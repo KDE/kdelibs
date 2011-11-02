@@ -1,8 +1,8 @@
 project(kded)
 
-add_subdirectory( tests )
+include_directories( ${KDE4_KIO_INCLUDES} ${KDE4_KCONFIG_INCLUDES})
 
-include_directories( ${KDE4_KIO_INCLUDES} )
+add_subdirectory( tests )
 
 if(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
     set(KBUILDSYCOCA_NO_KCRASH TRUE)

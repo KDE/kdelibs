@@ -24,11 +24,11 @@
 #include <QtCore/QHash>
 #include <QtCore/QStringList>
 
-#include <kurl.h>
-
 #include "class.h"
 
 #include "nepomuk_export.h"
+
+class QUrl;
 
 namespace Nepomuk {
 
@@ -785,7 +785,7 @@ namespace Nepomuk {
          *
          * \since 4.5
          */
-        static Resource fromResourceUri( const KUrl& uri, const Nepomuk::Types::Class& type = Nepomuk::Types::Class(), ResourceManager* manager = 0 );
+        static Resource fromResourceUri( const QUrl& uri, const Nepomuk::Types::Class& type = Nepomuk::Types::Class(), ResourceManager* manager = 0 );
 
     private:
         /**

@@ -176,12 +176,13 @@ So there's also a fast mode which is:
 
 */
 
-KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
+KMimeType::Ptr KMimeType::findByUrlHelper( const QUrl& url, mode_t mode,
                                            bool is_local_file,
                                            QIODevice* device,
                                            int* accuracy )
 {
     checkEssentialMimeTypes();
+    KUrl _url(url);
     const QString path = is_local_file ? _url.toLocalFile() : _url.path();
 
     if (accuracy)
@@ -312,7 +313,7 @@ KMimeType::Ptr KMimeType::findByUrlHelper( const KUrl& _url, mode_t mode,
     return defaultMimeTypePtr();
 }
 
-KMimeType::Ptr KMimeType::findByUrl( const KUrl& url, mode_t mode,
+KMimeType::Ptr KMimeType::findByUrl( const QUrl& url, mode_t mode,
                                      bool is_local_file, bool fast_mode,
                                      int *accuracy )
 {
@@ -454,8 +455,9 @@ KMimeType::~KMimeType()
 {
 }
 
-QString KMimeType::iconNameForUrl( const KUrl & _url, mode_t mode )
+QString KMimeType::iconNameForUrl( const QUrl & url, mode_t mode )
 {
+    KUrl _url(url);
     const KMimeType::Ptr mt = findByUrl( _url, mode, _url.isLocalFile(),
                                          false /*HACK*/);
     if (!mt) {
@@ -482,10 +484,11 @@ QString KMimeType::iconNameForUrl( const KUrl & _url, mode_t mode )
     return !i.isEmpty() ? i : unknown;
 }
 
-QString KMimeType::favIconForUrl( const KUrl& url )
+QString KMimeType::favIconForUrl( const QUrl& _url )
 {
+    KUrl url(_url);
     if (url.isLocalFile()
-        || !url.protocol().startsWith(QLatin1String("http"))
+        || !url.scheme().startsWith(QLatin1String("http"))
         || !KMimeTypeRepository::self()->useFavIcons())
         return QString();
 

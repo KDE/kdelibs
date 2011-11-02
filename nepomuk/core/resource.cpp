@@ -922,7 +922,7 @@ Nepomuk::File Nepomuk::Resource::toFile() const
 
 
 // static
-Nepomuk::Resource Nepomuk::Resource::fromResourceUri( const KUrl& uri, const Nepomuk::Types::Class& type, ResourceManager* manager )
+Nepomuk::Resource Nepomuk::Resource::fromResourceUri( const QUrl& uri, const Nepomuk::Types::Class& type, ResourceManager* manager )
 {
     if( !manager )
         manager = ResourceManager::instance();

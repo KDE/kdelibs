@@ -1,4 +1,4 @@
-include_directories( ${KDE4_KIO_INCLUDES} .. )
+include_directories( .. )
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
 ######### kmimeassociationstest ########

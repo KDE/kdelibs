@@ -20,6 +20,7 @@
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QtGlobal>
+#include <QtCore/QUrl>
 #include <kcomponentdata.h>
 #include <kmimetype.h>
 #include <kmessage.h>
@@ -59,7 +60,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    KMimeType::Ptr mime = KMimeType::findByUrl(KUrl("/"));
+    KMimeType::Ptr mime = KMimeType::findByUrl(QUrl::fromLocalFile("/"));
     Q_ASSERT(mime);
     Q_ASSERT(mime->name() == "application/octet-stream");
     if (!mime) {

@@ -26,6 +26,7 @@
 #include <soprano/node.h>
 
 #include <kdebug.h>
+#include <kurl.h>
 
 #include <QtCore/QVariant>
 

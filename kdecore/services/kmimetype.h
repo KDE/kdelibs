@@ -23,13 +23,13 @@
 #include <QtCore/QStringList>
 #include <QtCore/QList>
 
-#include <kurl.h>
 #include <ksycocatype.h>
 #include <kservicetype.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
 
+class QUrl;
 class KMimeTypePrivate;
 
 /**
@@ -70,7 +70,7 @@ public:
      * @return the name of the icon. The name of a default icon if there is no icon
      *         for the mime type
      */
-    static QString iconNameForUrl( const KUrl & url, mode_t mode = 0 );
+    static QString iconNameForUrl( const QUrl & url, mode_t mode = 0 );
 
     /**
      * Return the "favicon" (see http://www.favicon.com) for the given @p url,
@@ -81,7 +81,7 @@ public:
      * @param url the URL of the favicon
      * @return the name of the favicon, or QString()
      */
-    static QString favIconForUrl( const KUrl& url );
+    static QString favIconForUrl( const QUrl& url );
 
     /**
      * Returns the descriptive comment associated with the MIME type.
@@ -154,7 +154,7 @@ public:
      * @return A pointer to the matching mimetype. 0 is never returned.
      * @em Very @em Important: Don't store the result in a KMimeType* !
      */
-    static Ptr findByUrl( const KUrl& url, mode_t mode = 0,
+    static Ptr findByUrl( const QUrl& url, mode_t mode = 0,
                           bool is_local_file = false, bool fast_mode = false,
                           int *accuracy = 0 );
     /**
@@ -457,7 +457,7 @@ private:
     void loadInternal( QDataStream& _str);
     static void buildDefaultType();
     static void checkEssentialMimeTypes();
-    static KMimeType::Ptr findByUrlHelper( const KUrl& url, mode_t mode,
+    static KMimeType::Ptr findByUrlHelper( const QUrl& url, mode_t mode,
                                            bool is_local_file, QIODevice* device, int* accuracy );
 };
 

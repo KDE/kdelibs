@@ -174,6 +174,10 @@ if(NOT WINCE)
     set(KDE4_KDECORE_INCLUDES ${KDE4_KJS_INCLUDES} )
 endif(NOT WINCE)
 
+set(KDE4_KCONFIG_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore/config
+                          ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/io # for kurl.h
+                          ${CMAKE_BINARY_DIR}/tier1/libkcoreaddons/src
+   )
 # kdecore depends on Qt (need only headers from kjs)
 set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/kdecore
@@ -182,9 +186,7 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/kdecore/config
                           ${CMAKE_SOURCE_DIR}/kdecore/date
                           ${CMAKE_SOURCE_DIR}/kdecore/io
-                          ${CMAKE_SOURCE_DIR}/kdecore/jobs
                           ${CMAKE_SOURCE_DIR}/kdecore/kernel
-                          ${CMAKE_SOURCE_DIR}/kdecore/auth
                           ${CMAKE_SOURCE_DIR}/kdecore/network
                           ${CMAKE_SOURCE_DIR}/kdecore/services
                           ${CMAKE_SOURCE_DIR}/kdecore/localization

@@ -3,7 +3,7 @@ set(kntlm_LIB_SRCS kntlm.cpp des.cpp )
 
 kde4_add_library(kntlm ${LIBRARY_TYPE} ${kntlm_LIB_SRCS})
 
-target_link_libraries(kntlm  ${KDE4_KDECORE_LIBS} )
+target_link_libraries(kntlm  ${KDE4_KDECORE_LIBS} kcoreaddons)
 
 set_target_properties(kntlm PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 

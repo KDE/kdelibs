@@ -1,7 +1,7 @@
 
 project(kconf_update)
 
-include_directories( ${KDE4_KDECORE_INCLUDES} )
+include_directories( ${KDE4_KDECORE_INCLUDES} ${KDE4_KCONFIG_INCLUDES})
 
 
 ########### next target ###############

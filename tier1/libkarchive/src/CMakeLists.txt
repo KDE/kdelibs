@@ -2,6 +2,10 @@
 include(ConfigureChecks.cmake)
 configure_file(config-compression.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compression.h)
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
+
+# For KSaveFile - TODO put that into Qt
+include_directories( ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/io
+                     ${CMAKE_BINARY_DIR}/tier1/libkcoreaddons/src )
 add_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 if(BZIP2_FOUND)
@@ -32,7 +36,8 @@ set(karchive_SRCS
 
 kf5_add_library(karchive ${LIBRARY_TYPE} ${karchive_SRCS} ${karchive_OPTIONAL_SRCS})
 
-target_link_libraries(karchive ${QT_QTCORE_LIBRARY} ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY} ${KDE4_KDECORE_LIBS})
+# Uses kdecore for KMimeType only, TODO, port to QMimeType
+target_link_libraries(karchive ${QT_QTCORE_LIBRARY} ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY} kdecore kcoreaddons)
 
 set_target_properties(karchive PROPERTIES VERSION  ${GENERIC_LIB_VERSION}
                                           SOVERSION ${GENERIC_LIB_SOVERSION}
