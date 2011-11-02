@@ -38,7 +38,7 @@ public:
 
     QString tempFileName();
     KUrl managedFile;
-    KLockFile::Ptr lock;
+    KLockFile *lock;
     static const int padding;
     bool managedFileNameChanged;
 };
@@ -86,6 +86,7 @@ KAutoSaveFile::KAutoSaveFile(QObject *parent)
 KAutoSaveFile::~KAutoSaveFile()
 {
     releaseLock();
+    delete d->lock;
     delete d;
 }
 
@@ -105,9 +106,10 @@ void KAutoSaveFile::setManagedFile(const KUrl &filename)
 void KAutoSaveFile::releaseLock()
 {
     if (d->lock && d->lock->isLocked()) {
-        d->lock.clear();
+        delete d->lock;
+	d->lock = NULL;
         if (!fileName().isEmpty()) {
-        remove();
+            remove();
         }
     }
 }

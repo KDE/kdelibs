@@ -32,7 +32,7 @@ class KConfigIniBackend : public KConfigBackend
 private:
     class BufferFragment;
     
-    KLockFile::Ptr lockFile;
+    KLockFile *lockFile;
 public:
 
     KConfigIniBackend();

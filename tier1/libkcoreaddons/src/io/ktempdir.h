@@ -46,7 +46,7 @@
  * KStandardDirs::locateLocal() does.
  *
  * @see KStandardDirs
- * @see KTemporaryFile
+ * @see QTemporaryFile
  * @author Joseph Wenninger <jowenn@kde.org>
  */
 class KCOREADDONS_EXPORT KTempDir
