@@ -22,12 +22,13 @@
 #include "test_filter.h"
 #include "filter_p.h"
 
-#include <qtest_kde.h>
+#include <qtest.h>
 #include <kdebug.h>
 #include <kcmdlineargs.h>
 #include <QTextBoundaryFinder>
 
-QTEST_KDEMAIN_CORE( SonnetFilterTest )
+// QT5 TODO QTEST_GUILESS_MAIN(SonnetFilterTest)
+QTEST_MAIN(SonnetFilterTest)
 
 using namespace Sonnet;
 
