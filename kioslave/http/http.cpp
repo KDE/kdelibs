@@ -1591,6 +1591,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
     url = m_request.url.url();
 
   QString action, errorString;
+  int errorCode = ERR_SLAVE_DEFINED;
 
   // for 412 Precondition Failed
   QString ow = i18n( "Otherwise, the request would have succeeded." );
@@ -1696,8 +1697,8 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
 
       errorString += QLatin1String("<ul>");
 
-      for ( QStringList::const_iterator it = errors.constBegin(); it != errors.constEnd(); ++it )
-        errorString += QLatin1String("<li>") + *it + QLatin1String("</li>");
+      Q_FOREACH(const QString& error, errors)
+        errorString += QLatin1String("<li>") + error + QLatin1String("</li>");
 
       errorString += QLatin1String("</ul>");
     }
@@ -1711,22 +1712,23 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
       // 405 Method Not Allowed
       if ( m_request.method == DAV_MKCOL ) {
         // ERR_DIR_ALREADY_EXIST
-        errorString = i18n("The specified folder already exists.");
+        errorString = url;
+        errorCode = ERR_DIR_ALREADY_EXIST;
       }
       break;
     case 409:
       // 409 Conflict
       // ERR_ACCESS_DENIED
       errorString = i18n("A resource cannot be created at the destination "
-                  "until one or more intermediate collections (folders) "
-                  "have been created.");
+                         "until one or more intermediate collections (folders) "
+                         "have been created.");
       break;
     case 412:
       // 412 Precondition failed
       if ( m_request.method == DAV_COPY || m_request.method == DAV_MOVE ) {
         // ERR_ACCESS_DENIED
         errorString = i18n("The server was unable to maintain the liveness of "
-                           "the properties listed in the propertybehavior XML "
+                           "the properties listed in the property behavior XML "
                            "element or you attempted to overwrite a file while "
                            "requesting that files are not overwritten. %1",
                              ow );
@@ -1773,7 +1775,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
   //errorString += " (" + url + ')';
 
   if ( callError )
-    error( ERR_SLAVE_DEFINED, errorString );
+    error( errorCode, errorString );
 
   return errorString;
 }
@@ -4710,15 +4712,13 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
       cacheFileClose(); // no-op if not necessary
   }
 
-  if (sz <= 1)
+  if (!dataInternal && sz <= 1)
   {
     if (m_request.responseCode >= 500 && m_request.responseCode <= 599) {
       error(ERR_INTERNAL_SERVER, m_request.url.host());
       return false;
     } else if (m_request.responseCode >= 400 && m_request.responseCode <= 499 &&
-               !isAuthenticationRequired(m_request.responseCode) &&
-               // If we're doing a propfind, a 404 is not an error
-               m_request.method != DAV_PROPFIND) {
+               !isAuthenticationRequired(m_request.responseCode)) {
       error(ERR_DOES_NOT_EXIST, m_request.url.host());
       return false;
     }
@@ -4726,6 +4726,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
   if (!dataInternal && !m_isRedirection)
     data( QByteArray() );
+
   return true;
 }
 

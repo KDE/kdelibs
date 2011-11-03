@@ -64,7 +64,7 @@ void KMimeTypeTest::initTestCase()
         group.writeEntry("Type", "Service");
         group.writeEntry("X-KDE-Library", "fakepatchpart");
         group.writeEntry("ServiceTypes", "KParts/ReadOnlyPart");
-        group.writeEntry("MimeType", "text/x-patch;");
+        group.writeEntry("MimeType", "text/x-diff;"); // Use an alias on purpose, to test if that works
         group.writeEntry("InitialPreference", 5);
     }
 
