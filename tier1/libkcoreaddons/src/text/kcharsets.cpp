@@ -34,6 +34,9 @@
 #include <assert.h>
 #include <QHash>
 
+// PORTING HACK (KDE5 TODO: clean up)
+#define i18nc(a,b) QObject::tr(b, a)
+
 /*
  * ### FIXME KDE4: the name of the encodings should mostly be uppercase
  * The names of this list are user-visible
@@ -630,10 +633,10 @@ QString KCharsets::descriptionForEncoding( const QString& encoding ) const
                                                language_for_encoding_indices,
                                                encoding.toUtf8().data() );
     if ( lang )
-        return i18nc( "@item %1 character set, %2 encoding", "%1 ( %2 )",
-                      i18nc( "@item Text character set", lang ), encoding );
+        return i18nc("@item %1 character set, %2 encoding", "%1 ( %2 )")
+            .arg(i18nc( "@item Text character set", lang), encoding);
     else
-        return i18nc( "@item", "Other encoding (%1)", encoding );
+        return i18nc("@item", "Other encoding (%1)").arg(encoding);
 }
 
 QString KCharsets::encodingForName( const QString &descriptiveName ) const
@@ -659,8 +662,7 @@ QStringList KCharsets::descriptiveEncodingNames() const
     for ( const int *p = language_for_encoding_indices; *p != -1; p += 2) {
         const QString name = QString::fromUtf8( language_for_encoding_string + p[0] );
         const QString description = i18nc( "@item Text character set", language_for_encoding_string + p[1] );
-        encodings.append( i18nc( "@item Text encoding: %1 character set, %2 encoding", "%1 ( %2 )",
-                                 description, name ) );
+        encodings.append(i18nc("@item Text encoding: %1 character set, %2 encoding", "%1 ( %2 )").arg(description, name));
     }
     encodings.sort();
     return encodings;

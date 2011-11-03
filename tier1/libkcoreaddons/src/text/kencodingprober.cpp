@@ -229,6 +229,9 @@ void KEncodingProber::setProberType(KEncodingProber::ProberType proberType)
     reset();
 }
 
+// PORTING HACK (KDE5 TODO: clean up)
+#define i18nc(a,b) QObject::tr(b, a)
+
 KEncodingProber::ProberType KEncodingProber::proberTypeForName(const QString& lang)
 {
     if (lang.isEmpty())

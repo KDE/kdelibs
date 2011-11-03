@@ -32,6 +32,9 @@
 #include <QtCore/QList>
 #include <QHash>
 
+// PORTING HACK (KDE5 TODO: clean up)
+#define i18nc(a,b) QObject::tr(b, a)
+
 // -----------------------------------------------------------------------------
 // Design notes:
 //

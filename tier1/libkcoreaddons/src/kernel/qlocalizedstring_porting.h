@@ -62,7 +62,6 @@ static inline QString i18n(const char *msg, const QString &c1 = QString(), const
     Q_UNUSED(c1); Q_UNUSED(c2);
     return qi18n(msg).toString();
 }
-#endif
 
 static inline QString i18nc(const char *ctx, const char *msg, const QString &c1 = QString(),
                             const QString &c2 = QString(), const QString &c3= QString(), const QString &c4 = QString())
@@ -72,5 +71,6 @@ static inline QString i18nc(const char *ctx, const char *msg, const QString &c1 
     Q_UNUSED(c3); Q_UNUSED(c4);
     return QObject::tr(msg);
 }
+#endif
 
 #endif

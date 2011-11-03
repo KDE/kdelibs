@@ -44,6 +44,9 @@
 #include "kglobal.h"
 #include "kurl.h"
 
+// PORTING HACK (KDE5 TODO: clean up)
+#define i18nc(a,b) QObject::tr(b, a)
+
 // -----------------------------------------------------------------------------
 // Design notes:
 //
@@ -653,7 +656,7 @@ void KCmdLineArgsStatic::removeArgs(const QByteArray &id)
 
 #pragma message("KDE5 TODO: Remove this method once it is in Qt5 and import it to libinqt5")
 QString KCmdLineArgsStatic::escape(const QString &text)
-{ 
+{
     int tlen = text.length();
     QString ntext;
     ntext.reserve(tlen);
@@ -847,7 +850,7 @@ KCmdLineArgsStatic::findOption(const QByteArray &optv, const QByteArray &_opt,
          if (i >= s->all_argc)
          {
             KCmdLineArgs::enable_i18n();
-            KCmdLineArgs::usageError( i18nc("@info:shell %1 is cmdoption name","'%1' missing.",  QString::fromLocal8Bit(opt_name.data())));
+            KCmdLineArgs::usageError(i18nc("@info:shell %1 is cmdoption name","'%1' missing.").arg(QString::fromLocal8Bit(opt_name.data())));
          }
          argument = s->all_argv[i];
       }
@@ -915,8 +918,7 @@ KCmdLineArgsStatic::parseAllArgs()
                             "%3 application name, other %n version strings",
                             "Qt: %1\n"
                             "KDE Development Platform: %2\n"
-                            "%3: %4\n",
-                            QString::fromLatin1(qVersion()),
+                            "%3: %4\n").arg(QString::fromLatin1(qVersion()),
                             QString::fromLatin1(KDE_VERSION_STRING),
                             s->about->programName(), s->about->version()));
             exit(0);
@@ -938,7 +940,7 @@ KCmdLineArgsStatic::parseAllArgs()
                email = QString::fromLatin1(" &lt;") + (*it).emailAddress() + QLatin1String("&gt;");
              authorlist += QString::fromLatin1("    ") + (*it).name() + email + QLatin1Char('\n');
            }
-           s->printQ( i18nc("the 2nd argument is a list of name+address, one on each line","%1 was written by\n%2",   QString(s->about->programName()) ,  authorlist ) );
+           s->printQ(i18nc("the 2nd argument is a list of name+address, one on each line","%1 was written by\n%2").arg(QString(s->about->programName()), authorlist));
          }
        } else {
          s->printQ(QObject::tr("This application was written by somebody who wants to remain anonymous."));
