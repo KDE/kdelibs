@@ -11,11 +11,11 @@
 int main( int argc, char ** argv )
 {
   KCmdLineOptions options;
-  KAboutData aboutData( "knotifytest", 0, ki18n("KNotifyTest"), "0.1",
-			ki18n( "A test program for KDE Notifications" ),
+  KAboutData aboutData( "knotifytest", 0, qi18n("KNotifyTest"), "0.1",
+			qi18n( "A test program for KDE Notifications" ),
 			KAboutData::License_GPL,
-			ki18n("(c) 2006, Olivier Goffart"));
-  aboutData.addAuthor(ki18n("Olivier Goffart"), KLocalizedString(), "ogoffart @ kde.org");
+			qi18n("(c) 2006, Olivier Goffart"));
+  aboutData.addAuthor(qi18n("Olivier Goffart"), QLocalizedString(), "ogoffart @ kde.org");
   KCmdLineArgs::init( argc, argv, &aboutData );
   KCmdLineArgs::addCmdLineOptions( options );
 
