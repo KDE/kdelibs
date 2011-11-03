@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 {
  Dummy dummy;
 
- KAboutData about("kprociotest", 0, ki18n("kprociotest"), "version");
+ KAboutData about("kprociotest", 0, qi18n("kprociotest"), "version");
  //KCmdLineArgs::init(argc, argv, &about);
  KComponentData cData(&about);
 

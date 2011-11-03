@@ -762,7 +762,7 @@ QString DirectoryView::selectedDir()
 /**********************************************************************************************/
 
 int main(int argc, char* argv[]) {
-  KAboutData about("kdockwidgetdemo", 0, ki18n("kdockwidgetdemo"), "version");
+  KAboutData about("kdockwidgetdemo", 0, qi18n("kdockwidgetdemo"), "version");
   KCmdLineArgs::init(argc, argv, &about);
 
   KApplication app;

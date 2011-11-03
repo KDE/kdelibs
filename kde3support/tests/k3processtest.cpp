@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 {
  K3Process p1, p2, p3, p4;
  Dummy dummy;
- KAboutData about("kprocesstest", 0, ki18n("kprocesstest"), "version");
+ KAboutData about("kprocesstest", 0, qi18n("kprocesstest"), "version");
  KComponentData cData(&about);
  //KCmdLineArgs::init(argc, argv, &about);
  //KApplication app;

@@ -20,23 +20,23 @@
 
 int main(int argc, char** argv)
 {
-  KAboutData aboutData("K3AboutDialogTest", 0, ki18n("K3AboutDialogTest"), "version", ki18n("K3AboutDialog Test, Enjoy!"), KAboutData::License_GPL, ki18n("(c) 1997-2006, The KDE Developers"));
-  aboutData.addAuthor(ki18n("Bob Dobbs"), ki18n("Current Maintainer"), "bob@subgenius.com");
-  aboutData.addAuthor(ki18n("Gregory S. Hayes"), ki18n("Developer"), "syncomm@gmail.com");
-  aboutData.addAuthor(ki18n("Random Authors from KFind"));
-  aboutData.addAuthor(ki18n("Beppe Grimaldi"), ki18n("UI Design & more search options"), "grimalkin@ciaoweb.it");
-  aboutData.addAuthor(ki18n("Martin Hartig"));
-  aboutData.addAuthor(ki18n("Stephan Kulow"), KLocalizedString(), "coolo@kde.org");
-  aboutData.addAuthor(ki18n("Mario Weilguni"), KLocalizedString(), "mweilguni@sime.com");
-  aboutData.addAuthor(ki18n("Alex Zepeda"), KLocalizedString(), "zipzippy@sonic.net");
-  aboutData.addAuthor(ki18n("Miroslav Fl�r"), KLocalizedString(), "flidr@kky.zcu.cz");
-  aboutData.addAuthor(ki18n("Harri Porten"), KLocalizedString(), "porten@kde.org");
-  aboutData.addAuthor(ki18n("Dima Rogozin"), KLocalizedString(), "dima@mercury.co.il");
-  aboutData.addAuthor(ki18n("Carsten Pfeiffer"), KLocalizedString(), "pfeiffer@kde.org");
-  aboutData.addAuthor(ki18n("Hans Petter Bieker"), KLocalizedString(), "bieker@kde.org");
-  aboutData.addAuthor(ki18n("Waldo Bastian"), ki18n("UI Design"), "bastian@kde.org");
-  aboutData.addAuthor(ki18n("Alexander Neundorf"), KLocalizedString(), "neundorf@kde.org");
-  aboutData.addAuthor(ki18n("Clarence Dang"), KLocalizedString(), "dang@kde.org");
+  KAboutData aboutData("K3AboutDialogTest", 0, qi18n("K3AboutDialogTest"), "version", qi18n("K3AboutDialog Test, Enjoy!"), KAboutData::License_GPL, qi18n("(c) 1997-2006, The KDE Developers"));
+  aboutData.addAuthor(qi18n("Bob Dobbs"), qi18n("Current Maintainer"), "bob@subgenius.com");
+  aboutData.addAuthor(qi18n("Gregory S. Hayes"), qi18n("Developer"), "syncomm@gmail.com");
+  aboutData.addAuthor(qi18n("Random Authors from KFind"));
+  aboutData.addAuthor(qi18n("Beppe Grimaldi"), qi18n("UI Design & more search options"), "grimalkin@ciaoweb.it");
+  aboutData.addAuthor(qi18n("Martin Hartig"));
+  aboutData.addAuthor(qi18n("Stephan Kulow"), QLocalizedString(), "coolo@kde.org");
+  aboutData.addAuthor(qi18n("Mario Weilguni"), QLocalizedString(), "mweilguni@sime.com");
+  aboutData.addAuthor(qi18n("Alex Zepeda"), QLocalizedString(), "zipzippy@sonic.net");
+  aboutData.addAuthor(qi18n("Miroslav Fl�r"), QLocalizedString(), "flidr@kky.zcu.cz");
+  aboutData.addAuthor(qi18n("Harri Porten"), QLocalizedString(), "porten@kde.org");
+  aboutData.addAuthor(qi18n("Dima Rogozin"), QLocalizedString(), "dima@mercury.co.il");
+  aboutData.addAuthor(qi18n("Carsten Pfeiffer"), QLocalizedString(), "pfeiffer@kde.org");
+  aboutData.addAuthor(qi18n("Hans Petter Bieker"), QLocalizedString(), "bieker@kde.org");
+  aboutData.addAuthor(qi18n("Waldo Bastian"), qi18n("UI Design"), "bastian@kde.org");
+  aboutData.addAuthor(qi18n("Alexander Neundorf"), QLocalizedString(), "neundorf@kde.org");
+  aboutData.addAuthor(qi18n("Clarence Dang"), QLocalizedString(), "dang@kde.org");
 
   KCmdLineArgs::init(argc, argv, &aboutData);
 

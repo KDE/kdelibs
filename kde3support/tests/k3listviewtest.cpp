@@ -9,7 +9,7 @@
 
 int main( int argc, char **argv )
 {
-	KCmdLineArgs::init( argc, argv, "klistviewtest", 0, ki18n("K3ListViewTest"), "1.0", ki18n("klistview test app"));
+	KCmdLineArgs::init( argc, argv, "klistviewtest", 0, qi18n("K3ListViewTest"), "1.0", qi18n("klistview test app"));
 	KApplication app;
 	KDialog dialog;
 	K3ListView *view = new K3ListView();

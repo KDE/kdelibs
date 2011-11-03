@@ -43,7 +43,7 @@ KActiveLabelTest::KActiveLabelTest(QWidget *parent)
 
 int main( int argc, char ** argv )
 {
-  KAboutData about( "KActiveLabelTest", 0, ki18n("KActiveLabelTest"), "version");
+  KAboutData about( "KActiveLabelTest", 0, qi18n("KActiveLabelTest"), "version");
   KCmdLineArgs::init(argc, argv, &about);
 
   KApplication app;

@@ -61,7 +61,7 @@ DockTest::DockTest( QWidget* parent )
 int
 main( int argc, char** argv )
 {
-  KCmdLineArgs::init( argc, argv, "docktest", 0, ki18n("DockTest"), "1.0", ki18n("docktest"));
+  KCmdLineArgs::init( argc, argv, "docktest", 0, qi18n("DockTest"), "1.0", qi18n("docktest"));
   KApplication a;
   DockTest* ap = new DockTest();
   ap->setWindowTitle("DockWidget demo");

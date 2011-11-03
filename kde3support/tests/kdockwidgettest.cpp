@@ -255,7 +255,7 @@ void DockApplication::gSetPix2() {
 }
 
 int main(int argc, char* argv[]) {
-  KAboutData about("kdockdemoapp1", 0, ki18n("kdockdemoapp1"), "version");
+  KAboutData about("kdockdemoapp1", 0, qi18n("kdockdemoapp1"), "version");
   KCmdLineArgs::init(argc, argv, &about);
 
   KApplication a;
