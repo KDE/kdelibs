@@ -19,6 +19,7 @@
 
 #include "kaboutdata.h"
 #include "kcmdlineargs.h"
+#include "klocale.h"
 #include "kcomponentdata.h"
 
 #include "resourceclass.h"
@@ -46,38 +47,38 @@ int main( int argc, char** argv )
 {
     KAboutData aboutData( "nepomuk-rcgen",
                           "nepomuk-rcgen",
-                          ki18n("Nepomuk Resource Class Generator"),
+                          qi18n("Nepomuk Resource Class Generator"),
                           "0.3",
-                          ki18n("Nepomuk Resource Class Generator"),
+                          qi18n("Nepomuk Resource Class Generator"),
                           KAboutData::License_GPL,
-                          ki18n("(c) 2006-2009, Sebastian Trüg"),
-                          KLocalizedString(),
+                          qi18n("(c) 2006-2009, Sebastian Trüg"),
+                          QLocalizedString(),
                           "http://nepomuk.kde.org" );
-    aboutData.addAuthor(ki18n("Sebastian Trüg"), ki18n("Maintainer"), "trueg@kde.org");
-    aboutData.addAuthor(ki18n("Tobias Koenig"), ki18n("Major cleanup - Personal hero of maintainer"), "tokoe@kde.org");
+    aboutData.addAuthor(qi18n("Sebastian Trüg"), qi18n("Maintainer"), "trueg@kde.org");
+    aboutData.addAuthor(qi18n("Tobias Koenig"), qi18n("Major cleanup - Personal hero of maintainer"), "tokoe@kde.org");
     aboutData.setProgramIconName( "nepomuk" );
     KComponentData component( aboutData );
 
     KCmdLineArgs::init( argc, argv, &aboutData );
 
     KCmdLineOptions options;
-    options.add("verbose", ki18n("Verbose output debugging mode."));
-    options.add("fast", ki18n("Generate simple and fast wrapper classes not based on Nepomuk::Resource which do not provide any data integrity checking"));
-    options.add("writeall", ki18n("Actually generate the code."));
-    options.add("listincludes", ki18n("List all includes (deprecated)."));
-    options.add("listheaders", ki18n("List all header files that will be generated via the --writeall command."));
-    options.add("listsources", ki18n("List all source files that will be generated via the --writeall command."));
-    options.add("ontologies <files>", ki18n("The ontology files containing the ontologies to be generated, a space separated list (deprecated: use arguments instead.)"));
-    options.add("prefix <prefix>", ki18n("Include path prefix (deprecated)"));
-    options.add("target <target-folder>", ki18n("Specify the target folder to store generated files into."));
+    options.add("verbose", qi18n("Verbose output debugging mode."));
+    options.add("fast", qi18n("Generate simple and fast wrapper classes not based on Nepomuk::Resource which do not provide any data integrity checking"));
+    options.add("writeall", qi18n("Actually generate the code."));
+    options.add("listincludes", qi18n("List all includes (deprecated)."));
+    options.add("listheaders", qi18n("List all header files that will be generated via the --writeall command."));
+    options.add("listsources", qi18n("List all source files that will be generated via the --writeall command."));
+    options.add("ontologies <files>", qi18n("The ontology files containing the ontologies to be generated, a space separated list (deprecated: use arguments instead.)"));
+    options.add("prefix <prefix>", qi18n("Include path prefix (deprecated)"));
+    options.add("target <target-folder>", qi18n("Specify the target folder to store generated files into."));
     // (romain_kdab) : watch out for a regression with --templates :
     // KCmdLineOptions doesn't allow empty option arguments, so e.g. "--templates --foo" will treat --foo as the argument to --templates
     // Since the option is deprecated it's probably not worth changing the KCmdLineOptions behaviour only for this ?
-    options.add("templates <templates>", ki18n("Templates to be used (deprecated)."));
-    options.add("class <classname>", ki18n("Optionally specify the classes to be generated. Use option multiple times (defaults to all classes)"));
-    options.add("serialization <rdf-serialization>", ki18n("Serialization used in the ontology files. Will default to primitive file extension detection."));
-    options.add("visibility <visibility-name>", ki18n("Set the used visibility in case the classes are to be used in public API. <visibility-name> will be used to construct the export macro name and the export header. By default classes will not be exported."));
-    options.add("+[ontologies]", ki18n("The ontology files containing the ontologies to be generated."));
+    options.add("templates <templates>", qi18n("Templates to be used (deprecated)."));
+    options.add("class <classname>", qi18n("Optionally specify the classes to be generated. Use option multiple times (defaults to all classes)"));
+    options.add("serialization <rdf-serialization>", qi18n("Serialization used in the ontology files. Will default to primitive file extension detection."));
+    options.add("visibility <visibility-name>", qi18n("Set the used visibility in case the classes are to be used in public API. <visibility-name> will be used to construct the export macro name and the export header. By default classes will not be exported."));
+    options.add("+[ontologies]", qi18n("The ontology files containing the ontologies to be generated."));
 
     KCmdLineArgs::addCmdLineOptions( options );
     QCoreApplication app( argc,argv );

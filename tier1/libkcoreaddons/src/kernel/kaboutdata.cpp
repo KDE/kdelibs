@@ -447,7 +447,7 @@ KAboutData::KAboutData( const QByteArray &_appName,
     d->_catalogName = _catalogName;
     d->_programName = _programName;
     if (!d->_programName.isEmpty()) // KComponentData("klauncher") gives empty program name
-        d->_translatedProgramName = _programName.toString(0).toUtf8();
+        d->_translatedProgramName = _programName.toString().toUtf8();
     d->_version = _version;
     d->_shortDescription = _shortDescription;
     d->_licenseList.append(KAboutLicense(licenseType,this));

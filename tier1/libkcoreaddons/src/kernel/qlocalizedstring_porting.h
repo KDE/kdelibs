@@ -39,7 +39,7 @@ class QLocalizedString
 public:
     QLocalizedString(): _string(NULL) {}
     QLocalizedString(const char *text): _string(text) {}
-    QString toString(int i = 0) const { Q_UNUSED(i); return _string; }
+    QString toString() const { return _string; }
     bool isEmpty() const { return toString().isEmpty(); }
 
     QLatin1String _string;
