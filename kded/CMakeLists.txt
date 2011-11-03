@@ -30,7 +30,7 @@ target_link_libraries(kdeinit_kded4  ${KDE4_KIO_LIBS} ${X11_LIBRARIES} kcoreaddo
 
 install(TARGETS kdeinit_kded4 ${INSTALL_TARGETS_DEFAULT_ARGS})
 
-target_link_libraries( kded4 kdeinit_kded4 )
+target_link_libraries( kded4 kdeinit_kded4)
 install(TARGETS kded4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 
