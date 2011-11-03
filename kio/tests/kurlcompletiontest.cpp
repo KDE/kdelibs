@@ -196,7 +196,7 @@ void KUrlCompletionTest::testEmptyCwd()
 int main( int argc, char **argv )
 {
     //KApplication::disableAutoDcopRegistration();
-    KCmdLineArgs::init(argc,argv, "kurlcompletiontest", 0, ki18n("kurlcompletiontest"), 0);
+    KCmdLineArgs::init(argc,argv, "kurlcompletiontest", 0, qi18n("kurlcompletiontest"), 0);
     KApplication app;
 
     {

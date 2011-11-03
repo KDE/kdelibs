@@ -49,7 +49,7 @@ int main(int argc, char **argv)
     options.add("+[cmd]");
     options.add("+[url]");
 
-    KCmdLineArgs::init(argc, argv, "kfstest", 0, ki18n("kfstest"), "0", ki18n("test app"));
+    KCmdLineArgs::init(argc, argv, "kfstest", 0, qi18n("kfstest"), "0", qi18n("test app"));
     KCmdLineArgs::addCmdLineOptions(options);
     KApplication a;
     a.setQuitOnLastWindowClosed(false);

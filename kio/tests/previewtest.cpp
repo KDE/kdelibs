@@ -57,7 +57,7 @@ void PreviewTest::slotFailed()
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc,argv, "previewtest", 0, ki18n("previewtest"), 0);
+    KCmdLineArgs::init(argc,argv, "previewtest", 0, qi18n("previewtest"), 0);
     KApplication app;
     PreviewTest *w = new PreviewTest;
     w->show();

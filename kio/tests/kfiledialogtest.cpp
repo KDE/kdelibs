@@ -28,12 +28,12 @@ int main (int argc, char **argv)
 {
     KAboutData aboutData("kfiledialogtest",
                          0,
-                         ki18n("kfiledialogtest"),
+                         qi18n("kfiledialogtest"),
                          "0.1",
-                         ki18n("kfiledialogtest"),
+                         qi18n("kfiledialogtest"),
                          KAboutData::License_LGPL,
-                         ki18n("(c) 2008 Rafael Fernández López"),
-                         ki18n("kfiledialogtest"),
+                         qi18n("(c) 2008 Rafael Fernández López"),
+                         qi18n("kfiledialogtest"),
                          "http://www.kde.org/");
 
     KCmdLineArgs::init( argc, argv, &aboutData );

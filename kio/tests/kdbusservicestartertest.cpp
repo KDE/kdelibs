@@ -26,7 +26,7 @@
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc,argv, "kdbusservicestartertest", 0, ki18n("kdbusservicestartertest"), 0);
+    KCmdLineArgs::init(argc,argv, "kdbusservicestartertest", 0, qi18n("kdbusservicestartertest"), 0);
     KApplication app;
 
     QString error, dbusService;

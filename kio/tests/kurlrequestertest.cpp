@@ -6,10 +6,10 @@
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init(argc, argv, "kurlrequestertest", 0, ki18n("kurlrequestertest"), "0", ki18n("test app"));
+    KCmdLineArgs::init(argc, argv, "kurlrequestertest", 0, qi18n("kurlrequestertest"), "0", qi18n("test app"));
     KApplication app;
     app.setQuitOnLastWindowClosed(false);
- 
+
     KUrl url = KUrlRequesterDialog::getUrl( "ftp://ftp.kde.org" );
     qDebug( "Selected url: %s", url.url().toLatin1().constData());
 
@@ -26,6 +26,6 @@ int main( int argc, char **argv )
     req1->fileDialog();
     req1->setWindowTitle("AAAAAAAAAAAA");
     req1->show();
-   
+
     return app.exec();
 }

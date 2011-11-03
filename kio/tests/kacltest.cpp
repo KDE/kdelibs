@@ -68,7 +68,7 @@ static bool check(const QString& txt, T a, T b)
 int main(int argc, char *argv[])
 {
     //KApplication::disableAutoDcopRegistration();
-    KCmdLineArgs::init(argc,argv, "kacltest", 0, ki18n("kacltest"), 0);
+    KCmdLineArgs::init(argc,argv, "kacltest", 0, qi18n("kacltest"), 0);
     KApplication app;
 
 #ifdef HAVE_POSIX_ACL

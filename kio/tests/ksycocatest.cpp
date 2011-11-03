@@ -43,7 +43,7 @@
 int main(int argc, char *argv[])
 {
    //KApplication::disableAutoDcopRegistration();
-   KCmdLineArgs::init(argc,argv, "ksycocatest", 0, ki18n("ksycocatest"), 0);
+   KCmdLineArgs::init(argc,argv, "ksycocatest", 0, qi18n("ksycocatest"), 0);
    KApplication k;//(argc,argv,"whatever",false/*noGUI*/); // KMessageBox needs KApp for makeStdCaption
 
    QString instname = "kword";

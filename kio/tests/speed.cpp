@@ -57,10 +57,10 @@ void SpeedTest::finished(KJob*) {
 
 int main(int argc, char **argv) {
 
-    KCmdLineArgs::init( argc, argv, "speedapp", 0, ki18n("SpeedApp"), "0.0", ki18n("A KIO::listRecursive testing tool"));
+    KCmdLineArgs::init( argc, argv, "speedapp", 0, qi18n("SpeedApp"), "0.0", qi18n("A KIO::listRecursive testing tool"));
 
     KCmdLineOptions options;
-    options.add("+[URL]", ki18n("the URL to list"));
+    options.add("+[URL]", qi18n("the URL to list"));
 
     KCmdLineArgs::addCmdLineOptions( options );
 

@@ -60,10 +60,10 @@ private:
 int main (int argc, char **argv)
 {
   KCmdLineOptions options;
-  options.add("+[directory ...]", ki18n("Directory(ies) to model"));
+  options.add("+[directory ...]", qi18n("Directory(ies) to model"));
 
-  KCmdLineArgs::init(argc, argv, "kdirmodeltest", 0, ki18n("KDirModelTest"),
-		     "1.0", ki18n("Test for KDirModel"));
+  KCmdLineArgs::init(argc, argv, "kdirmodeltest", 0, qi18n("KDirModelTest"),
+		     "1.0", qi18n("Test for KDirModel"));
   KCmdLineArgs::addCmdLineOptions( options );
   KCmdLineArgs::addStdCmdLineOptions();
 

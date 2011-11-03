@@ -5,7 +5,7 @@
 
 int main(int argc, char *argv[])
 {
-    KCmdLineArgs::init(argc,argv, "whatever", 0, ki18n("whatever"), 0);
+    KCmdLineArgs::init(argc,argv, "whatever", 0, qi18n("whatever"), 0);
     KApplication k;
 
     KBuildSycocaProgressDialog::rebuildKSycoca(0);

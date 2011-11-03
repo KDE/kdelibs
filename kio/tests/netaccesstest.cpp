@@ -29,7 +29,7 @@
 
 int main(int argc, char **argv)
 {
-  KCmdLineArgs::init(argc,argv, "netaccesstest", 0, ki18n("netaccesstest"), 0);
+  KCmdLineArgs::init(argc,argv, "netaccesstest", 0, qi18n("netaccesstest"), 0);
   KApplication app;
   KUrl srcURL( "ftp://ftp.kde.org/pub/kde/README" );
 #ifdef Q_WS_WIN

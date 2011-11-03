@@ -3,7 +3,7 @@
 #include <kcmdlineargs.h>
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init( argc, argv, "kscantest", 0, ki18n("kscantest"), 0);
+    KCmdLineArgs::init( argc, argv, "kscantest", 0, qi18n("kscantest"), 0);
     KApplication app;
     KScanDialog *dlg = KScanDialog::getScanDialog();
     if ( !dlg ) {

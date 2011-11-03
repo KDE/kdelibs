@@ -156,7 +156,7 @@ void KDirListerTest::completed()
 
 int main ( int argc, char *argv[] )
 {
-  KCmdLineArgs::init( argc, argv, "kdirlistertest", 0, ki18n("kdirlistertest"), 0);
+  KCmdLineArgs::init( argc, argv, "kdirlistertest", 0, qi18n("kdirlistertest"), 0);
   KApplication app;
 
   KDirListerTest *test = new KDirListerTest( 0 );

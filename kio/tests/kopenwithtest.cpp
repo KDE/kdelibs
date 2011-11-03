@@ -29,7 +29,7 @@
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc, argv, "kopenwithdialogtest", 0, ki18n("kopenwithdialogtest"), "0.1", ki18n("kopenwithdialogtest"));
+    KCmdLineArgs::init(argc, argv, "kopenwithdialogtest", 0, qi18n("kopenwithdialogtest"), "0.1", qi18n("kopenwithdialogtest"));
     KApplication app;
     KUrl::List list;
 

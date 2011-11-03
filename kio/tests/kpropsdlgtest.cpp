@@ -8,9 +8,9 @@
 int main ( int argc, char** argv )
 {
     KCmdLineOptions options;
-    options.add("+url", ki18n("the path or url to the file/dir for which to show properties"));
+    options.add("+url", qi18n("the path or url to the file/dir for which to show properties"));
 
-    KAboutData aboutData(QByteArray("kpropertiesdialogtest"), QByteArray(), ki18n("KIO Properties Dialog Test"), QByteArray("1.0"));
+    KAboutData aboutData(QByteArray("kpropertiesdialogtest"), QByteArray(), qi18n("KIO Properties Dialog Test"), QByteArray("1.0"));
     KCmdLineArgs::init(argc, argv, &aboutData);
     KCmdLineArgs::addCmdLineOptions( options );
 
