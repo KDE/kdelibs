@@ -149,20 +149,20 @@ int main( int argc, char **argv )
 #ifndef QT_ONLY
     if (kde)
     {
-        KAboutData aboutData( "kjscmd", 0, ki18n("KJSCmd"), "0.2",
-            ki18n(""
+        KAboutData aboutData( "kjscmd", 0, qi18n("KJSCmd"), "0.2",
+            qi18n(""
             "Utility for running KJSEmbed scripts \n" ),
             KAboutData::License_LGPL,
-            ki18n("(C) 2005-2006 The KJSEmbed Authors") );
+            qi18n("(C) 2005-2006 The KJSEmbed Authors") );
 
         KCmdLineOptions options;
-        options.add("e", ki18n("Execute script without gui support"));
-        options.add("exec", ki18n("Execute script without gui support"));
-        options.add("i", ki18n("start interactive kjs interpreter"));
-        options.add("interactive", ki18n("start interactive kjs interpreter"));
-        options.add("n", ki18n("start without KDE KApplication support."));
-        options.add("no-kde", ki18n("start without KDE KApplication support."));
-        options.add("!+command", ki18n("Script to execute"));
+        options.add("e", qi18n("Execute script without gui support"));
+        options.add("exec", qi18n("Execute script without gui support"));
+        options.add("i", qi18n("start interactive kjs interpreter"));
+        options.add("interactive", qi18n("start interactive kjs interpreter"));
+        options.add("n", qi18n("start without KDE KApplication support."));
+        options.add("no-kde", qi18n("start without KDE KApplication support."));
+        options.add("!+command", qi18n("Script to execute"));
 
         KCmdLineArgs::addCmdLineOptions( options ); // Add our own options.
         KCmdLineArgs::init( argc, argv, &aboutData );
