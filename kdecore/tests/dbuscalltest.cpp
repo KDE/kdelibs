@@ -1,13 +1,12 @@
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
-//#include <kapplication.h>
 #include <kdebug.h>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusReply>
 
 int main( int argc, char** argv )
 {
-    KAboutData about("DBusCallTest", 0, ki18n("DBusCallTest"), "version");
+    KAboutData about("DBusCallTest", 0, qi18n("DBusCallTest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
 //   KApplication app(false);
 

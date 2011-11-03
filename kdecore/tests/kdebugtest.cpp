@@ -24,6 +24,7 @@
 // to test debug messages, kdebug should be enabled regardless of build mode
 
 #include <QCoreApplication>
+#include <QStringList>
 #include <kcmdlineargs.h>
 #include <QtCore/QDebug>
 #undef QT_NO_DEBUG

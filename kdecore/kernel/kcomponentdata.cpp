@@ -73,7 +73,7 @@ enum KdeLibraryPathsAdded {
 static KdeLibraryPathsAdded kdeLibraryPathsAdded = NeedLazyInit;
 
 KComponentData::KComponentData(const QByteArray &name, const QByteArray &catalog, MainComponentRegistration registerAsMain)
-    : d(new KComponentDataPrivate(KAboutData(name, catalog, KLocalizedString(), "", KLocalizedString())))
+    : d(new KComponentDataPrivate(KAboutData(name, catalog, QLocalizedString(), "", QLocalizedString())))
 {
     Q_ASSERT(!name.isEmpty());
 

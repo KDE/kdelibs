@@ -51,7 +51,7 @@
 // marked for translation. Since at the time when these object and calls are
 // made the translation catalogs are usually still not initialized, the
 // translation has to be delayed. This is achieved by using QLocalizedString
-// for translatable strings. QLocalizedStrings are produced by ki18n* calls,
+// for translatable strings. QLocalizedStrings are produced by qi18n* calls,
 // instead of the more usuall i18n* calls which produce QString by trying to
 // translate immediately.
 //
@@ -273,49 +273,49 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
     // Qt options
     //FIXME: Check if other options are specific to Qt/X11
 #ifdef Q_WS_X11
-    qt_options.add("display <displayname>", ki18n("Use the X-server display 'displayname'"));
+    qt_options.add("display <displayname>", qi18n("Use the X-server display 'displayname'"));
 #elif defined(Q_WS_QWS)
-    qt_options.add("display <displayname>", ki18n("Use the QWS display 'displayname'"));
+    qt_options.add("display <displayname>", qi18n("Use the QWS display 'displayname'"));
 #else
 #endif
-    qt_options.add("session <sessionId>", ki18n("Restore the application for the given 'sessionId'"));
-    qt_options.add("cmap", ki18n("Causes the application to install a private color\nmap on an 8-bit display"));
-    qt_options.add("ncols <count>", ki18n("Limits the number of colors allocated in the color\ncube on an 8-bit display, if the application is\nusing the QApplication::ManyColor color\nspecification"));
-    qt_options.add("nograb", ki18n("tells Qt to never grab the mouse or the keyboard"));
-    qt_options.add("dograb", ki18n("running under a debugger can cause an implicit\n-nograb, use -dograb to override"));
-    qt_options.add("sync", ki18n("switches to synchronous mode for debugging"));
+    qt_options.add("session <sessionId>", qi18n("Restore the application for the given 'sessionId'"));
+    qt_options.add("cmap", qi18n("Causes the application to install a private color\nmap on an 8-bit display"));
+    qt_options.add("ncols <count>", qi18n("Limits the number of colors allocated in the color\ncube on an 8-bit display, if the application is\nusing the QApplication::ManyColor color\nspecification"));
+    qt_options.add("nograb", qi18n("tells Qt to never grab the mouse or the keyboard"));
+    qt_options.add("dograb", qi18n("running under a debugger can cause an implicit\n-nograb, use -dograb to override"));
+    qt_options.add("sync", qi18n("switches to synchronous mode for debugging"));
     qt_options.add("fn");
-    qt_options.add("font <fontname>", ki18n("defines the application font"));
+    qt_options.add("font <fontname>", qi18n("defines the application font"));
     qt_options.add("bg");
-    qt_options.add("background <color>", ki18n("sets the default background color and an\napplication palette (light and dark shades are\ncalculated)"));
+    qt_options.add("background <color>", qi18n("sets the default background color and an\napplication palette (light and dark shades are\ncalculated)"));
     qt_options.add("fg");
-    qt_options.add("foreground <color>", ki18n("sets the default foreground color"));
+    qt_options.add("foreground <color>", qi18n("sets the default foreground color"));
     qt_options.add("btn");
-    qt_options.add("button <color>", ki18n("sets the default button color"));
-    qt_options.add("name <name>", ki18n("sets the application name"));
-    qt_options.add("title <title>", ki18n("sets the application title (caption)"));
+    qt_options.add("button <color>", qi18n("sets the default button color"));
+    qt_options.add("name <name>", qi18n("sets the application name"));
+    qt_options.add("title <title>", qi18n("sets the application title (caption)"));
 #ifdef Q_WS_X11
-    qt_options.add("visual TrueColor", ki18n("forces the application to use a TrueColor visual on\nan 8-bit display"));
-    qt_options.add("inputstyle <inputstyle>", ki18n("sets XIM (X Input Method) input style. Possible\nvalues are onthespot, overthespot, offthespot and\nroot"));
-    qt_options.add("im <XIM server>", ki18n("set XIM server"));
-    qt_options.add("noxim", ki18n("disable XIM"));
+    qt_options.add("visual TrueColor", qi18n("forces the application to use a TrueColor visual on\nan 8-bit display"));
+    qt_options.add("inputstyle <inputstyle>", qi18n("sets XIM (X Input Method) input style. Possible\nvalues are onthespot, overthespot, offthespot and\nroot"));
+    qt_options.add("im <XIM server>", qi18n("set XIM server"));
+    qt_options.add("noxim", qi18n("disable XIM"));
 #endif
 #ifdef Q_WS_QWS
-    qt_options.add("qws", ki18n("forces the application to run as QWS Server"));
+    qt_options.add("qws", qi18n("forces the application to run as QWS Server"));
 #endif
-    qt_options.add("reverse", ki18n("mirrors the whole layout of widgets"));
-    qt_options.add("stylesheet <file.qss>", ki18n("applies the Qt stylesheet to the application widgets"));
-    qt_options.add("graphicssystem <system>", ki18n("use a different graphics system instead of the default one, options are raster and opengl (experimental)"));
+    qt_options.add("reverse", qi18n("mirrors the whole layout of widgets"));
+    qt_options.add("stylesheet <file.qss>", qi18n("applies the Qt stylesheet to the application widgets"));
+    qt_options.add("graphicssystem <system>", qi18n("use a different graphics system instead of the default one, options are raster and opengl (experimental)"));
     // KDE options
-    kde_options.add("caption <caption>",   ki18n("Use 'caption' as name in the titlebar"));
-    kde_options.add("icon <icon>",         ki18n("Use 'icon' as the application icon"));
-    kde_options.add("config <filename>",   ki18n("Use alternative configuration file"));
-    kde_options.add("nocrashhandler",      ki18n("Disable crash handler, to get core dumps"));
+    kde_options.add("caption <caption>",   qi18n("Use 'caption' as name in the titlebar"));
+    kde_options.add("icon <icon>",         qi18n("Use 'icon' as the application icon"));
+    kde_options.add("config <filename>",   qi18n("Use alternative configuration file"));
+    kde_options.add("nocrashhandler",      qi18n("Disable crash handler, to get core dumps"));
 #ifdef Q_WS_X11
-    kde_options.add("waitforwm",           ki18n("Waits for a WM_NET compatible windowmanager"));
+    kde_options.add("waitforwm",           qi18n("Waits for a WM_NET compatible windowmanager"));
 #endif
-    kde_options.add("style <style>",       ki18n("sets the application GUI style"));
-    kde_options.add("geometry <geometry>", ki18n("sets the client geometry of the main widget - see man X for the argument format (usually WidthxHeight+XPos+YPos)"));
+    kde_options.add("style <style>",       qi18n("sets the application GUI style"));
+    kde_options.add("geometry <geometry>", qi18n("sets the client geometry of the main widget - see man X for the argument format (usually WidthxHeight+XPos+YPos)"));
 #ifndef Q_WS_WIN
     kde_options.add("smkey <sessionKey>"); // this option is obsolete and exists only to allow smooth upgrades from sessions
 #endif
@@ -433,7 +433,7 @@ void
 KCmdLineArgs::initIgnore(int _argc, char **_argv, const QByteArray &_appname )
 {
    init(_argc, _argv,
-        new KAboutData(_appname, 0, ki18n(_appname.data()), "unknown", ki18n("KDE Application")));
+        new KAboutData(_appname, 0, qi18n(_appname.data()), "unknown", qi18n("KDE Application")));
    s->ignoreUnknown = true;
 }
 
@@ -492,10 +492,10 @@ QString KCmdLineArgs::appName()
   */
 void KCmdLineArgs::addStdCmdLineOptions(StdCmdLineArgs stdargs) {
    if (stdargs & KCmdLineArgs::CmdLineArgQt) {
-       KCmdLineArgs::addCmdLineOptions(s->qt_options, ki18n("Qt"), "qt");
+       KCmdLineArgs::addCmdLineOptions(s->qt_options, qi18n("Qt"), "qt");
    }
    if (stdargs & KCmdLineArgs::CmdLineArgKDE) {
-       KCmdLineArgs::addCmdLineOptions(s->kde_options, ki18n("KDE"), "kde");
+       KCmdLineArgs::addCmdLineOptions(s->kde_options, qi18n("KDE"), "kde");
    }
    s->mStdargs = stdargs;
 }
@@ -823,7 +823,7 @@ KCmdLineArgsStatic::findOption(const QByteArray &optv, const QByteArray &_opt,
       if (s->ignoreUnknown)
          return;
       KCmdLineArgs::enable_i18n();
-      KCmdLineArgs::usageError( i18n("Unknown option '%1'.", QString::fromLocal8Bit(_opt.data())));
+      KCmdLineArgs::usageError(QObject::tr("Unknown option '%1'.").arg(QString::fromLocal8Bit(_opt.data())));
    }
 
    if ((result & 4) != 0)
@@ -839,7 +839,7 @@ KCmdLineArgsStatic::findOption(const QByteArray &optv, const QByteArray &_opt,
          if (s->ignoreUnknown)
             return;
          KCmdLineArgs::enable_i18n();
-         KCmdLineArgs::usageError( i18n("Unknown option '%1'.", QString::fromLocal8Bit(_opt.data())));
+         KCmdLineArgs::usageError(QObject::tr("Unknown option '%1'.").arg(QString::fromLocal8Bit(_opt.data())));
       }
       if (argument.isEmpty())
       {
@@ -941,16 +941,16 @@ KCmdLineArgsStatic::parseAllArgs()
            s->printQ( i18nc("the 2nd argument is a list of name+address, one on each line","%1 was written by\n%2",   QString(s->about->programName()) ,  authorlist ) );
          }
        } else {
-         s->printQ( i18n("This application was written by somebody who wants to remain anonymous.") );
+         s->printQ(QObject::tr("This application was written by somebody who wants to remain anonymous."));
        }
        if (s->about)
        {
          if (!s->about->customAuthorTextEnabled ())
          {
            if (s->about->bugAddress().isEmpty() || s->about->bugAddress() == QLatin1String("submit@bugs.kde.org") )
-             s->printQ( i18n( "Please use http://bugs.kde.org to report bugs.\n" ) );
+             s->printQ(QObject::tr( "Please use http://bugs.kde.org to report bugs.\n"));
            else
-             s->printQ( i18n( "Please report bugs to %1.\n" , s->about->bugAddress()) );
+             s->printQ(QObject::tr( "Please report bugs to %1.\n").arg(s->about->bugAddress()));
          }
          else
          {
@@ -987,7 +987,7 @@ KCmdLineArgsStatic::parseAllArgs()
             if (s->ignoreUnknown)
                continue;
             KCmdLineArgs::enable_i18n();
-            KCmdLineArgs::usageError(i18n("Unexpected argument '%1'.", s->escape(s->decodeInput(s->all_argv[i]))));
+            KCmdLineArgs::usageError(QObject::tr("Unexpected argument '%1'.").arg(s->escape(s->decodeInput(s->all_argv[i]))));
          }
          else
          {
@@ -1103,7 +1103,7 @@ KCmdLineArgs::usageError(const QString &error)
         localError.chop(1);
     fprintf(stderr, "%s: %s\n", s->appName, localError.data());
 
-    QString tmp = i18n("Use --help to get a list of available command line options.");
+    QString tmp = QObject::tr("Use --help to get a list of available command line options.");
     localError = s->encodeOutput(tmp);
     fprintf(stderr, "%s: %s\n", s->appName, localError.data());
     exit(254);
@@ -1126,14 +1126,14 @@ KCmdLineArgs::usage(const QByteArray &id)
    if ((*args)->d->id.isEmpty() && ((*args)->d->options.d->names.size() > 0) &&
        !(*args)->d->options.d->names[0].startsWith('+'))
    {
-      usage = i18n("[options] ")+usage;
+      usage = QObject::tr("[options] ")+usage;
    }
 
    while(true)
    {
       if (!(*args)->d->name.isEmpty())
       {
-         usage = i18n("[%1-options]", (*args)->d->name.toString())+QLatin1Char(' ')+usage;
+         usage = QObject::tr("[%1-options]").arg((*args)->d->name.toString())+QLatin1Char(' ')+usage;
       }
       if (args == s->argsList->begin())
          break;
@@ -1154,12 +1154,12 @@ KCmdLineArgs::usage(const QByteArray &id)
      }
    }
 
-   s->printQ(i18n("Usage: %1 %2\n", QString::fromLocal8Bit(s->appName), s->escape(usage)));
+   s->printQ(QObject::tr("Usage: %1 %2\n").arg(QString::fromLocal8Bit(s->appName)).arg(s->escape(usage)));
    s->printQ(QLatin1Char('\n')+s->about->shortDescription()+QLatin1Char('\n'));
 
-   s->printQ(i18n("\nGeneric options:\n"));
+   s->printQ(QObject::tr("\nGeneric options:\n"));
    s->printQ(optionFormatString.arg(QString::fromLatin1("--help"), -25)
-             .arg(i18n("Show help about options")));
+             .arg(QObject::tr("Show help about options")));
 
    args = s->argsList->begin();
    while(args != s->argsList->end())
@@ -1167,18 +1167,18 @@ KCmdLineArgs::usage(const QByteArray &id)
       if (!(*args)->d->name.isEmpty() && !(*args)->d->id.isEmpty())
       {
          QString option = QString::fromLatin1("--help-%1").arg(QString::fromLatin1((*args)->d->id.data()));
-         QString desc = i18n("Show %1 specific options", (*args)->d->name.toString());
+         QString desc = QObject::tr("Show %1 specific options").arg((*args)->d->name.toString());
 
          s->printQ(optionFormatString.arg(option, -25).arg(desc));
       }
       ++args;
    }
 
-   s->printQ(optionFormatString.arg(QString::fromLatin1("--help-all"),-25).arg(i18n("Show all options")));
-   s->printQ(optionFormatString.arg(QString::fromLatin1("--author"),-25).arg(i18n("Show author information")));
-   s->printQ(optionFormatString.arg(QString::fromLatin1("-v, --version"),-25).arg(i18n("Show version information")));
-   s->printQ(optionFormatString.arg(QString::fromLatin1("--license"),-25).arg(i18n("Show license information")));
-   s->printQ(optionFormatString.arg(QString::fromLatin1("--"), -25).arg(i18n("End of options")));
+   s->printQ(optionFormatString.arg(QString::fromLatin1("--help-all"),-25).arg(QObject::tr("Show all options")));
+   s->printQ(optionFormatString.arg(QString::fromLatin1("--author"),-25).arg(QObject::tr("Show author information")));
+   s->printQ(optionFormatString.arg(QString::fromLatin1("-v, --version"),-25).arg(QObject::tr("Show version information")));
+   s->printQ(optionFormatString.arg(QString::fromLatin1("--license"),-25).arg(QObject::tr("Show license information")));
+   s->printQ(optionFormatString.arg(QString::fromLatin1("--"), -25).arg(QObject::tr("End of options")));
 
    args = s->argsList->begin(); // Sets current to 1st.
 
@@ -1199,9 +1199,9 @@ KCmdLineArgs::usage(const QByteArray &id)
      bool hasOptions = false;
      QString optionsHeader;
      if (!(*args)->d->name.isEmpty())
-        optionsHeader = i18n("\n%1 options:\n", (*args)->d->name.toString());
+        optionsHeader = QObject::tr("\n%1 options:\n").arg((*args)->d->name.toString());
      else
-        optionsHeader = i18n("\nOptions:\n");
+        optionsHeader = QObject::tr("\nOptions:\n");
 
      while (args != s->argsList->end())
      {
@@ -1259,7 +1259,7 @@ KCmdLineArgs::usage(const QByteArray &id)
          {
             if (!hasArgs)
             {
-               s->printQ(i18n("\nArguments:\n"));
+               s->printQ(QObject::tr("\nArguments:\n"));
                hasArgs = true;
             }
 
@@ -1613,8 +1613,8 @@ void
 KCmdLineArgs::addTempFileOption()
 {
     KCmdLineOptions tmpopt;
-    tmpopt.add( "tempfile", ki18n("The files/URLs opened by the application will be deleted after use") );
-    KCmdLineArgs::addCmdLineOptions( tmpopt, ki18n("KDE-tempfile"), "kde-tempfile" );
+    tmpopt.add( "tempfile", qi18n("The files/URLs opened by the application will be deleted after use") );
+    KCmdLineArgs::addCmdLineOptions( tmpopt, qi18n("KDE-tempfile"), "kde-tempfile" );
 }
 
 bool KCmdLineArgs::isTempFileSet()

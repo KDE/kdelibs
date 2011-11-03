@@ -45,11 +45,11 @@ static const char LicenseFileText[] =    "free to write, reading forbidden, in t
 
 void KAboutDataTest::testConstructorWithDefaults()
 {
-    KAboutData aboutData(AppName, CatalogName, ki18n(ProgramName), Version );
+    KAboutData aboutData(AppName, CatalogName, qi18n(ProgramName), Version );
 
     QCOMPARE( aboutData.appName(), QLatin1String(AppName) );
     QCOMPARE( aboutData.productName(), QLatin1String(AppName) );
-    QCOMPARE( aboutData.programName(), ki18n(ProgramName).toString() );
+    QCOMPARE( aboutData.programName(), qi18n(ProgramName).toString() );
     QCOMPARE( aboutData.programIconName(), QLatin1String(AppName) );
     QCOMPARE( aboutData.programLogo(), QVariant() );
     QCOMPARE( aboutData.organizationDomain(), QString("kde.org") );
@@ -86,14 +86,14 @@ void KAboutDataTest::testConstructorWithDefaults()
 
 void KAboutDataTest::testConstructor()
 {
-    KAboutData aboutData(AppName, CatalogName, ki18n(ProgramName), Version,
-                ki18n(ShortDescription), KAboutData::License_Unknown,
-                ki18n(CopyrightStatement), ki18n(Text),
+    KAboutData aboutData(AppName, CatalogName, qi18n(ProgramName), Version,
+                qi18n(ShortDescription), KAboutData::License_Unknown,
+                qi18n(CopyrightStatement), qi18n(Text),
                 HomePageAddress, BugsEmailAddress );
 
     QCOMPARE( aboutData.appName(), QLatin1String(AppName) );
     QCOMPARE( aboutData.productName(), QLatin1String(AppName) );
-    QCOMPARE( aboutData.programName(), ki18n(ProgramName).toString() );
+    QCOMPARE( aboutData.programName(), qi18n(ProgramName).toString() );
     QCOMPARE( aboutData.programIconName(), QLatin1String(AppName) );
     QCOMPARE( aboutData.programLogo(), QVariant() );
     QCOMPARE( aboutData.organizationDomain(), QString(OrganizationDomain) );
@@ -119,8 +119,8 @@ void KAboutDataTest::testConstructor()
     QVERIFY( !aboutData.licenses().at(0).name(KAboutData::FullName).isEmpty() );
 //     QCOMPARE( aboutData.licenses().at(0).text(), QString(WarningText) );
     QVERIFY( !aboutData.licenses().at(0).text().isEmpty() );
-    QCOMPARE( aboutData.copyrightStatement(), ki18n(CopyrightStatement).toString() );
-    QCOMPARE( aboutData.shortDescription(), ki18n(ShortDescription).toString() );
+    QCOMPARE( aboutData.copyrightStatement(), qi18n(CopyrightStatement).toString() );
+    QCOMPARE( aboutData.shortDescription(), qi18n(ShortDescription).toString() );
     QCOMPARE( aboutData.customAuthorPlainText(), QString() );
     QCOMPARE( aboutData.customAuthorRichText(), QString() );
     QVERIFY( !aboutData.customAuthorTextEnabled() );
@@ -136,12 +136,12 @@ void KAboutDataTest::testSetAddLicense()
     licenseFileStream << QLatin1String(LicenseFileText);
     licenseFile.close();
 
-    const KLocalizedString copyrightStatement = ki18n(CopyrightStatement);
+    const QLocalizedString copyrightStatement = qi18n(CopyrightStatement);
     const QString lineFeed( "\n\n" );
 
-    KAboutData aboutData(AppName, CatalogName, ki18n(ProgramName), Version,
-                ki18n(ShortDescription), KAboutData::License_Unknown,
-                ki18n(CopyrightStatement), ki18n(Text),
+    KAboutData aboutData(AppName, CatalogName, qi18n(ProgramName), Version,
+                qi18n(ShortDescription), KAboutData::License_Unknown,
+                qi18n(CopyrightStatement), qi18n(Text),
                 HomePageAddress, BugsEmailAddress );
 
     // set to GPL2
@@ -190,7 +190,7 @@ void KAboutDataTest::testSetAddLicense()
 
     // add GPL2, Custom and File
     aboutData.addLicense( KAboutData::License_GPL_V2 );
-    aboutData.addLicenseText( ki18n(LicenseText) );
+    aboutData.addLicenseText( qi18n(LicenseText) );
     aboutData.addLicenseTextFile( LicenseFileName );
 
     QCOMPARE( aboutData.licenseName(KAboutData::ShortName), QString("GPL v3") );
@@ -208,19 +208,19 @@ void KAboutDataTest::testSetAddLicense()
     QVERIFY( !aboutData.licenses().at(1).text().isEmpty() );
     QCOMPARE( aboutData.licenses().at(2).name(KAboutData::ShortName), QString("Custom") );
     QCOMPARE( aboutData.licenses().at(2).name(KAboutData::FullName), QString("Custom") );
-    QCOMPARE( aboutData.licenses().at(2).text(), ki18n(LicenseText).toString() );
+    QCOMPARE( aboutData.licenses().at(2).text(), qi18n(LicenseText).toString() );
     QCOMPARE( aboutData.licenses().at(3).name(KAboutData::ShortName), QString("Custom") );
     QCOMPARE( aboutData.licenses().at(3).name(KAboutData::FullName), QString("Custom") );
-    QCOMPARE( aboutData.licenses().at(3).text(), QString(copyrightStatement.toString()+lineFeed+ki18n(LicenseFileText).toString()) );
+    QCOMPARE( aboutData.licenses().at(3).text(), QString(copyrightStatement.toString()+lineFeed+qi18n(LicenseFileText).toString()) );
 }
 
 void KAboutDataTest::testSetProgramIconName()
 {
     const QLatin1String programIconName( ProgramIconName );
 
-    KAboutData aboutData(AppName, CatalogName, ki18n(ProgramName), Version,
-                ki18n(ShortDescription), KAboutData::License_Unknown,
-                ki18n(CopyrightStatement), ki18n(Text),
+    KAboutData aboutData(AppName, CatalogName, qi18n(ProgramName), Version,
+                qi18n(ShortDescription), KAboutData::License_Unknown,
+                qi18n(CopyrightStatement), qi18n(Text),
                 HomePageAddress, BugsEmailAddress );
 
     // set different iconname
@@ -230,12 +230,12 @@ void KAboutDataTest::testSetProgramIconName()
 
 void KAboutDataTest::testCopying()
 {
-    KAboutData aboutData(AppName, CatalogName, ki18n(ProgramName), Version,
-                         ki18n(ShortDescription), KAboutData::License_GPL_V2);
+    KAboutData aboutData(AppName, CatalogName, qi18n(ProgramName), Version,
+                         qi18n(ShortDescription), KAboutData::License_GPL_V2);
 
     {
-    KAboutData aboutData2(AppName, CatalogName, ki18n(ProgramName), Version,
-                ki18n(ShortDescription), KAboutData::License_GPL_V3);
+    KAboutData aboutData2(AppName, CatalogName, qi18n(ProgramName), Version,
+                qi18n(ShortDescription), KAboutData::License_GPL_V3);
     aboutData2.addLicense(KAboutData::License_GPL_V2);
     aboutData = aboutData2;
     }

@@ -160,13 +160,13 @@ void KLocalizedStringTest::correctSubs ()
              QString("E = mc^2"));
 
     // Number formatting.
-    QCOMPARE(ki18n("%1").subs(42).toString(),
+    QCOMPARE(qi18n("%1").subs(42).toString(),
              QString("42"));
-    QCOMPARE(ki18n("%1").subs(42, 5).toString(),
+    QCOMPARE(qi18n("%1").subs(42, 5).toString(),
              QString("   42"));
-    QCOMPARE(ki18n("%1").subs(42, -5, 10, QChar('_')).toString(),
+    QCOMPARE(qi18n("%1").subs(42, -5, 10, QChar('_')).toString(),
              QString("42___"));
-    QCOMPARE(ki18n("%1").subs(4.2, 5, 'f', 2).toString(),
+    QCOMPARE(qi18n("%1").subs(4.2, 5, 'f', 2).toString(),
              QString(" 4.20"));
 }
 
@@ -197,13 +197,13 @@ void KLocalizedStringTest::wrongSubs ()
             != QString("Hunter, Kimball and %3"));
 
     // Gaps in placheholder numbering.
-    QVERIFY(ki18n("Beyond the %2").subs("infinity").toString()
+    QVERIFY(qi18n("Beyond the %2").subs("infinity").toString()
             != QString("Beyond the infinity"));
 
     // Plural argument not supplied.
-    QVERIFY(ki18np("1 pod", "%1 pods").toString()
+    QVERIFY(qi18np("1 pod", "%1 pods").toString()
             != QString("1 pod"));
-    QVERIFY(ki18np("1 pod", "%1 pods").toString()
+    QVERIFY(qi18np("1 pod", "%1 pods").toString()
             != QString("%1 pods"));
     #endif
 }

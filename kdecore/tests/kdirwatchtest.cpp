@@ -27,10 +27,10 @@
 int main (int argc, char **argv)
 {
   KCmdLineOptions options;
-  options.add("+[directory ...]", ki18n("Directory(ies) to watch"));
+  options.add("+[directory ...]", qi18n("Directory(ies) to watch"));
 
-  KCmdLineArgs::init(argc, argv, "kdirwatchtest", 0, ki18n("KDirWatchTest"),
-		     "1.0", ki18n("Test for KDirWatch"));
+  KCmdLineArgs::init(argc, argv, "kdirwatchtest", 0, qi18n("KDirWatchTest"),
+		     "1.0", qi18n("Test for KDirWatch"));
   KCmdLineArgs::addCmdLineOptions( options );
   KCmdLineArgs::addStdCmdLineOptions();
 

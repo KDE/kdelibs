@@ -266,13 +266,13 @@ QString KAboutLicense::text() const
         }
         // fall through
     default:
-        result += i18n("No licensing terms for this program have been specified.\n"
+        result += QObject::tr("No licensing terms for this program have been specified.\n"
                        "Please check the documentation or the source for any\n"
                        "licensing terms.\n");
     }
 
     if (knownLicense) {
-        result += i18n("This program is distributed under the terms of the %1.", name(KAboutData::ShortName));
+        result += QObject::tr("This program is distributed under the terms of the %1.").arg(name(KAboutData::ShortName));
         if (!pathToFile.isEmpty()) {
             result += lineFeed;
         }
@@ -829,7 +829,7 @@ QList<KAboutPerson> KAboutData::translators() const
         translatorName = d->translatorName.toString();
     }
     else {
-        translatorName = ki18nc("NAME OF TRANSLATORS", NAME_OF_TRANSLATORS).toString(); //toString(tmpLocale);
+        translatorName = qi18nc("NAME OF TRANSLATORS", NAME_OF_TRANSLATORS).toString(); //toString(tmpLocale);
     }
 
     QString translatorEmail;
@@ -837,7 +837,7 @@ QList<KAboutPerson> KAboutData::translators() const
         translatorEmail = d->translatorEmail.toString();
     }
     else {
-        translatorEmail = ki18nc("EMAIL OF TRANSLATORS", EMAIL_OF_TRANSLATORS).toString(); //toString(tmpLocale);
+        translatorEmail = qi18nc("EMAIL OF TRANSLATORS", EMAIL_OF_TRANSLATORS).toString(); //toString(tmpLocale);
     }
 #if 0
     delete tmpLocale;

@@ -22,9 +22,8 @@
 */
 
 #include "ksavefile.h"
-#include "qlocalizedstring_porting.h"
 
-#include <config.h>
+#include <config.h> // HAVE_FDATASYNC
 
 #include <QDir>
 #include <QTemporaryFile>
@@ -86,14 +85,14 @@ bool KSaveFile::open(OpenMode flags)
 {
     if ( d->realFileName.isEmpty() ) {
         d->error=QFile::OpenError;
-        d->errorString=i18n("No target filename has been given.");
+        d->errorString=tr("No target filename has been given.");
         return false;
     }
 
     if ( !d->tempFileName.isNull() ) {
 #if 0 // do not set an error here, this open() fails, but the file itself is without errors
         d->error=QFile::OpenError;
-        d->errorString=i18n("Already opened.");
+        d->errorString=tr("Already opened.");
 #endif
         return false;
     }
@@ -106,7 +105,7 @@ bool KSaveFile::open(OpenMode flags)
 
     if (!QFileInfo(parentDir.absolutePath()).isWritable()) {
         d->error=QFile::PermissionsError;
-        d->errorString=i18n("Insufficient permissions in target directory.");
+        d->errorString=tr("Insufficient permissions in target directory.");
         return false;
     }
 
@@ -116,7 +115,7 @@ bool KSaveFile::open(OpenMode flags)
     tempFile.setFileTemplate(d->realFileName + QLatin1String("XXXXXX.new"));
     if (!tempFile.open()) {
         d->error=QFile::OpenError;
-        d->errorString=i18n("Unable to open temporary file.");
+        d->errorString=tr("Unable to open temporary file.");
         return false;
     }
 
@@ -220,7 +219,7 @@ bool KSaveFile::finalize()
                         break;
                     if (errno != EINTR) {
                         d->error = QFile::WriteError;
-                        d->errorString = i18n("Synchronization to disk failed");
+                        d->errorString = tr("Synchronization to disk failed");
                         break;
                     }
                 }
@@ -244,7 +243,7 @@ bool KSaveFile::finalize()
             success = true;
         } else {
             d->error=QFile::OpenError;
-            d->errorString=i18n("Error during rename.");
+            d->errorString=tr("Error during rename.");
             QFile::remove(d->tempFileName);
         }
 

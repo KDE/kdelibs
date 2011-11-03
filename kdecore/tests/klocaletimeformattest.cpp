@@ -42,7 +42,7 @@ static QString loadTimeFormat(const QString &country)
 
 void KLocaleTimeFormatTest::initTestCase()
 {
-    KAboutData about("KLocaleTimeFormatTest", 0, ki18n("klocaletimeformattest"), "");
+    KAboutData about("KLocaleTimeFormatTest", 0, qi18n("klocaletimeformattest"), "");
     KComponentData comp(&about);
 
     // get countries with according time formats

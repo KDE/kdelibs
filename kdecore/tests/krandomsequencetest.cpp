@@ -30,7 +30,7 @@
 int
 main( /*int argc, char *argv[]*/ )
 {
-   //KAboutData about("krandomsequencetest", 0, ki18n("krandomsequencetest"), "version");
+   //KAboutData about("krandomsequencetest", 0, qi18n("krandomsequencetest"), "version");
    //KCmdLineArgs::init(argc, argv, &about);
    //KApplication a;
 

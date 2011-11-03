@@ -23,6 +23,7 @@
 #include "kpluginfactory_p.h"
 #include <kdebug.h>
 #include <kglobal.h>
+#include <klocale.h>
 
 #include <QtCore/QObjectCleanupHandler>
 

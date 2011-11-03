@@ -17,6 +17,7 @@
  */
 
 #include <kglobal.h>
+#include <klocale.h>
 
 #include <QtCore/QObject>
 

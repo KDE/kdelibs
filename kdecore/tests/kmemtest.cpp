@@ -238,7 +238,7 @@ int main(int argc, char *argv[])
   }
 //  showMem("second");
 
-   KAboutData about("kmemtest", 0, ki18n("kmemtest"), "version");
+   KAboutData about("kmemtest", 0, qi18n("kmemtest"), "version");
    //KCmdLineArgs::init(argc, argv, &about);
    KComponentData cData(&about);
 

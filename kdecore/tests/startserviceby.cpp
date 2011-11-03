@@ -26,7 +26,7 @@
 int
 main(int argc, char *argv[])
 {
-   KAboutData about("ktoolinvocationtest", 0, ki18n("ktoolinvocationtest"), "version");
+   KAboutData about("ktoolinvocationtest", 0, qi18n("ktoolinvocationtest"), "version");
    KComponentData cData(&about);
    //KCmdLineArgs::init(argc, argv, &about);
    //KApplication a;

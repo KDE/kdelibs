@@ -22,6 +22,7 @@
 #ifndef QLOCALIZEDSTRING_PORTING_H
 #define QLOCALIZEDSTRING_PORTING_H
 
+#include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QLatin1String>
 
@@ -32,7 +33,7 @@
 #endif
 
 // This is convenience wrapper to be able to build kcoreaddons without kdecore.
-// The code still uses ki18n* and KLocalizedString (renamed to QLocalizedString) and is unchanged.
+// The code still uses ki18n* (renamed to qi18n) and KLocalizedString (renamed to QLocalizedString) and is unchanged.
 class QLocalizedString
 {
 public:
@@ -44,22 +45,24 @@ public:
     QLatin1String _string;
 };
 
-static inline QLocalizedString ki18n (const char* msg)
+static inline QLocalizedString qi18n (const char* msg)
 {
     return QLocalizedString(msg);
 }
 
-static inline QLocalizedString ki18nc (const char *ctxt, const char *msg)
+static inline QLocalizedString qi18nc (const char *ctxt, const char *msg)
 {
     Q_UNUSED(ctxt);
-    return ki18n(msg);
+    return qi18n(msg);
 }
 
+#if 0
 static inline QString i18n(const char *msg, const QString &c1 = QString(), const QString &c2 = QString())
 {
     Q_UNUSED(c1); Q_UNUSED(c2);
-    return ki18n(msg).toString();
+    return qi18n(msg).toString();
 }
+#endif
 
 static inline QString i18nc(const char *ctx, const char *msg, const QString &c1 = QString(),
                             const QString &c2 = QString(), const QString &c3= QString(), const QString &c4 = QString())
@@ -67,7 +70,7 @@ static inline QString i18nc(const char *ctx, const char *msg, const QString &c1 
     Q_UNUSED(ctx);
     Q_UNUSED(c1); Q_UNUSED(c2);
     Q_UNUSED(c3); Q_UNUSED(c4);
-    return i18n(msg);
+    return QObject::tr(msg);
 }
 
 #endif

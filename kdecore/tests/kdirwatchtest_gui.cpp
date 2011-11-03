@@ -34,12 +34,12 @@
 
 int main(int argc, char **argv)
 {
-    KAboutData about(QByteArray("KDirWatchTest_GUI"), QByteArray(), ki18n("KDirWatchTest_GUI"),
+    KAboutData about(QByteArray("KDirWatchTest_GUI"), QByteArray(), qi18n("KDirWatchTest_GUI"),
             QByteArray("0.1"),
-        ki18n("KDirWatchTest_GUI"), KAboutData::License_LGPL,
-        ki18n("(C) 2006 Dirk Stoecker"), KLocalizedString(), QByteArray(),
+        qi18n("KDirWatchTest_GUI"), KAboutData::License_LGPL,
+        qi18n("(C) 2006 Dirk Stoecker"), QLocalizedString(), QByteArray(),
         QByteArray("kde@dstoecker.de"));
-    about.addAuthor( ki18n("Dirk Stoecker"), KLocalizedString(), QByteArray("kde@dstoecker.de") );
+    about.addAuthor( qi18n("Dirk Stoecker"), QLocalizedString(), QByteArray("kde@dstoecker.de") );
     KCmdLineArgs::init(argc, argv, &about);
     QApplication app(argc, argv);
 

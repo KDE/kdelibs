@@ -25,7 +25,7 @@
 
 int main(int argc, char *argv[])
 {
-   KAboutData about("klockfile_testlock", 0, ki18n("klockfile_testlock"), "version");
+   KAboutData about("klockfile_testlock", 0, qi18n("klockfile_testlock"), "version");
    KComponentData cData(&about);
 
    if (argc <= 1) {

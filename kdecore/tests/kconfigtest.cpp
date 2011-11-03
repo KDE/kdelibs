@@ -1163,15 +1163,15 @@ void KConfigTest::testReparent()
 
 void KConfigTest::testKAboutDataOrganizationDomain()
 {
-    KAboutData data( "app", 0, ki18n("program"), "version",
-                     ki18n("description"), KAboutData::License_LGPL,
-                     ki18n("copyright"), ki18n("hello world"),
+    KAboutData data( "app", 0, qi18n("program"), "version",
+                     qi18n("description"), KAboutData::License_LGPL,
+                     qi18n("copyright"), qi18n("hello world"),
                      "http://www.koffice.org" );
     QCOMPARE( data.organizationDomain(), QString::fromLatin1( "koffice.org" ) );
 
-    KAboutData data2( "app", 0, ki18n("program"), "version",
-                      ki18n("description"), KAboutData::License_LGPL,
-                      ki18n("copyright"), ki18n("hello world"),
+    KAboutData data2( "app", 0, qi18n("program"), "version",
+                      qi18n("description"), KAboutData::License_LGPL,
+                      qi18n("copyright"), qi18n("hello world"),
                       "http://edu.kde.org/kig" );
     QCOMPARE( data2.organizationDomain(), QString::fromLatin1( "kde.org" ) );
 }
