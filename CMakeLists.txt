@@ -194,6 +194,8 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/kdecore/text
                           ${CMAKE_SOURCE_DIR}/kdecore/util
                           ${CMAKE_SOURCE_DIR}/kdecore/sonnet
+                          ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/kernel
+                          ${CMAKE_BINARY_DIR}/tier1/libkcoreaddons/src
                           ${QT_INCLUDES}
                           ${_KDE4_PLATFORM_INCLUDE_DIRS})
 # kdeui depends on kdecore

@@ -22,6 +22,7 @@
 
 #include "kglobalaccel.h"
 #include "kglobalaccel_p.h"
+#include <klocale.h>
 
 #include <memory>
 

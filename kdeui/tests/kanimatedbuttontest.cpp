@@ -82,7 +82,7 @@ void MainWindow::slotAddNew()
 
 int main(int argc, char **argv)
 {
-    KAboutData aboutData("kanimatedbuttontest", 0, ki18n("kanimatedbuttontest"), "0.1");
+    KAboutData aboutData("kanimatedbuttontest", 0, qi18n("kanimatedbuttontest"), "0.1");
     KCmdLineArgs::init(argc, argv, &aboutData);
     KApplication app;
 

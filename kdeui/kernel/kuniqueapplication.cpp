@@ -37,6 +37,7 @@
 #include <QtDBus/QtDBus>
 
 #include <kcmdlineargs.h>
+#include <klocale.h>
 #include <kstandarddirs.h>
 #include <kaboutdata.h>
 #include <kconfiggroup.h>
@@ -85,11 +86,11 @@ void
 KUniqueApplication::addCmdLineOptions()
 {
   KCmdLineOptions kunique_options;
-  kunique_options.add("nofork", ki18n("Do not run in the background."));
+  kunique_options.add("nofork", qi18n("Do not run in the background."));
 #ifdef Q_WS_MACX
-  kunique_options.add("psn", ki18n("Internally added if launched from Finder"));
+  kunique_options.add("psn", qi18n("Internally added if launched from Finder"));
 #endif
-  KCmdLineArgs::addCmdLineOptions(kunique_options, KLocalizedString(), "kuniqueapp", "kde");
+  KCmdLineArgs::addCmdLineOptions(kunique_options, QLocalizedString(), "kuniqueapp", "kde");
 }
 
 static QDBusConnectionInterface *tryToInitDBusConnection()

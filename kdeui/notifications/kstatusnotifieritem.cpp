@@ -19,6 +19,7 @@
 */
 
 #include "kstatusnotifieritem.h"
+#include <klocale.h>
 #include "kstatusnotifieritemprivate_p.h"
 #include "kstatusnotifieritemdbus_p.h"
 
@@ -92,7 +93,7 @@ protected:
                 }
             }
         }
-        
+
         return QString();
 #endif
     }
