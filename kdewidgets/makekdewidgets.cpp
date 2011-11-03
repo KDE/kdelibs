@@ -79,7 +79,7 @@ static QString buildWidgetInclude( const QString &name, KConfig &input );
 static void buildFile( QTextStream &stream, const QString& group, const QString& fileName, const QString& pluginName );
 
 int main( int argc, char **argv ) {
-    new KComponentData( "makekdewidgets" );
+    KComponentData data( "makekdewidgets" );
 
     QLocalizedString description = qi18n( "Builds Qt widget plugins from an ini style description file." );
     const char version[] = "0.4";
@@ -91,9 +91,9 @@ int main( int argc, char **argv ) {
     options.add("g <group>", qi18n( "Default widget group name to display in designer" ), "Custom" );
 
 
-    KAboutData about( "makekdewidgets", 0, qi18n( "makekdewidgets" ), version, description, KAboutData::License_GPL, qi18n("(C) 2004-2005 Ian Reinhart Geiser"), KLocalizedString(), 0, "geiseri@kde.org" );
-    about.addAuthor( qi18n("Ian Reinhart Geiser"), KLocalizedString(), "geiseri@kde.org" );
-    about.addAuthor( qi18n("Daniel Molkentin"), KLocalizedString(), "molkentin@kde.org" );
+    KAboutData about( "makekdewidgets", 0, qi18n( "makekdewidgets" ), version, description, KAboutData::License_GPL, qi18n("(C) 2004-2005 Ian Reinhart Geiser"), QLocalizedString(), 0, "geiseri@kde.org" );
+    about.addAuthor( qi18n("Ian Reinhart Geiser"), QLocalizedString(), "geiseri@kde.org" );
+    about.addAuthor( qi18n("Daniel Molkentin"), QLocalizedString(), "molkentin@kde.org" );
     KCmdLineArgs::init( argc, argv, &about );
     KCmdLineArgs::addCmdLineOptions( options );
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();

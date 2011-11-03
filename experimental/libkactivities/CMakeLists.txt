@@ -3,7 +3,7 @@ project(kactivities)
 include_directories(
    ${CMAKE_SOURCE_DIR}
    ${CMAKE_BINARY_DIR}
-   ${KDE4_INCLUDES}
+   ${KDE4_KDECORE_INCLUDES}
    ${KDE4_KIO_INCLUDES}
    )
 
@@ -40,6 +40,7 @@ set_target_properties(
 target_link_libraries(
    kactivities
    ${KDE4_KDECORE_LIBS}
+   kcoreaddons
    )
 
 ## install
