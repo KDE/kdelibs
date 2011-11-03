@@ -85,7 +85,7 @@ endif(KDE4_ENABLE_FINAL)
 
    kde4_add_executable(meinproc4 NOGUI ${meinproc_SRCS})
 
-   target_link_libraries(meinproc4 ${KDE4_KDECORE_LIBS} karchive ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBEXSLT_LIBRARIES})
+   target_link_libraries(meinproc4 ${KDE4_KDECORE_LIBS} karchive ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBEXSLT_LIBRARIES} kcoreaddons)
 
    add_dependencies(meinproc4 docbookl10nhelper) 
 
@@ -126,7 +126,7 @@ set(genshortcutents_SRCS genshortcutents.cpp )
 
 kde4_add_executable(genshortcutents NOGUI ${genshortcutents_SRCS})
 
-target_link_libraries(genshortcutents ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS})
+target_link_libraries(genshortcutents ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} kcoreaddons)
 
 
 ########### customize includes for xslt ###############
