@@ -34,7 +34,7 @@ set(kparts_LIB_SRCS
 
 kde4_add_library(kparts ${LIBRARY_TYPE} ${kparts_LIB_SRCS})
 
-target_link_libraries(kparts  ${KDE4_KDECORE_LIBS} kdeui kio)
+target_link_libraries(kparts  ${KDE4_KDECORE_LIBS} kdeui kio kcoreaddons)
 target_link_libraries(kparts  LINK_INTERFACE_LIBRARIES kio kdeui kdecore ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} )
 if(HAVE_NEPOMUK)
   target_link_libraries(kparts  nepomuk nepomukutils)

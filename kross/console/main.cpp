@@ -91,21 +91,21 @@ int main(int argc, char **argv)
 
     KAboutData about("kross",
                      "kdelibs4",
-                     ki18n("Kross"),
+                     qi18n("Kross"),
                      "0.1",
-                     ki18n("KDE application to run Kross scripts."),
+                     qi18n("KDE application to run Kross scripts."),
                      KAboutData::License_LGPL,
-                     ki18n("(C) 2006 Sebastian Sauer"),
-                     ki18n("Run Kross scripts."),
+                     qi18n("(C) 2006 Sebastian Sauer"),
+                     qi18n("Run Kross scripts."),
                      "http://kross.dipe.org",
                      "kross@dipe.org");
-    about.addAuthor(ki18n("Sebastian Sauer"), ki18n("Author"), "mail@dipe.org");
+    about.addAuthor(qi18n("Sebastian Sauer"), qi18n("Author"), "mail@dipe.org");
 
     // Initialize command line args
     KCmdLineArgs::init(argc, argv, &about);
     // Tell which options are supported and parse them.
     KCmdLineOptions options;
-    options.add("+file", ki18n("Scriptfile"));
+    options.add("+file", qi18n("Scriptfile"));
 
     KCmdLineArgs::addCmdLineOptions(options);
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();

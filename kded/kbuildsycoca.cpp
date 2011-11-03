@@ -631,20 +631,20 @@ static const char appVersion[] = "1.1";
 
 extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 {
-   KAboutData d(appName, "kdelibs4", ki18n("KBuildSycoca"), appVersion,
-                ki18n("Rebuilds the system configuration cache."),
-                KAboutData::License_GPL, ki18n("(c) 1999-2002 KDE Developers"));
-   d.addAuthor(ki18n("David Faure"), ki18n("Author"), "faure@kde.org");
-   d.addAuthor(ki18n("Waldo Bastian"), ki18n("Author"), "bastian@kde.org");
+   KAboutData d(appName, "kdelibs4", qi18n("KBuildSycoca"), appVersion,
+                qi18n("Rebuilds the system configuration cache."),
+                KAboutData::License_GPL, qi18n("(c) 1999-2002 KDE Developers"));
+   d.addAuthor(qi18n("David Faure"), qi18n("Author"), "faure@kde.org");
+   d.addAuthor(qi18n("Waldo Bastian"), qi18n("Author"), "bastian@kde.org");
 
    KCmdLineOptions options;
-   options.add("nosignal", ki18n("Do not signal applications to update"));
-   options.add("noincremental", ki18n("Disable incremental update, re-read everything"));
-   options.add("checkstamps", ki18n("Check file timestamps"));
-   options.add("nocheckfiles", ki18n("Disable checking files (dangerous)"));
-   options.add("global", ki18n("Create global database"));
-   options.add("menutest", ki18n("Perform menu generation test run only"));
-   options.add("track <menu-id>", ki18n("Track menu id for debug purposes"));
+   options.add("nosignal", qi18n("Do not signal applications to update"));
+   options.add("noincremental", qi18n("Disable incremental update, re-read everything"));
+   options.add("checkstamps", qi18n("Check file timestamps"));
+   options.add("nocheckfiles", qi18n("Disable checking files (dangerous)"));
+   options.add("global", qi18n("Create global database"));
+   options.add("menutest", qi18n("Perform menu generation test run only"));
+   options.add("track <menu-id>", qi18n("Track menu id for debug purposes"));
 
    KCmdLineArgs::init(argc, argv, &d);
    KCmdLineArgs::addCmdLineOptions(options);

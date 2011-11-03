@@ -138,20 +138,20 @@ int main(int argc, char **argv)
 
     KAboutData about("krosstest",
                      0,
-                     ki18n("KrossTest"),
+                     qi18n("KrossTest"),
                      "0.1",
-                     ki18n("KDE application to test the Kross framework."),
+                     qi18n("KDE application to test the Kross framework."),
                      KAboutData::License_LGPL,
-                     ki18n("(C) 2005-2007 Sebastian Sauer"),
-                     ki18n("Test the Kross framework!"),
+                     qi18n("(C) 2005-2007 Sebastian Sauer"),
+                     qi18n("Test the Kross framework!"),
                      "http://kross.dipe.org",
                      "kross@dipe.org");
-    about.addAuthor(ki18n("Sebastian Sauer"), ki18n("Author"), "mail@dipe.org");
+    about.addAuthor(qi18n("Sebastian Sauer"), qi18n("Author"), "mail@dipe.org");
 
     KCmdLineOptions options;
-    options.add("+file", ki18n("Scriptfile"));
-    //options.add("functionname <functioname>", ki18n("Execute the function in the defined script file."));
-    //options.add("functionargs <functioarguments>", ki18n("List of arguments to pass to the function on execution."));
+    options.add("+file", qi18n("Scriptfile"));
+    //options.add("functionname <functioname>", qi18n("Execute the function in the defined script file."));
+    //options.add("functionargs <functioarguments>", qi18n("List of arguments to pass to the function on execution."));
 
     KCmdLineArgs::init(argc, argv, &about);
     KCmdLineArgs::addCmdLineOptions(options);

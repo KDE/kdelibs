@@ -687,7 +687,7 @@ QList<QWidget*> KPluginSelector::Private::PluginDelegate::createItemWidgets() co
     setBlockedEventTypes(aboutPushButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
                             << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick
                             << QEvent::KeyPress << QEvent::KeyRelease);
-                            
+
     setBlockedEventTypes(configurePushButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
                             << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick
                             << QEvent::KeyPress << QEvent::KeyRelease);
@@ -780,7 +780,7 @@ void KPluginSelector::Private::PluginDelegate::slotAboutClicked()
     const QString version = model->data(index, VersionRole).toString();
     const QString license = model->data(index, LicenseRole).toString();
 
-    KAboutData aboutData(name.toUtf8(), name.toUtf8(), ki18n(name.toUtf8()), version.toUtf8(), ki18n(comment.toUtf8()), KAboutLicense::byKeyword(license).key(), ki18n(QByteArray()), ki18n(QByteArray()), website.toLatin1());
+    KAboutData aboutData(name.toUtf8(), name.toUtf8(), qi18n(name.toUtf8()), version.toUtf8(), qi18n(comment.toUtf8()), KAboutLicense::byKeyword(license).key(), qi18n(QByteArray()), qi18n(QByteArray()), website.toLatin1());
     aboutData.setProgramIconName(index.model()->data(index, Qt::DecorationRole).toString());
     const QStringList authors = author.split(',');
     const QStringList emails = email.split(',');
@@ -788,7 +788,7 @@ void KPluginSelector::Private::PluginDelegate::slotAboutClicked()
 	int i = 0;
         foreach (const QString &author, authors) {
             if (!author.isEmpty()) {
-                aboutData.addAuthor(ki18n(author.toUtf8()), ki18n(QByteArray()), emails[i].toUtf8(), 0);
+                aboutData.addAuthor(qi18n(author.toUtf8()), qi18n(QByteArray()), emails[i].toUtf8(), 0);
             }
             i++;
         }
