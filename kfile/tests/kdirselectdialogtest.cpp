@@ -7,10 +7,10 @@
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init(argc, argv, "kdirselectdialogtest", 0, ki18n("kdirselectdialogtest"), "0", ki18n("test app"));
+    KCmdLineArgs::init(argc, argv, "kdirselectdialogtest", 0, qi18n("kdirselectdialogtest"), "0", qi18n("test app"));
 
     KCmdLineOptions opt;
-    opt.add("+[startDir]", ki18n("Directory to start in"), QByteArray());
+    opt.add("+[startDir]", qi18n("Directory to start in"), QByteArray());
 
     KCmdLineArgs::addCmdLineOptions(opt);
 

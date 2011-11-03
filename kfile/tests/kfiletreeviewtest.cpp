@@ -73,7 +73,7 @@ void Window::showRoot()
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc, argv, "kfiletreeviewtest", 0, ki18n("kfiletreeviewtest"), "0", ki18n("test app"));
+    KCmdLineArgs::init(argc, argv, "kfiletreeviewtest", 0, qi18n("kfiletreeviewtest"), "0", qi18n("test app"));
     KApplication app;
 
     Window *window = new Window;

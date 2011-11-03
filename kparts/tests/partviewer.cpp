@@ -97,7 +97,7 @@ int main( int argc, char **argv )
     options.add("+file(s)", qi18n("Files to load"));
 
     const char version[] = "v0.0.1 2000 (c) David Faure";
-    KLocalizedString description = qi18n("This is a test window for showing any part.");
+    QLocalizedString description = qi18n("This is a test window for showing any part.");
 
     KCmdLineArgs::init(argc, argv, "partviewer", 0, qi18n("partviewer"), version, description);
     KCmdLineArgs::addCmdLineOptions( options ); // Add my own options.
