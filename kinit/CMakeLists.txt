@@ -1,7 +1,5 @@
 project(kdeinit)
 
-add_subdirectory( tests )
-
 include_directories( ${KDE4_KPARTS_INCLUDES} )
 
 ########### Configuring (mainly for proctitle) ###########
