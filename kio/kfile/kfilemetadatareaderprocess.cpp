@@ -166,18 +166,18 @@ static QHash<KUrl, Nepomuk::Variant> readFileAndContextMetaData(const QList<KUrl
 
 int main(int argc, char *argv[])
 {
-    KAboutData aboutData("kfilemetadatareader", 0, ki18n("KFileMetaDataReader"),
+    KAboutData aboutData("kfilemetadatareader", 0, qi18n("KFileMetaDataReader"),
                          "1.0",
-                         ki18n("KFileMetaDataReader can be used to read metadata from a file"),
+                         qi18n("KFileMetaDataReader can be used to read metadata from a file"),
                          KAboutData::License_GPL,
-                         ki18n("(C) 2011, Peter Penz"));
-    aboutData.addAuthor(ki18n("Peter Penz"), ki18n("Current maintainer"), "peter.penz19@gmail.com");
-    
+                         qi18n("(C) 2011, Peter Penz"));
+    aboutData.addAuthor(qi18n("Peter Penz"), qi18n("Current maintainer"), "peter.penz19@gmail.com");
+
     KCmdLineArgs::init(argc, argv, &aboutData);
-    
+
     KCmdLineOptions options;
-    options.add("file", ki18n("Only the meta data that is part of the file is read"));
-    options.add("+[arg]", ki18n("List of URLs where the meta-data should be read from"));
+    options.add("file", qi18n("Only the meta data that is part of the file is read"));
+    options.add("+[arg]", qi18n("List of URLs where the meta-data should be read from"));
 
     KCmdLineArgs::addCmdLineOptions(options);
     const KCmdLineArgs *args = KCmdLineArgs::parsedArgs();

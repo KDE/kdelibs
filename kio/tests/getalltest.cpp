@@ -8,7 +8,7 @@
 
 int main(int argc, char *argv[])
 {
-    KCmdLineArgs::init( argc,argv, "getalltest", 0, ki18n("getalltest"), 0);
+    KCmdLineArgs::init( argc,argv, "getalltest", 0, qi18n("getalltest"), 0);
     KApplication k( false /*noGUI*/); // KMessageBox needs KApp for makeStdCaption
 
 //for (int i = 0 ; i < 2 ; ++i ) { // test twice to see if they got deleted

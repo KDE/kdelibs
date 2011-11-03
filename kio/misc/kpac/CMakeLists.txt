@@ -26,7 +26,7 @@ set(kded_proxyscout_PART_SRCS
 
 kde4_add_plugin(kded_proxyscout ${kded_proxyscout_PART_SRCS})
 
-target_link_libraries(kded_proxyscout ${QT_QTSCRIPT_LIBRARY} ${KPAC_EXTRA_LIBS} ${KDE4_KDECORE_LIBS} kio)
+target_link_libraries(kded_proxyscout ${QT_QTSCRIPT_LIBRARY} ${KPAC_EXTRA_LIBS} ${KDE4_KDECORE_LIBS} kio kcoreaddons)
 
 # this needs -lresolv e.g on Slackware, but not on FreeBSD
 if (HAVE_RESOLV_LIBRARY)

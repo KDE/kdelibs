@@ -37,10 +37,10 @@ KcmSsl::KcmSsl(QWidget *parent, const QVariantList &args)
     : KCModule(KcmSslFactory::componentData(), parent, args)
 {
     KAboutData *about = new KAboutData(
-        "kcm_ssl", 0, ki18n("SSL Configuration Module"),
-        KDE_VERSION_STRING, KLocalizedString(), KAboutData::License_GPL,
-        ki18n("Copyright 2010 Andreas Hartmetz"));
-    about->addAuthor(ki18n("Andreas Hartmetz"), KLocalizedString(), "ahartmetz@gmail.com");
+        "kcm_ssl", 0, qi18n("SSL Configuration Module"),
+        KDE_VERSION_STRING, QLocalizedString(), KAboutData::License_GPL,
+        qi18n("Copyright 2010 Andreas Hartmetz"));
+    about->addAuthor(qi18n("Andreas Hartmetz"), QLocalizedString(), "ahartmetz@gmail.com");
     setAboutData(about);
     setButtons(Apply | Default | Help);
 
