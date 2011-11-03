@@ -290,7 +290,7 @@ void CaCertificatesPage::removeSelectionClicked()
 // private slot
 void CaCertificatesPage::addCertificateClicked()
 {
-    QStringList certFiles
+    const QStringList certFiles
       = KFileDialog::getOpenFileNames(KUrl(), QLatin1String("application/x-x509-ca-cert"),
                                       this, i18n("Pick Certificates"));
 
