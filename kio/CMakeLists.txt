@@ -331,7 +331,7 @@ kde4_add_library(kio ${LIBRARY_TYPE} ${kio_LIB_SRCS})
 
 if(NOT KIO_NO_NEPOMUK)
   kde4_add_executable(kfilemetadatareader ${kfilemetadatareaderprocess_SRCS})
-  target_link_libraries(kfilemetadatareader ${KDE4_KIO_LIBS} ${KDE4_NEPOMUK_LIBRARY} nepomukutils)
+  target_link_libraries(kfilemetadatareader ${KDE4_KIO_LIBS} ${KDE4_NEPOMUK_LIBRARY} nepomukutils kcoreaddons)
   target_link_libraries(kio ${KDE4_NEPOMUK_LIBRARY} nepomukquery nepomukutils)
 endif(NOT KIO_NO_NEPOMUK)
 target_link_libraries(kio inqt5 kcoreaddons ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTSVG_LIBRARY} ${X11_LIBRARIES} ${KIO_EXTRA_LIBS})
