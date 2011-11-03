@@ -972,7 +972,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
                          KAboutData::License_GPL,
                          qi18n("(c) 2001, Waldo Bastian"));
 
-    aboutData.addAuthor(qi18n("Waldo Bastian"), KLocalizedString(), "bastian@kde.org");
+    aboutData.addAuthor(qi18n("Waldo Bastian"), QLocalizedString(), "bastian@kde.org");
 
     KCmdLineArgs::init(argc, argv, &aboutData);
     KCmdLineArgs::addCmdLineOptions(options);

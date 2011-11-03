@@ -19,12 +19,8 @@
 
 #include "httpauthenticationtest.h"
 
-#include <qtest_kde.h>
+#include <qtest.h>
 #include <kdebug.h>
-#include <kcodecs.h>
-#include <krandom.h>
-#include <kconfiggroup.h>
-#include <misc/kntlm/kntlm.h>
 
 #include <QtCore/QList>
 #include <QtCore/QByteArray>
@@ -33,7 +29,8 @@
 #define ENABLE_HTTP_AUTH_NONCE_SETTER
 #include "httpauthentication.cpp"
 
-QTEST_KDEMAIN(HTTPAuthenticationTest, NoGUI)
+// QT5 TODO QTEST_GUILESS_MAIN(HTTPAuthenticationTest)
+QTEST_MAIN(HTTPAuthenticationTest)
 
 static void parseAuthHeader(const QByteArray& header,
                             QByteArray* bestOffer,

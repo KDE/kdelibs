@@ -38,7 +38,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kglobal.h>
-#include <kcodecs.h>
+#include <kcodecs.h> // KMD5
 #include <kconfiggroup.h>
 #include <kio/authinfo.h>
 #include <misc/kntlm/kntlm.h>

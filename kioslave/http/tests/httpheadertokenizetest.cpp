@@ -19,7 +19,7 @@
 
 #include "httpheadertokenizetest.h"
 
-#include <qtest_kde.h>
+#include <qtest.h>
 
 #include <QtCore/QByteArray>
 #include <QtCore/QHash>
@@ -31,7 +31,8 @@
 
 #include <parsinghelpers.cpp>
 
-QTEST_KDEMAIN(HeaderTokenizeTest, NoGUI)
+// QT5 TODO QTEST_GUILESS_MAIN(HeaderTokenizeTest)
+QTEST_MAIN(HeaderTokenizeTest)
 
 /* some possible fields that can be used for test headers
         {"accept-ranges", false},

@@ -43,6 +43,7 @@ target_link_libraries(nepomukutils
   nepomukquery
   kdecore
   itemmodels
+  kcoreaddons
 )
 
 set_target_properties(nepomukutils PROPERTIES

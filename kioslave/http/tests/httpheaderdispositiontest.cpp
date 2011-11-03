@@ -19,7 +19,7 @@
 
 #include "httpheaderdispositiontest.h"
 
-#include <qtest_kde.h>
+#include <qtest.h>
 
 #include <QtCore/QByteArray>
 #include <kdebug.h>
@@ -30,7 +30,8 @@
 
 #include <parsinghelpers.cpp>
 
-QTEST_KDEMAIN(HeaderDispositionTest, NoGUI)
+// QT5 TODO QTEST_GUILESS_MAIN(HeaderDispositionTest)
+QTEST_MAIN(HeaderDispositionTest)
 
 static void runTest(const QString &header, const QByteArray &result)
 {

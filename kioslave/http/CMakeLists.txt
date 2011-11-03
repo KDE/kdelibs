@@ -29,6 +29,11 @@ include_directories( ${KDE4_KIO_INCLUDES}
                      ${CMAKE_BINARY_DIR}/tier1/solid
                      ${CMAKE_SOURCE_DIR}/tier1/libkarchive/src
                      ${CMAKE_BINARY_DIR}/tier1/libkarchive/src
+                     ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/randomness
+                     ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/kernel
+                     ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/io
+                     ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/text
+                     ${CMAKE_BINARY_DIR}/tier1/libkcoreaddons/src
 )
 include_directories( ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/kio/httpfilter )
 

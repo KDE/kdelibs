@@ -25,7 +25,6 @@
 #include <QTextCodec>
 #include <QUrl>
 
-#include <kcodecs.h>
 #include <kdebug.h>
 
 // Advance *pos beyond spaces / tabs
