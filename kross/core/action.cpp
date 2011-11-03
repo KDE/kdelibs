@@ -186,7 +186,7 @@ void Action::fromDomElement(const QDomElement& element, const QStringList& searc
 
     QString icon = element.attribute("icon");
     if( icon.isEmpty() && ! d->scriptfile.isNull() )
-        icon = KMimeType::iconNameForUrl( KUrl(d->scriptfile) );
+        icon = KMimeType::iconNameForUrl( QUrl::fromLocalFile(d->scriptfile) );
     setIconName( icon );
 
     const QString code = element.attribute("code");
@@ -246,7 +246,7 @@ QDomElement Action::toDomElement(const QStringList& searchPath) const
     if( ! fileName.isNull() ) {
         e.setAttribute("file", fileName);
     }
-    
+
     QList<QByteArray> props=dynamicPropertyNames();
     foreach(const QByteArray& prop, props) {
         QDomElement p = doc.createElement("property");
