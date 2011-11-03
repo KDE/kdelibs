@@ -62,7 +62,7 @@ set(notepadpart_PART_SRCS notepad.cpp)
 
 kde4_add_plugin(notepadpart ${notepadpart_PART_SRCS})
 
-target_link_libraries(notepadpart  ${KDE4_KPARTS_LIBS} )
+target_link_libraries(notepadpart  ${KDE4_KPARTS_LIBS} kcoreaddons)
 set_target_properties(notepadpart PROPERTIES COMPILE_FLAGS -DKDESRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}\\"")
 
 install(TARGETS notepadpart  DESTINATION ${PLUGIN_INSTALL_DIR} )

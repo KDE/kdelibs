@@ -51,7 +51,7 @@ else (Q_WS_MAC)
   kde4_add_executable(kdeinit4 NOGUI ${kdeinit_SRCS})
 endif (Q_WS_MAC)
 
-target_link_libraries(kdeinit4 ${KDE4_KDEUI_LIBS} ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY} )
+target_link_libraries(kdeinit4 ${KDE4_KDEUI_LIBS} ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY} kcoreaddons )
 if (Q_WS_X11)
   target_link_libraries(kdeinit4 ${X11_X11_LIB})
 endif(Q_WS_X11)
@@ -147,7 +147,7 @@ qt4_generate_dbus_interface(klauncher_adaptor.h org.kde.KLauncher.xml)
 kde4_add_kdeinit_executable( klauncher NOGUI ${klauncher_KDEINIT_SRCS})
 set_target_properties(kdeinit_klauncher PROPERTIES DEFINE_SYMBOL MAKE_KLAUNCHER)
 
-target_link_libraries(kdeinit_klauncher  ${KDE4_KIO_LIBS} ${X11_LIBRARIES})
+target_link_libraries(kdeinit_klauncher  ${KDE4_KIO_LIBS} ${X11_LIBRARIES} kcoreaddons)
 
 install(TARGETS kdeinit_klauncher ${INSTALL_TARGETS_DEFAULT_ARGS})
 

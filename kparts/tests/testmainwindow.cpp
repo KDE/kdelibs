@@ -162,7 +162,7 @@ void TestMainWindow::slotFileEdit()
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init( argc, argv, "kpartstest", 0, ki18n("kpartstest"), 0);
+    KCmdLineArgs::init( argc, argv, "kpartstest", 0, qi18n("kpartstest"), 0);
     KApplication app;
 
     TestMainWindow *shell = new TestMainWindow;

@@ -138,7 +138,7 @@ set(kprintutils_LIB_SRCS
 
 kde4_add_library(kprintutils ${LIBRARY_TYPE} ${kprintutils_LIB_SRCS})
 
-target_link_libraries(kprintutils ${KDE4_KPARTS_LIBS})
+target_link_libraries(kprintutils ${KDE4_KPARTS_LIBS} kcoreaddons)
 target_link_libraries(kprintutils LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY})
 set_target_properties(kprintutils PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}

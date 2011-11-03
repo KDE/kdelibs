@@ -82,7 +82,7 @@ void KEmoTest::changeTheme(const QString &theme)
 
 int main(int argc, char **argv)
 {
-    KAboutData aboutData("kemoticonstest", 0, ki18n("KEmoticons Test"), "1.0");
+    KAboutData aboutData("kemoticonstest", 0, qi18n("KEmoticons Test"), "1.0");
 
     KCmdLineArgs::init(argc, argv, &aboutData);
     KApplication app;

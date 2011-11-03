@@ -27,7 +27,7 @@ using namespace KParts;
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc, argv, "openorsavequestion", QByteArray(), ki18n("Test for the 'open or save' question"), "0");
+    KCmdLineArgs::init(argc, argv, "openorsavequestion", QByteArray(), qi18n("Test for the 'open or save' question"), "0");
     KApplication app;
 
     // A test for both 1) "unknown mimetype"  2) no associated app
