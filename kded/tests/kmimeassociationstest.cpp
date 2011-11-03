@@ -25,7 +25,7 @@
 #include <kdebug.h>
 #include <kservicefactory.h>
 #include <qtemporaryfile.h>
-#include <qtest_kde.h>
+#include <qtest.h>
 #include "kmimeassociations.h"
 #include <ksycoca.h>
 #include <kstandarddirs.h>
@@ -461,6 +461,7 @@ private:
     ExpectedResultsMap removedApps;
 };
 
-QTEST_KDEMAIN_CORE( KMimeAssociationsTest )
+// QT5 TODO QTEST_GUILESS_MAIN(KMimeAssociationsTest)
+QTEST_MAIN(KMimeAssociationsTest)
 
 #include "kmimeassociationstest.moc"

@@ -20,16 +20,14 @@
 */
 #include "test_kconfigutils.h"
 
-// Qt
-
-// KDE
-
+#include <qdebug.h>
 #include <qtest.h>
 
 // Local
 #include "../kconfigutils.h"
 
-QTEST_KDEMAIN_CORE(TestKConfigUtils)
+// QT5 TODO QTEST_GUILESS_MAIN(TestKConfigUtils)
+QTEST_MAIN(TestKConfigUtils)
 
 void TestKConfigUtils::testParseGroupString_data()
 {

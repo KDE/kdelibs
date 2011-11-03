@@ -15,7 +15,9 @@ include_directories(
  ${CMAKE_BINARY_DIR}/tier1/libkauth/
  ${CMAKE_SOURCE_DIR}/tier1/libkauth/
  ${CMAKE_BINARY_DIR}/tier1/libkcoreaddons/src
+ ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/caching
  ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/io
+ ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/jobs
  ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/text
  ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/kernel
  ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/randomness
