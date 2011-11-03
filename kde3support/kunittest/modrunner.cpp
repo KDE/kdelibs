@@ -34,21 +34,21 @@
 
 
 int main( int argc, char **argv )
-{    
+{
     KComponentData componentData("modrunner");
 
-    KLocalizedString description = 
-        ki18n("A command-line application that can be used to run KUnitTest modules.");
+    QLocalizedString description =
+        qi18n("A command-line application that can be used to run KUnitTest modules.");
 
     const char version[] = "0.1";
 
     KCmdLineOptions options;
-    options.add("query [regexp]", ki18n("Only run modules whose filenames match the regexp."), "^kunittest_.*\\.la$");
-    options.add("folder [folder]", ki18n("Only run tests modules which are found in the folder. Use the query option to select modules."), ".");
-    options.add("enable-dbgcap", ki18n("Disables debug capturing. You typically use this option when you use the GUI."));
+    options.add("query [regexp]", qi18n("Only run modules whose filenames match the regexp."), "^kunittest_.*\\.la$");
+    options.add("folder [folder]", qi18n("Only run tests modules which are found in the folder. Use the query option to select modules."), ".");
+    options.add("enable-dbgcap", qi18n("Disables debug capturing. You typically use this option when you use the GUI."));
 
-    KAboutData about("KUnitTest Module Runner", 0, ki18n("KUnitTest ModRunner"), version, description,
-                     KAboutData::License_BSD, ki18n("(C) 2005 Jeroen Wijnhout"), KLocalizedString(), 0,
+    KAboutData about("KUnitTest Module Runner", "", qi18n("KUnitTest ModRunner"), version, description,
+                     KAboutData::License_BSD, qi18n("(C) 2005 Jeroen Wijnhout"), QLocalizedString(), 0,
                      "Jeroen.Wijnhout@kdemail.net");
 
     KCmdLineArgs::init(argc, argv, &about);
