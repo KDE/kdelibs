@@ -199,11 +199,11 @@ void KColorUtilsDemo::targetSwatchChanged(const QColor &color)
 }
 
 int main(int argc, char* argv[]) {
-    KAboutData about("kcolorutilsdemo", 0, ki18n("kcolorutilsdemo"), "0.1",
-                     ki18n("KColorUtils demo/test application"),
-                     KAboutData::License_GPL, ki18n("Copyright 2009 Matthew Woehlke"),
-                     KLocalizedString(), 0, "mw_triad@users.sourceforge.net");
-    about.addAuthor(ki18n("Matthew Woehlke"), KLocalizedString(),
+    KAboutData about("kcolorutilsdemo", 0, qi18n("kcolorutilsdemo"), "0.1",
+                     qi18n("KColorUtils demo/test application"),
+                     KAboutData::License_GPL, qi18n("Copyright 2009 Matthew Woehlke"),
+                     QLocalizedString(), 0, "mw_triad@users.sourceforge.net");
+    about.addAuthor(qi18n("Matthew Woehlke"), QLocalizedString(),
                     "mw_triad@users.sourceforge.net");
     KCmdLineArgs::init(argc, argv, &about);
 

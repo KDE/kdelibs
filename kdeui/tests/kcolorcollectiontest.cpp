@@ -14,7 +14,7 @@
 
 int main( int argc, char **argv )
 {
-    KAboutData about("KColorCollectionTest", 0, ki18n("KColorCollectionTest"), "version");
+    KAboutData about("KColorCollectionTest", 0, qi18n("KColorCollectionTest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
     KApplication a;
 

@@ -25,7 +25,7 @@
 int main(int argc, char **argv) {
 
     // First a bug report to bugs.kde.org
-    KAboutData about("kbugreporttest", 0, ki18n("kbugreporttest"), "version");
+    KAboutData about("kbugreporttest", 0, qi18n("kbugreporttest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
 
     KApplication a;
@@ -35,9 +35,9 @@ int main(int argc, char **argv) {
 
     // Then a bug report by email.
     // Change the email address to check if it worked :)
-    KAboutData about1("kbugreporttest", 0, ki18n("kbugreporttest"), "version",
-                      ki18n("description"), KAboutData::License_Unknown,
-                      ki18n("copyright"), ki18n("bug report tool"),
+    KAboutData about1("kbugreporttest", 0, qi18n("kbugreporttest"), "version",
+                      qi18n("description"), KAboutData::License_Unknown,
+                      qi18n("copyright"), qi18n("bug report tool"),
                       QByteArray(), "null@bugs.kde.org");
     KBugReport rep1(0,true,&about1);
     rep1.exec();

@@ -12,14 +12,14 @@
 
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
+#include <klocale.h>
 #include <kapplication.h>
 #include <knuminput.h>
 
 #include "knuminputtest.h"
 
-KApplication *a;
-
 #include <kdebug.h>
+
 void TopLevel::slotPrint( int n ) {
   kDebug() << "slotPrint( " << n << " )";
 }
@@ -169,15 +169,14 @@ TopLevel::TopLevel(QWidget *parent)
 
 int main( int argc, char ** argv )
 {
-    KAboutData about("KNuminputTest", 0, ki18n("KNuminputTest"), "version");
+    KAboutData about("KNuminputTest", 0, qi18n("KNuminputTest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
 
-    a = new KApplication ( );
+    KApplication a;
 
     TopLevel *toplevel = new TopLevel(0);
-
     toplevel->show();
-    a->exec();
+    a.exec();
 }
 
 #include "knuminputtest.moc"

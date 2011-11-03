@@ -10,7 +10,7 @@
   if invoked like this ./testqtargs --bg blue --caption something --hello hi
 
   The program should list argv[] then produce output like this:
-  
+
   qt arg[0] = background
   qt arg[1] = blue
   arg bg = blue
@@ -25,10 +25,10 @@
   arg hello = hi
 
   See the extra dash in qt arg[0]?  I believe that is the cause of the problem.
-  --bg is aliased to --background but If you try it with --background or 
+  --bg is aliased to --background but If you try it with --background or
   -background, you get the same thing.
 
-  in kdecore/kapplication.cpp, KCmdLineOption qt_options is defined and used 
+  in kdecore/kapplication.cpp, KCmdLineOption qt_options is defined and used
   by the static method Kapplication::addCmdLineOptions to add the Qt options
   but its' entries look like this:
 
@@ -55,11 +55,11 @@ int main(int argc, char *argv[])
   {
     qDebug("argv[%d] = %s", i, argv[i]);
   }
-  KAboutData aboutData( "testqtargs", 0, ki18n("testqtargs"),
-    "1.0", ki18n("testqtargs"), KAboutData::License_GPL);
-	
+  KAboutData aboutData( "testqtargs", 0, qi18n("testqtargs"),
+    "1.0", qi18n("testqtargs"), KAboutData::License_GPL);
+
   KCmdLineOptions options;
-  options.add("hello ", ki18n("Says hello"));
+  options.add("hello ", qi18n("Says hello"));
 
   KCmdLineArgs::init(argc, argv, &aboutData);
   KCmdLineArgs::addCmdLineOptions(options);

@@ -31,7 +31,7 @@
 
  int main( int argc, char **argv )
 {
-  KAboutData about("KFontDialogTest", 0, ki18n("KFontDialogTest"), "version");
+  KAboutData about("KFontDialogTest", 0, qi18n("KFontDialogTest"), "version");
   KCmdLineArgs::init(argc, argv, &about);
 
   KApplication app;

@@ -9,7 +9,7 @@
 
 int main(int argc, char** argv)
 {
-  KAboutData about("DialogTest", 0, ki18n("DialogTest"), "version");
+  KAboutData about("DialogTest", 0, qi18n("DialogTest"), "version");
   KCmdLineArgs::init(argc, argv, &about);
 
   KApplication app;
@@ -63,7 +63,7 @@ int main(int argc, char** argv)
 
   QLabel label("this is a place for some advanced settings" ,&dialog);
   dialog.setDetailsWidget( &label);
-	
+
   //view.setMinimumSize(400, view.heightForWidth(400)+20);
   view.setMinimumSize( 250, 300 );
   /* After finishing the setup of your main widget, the dialog needs to be

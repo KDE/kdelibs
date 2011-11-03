@@ -65,13 +65,13 @@ void showResult(int test, int i)
 int main( int argc, char *argv[] )
 {
     int i, test;
-    KAboutData about("KMessageBoxTest", 0, ki18n("KMessageBoxTest"), "version");
+    KAboutData about("KMessageBoxTest", 0, qi18n("KMessageBoxTest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
 
     new KApplication();
 
     ExampleWidget *w = new ExampleWidget();
-    w->show();    
+    w->show();
 
     QStringList list; list.append("Hello"); list.append("World");
 
@@ -80,11 +80,11 @@ int main( int argc, char *argv[] )
          switch(test)
          {
 case 1:
-  i = KMessageBox::warningContinueCancel(w, 
+  i = KMessageBox::warningContinueCancel(w,
                 "You are about to <Print>.\n"
 		"Are you sure?",
                 "Print", KGuiItem( QLatin1String("&Print") ), KStandardGuiItem::cancel(), "dontask", false);
-  i = KMessageBox::warningContinueCancel(0, 
+  i = KMessageBox::warningContinueCancel(0,
                 "You are about to <Print>.\n"
 		"Are you sure?",
                 "Print", KGuiItem( QLatin1String("&Print") ), KStandardGuiItem::cancel(), "dontask", KMessageBox::AllowLink);
@@ -104,7 +104,7 @@ case 3:
   break;
 
 case 4:
-  i = KMessageBox::warningYesNo(0, 
+  i = KMessageBox::warningYesNo(0,
                                "KDVI could not locate the program 'dvipdfm' on your computer. That program is "
 			       "absolutely needed by the export function. You can, however, convert "
 			       "the DVI-file to PDF using the print function of KDVI, but that will often "
@@ -124,13 +124,13 @@ case 5:
   break;
 
 case 6:
-  i = KMessageBox::warningContinueCancel(0, 
+  i = KMessageBox::warningContinueCancel(0,
                 "You are about to print.\n"
 		"Are you sure?",
                 "Print", KGuiItem( QLatin1String("&Print") ) );
   break;
 case 7:
-  i = KMessageBox::warningContinueCancel(0, 
+  i = KMessageBox::warningContinueCancel(0,
                 "You are about to <Print>.\n"
 		"Are you sure?",
                 "Print", KGuiItem( QLatin1String("&Print") ), KStandardGuiItem::cancel(), "dontask", false);
@@ -214,9 +214,9 @@ case 20:
 case 21:
   {
   QStringList strlist;
-  printf("Filling StringList...\n");  
+  printf("Filling StringList...\n");
   for (int j=1;j<=6000;j++) strlist.append(QString("/tmp/tmp.%1").arg(j));
-  printf("Completed...\n");  
+  printf("Completed...\n");
   i = KMessageBox::questionYesNoList(0, "Do you want to delete the following files?",strlist);
   }
   break;

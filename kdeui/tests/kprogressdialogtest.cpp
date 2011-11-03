@@ -42,7 +42,7 @@ void MyWidget::timerEvent(QTimerEvent *)
 
 int main(int argc, char *argv[])
 {
-    KCmdLineArgs::init( argc, argv, "test", 0, ki18n("Test"), "1.0", ki18n("test app"));
+    KCmdLineArgs::init( argc, argv, "test", 0, qi18n("Test"), "1.0", qi18n("test app"));
     KApplication app;
     MyWidget w;
 

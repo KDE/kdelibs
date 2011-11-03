@@ -166,12 +166,12 @@ void Form1::slotHighlighted( int row )
 {
     if (row == -1)
         return;
-  
+
     QListWidgetItem *i = ListBox1->item( row );
     Q_ASSERT(i != 0);
-    
+
     QString text = i->text();
-    
+
     // remove any "weighting"
     int index = text.lastIndexOf( ':' );
     if ( index > 0 )
@@ -193,7 +193,7 @@ QStringList Form1::defaultItems() const
 
 int main(int argc, char **argv )
 {
-    KAboutData about("kcompletiontest", 0, ki18n("kcompletiontest"), "version");
+    KAboutData about("kcompletiontest", 0, qi18n("kcompletiontest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
 
     KApplication app;

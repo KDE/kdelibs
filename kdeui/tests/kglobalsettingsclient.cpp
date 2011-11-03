@@ -26,13 +26,13 @@
 
 int main(int argc, char **argv)
 {
-    KAboutData about("kglobalsettingsclient", 0, ki18n("kglobalsettingsclient"), "version");
+    KAboutData about("kglobalsettingsclient", 0, qi18n("kglobalsettingsclient"), "version");
     KCmdLineArgs::init(argc, argv, &about);
 
     KCmdLineOptions options;
-    options.add("p", ki18n("emit paletteChanged()"));
-    options.add("f", ki18n("emit fontChanged()"));
-    options.add("ps", ki18n("emit settingsChanged(SETTINGS_PATH)"));
+    options.add("p", qi18n("emit paletteChanged()"));
+    options.add("f", qi18n("emit fontChanged()"));
+    options.add("ps", qi18n("emit settingsChanged(SETTINGS_PATH)"));
 
     KCmdLineArgs::addCmdLineOptions( options );
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();

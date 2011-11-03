@@ -145,27 +145,27 @@ KRulerTest::KRulerTest()
   beginMark->setSliderEnabled(false);
   beginMark->move(5, 15);
   beginMark->setFixedSize(beginMark->sizeHint());
-  connect(beginMark, SIGNAL(valueChanged(int)), 
+  connect(beginMark, SIGNAL(valueChanged(int)),
 	  hruler, SLOT(slotNewOffset(int)) );
-  connect(beginMark, SIGNAL(valueChanged(int)), 
+  connect(beginMark, SIGNAL(valueChanged(int)),
 	  vruler, SLOT(slotNewOffset(int)) );
   endMark = new KIntNumInput(0, lineEdit);
   endMark->setRange(-1000, 1000);
   endMark->setSliderEnabled(false);
   endMark->move(5, 35);
   endMark->setFixedSize(endMark->sizeHint());
-  connect(endMark, SIGNAL(valueChanged(int)), 
+  connect(endMark, SIGNAL(valueChanged(int)),
 	  hruler, SLOT(slotEndOffset(int)) );
-  connect(endMark, SIGNAL(valueChanged(int)), 
+  connect(endMark, SIGNAL(valueChanged(int)),
 	  vruler, SLOT(slotEndOffset(int)) );
   lengthInput = new KIntNumInput(0, lineEdit);
   lengthInput->setRange(-1000, 1000);
   lengthInput->setSliderEnabled(false);
   lengthInput->move(5, 55);
   lengthInput->setFixedSize(lengthInput->sizeHint());
-  connect(lengthInput, SIGNAL(valueChanged(int)), 
+  connect(lengthInput, SIGNAL(valueChanged(int)),
 	  hruler, SLOT(slotEndOffset(int)) );
-  connect(lengthInput, SIGNAL(valueChanged(int)), 
+  connect(lengthInput, SIGNAL(valueChanged(int)),
 	  vruler, SLOT(slotEndOffset(int)) );
 
 
@@ -178,7 +178,7 @@ KRulerTest::KRulerTest()
   transX->move(5, 15);
   transX->setFixedSize(transX->sizeHint());
   //transX->setLabel("transx", AlignLeft);
-  connect(transX, SIGNAL(valueChanged(double)), 
+  connect(transX, SIGNAL(valueChanged(double)),
 	  SLOT(slotSetXTrans(double)) );
   transY = new KDoubleNumInput(vertrot);
   transY->setValue(-12.0);
@@ -186,7 +186,7 @@ KRulerTest::KRulerTest()
   transY->move(5, 35);
   transY->setFixedSize(transY->sizeHint());
   //transY->setLabel("transy", AlignLeft);
-  connect(transY, SIGNAL(valueChanged(double)), 
+  connect(transY, SIGNAL(valueChanged(double)),
 	  SLOT(slotSetYTrans(double)) );
   rotV = new KDoubleNumInput(vertrot);
   rotV->setValue(90.0);
@@ -194,12 +194,12 @@ KRulerTest::KRulerTest()
   rotV->move(5, 55);
   rotV->setFixedSize(rotV->sizeHint());
   //rotV->setLabel("rot", AlignLeft);
-  connect(rotV, SIGNAL(valueChanged(double)), 
+  connect(rotV, SIGNAL(valueChanged(double)),
 	  SLOT(slotSetRotate(double)) );
-  
+
 
   metricstyle = new QGroupBox("metric styles", bigwidget);
-  
+
   QButtonGroup* metricstyleButtons = new QButtonGroup(bigwidget);
 
   metricstyle->setFixedSize(100, 120);
@@ -288,21 +288,21 @@ KRulerTest::slotSetEndMarks(bool set)
   vruler->setShowEndMarks(set);
 }
 
-void 
+void
 KRulerTest::slotSetRulerPointer(bool set)
 {
   hruler->setShowPointer(set);
   vruler->setShowPointer(set);
 }
 
-void 
+void
 KRulerTest::slotSetRulerLength(int len)
 {
   hruler->setLength(len);
   vruler->setLength(len);
 }
 
-void 
+void
 KRulerTest::slotFixRulerLength(bool fix)
 {
   hruler->setLengthFixed(fix);
@@ -328,7 +328,7 @@ KRulerTest::slotUpdateShowMarks()
   showEM->setChecked(hruler->showEndMarks());
 }
 
-void 
+void
 KRulerTest::slotCheckLength(bool fixlen)
 {
   Q_UNUSED(fixlen);
@@ -337,7 +337,7 @@ KRulerTest::slotCheckLength(bool fixlen)
   lengthInput->setValue(hruler->length());
 }
 
-void 
+void
 KRulerTest::slotSetRotate(double d)
 {
   Q_UNUSED(d);
@@ -348,7 +348,7 @@ KRulerTest::slotSetRotate(double d)
 #endif
 }
 
-void 
+void
 KRulerTest::slotSetXTrans(double d)
 {
   Q_UNUSED(d);
@@ -359,7 +359,7 @@ KRulerTest::slotSetXTrans(double d)
 #endif
 }
 
-void 
+void
 KRulerTest::slotSetYTrans(double d)
 {
   Q_UNUSED(d);
@@ -374,7 +374,7 @@ KRulerTest::slotSetYTrans(double d)
 /* --- MAIN -----------------------*/
 int main(int argc, char **argv)
 {
-  KCmdLineArgs::init( argc, argv, "test", 0, ki18n("Test"), "1.0", ki18n("test app"));
+  KCmdLineArgs::init( argc, argv, "test", 0, qi18n("Test"), "1.0", qi18n("test app"));
   KApplication *testapp;
   KRulerTest   *window;
 

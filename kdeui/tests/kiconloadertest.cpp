@@ -12,7 +12,7 @@
 
 int main(int argc, char *argv[])
 {
-  KAboutData about("kiconloadertest", 0, ki18n("kiconloadertest"), "version");
+  KAboutData about("kiconloadertest", 0, qi18n("kiconloadertest"), "version");
   KCmdLineArgs::init(argc, argv, &about);
 
   KApplication app;

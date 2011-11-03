@@ -8,9 +8,9 @@
 int main(int argc, char**argv)
 {
   KCmdLineOptions options;
-  options.add("+file", ki18n("The image file to open"));
+  options.add("+file", qi18n("The image file to open"));
 
-  KCmdLineArgs::init(argc, argv, "test", 0, ki18n("test"), "1.0", ki18n("test"));
+  KCmdLineArgs::init(argc, argv, "test", 0, qi18n("test"), "1.0", qi18n("test"));
   KCmdLineArgs::addCmdLineOptions( options );
   KApplication app("test");
 

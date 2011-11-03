@@ -27,9 +27,9 @@
 int main( int argc, char *argv[] )
 {
 	QApplication::setColorSpec( QApplication::CustomColor );
-	KAboutData about("KNewPasswordDialogTest", 0, ki18n("KNewPasswordDialogTest"), "1");
+	KAboutData about("KNewPasswordDialogTest", 0, qi18n("KNewPasswordDialogTest"), "1");
 	KCmdLineArgs::init(argc, argv, &about);
-	
+
     KApplication a;
 
     //step 1  simple password
@@ -37,25 +37,7 @@ int main( int argc, char *argv[] )
         KPasswordDialog dlg(0, KPasswordDialog::ShowKeepPassword);
         dlg.setPrompt(i18n("This is a long prompt line. It is important it to be long so we can test the dialog does not get broken because of multiline labels. Please enter a password:"));
         dlg.addCommentLine(i18n("This is a rather large left comment line") , i18n("Right part of the comment line has to be long too so be test the layouting works really ok. Please visit http://www.kde.org"));
-        
-        if( dlg.exec() )
-        {
-            std::cout << "Entered password: " << (const char*)dlg.password().toAscii() << std::endl;
-        }
-        else
-        {
-            std::cout << "No password" << std::endl;
-            return -1;
-        }
-    }
-    
-    //step 2 readonly username
-    {
-        KPasswordDialog dlg(0, KPasswordDialog::ShowUsernameLine | KPasswordDialog::UsernameReadOnly);
-        dlg.setPrompt(i18n("Enter a password for the test"));
-        dlg.setUsername("konqui");
-        dlg.addCommentLine( i18n("Site") , i18n("http://www.kde.org") );
-        
+
         if( dlg.exec() )
         {
             std::cout << "Entered password: " << (const char*)dlg.password().toAscii() << std::endl;
@@ -67,7 +49,25 @@ int main( int argc, char *argv[] )
         }
     }
 
-    
+    //step 2 readonly username
+    {
+        KPasswordDialog dlg(0, KPasswordDialog::ShowUsernameLine | KPasswordDialog::UsernameReadOnly);
+        dlg.setPrompt(i18n("Enter a password for the test"));
+        dlg.setUsername("konqui");
+        dlg.addCommentLine( i18n("Site") , i18n("http://www.kde.org") );
+
+        if( dlg.exec() )
+        {
+            std::cout << "Entered password: " << (const char*)dlg.password().toAscii() << std::endl;
+        }
+        else
+        {
+            std::cout << "No password" << std::endl;
+            return -1;
+        }
+    }
+
+
     //step 3 with some username preset
     {
         KPasswordDialog dlg(0, KPasswordDialog::ShowUsernameLine);
@@ -76,7 +76,7 @@ int main( int argc, char *argv[] )
         logins.insert("konqui" , "foo");
         logins.insert("watson" , "bar");
         logins.insert("ogoffart" , "");
-        
+
         dlg.setKnownLogins(logins);
 
         if( dlg.exec() )
@@ -90,10 +90,10 @@ int main( int argc, char *argv[] )
         }
     }
 
-    
+
     return 0;
-    
-    
+
+
 
 }
 

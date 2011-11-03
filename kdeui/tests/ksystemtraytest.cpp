@@ -6,7 +6,7 @@
 
 int main(int argc, char **argv)
 {
-	KAboutData aboutData( "ksystemtraytest", 0 , ki18n("ksystemtraytest"), "1.0" );
+	KAboutData aboutData( "ksystemtraytest", 0 , qi18n("ksystemtraytest"), "1.0" );
 	KCmdLineArgs::init(argc, argv, &aboutData);
         KApplication app;
 	QLabel *l = new QLabel("System Tray Main Window", 0L);

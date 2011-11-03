@@ -30,7 +30,7 @@ void KHBoxTest::slotRemove()
 
 int main( int argc, char ** argv )
 {
-    KAboutData about("KHBoxTest", 0, ki18n("KHBoxTest"), "version");
+    KAboutData about("KHBoxTest", 0, qi18n("KHBoxTest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
 
     KApplication app;

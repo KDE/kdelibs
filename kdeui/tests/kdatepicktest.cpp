@@ -7,7 +7,7 @@
 
 int main(int argc, char** argv)
 {
-  KAboutData about("KDatePickertest", "kdelibs4", ki18n("KDatePickertest"), "version");
+  KAboutData about("KDatePickertest", "kdelibs4", qi18n("KDatePickertest"), "version");
   KCmdLineArgs::init(argc, argv, &about);
 
   KApplication app;

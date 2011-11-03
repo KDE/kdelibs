@@ -6,7 +6,7 @@
 
 int main( int argc, char **argv )
 {
-    KAboutData about("keditlistboxtest", 0, ki18n("keditlistboxtest"), "version");
+    KAboutData about("keditlistboxtest", 0, qi18n("keditlistboxtest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
 
     KApplication app;

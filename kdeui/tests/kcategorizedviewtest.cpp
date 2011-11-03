@@ -63,12 +63,12 @@ int main(int argc, char **argv)
 
     KAboutData aboutData("KCategorizedViewTest",
                          0,
-                         ki18n("KCategorizedViewTest"),
+                         qi18n("KCategorizedViewTest"),
                          "1.0",
-                         ki18n("KCategorizedViewTest"),
+                         qi18n("KCategorizedViewTest"),
                          KAboutData::License_LGPL_V3,
-                         ki18n("(c) 2009 Rafael Fernández López"),
-                         ki18n("KCategorizedViewTest"),
+                         qi18n("(c) 2009 Rafael Fernández López"),
+                         qi18n("KCategorizedViewTest"),
                          "http://www.kde.org");
 
     KCmdLineArgs::init(argc, argv, &aboutData);

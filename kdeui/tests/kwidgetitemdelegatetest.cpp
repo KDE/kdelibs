@@ -296,12 +296,12 @@ int main(int argc, char **argv)
 {
     KAboutData aboutData("goyaTest",
                          0,
-                         ki18n("Goya Test"),
+                         qi18n("Goya Test"),
                          "1.0",
-                         ki18n("Goya Test"),
+                         qi18n("Goya Test"),
                          KAboutData::License_LGPL_V3,
-                         ki18n("(c) 2008 Rafael Fernández López and Kevin Ottens "),
-                         ki18n("Goya Test"),
+                         qi18n("(c) 2008 Rafael Fernández López and Kevin Ottens "),
+                         qi18n("Goya Test"),
                          "http://www.kde.org");
 
     KCmdLineArgs::init( argc, argv, &aboutData );

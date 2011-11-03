@@ -29,7 +29,7 @@
 int main( int argc, char *argv[] )
 {
   QApplication app( argc, argv );
-  KAboutData aboutData( "kactionselectortest", 0, ki18n("kactionselectortest"), "1.0" );
+  KAboutData aboutData( "kactionselectortest", 0, qi18n("kactionselectortest"), "1.0" );
   KComponentData i( &aboutData );
 
   KActionSelector actionSelector(0);

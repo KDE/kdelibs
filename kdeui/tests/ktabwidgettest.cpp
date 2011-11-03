@@ -384,7 +384,7 @@ void Test::toggleEliding(bool state)
 
 int main(int argc, char** argv )
 {
-    KCmdLineArgs::init(argc, argv, "ktabwidgettest", 0, ki18n("KTabWidgetTest"), "1.0", ki18n("ktabwidget test app"));
+    KCmdLineArgs::init(argc, argv, "ktabwidgettest", 0, qi18n("KTabWidgetTest"), "1.0", qi18n("ktabwidget test app"));
     //KApplication::disableAutoDcopRegistration();
     KApplication app;
     Test *t = new Test();

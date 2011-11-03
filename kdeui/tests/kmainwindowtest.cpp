@@ -45,7 +45,7 @@ void MainWindow::showMessage()
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init( argc, argv, "kmainwindowtest", 0, ki18n("KMainWindowTest"), "1.0", ki18n("kmainwindow test app"));
+    KCmdLineArgs::init( argc, argv, "kmainwindowtest", 0, qi18n("KMainWindowTest"), "1.0", qi18n("kmainwindow test app"));
     KApplication app;
 
     MainWindow* mw = new MainWindow; // deletes itself when closed

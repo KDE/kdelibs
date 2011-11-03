@@ -167,7 +167,7 @@ void KLineEditTest::slotInvalidChar(int key)
 
 int main ( int argc, char **argv)
 {
-    KAboutData aboutData( "klineedittest", 0, ki18n("klineedittest"), "1.0" );
+    KAboutData aboutData( "klineedittest", 0, qi18n("klineedittest"), "1.0" );
     KCmdLineArgs::init(argc, argv, &aboutData);
     KCmdLineArgs::addStdCmdLineOptions();
 

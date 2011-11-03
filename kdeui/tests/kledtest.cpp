@@ -82,7 +82,7 @@ KLedTest::~KLedTest()
 }
 
 
-void 
+void
 KLedTest::nextColor() {
 
   ledcolor++;
@@ -98,24 +98,24 @@ KLedTest::nextColor() {
 }
 
 
-void 
-KLedTest::nextLook() { 
+void
+KLedTest::nextLook() {
   register int tmp;
   if (kled_round) {
     tmp = (static_cast<int>(ledlook) +1 ) % 3 ;
   }
-  else {  
+  else {
     tmp = (static_cast<int>(ledlook) + 1) % 3;
   }
   ledlook = static_cast<KLed::Look>(tmp);
   l->setLook(ledlook);
   //qDebug("painting look %i", ledlook);
-  //l->repaint(); 
+  //l->repaint();
 }
 
 
 void
-KLedTest::timeout() 
+KLedTest::timeout()
 {
   const int NoOfLeds=sizeof(leds)/sizeof(leds[0]);
   int count;
@@ -136,7 +136,7 @@ KLedTest::timeout()
 
 int main( int argc, char **argv )
 {
-    KAboutData about("KLedTest", 0, ki18n("KLedTest"), "version");
+    KAboutData about("KLedTest", 0, qi18n("KLedTest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
 
     KApplication a;
@@ -144,7 +144,7 @@ int main( int argc, char **argv )
     // -----
     /*
     if (argc>1) { // look out for round or circular led command
-      if (strncmp(argv[1],"-c",2)) {	
+      if (strncmp(argv[1],"-c",2)) {
 	// paint circular
 	printf("painting circular led\n");
 	widget.kled_round = true;

@@ -1,5 +1,5 @@
 /*
-    Copyright 2006 Hamish Rodda <rodda@kde.org>  
+    Copyright 2006 Hamish Rodda <rodda@kde.org>
     Copyright 2006 Simon Hausmann <hausmann@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init( argc, argv, "kselectactiontest", 0, ki18n("KSelectActionTest"), "1.0", ki18n("kselectaction test app"));
+    KCmdLineArgs::init( argc, argv, "kselectactiontest", 0, qi18n("KSelectActionTest"), "1.0", qi18n("kselectaction test app"));
     KApplication app;
 
     SelectActionTest* test = new SelectActionTest;

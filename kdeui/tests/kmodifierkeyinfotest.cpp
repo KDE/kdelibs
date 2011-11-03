@@ -93,7 +93,7 @@ TestWidget::TestWidget() : QWidget(0), m_lock(this)
     buttons.insert(Qt::XButton2, "Second X Button");
 
     QVBoxLayout *layout = new QVBoxLayout(this);
-    
+
     QMap<Qt::Key, QString>::const_iterator it;
     QMap<Qt::Key, QString>::const_iterator end = mods.constEnd();
     for (it = mods.constBegin(); it != end; ++it) {
@@ -133,7 +133,7 @@ TestWidget::TestWidget() : QWidget(0), m_lock(this)
         hlayout->addWidget(new QLabel(it2.value()));
         layout->addLayout(hlayout);
     }
-    
+
     setLayout(layout);
 
     connect(&m_lock, SIGNAL(keyPressed(Qt::Key, bool)), SLOT(keyPressed(Qt::Key, bool)));
@@ -187,7 +187,7 @@ void TestWidget::lock()
 
 int main(int argc, char *argv[])
 {
-    KAboutData about("simple", "simple", ki18n("simple"),
+    KAboutData about("simple", "simple", qi18n("simple"),
                      "0.0.1");
     KCmdLineArgs::init(argc, argv, &about);
 

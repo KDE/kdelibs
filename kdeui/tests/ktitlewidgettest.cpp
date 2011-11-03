@@ -68,7 +68,7 @@ public:
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc, argv, "ktitlewidgettest", 0, ki18n("KTitleWidgetTest"), "version", ki18n("description"));
+    KCmdLineArgs::init(argc, argv, "ktitlewidgettest", 0, qi18n("KTitleWidgetTest"), "version", qi18n("description"));
 
     KApplication app;
 

@@ -146,8 +146,8 @@ bool KTestJob::doKill()
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc, argv, "kjobtrackerstest", 0, ki18n("KJobTrackerTest"),
-                       "0.0", ki18n("Test several job trackers at once"));
+    KCmdLineArgs::init(argc, argv, "kjobtrackerstest", 0, qi18n("KJobTrackerTest"),
+                       "0.0", qi18n("Test several job trackers at once"));
 
     KApplication app;
 

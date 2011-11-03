@@ -198,7 +198,7 @@ void KPageWidgetTest::pageToggled( KPageWidgetItem *item, bool checked )
 
 int main( int argc, char **argv )
 {
-  KAboutData about("KPageWidgetTest", 0, ki18n("KPageWidgetTest"), "version");
+  KAboutData about("KPageWidgetTest", 0, qi18n("KPageWidgetTest"), "version");
   KCmdLineArgs::init( argc, argv, &about );
 
   KApplication app;

@@ -55,24 +55,24 @@ class MainWindow : public KXmlGuiWindow
       KAction* lineEditAction = new KAction( "Line Edit", this );
       actionCollection()->addAction( "lineEdit", lineEditAction );
       lineEditAction->setDefaultWidget(lineEdit);
-      
+
       // second constructor
       KToolBarLabelAction *label2 = new KToolBarLabelAction( lineEditAction, "This is the &second label", this );
       actionCollection()->addAction( "label2", label2 );
-      
+
 
       // set buddy for label1
       label1->setBuddy( lineEditAction );
-      
+
       // set buddy for accel
       accel->setBuddy( lineEdit );
-            
+
       // another widget so lineEdit can loose focus and check budyness works
       new KLineEdit( main );
 
       setupGUI( Default, "ktoolbarlabelactiontestui.rc" );
     }
-    
+
     bool eventFilter(QObject * watched, QEvent * event )
     {
       if (watched == mainLabel && event->type() == QEvent::MouseButtonPress)
@@ -81,14 +81,14 @@ class MainWindow : public KXmlGuiWindow
       }
       return KXmlGuiWindow::eventFilter(watched, event);
     }
-    
+
     KToolBarLabelAction* label1;
     KSqueezedTextLabel *mainLabel;
 };
 
 int main( int argc, char **argv )
 {
-  KCmdLineArgs::init( argc, argv, "test", 0, ki18n("Test"), "1.0", ki18n("test app"));
+  KCmdLineArgs::init( argc, argv, "test", 0, qi18n("Test"), "1.0", qi18n("test app"));
   KApplication app;
 
   KGlobal::mainComponent().dirs()->addResourceDir( "data", "." );

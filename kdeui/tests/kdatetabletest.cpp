@@ -6,7 +6,7 @@
 
 int main( int argc, char** argv )
 {
-  KCmdLineArgs::init( argc, argv, "test", "kdelibs4", ki18n("Test"), "1.0", ki18n("test app"));
+  KCmdLineArgs::init( argc, argv, "test", "kdelibs4", qi18n("Test"), "1.0", qi18n("test app"));
   KApplication app;
 
   KDateTable widget;

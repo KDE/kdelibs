@@ -27,7 +27,7 @@
 #include <QtGui/QBoxLayout>
 
 int main(int argc, char **argv) {
-   KAboutData about("kdialogbuttonboxtest", 0, ki18n("kbuttonboxtest"), "version");
+   KAboutData about("kdialogbuttonboxtest", 0, qi18n("kbuttonboxtest"), "version");
    KCmdLineArgs::init(argc, argv, &about);
 
    KApplication a;
@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
    bbox->addButton(QLatin1String("Cancel"),QDialogButtonBox::RejectRole,  w, SLOT(accept()));
 
    bbox->addButton(QLatin1String("Help"), QDialogButtonBox::HelpRole);
-    
+
 
     tl->addWidget(bbox,0);
     tl->activate();
@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
 
 
   // example 2
-  {    
+  {
     QDialog *w = new QDialog(0);
     w->setObjectName("Vertical");
     w->setModal(true);
@@ -93,7 +93,7 @@ int main(int argc, char **argv) {
 
 
     tl->addWidget(bbox,0);
-    tl->activate();  
+    tl->activate();
     w->exec();
     delete w;
   }

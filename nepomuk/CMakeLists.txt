@@ -23,6 +23,8 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/tier1/libkdbus
   ${CMAKE_BINARY_DIR}/tier1/libkdbus
   ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/io
+  ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/jobs
+  ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/randomness
   ${CMAKE_BINARY_DIR}/tier1/libkcoreaddons/src
   ${KDE4_KIO_INCLUDES}
   ${QT_INCLUDES}
@@ -134,6 +136,7 @@ target_link_libraries(nepomuk
   kdbus
   kdecore
   kdeui
+  kcoreaddons
 )
 
 target_link_libraries(nepomuk

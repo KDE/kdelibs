@@ -143,7 +143,7 @@ void KIconEffectTestWidget::slotColorizeValue(int value)
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init( argc, argv, "kiconeffecttest", 0, ki18n("KIconEffectTest"), "1.0", ki18n("KDE icon effect test"));
+    KCmdLineArgs::init( argc, argv, "kiconeffecttest", 0, qi18n("KIconEffectTest"), "1.0", qi18n("KDE icon effect test"));
     KApplication app;
     KIconEffectTestWidget *w = new KIconEffectTestWidget;
     w->show();

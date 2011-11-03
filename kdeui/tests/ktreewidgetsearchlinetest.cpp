@@ -107,7 +107,7 @@ void KTreeWidgetSearchLineTest::showEvent( QShowEvent * event )
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init( argc, argv, "KTreeWidgetSearchLineTest", 0, ki18n("KTreeWidgetSearchLineTest"), "1.0", ki18n("KTreeWidgetSearchLine test app"));
+    KCmdLineArgs::init( argc, argv, "KTreeWidgetSearchLineTest", 0, qi18n("KTreeWidgetSearchLineTest"), "1.0", qi18n("KTreeWidgetSearchLine test app"));
     KApplication app;
     KTreeWidgetSearchLineTest dialog;
 

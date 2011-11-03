@@ -152,7 +152,7 @@ int main(int argc, char *argv[]) \
     setenv("KDE_SKIP_KDERC", "1", 1); \
     unsetenv("KDE_COLOR_DEBUG"); \
     QFile::remove(QDir::homePath() + QLatin1String("/.kde-unit-test/share/config/qttestrc"));  \
-    KAboutData aboutData( QByteArray(componentName), QByteArray(), ki18n("KDE Test Program"), QByteArray("version") );  \
+    KAboutData aboutData( QByteArray(componentName), QByteArray(), qi18n("KDE Test Program"), QByteArray("version") );  \
     KDEMainFlags mainFlags = flags;                         \
     KCmdLineArgs::init( argc, argv, &aboutData); \
     KApplication app; \

@@ -24,6 +24,7 @@
 
 #include "resource.h"
 #include "nepomuk_export.h"
+#include <kurl.h>
 
 namespace Nepomuk {
     /**

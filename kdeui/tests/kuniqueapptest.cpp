@@ -79,9 +79,9 @@ int TestApp::newInstance()
 int main(int argc, char *argv[])
 {
     KCmdLineOptions options;
-    options.add("!+[argument]", ki18n("arguments passed to new instance"));
+    options.add("!+[argument]", qi18n("arguments passed to new instance"));
 
-    KAboutData about("kuniqueapptest", 0, ki18n("kuniqueapptest"), "version");
+    KAboutData about("kuniqueapptest", 0, qi18n("kuniqueapptest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
     KCmdLineArgs::addCmdLineOptions( options );
     KUniqueApplication::addCmdLineOptions();

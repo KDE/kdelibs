@@ -6,7 +6,7 @@
 
 int main (int argc,char **argv)
 {
-    KAboutData about("kcharselecttest", 0, ki18n("kcharselecttest"), "version");
+    KAboutData about("kcharselecttest", 0, qi18n("kcharselecttest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
 
     KApplication app;

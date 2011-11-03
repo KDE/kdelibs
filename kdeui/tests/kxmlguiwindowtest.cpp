@@ -111,10 +111,10 @@ MainWindow::MainWindow(QWidget *parent)
 int main(int argc, char **argv)
 {
     KAboutData aboutData("kxmlguiwindowtest", 0,
-                         ki18n("kxmlguiwindowtest"), "0.1",
-                         ki18n("kxmlguiwindowtest"),
+                         qi18n("kxmlguiwindowtest"), "0.1",
+                         qi18n("kxmlguiwindowtest"),
                          KAboutData::License_LGPL,
-                         ki18n("Copyright (c) 2008 Rafael Fernandez Lopez"));
+                         qi18n("Copyright (c) 2008 Rafael Fernandez Lopez"));
     KCmdLineArgs::init(argc, argv, &aboutData);
     KApplication app;
 
