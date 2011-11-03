@@ -8,7 +8,7 @@ set(kunittest_LIB_SRCS runner.cpp tester.cpp )
 
 kde4_add_library(kunittest ${LIBRARY_TYPE} ${kunittest_LIB_SRCS})
 
-target_link_libraries(kunittest ${KDE4_KDECORE_LIBS} )
+target_link_libraries(kunittest ${KDE4_KDECORE_LIBS} kcoreaddons )
 target_link_libraries(kunittest LINK_INTERFACE_LIBRARIES kdecore ${QT_QTCORE_LIBRARY} )
 
 set_target_properties(kunittest PROPERTIES
@@ -25,7 +25,7 @@ set(kunittestmodrunner_SRCS modrunner.cpp )
 
 kde4_add_executable(kunittestmodrunner NOGUI ${kunittestmodrunner_SRCS})
 
-target_link_libraries(kunittestmodrunner ${KDE4_KDECORE_LIBS} kunittest)
+target_link_libraries(kunittestmodrunner ${KDE4_KDECORE_LIBS} kunittest kcoreaddons)
 
 install(TARGETS kunittestmodrunner DESTINATION ${BIN_INSTALL_DIR} )
 
