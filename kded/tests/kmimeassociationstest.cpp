@@ -18,6 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <QDir>
 #include <kprocess.h>
 #include <kconfiggroup.h>
 #include <kdesktopfile.h>

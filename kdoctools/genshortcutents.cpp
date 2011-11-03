@@ -336,10 +336,10 @@ int main( int argc, char **argv )
 {
         KCmdLineOptions cmdLineOptions;
 	cmdLineOptions.add("o");
-	cmdLineOptions.add("output <file>", ki18n("Output file"), "kde-standard-accels.entities");
+	cmdLineOptions.add("output <file>", qi18n("Output file"), "kde-standard-accels.entities");
 
-	KAboutData aboutData( "genshortcutents", 0, ki18n("genshortcutents"), "1.0",
-	                      ki18n( "Generates DocBook entities for key shortcuts of standard actions" ));
+	KAboutData aboutData( "genshortcutents", 0, qi18n("genshortcutents"), "1.0",
+	                      qi18n( "Generates DocBook entities for key shortcuts of standard actions" ));
 
 	KCmdLineArgs::init( argc, argv, &aboutData );
 	KCmdLineArgs::addCmdLineOptions( cmdLineOptions );

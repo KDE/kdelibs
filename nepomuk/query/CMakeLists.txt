@@ -62,6 +62,7 @@ target_link_libraries(nepomukquery
   kdbus
   kdecore
   nepomuk
+  kcoreaddons
   )
 
 install(TARGETS nepomukquery ${INSTALL_TARGETS_DEFAULT_ARGS})

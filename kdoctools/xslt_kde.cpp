@@ -21,18 +21,17 @@
 #include <stdlib.h>
 #include <config.h>
 #include <stdarg.h>
-#include <kcharsets.h>
-#include <kurl.h>
+#include <qurl.h>
 
 void fillInstance(KComponentData &ins, const QString &srcdir)
 {
     QByteArray catalogs;
 
     if ( srcdir.isEmpty() ) {
-        catalogs += KUrl::fromLocalFile( ins.dirs()->findResource("data", "ksgmltools2/customization/catalog.xml") ).toEncoded();
+        catalogs += QUrl::fromLocalFile( ins.dirs()->findResource("data", "ksgmltools2/customization/catalog.xml") ).toEncoded();
         ins.dirs()->addResourceType("dtd", "data", "ksgmltools2/");
     } else {
-        catalogs += KUrl::fromLocalFile( srcdir +"/customization/catalog.xml" ).toEncoded();
+        catalogs += QUrl::fromLocalFile( srcdir +"/customization/catalog.xml" ).toEncoded();
         ins.dirs()->addResourceDir("dtd", srcdir);
     }
 
