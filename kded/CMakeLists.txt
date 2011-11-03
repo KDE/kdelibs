@@ -26,7 +26,7 @@ if (Q_WS_MAC)
     set_target_properties(kded4 PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "KDE Daemon")
 endif (Q_WS_MAC)
 
-target_link_libraries(kdeinit_kded4  ${KDE4_KIO_LIBS} ${X11_LIBRARIES})
+target_link_libraries(kdeinit_kded4  ${KDE4_KIO_LIBS} ${X11_LIBRARIES} kcoreaddons)
 
 install(TARGETS kdeinit_kded4 ${INSTALL_TARGETS_DEFAULT_ARGS})
 
