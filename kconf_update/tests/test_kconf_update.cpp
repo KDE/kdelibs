@@ -22,6 +22,7 @@
 
 // Qt
 #include <QFile>
+#include <QDir>
 #include <QSharedPointer>
 #include <qtemporaryfile.h>
 
@@ -30,11 +31,12 @@
 #include <kprocess.h>
 #include <kstandarddirs.h>
 
-#include <qtest_kde.h>
+#include <qtest.h>
 
 // Local
 
-QTEST_KDEMAIN_CORE(TestKConfUpdate)
+// QT5 TODO QTEST_GUILESS_MAIN(TestKConfUpdate)
+QTEST_MAIN(TestKConfUpdate)
 
 static void writeFile(const QString &path, const QString &content)
 {

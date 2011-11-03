@@ -20,11 +20,12 @@
 #include <QtCore/QString>
 #include <kdebug.h>
 #include <qstandardpaths.h>
-#include <qtest_kde.h>
+#include <qtest.h>
 #include "kconfigcompiler_test.h"
 #include "kconfigcompiler_test.moc"
 
-QTEST_KDEMAIN_CORE(KConfigCompiler_Test)
+// QT5 TODO QTEST_GUILESS_MAIN(KConfigCompiler_Test)
+QTEST_MAIN(KConfigCompiler_Test)
 
 typedef const char * CompilerTestSet[];
 

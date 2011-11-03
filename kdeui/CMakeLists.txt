@@ -14,6 +14,11 @@ include_directories(
  ${CMAKE_SOURCE_DIR}/tier1/itemmodels/src
  ${CMAKE_BINARY_DIR}/tier1/libkauth/
  ${CMAKE_SOURCE_DIR}/tier1/libkauth/
+ ${CMAKE_BINARY_DIR}/tier1/libkcoreaddons/src
+ ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/io
+ ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/text
+ ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/kernel
+ ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/randomness
  ${CMAKE_SOURCE_DIR}/kdeui
  ${CMAKE_SOURCE_DIR}/libinqt5/src
  ${CMAKE_BINARY_DIR}/libinqt5/src

@@ -23,6 +23,7 @@
 
 #include <kdebug.h>
 #include <kaboutdata.h>
+#include <klocale.h>
 
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>

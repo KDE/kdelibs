@@ -32,9 +32,9 @@
 #include "kdeui/widgets/ktextbrowser.h"
 #include "kdeui/widgets/ktitlewidget.h"
 
-#include <kdecore/kernel/kaboutdata.h>
-#include <kdecore/kernel/kglobal.h>
-#include <kdecore/localization/klocale.h>
+#include <kaboutdata.h>
+#include <kglobal.h>
+#include <klocale.h>
 
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>

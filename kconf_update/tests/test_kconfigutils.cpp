@@ -24,7 +24,7 @@
 
 // KDE
 
-#include <qtest_kde.h>
+#include <qtest.h>
 
 // Local
 #include "../kconfigutils.h"

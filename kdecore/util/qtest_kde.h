@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <kaboutdata.h>
+#include <qlocalizedstring_porting.h>
 #include <kcmdlineargs.h>
 #include <kcomponentdata.h>
 #include <kglobal.h>
