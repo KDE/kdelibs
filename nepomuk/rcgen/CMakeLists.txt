@@ -23,6 +23,7 @@ target_link_libraries(nepomuk-rcgen
   ${SOPRANO_LIBRARIES}
   kdecore
   kdeui
+  kcoreaddons
 )
 
 install(TARGETS nepomuk-rcgen ${INSTALL_TARGETS_DEFAULT_ARGS} )
