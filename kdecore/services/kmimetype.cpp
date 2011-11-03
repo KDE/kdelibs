@@ -317,8 +317,10 @@ KMimeType::Ptr KMimeType::findByUrl( const QUrl& url, mode_t mode,
                                      bool is_local_file, bool fast_mode,
                                      int *accuracy )
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     if ( !is_local_file && url.isLocalFile() )
         is_local_file = true;
+#endif
     if (is_local_file && !fast_mode) {
         QFile file(url.toLocalFile());
         return findByUrlHelper(url, mode, is_local_file, &file, accuracy);
