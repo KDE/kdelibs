@@ -21,7 +21,7 @@ qt4_add_dbus_interfaces(kcookiejar_SRCS ${kcookieserver_xml})
 
 kde4_add_executable( kcookiejar4 NOGUI ${kcookiejar_SRCS})
 
-target_link_libraries( kcookiejar4 ${KDE4_KDECORE_LIBS} )
+target_link_libraries( kcookiejar4 ${KDE4_KDECORE_LIBS} kcoreaddons)
 
 install(TARGETS kcookiejar4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 

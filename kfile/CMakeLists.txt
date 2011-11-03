@@ -50,7 +50,7 @@ if(X11_Xrender_FOUND)
   target_link_libraries(kfile ${X11_Xrender_LIB} )
 endif(X11_Xrender_FOUND)
 
-target_link_libraries(kfile LINK_INTERFACE_LIBRARIES kio kdeui kdecore ${QT_QTGUI_LIBRARY} )
+target_link_libraries(kfile LINK_INTERFACE_LIBRARIES kio kdeui kdecore ${QT_QTGUI_LIBRARY} kcoreaddons)
 
 set_target_properties(kfile PROPERTIES VERSION ${GENERIC_LIB_VERSION} 
                                        SOVERSION ${GENERIC_LIB_SOVERSION} 
@@ -79,6 +79,6 @@ set(kfilemodule_SRCS
   kfilemodule.cpp
 )
 kde4_add_plugin(kfilemodule ${kfilemodule_SRCS})
-target_link_libraries(kfilemodule ${KDE4_KFILE_LIBS} ${KDE4_KIO_LIBS})
+target_link_libraries(kfilemodule ${KDE4_KFILE_LIBS} ${KDE4_KIO_LIBS} kcoreaddons)
 install(TARGETS kfilemodule DESTINATION ${PLUGIN_INSTALL_DIR})
 install(FILES kfilemodule.desktop DESTINATION ${SERVICES_INSTALL_DIR})
