@@ -55,7 +55,7 @@ class DictionaryComboBoxTest : public QWidget
         {
             kDebug() << "Current dictionary changed: " << name;
         }
-        
+
         void dictNameChanged( const QString &name )
         {
             kDebug() << "Current dictionary name changed: " << name;
@@ -67,7 +67,7 @@ class DictionaryComboBoxTest : public QWidget
 
 int main( int argc, char** argv )
 {
-    KCmdLineArgs::init( argc, argv, "SonnetTest", 0, ki18n("SonnetTest"), 0 );
+    KCmdLineArgs::init( argc, argv, "SonnetTest", 0, qi18n("SonnetTest"), 0 );
     KApplication app;
 
     DictionaryComboBoxTest *test = new DictionaryComboBoxTest();

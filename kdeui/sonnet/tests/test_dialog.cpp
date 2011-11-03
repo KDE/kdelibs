@@ -52,7 +52,7 @@ void TestDialog::doneChecking( const QString& buf )
 int main( int argc, char** argv )
 {
     //KApplication::disableAutoDcopRegistration();
-    KCmdLineArgs::init( argc, argv, "test_dialog", 0, ki18n("test_dialog"), 0);
+    KCmdLineArgs::init( argc, argv, "test_dialog", 0, qi18n("test_dialog"), 0);
     KApplication app; // with GUI
 
     TestDialog test;

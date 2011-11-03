@@ -30,7 +30,7 @@ using namespace Sonnet;
 int main( int argc, char** argv )
 {
     //KApplication::disableAutoDcopRegistration();
-    KCmdLineArgs::init( argc, argv, "test_configdialog", 0, ki18n("test_configdialog"), 0);
+    KCmdLineArgs::init( argc, argv, "test_configdialog", 0, qi18n("test_configdialog"), 0);
     KApplication app; // with GUI
 
     KConfig config("sonnetrc");
