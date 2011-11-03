@@ -196,6 +196,7 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/kdecore/sonnet
                           ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/io
                           ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/kernel
+                          ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/jobs
                           ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/text
                           ${CMAKE_BINARY_DIR}/tier1/libkcoreaddons/src
                           ${QT_INCLUDES}

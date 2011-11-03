@@ -44,7 +44,7 @@ include_directories(
    ${CMAKE_CURRENT_BINARY_DIR}/kssl
    ${CMAKE_CURRENT_BINARY_DIR}      # e.g. for observer_stub.h
    ${KDE4_KDEUI_INCLUDES}
-   ${KDE4_KDECORE_INCLUDES}/
+   ${KDE4_KDECORE_INCLUDES}
    ${CMAKE_SOURCE_DIR}/libinqt5/src
    ${CMAKE_BINARY_DIR}/libinqt5/src
    ${ZLIB_INCLUDE_DIR}
