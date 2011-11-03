@@ -31,6 +31,7 @@
 #include <kconfiggroup.h>
 #include <kcomponentdata.h>
 #include <kdebug.h>
+#include <klocale.h>
 #include <kstandarddirs.h>
 #include <kcodecs.h>
 #include <kprocess.h>

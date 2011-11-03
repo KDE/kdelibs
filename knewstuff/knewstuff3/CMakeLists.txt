@@ -51,6 +51,7 @@ kde4_add_library(knewstuff3 ${LIBRARY_TYPE} ${knewstuff3_SRCS} )
 target_link_libraries(knewstuff3
     ${KDE4_KIO_LIBS}
     ${KDE4_KDECORE_LIBS}
+    kcoreaddons
 )
 
 target_link_libraries(knewstuff3 ${LIBATTICA_LIBRARIES} karchive)
