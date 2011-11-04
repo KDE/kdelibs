@@ -1445,27 +1445,13 @@ void HTTPProtocol::del( const KUrl& url, bool )
 
   if (m_protocol.startsWith("webdav")) {
     m_request.url.setQuery(QString());
-    proceedUntilResponseHeader();
-
-    // Work around strict Apache-2 WebDAV implementation which refuses to cooperate
-    // with webdav://host/directory, instead requiring webdav://host/directory/
-    // (strangely enough it accepts Destination: without a trailing slash)
-    // See BR# 209508 and BR#187970.
-    if (m_request.responseCode == 301) {
-      m_request.url = m_request.redirectUrl;
-      m_request.method = HTTP_DELETE;
-      m_request.cacheTag.policy = CC_Reload;
-      m_request.url.setQuery(QString());
-
-      // force re-authentication...
-      delete m_wwwAuth;
-      m_wwwAuth = 0;
-      proceedUntilResponseHeader();
+    if (!proceedUntilResponseHeader()) {
+      return;
     }
 
     // The server returns a HTTP/1.1 200 Ok or HTTP/1.1 204 No Content
-    // on successful completion
-    if ( m_request.responseCode == 200 || m_request.responseCode == 204 )
+    // on successful completion.
+    if ( m_request.responseCode == 200 || m_request.responseCode == 204 || m_isRedirection)
       davFinished();
     else
       davError();
