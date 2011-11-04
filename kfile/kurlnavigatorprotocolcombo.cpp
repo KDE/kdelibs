@@ -67,7 +67,7 @@ QSize KUrlNavigatorProtocolCombo::sizeHint() const
     const QSize size = KUrlNavigatorButtonBase::sizeHint();
 
     QFontMetrics fontMetrics(font());
-    int width = fontMetrics.width(text());
+    int width = fontMetrics.width(KGlobal::locale()->removeAcceleratorMarker(text()));
     width += (3 * BorderWidth) + ArrowSize;
 
     return QSize(width, size.height());
@@ -131,7 +131,12 @@ void KUrlNavigatorProtocolCombo::paintEvent(QPaintEvent* event)
 
     // draw text
     const int textWidth = arrowX - (2 * BorderWidth);
-    painter.drawText(QRect(BorderWidth, 0, textWidth, buttonHeight), Qt::AlignCenter, text());
+    int alignment = Qt::AlignCenter | Qt::TextShowMnemonic;
+    if (!style()->styleHint(QStyle::SH_UnderlineShortcut, &option, this)) {
+        alignment |= Qt::TextHideMnemonic;
+    }
+    style()->drawItemText(&painter, QRect(BorderWidth, 0, textWidth, buttonHeight),
+                          alignment, option.palette, isEnabled(), text());
 }
 
 void KUrlNavigatorProtocolCombo::setProtocol(QAction* action)
