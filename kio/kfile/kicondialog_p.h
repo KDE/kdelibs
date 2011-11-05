@@ -19,9 +19,15 @@
 #include <QtCore/QStringList>
 #include <QtGui/QPushButton>
 
+#include <kiconloader.h>
 #include <klistwidget.h>
 
-class KIconLoader;
+class QProgressBar;
+class QRadioButton;
+
+class KComboBox;
+class KIconCanvasDelegate;
+class KListWidgetSearchLine;
 
 /**
  * Icon canvas for KIconDialog.
@@ -88,7 +94,7 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void loadFiles();
-    void currentChanged(QListWidgetItem *item);
+    void currentListItemChanged(QListWidgetItem *item);
 
 private:
     bool m_loading;

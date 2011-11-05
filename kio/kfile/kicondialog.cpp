@@ -124,9 +124,9 @@ KIconCanvas::KIconCanvas(QWidget *parent)
     setUniformItemSizes(true);
     setMovement(Static);
     setIconSize(QSize(60, 60));
-    connect(m_timer, SIGNAL(timeout()), this, SLOT(_k_slotLoadFiles()));
-    connect(this, SIGNAL( currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
-            this, SLOT(_k_slotCurrentChanged(QListWidgetItem *)));
+    connect(m_timer, SIGNAL(timeout()), this, SLOT(loadFiles()));
+    connect(this, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
+            this, SLOT(currentListItemChanged(QListWidgetItem *)));
     setGridSize(QSize(100,80));
 
     setItemDelegate(m_delegate);
@@ -141,8 +141,8 @@ KIconCanvas::~KIconCanvas()
 void KIconCanvas::loadFiles(const QStringList& files)
 {
     clear();
-    d->mFiles = files;
-    emit startLoading(d->mFiles.count());
+    m_files = files;
+    emit startLoading(m_files.count());
     m_timer->setSingleShot(true);
     m_timer->start(10);
     m_loading = false;
@@ -167,8 +167,8 @@ void KIconCanvas::loadFiles()
     int i;
     QStringList::ConstIterator it;
     uint emitProgress = 10; // so we will emit it once in the beginning
-    QStringList::ConstIterator end(mFiles.constEnd());
-    for (it=mFiles.constBegin(), i=0; it!=end; ++it, i++)
+    QStringList::ConstIterator end(m_files.constEnd());
+    for (it = m_files.constBegin(), i = 0; it != end; ++it, ++i)
     {
 	if ( emitProgress >= 10 ) {
             emit progress(i);
@@ -229,7 +229,7 @@ void KIconCanvas::loadFiles()
 	
 	QPixmap pm = QPixmap::fromImage(img);
 	QFileInfo fi(*it);
-        QListWidgetItem *item = new QListWidgetItem(pm, fi.completeBaseName(), q);
+        QListWidgetItem *item = new QListWidgetItem(pm, fi.completeBaseName(), this);
 	item->setData(Qt::UserRole, *it);
         item->setToolTip(fi.completeBaseName());
     }
@@ -239,8 +239,8 @@ void KIconCanvas::loadFiles()
 
     QApplication::restoreOverrideCursor();
     m_loading = false;
-    emit q->finished();
-    q->setResizeMode(QListWidget::Adjust);
+    emit finished();
+    setResizeMode(QListWidget::Adjust);
 }
 
 QString KIconCanvas::getCurrent() const
@@ -257,9 +257,9 @@ void KIconCanvas::stopLoading()
     m_loading = false;
 }
 
-void KIconCanvas::currentChanged(QListWidgetItem *item)
+void KIconCanvas::currentListItemChanged(QListWidgetItem *item)
 {
-    emit q->nameChanged((item != 0L) ? item->text() : QString());
+    emit nameChanged((item != 0L) ? item->text() : QString());
 }
 
 /*

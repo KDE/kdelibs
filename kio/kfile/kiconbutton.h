@@ -18,7 +18,7 @@
 
 #include <QtGui/QPushButton>
 
-class KIconLoader;
+#include <kiconloader.h>
 
 /**
  * A pushbutton for choosing an icon. Pressing on the button will open a

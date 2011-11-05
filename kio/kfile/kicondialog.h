@@ -20,83 +20,8 @@
 #include <QtGui/QPushButton>
 
 #include <kdialog.h>
-#include <klistwidget.h>
 
 class KIconLoader;
-
-/**
- * Icon canvas for KIconDialog.
- */
-class KIO_EXPORT KIconCanvas: public KListWidget
-{
-    Q_OBJECT
-
-public:
-    /**
-     * Creates a new icon canvas.
-     *
-     * @param parent The parent widget.
-     */
-    explicit KIconCanvas(QWidget *parent=0L);
-
-    /**
-     * Destroys the icon canvas.
-     */
-    ~KIconCanvas();
-
-    /**
-     * Load icons into the canvas.
-     */
-    void loadFiles(const QStringList& files);
-
-    /**
-     * Returns the current icon.
-     */
-    QString getCurrent() const;
-
-public Q_SLOTS:
-    /**
-     * Call this slot to stop the loading of the icons.
-     */
-    void stopLoading();
-
-Q_SIGNALS:
-    /**
-     * Emitted when the current icon has changed.
-     */
-    void nameChanged(const QString&);
-
-    /**
-     * This signal is emitted when the loading of the icons
-     * has started.
-     *
-     * @param count The number of icons to be loaded.
-     */
-    void startLoading(int count);
-
-    /**
-     * This signal is emitted whenever an icon has been loaded.
-     *
-     * @param number The number of the currently loaded item.
-     */
-    void progress(int number);
-
-    /**
-     * This signal is emitted when the loading of the icons
-     * has been finished.
-     */
-    void finished();
-
-private:
-    class KIconCanvasPrivate;
-    KIconCanvasPrivate* const d;
-
-    Q_DISABLE_COPY(KIconCanvas)
-
-    Q_PRIVATE_SLOT(d, void _k_slotLoadFiles())
-    Q_PRIVATE_SLOT(d, void _k_slotCurrentChanged(QListWidgetItem *item))
-};
-
 
 /**
  * Dialog for interactive selection of icons. Use the function
