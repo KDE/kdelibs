@@ -54,7 +54,6 @@ KIO_EXECUTABLE_TESTS(
   kdbusservicestartertest
   kurlrequestertest
   kopenwithtest
-  kicondialogtest
   kfiledialogtest
 )
 
