@@ -225,7 +225,6 @@ install( FILES
   KIMProxy
   KIcon
   KIconButton
-  KIconCanvas
   KIconDialog
   KIconEffect
   KIconLoader
