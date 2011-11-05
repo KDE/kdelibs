@@ -340,7 +340,7 @@ void KNewStuff2Download::slotEntriesFailed()
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc, argv, "knewstuff2_download", 0, ki18n("knewstuff2_download"), 0);
+    KCmdLineArgs::init(argc, argv, "knewstuff2_download", 0, qi18n("knewstuff2_download"), 0);
     KApplication app;
 
     // Take source directory into account

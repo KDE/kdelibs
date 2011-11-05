@@ -67,11 +67,11 @@ void KNewStuff2Standard::run(bool upload, bool modal, QString file)
 int main(int argc, char **argv)
 {
     KCmdLineOptions options;
-    options.add("upload <file>", ki18n("Tests upload dialog"));
-    options.add("download", ki18n("Tests download dialog"));
-    options.add("modal", ki18n("Show modal dialogs"));
+    options.add("upload <file>", qi18n("Tests upload dialog"));
+    options.add("download", qi18n("Tests download dialog"));
+    options.add("modal", qi18n("Show modal dialogs"));
 
-    KCmdLineArgs::init(argc, argv, "knewstuff2_standard", 0, ki18n("knewstuff2_standard"), 0);
+    KCmdLineArgs::init(argc, argv, "knewstuff2_standard", 0, qi18n("knewstuff2_standard"), 0);
     KCmdLineArgs::addCmdLineOptions(options);
     KApplication app;
 
