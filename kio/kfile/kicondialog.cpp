@@ -12,6 +12,7 @@
  */
 
 #include "kicondialog.h"
+#include "kicondialog_p.h"
 
 #include <kio/kio_export.h>
 
@@ -82,22 +83,6 @@ QSize KIconCanvasDelegate::sizeHint ( const QStyleOptionViewItem & option, const
     return size;
 }
 
-class KIconCanvas::KIconCanvasPrivate
-{
-  public:
-    KIconCanvasPrivate(KIconCanvas *qq) { q = qq; m_bLoading = false; }
-    ~KIconCanvasPrivate() {}
-    KIconCanvas *q;
-    bool m_bLoading;
-    QStringList mFiles;
-    QTimer *mpTimer;
-    KIconCanvasDelegate *mpDelegate;
-
-    // slots
-    void _k_slotLoadFiles();
-    void _k_slotCurrentChanged(QListWidgetItem *item);
-};
-
 /**
  * Helper class for sorting icon paths by icon name
  */
@@ -130,27 +115,27 @@ public:
  */
 
 KIconCanvas::KIconCanvas(QWidget *parent)
-    : KListWidget(parent), d(new KIconCanvasPrivate(this))
+    : KListWidget(parent),
+      m_loading(false),
+      m_timer(new QTimer(this)),
+      m_delegate(new KIconCanvasDelegate(this, itemDelegate()))
 {
     setViewMode(IconMode);
     setUniformItemSizes(true);
     setMovement(Static);
     setIconSize(QSize(60, 60));
-    d->mpTimer = new QTimer(this);
-    connect(d->mpTimer, SIGNAL(timeout()), this, SLOT(_k_slotLoadFiles()));
+    connect(m_timer, SIGNAL(timeout()), this, SLOT(_k_slotLoadFiles()));
     connect(this, SIGNAL( currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
             this, SLOT(_k_slotCurrentChanged(QListWidgetItem *)));
     setGridSize(QSize(100,80));
 
-    d->mpDelegate = new KIconCanvasDelegate(this, itemDelegate());
-    setItemDelegate(d->mpDelegate);
+    setItemDelegate(m_delegate);
 }
 
 KIconCanvas::~KIconCanvas()
 {
-    delete d->mpTimer;
-    delete d->mpDelegate;
-    delete d;
+    delete m_timer;
+    delete m_delegate;
 }
 
 void KIconCanvas::loadFiles(const QStringList& files)
@@ -158,27 +143,27 @@ void KIconCanvas::loadFiles(const QStringList& files)
     clear();
     d->mFiles = files;
     emit startLoading(d->mFiles.count());
-    d->mpTimer->setSingleShot(true);
-    d->mpTimer->start(10);
-    d->m_bLoading = false;
+    m_timer->setSingleShot(true);
+    m_timer->start(10);
+    m_loading = false;
 }
 
-void KIconCanvas::KIconCanvasPrivate::_k_slotLoadFiles()
+void KIconCanvas::loadFiles()
 {
-    q->setResizeMode(QListWidget::Fixed);
+    setResizeMode(QListWidget::Fixed);
     QApplication::setOverrideCursor(Qt::WaitCursor);
 
     // disable updates to not trigger paint events when adding child items,
     // but force an initial paint so that we do not get garbage
-    q->repaint();
-    q->setUpdatesEnabled(false);
+    repaint();
+    setUpdatesEnabled(false);
 
     // Cache these as we will call them frequently.
-    const int canvasIconWidth = q->iconSize().width();
-    const int canvasIconHeight = q->iconSize().width();
-    const bool uniformIconSize = q->uniformItemSizes();
+    const int canvasIconWidth = iconSize().width();
+    const int canvasIconHeight = iconSize().width();
+    const bool uniformIconSize = uniformItemSizes();
 
-    m_bLoading = true;
+    m_loading = true;
     int i;
     QStringList::ConstIterator it;
     uint emitProgress = 10; // so we will emit it once in the beginning
@@ -186,13 +171,13 @@ void KIconCanvas::KIconCanvasPrivate::_k_slotLoadFiles()
     for (it=mFiles.constBegin(), i=0; it!=end; ++it, i++)
     {
 	if ( emitProgress >= 10 ) {
-            emit q->progress(i);
+            emit progress(i);
             emitProgress = 0;
         }
 
         emitProgress++;
 
-        if (!m_bLoading) { // user clicked on a button that will load another set of icons
+        if (!m_loading) { // user clicked on a button that will load another set of icons
             break;
         }
 	QImage img;
@@ -250,79 +235,32 @@ void KIconCanvas::KIconCanvasPrivate::_k_slotLoadFiles()
     }
 
     // enable updates since we have to draw the whole view now
-    q->setUpdatesEnabled(true);
+    setUpdatesEnabled(true);
 
     QApplication::restoreOverrideCursor();
-    m_bLoading = false;
+    m_loading = false;
     emit q->finished();
     q->setResizeMode(QListWidget::Adjust);
 }
 
 QString KIconCanvas::getCurrent() const
 {
-    if (!currentItem())
-	return QString();
+    if (!currentItem()) {
+        return QString();
+    }
+
     return currentItem()->data(Qt::UserRole).toString();
 }
 
 void KIconCanvas::stopLoading()
 {
-    d->m_bLoading = false;
+    m_loading = false;
 }
 
-void KIconCanvas::KIconCanvasPrivate::_k_slotCurrentChanged(QListWidgetItem *item)
+void KIconCanvas::currentChanged(QListWidgetItem *item)
 {
     emit q->nameChanged((item != 0L) ? item->text() : QString());
 }
-
-class KIconDialog::KIconDialogPrivate
-{
-  public:
-    KIconDialogPrivate(KIconDialog *qq) {
-        q = qq;
-        m_bStrictIconSize = true;
-	m_bLockUser = false;
-	m_bLockCustomDir = false;
-	searchLine = 0;
-        mNumOfSteps = 1;
-    }
-    ~KIconDialogPrivate() {}
-
-    void init();
-    void showIcons();
-    void setContext( KIconLoader::Context context );
-
-    // slots
-    void _k_slotContext(int);
-    void _k_slotStartLoading(int);
-    void _k_slotProgress(int);
-    void _k_slotFinished();
-    void _k_slotAcceptIcons();
-    void _k_slotBrowse();
-    void _k_slotOtherIconClicked();
-    void _k_slotSystemIconClicked();
-
-    KIconDialog *q;
-
-    int mGroupOrSize;
-    KIconLoader::Context mContext;
-
-    QStringList mFileList;
-    KComboBox *mpCombo;
-    QPushButton *mpBrowseBut;
-    QRadioButton *mpSystemIcons, *mpOtherIcons;
-    QProgressBar *mpProgress;
-    int mNumOfSteps;
-    KIconLoader *mpLoader;
-    KIconCanvas *mpCanvas;
-    int mNumContext;
-    KIconLoader::Context mContextMap[ 12 ]; // must match KIcon::Context size, code has assert
-
-    bool m_bStrictIconSize, m_bLockUser, m_bLockCustomDir;
-    QString custom;
-    QString customLocation;
-    KListWidgetSearchLine *searchLine;
-};
 
 /*
  * KIconDialog: Dialog for selecting icons. Both system and user
@@ -751,172 +689,5 @@ void KIconDialog::KIconDialogPrivate::_k_slotFinished()
     mpProgress->hide();
 }
 
-class KIconButton::KIconButtonPrivate
-{
-  public:
-    KIconButtonPrivate(KIconButton *qq, KIconLoader *loader);
-    ~KIconButtonPrivate();
-
-    // slots
-    void _k_slotChangeIcon();
-    void _k_newIconName(const QString&);
-
-    KIconButton *q;
-
-    int iconSize;
-    int buttonIconSize;
-    bool m_bStrictIconSize;
-
-    bool mbUser;
-    KIconLoader::Group mGroup;
-    KIconLoader::Context mContext;
-
-    QString mIcon;
-    KIconDialog *mpDialog;
-    KIconLoader *mpLoader;
-};
-
-
-/*
- * KIconButton: A "choose icon" pushbutton.
- */
-
-KIconButton::KIconButton(QWidget *parent)
-    : QPushButton(parent), d(new KIconButtonPrivate(this, KIconLoader::global()))
-{
-    QPushButton::setIconSize(QSize(48, 48));
-}
-
-KIconButton::KIconButton(KIconLoader *loader, QWidget *parent)
-    : QPushButton(parent), d(new KIconButtonPrivate(this, loader))
-{
-    QPushButton::setIconSize(QSize(48, 48));
-}
-
-KIconButton::KIconButtonPrivate::KIconButtonPrivate(KIconButton *qq, KIconLoader *loader)
-    : q(qq)
-{
-    m_bStrictIconSize = false;
-    iconSize = 0; // let KIconLoader choose the default
-    buttonIconSize = -1; //When buttonIconSize is -1, iconSize will be used for the button
-
-    mGroup = KIconLoader::Desktop;
-    mContext = KIconLoader::Application;
-    mbUser = false;
-
-    mpLoader = loader;
-    mpDialog = 0L;
-    connect(q, SIGNAL(clicked()), q, SLOT(_k_slotChangeIcon()));
-}
-
-KIconButton::KIconButtonPrivate::~KIconButtonPrivate()
-{
-    delete mpDialog;
-}
-
-KIconButton::~KIconButton()
-{
-    delete d;
-}
-
-void KIconButton::setStrictIconSize(bool b)
-{
-    d->m_bStrictIconSize=b;
-}
-
-bool KIconButton::strictIconSize() const
-{
-    return d->m_bStrictIconSize;
-}
-
-void KIconButton::setIconSize( int size )
-{
-    if (d->buttonIconSize == -1) {
-        QPushButton::setIconSize(QSize(size, size));
-    }
-
-    d->iconSize = size;
-}
-
-int KIconButton::iconSize() const
-{
-    return d->iconSize;
-}
-
-void KIconButton::setButtonIconSize( int size )
-{
-    QPushButton::setIconSize(QSize(size, size));
-    d->buttonIconSize = size;
-}
-
-int KIconButton::buttonIconSize() const
-{
-    return QPushButton::iconSize().height();
-}
-
-void KIconButton::setIconType(KIconLoader::Group group, KIconLoader::Context context, bool user)
-{
-    d->mGroup = group;
-    d->mContext = context;
-    d->mbUser = user;
-}
-
-void KIconButton::setIcon(const QString& icon)
-{
-    d->mIcon = icon;
-    setIcon(KIcon(d->mIcon));
-
-    if (!d->mpDialog) {
-        d->mpDialog = new KIconDialog(d->mpLoader, this);
-        connect(d->mpDialog, SIGNAL(newIconName(const QString&)), this, SLOT(_k_newIconName(const QString&)));
-    }
-
-    if (d->mbUser) {
-        d->mpDialog->setCustomLocation(QFileInfo(d->mpLoader->iconPath(d->mIcon, d->mGroup, true) ).absolutePath());
-    }
-}
-
-void KIconButton::setIcon(const QIcon& icon)
-{
-    QPushButton::setIcon(icon);
-}
-
-void KIconButton::resetIcon()
-{
-    d->mIcon.clear();
-    setIcon(QIcon());
-}
-
-const QString &KIconButton::icon() const
-{
-    return d->mIcon;
-}
-
-void KIconButton::KIconButtonPrivate::_k_slotChangeIcon()
-{
-    if (!mpDialog)
-    {
-        mpDialog = new KIconDialog(mpLoader, q);
-        connect(mpDialog, SIGNAL(newIconName(const QString&)), q, SLOT(_k_newIconName(const QString&)));
-    }
-
-    mpDialog->setup(mGroup, mContext, m_bStrictIconSize, iconSize, mbUser);
-    mpDialog->showDialog();
-}
-
-void KIconButton::KIconButtonPrivate::_k_newIconName(const QString& name)
-{
-    if (name.isEmpty())
-        return;
-
-    q->setIcon(KIcon(name));
-    mIcon = name;
-
-    if (mbUser) {
-        mpDialog->setCustomLocation(QFileInfo(mpLoader->iconPath(mIcon, mGroup, true)).absolutePath());
-    }
-
-    emit q->iconChanged(name);
-}
-
 #include "kicondialog.moc"
+#include "kicondialog_p.moc"
