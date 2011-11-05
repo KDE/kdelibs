@@ -21,13 +21,12 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kiconloader.h>
-#include <kfiledialog.h>
-#include <kimagefilepreview.h>
 #ifndef _WIN32_WCE
 #include <QtSvg/QSvgRenderer>
 #endif
 
 #include <QtGui/QApplication>
+#include <QtGui/QFileDialog>
 #include <QtGui/QGroupBox>
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
@@ -624,23 +623,15 @@ void KIconDialog::KIconDialogPrivate::_k_slotBrowse()
 {
     // Create a file dialog to select a PNG, XPM or SVG file,
     // with the image previewer shown.
-    // KFileDialog::getImageOpenURL doesn't allow svg.
-    KUrl emptyUrl;
-    KFileDialog dlg(emptyUrl, i18n("*.png *.xpm *.svg *.svgz|Icon Files (*.png *.xpm *.svg *.svgz)"), q);
-    dlg.setOperationMode( KFileDialog::Opening );
-    dlg.setCaption( i18n("Open") );
-    dlg.setMode( KFile::File );
+    QFileDialog dlg(q, i18n("Select Icon"), QString(), i18n("*.png *.xpm *.svg *.svgz|Icon Files (*.png *.xpm *.svg *.svgz)"));
+    dlg.setFileMode(QFileDialog::ExistingFile);
 
-    KImageFilePreview *ip = new KImageFilePreview( &dlg );
-    dlg.setPreviewWidget( ip );
     dlg.exec();
 
-    QString file = dlg.selectedFile();
-    if (!file.isEmpty())
-    {
-        custom = file;
+    if (!dlg.selectedFiles().isEmpty()) {
+        custom = dlg.selectedFiles().first();
         if (mpSystemIcons->isChecked()) {
-            customLocation = QFileInfo(file).absolutePath();
+            customLocation = QFileInfo(custom).absolutePath();
         }
         q->slotOk();
     }
