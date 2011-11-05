@@ -17,6 +17,7 @@
 #include <kio/kio_export.h>
 
 #include <QtCore/QStringList>
+#include <QtGui/QFileDialog>
 #include <QtGui/QPushButton>
 
 #include <kiconloader.h>
@@ -127,6 +128,7 @@ class KIconDialog::KIconDialogPrivate
     void _k_slotFinished();
     void _k_slotAcceptIcons();
     void _k_slotBrowse();
+    void _k_customFileSelected(const QString &path);
     void _k_slotOtherIconClicked();
     void _k_slotSystemIconClicked();
 
@@ -150,6 +152,7 @@ class KIconDialog::KIconDialogPrivate
     QString custom;
     QString customLocation;
     KListWidgetSearchLine *searchLine;
+    QWeakPointer<QFileDialog> browseDialog;
 };
 
 

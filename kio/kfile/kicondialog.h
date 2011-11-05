@@ -152,6 +152,7 @@ private:
     Q_PRIVATE_SLOT(d, void _k_slotFinished())
     Q_PRIVATE_SLOT(d, void _k_slotAcceptIcons())
     Q_PRIVATE_SLOT(d, void _k_slotBrowse())
+    Q_PRIVATE_SLOT(d, void _k_customFileSelected(const QString &path))
     Q_PRIVATE_SLOT(d, void _k_slotOtherIconClicked())
     Q_PRIVATE_SLOT(d, void _k_slotSystemIconClicked())
 };

@@ -26,7 +26,6 @@
 #endif
 
 #include <QtGui/QApplication>
-#include <QtGui/QFileDialog>
 #include <QtGui/QGroupBox>
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
@@ -621,15 +620,26 @@ QString KIconDialog::getIcon(KIconLoader::Group group, KIconLoader::Context cont
 
 void KIconDialog::KIconDialogPrivate::_k_slotBrowse()
 {
+    if (browseDialog) {
+        browseDialog.data()->show();
+        browseDialog.data()->raise();
+        return;
+    }
+
     // Create a file dialog to select a PNG, XPM or SVG file,
     // with the image previewer shown.
-    QFileDialog dlg(q, i18n("Select Icon"), QString(), i18n("*.png *.xpm *.svg *.svgz|Icon Files (*.png *.xpm *.svg *.svgz)"));
-    dlg.setFileMode(QFileDialog::ExistingFile);
+    QFileDialog *dlg = new QFileDialog(q, i18n("Select Icon"), QString(), i18n("*.png *.xpm *.svg *.svgz|Icon Files (*.png *.xpm *.svg *.svgz)"));
+    dlg->setModal(false);
+    dlg->setFileMode(QFileDialog::ExistingFile);
+    connect(dlg, SIGNAL(fileSelected(QString)), q, SLOT(_k_customFileSelected(QString)));
+    browseDialog = dlg;
+    dlg->show();
+}
 
-    dlg.exec();
-
-    if (!dlg.selectedFiles().isEmpty()) {
-        custom = dlg.selectedFiles().first();
+void KIconDialog::KIconDialogPrivate::_k_customFileSelected(const QString &path)
+{
+    if (!path.isEmpty()) {
+        custom = path;
         if (mpSystemIcons->isChecked()) {
             customLocation = QFileInfo(custom).absolutePath();
         }
