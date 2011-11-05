@@ -86,7 +86,7 @@ extern "C" {
 #include <kdiskfreespaceinfo.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
-#include <kicondialog.h>
+#include <kiconbutton.h>
 #include <kurl.h>
 #include <kurlrequester.h>
 #include <klocale.h>
