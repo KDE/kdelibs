@@ -1,6 +1,6 @@
 #include <QtGui/QApplication>
 #include <kcomponentdata.h>
-#include <kicondialog.h>
+#include <kiconbutton.h>
 
 int main( int argc, char **argv )
 {
