@@ -135,6 +135,8 @@ set(kdeui_LIB_SRCS
  fonts/kfontdialog.cpp
  fonts/kfontrequester.cpp
  fonts/kfontutils.cpp
+ icons/kiconbutton.cpp
+ icons/kicondialog.cpp
  icons/kiconeffect.cpp
  icons/kiconengine.cpp
  icons/kicon.cpp
@@ -540,6 +542,8 @@ install( FILES
  fonts/kfontdialog.h
  fonts/kfontrequester.h
  fonts/kfontutils.h
+ icons/kiconbutton.h
+ icons/kicondialog.h
  icons/kiconeffect.h
  icons/kicon.h
  icons/k3icon_p.h      # we install the private header as it is needed by kcm (tokoe)

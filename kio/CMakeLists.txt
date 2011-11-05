@@ -229,8 +229,6 @@ set(kfile_STAT_SRCS
   kfile/kfilemetadatawidget.cpp
   kfile/kfilemetainfowidget.cpp
   kfile/kfilemetapreview.cpp
-  kfile/kiconbutton.cpp
-  kfile/kicondialog.cpp
   kfile/kimagefilepreview.cpp
   kfile/kmetaprops.cpp
   kfile/knfotranslator.cpp
@@ -463,8 +461,6 @@ install( FILES
   kfile/kencodingfiledialog.h
   kfile/kfile.h
   kfile/kfiledialog.h
-  kfile/kiconbutton.h
-  kfile/kicondialog.h
   kfile/kimagefilepreview.h
   kfile/kfilemetadataconfigurationwidget.h
   kfile/kfilemetadatawidget.h
