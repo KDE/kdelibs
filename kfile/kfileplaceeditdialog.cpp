@@ -23,7 +23,7 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kglobal.h>
-#include <kicondialog.h>
+#include <kiconbutton.h>
 #include <kiconloader.h>
 #include <kcomponentdata.h>
 #include <klineedit.h>
