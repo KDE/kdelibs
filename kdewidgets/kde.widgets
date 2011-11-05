@@ -165,7 +165,7 @@ WhatsThis=A combobox which implements a history like a unix shell
 Group=Input (KDE)
 
 [KIconButton]
-IncludeFile=kicondialog.h
+IncludeFile=kiconbutton.h
 ToolTip=Button for selecting an icon (KDE)
 Group=Buttons (KDE)
 
