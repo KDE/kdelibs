@@ -32,10 +32,6 @@
 #include <kdebug.h>
 #include <kde_file.h>
 
-#include <assert.h>
-#include <stdlib.h>
-#include <time.h>
-
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
 #include <QPointer>
@@ -43,6 +39,12 @@
 #include "job_p.h"
 
 extern bool kio_resolve_local_urls; // from copyjob.cpp, abused here to save a symbol.
+
+static bool isHttpProtocol(const QString& protocol)
+{
+    return (protocol.startsWith(QLatin1String("webdav"), Qt::CaseInsensitive) ||
+            protocol.startsWith(QLatin1String("http"), Qt::CaseInsensitive));
+}
 
 namespace KIO
 {
@@ -170,7 +172,7 @@ void DeleteJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
         const UDSEntry& entry = *it;
         const QString displayName = entry.stringValue( KIO::UDSEntry::UDS_NAME );
 
-        assert(!displayName.isEmpty());
+        Q_ASSERT(!displayName.isEmpty());
         if (displayName != ".." && displayName != ".")
         {
             KUrl url;
@@ -259,7 +261,8 @@ void DeleteJobPrivate::finishedStatPhase()
     // To speed things up and prevent double-notification, we disable KDirWatch
     // on those dirs temporarily (using KDirWatch::self, that's the instance
     // used by e.g. kdirlister).
-    for ( QSet<QString>::const_iterator it = m_parentDirs.constBegin() ; it != m_parentDirs.constEnd() ; ++it )
+    const QSet<QString>::const_iterator itEnd = m_parentDirs.constEnd();
+    for ( QSet<QString>::const_iterator it = m_parentDirs.constBegin() ; it != itEnd ; ++it )
         KDirWatch::self()->stopDirScan( *it );
     state = DELETEJOB_STATE_DELETING_FILES;
     deleteNextFile();
@@ -298,7 +301,10 @@ void DeleteJobPrivate::deleteNextFile()
             } else
             { // if remote - or if unlink() failed (we'll use the job's error handling in that case)
                 //kDebug(7007) << "calling file_delete on" << *it;
-                job = KIO::file_delete( *it, KIO::HideProgressInfo );
+                if (isHttpProtocol(it->protocol()))
+                  job = KIO::http_delete( *it, KIO::HideProgressInfo );
+                else
+                  job = KIO::file_delete( *it, KIO::HideProgressInfo );
                 Scheduler::setJobPriority(job, 1);
                 m_currentURL=(*it);
             }
@@ -351,7 +357,8 @@ void DeleteJobPrivate::deleteNextDir()
     }
 
     // Re-enable watching on the dirs that held the deleted files
-    for (QSet<QString>::const_iterator it = m_parentDirs.constBegin() ; it != m_parentDirs.constEnd() ; ++it) {
+    const QSet<QString>::const_iterator itEnd = m_parentDirs.constEnd();
+    for (QSet<QString>::const_iterator it = m_parentDirs.constBegin() ; it != itEnd ; ++it) {
         KDirWatch::self()->restartDirScan( *it );
     }
 
@@ -450,7 +457,7 @@ void DeleteJob::slotResult( KJob *job )
             return;
         }
         removeSubjob( job );
-        assert( !hasSubjobs() );
+        Q_ASSERT( !hasSubjobs() );
         d->m_processedFiles++;
 
         d->deleteNextFile();
@@ -462,7 +469,7 @@ void DeleteJob::slotResult( KJob *job )
             return;
         }
         removeSubjob( job );
-        assert( !hasSubjobs() );
+        Q_ASSERT( !hasSubjobs() );
         d->m_processedDirs++;
         //emit processedAmount( this, KJob::Directories, d->m_processedDirs );
         //emitPercent( d->m_processedFiles + d->m_processedDirs, d->m_totalFilesDirs );
@@ -470,7 +477,7 @@ void DeleteJob::slotResult( KJob *job )
         d->deleteNextDir();
         break;
     default:
-        assert(0);
+        Q_ASSERT(0);
     }
 }
 

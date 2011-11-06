@@ -72,11 +72,22 @@ set       toc,title
   <xsl:variable name="title">
     <xsl:apply-templates select="." mode="title.markup"/>
   </xsl:variable>
-  <p>
-    <a href="{$filename}">
-      <xsl:copy-of select="$title"/>
-    </a>
-  </p>
+  <!-- Hard-coding the GNU FDL is not appropriate, but for backward compatability,
+       if the text in the legalnotice is the FDL notice, then just show the
+       "Legal Notice" text, as KDE4 has done from very early.
+       Otherwise, continue to process the contents of the legalnotice element -->
+  <xsl:choose>
+     <xsl:when test=".//xref[@linkend='gnu-fdl']">
+      <p>
+        <a href="{$filename}">
+          <xsl:copy-of select="$title"/>
+        </a>
+      </p>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:apply-templates select="*"/>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <!-- try with olinks: it nearly works --><!--
