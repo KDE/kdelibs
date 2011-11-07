@@ -23,10 +23,10 @@
 
 #include <QtCore/QLatin1Char>
 #include <QtCore/QCoreApplication>
+#include <QtCore/QDir>
 #include "klockfile.h"
 #include "krandom.h"
-#include "kglobal.h"
-#include "kstandarddirs.h"
+#include "qstandardpaths.h"
 
 class KAutoSaveFilePrivate
 {
@@ -44,6 +44,21 @@ public:
 };
 
 const int KAutoSaveFilePrivate::padding = 8;
+
+QStringList findAllStales()
+{
+    const QString appName = QCoreApplication::instance()->applicationName();
+    const QStringList dirs = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
+    QStringList files;
+
+    Q_FOREACH(const QString dir, dirs) {
+        const QString appDir = dir + QChar::fromLatin1('/') + appName;
+        if (QDir(dir).exists(appDir)) {
+            files = files << QDir(appDir).entryList(QStringList() << QString::fromLatin1("*"));
+        }
+    }
+    return files;
+}
 
 QString KAutoSaveFilePrivate::tempFileName()
 {
@@ -65,7 +80,7 @@ QString KAutoSaveFilePrivate::tempFileName()
     name += junk.right(3) + protocol + QLatin1Char('_');
     name += path + junk;
 
-    return QString::fromLatin1(KUrl::toPercentEncoding(name));
+    return QString::fromLatin1(KUrl::toPercentEncoding(name).data());
 }
 
 KAutoSaveFile::KAutoSaveFile(const KUrl &filename, QObject *parent)
@@ -73,14 +88,13 @@ KAutoSaveFile::KAutoSaveFile(const KUrl &filename, QObject *parent)
           d(new KAutoSaveFilePrivate)
 {
     setManagedFile(filename);
-    KGlobal::dirs()->addResourceType("stale", 0, QString::fromLatin1("data/stalefiles"));
 }
 
 KAutoSaveFile::KAutoSaveFile(QObject *parent)
         : QFile(parent),
           d(new KAutoSaveFilePrivate)
 {
-    KGlobal::dirs()->addResourceType("stale", 0, QString::fromLatin1("data/stalefiles"));
+
 }
 
 KAutoSaveFile::~KAutoSaveFile()
@@ -122,11 +136,8 @@ bool KAutoSaveFile::open(OpenMode openmode)
 
     QString tempFile;
     if (d->managedFileNameChanged) {
-        tempFile =  KStandardDirs::locateLocal("stale",
-                                               QCoreApplication::instance()->applicationName()
-                                               + QChar::fromLatin1('/')
-                                               + d->tempFileName()
-                                              );
+        tempFile = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) +
+            QChar::fromLatin1('/') +  d->tempFileName();
     } else {
         tempFile = fileName();
     }
@@ -157,7 +168,6 @@ bool KAutoSaveFile::open(OpenMode openmode)
 
 QList<KAutoSaveFile *> KAutoSaveFile::staleFiles(const KUrl &filename, const QString &applicationName)
 {
-    KGlobal::dirs()->addResourceType("stale", 0, QString::fromLatin1("data/stalefiles"));
 
     QString appName(applicationName);
     if (appName.isEmpty()) {
@@ -171,16 +181,13 @@ QList<KAutoSaveFile *> KAutoSaveFile::staleFiles(const KUrl &filename, const QSt
     }
 
     // get stale files
-    const QStringList files = KGlobal::dirs()->findAllResources("stale",
-                                                  appName + QChar::fromLatin1('/') +
-                                                  url + QChar::fromLatin1('*'),
-                                                  KStandardDirs::Recursive);
+    const QStringList files = findAllStales();
 
     QList<KAutoSaveFile *> list;
     KAutoSaveFile * asFile;
 
     // contruct a KAutoSaveFile for each stale file
-    foreach(const QString &file, files) {
+    Q_FOREACH(const QString &file, files) {
         if (file.endsWith(QLatin1String(".lock")))
             continue;
         // sets managedFile
@@ -196,7 +203,6 @@ QList<KAutoSaveFile *> KAutoSaveFile::staleFiles(const KUrl &filename, const QSt
 
 QList<KAutoSaveFile *> KAutoSaveFile::allStaleFiles(const QString &applicationName)
 {
-    KGlobal::dirs()->addResourceType("stale", 0, QString::fromLatin1("data/stalefiles"));
 
     QString appName(applicationName);
     if (appName.isEmpty()) {
@@ -204,12 +210,12 @@ QList<KAutoSaveFile *> KAutoSaveFile::allStaleFiles(const QString &applicationNa
     }
 
     // get stale files
-    const QStringList files = KGlobal::dirs()->findAllResources("stale", appName + QLatin1String("/*"));
+    const QStringList files = findAllStales();
 
     QList<KAutoSaveFile *> list;
 
     // contruct a KAutoSaveFile for each stale file
-    foreach(QString file, files) { // krazy:exclude=foreach (no const& because modified below)
+    Q_FOREACH(QString file, files) { // krazy:exclude=foreach (no const& because modified below)
         if (file.endsWith(QLatin1String(".lock")))
             continue;
         const QString sep = file.right(3);

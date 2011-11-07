@@ -32,6 +32,7 @@ if (UNIX)
 endif (UNIX)
 
 set(libkcoreaddons_SRCS
+    io/kautosavefile.cpp
     io/kdirwatch.cpp
     io/kfilesystemtype_p.cpp
     io/ksavefile.cpp
@@ -110,6 +111,7 @@ install(TARGETS kcoreaddons ${ECM_TARGET_DEFAULT_ARGS})
 
 install(FILES
     caching/kshareddatacache.h
+    io/kautosavefile.h
     io/kdirwatch.h
     io/klockfile.h
     io/ksavefile.h
