@@ -13,8 +13,6 @@
 
 #include "kiconbutton.h"
 
-#include <kio/kio_export.h>
-
 #include <QtCore/QFileInfo>
 
 #include <kiconloader.h>

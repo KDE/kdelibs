@@ -14,7 +14,7 @@
 #ifndef KICONDIALOG_H
 #define KICONDIALOG_H
 
-#include <kio/kio_export.h>
+#include <kdeui_export.h>
 
 #include <QtCore/QStringList>
 #include <QtGui/QPushButton>
@@ -29,7 +29,7 @@ class KIconLoader;
  *
  * @short An icon selection dialog.
  */
-class KIO_EXPORT KIconDialog: public KDialog
+class KDEUI_EXPORT KIconDialog: public KDialog
 {
     Q_OBJECT
 

@@ -14,8 +14,6 @@
 #include "kicondialog.h"
 #include "kicondialog_p.h"
 
-#include <kio/kio_export.h>
-
 #include <kcombobox.h>
 #include <klistwidgetsearchline.h>
 #include <klocale.h>

@@ -14,8 +14,6 @@
 #ifndef KICONDIALOG_P_H
 #define KICONDIALOG_P_H
 
-#include <kio/kio_export.h>
-
 #include <QtCore/QStringList>
 #include <QtGui/QFileDialog>
 #include <QtGui/QPushButton>
