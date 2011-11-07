@@ -24,7 +24,6 @@
 
 #include <qtest.h>
 #include <kdebug.h>
-#include <kcmdlineargs.h>
 #include <QTextBoundaryFinder>
 
 // QT5 TODO QTEST_GUILESS_MAIN(SonnetFilterTest)

@@ -25,7 +25,6 @@
 
 #include <qtest.h>
 #include <kdebug.h>
-#include <kcmdlineargs.h>
 
 // QT5 TODO QTEST_GUILESS_MAIN(SonnetCoreTest)
 QTEST_MAIN(SonnetCoreTest)
