@@ -8,6 +8,9 @@ include_directories(
    ${LIBATTICA_INCLUDE_DIR}
    ${CMAKE_SOURCE_DIR}/tier1/libkarchive/src
    ${CMAKE_BINARY_DIR}/tier1/libkarchive/src
+   ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/randomness
+   ${CMAKE_BINARY_DIR}/tier1/libkcoreaddons/src
+
 )
 
 set(knewstuff3_SRCS

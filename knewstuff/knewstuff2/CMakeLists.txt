@@ -6,6 +6,8 @@ include_directories(${KDE4_KIO_INCLUDES}
                     ${CMAKE_CURRENT_SOURCE_DIR}/..
                     ${CMAKE_SOURCE_DIR}/tier1/libkarchive/src
                     ${CMAKE_BINARY_DIR}/tier1/libkarchive/src
+                    ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/randomness
+                    ${CMAKE_BINARY_DIR}/tier1/libkcoreaddons/src
 )
 
 set(knewstuff2_core_SRCS

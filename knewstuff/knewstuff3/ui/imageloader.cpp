@@ -20,9 +20,6 @@
 
 #include <kio/job.h>
 #include <kio/scheduler.h>
-#include <kstandarddirs.h>
-#include <kapplication.h>
-#include <krandom.h>
 #include <kdebug.h>
 
 #include <QtCore/QFile>

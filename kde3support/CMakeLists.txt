@@ -4,8 +4,10 @@ kde4_no_enable_final(kde3support)
 
 # inter-subdir dependencies
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kdecore ${CMAKE_CURRENT_SOURCE_DIR}/kdeui
-${CMAKE_CURRENT_SOURCE_DIR}/kio/kfile
-${CMAKE_SOURCE_DIR}/solid )
+                     ${CMAKE_CURRENT_SOURCE_DIR}/kio/kfile
+                     ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/randomness
+                     ${CMAKE_BINARY_DIR}/tier1/libkcoreaddons/src
+                     ${CMAKE_SOURCE_DIR}/solid )
 #${CMAKE_CURRENT_SOURCE_DIR}/kparts ${CMAKE_CURRENT_SOURCE_DIR}/kutils )
 
 # all dependent libs
