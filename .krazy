@@ -1,5 +1,2 @@
 #these subdirs don't have code, so ignore them
 IGNORESUBS licenses,mimetypes
-
-#do not process
-SKIP /tests/
