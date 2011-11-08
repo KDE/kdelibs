@@ -28,6 +28,7 @@
 #include "scheduler.h"
 
 #include <kdebug.h>
+#include <kauthorized.h>
 #include <kprotocolinfo.h>
 
 #include <QtNetwork/QSslConfiguration>
@@ -249,6 +250,7 @@ int AccessManagerReply::jobError(KJob* kJob)
     switch (errCode)
     {
         case 0:
+            break; // No error;
         case KIO::ERR_NO_CONTENT: // Sent by a 204 response is not an error condition.
             setError(QNetworkReply::NoError, kJob->errorText());
             //kDebug(7044) << "0 -> QNetworkReply::NoError";
@@ -378,6 +380,13 @@ void AccessManagerReply::slotStatResult(KJob* kJob)
 void AccessManagerReply::slotRedirection(KIO::Job* job, const KUrl& u)
 {
     Q_UNUSED(job);
+
+    if (!KAuthorized::authorizeUrlAction(QLatin1String("redirect"), url(), u)) {
+        kWarning(7007) << "Redirection from" << url() << "to" << u << "REJECTED by policy!";
+        setError(QNetworkReply::ContentAccessDenied, u.url());
+        emit error(error());
+        return;
+    }
     setAttribute(QNetworkRequest::RedirectionTargetAttribute, QUrl(u));
 }
 
