@@ -2423,6 +2423,9 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
   if (bPartExists && !bResume)                  // get rid of an unwanted ".part" file
     QFile::remove(sPart);
 
+  if (bDestExists)                             // must delete for overwrite
+    QFile::remove(sCopyFile);
+
   // WABA: Make sure that we keep writing permissions ourselves,
   // otherwise we can be in for a surprise on NFS.
   mode_t initialMode;
@@ -2471,12 +2474,9 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
     { // rename ".part" on success
       if ( KDE::rename( sPart, sCopyFile ) )
       {
-        // If rename fails, try removing the destination first if it exists.
-        if (!bDestExists || !(QFile::remove(sCopyFile) && KDE::rename(sPart, sCopyFile) == 0)) {
-            kDebug(7102) << "cannot rename " << sPart << " to " << sCopyFile;
-            iError = ERR_CANNOT_RENAME_PARTIAL;
-            iRes = statusClientError;
-        }
+        kDebug(7102) << "cannot rename " << sPart << " to " << sCopyFile;
+        iError = ERR_CANNOT_RENAME_PARTIAL;
+        iRes = statusClientError;
       }
     }
     else if(KDE::stat( sPart, &buff ) == 0)
