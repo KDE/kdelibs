@@ -253,6 +253,17 @@ Q_SIGNALS:
      */
     void statusChanged( int );
     /**
+     * This signal is emmited when one of the collection's attributes changed or when one
+     * of the contained items changed
+     */
+    void contentsChanged();
+    /**
+     * This signal is emmited when the collection was effectively deleted by the delete job
+     * Calling other methods on this collection instance after this signal was emmited is undefined and
+     * may lead to unpredictable results.
+     */
+    void deleted();
+    /**
      * TODO: not yet implemented
      */
     void itemCreated( const KSecretsService::SecretItem& ); 
@@ -287,8 +298,14 @@ private:
     friend class CollectionLockJob;
     friend class CollectionUnlockJob;
     
+    /** @internal */
     void readIsValid( ReadCollectionPropertyJob* );
+    /** @internal */
     void emitStatusChanged();
+    /** @internal */
+    void emitContentsChanged();
+    /** @internal */
+    void emitDeleted();
     
     QSharedPointer< CollectionPrivate > d;
 };

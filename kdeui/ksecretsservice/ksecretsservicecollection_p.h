@@ -42,6 +42,8 @@ public:
     const WId &promptParentId() const;
     OrgFreedesktopSecretCollectionInterface *collectionInterface();
     void setStatus( Collection::Status );
+    static void notifyCollectionDeleted( const QDBusObjectPath& );
+    static void notifyCollectionChanged( const QDBusObjectPath& );
 
 public:
     Collection                              *collection;
@@ -50,6 +52,9 @@ public:
     QVariantMap                             collectionProperties;
     Collection::FindCollectionOptions       findOptions;
     Collection::Status                      collectionStatus;
+    QDBusObjectPath                         dbusPath;
+    static QMap< QDBusObjectPath, CollectionPrivate* > 
+                                            collectionMap;
     
 private:
     OrgFreedesktopSecretCollectionInterface *collectionIf;

@@ -418,6 +418,7 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
         // FIXME: should we specify CreateCollection or OpenOnly here?
         wallet->d->secretsCollection = KSecretsService::Collection::findCollection(name, KSecretsService::Collection::CreateCollection, QVariantMap(), w);
         connect( wallet->d->secretsCollection, SIGNAL(statusChanged(int)), wallet, SLOT(slotCollectionStatusChanged(int)) );
+        connect( wallet->d->secretsCollection, SIGNAL(deleted()), wallet, SLOT(slotCollectionDeleted()) );
         if ( ot == Synchronous ) {
            kDebug() << "WARNING openWallet OpenType=Synchronous requested";
            // TODO: not sure what to do with in this case; however, all other KSecretsService API methods are already
@@ -507,6 +508,12 @@ void Wallet::slotCollectionStatusChanged(int status)
     }
 }
 
+void Wallet::slotCollectionDeleted()
+{
+    d->folder.clear();
+    d->name.clear();
+    emit walletClosed();
+}
 
 bool Wallet::disconnectApplication(const QString& wallet, const QString& app) {
     if (walletLauncher->m_useKSecretsService) {

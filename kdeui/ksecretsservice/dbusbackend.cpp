@@ -32,6 +32,7 @@
 #include <fcntl.h>
 #include <ktoolinvocation.h>
 #include <QDBusMetaType>
+#include "ksecretsservicecollection_p.h"
 
 using namespace KSecretsService;
 
@@ -198,19 +199,19 @@ OrgFreedesktopSecretSessionInterface* OpenSessionJob::sessionInterface() const
     return sessionIf;
 }
 
-void OpenSessionJob::slotCollectionChanged(const QDBusObjectPath& )
+void OpenSessionJob::slotCollectionChanged(const QDBusObjectPath& path)
 {
-    // TODO: use this notification
+    CollectionPrivate::notifyCollectionChanged( path );
 }
 
 void OpenSessionJob::slotCollectionCreated(const QDBusObjectPath& coll)
 {
-
+    // TODO: use this notification
 }
 
-void OpenSessionJob::slotCollectionDeleted(const QDBusObjectPath& )
+void OpenSessionJob::slotCollectionDeleted(const QDBusObjectPath& path)
 {
-
+    CollectionPrivate::notifyCollectionDeleted( path );
 }
 
 

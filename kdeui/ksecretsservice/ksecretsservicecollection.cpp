@@ -137,6 +137,19 @@ void Collection::emitStatusChanged()
     emit statusChanged( d->collectionStatus );
 }
 
+void Collection::emitContentsChanged()
+{
+    emit contentsChanged();
+}
+
+void Collection::emitDeleted()
+{
+    emit deleted();
+}
+
+
+QMap< QDBusObjectPath, CollectionPrivate* > CollectionPrivate::collectionMap;
+
 CollectionPrivate::CollectionPrivate( Collection *coll ) :
         collection( coll ),
         findOptions( Collection::OpenOnly ),
@@ -147,6 +160,9 @@ CollectionPrivate::CollectionPrivate( Collection *coll ) :
 
 CollectionPrivate::~CollectionPrivate()
 {
+    if ( collectionMap.contains( dbusPath ) ) {
+        collectionMap.remove( dbusPath );
+    }
 }
 
 void CollectionPrivate::setPendingFindCollection( const WId &promptParentId,
@@ -181,6 +197,8 @@ void CollectionPrivate::setDBusPath( const QDBusObjectPath &path )
     collectionIf = DBusSession::createCollectionIf( path );
     if ( collectionIf->isValid() ) {
         kDebug() << "SUCCESS opening collection " << path.path();
+        collectionMap.insert( path, this );
+        dbusPath = path;
     }
     else {
         setStatus( Collection::NotFound );
@@ -219,8 +237,30 @@ void Collection::readIsValid( ReadCollectionPropertyJob *readPropertyJob)
     readPropertyJob->d->value = d->isValid();
 }
 
+void CollectionPrivate::notifyCollectionChanged( const QDBusObjectPath& path )
+{
+    if ( collectionMap.contains( path ) ) {
+        CollectionPrivate *cp = collectionMap[ path ];
+        cp->collection->emitContentsChanged();
+    }
+    else {
+        kDebug() << "Ignoring notifyCollectionChanged for " << path.path();
+    }
+}
+
+void CollectionPrivate::notifyCollectionDeleted( const QDBusObjectPath& path )
+{
+    if ( collectionMap.contains( path ) ) {
+        CollectionPrivate *cp = collectionMap[ path ];
+        cp->collection->emitDeleted();
+    }
+    else {
+        kDebug() << "Ignoring notifyCollectionDeleted for " << path.path();
+    }
+}
+
+
 #include "ksecretsservicecollection.moc"
 
     
 };
-

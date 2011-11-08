@@ -532,6 +532,11 @@ class KDEUI_EXPORT Wallet : public QObject
          * Receives status changed notifications from KSecretsService infrastructure
          */
         void slotCollectionStatusChanged( int );
+        /**
+         * @internal
+         * Received delete notification from KSecretsService infrastructure
+         */
+        void slotCollectionDeleted();
 
 	private:
 		class WalletPrivate;
