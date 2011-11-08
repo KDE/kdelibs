@@ -1,5 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 2006 David Faure <faure@kde.org>
+   Copyright (C) 2012 Mario Bensi <mbensi@ipsquad.net>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -21,12 +22,14 @@
 #define KARCHIVETEST_H
 
 #include <QtCore/QObject>
+#include <config-compression.h>
 
 class KArchiveTest : public QObject
 {
     Q_OBJECT
 
     void setupData();
+    void setup7ZipData();
 
 private Q_SLOTS:
     void initTestCase();
@@ -60,6 +63,21 @@ private Q_SLOTS:
     void testZipMaxLength();
     void testZipWithNonLatinFileNames();
     void testZipAddLocalDirectory();
+
+#if HAVE_XZ_SUPPORT
+    void testCreate7Zip_data(){ setup7ZipData(); };
+    void testCreate7Zip();
+    void testRead7Zip_data(){ setup7ZipData(); };
+    void testRead7Zip();
+    void test7ZipFileData_data(){ setup7ZipData(); };
+    void test7ZipFileData();
+    void test7ZipCopyTo_data(){ setup7ZipData(); };
+    void test7ZipCopyTo();
+    void test7ZipReadWrite_data(){ setup7ZipData(); };
+    void test7ZipReadWrite();
+    void test7ZipMaxLength_data(){ setup7ZipData(); };
+    void test7ZipMaxLength();
+#endif
 
     void cleanupTestCase();
 };

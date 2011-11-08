@@ -25,6 +25,7 @@
 
 #include "kcompressiondevice.h"
 #include <kfilterbase.h>
+#include <kxzfilter.h>
 #include "klimitediodevice_p.h"
 
 
@@ -257,6 +258,91 @@ public:
         : unpackCRCDefined(false)
         , unpackCRC(0)
     {}
+
+    quint64 getUnpackSize() const
+    {
+        if (unpackSizes.isEmpty())
+            return 0;
+        for (int i = unpackSizes.size() - 1; i >= 0; i--) {
+            if (findBindPairForOutStream(i) < 0) {
+                return unpackSizes[i];
+            }
+        }
+        return 0;
+    }
+
+    int getNumOutStreams() const
+    {
+        int result = 0;
+        for (int i = 0; i < folderInfos.size(); i++)
+            result += folderInfos[i]->numOutStreams;
+        return result;
+    }
+
+    int findBindPairForInStream(size_t inStreamIndex) const
+    {
+        for(int i = 0; i < inIndexes.size(); i++) {
+            if (inIndexes[i] == inStreamIndex) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    int findBindPairForOutStream(size_t outStreamIndex) const
+    {
+        for(int i = 0; i < outIndexes.size(); i++) {
+            if (outIndexes[i] == outStreamIndex) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    int findPackStreamArrayIndex(size_t inStreamIndex) const
+    {
+        for(int i = 0; i < packedStreams.size(); i++) {
+            if (packedStreams[i] == inStreamIndex) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    void findInStream(int streamIndex, int &coderIndex, int &coderStreamIndex) const
+    {
+        for (coderIndex = 0; coderIndex < folderInfos.size(); coderIndex++) {
+            int curSize = folderInfos[coderIndex]->numInStreams;
+            if (streamIndex < curSize) {
+                coderStreamIndex = streamIndex;
+                return;
+            }
+            streamIndex -= curSize;
+        }
+    }
+
+    void findOutStream(int streamIndex, int &coderIndex, int &coderStreamIndex) const {
+        for (coderIndex = 0; coderIndex < folderInfos.size(); coderIndex++) {
+            int curSize = folderInfos[coderIndex]->numOutStreams;
+            if (streamIndex < curSize) {
+                coderStreamIndex = streamIndex;
+                return;
+            }
+            streamIndex -= curSize;
+        }
+    }
+
+    bool isEncrypted() const
+    {
+        for (int i = folderInfos.size() - 1; i >= 0; i--) {
+            if (folderInfos[i]->methodID == k_AES) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //bool CheckStructure() const;
 
     bool unpackCRCDefined;
     quint32 unpackCRC;
@@ -664,14 +750,7 @@ Folder* K7Zip::K7ZipPrivate::folderItem()
     } else {
         if (numPackedStreams == 1) {
             for (quint64 i = 0; i < numInStreamsTotal; i++) {
-                bool found = false;
-                for (int j = 0; j < folder->inIndexes.size(); ++j) {
-                    if (folder->inIndexes[j] == i) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
+                if (folder->findBindPairForInStream(i) < 0) {
                     folder->packedStreams.append(i);
                     break;
                 }
@@ -803,10 +882,7 @@ bool K7Zip::K7ZipPrivate::readUnpackInfo()
 
     for (int i = 0; i < numFolders; ++i) {
         Folder* folder = folders[i];
-        int numOutStreams = 0;
-        for (int j = 0; j < folder->folderInfos.size(); ++j) {
-            numOutStreams += folder->folderInfos[i]->numOutStreams;
-        }
+        int numOutStreams = folder->getNumOutStreams();
         for (int j = 0; j < numOutStreams; ++j) {
             folder->unpackSizes.append(readNumber());
         }
@@ -878,20 +954,7 @@ bool K7Zip::K7ZipPrivate::readSubStreamsInfo()
                 sum += size;
             }
         }
-        if (!folders[i]->unpackSizes.isEmpty()) {
-            for (int j = folders[i]->unpackSizes.size() - 1; j >= 0; j--) {
-                bool found = false;
-                for (int k = 0; j < folders[i]->inIndexes.size(); ++k) {
-                    if (folders[i]->inIndexes[k] == (quint64)i) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    unpackSizes.append(folders[i]->unpackSizes[j] - sum);
-                }
-            }
-        }
+        unpackSizes.append(folders[i]->getUnpackSize() - sum);
     }
 
     if (type == kSize)
@@ -1060,6 +1123,364 @@ bool K7Zip::K7ZipPrivate::readMainStreamsInfo()
     return false;
 }
 
+
+struct StreamInfo
+{
+    quint64 startPos;
+    quint64 packSize;
+};
+
+struct BindInfo
+{
+    QVector<Folder::FolderInfo*> coders;
+    QVector<quint32> inIndexes;
+    QVector<quint32> outIndexes;
+    QVector<quint32> inStreams;
+    QVector<quint32> outStreams;
+    QVector<quint32> coderMethodIDs;
+
+    void clear()
+    {
+        coders.clear();
+        inIndexes.clear();
+        outIndexes.clear();
+        inStreams.clear();
+        outStreams.clear();
+        coderMethodIDs.clear();
+    }
+
+    void getNumStreams(quint32 &numInStreams, quint32 &numOutStreams) const
+    {
+        numInStreams = 0;
+        numOutStreams = 0;
+        for (int i = 0; i < coders.size(); i++)
+        {
+            const Folder::FolderInfo *coder = coders[i];
+            numInStreams += coder->numInStreams;
+            numOutStreams += coder->numOutStreams;
+        }
+    }
+
+    int findBinderForInStream(quint32 inStream) const
+    {
+        for (int i = 0; i < inIndexes.size(); i++) {
+            if (inIndexes[i] == inStream) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    int findBinderForOutStream(quint32 outStream) const
+    {
+        for (int i = 0; i < outIndexes.size(); i++) {
+            if (outIndexes[i] == outStream) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    quint32 getCoderInStreamIndex(quint32 coderIndex) const
+    {
+        quint32 streamIndex = 0;
+        for (quint32 i = 0; i < coderIndex; i++) {
+            streamIndex += coders[i]->numInStreams;
+        }
+        return streamIndex;
+    }
+
+    quint32 getCoderOutStreamIndex(quint32 coderIndex) const
+    {
+        quint32 streamIndex = 0;
+        for (quint32 i = 0; i < coderIndex; i++) {
+            streamIndex += coders[i]->numOutStreams;
+        }
+        return streamIndex;
+    }
+
+
+    void findInStream(quint32 streamIndex, quint32 &coderIndex, quint32 &coderStreamIndex) const
+    {
+        for (coderIndex = 0; coderIndex < (quint32)coders.size(); coderIndex++) {
+            quint32 curSize = coders[coderIndex]->numInStreams;
+            if (streamIndex < curSize) {
+                coderStreamIndex = streamIndex;
+                return;
+            }
+            streamIndex -= curSize;
+        }
+    }
+
+    void findOutStream(quint32 streamIndex, quint32 &coderIndex, quint32 &coderStreamIndex) const
+    {
+        for (coderIndex = 0; coderIndex < (quint32)coders.size(); coderIndex++) {
+            quint32 curSize = coders[coderIndex]->numOutStreams;
+            if (streamIndex < curSize) {
+                coderStreamIndex = streamIndex;
+                return;
+            }
+            streamIndex -= curSize;
+        }
+    }
+};
+
+static void convertFolderItemInfoToBindInfo(const Folder *folder, BindInfo &bindInfo)
+{
+    bindInfo.clear();
+    for (int i = 0; i < folder->inIndexes.size(); i++)
+    {
+        bindInfo.inIndexes.append(folder->inIndexes[i]);
+        bindInfo.outIndexes.append(folder->outIndexes[i]);
+    }
+
+    quint32 outStreamIndex = 0;
+    for (int i = 0; i < folder->folderInfos.size(); i++) {
+        Folder::FolderInfo *coderStreamsInfo = new Folder::FolderInfo();
+        const Folder::FolderInfo *coderInfo = folder->folderInfos[i];
+
+        coderStreamsInfo->numInStreams = coderInfo->numInStreams;
+        coderStreamsInfo->numOutStreams = coderInfo->numOutStreams;
+        bindInfo.coders.append(coderStreamsInfo);
+
+        bindInfo.coderMethodIDs.append(coderInfo->methodID);
+        for (qint32 j = 0; j < coderStreamsInfo->numOutStreams; j++, outStreamIndex++) {
+            if (folder->findBindPairForOutStream(outStreamIndex) < 0) {
+                bindInfo.outStreams.append(outStreamIndex);
+            }
+        }
+    }
+
+    for (int i = 0; i < folder->packedStreams.size(); i++) {
+        bindInfo.inStreams.append(folder->packedStreams[i]);
+    }
+}
+
+static bool getInStream(const BindInfo& bindInfo, quint32 streamIndex, int& seqInStream)
+{
+    for (int i = 0; i < bindInfo.inStreams.size(); i++) {
+        if (bindInfo.inStreams[i] == streamIndex) {
+            seqInStream = i;
+            return  true;
+        }
+    }
+
+    int binderIndex = bindInfo.findBinderForInStream(streamIndex);
+    if (binderIndex < 0)
+        return false;
+
+    quint32 coderIndex, coderStreamIndex;
+    bindInfo.findOutStream(bindInfo.outIndexes[binderIndex],
+      coderIndex, coderStreamIndex);
+
+    quint32 startIndex = bindInfo.getCoderInStreamIndex(coderIndex);
+
+    if (bindInfo.coders[coderIndex]->numInStreams > 1)
+        return false;
+
+    for (int i = 0; i < (int)bindInfo.coders[coderIndex]->numInStreams; i++) {
+        getInStream(bindInfo, startIndex + i, seqInStream);
+    }
+
+    return true;
+}
+
+static bool getOutStream(const BindInfo& bindInfo, quint32 streamIndex, int& seqOutStream)
+{
+    for(int i = 0; i < bindInfo.outStreams.size(); i++) {
+        if (bindInfo.outStreams[i] == streamIndex) {
+            seqOutStream = i;
+            return true;
+        }
+    }
+
+    int binderIndex = bindInfo.findBinderForOutStream(streamIndex);
+    if (binderIndex < 0)
+        return false;
+
+    quint32 coderIndex, coderStreamIndex;
+    bindInfo.findInStream(bindInfo.inIndexes[binderIndex],
+      coderIndex, coderStreamIndex);
+
+    quint32 startIndex = bindInfo.getCoderOutStreamIndex(coderIndex);
+
+    if (bindInfo.coders[coderIndex]->numOutStreams > 1)
+        return false;
+
+    for (int i = 0; i < (int)bindInfo.coders[coderIndex]->numOutStreams; i++) {
+        getOutStream(bindInfo, startIndex + i, seqOutStream);
+    }
+
+    return true;
+}
+
+const int kNumTopBits = 24;
+const quint32 kTopValue = (1 << kNumTopBits);
+
+class RangeDecoder
+{
+    int pos;
+
+public:
+    QByteArray stream;
+    quint32 range;
+    quint32 code;
+
+    RangeDecoder() : pos(0) {}
+
+    unsigned char readByte() { return stream[pos++]; }
+
+    void normalize()
+    {
+        while (range < kTopValue)
+        {
+            code = (code << 8) | readByte();
+            range <<= 8;
+        }
+    }
+
+    void setStream(const QByteArray& s) { stream = s; }
+
+    void init()
+    {
+        code = 0;
+        range = 0xFFFFFFFF;
+        for(int i = 0; i < 5; i++) {
+            code = (code << 8) | readByte();
+        }
+    }
+
+    void decode(quint32 start, quint32 size)
+    {
+        code -= start * range;
+        range *= size;
+        normalize();
+    }
+
+};
+
+const int kNumBitModelTotalBits  = 11;
+const quint32 kBitModelTotal = (1 << kNumBitModelTotalBits);
+
+template <int numMoveBits>
+class CBitModel
+{
+public:
+    quint32 prob;
+    void updateModel(quint32 symbol)
+    {
+        if (symbol == 0) {
+            prob += (kBitModelTotal - prob) >> numMoveBits;
+        } else {
+            prob -= (prob) >> numMoveBits;
+        }
+    }
+
+    void init() { prob = kBitModelTotal / 2; }
+};
+
+template <int numMoveBits>
+class CBitDecoder: public CBitModel<numMoveBits>
+{
+public:
+    quint32 decode(RangeDecoder *decoder)
+    {
+        quint32 newBound = (decoder->range >> kNumBitModelTotalBits) * this->prob;
+        if (decoder->code < newBound)
+        {
+            decoder->range = newBound;
+            this->prob += (kBitModelTotal - this->prob) >> numMoveBits;
+            if (decoder->range < kTopValue) {
+                decoder->code = (decoder->code << 8) | decoder->readByte();
+                decoder->range <<= 8;
+            }
+            return 0;
+        } else {
+            decoder->range -= newBound;
+            decoder->code -= newBound;
+            this->prob -= (this->prob) >> numMoveBits;
+            if (decoder->range < kTopValue) {
+                decoder->code = (decoder->code << 8) | decoder->readByte();
+                decoder->range <<= 8;
+            }
+            return 1;
+        }
+    }
+};
+
+
+inline bool isJcc(unsigned char b0, unsigned char b1) { return (b0 == 0x0F && (b1 & 0xF0) == 0x80); }
+inline bool isJ(unsigned char b0, unsigned char b1) { return ((b1 & 0xFE) == 0xE8 || isJcc(b0, b1)); }
+inline unsigned getIndex(unsigned char b0, unsigned char b1) { return ((b1 == 0xE8) ? b0 : ((b1 == 0xE9) ? 256 : 257)); }
+
+const int kNumMoveBits = 5;
+
+static QByteArray decodeBCJ2(const QByteArray& mainStream, const QByteArray& callStream, const QByteArray& jumpStream, const QByteArray& rangeBuffer)
+{
+    unsigned char prevByte = 0;
+    QByteArray outStream;
+    int mainStreamPos = 0;
+    int callStreamPos = 0;
+    int jumpStreamPos = 0;
+
+    RangeDecoder rangeDecoder;
+    rangeDecoder.setStream(rangeBuffer);
+    rangeDecoder.init();
+
+    QVector<CBitDecoder<kNumMoveBits> > statusDecoder(256+2);
+
+    for (int i = 0; i < 256 + 2; i++) {
+        statusDecoder[i].init();
+    }
+
+    for (;;) {
+        quint32 i;
+        unsigned char b = 0;
+        const quint32 kBurstSize = (1 << 18);
+        for (i = 0; i < kBurstSize; i++)
+        {
+            if (mainStreamPos == mainStream.size()) {
+                return outStream;
+            }
+
+            b = mainStream[mainStreamPos++];
+            outStream.append(b);
+
+            if (isJ(prevByte, b))
+                break;
+            prevByte = b;
+        }
+
+        if (i == kBurstSize)
+            continue;
+
+        unsigned index = getIndex(prevByte, b);
+        if (statusDecoder[index].decode(&rangeDecoder) == 1) {
+            quint32 src = 0;
+            for (int i = 0; i < 4; i++)
+            {
+                unsigned char b0;
+                if (b == 0xE8) {
+                    b0 = callStream[callStreamPos++];
+                } else {
+                    b0 = jumpStream[jumpStreamPos++];
+                }
+                src <<= 8;
+                src |= ((quint32)b0);
+            }
+
+            quint32 dest = src - (quint32(outStream.size()) + 4) ;
+            outStream.append((unsigned char)(dest));
+            outStream.append((unsigned char)(dest >> 8));
+            outStream.append((unsigned char)(dest >> 16));
+            outStream.append((unsigned char)(dest >> 24));
+            prevByte = (unsigned char)(dest >> 24);
+        } else {
+            prevByte = b;
+        }
+    }
+}
+
 QByteArray K7Zip::K7ZipPrivate::readAndDecodePackedStreams(bool readMainStreamInfo)
 {
     if (!buffer) {
@@ -1071,112 +1492,155 @@ QByteArray K7Zip::K7ZipPrivate::readAndDecodePackedStreams(bool readMainStreamIn
 
     QByteArray inflatedData;
 
-    int packIndex = 0;
+    quint64 startPos = 32 + packPos ;
+    quint64 startPos2 = 32 + packPos ;
     for (int i = 0; i < folders.size(); i++)
     {
         const Folder* folder = folders[i];
-        quint64 unpackSize64 = 0;
-        // GetUnpackSize
-        if (!folder->unpackSizes.isEmpty()) {
-            for (int j = folder->unpackSizes.size() - 1; j >= 0; j--) {
-                bool found = false;
-                for (int k = 0; k < folder->outIndexes.size(); ++k) {
-                    if (folder->outIndexes[j] == folder->unpackSizes[j]) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    unpackSize64 = folder->unpackSizes[j];
-                    break;
-                }
-            }
-        }
+        quint64 unpackSize64 = folder->getUnpackSize();;
         size_t unpackSize = (size_t)unpackSize64;
         if (unpackSize != unpackSize64) {
             qDebug() << "unsupported";
             return inflatedData;
         }
 
-        char encodedBuffer[packSizes[packIndex]];
+        QVector<StreamInfo> streamInfos;
+        for (int j = 0; j < folder->packedStreams.size(); j++) {
+            StreamInfo streamInfo;
+            streamInfo.startPos = startPos;
+            streamInfo.packSize = packSizes[j];
+            streamInfos.append(streamInfo);
+            startPos += packSizes[j];
+        }
 
-        quint64 method;
-        quint32 dicSize = 0;
-        for (int g = 0; g < folder->folderInfos.size(); ++g) {
-            Folder::FolderInfo* info = folder->folderInfos[g];
-            switch (info->methodID) {
-            case k_LZMA:
-                method = k_LZMA;
-                if (info->properties.size() == 5) {
-                    dicSize = ((unsigned char)info->properties[1]        |
-                              (((unsigned char)info->properties[2]) <<  8) |
-                              (((unsigned char)info->properties[3]) << 16) |
-                              (((unsigned char)info->properties[4]) << 24));
-                }
-                break;
-            case k_LZMA2:
-                method = k_LZMA2;
-                if (info->properties.size() == 1) {
-                    quint32 p = info->properties[0];
-                    dicSize = (((quint32)2 | ((p) & 1)) << ((p) / 2 + 11));
-                }
-                break;
-            case k_PPMD:
-                method = k_PPMD;
-                if (info->properties.size() == 5) {
-                    //Byte order = *(const Byte *)coder.Props;
-                    dicSize = ((unsigned char)info->properties[1]        |
-                              (((unsigned char)info->properties[2]) <<  8) |
-                              (((unsigned char)info->properties[3]) << 16) |
-                              (((unsigned char)info->properties[4]) << 24));
+        BindInfo bindInfo;
+        convertFolderItemInfoToBindInfo(folder, bindInfo);
+
+        //QVector<Folder::FolderInfo> coders;
+        for (int j = 0; j < bindInfo.inIndexes.size(); j++) {
+            quint32 inCoderIndex, inCoderStreamIndex;
+            quint32 outCoderIndex, outCoderStreamIndex;
+            bindInfo.findInStream(bindInfo.inIndexes[j], inCoderIndex, inCoderStreamIndex);
+            bindInfo.findOutStream(bindInfo.outIndexes[j], outCoderIndex, outCoderStreamIndex);
+
+        }
+
+        for (int j = 0; j < bindInfo.inStreams.size(); j++)
+        {
+            quint32 inCoderIndex, inCoderStreamIndex;
+            bindInfo.findInStream(bindInfo.inStreams[j], inCoderIndex, inCoderStreamIndex);
+        }
+
+        for (int j = 0; j < bindInfo.outStreams.size(); j++) {
+            quint32 outCoderIndex, outCoderStreamIndex;
+            bindInfo.findOutStream(bindInfo.outStreams[j], outCoderIndex, outCoderStreamIndex);
+        }
+
+        // Find main coder
+        int mainCoderIndex = -1;
+        QVector<int> outStreamIndexed;
+        int outStreamIndex = 0;
+        for (int j = 0; j < folder->folderInfos.size(); j++) {
+            const Folder::FolderInfo* info = folder->folderInfos[j];
+            for (int k = 0; k < info->numOutStreams; k++, outStreamIndex++) {
+                if (folder->findBindPairForOutStream(outStreamIndex) < 0) {
+                    outStreamIndexed.append(outStreamIndex);
                     break;
                 }
-            case k_AES:
-                if (info->properties.size() >=1) {
-                    //const Byte *data = (const Byte *)coder.Props;
-                    //Byte firstByte = *data++;
-                    //UInt32 numCyclesPower = firstByte & 0x3F;
-                }
-
-                break;
             }
         }
 
-        qint64 packPosition = packIndex == 0 ? packPos + 32 /*header size*/ : packPos + packSizes[packIndex-1];
-
-        QIODevice* dev = q->device();
-        dev->seek(packPosition);
-        quint64 n = dev->read(encodedBuffer, packSizes[packIndex]);
-        if ( n != packSizes[packIndex] ) {
-            qDebug() << "Failed read next header size, should read " << packSizes[packIndex] << ", read " << n;
-            return inflatedData;
+        int temp = 0;
+        if (!outStreamIndexed.isEmpty()) {
+            folder->findOutStream(outStreamIndexed[0], mainCoderIndex, temp);
         }
 
-        // Create Filter
+        quint32 startInIndex = bindInfo.getCoderInStreamIndex(mainCoderIndex);
+        quint32 startOutIndex = bindInfo.getCoderOutStreamIndex(mainCoderIndex);
+
+        Folder::FolderInfo* mainCoder = folder->folderInfos[mainCoderIndex];
+
+        size_t totalPackedSize = 0;
+        QVector<int> seqInStreams;
+        for (int j = 0; j < (int)mainCoder->numInStreams; j++) {
+            int seqInStream;
+            getInStream(bindInfo, startInIndex + j, seqInStream);
+            seqInStreams.append(seqInStream);
+            totalPackedSize += packSizes[j+i];
+        }
+
+        QVector<int> seqOutStreams;
+        for (int j = 0; j < (int)mainCoder->numOutStreams; j++) {
+            int seqOutStream;
+            getOutStream(bindInfo, startOutIndex + j, seqOutStream);
+            seqOutStreams.append(seqOutStream);
+        }
+
+        QVector<QByteArray> datas;
+        for (int j=0; j<(int)mainCoder->numInStreams; j++) {
+            int size = packSizes[j+i];
+            char encodedBuffer[size];
+            QIODevice* dev = q->device();
+            dev->seek(startPos2);
+            qint64 n = dev->read(encodedBuffer, size);
+            if ( n != size ) {
+                qDebug() << "Failed read next size, should read " << size << ", read " << n;
+                return inflatedData;
+            }
+            QByteArray deflatedData(encodedBuffer, size);
+            datas.append(deflatedData);
+            startPos2 += size;
+        }
+
+        QVector<QByteArray> inflatedDatas;
+        QByteArray deflatedData;
+        for (int j = 0; j < seqInStreams.size(); ++j) {
+            totalPackedSize = packSizes[seqInStreams[j]+i];
+
+            mainCoder = folder->folderInfos[j];
+
+            deflatedData = datas[seqInStreams[j]];
+
+            if (j != mainCoderIndex) {
+                //deflatedData.prepend(inflatedDataTmp);
+                //deflatedData.append(datas[seqInStreams[mainCoderIndex]]);
+            }
+
         KFilterBase* filter = KCompressionDevice::filterForCompressionType(KCompressionDevice::Xz);
         if (!filter) {
             qDebug() << "filter not found";
             return inflatedData;
         }
 
-
-        filter->init(QIODevice::ReadOnly);
-        QByteArray deflatedData(encodedBuffer, packSizes[packIndex]);
-
-        if (method == k_LZMA) {
-            const unsigned char lzmaHeader[13] = {0x5d, 0x00, 0x00, 0x80, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
-
-            for (int i = 12; i >= 0; --i) {
-                deflatedData.prepend(lzmaHeader[i]);
+        switch (mainCoder->methodID) {
+        case k_LZMA:
+            static_cast<KXzFilter*>(filter)->init(QIODevice::ReadOnly, KXzFilter::LZMA, mainCoder->properties);
+            break;
+        case k_LZMA2:
+            static_cast<KXzFilter*>(filter)->init(QIODevice::ReadOnly, KXzFilter::LZMA2, mainCoder->properties);
+            break;
+        case k_PPMD:
+            if (mainCoder->properties.size() == 5) {
+                //Byte order = *(const Byte *)coder.Props;
+                /*dicSize = ((unsigned char)info->properties[1]        |
+                          (((unsigned char)info->properties[2]) <<  8) |
+                          (((unsigned char)info->properties[3]) << 16) |
+                          (((unsigned char)info->properties[4]) << 24));*/
             }
-        } else {
-            const unsigned char lzma2Header[18] = {0x00, 0x04, 0xe6, 0xd6, 0xb4, 0x46, 0x02, 0x00, 0x21, 0x01, 0x16, 0x00, 0x00, 0x00, 0x74, 0x2f, 0xe5, 0xa3};
-            for (int i = 17; i >= 0; --i) {
-                deflatedData.prepend(lzma2Header[i]);
+            break;
+        case k_AES:
+            if (mainCoder->properties.size() >=1) {
+                //const Byte *data = (const Byte *)coder.Props;
+                //Byte firstByte = *data++;
+                //UInt32 numCyclesPower = firstByte & 0x3F;
             }
-            for (int i = 5; i >= 0; --i) {
-                deflatedData.prepend(XZ_HEADER_MAGIC[i]);
-            }
+
+            break;
+        case k_BCJ:
+        case k_BCJ2:
+            QByteArray bcj2 = decodeBCJ2(inflatedDatas[0], inflatedDatas[1], inflatedDatas[2], deflatedData);
+            static_cast<KXzFilter*>(filter)->init(QIODevice::ReadOnly, KXzFilter::BCJ, mainCoder->properties);
+            break;
         }
 
         filter->setInBuffer(deflatedData.data(), deflatedData.size());
@@ -1185,7 +1649,9 @@ QByteArray K7Zip::K7ZipPrivate::readAndDecodePackedStreams(bool readMainStreamIn
         // reserve memory
         outBuffer.resize(unpackSize);
 
+
         KFilterBase::Result result = KFilterBase::Ok;
+        QByteArray inflatedDataTmp;
         while (result != KFilterBase::End && result != KFilterBase::Error && !filter->inBufferEmpty()) {
             filter->setOutBuffer(outBuffer.data(), outBuffer.size());
             result = filter->uncompress();
@@ -1196,7 +1662,7 @@ QByteArray K7Zip::K7ZipPrivate::readAndDecodePackedStreams(bool readMainStreamIn
             int uncompressedBytes = outBuffer.size() - filter->outBufferAvailable();
 
             // append the uncompressed data to inflate buffer
-            inflatedData.append(outBuffer.data(), uncompressedBytes);
+            inflatedDataTmp.append(outBuffer.data(), uncompressedBytes);
 
             if (result == KFilterBase::End) {
                 break; // Finished.
@@ -1213,20 +1679,29 @@ QByteArray K7Zip::K7ZipPrivate::readAndDecodePackedStreams(bool readMainStreamIn
         delete filter;
 
         if (folder->unpackCRCDefined) {
-            quint32 crc = crc32(0, (Bytef*)(inflatedData.data()),unpackSize);
+            quint32 crc = crc32(0, (Bytef*)(inflatedDataTmp.data()),unpackSize);
             if (crc != folder->unpackCRC) {
                 qDebug() << "wrong crc";
                 return QByteArray();
             }
         }
 
-        for (int j = 0; j < folder->packedStreams.size(); j++)
-        {
-            quint64 packSize = packSizes[packIndex++];
-            pos += packSize;
-            headerSize += packSize;
-        }
+        inflatedDatas.append(inflatedDataTmp);
+
+        quint64 packSize = totalPackedSize;
+        pos += packSize;
+        headerSize += packSize;
+
     }
+
+        Q_FOREACH (QByteArray data, inflatedDatas) {
+            inflatedData.append(data);
+        }
+
+        inflatedDatas.clear();
+
+    }
+
     return inflatedData;
 }
 
@@ -1625,7 +2100,7 @@ QByteArray K7Zip::K7ZipPrivate::encodeStream(QVector<quint64> &packSizes, QVecto
     // remove xz header + lzma2 header
     encodedData.remove(0, 6+18);
     // remove xz + lzma2 footer
-    encodedData.remove(encodedData.size() - 29, 29);
+    encodedData.remove(encodedData.size() - 24, 24);
 
     packSizes.append(encodedData.size());
     return encodedData;
@@ -1958,18 +2433,7 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
         for (int i = 0; i < d->folders.size(); ++i)
         {
             Folder* folder = d->folders[i];
-            quint64 unpackSize = 0;
-
-            if (!folder->unpackSizes.isEmpty()) {
-                for (int j = folder->unpackSizes.size() - 1; j >= 0; j--) {
-                    for(int k = 0; k < folder->outIndexes.size(); k++) {
-                        if (folder->outIndexes[k] == folder->unpackSizes[j]) {
-                            unpackSize = folder->unpackSizes[j];
-                        }
-                    }
-                }
-            }
-            d->unpackSizes.append(unpackSize);
+            d->unpackSizes.append(folder->getUnpackSize());
             d->digestsDefined.append(folder->unpackCRCDefined);
             d->digests.append(folder->unpackCRC);
         }
@@ -2123,7 +2587,7 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
         bool checkRecordsSize = (major > 0 ||
                                  minor > 2);
         if (checkRecordsSize && d->pos - ppp != size) {
-            qDebug() << "error read size failed";
+            qDebug() << "error read size failed checkRecordsSize:" << checkRecordsSize << "d->pos - ppp" << d->pos - ppp << "size" << size;
             return false;
         }
     }
@@ -2157,6 +2621,11 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
     }
 
     d->outData = d->readAndDecodePackedStreams(false);
+
+    if (d->outData.isEmpty()) {
+        qDebug() << "readAndDecodePackedStream failed";
+        return false;
+    }
 
     int oldPos = 0;
     for (int i = 0; i < numFiles; i++)
@@ -2331,47 +2800,79 @@ bool K7Zip::closeArchive()
     d->createItemsFromEntities(dir, QString());
 
     //compress data
-    QBuffer* out = new QBuffer();
-    out->open(QBuffer::ReadWrite);
-    KCompressionDevice compression(out, true, KCompressionDevice::Xz);
-    compression.open(QIODevice::WriteOnly);
-    compression.write(d->outData.data(), d->outData.size());
-    compression.close();
+    QByteArray encodedData;
+    if (d->outData.size() > 0) {
+        QBuffer* out = new QBuffer();
+        out->open(QBuffer::ReadWrite);
+        KCompressionDevice compression(out, true, KCompressionDevice::Xz);
+        compression.open(QIODevice::WriteOnly);
+        compression.write(d->outData.data(), d->outData.size());
+        compression.close();
 
-    QByteArray encodedData = out->data();
+        encodedData = out->data();
 
-    // remove xz header + lzma2 header
-    encodedData.remove(0, 6+18);
-    // remove xz + lzma2 footer
-    encodedData.remove(encodedData.size() - 29, 29);
+        QByteArray footer = encodedData.mid(encodedData.size() - 12, 12);
+
+        d->buffer = footer.data();
+        d->end = 12;
+
+        d->pos = 0;
+
+        int crc = GetUi32(d->buffer, d->pos);
+        Q_UNUSED(crc);
+        d->pos += 4;
+        int back = GetUi32(d->buffer, d->pos);
+        int indexSize = (back + 1) << 2;
+        int backwardSize = d->readNumber();
+        Q_UNUSED(backwardSize);
+
+
+        int footerSize = indexSize + 12;
+
+        int blockSize = ((unsigned char)encodedData[12] + 1) * 4;
+        // remove xz header + lzma2 header
+        encodedData.remove(0, 12 + blockSize);
+        // remove xz + lzma2 footer
+        encodedData.remove(encodedData.size() - footerSize, footerSize);
+    }
 
     d->packSizes.append(encodedData.size());
 
-    d->numUnpackStreamsInFolders.append(d->unpackSizes.size());
+    int numUnpackStream = 0;
+    for (int i = 0; i < d->fileInfos.size(); ++i) {
+        if (d->fileInfos[i]->hasStream) {
+            numUnpackStream++;
+        }
+    }
+    d->numUnpackStreamsInFolders.append(numUnpackStream);
 
     quint64 headerOffset;
     d->writeHeader(headerOffset);
 
     // Encode Header
-    QVector<quint64> packSizes;
-    QVector<Folder*> folders;
-    QByteArray encodedStream = d->encodeStream(packSizes, folders);
+    QByteArray encodedStream;
+    /*{
+        QVector<quint64> packSizes;
+        QVector<Folder*> folders;
+        encodedStream = d->encodeStream(packSizes, folders);
 
-    if (folders.isEmpty()) {
-        return false;
-    }
+        if (folders.isEmpty()) {
+            return false;
+        }
 
-    d->header.clear();
+        d->header.clear();
 
-    d->writeByte(kEncodedHeader);
-    QVector<bool> emptyDefined;
-    QVector<quint32> emptyCrcs;
-    d->writePackInfo(headerOffset, packSizes, emptyDefined , emptyCrcs);
-    d->writeUnpackInfo(folders);
-    d->writeByte(kEnd);
-    for (int i = 0; i < packSizes.size(); i++) {
-        headerOffset += packSizes[i];
-    }
+        d->writeByte(kEncodedHeader);
+        QVector<bool> emptyDefined;
+        QVector<quint32> emptyCrcs;
+        d->writePackInfo(headerOffset, packSizes, emptyDefined , emptyCrcs);
+        d->writeUnpackInfo(folders);
+        d->writeByte(kEnd);
+        for (int i = 0; i < packSizes.size(); i++) {
+            headerOffset += packSizes[i];
+        }
+    }*/
+    // end encode header
 
     quint64 nextHeaderSize = d->header.size();
     quint32 nextHeaderCRC = crc32(0, (Bytef*)(d->header.data()), d->header.size());

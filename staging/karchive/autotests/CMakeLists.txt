@@ -38,6 +38,7 @@ KARCHIVE_UNIT_TESTS(
 KARCHIVE_EXECUTABLE_TESTS(
   ktartest
   kziptest
+  k7ziptest
 )
 
 ########### klimitediodevicetest ###############
