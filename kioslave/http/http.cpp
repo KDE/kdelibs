@@ -3635,13 +3635,6 @@ endParsing:
                 error(ERR_MALFORMED_URL, u.url());
                 return false;
             }
-            if ((u.protocol() != QLatin1String("http")) && (u.protocol() != QLatin1String("https")) &&
-                (u.protocol() != QLatin1String("webdav")) && (u.protocol() != QLatin1String("webdavs")))
-            {
-                redirection(u);
-                error(ERR_ACCESS_DENIED, u.url());
-                return false;
-            }
 
             // preserve #ref: (bug 124654)
             // if we were at http://host/resource1#ref, we sent a GET for "/resource1"
