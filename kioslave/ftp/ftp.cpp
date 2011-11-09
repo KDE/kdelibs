@@ -1814,13 +1814,19 @@ bool Ftp::ftpReadDir(FtpEntry& de)
 void Ftp::get( const KUrl & url )
 {
   kDebug(7102) << url;
+
   int iError = 0;
-  ftpGet(iError, -1, url, 0);               // iError gets status
+  const StatusCode cs = ftpGet(iError, -1, url, 0);
   ftpCloseCommand();                        // must close command!
-  if(iError)                                // can have only server side errs
-     error(iError, url.path());
-  else
+
+  if (cs == statusSuccess) {
      finished();
+     return;
+  }
+
+  if (iError) {                            // can have only server side errs
+     error(iError, url.path());
+  }
 }
 
 Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fileoffset_t llOffset)
@@ -2015,14 +2021,20 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
 //===============================================================================
 void Ftp::put(const KUrl& url, int permissions, KIO::JobFlags flags)
 {
-    kDebug(7102) << url;
+  kDebug(7102) << url;
+
   int iError = 0;                           // iError gets status
-  ftpPut(iError, -1, url, permissions, flags);
+  const StatusCode cs = ftpPut(iError, -1, url, permissions, flags);
   ftpCloseCommand();                        // must close command!
-  if(iError)                                // can have only server side errs
-    error(iError, url.path());
-  else
+
+  if (cs == statusSuccess) {
     finished();
+    return;
+  }
+
+  if (iError) {                             // can have only server side errs
+    error(iError, url.path());
+  }
 }
 
 Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
