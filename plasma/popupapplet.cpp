@@ -348,6 +348,10 @@ void PopupAppletPrivate::popupConstraintsEvent(Plasma::Constraints constraints)
             }
 
             //kDebug() << "about to switch to a popup";
+            if (!qWidget && !gWidget) {
+                delete dialogPtr.data();
+                return;
+            }
 
             //there was already a dialog? don't make the switch again
             if (dialogPtr) {
@@ -425,7 +429,7 @@ void PopupAppletPrivate::popupConstraintsEvent(Plasma::Constraints constraints)
 
 void PopupAppletPrivate::appletActivated()
 {
-    internalTogglePopup();
+    internalTogglePopup(true);
 }
 
 QSizeF PopupApplet::sizeHint(Qt::SizeHint which, const QSizeF & constraint) const
@@ -698,7 +702,7 @@ void PopupAppletPrivate::iconSizeChanged(int group)
     }
 }
 
-void PopupAppletPrivate::internalTogglePopup()
+void PopupAppletPrivate::internalTogglePopup(bool fromActivatedSignal)
 {
     if (autohideTimer) {
         autohideTimer->stop();
@@ -709,6 +713,11 @@ void PopupAppletPrivate::internalTogglePopup()
     Plasma::Dialog *dialog = dialogPtr.data();
     if (!dialog) {
         q->setFocus(Qt::ShortcutFocusReason);
+        if (!fromActivatedSignal) {
+            QObject::disconnect(q, SIGNAL(activate()), q, SLOT(appletActivated()));
+            emit q->activate();
+            QObject::connect(q, SIGNAL(activate()), q, SLOT(appletActivated()));
+        }
         return;
     }
 
@@ -729,6 +738,11 @@ void PopupAppletPrivate::internalTogglePopup()
             q->graphicsWidget() == static_cast<Applet*>(q)->d->extender.data() &&
             static_cast<Applet*>(q)->d->extender.data()->isEmpty()) {
             // we have nothing to show, so let's not.
+            if (!fromActivatedSignal) {
+                QObject::disconnect(q, SIGNAL(activate()), q, SLOT(appletActivated()));
+                emit q->activate();
+                QObject::connect(q, SIGNAL(activate()), q, SLOT(appletActivated()));
+            }
             return;
         }
 

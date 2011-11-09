@@ -250,6 +250,13 @@ public:
     bool isHidden() const;
 
     /**
+     * @return true if the file is a remote URL, or a local file on a network mount.
+     * It will return false only for really-local file systems.
+     * @since 4.7.4
+     */
+    bool isSlow() const;
+
+    /**
      * Checks whether the file is a readable local .desktop file,
      * i.e. a file whose path can be given to KDesktopFile
      * @return true if the file is a desktop file.

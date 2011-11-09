@@ -472,13 +472,13 @@ void KApplicationPrivate::init(bool GUIenabled)
   if(GUIenabled)
     (void) QApplication::clipboard();
 
+  extern KDECORE_EXPORT bool kde_kdebug_enable_dbus_interface;
+  kde_kdebug_enable_dbus_interface = true;
+
   parseCommandLine();
 
   if(GUIenabled)
     (void) KClipboardSynchronizer::self();
-
-  extern KDECORE_EXPORT bool kde_kdebug_enable_dbus_interface;
-  kde_kdebug_enable_dbus_interface = true;
 
   QApplication::setDesktopSettingsAware( false );
 
@@ -924,45 +924,6 @@ public:
 #ifdef Q_WS_X11
 bool KApplication::x11EventFilter( XEvent *_event )
 {
-    switch ( _event->type ) {
-        case ClientMessage:
-        {
-#if KDE_IS_VERSION( 3, 90, 90 )
-#ifdef __GNUC__
-#warning This should be already in Qt, check.
-#endif
-#endif
-        // Workaround for focus stealing prevention not working when dragging e.g. text from KWrite
-        // to KDesktop -> the dialog asking for filename doesn't get activated. This is because
-        // Qt-3.2.x doesn't have concept of qt_x_user_time at all, and Qt-3.3.0b1 passes the timestamp
-        // in the XdndDrop message in incorrect field (and doesn't update qt_x_user_time either).
-        // Patch already sent, future Qt version should have this fixed.
-            if( _event->xclient.message_type == kde_xdnd_drop )
-                { // if the message is XdndDrop
-                if( _event->xclient.data.l[ 1 ] == 1 << 24     // and it's broken the way it's in Qt-3.2.x
-                    && _event->xclient.data.l[ 2 ] == 0
-                    && _event->xclient.data.l[ 4 ] == 0
-                    && _event->xclient.data.l[ 3 ] != 0 )
-                    {
-                    if( QX11Info::appUserTime() == 0
-                        || NET::timestampCompare( _event->xclient.data.l[ 3 ], QX11Info::appUserTime() ) > 0 )
-                        { // and the timestamp looks reasonable
-                        QX11Info::setAppUserTime(_event->xclient.data.l[ 3 ]); // update our qt_x_user_time from it
-                        }
-                    }
-                else // normal DND, only needed until Qt updates qt_x_user_time from XdndDrop
-                    {
-                    if( QX11Info::appUserTime() == 0
-                        || NET::timestampCompare( _event->xclient.data.l[ 2 ], QX11Info::appUserTime() ) > 0 )
-                        { // the timestamp looks reasonable
-                        QX11Info::setAppUserTime(_event->xclient.data.l[ 2 ]); // update our qt_x_user_time from it
-                        }
-                    }
-                }
-        }
-        default: break;
-    }
-
     if (x11Filter) {
         foreach (const QWeakPointer< QWidget >& wp, *x11Filter) {
             if( QWidget* w = wp.data())

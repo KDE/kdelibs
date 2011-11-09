@@ -82,7 +82,7 @@ static QList<QByteArray> parseChallenge(QByteArray &ba, QByteArray *scheme, QByt
     QList<QByteArray> values;
     const char *b = ba.constData();
     int len = ba.count();
-    int start = 0, end = 0, pos = 0;
+    int start = 0, end = 0, pos = 0, pos2 = 0;
 
     // parse scheme
     while (start < len && isWhiteSpaceOrComma(b[start])) {
@@ -106,11 +106,6 @@ static QList<QByteArray> parseChallenge(QByteArray &ba, QByteArray *scheme, QByt
 
     while (end < len) {
         start = end;
-        // parse key, skip empty fields
-        while (start < len && isWhiteSpace(b[start])) {
-            start++;
-        }
-        end = start;
         while (end < len && b[end] != '=') {
             end++;
         }
@@ -118,7 +113,11 @@ static QList<QByteArray> parseChallenge(QByteArray &ba, QByteArray *scheme, QByt
         while (end - 1 > start && isWhiteSpace(b[end - 1])) { // trim whitespace
             end--;
         }
-        if (containsScheme(b, start, end) || (b[pos] != '=' && pos == len)) {
+        pos2 = start;
+        while (pos2 < end && isWhiteSpace(b[pos2])) { // skip whitespace
+            pos2++;
+        }
+        if (containsScheme(b, start, end) || (b[pos2] == ',' && b[pos] != '=' && pos == len)) {
             if (nextAuth) {
                 *nextAuth = QByteArray (b + start);
             }
@@ -315,6 +314,7 @@ void KAbstractHttpAuthentication::reset()
     m_needCredentials = true;
     m_forceKeepAlive = false;
     m_forceDisconnect = false;
+    m_keepPassword = false;
     m_headerFragment.clear();
     m_username.clear();
     m_password.clear();
@@ -352,6 +352,7 @@ void KAbstractHttpAuthentication::authInfoBoilerplate(KIO::AuthInfo *a) const
     a->verifyPath = supportsPathMatching();
     a->realmValue = realm();
     a->digestInfo = QLatin1String(authDataToCache());
+    a->keepPassword = m_keepPassword;
 }
 
 

@@ -417,14 +417,39 @@ void Wallpaper::setUsingRenderingCache(bool useCache)
 
 void Wallpaper::setResizeMethodHint(Wallpaper::ResizeMethod resizeMethod)
 {
-    d->lastResizeMethod = resizeMethod;
-    emit renderHintsChanged();
+    const ResizeMethod method = qBound(ScaledResize, resizeMethod, LastResizeMethod);
+    if (method != d->lastResizeMethod) {
+        d->lastResizeMethod = method;
+        emit renderHintsChanged();
+    }
+}
+
+Wallpaper::ResizeMethod Wallpaper::resizeMethodHint() const
+{
+    return d->lastResizeMethod;
 }
 
 void Wallpaper::setTargetSizeHint(const QSizeF &targetSize)
 {
-    d->targetSize = targetSize;
-    emit renderHintsChanged();
+    if (targetSize != d->targetSize) {
+        d->targetSize = targetSize;
+        emit renderHintsChanged();
+    }
+}
+
+QSizeF Wallpaper::targetSizeHint() const
+{
+    return d->targetSize;
+}
+
+void Wallpaper::render(const QImage &image, const QSize &size,
+                       Wallpaper::ResizeMethod resizeMethod, const QColor &color)
+{
+    if (image.isNull()) {
+        return;
+    }
+
+    d->renderWallpaper(QString(), image, size, resizeMethod, color);
 }
 
 void Wallpaper::render(const QString &sourceImagePath, const QSize &size,
@@ -435,22 +460,30 @@ void Wallpaper::render(const QString &sourceImagePath, const QSize &size,
         return;
     }
 
-    if (d->lastResizeMethod != resizeMethod) {
-        d->lastResizeMethod = resizeMethod;
-        emit renderHintsChanged();
+    d->renderWallpaper(sourceImagePath, QImage(), size, resizeMethod, color);
+}
+
+void WallpaperPrivate::renderWallpaper(const QString &sourceImagePath, const QImage &image, const QSize &size,
+                                       Wallpaper::ResizeMethod resizeMethod, const QColor &color)
+{
+    resizeMethod = qBound(Wallpaper::ScaledResize, resizeMethod, Wallpaper::LastResizeMethod);
+    if (lastResizeMethod != resizeMethod) {
+        lastResizeMethod = resizeMethod;
+        emit q->renderHintsChanged();
     }
 
-    if (d->cacheRendering) {
+    if (cacheRendering) {
         QFileInfo info(sourceImagePath);
-        QString cache = d->cacheKey(sourceImagePath, size, resizeMethod, color);
-        if (d->findInCache(cache, info.lastModified().toTime_t())) {
+        QString cache = cacheKey(sourceImagePath, size, resizeMethod, color);
+        if (findInCache(cache, info.lastModified().toTime_t())) {
             return;
         }
     }
 
     WallpaperRenderRequest request;
-    d->renderToken = request.token;
-    request.requester = this;
+    renderToken = request.token;
+    request.requester = q;
+    request.providedImage = image;
     request.file = sourceImagePath;
     request.size = size;
     request.resizeMethod = resizeMethod;

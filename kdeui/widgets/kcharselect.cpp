@@ -58,7 +58,7 @@ public:
 
     void _k_resizeCells();
     void _k_doubleClicked(const QModelIndex & index);
-    void _k_slotCurrentChanged(const QModelIndex & current, const QModelIndex & previous);
+    void _k_slotSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
 };
 
 class KCharSelect::KCharSelectPrivate
@@ -196,7 +196,7 @@ void KCharSelectTable::setContents(QList<QChar> chars)
     setSelectionModel(selectionModel);
     setSelectionBehavior(QAbstractItemView::SelectItems);
     setSelectionMode(QAbstractItemView::SingleSelection);
-    connect(selectionModel, SIGNAL(currentChanged(const QModelIndex & , const QModelIndex &)), this, SLOT(_k_slotCurrentChanged(const QModelIndex &, const QModelIndex &)));
+    connect(selectionModel, SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(_k_slotSelectionChanged(const QItemSelection &, const QItemSelection &)));
     connect(d->model, SIGNAL(showCharRequested(QChar)), this, SIGNAL(showCharRequested(QChar)));
     delete m; // this should hopefully delete aold selection models too, since it is the parent of them (didn't track, if there are setParent calls somewhere. Check that (jowenn)
 }
@@ -211,11 +211,12 @@ void KCharSelectTable::scrollTo(const QModelIndex & index, ScrollHint hint)
     }
 }
 
-void KCharSelectTablePrivate::_k_slotCurrentChanged(const QModelIndex & current, const QModelIndex & previous)
+void KCharSelectTablePrivate::_k_slotSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
 {
-    Q_UNUSED(previous);
-    if (!model) return;
-    QVariant temp = model->data(current, KCharSelectItemModel::CharacterRole);
+    Q_UNUSED(deselected);
+    if (!model || selected.indexes().isEmpty())
+        return;
+    QVariant temp = model->data(selected.indexes().at(0), KCharSelectItemModel::CharacterRole);
     if (temp.type() != QVariant::Char)
         return;
     QChar c = temp.toChar();
@@ -272,7 +273,7 @@ void KCharSelectTablePrivate::_k_resizeCells()
 void KCharSelectTablePrivate::_k_doubleClicked(const QModelIndex & index)
 {
     QChar c = model->data(index, KCharSelectItemModel::CharacterRole).toChar();
-    if (c.isPrint()) {
+    if (s_data->isPrint(c)) {
         emit q->activated(c);
     }
 }
@@ -288,7 +289,7 @@ void KCharSelectTable::keyPressEvent(QKeyEvent *e)
     case Qt::Key_Enter: case Qt::Key_Return: {
             if (!currentIndex().isValid()) return;
             QChar c = d->model->data(currentIndex(), KCharSelectItemModel::CharacterRole).toChar();
-            if (c.isPrint()) {
+            if (s_data->isPrint(c)) {
                 emit activated(c);
             }
         }
@@ -664,7 +665,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
         html += "<p style=\"margin-bottom: 0px;\">" + i18n("See also:") + "</p><ul style=\"margin-top: 0px;\">";
         foreach(const QChar &c2, seeAlso) {
             html += "<li><a href=\"" + QString::number(c2.unicode(), 16) + "\">";
-            if (c2.isPrint()) {
+            if (s_data->isPrint(c2)) {
                 html += "&#" + QString::number(c2.unicode()) + "; ";
             }
             html += s_data->formatCode(c2.unicode()) + ' ' + Qt::escape(s_data->name(c2)) + "</a></li>";
@@ -731,7 +732,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
 
     html += "<p><b>" + i18n("General Character Properties") + "</b><br>";
     html += i18n("Block: ") + s_data->block(c) + "<br>";
-    html += i18n("Unicode category: ") + s_data->categoryText(c.category()) + "</p>";
+    html += i18n("Unicode category: ") + s_data->categoryText(s_data->category(c)) + "</p>";
 
     QByteArray utf8 = QString(c).toUtf8();
 
@@ -764,7 +765,7 @@ QString KCharSelect::KCharSelectPrivate::createLinks(QString s)
     foreach(const QString &c, chars2) {
         int unicode = c.toInt(0, 16);
         QString link = "<a href=\"" + c + "\">";
-        if (QChar(unicode).isPrint()) {
+        if (s_data->isPrint(QChar(unicode))) {
             link += "&#" + QString::number(unicode) + ";&nbsp;";
         }
         link += "U+" + c + ' ';
@@ -860,7 +861,8 @@ void  KCharSelect::KCharSelectPrivate::_k_linkClicked(QUrl url)
 QVariant KCharSelectItemModel::data(const QModelIndex &index, int role) const
 {
     int pos = m_columns * (index.row()) + index.column();
-    if (pos >= m_chars.size() || index.row() < 0 || index.column() < 0) {
+    if (!index.isValid() || pos < 0 || pos >= m_chars.size()
+            || index.row() < 0 || index.column() < 0) {
         if (role == Qt::BackgroundColorRole) {
             return QVariant(qApp->palette().color(QPalette::Button));
         }
@@ -868,9 +870,7 @@ QVariant KCharSelectItemModel::data(const QModelIndex &index, int role) const
     }
 
     QChar c = m_chars[pos];
-    if (!index.isValid())
-        return QVariant();
-    else if (role == Qt::ToolTipRole) {
+    if (role == Qt::ToolTipRole) {
         QString result = s_data->display(c, m_font) + "<br />" + Qt::escape(s_data->name(c)) + "<br />" +
                          i18n("Unicode code point:") + ' ' + s_data->formatCode(c.unicode()) + "<br />" +
                          i18nc("Character", "In decimal:") + ' ' + QString::number(c.unicode());
@@ -878,12 +878,12 @@ QVariant KCharSelectItemModel::data(const QModelIndex &index, int role) const
     } else if (role == Qt::TextAlignmentRole)
         return QVariant(Qt::AlignHCenter | Qt::AlignVCenter);
     else if (role == Qt::DisplayRole) {
-        if (c.isPrint())
+        if (s_data->isPrint(c))
             return QVariant(c);
         return QVariant();
     } else if (role == Qt::BackgroundColorRole) {
         QFontMetrics fm = QFontMetrics(m_font);
-        if (fm.inFont(c) && c.isPrint())
+        if (fm.inFont(c) && s_data->isPrint(c))
             return QVariant(qApp->palette().color(QPalette::Base));
         else
             return QVariant(qApp->palette().color(QPalette::Button));

@@ -21,17 +21,19 @@
 #define KFILESYSTEMTYPE_P_H
 
 #include <QtCore/QString>
+#include <kdecore_export.h>
 
 namespace KFileSystemType
 {
    enum Type {
        Unknown,
-       Nfs, // NFS or similar (autofs, subfs, cachefs)
+       Nfs, // NFS or other full-featured networked filesystems (autofs, subfs, cachefs, sshfs)
+       Smb, // SMB/CIFS mount (networked but with some FAT-like behavior)
        Fat,  // FAT or similar (msdos, fat, vfat)
-       Other // ext, reiser, and so on. "Normal" filesystems.
+       Other // ext, reiser, and so on. "Normal" local filesystems.
    };
 
-   Type fileSystemType(const QString& path);
+   KDECORE_EXPORT Type fileSystemType(const QString& path);
 
 }
 

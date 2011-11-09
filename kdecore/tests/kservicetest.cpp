@@ -16,6 +16,8 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#include <locale.h>
+
 #include "kservicetest.h"
 #include "kservicetest.moc"
 #include <qtest_kde.h>
@@ -29,6 +31,7 @@
 
 #include <kprotocolinfo.h>
 #include <kdebug.h>
+#include <kprocess.h>
 #include <kservicegroup.h>
 #include <kservicetypetrader.h>
 #include <kservicetype.h>
@@ -36,7 +39,9 @@
 
 #include <QtCore/Q_PID>
 
-void KServiceTest::initTestCase()
+QTEST_KDEMAIN_CORE( KServiceTest )
+
+static void eraseProfiles()
 {
     QString profilerc = KStandardDirs::locateLocal( "config", "profilerc" );
     if ( !profilerc.isEmpty() )
@@ -45,9 +50,22 @@ void KServiceTest::initTestCase()
     profilerc = KStandardDirs::locateLocal( "config", "servicetype_profilerc" );
     if ( !profilerc.isEmpty() )
         QFile::remove( profilerc );
+}
+
+void KServiceTest::initTestCase()
+{
+    // A non-C locale is necessary for some tests.
+    // This locale must have the following properties:
+    //   - some character other than dot as decimal separator
+    // If it cannot be set, locale-dependent tests are skipped.
+    setlocale(LC_ALL, "fr_FR.utf8");
+    m_hasNonCLocale = (setlocale(LC_ALL, NULL) == QByteArray("fr_FR.utf8"));
+    if (!m_hasNonCLocale) {
+        kDebug() << "Setting locale to fr_FR.utf8 failed";
+    }
 
     m_hasKde4Konsole = false;
-
+    eraseProfiles();
 
     // Create some fake services for the tests below, and ensure they are in ksycoca.
 
@@ -99,10 +117,23 @@ void KServiceTest::initTestCase()
         QVERIFY(QTest::kWaitForSignal(KSycoca::self(), SIGNAL(databaseChanged(QStringList)), 10000));
         kDebug() << "got signal";
     }
-
 }
 
-QTEST_KDEMAIN_CORE( KServiceTest )
+void KServiceTest::cleanupTestCase()
+{
+    // If I want the konqueror unit tests to work, then I better not have a non-working part
+    // as the preferred part for text/plain...
+    QStringList services; services << "fakeservice.desktop" << "fakepart.desktop" << "faketextplugin.desktop";
+    Q_FOREACH(const QString& service, services) {
+        const QString fakeService = KStandardDirs::locateLocal("services", service);
+        QFile::remove(fakeService);
+    }
+    //QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME) );
+    KProcess proc;
+    proc << KStandardDirs::findExe(KBUILDSYCOCA_EXENAME);
+    proc.setOutputChannelMode(KProcess::MergedChannels); // silence kbuildsycoca output
+    proc.execute();
+}
 
 void KServiceTest::testByName()
 {
@@ -303,6 +334,13 @@ void KServiceTest::testTraderConstraints()
     QCOMPARE(offers.count(), 1);
     QVERIFY( offerListHasService( offers, "faketextplugin.desktop" ) );
 
+    if (m_hasNonCLocale) {
+        // Test float parsing, must use dot as decimal separator independent of locale.
+        offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin", "([X-KDE-Version] > 4.559) and ([X-KDE-Version] < 4.561)");
+        QCOMPARE(offers.count(), 1);
+        QVERIFY(offerListHasService( offers, "fakeservice.desktop"));
+    }
+
     // A test with an invalid query, to test for memleaks
     offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin", "A == B OR C == D AND OR Foo == 'Parse Error'");
     QVERIFY(offers.isEmpty());
@@ -501,6 +539,7 @@ void KServiceTest::createFakeService()
     group.writeEntry("Name", "FakePlugin");
     group.writeEntry("Type", "Service");
     group.writeEntry("X-KDE-Library", "fakeservice");
+    group.writeEntry("X-KDE-Version", "4.56");
     group.writeEntry("ServiceTypes", "KTextEditor/Plugin");
     group.writeEntry("MimeType", "text/plain;");
 }

@@ -270,7 +270,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         }
         case DeleteOperation: {
             //kDebug(7044) << "DeleteOperation:" << reqUrl;
-            kioJob = KIO::file_delete(reqUrl, KIO::HideProgressInfo);
+            kioJob = KIO::http_delete(reqUrl, KIO::HideProgressInfo);
             break;
         }
         case CustomOperation: {

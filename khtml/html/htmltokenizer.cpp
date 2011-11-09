@@ -1741,8 +1741,6 @@ void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
                 tquote = NoQuote;
                 parseProcessingInstruction(src);
                 continue;
-
-                break;
             }
             case '%':
                 if (!brokenServer) {

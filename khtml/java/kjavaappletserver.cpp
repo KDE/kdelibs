@@ -479,7 +479,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
 
     //get contextID
     QString contextID;
-    while( qb[index] != 0 && index < qb_size )
+    while( index < qb_size && qb[index] != 0 )
     {
         contextID += qb[ index++ ];
     }

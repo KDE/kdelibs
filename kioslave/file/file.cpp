@@ -796,6 +796,11 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & 
 
     if ( KDE_lstat( path.data(), &buff ) == 0 )  {
 
+        if (details > 2) {
+            entry.insert( KIO::UDSEntry::UDS_DEVICE_ID, buff.st_dev );
+            entry.insert( KIO::UDSEntry::UDS_INODE, buff.st_ino );
+        }
+
         if (S_ISLNK(buff.st_mode)) {
 
             char buffer2[ 1000 ];

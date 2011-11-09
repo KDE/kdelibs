@@ -118,6 +118,8 @@ void KAssistantDialog::next()
     QModelIndex nextIndex=d->getNext(d->pageModel->index(currentPage()));
     if (nextIndex.isValid())
         setCurrentPage(d->pageModel->item(nextIndex));
+    else if (isValid(currentPage()))
+        accept();
 }
 
 void KAssistantDialog::setValid(KPageWidgetItem * page, bool enable)

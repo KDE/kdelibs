@@ -31,7 +31,12 @@ class KExtendableItemDelegate::Private {
 public:
     Private(KExtendableItemDelegate *parent) :
         q(parent),
-        stateTick(0)
+        stateTick(0),
+        cachedStateTick(-1),
+        cachedRow(-20), //Qt uses -1 for invalid indices
+        extender(0),
+        extenderHeight(0)
+
     {}
 
     void _k_extenderDestructionHandler(QObject *destroyed);
@@ -55,6 +60,11 @@ public:
     QPixmap extendPixmap;
     QPixmap contractPixmap;
     int stateTick;
+    int cachedStateTick;
+    int cachedRow;
+    QModelIndex cachedParentIndex;
+    QWidget *extender;
+    int extenderHeight;
 };
 
 
@@ -238,27 +248,22 @@ void KExtendableItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
         return;
     }
 
-    //indexOfExtendedColumnInSameRow() is very expensive, try to avoid calling it.
-    static int cachedStateTick = -1;
-    static int cachedRow = -20; //Qt uses -1 for invalid indices
-    static QModelIndex cachedParentIndex;
-    static QWidget *extender = 0;
-    static int extenderHeight;
     int row = index.row();
     QModelIndex parentIndex = index.parent();
 
-    if (row != cachedRow || cachedStateTick != d->stateTick
-        || cachedParentIndex != parentIndex) {
-        extender = d->extenders.value(d->indexOfExtendedColumnInSameRow(index));
-        cachedStateTick = d->stateTick;
-        cachedRow = row;
-        cachedParentIndex = parentIndex;
-        if (extender) {
-            extenderHeight = extender->sizeHint().height();
+    //indexOfExtendedColumnInSameRow() is very expensive, try to avoid calling it.
+    if (row != d->cachedRow || d->cachedStateTick != d->stateTick
+        || d->cachedParentIndex != parentIndex) {
+        d->extender = d->extenders.value(d->indexOfExtendedColumnInSameRow(index));
+        d->cachedStateTick = d->stateTick;
+        d->cachedRow = row;
+        d->cachedParentIndex = parentIndex;
+        if (d->extender) {
+            d->extenderHeight = d->extender->sizeHint().height();
         }
     }
 
-    if (!extender) {
+    if (!d->extender) {
         QStyledItemDelegate::paint(painter, itemOption, index);
         if (showExtensionIndicator) {
             painter->save();
@@ -274,15 +279,15 @@ void KExtendableItemDelegate::paint(QPainter *painter, const QStyleOptionViewIte
     if (isExtended(index)) {
         QStyleOptionViewItemV4 extOption(option);
         initStyleOption(&extOption, index);
-        extOption.rect = extenderRect(extender, option, index);
-        updateExtenderGeometry(extender, extOption, index);
+        extOption.rect = extenderRect(d->extender, option, index);
+        updateExtenderGeometry(d->extender, extOption, index);
         //if we show it before, it will briefly flash in the wrong location.
         //the downside is, of course, that an api user effectively can't hide it.
-        extender->show();
+        d->extender->show();
     }
 
-    indicatorOption.rect.setHeight(option.rect.height() - extenderHeight);
-    itemOption.rect.setHeight(option.rect.height() - extenderHeight);
+    indicatorOption.rect.setHeight(option.rect.height() - d->extenderHeight);
+    itemOption.rect.setHeight(option.rect.height() - d->extenderHeight);
     //tricky:make sure that the modified options' rect really has the
     //same height as the unchanged option.rect if no extender is present
     //(seems to work OK)

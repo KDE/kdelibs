@@ -81,7 +81,7 @@ target_link_libraries(solidmttest ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT
 
 ########### networkingclient ###############
 
-include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES}
+include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} 
     ${KDE4_KDECORE_INCLUDES} ${KDE4_KDEUI_INCLUDES} ${KDE4_KIO_INCLUDES})
 
 set(networkingclient_SRCS networkingclient.cpp)

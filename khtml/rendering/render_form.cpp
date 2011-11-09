@@ -137,9 +137,8 @@ using namespace DOM;
                 const QComboBox* cb = qobject_cast<const QComboBox*>(widget);
                 const QStyleOptionComboBox* cbOpt = qstyleoption_cast<const QStyleOptionComboBox*>(opt);
 
-                QFontMetrics fm = cb->fontMetrics();
-
                 if (cb && cbOpt) {
+                    QFontMetrics fm = cb->fontMetrics();
                     // Compute content width; Qt uses the usual +4 magic number for icon/text margin
                     int maxW = 0;
                     for (int c = 0; c < cb->count(); ++c) {
@@ -331,7 +330,10 @@ RenderButton::RenderButton(HTMLGenericFormElementImpl *element)
 
 short RenderButton::baselinePosition( bool f ) const
 {
-    return RenderWidget::baselinePosition( f ) - 2;
+    int ret = (height()-RenderWidget::paddingTop()-RenderWidget::paddingBottom()+1)/2;
+    ret += marginTop() + RenderWidget::paddingTop();
+    ret += ((fontMetrics( f ).ascent())/2)-1;
+    return ret;
 }
 
 void RenderButton::layout()
@@ -967,11 +969,6 @@ void LineEditWidget::clearHistoryActivated()
 
 void LineEditWidget::paintEvent( QPaintEvent *pe )
 {
-    if (!hasFrame()) {
-        QPainter p(this);
-        p.fillRect(pe->rect(), palette().brush(QPalette::Base));
-        p.end();
-    }
     KLineEdit::paintEvent( pe );
 }
 
@@ -1049,20 +1046,21 @@ void RenderLineEdit::setStyle(RenderStyle* _style)
     RenderFormElement::setStyle( _style );
 
     widget()->setAlignment(textAlignment());
+
     bool showClearButton = (!shouldDisableNativeBorders() && !_style->hasBackgroundImage());
-    static_cast<LineEditWidget*>(widget())->setClearButtonShown( showClearButton );
-    if (showClearButton) {
+
+    if (!showClearButton && widget()->isClearButtonShown()) {
+        widget()->setClearButtonShown(false);
+    }
+    else if (showClearButton && !widget()->isClearButtonShown()) {
+        widget()->setClearButtonShown(true);
         QObjectList children = widget()->children();
         foreach (QObject* object, children) {
             QWidget *w = qobject_cast<QWidget*>(object);
-            if (w && !w->isWindow()) {
+            if (w && !w->isWindow() && (w->objectName() == "KLineEditButton")) {
                 // this duplicates KHTMLView's handleWidget but this widget
                 // is created on demand, so it might not be here at ChildPolished time
-                w->setObjectName("KHTMLLineEditButton");
                 w->installEventFilter(view());
-                w->setAttribute(Qt::WA_NoSystemBackground);
-                w->setAttribute(Qt::WA_WState_InPaintEvent);
-                w->setAttribute(Qt::WA_OpaquePaintEvent);
             }
         }
     }
@@ -1160,7 +1158,7 @@ void RenderLineEdit::slotTextChanged(const QString &string)
     if (m_blockElementUpdates) return;
 
     // don't use setValue here!
-    element()->m_value = string;
+    element()->m_value = string.isNull() ? DOMString("") : string;
     element()->m_unsubmittedFormChange = true;
 }
 

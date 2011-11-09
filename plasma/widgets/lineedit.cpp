@@ -64,7 +64,10 @@ LineEdit::LineEdit(QGraphicsWidget *parent)
     d->background->setImagePath("widgets/lineedit");
     d->background->setCacheAllRenderedFrames(true);
 
-    new FocusIndicator(this, d->background);
+    FocusIndicator *indicator = new FocusIndicator(this, d->background);
+    if (d->background->hasElement("hint-focus-over-base")) {
+        indicator->setFlag(QGraphicsItem::ItemStacksBehindParent, false);
+    }
     setNativeWidget(new KLineEdit);
 }
 
@@ -189,6 +192,8 @@ void LineEdit::focusInEvent(QFocusEvent *event)
         // as of Qt 4.7, apparently we have a bug here in QGraphicsProxyWidget
         nativeWidget()->setFocus(event->reason());
     }
+
+    emit focusChanged(true);
 }
 
 void LineEdit::focusOutEvent(QFocusEvent *event)
@@ -215,6 +220,8 @@ void LineEdit::focusOutEvent(QFocusEvent *event)
     }
 
     QGraphicsProxyWidget::focusOutEvent(event);
+
+    emit focusChanged(false);
 }
 
 } // namespace Plasma

@@ -113,6 +113,22 @@ protected:
     bool connectToHost(const QString &protocol, const QString& host, quint16 port);
 
     /**
+     * Connects to the specified host and port.
+     *
+     * @param host host name
+     * @param port port number
+     * @param errorString if not NULL, this string will contain error information
+     *                    on why the connection request failed.
+     *
+     * @return  on success, 0 is returned. on failure, a KIO::Error code is returned.
+     *          @ref errorString, if not NULL, will contain the appropriate error message
+     *          that can be sent back to the client.
+     *
+     * @since 4.7.2
+     */
+    int connectToHost(const QString& host, quint16 port, QString* errorString = 0);
+
+    /**
      * the current port for this service
      *
      */

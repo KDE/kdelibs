@@ -951,35 +951,47 @@ bool KUrlCompletionPrivate::fileCompletion(const KUrlCompletionPrivate::MyURL& u
 // URLs not handled elsewhere...
 //
 
+static bool isLocalProtocol(const QString& protocol)
+{
+    return (KProtocolInfo::protocolClass(protocol) == QLatin1String(":local"));
+}
+
 bool KUrlCompletionPrivate::urlCompletion(const KUrlCompletionPrivate::MyURL& url, QString* pMatch)
 {
     //kDebug() << *url.kurl();
-    if (onlyLocalProto && KProtocolInfo::protocolClass(url.protocol()) != QLatin1String(":local"))
+    if (onlyLocalProto && isLocalProtocol(url.protocol()))
         return false;
 
     // Use d->cwd as base url in case url is not absolute
-    KUrl url_cwd(cwd);
-
-    // Create an URL with the directory to be listed
-    KUrl url_dir(url_cwd, url.kurl().url());
-
-    // Don't try url completion if
-    // 1. malformed url
-    // 2. protocol that doesn't have listDir()
-    // 3. there is no directory (e.g. "ftp://ftp.kd" shouldn't do anything)
-    // 4. auto or popup completion mode depending on settings
-
-    bool man_or_info = (url_dir.protocol() == QLatin1String("man")
-                        || url_dir.protocol() == QLatin1String("info"));
-
-    if (!url_dir.isValid()
-            || !KProtocolManager::supportsListing(url_dir)
-            || (!man_or_info
-                && (url_dir.directory(KUrl::AppendTrailingSlash | KUrl::ObeyTrailingSlash).isEmpty()
-                    || (isAutoCompletion()
-                        && !url_auto_completion)))) {
-        return false;
+    KUrl url_dir = url.kurl();
+    if (url_dir.isRelative() && !cwd.isEmpty()) {
+        const KUrl url_cwd (cwd);
+        // Create an URL with the directory to be listed
+        url_dir = KUrl(url_cwd,  url_dir.url());
     }
+
+    // url is malformed
+    if (!url_dir.isValid())
+        return false;
+
+    // non local urls
+    if (!isLocalProtocol(url.protocol())) {
+        // url does not specify host
+        if (url_dir.host().isEmpty())
+            return false;
+
+        // url does not specify a valid directory
+        if (url_dir.directory(KUrl::AppendTrailingSlash | KUrl::ObeyTrailingSlash).isEmpty())
+            return false;
+
+        // automatic completion is disabled
+        if (isAutoCompletion() && !url_auto_completion)
+            return false;
+    }
+
+    // url handler doesn't support listing
+    if (!KProtocolManager::supportsListing(url_dir))
+        return false;
 
     url_dir.setFileName(QString()); // not really nesseccary, but clear the filename anyway...
 

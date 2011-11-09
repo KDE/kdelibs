@@ -36,6 +36,7 @@
 #include "kcolorhelpers_p.h"
 #include "kcolormimedata.h"
 #include "kdebug.h"
+#include "kwindowsystem.h"
 
 using KDEPrivate::fillOpaqueRect;
 
@@ -45,6 +46,7 @@ public:
     KColorButtonPrivate(KColorButton *q);
 
     void _k_chooseColor();
+    void _k_colorChosen();
 
     KColorButton *q;
     QColor m_defaultColor;
@@ -53,6 +55,8 @@ public:
 
     QColor col;
     QPoint mPos;
+
+    QWeakPointer<KColorDialog> dialogPtr;
 
     void initStyleOption(QStyleOptionButton* opt) const;    
 };
@@ -243,21 +247,39 @@ void KColorButton::mouseMoveEvent( QMouseEvent *e)
 
 void KColorButton::KColorButtonPrivate::_k_chooseColor()
 {
-    QPointer<KColorDialog> dialog = new KColorDialog(q, true);
+    KColorDialog *dialog = dialogPtr.data();
+    if (dialog) {
+        dialog->show();
+        KWindowSystem::forceActiveWindow(dialog->winId());
+        return;
+    }
+
+    dialog = new KColorDialog(q);
     dialog->setColor(q->color());
     if (m_bdefaultColor) {
         dialog->setDefaultColor(m_defaultColor);
     }
     dialog->setAlphaChannelEnabled(m_alphaChannel);
-    if (dialog->exec() != QDialog::Rejected) {
-        if (dialog->color().isValid()) {
-            q->setColor(dialog->color());
-        } else if (m_bdefaultColor) {
-            q->setColor(m_defaultColor);
-        }
-    }
-    delete dialog;
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->setButtons(KDialog::Ok | KDialog::Cancel);
+    connect(dialog, SIGNAL(applyClicked()), q, SLOT(_k_colorChosen()));
+    connect(dialog, SIGNAL(okClicked()), q, SLOT(_k_colorChosen()));
+    dialogPtr = dialog;
+    dialog->show();
 }
 
+void KColorButton::KColorButtonPrivate::_k_colorChosen()
+{
+    KColorDialog *dialog = dialogPtr.data();
+    if (!dialog) {
+        return;
+    }
+
+    if (dialog->color().isValid()) {
+        q->setColor(dialog->color());
+    } else if (m_bdefaultColor) {
+        q->setColor(m_defaultColor);
+    }
+}
 
 #include "kcolorbutton.moc"

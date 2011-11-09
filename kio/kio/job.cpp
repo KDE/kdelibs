@@ -1619,6 +1619,15 @@ TransferJob *KIO::http_post( const KUrl& url, QIODevice* ioDevice, qint64 size, 
     return job;
 }
 
+TransferJob* KIO::http_delete(const KUrl& url, JobFlags flags)
+{
+    // Send decoded path and encoded query
+    KIO_ARGS << url;
+    TransferJob * job = TransferJobPrivate::newJob(url, CMD_DEL, packedArgs,
+                                                   QByteArray(), flags);
+    return job;
+}
+
 StoredTransferJob *KIO::storedHttpPost( const QByteArray& postData, const KUrl& url, JobFlags flags )
 {
     KUrl _url(url);

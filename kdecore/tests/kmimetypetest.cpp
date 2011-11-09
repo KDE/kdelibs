@@ -50,9 +50,25 @@ void KMimeTypeTest::initTestCase()
         // No need to run update-mime-database here, the dir is entirely gone.
     }
 
-    // Create fake text/plain part with a higher initial preference than katepart.
-    const QString fakePart = KStandardDirs::locateLocal("services", "faketextpart.desktop");
     bool mustUpdateKSycoca = false;
+
+    // Create fake text/x-patch part.
+    const QString fakePatchPart = KStandardDirs::locateLocal("services", "fakepatchpart.desktop");
+    const bool mustCreatePatchPart = !QFile::exists(fakePatchPart);
+    if (mustCreatePatchPart) {
+        mustUpdateKSycoca = true;
+        KDesktopFile file(fakePatchPart);
+        KConfigGroup group = file.desktopGroup();
+        group.writeEntry("Name", "FakePatchPart");
+        group.writeEntry("Type", "Service");
+        group.writeEntry("X-KDE-Library", "fakepatchpart");
+        group.writeEntry("ServiceTypes", "KParts/ReadOnlyPart");
+        group.writeEntry("MimeType", "text/x-diff;"); // Use an alias on purpose, to test if that works
+        group.writeEntry("InitialPreference", 5);
+    }
+
+    // Create fake text/plain part with a higher initial preference than the patch part.
+    const QString fakePart = KStandardDirs::locateLocal("services", "faketextpart.desktop");
     const bool mustCreate = !QFile::exists(fakePart);
     if (mustCreate) {
         mustUpdateKSycoca = true;
@@ -112,6 +128,8 @@ void KMimeTypeTest::cleanupTestCase()
 {
     // If I want the konqueror unit tests to work, then I better not have a non-working part
     // as the preferred part for text/plain...
+    const QString fakePatchPart = KStandardDirs::locateLocal("services", "fakepatchpart.desktop");
+    QFile::remove(fakePatchPart);
     const QString fakePart = KStandardDirs::locateLocal("services", "faketextpart.desktop");
     QFile::remove(fakePart);
     const QString fakePlugin = KStandardDirs::locateLocal("services", "faketextplugin.desktop");
@@ -615,8 +633,8 @@ void KMimeTypeTest::testMimeTypeTraderForTextPlain()
 
     // Querying mimetype trader for services associated with text/plain
     KService::List offers = KMimeTypeTrader::self()->query("text/plain", "KParts/ReadOnlyPart");
-    QVERIFY( offerListHasService( offers, "katepart.desktop" ) );
-    QVERIFY( offerListHasService( offers, "faketextpart.desktop" ) );
+    QVERIFY(!offerListHasService(offers, "fakepatchpart.desktop"));
+    QVERIFY(offerListHasService(offers, "faketextpart.desktop"));
 
     offers = KMimeTypeTrader::self()->query("text/plain", "KTextEditor/Plugin");
     QVERIFY( offers.count() > 0 );
@@ -626,7 +644,8 @@ void KMimeTypeTest::testMimeTypeTraderForTextPlain()
     QVERIFY( offerListHasService( offers, "faketextplugin.desktop" ) );
 
     // We shouldn't have non-plugins
-    QVERIFY( !offerListHasService( offers, "katepart.desktop" ) );
+    QVERIFY( !offerListHasService( offers, "fakepatchpart.desktop" ) );
+    QVERIFY( !offerListHasService( offers, "faketextpart.desktop" ) );
 }
 
 void KMimeTypeTest::testMimeTypeTraderForDerivedMimeType()
@@ -636,7 +655,7 @@ void KMimeTypeTest::testMimeTypeTraderForDerivedMimeType()
 
     // Querying mimetype trader for services associated with text/x-patch, which inherits from text/plain
     KService::List offers = KMimeTypeTrader::self()->query("text/x-patch", "KParts/ReadOnlyPart");
-    QVERIFY( offerListHasService( offers, "katepart.desktop" ) );
+    QVERIFY( offerListHasService( offers, "fakepatchpart.desktop" ) );
     QVERIFY( offerListHasService( offers, "faketextpart.desktop" ) );
     QVERIFY( (*offers.begin())->entryPath() != "faketextpart.desktop" ); // in the list, but not preferred
 
@@ -648,7 +667,7 @@ void KMimeTypeTest::testMimeTypeTraderForDerivedMimeType()
     QVERIFY( offerListHasService( offers, "faketextplugin.desktop" ) );
 
     offers = KMimeTypeTrader::self()->query("text/x-patch", "Application");
-    QVERIFY( !offerListHasService( offers, "katepart.desktop" ) );
+    QVERIFY( !offerListHasService( offers, "faketextpart.desktop" ) );
 
     // We shouldn't have non-kde apps
     Q_FOREACH( KService::Ptr service, offers )
@@ -670,49 +689,51 @@ void KMimeTypeTest::testMimeTypeTraderForAlias()
         QSKIP( "ksycoca not available", SkipAll );
 
     const KService::List referenceOffers = KMimeTypeTrader::self()->query("application/xml", "KParts/ReadOnlyPart");
-    QVERIFY( offerListHasService( referenceOffers, "katepart.desktop" ) );
+    QVERIFY(offerListHasService(referenceOffers, "faketextpart.desktop"));
+    QVERIFY(!offerListHasService(referenceOffers, "fakepatchpart.desktop"));
 
     // Querying mimetype trader for services associated with text/xml, which is an alias for application/xml
     const KService::List offers = KMimeTypeTrader::self()->query("text/xml", "KParts/ReadOnlyPart");
-    QVERIFY( offerListHasService( offers, "katepart.desktop" ) );
+    QVERIFY(offerListHasService(offers, "faketextpart.desktop"));
+    QVERIFY(!offerListHasService(offers, "fakepatchpart.desktop"));
 
     QCOMPARE(offers.count(), referenceOffers.count());
 }
 
 void KMimeTypeTest::testHasServiceType1() // with services constructed with a full path (rare)
 {
-    QString katepartPath = KStandardDirs::locate( "services", "katepart.desktop" );
-    QVERIFY( !katepartPath.isEmpty() );
-    KService katepart( katepartPath );
-    QVERIFY( katepart.hasMimeType( "text/plain" ) );
-    //QVERIFY( katepart.hasMimeType( "text/x-patch" ) ); // inherited mimetype; fails
-    QVERIFY( !katepart.hasMimeType( "image/png" ) );
-    QVERIFY( katepart.hasServiceType( "KParts/ReadOnlyPart" ) );
-    QVERIFY( katepart.hasServiceType( "KParts/ReadWritePart" ) );
-    QVERIFY( !katepart.hasServiceType( "KTextEditor/Plugin" ) );
+    QString faketextpartPath = KStandardDirs::locate( "services", "faketextpart.desktop" );
+    QVERIFY( !faketextpartPath.isEmpty() );
+    KService faketextpart( faketextpartPath );
+    QVERIFY( faketextpart.hasMimeType( "text/plain" ) );
+    QVERIFY(!faketextpart.hasMimeType("text/x-patch")); // inherited mimetype; fails
+    QVERIFY( !faketextpart.hasMimeType( "image/png" ) );
+    QVERIFY( faketextpart.hasServiceType( "KParts/ReadOnlyPart" ) );
+    QVERIFY( !faketextpart.hasServiceType( "KParts/ReadWritePart" ) );
+    QVERIFY( !faketextpart.hasServiceType( "KTextEditor/Plugin" ) );
 
-    QString ktexteditor_insertfilePath = KStandardDirs::locate( "services", "ktexteditor_insertfile.desktop" );
-    QVERIFY( !ktexteditor_insertfilePath.isEmpty() );
-    KService ktexteditor_insertfile( ktexteditor_insertfilePath );
-    QVERIFY( ktexteditor_insertfile.hasServiceType( "KTextEditor/Plugin" ) );
-    QVERIFY( !ktexteditor_insertfile.hasServiceType( "KParts/ReadOnlyPart" ) );
+    QString textPluginPath = KStandardDirs::locate( "services", "faketextplugin.desktop" );
+    QVERIFY( !textPluginPath.isEmpty() );
+    KService textPlugin( textPluginPath );
+    QVERIFY( textPlugin.hasServiceType( "KTextEditor/Plugin" ) );
+    QVERIFY( !textPlugin.hasServiceType( "KParts/ReadOnlyPart" ) );
 }
 
 void KMimeTypeTest::testHasServiceType2() // with services coming from ksycoca
 {
-    KService::Ptr katepart = KService::serviceByDesktopPath( "katepart.desktop" );
-    QVERIFY( !katepart.isNull() );
-    QVERIFY( katepart->hasMimeType( "text/plain" ) );
-    QVERIFY( katepart->hasMimeType( "text/x-patch" ) ); // due to inheritance
-    QVERIFY( !katepart->hasMimeType( "image/png" ) );
-    QVERIFY( katepart->hasServiceType( "KParts/ReadOnlyPart" ) );
-    QVERIFY( katepart->hasServiceType( "KParts/ReadWritePart" ) );
-    QVERIFY( !katepart->hasServiceType( "KTextEditor/Plugin" ) );
+    KService::Ptr faketextpart = KService::serviceByDesktopPath( "faketextpart.desktop" );
+    QVERIFY( !faketextpart.isNull() );
+    QVERIFY( faketextpart->hasMimeType( "text/plain" ) );
+    QVERIFY( faketextpart->hasMimeType( "text/x-patch" ) ); // due to inheritance
+    QVERIFY( !faketextpart->hasMimeType( "image/png" ) );
+    QVERIFY( faketextpart->hasServiceType( "KParts/ReadOnlyPart" ) );
+    QVERIFY( !faketextpart->hasServiceType( "KParts/ReadWritePart" ) );
+    QVERIFY( !faketextpart->hasServiceType( "KTextEditor/Plugin" ) );
 
-    KService::Ptr ktexteditor_insertfile = KService::serviceByDesktopPath( "ktexteditor_insertfile.desktop" );
-    QVERIFY( !ktexteditor_insertfile.isNull() );
-    QVERIFY( ktexteditor_insertfile->hasServiceType( "KTextEditor/Plugin" ) );
-    QVERIFY( !ktexteditor_insertfile->hasServiceType( "KParts/ReadOnlyPart" ) );
+    KService::Ptr textPlugin= KService::serviceByDesktopPath( "faketextplugin.desktop" );
+    QVERIFY( !textPlugin.isNull() );
+    QVERIFY( textPlugin->hasServiceType( "KTextEditor/Plugin" ) );
+    QVERIFY( !textPlugin->hasServiceType( "KParts/ReadOnlyPart" ) );
 }
 
 void KMimeTypeTest::testPatterns_data()

@@ -81,11 +81,9 @@ bool UDevManager::Private::isOfInterest(const UdevQt::Device &device)
         // Empty slots will not have a system device associated with them.
         return QFile::exists(device.sysfsPath() + "/sysdev");
     }
-    if (device.subsystem() == QLatin1String("sound")) {
-        if (device.parent().subsystem() == QLatin1String("sound") ||
-            device.parent().subsystem().isEmpty()) {
-            return true;
-        }
+    if (device.subsystem() == QLatin1String("sound") &&
+            device.deviceProperty("SOUND_FORM_FACTOR").toString() != "internal") {
+        return true;
     }
 
     if (device.subsystem() == QLatin1String("tty")) {

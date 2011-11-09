@@ -63,14 +63,10 @@ public:
    * @param parent The parent widget of the dialog, if any.
    * @param flags Defines how the font chooser is displayed.
    *        @see KFontChooser::DisplayFlags
-   * @param onlyFixed only display fonts which have fixed-width
-   *        character sizes.
    * @param fontlist a list of fonts to display, in XLFD format.  If
    *        no list is formatted, the internal KDE font list is used.
    *        If that has not been created, X is queried, and all fonts
    *        available on the system are displayed.
-   * @param makeFrame Draws a frame with titles around the contents.
-   * @param diff Display the difference version dialog. See getFontDiff().
    * @param sizeIsRelativeState If not zero the widget will show a
    *        checkbox where the user may choose whether the font size
    *        is to be interpreted as relative size.

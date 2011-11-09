@@ -252,11 +252,13 @@ void KBuildServiceFactory::populateServiceTypes()
                 //kDebug(7021) << "Adding service" << service->entryPath() << "to" << serviceType->name() << "pref=" << preference;
                 m_offerHash.addServiceOffer(stName, KServiceOffer(service, preference, 0, service->allowAsDefault()) );
             } else {
+                KServiceOffer offer(service, serviceTypeList[i].preference, 0, service->allowAsDefault());
                 KMimeType::Ptr mime = KMimeType::mimeType(stName, KMimeType::ResolveAliases);
                 if (!mime) {
                     if (stName.startsWith(QLatin1String("x-scheme-handler/"))) {
                         // Create those on demand
                         m_mimeTypeFactory->createFakeMimeType(stName);
+                        m_offerHash.addServiceOffer(stName, offer );
                     } else {
                         kDebug(7021) << service->entryPath() << "specifies undefined mimetype/servicetype" << stName;
                         // technically we could call addServiceOffer here, 'mime' isn't used. But it
@@ -264,8 +266,9 @@ void KBuildServiceFactory::populateServiceTypes()
                         // over all known servicetypes and mimetypes. Unknown -> never written out.
                         continue;
                     }
+                } else {
+                    m_offerHash.addServiceOffer(mime->name(), offer); // mime->name so that we resolve aliases
                 }
-                m_offerHash.addServiceOffer(stName, KServiceOffer(service, serviceTypeList[i].preference, 0, service->allowAsDefault()) );
             }
         }
     }

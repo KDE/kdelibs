@@ -45,7 +45,9 @@ void KMountPointTest::testCurrentMountPoints()
         QVERIFY(!mountPoint->mountPoint().isEmpty());
         QVERIFY(!mountPoint->mountType().isEmpty());
         // old bug, happened because KMountPoint called KStandardDirs::realPath instead of realFilePath
-        QVERIFY(!mountPoint->realDeviceName().endsWith('/'));
+        if (mountPoint->realDeviceName().startsWith("/dev")) { // skip this check for cifs mounts for instance
+            QVERIFY(!mountPoint->realDeviceName().endsWith('/'));
+        }
 
         // keep one (any) mountpoint with a device name for the test below
         if (!mountPoint->realDeviceName().isEmpty() && !mountWithDevice) {

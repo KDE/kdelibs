@@ -291,6 +291,7 @@ void KLineEdit::setClearButtonShown(bool show)
         }
 
         d->clearButton = new KLineEditButton(this);
+        d->clearButton->setObjectName("KLineEditButton");
         d->clearButton->setCursor( Qt::ArrowCursor );
         d->clearButton->setToolTip( i18nc( "@action:button Clear current text in the line edit", "Clear text" ) );
 
@@ -1168,12 +1169,12 @@ void KLineEdit::mouseReleaseEvent( QMouseEvent* e )
 
     QLineEdit::mouseReleaseEvent( e );
 
-   if (QApplication::clipboard()->supportsSelection() ) {
-       if ( e->button() == Qt::LeftButton ) {
+    if (QApplication::clipboard()->supportsSelection() ) {
+        if ( e->button() == Qt::LeftButton ) {
             // Fix copying of squeezed text if needed
             copySqueezedText( false );
-       }
-   }
+        }
+    }
 }
 
 void KLineEdit::tripleClickTimeout()

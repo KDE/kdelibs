@@ -28,6 +28,7 @@ public:
     KServiceTest() : m_sycocaUpdateDone(0) {}
 private Q_SLOTS:
     void initTestCase();
+    void cleanupTestCase();
     void testByName();
     void testProperty();
     void testAllServiceTypes();
@@ -52,6 +53,7 @@ private:
     QString m_firstOffer;
     bool m_hasKde4Konsole;
     QAtomicInt m_sycocaUpdateDone;
+    bool m_hasNonCLocale;
 };
 
 #endif

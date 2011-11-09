@@ -111,34 +111,42 @@ bool isValidContextNode( NodeImpl *node )
 
 DOM::NodeImpl *xpathParentNode( DOM::NodeImpl *node )
 {
-	if ( node && node->nodeType() == Node::ATTRIBUTE_NODE )
-		return static_cast<DOM::AttrImpl*>(node)->ownerElement();
+	DOM::NodeImpl *res = 0;
+	if ( node ) {
+	    if ( node->nodeType() == Node::ATTRIBUTE_NODE )
+	        res = static_cast<DOM::AttrImpl*>(node)->ownerElement();
 	else
-		return node->parentNode();
+	        res = node->parentNode();
+	}
+	return res;
 }
 
 DOM::NodeImpl *xpathFirstChild( DOM::NodeImpl *node )
 {
-	if ( node && node->nodeType() == Node::ATTRIBUTE_NODE )
-		return 0;
-	else
-		return node->firstChild();
+	DOM::NodeImpl *res = 0;
+	if ( node && node->nodeType() != Node::ATTRIBUTE_NODE )
+	    res = node->firstChild();
+	return res;
 }
 
 DOM::NodeImpl *xpathLastChild( DOM::NodeImpl *node )
 {
-	if ( node && node->nodeType() == Node::ATTRIBUTE_NODE )
-		return 0;
-	else
-		return node->lastChild();
+	DOM::NodeImpl *res = 0;
+	if ( node && node->nodeType() != Node::ATTRIBUTE_NODE )
+	    res = node->lastChild();
+	return res;
 }
 
 DOM::NodeImpl *nextSiblingForFollowing( DOM::NodeImpl *node )
 {
-	if ( node && node->nodeType() == Node::ATTRIBUTE_NODE )
-		return static_cast<DOM::AttrImpl*>(node)->ownerElement()->firstChild();
+	DOM::NodeImpl *res = 0;
+	if ( node ) {
+		if ( node->nodeType() == Node::ATTRIBUTE_NODE )
+			res = static_cast<DOM::AttrImpl*>(node)->ownerElement()->firstChild();
 	else
-		return node->nextSibling();
+			res = node->nextSibling();
+	}
+	return res;
 }
 
 } // namespace khtml

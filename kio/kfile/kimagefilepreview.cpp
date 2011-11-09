@@ -167,8 +167,9 @@ KIO::PreviewJob * KImageFilePreview::createJob( const KUrl& url, int w, int h )
     if (url.isValid()) {
         KFileItemList items;
         items.append(KFileItem(KFileItem::Unknown, KFileItem::Unknown, url, true));
+        QStringList plugins = KIO::PreviewJob::availablePlugins();
 
-        KIO::PreviewJob *previewJob = KIO::filePreview(items, QSize(w, h));
+        KIO::PreviewJob *previewJob = KIO::filePreview(items, QSize(w, h), &plugins);
         previewJob->setOverlayIconAlpha(0);
         previewJob->setScaleType(KIO::PreviewJob::Scaled);
         return previewJob;
