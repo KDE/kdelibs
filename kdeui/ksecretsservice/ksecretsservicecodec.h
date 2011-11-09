@@ -24,7 +24,15 @@
 #include <kdeui_export.h>
 
 namespace KSecretsService {
-    
+
+/**
+ * @class SecretCodec
+ * @internal
+ * 
+ * This class is used internally by the KSecretsService infrastructure for communicating between the
+ * client API and the ksecretsserviced daemon. This communication is done over the DBus in the
+ * current implementation. As such, messages payload need encryption to avoid eavesdropping.
+ */
 class KDEUI_EXPORT SecretCodec {
 public:
     SecretCodec();

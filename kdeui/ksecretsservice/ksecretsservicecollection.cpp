@@ -45,7 +45,7 @@ Collection::~Collection()
 {
 }
 
-Collection * KSecretsService::Collection::findCollection(const QString& collectionName, 
+Collection * KSecretsService::Collection::findCollection(const QString& collectionName,
                                                          KSecretsService::Collection::FindCollectionOptions options /* = CreateCollection */,
                                                          const QVariantMap collectionProperties /* = QVariantMap() */,
                                                          const WId &promptParentWindowId /* =0 */ )

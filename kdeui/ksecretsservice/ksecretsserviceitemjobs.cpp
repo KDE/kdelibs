@@ -32,9 +32,10 @@
 using namespace KSecretsService;
 
 
-SecretItemJob::SecretItemJob(SecretItem* item): 
-    _item( item )
+SecretItemJob::SecretItemJob(SecretItem* item) :
+    d( new SecretItemJobPrivate() )
 {
+    d->_item = item;
 }
 
 SecretItemJob::~SecretItemJob()
@@ -43,17 +44,17 @@ SecretItemJob::~SecretItemJob()
 
 SecretItem* SecretItemJob::secretItem() const
 {
-    return _item;
+    return d->_item;
 }
 
 void SecretItemJob::setCustomData(const QVariant& data)
 {
-    _customData = data;
+    d->_customData = data;
 }
 
 const QVariant& SecretItemJob::customData() const
 {
-    return _customData;
+    return d->_customData;
 }
 
 void SecretItemJob::finished(SecretItemJob::ItemJobError err, const QString& msg)
@@ -63,8 +64,9 @@ void SecretItemJob::finished(SecretItemJob::ItemJobError err, const QString& msg
     emitResult();
 }
 
-
-
+SecretItemJobPrivate::SecretItemJobPrivate()
+{
+}
 
 GetSecretItemSecretJob::GetSecretItemSecretJob( SecretItem* item ) :
     SecretItemJob( item ),

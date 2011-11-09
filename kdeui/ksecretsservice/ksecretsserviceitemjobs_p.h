@@ -33,6 +33,15 @@ namespace KSecretsService {
 class GetSecretItemSecretJob;
 class SecretItemPrivate;
 
+class SecretItemJobPrivate {
+    Q_DISABLE_COPY(SecretItemJobPrivate)
+public:
+    SecretItemJobPrivate();
+    
+    SecretItem  *_item;
+    QVariant    _customData;
+};
+
 class GetSecretItemSecretJobPrivate  : public QObject {
     Q_OBJECT
     Q_DISABLE_COPY(GetSecretItemSecretJobPrivate)

@@ -47,6 +47,10 @@ class CreateItemJobPrivate;
  * SecretItems can be qualified using attributes. These attributes are used internally by KSecretsService to uniquely identify them inside the collection.
  * The attributes list always contain at least one item, named "Label". It's content is up to the client application.
  * The "Label" attribute can also be read by calling the @ref attribute method and set by @ref setLabel method.
+ * 
+ * Please note that all the jobs returned by this class autodelete themselbes when done. If you application
+ * need to access the returned items, then it should copy them away before returning from the job's done 
+ * signal handling method.
  */
 class KDEUI_EXPORT SecretItem : public QSharedData {
 public:

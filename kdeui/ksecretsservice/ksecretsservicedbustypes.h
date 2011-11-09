@@ -31,6 +31,7 @@
 namespace KSecretsService {
     
 /**
+ * @internal
  * This is the basic Secret structure exchanged via the dbus API
  * See the spec for more details
  */
@@ -46,6 +47,9 @@ typedef QMap<QDBusObjectPath, SecretStruct> ObjectPathSecretMap;
 typedef QMap<QString, QVariant> StringVariantMap;
 
 
+/**
+ * @internal
+ */
 inline QDBusArgument &operator<<(QDBusArgument &argument, const SecretStruct &secret)
 {
     argument.beginStructure();
@@ -54,6 +58,9 @@ inline QDBusArgument &operator<<(QDBusArgument &argument, const SecretStruct &se
     return argument;
 }
 
+/**
+ * @internal
+ */
 inline const QDBusArgument &operator>>(const QDBusArgument &argument, SecretStruct &secret)
 {
     argument.beginStructure();

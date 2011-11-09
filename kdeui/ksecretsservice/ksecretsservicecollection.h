@@ -61,6 +61,10 @@ class CollectionLockJob;
  * The KJob descendant classes returned by the methods also provide custom members, depending on the operation
  * they are intented to execute. Upon successuful execution, these members hold the corresponding return values.
  * 
+ * Please note that all the jobs returned by this class autodelete themselbes when done. If you application
+ * need to access the returned items, then it should copy them away before returning from the job's done 
+ * signal handling method.
+ * 
  * @see KJob
  */
 class KDEUI_EXPORT Collection : public QObject {
@@ -110,7 +114,7 @@ public:
     static Collection * findCollection( const QString &collectionName,
                                         FindCollectionOptions options = CreateCollection,
                                         const QVariantMap collectionProperties = QVariantMap(),
-                                        const WId &promptParentWindowId =0 );
+                                        const WId &promptParentWindowId = 0 );
 
     /**
      * Use this method to find out the names of all known secret service collections on the running system

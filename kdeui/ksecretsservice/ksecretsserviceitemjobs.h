@@ -31,12 +31,20 @@
 namespace KSecretsService {
 
 class SecretItem;
+class SecretItemJobPrivate;
 class GetSecretItemSecretJobPrivate;
 class SetSecretItemSecretJobPrivate;
 class SecretItemDeleteJobPrivate;
 class ReadItemPropertyJobPrivate;
 class WriteItemPropertyJobPrivate;
 
+/**
+ * @class SecretItemJob
+ * @internal
+ * 
+ * Base class for the SecretItem related jobs. Your application is not supposed
+ * to use this class directly.
+ */
 class KDEUI_EXPORT SecretItemJob : public KCompositeJob {
     Q_OBJECT
     Q_DISABLE_COPY(SecretItemJob)
@@ -65,11 +73,11 @@ public:
     const QVariant& customData() const;
     
 protected:
-    void finished( ItemJobError, const QString& msg ="");
+    void finished( ItemJobError, const QString& msg = QString() );
     
 private:
-    SecretItem  *_item;
-    QVariant    _customData;
+    friend class SecretItemJobPrivate;
+    QSharedPointer< SecretItemJobPrivate > d;
 };
 
 class KDEUI_EXPORT GetSecretItemSecretJob : public SecretItemJob {
