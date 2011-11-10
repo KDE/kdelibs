@@ -28,6 +28,23 @@
 
 #include <kdeui_export.h>
 
+/**
+ * NOTE: KSecretsService folder semantics
+ * The KWallet API uses folders for organising items. KSecretsService does not
+ * have this notion. But it uses attributes that can be applied arbitrarily on
+ * all the items. The KWallet code that maps to KSecretsService applies an special
+ * attribute KSS_ATTR_ENTRYFOLDER to all items with the currentFolder() value.
+ * The KWallet folder API's calls will always succeed and they'll only change the
+ * current folder value. The folderList() call will scan all the collection
+ * items and collect the KSS_ATTR_ENTRYFOLDER attributes into a list.
+ */
+
+/**
+ * NOTE: KWalet API distinguish KSecretsService collection items by attaching
+ * them some specific attributes, defined below
+ */
+#define KSS_ATTR_ENTRYFOLDER "kwallet.folderName"
+#define KSS_ATTR_WALLETTYPE "kwallet.type"
 
 class QDBusError;
 
@@ -428,6 +445,13 @@ class KDEUI_EXPORT Wallet : public QObject
 		 */
 		static bool keyDoesNotExist(const QString& wallet, const QString& folder,
 					    const QString& key);
+        
+        /**
+         * Determine if the KWallet API is using the KSecretsService infrastructure
+         * This can ben changed in system settings
+         * @return Returns true if the KSecretsService infrastructure is active
+         */
+        static bool isUsingKSecretsService();
 
 	Q_SIGNALS:
 		/**
@@ -502,6 +526,17 @@ class KDEUI_EXPORT Wallet : public QObject
 		 *  Emits wallet opening success.
 		 */
 		void emitWalletOpened();
+        
+        /**
+         * @internal
+         * Receives status changed notifications from KSecretsService infrastructure
+         */
+        void slotCollectionStatusChanged( int );
+        /**
+         * @internal
+         * Received delete notification from KSecretsService infrastructure
+         */
+        void slotCollectionDeleted();
 
 	private:
 		class WalletPrivate;
