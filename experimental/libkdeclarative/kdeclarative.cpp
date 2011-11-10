@@ -144,8 +144,13 @@ void KDeclarative::setupBindings()
     foreach(const QString &importPath, KGlobal::dirs()->findDirs("module", "imports")) {
         d->declarativeEngine.data()->addImportPath(importPath);
     }
-    KConfigGroup cg(KSharedConfig::openConfig("kdeclarativerc"), "Components-platform");
-    const QString componentsPlatform = cg.readEntry("name", "desktop");
+
+    QString componentsPlatform = getenv("KDE_PLASMA_COMPONENTS_PLATFORM");
+    if (componentsPlatform.isEmpty()) {
+        KConfigGroup cg(KSharedConfig::openConfig("kdeclarativerc"), "Components-platform");
+        componentsPlatform = cg.readEntry("name", "desktop");
+    }
+
     foreach(const QString &importPath, KGlobal::dirs()->findDirs("module", "platformimports/" % componentsPlatform)) {
         d->declarativeEngine.data()->addImportPath(importPath);
     }
