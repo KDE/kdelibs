@@ -1714,7 +1714,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
       if ( m_request.method == DAV_COPY || m_request.method == DAV_MOVE ) {
         // ERR_ACCESS_DENIED
         errorString = i18n("The server was unable to maintain the liveness of "
-                           "the properties listed in the property behavior XML "
+                           "the properties listed in the propertybehavior XML "
                            "element or you attempted to overwrite a file while "
                            "requesting that files are not overwritten. %1",
                              ow );
