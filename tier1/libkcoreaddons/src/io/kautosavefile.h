@@ -20,7 +20,7 @@
 #ifndef KAUTOSAVEFILE_H
 #define KAUTOSAVEFILE_H
 
-#include <kdecore_export.h>
+#include <kcoreaddons_export.h>
 #include "kurl.h"
 
 #include <QtCore/QFile>
@@ -126,7 +126,7 @@ class KAutoSaveFilePrivate;
  *
  * @author Jacob R Rideout <kde@jacobrideout.net>
  */
-class KDECORE_EXPORT KAutoSaveFile : public QFile
+class KCOREADDONS_EXPORT KAutoSaveFile : public QFile
 {
     Q_OBJECT
 public:
