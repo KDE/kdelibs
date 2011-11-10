@@ -53,7 +53,7 @@ QStringList findAllStales()
 
     Q_FOREACH(const QString dir, dirs) {
         const QString appDir = dir + QChar::fromLatin1('/') + appName;
-        if (QDir(dir).exists(appDir)) {
+        if (QDir(appDir).exists()) {
             files = files << QDir(appDir).entryList(QStringList() << QString::fromLatin1("*"));
         }
     }
