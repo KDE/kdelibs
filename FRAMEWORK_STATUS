@@ -27,7 +27,8 @@ LibKCoreAddons (contains KJob, KCmdLineArgs, KRandom, KUrl for now, KSharedDataC
                        KMD5 [for now; QCryptographicHash doesn't work on QIODevices])
            filesystem handling (KDirWatch, KLockFile for now, KSaveFile for now, KTempDir for now) -> Done (bambee)
 KDebug (seems small to be on its own.... pending: kconfig)
-Filesystem Handling
+Filesystem Handling -> KSavefile was already part of kcoreaddons, KTemporaryFile is going to be removed, so I moved KAutoSaveFile into kcoreaddons
+                       (since it provides almost the same kind of features than ksavefile) -> Done (bambee)
 Configuration
 Misc KDE Look/Feel/Consistency
 Misc Integration
