@@ -36,6 +36,7 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/xmlgui
  ${CMAKE_CURRENT_SOURCE_DIR}/ksecretsservice
  ${DBUSMENUQT_INCLUDE_DIR}
+ ${QCA2_INCLUDE_DIR}
 )
 
 if(NOT KDEUI_NO_ATTICA)
