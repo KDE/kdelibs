@@ -33,23 +33,28 @@
 #include <ktoolinvocation.h>
 #include <QDBusMetaType>
 #include "ksecretsservicecollection_p.h"
+#include <kglobal.h>
 
 using namespace KSecretsService;
 
 #define SERVICE_NAME "org.freedesktop.secrets"
 
 const QString DBusSession::encryptionAlgorithm = "dh-ietf1024-aes128-cbc-pkcs7";
-OpenSessionJob DBusSession::openSessionJob(0);
+OpenSessionJob *DBusSession::openSessionJob = 0;
 DBusSession DBusSession::staticInstance;
 
 DBusSession::DBusSession()
 {
-    openSessionJob.setAutoDelete(false);
 }
 
 OpenSessionJob* DBusSession::openSession()
 {
-    return &openSessionJob;
+    if ( 0 == openSessionJob ) {
+        openSessionJob = new OpenSessionJob(0);
+        openSessionJob->setAutoDelete(false);
+        KGlobal::deref(); // compensate for this job never finishing and preventing applications to quit
+    }
+    return openSessionJob;
 }
 
 OpenSessionJob::OpenSessionJob(QObject* parent): 
@@ -232,15 +237,15 @@ OrgFreedesktopSecretItemInterface* DBusSession::createItemIf(const QDBusObjectPa
 
 QDBusObjectPath DBusSession::sessionPath()
 {
-    Q_ASSERT( openSessionJob.sessionInterface()->isValid() );
-    return QDBusObjectPath( openSessionJob.sessionInterface()->path() );
+    Q_ASSERT( openSessionJob->sessionInterface()->isValid() );
+    return QDBusObjectPath( openSessionJob->sessionInterface()->path() );
 }
 
 bool DBusSession::encrypt(const QVariant& value, SecretStruct& secretStruct)
 {
     QCA::SecureArray valueArray( value.toByteArray() );
     QCA::SecureArray encryptedArray;
-    bool result = openSessionJob.secretCodec.encryptClient( valueArray , encryptedArray, secretStruct.m_parameters );
+    bool result = openSessionJob->secretCodec.encryptClient( valueArray , encryptedArray, secretStruct.m_parameters );
     if ( result ) {
         secretStruct.m_value = encryptedArray.toByteArray();
     }
@@ -250,7 +255,7 @@ bool DBusSession::encrypt(const QVariant& value, SecretStruct& secretStruct)
 bool DBusSession::decrypt(const SecretStruct& secretStruct, QVariant& value)
 {
     QCA::SecureArray valueArray;
-    bool result = openSessionJob.secretCodec.decryptClient( secretStruct.m_value, secretStruct.m_parameters, valueArray );
+    bool result = openSessionJob->secretCodec.decryptClient( secretStruct.m_value, secretStruct.m_parameters, valueArray );
     if ( result ) {
         value = valueArray.toByteArray();
     }
@@ -259,6 +264,6 @@ bool DBusSession::decrypt(const SecretStruct& secretStruct, QVariant& value)
 
 OrgFreedesktopSecretServiceInterface* DBusSession::serviceIf()
 {
-    Q_ASSERT(openSessionJob.serviceIf != 0);
-    return openSessionJob.serviceIf;
+    Q_ASSERT(openSessionJob->serviceIf != 0);
+    return openSessionJob->serviceIf;
 }

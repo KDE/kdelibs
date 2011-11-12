@@ -98,7 +98,7 @@ private:
     
     static DBusSession          staticInstance;
     static const QString        encryptionAlgorithm;
-    static OpenSessionJob       openSessionJob;
+    static OpenSessionJob       *openSessionJob;
 };
 
 } // namespace
