@@ -271,14 +271,14 @@ Wallet::Wallet(int handle, const QString& name)
 
 
 Wallet::~Wallet() {
+#ifdef HAVE_KSECRETSSERVICE
     if (walletLauncher->m_useKSecretsService) {
         d->folder.clear();
         d->name.clear();
-#ifdef HAVE_KSECRETSSERVICE
         delete d->secretsCollection;
-#endif
     }
     else {
+#endif
         if (d->handle != -1) {
             if (!walletLauncher.isDestroyed()) {
                 walletLauncher->getInterface().close(d->handle, false, appid());
@@ -290,7 +290,9 @@ Wallet::~Wallet() {
             d->folder.clear();
             d->name.clear();
         }
+#ifdef HAVE_KSECRETSSERVICE
     }
+#endif
     delete d;
 }
 
