@@ -274,9 +274,9 @@ void KUrlComboBox::setUrl( const KUrl& url )
 
     setDefaults();
 
-    QListIterator<const KUrlComboBoxPrivate::KUrlComboItem*> it( d->itemList );
-    while ( it.hasNext() )
-        d->insertUrlItem( it.next() );
+    int offset = qMax (0, d->itemList.count() - d->myMaximum + d->defaultList.count());
+    for ( int i = offset; i < d->itemList.count(); i++ )
+        d->insertUrlItem( d->itemList[i] );
 
     KUrlComboBoxPrivate::KUrlComboItem *item = new KUrlComboBoxPrivate::KUrlComboItem;
     item->url = url;
@@ -335,7 +335,7 @@ void KUrlComboBox::setMaxItems( int max )
 
         setDefaults();
 
-	int offset = qMax (0, d->itemList.count() - d->myMaximum + d->defaultList.count());
+        int offset = qMax (0, d->itemList.count() - d->myMaximum + d->defaultList.count());
         for ( int i = offset; i < d->itemList.count(); i++ )
             d->insertUrlItem( d->itemList[i] );
 
