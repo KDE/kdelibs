@@ -37,6 +37,8 @@
 /////////////////////////// K7Zip //////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
+#define BUFFER_SIZE 8*1024
+
 unsigned char k7zip_signature[6] = {'7', 'z', 0xBC, 0xAF, 0x27, 0x1C};
 unsigned char XZ_HEADER_MAGIC[6] = { 0xFD, '7', 'z', 'X', 'Z', 0x00 };
 
@@ -279,6 +281,25 @@ public:
         return result;
     }
 
+    quint32 getCoderInStreamIndex(quint32 coderIndex) const
+    {
+        quint32 streamIndex = 0;
+        for (quint32 i = 0; i < coderIndex; i++) {
+            streamIndex += folderInfos[i]->numInStreams;
+        }
+        return streamIndex;
+    }
+
+    quint32 getCoderOutStreamIndex(quint32 coderIndex) const
+    {
+        quint32 streamIndex = 0;
+        for (quint32 i = 0; i < coderIndex; i++) {
+            streamIndex += folderInfos[i]->numOutStreams;
+        }
+        return streamIndex;
+    }
+
+
     int findBindPairForInStream(size_t inStreamIndex) const
     {
         for(int i = 0; i < inIndexes.size(); i++) {
@@ -309,10 +330,10 @@ public:
         return -1;
     }
 
-    void findInStream(int streamIndex, int &coderIndex, int &coderStreamIndex) const
+    void findInStream(quint32 streamIndex, quint32 &coderIndex, quint32 &coderStreamIndex) const
     {
-        for (coderIndex = 0; coderIndex < folderInfos.size(); coderIndex++) {
-            int curSize = folderInfos[coderIndex]->numInStreams;
+        for (coderIndex = 0; coderIndex < (quint32)folderInfos.size(); coderIndex++) {
+            quint32 curSize = folderInfos[coderIndex]->numInStreams;
             if (streamIndex < curSize) {
                 coderStreamIndex = streamIndex;
                 return;
@@ -321,9 +342,10 @@ public:
         }
     }
 
-    void findOutStream(int streamIndex, int &coderIndex, int &coderStreamIndex) const {
-        for (coderIndex = 0; coderIndex < folderInfos.size(); coderIndex++) {
-            int curSize = folderInfos[coderIndex]->numOutStreams;
+    void findOutStream(quint32 streamIndex, quint32 &coderIndex, quint32 &coderStreamIndex) const
+    {
+        for (coderIndex = 0; coderIndex < (quint32)folderInfos.size(); coderIndex++) {
+            quint32 curSize = folderInfos[coderIndex]->numOutStreams;
             if (streamIndex < curSize) {
                 coderStreamIndex = streamIndex;
                 return;
@@ -407,6 +429,7 @@ public:
     QByteArray header;
     QByteArray outData; // Store data in this buffer before compress and write in archive.
     K7ZipFileEntry* m_currentFile;
+    QList<KArchiveEntry*> m_entryList;
 
     void clear() {
         packCRCsDefined.clear();
@@ -457,7 +480,7 @@ public:
     QByteArray readAndDecodePackedStreams(bool readMainStreamInfo = true);
 
     //Write
-    void createItemsFromEntities(const KArchiveDirectory*, const QString&);
+    void createItemsFromEntities(const KArchiveDirectory*, const QString&, QByteArray&);
     void writeByte(unsigned char b);
     void writeNumber(quint64 value);
     void writeBoolVector(const QVector<bool> &boolVector);
@@ -1123,192 +1146,71 @@ bool K7Zip::K7ZipPrivate::readMainStreamsInfo()
     return false;
 }
 
-
-struct StreamInfo
+static bool getInStream(const Folder* folder, quint32 streamIndex, int& seqInStream, quint32& coderIndex)
 {
-    quint64 startPos;
-    quint64 packSize;
-};
-
-struct BindInfo
-{
-    QVector<Folder::FolderInfo*> coders;
-    QVector<quint32> inIndexes;
-    QVector<quint32> outIndexes;
-    QVector<quint32> inStreams;
-    QVector<quint32> outStreams;
-    QVector<quint32> coderMethodIDs;
-
-    void clear()
-    {
-        coders.clear();
-        inIndexes.clear();
-        outIndexes.clear();
-        inStreams.clear();
-        outStreams.clear();
-        coderMethodIDs.clear();
-    }
-
-    void getNumStreams(quint32 &numInStreams, quint32 &numOutStreams) const
-    {
-        numInStreams = 0;
-        numOutStreams = 0;
-        for (int i = 0; i < coders.size(); i++)
-        {
-            const Folder::FolderInfo *coder = coders[i];
-            numInStreams += coder->numInStreams;
-            numOutStreams += coder->numOutStreams;
-        }
-    }
-
-    int findBinderForInStream(quint32 inStream) const
-    {
-        for (int i = 0; i < inIndexes.size(); i++) {
-            if (inIndexes[i] == inStream) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    int findBinderForOutStream(quint32 outStream) const
-    {
-        for (int i = 0; i < outIndexes.size(); i++) {
-            if (outIndexes[i] == outStream) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    quint32 getCoderInStreamIndex(quint32 coderIndex) const
-    {
-        quint32 streamIndex = 0;
-        for (quint32 i = 0; i < coderIndex; i++) {
-            streamIndex += coders[i]->numInStreams;
-        }
-        return streamIndex;
-    }
-
-    quint32 getCoderOutStreamIndex(quint32 coderIndex) const
-    {
-        quint32 streamIndex = 0;
-        for (quint32 i = 0; i < coderIndex; i++) {
-            streamIndex += coders[i]->numOutStreams;
-        }
-        return streamIndex;
-    }
-
-
-    void findInStream(quint32 streamIndex, quint32 &coderIndex, quint32 &coderStreamIndex) const
-    {
-        for (coderIndex = 0; coderIndex < (quint32)coders.size(); coderIndex++) {
-            quint32 curSize = coders[coderIndex]->numInStreams;
-            if (streamIndex < curSize) {
-                coderStreamIndex = streamIndex;
-                return;
-            }
-            streamIndex -= curSize;
-        }
-    }
-
-    void findOutStream(quint32 streamIndex, quint32 &coderIndex, quint32 &coderStreamIndex) const
-    {
-        for (coderIndex = 0; coderIndex < (quint32)coders.size(); coderIndex++) {
-            quint32 curSize = coders[coderIndex]->numOutStreams;
-            if (streamIndex < curSize) {
-                coderStreamIndex = streamIndex;
-                return;
-            }
-            streamIndex -= curSize;
-        }
-    }
-};
-
-static void convertFolderItemInfoToBindInfo(const Folder *folder, BindInfo &bindInfo)
-{
-    bindInfo.clear();
-    for (int i = 0; i < folder->inIndexes.size(); i++)
-    {
-        bindInfo.inIndexes.append(folder->inIndexes[i]);
-        bindInfo.outIndexes.append(folder->outIndexes[i]);
-    }
-
-    quint32 outStreamIndex = 0;
-    for (int i = 0; i < folder->folderInfos.size(); i++) {
-        Folder::FolderInfo *coderStreamsInfo = new Folder::FolderInfo();
-        const Folder::FolderInfo *coderInfo = folder->folderInfos[i];
-
-        coderStreamsInfo->numInStreams = coderInfo->numInStreams;
-        coderStreamsInfo->numOutStreams = coderInfo->numOutStreams;
-        bindInfo.coders.append(coderStreamsInfo);
-
-        bindInfo.coderMethodIDs.append(coderInfo->methodID);
-        for (qint32 j = 0; j < coderStreamsInfo->numOutStreams; j++, outStreamIndex++) {
-            if (folder->findBindPairForOutStream(outStreamIndex) < 0) {
-                bindInfo.outStreams.append(outStreamIndex);
-            }
-        }
-    }
-
     for (int i = 0; i < folder->packedStreams.size(); i++) {
-        bindInfo.inStreams.append(folder->packedStreams[i]);
-    }
-}
-
-static bool getInStream(const BindInfo& bindInfo, quint32 streamIndex, int& seqInStream)
-{
-    for (int i = 0; i < bindInfo.inStreams.size(); i++) {
-        if (bindInfo.inStreams[i] == streamIndex) {
+        if (folder->packedStreams[i] == streamIndex) {
             seqInStream = i;
             return  true;
         }
     }
 
-    int binderIndex = bindInfo.findBinderForInStream(streamIndex);
+    int binderIndex = folder->findBindPairForInStream(streamIndex);
     if (binderIndex < 0)
         return false;
 
-    quint32 coderIndex, coderStreamIndex;
-    bindInfo.findOutStream(bindInfo.outIndexes[binderIndex],
+    quint32 coderStreamIndex;
+    folder->findOutStream(folder->outIndexes[binderIndex],
       coderIndex, coderStreamIndex);
 
-    quint32 startIndex = bindInfo.getCoderInStreamIndex(coderIndex);
+    quint32 startIndex = folder->getCoderInStreamIndex(coderIndex);
 
-    if (bindInfo.coders[coderIndex]->numInStreams > 1)
+    if (folder->folderInfos[coderIndex]->numInStreams > 1)
         return false;
 
-    for (int i = 0; i < (int)bindInfo.coders[coderIndex]->numInStreams; i++) {
-        getInStream(bindInfo, startIndex + i, seqInStream);
+    for (int i = 0; i < (int)folder->folderInfos[coderIndex]->numInStreams; i++) {
+        getInStream(folder, startIndex + i, seqInStream, coderIndex);
     }
 
     return true;
 }
 
-static bool getOutStream(const BindInfo& bindInfo, quint32 streamIndex, int& seqOutStream)
+static bool getOutStream(const Folder* folder, quint32 streamIndex, int& seqOutStream)
 {
-    for(int i = 0; i < bindInfo.outStreams.size(); i++) {
-        if (bindInfo.outStreams[i] == streamIndex) {
+    QVector<quint32> outStreams;
+    quint32 outStreamIndex = 0;
+    for (int i = 0; i < folder->folderInfos.size(); i++) {
+        const Folder::FolderInfo *coderInfo = folder->folderInfos[i];
+
+        for (int j = 0; j < coderInfo->numOutStreams; j++, outStreamIndex++) {
+            if (folder->findBindPairForOutStream(outStreamIndex) < 0) {
+                outStreams.append(outStreamIndex);
+            }
+        }
+    }
+
+    for(int i = 0; i < outStreams.size(); i++) {
+        if (outStreams[i] == streamIndex) {
             seqOutStream = i;
             return true;
         }
     }
 
-    int binderIndex = bindInfo.findBinderForOutStream(streamIndex);
+    int binderIndex = folder->findBindPairForOutStream(streamIndex);
     if (binderIndex < 0)
         return false;
 
     quint32 coderIndex, coderStreamIndex;
-    bindInfo.findInStream(bindInfo.inIndexes[binderIndex],
+    folder->findInStream(folder->inIndexes[binderIndex],
       coderIndex, coderStreamIndex);
 
-    quint32 startIndex = bindInfo.getCoderOutStreamIndex(coderIndex);
+    quint32 startIndex = folder->getCoderOutStreamIndex(coderIndex);
 
-    if (bindInfo.coders[coderIndex]->numOutStreams > 1)
+    if (folder->folderInfos[coderIndex]->numOutStreams > 1)
         return false;
 
-    for (int i = 0; i < (int)bindInfo.coders[coderIndex]->numOutStreams; i++) {
-        getOutStream(bindInfo, startIndex + i, seqOutStream);
+    for (int i = 0; i < (int)folder->folderInfos[coderIndex]->numOutStreams; i++) {
+        getOutStream(folder, startIndex + i, seqOutStream);
     }
 
     return true;
@@ -1350,6 +1252,11 @@ public:
         }
     }
 
+    quint32 getThreshold(quint32 total)
+    {
+        return (code) / ( range /= total);
+    }
+
     void decode(quint32 start, quint32 size)
     {
         code -= start * range;
@@ -1357,6 +1264,42 @@ public:
         normalize();
     }
 
+    quint32 decodeDirectBits(int numTotalBits)
+    {
+        quint32 r = range;
+        quint32 c = code;
+        quint32 result = 0;
+        for (int i = numTotalBits; i != 0; i--) {
+            r >>= 1;
+            quint32 t = (c - r) >> 31;
+            c -= r & (t - 1);
+            result = (result << 1) | (1 - t);
+
+            if (r < kTopValue) {
+                c = (c << 8) | readByte();
+                r <<= 8;
+            }
+        }
+        range = r;
+        code = c;
+        return result;
+    }
+
+    quint32 DecodeBit(quint32 size0, quint32 numTotalBits)
+    {
+        quint32 newBound = (range >> numTotalBits) * size0;
+        quint32 symbol;
+        if (code < newBound) {
+            symbol = 0;
+            range = newBound;
+        } else {
+            symbol = 1;
+            code -= newBound;
+            range -= newBound;
+        }
+        normalize();
+        return symbol;
+    }
 };
 
 const int kNumBitModelTotalBits  = 11;
@@ -1493,7 +1436,6 @@ QByteArray K7Zip::K7ZipPrivate::readAndDecodePackedStreams(bool readMainStreamIn
     QByteArray inflatedData;
 
     quint64 startPos = 32 + packPos ;
-    quint64 startPos2 = 32 + packPos ;
     for (int i = 0; i < folders.size(); i++)
     {
         const Folder* folder = folders[i];
@@ -1504,40 +1446,8 @@ QByteArray K7Zip::K7ZipPrivate::readAndDecodePackedStreams(bool readMainStreamIn
             return inflatedData;
         }
 
-        QVector<StreamInfo> streamInfos;
-        for (int j = 0; j < folder->packedStreams.size(); j++) {
-            StreamInfo streamInfo;
-            streamInfo.startPos = startPos;
-            streamInfo.packSize = packSizes[j];
-            streamInfos.append(streamInfo);
-            startPos += packSizes[j];
-        }
-
-        BindInfo bindInfo;
-        convertFolderItemInfoToBindInfo(folder, bindInfo);
-
-        //QVector<Folder::FolderInfo> coders;
-        for (int j = 0; j < bindInfo.inIndexes.size(); j++) {
-            quint32 inCoderIndex, inCoderStreamIndex;
-            quint32 outCoderIndex, outCoderStreamIndex;
-            bindInfo.findInStream(bindInfo.inIndexes[j], inCoderIndex, inCoderStreamIndex);
-            bindInfo.findOutStream(bindInfo.outIndexes[j], outCoderIndex, outCoderStreamIndex);
-
-        }
-
-        for (int j = 0; j < bindInfo.inStreams.size(); j++)
-        {
-            quint32 inCoderIndex, inCoderStreamIndex;
-            bindInfo.findInStream(bindInfo.inStreams[j], inCoderIndex, inCoderStreamIndex);
-        }
-
-        for (int j = 0; j < bindInfo.outStreams.size(); j++) {
-            quint32 outCoderIndex, outCoderStreamIndex;
-            bindInfo.findOutStream(bindInfo.outStreams[j], outCoderIndex, outCoderStreamIndex);
-        }
-
         // Find main coder
-        int mainCoderIndex = -1;
+        quint32 mainCoderIndex = 0;
         QVector<int> outStreamIndexed;
         int outStreamIndex = 0;
         for (int j = 0; j < folder->folderInfos.size(); j++) {
@@ -1550,29 +1460,30 @@ QByteArray K7Zip::K7ZipPrivate::readAndDecodePackedStreams(bool readMainStreamIn
             }
         }
 
-        int temp = 0;
+        quint32 temp = 0;
         if (!outStreamIndexed.isEmpty()) {
             folder->findOutStream(outStreamIndexed[0], mainCoderIndex, temp);
         }
 
-        quint32 startInIndex = bindInfo.getCoderInStreamIndex(mainCoderIndex);
-        quint32 startOutIndex = bindInfo.getCoderOutStreamIndex(mainCoderIndex);
+        quint32 startInIndex = folder->getCoderInStreamIndex(mainCoderIndex);
+        quint32 startOutIndex = folder->getCoderOutStreamIndex(mainCoderIndex);
 
         Folder::FolderInfo* mainCoder = folder->folderInfos[mainCoderIndex];
 
-        size_t totalPackedSize = 0;
         QVector<int> seqInStreams;
+        QVector<quint32> coderIndexes;
         for (int j = 0; j < (int)mainCoder->numInStreams; j++) {
             int seqInStream;
-            getInStream(bindInfo, startInIndex + j, seqInStream);
+            quint32 coderIndex;
+            getInStream(folder, startInIndex + j, seqInStream, coderIndex);
             seqInStreams.append(seqInStream);
-            totalPackedSize += packSizes[j+i];
+            coderIndexes.append(coderIndex);
         }
 
         QVector<int> seqOutStreams;
         for (int j = 0; j < (int)mainCoder->numOutStreams; j++) {
             int seqOutStream;
-            getOutStream(bindInfo, startOutIndex + j, seqOutStream);
+            getOutStream(folder, startOutIndex + j, seqOutStream);
             seqOutStreams.append(seqOutStream);
         }
 
@@ -1581,125 +1492,157 @@ QByteArray K7Zip::K7ZipPrivate::readAndDecodePackedStreams(bool readMainStreamIn
             int size = packSizes[j+i];
             char encodedBuffer[size];
             QIODevice* dev = q->device();
-            dev->seek(startPos2);
-            qint64 n = dev->read(encodedBuffer, size);
-            if ( n != size ) {
+            dev->seek(startPos);
+            quint64 n = dev->read(encodedBuffer, size);
+            if ( n != (quint64)size ) {
                 qDebug() << "Failed read next size, should read " << size << ", read " << n;
                 return inflatedData;
             }
             QByteArray deflatedData(encodedBuffer, size);
             datas.append(deflatedData);
-            startPos2 += size;
+            startPos += size;
+            pos += size;
+            headerSize += size;
         }
 
         QVector<QByteArray> inflatedDatas;
         QByteArray deflatedData;
         for (int j = 0; j < seqInStreams.size(); ++j) {
-            totalPackedSize = packSizes[seqInStreams[j]+i];
-
-            mainCoder = folder->folderInfos[j];
+            Folder::FolderInfo* coder = 0;
+            if ((quint32)j != mainCoderIndex) {
+                coder = folder->folderInfos[coderIndexes[j]];
+            } else {
+                coder = folder->folderInfos[mainCoderIndex];
+            }
 
             deflatedData = datas[seqInStreams[j]];
 
-            if (j != mainCoderIndex) {
-                //deflatedData.prepend(inflatedDataTmp);
-                //deflatedData.append(datas[seqInStreams[mainCoderIndex]]);
+            KFilterBase* filter = 0;
+
+            switch (coder->methodID) {
+            case k_LZMA:
+                filter = KCompressionDevice::filterForCompressionType(KCompressionDevice::Xz);
+                if (!filter) {
+                    qDebug() << "filter not found";
+                    return QByteArray();
+                }
+                static_cast<KXzFilter*>(filter)->init(QIODevice::ReadOnly, KXzFilter::LZMA, coder->properties);
+                break;
+            case k_LZMA2:
+                filter = KCompressionDevice::filterForCompressionType(KCompressionDevice::Xz);
+                if (!filter) {
+                    qDebug() << "filter not found";
+                    return QByteArray();
+                }
+                static_cast<KXzFilter*>(filter)->init(QIODevice::ReadOnly, KXzFilter::LZMA2, coder->properties);
+                break;
+            case k_PPMD:
+            {
+                /*if (coder->properties.size() == 5) {
+                    //Byte order = *(const Byte *)coder.Props;
+                    qint32 dicSize = ((unsigned char)coder->properties[1]        |
+                                     (((unsigned char)coder->properties[2]) <<  8) |
+                                     (((unsigned char)coder->properties[3]) << 16) |
+                                     (((unsigned char)coder->properties[4]) << 24));
+                }*/
+                break;
+            }
+            case k_AES:
+                if (coder->properties.size() >=1) {
+                    //const Byte *data = (const Byte *)coder.Props;
+                    //Byte firstByte = *data++;
+                    //UInt32 numCyclesPower = firstByte & 0x3F;
+                }
+                break;
+            case k_BCJ:
+                filter = KCompressionDevice::filterForCompressionType(KCompressionDevice::Xz);
+                if (!filter) {
+                    qDebug() << "filter not found";
+                    return QByteArray();
+                }
+                static_cast<KXzFilter*>(filter)->init(QIODevice::ReadOnly, KXzFilter::BCJ, coder->properties);
+                break;
+            case k_BCJ2:
+            {
+                QByteArray bcj2 = decodeBCJ2(inflatedDatas[0], inflatedDatas[1], inflatedDatas[2], deflatedData);
+                inflatedDatas.clear();
+                inflatedDatas.append(bcj2);
+                break;
+            }
+            case k_BZip2:
+                filter = KCompressionDevice::filterForCompressionType(KCompressionDevice::BZip2);
+                if (!filter) {
+                    qDebug() << "filter not found";
+                    return QByteArray();
+                }
+                filter->init(QIODevice::ReadOnly);
+                break;
             }
 
-        KFilterBase* filter = KCompressionDevice::filterForCompressionType(KCompressionDevice::Xz);
-        if (!filter) {
-            qDebug() << "filter not found";
-            return inflatedData;
-        }
-
-        switch (mainCoder->methodID) {
-        case k_LZMA:
-            static_cast<KXzFilter*>(filter)->init(QIODevice::ReadOnly, KXzFilter::LZMA, mainCoder->properties);
-            break;
-        case k_LZMA2:
-            static_cast<KXzFilter*>(filter)->init(QIODevice::ReadOnly, KXzFilter::LZMA2, mainCoder->properties);
-            break;
-        case k_PPMD:
-            if (mainCoder->properties.size() == 5) {
-                //Byte order = *(const Byte *)coder.Props;
-                /*dicSize = ((unsigned char)info->properties[1]        |
-                          (((unsigned char)info->properties[2]) <<  8) |
-                          (((unsigned char)info->properties[3]) << 16) |
-                          (((unsigned char)info->properties[4]) << 24));*/
-            }
-            break;
-        case k_AES:
-            if (mainCoder->properties.size() >=1) {
-                //const Byte *data = (const Byte *)coder.Props;
-                //Byte firstByte = *data++;
-                //UInt32 numCyclesPower = firstByte & 0x3F;
+            if (coder->methodID == k_BCJ2) {
+                continue;
             }
 
-            break;
-        case k_BCJ:
-        case k_BCJ2:
-            QByteArray bcj2 = decodeBCJ2(inflatedDatas[0], inflatedDatas[1], inflatedDatas[2], deflatedData);
-            static_cast<KXzFilter*>(filter)->init(QIODevice::ReadOnly, KXzFilter::BCJ, mainCoder->properties);
-            break;
-        }
-
-        filter->setInBuffer(deflatedData.data(), deflatedData.size());
-
-        QByteArray outBuffer;
-        // reserve memory
-        outBuffer.resize(unpackSize);
-
-
-        KFilterBase::Result result = KFilterBase::Ok;
-        QByteArray inflatedDataTmp;
-        while (result != KFilterBase::End && result != KFilterBase::Error && !filter->inBufferEmpty()) {
-            filter->setOutBuffer(outBuffer.data(), outBuffer.size());
-            result = filter->uncompress();
-            if (result == KFilterBase::Error) {
-                qDebug() << " decode error";
+            if (!filter) {
                 return QByteArray();
             }
-            int uncompressedBytes = outBuffer.size() - filter->outBufferAvailable();
 
-            // append the uncompressed data to inflate buffer
-            inflatedDataTmp.append(outBuffer.data(), uncompressedBytes);
+            filter->setInBuffer(deflatedData.data(), deflatedData.size());
 
-            if (result == KFilterBase::End) {
-                break; // Finished.
+            QByteArray outBuffer;
+            // reserve memory
+            outBuffer.resize(unpackSize);
+
+            KFilterBase::Result result = KFilterBase::Ok;
+            QByteArray inflatedDataTmp;
+            while (result != KFilterBase::End && result != KFilterBase::Error && !filter->inBufferEmpty()) {
+                filter->setOutBuffer(outBuffer.data(), outBuffer.size());
+                result = filter->uncompress();
+                if (result == KFilterBase::Error) {
+                    qDebug() << " decode error";
+                    return QByteArray();
+                }
+                int uncompressedBytes = outBuffer.size() - filter->outBufferAvailable();
+
+                // append the uncompressed data to inflate buffer
+                inflatedDataTmp.append(outBuffer.data(), uncompressedBytes);
+
+                if (result == KFilterBase::End) {
+                    //qDebug() << "Finished unpacking";
+                    break; // Finished.
+                }
             }
-        }
 
-        if (result != KFilterBase::End && !filter->inBufferEmpty()) {
-            qDebug() << "decode failed result" << result;
+            if (result != KFilterBase::End && !filter->inBufferEmpty()) {
+                qDebug() << "decode failed result" << result;
+                delete filter;
+                return QByteArray();
+            }
+
+            const int bytesOut = unpackSize - filter->outBufferAvailable();
+
+            filter->terminate();
             delete filter;
-            return QByteArray();
+
+            inflatedDatas.append(inflatedDataTmp);
         }
 
-        filter->terminate();
-        delete filter;
+        QByteArray inflated;
+        Q_FOREACH (QByteArray data, inflatedDatas) {
+            inflated.append(data);
+        }
+
+        inflatedDatas.clear();
 
         if (folder->unpackCRCDefined) {
-            quint32 crc = crc32(0, (Bytef*)(inflatedDataTmp.data()),unpackSize);
+            quint32 crc = crc32(0, (Bytef*)(inflated.data()), unpackSize);
             if (crc != folder->unpackCRC) {
                 qDebug() << "wrong crc";
                 return QByteArray();
             }
         }
 
-        inflatedDatas.append(inflatedDataTmp);
-
-        quint64 packSize = totalPackedSize;
-        pos += packSize;
-        headerSize += packSize;
-
-    }
-
-        Q_FOREACH (QByteArray data, inflatedDatas) {
-            inflatedData.append(data);
-        }
-
-        inflatedDatas.clear();
-
+        inflatedData.append(inflated);
     }
 
     return inflatedData;
@@ -1708,10 +1651,9 @@ QByteArray K7Zip::K7ZipPrivate::readAndDecodePackedStreams(bool readMainStreamIn
 ///////////////// Write ////////////////////
 
 static int sizeItems = 0;
-void K7Zip::K7ZipPrivate::createItemsFromEntities(const KArchiveDirectory * dir, const QString & path)
+void K7Zip::K7ZipPrivate::createItemsFromEntities(const KArchiveDirectory * dir, const QString & path, QByteArray& data)
 {
     QStringList l = dir->entries();
-    l.sort();
     QStringList::ConstIterator it = l.constBegin();
     for ( ; it != l.constEnd(); ++it ) {
         const KArchiveEntry* entry = dir->entry( (*it) );
@@ -1723,31 +1665,28 @@ void K7Zip::K7ZipPrivate::createItemsFromEntities(const KArchiveDirectory * dir,
         mTimesDefined.append(true);
         mTimes.append(rtlSecondsSince1970ToSpecTime(entry->date()));
 
+        if (entry->isFile()) {
+            const K7ZipFileEntry* fileEntry = static_cast<const K7ZipFileEntry*>(entry);
 
-        if (!entry->symLinkTarget().isEmpty()) {
             fileInfo->attributes = FILE_ATTRIBUTE_ARCHIVE;
             fileInfo->attributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + ((entry->permissions() & 0xFFFF) << 16);
-
+            fileInfo->size = fileEntry->size();
+            sizeItems += fileInfo->size;
+            if (fileInfo->size > 0) {
+                fileInfo->hasStream = true;
+                data.append(outData.mid(fileEntry->position(), fileEntry->size()));
+            }
+            unpackSizes.append(fileInfo->size);
             fileInfos.append(fileInfo);
         }
+
         if (entry->isDirectory()) {
             fileInfo->attributes = FILE_ATTRIBUTE_DIRECTORY;
             fileInfo->attributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + ((entry->permissions() & 0xFFFF) << 16);
             fileInfo->isDir = true;
             fileInfos.append(fileInfo);
-            createItemsFromEntities( (KArchiveDirectory *)entry, path+(*it)+QLatin1Char('/') );
+            createItemsFromEntities( (KArchiveDirectory *)entry, path+(*it)+QLatin1Char('/'), data);
 
-        }
-        if (entry->isFile()) {
-            fileInfo->attributes = FILE_ATTRIBUTE_ARCHIVE;
-            fileInfo->attributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + ((entry->permissions() & 0xFFFF) << 16);
-            fileInfo->size = static_cast<const KArchiveFile*>(entry)->size();
-            sizeItems += fileInfo->size;
-            if (fileInfo->size > 0) {
-                fileInfo->hasStream = true;
-            }
-            unpackSizes.append(fileInfo->size);
-            fileInfos.append(fileInfo);
         }
     }
 }
@@ -2088,19 +2027,82 @@ QByteArray K7Zip::K7ZipPrivate::encodeStream(QVector<quint64> &packSizes, QVecto
     folds.append(folder);
 
     //compress data
-    QBuffer* out = new QBuffer();
+    QByteArray encodedData;
+    if (header.size() > 0) {
+        QByteArray enc;
+        enc.resize(BUFFER_SIZE);
+        KFilterBase* filter = KCompressionDevice::filterForCompressionType(KCompressionDevice::Xz);
+
+        filter->setOutBuffer( enc.data(), enc.size() );
+
+        static_cast<KXzFilter*>(filter)->init(QIODevice::WriteOnly, KXzFilter::LZMA2, info->properties);
+
+        const char *data = header.data();
+        uint len = header.size();
+
+        bool finish = (data == 0L);
+        if (!finish) {
+            filter->setInBuffer( data, len );
+        }
+
+        uint dataWritten = 0;
+        uint availIn = len;
+
+        while ( dataWritten < len || finish) {
+
+            KFilterBase::Result result = filter->compress( finish );
+
+            if (result == KFilterBase::Error) {
+                qDebug() << "compress failed";
+                return QByteArray();
+            }
+
+            if (filter->inBufferEmpty() || (result == KFilterBase::End)) {
+
+                uint wrote = availIn - filter->inBufferAvailable();
+                data += wrote;
+                dataWritten += wrote;
+
+                availIn = len - dataWritten;
+                if ( availIn > 0 ) {
+                    filter->setInBuffer( data, availIn );
+                }
+
+            }
+
+            if (filter->outBufferFull() || (result == KFilterBase::End) || finish) {
+                int towrite = enc.size() - filter->outBufferAvailable();
+                if ( towrite > 0 ) {
+                    encodedData.append(enc.data(), towrite);
+                }
+                if (result == KFilterBase::End) {
+                    break;
+                }
+                enc.resize(BUFFER_SIZE);
+                filter->setOutBuffer( enc.data(), enc.size() );
+            }
+            if (!(dataWritten < len || finish)) {
+                filter->setInBuffer( 0, 0 );
+                finish = true;
+            }
+        }
+
+        filter->terminate();
+        delete filter;
+    }
+    /*QBuffer* out = new QBuffer();
     out->open(QBuffer::ReadWrite);
     KCompressionDevice compression(out, true, KCompressionDevice::Xz);
     compression.open(QIODevice::WriteOnly);
     compression.write(header.data(), header.size());
     compression.close();
 
-    QByteArray encodedData = out->data();
+    QByteArray encodedData = out->data();*/
 
     // remove xz header + lzma2 header
-    encodedData.remove(0, 6+18);
+    /*encodedData.remove(0, 6+18);
     // remove xz + lzma2 footer
-    encodedData.remove(encodedData.size() - 24, 24);
+    encodedData.remove(encodedData.size() - 24, 24);*/
 
     packSizes.append(encodedData.size());
     return encodedData;
@@ -2240,6 +2242,7 @@ void K7Zip::K7ZipPrivate::writeHeader(quint64 &headerOffset)
     writeUInt64DefVector(mTimes, mTimesDefined, kMTime);
 
     writeUInt64DefVector(startPositions, startPositionsDefined, kStartPos);
+
     {
         /* ---------- Write Attrib ---------- */
         QVector<bool> boolVector;
@@ -2622,11 +2625,6 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
 
     d->outData = d->readAndDecodePackedStreams(false);
 
-    if (d->outData.isEmpty()) {
-        qDebug() << "readAndDecodePackedStream failed";
-        return false;
-    }
-
     int oldPos = 0;
     for (int i = 0; i < numFiles; i++)
     {
@@ -2667,7 +2665,7 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
         for (int j = 0; j < d->packSizes.size(); j++) {
             packSize += d->packSizes[j];
         }
-        //unsigned short st_mode =  fileInfo->attributes >> 16;
+        //unsigned short st_mode = fileInfo->attributes >> 16;
         QString method;
         for (int w = 0; w < d->folders.size(); ++w) {
             for (int g = 0; g < d->folders[w]->folderInfos.size(); ++g) {
@@ -2686,11 +2684,11 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
         }
 
         int access;
+        bool symlink = false;
         if (fileInfo->attributes & FILE_ATTRIBUTE_UNIX_EXTENSION) {
             access = fileInfo->attributes >> 16;
             if (S_ISLNK(access)) {
-                // TODO : Implement this part
-                qDebug() << "find symlink";
+                symlink = true;
             }
         } else {
             if (fileInfo->isDir) {
@@ -2732,7 +2730,12 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
                 e = new KArchiveDirectory( this, entryName, access, mTime, rootDir()->user(), rootDir()->group(), QString()/*symlink*/ );
             }
         } else {
-            e = new K7ZipFileEntry( this, entryName, access, mTime, rootDir()->user(), rootDir()->group(), QString()/*symlink*/, pos, fileInfo->size, d->outData );
+            if (!symlink) {
+                e = new K7ZipFileEntry( this, entryName, access, mTime, rootDir()->user(), rootDir()->group(), QString()/*symlink*/, pos, fileInfo->size, d->outData );
+            } else {
+                QString target = QFile::decodeName(d->outData.mid(pos, fileInfo->size));
+                e = new K7ZipFileEntry( this, entryName, access, mTime, rootDir()->user(), rootDir()->group(), target, 0, 0, 0 );
+            }
         }
 
         if (e) {
@@ -2766,8 +2769,6 @@ bool K7Zip::closeArchive()
 
     Folder *folder = new Folder();
 
-    folder->unpackCRCDefined = true;
-    folder->unpackCRC = crc32(0, (Bytef*)(d->outData.data()), d->outData.size());
     folder->unpackSizes.clear();
     folder->unpackSizes.append(d->outData.size());
 
@@ -2797,43 +2798,76 @@ bool K7Zip::closeArchive()
     d->folders.append(folder);
 
     const KArchiveDirectory* dir = directory();
-    d->createItemsFromEntities(dir, QString());
+    QByteArray data;
+    d->createItemsFromEntities(dir, QString(), data);
+    d->outData = data;
+
+    folder->unpackCRCDefined = true;
+    folder->unpackCRC = crc32(0, (Bytef*)(d->outData.data()), d->outData.size());
 
     //compress data
     QByteArray encodedData;
     if (d->outData.size() > 0) {
-        QBuffer* out = new QBuffer();
-        out->open(QBuffer::ReadWrite);
-        KCompressionDevice compression(out, true, KCompressionDevice::Xz);
-        compression.open(QIODevice::WriteOnly);
-        compression.write(d->outData.data(), d->outData.size());
-        compression.close();
+        QByteArray enc;
+        enc.resize(BUFFER_SIZE);
+        KFilterBase* filter = KCompressionDevice::filterForCompressionType(KCompressionDevice::Xz);
 
-        encodedData = out->data();
+        filter->setOutBuffer( enc.data(), enc.size() );
 
-        QByteArray footer = encodedData.mid(encodedData.size() - 12, 12);
+        static_cast<KXzFilter*>(filter)->init(QIODevice::WriteOnly, KXzFilter::LZMA2, info->properties);
 
-        d->buffer = footer.data();
-        d->end = 12;
+        const char *data = d->outData.data();
+        uint len = d->outData.size();
 
-        d->pos = 0;
+        bool finish = (data == 0L);
+        if (!finish) {
+            filter->setInBuffer( data, len );
+        }
 
-        int crc = GetUi32(d->buffer, d->pos);
-        Q_UNUSED(crc);
-        d->pos += 4;
-        int back = GetUi32(d->buffer, d->pos);
-        int indexSize = (back + 1) << 2;
-        int backwardSize = d->readNumber();
-        Q_UNUSED(backwardSize);
+        uint dataWritten = 0;
+        uint availIn = len;
 
+        while ( dataWritten < len || finish) {
 
-        int footerSize = indexSize + 12;
+            KFilterBase::Result result = filter->compress( finish );
 
-        int blockSize = ((unsigned char)encodedData[12] + 1) * 4;
-        // remove xz header + lzma2 header
-        encodedData.remove(0, 12 + blockSize);
-        // remove xz + lzma2 footer
-        encodedData.remove(encodedData.size() - footerSize, footerSize);
+            if (result == KFilterBase::Error) {
+                qDebug() << "compress failed";
+                return false;
+            }
+
+            if (filter->inBufferEmpty() || (result == KFilterBase::End)) {
+
+                uint wrote = availIn - filter->inBufferAvailable();
+                data += wrote;
+                dataWritten += wrote;
+
+                availIn = len - dataWritten;
+                if ( availIn > 0 ) {
+                    filter->setInBuffer( data, availIn );
+                }
+
+            }
+
+            if (filter->outBufferFull() || (result == KFilterBase::End) || finish) {
+                int towrite = enc.size() - filter->outBufferAvailable();
+                if ( towrite > 0 ) {
+                    encodedData.append(enc.data(), towrite);
+                }
+                if (result == KFilterBase::End) {
+                    break;
+                }
+                enc.resize(BUFFER_SIZE);
+                filter->setOutBuffer( enc.data(), enc.size() );
+            }
+            if (!(dataWritten < len || finish)) {
+                filter->setInBuffer( 0, 0 );
+                finish = true;
+            }
+        }
+
+        filter->terminate();
+        delete filter;
     }
 
     d->packSizes.append(encodedData.size());
@@ -2851,7 +2885,7 @@ bool K7Zip::closeArchive()
 
     // Encode Header
     QByteArray encodedStream;
-    /*{
+    {
         QVector<quint64> packSizes;
         QVector<Folder*> folders;
         encodedStream = d->encodeStream(packSizes, folders);
@@ -2871,7 +2905,7 @@ bool K7Zip::closeArchive()
         for (int i = 0; i < packSizes.size(); i++) {
             headerOffset += packSizes[i];
         }
-    }*/
+    }
     // end encode header
 
     quint64 nextHeaderSize = d->header.size();
@@ -2946,8 +2980,10 @@ bool K7Zip::doPrepareWriting(const QString &name, const QString &user,
     if (!entry) {
         K7ZipFileEntry* e = new K7ZipFileEntry( this, fileName, perm, mtime, user, group, QString()/*symlink*/, d->outData.size(), 0 /*unknown yet*/, d->outData );
         parentDir->addEntry( e );
+        d->m_entryList << e;
         d->m_currentFile = e;
     } else {
+        // TODO : find and replace in m_entryList
         //d->m_currentFile = static_cast<K7ZipFileEntry*>(entry);
     }
 
@@ -3017,10 +3053,13 @@ bool K7Zip::doWriteSymLink(const QString &name, const QString &target,
         fileName = name.mid( i + 1 );
         parentDir = findOrCreate( dir );
     }
+    QByteArray encodedTarget = QFile::encodeName(target);
 
-    K7ZipFileEntry* e = new K7ZipFileEntry( this, fileName, perm, mtime, user, group, target, d->outData.size(), 0 /*unknown yet*/, d->outData );
+    K7ZipFileEntry* e = new K7ZipFileEntry( this, fileName, perm, mtime, user, group, target, d->outData.size(), target.size(), 0 );
+    d->outData.append(encodedTarget);
 
     parentDir->addEntry( e );
+    d->m_entryList << e;
 
     return true;
 }

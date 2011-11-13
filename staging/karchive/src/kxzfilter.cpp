@@ -216,6 +216,19 @@ bool KXzFilter::init( int mode, Flag flag, const QVector<unsigned char>& propert
         if (flag == AUTO) {
             result = lzma_easy_encoder(&d->zStream, LZMA_PRESET_DEFAULT, LZMA_CHECK_CRC32);
         } else {
+            if (LZMA2) {
+                lzma_options_lzma lzma_opt;
+                lzma_lzma_preset(&lzma_opt, LZMA_PRESET_DEFAULT);
+                qDebug() << "write dictSize" << lzma_opt.dict_size;
+                 //lzma_opt.dict_size = properties[0];
+                qDebug() << "dict properties" << properties[0];
+
+                d->filters[0].id = LZMA_FILTER_LZMA2;
+                d->filters[0].options = &lzma_opt;
+                d->filters[1].id = LZMA_VLI_UNKNOWN;
+                d->filters[1].options = NULL;
+
+            }
             /*lzma_lzma_preset(&d->opt, LZMA_PRESET_DEFAULT);
             d->opt.dict_size = 8 << 20; //use dictSize ?
             //opt.preset_dict = preset_dict_buffer;
@@ -223,14 +236,13 @@ bool KXzFilter::init( int mode, Flag flag, const QVector<unsigned char>& propert
             if (flag == LZMA) {
                 d->filters[0].id = LZMA_FILTER_LZMA1;
             } else {
-                d->filters[0].id = LZMA_FILTER_LZMA2;
             }
             d->filters[0].options = &d->opt;
             d->filters[1].id = LZMA_VLI_UNKNOWN;*/
-            result = LZMA_OK;
+            result = lzma_raw_encoder(&d->zStream, d->filters);
         }
         if (result != LZMA_OK) {
-            //qWarning() << "lzma_easy_encoder returned" << result;
+            qWarning() << "lzma_easy_encoder returned" << result;
             return false;
         }
     } else {

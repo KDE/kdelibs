@@ -45,7 +45,7 @@ public:
         AUTO = 0,
         LZMA = 1,
         LZMA2 = 2,
-        BCJ = 3,
+        BCJ = 3, //X86
         POWERPC = 4,
         IA64 = 5,
         ARM = 6,
