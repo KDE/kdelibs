@@ -20,7 +20,7 @@
 #ifndef KSECRETSSERVICECODEC_H
 #define KSECRETSSERVICECODEC_H
 
-#include <QtCrypto/QtCrypto>
+#include <QtCrypto>
 #include <kdeui_export.h>
 
 namespace KSecretsService {

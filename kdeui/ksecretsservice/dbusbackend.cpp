@@ -26,7 +26,7 @@
 #include "item_interface.h"
 
 #include <QtDBus/QDBusConnection>
-#include <QtCrypto/QtCrypto>
+#include <QtCrypto>
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <fcntl.h>
