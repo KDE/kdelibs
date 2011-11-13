@@ -335,13 +335,9 @@ void KUrlComboBox::setMaxItems( int max )
 
         setDefaults();
 
-        QListIterator<const KUrlComboBoxPrivate::KUrlComboItem*> it( d->itemList );
-        int Overload = d->itemList.count() - d->myMaximum + d->defaultList.count();
-        for ( int i = 0; i <= Overload; i++ )
-            it.next();
-
-        while ( it.hasNext() )
-            d->insertUrlItem( it.next() );
+	int offset = qMax (0, d->itemList.count() - d->myMaximum + d->defaultList.count());
+        for ( int i = offset; i < d->itemList.count(); i++ )
+            d->insertUrlItem( d->itemList[i] );
 
         if ( count() > 0 ) { // restore the previous currentItem
             if ( oldCurrent >= count() )
