@@ -85,11 +85,11 @@ public:
     /**
      * @return true if the variant was successfully encrypted
      */
-    static bool encrypt( const QVariant& value, SecretStruct& secretStruct );
+    static bool encrypt( const QVariant& value, DBusSecretStruct& secretStruct );
     /**
      * @return true if the secret struct was successfully decrypted
      */
-    static bool decrypt( const SecretStruct &secretStruct, QVariant& value );
+    static bool decrypt( const DBusSecretStruct &secretStruct, QVariant& value );
     
 private:
     friend class OpenSessionJob;

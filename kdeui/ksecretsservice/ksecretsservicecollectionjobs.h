@@ -23,6 +23,7 @@
 
 #include "ksecretsservicecollection.h"
 #include "ksecretsserviceitem.h"
+#include "ksecretsserviceglobals.h"
 
 #include <kdeui_export.h>
 #include <kcompositejob.h>
@@ -43,8 +44,8 @@ class ReadCollectionItemsJobPrivate;
 class ReadCollectionPropertyJobPrivate;
 class WriteCollectionPropertyJobPrivate;
 class ChangeCollectionPasswordJobPrivate;
-class CollectionLockJobPrivate;
-class CollectionUnlockJobPrivate;
+class LockCollectionJobPrivate;
+class UnlockCollectionJobPrivate;
     
 class Collection;
 typedef QMap< QString, QString > QStringStringMap;
@@ -235,7 +236,7 @@ class KDEUI_EXPORT CreateCollectionItemJob : public CollectionJob {
     Q_OBJECT
     Q_DISABLE_COPY(CreateCollectionItemJob)
 public:
-    explicit CreateCollectionItemJob( Collection* collection, const QString& label, const QMap< QString, QString >& attributes, const Secret& secret, bool replace );
+    explicit CreateCollectionItemJob( Collection* collection, const QString& label, const QMap< QString, QString >& attributes, const Secret& secret, CreateItemOptions options = DoNotReplaceExistingItem );
     virtual ~CreateCollectionItemJob();
     
     virtual void start();
@@ -315,33 +316,33 @@ private:
     QSharedPointer< ChangeCollectionPasswordJobPrivate > d;
 };
 
-class KDEUI_EXPORT CollectionLockJob : public CollectionJob {
+class KDEUI_EXPORT LockCollectionJob : public CollectionJob {
     Q_OBJECT
-    Q_DISABLE_COPY(CollectionLockJob)
+    Q_DISABLE_COPY(LockCollectionJob)
 public:
-    CollectionLockJob( Collection *collection, const WId winId );
+    LockCollectionJob( Collection *collection, const WId winId );
     
     virtual void start();
     virtual void onFindCollectionFinished();
     
 private:
-    friend class CollectionLockJobPrivate;
-    QSharedPointer< CollectionLockJobPrivate > d;
+    friend class LockCollectionJobPrivate;
+    QSharedPointer< LockCollectionJobPrivate > d;
 };
 
-class KDEUI_EXPORT CollectionUnlockJob : public CollectionJob {
+class KDEUI_EXPORT UnlockCollectionJob : public CollectionJob {
     Q_OBJECT
-    Q_DISABLE_COPY(CollectionUnlockJob)
+    Q_DISABLE_COPY(UnlockCollectionJob)
 public:
-    CollectionUnlockJob( Collection* collection, const WId winId );
+    UnlockCollectionJob( Collection* collection, const WId winId );
     
     virtual void start();
     virtual void unlockCollection();
     virtual void onFindCollectionFinished();
     
 private:
-    friend class CollectionUnlockJobPrivate;
-    QSharedPointer< CollectionUnlockJobPrivate > d;
+    friend class UnlockCollectionJobPrivate;
+    QSharedPointer< UnlockCollectionJobPrivate > d;
 };
 
 }

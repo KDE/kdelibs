@@ -22,7 +22,6 @@
 #define KSECRETSSERVICESECRET_H
 
 #include <kdeui_export.h>
-#include <QObject>
 #include <QVariant>
 #include <QSharedDataPointer>
 
@@ -36,16 +35,17 @@ class SecretPrivate;
  * inside a secrets collection.
  */
 class KDEUI_EXPORT Secret {
+    explicit Secret( SecretPrivate* sp );
 public:
     Secret();
     Secret( const Secret & that );
-    explicit Secret( SecretPrivate* sp );
     virtual ~Secret();
 
     /**
-     * Used to test if this Secret incstance is correctly initialized
+     * Used to test if this Secret instance is correctly initialized.
+     * @return true if this Secret instance is not correctly initialized
      */
-    operator bool() const;
+    bool operator ! () const;
     
     Secret& operator = (const Secret& that);
 
@@ -83,6 +83,8 @@ public:
 private:
     friend class CreateCollectionItemJob;
     friend class SetSecretItemSecretJob;
+    friend class GetSecretItemSecretJob;
+    friend class SearchCollectionSecretsJob;
     QSharedDataPointer< SecretPrivate > d;
 };
 

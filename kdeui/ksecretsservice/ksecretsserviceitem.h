@@ -26,7 +26,6 @@
 
 #include <kdeui_export.h>
 #include <QSharedData>
-#include <kjob.h>
 
 
 namespace KSecretsService {
@@ -53,10 +52,10 @@ class CreateItemJobPrivate;
  * signal handling method.
  */
 class KDEUI_EXPORT SecretItem : public QSharedData {
+    SecretItem( SecretItemPrivate * );
 public:
     SecretItem();
     SecretItem( const SecretItem& );
-    SecretItem( SecretItemPrivate * );
     virtual ~SecretItem();
     
     /**
@@ -118,6 +117,9 @@ private:
     friend class ReadItemPropertyJob;
     friend class WriteItemPropertyJob;
     friend class CreateItemJobPrivate;
+    friend class SearchCollectionItemsJob;
+    friend class CreateCollectionItemJobPrivate;
+    friend class ReadCollectionItemsJob;
     
     QSharedDataPointer< SecretItemPrivate > d;
 };

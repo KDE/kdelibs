@@ -23,13 +23,12 @@
 
 #include "ksecretsservicesecret.h"
 #include "ksecretsservicecollectionjobs.h"
-#include "ksecretsservicedbustypes.h"
+#include "ksecretsserviceglobals.h"
 
 #include <kdeui_export.h>
 #include <QObject>
 #include <QMap>
 #include <QSharedPointer>
-#include <kjob.h>
 #include <kcompositejob.h>
 #include <qwindowdefs.h>
 
@@ -45,7 +44,7 @@ class ReadCollectionPropertyJob;
 class WriteCollectionPropertyJob;
 class ListCollectionsJob;
 class ChangeCollectionPasswordJob;
-class CollectionLockJob;
+class LockCollectionJob;
 
 /**
  * This is the main KSecretsService entry class, used by the applications that need to store secrets, 
@@ -193,7 +192,7 @@ public:
      *
      * @see SecretItem
      */
-    CreateCollectionItemJob * createItem( const QString& label, const StringStringMap &attributes, const Secret &secret, bool replace =false );
+    CreateCollectionItemJob * createItem( const QString& label, const StringStringMap &attributes, const Secret &secret, CreateItemOptions options = DoNotReplaceExistingItem );
 
     /** 
      * Retrieve items stored inside this collection
@@ -245,9 +244,9 @@ public:
     /**
      * Request collection lock. Locked collection's contents cannot be changed.
      * @note Accessing the other methods will trigger collection unlocking and as such the user may be prompted for the password
-     * @return CollectionLockJob
+     * @return LockCollectionJob
      */
-    CollectionLockJob* lock( const WId =0 );
+    LockCollectionJob* lock( const WId =0 );
    
 Q_SIGNALS:
     /**
@@ -280,11 +279,13 @@ Q_SIGNALS:
      */
     void itemChanged( const KSecretsService::SecretItem& );
 
-    
+
 protected:
     explicit Collection();
-    explicit Collection( CollectionPrivate* );
     
+private:
+    explicit Collection( CollectionPrivate* );
+
 private:
     friend class CollectionPrivate;
     friend class CollectionJob; // to give access to Private class
@@ -299,8 +300,8 @@ private:
     friend class ReadCollectionPropertyJob;
     friend class WriteCollectionPropertyJob;
     friend class ChangeCollectionPasswordJob;
-    friend class CollectionLockJob;
-    friend class CollectionUnlockJob;
+    friend class LockCollectionJob;
+    friend class UnlockCollectionJob;
     
     /** @internal */
     void readIsValid( ReadCollectionPropertyJob* );
@@ -313,7 +314,6 @@ private:
     
     QSharedPointer< CollectionPrivate > d;
 };
-
 
 
 }; // namespace

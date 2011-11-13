@@ -744,9 +744,12 @@ if(QCA2_FOUND)
     ksecretsservice/ksecretsserviceitem.h
     ksecretsservice/ksecretsserviceitemjobs.h
     ksecretsservice/ksecretsservicesecret.h
+    ksecretsservice/ksecretsserviceglobals.h
+  DESTINATION ${INCLUDE_INSTALL_DIR}/ksecretsservice COMPONENT Devel )
+  install(FILES
     ksecretsservice/ksecretsservicedbustypes.h
     ksecretsservice/ksecretsservicecodec.h
-  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
+  DESTINATION ${INCLUDE_INSTALL_DIR}/ksecretsservice/private COMPONENT Devel )
 endif(QCA2_FOUND)
 
 if(NOT KDE_NO_DEPRECATED)

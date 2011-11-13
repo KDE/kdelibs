@@ -26,7 +26,6 @@
 #include <QtDBus/QDBusArgument>
 #include <QtCore/QMap>
 #include <QtCore/QString>
-#include <QtCore/QSharedData>
 
 namespace KSecretsService {
     
@@ -35,22 +34,22 @@ namespace KSecretsService {
  * This is the basic Secret structure exchanged via the dbus API
  * See the spec for more details
  */
-struct SecretStruct {
+struct DBusSecretStruct {
     QDBusObjectPath m_session;
     QByteArray      m_parameters;
     QByteArray      m_value;
     QString         m_contentType;
 };
 
-typedef QMap<QString, QString> StringStringMap;
-typedef QMap<QDBusObjectPath, SecretStruct> ObjectPathSecretMap;
-typedef QMap<QString, QVariant> StringVariantMap;
+typedef QMap<QString, QString> DBusStringStringMap;
+typedef QMap<QDBusObjectPath, DBusSecretStruct> DBusObjectPathSecretMap;
+typedef QMap<QString, QVariant> DBusStringVariantMap;
 
 
 /**
  * @internal
  */
-inline QDBusArgument &operator<<(QDBusArgument &argument, const SecretStruct &secret)
+inline QDBusArgument &operator<<(QDBusArgument &argument, const DBusSecretStruct &secret)
 {
     argument.beginStructure();
     argument << secret.m_session << secret.m_parameters << secret.m_value << secret.m_contentType;
@@ -61,7 +60,7 @@ inline QDBusArgument &operator<<(QDBusArgument &argument, const SecretStruct &se
 /**
  * @internal
  */
-inline const QDBusArgument &operator>>(const QDBusArgument &argument, SecretStruct &secret)
+inline const QDBusArgument &operator>>(const QDBusArgument &argument, DBusSecretStruct &secret)
 {
     argument.beginStructure();
     argument >> secret.m_session >> secret.m_parameters >> secret.m_value >> secret.m_contentType;
@@ -71,10 +70,14 @@ inline const QDBusArgument &operator>>(const QDBusArgument &argument, SecretStru
 
 } // namespace
 
-Q_DECLARE_METATYPE( KSecretsService::StringStringMap );
-Q_DECLARE_METATYPE( KSecretsService::ObjectPathSecretMap );
-Q_DECLARE_METATYPE( KSecretsService::StringVariantMap );
-Q_DECLARE_METATYPE( KSecretsService::SecretStruct )
+#ifndef STRINGSTRINGMAP_METATYPE_DEFINED
+Q_DECLARE_METATYPE( KSecretsService::DBusStringStringMap );
+#define STRINGSTRINGMAP_METATYPE_DEFINED
+#endif // STRINGSTRINGMAP_METATYPE_DEFINED
+
+Q_DECLARE_METATYPE( KSecretsService::DBusObjectPathSecretMap );
+Q_DECLARE_METATYPE( KSecretsService::DBusStringVariantMap );
+Q_DECLARE_METATYPE( KSecretsService::DBusSecretStruct )
 
 #endif // KSECRETSSERVICEDBUSTYPES_H
 

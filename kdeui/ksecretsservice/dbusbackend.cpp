@@ -77,17 +77,17 @@ void OpenSessionJob::start()
         emitResult();
     }
     else {
-        qRegisterMetaType<KSecretsService::SecretStruct>();
-        qDBusRegisterMetaType<KSecretsService::SecretStruct>();
+        qRegisterMetaType<KSecretsService::DBusSecretStruct>();
+        qDBusRegisterMetaType<KSecretsService::DBusSecretStruct>();
 
         qRegisterMetaType<KSecretsService::StringStringMap>();
         qDBusRegisterMetaType<KSecretsService::StringStringMap>();
 
-        qRegisterMetaType<KSecretsService::ObjectPathSecretMap>();
-        qDBusRegisterMetaType<KSecretsService::ObjectPathSecretMap>();
+        qRegisterMetaType<KSecretsService::DBusObjectPathSecretMap>();
+        qDBusRegisterMetaType<KSecretsService::DBusObjectPathSecretMap>();
 
-        qRegisterMetaType<KSecretsService::StringVariantMap>();
-        qDBusRegisterMetaType<KSecretsService::StringVariantMap>();
+        qRegisterMetaType<KSecretsService::DBusStringVariantMap>();
+        qDBusRegisterMetaType<KSecretsService::DBusStringVariantMap>();
 
         // NOTE: this is already registered by Qt in qtextratypes.h
         // qRegisterMetaType< QList<QDBusObjectPath> >();
@@ -175,8 +175,8 @@ void OpenSessionJob::slotOpenSessionFinished(QDBusPendingCallWatcher* watcher)
         QByteArray dhOutput = dhOutputVar.toByteArray();
         QCA::DHPublicKey dhServiceKey(*dhDlgroup, QCA::BigInteger(QCA::SecureArray(dhOutput)));
         QCA::SymmetricKey dhSharedKey(dhPrivkey->deriveKey(dhServiceKey));
-        QCA::Cipher *dhCipher = new QCA::Cipher("aes128", QCA::Cipher::CBC, QCA::Cipher::PKCS7);
-        
+        //QCA::Cipher *dhCipher = new QCA::Cipher("aes128", QCA::Cipher::CBC, QCA::Cipher::PKCS7);
+
         QDBusObjectPath sessionPath = reply.argumentAt<1>();
         kDebug() << "SESSION path is " << sessionPath.path();
         sessionIf = new OrgFreedesktopSecretSessionInterface( SERVICE_NAME, sessionPath.path(), QDBusConnection::sessionBus() );
@@ -209,7 +209,7 @@ void OpenSessionJob::slotCollectionChanged(const QDBusObjectPath& path)
     CollectionPrivate::notifyCollectionChanged( path );
 }
 
-void OpenSessionJob::slotCollectionCreated(const QDBusObjectPath& coll)
+void OpenSessionJob::slotCollectionCreated(const QDBusObjectPath& )
 {
     // TODO: use this notification
 }
@@ -241,7 +241,7 @@ QDBusObjectPath DBusSession::sessionPath()
     return QDBusObjectPath( openSessionJob->sessionInterface()->path() );
 }
 
-bool DBusSession::encrypt(const QVariant& value, SecretStruct& secretStruct)
+bool DBusSession::encrypt(const QVariant& value, DBusSecretStruct& secretStruct)
 {
     QCA::SecureArray valueArray( value.toByteArray() );
     QCA::SecureArray encryptedArray;
@@ -252,7 +252,7 @@ bool DBusSession::encrypt(const QVariant& value, SecretStruct& secretStruct)
     return result;
 }
 
-bool DBusSession::decrypt(const SecretStruct& secretStruct, QVariant& value)
+bool DBusSession::decrypt(const DBusSecretStruct& secretStruct, QVariant& value)
 {
     QCA::SecureArray valueArray;
     bool result = openSessionJob->secretCodec.decryptClient( secretStruct.m_value, secretStruct.m_parameters, valueArray );

@@ -160,7 +160,7 @@ public:
     QString                             label;
     QMap< QString, QString >            attributes;
     QSharedDataPointer< SecretPrivate > secretPrivate;
-    bool                                replace;
+    CreateItemOptions                   options;
     SecretItem                          *item;
 };
 
@@ -242,11 +242,11 @@ public:
     ChangeCollectionPasswordJob  *theJob;
 };
 
-class CollectionLockJobPrivate : public QObject {
+class LockCollectionJobPrivate : public QObject {
     Q_OBJECT
-    Q_DISABLE_COPY(CollectionLockJobPrivate)
+    Q_DISABLE_COPY(LockCollectionJobPrivate)
 public:
-    explicit CollectionLockJobPrivate( CollectionPrivate *cp, CollectionLockJob* );
+    explicit LockCollectionJobPrivate( CollectionPrivate *cp, LockCollectionJob* );
     
     void startLockingCollection();
     
@@ -259,15 +259,15 @@ private:
     
 public:
     CollectionPrivate *collectionPrivate;
-    CollectionLockJob *theJob;
+    LockCollectionJob *theJob;
     WId                windowId;
 };
 
-class CollectionUnlockJobPrivate : public QObject {
+class UnlockCollectionJobPrivate : public QObject {
     Q_OBJECT
-    Q_DISABLE_COPY(CollectionUnlockJobPrivate)
+    Q_DISABLE_COPY(UnlockCollectionJobPrivate)
 public:
-    explicit CollectionUnlockJobPrivate( CollectionPrivate *cp, CollectionUnlockJob* );
+    explicit UnlockCollectionJobPrivate( CollectionPrivate *cp, UnlockCollectionJob* );
     
     void startUnlockingCollection();
     
@@ -280,7 +280,7 @@ private:
     
 public:
     CollectionPrivate   *collectionPrivate;
-    CollectionUnlockJob *theJob;
+    UnlockCollectionJob *theJob;
     WId                 windowId;
 };
 

@@ -101,7 +101,7 @@ GetSecretItemSecretJobPrivate::GetSecretItemSecretJobPrivate(GetSecretItemSecret
 
 void GetSecretItemSecretJobPrivate::start()
 {
-    QDBusPendingReply<SecretStruct> reply = job->d->secretItemPrivate->itemIf()->GetSecret( DBusSession::sessionPath() );
+    QDBusPendingReply<DBusSecretStruct> reply = job->d->secretItemPrivate->itemIf()->GetSecret( DBusSession::sessionPath() );
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( reply );
     connect( watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(getSecretReply(QDBusPendingCallWatcher*)) );
 }
@@ -109,7 +109,7 @@ void GetSecretItemSecretJobPrivate::start()
 void GetSecretItemSecretJobPrivate::getSecretReply( QDBusPendingCallWatcher *watcher )
 {
     Q_ASSERT(watcher != 0);
-    QDBusPendingReply<SecretStruct> reply = *watcher;
+    QDBusPendingReply<DBusSecretStruct> reply = *watcher;
     if ( !reply.isError() ) {
         secret = reply.argumentAt<0>();
         kDebug() << "Received Secret size: " << secret.m_value.size();
@@ -148,15 +148,15 @@ SetSecretItemSecretJobPrivate::SetSecretItemSecretJobPrivate( SetSecretItemSecre
     
 void SetSecretItemSecretJobPrivate::start()
 {
-    SecretStruct secretStruct;
+    DBusSecretStruct secretStruct;
     if ( secretPrivate->toSecretStruct( secretStruct ) ) {
         QDBusPendingReply< void > reply = secretItemPrivate->itemIf()->SetSecret( secretStruct );
         QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher( reply );
         connect( watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this, SLOT(setSecretReply(QDBusPendingCallWatcher*)) );
     }
     else {
-        kDebug() << "ERROR building SecretStruct";
-        job->finished( SecretItemJob::InternalError, "ERROR building SecretStruct" );
+        kDebug() << "ERROR building DBusSecretStruct";
+        job->finished( SecretItemJob::InternalError, "ERROR building DBusSecretStruct" );
     }
 }
 

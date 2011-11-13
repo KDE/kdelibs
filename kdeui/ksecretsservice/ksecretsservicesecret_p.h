@@ -33,7 +33,7 @@ class SecretPrivate : public QSharedData {
 public:
     SecretPrivate();
     SecretPrivate( const SecretPrivate& that );
-    SecretPrivate( const SecretStruct& secretStruct );
+    SecretPrivate( const DBusSecretStruct& secretStruct );
     ~SecretPrivate();
 
     
@@ -43,7 +43,7 @@ public:
      *
      * @return true if the secretStruct was correctly initialized
      */
-    bool toSecretStruct( SecretStruct &secretStruct ) const;
+    bool toSecretStruct( DBusSecretStruct &secretStruct ) const;
 
     /**
      * This method attempts to decrypt the secretStruct given and to allocate and initialize 
@@ -51,7 +51,7 @@ public:
      *
      * @return true if the secret struct was successfully decrypted into the SecretPrivate object
      */
-    static bool fromSecretStruct( const SecretStruct &secretStruct, SecretPrivate*& );
+    static bool fromSecretStruct( const DBusSecretStruct &secretStruct, SecretPrivate*& );
     
     bool operator == ( const SecretPrivate &that ) const;
 

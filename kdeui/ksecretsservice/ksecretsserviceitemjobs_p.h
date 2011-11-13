@@ -58,7 +58,7 @@ Q_SIGNALS:
 
 public:
     GetSecretItemSecretJob *job;
-    SecretStruct secret;
+    DBusSecretStruct secret;
     const QSharedDataPointer< SecretItemPrivate > secretItemPrivate;
 };
 
