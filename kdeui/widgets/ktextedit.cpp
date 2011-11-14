@@ -422,16 +422,14 @@ bool KTextEdit::Private::handleShortcut(const QKeyEvent* event)
     cursor.movePosition( QTextCursor::EndOfLine );
     parent->setTextCursor( cursor );
     return true;
-  } else if (KStandardShortcut::find().contains(key)) {
-      if (findReplaceEnabled)
-          parent->slotFind();
+  } else if (findReplaceEnabled && KStandardShortcut::find().contains(key)) {
+      parent->slotFind();
       return true;
-  } else if (KStandardShortcut::findNext().contains(key)) {
-      if (findReplaceEnabled)
-          parent->slotFindNext();
+  } else if (findReplaceEnabled && KStandardShortcut::findNext().contains(key)) {
+      parent->slotFindNext();
       return true;
-  } else if (KStandardShortcut::replace().contains(key)) {
-      if (!parent->isReadOnly() && findReplaceEnabled)
+  } else if (findReplaceEnabled && KStandardShortcut::replace().contains(key)) {
+      if (!parent->isReadOnly())
           parent->slotReplace();
       return true;
   } else if ( KStandardShortcut::pasteSelection().contains( key ) ) {
@@ -1052,11 +1050,11 @@ bool KTextEdit::Private::overrideShortcut(const QKeyEvent* event)
     return true;
   } else if ( KStandardShortcut::pasteSelection().contains( key ) ) {
     return true;
-  } else if (KStandardShortcut::find().contains(key)) {
+  } else if (findReplaceEnabled && KStandardShortcut::find().contains(key)) {
       return true;
-  } else if (KStandardShortcut::findNext().contains(key)) {
+  } else if (findReplaceEnabled && KStandardShortcut::findNext().contains(key)) {
       return true;
-  } else if (KStandardShortcut::replace().contains(key)) {
+  } else if (findReplaceEnabled && KStandardShortcut::replace().contains(key)) {
       return true;
   } else if (event->matches(QKeySequence::SelectAll)) { // currently missing in QTextEdit
       return true;
