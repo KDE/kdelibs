@@ -592,7 +592,9 @@ void KTabWidget::moveTab( int from, int to )
 
   setUpdatesEnabled(true);
 
+#ifndef KDE_NO_DEPRECATED
   emit ( movedTab( from, to ) );
+#endif
 }
 
 void KTabWidget::removePage( QWidget *widget )
