@@ -45,6 +45,7 @@
 #include <ktemporaryfile.h>
 #include <kio/accessmanager.h>
 #include <kio/job.h>
+#include <kio/copyjob.h>
 #include <kio/jobuidelegate.h>
 #include <kio/renamedialog.h>
 #include <kparts/browseropenorsavequestion.h>
@@ -109,42 +110,17 @@ static void extractMimeType(const QNetworkReply* reply, QString& mimeType)
     mimeType = ((index == -1) ? value : value.left(index));
 }
 
-static KUrl promptUser (QWidget *parent, const KUrl& url, const QString& suggestedName)
-{
-    KUrl destUrl;
-    int result = KIO::R_OVERWRITE;
-    const QString fileName ((suggestedName.isEmpty() ? url.fileName() : suggestedName));
-
-    do {
-        // convert filename to URL using fromPath to avoid trouble with ':' in filenames (#184202)
-        destUrl = KFileDialog::getSaveFileName(KUrl::fromPath(fileName), QString(), parent);
-
-        if (destUrl.isLocalFile()) {
-            QFileInfo finfo (destUrl.toLocalFile());
-            if (finfo.exists()) {
-                QDateTime now = QDateTime::currentDateTime();
-                KIO::RenameDialog dlg (parent, i18n("Overwrite File?"), url, destUrl,
-                                       KIO::RenameDialog_Mode(KIO::M_OVERWRITE | KIO::M_SKIP),
-                                       -1, finfo.size(),
-                                       now.toTime_t(), finfo.created().toTime_t(),
-                                       now.toTime_t(), finfo.lastModified().toTime_t());
-                result = dlg.exec();
-            }
-        }
-    } while (result == KIO::R_CANCEL && destUrl.isValid());
-
-    return destUrl;
-}
-
 static bool downloadResource (const KUrl& srcUrl, const QString& suggestedName = QString(),
                               QWidget* parent = 0, const KIO::MetaData& metaData = KIO::MetaData())
 {
-    const KUrl& destUrl = promptUser(parent, srcUrl, suggestedName);
-
+    const QString fileName = suggestedName.isEmpty() ? srcUrl.fileName() : suggestedName;
+    // convert filename to URL using fromPath to avoid trouble with ':' in filenames (#184202)
+    KUrl destUrl = KFileDialog::getSaveFileName(KUrl::fromPath(fileName), QString(), parent);
     if (!destUrl.isValid())
         return false;
 
-    KIO::Job *job = KIO::file_copy(srcUrl, destUrl);
+    // Using KIO::copy rather than file_copy, to benefit from "dest already exists" dialogs.
+    KIO::Job *job = KIO::copy(srcUrl, destUrl);
 
     if (!metaData.isEmpty())
         job->setMetaData(metaData);
