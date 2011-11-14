@@ -78,6 +78,8 @@ class KTabWidget::Private
     void resizeTabs( int changedTabIndex = -1 );
     void updateTab( int index );
     void removeTab( int index );
+
+    void slotTabMoved( int from, int to );
 };
 
 bool KTabWidget::Private::isEmptyTabbarSpace( const QPoint &point ) const
@@ -218,6 +220,16 @@ void KTabWidget::Private::updateTab( int index )
     m_parent->QTabWidget::setTabText( index, title );
 }
 
+void KTabWidget::Private::slotTabMoved(int from, int to)
+{
+    /* called from Qt slot when Qt has moved the tab, so we only
+       need to adjust the m_tabNames list */
+    if (m_automaticResizeTabs) {
+        QString movedName = m_tabNames.takeAt(from);
+        m_tabNames.insert(to, movedName);
+    }
+}
+
 KTabWidget::KTabWidget( QWidget *parent, Qt::WFlags flags )
   : QTabWidget( parent ),
     d( new Private( this ) )
@@ -235,6 +247,7 @@ KTabWidget::KTabWidget( QWidget *parent, Qt::WFlags flags )
   connect(tabBar(), SIGNAL(testCanDecode(const QDragMoveEvent *, bool & )), SIGNAL(testCanDecode(const QDragMoveEvent *, bool & )));
   connect(tabBar(), SIGNAL(receivedDropEvent( int, QDropEvent * )), SLOT(receivedDropEvent( int, QDropEvent * )));
   connect(tabBar(), SIGNAL(moveTab( int, int )), SLOT(moveTab( int, int )));
+  connect(tabBar(), SIGNAL(tabMoved( int, int )), SLOT(slotTabMoved( int, int )));
   connect(tabBar(), SIGNAL(tabCloseRequested( int )), SLOT(closeRequest( int )));
 }
 
