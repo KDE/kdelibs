@@ -291,10 +291,13 @@ int KIntSpinBox::valueFromText(const QString &text) const
 {
     bool ok;
     QString theText = text;
+    if (theText.startsWith(prefix())) {
+        theText.remove(0, prefix().length());
+    }
     if (theText.endsWith(suffix())) {
         theText.chop(suffix().length());
     }
-    return theText.toInt(&ok, d->val_base);
+    return theText.trimmed().toInt(&ok, d->val_base);
 }
 
 void KIntSpinBox::setEditFocus(bool mark)
