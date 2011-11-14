@@ -502,23 +502,26 @@ QMenu *KTextEdit::mousePopupMenu()
       d->allowTab = popup->addAction( i18n("Allow Tabulations") );
       d->allowTab->setCheckable( true );
       d->allowTab->setChecked( !tabChangesFocus() );
+  }
 
-      if (d->findReplaceEnabled)
-      {
-          KAction *findAction = KStandardAction::find(this, SLOT(slotFind()), popup);
-          KAction *findNextAction = KStandardAction::findNext(this, SLOT(slotFindNext()), popup);
+  if (d->findReplaceEnabled) {
+      KAction *findAction = KStandardAction::find(this, SLOT(slotFind()), popup);
+      KAction *findNextAction = KStandardAction::findNext(this, SLOT(slotFindNext()), popup);
+      if (emptyDocument) {
+          findAction->setEnabled(false);
+          findNextAction->setEnabled(false);
+      } else {
+          findNextAction->setEnabled(d->find != 0);
+      }
+      popup->addSeparator();
+      popup->addAction(findAction);
+      popup->addAction(findNextAction);
+
+      if (!isReadOnly()) {
           KAction *replaceAction = KStandardAction::replace(this, SLOT(slotReplace()), popup);
-          if (emptyDocument)
-          {
-              findAction->setEnabled(false);
-              findNextAction->setEnabled(false );
+          if (emptyDocument) {
               replaceAction->setEnabled(false);
           }
-	  else
-	      findNextAction->setEnabled(d->find != 0 );
-          popup->addSeparator();
-          popup->addAction(findAction);
-          popup->addAction(findNextAction);
           popup->addAction(replaceAction);
       }
   }
