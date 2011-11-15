@@ -1003,7 +1003,7 @@ int KFileDialog::exec()
                 d->native->startDir(), parentWidget(), windowTitle()) );
             if (url.isEmpty() || !url.isValid()) {
                 res = QDialog::Rejected;
-				break;
+                break;
             }
             d->native->selectedUrls.clear();
             d->native->selectedUrls.append(url);
