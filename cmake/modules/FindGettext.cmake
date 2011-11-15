@@ -213,7 +213,8 @@ MACRO(GETTEXT_PROCESS_PO_FILES _lang)
 #    message(STATUS "2 all ${_addToAll} dest ${_installDest} args: ${_args}")
    
    FOREACH(_current_PO_FILE ${_args})
-      GET_FILENAME_COMPONENT(_basename ${_current_PO_FILE} NAME_WE)
+      GET_FILENAME_COMPONENT(_name ${_current_PO_FILE} NAME)
+      STRING(REGEX REPLACE "^(.+)(\\.[^.]+)$" "\\1" _basename ${_name})
       SET(_gmoFile ${CMAKE_CURRENT_BINARY_DIR}/${_basename}.gmo)
       add_custom_command(OUTPUT ${_gmoFile}
             COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} -o ${_gmoFile} ${_current_PO_FILE}
