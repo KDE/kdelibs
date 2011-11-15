@@ -35,7 +35,6 @@ include_directories(
 )
 if(QCA2_FOUND)
   include_directories(
-   ${CMAKE_CURRENT_SOURCE_DIR}/ksecretsservice
    ${QCA2_INCLUDE_DIR}
   )
   set(KDEUI_EXTRA_LIBS ${KDEUI_EXTRA_LIBS} ${QCA2_LIBRARIES} )
@@ -54,10 +53,7 @@ configure_file(
     ${CMAKE_CURRENT_BINARY_DIR}/dialogs/kaboutapplicationconfigattica_p.h
 )
 
-if(QCA2_FOUND)
-  set(HAVE_KSECRETSSERVICE 0)
-endif(QCA2_FOUND)
-
+set(HAVE_KSECRETSSERVICE 0)
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/util/config-kwallet.h.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/util/config-kwallet.h
@@ -66,9 +62,6 @@ configure_file(
 add_subdirectory( about )
 add_subdirectory( tests )
 add_subdirectory( sonnet/tests )
-if(QCA2_FOUND)
-  add_subdirectory( ksecretsservice )
-endif(QCA2_FOUND)
 
 ########### next target ###############
 set(kdeui_LIB_SRCS
@@ -305,19 +298,6 @@ set(kdeui_LIB_SRCS
  xmlgui/kxmlguiversionhandler.cpp
 )
 
-if(QCA2_FOUND)
-set(kdeui_LIB_SRCS
- ${kdeui_LIB_SRCS}
- ksecretsservice/ksecretsserviceitem.cpp
- ksecretsservice/ksecretsserviceitemjobs.cpp
- ksecretsservice/ksecretsservicesecret.cpp
- ksecretsservice/ksecretsservicecollection.cpp
- ksecretsservice/ksecretsservicecollectionjobs.cpp
- ksecretsservice/dbusbackend.cpp
- ksecretsservice/promptjob.cpp
- ksecretsservice/ksecretsservicecodec.cpp )
-endif(QCA2_FOUND)
-
 if(NOT KDE_NO_DEPRECATED)
 set(kdeui_LIB_SRCS
  ${kdeui_LIB_SRCS}
@@ -413,22 +393,6 @@ kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )
 
 set(kwallet_xml util/org.kde.KWallet.xml)
 install(FILES ${kwallet_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
-
-if(QCA2_FOUND)
-  set_source_files_properties(
-    ${CMAKE_CURRENT_SOURCE_DIR}/ksecretsservice/org.freedesktop.Secret.Collection.xml
-    ${CMAKE_CURRENT_SOURCE_DIR}/ksecretsservice/org.freedesktop.Secret.Item.xml
-    ${CMAKE_CURRENT_SOURCE_DIR}/ksecretsservice/org.freedesktop.Secret.Prompt.xml
-    ${CMAKE_CURRENT_SOURCE_DIR}/ksecretsservice/org.freedesktop.Secret.Service.xml
-    ${CMAKE_CURRENT_SOURCE_DIR}/ksecretsservice/org.freedesktop.Secret.Session.xml
-    PROPERTIES INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/ksecretsservice/ksecretsservicedbustypes.h )
-
-  qt4_add_dbus_interface(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/ksecretsservice/org.freedesktop.Secret.Collection.xml collection_interface)
-  qt4_add_dbus_interface(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/ksecretsservice/org.freedesktop.Secret.Item.xml item_interface)
-  qt4_add_dbus_interface(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/ksecretsservice/org.freedesktop.Secret.Prompt.xml prompt_interface)
-  qt4_add_dbus_interface(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/ksecretsservice/org.freedesktop.Secret.Service.xml service_interface)
-  qt4_add_dbus_interface(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/ksecretsservice/org.freedesktop.Secret.Session.xml session_interface)
-endif(QCA2_FOUND)
 
 qt4_add_dbus_interface( kdeui_LIB_SRCS ${kwallet_xml} kwallet_interface )
 qt4_add_dbus_interfaces(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.JobViewServer.xml )
@@ -736,21 +700,6 @@ install( FILES
  xmlgui/kxmlguibuilder.h
  xmlgui/kxmlguifactory.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
-
-if(QCA2_FOUND)
-  install(FILES
-    ksecretsservice/ksecretsservicecollection.h
-    ksecretsservice/ksecretsservicecollectionjobs.h
-    ksecretsservice/ksecretsserviceitem.h
-    ksecretsservice/ksecretsserviceitemjobs.h
-    ksecretsservice/ksecretsservicesecret.h
-    ksecretsservice/ksecretsserviceglobals.h
-  DESTINATION ${INCLUDE_INSTALL_DIR}/ksecretsservice COMPONENT Devel )
-  install(FILES
-    ksecretsservice/ksecretsservicedbustypes.h
-    ksecretsservice/ksecretsservicecodec.h
-  DESTINATION ${INCLUDE_INSTALL_DIR}/ksecretsservice/private COMPONENT Devel )
-endif(QCA2_FOUND)
 
 if(NOT KDE_NO_DEPRECATED)
 install(FILES
