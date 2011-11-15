@@ -25,6 +25,8 @@ set(libinqt5_SRCS
 
 add_library(inqt5 ${LIBRARY_TYPE} ${libinqt5_SRCS})
 
+generate_export_header(inqt5)
+
 target_link_libraries(inqt5 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
 
 set_target_properties(inqt5 PROPERTIES VERSION   ${ECM_VERSION_STRING}
