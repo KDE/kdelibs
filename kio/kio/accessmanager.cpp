@@ -252,10 +252,12 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             break;
         }
         case PostOperation: {
-            //kDebug( 7044 ) << "PostOperation:" << reqUrl;
             const qint64 size = sizeFromRequest(req);
-            //kDebug(7044) << "PostOperation: data size=" << size;
-            kioJob = KIO::http_post(reqUrl, outgoingData, size, KIO::HideProgressInfo);
+            // kDebug(7044) << "PostOperation:" << reqUrl << ", data size=" << size;
+            if (outgoingData && size > 0)
+                kioJob = KIO::http_post(reqUrl, outgoingData, size, KIO::HideProgressInfo);
+            else
+                kioJob = KIO::http_post(reqUrl, QByteArray(), KIO::HideProgressInfo);
             if (!metaData.contains(QL1S("content-type")))  {
                 const QVariant header = req.header(QNetworkRequest::ContentTypeHeader);
                 if (header.isValid()) {
