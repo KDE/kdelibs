@@ -1,5 +1,5 @@
 /*
-    Copyright 2006 Davide Bettio <davbet@aliceposta.it>
+    Copyright 2006 Davide Bettio <davide.bettio@kdemail.net>
     Copyright 2007 Jeff Mitchell <kde-dev@emailgoeshere.com>
 
     This library is free software; you can redistribute it and/or
@@ -34,7 +34,7 @@ namespace Ifaces
      * a portable media player attached to the system.
      * A portable media player is a portable device able to play multimedia files.
      * Some of them have even recording capabilities.
-     * @author Davide Bettio <davbet@aliceposta.it>
+     * @author Davide Bettio <davide.bettio@kdemail.net>
      */
     class PortableMediaPlayer : virtual public DeviceInterface
     {
