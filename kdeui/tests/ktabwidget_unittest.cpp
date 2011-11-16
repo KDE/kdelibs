@@ -136,6 +136,7 @@ private Q_SLOTS:
      }
 
      void testMiddleClickTabReordering();
+     void testTabMoved();
 
 private Q_SLOTS:
     void slotCurrentChanged(int index)
@@ -191,6 +192,25 @@ void KTabWidget_UnitTest::testMiddleClickTabReordering()
     QCOMPARE(tabWidget.widget(1), w0);
 
     QTest::mouseRelease(tabWidget.getTabBar(), Qt::MidButton, Qt::NoModifier, pos1);
+}
+
+void KTabWidget_UnitTest::testTabMoved()
+{
+    MyTabWidget tabWidget;
+    tabWidget.setMovable(true);
+    tabWidget.setAutomaticResizeTabs(true);
+
+    tabWidget.insertTab(0, new QWidget, "Tab A");
+    tabWidget.insertTab(1, new QWidget, "Tab B");
+    tabWidget.insertTab(2, new QWidget, "Tab C");
+    tabWidget.insertTab(3, new QWidget, "Tab D");
+
+    tabWidget.getTabBar()->moveTab(3, 1);
+
+    QCOMPARE(tabWidget.tabText(0), QString("Tab A"));
+    QCOMPARE(tabWidget.tabText(1), QString("Tab D"));
+    QCOMPARE(tabWidget.tabText(2), QString("Tab B"));
+    QCOMPARE(tabWidget.tabText(3), QString("Tab C"));
 }
 
 QTEST_KDEMAIN(KTabWidget_UnitTest, GUI)

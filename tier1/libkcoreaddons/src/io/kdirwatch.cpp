@@ -233,7 +233,7 @@ KDirWatchPrivate::KDirWatchPrivate()
     }
   }
 
-  qDebug() << "INotify available: " << supports_inotify;
+  //qDebug() << "INotify available: " << supports_inotify;
   if ( supports_inotify ) {
     availableMethods << "INotify";
     fcntl(m_inotify_fd, F_SETFD, FD_CLOEXEC);

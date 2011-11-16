@@ -91,6 +91,8 @@ public:
 
     virtual ~KService();
 
+    // TODO KDE5: add mimeTypes() accessor
+
     /**
      * Services are either applications (executables) or dlopened libraries (plugins).
      * @return true if this service is an application, i.e. it has Type=Application in its

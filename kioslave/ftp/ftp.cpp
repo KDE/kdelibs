@@ -1814,13 +1814,19 @@ bool Ftp::ftpReadDir(FtpEntry& de)
 void Ftp::get( const KUrl & url )
 {
   kDebug(7102) << url;
+
   int iError = 0;
-  ftpGet(iError, -1, url, 0);               // iError gets status
+  const StatusCode cs = ftpGet(iError, -1, url, 0);
   ftpCloseCommand();                        // must close command!
-  if(iError)                                // can have only server side errs
-     error(iError, url.path());
-  else
+
+  if (cs == statusSuccess) {
      finished();
+     return;
+  }
+
+  if (iError) {                            // can have only server side errs
+     error(iError, url.path());
+  }
 }
 
 Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fileoffset_t llOffset)
@@ -2015,14 +2021,20 @@ Ftp::StatusCode Ftp::ftpGet(int& iError, int iCopyFile, const KUrl& url, KIO::fi
 //===============================================================================
 void Ftp::put(const KUrl& url, int permissions, KIO::JobFlags flags)
 {
-    kDebug(7102) << url;
+  kDebug(7102) << url;
+
   int iError = 0;                           // iError gets status
-  ftpPut(iError, -1, url, permissions, flags);
+  const StatusCode cs = ftpPut(iError, -1, url, permissions, flags);
   ftpCloseCommand();                        // must close command!
-  if(iError)                                // can have only server side errs
-    error(iError, url.path());
-  else
+
+  if (cs == statusSuccess) {
     finished();
+    return;
+  }
+
+  if (iError) {                             // can have only server side errs
+    error(iError, url.path());
+  }
 }
 
 Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
@@ -2423,9 +2435,6 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
   if (bPartExists && !bResume)                  // get rid of an unwanted ".part" file
     QFile::remove(sPart);
 
-  if (bDestExists)                             // must delete for overwrite
-    QFile::remove(sCopyFile);
-
   // WABA: Make sure that we keep writing permissions ourselves,
   // otherwise we can be in for a surprise on NFS.
   mode_t initialMode;
@@ -2474,9 +2483,12 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
     { // rename ".part" on success
       if ( KDE::rename( sPart, sCopyFile ) )
       {
-        kDebug(7102) << "cannot rename " << sPart << " to " << sCopyFile;
-        iError = ERR_CANNOT_RENAME_PARTIAL;
-        iRes = statusClientError;
+        // If rename fails, try removing the destination first if it exists.
+        if (!bDestExists || !(QFile::remove(sCopyFile) && KDE::rename(sPart, sCopyFile) == 0)) {
+            kDebug(7102) << "cannot rename " << sPart << " to " << sCopyFile;
+            iError = ERR_CANNOT_RENAME_PARTIAL;
+            iRes = statusClientError;
+        }
       }
     }
     else if(KDE::stat( sPart, &buff ) == 0)

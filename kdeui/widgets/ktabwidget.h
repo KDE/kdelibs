@@ -324,11 +324,13 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      */
     void contextMenu( QWidget *, const QPoint & );
 
+#ifndef KDE_NO_DEPRECATED
     /**
      * A tab was moved from first to second index. This signal is only
      * possible after you have called setTabReorderingEnabled( true ).
      */
     void movedTab( int, int );
+#endif
 
     /**
      * A double left mouse button click was performed over empty space besides tabbar.
@@ -396,6 +398,8 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
   private:
     class Private;
     Private * const d;
+
+    Q_PRIVATE_SLOT(d, void slotTabMoved(int, int))
 };
 
 #endif

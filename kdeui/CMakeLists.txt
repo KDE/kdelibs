@@ -43,8 +43,15 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
  ${CMAKE_CURRENT_SOURCE_DIR}/windowmanagement
  ${CMAKE_CURRENT_SOURCE_DIR}/xmlgui
+ ${CMAKE_CURRENT_BINARY_DIR}/util
  ${DBUSMENUQT_INCLUDE_DIR}
 )
+if(QCA2_FOUND)
+  include_directories(
+   ${QCA2_INCLUDE_DIR}
+  )
+  set(KDEUI_EXTRA_LIBS ${KDEUI_EXTRA_LIBS} ${QCA2_LIBRARIES} )
+endif(QCA2_FOUND)
 
 if(NOT KDEUI_NO_ATTICA)
    include_directories( ${LIBATTICA_INCLUDE_DIR} )
@@ -57,6 +64,12 @@ macro_bool_to_01(HAVE_ATTICA)
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogs/kaboutapplicationconfigattica_p.h.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/dialogs/kaboutapplicationconfigattica_p.h
+)
+
+set(HAVE_KSECRETSSERVICE 0)
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/util/config-kwallet.h.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/util/config-kwallet.h
 )
 
 add_subdirectory( about )

@@ -1,5 +1,5 @@
 /*
-    Copyright 2006 Davide Bettio <davbet@aliceposta.it>
+    Copyright 2006 Davide Bettio <davide.bettio@kdemail.net>
     Copyright 2007 Kevin Ottens <ervin@kde.org>
     Copyright 2007 Jeff Mitchell <kde-dev@emailgoeshere.com>
 
@@ -40,7 +40,7 @@ namespace Solid
      * a portable media player attached to the system.
      * A portable media player is a portable device able to play multimedia files.
      * Some of them have even recording capabilities.
-     * @author Davide Bettio <davbet@aliceposta.it>
+     * @author Davide Bettio <davide.bettio@kdemail.net>
      */
     class SOLID_EXPORT PortableMediaPlayer : public DeviceInterface
     {
