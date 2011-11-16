@@ -201,6 +201,9 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         d->m_srcPreview->setMinimumHeight(KIconLoader::SizeEnormous);
         d->m_destPreview->setMinimumHeight(KIconLoader::SizeEnormous);
 
+        d->m_srcPreview->setAlignment(Qt::AlignCenter);
+        d->m_destPreview->setAlignment(Qt::AlignCenter);
+
         d->m_srcPendingPreview = true;
         d->m_destPendingPreview = true;
 
@@ -642,7 +645,7 @@ KSqueezedTextLabel* RenameDialog::createSqueezedLabel(QWidget* parent, const QSt
     KSqueezedTextLabel* label = new KSqueezedTextLabel(text, parent);
 
     label->setAlignment(Qt::AlignHCenter);
-    label->setFixedWidth(200);
+    label->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
 
     return label;
 }
