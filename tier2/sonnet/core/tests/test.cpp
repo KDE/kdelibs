@@ -23,7 +23,6 @@
 
 #include <QCoreApplication>
 #include <kdebug.h>
-#include <kcmdlineargs.h>
 #include <QtCore/QDate>
 
 using namespace Sonnet;
