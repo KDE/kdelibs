@@ -73,6 +73,8 @@ public:
 
     KFileItemList initialItems;
     QStringList enabledPlugins;
+    // Some plugins support remote URLs, <protocol, mimetypes>
+    QHash<QString, QStringList> m_remoteProtocolPlugins;
     // Our todo list :)
     // We remove the first item at every step, so use QLinkedList
     QLinkedList<PreviewItem> items;
@@ -269,8 +271,26 @@ void PreviewJobPrivate::startPreview()
     // Load the list of plugins to determine which mimetypes are supported
     const KService::List plugins = KServiceTypeTrader::self()->query("ThumbCreator");
     QMap<QString, KService::Ptr> mimeMap;
-
     for (KService::List::ConstIterator it = plugins.constBegin(); it != plugins.constEnd(); ++it) {
+        const QStringList protocols = (*it)->property("X-KDE-Protocol").toStringList();
+        foreach (const QString &protocol, protocols) {
+            QStringList mtypes = (*it)->serviceTypes();
+            // Filter out non-mimetype servicetypes
+            // TODO KDE5: use KService::mimeTypes()
+            foreach (const QString &_mtype, mtypes) {
+                if (!((*it)->hasMimeType(_mtype))) {
+                    mtypes.removeAll(_mtype);
+                }
+            }
+            // Add already existing protocols, so more than one plugin can
+            // support a given scheme + mimetype
+            QStringList &_ms = m_remoteProtocolPlugins[protocol];
+            foreach (const QString &_m, mtypes) {
+                if (!_ms.contains(_m)) {
+                    _ms.append(_m);
+                }
+            }
+        }
         if (enabledPlugins.contains((*it)->desktopEntryName())) {
             const QStringList mimeTypes = (*it)->serviceTypes();
             for (QStringList::ConstIterator mt = mimeTypes.constBegin(); mt != mimeTypes.constEnd(); ++mt)
@@ -444,6 +464,7 @@ void PreviewJob::slotResult( KJob *job )
             bool skipCurrentItem = false;
             const KIO::filesize_t size = (KIO::filesize_t)entry.numberValue( KIO::UDSEntry::UDS_SIZE, 0 );
             const KUrl itemUrl = d->currentItem.item.mostLocalUrl();
+
             if (itemUrl.isLocalFile() || KProtocolInfo::protocolClass(itemUrl.protocol()) == QLatin1String(":local"))
             {
                 skipCurrentItem = !d->ignoreMaximumSize && size > d->maximumLocalSize
@@ -470,7 +491,6 @@ void PreviewJob::slotResult( KJob *job )
             }
 
             bool pluginHandlesSequences = d->currentItem.plugin->property("HandleSequences", QVariant::Bool).toBool();
-
             if ( !d->currentItem.plugin->property( "CacheThumbnail" ).toBool()  || (d->sequenceIndex && pluginHandlesSequences) )
             {
                 // This preview will not be cached, no need to look for a saved thumbnail
@@ -566,10 +586,27 @@ void PreviewJobPrivate::getOrCreateThumbnail()
     // We still need to load the orig file ! (This is getting tedious) :)
     const KFileItem& item = currentItem.item;
     const QString localPath = item.localPath();
-    if ( !localPath.isEmpty() )
+    if (!localPath.isEmpty()) {  
         createThumbnail( localPath );
-    else
-    {
+    } else {
+        const KUrl fileUrl = item.url();
+        // heuristics for remote URL support
+        bool supportsProtocol = false;
+        if (m_remoteProtocolPlugins.value(fileUrl.scheme()).contains(item.mimetype())) {
+            // There's a plugin supporting this protocol and mimetype
+            supportsProtocol = true;
+        } else if (m_remoteProtocolPlugins.value("KIO").contains(item.mimetype())) {
+            // Assume KIO understands any URL, ThumbCreator slaves who have
+            // X-KDE-Protocol=KIO, will get feed the remote URL directly.
+            supportsProtocol = true;
+        }
+
+        if (supportsProtocol) {
+            createThumbnail(fileUrl.url());
+            return;
+        }
+        // No plugin support access to this remote content, copy the file
+        // to the local machine, then create the thumbnail
         state = PreviewJobPrivate::STATE_GETORIG;
         KTemporaryFile localFile;
         localFile.setAutoRemove(false);

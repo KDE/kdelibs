@@ -1,5 +1,5 @@
 /*
-    Copyright 2006 Davide Bettio <davbet@aliceposta.it>
+    Copyright 2006 Davide Bettio <davide.bettio@kdemail.net>
     Copyright 2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -37,7 +37,7 @@ namespace Solid
      * A button is a device, like power button or lid switch, that can be pressed by user.
      * Some buttons can have two states (Enabled/Disabled, On/Off ...), other buttons haven't state.
      *
-     * @author Davide Bettio <davbet@aliceposta.it>
+     * @author Davide Bettio <davide.bettio@kdemail.net>
      */
     class SOLID_EXPORT Button : public DeviceInterface
     {

@@ -35,6 +35,8 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kurl.h>
+#include <kconfiggroup.h>
+#include <ksharedconfig.h>
 
 void registerNonGuiMetaTypes(QScriptEngine *engine);
 QScriptValue constructIconClass(QScriptEngine *engine);
@@ -140,6 +142,16 @@ void KDeclarative::setupBindings()
 
     //tell to the engine to search for inport in the kde4 plugin dirs
     foreach(const QString &importPath, KGlobal::dirs()->findDirs("module", "imports")) {
+        d->declarativeEngine.data()->addImportPath(importPath);
+    }
+
+    QString componentsPlatform = getenv("KDE_PLASMA_COMPONENTS_PLATFORM");
+    if (componentsPlatform.isEmpty()) {
+        KConfigGroup cg(KSharedConfig::openConfig("kdeclarativerc"), "Components-platform");
+        componentsPlatform = cg.readEntry("name", "desktop");
+    }
+
+    foreach(const QString &importPath, KGlobal::dirs()->findDirs("module", "platformimports/" % componentsPlatform)) {
         d->declarativeEngine.data()->addImportPath(importPath);
     }
 

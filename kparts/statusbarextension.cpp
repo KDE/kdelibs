@@ -96,7 +96,7 @@ StatusBarExtension::StatusBarExtension(KParts::ReadOnlyPart *parent)
 
 StatusBarExtension::~StatusBarExtension()
 {
-  KStatusBar * sb = statusBar();
+  KStatusBar * sb = d->m_statusBar;
   for ( int i = d->m_statusBarItems.count () - 1; i >= 0 ; --i ) {
     if ( d->m_statusBarItems[i].widget() ) {
       if ( sb ) {

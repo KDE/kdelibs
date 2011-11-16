@@ -422,16 +422,14 @@ bool KTextEdit::Private::handleShortcut(const QKeyEvent* event)
     cursor.movePosition( QTextCursor::EndOfLine );
     parent->setTextCursor( cursor );
     return true;
-  } else if (KStandardShortcut::find().contains(key)) {
-      if (findReplaceEnabled)
-          parent->slotFind();
+  } else if (findReplaceEnabled && KStandardShortcut::find().contains(key)) {
+      parent->slotFind();
       return true;
-  } else if (KStandardShortcut::findNext().contains(key)) {
-      if (findReplaceEnabled)
-          parent->slotFindNext();
+  } else if (findReplaceEnabled && KStandardShortcut::findNext().contains(key)) {
+      parent->slotFindNext();
       return true;
-  } else if (KStandardShortcut::replace().contains(key)) {
-      if (!parent->isReadOnly() && findReplaceEnabled)
+  } else if (findReplaceEnabled && KStandardShortcut::replace().contains(key)) {
+      if (!parent->isReadOnly())
           parent->slotReplace();
       return true;
   } else if ( KStandardShortcut::pasteSelection().contains( key ) ) {
@@ -502,23 +500,26 @@ QMenu *KTextEdit::mousePopupMenu()
       d->allowTab = popup->addAction( i18n("Allow Tabulations") );
       d->allowTab->setCheckable( true );
       d->allowTab->setChecked( !tabChangesFocus() );
+  }
 
-      if (d->findReplaceEnabled)
-      {
-          KAction *findAction = KStandardAction::find(this, SLOT(slotFind()), popup);
-          KAction *findNextAction = KStandardAction::findNext(this, SLOT(slotFindNext()), popup);
+  if (d->findReplaceEnabled) {
+      KAction *findAction = KStandardAction::find(this, SLOT(slotFind()), popup);
+      KAction *findNextAction = KStandardAction::findNext(this, SLOT(slotFindNext()), popup);
+      if (emptyDocument) {
+          findAction->setEnabled(false);
+          findNextAction->setEnabled(false);
+      } else {
+          findNextAction->setEnabled(d->find != 0);
+      }
+      popup->addSeparator();
+      popup->addAction(findAction);
+      popup->addAction(findNextAction);
+
+      if (!isReadOnly()) {
           KAction *replaceAction = KStandardAction::replace(this, SLOT(slotReplace()), popup);
-          if (emptyDocument)
-          {
-              findAction->setEnabled(false);
-              findNextAction->setEnabled(false );
+          if (emptyDocument) {
               replaceAction->setEnabled(false);
           }
-	  else
-	      findNextAction->setEnabled(d->find != 0 );
-          popup->addSeparator();
-          popup->addAction(findAction);
-          popup->addAction(findNextAction);
           popup->addAction(replaceAction);
       }
   }
@@ -1049,11 +1050,11 @@ bool KTextEdit::Private::overrideShortcut(const QKeyEvent* event)
     return true;
   } else if ( KStandardShortcut::pasteSelection().contains( key ) ) {
     return true;
-  } else if (KStandardShortcut::find().contains(key)) {
+  } else if (findReplaceEnabled && KStandardShortcut::find().contains(key)) {
       return true;
-  } else if (KStandardShortcut::findNext().contains(key)) {
+  } else if (findReplaceEnabled && KStandardShortcut::findNext().contains(key)) {
       return true;
-  } else if (KStandardShortcut::replace().contains(key)) {
+  } else if (findReplaceEnabled && KStandardShortcut::replace().contains(key)) {
       return true;
   } else if (event->matches(QKeySequence::SelectAll)) { // currently missing in QTextEdit
       return true;

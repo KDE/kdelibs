@@ -1,5 +1,5 @@
 /*
-    Copyright 2006 Davide Bettio <davbet@aliceposta.it>
+    Copyright 2006 Davide Bettio <davide.bettio@kdemail.net>
     Copyright 2007 Jeff Mitchell <kde-dev@emailgoeshere.com>
 
     This library is free software; you can redistribute it and/or

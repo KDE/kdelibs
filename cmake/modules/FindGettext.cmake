@@ -103,7 +103,8 @@ FIND_PROGRAM(GETTEXT_MSGFMT_EXECUTABLE msgfmt)
 MACRO(GETTEXT_CREATE_TRANSLATIONS _potFile _firstPoFile)
 
    SET(_gmoFiles)
-   GET_FILENAME_COMPONENT(_potBasename ${_potFile} NAME_WE)
+   GET_FILENAME_COMPONENT(_potName ${_potFile} NAME)
+   STRING(REGEX REPLACE "^(.+)(\\.[^.]+)$" "\\1" _potBasename ${_potName})
    GET_FILENAME_COMPONENT(_absPotFile ${_potFile} ABSOLUTE)
 
    SET(_addToAll)
@@ -158,7 +159,8 @@ MACRO(GETTEXT_PROCESS_POT_FILE _potFile)
       ENDIF("${_tmp}" STREQUAL "INSTALL_DESTINATION")
    ENDIF(_args)
 
-   GET_FILENAME_COMPONENT(_potBasename ${_potFile} NAME_WE)
+   GET_FILENAME_COMPONENT(_potName ${_potFile} NAME)
+   STRING(REGEX REPLACE "^(.+)(\\.[^.]+)$" "\\1" _potBasename ${_potName})
    GET_FILENAME_COMPONENT(_absPotFile ${_potFile} ABSOLUTE)
 
 #    message(STATUS "1 all ${_addToAll} dest ${_installDest} args: ${_args}")
@@ -213,7 +215,8 @@ MACRO(GETTEXT_PROCESS_PO_FILES _lang)
 #    message(STATUS "2 all ${_addToAll} dest ${_installDest} args: ${_args}")
    
    FOREACH(_current_PO_FILE ${_args})
-      GET_FILENAME_COMPONENT(_basename ${_current_PO_FILE} NAME_WE)
+      GET_FILENAME_COMPONENT(_name ${_current_PO_FILE} NAME)
+      STRING(REGEX REPLACE "^(.+)(\\.[^.]+)$" "\\1" _basename ${_name})
       SET(_gmoFile ${CMAKE_CURRENT_BINARY_DIR}/${_basename}.gmo)
       add_custom_command(OUTPUT ${_gmoFile}
             COMMAND ${GETTEXT_MSGFMT_EXECUTABLE} -o ${_gmoFile} ${_current_PO_FILE}

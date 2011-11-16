@@ -13,10 +13,6 @@
 
 find_path( HUPNP_INCLUDE_DIR HUpnpCore/HUpnp )
 
-if( WIN32 )
-    #I don't know why its needed but without it cmake tries to link against the dll directly
-     set(CMAKE_FIND_LIBRARY_SUFFIXES ".dll.a;.a;.lib;") 
-endif( WIN32 )
 find_library( HUPNP_LIBS NAMES HUpnp HUpnp1 )
 
 if( HUPNP_INCLUDE_DIR AND EXISTS "${HUPNP_INCLUDE_DIR}/HUpnpCore/public/hupnpinfo.h" )
