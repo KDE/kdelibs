@@ -8,5 +8,5 @@ set(krosstest_SRCS
 
 kde4_add_executable(krosstest TEST ${krosstest_SRCS})
 
-target_link_libraries(krosstest ${KDE4_KDEUI_LIBS} krosscore )
+target_link_libraries(krosstest ${KDE4_KDEUI_LIBS} krosscore kcoreaddons)
 

@@ -17,6 +17,7 @@ target_link_libraries(queryparsertest nepomuk nepomukquery
   ${QT_QTTEST_LIBRARY}
   ${SOPRANO_LIBRARIES}
   ${KDE4_KDECORE_LIBS}
+  kcoreaddons
 )
 
 set(querytest_SRC querytest.cpp)
@@ -25,6 +26,7 @@ target_link_libraries(querytest nepomuk nepomukquery
   ${QT_QTTEST_LIBRARY}
   ${SOPRANO_LIBRARIES}
   ${KDE4_KDECORE_LIBS}
+  kcoreaddons
 )
 
 set(queryserializertest_SRC queryserializertest.cpp)
@@ -33,6 +35,7 @@ target_link_libraries(queryserializertest nepomuk nepomukquery
   ${QT_QTTEST_LIBRARY}
   ${SOPRANO_LIBRARIES}
   ${KDE4_KDECORE_LIBS}
+  kcoreaddons
 )
 
 
@@ -52,7 +55,9 @@ target_link_libraries(resourcetest
   ${QT_QTTEST_LIBRARY}
   ${KDE4_KDECORE_LIBS}
   ${SOPRANO_LIBRARIES}
-  kdecore)
+  kdecore
+  kcoreaddons
+)
 
 
 
@@ -78,6 +83,7 @@ target_link_libraries(simplefacettest
   ${QT_QTTEST_LIBRARY}
   ${SOPRANO_LIBRARIES}
   ${KDE4_KDECORE_LIBS}
+  kcoreaddons
   nepomuk
   nepomukquery
   nepomukutils
@@ -91,6 +97,7 @@ target_link_libraries(dynamicresourcefacettest
   nepomuk
   nepomukquery
   nepomukutils
+  kcoreaddons
 )
 
 kde4_add_unit_test(proxyfacettest TESTNAME nepomuk-proxyfacettest proxyfacettest.cpp)
@@ -101,6 +108,7 @@ target_link_libraries(proxyfacettest
   nepomuk
   nepomukquery
   nepomukutils
+  kcoreaddons
 )
 
 kde4_add_unit_test(facetmodeltest TESTNAME nepomuk-facetmodeltest facetmodeltest.cpp)
@@ -111,6 +119,7 @@ target_link_libraries(facetmodeltest
   nepomuk
   nepomukquery
   nepomukutils
+  kcoreaddons
 )
 
 kde4_add_unit_test(typefacettest TESTNAME nepomuk-typefacettest typefacettest.cpp)
@@ -118,6 +127,7 @@ target_link_libraries(typefacettest
   ${QT_QTTEST_LIBRARY}
   ${SOPRANO_LIBRARIES}
   ${KDE4_KDECORE_LIBS}
+  kcoreaddons
   nepomuk
   nepomukquery
   nepomukutils

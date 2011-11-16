@@ -28,4 +28,4 @@ install(FILES
 ############# tests ########################
 
 kde4_add_unit_test(kjsapitest NOGUI kjsapitest.cpp)
-target_link_libraries(kjsapitest kjsapi ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kjsapitest kjsapi ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)

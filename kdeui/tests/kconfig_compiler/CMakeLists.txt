@@ -150,7 +150,7 @@ gen_kcfg_test_source(test10 test10_SRCS)
 
 kde4_add_executable(test10 TEST ${test10_SRCS})
 
-target_link_libraries(test10  ${KDE4_KDEUI_LIBS} )
+target_link_libraries(test10  ${KDE4_KDEUI_LIBS} kcoreaddons)
 
 
 ########### next target ###############
@@ -198,7 +198,7 @@ set(kconfigcompiler_test_SRCS kconfigcompiler_test.cpp )
 
 kde4_add_unit_test(kconfigcompiler_test ${kconfigcompiler_test_SRCS})
 
-target_link_libraries(kconfigcompiler_test ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kconfigcompiler_test ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
 
 ########### install files ###############
 

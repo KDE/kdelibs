@@ -13,7 +13,7 @@ notepad.cpp
 
 kde4_add_executable(kpartstest TEST ${kpartstest_SRCS})
 
-target_link_libraries(kpartstest  ${KDE4_KPARTS_LIBS} )
+target_link_libraries(kpartstest  ${KDE4_KPARTS_LIBS} kcoreaddons)
 
 
 ########### next target ###############
@@ -27,7 +27,7 @@ notepad.cpp
 
 kde4_add_executable(normalktmtest TEST ${normalktmtest_SRCS})
 
-target_link_libraries(normalktmtest  ${KDE4_KPARTS_LIBS} )
+target_link_libraries(normalktmtest  ${KDE4_KPARTS_LIBS} kcoreaddons)
 
 
 ########### next target ###############
@@ -37,12 +37,12 @@ partviewer.cpp
 )
 
 kde4_add_executable(partviewer TEST ${partviewer_SRCS})
-target_link_libraries(partviewer  ${KDE4_KPARTS_LIBS} )
+target_link_libraries(partviewer  ${KDE4_KPARTS_LIBS} kcoreaddons)
 
 ########### test prog for "open or save question" ###############
 
 kde4_add_executable(openorsavequestion TEST openorsavequestion.cpp)
-target_link_libraries(openorsavequestion  ${KDE4_KPARTS_LIBS} )
+target_link_libraries(openorsavequestion  ${KDE4_KPARTS_LIBS} kcoreaddons)
 
 ########### next target ###############
 
@@ -73,7 +73,7 @@ install(TARGETS notepadpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 MACRO(KPARTS_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_unit_test(${_testname} TESTNAME kparts-${_testname} ${_testname}.cpp)
-               target_link_libraries(${_testname} ${KDE4_KPARTS_LIBS} ${QT_QTTEST_LIBRARY})
+               target_link_libraries(${_testname} ${KDE4_KPARTS_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
        ENDFOREACH(_testname)
 ENDMACRO(KPARTS_UNIT_TESTS)
 MACRO(KPARTS_EXECUTABLE_TESTS)
