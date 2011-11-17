@@ -164,6 +164,7 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
         return;
 
     const KIO::MetaData& metaData = job->metaData();
+    kDebug(7044) << metaData;
     if (metaData.isEmpty()) {
         // Allow handling of local resources such as man pages and file url...
         if (AccessManager_isLocalRequest(url())) {
@@ -187,57 +188,67 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
 
     // Set the raw header information...
     const QStringList httpHeaders (metaData.value(QL1S("HTTP-Headers")).split(QL1C('\n'), QString::SkipEmptyParts));
-    Q_FOREACH(const QString& httpHeader, httpHeaders) {
-        int index = httpHeader.indexOf(QL1C(':'));
-        // Handle HTTP status line...
-        if (index == -1) {
-            // Except for the status line, all HTTP header must be an nvpair of
-            // type "<name>:<value>"
-            if (!httpHeader.startsWith(QL1S("HTTP/"), Qt::CaseInsensitive)) {
+    if (httpHeaders.isEmpty()) {
+      if (metaData.contains(QL1S("charset"))) {
+         QString mimeType = header(QNetworkRequest::ContentTypeHeader).toString();
+         mimeType += QL1S(" ; charset=");
+         mimeType += metaData.value(QL1S("charset"));
+         kDebug(7044) << "changed content-type to" << mimeType;
+         setHeader(QNetworkRequest::ContentTypeHeader, mimeType.toUtf8());
+      }
+    } else {
+        Q_FOREACH(const QString& httpHeader, httpHeaders) {
+            int index = httpHeader.indexOf(QL1C(':'));
+            // Handle HTTP status line...
+            if (index == -1) {
+                // Except for the status line, all HTTP header must be an nvpair of
+                // type "<name>:<value>"
+                if (!httpHeader.startsWith(QL1S("HTTP/"), Qt::CaseInsensitive)) {
+                    continue;
+                }
+
+                QStringList statusLineAttrs (httpHeader.split(QL1C(' '), QString::SkipEmptyParts));
+                if (statusLineAttrs.count() > 1) {
+                    setAttribute(QNetworkRequest::HttpStatusCodeAttribute, statusLineAttrs.at(1));
+                }
+
+                if (statusLineAttrs.count() > 2) {
+                    setAttribute(QNetworkRequest::HttpReasonPhraseAttribute, statusLineAttrs.at(2));
+                }
+
                 continue;
             }
 
-            QStringList statusLineAttrs (httpHeader.split(QL1C(' '), QString::SkipEmptyParts));
-            if (statusLineAttrs.count() > 1) {
-                setAttribute(QNetworkRequest::HttpStatusCodeAttribute, statusLineAttrs.at(1));
+            const QString headerName = httpHeader.left(index);
+            QString headerValue = httpHeader.mid(index+1);
+
+            // Ignore cookie header since it is handled by the http ioslave.
+            if (headerName.startsWith(QL1S("set-cookie"), Qt::CaseInsensitive)) {
+                continue;
             }
 
-            if (statusLineAttrs.count() > 2) {
-                setAttribute(QNetworkRequest::HttpReasonPhraseAttribute, statusLineAttrs.at(2));
+            if (headerName.startsWith(QL1S("content-disposition"), Qt::CaseInsensitive) &&
+                ignoreContentDisposition(job)) {
+                continue;
             }
 
-            continue;
-        }
-
-        const QString headerName = httpHeader.left(index);
-        QString headerValue = httpHeader.mid(index+1);
-
-        // Ignore cookie header since it is handled by the http ioslave.
-        if (headerName.startsWith(QL1S("set-cookie"), Qt::CaseInsensitive)) {
-            continue;
-        }
-
-        if (headerName.startsWith(QL1S("content-disposition"), Qt::CaseInsensitive) &&
-            ignoreContentDisposition(job)) {
-            continue;
-        }
-
-        // Without overridding the corrected mime-type sent by kio_http, add
-        // back the "charset=" portion of the content-type header if present.
-        if (headerName.startsWith(QL1S("content-type"), Qt::CaseInsensitive)) {
-            const QString mimeType = header(QNetworkRequest::ContentTypeHeader).toString();
-            if (!headerValue.contains(mimeType, Qt::CaseInsensitive)) {
-                index = headerValue.indexOf(QL1C(';'));
-                if (index == -1) {
-                    headerValue = mimeType;
-                } else {
-                    headerValue.replace(0, index, mimeType);
+            // Without overridding the corrected mime-type sent by kio_http, add
+            // back the "charset=" portion of the content-type header if present.
+            if (headerName.startsWith(QL1S("content-type"), Qt::CaseInsensitive)) {
+                const QString mimeType = header(QNetworkRequest::ContentTypeHeader).toString();
+                if (!headerValue.contains(mimeType, Qt::CaseInsensitive)) {
+                    index = headerValue.indexOf(QL1C(';'));
+                    if (index == -1) {
+                        headerValue = mimeType;
+                    } else {
+                        headerValue.replace(0, index, mimeType);
+                    }
+                    kDebug(7044) << "Changed mime-type from" << mimeType << "to" << headerValue;
                 }
-                //kDebug(7044) << "Changed mime-type from" << mimeType << "to" << headerValue;
             }
-        }
 
-        setRawHeader(headerName.trimmed().toUtf8(), headerValue.trimmed().toUtf8());
+            setRawHeader(headerName.trimmed().toUtf8(), headerValue.trimmed().toUtf8());
+        }
     }
 
     m_metaDataRead = true;
