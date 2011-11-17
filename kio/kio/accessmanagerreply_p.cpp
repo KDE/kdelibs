@@ -164,7 +164,6 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
         return;
 
     const KIO::MetaData& metaData = job->metaData();
-    kDebug(7044) << metaData;
     if (metaData.isEmpty()) {
         // Allow handling of local resources such as man pages and file url...
         if (AccessManager_isLocalRequest(url())) {
