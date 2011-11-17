@@ -106,3 +106,8 @@ install(FILES
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   feature_summary(WHAT ALL   FATAL_ON_MISSING_REQUIRED_PACKAGES)
 endif()
+
+# TODO: Remove once we depend on polkit-qt1 > 0.99.0
+# core/polkitqt1-actiondescription.h from polkit currently fails when built with -pedantic
+string(REPLACE "--pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+string(REPLACE "-pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
