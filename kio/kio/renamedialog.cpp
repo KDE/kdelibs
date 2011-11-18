@@ -30,6 +30,7 @@
 #include <QtGui/QLayout>
 #include <QtGui/QPixmap>
 #include <QtGui/QScrollArea>
+#include <QtGui/QScrollBar>
 #include <QtGui/QApplication>
 #include <QtGui/QDesktopWidget>
 #include <QtCore/QDir>
@@ -213,6 +214,11 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         // widget
         d->m_srcArea = createContainerLayout(parent, d->srcItem, d->m_srcPreview);
         d->m_destArea = createContainerLayout(parent, d->destItem, d->m_destPreview);
+
+        connect(d->m_srcArea->verticalScrollBar(), SIGNAL(valueChanged(int)), d->m_destArea->verticalScrollBar(), SLOT(setValue(int)));
+        connect(d->m_destArea->verticalScrollBar(), SIGNAL(valueChanged(int)), d->m_srcArea->verticalScrollBar(), SLOT(setValue(int)));
+        connect(d->m_srcArea->horizontalScrollBar(), SIGNAL(valueChanged(int)), d->m_destArea->horizontalScrollBar(), SLOT(setValue(int)));
+        connect(d->m_destArea->horizontalScrollBar(), SIGNAL(valueChanged(int)), d->m_srcArea->horizontalScrollBar(), SLOT(setValue(int)));
 
         // create layout
         QGridLayout* gridLayout = new QGridLayout();
@@ -581,7 +587,16 @@ void RenameDialog::resizePanels()
     // using QDesktopWidget geometry as Kephal isn't accessible here in kdelibs
     QSize screenSize = QApplication::desktop()->availableGeometry(this).size();
     QSize halfSize = d->m_srcArea->widget()->sizeHint().expandedTo(d->m_destArea->widget()->sizeHint());
-    QSize maxHalfSize = QSize(screenSize.width() / qreal(2.), screenSize.height() * qreal(0.9));
+    QSize currentSize = d->m_srcArea->size().expandedTo(d->m_destArea->size());
+    int maxHeightPossible = screenSize.height() - (size().height() - currentSize.height());
+    QSize maxHalfSize = QSize(screenSize.width() / qreal(2.1), maxHeightPossible * qreal(0.9));
+
+    if (halfSize.height() > maxHalfSize.height() &&
+        halfSize.width() <= maxHalfSize.width() + d->m_srcArea->verticalScrollBar()->width())
+    {
+        halfSize.rwidth() += d->m_srcArea->verticalScrollBar()->width();
+        maxHalfSize.rwidth() += d->m_srcArea->verticalScrollBar()->width();
+    }
 
     d->m_srcArea->setMinimumSize(halfSize.boundedTo(maxHalfSize));
     d->m_destArea->setMinimumSize(halfSize.boundedTo(maxHalfSize));
