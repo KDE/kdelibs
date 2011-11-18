@@ -4079,12 +4079,12 @@ bool HTTPProtocol::sendBody()
     return false;
   }
 
+  // Send the amount
+  totalSize(m_iPostDataSize);
+
   // If content-length is 0, then do nothing but simply return true.
   if (m_iPostDataSize == 0)
     return true;
-
-  // Send the amount
-  totalSize(m_iPostDataSize);
 
   sendOk = true;
   KIO::filesize_t bytesSent = 0;
