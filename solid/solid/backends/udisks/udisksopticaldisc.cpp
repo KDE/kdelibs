@@ -239,12 +239,12 @@ Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
                         m_device->prop("OpticalDiscNumTracks").toInt() > m_device->prop("OpticalDiscNumAudioTracks").toInt();
         bool hasAudio = m_device->prop("OpticalDiscNumAudioTracks").toInt() > 0;
 
-        if ( hasData )
+        if ( hasData ) {
             m_cachedContent |= Solid::OpticalDisc::Data;
+            m_cachedContent |= advancedDiscDetect(m_device->prop("DeviceFile").toString());
+        }
         if ( hasAudio )
             m_cachedContent |= Solid::OpticalDisc::Audio;
-
-        m_cachedContent |= advancedDiscDetect(m_device->prop("DeviceFile").toString());
 
         m_needsReprobe = false;
     }
@@ -252,7 +252,7 @@ Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
     return m_cachedContent;
 }
 
-void Solid::Backends::UDisks::OpticalDisc::slotChanged()
+void OpticalDisc::slotChanged()
 {
     m_needsReprobe = true;
     m_cachedContent = Solid::OpticalDisc::NoContent;
