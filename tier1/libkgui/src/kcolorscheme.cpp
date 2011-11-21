@@ -22,7 +22,6 @@
 #include <kconfiggroup.h>
 #include <kglobal.h>
 #include <ksharedconfig.h>
-#include <kglobalsettings.h>
 #include <kcolorutils.h>
 
 #include <QtGui/QColor>
@@ -71,9 +70,9 @@ StateEffects::StateEffects(QPalette::ColorGroup state, const KSharedConfigPtr &c
 {
     QString group;
     if(state == QPalette::Disabled)
-        group = "ColorEffects:Disabled";
+        group = QLatin1String("ColorEffects:Disabled");
     else if(state == QPalette::Inactive)
-        group = "ColorEffects:Inactive";
+        group = QLatin1String("ColorEffects:Inactive");
 
     _effects[0] = 0;
     _effects[1] = 0;
@@ -270,7 +269,9 @@ KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config,
                                          SetDefaultColors defaults)
 {
     KConfigGroup cfg( config, group );
-    _contrast = KGlobalSettings::contrastF( config );
+
+    KConfigGroup g( config, "KDE" );
+    _contrast = 0.1 * g.readEntry( "contrast", 7 );
 
     // loaded-from-config colors (no adjustment)
     _brushes.bg[0] = cfg.readEntry( "BackgroundNormal", SET_DEFAULT(NormalBackground) );
@@ -287,7 +288,8 @@ KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config,
                                          const QBrush &tint)
 {
     KConfigGroup cfg( config, group );
-    _contrast = KGlobalSettings::contrastF( config );
+    KConfigGroup g( config, "KDE" );
+    _contrast = 0.1 * g.readEntry( "contrast", 7 );
 
     // loaded-from-config colors
     _brushes.bg[0] = cfg.readEntry( "BackgroundNormal", SET_DEFAULT(NormalBackground) );
@@ -473,7 +475,9 @@ QColor KColorScheme::shade(ShadeRole role) const
 
 QColor KColorScheme::shade(const QColor &color, ShadeRole role)
 {
-    return shade(color, role, KGlobalSettings::contrastF());
+    KConfigGroup g( KGlobal::config(), "KDE" );
+    qreal contrast = 0.1 * g.readEntry( "contrast", 7 );
+    return shade(color, role, contrast);
 }
 
 QColor KColorScheme::shade(const QColor &color, ShadeRole role, qreal contrast, qreal chromaAdjust)
