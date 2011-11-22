@@ -238,4 +238,4 @@ void KBreadcrumbSelectionModelPrivate::syncBreadcrumbs()
 }
 
 
-#include "kbreadcrumbselectionmodel.moc"
+#include "moc_kbreadcrumbselectionmodel.cpp"

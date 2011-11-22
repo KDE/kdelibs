@@ -358,5 +358,5 @@ void KViewStateSerializer::restoreState()
     d->listenToPendingChanges();
 }
 
-#include "kviewstateserializer.moc"
+#include "moc_kviewstateserializer.cpp"
 

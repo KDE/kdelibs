@@ -110,4 +110,4 @@ void KViewStateMaintainerBase::setView(QAbstractItemView* view)
   }
 }
 
-#include "kviewstatemaintainerbase.moc"
+#include "moc_kviewstatemaintainerbase.cpp"

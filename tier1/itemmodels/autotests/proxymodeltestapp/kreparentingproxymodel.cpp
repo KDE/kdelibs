@@ -1525,4 +1525,4 @@ void KReparentingProxyModel::endChangeRule()
 }
 
 
-#include "kreparentingproxymodel.moc"
+#include "moc_kreparentingproxymodel.cpp"

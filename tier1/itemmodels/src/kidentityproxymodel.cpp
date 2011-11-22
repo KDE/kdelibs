@@ -751,4 +751,4 @@ void KIdentityProxyModel::resetInternalData()
 
 }
 
-#include "kidentityproxymodel.moc"
+#include "moc_kidentityproxymodel.cpp"
