@@ -30,6 +30,9 @@
 #include <QtGui/QLayout>
 #include <QtGui/QPixmap>
 #include <QtGui/QScrollArea>
+#include <QtGui/QScrollBar>
+#include <QtGui/QApplication>
+#include <QtGui/QDesktopWidget>
 #include <QtCore/QDir>
 
 #include <klineedit.h>
@@ -97,6 +100,10 @@ public:
     bool m_destPendingPreview;
     QLabel* m_srcPreview;
     QLabel* m_destPreview;
+    QScrollArea* m_srcArea;
+    QScrollArea* m_destArea;
+    KFileItem srcItem;
+    KFileItem destItem;
 };
 
 RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
@@ -166,11 +173,8 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         d->bRename->setText(i18n("C&ontinue"));
         pLayout->addWidget(lb);
     } else if (_mode & M_OVERWRITE) {
-        KFileItem srcItem;
-        KFileItem destItem;
-
         if (d->src.isLocalFile()) {
-            srcItem = KFileItem(KFileItem::Unknown, KFileItem::Unknown, d->src);
+            d->srcItem = KFileItem(KFileItem::Unknown, KFileItem::Unknown, d->src);
         } else {
             UDSEntry srcUds;
 
@@ -179,11 +183,11 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
             srcUds.insert(UDSEntry::UDS_CREATION_TIME, ctimeSrc);
             srcUds.insert(UDSEntry::UDS_SIZE, sizeSrc);
 
-            srcItem = KFileItem(srcUds, d->src);
+            d->srcItem = KFileItem(srcUds, d->src);
         }
 
         if (d->dest.isLocalFile()) {
-            destItem = KFileItem(KFileItem::Unknown, KFileItem::Unknown, d->dest);
+            d->destItem = KFileItem(KFileItem::Unknown, KFileItem::Unknown, d->dest);
         } else {
             UDSEntry destUds;
 
@@ -192,7 +196,7 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
             destUds.insert(UDSEntry::UDS_CREATION_TIME, ctimeDest);
             destUds.insert(UDSEntry::UDS_SIZE, sizeDest);
 
-            destItem = KFileItem(destUds, d->dest);
+            d->destItem = KFileItem(destUds, d->dest);
         }
 
         d->m_srcPreview = createLabel(parent, QString(), false);
@@ -201,29 +205,20 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         d->m_srcPreview->setMinimumHeight(KIconLoader::SizeEnormous);
         d->m_destPreview->setMinimumHeight(KIconLoader::SizeEnormous);
 
+        d->m_srcPreview->setAlignment(Qt::AlignCenter);
+        d->m_destPreview->setAlignment(Qt::AlignCenter);
+
         d->m_srcPendingPreview = true;
         d->m_destPendingPreview = true;
 
-        KIO::PreviewJob* srcJob = KIO::filePreview(KFileItemList() << srcItem,
-                                  QSize(d->m_srcPreview->width(), d->m_srcPreview->height()));
-        srcJob->setScaleType(KIO::PreviewJob::Unscaled);
-
-        KIO::PreviewJob* destJob = KIO::filePreview(KFileItemList() << destItem,
-                                   QSize(d->m_destPreview->width(), d->m_destPreview->height()));
-        destJob->setScaleType(KIO::PreviewJob::Unscaled);
-
-        connect(srcJob, SIGNAL(gotPreview(const KFileItem&, const QPixmap&)),
-                this, SLOT(showSrcPreview(const KFileItem&, const QPixmap&)));
-        connect(destJob, SIGNAL(gotPreview(const KFileItem&, const QPixmap&)),
-                this, SLOT(showDestPreview(const KFileItem&, const QPixmap&)));
-        connect(srcJob, SIGNAL(failed(const KFileItem&)),
-                this, SLOT(showSrcIcon(const KFileItem&)));
-        connect(destJob, SIGNAL(failed(const KFileItem&)),
-                this, SLOT(showDestIcon(const KFileItem&)));
-
         // widget
-        QScrollArea* srcWidget = createContainerLayout(parent, srcItem, d->m_srcPreview);
-        QScrollArea* destWidget = createContainerLayout(parent, destItem, d->m_destPreview);
+        d->m_srcArea = createContainerLayout(parent, d->srcItem, d->m_srcPreview);
+        d->m_destArea = createContainerLayout(parent, d->destItem, d->m_destPreview);
+
+        connect(d->m_srcArea->verticalScrollBar(), SIGNAL(valueChanged(int)), d->m_destArea->verticalScrollBar(), SLOT(setValue(int)));
+        connect(d->m_destArea->verticalScrollBar(), SIGNAL(valueChanged(int)), d->m_srcArea->verticalScrollBar(), SLOT(setValue(int)));
+        connect(d->m_srcArea->horizontalScrollBar(), SIGNAL(valueChanged(int)), d->m_destArea->horizontalScrollBar(), SLOT(setValue(int)));
+        connect(d->m_destArea->horizontalScrollBar(), SIGNAL(valueChanged(int)), d->m_srcArea->horizontalScrollBar(), SLOT(setValue(int)));
 
         // create layout
         QGridLayout* gridLayout = new QGridLayout();
@@ -246,22 +241,22 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
 
             gridLayout->addWidget(srcTitle, 3, 0);
             gridLayout->addWidget(srcInfo, 4, 0);
-            gridLayout->addWidget(srcWidget, 5, 0);
+            gridLayout->addWidget(d->m_srcArea, 5, 0);
 
             gridLayout->addWidget(destTitle, 3, 1);
             gridLayout->addWidget(destInfo, 4, 1);
-            gridLayout->addWidget(destWidget, 5, 1);
+            gridLayout->addWidget(d->m_destArea, 5, 1);
         } else {
             gridLayout->addWidget(titleLabel, 0, 0, 1, 2);
             gridLayout->setRowMinimumHeight(1, 15);
 
             gridLayout->addWidget(srcTitle, 2, 0);
             gridLayout->addWidget(srcInfo, 3, 0);
-            gridLayout->addWidget(srcWidget, 4, 0);
+            gridLayout->addWidget(d->m_srcArea, 4, 0);
 
             gridLayout->addWidget(destTitle, 2, 1);
             gridLayout->addWidget(destInfo, 3, 1);
-            gridLayout->addWidget(destWidget, 4, 1);
+            gridLayout->addWidget(d->m_destArea, 4, 1);
         }
     } else {
         // This is the case where we don't want to allow overwriting, the existing
@@ -587,6 +582,43 @@ void RenameDialog::showDestPreview(const KFileItem& fileitem, const QPixmap& pix
     }
 }
 
+void RenameDialog::resizePanels()
+{
+    // using QDesktopWidget geometry as Kephal isn't accessible here in kdelibs
+    QSize screenSize = QApplication::desktop()->availableGeometry(this).size();
+    QSize halfSize = d->m_srcArea->widget()->sizeHint().expandedTo(d->m_destArea->widget()->sizeHint());
+    QSize currentSize = d->m_srcArea->size().expandedTo(d->m_destArea->size());
+    int maxHeightPossible = screenSize.height() - (size().height() - currentSize.height());
+    QSize maxHalfSize = QSize(screenSize.width() / qreal(2.1), maxHeightPossible * qreal(0.9));
+
+    if (halfSize.height() > maxHalfSize.height() &&
+        halfSize.width() <= maxHalfSize.width() + d->m_srcArea->verticalScrollBar()->width())
+    {
+        halfSize.rwidth() += d->m_srcArea->verticalScrollBar()->width();
+        maxHalfSize.rwidth() += d->m_srcArea->verticalScrollBar()->width();
+    }
+
+    d->m_srcArea->setMinimumSize(halfSize.boundedTo(maxHalfSize));
+    d->m_destArea->setMinimumSize(halfSize.boundedTo(maxHalfSize));
+
+    KIO::PreviewJob* srcJob = KIO::filePreview(KFileItemList() << d->srcItem,
+                              QSize(d->m_srcPreview->width() * qreal(0.9), d->m_srcPreview->height()));
+    srcJob->setScaleType(KIO::PreviewJob::Unscaled);
+
+    KIO::PreviewJob* destJob = KIO::filePreview(KFileItemList() << d->destItem,
+                               QSize(d->m_destPreview->width() * qreal(0.9), d->m_destPreview->height()));
+    destJob->setScaleType(KIO::PreviewJob::Unscaled);
+
+    connect(srcJob, SIGNAL(gotPreview(const KFileItem&, const QPixmap&)),
+            this, SLOT(showSrcPreview(const KFileItem&, const QPixmap&)));
+    connect(destJob, SIGNAL(gotPreview(const KFileItem&, const QPixmap&)),
+            this, SLOT(showDestPreview(const KFileItem&, const QPixmap&)));
+    connect(srcJob, SIGNAL(failed(const KFileItem&)),
+            this, SLOT(showSrcIcon(const KFileItem&)));
+    connect(destJob, SIGNAL(failed(const KFileItem&)),
+            this, SLOT(showDestIcon(const KFileItem&)));
+}
+
 QScrollArea* RenameDialog::createContainerLayout(QWidget* parent, const KFileItem& item, QLabel* preview)
 {
     KFileItemList itemList;
@@ -597,6 +629,7 @@ QScrollArea* RenameDialog::createContainerLayout(QWidget* parent, const KFileIte
 
     metaWidget->setReadOnly(true);
     metaWidget->setItems(itemList);
+    connect(metaWidget, SIGNAL(metaDataRequestFinished(const KFileItemList&)), this, SLOT(resizePanels()));
 
     // Encapsulate the MetaDataWidgets inside a container with stretch at the bottom.
     // This prevents that the meta data widgets get vertically stretched
@@ -642,7 +675,7 @@ KSqueezedTextLabel* RenameDialog::createSqueezedLabel(QWidget* parent, const QSt
     KSqueezedTextLabel* label = new KSqueezedTextLabel(text, parent);
 
     label->setAlignment(Qt::AlignHCenter);
-    label->setFixedWidth(200);
+    label->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
 
     return label;
 }

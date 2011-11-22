@@ -63,7 +63,9 @@ static qint64 sizeFromRequest(const QNetworkRequest& req)
     const QVariant size = req.header(QNetworkRequest::ContentLengthHeader);
     if (!size.isValid())
         return -1;
-    return size.toLongLong();
+    bool ok = false;
+    const qlonglong value = size.toLongLong(&ok);
+    return (ok ? value : -1);
 }
 
 namespace KIO {
@@ -252,12 +254,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             break;
         }
         case PostOperation: {
-            const qint64 size = sizeFromRequest(req);
-            // kDebug(7044) << "PostOperation:" << reqUrl << ", data size=" << size;
-            if (outgoingData && size > 0)
-                kioJob = KIO::http_post(reqUrl, outgoingData, size, KIO::HideProgressInfo);
-            else
-                kioJob = KIO::http_post(reqUrl, QByteArray(), KIO::HideProgressInfo);
+            kioJob = KIO::http_post(reqUrl, outgoingData, sizeFromRequest(req), KIO::HideProgressInfo);
             if (!metaData.contains(QL1S("content-type")))  {
                 const QVariant header = req.header(QNetworkRequest::ContentTypeHeader);
                 if (header.isValid()) {

@@ -146,8 +146,9 @@ bool StatusBarExtension::eventFilter(QObject * watched, QEvent* ev)
 KStatusBar * StatusBarExtension::statusBar() const
 {
   if ( !d->m_statusBar )  {
-    QWidget* w = static_cast<KParts::ReadOnlyPart*>(parent())->widget();
-    KMainWindow* mw = w ? dynamic_cast<KMainWindow *>( w->topLevelWidget() ) : 0;
+    KParts::ReadOnlyPart* part = qobject_cast<KParts::ReadOnlyPart*>(parent());
+    QWidget* w = part ? part->widget() : 0;
+    KMainWindow* mw = w ? qobject_cast<KMainWindow *>( w->topLevelWidget() ) : 0;
     if ( mw )
       d->m_statusBar = mw->statusBar();
   }

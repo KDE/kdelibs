@@ -37,7 +37,7 @@ public:
     qint64 shmDataSize;
 
     sharedInfoData() {
-      memset ( this, 0, sizeof ( this ) );
+      memset ( this, 0, sizeof ( *this ) );
     }
   };
   Private ( KMemFile *_parent ) : readWritePos ( 0 ), shmDataSize ( 0 ), parent ( _parent ) {}

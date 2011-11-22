@@ -210,6 +210,12 @@ static bool isPotentialSpoofingAttack(const HTTPProtocol::HTTPRequest& request, 
         return false;
     }
 
+    // NOTE: Workaround for brain dead clients that include "undefined" as
+    // username and password in the request URL (BR# 275033).
+    if (request.url.user() == QLatin1String("undefined") && request.url.pass() == QLatin1String("undefined")) {
+        return false;
+    }
+
     // We already have cached authentication.
     if (config->readEntry(QLatin1String("cached-www-auth"), false)) {
         return false;
@@ -4075,6 +4081,10 @@ bool HTTPProtocol::sendBody()
 
   // Send the amount
   totalSize(m_iPostDataSize);
+
+  // If content-length is 0, then do nothing but simply return true.
+  if (m_iPostDataSize == 0)
+    return true;
 
   sendOk = true;
   KIO::filesize_t bytesSent = 0;

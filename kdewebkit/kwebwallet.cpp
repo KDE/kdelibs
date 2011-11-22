@@ -41,31 +41,34 @@
 // Form parsing JS code adapted from Arora.
 // See https://github.com/Arora/arora/blob/master/src/data/parseForms.js
 #define FORM_PARSING_JS "(function (){ \
-    var forms = new Array; \
+    var forms; \
     var numForms = document.forms.length; \
-    for (var i = 0; i < numForms; ++i) { \
-        var form = document.forms[i]; \
-        if (form.method.toLowerCase() != 'post') \
-            continue; \
-        var formObject = new Object; \
-        formObject.name = form.name; \
-        formObject.index = i; \
-        var elements = new Array; \
-        var numElements = form.elements.length; \
-        for (var j = 0; j < numElements; ++j) { \
-            var e = form.elements[j]; \
-            var element = new Object; \
-            element.name = e.name; \
-            element.value = e.value; \
-            element.type = e.type; \
-            element.readonly = e.hasAttribute('readonly'); \
-            element.disabled = e.hasAttribute('disabled'); \
-            if (element.autocomplete != null)  \
-                element.autocomplete = element.autocomplete.value; \
-            elements.push(element); \
+    if (numForms > 0 ) { \
+        var forms = new Array; \
+        for (var i = 0; i < numForms; ++i) { \
+            var form = document.forms[i]; \
+            if (form.method.toLowerCase() != 'post') \
+                continue; \
+            var formObject = new Object; \
+            formObject.name = form.name; \
+            formObject.index = i; \
+            var elements = new Array; \
+            var numElements = form.elements.length; \
+            for (var j = 0; j < numElements; ++j) { \
+                var e = form.elements[j]; \
+                var element = new Object; \
+                element.name = e.name; \
+                element.value = e.value; \
+                element.type = e.type; \
+                element.readonly = e.hasAttribute('readonly'); \
+                element.disabled = e.hasAttribute('disabled'); \
+                if (element.autocomplete != null)  \
+                    element.autocomplete = element.autocomplete.value; \
+                elements.push(element); \
+            } \
+            formObject.elements = elements; \
+            forms.push(formObject); \
         } \
-        formObject.elements = elements; \
-        forms.push(formObject); \
     } \
     return forms; \
 }())"
