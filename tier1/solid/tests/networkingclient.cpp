@@ -23,8 +23,6 @@
 
 #include <qdebug.h>
 
-#include <solid/networking.h>
-
 #include "networkingclient.h"
 
 QString toString( Solid::Networking::Status st )

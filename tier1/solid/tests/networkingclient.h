@@ -23,7 +23,8 @@
 
 #include <QtGui/QApplication>
 #include <QtGui/QMainWindow>
-//#include <networkstatuscommon.h>
+
+#include <solid/networking.h>
 
 #include "ui_networkingclientview.h"
 
