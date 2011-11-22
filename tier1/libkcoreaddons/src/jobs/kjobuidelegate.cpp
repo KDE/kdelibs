@@ -117,4 +117,4 @@ void KJobUiDelegate::Private::_k_result(KJob *job2)
         q->showErrorMessage();
 }
 
-#include "kjobuidelegate.moc"
+#include "moc_kjobuidelegate.cpp"

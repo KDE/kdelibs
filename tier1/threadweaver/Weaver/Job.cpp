@@ -237,5 +237,5 @@ void Job::setFinished ( bool status )
 //     return * d->mutex;
 // }
 
-#include "Job.moc"
-#include "Job_p.moc"
+#include "moc_Job.cpp"
+#include "moc_Job_p.cpp"

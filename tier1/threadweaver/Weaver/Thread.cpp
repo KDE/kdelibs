@@ -161,5 +161,5 @@ void Thread::requestAbort ()
     }
 }
 
-#include "Thread.moc"
-#include "Thread_p.moc"
+#include "moc_Thread.cpp"
+#include "moc_Thread_p.cpp"

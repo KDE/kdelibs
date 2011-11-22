@@ -352,5 +352,5 @@ void JobCollection::dequeueElements()
 		Q_EMIT done(this);
 }
 
-#include "JobCollection.moc"
-#include "JobCollection_p.moc"
+#include "moc_JobCollection.cpp"
+#include "moc_JobCollection_p.cpp"

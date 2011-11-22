@@ -115,4 +115,4 @@ void ActionWatcher::Private::statusChangedSlot(const QString &taction, Action::A
 
 } // namespace Auth
 
-#include "kauthactionwatcher.moc"
+#include "moc_kauthactionwatcher.cpp"

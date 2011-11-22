@@ -88,4 +88,4 @@ void KDBusInterProcessLock::waitForLockGranted()
     loop.exec();
 }
 
-#include "kdbusinterprocesslock.moc"
+#include "moc_kdbusinterprocesslock.cpp"
