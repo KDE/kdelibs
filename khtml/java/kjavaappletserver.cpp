@@ -154,9 +154,11 @@ KJavaAppletServer::KJavaAppletServer()
 
 KJavaAppletServer::~KJavaAppletServer()
 {
+    disconnect(process, 0, 0, 0); // first disconnect from process.
     quit();
 
     delete process;
+    process = 0;
     delete d;
 }
 

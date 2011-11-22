@@ -660,7 +660,7 @@ QSize KPluginSelector::Private::PluginDelegate::sizeHint(const QStyleOptionViewI
 
     return QSize(qMax(fmTitle.width(index.model()->data(index, Qt::DisplayRole).toString()),
                       option.fontMetrics.width(index.model()->data(index, CommentRole).toString())) +
-                      pluginSelector_d->showIcons ? KIconLoader::SizeMedium : 0 + MARGIN * i + pushButton->sizeHint().width() * j,
+                      (pluginSelector_d->showIcons ? KIconLoader::SizeMedium : 0) + MARGIN * i + pushButton->sizeHint().width() * j,
                  qMax(KIconLoader::SizeMedium + MARGIN * 2, fmTitle.height() + option.fontMetrics.height() + MARGIN * 2));
 }
 

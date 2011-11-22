@@ -91,9 +91,9 @@ public:
   virtual void startProgram( const QString& program,
                              const QStringList& args ) = 0;
   /**
-   * If a shell is currently shown, this sends it a cd
-   * command. Otherwise, this starts a shell, and sends it a cd
-   * command too...
+   * If no shell is running, this starts a shell with the
+   * @dir as the starting directory.
+   * If a shell is already running, nothing is done.
    */
   virtual void showShellInDir( const QString& dir ) = 0;
 

@@ -139,6 +139,7 @@ private Q_SLOTS:
     void showDestIcon(const KFileItem &);
     void showSrcPreview(const KFileItem &, const QPixmap &);
     void showDestPreview(const KFileItem &, const QPixmap &);
+    void resizePanels();
 
 private:
     QScrollArea* createContainerLayout(QWidget* parent, const KFileItem& item, QLabel* preview);

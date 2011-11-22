@@ -772,11 +772,11 @@ QWidget* FormModule::createWidgetFromUIFile(QWidget* parent, const QString& file
     QFile file(filename);
     if( ! file.exists() ) {
         kDebug() << QString("Kross::FormModule::createWidgetFromUIFile: There exists no such file \"%1\"").arg(filename);
-        return false;
+        return 0;
     }
     if( ! file.open(QFile::ReadOnly) ) {
         kDebug() << QString("Kross::FormModule::createWidgetFromUIFile: Failed to open the file \"%1\"").arg(filename);
-        return false;
+        return 0;
     }
     const QString xml = file.readAll();
     file.close();

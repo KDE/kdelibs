@@ -919,7 +919,7 @@ void KFontChooser::Private::setupDisplay()
     }
 
     // 1st family fallback.
-    if ( (i == numEntries) )
+    if ( i == numEntries )
     {
         if (family.contains('['))
         {
@@ -934,7 +934,7 @@ void KFontChooser::Private::setupDisplay()
     }
 
     // 2nd family fallback.
-    if ( (i == numEntries) )
+    if ( i == numEntries )
     {
         QString fallback = family+" [";
         for (i = 0; i < numEntries; i++) {
@@ -946,7 +946,7 @@ void KFontChooser::Private::setupDisplay()
     }
 
     // 3rd family fallback.
-    if ( (i == numEntries) )
+    if ( i == numEntries )
     {
         for (i = 0; i < numEntries; i++) {
             if (qtFamilies[familyListBox->item(i)->text()].toLower().startsWith(family)) {

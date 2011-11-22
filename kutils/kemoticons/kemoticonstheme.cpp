@@ -282,7 +282,7 @@ QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, 
                 // If this is an HTML, then search for the HTML form of the emoticon.
                 // For instance <o) => &gt;o)
                 needle = (mode & SkipHTML) ? (*it).matchTextEscaped : (*it).matchText;
-                if ((pos == message.indexOf(needle, pos))) {
+                if (pos == message.indexOf(needle, pos)) {
                     if (mode & StrictParse) {
                         /* check if the character after this match is space or end of string*/
                         if (message.length() > pos + needle.length()) {
