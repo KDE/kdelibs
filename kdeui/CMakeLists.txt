@@ -96,12 +96,16 @@ set(kdeui_LIB_SRCS
  actions/ktoolbarlabelaction.cpp
  actions/ktoolbarpopupaction.cpp
  actions/ktoolbarspaceraction.cpp
+ colors/kcolorspaces.cpp
+ colors/kcolorutils.cpp
+ colors/kcolorscheme.cpp
  colors/kcolorcollection.cpp
  colors/kcolorhelpers.cpp
  colors/kcolorbutton.cpp
  colors/kcolorcombo.cpp
  colors/kcolorchoosermode.cpp
  colors/kcolordialog.cpp
+ colors/kcolormimedata.cpp
  colors/kcolorvalueselector.cpp
  colors/khuesaturationselect.cpp
  config/kconfigskeleton.cpp
@@ -424,7 +428,7 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 
 target_link_libraries(kdeui itemmodels sonnetcore kauth ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
-                            ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} kcoreaddons kgui inqt5)
+                            ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} kcoreaddons inqt5)
 
 if(NOT WINCE)
 target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY} ${DBUSMENUQT_LIBRARIES})
@@ -512,11 +516,14 @@ install( FILES
  actions/ktoolbarlabelaction.h
  actions/ktoolbarpopupaction.h
  actions/ktoolbarspaceraction.h
+ colors/kcolorutils.h
+ colors/kcolorscheme.h
  colors/kcolorcollection.h
  colors/kcolorbutton.h
  colors/kcolorchoosermode.h
  colors/kcolorcombo.h
  colors/kcolordialog.h
+ colors/kcolormimedata.h
  colors/kcolorvalueselector.h
  colors/khuesaturationselect.h
  config/kconfigskeleton.h
