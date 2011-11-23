@@ -373,6 +373,7 @@ if(NOT WINCE)
 endif(NOT WINCE)
 
 add_subdirectory(libkcoreaddons)
+add_subdirectory(libkarchive)
 
 ########### install files ###############
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/all_languages DESTINATION ${LOCALE_INSTALL_DIR}  )

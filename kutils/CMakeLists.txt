@@ -2,8 +2,8 @@ project(kutils)
 include_directories( ${KDE4_KDEUI_INCLUDES}
                      ${KDE4_KPARTS_INCLUDES}
                      ${CMAKE_CURRENT_SOURCE_DIR}
-                     ${CMAKE_SOURCE_DIR}/tier1/libkarchive/src
-                     ${CMAKE_BINARY_DIR}/tier1/libkarchive/src
+                     ${karchive_SOURCE_DIR}/src
+                     ${karchive_BINARY_DIR}/src
                      ${CMAKE_SOURCE_DIR}/tier1/libkauth/
                      ${CMAKE_BINARY_DIR}/tier1/libkauth/
 )

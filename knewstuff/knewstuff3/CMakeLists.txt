@@ -6,8 +6,8 @@ include_directories(
    ${KDE4_KIO_INCLUDES}
    ${CMAKE_CURRENT_SOURCE_DIR}/..
    ${LIBATTICA_INCLUDE_DIR}
-   ${CMAKE_SOURCE_DIR}/tier1/libkarchive/src
-   ${CMAKE_BINARY_DIR}/tier1/libkarchive/src
+   ${karchive_SOURCE_DIR}/src
+   ${karchive_BINARY_DIR}/src
    ${kcoreaddons_SOURCE_DIR}/src/randomness
    ${kcoreaddons_BINARY_DIR}/src
 

@@ -1,8 +1,8 @@
 
 include_directories( ${CMAKE_SOURCE_DIR}/khtml
                      ${CMAKE_SOURCE_DIR}/kio/httpfilter
-                     ${CMAKE_SOURCE_DIR}/tier1/libkarchive/src
-                     ${CMAKE_BINARY_DIR}/tier1/libkarchive
+                     ${karchive_SOURCE_DIR}/src
+                     ${karchive_BINARY_DIR}
 )
 include_directories(${ZLIB_INCLUDE_DIR})
 

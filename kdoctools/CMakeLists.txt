@@ -9,8 +9,8 @@ macro_log_feature(LIBXML2_FOUND "LibXML2" "Required by the KDE help system to pr
 macro_log_feature(LIBXML2_XMLLINT_EXECUTABLE "xmllint" "Required by the KDE help system to process DocBook XML" "http://xmlsoft.org" TRUE "" "")
 
 include_directories( ${KDE4_KIO_INCLUDES}
-                     ${CMAKE_SOURCE_DIR}/tier1/libkarchive/src
-                     ${CMAKE_BINARY_DIR}/tier1/libkarchive/src
+                     ${karchive_SOURCE_DIR}/src
+                     ${karchive_BINARY_DIR}/src
 )
 #include_directories( ${CMAKE_SOURCE_DIR}/kioslave ${CMAKE_SOURCE_DIR}/kioslave/bzip2 )
 
