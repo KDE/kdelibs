@@ -2,18 +2,18 @@ project(sonnetcore)
 
 include_directories(
   ${QT_INCLUDES}
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../kdecore/kernel
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../kdecore/util
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../kdecore/localization
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../kdecore/config
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../kdecore/global
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../kdecore/services
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../kdecore/sycoca
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../kdecore/io
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../tier1/libkcoreaddons/src/io
-  ${CMAKE_CURRENT_BINARY_DIR}/../../../tier1/libkcoreaddons/src
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../kdecore
-  ${CMAKE_CURRENT_BINARY_DIR}/../../../kdecore
+  ${CMAKE_SOURCE_DIR}/kdecore/kernel
+  ${CMAKE_SOURCE_DIR}/kdecore/util
+  ${CMAKE_SOURCE_DIR}/kdecore/localization
+  ${CMAKE_SOURCE_DIR}/kdecore/config
+  ${CMAKE_SOURCE_DIR}/kdecore/global
+  ${CMAKE_SOURCE_DIR}/kdecore/services
+  ${CMAKE_SOURCE_DIR}/kdecore/sycoca
+  ${CMAKE_SOURCE_DIR}/kdecore/io
+  ${kcoreaddons_SOURCE_DIR}/src/io
+  ${kcoreaddons_BINARY_DIR}/src
+  ${CMAKE_SOURCE_DIR}/kdecore
+  ${CMAKE_BINARY_DIR}/kdecore
   ${CMAKE_CURRENT_BINARY_DIR}
 )
 
