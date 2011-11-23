@@ -18,6 +18,10 @@ find_package(Qt4 REQUIRED QtCore QtGui QtDBus)
 
 include(${QT_USE_FILE})
 
+# TODO: Where does this belong?
+set(SYSCONF_INSTALL_DIR etc)
+set(PLUGIN_INSTALL_DIR ${LIB_INSTALL_DIR}/kde4)
+
 # This file handles all the logic for compiling KAuth's backends
 include(ConfigureChecks.cmake)
 
