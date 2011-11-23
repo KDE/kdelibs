@@ -1,9 +1,8 @@
-/* A Bison parser, made by GNU Bison 2.4.3.  */
+/* A Bison parser, made by GNU Bison 2.5.  */
 
-/* Skeleton implementation for Bison's Yacc-like parsers in C
+/* Bison implementation for Yacc-like parsers in C
    
-      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
-   2009, 2010 Free Software Foundation, Inc.
+      Copyright (C) 1984, 1989-1990, 2000-2011 Free Software Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -45,7 +44,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "2.4.3"
+#define YYBISON_VERSION "2.5"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -431,11 +430,11 @@ YYID (yyi)
 #    define alloca _alloca
 #   else
 #    define YYSTACK_ALLOC alloca
-#    if ! defined _ALLOCA_H && ! defined _STDLIB_H && (defined __STDC__ || defined __C99__FUNC__ \
+#    if ! defined _ALLOCA_H && ! defined EXIT_SUCCESS && (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 #     include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
-#     ifndef _STDLIB_H
-#      define _STDLIB_H 1
+#     ifndef EXIT_SUCCESS
+#      define EXIT_SUCCESS 0
 #     endif
 #    endif
 #   endif
@@ -458,24 +457,24 @@ YYID (yyi)
 #  ifndef YYSTACK_ALLOC_MAXIMUM
 #   define YYSTACK_ALLOC_MAXIMUM YYSIZE_MAXIMUM
 #  endif
-#  if (defined __cplusplus && ! defined _STDLIB_H \
+#  if (defined __cplusplus && ! defined EXIT_SUCCESS \
        && ! ((defined YYMALLOC || defined malloc) \
 	     && (defined YYFREE || defined free)))
 #   include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
-#   ifndef _STDLIB_H
-#    define _STDLIB_H 1
+#   ifndef EXIT_SUCCESS
+#    define EXIT_SUCCESS 0
 #   endif
 #  endif
 #  ifndef YYMALLOC
 #   define YYMALLOC malloc
-#   if ! defined malloc && ! defined _STDLIB_H && (defined __STDC__ || defined __C99__FUNC__ \
+#   if ! defined malloc && ! defined EXIT_SUCCESS && (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 void *malloc (YYSIZE_T); /* INFRINGES ON USER NAME SPACE */
 #   endif
 #  endif
 #  ifndef YYFREE
 #   define YYFREE free
-#   if ! defined free && ! defined _STDLIB_H && (defined __STDC__ || defined __C99__FUNC__ \
+#   if ! defined free && ! defined EXIT_SUCCESS && (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 void free (void *); /* INFRINGES ON USER NAME SPACE */
 #   endif
@@ -504,23 +503,7 @@ union yyalloc
      ((N) * (sizeof (yytype_int16) + sizeof (YYSTYPE)) \
       + YYSTACK_GAP_MAXIMUM)
 
-/* Copy COUNT objects from FROM to TO.  The source and destination do
-   not overlap.  */
-# ifndef YYCOPY
-#  if defined __GNUC__ && 1 < __GNUC__
-#   define YYCOPY(To, From, Count) \
-      __builtin_memcpy (To, From, (Count) * sizeof (*(From)))
-#  else
-#   define YYCOPY(To, From, Count)		\
-      do					\
-	{					\
-	  YYSIZE_T yyi;				\
-	  for (yyi = 0; yyi < (Count); yyi++)	\
-	    (To)[yyi] = (From)[yyi];		\
-	}					\
-      while (YYID (0))
-#  endif
-# endif
+# define YYCOPY_NEEDED 1
 
 /* Relocate STACK from its old location to the new one.  The
    local variables YYSIZE and YYSTACKSIZE give the old and new number of
@@ -539,6 +522,26 @@ union yyalloc
     while (YYID (0))
 
 #endif
+
+#if defined YYCOPY_NEEDED && YYCOPY_NEEDED
+/* Copy COUNT objects from FROM to TO.  The source and destination do
+   not overlap.  */
+# ifndef YYCOPY
+#  if defined __GNUC__ && 1 < __GNUC__
+#   define YYCOPY(To, From, Count) \
+      __builtin_memcpy (To, From, (Count) * sizeof (*(From)))
+#  else
+#   define YYCOPY(To, From, Count)		\
+      do					\
+	{					\
+	  YYSIZE_T yyi;				\
+	  for (yyi = 0; yyi < (Count); yyi++)	\
+	    (To)[yyi] = (From)[yyi];		\
+	}					\
+      while (YYID (0))
+#  endif
+# endif
+#endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  23
@@ -699,26 +702,26 @@ static const yytype_int16 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   311,   311,   312,   313,   314,   315,   316,   320,   321,
-     322,   326,   333,   339,   364,   374,   380,   382,   386,   387,
-     390,   392,   393,   396,   398,   401,   410,   412,   416,   418,
-     429,   439,   442,   448,   449,   453,   463,   471,   472,   476,
-     477,   480,   482,   493,   494,   495,   496,   497,   498,   499,
-     503,   504,   505,   506,   510,   511,   515,   521,   524,   530,
-     536,   540,   547,   550,   556,   559,   562,   568,   571,   577,
-     580,   585,   589,   594,   601,   612,   624,   625,   635,   653,
-     656,   662,   669,   672,   678,   679,   680,   684,   685,   689,
-     711,   724,   742,   752,   755,   758,   772,   786,   793,   794,
-     795,   799,   804,   811,   818,   826,   836,   849,   854,   861,
-     869,   882,   886,   892,   895,   905,   912,   926,   927,   928,
-     932,   949,   956,   962,   969,   978,   991,   994,   997,  1000,
-    1003,  1006,  1012,  1013,  1017,  1023,  1029,  1036,  1043,  1050,
-    1057,  1066,  1069,  1072,  1075,  1080,  1086,  1090,  1093,  1098,
-    1104,  1126,  1132,  1154,  1155,  1159,  1163,  1179,  1182,  1185,
-    1191,  1192,  1194,  1195,  1196,  1202,  1203,  1204,  1206,  1212,
-    1213,  1214,  1215,  1216,  1217,  1218,  1219,  1220,  1221,  1222,
-    1223,  1224,  1225,  1226,  1227,  1228,  1229,  1230,  1231,  1232,
-    1237,  1245,  1261,  1268,  1274,  1283,  1309,  1310,  1314,  1315
+       0,   312,   312,   313,   314,   315,   316,   317,   321,   322,
+     323,   327,   334,   340,   365,   375,   381,   383,   387,   388,
+     391,   393,   394,   397,   399,   402,   411,   413,   417,   419,
+     430,   440,   443,   449,   450,   454,   464,   472,   473,   477,
+     478,   481,   483,   494,   495,   496,   497,   498,   499,   500,
+     504,   505,   506,   507,   511,   512,   516,   522,   525,   531,
+     537,   541,   548,   551,   557,   560,   563,   569,   572,   578,
+     581,   586,   590,   595,   602,   613,   625,   626,   636,   654,
+     657,   663,   670,   673,   679,   680,   681,   685,   686,   690,
+     712,   725,   743,   753,   756,   759,   773,   787,   794,   795,
+     796,   800,   805,   812,   819,   827,   837,   850,   855,   862,
+     870,   883,   887,   893,   896,   906,   913,   927,   928,   929,
+     933,   950,   957,   963,   970,   979,   992,   995,   998,  1001,
+    1004,  1007,  1013,  1014,  1018,  1024,  1030,  1037,  1044,  1051,
+    1058,  1067,  1070,  1073,  1076,  1081,  1087,  1091,  1094,  1099,
+    1105,  1127,  1133,  1155,  1156,  1160,  1164,  1180,  1183,  1186,
+    1192,  1193,  1195,  1196,  1197,  1203,  1204,  1205,  1207,  1213,
+    1214,  1215,  1216,  1217,  1218,  1219,  1220,  1221,  1222,  1223,
+    1224,  1225,  1226,  1227,  1228,  1229,  1230,  1231,  1232,  1233,
+    1238,  1246,  1262,  1269,  1275,  1284,  1310,  1311,  1315,  1316
 };
 #endif
 
@@ -824,8 +827,8 @@ static const yytype_uint8 yyr2[] =
        5,     3,     2,     3,     3,     2,     5,     3,     1,     3
 };
 
-/* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
-   STATE-NUM when YYTABLE doesn't specify something else to do.  Zero
+/* YYDEFACT[STATE-NAME] -- Default reduction number in state STATE-NUM.
+   Performed when YYTABLE doesn't specify something else to do.  Zero
    means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
@@ -940,8 +943,7 @@ static const yytype_int16 yypgoto[] =
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
    positive, shift that token.  If negative, reduce the rule which
-   number is the opposite.  If zero, do what YYDEFACT says.
-   If YYTABLE_NINF, syntax error.  */
+   number is the opposite.  If YYTABLE_NINF, syntax error.  */
 #define YYTABLE_NINF -155
 static const yytype_int16 yytable[] =
 {
@@ -1010,6 +1012,12 @@ static const yytype_int16 yytable[] =
       84,    85,    86,    87,    88,    89,    90,    91,    92,    93,
        0,    95,    96,    97
 };
+
+#define yypact_value_is_default(yystate) \
+  ((yystate) == (-182))
+
+#define yytable_value_is_error(yytable_value) \
+  YYID (0)
 
 static const yytype_int16 yycheck[] =
 {
@@ -1156,7 +1164,6 @@ do								\
     {								\
       yychar = (Token);						\
       yylval = (Value);						\
-      yytoken = YYTRANSLATE (yychar);				\
       YYPOPSTACK (1);						\
       goto yybackup;						\
     }								\
@@ -1198,19 +1205,10 @@ while (YYID (0))
 #endif
 
 
-/* YY_LOCATION_PRINT -- Print the location on the stream.
-   This macro was not mandated originally: define only if we know
-   we won't break user code: when these are the locations we know.  */
+/* This macro is provided for backward compatibility. */
 
 #ifndef YY_LOCATION_PRINT
-# if defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
-#  define YY_LOCATION_PRINT(File, Loc)			\
-     fprintf (File, "%d.%d-%d.%d",			\
-	      (Loc).first_line, (Loc).first_column,	\
-	      (Loc).last_line,  (Loc).last_column)
-# else
-#  define YY_LOCATION_PRINT(File, Loc) ((void) 0)
-# endif
+# define YY_LOCATION_PRINT(File, Loc) ((void) 0)
 #endif
 
 
@@ -1402,7 +1400,6 @@ int yydebug;
 # define YYMAXDEPTH 10000
 #endif
 
-
 
 #if YYERROR_VERBOSE
 
@@ -1505,115 +1502,142 @@ yytnamerr (char *yyres, const char *yystr)
 }
 # endif
 
-/* Copy into YYRESULT an error message about the unexpected token
-   YYCHAR while in state YYSTATE.  Return the number of bytes copied,
-   including the terminating null byte.  If YYRESULT is null, do not
-   copy anything; just return the number of bytes that would be
-   copied.  As a special case, return 0 if an ordinary "syntax error"
-   message will do.  Return YYSIZE_MAXIMUM if overflow occurs during
-   size calculation.  */
-static YYSIZE_T
-yysyntax_error (char *yyresult, int yystate, int yychar)
+/* Copy into *YYMSG, which is of size *YYMSG_ALLOC, an error message
+   about the unexpected token YYTOKEN for the state stack whose top is
+   YYSSP.
+
+   Return 0 if *YYMSG was successfully written.  Return 1 if *YYMSG is
+   not large enough to hold the message.  In that case, also set
+   *YYMSG_ALLOC to the required number of bytes.  Return 2 if the
+   required number of bytes is too large to store.  */
+static int
+yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
+                yytype_int16 *yyssp, int yytoken)
 {
-  int yyn = yypact[yystate];
+  YYSIZE_T yysize0 = yytnamerr (0, yytname[yytoken]);
+  YYSIZE_T yysize = yysize0;
+  YYSIZE_T yysize1;
+  enum { YYERROR_VERBOSE_ARGS_MAXIMUM = 5 };
+  /* Internationalized format string. */
+  const char *yyformat = 0;
+  /* Arguments of yyformat. */
+  char const *yyarg[YYERROR_VERBOSE_ARGS_MAXIMUM];
+  /* Number of reported tokens (one for the "unexpected", one per
+     "expected"). */
+  int yycount = 0;
 
-  if (! (YYPACT_NINF < yyn && yyn <= YYLAST))
-    return 0;
-  else
+  /* There are many possibilities here to consider:
+     - Assume YYFAIL is not used.  It's too flawed to consider.  See
+       <http://lists.gnu.org/archive/html/bison-patches/2009-12/msg00024.html>
+       for details.  YYERROR is fine as it does not invoke this
+       function.
+     - If this state is a consistent state with a default action, then
+       the only way this function was invoked is if the default action
+       is an error action.  In that case, don't check for expected
+       tokens because there are none.
+     - The only way there can be no lookahead present (in yychar) is if
+       this state is a consistent state with a default action.  Thus,
+       detecting the absence of a lookahead is sufficient to determine
+       that there is no unexpected or expected token to report.  In that
+       case, just report a simple "syntax error".
+     - Don't assume there isn't a lookahead just because this state is a
+       consistent state with a default action.  There might have been a
+       previous inconsistent state, consistent state with a non-default
+       action, or user semantic action that manipulated yychar.
+     - Of course, the expected token list depends on states to have
+       correct lookahead information, and it depends on the parser not
+       to perform extra reductions after fetching a lookahead from the
+       scanner and before detecting a syntax error.  Thus, state merging
+       (from LALR or IELR) and default reductions corrupt the expected
+       token list.  However, the list is correct for canonical LR with
+       one exception: it will still contain any token that will not be
+       accepted due to an error action in a later state.
+  */
+  if (yytoken != YYEMPTY)
     {
-      int yytype = YYTRANSLATE (yychar);
-      YYSIZE_T yysize0 = yytnamerr (0, yytname[yytype]);
-      YYSIZE_T yysize = yysize0;
-      YYSIZE_T yysize1;
-      int yysize_overflow = 0;
-      enum { YYERROR_VERBOSE_ARGS_MAXIMUM = 5 };
-      char const *yyarg[YYERROR_VERBOSE_ARGS_MAXIMUM];
-      int yyx;
+      int yyn = yypact[*yyssp];
+      yyarg[yycount++] = yytname[yytoken];
+      if (!yypact_value_is_default (yyn))
+        {
+          /* Start YYX at -YYN if negative to avoid negative indexes in
+             YYCHECK.  In other words, skip the first -YYN actions for
+             this state because they are default actions.  */
+          int yyxbegin = yyn < 0 ? -yyn : 0;
+          /* Stay within bounds of both yycheck and yytname.  */
+          int yychecklim = YYLAST - yyn + 1;
+          int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
+          int yyx;
 
-# if 0
-      /* This is so xgettext sees the translatable formats that are
-	 constructed on the fly.  */
-      YY_("syntax error, unexpected %s");
-      YY_("syntax error, unexpected %s, expecting %s");
-      YY_("syntax error, unexpected %s, expecting %s or %s");
-      YY_("syntax error, unexpected %s, expecting %s or %s or %s");
-      YY_("syntax error, unexpected %s, expecting %s or %s or %s or %s");
-# endif
-      char *yyfmt;
-      char const *yyf;
-      static char const yyunexpected[] = "syntax error, unexpected %s";
-      static char const yyexpecting[] = ", expecting %s";
-      static char const yyor[] = " or %s";
-      char yyformat[sizeof yyunexpected
-		    + sizeof yyexpecting - 1
-		    + ((YYERROR_VERBOSE_ARGS_MAXIMUM - 2)
-		       * (sizeof yyor - 1))];
-      char const *yyprefix = yyexpecting;
-
-      /* Start YYX at -YYN if negative to avoid negative indexes in
-	 YYCHECK.  */
-      int yyxbegin = yyn < 0 ? -yyn : 0;
-
-      /* Stay within bounds of both yycheck and yytname.  */
-      int yychecklim = YYLAST - yyn + 1;
-      int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
-      int yycount = 1;
-
-      yyarg[0] = yytname[yytype];
-      yyfmt = yystpcpy (yyformat, yyunexpected);
-
-      for (yyx = yyxbegin; yyx < yyxend; ++yyx)
-	if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR)
-	  {
-	    if (yycount == YYERROR_VERBOSE_ARGS_MAXIMUM)
-	      {
-		yycount = 1;
-		yysize = yysize0;
-		yyformat[sizeof yyunexpected - 1] = '\0';
-		break;
-	      }
-	    yyarg[yycount++] = yytname[yyx];
-	    yysize1 = yysize + yytnamerr (0, yytname[yyx]);
-	    yysize_overflow |= (yysize1 < yysize);
-	    yysize = yysize1;
-	    yyfmt = yystpcpy (yyfmt, yyprefix);
-	    yyprefix = yyor;
-	  }
-
-      yyf = YY_(yyformat);
-      yysize1 = yysize + yystrlen (yyf);
-      yysize_overflow |= (yysize1 < yysize);
-      yysize = yysize1;
-
-      if (yysize_overflow)
-	return YYSIZE_MAXIMUM;
-
-      if (yyresult)
-	{
-	  /* Avoid sprintf, as that infringes on the user's name space.
-	     Don't have undefined behavior even if the translation
-	     produced a string with the wrong number of "%s"s.  */
-	  char *yyp = yyresult;
-	  int yyi = 0;
-	  while ((*yyp = *yyf) != '\0')
-	    {
-	      if (*yyp == '%' && yyf[1] == 's' && yyi < yycount)
-		{
-		  yyp += yytnamerr (yyp, yyarg[yyi++]);
-		  yyf += 2;
-		}
-	      else
-		{
-		  yyp++;
-		  yyf++;
-		}
-	    }
-	}
-      return yysize;
+          for (yyx = yyxbegin; yyx < yyxend; ++yyx)
+            if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR
+                && !yytable_value_is_error (yytable[yyx + yyn]))
+              {
+                if (yycount == YYERROR_VERBOSE_ARGS_MAXIMUM)
+                  {
+                    yycount = 1;
+                    yysize = yysize0;
+                    break;
+                  }
+                yyarg[yycount++] = yytname[yyx];
+                yysize1 = yysize + yytnamerr (0, yytname[yyx]);
+                if (! (yysize <= yysize1
+                       && yysize1 <= YYSTACK_ALLOC_MAXIMUM))
+                  return 2;
+                yysize = yysize1;
+              }
+        }
     }
+
+  switch (yycount)
+    {
+# define YYCASE_(N, S)                      \
+      case N:                               \
+        yyformat = S;                       \
+      break
+      YYCASE_(0, YY_("syntax error"));
+      YYCASE_(1, YY_("syntax error, unexpected %s"));
+      YYCASE_(2, YY_("syntax error, unexpected %s, expecting %s"));
+      YYCASE_(3, YY_("syntax error, unexpected %s, expecting %s or %s"));
+      YYCASE_(4, YY_("syntax error, unexpected %s, expecting %s or %s or %s"));
+      YYCASE_(5, YY_("syntax error, unexpected %s, expecting %s or %s or %s or %s"));
+# undef YYCASE_
+    }
+
+  yysize1 = yysize + yystrlen (yyformat);
+  if (! (yysize <= yysize1 && yysize1 <= YYSTACK_ALLOC_MAXIMUM))
+    return 2;
+  yysize = yysize1;
+
+  if (*yymsg_alloc < yysize)
+    {
+      *yymsg_alloc = 2 * yysize;
+      if (! (yysize <= *yymsg_alloc
+             && *yymsg_alloc <= YYSTACK_ALLOC_MAXIMUM))
+        *yymsg_alloc = YYSTACK_ALLOC_MAXIMUM;
+      return 1;
+    }
+
+  /* Avoid sprintf, as that infringes on the user's name space.
+     Don't have undefined behavior even if the translation
+     produced a string with the wrong number of "%s"s.  */
+  {
+    char *yyp = *yymsg;
+    int yyi = 0;
+    while ((*yyp = *yyformat) != '\0')
+      if (*yyp == '%' && yyformat[1] == 's' && yyi < yycount)
+        {
+          yyp += yytnamerr (yyp, yyarg[yyi++]);
+          yyformat += 2;
+        }
+      else
+        {
+          yyp++;
+          yyformat++;
+        }
+  }
+  return 0;
 }
 #endif /* YYERROR_VERBOSE */
-
 
 /*-----------------------------------------------.
 | Release the memory associated to this symbol.  |
@@ -1640,6 +1664,11 @@ yydestruct (yymsg, yytype, yyvaluep)
 
   switch (yytype)
     {
+      case 100: /* "maybe_media_value" */
+
+	{ delete (yyvaluep->valueList); (yyvaluep->valueList) = 0; };
+
+	break;
       case 102: /* "media_query_exp_list" */
 
 	{ delete (yyvaluep->mediaQueryExpList); (yyvaluep->mediaQueryExpList) = 0; };
@@ -1715,11 +1744,17 @@ yydestruct (yymsg, yytype, yyvaluep)
 	{ delete (yyvaluep->valueList); (yyvaluep->valueList) = 0; };
 
 	break;
+      case 139: /* "function" */
+
+	{ if ((yyvaluep->value).function) delete (yyvaluep->value).function->args; delete (yyvaluep->value).function; (yyvaluep->value).function = 0; };
+
+	break;
 
       default:
 	break;
     }
 }
+
 
 /* Prevent warnings from -Wmissing-prototypes.  */
 #ifdef YYPARSE_PARAM
@@ -1737,12 +1772,9 @@ int yyparse ();
 #endif /* ! YYPARSE_PARAM */
 
 
-
-
-
-/*-------------------------.
-| yyparse or yypush_parse.  |
-`-------------------------*/
+/*----------.
+| yyparse.  |
+`----------*/
 
 #ifdef YYPARSE_PARAM
 #if (defined __STDC__ || defined __C99__FUNC__ \
@@ -1929,7 +1961,7 @@ yybackup:
 
   /* First try to decide what to do without reference to lookahead token.  */
   yyn = yypact[yystate];
-  if (yyn == YYPACT_NINF)
+  if (yypact_value_is_default (yyn))
     goto yydefault;
 
   /* Not known => get a lookahead token if don't already have one.  */
@@ -1960,8 +1992,8 @@ yybackup:
   yyn = yytable[yyn];
   if (yyn <= 0)
     {
-      if (yyn == 0 || yyn == YYTABLE_NINF)
-	goto yyerrlab;
+      if (yytable_value_is_error (yyn))
+        goto yyerrlab;
       yyn = -yyn;
       goto yyreduce;
     }
@@ -2019,14 +2051,14 @@ yyreduce:
     {
         CSSParser *p = static_cast<CSSParser *>(parser);
 	p->rule = (yyvsp[(4) - (6)].rule);
-    ;}
+    }
     break;
 
   case 12:
 
     {
 	/* can be empty */
-    ;}
+    }
     break;
 
   case 13:
@@ -2052,7 +2084,7 @@ yyreduce:
 #endif
 	delete p->valueList;
 	p->valueList = 0;
-    ;}
+    }
     break;
 
   case 14:
@@ -2063,7 +2095,7 @@ yyreduce:
 			p->selectors = *(yyvsp[(4) - (5)].selectorList);
 		else
 			p->selectors.clear(); // parse error
-	;}
+	}
     break;
 
   case 15:
@@ -2071,7 +2103,7 @@ yyreduce:
     {
          CSSParser *p = static_cast<CSSParser *>(parser);
          p->mediaQuery = (yyvsp[(4) - (5)].mediaQuery);
-     ;}
+     }
     break;
 
   case 25:
@@ -2084,19 +2116,19 @@ yyreduce:
      if (p->styleElement && p->styleElement->isCSSStyleSheet()) {
          p->styleElement->append( new CSSCharsetRuleImpl(p->styleElement, domString((yyvsp[(3) - (5)].string))) );
      }
- ;}
+ }
     break;
 
   case 26:
 
     {
- ;}
+ }
     break;
 
   case 27:
 
     {
- ;}
+ }
     break;
 
   case 29:
@@ -2108,7 +2140,7 @@ yyreduce:
      } else {
 	 delete (yyvsp[(2) - (3)].rule);
      }
- ;}
+ }
     break;
 
   case 30:
@@ -2122,21 +2154,21 @@ yyreduce:
 	    (yyval.rule) = new CSSImportRuleImpl( p->styleElement, domString((yyvsp[(3) - (6)].string)), (yyvsp[(5) - (6)].mediaList) );
 	else
 	    (yyval.rule) = 0;
-    ;}
+    }
     break;
 
   case 31:
 
     {
         (yyval.rule) = 0;
-    ;}
+    }
     break;
 
   case 32:
 
     {
         (yyval.rule) = 0;
-    ;}
+    }
     break;
 
   case 35:
@@ -2147,7 +2179,7 @@ yyreduce:
 #endif
     CSSParser *p = static_cast<CSSParser *>(parser);
     (yyval.rule) = new CSSNamespaceRuleImpl(p->styleElement, domString((yyvsp[(3) - (4)].string)), domString((yyvsp[(4) - (4)].string)));
- ;}
+ }
     break;
 
   case 36:
@@ -2159,17 +2191,17 @@ yyreduce:
                     (static_cast<CSSNamespaceRuleImpl*>((yyvsp[(1) - (3)].rule))); 
                             // can't use ->append since it 
                             // wouldn't keep track of dirtiness
- ;}
+ }
     break;
 
   case 39:
 
-    { (yyval.string).string = 0; ;}
+    { (yyval.string).string = 0; }
     break;
 
   case 40:
 
-    { (yyval.string) = (yyvsp[(1) - (2)].string); ;}
+    { (yyval.string) = (yyvsp[(1) - (2)].string); }
     break;
 
   case 42:
@@ -2181,45 +2213,45 @@ yyreduce:
      } else {
 	 delete (yyvsp[(2) - (3)].rule);
      }
- ;}
+ }
     break;
 
   case 49:
 
-    { delete (yyvsp[(1) - (2)].rule); (yyval.rule) = 0; ;}
+    { delete (yyvsp[(1) - (2)].rule); (yyval.rule) = 0; }
     break;
 
   case 53:
 
-    { delete (yyvsp[(1) - (2)].rule); (yyval.rule) = 0; ;}
+    { delete (yyvsp[(1) - (2)].rule); (yyval.rule) = 0; }
     break;
 
   case 56:
 
     {
         (yyval.string) = (yyvsp[(1) - (2)].string);
-    ;}
+    }
     break;
 
   case 57:
 
     {
         (yyval.valueList) = 0;
-    ;}
+    }
     break;
 
   case 58:
 
     {
         (yyval.valueList) = (yyvsp[(3) - (4)].valueList);
-    ;}
+    }
     break;
 
   case 59:
 
     {
         (yyval.mediaQueryExp) = new khtml::MediaQueryExp(domString((yyvsp[(3) - (7)].string)).lower(), (yyvsp[(5) - (7)].valueList));
-    ;}
+    }
     break;
 
   case 60:
@@ -2227,7 +2259,7 @@ yyreduce:
     {
       (yyval.mediaQueryExpList) =  new QList<khtml::MediaQueryExp*>;
       (yyval.mediaQueryExpList)->append((yyvsp[(1) - (1)].mediaQueryExp));
-    ;}
+    }
     break;
 
   case 61:
@@ -2235,63 +2267,63 @@ yyreduce:
     {
       (yyval.mediaQueryExpList) = (yyvsp[(1) - (5)].mediaQueryExpList);
       (yyval.mediaQueryExpList)->append((yyvsp[(5) - (5)].mediaQueryExp));
-    ;}
+    }
     break;
 
   case 62:
 
     {
         (yyval.mediaQueryExpList) = new QList<khtml::MediaQueryExp*>;
-    ;}
+    }
     break;
 
   case 63:
 
     {
         (yyval.mediaQueryExpList) = (yyvsp[(3) - (3)].mediaQueryExpList);
-    ;}
+    }
     break;
 
   case 64:
 
     {
         (yyval.mediaQueryRestrictor) = khtml::MediaQuery::None;
-    ;}
+    }
     break;
 
   case 65:
 
     {
         (yyval.mediaQueryRestrictor) = khtml::MediaQuery::Only;
-    ;}
+    }
     break;
 
   case 66:
 
     {
         (yyval.mediaQueryRestrictor) = khtml::MediaQuery::Not;
-    ;}
+    }
     break;
 
   case 67:
 
     {
         (yyval.mediaQuery) = new khtml::MediaQuery(khtml::MediaQuery::None, "all", (yyvsp[(1) - (1)].mediaQueryExpList));
-    ;}
+    }
     break;
 
   case 68:
 
     {
         (yyval.mediaQuery) = new khtml::MediaQuery((yyvsp[(1) - (4)].mediaQueryRestrictor), domString((yyvsp[(3) - (4)].string)).lower(), (yyvsp[(4) - (4)].mediaQueryExpList));
-    ;}
+    }
     break;
 
   case 69:
 
     {
 	(yyval.mediaList) = new MediaListImpl();
-    ;}
+    }
     break;
 
   case 71:
@@ -2299,7 +2331,7 @@ yyreduce:
     {
         (yyval.mediaList) = new MediaListImpl();
         (yyval.mediaList)->appendMediaQuery((yyvsp[(1) - (1)].mediaQuery));
-    ;}
+    }
     break;
 
   case 72:
@@ -2308,7 +2340,7 @@ yyreduce:
 	(yyval.mediaList) = (yyvsp[(1) - (4)].mediaList);
 	if ((yyval.mediaList))
 	    (yyval.mediaList)->appendMediaQuery( (yyvsp[(4) - (4)].mediaQuery) );
-    ;}
+    }
     break;
 
   case 73:
@@ -2316,7 +2348,7 @@ yyreduce:
     {
        delete (yyvsp[(1) - (2)].mediaList);
        (yyval.mediaList) = 0;
-    ;}
+    }
     break;
 
   case 74:
@@ -2331,7 +2363,7 @@ yyreduce:
 	    delete (yyvsp[(3) - (7)].mediaList);
 	    delete (yyvsp[(6) - (7)].ruleList);
 	}
-    ;}
+    }
     break;
 
   case 75:
@@ -2344,12 +2376,12 @@ yyreduce:
             (yyval.rule) = 0;
             delete (yyvsp[(5) - (6)].ruleList);
         }
-    ;}
+    }
     break;
 
   case 76:
 
-    { (yyval.ruleList) = 0; ;}
+    { (yyval.ruleList) = 0; }
     break;
 
   case 77:
@@ -2360,28 +2392,28 @@ yyreduce:
 	  if ( !(yyval.ruleList) ) (yyval.ruleList) = new CSSRuleListImpl();
 	  (yyval.ruleList)->append( (yyvsp[(2) - (3)].rule) );
       }
-  ;}
+  }
     break;
 
   case 78:
 
     {
       (yyval.string) = (yyvsp[(1) - (2)].string);
-  ;}
+  }
     break;
 
   case 79:
 
     {
       (yyval.rule) = 0;
-    ;}
+    }
     break;
 
   case 80:
 
     {
       (yyval.rule) = 0;
-    ;}
+    }
     break;
 
   case 81:
@@ -2392,46 +2424,46 @@ yyreduce:
       CSSStyleDeclarationImpl *decl = p->createFontFaceStyleDeclaration( rule );
       rule->setDeclaration(decl);
       (yyval.rule) = rule;
-    ;}
+    }
     break;
 
   case 82:
 
     {
       (yyval.rule) = 0;
-    ;}
+    }
     break;
 
   case 83:
 
     {
       (yyval.rule) = 0;
-    ;}
+    }
     break;
 
   case 84:
 
-    { (yyval.relation) = CSSSelector::DirectAdjacent; ;}
+    { (yyval.relation) = CSSSelector::DirectAdjacent; }
     break;
 
   case 85:
 
-    { (yyval.relation) = CSSSelector::IndirectAdjacent; ;}
+    { (yyval.relation) = CSSSelector::IndirectAdjacent; }
     break;
 
   case 86:
 
-    { (yyval.relation) = CSSSelector::Child; ;}
+    { (yyval.relation) = CSSSelector::Child; }
     break;
 
   case 87:
 
-    { (yyval.val) = -1; ;}
+    { (yyval.val) = -1; }
     break;
 
   case 88:
 
-    { (yyval.val) = 1; ;}
+    { (yyval.val) = 1; }
     break;
 
   case 89:
@@ -2454,7 +2486,7 @@ yyreduce:
 	    (yyvsp[(1) - (2)].selectorList) = 0;
 	    p->clearProperties();
 	}
-    ;}
+    }
     break;
 
   case 90:
@@ -2471,7 +2503,7 @@ yyreduce:
 	} else {
 	    (yyval.selectorList) = 0;
 	}
-    ;}
+    }
     break;
 
   case 91:
@@ -2493,7 +2525,7 @@ yyreduce:
 	    delete (yyvsp[(4) - (4)].selector);
 	    (yyval.selectorList) = 0;
 	}
-    ;}
+    }
     break;
 
   case 92:
@@ -2503,21 +2535,21 @@ yyreduce:
 	delete (yyvsp[(1) - (2)].selectorList);
 	(yyvsp[(1) - (2)].selectorList) = 0;
 	(yyval.selectorList) = 0;
-    ;}
+    }
     break;
 
   case 93:
 
     {
 	(yyval.selector) = (yyvsp[(1) - (1)].selector);
-    ;}
+    }
     break;
 
   case 94:
 
     {
         (yyval.selector) = (yyvsp[(1) - (2)].selector);
-    ;}
+    }
     break;
 
   case 95:
@@ -2535,7 +2567,7 @@ yyreduce:
             end->relation = CSSSelector::Descendant;
             end->tagHistory = (yyvsp[(1) - (3)].selector);
         }
-    ;}
+    }
     break;
 
   case 96:
@@ -2553,7 +2585,7 @@ yyreduce:
 	    end->relation = (yyvsp[(2) - (3)].relation);
 	    end->tagHistory = (yyvsp[(1) - (3)].selector);
 	}
-    ;}
+    }
     break;
 
   case 97:
@@ -2561,22 +2593,22 @@ yyreduce:
     {
 	delete (yyvsp[(1) - (2)].selector);
 	(yyval.selector) = 0;
-    ;}
+    }
     break;
 
   case 98:
 
-    { (yyval.string).string = 0; (yyval.string).length = 0; ;}
+    { (yyval.string).string = 0; (yyval.string).length = 0; }
     break;
 
   case 99:
 
-    { static unsigned short star = '*'; (yyval.string).string = &star; (yyval.string).length = 1; ;}
+    { static unsigned short star = '*'; (yyval.string).string = &star; (yyval.string).length = 1; }
     break;
 
   case 100:
 
-    { (yyval.string) = (yyvsp[(1) - (2)].string); ;}
+    { (yyval.string) = (yyvsp[(1) - (2)].string); }
     break;
 
   case 101:
@@ -2585,7 +2617,7 @@ yyreduce:
 	(yyval.selector) = new CSSSelector();
         (yyval.selector)->tagLocalName = LocalName::fromId(localNamePart((yyvsp[(1) - (1)].element)));
         (yyval.selector)->tagNamespace = NamespaceName::fromId(namespacePart((yyvsp[(1) - (1)].element)));
-    ;}
+    }
     break;
 
   case 102:
@@ -2596,7 +2628,7 @@ yyreduce:
             (yyval.selector)->tagLocalName = LocalName::fromId(localNamePart((yyvsp[(1) - (2)].element)));
             (yyval.selector)->tagNamespace = NamespaceName::fromId(namespacePart((yyvsp[(1) - (2)].element)));
         }
-    ;}
+    }
     break;
 
   case 103:
@@ -2607,7 +2639,7 @@ yyreduce:
             (yyval.selector)->tagLocalName = LocalName::fromId(anyLocalName);
             (yyval.selector)->tagNamespace = NamespaceName::fromId(static_cast<CSSParser*>(parser)->defaultNamespace());
         }
-    ;}
+    }
     break;
 
   case 104:
@@ -2619,7 +2651,7 @@ yyreduce:
 	CSSParser *p = static_cast<CSSParser *>(parser);
         if (p->styleElement && p->styleElement->isCSSStyleSheet())
             static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->tagNamespace, domString((yyvsp[(1) - (2)].string)));
-    ;}
+    }
     break;
 
   case 105:
@@ -2633,7 +2665,7 @@ yyreduce:
             if (p->styleElement && p->styleElement->isCSSStyleSheet())
                 static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->tagNamespace, domString((yyvsp[(1) - (3)].string)));
         }
-    ;}
+    }
     break;
 
   case 106:
@@ -2647,7 +2679,7 @@ yyreduce:
             if (p->styleElement && p->styleElement->isCSSStyleSheet())
                 static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->tagNamespace, domString((yyvsp[(1) - (2)].string)));
         }
-    ;}
+    }
     break;
 
   case 107:
@@ -2656,7 +2688,7 @@ yyreduce:
 	(yyval.selector) = new CSSSelector();
         (yyval.selector)->tagLocalName = LocalName::fromId(localNamePart((yyvsp[(1) - (1)].element)));
         (yyval.selector)->tagNamespace = NamespaceName::fromId(namespacePart((yyvsp[(1) - (1)].element)));
-    ;}
+    }
     break;
 
   case 108:
@@ -2667,7 +2699,7 @@ yyreduce:
             (yyval.selector)->tagLocalName = LocalName::fromId(anyLocalName);
             (yyval.selector)->tagNamespace = NamespaceName::fromId(static_cast<CSSParser*>(parser)->defaultNamespace());
         }
-    ;}
+    }
     break;
 
   case 109:
@@ -2679,7 +2711,7 @@ yyreduce:
 	CSSParser *p = static_cast<CSSParser *>(parser);
         if (p->styleElement && p->styleElement->isCSSStyleSheet())
             static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->tagNamespace, domString((yyvsp[(1) - (2)].string)));
-    ;}
+    }
     break;
 
   case 110:
@@ -2693,7 +2725,7 @@ yyreduce:
             if (p->styleElement && p->styleElement->isCSSStyleSheet())
                 static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->tagNamespace, domString((yyvsp[(1) - (2)].string)));
         }
-    ;}
+    }
     break;
 
   case 111:
@@ -2701,21 +2733,21 @@ yyreduce:
     {
       CSSParser *p = static_cast<CSSParser *>(parser);
       (yyval.element) = makeId(p->defaultNamespace(), p->getLocalNameId(domString((yyvsp[(1) - (1)].string))));
-    ;}
+    }
     break;
 
   case 112:
 
     {
 	(yyval.element) = makeId(static_cast<CSSParser*>(parser)->defaultNamespace(), anyLocalName);
-    ;}
+    }
     break;
 
   case 113:
 
     {
 	(yyval.selector) = (yyvsp[(1) - (1)].selector);
-    ;}
+    }
     break;
 
   case 114:
@@ -2729,7 +2761,7 @@ yyreduce:
             end->relation = CSSSelector::SubSelector;
             end->tagHistory = (yyvsp[(2) - (2)].selector);
 	}
-    ;}
+    }
     break;
 
   case 115:
@@ -2737,7 +2769,7 @@ yyreduce:
     {
 	delete (yyvsp[(1) - (2)].selector);
 	(yyval.selector) = 0;
-    ;}
+    }
     break;
 
   case 116:
@@ -2755,7 +2787,7 @@ yyreduce:
             (yyval.selector)->value = domString((yyvsp[(1) - (1)].string));
         else
             (yyval.selector)->value = domString((yyvsp[(1) - (1)].string)).lower();
-    ;}
+    }
     break;
 
   case 120:
@@ -2773,7 +2805,7 @@ yyreduce:
             (yyval.selector)->value = domString((yyvsp[(2) - (2)].string));
         else
             (yyval.selector)->value = domString((yyvsp[(2) - (2)].string)).lower();
-    ;}
+    }
     break;
 
   case 121:
@@ -2781,7 +2813,7 @@ yyreduce:
     {
       CSSParser *p = static_cast<CSSParser *>(parser);
       (yyval.attribute) = makeId(emptyNamespace, p->getLocalNameId(domString((yyvsp[(1) - (2)].string))));
-    ;}
+    }
     break;
 
   case 122:
@@ -2791,7 +2823,7 @@ yyreduce:
         (yyval.selector)->attrLocalName = LocalName::fromId(localNamePart((yyvsp[(3) - (4)].attribute)));
         (yyval.selector)->attrNamespace = NamespaceName::fromId(namespacePart((yyvsp[(3) - (4)].attribute)));
 	(yyval.selector)->match = CSSSelector::Set;
-    ;}
+    }
     break;
 
   case 123:
@@ -2802,7 +2834,7 @@ yyreduce:
         (yyval.selector)->attrNamespace = NamespaceName::fromId(namespacePart((yyvsp[(3) - (8)].attribute)));
 	(yyval.selector)->match = (yyvsp[(4) - (8)].match);
 	(yyval.selector)->value = domString((yyvsp[(6) - (8)].string));
-    ;}
+    }
     break;
 
   case 124:
@@ -2815,7 +2847,7 @@ yyreduce:
         CSSParser *p = static_cast<CSSParser *>(parser);
         if (p->styleElement && p->styleElement->isCSSStyleSheet())
             static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->attrNamespace, domString((yyvsp[(3) - (5)].string)));
-    ;}
+    }
     break;
 
   case 125:
@@ -2829,49 +2861,49 @@ yyreduce:
         CSSParser *p = static_cast<CSSParser *>(parser);
         if (p->styleElement && p->styleElement->isCSSStyleSheet())
             static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace((yyval.selector)->attrNamespace, domString((yyvsp[(3) - (9)].string)));
-   ;}
+   }
     break;
 
   case 126:
 
     {
 	(yyval.match) = CSSSelector::Exact;
-    ;}
+    }
     break;
 
   case 127:
 
     {
 	(yyval.match) = CSSSelector::List;
-    ;}
+    }
     break;
 
   case 128:
 
     {
 	(yyval.match) = CSSSelector::Hyphen;
-    ;}
+    }
     break;
 
   case 129:
 
     {
 	(yyval.match) = CSSSelector::Begin;
-    ;}
+    }
     break;
 
   case 130:
 
     {
 	(yyval.match) = CSSSelector::End;
-    ;}
+    }
     break;
 
   case 131:
 
     {
 	(yyval.match) = CSSSelector::Contain;
-    ;}
+    }
     break;
 
   case 134:
@@ -2880,7 +2912,7 @@ yyreduce:
 	(yyval.selector) = new CSSSelector();
 	(yyval.selector)->match = CSSSelector::PseudoClass;
 	(yyval.selector)->value = domString((yyvsp[(2) - (2)].string));
-    ;}
+    }
     break;
 
   case 135:
@@ -2889,7 +2921,7 @@ yyreduce:
 	(yyval.selector) = new CSSSelector();
 	(yyval.selector)->match = CSSSelector::PseudoElement;
         (yyval.selector)->value = domString((yyvsp[(3) - (3)].string));
-    ;}
+    }
     break;
 
   case 136:
@@ -2899,7 +2931,7 @@ yyreduce:
         (yyval.selector)->match = CSSSelector::PseudoClass;
         (yyval.selector)->string_arg = domString((yyvsp[(4) - (6)].string));
         (yyval.selector)->value = domString((yyvsp[(2) - (6)].string));
-    ;}
+    }
     break;
 
   case 137:
@@ -2909,7 +2941,7 @@ yyreduce:
         (yyval.selector)->match = CSSSelector::PseudoClass;
         (yyval.selector)->string_arg = QString::number((yyvsp[(5) - (7)].val));
         (yyval.selector)->value = domString((yyvsp[(2) - (7)].string));
-    ;}
+    }
     break;
 
   case 138:
@@ -2919,7 +2951,7 @@ yyreduce:
         (yyval.selector)->match = CSSSelector::PseudoClass;
         (yyval.selector)->string_arg = domString((yyvsp[(4) - (6)].string));
         (yyval.selector)->value = domString((yyvsp[(2) - (6)].string));
-    ;}
+    }
     break;
 
   case 139:
@@ -2929,7 +2961,7 @@ yyreduce:
         (yyval.selector)->match = CSSSelector::PseudoClass;
         (yyval.selector)->string_arg = domString((yyvsp[(4) - (6)].string));
         (yyval.selector)->value = domString((yyvsp[(2) - (6)].string));
-    ;}
+    }
     break;
 
   case 140:
@@ -2939,28 +2971,28 @@ yyreduce:
         (yyval.selector)->match = CSSSelector::PseudoClass;
         (yyval.selector)->simpleSelector = (yyvsp[(4) - (6)].selector);
         (yyval.selector)->value = domString((yyvsp[(2) - (6)].string));
-    ;}
+    }
     break;
 
   case 141:
 
     {
 	(yyval.ok) = (yyvsp[(3) - (4)].ok);
-    ;}
+    }
     break;
 
   case 142:
 
     {
 	(yyval.ok) = false;
-    ;}
+    }
     break;
 
   case 143:
 
     {
 	(yyval.ok) = (yyvsp[(3) - (4)].ok);
-    ;}
+    }
     break;
 
   case 144:
@@ -2969,28 +3001,28 @@ yyreduce:
 	(yyval.ok) = (yyvsp[(3) - (5)].ok);
 	if ( (yyvsp[(4) - (5)].ok) )
 	    (yyval.ok) = (yyvsp[(4) - (5)].ok);
-    ;}
+    }
     break;
 
   case 145:
 
     {
 	(yyval.ok) = (yyvsp[(3) - (5)].ok);
-    ;}
+    }
     break;
 
   case 146:
 
     {
 	(yyval.ok) = (yyvsp[(1) - (3)].ok);
-    ;}
+    }
     break;
 
   case 147:
 
     {
         (yyval.ok) = false;
-    ;}
+    }
     break;
 
   case 148:
@@ -2999,14 +3031,14 @@ yyreduce:
 	(yyval.ok) = (yyvsp[(1) - (4)].ok);
 	if ( (yyvsp[(2) - (4)].ok) )
 	    (yyval.ok) = (yyvsp[(2) - (4)].ok);
-    ;}
+    }
     break;
 
   case 149:
 
     {
         (yyval.ok) = (yyvsp[(1) - (4)].ok);
-    ;}
+    }
     break;
 
   case 150:
@@ -3032,14 +3064,14 @@ yyreduce:
         }
 	delete p->valueList;
 	p->valueList = 0;
-    ;}
+    }
     break;
 
   case 151:
 
     {
         (yyval.ok) = false;
-    ;}
+    }
     break;
 
   case 152:
@@ -3062,17 +3094,17 @@ yyreduce:
 	} else {
 	    (yyval.prop_id) = getPropertyID( str.toLatin1(), str.length() );
         }
-    ;}
+    }
     break;
 
   case 153:
 
-    { (yyval.b) = true; ;}
+    { (yyval.b) = true; }
     break;
 
   case 154:
 
-    { (yyval.b) = false; ;}
+    { (yyval.b) = false; }
     break;
 
   case 155:
@@ -3080,7 +3112,7 @@ yyreduce:
     {
 	(yyval.valueList) = new ValueList;
 	(yyval.valueList)->addValue( (yyvsp[(1) - (1)].value) );
-    ;}
+    }
     break;
 
   case 156:
@@ -3097,48 +3129,48 @@ yyreduce:
 	    }
 	    (yyval.valueList)->addValue( (yyvsp[(3) - (3)].value) );
 	}
-    ;}
+    }
     break;
 
   case 157:
 
     {
 	(yyval.tok) = '/';
-    ;}
+    }
     break;
 
   case 158:
 
     {
 	(yyval.tok) = ',';
-    ;}
+    }
     break;
 
   case 159:
 
     {
         (yyval.tok) = 0;
-  ;}
+  }
     break;
 
   case 160:
 
-    { (yyval.value) = (yyvsp[(1) - (1)].value); ;}
+    { (yyval.value) = (yyvsp[(1) - (1)].value); }
     break;
 
   case 161:
 
-    { (yyval.value) = (yyvsp[(2) - (2)].value); (yyval.value).fValue *= (yyvsp[(1) - (2)].val); ;}
+    { (yyval.value) = (yyvsp[(2) - (2)].value); (yyval.value).fValue *= (yyvsp[(1) - (2)].val); }
     break;
 
   case 162:
 
-    { (yyval.value).id = 0; (yyval.value).string = (yyvsp[(1) - (2)].string); (yyval.value).unit = CSSPrimitiveValue::CSS_DIMENSION; ;}
+    { (yyval.value).id = 0; (yyval.value).string = (yyvsp[(1) - (2)].string); (yyval.value).unit = CSSPrimitiveValue::CSS_DIMENSION; }
     break;
 
   case 163:
 
-    { (yyval.value).id = 0; (yyval.value).string = (yyvsp[(1) - (2)].string); (yyval.value).unit = CSSPrimitiveValue::CSS_STRING; ;}
+    { (yyval.value).id = 0; (yyval.value).string = (yyvsp[(1) - (2)].string); (yyval.value).unit = CSSPrimitiveValue::CSS_STRING; }
     break;
 
   case 164:
@@ -3148,134 +3180,134 @@ yyreduce:
       (yyval.value).id = getValueID( str.toLower().toLatin1(), str.length() );
       (yyval.value).unit = CSSPrimitiveValue::CSS_IDENT;
       (yyval.value).string = (yyvsp[(1) - (2)].string);
-  ;}
+  }
     break;
 
   case 165:
 
-    { (yyval.value).id = 0; (yyval.value).string = (yyvsp[(1) - (2)].string); (yyval.value).unit = CSSPrimitiveValue::CSS_URI; ;}
+    { (yyval.value).id = 0; (yyval.value).string = (yyvsp[(1) - (2)].string); (yyval.value).unit = CSSPrimitiveValue::CSS_URI; }
     break;
 
   case 166:
 
-    { (yyval.value).id = 0; (yyval.value).iValue = 0; (yyval.value).unit = CSSPrimitiveValue::CSS_UNKNOWN;/* ### */ ;}
+    { (yyval.value).id = 0; (yyval.value).iValue = 0; (yyval.value).unit = CSSPrimitiveValue::CSS_UNKNOWN;/* ### */ }
     break;
 
   case 167:
 
-    { (yyval.value).id = 0; (yyval.value).string = (yyvsp[(1) - (1)].string); (yyval.value).unit = CSSPrimitiveValue::CSS_RGBCOLOR; ;}
+    { (yyval.value).id = 0; (yyval.value).string = (yyvsp[(1) - (1)].string); (yyval.value).unit = CSSPrimitiveValue::CSS_RGBCOLOR; }
     break;
 
   case 168:
 
     {
       (yyval.value) = (yyvsp[(1) - (1)].value);
-  ;}
+  }
     break;
 
   case 169:
 
-    { (yyval.value).id = 0; (yyval.value).isInt = true; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_NUMBER; ;}
+    { (yyval.value).id = 0; (yyval.value).isInt = true; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_NUMBER; }
     break;
 
   case 170:
 
-    { (yyval.value).id = 0; (yyval.value).isInt = false; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_NUMBER; ;}
+    { (yyval.value).id = 0; (yyval.value).isInt = false; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_NUMBER; }
     break;
 
   case 171:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_PERCENTAGE; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_PERCENTAGE; }
     break;
 
   case 172:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_PX; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_PX; }
     break;
 
   case 173:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_CM; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_CM; }
     break;
 
   case 174:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_MM; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_MM; }
     break;
 
   case 175:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_IN; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_IN; }
     break;
 
   case 176:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_PT; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_PT; }
     break;
 
   case 177:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_PC; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_PC; }
     break;
 
   case 178:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_DEG; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_DEG; }
     break;
 
   case 179:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_RAD; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_RAD; }
     break;
 
   case 180:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_GRAD; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_GRAD; }
     break;
 
   case 181:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_MS; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_MS; }
     break;
 
   case 182:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_S; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_S; }
     break;
 
   case 183:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_HZ; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_HZ; }
     break;
 
   case 184:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_KHZ; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_KHZ; }
     break;
 
   case 185:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_EMS; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_EMS; }
     break;
 
   case 186:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = Value::Q_EMS; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = Value::Q_EMS; }
     break;
 
   case 187:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_EXS; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_EXS; }
     break;
 
   case 188:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_DPI; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_DPI; }
     break;
 
   case 189:
 
-    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_DPCM; ;}
+    { (yyval.value).id = 0; (yyval.value).fValue = (yyvsp[(1) - (2)].val); (yyval.value).unit = CSSPrimitiveValue::CSS_DPCM; }
     break;
 
   case 190:
@@ -3287,7 +3319,7 @@ yyreduce:
       (yyval.value).id = 0;
       (yyval.value).unit = Value::Function;
       (yyval.value).function = f;
-  ;}
+  }
     break;
 
   case 191:
@@ -3299,12 +3331,12 @@ yyreduce:
       (yyval.value).id = 0;
       (yyval.value).unit = Value::Function;
       (yyval.value).function = f;
-  ;}
+  }
     break;
 
   case 192:
 
-    { (yyval.string) = (yyvsp[(1) - (2)].string); ;}
+    { (yyval.string) = (yyvsp[(1) - (2)].string); }
     break;
 
   case 193:
@@ -3314,7 +3346,7 @@ yyreduce:
 #ifdef CSS_DEBUG
 	kDebug( 6080 ) << "skipped invalid @-rule";
 #endif
-    ;}
+    }
     break;
 
   case 194:
@@ -3324,7 +3356,7 @@ yyreduce:
 #ifdef CSS_DEBUG
 	kDebug( 6080 ) << "skipped invalid @-rule";
 #endif
-    ;}
+    }
     break;
 
   case 195:
@@ -3334,13 +3366,24 @@ yyreduce:
 #ifdef CSS_DEBUG
 	kDebug( 6080 ) << "skipped invalid rule";
 #endif
-    ;}
+    }
     break;
 
 
 
       default: break;
     }
+  /* User semantic actions sometimes alter yychar, and that requires
+     that yytoken be updated with the new translation.  We take the
+     approach of translating immediately before every use of yytoken.
+     One alternative is translating here after every semantic action,
+     but that translation would be missed if the semantic action invokes
+     YYABORT, YYACCEPT, or YYERROR immediately after altering yychar or
+     if it invokes YYBACKUP.  In the case of YYABORT or YYACCEPT, an
+     incorrect destructor might then be invoked immediately.  In the
+     case of YYERROR or YYBACKUP, subsequent parser actions might lead
+     to an incorrect destructor call or verbose syntax error message
+     before the lookahead is translated.  */
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
 
   YYPOPSTACK (yylen);
@@ -3368,6 +3411,10 @@ yyreduce:
 | yyerrlab -- here on detecting error |
 `------------------------------------*/
 yyerrlab:
+  /* Make sure we have latest lookahead translation.  See comments at
+     user semantic actions for why this is necessary.  */
+  yytoken = yychar == YYEMPTY ? YYEMPTY : YYTRANSLATE (yychar);
+
   /* If not already recovering from an error, report this error.  */
   if (!yyerrstatus)
     {
@@ -3375,37 +3422,36 @@ yyerrlab:
 #if ! YYERROR_VERBOSE
       yyerror (YY_("syntax error"));
 #else
+# define YYSYNTAX_ERROR yysyntax_error (&yymsg_alloc, &yymsg, \
+                                        yyssp, yytoken)
       {
-	YYSIZE_T yysize = yysyntax_error (0, yystate, yychar);
-	if (yymsg_alloc < yysize && yymsg_alloc < YYSTACK_ALLOC_MAXIMUM)
-	  {
-	    YYSIZE_T yyalloc = 2 * yysize;
-	    if (! (yysize <= yyalloc && yyalloc <= YYSTACK_ALLOC_MAXIMUM))
-	      yyalloc = YYSTACK_ALLOC_MAXIMUM;
-	    if (yymsg != yymsgbuf)
-	      YYSTACK_FREE (yymsg);
-	    yymsg = (char *) YYSTACK_ALLOC (yyalloc);
-	    if (yymsg)
-	      yymsg_alloc = yyalloc;
-	    else
-	      {
-		yymsg = yymsgbuf;
-		yymsg_alloc = sizeof yymsgbuf;
-	      }
-	  }
-
-	if (0 < yysize && yysize <= yymsg_alloc)
-	  {
-	    (void) yysyntax_error (yymsg, yystate, yychar);
-	    yyerror (yymsg);
-	  }
-	else
-	  {
-	    yyerror (YY_("syntax error"));
-	    if (yysize != 0)
-	      goto yyexhaustedlab;
-	  }
+        char const *yymsgp = YY_("syntax error");
+        int yysyntax_error_status;
+        yysyntax_error_status = YYSYNTAX_ERROR;
+        if (yysyntax_error_status == 0)
+          yymsgp = yymsg;
+        else if (yysyntax_error_status == 1)
+          {
+            if (yymsg != yymsgbuf)
+              YYSTACK_FREE (yymsg);
+            yymsg = (char *) YYSTACK_ALLOC (yymsg_alloc);
+            if (!yymsg)
+              {
+                yymsg = yymsgbuf;
+                yymsg_alloc = sizeof yymsgbuf;
+                yysyntax_error_status = 2;
+              }
+            else
+              {
+                yysyntax_error_status = YYSYNTAX_ERROR;
+                yymsgp = yymsg;
+              }
+          }
+        yyerror (yymsgp);
+        if (yysyntax_error_status == 2)
+          goto yyexhaustedlab;
       }
+# undef YYSYNTAX_ERROR
 #endif
     }
 
@@ -3464,7 +3510,7 @@ yyerrlab1:
   for (;;)
     {
       yyn = yypact[yystate];
-      if (yyn != YYPACT_NINF)
+      if (!yypact_value_is_default (yyn))
 	{
 	  yyn += YYTERROR;
 	  if (0 <= yyn && yyn <= YYLAST && yycheck[yyn] == YYTERROR)
@@ -3523,8 +3569,13 @@ yyexhaustedlab:
 
 yyreturn:
   if (yychar != YYEMPTY)
-     yydestruct ("Cleanup: discarding lookahead",
-		 yytoken, &yylval);
+    {
+      /* Make sure we have latest lookahead translation.  See comments at
+         user semantic actions for why this is necessary.  */
+      yytoken = YYTRANSLATE (yychar);
+      yydestruct ("Cleanup: discarding lookahead",
+                  yytoken, &yylval);
+    }
   /* Do not reclaim the symbols of the rule which action triggered
      this YYABORT or YYACCEPT.  */
   YYPOPSTACK (yylen);
