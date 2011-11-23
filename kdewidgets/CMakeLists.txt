@@ -7,9 +7,9 @@ add_subdirectory( tests )
 include_directories(
   ${CMAKE_SOURCE_DIR}/tier1/libkplotting/src
   ${CMAKE_BINARY_DIR}/tier1/libkplotting/src
-  ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/io   # kurl.h
-  ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/text # kmacroexpander.h
-  ${CMAKE_BINARY_DIR}/tier1/libkcoreaddons/src
+  ${kcoreaddons_SOURCE_DIR}/src/io   # kurl.h
+  ${kcoreaddons_SOURCE_DIR}/src/text # kmacroexpander.h
+  ${kcoreaddons_BINARY_DIR}/src
   ${KDE4_KIO_INCLUDES}
  )
 

@@ -22,10 +22,10 @@ include_directories(
   ${CMAKE_SOURCE_DIR}
   ${CMAKE_SOURCE_DIR}/tier1/libkdbus
   ${CMAKE_BINARY_DIR}/tier1/libkdbus
-  ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/io
-  ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/jobs
-  ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/randomness
-  ${CMAKE_BINARY_DIR}/tier1/libkcoreaddons/src
+  ${kcoreaddons_SOURCE_DIR}/src/io
+  ${kcoreaddons_SOURCE_DIR}/src/jobs
+  ${kcoreaddons_SOURCE_DIR}/src/randomness
+  ${kcoreaddons_BINARY_DIR}/src
   ${KDE4_KIO_INCLUDES}
   ${QT_INCLUDES}
   ${SOPRANO_INCLUDE_DIR}

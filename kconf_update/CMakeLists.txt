@@ -4,8 +4,8 @@ project(kconf_update)
 include_directories(
  ${KDE4_KDECORE_INCLUDES}
  ${KDE4_KCONFIG_INCLUDES}
- ${CMAKE_BINARY_DIR}/tier1/libkcoreaddons/src
- ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/kernel
+ ${kcoreaddons_BINARY_DIR}/src
+ ${kcoreaddons_SOURCE_DIR}/src/kernel
 )
 
 

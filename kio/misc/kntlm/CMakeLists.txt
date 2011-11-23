@@ -1,6 +1,6 @@
 include_directories(
-  ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/randomness
-  ${CMAKE_BINARY_DIR}/tier1/libkcoreaddons/src
+  ${kcoreaddons_SOURCE_DIR}/src/randomness
+  ${kcoreaddons_BINARY_DIR}/src
 )
 
 set(kntlm_LIB_SRCS kntlm.cpp des.cpp )
