@@ -11,9 +11,10 @@ IDTable<NamespaceFactory>* NamespaceFactory::initIdTable()
     if (s_idTable) return s_idTable; // Can happen if KHTMLGlobal was recreated..
     s_idTable = new IDTable<NamespaceFactory>();
     s_idTable->addStaticMapping(DOM::xmlNamespace, XML_NAMESPACE);
+    s_idTable->addStaticMapping(DOM::xmlnsNamespace, XMLNS_NAMESPACE);
     s_idTable->addStaticMapping(DOM::svgNamespace, SVG_NAMESPACE);
-    s_idTable->addStaticMapping(DOM::xhtmlNamespace, XHTML_NAMESPACE);
     s_idTable->addStaticMapping(DOM::xlinkNamespace, XLINK_NAMESPACE);
+    s_idTable->addStaticMapping(DOM::xhtmlNamespace, XHTML_NAMESPACE);
     s_idTable->addStaticMapping(DOM::emptyNamespace, DOMString());
     return s_idTable;
 }
@@ -279,6 +280,7 @@ IDTable<LocalNameFactory>* LocalNameFactory::initIdTable()
     s_idTable->addStaticMapping(localNamePart(ATTR_SUMMARY), "summary");
     s_idTable->addStaticMapping(localNamePart(ATTR_USEMAP), "usemap");
     s_idTable->addStaticMapping(localNamePart(ATTR_VALUE), "value");
+    s_idTable->addStaticMapping(localNamePart(ATTR_XMLNS), "xmlns");
     s_idTable->addStaticMapping(localNamePart(ID_ALTGLYPH), "altGlyph");
     s_idTable->addStaticMapping(localNamePart(ID_ALTGLYPHDEF), "altGlyphDef");
     s_idTable->addStaticMapping(localNamePart(ID_ALTGLYPHITEM), "altGlyphItem");
@@ -589,6 +591,8 @@ IDTable<PrefixFactory>* PrefixFactory::initIdTable()
     if (s_idTable) return s_idTable; // Can happen if KHTMLGlobal was recreated..
     s_idTable = new IDTable<PrefixFactory>();
     s_idTable->addStaticMapping(DOM::emptyPrefix, DOMString());
+    s_idTable->addStaticMapping(DOM::xmlPrefix, "xml");
+    s_idTable->addStaticMapping(DOM::xmlnsPrefix, "xmlns");
     return s_idTable;
 }
 
