@@ -57,7 +57,7 @@ public:
     virtual ~tst_qstandardpaths() {
     }
 
-private slots:
+private Q_SLOTS:
     void testDefaultLocations();
     void testCustomLocations();
     void testLocateAll();
