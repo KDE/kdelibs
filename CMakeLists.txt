@@ -1,3 +1,6 @@
+
+cmake_minimum_required(VERSION 2.8.6)
+
 project(kdelibs)
 
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
@@ -42,6 +45,9 @@ if (KHTML_BUILD_TESTREGRESSION)
 endif (KHTML_BUILD_TESTREGRESSION)
 
 option(STATIC_LIBRARY "Build kdelibs as static libraries." FALSE)
+
+add_subdirectory( libinqt5 )
+add_subdirectory( tier1 )
 
 ################# write platform profile file which will be installed #################
 include(CreateKDEPlatformProfile.cmake)
@@ -297,8 +303,6 @@ check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 
 add_subdirectory( cmake )
 add_subdirectory( kdecore )
-add_subdirectory( libinqt5 )
-add_subdirectory( tier1 )
 add_subdirectory( tier2 )
 add_subdirectory( kdeui )
 if (UNIX)

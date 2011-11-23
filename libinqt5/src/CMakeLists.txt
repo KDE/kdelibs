@@ -1,20 +1,5 @@
 project(inqt5)
 
-find_package(extra-cmake-modules REQUIRED)
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${EXTRA_CMAKE_MODULES_MODULE_PATH})
-
-include(ECMVersion)
-# -- Maintained by scripty
-ecm_version(5 0 0)
-# --
-include(ECMQtFramework)
-
-include_directories(
-    ${QT_INCLUDES}
-    ${CMAKE_CURRENT_BINARY_DIR}
-)
-
 set(libinqt5_SRCS
     qstandardpaths.cpp
     qstandardpaths_unix.cpp
