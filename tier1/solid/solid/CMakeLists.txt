@@ -1,10 +1,5 @@
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 add_subdirectory( ifaces )
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} )
-
-if(WIN32)
-   include_directories( ${KDEWIN_INCLUDES} )
-endif(WIN32)
 
 include (CheckCXXSourceCompiles)
 
@@ -178,8 +173,6 @@ if(NOT WIN32 AND NOT APPLE)
       TYPE OPTIONAL
       PURPOSE "Allows Solid to use UDev to provide information about devices on Linux"
    )
-   configure_file( config-solid.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-solid.h )
-
 
    if ( UDEV_FOUND )
       message(STATUS "Building Solid UDev backend." )
@@ -271,6 +264,32 @@ if(NOT WIN32 AND NOT APPLE)
 
 endif(NOT WIN32 AND NOT APPLE)
 
+include(CheckIncludeFiles)
+include(CheckFunctionExists)
+include(CheckCXXSourceCompiles)
+
+check_include_files(mntent.h      HAVE_MNTENT_H)                       # solid, kio, kdecore
+check_include_files(sys/types.h   HAVE_SYS_TYPES_H)                    # various
+check_include_files(sys/param.h   HAVE_SYS_PARAM_H)                    # various
+check_include_files("stdio.h;sys/mnttab.h"  HAVE_SYS_MNTTAB_H)         # kio, kdecore
+check_include_files("sys/param.h;sys/mount.h"  HAVE_SYS_MOUNT_H)       # kio, kdecore
+
+check_function_exists(getmntinfo HAVE_GETMNTINFO)        # kdecore, kio
+
+check_function_exists(setmntent  HAVE_SETMNTENT)         # solid, kio, kdecore
+
+check_cxx_source_compiles("
+  #include <sys/types.h>
+  #include <sys/statvfs.h>
+  int main(){
+    struct statvfs *mntbufp;
+    int flags;
+    return getmntinfo(&mntbufp, flags);
+  }
+" GETMNTINFO_USES_STATVFS )
+
+configure_file( config-solid.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-solid.h )
+
 if(APPLE)
    find_package(IOKit REQUIRED)
 
@@ -344,7 +363,7 @@ qt4_add_dbus_interface(solid_LIB_SRCS org.kde.Solid.Networking.Client.xml
 set(solid_OPTIONAL_LIBS)
 
 if(WIN32)
-   set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${KDEWIN_LIBRARY})
+   set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS})
    if(HAVE_WBEM)
       set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${WBEM_LIBRARIES})
    endif(HAVE_WBEM)
@@ -354,7 +373,9 @@ if(APPLE)
    set(solid_OPTIONAL_LIBS ${IOKIT_LIBRARY})
 endif(APPLE)
 
-kde4_add_library(solid ${LIBRARY_TYPE} ${solid_LIB_SRCS})
+include_directories (${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+
+add_library(solid ${LIBRARY_TYPE} ${solid_LIB_SRCS})
 generate_export_header(solid)
 
 if ( HUPNP_FOUND )
@@ -368,15 +389,14 @@ endif ( UDEV_FOUND )
 target_link_libraries(solid ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS} )
 target_link_libraries(solid LINK_INTERFACE_LIBRARIES ${QT_CORE_LIBRARY} )
 
-if (WINCE)
-   target_link_libraries(solid ${WCECOMPAT_LIBRARIES})
-endif(WINCE)
-
 set_target_properties(solid PROPERTIES
-   VERSION ${GENERIC_LIB_VERSION}
-   SOVERSION ${GENERIC_LIB_SOVERSION}
+   VERSION ${ECM_VERSION_STRING}
+   SOVERSION ${ECM_SOVERSION}
 )
-install(TARGETS solid ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS solid ${ECM_TARGET_DEFAULT_ARGS})
+
+# TODO Should this be in ECM?
+set(DBUS_INTERFACES_INSTALL_DIR "share/dbus-1/interfaces")
 
 install(FILES org.kde.Solid.Networking.Client.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 install(FILES org.kde.Solid.PowerManagement.PolicyAgent.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
@@ -385,7 +405,7 @@ install(FILES org.freedesktop.PowerManagement.Inhibit.xml DESTINATION ${DBUS_INT
 
 ########### static lib for tests  ###############
 
-kde4_add_library(solid_static STATIC ${solid_LIB_SRCS})
+add_library(solid_static STATIC ${solid_LIB_SRCS})
 
 target_link_libraries(solid_static ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS})
 

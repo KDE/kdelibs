@@ -20,3 +20,16 @@
 
 #cmakedefine UDEV_FOUND
 #cmakedefine HUPNP_FOUND
+
+#cmakedefine HAVE_SYS_TYPES_H 1
+#cmakedefine HAVE_SYS_PARAM_H 1
+#cmakedefine HAVE_SYS_MNTTAB_H 1
+#cmakedefine HAVE_SYS_MOUNT_H 1
+
+#cmakedefine HAVE_MNTENT_H 1
+
+#cmakedefine   HAVE_GETMNTINFO 1
+#cmakedefine   HAVE_SETMNTENT 1
+
+#cmakedefine GETMNTINFO_USES_STATVFS 1
+

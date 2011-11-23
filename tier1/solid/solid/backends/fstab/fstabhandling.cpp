@@ -30,7 +30,7 @@
 
 #include <solid/soliddefs_p.h>
 
-#include <config.h>
+#include "solid/config-solid.h"
 #include <stdlib.h>
 
 #ifdef HAVE_SYS_MNTTAB_H

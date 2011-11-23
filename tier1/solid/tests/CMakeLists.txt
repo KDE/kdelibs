@@ -6,7 +6,8 @@ set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 set(fakehardwaretest_SRCS fakehardwaretest.cpp )
 
 
-kde4_add_unit_test(fakehardwaretest ${fakehardwaretest_SRCS})
+add_executable(fakehardwaretest ${fakehardwaretest_SRCS})
+add_test(fakehardwaretest fakehardwaretest)
 
 target_link_libraries(fakehardwaretest solid_static ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} )
 add_definitions(-DTEST_DATA="\\"${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fakehw/fakecomputer.xml\\"")
@@ -17,42 +18,36 @@ add_definitions(-DTEST_DATA="\\"${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fa
 if(NOT WIN32 AND NOT APPLE)
 set(halbasictest_SRCS halbasictest.cpp )
 
-kde4_add_executable(halbasictest ${halbasictest_SRCS})
+add_executable(halbasictest ${halbasictest_SRCS})
 
 target_link_libraries(halbasictest solid_static ${KDEWIN_LIBRARIES} ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} )
 endif(NOT WIN32 AND NOT APPLE)
 
 ########### solidhwtest ###############
 
-set(solidhwtest_SRCS 
+set(solidhwtest_SRCS
    solidhwtest.cpp )
 
 
-kde4_add_unit_test(solidhwtest ${solidhwtest_SRCS})
+add_executable(solidhwtest ${solidhwtest_SRCS})
+add_test(solidhwtest solidhwtest)
 add_definitions(-DFAKE_COMPUTER_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fakehw/fakecomputer.xml\\"")
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fakehw )
-
-if(WIN32)
-  set (LIBS ${KDEWIN_LIBRARIES})
-endif(WIN32)
 
 target_link_libraries(solidhwtest ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} ${LIBS} solid_static)
 
 ########### solidmttest ###############
 
-set(solidmttest_SRCS 
+set(solidmttest_SRCS
    solidmttest.cpp )
 
 
-kde4_add_unit_test(solidmttest ${solidmttest_SRCS})
+add_executable(solidmttest ${solidmttest_SRCS})
+add_test(solidmttest solidmttest)
 add_definitions(-DFAKE_COMPUTER_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fakehw/fakecomputer.xml\\"")
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fakehw )
-
-if(WIN32)
-  set (LIBS ${KDEWIN_LIBRARIES})
-endif(WIN32)
 
 target_link_libraries(solidmttest ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} ${LIBS} solid_static)
 
