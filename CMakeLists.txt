@@ -175,8 +175,8 @@ if(NOT WINCE)
 endif(NOT WINCE)
 
 set(KDE4_KCONFIG_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore/config
-                          ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/io # for kurl.h
-                          ${CMAKE_BINARY_DIR}/tier1/libkcoreaddons/src
+                          ${CMAKE_SOURCE_DIR}/kdecore/libkcoreaddons/src/io # for kurl.h
+                          ${CMAKE_BINARY_DIR}/kdecore/libkcoreaddons/src
    )
 # kdecore depends on Qt and kcoreaddons (need only headers from kjs)
 set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
@@ -194,11 +194,11 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/kdecore/text
                           ${CMAKE_SOURCE_DIR}/kdecore/util
                           ${CMAKE_SOURCE_DIR}/kdecore/sonnet
-                          ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/io
-                          ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/kernel
-                          ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/jobs
-                          ${CMAKE_SOURCE_DIR}/tier1/libkcoreaddons/src/text
-                          ${CMAKE_BINARY_DIR}/tier1/libkcoreaddons/src
+                          ${CMAKE_SOURCE_DIR}/kdecore/libkcoreaddons/src/io
+                          ${CMAKE_SOURCE_DIR}/kdecore/libkcoreaddons/src/kernel
+                          ${CMAKE_SOURCE_DIR}/kdecore/libkcoreaddons/src/jobs
+                          ${CMAKE_SOURCE_DIR}/kdecore/libkcoreaddons/src/text
+                          ${CMAKE_BINARY_DIR}/kdecore/libkcoreaddons/src
                           ${QT_INCLUDES}
                           ${_KDE4_PLATFORM_INCLUDE_DIRS})
 # kdeui depends on kdecore
