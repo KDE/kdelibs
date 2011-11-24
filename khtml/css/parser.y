@@ -108,7 +108,7 @@ int DOM::getValueID(const char *tagStr, int len)
 #define YYLTYPE_IS_TRIVIAL 1
 %}
 
-%expect 38
+%expect 39
 
 %pure_parser
 
@@ -309,7 +309,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 %%
 
 stylesheet:
-    maybe_charset maybe_sgml import_list namespace_list rule_list
+    maybe_space maybe_charset maybe_sgml import_list namespace_list rule_list
   | khtml_rule maybe_space
   | khtml_decls maybe_space
   | khtml_value maybe_space
