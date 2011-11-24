@@ -347,13 +347,13 @@ public:
      * is displayed. The URL belonging to this popup menu is stored here.
      */
     KUrl::List m_popupFiles;
-    
+
     QStringList m_supportedMimeTypes;
     QString m_tempFileToDelete; // set when a tempfile was created for a Type=URL desktop file
     QString m_text;
     bool m_viewShowsHiddenFiles;
-    
-    KNewFileMenu* q;   
+
+    KNewFileMenu* q;
 
     class Strategy;
     KNewFileMenuStrategy m_strategy;
@@ -497,7 +497,7 @@ void KNewFileMenuPrivate::executeRealFileOrDir(const KNewFileMenuSingleton::Entr
 
 void KNewFileMenuPrivate::executeSymLink(const KNewFileMenuSingleton::Entry& entry)
 {
-    KNameAndUrlInputDialog* dlg = new KNameAndUrlInputDialog(i18n("File name:"), entry.comment, m_popupFiles.first(), m_parentWidget);    
+    KNameAndUrlInputDialog* dlg = new KNameAndUrlInputDialog(i18n("File name:"), entry.comment, m_popupFiles.first(), m_parentWidget);
     dlg->setModal(q->isModal());
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setCaption(i18n("Create Symlink"));
@@ -550,12 +550,11 @@ void KNewFileMenuPrivate::executeStrategy()
         kjob->ui()->setWindow(m_parentWidget);
         QObject::connect(kjob, SIGNAL(result(KJob*)), q, SLOT(slotResult(KJob*)));
     }
-    
 }
 
 void KNewFileMenuPrivate::executeUrlDesktopFile(const KNewFileMenuSingleton::Entry& entry)
 {
-    KNameAndUrlInputDialog* dlg = new KNameAndUrlInputDialog(i18n("File name:"), entry.comment, m_popupFiles.first(), m_parentWidget);    
+    KNameAndUrlInputDialog* dlg = new KNameAndUrlInputDialog(i18n("File name:"), entry.comment, m_popupFiles.first(), m_parentWidget);
     m_strategy.m_templatePath = entry.templatePath;
     dlg->setModal(q->isModal());
     dlg->setAttribute(Qt::WA_DeleteOnClose);
@@ -762,20 +761,20 @@ void KNewFileMenuPrivate::_k_slotCreateDirectory(bool writeHiddenDir)
         url.addPath( name );
       }
     }
-    
-    if(!askAgain){      
+
+    if (!askAgain) {
       KIO::SimpleJob * job = KIO::mkdir(url);
       job->setProperty("isMkdirJob", true); // KDE5: cast to MkdirJob in slotResult instead
       job->ui()->setWindow(m_parentWidget);
       job->ui()->setAutoErrorHandlingEnabled(true);
       KIO::FileUndoManager::self()->recordJob( KIO::FileUndoManager::Mkdir, KUrl(), url, job );
-      
+
       if (job) {
         // We want the error handling to be done by slotResult so that subclasses can reimplement it
         job->ui()->setAutoErrorHandlingEnabled(false);
         QObject::connect(job, SIGNAL(result(KJob *)), q, SLOT(slotResult(KJob *)));
-      }      
-    } 
+      }
+    }
     else {
       q->createDirectory(); // ask again for the name
     }
@@ -935,13 +934,12 @@ void KNewFileMenuPrivate::_k_slotUrlDesktopFile()
     group.writeEntry("Icon", KProtocolInfo::icon(linkUrl.protocol()));
     group.writePathEntry("URL", linkUrl.prettyUrl());
     df.sync();
-    
+
     m_strategy.m_src = tempFileName;
     m_strategy.m_tempFileToDelete = tempFileName;
-    
+
     executeStrategy();
 }
-
 
 KNewFileMenu::KNewFileMenu(KActionCollection* collection, const QString& name, QObject* parent)
     : KActionMenu(KIcon("document-new"), i18n("Create New"), parent),

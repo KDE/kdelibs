@@ -149,8 +149,8 @@ void KDirSelectDialog::Private::slotMkdir()
     for ( ; it != dirs.end(); ++it )
     {
         folderurl.addPath( *it );
-        exists = KIO::NetAccess::exists( folderurl, KIO::NetAccess::DestinationSide, 0 );
-        writeOk = !exists && KIO::NetAccess::mkdir( folderurl, m_parent->topLevelWidget() );
+        exists = KIO::NetAccess::exists( folderurl, KIO::NetAccess::DestinationSide, m_parent );
+        writeOk = !exists && KIO::NetAccess::mkdir( folderurl, m_parent );
     }
 
     if ( exists ) // url was already existent
@@ -244,7 +244,7 @@ void KDirSelectDialog::Private::slotMoveToTrash()
     KIO::JobUiDelegate job;
     if (job.askDeleteConfirmation(KUrl::List() << url, KIO::JobUiDelegate::Trash, KIO::JobUiDelegate::DefaultConfirmation)) {
         KIO::CopyJob* copyJob = KIO::trash(url);
-        copyJob->ui()->setWindow(this->m_parent);
+        copyJob->ui()->setWindow(m_parent);
         copyJob->ui()->setAutoErrorHandlingEnabled(true);
     }
 }
@@ -255,7 +255,7 @@ void KDirSelectDialog::Private::slotDelete()
     KIO::JobUiDelegate job;
     if (job.askDeleteConfirmation(KUrl::List() << url, KIO::JobUiDelegate::Delete, KIO::JobUiDelegate::DefaultConfirmation)) {
         KIO::DeleteJob* deleteJob = KIO::del(url);
-        deleteJob->ui()->setWindow(this->m_parent);
+        deleteJob->ui()->setWindow(m_parent);
         deleteJob->ui()->setAutoErrorHandlingEnabled(true);
     }
 }
@@ -408,7 +408,7 @@ KUrl KDirSelectDialog::url() const
 
     if ( comboUrl.isValid() ) {
        KIO::StatJob *statJob = KIO::stat(comboUrl, KIO::HideProgressInfo);
-       const bool ok = KIO::NetAccess::synchronousRun(statJob, 0);
+       const bool ok = KIO::NetAccess::synchronousRun(statJob, d->m_parent);
        if (ok && statJob->statResult().isDir()) {
            return comboUrl;
        }
