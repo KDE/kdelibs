@@ -289,5 +289,5 @@ void Solid::DeviceManagerStorage::ensureManagerCreated()
 }
 
 #include "devicenotifier.moc"
-#include "devicemanager_p.moc"
+#include "moc_devicemanager_p.cpp"
 

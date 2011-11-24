@@ -239,4 +239,4 @@ QList<KAutoSaveFile *> KAutoSaveFile::allStaleFiles(const QString &applicationNa
     return list;
 }
 
-#include "kautosavefile.moc"
+#include "moc_kautosavefile.cpp"

@@ -147,4 +147,4 @@ void KJobTrackerInterface::speed(KJob *job, unsigned long value)
     Q_UNUSED(value)
 }
 
-#include "kjobtrackerinterface.moc"
+#include "moc_kjobtrackerinterface.cpp"
