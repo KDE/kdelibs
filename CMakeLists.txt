@@ -181,8 +181,8 @@ if(NOT WINCE)
 endif(NOT WINCE)
 
 set(KDE4_KCONFIG_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore/config
-                          ${CMAKE_SOURCE_DIR}/kdecore/libkcoreaddons/src/io # for kurl.h
-                          ${CMAKE_BINARY_DIR}/kdecore/libkcoreaddons/src
+                          ${CMAKE_SOURCE_DIR}/staging/libkcoreaddons/src/io # for kurl.h
+                          ${CMAKE_BINARY_DIR}/staging/libkcoreaddons/src
    )
 # kdecore depends on Qt and kcoreaddons (need only headers from kjs)
 set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
@@ -200,11 +200,11 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/kdecore/text
                           ${CMAKE_SOURCE_DIR}/kdecore/util
                           ${CMAKE_SOURCE_DIR}/kdecore/sonnet
-                          ${CMAKE_SOURCE_DIR}/kdecore/libkcoreaddons/src/io
-                          ${CMAKE_SOURCE_DIR}/kdecore/libkcoreaddons/src/kernel
-                          ${CMAKE_SOURCE_DIR}/kdecore/libkcoreaddons/src/jobs
-                          ${CMAKE_SOURCE_DIR}/kdecore/libkcoreaddons/src/text
-                          ${CMAKE_BINARY_DIR}/kdecore/libkcoreaddons/src
+                          ${CMAKE_SOURCE_DIR}/staging/libkcoreaddons/src/io
+                          ${CMAKE_SOURCE_DIR}/staging/libkcoreaddons/src/kernel
+                          ${CMAKE_SOURCE_DIR}/staging/libkcoreaddons/src/jobs
+                          ${CMAKE_SOURCE_DIR}/staging/libkcoreaddons/src/text
+                          ${CMAKE_BINARY_DIR}/staging/libkcoreaddons/src
                           ${QT_INCLUDES}
                           ${_KDE4_PLATFORM_INCLUDE_DIRS})
 # kdeui depends on kdecore
@@ -303,6 +303,7 @@ check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 
 add_subdirectory( cmake )
 add_subdirectory( kdecore )
+add_subdirectory( staging )
 add_subdirectory( tier2 )
 add_subdirectory( kdeui )
 if (UNIX)

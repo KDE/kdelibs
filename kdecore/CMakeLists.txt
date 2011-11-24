@@ -39,12 +39,12 @@ include_directories( ${ZLIB_INCLUDE_DIR} )
 include_directories( ${QT_INCLUDES} )
 include_directories( ${CMAKE_SOURCE_DIR}/libinqt5/src )
 include_directories( ${CMAKE_BINARY_DIR}/libinqt5/src )
-include_directories( ${CMAKE_SOURCE_DIR}/kdecore/libkcoreaddons/src/jobs )
-include_directories( ${CMAKE_SOURCE_DIR}/kdecore/libkcoreaddons/src/io )
-include_directories( ${CMAKE_SOURCE_DIR}/kdecore/libkcoreaddons/src/text )
-include_directories( ${CMAKE_SOURCE_DIR}/kdecore/libkcoreaddons/src/kernel )
-include_directories( ${CMAKE_SOURCE_DIR}/kdecore/libkcoreaddons/src/randomness )
-include_directories( ${CMAKE_BINARY_DIR}/kdecore/libkcoreaddons/src/ )
+include_directories( ${CMAKE_SOURCE_DIR}/staging/libkcoreaddons/src/jobs )
+include_directories( ${CMAKE_SOURCE_DIR}/staging/libkcoreaddons/src/io )
+include_directories( ${CMAKE_SOURCE_DIR}/staging/libkcoreaddons/src/text )
+include_directories( ${CMAKE_SOURCE_DIR}/staging/libkcoreaddons/src/kernel )
+include_directories( ${CMAKE_SOURCE_DIR}/staging/libkcoreaddons/src/randomness )
+include_directories( ${CMAKE_BINARY_DIR}/staging/libkcoreaddons/src/ )
 
 if (KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
    set(KDECORE_NO_KDE3SUPPORT TRUE)
@@ -371,9 +371,6 @@ if(NOT WINCE)
     install( TARGETS ktranscript DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 endif(NOT WINCE)
-
-add_subdirectory(libkcoreaddons)
-add_subdirectory(libkarchive)
 
 ########### install files ###############
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/all_languages DESTINATION ${LOCALE_INSTALL_DIR}  )
