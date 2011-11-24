@@ -550,7 +550,6 @@ void KNewFileMenuPrivate::executeStrategy()
         kjob->ui()->setWindow(m_parentWidget);
         QObject::connect(kjob, SIGNAL(result(KJob*)), q, SLOT(slotResult(KJob*)));
     }
-
 }
 
 void KNewFileMenuPrivate::executeUrlDesktopFile(const KNewFileMenuSingleton::Entry& entry)
@@ -763,7 +762,7 @@ void KNewFileMenuPrivate::_k_slotCreateDirectory(bool writeHiddenDir)
       }
     }
 
-    if(!askAgain){
+    if (!askAgain) {
       KIO::SimpleJob * job = KIO::mkdir(url);
       job->setProperty("isMkdirJob", true); // KDE5: cast to MkdirJob in slotResult instead
       job->ui()->setWindow(m_parentWidget);
@@ -941,7 +940,6 @@ void KNewFileMenuPrivate::_k_slotUrlDesktopFile()
 
     executeStrategy();
 }
-
 
 KNewFileMenu::KNewFileMenu(KActionCollection* collection, const QString& name, QObject* parent)
     : KActionMenu(KIcon("document-new"), i18n("Create New"), parent),

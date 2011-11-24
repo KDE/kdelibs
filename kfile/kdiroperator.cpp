@@ -758,8 +758,8 @@ bool KDirOperator::mkdir(const QString& directory, bool enterDirectory)
 
     for (; it != dirs.end(); ++it) {
         url.addPath(*it);
-        exists = KIO::NetAccess::exists(url, KIO::NetAccess::DestinationSide, 0);
-        writeOk = !exists && KIO::NetAccess::mkdir(url, topLevelWidget());
+        exists = KIO::NetAccess::exists(url, KIO::NetAccess::DestinationSide, this);
+        writeOk = !exists && KIO::NetAccess::mkdir(url, this);
     }
 
     if (exists) { // url was already existent
@@ -820,7 +820,7 @@ KIO::DeleteJob * KDirOperator::del(const KFileItemList& items,
     if (doIt) {
         KIO::JobFlags flags = showProgress ? KIO::DefaultFlags : KIO::HideProgressInfo;
         KIO::DeleteJob *job = KIO::del(urls, flags);
-        job->ui()->setWindow(topLevelWidget());
+        job->ui()->setWindow(this);
         job->ui()->setAutoErrorHandlingEnabled(true);
         return job;
     }
@@ -878,7 +878,7 @@ KIO::CopyJob * KDirOperator::trash(const KFileItemList& items,
     if (doIt) {
         KIO::JobFlags flags = showProgress ? KIO::DefaultFlags : KIO::HideProgressInfo;
         KIO::CopyJob *job = KIO::trash(urls, flags);
-        job->ui()->setWindow(topLevelWidget());
+        job->ui()->setWindow(this);
         job->ui()->setAutoErrorHandlingEnabled(true);
         return job;
     }

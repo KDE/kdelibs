@@ -197,7 +197,7 @@ public:
      * This method won't show any progress dialogs for stating, since
      * they are very annoying when stating.
      */
-    static KUrl mostLocalUrl(const KUrl &url);
+    KUrl mostLocalUrl(const KUrl &url);
 
     void setInlinePreviewShown(bool show);
 
@@ -608,7 +608,7 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     if ( filename.isEmpty() )
     {
         KIO::StatJob *statJob = KIO::stat(startDir, KIO::HideProgressInfo);
-        statRes = KIO::NetAccess::synchronousRun(statJob, 0);
+        statRes = KIO::NetAccess::synchronousRun(statJob, this);
         kDebug(kfile_area) << "stat of" << startDir << "-> statRes" << statRes << "isDir" << statJob->statResult().isDir();
         if (!statRes || !statJob->statResult().isDir()) {
             filename = startDir.fileName();
@@ -824,7 +824,7 @@ void KFileWidget::slotOk()
             while (!res && start < locationEditCurrentTextList.count()) {
                 topMostUrl = locationEditCurrentTextList.at(start);
                 statJob = KIO::stat(topMostUrl, KIO::HideProgressInfo);
-                res = KIO::NetAccess::synchronousRun(statJob, 0);
+                res = KIO::NetAccess::synchronousRun(statJob, this);
                 start++;
             }
 
@@ -841,7 +841,7 @@ void KFileWidget::slotOk()
             for (int i = start; i < locationEditCurrentTextList.count(); ++i) {
                 KUrl currUrl = locationEditCurrentTextList.at(i);
                 KIO::StatJob *statJob = KIO::stat(currUrl, KIO::HideProgressInfo);
-                bool res = KIO::NetAccess::synchronousRun(statJob, 0);
+                bool res = KIO::NetAccess::synchronousRun(statJob, this);
                 if (res) {
                     // again, we don't care about filenames
                     if (!statJob->statResult().isDir()) {
@@ -887,7 +887,7 @@ void KFileWidget::slotOk()
             KUrl url(locationEditCurrentText);
             if (d->operationMode == Opening) {
                 KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
-                bool res = KIO::NetAccess::synchronousRun(statJob, 0);
+                bool res = KIO::NetAccess::synchronousRun(statJob, this);
                 if (res) {
                     if (!statJob->statResult().isDir()) {
                         url.adjustPath(KUrl::RemoveTrailingSlash);
@@ -902,7 +902,7 @@ void KFileWidget::slotOk()
                 directory.setFileName(QString());
                 //Check if the folder exists
                 KIO::StatJob * statJob = KIO::stat(directory, KIO::HideProgressInfo);
-                bool res = KIO::NetAccess::synchronousRun(statJob, 0);
+                bool res = KIO::NetAccess::synchronousRun(statJob, this);
                 if (res) {
                     if (statJob->statResult().isDir()) {
                         url.adjustPath(KUrl::RemoveTrailingSlash);
@@ -939,7 +939,7 @@ void KFileWidget::slotOk()
 
         d->url = url;
         KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
-        bool res = KIO::NetAccess::synchronousRun(statJob, 0);
+        bool res = KIO::NetAccess::synchronousRun(statJob, this);
 
         if (!KAuthorized::authorizeUrlAction("open", KUrl(), url)) {
             QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->url.prettyUrl());
@@ -967,7 +967,7 @@ void KFileWidget::slotOk()
             while (it != locationEditCurrentTextList.constEnd()) {
                 KUrl checkUrl(*it);
                 KIO::StatJob *checkStatJob = KIO::stat(checkUrl, KIO::HideProgressInfo);
-                bool res = KIO::NetAccess::synchronousRun(checkStatJob, 0);
+                bool res = KIO::NetAccess::synchronousRun(checkStatJob, this);
                 if (res && checkStatJob->statResult().isDir()) {
                     KMessageBox::sorry(this, i18n("More than one folder has been selected and this dialog does not accept folders, so it is not possible to decide which one to enter. Please select only one folder to list it."), i18n("More than one folder provided"));
                     return;
@@ -1474,7 +1474,7 @@ bool KFileWidgetPrivate::toOverwrite(const KUrl &url)
 //     kDebug(kfile_area);
 
     KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
-    bool res = KIO::NetAccess::synchronousRun(statJob, 0);
+    bool res = KIO::NetAccess::synchronousRun(statJob, q);
 
     if (res) {
         int ret = KMessageBox::warningContinueCancel( q,
@@ -2262,7 +2262,7 @@ void KFileWidgetPrivate::updateLocationEditExtension (const QString &lastExtensi
     {
         // exists?
         KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
-        bool result = KIO::NetAccess::synchronousRun(statJob, 0);
+        bool result = KIO::NetAccess::synchronousRun(statJob, q);
         if (result)
         {
 //             kDebug (kfile_area) << "\tfile exists";
@@ -2357,7 +2357,7 @@ void KFileWidgetPrivate::appendExtension (KUrl &url)
 
     // exists?
     KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
-    bool res = KIO::NetAccess::synchronousRun(statJob, 0);
+    bool res = KIO::NetAccess::synchronousRun(statJob, q);
     if (res)
     {
 //         kDebug (kfile_area) << "\tfile exists - won't append extension";
@@ -2711,7 +2711,7 @@ KUrl KFileWidgetPrivate::mostLocalUrl(const KUrl &url)
     }
 
     KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
-    bool res = KIO::NetAccess::synchronousRun(statJob, 0);
+    bool res = KIO::NetAccess::synchronousRun(statJob, q);
 
     if (!res) {
         return url;

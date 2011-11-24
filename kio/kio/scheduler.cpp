@@ -1288,14 +1288,36 @@ void SchedulerPrivate::checkSlaveOnHold(bool b)
     m_checkOnHold = b;
 }
 
+/*
+  Returns the top most window associated with widget.
+
+  Unlike QWidget::window(), this function does its best to find and return the
+  main application window associated with the given widget.
+
+  If widget itself is a dialog or its parent is a dialog, and that dialog has a
+  parent widget then this function will iterate through all those widgets to
+  find the top most window, which most of the time is the main window of the
+  application. By contrast, QWidget::window() would simply return the first
+  file dialog it encountered since it is the "next ancestor widget that has (or
+  could have) a window-system frame".
+*/
+static QWidget* topLevelWindow(QWidget* widget)
+{
+    QWidget* w = widget;
+    while (w && w->parentWidget()) {
+        w = w->parentWidget();
+    }
+    return (w ? w->window() : 0);
+}
+
 void SchedulerPrivate::registerWindow(QWidget *wid)
 {
    if (!wid)
       return;
 
-   QWidget* window = wid->window();
-
+   QWidget* window = topLevelWindow(wid);
    QObject *obj = static_cast<QObject *>(window);
+
    if (!m_windowList.contains(obj))
    {
       // We must store the window Id because by the time
