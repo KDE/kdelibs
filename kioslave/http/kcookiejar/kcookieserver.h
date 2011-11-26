@@ -77,6 +77,9 @@ public:
   void addCookies(const QString &url, const QByteArray &cookieHeader,
                   qlonglong windowId, bool useDOMFormat);
   void checkCookies(KHttpCookieList *cookieList);
+  // TODO: KDE5 merge with above function and make all these public functions
+  // private since they are not used externally.
+  void checkCookies(KHttpCookieList *cookieList, qlonglong windowId);
 
 private Q_SLOTS:
   void slotSave();

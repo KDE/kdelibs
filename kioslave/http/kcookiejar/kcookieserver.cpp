@@ -36,13 +36,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kdebug.h>
 #include <kcmdlineargs.h>
 #include <kstandarddirs.h>
+#include <kpluginfactory.h>
+#include <kpluginloader.h>
+#include <kwindowsystem.h>
 
 #include "kcookiejar.h"
 #include "kcookiewin.h"
 #include "kcookieserveradaptor.h"
-#include <kpluginfactory.h>
-#include <kpluginloader.h>
-
 
 #define QL1S(x)  QLatin1String(x)
 #define QL1C(x)  QLatin1Char(x)
@@ -149,7 +149,7 @@ void KCookieServer::addCookies( const QString &url, const QByteArray &cookieHead
     else
        cookieList = mCookieJar->makeCookies(url, cookieHeader, windowId);
 
-    checkCookies(&cookieList);
+    checkCookies(&cookieList, windowId);
 
     *mPendingCookies += cookieList;
 
@@ -158,13 +158,18 @@ void KCookieServer::addCookies( const QString &url, const QByteArray &cookieHead
        mAdvicePending = true;
        while (!mPendingCookies->isEmpty())
        {
-          checkCookies(0);
+          checkCookies(0, windowId);
        }
        mAdvicePending = false;
     }
 }
 
 void KCookieServer::checkCookies(KHttpCookieList *cookieList)
+{
+    checkCookies(cookieList, 0);
+}
+
+void KCookieServer::checkCookies(KHttpCookieList *cookieList, qlonglong windowId)
 {
     KHttpCookieList *list;
 
@@ -211,6 +216,14 @@ void KCookieServer::checkCookies(KHttpCookieList *cookieList)
     KCookieWin *kw = new KCookieWin( 0L, currentList,
                                      mCookieJar->preferredDefaultPolicy(),
                                      mCookieJar->showCookieDetails() );
+    if (windowId > 0) {
+#ifndef Q_WS_WIN
+        KWindowSystem::setMainWindow(kw, static_cast<WId>(windowId));
+#else
+        KWindowSystem::setMainWindow(kw, (HWND)(long)windowId);
+#endif
+    }
+
     KCookieAdvice userAdvice = kw->advice(mCookieJar, currentCookie);
     delete kw;
     // Save the cookie config if it has changed
