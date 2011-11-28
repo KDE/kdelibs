@@ -21,6 +21,7 @@ include(${QT_USE_FILE})
 # TODO: Where does this belong?
 set(SYSCONF_INSTALL_DIR etc)
 set(PLUGIN_INSTALL_DIR ${LIB_INSTALL_DIR}/kde4)
+set(LIBEXEC_INSTALL_DIR ${LIB_INSTALL_DIR}/kde4/libexec)
 
 # This file handles all the logic for compiling KAuth's backends
 include(ConfigureChecks.cmake)
@@ -113,5 +114,5 @@ endif()
 
 # TODO: Remove once we depend on polkit-qt1 > 0.99.0
 # core/polkitqt1-actiondescription.h from polkit currently fails when built with -pedantic
-string(REPLACE "--pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-string(REPLACE "-pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+#string(REPLACE "--pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+#string(REPLACE "-pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
