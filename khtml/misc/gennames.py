@@ -8,7 +8,8 @@ namespaces = {
     "empty": [ "DOMString()", False, 1 ],
     "svg":   ['"http://www.w3.org/2000/svg"', False, 2 ],
     "xlink": ['"http://www.w3.org/1999/xlink"', True, 3 ],
-    "xml":   ['"http://www.w3.org/2000/xmlns/"', True, 4 ]
+    "xmlns":   ['"http://www.w3.org/2000/xmlns/"', True, 4 ],
+    "xml":   ['"http://www.w3.org/XML/1998/namespace"', True, 5 ],
 }
 
 cache = {}
@@ -124,6 +125,8 @@ for n in namespaces.keys():
 out.write("const quint16 anyNamespace = 0xffff;\n\
 const quint16 anyLocalName = 0xffff;\n\
 const quint16 emptyPrefix = 0;\n\
+const quint16 xmlPrefix = 1;\n\
+const quint16 xmlnsPrefix = 2;\n\
 \n\
 inline quint16 localNamePart(quint32 id) { return id & NodeImpl_IdLocalMask; }\n\
 inline quint16 namespacePart(quint32 id) { return (((unsigned int)id) & NodeImpl_IdNSMask) >> 16; }\n\
@@ -252,6 +255,8 @@ IDTable<PrefixFactory>* PrefixFactory::initIdTable()\n\
     if (s_idTable) return s_idTable; // Can happen if KHTMLGlobal was recreated..\n\
     s_idTable = new IDTable<PrefixFactory>();\n\
     s_idTable->addStaticMapping(DOM::emptyPrefix, DOMString());\n\
+    s_idTable->addStaticMapping(DOM::xmlPrefix, \"xml\");\n\
+    s_idTable->addStaticMapping(DOM::xmlnsPrefix, \"xmlns\");\n\
     return s_idTable;\n\
 }\n" % temp)
 out.write("\n}\n")

@@ -206,6 +206,10 @@ static QString sanitizeCustomHTTPHeader(const QString& _header)
 static bool isPotentialSpoofingAttack(const HTTPProtocol::HTTPRequest& request, const KConfigGroup* config)
 {
     // kDebug(7113) << request.url << "response code: " << request.responseCode << "previous response code:" << request.prevResponseCode;
+    if (config->readEntry("no-spoof-check", false)) {
+        return false;
+    }
+
     if (request.url.user().isEmpty()) {
         return false;
     }

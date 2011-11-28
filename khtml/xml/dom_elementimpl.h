@@ -507,12 +507,9 @@ inline bool checkQualifiedName(const DOMString &qualifiedName, const DOMString &
         (colonpos >= 0 && namespaceURI.isNull()) ||
         colonpos == 0 || // prefix has to consist of at least a letter
         (qualifiedName.isNull() && !namespaceURI.isNull()) ||
-        (hasXMLPrefix &&
-         namespaceURI != "http://www.w3.org/XML/1998/namespace") ||
-        (hasXMLNSPrefix &&
-         namespaceURI != "http://www.w3.org/2000/xmlns/") ||
-        (namespaceURI == "http://www.w3.org/2000/xmlns/" &&
-         !hasXMLNSPrefix && qualifiedName != "xmlns")) {
+        (hasXMLPrefix && namespaceURI != XML_NAMESPACE) ||
+        (hasXMLNSPrefix && namespaceURI != XMLNS_NAMESPACE) ||
+        (namespaceURI == XMLNS_NAMESPACE && !hasXMLNSPrefix && qualifiedName != "xmlns")) {
         if (pExceptioncode)
             *pExceptioncode = DOMException::NAMESPACE_ERR;
         return false;
