@@ -114,5 +114,5 @@ endif()
 
 # TODO: Remove once we depend on polkit-qt1 > 0.99.0
 # core/polkitqt1-actiondescription.h from polkit currently fails when built with -pedantic
-#string(REPLACE "--pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-#string(REPLACE "-pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+string(REPLACE "--pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+string(REPLACE "-pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
