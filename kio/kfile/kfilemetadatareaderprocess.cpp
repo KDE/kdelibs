@@ -22,6 +22,7 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kfilemetainfo.h>
+#include <kcomponentdata.h>
 #include <klocale.h>
 
 #include <QtCore/QByteArray>
@@ -213,12 +214,13 @@ QHash<KUrl, Nepomuk::Variant> KFileMetaDataReaderApplication::readFileAndContext
 
 int main(int argc, char *argv[])
 {
-    KAboutData aboutData("kfilemetadatareader", 0, ki18n("KFileMetaDataReader"),
+    KAboutData aboutData("kfilemetadatareader", "kio4", ki18n("KFileMetaDataReader"),
                          "1.0",
                          ki18n("KFileMetaDataReader can be used to read metadata from a file"),
                          KAboutData::License_GPL,
                          ki18n("(C) 2011, Peter Penz"));
     aboutData.addAuthor(ki18n("Peter Penz"), ki18n("Current maintainer"), "peter.penz19@gmail.com");
+    KComponentData compData(&aboutData);
 
     KCmdLineArgs::init(argc, argv, &aboutData);
 
