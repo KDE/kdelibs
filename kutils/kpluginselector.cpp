@@ -258,6 +258,7 @@ KPluginSelector::KPluginSelector(QWidget *parent)
     d->listView = new KCategorizedView(this);
     d->listView->setVerticalScrollMode(QListView::ScrollPerPixel);
     d->listView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn); // bug 213068
+    d->listView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff); // bug 213068
     d->listView->setAlternatingRowColors(true);
     d->listView->setCategoryDrawer(d->categoryDrawer);
     d->dependenciesWidget = new Private::DependenciesWidget(this);
