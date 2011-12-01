@@ -22,6 +22,7 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kfilemetainfo.h>
+#include <kcomponentdata.h>
 #include <klocale.h>
 
 #include <QtCore/QByteArray>
@@ -219,6 +220,7 @@ int main(int argc, char *argv[])
                          KAboutData::License_GPL,
                          qi18n("(C) 2011, Peter Penz"));
     aboutData.addAuthor(qi18n("Peter Penz"), qi18n("Current maintainer"), "peter.penz19@gmail.com");
+    KComponentData compData(&aboutData);
 
     KCmdLineArgs::init(argc, argv, &aboutData);
 
