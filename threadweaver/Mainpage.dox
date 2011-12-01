@@ -18,7 +18,7 @@ For more information, see \ref UseCases, \ref Why and \ref MainComponents.
 
 \section Tests Example Code
 <p>Example code is available in the
-<a href="http://websvn.kde.org/trunk/KDE/kdelibs/threadweaver/Examples">Examples</a>
+<a href="http://lxr.kde.org/source/kde/kdelibs/threadweaver/Examples/">Examples</a>
 directory. The Construction
 program shows how to use ThreadWeaver in imperative (not event oriented)
 programs. The Jobs program provides a GUI example and displays the

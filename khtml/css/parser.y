@@ -108,7 +108,7 @@ int DOM::getValueID(const char *tagStr, int len)
 #define YYLTYPE_IS_TRIVIAL 1
 %}
 
-%expect 38
+%expect 39
 
 %pure_parser
 
@@ -158,12 +158,13 @@ static int cssyylex( YYSTYPE *yylval ) {
 
 %}
 
-%destructor { delete $$; $$ = 0; } expr;
+%destructor { delete $$; $$ = 0; } maybe_media_value expr;
 %destructor { delete $$; $$ = 0; } maybe_media_list media_list;
 %destructor { delete $$; $$ = 0; } maybe_and_media_query_exp_list media_query_exp_list;
 %destructor { if ($$) qDeleteAll(*$$); delete $$; $$ = 0; } selector_list;
 %destructor { delete $$; $$ = 0; } ruleset_list;
 %destructor { delete $$; $$ = 0; } specifier specifier_list simple_selector simple_css3_selector selector class attrib pseudo;
+%destructor { if ($$.function) delete $$.function->args; delete $$.function; $$.function = 0; } function;
 
 %no-lines
 %verbose
@@ -308,7 +309,7 @@ static int cssyylex( YYSTYPE *yylval ) {
 %%
 
 stylesheet:
-    maybe_charset maybe_sgml import_list namespace_list rule_list
+    maybe_space maybe_charset maybe_sgml import_list namespace_list rule_list
   | khtml_rule maybe_space
   | khtml_decls maybe_space
   | khtml_value maybe_space

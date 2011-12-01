@@ -160,3 +160,5 @@ summary
 title
 usemap
 value
+# xmlns is not a HTML attribute, but like HTML attributes it has empty prefix and namespace
+xmlns

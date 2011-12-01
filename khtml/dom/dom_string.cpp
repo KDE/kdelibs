@@ -29,6 +29,10 @@ using namespace DOM;
 
 DOMString::DOMString(const QChar *str, uint len)
 {
+    if (!str) {
+       impl = 0;
+       return;
+    }
     impl = new DOMStringImpl( str, len );
     impl->ref();
 }

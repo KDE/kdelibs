@@ -25,9 +25,11 @@
 #include <klocale.h>
 
 #include <QtCore/QByteArray>
+#include <QtCore/QCoreApplication>
 #include <QtCore/QDataStream>
 #include <QtCore/QHash>
 #include <QtCore/QString>
+#include <QtCore/QTimer>
 
 #define DISABLE_NEPOMUK_LEGACY
 #include "config-nepomuk.h"
@@ -46,7 +48,52 @@
 
 using namespace std;
 
-static void sendMetaData(const QHash<KUrl, Nepomuk::Variant>& data)
+class KFileMetaDataReaderApplication : public QCoreApplication
+{
+    Q_OBJECT
+
+public:
+    KFileMetaDataReaderApplication(int& argc, char** argv);
+
+private Q_SLOTS:
+    void readAndSendMetaData();
+
+private:
+    void sendMetaData(const QHash<KUrl, Nepomuk::Variant>& data);
+    QHash<KUrl, Nepomuk::Variant> readFileMetaData(const QList<KUrl>& urls) const;
+    QHash<KUrl, Nepomuk::Variant> readFileAndContextMetaData(const QList<KUrl>& urls) const;
+};
+
+
+
+KFileMetaDataReaderApplication::KFileMetaDataReaderApplication(int& argc, char** argv) :
+    QCoreApplication(argc, argv)
+{
+    QTimer::singleShot(0, this, SLOT(readAndSendMetaData()));
+}
+
+void KFileMetaDataReaderApplication::readAndSendMetaData()
+{
+    const KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+
+    KUrl::List urls;
+    for (int i = 0; i < args->count(); ++i) {
+        urls.append(KUrl(args->arg(i)));
+    }
+
+    QHash<KUrl, Nepomuk::Variant> metaData;
+    if (args->isSet("file")) {
+        metaData = readFileMetaData(urls);
+    } else {
+        metaData = readFileAndContextMetaData(urls);
+    }
+
+    sendMetaData(metaData);
+
+    quit();
+}
+
+void KFileMetaDataReaderApplication::sendMetaData(const QHash<KUrl, Nepomuk::Variant>& data)
 {
     QByteArray byteArray;
     QDataStream out(&byteArray, QIODevice::WriteOnly);
@@ -73,7 +120,7 @@ static void sendMetaData(const QHash<KUrl, Nepomuk::Variant>& data)
     cout << byteArray.toBase64().constData();
 }
 
-static QHash<KUrl, Nepomuk::Variant> readFileMetaData(const QList<KUrl>& urls)
+QHash<KUrl, Nepomuk::Variant> KFileMetaDataReaderApplication::readFileMetaData(const QList<KUrl>& urls) const
 {
     QHash<KUrl, Nepomuk::Variant> data;
 
@@ -95,7 +142,7 @@ static QHash<KUrl, Nepomuk::Variant> readFileMetaData(const QList<KUrl>& urls)
     return data;
 }
 
-static QHash<KUrl, Nepomuk::Variant> readFileAndContextMetaData(const QList<KUrl>& urls)
+QHash<KUrl, Nepomuk::Variant> KFileMetaDataReaderApplication::readFileAndContextMetaData(const QList<KUrl>& urls) const
 {
     QHash<KUrl, Nepomuk::Variant> metaData;
 
@@ -172,28 +219,17 @@ int main(int argc, char *argv[])
                          KAboutData::License_GPL,
                          ki18n("(C) 2011, Peter Penz"));
     aboutData.addAuthor(ki18n("Peter Penz"), ki18n("Current maintainer"), "peter.penz19@gmail.com");
-    
+
     KCmdLineArgs::init(argc, argv, &aboutData);
-    
+
     KCmdLineOptions options;
     options.add("file", ki18n("Only the meta data that is part of the file is read"));
     options.add("+[arg]", ki18n("List of URLs where the meta-data should be read from"));
 
     KCmdLineArgs::addCmdLineOptions(options);
-    const KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-    KUrl::List urls;
-    const int argsCount = args->count();
-    for (int i = 0; i < argsCount; ++i) {
-        urls.append(KUrl(args->arg(i)));
-    }
-
-    QHash<KUrl, Nepomuk::Variant> metaData;
-    if (args->isSet("file")) {
-        metaData = readFileMetaData(urls);
-    } else {
-        metaData = readFileAndContextMetaData(urls);
-    }
-
-    sendMetaData(metaData);
+    KFileMetaDataReaderApplication app(argc, argv);
+    return app.exec();
 }
+
+#include "kfilemetadatareaderprocess.moc"

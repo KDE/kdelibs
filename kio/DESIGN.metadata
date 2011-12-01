@@ -159,6 +159,7 @@ recurse                 bool    When true, del() will be able to delete non-empt
                                 Otherwise, del() is supposed to give an error on non-empty directories.
 
 DefaultRemoteProtocol	string	Protocol to redirect file://<hostname>/ URLs to, default is "smb" (read by file)
+no-spoof-check          bool    Flag to indicate whether a username spoofing check should be performed, default is FALSE.(read by http)
 
 ** NOTE: Anything in quotes ("") under Value(s) indicates literal value.
 

@@ -1387,6 +1387,13 @@ DOM::DOMString DOM::NodeImpl::lookupNamespaceURI(const DOM::DOMString& prefix)
 {
     //for details see http://www.w3.org/TR/DOM-Level-3-Core/namespaces-algorithms.html#lookupNamespaceURIAlgo
 
+    // check if this is one of the hard defined prefixes
+    PrefixName ppn = PrefixName::fromString(prefix);
+    if (ppn.id() == xmlPrefix)
+        return DOM::DOMString(XML_NAMESPACE);
+    if (ppn.id() == xmlnsPrefix)
+        return DOM::DOMString(XMLNS_NAMESPACE);
+    
     switch( this->nodeType() ) {
         case Node::ELEMENT_NODE:
             if( !this->namespaceURI().isNull() && this->prefix() == prefix ) {
@@ -1394,19 +1401,18 @@ DOM::DOMString DOM::NodeImpl::lookupNamespaceURI(const DOM::DOMString& prefix)
             }
             if( this->hasAttributes() ) {
                 ElementImpl* node = static_cast<ElementImpl*>(this);
-                
+
                 NamedAttrMapImpl* attributes = node->attributes( true /*readonly*/);
-                LocalName pln = LocalName::fromString(prefix);
-                PrefixName xmlns = PrefixName::fromString("xmlns");
+                if (ppn.id() != emptyPrefix) {
+                    LocalName pln = LocalName::fromString(prefix);
+                    PrefixName xmlns = PrefixName::fromId(xmlnsNamespace);
 
-                DOM::DOMString result = attributes->getValue(pln.id(), xmlns);
-                if( !result.isNull() ) {
-                    return result;
-                }
-
-                if( prefix.isNull() ) {
-                    pln = LocalName::fromString("xmlns");
-                    result = attributes->getValue(pln.id());
+                    DOM::DOMString result = attributes->getValue(pln.id(), xmlns);
+                    if( !result.isNull() ) {
+                        return result;
+                    }
+                } else {
+                    DOM::DOMString result = attributes->getValue(ATTR_XMLNS);
                     if( !result.isEmpty() ) {
                         return result;
                     }
