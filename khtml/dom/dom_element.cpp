@@ -374,6 +374,16 @@ NodeList Element::querySelectorAll(const DOMString& query) const
     return res;
 }
 
+static inline bool isExtender(ushort c)
+{ return c > 0x00B6 &&
+        (c == 0x00B7 || c == 0x02D0 || c == 0x02D1 || c == 0x0387 ||
+         c == 0x0640 || c == 0x0E46 || c == 0x0EC6 || c == 0x3005 ||
+         (c >= 0x3031 && c <= 0x3035) ||
+         (c >= 0x309D && c <= 0x309E) ||
+         (c >= 0x30FC && c <= 0x30FE)
+        );
+}
+
 bool Element::khtmlValidAttrName(const DOMString &name)
 {
     // Check if name is valid
@@ -388,7 +398,7 @@ bool Element::khtmlValidAttrName(const DOMString &name)
         if ( !ch.isLetter() && !ch.isDigit() && ch != '.'
              && ch != '-' && ch != '_' && ch != ':'
              && ch.category() != QChar::Mark_SpacingCombining
-             /* no idea what "extender is" */ )
+             && !isExtender(ch.unicode()) )
             return false;
     }
     return true;
