@@ -2810,6 +2810,8 @@ void HTTPProtocol::fixupResponseMimetype()
             m_mimeType = QLatin1String("video/x-ms-wmv");
         else if (ext == QLatin1String("WEBM"))
             m_mimeType = QLatin1String("video/webm");
+        else if (ext == QLatin1String("DEB"))
+            m_mimeType = QLatin1String("application/x-deb");
     }
     kDebug(7113) << "after fixup" << m_mimeType;
 }
