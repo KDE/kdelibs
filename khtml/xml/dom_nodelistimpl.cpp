@@ -306,7 +306,7 @@ bool NameNodeListImpl::nodeMatches( NodeImpl *testNode, bool& /*doRecurse*/ ) co
 ClassNodeListImpl::ClassNodeListImpl(NodeImpl* rootNode, const DOMString& classNames)
     : DynamicNodeListImpl(rootNode, UNCACHEABLE, DynamicNodeListImpl::Cache::makeClassName)
 {
-    m_classNames.parseClassAttribute(classNames.string(), m_refNode->document()->inCompatMode());
+    m_classNames.parseClassAttribute(classNames, m_refNode->document()->inCompatMode());
 }
 
 bool ClassNodeListImpl::nodeMatches(NodeImpl *testNode, bool& doRecurse) const
