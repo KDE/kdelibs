@@ -15,7 +15,7 @@ set(JobTests_SRCS JobTests.cpp AppendCharacterJob.cpp)
 add_executable(ThreadWeaverJobTests ${JobTests_SRCS})
 add_test(ThreadWeaverJobTests ThreadWeaverJobTests)
 
-target_link_libraries(ThreadWeaverJobTests ${QT_QTTEST_LIBRARY} threadweaver)
+target_link_libraries(ThreadWeaverJobTests ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} threadweaver)
 
 ########### next target ###############
 
