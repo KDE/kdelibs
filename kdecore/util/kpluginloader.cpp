@@ -259,7 +259,6 @@ bool KPluginLoader::load()
 QString KPluginLoader::errorString() const
 {
     Q_D(const KPluginLoader);
-    const_cast<KPluginLoader*>(this)->load();
 
     if (!d->errorString.isEmpty())
         return d->errorString;
