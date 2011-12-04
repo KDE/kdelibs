@@ -4,12 +4,14 @@ include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}/../src
    ${CMAKE_CURRENT_BINARY_DIR}/../src
    ${CMAKE_SOURCE_DIR}/kio/httpfilter
+   ${CMAKE_SOURCE_DIR}/libinqt5/src
+   ${CMAKE_BINARY_DIR}/libinqt5/src
 )
 
 MACRO(KARCHIVE_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_unit_test(${_testname} TESTNAME "karchive-${_testname}" NOGUI ${_testname}.cpp)
-               target_link_libraries(${_testname} karchive ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${KDE4_KDECORE_LIBS} kcoreaddons)
+               target_link_libraries(${_testname} karchive ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} kcoreaddons)
                if(WINCE)
                 target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
                endif(WINCE)
