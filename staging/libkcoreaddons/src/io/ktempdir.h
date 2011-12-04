@@ -26,30 +26,28 @@
 /**
  * \class KTempDir ktempdir.h <KTempDir>
  *
+ * @deprecated use QTemporaryDir
+ *
  * @brief Create a unique directory for temporary use.
  *
  * The KTempDir class creates a unique directory for temporary use.
  *
- * This is especially useful if you need to create a directory in a world
- * writable directory like /tmp without being vulnerable to so called
- * symlink attacks.
+ * Porting to QTemporaryDir goes as follows:
+ * - Replace KTempDir with QTemporaryDir
+ * - Replace name() with path(), but keep in mind that name ended with a '/', while path does not.
+ * - Replace status() with isValid()
  *
- * KDE applications, however, shouldn't create files or directories in /tmp
- * in the first place but use the "tmp" resource instead. The standard
- * KTempDir constructor will do that by default.
+ * A typical usage of KTempDir was
+ *    KTempDir(KStandardDirs::locateLocal("tmp", prefix));
+ * This should be ported to
+ *    QTemporaryDir(QDir::tempPath() + QLatin1Char('/') + prefix);
  *
- * To create a temporary directory that starts with a certain name
- * in the "tmp" resource, one should use:
- * KTempDir(KStandardDirs::locateLocal("tmp", prefix));
- *
- * KTempDir does not create any missing directories, but
+ * Note: KTempDir does not create any missing directories, but
  * KStandardDirs::locateLocal() does.
  *
- * @see KStandardDirs
- * @see QTemporaryFile
- * @author Joseph Wenninger <jowenn@kde.org>
+ * @see QTemporaryDir
  */
-class KCOREADDONS_EXPORT KTempDir
+class KCOREADDONS_DEPRECATED_EXPORT KTempDir
 {
 public:
    /**
@@ -68,7 +66,9 @@ public:
     * file's group, with the same values; and the third for other
     * users not in the file's group, with the same values.
     *
-    **/
+    * @deprecated Use QTemporaryDir() or QTemporaryDir(directoryPrefix).
+    * If a specific mode was set, you'll need to use QFile::setPermissions on the temporary dir path.
+    */
    explicit KTempDir(const QString& directoryPrefix=QString(),
                      int mode = 0700 );
 
@@ -101,7 +101,9 @@ public:
     * whether the directory could be created.
     *
     * @return the errno status, 0 means ok
-    **/
+    *
+    * @deprecated use QTemporaryDir::isValid()
+    */
    int status() const;
 
    /**
@@ -109,17 +111,24 @@ public:
     * trailing '/'.
     * @return The name of the directory, or QString() if creating the
     *         directory has failed or the directory has been unlinked
-    **/
+    *
+    * @deprecated use QTemporaryDir::path()
+    */
    QString name() const;
 
    /**
     * Deletes the directory recursively
-    **/
+    *
+    * @deprecated use QTemporaryDir::remove()
+    */
    void unlink();
 
    /**
     * Returns true if a temporary directory has successfully been created
     * and has not been unlinked yet.
+    *
+    * @deprecated use QTemporaryDir::isValid() + QDir::exists(path) if there's really
+    * a doubt that it might have been deleted meanwhile.
     */
    bool exists() const;
 
@@ -142,7 +151,9 @@ public:
     * @param path Path of the directory to delete
     * @return true if successful, otherwise false
     * (Use errno for more details about the error.)
-    * @todo decide how and where this function should be defined in KDE5
+    *
+    * @deprecated use QTemporaryDir::removeRecursively(path) for now (libinqt5),
+    *         use QDir(path)::removeRecursively in Qt 5.
     */
     static bool removeDir( const QString& path );
 
@@ -158,7 +169,6 @@ protected:
    bool create(const QString &directoryPrefix,  int mode);
 
 private:
-    Q_DISABLE_COPY(KTempDir)
     class Private;
     Private * const d;
 };
