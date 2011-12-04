@@ -214,7 +214,7 @@ QHash<KUrl, Nepomuk::Variant> KFileMetaDataReaderApplication::readFileAndContext
 
 int main(int argc, char *argv[])
 {
-    KAboutData aboutData("kfilemetadatareader", 0, qi18n("KFileMetaDataReader"),
+    KAboutData aboutData("kfilemetadatareader", "kio4", qi18n("KFileMetaDataReader"),
                          "1.0",
                          qi18n("KFileMetaDataReader can be used to read metadata from a file"),
                          KAboutData::License_GPL,
