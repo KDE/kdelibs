@@ -24,10 +24,10 @@ endif()
 ################# set KDE specific information #################
 
 set (KDE_VERSION_MAJOR 4)
-set (KDE_VERSION_MINOR 7)
-set (KDE_VERSION_RELEASE 40)
+set (KDE_VERSION_MINOR 90)
+set (KDE_VERSION_RELEASE 0)
 set (KDE_VERSION "${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}.${KDE_VERSION_RELEASE}" )
-set (KDE_VERSION_STRING "${KDE_VERSION} (4.7.40 (KDE 4.8 >= 20110623)")
+set (KDE_VERSION_STRING "${KDE_VERSION} (4.90.0 (KDE Frameworks >= 20111205)")
 
 set (KDE_DISTRIBUTION_TEXT "compiled sources" CACHE STRING "Indicate the distribution in bug reports" )
 
