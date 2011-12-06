@@ -1233,7 +1233,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                     {
                         tag = SearchValue;
                         *dest++ = 0;
-                        attrName.clear();
+                        attrName = DOMString("");
                     }
                     else
                         tag = AttributeName;
@@ -1276,7 +1276,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                                 cBuffer[cBufferPos - 1] = '/';
                             }
                             if (!a)
-                                attrName = QLatin1String(QByteArray(cBuffer, cBufferPos+1).data());
+                                attrName = DOMString(cBuffer, cBufferPos);
                         }
 
                         dest = buffer;
@@ -1298,7 +1298,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
             }
             if ( cBufferPos == CBUFLEN ) {
                 cBuffer[cBufferPos] = '\0';
-                attrName = QLatin1String(QByteArray(cBuffer, cBufferPos+1).data());
+                attrName = DOMString(cBuffer, cBufferPos);
                 dest = buffer;
                 *dest++ = 0;
                 tag = SearchEqual;
@@ -1326,7 +1326,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                     {
                         tag = SearchValue;
                         *dest++ = 0;
-                        attrName.clear();
+                        attrName = DOMString("");
                     }
                     else {
                         DOMString v("");

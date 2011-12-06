@@ -73,7 +73,7 @@ namespace khtml {
             if(attrs) attrs->deref();
             if(text) text->deref();
         }
-        void addAttribute(DocumentImpl* /*doc*/, QChar* buffer, const QString& attrName, const DOMString& v)
+        void addAttribute(DocumentImpl* /*doc*/, QChar* buffer, const DOMString& _attrName, const DOMString& v)
         {
             DOMStringImpl *value = v.implementation();
             LocalName localname = LocalName::fromId(0);
@@ -81,8 +81,8 @@ namespace khtml {
             if(buffer->unicode()) {
                 localname = LocalName::fromId(buffer->unicode());
             }
-            else if ( !attrName.isEmpty() && attrName != "/" ) {
-                splitPrefixLocalName(attrName, prefixname, localname, true /* htmlCompat*/);
+            else if ( !_attrName.isEmpty() && _attrName != "/" ) {
+                splitPrefixLocalName(_attrName, prefixname, localname, true /* htmlCompat*/);
             }
 
             if (value && localname.id()) {
@@ -351,7 +351,7 @@ protected:
     } doctypeComment;
 
     // name of an unknown attribute
-    QString attrName;
+    DOMString attrName;
 
     // Used to store the content of 
     QChar *rawContent;
