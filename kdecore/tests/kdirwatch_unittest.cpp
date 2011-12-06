@@ -22,7 +22,7 @@
 #include <kconfiggroup.h>
 #include <QDir>
 #include <kdebug.h>
-#include <ktempdir.h>
+#include <qtemporarydir.h>
 #include <qtest_kde.h>
 #include <qtestevent.h>
 #include <kdirwatch.h>
@@ -60,8 +60,7 @@ class KDirWatch_UnitTest : public QObject
 public:
     KDirWatch_UnitTest()
     {
-        m_path = m_tempDir.name();
-        Q_ASSERT(m_path.endsWith('/'));
+        m_path = m_tempDir.path() + '/';
 
         KConfigGroup config(KGlobal::config(), "DirWatch");
         const QByteArray testMethod = qgetenv("KDIRWATCHTEST_METHOD");
@@ -116,7 +115,7 @@ private:
     void appendToFile(const QString& path);
     void appendToFile(int num);
 
-    KTempDir m_tempDir;
+    QTemporaryDir m_tempDir;
     QString m_path;
     bool m_slow;
 };
@@ -517,14 +516,14 @@ void KDirWatch_UnitTest::testDeleteAndRecreateDir()
 {
     // Like KDirModelTest::testOverwriteFileWithDir does at the end.
     // The linux-2.6.31 bug made kdirwatch emit deletion signals about the -new- dir!
-    KTempDir* tempDir1 = new KTempDir(KStandardDirs::locateLocal("tmp", "olddir-"));
+    QTemporaryDir* tempDir1 = new QTemporaryDir(QDir::tempPath() + QLatin1Char('/') + "olddir-");
     KDirWatch watch;
-    const QString path1 = tempDir1->name();
+    const QString path1 = tempDir1->path() + '/';
     watch.addDir(path1);
 
     delete tempDir1;
-    KTempDir* tempDir2 = new KTempDir(KStandardDirs::locateLocal("tmp", "newdir-"));
-    const QString path2 = tempDir2->name();
+    QTemporaryDir* tempDir2 = new QTemporaryDir(QDir::tempPath() + QLatin1Char('/') + "newdir-");
+    const QString path2 = tempDir2->path() + '/';
     watch.addDir(path2);
 
     QVERIFY(waitForOneSignal(watch, SIGNAL(deleted(QString)), path1));
