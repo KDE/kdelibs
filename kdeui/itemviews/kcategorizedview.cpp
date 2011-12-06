@@ -492,7 +492,6 @@ void KCategorizedView::Private::topToBottomVisualRect(const QModelIndex &index, 
                 QModelIndex prevIndex = proxyModel->index(index.row() - 1, q->modelColumn(), q->rootIndex());
                 QRect prevRect = q->visualRect(prevIndex);
                 prevRect = mapFromViewport(prevRect);
-                const QSize currSize = q->sizeHintForIndex(index);
                 item.topLeft.rx() = blockPos.x() + categoryDrawer->leftMargin() + q->spacing();
                 item.topLeft.ry() = (prevRect.bottomRight().y() + 1) + q->spacing() - blockPos.y();
             } else {
@@ -1354,7 +1353,28 @@ void KCategorizedView::updateGeometries()
 {
     const int oldVerticalOffset = verticalOffset();
 
+    //BEGIN bugs 213068, 287847 ------------------------------------------------------------
+    /*
+     * QListView::updateGeometries() has it's own opinion on whether the scrollbars should be visible (valid range) or not
+     * and triggers a (sometimes additionally timered) resize through ::layoutChildren()
+     * http://qt.gitorious.org/qt/qt/blobs/4.7/src/gui/itemviews/qlistview.cpp#line1499
+     * (the comment above the main block isn't all accurate, layoutChldren is called regardless of the policy)
+     *
+     * As a result QListView and KCategorizedView occasionally started a race on the scrollbar visibility, effectively blocking the UI
+     * So we prevent QListView from having an own opinion on the scrollbar visibility by
+     * fixing it before calling the baseclass QListView::updateGeometries() and restoring the policy afterwards
+     */
+    const Qt::ScrollBarPolicy verticalP = verticalScrollBarPolicy(), horizontalP = horizontalScrollBarPolicy();
+    setVerticalScrollBarPolicy(verticalScrollBar()->isVisibleTo(this) ? Qt::ScrollBarAlwaysOn : Qt::ScrollBarAlwaysOff);
+    setHorizontalScrollBarPolicy(horizontalScrollBar()->isVisibleTo(this) ? Qt::ScrollBarAlwaysOn : Qt::ScrollBarAlwaysOff);
+    //END bugs 213068, 287847 --------------------------------------------------------------
+
     QListView::updateGeometries();
+
+    //BEGIN bugs 213068, 287847 ------------------------------------------------------------
+    setVerticalScrollBarPolicy(verticalP);
+    setHorizontalScrollBarPolicy(horizontalP);
+    //END bugs 213068, 287847 --------------------------------------------------------------
 
     if (!d->isCategorized()) {
         return;
@@ -1363,6 +1383,8 @@ void KCategorizedView::updateGeometries()
     const int rowCount = d->proxyModel->rowCount();
     if (!rowCount) {
         verticalScrollBar()->setRange(0, 0);
+        // unconditional, see function end todo
+        horizontalScrollBar()->setRange(0, 0);
         return;
     }
 

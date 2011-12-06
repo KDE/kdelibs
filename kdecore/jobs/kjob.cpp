@@ -64,6 +64,10 @@ KJob::KJob(KJobPrivate &dd, QObject *parent)
 
 KJob::~KJob()
 {
+    if (!d_ptr->isFinished) {
+        emit finished(this);
+    }
+
     delete d_ptr->speedTimer;
     delete d_ptr->uiDelegate;
     delete d_ptr;
@@ -103,6 +107,7 @@ bool KJob::isSuspended() const
 
 bool KJob::kill( KillVerbosity verbosity )
 {
+    Q_D(KJob);
     if ( doKill() )
     {
         setError( KilledJobError );
@@ -114,6 +119,7 @@ bool KJob::kill( KillVerbosity verbosity )
         else
         {
             // If we are displaying a progress dialog, remove it first.
+            d->isFinished = true;
             emit finished(this);
 
             if ( isAutoDelete() )
