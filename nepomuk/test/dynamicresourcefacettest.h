@@ -23,7 +23,8 @@
 #define DYNAMICRESOURCEFACETTEST_H
 
 #include <QObject>
-#include "ktempdir.h"
+#include <qtemporarydir.h>
+
 #include "tag.h"
 #include "dynamicresourcefacet.h"
 
@@ -60,7 +61,7 @@ private slots:
     void testSetClientQuery();
 
 private:
-    KTempDir* m_storageDir;
+    QTemporaryDir* m_storageDir;
     Soprano::Model* m_model;
     Nepomuk::Tag tag1, tag2, tag3, tag4;
 };

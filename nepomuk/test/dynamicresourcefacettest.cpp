@@ -122,8 +122,10 @@ void DynamicResourceFacetTest::initTestCase()
     // We create a dummy model with some simple test data in it
     const Soprano::Backend* backend = Soprano::PluginManager::instance()->discoverBackendByName( "virtuosobackend" );
     QVERIFY( backend );
-    m_storageDir = new KTempDir();
-    m_model = backend->createModel( Soprano::BackendSettings() << Soprano::BackendSetting(Soprano::BackendOptionStorageDir, m_storageDir->name()) );
+    m_storageDir = new QTemporaryDir();
+    QString storageDir = m_storageDir->path() + '/' ;
+
+    m_model = backend->createModel( Soprano::BackendSettings() << Soprano::BackendSetting(Soprano::BackendOptionStorageDir, storageDir ) );
     QVERIFY( m_model );
 
     Nepomuk::ResourceManager::instance()->setOverrideMainModel( m_model );

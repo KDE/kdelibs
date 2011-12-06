@@ -23,7 +23,7 @@
 #define _NEPOMUK_QUERY_PARSER_TEST_H_
 
 #include <QtCore/QObject>
-#include "ktempdir.h"
+#include <qtemporarydir.h>
 
 #include <Soprano/Model>
 
@@ -42,7 +42,7 @@ private Q_SLOTS:
     void testQueryParserDetectFilenamePattern();
 
 private:
-    KTempDir* m_storageDir;
+    QTemporaryDir* m_storageDir;
     Soprano::Model* m_model;
 };
 

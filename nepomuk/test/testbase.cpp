@@ -19,16 +19,17 @@
 
 #include <Soprano/Soprano>
 
-#include <ktempdir.h>
+#include <qtemporarydir.h>
 
 void TestBase::initTestCase()
 {
-    m_tmpDir = new KTempDir();
+    m_tmpDir = new QTemporaryDir();
     const Soprano::Backend* backend = Soprano::PluginManager::instance()->discoverBackendByName("virtuoso");
     if( !backend ) {
         QSKIP( "Unable to load Virtuoso backend, skipping test.", SkipAll );
     }
-    m_model = backend->createModel( Soprano::BackendSettings() << Soprano::BackendSetting(Soprano::BackendOptionStorageDir, m_tmpDir->name() ));
+    QString tmpDir = m_tmpDir->path() + '/' ;
+    m_model = backend->createModel( Soprano::BackendSettings() << Soprano::BackendSetting(Soprano::BackendOptionStorageDir, tmpDir ));
     Nepomuk::ResourceManager::instance()->setOverrideMainModel( m_model );
 }
 

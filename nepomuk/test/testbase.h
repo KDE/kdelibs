@@ -17,7 +17,8 @@
 
 #include <QtTest/QtTest>
 
-class KTempDir;
+
+class QTemporaryDir;
 namespace Soprano {
 class Model;
 }
@@ -33,7 +34,7 @@ private Q_SLOTS:
     virtual void cleanup();
 
 private:
-    KTempDir* m_tmpDir;
+    QTemporaryDir* m_tmpDir;
     Soprano::Model* m_model;
 };
 

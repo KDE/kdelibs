@@ -33,8 +33,7 @@
 
 #include <QtTest>
 #include <qtest_kde.h>
-
-#include "ktempdir.h"
+#include <qtemporarydir.h>
 
 #include <Soprano/LiteralValue>
 #include <Soprano/Node>
@@ -60,8 +59,10 @@ void QueryParserTest::initTestCase()
     // that are used by libnepomuk below
     const Soprano::Backend* backend = Soprano::PluginManager::instance()->discoverBackendByName( "virtuosobackend" );
     QVERIFY( backend );
-    m_storageDir = new KTempDir();
-    m_model = backend->createModel( Soprano::BackendSettings() << Soprano::BackendSetting(Soprano::BackendOptionStorageDir, m_storageDir->name()) );
+    m_storageDir = new  QTemporaryDir();
+    QString storageDir = m_storageDir->path() + '/' ;
+
+    m_model = backend->createModel( Soprano::BackendSettings() << Soprano::BackendSetting(Soprano::BackendOptionStorageDir, storageDir) );
     QVERIFY( m_model );
 
     // we create one fake ontology
