@@ -23,13 +23,13 @@
 #include <QtGui/QLabel>
 #include <QtGui/QPrinter>
 #include <QtGui/QShowEvent>
+#include <qtemporarydir.h>
 
 #include <kmimetypetrader.h>
 #include <kparts/part.h>
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
 #include <kservice.h>
-#include <ktempdir.h>
 #include <kdebug.h>
 
 
@@ -43,8 +43,8 @@ public:
         , previewPart(0)
         , failMessage(0)
     {
-        if ( tempdir.exists() ) {
-            filename = tempdir.name() + "print_preview.pdf";
+        if ( tempdir.isValid() ) {
+            filename = tempdir.path() + '/' + "print_preview.pdf";
         } else {
             // XXX: not portable!
             kWarning() << "Failed to create temporary directory";
@@ -61,7 +61,7 @@ public:
     QPrinter *printer;
     QWidget *mainWidget;
 
-    KTempDir tempdir;
+    QTemporaryDir tempdir;
     QString filename;
 
     KParts::ReadOnlyPart *previewPart;
