@@ -43,6 +43,7 @@
 #include <QtCore/QRegExp>
 #include <QtCore/QVariant>
 #include <QtCore/QTextStream>
+#include <QtCore/QFileInfo>
 
 #include <Soprano/Node>
 #include <Soprano/Model>
@@ -71,33 +72,83 @@ ORDER BY  desc (?
 */
 
 
+namespace {
+    bool isSymlinked(const QString& path) {
+        QFileInfo fi(path);
+        return(fi.filePath() != fi.canonicalFilePath());
+    }
+}
+namespace Nepomuk {
+    namespace Vocabulary {
+        namespace KExt {
+            /// we do not have the kext ontology in kdelibs
+            QUrl altUrl() { return QUrl::fromEncoded("http://nepomuk.kde.org/ontologies/2010/11/29/kext#altUrl", QUrl::StrictMode); }
+        }
+    }
+}
+
+
 Nepomuk::Query::Term Nepomuk::Query::QueryPrivate::createFolderFilter() const
 {
     Term mainTerm;
 
     if ( !m_includeFolders.isEmpty() ) {
-        QStringList includeFilter;
+        QStringList includeFilterNieUrl, includeFilterKextAltUrls;
         for( QHash<KUrl, bool>::ConstIterator it = m_includeFolders.constBegin();
              it != m_includeFolders.constEnd(); ++it ) {
             const QString urlStr = it.key().url(KUrl::AddTrailingSlash);
+            QString filter;
             if( it.value() )
-                includeFilter.append( QString::fromLatin1("(^%1)").arg( urlStr ) );
+                filter = QString::fromLatin1("(^%1)").arg( urlStr );
             else
-                includeFilter.append( QString::fromLatin1("(^%1[^/]*$)").arg( urlStr ) );
+                filter = QString::fromLatin1("(^%1[^/]*$)").arg( urlStr );
+            if(isSymlinked(it.key().toLocalFile())) {
+                includeFilterKextAltUrls << filter;
+            }
+            else {
+                includeFilterNieUrl << filter;
+            }
         }
-        mainTerm = mainTerm && ComparisonTerm(
-                    Nepomuk::Vocabulary::NIE::url(),
-                    LiteralTerm(includeFilter.join( "|" )),
-                    ComparisonTerm::Regexp);
+        Term filterTerm;
+        if(!includeFilterNieUrl.isEmpty()) {
+            filterTerm = ComparisonTerm(
+                             Nepomuk::Vocabulary::NIE::url(),
+                             LiteralTerm(includeFilterNieUrl.join( "|" )),
+                             ComparisonTerm::Regexp);
+        }
+        if(!includeFilterKextAltUrls.isEmpty()) {
+            filterTerm = filterTerm || ComparisonTerm(
+                             Nepomuk::Vocabulary::KExt::altUrl(),
+                             LiteralTerm(includeFilterKextAltUrls.join( "|" )),
+                             ComparisonTerm::Regexp);
+        }
+        mainTerm = mainTerm && filterTerm;
     }
 
-    if ( !m_excludeFolders.isEmpty() ) {
-        mainTerm = mainTerm && NegationTerm::negateTerm(
-                    ComparisonTerm(
-                        Nepomuk::Vocabulary::NIE::url(),
-                        LiteralTerm(QString::fromLatin1("^(%1)").arg( m_excludeFolders.toStringList(KUrl::AddTrailingSlash).join( "|" ) )),
-                        ComparisonTerm::Regexp));
+    QStringList excludeFilterNieUrl, excludeFilterKextAltUrl;
+    foreach(const KUrl& url, m_excludeFolders) {
+        if(isSymlinked(url.toLocalFile())) {
+            excludeFilterKextAltUrl << url.url(KUrl::AddTrailingSlash);
+        }
+        else {
+            excludeFilterNieUrl << url.url(KUrl::AddTrailingSlash);
+        }
     }
+    if(!excludeFilterNieUrl.isEmpty()) {
+        mainTerm = mainTerm && NegationTerm::negateTerm(
+                       ComparisonTerm(
+                           Nepomuk::Vocabulary::NIE::url(),
+                           LiteralTerm(QString::fromLatin1("^(%1)").arg( excludeFilterNieUrl.join( "|" ) )),
+                           ComparisonTerm::Regexp));
+    }
+    if(!excludeFilterKextAltUrl.isEmpty()) {
+        mainTerm = mainTerm && NegationTerm::negateTerm(
+                       ComparisonTerm(
+                           Nepomuk::Vocabulary::KExt::altUrl(),
+                           LiteralTerm(QString::fromLatin1("^(%1)").arg( excludeFilterKextAltUrl.join( "|" ) )),
+                           ComparisonTerm::Regexp));
+    }
+
     return mainTerm;
 }
 
