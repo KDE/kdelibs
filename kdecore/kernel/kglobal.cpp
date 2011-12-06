@@ -206,6 +206,11 @@ bool KGlobal::hasLocale()
     return (d->locale != 0);
 }
 
+KCharsets *KGlobal::charsets()
+{
+    return KCharsets::charsets();
+}
+
 mode_t KGlobal::umask()
 {
     // Don't use PRIVATE_DATA here. This is called by ~KGlobalPrivate -> ~KConfig -> sync -> KSaveFile, so there's no KGlobalPrivate anymore.

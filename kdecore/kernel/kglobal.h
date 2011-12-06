@@ -387,6 +387,12 @@ namespace KGlobal
     KDECORE_EXPORT bool hasLocale();
 
     /**
+     * The global charset manager.
+     * @return the global charset manager
+     */
+    KDECORE_EXPORT KCharsets *charsets();
+
+    /**
      * Returns the umask of the process.
      * @return the umask of the process
      */
