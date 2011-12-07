@@ -230,6 +230,7 @@ void KFileMetaDataWidget::Private::slotLoadingFinished()
 
         // Create label
         QLabel* label = new QLabel(itemLabel, q);
+        label->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
         label->setForegroundRole(q->foregroundRole());
         label->setFont(q->font());
         label->setWordWrap(true);
