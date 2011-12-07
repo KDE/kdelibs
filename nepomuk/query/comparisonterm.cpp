@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2009-2010 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2009-2011 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -27,6 +27,7 @@
 #include "resourceterm.h"
 #include "resource.h"
 #include "query_p.h"
+#include "nie.h"
 
 #include <Soprano/LiteralValue>
 #include <Soprano/Node>
@@ -37,6 +38,14 @@
 
 #include <kdebug.h>
 
+namespace Nepomuk {
+    namespace Vocabulary {
+        namespace KExt {
+            /// we do not have the kext ontology in kdelibs
+            QUrl altUrl() { return QUrl::fromEncoded("http://nepomuk.kde.org/ontologies/2010/11/29/kext#altUrl", QUrl::StrictMode); }
+        }
+    }
+}
 
 namespace {
 
@@ -106,10 +115,9 @@ Nepomuk::Query::ComparisonTerm::Comparator Nepomuk::Query::stringToComparator( c
         return Nepomuk::Query::ComparisonTerm::Contains;
 }
 
-QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, const TermPrivate* parentTerm, QueryBuilderData* qbd ) const
-{
-    Q_UNUSED(parentTerm);
 
+QString Nepomuk::Query::ComparisonTermPrivate::createBaseSparqlPattern(const QString &resourceVarName, const QString& property, bool* firstUse, Nepomuk::Query::QueryBuilderData *qbd) const
+{
     //
     // 1. property range: literal
     // 1.1. operator =
@@ -140,15 +148,13 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
     //
 
     if ( !m_subTerm.isValid() ) {
-        QString prop = propertyToString( qbd );
-        bool firstUse = false;
-        QString ov = getMainVariableName( qbd, &firstUse );
+        QString ov = getMainVariableName( qbd, firstUse );
         if( m_inverted )
             return QString::fromLatin1( "%1 %2 %3 . " )
-                .arg( ov, prop, resourceVarName );
-        else if( firstUse )
+                .arg( ov, property, resourceVarName );
+        else if( *firstUse )
             return QString::fromLatin1( "%1 %2 %3 . " )
-                .arg( resourceVarName, prop, ov );
+                .arg( resourceVarName, property, ov );
         else
             return QString();
     }
@@ -160,45 +166,42 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
         if ( m_comparator == ComparisonTerm::Equal ) {
             return QString::fromLatin1( "%1 %2 %3 . " )
                 .arg( resourceVarName,
-                      propertyToString( qbd ),
+                      property,
                       Soprano::Node::literalToN3( m_subTerm.toLiteralTerm().value() ) );
         }
         else if ( m_comparator == ComparisonTerm::Contains ) {
-            bool firstUse = false;
-            const QString v = getMainVariableName(qbd, &firstUse);
+            const QString v = getMainVariableName(qbd, firstUse);
             QString pattern = LiteralTermPrivate::createContainsPattern( v, m_subTerm.toLiteralTerm().value().toString(), qbd );
-            if(firstUse) {
+            if(*firstUse) {
                 pattern.prepend(QString::fromLatin1( "%1 %2 %3 . " )
                                 .arg( resourceVarName,
-                                      propertyToString( qbd ),
+                                      property,
                                       v ));
             }
             return pattern;
         }
         else if ( m_comparator == ComparisonTerm::Regexp ) {
-            bool firstUse = false;
-            const QString v = getMainVariableName(qbd, &firstUse);
+            const QString v = getMainVariableName(qbd, firstUse);
             QString pattern = QString::fromLatin1( "FILTER(REGEX(STR(%1), '%2', 'i')) . " )
                     .arg( v, m_subTerm.toLiteralTerm().value().toString() );
-            if( firstUse ) {
+            if( *firstUse ) {
                 pattern.prepend(QString::fromLatin1( "%1 %2 %3 . " )
                                 .arg( resourceVarName,
-                                      propertyToString( qbd ),
+                                      property,
                                       v ));
             }
             return pattern;
         }
         else {
-            bool firstUse = false;
-            const QString v = getMainVariableName(qbd, &firstUse);
+            const QString v = getMainVariableName(qbd, firstUse);
             QString pattern = QString::fromLatin1( "FILTER(%1%2%3) . " )
                     .arg( v,
                           comparatorToString( m_comparator ),
                           Soprano::Node::literalToN3(m_subTerm.toLiteralTerm().value()) );
-            if( firstUse ) {
+            if( *firstUse ) {
                 pattern.prepend( QString::fromLatin1( "%1 %2 %3 . " )
                                  .arg( resourceVarName,
-                                       propertyToString( qbd ),
+                                       property,
                                        v ) );
             }
             return pattern;
@@ -231,14 +234,14 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
             m_property.inverseProperty().isValid() ) {
             corePattern = QString::fromLatin1("{ %1 %2 %3 . } UNION { %3 %4 %1 . } . ")
                               .arg( subject,
-                                    propertyToString( qbd ),
+                                    property,
                                     object,
                                     Soprano::Node::resourceToN3( m_property.inverseProperty().uri() ) );
         }
         else {
             corePattern = QString::fromLatin1("%1 %2 %3 . ")
                               .arg( subject,
-                                    propertyToString( qbd ),
+                                    property,
                                     object );
         }
 
@@ -247,11 +250,10 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
             // the base of the pattern is always the same: match to resources related to X
             // which has a label that we compare somehow. This label's value will be filled below
             //
-            bool firstUse = true;
-            QString v1 = getMainVariableName(qbd, &firstUse);
+            QString v1 = getMainVariableName(qbd, firstUse);
             QString v2 = qbd->uniqueVarName();
             QString pattern = QString::fromLatin1( "%1%2 %3 %4 . %3 %5 %6 . " )
-                    .arg( firstUse ? corePattern.arg(v1) : QString(),
+                    .arg( *firstUse ? corePattern.arg(v1) : QString(),
                           v1,
                           v2,
                           QLatin1String("%1"), // funny way to have a resulting string which takes only one arg
@@ -287,17 +289,52 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
         }
         else {
             // ?r <prop> ?v1 . ?v1 ...
-            bool firstUse = true;
-            QString v = getMainVariableName(qbd, &firstUse);
+            QString v = getMainVariableName(qbd, firstUse);
             qbd->increaseDepth();
             QString subTermSparql = m_subTerm.d_ptr->toSparqlGraphPattern( v, this, qbd );
             qbd->decreaseDepth();
-            if( firstUse )
+            if( *firstUse )
                 return corePattern.arg(v) + subTermSparql;
             else
                 return subTermSparql;
         }
     }
+}
+
+
+QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, const TermPrivate* parentTerm, QueryBuilderData* qbd ) const
+{
+    Q_UNUSED(parentTerm);
+
+    //
+    // nie:url is a special case. See below.
+    //
+    QString property;
+    if( !m_property.isValid() ||
+        m_property == Vocabulary::NIE::url()) {
+        property = qbd->uniqueVarName();
+    }
+    else {
+        property = Soprano::Node::resourceToN3( m_property.uri() );
+    }
+
+    bool firstUse = true;
+    QString basePattern = createBaseSparqlPattern(resourceVarName, property, &firstUse, qbd);
+
+    //
+    // We handle the special case of symlinks the easy way: simply always match nie:url and kext:altUrl whenever
+    // a client requests nie:url.
+    //
+    // We only do this if it is the first time we use the property. Otherwise another ComparisonTerm in this term
+    // group has already added the filter.
+    //
+    if(firstUse && m_property == Vocabulary::NIE::url()) {
+        basePattern += QString::fromLatin1("FILTER(%1 in (%2,%3)) . ")
+                       .arg(property,
+                            Soprano::Node::resourceToN3( Nepomuk::Vocabulary::NIE::url() ),
+                            Soprano::Node::resourceToN3( Nepomuk::Vocabulary::KExt::altUrl() ));
+    }
+    return basePattern;
 }
 
 
@@ -406,15 +443,6 @@ QString Nepomuk::Query::ComparisonTermPrivate::getMainVariableName( QueryBuilder
             qbd->addCustomVariable( sortVar );
     }
     return v;
-}
-
-
-QString Nepomuk::Query::ComparisonTermPrivate::propertyToString( QueryBuilderData* qbd ) const
-{
-    if( m_property.isValid() )
-        return Soprano::Node::resourceToN3( m_property.uri() );
-    else
-        return qbd->uniqueVarName();
 }
 
 

@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2009-2010 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2009-2011 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -47,6 +47,15 @@ namespace Nepomuk {
 
             bool equals( const TermPrivate* other ) const;
             bool isValid() const;
+
+            /**
+             * \param resourceVarName The variable which refers to the resource to match.
+             * \param property The N3 representation of the property (variable or URI)
+             * \param firstUse Should be passed on to getMainVariableName. Will be set to true if this is the first time this property is used in
+             *        the current term group.
+             * \param qbd The QueryBuilderData to use.
+             */
+            QString createBaseSparqlPattern( const QString& resourceVarName, const QString& property, bool* firstUse, QueryBuilderData* qbd ) const;
             QString toSparqlGraphPattern( const QString& resourceVarName, const TermPrivate* parentTerm, QueryBuilderData* qbd ) const;
 
             /**
@@ -54,12 +63,6 @@ namespace Nepomuk {
              * or ask the latter to create a new variable.
              */
             QString getMainVariableName( QueryBuilderData* qbd, bool* firstUse ) const;
-
-            /**
-             * return the N3 form of m_property or a new variable
-             * in case m_property is invalid.
-             */
-            QString propertyToString( QueryBuilderData* qbd ) const;
 
             Types::Property m_property;
             ComparisonTerm::Comparator m_comparator;
