@@ -529,7 +529,7 @@ bool KWebPage::handleReply(QNetworkReply* reply, QString* contentType, KIO::Meta
         case KParts::BrowserOpenOrSaveQuestion::Save:
             // Do not download local files...
             if (!replyUrl.isLocalFile()) {
-                QString downloadCmd (reply->property(QLatin1String("DownloadManagerExe")).toString());
+                QString downloadCmd (reply->property("DownloadManagerExe").toString());
                 if (!downloadCmd.isEmpty()) {
                     downloadCmd += QLatin1Char(' ');
                     downloadCmd += KShell::quoteArg(replyUrl.url());
