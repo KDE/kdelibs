@@ -11,7 +11,7 @@ include_directories(
 MACRO(KARCHIVE_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_unit_test(${_testname} TESTNAME "karchive-${_testname}" NOGUI ${_testname}.cpp)
-               target_link_libraries(${_testname} karchive ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} kcoreaddons)
+               target_link_libraries(${_testname} karchive ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} kcoreaddons kdecore inqt5) #kdecore for KMimeType, TODO REMOVE
                if(WINCE)
                 target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
                endif(WINCE)
