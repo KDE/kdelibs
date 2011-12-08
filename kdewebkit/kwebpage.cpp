@@ -40,6 +40,7 @@
 #include <kstandardshortcut.h>
 #include <kurl.h>
 #include <kdebug.h>
+#include <kshell.h>
 #include <kmimetypetrader.h>
 #include <klocalizedstring.h>
 #include <ktemporaryfile.h>
@@ -528,6 +529,17 @@ bool KWebPage::handleReply(QNetworkReply* reply, QString* contentType, KIO::Meta
         case KParts::BrowserOpenOrSaveQuestion::Save:
             // Do not download local files...
             if (!replyUrl.isLocalFile()) {
+                QString downloadCmd (reply->property(QLatin1String("DownloadManagerExe")).toString());
+                if (!downloadCmd.isEmpty()) {
+                    downloadCmd += QLatin1Char(' ');
+                    downloadCmd += KShell::quoteArg(replyUrl.url());
+                    if (!suggestedFileName.isEmpty()) {
+                        downloadCmd += QLatin1Char(' ');
+                        downloadCmd += suggestedFileName;
+                    }
+                    if (KRun::runCommand(downloadCmd, view()))
+                        return true;
+                }
                 return downloadResource(replyUrl, suggestedFileName, topLevelWindow);
             }
             return true;
