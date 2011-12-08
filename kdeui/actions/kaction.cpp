@@ -251,7 +251,7 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type,
   }
   for (int i = 0; i < 8; i++) {
     if (shortcutKeys[i] == -1) {
-      kWarning(283) << "Encountered garbage keycode (keycode = -1) in input, not doing anything.";
+      qWarning() << "Encountered garbage keycode (keycode = -1) in input, not doing anything.";
       return;
     }
   }
@@ -259,7 +259,7 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type,
   if (!d->globalShortcutEnabled) {
     changed = true;
     if (objectName().isEmpty() || objectName().startsWith(QLatin1String("unnamed-"))) {
-      kWarning(283) << "Attempt to set global shortcut for action without objectName()."
+      qWarning() << "Attempt to set global shortcut for action without objectName()."
                        " Read the setGlobalShortcut() documentation.";
       return;
     }
@@ -347,7 +347,7 @@ void KAction::setShapeGesture( const KShapeGesture& gest,  ShortcutTypes type )
 
   if ( type & ActiveShortcut ) {
     if ( KGestureMap::self()->findAction( gest ) ) {
-      kDebug(283) << "New mouse gesture already in use, won't change gesture.";
+      qDebug() << "New mouse gesture already in use, won't change gesture.";
       return;
     }
     KGestureMap::self()->removeGesture( d->shapeGesture, this );
@@ -365,7 +365,7 @@ void KAction::setRockerGesture( const KRockerGesture& gest,  ShortcutTypes type 
 
   if ( type & ActiveShortcut ) {
     if ( KGestureMap::self()->findAction( gest ) ) {
-      kDebug(283) << "New mouse gesture already in use, won't change gesture.";
+      qDebug() << "New mouse gesture already in use, won't change gesture.";
       return;
     }
     KGestureMap::self()->removeGesture( d->rockerGesture, this );

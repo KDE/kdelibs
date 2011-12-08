@@ -136,7 +136,7 @@ void KPasteTextActionPrivate::_k_slotTriggered(QAction* action)
       QString clipboardText = reply;
       reply = klipper.call("setClipboardContents", clipboardText);
       if (reply.isValid())
-        kDebug(129) << "Clipboard: " << qApp->clipboard()->text(QClipboard::Clipboard);
+        qDebug() << "Clipboard: " << qApp->clipboard()->text(QClipboard::Clipboard);
     }
 }
 

@@ -55,7 +55,7 @@ org::kde::kglobalaccel::Component *KGlobalAccelPrivate::getComponent(const QStri
             "/kglobalaccel",
             QDBusConnection::sessionBus());
     if (!kglobalaccel.isValid()) {
-        kDebug() << "Failed to connect to the kglobalaccel daemon" << QDBusConnection::sessionBus().lastError();
+        qDebug() << "Failed to connect to the kglobalaccel daemon" << QDBusConnection::sessionBus().lastError();
         return NULL;
     }
 
@@ -70,7 +70,7 @@ org::kde::kglobalaccel::Component *KGlobalAccelPrivate::getComponent(const QStri
         }
 
         // An unknown error.
-        kDebug() << "Failed to get dbus path for component " << componentUnique << reply.error();
+        qDebug() << "Failed to get dbus path for component " << componentUnique << reply.error();
         return NULL;
     }
 
@@ -83,7 +83,7 @@ org::kde::kglobalaccel::Component *KGlobalAccelPrivate::getComponent(const QStri
 
     // No component no cleaning
     if (!component->isValid()) {
-        kDebug() << "Failed to get component" << componentUnique << QDBusConnection::sessionBus().lastError();
+        qDebug() << "Failed to get component" << componentUnique << QDBusConnection::sessionBus().lastError();
         return NULL;
     }
 
@@ -138,7 +138,7 @@ void KGlobalAccelPrivate::readComponentData(const KComponentData &componentData)
 
     mainComponent = componentData;
     if (componentData.aboutData()->programName().isEmpty()) {
-        kDebug(123) << componentData.componentName() << " has empty programName()";
+        qDebug() << componentData.componentName() << " has empty programName()";
     }
 }
 
@@ -467,7 +467,7 @@ void KGlobalAccelPrivate::_k_serviceOwnerChanged(const QString &name, const QStr
     Q_UNUSED(oldOwner);
     if (name == QLatin1String("org.kde.kglobalaccel") && !newOwner.isEmpty()) {
         // kglobalaccel was restarted
-        kDebug(123) << "detected kglobalaccel restarting, re-registering all shortcut keys";
+        qDebug() << "detected kglobalaccel restarting, re-registering all shortcut keys";
         reRegisterAll();
     }
 }

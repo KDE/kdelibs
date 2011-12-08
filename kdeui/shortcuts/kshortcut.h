@@ -88,6 +88,7 @@ public:
      * @param alternate Qt keycode of alternate shortcut
      * @see Qt::Key
      */
+    // TODO KDE5 move to QShortcut
     KShortcut(const QKeySequence &primary, const QKeySequence &alternate);
 
     /**
@@ -98,6 +99,7 @@ public:
      * @param keyQtAlt Qt keycode of alternate shortcut
      * @see Qt::Key
      */
+    // TODO KDE5 move to QShortcut
     explicit KShortcut(int keyQtPri, int keyQtAlt = 0);
 
     /**
@@ -114,6 +116,7 @@ public:
      * @param description the description of key sequence(s)
      * @see QKeySequence::fromString(const QString&, SequenceFormat)
      */
+    // TODO KDE5 move to QShortcut
     explicit KShortcut(const QString &description);
 
     /**
@@ -122,6 +125,7 @@ public:
      * sequence, the second one the alternate.
      * @param seqs List of key sequeces.
      */
+    // TODO KDE5 move to QShortcut
     explicit KShortcut(const QList<QKeySequence> &seqs);
 
     /**

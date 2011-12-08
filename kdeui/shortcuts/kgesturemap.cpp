@@ -69,11 +69,11 @@ void KGestureMap::addGesture(const KShapeGesture &gesture, KAction *act)
 {
     if (!gesture.isValid() || !act)
         return;
-    kDebug(283) << "KGestureMap::addGesture(KShapeGesture ...)";
+    qDebug() << "KGestureMap::addGesture(KShapeGesture ...)";
     if (!m_shapeGestures.contains(gesture))
         m_shapeGestures.insert(gesture, act);
     else
-        kDebug(283) << "Tried to register an action for a gesture already taken";
+        qDebug() << "Tried to register an action for a gesture already taken";
 }
 
 
@@ -81,11 +81,11 @@ void KGestureMap::addGesture(const KRockerGesture &gesture, KAction *act)
 {
     if (!gesture.isValid() || !act)
         return;
-    kDebug(283) << "KGestureMap::addGesture(KRockerGesture ...)";
+    qDebug() << "KGestureMap::addGesture(KRockerGesture ...)";
     if (!m_rockerGestures.contains(gesture))
         m_rockerGestures.insert(gesture, act);
     else
-        kDebug(283) << "Tried to register an action for a gesture already taken";
+        qDebug() << "Tried to register an action for a gesture already taken";
 }
 
 
@@ -93,7 +93,7 @@ void KGestureMap::removeGesture(const KShapeGesture &gesture, KAction *act)
 {
     if (!gesture.isValid())
         return;
-    kDebug(283) << "KGestureMap::removeGesture(KShapeGesture ...)";
+    qDebug() << "KGestureMap::removeGesture(KShapeGesture ...)";
     KAction *oldAct = m_shapeGestures.value(gesture);
     if (oldAct == act || !act /*wildcard*/)
         m_shapeGestures.remove(gesture);
@@ -104,7 +104,7 @@ void KGestureMap::removeGesture(const KRockerGesture &gesture, KAction *act)
 {
     if (!gesture.isValid())
         return;
-    kDebug(283) << "KGestureMap::removeGesture(KRockerGesture ...)";
+    qDebug() << "KGestureMap::removeGesture(KRockerGesture ...)";
     KAction *oldAct = m_rockerGestures.value(gesture);
     if (oldAct == act || !act /*wildcard*/)
         m_rockerGestures.remove(gesture);
@@ -144,7 +144,7 @@ void KGestureMap::handleAction(KAction *kact)
 {
     if (!kact)
         return;
-    kDebug(283) << "handleAction";
+    qDebug() << "handleAction";
     //TODO: only activate in the action's context, just like keyboard shortcuts
     kact->trigger();
     return;
@@ -215,14 +215,14 @@ bool KGestureMap::eventFilter(QObject *obj, QEvent *e)
     QMouseEvent *me = static_cast<QMouseEvent *>(e);
     if (type == QEvent::MouseButtonPress) {
         int nButtonsDown = bitCount(me->buttons());
-        kDebug(283) << "number of buttons down:" << nButtonsDown;
+        qDebug() << "number of buttons down:" << nButtonsDown;
 
         //right button down starts gesture acquisition
         if (nButtonsDown == 1 && me->button() == Qt::RightButton) {
             //"startAcquisition()"
             m_acquiring = true;
             m_gestureTimeout.start(4000);
-            kDebug(283) << "========================";
+            qDebug() << "========================";
             m_points.clear();
             m_points.append(me->pos());
             return true;

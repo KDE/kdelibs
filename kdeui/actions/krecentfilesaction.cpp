@@ -162,7 +162,7 @@ void KRecentFilesAction::addUrl( const KUrl& _url, const QString& name )
 void KRecentFilesAction::addAction(QAction* action, const KUrl& url, const QString& name)
 {
   Q_D(KRecentFilesAction);
-  //kDebug (129) << "KRecentFilesAction::addAction(" << action << ")";
+  //qDebug () << "KRecentFilesAction::addAction(" << action << ")";
 
   action->setActionGroup(selectableActionGroup());
 
