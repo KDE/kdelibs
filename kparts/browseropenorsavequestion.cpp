@@ -96,7 +96,7 @@ public:
         if (mime) { // The mime-type is known so display the comment instead of mime-type
             mimeDescription = mime->comment();
         }
-        QLabel* mimeTypeLabel = new QLabel(mainWidget());
+        mimeTypeLabel = new QLabel(mainWidget());
         mimeTypeLabel->setText(i18nc("@label Type of file", "Type: %1", mimeDescription));
         mimeTypeLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
         textVLayout->addWidget(mimeTypeLabel);
@@ -147,6 +147,7 @@ public:
     KSqueezedTextLabel* questionLabel;
     BrowserOpenOrSaveQuestion::Features features;
     QLabel* fileNameLabel;
+    QLabel* mimeTypeLabel;
 
 protected:
     virtual void slotButtonClicked(int buttonId)
@@ -320,8 +321,11 @@ void BrowserOpenOrSaveQuestion::setSuggestedFileName(const QString& suggestedFil
     // If the current mime-type is the default mime-type, then attempt to
     // determine the "real" mimetype from the file name.
     if (d->mimeType == KMimeType::defaultMimeType()) {
-        const KMimeType::Ptr mimePtr = KMimeType::findByUrl(suggestedFileName);
-        d->mimeType = mimePtr->name();
+        int accuracy = 0;
+        const KMimeType::Ptr mimePtr = KMimeType::findByUrl(suggestedFileName, 0, false, true, &accuracy);
+        if (accuracy == 100 && !mimePtr->isDefault()) {
+            d->mimeTypeLabel->setText((d->mimeType = mimePtr->name()));
+        }
     }
 }
 

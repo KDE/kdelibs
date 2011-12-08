@@ -495,6 +495,15 @@ bool XCFImageFormat::composeTiles(XCFImage& xcf_image)
 	layer.nrows = (layer.height + TILE_HEIGHT - 1) / TILE_HEIGHT;
 	layer.ncols = (layer.width + TILE_WIDTH - 1) / TILE_WIDTH;
 
+        //kDebug(399) << "IMAGE: height=" << xcf_image.height << ", width=" << xcf_image.width;
+        //kDebug(399) << "LAYER: height=" << layer.height << ", width=" << layer.width;
+        //kDebug(399) << "LAYER: rows=" << layer.nrows << ", columns=" << layer.ncols;
+        
+        // SANITY CHECK: Catch corrupted XCF image file where the width or height
+        // of a tile is reported are bogus. See Bug# 234030.
+        if (layer.height > xcf_image.height || layer.width > xcf_image.width)
+              return false;
+       
 	layer.image_tiles.resize(layer.nrows);
 
 	if (layer.type == GRAYA_GIMAGE || layer.type == INDEXEDA_GIMAGE)
