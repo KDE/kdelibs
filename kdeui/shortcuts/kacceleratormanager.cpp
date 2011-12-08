@@ -169,7 +169,7 @@ void KAcceleratorManagerPrivate::manage(QWidget *widget)
 {
     if (!widget)
     {
-        kDebug(240) << "null pointer given to manage";
+        qDebug() << "null pointer given to manage";
         return;
     }
 
@@ -626,7 +626,7 @@ void KAccelString::calculateWeights(int initialWeight)
     // try to preserve the wanted accelarators
     if ((int)pos == accel()) {
         weight += KAccelManagerAlgorithm::WANTED_ACCEL_EXTRA_WEIGHT;
-        // kDebug(240) << "wanted " << m_pureText << " " << KAcceleratorManagerPrivate::standardName(m_origText);
+        // qDebug(240) << "wanted " << m_pureText << " " << KAcceleratorManagerPrivate::standardName(m_origText);
         if (KAcceleratorManagerPrivate::standardName(m_origText))  {
             weight += KAccelManagerAlgorithm::STANDARD_ACCEL;
         }
@@ -697,7 +697,7 @@ void KAccelString::dump()
   QString s;
   for (int i=0; i<m_weight.count(); ++i)
     s += QString("%1(%2) ").arg(pure()[i]).arg(m_weight[i]);
-  kDebug() << "s " << s;
+  qDebug() << "s " << s;
 }
 
 

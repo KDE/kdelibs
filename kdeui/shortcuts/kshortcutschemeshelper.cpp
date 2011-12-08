@@ -45,7 +45,7 @@ bool KShortcutSchemesHelper::exportActionCollection(KActionCollection *collectio
     QFile schemeFile(schemeFileName);
     if (!schemeFile.open(QFile::WriteOnly | QFile::Truncate))
     {
-        kDebug() << "COULD NOT WRITE" << schemeFileName;
+        qDebug() << "COULD NOT WRITE" << schemeFileName;
         return false;
     }
 

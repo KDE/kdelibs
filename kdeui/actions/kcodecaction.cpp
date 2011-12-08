@@ -143,7 +143,7 @@ int KCodecAction::mibForName(const QString &codecName, bool *ok) const
     if (success)
         return mib;
 
-    kWarning() << "Invalid codec name: "  << codecName;
+    qWarning() << "Invalid codec name: "  << codecName;
     return MIB_DEFAULT;
 }
 

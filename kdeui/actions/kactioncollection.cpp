@@ -164,7 +164,7 @@ void KActionCollection::setComponentData(const KComponentData &cData)
     // As of now this only matters for global shortcuts. We could
     // thus relax the requirement and only refuse to change the component data
     // if we have actions with global shortcuts in this collection.
-    kWarning(129) << "this does not work on a KActionCollection containing actions!";
+    qWarning() << "this does not work on a KActionCollection containing actions!";
   }
 
   if (cData.isValid()) {
@@ -235,7 +235,7 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
             // different one. The objectName is used for saving shortcut
             // settings to disk. Both for local and global shortcuts.
             KAction *kaction = qobject_cast<KAction*>(action);
-            kDebug(125) << "Registering action " << objectName << " under new name " << indexName;
+            qDebug() << "Registering action " << objectName << " under new name " << indexName;
             // If there is a global shortcuts it's a very bad idea.
             if (kaction && kaction->isGlobalShortcutEnabled()) {
                 // In debug mode assert
@@ -439,7 +439,7 @@ void KActionCollection::readSettings( KConfigGroup* config )
       }
   }
 
-  //kDebug(125) << " done";
+  //qDebug() << " done";
 }
 
 void KActionCollection::exportGlobalShortcuts( KConfigGroup* config, bool writeAll ) const
@@ -478,13 +478,13 @@ void KActionCollection::exportGlobalShortcuts( KConfigGroup* config, bool writeA
               QString s = kaction->globalShortcut().toString();
               if( s.isEmpty() )
                   s = "none";
-              kDebug(125) << "\twriting " << actionName << " = " << s;
+              qDebug() << "\twriting " << actionName << " = " << s;
               config->writeEntry( actionName, s, flags );
           }
           // Otherwise, this key is the same as default
           //  but exists in config file.  Remove it.
           else if( bConfigHasAction ) {
-              kDebug(125) << "\tremoving " << actionName << " because == default";
+              qDebug() << "\tremoving " << actionName << " because == default";
               config->deleteEntry( actionName, flags );
           }
       }
@@ -502,7 +502,7 @@ bool KActionCollectionPrivate::writeKXMLGUIConfigFile()
         return false;
     }
 
-    kDebug(129) << "xmlFile=" << kxmlguiClient->xmlFile();
+    qDebug() << "xmlFile=" << kxmlguiClient->xmlFile();
 
     QString attrShortcut = QLatin1String("shortcut");
 
@@ -534,7 +534,7 @@ bool KActionCollectionPrivate::writeKXMLGUIConfigFile()
       }
 
       bool bSameAsDefault = (kaction->shortcut() == kaction->shortcut(KAction::DefaultShortcut));
-      kDebug(129) << "name = " << actionName
+      qDebug() << "name = " << actionName
                   << " shortcut = " << kaction->shortcut(KAction::ActiveShortcut).toString()
                   << " globalshortcut = " << kaction->globalShortcut(KAction::ActiveShortcut).toString()
                   << " def = " << kaction->shortcut(KAction::DefaultShortcut).toString();
@@ -547,7 +547,7 @@ bool KActionCollectionPrivate::writeKXMLGUIConfigFile()
 
       if( bSameAsDefault ) {
         act_elem.removeAttribute( attrShortcut );
-        //kDebug(129) << "act_elem.attributes().count() = " << act_elem.attributes().count();
+        //qDebug() << "act_elem.attributes().count() = " << act_elem.attributes().count();
         if( act_elem.attributes().count() == 1 )
           elem.removeChild( act_elem );
       } else {
@@ -619,13 +619,13 @@ void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAct
                 QString s = kaction->shortcut().toString();
                 if( s.isEmpty() )
                     s = "none";
-                kDebug(125) << "\twriting " << actionName << " = " << s;
+                qDebug() << "\twriting " << actionName << " = " << s;
                 config->writeEntry( actionName, s, flags );
 
             } else if( bConfigHasAction ) {
                 // Otherwise, this key is the same as default but exists in
                 // config file. Remove it.
-                kDebug(125) << "\tremoving " << actionName << " because == default";
+                qDebug() << "\tremoving " << actionName << " because == default";
                 config->deleteEntry( actionName, flags );
             }
         }
