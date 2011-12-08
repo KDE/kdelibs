@@ -20,7 +20,7 @@ set(kemoticons_LIB_SRCS
 )
 
 kde4_add_library(kemoticons ${LIBRARY_TYPE} ${kemoticons_LIB_SRCS})
-target_link_libraries(kemoticons ${KDE4_KIO_LIBS} karchive kcoreaddons)
+target_link_libraries(kemoticons ${KDE4_KIO_LIBS} karchive kcoreaddons inqt5)
 target_link_libraries(kemoticons LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY})
 set_target_properties(kemoticons PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}
@@ -140,7 +140,7 @@ set(kprintutils_LIB_SRCS
 
 kde4_add_library(kprintutils ${LIBRARY_TYPE} ${kprintutils_LIB_SRCS})
 
-target_link_libraries(kprintutils ${KDE4_KPARTS_LIBS} kcoreaddons)
+target_link_libraries(kprintutils ${KDE4_KPARTS_LIBS} kcoreaddons inqt5)
 target_link_libraries(kprintutils LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY})
 set_target_properties(kprintutils PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}
