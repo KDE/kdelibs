@@ -180,9 +180,10 @@ public:
      *        the "What's This" menu entry.
      *
      * @return A standard help menu.
+     * @deprecated use KHelpMenu directly
      */
-    KMenu* helpMenu( const QString &aboutAppText = QString(),
-			  bool showWhatsThis = true );
+    KDE_DEPRECATED KMenu* helpMenu(const QString &aboutAppText = QString(),
+                                   bool showWhatsThis = true );
 
     /**
      * Returns the help menu. Creates a standard help menu if none exists yet.
@@ -205,8 +206,9 @@ public:
      *        the "What's This" menu entry.
      *
      * @return A standard help menu.
+     * @deprecated use XMLGUI instead, or KHelpMenu directly
      */
-    KMenu* customHelpMenu( bool showWhatsThis = true );
+    KDE_DEPRECATED KMenu* customHelpMenu( bool showWhatsThis = true );
 
     /**
      * If the session did contain so high a number, @p true is returned,
@@ -659,8 +661,9 @@ protected Q_SLOTS:
     *   <activate your custom dialog>
     * }
     * \endcode
+    * @deprecated use KHelpMenu
     */
-    virtual void showAboutApplication();
+    virtual KDE_DEPRECATED void showAboutApplication();
 
    /**
     * This slot should only be called in case you reimplement closeEvent() and
