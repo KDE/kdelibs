@@ -30,7 +30,20 @@ set(kparts_LIB_SRCS
    textextension.cpp
    htmlextension.cpp
    fileinfoextension.cpp
+
+   # Private classes from libkactivities
+   private/libkactivities/manager_p.cpp
+   private/libkactivities/resourceinstance.cpp
    )
+
+
+# D-Bus connection to the activity manager
+qt4_add_dbus_interface(
+   kparts_LIB_SRCS
+   private/libkactivities/org.kde.ActivityManager.xml
+   activitymanager_interface
+)
+
 
 kde4_add_library(kparts ${LIBRARY_TYPE} ${kparts_LIB_SRCS})
 
@@ -41,8 +54,8 @@ if(HAVE_NEPOMUK)
   target_link_libraries(kparts  LINK_INTERFACE_LIBRARIES nepomuk nepomukutils )
 endif(HAVE_NEPOMUK)
 
-set_target_properties(kparts PROPERTIES VERSION ${GENERIC_LIB_VERSION} 
-                                        SOVERSION ${GENERIC_LIB_SOVERSION} 
+set_target_properties(kparts PROPERTIES VERSION ${GENERIC_LIB_VERSION}
+                                        SOVERSION ${GENERIC_LIB_SOVERSION}
                      )
 
 
