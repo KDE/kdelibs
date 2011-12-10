@@ -34,7 +34,6 @@ KDECORE_UNIT_TESTS(
  kstringhandlertest
  cplusplustest
  ksortablelisttest
- kcharsetstest
  kcalendartest
  kmacroexpandertest
  kshelltest
