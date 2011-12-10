@@ -20,7 +20,6 @@
 
 #include "ktemporaryfile.h"
 #include "kcomponentdata.h"
-#include "kstandarddirs.h"
 
 #include <QDir>
 
@@ -34,7 +33,8 @@ class KTemporaryFilePrivate
 
         inline QString defaultPrefix() const
         {
-            return KStandardDirs::locateLocal("tmp", componentData.componentName(), componentData);
+            // was: KStandardDirs::locateLocal("tmp", componentData.componentName(), componentData);
+            return QDir::tempPath() + QLatin1Char('/') + componentData.componentName();
         }
 
         KComponentData componentData;
@@ -62,7 +62,7 @@ void KTemporaryFile::setPrefix(const QString &prefix)
         newPrefix = d->defaultPrefix();
     } else {
         if ( !QDir::isAbsolutePath(newPrefix) ) {
-            newPrefix.prepend(KGlobal::dirs()->saveLocation("tmp"));
+            newPrefix.prepend(QDir::tempPath() + QLatin1Char('/'));
         }
     }
 
