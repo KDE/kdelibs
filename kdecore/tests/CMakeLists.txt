@@ -30,7 +30,6 @@ KDECORE_UNIT_TESTS(
  klocalizedstringtest
  kmountpointtest
  kstandarddirstest
- kaboutdatatest
  kurltest
  kstringhandlertest
  cplusplustest

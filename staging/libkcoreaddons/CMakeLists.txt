@@ -14,7 +14,7 @@ ecm_version(5 0 0)
 
 include(ECMQtFramework)
 
-find_package(Qt4 REQUIRED QtCore)
+find_package(Qt4 REQUIRED QtCore QtTest)
 
 include(${QT_USE_FILE})
 
@@ -30,5 +30,4 @@ include(src/io/ConfigureChecks.cmake)
 configure_file(src/io/config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/src/io/config-kdirwatch.h)
 
 add_subdirectory(src)
- 
-#add_subdirectory(test)
+add_subdirectory(autotests)

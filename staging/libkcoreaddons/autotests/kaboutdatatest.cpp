@@ -20,11 +20,10 @@
 
 // test object
 #include <kaboutdata.h>
-// lib
-#include <qtest_kde.h>
 // Qt
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
+#include <QTest>
 
 
 static const char AppName[] =            "app";
@@ -52,11 +51,11 @@ void KAboutDataTest::testConstructorWithDefaults()
     QCOMPARE( aboutData.programName(), qi18n(ProgramName).toString() );
     QCOMPARE( aboutData.programIconName(), QLatin1String(AppName) );
     QCOMPARE( aboutData.programLogo(), QVariant() );
-    QCOMPARE( aboutData.organizationDomain(), QString("kde.org") );
-    QCOMPARE( aboutData.version(), QString(Version) );
-    QCOMPARE( aboutData.catalogName(), QString(CatalogName) );
+    QCOMPARE( aboutData.organizationDomain(), QString::fromLatin1("kde.org") );
+    QCOMPARE( aboutData.version(), QString::fromLatin1(Version) );
+    QCOMPARE( aboutData.catalogName(), QString::fromLatin1(CatalogName) );
     QCOMPARE( aboutData.homepage(), QString() );
-    QCOMPARE( aboutData.bugAddress(), QString("submit@bugs.kde.org") );
+    QCOMPARE( aboutData.bugAddress(), QString::fromLatin1("submit@bugs.kde.org") );
     QVERIFY( aboutData.authors().isEmpty() );
     QVERIFY( aboutData.credits().isEmpty() );
     QVERIFY( aboutData.translators().isEmpty() );
@@ -96,15 +95,15 @@ void KAboutDataTest::testConstructor()
     QCOMPARE( aboutData.programName(), qi18n(ProgramName).toString() );
     QCOMPARE( aboutData.programIconName(), QLatin1String(AppName) );
     QCOMPARE( aboutData.programLogo(), QVariant() );
-    QCOMPARE( aboutData.organizationDomain(), QString(OrganizationDomain) );
-    QCOMPARE( aboutData.version(), QString(Version) );
-    QCOMPARE( aboutData.catalogName(), QString(CatalogName) );
-    QCOMPARE( aboutData.homepage(), QString(HomePageAddress) );
-    QCOMPARE( aboutData.bugAddress(), QString(BugsEmailAddress) );
+    QCOMPARE( aboutData.organizationDomain(), QString::fromLatin1(OrganizationDomain) );
+    QCOMPARE( aboutData.version(), QString::fromLatin1(Version) );
+    QCOMPARE( aboutData.catalogName(), QString::fromLatin1(CatalogName) );
+    QCOMPARE( aboutData.homepage(), QString::fromLatin1(HomePageAddress) );
+    QCOMPARE( aboutData.bugAddress(), QString::fromLatin1(BugsEmailAddress) );
     QVERIFY( aboutData.authors().isEmpty() );
     QVERIFY( aboutData.credits().isEmpty() );
     QVERIFY( aboutData.translators().isEmpty() );
-    QCOMPARE( aboutData.otherText(), QString(Text) );
+    QCOMPARE( aboutData.otherText(), QString::fromLatin1(Text) );
 //     QCOMPARE( aboutData.licenseName(KAboutData::ShortName), QString(WarningText) );
     QVERIFY( !aboutData.licenseName(KAboutData::ShortName).isEmpty() );
 //     QCOMPARE( aboutData.licenseName(KAboutData::FullName), QString(WarningText) );
@@ -130,14 +129,14 @@ void KAboutDataTest::testConstructor()
 void KAboutDataTest::testSetAddLicense()
 {
     // prepare a file with a license text
-    QFile licenseFile(LicenseFileName);
+    QFile licenseFile(QString::fromLatin1(LicenseFileName));
     licenseFile.open(QIODevice::WriteOnly);
     QTextStream licenseFileStream(&licenseFile);
     licenseFileStream << QLatin1String(LicenseFileText);
     licenseFile.close();
 
     const QLocalizedString copyrightStatement = qi18n(CopyrightStatement);
-    const QString lineFeed( "\n\n" );
+    const QString lineFeed = QString::fromLatin1( "\n\n" );
 
     KAboutData aboutData(AppName, CatalogName, qi18n(ProgramName), Version,
                 qi18n(ShortDescription), KAboutData::License_Unknown,
@@ -147,13 +146,14 @@ void KAboutDataTest::testSetAddLicense()
     // set to GPL2
     aboutData.setLicense( KAboutData::License_GPL_V2 );
 
-    QCOMPARE( aboutData.licenseName(KAboutData::ShortName), QString("GPL v2") );
-    QCOMPARE( aboutData.licenseName(KAboutData::FullName), QString("GNU General Public License Version 2") );
+    QCOMPARE( aboutData.licenseName(KAboutData::ShortName), QString::fromLatin1("GPL v2") );
+    QCOMPARE( aboutData.licenseName(KAboutData::FullName), QString::fromLatin1("GNU General Public License Version 2") );
 //     QCOMPARE( aboutData.license(), QString(GPL2Text) );
     QVERIFY( !aboutData.license().isEmpty() );
+    
     QCOMPARE( aboutData.licenses().count(), 1 );
-    QCOMPARE( aboutData.licenses().at(0).name(KAboutData::ShortName), QString("GPL v2") );
-    QCOMPARE( aboutData.licenses().at(0).name(KAboutData::FullName), QString("GNU General Public License Version 2") );
+    QCOMPARE( aboutData.licenses().at(0).name(KAboutData::ShortName), QString::fromLatin1("GPL v2") );
+    QCOMPARE( aboutData.licenses().at(0).name(KAboutData::FullName), QString::fromLatin1("GNU General Public License Version 2") );
 //     QCOMPARE( aboutData.licenses().at(0).text(), QString(GPL2Text) );
     QVERIFY( !aboutData.licenses().at(0).text().isEmpty() );
 
@@ -178,39 +178,39 @@ void KAboutDataTest::testSetAddLicense()
     // add GPL3
     aboutData.addLicense( KAboutData::License_GPL_V3 );
 
-    QCOMPARE( aboutData.licenseName(KAboutData::ShortName), QString("GPL v3") );
-    QCOMPARE( aboutData.licenseName(KAboutData::FullName), QString("GNU General Public License Version 3") );
+    QCOMPARE( aboutData.licenseName(KAboutData::ShortName), QString::fromLatin1("GPL v3") );
+    QCOMPARE( aboutData.licenseName(KAboutData::FullName), QString::fromLatin1("GNU General Public License Version 3") );
 //     QCOMPARE( aboutData.license(), QString(GPL3Text) );
     QVERIFY( !aboutData.license().isEmpty() );
     QCOMPARE( aboutData.licenses().count(), 1 );
-    QCOMPARE( aboutData.licenses().at(0).name(KAboutData::ShortName), QString("GPL v3") );
-    QCOMPARE( aboutData.licenses().at(0).name(KAboutData::FullName), QString("GNU General Public License Version 3") );
+    QCOMPARE( aboutData.licenses().at(0).name(KAboutData::ShortName), QString::fromLatin1("GPL v3") );
+    QCOMPARE( aboutData.licenses().at(0).name(KAboutData::FullName), QString::fromLatin1("GNU General Public License Version 3") );
 //     QCOMPARE( aboutData.licenses().at(0).text(), QString(GPL3Text) );
     QVERIFY( !aboutData.licenses().at(0).text().isEmpty() );
 
     // add GPL2, Custom and File
     aboutData.addLicense( KAboutData::License_GPL_V2 );
     aboutData.addLicenseText( qi18n(LicenseText) );
-    aboutData.addLicenseTextFile( LicenseFileName );
+    aboutData.addLicenseTextFile( QString::fromLatin1(LicenseFileName) );
 
-    QCOMPARE( aboutData.licenseName(KAboutData::ShortName), QString("GPL v3") );
-    QCOMPARE( aboutData.licenseName(KAboutData::FullName), QString("GNU General Public License Version 3") );
+    QCOMPARE( aboutData.licenseName(KAboutData::ShortName), QString::fromLatin1("GPL v3") );
+    QCOMPARE( aboutData.licenseName(KAboutData::FullName), QString::fromLatin1("GNU General Public License Version 3") );
 //     QCOMPARE( aboutData.license(), QString(GPL3Text) );
     QVERIFY( !aboutData.license().isEmpty() );
     QCOMPARE( aboutData.licenses().count(), 4 );
-    QCOMPARE( aboutData.licenses().at(0).name(KAboutData::ShortName), QString("GPL v3") );
-    QCOMPARE( aboutData.licenses().at(0).name(KAboutData::FullName), QString("GNU General Public License Version 3") );
+    QCOMPARE( aboutData.licenses().at(0).name(KAboutData::ShortName), QString::fromLatin1("GPL v3") );
+    QCOMPARE( aboutData.licenses().at(0).name(KAboutData::FullName), QString::fromLatin1("GNU General Public License Version 3") );
 //     QCOMPARE( aboutData.licenses().at(0).text(), QString(GPL3Text) );
     QVERIFY( !aboutData.licenses().at(0).text().isEmpty() );
-    QCOMPARE( aboutData.licenses().at(1).name(KAboutData::ShortName), QString("GPL v2") );
-    QCOMPARE( aboutData.licenses().at(1).name(KAboutData::FullName), QString("GNU General Public License Version 2") );
+    QCOMPARE( aboutData.licenses().at(1).name(KAboutData::ShortName), QString::fromLatin1("GPL v2") );
+    QCOMPARE( aboutData.licenses().at(1).name(KAboutData::FullName), QString::fromLatin1("GNU General Public License Version 2") );
 //     QCOMPARE( aboutData.licenses().at(1).text(), QString(GPL2Text) );
     QVERIFY( !aboutData.licenses().at(1).text().isEmpty() );
-    QCOMPARE( aboutData.licenses().at(2).name(KAboutData::ShortName), QString("Custom") );
-    QCOMPARE( aboutData.licenses().at(2).name(KAboutData::FullName), QString("Custom") );
+    QCOMPARE( aboutData.licenses().at(2).name(KAboutData::ShortName), QString::fromLatin1("Custom") );
+    QCOMPARE( aboutData.licenses().at(2).name(KAboutData::FullName), QString::fromLatin1("Custom") );
     QCOMPARE( aboutData.licenses().at(2).text(), qi18n(LicenseText).toString() );
-    QCOMPARE( aboutData.licenses().at(3).name(KAboutData::ShortName), QString("Custom") );
-    QCOMPARE( aboutData.licenses().at(3).name(KAboutData::FullName), QString("Custom") );
+    QCOMPARE( aboutData.licenses().at(3).name(KAboutData::ShortName), QString::fromLatin1("Custom") );
+    QCOMPARE( aboutData.licenses().at(3).name(KAboutData::FullName), QString::fromLatin1("Custom") );
     QCOMPARE( aboutData.licenses().at(3).text(), QString(copyrightStatement.toString()+lineFeed+qi18n(LicenseFileText).toString()) );
 }
 
@@ -249,4 +249,4 @@ void KAboutDataTest::testCopying()
     QVERIFY(!licenses.at(1).text().isEmpty());
 }
 
-QTEST_KDEMAIN_CORE( KAboutDataTest )
+QTEST_MAIN( KAboutDataTest )
