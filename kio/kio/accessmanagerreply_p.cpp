@@ -38,22 +38,15 @@
 
 namespace KDEPrivate {
 
-bool AccessManager_isLocalRequest(const KUrl& url)
-{
-    const QString scheme (url.protocol());
-    return (KProtocolInfo::isKnownProtocol(scheme) &&
-            KProtocolInfo::protocolClass(scheme).compare(QL1S(":local"), Qt::CaseInsensitive) == 0);
-}
-
 AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation &op,
                                        const QNetworkRequest &request,
                                        KIO::SimpleJob *kioJob,
-                                       bool emitReadReadOnMetaDataChange,
+                                       bool emitReadyReadOnMetaDataChange,
                                        QObject *parent)
                    :QNetworkReply(parent),
                     m_metaDataRead(false),
                     m_ignoreContentDisposition(false),
-                    m_emitReadReadOnMetaDataChange(emitReadReadOnMetaDataChange),
+                    m_emitReadyReadOnMetaDataChange(emitReadyReadOnMetaDataChange),
                     m_kioJob(kioJob)
 
 {
@@ -158,6 +151,13 @@ void AccessManagerReply::putOnHold()
     KIO::Scheduler::publishSlaveOnHold();
 }
 
+bool AccessManagerReply::isLocalRequest (const KUrl& url)
+{
+    const QString scheme (url.protocol());
+    return (KProtocolInfo::isKnownProtocol(scheme) &&
+            KProtocolInfo::protocolClass(scheme).compare(QL1S(":local"), Qt::CaseInsensitive) == 0);
+}
+
 void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
 {
     if (!job || m_metaDataRead)
@@ -166,7 +166,7 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
     const KIO::MetaData& metaData = job->metaData();
     if (metaData.isEmpty()) {
         // Allow handling of local resources such as man pages and file url...
-        if (AccessManager_isLocalRequest(url())) {
+        if (isLocalRequest(url())) {
             setHeader(QNetworkRequest::ContentLengthHeader, job->totalAmount(KJob::Bytes));
             setAttribute(QNetworkRequest::HttpStatusCodeAttribute, "200");
             emit metaDataChanged();
@@ -342,7 +342,7 @@ void AccessManagerReply::slotMimeType(KIO::Job *kioJob, const QString &mimeType)
     //kDebug(7044) << kioJob << mimeType;
     setHeader(QNetworkRequest::ContentTypeHeader, mimeType.toUtf8());
     readHttpResponseHeaders(kioJob);
-    if (m_emitReadReadOnMetaDataChange) {
+    if (m_emitReadyReadOnMetaDataChange) {
         emit readyRead();
     }
 }
@@ -371,6 +371,7 @@ void AccessManagerReply::slotStatResult(KJob* kJob)
     if (jobError(kJob)) {
         emit error (error());
         emit finished();
+        return;
     }
 
     KIO::StatJob* statJob = qobject_cast<KIO::StatJob*>(kJob);
