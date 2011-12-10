@@ -4,18 +4,17 @@ This file is part of the KDE libraries
 This file has been placed in the Public Domain.
 */
 
+#undef QT_NO_CAST_FROM_ASCII
+
 #include "ktemporaryfiletest.h"
 
 #include "qtest_kde.h"
 
 #include <QtCore/QDir>
 
-#include "kstandarddirs.h"
-
 #include "ktemporaryfile.h"
-#include "ktemporaryfiletest.moc"
 
-QTEST_KDEMAIN_CORE( KTemporaryFileTest )
+QTEST_MAIN( KTemporaryFileTest )
 
 /*
 Notes on these tests:
@@ -28,7 +27,7 @@ those things work. These should only test KDE specific functionality.
 
 void KTemporaryFileTest::initTestCase()
 {
-    kdeTempDir = KStandardDirs::locateLocal("tmp", "");
+    kdeTempDir = QDir::tempPath() + '/';
     componentName = KGlobal::mainComponent().componentName();
 
     QDir qdir ( kdeTempDir );
