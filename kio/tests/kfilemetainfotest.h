@@ -20,7 +20,7 @@
 #ifndef KFILEMETAINFOTEST_H
 #define KFILEMETAINFOTEST_H
 
-#include <ktempdir.h>
+#include <qtemporarydir.h>
 #include <QtCore/QEventLoop>
 #include <QtCore/QObject>
 
@@ -39,7 +39,7 @@ protected Q_SLOTS:
 private:
     int m_exitCount;
     QEventLoop m_eventLoop;
-    KTempDir m_tempDir;
+    QTemporaryDir m_tempDir;
 };
 
 #endif
