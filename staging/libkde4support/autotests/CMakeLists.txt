@@ -1,3 +1,4 @@
+enable_testing()
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
 include_directories(
@@ -10,7 +11,8 @@ include_directories(
 
 MACRO(KDE4SUPPORT_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
-               kde4_add_unit_test(${_testname} TESTNAME "kde4support-${_testname}" NOGUI ${_testname}.cpp)
+               add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
+               add_test(kde4support-${_testname} ${_testname})
                target_link_libraries(${_testname} kde4support ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} kdecore inqt5)
                if(WINCE)
                 target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
