@@ -10,6 +10,7 @@ remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 
 find_package(Qt4 REQUIRED QtTest)
 include(${QT_USE_FILE})
+enable_testing()
 
 add_subdirectory(proxymodeltestsuite)
 include_directories(
@@ -22,6 +23,7 @@ include_directories(
 MACRO(ITEMMODELS_PROXYMODEL_TESTS)
        FOREACH(_testname ${ARGN})
                add_executable(${_testname} ${_testname}.cpp ${proxyModelTestSources} )
+               add_test(itemmodels-${_testname} ${_testname})
                target_link_libraries(${_testname} itemmodels ${QT_QTTEST_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTXML_LIBRARY} proxymodeltestsuite )
        ENDFOREACH(_testname)
 ENDMACRO()

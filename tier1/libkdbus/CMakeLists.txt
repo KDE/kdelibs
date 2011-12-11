@@ -43,5 +43,5 @@ install(FILES
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 
-add_subdirectory(tests)
+add_subdirectory(autotests)
 
