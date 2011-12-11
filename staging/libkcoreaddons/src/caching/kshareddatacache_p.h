@@ -20,7 +20,7 @@
 #ifndef KSHAREDDATACACHE_P_H
 #define KSHAREDDATACACHE_P_H
 
-#include <config-util.h> // HAVE_SYS_MMAN_H
+#include <config-caching.h> // HAVE_SYS_MMAN_H
 
 #include <QtCore/QDebug>
 #include <QtCore/QSharedPointer>

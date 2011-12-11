@@ -1,3 +1,8 @@
+# Configure checks for the caching subdir
+include(CheckIncludeFiles)
+check_include_files("sys/types.h;sys/mman.h" HAVE_SYS_MMAN_H)
+configure_file(caching/config-caching.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-caching.h)
+
 set(kcoreaddons_OPTIONAL_SRCS )
 set(kcoreaddons_OPTIONAL_LIBS )
 
