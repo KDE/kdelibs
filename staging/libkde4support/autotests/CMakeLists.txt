@@ -5,6 +5,7 @@ include_directories(
    ${CMAKE_CURRENT_BINARY_DIR}/../src
    ${CMAKE_SOURCE_DIR}/libinqt5/src
    ${CMAKE_BINARY_DIR}/libinqt5/src
+   ${KDE4_KDECORE_INCLUDES}
 )
 
 MACRO(KDE4SUPPORT_UNIT_TESTS)
