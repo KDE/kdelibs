@@ -21,7 +21,7 @@
 
 #include <QSignalSpy>
 #include <QtCore/QObject>
-#include <ktempdir.h>
+#include <qtemporarydir.h>
 #include <QtCore/QDate>
 #include <kdirlister.h>
 #include <QtCore/QEventLoop>
@@ -122,7 +122,7 @@ Q_SIGNALS:
 private:
     void enterLoop(int exitCount = 1);
     int fileCount() const;
-    QString path() const { return m_tempDir.name(); }
+    QString path() const { return m_tempDir.path() + '/'; }
     void waitForRefreshedItems();
     void createSimpleFile(const QString& fileName);
     void fillDirLister2(MyDirLister& lister, const QString& path);
@@ -130,7 +130,7 @@ private:
 private:
     int m_exitCount;
     QEventLoop m_eventLoop;
-    KTempDir m_tempDir;
+    QTemporaryDir m_tempDir;
     MyDirLister m_dirLister;
     KFileItemList m_items;
     KFileItemList m_items2;
