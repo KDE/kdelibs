@@ -8,6 +8,8 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/kdecore/kernel/ # for KComponentData
     ${CMAKE_BINARY_DIR}/kdecore/kernel/
     ${CMAKE_BINARY_DIR}/kdecore/
+    ${CMAKE_SOURCE_DIR}/kdecore/config/
+    ${CMAKE_SOURCE_DIR}/kdecore/util/
 )
 
 add_library(kde4support ${LIBRARY_TYPE} ${libkde4support_SRCS})
