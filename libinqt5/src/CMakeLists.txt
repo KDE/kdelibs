@@ -1,5 +1,3 @@
-project(inqt5)
-
 set(libinqt5_SRCS
     qstandardpaths.cpp
     qstandardpaths_unix.cpp
