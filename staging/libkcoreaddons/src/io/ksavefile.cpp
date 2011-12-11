@@ -28,7 +28,10 @@
 #include <QDir>
 #include <QTemporaryFile>
 
-#include <kde_file.h>
+
+#include <sys/types.h>
+#include <sys/stat.h> // umask, fchmod
+#include <unistd.h> // fchown, fdatasync
 
 #include <stdlib.h>
 #include <errno.h>
@@ -237,7 +240,12 @@ bool KSaveFile::finalize()
         //to the temp file without creating a small race condition. So we use
         //the standard rename call instead, which will do the copy without the
         //race condition.
-        else if (0 == KDE::rename(d->tempFileName,d->realFileName)) {
+#ifdef Q_OS_WIN
+        else if (0 == kdewin32_rename(d->tempFileName,d->realFileName)) {
+#else
+        else if (0 == ::rename(QFile::encodeName(d->tempFileName).constData(),
+                               QFile::encodeName(d->realFileName).constData())) {
+#endif
             d->error=QFile::NoError;
             d->errorString.clear();
             success = true;

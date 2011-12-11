@@ -91,9 +91,8 @@ set(libkcoreaddons_SRCS
 
 
 include_directories(
-    ${CMAKE_BINARY_DIR}/kdecore/ # kde_export.h (required by kde_file.h)
-    ${CMAKE_SOURCE_DIR}/kdecore/util/ # kde_file.h (need to be ported to qfile/qfileinfo/qdir)
-    ${CMAKE_SOURCE_DIR}/kdecore/kernel/ # K_GLOBAL_STATIC
+    ${CMAKE_BINARY_DIR}/kdecore/ # kde_export.h (required by kglobal.h)
+    ${CMAKE_SOURCE_DIR}/kdecore/kernel/ # K_GLOBAL_STATIC (TODO remove)
     ${CMAKE_SOURCE_DIR}/libinqt5/src/
     ${CMAKE_BINARY_DIR}/libinqt5/src/
     ${CMAKE_CURRENT_BINARY_DIR}/io/
@@ -103,6 +102,8 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/kernel/
     ${CMAKE_CURRENT_SOURCE_DIR}/text/
 )
+
+include_directories(${QT_MKSPECS_DIR}/default) # for qplatformdefs.h
 
 add_library(kcoreaddons ${LIBRARY_TYPE} ${libkcoreaddons_SRCS})
 generate_export_header(kcoreaddons)

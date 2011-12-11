@@ -60,7 +60,7 @@
 
 #include <kglobal.h>
 
-#include <kde_file.h>
+#include <qplatformdefs.h> // QT_LSTAT, QT_STAT, QT_STATBUF
 
 #include <stdlib.h>
 #include <string.h>
@@ -390,11 +390,11 @@ void KDirWatchPrivate::inotifyEventReceived()
               // watched file as it would have its own watch descriptor, so
               // no addEntry/ removeEntry bookkeeping should be required.  Emit
               // the event immediately if any clients are interested.
-              KDE_struct_stat stat_buf;
+              QT_STATBUF stat_buf;
               // Unlike clientsForFileOrDir, the stat can fail here (item deleted),
               // so in that case we'll just take both kinds of clients and emit Deleted.
               KDirWatch::WatchModes flag = KDirWatch::WatchSubDirs | KDirWatch::WatchFiles;
-              if (KDE::stat(tpath, &stat_buf) == 0) {
+              if (QT_STAT(QFile::encodeName(tpath).constData(), &stat_buf) == 0) {
                 bool isDir = S_ISDIR(stat_buf.st_mode);
                 flag = isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
               }
@@ -419,9 +419,9 @@ void KDirWatchPrivate::inotifyEventReceived()
               // addEntry/ removeEntry bookkeeping should be required.
               // Add the path to the list of pending file changes if
               // there are any interested clients.
-              //KDE_struct_stat stat_buf;
+              //QT_STATBUF stat_buf;
               //QByteArray tpath = QFile::encodeName(e->path+'/'+path);
-              //KDE_stat(tpath, &stat_buf);
+              //QT_STAT(tpath, &stat_buf);
               //bool isDir = S_ISDIR(stat_buf.st_mode);
 
               // The API doc is somewhat vague as to whether we should emit
@@ -529,9 +529,9 @@ QString KDirWatchPrivate::Entry::parentDirectory() const
 QList<KDirWatchPrivate::Client *> KDirWatchPrivate::Entry::clientsForFileOrDir(const QString& tpath, bool* isDir) const
 {
   QList<Client *> ret;
-  KDE_struct_stat stat_buf;
-  if (KDE::stat(tpath, &stat_buf) == 0) {
-    *isDir = S_ISDIR(stat_buf.st_mode);
+  QFileInfo fi(tpath);
+  if (fi.exists()) {
+    *isDir = fi.isDir();
     const KDirWatch::WatchModes flag =
       *isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
     Q_FOREACH(Client *client, this->m_clients) {
@@ -542,9 +542,9 @@ QList<KDirWatchPrivate::Client *> KDirWatchPrivate::Entry::clientsForFileOrDir(c
   } else {
     // Happens frequently, e.g. ERROR: couldn't stat "/home/dfaure/.viminfo.tmp"
     //kDebug(7001) << "ERROR: couldn't stat" << tpath;
+    // In this case isDir is not set, but ret is empty anyway
+    // so isDir won't be used.
   }
-  // If KDE_stat fails then isDir is not set, but ret is empty anyway
-  // so isDir won't be used.
   return ret;
 }
 
@@ -803,8 +803,8 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 
   // we have a new path to watch
 
-  KDE_struct_stat stat_buf;
-  bool exists = (KDE::stat(path, &stat_buf) == 0);
+  QT_STATBUF stat_buf;
+  bool exists = (QT_STAT(QFile::encodeName(path).constData(), &stat_buf) == 0);
 
   EntryMap::iterator newIt = m_mapEntries.insert( path, Entry() );
   // the insert does a copy, so we have to use <e> now
@@ -814,7 +814,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
     e->isDir = S_ISDIR(stat_buf.st_mode);
 
     if (e->isDir && !isDir) {
-      KDE::lstat(path, &stat_buf);
+      QT_LSTAT(QFile::encodeName(path).constData(), &stat_buf);
       if (S_ISLNK(stat_buf.st_mode))
         // if it's a symlink, don't follow it
         e->isDir = false;
@@ -1131,8 +1131,8 @@ bool KDirWatchPrivate::restartEntryScan( KDirWatch* instance, Entry* e,
   int ev = NoChange;
   if (wasWatching == 0) {
     if (!notify) {
-      KDE_struct_stat stat_buf;
-      bool exists = (KDE::stat(e->path, &stat_buf) == 0);
+      QT_STATBUF stat_buf;
+      bool exists = (QT_STAT(QFile::encodeName(e->path).constData(), &stat_buf) == 0);
       if (exists) {
 #ifdef Q_OS_WIN
         // ctime is the 'creation time' on windows - use mtime instead
@@ -1226,8 +1226,8 @@ int KDirWatchPrivate::scanEntry(Entry* e)
     e->msecLeft += e->freq;
   }
 
-  KDE_struct_stat stat_buf;
-  const bool exists = (KDE::stat(e->path, &stat_buf) == 0);
+  QT_STATBUF stat_buf;
+  const bool exists = (QT_STAT(QFile::encodeName(e->path).constData(), &stat_buf) == 0);
   if (exists) {
 
     if (e->m_status == NonExistent) {
