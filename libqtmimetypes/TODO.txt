@@ -1,0 +1,8 @@
+To be done:
++fix bug with wrong xml/docbook
+-fix bug when determining match on low level with low priority (when best match on higher level)
+-add normal glob patterns (not via regexp)
+-rewrite parser
+-add binary parser
+-explore user-modified types
++add support fot AND magics

@@ -1,0 +1,2 @@
+add_subdirectory(qmimetype)
+add_subdirectory(qmimedatabase)

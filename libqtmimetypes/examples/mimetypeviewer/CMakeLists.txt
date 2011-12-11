@@ -1,0 +1,16 @@
+find_package(Qt4 REQUIRED QtGui)
+include(${QT_USE_FILE})
+
+set(SOURCES
+    main.cpp
+    mimetypeviewer.cpp
+)
+
+qt4_wrap_ui(SOURCES mimetypeviewer.ui)
+
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../../include/QtMimeTypes)
+
+add_executable( mimetypeviewer ${SOURCES} )
+
+target_link_libraries( mimetypeviewer QtMimeTypes inqt5 ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} )
+

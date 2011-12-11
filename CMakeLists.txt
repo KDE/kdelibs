@@ -47,6 +47,7 @@ endif (KHTML_BUILD_TESTREGRESSION)
 option(STATIC_LIBRARY "Build kdelibs as static libraries." FALSE)
 
 add_subdirectory( libinqt5 )
+add_subdirectory( libqtmimetypes )
 add_subdirectory( tier1 )
 
 ################# write platform profile file which will be installed #################
