@@ -22,7 +22,7 @@
 #include <QtCore/QDir>
 #include <assert.h>
 #include <QtCore/QFile>
-#include <ktempdir.h>
+#include <qtemporarydir.h>
 #include <kcmdlineargs.h>
 #include <unistd.h>
 
@@ -41,7 +41,7 @@ public:
 private:
     void waitForCompletion();
     KUrlCompletion* m_completion;
-    KTempDir* m_tempDir;
+    QTemporaryDir* m_tempDir;
     KUrl m_dirURL;
     QString m_dir;
     KUrlCompletion* m_completionEmptyCwd;
@@ -51,9 +51,8 @@ void KUrlCompletionTest::setup( bool setDirAsURL )
 {
     kDebug() ;
     m_completion = new KUrlCompletion;
-    m_tempDir = new KTempDir;
-    m_dir = m_tempDir->name();
-    Q_ASSERT( m_dir.endsWith( "/" ) );
+    m_tempDir = new QTemporaryDir;
+    m_dir = m_tempDir->path() + '/';
     m_dir += "Dir With#Spaces/";
     QDir().mkdir(m_dir);
     kDebug() << "m_dir=" << m_dir;
@@ -208,7 +207,7 @@ int main( int argc, char **argv )
         test.testEmptyCwd();
         test.teardown();
 
-        // Try again, with another KTempDir (to check that the caching doesn't give us wrong results)
+        // Try again, with another QTemporaryDir (to check that the caching doesn't give us wrong results)
         test.setup( true );
         test.testLocalRelativePath();
         test.testLocalAbsolutePath();
