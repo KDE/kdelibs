@@ -31,13 +31,13 @@ void KTemporaryFileTest::initTestCase()
     componentName = KGlobal::mainComponent().componentName();
 
     QDir qdir ( kdeTempDir );
-    qdir.mkdir("foo");
+    qdir.mkdir("ktempfiletest");
 }
 
 void KTemporaryFileTest::cleanupTestCase()
 {
     QDir qdir ( kdeTempDir );
-    qdir.rmdir("foo");
+    qdir.rmdir("ktempfiletest");
 }
 
 // Test putting files in the default KDE temp directory
@@ -66,9 +66,9 @@ void KTemporaryFileTest::testKTemporaryFile()
     //Test relative subdirectory
     {
         KTemporaryFile file;
-        file.setPrefix("foo/");
+        file.setPrefix("ktempfiletest/");
         QVERIFY(file.open());
-        QVERIFY(file.fileName().startsWith(kdeTempDir + "foo/"));
+        QVERIFY(file.fileName().startsWith(kdeTempDir + "ktempfiletest/"));
         QVERIFY(file.fileName().endsWith(QLatin1String(".tmp")));
         QVERIFY(QFile::exists(file.fileName()));
     }
