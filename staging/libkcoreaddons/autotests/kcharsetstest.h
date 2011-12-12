@@ -25,6 +25,7 @@ class KCharsetsTest: public QObject
     Q_OBJECT
 private Q_SLOTS:
     void testSingleton();
+    void testCodecForName_data();
     void testCodecForName();
     void testFromEntity();
     void testToEntity();
