@@ -13,7 +13,7 @@ MACRO(KARCHIVE_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
                add_test(karchive-${_testname} ${_testname})
-               target_link_libraries(${_testname} karchive ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} kcoreaddons kdecore inqt5) #kdecore for KMimeType, TODO REMOVE
+               target_link_libraries(${_testname} karchive ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} kcoreaddons inqt5)
                if(WINCE)
                 target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
                endif(WINCE)
