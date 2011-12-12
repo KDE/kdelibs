@@ -22,7 +22,6 @@
 
 #include "kmacroexpander_p.h"
 
-#include "kshell.h"
 
 #include <QtCore/QStringList>
 #include <QtCore/QStack>
