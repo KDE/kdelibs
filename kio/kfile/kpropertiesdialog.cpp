@@ -56,7 +56,6 @@ extern "C" {
 }
 #include <unistd.h>
 #include <errno.h>
-#include <assert.h>
 #include <algorithm>
 #include <functional>
 
@@ -212,11 +211,11 @@ KPropertiesDialog::KPropertiesDialog (const KFileItem& item,
 {
     setCaption( i18n( "Properties for %1" , KIO::decodeFileName(item.url().fileName())) );
 
-    assert( !item.isNull() );
+    Q_ASSERT( !item.isNull() );
     d->m_items.append(item);
 
     d->m_singleUrl = item.url();
-    assert(!d->m_singleUrl.isEmpty());
+    Q_ASSERT(!d->m_singleUrl.isEmpty());
 
     d->init();
 }
@@ -239,9 +238,9 @@ KPropertiesDialog::KPropertiesDialog(const KFileItemList& _items,
     else
         setCaption( i18n( "Properties for %1" , KIO::decodeFileName(_items.first().url().fileName())) );
 
-    assert( !_items.isEmpty() );
+    Q_ASSERT( !_items.isEmpty() );
     d->m_singleUrl = _items.first().url();
-    assert(!d->m_singleUrl.isEmpty());
+    Q_ASSERT(!d->m_singleUrl.isEmpty());
 
     d->m_items = _items;
 
@@ -273,7 +272,7 @@ KPropertiesDialog::KPropertiesDialog (const KUrl& _tempUrl, const KUrl& _current
     d->m_singleUrl = _tempUrl;
     d->m_defaultName = _defaultName;
     d->m_currentDir = _currentDir;
-    assert(!d->m_singleUrl.isEmpty());
+    Q_ASSERT(!d->m_singleUrl.isEmpty());
 
     // Create the KFileItem for the _template_ file, in order to read from it.
     d->m_items.append(KFileItem(KFileItem::Unknown, KFileItem::Unknown, d->m_singleUrl));
@@ -563,7 +562,7 @@ void KPropertiesDialog::updateUrl( const KUrl& _newUrl )
 
     d->m_singleUrl = newUrl;
     d->m_items.first().setUrl(newUrl);
-    assert(!d->m_singleUrl.isEmpty());
+    Q_ASSERT(!d->m_singleUrl.isEmpty());
     // If we have an Desktop page, set it dirty, so that a full file is saved locally
     // Same for a URL page (because of the Name= hack)
     foreach (KPropertiesDialogPlugin *it, d->m_pageList) {
@@ -1339,9 +1338,9 @@ void KFilePropsPlugin::applyChanges()
 
             // Don't remove the template !!
             if ( !d->m_bFromTemplate ) // (normal renaming)
-                job = KIO::move( oldurl, properties->kurl() );
+                job = KIO::moveAs( oldurl, properties->kurl() );
             else // Copying a template
-                job = KIO::copy( oldurl, properties->kurl() );
+                job = KIO::copyAs( oldurl, properties->kurl() );
 
             connect( job, SIGNAL( result( KJob * ) ),
                      SLOT( slotCopyFinished( KJob * ) ) );
@@ -1381,8 +1380,8 @@ void KFilePropsPlugin::slotCopyFinished( KJob * job )
         }
     }
 
-    assert( !properties->item().isNull() );
-    assert( !properties->item().url().isEmpty() );
+    Q_ASSERT( !properties->item().isNull() );
+    Q_ASSERT( !properties->item().url().isEmpty() );
 
     // Save the file where we can -> usually in ~/.kde/...
     if (d->bDesktopFile && !d->m_sRelativePath.isEmpty())
