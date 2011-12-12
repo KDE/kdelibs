@@ -18,7 +18,7 @@
 
 #include "kfilterdev.h"
 #include <config-compression.h>
-#include <kmimetype.h>
+#include <qmimedatabase.h>
 
 #include <QDebug>
 
@@ -70,22 +70,23 @@ static KCompressionDevice::CompressionType findCompressionTypeByMimeType( const 
         return KCompressionDevice::Xz;
     }
 #endif
-    const KMimeType::Ptr mime = KMimeType::mimeType(mimeType);
-    if (mime) {
-        if (mime->is(QString::fromLatin1("application/x-gzip"))) {
+    QMimeDatabase db;
+    const QMimeType mime = db.mimeTypeForName(mimeType);
+    if (mime.isValid()) {
+        if (mime.inherits(QString::fromLatin1("application/x-gzip"))) {
             return KCompressionDevice::GZip;
         }
 #if HAVE_BZIP2_SUPPORT
-        if (mime->is(QString::fromLatin1("application/x-bzip"))) {
+        if (mime.inherits(QString::fromLatin1("application/x-bzip"))) {
             return KCompressionDevice::BZip2;
         }
 #endif
 #if HAVE_XZ_SUPPORT
-        if (mime->is(QString::fromLatin1("application/x-lzma"))) {
+        if (mime.inherits(QString::fromLatin1("application/x-lzma"))) {
             return KCompressionDevice::Xz;
         }
 
-        if (mime->is(QString::fromLatin1("application/x-xz"))) {
+        if (mime.inherits(QString::fromLatin1("application/x-xz"))) {
             return KCompressionDevice::Xz;
         }
 #endif

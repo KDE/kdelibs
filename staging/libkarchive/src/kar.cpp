@@ -20,11 +20,8 @@
 #include "kar.h"
 
 #include <QtCore/QFile>
-#include <QtCore/QDir>
 #include <QtCore/QDebug>
 #include <time.h>
-//#include <kmimetype.h>
-#include <QtCore/QRegExp>
 
 #include "kfilterdev.h"
 //#include "klimitediodevice_p.h"

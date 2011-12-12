@@ -105,6 +105,20 @@ An easy case is KStandardDirs::findExe -&gt; QStandardPaths::findExecutable. Wel
 </li>
 <li>KTemporaryFile is deprecated, port to QTemporaryFile instead, see KTemporaryFile API documentation for details.</li>
 <li>KTempDir is deprecated, port to QTemporaryDir instead, see KTempDir API documentation for details.</li>
+<li>KMimeType is deprecated, port to QMimeType instead. Here's a porting guide:
+<pre>
+   QMimeDatabase db; // All the methods need a db instance, but it's very cheap to create, on stack is fine.
+   KMimeType::Ptr mime -&gt; QMimeType mime
+   if (mime) -&gt; if (mime.isValid())
+   KMimeType::mimeType(name) -&gt; db.mimeTypeForName(name)
+   KMimeType::mimeType(name, DontResolveAlias) -&gt; db.mimeTypeForName(name) // there is no separate mime object for the alias
+   KMimeType::findByUrl(url) -&gt; db.findByUrl(url)
+   KMimeType::findByPath(path) -&gt; db.findByFile(path)
+   KMimeType::findByPath(path, 0, true) -&gt; db.findByName(path)
+   KMimeType::findByContent(data) -&gt; db.findByData(data)
+   KMimeType::findByNameAndContent(name, data_or_device) -&gt; db.findByNameAndData(name, data_or_device)
+   KMimeType::findByFileContent(path) -&gt; QFile f(path); if (f.open(QIODevice::ReadOnly)) db.findByData(&amp;f)
+   mime->name() == KMimeType::defaultMimeType() -&gt; mime.isDefault()
 </ul>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>

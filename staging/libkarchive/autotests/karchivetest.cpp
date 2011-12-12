@@ -20,7 +20,6 @@
 #include <config-compression.h>
 
 #include "karchivetest.h"
-#include <kmimetype.h>
 #include "karchivetest.moc"
 #include <ktar.h>
 #include <kzip.h>
@@ -289,9 +288,6 @@ void KArchiveTest::initTestCase()
         QVERIFY(false);
     }
 #endif
-
-    // For better benchmarks: initialize KMimeTypeFactory magic here
-    KMimeType::findByContent(QByteArray("hello"));
 }
 
 void KArchiveTest::testCreateTar_data()

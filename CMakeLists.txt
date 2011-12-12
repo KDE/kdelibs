@@ -206,6 +206,7 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/staging/libkcoreaddons/src/jobs
                           ${CMAKE_SOURCE_DIR}/staging/libkcoreaddons/src/text
                           ${CMAKE_BINARY_DIR}/staging/libkcoreaddons/src
+                          ${CMAKE_SOURCE_DIR}/libqtmimetypes/include/QtMimeTypes
                           ${QT_INCLUDES}
                           ${_KDE4_PLATFORM_INCLUDE_DIRS})
 # kdeui depends on kdecore

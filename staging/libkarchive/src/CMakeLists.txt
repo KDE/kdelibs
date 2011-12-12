@@ -36,8 +36,8 @@ set(karchive_SRCS
 
 kf5_add_library(karchive ${LIBRARY_TYPE} ${karchive_SRCS} ${karchive_OPTIONAL_SRCS})
 
-# Uses kdecore for KMimeType only, TODO, port to QMimeType
-target_link_libraries(karchive ${QT_QTCORE_LIBRARY} ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY} kdecore kcoreaddons)
+# Links to kcoreaddons for KSaveFile - TODO REMOVE
+target_link_libraries(karchive ${QT_QTCORE_LIBRARY} ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY} kcoreaddons QtMimeTypes)
 
 set_target_properties(karchive PROPERTIES VERSION  ${GENERIC_LIB_VERSION}
                                           SOVERSION ${GENERIC_LIB_SOVERSION}

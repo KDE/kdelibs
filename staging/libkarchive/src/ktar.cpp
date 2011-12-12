@@ -26,7 +26,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
-#include <kmimetype.h>
+#include <qmimedatabase.h>
 #include <QtCore/QTemporaryFile>
 
 #include <kfilterdev.h>
@@ -89,31 +89,35 @@ bool KTar::createDevice(QIODevice::OpenMode mode)
     if (d->mimetype.isEmpty()) {
         // Find out mimetype manually
 
-        KMimeType::Ptr mime;
+        QMimeDatabase db;
+        QMimeType mime;
         if (mode != QIODevice::WriteOnly && QFile::exists(fileName())) {
             // Give priority to file contents: if someone renames a .tar.bz2 to .tar.gz,
             // we can still do the right thing here.
-            mime = KMimeType::findByFileContent(fileName());
-            if (mime == KMimeType::defaultMimeTypePtr()) {
+            QFile f(fileName());
+            if (f.open(QIODevice::ReadOnly)) {
+                mime = db.findByData(&f);
+            }
+            if (!mime.isValid()) {
                 // Unable to determine mimetype from contents, get it from file name
-                mime = KMimeType::findByPath(fileName(), 0, true);
+                mime = db.findByName(fileName());
             }
         } else {
-            mime = KMimeType::findByPath(fileName(), 0, true);
+            mime = db.findByName(fileName());
         }
 
         //qDebug() << mode << mime->name();
 
-        if (mime->is(QString::fromLatin1("application/x-compressed-tar")) || mime->is(QString::fromLatin1(application_gzip))) {
+        if (mime.inherits(QString::fromLatin1("application/x-compressed-tar")) || mime.inherits(QString::fromLatin1(application_gzip))) {
             // gzipped tar file (with possibly invalid file name), ask for gzip filter
             d->mimetype = QString::fromLatin1(application_gzip);
-        } else if (mime->is(QString::fromLatin1("application/x-bzip-compressed-tar")) || mime->is(QString::fromLatin1(application_bzip))) {
+        } else if (mime.inherits(QString::fromLatin1("application/x-bzip-compressed-tar")) || mime.inherits(QString::fromLatin1(application_bzip))) {
             // bzipped2 tar file (with possibly invalid file name), ask for bz2 filter
             d->mimetype = QString::fromLatin1(application_bzip);
-        } else if (mime->is(QString::fromLatin1("application/x-lzma-compressed-tar")) || mime->is(QString::fromLatin1(application_lzma))) {
+        } else if (mime.inherits(QString::fromLatin1("application/x-lzma-compressed-tar")) || mime.inherits(QString::fromLatin1(application_lzma))) {
             // lzma compressed tar file (with possibly invalid file name), ask for xz filter
             d->mimetype = QString::fromLatin1(application_lzma);
-        } else if (mime->is(QString::fromLatin1("application/x-xz-compressed-tar")) || mime->is(QString::fromLatin1(application_xz))) {
+        } else if (mime.inherits(QString::fromLatin1("application/x-xz-compressed-tar")) || mime.inherits(QString::fromLatin1(application_xz))) {
             // xz compressed tar file (with possibly invalid name), ask for xz filter
             d->mimetype = QString::fromLatin1(application_xz);
         }
