@@ -31,6 +31,9 @@ class KFilterBase;
  *
  * To simply read/write compressed files, see deviceForFile.
  *
+ * KFilterDev adds MIME type support to KCompressionDevice, and also
+ * provides compatibility methods for KDE 4 code.
+ *
  * @author David Faure <faure@kde.org>
  */
 class KARCHIVE_EXPORT KFilterDev : public KCompressionDevice
@@ -43,8 +46,10 @@ public:
      */
     KFilterDev(const QString& fileName);
 
-    // Returns the compression type for the given mimetype, if possible. Otherwise returns None.
-    // This handles simple cases like application/x-gzip, but also application/x-compressed-tar, and inheritance.
+    /**
+     * Returns the compression type for the given mimetype, if possible. Otherwise returns None.
+     * This handles simple cases like application/x-gzip, but also application/x-compressed-tar, and inheritance.
+     */
     static CompressionType compressionTypeForMimeType(const QString& mimetype);
 
     /**
