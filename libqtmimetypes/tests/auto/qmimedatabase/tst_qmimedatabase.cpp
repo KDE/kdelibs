@@ -229,6 +229,9 @@ void tst_qmimedatabase::test_findByFileWithContent()
     tempFile.close();
     mime = db.findByFile(tempFileName);
     QCOMPARE(mime.name(), QString::fromLatin1("application/pdf"));
+    QFile file(tempFileName);
+    mime = db.findByData(&file); // QIODevice ctor
+    QCOMPARE(mime.name(), QString::fromLatin1("application/pdf"));
     // by name only, we cannot find the mimetype
     mime = db.findByName(tempFileName);
     QVERIFY(mime.isValid());

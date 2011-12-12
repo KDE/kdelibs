@@ -489,6 +489,29 @@ QMimeType QMimeDatabase::findByData(const QByteArray &data) const
 // ------------------------------------------------------------------------------------------------
 
 /*!
+    Returns a MIME type for the data in \a device.
+
+    A valid MIME type is always returned. If \a data doesn't match any
+    known MIME type data, the default MIME type (application/octet-stream)
+    is returned.
+*/
+QMimeType QMimeDatabase::findByData(QIODevice* device) const
+{
+    QMutexLocker locker(&d->mutex);
+
+    int accuracy = 0;
+    if (device->isOpen() || device->open(QIODevice::ReadOnly)) {
+        // Read 16K in one go (QIODEVICE_BUFFERSIZE in qiodevice_p.h).
+        // This is much faster than seeking back and forth into QIODevice.
+        const QByteArray data = device->read(16384);
+        return d->findByData(data, &accuracy);
+    }
+    return mimeTypeForName(d->defaultMimeType());
+}
+
+// ------------------------------------------------------------------------------------------------
+
+/*!
     Returns a MIME type for \a url.
 
     If the url is a local file, this calls findByFile.

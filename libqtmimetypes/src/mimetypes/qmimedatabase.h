@@ -47,6 +47,7 @@ public:
     QMimeType mimeTypeForName(const QString &nameOrAlias) const;
     QMimeType findByName(const QString &fileName) const;
     QMimeType findByData(const QByteArray &data) const;
+    QMimeType findByData(QIODevice *device) const;
 
     QMimeType findByFile(const QString &fileName) const;
     QMimeType findByFile(const QFileInfo &fileInfo) const;
@@ -71,5 +72,5 @@ private:
 };
 
 QT_END_NAMESPACE
-  
+
 #endif   // QMIMEDATABASE_H_INCLUDED
