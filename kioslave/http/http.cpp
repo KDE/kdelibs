@@ -2188,7 +2188,7 @@ bool HTTPProtocol::httpOpenConnection()
     // Only save proxy auth information after proxy authentication has
     // actually taken place, which will set up exactly this connection.
     disconnect(socket(), SIGNAL(connected()),
-              this, SLOT(saveProxyAuthenticationForSocket()));
+               this, SLOT(saveProxyAuthenticationForSocket()));
 
     clearUnreadBuffer();
 
@@ -4734,7 +4734,7 @@ void HTTPProtocol::error( int _err, const QString &_text )
 {
   // Close the connection only on connection errors. Otherwise, honor the
   // keep alive flag.
-  if (_err == ERR_CONNECTION_BROKEN)
+  if (_err == ERR_CONNECTION_BROKEN || _err == ERR_COULD_NOT_CONNECT)
       httpClose(false);
   else
       httpClose(m_request.isKeepAlive);
