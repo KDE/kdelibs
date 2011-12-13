@@ -24,6 +24,7 @@
 #include "kmimemagicrule_p.h"
 #include "kmimeglobsfileparser_p.h"
 #include "kmimetype.h"
+#include "qmimedatabase.h"
 #include <QReadWriteLock>
 
 /**
@@ -125,53 +126,17 @@ private:
     KMimeTypeRepository();
     ~KMimeTypeRepository();
 
+    QMimeDatabase m_mimeDb;
+
     typedef QHash<QString, QString> AliasesMap;
     const AliasesMap& aliases();
 
-    /**
-     * @internal (public for unit tests only)
-     */
-    QList<KMimeMagicRule> parseMagicFile(QIODevice* file, const QString& fileName) const;
-
-    // Read magic files
-    void parseMagic();
-
-    void parseGlobs();
-
-    /**
-     * Look into either the high-weight patterns or the low-weight patterns.
-     * @param matchingMimeTypes in/out parameter. In: the already found mimetypes;
-     * this is only set when the fast pattern dict found matches (i.e. weight 50)
-     * and we want to check if there are other, longer, weight 50 matches.
-     * @param filename the filename we are trying to match
-     * @param foundExt in/out parameter, the recognized extension of the match
-     * @param highWeight whether to look into >50 or <=50 patterns.
-     */
-    void findFromOtherPatternList(QStringList& matchingMimeTypes,
-                                  const QString &filename,
-                                  QString& foundExt,
-                                  bool highWeight);
-
-    mutable AliasesMap m_aliases; // alias -> canonicalName
-
-    typedef QHash<QString, QStringList> ParentsMap;
-    ParentsMap m_parents;
-
-    typedef QHash<QString, QStringList> PatternsMap;
-    PatternsMap m_patterns;
-
-    bool m_parentsMapLoaded;
-    bool m_magicFilesParsed;
-    mutable bool m_aliasFilesParsed;
-    bool m_globsFilesParsed;
-    bool m_patternsMapCalculated;
     bool m_mimeTypesChecked;
     bool m_useFavIcons;
     bool m_useFavIconsChecked;
     int m_sharedMimeInfoVersion;
-    QList<KMimeMagicRule> m_magicRules;
-    KMimeGlobsFileParser::AllGlobs m_globs;
     KMimeType::Ptr m_defaultMimeType;
+
     QReadWriteLock m_mutex;
 };
 
