@@ -124,7 +124,7 @@ void KFilterTest::test_block_read( const QString & fileName )
     while ( ( n = dev.read( array.data(), array.size() ) ) )
     {
         QVERIFY( n > 0 );
-        read += QByteArray( array, n );
+        read += QByteArray( array.constData(), n );
         //qDebug() << "read returned " << n;
         //qDebug() << "read='" << read << "'";
 
@@ -338,7 +338,7 @@ void KFilterTest::test_deflateWithZlibHeader()
     mFilterDevice->terminate();
     delete mFilterDevice;
 #endif
-    QCOMPARE(QString::fromLatin1(read), QString::fromLatin1(data)); // more readable output than the line below
+    QCOMPARE(QString::fromLatin1(read.constData()), QString::fromLatin1(data.constData())); // more readable output than the line below
     QCOMPARE(read, data);
 
     {
@@ -375,20 +375,20 @@ void KFilterTest::test_pushData() // ### UNFINISHED
     QVERIFY(file.open(QIODevice::ReadOnly));
     const QByteArray compressed = file.readAll();
     const int firstChunkSize = compressed.size() / 2;
-    QByteArray firstData(compressed, firstChunkSize);
+    QByteArray firstData(compressed.constData(), firstChunkSize);
     QBuffer inBuffer(&firstData);
     QVERIFY(inBuffer.open(QIODevice::ReadWrite));
     KCompressionDevice::CompressionType type = KFilterDev::compressionTypeForMimeType(QString::fromLatin1("application/x-gzip"));
     KCompressionDevice flt(&inBuffer, false, type);
     QVERIFY(flt.open(QIODevice::ReadOnly));
     QByteArray read = flt.readAll();
-    qDebug() << QString::fromLatin1(read);
+    qDebug() << QString::fromLatin1(read.constData());
 
     // And later...
     inBuffer.write(QByteArray(compressed.data() + firstChunkSize, compressed.size() - firstChunkSize));
     QCOMPARE(inBuffer.data().size(), compressed.size());
     read += flt.readAll();
-    qDebug() << QString::fromLatin1(read);
+    qDebug() << QString::fromLatin1(read.constData());
     // ### indeed, doesn't work currently. So we use HTTPFilter instead, for now.
 }
 
@@ -432,4 +432,3 @@ void KFilterTest::slotFilterOutput(const QByteArray& data)
     m_filterOutput += data;
 }
 
-#include "kfiltertest.moc"

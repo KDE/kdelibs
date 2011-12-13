@@ -75,7 +75,7 @@ HTTPFilterChain::slotInput(const QByteArray &d)
    if (first)
       first->slotInput(d);
    else
-      emit output(d);
+      Q_EMIT output(d);
 }
 
 HTTPFilterMD5::HTTPFilterMD5()
@@ -85,14 +85,14 @@ HTTPFilterMD5::HTTPFilterMD5()
 QString
 HTTPFilterMD5::md5()
 {
-    return QString::fromLatin1(context.base64Digest());
+    return QString::fromLatin1(context.base64Digest().constData());
 }
 
 void
 HTTPFilterMD5::slotInput(const QByteArray &d)
 {
    context.update(d);
-   emit output(d);
+   Q_EMIT output(d);
 }
 
 
@@ -172,18 +172,18 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
         {
             const int bytesOut = sizeof(buf) - m_gzipFilter->outBufferAvailable();
             if (bytesOut) {
-                emit output(QByteArray(buf, bytesOut));
+                Q_EMIT output(QByteArray(buf, bytesOut));
             }
             if (result == KFilterBase::End) {
                 //kDebug() << "done, bHasFinished=true";
-                emit output(QByteArray());
+                Q_EMIT output(QByteArray());
                 m_finished = true;
             }
             break;
         }
         case KFilterBase::Error:
             kWarning() << "Error from KGZipFilter";
-            emit error(i18n("Receiving corrupt data."));
+            Q_EMIT error(i18n("Receiving corrupt data."));
             m_finished = true; // exit this while loop
             break;
         }

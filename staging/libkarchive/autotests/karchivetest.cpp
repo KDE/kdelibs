@@ -17,8 +17,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-#undef QT_NO_CAST_FROM_ASCII
-
 #include <config-compression.h>
 
 #include "karchivetest.h"

@@ -76,4 +76,3 @@ void KLimitedIODeviceTest::testSeeking()
     QCOMPARE(dev.readAll(), chunk.data);
 }
 
-#include "klimitediodevicetest.moc"

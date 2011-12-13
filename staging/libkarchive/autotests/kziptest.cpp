@@ -66,9 +66,9 @@ void recursive_transfer(const KArchiveDirectory * dir,
     	    printf("DATA=%s\n", str.toLatin1().constData());
 
 	    if (e->symLinkTarget().isEmpty()) {
-	        zip->writeFile( path+e->name().toLatin1().constData(),
-			    "holgi", "holgrp",
-			    f->data(), arr.size() );
+	        zip->writeFile( path + e->name(),
+                                "holgi", "holgrp",
+                                arr.constData(), arr.size() );
 	    } else
 	        zip->writeSymLink(path+e->name(), e->symLinkTarget(), "leo", "leo",
 				0120777, 1000000000l, 1000000000l, 1000000000l);
@@ -204,7 +204,7 @@ int main( int argc, char** argv )
 
     QDataStream s( &f );
 
-    zip.writeFile( argv[3], "", "", f.readAll(), f.size() );
+    zip.writeFile( argv[3], "", "", f.readAll().constData(), f.size() );
     zip.close();
 
     return 0;
