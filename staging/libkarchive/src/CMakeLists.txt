@@ -34,7 +34,8 @@ set(karchive_SRCS
   kzip.cpp
 )
 
-kf5_add_library(karchive ${LIBRARY_TYPE} ${karchive_SRCS} ${karchive_OPTIONAL_SRCS})
+add_library(karchive ${LIBRARY_TYPE} ${karchive_SRCS} ${karchive_OPTIONAL_SRCS})
+generate_export_header(karchive)
 
 # Links to kcoreaddons for KSaveFile - TODO REMOVE
 target_link_libraries(karchive ${QT_QTCORE_LIBRARY} ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY} kcoreaddons QtMimeTypes)

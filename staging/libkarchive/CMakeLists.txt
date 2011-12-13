@@ -1,4 +1,22 @@
+cmake_minimum_required(VERSION 2.8.5)
+
 project(karchive)
+
+find_package(extra-cmake-modules REQUIRED)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${EXTRA_CMAKE_MODULES_MODULE_PATH})
+
+include(ECMVersion)
+
+# -- Maintained by scripty
+ecm_version(5 0 0)
+# --
+
+include(ECMQtFramework)
+
+find_package(Qt4 REQUIRED QtCore)
+
+include(${QT_USE_FILE})
 
 find_package(ZLIB)
 set_package_properties(ZLIB PROPERTIES
@@ -11,7 +29,7 @@ include_directories(
   ${QT_INCLUDES}
   ${CMAKE_CURRENT_BINARY_DIR}
   ${ZLIB_INCLUDE_DIR}
-  ${KDE4_KDECORE_INCLUDES}
+  ${KDE4_KDECORE_INCLUDES} # TODO REMOVE
 )
 
 add_subdirectory(src)

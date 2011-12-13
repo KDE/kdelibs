@@ -17,10 +17,11 @@
    Boston, MA 02110-1301, USA.
 */
 
+#undef QT_NO_CAST_FROM_ASCII
+
 #include <config-compression.h>
 
 #include "karchivetest.h"
-#include "karchivetest.moc"
 #include <ktar.h>
 #include <kzip.h>
 
@@ -146,7 +147,7 @@ static void testFileData( KArchive* archive )
     QCOMPARE(contents.size(), 5);
     contents += dev->read(50);
     QCOMPARE(contents.size(), 13);
-    QCOMPARE( QString::fromLatin1(contents), QString::fromLatin1(arr) );
+    QCOMPARE( QString::fromLatin1(contents.constData()), QString::fromLatin1(arr.constData()) );
     delete dev;
 
     e = dir->entry( "mediumfile" );
@@ -167,9 +168,9 @@ static void testFileData( KArchive* archive )
     f = (KArchiveFile*)e;
     dev = f->createDevice();
     QByteArray firstLine = dev->readLine();
-    QCOMPARE(QString::fromLatin1(firstLine), QString::fromLatin1("I do not speak German\n"));
+    QCOMPARE(QString::fromLatin1(firstLine.constData()), QString::fromLatin1("I do not speak German\n"));
     QByteArray secondLine = dev->read(100);
-    QCOMPARE(QString::fromLatin1(secondLine), QString::fromLatin1("David."));
+    QCOMPARE(QString::fromLatin1(secondLine.constData()), QString::fromLatin1("David."));
     delete dev;
 #ifndef Q_OS_WIN
     e = dir->entry( "z/test3_symlink" );
