@@ -50,7 +50,6 @@ KDECORE_UNIT_TESTS(
  kautosavefiletest
  kdesktopfiletest
  kautostarttest
- kjobtest
  ksycocadicttest
  kservicetest
  kglobalstatictest

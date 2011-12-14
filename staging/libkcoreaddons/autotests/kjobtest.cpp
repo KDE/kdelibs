@@ -19,12 +19,11 @@
 
 #include "kjobtest.h"
 
-#include "qtest_kde.h"
-
 #include <QtCore/QTimer>
 #include <QtTest/QSignalSpy>
+#include <QtTest/QTest>
 
-QTEST_KDEMAIN_CORE( KJobTest )
+QTEST_MAIN( KJobTest )
 
 
 KJobTest::KJobTest()

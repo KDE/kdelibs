@@ -44,7 +44,7 @@ public:
     void setTotalSize( qulonglong size );
     void setPercent( unsigned long percentage );
 
-private slots:
+private Q_SLOTS:
     void doEmit();
 };
 
