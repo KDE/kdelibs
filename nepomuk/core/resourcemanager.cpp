@@ -31,7 +31,6 @@
 
 #include <kglobal.h>
 #include <kdebug.h>
-#include <krandom.h>
 
 #include <Soprano/Node>
 #include <Soprano/Statement>
