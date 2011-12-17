@@ -371,10 +371,18 @@ int TCPSlaveBase::connectToHost(const QString& host, quint16 port, QString* erro
         if (d->socket.state() != KTcpSocket::ConnectedState) {
             if (errorString)
                 *errorString = host + QLatin1String(": ") + d->socket.errorString();
-            if (d->socket.error() == KTcpSocket::HostNotFoundError) {
+            switch (d->socket.error()) {
+            case KTcpSocket::UnsupportedSocketOperationError:
+                return ERR_UNSUPPORTED_ACTION;
+            case KTcpSocket::RemoteHostClosedError:
+                return ERR_CONNECTION_BROKEN;
+            case KTcpSocket::SocketTimeoutError:
+                return ERR_SERVER_TIMEOUT;
+            case KTcpSocket::HostNotFoundError:
                 return ERR_UNKNOWN_HOST;
+            default:
+                return ERR_COULD_NOT_CONNECT;
             }
-            return ERR_COULD_NOT_CONNECT;
         }
 
         //### check for proxyAuthenticationRequiredError

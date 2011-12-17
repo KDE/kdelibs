@@ -2237,6 +2237,8 @@ bool HTTPProtocol::httpOpenConnection()
                         m_request.proxyUrl = url;
                         kDebug(7113) << "Connected to proxy: host=" << url.host() << "port=" << url.port();
                     } else {
+                        if (connectError == ERR_UNKNOWN_HOST)
+                            connectError = ERR_UNKNOWN_PROXY_HOST;
                         kDebug(7113) << "Failed to connect to proxy:" << proxyUrl;
                         badProxyUrls << url;
                     }
@@ -2252,6 +2254,8 @@ bool HTTPProtocol::httpOpenConnection()
                     kDebug(7113) << "Connected to proxy: host=" << url.host() << "port=" << url.port();
                     break;
                 } else {
+                    if (connectError == ERR_UNKNOWN_HOST)
+                        connectError = ERR_UNKNOWN_PROXY_HOST;
                     kDebug(7113) << "Failed to connect to proxy:" << proxyUrl;
                     badProxyUrls << url;
                     QNetworkProxy::setApplicationProxy(QNetworkProxy::NoProxy);
