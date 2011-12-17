@@ -65,7 +65,7 @@ void KFileMetaInfoTest::initTestCase()
 
 void KFileMetaInfoTest::testMetaInfo()
 {
-    const QString file = m_tempDir.path() + '/' + "testfilename";
+    const QString file = m_tempDir.path() + "/testfilename";
     createTestFile(file);
 
     KFileMetaInfo fileMetaInfo(file);
@@ -77,7 +77,7 @@ void KFileMetaInfoTest::testMetaInfo()
 
 void KFileMetaInfoTest::testReentrancy()
 {
-    const QString file = m_tempDir.path() + '/' + "testfilename";
+    const QString file = m_tempDir.path() + "/testfilename";
     createTestFile(file);
 
     m_exitCount = 20;
