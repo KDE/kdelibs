@@ -1894,7 +1894,10 @@ double KLocalePrivate::readNumber(const QString &_str, bool * ok) const
 
     // Remove group separators
     bool groupOk = true;
-    str = parseDigitGroup(str, thousandsSeparator(), decimalSymbol(), numericDigitGrouping(), &groupOk);
+    if(str.contains(thousandsSeparator())) {
+        str = parseDigitGroup(str, thousandsSeparator(), decimalSymbol(),
+                              numericDigitGrouping(), &groupOk);
+    }
 
     if (!groupOk) {
         if (ok) {
@@ -2013,7 +2016,10 @@ double KLocalePrivate::readMoney(const QString &_str, bool *ok) const
 
     // Remove group separators
     bool groupOk = true;
-    str = parseDigitGroup(str, monetaryThousandsSeparator(), monetaryDecimalSymbol(), monetaryDigitGrouping(), &groupOk);
+    if(str.contains(monetaryThousandsSeparator())) {
+        str = parseDigitGroup(str, monetaryThousandsSeparator(), monetaryDecimalSymbol(),
+                              monetaryDigitGrouping(), &groupOk);
+    }
 
     if (!groupOk) {
         if (ok) {

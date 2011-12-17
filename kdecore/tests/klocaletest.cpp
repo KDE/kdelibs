@@ -180,9 +180,13 @@ KLocaleTest::readNumber()
     QVERIFY(!ok);
     QCOMPARE(locale.readNumber(QString("123,456,789.01"), &ok), 0.0);
     QVERIFY(!ok);
-    QCOMPARE(locale.readNumber(QString("123456789"), &ok), 0.0);
+    QCOMPARE(locale.readNumber(QString("123456789"), &ok), 123456789.0);
+    QVERIFY(ok);
+    QCOMPARE(locale.readNumber(QString("123456789.01"), &ok), 123456789.01);
+    QVERIFY(ok);
+    QCOMPARE(locale.readNumber(QString("123456,789"), &ok), 0.0);
     QVERIFY(!ok);
-    QCOMPARE(locale.readNumber(QString("123456789.01"), &ok), 0.0);
+    QCOMPARE(locale.readNumber(QString("123456,789.01"), &ok), 0.0);
     QVERIFY(!ok);
 
     //Test it parses correctly with an empty separator.
@@ -204,6 +208,14 @@ KLocaleTest::readNumber()
     QVERIFY(ok);
     QCOMPARE(locale.readNumber(QString("123 456 789.01"), &ok), 123456789.01);
     QVERIFY(ok);
+    QCOMPARE(locale.readNumber(QString("123456789"), &ok), 123456789.0);
+    QVERIFY(ok);
+    QCOMPARE(locale.readNumber(QString("123456789.01"), &ok), 123456789.01);
+    QVERIFY(ok);
+    QCOMPARE(locale.readNumber(QString("123456 789"), &ok), 0.0);
+    QVERIFY(!ok);
+    QCOMPARE(locale.readNumber(QString("123456 789.01"), &ok), 0.0);
+    QVERIFY(!ok);
     QCOMPARE(locale.readNumber(QString("123,456,789"), &ok), 0.0);
     QVERIFY(!ok);
     QCOMPARE(locale.readNumber(QString("123,456,789.01"), &ok), 0.0);
@@ -479,6 +491,10 @@ void KLocaleTest::readMoney()
     QVERIFY(ok);
     QCOMPARE(locale.readMoney("$ 987,654,321.12", &ok), 987654321.12);
     QVERIFY(ok);
+    QCOMPARE(locale.readMoney("$ 987654321.12", &ok), 987654321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney("$ 987654,321.12", &ok), 0.0);
+    QVERIFY(!ok);
 
     QCOMPARE(locale.readMoney(          "$ -1.12", &ok),         -1.12);
     QVERIFY(ok);
@@ -498,6 +514,10 @@ void KLocaleTest::readMoney()
     QVERIFY(ok);
     QCOMPARE(locale.readMoney("$ -987,654,321.12", &ok), -987654321.12);
     QVERIFY(ok);
+    QCOMPARE(locale.readMoney("$ -987654321.12", &ok), -987654321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney("$ -987654,321.12", &ok), 0.0);
+    QVERIFY(!ok);
 
     // Test incomplete formats
     QCOMPARE(locale.readMoney(          "$ 1", &ok),         1.00);
@@ -521,17 +541,21 @@ void KLocaleTest::readMoney()
 
     // Test Grouping
     locale.d->setMonetaryDigitGrouping(QList<int>());
-    QCOMPARE(locale.readMoney( "$ 987654321.12", &ok),  987654321.12);
+    QCOMPARE(locale.readMoney("$ 987654321.12", &ok),  987654321.12);
     QVERIFY(ok);
     QCOMPARE(locale.readMoney("$ -987654321.12", &ok), -987654321.12);
     QVERIFY(ok);
     locale.d->setMonetaryDigitGrouping(QList<int>() << 3 << 2);
-    QCOMPARE(locale.readMoney( "$ 98,76,54,321.12", &ok),  987654321.12);
+    QCOMPARE(locale.readMoney("$ 98,76,54,321.12", &ok),  987654321.12);
     QVERIFY(ok);
     QCOMPARE(locale.readMoney("$ -98,76,54,321.12", &ok), -987654321.12);
     QVERIFY(ok);
+    QCOMPARE(locale.readMoney("$ 987654321.12", &ok),  987654321.12);
+    QVERIFY(ok);
+    QCOMPARE(locale.readMoney("$ -987654321.12", &ok), -987654321.12);
+    QVERIFY(ok);
     locale.d->setMonetaryDigitGrouping(QList<int>() << 3 << -1);
-    QCOMPARE(locale.readMoney( "$ 987654,321.12", &ok),  987654321.12);
+    QCOMPARE(locale.readMoney("$ 987654,321.12", &ok),  987654321.12);
     QVERIFY(ok);
     QCOMPARE(locale.readMoney("$ -987654,321.12", &ok), -987654321.12);
     QVERIFY(ok);
