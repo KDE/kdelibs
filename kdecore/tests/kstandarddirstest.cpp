@@ -28,7 +28,7 @@ QTEST_KDEMAIN_CORE( KStandarddirsTest )
 #include <kstandarddirs.h>
 #include <kconfig.h>
 #include <kglobal.h>
-#include <ktempdir.h>
+#include <qtemporarydir.h>
 #include <config-prefix.h>
 #include <QtCore/QDebug>
 #include <kconfiggroup.h>
@@ -461,7 +461,7 @@ void KStandarddirsTest::testSymlinkResolution()
     // and thus making comparisons fail later on in KConfig.
     const QString symlink = m_kdehome + "/symlink";
     const QString expected = m_kdehome + "/real/test/";
-    QVERIFY(KTempDir::removeDir(m_kdehome + "/real"));
+    QVERIFY(QTemporaryDir::removeRecursively(m_kdehome + "/real"));
     QVERIFY(QDir(m_kdehome).mkdir("real"));
     QFile::remove(symlink);
     QVERIFY(!QFile::exists(symlink));

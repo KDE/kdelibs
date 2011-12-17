@@ -28,7 +28,7 @@
 #include <kglobal.h>
 #include <kuser.h>
 #include <kstandarddirs.h>
-#include <ktempdir.h>
+#include <qtemporarydir.h>
 #include <kconfiggroup.h>
 #include <kdebug.h>
 
@@ -47,7 +47,7 @@ void KMimeTypeTest::initTestCase()
     // Clean up local xdg dir in case of leftover mimetype definitions
     const QString xdgDir = QString::fromLocal8Bit(getenv("XDG_DATA_HOME"));
     if (!xdgDir.isEmpty()) {
-        KTempDir::removeDir(xdgDir);
+        QTemporaryDir::removeRecursively(xdgDir);
         // No need to run update-mime-database here, the dir is entirely gone.
     }
 
@@ -190,11 +190,12 @@ void KMimeTypeTest::testIcons()
     if ( !KUser().isSuperUser() ) // Can't test this one if running as root
     {
         QString emptyString; // gcc-3.3 workaround
-        KTempDir tmp( emptyString, 0 );
+	QTemporaryDir tmp (emptyString);
+	QFile(tmp.path()).setPermissions(0);
         tmp.setAutoRemove( true );
-        KUrl url( tmp.name() );
+        KUrl url( tmp.path() );
         checkIcon( url, "inode-directory" ); // was folder_locked, but we don't have that anymore - TODO
-        KDE::chmod( tmp.name(), 0500 ); // so we can 'rm -rf' it
+	QFile(tmp.path()).setPermissions(QFile::ReadOwner|QFile::ExeOwner); // so we can 'rm -rf' it
     }
 }
 

@@ -20,7 +20,7 @@
 #define KDIRMODELTEST_H
 
 #include <QtCore/QObject>
-#include <ktempdir.h>
+#include <qtemporarydir.h>
 #include <QtCore/QDate>
 #include <kdirmodel.h>
 #include <QtCore/QEventLoop>
@@ -93,7 +93,7 @@ private:
 #else
     QEventLoop m_eventLoop;
 #endif
-    KTempDir* m_tempDir;
+    QTemporaryDir* m_tempDir;
     KDirModel* m_dirModel;
     QModelIndex m_fileIndex;
     QModelIndex m_specialFileIndex;

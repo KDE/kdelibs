@@ -20,7 +20,7 @@
 #include "kconfigtest.h"
 
 #include <qtest_kde.h>
-#include <ktempdir.h>
+#include <qtemporarydir.h>
 #include <kdesktopfile.h>
 #include <kstandarddirs.h>
 #include "kconfigtest.moc"
@@ -210,7 +210,7 @@ void KConfigTest::cleanupTestCase()
 {
     const QString localConfig = KGlobal::dirs()->saveLocation("config");
     //qDebug() << "Erasing" << localConfig;
-    KTempDir::removeDir(localConfig);
+    QTemporaryDir::removeRecursively(localConfig);
     QVERIFY(!QFile::exists(localConfig));
 }
 
@@ -1538,7 +1538,7 @@ void KConfigTest::testNoKdeHome()
 {
     const QString xdgConfigHome = QDir::homePath() + "/.kde-unit-test-does-not-exist";
     setenv("XDG_CONFIG_HOME", QFile::encodeName(xdgConfigHome), 1);
-    KTempDir::removeDir(xdgConfigHome);
+    QTemporaryDir::removeRecursively(xdgConfigHome);
     QVERIFY(!QFile::exists(xdgConfigHome));
 
     // Do what kde4-config does, and ensure kdehome doesn't get created (#233892)
@@ -1557,7 +1557,7 @@ void KConfigTest::testNoKdeHome()
     QVERIFY(QFile::exists(xdgConfigHome + "/KConfigTestrc"));
 
     // Cleanup
-    KTempDir::removeDir(xdgConfigHome);
+    QTemporaryDir::removeRecursively(xdgConfigHome);
 }
 
 #include <QThreadPool>

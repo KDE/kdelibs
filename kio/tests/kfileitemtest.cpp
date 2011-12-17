@@ -23,7 +23,7 @@
 #include "kfileitemtest.moc"
 #include <kfileitem.h>
 
-#include <ktempdir.h>
+#include <qtemporarydir.h>
 #include <qtemporaryfile.h>
 #include <kuser.h>
 
@@ -36,14 +36,14 @@ void KFileItemTest::initTestCase()
 void KFileItemTest::testPermissionsString()
 {
     // Directory
-    KTempDir tempDir;
-    KFileItem dirItem(KUrl(tempDir.name()), QString(), KFileItem::Unknown);
+    QTemporaryDir tempDir;
+    KFileItem dirItem(KUrl(tempDir.path() + '/' ), QString(), KFileItem::Unknown);
     QCOMPARE((uint)dirItem.permissions(), (uint)0700);
     QCOMPARE(dirItem.permissionsString(), QString("drwx------"));
     QVERIFY(dirItem.isReadable());
 
     // File
-    QFile file(tempDir.name() + "afile");
+    QFile file(tempDir.path() + "/afile");
     QVERIFY(file.open(QIODevice::WriteOnly));
     file.setPermissions(QFile::ReadOwner | QFile::WriteOwner | QFile::ReadOther); // 0604
     KFileItem fileItem(KUrl(file.fileName()), QString(), KFileItem::Unknown);
@@ -52,7 +52,7 @@ void KFileItemTest::testPermissionsString()
     QVERIFY(fileItem.isReadable());
 
     // Symlink to file
-    QString symlink = tempDir.name() + "asymlink";
+    QString symlink = tempDir.path() + "/asymlink";
     QVERIFY( file.link( symlink ) );
     KUrl symlinkUrl(symlink);
     KFileItem symlinkItem(symlinkUrl, QString(), KFileItem::Unknown);
@@ -64,7 +64,7 @@ void KFileItemTest::testPermissionsString()
 
     // Symlink to directory (#162544)
     QVERIFY(QFile::remove(symlink));
-    QVERIFY(QFile(tempDir.name()).link(symlink));
+    QVERIFY(QFile(tempDir.path() + '/').link(symlink));
     KFileItem symlinkToDirItem(symlinkUrl, QString(), KFileItem::Unknown);
     QCOMPARE((uint)symlinkToDirItem.permissions(), (uint)0700);
     QCOMPARE(symlinkToDirItem.permissionsString(), QString("lrwx------"));
@@ -160,8 +160,8 @@ void KFileItemTest::testRootDirectory()
 
 void KFileItemTest::testHiddenFile()
 {
-    KTempDir tempDir;
-    QFile file(tempDir.name() + ".hiddenfile");
+    QTemporaryDir tempDir;
+    QFile file(tempDir.path() + "/.hiddenfile");
     QVERIFY(file.open(QIODevice::WriteOnly));
     KFileItem fileItem(KUrl(file.fileName()), QString(), KFileItem::Unknown);
     QCOMPARE(fileItem.text(), QString(".hiddenfile"));
@@ -267,20 +267,20 @@ void KFileItemTest::testRename()
 
 void KFileItemTest::testDotDirectory()
 {
-    KTempDir tempDir;
-    QFile file(tempDir.name() + ".directory");
+    QTemporaryDir tempDir;
+    QFile file(tempDir.path() + "/.directory");
     QVERIFY(file.open(QIODevice::WriteOnly));
     file.write("[Desktop Entry]\nIcon=foo\nComment=com\n");
     file.close();
     {
-        KFileItem fileItem(KUrl(tempDir.name()), QString(), KFileItem::Unknown);
+        KFileItem fileItem(KUrl(tempDir.path() + '/'), QString(), KFileItem::Unknown);
         QVERIFY(fileItem.isLocalFile());
         QCOMPARE(fileItem.mimeComment(), QString::fromLatin1("com"));
         QCOMPARE(fileItem.iconName(), QString::fromLatin1("foo"));
     }
     // Test for calling iconName first, to trigger mimetype resolution
     {
-        KFileItem fileItem(KUrl(tempDir.name()), QString(), KFileItem::Unknown);
+        KFileItem fileItem(KUrl(tempDir.path()), QString(), KFileItem::Unknown);
         QVERIFY(fileItem.isLocalFile());
         QCOMPARE(fileItem.iconName(), QString::fromLatin1("foo"));
     }
@@ -355,11 +355,11 @@ void KFileItemTest::testListProperties()
     QFETCH(QString, expectedMimeType);
     QFETCH(QString, expectedMimeGroup);
 
-    KTempDir tempDir;
-    QDir baseDir(tempDir.name());
+    QTemporaryDir tempDir;
+    QDir baseDir(tempDir.path() );
     KFileItemList items;
     for (int i = 0; i < itemDescriptions.size(); ++i) {
-        QString fileName = tempDir.name() + "file" + QString::number(i);
+        QString fileName = tempDir.path() + "/file" + QString::number(i);
         switch(itemDescriptions[i].toLatin1()) {
         case 'f':
         {
