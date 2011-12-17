@@ -261,6 +261,7 @@ int AccessManagerReply::jobError(KJob* kJob)
     {
         case 0:
             break; // No error;
+        case KIO::ERR_SLAVE_DEFINED:
         case KIO::ERR_NO_CONTENT: // Sent by a 204 response is not an error condition.
             setError(QNetworkReply::NoError, kJob->errorText());
             //kDebug(7044) << "0 -> QNetworkReply::NoError";
@@ -334,7 +335,8 @@ void AccessManagerReply::slotData(KIO::Job *kioJob, const QByteArray &data)
 {
     Q_UNUSED (kioJob);
     m_data += data;
-    emit readyRead();
+    if (!data.isEmpty())
+        emit readyRead();
 }
 
 void AccessManagerReply::slotMimeType(KIO::Job *kioJob, const QString &mimeType)
