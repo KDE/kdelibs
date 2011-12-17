@@ -52,8 +52,8 @@ void KUrlCompletionTest::setup( bool setDirAsURL )
     kDebug() ;
     m_completion = new KUrlCompletion;
     m_tempDir = new QTemporaryDir;
-    m_dir = m_tempDir->path() + '/';
-    m_dir += "Dir With#Spaces/";
+    m_dir = m_tempDir->path();
+    m_dir += "/Dir With#Spaces/";
     QDir().mkdir(m_dir);
     kDebug() << "m_dir=" << m_dir;
     if ( setDirAsURL ) {
