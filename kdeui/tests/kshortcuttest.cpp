@@ -55,8 +55,8 @@ private Q_SLOTS:
         // Reported with patch - mjansen
         QKeySequence unknown_key(Qt::Key_unknown);
         // The keycode falls into the unicode handling
-        QString p = QChar((Qt::Key_unknown-0x10000)/0x400+0xd800);
-                p += QChar((Qt::Key_unknown-0x10000)%400+0xdc00);
+        QString p = QChar(QChar::highSurrogate(Qt::Key_unknown)) + QChar(QChar::lowSurrogate(Qt::Key_unknown));
+
         QCOMPARE(unknown_key.toString(), p); // What happens
         QEXPECT_FAIL("", "Qt::Key_unknown not handled", Continue);
         QCOMPARE(unknown_key.toString(), QString());     // What i would expect
@@ -68,8 +68,10 @@ private Q_SLOTS:
         // Qt::Key_unknown instead. Unsupported keys: (Alt+Print for example).
         // Reported with patch - mjansen
         QKeySequence invalid_key(-1);
-        // The keycode falls into the handling of keys lesser that Key_escape
-        QString p1 = QChar((-1) & 0xffff).toUpper();
+        // The keycode falls into the unicode handling too
+        int k = int(-1) & ~(Qt::ShiftModifier | Qt::ControlModifier | Qt::AltModifier | Qt::MetaModifier);
+        QString p1 = QChar(QChar::highSurrogate(k)) + QChar(QChar::lowSurrogate(k));
+
         QCOMPARE(invalid_key.toString(), QString("Meta+Ctrl+Alt+Shift+"+p1)); // What happens
         QEXPECT_FAIL("", "-1 not handled", Continue);
         QCOMPARE(invalid_key.toString(), QString());     // What i would expect
