@@ -20,7 +20,7 @@
 #ifndef KTEMPDIR_H
 #define KTEMPDIR_H
 
-#include <kcoreaddons_export.h>
+#include <kde4support_export.h>
 #include <QtCore/QString>
 
 /**
@@ -47,7 +47,7 @@
  *
  * @see QTemporaryDir
  */
-class KCOREADDONS_DEPRECATED_EXPORT KTempDir
+class KDE4SUPPORT_DEPRECATED_EXPORT KTempDir
 {
 public:
    /**

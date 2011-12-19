@@ -7,10 +7,11 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/libinqt5/src/
     ${CMAKE_BINARY_DIR}/libinqt5/src/
     ${CMAKE_SOURCE_DIR}/kdecore/kernel/ # for KComponentData
-    ${CMAKE_BINARY_DIR}/kdecore/kernel/
     ${CMAKE_BINARY_DIR}/kdecore/
     ${CMAKE_SOURCE_DIR}/kdecore/config/
     ${CMAKE_SOURCE_DIR}/kdecore/util/
+    ${kcoreaddons_SOURCE_DIR}/src/randomness # for KRandom
+    ${kcoreaddons_BINARY_DIR}/src
 )
 
 add_library(kde4support ${LIBRARY_TYPE} ${libkde4support_SRCS})
