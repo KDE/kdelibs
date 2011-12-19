@@ -43,7 +43,6 @@ KDECORE_UNIT_TESTS(
  kconfigtest
  kurlmimetest
  klockfiletest
- ktempdirtest
  ksharedptrtest
  kdatetimetest
  ksavefiletest

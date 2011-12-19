@@ -122,7 +122,7 @@ bool KTempDir::create(const QString &directoryPrefix, int mode)
    {
        // Recreate it for the warning, mkdtemps emptied it
        nme = QFile::encodeName(directoryPrefix) + "XXXXXX";
-       qWarning() << "KTempDir: Error trying to create " << nme.data()
+       qWarning() << "KTempDir: Error trying to create " << nme.constData()
                   << ": " << ::strerror(errno);
        d->error = errno;
        d->tmpName.clear();
@@ -131,7 +131,7 @@ bool KTempDir::create(const QString &directoryPrefix, int mode)
 
    // got a return value != 0
    QByteArray realNameStr(realName);
-   d->tmpName = QFile::decodeName(realNameStr)+QLatin1Char('/');
+   d->tmpName = QFile::decodeName(realNameStr.constData())+QLatin1Char('/');
    qDebug() << "KTempDir: Temporary directory created :" << d->tmpName;
 
    if(chmod(nme.data(), mode&(~s_umask)) < 0) {

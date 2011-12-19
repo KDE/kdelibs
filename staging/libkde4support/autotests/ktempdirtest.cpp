@@ -52,7 +52,7 @@ void KTempDirTest::testDefaultCtor()
 
 void KTempDirTest::testNoDelete()
 {
-	KTempDir dir("test");
+	KTempDir dir(QLatin1String("test"));
 	dir.setAutoRemove(false);
 	QVERIFY(dir.status() == 0);
 	QVERIFY(dir.exists());
@@ -62,11 +62,12 @@ void KTempDirTest::testNoDelete()
 	QVERIFY(dir.status() == 0);
 	QVERIFY(!dir.exists());
 	QVERIFY(!QDir(dir.name()).exists());
+	
 }
 
 void KTempDirTest::testAutoDelete()
 {
-	KTempDir *dir = new KTempDir("test");
+	KTempDir *dir = new KTempDir(QLatin1String("test"));
 	QVERIFY(dir->status() == 0);
 	QVERIFY(dir->exists());
 
@@ -77,25 +78,25 @@ void KTempDirTest::testAutoDelete()
 
 void KTempDirTest::testCreateSubDir()
 {
-	KTempDir *dir = new KTempDir("test");
+	KTempDir *dir = new KTempDir(QLatin1String("test"));
 	QVERIFY(dir->status() == 0);
 	QVERIFY(dir->exists());
 
 	QDir d ( dir->name() );
 	QVERIFY(d.exists());
 
-	QVERIFY(d.mkdir(QString("123")));
-	QVERIFY(d.mkdir(QString("456")));
+	QVERIFY(d.mkdir(QString(QString::fromLatin1("123"))));
+	QVERIFY(d.mkdir(QString(QString::fromLatin1("456"))));
 
 	QString dName = dir->name();
 	delete dir;
 	d.refresh();
 
 	QVERIFY(!QDir(dName).exists());
-	QVERIFY(!d.exists(QString("123")));
-	QVERIFY(!d.exists(QString("456")));
+	QVERIFY(!d.exists(QString::fromLatin1(("123"))));
+	QVERIFY(!d.exists(QString(QString::fromLatin1("456"))));
 }
 
-QTEST_KDEMAIN_CORE(KTempDirTest)
+QTEST_MAIN(KTempDirTest)
 
 #include "ktempdirtest.moc"
