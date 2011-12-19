@@ -45,16 +45,16 @@ public:
 
 const int KAutoSaveFilePrivate::padding = 8;
 
-QStringList findAllStales()
+static QStringList findAllStales(const QString& appName)
 {
-    const QString appName = QCoreApplication::instance()->applicationName();
     const QStringList dirs = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
     QStringList files;
 
-    Q_FOREACH(const QString dir, dirs) {
-        const QString appDir = dir + QChar::fromLatin1('/') + appName;
-        if (QDir(appDir).exists()) {
-            files = files << QDir(appDir).entryList(QStringList() << QString::fromLatin1("*"));
+    Q_FOREACH(const QString& dir, dirs) {
+        QDir appDir(dir + QString::fromLatin1("/stalefiles/") + appName);
+        //qDebug() << "Looking in" << appDir.absolutePath();
+        Q_FOREACH(const QString& file, appDir.entryList(QDir::Files)) {
+            files << (appDir.absolutePath() + QLatin1Char('/') + file);
         }
     }
     return files;
@@ -136,8 +136,11 @@ bool KAutoSaveFile::open(OpenMode openmode)
 
     QString tempFile;
     if (d->managedFileNameChanged) {
-        tempFile = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) +
-            QChar::fromLatin1('/') +  d->tempFileName();
+        QString staleFilesDir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) +
+                                QString::fromLatin1("/stalefiles/") + QCoreApplication::instance()->applicationName();
+        if (!QDir().mkpath(staleFilesDir))
+            return false;
+        tempFile = staleFilesDir + QChar::fromLatin1('/') + d->tempFileName();
     } else {
         tempFile = fileName();
     }
@@ -181,7 +184,7 @@ QList<KAutoSaveFile *> KAutoSaveFile::staleFiles(const KUrl &filename, const QSt
     }
 
     // get stale files
-    const QStringList files = findAllStales();
+    const QStringList files = findAllStales(appName);
 
     QList<KAutoSaveFile *> list;
     KAutoSaveFile * asFile;
@@ -210,7 +213,7 @@ QList<KAutoSaveFile *> KAutoSaveFile::allStaleFiles(const QString &applicationNa
     }
 
     // get stale files
-    const QStringList files = findAllStales();
+    const QStringList files = findAllStales(appName);
 
     QList<KAutoSaveFile *> list;
 
