@@ -535,8 +535,9 @@ bool KWebPage::handleReply(QNetworkReply* reply, QString* contentType, KIO::Meta
                     downloadCmd += KShell::quoteArg(replyUrl.url());
                     if (!suggestedFileName.isEmpty()) {
                         downloadCmd += QLatin1Char(' ');
-                        downloadCmd += suggestedFileName;
+                        downloadCmd += KShell::quoteArg(suggestedFileName);
                     }
+                    // kDebug(800) << "download command:" << downloadCmd;
                     if (KRun::runCommand(downloadCmd, view()))
                         return true;
                 }
