@@ -2338,10 +2338,14 @@ void KFileWidgetPrivate::updateFilter()
         } else {
             QString filename = urlStr.mid( urlStr.lastIndexOf( KDIR_SEPARATOR ) + 1 ); // only filename
             foreach( const QString& filter, filterWidget->filters()) {
-                QString f = filter.left( filter.indexOf( '|' )); // '*.foo|Foo type' -> '*.foo'
-                if( KMimeType::matchFileName( filename, f )) {
-                    filterWidget->setCurrentFilter( filter );
-                    break;
+                QStringList patterns = filter.left( filter.indexOf( '|' )).split ( ' ', QString::SkipEmptyParts ); // '*.foo *.bar|Foo type' -> '*.foo', '*.bar'
+                foreach ( const QString& p, patterns ) {
+                    if( KMimeType::matchFileName( filename, p )) {
+                        if ( p != "*" ) { // never match the catch-all filter
+                            filterWidget->setCurrentFilter( filter );
+                        }
+                        break;
+                    }
                 }
             }
         }
