@@ -29,6 +29,7 @@
 #include "krecentfilesaction_p.h"
 
 #include <QtCore/QFile>
+#include <QtGui/QDesktopWidget>
 #ifdef Q_OS_WIN
 #include <QtCore/QDir>
 #endif
@@ -114,6 +115,38 @@ void KRecentFilesAction::setMaxItems( int maxItems )
         delete removeAction(selectableActionGroup()->actions().last());
 }
 
+static QString titleWithSensibleWidth(const QString& nameValue, const QString& value)
+{
+    // Calculate 3/4 of screen geometry, we do not want
+    // action titles to be bigger than that
+    // Since we do not know in which screen we are going to show
+    // we choose the min of all the screens
+    const QDesktopWidget desktopWidget;
+    int maxWidthForTitles = INT_MAX;
+    for (int i = 0; i < desktopWidget.screenCount(); ++i) {
+        maxWidthForTitles = qMin(maxWidthForTitles, desktopWidget.availableGeometry(i).width() * 3 / 4);
+    }
+    const QFontMetrics fontMetrics = QFontMetrics(QFont());
+
+    QString title = nameValue + " [" + value + ']';
+    if (fontMetrics.width(title) > maxWidthForTitles){
+        // If it does not fit, try to cut only the whole path, though if the 
+        // name is too long (more than 3/4 of the whole text) we cut it a bit too
+        const int nameValueMaxWidth = maxWidthForTitles * 3 / 4;
+        const int nameWidth = fontMetrics.width(nameValue);
+        QString cutNameValue, cutValue;
+        if (nameWidth > nameValueMaxWidth) {
+            cutNameValue = fontMetrics.elidedText(nameValue, Qt::ElideMiddle, nameValueMaxWidth);
+            cutValue = fontMetrics.elidedText(value, Qt::ElideMiddle, maxWidthForTitles - nameValueMaxWidth);
+        } else {
+            cutNameValue = nameValue;
+            cutValue = fontMetrics.elidedText(value, Qt::ElideMiddle, maxWidthForTitles - nameWidth);
+        }
+        title = cutNameValue + " [" + cutValue + ']';
+    }
+    return title;
+}
+
 void KRecentFilesAction::addUrl( const KUrl& _url, const QString& name )
 {
     Q_D(KRecentFilesAction);
@@ -154,7 +187,7 @@ void KRecentFilesAction::addUrl( const KUrl& _url, const QString& name )
     d->clearAction->setVisible(true);
     setEnabled(true);
     // add file to list
-    const QString title = tmpName + " [" + file + ']';
+    const QString title = titleWithSensibleWidth(tmpName, file);
     QAction* action = new QAction(title, selectableActionGroup());
     addAction(action, url, tmpName);
 }
@@ -265,7 +298,7 @@ void KRecentFilesAction::loadEntries( const KConfigGroup& _config)
 
         nameKey = QString( "Name%1" ).arg( i );
         nameValue = cg.readPathEntry( nameKey, url.fileName() );
-        title = nameValue + " [" + value + ']';
+        title = titleWithSensibleWidth(nameValue, value);
         if (!value.isNull())
         {
           thereAreEntries=true;

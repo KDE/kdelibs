@@ -51,7 +51,7 @@ public:
     AccessManagerReply(const QNetworkAccessManager::Operation &op,
                        const QNetworkRequest &request,
                        KIO::SimpleJob *kioJob,
-                       bool emitReadReadOnMetaDataChange = false,
+                       bool emitReadyReadOnMetaDataChange = false,
                        QObject *parent = 0);
 
     virtual ~AccessManagerReply();
@@ -61,6 +61,8 @@ public:
     void setIgnoreContentDisposition(bool on);
     void setStatus(const QString& message, QNetworkReply::NetworkError);
     void putOnHold();
+
+    static bool isLocalRequest(const KUrl& url);
 
 protected:
     virtual qint64 readData(char *data, qint64 maxSize);
@@ -80,7 +82,7 @@ private:
     QByteArray m_data;
     bool m_metaDataRead;
     bool m_ignoreContentDisposition;
-    bool m_emitReadReadOnMetaDataChange;
+    bool m_emitReadyReadOnMetaDataChange;
     QPointer<KIO::SimpleJob> m_kioJob;
 };
 

@@ -61,7 +61,8 @@ class KHelpMenuPrivate
 public:
     KHelpMenuPrivate()
       : mSwitchApplicationLanguage(0),
-        mSwitchApplicationLanguageAction(0)
+        mSwitchApplicationLanguageAction(0),
+        mActionsCreated(false)
     {
         mMenu = 0;
         mAboutApp = 0;
@@ -82,6 +83,8 @@ public:
         delete mSwitchApplicationLanguage;
     }
 
+    void createActions(KHelpMenu* q);
+
     KMenu *mMenu;
     KDialog *mAboutApp;
     KAboutKdeDialog *mAboutKDE;
@@ -93,6 +96,7 @@ public:
     QString mAboutAppText;
 
     bool mShowWhatsThis;
+    bool mActionsCreated;
 
     KAction *mHandBookAction, *mWhatsThisAction;
     QAction *mReportBugAction, *mSwitchApplicationLanguageAction, *mAboutAppAction, *mAboutKDEAction;
@@ -118,16 +122,21 @@ KHelpMenu::KHelpMenu( QWidget *parent, const KAboutData *aboutData,
   d->mParent = parent;
   d->mAboutData = aboutData;
 
-  if (actions)
-  {
-    actions->addAction(KStandardAction::HelpContents, this, SLOT(appHelpActivated()));
-    if (showWhatsThis)
-      actions->addAction(KStandardAction::WhatsThis, this, SLOT(contextHelpActivated()));
-    actions->addAction(KStandardAction::ReportBug, this, SLOT(reportBug()));
-    actions->addAction(KStandardAction::SwitchApplicationLanguage, this, SLOT(switchApplicationLanguage()));
-    actions->addAction(KStandardAction::AboutApp, this, SLOT(aboutApplication()));
-    actions->addAction(KStandardAction::AboutKDE, this, SLOT(aboutKDE()));
-  }
+    if (actions) {
+        d->createActions(this);
+        if (d->mHandBookAction)
+            actions->addAction(d->mHandBookAction->objectName(), d->mHandBookAction);
+        if (d->mWhatsThisAction)
+            actions->addAction(d->mWhatsThisAction->objectName(), d->mWhatsThisAction);
+        if (d->mReportBugAction)
+            actions->addAction(d->mReportBugAction->objectName(), d->mReportBugAction);
+        if (d->mSwitchApplicationLanguageAction)
+            actions->addAction(d->mSwitchApplicationLanguageAction->objectName(), d->mSwitchApplicationLanguageAction);
+        if (d->mAboutAppAction)
+            actions->addAction(d->mAboutAppAction->objectName(), d->mAboutAppAction);
+        if (d->mAboutKDEAction)
+            actions->addAction(d->mAboutKDEAction->objectName(), d->mAboutKDEAction);
+    }
 }
 
 KHelpMenu::~KHelpMenu()
@@ -135,68 +144,85 @@ KHelpMenu::~KHelpMenu()
   delete d;
 }
 
+void KHelpMenuPrivate::createActions(KHelpMenu* q)
+{
+    if (mActionsCreated)
+        return;
+    mActionsCreated = true;
+
+    if (KAuthorized::authorizeKAction("help_contents")) {
+        mHandBookAction = KStandardAction::helpContents(q, SLOT(appHelpActivated()), q);
+    }
+    if (mShowWhatsThis && KAuthorized::authorizeKAction("help_whats_this")) {
+        mWhatsThisAction = KStandardAction::whatsThis(q, SLOT(contextHelpActivated()), q);
+    }
+
+    const KAboutData *aboutData = mAboutData ? mAboutData : KGlobal::mainComponent().aboutData();
+    if (KAuthorized::authorizeKAction("help_report_bug") && aboutData && !aboutData->bugAddress().isEmpty()) {
+        mReportBugAction = KStandardAction::reportBug(q, SLOT(reportBug()), q);
+    }
+
+    if (KAuthorized::authorizeKAction("switch_application_language")) {
+        if((KGlobal::dirs()->findAllResources("locale", QString::fromLatin1("*/entry.desktop"))).count() > 1) {
+            mSwitchApplicationLanguageAction = KStandardAction::create(KStandardAction::SwitchApplicationLanguage, q, SLOT(switchApplicationLanguage()), q);
+        }
+    }
+
+    if (KAuthorized::authorizeKAction("help_about_app")) {
+        mAboutAppAction = KStandardAction::aboutApp(q, SLOT(aboutApplication()), q);
+    }
+
+    if (KAuthorized::authorizeKAction("help_about_kde")) {
+        mAboutKDEAction = KStandardAction::aboutKDE(q, SLOT(aboutKDE()), q);
+    }
+}
+
+// Used in the non-xml-gui case, like kfind or ksnapshot's help button.
 KMenu* KHelpMenu::menu()
 {
   if( !d->mMenu )
   {
-    const KAboutData *aboutData = d->mAboutData ? d->mAboutData : KGlobal::mainComponent().aboutData();
-    QString appName = (aboutData)? aboutData->programName() : qApp->applicationName();
-
     d->mMenu = new KMenu();
     connect( d->mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));
 
     d->mMenu->setTitle(i18n("&Help"));
 
+    d->createActions(this);
+
     bool need_separator = false;
-    if (KAuthorized::authorizeKAction("help_contents"))
-    {
-      d->mHandBookAction = new KAction(KIcon("help-contents"), i18n("%1 &Handbook", appName), d->mMenu);
-      d->mHandBookAction->setShortcut(KStandardShortcut::shortcut(KStandardShortcut::Help));
-      connect(d->mHandBookAction, SIGNAL(triggered(bool)), this, SLOT(appHelpActivated()));
+    if (d->mHandBookAction) {
       d->mMenu->addAction(d->mHandBookAction);
       need_separator = true;
     }
 
-    if( d->mShowWhatsThis && KAuthorized::authorizeKAction("help_whats_this") )
-    {
-      d->mWhatsThisAction = new KAction(KIcon("help-contextual"), i18n( "What's &This" ), d->mMenu);
-      d->mWhatsThisAction->setShortcut(Qt::SHIFT + Qt::Key_F1);
-      connect(d->mWhatsThisAction, SIGNAL(triggered(bool)), this, SLOT(contextHelpActivated()));
+    if (d->mWhatsThisAction) {
       d->mMenu->addAction(d->mWhatsThisAction);
       need_separator = true;
     }
 
-    if (KAuthorized::authorizeKAction("help_report_bug") && aboutData && !aboutData->bugAddress().isEmpty() )
-    {
+    if (d->mReportBugAction) {
       if (need_separator)
         d->mMenu->addSeparator();
-      d->mReportBugAction = d->mMenu->addAction( KIcon("tools-report-bug"), i18n( "&Report Bug..." ), this, SLOT(reportBug()) );
+      d->mMenu->addAction(d->mReportBugAction);
       need_separator = true;
     }
 
-    if (KAuthorized::authorizeKAction("switch_application_language"))
-    {
-      if((KGlobal::dirs()->findAllResources("locale", QString::fromLatin1("*/entry.desktop"))).count() > 1)
-      {
+    if (d->mSwitchApplicationLanguageAction) {
         if (need_separator)
           d->mMenu->addSeparator();
-        d->mSwitchApplicationLanguageAction = d->mMenu->addAction( i18n( "Switch Application &Language..." ), this, SLOT(switchApplicationLanguage()) );
+        d->mMenu->addAction(d->mSwitchApplicationLanguageAction);
         need_separator = true;
-      }
     }
 
     if (need_separator)
       d->mMenu->addSeparator();
 
-    if (KAuthorized::authorizeKAction("help_about_app"))
-    {
-      d->mAboutAppAction = d->mMenu->addAction( qApp->windowIcon(),
-        i18n( "&About %1" , appName), this, SLOT( aboutApplication() ) );
+    if (d->mAboutAppAction) {
+      d->mMenu->addAction(d->mAboutAppAction);
     }
 
-    if (KAuthorized::authorizeKAction("help_about_kde"))
-    {
-      d->mAboutKDEAction = d->mMenu->addAction( KIcon("kde"), i18n( "About &KDE" ), this, SLOT( aboutKDE() ) );
+    if (d->mAboutKDEAction) {
+      d->mMenu->addAction(d->mAboutKDEAction);
     }
   }
 
