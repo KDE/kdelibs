@@ -115,7 +115,7 @@ QString Nepomuk::Utils::formatPropertyValue( const Nepomuk::Types::Property& pro
 
     QString valueString;
     if (value.isDateTime()) {
-        valueString = KGlobal::locale()->formatDateTime(value.toDateTime(), KLocale::FancyLongDate);
+        valueString = KGlobal::locale()->formatDateTime(value.toDateTime().toLocalTime(), KLocale::FancyLongDate);
     }
 
     else if(value.isDouble()) {

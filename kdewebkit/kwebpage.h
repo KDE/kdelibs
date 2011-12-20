@@ -205,7 +205,16 @@ public Q_SLOTS:
      * This slot first prompts the user where to save the requested resource
      * and then downloads it using KIO.
      *
+     * In KDE 4.8 and higher, if @p reply contains a QObject property called
+     * "DownloadManagerExe", then an attempt will be made to the command
+     * specified by that property to download the specified resource.
+     *
+     * If the "DownloadManagerExe" property is not defined or the command
+     * specified by it could not be successfully executed, then the user will
+     * be prompted for the action to take.
+     *
      * @since 4.5
+     * @see handleReply
      */
     void downloadResponse(QNetworkReply *reply);
 
@@ -330,7 +339,15 @@ protected:
     virtual bool acceptNavigationRequest(QWebFrame * frame, const QNetworkRequest & request, NavigationType type);
 
     /**
-     * Attempts to handle @ref reply and returns true on success, false otherwise.
+     * Attempts to handle @p reply and returns true on success, false otherwise.
+     *
+     * In KDE 4.8 and higher, if @p reply contains a QObject property called
+     * "DownloadManagerExe", then an attempt will be made to the command
+     * specified by that property to download the specified resource.
+     *
+     * If the "DownloadManagerExe" property is not defined or the command
+     * specified by it could not be successfully executed, then the user will
+     * be prompted for the action to take.
      *
      * @param reply        the QNetworkReply object to be handled.
      * @param contentType  if not null, it will be set to the content-type specified in @p reply, if any.

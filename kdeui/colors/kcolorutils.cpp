@@ -39,13 +39,17 @@ qreal KColorUtils::luma(const QColor &color)
     return KColorSpaces::KHCY::luma(color);
 }
 
-qreal KColorUtils::contrastRatio(const QColor &c1, const QColor &c2)
+static qreal contrastRatioForLuma(qreal y1, qreal y2)
 {
-    qreal y1 = luma(c1), y2 = luma(c2);
     if (y1 > y2)
         return (y1 + 0.05) / (y2 + 0.05);
     else
         return (y2 + 0.05) / (y1 + 0.05);
+}
+
+qreal KColorUtils::contrastRatio(const QColor &c1, const QColor &c2)
+{
+    return contrastRatioForLuma(luma(c1), luma(c2));
 }
 
 QColor KColorUtils::lighten(const QColor &color, qreal ky, qreal kc)
@@ -72,10 +76,10 @@ QColor KColorUtils::shade(const QColor &color, qreal ky, qreal kc)
     return c.qColor();
 }
 
-QColor tintHelper(const QColor &base, const QColor &color, qreal amount)
+static QColor tintHelper(const QColor &base, qreal baseLuma, const QColor &color, qreal amount)
 {
     KColorSpaces::KHCY result(KColorUtils::mix(base, color, pow(amount, 0.3)));
-    result.y = mixQreal(KColorUtils::luma(base), result.y, amount);
+    result.y = mixQreal(baseLuma, result.y, amount);
 
     return result.qColor();
 }
@@ -86,14 +90,15 @@ QColor KColorUtils::tint(const QColor &base, const QColor &color, qreal amount)
     if (amount >= 1.0) return color;
     if (isnan(amount)) return base;
 
-    double ri = contrastRatio(base, color);
+    qreal baseLuma = luma(base); //cache value because luma call is expensive
+    double ri = contrastRatioForLuma(baseLuma, luma(color));
     double rg = 1.0 + ((ri + 1.0) * amount * amount * amount);
     double u = 1.0, l = 0.0;
     QColor result;
     for (int i = 12 ; i ; --i) {
         double a = 0.5 * (l+u);
-        result = tintHelper(base, color, a);
-        double ra = contrastRatio(base, result);
+        result = tintHelper(base, baseLuma, color, a);
+        double ra = contrastRatioForLuma(baseLuma, luma(result));
         if (ra > rg)
             u = a;
         else

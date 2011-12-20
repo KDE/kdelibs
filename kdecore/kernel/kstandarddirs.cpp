@@ -407,7 +407,8 @@ bool KStandardDirs::addResourceType( const char *type,
     if (!copy.endsWith(QLatin1Char('/')))
         copy += QLatin1Char('/');
 
-    QStringList& rels = d->m_relatives[type]; // find or insert
+    QByteArray typeBa = type;
+    QStringList& rels = d->m_relatives[typeBa]; // find or insert
 
     if (!rels.contains(copy)) {
         if (priority)
@@ -415,8 +416,8 @@ bool KStandardDirs::addResourceType( const char *type,
         else
             rels.append(copy);
         // clean the caches
-        d->m_dircache.remove(type);
-        d->m_savelocations.remove(type);
+        d->m_dircache.remove(typeBa);
+        d->m_savelocations.remove(typeBa);
         return true;
     }
     return false;
@@ -433,15 +434,16 @@ bool KStandardDirs::addResourceDir( const char *type,
     if (copy.at(copy.length() - 1) != QLatin1Char('/'))
         copy += QLatin1Char('/');
 
-    QStringList &paths = d->m_absolutes[type];
+    QByteArray typeBa = type;
+    QStringList &paths = d->m_absolutes[typeBa];
     if (!paths.contains(copy)) {
         if (priority)
             paths.prepend(copy);
         else
             paths.append(copy);
         // clean the caches
-        d->m_dircache.remove(type);
-        d->m_savelocations.remove(type);
+        d->m_dircache.remove(typeBa);
+        d->m_savelocations.remove(typeBa);
         return true;
     }
     return false;
@@ -2029,8 +2031,8 @@ bool KStandardDirs::addCustomized(KConfig *config)
                 const QString key = it2.key();
                 if (key.startsWith(QLatin1String("dir_"))) {
                     // generate directory list, there may be more than 1.
-                    QStringList dirs = (*it2).split(QString(QLatin1Char(',')));
-                    QStringList::Iterator sIt(dirs.begin());
+                    const QStringList dirs = (*it2).split(QString(QLatin1Char(',')));
+                    QStringList::ConstIterator sIt(dirs.begin());
                     QString resType = key.mid(4);
                     for (; sIt != dirs.end(); ++sIt)
                     {

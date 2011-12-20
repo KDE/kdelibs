@@ -199,7 +199,7 @@ QString Nepomuk::Query::LiteralTermPrivate::createContainsPattern( const QString
         QString regexFilter;
         if( regexTokens[i].second )
             regexFilter += QLatin1Char('!');
-        regexFilter += QString::fromLatin1( "REGEX(%1, \"%2\")" )
+        regexFilter += QString::fromLatin1( "REGEX(%1, \"%2\", 'i')" )
                 .arg( varName,
                       prepareRegexText(regexTokens[i].first) );
         filters << regexFilter;

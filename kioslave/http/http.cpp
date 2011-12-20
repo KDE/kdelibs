@@ -2188,7 +2188,7 @@ bool HTTPProtocol::httpOpenConnection()
     // Only save proxy auth information after proxy authentication has
     // actually taken place, which will set up exactly this connection.
     disconnect(socket(), SIGNAL(connected()),
-              this, SLOT(saveProxyAuthenticationForSocket()));
+               this, SLOT(saveProxyAuthenticationForSocket()));
 
     clearUnreadBuffer();
 
@@ -2237,6 +2237,8 @@ bool HTTPProtocol::httpOpenConnection()
                         m_request.proxyUrl = url;
                         kDebug(7113) << "Connected to proxy: host=" << url.host() << "port=" << url.port();
                     } else {
+                        if (connectError == ERR_UNKNOWN_HOST)
+                            connectError = ERR_UNKNOWN_PROXY_HOST;
                         kDebug(7113) << "Failed to connect to proxy:" << proxyUrl;
                         badProxyUrls << url;
                     }
@@ -2252,6 +2254,8 @@ bool HTTPProtocol::httpOpenConnection()
                     kDebug(7113) << "Connected to proxy: host=" << url.host() << "port=" << url.port();
                     break;
                 } else {
+                    if (connectError == ERR_UNKNOWN_HOST)
+                        connectError = ERR_UNKNOWN_PROXY_HOST;
                     kDebug(7113) << "Failed to connect to proxy:" << proxyUrl;
                     badProxyUrls << url;
                     QNetworkProxy::setApplicationProxy(QNetworkProxy::NoProxy);
@@ -2810,6 +2814,8 @@ void HTTPProtocol::fixupResponseMimetype()
             m_mimeType = QLatin1String("video/x-ms-wmv");
         else if (ext == QLatin1String("WEBM"))
             m_mimeType = QLatin1String("video/webm");
+        else if (ext == QLatin1String("DEB"))
+            m_mimeType = QLatin1String("application/x-deb");
     }
     kDebug(7113) << "after fixup" << m_mimeType;
 }
@@ -4732,7 +4738,7 @@ void HTTPProtocol::error( int _err, const QString &_text )
 {
   // Close the connection only on connection errors. Otherwise, honor the
   // keep alive flag.
-  if (_err == ERR_CONNECTION_BROKEN)
+  if (_err == ERR_CONNECTION_BROKEN || _err == ERR_COULD_NOT_CONNECT)
       httpClose(false);
   else
       httpClose(m_request.isKeepAlive);

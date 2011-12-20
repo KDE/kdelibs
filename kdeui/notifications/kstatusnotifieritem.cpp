@@ -188,7 +188,7 @@ QString KStatusNotifierItem::iconName() const
 
 void KStatusNotifierItem::setIconByPixmap(const QIcon &icon)
 {
-    if (d->icon.cacheKey() == icon.cacheKey()) {
+    if (d->iconName.isEmpty() && d->icon.cacheKey() == icon.cacheKey()) {
         return;
     }
 
@@ -234,10 +234,11 @@ QString KStatusNotifierItem::overlayIconName() const
 
 void KStatusNotifierItem::setOverlayIconByPixmap(const QIcon &icon)
 {
-    if (d->overlayIcon.cacheKey() == icon.cacheKey()) {
+    if (d->overlayIconName.isEmpty() && d->overlayIcon.cacheKey() == icon.cacheKey()) {
         return;
     }
 
+    d->overlayIconName.clear();
     d->serializedOverlayIcon = d->iconToVector(icon);
     emit d->statusNotifierItemDBus->NewOverlayIcon();
 
@@ -278,7 +279,7 @@ QString KStatusNotifierItem::attentionIconName() const
 
 void KStatusNotifierItem::setAttentionIconByPixmap(const QIcon &icon)
 {
-    if (d->attentionIcon.cacheKey() == icon.cacheKey()) {
+    if (d->attentionIconName.isEmpty() && d->attentionIcon.cacheKey() == icon.cacheKey()) {
         return;
     }
 
@@ -341,7 +342,7 @@ void KStatusNotifierItem::setToolTip(const QString &iconName, const QString &tit
 
 void KStatusNotifierItem::setToolTip(const QIcon &icon, const QString &title, const QString &subTitle)
 {
-    if (d->toolTipIcon.cacheKey() == icon.cacheKey() &&
+    if (d->toolTipIconName.isEmpty() && d->toolTipIcon.cacheKey() == icon.cacheKey() &&
         d->toolTipTitle == title &&
         d->toolTipSubTitle == subTitle) {
         return;
@@ -378,7 +379,7 @@ QString KStatusNotifierItem::toolTipIconName() const
 
 void KStatusNotifierItem::setToolTipIconByPixmap(const QIcon &icon)
 {
-    if (d->toolTipIcon.cacheKey() == icon.cacheKey()) {
+    if (d->toolTipIconName.isEmpty() && d->toolTipIcon.cacheKey() == icon.cacheKey()) {
         return;
     }
 

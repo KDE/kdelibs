@@ -4,4 +4,4 @@
 <!-- Inclui este arquivo para teste, se funcionar tudo bem eu posto uma mensagem na lista. -->
 
 <!ENTITY Andre.Marcelo.Alvarenga '<personname><firstname>André</firstname><othername>Marcelo</othername><surname>Alvarenga</surname></personname>'>
-<!ENTITY Andre.Marcelo.Alvarenga.mail '<email>andrealvarenga@gmx.net></email>'>
+<!ENTITY Andre.Marcelo.Alvarenga.mail '<email>alvarenga@kde.org></email>'>

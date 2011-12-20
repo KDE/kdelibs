@@ -2142,12 +2142,23 @@ void KFileWidgetPrivate::updateAutoSelectExtension()
         QString filter = filterWidget->currentFilter();
         if (!filter.isEmpty())
         {
+            // if the currently selected filename already has an extension which
+            // is also included in the currently allowed extensions, keep it
+            // otherwise use the default extension
+            QString currentExtension = KMimeType::extractKnownExtension(locationEditCurrentText());
+            if ( currentExtension.isEmpty() )
+                currentExtension = locationEditCurrentText().section(QLatin1Char('.'), -1, -1);
+            kDebug (kfile_area) << "filter:" << filter << "locationEdit:" << locationEditCurrentText()
+                                << "currentExtension:" << currentExtension;
+
+            QString defaultExtension;
+            QStringList extensionList;
+
             // e.g. "*.cpp"
             if (filter.indexOf ('/') < 0)
             {
-                extension = getExtensionFromPatternList (filter.split(' ', QString::SkipEmptyParts));
-//                 kDebug (kfile_area) << "\tsetFilter-style: pattern ext=\'"
-//                                     << extension << "\'" << endl;
+                extensionList = filter.split(' ', QString::SkipEmptyParts);
+                defaultExtension = getExtensionFromPatternList(extensionList);
             }
             // e.g. "text/html"
             else
@@ -2155,11 +2166,17 @@ void KFileWidgetPrivate::updateAutoSelectExtension()
                 KMimeType::Ptr mime = KMimeType::mimeType (filter);
                 if (mime)
                 {
-                        extension = mime->mainExtension();
-//                         kDebug (kfile_area) << "\tsetMimeFilter-style: pattern ext=\'"
-//                                             << extension << "\'" << endl;
+                    extensionList = mime->patterns();
+                    defaultExtension = mime->mainExtension();
                 }
             }
+
+            if ( !currentExtension.isEmpty() && extensionList.contains(QLatin1String("*.") + currentExtension) )
+                extension = QLatin1Char('.') + currentExtension;
+            else
+                extension = defaultExtension;
+
+            kDebug (kfile_area) << "List:" << extensionList << "auto-selected extension:" << extension;
         }
 
 
@@ -2321,10 +2338,14 @@ void KFileWidgetPrivate::updateFilter()
         } else {
             QString filename = urlStr.mid( urlStr.lastIndexOf( KDIR_SEPARATOR ) + 1 ); // only filename
             foreach( const QString& filter, filterWidget->filters()) {
-                QString f = filter.left( filter.indexOf( '|' )); // '*.foo|Foo type' -> '*.foo'
-                if( KMimeType::matchFileName( filename, f )) {
-                    filterWidget->setCurrentFilter( filter );
-                    break;
+                QStringList patterns = filter.left( filter.indexOf( '|' )).split ( ' ', QString::SkipEmptyParts ); // '*.foo *.bar|Foo type' -> '*.foo', '*.bar'
+                foreach ( const QString& p, patterns ) {
+                    if( KMimeType::matchFileName( filename, p )) {
+                        if ( p != "*" ) { // never match the catch-all filter
+                            filterWidget->setCurrentFilter( filter );
+                        }
+                        break;
+                    }
                 }
             }
         }
