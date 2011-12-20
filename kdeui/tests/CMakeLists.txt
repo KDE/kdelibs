@@ -34,7 +34,6 @@ KDEUI_UNIT_TESTS(
   kfindtest
   kglobalsettingstest
   kglobalshortcuttest
-  kicondialogtest
   kmainwindow_unittest
   klineedit_unittest
   ktextedit_unittest
@@ -88,6 +87,7 @@ KDEUI_EXECUTABLE_TESTS(
   kglobalsettingsclient # helper program for kglobalsettingstest
   khboxtest
   kiconeffecttest
+  kicondialogtest
   kiconloadertest
   kinputdialogtest
   kjobtrackerstest

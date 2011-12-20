@@ -269,7 +269,7 @@ bool QTemporaryDir::removeRecursively(const QString& path)
         di.next();
         const QFileInfo& fi = di.fileInfo();
         bool ok;
-        if (fi.isDir())
+        if (fi.isDir() && !fi.isSymLink())
             ok = removeRecursively(di.filePath()); // recursive
         else
             ok = QFile::remove(di.filePath());

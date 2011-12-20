@@ -16,6 +16,14 @@
 
 #include <qmimedatabase.h>
 
+int initializeLang()
+{
+    qputenv("LANG", "en_US");
+    return 0;
+}
+
+Q_CONSTRUCTOR_FUNCTION(initializeLang)
+
 tst_qmimedatabase::~tst_qmimedatabase()
 {
 }
