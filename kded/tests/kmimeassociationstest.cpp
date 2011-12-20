@@ -106,6 +106,10 @@ private Q_SLOTS:
     void initTestCase()
     {
         QString kdehome = QDir::home().canonicalPath() + "/.kde-unit-test";
+
+        setenv("KDEHOME", QFile::encodeName(kdehome), 1);
+        setenv("XDG_DATA_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/local") ), 1);
+
         m_localApps = KStandardDirs::locateLocal("xdgdata-apps", "");
         QVERIFY(m_localApps.startsWith(kdehome));
 
