@@ -24,6 +24,7 @@
 
 #include <kdebug.h>
 #include <kglobal.h>
+#include <klocale.h>
 #include <kstandarddirs.h>
 #include <kprotocolinfo.h>
 #include <kcolorscheme.h>
@@ -882,6 +883,9 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
                 propagateQtSettings();
             }
         } else {
+            if (category == SETTINGS_LOCALE) {
+                KGlobal::locale()->reparseConfiguration();
+            }
             emit q->settingsChanged(category);
         }
         break;

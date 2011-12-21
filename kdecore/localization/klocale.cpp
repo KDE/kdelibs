@@ -780,3 +780,8 @@ KLocale::DigitSet KLocale::dateTimeDigitSet() const
 {
     return d->dateTimeDigitSet();
 }
+
+void KLocale::reparseConfiguration()
+{
+    d->initFormat();
+}
