@@ -63,6 +63,11 @@ public:
      **    Initialization    **
      **************************/
 
+    /**
+     * Reads the format configuration from disk.
+     */
+    virtual void initFormat();
+
 protected:
 
     /**
@@ -74,11 +79,6 @@ protected:
      * @internal Copies object members
      */
     virtual void copy(const KLocalePrivate &rhs);
-
-    /**
-     * @internal Reads the format configuration from disk.
-     */
-    virtual void initFormat();
 
     /**
      * @internal Main init function, needs to be called by appropriate child constructor.

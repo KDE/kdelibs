@@ -2114,6 +2114,14 @@ public:
     QString convertDigits(const QString &str, DigitSet digitSet,
                           bool ignoreContext = false) const;
 
+    /**
+     * @since 4.8
+     *
+     * Reparse locale configuration files for the current selected
+     * language.
+     */
+    void reparseConfiguration();
+
 private:
     friend class KLocalePrivate;
     friend class KLocaleTest;
