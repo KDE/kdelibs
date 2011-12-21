@@ -51,6 +51,8 @@
 #include <QPointer>
 
 #include "job_p.h"
+#include <kdiskfreespaceinfo.h>
+#include <kfilesystemtype_p.h>
 
 using namespace KIO;
 
@@ -106,6 +108,7 @@ public:
         , m_asMethod(asMethod)
         , destinationState(DEST_NOT_STATED)
         , state(STATE_STATING)
+        , m_freeSpace(-1)
         , m_totalSize(0)
         , m_processedSize(0)
         , m_fileProcessedSize(0)
@@ -148,6 +151,9 @@ public:
     bool m_asMethod;
     DestinationState destinationState;
     CopyJobState state;
+
+    KIO::filesize_t m_freeSpace;
+
     KIO::filesize_t m_totalSize;
     KIO::filesize_t m_processedSize;
     KIO::filesize_t m_fileProcessedSize;
@@ -167,7 +173,7 @@ public:
     KUrl m_currentDest; // set during listing, used by slotEntries
     //
     QStringList m_skipList;
-    QStringList m_overwriteList;
+    QSet<QString> m_overwriteList;
     bool m_bAutoRenameFiles;
     bool m_bAutoRenameDirs;
     bool m_bAutoSkipFiles;
@@ -329,6 +335,18 @@ void CopyJobPrivate::slotResultStating( KJob *job )
     const UDSEntry entry = static_cast<StatJob*>(job)->statResult();
 
     if ( destinationState == DEST_NOT_STATED ) {
+        if ( m_dest.isLocalFile() ) //works for dirs as well
+        {
+            QString path = m_dest.toLocalFile();
+            KFileSystemType::Type fsType = KFileSystemType::fileSystemType( path );
+            if ( fsType != KFileSystemType::Nfs && fsType != KFileSystemType::Smb )
+            {
+                m_freeSpace = KDiskFreeSpaceInfo::freeSpaceInfo( path ).available();
+            }
+            //TODO actually preliminary check is even more valuable for slow NFS/SMB mounts,
+            //but we need to find a way to report connection errors to user
+        }
+
         const bool isGlobalDest = m_dest == m_globalDest;
         const bool isDir = entry.isDir();
         // we were stating the dest
@@ -768,6 +786,10 @@ void CopyJobPrivate::statCurrentSrc()
         state = STATE_STATING;
         m_bURLDirty = true;
         slotReport();
+
+        kDebug(7007)<<"Stating finished. To copy:"<<m_totalSize<<", available:"<<m_freeSpace;
+	//TODO warn user beforehand if space is not enough
+
         if (!dirs.isEmpty())
            emit q->aboutToCreate( q, dirs );
         if (!files.isEmpty())
@@ -1100,7 +1122,7 @@ void CopyJobPrivate::slotResultConflictCreatingDirs( KJob * job )
             m_processedDirs++;
             break;
         case R_OVERWRITE:
-            m_overwriteList.append( existingDest );
+            m_overwriteList.insert( existingDest );
             emit q->copyingDone( q, (*it).uSource, (*it).uDest, (*it).mtime, true /* directory */, false /* renamed */ );
             // Move on to next dir
             dirs.erase( it );
@@ -1276,8 +1298,15 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
             //required for the undo feature
             emit q->copyingDone( q, (*it).uSource, (*it).uDest, (*it).mtime, false, false );
             if (m_mode == CopyJob::Move)
+            {
                 org::kde::KDirNotify::emitFileMoved( (*it).uSource.url(), (*it).uDest.url() );
+            }
             m_successSrcList.append((*it).uSource);
+            if ( m_freeSpace != -1 )
+            {
+                m_freeSpace -= (*it).size;
+            }
+
         }
         // remove from list, to move on to next file
         files.erase( it );
@@ -1415,7 +1444,7 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
             break;
         case R_OVERWRITE:
             // Add to overwrite list, so that copyNextFile knows to overwrite
-            m_overwriteList.append( (*it).uDest.path() );
+            m_overwriteList.insert( (*it).uDest.path() );
             break;
         default:
             assert( 0 );
@@ -1520,6 +1549,18 @@ void CopyJobPrivate::copyNextFile()
 
     if (bCopyFile) // any file to create, finally ?
     {
+        //kDebug()<<"preparing to copy"<<(*it).uSource<<(*it).size<<m_freeSpace;
+        if ( m_freeSpace != -1 )
+        {
+            if ( m_freeSpace < (*it).size )
+            {
+                q->setError( ERR_DISK_FULL );
+                q->emitResult();
+                return;
+            }
+            //TODO check if dst mount is msdos and (*it).size exceeds it's limits
+        }
+
         const KUrl& uSource = (*it).uSource;
         const KUrl& uDest = (*it).uDest;
         // Do we set overwrite ?
@@ -1979,7 +2020,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                     // we only overwrite for the current one, not for all.
                     // When renaming a single file (m_asMethod), it makes no difference.
                     kDebug(7007) << "adding to overwrite list: " << dest.path();
-                    m_overwriteList.append( dest.path() );
+                    m_overwriteList.insert( dest.path() );
                     break;
                 default:
                     //assert( 0 );
