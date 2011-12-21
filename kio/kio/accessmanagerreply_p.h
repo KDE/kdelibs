@@ -24,7 +24,7 @@
 #ifndef KIO_ACCESSMANAGERREPLY_P_H
 #define KIO_ACCESSMANAGERREPLY_P_H
 
-#include <QtCore/QPointer>
+#include <QtCore/QWeakPointer>
 #include <QtNetwork/QNetworkReply>
 
 namespace KIO
@@ -83,7 +83,7 @@ private:
     bool m_metaDataRead;
     bool m_ignoreContentDisposition;
     bool m_emitReadyReadOnMetaDataChange;
-    QPointer<KIO::SimpleJob> m_kioJob;
+    QWeakPointer<KIO::SimpleJob> m_kioJob;
 };
 
 

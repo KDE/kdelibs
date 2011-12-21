@@ -30,6 +30,7 @@
 #include <kdebug.h>
 #include <kauthorized.h>
 #include <kprotocolinfo.h>
+#include <kmimetype.h>
 
 #include <QtNetwork/QSslConfiguration>
 
@@ -81,8 +82,10 @@ AccessManagerReply::~AccessManagerReply()
 
 void AccessManagerReply::abort()
 {
-    if (m_kioJob)
-        m_kioJob->kill();
+    if (m_kioJob) {
+        m_kioJob.data()->kill();
+        m_kioJob.clear();
+    }
 
     m_data.clear();
     m_metaDataRead = false;
@@ -145,9 +148,9 @@ void AccessManagerReply::putOnHold()
         return;
 
     // kDebug(7044) << m_kioJob << m_data;
-    m_kioJob->disconnect(this);
-    m_kioJob->putOnHold();
-    m_kioJob = 0;
+    m_kioJob.data()->disconnect(this);
+    m_kioJob.data()->putOnHold();
+    m_kioJob.clear();
     KIO::Scheduler::publishSlaveOnHold();
 }
 
@@ -163,7 +166,7 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
     if (!job || m_metaDataRead)
         return;
 
-    const KIO::MetaData& metaData = job->metaData();
+    KIO::MetaData metaData (job->metaData());
     if (metaData.isEmpty()) {
         // Allow handling of local resources such as man pages and file url...
         if (isLocalRequest(url())) {
@@ -180,10 +183,6 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
     setAttribute(QNetworkRequest::ConnectionEncryptedAttribute, isEncrypted);
     if (isEncrypted)
         setSslConfiguration(sslConfig);
-
-    // Set the returned meta data as attribute...
-    setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::MetaData),
-                 metaData.toVariant());
 
     // Set the raw header information...
     const QStringList httpHeaders (metaData.value(QL1S("HTTP-Headers")).split(QL1C('\n'), QString::SkipEmptyParts));
@@ -234,7 +233,24 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
             // Without overridding the corrected mime-type sent by kio_http, add
             // back the "charset=" portion of the content-type header if present.
             if (headerName.startsWith(QL1S("content-type"), Qt::CaseInsensitive)) {
-                const QString mimeType = header(QNetworkRequest::ContentTypeHeader).toString();
+
+                QString mimeType (header(QNetworkRequest::ContentTypeHeader).toString());
+
+                if (m_ignoreContentDisposition) {
+                    // If the server returned application/octet-stream, try to determine the
+                    // real content type from the disposition filename.
+                    if (mimeType == KMimeType::defaultMimeType()) {
+                        int accuracy = 0;
+                        const QString fileName (metaData.value(QL1S("content-disposition-filename")));
+                        KMimeType::Ptr mime = KMimeType::findByUrl((fileName.isEmpty() ? url().path() : fileName), 0, false, true, &accuracy);
+                        if (!mime->isDefault() && accuracy == 100) {
+                            mimeType = mime->name();
+                        }
+                    }
+                    metaData.remove(QL1S("content-disposition-type"));
+                    metaData.remove(QL1S("content-disposition-filename"));
+                }
+
                 if (!headerValue.contains(mimeType, Qt::CaseInsensitive)) {
                     index = headerValue.indexOf(QL1C(';'));
                     if (index == -1) {
@@ -242,13 +258,15 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
                     } else {
                         headerValue.replace(0, index, mimeType);
                     }
-                    kDebug(7044) << "Changed mime-type from" << mimeType << "to" << headerValue;
+                    //kDebug(7044) << "Changed mime-type from" << mimeType << "to" << headerValue;
                 }
             }
-
             setRawHeader(headerName.trimmed().toUtf8(), headerValue.trimmed().toUtf8());
         }
     }
+
+    // Set the returned meta data as attribute...
+    setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::MetaData), metaData.toVariant());
 
     m_metaDataRead = true;
     emit metaDataChanged();
