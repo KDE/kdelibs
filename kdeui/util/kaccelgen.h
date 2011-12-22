@@ -181,7 +181,6 @@ generate(Iter begin, Iter end, QStringList& target)
         int user_ampersand = item.indexOf(QLatin1Char('&'));
         if( user_ampersand < 0 || item[user_ampersand+1] == QLatin1Char('&')) {
             bool found = false;
-            int found_idx;
             int j;
 
             // Check word-starting letters first.
@@ -190,7 +189,6 @@ generate(Iter begin, Iter end, QStringList& target)
                     && !used_accels.contains(item[j])
                     && (0 == j || (j > 0 && item[j-1].isSpace())) ) {
                     found = true;
-                    found_idx = j;
                     break;
                 }
             }
@@ -201,7 +199,6 @@ generate(Iter begin, Iter end, QStringList& target)
                     if( isLegalAccelerator(item, j)
                         && !used_accels.contains(item[j]) ) {
                         found = true;
-                        found_idx = j;
                         break;
                     }
                 }

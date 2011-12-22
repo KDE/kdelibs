@@ -450,7 +450,7 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags sparqlFlags ) const
     QueryBuilderData qbd( d.constData(), sparqlFlags );
 
 
-    // We restrict results to user visible types only.
+    // We restrict results to user visible types only. There is no need for this with file queries as normally all files are visible.
     //
     // Here we use an optimizations:
     // The storage service creates "nao:userVisible 1" entries for all visible resources. This contains two optimizations:
@@ -462,7 +462,7 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags sparqlFlags ) const
     //   performance impact which the filter has not.
     //
     QString userVisibilityRestriction;
-    if( !(queryFlags()&NoResultRestrictions) ) {
+    if( !(queryFlags()&NoResultRestrictions) && !d->m_isFileQuery ) {
         userVisibilityRestriction = QString::fromLatin1("?r %1 %2 . FILTER(%2>0) . ")
                 .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::userVisible()),
                      qbd.uniqueVarName());
