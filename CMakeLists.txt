@@ -46,16 +46,16 @@ endif (KHTML_BUILD_TESTREGRESSION)
 
 option(STATIC_LIBRARY "Build kdelibs as static libraries." FALSE)
 
+add_subdirectory( libinqt5 )
+add_subdirectory( libqtmimetypes )
+add_subdirectory( tier1 )
+
 # This option should be removed, or moved down as far as possible.
 # That means porting the existing frameworks to the CMake automoc
 # feature. Porting is mostly removing explicit moc includes, and
 # leaving the ones which are truly needed (ie, if you remove
 # them, the build fails).
 set(CMAKE_AUTOMOC_RELAXED_MODE ON)
-
-add_subdirectory( libinqt5 )
-add_subdirectory( libqtmimetypes )
-add_subdirectory( tier1 )
 
 ################# write platform profile file which will be installed #################
 include(CreateKDEPlatformProfile.cmake)
