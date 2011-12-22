@@ -335,12 +335,10 @@ void CopyJobPrivate::slotResultStating( KJob *job )
     const UDSEntry entry = static_cast<StatJob*>(job)->statResult();
 
     if ( destinationState == DEST_NOT_STATED ) {
-        if ( m_dest.isLocalFile() ) //works for dirs as well
-        {
+        if ( m_dest.isLocalFile() ) { //works for dirs as well
             QString path = m_dest.toLocalFile();
             KFileSystemType::Type fsType = KFileSystemType::fileSystemType( path );
-            if ( fsType != KFileSystemType::Nfs && fsType != KFileSystemType::Smb )
-            {
+            if ( fsType != KFileSystemType::Nfs && fsType != KFileSystemType::Smb ) {
                 m_freeSpace = KDiskFreeSpaceInfo::freeSpaceInfo( path ).available();
             }
             //TODO actually preliminary check is even more valuable for slow NFS/SMB mounts,
@@ -1302,8 +1300,7 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
                 org::kde::KDirNotify::emitFileMoved( (*it).uSource.url(), (*it).uDest.url() );
             }
             m_successSrcList.append((*it).uSource);
-            if ( m_freeSpace != -1 )
-            {
+            if (m_freeSpace != (KIO::filesize_t)-1 && (*it).size != (KIO::filesize_t)-1) {
                 m_freeSpace -= (*it).size;
             }
 
@@ -1550,10 +1547,8 @@ void CopyJobPrivate::copyNextFile()
     if (bCopyFile) // any file to create, finally ?
     {
         //kDebug()<<"preparing to copy"<<(*it).uSource<<(*it).size<<m_freeSpace;
-        if ( m_freeSpace != -1 )
-        {
-            if ( m_freeSpace < (*it).size )
-            {
+        if (m_freeSpace != (KIO::filesize_t)-1 && (*it).size != (KIO::filesize_t)-1) {
+            if (m_freeSpace < (*it).size) {
                 q->setError( ERR_DISK_FULL );
                 q->emitResult();
                 return;
