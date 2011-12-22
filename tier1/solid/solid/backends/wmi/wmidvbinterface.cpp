@@ -131,4 +131,3 @@ bool DvbInterface::parseTypeIndex(Solid::DvbInterface::DeviceType *type, int *in
     return ok;
 }
 
-#include "backends/wmi/wmidvbinterface.moc"

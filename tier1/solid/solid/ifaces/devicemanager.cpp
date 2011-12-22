@@ -32,4 +32,3 @@ Solid::Ifaces::DeviceManager::~DeviceManager()
 
 }
 
-#include "ifaces/devicemanager.moc"

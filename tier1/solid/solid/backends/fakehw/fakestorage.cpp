@@ -120,4 +120,3 @@ qulonglong FakeStorage::size() const
     return fakeDevice()->property("size").toULongLong();
 }
 
-#include "backends/fakehw/fakestorage.moc"

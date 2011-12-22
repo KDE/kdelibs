@@ -152,5 +152,3 @@ void Solid::Networking::setDisconnectPolicy( Solid::Networking::ManagementPolicy
     globalNetworkManager->disconnectPolicy = policy;
 }
 
-#include "networking_p.moc"
-#include "networking.moc"

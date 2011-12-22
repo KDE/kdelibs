@@ -56,4 +56,3 @@ Solid::Processor::InstructionSets Processor::instructionSets() const
     return 0; // TODO
 }
 
-#include "backends/iokit/iokitprocessor.moc"

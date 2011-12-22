@@ -65,4 +65,3 @@ QVariant Solid::Backends::Wmi::PortableMediaPlayer::driverHandle(const QString &
     return QVariant();
 }
 
-#include "backends/wmi/wmiportablemediaplayer.moc"

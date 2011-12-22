@@ -137,5 +137,5 @@ void HalBasicTest::slotPropertyChanged(const QMap<QString,int> &changes)
 #endif
 }
 
-#include "halbasictest.moc"
+#include "moc_halbasictest.cpp"
 

@@ -282,4 +282,3 @@ FakeDevice *FakeManager::parseDeviceElement(const QDomElement &deviceElement)
     return device;
 }
 
-#include "backends/fakehw/fakemanager.moc"

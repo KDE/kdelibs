@@ -206,4 +206,3 @@ static Solid::Processor::InstructionSets cpuFeatures()
    return featureflags;
 }
 
-#include "backends/wmi/wmiprocessor.moc"

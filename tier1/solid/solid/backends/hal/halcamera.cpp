@@ -71,4 +71,3 @@ QVariant Solid::Backends::Hal::Camera::driverHandle(const QString &driver) const
     return QVariant();
 }
 
-#include "backends/hal/halcamera.moc"

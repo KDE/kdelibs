@@ -215,4 +215,3 @@ void Cdrom::slotEjectDone(int error, const QString &errorString)
     Q_EMIT ejectDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
 }
 
-#include "backends/hal/halcdrom.moc"

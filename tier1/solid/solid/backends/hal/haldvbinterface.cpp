@@ -132,4 +132,3 @@ bool DvbInterface::parseTypeIndex(Solid::DvbInterface::DeviceType *type, int *in
     return ok;
 }
 
-#include "backends/hal/haldvbinterface.moc"

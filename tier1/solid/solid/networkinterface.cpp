@@ -58,4 +58,3 @@ qulonglong Solid::NetworkInterface::macAddress() const
     return_SOLID_CALL(Ifaces::NetworkInterface *, d->backendObject(), 0, macAddress());
 }
 
-#include "networkinterface.moc"

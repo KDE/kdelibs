@@ -52,4 +52,3 @@ Solid::SmartCardReader::ReaderType SmartCardReader::readerType() const
     return type;
 }
 
-#include "backends/hal/halsmartcardreader.moc"

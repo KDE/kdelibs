@@ -154,4 +154,3 @@ qulonglong OpticalDisc::capacity() const
     return m_device->property("volume.disc.capacity").toULongLong();
 }
 
-#include "backends/wmi/wmiopticaldisc.moc"

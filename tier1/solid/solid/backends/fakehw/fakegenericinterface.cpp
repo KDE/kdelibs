@@ -50,4 +50,3 @@ bool FakeGenericInterface::propertyExists(const QString &key) const
     return fakeDevice()->propertyExists(key);
 }
 
-#include "backends/fakehw/fakegenericinterface.moc"

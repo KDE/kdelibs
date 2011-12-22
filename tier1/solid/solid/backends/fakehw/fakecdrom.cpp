@@ -98,4 +98,3 @@ bool FakeCdrom::eject()
     return false;
 }
 
-#include "backends/fakehw/fakecdrom.moc"

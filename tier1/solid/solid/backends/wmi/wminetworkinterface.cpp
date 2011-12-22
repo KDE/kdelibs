@@ -66,4 +66,3 @@ qulonglong NetworkInterface::macAddress() const
     }
 }
 
-#include "backends/wmi/wminetworkinterface.moc"

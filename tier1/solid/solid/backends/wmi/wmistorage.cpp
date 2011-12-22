@@ -120,4 +120,3 @@ qulonglong Storage::size() const
     return m_device->property("storage.size").toULongLong();
 }
 
-#include "backends/wmi/wmistorage.moc"

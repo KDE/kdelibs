@@ -70,4 +70,3 @@ bool Solid::OpticalDrive::eject()
     return_SOLID_CALL(Ifaces::OpticalDrive *, d->backendObject(), false, eject());
 }
 
-#include "opticaldrive.moc"

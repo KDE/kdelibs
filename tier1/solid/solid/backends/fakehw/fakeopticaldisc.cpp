@@ -157,4 +157,3 @@ qulonglong FakeOpticalDisc::capacity() const
     return fakeDevice()->property("capacity").toULongLong();
 }
 
-#include "backends/fakehw/fakeopticaldisc.moc"

@@ -111,4 +111,3 @@ QString Solid::Backends::Wmi::Volume::encryptedContainerUdi() const
     return m_device->property("volume.crypto_luks.clear.backing_volume").toString();
 }
 
-#include "backends/wmi/wmivolume.moc"

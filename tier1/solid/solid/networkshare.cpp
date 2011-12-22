@@ -46,5 +46,4 @@ QUrl Solid::NetworkShare::url() const
     return_SOLID_CALL(Ifaces::NetworkShare *, d->backendObject(), QUrl(), url());
 }
 
-#include "networkshare.moc"
 

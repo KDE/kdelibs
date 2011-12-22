@@ -47,4 +47,3 @@ void AcAdapter::slotPropertyChanged(const QMap<QString,int> &changes)
     }
 }
 
-#include "backends/hal/halacadapter.moc"

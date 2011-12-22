@@ -135,4 +135,3 @@ void FakeBattery::setChargeLevel(int newLevel)
     Q_EMIT chargePercentChanged(chargePercent(), fakeDevice()->udi());
 }
 
-#include "backends/fakehw/fakebattery.moc"

@@ -52,4 +52,3 @@ QString Solid::Block::device() const
     return_SOLID_CALL(Ifaces::Block *, d->backendObject(), QString(), device());
 }
 
-#include "block.moc"

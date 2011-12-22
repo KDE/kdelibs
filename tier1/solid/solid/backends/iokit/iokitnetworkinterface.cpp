@@ -84,4 +84,3 @@ qulonglong NetworkInterface::macAddress() const
     return result;
 }
 
-#include "backends/iokit/iokitnetworkinterface.moc"

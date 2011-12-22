@@ -201,4 +201,3 @@ Solid::AudioInterface::SoundcardType AudioInterface::soundcardType() const
     return m_soundcardType;
 }
 
-#include "backends/wmi/wmiaudiointerface.moc"

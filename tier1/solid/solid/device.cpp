@@ -324,4 +324,3 @@ void Solid::DevicePrivate::setInterface(const DeviceInterface::Type &type, Devic
     m_ifaces[type] = interface;
 }
 
-#include "device_p.moc"

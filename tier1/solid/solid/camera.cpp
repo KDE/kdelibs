@@ -52,5 +52,4 @@ QVariant Solid::Camera::driverHandle(const QString &driver) const
     return_SOLID_CALL(Ifaces::Camera *, d->backendObject(), QVariant(), driverHandle(driver));
 }
 
-#include "camera.moc"
 

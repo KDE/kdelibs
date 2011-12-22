@@ -78,4 +78,3 @@ void Button::slotConditionRaised(const QString &name, const QString &/*reason */
     }
 }
 
-#include "backends/hal/halbutton.moc"

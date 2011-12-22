@@ -125,4 +125,3 @@ void Battery::slotPropertyChanged(const QMap<QString,int> &changes)
 
 }
 
-#include "backends/wmi/wmibattery.moc"

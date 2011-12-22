@@ -90,4 +90,3 @@ Solid::Device Solid::StorageVolume::encryptedContainer() const
     }
 }
 
-#include "storagevolume.moc"

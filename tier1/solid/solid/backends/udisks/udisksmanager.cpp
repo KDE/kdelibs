@@ -261,4 +261,3 @@ const QStringList &UDisksManager::deviceCache()
 }
 
 
-#include "backends/udisks/udisksmanager.moc"

@@ -55,4 +55,3 @@ bool Solid::Button::stateValue() const
     return_SOLID_CALL(Ifaces::Button *, d->backendObject(), false, stateValue());
 }
 
-#include "button.moc"

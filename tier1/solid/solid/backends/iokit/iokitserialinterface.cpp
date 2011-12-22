@@ -49,7 +49,6 @@ int SerialInterface::port() const
     return -1; // TODO
 }
 
-#include "backends/iokit/iokitserialinterface.moc"
 
 
 

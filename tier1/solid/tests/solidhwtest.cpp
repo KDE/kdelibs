@@ -483,5 +483,5 @@ void SolidHwTest::slotPropertyChanged(const QMap<QString,int> &changes)
 }
 
 
-#include "solidhwtest.moc"
+#include "moc_solidhwtest.cpp"
 

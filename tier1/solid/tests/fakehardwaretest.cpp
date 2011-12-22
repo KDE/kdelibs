@@ -74,4 +74,4 @@ void FakeHardwareTest::testFakeBackend()
     delete fakeManager;
 }
 
-#include "fakehardwaretest.moc"
+#include "moc_fakehardwaretest.cpp"
