@@ -35,10 +35,10 @@ if(NOT KDE_NO_DEPRECATED)
     knewstuffauthortest
     knewstuffentrytest
     testTranslatable
-    knewstuff2_test
   )
 
   KNEWSTUFF_EXECUTABLE_TESTS(
+   knewstuff2_test
    knewstuff2_download
    knewstuff2_standard
    knewstuff2_cache
