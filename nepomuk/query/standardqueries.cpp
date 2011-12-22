@@ -100,17 +100,21 @@ Nepomuk::Query::Query Nepomuk::Query::dateRangeQuery( const QDate& start, const 
     const LiteralTerm dateFrom( QDateTime( start, QTime( 0,0,0 ) ) );
     const LiteralTerm dateTo( QDateTime( end, QTime( 23, 59, 59, 999 ) ) );
 
+    // slight optimization: no need for an end filter if the end is in the future
+    const bool needStartFilter = start.isValid();
+    const bool needEndFilter = end.isValid() && end < QDate::currentDate();
+
     Query query;
 
     if( dateFlags & ModificationDate ) {
         // include files modified in our date range
         ComparisonTerm lastModifiedStart = Nepomuk::Vocabulary::NIE::lastModified() > dateFrom;
         ComparisonTerm lastModifiedEnd = Nepomuk::Vocabulary::NIE::lastModified() < dateTo;
-        if( start.isValid() && end.isValid() )
+        if( needStartFilter && needEndFilter )
             query = query || ( lastModifiedStart && lastModifiedEnd );
-        else if( start.isValid() )
+        else if( needStartFilter )
             query = query || lastModifiedStart;
-        else if( end.isValid() )
+        else if( needEndFilter )
             query = query || lastModifiedEnd;
     }
 
@@ -118,11 +122,11 @@ Nepomuk::Query::Query Nepomuk::Query::dateRangeQuery( const QDate& start, const 
         // include files created (as in photos taken) in our data range
         ComparisonTerm contentCreatedStart = Nepomuk::Vocabulary::NIE::contentCreated() > dateFrom;
         ComparisonTerm contentCreatedEnd = Nepomuk::Vocabulary::NIE::contentCreated() < dateTo;
-        if( start.isValid() && end.isValid() )
+        if( needStartFilter && needEndFilter )
             query = query || ( contentCreatedStart && contentCreatedEnd );
-        else if( start.isValid() )
+        else if( needStartFilter )
             query = query || contentCreatedStart;
-        else if( end.isValid() )
+        else if( needEndFilter )
             query = query || contentCreatedEnd;
     }
 
@@ -132,11 +136,11 @@ Nepomuk::Query::Query Nepomuk::Query::dateRangeQuery( const QDate& start, const 
         ComparisonTerm accessEventStart = Nepomuk::Vocabulary::NUAO::start() > dateFrom;
         ComparisonTerm accessEventEnd = Nepomuk::Vocabulary::NUAO::start() < dateTo;
         ComparisonTerm accessEventCondition( Nepomuk::Vocabulary::NUAO::involves(), Term() );
-        if( start.isValid() && end.isValid() )
+        if( needStartFilter && needEndFilter )
             accessEventCondition.setSubTerm( accessEventStart && accessEventEnd );
-        else if( start.isValid() )
+        else if( needStartFilter )
             accessEventCondition.setSubTerm( accessEventStart );
-        else if( end.isValid() )
+        else if( needEndFilter )
             accessEventCondition.setSubTerm( accessEventEnd );
         if( accessEventCondition.subTerm().isValid() )
             query = query || accessEventCondition.inverted();

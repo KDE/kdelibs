@@ -619,8 +619,10 @@ public:
 
   /**
    * Checks whether the file is local.
-   * @return true if the file is a plain local file and has no filter protocols
-   *         attached to it.
+   * @return true if the file is a plain local file (i.e. uses the file protocol
+   *   and no hostname, or the local hostname).
+   *  When isLocalFile returns true, you can use toLocalFile to read the file contents.
+   *  Otherwise you need to use KIO (e.g. KIO::get).
    */
   bool isLocalFile() const;
 

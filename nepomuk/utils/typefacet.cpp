@@ -68,7 +68,6 @@ public:
         m_fileTypes.append( qMakePair<QString, Query::Term>(i18nc("@option:check A filter on file type - audio files", "Audio"),
                            Query::ComparisonTerm(Nepomuk::Vocabulary::NIE::mimeType(), Query::LiteralTerm(QLatin1String("audio")))) );
         m_fileTypes.append( qMakePair<QString, Query::Term>(i18nc("@option:check A filter on file type - media video", "Video"),
-                           Query::ResourceTypeTerm(Nepomuk::Vocabulary::NFO::Video()) ||
                            Query::ComparisonTerm(Nepomuk::Vocabulary::NIE::mimeType(), Query::LiteralTerm(QLatin1String("video")))) );
 
         m_fileTypes.append( qMakePair<QString, Query::Term>(i18nc("@option:check A filter on file type", "Images"),

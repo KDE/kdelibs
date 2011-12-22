@@ -189,6 +189,9 @@ void KUrlTest::testQUrl()
 
 void KUrlTest::testIsLocalFile()
 {
+  KUrl trash("trash:/");
+  QVERIFY(!trash.isLocalFile());
+
   KUrl local_file_1("file://localhost/my/file");
   QVERIFY( local_file_1.isLocalFile() );
 

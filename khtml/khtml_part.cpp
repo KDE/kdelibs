@@ -1531,8 +1531,10 @@ void KHTMLPart::clear()
   d->m_decoder = 0;
 
   // We don't want to change between parts if we are going to delete all of them anyway
-  disconnect( partManager(), SIGNAL( activePartChanged( KParts::Part * ) ),
-               this, SLOT( slotActiveFrameChanged( KParts::Part * ) ) );
+  if (partManager()) {
+        disconnect( partManager(), SIGNAL( activePartChanged( KParts::Part * ) ),
+                    this, SLOT( slotActiveFrameChanged( KParts::Part * ) ) );
+  }
 
   if (d->m_frames.count())
   {
@@ -1567,8 +1569,10 @@ void KHTMLPart::clear()
   }
 
   // Listen to part changes again
-  connect( partManager(), SIGNAL( activePartChanged( KParts::Part * ) ),
-             this, SLOT( slotActiveFrameChanged( KParts::Part * ) ) );
+  if (partManager()) {
+        connect( partManager(), SIGNAL( activePartChanged( KParts::Part * ) ),
+                 this, SLOT( slotActiveFrameChanged( KParts::Part * ) ) );
+  }
 
   d->clearRedirection();
   d->m_redirectLockHistory = true;
