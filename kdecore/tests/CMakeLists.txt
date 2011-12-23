@@ -42,7 +42,6 @@ KDECORE_UNIT_TESTS(
  kentrymaptest
  kconfigtest
  kurlmimetest
- klockfiletest
  ksharedptrtest
  kdatetimetest
  ksavefiletest
@@ -89,7 +88,6 @@ KDECORE_EXECUTABLE_TESTS(
  dbuscalltest
  kmdcodectest
  startserviceby
- klockfile_testlock # helper for klockfiletest
 )
 
 ########### klocaletest ###############

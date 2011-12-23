@@ -18,15 +18,18 @@
 
 #include "klockfiletest.h"
 #include "klockfiletest.moc"
+#include "config-klockfile.h"
 
-#include <kdebug.h>
 #include <unistd.h>
-
-// TODO test locking from two different threads
-//#include <qtconcurrentrun.h>
+#include <QtTest/QTest>
+#include <QtCore/QFile>
+#include <QtCore/QProcess>
+#include <QtCore/QIODevice>
+#include <QtCore/QTextStream>
+#include <QtCore/QtConcurrentRun>
 
 namespace QTest {
-template<>
+
 char* toString(const KLockFile::LockResult& result)
 {
 	static const char *const strings[] = {
@@ -61,14 +64,23 @@ static const char *const lockName = "klockfiletest.lock";
 void
 Test_KLockFile::initTestCase()
 {
-	QFile::remove( lockName );
-	lockFile = new KLockFile(QLatin1String(lockName));
+    qApp->setApplicationName(QLatin1String("qttest"));
+    QFile::remove( QString::fromLatin1(lockName) );
+    lockFile = new KLockFile(QLatin1String(lockName));
 }
 
 static KLockFile::LockResult testLockFromProcess(const QString& lockName)
 {
-    const int ret = QProcess::execute("./klockfile_testlock", QStringList() << lockName);
+    const int ret = QProcess::execute(QString::fromLatin1(AUTOTESTS_BINARY_DIR "/bin/klockfile_testlock"), QStringList() << lockName);
     return KLockFile::LockResult(ret);
+}
+
+static KLockFile::LockResult testLockFromThread()
+{
+    KLockFile *lockFile = new KLockFile(QLatin1String(lockName));
+    KLockFile::LockResult result = lockFile->lock(KLockFile::NoBlockFlag);
+    delete lockFile;
+    return result;
 }
 
 void
@@ -85,8 +97,12 @@ Test_KLockFile::testLock()
 	QVERIFY(!lockFile2->isLocked());
 	delete lockFile2;
 
-        // Also try from a different process.
+        // Try from a different process.
         QCOMPARE(testLockFromProcess(QLatin1String(lockName)), KLockFile::LockFail);
+
+	// Also try from a different thread.
+        QFuture<KLockFile::LockResult> ret = QtConcurrent::run<KLockFile::LockResult>(testLockFromThread);
+	QCOMPARE(ret.result(), KLockFile::LockFail);
 }
 
 void
@@ -136,7 +152,7 @@ Test_KLockFile::testStaleNoBlockFlag()
     char hostname[256];
     ::gethostname(hostname, sizeof(hostname));
 
-    QFile f(lockName);
+    QFile f(QString::fromLatin1(lockName));
     f.open(QIODevice::WriteOnly);
     QTextStream stream(&f);
     stream << QString::number(111222) << endl << QLatin1String("qttest") << endl << hostname << endl;
@@ -147,7 +163,7 @@ Test_KLockFile::testStaleNoBlockFlag()
     QVERIFY(!lockFile->isLocked());
     QCOMPARE(lockFile->lock(KLockFile::NoBlockFlag), KLockFile::LockStale);
     QByteArray expectedMsg = QByteArray("WARNING: deleting stale lockfile ") + lockName;
-    QTest::ignoreMessage(QtWarningMsg, expectedMsg);
+    QTest::ignoreMessage(QtWarningMsg, expectedMsg.data());
     QCOMPARE(lockFile->lock(KLockFile::NoBlockFlag|KLockFile::ForceFlag), KLockFile::LockOK);
 
     QVERIFY(lockFile->isLocked());
@@ -155,4 +171,4 @@ Test_KLockFile::testStaleNoBlockFlag()
 }
 
 
-QTEST_KDEMAIN_CORE(Test_KLockFile)
+QTEST_MAIN(Test_KLockFile)

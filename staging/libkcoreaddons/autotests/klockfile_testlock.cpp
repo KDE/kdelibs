@@ -1,9 +1,10 @@
 /* This file is part of the KDE libraries
-    Copyright (c) 2005 Thomas Braxton <brax108@cox.net>
+    Copyright (c) 2011 David Faure <faure@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
-    License version 2 as published by the Free Software Foundation.
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
 
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,23 +17,23 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KLOCKFILETEST_H
-#define KLOCKFILETEST_H
+#include <kcmdlineargs.h>
+#include <kaboutdata.h>
+#include <klockfile.h>
 
-#include "qtest_kde.h"
-#include "klockfile.h"
-
-class Test_KLockFile : public QObject
+int main(int argc, char *argv[])
 {
-	Q_OBJECT
+   KAboutData about("klockfile_testlock", 0, qi18n("klockfile_testlock"), "version");
 
-	KLockFile *lockFile;
-private Q_SLOTS:
-	void initTestCase();
-	void testLock();
-	void testStale();
-	void testUnlock();
-        void testStaleNoBlockFlag();
-};
+   if (argc <= 1) {
+       return KLockFile::LockError;
+   }
 
-#endif
+   const QString lockName = QString::fromLocal8Bit(argv[1]);
+
+   KLockFile lockFile(lockName);
+   if (lockFile.isLocked()) {
+       return KLockFile::LockError;
+   }
+   return lockFile.lock(KLockFile::NoBlockFlag);
+}

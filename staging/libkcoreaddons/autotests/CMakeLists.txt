@@ -19,10 +19,14 @@ MACRO(KCOREADDONS_EXECUTABLE_TESTS)
        ENDFOREACH(_testname)
 ENDMACRO(KCOREADDONS_EXECUTABLE_TESTS)
 
+set(AUTOTESTS_BINARY_DIR "${CMAKE_BINARY_DIR}")
+configure_file(config-klockfile.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-klockfile.h)
+
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/kernel
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/text
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/jobs
+    ${CMAKE_CURRENT_SOURCE_DIR}/../src/io
     ${CMAKE_CURRENT_BINARY_DIR}/../src
 )
 
@@ -30,5 +34,9 @@ KCOREADDONS_UNIT_TESTS(
     kaboutdatatest
     kcharsetstest
     kjobtest
+    klockfiletest
 )
 
+KCOREADDONS_EXECUTABLE_TESTS(
+    klockfile_testlock
+)
