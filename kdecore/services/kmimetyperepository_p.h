@@ -41,11 +41,6 @@ public:
     static KMimeTypeRepository * self();
 
     /**
-     * Creates a KMimeType
-     */
-    KMimeType::Ptr findMimeTypeByName(const QString &_name, KMimeType::FindByNameOption options = KMimeType::DontResolveAlias);
-
-    /**
      * Return the patterns (globs) for a given mimetype
      * TEMPORARY method, it will go away once we can require shared-mime-info >= 0.70.
      */

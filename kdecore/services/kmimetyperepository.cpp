@@ -50,27 +50,6 @@ KMimeTypeRepository::~KMimeTypeRepository()
 {
 }
 
-KMimeType::Ptr KMimeTypeRepository::findMimeTypeByName(const QString &_name, KMimeType::FindByNameOption options)
-{
-    Q_UNUSED(options);
-    QMimeType mime = m_mimeDb.mimeTypeForName(_name);
-    return KMimeType::Ptr(new KMimeType(mime));
-#if 0
-    QString name = _name;
-    if (options & KMimeType::ResolveAliases) {
-        name = canonicalName(name);
-    }
-
-    const QString filename = name + QLatin1String(".xml");
-
-    if (QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("mime/") + filename).isEmpty()) {
-        return KMimeType::Ptr(); // Not found
-    }
-
-    return KMimeType::Ptr(new KMimeType(filename, name, QString() /*comment*/));
-#endif
-}
-
 bool KMimeTypeRepository::checkMimeTypes()
 {
     // check if there are mimetypes. There should be at least one globs file.
@@ -189,8 +168,8 @@ KMimeType::Ptr KMimeTypeRepository::defaultMimeTypePtr()
     QWriteLocker lock(&m_mutex);
     if (!m_defaultMimeType) {
         // Try to find the default type
-        KMimeType::Ptr mime = findMimeTypeByName(KMimeType::defaultMimeType());
-        Q_ASSERT(mime);
+        QMimeType qmime = m_mimeDb.mimeTypeForName(KMimeType::defaultMimeType());
+        KMimeType::Ptr mime(new KMimeType(qmime));
         m_defaultMimeType = mime;
     }
     return m_defaultMimeType;

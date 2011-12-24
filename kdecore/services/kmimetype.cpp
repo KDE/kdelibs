@@ -87,7 +87,7 @@ bool KMimeType::isBufferBinaryData(const QByteArray& data)
     return false;
 }
 
-#if 0 // the windows-specific code, and the locked directory, are missing from QMimeDatabase.
+// the windows-specific code, and the locked directory, are missing from QMimeDatabase.
 static KMimeType::Ptr findFromMode( const QString& path /*only used if is_local_file*/,
                                     mode_t mode /*0 if unknown*/,
                                     bool is_local_file )
@@ -151,7 +151,6 @@ static KMimeType::Ptr findFromMode( const QString& path /*only used if is_local_
 
     return KMimeType::Ptr();
 }
-#endif
 
 /*
  Note: in KDE we want the file views to sniff in a delayed manner.
@@ -235,7 +234,7 @@ KMimeType::Ptr KMimeType::findByFileContent( const QString &fileName, int *accur
     checkEssentialMimeTypes();
 
     QFile device(fileName);
-#if 0
+#if 1
     // Look at mode first
     KMimeType::Ptr mimeFromMode = findFromMode( fileName, 0, true );
     if (mimeFromMode) {
@@ -245,9 +244,10 @@ KMimeType::Ptr KMimeType::findByFileContent( const QString &fileName, int *accur
     }
 #endif
     QMimeDatabase db;
+    KMimeType::Ptr mime(new KMimeType(db.findByData(&device)));
     if (accuracy)
-        *accuracy = 80; // not supported anymore; was it really used for anything?
-    return KMimeType::Ptr(new KMimeType(db.findByData(&device)));
+        *accuracy = mime->isDefault() ? 0 : 80; // not supported anymore; was it really used for anything?
+    return mime;
 }
 
 bool KMimeType::isBinaryData( const QString &fileName )

@@ -170,7 +170,9 @@ void KBuildServiceFactory::collectInheritedServices(const QString& mimeTypeName,
     // through the multiple parents at a given level). I don't think we care, though.
     int mimeTypeInheritanceLevel = 0;
 
-    Q_FOREACH(const QString& parentMimeType, KMimeTypeRepository::self()->parents(mimeTypeName)) {
+    QMimeDatabase db;
+    QMimeType qmime = db.mimeTypeForName(mimeTypeName);
+    Q_FOREACH(const QString& parentMimeType, qmime.parentMimeTypes()) {
 
         collectInheritedServices(parentMimeType, visitedMimes);
 

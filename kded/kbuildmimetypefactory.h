@@ -22,7 +22,6 @@
 
 #include <kmimetypefactory.h>
 #include <QtCore/QStringList>
-#include <kmimeglobsfileparser_p.h>
 #include <kmimetype.h>
 
 /**
@@ -38,12 +37,6 @@ public:
   KBuildMimeTypeFactory();
 
   virtual ~KBuildMimeTypeFactory();
-
-    /**
-     * Find a mime type entry in the database file
-     * @return a pointer to the mimetype in the memory dict (don't free!)
-     */
-    MimeTypeEntry::Ptr findMimeTypeEntryByName(const QString &_name, KMimeType::FindByNameOption options = KMimeType::DontResolveAlias);
 
   virtual KSycocaEntry::List allEntries() const;
 

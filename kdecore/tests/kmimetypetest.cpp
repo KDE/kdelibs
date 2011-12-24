@@ -468,7 +468,7 @@ void KMimeTypeTest::testFindByFileContent()
     KMimeType::Ptr mime;
     int accuracy = 0;
 
-    // Calling findByContent on a directory
+    // Calling findByFileContent on a directory
     mime = KMimeType::findByFileContent("/", &accuracy);
     QVERIFY(mime);
     QCOMPARE(mime->name(), QString::fromLatin1("inode/directory"));
@@ -498,6 +498,9 @@ void KMimeTypeTest::testAllMimeTypes()
         const KMimeType::Ptr lookedupMime = KMimeType::mimeType( name );
         QVERIFY( lookedupMime ); // not null
         QCOMPARE( lookedupMime->name(), name ); // if this fails, you have an alias defined as a real mimetype too!
+        // Note: this happens with x-win-lnk when your kde.xml defines it as an alias, while
+        // /usr/share/mime/packages/kde.xml defines it as a real mimetype. This is a false positive,
+        // remove one of the kde.xml files.
     }
 }
 
@@ -505,9 +508,7 @@ void KMimeTypeTest::testAlias()
 {
     const KMimeType::Ptr canonical = KMimeType::mimeType( "application/xml" );
     QVERIFY( canonical );
-    KMimeType::Ptr alias = KMimeType::mimeType("text/xml", KMimeType::DontResolveAlias);
-    QVERIFY( !alias );
-    alias = KMimeType::mimeType( "text/xml", KMimeType::ResolveAliases );
+    KMimeType::Ptr alias = KMimeType::mimeType( "text/xml" );
     QVERIFY( alias );
     QCOMPARE( alias->name(), QString("application/xml") );
 

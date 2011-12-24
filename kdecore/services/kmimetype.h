@@ -103,7 +103,8 @@ public:
      */
     QStringList patterns() const;
 
-    enum FindByNameOption { DontResolveAlias, ResolveAliases = 1 };
+    // DontResolveAlias was removed for kde 5, there was no use case for it.
+    enum FindByNameOption { ResolveAliases = 1 };
 
     /**
      * Retrieve a pointer to the mime type @p name
