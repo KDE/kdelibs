@@ -18,6 +18,7 @@
  */
 
 #include "kmimetyperepository_p.h"
+#include <kdebug.h>
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>
 #include "kmimetype.h"
@@ -77,19 +78,6 @@ bool KMimeTypeRepository::checkMimeTypes()
     return !aGlobFile.isEmpty();
 }
 
-QString KMimeTypeRepository::resolveAlias(const QString& mime)
-{
-    return aliases().value(mime);
-}
-
-QString KMimeTypeRepository::canonicalName(const QString& mime)
-{
-    QString c = resolveAlias(mime);
-    if (c.isEmpty())
-        return mime;
-    return c;
-}
-
 // TODO export QMimeGlobPattern::matchFileName in the public API
 bool KMimeTypeRepository::matchFileName( const QString &filename, const QString &pattern )
 {
@@ -137,137 +125,10 @@ bool KMimeTypeRepository::matchFileName( const QString &filename, const QString 
     return rx.exactMatch(filename);
 }
 
-QStringList KMimeTypeRepository::findFromFileName(const QString &fileName, QString *pMatchingExtension)
-{
-    //QReadLocker lock(&m_mutex);
-
-    QStringList matchingMimeTypes;
-    QString foundExt;
-
-
-
-    if (pMatchingExtension)
-        *pMatchingExtension = foundExt;
-    return matchingMimeTypes;
-}
-
-KMimeType::Ptr KMimeTypeRepository::findFromContent(QIODevice* device, int* accuracy, QByteArray& beginning)
-{
-    Q_ASSERT(device->isOpen());
-    const qint64 deviceSize = device->size();
-    if (deviceSize == 0) {
-        if (accuracy)
-            *accuracy = 100;
-        return findMimeTypeByName(QLatin1String("application/x-zerosize"));
-    }
-    if (beginning.isEmpty()) {
-        // check if we can really read the data; also provide enough data for most rules
-        const qint64 dataNeeded = qMin(deviceSize, (qint64) 16384);
-        beginning.resize(dataNeeded);
-        if (!device->seek(0) || device->read(beginning.data(), dataNeeded) == -1) {
-            return defaultMimeTypePtr(); // don't bother detecting unreadable file
-        }
-    }
-
-    m_mutex.lockForWrite();
-    if (!m_magicFilesParsed) {
-        parseMagic();
-        m_magicFilesParsed = true;
-    }
-    m_mutex.unlock();
-
-    // Apply magic rules
-    {
-        QReadLocker lock(&m_mutex);
-        Q_FOREACH ( const KMimeMagicRule& rule, m_magicRules ) {
-            if (rule.match(device, deviceSize, beginning)) {
-                if (accuracy)
-                    *accuracy = rule.priority();
-                return findMimeTypeByName(rule.mimetype());
-            }
-        }
-    }
-
-    // Do fallback code so that we never return 0
-    // Nothing worked, check if the file contents looks like binary or text
-    if (!KMimeType::isBufferBinaryData(beginning)) {
-        if (accuracy)
-            *accuracy = 5;
-        return findMimeTypeByName(QLatin1String("text/plain"));
-    }
-    if (accuracy)
-        *accuracy = 0;
-    return defaultMimeTypePtr();
-}
-
-static QString fallbackParent(const QString& mimeTypeName)
-{
-    const QString myGroup = mimeTypeName.left(mimeTypeName.indexOf(QLatin1Char('/')));
-    // All text/* types are subclasses of text/plain.
-    if (myGroup == QLatin1String("text") && mimeTypeName != QLatin1String("text/plain"))
-        return QLatin1String("text/plain");
-    // All real-file mimetypes implicitly derive from application/octet-stream
-    if (myGroup != QLatin1String("inode") &&
-        // kde extensions
-        myGroup != QLatin1String("all") && myGroup != QLatin1String("fonts") && myGroup != QLatin1String("print") && myGroup != QLatin1String("uri")
-        && mimeTypeName != QLatin1String("application/octet-stream")) {
-        return QLatin1String("application/octet-stream");
-    }
-    return QString();
-}
-
-QStringList KMimeTypeRepository::parents(const QString& mime)
-{
-    QWriteLocker lock(&m_mutex);
-    if (!m_parentsMapLoaded) {
-        m_parentsMapLoaded = true;
-        Q_ASSERT(m_parents.isEmpty());
-
-        const QStringList subclassFiles = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QLatin1String("mime/subclasses"));
-        //kDebug() << subclassFiles;
-        Q_FOREACH(const QString& fileName, subclassFiles) {
-
-            QFile qfile( fileName );
-            //kDebug(7021) << "Now parsing" << fileName;
-            if (qfile.open(QIODevice::ReadOnly)) {
-                QTextStream stream(&qfile);
-                stream.setCodec("ISO 8859-1");
-                while (!stream.atEnd()) {
-                    const QString line = stream.readLine();
-                    if (line.isEmpty() || line[0] == QLatin1Char('#'))
-                        continue;
-                    const int pos = line.indexOf(QLatin1Char(' '));
-                    if (pos == -1) // syntax error
-                        continue;
-                    const QString derivedTypeName = line.left(pos);
-                    KMimeType::Ptr derivedType = findMimeTypeByName(derivedTypeName, KMimeType::ResolveAliases);
-                    if (!derivedType)
-                        kWarning(7012) << fileName << " refers to unknown mimetype " << derivedTypeName;
-                    else {
-                        const QString parentTypeName = line.mid(pos+1);
-                        Q_ASSERT(!parentTypeName.isEmpty());
-                        //derivedType->setParentMimeType(parentTypeName);
-                        m_parents[derivedTypeName].append(parentTypeName);
-                    }
-                }
-            }
-        }
-    }
-    QStringList parents = m_parents.value(mime);
-
-    if (parents.isEmpty()) {
-        const QString myParent = fallbackParent(mime);
-        if (!myParent.isEmpty())
-            parents.append(myParent);
-    }
-
-    return parents;
-}
-
 QStringList KMimeTypeRepository::patternsForMimetype(const QString& mimeType)
 {
     //QWriteLocker lock(&m_mutex);
-    QMimeType mime = m_db.mimeTypeForName(mimeType);
+    QMimeType mime = m_mimeDb.mimeTypeForName(mimeType);
     return mime.globPatterns();
 }
 
@@ -329,15 +190,8 @@ KMimeType::Ptr KMimeTypeRepository::defaultMimeTypePtr()
     if (!m_defaultMimeType) {
         // Try to find the default type
         KMimeType::Ptr mime = findMimeTypeByName(KMimeType::defaultMimeType());
-        if (mime) {
-            m_defaultMimeType = mime;
-        } else {
-            const QString defaultMimeType = KMimeType::defaultMimeType();
-            errorMissingMimeTypes(QStringList(defaultMimeType));
-            const QString pathDefaultMimeType = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) +
-                                                    QLatin1String("/mime/") + defaultMimeType + QLatin1String(".xml");
-            m_defaultMimeType = new KMimeType(pathDefaultMimeType, defaultMimeType, QLatin1String("mime"));
-        }
+        Q_ASSERT(mime);
+        m_defaultMimeType = mime;
     }
     return m_defaultMimeType;
 }

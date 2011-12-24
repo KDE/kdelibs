@@ -21,8 +21,6 @@
 #ifndef KMIMETYPEREPOSITORY_H
 #define KMIMETYPEREPOSITORY_H
 
-#include "kmimemagicrule_p.h"
-#include "kmimeglobsfileparser_p.h"
 #include "kmimetype.h"
 #include "qmimedatabase.h"
 #include <QReadWriteLock>
@@ -46,26 +44,6 @@ public:
      * Creates a KMimeType
      */
     KMimeType::Ptr findMimeTypeByName(const QString &_name, KMimeType::FindByNameOption options = KMimeType::DontResolveAlias);
-
-    /**
-     * Check if mime is an alias, and return the canonical name for it if it is, otherwise empty.
-     */
-    QString resolveAlias(const QString& mime);
-
-    /**
-     * Resolve mime if it's an alias, and return it otherwise.
-     */
-    QString canonicalName(const QString& mime);
-
-    /**
-     * Returns the list of parents for a given mimetype
-     */
-    QStringList parents(const QString& mime);
-
-    enum GlobMatchingFlag {
-        NoFlag = 0,
-        CaseSensitive = 0x1
-    };
 
     /**
      * Return the patterns (globs) for a given mimetype
@@ -93,29 +71,6 @@ public:
     static bool matchFileName( const QString &filename, const QString &pattern );
 
 private: // only for KMimeType and unittests
-    friend class KMimeType;
-    friend class KMimeFileParserTest;
-    friend class KMimeTypeTest;
-
-    /**
-     * Find a mimetype from a filename (using the pattern list)
-     * @param filename filename to check.
-     * @param match if provided, returns the extension that matched.
-     *
-     * This is internal API, use KMimeType::findByUrl instead.
-     */
-    QStringList findFromFileName(const QString &filename, QString *matchingExtension = 0);
-
-    /**
-     * Find a mimetype from the content of a file or buffer
-     * @param device the file or buffer. Must be open.
-     * @param accuracy returns the priority of the rule that matched
-     * @param beginning will contain the first N bytes of the device; used as cache to avoid repeated seeks
-     *
-     * This is internal API, use KMimeType::findByUrl instead.
-     */
-    KMimeType::Ptr findFromContent(QIODevice* device, int* accuracy, QByteArray& beginning);
-
     /**
      * @return true if at least one mimetype is present
      * Safety test
@@ -127,9 +82,6 @@ private:
     ~KMimeTypeRepository();
 
     QMimeDatabase m_mimeDb;
-
-    typedef QHash<QString, QString> AliasesMap;
-    const AliasesMap& aliases();
 
     bool m_mimeTypesChecked;
     bool m_useFavIcons;

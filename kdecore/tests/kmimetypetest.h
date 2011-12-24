@@ -22,7 +22,6 @@
 #define KMIMETYPETEST_H
 
 #include <QtCore/QObject>
-#include <kmimemagicrule_p.h>
 
 class KMimeTypeTest : public QObject
 {
@@ -56,14 +55,11 @@ private Q_SLOTS:
     void testPatterns();
     void testExtractKnownExtension_data();
     void testExtractKnownExtension();
-    void testParseMagicFile_data();
-    void testParseMagicFile();
     void testHelperProtocols();
     void testFromThread();
 
     void testThreads();
 private:
-    QList<KMimeMagicRule> m_rules;
     QString m_nonKdeApp;
 };
 

@@ -20,6 +20,7 @@
 #include "kmimetype.h"
 #include "kmimetype_p.h"
 #include "kmimetypefactory.h"
+#include "kmimetyperepository_p.h"
 #include "qmimedatabase.h"
 
 #include <kdebug.h>
@@ -58,7 +59,7 @@ KMimeType::Ptr KMimeType::mimeType(const QString& name, FindByNameOption options
 {
     Q_UNUSED(options);
     QMimeDatabase db;
-    return new KMimeType(db.mimeTypeForName(name));
+    return KMimeType::Ptr(new KMimeType(db.mimeTypeForName(name)));
 }
 
 KMimeType::List KMimeType::allMimeTypes()
@@ -165,20 +166,26 @@ KMimeType::Ptr KMimeType::findByUrl( const QUrl& url, mode_t mode,
 {
     Q_UNUSED(mode); // special devices only matter locally; caller can use S_ISDIR by itself.
     Q_UNUSED(is_local_file); // QUrl can tell us...
-    Q_UNUSED(fast_mode); // TODO implement
+    QMimeDatabase db;
     if (accuracy)
         *accuracy = 80; // not supported anymore; was it really used for anything?
-    return new KMimeType(db.findByUrl(url));
+    if (fast_mode) {
+        return KMimeType::Ptr(new KMimeType(db.findByName(url.path())));
+    }
+    return KMimeType::Ptr(new KMimeType(db.findByUrl(url)));
 }
 
 KMimeType::Ptr KMimeType::findByPath( const QString& path, mode_t mode,
                                       bool fast_mode, int* accuracy )
 {
     Q_UNUSED(mode); // special devices only matter locally; caller can use S_ISDIR by itself.
-    Q_UNUSED(fast_mode); // TODO implement
+    QMimeDatabase db;
     if (accuracy)
         *accuracy = 80; // not supported anymore; was it really used for anything?
-    return new KMimeType(db.findByFile(path));
+    if (fast_mode) {
+        return KMimeType::Ptr(new KMimeType(db.findByName(path)));
+    }
+    return KMimeType::Ptr(new KMimeType(db.findByFile(path)));
 }
 
 KMimeType::Ptr KMimeType::findByNameAndContent( const QString& name, const QByteArray& data,
@@ -188,20 +195,23 @@ KMimeType::Ptr KMimeType::findByNameAndContent( const QString& name, const QByte
     if (accuracy)
         *accuracy = 80; // not supported anymore; was it really used for anything?
     QMimeDatabase db;
-    return db.findByNameAndData(name, data);
+    return KMimeType::Ptr(new KMimeType(db.findByNameAndData(name, data)));
 }
 
 KMimeType::Ptr KMimeType::findByNameAndContent( const QString& name, QIODevice* device,
                                                 mode_t mode, int* accuracy )
 {
+    Q_UNUSED(mode); // If we have data, then this is a regular file anyway...
+    if (accuracy)
+        *accuracy = 80; // not supported anymore; was it really used for anything?
     QMimeDatabase db;
-    return new KMimeType(db.findByNameAndData(name, device));
+    return KMimeType::Ptr(new KMimeType(db.findByNameAndData(name, device)));
 }
 
 QString KMimeType::extractKnownExtension(const QString &fileName)
 {
     QMimeDatabase db;
-    return new KMimeType(db.suffixForFileName(fileName));
+    return db.suffixForFileName(fileName);
 }
 
 KMimeType::Ptr KMimeType::findByContent( const QByteArray &data, int *accuracy )
@@ -209,7 +219,7 @@ KMimeType::Ptr KMimeType::findByContent( const QByteArray &data, int *accuracy )
     QMimeDatabase db;
     if (accuracy)
         *accuracy = 80; // not supported anymore; was it really used for anything?
-    return new KMimeType(db.findByData(data));
+    return KMimeType::Ptr(new KMimeType(db.findByData(data)));
 }
 
 KMimeType::Ptr KMimeType::findByContent( QIODevice* device, int* accuracy )
@@ -217,7 +227,7 @@ KMimeType::Ptr KMimeType::findByContent( QIODevice* device, int* accuracy )
     QMimeDatabase db;
     if (accuracy)
         *accuracy = 80; // not supported anymore; was it really used for anything?
-    return new KMimeType(db.findByData(device));
+    return KMimeType::Ptr(new KMimeType(db.findByData(device)));
 }
 
 KMimeType::Ptr KMimeType::findByFileContent( const QString &fileName, int *accuracy )
@@ -225,6 +235,7 @@ KMimeType::Ptr KMimeType::findByFileContent( const QString &fileName, int *accur
     checkEssentialMimeTypes();
 
     QFile device(fileName);
+#if 0
     // Look at mode first
     KMimeType::Ptr mimeFromMode = findFromMode( fileName, 0, true );
     if (mimeFromMode) {
@@ -232,15 +243,11 @@ KMimeType::Ptr KMimeType::findByFileContent( const QString &fileName, int *accur
             *accuracy = 100;
         return mimeFromMode;
     }
-    if (!device.open(QIODevice::ReadOnly)) {
-        if (accuracy)
-            *accuracy = 0;
-        return KMimeType::defaultMimeTypePtr();
-    }
-
+#endif
+    QMimeDatabase db;
     if (accuracy)
         *accuracy = 80; // not supported anymore; was it really used for anything?
-    return new KMimeType(db.findByData(&device));
+    return KMimeType::Ptr(new KMimeType(db.findByData(&device)));
 }
 
 bool KMimeType::isBinaryData( const QString &fileName )
@@ -252,59 +259,9 @@ bool KMimeType::isBinaryData( const QString &fileName )
     return isBufferBinaryData(data);
 }
 
-#if 0
-KMimeType::KMimeType( KMimeTypePrivate &dd)
-    : KServiceType(dd)
-{
-}
-
-KMimeType::KMimeType( KMimeTypePrivate &dd, const QString& name,
-                      const QString& comment )
-    : KServiceType( dd, name, comment )
-{
-}
-
-KMimeType::KMimeType( const QString & fullpath, const QString& name,
-                      const QString& comment )
-    : d_ptr( new KMimeTypePrivate(fullpath) )
-{
-}
-
-KMimeType::KMimeType( QDataStream& _str, int offset )
-    : d_ptr( new KMimeTypePrivate(_str, offset ))
-{
-}
-#endif
-
 KMimeType::KMimeType(const QMimeType& mime)
-    : d_ptr( new KMimeTypePrivate(mime) )
+    : d_ptr(new KMimeTypePrivate(mime))
 {
-}
-
-void KMimeTypePrivate::save( QDataStream& _str )
-{
-    KServiceTypePrivate::save( _str );
-    // Warning adding fields here involves a binary incompatible change - update version
-    // number in ksycoca.h. Never remove fields.
-    _str << m_lstPatterns << QString() << QStringList() << m_iconName;
-}
-
-QVariant KMimeTypePrivate::property( const QString& _name ) const
-{
-    if ( _name == QLatin1String("Patterns") )
-        return QVariant( m_lstPatterns );
-    if ( _name == QLatin1String("Icon") )
-        return QVariant(iconName());
-
-    return KServiceTypePrivate::property( _name );
-}
-
-QStringList KMimeTypePrivate::propertyNames() const
-{
-    QStringList res = KServiceTypePrivate::propertyNames();
-    res.append( QString::fromLatin1("Patterns") );
-    res.append( QString::fromLatin1("Icon") );
-    return res;
 }
 
 KMimeType::~KMimeType()
@@ -358,74 +315,32 @@ QString KMimeType::favIconForUrl( const QUrl& _url )
 
 QString KMimeType::comment() const
 {
-    Q_D(const KMimeType);
-    return d->comment();
+    return d_ptr->m_qmime.comment();
 }
 
 #ifndef KDE_NO_DEPRECATED
 QString KMimeType::parentMimeType() const
 {
-    const QStringList parents = parentMimeTypes();
+    const QStringList parents = d_ptr->m_qmime.parentMimeTypes();
     if (!parents.isEmpty())
         return parents.first();
     return QString();
 }
 #endif
 
-bool KMimeTypePrivate::inherits(const QString& mime) const
+bool KMimeType::is(const QString& mimeTypeName) const
 {
-    QStack<QString> toCheck;
-    toCheck.push(m_strName);
-    while (!toCheck.isEmpty()) {
-        const QString current = toCheck.pop();
-        if (current == mime)
-            return true;
-        Q_FOREACH(const QString& parent, KMimeTypeRepository::self()->parents(current)) {
-            toCheck.push(parent);
-        }
-    }
-    return false;
-}
-
-bool KMimeType::is( const QString& mimeTypeName ) const
-{
-    Q_D(const KMimeType);
-    if (name() == mimeTypeName)
-        return true;
-    const QString mime = KMimeTypeRepository::self()->canonicalName(mimeTypeName);
-    return d->inherits(mime);
+    return d_ptr->m_qmime.inherits(mimeTypeName);
 }
 
 QStringList KMimeType::parentMimeTypes() const
 {
-    Q_D(const KMimeType);
-    return KMimeTypeRepository::self()->parents(d->m_strName);
-}
-
-static void collectParentMimeTypes(const QString& mime, QStringList& allParents)
-{
-    QStringList parents = KMimeTypeRepository::self()->parents(mime);
-    Q_FOREACH(const QString& parent, parents) {
-        // I would use QSet, but since order matters I better not
-        if (!allParents.contains(parent))
-            allParents.append(parent);
-    }
-    // We want a breadth-first search, so that the least-specific parent (octet-stream) is last
-    // This means iterating twice, unfortunately.
-    Q_FOREACH(const QString& parent, parents) {
-        collectParentMimeTypes(parent, allParents);
-    }
+    return d_ptr->m_qmime.parentMimeTypes();
 }
 
 QStringList KMimeType::allParentMimeTypes() const
 {
-    Q_D(const KMimeType);
-    QStringList allParents;
-    const QString canonical = KMimeTypeRepository::self()->resolveAlias(name());
-    if (!canonical.isEmpty())
-        allParents.append(canonical);
-    collectParentMimeTypes(d->m_strName, allParents);
-    return allParents;
+    return d_ptr->m_qmime.allParentMimeTypes();
 }
 
 QString KMimeType::defaultMimeType()
@@ -437,137 +352,20 @@ QString KMimeType::defaultMimeType()
 
 QString KMimeType::iconName() const
 {
-    Q_D(const KMimeType);
-    return d->iconName();
+    return d_ptr->m_qmime.iconName();
 }
 
 QStringList KMimeType::patterns() const
 {
-    Q_D(const KMimeType);
-    d->ensureXmlDataLoaded();
-    return d->m_lstPatterns;
+    return d_ptr->m_qmime.globPatterns();
 }
 
-// loads comment, icon, mainPattern, m_lstPatterns
-void KMimeTypePrivate::ensureXmlDataLoaded() const
-{
-    if (m_xmlDataLoaded)
-        return;
-
-    m_xmlDataLoaded = true;
-
-    const QString file = m_strName + QLatin1String(".xml");
-    const QStringList mimeFiles = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QString::fromLatin1("mime/") + file);
-    if (mimeFiles.isEmpty()) {
-        kWarning() << "No file found for" << file << ", even though the file appeared in a directory listing.";
-        kWarning() << "Either it was just removed, or the directory doesn't have executable permission...";
-        kWarning() << QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QLatin1String("mime"), QStandardPaths::LocateDirectory);
-        return;
-    }
-
-    QString comment;
-    QString mainPattern;
-    const QStringList languageList = KGlobal::locale()->languageList();
-    QString preferredLanguage = languageList.first();
-    QMap<QString, QString> commentsByLanguage;
-
-    QListIterator<QString> mimeFilesIter(mimeFiles);
-    mimeFilesIter.toBack();
-    while (mimeFilesIter.hasPrevious()) { // global first, then local.
-        const QString fullPath = mimeFilesIter.previous();
-        QFile qfile(fullPath);
-        if (!qfile.open(QFile::ReadOnly))
-            continue;
-
-        QXmlStreamReader xml(&qfile);
-        if (xml.readNextStartElement()) {
-            if (xml.name() != "mime-type") {
-                continue;
-            }
-            const QString name = xml.attributes().value(QLatin1String("type")).toString();
-            if (name.isEmpty())
-                continue;
-            if (name != m_strName) {
-                kWarning() << "Got name" << name << "in file" << file << "expected" << m_strName;
-            }
-
-            while (xml.readNextStartElement()) {
-                const QStringRef tag = xml.name();
-                if (tag == "comment") {
-                    QString lang = xml.attributes().value(QLatin1String("xml:lang")).toString();
-                    const QString text = xml.readElementText();
-                    if (lang.isEmpty()) {
-                        lang = QLatin1String("en_US");
-                    }
-                    if (lang == preferredLanguage) {
-                        comment = text;
-                    } else {
-                        commentsByLanguage.insert(lang, text);
-                    }
-                    continue; // we called readElementText, so we're at the EndElement already.
-                } else if (tag == "icon") { // as written out by shared-mime-info >= 0.40
-                    m_iconName = xml.attributes().value(QLatin1String("name")).toString();
-                } else if (tag == "glob-deleteall") { // as written out by shared-mime-info >= 0.70
-                    mainPattern.clear();
-                    m_lstPatterns.clear();
-                } else if (tag == "glob") { // as written out by shared-mime-info >= 0.70
-                    const QString pattern = xml.attributes().value(QLatin1String("pattern")).toString();
-                    if (mainPattern.isEmpty() && pattern.startsWith(QLatin1Char('*'))) {
-                        mainPattern = pattern;
-                    }
-                    if (!m_lstPatterns.contains(pattern))
-                        m_lstPatterns.append(pattern);
-                }
-                xml.skipCurrentElement();
-            }
-            if (xml.name() != "mime-type") {
-                kFatal() << "Programming error in KMimeType XML loading, please create a bug report on http://bugs.kde.org and attach the file" << fullPath;
-            }
-        }
-    }
-
-    if (comment.isEmpty()) {
-        Q_FOREACH(const QString& lang, languageList) {
-            const QString comm = commentsByLanguage.value(lang);
-            if (!comm.isEmpty()) {
-                comment = comm;
-                break;
-            }
-            const int pos = lang.indexOf(QLatin1Char('_'));
-            if (pos != -1) {
-                // "pt_BR" not found? try just "pt"
-                const QString shortLang = lang.left(pos);
-                const QString comm = commentsByLanguage.value(shortLang);
-                if (!comm.isEmpty()) {
-                    comment = comm;
-                    break;
-                }
-            }
-        }
-        if (comment.isEmpty()) {
-            kWarning() << "Missing <comment> field in" << file;
-        }
-    }
-    m_strComment = comment;
-
-    const bool globsInXml = (KMimeType::sharedMimeInfoVersion() >= KDE_MAKE_VERSION(0, 70, 0));
-    if (globsInXml) {
-        if (!mainPattern.isEmpty() && m_lstPatterns.first() != mainPattern) {
-            // ensure it's first in the list of patterns
-            m_lstPatterns.removeAll(mainPattern);
-            m_lstPatterns.prepend(mainPattern);
-        }
-    } else {
-        // Fallback: get the patterns from the globs file
-        m_lstPatterns = KMimeTypeRepository::self()->patternsForMimetype(m_strName);
-    }
-}
-
+// TODO MOVE TO keditfiletype/mimetypedata.cpp
 QString KMimeType::userSpecifiedIconName() const
 {
-    Q_D(const KMimeType);
-    d->ensureXmlDataLoaded();
-    return d->m_iconName;
+    //d->ensureXmlDataLoaded();
+    //return d->m_iconName;
+    return QString();
 }
 
 int KMimeType::sharedMimeInfoVersion()
@@ -577,15 +375,13 @@ int KMimeType::sharedMimeInfoVersion()
 
 QString KMimeType::mainExtension() const
 {
-    Q_D(const KMimeType);
-
 #if 1 // HACK START - can be removed once shared-mime-info >= 0.70 is used/required.
     // The idea was: first usable pattern from m_lstPatterns.
     // But update-mime-database makes a mess of the order of the patterns,
     // because it uses a hash internally.
     static const struct { const char* mime; const char* extension; } s_hardcodedMimes[] = {
         { "text/plain", ".txt" } };
-    if (d->m_lstPatterns.count() > 1) {
+    if (patterns().count() > 1) {
         const QByteArray me = name().toLatin1();
         for (uint i = 0; i < sizeof(s_hardcodedMimes)/sizeof(*s_hardcodedMimes); ++i) {
             if (me == s_hardcodedMimes[i].mime)
@@ -612,12 +408,14 @@ bool KMimeType::matchFileName( const QString &filename, const QString &pattern )
     return KMimeTypeRepository::matchFileName( filename, pattern );
 }
 
+/*
 int KMimeTypePrivate::serviceOffersOffset() const
 {
     return KMimeTypeFactory::self()->serviceOffersOffset(name());
 }
+*/
 
 QString KMimeType::name() const
 {
-    return d_ptr->name();
+    return d_ptr->m_qmime.name();
 }

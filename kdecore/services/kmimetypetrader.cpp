@@ -55,7 +55,12 @@ static KServiceOfferList mimeTypeSycocaOffers(const QString& mimeType)
 {
     KServiceOfferList lst;
 
-    const QString mime = KMimeTypeRepository::self()->canonicalName(mimeType);
+    QMimeDatabase db;
+    const QString mime = db.mimeTypeForName(mimeType).name();
+    if (mime.isEmpty()) {
+        kWarning(7014) << "KMimeTypeTrader: mimeType" << mimeType << "not found";
+        return lst; // empty
+    }
     KMimeTypeFactory *factory = KMimeTypeFactory::self();
     const int offset = factory->entryOffset(mime);
     if ( !offset ) {
@@ -74,7 +79,12 @@ static KServiceOfferList mimeTypeSycocaOffers(const QString& mimeType)
 static KService::List mimeTypeSycocaServiceOffers(const QString& mimeType)
 {
     KService::List lst;
-    const QString mime = KMimeTypeRepository::self()->canonicalName(mimeType);
+    QMimeDatabase db;
+    const QString mime = db.mimeTypeForName(mimeType).name();
+    if (mime.isEmpty()) {
+        kWarning(7014) << "KMimeTypeTrader: mimeType" << mimeType << "not found";
+        return lst; // empty
+    }
     KMimeTypeFactory *factory = KMimeTypeFactory::self();
     const int offset = factory->entryOffset(mime);
     if ( !offset ) {

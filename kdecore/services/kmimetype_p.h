@@ -19,56 +19,19 @@
 #ifndef __kmimetype_p_h__
 #define __kmimetype_p_h__
 
-#include "kservicetype_p.h"
+#include <QMimeType>
 
-class KMimeTypePrivate: public KServiceTypePrivate
+class KMimeTypePrivate
 {
 public:
-  K_SYCOCATYPE( KST_KMimeType, KServiceTypePrivate )
-
-  KMimeTypePrivate(const QString &path) : KServiceTypePrivate(path), m_xmlDataLoaded(false)
-    {}
-  KMimeTypePrivate(QDataStream &_str, int offset)
-      : KServiceTypePrivate(_str, offset), m_xmlDataLoaded(false)
-  {
-  }
-
-  virtual void save(QDataStream &s);
-
-  virtual QVariant property(const QString &name ) const;
-
-  virtual QStringList propertyNames() const;
-
-    QString comment() const
+    KMimeTypePrivate(const QMimeType& mime)
+        : m_qmime(mime)
     {
-        ensureXmlDataLoaded();
-        return m_strComment;
     }
 
-    QString iconName() const
-    {
-        ensureXmlDataLoaded();
-        if (!m_iconName.isEmpty())
-            return m_iconName;
+    //virtual int serviceOffersOffset() const;
 
-        // Make default icon name from the mimetype name
-        // Don't store this in m_iconName, it would make the filetype editor
-        // write out icon names in every local mimetype definition file.
-        QString icon = name();
-        const int slashindex = icon.indexOf(QLatin1Char('/'));
-        if (slashindex != -1) {
-            icon[slashindex] = QLatin1Char('-');
-        }
-        return icon;
-    }
-
-    bool inherits(const QString& mime) const;
-    void ensureXmlDataLoaded() const;
-    virtual int serviceOffersOffset() const;
-
-    mutable QStringList m_lstPatterns;
-    mutable QString m_iconName; // user-specified
-    mutable bool m_xmlDataLoaded;
+    QMimeType m_qmime;
 };
 
 #endif // __kmimetype_p_h__
