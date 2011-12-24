@@ -18,7 +18,6 @@
 
 #include "klockfiletest.h"
 #include "klockfiletest.moc"
-#include "config-klockfile.h"
 
 #include <unistd.h>
 #include <QtTest/QTest>
@@ -71,7 +70,7 @@ Test_KLockFile::initTestCase()
 
 static KLockFile::LockResult testLockFromProcess(const QString& lockName)
 {
-    const int ret = QProcess::execute(QString::fromLatin1(AUTOTESTS_BINARY_DIR "/bin/klockfile_testlock"), QStringList() << lockName);
+    const int ret = QProcess::execute(QString::fromLatin1("./klockfile_testlock"), QStringList() << lockName);
     return KLockFile::LockResult(ret);
 }
 
