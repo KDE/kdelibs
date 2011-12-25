@@ -53,7 +53,7 @@ QMimeProviderBase::QMimeProviderBase(QMimeDatabasePrivate *db)
 }
 
 QMimeBinaryProvider::QMimeBinaryProvider(QMimeDatabasePrivate *db)
-    : QMimeProviderBase(db)
+    : QMimeProviderBase(db), m_mimetypeListLoaded(false)
 {
 }
 
@@ -154,7 +154,7 @@ bool QMimeBinaryProvider::isValid()
 #endif
 }
 
-QMimeType QMimeBinaryProvider::mimeTypeForName(const QString &name)
+static QMimeType mimeTypeForNameUnchecked(const QString &name)
 {
     QMimeTypePrivate data;
     data.name = name;
@@ -163,6 +163,15 @@ QMimeType QMimeBinaryProvider::mimeTypeForName(const QString &name)
     // iconName: in loadIcon
     // genericIconName: in loadGenericIcon
     return QMimeType(data);
+}
+
+QMimeType QMimeBinaryProvider::mimeTypeForName(const QString &name)
+{
+    if (!m_mimetypeListLoaded)
+        loadMimeTypeList();
+    if (!m_mimetypeNames.contains(name))
+        return QMimeType(); // unknown mimetype
+    return mimeTypeForNameUnchecked(name);
 }
 
 QStringList QMimeBinaryProvider::findByName(const QString &fileName, QString *foundSuffix)
@@ -297,7 +306,7 @@ QMimeType QMimeBinaryProvider::findByMagic(const QByteArray &data, int *accuracy
                 *accuracyPtr = cacheFile->getUint32(off);
                 // Return the first match. We have no rules for conflicting magic data...
                 // (mime.cache itself is sorted, but what about local overrides with a lower prio?)
-                return mimeTypeForName(QLatin1String(mimeType));
+                return mimeTypeForNameUnchecked(QLatin1String(mimeType));
             }
         }
     }
@@ -373,29 +382,35 @@ QString QMimeBinaryProvider::resolveAlias(const QString &name)
     return name;
 }
 
-QList<QMimeType> QMimeBinaryProvider::allMimeTypes()
+void QMimeBinaryProvider::loadMimeTypeList()
 {
-    QList<QMimeType> result;
-    QSet<QString> mimetypes;
-    // Unfortunately mime.cache doesn't have a full list of all mimetypes.
-    // So we'll have to parse the plain-text files called "types".
-    // We did say it would be slow, in the documentation :-)
-    const QStringList typesFilenames = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QLatin1String("mime/types"));
-    foreach (const QString& typeFilename, typesFilenames) {
-        QFile file(typeFilename);
-        if (file.open(QIODevice::ReadOnly)) {
-            while (!file.atEnd()) {
-                QByteArray line = file.readLine();
-                line.chop(1);
-                mimetypes.insert(QString::fromLatin1(line.constData(), line.size()));
+    if (!m_mimetypeListLoaded) {
+        m_mimetypeListLoaded = true;
+        m_mimetypeNames.clear();
+        // Unfortunately mime.cache doesn't have a full list of all mimetypes.
+        // So we have to parse the plain-text files called "types".
+        const QStringList typesFilenames = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QLatin1String("mime/types"));
+        foreach (const QString& typeFilename, typesFilenames) {
+            QFile file(typeFilename);
+            if (file.open(QIODevice::ReadOnly)) {
+                while (!file.atEnd()) {
+                    QByteArray line = file.readLine();
+                    line.chop(1);
+                    m_mimetypeNames.insert(QString::fromLatin1(line.constData(), line.size()));
+                }
             }
         }
     }
+}
 
-    for (QSet<QString>::const_iterator it = mimetypes.constBegin();
-          it != mimetypes.constEnd(); ++it) {
-        result.append(mimeTypeForName(*it));
-    }
+QList<QMimeType> QMimeBinaryProvider::allMimeTypes()
+{
+    QList<QMimeType> result;
+    loadMimeTypeList();
+
+    for (QSet<QString>::const_iterator it = m_mimetypeNames.constBegin();
+          it != m_mimetypeNames.constEnd(); ++it)
+        result.append(mimeTypeForNameUnchecked(*it));
 
     return result;
 }
