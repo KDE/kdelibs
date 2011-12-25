@@ -23,8 +23,6 @@
 #include <kconfiggroup.h>
 #include "kmimetype.h"
 #include <kdeversion.h> // KDE_MAKE_VERSION
-#include <kmessage.h>
-#include <klocale.h>
 #include <qstandardpaths.h>
 #include <QFile>
 #include <QProcess>
@@ -38,8 +36,7 @@ KMimeTypeRepository * KMimeTypeRepository::self()
 }
 
 KMimeTypeRepository::KMimeTypeRepository()
-    : m_mimeTypesChecked(false),
-      m_useFavIcons(true),
+    : m_useFavIcons(true),
       m_useFavIconsChecked(false),
       m_sharedMimeInfoVersion(0),
       m_mutex(QReadWriteLock::Recursive)
@@ -48,13 +45,6 @@ KMimeTypeRepository::KMimeTypeRepository()
 
 KMimeTypeRepository::~KMimeTypeRepository()
 {
-}
-
-bool KMimeTypeRepository::checkMimeTypes()
-{
-    // check if there are mimetypes. There should be at least one globs file.
-    const QString aGlobFile = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("mime/globs"));
-    return !aGlobFile.isEmpty();
 }
 
 // TODO export QMimeGlobPattern::matchFileName in the public API
@@ -109,58 +99,6 @@ QStringList KMimeTypeRepository::patternsForMimetype(const QString& mimeType)
     //QWriteLocker lock(&m_mutex);
     QMimeType mime = m_mimeDb.mimeTypeForName(mimeType);
     return mime.globPatterns();
-}
-
-static void errorMissingMimeTypes( const QStringList& _types )
-{
-    KMessage::message( KMessage::Error, i18np( "Could not find mime type <resource>%2</resource>",
-                "Could not find mime types:\n<resource>%2</resource>", _types.count(), _types.join(QLatin1String("</resource>\n<resource>")) ) );
-}
-
-void KMimeTypeRepository::checkEssentialMimeTypes()
-{
-    QWriteLocker lock(&m_mutex);
-    if (m_mimeTypesChecked) // already done
-        return;
-
-    m_mimeTypesChecked = true; // must be done before building mimetypes
-
-    // No Mime-Types installed ?
-    // Lets do some rescue here.
-    if (!checkMimeTypes()) {
-        // Note that this messagebox is queued, so it will only be shown once getting back to the event loop
-
-        // No mimetypes installed? Are you setting XDG_DATA_DIRS without including /usr/share in it?
-        KMessage::message(KMessage::Error, i18n("No mime types installed. "
-            "Check that shared-mime-info is installed, and that XDG_DATA_DIRS is not set, or includes /usr/share."));
-        return; // no point in going any further
-    }
-
-    QStringList missingMimeTypes;
-
-    if (!KMimeType::mimeType(QLatin1String("inode/directory")))
-        missingMimeTypes.append(QLatin1String("inode/directory"));
-#ifndef Q_OS_WIN
-    //if (!KMimeType::mimeType(QLatin1String("inode/directory-locked")))
-    //  missingMimeTypes.append(QLatin1String("inode/directory-locked"));
-    if (!KMimeType::mimeType(QLatin1String("inode/blockdevice")))
-        missingMimeTypes.append(QLatin1String("inode/blockdevice"));
-    if (!KMimeType::mimeType(QLatin1String("inode/chardevice")))
-        missingMimeTypes.append(QLatin1String("inode/chardevice"));
-    if (!KMimeType::mimeType(QLatin1String("inode/socket")))
-        missingMimeTypes.append(QLatin1String("inode/socket"));
-    if (!KMimeType::mimeType(QLatin1String("inode/fifo")))
-        missingMimeTypes.append(QLatin1String("inode/fifo"));
-#endif
-    if (!KMimeType::mimeType(QLatin1String("application/x-shellscript")))
-        missingMimeTypes.append(QLatin1String("application/x-shellscript"));
-    if (!KMimeType::mimeType(QLatin1String("application/x-executable")))
-        missingMimeTypes.append(QLatin1String("application/x-executable"));
-    if (!KMimeType::mimeType(QLatin1String("application/x-desktop")))
-        missingMimeTypes.append(QLatin1String("application/x-desktop"));
-
-    if (!missingMimeTypes.isEmpty())
-        errorMissingMimeTypes(missingMimeTypes);
 }
 
 KMimeType::Ptr KMimeTypeRepository::defaultMimeTypePtr()

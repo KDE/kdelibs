@@ -50,11 +50,6 @@ bool KMimeType::isDefault() const
     return name() == defaultMimeType();
 }
 
-void KMimeType::checkEssentialMimeTypes()
-{
-    KMimeTypeRepository::self()->checkEssentialMimeTypes();
-}
-
 KMimeType::Ptr KMimeType::mimeType(const QString& name, FindByNameOption options)
 {
     Q_UNUSED(options);
@@ -236,8 +231,6 @@ KMimeType::Ptr KMimeType::findByContent( QIODevice* device, int* accuracy )
 
 KMimeType::Ptr KMimeType::findByFileContent( const QString &fileName, int *accuracy )
 {
-    checkEssentialMimeTypes();
-
     QFile device(fileName);
 #if 1
     // Look at mode first

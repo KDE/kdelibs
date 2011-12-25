@@ -46,11 +46,6 @@ public:
      */
     QStringList patternsForMimetype(const QString& mimeType);
 
-    /**
-     * This function makes sure that vital mime types are installed.
-     */
-    void checkEssentialMimeTypes();
-
     KMimeType::Ptr defaultMimeTypePtr();
 
     /**
@@ -65,20 +60,12 @@ public:
      */
     static bool matchFileName( const QString &filename, const QString &pattern );
 
-private: // only for KMimeType and unittests
-    /**
-     * @return true if at least one mimetype is present
-     * Safety test
-     */
-    bool checkMimeTypes();
-
 private:
     KMimeTypeRepository();
     ~KMimeTypeRepository();
 
     QMimeDatabase m_mimeDb;
 
-    bool m_mimeTypesChecked;
     bool m_useFavIcons;
     bool m_useFavIconsChecked;
     int m_sharedMimeInfoVersion;
