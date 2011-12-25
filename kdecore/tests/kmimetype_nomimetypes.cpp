@@ -54,22 +54,21 @@ int main(int argc, char **argv)
     KMessage::setMessageHandler(msgHandler);
 
     KMimeType::Ptr s0 = KMimeType::mimeType("application/x-zerosize");
-    Q_ASSERT(!s0); // should NOT be found, otherwise this test is bogus!
-    if (s0) {
+    Q_ASSERT(s0); // QMimeType falls back to its own copy freedesktop.org.xml, so this works!
+    if (!s0) {
         abort();
         return 1;
     }
 
     KMimeType::Ptr mime = KMimeType::findByUrl(QUrl::fromLocalFile("/"));
     Q_ASSERT(mime);
-    Q_ASSERT(mime->name() == "application/octet-stream");
+    Q_ASSERT(mime->name() == "inode/directory");
     if (!mime) {
         abort();
         return 2;
     }
-    qDebug() << mime->name();
 
-    Q_ASSERT(msgHandler->m_messages.count() > 0);
+    Q_ASSERT(msgHandler->m_messages.count() == 0);
 
     return 0;
 }
