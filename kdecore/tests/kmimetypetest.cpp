@@ -807,20 +807,27 @@ void KMimeTypeTest::testExtractKnownExtension()
 
 void KMimeTypeTest::testHelperProtocols()
 {
-    QVERIFY(KProtocolInfo::isKnownProtocol("mailto"));
-    QVERIFY(KProtocolInfo::isHelperProtocol("mailto"));
-    QVERIFY(KProtocolInfo::isHelperProtocol(KUrl("mailto:faure@kde.org")));
-    QCOMPARE(KProtocolInfo::exec("mailto"), QString::fromLatin1("kmail -caption \"%c\"")); // comes from KMail2.desktop
     QVERIFY(!KProtocolInfo::isHelperProtocol("http"));
     QVERIFY(!KProtocolInfo::isHelperProtocol("ftp"));
     QVERIFY(!KProtocolInfo::isHelperProtocol("file"));
     QVERIFY(!KProtocolInfo::isHelperProtocol("unknown"));
+    // Comes from ktelnetservice.desktop:MimeType=x-scheme-handler/telnet;x-scheme-handler/rlogin;x-scheme-handler/ssh;
     QVERIFY(KProtocolInfo::isHelperProtocol("telnet"));
 
     // To test that compat still works
     if (KProtocolInfo::isKnownProtocol("tel")) {
         QVERIFY(KProtocolInfo::isHelperProtocol("tel"));
     }
+
+    KService::Ptr kmail2 = KService::serviceByStorageId("KMail2.desktop");
+    if (!kmail2) {
+        QSKIP( "kmail2 not installed", SkipSingle );
+    }
+
+    QVERIFY(KProtocolInfo::isKnownProtocol("mailto"));
+    QVERIFY(KProtocolInfo::isHelperProtocol("mailto"));
+    QVERIFY(KProtocolInfo::isHelperProtocol(KUrl("mailto:faure@kde.org")));
+    QCOMPARE(KProtocolInfo::exec("mailto"), QString::fromLatin1("kmail -caption \"%c\"")); // comes from KMail2.desktop
 }
 
 void KMimeTypeTest::testFromThread()

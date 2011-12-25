@@ -59,7 +59,12 @@ KMimeType::Ptr KMimeType::mimeType(const QString& name, FindByNameOption options
 {
     Q_UNUSED(options);
     QMimeDatabase db;
-    return KMimeType::Ptr(new KMimeType(db.mimeTypeForName(name)));
+    QMimeType mime = db.mimeTypeForName(name);
+    if (mime.isValid()) {
+        return KMimeType::Ptr(new KMimeType(mime));
+    } else {
+        return KMimeType::Ptr();
+    }
 }
 
 KMimeType::List KMimeType::allMimeTypes()
@@ -68,7 +73,7 @@ KMimeType::List KMimeType::allMimeTypes()
     KMimeType::List lst;
     QMimeDatabase db;
     Q_FOREACH(const QMimeType& mimeType, db.allMimeTypes()) {
-        Q_ASSERT(!mimeType.name().startsWith(QLatin1String("x-scheme-handler"))); // was if() in kde4, but can't happen with qmime, right?
+        Q_ASSERT(!mimeType.name().startsWith(QLatin1String("x-scheme-handler")));
         lst.append(KMimeType::Ptr(new KMimeType(mimeType)));
     }
     return lst;
