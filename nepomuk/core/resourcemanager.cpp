@@ -27,6 +27,7 @@
 #include "resource.h"
 #include "class.h"
 #include "nie.h"
+#include "dbustypes.h"
 
 #include <kglobal.h>
 #include <kdebug.h>
@@ -47,6 +48,7 @@
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusConnectionInterface>
 #include <QtDBus/QDBusServiceWatcher>
+#include <QtDBus/QDBusMetaType>
 
 using namespace Soprano;
 
@@ -59,6 +61,7 @@ Nepomuk::ResourceManagerPrivate::ResourceManagerPrivate( ResourceManager* manage
       dataCnt( 0 ),
       m_manager( manager )
 {
+    Nepomuk::DBus::registerDBusTypes();
 }
 
 

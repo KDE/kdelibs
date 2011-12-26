@@ -36,6 +36,7 @@ set(nepomuk_core_SRCS
   core/file.cpp
   core/tag.cpp
   core/nepomukservice.cpp
+  core/dbustypes.cpp
 )
 
 if(NOT KDE_NO_DEPRECATED)

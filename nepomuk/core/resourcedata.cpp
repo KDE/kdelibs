@@ -30,6 +30,7 @@
 #include "nepomukmainmodel.h"
 #include "dbusconnectionpool.h"
 #include "class.h"
+#include "dbustypes.h"
 
 #include <Soprano/Statement>
 #include <Soprano/StatementIterator>
@@ -266,13 +267,10 @@ bool Nepomuk::ResourceData::store()
                                                            QLatin1String("org.kde.nepomuk.DataManagement"),
                                                            QLatin1String("createResource") );
         QString app = KGlobal::mainComponent().componentName();
-        QStringList types;
-        foreach( const QUrl &type, m_types )
-            types << type.toString();
-
         QVariantList arguments;
+
         //FIXME: Maybe we should be setting the 'label' over here.
-        arguments << types << QString() << QString() << app;
+        arguments << DBus::convertUriList(m_types) << QString() << QString() << app;
         msg.setArguments( arguments );
 
         QDBusMessage reply = bus.call( msg );
@@ -442,13 +440,12 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
                                                            QLatin1String("setProperty") );
         QString app = KGlobal::mainComponent().componentName();
         QVariantList arguments;
-        QStringList resources;
-        resources << m_uri.url();
         QVariantList varList;
         foreach( const Nepomuk::Variant var, value.toVariantList() )
             varList << var.variant();
 
-        arguments << resources << uri.toString() << QVariant(varList) << app;
+        arguments << DBus::convertUriList(QList<QUrl>() << m_uri) << DBus::convertUri(uri)
+                  << QVariant(DBus::normalizeVariantList(varList)) << app;
         msg.setArguments( arguments );
 
         QDBusMessage reply = bus.call( msg );
@@ -483,7 +480,7 @@ void Nepomuk::ResourceData::removeProperty( const QUrl& uri )
                                                            QLatin1String("removeProperties") );
         QString app = KGlobal::mainComponent().componentName();
         QVariantList arguments;
-        arguments << m_uri.url() << uri.toString() << app;
+        arguments << DBus::convertUri(m_uri) << DBus::convertUri(uri) << app;
         msg.setArguments( arguments );
 
         QDBusMessage reply = bus.call( msg );
@@ -516,7 +513,7 @@ void Nepomuk::ResourceData::remove( bool recursive )
         QString app = KGlobal::mainComponent().componentName();
         QVariantList arguments;
         // TODO: Set the flag over here
-        arguments << m_uri.url() << 0 << app;
+        arguments << DBus::convertUri(m_uri) << 0 << app;
         msg.setArguments( arguments );
 
         QDBusMessage reply = bus.call( msg );
