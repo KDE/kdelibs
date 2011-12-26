@@ -22,7 +22,6 @@
 #include "resourcedata.h"
 #include "resourcemanager.h"
 #include "resourcemanager_p.h"
-#include "resourcefiltermodel.h"
 #include "resource.h"
 #include "tools.h"
 #include "nie.h"

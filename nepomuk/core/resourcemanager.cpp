@@ -25,7 +25,6 @@
 #include "tools.h"
 #include "nepomukmainmodel.h"
 #include "resource.h"
-#include "resourcefiltermodel.h"
 #include "class.h"
 #include "nie.h"
 
@@ -261,12 +260,6 @@ Nepomuk::ResourceManager::ResourceManager()
     : QObject(),
       d( new ResourceManagerPrivate( this ) )
 {
-    d->resourceFilterModel = new ResourceFilterModel( this );
-    connect( d->resourceFilterModel, SIGNAL(statementsAdded()),
-             this, SLOT(slotStoreChanged()) );
-    connect( d->resourceFilterModel, SIGNAL(statementsRemoved()),
-             this, SLOT(slotStoreChanged()) );
-
     // connect to the storage service's initialized signal to be able to emit
     // the nepomukSystemStarted signal
     QDBusConnection::sessionBus().connect( QLatin1String("org.kde.NepomukStorage"),
@@ -292,7 +285,6 @@ Nepomuk::ResourceManager::ResourceManager()
 Nepomuk::ResourceManager::~ResourceManager()
 {
     clearCache();
-    delete d->resourceFilterModel;
     delete d->mainModel;
     delete d;
 
@@ -325,8 +317,6 @@ int Nepomuk::ResourceManager::init()
     if( !d->mainModel ) {
         d->mainModel = new MainModel( this );
     }
-
-    d->resourceFilterModel->setParentModel( d->mainModel );
 
     d->mainModel->init();
 
@@ -509,7 +499,7 @@ Soprano::Model* Nepomuk::ResourceManager::mainModel()
         init();
     }
 
-    return d->resourceFilterModel;
+    return d->mainModel;
 }
 
 
@@ -527,9 +517,8 @@ void Nepomuk::ResourceManager::setOverrideMainModel( Soprano::Model* model )
 {
     QMutexLocker lock( &d->mutex );
 
-    if( model != d->resourceFilterModel ) {
+    if( model != d->mainModel ) {
         d->overrideModel = model;
-        d->resourceFilterModel->setParentModel( model ? model : d->mainModel );
 
         // clear cache to make sure we do not mix data
         Q_FOREACH( ResourceData* data, d->allResourceData()) {

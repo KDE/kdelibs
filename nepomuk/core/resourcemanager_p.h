@@ -39,7 +39,6 @@ namespace Nepomuk {
 
     class ResourceManager;
     class MainModel;
-    class ResourceFilterModel;
 
     typedef QHash<KUrl, Nepomuk::ResourceData*> ResourceDataHash;
 
@@ -49,7 +48,6 @@ namespace Nepomuk {
         ResourceManagerPrivate( ResourceManager* manager );
 
         Nepomuk::MainModel* mainModel;
-        ResourceFilterModel* resourceFilterModel;
         Soprano::Model* overrideModel;
 
         /// used to protect the initialization

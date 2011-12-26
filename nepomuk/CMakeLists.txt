@@ -29,7 +29,6 @@ set(nepomuk_core_SRCS
   core/variant.cpp
   core/resourcedata.cpp
   core/resourcemanager.cpp
-  core/resourcefiltermodel.cpp
   core/nepomukmainmodel.cpp
   core/dbusconnectionpool.cpp
   core/resource.cpp
@@ -37,7 +36,6 @@ set(nepomuk_core_SRCS
   core/file.cpp
   core/tag.cpp
   core/nepomukservice.cpp
-  core/graphwrapper.cpp
 )
 
 if(NOT KDE_NO_DEPRECATED)
