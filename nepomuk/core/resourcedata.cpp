@@ -54,7 +54,7 @@
 
 using namespace Soprano;
 
-#define MAINMODEL static_cast<ResourceFilterModel*>(m_rm->m_manager->mainModel())
+#define MAINMODEL (m_rm->m_manager->mainModel())
 
 
 Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QUrl& kickOffUri, const QUrl& type, ResourceManagerPrivate* rm )
@@ -535,7 +535,9 @@ void Nepomuk::ResourceData::remove( bool recursive )
 bool Nepomuk::ResourceData::exists()
 {
     if( m_uri.isValid() ) {
-        return MAINMODEL->containsAnyStatement( Statement( m_uri, Node(), Node() ) );
+        const QString query = QString::fromLatin1("ask { %1 ?p ?o . }")
+                              .arg( Soprano::Node::resourceToN3(m_uri) );
+        return MAINMODEL->executeQuery( query, Soprano::Query::QueryLanguageSparql ).boolValue();
     }
     else {
         return false;
