@@ -96,6 +96,11 @@ static void collectAllChildFrames(QWebFrame* frame, QList<QWebFrame*>& list)
     }
 }
 
+static QUrl urlForFrame(QWebFrame* frame)
+{
+    return (frame->url().isEmpty() ? frame->baseUrl().resolved(frame->url()) : frame->url());
+}
+
 class KWebWallet::KWebWalletPrivate
 {
 public:
@@ -141,7 +146,7 @@ KWebWallet::WebFormList KWebWallet::KWebWalletPrivate::parseFormData(QWebFrame *
     Q_FOREACH (const QVariant &formVariant, results) {
         QVariantMap map = formVariant.toMap();
         KWebWallet::WebForm form;
-        form.url = frame->url();
+        form.url = urlForFrame(frame);
         form.name = map[QL1S("name")].toString();
         form.index = map[QL1S("index")].toString();
         bool formHasPasswords = false;
@@ -401,7 +406,7 @@ void KWebWallet::fillFormData(QWebFrame *frame, bool recursive)
     KUrl::List urlList;
     WebFormList formsList = d->parseFormData(frame);
     if (!formsList.isEmpty()) {
-        const QUrl url (frame->url());
+        const QUrl url (urlForFrame(frame));
         if (d->pendingFillRequests.contains(url)) {
             kWarning(800) << "Duplicate request rejected!";
         } else {
@@ -456,7 +461,7 @@ void KWebWallet::saveFormData(QWebFrame *frame, bool recursive, bool ignorePassw
     if (list.isEmpty())
         return;
 
-    const QString key = QString::number(qHash(frame->url().toString() + frame->frameName()), 16);
+    const QString key = QString::number(qHash(urlForFrame(frame).toString() + frame->frameName()), 16);
     const bool isAlreadyPending = d->pendingSaveRequests.contains(key);
     d->pendingSaveRequests.insert(key, list);
 
@@ -469,12 +474,12 @@ void KWebWallet::saveFormData(QWebFrame *frame, bool recursive, bool ignorePassw
     }
 
     if (list.isEmpty()) {
-        d->confirmSaveRequestOverwrites.insert(frame->url());
+        d->confirmSaveRequestOverwrites.insert(urlForFrame(frame));
         saveFormDataToCache(key);
         return;
     }
 
-    emit saveFormDataRequested(key, frame->url());
+    emit saveFormDataRequested(key, urlForFrame(frame));
 }
 
 void KWebWallet::removeFormData(QWebFrame *frame, bool recursive)
