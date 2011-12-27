@@ -18,39 +18,35 @@
 */
 
 #include "klockfile.h"
-#include "kcomponentdata.h"
-#include "kdebug.h"
 
 #include <windows.h>
 
 /**
- The win32 implementation uses CreateFile() without shared access rights 
- to detect if the lock file is opened by another process. 
-*/ 
+ The win32 implementation uses CreateFile() without shared access rights
+ to detect if the lock file is opened by another process.
+*/
 
 class KLockFile::Private
 {
 public:
-    Private(const KComponentData &c)
-        : componentData(c)
+    Private(const QString &f, const QString &componentName)
+        : file(f),
+          staleTime(0),
+          isLocked(false),
+          m_componentName(componentName)
     {
     }
 
-    static int debugArea() { static int s_area = KDebug::registerArea("kdecore (KLockFile)"); return s_area; }
-
     QString file;
-    bool isLocked;
     int staleTime;
-    KComponentData componentData;
+    bool isLocked;
+    QString m_componentName;
     HANDLE h;
 };
 
-KLockFile::KLockFile(const QString &file, const KComponentData &componentData)
-    : d(new Private(componentData))
+KLockFile::KLockFile(const QString &file, const QString &componentName)
+    : d(new Private(file, componentName))
 {
-    d->file = file;
-    d->isLocked = false;
-    d->staleTime = 0;
 }
 
 KLockFile::~KLockFile()
@@ -72,7 +68,7 @@ KLockFile::setStaleTime(int _staleTime)
   d->staleTime = _staleTime;
 }
 
-KLockFile::LockResult 
+KLockFile::LockResult
 KLockFile::lock(LockFlags options)
 {
     if (d->isLocked)
@@ -92,47 +88,47 @@ KLockFile::lock(LockFlags options)
     if (!d->h)
         result = LockError;
 
-    else if (GetLastError() == NO_ERROR) 
+    else if (GetLastError() == NO_ERROR)
 	{
-//        kDebug(d->debugArea()) << "'" << d->file << "' locked";
+//        qDebug() << "'" << d->file << "' locked";
         result = LockOK;
     }
-    else if (GetLastError() == ERROR_ALREADY_EXISTS) 
+    else if (GetLastError() == ERROR_ALREADY_EXISTS)
 	{
-        // handle stale lock file 
-        //kDebug(d->debugArea()) << "stale lock file '" << d->file << "' found, reused file";
+        // handle stale lock file
+        //qDebug() << "stale lock file '" << d->file << "' found, reused file";
         // we reuse this file
         result = LockOK;
     }
-    else if (GetLastError() == ERROR_SHARING_VIOLATION) 
+    else if (GetLastError() == ERROR_SHARING_VIOLATION)
 	{
         CloseHandle(d->h);
         d->h = 0;
-        //kDebug(d->debugArea()) << "could not lock file '" << d->file << "' it is locked by another process";
+        //qDebug() << "could not lock file '" << d->file << "' it is locked by another process";
         result = LockFail;
     }
     else {
-        //kDebug(d->debugArea()) << "could not lock '" << d->file << "' error= " << GetLastError();
+        //qDebug() << "could not lock '" << d->file << "' error= " << GetLastError();
         result = LockError;
     }
-    
+
     if (result == LockOK)
         d->isLocked = true;
     return result;
 }
 
-bool 
+bool
 KLockFile::isLocked() const
 {
     return d->isLocked;
 }
 
-void 
+void
 KLockFile::unlock()
 {
     if (d->isLocked)
     {
-         //kDebug(d->debugArea()) << "lock removed for file '" << d->file << "'";
+         //qDebug() << "lock removed for file '" << d->file << "'";
          CloseHandle(d->h);
          DeleteFileW((WCHAR *)d->file.utf16());
          d->h = 0;
@@ -140,7 +136,7 @@ KLockFile::unlock()
     }
 }
 
-bool 
+bool
 KLockFile::getLockInfo(int &pid, QString &hostname, QString &appname)
 {
   return false;
