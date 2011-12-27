@@ -223,7 +223,6 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
             case Qt::Key_Return:
                 ev->accept();
                 return true;
-                break;
             case Qt::Key_Tab:
             case Qt::Key_Backtab:
                 if ( ev->modifiers() == Qt::NoButton ||
