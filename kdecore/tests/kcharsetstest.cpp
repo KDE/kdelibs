@@ -18,7 +18,11 @@ int main()
     // Do NOT move this code to a QTestLib unit test ;-)
     QString one = QString::fromUtf8("é");
     QByteArray one8bit = one.toLocal8Bit();
-    if (qgetenv("LANG").endsWith("UTF-8")) { // krazy:exclude=strings
+    QByteArray lang = qgetenv("LC_ALL");
+    if (lang.isEmpty()) {
+        lang = qgetenv("LANG");
+    }
+    if (lang.endsWith("UTF-8")) { // krazy:exclude=strings
         kDebug() << one << one8bit;
         Q_ASSERT(one8bit.length() == 2);
     }
