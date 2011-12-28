@@ -4,7 +4,10 @@
 #  You MUST wrap all lines at 72 characters.
 #  Please see http://techbase.kde.org/Policies/Commit_Policy
 #
-# ==[ Subject: One line only short meaningful description for logs ]===|
+#  For Git commit hook keywords see:
+#  http://community.kde.org/Sysadmin/GitKdeOrgManual#Commit_hook_keywords
+#
+# ==[ Subject: One line ONLY short meaningful description for logs ]===|
 
 # ==[ Blank: Follow the Subject with a blank line, do NOT remove ]=====|
 
@@ -35,3 +38,8 @@
 #
 # --[ Notify Commit Digest team of something interesting ]-------------|
 #DIGEST:
+#
+# --[ Mark commit as silent for commit filter filtering. ]-------------|
+#   [ Use sparingly and only for uninteresting and       ]
+#   [ uncontroversial commits.                           ]
+#GIT_SILENT
