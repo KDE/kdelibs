@@ -4,14 +4,7 @@
 #  You MUST wrap all lines at 72 characters.
 #  Please see http://techbase.kde.org/Policies/Commit_Policy
 #
-<<<<<<< HEAD
 # ==[ Subject: One line only short meaningful description for logs ]===|
-=======
-#  For Git commit hook keywords see:
-#  http://community.kde.org/Sysadmin/GitKdeOrgManual#Commit_hook_keywords
-#
-# ==[ Subject: One line ONLY short meaningful description for logs ]===|
->>>>>>> f580954... Add URL to git commit hook keywords to .commit-template file.
 
 # ==[ Blank: Follow the Subject with a blank line, do NOT remove ]=====|
 
