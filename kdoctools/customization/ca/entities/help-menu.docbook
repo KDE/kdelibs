@@ -29,7 +29,6 @@ se us obrirà una finestra d'ajuda (si existeix per a aquest ítem en
 particular) explicant la funció de dit ítem.</para></listitem>
 </varlistentry>
 
-
 <varlistentry>
 <term><menuchoice>
 <guimenu>Ajuda</guimenu>
@@ -38,6 +37,16 @@ particular) explicant la funció de dit ítem.</para></listitem>
 <listitem><para><action>Obre un diàleg d'informe d'errors</action> a on
 podreu informar d'un error o requerir una característica
 <quote>wishlist</quote>.</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><menuchoice>
+<guimenu>Ajuda</guimenu>
+<guimenuitem>Canvia l'idioma de l'aplicació...</guimenuitem>
+</menuchoice></term>
+<listitem><para><action>Obre un diàleg</action> des d'on podreu editar les 
+opcions <guilabel>Idioma principal</guilabel> i <guilabel>Idioma de reserva
+</guilabel> per a aquesta aplicació.</para></listitem>
 </varlistentry>
 
 <varlistentry>

@@ -21,3 +21,19 @@
 <!ENTITY FDLBackCoverText "el text de la contraportada està &FDLBCTTitles;">
  ]]>
 <!ENTITY FDLBackCoverText "sense text a la contraportada">
+
+<!-- modespec entity: must be adapted in accordance with the normal usage
+     for documents in a language; the most likely candidates are the value
+     of xreflabel (now %t for title of section referred to) and the content
+     (now empty).  If more than one format is needed, contact kde-docbook@kde.org.
+     ** In general, this setup will not work with more than one language in 
+        a document **
+     Usage: in <bookinfo>
+     Only strictly needed when olinks are used
+ -->
+<!--ENTITY kde-modespec '<modespec id="kdems-default" xreflabel="&percnt;t"></modespec>'-->
+<!ENTITY kde.modespec '
+ <modespec id="kdems-help">help:</modespec>
+ <modespec id="kdems-man">man:</modespec>'>
+
+<!ENTITY olinktype "kde-installation">
