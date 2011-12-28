@@ -1,14 +1,8 @@
-<para>Per a poder compilar i instal·lar &kappname; al vostre sistema, 
-introduiu el següent en el directori arrel de la distribució de 
-&kappname;:</para>
+<para>Per a informació més detallada sobre com compilar i instal·lar 
+aplicacions &kde; mireu <ulink url="http://techbase.kde.org/Getting_Started">
+Building KDE4 From Source</ulink></para>
 
-<screen><prompt>%</prompt> <userinput><command>./configure</command></userinput>
-<prompt>%</prompt> <userinput><command>make</command></userinput>
-<prompt>%</prompt> <userinput><command>make</command> install</userinput>
-</screen>
-
-<para>Donat que &kappname; empra <command>autoconf</command> i 
-<command>automake</command> no hauria de produir-se cap complicació durant 
-la compilació. Si us trobeu amb cap problema, si us plau, informeu-ne a 
-les llistes de correu de &kde;.</para>
+<para>Donat que &kde; empra <command>cmake</command> no hauria de produir-se 
+cap complicació durant la compilació. Si us trobeu amb cap problema, si us 
+plau, informeu-ne a les llistes de correu de &kde;.</para>
 
