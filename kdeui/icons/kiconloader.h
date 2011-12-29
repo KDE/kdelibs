@@ -388,7 +388,11 @@ public:
     QStringList queryIconsByDir( const QString& iconsDir ) const;
 
     /**
-     * Returns the current size of the group.
+     * Returns the current size of the icon group.
+     * Using e.g. KIconLoader::SmallIcon will retrieve the icon size
+     * that is currently set from System Settings->Appearance->Icon
+     * sizes. SmallIcon for instance, would typically be 16x16, but
+     * the user could increase it and this setting would change as well.
      * @param group the group to check.
      * @return the current size for an icon group.
      */
