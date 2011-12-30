@@ -21,7 +21,8 @@
 #define KLOCKFILE_H
 
 #include <kcoreaddons_export.h>
-#include <kglobal.h>
+#include <QtCore/QString>
+#include <QtCore/QFlags>
 
 class QString;
 

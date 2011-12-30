@@ -74,4 +74,3 @@ void Button::slotConditionRaised(const QString &name, const QString &/*reason */
     }
 }
 
-#include "backends/wmi/wmibutton.moc"

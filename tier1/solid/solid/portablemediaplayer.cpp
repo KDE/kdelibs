@@ -54,4 +54,3 @@ QVariant Solid::PortableMediaPlayer::driverHandle(const QString &driver) const
     return_SOLID_CALL(Ifaces::PortableMediaPlayer *, d->backendObject(), QVariant(), driverHandle(driver));
 }
 
-#include "portablemediaplayer.moc"

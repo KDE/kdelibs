@@ -42,4 +42,3 @@ bool Solid::AcAdapter::isPlugged() const
     return_SOLID_CALL(Ifaces::AcAdapter *, d->backendObject(), false, isPlugged());
 }
 
-#include "acadapter.moc"

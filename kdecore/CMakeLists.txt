@@ -35,6 +35,7 @@ include_directories( ${ZLIB_INCLUDE_DIR} )
 include_directories( ${QT_INCLUDES} )
 include_directories( ${CMAKE_SOURCE_DIR}/libinqt5/src )
 include_directories( ${CMAKE_BINARY_DIR}/libinqt5/src )
+include_directories( ${CMAKE_SOURCE_DIR}/libqtmimetypes/include/QtMimeTypes )
 include_directories( ${CMAKE_SOURCE_DIR}/staging/libkcoreaddons/src/jobs )
 include_directories( ${CMAKE_SOURCE_DIR}/staging/libkcoreaddons/src/io )
 include_directories( ${CMAKE_SOURCE_DIR}/staging/libkcoreaddons/src/text )
@@ -195,10 +196,8 @@ set(kdecore_LIB_SRCS
    kernel/kstandarddirs.cpp
    kernel/ktoolinvocation.cpp
    services/kmimetypefactory.cpp
-   services/kmimemagicrule.cpp
    services/kmimetypetrader.cpp
    services/kmimetype.cpp
-   services/kmimeglobsfileparser.cpp
    services/kmimetyperepository.cpp
    services/kservice.cpp
    services/kserviceaction.cpp
@@ -283,7 +282,7 @@ endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 kde4_add_library(kdecore ${LIBRARY_TYPE} ${kdecore_LIB_SRCS})
 generate_export_header(kdecore)
 
-target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS} inqt5 kcoreaddons)
+target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS} inqt5 kcoreaddons QtMimeTypes)
 
 if(WINCE)
   target_link_libraries(kdecore ${WCECOMPAT_LIBRARIES} Ceshell.lib)

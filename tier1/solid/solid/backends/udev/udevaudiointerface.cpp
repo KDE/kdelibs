@@ -84,4 +84,3 @@ Solid::AudioInterface::SoundcardType AudioInterface::soundcardType() const
     return d->soundcardType();
 }
 
-#include "backends/udev/udevaudiointerface.moc"

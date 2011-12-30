@@ -42,7 +42,6 @@ KDECORE_UNIT_TESTS(
  kentrymaptest
  kconfigtest
  kurlmimetest
- klockfiletest
  ksharedptrtest
  kdatetimetest
  ksavefiletest
@@ -89,7 +88,6 @@ KDECORE_EXECUTABLE_TESTS(
  dbuscalltest
  kmdcodectest
  startserviceby
- klockfile_testlock # helper for klockfiletest
 )
 
 ########### klocaletest ###############
@@ -113,17 +111,9 @@ target_link_libraries(kdirwatchtest_gui ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY}
 
 ########### kmimetypetest ###############
 
-# compile kmimemagicrule.cpp into the test since it's not exported and we call match().
-set(kmimetypetest_SRCS kmimetypetest.cpp ../services/kmimemagicrule.cpp)
+set(kmimetypetest_SRCS kmimetypetest.cpp)
 kde4_add_unit_test(kmimetypetest TESTNAME kdecore-kmimetypetest ${kmimetypetest_SRCS})
 target_link_libraries(kmimetypetest ${KDE4_KDECORE_LIBS} inqt5 ${QT_QTTEST_LIBRARY} kcoreaddons)
-
-########### kmimeglobsfileparsertest ###############
-
-# compile kmimeglobsfileparser.cpp into the test since it's not exported
-set(kmimeglobsfileparsertest_SRCS kmimeglobsfileparsertest.cpp ../services/kmimeglobsfileparser.cpp)
-kde4_add_unit_test(kmimeglobsfileparsertest TESTNAME kdecore-kmimeglobsfileparsertest ${kmimeglobsfileparsertest_SRCS})
-target_link_libraries(kmimeglobsfileparsertest ${KDE4_KDECORE_LIBS} inqt5 ${QT_QTTEST_LIBRARY} kcoreaddons)
 
 ########### module for klibloadertest ###############
 

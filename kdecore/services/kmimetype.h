@@ -29,6 +29,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+class QMimeType;
 class QUrl;
 class KMimeTypePrivate;
 
@@ -43,7 +44,7 @@ class KMimeTypePrivate;
  *
  * @see KServiceType
  */
-class KDECORE_EXPORT KMimeType : public KServiceType // TODO KDE5: drop kservicetype inheritance, inherit kshared
+class KDECORE_EXPORT KMimeType : public QSharedData
 {
     Q_DECLARE_PRIVATE( KMimeType )
 public:
@@ -51,6 +52,11 @@ public:
     typedef QList<Ptr> List;
 
     virtual ~KMimeType();
+
+    /**
+     * @return the name of this entry
+     */
+    QString name() const;
 
     /**
      * Return the filename of the icon associated with the mimetype.
@@ -97,7 +103,8 @@ public:
      */
     QStringList patterns() const;
 
-    enum FindByNameOption { DontResolveAlias, ResolveAliases = 1 };
+    // DontResolveAlias was removed for kde 5, there was no use case for it.
+    enum FindByNameOption { ResolveAliases = 1 };
 
     /**
      * Retrieve a pointer to the mime type @p name
@@ -391,6 +398,8 @@ public:
      * Determines the extension from a filename (or full path) using the mimetype database.
      * This allows to extract "tar.bz2" for foo.tar.bz2
      * but still return "txt" for my.doc.with.dots.txt
+     *
+     * @deprecated use QMimeDatabase::suffixForFileName
      */
     static QString extractKnownExtension( const QString &fileName );
 
@@ -416,6 +425,12 @@ protected:
 
     friend class KMimeTypeRepository; // for KMimeType(QString,QString,QString)
 
+    /**
+     * @internal Construct a kmimetype from a qmimetype.
+     */
+    KMimeType( const QMimeType& mime );
+
+#if 0
     /**
      * @internal Construct a service from a stream.
      *
@@ -448,6 +463,7 @@ protected:
      * @param comment the comment associated with the mimetype
      */
     KMimeType( KMimeTypePrivate &dd, const QString& name, const QString& comment );
+#endif
 
 private:
     // Forbidden nowadays in KMimeType
@@ -456,9 +472,10 @@ private:
 
     void loadInternal( QDataStream& _str);
     static void buildDefaultType();
-    static void checkEssentialMimeTypes();
     static KMimeType::Ptr findByUrlHelper( const QUrl& url, mode_t mode,
                                            bool is_local_file, QIODevice* device, int* accuracy );
+
+    KMimeTypePrivate *d_ptr;
 };
 
 #endif

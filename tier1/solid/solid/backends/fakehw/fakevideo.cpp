@@ -33,4 +33,3 @@ FakeVideo::~FakeVideo()
 {
 
 }
-#include "backends/fakehw/fakevideo.moc"

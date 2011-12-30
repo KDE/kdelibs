@@ -59,4 +59,3 @@ QVariant Solid::Backends::Wmi::Video::driverHandle(const QString &driver) const
     return QVariant();
 }
 
-#include "backends/wmi/wmivideo.moc"

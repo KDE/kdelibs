@@ -18,7 +18,7 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "udevqt.h"
+#include "udevqtclient.h"
 #include "udevqt_p.h"
 
 #include <sys/stat.h>
@@ -253,4 +253,4 @@ Device Client::deviceBySubsystemAndName(const QString &subsystem, const QString 
 
 }
 
-#include "udevqt.moc"
+#include "moc_udevqtclient.cpp"

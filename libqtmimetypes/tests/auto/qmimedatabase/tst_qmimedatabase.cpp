@@ -66,6 +66,9 @@ void tst_qmimedatabase::test_mimeTypeForName()
     QVERIFY(defaultMime.isValid());
     QVERIFY(defaultMime.isDefault());
 
+    QMimeType doesNotExist = db.mimeTypeForName(QString::fromLatin1("foobar/x-doesnot-exist"));
+    QVERIFY(!doesNotExist.isValid());
+
     // TODO move to test_findByFile
 #ifdef Q_OS_LINUX
     QString exePath = QStandardPaths::findExecutable(QLatin1String("ls"));

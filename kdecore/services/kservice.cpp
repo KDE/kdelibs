@@ -452,7 +452,10 @@ bool KService::hasMimeType( const KServiceType* ptr ) const
 bool KService::hasMimeType(const QString& mimeType) const
 {
     Q_D(const KService);
-    const QString mime = KMimeTypeRepository::self()->canonicalName(mimeType);
+    QMimeDatabase db;
+    const QString mime = db.mimeTypeForName(mimeType).name();
+    if (mime.isEmpty())
+        return false;
     int serviceOffset = offset();
     if ( serviceOffset ) {
         KMimeTypeFactory *factory = KMimeTypeFactory::self();

@@ -79,4 +79,3 @@ void Solid::Backends::Fake::FakeStorageAccess::onPropertyChanged(const QMap<QStr
     }
 }
 
-#include "backends/fakehw/fakestorageaccess.moc"

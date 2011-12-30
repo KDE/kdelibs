@@ -71,4 +71,3 @@ QVariant Solid::Backends::Wmi::Camera::driverHandle(const QString &driver) const
     return QVariant();
 }
 
-#include "backends/wmi/wmicamera.moc"

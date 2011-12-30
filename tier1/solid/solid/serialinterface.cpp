@@ -54,4 +54,3 @@ int Solid::SerialInterface::port() const
     return_SOLID_CALL(Ifaces::SerialInterface *, d->backendObject(), -1, port());
 }
 
-#include "serialinterface.moc"

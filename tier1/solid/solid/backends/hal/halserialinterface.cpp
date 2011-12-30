@@ -57,4 +57,3 @@ int SerialInterface::port() const
     return m_device->prop("serial.port").toInt();
 }
 
-#include "backends/hal/halserialinterface.moc"

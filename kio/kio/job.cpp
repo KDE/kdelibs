@@ -2637,6 +2637,8 @@ void ListJob::slotFinished()
 
     // Support for listing archives as directories
     if ( error() == KIO::ERR_IS_FILE && d->m_url.isLocalFile() ) {
+#if 0   // TODO port this KDE 3 code to KProtocolManager::protocolForArchiveMimetype.
+        // Note however that this code never worked in KDE 4.
         KMimeType::Ptr ptr = KMimeType::findByUrl( d->m_url, 0, true, true );
         if ( ptr ) {
             QString proto = ptr->property("X-KDE-LocalProtocol").toString();
@@ -2647,6 +2649,7 @@ void ListJob::slotFinished()
                 emit redirection(this,d->m_redirectionURL);
             }
         }
+#endif
     }
 
     if ( !d->m_redirectionURL.isEmpty() && d->m_redirectionURL.isValid() && !error() ) {

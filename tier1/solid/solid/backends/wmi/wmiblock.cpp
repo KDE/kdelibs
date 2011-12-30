@@ -50,4 +50,3 @@ QString Block::device() const
     return m_device->property("drive").toString();
 }
 
-#include "backends/wmi/wmiblock.moc"

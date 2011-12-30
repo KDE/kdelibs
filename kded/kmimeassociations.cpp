@@ -82,18 +82,23 @@ void KMimeAssociations::parseMimeAppsList(const QString& file, int basePreferenc
 
 void KMimeAssociations::parseAddedAssociations(const KConfigGroup& group, const QString& file, int basePreference)
 {
+    QMimeDatabase db;
     Q_FOREACH(const QString& mimeName, group.keyList()) {
         const QStringList services = group.readXdgListEntry(mimeName);
-        const QString resolvedMimeName = KMimeTypeRepository::self()->canonicalName(mimeName);
-        int pref = basePreference;
-        Q_FOREACH(const QString &service, services) {
-            KService::Ptr pService = KService::serviceByStorageId(service);
-            if (!pService) {
-                kDebug(7021) << file << "specifies unknown service" << service << "in" << group.name();
-            } else {
-                //kDebug(7021) << "adding mime" << resolvedMimeName << "to service" << pService->entryPath() << "pref=" << pref;
-                m_offerHash.addServiceOffer(resolvedMimeName, KServiceOffer(pService, pref, 0, pService->allowAsDefault()));
-                --pref;
+        const QString resolvedMimeName = db.mimeTypeForName(mimeName).name();
+        if (resolvedMimeName.isEmpty()) {
+            kDebug(7021) << file << "specifies unknown mimeType" << mimeName << "in" << group.name();
+        } else {
+            int pref = basePreference;
+            Q_FOREACH(const QString &service, services) {
+                KService::Ptr pService = KService::serviceByStorageId(service);
+                if (!pService) {
+                    kDebug(7021) << file << "specifies unknown service" << service << "in" << group.name();
+                } else {
+                    //kDebug(7021) << "adding mime" << resolvedMimeName << "to service" << pService->entryPath() << "pref=" << pref;
+                    m_offerHash.addServiceOffer(resolvedMimeName, KServiceOffer(pService, pref, 0, pService->allowAsDefault()));
+                    --pref;
+                }
             }
         }
     }

@@ -234,4 +234,3 @@ bool Solid::Backends::Wmi::StorageAccess::callSystemUnmount()
     return 0;
 }
 
-#include "backends/wmi/wmistorageaccess.moc"

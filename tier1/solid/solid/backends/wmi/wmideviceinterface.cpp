@@ -31,4 +31,3 @@ DeviceInterface::~DeviceInterface()
 {
 }
 
-#include "backends/wmi/wmideviceinterface.moc"

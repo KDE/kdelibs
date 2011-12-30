@@ -53,5 +53,4 @@ QVariant Solid::Video::driverHandle(const QString &driver) const
     return_SOLID_CALL(Ifaces::Video *, d->backendObject(), QVariant(), driverHandle(driver));
 }
 
-#include "video.moc"
 

@@ -59,4 +59,3 @@ Solid::Processor::InstructionSets Solid::Processor::instructionSets() const
     return_SOLID_CALL(Ifaces::Processor *, d->backendObject(), InstructionSets(), instructionSets());
 }
 
-#include "processor.moc"

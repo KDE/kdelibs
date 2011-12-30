@@ -164,4 +164,3 @@ void UPowerManager::slotDeviceRemoved(const QString &opath)
     Q_EMIT deviceRemoved(opath);
 }
 
-#include "backends/upower/upowermanager.moc"

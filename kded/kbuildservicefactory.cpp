@@ -170,7 +170,9 @@ void KBuildServiceFactory::collectInheritedServices(const QString& mimeTypeName,
     // through the multiple parents at a given level). I don't think we care, though.
     int mimeTypeInheritanceLevel = 0;
 
-    Q_FOREACH(const QString& parentMimeType, KMimeTypeRepository::self()->parents(mimeTypeName)) {
+    QMimeDatabase db;
+    QMimeType qmime = db.mimeTypeForName(mimeTypeName);
+    Q_FOREACH(const QString& parentMimeType, qmime.parentMimeTypes()) {
 
         collectInheritedServices(parentMimeType, visitedMimes);
 
@@ -253,12 +255,12 @@ void KBuildServiceFactory::populateServiceTypes()
                 m_offerHash.addServiceOffer(stName, KServiceOffer(service, preference, 0, service->allowAsDefault()) );
             } else {
                 KServiceOffer offer(service, serviceTypeList[i].preference, 0, service->allowAsDefault());
-                KMimeType::Ptr mime = KMimeType::mimeType(stName, KMimeType::ResolveAliases);
+                KMimeType::Ptr mime = KMimeType::mimeType(stName);
                 if (!mime) {
                     if (stName.startsWith(QLatin1String("x-scheme-handler/"))) {
                         // Create those on demand
                         m_mimeTypeFactory->createFakeMimeType(stName);
-                        m_offerHash.addServiceOffer(stName, offer );
+                        m_offerHash.addServiceOffer(stName, offer);
                     } else {
                         kDebug(7021) << service->entryPath() << "specifies undefined mimetype/servicetype" << stName;
                         // technically we could call addServiceOffer here, 'mime' isn't used. But it
@@ -267,6 +269,7 @@ void KBuildServiceFactory::populateServiceTypes()
                         continue;
                     }
                 } else {
+                    //kDebug(7021) << "Adding service" << service->entryPath() << "to mime" << mime->name();
                     m_offerHash.addServiceOffer(mime->name(), offer); // mime->name so that we resolve aliases
                 }
             }

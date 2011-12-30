@@ -50,20 +50,6 @@ KBuildMimeTypeFactory::~KBuildMimeTypeFactory()
     delete m_resourceList;
 }
 
-KMimeTypeFactory::MimeTypeEntry::Ptr KBuildMimeTypeFactory::findMimeTypeEntryByName(const QString &_name, KMimeType::FindByNameOption options)
-{
-    assert (KSycoca::self()->isBuilding());
-
-    QString name = _name;
-    if (options & KMimeType::ResolveAliases) {
-        name = KMimeTypeRepository::self()->canonicalName(_name);
-    }
-
-    // We're building a database - the mime type must be in memory
-    KSycocaEntry::Ptr servType = m_entryDict->value( name );
-    return MimeTypeEntry::Ptr::staticCast( servType );
-}
-
 KSycocaEntry::List KBuildMimeTypeFactory::allEntries() const
 {
     assert (KSycoca::self()->isBuilding());

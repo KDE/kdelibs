@@ -20,7 +20,7 @@ ENDMACRO(KNEWSTUFF_UNIT_TESTS)
 MACRO(KNEWSTUFF_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
                add_executable(${_testname} ${_testname}.cpp)
-               target_link_libraries(${_testname} knewstuff2 ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} kcoreaddons)
+               target_link_libraries(${_testname} knewstuff2 ${QT_QTXML_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} kcoreaddons)
                set_target_properties(${_testname} PROPERTIES COMPILE_FLAGS -DKNSSRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}/\\""\ -DKNSBUILDDIR="\\"${CMAKE_CURRENT_BINARY_DIR}\\"")
        ENDFOREACH(_testname)
 ENDMACRO(KNEWSTUFF_EXECUTABLE_TESTS)
@@ -35,10 +35,10 @@ if(NOT KDE_NO_DEPRECATED)
     knewstuffauthortest
     knewstuffentrytest
     testTranslatable
-    knewstuff2_test
   )
 
   KNEWSTUFF_EXECUTABLE_TESTS(
+   knewstuff2_test
    knewstuff2_download
    knewstuff2_standard
    knewstuff2_cache

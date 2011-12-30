@@ -506,7 +506,7 @@ QMimeType QMimeDatabase::findByData(QIODevice* device) const
         const QByteArray data = device->read(16384);
         return d->findByData(data, &accuracy);
     }
-    return mimeTypeForName(d->defaultMimeType());
+    return d->mimeTypeForName(d->defaultMimeType());
 }
 
 // ------------------------------------------------------------------------------------------------

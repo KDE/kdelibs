@@ -1,8 +1,10 @@
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
+
 MACRO(KCOREADDONS_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                #kde4_add_unit_test(${_testname} TESTNAME "kcoreaddons-${_testname}" NOGUI ${_testname}.cpp)
 	       add_executable(${_testname} ${_testname}.cpp)
-	       add_test(kcoreaddons-${_testname} ${CMAKE_BINARY_DIR}/bin/${_testname})
+	       add_test(kcoreaddons-${_testname} ${_testname})
                target_link_libraries(${_testname} ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} kcoreaddons)
                if(WINCE)
                 target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
@@ -23,6 +25,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/kernel
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/text
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/jobs
+    ${CMAKE_CURRENT_SOURCE_DIR}/../src/io
     ${CMAKE_CURRENT_BINARY_DIR}/../src
 )
 
@@ -30,5 +33,9 @@ KCOREADDONS_UNIT_TESTS(
     kaboutdatatest
     kcharsetstest
     kjobtest
+    klockfiletest
 )
 
+KCOREADDONS_EXECUTABLE_TESTS(
+    klockfile_testlock
+)

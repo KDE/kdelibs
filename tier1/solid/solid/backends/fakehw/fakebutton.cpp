@@ -71,4 +71,3 @@ void FakeButton::press()
     Q_EMIT pressed(type(), fakeDevice()->udi());
 }
 
-#include "backends/fakehw/fakebutton.moc"

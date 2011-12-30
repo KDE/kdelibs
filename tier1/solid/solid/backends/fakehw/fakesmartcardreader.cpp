@@ -46,4 +46,3 @@ Solid::SmartCardReader::ReaderType FakeSmartCardReader::readerType() const
     }
 }
 
-#include "backends/fakehw/fakesmartcardreader.moc"

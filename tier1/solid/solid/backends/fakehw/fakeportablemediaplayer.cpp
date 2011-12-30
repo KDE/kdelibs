@@ -53,4 +53,3 @@ QVariant Solid::Backends::Fake::FakePortableMediaPlayer::driverHandle(const QStr
     return QVariant();
 }
 
-#include "backends/fakehw/fakeportablemediaplayer.moc"

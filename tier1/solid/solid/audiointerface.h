@@ -24,6 +24,7 @@
 #include <solid/solid_export.h>
 
 #include <solid/deviceinterface.h>
+#include <QVariant>
 
 class QVariant;
 namespace Solid

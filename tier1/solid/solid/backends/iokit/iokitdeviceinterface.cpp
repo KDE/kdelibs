@@ -31,4 +31,3 @@ DeviceInterface::~DeviceInterface()
 {
 }
 
-#include "backends/iokit/iokitdeviceinterface.moc"
