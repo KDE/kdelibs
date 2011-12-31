@@ -422,6 +422,8 @@ void HTTPProtocol::reparseConfiguration()
     m_wwwAuth = 0;
     m_request.proxyUrl.clear(); //TODO revisit
     m_request.proxyUrls.clear();
+
+    TCPSlaveBase::reparseConfiguration();
 }
 
 void HTTPProtocol::resetConnectionSettings()
