@@ -793,7 +793,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         // Extract the file name only
         filename = properties->defaultName();
         if ( filename.isEmpty() ) { // no template
-            filename = item.name(); // this gives support for UDS_NAME, e.g. for kio_trash or kio_system
+            const QFileInfo finfo (item.name()); // Make sure only the file's name is displayed (#160964).
+            filename = finfo.fileName(); // this gives support for UDS_NAME, e.g. for kio_trash or kio_system
         } else {
             d->m_bFromTemplate = true;
             setDirty(); // to enforce that the copy happens
