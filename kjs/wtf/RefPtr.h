@@ -24,7 +24,6 @@
 
 #include <algorithm>
 #include "AlwaysInline.h"
-#include "PassRefPtr.h"
 
 namespace WTF {
 
