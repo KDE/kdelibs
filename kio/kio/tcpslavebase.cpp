@@ -28,32 +28,20 @@
 
 #include <config.h>
 
-#include <sys/types.h>
-#include <sys/uio.h>
-#include <sys/time.h>
-#include <sys/socket.h>
-
-#include <netinet/in.h>
-
-#include <time.h>
-#include <netdb.h>
-#include <unistd.h>
-#include <errno.h>
-
 #include <kdebug.h>
 #include <ksslcertificatemanager.h>
 #include <ksslsettings.h>
 #include <kmessagebox.h>
+#include <klocale.h>
+#include <ktoolinvocation.h>
 #include <network/ktcpsocket.h>
 
-#include <klocale.h>
 #include <QtCore/QDataStream>
 #include <QtCore/QTime>
 #include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QHostInfo>
 #include <QtDBus/QtDBus>
 
-#include <ktoolinvocation.h>
 
 using namespace KIO;
 //using namespace KNetwork;
