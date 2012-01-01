@@ -45,6 +45,8 @@ class KMD5Private;
 /**
  * @short An adapted C++ implementation of RSA Data Securities MD5 algorithm.
  *
+ * DEPRECATED. please use QCryptographicHash instead
+ *
  * The default constructor is designed to provide much the same
  * functionality as the most commonly used C-implementation, while
  * the other three constructors are meant to further simplify the
