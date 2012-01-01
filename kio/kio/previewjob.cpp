@@ -42,7 +42,7 @@
 #include <kfileitem.h>
 #include <kde_file.h>
 #include <kservicetypetrader.h>
-#include <kcodecs.h>
+#include <kmd5.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kservice.h>

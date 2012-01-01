@@ -19,7 +19,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kcodecs.h>
+#include <kmd5.h>
 #include <qtest_kde.h>
 
 #include <QCryptographicHash>

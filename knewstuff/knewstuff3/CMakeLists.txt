@@ -57,7 +57,7 @@ target_link_libraries(knewstuff3
     kcoreaddons
 )
 
-target_link_libraries(knewstuff3 ${LIBATTICA_LIBRARIES} karchive)
+target_link_libraries(knewstuff3 ${LIBATTICA_LIBRARIES} karchive kde4support)
 target_link_libraries(knewstuff3 LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTGUI_LIBRARY})
 
 set_target_properties(knewstuff3 PROPERTIES

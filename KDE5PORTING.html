@@ -106,6 +106,7 @@ An easy case is KStandardDirs::findExe -&gt; QStandardPaths::findExecutable. Wel
 </li>
 <li>KTemporaryFile is deprecated, port to QTemporaryFile instead, see KTemporaryFile API documentation for details.</li>
 <li>KTempDir is deprecated, port to QTemporaryDir instead, see KTempDir API documentation for details.</li>
+<li>KMD5 is deprecated, port to QCryptographicHash instead.</li>
 <li>KMimeType is deprecated, port to QMimeType instead. Here's a porting guide:
 <pre>
    QMimeDatabase db; // All the methods need a db instance, but it's very cheap to create, on stack is fine.

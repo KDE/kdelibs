@@ -32,7 +32,7 @@
 #include <kdebug.h>
 #include <kinputdialog.h>
 #include <klocale.h>
-#include <kcodecs.h>
+#include <kmd5.h>
 #include <kmessagebox.h>
 #include <kpassworddialog.h>
 #include <kprocess.h>

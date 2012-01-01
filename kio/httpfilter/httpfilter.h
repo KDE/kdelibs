@@ -27,7 +27,7 @@ class KFilterBase;
 #include <QBuffer>
 
 #include <QObject>
-#include <kcodecs.h>
+#include <kmd5.h>
 
 class HTTPFilterBase : public QObject
 {
