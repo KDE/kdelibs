@@ -39,10 +39,11 @@
 #include <QtCore/QRegExp>
 #include <qtemporaryfile.h>
 
+#include <QtCore/QCryptographicHash>
+
 #include <kfileitem.h>
 #include <kde_file.h>
 #include <kservicetypetrader.h>
-#include <kmd5.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kservice.h>
@@ -539,8 +540,9 @@ bool PreviewJobPrivate::statResultThumbnail()
     url.setPass(QString());
     origName = url.url();
 
-    KMD5 md5( QFile::encodeName( origName ) );
-    thumbName = QFile::encodeName( md5.hexDigest() ) + ".png";
+    QCryptographicHash md5(QCryptographicHash::Md5);
+    md5.addData(QFile::encodeName( origName ) );
+    thumbName = QFile::encodeName( md5.result().toHex() ) + ".png";
 
     QImage thumb;
     if ( !thumb.load( thumbPath + thumbName ) ) return false;
