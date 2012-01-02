@@ -24,7 +24,7 @@
 
 #include <QCryptographicHash>
 
-class KMd5Test : public QObject {
+class KMd5Benchmark : public QObject {
     Q_OBJECT
 
 private:
@@ -112,6 +112,6 @@ private Q_SLOTS:
 
 };
 
-QTEST_KDEMAIN_CORE( KMd5Test )
+QTEST_KDEMAIN_CORE( KMd5Benchmark )
 
-#include "kmd5test.moc"
+#include "kmd5benchmark.moc"
