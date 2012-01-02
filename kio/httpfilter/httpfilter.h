@@ -27,7 +27,7 @@ class KFilterBase;
 #include <QBuffer>
 
 #include <QObject>
-#include <kmd5.h>
+#include <QCryptographicHash>
 
 class HTTPFilterBase : public QObject
 {
@@ -76,7 +76,7 @@ public Q_SLOTS:
     void slotInput(const QByteArray &d);
 
 private:
-    KMD5 context;
+    QCryptographicHash context;
 };
 
 

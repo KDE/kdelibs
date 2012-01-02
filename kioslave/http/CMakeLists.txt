@@ -70,7 +70,7 @@ set(kio_http_PART_SRCS
 
 kde4_add_plugin(kio_http ${kio_http_PART_SRCS})
 
-target_link_libraries(kio_http karchive ${KDE4_KIO_LIBS} ${KDE4_SOLID_LIBS} kntlm ${ZLIB_LIBRARY} kcoreaddons kde4support)
+target_link_libraries(kio_http karchive ${KDE4_KIO_LIBS} ${KDE4_SOLID_LIBS} kntlm ${ZLIB_LIBRARY} kcoreaddons)
 if(GSSAPI_FOUND)
   target_link_libraries(kio_http ${GSSAPI_LIBS} )
 endif(GSSAPI_FOUND)
