@@ -33,13 +33,8 @@ Solid::NetworkingPrivate::NetworkingPrivate()
     : netStatus(Solid::Networking::Unknown),
       connectPolicy(Solid::Networking::Managed),
       disconnectPolicy(Solid::Networking::Managed),
-      iface(new OrgKdeSolidNetworkingClientInterface( "org.kde.kded",
-            "/modules/networkstatus",
-            QDBusConnection::sessionBus(),
-            this))
+      iface(0)
 {
-    //connect( iface, SIGNAL( statusChanged( uint ) ), globalNetworkManager, SIGNAL( statusChanged( Networking::Status ) ) );
-    connect(iface, SIGNAL(statusChanged(uint)), this, SLOT(serviceStatusChanged(uint)));
     QDBusServiceWatcher *watcher = new QDBusServiceWatcher("org.kde.kded", QDBusConnection::sessionBus(),
                                                            QDBusServiceWatcher::WatchForOwnerChange, this);
     connect(watcher, SIGNAL(serviceOwnerChanged(QString,QString,QString)),
@@ -58,8 +53,16 @@ Solid::Networking::Notifier::Notifier()
 
 void Solid::NetworkingPrivate::initialize()
 {
-    QDBusPendingReply<uint> reply = iface->status();
-    reply.waitForFinished();
+    delete iface;
+    iface  = new OrgKdeSolidNetworkingClientInterface( "org.kde.kded",
+            "/modules/networkstatus",
+            QDBusConnection::sessionBus(),
+            this);
+
+    //connect( iface, SIGNAL( statusChanged( uint ) ), globalNetworkManager, SIGNAL( statusChanged( Networking::Status ) ) );
+    connect(iface, SIGNAL(statusChanged(uint)), this, SLOT(serviceStatusChanged(uint)));
+
+    QDBusReply<uint> reply = iface->status();
     if (reply.isValid()) {
         netStatus = ( Solid::Networking::Status )reply.value();
     } else {

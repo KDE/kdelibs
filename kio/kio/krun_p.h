@@ -92,6 +92,7 @@ public:
     static bool displayNativeOpenWithDialog( const KUrl::List& lst, QWidget* window, bool tempFiles,
                                        const QString& suggestedFileName, const QByteArray& asn );
 #endif
+    bool runExecutable(const QString& _exec);
 
     KRun *q;
     bool m_showingDialog;

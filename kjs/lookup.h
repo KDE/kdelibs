@@ -23,6 +23,7 @@
 #ifndef _KJSLOOKUP_H_
 #define _KJSLOOKUP_H_
 
+#include "JSVariableObject.h"
 #include "interpreter.h"
 #include "identifier.h"
 #include "object.h"

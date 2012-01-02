@@ -591,7 +591,8 @@ public:
      * Valid values for the settingsChanged signal
      */
     enum SettingsCategory { SETTINGS_MOUSE, SETTINGS_COMPLETION, SETTINGS_PATHS,
-                            SETTINGS_POPUPMENU, SETTINGS_QT, SETTINGS_SHORTCUTS };
+                            SETTINGS_POPUPMENU, SETTINGS_QT, SETTINGS_SHORTCUTS,
+                            SETTINGS_LOCALE };
 
 Q_SIGNALS:
     /**
