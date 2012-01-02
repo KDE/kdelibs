@@ -1,4 +1,5 @@
 set(libinqt5_SRCS
+    q5cryptographichash.cpp
     qstandardpaths.cpp
     qstandardpaths_unix.cpp
     qtemporarydir.cpp
