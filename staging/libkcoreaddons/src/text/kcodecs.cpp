@@ -284,14 +284,14 @@ void KCodecs::quotedPrintableDecode(const QByteArray& in, QByteArray& out)
 
   for (unsigned int i = 0; i < length; i++)
   {
-    char c(in[i]);
+    char c(data[i]);
 
     if ('=' == c)
     {
       if (i < length - 2)
       {
-        char c1 = in[i + 1];
-        char c2 = in[i + 2];
+        char c1 = data[i + 1];
+        char c2 = data[i + 2];
 
         if (('\n' == c1) || ('\r' == c1 && '\n' == c2))
         {
