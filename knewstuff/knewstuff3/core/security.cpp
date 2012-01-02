@@ -28,11 +28,13 @@
 #include <QtCore/QTextIStream>
 #include <QtCore/QTimer>
 
+//currently inqt5
+#include <q5cryptographichash.h>
+
 //kde includes
 #include <kdebug.h>
 #include <kinputdialog.h>
 #include <klocale.h>
-#include <kmd5.h>
 #include <kmessagebox.h>
 #include <kpassworddialog.h>
 #include <kprocess.h>
@@ -246,13 +248,12 @@ void Security::slotCheckValidity()
     QFileInfo f(m_fileName);
     //check the MD5 sum
     QString md5sum;
-    const char* c = "";
-    KMD5 context(c);
+    Q5CryptographicHash context(Q5CryptographicHash::Md5);
     QFile file(m_fileName);
     if (file.open(QIODevice::ReadOnly)) {
         context.reset();
-        context.update(file);
-        md5sum = context.hexDigest();
+        context.addData(&file);
+        md5sum = context.result().toHex();
         file.close();
     }
     file.setFileName(f.path() + "/md5sum");
@@ -322,13 +323,12 @@ void Security::slotSignFile()
 
     //create the MD5 sum
     QString md5sum;
-    const char* c = "";
-    KMD5 context(c);
+    Q5CryptographicHash context(Q5CryptographicHash::Md5);
     QFile file(m_fileName);
     if (file.open(QIODevice::ReadOnly)) {
         context.reset();
-        context.update(file);
-        md5sum = context.hexDigest();
+        context.addData(&file);
+        md5sum = context.result().toHex();
         file.close();
     }
     file.setFileName(f.path() + "/md5sum");

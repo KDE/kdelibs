@@ -216,6 +216,8 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_BINARY_DIR}/staging/libkde4support/src
                           ${CMAKE_SOURCE_DIR}/staging/libkde4support/src
                           ${CMAKE_SOURCE_DIR}/libqtmimetypes/include/QtMimeTypes
+			  ${CMAKE_SOURCE_DIR}/libinqt5/src/
+			  ${CMAKE_BINARY_DIR}/libinqt5/src/
                           ${QT_INCLUDES}
                           ${_KDE4_PLATFORM_INCLUDE_DIRS})
 # kdeui depends on kdecore
