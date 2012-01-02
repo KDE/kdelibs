@@ -26,7 +26,7 @@
 
 #include <windows.h>
 #include <lm.h>
-#include <Sddl.h>
+#include <sddl.h>
 
 class KUser::Private : public KShared
 {
