@@ -668,8 +668,12 @@ void KEditToolBarPrivate::_k_slotOk()
   }
   else
   {
-    emit q->newToolBarConfig();
-    emit q->newToolbarConfig(); // compat
+    // Do not emit the "newToolBarConfig" signal again here if the "Apply"
+    // button was already pressed and no further changes were made.
+    if (q->isButtonEnabled(KDialog::Apply)) {
+        emit q->newToolBarConfig();
+        emit q->newToolbarConfig(); // compat
+    }
     q->accept();
   }
 }
