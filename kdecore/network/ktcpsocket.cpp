@@ -779,7 +779,7 @@ QVariant KTcpSocket::socketOption(QAbstractSocket::SocketOption options) const
 
 void KTcpSocket::setSocketOption(QAbstractSocket::SocketOption options, const QVariant &value)
 {
-    return d->sock.setSocketOption(options, value);
+    d->sock.setSocketOption(options, value);
 }
 
 //slot
