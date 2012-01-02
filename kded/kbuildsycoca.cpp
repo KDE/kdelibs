@@ -96,7 +96,11 @@ void crashHandler(int)
 
 static QString sycocaPath()
 {
-  return KSycoca::absoluteFilePath(bGlobalDatabase ? KSycoca::GlobalDatabase : KSycoca::LocalDatabase);
+  QFileInfo fi(KSycoca::absoluteFilePath(bGlobalDatabase ? KSycoca::GlobalDatabase : KSycoca::LocalDatabase));
+  if (!QDir().mkpath(fi.absolutePath())) {
+      kWarning(7021) << "Couldn't create" << fi.absolutePath();
+  }
+  return fi.absoluteFilePath();
 }
 
 KBuildSycoca::KBuildSycoca()
