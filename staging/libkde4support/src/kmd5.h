@@ -87,6 +87,9 @@ class KMD5Private;
  * \endcode
  *
  * @author Dirk Mueller <mueller@kde.org>, Dawit Alemayehu <adawit@kde.org>
+ *
+ * @deprecated
+ * @see QCryptographicHash
  */
 
 class KDE4SUPPORT_DEPRECATED_EXPORT KMD5
@@ -122,11 +125,15 @@ public:
    *
    * @param in     message to be added to digest
    * @param len    the length of the given message.
+   *
+   * please use QCryptographicHash::addData instead
    */
   void update(const char* in, int len = -1);
 
   /**
    * @overload
+   *
+   * please use QCryptographicHash::addData instead
    */
   void update(const unsigned char* in, int len = -1);
 
@@ -134,6 +141,8 @@ public:
    * @overload
    *
    * @param in     message to be added to the digest (QByteArray).
+   *
+   * please use QCryptographicHash::addData instead
    */
   void update(const QByteArray& in );
 
@@ -147,6 +156,8 @@ public:
    * @param file       a pointer to FILE as returned by calls like f{d,re}open
    *
    * @returns false if an error occurred during reading.
+   *
+   * please use QCryptographicHash::addData instead
    */
   bool update(QIODevice& file);
 
@@ -154,11 +165,14 @@ public:
    * Calling this function will reset the calculated message digest.
    * Use this method to perform another message digest calculation
    * without recreating the KMD5 object.
+   *
+   * please use QCryptographicHash::reset() instead
    */
   void reset();
 
   /**
    * @return the raw representation of the digest
+   * please use QCryptographicHash::result instead
    */
   const Digest& rawDigest (); //krazy:exclude=constref (simple array)
 
@@ -176,6 +190,7 @@ public:
   /**
    * Returns the value of the calculated message digest in
    * a hexadecimal representation.
+   * please use QCryptographicHash::result().toHex() instead
    */
   QByteArray hexDigest ();
 
@@ -187,6 +202,7 @@ public:
   /**
    * Returns the value of the calculated message digest in
    * a base64-encoded representation.
+   * please use QCryptographicHash::result().toBase64() instead
    */
   QByteArray base64Digest ();
 
