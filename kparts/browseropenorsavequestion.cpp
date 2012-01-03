@@ -41,6 +41,15 @@
 using namespace KParts;
 Q_DECLARE_METATYPE(KService::Ptr)
 
+static KMimeType::Ptr fixupMimeType (const QString& mimeType, const QString& fileName)
+{
+    KMimeType::Ptr mime = KMimeType::mimeType(mimeType, KMimeType::ResolveAliases);
+    if ((!mime || mime->isDefault()) && !fileName.isEmpty()) {
+        mime = KMimeType::findByUrl(fileName, 0, false, true);
+    }
+    return mime;
+}
+
 class KParts::BrowserOpenOrSaveQuestionPrivate : public KDialog
 {
     Q_OBJECT
@@ -91,10 +100,11 @@ public:
         fileNameLabel->hide();
         textVLayout->addWidget(fileNameLabel);
 
-        mime = KMimeType::mimeType(mimeType, KMimeType::ResolveAliases);
-        QString mimeDescription = mimeType;
-        if (mime) { // The mime-type is known so display the comment instead of mime-type
-            mimeDescription = mime->comment();
+        mime = fixupMimeType(mimeType, url.fileName());
+        QString mimeDescription (mimeType);
+        if (mime) {
+            // Always prefer the mime-type comment over the raw type for display
+            mimeDescription = (mime->comment().isEmpty() ? mime->name() : mime->comment());
         }
         mimeTypeLabel = new QLabel(mainWidget());
         mimeTypeLabel->setText(i18nc("@label Type of file", "Type: %1", mimeDescription));
@@ -320,12 +330,13 @@ void BrowserOpenOrSaveQuestion::setSuggestedFileName(const QString& suggestedFil
 
     // If the current mime-type is the default mime-type, then attempt to
     // determine the "real" mimetype from the file name.
-    if (d->mimeType == KMimeType::defaultMimeType()) {
-        int accuracy = 0;
-        const KMimeType::Ptr mimePtr = KMimeType::findByUrl(suggestedFileName, 0, false, true, &accuracy);
-        if (accuracy == 100 && !mimePtr->isDefault()) {
-            d->mimeTypeLabel->setText((d->mimeType = mimePtr->name()));
-        }
+    KMimeType::Ptr mimePtr = fixupMimeType(d->mimeType, suggestedFileName);
+    if (mimePtr && mimePtr->name() != d->mimeType) {
+        d->mime = mimePtr;
+        d->mimeType = mimePtr->name();
+        // Always prefer the mime-type comment over the raw type for display
+        const QString mimeDescription (mimePtr->comment().isEmpty() ? mimePtr->name() : mimePtr->comment());
+        d->mimeTypeLabel->setText(i18nc("@label Type of file", "Type: %1", mimeDescription));
     }
 }
 
