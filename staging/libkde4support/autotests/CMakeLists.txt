@@ -13,7 +13,7 @@ MACRO(KDE4SUPPORT_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
                add_test(kde4support-${_testname} ${_testname})
-               target_link_libraries(${_testname} kde4support ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} kdecore inqt5)
+               target_link_libraries(${_testname} kde4support ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} kdecore inqt5 kcoreaddons)
                if(WINCE)
                 target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
                endif(WINCE)
@@ -21,6 +21,7 @@ MACRO(KDE4SUPPORT_UNIT_TESTS)
 ENDMACRO(KDE4SUPPORT_UNIT_TESTS)
 
 KDE4SUPPORT_UNIT_TESTS(
+  kmd5benchmark
   ktempdirtest
   ktemporaryfiletest
 )

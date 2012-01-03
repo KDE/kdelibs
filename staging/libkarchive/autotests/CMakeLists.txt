@@ -54,5 +54,5 @@ set(kfiltertest_SRCS kfiltertest.cpp ${CMAKE_SOURCE_DIR}/kio/httpfilter/httpfilt
 include_directories( ${CMAKE_SOURCE_DIR}/kio/httpfilter )
 add_executable(kfiltertest ${kfiltertest_SRCS})
 add_test(karchive-kfiltertest kfiltertest)
-target_link_libraries(kfiltertest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} karchive kcoreaddons)
+target_link_libraries(kfiltertest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} karchive kcoreaddons kde4support)
 target_link_libraries(kfiltertest ${ZLIB_LIBRARIES})

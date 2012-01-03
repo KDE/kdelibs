@@ -19,12 +19,12 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kcodecs.h>
+#include <kmd5.h>
 #include <qtest_kde.h>
 
 #include <QCryptographicHash>
 
-class KMd5Test : public QObject {
+class KMd5Benchmark : public QObject {
     Q_OBJECT
 
 private:
@@ -112,6 +112,6 @@ private Q_SLOTS:
 
 };
 
-QTEST_KDEMAIN_CORE( KMd5Test )
+QTEST_KDEMAIN_CORE( KMd5Benchmark )
 
-#include "kmd5test.moc"
+#include "kmd5benchmark.moc"

@@ -4,7 +4,7 @@
 ** All rights reserved.
 ** Contact: Nokia Corporation (qt-info@nokia.com)
 **
-** This file is part of the QtGui module of the Qt Toolkit.
+** This file is part of the QtCore module of the Qt Toolkit.
 **
 ** $QT_BEGIN_LICENSE:LGPL$
 ** GNU Lesser General Public License Usage
@@ -39,11 +39,20 @@
 **
 ****************************************************************************/
 
-#ifndef QSTANDARDPATHS_H
-#define QSTANDARDPATHS_H
+/*
+ *  STOLEN FROM QT5. TO PORT CODE, JUST s/Q5/Q/
+ *
+ *
+ *
+ *
+ *
+ */
 
-#include <QtCore/qstringlist.h>
-#include "inqt5_export.h"
+#ifndef QCRYPTOGRAPHICSHASH_H
+#define QCRYPTOGRAPHICSHASH_H
+
+#include <QtCore/qbytearray.h>
+#include <inqt5_export.h>
 
 QT_BEGIN_HEADER
 
@@ -51,57 +60,37 @@ QT_BEGIN_NAMESPACE
 
 QT_MODULE(Core)
 
-#ifndef QT_NO_STANDARDPATHS
+class Q5CryptographicHashPrivate;
+class QIODevice;
 
-class QStringList;
-
-class INQT5_EXPORT QStandardPaths
+class INQT5_EXPORT Q5CryptographicHash
 {
 public:
-    // Do not re-order, must match QDesktopServices
-    enum StandardLocation {
-        DesktopLocation,
-        DocumentsLocation,
-        FontsLocation,
-        ApplicationsLocation,
-        MusicLocation,
-        MoviesLocation,
-        PicturesLocation,
-        TempLocation,
-        HomeLocation,
-        DataLocation,
-        CacheLocation,
-        GenericDataLocation,
-        RuntimeLocation,
-        ConfigLocation,
-        GenericCacheLocation
+    enum Algorithm {
+        Md4,
+        Md5,
+        Sha1
     };
 
-    static QString writableLocation(StandardLocation type);
-    static QStringList standardLocations(StandardLocation type);
+    Q5CryptographicHash(Algorithm method);
+    ~Q5CryptographicHash();
 
-    enum LocateOption {
-        LocateFile = 0x0,
-        LocateDirectory = 0x1
-    };
-    Q_DECLARE_FLAGS(LocateOptions, LocateOption)
+    void reset();
 
-    static QString locate(StandardLocation type, const QString &fileName, LocateOptions options = LocateFile);
-    static QStringList locateAll(StandardLocation type, const QString &fileName, LocateOptions options = LocateFile);
-    static QString displayName(StandardLocation type);
+    void addData(const char *data, int length);
+    void addData(const QByteArray &data);
+    bool addData(QIODevice* device);
 
-    static QString findExecutable(const QString &executableName, const QStringList &paths = QStringList());
+    QByteArray result() const;
 
+    static QByteArray hash(const QByteArray &data, Algorithm method);
 private:
-    // prevent construction
-    QStandardPaths();
-    ~QStandardPaths();
+    Q_DISABLE_COPY(Q5CryptographicHash)
+    Q5CryptographicHashPrivate *d;
 };
-
-#endif // QT_NO_STANDARDPATHS
 
 QT_END_NAMESPACE
 
 QT_END_HEADER
 
-#endif // QSTANDARDPATHS_H
+#endif

@@ -7,5 +7,5 @@ set(kmimeassociationstest_SRCS kmimeassociationstest.cpp ../kmimeassociations.cp
 
 kde4_add_unit_test(kmimeassociationstest ${kmimeassociationstest_SRCS})
 
-target_link_libraries(kmimeassociationstest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
+target_link_libraries(kmimeassociationstest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} QtMimeTypes)
 

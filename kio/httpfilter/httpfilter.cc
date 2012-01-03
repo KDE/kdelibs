@@ -78,20 +78,20 @@ HTTPFilterChain::slotInput(const QByteArray &d)
       Q_EMIT output(d);
 }
 
-HTTPFilterMD5::HTTPFilterMD5()
+HTTPFilterMD5::HTTPFilterMD5() : context(QCryptographicHash::Md5)
 {
 }
 
 QString
 HTTPFilterMD5::md5()
 {
-    return QString::fromLatin1(context.base64Digest().constData());
+    return QString::fromLatin1(context.result().toBase64().constData());
 }
 
 void
 HTTPFilterMD5::slotInput(const QByteArray &d)
 {
-   context.update(d);
+   context.addData(d);
    Q_EMIT output(d);
 }
 

@@ -126,7 +126,8 @@ bool KSycocaPrivate::tryMmap()
     m_mmapFile = new QFile(m_databasePath);
     const bool canRead = m_mmapFile->open(QIODevice::ReadOnly);
     Q_ASSERT(canRead);
-    Q_UNUSED(canRead); // no compiler warning in release builds.
+    if (!canRead)
+        return false;
     fcntl(m_mmapFile->handle(), F_SETFD, FD_CLOEXEC);
     sycoca_size = m_mmapFile->size();
     sycoca_mmap = (const char *) mmap(0, sycoca_size,
@@ -537,10 +538,11 @@ QString KSycoca::absoluteFilePath(DatabaseType type)
     }
 
     const QByteArray ksycoca_env = qgetenv("KDESYCOCA");
-    if (ksycoca_env.isEmpty())
-        return KGlobal::dirs()->saveLocation("cache") + QString::fromLatin1(KSYCOCA_FILENAME);
-    else
+    if (ksycoca_env.isEmpty()) {
+        return QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + QLatin1Char('/') + QString::fromLatin1(KSYCOCA_FILENAME);
+    } else {
         return QFile::decodeName(ksycoca_env);
+    }
 }
 
 QString KSycoca::language()

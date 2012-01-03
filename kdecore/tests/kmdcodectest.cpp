@@ -32,6 +32,7 @@
 //#include <kapplication.h>
 
 #include <kcodecs.h>
+#include <kmd5.h>
 
 using namespace std;
 

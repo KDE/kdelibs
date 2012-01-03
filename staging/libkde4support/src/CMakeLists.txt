@@ -1,6 +1,7 @@
 set(libkde4support_SRCS
     ktemporaryfile.cpp
     ktempdir.cpp
+    kmd5.cpp
 )
 
 include_directories(
