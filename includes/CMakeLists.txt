@@ -153,6 +153,7 @@ install( FILES
   KDateTimeWidget
   KDateValidator
   KDateWidget
+  KDescendantsProxyModel
   KDesktopFile
   KDialog
   KDialogButtonBox
