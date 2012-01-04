@@ -46,29 +46,31 @@ QTEST_KDEMAIN_CORE(KSycocaDictTest)
 // Standard use of KSycocaDict: mapping entry name to entry
 void KSycocaDictTest::testStandardDict()
 {
-    if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll ); // needed for KMimeType...
     if (!KServiceType::serviceType("KCModule"))
         QSKIP( "Missing servicetypes", SkipAll );
 
+    QStringList serviceTypes;
+    serviceTypes << "KUriFilter/Plugin"
+                 << "KDataTool"
+                 << "KCModule"
+                 << "KScan/KScanDialog"
+                 << "Browser/View";
+
+    if (KServiceType::serviceType("Plasma/Applet")) {
+        serviceTypes << "Plasma/Applet"
+                     << "Plasma/Runner";
+    }
+
   QBENCHMARK {
     QByteArray buffer;
-    QStringList mimeTypes;
-    mimeTypes << "KUriFilter/Plugin"
-              << "KDataTool"
-              << "KCModule"
-              << "KScan/KScanDialog"
-              << "Browser/View"
-              << "Plasma/Applet"
-              << "Plasma/Runner";
     {
         KSycocaDict dict;
-        foreach(const QString& str, mimeTypes) {
+        foreach(const QString& str, serviceTypes) {
             add(dict, str, str);
         }
         dict.remove("KCModule"); // just to test remove
         add(dict, "KCModule", "KCModule");
-        QCOMPARE((int)dict.count(), mimeTypes.count());
+        QCOMPARE((int)dict.count(), serviceTypes.count());
         QDataStream saveStream(&buffer, QIODevice::WriteOnly);
         dict.save(saveStream);
     }
@@ -78,7 +80,7 @@ void KSycocaDictTest::testStandardDict()
     int offset = loadingDict.find_string("Browser/View");
     QVERIFY(offset > 0);
     QCOMPARE(offset, KServiceType::serviceType("Browser/View")->offset());
-    foreach(const QString& str, mimeTypes) {
+    foreach(const QString& str, serviceTypes) {
         int offset = loadingDict.find_string(str);
         QVERIFY(offset > 0);
         QCOMPARE(offset, KServiceType::serviceType(str)->offset());
@@ -87,64 +89,5 @@ void KSycocaDictTest::testStandardDict()
     // TODO QCOMPARE(offset, 0); // could be non 0 according to the docs, too; if non 0, we should check that the pointed mimetype doesn't have this name.
   }
 }
-
-// New use of KSycocaDict: mapping extension to mimetype; kind of a qmultihash
-//   Not used anymore -> test disabled
-#if 0
-void KSycocaDictTest::testExtensionDict()
-{
-    if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll ); // needed for KMimeType...
-
-  /*QBENCHMARK*/ {
-    QByteArray buffer;
-    QStringList extensions;
-    extensions << "txt"
-               << "xml"
-               << "pdf"
-               << "php"
-               << "doc";
-    QStringList mimeTypes;
-    mimeTypes << "text/plain"
-              << "application/xml"
-              << "application/pdf"
-              << "application/x-php"
-              << "application/msword";
-    {
-        KSycocaDict dict;
-        for(int i = 0; i < mimeTypes.count(); ++i) {
-            add(dict, extensions[i], mimeTypes[i]);
-        }
-        dict.remove("php"); // just to test remove
-        add(dict, "php", "application/x-php");
-        // Now add another value for "doc"
-        add(dict, "doc", "text/plain");
-        QCOMPARE((int)dict.count(), mimeTypes.count()+1);
-        QDataStream saveStream(&buffer, QIODevice::WriteOnly);
-        dict.save(saveStream);
-    }
-
-    QDataStream stream(buffer);
-    KSycocaDict loadingDict(&stream, 0);
-    int offset = loadingDict.find_string("txt");
-    QVERIFY(offset > 0);
-    QCOMPARE(offset, KMimeType::mimeType("text/plain")->offset());
-    for(int i = 0; i < mimeTypes.count(); ++i) {
-        int offset = loadingDict.find_string(extensions[i]);
-        QVERIFY(offset > 0);
-        QCOMPARE(offset, KMimeType::mimeType(mimeTypes[i])->offset());
-        if (extensions[i] != "doc") {
-            QList<int> offsetList = loadingDict.findMultiString(extensions[i]);
-            QCOMPARE(offsetList.count(), 1);
-            QCOMPARE(offsetList.first(), offset);
-        }
-    }
-    QList<int> offsetList = loadingDict.findMultiString("doc");
-    QCOMPARE(offsetList.count(), 2);
-    QCOMPARE(offsetList[0], KMimeType::mimeType("application/msword")->offset());
-    QCOMPARE(offsetList[1], KMimeType::mimeType("text/plain")->offset());
-  }
-}
-#endif
 
 #include "ksycocadicttest.moc"
