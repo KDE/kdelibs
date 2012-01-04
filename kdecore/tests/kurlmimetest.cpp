@@ -48,7 +48,7 @@ void KUrlMimeTest::testURLList()
     QVERIFY(mimeData->hasText());
 
     QMap<QString, QString> decodedMetaData;
-    KUrl::List decodedURLs = KUrl::List::fromMimeData( mimeData, &decodedMetaData );
+    KUrl::List decodedURLs = KUrl::List::fromMimeData( mimeData, KUrl::List::PreferKdeUrls, &decodedMetaData );
     QVERIFY( !decodedURLs.isEmpty() );
     KUrl::List expectedUrls = urls;
     expectedUrls[1] = KUrl("http://wstephenson@example.com/path"); // password removed
@@ -75,7 +75,7 @@ void KUrlMimeTest::testOneURL()
 
     QVERIFY( KUrl::List::canDecode( mimeData ) );
     QMap<QString, QString> decodedMetaData;
-    KUrl::List decodedURLs = KUrl::List::fromMimeData( mimeData, &decodedMetaData );
+    KUrl::List decodedURLs = KUrl::List::fromMimeData( mimeData, KUrl::List::PreferKdeUrls, &decodedMetaData );
     QVERIFY( !decodedURLs.isEmpty() );
     QCOMPARE( decodedURLs.count(), 1 );
     QCOMPARE( decodedURLs[0].url(), oneURL.url() );
@@ -93,7 +93,7 @@ void KUrlMimeTest::testFromQUrl()
 
     QVERIFY(KUrl::List::canDecode(mimeData));
     QMap<QString, QString> decodedMetaData;
-    KUrl::List decodedURLs = KUrl::List::fromMimeData( mimeData, &decodedMetaData );
+    KUrl::List decodedURLs = KUrl::List::fromMimeData( mimeData, KUrl::List::PreferKdeUrls, &decodedMetaData );
     QVERIFY( !decodedURLs.isEmpty() );
     QCOMPARE( decodedURLs.count(), 2 );
     QCOMPARE( static_cast<QUrl>(decodedURLs[0]), qurls[0] );

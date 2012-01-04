@@ -273,16 +273,6 @@ public:
       static QStringList mimeDataTypes();
 
       /**
-       * Extract a list of KUrls from the contents of @p mimeData.
-       * Decoding will fail if @p mimeData does not contain any URLs, or if at
-       * least one extracted URL is not valid.
-       * @param mimeData the mime data to extract from; cannot be 0
-       * @param metaData optional pointer to a map holding the metadata
-       * @return the list of urls
-       */
-      static KUrl::List fromMimeData( const QMimeData *mimeData, KUrl::MetaDataMap* metaData = 0 );
-
-      /**
        * Flags to be used in fromMimeData.
        * @since 4.2.3
        */
@@ -314,7 +304,7 @@ public:
        * @since 4.2.3
        */
       static KUrl::List fromMimeData( const QMimeData *mimeData,
-                                      DecodeOptions decodeOptions, // TODO KDE5: = PreferKdeUrls, and merge with above
+                                      DecodeOptions decodeOptions = PreferKdeUrls,
                                       KUrl::MetaDataMap* metaData = 0 );
 
   };
