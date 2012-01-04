@@ -415,4 +415,4 @@ void TestJobUiDelegate::connectJob( KJob *job )
     QVERIFY( job->uiDelegate()!=0 );
 }
 
-#include "kjobtest.moc"
+#include "moc_kjobtest.cpp"
