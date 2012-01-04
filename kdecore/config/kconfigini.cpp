@@ -500,14 +500,18 @@ bool KConfigIniBackend::isWritable() const
         // The check might have failed because any of the containing dirs
         // did not exist. If the file does not exist, check if the deepest
         // existing dir is writable.
-        if (!QFileInfo(filePath()).exists()) {
-            QDir dir = QFileInfo(filePath()).absolutePath();
+        QFileInfo file(filePath());
+        if (!file.exists()) {
+            QFileInfo dir(file.absolutePath());
             while (!dir.exists()) {
-                if (!dir.cdUp()) {
+                QString parent = dir.absolutePath(); // Go up. Can't use cdUp() on non-existing dirs.
+                if (parent == dir.filePath()) {
+                    // no parent
                     return false;
                 }
+                dir.setFile(parent);
             }
-            return QFileInfo(dir.absolutePath()).isWritable();
+            return dir.isDir() && dir.isWritable();
         }
     }
 
