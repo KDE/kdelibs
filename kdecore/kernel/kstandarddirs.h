@@ -60,7 +60,7 @@ class KConfig;
  * specific directories that aren't in his <tt>$KDEHOME</tt> directory, for
  * example for icons.
  *
- * <b>Standard resources that kdelibs allocates are:</b>\n
+ * <b>Standard resources that kdelibs allocates are:</b>
  *
  * @li @c apps - Applications menu (.desktop files).
  * @li @c autostart - Autostart directories (both XDG and kde-specific)
