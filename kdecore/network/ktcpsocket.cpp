@@ -1084,7 +1084,9 @@ KSslErrorUiData::KSslErrorUiData(const QSslSocket *socket)
 
     d->ip = socket->peerAddress().toString();
     d->host = socket->peerName();
-    d->sslProtocol = socket->negotiatedSslVersionName();
+    if (socket->isEncrypted()) {
+        d->sslProtocol = socket->sessionCipher().protocolString();
+    }
     d->cipher = socket->sessionCipher().name();
     d->usedBits = socket->sessionCipher().usedBits();
     d->bits = socket->sessionCipher().supportedBits();
