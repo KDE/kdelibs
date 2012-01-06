@@ -1,13 +1,9 @@
-<para>Чтобы собрать и установить &kappname;, введите следующие
-команды в каталоге дистрибутива &kappname;:</para>
+<para>С подробным руководством, описывающим компиляцию и установку &kde;,
+можно ознакомиться в разделе
+<ulink url="http://techbase.kde.org/Getting_Started#Building_and_Running_KDE_Software_From_Source">
+Сборка и запуск программного обеспечения KDE из исходного кода</ulink>.</para>
 
-<screen><prompt>%</prompt> <userinput><command>./configure</command></userinput>
-<prompt>%</prompt> <userinput><command>make</command></userinput>
-<prompt>%</prompt> <userinput><command>make</command> install</userinput>
-</screen>
-
-<para>Поскольку &kappname; использует <command>autoconf</command> и
-<command>automake</command>, у вас не должно возникнуть никаких
-проблем. Если же у вас возникли ошибки, сообщите о них
-в списки рассылки &kde;.</para>
+<para>Поскольку для сборки &kde; используется <command>cmake</command>, с
+компиляцией не должно возникнуть никаких проблем. Если у вас всё же возникли
+проблемы, пожалуйста, сообщите о них с помощью списков рассылки &kde;.</para>
 

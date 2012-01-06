@@ -237,6 +237,10 @@ QSslError::NoSslSupport                             Never happens :)
 protected:
     virtual qint64 readData (char *data, qint64 maxSize);
     virtual qint64 writeData (const char *data, qint64 maxSize);
+signals:
+    /// @since 4.8.1
+    /// Forwarded from QSslSocket
+    void encryptedBytesWritten( qint64 written );
 public:
     //from QAbstractSocket
     void abort();
@@ -322,7 +326,7 @@ public:
     QVariant socketOption(QAbstractSocket::SocketOption options) const;
 
     /**
-     * Sets the socket @p option to @p value. 
+     * Sets the socket @p option to @p value.
      *
      * @see QAbstractSocket::setSocketOption
      *
@@ -384,6 +388,10 @@ public:
      * Create an instance and initialize it with SSL error data from @p socket.
      */
     KSslErrorUiData(const KTcpSocket *socket);
+    /**
+     * Create an instance and initialize it with SSL error data from @p socket.
+     */
+    KSslErrorUiData(const QSslSocket *socket);
     KSslErrorUiData(const KSslErrorUiData &other);
     KSslErrorUiData &operator=(const KSslErrorUiData &);
     /**

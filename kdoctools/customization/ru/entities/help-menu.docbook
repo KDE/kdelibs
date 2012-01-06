@@ -5,8 +5,8 @@
 <shortcut>
 <keycombo action="simul"><keycap>F1</keycap></keycombo>
 </shortcut>
-<guimenu>Помощь</guimenu>
-<guimenuitem>Содержание</guimenuitem>
+<guimenu>Справка</guimenu>
+<guimenuitem>Руководство пользователя &kappname;</guimenuitem>
 </menuchoice>
 </term>
 <listitem><para><action>Запускает Центр помощи KDE</action> и открывает
@@ -18,7 +18,7 @@
 <shortcut>
 <keycombo action="simul">&Shift;<keycap>F1</keycap></keycombo>
 </shortcut>
-<guimenu>Помощь</guimenu>
+<guimenu>Справка</guimenu>
 <guimenuitem>Что это?</guimenuitem>
 </menuchoice>
 </term>
@@ -31,7 +31,7 @@
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Помощь</guimenu>
+<guimenu>Справка</guimenu>
 <guimenuitem>Сообщить об ошибке...</guimenuitem>
 </menuchoice></term>
 <listitem><para><action>Открывается диалог отправки сообщения об ошибке</action>.
@@ -43,7 +43,17 @@
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Помощь</guimenu>
+<guimenu>Справка</guimenu>
+<guimenuitem>Сменить язык интерфейса приложения...</guimenuitem>
+</menuchoice></term>
+<listitem><para><action>Открывает диалоговое окно</action>, с помощью которого вы
+сможете изменить <guilabel>Основной язык</guilabel> и <guilabel>Резервный язык</guilabel>
+интерфейса программы.</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><menuchoice>
+<guimenu>Справка</guimenu>
 <guimenuitem>О программе &kappname;</guimenuitem>
 </menuchoice></term>
 <listitem><para><action>Будут выведены сведения о
@@ -52,7 +62,7 @@
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Помощь</guimenu>
+<guimenu>Справка</guimenu>
 <guimenuitem>О KDE</guimenuitem>
 </menuchoice></term>
 <listitem><para><action>Будут выведены сведения о

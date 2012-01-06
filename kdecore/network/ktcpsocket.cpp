@@ -380,6 +380,7 @@ KTcpSocket::KTcpSocket(QObject *parent)
 
     connect(&d->sock, SIGNAL(aboutToClose()), this, SIGNAL(aboutToClose()));
     connect(&d->sock, SIGNAL(bytesWritten(qint64)), this, SIGNAL(bytesWritten(qint64)));
+    connect(&d->sock, SIGNAL(encryptedBytesWritten(qint64)), this, SIGNAL(encryptedBytesWritten(qint64)));
     connect(&d->sock, SIGNAL(readyRead()), this, SLOT(reemitReadyRead()));
     connect(&d->sock, SIGNAL(connected()), this, SIGNAL(connected()));
     connect(&d->sock, SIGNAL(encrypted()), this, SIGNAL(encrypted()));
@@ -1064,6 +1065,23 @@ KSslErrorUiData::KSslErrorUiData(const KTcpSocket *socket)
 {
     d->certificateChain = socket->peerCertificateChain();
     d->sslErrors = socket->sslErrors();
+    d->ip = socket->peerAddress().toString();
+    d->host = socket->peerName();
+    d->sslProtocol = socket->negotiatedSslVersionName();
+    d->cipher = socket->sessionCipher().name();
+    d->usedBits = socket->sessionCipher().usedBits();
+    d->bits = socket->sessionCipher().supportedBits();
+}
+
+KSslErrorUiData::KSslErrorUiData(const QSslSocket *socket)
+ : d(new Private())
+{
+    d->certificateChain = socket->peerCertificateChain();
+
+    // See KTcpSocket::sslErrors()
+    foreach (const QSslError &e, socket->sslErrors())
+        d->sslErrors.append(KSslError(e));
+
     d->ip = socket->peerAddress().toString();
     d->host = socket->peerName();
     d->sslProtocol = socket->negotiatedSslVersionName();
