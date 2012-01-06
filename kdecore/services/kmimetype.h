@@ -51,6 +51,12 @@ public:
     typedef KSharedPtr<KMimeType> Ptr;
     typedef QList<Ptr> List;
 
+    /**
+     * Construct a KMimeType from a QMimeType.
+     * This is mostly useful as a temporary measure during porting.
+     */
+    KMimeType( const QMimeType& mime );
+
     virtual ~KMimeType();
 
     /**
@@ -420,50 +426,6 @@ public:
      * @endcode
      */
     static int sharedMimeInfoVersion();
-
-protected:
-
-    friend class KMimeTypeRepository; // for KMimeType(QString,QString,QString)
-
-    /**
-     * @internal Construct a kmimetype from a qmimetype.
-     */
-    KMimeType( const QMimeType& mime );
-
-#if 0
-    /**
-     * @internal Construct a service from a stream.
-     *
-     * The stream must already be positionned at the correct offset
-     */
-    KMimeType( QDataStream& str, int offset );
-
-    /**
-     * Construct a mimetype and take all information from an XML file.
-     * @param fullpath the path to the xml that describes the mime type
-     * @param name the name of the mimetype (usually the end of the path)
-     * @param comment the comment associated with the mimetype
-     */
-    KMimeType( const QString& fullpath, const QString& name, const QString& comment );
-
-    /**
-     * Construct a mimetype from another mimetype's private object
-     *
-     * @param dd the private object
-     */
-    KMimeType( KMimeTypePrivate &dd);
-
-    /**
-     * Construct a mimetype based on another mimetype's private object
-     *
-     * Allows the name and comment to be overridden.
-     *
-     * @param dd the private object
-     * @param name the name of the mimetype
-     * @param comment the comment associated with the mimetype
-     */
-    KMimeType( KMimeTypePrivate &dd, const QString& name, const QString& comment );
-#endif
 
 private:
     // Forbidden nowadays in KMimeType

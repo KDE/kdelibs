@@ -41,11 +41,13 @@ class QMIME_EXPORT QMimeDatabase
 
 public:
     QMimeDatabase();
-    //explicit QMimeDatabase(QMimeDatabasePrivate *theD);
     ~QMimeDatabase();
 
     QMimeType mimeTypeForName(const QString &nameOrAlias) const;
+
     QMimeType findByName(const QString &fileName) const;
+    QList<QMimeType> findMimeTypesByFileName(const QString &fileName) const;
+
     QMimeType findByData(const QByteArray &data) const;
     QMimeType findByData(QIODevice *device) const;
 

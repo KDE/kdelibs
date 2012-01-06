@@ -40,6 +40,7 @@
 #include <QtGui/QApplication>
 #include <QtGui/QPalette>
 #include <QTextDocument>
+#include <QMimeDatabase>
 
 #include <kdebug.h>
 #include <kfilemetainfo.h>
@@ -1517,15 +1518,21 @@ KMimeType::Ptr KFileItem::mimeTypePtr() const
         Q_ASSERT(!d->m_url.isEmpty());
         bool isLocalUrl;
         KUrl url = mostLocalUrl(isLocalUrl);
-        int accuracy;
-        d->m_pMimeType = KMimeType::findByUrl( url, d->m_fileMode, isLocalUrl,
-                                               // use fast mode if delayed mimetype determination can refine it later
-                                               d->m_delayedMimeTypes, &accuracy );
-        // If we used the "fast mode" (no sniffing), and we didn't get a perfect (extension-based) match,
-        // then determineMimeType will be able to do better.
-        const bool canDoBetter = d->m_delayedMimeTypes && accuracy < 100;
-        //kDebug() << "finding mimetype for" << url << ":" << d->m_pMimeType->name() << "canDoBetter=" << canDoBetter;
-        d->m_bMimeTypeKnown = !canDoBetter;
+        if (d->m_delayedMimeTypes) {
+            QMimeDatabase db;
+            const QList<QMimeType> mimeTypes = db.findMimeTypesByFileName(url.path());
+            if (mimeTypes.isEmpty()) {
+                d->m_pMimeType = KMimeType::defaultMimeTypePtr();
+                d->m_bMimeTypeKnown = false;
+            } else {
+                d->m_pMimeType = KMimeType::Ptr(new KMimeType(mimeTypes.first()));
+                // If there were conflicting globs. determineMimeType will be able to do better.
+                d->m_bMimeTypeKnown = (mimeTypes.count() == 1);
+            }
+        } else {
+            d->m_pMimeType = KMimeType::findByUrl(url, d->m_fileMode, isLocalUrl);
+            d->m_bMimeTypeKnown = true;
+        }
     }
     return d->m_pMimeType;
 }

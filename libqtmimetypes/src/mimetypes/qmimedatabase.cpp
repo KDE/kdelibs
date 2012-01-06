@@ -426,15 +426,18 @@ QMimeType QMimeDatabase::findByFile(const QString &fileName) const
 
 /*!
     \fn QMimeType QMimeDatabase::findByName(const QString &fileName) const;
-    \brief Returns a MIME type for the file \a fileName.
+    \brief Returns a MIME type for the file name \a fileName.
 
     A valid MIME type is always returned. If the file name doesn't match any
     known pattern, the default MIME type (application/octet-stream)
     is returned.
+    If multiple MIME types match this file, the first one (alphabetically) is returned.
 
     This function does not try to open the file. To also use the content
     when determining the MIME type, use findByFile() or
     findByNameAndData() instead.
+
+    \sa findMimeTypesByFileName
 */
 QMimeType QMimeDatabase::findByName(const QString &fileName) const
 {
@@ -453,6 +456,33 @@ QMimeType QMimeDatabase::findByName(const QString &fileName) const
     }
 }
 
+// ------------------------------------------------------------------------------------------------
+
+/*!
+    \fn QMimeType QMimeDatabase::findMimeTypesByFileName(const QString &fileName) const;
+    \brief Returns the MIME types for the file name \a fileName.
+
+    If the file name doesn't match any known pattern, an empty list is returned.
+    If multiple MIME types match this file, they are all returned.
+
+    This function does not try to open the file. To also use the content
+    when determining the MIME type, use findByFile() or
+    findByNameAndData() instead.
+
+    \sa findByName
+*/
+QList<QMimeType> QMimeDatabase::findMimeTypesByFileName(const QString &fileName) const
+{
+    QMutexLocker locker(&d->mutex);
+
+    QStringList matches = d->findByName(fileName);
+    QList<QMimeType> mimes;
+    matches.sort(); // Make it deterministic
+    foreach(const QString& mime, matches) {
+        mimes.append(d->mimeTypeForName(mime));
+    }
+    return mimes;
+}
 // ------------------------------------------------------------------------------------------------
 
 /*!
