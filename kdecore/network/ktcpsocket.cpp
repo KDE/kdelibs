@@ -380,6 +380,7 @@ KTcpSocket::KTcpSocket(QObject *parent)
 
     connect(&d->sock, SIGNAL(aboutToClose()), this, SIGNAL(aboutToClose()));
     connect(&d->sock, SIGNAL(bytesWritten(qint64)), this, SIGNAL(bytesWritten(qint64)));
+    connect(&d->sock, SIGNAL(encryptedBytesWritten(qint64)), this, SIGNAL(encryptedBytesWritten(qint64)));
     connect(&d->sock, SIGNAL(readyRead()), this, SLOT(reemitReadyRead()));
     connect(&d->sock, SIGNAL(connected()), this, SIGNAL(connected()));
     connect(&d->sock, SIGNAL(encrypted()), this, SIGNAL(encrypted()));
