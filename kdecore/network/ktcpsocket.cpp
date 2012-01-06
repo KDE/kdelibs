@@ -1073,6 +1073,23 @@ KSslErrorUiData::KSslErrorUiData(const KTcpSocket *socket)
     d->bits = socket->sessionCipher().supportedBits();
 }
 
+KSslErrorUiData::KSslErrorUiData(const QSslSocket *socket)
+ : d(new Private())
+{
+    d->certificateChain = socket->peerCertificateChain();
+
+    // See KTcpSocket::sslErrors()
+    foreach (const QSslError &e, socket->sslErrors())
+        d->sslErrors.append(KSslError(e));
+
+    d->ip = socket->peerAddress().toString();
+    d->host = socket->peerName();
+    d->sslProtocol = socket->negotiatedSslVersionName();
+    d->cipher = socket->sessionCipher().name();
+    d->usedBits = socket->sessionCipher().usedBits();
+    d->bits = socket->sessionCipher().supportedBits();
+}
+
 
 KSslErrorUiData::KSslErrorUiData(const KSslErrorUiData &other)
  : d(new Private(*other.d))
