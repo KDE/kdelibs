@@ -1342,6 +1342,10 @@ KLocaleTest::formatByteSize2()
     QCOMPARE(locale.formatByteSize(1023.0), QString("1,023 B"));
     QCOMPARE(locale.formatByteSize(1163000.0), QString("1.1 MiB")); // 1.2 metric
 
+    QCOMPARE(locale.formatByteSize(-1024.0), QString("-1.0 KiB"));
+    QCOMPARE(locale.formatByteSize(-1023.0), QString("-1,023 B"));
+    QCOMPARE(locale.formatByteSize(-1163000.0), QString("-1.1 MiB")); // 1.2 metric
+
     locale.setBinaryUnitDialect(KLocale::JEDECBinaryDialect);
     QCOMPARE(locale.binaryUnitDialect(), KLocale::JEDECBinaryDialect);
 
@@ -1349,12 +1353,20 @@ KLocaleTest::formatByteSize2()
     QCOMPARE(locale.formatByteSize(1023.0), QString("1,023 B"));
     QCOMPARE(locale.formatByteSize(1163000.0), QString("1.1 MB"));
 
+    QCOMPARE(locale.formatByteSize(-1024.0), QString("-1.0 KB"));
+    QCOMPARE(locale.formatByteSize(-1023.0), QString("-1,023 B"));
+    QCOMPARE(locale.formatByteSize(-1163000.0), QString("-1.1 MB"));
+
     locale.setBinaryUnitDialect(KLocale::MetricBinaryDialect);
     QCOMPARE(locale.binaryUnitDialect(), KLocale::MetricBinaryDialect);
 
     QCOMPARE(locale.formatByteSize(1024.0), QString("1.0 kB"));
     QCOMPARE(locale.formatByteSize(1023.0), QString("1.0 kB"));
     QCOMPARE(locale.formatByteSize(1163000.0), QString("1.2 MB"));
+
+    QCOMPARE(locale.formatByteSize(-1024.0), QString("-1.0 kB"));
+    QCOMPARE(locale.formatByteSize(-1023.0), QString("-1.0 kB"));
+    QCOMPARE(locale.formatByteSize(-1163000.0), QString("-1.2 MB"));
 
     // Ensure specific dialects work, still on metric by default
     QCOMPARE(locale.formatByteSize(1024.0, 1, KLocale::JEDECBinaryDialect), QString("1.0 KB"));

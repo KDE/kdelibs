@@ -1734,7 +1734,7 @@ QString KLocalePrivate::formatByteSize(double size, int precision, KLocale::Bina
     // If a specific unit conversion is given, use it directly.  Otherwise
     // search until the result is in [0, multiplier) (or out of our range).
     if (specificUnit == KLocale::DefaultBinaryUnits) {
-        while (size >= multiplier && unit < (int) KLocale::UnitYottaByte) {
+        while (qAbs(size) >= multiplier && unit < (int) KLocale::UnitYottaByte) {
             size /= multiplier;
             unit++;
         }
