@@ -326,7 +326,7 @@ public:
     QVariant socketOption(QAbstractSocket::SocketOption options) const;
 
     /**
-     * Sets the socket @p option to @p value. 
+     * Sets the socket @p option to @p value.
      *
      * @see QAbstractSocket::setSocketOption
      *
@@ -388,6 +388,10 @@ public:
      * Create an instance and initialize it with SSL error data from @p socket.
      */
     KSslErrorUiData(const KTcpSocket *socket);
+    /**
+     * Create an instance and initialize it with SSL error data from @p socket.
+     */
+    KSslErrorUiData(const QSslSocket *socket);
     KSslErrorUiData(const KSslErrorUiData &other);
     KSslErrorUiData &operator=(const KSslErrorUiData &);
     /**
