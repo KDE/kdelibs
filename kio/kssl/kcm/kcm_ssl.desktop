@@ -123,6 +123,7 @@ Comment[zh_TW]=SSL 版本與憑證
 X-KDE-Keywords=SSL,Security,Network,Protocol,Certificates,Encryption,HTTPS
 X-KDE-Keywords[bg]=SSL,Security,Network,Protocol,Certificates,Encryption,HTTPS,Сигурност,Мрежа,Протокол,Удостоверение,Сертификат,Шифриране
 X-KDE-Keywords[ca]=SSL,Seguretat,Xarxa,Protocol,Certificats,Encriptatge,HTTPS
+X-KDE-Keywords[ca@valencia]=SSL,Seguretat,Xarxa,Protocol,Certificats,Encriptatge,HTTPS
 X-KDE-Keywords[da]=SSL,Sikkerhed,Netværk,Protokol,Certifikater,Kryptering,HTTPS
 X-KDE-Keywords[es]=SSL,Seguridad,Red,Protocolo,Certificados,Cifrado,HTTPS
 X-KDE-Keywords[et]=SSL,turvalisus,võrk,protokoll,sertifikaadid,serdid,krüptimine,krüpto,HTTPS
