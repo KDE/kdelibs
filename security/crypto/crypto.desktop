@@ -179,6 +179,7 @@ Comment[zh_TW]=設定 SSL、管理憑證與其他加密設定
 X-KDE-Keywords=Crypto,Krypto,Cryptography,encryption,SSL,https,certificates,ciphers,TLS,secure,security
 X-KDE-Keywords[bg]=Crypto,Krypto,Cryptography,encryption,SSL,https,certificates,ciphers,TLS,secure,security,криптография,шифриране,удостоверения,сертификати,шифри,сигурност
 X-KDE-Keywords[ca]=Criptografia,encriptatge,SSL,https,certificats,xifres,TLS,segur,seguretat
+X-KDE-Keywords[ca@valencia]=Criptografia,encriptatge,SSL,https,certificats,xifres,TLS,segur,seguretat
 X-KDE-Keywords[da]=Crypto,Krypto,Kryptografi,kryptering,SSL,https,certifikater,chiffre,TLS,sikker,sikkerhed
 X-KDE-Keywords[es]=Crypto,Krypto,Criptografía,cifrado,SSL,ttps,certificados,cifradores,TLS,seguro,seguridad
 X-KDE-Keywords[et]=krüpto,krüptograafia,krüptimine,SSL,https,sertifikaadid,serdid,šifrid,TLS,turvalisus,turve
