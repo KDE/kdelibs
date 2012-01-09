@@ -220,7 +220,12 @@ void KStandarddirsTest::testFindExe()
     // findExe with a result in bin
     const QString kdeinit = KGlobal::dirs()->findExe( "kdeinit4" );
     QVERIFY( !kdeinit.isEmpty() );
+#ifdef Q_OS_MAC
+    QVERIFY( kdeinit.endsWith( "kdeinit4", PATH_SENSITIVITY ) );
+#else
     QVERIFY( kdeinit.endsWith( "bin/kdeinit4" EXT, PATH_SENSITIVITY ) );
+#endif
+
 
 #ifdef Q_OS_UNIX
     // findExe with a result in libexec
