@@ -699,16 +699,22 @@ public:
      *        a sanely-sized number.
      * @return converted size as a translated string including the units.
      *         E.g. "1.23 KiB", "2 GB" (JEDEC), "4.2 kB" (Metric).
+     * @see BinaryUnitDialect
      */
     QString formatByteSize(double size, int precision,
                            BinaryUnitDialect dialect = KLocale::DefaultBinaryDialect,
                            BinarySizeUnits specificUnit = KLocale::DefaultBinaryUnits) const;
 
     /**
-     * Returns the user's default binary unit dialect.
+     * Returns the user's configured binary unit dialect.
+     * e.g. if MetricBinaryDialect is returned then the values
+     * configured for how much a set of bytes are worth would
+     * be 10^(3*n) and KB (1000 bytes == 1 KB), in this case.
+     *
+     * Will never return DefaultBinaryDialect.
      *
      * @since 4.4
-     * @return User's default binary unit dialect
+     * @return User's configured binary unit dialect
      * @see BinaryUnitDialect
      */
     BinaryUnitDialect binaryUnitDialect() const;
