@@ -777,7 +777,6 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
       "<D:source/>"
       "<D:getcontentlanguage/>"
       "<D:getcontenttype/>"
-      "<D:executable/>"
       "<D:getlastmodified/>"
       "<D:getetag/>"
       "<D:supportedlock/>"
