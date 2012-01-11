@@ -23,6 +23,7 @@
 #define _NEPOMUK_QUERY_FACET_H_
 
 #include <QtCore/QObject>
+#include <QtCore/QMetaType>
 
 #include "nepomukutils_export.h"
 
@@ -314,5 +315,7 @@ namespace Nepomuk {
         };
     }
 }
+
+Q_DECLARE_METATYPE( Nepomuk::Utils::Facet* )
 
 #endif

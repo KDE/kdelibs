@@ -226,6 +226,4 @@ namespace Nepomuk {
     }
 }
 
-Q_DECLARE_METATYPE( Nepomuk::Utils::Facet* )
-
 #endif
