@@ -430,14 +430,6 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
         // step 0: make sure this resource is in the store
         QMutexLocker lock(&m_modificationMutex);
 
-        // make sure resource values are in the store
-        if ( value.simpleType() == qMetaTypeId<Resource>() ) {
-            QList<Resource> l = value.toResourceList();
-            for( QList<Resource>::iterator resIt = l.begin(); resIt != l.end(); ++resIt ) {
-                resIt->m_data->store();
-            }
-        }
-
         // update the store
         QDBusConnection bus = QDBusConnection::sessionBus();
         QDBusMessage msg = QDBusMessage::createMethodCall( QLatin1String("org.kde.nepomuk.DataManagement"),
