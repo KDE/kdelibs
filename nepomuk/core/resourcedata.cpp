@@ -261,6 +261,13 @@ bool Nepomuk::ResourceData::store()
     if ( m_uri.isEmpty() ) {
         QMutexLocker rmlock(&m_rm->mutex);
 
+        if ( m_nieUrl.isValid() &&
+             m_nieUrl.isLocalFile() &&
+             m_mainType == Soprano::Vocabulary::RDFS::Resource() ) {
+            m_mainType = Nepomuk::Vocabulary::NFO::FileDataObject();
+            m_types << m_mainType;
+        }
+
         QDBusConnection bus = QDBusConnection::sessionBus();
         QDBusMessage msg = QDBusMessage::createMethodCall( QLatin1String("org.kde.nepomuk.DataManagement"),
                                                            QLatin1String("/datamanagement"),
