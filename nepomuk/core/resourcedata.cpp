@@ -447,8 +447,16 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
         QString app = KGlobal::mainComponent().componentName();
         QVariantList arguments;
         QVariantList varList;
-        foreach( const Nepomuk::Variant var, value.toVariantList() )
-            varList << var.variant();
+        foreach( const Nepomuk::Variant var, value.toVariantList() ) {
+            // make sure resource values are in the store
+            if( var.simpleType() == qMetaTypeId<Resource>() ) {
+                var.toResource().m_data->store();
+                varList << var.toUrl();
+            }
+            else {
+                varList << var.variant();
+            }
+        }
 
         arguments << DBus::convertUriList(QList<QUrl>() << m_uri) << DBus::convertUri(uri)
                   << QVariant(DBus::normalizeVariantList(varList)) << app;
