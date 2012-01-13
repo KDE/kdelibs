@@ -55,7 +55,7 @@ void KStringHandlerTest::naturalCompare()
     QCOMPARE(KStringHandler::naturalCompare("b", "a", Qt::CaseSensitive), +1);
     QCOMPARE(KStringHandler::naturalCompare("a", "a", Qt::CaseSensitive), 0);
 
-#ifdef Q_WS_WIN
+#if (defined Q_WS_WIN || defined Q_OS_MAC)
     // 'A' > 'a' ...
     QCOMPARE(KStringHandler::naturalCompare("A", "a", Qt::CaseSensitive), +1);
 #else

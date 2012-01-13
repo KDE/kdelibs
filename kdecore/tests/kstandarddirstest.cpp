@@ -220,7 +220,12 @@ void KStandarddirsTest::testFindExe()
     // findExe with a result in bin
     const QString kdeinit = KGlobal::dirs()->findExe( "kdeinit4" );
     QVERIFY( !kdeinit.isEmpty() );
+#ifdef Q_OS_MAC
+    QVERIFY( kdeinit.endsWith( "kdeinit4", PATH_SENSITIVITY ) );
+#else
     QVERIFY( kdeinit.endsWith( "bin/kdeinit4" EXT, PATH_SENSITIVITY ) );
+#endif
+
 
 #ifdef Q_OS_UNIX
     // findExe with a result in libexec
@@ -229,10 +234,12 @@ void KStandarddirsTest::testFindExe()
     QVERIFY( lnusertemp.endsWith( "lib" KDELIBSUFF "/kde4/libexec/lnusertemp" EXT, PATH_SENSITIVITY ) );
 #endif
 
+#ifndef Q_OS_MAC // kdeinit4 is a bundle on Mac, so the below doesn't work
     // Check the "exe" resource too
     QString kdeinitPath1 = KGlobal::dirs()->realFilePath(kdeinit);
     QString kdeinitPath2 = KGlobal::dirs()->locate( "exe", "kdeinit4" );
     QCOMPARE_PATHS( kdeinitPath1, kdeinitPath2 );
+#endif
 
 #ifdef Q_OS_UNIX
     QCOMPARE_PATHS( KGlobal::dirs()->realFilePath(lnusertemp),

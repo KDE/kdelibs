@@ -1,6 +1,6 @@
 <para>Ausführliche Anleitungen, um &kde;-Programme auf Ihrem System zu kompilieren 
 und zu installieren, finden Sie unter <ulink 
-url="http://techbase.kde.org/Getting_Started/Build/KDE4">
+url="http://techbase.kde.org/Getting_Started#Building_and_Running_KDE_Software_From_Source">
 KDE4 aus dem Quellcode installieren</ulink></para>
 
 <para>Da &kde; <command>cmake</command> benutzt, sollte es dabei keine

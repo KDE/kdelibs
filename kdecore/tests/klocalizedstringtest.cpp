@@ -50,12 +50,14 @@ void KLocalizedStringTest::initTestCase ()
 
     if (m_hasFrench)
         KGlobal::locale()->setLanguage(QStringList() << "fr" << "en_US");
-    KGlobal::locale()->setThousandsSeparator(QString(","));
+    KGlobal::locale()->setThousandsSeparator(QLatin1String(","));
+    KGlobal::locale()->setDecimalSymbol(QLatin1String("."));
     QCOMPARE(KGlobal::locale()->isApplicationTranslatedInto("en_US"), true);
 
     if (m_hasFrench) {
         QCOMPARE(KGlobal::locale()->isApplicationTranslatedInto("fr"), true);
     }
+
 }
 
 void KLocalizedStringTest::correctSubs ()
