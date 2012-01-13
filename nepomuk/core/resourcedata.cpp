@@ -473,6 +473,55 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
 }
 
 
+void Nepomuk::ResourceData::addProperty( const QUrl& uri, const Nepomuk::Variant& value )
+{
+    Q_ASSERT( uri.isValid() );
+
+    if( value.isValid() && store() ) {
+        // step 0: make sure this resource is in the store
+        QMutexLocker lock(&m_modificationMutex);
+
+        // update the store
+        QDBusConnection bus = QDBusConnection::sessionBus();
+        QDBusMessage msg = QDBusMessage::createMethodCall( QLatin1String("org.kde.nepomuk.DataManagement"),
+                                                           QLatin1String("/datamanagement"),
+                                                           QLatin1String("org.kde.nepomuk.DataManagement"),
+                                                           QLatin1String("addProperty") );
+        QString app = KGlobal::mainComponent().componentName();
+        QVariantList arguments;
+        QVariantList varList;
+        foreach( const Nepomuk::Variant var, value.toVariantList() ) {
+            // make sure resource values are in the store
+            if( var.simpleType() == qMetaTypeId<Resource>() ) {
+                var.toResource().m_data->store();
+                varList << var.toUrl();
+            }
+            else {
+                varList << var.variant();
+            }
+        }
+
+        arguments << DBus::convertUriList(QList<QUrl>() << m_uri) << DBus::convertUri(uri)
+                  << QVariant(DBus::normalizeVariantList(varList)) << app;
+        msg.setArguments( arguments );
+
+        QDBusMessage reply = bus.call( msg );
+        if( reply.type() == QDBusMessage::ErrorMessage ) {
+            //TODO: Set the error somehow
+            kWarning() << reply.errorMessage();
+            return;
+        }
+
+        // update the cache for now
+        if( value.isValid() )
+            m_cache[uri].append(value);
+
+        // update the kickofflists
+        updateKickOffLists( uri, value );
+    }
+}
+
+
 void Nepomuk::ResourceData::removeProperty( const QUrl& uri )
 {
     Q_ASSERT( uri.isValid() );

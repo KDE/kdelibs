@@ -107,6 +107,8 @@ namespace Nepomuk {
          */
         void setProperty( const QUrl& uri, const Variant& value );
 
+        void addProperty( const QUrl& uri, const Variant& value );
+
         void removeProperty( const QUrl& uri );
 
         /**

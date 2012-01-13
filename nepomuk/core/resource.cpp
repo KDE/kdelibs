@@ -312,9 +312,8 @@ void Nepomuk::Resource::setProperty( const QString& uri, const Nepomuk::Variant&
 
 void Nepomuk::Resource::addProperty( const QUrl& uri, const Variant& value )
 {
-    Variant v = property( uri );
-    v.append( value );
-    setProperty( uri, v );
+    determineFinalResourceData();
+    m_data->addProperty( uri, value );
 }
 
 
