@@ -300,6 +300,13 @@ bool Nepomuk::ResourceData::store()
             m_rm->addToKickOffList( this, m_kickoffUris );
         }
 
+        // store our grounding occurrence in case we are a thing created by the pimoThing() method
+        if( m_groundingOccurence ) {
+            if( m_groundingOccurence != this )
+                m_groundingOccurence->store();
+            setProperty(Vocabulary::PIMO::groundingOccurrence(), Variant(m_groundingOccurence->uri()) );
+        }
+
         foreach( const KUrl& url, m_kickoffUris ) {
             if( url.scheme().isEmpty() )
                 setProperty( Soprano::Vocabulary::NAO::identifier(), Variant(url.url()) );
@@ -308,14 +315,6 @@ bool Nepomuk::ResourceData::store()
         }
     }
 
-    /*
-    // store our grounding occurrence in case we are a thing created by the pimoThing() method
-    if( m_groundingOccurence ) {
-        if( m_groundingOccurence != this )
-            m_groundingOccurence->store();
-        statements.append( Statement( m_uri, Vocabulary::PIMO::groundingOccurrence(), m_groundingOccurence->uri() ) );
-    }
-   */
     return true;
 }
 
