@@ -1,6 +1,6 @@
 /*
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006-2010 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2012 Sebastian Trueg <trueg@kde.org>
  * Copyright (C) 2010 Vishesh Handa <handa.vish@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -319,6 +319,11 @@ int Nepomuk::ResourceManager::init()
 
     if( !d->mainModel ) {
         d->mainModel = new MainModel( this );
+        // FIXME: use the ResourceWatcher instead
+        connect( d->mainModel, SIGNAL(statementsAdded()),
+                 this, SLOT(slotStoreChanged()) );
+        connect( d->mainModel, SIGNAL(statementsRemoved()),
+                 this, SLOT(slotStoreChanged()) );
     }
 
     d->mainModel->init();
