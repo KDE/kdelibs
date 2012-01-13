@@ -36,8 +36,6 @@
 using namespace Nepomuk::Utils;
 using namespace Nepomuk::Query;
 
-Q_DECLARE_METATYPE(Nepomuk::Utils::Facet*)
-
 void ProxyFacetTest::initTestCase()
 {
     qRegisterMetaType<Nepomuk::Utils::Facet*>();
