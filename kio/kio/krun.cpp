@@ -1152,12 +1152,11 @@ void KRun::init()
         d->m_bIsLocalFile = true;
     }
 
-    QString exec;
-    if (d->m_strURL.protocol().startsWith(QLatin1String("http"))) {
-        exec = d->m_externalBrowser;
-    }
-
-    if (d->m_bIsLocalFile) {
+    if (!d->m_externalBrowser.isEmpty() && d->m_strURL.protocol().startsWith(QLatin1String("http"))) {
+        if (d->runExecutable(d->m_externalBrowser)) {
+            return;
+        }
+    } else if (d->m_bIsLocalFile) {
         if (d->m_mode == 0) {
             KDE_struct_stat buff;
             if (KDE::stat(d->m_strURL.path(), &buff) == -1) {
@@ -1178,43 +1177,29 @@ void KRun::init()
         KMimeType::Ptr mime = KMimeType::findByUrl(d->m_strURL, d->m_mode, d->m_bIsLocalFile);
         assert(mime);
         kDebug(7010) << "MIME TYPE is " << mime->name();
-        mimeTypeDetermined(mime->name());
-        return;
-    }
-    else if (!exec.isEmpty() || KProtocolInfo::isHelperProtocol(d->m_strURL)) {
-        kDebug(7010) << "Helper protocol";
-
-        bool ok = false;
-        KUrl::List urls;
-        urls.append(d->m_strURL);
-        if (exec.isEmpty()) {
-            exec = KProtocolInfo::exec(d->m_strURL.protocol());
-            if (exec.isEmpty()) {
-                mimeTypeDetermined(KProtocolManager::defaultMimetype(d->m_strURL));
+        if (!d->m_externalBrowser.isEmpty() && (
+               mime->is(QLatin1String("text/html")) ||
+               mime->is(QLatin1String("application/xml")))) {
+            if (d->runExecutable(d->m_externalBrowser)) {
                 return;
             }
-            run(exec, urls, d->m_window, QString(), QString(), d->m_asn);
-            ok = true;
-        }
-        else if (exec.startsWith('!')) {
-            exec = exec.mid(1); // Literal command
-            exec += " %u";
-            run(exec, urls, d->m_window, QString(), QString(), d->m_asn);
-            ok = true;
-        }
-        else {
-            KService::Ptr service = KService::serviceByStorageId(exec);
-            if (service) {
-                run(*service, urls, d->m_window, false, QString(), d->m_asn);
-                ok = true;
-            }
-        }
-
-        if (ok) {
-            d->m_bFinished = true;
-            // will emit the error and autodelete this
-            d->startTimer();
+        } else {
+            mimeTypeDetermined(mime->name());
             return;
+        }
+    }
+    else if (KProtocolInfo::isHelperProtocol(d->m_strURL)) {
+        kDebug(7010) << "Helper protocol";
+        const QString exec = KProtocolInfo::exec(d->m_strURL.protocol());
+        if (exec.isEmpty()) {
+            mimeTypeDetermined(KProtocolManager::defaultMimetype(d->m_strURL));
+            return;
+        } else {
+            if (run(exec, KUrl::List() << d->m_strURL, d->m_window, QString(), QString(), d->m_asn)) {
+                d->m_bFinished = true;
+                d->startTimer();
+                return;
+            }
         }
     }
 
@@ -1253,6 +1238,30 @@ KRun::~KRun()
     KGlobal::deref();
     //kDebug(7010) << this << "done";
     delete d;
+}
+
+bool KRun::KRunPrivate::runExecutable(const QString& _exec)
+{
+    KUrl::List urls;
+    urls.append(m_strURL);
+    if (_exec.startsWith('!')) {
+        QString exec = _exec.mid(1); // Literal command
+        exec += " %u";
+        if (q->run(exec, urls, m_window, QString(), QString(), m_asn)) {
+            m_bFinished = true;
+            startTimer();
+            return true;
+        }
+    }
+    else {
+        KService::Ptr service = KService::serviceByStorageId(_exec);
+        if (service && q->run(*service, urls, m_window, false, QString(), m_asn)) {
+            m_bFinished = true;
+            startTimer();
+            return true;
+        }
+    }
+    return false;
 }
 
 void KRun::scanFile()

@@ -24,6 +24,7 @@
 
 #include <kdebug.h>
 #include <kglobal.h>
+#include <klocale.h>
 #include <kstandarddirs.h>
 #include <kprotocolinfo.h>
 #include <kcolorscheme.h>
@@ -362,7 +363,7 @@ QColor KGlobalSettings::activeTextColor()
 int KGlobalSettings::contrast()
 {
     KConfigGroup g( KGlobal::config(), "KDE" );
-    return g.readEntry( "contrast", 5 );
+    return g.readEntry( "contrast", 7 );
 }
 
 qreal KGlobalSettings::contrastF(const KSharedConfigPtr &config)
@@ -882,6 +883,9 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
                 propagateQtSettings();
             }
         } else {
+            if (category == SETTINGS_LOCALE) {
+                KGlobal::locale()->reparseConfiguration();
+            }
             emit q->settingsChanged(category);
         }
         break;

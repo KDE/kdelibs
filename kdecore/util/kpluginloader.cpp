@@ -162,7 +162,7 @@ KPluginLoader::KPluginLoader(const KService &service, const KComponentData &comp
 
     // service.library() is used to find the lib. So first check if it is empty.
     if (service.library().isEmpty()) {
-        d->errorString = i18n("The service '%1' provides no library or the Library key is missing in ", service.entryPath());
+        d->errorString = i18n("The service '%1' provides no library or the Library key is missing", service.entryPath());
         return;
     }
 

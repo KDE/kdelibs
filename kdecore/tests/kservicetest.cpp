@@ -315,21 +315,21 @@ void KServiceTest::testByStorageId()
 {
     if ( !KSycoca::isAvailable() )
         QSKIP("ksycoca not available", SkipAll);
-    if (!m_hasKde4Konsole)
-        QSKIP("kdebase not installed", SkipAll);
-    QVERIFY(KService::serviceByMenuId("kde4-systemsettings.desktop"));
-    QVERIFY(!KService::serviceByMenuId("kde4-systemsettings")); // doesn't work, extension mandatory
-    QVERIFY(KService::serviceByStorageId("kde4-systemsettings.desktop"));
-    //QVERIFY(!KService::serviceByStorageId("kde4-systemsettings")); // doesn't work, extension mandatory; also shows a debug
+    QVERIFY(KService::serviceByMenuId("kde4-kmailservice.desktop"));
+    QVERIFY(!KService::serviceByMenuId("kde4-kmailservice")); // doesn't work, extension mandatory
+    QVERIFY(KService::serviceByStorageId("kde4-kmailservice.desktop"));
+    //QVERIFY(!KService::serviceByStorageId("kde4-kmailservice")); // doesn't work, extension mandatory; also shows a debug
+
     // This one fails here; probably because there are two such files, so this would be too
     // ambiguous... According to the testAllServices output, the entryPaths are
-    // entryPath="/d/kde/inst/kde4/share/applications/kde4/systemsettings.desktop"
-    // entryPath= "/usr/share/applications/kde/systemsettings.desktop"
+    // entryPath="/d/kde/inst/kde4/share/applications/kde4/kmailservice.desktop"
+    // entryPath= "/usr/share/applications/kde4/kmailservice.desktop"
     //
-    //QVERIFY(KService::serviceByDesktopPath("systemsettings.desktop"));
-    QVERIFY(KService::serviceByDesktopName("systemsettings"));
-    // Fails here, finds the kde3 systemsettings from /usr/share
-    //QCOMPARE(KService::serviceByDesktopName("systemsettings")->menuId(), QString("kde4-systemsettings,desktop"));
+    //QVERIFY(KService::serviceByDesktopPath("kmailservice.desktop"));
+
+    QVERIFY(KService::serviceByDesktopName("kmailservice"));
+    // This could fail if it finds the kde3 kmailservice from /usr/share. But who still has kde3 :-)
+    QCOMPARE(KService::serviceByDesktopName("kmailservice")->menuId(), QString("kde4-kmailservice.desktop"));
 }
 
 void KServiceTest::testServiceTypeTraderForReadOnlyPart()

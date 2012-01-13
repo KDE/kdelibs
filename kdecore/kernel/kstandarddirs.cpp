@@ -1379,18 +1379,6 @@ QString KStandardDirs::findExe( const QString& appname,
         return result;
     }
 
-    // Look into the KDE-specific bin dir ("exe" resource) in case KDE was installed into a custom
-    // prefix, to make things easier ($PATH not required). But not if KDE is in /usr (#241763).
-    p = installPath("exe");
-    if (p != QLatin1String("/usr/")) {
-        p += appname;
-        result = checkExecutable(p, options & IgnoreExecBit);
-        if (!result.isEmpty()) {
-            //kDebug(180) << "findExe(): returning " << result;
-            return result;
-        }
-    }
-
     //kDebug(180) << "findExe(): checking system paths";
     const QStringList exePaths = systemPaths( pstr );
     for (QStringList::ConstIterator it = exePaths.begin(); it != exePaths.end(); ++it)
@@ -1404,6 +1392,15 @@ QString KStandardDirs::findExe( const QString& appname,
             //kDebug(180) << "findExe(): returning " << result;
             return result;
         }
+    }
+
+    // Not found in PATH, look into the KDE-specific bin dir ("exe" resource)
+    p = installPath("exe");
+    p += appname;
+    result = checkExecutable(p, options & IgnoreExecBit);
+    if (!result.isEmpty()) {
+        //kDebug(180) << "findExe(): returning " << result;
+        return result;
     }
 
     // If we reach here, the executable wasn't found.

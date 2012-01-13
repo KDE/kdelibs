@@ -355,12 +355,13 @@ private Q_SLOTS:
     void testRemovedImplicitAssociation178560()
     {
         // #178560: Removing ark from interface/x-winamp-skin didn't work
-        const QString mime = "interface/x-winamp-skin";
+        // Using application/x-kns (another zip-derived mimetype) nowadays.
+        const QString mime = "application/x-kns";
         KService::List offers = KMimeTypeTrader::self()->query(mime);
         QVERIFY(offerListHasService(offers, fakeArkApplication, true));
 
         writeToMimeApps(QByteArray("[Removed Associations]\n"
-                                   "interface/x-winamp-skin=fakearkapplication.desktop;\n"));
+                                   "application/x-kns=fakearkapplication.desktop;\n"));
 
         offers = KMimeTypeTrader::self()->query(mime);
         QVERIFY(!offerListHasService(offers, fakeArkApplication, false));
