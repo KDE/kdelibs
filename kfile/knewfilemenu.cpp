@@ -513,6 +513,12 @@ void KNewFileMenuPrivate::executeStrategy()
     const QString src = m_strategy.sourceFileToCopy();
     QString chosenFileName = expandTilde(m_strategy.chosenFileName(), true);
 
+    // If the file is not going to be detected as a desktop file, due to a
+    // known extension (e.g. ".pl"), append ".desktop". #224142.
+    KMimeType::Ptr mime = KMimeType::findByNameAndContent(chosenFileName, "[Desktop Entry]\n");
+    if (!mime->is(QLatin1String("application/x-desktop")))
+        chosenFileName += QLatin1String(".desktop");
+
     if (src.isEmpty())
         return;
     KUrl uSrc(src);
