@@ -1,6 +1,7 @@
 [Desktop Entry]
 Type=Service
 Name=KDE Emoticons Theme
+Name[ar]=سمة ابتسامات كدي
 Name[bg]=Тема с емоции KDE
 Name[bn]=কে.ডি.ই. ইমোট-আইকনস থীম
 Name[bs]=KDE‑ova tema emotikona
@@ -62,7 +63,7 @@ Name[x-test]=xxKDE Emoticons Themexx
 Name[zh_CN]=KDE 表情主题
 Name[zh_TW]=KDE 表情圖示主題
 Comment=Library to use KDE emoticons theme
-Comment[ar]=مكتبة لاستخدام سمة رموز كيدي
+Comment[ar]=مكتبة لاستخدام سمة ابتسامات كدي
 Comment[as]=KDE emoticons থিম ব্যৱহাৰ কৰা লাইব্ৰেৰী
 Comment[ast]=Biblioteca pa usar el tema d'emoticonos KDE
 Comment[be@latin]=Biblijateka dla matyvaŭ smajlikaŭ „KDE”

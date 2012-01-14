@@ -1,6 +1,7 @@
 [Global]
 IconName=preferences-system-network-proxy
 Comment=Network Proxy Configuration
+Comment[ar]=إعدادات وكيل الشبكة
 Comment[bg]=Настройки на мрежови посредник
 Comment[bn]=নেটওয়ার্ক প্রক্সি কনফিগারেশন
 Comment[bs]=Podešavanje proksija za mrežu

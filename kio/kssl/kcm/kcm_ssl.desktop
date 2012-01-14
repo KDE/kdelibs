@@ -9,6 +9,7 @@ X-KDE-ParentApp=kcontrol
 X-KDE-System-Settings-Parent-Category=network-and-connectivity
 
 Name=SSL Preferences
+Name[ar]=تفضيلات SSL
 Name[bg]=Настройки на SSL
 Name[bs]=SSL postavke
 Name[ca]=Preferències SSL
@@ -65,6 +66,7 @@ Name[x-test]=xxSSL Preferencesxx
 Name[zh_CN]=SSL 首选项
 Name[zh_TW]=SSL 喜好設定
 Comment=SSL Versions and Certificates
+Comment[ar]=إصدارات وشهادات SSL
 Comment[bg]=Версии и сертификати на SSL
 Comment[bs]=SSL verzije i certifikati
 Comment[ca]=Versions i certificats SSL
@@ -121,6 +123,7 @@ Comment[zh_CN]=SSL 版本和证书
 Comment[zh_TW]=SSL 版本與憑證
 
 X-KDE-Keywords=SSL,Security,Network,Protocol,Certificates,Encryption,HTTPS
+X-KDE-Keywords[ar]=SSL,الأمن,الشبكة,البرتوكول,الشهادات,التشفير,HTTPS
 X-KDE-Keywords[bg]=SSL,Security,Network,Protocol,Certificates,Encryption,HTTPS,Сигурност,Мрежа,Протокол,Удостоверение,Сертификат,Шифриране
 X-KDE-Keywords[ca]=SSL,Seguretat,Xarxa,Protocol,Certificats,Encriptatge,HTTPS
 X-KDE-Keywords[ca@valencia]=SSL,Seguretat,Xarxa,Protocol,Certificats,Encriptatge,HTTPS
