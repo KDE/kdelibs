@@ -370,7 +370,8 @@ QSize KCapacityBar::minimumSizeHint() const
 void KCapacityBar::paintEvent(QPaintEvent *event)
 {
     QPainter p(this);
-    drawCapacityBar(&p, event->rect());
+    p.setClipRect(event->rect());
+    drawCapacityBar(&p, contentsRect());
     p.end();
 }
 
