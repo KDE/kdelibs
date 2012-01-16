@@ -1,6 +1,7 @@
 [Desktop Entry]
 Type=Service
 Name=Cookie Jar
+Name[ar]=كعكة Jar
 Name[bg]=Буркан за бисквитки
 Name[bn]=কুকি জার
 Name[bs]=Kolekcija kolačića
@@ -60,6 +61,7 @@ Name[x-test]=xxCookie Jarxx
 Name[zh_CN]=Cookie Jar 模块
 Name[zh_TW]=Cookie Jar
 Comment=Stores network cookies
+Comment[ar]=يخزن كعكات (cookies) الشبكة
 Comment[bg]=Съхранява мрежовите бисквитки
 Comment[bs]=Skladišti mrežne kolačiće
 Comment[ca]=Emmagatzema les galetes de la xarxa

@@ -1,6 +1,6 @@
 # ctxt: standard desktop component
 Name=Embedded Text Editor
-Name[ar]=محرر نصوص مدمج
+Name[ar]=محرر نصوص مضمَّن
 Name[ast]=Editor de testu encrustáu
 Name[be@latin]=Unutrany tekstavy redaktar
 Name[bg]=Вграден текстов редактор
@@ -73,7 +73,7 @@ Name[zh_CN]=嵌入式文本编辑器
 Name[zh_TW]=嵌入式文字編輯器
 Comment=The text editor service provides applications with a text viewer and editor. KDE applications that provide text editing facilities should use this service.
 Comment[af]=Die teksredigeerderdiens verskaf programme met 'n teks aansig en redigeerder. KDE programme wat teksredigering fasiliteite verskaf, moet hierdie diens gebruik.
-Comment[ar]=تقوم خدمة محرر النصوص بتزويد التطبيقات بمعاين نصوص ومحرر. يجب أن تستخدم تطبيقات كيدي التي تزود بتسهيلات تحرير النصوص هذه الخدمة.
+Comment[ar]=تقوم خدمة محرر النصوص بتزويد التطبيقات بمعاين نصوص ومحرر. يجب أن تستخدم تطبيقات كدي التي تزود بتسهيلات تحرير النصوص هذه الخدمة.
 Comment[as]=লিপি সম্পাদক সেৱাই এটা লিপি প্ৰদৰ্শক আৰু সম্পাদকৰ অনুপ্ৰয়োগ দিয়ে । যি KDE অনুপ্ৰয়োগে লিপি সম্পাদনৰ সুবিধা দিয়ে এই সেৱা ব্যৱহাৰ কৰিব লাগে ।
 Comment[ast]=El serviciu d'editor de testu ufre a les aplicaciones un visor y editor de testu. Les aplicaciones KDE qu'ufren facilidáes d'edición de testu habríen d'usar esti serviciu.
 Comment[be]=Сервіс тэкставага рэдактара дазваляе праглядаць і рэдагаваць тэкст у праграмах. Праграмы KDE, якія выконваюць гэтыя функцыі, павінны працаваць з гэтым сервісам.

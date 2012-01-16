@@ -2079,6 +2079,7 @@ Name[zh_HK]=嘉泰羅尼亞語
 Name[zh_TW]=嘉泰羅尼亞語
 [ca@valencia]
 Name=Catalan (Valencian)
+Name[ar]=كتلونية(بلنسية)
 Name[bg]=Каталонски (Валенсиански)
 Name[bs]=Katalonski(Valensijski)
 Name[ca]=Català (Valencià)
@@ -3183,7 +3184,7 @@ Name[zh_HK]=德語
 Name[zh_TW]=德語
 [dsb]
 Name=Lower Sorbian
-Name[ar]=صوربية منخفضة
+Name[ar]=صوربية سفلى
 Name[as]=লোৱাৰ ছৰ্বিয়ান
 Name[ast]=Baxu Sorbiu
 Name[be@latin]=Nižnie-łužyckaja
@@ -5850,7 +5851,7 @@ Name[zh_TW]=克羅埃西亞語
 [hsb]
 Name=Upper Sorbian
 Name[af]=Hoog Serbiese
-Name[ar]=صوربية مرتفعة
+Name[ar]=صوربية عُليا
 Name[as]=আপাৰ ছৰ্বিয়ান
 Name[ast]=Altu Sorbiu
 Name[be]=Верхнялужыцкая
@@ -14098,6 +14099,7 @@ Name[zh_HK]=塞爾維亞語
 Name[zh_TW]=塞爾維亞語
 [sr@ijekavian]
 Name=Serbian Ijekavian
+Name[ar]=صربية اليكافيانية
 Name[bg]=Сръбски йекавски
 Name[bn]=সার্বীয় ইজেকাভিয়ান
 Name[bs]=Srpski(ijekavski)
@@ -14159,6 +14161,7 @@ Name[zh_CN]=塞尔维亚 Ijekavian 口音语言
 Name[zh_TW]=賽爾維亞耶卡語
 [sr@ijekavianlatin]
 Name=Serbian Ijekavian Latin
+Name[ar]=الصربية اليكافيانية اللاتينيّة
 Name[bg]=Сръбски йекавски (латиница)
 Name[bn]=সার্বীয় ইজেকাভিয়ান লাতিন
 Name[bs]=Srpski(ijekavski latinica)
@@ -16055,6 +16058,7 @@ Name[zh_HK]=大溪地語
 Name[zh_TW]=大溪地語
 [ug]
 Name=Uyghur
+Name[ar]=أيغوريّة
 Name[bg]=Уйгурски
 Name[bs]=Uyghur
 Name[ca]=Uigur
@@ -16309,7 +16313,7 @@ Name[zh_TW]=烏都語
 [uz]
 Name=Uzbek
 Name[af]=Uzbek
-Name[ar]=الأوزبكية
+Name[ar]=أوزبكية
 Name[as]=উজ্‌বেক
 Name[ast]=Uzbecu
 Name[be]=Узбецкая
@@ -16405,7 +16409,7 @@ Name[zh_HK]=烏茲別克語
 Name[zh_TW]=烏茲別克語
 [uz@cyrillic]
 Name=Uzbek (Cyrillic)
-Name[ar]=الأوزبكية (سريالية)
+Name[ar]=أوزبكية (سريالية)
 Name[as]=উজ্‌বেক (ছিৰিলিক)
 Name[ast]=Uzbecu (Cirílicu)
 Name[be@latin]=Uzbeckaja kirylica
@@ -17068,6 +17072,7 @@ Name[zh_HK]=科薩語
 Name[zh_TW]=科薩語
 [x-test]
 Name=KDE Test Language
+Name[ar]=لغة اختبار كدي
 Name[bg]=Пробен език за KDE
 Name[bs]=KDE Test jezik
 Name[ca]=Idioma de proves del KDE
