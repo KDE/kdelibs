@@ -24,7 +24,7 @@
 #include <kpagedialog.h>
 
 class KConfig;
-class KConfigSkeleton;
+class KCoreConfigSkeleton;
 class KConfigDialogManager;
 
 /**
@@ -99,7 +99,7 @@ public:
    * @param config - Config object containing settings.
    */
   KConfigDialog( QWidget *parent, const QString& name,
-                 KConfigSkeleton *config );
+                 KCoreConfigSkeleton *config );
 
   /**
    * Deconstructor, removes name from the list of open dialogs.
@@ -147,7 +147,7 @@ public:
    *        mode. If empty, the itemName text is used when needed.
    * @returns The KPageWidgetItem associated with the page.
    */
-  KPageWidgetItem* addPage( QWidget *page, KConfigSkeleton *config,
+  KPageWidgetItem* addPage( QWidget *page, KCoreConfigSkeleton *config,
                 const QString &itemName,
                 const QString &pixmapName=QString(),
                 const QString &header=QString() );

@@ -23,7 +23,7 @@
 
 #include <kcomponentdata.h>
 #include <kconfigdialogmanager.h>
-#include <kconfigskeleton.h>
+#include <kcoreconfigskeleton.h>
 #include <kdebug.h>
 #include <kicon.h>
 #include <kiconloader.h>
@@ -62,7 +62,7 @@ public:
 QHash<QString,KConfigDialog *> KConfigDialog::KConfigDialogPrivate::openDialogs;
 
 KConfigDialog::KConfigDialog( QWidget *parent, const QString& name,
-          KConfigSkeleton *config ) :
+          KCoreConfigSkeleton *config ) :
     KPageDialog( parent ),
     d(new KConfigDialogPrivate(this))
 {
@@ -127,7 +127,7 @@ KPageWidgetItem* KConfigDialog::addPage(QWidget *page,
 }
 
 KPageWidgetItem* KConfigDialog::addPage(QWidget *page,
-                                KConfigSkeleton *config,
+                                KCoreConfigSkeleton *config,
                                 const QString &itemName,
                                 const QString &pixmapName,
                                 const QString &header)
