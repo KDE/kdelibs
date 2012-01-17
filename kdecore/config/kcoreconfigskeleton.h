@@ -313,7 +313,7 @@ template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonI
    *
    * This class provides an interface to preferences settings. Preferences items
    * can be registered by the addItem() function corresponding to the data type of
-   * the seetting. KCoreConfigSkeleton then handles reading and writing of config files and
+   * the stting. KCoreConfigSkeleton then handles reading and writing of config files and
    * setting of default values.
    *
    * Normally you will subclass KCoreConfigSkeleton, add data members for the preferences
