@@ -39,7 +39,7 @@ An entry must also have a type. The list of allowable types is
 specified in the DTD and loosely follows the list of types supported
 by the QVariant with exception of the clearly binary types
 (e.g. Pixmap, Image...) which are not supported. Besides those basic
-type the following special types are supported:
+types the following special types are supported:
 
 - Path  This is a string that is specially treated as a file-path. 
   In particular paths in the home directory are prefixed with $HOME in
@@ -134,7 +134,7 @@ The following options are read from the kcfgc file:
   <td>string: public|protected|private|dpointer</td>
   <td>private</td>
   <td>C++ access modifier used for member variables holding the configuration
-  valuse</td>
+  values</td>
 </tr>
 <tr>
   <td><b>IncludeFiles</b></td>
