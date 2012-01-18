@@ -37,7 +37,17 @@ set(nepomuk_core_SRCS
   core/tag.cpp
   core/nepomukservice.cpp
   core/dbustypes.cpp
+  core/resourcewatcher.cpp
 )
+
+qt4_add_dbus_interface(nepomuk_core_SRCS
+  core/org.kde.nepomuk.ResourceWatcherConnection.xml
+  resourcewatcherconnectioninterface)
+
+qt4_add_dbus_interface(nepomuk_core_SRCS
+  core/org.kde.nepomuk.ResourceWatcher.xml
+  resourcewatchermanagerinterface)
+
 
 if(NOT KDE_NO_DEPRECATED)
   set(nepomuk_core_SRCS
