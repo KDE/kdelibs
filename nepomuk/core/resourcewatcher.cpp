@@ -35,6 +35,14 @@ namespace {
         return KUrl(uri).url();
     }
 
+    QStringList convertUris(const QList<QUrl>& uris) {
+        QStringList cs;
+        foreach(const QUrl& uri, uris) {
+            cs << convertUri(uri);
+        }
+        return cs;
+    }
+
     QList<QUrl> convertUris(const QStringList& uris) {
         QList<QUrl> us;
         foreach(const QString& uri, uris) {
@@ -46,9 +54,9 @@ namespace {
 
 class Nepomuk::ResourceWatcher::Private {
 public:
-    QList<Types::Class> m_types;
-    QList<Nepomuk::Resource> m_resources;
-    QList<Types::Property> m_properties;
+    QList<QUrl> m_types;
+    QList<QUrl> m_resources;
+    QList<QUrl> m_properties;
 
     org::kde::nepomuk::ResourceWatcherConnection * m_connectionInterface;
     org::kde::nepomuk::ResourceWatcher * m_watchManagerInterface;
@@ -76,20 +84,9 @@ bool Nepomuk::ResourceWatcher::start()
     //
     // Convert to list of strings
     //
-    QList<QString> uris;
-    foreach( const Nepomuk::Resource & res, d->m_resources ) {
-        uris << convertUri(res.resourceUri());
-    }
-
-    QList<QString> props;
-    foreach( const Types::Property & prop, d->m_properties ) {
-        props << convertUri(prop.uri());
-    }
-
-    QList<QString> types_;
-    foreach( const Types::Class & cl, d->m_types ) {
-        types_ << convertUri(cl.uri());
-    }
+    QList<QString> uris = convertUris(d->m_resources);
+    QList<QString> props = convertUris(d->m_properties);
+    QList<QString> types_ = convertUris(d->m_types);
 
     //
     // Create the dbus object to watch
@@ -133,7 +130,7 @@ void Nepomuk::ResourceWatcher::stop()
 
 void Nepomuk::ResourceWatcher::addProperty(const Nepomuk::Types::Property& property)
 {
-    d->m_properties << property;
+    d->m_properties << property.uri();
     if(d->m_connectionInterface) {
         d->m_connectionInterface->addProperty(convertUri(property.uri()));
     }
@@ -141,7 +138,7 @@ void Nepomuk::ResourceWatcher::addProperty(const Nepomuk::Types::Property& prope
 
 void Nepomuk::ResourceWatcher::addResource(const Nepomuk::Resource& res)
 {
-    d->m_resources << res;
+    d->m_resources << res.resourceUri();
     if(d->m_connectionInterface) {
         d->m_connectionInterface->addResource(convertUri(res.resourceUri()));
     }
@@ -149,7 +146,7 @@ void Nepomuk::ResourceWatcher::addResource(const Nepomuk::Resource& res)
 
 void Nepomuk::ResourceWatcher::addType(const Nepomuk::Types::Class& type)
 {
-    d->m_types << type;
+    d->m_types << type.uri();
     if(d->m_connectionInterface) {
         d->m_connectionInterface->addType(convertUri(type.uri()));
     }
@@ -157,7 +154,7 @@ void Nepomuk::ResourceWatcher::addType(const Nepomuk::Types::Class& type)
 
 void Nepomuk::ResourceWatcher::removeProperty(const Nepomuk::Types::Property& property)
 {
-    d->m_properties.removeAll(property);
+    d->m_properties.removeAll(property.uri());
     if(d->m_connectionInterface) {
         d->m_connectionInterface->removeProperty(convertUri(property.uri()));
     }
@@ -165,7 +162,7 @@ void Nepomuk::ResourceWatcher::removeProperty(const Nepomuk::Types::Property& pr
 
 void Nepomuk::ResourceWatcher::removeResource(const Nepomuk::Resource& res)
 {
-    d->m_resources.removeAll(res);
+    d->m_resources.removeAll(res.resourceUri());
     if(d->m_connectionInterface) {
         d->m_connectionInterface->removeResource(convertUri(res.resourceUri()));
     }
@@ -173,7 +170,7 @@ void Nepomuk::ResourceWatcher::removeResource(const Nepomuk::Resource& res)
 
 void Nepomuk::ResourceWatcher::removeType(const Nepomuk::Types::Class& type)
 {
-    d->m_types.removeAll(type);
+    d->m_types.removeAll(type.uri());
     if(d->m_connectionInterface) {
         d->m_connectionInterface->removeType(convertUri(type.uri()));
     }
@@ -181,55 +178,61 @@ void Nepomuk::ResourceWatcher::removeType(const Nepomuk::Types::Class& type)
 
 QList< Nepomuk::Types::Property > Nepomuk::ResourceWatcher::properties() const
 {
-    return d->m_properties;
+    QList< Nepomuk::Types::Property > props;
+    foreach(const QUrl& uri, d->m_properties)
+        props << Types::Property(uri);
+    return props;
 }
 
 QList<Nepomuk::Resource> Nepomuk::ResourceWatcher::resources() const
 {
-    return d->m_resources;
+    QList<Nepomuk::Resource> resources;
+    foreach(const QUrl& uri, d->m_resources)
+        resources << Resource::fromResourceUri(uri);
+    return resources;
 }
 
 QList< Nepomuk::Types::Class > Nepomuk::ResourceWatcher::types() const
 {
-    return d->m_types;
+    QList<Nepomuk::Types::Class> types;
+    foreach(const QUrl& uri, d->m_types)
+        types << Types::Class(uri);
+    return types;
 }
 
 void Nepomuk::ResourceWatcher::setProperties(const QList< Nepomuk::Types::Property >& properties_)
 {
-    d->m_properties = properties_;
+    d->m_properties.clear();
+    foreach(const Nepomuk::Types::Property& p, properties_) {
+        d->m_properties << p.uri();
+    }
 
     if(d->m_connectionInterface) {
-        QStringList propertyStrings;
-        foreach(const Nepomuk::Types::Property& p, properties_) {
-            propertyStrings << convertUri(p.uri());
-        }
-        d->m_connectionInterface->setProperties(propertyStrings);
+        d->m_connectionInterface->setProperties(convertUris(d->m_properties));
     }
 }
 
 void Nepomuk::ResourceWatcher::setResources(const QList< Nepomuk::Resource >& resources_)
 {
-    d->m_resources = resources_;
+    d->m_resources.clear();
+    foreach(const Nepomuk::Resource& res, resources_) {
+        d->m_resources << res.resourceUri();
+    }
 
     if(d->m_connectionInterface) {
-        QStringList resStrings;
-        foreach(const Nepomuk::Resource& res, resources_) {
-            resStrings << convertUri(res.resourceUri());
-        }
-        d->m_connectionInterface->setResources(resStrings);
+        d->m_connectionInterface->setResources(convertUris(d->m_resources));
     }
 }
 
 void Nepomuk::ResourceWatcher::setTypes(const QList< Nepomuk::Types::Class >& types_)
 {
-    d->m_types = types_;
+    d->m_types.clear();
+    foreach(const Nepomuk::Types::Class& t, types_) {
+        d->m_types << t.uri();
+    }
 
     if(d->m_connectionInterface) {
-        QStringList typeStrings;
-        foreach(const Nepomuk::Types::Class& t, types_) {
-            typeStrings << convertUri(t.uri());
-        }
-        d->m_connectionInterface->setTypes(typeStrings);
+        d->m_connectionInterface->setTypes(convertUris(d->m_types));
     }
 }
 
