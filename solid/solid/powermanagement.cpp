@@ -138,10 +138,22 @@ int Solid::PowerManagement::beginSuppressingScreenPowerManagement(const QString&
             (uint)PowerManagementPrivate::ChangeScreenSettings,
             QCoreApplication::applicationName(), reason);
 
-        if (reply.isValid())
+        if (reply.isValid()) {
+            QDBusMessage message = QDBusMessage::createMethodCall("org.freedesktop.ScreenSaver", "/ScreenSaver",
+                                                                  "org.freedesktop.ScreenSaver", "Inhibit");
+            message << QCoreApplication::applicationName();
+            message << reason;
+
+            QDBusPendingReply<uint> ssReply = QDBusConnection::sessionBus().asyncCall(message);
+            ssReply.waitForFinished();
+            if (ssReply.isValid()) {
+                globalPowerManager->screensaverCookiesForPowerDevilCookies.insert(reply, ssReply.value());
+            }
+
             return reply;
-        else
+        } else {
             return -1;
+        }
     } else {
         // No way to fallback on something, hence return failure
         return -1;
@@ -151,7 +163,16 @@ int Solid::PowerManagement::beginSuppressingScreenPowerManagement(const QString&
 bool Solid::PowerManagement::stopSuppressingScreenPowerManagement(int cookie)
 {
     if (globalPowerManager->policyAgentIface.isValid()) {
-        return globalPowerManager->policyAgentIface.ReleaseInhibition(cookie).isValid();
+        bool result = globalPowerManager->policyAgentIface.ReleaseInhibition(cookie).isValid();
+
+        if (globalPowerManager->screensaverCookiesForPowerDevilCookies.contains(cookie)) {
+            QDBusMessage message = QDBusMessage::createMethodCall("org.freedesktop.ScreenSaver", "/ScreenSaver",
+                                                                  "org.freedesktop.ScreenSaver", "UnInhibit");
+            message << globalPowerManager->screensaverCookiesForPowerDevilCookies.take(cookie);
+            QDBusConnection::sessionBus().asyncCall(message);
+        }
+
+        return result;
     } else {
         // No way to fallback on something, hence return failure
         return false;
