@@ -267,8 +267,8 @@ namespace Nepomuk {
         void nepomukSystemStopped();
 
     private Q_SLOTS:
-        void slotPropertyAdded(const Resource &res, const Types::Property &prop, const QVariant &value);
-        void slotPropertyRemoved(const Resource &res, const Types::Property &prop, const QVariant &value);
+        void slotPropertyAdded(const Nepomuk::Resource &res, const Nepomuk::Types::Property &prop, const QVariant &value);
+        void slotPropertyRemoved(const Nepomuk::Resource &res, const Nepomuk::Types::Property &prop, const QVariant &value);
 
     private:
         friend class Nepomuk::Resource;

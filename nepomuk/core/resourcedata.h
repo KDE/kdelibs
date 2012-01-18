@@ -30,8 +30,6 @@
 
 #include "variant.h"
 #include "thing.h"
-#include "resourcewatcher.h"
-
 #include <kurl.h>
 
 #include <soprano/statement.h>
@@ -213,7 +211,6 @@ namespace Nepomuk {
         ResourceData* m_groundingOccurence;
 
         ResourceManagerPrivate* m_rm;
-        ResourceWatcher* m_watcher;
     };
 }
 
