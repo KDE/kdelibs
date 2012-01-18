@@ -1,7 +1,7 @@
 /*
  * This file is part of the Nepomuk KDE project.
  * Copyright (C) 2006-2010 Sebastian Trueg <trueg@kde.org>
- * Copyright (C) 2010 Vishesh Handa <handa.vish@gmail.com>
+ * Copyright (C) 2010-2012 Vishesh Handa <handa.vish@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -691,6 +691,15 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::determineUri()
         ResourceDataHash::iterator it = m_rm->m_initializedData.find(m_uri);
         if( it == m_rm->m_initializedData.end() ) {
             m_rm->m_initializedData.insert( m_uri, this );
+            m_watcher = new ResourceWatcher(this);
+            m_watcher->addResource( Nepomuk::Resource::fromResourceUri(m_uri) );
+
+            connect( m_watcher, SIGNAL(propertyAdded(Nepomuk::Resource,Nepomuk::Types::Property,QVariant)),
+                     this, SLOT(propertyAdded(Nepomuk::Resource,Nepomuk::Types::Property,QVariant)) );
+            connect( m_watcher, SIGNAL(propertyRemoved(Nepomuk::Resource,Nepomuk::Types::Property,QVariant)),
+                     this, SLOT(propertyRemoved(Nepomuk::Resource,Nepomuk::Types::Property,QVariant)) );
+
+            m_watcher->start();
         }
         else {
             return it.value();
@@ -796,4 +805,26 @@ void Nepomuk::ResourceData::updateKickOffLists(const QUrl& prop, const Nepomuk::
             m_rm->m_uriKickoffData.insert( newUrl, this );
         }
     }
+}
+
+void Nepomuk::ResourceData::propertyAdded(const Nepomuk::Resource& res, const Nepomuk::Types::Property& prop, const QVariant& value)
+{
+    Q_ASSERT( res.resourceUri() == m_uri );
+    const QUrl propUri = prop.uri();
+    const Nepomuk::Variant var(value);
+
+    m_cache.insert(propUri, var);
+    updateKickOffLists(propUri, var);
+}
+
+void Nepomuk::ResourceData::propertyRemoved(const Nepomuk::Resource& res, const Nepomuk::Types::Property& prop, const QVariant& value)
+{
+    Q_ASSERT( res.resourceUri() == m_uri );
+    const QUrl propUri = prop.uri();
+    const Nepomuk::Variant var(value);
+
+    //FIXME: What if the property doesn't have a cardinality of 1?
+    m_cache.remove(propUri);
+
+    updateKickOffLists(propUri, Variant());
 }

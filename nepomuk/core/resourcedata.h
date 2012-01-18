@@ -30,6 +30,7 @@
 
 #include "variant.h"
 #include "thing.h"
+#include "resourcewatcher.h"
 
 #include <kurl.h>
 
@@ -41,8 +42,9 @@ namespace Nepomuk {
     class Resource;
     class ResourceManagerPrivate;
 
-    class ResourceData
+    class ResourceData : public QObject
     {
+        Q_OBJECT
     public:
         explicit ResourceData( const QUrl& uri, const QUrl& kickOffUri, const QUrl& type_, ResourceManagerPrivate* rm );
         ~ResourceData();
@@ -211,6 +213,11 @@ namespace Nepomuk {
         ResourceData* m_groundingOccurence;
 
         ResourceManagerPrivate* m_rm;
+        ResourceWatcher* m_watcher;
+
+    private Q_SLOTS:
+        void propertyAdded(const Resource &res, const Types::Property &prop, const QVariant &value);
+        void propertyRemoved(const Resource &res, const Types::Property &prop, const QVariant &value);
     };
 }
 
