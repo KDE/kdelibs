@@ -33,6 +33,33 @@
         <arg name="oldValues" type="av" direction="out"/>
         <arg name="newValues" type="av" direction="out"/>
     </signal>
+    <method name="setResources">
+        <arg name="resources" type="as" direction="in"/>
+    </method>
+    <method name="addResource">
+        <arg name="resource" type="s" direction="in"/>
+    </method>
+    <method name="removeResource">
+        <arg name="resource" type="s" direction="in"/>
+    </method>
+    <method name="setProperties">
+        <arg name="properties" type="as" direction="in"/>
+    </method>
+    <method name="addProperty">
+        <arg name="property" type="s" direction="in"/>
+    </method>
+    <method name="removeProperty">
+        <arg name="property" type="s" direction="in"/>
+    </method>
+    <method name="setTypes">
+        <arg name="types" type="as" direction="in"/>
+    </method>
+    <method name="addType">
+        <arg name="type" type="s" direction="in"/>
+    </method>
+    <method name="removeType">
+        <arg name="type" type="s" direction="in"/>
+    </method>
     <method name="close" />
   </interface>
 </node>
