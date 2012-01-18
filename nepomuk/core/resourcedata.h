@@ -42,9 +42,8 @@ namespace Nepomuk {
     class Resource;
     class ResourceManagerPrivate;
 
-    class ResourceData : public QObject
+    class ResourceData
     {
-        Q_OBJECT
     public:
         explicit ResourceData( const QUrl& uri, const QUrl& kickOffUri, const QUrl& type_, ResourceManagerPrivate* rm );
         ~ResourceData();
@@ -180,15 +179,17 @@ namespace Nepomuk {
         /// This is a set since Resource::determineFinalResourceData may add additional uris
         QSet<KUrl> m_kickoffUris;
 
+        QHash<QUrl, Variant> m_cache;
+
+        /// Updates both m_kickoffUris and ResourceMangerPrivate's list
+        void updateKickOffLists( const QUrl & prop, const Variant & v );
+
     private:
         void loadType( const QUrl& type );
 
         /// Will reset this instance to 0 as if constructed without parameters
         /// Used by remove() and deleteData()
         void resetAll( bool isDelete = false );
-
-        /// Updates both m_kickoffUris and ResourceMangerPrivate's list
-        void updateKickOffLists( const QUrl & prop, const Variant & v );
 
         /// final resource URI created by determineUri
         KUrl m_uri;
@@ -203,7 +204,6 @@ namespace Nepomuk {
 
         mutable QMutex m_modificationMutex;
 
-        QHash<QUrl, Variant> m_cache;
         bool m_cacheDirty;
 
         // using a pointer to avoid infinite creation loop
@@ -214,10 +214,6 @@ namespace Nepomuk {
 
         ResourceManagerPrivate* m_rm;
         ResourceWatcher* m_watcher;
-
-    private Q_SLOTS:
-        void propertyAdded(const Resource &res, const Types::Property &prop, const QVariant &value);
-        void propertyRemoved(const Resource &res, const Types::Property &prop, const QVariant &value);
     };
 }
 

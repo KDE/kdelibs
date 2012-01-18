@@ -151,8 +151,12 @@ void Nepomuk::ResourceData::resetAll( bool isDelete )
 {
     // remove us from all caches (store() will re-insert us later if necessary)
     m_rm->mutex.lock();
-    if( !m_uri.isEmpty() )
+    if( !m_uri.isEmpty() ) {
         m_rm->m_initializedData.remove( m_uri );
+        if( m_rm->m_watcher ) {
+            m_rm->m_watcher->removeResource(Resource::fromResourceUri(m_uri));
+        }
+    }
     Q_FOREACH( const KUrl& uri, m_kickoffUris )
         m_rm->m_uriKickoffData.remove( uri );
     m_rm->mutex.unlock();
@@ -691,15 +695,15 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::determineUri()
         ResourceDataHash::iterator it = m_rm->m_initializedData.find(m_uri);
         if( it == m_rm->m_initializedData.end() ) {
             m_rm->m_initializedData.insert( m_uri, this );
-            m_watcher = new ResourceWatcher(this);
-            m_watcher->addResource( Nepomuk::Resource::fromResourceUri(m_uri) );
-
-            connect( m_watcher, SIGNAL(propertyAdded(Nepomuk::Resource,Nepomuk::Types::Property,QVariant)),
-                     this, SLOT(propertyAdded(Nepomuk::Resource,Nepomuk::Types::Property,QVariant)) );
-            connect( m_watcher, SIGNAL(propertyRemoved(Nepomuk::Resource,Nepomuk::Types::Property,QVariant)),
-                     this, SLOT(propertyRemoved(Nepomuk::Resource,Nepomuk::Types::Property,QVariant)) );
-
-            m_watcher->start();
+            if(!m_rm->m_watcher) {
+                m_rm->m_watcher = new ResourceWatcher(m_rm->m_manager);
+                QObject::connect( m_watcher, SIGNAL(propertyAdded(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)),
+                                  m_rm->m_manager, SLOT(propertyAdded(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)) );
+                QObject::connect( m_watcher, SIGNAL(propertyRemoved(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)),
+                                  m_rm->m_manager, SLOT(propertyRemoved(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)) );
+                m_rm->m_watcher->start();
+            }
+            m_rm->m_watcher->addResource( Nepomuk::Resource::fromResourceUri(m_uri) );
         }
         else {
             return it.value();
@@ -805,26 +809,4 @@ void Nepomuk::ResourceData::updateKickOffLists(const QUrl& prop, const Nepomuk::
             m_rm->m_uriKickoffData.insert( newUrl, this );
         }
     }
-}
-
-void Nepomuk::ResourceData::propertyAdded(const Nepomuk::Resource& res, const Nepomuk::Types::Property& prop, const QVariant& value)
-{
-    Q_ASSERT( res.resourceUri() == m_uri );
-    const QUrl propUri = prop.uri();
-    const Nepomuk::Variant var(value);
-
-    m_cache.insert(propUri, var);
-    updateKickOffLists(propUri, var);
-}
-
-void Nepomuk::ResourceData::propertyRemoved(const Nepomuk::Resource& res, const Nepomuk::Types::Property& prop, const QVariant& value)
-{
-    Q_ASSERT( res.resourceUri() == m_uri );
-    const QUrl propUri = prop.uri();
-    const Nepomuk::Variant var(value);
-
-    //FIXME: What if the property doesn't have a cardinality of 1?
-    m_cache.remove(propUri);
-
-    updateKickOffLists(propUri, Variant());
 }

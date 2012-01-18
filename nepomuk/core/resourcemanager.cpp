@@ -28,6 +28,7 @@
 #include "class.h"
 #include "nie.h"
 #include "dbustypes.h"
+#include "resourcewatcher.h"
 
 #include <kglobal.h>
 #include <kdebug.h>
@@ -59,7 +60,8 @@ Nepomuk::ResourceManagerPrivate::ResourceManagerPrivate( ResourceManager* manage
       overrideModel( 0 ),
       mutex(QMutex::Recursive),
       dataCnt( 0 ),
-      m_manager( manager )
+      m_manager( manager ),
+      m_watcher( 0 )
 {
     Nepomuk::DBus::registerDBusTypes();
 }
@@ -319,11 +321,6 @@ int Nepomuk::ResourceManager::init()
 
     if( !d->mainModel ) {
         d->mainModel = new MainModel( this );
-        // FIXME: use the ResourceWatcher instead
-        connect( d->mainModel, SIGNAL(statementsAdded()),
-                 this, SLOT(slotStoreChanged()) );
-        connect( d->mainModel, SIGNAL(statementsRemoved()),
-                 this, SLOT(slotStoreChanged()) );
     }
 
     d->mainModel->init();
@@ -511,15 +508,41 @@ Soprano::Model* Nepomuk::ResourceManager::mainModel()
 }
 
 
-void Nepomuk::ResourceManager::slotStoreChanged()
+void Nepomuk::ResourceManager::slotPropertyAdded(const Resource &res, const Types::Property &prop, const QVariant &value)
 {
-    QMutexLocker lock( &d->mutex );
-
-    Q_FOREACH( ResourceData* data, d->allResourceData()) {
-        data->invalidateCache();
+    ResourceDataHash::iterator it = d->m_initializedData.find(res.resourceUri());
+    if(it != d->m_initializedData.end()) {
+        ResourceData* data = *it;
+        data->m_cache[prop.uri()].append(Variant(value));
+        data->updateKickOffLists(prop.uri(), Variant(value));
     }
 }
 
+void Nepomuk::ResourceManager::slotPropertyRemoved(const Resource &res, const Types::Property &prop, const QVariant &value_)
+{
+    ResourceDataHash::iterator it = d->m_initializedData.find(res.resourceUri());
+    if(it != d->m_initializedData.end()) {
+        ResourceData* data = *it;
+
+
+        QHash<QUrl, Variant>::iterator cacheIt = data->m_cache.find(prop.uri());
+        if(cacheIt != data->m_cache.end()) {
+            Variant v = *cacheIt;
+            const Variant value(value_);
+            QList<Variant> vl = v.toVariantList();
+            if(vl.contains(value)) {
+                vl.removeAll(value);
+                data->updateKickOffLists(prop.uri(), Variant());
+                if(vl.isEmpty()) {
+                    data->m_cache.erase(cacheIt);
+                }
+                else {
+                    cacheIt.value() = vl;
+                }
+            }
+        }
+    }
+}
 
 void Nepomuk::ResourceManager::setOverrideMainModel( Soprano::Model* model )
 {
