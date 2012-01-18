@@ -123,6 +123,35 @@ namespace Nepomuk {
         void addProperty( const Types::Property & property );
 
         /**
+         * \brief Remove a type to be watched.
+         *
+         * Every resource of this type will be watched for changes.
+         *
+         * \sa setTypes()
+         */
+        void removeType( const Types::Class & type );
+
+        /**
+         * \brief Remove a resource to be watched.
+         *
+         * Every change to this resource will be
+         * signalled, depending on the configured properties().
+         *
+         * \sa setResources()
+         */
+        void removeResource( const Nepomuk::Resource & res );
+
+        /**
+         * \brief Remove a property to be watched.
+         *
+         * Every change to a value of this property
+         * will be signalled, depending on the configured resources() or types().
+         *
+         * \sa setProperties()
+         */
+        void removeProperty( const Types::Property & property );
+
+        /**
          * \brief Set the types to be watched.
          *
          * Every resource having one of these types will be watched for changes.

@@ -155,6 +155,30 @@ void Nepomuk::ResourceWatcher::addType(const Nepomuk::Types::Class& type)
     }
 }
 
+void Nepomuk::ResourceWatcher::removeProperty(const Nepomuk::Types::Property& property)
+{
+    d->m_properties.removeAll(property);
+    if(d->m_connectionInterface) {
+        d->m_connectionInterface->removeProperty(convertUri(property.uri()));
+    }
+}
+
+void Nepomuk::ResourceWatcher::removeResource(const Nepomuk::Resource& res)
+{
+    d->m_resources.removeAll(res);
+    if(d->m_connectionInterface) {
+        d->m_connectionInterface->removeResource(convertUri(res.resourceUri()));
+    }
+}
+
+void Nepomuk::ResourceWatcher::removeType(const Nepomuk::Types::Class& type)
+{
+    d->m_types.removeAll(type);
+    if(d->m_connectionInterface) {
+        d->m_connectionInterface->removeType(convertUri(type.uri()));
+    }
+}
+
 QList< Nepomuk::Types::Property > Nepomuk::ResourceWatcher::properties() const
 {
     return d->m_properties;
