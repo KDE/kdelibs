@@ -20,12 +20,12 @@
     <signal name="propertyAdded">
       <arg name="resource" type="s" direction="out"/>
       <arg name="property" type="s" direction="out"/>
-      <arg name="value" type="v" direction="out"/>
+      <arg name="values" type="av" direction="out"/>
     </signal>
     <signal name="propertyRemoved">
       <arg name="resource" type="s" direction="out"/>
       <arg name="property" type="s" direction="out"/>
-      <arg name="value" type="v" direction="out"/>
+      <arg name="values" type="av" direction="out"/>
     </signal>
     <signal name="propertyChanged">
         <arg name="resource" type="s" direction="out"/>

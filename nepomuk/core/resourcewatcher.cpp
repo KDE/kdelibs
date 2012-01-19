@@ -98,10 +98,10 @@ bool Nepomuk::ResourceWatcher::start()
         d->m_connectionInterface = new org::kde::nepomuk::ResourceWatcherConnection( "org.kde.nepomuk.DataManagement",
                                                                                      path.path(),
                                                                                      QDBusConnection::sessionBus() );
-        connect( d->m_connectionInterface, SIGNAL(propertyAdded(QString,QString,QDBusVariant)),
-                 this, SLOT(slotPropertyAdded(QString,QString,QDBusVariant)) );
-        connect( d->m_connectionInterface, SIGNAL(propertyRemoved(QString,QString,QDBusVariant)),
-                 this, SLOT(slotPropertyRemoved(QString,QString,QDBusVariant)) );
+        connect( d->m_connectionInterface, SIGNAL(propertyAdded(QString,QString,QVariantList)),
+                 this, SLOT(slotPropertyAdded(QString,QString,QVariantList)) );
+        connect( d->m_connectionInterface, SIGNAL(propertyRemoved(QString,QString,QVariantList)),
+                 this, SLOT(slotPropertyRemoved(QString,QString,QVariantList)) );
         connect( d->m_connectionInterface, SIGNAL(resourceCreated(QString,QStringList)),
                  this, SLOT(slotResourceCreated(QString,QStringList)) );
         connect( d->m_connectionInterface, SIGNAL(propertyChanged(QString,QString,QVariantList,QVariantList)),
@@ -256,14 +256,18 @@ void Nepomuk::ResourceWatcher::slotResourceTypeRemoved(const QString &res, const
     emit resourceTypeRemoved(KUrl(res), KUrl(type));
 }
 
-void Nepomuk::ResourceWatcher::slotPropertyAdded(const QString& res, const QString& prop, const QDBusVariant& object)
+void Nepomuk::ResourceWatcher::slotPropertyAdded(const QString& res, const QString& prop, const QVariantList &objects)
 {
-    emit propertyAdded( Resource::fromResourceUri(KUrl(res)), Types::Property( KUrl(prop) ), object.variant() );
+    foreach(const QVariant& v, objects) {
+        emit propertyAdded( Resource::fromResourceUri(KUrl(res)), Types::Property( KUrl(prop) ), v );
+    }
 }
 
-void Nepomuk::ResourceWatcher::slotPropertyRemoved(const QString& res, const QString& prop, const QDBusVariant& object)
+void Nepomuk::ResourceWatcher::slotPropertyRemoved(const QString& res, const QString& prop, const QVariantList &objects)
 {
-    emit propertyRemoved( Resource::fromResourceUri(KUrl(res)), Types::Property( KUrl(prop) ), object.variant() );
+    foreach(const QVariant& v, objects) {
+        emit propertyRemoved( Resource::fromResourceUri(KUrl(res)), Types::Property( KUrl(prop) ), v );
+    }
 }
 
 void Nepomuk::ResourceWatcher::slotPropertyChanged(const QString& res, const QString& prop, const QVariantList& oldObjs, const QVariantList& newObjs)
