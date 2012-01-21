@@ -368,6 +368,25 @@ QItemSelection kNormalizeSelection(QItemSelection selection)
     if (selection.size() <= 1)
         return selection;
 
+    // KSelectionProxyModel has a strong assumption that
+    // the views always select rows, so usually the
+    // @p selection here contains ranges that span all
+    // columns. However, if a QSortFilterProxyModel
+    // is used too, it splits up the complete ranges into
+    // one index per range. That confuses the data structures
+    // held by this proxy (which keeps track of indexes in the
+    // first column). As this proxy already assumes that if the
+    // zeroth column is selected, then its entire row is selected,
+    // we can safely remove the ranges which do not include
+    // column 0 without a loss of functionality.
+    QItemSelection::iterator i = selection.begin();
+    while (i != selection.end()) {
+      if (i->left() > 0)
+        i = selection.erase(i);
+      else
+        ++i;
+    }
+
     RangeLessThan lt;
     qSort(selection.begin(), selection.end(), lt);
     return stableNormalizeSelection(selection);
