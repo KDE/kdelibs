@@ -3,9 +3,6 @@ project(kjs)
 
 add_subdirectory(tests)
 
-# Conflict between KJS::HashTable and WTF::HashTable, due to "using namespace" of both namespaces.
-kde4_no_enable_final(kjs)
-
 # Configuration checks
 include(FindThreads)
 check_library_exists(pthread pthread_attr_get_np "" HAVE_PTHREAD_ATTR_GET_NP)

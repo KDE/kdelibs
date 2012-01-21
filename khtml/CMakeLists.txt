@@ -1,6 +1,5 @@
 
 project(khtml)
-KDE4_NO_ENABLE_FINAL(khtml)
 
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=6000)
 
@@ -552,11 +551,7 @@ macro(CREATE_LUT _in_FILE _out_FILE)
       COMMAND ${PERL_EXECUTABLE} ${CREATE_HASH_TABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} > ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
       DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE}
    )
-   if(KDE4_ENABLE_FINAL)
-     macro_add_file_dependencies(${CMAKE_CURRENT_BINARY_DIR}/khtml_final_cpp.cpp ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE} )
-   else(KDE4_ENABLE_FINAL)
-     macro_add_file_dependencies(${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE} )
-   endif(KDE4_ENABLE_FINAL)
+   macro_add_file_dependencies(${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE} )
 endmacro(CREATE_LUT)
 
 
@@ -594,11 +589,7 @@ macro(create_js_binding _in_FILE)
       MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE}
       DEPENDS ${_scripts_dir}/CodeGeneratorJS.pm
       )
-   if(KDE4_ENABLE_FINAL)
-     macro_add_file_dependencies(${CMAKE_CURRENT_BINARY_DIR}/khtml_final_cpp.cpp ${_out_h_FILE} ${_out_cpp_FILE})
-   else(KDE4_ENABLE_FINAL)
-      macro_add_file_dependencies(${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} ${_out_h_FILE} ${_out_cpp_FILE})
-   endif(KDE4_ENABLE_FINAL)
+   macro_add_file_dependencies(${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} ${_out_h_FILE} ${_out_cpp_FILE})
 endmacro(create_js_binding)
 
 create_js_binding(html/TimeRanges.idl)

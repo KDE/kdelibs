@@ -2976,7 +2976,6 @@ void RenderBlock::calcMinMaxWidth()
 // bidi.cpp defines the following functions too.
 // Maybe these should not be static, after all...
 
-#ifndef KDE_USE_FINAL
 
 static int getBPMWidth(int childValue, Length cssUnit)
 {
@@ -2999,7 +2998,6 @@ static int getBorderPaddingMargin(RenderObject* child, bool endOfInline)
     result += leftSide ? child->borderLeft() : child->borderRight();
     return result;
 }
-#endif
 
 static void stripTrailingSpace(bool preserveWS,
                                int& inlineMax, int& inlineMin,

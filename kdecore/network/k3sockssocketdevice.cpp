@@ -32,11 +32,9 @@
 
 
 #include <QCoreApplication>
-#ifndef KDE_USE_FINAL
 #define I_KNOW_KSOCKS_ISNT_PUBLIC
 #include "k3socks.h"
 #undef I_KNOW_KSOCKS_ISNT_PUBLIC
-#endif
 #include "k3socketaddress.h"
 #include "k3resolver.h"
 

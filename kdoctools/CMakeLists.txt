@@ -68,11 +68,7 @@ install(TARGETS kio_ghelp  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 ########### next target ###############
 
-if(KDE4_ENABLE_FINAL)
-   set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/meinproc4_final_cpp.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
-else(KDE4_ENABLE_FINAL)
-   set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
-endif(KDE4_ENABLE_FINAL)
+set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
 
 # The cross compiling parts are commented out on purpose. Alex
 # if (CMAKE_CROSSCOMPILING)
@@ -100,11 +96,7 @@ endif(KDE4_ENABLE_FINAL)
 
 ########### next target ###############
 
-if(KDE4_ENABLE_FINAL)
-   set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/meinproc4_simple_final_cpp.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
-else(KDE4_ENABLE_FINAL)
-   set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
-endif(KDE4_ENABLE_FINAL)
+set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
 
 if (NOT CMAKE_CROSSCOMPILING)
    set(meinproc_qt_SRCS meinproc_simple.cpp meinproc_common.cpp xslt.cpp )

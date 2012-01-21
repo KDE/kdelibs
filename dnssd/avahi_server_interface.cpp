@@ -12,9 +12,7 @@
 #include "avahi_server_interface.h"
 #include "servicebase.h"
 #include <QtCore/QUrl>
-#ifndef KDE_USE_FINAL
 Q_DECLARE_METATYPE(QList<QByteArray>)
-#endif
 /*
  * Implementation of interface class OrgFreedesktopAvahiServerInterface
  */

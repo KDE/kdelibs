@@ -16,12 +16,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifdef KDE_USE_FINAL
-#ifdef KeyRelease
-#undef KeyRelease
-#endif
-#endif
-
 #include "kcursor.h"
 #include "kcursor_p.h"
 #include <kdebug.h>

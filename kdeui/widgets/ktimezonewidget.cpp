@@ -50,12 +50,10 @@ public:
     bool singleSelection;
 };
 
-#ifndef KDE_USE_FINAL
 static bool localeLessThan (const QString &a, const QString &b)
 {
     return QString::localeAwareCompare(a, b) < 0;
 }
-#endif
 
 KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
   : QTreeWidget( parent ),

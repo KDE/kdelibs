@@ -25,9 +25,6 @@
 
 #include <stdio.h>
 
-#ifdef KDE_USE_FINAL
-#undef Always
-#endif
 #include <QtCore/QDir>
 #include <QtCore/QPair>
 #include <QtCore/QTimer>

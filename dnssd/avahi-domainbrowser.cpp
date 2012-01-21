@@ -31,9 +31,7 @@
 
 
 
-#ifndef KDE_USE_FINAL
 Q_DECLARE_METATYPE(QList<QByteArray>)
-#endif
 namespace DNSSD
 {
 

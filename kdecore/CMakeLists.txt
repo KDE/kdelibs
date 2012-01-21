@@ -218,7 +218,7 @@ set(kdecore_LIB_SRCS
 
 if (NOT KDECORE_NO_KDE3SUPPORT)
    set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
-      network/k3socketdevice.cpp # must be before the rest of network/, for enable-final
+      network/k3socketdevice.cpp
       network/k3bufferedsocket.cpp
       network/k3clientsocketbase.cpp
       network/k3resolver.cpp
@@ -355,12 +355,7 @@ if(NOT WINCE)
 
     target_link_libraries( ktranscript kjs ${QT_QTCORE_LIBRARY} )
 
-
-    if(KDE4_ENABLE_FINAL)
-       macro_add_file_dependencies(${CMAKE_CURRENT_BINARY_DIR}/ktranscript_final_cpp.cpp ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h)
-    else(KDE4_ENABLE_FINAL)
-       macro_add_file_dependencies(${CMAKE_CURRENT_SOURCE_DIR}/localization/ktranscript.cpp ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h)
-    endif(KDE4_ENABLE_FINAL)
+    macro_add_file_dependencies(${CMAKE_CURRENT_SOURCE_DIR}/localization/ktranscript.cpp ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h)
 
     install( TARGETS ktranscript DESTINATION ${PLUGIN_INSTALL_DIR} )
 

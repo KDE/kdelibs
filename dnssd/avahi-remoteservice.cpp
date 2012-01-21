@@ -26,9 +26,7 @@
 #include "remoteservice.h"
 #include "avahi_server_interface.h"
 #include "avahi_serviceresolver_interface.h"
-#ifndef KDE_USE_FINAL
 Q_DECLARE_METATYPE(QList<QByteArray>)
-#endif
 namespace DNSSD
 {
 

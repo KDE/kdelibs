@@ -112,14 +112,6 @@ configure_file(${CMAKE_SOURCE_DIR}/../../config-compiler.h.cmake ${CMAKE_CURRENT
 configure_file(${CMAKE_SOURCE_DIR}/../../kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 
 include(KDE4Macros)
-macro(KDE4_NO_ENABLE_FINAL _project_name)
-   if(KDE4_ENABLE_FINAL)
-        set(KDE4_ENABLE_FINAL OFF)
-        remove_definitions(-DKDE_USE_FINAL)
-        message(STATUS "You used enable-final argument but \"${_project_name}\" doesn't support it. Try to fix compile it and remove KDE4_NO_ENABLE_FINAL macro. Thanks")
-
-   endif(KDE4_ENABLE_FINAL)
-endmacro(KDE4_NO_ENABLE_FINAL _project_name)
 
 if (NOT QTONLY_WEBKIT)
    include_directories( ${CMAKE_SOURCE_DIR}/../.. ${CMAKE_SOURCE_DIR}/../../wtf ${CMAKE_SOURCE_DIR}/../../kjsembed ${KDE4_KJS_INCLUDES} ${QT_INCLUDES} ${KDEWIN_INCLUDES} )
