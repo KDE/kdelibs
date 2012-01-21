@@ -155,7 +155,7 @@ void Nepomuk::ResourceData::resetAll( bool isDelete )
     if( !m_uri.isEmpty() ) {
         m_rm->m_initializedData.remove( m_uri );
         if( m_rm->m_watcher ) {
-            m_rm->m_watcher->removeResource(Resource::fromResourceUri(m_uri));
+            m_rm->m_watcher->removeResource(m_uri);
         }
     }
     Q_FOREACH( const KUrl& uri, m_kickoffUris )
@@ -698,15 +698,15 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::determineUri()
             m_rm->m_initializedData.insert( m_uri, this );
             if(!m_rm->m_watcher) {
                 m_rm->m_watcher = new ResourceWatcher(m_rm->m_manager);
-                QObject::connect( m_rm->m_watcher, SIGNAL(propertyAdded(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)),
-                                  m_rm->m_manager, SLOT(slotPropertyAdded(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)) );
-                QObject::connect( m_rm->m_watcher, SIGNAL(propertyRemoved(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)),
-                                  m_rm->m_manager, SLOT(slotPropertyRemoved(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)) );
-                m_rm->m_watcher->addResource( Nepomuk::Resource::fromResourceUri(m_uri) );
+                QObject::connect( m_rm->m_watcher, SIGNAL(propertyAdded(QUrl, Nepomuk::Types::Property, QVariant)),
+                                  m_rm->m_manager, SLOT(slotPropertyAdded(QUrl, Nepomuk::Types::Property, QVariant)) );
+                QObject::connect( m_rm->m_watcher, SIGNAL(propertyRemoved(QUrl, Nepomuk::Types::Property, QVariant)),
+                                  m_rm->m_manager, SLOT(slotPropertyRemoved(QUrl, Nepomuk::Types::Property, QVariant)) );
+                m_rm->m_watcher->addResource( m_uri );
                 m_rm->m_watcher->start();
             }
             else {
-                m_rm->m_watcher->addResource( Nepomuk::Resource::fromResourceUri(m_uri) );
+                m_rm->m_watcher->addResource( m_uri );
             }
         }
         else {
