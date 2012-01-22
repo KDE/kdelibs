@@ -66,13 +66,13 @@ HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
     m_determineParseMode = false;
 
 /* dynamic history stuff to be fixed later (pfeiffer)
-    connect( KHTMLGlobal::vLinks(), SIGNAL( removed( const QString& )),
-             SLOT( slotHistoryChanged() ));
+    connect( KHTMLGlobal::vLinks(), SIGNAL(removed(QString)),
+             SLOT(slotHistoryChanged()));
 */
-    connect( KHTMLGlobal::vLinks(), SIGNAL( inserted( const QString& ) ),
-             SLOT( slotHistoryChanged() ));
-    connect( KHTMLGlobal::vLinks(), SIGNAL( cleared()),
-             SLOT( slotHistoryChanged() ));
+    connect( KHTMLGlobal::vLinks(), SIGNAL(inserted(QString)),
+             SLOT(slotHistoryChanged()));
+    connect( KHTMLGlobal::vLinks(), SIGNAL(cleared()),
+             SLOT(slotHistoryChanged()));
 }
 
 HTMLDocumentImpl::~HTMLDocumentImpl()

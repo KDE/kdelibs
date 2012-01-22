@@ -124,7 +124,7 @@ void KCModuleContainer::addModule( const QString& module )
 
 	d->tabWidget->setTabToolTip( d->tabWidget->indexOf( proxy ), proxy->moduleInfo().comment() );
 
-	connect( proxy, SIGNAL(changed(KCModuleProxy *)), SLOT(moduleChanged(KCModuleProxy *)));
+	connect( proxy, SIGNAL(changed(KCModuleProxy*)), SLOT(moduleChanged(KCModuleProxy*)));
 
 	/* Collect our buttons - we go for the common deliminator */
 	setButtons( buttons() | proxy->realModule()->buttons() );

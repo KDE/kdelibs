@@ -1224,8 +1224,8 @@ void KRun::init()
     KIO::JobFlags flags = d->m_bProgressInfo ? KIO::DefaultFlags : KIO::HideProgressInfo;
     KIO::StatJob *job = KIO::stat(d->m_strURL, KIO::StatJob::SourceSide, 0 /* no details */, flags);
     job->ui()->setWindow(d->m_window);
-    connect(job, SIGNAL(result(KJob *)),
-            this, SLOT(slotStatResult(KJob *)));
+    connect(job, SIGNAL(result(KJob*)),
+            this, SLOT(slotStatResult(KJob*)));
     d->m_job = job;
     kDebug(7010) << " Job " << job << " is about stating " << d->m_strURL.url();
 }
@@ -1295,10 +1295,10 @@ void KRun::scanFile()
     KIO::JobFlags flags = d->m_bProgressInfo ? KIO::DefaultFlags : KIO::HideProgressInfo;
     KIO::TransferJob *job = KIO::get(d->m_strURL, KIO::NoReload /*reload*/, flags);
     job->ui()->setWindow(d->m_window);
-    connect(job, SIGNAL(result(KJob *)),
-            this, SLOT(slotScanFinished(KJob *)));
-    connect(job, SIGNAL(mimetype(KIO::Job *, const QString &)),
-            this, SLOT(slotScanMimeType(KIO::Job *, const QString &)));
+    connect(job, SIGNAL(result(KJob*)),
+            this, SLOT(slotScanFinished(KJob*)));
+    connect(job, SIGNAL(mimetype(KIO::Job*,QString)),
+            this, SLOT(slotScanMimeType(KIO::Job*,QString)));
     d->m_job = job;
     kDebug(7010) << " Job " << job << " is about getting from " << d->m_strURL.url();
 }
@@ -1718,8 +1718,8 @@ KProcessRunner::KProcessRunner(KProcess * p, const QString & executable, const K
     m_pid = 0;
     process = p;
     m_executable = executable;
-    connect(process, SIGNAL(finished(int, QProcess::ExitStatus)),
-            this, SLOT(slotProcessExited(int, QProcess::ExitStatus)));
+    connect(process, SIGNAL(finished(int,QProcess::ExitStatus)),
+            this, SLOT(slotProcessExited(int,QProcess::ExitStatus)));
 
     process->start();
     if (!process->waitForStarted()) {

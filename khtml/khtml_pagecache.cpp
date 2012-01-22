@@ -121,7 +121,7 @@ KHTMLPageCacheEntry::fetchData(QObject *recvObj, const char *recvSlot)
                                                              );
   delivery->file->open(QIODevice::ReadOnly);
 
-  recvObj->connect(delivery, SIGNAL(emitData(const QByteArray&)), recvSlot);
+  recvObj->connect(delivery, SIGNAL(emitData(QByteArray)), recvSlot);
   delivery->recvObj = recvObj;
   return delivery;
 }

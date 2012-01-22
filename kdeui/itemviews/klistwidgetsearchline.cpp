@@ -117,20 +117,20 @@ void KListWidgetSearchLine::setCaseSensitivity( Qt::CaseSensitivity cs )
 void KListWidgetSearchLine::setListWidget( QListWidget *lw )
 {
     if ( d->listWidget != 0 ) {
-        disconnect( d->listWidget, SIGNAL( destroyed() ),
-                    this, SLOT( _k_listWidgetDeleted() ) );
+        disconnect( d->listWidget, SIGNAL(destroyed()),
+                    this, SLOT(_k_listWidgetDeleted()) );
         d->listWidget->model()->disconnect( this );
     }
 
     d->listWidget = lw;
 
     if ( lw != 0 ) {
-        connect( d->listWidget, SIGNAL( destroyed() ),
-                 this, SLOT( _k_listWidgetDeleted() ) );
-        connect( d->listWidget->model(), SIGNAL( rowsInserted( const QModelIndex &, int, int ) ),
-                 this, SLOT( _k_rowsInserted( const QModelIndex &, int, int ) ) );
-        connect( d->listWidget->model(), SIGNAL( dataChanged( const QModelIndex &, const QModelIndex & ) ),
-                 this, SLOT( _k_dataChanged( const QModelIndex &, const QModelIndex & ) ) );
+        connect( d->listWidget, SIGNAL(destroyed()),
+                 this, SLOT(_k_listWidgetDeleted()) );
+        connect( d->listWidget->model(), SIGNAL(rowsInserted(QModelIndex,int,int)),
+                 this, SLOT(_k_rowsInserted(QModelIndex,int,int)) );
+        connect( d->listWidget->model(), SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+                 this, SLOT(_k_dataChanged(QModelIndex,QModelIndex)) );
         setEnabled( true );
     } else
         setEnabled( false );
@@ -156,16 +156,16 @@ void KListWidgetSearchLine::KListWidgetSearchLinePrivate::init( QListWidget *_li
 {
     listWidget = _listWidget;
 
-    connect( q, SIGNAL( textChanged( const QString & ) ),
-             q, SLOT( _k_queueSearch( const QString & ) ) );
+    connect( q, SIGNAL(textChanged(QString)),
+             q, SLOT(_k_queueSearch(QString)) );
 
     if ( listWidget != 0 ) {
-        connect( listWidget, SIGNAL( destroyed() ),
-                 q, SLOT( _k_listWidgetDeleted() ) );
-        connect( listWidget->model(), SIGNAL( rowsInserted( const QModelIndex &, int, int ) ),
-                 q, SLOT( _k_rowsInserted( const QModelIndex &, int, int ) ) );
-        connect( listWidget->model(), SIGNAL( dataChanged( const QModelIndex &, const QModelIndex & ) ),
-                 q, SLOT( _k_dataChanged( const QModelIndex &, const QModelIndex & ) ) );
+        connect( listWidget, SIGNAL(destroyed()),
+                 q, SLOT(_k_listWidgetDeleted()) );
+        connect( listWidget->model(), SIGNAL(rowsInserted(QModelIndex,int,int)),
+                 q, SLOT(_k_rowsInserted(QModelIndex,int,int)) );
+        connect( listWidget->model(), SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+                 q, SLOT(_k_dataChanged(QModelIndex,QModelIndex)) );
         q->setEnabled( true );
     } else {
         q->setEnabled( false );
@@ -229,7 +229,7 @@ void KListWidgetSearchLine::KListWidgetSearchLinePrivate::_k_queueSearch( const 
 {
     queuedSearches++;
     search = s;
-    QTimer::singleShot( 200, q, SLOT( _k_activateSearch() ) );
+    QTimer::singleShot( 200, q, SLOT(_k_activateSearch()) );
 }
 
 void KListWidgetSearchLine::KListWidgetSearchLinePrivate::_k_activateSearch()

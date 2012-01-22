@@ -111,8 +111,8 @@ CaCertificatesPage::CaCertificatesPage(QWidget *parent)
     connect(m_ui.enableSelection, SIGNAL(clicked()), SLOT(enableSelectionClicked()));
     connect(m_ui.removeSelection, SIGNAL(clicked()), SLOT(removeSelectionClicked()));
     connect(m_ui.add, SIGNAL(clicked()), SLOT(addCertificateClicked()));
-    connect(m_ui.treeWidget, SIGNAL(itemChanged(QTreeWidgetItem *, int)),
-            SLOT(itemChanged(QTreeWidgetItem *, int)));
+    connect(m_ui.treeWidget, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
+            SLOT(itemChanged(QTreeWidgetItem*,int)));
     connect(m_ui.treeWidget, SIGNAL(itemSelectionChanged()),
             SLOT(itemSelectionChanged()));
 

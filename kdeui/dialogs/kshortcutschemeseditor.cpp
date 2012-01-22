@@ -85,8 +85,8 @@ KShortcutSchemesEditor::KShortcutSchemesEditor(KShortcutsDialog *parent)
 
     l->addStretch(1);
 
-    connect(m_schemesList, SIGNAL(activated(const QString&)),
-        this, SIGNAL(shortcutsSchemeChanged(const QString&)));
+    connect(m_schemesList, SIGNAL(activated(QString)),
+        this, SIGNAL(shortcutsSchemeChanged(QString)));
     connect(m_newScheme, SIGNAL(clicked()), this, SLOT(newScheme()));
     connect(m_deleteScheme, SIGNAL(clicked()), this, SLOT(deleteScheme()));
     updateDeleteButton();

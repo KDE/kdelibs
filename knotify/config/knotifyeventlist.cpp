@@ -106,7 +106,7 @@ KNotifyEventList::KNotifyEventList(QWidget *parent)
 	header()->resizeSection( 0, KNotifyConfigElement::have_kttsd() ? (iconWidth+4)*6: (iconWidth+4)*5 );
 	header()->setResizeMode( 1, QHeaderView::ResizeToContents );
 
-	connect(this, SIGNAL(currentItemChanged( QTreeWidgetItem * , QTreeWidgetItem *  )) , this , SLOT(slotSelectionChanged( QTreeWidgetItem * , QTreeWidgetItem *)));
+	connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)) , this , SLOT(slotSelectionChanged(QTreeWidgetItem*,QTreeWidgetItem*)));
 }
 
 

@@ -148,7 +148,7 @@ void StaticXmlProvider::loadEntries(const KNS3::Provider::SearchRequest& request
         // TODO first get the entries, then filter with searchString, finally emit the finished signal...
         // FIXME: don't creat an endless number of xmlloaders!
         XmlLoader * loader = new XmlLoader(this);
-        connect(loader, SIGNAL(signalLoaded(const QDomDocument&)), SLOT(slotFeedFileLoaded(const QDomDocument&)));
+        connect(loader, SIGNAL(signalLoaded(QDomDocument)), SLOT(slotFeedFileLoaded(QDomDocument)));
         connect(loader, SIGNAL(signalFailed()), SLOT(slotFeedFailed()));
 
         mFeedLoaders.insert(request.sortMode, loader);

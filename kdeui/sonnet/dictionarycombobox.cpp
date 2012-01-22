@@ -47,8 +47,8 @@ DictionaryComboBox::DictionaryComboBox( QWidget * parent )
         : KComboBox( parent ), d( new DictionaryComboBox::Private( this ) )
 {
     reloadCombo();
-    connect( this, SIGNAL( activated( int ) ),
-             SLOT( slotDictionaryChanged( int ) ) );
+    connect( this, SIGNAL(activated(int)),
+             SLOT(slotDictionaryChanged(int)) );
 }
 
 DictionaryComboBox::~DictionaryComboBox()

@@ -122,10 +122,10 @@ KReplaceNextDialog* KReplacePrivate::dialog()
     if ( !q->KFind::d->dialog )
     {
         q->KFind::d->dialog = new KReplaceNextDialog( q->parentWidget() );
-        q->connect( q->KFind::d->dialog, SIGNAL( user1Clicked() ), q, SLOT( _k_slotReplaceAll() ) );
-        q->connect( q->KFind::d->dialog, SIGNAL( user2Clicked() ), q, SLOT( _k_slotSkip() ) );
-        q->connect( q->KFind::d->dialog, SIGNAL( user3Clicked() ), q, SLOT( _k_slotReplace() ) );
-        q->connect( q->KFind::d->dialog, SIGNAL( finished() ), q, SLOT( _k_slotDialogClosed() ) );
+        q->connect( q->KFind::d->dialog, SIGNAL(user1Clicked()), q, SLOT(_k_slotReplaceAll()) );
+        q->connect( q->KFind::d->dialog, SIGNAL(user2Clicked()), q, SLOT(_k_slotSkip()) );
+        q->connect( q->KFind::d->dialog, SIGNAL(user3Clicked()), q, SLOT(_k_slotReplace()) );
+        q->connect( q->KFind::d->dialog, SIGNAL(finished()), q, SLOT(_k_slotDialogClosed()) );
     }
     return static_cast<KReplaceNextDialog *>(q->KFind::d->dialog);
 }

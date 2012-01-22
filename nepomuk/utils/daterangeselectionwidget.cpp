@@ -296,22 +296,22 @@ DateRangeSelectionWidget::DateRangeSelectionWidget( QWidget* parent )
     d->setupPopupMenus();
 
     d->m_calendar->setFirstDayOfWeek( Qt::DayOfWeek( KGlobal::locale()->weekStartDay() ) );
-    connect( d->m_anytimeButton, SIGNAL( clicked() ),
-             this, SLOT( _k_anytimeClicked() ) );
-    connect( d->m_beforeButton, SIGNAL( clicked() ),
-             this, SLOT( _k_beforeClicked() ) );
-    connect( d->m_afterButton, SIGNAL( clicked() ),
-             this, SLOT( _k_afterClicked() ) );
-    connect( d->m_rangesButton, SIGNAL( clicked() ),
-             this, SLOT( _k_rangeClicked() ) );
-    connect( d->m_rangesButton, SIGNAL( triggered(QAction*) ),
-             this, SLOT( _k_rangeClicked(QAction*) ) );
-    connect( d->m_rangeStartEdit, SIGNAL( dateChanged( QDate ) ),
-             this, SLOT( _k_rangeStartEdited( QDate ) ) );
-    connect( d->m_rangeEndEdit, SIGNAL( dateChanged( QDate ) ),
-             this, SLOT( _k_rangeEndEdited( QDate ) ) );
-    connect( d->m_calendar, SIGNAL( clicked( QDate ) ),
-             this, SLOT( _k_calendarDateClicked( QDate ) ) );
+    connect( d->m_anytimeButton, SIGNAL(clicked()),
+             this, SLOT(_k_anytimeClicked()) );
+    connect( d->m_beforeButton, SIGNAL(clicked()),
+             this, SLOT(_k_beforeClicked()) );
+    connect( d->m_afterButton, SIGNAL(clicked()),
+             this, SLOT(_k_afterClicked()) );
+    connect( d->m_rangesButton, SIGNAL(clicked()),
+             this, SLOT(_k_rangeClicked()) );
+    connect( d->m_rangesButton, SIGNAL(triggered(QAction*)),
+             this, SLOT(_k_rangeClicked(QAction*)) );
+    connect( d->m_rangeStartEdit, SIGNAL(dateChanged(QDate)),
+             this, SLOT(_k_rangeStartEdited(QDate)) );
+    connect( d->m_rangeEndEdit, SIGNAL(dateChanged(QDate)),
+             this, SLOT(_k_rangeEndEdited(QDate)) );
+    connect( d->m_calendar, SIGNAL(clicked(QDate)),
+             this, SLOT(_k_calendarDateClicked(QDate)) );
 
     setRange( DateRange() );
 }

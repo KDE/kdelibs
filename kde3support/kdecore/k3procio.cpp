@@ -75,14 +75,14 @@ K3ProcIO::resetAll ()
     d->readsignalon = true;
     d->writeready = true;
 
-  disconnect (this, SIGNAL (receivedStdout (K3Process *, char *, int)),
-	   this, SLOT (received (K3Process *, char *, int)));
+  disconnect (this, SIGNAL (receivedStdout(K3Process*,char*,int)),
+	   this, SLOT (received(K3Process*,char*,int)));
 
-  disconnect (this, SIGNAL (receivedStderr (K3Process *, char *, int)),
-	   this, SLOT (received (K3Process *, char *, int)));
+  disconnect (this, SIGNAL (receivedStderr(K3Process*,char*,int)),
+	   this, SLOT (received(K3Process*,char*,int)));
 
-  disconnect (this, SIGNAL (wroteStdin(K3Process *)),
-	   this, SLOT (sent (K3Process *)));
+  disconnect (this, SIGNAL (wroteStdin(K3Process*)),
+	   this, SLOT (sent(K3Process*)));
 
   qDeleteAll( d->outbuffer );
   d->outbuffer.clear();
@@ -95,17 +95,17 @@ void K3ProcIO::setComm (Communication comm)
 
 bool K3ProcIO::start (RunMode runmode, bool includeStderr)
 {
-  connect (this, SIGNAL (receivedStdout (K3Process *, char *, int)),
-	   this, SLOT (received (K3Process *, char *, int)));
+  connect (this, SIGNAL (receivedStdout(K3Process*,char*,int)),
+	   this, SLOT (received(K3Process*,char*,int)));
 
   if (includeStderr)
   {
-     connect (this, SIGNAL (receivedStderr (K3Process *, char *, int)),
-              this, SLOT (received (K3Process *, char *, int)));
+     connect (this, SIGNAL (receivedStderr(K3Process*,char*,int)),
+              this, SLOT (received(K3Process*,char*,int)));
   }
 
-  connect (this, SIGNAL (wroteStdin(K3Process *)),
-	   this, SLOT (sent (K3Process *)));
+  connect (this, SIGNAL (wroteStdin(K3Process*)),
+	   this, SLOT (sent(K3Process*)));
 
   return K3Process::start (runmode, d->comm);
 }

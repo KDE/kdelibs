@@ -124,8 +124,8 @@ Highlighter::Highlighter(QTextEdit *textEdit,
             d->dict->addToSession( *it );
         }
         d->rehighlightRequest = new QTimer(this);
-        connect( d->rehighlightRequest, SIGNAL( timeout() ),
-                 this, SLOT( slotRehighlight() ));
+        connect( d->rehighlightRequest, SIGNAL(timeout()),
+                 this, SLOT(slotRehighlight()));
         d->completeRehighlightRequired = true;
         d->rehighlightRequest->setInterval(0);
         d->rehighlightRequest->setSingleShot(true);
@@ -175,7 +175,7 @@ void Highlighter::slotRehighlight()
     }
     //if (d->checksDone == d->checksRequested)
     //d->completeRehighlightRequired = false;
-    QTimer::singleShot( 0, this, SLOT( slotAutoDetection() ));
+    QTimer::singleShot( 0, this, SLOT(slotAutoDetection()));
 }
 
 
@@ -392,7 +392,7 @@ bool Highlighter::eventFilter( QObject *o, QEvent *e)
 	if ( k->key() == Qt::Key_Space ||
 	     k->key() == Qt::Key_Enter ||
 	     k->key() == Qt::Key_Return ) {
-	    QTimer::singleShot( 0, this, SLOT( slotAutoDetection() ));
+	    QTimer::singleShot( 0, this, SLOT(slotAutoDetection()));
 	}
     }
 

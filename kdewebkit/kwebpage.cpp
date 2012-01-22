@@ -491,7 +491,7 @@ bool KWebPage::handleReply(QNetworkReply* reply, QString* contentType, KIO::Meta
                 KIO::Job *job = KIO::file_copy(replyUrl, destUrl, 0600, KIO::Overwrite);
                 job->ui()->setWindow(topLevelWindow);
                 job->ui()->setAutoErrorHandlingEnabled(true);
-                connect(job, SIGNAL(result(KJob *)),
+                connect(job, SIGNAL(result(KJob*)),
                         this, SLOT(_k_copyResultToTempFile(KJob*)));
                 return true;
             }

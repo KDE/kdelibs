@@ -76,8 +76,8 @@ KBreadcrumbSelectionModel::KBreadcrumbSelectionModel(QItemSelectionModel *select
     d_ptr(new KBreadcrumbSelectionModelPrivate(this, selectionModel, direction))
 {
   if ( direction != MakeBreadcrumbSelectionInSelf)
-    connect(selectionModel, SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
-            this, SLOT(sourceSelectionChanged(const QItemSelection&,const QItemSelection&)));
+    connect(selectionModel, SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
+            this, SLOT(sourceSelectionChanged(QItemSelection,QItemSelection)));
 
   d_ptr->init();
 }
@@ -229,7 +229,7 @@ void KBreadcrumbSelectionModelPrivate::init()
   Q_Q(KBreadcrumbSelectionModel);
   q->connect(m_selectionModel->model(), SIGNAL(layoutChanged()), SLOT(syncBreadcrumbs()));
   q->connect(m_selectionModel->model(), SIGNAL(modelReset()), SLOT(syncBreadcrumbs()));
-  q->connect(m_selectionModel->model(), SIGNAL(rowsMoved(QModelIndex, int, int, QModelIndex, int)), SLOT(syncBreadcrumbs()));
+  q->connect(m_selectionModel->model(), SIGNAL(rowsMoved(QModelIndex,int,int,QModelIndex,int)), SLOT(syncBreadcrumbs()));
   // Don't need to handle insert & remove because they can't change the breadcrumbs on their own.
 }
 

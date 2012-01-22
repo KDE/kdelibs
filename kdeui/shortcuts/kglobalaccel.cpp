@@ -89,8 +89,8 @@ org::kde::kglobalaccel::Component *KGlobalAccelPrivate::getComponent(const QStri
     if (remember)
         {
         // Connect to the signals we are interested in.
-        q->connect(component, SIGNAL(globalShortcutPressed(const QString &, const QString &, qlonglong)),
-                SLOT(_k_invokeAction(const QString &, const QString &, qlonglong)));
+        q->connect(component, SIGNAL(globalShortcutPressed(QString,QString,qlonglong)),
+                SLOT(_k_invokeAction(QString,QString,qlonglong)));
 
         components[componentUnique] = component;
         }
@@ -150,8 +150,8 @@ KGlobalAccel::KGlobalAccel()
     qDBusRegisterMetaType<KGlobalShortcutInfo>();
     qDBusRegisterMetaType<QList<KGlobalShortcutInfo> >();
 
-    connect(&d->iface, SIGNAL(yourShortcutGotChanged(const QStringList &, const QList<int> &)),
-            SLOT(_k_shortcutGotChanged(const QStringList &, const QList<int> &)));
+    connect(&d->iface, SIGNAL(yourShortcutGotChanged(QStringList,QList<int>)),
+            SLOT(_k_shortcutGotChanged(QStringList,QList<int>)));
 
     if (KGlobal::hasMainComponent()) {
         d->readComponentData( KGlobal::mainComponent() );

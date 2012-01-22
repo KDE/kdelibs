@@ -53,13 +53,13 @@ void ModelSelector::setWatch(bool watch)
   if (!m_model)
     return;
 
-  disconnect(m_model, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
-             this, SLOT(rowsInserted(const QModelIndex &, int, int)));
+  disconnect(m_model, SIGNAL(rowsInserted(QModelIndex,int,int)),
+             this, SLOT(rowsInserted(QModelIndex,int,int)));
   if (watch)
   {
     Q_ASSERT(m_model);
-    connect(m_model, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
-            SLOT(rowsInserted(const QModelIndex &, int, int)));
+    connect(m_model, SIGNAL(rowsInserted(QModelIndex,int,int)),
+            SLOT(rowsInserted(QModelIndex,int,int)));
     if (m_model->hasChildren())
       rowsInserted(QModelIndex(), 0, m_model->rowCount() - 1);
   }

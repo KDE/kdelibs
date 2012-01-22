@@ -54,10 +54,10 @@ KDatagramSocket::KDatagramSocket(QObject* parent)
 
   localResolver().setFlags(KResolver::Passive);
 
-  //  QObject::connect(localResolver(), SIGNAL(finished(const KNetwork::KResolverResults&))
+  //  QObject::connect(localResolver(), SIGNAL(finished(KNetwork::KResolverResults))
   //		   this, SLOT(lookupFinishedLocal()));
   QObject::connect(&peerResolver(),
-		   SIGNAL(finished(const KNetwork::KResolverResults&)),
+		   SIGNAL(finished(KNetwork::KResolverResults)),
   		   this, SLOT(lookupFinishedPeer()));
   QObject::connect(this, SIGNAL(hostFound()), this, SLOT(lookupFinishedLocal()));
 }

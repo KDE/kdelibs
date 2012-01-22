@@ -323,8 +323,8 @@ QWidget* KFileMetaDataProvider::Private::createRatingWidget(int rating, QWidget*
     const QFontMetrics metrics(parent->font());
     ratingWidget->setPixmapSize(metrics.height());
 
-    connect(ratingWidget, SIGNAL(ratingChanged(unsigned int)),
-            q, SLOT(slotRatingChanged(unsigned int)));
+    connect(ratingWidget, SIGNAL(ratingChanged(uint)),
+            q, SLOT(slotRatingChanged(uint)));
 
     m_ratingWidget = ratingWidget;
 
@@ -355,8 +355,8 @@ QWidget* KFileMetaDataProvider::Private::createCommentWidget(const QString& comm
     commentWidget->setText(comment);
     commentWidget->setReadOnly(m_readOnly);
 
-    connect(commentWidget, SIGNAL(commentChanged(const QString&)),
-            q, SLOT(slotCommentChanged(const QString&)));
+    connect(commentWidget, SIGNAL(commentChanged(QString)),
+            q, SLOT(slotCommentChanged(QString)));
 
     m_commentWidget = commentWidget;
 

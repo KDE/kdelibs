@@ -62,32 +62,32 @@ KFileTreeBranch::KFileTreeBranch( K3FileTreeView *parent, const KUrl& url,
 
     setShowingDotFiles( showHidden );
 
-    connect( this, SIGNAL( refreshItems(const QList<QPair<KFileItem, KFileItem> >&)),
-             this, SLOT  ( slotRefreshItems( const QList<QPair<KFileItem, KFileItem> >& )));
+    connect( this, SIGNAL(refreshItems(QList<QPair<KFileItem,KFileItem> >)),
+             this, SLOT  (slotRefreshItems(QList<QPair<KFileItem,KFileItem> >)));
 
-    connect( this, SIGNAL( newItems(const KFileItemList&)),
-             this, SLOT  ( addItems( const KFileItemList& )));
+    connect( this, SIGNAL(newItems(KFileItemList)),
+             this, SLOT  (addItems(KFileItemList)));
 
-    connect( this, SIGNAL( completed(const KUrl& )),
-             this,   SLOT(slCompleted(const KUrl&)));
+    connect( this, SIGNAL(completed(KUrl)),
+             this,   SLOT(slCompleted(KUrl)));
 
-    connect( this, SIGNAL( started( const KUrl& )),
-             this,   SLOT( slotListerStarted( const KUrl& )));
+    connect( this, SIGNAL(started(KUrl)),
+             this,   SLOT(slotListerStarted(KUrl)));
 
-    connect( this, SIGNAL( deleteItem( const KFileItem& )),
-             this,   SLOT( slotDeleteItem( const KFileItem& )));
+    connect( this, SIGNAL(deleteItem(KFileItem)),
+             this,   SLOT(slotDeleteItem(KFileItem)));
 
-    connect( this, SIGNAL( canceled(const KUrl&) ),
-             this,   SLOT( slotCanceled(const KUrl&) ));
+    connect( this, SIGNAL(canceled(KUrl)),
+             this,   SLOT(slotCanceled(KUrl)));
 
-    connect( this, SIGNAL( clear()),
-             this, SLOT( slotDirlisterClear()));
+    connect( this, SIGNAL(clear()),
+             this, SLOT(slotDirlisterClear()));
 
-    connect( this, SIGNAL( clear(const KUrl&)),
-             this, SLOT( slotDirlisterClearUrl(const KUrl&)));
+    connect( this, SIGNAL(clear(KUrl)),
+             this, SLOT(slotDirlisterClearUrl(KUrl)));
 
-    connect( this, SIGNAL( redirection( const KUrl& , const KUrl& ) ),
-             this, SLOT( slotRedirect( const KUrl&, const KUrl& )));
+    connect( this, SIGNAL(redirection(KUrl,KUrl)),
+             this, SLOT(slotRedirect(KUrl,KUrl)));
 
     m_openChildrenURLs.append( url );
 }

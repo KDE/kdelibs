@@ -48,8 +48,8 @@ void KNewStuff2Cache::run()
 
     if (ret) {
         connect(m_engine,
-                SIGNAL(signalEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)),
-                SLOT(slotEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)));
+                SIGNAL(signalEntryLoaded(KNS::Entry*,const KNS::Feed*,const KNS::Provider*)),
+                SLOT(slotEntryLoaded(KNS::Entry*,const KNS::Feed*,const KNS::Provider*)));
         connect(m_engine,
                 SIGNAL(signalEntriesFailed()),
                 SLOT(slotEntriesFailed()));

@@ -270,7 +270,7 @@ void HTMLObjectBaseElementImpl::requestRerender()
 {
     if (m_rerender) return;
     m_rerender = true;
-    QTimer::singleShot( 0, this, SLOT( slotRerender()) );
+    QTimer::singleShot( 0, this, SLOT(slotRerender()) );
 }
 
 void HTMLObjectBaseElementImpl::slotRerender()

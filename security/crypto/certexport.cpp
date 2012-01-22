@@ -65,7 +65,7 @@ KCertExport::KCertExport(QWidget *parent)
 
    _filename = new KLineEdit(this);
    grid->addWidget(_filename, 6, 0, 1, 5 );
-   connect(_filename, SIGNAL(textChanged(const QString &)), this, SLOT(slotTextChanged(const QString &)));
+   connect(_filename, SIGNAL(textChanged(QString)), this, SLOT(slotTextChanged(QString)));
    connect(_filename, SIGNAL(returnPressed()), this, SLOT(slotExport()));
 
    _choose = new QPushButton(KIcon("document-open"), QString(), this); // TODO: port to KUrlRequester

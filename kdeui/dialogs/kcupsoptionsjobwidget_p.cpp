@@ -96,7 +96,7 @@ void KCupsOptionsJobWidget::initJobHold()
     ui.jobHoldComboBox->addItem( i18n("Weekend (Saturday to Sunday)"),  QVariant( Weekend ) );
     ui.jobHoldComboBox->addItem( i18n("Specific Time"),                 QVariant( SpecificTime ) );
 
-    connect( ui.jobHoldComboBox, SIGNAL( currentIndexChanged(int) ), this, SLOT( toggleJobHoldTime() ) );
+    connect( ui.jobHoldComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(toggleJobHoldTime()) );
 
     setJobHold( NoHold );
     setJobHoldTime( QTime( 0, 0 ) );

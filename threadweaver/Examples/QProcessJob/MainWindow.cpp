@@ -35,8 +35,8 @@ MainWindow::MainWindow ( QWidget * parent )
     : QMainWindow ( parent )
 {
     ui.setupUi ( this );
-    connect ( Weaver::instance(),  SIGNAL ( jobDone ( ThreadWeaver::Job* ) ),
-              SLOT ( update ( ThreadWeaver::Job* ) ) );
+    connect ( Weaver::instance(),  SIGNAL (jobDone(ThreadWeaver::Job*)),
+              SLOT (update(ThreadWeaver::Job*)) );
 }
 
 void MainWindow::on_pushButtonStart_clicked ()

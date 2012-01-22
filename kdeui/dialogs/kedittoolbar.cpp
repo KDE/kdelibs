@@ -303,7 +303,7 @@ IconTextEditDialog::IconTextEditDialog(QWidget *parent)
     m_cbHidden = new QCheckBox(i18n("&Hide text when toolbar shows text alongside icons"), mainWidget);
     layout->addWidget(m_cbHidden, 1, 1);
 
-    connect(m_lineEdit, SIGNAL(textChanged(const QString &)), SLOT(slotTextChanged(const QString &)));
+    connect(m_lineEdit, SIGNAL(textChanged(QString)), SLOT(slotTextChanged(QString)));
 
     m_lineEdit->setFocus();
     setMainWidget(mainWidget);
@@ -919,8 +919,8 @@ void KEditToolBarWidgetPrivate::setupLayout()
                    m_widget,       SLOT(slotInactiveSelectionChanged()));
   QObject::connect(m_inactiveList, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
                    m_widget,       SLOT(slotInsertButton()));
-  QObject::connect(m_inactiveList, SIGNAL(dropped(ToolBarListWidget*, int, ToolBarItem*, bool)),
-                   m_widget,       SLOT(slotDropped(ToolBarListWidget*, int, ToolBarItem*, bool)));
+  QObject::connect(m_inactiveList, SIGNAL(dropped(ToolBarListWidget*,int,ToolBarItem*,bool)),
+                   m_widget,       SLOT(slotDropped(ToolBarListWidget*,int,ToolBarItem*,bool)));
 
   KListWidgetSearchLine *inactiveListSearchLine = new KListWidgetSearchLine(m_widget, m_inactiveList);
   inactiveListSearchLine->setClickMessage(i18n("Filter"));
@@ -938,8 +938,8 @@ void KEditToolBarWidgetPrivate::setupLayout()
                    m_widget,     SLOT(slotActiveSelectionChanged()));
   QObject::connect(m_activeList, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
                    m_widget,     SLOT(slotRemoveButton()));
-  QObject::connect(m_activeList, SIGNAL(dropped(ToolBarListWidget*, int, ToolBarItem*, bool)),
-                   m_widget,     SLOT(slotDropped(ToolBarListWidget*, int, ToolBarItem*, bool)));
+  QObject::connect(m_activeList, SIGNAL(dropped(ToolBarListWidget*,int,ToolBarItem*,bool)),
+                   m_widget,     SLOT(slotDropped(ToolBarListWidget*,int,ToolBarItem*,bool)));
 
   KListWidgetSearchLine *activeListSearchLine = new KListWidgetSearchLine(m_widget, m_activeList);
   activeListSearchLine->setClickMessage(i18n("Filter"));
@@ -951,16 +951,16 @@ void KEditToolBarWidgetPrivate::setupLayout()
   m_hasKDialog = !kdialogExe.isEmpty();
   m_changeIcon->setEnabled(m_hasKDialog && m_activeList->currentItem());
 
-  QObject::connect( m_changeIcon, SIGNAL( clicked() ),
-                    m_widget, SLOT( slotChangeIcon() ) );
+  QObject::connect( m_changeIcon, SIGNAL(clicked()),
+                    m_widget, SLOT(slotChangeIcon()) );
 
   // "change icon text" button
   m_changeIconText = new KPushButton(i18n( "Change Te&xt..." ), m_widget);
   m_changeIconText->setIcon(KIcon("edit-rename"));
   m_changeIconText->setEnabled(m_activeList->currentItem() != 0);
 
-  QObject::connect( m_changeIconText, SIGNAL( clicked() ),
-                    m_widget, SLOT( slotChangeIconText() ) );
+  QObject::connect( m_changeIconText, SIGNAL(clicked()),
+                    m_widget, SLOT(slotChangeIconText()) );
 
   // The buttons in the middle
 
@@ -1541,8 +1541,8 @@ void KEditToolBarWidgetPrivate::slotChangeIcon()
   m_activeList->setEnabled( false ); // don't change the current item
   m_toolbarCombo->setEnabled( false ); // don't change the current toolbar
 
-  QObject::connect( m_kdialogProcess, SIGNAL( finished( int, QProcess::ExitStatus ) ),
-                    m_widget, SLOT( slotProcessExited() ) );
+  QObject::connect( m_kdialogProcess, SIGNAL(finished(int,QProcess::ExitStatus)),
+                    m_widget, SLOT(slotProcessExited()) );
 }
 
 void KEditToolBarWidgetPrivate::slotChangeIconText()

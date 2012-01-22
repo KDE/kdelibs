@@ -156,7 +156,7 @@ bool PublicServicePrivate::fillEntryGroup()
 	QDBusReply<QDBusObjectPath> rep=m_server->EntryGroupNew();
 	if (!rep.isValid()) return false;
 	m_group=new org::freedesktop::Avahi::EntryGroup("org.freedesktop.Avahi",rep.value().path(), QDBusConnection::systemBus());
-        connect(m_group,SIGNAL(StateChanged(int,const QString&)), this, SLOT(groupStateChanged(int,const QString&)));
+        connect(m_group,SIGNAL(StateChanged(int,QString)), this, SLOT(groupStateChanged(int,QString)));
     }
     if (m_serviceName.isNull()) {
 	QDBusReply<QString> rep=m_server->GetHostName();
@@ -218,7 +218,7 @@ void PublicService::publishAsync()
 	
 	if (!d->m_server) {
     	    d->m_server = new org::freedesktop::Avahi::Server("org.freedesktop.Avahi","/",QDBusConnection::systemBus());
-	    connect(d->m_server,SIGNAL(StateChanged(int,const QString&)),d,SLOT(serverStateChanged(int,const QString&)));
+	    connect(d->m_server,SIGNAL(StateChanged(int,QString)),d,SLOT(serverStateChanged(int,QString)));
 	}
 	
 	int state=AVAHI_SERVER_INVALID;

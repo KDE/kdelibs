@@ -187,15 +187,15 @@ class KStartupInfo::Private
                 return;
 
             if( !( flags & DisableKWinModule )) {
-                QObject::connect( KWindowSystem::self(), SIGNAL( windowAdded( WId )), q, SLOT( slot_window_added( WId )));
+                QObject::connect( KWindowSystem::self(), SIGNAL(windowAdded(WId)), q, SLOT(slot_window_added(WId)));
 #ifdef __GNUC__
 #warning "systemTrayWindowAdded signal was remove from KWindowSystem class"
 #endif		
-                //QObject::connect( KWindowSystem::self(), SIGNAL( systemTrayWindowAdded( WId )), q, SLOT( slot_window_added( WId )));
+                //QObject::connect( KWindowSystem::self(), SIGNAL(systemTrayWindowAdded(WId)), q, SLOT(slot_window_added(WId)));
             }
-            QObject::connect( &msgs, SIGNAL( gotMessage( const QString& )), q, SLOT( got_message( const QString& )));
+            QObject::connect( &msgs, SIGNAL(gotMessage(QString)), q, SLOT(got_message(QString)));
             cleanup = new QTimer( q );
-            QObject::connect( cleanup, SIGNAL( timeout()), q, SLOT( startups_cleanup()));
+            QObject::connect( cleanup, SIGNAL(timeout()), q, SLOT(startups_cleanup()));
 #endif
         }
     };
@@ -911,7 +911,7 @@ void KStartupInfo::setTimeout( unsigned int secs_P )
     {
     d->timeout = secs_P;
  // schedule removing entries that are older than the new timeout
-    QTimer::singleShot( 0, this, SLOT( startups_cleanup_no_age()));
+    QTimer::singleShot( 0, this, SLOT(startups_cleanup_no_age()));
     }
 
 void KStartupInfo::Private::startups_cleanup_no_age()

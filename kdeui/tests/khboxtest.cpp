@@ -8,7 +8,7 @@ KHBoxTest::KHBoxTest( QWidget* parentWidget )
     : KHBox( parentWidget )
 {
     pbAdd = new QPushButton( "Add a button", this );
-    connect( pbAdd, SIGNAL( clicked() ), this, SLOT( slotAdd() ) );
+    connect( pbAdd, SIGNAL(clicked()), this, SLOT(slotAdd()) );
     pbRemove = 0;
 }
 
@@ -16,7 +16,7 @@ void KHBoxTest::slotAdd()
 {
     if ( !pbRemove ) {
         pbRemove = new QPushButton( "Remove me", this );
-        connect( pbRemove, SIGNAL( clicked() ), this, SLOT( slotRemove() ) );
+        connect( pbRemove, SIGNAL(clicked()), this, SLOT(slotRemove()) );
         pbAdd->setEnabled( false );
     }
 }

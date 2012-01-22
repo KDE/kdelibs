@@ -46,7 +46,7 @@ TestPlot::TestPlot( QWidget *p ) : KMainWindow( p ), po1(0), po2(0) {
 
 	setCentralWidget( w );
 
-	connect( PlotSelector, SIGNAL( activated( int ) ), this, SLOT( slotSelectPlot( int ) ) );
+	connect( PlotSelector, SIGNAL(activated(int)), this, SLOT(slotSelectPlot(int)) );
 
 	slotSelectPlot( PlotSelector->currentIndex() );
 }

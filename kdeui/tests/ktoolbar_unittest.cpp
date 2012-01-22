@@ -616,7 +616,7 @@ void tst_KToolBar::testClickingToolButton() {
     KToolBar toolBar(&mainWindow);
     KAction* testAction = new KAction("test", &toolBar);
     QSignalSpy spy(testAction, SIGNAL(triggered()));
-    QSignalSpy spyButtonsModifiers(testAction, SIGNAL(triggered(Qt::MouseButtons, Qt::KeyboardModifiers)));
+    QSignalSpy spyButtonsModifiers(testAction, SIGNAL(triggered(Qt::MouseButtons,Qt::KeyboardModifiers)));
     toolBar.addAction(testAction);
     QToolButton* testToolButton = qobject_cast<QToolButton*>(toolBar.widgetForAction(testAction));
     QVERIFY(testToolButton);

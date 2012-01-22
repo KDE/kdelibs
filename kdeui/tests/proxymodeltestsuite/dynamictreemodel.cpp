@@ -626,9 +626,9 @@ void ModelInsertAndRemoveQueuedCommand::doCommand()
 {
   QModelIndex parent = findIndex(m_rowNumbers);
 
-  connect (this, SIGNAL(beginInsertRows(const QModelIndex &, int, int)), SLOT(queuedBeginInsertRows(const QModelIndex &, int, int)), Qt::QueuedConnection);
+  connect (this, SIGNAL(beginInsertRows(QModelIndex,int,int)), SLOT(queuedBeginInsertRows(QModelIndex,int,int)), Qt::QueuedConnection);
   connect (this, SIGNAL(endInsertRows()), SLOT(queuedEndInsertRows()), Qt::QueuedConnection);
-  connect (this, SIGNAL(beginRemoveRows(const QModelIndex &, int, int)), SLOT(queuedBeginRemoveRows(const QModelIndex &, int, int)), Qt::QueuedConnection);
+  connect (this, SIGNAL(beginRemoveRows(QModelIndex,int,int)), SLOT(queuedBeginRemoveRows(QModelIndex,int,int)), Qt::QueuedConnection);
   connect (this, SIGNAL(endRemoveRows()), SLOT(queuedEndRemoveRows()), Qt::QueuedConnection);
 
   emit beginInsertRows(parent, m_startRow, m_endRow);

@@ -213,14 +213,14 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
 
     if (placesModel != 0) {
         m_placesSelector = new KUrlNavigatorPlacesSelector(q, placesModel);
-        connect(m_placesSelector, SIGNAL(placeActivated(const KUrl&)),
-                q, SLOT(setLocationUrl(const KUrl&)));
+        connect(m_placesSelector, SIGNAL(placeActivated(KUrl)),
+                q, SLOT(setLocationUrl(KUrl)));
 
-        connect(placesModel, SIGNAL(rowsInserted(QModelIndex, int, int)),
+        connect(placesModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
                 q, SLOT(updateContent()));
-        connect(placesModel, SIGNAL(rowsRemoved(QModelIndex, int, int)),
+        connect(placesModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
                 q, SLOT(updateContent()));
-        connect(placesModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)),
+        connect(placesModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
                 q, SLOT(updateContent()));
     }
 
@@ -550,10 +550,10 @@ void KUrlNavigator::Private::updateButtons(int startIndex)
                 button = new KUrlNavigatorButton(buttonUrl(idx), q);
                 button->installEventFilter(q);
                 button->setForegroundRole(QPalette::WindowText);
-                connect(button, SIGNAL(urlsDropped(const KUrl&, QDropEvent*)),
-                        q, SLOT(dropUrls(const KUrl&, QDropEvent*)));
-                connect(button, SIGNAL(clicked(KUrl, Qt::MouseButton)),
-                        q, SLOT(slotNavigatorButtonClicked(KUrl, Qt::MouseButton)));
+                connect(button, SIGNAL(urlsDropped(KUrl,QDropEvent*)),
+                        q, SLOT(dropUrls(KUrl,QDropEvent*)));
+                connect(button, SIGNAL(clicked(KUrl,Qt::MouseButton)),
+                        q, SLOT(slotNavigatorButtonClicked(KUrl,Qt::MouseButton)));
                 connect(button, SIGNAL(finishedTextResolving()),
                         q, SLOT(updateButtonVisibility()));
                 appendWidget(button);

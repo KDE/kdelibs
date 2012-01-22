@@ -134,8 +134,8 @@ int Soap::call_soap(QDomElement element, const QString &endpoint)
     //kDebug() << "Call!";
 
     connect(job,
-            SIGNAL(data(KIO::Job*, const QByteArray&)),
-            SLOT(slotData(KIO::Job*, const QByteArray&)));
+            SIGNAL(data(KIO::Job*,QByteArray)),
+            SLOT(slotData(KIO::Job*,QByteArray)));
     connect(job,
             SIGNAL(result(KJob*)),
             SLOT(slotResult(KJob*)));

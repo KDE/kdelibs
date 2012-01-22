@@ -305,7 +305,7 @@ void KComboBox::setLineEdit( QLineEdit *edit )
 
     // Connect the returnPressed signal for both Q[K]LineEdits'
     if (edit)
-        connect( edit, SIGNAL( returnPressed() ), SIGNAL( returnPressed() ));
+        connect( edit, SIGNAL(returnPressed()), SIGNAL(returnPressed()));
 
     if ( d->klineEdit )
     {
@@ -313,32 +313,32 @@ void KComboBox::setLineEdit( QLineEdit *edit )
         // lineedit without us noticing. And KCompletionBase::delegate would
         // be a dangling pointer then, so prevent that. Note: only do this
         // when it is a KLineEdit!
-        connect( edit, SIGNAL( destroyed() ), SLOT( lineEditDeleted() ));
+        connect( edit, SIGNAL(destroyed()), SLOT(lineEditDeleted()));
 
-        connect( d->klineEdit, SIGNAL( returnPressed( const QString& )),
-                 SIGNAL( returnPressed( const QString& ) ));
+        connect( d->klineEdit, SIGNAL(returnPressed(QString)),
+                 SIGNAL(returnPressed(QString)));
 
-        connect( d->klineEdit, SIGNAL( completion( const QString& )),
-                 SIGNAL( completion( const QString& )) );
+        connect( d->klineEdit, SIGNAL(completion(QString)),
+                 SIGNAL(completion(QString)) );
 
-        connect( d->klineEdit, SIGNAL( substringCompletion( const QString& )),
-                 SIGNAL( substringCompletion( const QString& )) );
-
-        connect( d->klineEdit,
-                 SIGNAL( textRotation( KCompletionBase::KeyBindingType )),
-                 SIGNAL( textRotation( KCompletionBase::KeyBindingType )) );
+        connect( d->klineEdit, SIGNAL(substringCompletion(QString)),
+                 SIGNAL(substringCompletion(QString)) );
 
         connect( d->klineEdit,
-                 SIGNAL( completionModeChanged( KGlobalSettings::Completion )),
-                 SIGNAL( completionModeChanged( KGlobalSettings::Completion)));
+                 SIGNAL(textRotation(KCompletionBase::KeyBindingType)),
+                 SIGNAL(textRotation(KCompletionBase::KeyBindingType)) );
 
         connect( d->klineEdit,
-                 SIGNAL( aboutToShowContextMenu( QMenu * )),
-                 SIGNAL( aboutToShowContextMenu( QMenu * )) );
+                 SIGNAL(completionModeChanged(KGlobalSettings::Completion)),
+                 SIGNAL(completionModeChanged(KGlobalSettings::Completion)));
 
         connect( d->klineEdit,
-                 SIGNAL( completionBoxActivated( const QString& )),
-                 SIGNAL( activated( const QString& )) );
+                 SIGNAL(aboutToShowContextMenu(QMenu*)),
+                 SIGNAL(aboutToShowContextMenu(QMenu*)) );
+
+        connect( d->klineEdit,
+                 SIGNAL(completionBoxActivated(QString)),
+                 SIGNAL(activated(QString)) );
 
         d->klineEdit->setTrapReturnKey( d->trapReturnKey );
     }

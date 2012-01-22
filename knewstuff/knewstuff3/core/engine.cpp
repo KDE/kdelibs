@@ -139,10 +139,10 @@ bool Engine::init(const QString &configfile)
         return false;
     }
 
-    connect(m_installation, SIGNAL(signalEntryChanged(const KNS3::EntryInternal&)), SLOT(slotEntryChanged(const KNS3::EntryInternal&)));
+    connect(m_installation, SIGNAL(signalEntryChanged(KNS3::EntryInternal)), SLOT(slotEntryChanged(KNS3::EntryInternal)));
 
     m_cache = Cache::getCache(m_applicationName.split(':')[0]);
-    connect(this, SIGNAL(signalEntryChanged(const KNS3::EntryInternal&)), m_cache.data(), SLOT(registerChangedEntry(const KNS3::EntryInternal&)));
+    connect(this, SIGNAL(signalEntryChanged(KNS3::EntryInternal)), m_cache.data(), SLOT(registerChangedEntry(KNS3::EntryInternal)));
     m_cache->readRegistry();
 
     m_initialized = true;
@@ -176,7 +176,7 @@ void Engine::loadProviders()
         emit signalBusy(i18n("Loading provider information"));
 
         XmlLoader * loader = new XmlLoader(this);
-        connect(loader, SIGNAL(signalLoaded(const QDomDocument&)), SLOT(slotProviderFileLoaded(const QDomDocument&)));
+        connect(loader, SIGNAL(signalLoaded(QDomDocument)), SLOT(slotProviderFileLoaded(QDomDocument)));
         connect(loader, SIGNAL(signalFailed()), SLOT(slotProvidersFailed()));
 
         loader->load(KUrl(m_providerFileUrl));
@@ -236,10 +236,10 @@ void Engine::addProvider(QSharedPointer<KNS3::Provider> provider)
 {
     m_providers.insert(provider->id(), provider);
     connect(provider.data(), SIGNAL(providerInitialized(KNS3::Provider*)), SLOT(providerInitialized(KNS3::Provider*)));
-    connect(provider.data(), SIGNAL(loadingFinished(KNS3::Provider::SearchRequest, KNS3::EntryInternal::List)),
-            SLOT(slotEntriesLoaded(KNS3::Provider::SearchRequest, KNS3::EntryInternal::List)));
+    connect(provider.data(), SIGNAL(loadingFinished(KNS3::Provider::SearchRequest,KNS3::EntryInternal::List)),
+            SLOT(slotEntriesLoaded(KNS3::Provider::SearchRequest,KNS3::EntryInternal::List)));
     connect(provider.data(), SIGNAL(entryDetailsLoaded(KNS3::EntryInternal)), SLOT(slotEntryDetailsLoaded(KNS3::EntryInternal)));
-    connect(provider.data(), SIGNAL(payloadLinkLoaded(const KNS3::EntryInternal&)), SLOT(downloadLinkLoaded(const KNS3::EntryInternal&)));
+    connect(provider.data(), SIGNAL(payloadLinkLoaded(KNS3::EntryInternal)), SLOT(downloadLinkLoaded(KNS3::EntryInternal)));
     connect(provider.data(), SIGNAL(signalError(QString)), this, SIGNAL(signalError(QString)));
     connect(provider.data(), SIGNAL(signalInformation(QString)), this, SIGNAL(signalIdle(QString)));
 }

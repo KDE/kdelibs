@@ -38,11 +38,11 @@ TestService::TestService(const QString &exec)
 
    proc.start();
 
-   connect(KApplication::dcopClient(), SIGNAL( applicationRegistered(const QByteArray&)),
-           this, SLOT(newApp(const QByteArray&)));
-   connect(KApplication::dcopClient(), SIGNAL( applicationRemoved(const QByteArray&)),
-           this, SLOT(endApp(const QByteArray&)));
-   connect(&proc, SIGNAL(finished(int, QProcess::ExitStatus)),
+   connect(KApplication::dcopClient(), SIGNAL(applicationRegistered(QByteArray)),
+           this, SLOT(newApp(QByteArray)));
+   connect(KApplication::dcopClient(), SIGNAL(applicationRemoved(QByteArray)),
+           this, SLOT(endApp(QByteArray)));
+   connect(&proc, SIGNAL(finished(int,QProcess::ExitStatus)),
            this, SLOT(appExit()));
 
    QTimer::singleShot(20*1000, this, SLOT(stop()));

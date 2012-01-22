@@ -35,8 +35,8 @@ KDXSComments::KDXSComments(QWidget *parent)
     m_log = new KTextBrowser(this);
     setMainWidget(m_log);
 
-    connect(m_log, SIGNAL(anchorClicked(const QUrl&)),
-            SLOT(slotUrl(const QUrl&)));
+    connect(m_log, SIGNAL(anchorClicked(QUrl)),
+            SLOT(slotUrl(QUrl)));
 }
 
 void KDXSComments::slotUrl(const QUrl& url)

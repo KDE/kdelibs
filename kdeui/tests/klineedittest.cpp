@@ -33,17 +33,17 @@ KLineEditTest::KLineEditTest ( QWidget* widget )
     m_lineedit->completionObject()->setItems( list );
     m_lineedit->setSqueezedTextEnabled( true );
     m_lineedit->setClearButtonShown( true );
-    connect( m_lineedit, SIGNAL( returnPressed() ), SLOT( slotReturnPressed() ) );
-    connect( m_lineedit, SIGNAL( returnPressed(const QString&) ),
-             SLOT( slotReturnPressed(const QString&) ) );
+    connect( m_lineedit, SIGNAL(returnPressed()), SLOT(slotReturnPressed()) );
+    connect( m_lineedit, SIGNAL(returnPressed(QString)),
+             SLOT(slotReturnPressed(QString)) );
 
     QHBoxLayout* restrictedHBox = new QHBoxLayout;
     m_restrictedLine = new KRestrictedLine(this);
     m_restrictedLine->setValidChars(QString::fromUtf8("aeiouyé"));
     connect(m_restrictedLine, SIGNAL(invalidChar(int)), this, SLOT(slotInvalidChar(int)));
-    connect( m_restrictedLine, SIGNAL( returnPressed() ), SLOT( slotReturnPressed() ) );
-    connect( m_restrictedLine, SIGNAL( returnPressed(const QString&) ),
-             SLOT( slotReturnPressed(const QString&) ) );
+    connect( m_restrictedLine, SIGNAL(returnPressed()), SLOT(slotReturnPressed()) );
+    connect( m_restrictedLine, SIGNAL(returnPressed(QString)),
+             SLOT(slotReturnPressed(QString)) );
     restrictedHBox->addWidget(new QLabel("Vowels only:", this));
     restrictedHBox->addWidget(m_restrictedLine);
     m_invalidCharLabel = new QLabel(this);
@@ -52,26 +52,26 @@ KLineEditTest::KLineEditTest ( QWidget* widget )
 
     KHBox *hbox = new KHBox (this);
     m_btnExit = new QPushButton( "E&xit", hbox );
-    connect( m_btnExit, SIGNAL( clicked() ), SLOT( quitApp() ) );
+    connect( m_btnExit, SIGNAL(clicked()), SLOT(quitApp()) );
 
     m_btnReadOnly = new QPushButton( "&Read Only", hbox );
     m_btnReadOnly->setCheckable (true);
-    connect( m_btnReadOnly, SIGNAL( toggled(bool) ), SLOT( slotReadOnly(bool) ) );
+    connect( m_btnReadOnly, SIGNAL(toggled(bool)), SLOT(slotReadOnly(bool)) );
 
     m_btnPassword = new QPushButton( "&Password", hbox );
     m_btnPassword->setCheckable (true);
-    connect( m_btnPassword, SIGNAL( toggled(bool) ), SLOT( slotPassword(bool) ) );
+    connect( m_btnPassword, SIGNAL(toggled(bool)), SLOT(slotPassword(bool)) );
 
     m_btnEnable = new QPushButton( "Dis&able", hbox );
     m_btnEnable->setCheckable (true);
-    connect( m_btnEnable, SIGNAL( toggled(bool) ), SLOT( slotEnable(bool) ) );
+    connect( m_btnEnable, SIGNAL(toggled(bool)), SLOT(slotEnable(bool)) );
 
     m_btnHide = new QPushButton( "Hi&de", hbox );
-    connect( m_btnHide, SIGNAL( clicked() ), SLOT( slotHide() ) );
+    connect( m_btnHide, SIGNAL(clicked()), SLOT(slotHide()) );
 
     m_btnClickMessage = new QPushButton( "Clicked Message", hbox);
     m_btnClickMessage->setCheckable (true);
-    connect( m_btnClickMessage, SIGNAL( toggled(bool) ), SLOT( slotClickMessage(bool) ) );
+    connect( m_btnClickMessage, SIGNAL(toggled(bool)), SLOT(slotClickMessage(bool)) );
 
     QPushButton *button = new QPushButton( "Stylesheet", hbox);
     connect( button, SIGNAL(clicked()), SLOT(slotSetStyleSheet()));

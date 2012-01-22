@@ -43,8 +43,8 @@ KNotifyConfigWidget::KNotifyConfigWidget( QWidget * parent )
 	d->eventList->setFocus();
 	d->actionsconfig=new KNotifyConfigActionsWidget(this);
 	d->actionsconfig->setEnabled(false);
-	connect(d->eventList , SIGNAL(eventSelected( KNotifyConfigElement* )) , 
-			this , SLOT(slotEventSelected( KNotifyConfigElement* )));
+	connect(d->eventList , SIGNAL(eventSelected(KNotifyConfigElement*)) ,
+			this , SLOT(slotEventSelected(KNotifyConfigElement*)));
 	connect(d->actionsconfig,SIGNAL(changed()),this,SLOT(slotActionChanged()));
     
 	QVBoxLayout *layout = new QVBoxLayout(this);

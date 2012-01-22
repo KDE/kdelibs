@@ -330,9 +330,9 @@ void KSwitchLanguageDialogPrivate::addLanguageButton(const QString & languageCod
 
     QObject::connect(
         languageButton,
-        SIGNAL(activated(const QString &)),
+        SIGNAL(activated(QString)),
         p,
-        SLOT(languageOnButtonChanged(const QString &))
+        SLOT(languageOnButtonChanged(QString))
         );
 
     LanguageRowData languageRowData;

@@ -118,14 +118,14 @@ KFilePlacesSharedBookmarks::KFilePlacesSharedBookmarks(KBookmarkManager * mgr)
     const QString file = KStandardDirs().localxdgdatadir() + "user-places.xbel";
     m_sharedBookmarkManager = KBookmarkManager::managerForExternalFile(file); 
     
-    connect(m_sharedBookmarkManager, SIGNAL(changed(const QString&, const QString&)),
+    connect(m_sharedBookmarkManager, SIGNAL(changed(QString,QString)),
               this, SLOT(slotSharedBookmarksChanged()));
-    connect(m_sharedBookmarkManager, SIGNAL(bookmarksChanged(const QString&)),
+    connect(m_sharedBookmarkManager, SIGNAL(bookmarksChanged(QString)),
               this, SLOT(slotSharedBookmarksChanged()));
 
-    connect(m_placesBookmarkManager, SIGNAL(changed(const QString&, const QString&)),
+    connect(m_placesBookmarkManager, SIGNAL(changed(QString,QString)),
               this, SLOT(slotBookmarksChanged()));
-    connect(m_placesBookmarkManager, SIGNAL(bookmarksChanged(const QString&)),
+    connect(m_placesBookmarkManager, SIGNAL(bookmarksChanged(QString)),
               this, SLOT(slotBookmarksChanged()));
     
     integrateSharedBookmarks();

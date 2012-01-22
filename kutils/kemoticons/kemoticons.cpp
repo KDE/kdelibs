@@ -120,7 +120,7 @@ KEmoticons::KEmoticons()
 {
     d->loadServiceList();
     d->m_dirwatch = new KDirWatch;
-    connect(d->m_dirwatch, SIGNAL(dirty(const QString&)), this, SLOT(themeChanged(const QString&)));
+    connect(d->m_dirwatch, SIGNAL(dirty(QString)), this, SLOT(themeChanged(QString)));
 }
 
 KEmoticons::~KEmoticons()

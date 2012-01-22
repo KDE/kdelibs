@@ -48,14 +48,14 @@ void KReplaceTest::replace( const QString &pattern, const QString &replacement, 
 
     // Connect highlight signal to code which handles highlighting
     // of found text.
-    connect(m_replace, SIGNAL(highlight(QString, int, int)),
-            this, SLOT(slotHighlight(QString, int, int)));
+    connect(m_replace, SIGNAL(highlight(QString,int,int)),
+            this, SLOT(slotHighlight(QString,int,int)));
     // Connect findNext signal - called when pressing the button in the dialog
-    connect(m_replace, SIGNAL( findNext() ),
-            this, SLOT( slotReplaceNext() ) );
+    connect(m_replace, SIGNAL(findNext()),
+            this, SLOT(slotReplaceNext()) );
     // Connect replace signal - called when doing a replacement
-    connect(m_replace, SIGNAL( replace(const QString &, int, int, int) ),
-            this, SLOT( slotReplace(const QString &, int, int, int) ) );
+    connect(m_replace, SIGNAL(replace(QString,int,int,int)),
+            this, SLOT(slotReplace(QString,int,int,int)) );
 
     // Go to initial position
     if ( (options & KFind::FromCursor) == 0 )

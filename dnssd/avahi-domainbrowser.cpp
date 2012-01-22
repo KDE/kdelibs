@@ -57,8 +57,8 @@ void DomainBrowser::startBrowse()
 	if (!rep.isValid()) return;
 	org::freedesktop::Avahi::DomainBrowser *b=new org::freedesktop::Avahi::DomainBrowser("org.freedesktop.Avahi",rep.value().path(),
 	    QDBusConnection::systemBus());
-	connect(b,SIGNAL(ItemNew(int,int,const QString&,uint)),d, SLOT(gotNewDomain(int,int,const QString&, uint)));
-	connect(b,SIGNAL(ItemRemove(int,int,const QString&,uint)),d, SLOT(gotRemoveDomain(int,int,const QString&, uint)));
+	connect(b,SIGNAL(ItemNew(int,int,QString,uint)),d, SLOT(gotNewDomain(int,int,QString,uint)));
+	connect(b,SIGNAL(ItemRemove(int,int,QString,uint)),d, SLOT(gotRemoveDomain(int,int,QString,uint)));
 	d->m_browser=b;
 	if (d->m_type==Browsing) {	
     	    QString domains_evar=qgetenv("AVAHI_BROWSE_DOMAINS");

@@ -165,8 +165,8 @@ void ToolBarHandler::Private::init( KXmlGuiWindow *mw )
 {
   mainWindow = mw;
 
-  QObject::connect( mainWindow->guiFactory(), SIGNAL( clientAdded( KXMLGUIClient * ) ),
-                    parent, SLOT( clientAdded( KXMLGUIClient * ) ) );
+  QObject::connect( mainWindow->guiFactory(), SIGNAL(clientAdded(KXMLGUIClient*)),
+                    parent, SLOT(clientAdded(KXMLGUIClient*)) );
 
   if ( parent->domDocument().documentElement().isNull() ) {
 
@@ -197,8 +197,8 @@ void ToolBarHandler::Private::connectToActionContainer( QWidget *container )
   if ( !popupMenu )
     return;
 
-  connect( popupMenu, SIGNAL( aboutToShow() ),
-           parent, SLOT( setupActions() ) );
+  connect( popupMenu, SIGNAL(aboutToShow()),
+           parent, SLOT(setupActions()) );
 }
 
 ToolBarHandler::ToolBarHandler( KXmlGuiWindow *mainWindow )

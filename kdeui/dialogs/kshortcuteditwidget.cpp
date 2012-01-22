@@ -77,10 +77,10 @@ ShortcutEditWidget::ShortcutEditWidget(QWidget *viewport, const QKeySequence &de
 
     connect(m_defaultRadio, SIGNAL(toggled(bool)),
             this, SLOT(defaultToggled(bool)));
-    connect(m_customEditor, SIGNAL(keySequenceChanged(const QKeySequence &)),
-            this, SLOT(setCustom(const QKeySequence &)));
-    connect(m_customEditor, SIGNAL(stealShortcut(const QKeySequence &, KAction *)),
-        this, SIGNAL(stealShortcut(const QKeySequence &, KAction *)));
+    connect(m_customEditor, SIGNAL(keySequenceChanged(QKeySequence)),
+            this, SLOT(setCustom(QKeySequence)));
+    connect(m_customEditor, SIGNAL(stealShortcut(QKeySequence,KAction*)),
+        this, SIGNAL(stealShortcut(QKeySequence,KAction*)));
 }
 
 

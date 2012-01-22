@@ -82,8 +82,8 @@ void KNewPasswordDialog::KNewPasswordDialogPrivate::init()
     ui.labelStrengthMeter->setWhatsThis(strengthBarWhatsThis);
     ui.strengthBar->setWhatsThis(strengthBarWhatsThis);
 
-    connect( ui.linePassword, SIGNAL(textChanged(const QString&)), q, SLOT(_k_textChanged()) );
-    connect( ui.lineVerifyPassword, SIGNAL(textChanged(const QString&)), q, SLOT(_k_textChanged()) );
+    connect( ui.linePassword, SIGNAL(textChanged(QString)), q, SLOT(_k_textChanged()) );
+    connect( ui.lineVerifyPassword, SIGNAL(textChanged(QString)), q, SLOT(_k_textChanged()) );
 
     _k_textChanged();
 }

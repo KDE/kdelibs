@@ -135,8 +135,8 @@ void QueueTests::DeleteDoneJobsFromSequenceTest()
     jobCollection.addJob ( &c);
 
     QVERIFY( autoDeleteJob != 0 );
-    connect( autoDeleteJob, SIGNAL( done( ThreadWeaver::Job* ) ),
-             SLOT( deleteJob( ThreadWeaver::Job* ) ) );
+    connect( autoDeleteJob, SIGNAL(done(ThreadWeaver::Job*)),
+             SLOT(deleteJob(ThreadWeaver::Job*)) );
     ThreadWeaver::Weaver::instance()->enqueue ( &jobCollection );
     QTest::qWait(100); // return to event queue to make sure signals are delivered
     ThreadWeaver::Weaver::instance()->finish();
@@ -157,8 +157,8 @@ void QueueTests::DeleteCollectionOnDoneTest()
 {
     QString sequence;
     autoDeleteCollection = new ThreadWeaver::JobCollection( this );
-    connect ( autoDeleteCollection, SIGNAL( done( ThreadWeaver::Job* ) ),
-              SLOT( deleteCollection( ThreadWeaver::Job* ) ) );
+    connect ( autoDeleteCollection, SIGNAL(done(ThreadWeaver::Job*)),
+              SLOT(deleteCollection(ThreadWeaver::Job*)) );
 
     AppendCharacterJob a( QChar( 'a' ), &sequence );
     AppendCharacterJob b( QChar( 'b' ), &sequence );

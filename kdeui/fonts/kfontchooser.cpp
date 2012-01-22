@@ -267,8 +267,8 @@ KFontChooser::KFontChooser( QWidget *parent,
         d->familyLabel->setWhatsThis(fontFamilyWhatsThisText );
     }
 
-    connect(d->familyListBox, SIGNAL(currentTextChanged(const QString &)),
-            this, SLOT(_k_family_chosen_slot(const QString &)));
+    connect(d->familyListBox, SIGNAL(currentTextChanged(QString)),
+            this, SLOT(_k_family_chosen_slot(QString)));
     if ( !fontList.isEmpty() ) {
         d->setFamilyBoxItems(fontList);
     }
@@ -301,8 +301,8 @@ KFontChooser::KFontChooser( QWidget *parent,
     d->styleListBox->setMinimumHeight(
         minimumListHeight( d->styleListBox, visibleListSize  ) );
 
-    connect(d->styleListBox, SIGNAL(currentTextChanged(const QString &)),
-            this, SLOT(_k_style_chosen_slot(const QString &)));
+    connect(d->styleListBox, SIGNAL(currentTextChanged(QString)),
+            this, SLOT(_k_style_chosen_slot(QString)));
 
 
     d->sizeListBox = new KListWidget( page );
@@ -363,11 +363,11 @@ KFontChooser::KFontChooser( QWidget *parent,
     d->sizeListBox->setMinimumHeight(
         minimumListHeight( d->sizeListBox, visibleListSize  ) );
 
-    connect( d->sizeOfFont, SIGNAL( valueChanged(double) ),
+    connect( d->sizeOfFont, SIGNAL(valueChanged(double)),
              this, SLOT(_k_size_value_slot(double)));
 
-    connect( d->sizeListBox, SIGNAL(currentTextChanged(const QString&)),
-             this, SLOT(_k_size_chosen_slot(const QString&)) );
+    connect( d->sizeListBox, SIGNAL(currentTextChanged(QString)),
+             this, SLOT(_k_size_chosen_slot(QString)) );
 
     row ++;
     //
@@ -391,8 +391,8 @@ KFontChooser::KFontChooser( QWidget *parent,
              "You may edit it to test special characters." );
     d->sampleEdit->setWhatsThis(sampleEditWhatsThisText );
 
-    connect(this, SIGNAL(fontSelected(const QFont &)),
-            this, SLOT(_k_displaySample(const QFont &)));
+    connect(this, SIGNAL(fontSelected(QFont)),
+            this, SLOT(_k_displaySample(QFont)));
 
     splitter->addWidget(d->sampleEdit);
     //

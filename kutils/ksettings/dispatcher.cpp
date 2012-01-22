@@ -48,7 +48,7 @@ void registerComponent(const KComponentData &componentData, QObject *recv, const
     d->m_componentInfo[componentName].slotList.append(ComponentInfo::Slot(recv, slot));
 
     ++(d->m_componentInfo[componentName].count);
-    QObject::connect(recv, SIGNAL(destroyed(QObject *)), d, SLOT(unregisterComponent(QObject *)));
+    QObject::connect(recv, SIGNAL(destroyed(QObject*)), d, SLOT(unregisterComponent(QObject*)));
 }
 
 KSharedConfig::Ptr configForComponentName(const QString &componentName)

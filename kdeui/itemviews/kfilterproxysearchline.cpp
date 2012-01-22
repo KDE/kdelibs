@@ -38,7 +38,7 @@ public:
     {
     timer = new QTimer( q );
     timer->setSingleShot( true );
-    connect( timer, SIGNAL( timeout() ), q, SLOT( slotSearchLineActivate() ) );
+    connect( timer, SIGNAL(timeout()), q, SLOT(slotSearchLineActivate()) );
     }
     QTimer* timer;
     KFilterProxySearchLine* q;
@@ -76,8 +76,8 @@ KFilterProxySearchLine::KFilterProxySearchLine( QWidget* parent )
     layout->setMargin( 0 );
     layout->addWidget( d->searchLine );
 
-    connect( d->searchLine, SIGNAL( textChanged( const QString& ) ),
-             SLOT( slotSearchLineChange( const QString& ) ) );
+    connect( d->searchLine, SIGNAL(textChanged(QString)),
+             SLOT(slotSearchLineChange(QString)) );
 }
 
 KFilterProxySearchLine::~KFilterProxySearchLine()

@@ -43,11 +43,11 @@ namespace KPAC
         m_scriptURL = url;
 
         KIO::TransferJob* job = KIO::get( url, KIO::NoReload, KIO::HideProgressInfo );
-        connect( job, SIGNAL( data( KIO::Job*, const QByteArray& ) ),
-                 SLOT( data( KIO::Job*, const QByteArray& ) ) );
-        connect( job, SIGNAL ( redirection( KIO::Job*, const KUrl& ) ),
-                 SLOT( redirection( KIO::Job*, const KUrl& ) ) );
-        connect( job, SIGNAL( result( KJob* ) ), SLOT( result( KJob* ) ) );
+        connect( job, SIGNAL(data(KIO::Job*,QByteArray)),
+                 SLOT(data(KIO::Job*,QByteArray)) );
+        connect( job, SIGNAL (redirection(KIO::Job*,KUrl)),
+                 SLOT(redirection(KIO::Job*,KUrl)) );
+        connect( job, SIGNAL(result(KJob*)), SLOT(result(KJob*)) );
     }
 
     void Downloader::failed()

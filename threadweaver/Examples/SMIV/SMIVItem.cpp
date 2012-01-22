@@ -50,16 +50,16 @@ SMIVItem::SMIVItem ( Weaver *weaver,
         m_desc2 = fi.absoluteFilePath();
         m_fileloader = new FileLoaderJob ( fi.absoluteFilePath(),  this );
         m_fileloader->setObjectName ( tr ( "load file: " ) + fi.baseName() );
-        connect ( m_fileloader,  SIGNAL ( done( ThreadWeaver::Job* ) ),
-                  SLOT ( fileLoaderReady ( ThreadWeaver::Job* ) ) );
+        connect ( m_fileloader,  SIGNAL (done(ThreadWeaver::Job*)),
+                  SLOT (fileLoaderReady(ThreadWeaver::Job*)) );
         m_fileloader->assignQueuePolicy( resourceRestriction() );
         m_imageloader = new QImageLoaderJob ( m_fileloader,  this );
-        connect ( m_imageloader,  SIGNAL ( done( ThreadWeaver::Job* ) ),
-                  SLOT ( imageLoaderReady ( ThreadWeaver::Job* ) ) );
+        connect ( m_imageloader,  SIGNAL (done(ThreadWeaver::Job*)),
+                  SLOT (imageLoaderReady(ThreadWeaver::Job*)) );
         m_imageloader->setObjectName( tr( "load image: " ) + fi.baseName() );
         m_thumb = new ComputeThumbNailJob ( m_imageloader,  this );
-        connect ( m_thumb,  SIGNAL ( done( ThreadWeaver::Job* ) ),
-                  SLOT ( computeThumbReady ( ThreadWeaver::Job* ) ) );
+        connect ( m_thumb,  SIGNAL (done(ThreadWeaver::Job*)),
+                  SLOT (computeThumbReady(ThreadWeaver::Job*)) );
         m_thumb->setObjectName ( tr( "scale image: " ) + fi.baseName() );
         m_sequence->addJob ( m_fileloader );
         m_sequence->addJob ( m_imageloader );

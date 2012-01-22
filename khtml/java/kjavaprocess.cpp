@@ -47,12 +47,12 @@ KJavaProcess::KJavaProcess( QObject* parent )
 	d(new KJavaProcessPrivate)
 
 {
-    connect( this, SIGNAL( readyReadStandardOutput() ),
-             this, SLOT( slotReceivedData() ) );
-    connect( this, SIGNAL( finished( int, QProcess::ExitStatus ) ),
-             this, SLOT( slotExited() ) );
-    connect( this, SIGNAL( error(  QProcess::ProcessError ) ),
-             this, SLOT( slotExited() ) );
+    connect( this, SIGNAL(readyReadStandardOutput()),
+             this, SLOT(slotReceivedData()) );
+    connect( this, SIGNAL(finished(int,QProcess::ExitStatus)),
+             this, SLOT(slotExited()) );
+    connect( this, SIGNAL(error(QProcess::ProcessError)),
+             this, SLOT(slotExited()) );
 
     d->jvmPath = "java";
     d->mainClass = "-help";

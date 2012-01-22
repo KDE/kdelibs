@@ -443,14 +443,14 @@ KFilePreviewGenerator::Private::Private(KFilePreviewGenerator* parent,
         m_previewShown = false;
     } else {
         KDirModel* dirModel = m_dirModel.data();
-        connect(dirModel->dirLister(), SIGNAL(newItems(const KFileItemList&)),
-                q, SLOT(updateIcons(const KFileItemList&)));
-        connect(dirModel, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
-                q, SLOT(updateIcons(const QModelIndex&, const QModelIndex&)));
-        connect(dirModel, SIGNAL(needSequenceIcon(const QModelIndex&,int)),
-               q, SLOT(requestSequenceIcon(const QModelIndex&, int)));
-        connect(dirModel, SIGNAL(rowsAboutToBeRemoved(const QModelIndex&, int, int)),
-                q, SLOT(rowsAboutToBeRemoved(const QModelIndex&, int, int)));
+        connect(dirModel->dirLister(), SIGNAL(newItems(KFileItemList)),
+                q, SLOT(updateIcons(KFileItemList)));
+        connect(dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+                q, SLOT(updateIcons(QModelIndex,QModelIndex)));
+        connect(dirModel, SIGNAL(needSequenceIcon(QModelIndex,int)),
+               q, SLOT(requestSequenceIcon(QModelIndex,int)));
+        connect(dirModel, SIGNAL(rowsAboutToBeRemoved(QModelIndex,int,int)),
+                q, SLOT(rowsAboutToBeRemoved(QModelIndex,int,int)));
     }
 
     QClipboard* clipboard = QApplication::clipboard();
@@ -1056,8 +1056,8 @@ void KFilePreviewGenerator::Private::startPreviewJob(const KFileItemList& items,
             }
         }
 
-        connect(job, SIGNAL(gotPreview(const KFileItem&, const QPixmap&)),
-                q, SLOT(addToPreviewQueue(const KFileItem&, const QPixmap&)));
+        connect(job, SIGNAL(gotPreview(KFileItem,QPixmap)),
+                q, SLOT(addToPreviewQueue(KFileItem,QPixmap)));
         connect(job, SIGNAL(finished(KJob*)),
                 q, SLOT(slotPreviewJobFinished(KJob*)));
         m_previewJobs.append(job);

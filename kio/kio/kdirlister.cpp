@@ -54,12 +54,12 @@ KDirListerCache::KDirListerCache()
   connect( &pendingUpdateTimer, SIGNAL(timeout()), this, SLOT(processPendingUpdates()) );
   pendingUpdateTimer.setSingleShot( true );
 
-  connect( KDirWatch::self(), SIGNAL( dirty( const QString& ) ),
-           this, SLOT( slotFileDirty( const QString& ) ) );
-  connect( KDirWatch::self(), SIGNAL( created( const QString& ) ),
-           this, SLOT( slotFileCreated( const QString& ) ) );
-  connect( KDirWatch::self(), SIGNAL( deleted( const QString& ) ),
-           this, SLOT( slotFileDeleted( const QString& ) ) );
+  connect( KDirWatch::self(), SIGNAL(dirty(QString)),
+           this, SLOT(slotFileDirty(QString)) );
+  connect( KDirWatch::self(), SIGNAL(created(QString)),
+           this, SLOT(slotFileCreated(QString)) );
+  connect( KDirWatch::self(), SIGNAL(deleted(QString)),
+           this, SLOT(slotFileDeleted(QString)) );
 
   kdirnotify = new org::kde::KDirNotify(QString(), QString(), QDBusConnection::sessionBus(), this);
   connect(kdirnotify, SIGNAL(FileRenamed(QString,QString)), SLOT(slotFileRenamed(QString,QString)));
@@ -222,12 +222,12 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
                 if (lister->d->window)
                     job->ui()->setWindow(lister->d->window);
 
-                connect(job, SIGNAL(entries(KIO::Job *, KIO::UDSEntryList)),
-                        this, SLOT(slotEntries(KIO::Job *, KIO::UDSEntryList)));
-                connect(job, SIGNAL(result(KJob *)),
-                        this, SLOT(slotResult(KJob *)));
-                connect(job, SIGNAL(redirection(KIO::Job *,KUrl)),
-                        this, SLOT(slotRedirection(KIO::Job *,KUrl)));
+                connect(job, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)),
+                        this, SLOT(slotEntries(KIO::Job*,KIO::UDSEntryList)));
+                connect(job, SIGNAL(result(KJob*)),
+                        this, SLOT(slotResult(KJob*)));
+                connect(job, SIGNAL(redirection(KIO::Job*,KUrl)),
+                        this, SLOT(slotRedirection(KIO::Job*,KUrl)));
 
                 emit lister->started(_url);
             }
@@ -707,10 +707,10 @@ void KDirListerCache::updateDirectory( const KUrl& _dir )
     job = KIO::listDir( _dir, KIO::HideProgressInfo );
     runningListJobs.insert( job, KIO::UDSEntryList() );
 
-    connect( job, SIGNAL(entries( KIO::Job *, const KIO::UDSEntryList & )),
-             this, SLOT(slotUpdateEntries( KIO::Job *, const KIO::UDSEntryList & )) );
-    connect( job, SIGNAL(result( KJob * )),
-             this, SLOT(slotUpdateResult( KJob * )) );
+    connect( job, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)),
+             this, SLOT(slotUpdateEntries(KIO::Job*,KIO::UDSEntryList)) );
+    connect( job, SIGNAL(result(KJob*)),
+             this, SLOT(slotUpdateResult(KJob*)) );
 
     kDebug(7004) << "update started in" << _dir;
 
@@ -1490,10 +1490,10 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const KUrl& url )
     // make the job an update job
     job->disconnect( this );
 
-    connect( job, SIGNAL(entries( KIO::Job *, const KIO::UDSEntryList & )),
-             this, SLOT(slotUpdateEntries( KIO::Job *, const KIO::UDSEntryList & )) );
-    connect( job, SIGNAL(result( KJob * )),
-             this, SLOT(slotUpdateResult( KJob * )) );
+    connect( job, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)),
+             this, SLOT(slotUpdateEntries(KIO::Job*,KIO::UDSEntryList)) );
+    connect( job, SIGNAL(result(KJob*)),
+             this, SLOT(slotUpdateResult(KJob*)) );
 
     // FIXME: autoUpdate-Counts!!
 
@@ -2636,16 +2636,16 @@ void KDirLister::Private::jobStarted( KIO::ListJob *job )
 
 void KDirLister::Private::connectJob( KIO::ListJob *job )
 {
-  m_parent->connect( job, SIGNAL(infoMessage( KJob *, const QString&, const QString& )),
-                     m_parent, SLOT(_k_slotInfoMessage( KJob *, const QString& )) );
-  m_parent->connect( job, SIGNAL(percent( KJob *, unsigned long )),
-                     m_parent, SLOT(_k_slotPercent( KJob *, unsigned long )) );
-  m_parent->connect( job, SIGNAL(totalSize( KJob *, qulonglong )),
-                     m_parent, SLOT(_k_slotTotalSize( KJob *, qulonglong )) );
-  m_parent->connect( job, SIGNAL(processedSize( KJob *, qulonglong )),
-                     m_parent, SLOT(_k_slotProcessedSize( KJob *, qulonglong )) );
-  m_parent->connect( job, SIGNAL(speed( KJob *, unsigned long )),
-                     m_parent, SLOT(_k_slotSpeed( KJob *, unsigned long )) );
+  m_parent->connect( job, SIGNAL(infoMessage(KJob*,QString,QString)),
+                     m_parent, SLOT(_k_slotInfoMessage(KJob*,QString)) );
+  m_parent->connect( job, SIGNAL(percent(KJob*,ulong)),
+                     m_parent, SLOT(_k_slotPercent(KJob*,ulong)) );
+  m_parent->connect( job, SIGNAL(totalSize(KJob*,qulonglong)),
+                     m_parent, SLOT(_k_slotTotalSize(KJob*,qulonglong)) );
+  m_parent->connect( job, SIGNAL(processedSize(KJob*,qulonglong)),
+                     m_parent, SLOT(_k_slotProcessedSize(KJob*,qulonglong)) );
+  m_parent->connect( job, SIGNAL(speed(KJob*,ulong)),
+                     m_parent, SLOT(_k_slotSpeed(KJob*,ulong)) );
 }
 
 void KDirLister::setMainWindow( QWidget *window )

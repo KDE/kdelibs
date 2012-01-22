@@ -54,7 +54,7 @@ QString statusToString( uint status )
 
 Behaviour::Behaviour( TestNetworkingService * service ) : mService( service )
 {
-    connect ( mService, SIGNAL( statusChanged( uint ) ), this, SLOT( serviceStatusChanged( uint ) ) );
+    connect ( mService, SIGNAL(statusChanged(uint)), this, SLOT(serviceStatusChanged(uint)) );
 }
 
 GoOnlineOnRequest::GoOnlineOnRequest( TestNetworkingService * service ) : Behaviour( service )
@@ -73,11 +73,11 @@ void GoOnlineOnRequest::serviceStatusChanged( uint status )
     {
         case Solid::Networking::Connecting:
             qDebug( "  connecting..." );
-            QTimer::singleShot( 5000, this, SLOT( doDelayedConnect() ) );
+            QTimer::singleShot( 5000, this, SLOT(doDelayedConnect()) );
             break;
         case Solid::Networking::Disconnecting:
             qDebug( "  disconnecting..." );
-            QTimer::singleShot( 5000, this, SLOT( doDelayedDisconnect() ) );
+            QTimer::singleShot( 5000, this, SLOT(doDelayedDisconnect()) );
             break;
         default:
             ;

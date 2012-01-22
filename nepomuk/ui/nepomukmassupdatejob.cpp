@@ -34,8 +34,8 @@ Nepomuk::MassUpdateJob::MassUpdateJob( QObject* parent )
 {
     kDebug();
     setCapabilities( Killable|Suspendable );
-    connect( &m_processTimer, SIGNAL( timeout() ),
-             this, SLOT( slotNext() ) );
+    connect( &m_processTimer, SIGNAL(timeout()),
+             this, SLOT(slotNext()) );
 }
 
 

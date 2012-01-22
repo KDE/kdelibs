@@ -60,8 +60,8 @@ CachedRendering::CachedRendering(QStyle::State state, const QSize &size, QModelI
 
     if (index.model())
     {
-      connect(index.model(), SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
-              SLOT(dataChanged(const QModelIndex &, const QModelIndex &)));
+      connect(index.model(), SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+              SLOT(dataChanged(QModelIndex,QModelIndex)));
       connect(index.model(), SIGNAL(modelReset()), SLOT(modelReset()));
     }
 }

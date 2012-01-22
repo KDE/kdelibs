@@ -139,10 +139,10 @@ void JobRemoteTest::putAndGet()
     mtime.setTime_t(mtime.toTime_t()); // hack for losing the milliseconds
     job->setModificationTime(mtime);
     job->setUiDelegate( 0 );
-    connect( job, SIGNAL( result(KJob*) ),
-            this, SLOT( slotResult(KJob*) ) );
-    connect( job, SIGNAL(dataReq(KIO::Job*, QByteArray&)),
-             this, SLOT(slotDataReq(KIO::Job*, QByteArray&)) );
+    connect( job, SIGNAL(result(KJob*)),
+            this, SLOT(slotResult(KJob*)) );
+    connect( job, SIGNAL(dataReq(KIO::Job*,QByteArray&)),
+             this, SLOT(slotDataReq(KIO::Job*,QByteArray&)) );
     m_result = -1;
     m_dataReqCount = 0;
     enterLoop();
@@ -152,8 +152,8 @@ void JobRemoteTest::putAndGet()
 
     KIO::StoredTransferJob* getJob = KIO::storedGet( u, KIO::NoReload, KIO::HideProgressInfo );
     getJob->setUiDelegate( 0 );
-    connect( getJob, SIGNAL( result( KJob* ) ),
-            this, SLOT( slotGetResult( KJob* ) ) );
+    connect( getJob, SIGNAL(result(KJob*)),
+            this, SLOT(slotGetResult(KJob*)) );
     enterLoop();
     QCOMPARE( m_result, 0 ); // no error
     QCOMPARE( m_data, QByteArray("This is a test for KIO::put()\n") );
@@ -201,16 +201,16 @@ void JobRemoteTest::openFileWriting()
     fileJob = KIO::open(u, QIODevice::WriteOnly);
 
     fileJob->setUiDelegate( 0 );
-    connect( fileJob, SIGNAL( result(KJob*) ),
-            this, SLOT( slotResult(KJob*) ) );
-    connect( fileJob, SIGNAL(data(KIO::Job*, const QByteArray&)),
-             this, SLOT(slotFileJobData(KIO::Job*, const QByteArray&)) );
+    connect( fileJob, SIGNAL(result(KJob*)),
+            this, SLOT(slotResult(KJob*)) );
+    connect( fileJob, SIGNAL(data(KIO::Job*,QByteArray)),
+             this, SLOT(slotFileJobData(KIO::Job*,QByteArray)) );
     connect( fileJob, SIGNAL(open(KIO::Job*)),
              this, SLOT(slotFileJobOpen(KIO::Job*)) );
-    connect( fileJob, SIGNAL(written(KIO::Job *, KIO::filesize_t)),
-             this, SLOT(slotFileJobWritten (KIO::Job *, KIO::filesize_t)) );
-    connect( fileJob, SIGNAL(position (KIO::Job *, KIO::filesize_t)),
-             this, SLOT(slotFileJobPosition (KIO::Job *, KIO::filesize_t)) );
+    connect( fileJob, SIGNAL(written(KIO::Job*,KIO::filesize_t)),
+             this, SLOT(slotFileJobWritten(KIO::Job*,KIO::filesize_t)) );
+    connect( fileJob, SIGNAL(position(KIO::Job*,KIO::filesize_t)),
+             this, SLOT(slotFileJobPosition(KIO::Job*,KIO::filesize_t)) );
     connect( fileJob, SIGNAL(close(KIO::Job*)),
              this, SLOT(slotFileJobClose(KIO::Job*)) );
     m_result = -1;
@@ -221,8 +221,8 @@ void JobRemoteTest::openFileWriting()
 
     KIO::StoredTransferJob* getJob = KIO::storedGet( u, KIO::NoReload, KIO::HideProgressInfo );
     getJob->setUiDelegate( 0 );
-    connect( getJob, SIGNAL( result( KJob* ) ),
-             this, SLOT( slotGetResult( KJob* ) ) );
+    connect( getJob, SIGNAL(result(KJob*)),
+             this, SLOT(slotGetResult(KJob*)) );
     enterLoop();
     QCOMPARE( m_result, 0 ); // no error
     kDebug() << "m_data: " << m_data;
@@ -301,8 +301,8 @@ void JobRemoteTest::openFileReading()
     mtime.setTime_t(mtime.toTime_t()); // hack for losing the milliseconds
     putJob->setModificationTime(mtime);
     putJob->setUiDelegate( 0 );
-    connect( putJob, SIGNAL( result(KJob*) ),
-            this, SLOT( slotResult(KJob*) ) );
+    connect( putJob, SIGNAL(result(KJob*)),
+            this, SLOT(slotResult(KJob*)) );
     m_result = -1;
     enterLoop();
     QVERIFY( m_result == 0 ); // no error
@@ -314,16 +314,16 @@ void JobRemoteTest::openFileReading()
     fileJob = KIO::open(u, QIODevice::ReadOnly);
 
     fileJob->setUiDelegate( 0 );
-    connect( fileJob, SIGNAL( result(KJob*) ),
-            this, SLOT( slotResult(KJob*) ) );
-    connect( fileJob, SIGNAL(data(KIO::Job*, const QByteArray&)),
-             this, SLOT(slotFileJob2Data(KIO::Job*, const QByteArray&)) );
+    connect( fileJob, SIGNAL(result(KJob*)),
+            this, SLOT(slotResult(KJob*)) );
+    connect( fileJob, SIGNAL(data(KIO::Job*,QByteArray)),
+             this, SLOT(slotFileJob2Data(KIO::Job*,QByteArray)) );
     connect( fileJob, SIGNAL(open(KIO::Job*)),
              this, SLOT(slotFileJob2Open(KIO::Job*)) );
-    connect( fileJob, SIGNAL(written(KIO::Job *, KIO::filesize_t)),
-             this, SLOT(slotFileJob2Written (KIO::Job *, KIO::filesize_t)) );
-    connect( fileJob, SIGNAL(position (KIO::Job *, KIO::filesize_t)),
-             this, SLOT(slotFileJob2Position (KIO::Job *, KIO::filesize_t)) );
+    connect( fileJob, SIGNAL(written(KIO::Job*,KIO::filesize_t)),
+             this, SLOT(slotFileJob2Written(KIO::Job*,KIO::filesize_t)) );
+    connect( fileJob, SIGNAL(position(KIO::Job*,KIO::filesize_t)),
+             this, SLOT(slotFileJob2Position(KIO::Job*,KIO::filesize_t)) );
     connect( fileJob, SIGNAL(close(KIO::Job*)),
              this, SLOT(slotFileJob2Close(KIO::Job*)) );
     m_result = -1;

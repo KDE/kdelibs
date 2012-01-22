@@ -59,8 +59,8 @@ Nepomuk::Utils::FacetWidget::FacetWidget( QWidget *parent )
       d( new Private() )
 {
     d->m_facetModel = new Nepomuk::Utils::FacetModel( this );
-    connect( d->m_facetModel, SIGNAL( queryTermChanged(Nepomuk::Query::Term) ),
-             this, SIGNAL( queryTermChanged(Nepomuk::Query::Term) ) );
+    connect( d->m_facetModel, SIGNAL(queryTermChanged(Nepomuk::Query::Term)),
+             this, SIGNAL(queryTermChanged(Nepomuk::Query::Term)) );
 
     d->m_facetView = new QListView( this );
     d->m_facetView->setItemDelegate( new FacetDelegate( d->m_facetView ) );

@@ -112,12 +112,12 @@ void KHTMLPartBrowserExtension::editableWidgetFocused( QWidget *widget )
 
     if ( !m_connectedToClipboard && m_editableFormWidget )
     {
-        connect( QApplication::clipboard(), SIGNAL( dataChanged() ),
-                 this, SLOT( updateEditActions() ) );
+        connect( QApplication::clipboard(), SIGNAL(dataChanged()),
+                 this, SLOT(updateEditActions()) );
 
         if ( m_editableFormWidget->inherits( "QLineEdit" ) || m_editableFormWidget->inherits( "QTextEdit" ) )
-            connect( m_editableFormWidget, SIGNAL( selectionChanged() ),
-                     this, SLOT( updateEditActions() ) );
+            connect( m_editableFormWidget, SIGNAL(selectionChanged()),
+                     this, SLOT(updateEditActions()) );
 
         m_connectedToClipboard = true;
     }
@@ -135,14 +135,14 @@ void KHTMLPartBrowserExtension::editableWidgetBlurred( QWidget * /*widget*/ )
 
     if ( m_connectedToClipboard )
     {
-        disconnect( QApplication::clipboard(), SIGNAL( dataChanged() ),
-                    this, SLOT( updateEditActions() ) );
+        disconnect( QApplication::clipboard(), SIGNAL(dataChanged()),
+                    this, SLOT(updateEditActions()) );
 
         if ( oldWidget )
         {
             if ( oldWidget->inherits( "QLineEdit" ) || oldWidget->inherits( "QTextEdit" ) )
-                disconnect( oldWidget, SIGNAL( selectionChanged() ),
-                            this, SLOT( updateEditActions() ) );
+                disconnect( oldWidget, SIGNAL(selectionChanged()),
+                            this, SLOT(updateEditActions()) );
         }
 
         m_connectedToClipboard = false;
@@ -154,14 +154,14 @@ void KHTMLPartBrowserExtension::setExtensionProxy( KParts::BrowserExtension *pro
 {
     if ( m_extensionProxy )
     {
-        disconnect( m_extensionProxy, SIGNAL( enableAction( const char *, bool ) ),
-                    this, SLOT( extensionProxyActionEnabled( const char *, bool ) ) );
+        disconnect( m_extensionProxy, SIGNAL(enableAction(const char*,bool)),
+                    this, SLOT(extensionProxyActionEnabled(const char*,bool)) );
         if ( m_extensionProxy->inherits( "KHTMLPartBrowserExtension" ) )
         {
-            disconnect( m_extensionProxy, SIGNAL( editableWidgetFocused() ),
-                        this, SLOT( extensionProxyEditableWidgetFocused() ) );
-            disconnect( m_extensionProxy, SIGNAL( editableWidgetBlurred() ),
-                        this, SLOT( extensionProxyEditableWidgetBlurred() ) );
+            disconnect( m_extensionProxy, SIGNAL(editableWidgetFocused()),
+                        this, SLOT(extensionProxyEditableWidgetFocused()) );
+            disconnect( m_extensionProxy, SIGNAL(editableWidgetBlurred()),
+                        this, SLOT(extensionProxyEditableWidgetBlurred()) );
         }
     }
 
@@ -169,14 +169,14 @@ void KHTMLPartBrowserExtension::setExtensionProxy( KParts::BrowserExtension *pro
 
     if ( m_extensionProxy )
     {
-        connect( m_extensionProxy, SIGNAL( enableAction( const char *, bool ) ),
-                 this, SLOT( extensionProxyActionEnabled( const char *, bool ) ) );
+        connect( m_extensionProxy, SIGNAL(enableAction(const char*,bool)),
+                 this, SLOT(extensionProxyActionEnabled(const char*,bool)) );
         if ( m_extensionProxy->inherits( "KHTMLPartBrowserExtension" ) )
         {
-            connect( m_extensionProxy, SIGNAL( editableWidgetFocused() ),
-                     this, SLOT( extensionProxyEditableWidgetFocused() ) );
-            connect( m_extensionProxy, SIGNAL( editableWidgetBlurred() ),
-                     this, SLOT( extensionProxyEditableWidgetBlurred() ) );
+            connect( m_extensionProxy, SIGNAL(editableWidgetFocused()),
+                     this, SLOT(extensionProxyEditableWidgetFocused()) );
+            connect( m_extensionProxy, SIGNAL(editableWidgetBlurred()),
+                     this, SLOT(extensionProxyEditableWidgetBlurred()) );
         }
 
         enableAction( "cut", m_extensionProxy->isActionEnabled( "cut" ) );
@@ -225,7 +225,7 @@ void KHTMLPartBrowserExtension::copy()
         //kDebug(6050) << text;
 
         QClipboard *cb = QApplication::clipboard();
-        disconnect( cb, SIGNAL( selectionChanged() ), m_part, SLOT( slotClearSelection() ) );
+        disconnect( cb, SIGNAL(selectionChanged()), m_part, SLOT(slotClearSelection()) );
 #ifndef QT_NO_MIMECLIPBOARD
   QString htmltext;
   /*
@@ -248,7 +248,7 @@ void KHTMLPartBrowserExtension::copy()
   cb->setText(text);
 #endif
 
-        connect( cb, SIGNAL( selectionChanged() ), m_part, SLOT( slotClearSelection() ) );
+        connect( cb, SIGNAL(selectionChanged()), m_part, SLOT(slotClearSelection()) );
     }
     else
     {
@@ -413,7 +413,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
     if (hasSelection) {
         QList<QAction *> editActions;
         QAction* copyAction = d->m_actionCollection->addAction( KStandardAction::Copy, "copy",
-                                                                d->m_khtml->browserExtension(), SLOT( copy() ) );
+                                                                d->m_khtml->browserExtension(), SLOT(copy()) );
 
         copyAction->setText(i18n("&Copy Text"));
         copyAction->setEnabled(d->m_khtml->browserExtension()->isActionEnabled( "copy" ));
@@ -432,7 +432,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
             KAction *action = new KAction(i18n("Open '%1'", selectedTextURL), this);
             d->m_actionCollection->addAction( "openSelection", action );
             action->setIcon( KIcon( "window-new" ) );
-            connect( action, SIGNAL(triggered(bool)), this, SLOT( openSelection() ) );
+            connect( action, SIGNAL(triggered(bool)), this, SLOT(openSelection()) );
             editActions.append(action);
         }
 
@@ -458,7 +458,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
 
             action = new KAction( i18n( "&Copy Link Address" ), this );
             d->m_actionCollection->addAction( "copylinklocation", action );
-            connect( action, SIGNAL(triggered(bool)), this, SLOT( slotCopyLinkLocation() ) );
+            connect( action, SIGNAL(triggered(bool)), this, SLOT(slotCopyLinkLocation()) );
             linkActions.append(action);
         }
         d->actionGroups.insert("linkactions", linkActions);
@@ -477,13 +477,13 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
 
             action = new KAction( i18n( "Open in &This Window" ), this );
             d->m_actionCollection->addAction( "frameintop", action );
-            connect( action, SIGNAL(triggered(bool)), this, SLOT( slotFrameInTop() ) );
+            connect( action, SIGNAL(triggered(bool)), this, SLOT(slotFrameInTop()) );
             menu->addAction(action);
 
             action = new KAction( i18n( "Open in &New Tab" ), this );
             d->m_actionCollection->addAction( "frameintab", action );
             action->setIcon( KIcon( "tab-new" ) );
-            connect( action, SIGNAL(triggered(bool)), this, SLOT( slotFrameInTab() ) );
+            connect( action, SIGNAL(triggered(bool)), this, SLOT(slotFrameInTab()) );
             menu->addAction(action);
 
             action = new KAction(d->m_actionCollection);
@@ -492,28 +492,28 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
 
             action = new KAction( i18n( "Reload Frame" ), this );
             d->m_actionCollection->addAction( "reloadframe", action );
-            connect( action, SIGNAL(triggered(bool)), this, SLOT( slotReloadFrame() ) );
+            connect( action, SIGNAL(triggered(bool)), this, SLOT(slotReloadFrame()) );
             menu->addAction(action);
 
             action = new KAction( i18n( "Print Frame..." ), this );
             d->m_actionCollection->addAction( "printFrame", action );
             action->setIcon( KIcon( "document-print-frame" ) );
-            connect( action, SIGNAL(triggered(bool)), d->m_khtml->browserExtension(), SLOT( print() ) );
+            connect( action, SIGNAL(triggered(bool)), d->m_khtml->browserExtension(), SLOT(print()) );
             menu->addAction(action);
 
             action = new KAction( i18n( "Save &Frame As..." ), this );
             d->m_actionCollection->addAction( "saveFrame", action );
-            connect( action, SIGNAL(triggered(bool)), d->m_khtml, SLOT( slotSaveFrame() ) );
+            connect( action, SIGNAL(triggered(bool)), d->m_khtml, SLOT(slotSaveFrame()) );
             menu->addAction(action);
 
             action = new KAction( i18n( "View Frame Source" ), this );
             d->m_actionCollection->addAction( "viewFrameSource", action );
-            connect( action, SIGNAL(triggered(bool)), d->m_khtml, SLOT( slotViewDocumentSource() ) );
+            connect( action, SIGNAL(triggered(bool)), d->m_khtml, SLOT(slotViewDocumentSource()) );
             menu->addAction(action);
 
             action = new KAction( i18n( "View Frame Information" ), this );
             d->m_actionCollection->addAction( "viewFrameInfo", action );
-            connect( action, SIGNAL(triggered(bool)), d->m_khtml, SLOT( slotViewPageInfo() ) );
+            connect( action, SIGNAL(triggered(bool)), d->m_khtml, SLOT(slotViewPageInfo()) );
 
             action = new KAction(d->m_actionCollection);
             action->setSeparator(true);
@@ -523,7 +523,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
                 if ( khtml->d->m_frame->m_type == khtml::ChildFrame::IFrame ) {
                     action = new KAction( i18n( "Block IFrame..." ), this );
                     d->m_actionCollection->addAction( "blockiframe", action );
-                    connect( action, SIGNAL(triggered(bool)), this, SLOT( slotBlockIFrame() ) );
+                    connect( action, SIGNAL(triggered(bool)), this, SLOT(slotBlockIFrame()) );
                     menu->addAction(action);
                 }
             }
@@ -548,26 +548,26 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
             d->m_imageURL = KUrl( static_cast<DOM::HTMLInputElement>( e ).src().string() );
         KAction *action = new KAction( i18n( "Save Image As..." ), this );
         d->m_actionCollection->addAction( "saveimageas", action );
-        connect( action, SIGNAL(triggered(bool)), this, SLOT( slotSaveImageAs() ) );
+        connect( action, SIGNAL(triggered(bool)), this, SLOT(slotSaveImageAs()) );
         partActions.append(action);
 
         action = new KAction( i18n( "Send Image..." ), this );
         d->m_actionCollection->addAction( "sendimage", action );
-        connect( action, SIGNAL(triggered(bool)), this, SLOT( slotSendImage() ) );
+        connect( action, SIGNAL(triggered(bool)), this, SLOT(slotSendImage()) );
         partActions.append(action);
 
 #ifndef QT_NO_MIMECLIPBOARD
         action = new KAction( i18n( "Copy Image" ), this );
         d->m_actionCollection->addAction( "copyimage", action );
         action->setEnabled(!d->m_pixmap.isNull());
-        connect( action, SIGNAL(triggered(bool)), this, SLOT( slotCopyImage() ) );
+        connect( action, SIGNAL(triggered(bool)), this, SLOT(slotCopyImage()) );
         partActions.append(action);
 #endif
 
         if(d->m_pixmap.isNull()) {    //fallback to image location if still loading the image.  this will always be true if ifdef QT_NO_MIMECLIPBOARD
             action = new KAction( i18n( "Copy Image Location" ), this );
             d->m_actionCollection->addAction( "copyimagelocation", action );
-            connect( action, SIGNAL(triggered(bool)), this, SLOT( slotCopyImageLocation() ) );
+            connect( action, SIGNAL(triggered(bool)), this, SLOT(slotCopyImageLocation()) );
             partActions.append(action);
         }
 
@@ -576,13 +576,13 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
                                    : d->m_suggestedFilename;
         action = new KAction( i18n("View Image (%1)", actionText.replace("&", "&&")), this );
         d->m_actionCollection->addAction( "viewimage", action );
-        connect( action, SIGNAL(triggered(bool)), this, SLOT( slotViewImage() ) );
+        connect( action, SIGNAL(triggered(bool)), this, SLOT(slotViewImage()) );
         partActions.append(action);
 
         if (KHTMLGlobal::defaultHTMLSettings()->isAdFilterEnabled()) {
             action = new KAction( i18n( "Block Image..." ), this );
             d->m_actionCollection->addAction( "blockimage", action );
-            connect( action, SIGNAL(triggered(bool)), this, SLOT( slotBlockImage() ) );
+            connect( action, SIGNAL(triggered(bool)), this, SLOT(slotBlockImage()) );
             partActions.append(action);
 
             if (!d->m_imageURL.host().isEmpty() &&
@@ -590,7 +590,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
             {
                 action = new KAction( i18n( "Block Images From %1" , d->m_imageURL.host()), this );
                 d->m_actionCollection->addAction( "blockhost", action );
-                connect( action, SIGNAL(triggered(bool)), this, SLOT( slotBlockHost() ) );
+                connect( action, SIGNAL(triggered(bool)), this, SLOT(slotBlockHost()) );
                 partActions.append(action);
             }
         }
@@ -1036,7 +1036,7 @@ void KHTMLZoomFactorAction::init(KHTMLPart *part, bool direction)
         addAction( i18n( "%1%" ,  fastZoomSizes[ofs + i] ) );
     }
 
-    connect( selectableActionGroup(), SIGNAL( triggered(QAction*) ), this, SLOT( slotTriggered(QAction*) ) );
+    connect( selectableActionGroup(), SIGNAL(triggered(QAction*)), this, SLOT(slotTriggered(QAction*)) );
 }
 
 KHTMLZoomFactorAction::~KHTMLZoomFactorAction()

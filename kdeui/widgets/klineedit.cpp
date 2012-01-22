@@ -1199,7 +1199,7 @@ QMenu* KLineEdit::createStandardContextMenu()
             separatorAction = actionList.at( idx );
         if ( separatorAction )
         {
-            KAction *clearAllAction = KStandardAction::clear( this, SLOT( clear() ), this) ;
+            KAction *clearAllAction = KStandardAction::clear( this, SLOT(clear()), this) ;
             if ( text().isEmpty() )
                 clearAllAction->setEnabled( false );
             popup->insertAction( separatorAction, clearAllAction );
@@ -1214,8 +1214,8 @@ QMenu* KLineEdit::createStandardContextMenu()
     if ( compObj() && !isReadOnly() && KAuthorized::authorize("lineedit_text_completion") )
     {
         QMenu *subMenu = popup->addMenu( KIcon("text-completion"), i18nc("@title:menu", "Text Completion") );
-        connect( subMenu, SIGNAL( triggered ( QAction* ) ),
-                 this, SLOT( completionMenuActivated( QAction* ) ) );
+        connect( subMenu, SIGNAL(triggered(QAction*)),
+                 this, SLOT(completionMenuActivated(QAction*)) );
 
         popup->addSeparator();
 
@@ -1437,10 +1437,10 @@ void KLineEdit::setCompletionBox( KCompletionBox *box )
     d->completionBox = box;
     if ( handleSignals() )
     {
-        connect( d->completionBox, SIGNAL(currentTextChanged( const QString& )),
-                 SLOT(_k_slotCompletionBoxTextChanged( const QString& )) );
-        connect( d->completionBox, SIGNAL(userCancelled( const QString& )),
-                 SLOT(userCancelled( const QString& )) );
+        connect( d->completionBox, SIGNAL(currentTextChanged(QString)),
+                 SLOT(_k_slotCompletionBoxTextChanged(QString)) );
+        connect( d->completionBox, SIGNAL(userCancelled(QString)),
+                 SLOT(userCancelled(QString)) );
         connect( d->completionBox, SIGNAL(activated(QString)),
                  SIGNAL(completionBoxActivated(QString)) );
         connect( d->completionBox, SIGNAL(activated(QString)),
@@ -1642,12 +1642,12 @@ void KLineEdit::setCompletionObject( KCompletion* comp, bool hsig )
 {
     KCompletion *oldComp = compObj();
     if ( oldComp && handleSignals() )
-        disconnect( oldComp, SIGNAL( matches( const QStringList& )),
-                    this, SLOT( setCompletedItems( const QStringList& )));
+        disconnect( oldComp, SIGNAL(matches(QStringList)),
+                    this, SLOT(setCompletedItems(QStringList)));
 
     if ( comp && hsig )
-      connect( comp, SIGNAL( matches( const QStringList& )),
-               this, SLOT( setCompletedItems( const QStringList& )));
+      connect( comp, SIGNAL(matches(QStringList)),
+               this, SLOT(setCompletedItems(QStringList)));
 
     KCompletionBase::setCompletionObject( comp, hsig );
 }

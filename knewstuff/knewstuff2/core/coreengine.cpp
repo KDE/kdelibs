@@ -258,8 +258,8 @@ void CoreEngine::loadEntries(Provider *provider)
                     SIGNAL(signalEntriesFailed()),
                     SLOT(slotEntriesFailed()));
             connect(entry_loader,
-                    SIGNAL(signalProgress(KJob*, unsigned long)),
-                    SLOT(slotProgress(KJob*, unsigned long)));
+                    SIGNAL(signalProgress(KJob*,ulong)),
+                    SLOT(slotProgress(KJob*,ulong)));
 
             entry_loader->load(provider, feed);
         }
@@ -291,8 +291,8 @@ void CoreEngine::downloadPreview(Entry *entry)
             SIGNAL(result(KJob*)),
             SLOT(slotPreviewResult(KJob*)));
     connect(job,
-            SIGNAL(progress(KJob*, unsigned long)),
-            SLOT(slotProgress(KJob*, unsigned long)));
+            SIGNAL(progress(KJob*,ulong)),
+            SLOT(slotProgress(KJob*,ulong)));
 
     m_entry_jobs[job] = entry;
 }
@@ -331,8 +331,8 @@ void CoreEngine::downloadPayload(Entry *entry)
             SIGNAL(result(KJob*)),
             SLOT(slotPayloadResult(KJob*)));
     connect(job,
-            SIGNAL(percent(KJob*, unsigned long)),
-            SLOT(slotProgress(KJob*, unsigned long)));
+            SIGNAL(percent(KJob*,ulong)),
+            SLOT(slotProgress(KJob*,ulong)));
 
     m_entry_jobs[job] = entry;
 }

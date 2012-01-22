@@ -135,8 +135,8 @@ void MetaInfoJob::getMetaInfo()
     KIO::TransferJob* job = KIO::get(URL, NoReload, HideProgressInfo);
     addSubjob(job);
 
-    connect(job,  SIGNAL(data(KIO::Job *, const QByteArray &)),
-            this, SLOT(slotMetaInfo(KIO::Job *, const QByteArray &)));
+    connect(job,  SIGNAL(data(KIO::Job*,QByteArray)),
+            this, SLOT(slotMetaInfo(KIO::Job*,QByteArray)));
 
     job->addMetaData("mimeType", item.mimetype());
 }

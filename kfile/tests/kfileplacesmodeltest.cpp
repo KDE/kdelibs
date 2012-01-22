@@ -270,7 +270,7 @@ void KFilePlacesModelTest::testHiding()
     QModelIndex b = m_places->index(6, 0);
 
     QList<QVariant> args;
-    QSignalSpy spy(m_places, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
+    QSignalSpy spy(m_places, SIGNAL(dataChanged(QModelIndex,QModelIndex)));
 
     // Verify that hidden is taken into account and is not global
     m_places->setPlaceHidden(a, true);
@@ -311,8 +311,8 @@ void KFilePlacesModelTest::testHiding()
 void KFilePlacesModelTest::testMove()
 {
     QList<QVariant> args;
-    QSignalSpy spy_inserted(m_places, SIGNAL(rowsInserted(QModelIndex, int, int)));
-    QSignalSpy spy_removed(m_places, SIGNAL(rowsRemoved(QModelIndex, int, int)));
+    QSignalSpy spy_inserted(m_places, SIGNAL(rowsInserted(QModelIndex,int,int)));
+    QSignalSpy spy_removed(m_places, SIGNAL(rowsRemoved(QModelIndex,int,int)));
 
     const QString file = KStandardDirs::locateLocal("data", "kfileplaces/bookmarks.xml");
     KBookmarkManager *bookmarkManager = KBookmarkManager::managerForFile(file, "kfilePlaces");
@@ -384,8 +384,8 @@ void KFilePlacesModelTest::testMove()
 void KFilePlacesModelTest::testDragAndDrop()
 {
     QList<QVariant> args;
-    QSignalSpy spy_inserted(m_places, SIGNAL(rowsInserted(QModelIndex, int, int)));
-    QSignalSpy spy_removed(m_places, SIGNAL(rowsRemoved(QModelIndex, int, int)));
+    QSignalSpy spy_inserted(m_places, SIGNAL(rowsInserted(QModelIndex,int,int)));
+    QSignalSpy spy_removed(m_places, SIGNAL(rowsRemoved(QModelIndex,int,int)));
 
     // Move the trash at the end of the list
     QModelIndexList indexes;
@@ -462,9 +462,9 @@ void KFilePlacesModelTest::testDragAndDrop()
 void KFilePlacesModelTest::testPlacesLifecycle()
 {
     QList<QVariant> args;
-    QSignalSpy spy_inserted(m_places, SIGNAL(rowsInserted(QModelIndex, int, int)));
-    QSignalSpy spy_removed(m_places, SIGNAL(rowsRemoved(QModelIndex, int, int)));
-    QSignalSpy spy_changed(m_places, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
+    QSignalSpy spy_inserted(m_places, SIGNAL(rowsInserted(QModelIndex,int,int)));
+    QSignalSpy spy_removed(m_places, SIGNAL(rowsRemoved(QModelIndex,int,int)));
+    QSignalSpy spy_changed(m_places, SIGNAL(dataChanged(QModelIndex,QModelIndex)));
 
     m_places->addPlace("Foo", KUrl("/home/foo"));
 
@@ -568,8 +568,8 @@ void KFilePlacesModelTest::testPlacesLifecycle()
 void KFilePlacesModelTest::testDevicePlugging()
 {
     QList<QVariant> args;
-    QSignalSpy spy_inserted(m_places, SIGNAL(rowsInserted(QModelIndex, int, int)));
-    QSignalSpy spy_removed(m_places, SIGNAL(rowsRemoved(QModelIndex, int, int)));
+    QSignalSpy spy_inserted(m_places, SIGNAL(rowsInserted(QModelIndex,int,int)));
+    QSignalSpy spy_removed(m_places, SIGNAL(rowsRemoved(QModelIndex,int,int)));
 
     fakeManager()->call("unplug", "/org/kde/solid/fakehw/volume_part1_size_993284096");
 
@@ -673,7 +673,7 @@ void KFilePlacesModelTest::testDevicePlugging()
 void KFilePlacesModelTest::testDeviceSetupTeardown()
 {
     QList<QVariant> args;
-    QSignalSpy spy_changed(m_places, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
+    QSignalSpy spy_changed(m_places, SIGNAL(dataChanged(QModelIndex,QModelIndex)));
 
     fakeDevice("/org/kde/solid/fakehw/volume_part1_size_993284096/StorageAccess")->call("teardown");
 

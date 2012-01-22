@@ -257,8 +257,8 @@ void KTextEdit::Private::init()
 {
     spellInterface = 0;
     KCursor::setAutoHideCursor(parent, true, false);
-    parent->connect(parent, SIGNAL(languageChanged(const QString&)),
-                    parent, SLOT(setSpellCheckingLanguage(const QString&)));
+    parent->connect(parent, SIGNAL(languageChanged(QString)),
+                    parent, SLOT(setSpellCheckingLanguage(QString)));
 }
 
 KTextEdit::KTextEdit( const QString& text, QWidget *parent )
@@ -310,8 +310,8 @@ void KTextEdit::showSpellConfigDialog(const QString &configFileName,
     Sonnet::ConfigDialog dialog(&config, this);
     if (!d->spellCheckingLanguage.isEmpty())
         dialog.setLanguage(d->spellCheckingLanguage);
-    connect(&dialog, SIGNAL(languageChanged(const QString &)),
-            this, SLOT(setSpellCheckingLanguage(const QString &)));
+    connect(&dialog, SIGNAL(languageChanged(QString)),
+            this, SLOT(setSpellCheckingLanguage(QString)));
     if (!windowIcon.isEmpty())
         dialog.setWindowIcon(KIcon(windowIcon));
     dialog.exec();
@@ -462,8 +462,8 @@ QMenu *KTextEdit::mousePopupMenu()
 {
   QMenu *popup = createStandardContextMenu();
   if (!popup) return 0;
-  connect( popup, SIGNAL( triggered ( QAction* ) ),
-             this, SLOT( menuActivated( QAction* ) ) );
+  connect( popup, SIGNAL(triggered(QAction*)),
+             this, SLOT(menuActivated(QAction*)) );
 
   const bool emptyDocument = document()->isEmpty();
   if( !isReadOnly() )
@@ -793,22 +793,22 @@ void KTextEdit::checkSpelling()
      backgroundSpellCheck->changeLanguage(d->spellCheckingLanguage);
   Sonnet::Dialog *spellDialog = new Sonnet::Dialog(
       backgroundSpellCheck, 0);
-  connect(spellDialog, SIGNAL(replace( const QString&, int,const QString&)),
-          this, SLOT(spellCheckerCorrected( const QString&, int,const QString&)));
-  connect(spellDialog, SIGNAL(misspelling( const QString&, int)),
-          this, SLOT(spellCheckerMisspelling(const QString &,int)));
-  connect(spellDialog, SIGNAL(autoCorrect(const QString&, const QString&)),
-          this, SLOT(spellCheckerAutoCorrect(const QString&, const QString&)));
-  connect(spellDialog, SIGNAL(done(const QString&)),
+  connect(spellDialog, SIGNAL(replace(QString,int,QString)),
+          this, SLOT(spellCheckerCorrected(QString,int,QString)));
+  connect(spellDialog, SIGNAL(misspelling(QString,int)),
+          this, SLOT(spellCheckerMisspelling(QString,int)));
+  connect(spellDialog, SIGNAL(autoCorrect(QString,QString)),
+          this, SLOT(spellCheckerAutoCorrect(QString,QString)));
+  connect(spellDialog, SIGNAL(done(QString)),
           this, SLOT(spellCheckerFinished()));
   connect(spellDialog, SIGNAL(cancel()),
           this, SLOT(spellCheckerCanceled()));
   connect(spellDialog, SIGNAL(stop()),
           this, SLOT(spellCheckerFinished()));
-  connect(spellDialog, SIGNAL(spellCheckStatus(const QString &)),
-          this,SIGNAL(spellCheckStatus(const QString &)));
-  connect(spellDialog, SIGNAL(languageChanged(const QString &)),
-          this, SIGNAL(languageChanged(const QString &)));
+  connect(spellDialog, SIGNAL(spellCheckStatus(QString)),
+          this,SIGNAL(spellCheckStatus(QString)));
+  connect(spellDialog, SIGNAL(languageChanged(QString)),
+          this, SIGNAL(languageChanged(QString)));
   d->originalDoc = QTextDocumentFragment(document());
   spellDialog->setBuffer(toPlainText());
   spellDialog->show();
@@ -861,11 +861,11 @@ void KTextEdit::slotDoReplace()
 
     // Connect highlight signal to code which handles highlighting
     // of found text.
-    connect(d->replace, SIGNAL(highlight(const QString &, int, int)),
-            this, SLOT(slotFindHighlight(const QString &, int, int)));
+    connect(d->replace, SIGNAL(highlight(QString,int,int)),
+            this, SLOT(slotFindHighlight(QString,int,int)));
     connect(d->replace, SIGNAL(findNext()), this, SLOT(slotReplaceNext()));
-    connect(d->replace, SIGNAL(replace(const QString &, int, int, int)),
-            this, SLOT(slotReplaceText(const QString &, int, int, int)));
+    connect(d->replace, SIGNAL(replace(QString,int,int,int)),
+            this, SLOT(slotReplaceText(QString,int,int,int)));
 
     d->repDlg->close();
     slotReplaceNext();
@@ -935,8 +935,8 @@ void KTextEdit::slotDoFind()
 
     // Connect highlight signal to code which handles highlighting
     // of found text.
-    connect(d->find, SIGNAL(highlight(const QString &, int, int)),
-            this, SLOT(slotFindHighlight(const QString &, int, int)));
+    connect(d->find, SIGNAL(highlight(QString,int,int)),
+            this, SLOT(slotFindHighlight(QString,int,int)));
     connect(d->find, SIGNAL(findNext()), this, SLOT(slotFindNext()));
 
     d->findDlg->close();

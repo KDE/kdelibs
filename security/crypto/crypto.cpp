@@ -279,7 +279,7 @@ QString whatstr;
   SSLv3Box->setSelectionMode(QTreeWidget::NoSelection);
   grid->addWidget(SSLv3Box, 2, 0, 1, 2 );
   loadCiphers();
-  connect(SSLv3Box, SIGNAL(itemChanged(QTreeWidgetItem *, int)), SLOT(configChanged()));
+  connect(SSLv3Box, SIGNAL(itemChanged(QTreeWidgetItem*,int)), SLOT(configChanged()));
 
   //
   //  CipherWizards
@@ -362,7 +362,7 @@ QString whatstr;
   laygroup1->addWidget( oTest );
   connect(oTest, SIGNAL(clicked()), SLOT(slotTestOSSL()));
 
-  connect(oPath, SIGNAL(textChanged(const QString&)), SLOT(configChanged()));
+  connect(oPath, SIGNAL(textChanged(QString)), SLOT(configChanged()));
 
   //
   //  Settings for the EGD
@@ -383,7 +383,7 @@ QString whatstr;
   mEGDPath = new KUrlRequester(egdframe);
   mEGDPath->setMode(KFile::File|KFile::ExistingOnly|KFile::LocalOnly);
   grid2->addWidget(mEGDPath, 0, 1);
-  connect(mEGDPath, SIGNAL(textChanged(const QString&)), SLOT(configChanged()));
+  connect(mEGDPath, SIGNAL(textChanged(QString)), SLOT(configChanged()));
   vbox->addWidget(egdframe);
   whatstr = i18n("If selected, OpenSSL will be asked to use the entropy gathering"
           " daemon (EGD) for initializing the pseudo-random number generator.");
@@ -570,7 +570,7 @@ QString whatstr;
   connect(hostAuthList, SIGNAL(itemSelectionChanged()), this, SLOT(slotAuthItemChanged()));
   connect(authAdd, SIGNAL(clicked()), this, SLOT(slotNewHostAuth()));
   connect(authRemove, SIGNAL(clicked()), this, SLOT(slotRemoveHostAuth()));
-  connect(authHost, SIGNAL(textChanged(const QString &)), this, SLOT(slotAuthText(const QString &)));
+  connect(authHost, SIGNAL(textChanged(QString)), this, SLOT(slotAuthText(QString)));
   connect(hostCertBG, SIGNAL(buttonClicked(int)), this, SLOT(slotAuthButtons()));
   connect(hostCertBox, SIGNAL(activated(int)), this, SLOT(slotAuthCombo()));
 

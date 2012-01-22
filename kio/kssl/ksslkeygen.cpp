@@ -39,8 +39,8 @@ KSSLKeyGenWizardPage2::KSSLKeyGenWizardPage2(QWidget* parent)
 {
     ui2 = new Ui_KGWizardPage2;
     ui2->setupUi(this);
-    connect(ui2->_password1, SIGNAL(textChanged(const QString&)), this, SLOT(slotPassChanged()));
-    connect(ui2->_password2, SIGNAL(textChanged(const QString&)), this, SLOT(slotPassChanged()));
+    connect(ui2->_password1, SIGNAL(textChanged(QString)), this, SLOT(slotPassChanged()));
+    connect(ui2->_password2, SIGNAL(textChanged(QString)), this, SLOT(slotPassChanged()));
 }
 
 bool KSSLKeyGenWizardPage2::isComplete() const

@@ -156,7 +156,7 @@ void KFindDialog::KFindDialogPrivate::init(bool forReplace, const QStringList &_
     q->connect(regExpItem, SIGNAL(clicked()), q, SLOT(_k_showPatterns()));
     q->connect(backRefItem, SIGNAL(clicked()), q, SLOT(_k_showPlaceholders()));
 
-    q->connect(find, SIGNAL(editTextChanged(const QString &)), q, SLOT(_k_textSearchChanged(const QString &)));
+    q->connect(find, SIGNAL(editTextChanged(QString)), q, SLOT(_k_textSearchChanged(QString)));
 
     q->connect(regExp, SIGNAL(toggled(bool)), q, SIGNAL(optionsChanged()));
     q->connect(backRef, SIGNAL(toggled(bool)), q, SIGNAL(optionsChanged()));

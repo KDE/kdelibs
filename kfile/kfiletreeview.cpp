@@ -95,13 +95,13 @@ KFileTreeView::KFileTreeView(QWidget *parent)
 
     d->mSourceModel->dirLister()->openUrl(KUrl(QDir::root().absolutePath()), KDirLister::Keep);
 
-    connect(this, SIGNAL(activated(const QModelIndex&)),
-            this, SLOT(_k_activated(const QModelIndex&)));
-    connect(selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
-            this, SLOT(_k_currentChanged(const QModelIndex&, const QModelIndex&)));
+    connect(this, SIGNAL(activated(QModelIndex)),
+            this, SLOT(_k_activated(QModelIndex)));
+    connect(selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)),
+            this, SLOT(_k_currentChanged(QModelIndex,QModelIndex)));
 
-    connect(d->mSourceModel, SIGNAL(expand(const QModelIndex&)),
-            this, SLOT(_k_expanded(const QModelIndex&)));
+    connect(d->mSourceModel, SIGNAL(expand(QModelIndex)),
+            this, SLOT(_k_expanded(QModelIndex)));
 }
 
 KFileTreeView::~KFileTreeView()

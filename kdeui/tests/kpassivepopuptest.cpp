@@ -55,32 +55,32 @@ int main( int argc, char **argv )
 
     pb = new QPushButton();
     pb->setText( "By taskbar entry" );
-    pb->connect( pb, SIGNAL(clicked()), t, SLOT( showIt() ) );
+    pb->connect( pb, SIGNAL(clicked()), t, SLOT(showIt()) );
     pb->show();
 
     pb2 = new QPushButton();
     pb2->setText( "By taskbar entry (with caption)" );
-    pb2->connect( pb2, SIGNAL(clicked()), t, SLOT( showIt2() ) );
+    pb2->connect( pb2, SIGNAL(clicked()), t, SLOT(showIt2()) );
     pb2->show();
 
     pb3 = new QPushButton();
     pb3->setText( "By WinId" );
-    pb3->connect( pb3, SIGNAL(clicked()), t, SLOT( showIt3() ) );
+    pb3->connect( pb3, SIGNAL(clicked()), t, SLOT(showIt3()) );
     pb3->show();
 
     pb4 = new QPushButton();
     pb4->setText( "Boxed taskbar entry" );
-    pb4->connect( pb4, SIGNAL(clicked()), t, SLOT( showIt4() ) );
+    pb4->connect( pb4, SIGNAL(clicked()), t, SLOT(showIt4()) );
     pb4->show();
 
     pb5 = new QPushButton();
     pb5->setText( "Balloon taskbar entry" );
-    pb5->connect( pb5, SIGNAL(clicked()), t, SLOT( showIt5() ) );
+    pb5->connect( pb5, SIGNAL(clicked()), t, SLOT(showIt5()) );
     pb5->show();
 
     icon = new KSystemTrayIcon();
     icon->setIcon(icon->loadIcon("xorg"));
-    icon->connect( icon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), t, SLOT( showIt6(QSystemTrayIcon::ActivationReason) ) );
+    icon->connect( icon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), t, SLOT(showIt6(QSystemTrayIcon::ActivationReason)) );
     icon->show();
 
     return app.exec();

@@ -289,8 +289,8 @@ KTimeComboBox::KTimeComboBox(QWidget *parent)
 
     connect( this, SIGNAL(activated(int)),
              this, SLOT(selectTime(int)));
-    connect( this, SIGNAL(editTextChanged(const QString&)),
-             this, SLOT(editTime(const QString&)));
+    connect( this, SIGNAL(editTextChanged(QString)),
+             this, SLOT(editTime(QString)));
 }
 
 KTimeComboBox::~KTimeComboBox()

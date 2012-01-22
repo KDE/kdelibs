@@ -29,18 +29,18 @@
 K3ListBox::K3ListBox( QWidget *parent, const char *name, Qt::WFlags f )
     : Q3ListBox( parent, name, f ), d(0)
 {
-    connect( this, SIGNAL( onViewport() ),
-	     this, SLOT( slotOnViewport() ) );
-    connect( this, SIGNAL( onItem( Q3ListBoxItem * ) ),
-	     this, SLOT( slotOnItem( Q3ListBoxItem * ) ) );
+    connect( this, SIGNAL(onViewport()),
+	     this, SLOT(slotOnViewport()) );
+    connect( this, SIGNAL(onItem(Q3ListBoxItem*)),
+	     this, SLOT(slotOnItem(Q3ListBoxItem*)) );
     slotSettingsChanged(KGlobalSettings::SETTINGS_MOUSE);
-    connect( KGlobalSettings::self(), SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
+    connect( KGlobalSettings::self(), SIGNAL(settingsChanged(int)), SLOT(slotSettingsChanged(int)) );
 
     m_pCurrentItem = 0L;
 
     m_pAutoSelect = new QTimer( this );
-    connect( m_pAutoSelect, SIGNAL( timeout() ),
-    	     this, SLOT( slotAutoSelect() ) );
+    connect( m_pAutoSelect, SIGNAL(timeout()),
+            this, SLOT(slotAutoSelect()) );
 }
 
 void K3ListBox::slotOnItem( Q3ListBoxItem *item )
