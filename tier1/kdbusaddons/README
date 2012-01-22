@@ -1,0 +1,5 @@
+This directory holds the code for the kdbusaddons library. It provides
+extra convenience classes on top of QtDBus.
+
+kdbusaddons is part of the KDE Frameworks offering.
+
