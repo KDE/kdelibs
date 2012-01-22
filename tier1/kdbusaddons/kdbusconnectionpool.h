@@ -21,7 +21,7 @@
 #ifndef KDBUSCONNECTIONPOOL_H
 #define KDBUSCONNECTIONPOOL_H
 
-#include <kdbus_export.h>
+#include <kdbusaddons_export.h>
 
 #include <QtDBus/QDBusConnection>
 
@@ -34,7 +34,7 @@ namespace KDBusConnectionPool
  * around in Qt) this method can be dropped in favor of
  * QDBusConnection::sessionBus().
  */
-KDBUS_EXPORT QDBusConnection threadConnection();
+KDBUSADDONS_EXPORT QDBusConnection threadConnection();
 }
 
 #endif

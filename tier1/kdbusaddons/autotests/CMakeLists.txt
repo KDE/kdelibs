@@ -6,18 +6,18 @@ remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 find_package(Qt4 REQUIRED QtTest)
 include(${QT_USE_FILE})
 
-MACRO(KDBUS_UNIT_TESTS)
+MACRO(KDBUSADDONS_UNIT_TESTS)
     FOREACH(_testname ${ARGN})
         add_executable(${_testname} ${_testname}.cpp)
         add_test(${_testname} ${_testname})
-        target_link_libraries(${_testname} ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTTEST_LIBRARY} kdbus)
+        target_link_libraries(${_testname} ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTTEST_LIBRARY} kdbusaddons)
     ENDFOREACH(_testname)
-ENDMACRO(KDBUS_UNIT_TESTS)
+ ENDMACRO(KDBUSADDONS_UNIT_TESTS)
 
 
 ########### next target ###############
 
-KDBUS_UNIT_TESTS(
+KDBUSADDONS_UNIT_TESTS(
  kdbusinterprocesslocktest
  kdbusservicetest
 )

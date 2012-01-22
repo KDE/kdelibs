@@ -25,7 +25,7 @@
 
 #include <QtCore/QObject>
 
-#include <kdbus_export.h>
+#include <kdbusaddons_export.h>
 
 class KDBusInterProcessLockPrivate;
 
@@ -59,7 +59,7 @@ class KDBusInterProcessLockPrivate;
  *
  * @author Tobias Koenig <tokoe@kde.org>
  */
-class KDBUS_EXPORT KDBusInterProcessLock : public QObject
+class KDBUSADDONS_EXPORT KDBusInterProcessLock : public QObject
 {
     Q_OBJECT
 

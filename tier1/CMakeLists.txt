@@ -4,7 +4,7 @@ project(tier1)
 
 add_subdirectory(itemmodels)
 add_subdirectory(libkauth)
-add_subdirectory(libkdbus)
+add_subdirectory(kdbusaddons)
 add_subdirectory(libkplotting)
 add_subdirectory(solid)
 add_subdirectory(threadweaver)

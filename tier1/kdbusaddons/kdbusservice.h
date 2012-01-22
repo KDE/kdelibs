@@ -25,7 +25,7 @@
 
 #include <QObject>
 
-#include <kdbus_export.h>
+#include <kdbusaddons_export.h>
 
 class KDBusServicePrivate;
 
@@ -38,7 +38,7 @@ class KDBusServicePrivate;
  * via DBus, which could be a problem for other apps or scripts which start the
  * application in order to talk DBus to it immediately.
  */
-class KDBUS_EXPORT KDBusService : public QObject
+class KDBUSADDONS_EXPORT KDBusService : public QObject
 {
     Q_OBJECT
     Q_ENUMS(StartupOption)
