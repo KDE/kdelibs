@@ -688,5 +688,5 @@ void KIconDialog::KIconDialogPrivate::_k_slotFinished()
     mpProgress->hide();
 }
 
-#include "kicondialog.moc"
-#include "kicondialog_p.moc"
+#include "moc_kicondialog.cpp"
+#include "moc_kicondialog_p.cpp"

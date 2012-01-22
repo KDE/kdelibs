@@ -1359,4 +1359,3 @@ bool FileProtocol::deleteRecursive(const QString& path)
     return true;
 }
 
-#include "file.moc"

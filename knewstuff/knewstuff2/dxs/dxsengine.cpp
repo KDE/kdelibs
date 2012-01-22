@@ -116,4 +116,3 @@ void DxsEngine::slotEntriesFailed()
     emit signalEntriesFailed();
 }
 
-#include "dxsengine.moc"

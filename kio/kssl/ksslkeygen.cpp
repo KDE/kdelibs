@@ -270,6 +270,6 @@ void KSSLKeyGen::setKeySize(int idx)
      d->idx = idx;
 }
 
-#include "ksslkeygen.moc"
+#include "moc_ksslkeygen.cpp"
 
-#include "ksslkeygen_p.moc"
+#include "moc_ksslkeygen_p.cpp"

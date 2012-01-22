@@ -985,4 +985,3 @@ KCompTreeNode *KCompTreeNodeList::at(uint index) const
 
 KZoneAllocator KCompTreeNode::alloc(8192);
 
-#include "kcompletion.moc"

@@ -132,4 +132,4 @@ KPageWidgetItem* KPageWidget::currentPage() const
     return d_func()->model()->item(index);
 }
 
-#include "kpagewidget.moc"
+#include "moc_kpagewidget.cpp"

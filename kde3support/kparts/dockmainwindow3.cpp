@@ -161,4 +161,4 @@ void DockMainWindow3::createShellGUI( bool create )
     }
 }
 
-#include "dockmainwindow3.moc"
+#include "moc_dockmainwindow3.cpp"

@@ -124,4 +124,3 @@ QWidget *KToolBarLabelAction::createWidget( QWidget* _parent )
   return d->label;
 }
 
-#include "ktoolbarlabelaction.moc"

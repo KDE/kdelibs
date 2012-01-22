@@ -201,4 +201,4 @@ int KAnimatedButton::iconDimensions() const
   return qMin(iconSize().width(), iconSize().height());
 }
 
-#include "kanimatedbutton.moc"
+#include "moc_kanimatedbutton.cpp"

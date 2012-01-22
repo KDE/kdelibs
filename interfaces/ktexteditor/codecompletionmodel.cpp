@@ -121,4 +121,3 @@ void CodeCompletionModel2::executeCompletionItem2(Document* document, const Rang
   document->replaceText(word, data(index.sibling(index.row(), Name)).toString());
 }
 
-#include "codecompletionmodel.moc"

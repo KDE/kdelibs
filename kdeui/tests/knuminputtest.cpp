@@ -179,5 +179,4 @@ int main( int argc, char ** argv )
     a.exec();
 }
 
-#include "knuminputtest.moc"
 

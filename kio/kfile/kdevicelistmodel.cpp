@@ -284,4 +284,4 @@ QModelIndex KDeviceListModel::Private::indexForItem(KDeviceListItem *item) const
     }
 }
 
-#include "kdevicelistmodel.moc"
+#include "moc_kdevicelistmodel.cpp"

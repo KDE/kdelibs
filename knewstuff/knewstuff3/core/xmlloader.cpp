@@ -88,4 +88,3 @@ namespace KNS3
     }
 } // end KNS namespace
 
-#include "xmlloader.moc"

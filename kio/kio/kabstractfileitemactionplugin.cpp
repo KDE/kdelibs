@@ -29,4 +29,3 @@ KAbstractFileItemActionPlugin::~KAbstractFileItemActionPlugin()
 {
 }
 
-#include "kabstractfileitemactionplugin.moc"

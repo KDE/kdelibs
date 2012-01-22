@@ -959,4 +959,4 @@ int KPopupFrame::exec( int x, int y )
     return exec( QPoint( x, y ) );
 }
 
-#include "kdatetable.moc"
+#include "moc_kdatetable.cpp"

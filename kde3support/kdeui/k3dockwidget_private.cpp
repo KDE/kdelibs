@@ -717,5 +717,5 @@ void K3DockWidgetPrivate::slotFocusEmbeddedWidget(QWidget* w)
 }
 
 #ifndef NO_INCLUDE_MOCFILES // for Qt-only projects, because tmake doesn't take this name
-#include "k3dockwidget_private.moc"
+#include "moc_k3dockwidget_private.cpp"
 #endif

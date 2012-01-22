@@ -598,4 +598,4 @@ void KDateTimeEdit::resizeEvent(QResizeEvent *event)
     QWidget::resizeEvent(event);
 }
 
-#include "kdatetimeedit.moc"
+#include "moc_kdatetimeedit.cpp"

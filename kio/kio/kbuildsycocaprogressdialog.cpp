@@ -102,4 +102,4 @@ void KBuildSycocaProgressDialogPrivate::_k_slotFinished()
 }
 
 
-#include "kbuildsycocaprogressdialog.moc"
+#include "moc_kbuildsycocaprogressdialog.cpp"

@@ -1726,4 +1726,4 @@ org::kde::KWallet &KWalletDLauncher::getInterface()
 
 } // namespace KWallet
 
-#include "kwallet.moc"
+#include "moc_kwallet.cpp"

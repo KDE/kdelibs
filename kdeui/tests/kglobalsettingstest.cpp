@@ -19,7 +19,6 @@
 
 #include "qtest_kde.h"
 #include "kglobalsettingstest.h"
-#include "kglobalsettingstest.moc"
 
 QTEST_KDEMAIN( KGlobalSettingsTest, GUI )
 

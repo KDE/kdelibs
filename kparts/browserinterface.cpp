@@ -72,4 +72,3 @@ void BrowserInterface::callMethod( const char *name, const QVariant &argument )
     }
 }
 
-#include "browserinterface.moc"

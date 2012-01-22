@@ -131,4 +131,3 @@ void KToggleToolBarAction::slotToggled( bool checked )
   KToggleAction::slotToggled( checked );
 }
 
-#include "ktoggletoolbaraction.moc"

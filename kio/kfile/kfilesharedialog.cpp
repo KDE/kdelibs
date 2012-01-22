@@ -278,7 +278,7 @@ QWidget* KFileSharePropsPlugin::page() const
     return d->m_vBox;
 }
 
-#include "kfilesharedialog.moc"
+#include "moc_kfilesharedialog.cpp"
 
 //TODO: do we need to monitor /etc/security/fileshare.conf ?
 // if the user is added to the 'fileshare' group, we wouldn't be notified

@@ -391,5 +391,4 @@ void EntryView::urlSelected(const QString &link)
     }
 }
 
-#include "itemsview.moc"
 

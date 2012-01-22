@@ -166,4 +166,3 @@ void WidgetBasedPoller::stopCatchingIdleEvents()
     releaseInputLock();
 }
 
-#include "widgetbasedpoller.moc"

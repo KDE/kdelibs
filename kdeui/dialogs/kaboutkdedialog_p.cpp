@@ -156,4 +156,3 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
 
 }
 
-#include "kaboutkdedialog_p.moc"

@@ -210,4 +210,3 @@ bool Nepomuk::Utils::ProxyFacet::facetConditionMet() const
     return d->m_facetConditionMet;
 }
 
-#include "proxyfacet.moc"

@@ -1697,5 +1697,5 @@ QString K3Spell::modaltext;
 int K3Spell::modalreturn = 0;
 QWidget* K3Spell::modalWidgetHack = 0;
 
-#include "k3spell.moc"
+#include "moc_k3spell.cpp"
 

@@ -263,4 +263,3 @@ void ScriptingPlugin::slotResetScriptActions()
     KIO::NetAccess::del(KUrl(d->userActionsFile), 0);
 }
 
-#include "plugin.moc"

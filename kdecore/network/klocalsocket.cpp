@@ -222,4 +222,4 @@ QString KLocalSocketServer::errorString() const
     return d->errorString;
 }
 
-#include "klocalsocket.moc"
+#include "moc_klocalsocket.cpp"

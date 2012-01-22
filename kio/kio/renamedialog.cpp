@@ -680,4 +680,3 @@ KSqueezedTextLabel* RenameDialog::createSqueezedLabel(QWidget* parent, const QSt
     return label;
 }
 
-#include "renamedialog.moc"

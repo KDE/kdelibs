@@ -1128,4 +1128,4 @@ void KTextEdit::focusOutEvent(QFocusEvent *ev)
     QTextEdit::focusOutEvent(ev);
 }
 
-#include "ktextedit.moc"
+#include "moc_ktextedit.cpp"

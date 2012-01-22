@@ -711,4 +711,3 @@ void KUriFilter::loadPlugins()
     }
 }
 
-#include "kurifilter.moc"

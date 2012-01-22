@@ -329,4 +329,4 @@ bool KUrlLabel::event( QEvent *event )
     return QLabel::event( event );
 }
 
-#include "kurllabel.moc"
+#include "moc_kurllabel.cpp"

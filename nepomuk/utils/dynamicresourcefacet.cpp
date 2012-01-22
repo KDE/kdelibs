@@ -419,4 +419,4 @@ Nepomuk::Resource Nepomuk::Utils::DynamicResourceFacet::resourceAt(int i) const
         return Resource();
 }
 
-#include "dynamicresourcefacet.moc"
+#include "moc_dynamicresourcefacet.cpp"

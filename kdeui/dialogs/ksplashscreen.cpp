@@ -41,4 +41,3 @@ KSplashScreen::~KSplashScreen()
 {
 }
 
-#include "ksplashscreen.moc"

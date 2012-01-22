@@ -2404,5 +2404,4 @@ void RenderTextArea::setSelectionRange(long start, long end) {
 }
 // ---------------------------------------------------------------------------
 
-#include "render_form.moc"
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

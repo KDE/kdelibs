@@ -810,5 +810,5 @@ void FileUndoManager::UiInterface::virtual_hook(int, void*)
 {
 }
 
-#include "fileundomanager_p.moc"
-#include "fileundomanager.moc"
+#include "moc_fileundomanager_p.cpp"
+#include "moc_fileundomanager.cpp"

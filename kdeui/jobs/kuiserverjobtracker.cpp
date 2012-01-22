@@ -327,5 +327,5 @@ org::kde::JobViewServer &KSharedUiServerProxy::uiserver()
     return m_uiserver;
 }
 
-#include "kuiserverjobtracker.moc"
-#include "kuiserverjobtracker_p.moc"
+#include "moc_kuiserverjobtracker.cpp"
+#include "moc_kuiserverjobtracker_p.cpp"

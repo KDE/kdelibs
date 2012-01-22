@@ -18,7 +18,6 @@
  */
 
 #include "callstackdock.h"
-#include "callstackdock.moc"
 
 #include <QVBoxLayout>
 #include <QTableWidget>

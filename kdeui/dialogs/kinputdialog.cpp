@@ -479,7 +479,7 @@ QStringList getItemList( const QString &caption,
 
 }
 
-#include "kinputdialog_p.moc"
+#include "moc_kinputdialog_p.cpp"
 
 /* vim: set ai et sw=2 ts=2
 */

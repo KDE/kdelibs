@@ -263,4 +263,3 @@ bool Nepomuk::Utils::SimpleFacet::selectFromTerm( const Nepomuk::Query::Term& te
     }
 }
 
-#include "simplefacet.moc"

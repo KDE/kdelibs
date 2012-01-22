@@ -1,5 +1,5 @@
 #include "kcommandtest.h"
-#include "kcommandtest.moc"
+#include "moc_kcommandtest.cpp"
 
 #include "qtest_kde.h"
 

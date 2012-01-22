@@ -558,6 +558,6 @@ void DialogPrivate::_k_updateEnabledState(bool enabled)
 
 } //namespace
 
-#include "dialog.moc"
+#include "moc_dialog.cpp"
 
 // vim: ts=4

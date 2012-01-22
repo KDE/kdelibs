@@ -169,4 +169,4 @@ void KReplaceDialogPrivate::_k_slotOk()
 }
 
 // kate: space-indent on; indent-width 4; replace-tabs on;
-#include "kreplacedialog.moc"
+#include "moc_kreplacedialog.cpp"

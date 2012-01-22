@@ -358,5 +358,5 @@ void KXmlGuiWindow::applyMainWindowSettings(const KConfigGroup &config, bool for
 void KXmlGuiWindow::finalizeGUI( KXMLGUIClient *client )
 { KXMLGUIBuilder::finalizeGUI( client ); }
 
-#include "kxmlguiwindow.moc"
+#include "moc_kxmlguiwindow.cpp"
 

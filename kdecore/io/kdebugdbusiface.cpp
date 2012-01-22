@@ -43,4 +43,4 @@ void KDebugDBusIface::printBacktrace()
     kDebug() << kBacktrace();
 }
 
-#include "kdebugdbusiface_p.moc"
+#include "moc_kdebugdbusiface_p.cpp"

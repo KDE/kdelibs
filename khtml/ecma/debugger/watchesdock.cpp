@@ -18,7 +18,6 @@
  */
 
 #include "watchesdock.h"
-#include "watchesdock.moc"
 
 #include <QVBoxLayout>
 #include <QListWidget>

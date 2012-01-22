@@ -1292,4 +1292,4 @@ QStringList KFilePreviewGenerator::enabledPlugins() const
     return d->m_enabledPlugins;
 }
 
-#include "kfilepreviewgenerator.moc"
+#include "moc_kfilepreviewgenerator.cpp"

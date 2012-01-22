@@ -106,4 +106,4 @@ void KUrlNavigatorToggleButton::updateCursor()
 
 } // namespace KDEPrivate
 
-#include "kurlnavigatortogglebutton_p.moc"
+#include "moc_kurlnavigatortogglebutton_p.cpp"

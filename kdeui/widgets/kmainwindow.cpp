@@ -1180,5 +1180,5 @@ QString KMainWindow::dbusName() const
     return k_func()->dbusName;
 }
 
-#include "kmainwindow.moc"
+#include "moc_kmainwindow.cpp"
 

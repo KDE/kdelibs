@@ -283,4 +283,3 @@ bool KCupsOptionsPagesWidget::mirrorPages() const
     return ui.mirrorPagesCheckBox->isChecked();
 }
 
-#include "kcupsoptionspageswidget_p.moc"

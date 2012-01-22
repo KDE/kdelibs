@@ -677,4 +677,4 @@ void K3FileTreeView::slotSetNextUrlToSelect( const KUrl &url )
 ///////////////////////////////////////////////////////////////////
 
 
-#include "k3filetreeview.moc"
+#include "moc_k3filetreeview.cpp"

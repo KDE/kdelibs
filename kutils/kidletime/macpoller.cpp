@@ -219,4 +219,3 @@ void MacPoller::simulateUserActivity()
     // TODO
 }
 
-#include "macpoller.moc"

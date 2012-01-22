@@ -313,5 +313,4 @@ QList<KConfigDialogManager*> KCModule::configs() const
     return d->managers;
 }
 
-#include "kcmodule.moc"
 // vim: sw=4 et sts=4

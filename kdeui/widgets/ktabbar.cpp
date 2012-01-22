@@ -447,4 +447,3 @@ QRect KTabBar::closeButtonRect( int tabIndex ) const
   return QRect();
 }
 
-#include "ktabbar.moc"

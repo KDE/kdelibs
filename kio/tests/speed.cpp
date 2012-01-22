@@ -104,4 +104,3 @@ int main(int argc, char **argv) {
         kDebug() << mp->mountPoint() << " is the mount point for path " << url;
 }
 
-#include "speed.moc"

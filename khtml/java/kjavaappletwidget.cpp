@@ -145,4 +145,3 @@ void KJavaAppletWidget::showEvent (QShowEvent * e) {
     }
 }
 
-#include "kjavaappletwidget.moc"

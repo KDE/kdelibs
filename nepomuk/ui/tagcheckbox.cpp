@@ -164,4 +164,3 @@ void Nepomuk::TagCheckBox::enableUrlHover( bool enable )
     }
 }
 
-#include "tagcheckbox.moc"

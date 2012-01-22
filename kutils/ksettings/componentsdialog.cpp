@@ -176,4 +176,4 @@ void ComponentsDialog::slotApply()
 
 } //namespace
 
-#include "componentsdialog_p.moc"
+#include "moc_componentsdialog_p.cpp"

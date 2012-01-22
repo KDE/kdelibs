@@ -19,7 +19,6 @@
 
 #include <qtest_kde.h>
 #include "kstandardshortcuttest.h"
-#include "kstandardshortcuttest.moc"
 
 QTEST_KDEMAIN( KStandardShortcutTest, GUI ) // GUI needed by KAccel
 

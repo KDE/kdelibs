@@ -109,4 +109,3 @@ void KToggleAction::slotToggled( bool )
   }
 }
 
-#include "ktoggleaction.moc"

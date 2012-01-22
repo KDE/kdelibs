@@ -211,4 +211,3 @@ bool KFilePlaceEditDialog::applicationLocal() const
 }
 
 
-#include "kfileplaceeditdialog.moc"

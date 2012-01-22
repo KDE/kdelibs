@@ -1689,5 +1689,5 @@ void KEditToolBar::hideEvent(QHideEvent* event)
   KDialog::hideEvent(event);
 }
 
-#include "kedittoolbar.moc"
-#include "kedittoolbar_p.moc"
+#include "moc_kedittoolbar.cpp"
+#include "moc_kedittoolbar_p.cpp"

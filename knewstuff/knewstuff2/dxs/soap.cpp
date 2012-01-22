@@ -355,4 +355,3 @@ QDomDocument Soap::buildtree(QDomDocument doc, QDomElement cur, const QString& d
     return doc;
 }
 
-#include "soap.moc"

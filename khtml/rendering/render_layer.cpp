@@ -2036,5 +2036,4 @@ void Marquee::timerEvent(QTimerEvent* /*evt*/)
     }
 }
 
-#include "render_layer.moc"
 // kate: indent-width 4; replace-tabs on; tab-width 8; space-indent on;

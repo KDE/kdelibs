@@ -86,4 +86,4 @@ void PluginPage::defaults()
 
 } //namespace
 
-#include "pluginpage.moc"
+#include "moc_pluginpage.cpp"

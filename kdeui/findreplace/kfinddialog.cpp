@@ -572,4 +572,4 @@ void KFindDialog::KFindDialogPrivate::_k_slotOk()
         q->accept();
 }
 // kate: space-indent on; indent-width 4; replace-tabs on;
-#include "kfinddialog.moc"
+#include "moc_kfinddialog.cpp"

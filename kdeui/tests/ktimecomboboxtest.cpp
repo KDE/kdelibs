@@ -28,7 +28,6 @@
 
 QTEST_KDEMAIN(KTimeComboBoxTest, GUI)
 
-#include "ktimecomboboxtest.moc"
 
 void KTimeComboBoxTest::testDefaults()
 {

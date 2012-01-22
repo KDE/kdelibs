@@ -22,7 +22,6 @@
 #undef QT_USE_FAST_CONCATENATION
 
 #include "krununittest.h"
-#include "krununittest.moc"
 #include <qtest_kde.h>
 QTEST_KDEMAIN( KRunUnitTest, NoGUI )
 

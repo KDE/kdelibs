@@ -114,4 +114,4 @@ int main(int argc, char *argv[])
  printf("Entering man Qt event loop -- press <CTRL><C> to abort\n");
  return app.exec();
 }
-#include "k3processtest.moc"
+#include "moc_k3processtest.cpp"

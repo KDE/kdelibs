@@ -377,4 +377,3 @@ bool CaCertificatesPage::addCertificateItem(const KSslCaCertificate &caCert)
     return true;
 }
 
-#include "cacertificatespage.moc"

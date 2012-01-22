@@ -119,4 +119,3 @@ int KOCRDialog::nextId()
 
 
 
-#include "kscan.moc"

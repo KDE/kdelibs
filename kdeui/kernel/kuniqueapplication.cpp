@@ -446,5 +446,5 @@ int KUniqueApplicationAdaptor::newInstance(const QByteArray &asn_id, const QByte
     return ret;
 }
 
-#include "kuniqueapplication.moc"
-#include "kuniqueapplication_p.moc"
+#include "moc_kuniqueapplication.cpp"
+#include "moc_kuniqueapplication_p.cpp"

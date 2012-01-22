@@ -196,4 +196,3 @@ QList<UnitCategory*> Converter::categories() const
 
 }
 
-#include "converter.moc"

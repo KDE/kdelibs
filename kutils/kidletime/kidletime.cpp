@@ -266,4 +266,4 @@ QHash<int, int> KIdleTime::idleTimeouts() const
     return d->associations;
 }
 
-#include "kidletime.moc"
+#include "moc_kidletime.cpp"

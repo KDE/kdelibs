@@ -146,4 +146,3 @@ void Console::on_actionStop_activated()
 }
 
 
-#include "console.moc"

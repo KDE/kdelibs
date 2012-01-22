@@ -138,4 +138,4 @@ void KNameAndUrlInputDialog::setSuggestedUrl(const KUrl& url)
     d->m_urlRequester->setUrl(url);
 }
 
-#include "knameandurlinputdialog.moc"
+#include "moc_knameandurlinputdialog.cpp"

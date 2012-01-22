@@ -155,4 +155,3 @@ int main(int argc, char **argv) {
     return r;
 }
 
-#include "main.moc"

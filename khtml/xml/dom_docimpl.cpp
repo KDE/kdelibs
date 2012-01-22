@@ -3250,6 +3250,5 @@ void XMLDocumentImpl::close()
     }
 }
 
-#include "dom_docimpl.moc"
 
 // kate: indent-width 4; replace-tabs on; tab-width 8; space-indent on;

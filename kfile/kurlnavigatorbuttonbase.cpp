@@ -151,4 +151,4 @@ void KUrlNavigatorButtonBase::activate()
 
 } // namespace KDEPrivate
 
-#include "kurlnavigatorbuttonbase_p.moc"
+#include "moc_kurlnavigatorbuttonbase_p.cpp"

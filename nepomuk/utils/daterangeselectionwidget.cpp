@@ -334,4 +334,4 @@ void DateRangeSelectionWidget::setRange( const DateRange& range )
     d->setRange( range );
 }
 
-#include "daterangeselectionwidget.moc"
+#include "moc_daterangeselectionwidget.cpp"

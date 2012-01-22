@@ -610,4 +610,4 @@ qint64 KPtyDevice::writeData(const char *data, qint64 len)
     return len;
 }
 
-#include "kptydevice.moc"
+#include "moc_kptydevice.cpp"

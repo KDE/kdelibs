@@ -790,5 +790,5 @@ int main(int argc, char* argv[]) {
   return 0;
 }
 
-#include "kdockwidgetdemo.moc"
+#include "moc_kdockwidgetdemo.cpp"
 

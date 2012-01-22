@@ -657,5 +657,4 @@ void XMLTokenizer::executeScript(NodeImpl* node)
     }
 }
 
-#include "xml_tokenizer.moc"
 

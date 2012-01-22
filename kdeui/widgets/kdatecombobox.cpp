@@ -544,4 +544,4 @@ void KDateComboBox::resizeEvent(QResizeEvent *event)
     KComboBox::resizeEvent(event);
 }
 
-#include "kdatecombobox.moc"
+#include "moc_kdatecombobox.cpp"

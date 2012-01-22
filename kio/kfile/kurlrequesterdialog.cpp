@@ -146,6 +146,6 @@ KUrlRequester * KUrlRequesterDialog::urlRequester()
     return d->urlRequester;
 }
 
-#include "kurlrequesterdialog.moc"
+#include "moc_kurlrequesterdialog.cpp"
 
 // vim:ts=4:sw=4:tw=78

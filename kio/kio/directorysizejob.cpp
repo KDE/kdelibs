@@ -210,4 +210,4 @@ DirectorySizeJob * KIO::directorySize( const KFileItemList & lstItems )
     return DirectorySizeJobPrivate::newJob(lstItems);
 }
 
-#include "directorysizejob.moc"
+#include "moc_directorysizejob.cpp"

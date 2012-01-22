@@ -659,4 +659,3 @@ int KJavaAppletViewerLiveConnectExtension::m_jssessions = 0;
 
 //-----------------------------------------------------------------------------
 
-#include "kjavaappletviewer.moc"

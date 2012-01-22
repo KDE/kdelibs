@@ -407,4 +407,3 @@ void KAboutApplicationPersonIconsJob::onJobFinished( QNetworkReply *reply ) //SL
 
 } //namespace KDEPrivate
 
-#include "kaboutapplicationpersonmodel_p.moc"

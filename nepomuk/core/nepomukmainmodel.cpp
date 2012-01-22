@@ -278,4 +278,3 @@ Soprano::Node Nepomuk::MainModel::createBlankNode()
     return n;
 }
 
-#include "nepomukmainmodel.moc"

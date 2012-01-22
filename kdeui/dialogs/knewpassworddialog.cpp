@@ -355,6 +355,6 @@ bool KNewPasswordDialog::checkPassword(const QString &)
     return true;
 }
 
-#include "knewpassworddialog.moc"
+#include "moc_knewpassworddialog.cpp"
 
 // kate: space-indent on; indent-width 4; encoding utf-8; replace-tabs on;

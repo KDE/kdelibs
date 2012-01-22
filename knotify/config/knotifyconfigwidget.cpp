@@ -128,4 +128,3 @@ void KNotifyConfigWidget::slotActionChanged()
 }
 
 
-#include "knotifyconfigwidget.moc"

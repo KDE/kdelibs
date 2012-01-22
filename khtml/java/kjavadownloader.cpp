@@ -295,4 +295,3 @@ void KJavaUploader::jobCommand( int cmd )
     }
 }
 
-#include "kjavadownloader.moc"

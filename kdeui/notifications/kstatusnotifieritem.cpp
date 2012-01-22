@@ -1035,5 +1035,5 @@ KDbusImageVector KStatusNotifierItemPrivate::iconToVector(const QIcon &icon)
     return iconVector;
 }
 
-#include "kstatusnotifieritem.moc"
+#include "moc_kstatusnotifieritem.cpp"
 #include "kstatusnotifieritemprivate_p.moc"

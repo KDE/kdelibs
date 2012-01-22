@@ -5455,4 +5455,3 @@ void HTTPProtocol::saveProxyAuthenticationForSocket()
     m_socketProxyAuth = 0;
 }
 
-#include "http.moc"

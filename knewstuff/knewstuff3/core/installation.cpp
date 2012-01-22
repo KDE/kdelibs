@@ -598,4 +598,3 @@ QStringList Installation::archiveEntries(const QString& path, const KArchiveDire
 }
 
 
-#include "installation.moc"

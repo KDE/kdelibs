@@ -631,4 +631,4 @@ int K3PopupMenu::contextMenuFocusItem()
 
 #endif // END compat methods
 
-#include "k3popupmenu.moc"
+#include "moc_k3popupmenu.cpp"

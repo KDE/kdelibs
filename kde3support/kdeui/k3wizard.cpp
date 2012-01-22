@@ -54,4 +54,4 @@ K3Wizard::K3Wizard( QWidget *parent, const char *name, bool modal, Qt::WFlags f 
   setTitleFont( font );
 }
 
-#include "k3wizard.moc"
+#include "moc_k3wizard.cpp"

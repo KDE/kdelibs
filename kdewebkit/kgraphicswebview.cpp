@@ -82,4 +82,3 @@ void KGraphicsWebView::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsWebView::mouseReleaseEvent(event);
 }
 
-#include "kgraphicswebview.moc"

@@ -71,4 +71,4 @@ void KUrlNavigatorMenu::mouseReleaseEvent(QMouseEvent* event)
 
 } // namespace KDEPrivate
 
-#include "kurlnavigatormenu_p.moc"
+#include "moc_kurlnavigatormenu_p.cpp"

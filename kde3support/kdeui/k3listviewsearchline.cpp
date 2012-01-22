@@ -569,4 +569,4 @@ K3ListViewSearchLine *K3ListViewSearchLineWidget::searchLine() const
     return d->searchLine;
 }
 
-#include "k3listviewsearchline.moc"
+#include "moc_k3listviewsearchline.cpp"

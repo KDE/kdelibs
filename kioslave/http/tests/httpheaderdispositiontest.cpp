@@ -26,7 +26,6 @@
 
 #include <parsinghelpers.h>
 
-#include "httpheaderdispositiontest.moc"
 
 #include <parsinghelpers.cpp>
 

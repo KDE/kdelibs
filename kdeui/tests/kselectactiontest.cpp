@@ -114,5 +114,4 @@ void SelectActionTest::slotActionTriggered(bool state)
     kDebug() << sender() << " state " << state;
 }
 
-#include "kselectactiontest.moc"
 

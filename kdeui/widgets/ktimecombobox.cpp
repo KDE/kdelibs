@@ -538,4 +538,4 @@ void KTimeComboBox::resizeEvent(QResizeEvent *event)
     KComboBox::resizeEvent(event);
 }
 
-#include "ktimecombobox.moc"
+#include "moc_ktimecombobox.cpp"

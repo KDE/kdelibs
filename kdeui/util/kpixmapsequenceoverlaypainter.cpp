@@ -275,4 +275,4 @@ bool KPixmapSequenceOverlayPainter::eventFilter(QObject *obj, QEvent *event)
     return false;
 }
 
-#include "kpixmapsequenceoverlaypainter.moc"
+#include "moc_kpixmapsequenceoverlaypainter.cpp"

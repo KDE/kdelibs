@@ -22,7 +22,6 @@
 #include <qstandardpaths.h>
 #include <qtest.h>
 #include "kconfigcompiler_test.h"
-#include "kconfigcompiler_test.moc"
 
 // QT5 TODO QTEST_GUILESS_MAIN(KConfigCompiler_Test)
 QTEST_MAIN(KConfigCompiler_Test)

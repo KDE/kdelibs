@@ -279,4 +279,3 @@ int main(int argc, char **argv)
     return app.exec();
 }
 
-#include "moc_knewstuff2_test.cpp"

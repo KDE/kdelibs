@@ -77,6 +77,6 @@ const char* K3MultipleDrag::format( int i ) const
 void K3MultipleDrag::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-#include "k3multipledrag.moc"
+#include "moc_k3multipledrag.cpp"
 
 #endif

@@ -19,7 +19,6 @@
  */
 
 #include "localvariabledock.h"
-#include "localvariabledock.moc"
 
 #include <QVBoxLayout>
 #include <QTreeWidget>

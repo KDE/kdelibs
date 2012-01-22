@@ -21,7 +21,6 @@
  */
 
 #include "highlighter.h"
-#include "highlighter.moc"
 
 #include "speller.h"
 #include "loader_p.h"

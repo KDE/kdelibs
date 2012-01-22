@@ -506,4 +506,4 @@ void SlaveInterfacePrivate::slotHostInfo(const QHostInfo& info)
     connection->send(CMD_HOST_INFO, data);
 }
 
-#include "slaveinterface.moc"
+#include "moc_slaveinterface.cpp"

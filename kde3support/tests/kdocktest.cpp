@@ -69,4 +69,4 @@ main( int argc, char** argv )
   return a.exec();
 }
 
-#include "kdocktest.moc"
+#include "moc_kdocktest.cpp"

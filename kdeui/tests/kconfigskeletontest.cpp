@@ -19,7 +19,6 @@
 
 #include <qtest_kde.h>
 #include "kconfigskeletontest.h"
-#include "kconfigskeletontest.moc"
 
 #include <kconfig.h>
 #include <kdebug.h>

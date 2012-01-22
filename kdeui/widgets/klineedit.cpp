@@ -1878,5 +1878,5 @@ void KLineEdit::doCompletion(const QString& txt)
     d->completionRunning = false;
 }
 
-#include "klineedit.moc"
-#include "klineedit_p.moc"
+#include "moc_klineedit.cpp"
+#include "moc_klineedit_p.cpp"

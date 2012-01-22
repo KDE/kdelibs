@@ -145,4 +145,4 @@ void KFileMetaPropsPlugin::applyChanges()
 {
 }
 
-#include "kmetaprops.moc"
+#include "moc_kmetaprops.cpp"

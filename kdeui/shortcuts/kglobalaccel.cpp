@@ -606,5 +606,5 @@ void KGlobalAccel::stealShortcutSystemwide(const QKeySequence &seq)
     self()->d->iface.setForeignShortcut(actionId, sc);
 }
 
-#include "kglobalaccel.moc"
+#include "moc_kglobalaccel.cpp"
 

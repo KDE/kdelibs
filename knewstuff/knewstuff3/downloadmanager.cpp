@@ -174,4 +174,4 @@ void DownloadManager::setSearchTerm(const QString& searchTerm)
 }
 
 
-#include "downloadmanager.moc"
+#include "moc_downloadmanager.cpp"

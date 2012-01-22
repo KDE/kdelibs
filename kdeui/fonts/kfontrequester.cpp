@@ -231,7 +231,7 @@ void KFontRequester::KFontRequesterPrivate::setToolTip()
   }
 }
 
-#include "kfontrequester.moc"
+#include "moc_kfontrequester.cpp"
 
 /* vim: et sw=2 ts=2
 */

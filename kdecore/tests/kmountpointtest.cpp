@@ -18,7 +18,6 @@
 
 #include "kmountpointtest.h"
 #include <qtest_kde.h>
-#include "kmountpointtest.moc"
 
 #include "kmountpoint.h"
 #include <kdebug.h>

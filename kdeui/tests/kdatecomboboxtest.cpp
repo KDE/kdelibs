@@ -29,7 +29,6 @@
 
 QTEST_KDEMAIN(KDateComboBoxTest, GUI)
 
-#include "kdatecomboboxtest.moc"
 
 void KDateComboBoxTest::testDefaults()
 {

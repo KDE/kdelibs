@@ -596,4 +596,3 @@ void DownloadDialog::slotError()
                        i18n("Desktop Exchange Service"));
 }
 
-#include "downloaddialog.moc"

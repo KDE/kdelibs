@@ -447,7 +447,7 @@ unsigned int qHash(const KParts::ScriptableExtension::FunctionRef& f)
 
 
 
-#include "scriptableextension.moc"
-#include "scriptableextension_p.moc"
+#include "moc_scriptableextension.cpp"
+#include "moc_scriptableextension_p.cpp"
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
 

@@ -128,4 +128,3 @@ void Nepomuk::Utils::FacetWidget::clear()
     d->m_facetModel->clear();
 }
 
-#include "facetwidget.moc"

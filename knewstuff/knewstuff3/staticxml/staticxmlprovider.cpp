@@ -279,4 +279,3 @@ EntryInternal::List StaticXmlProvider::installedEntries() const
 
 }
 
-#include "staticxmlprovider.moc"

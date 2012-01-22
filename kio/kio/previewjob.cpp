@@ -792,4 +792,4 @@ KIO::filesize_t PreviewJob::maximumFileSize()
 }
 #endif
 
-#include "previewjob.moc"
+#include "moc_previewjob.cpp"

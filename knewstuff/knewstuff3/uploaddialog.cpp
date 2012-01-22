@@ -771,4 +771,4 @@ void UploadDialog::Private::_k_detailsLinkLoaded(const QUrl& url)
     ui.fetchContentLinkImageLabel->setPixmap(KIcon("dialog-ok").pixmap(16));
 }
 
-#include "uploaddialog.moc"
+#include "moc_uploaddialog.cpp"

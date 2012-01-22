@@ -178,4 +178,3 @@ DISPATCH_IMPL1(data, const QByteArray &, ba)
 #undef DISPATCH_IMPL
 #undef DISPATCH_IMPL1
 
-#include "dataslave.moc"

@@ -160,5 +160,5 @@ void KButtonGroup::Private::slotClicked( int id )
   emit q->changed( id );
 }
 
-#include "kbuttongroup.moc"
+#include "moc_kbuttongroup.cpp"
 

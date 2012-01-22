@@ -108,4 +108,4 @@ void KDynamicJobTracker::unregisterJob(KJob *job)
         widgetTracker->unregisterJob(job);
 }
 
-#include "kdynamicjobtracker_p.moc"
+#include "moc_kdynamicjobtracker_p.cpp"

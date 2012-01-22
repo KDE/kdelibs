@@ -214,4 +214,3 @@ void KNotifyEventListItem::update()
 	setData(0 , Qt::UserRole , m_config.readEntry( "Action" ));
 }
 
-#include "knotifyeventlist.moc"

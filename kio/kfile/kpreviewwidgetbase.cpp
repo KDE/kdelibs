@@ -34,4 +34,4 @@ QStringList KPreviewWidgetBase::supportedMimeTypes() const
     return d->supportedMimeTypes;
 }
 
-#include "kpreviewwidgetbase.moc"
+#include "moc_kpreviewwidgetbase.cpp"

@@ -60,4 +60,3 @@ void tst_KStandardAction::shortcutForActionId()
 }
 
 QTEST_KDEMAIN(tst_KStandardAction, GUI)
-#include "kstandardactiontest.moc"

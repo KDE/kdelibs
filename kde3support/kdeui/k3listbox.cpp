@@ -256,4 +256,4 @@ void K3ListBox::slotMouseButtonClicked( int btn, Q3ListBoxItem *item, const QPoi
     emitExecute( item, pos );
 }
 
-#include "k3listbox.moc"
+#include "moc_k3listbox.cpp"

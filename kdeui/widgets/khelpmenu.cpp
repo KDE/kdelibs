@@ -397,4 +397,3 @@ void KHelpMenu::contextHelpActivated()
 }
 
 
-#include "khelpmenu.moc"

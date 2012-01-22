@@ -203,4 +203,4 @@ QSize KFileTreeView::sizeHint() const
     return QSize(680, 500);
 }
 
-#include "kfiletreeview.moc"
+#include "moc_kfiletreeview.cpp"

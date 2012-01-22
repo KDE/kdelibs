@@ -220,5 +220,5 @@ KNFSShare* KNFSShare::instance()
   return _instance;
 }
 
-#include "knfsshare.moc"
+#include "moc_knfsshare.cpp"
 

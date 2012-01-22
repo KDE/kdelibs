@@ -833,4 +833,3 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
    return 0;
 }
 
-#include "kbuildsycoca.moc"

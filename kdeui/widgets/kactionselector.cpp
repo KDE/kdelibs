@@ -562,4 +562,4 @@ int KActionSelectorPrivate::selectedRowIndex( QListWidget *lb )
 }
 
 //END Private Methods
-#include "kactionselector.moc"
+#include "moc_kactionselector.cpp"

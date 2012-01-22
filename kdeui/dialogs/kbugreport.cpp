@@ -560,4 +560,4 @@ bool KBugReport::sendBugReport()
 }
 
 
-#include "kbugreport.moc"
+#include "moc_kbugreport.cpp"

@@ -27,7 +27,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QTimer>
 
 #include "k3panelmenu.h"
-#include "k3panelmenu.moc"
+#include "moc_k3panelmenu.cpp"
 //#include "kaccelmanager.h"
 
 

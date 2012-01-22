@@ -64,4 +64,4 @@ const QList<Qt::Key> KModifierKeyInfoProvider::knownKeys() const
     return m_modifierStates.keys();
 }
 
-#include "kmodifierkeyinfoprovider_p.moc"
+#include "moc_kmodifierkeyinfoprovider_p.cpp"

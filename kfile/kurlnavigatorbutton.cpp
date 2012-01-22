@@ -680,4 +680,4 @@ void KUrlNavigatorButton::initMenu(KUrlNavigatorMenu* menu, int startIndex)
 
 } // namespace KDEPrivate
 
-#include "kurlnavigatorbutton_p.moc"
+#include "moc_kurlnavigatorbutton_p.cpp"

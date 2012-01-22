@@ -555,4 +555,4 @@ int KFileMetaDataProvider::Private::subDirectoriesCount(const QString& path)
 #endif
 }
 
-#include "kfilemetadataprovider_p.moc"
+#include "moc_kfilemetadataprovider_p.cpp"

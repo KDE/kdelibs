@@ -411,4 +411,4 @@ void K3TextEdit::highLightWord( unsigned int length, unsigned int pos )
     setSelection( l, cnt, l, cnt + length );
 }
 
-#include "k3textedit.moc"
+#include "moc_k3textedit.cpp"

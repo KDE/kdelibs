@@ -128,4 +128,4 @@ void KMediaPlayerAdaptor::stop()
 }
 
 
-#include "kmediaplayeradaptor_p.moc"
+#include "moc_kmediaplayeradaptor_p.cpp"

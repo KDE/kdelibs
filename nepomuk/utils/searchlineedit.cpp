@@ -154,4 +154,4 @@ Nepomuk::Query::Query Nepomuk::Utils::SearchLineEdit::query() const
     return d->m_currentQuery;
 }
 
-#include "searchlineedit.moc"
+#include "moc_searchlineedit.cpp"

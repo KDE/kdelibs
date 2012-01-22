@@ -269,5 +269,5 @@ int K3ProcIO::readln (QString &line, bool autoAck, bool *partial)
 
 }
 
-#include "k3procio.moc"
+#include "moc_k3procio.cpp"
 

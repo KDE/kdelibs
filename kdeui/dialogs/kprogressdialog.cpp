@@ -253,4 +253,4 @@ void KProgressDialog::KProgressDialogPrivate::slotAutoActions(int percentage)
     }
 }
 
-#include "kprogressdialog.moc"
+#include "moc_kprogressdialog.cpp"

@@ -19,7 +19,6 @@
 #include <kconfiggroup.h>
 #include <qtemporaryfile.h>
 #include <kstandarddirs.h>
-#include "kdesktopfiletest.moc"
 
 #include "kdesktopfile.h"
 

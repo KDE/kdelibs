@@ -583,5 +583,5 @@ KParts::BrowserArguments& KParts::BrowserRun::browserArguments()
     return d->m_browserArgs;
 }
 
-#include "browserrun.moc"
-#include "browserrun_p.moc"
+#include "moc_browserrun.cpp"
+#include "moc_browserrun_p.cpp"

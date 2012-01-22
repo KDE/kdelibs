@@ -709,4 +709,4 @@ void KRichTextWidget::updateActionStates()
 }
 
 // kate: space-indent on; indent-width 4; encoding utf-8; replace-tabs on;
-#include "krichtextwidget.moc"
+#include "moc_krichtextwidget.cpp"

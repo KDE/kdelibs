@@ -1565,4 +1565,3 @@ void JobTest::moveOverSymlinkToSelf() // #169547
 #endif
 }
 
-#include "jobtest.moc"

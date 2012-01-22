@@ -117,4 +117,3 @@ void EntryLoader::slotJobResult(KJob *job)
     emit signalEntriesLoaded(m_entries);
 }
 
-#include "entryloader.moc"

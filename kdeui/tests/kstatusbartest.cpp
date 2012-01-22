@@ -123,5 +123,4 @@ int main( int argc, char *argv[] )
         return ret;
 }
 
-#include "kstatusbartest.moc"
 

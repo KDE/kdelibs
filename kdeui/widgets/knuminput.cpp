@@ -1085,4 +1085,4 @@ void KDoubleNumInput::setExponentRatio(double dbl)
 }
 
 
-#include "knuminput.moc"
+#include "moc_knuminput.cpp"

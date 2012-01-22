@@ -523,4 +523,3 @@ void TestKConfUpdate::testScript()
     QCOMPARE(newConfContent, expectedNewConfContent);
 }
 
-#include "test_kconf_update.moc"

@@ -247,4 +247,3 @@ QAbstractItemView::SelectionMode KTimeZoneWidget::selectionMode() const
     }
 }
 
-#include "ktimezonewidget.moc"

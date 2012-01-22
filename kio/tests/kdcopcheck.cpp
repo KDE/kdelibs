@@ -128,4 +128,3 @@ int main(int argc, char *argv[])
    qWarning("%d left after filtering.", i);
 }
 
-#include "kdcopcheck.moc"

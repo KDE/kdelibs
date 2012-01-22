@@ -257,4 +257,4 @@ void ToolBarHandler::setupActions()
   d->connectToActionContainers();
 }
 
-#include "ktoolbarhandler_p.moc"
+#include "moc_ktoolbarhandler_p.cpp"

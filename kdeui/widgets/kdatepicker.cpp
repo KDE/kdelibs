@@ -44,8 +44,8 @@
 #include <klineedit.h>
 #include <knotification.h>
 
-#include "kdatepicker.moc"
-#include "kdatepicker_p.moc"
+#include "moc_kdatepicker.cpp"
+#include "moc_kdatepicker_p.cpp"
 
 // Week numbers are defined by ISO 8601
 // See http://www.merlyn.demon.co.uk/weekinfo.htm for details

@@ -23,7 +23,6 @@
 
 #include <qtest_kde.h>
 
-#include "kautostarttest.moc"
 
 #include <QtCore/QFile>
 

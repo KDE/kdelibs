@@ -82,4 +82,3 @@ void Button::showDialog()
 
 }
 
-#include "knewstuffbutton.moc"

@@ -485,4 +485,3 @@ void ResourceTest::testKickOffListRemoval()
 
 QTEST_KDEMAIN(ResourceTest, NoGUI)
 
-#include "resourcetest.moc"

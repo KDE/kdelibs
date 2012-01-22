@@ -20,7 +20,6 @@
 #include "kfileitemtest.h"
 #include <kfileitemlistproperties.h>
 #include <qtest_kde.h>
-#include "kfileitemtest.moc"
 #include <kfileitem.h>
 
 #include <qtemporarydir.h>

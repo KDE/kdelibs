@@ -147,4 +147,3 @@ void TestKConfigUtils::testUnescapeString()
     }
 }
 
-#include "test_kconfigutils.moc"

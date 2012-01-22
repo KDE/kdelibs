@@ -663,5 +663,5 @@ void KWidgetJobTracker::Private::ProgressWidget::_k_arrowToggled()
     setMaximumHeight(sizeHint().height());
 }
 
-#include "kwidgetjobtracker.moc"
-#include "kwidgetjobtracker_p.moc"
+#include "moc_kwidgetjobtracker.cpp"
+#include "moc_kwidgetjobtracker_p.cpp"

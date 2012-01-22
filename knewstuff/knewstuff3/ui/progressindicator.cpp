@@ -73,4 +73,3 @@ void ProgressIndicator::idle(const QString &message)
     busyWidget->setVisible(false);
 }
 
-#include "progressindicator.moc"

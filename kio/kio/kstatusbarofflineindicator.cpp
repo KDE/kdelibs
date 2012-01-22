@@ -75,4 +75,4 @@ void KStatusBarOfflineIndicatorPrivate::_k_networkStatusChanged( Solid::Networki
     }
 }
 
-#include "kstatusbarofflineindicator.moc"
+#include "moc_kstatusbarofflineindicator.cpp"

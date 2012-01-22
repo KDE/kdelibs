@@ -229,4 +229,4 @@ bool KFileFilterCombo::isMimeFilter() const
     return d->isMimeFilter;
 }
 
-#include "kfilefiltercombo.moc"
+#include "moc_kfilefiltercombo.cpp"

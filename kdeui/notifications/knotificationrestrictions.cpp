@@ -183,4 +183,4 @@ QString KNotificationRestrictions::Private::determineProgramName()
     return appName;
 }
 
-#include "knotificationrestrictions.moc"
+#include "moc_knotificationrestrictions.cpp"

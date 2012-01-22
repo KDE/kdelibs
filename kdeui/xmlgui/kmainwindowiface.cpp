@@ -117,4 +117,4 @@ void KMainWindowInterface::grabWindowToClipBoard()
 	clipboard->setPixmap(QPixmap::grabWidget(m_MainWindow));
 }
 
-#include "kmainwindowiface_p.moc"
+#include "moc_kmainwindowiface_p.cpp"

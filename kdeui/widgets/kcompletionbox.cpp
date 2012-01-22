@@ -579,4 +579,3 @@ bool KCompletionBox::activateOnSelect() const
     return d->emitSelected;
 }
 
-#include "kcompletionbox.moc"

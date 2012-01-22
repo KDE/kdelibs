@@ -1686,7 +1686,6 @@ bool KFileItemDelegate::eventFilter(QObject *object, QEvent *event)
 
 
 
-#include "kfileitemdelegate.moc"
 
 
 // kate: space-indent on; indent-width 4; replace-tabs on;

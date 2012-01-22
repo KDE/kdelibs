@@ -587,4 +587,3 @@ int PartManager::reason() const
     return d->m_reason;
 }
 
-#include "partmanager.moc"

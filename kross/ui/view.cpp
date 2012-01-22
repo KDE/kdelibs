@@ -558,4 +558,3 @@ void ActionCollectionView::slotRemove()
     KMessageBox::sorry(0, "TODO");
 }
 
-#include "view.moc"

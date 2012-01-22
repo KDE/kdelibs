@@ -116,4 +116,3 @@ void KTagDisplayWidget::clear()
     d->buildDisplay();
 }
 
-#include "ktagdisplaywidget.moc"

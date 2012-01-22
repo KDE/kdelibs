@@ -268,4 +268,4 @@ void KListWidget::mouseDoubleClickEvent ( QMouseEvent * e )
   }
 }
 
-#include "klistwidget.moc"
+#include "moc_klistwidget.cpp"

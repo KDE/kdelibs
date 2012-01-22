@@ -122,4 +122,4 @@ void DispatcherPrivate::unregisterComponent(QObject *obj)
 } // namespace Dispatcher
 } // namespace KSettings
 
-#include "dispatcher_p.moc"
+#include "moc_dispatcher_p.cpp"

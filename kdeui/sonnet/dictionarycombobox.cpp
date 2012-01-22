@@ -112,4 +112,4 @@ void DictionaryComboBox::reloadCombo()
 
 }
 
-#include "dictionarycombobox.moc"
+#include "moc_dictionarycombobox.cpp"

@@ -313,4 +313,4 @@ QList<Nepomuk::Resource> Nepomuk::Utils::SearchWidget::searchResources( QWidget*
     }
 }
 
-#include "searchwidget.moc"
+#include "moc_searchwidget.cpp"

@@ -114,4 +114,4 @@ QTextStream& operator<<( QTextStream& str, const QSize& r ) {
     return str;
 }
 
-#include "tester.moc"
+#include "moc_tester.cpp"

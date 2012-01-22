@@ -772,4 +772,3 @@ void RenderPartObject::slotViewCleared()
   }
 }
 
-#include "render_frames.moc"

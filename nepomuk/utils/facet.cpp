@@ -196,4 +196,3 @@ Nepomuk::Utils::Facet* Nepomuk::Utils::Facet::createRatingFacet( QObject* parent
     return facet;
 }
 
-#include "facet.moc"

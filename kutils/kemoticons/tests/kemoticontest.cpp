@@ -18,7 +18,6 @@
 
 // QTestLib for KDE
 #include "kemoticontest.h"
-#include "kemoticontest.moc"
 #include <qtest_kde.h>
 
 #include <stdlib.h>

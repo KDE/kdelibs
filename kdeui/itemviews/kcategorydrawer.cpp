@@ -281,4 +281,3 @@ void KCategoryDrawerV3::mouseLeft(const QModelIndex&, const QRect&)
 {
 }
 
-#include "kcategorydrawer.moc"

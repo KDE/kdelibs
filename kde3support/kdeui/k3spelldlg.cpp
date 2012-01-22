@@ -293,4 +293,4 @@ K3SpellDlg::slotConfigChanged()
   done( KS_CONFIG );
 }
 
-#include "k3spelldlg.moc"
+#include "moc_k3spelldlg.cpp"

@@ -57,4 +57,3 @@ KUrl Provider::icon() const
 
 }
 
-#include "provider.moc"

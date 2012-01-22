@@ -442,4 +442,3 @@ QString KGradientSelector::secondText() const
   return d->text2;
 }
 
-#include "kselector.moc"

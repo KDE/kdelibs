@@ -158,4 +158,3 @@ void tst_KActionCategory::tstActionCreation()
 
 QTEST_KDEMAIN(tst_KActionCategory, GUI)
 
-#include "moc_kactioncategorytest.cpp"

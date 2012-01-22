@@ -566,5 +566,5 @@ bool KFileTreeBranch::populate( const KUrl& url,  K3FileTreeViewItem *currItem )
     return ret;
 }
 
-#include "kfiletreebranch.moc"
+#include "moc_kfiletreebranch.cpp"
 

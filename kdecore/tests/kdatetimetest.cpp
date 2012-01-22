@@ -17,6 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "kdatetimetest.h"
+
 #include <cstdlib>
 #include <qtest_kde.h>
 #include <QtCore/QDir>
@@ -28,7 +30,6 @@
 #include <kconfiggroup.h>
 #include <QtDBus/QtDBus>
 
-#include "kdatetimetest.moc"
 
 //TODO: test new methods
 

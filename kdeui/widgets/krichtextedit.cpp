@@ -575,4 +575,3 @@ QString KRichTextEdit::toCleanHtml() const
   return result;
 }
 
-#include "krichtextedit.moc"

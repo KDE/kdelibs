@@ -20,7 +20,6 @@
  */
 
 #include "consoledock.h"
-#include "consoledock.moc"
 
 #include <QVBoxLayout>
 #include <QPushButton>

@@ -409,4 +409,4 @@ bool KPasswordDialog::checkPassword()
     return true;
 }
 
-#include "kpassworddialog.moc"
+#include "moc_kpassworddialog.cpp"

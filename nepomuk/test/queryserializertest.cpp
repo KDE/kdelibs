@@ -289,4 +289,3 @@ void QuerySerializerTest::testSerialization()
 
 QTEST_KDEMAIN_CORE( QuerySerializerTest )
 
-#include "queryserializertest.moc"

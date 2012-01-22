@@ -278,4 +278,4 @@ void KFilePlacesSharedBookmarks::slotBookmarksChanged()
     if (dirty) m_sharedBookmarkManager->emitChanged();
 }
 
-#include "kfileplacessharedbookmarks_p.moc"
+#include "moc_kfileplacessharedbookmarks_p.cpp"

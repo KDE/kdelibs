@@ -661,4 +661,3 @@ void QueryTest::testTermFromProperty()
 
 QTEST_KDEMAIN_CORE( QueryTest )
 
-#include "querytest.moc"

@@ -74,4 +74,3 @@ KDXSTranslation::KDXSTranslation(QWidget *parent)
     vbox->addLayout(grid);
 }
 
-#include "kdxstranslation.moc"

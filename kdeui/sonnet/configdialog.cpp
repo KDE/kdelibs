@@ -91,4 +91,4 @@ void ConfigDialog::setLanguage( const QString &language )
     d->ui->setLanguage( language );
 }
 
-#include "configdialog.moc"
+#include "moc_configdialog.cpp"

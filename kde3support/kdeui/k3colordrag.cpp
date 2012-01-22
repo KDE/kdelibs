@@ -110,4 +110,4 @@ K3ColorDrag::makeDrag( const QColor &color,QWidget *dragsource)
 void K3ColorDrag::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 
-#include "k3colordrag.moc"
+#include "moc_k3colordrag.cpp"

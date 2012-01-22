@@ -67,4 +67,3 @@ void OrgKdeKDirNotifyInterface::emitLeftDirectory(const QString &url)
     emitSignal(QLatin1String("leftDirectory"), QVariantList() << url);
 }
 
-#include "kdirnotify.moc"

@@ -35,7 +35,6 @@
 #include <kconfig.h>
 #include <kfiledialog.h>
 
-#include "test_regression_gui_window.moc"
 
 // Taken from QUrl
 #define Q_HAS_FLAG(a, b)	( ((a) & (b)) == (b) )

@@ -131,4 +131,4 @@ bool KDualAction::isActive() const
     return d->isActive;
 }
 
-#include "kdualaction.moc"
+#include "moc_kdualaction.cpp"

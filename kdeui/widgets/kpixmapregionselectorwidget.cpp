@@ -525,4 +525,3 @@ void KPixmapRegionSelectorWidget::setMaximumWidgetSize(int width, int height)
    resize(d->m_label->width(), d->m_label->height());
 }
 
-#include "kpixmapregionselectorwidget.moc"

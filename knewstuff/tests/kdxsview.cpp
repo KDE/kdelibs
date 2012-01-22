@@ -145,4 +145,3 @@ void KDXSView::slotProvidersFailed()
                           i18n("It was not possible to load the providers URL."));
 }
 
-#include "kdxsview.moc"

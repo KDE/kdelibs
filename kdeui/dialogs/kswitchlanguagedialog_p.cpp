@@ -19,7 +19,7 @@
  *
  */
 
-#include "kswitchlanguagedialog_p.moc"
+#include "moc_kswitchlanguagedialog_p.cpp"
 
 #include <QtGui/QApplication>
 #include <QtGui/QLayout>

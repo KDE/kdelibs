@@ -1267,4 +1267,4 @@ public:
 
 static KFileDialogQtOverride qtOverride;
 
-#include "kfiledialog.moc"
+#include "moc_kfiledialog.cpp"

@@ -267,5 +267,5 @@ int main(int argc, char* argv[]) {
 }
 
 
-#include "kdockwidgettest.moc"
+#include "moc_kdockwidgettest.cpp"
 

@@ -282,5 +282,5 @@ QList<QEvent::Type> KWidgetItemDelegate::blockedEventTypes(QWidget *widget) cons
     return widget->property("goya:blockedEventTypes").value<QList<QEvent::Type> >();
 }
 
-#include "kwidgetitemdelegate.moc"
-#include "kwidgetitemdelegate_p.moc"
+#include "moc_kwidgetitemdelegate.cpp"
+#include "moc_kwidgetitemdelegate_p.cpp"

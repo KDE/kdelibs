@@ -154,5 +154,4 @@ void KCertExport::slotTextChanged(const QString& x) {
 }
 
 
-#include "certexport.moc"
 

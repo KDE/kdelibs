@@ -2754,4 +2754,4 @@ void KFileWidgetPrivate::setInlinePreviewShown(bool show)
 }
 
 
-#include "kfilewidget.moc"
+#include "moc_kfilewidget.cpp"

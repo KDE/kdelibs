@@ -52,7 +52,7 @@
 #include <kurl.h>
 #include <kstandarddirs.h>
 #include <kprocess.h>
-#include "discovery.moc"
+#include "moc_discovery.cpp"
 
 namespace KPAC
 {

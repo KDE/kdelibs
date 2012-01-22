@@ -352,4 +352,4 @@ KMimeTypeChooserDialog::~KMimeTypeChooserDialog()
 //END KMimeTypeChooserDialog
 
 // kate: space-indent on; indent-width 2; replace-tabs on;
-#include "kmimetypechooser.moc"
+#include "moc_kmimetypechooser.cpp"

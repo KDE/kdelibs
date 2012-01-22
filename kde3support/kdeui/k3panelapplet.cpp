@@ -22,7 +22,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************************************************/
 
 #include "k3panelapplet.h"
-#include "k3panelapplet.moc"
+#include "moc_k3panelapplet.cpp"
 #include <ksharedconfig.h>
 #include <kglobal.h>
 #include <QResizeEvent>

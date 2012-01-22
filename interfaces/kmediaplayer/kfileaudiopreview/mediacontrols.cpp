@@ -140,5 +140,5 @@ void MediaControlsPrivate::_k_mediaDestroyed()
 
 } // namespace Phonon
 
-#include "mediacontrols.moc"
+#include "moc_mediacontrols.cpp"
 // vim: sw=4 ts=4

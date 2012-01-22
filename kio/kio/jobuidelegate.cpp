@@ -191,4 +191,3 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const KUrl::List& urls,
     return true;
 }
 
-#include "jobuidelegate.moc"

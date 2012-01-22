@@ -449,4 +449,3 @@ void Dialog::slotDone()
 
 }
 
-#include "dialog.moc"

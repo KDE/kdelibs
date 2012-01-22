@@ -542,4 +542,4 @@ QModelIndex KPageWidgetModel::index( const KPageWidgetItem *item ) const
   return createIndex( pageItem->row(), 0, (void*)pageItem );
 }
 
-#include "kpagewidgetmodel.moc"
+#include "moc_kpagewidgetmodel.cpp"

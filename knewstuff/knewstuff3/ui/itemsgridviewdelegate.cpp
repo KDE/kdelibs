@@ -376,4 +376,3 @@ void ItemsGridViewDelegate::displayOperationBar(const QRect &rect,const QModelIn
 }
 }
 
-#include "itemsgridviewdelegate.moc"

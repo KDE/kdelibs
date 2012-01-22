@@ -548,4 +548,3 @@ void KDXSButton::slotPayloadFailed(KNS::Entry *)
     //kDebug() << "PAYLOAD: failed";
 }
 
-#include "kdxsbutton.moc"

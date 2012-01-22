@@ -371,4 +371,4 @@ void KReplace::closeReplaceNextDialog()
     closeFindNextDialog();
 }
 
-#include "kreplace.moc"
+#include "moc_kreplace.cpp"

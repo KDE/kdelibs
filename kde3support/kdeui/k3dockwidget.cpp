@@ -3468,7 +3468,7 @@ void K3DockArea::virtual_hook( int, void* )
 
 
 #ifndef NO_INCLUDE_MOCFILES // for Qt-only projects, because tmake doesn't take this name
-#include "k3dockwidget.moc"
+#include "moc_k3dockwidget.cpp"
 #endif
 
 //kate: indent-mode csands; space-indent on; indent-width 2;

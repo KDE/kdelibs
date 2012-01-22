@@ -417,4 +417,3 @@ DateRange Nepomuk::Utils::DateFacet::getCustomRange( bool* ok ) const
     return drw->range();
 }
 
-#include "datefacet.moc"

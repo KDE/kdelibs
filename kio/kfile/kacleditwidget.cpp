@@ -1118,7 +1118,7 @@ bool KACLListView::defaultMaskCanBeDeleted() const
     return !findDefaultItemByType( NamedUser ) && !findDefaultItemByType( NamedGroup );
 }
 
-#include "kacleditwidget.moc"
-#include "kacleditwidget_p.moc"
+#include "moc_kacleditwidget.cpp"
+#include "moc_kacleditwidget_p.cpp"
 #endif
 // vim:set ts=8 sw=4:

@@ -391,4 +391,4 @@ void DownloadWidgetPrivate::slotShowOverview()
 }
 
 
-#include "downloadwidget.moc"
+#include "moc_downloadwidget.cpp"

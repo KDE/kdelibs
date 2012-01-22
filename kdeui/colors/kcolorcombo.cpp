@@ -364,4 +364,4 @@ void KColorComboPrivate::addColors()
     }
 }
 
-#include "kcolorcombo.moc"
+#include "moc_kcolorcombo.cpp"

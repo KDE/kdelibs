@@ -7437,7 +7437,6 @@ bool KHTMLPart::inProgress() const
 }
 
 using namespace KParts;
-#include "khtml_part.moc"
 #include "khtmlpart_p.moc"
 #ifndef KHTML_NO_WALLET
 #include "khtml_wallet_p.moc"

@@ -1530,4 +1530,4 @@ void KCategorizedView::slotLayoutChanged()
 
 //END: Public part
 
-#include "kcategorizedview.moc"
+#include "moc_kcategorizedview.cpp"

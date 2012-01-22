@@ -436,4 +436,4 @@ void KCursorPrivate::slotWidgetDestroyed( QObject* o )
     delete filter;
 }
 
-#include "kcursor_p.moc"
+#include "moc_kcursor_p.cpp"

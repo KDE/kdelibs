@@ -412,4 +412,4 @@ bool KTipDialog::eventFilter( QObject *object, QEvent *event )
 }
 
 
-#include "ktip.moc"
+#include "moc_ktip.cpp"

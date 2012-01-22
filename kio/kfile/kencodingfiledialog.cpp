@@ -210,4 +210,4 @@ KEncodingFileDialog::Result  KEncodingFileDialog::getSaveUrlAndEncoding(const QS
     return res;
 }
 
-#include "kencodingfiledialog.moc"
+#include "moc_kencodingfiledialog.cpp"

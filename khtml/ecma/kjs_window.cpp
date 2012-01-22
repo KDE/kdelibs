@@ -2998,5 +2998,4 @@ JSValue *HistoryFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const L
 } // namespace KJS
 
 
-#include "kjs_window.moc"
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

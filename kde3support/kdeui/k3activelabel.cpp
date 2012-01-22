@@ -138,4 +138,4 @@ QSize K3ActiveLabel::sizeHint() const
    return minimumSizeHint();
 }
 
-#include "k3activelabel.moc"
+#include "moc_k3activelabel.cpp"

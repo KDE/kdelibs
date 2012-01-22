@@ -284,4 +284,3 @@ bool KJavaApplet::failed() const {
     return d->failed;
 }
 
-#include "kjavaapplet.moc"

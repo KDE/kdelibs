@@ -186,4 +186,4 @@ void KIconButton::KIconButtonPrivate::_k_newIconName(const QString& name)
     emit q->iconChanged(name);
 }
 
-#include "kiconbutton.moc"
+#include "moc_kiconbutton.cpp"

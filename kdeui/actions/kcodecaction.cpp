@@ -278,4 +278,4 @@ bool KCodecAction::setCurrentAutoDetectScript(KEncodingDetector::AutoDetectScrip
     return false;
 }
 
-#include "kcodecaction.moc"
+#include "moc_kcodecaction.cpp"

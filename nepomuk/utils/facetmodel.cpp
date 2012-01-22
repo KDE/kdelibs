@@ -407,4 +407,4 @@ void Nepomuk::Utils::FacetModel::setClientQuery( const Nepomuk::Query::Query& qu
     }
 }
 
-#include "facetmodel.moc"
+#include "moc_facetmodel.cpp"

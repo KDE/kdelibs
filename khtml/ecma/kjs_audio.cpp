@@ -323,4 +323,3 @@ void AudioQObject::loop(int n)
 
 } // namespace KJS
 
-#include "kjs_audio.moc"

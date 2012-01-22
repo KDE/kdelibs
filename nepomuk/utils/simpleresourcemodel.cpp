@@ -167,4 +167,3 @@ void Nepomuk::Utils::SimpleResourceModel::clear()
     reset();
 }
 
-#include "simpleresourcemodel.moc"

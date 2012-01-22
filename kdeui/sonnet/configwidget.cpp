@@ -154,4 +154,3 @@ QString ConfigWidget::language() const
     }
 }
 
-#include "configwidget.moc"

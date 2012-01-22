@@ -80,4 +80,3 @@ void KWebView::mouseReleaseEvent(QMouseEvent *event)
     QWebView::mouseReleaseEvent(event);
 }
 
-#include "kwebview.moc"

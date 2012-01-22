@@ -309,5 +309,5 @@ namespace KUnitTest
     }
 }
 
-#include "runner.moc"
+#include "moc_runner.cpp"
 

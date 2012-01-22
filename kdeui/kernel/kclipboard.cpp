@@ -179,4 +179,4 @@ bool KClipboardSynchronizer::isReverseSynchronizing()
     return Private::s_reverse_sync;
 }
 
-#include "kclipboard.moc"
+#include "moc_kclipboard.cpp"

@@ -582,4 +582,4 @@ void KWebWallet::removeFormDataFromCache(const WebFormList &forms)
     d->openWallet();
 }
 
-#include "kwebwallet.moc"
+#include "moc_kwebwallet.cpp"

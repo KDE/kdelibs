@@ -82,4 +82,3 @@ void KSslCertificateBox::clear()
 }
 
 
-#include "ksslcertificatebox.moc"

@@ -49,7 +49,7 @@
  *
  */
 
-#include "k3buttonbox.moc"
+#include "moc_k3buttonbox.cpp"
 #include <kglobalsettings.h>
 #include <kguiitem.h>
 #include <kpushbutton.h>

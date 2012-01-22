@@ -145,4 +145,4 @@ QHash<KUrl, Nepomuk::Variant> KFileMetaDataReader::metaData() const
     return d->m_metaData;
 }
 
-#include "kfilemetadatareader_p.moc"
+#include "moc_kfilemetadatareader_p.cpp"

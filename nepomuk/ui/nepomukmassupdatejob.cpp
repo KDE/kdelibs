@@ -161,4 +161,3 @@ Nepomuk::MassUpdateJob* Nepomuk::MassUpdateJob::commentResources( const QList<Ne
     return job;
 }
 
-#include "nepomukmassupdatejob.moc"

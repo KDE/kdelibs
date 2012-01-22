@@ -1883,4 +1883,3 @@ void RegressionTest::resizeTopLevelWidget( int w, int h )
     QApplication::sendPostedEvents( 0, QEvent::Resize );
 }
 
-#include "test_regression.moc"

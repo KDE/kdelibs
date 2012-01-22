@@ -213,4 +213,3 @@ void KLocaleTimeFormatTest::formatAndReadAllCountriesTest()
 }
 
 QTEST_MAIN(KLocaleTimeFormatTest)
-#include "klocaletimeformattest.moc"

@@ -132,4 +132,3 @@ const KPageWidget* KPageDialog::pageWidget() const
     return d_func()->mPageWidget;
 }
 
-#include "kpagedialog.moc"

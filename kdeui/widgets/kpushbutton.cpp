@@ -382,4 +382,4 @@ void KPushButton::paintEvent( QPaintEvent * )
     p.drawControl(QStyle::CE_PushButton, option);
 }
 
-#include "kpushbutton.moc"
+#include "moc_kpushbutton.cpp"

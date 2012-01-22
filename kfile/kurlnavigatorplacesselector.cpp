@@ -238,5 +238,5 @@ void KUrlNavigatorPlacesSelector::onStorageSetupDone(const QModelIndex &index, b
 
 } // namespace KDEPrivate
 
-#include "kurlnavigatorplacesselector_p.moc"
+#include "moc_kurlnavigatorplacesselector_p.cpp"
 

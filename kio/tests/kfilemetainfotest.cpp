@@ -98,4 +98,3 @@ void KFileMetaInfoTest::exitLoop()
     }
 }
 
-#include "kfilemetainfotest.moc"

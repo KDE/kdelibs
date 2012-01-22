@@ -59,4 +59,3 @@ void Nepomuk::Service::setServiceInitialized( bool success )
                                Q_ARG(bool, success) );
 }
 
-#include "nepomukservice.moc"

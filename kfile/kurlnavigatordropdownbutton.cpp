@@ -84,4 +84,4 @@ void KUrlNavigatorDropDownButton::keyPressEvent(QKeyEvent* event)
 
 } // namespace KDEPrivate
 
-#include "kurlnavigatordropdownbutton_p.moc"
+#include "moc_kurlnavigatordropdownbutton_p.cpp"

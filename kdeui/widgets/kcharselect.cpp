@@ -895,5 +895,5 @@ QVariant KCharSelectItemModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-#include "kcharselect.moc"
-#include "kcharselect_p.moc"
+#include "moc_kcharselect.cpp"
+#include "moc_kcharselect_p.cpp"

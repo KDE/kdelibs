@@ -665,4 +665,4 @@ bool K3DictSpellingHighlighter::eventFilter( QObject *o, QEvent *e)
     return false;
 }
 
-#include "k3syntaxhighlighter.moc"
+#include "moc_k3syntaxhighlighter.cpp"

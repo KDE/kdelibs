@@ -418,4 +418,4 @@ bool KFileMetaDataWidget::event(QEvent* event)
     return QWidget::event(event);
 }
 
-#include "kfilemetadatawidget.moc"
+#include "moc_kfilemetadatawidget.cpp"

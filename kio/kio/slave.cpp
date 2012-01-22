@@ -510,4 +510,3 @@ bool Slave::checkForHeldSlave(const KUrl &url)
     return KToolInvocation::klauncher()->checkForHeldSlave(url.url());
 }
 
-#include "slave.moc"

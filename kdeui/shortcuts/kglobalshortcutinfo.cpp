@@ -107,4 +107,3 @@ QString KGlobalShortcutInfo::uniqueName() const
     }
 
 
-#include "moc_kglobalshortcutinfo.cpp"

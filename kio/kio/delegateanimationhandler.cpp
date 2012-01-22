@@ -32,7 +32,7 @@
 #include <kdebug.h>
 #include <qabstractproxymodel.h>
 
-#include "delegateanimationhandler_p.moc"
+#include "moc_delegateanimationhandler_p.cpp"
 
 namespace KIO
 {

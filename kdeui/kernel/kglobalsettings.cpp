@@ -1155,4 +1155,4 @@ void KGlobalSettings::Private::propagateQtSettings()
     emit q->settingsChanged(SETTINGS_QT);
 }
 
-#include "kglobalsettings.moc"
+#include "moc_kglobalsettings.cpp"

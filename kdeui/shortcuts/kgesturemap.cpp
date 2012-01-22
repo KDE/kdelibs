@@ -271,4 +271,3 @@ bool KGestureMap::eventFilter(QObject *obj, QEvent *e)
     return false;
 }
 
-#include "kgesturemap.moc"

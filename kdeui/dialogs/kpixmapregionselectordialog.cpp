@@ -160,4 +160,4 @@ QImage KPixmapRegionSelectorDialog::getSelectedImage(const QPixmap &pixmap, int 
   return image;
 }
 
-#include "kpixmapregionselectordialog.moc"
+#include "moc_kpixmapregionselectordialog.cpp"

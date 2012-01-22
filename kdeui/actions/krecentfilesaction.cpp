@@ -344,4 +344,4 @@ void KRecentFilesAction::saveEntries( const KConfigGroup &_cg )
 /* vim: et sw=2 ts=2
  */
 
-#include "krecentfilesaction.moc"
+#include "moc_krecentfilesaction.cpp"

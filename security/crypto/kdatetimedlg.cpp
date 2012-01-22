@@ -116,5 +116,4 @@ void KDateTimeDlg::setDateTime(const QDateTime& qdatetime) {
 }
 
 
-#include "kdatetimedlg.moc"
 

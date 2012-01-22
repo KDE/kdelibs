@@ -22,7 +22,6 @@
 #include <kio/copyjob.h>
 #include <kio/chmodjob.h>
 #include <kprotocolinfo.h>
-#include "kdirmodeltest.moc"
 #include <kdirmodel.h>
 #include <kdirlister.h>
 //TODO #include "../../kdeui/tests/proxymodeltestsuite/modelspy.h"

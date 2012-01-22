@@ -336,4 +336,4 @@ void KAboutApplicationDialog::Private::_k_showLicense( const QString &number )
     dialog->show();
 }
 
-#include "kaboutapplicationdialog.moc"
+#include "moc_kaboutapplicationdialog.cpp"

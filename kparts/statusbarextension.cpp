@@ -185,6 +185,5 @@ void StatusBarExtension::removeStatusBarItem( QWidget * widget )
     kWarning(1000) << "StatusBarExtension::removeStatusBarItem. Widget not found : " << widget;
 }
 
-#include "statusbarextension.moc"
 
 // vim: ts=2 sw=2 et

@@ -988,5 +988,4 @@ JSValue *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, JSObject *this
 
 } // end namespace
 
-#include "xmlhttprequest.moc"
 // kate: indent-width 2; replace-tabs on; tab-width 4; space-indent on;

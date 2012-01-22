@@ -444,4 +444,3 @@ EntryInternal AtticaProvider::entryFromAtticaContent(const Attica::Content& cont
 } // namespace
 
 
-#include "atticaprovider.moc"

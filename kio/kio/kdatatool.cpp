@@ -340,4 +340,3 @@ const KComponentData &KDataTool::componentData() const
    return d->componentData;
 }
 
-#include "kdatatool.moc"

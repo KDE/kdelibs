@@ -174,4 +174,3 @@ DavJob* KIO::davReport( const KUrl& url, const QString& report, const QString &d
     return job;
 }
 
-#include "davjob.moc"

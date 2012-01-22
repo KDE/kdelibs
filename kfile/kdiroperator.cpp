@@ -2659,4 +2659,4 @@ void KDirOperator::Private::_k_slotDirectoryCreated(const KUrl& url)
     parent->setUrl(url, true);
 }
 
-#include "kdiroperator.moc"
+#include "moc_kdiroperator.cpp"

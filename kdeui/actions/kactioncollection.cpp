@@ -781,4 +781,4 @@ void KActionCollectionPrivate::_k_associatedWidgetDestroyed(QObject *obj)
 /* vim: et sw=2 ts=2
  */
 
-#include "kactioncollection.moc"
+#include "moc_kactioncollection.cpp"

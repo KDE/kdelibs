@@ -20,7 +20,6 @@
 #include "qstandardpaths.h"
 
 #include "qtest_kde.h"
-#include "kstandarddirstest.moc"
 
 QTEST_KDEMAIN_CORE( KStandarddirsTest )
 

@@ -84,5 +84,5 @@ KDiskFreeSpace * KDiskFreeSpace::findUsageInfo( const QString & path )
     return job;
 }
 
-#include "kdiskfreespace.moc"
+#include "moc_kdiskfreespace.cpp"
 

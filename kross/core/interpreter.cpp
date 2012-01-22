@@ -174,4 +174,3 @@ InterpreterInfo* Interpreter::interpreterInfo() const
     return d->interpreterinfo;
 }
 
-#include "interpreter.moc"

@@ -147,4 +147,4 @@ void KCommentWidget::slotLinkActivated(const QString& link)
     }
 }
 
-#include "kcommentwidget_p.moc"
+#include "moc_kcommentwidget_p.cpp"

@@ -44,7 +44,6 @@
  */
 
 #include "kstyle.h"
-#include "kstyle.moc"
 
 #include <QtCore/qalgorithms.h>
 #include <QtCore/QCache>

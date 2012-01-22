@@ -1826,5 +1826,5 @@ void KColorDialog::KColorDialogPrivate::setHsvEdit(const QColor &col)
     vedit->setValue(v);
 }
 
-#include "kcolordialog.moc"
-#include "kcolordialog_p.moc"
+#include "moc_kcolordialog.cpp"
+#include "moc_kcolordialog_p.cpp"

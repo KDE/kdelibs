@@ -68,4 +68,4 @@ QString KFileBookmarkHandler::currentTitle() const
     return m_widget->baseUrl().prettyUrl();
 }
 
-#include "kfilebookmarkhandler_p.moc"
+#include "moc_kfilebookmarkhandler_p.cpp"

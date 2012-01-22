@@ -734,4 +734,4 @@ bool K3PasswordDialog::keep() const
     return m_Keep;
 }
 
-#include "k3passworddialog.moc"
+#include "moc_k3passworddialog.cpp"

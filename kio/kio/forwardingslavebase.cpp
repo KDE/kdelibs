@@ -561,5 +561,5 @@ void ForwardingSlaveBasePrivate::_k_slotCanResume (KIO::Job* /*job*/, KIO::files
 
 }
 
-#include "forwardingslavebase.moc"
+#include "moc_forwardingslavebase.cpp"
 

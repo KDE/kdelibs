@@ -188,4 +188,3 @@ Soprano::Error::ErrorCode Nepomuk::ResourceFilterModel::ensureResource( const QU
     }
 }
 
-#include "resourcefiltermodel.moc"

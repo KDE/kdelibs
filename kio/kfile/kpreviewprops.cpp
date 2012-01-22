@@ -89,4 +89,4 @@ void KPreviewPropsPlugin::currentPageChanged( KPageWidgetItem *current, KPageWid
     preview->showPreview(properties->item().url());
 }
 
-#include "kpreviewprops.moc"
+#include "moc_kpreviewprops.cpp"

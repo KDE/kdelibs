@@ -448,4 +448,4 @@ QPixmap KExtendableItemDelegate::contractPixmap()
     return d->contractPixmap;
 }
 
-#include "kextendableitemdelegate.moc"
+#include "moc_kextendableitemdelegate.cpp"

@@ -110,4 +110,3 @@ void KHBox::setMargin( int margin )
 	layout()->setMargin( margin );
 }
 
-#include "khbox.moc"

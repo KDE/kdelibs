@@ -74,4 +74,3 @@ void QStarFrame::paintEvent(QPaintEvent *e)
     drawstars();
 }
 
-#include "qstarframe.moc"

@@ -261,4 +261,3 @@ void KRatingWidget::resizeEvent( QResizeEvent* e )
     QFrame::resizeEvent( e );
 }
 
-#include "kratingwidget.moc"

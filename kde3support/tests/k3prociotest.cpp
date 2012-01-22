@@ -66,4 +66,4 @@ int main(int argc, char *argv[])
  printf("Entering man Qt event loop -- press <CTRL><C> to abort\n");
  return app.exec();
 }
-#include "k3prociotest.moc"
+#include "moc_k3prociotest.cpp"

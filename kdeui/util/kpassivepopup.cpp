@@ -18,7 +18,6 @@
  */
 
 #include "kpassivepopup.h"
-#include "kpassivepopup.moc"
 
 // Qt
 #include <QApplication>

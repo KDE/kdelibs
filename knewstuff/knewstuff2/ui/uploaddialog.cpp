@@ -179,4 +179,3 @@ Entry *UploadDialog::entry() const
     return m_entry;
 }
 
-#include "uploaddialog.moc"

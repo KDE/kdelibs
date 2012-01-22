@@ -164,4 +164,4 @@ bool KAssistantDialog::isAppropriate(KPageWidgetItem * page) const
     return d->appropriate.value(page, true);
 }
 
-#include "kassistantdialog.moc"
+#include "moc_kassistantdialog.cpp"

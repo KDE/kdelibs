@@ -238,4 +238,3 @@ void AtticaHelper::slotPreviewDownload(KJob *job)
     emit previewLoaded(previewNum, image);
 }
 
-#include "atticahelper.moc"

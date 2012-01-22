@@ -386,4 +386,3 @@ khtml::Tokenizer* HTMLTextDocumentImpl::createTokenizer()
     return new HTMLTextTokenizer(this);
 }
 
-#include "html_documentimpl.moc"

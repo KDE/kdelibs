@@ -23,7 +23,6 @@
 #include <qtemporarydir.h>
 #include <kdesktopfile.h>
 #include <kstandarddirs.h>
-#include "kconfigtest.moc"
 
 #include <kconfig.h>
 #include <kdebug.h>

@@ -243,4 +243,3 @@ EntryInternal::List Cache::requestFromCache(const KNS3::Provider::SearchRequest&
     return requestCache.value(request.hashForRequest());
 }
 
-#include "cache.moc"

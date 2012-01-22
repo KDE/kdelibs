@@ -291,4 +291,4 @@ ChmodJob *KIO::chmod( const KFileItemList& lstItems, int permissions, int mask,
                                    newGroupID, recursive, flags);
 }
 
-#include "chmodjob.moc"
+#include "moc_chmodjob.cpp"

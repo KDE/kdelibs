@@ -183,4 +183,3 @@ void KParts::MainWindow::configureToolbars()
     KXmlGuiWindow::configureToolbars();
 }
 
-#include "mainwindow.moc"

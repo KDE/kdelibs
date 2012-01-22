@@ -94,4 +94,3 @@ void KDateTimeWidget::slotValueChanged()
   emit valueChanged(datetime);
 }
 
-#include "kdatetimewidget.moc"

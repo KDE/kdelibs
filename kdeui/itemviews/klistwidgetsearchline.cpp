@@ -272,4 +272,4 @@ void KListWidgetSearchLine::KListWidgetSearchLinePrivate::_k_dataChanged( const 
 
 
 
-#include "klistwidgetsearchline.moc"
+#include "moc_klistwidgetsearchline.cpp"

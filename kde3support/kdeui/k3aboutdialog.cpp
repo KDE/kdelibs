@@ -54,8 +54,8 @@ template class QList<K3AboutContributor *>;
 
 // ##############################################################
 // MOC OUTPUT FILES:
-#include "k3aboutdialog.moc"
-#include "k3aboutdialog_p.moc"
+#include "moc_k3aboutdialog.cpp"
+#include "moc_k3aboutdialog_p.cpp"
 // ##############################################################
 
 class K3AboutContributor::Private

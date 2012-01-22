@@ -899,5 +899,5 @@ QFont KPluginSelector::Private::PluginDelegate::titleFont(const QFont &baseFont)
     return retFont;
 }
 
-#include "kpluginselector_p.moc"
-#include "kpluginselector.moc"
+#include "moc_kpluginselector_p.cpp"
+#include "moc_kpluginselector.cpp"

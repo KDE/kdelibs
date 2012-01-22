@@ -301,5 +301,4 @@ void EntryDetails::becomeFan()
     m_engine->becomeFan(m_entry);
 }
 
-#include "entrydetailsdialog.moc"
 

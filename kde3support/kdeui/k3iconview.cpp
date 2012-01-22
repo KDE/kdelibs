@@ -736,4 +736,4 @@ void K3IconViewItem::setPixmapSize( const QSize& size )
     d->m_pixmapSize = size;
 }
 
-#include "k3iconview.moc"
+#include "moc_k3iconview.cpp"

@@ -392,4 +392,3 @@ int main(int argc, char** argv )
     app.exec();
 }
 
-#include "ktabwidgettest.moc"

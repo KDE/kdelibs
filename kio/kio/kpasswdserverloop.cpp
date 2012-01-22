@@ -74,4 +74,4 @@ void KPasswdServerLoop::kdedServiceUnregistered()
 
 }
 
-#include "kpasswdserverloop_p.moc"
+#include "moc_kpasswdserverloop_p.cpp"

@@ -1668,4 +1668,3 @@ QStringList KNS::CoreEngine::archiveEntries(const QString& path, const KArchiveD
 }
 
 
-#include "coreengine.moc"

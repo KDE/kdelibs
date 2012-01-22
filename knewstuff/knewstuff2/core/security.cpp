@@ -369,4 +369,3 @@ void Security::slotSignFile()
     }
 }
 
-#include "security.moc"

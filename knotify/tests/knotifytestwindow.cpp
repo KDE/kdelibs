@@ -106,6 +106,5 @@ void KNotifyTestWindow::slotConfigureC( )
 
 
 
-#include "knotifytestwindow.moc"
 
 

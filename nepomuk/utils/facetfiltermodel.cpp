@@ -42,4 +42,3 @@ bool Nepomuk::Utils::FacetFilterModel::filterAcceptsRow(int source_row, const QM
     return index.isValid() && index.data(FacetModel::FacetRole).value<Facet*>()->count() > 0;
 }
 
-#include "facetfiltermodel.moc"

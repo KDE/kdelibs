@@ -651,4 +651,3 @@ QString KIMProxy::preferredApp()
 	return preferredApp;
 }
 
-#include "kimproxy.moc"

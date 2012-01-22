@@ -329,4 +329,3 @@ QSize ItemsViewDelegate::sizeHint(const QStyleOptionViewItem & option, const QMo
 
 } // namespace
 
-#include "itemsviewdelegate.moc"

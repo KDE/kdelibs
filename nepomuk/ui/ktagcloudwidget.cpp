@@ -176,4 +176,3 @@ void KTagCloudWidget::buildTagCloud()
     }
 }
 
-#include "ktagcloudwidget.moc"

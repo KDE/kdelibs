@@ -1,5 +1,4 @@
 #include "kjserrordlg.h"
-#include "kjserrordlg.moc"
 
 KJSErrorDlg::KJSErrorDlg( QWidget *parent )
   : QDialog( parent )

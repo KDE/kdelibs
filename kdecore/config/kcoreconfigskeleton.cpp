@@ -1319,4 +1319,3 @@ KConfigSkeletonItem *KCoreConfigSkeleton::findItem(const QString &name) const
 }
 
 #include "kcoreconfigskeleton.moc"
-

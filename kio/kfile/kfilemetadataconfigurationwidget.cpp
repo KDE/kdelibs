@@ -216,4 +216,4 @@ QSize KFileMetaDataConfigurationWidget::sizeHint() const
 }
 
 
-#include "kfilemetadataconfigurationwidget.moc"
+#include "moc_kfilemetadataconfigurationwidget.cpp"

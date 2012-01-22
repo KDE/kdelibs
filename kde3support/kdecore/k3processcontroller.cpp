@@ -329,4 +329,4 @@ void K3ProcessController::addProcess( int pid )
   ref(); // make sure we stay around when the K3Process goes away
 }
 
-#include "k3processcontroller.moc"
+#include "moc_k3processcontroller.cpp"

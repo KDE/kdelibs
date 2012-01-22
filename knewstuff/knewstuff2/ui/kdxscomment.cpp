@@ -45,4 +45,3 @@ QString KDXSComment::comment()
     return m_textbox->toPlainText();
 }
 
-#include "kdxscomment.moc"

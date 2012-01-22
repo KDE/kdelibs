@@ -290,4 +290,3 @@ void Dxs::slotResult(QDomNode node, int jobid)
     }
 }
 
-#include "dxs.moc"

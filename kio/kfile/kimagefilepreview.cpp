@@ -283,4 +283,4 @@ void KImageFilePreview::clearPreview()
     }
 }
 
-#include "kimagefilepreview.moc"
+#include "moc_kimagefilepreview.cpp"

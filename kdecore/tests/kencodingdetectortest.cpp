@@ -21,7 +21,6 @@
 #include <kdebug.h>
 #include <kencodingdetector.h>
 
-#include "kencodingdetectortest.moc"
 
 static const char data1[] = "this should decode correctly";
 static const char data2[] = "this is an invalid utf-8 byte: \xBF and another one: \xBE";

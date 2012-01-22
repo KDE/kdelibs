@@ -79,5 +79,4 @@ QWidget *KMessageBoxMessageHandlerPrivate::parentWidget()
     return qobject_cast<QWidget*>(q->parent());
 }
 
-#include "kmessageboxmessagehandler.moc"
 // kate: space-indent on; indent-width 4; encoding utf-8; replace-tabs on;

@@ -117,4 +117,3 @@ void KDXSRating::paintEvent(QPaintEvent e)
 }
 */
 
-#include "kdxsrating.moc"

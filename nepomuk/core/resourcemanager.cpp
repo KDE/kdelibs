@@ -545,4 +545,4 @@ Nepomuk::ResourceManager* Nepomuk::ResourceManager::createManagerForModel( Sopra
     return manager;
 }
 
-#include "resourcemanager.moc"
+#include "moc_resourcemanager.cpp"

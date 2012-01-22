@@ -307,4 +307,3 @@ void KCookieDetail::displayCookieDetails()
     m_secure->setText(sec);
 }
 
-#include "kcookiewin.moc"

@@ -2208,4 +2208,4 @@ CopyJob *KIO::trash(const KUrl::List& srcList, JobFlags flags)
     return CopyJobPrivate::newJob(srcList, KUrl( "trash:/" ), CopyJob::Move, false, flags);
 }
 
-#include "copyjob.moc"
+#include "moc_copyjob.cpp"

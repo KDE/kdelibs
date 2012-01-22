@@ -294,4 +294,4 @@ void KTitleWidget::showEvent(QShowEvent *event)
     }
 }
 
-#include "ktitlewidget.moc"
+#include "moc_ktitlewidget.cpp"

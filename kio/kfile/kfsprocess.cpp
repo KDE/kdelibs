@@ -346,4 +346,4 @@ void KfsProcess::processHasExited()
     emit processExited();
 }
 
-#include "kfsprocess.moc"
+#include "moc_kfsprocess.cpp"

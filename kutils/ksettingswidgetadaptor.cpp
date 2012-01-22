@@ -31,4 +31,3 @@ QString KSettingsWidgetAdaptor::applicationName()
 	return KGlobal::caption();
 }
 
-#include "ksettingswidgetadaptor.moc"

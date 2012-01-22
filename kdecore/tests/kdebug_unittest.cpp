@@ -26,7 +26,6 @@
 #include <kdebug.h>
 #include <kprocess.h>
 #include <kstandarddirs.h>
-#include "kdebug_unittest.moc"
 
 QTEST_KDEMAIN_CORE( KDebugTest )
 

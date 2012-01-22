@@ -758,4 +758,4 @@ bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
 /* vim: et sw=2 ts=2
  */
 
-#include "kselectaction.moc"
+#include "moc_kselectaction.cpp"

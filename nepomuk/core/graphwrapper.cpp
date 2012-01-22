@@ -124,4 +124,4 @@ void Nepomuk::GraphWrapper::storeGraph( const QUrl& graph )
     m_timer.start( 200 );
 }
 
-#include "graphwrapper_p.moc"
+#include "moc_graphwrapper_p.cpp"

@@ -1,7 +1,6 @@
 // program to test the new khtml implementation
 
 #include "testkhtml.h"
-#include "testkhtml.moc"
 
 #include <stdlib.h>
 #include "kapplication.h"

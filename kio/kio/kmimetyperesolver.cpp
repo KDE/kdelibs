@@ -192,4 +192,4 @@ void KMimeTypeResolverPrivate::_k_slotViewportAdjusted()
     m_timer.start(0);
 }
 
-#include "kmimetyperesolver.moc"
+#include "moc_kmimetyperesolver.cpp"

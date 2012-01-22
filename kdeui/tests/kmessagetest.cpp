@@ -109,5 +109,4 @@ int main(int argc, char **argv)
     return app.exec();
 }
 
-#include "kmessagetest.moc"
 // kate: space-indent on; indent-width 4; encoding utf-8; replace-tabs on;

@@ -52,4 +52,3 @@ void TestBase::cleanup()
 {
 }
 
-#include "testbase.moc"

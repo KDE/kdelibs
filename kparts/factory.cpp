@@ -78,4 +78,3 @@ QObject *Factory::createObject( QObject *parent, const char *classname, const QS
   return createPart( static_cast<QWidget *>( parent ), parent, classname, args );
 }
 
-#include "factory.moc"

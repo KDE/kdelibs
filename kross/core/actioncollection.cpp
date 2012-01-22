@@ -459,4 +459,3 @@ bool ActionCollection::writeXml(QIODevice* device, int indent, const QStringList
     return device->write( document.toByteArray(indent) ) != -1;
 }
 
-#include "actioncollection.moc"

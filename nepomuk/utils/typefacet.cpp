@@ -414,4 +414,3 @@ bool Nepomuk::Utils::TypeFacet::selectFromTerm(const Nepomuk::Query::Term &query
     return false;
 }
 
-#include "typefacet.moc"

@@ -395,4 +395,3 @@ void Nepomuk::TagWidget::slotTagStateChanged( const Nepomuk::Tag&, int )
     }
 }
 
-#include "tagwidget.moc"

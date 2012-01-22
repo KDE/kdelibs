@@ -720,4 +720,4 @@ QWidget* KFind::dialogsParent() const
     return d->findDialog ? (QWidget*)d->findDialog : ( d->dialog ? d->dialog : parentWidget() );
 }
 
-#include "kfind.moc"
+#include "moc_kfind.cpp"

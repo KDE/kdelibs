@@ -177,4 +177,4 @@ void KNotificationManager::reemit(KNotification * n, int id)
 }
 
 
-#include "knotificationmanager_p.moc"
+#include "moc_knotificationmanager_p.cpp"

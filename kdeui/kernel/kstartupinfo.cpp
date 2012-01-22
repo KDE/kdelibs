@@ -1617,4 +1617,4 @@ static QString escape_str( const QString& str_P )
     return ret;
     }
 
-#include "kstartupinfo.moc"
+#include "moc_kstartupinfo.cpp"

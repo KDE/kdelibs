@@ -494,4 +494,4 @@ int K3FileView::autoOpenDelay()
     return (QApplication::startDragTime() * 3) / 2;
 }
 
-#include "k3fileview.moc"
+#include "moc_k3fileview.cpp"

@@ -39,7 +39,6 @@
 #include <time.h>
 #include <sys/time.h>
 
-#include "fileundomanagertest.moc"
 
 QTEST_KDEMAIN( FileUndoManagerTest, NoGUI )
 

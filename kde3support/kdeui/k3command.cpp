@@ -442,4 +442,4 @@ void K3NamedCommand::virtual_hook( int id, void* data )
 void K3MacroCommand::virtual_hook( int id, void* data )
 { K3NamedCommand::virtual_hook( id, data ); }
 
-#include "k3command.moc"
+#include "moc_k3command.cpp"

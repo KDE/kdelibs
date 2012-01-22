@@ -18,7 +18,6 @@
  */
 
 #include "breakpointsdock.h"
-#include "breakpointsdock.moc"
 
 #include <QVBoxLayout>
 #include <QListWidget>

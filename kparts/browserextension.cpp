@@ -820,4 +820,3 @@ LiveConnectExtension *LiveConnectExtension::childObject( QObject *obj )
     return KGlobal::findDirectChild<KParts::LiveConnectExtension *>(obj);
 }
 
-#include "browserextension.moc"

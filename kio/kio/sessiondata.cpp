@@ -19,7 +19,6 @@
 */
 
 #include "sessiondata.h"
-#include "sessiondata.moc"
 
 #include <QtCore/QList>
 #include <QtCore/QTextCodec>

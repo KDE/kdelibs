@@ -547,4 +547,3 @@ WrapperInterface::~WrapperInterface()
 {
 }
 
-#include "action.moc"

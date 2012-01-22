@@ -19,7 +19,7 @@
  */
 
 #include "document.h"
-#include "document.moc"
+#include "moc_document.cpp"
 
 #include "documentadaptor_p.h"
 #include "documentadaptor_p.moc"

@@ -19,7 +19,6 @@
 #include <locale.h>
 
 #include "kservicetest.h"
-#include "kservicetest.moc"
 #include <qtest_kde.h>
 
 #include <kconfig.h>

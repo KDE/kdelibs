@@ -25,4 +25,4 @@ KAbstractFileModule::KAbstractFileModule(QObject* parent)
 
 }
 
-#include "kabstractfilemodule.moc"
+#include "moc_kabstractfilemodule.cpp"

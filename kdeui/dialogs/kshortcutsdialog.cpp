@@ -192,7 +192,7 @@ int KShortcutsDialog::configure(KActionCollection *collection, KShortcutsEditor:
     return dlg.configure(saveSettings);
 }
 
-#include "kshortcutsdialog.moc"
-#include "kshortcutsdialog_p.moc"
+#include "moc_kshortcutsdialog.cpp"
+#include "moc_kshortcutsdialog_p.cpp"
 
 //kate: space-indent on; indent-width 4; replace-tabs on;tab-width 4;

@@ -85,4 +85,3 @@ void ImageLoader::slotDownload(KJob *job)
     deleteLater();
 }
 
-#include "imageloader.moc"

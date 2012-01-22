@@ -725,4 +725,4 @@ void KShortcutsEditorPrivate::printShortcuts() const
 #endif
 }
 
-#include "kshortcutseditor.moc"
+#include "moc_kshortcutseditor.cpp"

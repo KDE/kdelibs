@@ -17,6 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include "ktimezonestest.h"
 #include "ktimezonestest_p.h"
 
 #include <stdio.h>
@@ -27,7 +28,6 @@
 #include <config-date.h> // for HAVE_TM_GMTOFF
 #include "ksystemtimezone.h"
 #include "ktzfiletimezone.h"
-#include "ktimezonestest.moc"
 
 QTEST_KDEMAIN_CORE(KTimeZonesTest)
 

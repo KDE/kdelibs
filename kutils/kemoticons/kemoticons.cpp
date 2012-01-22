@@ -294,6 +294,6 @@ KEmoticonsTheme::ParseMode KEmoticons::parseMode()
     return (KEmoticonsTheme::ParseMode) config.readEntry("parseMode", int(KEmoticonsTheme::RelaxedParse));
 }
 
-#include "kemoticons.moc"
+#include "moc_kemoticons.cpp"
 
 // kate: space-indent on; indent-width 4; replace-tabs on;

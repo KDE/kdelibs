@@ -146,4 +146,3 @@ void KNotifyConfigActionsWidget::slotKTTSComboChanged()
 	emit changed();
 }
 
-#include "knotifyconfigactionswidget.moc"

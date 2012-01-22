@@ -107,4 +107,3 @@ bool KHTMLPrintSettings::printHeader()
 }
 
 
-#include "khtml_printsettings.moc"

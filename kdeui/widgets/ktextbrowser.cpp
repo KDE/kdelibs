@@ -128,4 +128,3 @@ void KTextBrowser::contextMenuEvent( QContextMenuEvent *event )
   }
 }
 
-#include "ktextbrowser.moc"

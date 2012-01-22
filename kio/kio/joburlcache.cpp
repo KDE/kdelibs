@@ -64,4 +64,4 @@ void JobUrlCache::requestJobUrlsChanged()
     emit jobUrlsChanged(m_destUrls);
 }
 
-#include "joburlcache_p.moc"
+#include "moc_joburlcache_p.cpp"

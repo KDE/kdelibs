@@ -290,4 +290,3 @@ void KJavaProcess::slotExited()
     emit exited(status);
 }
 
-#include "kjavaprocess.moc"

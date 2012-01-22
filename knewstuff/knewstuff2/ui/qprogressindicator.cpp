@@ -146,4 +146,3 @@ void QProgressIndicator::calculateAverage()
     m_pb->setValue(average);
 }
 
-#include "qprogressindicator.moc"

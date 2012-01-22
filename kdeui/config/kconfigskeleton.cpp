@@ -118,5 +118,4 @@ KConfigSkeleton::ItemFont *KConfigSkeleton::addItemFont( const QString &name, QF
   return item;
 }
 
-#include "kconfigskeleton.moc"
 

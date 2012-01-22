@@ -59,4 +59,3 @@ void KDXSChanges::addChangelog(const QString& version, const QString& log)
     m_log->setHtml(t);
 }
 
-#include "kdxschanges.moc"

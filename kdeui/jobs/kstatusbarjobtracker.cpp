@@ -280,5 +280,5 @@ bool KStatusBarJobTracker::Private::ProgressWidget::eventFilter(QObject *obj, QE
     return QWidget::eventFilter(obj, event);
 }
 
-#include "kstatusbarjobtracker.moc"
-#include "kstatusbarjobtracker_p.moc"
+#include "moc_kstatusbarjobtracker.cpp"
+#include "moc_kstatusbarjobtracker_p.cpp"

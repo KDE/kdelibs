@@ -89,4 +89,3 @@ void WindowsPoller::checkForIdle()
     }
 }
 
-#include "windowspoller.moc"

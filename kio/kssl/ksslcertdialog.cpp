@@ -172,5 +172,4 @@ QDataStream& operator>>(QDataStream& s, KSSLCertDialogRet& r) {
 }
 
 
-#include "ksslcertdialog.moc"
 

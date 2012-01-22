@@ -101,4 +101,3 @@ void TypeFacetTest::testSelectFromTerm()
 
 QTEST_KDEMAIN_CORE(TypeFacetTest)
 
-#include "typefacettest.moc"

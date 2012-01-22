@@ -18,7 +18,6 @@
 
 #include <qtest_kde.h>
 #include "kbookmarktest.h"
-#include "kbookmarktest.moc"
 
 QTEST_KDEMAIN( KBookmarkTest, false )
 

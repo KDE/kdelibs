@@ -18,12 +18,13 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include "klanguagebutton.moc"
 
 #include <QtGui/QMenu>
 #include <QtGui/QLayout>
 #include <QtGui/QPushButton>
 #include <QtGui/QMenuItem>
+
+#include "klanguagebutton.h"
 
 #include <klocale.h>
 #include <kstandarddirs.h>

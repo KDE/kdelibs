@@ -2755,5 +2755,5 @@ KFileItem KDirLister::cachedItemForUrl(const KUrl& url)
     return kDirListerCache->itemForUrl(url);
 }
 
-#include "kdirlister.moc"
-#include "kdirlister_p.moc"
+#include "moc_kdirlister.cpp"
+#include "moc_kdirlister_p.cpp"

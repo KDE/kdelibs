@@ -90,4 +90,3 @@ RenameDialogPlugin::RenameDialogPlugin( QDialog* dlg)
     : QWidget( dlg )
 {}
 
-#include "renamedialogplugin.moc"

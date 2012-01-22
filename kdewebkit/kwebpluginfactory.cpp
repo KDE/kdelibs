@@ -142,4 +142,3 @@ QList<KWebPluginFactory::Plugin> KWebPluginFactory::plugins() const
     return plugins;
 }
 
-#include "kwebpluginfactory.moc"

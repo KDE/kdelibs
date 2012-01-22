@@ -266,4 +266,4 @@ void K3IconViewSearchLine::iconViewDeleted()
   setEnabled( false );
 }
 
-#include "k3iconviewsearchline.moc"
+#include "moc_k3iconviewsearchline.cpp"

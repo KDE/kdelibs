@@ -19,7 +19,6 @@
 
 #include "kdirlistertest.h"
 #include <qtemporaryfile.h>
-#include "kdirlistertest.moc"
 #include <kdirlister.h>
 #include <qtest_kde.h>
 

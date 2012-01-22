@@ -616,5 +616,5 @@ void ConnectionServer::setNextPendingConnection(Connection *conn)
     conn->d->dequeue();
 }
 
-#include "connection_p.moc"
-#include "connection.moc"
+#include "moc_connection_p.cpp"
+#include "moc_connection.cpp"

@@ -230,4 +230,4 @@ void KUrlNavigatorProtocolCombo::initializeCategories()
 
 } // namespace KDEPrivate
 
-#include "kurlnavigatorprotocolcombo_p.moc"
+#include "moc_kurlnavigatorprotocolcombo_p.cpp"

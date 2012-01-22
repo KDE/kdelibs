@@ -319,4 +319,4 @@ void KConfigDialog::settingsChangedSlot()
     d->_k_settingsChangedSlot();
 }
 
-#include "kconfigdialog.moc"
+#include "moc_kconfigdialog.cpp"

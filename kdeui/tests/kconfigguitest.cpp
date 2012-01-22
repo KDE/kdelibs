@@ -19,7 +19,6 @@
 
 #include <qtest_kde.h>
 #include "kconfigguitest.h"
-#include "kconfigguitest.moc"
 
 #include <kconfig.h>
 #include <kdebug.h>

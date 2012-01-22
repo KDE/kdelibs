@@ -92,4 +92,3 @@ void TagWidgetTest::setReadOnly( bool enable )
     m_tagWidget->setModeFlags( enable ? flags | Nepomuk::TagWidget::ReadOnly : flags & ~Nepomuk::TagWidget::ReadOnly );
 }
 
-#include "tagwidgettest.moc"

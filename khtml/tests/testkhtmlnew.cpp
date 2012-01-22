@@ -1,7 +1,6 @@
 // program to test the new khtml implementation
 
 #include "testkhtmlnew.h"
-#include "testkhtmlnew.moc"
 
 #include <QtGui/QCursor>
 #include <QtGui/QBoxLayout>

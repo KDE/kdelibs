@@ -74,5 +74,4 @@ void CodecActionTest::slotActionTriggered(bool state)
     kDebug() << sender() << " state " << state;
 }
 
-#include "kcodecactiontest.moc"
 

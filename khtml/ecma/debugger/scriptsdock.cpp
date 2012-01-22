@@ -19,7 +19,6 @@
  */
 
 #include "scriptsdock.h"
-#include "scriptsdock.moc"
 
 #include <QVBoxLayout>
 #include <QTreeWidget>

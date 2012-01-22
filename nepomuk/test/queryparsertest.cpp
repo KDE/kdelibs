@@ -210,4 +210,3 @@ void QueryParserTest::testQueryParserDetectFilenamePattern()
 
 QTEST_KDEMAIN_CORE( QueryParserTest )
 
-#include "queryparsertest.moc"

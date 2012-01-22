@@ -19,7 +19,7 @@
 
 #include "kstandardaction.h"
 #include "kstandardaction_p.h"
-#include "kstandardaction_p.moc"
+#include "moc_kstandardaction_p.cpp"
 
 #include <QtCore/QMutableStringListIterator>
 #include <QtGui/QToolButton>

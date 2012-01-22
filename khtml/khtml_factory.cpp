@@ -53,4 +53,3 @@ QObject * KHTMLFactory::create( const char *iface,
 
 K_EXPORT_PLUGIN( KHTMLFactory )
 
-#include "khtml_factory.moc"

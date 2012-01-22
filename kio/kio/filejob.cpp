@@ -215,5 +215,5 @@ FileJob *KIO::open(const KUrl &url, QIODevice::OpenMode mode)
     return FileJobPrivate::newJob(url, packedArgs);
 }
 
-#include "filejob.moc"
+#include "moc_filejob.cpp"
 

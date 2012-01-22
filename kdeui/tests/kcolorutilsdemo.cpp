@@ -216,5 +216,4 @@ int main(int argc, char* argv[]) {
     return app.exec();
 }
 
-#include "kcolorutilsdemo.moc"
 // kate: hl C++; indent-width 4; replace-tabs on;

@@ -146,4 +146,4 @@ void KShortcutWidgetPrivate::altKeySequenceChanged(const QKeySequence &seq)
         emit q->shortcutChanged(cut);
 }
 
-#include "kshortcutwidget.moc"
+#include "moc_kshortcutwidget.cpp"

@@ -88,4 +88,3 @@ kapp->invokeMailer( url );
 }
 */
 
-#include "kdxscomments.moc"

@@ -493,4 +493,4 @@ DeleteJob *KIO::del( const KUrl::List& src, JobFlags flags )
     return DeleteJobPrivate::newJob(src, flags);
 }
 
-#include "deletejob.moc"
+#include "moc_deletejob.cpp"

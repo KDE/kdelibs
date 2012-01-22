@@ -428,4 +428,4 @@ void KAction::setAuthAction(KAuth::Action *action)
 /* vim: et sw=2 ts=2
  */
 
-#include "kaction.moc"
+#include "moc_kaction.cpp"

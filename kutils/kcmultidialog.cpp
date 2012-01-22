@@ -503,4 +503,4 @@ void KCMultiDialog::setButtons(ButtonCodes buttonMask)
 }
 
 
-#include "kcmultidialog.moc"
+#include "moc_kcmultidialog.cpp"

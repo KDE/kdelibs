@@ -59,4 +59,3 @@ Qt::Orientation KSeparator::orientation() const
    return ((frameStyle() & VLine) == VLine) ? Qt::Vertical : Qt::Horizontal;
 }
 
-#include "kseparator.moc"

@@ -135,4 +135,3 @@ void RatingPainterTestWidget::slotChangeIcon()
     }
 }
 
-#include "ratingpaintertestwidget.moc"

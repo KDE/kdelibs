@@ -97,4 +97,3 @@ void ProviderLoader::slotJobResult(KJob *job)
     emit signalProvidersLoaded(m_providers);
 }
 
-#include "providerloader.moc"

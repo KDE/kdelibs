@@ -119,4 +119,4 @@ void KToolBarSpacerAction::deleteWidget(QWidget *widget)
     KAction::deleteWidget(widget);
 }
 
-#include "ktoolbarspaceraction.moc"
+#include "moc_ktoolbarspaceraction.cpp"

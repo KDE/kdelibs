@@ -285,4 +285,4 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
     return KCategorizedSortFilterProxyModel::subSortLessThan(left, right);
 }
 
-#include "kdirsortfilterproxymodel.moc"
+#include "moc_kdirsortfilterproxymodel.cpp"

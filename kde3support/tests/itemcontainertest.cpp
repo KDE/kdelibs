@@ -224,4 +224,4 @@ int main( int argc, char ** argv )
     app.exec();
 }
 
-#include "itemcontainertest.moc"
+#include "moc_itemcontainertest.cpp"

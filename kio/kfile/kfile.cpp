@@ -90,4 +90,4 @@ bool KFile::isDetailTreeView( const FileView& view )
     return (view & DetailTree) == DetailTree;
 }
 
-#include "kfile.moc"
+#include "moc_kfile.cpp"

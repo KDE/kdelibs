@@ -1183,7 +1183,7 @@ K3SpellConfig::replaceAllList() const
   return d->replacelist;
 }
 
-#include "k3sconfig.moc"
+#include "moc_k3sconfig.cpp"
 
 
 

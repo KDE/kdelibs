@@ -1144,4 +1144,4 @@ void KParts::OpenUrlArguments::setActionRequestedByUser(bool userRequested)
     d->actionRequestedByUser = userRequested;
 }
 
-#include "part.moc"
+#include "moc_part.cpp"

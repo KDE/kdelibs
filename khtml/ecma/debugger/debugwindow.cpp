@@ -21,7 +21,6 @@
  */
 
 #include "debugwindow.h"
-#include "debugwindow.moc"
 
 #include <QSharedData>
 #include <QDebug>

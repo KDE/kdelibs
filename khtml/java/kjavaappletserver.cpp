@@ -843,4 +843,3 @@ void PermissionDialog::clicked()
     static_cast<const QWidget*>(sender())->parentWidget()->close();
 }
 
-#include "kjavaappletserver.moc"

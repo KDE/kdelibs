@@ -444,4 +444,4 @@ void KUrlComboBox::KUrlComboBoxPrivate::updateItem( const KUrlComboBoxPrivate::K
 }
 
 
-#include "kurlcombobox.moc"
+#include "moc_kurlcombobox.cpp"

@@ -2350,7 +2350,7 @@ void K3ListViewItem::paintCell(QPainter *p, const QColorGroup &cg, int column, i
   Q3ListViewItem::paintCell(p, _cg, column, width, alignment);
 }
 
-#include "k3listview.moc"
+#include "moc_k3listview.cpp"
 #include "k3listviewlineedit.moc"
 
 // vim: noet

@@ -227,4 +227,3 @@ bool Nepomuk::Utils::ResourceModel::setData( const QModelIndex& index, const QVa
     return QAbstractItemModel::setData(index, value, role);
 }
 
-#include "resourcemodel.moc"

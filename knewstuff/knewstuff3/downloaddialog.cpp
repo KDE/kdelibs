@@ -113,4 +113,3 @@ Entry::List DownloadDialog::installedEntries()
 }
 
 
-#include "downloaddialog.moc"

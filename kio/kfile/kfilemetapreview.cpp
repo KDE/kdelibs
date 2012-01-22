@@ -197,4 +197,4 @@ KPreviewWidgetBase * KFileMetaPreview::createAudioPreview( QWidget *parent )
     return w;
 }
 
-#include "kfilemetapreview.moc"
+#include "moc_kfilemetapreview.cpp"

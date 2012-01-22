@@ -721,4 +721,4 @@ void KTabWidget::currentChanged( int )
 }
 #endif
 
-#include "ktabwidget.moc"
+#include "moc_ktabwidget.cpp"

@@ -433,4 +433,4 @@ void KFileMetaInfoWidget::slotDateTimeChanged(const QDateTime& value)
     d->m_dirty = true;
 }
 
-#include "kfilemetainfowidget.moc"
+#include "moc_kfilemetainfowidget.cpp"

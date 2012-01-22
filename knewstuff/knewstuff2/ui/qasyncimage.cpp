@@ -57,4 +57,4 @@ void QAsyncImage::slotDownload(KJob *job)
     emit signalLoaded(m_url, *this);
 }
 
-#include "qasyncimage_p.moc"
+#include "moc_qasyncimage_p.cpp"

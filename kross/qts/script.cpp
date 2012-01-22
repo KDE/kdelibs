@@ -270,4 +270,3 @@ QObject* EcmaScript::engine() const
     return d->m_engine;
 }
 
-#include "script.moc"

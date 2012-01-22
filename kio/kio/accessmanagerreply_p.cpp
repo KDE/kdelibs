@@ -434,4 +434,3 @@ void AccessManagerReply::slotPercent(KJob *job, unsigned long percent)
 }
 }
 
-#include "accessmanagerreply_p.moc"

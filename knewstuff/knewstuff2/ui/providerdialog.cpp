@@ -108,4 +108,3 @@ KNS::Provider *ProviderDialog::provider() const
     return m_provider;
 }
 
-#include "providerdialog.moc"

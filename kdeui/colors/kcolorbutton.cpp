@@ -282,4 +282,4 @@ void KColorButton::KColorButtonPrivate::_k_colorChosen()
     }
 }
 
-#include "kcolorbutton.moc"
+#include "moc_kcolorbutton.cpp"

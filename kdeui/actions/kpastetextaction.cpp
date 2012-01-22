@@ -143,4 +143,4 @@ void KPasteTextActionPrivate::_k_slotTriggered(QAction* action)
 /* vim: et sw=2 ts=2
  */
 
-#include "kpastetextaction.moc"
+#include "moc_kpastetextaction.cpp"

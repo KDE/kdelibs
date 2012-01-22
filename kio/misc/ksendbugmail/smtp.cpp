@@ -338,4 +338,3 @@ void SMTP::processLine(QString *line)
     }
 }
 
-#include "smtp.moc"
