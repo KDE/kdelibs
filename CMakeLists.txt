@@ -189,8 +189,8 @@ if(NOT WINCE)
 endif(NOT WINCE)
 
 set(KDE4_KCONFIG_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore/config
-                          ${CMAKE_SOURCE_DIR}/staging/libkcoreaddons/src/io # for kurl.h
-                          ${CMAKE_BINARY_DIR}/staging/libkcoreaddons/src
+                          ${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/io # for kurl.h
+                          ${CMAKE_BINARY_DIR}/staging/kcoreaddons/src
    )
 # kdecore depends on Qt and kcoreaddons (need only headers from kjs)
 set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
@@ -208,13 +208,13 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/kdecore/text
                           ${CMAKE_SOURCE_DIR}/kdecore/util
                           ${CMAKE_SOURCE_DIR}/kdecore/sonnet
-                          ${CMAKE_SOURCE_DIR}/staging/libkcoreaddons/src/io
-                          ${CMAKE_SOURCE_DIR}/staging/libkcoreaddons/src/kernel
-                          ${CMAKE_SOURCE_DIR}/staging/libkcoreaddons/src/jobs
-                          ${CMAKE_SOURCE_DIR}/staging/libkcoreaddons/src/text
-                          ${CMAKE_BINARY_DIR}/staging/libkcoreaddons/src
-                          ${CMAKE_BINARY_DIR}/staging/libkde4support/src
-                          ${CMAKE_SOURCE_DIR}/staging/libkde4support/src
+                          ${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/io
+                          ${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/kernel
+                          ${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/jobs
+                          ${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/text
+                          ${CMAKE_BINARY_DIR}/staging/kcoreaddons/src
+                          ${CMAKE_BINARY_DIR}/staging/kde4support/src
+                          ${CMAKE_SOURCE_DIR}/staging/kde4support/src
                           ${CMAKE_SOURCE_DIR}/libqtmimetypes/include/QtMimeTypes
 			  ${CMAKE_SOURCE_DIR}/libinqt5/src/
 			  ${CMAKE_BINARY_DIR}/libinqt5/src/
