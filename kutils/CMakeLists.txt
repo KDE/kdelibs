@@ -4,8 +4,8 @@ include_directories( ${KDE4_KDEUI_INCLUDES}
                      ${CMAKE_CURRENT_SOURCE_DIR}
                      ${karchive_SOURCE_DIR}/src
                      ${karchive_BINARY_DIR}/src
-                     ${CMAKE_SOURCE_DIR}/tier1/kauth/
-                     ${CMAKE_BINARY_DIR}/tier1/kauth/
+                     ${CMAKE_SOURCE_DIR}/tier1/kauth/src/
+                     ${CMAKE_BINARY_DIR}/tier1/kauth/src/
 		     ${CMAKE_SOURCE_DIR}/libinqt5/src
 		     ${CMAKE_BINARY_DIR}/libinqt5/src
 )
