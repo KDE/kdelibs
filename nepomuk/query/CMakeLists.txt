@@ -59,7 +59,7 @@ set_target_properties(nepomukquery PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOV
 target_link_libraries(nepomukquery
   ${QT_QTCORE_LIBRARY}
   ${SOPRANO_LIBRARIES}
-  kdbus
+  kdbusaddons
   kdecore
   nepomuk
   kcoreaddons

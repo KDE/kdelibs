@@ -20,8 +20,8 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/query
   ${CMAKE_CURRENT_SOURCE_DIR}/utils
   ${CMAKE_SOURCE_DIR}
-  ${CMAKE_SOURCE_DIR}/tier1/libkdbus
-  ${CMAKE_BINARY_DIR}/tier1/libkdbus
+  ${CMAKE_SOURCE_DIR}/tier1/kdbusaddons/src
+  ${CMAKE_BINARY_DIR}/tier1/kdbusaddons/src
   ${kcoreaddons_SOURCE_DIR}/src/io
   ${kcoreaddons_SOURCE_DIR}/src/jobs
   ${kcoreaddons_SOURCE_DIR}/src/randomness
@@ -133,7 +133,7 @@ target_link_libraries(nepomuk
   ${QT_QTCORE_LIBRARY}
   ${QT_QTGUI_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
-  kdbus
+  kdbusaddons
   kdecore
   kdeui
   kcoreaddons
