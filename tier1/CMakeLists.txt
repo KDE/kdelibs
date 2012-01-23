@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8.5)
 project(tier1)
 
 add_subdirectory(itemmodels)
-add_subdirectory(libkauth)
+add_subdirectory(kauth)
 add_subdirectory(kdbusaddons)
 add_subdirectory(kplotting)
 add_subdirectory(solid)

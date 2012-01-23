@@ -12,8 +12,8 @@ include_directories(
  ${CMAKE_SOURCE_DIR}/tier2/sonnet/core
  ${CMAKE_BINARY_DIR}/tier1/itemmodels/src
  ${CMAKE_SOURCE_DIR}/tier1/itemmodels/src
- ${CMAKE_BINARY_DIR}/tier1/libkauth/
- ${CMAKE_SOURCE_DIR}/tier1/libkauth/
+ ${CMAKE_BINARY_DIR}/tier1/kauth/
+ ${CMAKE_SOURCE_DIR}/tier1/kauth/
  ${kcoreaddons_BINARY_DIR}/src
  ${kcoreaddons_SOURCE_DIR}/src/caching
  ${kcoreaddons_SOURCE_DIR}/src/io
