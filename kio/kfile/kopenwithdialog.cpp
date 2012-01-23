@@ -39,6 +39,7 @@
 #include <klineedit.h>
 #include <klocale.h>
 #include <kmessagebox.h>
+#include <kshell.h>
 #include <krun.h>
 #include <kstringhandler.h>
 #include <kurlcompletion.h>
@@ -458,6 +459,7 @@ public:
 
     // slots
     void _k_slotDbClick();
+    void _k_slotFileSelected();
 
     bool saveNewApps;
     bool m_terminaldirty;
@@ -617,6 +619,7 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
   }
 
     QObject::connect(edit, SIGNAL(textChanged(QString)), q, SLOT(slotTextChanged()));
+    QObject::connect(edit, SIGNAL(urlSelected(KUrl)), q, SLOT(_k_slotFileSelected()));
 
     view = new KApplicationView(mainWidget);
     view->setModel(new KApplicationModel(view));
@@ -741,6 +744,12 @@ void KOpenWithDialogPrivate::_k_slotDbClick()
         return;
     }
     q->accept();
+}
+
+void KOpenWithDialogPrivate::_k_slotFileSelected()
+{
+    // quote the path to avoid unescaped whitespace, backslashes, etc.
+    edit->setText(KShell::quoteArg(edit->text()));
 }
 
 void KOpenWithDialog::setSaveNewApplications(bool b)

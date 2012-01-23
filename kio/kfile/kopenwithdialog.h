@@ -134,6 +134,7 @@ private:
     Q_DISABLE_COPY(KOpenWithDialog)
 
     Q_PRIVATE_SLOT(d, void _k_slotDbClick())
+    Q_PRIVATE_SLOT(d, void _k_slotFileSelected())
 };
 
 #endif

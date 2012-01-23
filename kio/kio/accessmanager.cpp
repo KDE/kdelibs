@@ -37,7 +37,6 @@
 
 #include <QtCore/QUrl>
 #include <QtGui/QWidget>
-#include <QtCore/QEventLoop>
 #include <QtCore/QWeakPointer>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusConnection>
@@ -210,6 +209,20 @@ void AccessManager::setEmitReadyReadOnMetaDataChange(bool enable)
 
 QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData)
 {
+    /*
+     * WORKAROUND: Since there is no way to do a synchronous KIO request
+     * without creating a nested event loop and creating such a loop here is
+     * the surest way to encounter the inherent flaws of creating such loops,
+     * i.e. crashes (bug# 287778), we let Qt's networking layer handle such
+     * requests because it can block without the need for nested event loops.
+     *
+     * The only consequence of doing this is the HTTP response will never be
+     * cached since it won't be handled by kio_http.
+     */
+    if (req.attribute(gSynchronousNetworkRequestAttribute).toBool()) {
+        return QNetworkAccessManager::createRequest(op, req, outgoingData);
+    }
+
     KIO::SimpleJob *kioJob = 0;
     const KUrl reqUrl (req.url());
 
@@ -323,17 +336,6 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
 
     // Create the reply...
     KDEPrivate::AccessManagerReply *reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadReadOnMetaDataChange, this);
-
-    /*
-     * NOTE: Since QtWebkit >= v2.2 no longer spins in its own even loop, we
-     * are forced to create our own local event loop here to handle the very
-     * rare but still in use synchronous XHR calls, e.g. http://webchat.freenode.net/
-     */
-    if (req.attribute(gSynchronousNetworkRequestAttribute).toBool()) {
-        QEventLoop eventLoop;
-        connect (reply, SIGNAL(finished()), &eventLoop, SLOT(quit()));
-        eventLoop.exec();
-    }
 
     if (ignoreContentDisposition) {
         kDebug(7044) << "Content-Disposition WILL BE IGNORED!";
