@@ -118,6 +118,8 @@ namespace Solid
          * @param cookie The cookie acquired when requesting screen power management suppression
          * @return true if the suppression was stopped, false if an invalid cookie was given
          *
+         * @note Since 4.8, this function also inhibites screensaver
+         *
          * @since 4.6
          */
         SOLID_EXPORT bool stopSuppressingScreenPowerManagement(int cookie);

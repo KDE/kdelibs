@@ -8,6 +8,7 @@ X-DocPath=kioslave/telnet/index.html
 NoDisplay=true
 
 Name=KTelnetService
+Name[ar]=KTelnetService
 Name[bg]=KTelnetService
 Name[bs]=KTelnetService
 Name[ca]=KTelnetService
@@ -56,6 +57,7 @@ Name[sv]=Ktelnet-tjänst
 Name[tg]=Хадамоти KTelnetService
 Name[th]=KTelnetService
 Name[tr]=KTelnetService
+Name[tt]=KTelnetService
 Name[ug]=KTelnetService
 Name[uk]=Служба telnet KTelnet
 Name[vi]=KTelnetService

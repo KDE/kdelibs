@@ -2,6 +2,7 @@
 Type=ServiceType
 X-KDE-ServiceType=KFileItemAction/Plugin
 Comment=Plugin for the KIO file item context menu
+Comment[ar]=إضافة تستخدم لقائمة السياق لعناصر ملفات KIO
 Comment[bg]=Приставка за контекстно файлово меню
 Comment[bs]=Dodatak za kontekstni meni KIO datotečni objekt
 Comment[ca]=Connector per a l'element KIO de fitxers del menú contextual
@@ -47,6 +48,7 @@ Comment[sv]=Insticksprogram för KIO-filobjektets sammanhangsberoende meny
 Comment[tg]=Васлкунаки менюи файли мӯҳтавои KIO
 Comment[th]=ส่วนเสริม KIO สำหรับเมนูเมื่อคลิกขวาบนแฟ้ม
 Comment[tr]=KIO dosya ögesi sağlık menüsü için eklenti
+Comment[tt]=KIO файлның контекст меню өстәлмәсе
 Comment[ug]=KIO ھۆججەت تۈرىنىڭ تىل مۇھىت قىستۇرمىسى
 Comment[uk]=Додаток пункту контекстного меню KIO
 Comment[vi]=Phần bổ sung cho trình đơn ngữ cảnh mục tập tin KIO

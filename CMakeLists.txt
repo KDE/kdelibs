@@ -9,10 +9,10 @@ include(CPack)
 ################# set KDE specific information #################
 
 set (KDE_VERSION_MAJOR 4)
-set (KDE_VERSION_MINOR 7)
-set (KDE_VERSION_RELEASE 98)
+set (KDE_VERSION_MINOR 8)
+set (KDE_VERSION_RELEASE 00)
 set (KDE_VERSION "${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}.${KDE_VERSION_RELEASE}" )
-set (KDE_VERSION_STRING "${KDE_VERSION} (4.8 RC2+ (4.7.98)")
+set (KDE_VERSION_STRING "${KDE_VERSION} (4.8.0")
 
 set (KDE_DISTRIBUTION_TEXT "compiled sources" CACHE STRING "Indicate the distribution in bug reports" )
 

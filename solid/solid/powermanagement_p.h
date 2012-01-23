@@ -59,6 +59,7 @@ namespace Solid
 
         bool powerSaveStatus;
         QSet<Solid::PowerManagement::SleepState> supportedSleepStates;
+        QHash<uint, uint> screensaverCookiesForPowerDevilCookies;
     };
 }
 

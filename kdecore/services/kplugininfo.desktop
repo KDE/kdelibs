@@ -3,7 +3,7 @@ Type=ServiceType
 X-KDE-ServiceType=KPluginInfo
 Name=KDE Plugin Information
 Name[af]=KDE inpropmodule Informasie
-Name[ar]=معلومات ملحقات كيدي
+Name[ar]=معلومات ملحقات كدي
 Name[as]=KDE প্লাগ-ইনৰ তথ্য
 Name[ast]=Información del complementu de KDE
 Name[be]=Звесткі пра ўтулкі KDE
@@ -85,6 +85,7 @@ Name[te]=కెడిఈ ప్లగిన్ సమాచారం
 Name[tg]=Иттилооти васлкунаки KDE
 Name[th]=ข้อมูลโปรแกรมเสริมของ KDE
 Name[tr]=KDE Eklenti Bilgisi
+Name[tt]=Name=KDE өстәмәсе турында мәгълүмат
 Name[ug]=KDE قىستۇرما ئۇچۇرى
 Name[uk]=Інформація про додаток до KDE
 Name[uz]=KDE plagin haqida maʼlumot

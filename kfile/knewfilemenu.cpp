@@ -48,6 +48,7 @@
 #include <kio/renamedialog.h>
 #include <kio/netaccess.h>
 #include <kio/fileundomanager.h>
+#include <kio/kurifilter.h>
 
 #include <kpropertiesdialog.h>
 #include <ktemporaryfile.h>
@@ -512,6 +513,12 @@ void KNewFileMenuPrivate::executeStrategy()
     const QString src = m_strategy.sourceFileToCopy();
     QString chosenFileName = expandTilde(m_strategy.chosenFileName(), true);
 
+    // If the file is not going to be detected as a desktop file, due to a
+    // known extension (e.g. ".pl"), append ".desktop". #224142.
+    KMimeType::Ptr mime = KMimeType::findByNameAndContent(chosenFileName, "[Desktop Entry]\n");
+    if (!mime->is(QLatin1String("application/x-desktop")))
+        chosenFileName += QLatin1String(".desktop");
+
     if (src.isEmpty())
         return;
     KUrl uSrc(src);
@@ -898,8 +905,20 @@ void KNewFileMenuPrivate::_k_slotUrlDesktopFile()
     KNameAndUrlInputDialog* dlg = (KNameAndUrlInputDialog*) m_fileDialog;
     
     m_strategy.m_chosenFileName = dlg->name(); // no path
-    KUrl linkUrl = dlg->url(); // the url to put in the file
-    
+    KUrl linkUrl = dlg->url();
+
+    // Filter user input so that short uri entries, e.g. www.kde.org, are
+    // handled properly. This not only makes the icon detection below work
+    // properly, but opening the URL link where the short uri will not be
+    // sent to the application (opening such link Konqueror fails).
+    KUriFilterData uriData;
+    uriData.setData(linkUrl); // the url to put in the file
+    uriData.setCheckForExecutables(false);
+
+    if (KUriFilter::self()->filterUri(uriData, QStringList() << QLatin1String("kshorturifilter"))) {
+        linkUrl = uriData.uri();
+    }
+
     if (m_strategy.m_chosenFileName.isEmpty() || linkUrl.isEmpty())
         return;
 
