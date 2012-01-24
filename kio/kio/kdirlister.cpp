@@ -842,7 +842,7 @@ void KDirListerCache::slotFilesAdded( const QString &dir /*url*/ ) // from KDirN
     KUrl urlDir(dir);
     kDebug(7004) << urlDir; // output urls, not qstrings, since they might contain a password
     if (urlDir.isLocalFile()) {
-        Q_FOREACH(const QString& u, directoriesForCanonicalPath(urlDir.path())) {
+        Q_FOREACH(const QString& u, directoriesForCanonicalPath(urlDir.toLocalFile())) {
             updateDirectory(KUrl(u));
         }
     } else {
@@ -1074,7 +1074,7 @@ void KDirListerCache::slotFileDirty( const QString& path )
     KUrl url(path);
     url.adjustPath(KUrl::RemoveTrailingSlash);
     if (isDir) {
-        Q_FOREACH(const QString& dir, directoriesForCanonicalPath(url.path())) {
+        Q_FOREACH(const QString& dir, directoriesForCanonicalPath(url.toLocalFile())) {
             handleDirDirty(dir);
         }
     } else {
