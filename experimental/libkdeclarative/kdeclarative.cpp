@@ -140,9 +140,15 @@ void KDeclarative::setupBindings()
         return;
     }
 
-    //tell to the engine to search for inport in the kde4 plugin dirs
-    foreach(const QString &importPath, KGlobal::dirs()->findDirs("module", "imports")) {
-        d->declarativeEngine.data()->addImportPath(importPath);
+    /*tell the engine to search for import in the kde4 plugin dirs.
+    addImportPath adds the path at the beginning, so to honour user's
+    paths we need to traverse the list in reverse order*/
+
+    const QStringList importPathList = KGlobal::dirs()->findDirs("module", "imports");
+    QStringListIterator importPathIterator(importPathList);
+    importPathIterator.toBack();
+    while (importPathIterator.hasPrevious()) {
+        d->declarativeEngine.data()->addImportPath(importPathIterator.previous());
     }
 
     QString componentsPlatform = getenv("KDE_PLASMA_COMPONENTS_PLATFORM");
@@ -151,8 +157,11 @@ void KDeclarative::setupBindings()
         componentsPlatform = cg.readEntry("name", "desktop");
     }
 
-    foreach(const QString &importPath, KGlobal::dirs()->findDirs("module", "platformimports/" % componentsPlatform)) {
-        d->declarativeEngine.data()->addImportPath(importPath);
+    const QStringList platformImportPathList = KGlobal::dirs()->findDirs("module", "platformimports/" % componentsPlatform);
+    QStringListIterator platformImportPathIterator(platformImportPathList);
+    platformImportPathIterator.toBack();
+    while (platformImportPathIterator.hasPrevious()) {
+        d->declarativeEngine.data()->addImportPath(platformImportPathIterator.previous());
     }
 
     QScriptValue global = engine->globalObject();
