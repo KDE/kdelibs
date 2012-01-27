@@ -1,6 +1,6 @@
 /*
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2006-2010 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2006-2012 Sebastian Trueg <trueg@kde.org>
  * Copyright (C) 2010 Vishesh Handa <handa.vish@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -25,9 +25,10 @@
 #include "tools.h"
 #include "nepomukmainmodel.h"
 #include "resource.h"
-#include "resourcefiltermodel.h"
 #include "class.h"
 #include "nie.h"
+#include "dbustypes.h"
+#include "resourcewatcher.h"
 
 #include <kglobal.h>
 #include <kdebug.h>
@@ -48,6 +49,7 @@
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusConnectionInterface>
 #include <QtDBus/QDBusServiceWatcher>
+#include <QtDBus/QDBusMetaType>
 
 using namespace Soprano;
 
@@ -58,8 +60,10 @@ Nepomuk::ResourceManagerPrivate::ResourceManagerPrivate( ResourceManager* manage
       overrideModel( 0 ),
       mutex(QMutex::Recursive),
       dataCnt( 0 ),
-      m_manager( manager )
+      m_manager( manager ),
+      m_watcher( 0 )
 {
+    Nepomuk::DBus::registerDBusTypes();
 }
 
 
@@ -261,12 +265,6 @@ Nepomuk::ResourceManager::ResourceManager()
     : QObject(),
       d( new ResourceManagerPrivate( this ) )
 {
-    d->resourceFilterModel = new ResourceFilterModel( this );
-    connect( d->resourceFilterModel, SIGNAL(statementsAdded()),
-             this, SLOT(slotStoreChanged()) );
-    connect( d->resourceFilterModel, SIGNAL(statementsRemoved()),
-             this, SLOT(slotStoreChanged()) );
-
     // connect to the storage service's initialized signal to be able to emit
     // the nepomukSystemStarted signal
     QDBusConnection::sessionBus().connect( QLatin1String("org.kde.NepomukStorage"),
@@ -292,7 +290,6 @@ Nepomuk::ResourceManager::ResourceManager()
 Nepomuk::ResourceManager::~ResourceManager()
 {
     clearCache();
-    delete d->resourceFilterModel;
     delete d->mainModel;
     delete d;
 
@@ -325,8 +322,6 @@ int Nepomuk::ResourceManager::init()
     if( !d->mainModel ) {
         d->mainModel = new MainModel( this );
     }
-
-    d->resourceFilterModel->setParentModel( d->mainModel );
 
     d->mainModel->init();
 
@@ -509,27 +504,52 @@ Soprano::Model* Nepomuk::ResourceManager::mainModel()
         init();
     }
 
-    return d->resourceFilterModel;
+    return d->mainModel;
 }
 
 
-void Nepomuk::ResourceManager::slotStoreChanged()
+void Nepomuk::ResourceManager::slotPropertyAdded(const QUrl &res, const Types::Property &prop, const QVariant &value)
 {
-    QMutexLocker lock( &d->mutex );
-
-    Q_FOREACH( ResourceData* data, d->allResourceData()) {
-        data->invalidateCache();
+    ResourceDataHash::iterator it = d->m_initializedData.find(res);
+    if(it != d->m_initializedData.end()) {
+        ResourceData* data = *it;
+        data->m_cache[prop.uri()].append(Variant(value));
+        data->updateKickOffLists(prop.uri(), Variant(value));
     }
 }
 
+void Nepomuk::ResourceManager::slotPropertyRemoved(const QUrl& res, const Nepomuk::Types::Property& prop, const QVariant& value_)
+{
+    ResourceDataHash::iterator it = d->m_initializedData.find(res);
+    if(it != d->m_initializedData.end()) {
+        ResourceData* data = *it;
+
+
+        QHash<QUrl, Variant>::iterator cacheIt = data->m_cache.find(prop.uri());
+        if(cacheIt != data->m_cache.end()) {
+            Variant v = *cacheIt;
+            const Variant value(value_);
+            QList<Variant> vl = v.toVariantList();
+            if(vl.contains(value)) {
+                vl.removeAll(value);
+                data->updateKickOffLists(prop.uri(), Variant());
+                if(vl.isEmpty()) {
+                    data->m_cache.erase(cacheIt);
+                }
+                else {
+                    cacheIt.value() = vl;
+                }
+            }
+        }
+    }
+}
 
 void Nepomuk::ResourceManager::setOverrideMainModel( Soprano::Model* model )
 {
     QMutexLocker lock( &d->mutex );
 
-    if( model != d->resourceFilterModel ) {
+    if( model != d->mainModel ) {
         d->overrideModel = model;
-        d->resourceFilterModel->setParentModel( model ? model : d->mainModel );
 
         // clear cache to make sure we do not mix data
         Q_FOREACH( ResourceData* data, d->allResourceData()) {
