@@ -9,16 +9,74 @@
 <title>mailto</title>
 <articleinfo>
 <authorgroup>
-<author>&Ferdinand.Gassauer; &Ferdinand.Gassauer.mail;</author>
+<author> 
+<firstname>Christopher</firstname>
+<surname>Yeleighton</surname>
+<email>giecrilj@stegny.2a.pl</email></author>
+
 <!-- TRANS:ROLES_OF_TRANSLATORS -->
 </authorgroup>
-</articleinfo>
-<para>The mailto kioslave is used when you click on a mailto link in an
-<acronym>HTML</acronym> page.  &konqueror; will open the preferred mail
-client you have configured, with a composer window.  Any information
-supplied in the <acronym>URL</acronym> will be filled in for you.</para>
 
-<para> 
-See the manual: <ulink url="man:/mailto">mailto</ulink>.
+<date>2012-01-28</date>
+<releaseinfo>&kde; 4.8</releaseinfo>
+</articleinfo>
+<para>
+The kioslave mailto is responsible for launching the mail composer of your
+choice when you open a &URL; in the mailto scheme (<ulink url="http://tools.ietf.org/html/rfc6068">RFC6068</ulink>).
 </para>
+
+<variablelist>
+<varlistentry>
+<term>Syntax</term>
+<listitem><para>The syntax of a mailto &URL; follows the following pattern:</para>
+
+<para>mailto:recipients?query</para>
+
+<para>where recipients form a list of restricted &SMTP; address specifications, and the
+query part may contain one or more of the following parameters:</para>
+
+<variablelist>
+<varlistentry>
+<term>&amp;to=recipients</term>
+<listitem><para>Specifies additional recipients.</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>&amp;cc=recipients</term>
+<listitem><para>Specifies additional recipients of carbon copies.</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>&amp;bcc=recipients</term>
+<listitem><para>Specifies additional recipients of blind carbon copies. These recipients
+will not know about the other recipients.</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>&amp;body=text</term>
+<listitem><para>Specifies the text of the message.  This text should not be long, as there
+may be hard limits on how long an &URL; may be.</para></listitem>
+</varlistentry>
+
+</variablelist>
+
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Example</term>
+<listitem><para>   
+<literal>mailto:info@kde.org?cc=kde@kde.org&amp;body=Thanks!%20KDE%20rocks!%20How%20can%20I%20help%3F</literal>
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Configuration</term>
+<listitem><para>   
+Choose the application to handle mailto locators in &systemsettings; <menuchoice><guimenu>Workspace Appearance and Behaviour</guimenu><guimenuitem>Default Applications</guimenuitem></menuchoice>. 
+</para></listitem>
+</varlistentry>
+
+</variablelist>
+  
 </article>
