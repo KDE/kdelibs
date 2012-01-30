@@ -39,6 +39,7 @@
 
 #include <kglobal.h>
 #include <klocale.h>
+#include <kmimetype.h>
 
 #include <Soprano/Model>
 #include <Soprano/QueryResultIterator>
@@ -130,6 +131,14 @@ QString Nepomuk::Utils::formatPropertyValue( const Nepomuk::Types::Property& pro
     else if(value.isResource() &&
             value.toResource().exists()) {
         valueString = value.toResource().genericLabel();
+    }
+
+    else if(property == Vocabulary::NIE::contentSize()) {
+        valueString = KGlobal::locale()->formatByteSize(value.toDouble());
+    }
+
+    else if(property == Vocabulary::NIE::mimeType()) {
+        valueString = KMimeType::mimeType(value.toString())->comment();
     }
 
     else {
