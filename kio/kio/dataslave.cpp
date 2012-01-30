@@ -134,6 +134,7 @@ void DataSlave::send(int cmd, const QByteArray &arr) {
       break;
     }
     // ignore these (must not emit error, otherwise SIGSEGV occurs)
+    case CMD_REPARSECONFIGURATION:
     case CMD_META_DATA:
     case CMD_SUBURL:
       break;
