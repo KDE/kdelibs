@@ -934,17 +934,6 @@ macro (KDE4_ADD_LIBRARY _target_NAME _lib_TYPE)
    string(REGEX REPLACE "[^_A-Za-z0-9]" "_" _symbol ${_symbol})
    set(_symbol "MAKE_${_symbol}_LIB")
    set_target_properties(${_target_NAME} PROPERTIES DEFINE_SYMBOL ${_symbol})
-
-   # By default don't add any linked libraries to the "exported"
-   # link interfaces, so that executables linking against this library
-   # will not automatically add implicit dependencies to their link list.
-   #
-   # This reduces inter-package dependencies and makes it easier to remove
-   # dependencies of shared libraries without breaking binary compatibility.
-   if(NOT "${_add_lib_param}" STREQUAL "STATIC")
-      set_target_properties(${_target_NAME} PROPERTIES LINK_INTERFACE_LIBRARIES "" )
-   endif(NOT "${_add_lib_param}" STREQUAL "STATIC")
-
 endmacro (KDE4_ADD_LIBRARY _target_NAME _lib_TYPE)
 
 macro(kf5_add_library _target_NAME _lib_TYPE)

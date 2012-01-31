@@ -222,7 +222,6 @@
 #
 #  KDE4_ADD_LIBRARY (name [STATIC | SHARED | MODULE ] file1 ... fileN)
 #    Equivalent to ADD_LIBRARY().
-#    sets LINK_INTERFACE_LIBRARIES target property empty.
 #    The RPATH is set according to the global RPATH settings as set up by FindKDE4Internal.cmake
 #    (CMAKE_SKIP_BUILD_RPATH=FALSE, CMAKE_BUILD_WITH_INSTALL_RPATH=FALSE, CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE)
 #    Under Windows it adds a -DMAKE_<name>_LIB definition to the compilation.

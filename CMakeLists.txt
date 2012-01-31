@@ -58,6 +58,16 @@ add_subdirectory( tier1 )
 set(CMAKE_AUTOMOC_RELAXED_MODE ON)
 set(CMAKE_AUTOMOC ON)
 
+
+# By default don't add any linked libraries to the "exported"
+# link interfaces of shared libraries, so that executables linking
+# against these libraries will not automatically add implicit
+# dependencies to their link list.
+#
+# This reduces inter-package dependencies and makes it easier to remove
+# dependencies of shared libraries without breaking binary compatibility.
+set(CMAKE_LINK_INTERFACE_LIBRARIES "")
+
 ################# write platform profile file which will be installed #################
 include(CreateKDEPlatformProfile.cmake)
 
