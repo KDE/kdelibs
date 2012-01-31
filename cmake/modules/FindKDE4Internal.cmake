@@ -39,7 +39,6 @@
 # compile KDE software:
 #
 #  KDE4_KCFGC_EXECUTABLE    - the kconfig_compiler executable
-#  KDE4_AUTOMOC_EXECUTABLE  - the kde4automoc executable, deprecated, use AUTOMOC4_EXECUTABLE instead
 #  KDE4_MEINPROC_EXECUTABLE - the meinproc4 executable
 #  KDE4_MAKEKDEWIDGETS_EXECUTABLE - the makekdewidgets executable
 #
@@ -219,7 +218,6 @@
 #  KDE4_ADD_EXECUTABLE (name [NOGUI] [TEST] [RUN_UNINSTALLED] file1 ... fileN)
 #    Equivalent to ADD_EXECUTABLE(), but additionally adds some more features:
 #    -support for KDE4_ENABLE_FINAL
-#    -support for automoc
 #    -automatic RPATH handling
 #    If the executable doesn't have a GUI, use the option NOGUI. By default on OS X
 #    application bundles are created, with the NOGUI option no bundles but simple executables
@@ -234,7 +232,7 @@
 #
 #  KDE4_ADD_LIBRARY (name [STATIC | SHARED | MODULE ] file1 ... fileN)
 #    Equivalent to ADD_LIBRARY(). Additionally it supports KDE4_ENABLE_FINAL,
-#    includes automoc-handling and sets LINK_INTERFACE_LIBRARIES target property empty.
+#    sets LINK_INTERFACE_LIBRARIES target property empty.
 #    The RPATH is set according to the global RPATH settings as set up by FindKDE4Internal.cmake
 #    (CMAKE_SKIP_BUILD_RPATH=FALSE, CMAKE_BUILD_WITH_INSTALL_RPATH=FALSE, CMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE)
 #    Under Windows it adds a -DMAKE_<name>_LIB definition to the compilation.
@@ -419,20 +417,6 @@ set(QT_USE_IMPORTED_TARGETS TRUE)
 # TODO: we should check here that all necessary modules of Qt have been found, e.g. QtDBus
 find_package(Qt4 ${_REQ_STRING_KDE4})
 
-# automoc4 (from kdesupport) is now required, Alex
-find_package(Automoc4 ${_REQ_STRING_KDE4})
-
-# cmake 2.6.0 and automoc4 < 0.9.84 don't work right for -D flags
-if (NOT AUTOMOC4_VERSION)
-   # the version macro was added for 0.9.84
-   set(AUTOMOC4_VERSION "0.9.83")
-endif (NOT AUTOMOC4_VERSION)
-set(_automoc4_min_version "0.9.88")
-macro_ensure_version("${_automoc4_min_version}" "${AUTOMOC4_VERSION}" _automoc4_version_ok)
-
-# for compatibility with KDE 4.0.x
-set(KDE4_AUTOMOC_EXECUTABLE        "${AUTOMOC4_EXECUTABLE}" )
-
 # Perl is not required for building KDE software, but we had that here since 4.0
 find_package(Perl)
 if(NOT PERL_FOUND)
@@ -459,19 +443,6 @@ if(NOT QT4_FOUND)
    message(STATUS "KDE4 not found, because Qt4 was not found")
    return()
 endif(NOT QT4_FOUND)
-
-if(NOT AUTOMOC4_FOUND OR NOT _automoc4_version_ok)
-   if(NOT AUTOMOC4_FOUND)
-      message(${_REQ_STRING_KDE4_MESSAGE} "KDE4 not found, because Automoc4 not found.")
-      return()
-   else(NOT AUTOMOC4_FOUND)
-      if(NOT _automoc4_version_ok)
-         message(${_REQ_STRING_KDE4_MESSAGE} "Your version of automoc4 is too old. You have ${AUTOMOC4_VERSION}, you need at least ${_automoc4_min_version}")
-         return()
-      endif(NOT _automoc4_version_ok)
-   endif(NOT AUTOMOC4_FOUND)
-endif(NOT AUTOMOC4_FOUND OR NOT _automoc4_version_ok)
-
 
 # now we are sure we have everything we need
 
@@ -1367,12 +1338,6 @@ macro (KDE4_PRINT_RESULTS)
    else(KDE4_KCFGC_EXECUTABLE)
       message(STATUS "Didn't find the KDE4 kconfig_compiler preprocessor")
    endif(KDE4_KCFGC_EXECUTABLE)
-
-   if(AUTOMOC4_EXECUTABLE)
-      message(STATUS "Found automoc4: ${AUTOMOC4_EXECUTABLE}")
-   else(AUTOMOC4_EXECUTABLE)
-      message(STATUS "Didn't find automoc4")
-   endif(AUTOMOC4_EXECUTABLE)
 endmacro (KDE4_PRINT_RESULTS)
 
 

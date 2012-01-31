@@ -56,6 +56,7 @@ add_subdirectory( tier1 )
 # leaving the ones which are truly needed (ie, if you remove
 # them, the build fails).
 set(CMAKE_AUTOMOC_RELAXED_MODE ON)
+set(CMAKE_AUTOMOC ON)
 
 ################# write platform profile file which will be installed #################
 include(CreateKDEPlatformProfile.cmake)

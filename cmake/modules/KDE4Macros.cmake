@@ -6,8 +6,6 @@
 # KDE4_ADD_KCFG_FILES
 # _KDE4_SET_CUSTOM_TARGET_PROPERTY
 # _KDE4_GET_CUSTOM_TARGET_PROPERTY
-# KDE4_MOC_HEADERS
-# KDE4_HANDLE_AUTOMOC
 # KDE4_CREATE_FINAL_FILES
 # KDE4_ADD_PLUGIN
 # KDE4_ADD_KDEINIT_EXECUTABLE
@@ -31,28 +29,6 @@
 #
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
-
-# This is for versions of automoc4 which don't provide these two macros.
-# If such a version is used, just use the "old" style automoc handling. 
-if(NOT COMMAND _AUTOMOC4_KDE4_PRE_TARGET_HANDLING)
-
-   macro(_AUTOMOC4_KDE4_PRE_TARGET_HANDLING _target _srcs)
-      if(MSVC)
-         add_automoc4_target("${_target}_automoc" ${_srcs})
-      else(MSVC)
-         automoc4(${_target} ${_srcs} )
-      endif(MSVC)
-   endmacro(_AUTOMOC4_KDE4_PRE_TARGET_HANDLING)
-
-
-   macro(_AUTOMOC4_KDE4_POST_TARGET_HANDLING _target)
-      if(MSVC)
-         add_dependencies(${_target} "${_target}_automoc")
-      endif(MSVC)
-   endmacro(_AUTOMOC4_KDE4_POST_TARGET_HANDLING)
-
-endif(NOT COMMAND _AUTOMOC4_KDE4_PRE_TARGET_HANDLING)
-
 
 macro (KDE4_ADD_KCFG_FILES _sources )
    foreach (_current_ARG ${ARGN})
@@ -251,17 +227,6 @@ macro (_KDE4_GET_CUSTOM_TARGET_PROPERTY _var _target_name _property_name)
    string(REGEX REPLACE "[/ ]" "_" _dir "${CMAKE_CURRENT_SOURCE_DIR}")
    set(${_var} "${_kde4_${_dir}_${_target_name}_${_property_name}}")
 endmacro (_KDE4_GET_CUSTOM_TARGET_PROPERTY)
-
-
-macro (KDE4_MOC_HEADERS _target_NAME)
-   # if automoc4 from kdesupport has been found, use the macro provided there
-   automoc4_moc_headers(${_target_NAME} ${ARGN})
-endmacro (KDE4_MOC_HEADERS)
-
-macro(KDE4_HANDLE_AUTOMOC _target_NAME _SRCS)
-   # if automoc4 from kdesupport has been found, use the macro provided there
-   automoc4(${_target_NAME} ${_SRCS})
-endmacro(KDE4_HANDLE_AUTOMOC)
 
 macro(KDE4_INSTALL_TS_FILES _lang _sdir)
    file(GLOB_RECURSE _ts_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${_sdir}/*)
@@ -665,8 +630,6 @@ macro (KDE4_ADD_PLUGIN _target_NAME )
 
    set(_SRCS ${_args})
 
-   _automoc4_kde4_pre_target_handling(${_target_NAME} _SRCS)
-
    if("${_add_lib_param}" STREQUAL "STATIC")
       add_definitions(-DQT_STATICPLUGIN)
    endif("${_add_lib_param}" STREQUAL "STATIC")
@@ -677,8 +640,6 @@ macro (KDE4_ADD_PLUGIN _target_NAME )
    else (KDE4_ENABLE_FINAL)
       add_library(${_target_NAME} ${_add_lib_param}  ${_SRCS})
    endif (KDE4_ENABLE_FINAL)
-
-   _automoc4_kde4_post_target_handling(${_target_NAME})
 
    if (NOT _with_pre)
       set_target_properties(${_target_NAME} PROPERTIES PREFIX "")
@@ -795,7 +756,6 @@ macro (KDE4_ADD_KDEINIT_EXECUTABLE _target_NAME )
 
       target_link_libraries(${_target_NAME} ${QT_QTMAIN_LIBRARY} kdeinit_${_target_NAME})
    else(WIN32)
-      _automoc4_kde4_pre_target_handling(kdeinit_${_target_NAME} _SRCS)
 
       if (KDE4_ENABLE_FINAL)
          kde4_create_final_files(${CMAKE_CURRENT_BINARY_DIR}/kdeinit_${_target_NAME}_final_cpp.cpp _separate_files ${_SRCS})
@@ -804,8 +764,6 @@ macro (KDE4_ADD_KDEINIT_EXECUTABLE _target_NAME )
       else (KDE4_ENABLE_FINAL)
          add_library(kdeinit_${_target_NAME} SHARED ${_SRCS})
       endif (KDE4_ENABLE_FINAL)
-
-      _automoc4_kde4_post_target_handling(kdeinit_${_target_NAME})
 
       set_target_properties(kdeinit_${_target_NAME} PROPERTIES OUTPUT_NAME kdeinit4_${_target_NAME})
 
@@ -975,8 +933,6 @@ macro (KDE4_ADD_EXECUTABLE _target_NAME)
       set(_add_executable_param ${_add_executable_param} EXCLUDE_FROM_ALL)
    endif (_test AND NOT KDE4_BUILD_TESTS)
 
-   _automoc4_kde4_pre_target_handling(${_target_NAME} _SRCS)
-   
    if (KDE4_ENABLE_FINAL)
       kde4_create_final_files(${CMAKE_CURRENT_BINARY_DIR}/${_target_NAME}_final_cpp.cpp _separate_files ${_SRCS})
       add_executable(${_target_NAME} ${_add_executable_param} ${CMAKE_CURRENT_BINARY_DIR}/${_target_NAME}_final_cpp.cpp ${_separate_files})
@@ -987,8 +943,6 @@ macro (KDE4_ADD_EXECUTABLE _target_NAME)
    IF (KDE4_ENABLE_UAC_MANIFEST)
        _kde4_add_manifest(${_target_NAME})
    ENDIF(KDE4_ENABLE_UAC_MANIFEST)
-
-   _automoc4_kde4_post_target_handling(${_target_NAME})
 
    if (_test)
       set_target_properties(${_target_NAME} PROPERTIES COMPILE_FLAGS -DKDESRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}/\\"")
@@ -1024,16 +978,12 @@ macro (KDE4_ADD_LIBRARY _target_NAME _lib_TYPE)
 
    set(_SRCS ${_first_SRC} ${ARGN})
 
-   _automoc4_kde4_pre_target_handling(${_target_NAME} _SRCS)
-
    if (KDE4_ENABLE_FINAL)
       kde4_create_final_files(${CMAKE_CURRENT_BINARY_DIR}/${_target_NAME}_final_cpp.cpp _separate_files ${_SRCS})
       add_library(${_target_NAME} ${_add_lib_param}  ${CMAKE_CURRENT_BINARY_DIR}/${_target_NAME}_final_cpp.cpp ${_separate_files})
    else (KDE4_ENABLE_FINAL)
       add_library(${_target_NAME} ${_add_lib_param} ${_SRCS})
    endif (KDE4_ENABLE_FINAL)
-
-   _automoc4_kde4_post_target_handling(${_target_NAME})
 
    # for shared libraries a -DMAKE_target_LIB is required
    string(TOUPPER ${_target_NAME} _symbol)
