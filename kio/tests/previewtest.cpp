@@ -1,4 +1,6 @@
 
+#include "previewtest.h"
+
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 #include <QtGui/QPushButton>

@@ -1001,3 +1001,5 @@ void KDirListerTest::fillDirLister2(MyDirLister& lister, const QString& path)
     enterLoop();
     QVERIFY(lister.isFinished());
 }
+
+#include "moc_kdirlistertest.cpp"

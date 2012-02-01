@@ -164,4 +164,4 @@ int main ( int argc, char *argv[] )
   return app.exec();
 }
 
-#include "kdirlistertest_gui.moc"
+#include "moc_kdirlistertest_gui.cpp"

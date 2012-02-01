@@ -542,4 +542,4 @@ int main(int argc, char **argv) {
   app.exec();
 }
 
-#include "kioslavetest.moc"
+#include "moc_kioslavetest.cpp"
