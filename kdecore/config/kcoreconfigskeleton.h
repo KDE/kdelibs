@@ -1014,17 +1014,6 @@ public:
   virtual void readConfig();
 
   /**
-   * Write preferences to config file. The values of all registered items are
-   * written to disk.
-   * This method calls usrWriteConfig() after writing the settings from the
-   * registered items to the KConfig. You can overridde usrWriteConfig()
-   * in derived classes if you have special requirements.
-   * If you need more fine-grained control of storing the settings from
-   * the registered items you can override writeConfig() in a derived class.
-   */
-  virtual void writeConfig();
-
-  /**
    * Set the config file group for subsequent addItem() calls. It is valid
    * until setCurrentGroup() is called with a new argument. Call this before
    * you add any items. The default value is "No Group".
@@ -1369,6 +1358,18 @@ public:
    * @return The state prior to this call
    */
   virtual bool useDefaults(bool b);
+
+public Q_SLOTS:
+  /**
+   * Write preferences to config file. The values of all registered items are
+   * written to disk.
+   * This method calls usrWriteConfig() after writing the settings from the
+   * registered items to the KConfig. You can overridde usrWriteConfig()
+   * in derived classes if you have special requirements.
+   * If you need more fine-grained control of storing the settings from
+   * the registered items you can override writeConfig() in a derived class.
+   */
+  virtual void writeConfig();
 
 Q_SIGNALS:
   /**
