@@ -49,7 +49,7 @@ query part may contain one or more of the following parameters:</para>
 <varlistentry>
 <term>&amp;bcc=recipients</term>
 <listitem><para>Specifies additional recipients of blind carbon copies. These recipients
-will not know about the other recipients.</para></listitem>
+will receive the message, but all other recipients will not know about that.</para></listitem>
 </varlistentry>
 
 <varlistentry>
