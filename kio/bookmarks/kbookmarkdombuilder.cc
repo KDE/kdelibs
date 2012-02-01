@@ -92,4 +92,4 @@ void KBookmarkDomBuilder::endFolder() {
       kWarning() << "m_stack is empty. This should not happen when importing a valid bookmarks file!";
 }
 
-#include "kbookmarkdombuilder.moc"
+#include "moc_kbookmarkdombuilder.cpp"

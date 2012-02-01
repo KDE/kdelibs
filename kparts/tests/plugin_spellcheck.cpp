@@ -60,4 +60,4 @@ void PluginSpellCheck::slotSpellCheck()
 K_PLUGIN_FACTORY(PluginSpellCheckFactory, registerPlugin<PluginSpellCheck>();)
 K_EXPORT_PLUGIN(PluginSpellCheckFactory("spellcheckplugin"))
 
-#include <plugin_spellcheck.moc>
+#include "moc_plugin_spellcheck.cpp"

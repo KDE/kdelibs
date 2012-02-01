@@ -247,4 +247,4 @@ KMenu * KonqBookmarkMenu::contextMenu(QAction * action)
     return new KonqBookmarkContextMenu(act->bookmark(), manager(), owner());
 }
 
-#include "konqbookmarkmenu.moc"
+#include "moc_konqbookmarkmenu.cpp"

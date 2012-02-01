@@ -118,5 +118,5 @@ void RemoteService::virtual_hook(int, void*)
 
 }
 
-#include "remoteservice.moc"
-#include "avahi-remoteservice_p.moc"
+#include "moc_remoteservice.cpp"
+#include "moc_avahi-remoteservice_p.cpp"

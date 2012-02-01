@@ -917,4 +917,4 @@ void KAcceleratorManager::setNoAccel( QWidget *widget )
     KAcceleratorManagerPrivate::ignored_widgets[widget] = 1;
 }
 
-#include "kacceleratormanager_private.moc"
+#include "moc_kacceleratormanager_private.cpp"

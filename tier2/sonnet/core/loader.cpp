@@ -300,4 +300,4 @@ void Loader::changed()
 
 }
 
-#include "loader_p.moc"
+#include "moc_loader_p.cpp"

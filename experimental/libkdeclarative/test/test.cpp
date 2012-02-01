@@ -58,4 +58,4 @@ int main(int argc, char *argv[])
     return app.exec();
 }
 
-#include "testobject_p.moc"
+#include "moc_testobject_p.cpp"

@@ -32,4 +32,4 @@ void KBookmarkManagerAdaptor::notifyCompleteChange()
     static_cast<KBookmarkManager*>(parent())->notifyCompleteChange(QString());
 }
 
-#include "kbookmarkmanageradaptor_p.moc"
+#include "moc_kbookmarkmanageradaptor_p.cpp"

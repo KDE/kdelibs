@@ -96,5 +96,5 @@ bool ServiceTypeBrowser::isRunning() const
 
 
 }
-#include "servicetypebrowser.moc"
-#include "avahi-servicetypebrowser_p.moc"
+#include "moc_servicetypebrowser.cpp"
+#include "moc_avahi-servicetypebrowser_p.cpp"

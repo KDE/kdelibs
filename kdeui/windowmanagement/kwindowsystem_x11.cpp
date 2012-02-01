@@ -1110,4 +1110,4 @@ QPoint KWindowSystem::constrainViewportRelativePosition( const QPoint& pos )
     return QPoint( x - c.x, y - c.y );
 }
 
-#include "kwindowsystem.moc"
+#include "moc_kwindowsystem.cpp"

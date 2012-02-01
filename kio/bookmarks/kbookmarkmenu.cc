@@ -764,5 +764,5 @@ KBookmarkActionMenu::~KBookmarkActionMenu()
 {
 }
 
-#include "kbookmarkmenu.moc"
-#include "kbookmarkmenu_p.moc"
+#include "moc_kbookmarkmenu.cpp"
+#include "moc_kbookmarkmenu_p.cpp"

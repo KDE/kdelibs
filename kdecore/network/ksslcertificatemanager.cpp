@@ -530,4 +530,4 @@ void _setAllKsslCaCertificates(KSslCertificateManager *cm, const QList<KSslCaCer
     KSslCertificateManagerPrivate::get(cm)->setAllCertificates(certsIn);
 }
 
-#include "kssld/kssld_interface.moc"
+#include "kssld/moc_kssld_interface.cpp"

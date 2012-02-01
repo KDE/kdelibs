@@ -38,4 +38,4 @@ void EngineAccess::setEngine(QScriptValue val)
     m_kDeclarative->d->scriptEngine = val.engine();
 }
 
-#include "engineaccess_p.moc"
+#include "moc_engineaccess_p.cpp"

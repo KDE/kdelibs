@@ -107,6 +107,6 @@ void SmartRangeWatcher::parentRangeChanged( SmartRange *, SmartRange *, SmartRan
 {
 }
 
-#include "smartrangenotifier.moc"
+#include "moc_smartrangenotifier.cpp"
 
 // kate: space-indent on; indent-width 2; replace-tabs on;

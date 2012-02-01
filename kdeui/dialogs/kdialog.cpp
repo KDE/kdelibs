@@ -1109,4 +1109,4 @@ void KDialogQueue::Private::slotShowQueuedDialog()
 }
 
 #include "moc_kdialog.cpp"
-#include "kdialogqueue_p.moc"
+#include "moc_kdialogqueue_p.cpp"

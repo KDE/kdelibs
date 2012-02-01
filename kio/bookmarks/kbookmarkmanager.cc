@@ -715,4 +715,4 @@ void KBookmarkOwner::openFolderinTabs(const KBookmarkGroup &)
 
 }
 
-#include "kbookmarkmanager.moc"
+#include "moc_kbookmarkmanager.cpp"

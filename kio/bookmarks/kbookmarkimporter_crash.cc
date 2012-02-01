@@ -187,4 +187,4 @@ QString KCrashBookmarkImporterImpl::findDefaultLocation( bool ) const
     return KStandardDirs::locateLocal( "tmp", "" );
 }
 
-#include "kbookmarkimporter_crash.moc"
+#include "moc_kbookmarkimporter_crash.cpp"

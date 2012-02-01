@@ -51,4 +51,4 @@ QString DNSToDomain(const QString& domain)
 }
 }
 
-#include "avahi_server_interface.moc"
+#include "moc_avahi_server_interface.cpp"

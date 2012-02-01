@@ -30,4 +30,4 @@ Client::Client( QObject *parent )
 
 }
 
-#include "client_p.moc"
+#include "moc_client_p.cpp"

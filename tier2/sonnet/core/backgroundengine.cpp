@@ -116,4 +116,4 @@ QStringList BackgroundEngine::suggest(const QString &word)
     return m_dict.suggest(word);
 }
 
-#include "backgroundengine_p.moc"
+#include "moc_backgroundengine_p.cpp"

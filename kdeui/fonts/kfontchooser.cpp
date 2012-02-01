@@ -1055,4 +1055,4 @@ void KFontChooser::Private::_k_showXLFDArea(bool show)
 }
 
 #include "moc_kfontchooser.cpp"
-#include "sampleedit_p.moc"
+#include "moc_sampleedit_p.cpp"

@@ -3153,5 +3153,5 @@ int CacheInfo::expireDate();
 int CacheInfo::expireTimeout();
 #endif
 
-#include "jobclasses.moc"
+#include "moc_jobclasses.cpp"
 #include "moc_job_p.cpp"

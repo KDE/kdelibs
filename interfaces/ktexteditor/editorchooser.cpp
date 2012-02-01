@@ -17,7 +17,7 @@
  *  Boston, MA 02110-1301, USA.
  */
 #include <editorchooser.h>
-#include <editorchooser.moc>
+#include "moc_editorchooser.cpp"
 
 #include <QtGui/QComboBox>
 #include <QtCore/QStringList>

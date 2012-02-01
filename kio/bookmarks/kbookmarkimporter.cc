@@ -98,4 +98,4 @@ KBookmarkImporterBase* KBookmarkImporterBase::factory( const QString &type )
     return 0;
 }
 
-#include <kbookmarkimporter.moc>
+#include "moc_kbookmarkimporter.cpp"

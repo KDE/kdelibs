@@ -22,21 +22,21 @@
 #include "cursor.h"
 
 #include "configpage.h"
-#include "configpage.moc"
+#include "moc_configpage.cpp"
 
 #include "factory.h"
-#include "factory.moc"
+#include "moc_factory.cpp"
 
 #include "editor.h"
-#include "editor.moc"
+#include "moc_editor.cpp"
 
 #include "document.h"
 
 #include "view.h"
-#include "view.moc"
+#include "moc_view.cpp"
 
 #include "plugin.h"
-#include "plugin.moc"
+#include "moc_plugin.cpp"
 
 #include "recoveryinterface.h"
 #include "commandinterface.h"
@@ -50,10 +50,10 @@
 #include "containerinterface.h"
 
 #include "annotationinterface.h"
-#include "annotationinterface.moc"
+#include "moc_annotationinterface.cpp"
 
 #include "loadsavefiltercheckplugin.h"
-#include "loadsavefiltercheckplugin.moc"
+#include "moc_loadsavefiltercheckplugin.cpp"
 
 #include "modeinterface.h"
 

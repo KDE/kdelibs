@@ -106,4 +106,4 @@ void Nepomuk::TagCloud::slotTagClicked( const QString& tag )
     emit tagClicked( Tag(tag) );
 }
 
-#include "kmetadatatagcloud.moc"
+#include "moc_kmetadatatagcloud.cpp"
