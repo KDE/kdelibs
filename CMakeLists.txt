@@ -137,16 +137,6 @@ macro_log_feature(OPENSSL_FOUND "OpenSSL" "Support for secure network communicat
 find_package(Libintl)
 macro_log_feature(LIBINTL_FOUND "Libintl" "Support for multiple languages" "http://www.gnu.org/software/gettext" FALSE "" "STRONGLY RECOMMENDED: Enables KDE to be available in many different languages")
 
-set(SOPRANO_MIN_VERSION "2.5.60")
-find_package(Soprano ${SOPRANO_MIN_VERSION} COMPONENTS PLUGIN_RAPTORPARSER PLUGIN_REDLANDBACKEND)
-macro_log_feature(SOPRANO_FOUND "Soprano" "Support for the Nepomuk semantic desktop system" "http://soprano.sourceforge.net" FALSE "${SOPRANO_MIN_VERSION}" "")
-macro_log_feature(SOPRANO_PLUGIN_RAPTORPARSER_FOUND "Soprano Raptor Parser" "Support for the Nepomuk semantic desktop system" "http://soprano.sourceforge.net" FALSE "" "")
-macro_log_feature(SOPRANO_PLUGIN_REDLANDBACKEND_FOUND "Soprano Redland Backend" "Support for the Nepomuk semantic desktop system" "http://soprano.sourceforge.net" FALSE "" "")
-
-set(SHAREDDESKTOPONTOLOGIES_MIN_VERSION 0.6.50)
-find_package(SharedDesktopOntologies ${SHAREDDESKTOPONTOLOGIES_MIN_VERSION})
-macro_log_feature(SHAREDDESKTOPONTOLOGIES_FOUND "Shared desktop ontologies" "Support for the Nepomuk semantic desktop system" "http://oscaf.sourceforge.net" FALSE "${SHAREDDESKTOPONTOLOGIES_MIN_VERSION}" "")
-
 find_package(QCA2)
 macro_log_feature(QCA2_FOUND "QCA2" "Support for remote plasma widgets" "http://delta.affinix.com/qca" FALSE "2.0.0" "")
 
@@ -297,20 +287,11 @@ configure_file(config-acl.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-acl.h )
 
 include(ConfigureChecks.cmake)
 
-# Actually nepomuk is not optional, without it other KDE modules don't build,
-# so this must be fixed. Alex
-if(Soprano_FOUND AND SHAREDDESKTOPONTOLOGIES_FOUND)
-  set(HAVE_NEPOMUK true)
-  include(SopranoAddOntology)
-  add_subdirectory(nepomuk)
-endif(Soprano_FOUND AND SHAREDDESKTOPONTOLOGIES_FOUND)
-
 # now create config headers
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 configure_file(config-prefix.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-prefix.h )
 configure_file(config-compiler.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compiler.h )
 configure_file(config-pty.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-pty.h )
-configure_file(config-nepomuk.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-nepomuk.h )
 configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 
 # these two calls here should go somewhere else, Alex
@@ -386,7 +367,6 @@ include(CreateKDELibsDependenciesFile.cmake)
 ################# install files #################
 
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/config-nepomuk.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake DESTINATION ${DATA_INSTALL_DIR}/cmake/modules)
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDEPlatformProfile.cmake  DESTINATION ${DATA_INSTALL_DIR}/cmake/modules)
 
