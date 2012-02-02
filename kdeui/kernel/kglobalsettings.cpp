@@ -45,7 +45,6 @@
 #include <QtDBus/QtDBus>
 #include <QStyleFactory>
 #include <qstandardpaths.h>
-#include <qplatformdefs.h>
 
 // next two needed so we can set their palettes
 #include <QToolTip>
