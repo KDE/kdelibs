@@ -84,6 +84,8 @@ void KLocalSocket::disconnectFromHostImplementation()
   // as pseudo-virtual slots) or  it should be removed entirely.
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     QTcpSocket::disconnectFromHostImplementation();
+#else
+#warning QT5 PORT TO QTcpSocket API fixups, no more disconnectFromHostImplementation workaround
 #endif
 
     d->peerPath.clear();
