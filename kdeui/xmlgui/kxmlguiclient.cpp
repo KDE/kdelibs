@@ -25,7 +25,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtXml/QDomDocument>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include <QtCore/QRegExp>
 #include <QtCore/QPointer>
 

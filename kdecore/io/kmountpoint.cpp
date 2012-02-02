@@ -24,7 +24,7 @@
 #include <stdlib.h>
 
 #include <QtCore/QFile>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 
 #include "kstandarddirs.h"
 

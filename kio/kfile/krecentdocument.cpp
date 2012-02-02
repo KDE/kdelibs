@@ -37,7 +37,7 @@
 #include <kde_file.h>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include <QtCore/QMutableStringListIterator>
 #include <QtCore/QRegExp>
 

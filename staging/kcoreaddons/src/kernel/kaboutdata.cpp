@@ -26,7 +26,7 @@
 
 #include "qstandardpaths.h"
 #include <QtCore/QFile>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include <QtCore/QSharedData>
 #include <QtCore/QVariant>
 #include <QtCore/QList>

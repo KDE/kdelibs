@@ -25,7 +25,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QPointer>
 #include <QtCore/QStringList>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include <QtCore/QTimer>
 
 //inqt5 - already in qt5 as qcryptographichash

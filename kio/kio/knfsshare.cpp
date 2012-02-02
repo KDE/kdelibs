@@ -21,7 +21,7 @@
 #include <QSet>
 #include <QtCore/QFile>
 #include <QtCore/QMutableStringListIterator>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 
 #include <kdirwatch.h>
 #include <kdebug.h>

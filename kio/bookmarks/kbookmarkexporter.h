@@ -23,7 +23,7 @@
 #ifndef __kbookmarkexporter_h
 #define __kbookmarkexporter_h
 
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include <kbookmark.h>
 
 class KIO_EXPORT KBookmarkExporterBase

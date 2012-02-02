@@ -44,7 +44,7 @@
 #include <QtCore/QDate>
 #include <QtCore/QFile>
 #include <QtCore/QDataStream>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 
 #include "kglobal.h"
 #include "krandom.h"

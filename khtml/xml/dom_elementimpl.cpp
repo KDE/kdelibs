@@ -54,7 +54,7 @@
 #include <editing/editing_p.h>
 #include <editing/editor.h>
 
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include <QTextDocument>
 #include <kdebug.h>
 #include <stdlib.h>

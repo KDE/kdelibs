@@ -40,7 +40,7 @@
 #include "misc/helper.h"
 #include "rendering/render_style.h"
 #include "rendering/render_position.h"
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 
 // svg
 #include "FloatRect.h"

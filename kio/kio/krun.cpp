@@ -64,7 +64,7 @@
 #include <kprocess.h>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
-#include <QtCore/QTextIStream>
+#include <QtCore/QTextStream>
 #include <QtCore/QDate>
 #include <QtCore/QRegExp>
 #include <QDir>
