@@ -23,7 +23,7 @@
 #include "kkernel_win.h"
 
 #include <config.h>
-#include <QtCore/QBool>
+
 #include <QtCore/QTextCodec>
 
 #ifdef Q_OS_WIN

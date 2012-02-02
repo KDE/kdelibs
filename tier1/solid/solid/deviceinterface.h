@@ -22,7 +22,7 @@
 #define SOLID_DEVICEINTERFACE_H
 
 #include <QtCore/QObject>
-#include <QtCore/QBool>
+
 
 #include <solid/solid_export.h>
 

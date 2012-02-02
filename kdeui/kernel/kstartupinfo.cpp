@@ -33,7 +33,7 @@ DEALINGS IN THE SOFTWARE.
 #include "kstartupinfo.h"
 
 #include <QWidget>
-#include <QtCore/QBool>
+
 
 #include <config.h>
 

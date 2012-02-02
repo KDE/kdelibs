@@ -38,7 +38,6 @@
 
 #include <QMutex>
 #include <QMutexLocker>
-#include <QtCore/QBool>
 
 extern bool kde_kiosk_exception;
 

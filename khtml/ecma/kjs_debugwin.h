@@ -21,7 +21,7 @@
 #ifndef _KJS_DEBUGGER_H_
 #define _KJS_DEBUGGER_H_
 
-#include <QtCore/QBool>
+
 
 #define KJS_DEBUGGER
 

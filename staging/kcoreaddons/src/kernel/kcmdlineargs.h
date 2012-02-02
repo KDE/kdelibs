@@ -20,7 +20,7 @@
 #define KCMDLINEARGS_H
 
 #include <kcoreaddons_export.h>
-#include <QtCore/QBool>
+
 
 #include "qlocalizedstring_porting.h"
 

@@ -13,7 +13,7 @@
 #ifndef __KDE_su_Client_h_Included__
 #define __KDE_su_Client_h_Included__
 
-#include <QtCore/QBool>
+
 #include <QtCore/QList>
 #include <kdesu/kdesu_export.h>
 
