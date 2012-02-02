@@ -47,7 +47,13 @@ static QString nonemptyIssuer(const QSslCertificate &cert)
                      QSslCertificate::OrganizationalUnitName
     };
     for (int i = 0; i < 3; i++) {
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
         issuerText = cert.issuerInfo(fields[i]);
+#else
+#warning QT5 PORT TO NEW API
+        issuerText = cert.issuerInfo(fields[i]).first();
+#endif
+
         if (!issuerText.isEmpty()) {
             return issuerText;
         }
@@ -73,7 +79,12 @@ public:
             switch (column) {
             case OrgCnColumn:
             case HiddenSortColumn: {
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
                 QString subjectText = m_cert.issuerInfo(QSslCertificate::CommonName);
+#else
+#warning QT5 PORT TO NEW API
+                QString subjectText = m_cert.issuerInfo(QSslCertificate::CommonName).first();
+#endif
                 if (column == HiddenSortColumn) {
                     return subjectText.toLower();
                 }

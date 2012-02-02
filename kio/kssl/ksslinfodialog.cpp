@@ -164,7 +164,12 @@ void KSslInfoDialog::setSslInfo(const QList<QSslCertificate> &certificateChain,
             QSslCertificate::OrganizationalUnitName
         };
         for (int j = 0; j < 3 && name.isEmpty(); j++)
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
             name = cert.subjectInfo(si[j]);
+#else
+#warning QT5 PORT TO NEW API
+            name = cert.subjectInfo(si[j]).first();
+#endif
         d->ui.certSelector->addItem(name);
     }
     if (certificateChain.size() < 2) {
