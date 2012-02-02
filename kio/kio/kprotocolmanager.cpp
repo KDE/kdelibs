@@ -657,6 +657,9 @@ static QString platform()
      return QL1S("Windows");
 #elif defined(Q_WS_S60)
      return QL1S("Symbian");
+#else
+#warning QT5 PORT TO QPA
+  return QString();
 #endif
 }
 
