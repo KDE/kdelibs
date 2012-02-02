@@ -242,8 +242,10 @@ static EventType events[] = {
     EventType( KJS::Identifier("onHoverEnterEvent"), QEvent::HoverEnter ),
     EventType( KJS::Identifier("onHoverLeaveEvent"), QEvent::HoverLeave ),
     EventType( KJS::Identifier("onHoverMoveEvent"), QEvent::HoverMove ),
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     EventType( KJS::Identifier("onAccessibilityHelpEvent"), QEvent::AccessibilityHelp ),
     EventType( KJS::Identifier("onAccessibilityDescriptionEvent"), QEvent::AccessibilityDescription ),
+#endif
     EventType(KJS::Identifier(), QEvent::None )
 };
 

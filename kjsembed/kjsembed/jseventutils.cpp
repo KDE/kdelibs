@@ -148,8 +148,10 @@ namespace JSEventUtils
             case QEvent::HoverEnter:
             case QEvent::HoverLeave:
             case QEvent::HoverMove:
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
             case QEvent::AccessibilityHelp:
             case QEvent::AccessibilityDescription:
+#endif
             default:
                 return convertEvent( exec, ev );
                 break;
