@@ -456,7 +456,7 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
         msg.setArguments( QVariantList()
                           << DBus::convertUriList(QList<QUrl>() << m_uri)
                           << DBus::convertUri(uri)
-                          << DBus::normalizeVariantList(varList)
+                          << QVariant(DBus::normalizeVariantList(varList))
                           << KGlobal::mainComponent().componentName() );
 
         QDBusMessage reply = bus.call( msg );
@@ -507,7 +507,7 @@ void Nepomuk::ResourceData::addProperty( const QUrl& uri, const Nepomuk::Variant
         msg.setArguments( QVariantList()
                           << DBus::convertUriList(QList<QUrl>() << m_uri)
                           << DBus::convertUri(uri)
-                          << DBus::normalizeVariantList(varList)
+                          << QVariant(DBus::normalizeVariantList(varList))
                           << KGlobal::mainComponent().componentName() );
 
         QDBusMessage reply = bus.call( msg );
