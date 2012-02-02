@@ -441,8 +441,6 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
                                                            QLatin1String("/datamanagement"),
                                                            QLatin1String("org.kde.nepomuk.DataManagement"),
                                                            QLatin1String("setProperty") );
-        QString app = KGlobal::mainComponent().componentName();
-        QVariantList arguments;
         QVariantList varList;
         foreach( const Nepomuk::Variant var, value.toVariantList() ) {
             // make sure resource values are in the store
@@ -455,9 +453,11 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
             }
         }
 
-        arguments << DBus::convertUriList(QList<QUrl>() << m_uri) << DBus::convertUri(uri)
-                  << QVariant(DBus::normalizeVariantList(varList)) << app;
-        msg.setArguments( arguments );
+        msg.setArguments( QVariantList()
+                          << DBus::convertUriList(QList<QUrl>() << m_uri)
+                          << DBus::convertUri(uri)
+                          << DBus::normalizeVariantList(varList)
+                          << KGlobal::mainComponent().componentName() );
 
         QDBusMessage reply = bus.call( msg );
         if( reply.type() == QDBusMessage::ErrorMessage ) {
@@ -492,8 +492,6 @@ void Nepomuk::ResourceData::addProperty( const QUrl& uri, const Nepomuk::Variant
                                                            QLatin1String("/datamanagement"),
                                                            QLatin1String("org.kde.nepomuk.DataManagement"),
                                                            QLatin1String("addProperty") );
-        QString app = KGlobal::mainComponent().componentName();
-        QVariantList arguments;
         QVariantList varList;
         foreach( const Nepomuk::Variant var, value.toVariantList() ) {
             // make sure resource values are in the store
@@ -506,9 +504,11 @@ void Nepomuk::ResourceData::addProperty( const QUrl& uri, const Nepomuk::Variant
             }
         }
 
-        arguments << DBus::convertUriList(QList<QUrl>() << m_uri) << DBus::convertUri(uri)
-                  << QVariant(DBus::normalizeVariantList(varList)) << app;
-        msg.setArguments( arguments );
+        msg.setArguments( QVariantList()
+                          << DBus::convertUriList(QList<QUrl>() << m_uri)
+                          << DBus::convertUri(uri)
+                          << DBus::normalizeVariantList(varList)
+                          << KGlobal::mainComponent().componentName() );
 
         QDBusMessage reply = bus.call( msg );
         if( reply.type() == QDBusMessage::ErrorMessage ) {
@@ -538,10 +538,10 @@ void Nepomuk::ResourceData::removeProperty( const QUrl& uri )
                                                            QLatin1String("/datamanagement"),
                                                            QLatin1String("org.kde.nepomuk.DataManagement"),
                                                            QLatin1String("removeProperties") );
-        QString app = KGlobal::mainComponent().componentName();
-        QVariantList arguments;
-        arguments << DBus::convertUri(m_uri) << DBus::convertUri(uri) << app;
-        msg.setArguments( arguments );
+        msg.setArguments( QVariantList()
+                          << DBus::convertUri(m_uri)
+                          << DBus::convertUri(uri)
+                          << KGlobal::mainComponent().componentName() );
 
         QDBusMessage reply = bus.call( msg );
         if( reply.type() == QDBusMessage::ErrorMessage ) {
@@ -570,11 +570,11 @@ void Nepomuk::ResourceData::remove( bool recursive )
                                                            QLatin1String("/datamanagement"),
                                                            QLatin1String("org.kde.nepomuk.DataManagement"),
                                                            QLatin1String("removeResources") );
-        QString app = KGlobal::mainComponent().componentName();
-        QVariantList arguments;
         // TODO: Set the flag over here
-        arguments << DBus::convertUri(m_uri) << 0 << app;
-        msg.setArguments( arguments );
+        msg.setArguments( QVariantList()
+                          << DBus::convertUri(m_uri)
+                          << 0 /* no flags */
+                          << KGlobal::mainComponent().componentName());
 
         QDBusMessage reply = bus.call( msg );
         if( reply.type() == QDBusMessage::ErrorMessage ) {
