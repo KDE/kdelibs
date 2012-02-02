@@ -21,7 +21,9 @@
 
 #include "kfilemetainfoitem.h"
 #include "kfilemetainfoitem_p.h"
+#ifdef HAVE_NEPOMUK
 #include <config-nepomuk.h>
+#endif
 
 KFileMetaInfoItem::KFileMetaInfoItem() : d(new KFileMetaInfoItemPrivate()) {
 }
