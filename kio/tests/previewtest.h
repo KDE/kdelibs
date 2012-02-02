@@ -1,3 +1,5 @@
+#ifndef PREVIEWTEST_H
+#define PREVIEWTEST_H
 
 #include <qwidget.h>
 #include <kio/job.h>
@@ -22,4 +24,6 @@ private:
     KLineEdit *m_url;
     QLabel *m_preview;
 };
+
+#endif
 
