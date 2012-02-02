@@ -179,12 +179,19 @@ private:
 
 class KLineEndStrippingDebugStream: public KNoDebugStream
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    QMessageLogContext context;
+#endif
     // Q_OBJECT
 public:
     qint64 writeData(const char *data, qint64 len)
         {
             QByteArray buf = QByteArray::fromRawData(data, len);
-            qt_message_output(QtDebugMsg, buf.trimmed().constData());
+            qt_message_output(QtDebugMsg,
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+                              context,
+#endif
+                              buf.trimmed().constData());
             return len;
         }
 };
