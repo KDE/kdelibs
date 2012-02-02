@@ -140,7 +140,13 @@ public:
      * Returns the number of references.
      * @return the number of references
      */
-    inline int count() const { return d ? static_cast<int>(d->ref) : 0; } // for debugging purposes
+    inline int count() const { return d ?
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+        static_cast<int>(d->ref)
+#else
+        d->ref.load()
+#endif
+        : 0; } // for debugging purposes
 
     /**
      * Test if the shared pointer is null.
