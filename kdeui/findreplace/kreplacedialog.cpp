@@ -142,7 +142,7 @@ void KReplaceDialogPrivate::_k_slotOk()
     if ( q->KFindDialog::d->regExp->isChecked() && q->KFindDialog::d->backRef->isChecked() )
     {
         QRegExp r ( q->pattern() );
-        int caps = r.numCaptures();
+        int caps = r.captureCount();
         QRegExp check(QString("((?:\\\\)+)(\\d+)"));
         int p = 0;
         QString rep = q->replacement();
