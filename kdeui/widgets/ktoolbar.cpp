@@ -32,6 +32,8 @@
 #include <QDesktopWidget>
 #include <QFrame>
 #include <QLayout>
+#include <QMimeData>
+#include <QDrag>
 #include <QMouseEvent>
 #include <QToolButton>
 #include <QtXml/QDomElement>

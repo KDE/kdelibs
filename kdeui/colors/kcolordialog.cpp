@@ -45,6 +45,7 @@
 #include <QtCore/QFile>
 #include <QHeaderView>
 #include <QImage>
+#include <QDrag>
 #include <QStyledItemDelegate>
 #include <QLabel>
 #include <QLayout>

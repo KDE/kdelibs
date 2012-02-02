@@ -27,6 +27,8 @@
 #include <qdrawutil.h>
 #include <QApplication>
 #include <QClipboard>
+#include <QMimeData>
+#include <QDrag>
 #include <QStyle>
 #include <kglobalsettings.h>
 #include <kstandardshortcut.h>
