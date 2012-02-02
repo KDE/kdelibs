@@ -5,7 +5,7 @@ remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 MACRO(KDECORE_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_unit_test(${_testname} TESTNAME "kdecore-${_testname}" NOGUI ${_testname}.cpp)
-               target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} inqt5 ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} kcoreaddons kde4support)
+               target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} kcoreaddons kde4support)
                if(WINCE)
                 target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
                endif(WINCE)
@@ -14,7 +14,7 @@ ENDMACRO(KDECORE_UNIT_TESTS)
 MACRO(KDECORE_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_executable(${_testname} NOGUI TEST ${_testname}.cpp)
-               target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} inqt5 ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} kcoreaddons kde4support)
+               target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} kcoreaddons kde4support)
                if(WINCE)
                 target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
                endif(WINCE)
@@ -112,7 +112,7 @@ target_link_libraries(kdirwatchtest_gui ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY}
 
 set(kmimetypetest_SRCS kmimetypetest.cpp)
 kde4_add_unit_test(kmimetypetest TESTNAME kdecore-kmimetypetest ${kmimetypetest_SRCS})
-target_link_libraries(kmimetypetest ${KDE4_KDECORE_LIBS} inqt5 ${QT_QTTEST_LIBRARY} kcoreaddons)
+target_link_libraries(kmimetypetest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
 
 ########### module for klibloadertest ###############
 

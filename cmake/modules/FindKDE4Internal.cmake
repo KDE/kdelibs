@@ -617,7 +617,7 @@ endif (_kdeBootStrapping)
 # Sorted by names:
 _kde4_set_lib_variables(KCMUTILS      kcmutils      "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(KDE3SUPPORT   kde3support   "${KDE4_TARGET_PREFIX}")
-_kde4_set_lib_variables(KDECORE       kdecore       "${KDE4_TARGET_PREFIX}")
+_kde4_set_lib_variables(KDECORE_UNPORTED       kdecore       "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(KDEUI_UNPORTED         kdeui         "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(KDEWEBKIT     kdewebkit     "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(KDNSSD        kdnssd        "${KDE4_TARGET_PREFIX}")
@@ -644,6 +644,7 @@ _kde4_set_lib_variables(THREADWEAVER  threadweaver  "${KDE4_TARGET_PREFIX}")
 
 set(KDE4_KDEUI_LIBRARY itemmodels sonnetcore ${KDE4_KDEUI_UNPORTED_LIBRARY} )
 set(KDE4_KDEUI_LIBS    ${KDE4_KDEUI_LIBRARY} )
+set(KDE4_KDECORE_LIBS   inqt5 ${KDE4_KDECORE_UNPORTED_LIBRARY} )
 
 if (UNIX)
    _kde4_set_lib_variables(KDEFAKES kdefakes "${KDE4_TARGET_PREFIX}")

@@ -11,5 +11,5 @@ add_test( tst_qmimedatabase-xml tst_qmimedatabase-xml )
 
 set_target_properties(tst_qmimedatabase-xml PROPERTIES COMPILE_FLAGS -DSRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}/../\\"")
 
-target_link_libraries( tst_qmimedatabase-xml QtMimeTypes inqt5 ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY})
+target_link_libraries( tst_qmimedatabase-xml QtMimeTypes ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY})
 
