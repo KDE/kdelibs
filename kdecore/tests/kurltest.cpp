@@ -21,22 +21,18 @@
 
 #include "kurltest.h"
 
-#include "qtest_kde.h"
+#include <QTest>
 
-QTEST_KDEMAIN_CORE( KUrlTest )
-
-#include <config.h>
-#include <kcmdlineargs.h>
+QTEST_MAIN( KUrlTest )
 
 #include "kurl.h"
-#include <kdebug.h>
-#include <kglobal.h>
-#include <kuser.h>
-#include <QtCore/QTextCodec>
-#include <QtCore/QDataStream>
-#include <QtCore/QMap>
-#include <stdio.h>
-#include <stdlib.h>
+
+#include "kuser.h"
+
+#include <QTextCodec>
+#include <QDataStream>
+#include <QMap>
+#include <QMimeData>
 
 //QCOMPARE cannot be used to strictly check for empty or null QString as it treats QString("") == QString()
 #define QSTREMPTY(_str) QVERIFY(!_str.isNull() && _str.isEmpty())
