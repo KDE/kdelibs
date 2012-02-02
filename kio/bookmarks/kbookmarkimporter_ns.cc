@@ -34,7 +34,7 @@
 
 #include <qtextcodec.h>
 #include <qtextdocument.h> // Qt::escape
-#include <QtGui/QApplication>
+#include <QApplication>
 
 
 

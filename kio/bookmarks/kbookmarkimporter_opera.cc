@@ -26,7 +26,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <qtextcodec.h>
-#include <QtGui/QApplication>
+#include <QApplication>
 
 #include <sys/types.h>
 #include <stddef.h>

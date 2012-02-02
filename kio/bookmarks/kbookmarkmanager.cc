@@ -28,7 +28,7 @@
 #include <QtCore/QRegExp>
 #include <QtCore/QTextStream>
 #include <QtDBus/QtDBus>
-#include <QtGui/QApplication>
+#include <QApplication>
 
 #include <kbackup.h>
 #include <kconfiggroup.h>

@@ -40,8 +40,8 @@
 
 
 #include <QtCore/QStack>
-#include <QtGui/QHeaderView>
-#include <QtGui/QApplication>
+#include <QHeaderView>
+#include <QApplication>
 
 /********************************************************************/
 /********************************************************************/

@@ -23,13 +23,13 @@
 #include <kpluginloader.h>
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
-#include <QtGui/QFrame>
+#include <QFrame>
 #include <klocale.h>
 #include <kdebug.h>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QComboBox>
+#include <QLabel>
+#include <QLayout>
+#include <QPushButton>
+#include <QComboBox>
 #include <kmessagebox.h>
 #include <kpassworddialog.h>
 #include <ksslall.h>
@@ -39,7 +39,7 @@
 #include <kfiledialog.h>
 #include <QtCore/Q_PID>
 #include <kseparator.h>
-#include <QtGui/QTreeWidget>
+#include <QTreeWidget>
 #include <QtCore/QRegExp>
 #include <kcombobox.h>
 #include <kparts/browserextension.h>
