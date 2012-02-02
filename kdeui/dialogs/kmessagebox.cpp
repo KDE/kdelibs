@@ -477,7 +477,11 @@ int KMessageBox::questionYesNoListWId(WId parent_id, const QString &text,
         dialog->setPlainCaption( caption );
     }
     if ( parent == NULL && parent_id ) {
+#ifndef KDE_NO_WINDOWSYSTEM
         KWindowSystem::setMainWindow( dialog, parent_id );
+#else
+#warning QT5 PORT TO QPA
+#endif
     }
 
     bool checkboxResult = false;
@@ -538,7 +542,11 @@ int KMessageBox::questionYesNoCancelWId(WId parent_id,
         dialog->setPlainCaption( caption );
     }
     if ( parent == NULL && parent_id ) {
+#ifndef KDE_NO_WINDOWSYSTEM
         KWindowSystem::setMainWindow( dialog, parent_id );
+#else
+#warning QT5 PORT TO QPA
+#endif
     }
 
     bool checkboxResult = false;
@@ -626,7 +634,11 @@ int KMessageBox::warningYesNoListWId(WId parent_id, const QString &text,
         dialog->setPlainCaption( caption );
     }
     if ( parent == NULL && parent_id ) {
+#ifndef KDE_NO_WINDOWSYSTEM
         KWindowSystem::setMainWindow( dialog, parent_id );
+#else
+#warning QT5 PORT TO QPA
+#endif
     }
 
     bool checkboxResult = false;
@@ -706,7 +718,11 @@ int KMessageBox::warningContinueCancelListWId(WId parent_id, const QString &text
         dialog->setPlainCaption( caption );
     }
     if ( parent == NULL && parent_id ) {
+#ifndef KDE_NO_WINDOWSYSTEM
         KWindowSystem::setMainWindow( dialog, parent_id );
+#else
+#warning QT5 PORT TO QPA
+#endif
     }
 
     bool checkboxResult = false;
@@ -793,7 +809,11 @@ int KMessageBox::warningYesNoCancelListWId(WId parent_id, const QString &text,
         dialog->setPlainCaption( caption );
     }
     if ( parent == NULL && parent_id ) {
+#ifndef KDE_NO_WINDOWSYSTEM
         KWindowSystem::setMainWindow( dialog, parent_id );
+#else
+#warning QT5 PORT TO QPA
+#endif
     }
 
     bool checkboxResult = false;
@@ -848,7 +868,11 @@ void KMessageBox::errorListWId(WId parent_id,  const QString &text, const QStrin
         dialog->setPlainCaption( caption );
     }
     if ( parent == NULL && parent_id ) {
+#ifndef KDE_NO_WINDOWSYSTEM
         KWindowSystem::setMainWindow( dialog, parent_id );
+#else
+#warning QT5 PORT TO QPA
+#endif
     }
 
     createKMessageBox(dialog, QMessageBox::Critical, text, strlist, QString(), 0, options);
@@ -878,7 +902,11 @@ void KMessageBox::detailedErrorWId(WId parent_id,  const QString &text,
         dialog->setPlainCaption( caption );
     }
     if ( parent == NULL && parent_id ) {
+#ifndef KDE_NO_WINDOWSYSTEM
         KWindowSystem::setMainWindow( dialog, parent_id );
+#else
+#warning QT5 PORT TO QPA
+#endif
     }
 
     createKMessageBox(dialog, QMessageBox::Critical, text, QStringList(), QString(), 0, options, details);
@@ -922,7 +950,11 @@ void KMessageBox::sorryWId(WId parent_id, const QString &text,
         dialog->setPlainCaption( caption );
     }
     if ( parent == NULL && parent_id ) {
+#ifndef KDE_NO_WINDOWSYSTEM
         KWindowSystem::setMainWindow( dialog, parent_id );
+#else
+#warning QT5 PORT TO QPA
+#endif
     }
 
     createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(), QString(), 0, options);
@@ -951,7 +983,11 @@ void KMessageBox::detailedSorryWId(WId parent_id, const QString &text,
         dialog->setPlainCaption( caption );
     }
     if ( parent == NULL && parent_id ) {
+#ifndef KDE_NO_WINDOWSYSTEM
         KWindowSystem::setMainWindow( dialog, parent_id );
+#else
+#warning QT5 PORT TO QPA
+#endif
     }
 
     createKMessageBox(dialog, QMessageBox::Warning, text, QStringList(), QString(), 0, options, details);
@@ -995,7 +1031,11 @@ void KMessageBox::informationListWId(WId parent_id,const QString &text, const QS
         dialog->setPlainCaption( caption );
     }
     if ( parent == NULL && parent_id ) {
+#ifndef KDE_NO_WINDOWSYSTEM
         KWindowSystem::setMainWindow( dialog, parent_id );
+#else
+#warning QT5 PORT TO QPA
+#endif
     }
 
     bool checkboxResult = false;

@@ -979,7 +979,11 @@ void KStatusNotifierItemPrivate::minimizeRestore(bool show)
     if (show) {
         associatedWidget->show();
         associatedWidget->raise();
+#ifndef KDE_NO_WINDOWSYSTEM
         KWindowSystem::forceActiveWindow(associatedWidget->winId());
+#else
+#warning QT5 PORT TO QPA
+#endif
     } else {
         associatedWidget->hide();
     }

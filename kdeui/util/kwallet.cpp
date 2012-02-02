@@ -331,7 +331,11 @@ void Wallet::changePassword(const QString& name, WId w) {
         kDebug(285) << "Pass a valid window to KWallet::Wallet::changePassword().";
 
     // Make sure the password prompt window will be visible and activated
+#ifndef KDE_NO_WINDOWSYSTEM
     KWindowSystem::allowExternalProcessWindowActivation();
+#else
+#warning QT5 PORT TO QPA
+#endif
 #ifdef HAVE_KSECRETSSERVICE
     if (walletLauncher->m_useKSecretsService) {
         KSecretsService::Collection *coll = KSecretsService::Collection::findCollection( name );
@@ -484,7 +488,11 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
         }
 
         // Make sure the password prompt window will be visible and activated
+#ifndef KDE_NO_WINDOWSYSTEM
         KWindowSystem::allowExternalProcessWindowActivation();
+#else
+#warning QT5 PORT TO QPA
+#endif
 
         // do the call
         QDBusReply<int> r;
@@ -700,7 +708,11 @@ void Wallet::requestChangePassword(WId w) {
         }
 
         // Make sure the password prompt window will be visible and activated
+#ifndef KDE_NO_WINDOWSYSTEM
         KWindowSystem::allowExternalProcessWindowActivation();
+#else
+#warning QT5 PORT TO QPA
+#endif
 
         walletLauncher->getInterface().changePassword(d->name, (qlonglong)w, appid());
 #ifdef HAVE_KSECRETSSERVICE

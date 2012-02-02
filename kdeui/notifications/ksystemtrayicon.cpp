@@ -344,7 +344,11 @@ void KSystemTrayIcon::minimizeRestore( bool restore )
     {
         pw->show();
         pw->raise();
+#ifndef KDE_NO_WINDOWSYSTEM
         KWindowSystem::forceActiveWindow( pw->winId() );
+#else
+#warning QT5 PORT TO QPA
+#endif
     } else {
         pw->hide();
     }
