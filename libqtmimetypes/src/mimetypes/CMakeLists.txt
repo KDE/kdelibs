@@ -21,7 +21,7 @@ qt4_add_resources( SOURCES mimetypes.qrc )
 
 add_library( QtMimeTypes ${LIBRARY_TYPE} ${SOURCES} )
 
-target_link_libraries( QtMimeTypes LINK_PUBLIC inqt5 ${QT_QTCORE_LIBRARY} )
+target_link_libraries( QtMimeTypes LINK_PUBLIC ${INQT5_LIBRARY} ${QT_QTCORE_LIBRARY} )
 
 set_target_properties( QtMimeTypes PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                        SOVERSION ${ECM_SOVERSION})

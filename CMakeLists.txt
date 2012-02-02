@@ -46,7 +46,12 @@ endif (KHTML_BUILD_TESTREGRESSION)
 
 option(STATIC_LIBRARY "Build kdelibs as static libraries." FALSE)
 
-add_subdirectory( libinqt5 )
+option(QT5_BUILD "Build kdelibs against Qt5." FALSE)
+
+if (NOT QT5_BUILD)
+  add_subdirectory( libinqt5 )
+  set(INQT5_LIBRARY inqt5)
+endif()
 add_subdirectory( libqtmimetypes )
 add_subdirectory( tier1 )
 

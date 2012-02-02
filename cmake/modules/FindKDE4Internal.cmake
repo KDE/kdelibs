@@ -428,10 +428,10 @@ set(CMAKE_MODULE_PATH ${_kde_cmake_module_path_back})
 # then we get here and must check that everything has actually been found. If something is missing,
 # we must not fail with FATAL_ERROR, but only not set KDE4_FOUND.
 
-if(NOT QT4_FOUND)
+if(NOT QT5_BUILD AND NOT QT4_FOUND)
    message(STATUS "KDE4 not found, because Qt4 was not found")
    return()
-endif(NOT QT4_FOUND)
+endif()
 
 # now we are sure we have everything we need
 
@@ -644,7 +644,7 @@ _kde4_set_lib_variables(THREADWEAVER  threadweaver  "${KDE4_TARGET_PREFIX}")
 
 set(KDE4_KDEUI_LIBRARY itemmodels sonnetcore ${KDE4_KDEUI_UNPORTED_LIBRARY} )
 set(KDE4_KDEUI_LIBS    ${KDE4_KDEUI_LIBRARY} )
-set(KDE4_KDECORE_LIBS   inqt5 ${KDE4_KDECORE_UNPORTED_LIBRARY} )
+set(KDE4_KDECORE_LIBS  ${INQT5_LIBRARY} ${KDE4_KDECORE_UNPORTED_LIBRARY} )
 
 if (UNIX)
    _kde4_set_lib_variables(KDEFAKES kdefakes "${KDE4_TARGET_PREFIX}")
