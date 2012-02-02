@@ -46,12 +46,6 @@ include_directories(
  ${CMAKE_CURRENT_BINARY_DIR}/util
  ${DBUSMENUQT_INCLUDE_DIR}
 )
-if(QCA2_FOUND)
-  include_directories(
-   ${QCA2_INCLUDE_DIR}
-  )
-  set(KDEUI_EXTRA_LIBS ${KDEUI_EXTRA_LIBS} ${QCA2_LIBRARIES} )
-endif(QCA2_FOUND)
 
 if(NOT KDEUI_NO_ATTICA)
    include_directories( ${LIBATTICA_INCLUDE_DIR} )

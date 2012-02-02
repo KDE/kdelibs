@@ -323,14 +323,14 @@ add_subdirectory( kconf_update )
 add_subdirectory( licenses   )
 add_subdirectory( mimetypes  )
 
+add_subdirectory( kdeui )
+
 if (QT5_BUILD)
   # This should be moved down and eventually removed when everything
   # can be built with Qt5.
   # The current problem is kdeui because it uses X11 stuff which is no longer in Qt.
   return()
 endif()
-
-add_subdirectory( kdeui )
 if(NOT WINCE)
   add_subdirectory( kjsembed )
 endif(NOT WINCE)
