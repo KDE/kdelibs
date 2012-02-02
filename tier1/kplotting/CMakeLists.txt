@@ -14,9 +14,8 @@ ecm_version(5 0 0)
 
 include(ECMQtFramework)
 
-find_package(Qt4 REQUIRED QtCore QtGui)
+find_package(Qt5Transitional REQUIRED Core Gui)
 
-include(${QT_USE_FILE})
 
 add_subdirectory(src)
 add_subdirectory(examples)

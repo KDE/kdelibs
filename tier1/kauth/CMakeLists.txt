@@ -14,9 +14,7 @@ ecm_version(5 0 0)
 
 include(ECMQtFramework)
 
-find_package(Qt4 REQUIRED QtCore QtGui QtDBus)
-
-include(${QT_USE_FILE})
+find_package(Qt5Transitional REQUIRED Core Gui DBus)
 
 
 # TODO: Where does this belong?

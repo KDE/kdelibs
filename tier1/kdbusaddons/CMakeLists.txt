@@ -15,9 +15,7 @@ ecm_version(5 0 0)
 include(ECMQtFramework)
 enable_testing()
 
-find_package(Qt4 REQUIRED QtCore QtDBus)
-
-include(${QT_USE_FILE})
+find_package(Qt5Transitional REQUIRED Core DBus)
 
 add_subdirectory(src)
 add_subdirectory(autotests)

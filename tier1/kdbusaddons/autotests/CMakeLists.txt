@@ -3,8 +3,7 @@ include_directories( ../src )
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/../src )
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
-find_package(Qt4 REQUIRED QtTest)
-include(${QT_USE_FILE})
+find_package(Qt5Transitional REQUIRED Test)
 
 MACRO(KDBUSADDONS_UNIT_TESTS)
     FOREACH(_testname ${ARGN})

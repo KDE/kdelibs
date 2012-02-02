@@ -48,6 +48,9 @@ option(STATIC_LIBRARY "Build kdelibs as static libraries." FALSE)
 
 option(QT5_BUILD "Build kdelibs against Qt5." FALSE)
 
+find_package(extra-cmake-modules 0.0.2 REQUIRED)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${EXTRA_CMAKE_MODULES_MODULE_PATH})
+
 if (NOT QT5_BUILD)
   add_subdirectory( libinqt5 )
   set(INQT5_LIBRARY inqt5)
@@ -309,6 +312,14 @@ add_subdirectory( cmake )
 add_subdirectory( kdecore )
 add_subdirectory( staging )
 add_subdirectory( tier2 )
+
+if (QT5_BUILD)
+  # This should be moved down and eventually removed when everything
+  # can be built with Qt5.
+  # The current problem is kdeui because it uses X11 stuff which is no longer in Qt.
+  return()
+endif()
+
 add_subdirectory( kdeui )
 if (UNIX)
    add_subdirectory( kpty )

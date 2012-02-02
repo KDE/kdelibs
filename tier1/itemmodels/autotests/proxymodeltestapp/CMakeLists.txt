@@ -7,8 +7,7 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/..
 )
 
-find_package(Qt4 REQUIRED QtScript)
-include(${QT_USE_FILE})
+find_package(Qt5Transitional REQUIRED Script)
 
 set(proxymodeltestapp_SRCS
     main.cpp

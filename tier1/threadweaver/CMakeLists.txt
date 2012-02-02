@@ -14,9 +14,7 @@ ecm_version(5 0 0)
 
 include(ECMQtFramework)
 
-find_package(Qt4 REQUIRED QtCore QtTest)
-
-include(${QT_USE_FILE})
+find_package(Qt5Transitional REQUIRED Core Test)
 
 add_subdirectory(Weaver)
 # disabled for default kdelibs build:

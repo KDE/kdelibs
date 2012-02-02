@@ -26,9 +26,7 @@ remove_definitions(-DQT_USE_FAST_CONCATENATION)
 remove_definitions(-DQT_USE_FAST_OPERATOR_PLUS)
 
 
-find_package(Qt4 REQUIRED QtCore QtGui)
-
-include(${QT_USE_FILE})
+find_package(Qt5Transitional REQUIRED Core DBus Gui Test)
 
 include_directories (${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 

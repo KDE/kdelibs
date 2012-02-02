@@ -14,9 +14,7 @@ ecm_version(5 0 0)
 
 include(ECMQtFramework)
 
-find_package(Qt4 REQUIRED QtCore)
-
-include(${QT_USE_FILE})
+find_package(Qt5Transitional REQUIRED Core)
 
 find_package(ZLIB)
 set_package_properties(ZLIB PROPERTIES

@@ -402,9 +402,7 @@ endif( ${QT_MIN_VERSION} VERSION_LESS "4.5.0" )
 # Qt libs and are flexible regarding the install location of Qt under Windows:
 set(QT_USE_IMPORTED_TARGETS TRUE)
 
-#this line includes FindQt4.cmake, which searches the Qt library and headers
-# TODO: we should check here that all necessary modules of Qt have been found, e.g. QtDBus
-find_package(Qt4 ${_REQ_STRING_KDE4})
+find_package(Qt5Transitional)
 
 # Perl is not required for building KDE software, but we had that here since 4.0
 find_package(Perl)
