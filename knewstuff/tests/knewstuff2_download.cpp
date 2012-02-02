@@ -32,8 +32,6 @@
 #include <QListWidget>
 #include <QTabWidget>
 #include <QTableWidget>
-//FIXME just include as needed
-#include <QtGui>
 
 #include <unistd.h> // for exit()
 #include <stdio.h> // for stdout

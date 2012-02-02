@@ -23,7 +23,9 @@
 
 #include <QtCore/QAbstractEventDispatcher>
 #include <QtCore/QTimer>
-#include <QtGui>
+#include <QDebug>
+#include <QStringList>
+#include <QSize>
 
 #include "modeltest.h"
 
