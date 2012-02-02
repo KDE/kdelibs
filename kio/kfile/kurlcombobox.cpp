@@ -21,6 +21,7 @@
 #include <QtCore/QDir>
 #include <QMouseEvent>
 #include <QDrag>
+#include <QMimeData>
 
 #include <kdebug.h>
 #include <kglobalsettings.h>

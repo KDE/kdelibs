@@ -37,6 +37,7 @@
 
 #include <QtCore/QUrl>
 #include <QWidget>
+#include <QNetworkCookie>
 #include <QtCore/QWeakPointer>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusConnection>
