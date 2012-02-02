@@ -173,10 +173,12 @@ KPluginFactory* KLibrary::factory(const char* factoryname)
     return factory;
 }
 
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
 void *KLibrary::resolveSymbol( const char* symname )
 {
     return resolve( symname );
 }
+#endif
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
 KLibrary::void_function_ptr KLibrary::resolveFunction( const char* symname )
