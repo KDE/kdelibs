@@ -23,6 +23,8 @@
 #include <QtCore/QAtomicPointer>
 #include <sys/types.h>
 #include <QtCore/QObject>
+// To simplify Qt5 porting in KDE code not yet ported to frameworks.
+#include <QMimeData>
 
 #include <kdemacros.h>
 

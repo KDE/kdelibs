@@ -22,6 +22,7 @@
 #include "kurlnavigatormenu_p.h"
 
 #include <QKeyEvent>
+#include <QMimeData>
 
 namespace KDEPrivate
 {
