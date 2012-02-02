@@ -337,8 +337,6 @@ if (Q_WS_WIN)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kernel/kapplication_win.cpp util/kkeyserver_win.cpp )
 endif (Q_WS_WIN)
 
-add_definitions(-DKDE_NO_WINDOWSYSTEM)
-
 if (Q_WS_X11)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_x11.cpp
                                          windowmanagement/kwindowinfo_x11.cpp

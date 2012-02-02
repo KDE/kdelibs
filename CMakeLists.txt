@@ -306,6 +306,9 @@ configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 check_library_exists(nsl gethostbyname "" HAVE_NSL_LIBRARY)
 check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 
+# TODO: Port away from this:
+add_definitions(-DKDE_NO_WINDOWSYSTEM)
+
 ################# list the subdirectories #################
 
 add_subdirectory( cmake )
@@ -326,6 +329,7 @@ add_subdirectory( mimetypes  )
 add_subdirectory( kdeui )
 add_subdirectory( dnssd )
 add_subdirectory( security )
+add_subdirectory( kio )
 
 if (QT5_BUILD)
   # This should be moved down and eventually removed when everything
@@ -334,7 +338,6 @@ if (QT5_BUILD)
   return()
 endif()
 
-add_subdirectory( kio )
 add_subdirectory( kded       )
 if (QT_QT3SUPPORT_FOUND)
    add_subdirectory( kde3support  )
