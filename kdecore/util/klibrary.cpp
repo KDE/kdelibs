@@ -178,6 +178,7 @@ void *KLibrary::resolveSymbol( const char* symname )
     return resolve( symname );
 }
 
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
 KLibrary::void_function_ptr KLibrary::resolveFunction( const char* symname )
 {
     void *psym = resolve( symname );
@@ -191,6 +192,7 @@ KLibrary::void_function_ptr KLibrary::resolveFunction( const char* symname )
 
     return sym;
 }
+#endif
 
 void KLibrary::setFileName(const QString &name, const KComponentData &data)
 {

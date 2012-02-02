@@ -66,6 +66,7 @@ public:
      */
     void *resolveSymbol(const char *name);
 
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     /**
      * Looks up a symbol from the library. This is a very low level
      * function that you usually don't want to use.
@@ -73,6 +74,12 @@ public:
      * @return the address of the symbol, or 0 if it does not exist
      */
     void_function_ptr resolveFunction(const char *name);
+#else
+    void_function_ptr resolveFunction(const char *name)
+    {
+      return resolve(name);
+    }
+#endif
 
     void setFileName(const QString &name, const KComponentData &data = KGlobal::mainComponent());
 
