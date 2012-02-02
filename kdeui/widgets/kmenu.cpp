@@ -30,7 +30,6 @@
 #include <QFontMetrics>
 #include <QHBoxLayout>
 #include <QKeyEvent>
-#include <QMenuItem>
 #include <QLabel>
 #include <QPainter>
 #include <QStyle>

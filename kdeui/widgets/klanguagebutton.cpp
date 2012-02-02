@@ -22,7 +22,6 @@
 #include <QMenu>
 #include <QLayout>
 #include <QPushButton>
-#include <QMenuItem>
 
 #include "klanguagebutton.h"
 

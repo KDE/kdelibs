@@ -30,7 +30,6 @@
 #include <QtCore/QTimer>
 #include <QActionEvent>
 #include <QDesktopWidget>
-#include <QMenuItem>
 #include <QPainter>
 #include <QStyle>
 #include <QStyleOptionMenuItem>
