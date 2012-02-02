@@ -14,8 +14,8 @@
 // along with this library; see the file COPYING.LIB.  If not, write to
 // the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 
-#include <QtCore/QCOORD> 
-#include "kckey.h" 
+#include <QtCore/qnamespace.h>
+#include "kckey.h"
 
 const KKeys kde_KKEYS[NB_KEYS] = {
 	{ "Escape", 0x1000 }, // translated

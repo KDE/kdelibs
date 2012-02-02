@@ -30,6 +30,7 @@ class KLineEdit;
 class KComboBox;
 class QListView;
 class QPushButton;
+class QItemSelection;
 
 class KEditListWidgetPrivate;
 /**
