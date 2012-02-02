@@ -37,7 +37,7 @@ public:
     {}
 
     QString tempFileName();
-    KUrl managedFile;
+    QUrl managedFile;
     KLockFile *lock;
     static const int padding;
     bool managedFileNameChanged;
@@ -65,25 +65,28 @@ QString KAutoSaveFilePrivate::tempFileName()
     static const int maxNameLength = FILENAME_MAX;
 
     // Note: we drop any query string and user/pass info
-    QString protocol(managedFile.protocol());
-    QString path(managedFile.directory());
-    QString name(managedFile.fileName());
+    const QString protocol(managedFile.scheme());
+    //with KUrl, it was: QString path(managedFile.directory());
+    //with KUrl, it was: QString name(managedFile.fileName());
+    const QFileInfo fullPath(managedFile.path());
+    QString path(fullPath.path());
+    QString name(fullPath.fileName());
 
     // Remove any part of the path to the right if it is longer than the max file size and
     // ensure that the max filesize takes into account the other parts of the tempFileName
-    // Subtract 1 for the _ char, 3 for the padding sepperator, 5 is for the .lock
+    // Subtract 1 for the _ char, 3 for the padding separator, 5 is for the .lock
     path = path.left(maxNameLength - padding - name.size() - protocol.size() - 9);
 
     QString junk = KRandom::randomString(padding);
-    // tempName = fileName + junk.trunicated + protocol + _ + path.trunicated + junk
+    // tempName = fileName + junk.trunicated + protocol + _ + path.truncated + junk
     // This is done so that the separation between the filename and path can be determined
     name += junk.right(3) + protocol + QLatin1Char('_');
     name += path + junk;
 
-    return QString::fromLatin1(KUrl::toPercentEncoding(name).data());
+    return QString::fromLatin1(QUrl::toPercentEncoding(name).constData());
 }
 
-KAutoSaveFile::KAutoSaveFile(const KUrl &filename, QObject *parent)
+KAutoSaveFile::KAutoSaveFile(const QUrl &filename, QObject *parent)
         : QFile(parent),
           d(new KAutoSaveFilePrivate)
 {
@@ -104,12 +107,12 @@ KAutoSaveFile::~KAutoSaveFile()
     delete d;
 }
 
-KUrl KAutoSaveFile::managedFile() const
+QUrl KAutoSaveFile::managedFile() const
 {
     return d->managedFile;
 }
 
-void KAutoSaveFile::setManagedFile(const KUrl &filename)
+void KAutoSaveFile::setManagedFile(const QUrl &filename)
 {
     releaseLock();
 
@@ -130,7 +133,7 @@ void KAutoSaveFile::releaseLock()
 
 bool KAutoSaveFile::open(OpenMode openmode)
 {
-    if (d->managedFile == KUrl()) {
+    if (d->managedFile.isEmpty()) {
         return false;
     }
 
@@ -169,18 +172,12 @@ bool KAutoSaveFile::open(OpenMode openmode)
     return false;
 }
 
-QList<KAutoSaveFile *> KAutoSaveFile::staleFiles(const KUrl &filename, const QString &applicationName)
+QList<KAutoSaveFile *> KAutoSaveFile::staleFiles(const QUrl &filename, const QString &applicationName)
 {
 
     QString appName(applicationName);
     if (appName.isEmpty()) {
         appName = QCoreApplication::instance()->applicationName();
-    }
-
-    QString url = filename.fileName();
-
-    if (url.isEmpty()) {
-        return QList<KAutoSaveFile *>();
     }
 
     // get stale files
@@ -226,10 +223,10 @@ QList<KAutoSaveFile *> KAutoSaveFile::allStaleFiles(const QString &applicationNa
 
         int sepPos = file.indexOf(sep);
         int pathPos = file.indexOf(QChar::fromLatin1('_'), sepPos);
-        KUrl name;
-        name.setProtocol(file.mid(sepPos + 3, pathPos - sep.size() - 3));
-        name.setPath(KUrl::fromPercentEncoding(file.right(pathPos - 1).toLatin1()));
-        name.addPath(KUrl::fromPercentEncoding(file.left(sepPos).toLatin1()));
+        QUrl name;
+        name.setScheme(file.mid(sepPos + 3, pathPos - sep.size() - 3));
+        QByteArray encodedPath = file.right(pathPos - 1).toLatin1() + '/' + file.left(sepPos).toLatin1();
+        name.setPath(QUrl::fromPercentEncoding(encodedPath));
 
         // sets managedFile
         KAutoSaveFile* asFile = new KAutoSaveFile(name);

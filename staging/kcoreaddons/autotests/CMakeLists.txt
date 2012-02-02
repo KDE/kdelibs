@@ -31,6 +31,7 @@ KCOREADDONS_UNIT_TESTS(
     kcharsetstest
     kjobtest
     klockfiletest
+    kautosavefiletest
 )
 
 # Helper for klockfiletest

@@ -25,13 +25,18 @@
 #include <qtemporaryfile.h>
 #include <kautosavefile.h>
 
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 
-QTEST_KDEMAIN_CORE( KAutoSaveFileTest )
+QTEST_MAIN( KAutoSaveFileTest )
+
+void KAutoSaveFileTest::initTestCase()
+{
+    QCoreApplication::instance()->setApplicationName(QLatin1String("qttest")); // TODO do this in qtestlib itself
+}
 
 void KAutoSaveFileTest::cleanupTestCase()
 {
-    foreach (const QString &fileToRemove, filesToRemove) {
+    Q_FOREACH (const QString &fileToRemove, filesToRemove) {
         QFile::remove(fileToRemove);
     }
 }
@@ -42,7 +47,7 @@ void KAutoSaveFileTest::test_readWrite()
 
     QVERIFY( file.open() );
 
-    KUrl normalFile( QFileInfo(file).absoluteFilePath() );
+    QUrl normalFile( QFileInfo(file).absoluteFilePath() );
 
     //Test basic functionality
     KAutoSaveFile saveFile(normalFile);
@@ -50,7 +55,7 @@ void KAutoSaveFileTest::test_readWrite()
     QVERIFY( !QFile::exists(saveFile.fileName()) );
     QVERIFY( saveFile.open(QIODevice::ReadWrite) );
 
-    QString inText = "This is test data one.\n";
+    QString inText = QString::fromLatin1("This is test data one.\n");
 
     {
         QTextStream ts ( &saveFile );
@@ -76,17 +81,17 @@ void KAutoSaveFileTest::test_readWrite()
 
 void KAutoSaveFileTest::test_fileStaleFiles()
 {
-    QVERIFY(1 == 1);
+    // TODO
 }
 
 void KAutoSaveFileTest::test_applicationStaleFiles()
 {
-    QVERIFY(1 == 1);
+    // TODO
 }
 
 void KAutoSaveFileTest::test_locking()
 {
-    KUrl normalFile( "fish://user@example.com/home/remote/test.txt" );
+    QUrl normalFile( QString::fromLatin1("fish://user@example.com/home/remote/test.txt") );
 
     KAutoSaveFile saveFile(normalFile);
 
@@ -99,6 +104,11 @@ void KAutoSaveFileTest::test_locking()
 
     KAutoSaveFile* saveFile2 = staleFiles.at(0);
 
+    const QString fn = saveFile2->fileName();
+    // It looks like $XDG_DATA_HOME/stalefiles/qttest/test.txtXXXfish_%2Fhome%2FremoteXXXXXXX
+    QVERIFY2( fn.contains(QLatin1String("stalefiles/qttest/test.txt")), qPrintable(fn) );
+    QVERIFY2( fn.contains(QLatin1String("fish_%2Fhome%2Fremote")), qPrintable(fn) );
+
     QVERIFY( QFile::exists(saveFile2->fileName()) );
     QVERIFY( !saveFile2->open(QIODevice::ReadWrite) );
 
@@ -109,5 +119,3 @@ void KAutoSaveFileTest::test_locking()
     delete saveFile2;
 
 }
-
-#include "kautosavefiletest.moc"

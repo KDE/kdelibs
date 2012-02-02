@@ -21,10 +21,10 @@
 #define KAUTOSAVEFILE_H
 
 #include <kcoreaddons_export.h>
-#include "kurl.h"
 
 #include <QtCore/QFile>
 #include <QtCore/QList>
+#include <QtCore/QUrl>
 
 class KAutoSaveFilePrivate;
 /**
@@ -57,7 +57,7 @@ class KAutoSaveFilePrivate;
  * Examples:
  * Opening a new file:
  * @code
- *   void Document::open(const KUrl &url)
+ *   void Document::open(const QUrl &url)
  *   {
  *       // check whether autosave files exist:
  *       QList<KAutoSaveFile *> staleFiles = KAutoSaveFile::staleFiles(url);
@@ -139,7 +139,7 @@ public:
      * @param filename the filename that this KAutoSaveFile refers to
      * @param parent the parent object
      */
-    explicit KAutoSaveFile(const KUrl &filename, QObject *parent = 0);
+    explicit KAutoSaveFile(const QUrl &filename, QObject *parent = 0);
 
     /**
      * @overload
@@ -165,7 +165,7 @@ public:
      * application. To get the name of the temporary file where data
      * can be saved, use fileName() (after you have called open()).
      */
-    KUrl managedFile() const;
+    QUrl managedFile() const;
 
     /**
      * Sets the URL of the file managed by KAutoSaveFile. This should
@@ -174,7 +174,7 @@ public:
      *
      * @param filename the filename that this KAutoSaveFile refers to
      */
-    void setManagedFile(const KUrl &filename);
+    void setManagedFile(const QUrl &filename);
 
     /**
      * Closes the autosave file resource and removes the lock
@@ -203,7 +203,7 @@ public:
     virtual bool open(OpenMode openmode);
 
     /**
-     * Checks for stale autosave files for @p filename. Returns a list
+     * Checks for stale autosave files for the file @p url. Returns a list
      * of autosave files that contain autosaved data left behind by
      * other instances of the application, due to crashing or
      * otherwise uncleanly exiting.
@@ -222,7 +222,7 @@ public:
      * the lock. Subsequent releaseLock() or deleting of the object will
      * then erase the stale autosave file.
      */
-    static QList<KAutoSaveFile *> staleFiles(const KUrl &filename,
+    static QList<KAutoSaveFile *> staleFiles(const QUrl &url,
                                              const QString &applicationName =
                                              QString());
 
