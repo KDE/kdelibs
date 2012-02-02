@@ -423,8 +423,12 @@ target_link_libraries(kdeui itemmodels sonnetcore kauth ${KDE4_KDECORE_LIBS} ${X
                             ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} kcoreaddons)
 
 if(NOT WINCE)
-target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY} ${DBUSMENUQT_LIBRARIES})
+target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY})
 endif(NOT WINCE)
+
+if(HAVE_DBUSMENUQT)
+  target_link_libraries(kdeui ${DBUSMENUQT_LIBRARIES})
+endif()
 
 if(MINGW)
    target_link_libraries(kdeui gdi32 oleaut32)
