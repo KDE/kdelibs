@@ -22,7 +22,7 @@
 #ifndef BREADCRUBS_WIDGET_H
 #define BREADCRUBS_WIDGET_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QItemSelection>
 #include <QLabel>
 #include <QListView>

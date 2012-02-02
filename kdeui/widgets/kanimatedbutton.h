@@ -20,7 +20,7 @@
 #define KANIMATEDBUTTON_H
 
 #include <kdeui_export.h>
-#include <QtGui/QToolButton>
+#include <QToolButton>
 
 /**
  * @short An extended version of QToolButton which can display an animated icon.

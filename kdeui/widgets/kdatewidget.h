@@ -22,7 +22,7 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 #include "klocale.h"
 

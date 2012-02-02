@@ -21,8 +21,8 @@
 #ifndef KURLNAVIGATORBUTTONBASE_P_H
 #define KURLNAVIGATORBUTTONBASE_P_H
 
-#include <QtGui/QColor>
-#include <QtGui/QPushButton>
+#include <QColor>
+#include <QPushButton>
 
 class KUrl;
 class QEvent;

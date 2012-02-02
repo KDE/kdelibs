@@ -10,7 +10,7 @@
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QtWidgets/QIcon>
 #else
-#include <QtGui/QIcon>
+#include <QIcon>
 #endif
 #endif
 

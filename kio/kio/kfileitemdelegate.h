@@ -22,8 +22,8 @@
 #ifndef KFILEITEMDELEGATE_H
 #define KFILEITEMDELEGATE_H
 
-#include <QtGui/QAbstractItemDelegate>
-#include <QtGui/QTextOption>
+#include <QAbstractItemDelegate>
+#include <QTextOption>
 #include <kio/global.h>
 
 

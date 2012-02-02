@@ -19,7 +19,7 @@
 #ifndef KMESSAGEBOXWRAPPER_H
 #define KMESSAGEBOXWRAPPER_H
 #include <kmessagebox.h>
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <kdebug.h>
 
 /**

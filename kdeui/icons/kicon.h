@@ -21,7 +21,7 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QIcon>
+#include <QIcon>
 
 class KIconLoader;
 class QStringList;

@@ -40,12 +40,12 @@
 #include <QDesktopWidget>
 #include <QDockWidget>
 #include <QtXml/QDomDocument>
-#include <QtGui/QLayout>
+#include <QLayout>
 #include <QtCore/QObject>
-#include <QtGui/QSessionManager>
-#include <QtGui/QStyle>
+#include <QSessionManager>
+#include <QStyle>
 #include <QtCore/QTimer>
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QtCore/QList>
 #include <kaction.h>
 #include <kapplication.h>

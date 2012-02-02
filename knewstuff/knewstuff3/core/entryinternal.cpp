@@ -21,7 +21,7 @@
 #include "entryinternal.h"
 
 #include <QtCore/QStringList>
-#include <QtGui/QImage>
+#include <QImage>
 #include <kdebug.h>
 
 #include "core/xmlloader.h"

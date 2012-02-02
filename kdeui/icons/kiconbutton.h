@@ -16,7 +16,7 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QPushButton>
+#include <QPushButton>
 
 #include <kiconloader.h>
 

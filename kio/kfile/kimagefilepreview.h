@@ -12,7 +12,7 @@
 #ifndef KIMAGEFILEPREVIEW_H
 #define KIMAGEFILEPREVIEW_H
 
-#include <QtGui/QPixmap>
+#include <QPixmap>
 
 #include <kurl.h>
 #include <kpreviewwidgetbase.h>

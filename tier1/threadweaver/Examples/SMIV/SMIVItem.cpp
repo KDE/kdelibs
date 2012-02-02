@@ -17,7 +17,7 @@
 #include "SMIVItem.h"
 
 #include <QtCore/QStringList>
-#include <QtGui/QImage>
+#include <QImage>
 #include <QtCore/QTimer>
 #include <QtCore/QFileInfo>
 

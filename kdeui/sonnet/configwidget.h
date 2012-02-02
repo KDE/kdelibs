@@ -20,7 +20,7 @@
 #ifndef SONNET_CONFIGWIDGET_H
 #define SONNET_CONFIGWIDGET_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <kdeui_export.h>
 
 class KConfig;

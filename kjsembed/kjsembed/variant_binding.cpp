@@ -32,7 +32,7 @@
 #include <QtCore/QByteRef>
 #include <QtCore/QDebug>
 #include <QtCore/QObject>
-#include <QtGui/QWidget>
+#include <QWidget>
 
 #include "kjseglobal.h"
 #include "static_binding.h"

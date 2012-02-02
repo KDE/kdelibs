@@ -42,8 +42,8 @@
 
 #include <kglobal.h>
 
-#include <QtGui/QApplication>
-#include <QtGui/QStyle>
+#include <QApplication>
+#include <QStyle>
 
 #include <kdebug.h>
 #include <assert.h>

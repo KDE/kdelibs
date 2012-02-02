@@ -31,25 +31,25 @@
 
 #include <kstyle.h>
 
-#include <QtGui/QColor>
-#include <QtGui/QCursor>
-#include <QtGui/QDesktopWidget>
+#include <QColor>
+#include <QCursor>
+#include <QDesktopWidget>
 #include <QtCore/QDir>
-#include <QtGui/QFont>
-#include <QtGui/QFontDatabase>
-#include <QtGui/QFontInfo>
-#include <QtGui/QKeySequence>
-#include <QtGui/QPixmap>
-#include <QtGui/QPixmapCache>
+#include <QFont>
+#include <QFontDatabase>
+#include <QFontInfo>
+#include <QKeySequence>
+#include <QPixmap>
+#include <QPixmapCache>
 #include <QApplication>
 #include <QtDBus/QtDBus>
-#include <QtGui/QStyleFactory>
+#include <QStyleFactory>
 #include <qstandardpaths.h>
 #include <qplatformdefs.h>
 
 // next two needed so we can set their palettes
-#include <QtGui/QToolTip>
-#include <QtGui/QWhatsThis>
+#include <QToolTip>
+#include <QWhatsThis>
 
 #ifdef Q_WS_WIN
 #include <windows.h>

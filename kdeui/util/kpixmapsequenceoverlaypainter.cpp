@@ -20,10 +20,10 @@
 #include "kpixmapsequenceoverlaypainter.h"
 #include "kpixmapsequence.h"
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QtCore/QPoint>
 #include <QtCore/QRect>
-#include <QtGui/QPainter>
+#include <QPainter>
 #include <QtCore/QTimer>
 #include <QtCore/QEvent>
 #include <QtCore/QPointer>

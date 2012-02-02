@@ -31,8 +31,8 @@
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusReply>
 #include <QtDBus/QDBusVariant>
-#include <QtGui/QApplication>
-#include <QtGui/QWidget>
+#include <QApplication>
+#include <QWidget>
 
 #include <unistd.h>
 #include <stdlib.h>

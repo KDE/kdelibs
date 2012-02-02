@@ -19,8 +19,8 @@
 
 #include "kcmodulecontainer.h"
 
-#include <QtGui/QLayout>
-#include <QtGui/QPixmap>
+#include <QLayout>
+#include <QPixmap>
 #include <QtCore/QStringList>
 
 #include <kcmodule.h>

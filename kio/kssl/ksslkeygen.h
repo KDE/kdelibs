@@ -25,7 +25,7 @@
 #include <kio/kio_export.h>
 
 #include <QtCore/QStringList>
-#include <QtGui/QWizard>
+#include <QWizard>
 
 
 class KSSLKeyGenPrivate;

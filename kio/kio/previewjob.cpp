@@ -34,7 +34,7 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QFile>
-#include <QtGui/QImage>
+#include <QImage>
 #include <QtCore/QTimer>
 #include <QtCore/QRegExp>
 #include <qtemporaryfile.h>

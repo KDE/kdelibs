@@ -21,7 +21,7 @@
 #define PHONON_UI_MEDIACONTROLS_H
 
 #include <phonon/phononnamespace.h>
-#include <QtGui/QWidget>
+#include <QWidget>
 
 namespace Phonon
 {

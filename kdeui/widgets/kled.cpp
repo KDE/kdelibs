@@ -22,10 +22,10 @@
 
 #include <kcolorutils.h>
 
-#include <QtGui/QPainter>
-#include <QtGui/QImage>
-#include <QtGui/QStyle>
-#include <QtGui/QStyleOption>
+#include <QPainter>
+#include <QImage>
+#include <QStyle>
+#include <QStyleOption>
 
 class KLed::Private
 {

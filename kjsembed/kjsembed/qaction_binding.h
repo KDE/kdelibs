@@ -24,8 +24,8 @@
 #define QACTION_BINDING_H
 
 #include <QtCore/QObject>
-#include <QtGui/QAction>
-//#include <QtGui/QActionGroup>
+#include <QAction>
+//#include <QActionGroup>
 
 #include "qobject_binding.h" //krazy:exclude=includes (not a Qt header)
 

@@ -25,7 +25,7 @@
 #include <kdeui_export.h>
 
 #include <QtCore/QStringList>
-#include <QtGui/QValidator>
+#include <QValidator>
 
 /**
  * @short A QValidator to (dis)allow certain strings

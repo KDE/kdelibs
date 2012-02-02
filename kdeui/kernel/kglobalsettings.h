@@ -22,7 +22,7 @@
 #include <ksharedconfig.h>
 #include <QtCore/QObject>
 #include <QtCore/QString>
-#include <QtGui/QPalette>
+#include <QPalette>
 
 #define KDE_DEFAULT_SINGLECLICK true
 #define KDE_DEFAULT_SMOOTHSCROLL true

@@ -26,11 +26,11 @@
 
 #include "kfiledialog.h"
 
-#include <QtGui/QCheckBox>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QFileDialog>
-#include <QtGui/QApplication>
-#include <QtGui/QDesktopWidget>
+#include <QCheckBox>
+#include <QKeyEvent>
+#include <QFileDialog>
+#include <QApplication>
+#include <QDesktopWidget>
 
 #include <kimageio.h>
 #include <klocale.h>

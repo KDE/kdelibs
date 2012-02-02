@@ -21,10 +21,10 @@
 
 #include "kwindowsystem.h"
 
-#include <QtGui/QDesktopWidget>
-#include <QtGui/QIcon>
-#include <QtGui/QBitmap>
-#include <QtGui/QPixmap>
+#include <QDesktopWidget>
+#include <QIcon>
+#include <QBitmap>
+#include <QPixmap>
 #include <QtCore/QLibrary>
 
 #include "kglobal.h"

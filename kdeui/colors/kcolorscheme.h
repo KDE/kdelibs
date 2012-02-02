@@ -25,7 +25,7 @@
 
 #include <QtCore/QExplicitlySharedDataPointer>
 
-#include <QtGui/QPalette>
+#include <QPalette>
 
 class QColor;
 class QBrush;

@@ -30,7 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QChildEvent>
-#include <QtGui/QWidgetList>
+#include <QWidgetList>
 
 #include <sys/types.h>
 

@@ -31,7 +31,7 @@
 
 #include <QtCore/QList>
 #include <QtCore/QMetaType>
-#include <QtGui/QKeySequence>
+#include <QKeySequence>
 
 class KShortcutPrivate;
 

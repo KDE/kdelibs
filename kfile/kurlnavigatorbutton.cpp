@@ -31,9 +31,9 @@
 #include <kstringhandler.h>
 
 #include <QtCore/QTimer>
-#include <QtGui/QPainter>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QStyleOption>
+#include <QPainter>
+#include <QKeyEvent>
+#include <QStyleOption>
 
 namespace KDEPrivate
 {

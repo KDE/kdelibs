@@ -23,16 +23,16 @@
 #include <QtSvg/QSvgRenderer>
 #endif
 
-#include <QtGui/QApplication>
-#include <QtGui/QGroupBox>
-#include <QtGui/QLayout>
-#include <QtGui/QLabel>
+#include <QApplication>
+#include <QGroupBox>
+#include <QLayout>
+#include <QLabel>
 #include <QtCore/QTimer>
-#include <QtGui/QRadioButton>
+#include <QRadioButton>
 #include <QtCore/QFileInfo>
-#include <QtGui/QProgressBar>
-#include <QtGui/QPainter>
-#include <QtGui/QScrollBar>
+#include <QProgressBar>
+#include <QPainter>
+#include <QScrollBar>
 
 
 /**

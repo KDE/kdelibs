@@ -21,10 +21,10 @@
 #include "kfiletreebranch.h"
 
 #include <Qt3Support/Q3Header>
-#include <QtGui/QKeyEvent>
+#include <QKeyEvent>
 #include <QtCore/QTimer>
 #include <QtCore/QDir>
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <kdebug.h>
 #include <kglobalsettings.h>
 #include <kfileitem.h>

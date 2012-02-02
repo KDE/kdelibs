@@ -30,7 +30,7 @@
 #include "misc/loader_client.h"
 #include "html/html_canvasimpl.h"
 
-#include <QtGui/QPainterPath>
+#include <QPainterPath>
 
 namespace DOM {
    class HTMLElementImpl;

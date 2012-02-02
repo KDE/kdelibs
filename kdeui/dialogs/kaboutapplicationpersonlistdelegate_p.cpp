@@ -28,8 +28,8 @@
 #include <kstandarddirs.h>
 #include <ktoolinvocation.h>
 
-#include <QtGui/QApplication>
-#include <QtGui/QPainter>
+#include <QApplication>
+#include <QPainter>
 
 namespace KDEPrivate
 {

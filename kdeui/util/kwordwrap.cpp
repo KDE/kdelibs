@@ -19,7 +19,7 @@
 #include "kwordwrap.h"
 #include <kdebug.h>
 
-#include <QtGui/QPainter>
+#include <QPainter>
 #include <QtCore/QMutableVectorIterator>
 
 class KWordWrapPrivate {

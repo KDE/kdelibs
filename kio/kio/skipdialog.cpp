@@ -21,10 +21,10 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include <QtGui/QMessageBox>
-#include <QtGui/QWidget>
-#include <QtGui/QLayout>
-#include <QtGui/QLabel>
+#include <QMessageBox>
+#include <QWidget>
+#include <QLayout>
+#include <QLabel>
 
 #include <klocale.h>
 #include <kurl.h>

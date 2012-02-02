@@ -22,7 +22,7 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QTreeWidget>
+#include <QTreeWidget>
 
 class KTimeZone;
 class KTimeZones;

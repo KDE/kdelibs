@@ -28,8 +28,8 @@
 #include <QtCore/QList>
 #include <QtCore/QSet>
 #include <QtCore/QString>
-#include <QtGui/QLabel>
-#include <QtGui/QWidget>
+#include <QLabel>
+#include <QWidget>
 
 #include <kpagewidgetmodel.h>
 #include <kservice.h>

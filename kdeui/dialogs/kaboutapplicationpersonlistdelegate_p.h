@@ -20,7 +20,7 @@
 
 #include <kwidgetitemdelegate.h>
 
-#include <QtGui/QLabel>
+#include <QLabel>
 
 namespace KDEPrivate
 {

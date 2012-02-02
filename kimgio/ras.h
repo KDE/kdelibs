@@ -11,7 +11,7 @@
 #ifndef KIMG_RAS_H
 #define KIMG_RAS_H
 
-#include <QtGui/QImageIOPlugin>
+#include <QImageIOPlugin>
 
 class RASHandler : public QImageIOHandler
 {

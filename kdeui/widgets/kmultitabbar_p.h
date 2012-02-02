@@ -24,7 +24,7 @@
 
 #ifndef K_MULTI_TAB_BAR_P_H
 #define K_MULTI_TAB_BAR_P_H
-#include <QtGui/QScrollArea>
+#include <QScrollArea>
 #include <kmultitabbar.h>
 
 class KMultiTabBarInternal: public QFrame

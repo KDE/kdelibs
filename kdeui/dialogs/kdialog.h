@@ -32,7 +32,7 @@ class KDialogPrivate;
 #include <kconfiggroup.h>
 #include <kguiitem.h>
 
-#include <QtGui/QDialog>
+#include <QDialog>
 
 /**
  * @short A dialog base class with standard buttons and predefined layouts.

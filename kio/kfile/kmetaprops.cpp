@@ -26,9 +26,9 @@
 #include <klocale.h>
 
 #include <QtCore/QPointer>
-#include <QtGui/QLabel>
-#include <QtGui/QScrollArea>
-#include <QtGui/QVBoxLayout>
+#include <QLabel>
+#include <QScrollArea>
+#include <QVBoxLayout>
 
 using namespace KDEPrivate;
 

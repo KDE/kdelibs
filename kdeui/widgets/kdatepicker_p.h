@@ -25,8 +25,8 @@
 #include <kcalendarsystem.h>
 
 #include <QtCore/QDate>
-#include <QtGui/QLineEdit>
-#include <QtGui/QValidator>
+#include <QLineEdit>
+#include <QValidator>
 
 /** Year selection widget.
 * @internal

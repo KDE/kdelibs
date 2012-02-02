@@ -30,7 +30,7 @@
 //#define CLIP_DEBUG
 
 
-#include <QtGui/QPainter>
+#include <QPainter>
 
 #include "misc/loader.h"
 #include "rendering/render_form.h"

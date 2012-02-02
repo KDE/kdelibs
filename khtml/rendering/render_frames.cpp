@@ -40,9 +40,9 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <QtCore/QTimer>
-#include <QtGui/QPainter>
-#include <QtGui/QCursor>
-#include <QtGui/QApplication>
+#include <QPainter>
+#include <QCursor>
+#include <QApplication>
 
 using namespace khtml;
 using namespace DOM;

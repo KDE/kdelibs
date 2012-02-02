@@ -37,7 +37,7 @@
 #include <QCheckBox>
 #include <QFile>
 #include <QFileInfo>
-#include <QtGui/QFrame>
+#include <QFrame>
 #include <QLabel>
 #include <QLayout>
 #include <QFormLayout>

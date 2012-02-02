@@ -23,7 +23,7 @@
 
 #include <math.h>
 
-#include <QtGui/QActionEvent>
+#include <QActionEvent>
 #include <QHash>
 #include <QPainter>
 #include <QPixmap>

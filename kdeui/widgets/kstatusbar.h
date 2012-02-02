@@ -23,7 +23,7 @@
 #define KSTATUSBAR_H
 
 #include <kdeui_export.h>
-#include <QtGui/QStatusBar>
+#include <QStatusBar>
 
 class QObject;
 class QEvent;

@@ -24,9 +24,9 @@
 #include <QtTest/QTestEvent>
 
 #include <QtCore/QList>
-#include <QtGui/QRadioButton>
+#include <QRadioButton>
 #include <QtTest/QSignalSpy>
-#include <QtGui/QBoxLayout>
+#include <QBoxLayout>
 
 #include "kbuttongrouptest.h"
 #include "kbuttongroup.h"

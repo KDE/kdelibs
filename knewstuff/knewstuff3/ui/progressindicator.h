@@ -21,7 +21,7 @@
 #ifndef KNEWSTUFF3_UI_PROGRESSINDICATOR_H
 #define KNEWSTUFF3_UI_PROGRESSINDICATOR_H
 
-#include <QtGui/QFrame>
+#include <QFrame>
 #include <kpixmapsequence.h>
 
 class QVBoxLayout;

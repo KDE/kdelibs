@@ -25,9 +25,9 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QAbstractSlider>
-#include <QtGui/QGradient>
-#include <QtGui/QWidget>
+#include <QAbstractSlider>
+#include <QGradient>
+#include <QWidget>
 
 /**
  * KSelector is the base class for other widgets which

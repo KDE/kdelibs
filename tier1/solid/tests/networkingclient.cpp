@@ -18,8 +18,8 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QtGui/QLabel>
-#include <QtGui/QPushButton>
+#include <QLabel>
+#include <QPushButton>
 
 #include <qdebug.h>
 

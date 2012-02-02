@@ -28,10 +28,10 @@
 
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
-#include <QtGui/QBoxLayout>
-#include <QtGui/QHeaderView>
-#include <QtGui/QTreeView>
-#include <QtGui/QLabel>
+#include <QBoxLayout>
+#include <QHeaderView>
+#include <QTreeView>
+#include <QLabel>
 
 #include <kapplication.h>
 //#include <kdeversion.h>

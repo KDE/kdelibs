@@ -28,18 +28,18 @@
 #include <math.h>
 
 #include <QtCore/QSysInfo>
-#include <QtGui/QApplication>
-#include <QtGui/QPaintEngine>
-#include <QtGui/QDesktopWidget>
+#include <QApplication>
+#include <QPaintEngine>
+#include <QDesktopWidget>
 #include <QtCore/QCharRef>
 #include <QtCore/QMutableStringListIterator>
-#include <QtGui/QBitmap>
-#include <QtGui/QPixmap>
-#include <QtGui/QImage>
-#include <QtGui/QColor>
-#include <QtGui/QWidget>
-#include <QtGui/QPainter>
-#include <QtGui/QPen>
+#include <QBitmap>
+#include <QPixmap>
+#include <QImage>
+#include <QColor>
+#include <QWidget>
+#include <QPainter>
+#include <QPen>
 
 #include <kdebug.h>
 #include <kglobal.h>

@@ -21,7 +21,7 @@
 #ifndef SONNET_HIGHLIGHTER_H
 #define SONNET_HIGHLIGHTER_H
 
-#include <QtGui/QSyntaxHighlighter>
+#include <QSyntaxHighlighter>
 #include <QtCore/QStringList>
 #include <kdemacros.h>
 #include <kdeui_export.h>

@@ -28,7 +28,7 @@
 #ifndef RENDER_TABLE_H
 #define RENDER_TABLE_H
 
-#include <QtGui/QColor>
+#include <QColor>
 #include <QVector>
 
 #include "rendering/render_box.h"

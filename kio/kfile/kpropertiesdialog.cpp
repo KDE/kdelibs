@@ -61,15 +61,15 @@ extern "C" {
 
 #include <QtCore/QFile>
 #include <QtCore/QDir>
-#include <QtGui/QLabel>
-#include <QtGui/QPushButton>
-#include <QtGui/QCheckBox>
+#include <QLabel>
+#include <QPushButton>
+#include <QCheckBox>
 #include <QtCore/QMutableStringListIterator>
 #include <QtCore/QTextIStream>
-#include <QtGui/QPainter>
-#include <QtGui/QLayout>
-#include <QtGui/QStyle>
-#include <QtGui/QProgressBar>
+#include <QPainter>
+#include <QLayout>
+#include <QStyle>
+#include <QProgressBar>
 #include <QVector>
 #include <QFileInfo>
 

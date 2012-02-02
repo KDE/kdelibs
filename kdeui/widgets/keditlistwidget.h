@@ -23,8 +23,8 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QWidget>
-#include <QtGui/QStringListModel>
+#include <QWidget>
+#include <QStringListModel>
 
 class KLineEdit;
 class KComboBox;

@@ -24,7 +24,7 @@
 
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
-#include <QtGui/QTextDocument>
+#include <QTextDocument>
 #include <QtCore/QtAlgorithms>
 
 #include <kio/netaccess.h>

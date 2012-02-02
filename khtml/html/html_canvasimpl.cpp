@@ -75,8 +75,8 @@
 #include <QtCore/QCharRef>
 #include <QtCore/QPoint>
 #include <QtCore/QLocale>
-#include <QtGui/QRegion>
-#include <QtGui/QImage>
+#include <QRegion>
+#include <QImage>
 #include <QDebug>
 #include <cmath>
 #include <limits>

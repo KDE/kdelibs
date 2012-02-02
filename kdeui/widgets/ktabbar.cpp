@@ -22,9 +22,9 @@
 #include "ktabbar.h"
 
 #include <QtCore/QTimer>
-#include <QtGui/QApplication>
-#include <QtGui/QCursor>
-#include <QtGui/QMouseEvent>
+#include <QApplication>
+#include <QCursor>
+#include <QMouseEvent>
 
 #include <kglobalsettings.h>
 

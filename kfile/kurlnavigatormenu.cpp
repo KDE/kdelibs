@@ -21,7 +21,7 @@
 
 #include "kurlnavigatormenu_p.h"
 
-#include <QtGui/QKeyEvent>
+#include <QKeyEvent>
 
 namespace KDEPrivate
 {

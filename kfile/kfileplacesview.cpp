@@ -23,11 +23,11 @@
 
 #include <QtCore/QTimeLine>
 #include <QtCore/QTimer>
-#include <QtGui/QPainter>
-#include <QtGui/QAbstractItemDelegate>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QApplication>
-#include <QtGui/QScrollBar>
+#include <QPainter>
+#include <QAbstractItemDelegate>
+#include <QKeyEvent>
+#include <QApplication>
+#include <QScrollBar>
 
 #include <kdebug.h>
 

@@ -24,9 +24,9 @@
 #ifndef KNEWSTUFF3_UI_DOWNLOADWIDGET_P_H
 #define KNEWSTUFF3_UI_DOWNLOADWIDGET_P_H
 
-#include <QtGui/QSortFilterProxyModel>
+#include <QSortFilterProxyModel>
 #include <QtCore/QTimer>
-#include <QtGui/QScrollBar>
+#include <QScrollBar>
 #include <QListView>
 #include <kmessagebox.h>
 #include <kcomponentdata.h>

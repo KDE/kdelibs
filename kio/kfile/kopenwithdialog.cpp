@@ -26,11 +26,11 @@
 
 #include <QtCore/QtAlgorithms>
 #include <QtCore/QList>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
-#include <QtGui/QCheckBox>
-#include <QtGui/QStyle>
-#include <QtGui/QStyleOptionButton>
+#include <QLabel>
+#include <QLayout>
+#include <QCheckBox>
+#include <QStyle>
+#include <QStyleOptionButton>
 #include <qstandardpaths.h>
 
 #include <kauthorized.h>

@@ -28,14 +28,14 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include <QtGui/QAction>
+#include <QAction>
 #include <QtCore/QCharRef>
 #include <QtCore/QMutableStringListIterator>
 #include <QtCore/QMap>
 #include <QtCore/QSet>
-#include <QtGui/QPixmap>
-#include <QtGui/QPixmapCache>
-#include <QtGui/QImage>
+#include <QPixmap>
+#include <QPixmapCache>
+#include <QImage>
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
 

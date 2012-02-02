@@ -19,8 +19,8 @@
 
 #include "kimagecache.h"
 
-#include <QtGui/QPixmap>
-#include <QtGui/QImage>
+#include <QPixmap>
+#include <QImage>
 #include <QtCore/QBuffer>
 #include <QtCore/QCache>
 #include <QtCore/QCoreApplication>

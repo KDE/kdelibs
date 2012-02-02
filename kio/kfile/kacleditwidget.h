@@ -24,7 +24,7 @@
 
 #if defined(HAVE_POSIX_ACL) || defined(Q_MOC_RUN)
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 #include <kacl.h>
 

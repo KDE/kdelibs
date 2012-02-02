@@ -20,7 +20,7 @@
 #ifndef KPROGRESSDIALOG_H
 #define KPROGRESSDIALOG_H
 
-#include <QtGui/QProgressBar>
+#include <QProgressBar>
 
 #include <kdialog.h>
 

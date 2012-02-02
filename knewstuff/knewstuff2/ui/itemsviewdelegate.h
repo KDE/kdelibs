@@ -24,9 +24,9 @@
 #include <QtCore/QMap>
 #include <QtCore/QModelIndex>
 #include <QtCore/QObject>
-#include <QtGui/QImage>
-#include <QtGui/QLabel>
-#include <QtGui/QToolButton>
+#include <QImage>
+#include <QLabel>
+#include <QToolButton>
 
 #include <knewstuff2/core/entry.h>
 #include <knewstuff2/ui/downloaddialog.h>

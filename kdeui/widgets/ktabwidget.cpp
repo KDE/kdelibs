@@ -21,14 +21,14 @@
 
 #include "ktabwidget.h"
 
-#include <QtGui/QApplication>
-#include <QtGui/QDragMoveEvent>
-#include <QtGui/QDropEvent>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QStyle>
-#include <QtGui/QStyleOption>
-#include <QtGui/QTextDocument>
-#include <QtGui/QWheelEvent>
+#include <QApplication>
+#include <QDragMoveEvent>
+#include <QDropEvent>
+#include <QMouseEvent>
+#include <QStyle>
+#include <QStyleOption>
+#include <QTextDocument>
+#include <QWheelEvent>
 #include <QtCore/QList>
 
 #include <ksharedconfig.h>

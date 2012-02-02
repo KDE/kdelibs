@@ -18,10 +18,10 @@
  */
 
 
-#include <QtGui/QApplication>
-#include <QtGui/QLayout>
-#include <QtGui/QWidget>
-#include <QtGui/QBoxLayout>
+#include <QApplication>
+#include <QLayout>
+#include <QWidget>
+#include <QBoxLayout>
 
 #include "kseparator.h"
 

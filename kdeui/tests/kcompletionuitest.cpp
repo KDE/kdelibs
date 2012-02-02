@@ -1,8 +1,8 @@
-#include <QtGui/QLabel>
-#include <QtGui/QListWidget>
-#include <QtGui/QPushButton>
-#include <QtGui/QLayout>
-#include <QtGui/QGroupBox>
+#include <QLabel>
+#include <QListWidget>
+#include <QPushButton>
+#include <QLayout>
+#include <QGroupBox>
 
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>

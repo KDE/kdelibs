@@ -30,7 +30,7 @@
 #include "rawimageplane.h"
 #include "scaledimageplane.h"
 
-#include <QtGui/QPainter>
+#include <QPainter>
 #include <limits.h>
 #include <kdebug.h>
 #include <config.h> //For endian

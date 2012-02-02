@@ -1,6 +1,6 @@
 #include "kpixmapregionselectordialog.h"
-#include <QtGui/QPixmap>
-#include <QtGui/QImage>
+#include <QPixmap>
+#include <QImage>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <iostream>

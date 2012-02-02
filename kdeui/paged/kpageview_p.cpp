@@ -22,11 +22,11 @@
 
 #include "kpageview_p.h"
 
-#include <QtGui/QApplication>
-#include <QtGui/QHeaderView>
-#include <QtGui/QPainter>
-#include <QtGui/QTextLayout>
-#include <QtGui/QVBoxLayout>
+#include <QApplication>
+#include <QHeaderView>
+#include <QPainter>
+#include <QTextLayout>
+#include <QVBoxLayout>
 
 #include <kdialog.h>
 #include <kiconloader.h>

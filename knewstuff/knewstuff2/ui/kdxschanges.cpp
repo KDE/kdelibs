@@ -21,9 +21,9 @@
 #include <klocale.h>
 #include <ktextbrowser.h>
 
-#include <QtGui/QTextDocument>
-#include <QtGui/QLayout>
-#include <QtGui/QApplication>
+#include <QTextDocument>
+#include <QLayout>
+#include <QApplication>
 
 KDXSChanges::KDXSChanges(QWidget *parent)
         : KDialog(parent)

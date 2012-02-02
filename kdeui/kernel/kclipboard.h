@@ -22,7 +22,7 @@
 #include <kdeui_export.h>
 
 #include <QtCore/QObject>
-#include <QtGui/QClipboard>
+#include <QClipboard>
 
 class QMimeData;
 

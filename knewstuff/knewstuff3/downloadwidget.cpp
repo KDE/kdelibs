@@ -25,8 +25,8 @@
 #include "downloadwidget_p.h"
 
 #include <QtCore/QTimer>
-#include <QtGui/QScrollBar>
-#include <QtGui/QKeyEvent>
+#include <QScrollBar>
+#include <QKeyEvent>
 
 #include <kmessagebox.h>
 #include <kcomponentdata.h>

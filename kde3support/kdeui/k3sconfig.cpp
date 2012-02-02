@@ -20,10 +20,10 @@
 
 #include "k3sconfig.h"
 
-#include <QtGui/QCheckBox>
-#include <QtGui/QComboBox>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QLabel>
+#include <QLayout>
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
 

@@ -20,7 +20,7 @@
  * Boston, MA 02110-1301, USA.
  */
 #include "kqeventutil.h"
-#include <QtGui/QKeyEvent>
+#include <QKeyEvent>
 
 QString KQEventUtil::getQtEventName( QEvent* e )
 {

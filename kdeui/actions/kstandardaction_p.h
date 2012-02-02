@@ -19,7 +19,7 @@
 #ifndef KSTANDARDACTION_PRIVATE_H
 #define KSTANDARDACTION_PRIVATE_H
 
-#include <QtGui/QApplication>
+#include <QApplication>
 
 #include <kaction.h>
 #include <klocale.h>

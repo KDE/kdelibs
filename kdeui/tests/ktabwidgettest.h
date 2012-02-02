@@ -2,15 +2,15 @@
 #define KTABWIDGETTEST_H
 
 #include <kiconloader.h>
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <ktabwidget.h>
-#include <QtGui/QLabel>
-#include <QtGui/QPushButton>
+#include <QLabel>
+#include <QPushButton>
 #include <stdlib.h>
 #include <kvbox.h>
 #include <time.h>
-#include <QtGui/QCheckBox>
-#include <QtGui/QToolButton>
+#include <QCheckBox>
+#include <QToolButton>
 
 class Test : public KVBox
 {

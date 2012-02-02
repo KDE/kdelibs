@@ -20,8 +20,8 @@
 #ifndef KFONTREQUESTER_H
 #define KFONTREQUESTER_H
 
-#include <QtGui/QWidget>
-#include <QtGui/QFont>
+#include <QWidget>
+#include <QFont>
 #include <QtCore/QString>
 
 #include <kdeui_export.h>

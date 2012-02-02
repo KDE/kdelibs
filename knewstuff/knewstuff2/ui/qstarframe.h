@@ -19,7 +19,7 @@
 #ifndef KNEWSTUFF2_UI_QSTARFRAME_H
 #define KNEWSTUFF2_UI_QSTARFRAME_H
 
-#include <QtGui/QFrame>
+#include <QFrame>
 
 /**
  * Rating visualization class.

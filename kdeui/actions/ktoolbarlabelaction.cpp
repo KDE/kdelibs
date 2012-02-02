@@ -20,8 +20,8 @@
 #include "ktoolbar.h"
 
 #include <QtCore/QPointer>
-#include <QtGui/QApplication>
-#include <QtGui/QLabel>
+#include <QApplication>
+#include <QLabel>
 
 class KToolBarLabelAction::Private
 {

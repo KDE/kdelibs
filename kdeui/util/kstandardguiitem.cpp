@@ -18,7 +18,7 @@
 
 #include "kstandardguiitem.h"
 
-#include <QtGui/QApplication>
+#include <QApplication>
 
 #include <kguiitem.h>
 #include <klocale.h>

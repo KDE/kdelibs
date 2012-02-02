@@ -28,7 +28,7 @@
 #ifndef KWIDGETITEMDELEGATE_P_H
 #define KWIDGETITEMDELEGATE_P_H
 
-#include <QtGui/QItemSelectionModel>
+#include <QItemSelectionModel>
 
 class KWidgetItemDelegate;
 

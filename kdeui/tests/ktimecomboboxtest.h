@@ -20,7 +20,7 @@
 #ifndef KTIMECOMBOBOXTEST_H
 #define KTIMECOMBOBOXTEST_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 class KTimeComboBox;
 

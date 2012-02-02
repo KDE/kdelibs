@@ -20,8 +20,8 @@
 #include "ktimecombobox.h"
 
 #include <QtCore/QTime>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QLineEdit>
+#include <QKeyEvent>
+#include <QLineEdit>
 
 #include "kglobal.h"
 #include "kdebug.h"

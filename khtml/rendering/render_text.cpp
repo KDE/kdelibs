@@ -38,9 +38,9 @@
 #include <misc/loader.h>
 #include <misc/helper.h>
 
-#include <QtGui/QBitmap>
-#include <QtGui/QImage>
-#include <QtGui/QPainter>
+#include <QBitmap>
+#include <QImage>
+#include <QPainter>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <assert.h>

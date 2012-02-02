@@ -19,10 +19,10 @@
  */
 
 
-#include <QtGui/QMenu>
-#include <QtGui/QLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QMenuItem>
+#include <QMenu>
+#include <QLayout>
+#include <QPushButton>
+#include <QMenuItem>
 
 #include "klanguagebutton.h"
 

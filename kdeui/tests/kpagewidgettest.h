@@ -22,7 +22,7 @@
 #ifndef KPAGEWIDGETTEST_H
 #define KPAGEWIDGETTEST_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 #include "kpagewidget.h"
 

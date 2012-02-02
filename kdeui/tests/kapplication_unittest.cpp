@@ -23,8 +23,8 @@
 QTEST_KDEMAIN( KApplication_UnitTest, GUI )
 
 #include <kstandarddirs.h>
-#include <QtGui/QClipboard>
-#include <QtGui/QApplication>
+#include <QClipboard>
+#include <QApplication>
 
 #if 0
 

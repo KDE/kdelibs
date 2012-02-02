@@ -22,10 +22,10 @@
 #ifndef html_helper_h
 #define html_helper_h
 
-#include <QtGui/QColor>
+#include <QColor>
 class QPainter;
-#include <QtGui/QFontMetrics>
-#include <QtGui/QFont>
+#include <QFontMetrics>
+#include <QFont>
 
 
 

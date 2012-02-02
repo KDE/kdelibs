@@ -42,8 +42,8 @@
 #include <QtCore/QCharRef>
 #include <QtCore/QPoint>
 #include <QtCore/QStack>
-#include <QtGui/QRegion>
-#include <QtGui/QImage>
+#include <QRegion>
+#include <QImage>
 
 using namespace DOM;
 using namespace khtml;

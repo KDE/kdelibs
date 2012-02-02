@@ -23,15 +23,15 @@
 #include "kdatepicker_p.h"
 #include "kdatetable.h"
 
-#include <QtGui/QApplication>
-#include <QtGui/QFont>
-#include <QtGui/QLayout>
+#include <QApplication>
+#include <QFont>
+#include <QLayout>
 #include <QKeyEvent>
-#include <QtGui/QMenu>
-#include <QtGui/QPainter>
-#include <QtGui/QStyle>
-#include <QtGui/QToolButton>
-#include <QtGui/QDoubleValidator>
+#include <QMenu>
+#include <QPainter>
+#include <QStyle>
+#include <QToolButton>
+#include <QDoubleValidator>
 
 #include <kcalendarsystem.h>
 #include <klocalizeddate.h>

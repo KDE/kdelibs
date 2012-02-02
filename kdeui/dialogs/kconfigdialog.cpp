@@ -31,7 +31,7 @@
 #include <kpagewidgetmodel.h>
 #include <kvbox.h>
 
-#include <QtGui/QLayout>
+#include <QLayout>
 #include <QtCore/QMap>
 
 class KConfigDialog::KConfigDialogPrivate

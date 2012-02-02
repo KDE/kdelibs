@@ -25,7 +25,7 @@
 #include <kglobal.h>
 #include <klocale.h>
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusReply>

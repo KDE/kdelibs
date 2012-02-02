@@ -19,8 +19,8 @@
 
 #include <knotificationrestrictions.h>
 
-#include <QtGui/QApplication>
-#include <QtGui/QLabel>
+#include <QApplication>
+#include <QLabel>
 
 int main(int argc, char* argv[])
 {

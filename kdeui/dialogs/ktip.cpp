@@ -27,10 +27,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "ktip.h"
 
 #include <QtCore/QFile>
-#include <QtGui/QCheckBox>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
+#include <QCheckBox>
+#include <QKeyEvent>
+#include <QLabel>
+#include <QLayout>
 
 #include <kaboutdata.h>
 #include <kconfig.h>

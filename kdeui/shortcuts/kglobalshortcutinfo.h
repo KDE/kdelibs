@@ -22,7 +22,7 @@
 
 #include <QtCore/QList>
 #include <QtCore/QObject>
-#include <QtGui/QKeySequence>
+#include <QKeySequence>
 #include <QtDBus/QDBusArgument>
 
 

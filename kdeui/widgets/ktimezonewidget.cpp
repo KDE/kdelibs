@@ -21,7 +21,7 @@
 #include "ktimezonewidget.h"
 
 #include <QtCore/QFile>
-#include <QtGui/QPixmap>
+#include <QPixmap>
 
 #include <kdebug.h>
 #include <klocale.h>

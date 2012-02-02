@@ -19,17 +19,17 @@
   * Boston, MA 02110-1301, USA.
   */
 
-#include <QtGui/QApplication>
-#include <QtGui/QAbstractItemView>
-#include <QtGui/QListView>
-#include <QtGui/QStringListModel>
-#include <QtGui/QMainWindow>
-#include <QtGui/QPainter>
-#include <QtGui/QRadialGradient>
-#include <QtGui/QPaintEvent>
+#include <QApplication>
+#include <QAbstractItemView>
+#include <QListView>
+#include <QStringListModel>
+#include <QMainWindow>
+#include <QPainter>
+#include <QRadialGradient>
+#include <QPaintEvent>
 #include <QtCore/QDebug>
-#include <QtGui/QToolButton>
-#include <QtGui/QMenu>
+#include <QToolButton>
+#include <QMenu>
 
 #include <kapplication.h>
 #include <kaboutdata.h>
@@ -46,7 +46,7 @@
 #define EQUALLY_SIZED_TOOLBUTTONS 1
 
 #if EQUALLY_SIZED_TOOLBUTTONS
-#include <QtGui/QStyleOptionToolButton>
+#include <QStyleOptionToolButton>
 #endif
 
 class TestWidget

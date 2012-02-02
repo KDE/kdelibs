@@ -37,12 +37,12 @@
 #include <QtCore/QDataStream>
 #include <QtCore/QByteArray>
 #include <QtCore/QStringBuilder> // % operator for QString
-#include <QtGui/QIcon>
-#include <QtGui/QImage>
-#include <QtGui/QMovie>
-#include <QtGui/QPainter>
-#include <QtGui/QPixmap>
-#include <QtGui/QPixmapCache>
+#include <QIcon>
+#include <QImage>
+#include <QMovie>
+#include <QPainter>
+#include <QPixmap>
+#include <QPixmapCache>
 #ifndef _WIN32_WCE
 #include <QtSvg/QSvgRenderer>
 #endif

@@ -24,7 +24,7 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QFrame>
+#include <QFrame>
 
 class KVBox;
 class QSystemTrayIcon;

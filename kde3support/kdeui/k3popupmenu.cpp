@@ -19,10 +19,10 @@
 
 #include "k3popupmenu.h"
 
-#include <QtGui/QCursor>
-#include <QtGui/QPainter>
+#include <QCursor>
+#include <QPainter>
 #include <QtCore/QTimer>
-#include <QtGui/QFontMetrics>
+#include <QFontMetrics>
 #include <QKeyEvent>
 #include <QPointer>
 #include <QMenuItem>

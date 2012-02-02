@@ -24,8 +24,8 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QWidget>
-#include <QtGui/QSpinBox>
+#include <QWidget>
+#include <QSpinBox>
 
 class QSlider;
 class QSpinBox;

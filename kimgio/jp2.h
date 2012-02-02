@@ -7,7 +7,7 @@
 #ifndef KIMG_JP2_H
 #define KIMG_JP2_H
 
-#include <QtGui/QImageIOPlugin>
+#include <QImageIOPlugin>
 
 class JP2Handler : public QImageIOHandler
 {

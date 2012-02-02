@@ -21,9 +21,9 @@
 
 #include "moc_kswitchlanguagedialog_p.cpp"
 
-#include <QtGui/QApplication>
-#include <QtGui/QLayout>
-#include <QtGui/QLabel>
+#include <QApplication>
+#include <QLayout>
+#include <QLabel>
 #include <QtCore/QEvent>
 #include <QtCore/QMap>
 

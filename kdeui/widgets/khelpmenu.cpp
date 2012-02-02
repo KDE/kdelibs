@@ -24,9 +24,9 @@
 #include "khelpmenu.h"
 
 #include <QtCore/QTimer>
-#include <QtGui/QLabel>
-#include <QtGui/QWidget>
-#include <QtGui/QWhatsThis>
+#include <QLabel>
+#include <QWidget>
+#include <QWhatsThis>
 
 #include <kaboutapplicationdialog.h>
 #include <kaboutdata.h>

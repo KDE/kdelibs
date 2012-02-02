@@ -8,7 +8,7 @@
 #define _EPS_H
 
 
-#include <QtGui/QImageIOPlugin>
+#include <QImageIOPlugin>
 
 class EPSHandler : public QImageIOHandler
 {

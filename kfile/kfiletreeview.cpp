@@ -22,8 +22,8 @@
 #include "kfiletreeview.h"
 
 #include <QtCore/QDir>
-#include <QtGui/QContextMenuEvent>
-#include <QtGui/QMenu>
+#include <QContextMenuEvent>
+#include <QMenu>
 
 #include <kdirlister.h>
 #include <kdirmodel.h>

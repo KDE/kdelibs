@@ -1,4 +1,4 @@
-#include <QtGui/QToolBar>
+#include <QToolBar>
 #include <QtCore/QTextCodec>
 
 #include <kcmdlineargs.h>

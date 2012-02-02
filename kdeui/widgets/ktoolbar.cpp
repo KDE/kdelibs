@@ -29,11 +29,11 @@
 #include <config.h>
 
 #include <QtCore/QPointer>
-#include <QtGui/QDesktopWidget>
-#include <QtGui/QFrame>
-#include <QtGui/QLayout>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QToolButton>
+#include <QDesktopWidget>
+#include <QFrame>
+#include <QLayout>
+#include <QMouseEvent>
+#include <QToolButton>
 #include <QtXml/QDomElement>
 
 #include <kaction.h>

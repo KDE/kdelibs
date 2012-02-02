@@ -76,20 +76,20 @@
 #include <kstringhandler.h>
 #include <kconfiggroup.h>
 
-#include <QtGui/QBitmap>
-#include <QtGui/QLabel>
+#include <QBitmap>
+#include <QLabel>
 #include <QtCore/QObject>
-#include <QtGui/QPainter>
+#include <QPainter>
 #include <QtCore/QHash>
-#include <QtGui/QToolTip>
+#include <QToolTip>
 #include <QtCore/QString>
-#include <QtGui/QTextDocument>
+#include <QTextDocument>
 #include <QtCore/QTimer>
 #include <QtCore/QAbstractEventDispatcher>
 #include <QtCore/QVector>
-#include <QtGui/QAbstractScrollArea>
-#include <QtGui/QPrinter>
-#include <QtGui/QPrintDialog>
+#include <QAbstractScrollArea>
+#include <QPrinter>
+#include <QPrintDialog>
 
 //#define DEBUG_FLICKER
 

@@ -4,7 +4,7 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 
-#include <QtGui/QLabel>
+#include <QLabel>
 
 #define MAKE_WINDOW( kind, title ) do { \
   MainWin##kind * m = new MainWin##kind; \

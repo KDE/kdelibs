@@ -34,11 +34,11 @@
 #include <kprogressdialog.h>
 #include <kdebug.h>
 
-#include <QtGui/QListView>
-#include <QtGui/QStringListModel>
-#include <QtGui/QPushButton>
-#include <QtGui/QComboBox>
-#include <QtGui/QLabel>
+#include <QListView>
+#include <QStringListModel>
+#include <QPushButton>
+#include <QComboBox>
+#include <QLabel>
 #include <QtCore/QTimer>
 
 

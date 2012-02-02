@@ -21,14 +21,14 @@
 #include "kfinddialog.h"
 #include "kfinddialog_p.h"
 
-#include <QtGui/QCheckBox>
-#include <QtGui/QCursor>
-#include <QtGui/QGroupBox>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
-#include <QtGui/QLineEdit>
-#include <QtGui/QMenu>
-#include <QtGui/QPushButton>
+#include <QCheckBox>
+#include <QCursor>
+#include <QGroupBox>
+#include <QLabel>
+#include <QLayout>
+#include <QLineEdit>
+#include <QMenu>
+#include <QPushButton>
 #include <QtCore/QRegExp>
 #include <kcombobox.h>
 #include <khistorycombobox.h>

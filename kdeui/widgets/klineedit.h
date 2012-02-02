@@ -30,7 +30,7 @@
 #ifndef KLINEEDIT_H
 #define KLINEEDIT_H
 
-#include <QtGui/QLineEdit>
+#include <QLineEdit>
 
 #include <kcompletion.h>
 

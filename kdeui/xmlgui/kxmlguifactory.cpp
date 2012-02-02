@@ -29,7 +29,7 @@
 #include <QtXml/QDomDocument>
 #include <QtCore/QFile>
 #include <QtCore/QTextIStream>
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QtCore/QDate>
 #include <QtCore/QVariant>
 #include <QTextCodec>

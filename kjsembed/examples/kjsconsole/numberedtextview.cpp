@@ -22,14 +22,14 @@
 
 #include "numberedtextview.h"
 
-#include <QtGui/QTextDocument>
-#include <QtGui/QTextBlock>
-#include <QtGui/QTextEdit>
-#include <QtGui/QBoxLayout>
-#include <QtGui/QScrollBar>
-#include <QtGui/QPainter>
-#include <QtGui/QTextObjectInterface>
-#include <QtGui/QToolTip>
+#include <QTextDocument>
+#include <QTextBlock>
+#include <QTextEdit>
+#include <QBoxLayout>
+#include <QScrollBar>
+#include <QPainter>
+#include <QTextObjectInterface>
+#include <QToolTip>
 #include <QtCore/QDebug>
 
 NumberBar::NumberBar( QWidget *parent )

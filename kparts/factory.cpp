@@ -21,7 +21,7 @@
 #include "factory.h"
 #include "part.h"
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 #include <kpluginloader.h>
 #include <klibrary.h>

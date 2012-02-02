@@ -25,11 +25,11 @@
 #include <kiconloader.h>
 #include <kdebug.h>
 
-#include <QtGui/QLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QComboBox>
-#include <QtGui/QPushButton>
-#include <QtGui/QMessageBox>
+#include <QLayout>
+#include <QLabel>
+#include <QComboBox>
+#include <QPushButton>
+#include <QMessageBox>
 
 using namespace KNS;
 

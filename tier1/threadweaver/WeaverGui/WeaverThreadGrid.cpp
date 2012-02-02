@@ -27,7 +27,7 @@
 */
 #include "WeaverThreadGrid.h"
 
-#include <QtGui/QPainter>
+#include <QPainter>
 
 #include <Thread.h>
 

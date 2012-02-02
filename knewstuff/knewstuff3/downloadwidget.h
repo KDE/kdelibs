@@ -23,7 +23,7 @@
 #ifndef KNEWSTUFF3_UI_DOWNLOADWIDGET_H
 #define KNEWSTUFF3_UI_DOWNLOADWIDGET_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 #include "knewstuff_export.h"
 #include "entry.h"

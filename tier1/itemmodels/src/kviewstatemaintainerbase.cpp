@@ -22,8 +22,8 @@
 #include "kviewstatemaintainerbase.h"
 
 #include <QtCore/QWeakPointer>
-#include <QtGui/QItemSelectionModel>
-#include <QtGui/QAbstractItemView>
+#include <QItemSelectionModel>
+#include <QAbstractItemView>
 
 class KViewStateMaintainerBasePrivate
 {

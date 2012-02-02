@@ -1,7 +1,7 @@
 #ifndef _KCOMBOBOXTEST_H
 #define _KCOMBOBOXTEST_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 class QTimer;
 class QComboBox;

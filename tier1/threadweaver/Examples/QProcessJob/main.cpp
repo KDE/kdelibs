@@ -24,7 +24,7 @@ http://www.hackerbuero.org $
    Boston, MA 02110-1301, USA.
 
 */
-#include <QtGui/QApplication>
+#include <QApplication>
 
 #include "ThreadWeaver.h"
 #include "MainWindow.h"

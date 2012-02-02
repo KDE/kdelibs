@@ -1,5 +1,5 @@
-#include <QtGui/QMessageBox>
-#include <QtGui/QTextEdit>
+#include <QMessageBox>
+#include <QTextEdit>
 #include <QtCore/QDir>
 
 #include <stdlib.h>

@@ -23,15 +23,15 @@
 
 #include <math.h>
 
-#include <QtGui/QApplication>
-#include <QtGui/QLabel>
-#include <QtGui/QStyle>
-#include <QtGui/QPainter>
-#include <QtGui/QBoxLayout>
-#include <QtGui/QPaintEvent>
-#include <QtGui/QPainterPath>
-#include <QtGui/QLinearGradient>
-#include <QtGui/QStyleOptionFrame>
+#include <QApplication>
+#include <QLabel>
+#include <QStyle>
+#include <QPainter>
+#include <QBoxLayout>
+#include <QPaintEvent>
+#include <QPainterPath>
+#include <QLinearGradient>
+#include <QStyleOptionFrame>
 
 #include <kcolorscheme.h>
 

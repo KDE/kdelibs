@@ -23,7 +23,7 @@
 #define _CSS_cssparser_h_
 
 #include <QtCore/QString>
-#include <QtGui/QColor>
+#include <QColor>
 #include <QtCore/QVector>
 #include <dom/dom_string.h>
 #include <misc/htmlnames.h>

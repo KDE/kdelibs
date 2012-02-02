@@ -21,11 +21,11 @@
 
 #include "nestedlisthelper.h"
 
-#include <QtGui/QKeyEvent>
-#include <QtGui/QTextCursor>
-#include <QtGui/QTextList>
-#include <QtGui/QTextBlock>
-#include <QtGui/QTextDocumentFragment>
+#include <QKeyEvent>
+#include <QTextCursor>
+#include <QTextList>
+#include <QTextBlock>
+#include <QTextDocumentFragment>
 
 #include <ktextedit.h>
 #include <kdebug.h>

@@ -21,7 +21,7 @@
 
 #include "k3syntaxhighlighter.h"
 
-#include <QtGui/QColor>
+#include <QColor>
 #include <QtCore/QRegExp>
 #include <Qt3Support/Q3SyntaxHighlighter>
 #include <QtCore/QTimer>

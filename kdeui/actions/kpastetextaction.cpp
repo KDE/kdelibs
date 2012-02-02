@@ -27,7 +27,7 @@
 
 #include "kpastetextaction.h"
 
-#include <QtGui/QClipboard>
+#include <QClipboard>
 #include <QtDBus/QtDBus>
 
 #include <kapplication.h>

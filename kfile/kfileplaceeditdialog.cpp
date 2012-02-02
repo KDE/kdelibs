@@ -35,16 +35,16 @@
 #include <kurlrequester.h>
 
 #include <QtCore/QMimeData>
-#include <QtGui/QApplication>
-#include <QtGui/QCheckBox>
-#include <QtGui/qdrawutil.h>
-#include <QtGui/QFontMetrics>
-#include <QtGui/QFormLayout>
-#include <QtGui/QItemDelegate>
-#include <QtGui/QLabel>
-#include <QtGui/QMenu>
-#include <QtGui/QPainter>
-#include <QtGui/QStyle>
+#include <QApplication>
+#include <QCheckBox>
+#include <qdrawutil.h>
+#include <QFontMetrics>
+#include <QFormLayout>
+#include <QItemDelegate>
+#include <QLabel>
+#include <QMenu>
+#include <QPainter>
+#include <QStyle>
 
 #include <unistd.h>
 #include <kvbox.h>

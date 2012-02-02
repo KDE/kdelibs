@@ -31,18 +31,18 @@
 #include "render_arena.h"
 
 #include <assert.h>
-#include <QtGui/QWidget>
-#include <QtGui/QPainter>
-#include <QtGui/QActionEvent>
-#include <QtGui/QApplication>
-#include <QtGui/QLineEdit>
-#include <QtGui/QComboBox>
+#include <QWidget>
+#include <QPainter>
+#include <QActionEvent>
+#include <QApplication>
+#include <QLineEdit>
+#include <QComboBox>
 #include <kglobalsettings.h>
 #include <kurlrequester.h>
 #include <QtCore/QObject>
 #include <QVector>
 #include <QMatrix>
-#include <QtGui/QPaintEngine>
+#include <QPaintEngine>
 
 #include "khtml_ext.h"
 #include "khtmlview.h"

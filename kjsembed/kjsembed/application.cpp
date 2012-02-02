@@ -22,7 +22,7 @@
 #include "application.h"
 
 #include <QtCore/QDebug>
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <QtCore/QStringList>
 using namespace KJSEmbed;
 

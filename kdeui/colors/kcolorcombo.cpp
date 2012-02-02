@@ -21,9 +21,9 @@
 
 #include "kcolorcombo.h"
 
-#include <QtGui/QAbstractItemDelegate>
-#include <QtGui/QApplication>
-#include <QtGui/QStylePainter>
+#include <QAbstractItemDelegate>
+#include <QApplication>
+#include <QStylePainter>
 
 #include <klocale.h>
 

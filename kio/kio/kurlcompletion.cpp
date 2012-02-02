@@ -40,7 +40,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QTextIStream>
 #include <QtCore/QThread>
-#include <QtGui/QActionEvent>
+#include <QActionEvent>
 
 #include <kauthorized.h>
 #include <kdebug.h>

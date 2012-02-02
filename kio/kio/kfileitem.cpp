@@ -37,8 +37,8 @@
 #include <QtCore/QDirIterator>
 #include <QtCore/QFile>
 #include <QtCore/QMap>
-#include <QtGui/QApplication>
-#include <QtGui/QPalette>
+#include <QApplication>
+#include <QPalette>
 #include <QTextDocument>
 #include <QMimeDatabase>
 

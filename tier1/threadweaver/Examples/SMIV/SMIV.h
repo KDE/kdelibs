@@ -19,7 +19,7 @@
 
 #include <QtCore/QDate>
 #include <QtCore/QList>
-#include <QtGui/QWidget>
+#include <QWidget>
 
 #include <ThreadWeaver.h>
 

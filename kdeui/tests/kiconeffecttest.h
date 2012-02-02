@@ -1,8 +1,8 @@
 #ifndef KICONEFFECTTEST_H
 #define KICONEFFECTTEST_H
 
-#include <QtGui/QScrollArea>
-#include <QtGui/QImage>
+#include <QScrollArea>
+#include <QImage>
 
 class QLabel;
 

@@ -43,8 +43,8 @@
 #include <kglobal.h>
 
 #include <QtCore/QHash>
-#include <QtGui/QPainter>
-#include <QtGui/QFontDatabase>
+#include <QPainter>
+#include <QFontDatabase>
 #include <QtGlobal>
 
 // for SVG

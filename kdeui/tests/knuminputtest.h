@@ -8,7 +8,7 @@
 #ifndef _KNUMINPUTTEST_H
 #define _KNUMINPUTTEST_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 class KIntNumInput;
 class KDoubleNumInput;

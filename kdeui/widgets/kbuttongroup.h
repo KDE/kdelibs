@@ -23,7 +23,7 @@
 #define KBUTTONGROUP_H
 
 #include <kdeui_export.h>
-#include <QtGui/QGroupBox>
+#include <QGroupBox>
 
 class QAbstractButton;
 

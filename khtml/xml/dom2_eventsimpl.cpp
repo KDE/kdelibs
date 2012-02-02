@@ -35,7 +35,7 @@
 #include <khtmlview.h>
 #include <khtml_part.h>
 
-#include <QtGui/QActionEvent>
+#include <QActionEvent>
 #include <kdebug.h>
 
 using namespace DOM;

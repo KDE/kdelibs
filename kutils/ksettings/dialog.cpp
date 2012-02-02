@@ -32,7 +32,7 @@
 #include <kcomponentdata.h>
 #include <kiconloader.h>
 #include <QtCore/QFile>
-#include <QtGui/QCheckBox>
+#include <QCheckBox>
 #include <QtCore/QStack>
 
 uint qHash(const KCModuleInfo &info)

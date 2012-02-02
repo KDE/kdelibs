@@ -26,7 +26,7 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QFuture>
-#include <QtGui/QFont>
+#include <QFont>
 
 // Internal class used by KCharSelect
 

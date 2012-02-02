@@ -25,10 +25,10 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QFile>
-#include <QtGui/QSessionManager>
-#include <QtGui/QStyleFactory>
+#include <QSessionManager>
+#include <QStyleFactory>
 #include <QtCore/QTimer>
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QtCore/QList>
 #include <QtDBus/QtDBus>
 #include <QtCore/QMetaType>
@@ -55,7 +55,7 @@
 #include "kmessageboxmessagehandler.h"
 
 #if defined Q_WS_X11
-#include <QtGui/qx11info_x11.h>
+#include <qx11info_x11.h>
 #include <kstartupinfo.h>
 #endif
 
@@ -105,7 +105,7 @@
 #endif
 
 #include <qstandardpaths.h>
-#include <QtGui/QActionEvent>
+#include <QActionEvent>
 #include <kcomponentdata.h>
 
 KApplication* KApplication::KApp = 0L;

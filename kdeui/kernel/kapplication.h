@@ -33,8 +33,8 @@ class KConfig;
 #include <kcmdlineargs.h>
 #include <kiconloader.h>
 #include <kicontheme.h>
-#include <QtGui/QPixmap>
-#include <QtGui/QIcon>
+#include <QPixmap>
+#include <QIcon>
 #endif
 
 typedef unsigned long Atom;
@@ -42,12 +42,12 @@ typedef unsigned long Atom;
 typedef void Display;
 #endif
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <kcomponentdata.h>
 #include <kglobal.h>
 
 #ifdef Q_WS_X11
-#include <QtGui/QX11Info>
+#include <QX11Info>
 #endif
 
 struct _IceConn;

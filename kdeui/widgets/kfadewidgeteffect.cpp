@@ -25,8 +25,8 @@
 #include <config.h> // for HAVE_XRENDER
 
 #include <QtCore/QEvent>
-#include <QtGui/QPaintEngine>
-#include <QtGui/QPainter>
+#include <QPaintEngine>
+#include <QPainter>
 
 #include <kglobalsettings.h>
 

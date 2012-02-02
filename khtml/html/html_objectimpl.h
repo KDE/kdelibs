@@ -29,7 +29,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QPointer>
 #include <QtCore/QStringList>
-#include <QtGui/QWidget>
+#include <QWidget>
 
 
 // -------------------------------------------------------------------------

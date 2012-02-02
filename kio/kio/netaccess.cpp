@@ -30,7 +30,7 @@
 #include <cstring>
 
 #include <QtCore/QCharRef>
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <QtCore/QFile>
 #include <QtCore/QMetaClassInfo>
 #include <QtCore/QTextIStream>

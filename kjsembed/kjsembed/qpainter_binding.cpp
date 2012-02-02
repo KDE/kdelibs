@@ -27,17 +27,17 @@
 #include <kjs/object.h>
 #include <QtCore/QDebug>
 
-#include <QtGui/QWidget>
-#include <QtGui/QPainter>
-#include <QtGui/QImage>
-#include <QtGui/QPixmap>
-#include <QtGui/QPen>
-#include <QtGui/QBrush>
+#include <QWidget>
+#include <QPainter>
+#include <QImage>
+#include <QPixmap>
+#include <QPen>
+#include <QBrush>
 #include <QtCore/QLine>
-#include <QtGui/QPolygon>
+#include <QPolygon>
 #include <QtCore/QPoint>
 
-#include <QtGui/QFrame>
+#include <QFrame>
 
 using namespace KJSEmbed;
 

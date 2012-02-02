@@ -21,7 +21,7 @@
 */
 #include "kjs_object_model.h"
 
-#include <QtGui/QPixmap>
+#include <QPixmap>
 #include <QtCore/QDebug>
 
 #include <kjs/object.h>

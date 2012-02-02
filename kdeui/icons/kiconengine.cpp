@@ -20,10 +20,10 @@
 
 #include <kiconloader.h>
 
-#include <QtGui/QPainter>
-#include <QtGui/QMenu>
-#include <QtGui/QToolBar>
-#include <QtGui/QApplication>
+#include <QPainter>
+#include <QMenu>
+#include <QToolBar>
+#include <QApplication>
 
 
 KIconEngine::KIconEngine(const QString& iconName, KIconLoader* iconLoader, const QStringList& overlays)

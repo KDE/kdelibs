@@ -24,8 +24,8 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QValidator>
-#include <QtGui/QLineEdit>
+#include <QValidator>
+#include <QLineEdit>
 #include <QtCore/QDateTime>
 
 #include <klocale.h>

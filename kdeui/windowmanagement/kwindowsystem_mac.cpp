@@ -25,9 +25,9 @@
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kxerrorhandler.h>
-#include <QtGui/QBitmap>
+#include <QBitmap>
 #include <QDesktopWidget>
-#include <QtGui/QDialog>
+#include <QDialog>
 #include <QtDBus/QtDBus>
 #include <kdebug.h>
 

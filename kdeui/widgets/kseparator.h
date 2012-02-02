@@ -21,7 +21,7 @@
 #define KSEPARATOR_H
 
 #include <kdeui_export.h>
-#include <QtGui/QFrame>
+#include <QFrame>
 
 /**
  * Standard horizontal or vertical separator.

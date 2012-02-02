@@ -32,10 +32,10 @@
 #include "kauthaction.h"
 #include "kauthactionwatcher.h"
 
-#include <QtGui/QApplication>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QShortcutEvent>
-#include <QtGui/QToolBar>
+#include <QApplication>
+#include <QHBoxLayout>
+#include <QShortcutEvent>
+#include <QToolBar>
 
 #include <kdebug.h>
 

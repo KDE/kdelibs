@@ -23,15 +23,15 @@
 
 
 #include <QtXml/QDomDocument>
-#include <QtGui/QLayout>
+#include <QLayout>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QHeaderView>
-#include <QtGui/QToolButton>
-#include <QtGui/QLabel>
-#include <QtGui/QApplication>
-#include <QtGui/QGridLayout>
-#include <QtGui/QCheckBox>
+#include <QToolButton>
+#include <QLabel>
+#include <QApplication>
+#include <QGridLayout>
+#include <QCheckBox>
 #include <QMimeData>
 #include <qstandardpaths.h>
 

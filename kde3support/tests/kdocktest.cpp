@@ -4,7 +4,7 @@
 #include <kcmdlineargs.h>
 #include <kiconloader.h>
 
-#include <QtGui/QImage>
+#include <QImage>
 #include <QtCore/QString>
 
 DockTest::DockTest( QWidget* parent )

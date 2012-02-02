@@ -21,10 +21,10 @@
 #include <klocale.h>
 #include <ktextbrowser.h>
 
-#include <QtGui/QLayout>
-#include <QtGui/QApplication>
+#include <QLayout>
+#include <QApplication>
 
-#include <QtGui/QCursor>
+#include <QCursor>
 
 KDXSComments::KDXSComments(QWidget *parent)
         : KDialog(parent)

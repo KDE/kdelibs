@@ -20,9 +20,9 @@
 
 #include "kratingpainter.h"
 
-#include <QtGui/QPainter>
-#include <QtGui/QPixmap>
-#include <QtGui/QIcon>
+#include <QPainter>
+#include <QPixmap>
+#include <QIcon>
 #include <QtCore/QRect>
 #include <QtCore/QPoint>
 

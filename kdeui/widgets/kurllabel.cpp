@@ -18,8 +18,8 @@
 #include "kurllabel.h"
 
 #include <QtCore/QTimer>
-#include <QtGui/QApplication>
-#include <QtGui/QMouseEvent>
+#include <QApplication>
+#include <QMouseEvent>
 
 #include <kcursor.h>
 #include <kcolorscheme.h>

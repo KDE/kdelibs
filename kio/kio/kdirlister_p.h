@@ -27,7 +27,7 @@
 #include <QtCore/QCache>
 #include <QtCore/QSet>
 #include <QtCore/QTimer>
-#include <QtGui/QWidget>
+#include <QWidget>
 
 #include <kurl.h>
 #include <kdebug.h>

@@ -6,9 +6,9 @@
 * Licensed under the GNU General Public License version 2 or later
 */
 
-#include <QtGui/QLayout>
-#include <QtGui/QGroupBox>
-#include <QtGui/QBoxLayout>
+#include <QLayout>
+#include <QGroupBox>
+#include <QBoxLayout>
 
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>

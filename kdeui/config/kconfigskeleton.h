@@ -27,8 +27,8 @@
 
 #include <kcoreconfigskeleton.h>
 
-#include <QtGui/QColor>
-#include <QtGui/QFont>
+#include <QColor>
+#include <QFont>
 
 /**
  * @short Class for handling preferences settings for an application.

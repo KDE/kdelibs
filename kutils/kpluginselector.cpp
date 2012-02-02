@@ -21,12 +21,12 @@
 #include "kpluginselector.h"
 #include "kpluginselector_p.h"
 
-#include <QtGui/QLabel>
-#include <QtGui/QPainter>
-#include <QtGui/QBoxLayout>
-#include <QtGui/QApplication>
-#include <QtGui/QCheckBox>
-#include <QtGui/QStyleOptionViewItemV4>
+#include <QLabel>
+#include <QPainter>
+#include <QBoxLayout>
+#include <QApplication>
+#include <QCheckBox>
+#include <QStyleOptionViewItemV4>
 
 #include <kdebug.h>
 #include <klineedit.h>

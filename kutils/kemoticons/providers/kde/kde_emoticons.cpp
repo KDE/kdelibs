@@ -20,8 +20,8 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
-#include <QtGui/QImageReader>
-#include <QtGui/QTextDocument>
+#include <QImageReader>
+#include <QTextDocument>
 
 #include <kpluginfactory.h>
 #include <kdebug.h>

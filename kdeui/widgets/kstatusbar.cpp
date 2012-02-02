@@ -23,7 +23,7 @@
 
 #include <QtCore/QHash>
 #include <QtCore/QEvent>
-#include <QtGui/QLabel>
+#include <QLabel>
 
 #include <kdebug.h>
 #include <kglobal.h>

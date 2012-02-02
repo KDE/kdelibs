@@ -29,8 +29,8 @@
 
 #include <phonon/mediaobject.h>
 #include <QWidget>
-#include <QtGui/QPushButton>
-#include <QtGui/QToolButton>
+#include <QPushButton>
+#include <QToolButton>
 
 namespace khtml {
 

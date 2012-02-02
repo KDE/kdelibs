@@ -20,7 +20,7 @@
 #ifndef KDATECOMBOBOXTEST_H
 #define KDATECOMBOBOXTEST_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 class KDateTimeEdit;
 

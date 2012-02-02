@@ -23,7 +23,7 @@
 
 #include <QtCore/QMimeData>
 #include <QtDBus/QtDBus>
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <kconfiggroup.h>
 
 /*

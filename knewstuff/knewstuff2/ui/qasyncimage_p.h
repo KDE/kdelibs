@@ -19,7 +19,7 @@
 #ifndef KNEWSTUFF2_UI_QASYNCPIXMAP_H
 #define KNEWSTUFF2_UI_QASYNCPIXMAP_H
 
-#include <QtGui/QImage>
+#include <QImage>
 #include <QtCore/QObject>
 #include <QtCore/QByteArray>
 

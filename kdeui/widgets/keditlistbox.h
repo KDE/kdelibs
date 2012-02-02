@@ -22,8 +22,8 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QGroupBox>
-#include <QtGui/QStringListModel>
+#include <QGroupBox>
+#include <QStringListModel>
 
 class KLineEdit;
 class KComboBox;

@@ -23,7 +23,7 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QStyle>
+#include <QStyle>
 
 class KDEUI_EXPORT KdeUiProxyStyle : public QStyle
 {

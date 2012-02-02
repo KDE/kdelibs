@@ -29,7 +29,7 @@
 
 #include <dom/dom_string.h>
 
-#include <QtGui/QColor>
+#include <QColor>
 
 #include <kdemacros.h>
 

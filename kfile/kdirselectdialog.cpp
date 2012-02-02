@@ -22,7 +22,7 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QStringList>
-#include <QtGui/QLayout>
+#include <QLayout>
 
 #include <kactioncollection.h>
 #include <kapplication.h>

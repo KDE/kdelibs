@@ -7,8 +7,8 @@
  * requires:   recent C++-compiler, at least Qt 1.4
  */
 
-#include <QtGui/QImage>
-#include <QtGui/QPixmap>
+#include <QImage>
+#include <QPixmap>
 
 #include "k3aboutdialog.h"
 

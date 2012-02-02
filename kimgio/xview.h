@@ -16,7 +16,7 @@
 #define XVIEW_H
 
 
-#include <QtGui/QImageIOPlugin>
+#include <QImageIOPlugin>
 
 class XVHandler : public QImageIOHandler
 {

@@ -24,8 +24,8 @@
 
 #include <QtCore/QProcess>
 #include <QtDBus/QtDBus>
-#include <QtGui/QApplication>
-#include <QtGui/QWidget>
+#include <QApplication>
+#include <QWidget>
 
 using namespace Solid::Backends::UDisks;
 

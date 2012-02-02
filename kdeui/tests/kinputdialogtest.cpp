@@ -3,7 +3,7 @@
  * Licensed under the GNU General Public License version 2
  */
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <kinputdialog.h>
@@ -11,7 +11,7 @@
 #include <klistwidget.h>
 
 #include <QtCore/QString>
-#include <QtGui/QValidator>
+#include <QValidator>
 #include <kcmdlineargs.h>
 
 

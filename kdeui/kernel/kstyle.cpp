@@ -49,16 +49,16 @@
 #include <QtCore/QCache>
 #include <QtCore/QEvent>
 #include <QtCore/QVariant>
-#include <QtGui/QAbstractItemView>
-#include <QtGui/QApplication>
-#include <QtGui/QDialogButtonBox>
-#include <QtGui/QFormLayout>
-#include <QtGui/QIcon>
-#include <QtGui/QLabel>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QPainter>
-#include <QtGui/QScrollBar>
-#include <QtGui/QStyleOption>
+#include <QAbstractItemView>
+#include <QApplication>
+#include <QDialogButtonBox>
+#include <QFormLayout>
+#include <QIcon>
+#include <QLabel>
+#include <QKeyEvent>
+#include <QPainter>
+#include <QScrollBar>
+#include <QStyleOption>
 
 #include <kcomponentdata.h>
 #include <kglobal.h>

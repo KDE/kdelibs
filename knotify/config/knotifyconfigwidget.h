@@ -20,7 +20,7 @@
 #define KNOTIFYCONFIGWIDGET_H
 
 #include <knotifyconfig_export.h>
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QtCore/QString>
 
 class KNotifyConfigElement;

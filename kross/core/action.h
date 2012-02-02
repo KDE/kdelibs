@@ -24,7 +24,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QDir>
 #include <QtCore/QUrl>
-#include <QtGui/QAction>
+#include <QAction>
 #include <QtXml/QDomAttr>
 #include <QtScript/QScriptable>
 

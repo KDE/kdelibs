@@ -2,7 +2,7 @@
 #define testwindow_h
 
 #include <QtCore/QTimer>
-#include <QtGui/QProgressBar>
+#include <QProgressBar>
 #include <kmenubar.h>
 #include <kstatusbar.h>
 #include <ktoolbar.h>

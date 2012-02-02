@@ -23,9 +23,9 @@
 #include "kwallet.h"
 #include "config-kwallet.h"
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <QtCore/QPointer>
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QtDBus/QtDBus>
 #include <ktoolinvocation.h>
 

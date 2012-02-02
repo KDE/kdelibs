@@ -26,9 +26,9 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QImage>
-#include <QtGui/QPixmap>
-#include <QtGui/QColor>
+#include <QImage>
+#include <QPixmap>
+#include <QColor>
 #include <QtCore/QRect>
 
 class KIconEffectPrivate;

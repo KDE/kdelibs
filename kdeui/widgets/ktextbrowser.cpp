@@ -20,11 +20,11 @@
 
 #include "ktextbrowser.h"
 
-#include <QtGui/QAction>
-#include <QtGui/QMenu>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QTextBrowser>
-#include <QtGui/QWhatsThis>
+#include <QAction>
+#include <QMenu>
+#include <QKeyEvent>
+#include <QTextBrowser>
+#include <QWhatsThis>
 
 #include <kcursor.h>
 #include <kglobalsettings.h>

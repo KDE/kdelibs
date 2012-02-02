@@ -22,7 +22,7 @@
 #define OPENWITHDIALOG_P_H
 
 #include <QtCore/QAbstractItemModel>
-#include <QtGui/QTreeView>
+#include <QTreeView>
 
 class KApplicationModelPrivate;
 

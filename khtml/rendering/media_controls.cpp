@@ -26,7 +26,7 @@
  */
 
 #include "media_controls.h"
-#include <QtGui/QHBoxLayout>
+#include <QHBoxLayout>
 #include <phonon/seekslider.h>
 #include <phonon/mediaobject.h>
 #include <rendering/render_media.h>

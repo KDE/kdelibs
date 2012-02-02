@@ -37,12 +37,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kcookiewin.h"
 #include "kcookiejar.h"
 
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
-#include <QtGui/QGroupBox>
-#include <QtGui/QPushButton>
-#include <QtGui/QRadioButton>
-#include <QtGui/QShortcut>
+#include <QLabel>
+#include <QLayout>
+#include <QGroupBox>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QShortcut>
 
 #include <kwindowsystem.h>
 #include <klocale.h>

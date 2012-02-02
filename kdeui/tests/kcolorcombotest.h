@@ -1,7 +1,7 @@
 #ifndef _KCOLORCOMBOTEST_H
 #define _KCOLORCOMBOTEST_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 class QPushButton;
 class KColorCombo;

@@ -21,7 +21,7 @@
 #include <Qt3Support/Q3CString>
 #include <Qt3Support/Q3StrIList>
 #include <Qt3Support/Q3ColorDrag>
-#include <QtGui/QFont>
+#include <QFont>
 #include <unistd.h>
 
 #include <kglobal.h>

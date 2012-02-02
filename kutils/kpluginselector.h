@@ -21,7 +21,7 @@
 #ifndef KPLUGINSELECTOR_H
 #define KPLUGINSELECTOR_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 #include <QtCore/QList>
 

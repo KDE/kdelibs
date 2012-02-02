@@ -21,10 +21,10 @@
 
 #include "proxyitemselectionwidget.h"
 
-#include <QtGui/QSplitter>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QTreeView>
-#include <QtGui/QSortFilterProxyModel>
+#include <QSplitter>
+#include <QHBoxLayout>
+#include <QTreeView>
+#include <QSortFilterProxyModel>
 
 #include "dynamictreemodel.h"
 #include "dynamictreewidget.h"

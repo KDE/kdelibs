@@ -20,7 +20,7 @@
 #define karrowbutton_h
 
 #include <kdeui_export.h>
-#include <QtGui/QPushButton>
+#include <QPushButton>
 
 class KArrowButtonPrivate;
 /**

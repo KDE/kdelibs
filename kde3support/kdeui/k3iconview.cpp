@@ -21,9 +21,9 @@
 //#include <config.h>
 
 #include <QtCore/QTimer>
-#include <QtGui/QPainter>
-#include <QtGui/QPixmapCache>
-#include <QtGui/QActionEvent>
+#include <QPainter>
+#include <QPixmapCache>
+#include <QActionEvent>
 
 #include "kwordwrap.h"
 #include <kconfig.h>

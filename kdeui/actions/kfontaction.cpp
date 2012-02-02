@@ -28,7 +28,7 @@
 
 #include "kfontaction.h"
 
-#include <QtGui/QToolBar>
+#include <QToolBar>
 
 #include <kdebug.h>
 #include <kfontdialog.h>

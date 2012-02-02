@@ -22,9 +22,9 @@
 #include "brush.h"
 
 #include <QtCore/QDebug>
-#include <QtGui/QBrush>
-#include <QtGui/QPixmap>
-#include <QtGui/QColor>
+#include <QBrush>
+#include <QPixmap>
+#include <QColor>
 
 #include "pixmap.h"
 #include "color.h"

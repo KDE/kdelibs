@@ -22,7 +22,7 @@
 #include "font.h"
 
 #include <QtCore/QDebug>
-#include <QtGui/QFont>
+#include <QFont>
 #include <QtCore/QStringList>
 using namespace KJSEmbed;
 

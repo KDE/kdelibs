@@ -23,9 +23,9 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QColor>
-#include <QtGui/QLabel>
-#include <QtGui/QPixmap>
+#include <QColor>
+#include <QLabel>
+#include <QPixmap>
 
 class QCursor;
 

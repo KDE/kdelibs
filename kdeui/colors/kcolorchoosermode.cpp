@@ -19,7 +19,7 @@
 
 #include "kcolorchoosermode_p.h"
 
-#include <QtGui/QColor>
+#include <QColor>
 
 namespace KDEPrivate {
 

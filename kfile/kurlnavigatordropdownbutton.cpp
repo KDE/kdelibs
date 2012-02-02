@@ -22,9 +22,9 @@
 
 #include <kglobalsettings.h>
 
-#include <QtGui/QKeyEvent>
-#include <QtGui/QPainter>
-#include <QtGui/QStyleOption>
+#include <QKeyEvent>
+#include <QPainter>
+#include <QStyleOption>
 
 namespace KDEPrivate
 {

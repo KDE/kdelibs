@@ -21,7 +21,7 @@
 #define KURLNAVIGATORTOGGLEBUTTON_P_H
 
 #include "kurlnavigatorbuttonbase_p.h"
-#include <QtGui/QPixmap>
+#include <QPixmap>
 
 namespace KDEPrivate
 {

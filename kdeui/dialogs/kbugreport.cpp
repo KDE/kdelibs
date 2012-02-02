@@ -21,11 +21,11 @@
 
 #include <QtCore/QProcess>
 #include <QtCore/QCoreApplication>
-#include <QtGui/QPushButton>
-#include <QtGui/QLayout>
-#include <QtGui/QRadioButton>
-#include <QtGui/QGroupBox>
-#include <QtGui/QCloseEvent>
+#include <QPushButton>
+#include <QLayout>
+#include <QRadioButton>
+#include <QGroupBox>
+#include <QCloseEvent>
 
 #include <kaboutdata.h>
 #include <kcombobox.h>

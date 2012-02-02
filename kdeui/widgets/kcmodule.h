@@ -26,7 +26,7 @@
 #include <kdeui_export.h>
 
 #include <QtCore/QVariant>
-#include <QtGui/QWidget>
+#include <QWidget>
 
 #ifdef Q_WS_X11
 #include <fixx11h.h>

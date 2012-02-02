@@ -8,7 +8,7 @@
 
 #include "kfilemetapreview.h"
 
-#include <QtGui/QLayout>
+#include <QLayout>
 
 #include <kdebug.h>
 #include <kio/previewjob.h>

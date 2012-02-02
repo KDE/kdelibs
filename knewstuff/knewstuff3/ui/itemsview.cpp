@@ -17,7 +17,7 @@
 
 #include "itemsview.h"
 
-#include <QtGui/QScrollBar>
+#include <QScrollBar>
 
 namespace KNS3
 {

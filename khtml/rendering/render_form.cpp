@@ -57,11 +57,11 @@
 
 #include <QAbstractItemView>
 #include <QAbstractTextDocumentLayout>
-#include <QtGui/QStyle>
+#include <QStyle>
 #include <QStyleOptionButton>
-#include <QtGui/QLabel>
-#include <QtGui/QStyleOptionFrameV3>
-#include <QtGui/QStandardItemModel>
+#include <QLabel>
+#include <QStyleOptionFrameV3>
+#include <QStandardItemModel>
 
 #include <misc/helper.h>
 #include <xml/dom2_eventsimpl.h>
@@ -74,10 +74,10 @@
 #include <khtml_ext.h>
 #include <xml/dom_docimpl.h>
 
-#include <QtGui/QMenu>
-#include <QtGui/QBitmap>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
+#include <QMenu>
+#include <QBitmap>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 
 using namespace khtml;
 using namespace DOM;

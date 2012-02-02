@@ -35,7 +35,7 @@
 #endif
 
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <QtCore/QTextCodec>
 #include <QtCore/QTimer>
 

@@ -24,10 +24,10 @@
 #include <kross/core/krossconfig.h>
 
 #include <QtCore/QObject>
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QtCore/QModelIndex>
-#include <QtGui/QItemSelection>
-#include <QtGui/QTreeView>
+#include <QItemSelection>
+#include <QTreeView>
 
 #include <kdialog.h>
 

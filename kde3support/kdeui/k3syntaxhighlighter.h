@@ -28,7 +28,7 @@
 
 #include <Qt3Support/Q3TextEdit>
 #include <Qt3Support/Q3SyntaxHighlighter>
-#include <QtGui/QColor>
+#include <QColor>
 #include <QtCore/QStringList>
 
 class K3Spell;

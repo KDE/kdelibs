@@ -19,9 +19,9 @@
 
 #include "kcolorhelpers_p.h"
 
-#include <QtGui/QColor>
-#include <QtGui/QPainter>
-#include <QtGui/QPixmap>
+#include <QColor>
+#include <QPainter>
+#include <QPixmap>
 
 namespace KDEPrivate {
 

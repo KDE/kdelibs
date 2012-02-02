@@ -51,9 +51,9 @@
 #include <kde3support_export.h>
 #include <QtCore/QPoint>
 #include <Qt3Support/Q3PtrList>
-#include <QtGui/QFrame>
+#include <QFrame>
 #include <QtXml/QDomElement>
-#include <QtGui/QTabWidget>
+#include <QTabWidget>
 
 #ifndef NO_KDE2
 #include <kxmlguiwindow.h>

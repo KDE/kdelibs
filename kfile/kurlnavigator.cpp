@@ -42,14 +42,14 @@
 #include <QtCore/QDir>
 #include <QtCore/QLinkedList>
 #include <QtCore/QTimer>
-#include <QtGui/QApplication>
-#include <QtGui/QBoxLayout>
-#include <QtGui/QClipboard>
-#include <QtGui/QDropEvent>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QLabel>
-#include <QtGui/QPainter>
-#include <QtGui/QStyleOption>
+#include <QApplication>
+#include <QBoxLayout>
+#include <QClipboard>
+#include <QDropEvent>
+#include <QKeyEvent>
+#include <QLabel>
+#include <QPainter>
+#include <QStyleOption>
 
 #include <fixx11h.h>
 

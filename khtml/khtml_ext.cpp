@@ -37,9 +37,9 @@
 #include "dom/html_document.h"
 #include "dom/dom_element.h"
 #include "xml/dom_elementimpl.h"
-#include <QtGui/QClipboard>
+#include <QClipboard>
 #include <QtCore/QFileInfo>
-#include <QtGui/QMenu>
+#include <QMenu>
 #include <QtCore/QUrl>
 #include <QtCore/QMetaEnum>
 #include <assert.h>

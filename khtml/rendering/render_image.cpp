@@ -27,9 +27,9 @@
 #include "render_image.h"
 #include "render_canvas.h"
 
-#include <QtGui/qdrawutil.h>
-#include <QtGui/QPainter>
-#include <QtGui/QApplication>
+#include <qdrawutil.h>
+#include <QPainter>
+#include <QApplication>
 
 #include <kdebug.h>
 #include <kglobalsettings.h>

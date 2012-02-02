@@ -17,7 +17,7 @@
 #ifndef SMIVITEMDELEGATE_H
 #define SMIVITEMDELEGATE_H
 
-#include <QtGui/QItemDelegate>
+#include <QItemDelegate>
 #include <QtCore/QSize>
 
 class SMIVItemDelegate : public QItemDelegate

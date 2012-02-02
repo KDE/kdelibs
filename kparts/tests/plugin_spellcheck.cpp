@@ -19,7 +19,7 @@
 */
 
 #include "notepad.h" // this plugin applies to a notepad part
-#include <QtGui/QTextEdit>
+#include <QTextEdit>
 #include "plugin_spellcheck.h"
 #include <kaction.h>
 #include <kactioncollection.h>

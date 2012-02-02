@@ -22,8 +22,8 @@
 */
 #include "knewpassworddialog.h"
 
-#include <QtGui/QApplication>
-#include <QtGui/QProgressBar>
+#include <QApplication>
+#include <QProgressBar>
 #include <QtCore/QRegExp>
 #include <QtCore/QSize>
 #include <QtCore/QString>

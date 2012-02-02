@@ -22,7 +22,7 @@
 
 #include "notifications/kstatusnotifieritem.h"
 #include <QDateTime>
-#include <QtGui/QLabel>
+#include <QLabel>
 #include <QMovie>
 
 #include <kapplication.h>

@@ -22,7 +22,7 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QMenu>
+#include <QMenu>
 
 /**
  * @short A menu with keyboard searching

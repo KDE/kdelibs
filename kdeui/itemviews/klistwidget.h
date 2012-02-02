@@ -20,7 +20,7 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QListWidget>
+#include <QListWidget>
 
 /**
  * @short A variant of QListWidget that honors KDE's system-wide settings.

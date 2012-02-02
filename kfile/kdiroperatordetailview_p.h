@@ -19,7 +19,7 @@
 #ifndef KDIROPERATORDETAILVIEW_P_H
 #define KDIROPERATORDETAILVIEW_P_H
 
-#include <QtGui/QTreeView>
+#include <QTreeView>
 
 #include <kfile.h>
 

@@ -13,7 +13,7 @@
 #include "khtml_part.h"
 #undef protected
 #include "misc/loader.h"
-#include <QtGui/QCursor>
+#include <QCursor>
 #include <QDomDocument>
 #include <dom_string.h>
 #include "dom/dom2_range.h"

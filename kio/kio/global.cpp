@@ -31,7 +31,7 @@
 
 #include <QtCore/QByteArray>
 #include <QtCore/QDate>
-#include <QtGui/QTextDocument>
+#include <QTextDocument>
 
 #include <sys/types.h>
 #include <sys/wait.h>

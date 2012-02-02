@@ -24,8 +24,8 @@
 
 #include <kdebug.h>
 
-#include <QtGui/QBoxLayout>
-#include <QtGui/QKeyEvent>
+#include <QBoxLayout>
+#include <QKeyEvent>
 
 KHTMLViewBar::KHTMLViewBar( Position position, KHTMLView *view, QWidget *parent ) :
     QWidget( parent ),

@@ -31,7 +31,7 @@
 #ifndef KSELECTACTION_H
 #define KSELECTACTION_H
 
-#include <QtGui/QToolButton>
+#include <QToolButton>
 
 #include <kaction.h>
 

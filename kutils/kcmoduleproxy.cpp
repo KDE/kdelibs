@@ -20,17 +20,17 @@
 #include "kcmoduleproxy.h"
 #include "kcmoduleproxy_p.h"
 
-#include <QtGui/QApplication>
-#include <QtGui/QCursor>
+#include <QApplication>
+#include <QCursor>
 #include <QtCore/QDataStream>
-#include <QtGui/QKeyEvent>
+#include <QKeyEvent>
 #include <QtCore/QFileInfo>
-#include <QtGui/QFrame>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
+#include <QFrame>
+#include <QLabel>
+#include <QLayout>
 #include <QtCore/QPoint>
 
-#include <QtGui/QImage>
+#include <QImage>
 
 #include <QtDBus/QtDBus>
 

@@ -24,7 +24,7 @@
 #include <kapplication.h>
 #include <kxmlguiwindow.h>
 #include <kaction.h>
-#include <QtGui/QClipboard>
+#include <QClipboard>
 
 
 KMainWindowInterface::KMainWindowInterface(KXmlGuiWindow * mainWindow)

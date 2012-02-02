@@ -30,11 +30,11 @@
 #include <QtCore/QPair>
 #include <QtCore/QHash>
 #include <QtCore/QList>
-#include <QtGui/QWidget>
-#include <QtGui/QAbstractItemView>
-#include <QtGui/QApplication>
-#include <QtGui/QInputEvent>
-#include <QtGui/QAbstractProxyModel>
+#include <QWidget>
+#include <QAbstractItemView>
+#include <QApplication>
+#include <QInputEvent>
+#include <QAbstractProxyModel>
 
 #include <kdebug.h>
 

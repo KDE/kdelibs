@@ -35,7 +35,7 @@
 
 #include <config.h>
 
-#include <QtGui/QClipboard>
+#include <QClipboard>
 
 #include "rendering/render_form.h"
 

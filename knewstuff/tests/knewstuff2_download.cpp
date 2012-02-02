@@ -27,11 +27,11 @@
 #include <kdebug.h>
 #include <kicon.h>
 
-#include <QtGui/QPushButton>
-#include <QtGui/QLayout>
-#include <QtGui/QListWidget>
-#include <QtGui/QTabWidget>
-#include <QtGui/QTableWidget>
+#include <QPushButton>
+#include <QLayout>
+#include <QListWidget>
+#include <QTabWidget>
+#include <QTableWidget>
 //FIXME just include as needed
 #include <QtGui>
 

@@ -24,7 +24,7 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <QtCore/QCoreApplication>
 #include "qobject_binding.h"
 #include "static_binding.h"

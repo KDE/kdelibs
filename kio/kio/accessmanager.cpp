@@ -36,7 +36,7 @@
 #include <klocalizedstring.h>
 
 #include <QtCore/QUrl>
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QtCore/QWeakPointer>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusConnection>

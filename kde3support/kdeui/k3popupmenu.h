@@ -26,7 +26,7 @@
 #include <kde3support_export.h>
 
 #include <Qt3Support/Q3PopupMenu>
-#include <QtGui/QMenuItem>
+#include <QMenuItem>
 
 /**
  * @short A menu with keyboard searching and convenience methods for title items.

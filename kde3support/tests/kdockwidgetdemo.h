@@ -3,7 +3,7 @@
 
 #include <k3dockwidget.h>
 
-#include <QtGui/QDialog>
+#include <QDialog>
 #include <Qt3Support/Q3ListView>
 #include <QtCore/QString>
 #include <QtCore/QFile>
@@ -12,7 +12,7 @@
 #include <Qt3Support/Q3ScrollView>
 #include <Qt3Support/Q3FileDialog>
 #include <Qt3Support/Q3WidgetStack>
-#include <QtGui/QPixmap>
+#include <QPixmap>
 
 class Q3MultiLineEdit;
 class Q3TextView;

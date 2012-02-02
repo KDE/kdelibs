@@ -24,8 +24,8 @@
 #include <QtCore/QAbstractItemModel>
 #include <QtCore/QWeakPointer>
 #include <QtCore/QDebug>
-#include <QtGui/QAbstractProxyModel>
-#include <QtGui/QItemSelectionModel>
+#include <QAbstractProxyModel>
+#include <QItemSelectionModel>
 
 class KModelIndexProxyMapperPrivate
 {

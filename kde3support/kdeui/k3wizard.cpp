@@ -19,7 +19,7 @@
 
 #include "k3wizard.h"
 
-#include <QtGui/QPushButton>
+#include <QPushButton>
 #include <QtCore/QCharRef>
 
 #include <kiconloader.h>

@@ -1,6 +1,6 @@
-#include <QtGui/QLayout>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QMenu>
+#include <QLayout>
+#include <QKeyEvent>
+#include <QMenu>
 #include <QtCore/QMimeData>
 
 #include <kapplication.h>

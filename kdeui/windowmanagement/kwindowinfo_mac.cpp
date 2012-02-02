@@ -27,9 +27,9 @@
 #include <kdebug.h>
 #include <kxerrorhandler.h>
 #include <netwm.h>
-#include <QtGui/QBitmap>
+#include <QBitmap>
 #include <QDesktopWidget>
-#include <QtGui/QDialog>
+#include <QDialog>
 #include <QtDBus/QtDBus>
 
 KWindowInfo::Private::Private()

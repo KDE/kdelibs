@@ -2,15 +2,15 @@
 
 #include "testkhtmlnew.h"
 
-#include <QtGui/QCursor>
-#include <QtGui/QBoxLayout>
-#include <QtGui/QFrame>
-#include <QtGui/QToolButton>
-#include <QtGui/QComboBox>
-#include <QtGui/QLineEdit>
-#include <QtGui/QMovie>
-#include <QtGui/QLabel>
-#include <QtGui/QImage>
+#include <QCursor>
+#include <QBoxLayout>
+#include <QFrame>
+#include <QToolButton>
+#include <QComboBox>
+#include <QLineEdit>
+#include <QMovie>
+#include <QLabel>
+#include <QImage>
 #include <QtXml/QDomDocument>
 
 #include <kapplication.h>

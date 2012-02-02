@@ -18,8 +18,8 @@
 #ifndef KNEWSTUFF3_UI_IMAGEPREVIEWWIDGET_H
 #define KNEWSTUFF3_UI_IMAGEPREVIEWWIDGET_H
 
-#include <QtGui/QWidget>
-#include <QtGui/QImage>
+#include <QWidget>
+#include <QImage>
 
 namespace KNS3 {
 

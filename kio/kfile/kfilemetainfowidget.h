@@ -20,7 +20,7 @@
 #ifndef __KFILEMETAINFOWIDGET_H__
 #define __KFILEMETAINFOWIDGET_H__
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QtCore/QVariant>
 #include <kfilemetainfo.h>
 

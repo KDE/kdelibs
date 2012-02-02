@@ -22,12 +22,12 @@
 
 #include <kssl.h>
 
-#include <QtGui/QLayout>
-#include <QtGui/QRadioButton>
-#include <QtGui/QCheckBox>
-#include <QtGui/QFrame>
-#include <QtGui/QLabel>
-#include <QtGui/QListWidget>
+#include <QLayout>
+#include <QRadioButton>
+#include <QCheckBox>
+#include <QFrame>
+#include <QLabel>
+#include <QListWidget>
 
 #include <klocale.h>
 #include <kglobalsettings.h>

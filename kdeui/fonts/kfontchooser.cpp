@@ -23,13 +23,13 @@ Boston, MA 02110-1301, USA.
 #include "fonthelpers_p.h"
 #include "sampleedit_p.h"
 
-#include <QtGui/QCheckBox>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
-#include <QtGui/QSplitter>
-#include <QtGui/QScrollBar>
-#include <QtGui/QFontDatabase>
-#include <QtGui/QGroupBox>
+#include <QCheckBox>
+#include <QLabel>
+#include <QLayout>
+#include <QSplitter>
+#include <QScrollBar>
+#include <QFontDatabase>
+#include <QGroupBox>
 #include <kcharsets.h>
 #include <kconfig.h>
 #include <kdialog.h>

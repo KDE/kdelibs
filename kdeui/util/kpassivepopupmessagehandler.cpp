@@ -19,7 +19,7 @@
 #include "kpassivepopupmessagehandler.h"
 
 #include <QtCore/QLatin1String>
-#include <QtGui/QPixmap>
+#include <QPixmap>
 
 #include <kpassivepopup.h>
 #include <kicon.h>

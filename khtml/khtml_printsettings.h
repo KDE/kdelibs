@@ -20,7 +20,7 @@
 #ifndef KHTML_PRINTSETTINGS_H
 #define KHTML_PRINTSETTINGS_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 class QCheckBox;
 

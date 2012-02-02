@@ -22,8 +22,8 @@
  */
 
 
-#include <QtGui/QImageIOPlugin>
-#include <QtGui/QImage>
+#include <QImageIOPlugin>
+#include <QImage>
 #include <QtCore/QIODevice>
 #include <QtCore/QVector>
 

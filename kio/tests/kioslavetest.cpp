@@ -9,10 +9,10 @@
   LGPL version 2.
  */
 
-#include <QtGui/QLayout>
-#include <QtGui/QMessageBox>
+#include <QLayout>
+#include <QMessageBox>
 #include <QtCore/QDir>
-#include <QtGui/QGroupBox>
+#include <QGroupBox>
 
 #include <unistd.h>
 #include <kapplication.h>

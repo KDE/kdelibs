@@ -23,7 +23,7 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QAbstractSlider>
+#include <QAbstractSlider>
 
 /**
  * A ruler widget.

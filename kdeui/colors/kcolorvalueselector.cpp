@@ -19,7 +19,7 @@
 
 #include "kcolorvalueselector.h"
 
-#include <QtGui/QPainter>
+#include <QPainter>
 
 #include "kcolorchoosermode_p.h"
 

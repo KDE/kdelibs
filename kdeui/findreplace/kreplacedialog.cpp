@@ -21,11 +21,11 @@
 #include "kreplacedialog.h"
 #include "kfinddialog_p.h"
 
-#include <QtGui/QCheckBox>
-#include <QtGui/QGroupBox>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
-#include <QtGui/QLineEdit>
+#include <QCheckBox>
+#include <QGroupBox>
+#include <QLabel>
+#include <QLayout>
+#include <QLineEdit>
 #include <QtCore/QRegExp>
 #include <khistorycombobox.h>
 #include <klocale.h>

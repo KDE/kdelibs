@@ -29,8 +29,8 @@
 #include <QtCore/QPair>
 #include <QtCore/QTimer>
 #include <QtCore/QPointer>
-#include <QtGui/QLabel>
-#include <QtGui/QTableWidget>
+#include <QLabel>
+#include <QTableWidget>
 #include <QtDBus/QtDBus>
 
 #include <kapplication.h>

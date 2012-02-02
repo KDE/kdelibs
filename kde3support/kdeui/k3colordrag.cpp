@@ -19,7 +19,7 @@
 
 #include "k3colordrag.h"
 
-#include <QtGui/QPainter>
+#include <QPainter>
 
 static const char * const color_mime_string = "application/x-color";
 static const char * const text_mime_string = "text/plain";

@@ -18,8 +18,8 @@
 #include "SMIVItem.h"
 
 #include <QtCore/QDebug>
-#include <QtGui/QFileDialog>
-#include <QtGui/QApplication>
+#include <QFileDialog>
+#include <QApplication>
 
 #include <State.h>
 #include <ThreadWeaver.h>

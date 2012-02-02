@@ -28,7 +28,7 @@
 #include <QtCore/QVariant>
 
 #include <kiconloader.h>
-#include <QtGui/QPixmap> // for pixmapForUrl
+#include <QPixmap> // for pixmapForUrl
 
 #include <sys/stat.h>  // S_ISDIR
 #include <sys/types.h> // mode_t

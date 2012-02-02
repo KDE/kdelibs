@@ -1,9 +1,9 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
-#include <QtGui/QWidget>
-#include <QtGui/QCursor>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QPainter>
+#include <QWidget>
+#include <QCursor>
+#include <QKeyEvent>
+#include <QPainter>
 #include "kmenu.h"
 
 class DemoWidget : public QWidget {

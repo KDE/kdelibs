@@ -22,7 +22,7 @@
 
 #include <assert.h>
 
-#include <QtGui/QImage>
+#include <QImage>
 #include <QtCore/QDataStream>
 
 #include <kdebug.h>

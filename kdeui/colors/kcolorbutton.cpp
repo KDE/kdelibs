@@ -23,11 +23,11 @@
 #include <config.h>
 
 #include <QtCore/QPointer>
-#include <QtGui/QPainter>
-#include <QtGui/qdrawutil.h>
-#include <QtGui/QApplication>
-#include <QtGui/QClipboard>
-#include <QtGui/QStyle>
+#include <QPainter>
+#include <qdrawutil.h>
+#include <QApplication>
+#include <QClipboard>
+#include <QStyle>
 #include <kglobalsettings.h>
 #include <kstandardshortcut.h>
 #include <QMouseEvent>

@@ -24,7 +24,7 @@
 #include "kimproxy.h"
 
 #include <QtCore/QBool>
-#include <QtGui/QPixmapCache>
+#include <QPixmapCache>
 
 #include <kapplication.h>
 #include <kdbusservicestarter.h>

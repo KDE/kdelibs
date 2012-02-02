@@ -20,17 +20,17 @@
 #include "kfilesharedialog.h"
 #include "kfsprocess.h"
 #include <kvbox.h>
-#include <QtGui/QLabel>
+#include <QLabel>
 #include <QtCore/QDir>
-#include <QtGui/QRadioButton>
-#include <QtGui/QButtonGroup>
-#include <QtGui/QLayout>
+#include <QRadioButton>
+#include <QButtonGroup>
+#include <QLayout>
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <kio/kfileshare.h>
 #include <kseparator.h>
-#include <QtGui/QPushButton>
+#include <QPushButton>
 #include <kmessagebox.h>
 
 class KFileSharePropsPlugin::Private

@@ -30,7 +30,7 @@
 
 #include "kfile_export.h"
 #include "kabstractfilewidget.h"
-#include <QtGui/QWidget>
+#include <QWidget>
 
 class KJob;
 class KFileItem;

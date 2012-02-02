@@ -23,7 +23,7 @@
 #include <kde3support_export.h>
 
 #include <Qt3Support/Q3ColorDrag>
-#include <QtGui/QColor>
+#include <QColor>
 
 class K3ColorDragPrivate;
 /**

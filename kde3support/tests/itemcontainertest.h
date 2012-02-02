@@ -8,7 +8,7 @@
 #ifndef _ITEMCONTAINERTEST_H
 #define _ITEMCONTAINERTEST_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 class K3IconView;
 class K3ListView;

@@ -2,7 +2,7 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kapplication.h>
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QtCore/QTimer>
 #include <stdlib.h>
 #include "kcolorcollection.h"

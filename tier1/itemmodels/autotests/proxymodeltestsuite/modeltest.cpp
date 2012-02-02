@@ -23,7 +23,7 @@
 
 #include <QtCore/QAbstractEventDispatcher>
 #include <QtCore/QTimer>
-#include <QtGui/QtGui>
+#include <QtGui>
 
 #include "modeltest.h"
 

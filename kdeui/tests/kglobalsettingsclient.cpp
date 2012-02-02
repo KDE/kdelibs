@@ -19,7 +19,7 @@
 
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <kglobalsettings.h>
 #include <kdebug.h>
 #include <kcomponentdata.h>

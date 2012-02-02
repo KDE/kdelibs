@@ -19,12 +19,12 @@
 
 #include "kdatecombobox.h"
 
-#include <QtGui/QAbstractItemView>
-#include <QtGui/QApplication>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QMenu>
-#include <QtGui/QLineEdit>
-#include <QtGui/QWidgetAction>
+#include <QAbstractItemView>
+#include <QApplication>
+#include <QKeyEvent>
+#include <QMenu>
+#include <QLineEdit>
+#include <QWidgetAction>
 
 #include "kdebug.h"
 #include "klocale.h"

@@ -23,10 +23,10 @@
 #include "parts.h"
 #include "notepad.h"
 
-#include <QtGui/QSplitter>
-#include <QtGui/QCheckBox>
+#include <QSplitter>
+#include <QCheckBox>
 #include <QtCore/QDir>
-#include <QtGui/QMenu>
+#include <QMenu>
 
 #include <kiconloader.h>
 #include <kstandarddirs.h>

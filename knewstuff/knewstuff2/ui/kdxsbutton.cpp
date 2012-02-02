@@ -30,9 +30,9 @@
 #include "kdxschanges.h"
 #include "kdxstranslation.h"
 
-#include <QtGui/QLayout>
+#include <QLayout>
 #include <QtXml/qdom.h>
-#include <QtGui/QToolButton>
+#include <QToolButton>
 
 #include <ktoolinvocation.h>
 #include <kmessagebox.h>

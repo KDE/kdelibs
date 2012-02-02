@@ -33,7 +33,7 @@
 
 #include <stdlib.h>
 #include <QtCore/QObject>
-#include <QtGui/QPixmap>
+#include <QPixmap>
 #include <QtCore/QBuffer>
 #include <QtCore/QStringList>
 #include <QtCore/QTextCodec>

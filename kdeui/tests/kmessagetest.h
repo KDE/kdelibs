@@ -19,7 +19,7 @@
 #ifndef KMESSAGETEST_H
 #define KMESSAGETEST_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 class KMessage_Test : public QWidget
 {

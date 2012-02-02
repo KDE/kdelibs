@@ -30,7 +30,7 @@
 #include <setjmp.h>
 #include <QtCore/QDate>
 #include <kglobal.h>
-#include <QtGui/QImage>
+#include <QImage>
 
 #include "imageloader.h"
 #include "imagemanager.h"

@@ -23,7 +23,7 @@
 #include <kdeui_export.h>
 #include <kcomponentdata.h>
 
-#include <QtGui/QPixmap>
+#include <QPixmap>
 #include <QtCore/QObject>
 #include <QtCore/QPair>
 

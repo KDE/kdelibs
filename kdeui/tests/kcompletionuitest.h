@@ -3,7 +3,7 @@
 
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
-#include <QtGui/QWidget>
+#include <QWidget>
 class QVBoxLayout;
 class QHBoxLayout;
 class QGroupBox;

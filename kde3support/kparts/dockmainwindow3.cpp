@@ -27,7 +27,7 @@
 #include <kcomponentdata.h>
 #include <khelpmenu.h>
 #include <kstandarddirs.h>
-#include <QtGui/QApplication>
+#include <QApplication>
 
 #include <kdebug.h>
 #include <kxmlguifactory.h>

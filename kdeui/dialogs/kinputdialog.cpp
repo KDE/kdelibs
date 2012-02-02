@@ -20,9 +20,9 @@
 #include "kinputdialog.h"
 #include "kinputdialog_p.h"
 
-#include <QtGui/QDoubleValidator>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
+#include <QDoubleValidator>
+#include <QLabel>
+#include <QLayout>
 
 #include <kcombobox.h>
 #include <kcompletion.h>

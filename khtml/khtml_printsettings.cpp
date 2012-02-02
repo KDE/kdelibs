@@ -21,8 +21,8 @@
 
 #include <kdialog.h>
 #include <klocale.h>
-#include <QtGui/QCheckBox>
-#include <QtGui/QLayout>
+#include <QCheckBox>
+#include <QLayout>
 
 KHTMLPrintSettings::KHTMLPrintSettings(QWidget *parent)
     : QWidget(parent)

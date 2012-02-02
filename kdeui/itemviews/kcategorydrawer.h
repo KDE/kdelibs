@@ -24,7 +24,7 @@
 #include <kdeui_export.h>
 
 #include <QtCore/QObject>
-#include <QtGui/QMouseEvent>
+#include <QMouseEvent>
 
 class QPainter;
 class QModelIndex;

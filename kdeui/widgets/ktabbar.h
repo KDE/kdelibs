@@ -24,7 +24,7 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QTabBar>
+#include <QTabBar>
 
 /**
  * A QTabBar with extended features.

@@ -22,9 +22,9 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <QtCore/QDir>
-#include <QtGui/QLayout>
+#include <QLayout>
 #include <QtCore/QMutableStringListIterator>
-#include <QtGui/QWidget>
+#include <QWidget>
 
 #include <kfiledialog.h>
 #include <kmessagebox.h>

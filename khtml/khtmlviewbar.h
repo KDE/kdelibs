@@ -20,7 +20,7 @@
 #ifndef _khtml_viewbar_h_
 #define _khtml_viewbar_h_
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 class KHTMLView;
 class KHTMLViewBarWidget;

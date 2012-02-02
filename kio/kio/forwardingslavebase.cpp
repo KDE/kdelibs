@@ -25,7 +25,7 @@
 #include <kdebug.h>
 #include <kmimetype.h>
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <QtCore/QEventLoop>
 
 namespace KIO

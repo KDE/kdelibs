@@ -20,11 +20,11 @@
 #include "ktitlewidget.h"
 
 #include <QtCore/QTimer>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QFrame>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
-#include <QtGui/QTextDocument>
+#include <QMouseEvent>
+#include <QFrame>
+#include <QLabel>
+#include <QLayout>
+#include <QTextDocument>
 
 #include <kicon.h>
 #include <kiconloader.h>

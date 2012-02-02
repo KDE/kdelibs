@@ -26,7 +26,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include "khtml_ext.h"
-#include <QtGui/QImage>
+#include <QImage>
 
 KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KUrl &url,
                     const KParts::OpenUrlArguments& args,

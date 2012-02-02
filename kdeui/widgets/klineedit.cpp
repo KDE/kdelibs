@@ -44,9 +44,9 @@
 #include <kstandardshortcut.h>
 
 #include <QtCore/QTimer>
-#include <QtGui/QClipboard>
-#include <QtGui/QStyleOption>
-#include <QtGui/QToolTip>
+#include <QClipboard>
+#include <QStyleOption>
+#include <QToolTip>
 
 class KLineEditStyle;
 

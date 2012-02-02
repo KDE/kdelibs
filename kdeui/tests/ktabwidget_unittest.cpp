@@ -24,7 +24,7 @@
 #include <ktabwidget.h>
 #include <klineedit.h>
 #include <QComboBox>
-#include <QtGui/QTabBar>
+#include <QTabBar>
 
 class KTabWidget_UnitTest : public QObject
 {

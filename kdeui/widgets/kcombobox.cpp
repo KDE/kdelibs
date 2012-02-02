@@ -22,11 +22,11 @@
 
 #include "kcombobox.h"
 
-#include <QtGui/QClipboard>
-#include <QtGui/QLineEdit>
-#include <QtGui/QMenu>
-#include <QtGui/QApplication>
-#include <QtGui/QActionEvent>
+#include <QClipboard>
+#include <QLineEdit>
+#include <QMenu>
+#include <QApplication>
+#include <QActionEvent>
 
 #include <kselectaction.h>
 #include <kcompletionbox.h>

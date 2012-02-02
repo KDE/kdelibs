@@ -21,8 +21,8 @@
 
 #include "kshortcut.h"
 
-#include <QtGui/QActionEvent>
-#include <QtGui/QKeySequence>
+#include <QActionEvent>
+#include <QKeySequence>
 #include <QtCore/QCharRef>
 #include <QtCore/QMutableStringListIterator>
 

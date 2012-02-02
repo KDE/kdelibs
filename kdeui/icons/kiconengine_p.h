@@ -21,7 +21,7 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QIconEngineV2>
+#include <QIconEngineV2>
 
 class KIconLoader;
 

@@ -24,7 +24,7 @@
 #include <kde3support_export.h>
 #include <kdialog.h>
 
-#include <QtGui/QLineEdit>
+#include <QLineEdit>
 
 class QLabel;
 class QGridLayout;

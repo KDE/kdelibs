@@ -18,8 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <QtGui/QLayout>
-#include <QtGui/QPushButton>
+#include <QLayout>
+#include <QPushButton>
 #include <QtCore/QDir>
 
 #include <kapplication.h>

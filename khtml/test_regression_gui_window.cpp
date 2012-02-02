@@ -28,7 +28,7 @@
 #include <QtCore/QProcess>
 #include <QtCore/QFileInfo>
 #include <QtCore/QTextStream>
-#include <QtGui/QMainWindow>
+#include <QMainWindow>
 
 #include <kiconloader.h>
 #include <kmessagebox.h>

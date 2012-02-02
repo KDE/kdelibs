@@ -29,7 +29,7 @@
 #include "dom/dom_string.h"
 
 #include <QtCore/QMap>
-#include <QtGui/QPixmap>
+#include <QPixmap>
 
 namespace khtmlImLoad {
     class ImagePainter;

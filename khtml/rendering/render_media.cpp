@@ -28,7 +28,7 @@
 #include "media_controls.h"
 #include <phonon/mediaobject.h>
 #include <phonon/videowidget.h>
-#include <QtGui/QVBoxLayout>
+#include <QVBoxLayout>
 
 const double doubleMax = 999999999.8; // ### numeric_limits<double>::max()
 const double doubleInf = 999999999.0; // ### numeric_limits<double>::infinity()

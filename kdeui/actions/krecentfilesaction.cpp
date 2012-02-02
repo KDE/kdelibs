@@ -29,7 +29,7 @@
 #include "krecentfilesaction_p.h"
 
 #include <QtCore/QFile>
-#include <QtGui/QDesktopWidget>
+#include <QDesktopWidget>
 #ifdef Q_OS_WIN
 #include <QtCore/QDir>
 #endif

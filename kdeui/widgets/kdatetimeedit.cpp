@@ -20,10 +20,10 @@
 #include "kdatetimeedit.h"
 
 #include <QtCore/QStringList>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QMenu>
-#include <QtGui/QLineEdit>
-#include <QtGui/QWidgetAction>
+#include <QKeyEvent>
+#include <QMenu>
+#include <QLineEdit>
+#include <QWidgetAction>
 
 #include "kdebug.h"
 #include "kdatetime.h"

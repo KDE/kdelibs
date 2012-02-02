@@ -28,8 +28,8 @@
 
 #include <QList>
 #include <QSslCertificate>
-#include <QtGui/QTreeWidgetItem>
-#include <QtGui/QStandardItemModel>
+#include <QTreeWidgetItem>
+#include <QStandardItemModel>
 
 enum Columns {
     OrgCnColumn = 0,

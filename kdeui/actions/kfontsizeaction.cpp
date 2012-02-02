@@ -27,9 +27,9 @@
 
 #include "kfontsizeaction.h"
 
-#include <QtGui/QFontDatabase>
-#include <QtGui/QToolBar>
-#include <QtGui/QToolButton>
+#include <QFontDatabase>
+#include <QToolBar>
+#include <QToolButton>
 
 #include <kdebug.h>
 #include <kicon.h>

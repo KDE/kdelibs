@@ -21,9 +21,9 @@
 
 #include <kicon.h>
 
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QToolButton>
-#include <QtGui/QResizeEvent>
+#include <QHBoxLayout>
+#include <QToolButton>
+#include <QResizeEvent>
 
 KHTMLViewBarWidget::KHTMLViewBarWidget( bool addCloseButton, QWidget *parent )
  : QWidget( parent )

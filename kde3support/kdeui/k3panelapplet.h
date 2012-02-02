@@ -25,7 +25,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define __kpanelapplet_h__
 
 #include <kde3support_export.h>
-#include <QtGui/QFrame>
+#include <QFrame>
 
 #include <ksharedconfig.h>
 

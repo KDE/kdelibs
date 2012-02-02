@@ -25,10 +25,10 @@
 #ifndef _KMultitabbar_h_
 #define _KMultitabbar_h_
 
-#include <QtGui/QLayout>
+#include <QLayout>
 #include <QtCore/QString>
 #include <QtCore/QList>
-#include <QtGui/QPushButton>
+#include <QPushButton>
 
 #include <kdeui_export.h>
 

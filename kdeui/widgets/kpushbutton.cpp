@@ -21,11 +21,11 @@
 #include <QStyleOptionToolButton>
 #include <QStylePainter>
 
-#include <QtGui/QDrag>
-#include <QtGui/QActionEvent>
-#include <QtGui/QMenu>
+#include <QDrag>
+#include <QActionEvent>
+#include <QMenu>
 #include <QtCore/QPointer>
-#include <QtGui/QStyle>
+#include <QStyle>
 #include <QtCore/QTimer>
 
 #include <config.h>

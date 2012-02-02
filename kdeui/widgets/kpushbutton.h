@@ -20,7 +20,7 @@
 #ifndef KPUSHBUTTON_H
 #define KPUSHBUTTON_H
 
-#include <QtGui/QPushButton>
+#include <QPushButton>
 
 #include <kstandardguiitem.h>
 

@@ -35,7 +35,7 @@
 #include <kapplication.h>
 #include <kacceleratormanager.h>
 #include <kstandarddirs.h>
-#include <QtGui/QImage>
+#include <QImage>
 #include <QtCore/QFile>
 #include <QtCore/QEventLoop>
 #include <stdio.h>
@@ -46,8 +46,8 @@
 #include "rendering/render_layer.h"
 #include "khtmldefaults.h"
 #include <QtCore/QProcess>
-#include <QtGui/QWindowsStyle>
-#include <QtGui/QStyleOption>
+#include <QWindowsStyle>
+#include <QStyleOption>
 
 #include <dom/dom_node.h>
 #include <dom/dom_element.h>
@@ -226,11 +226,11 @@ const char* imageMissingIcon =
 #include <kconfig.h>
 #include <kglobalsettings.h>
 
-#include <QtGui/QColor>
-#include <QtGui/QCursor>
+#include <QColor>
+#include <QCursor>
 #include <QtCore/QDir>
 #include <QtCore/QObject>
-#include <QtGui/QPushButton>
+#include <QPushButton>
 #include <QtCore/QString>
 #include <QtCore/QTextStream>
 #include <QtCore/QFileInfo>

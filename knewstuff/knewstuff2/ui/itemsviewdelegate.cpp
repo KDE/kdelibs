@@ -19,8 +19,8 @@
 #include "itemsviewdelegate.h"
 #include "itemsmodel.h"
 
-#include <QtGui/QPainter>
-#include <QtGui/QSortFilterProxyModel>
+#include <QPainter>
+#include <QSortFilterProxyModel>
 
 #include <kdebug.h>
 #include <kstandarddirs.h>

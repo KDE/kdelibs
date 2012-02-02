@@ -26,7 +26,7 @@
 #include <kfile_export.h>
 
 #include <kurl.h>
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QtCore/QByteArray>
 
 class KFilePlacesModel;

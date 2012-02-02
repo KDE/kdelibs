@@ -1,7 +1,7 @@
 #include <kapplication.h>
 #include <kaction.h>
 #include <kactioncollection.h>
-#include <QtGui/QMainWindow>
+#include <QMainWindow>
 #include <ktoolbar.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>

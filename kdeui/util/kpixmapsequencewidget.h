@@ -20,7 +20,7 @@
 #ifndef _K_PIXMAPSEQUENCE_WIDGET_H_
 #define _K_PIXMAPSEQUENCE_WIDGET_H_
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 #include "kdeui_export.h"
 

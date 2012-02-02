@@ -21,7 +21,7 @@
 
 #include "kviewstateserializer.h"
 
-#include <QtGui/QAbstractScrollArea>
+#include <QAbstractScrollArea>
 #include <QScrollBar>
 #include <QTimer>
 #include <QTreeView>

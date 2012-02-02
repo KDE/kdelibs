@@ -34,7 +34,7 @@
 #include <assert.h>
 
 #include <QtCore/QHash>
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QtDBus/QtDBus>
 
 // Slaves may be idle for a certain time (3 minutes) before they are killed.

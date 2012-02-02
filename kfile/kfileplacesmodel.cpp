@@ -30,8 +30,8 @@
 #include <QtCore/QMimeData>
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
-#include <QtGui/QColor>
-#include <QtGui/QAction>
+#include <QColor>
+#include <QAction>
 
 #include <kfileitem.h>
 #include <kglobal.h>

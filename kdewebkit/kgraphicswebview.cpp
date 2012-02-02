@@ -28,8 +28,8 @@
 #include "kwebpage.h"
 #include "kwebview_p.h"
 
-#include <QtGui/QGraphicsSceneWheelEvent>
-#include <QtGui/QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneWheelEvent>
+#include <QGraphicsSceneMouseEvent>
 
 
 KGraphicsWebView::KGraphicsWebView(QGraphicsItem *parent, bool createCustomPage)

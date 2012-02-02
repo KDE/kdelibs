@@ -29,11 +29,11 @@
 
 #include <cmath>
 
-#include <QtGui/QApplication>
-#include <QtGui/QLabel>
-#include <QtGui/QLineEdit>
-#include <QtGui/QResizeEvent>
-#include <QtGui/QSlider>
+#include <QApplication>
+#include <QLabel>
+#include <QLineEdit>
+#include <QResizeEvent>
+#include <QSlider>
 
 #include <kdebug.h>
 #include <kdialog.h>

@@ -20,9 +20,9 @@
 #include "kdatewidget.h"
 
 #include <QtCore/QDate>
-#include <QtGui/QLayout>
-#include <QtGui/QLineEdit>
-#include <QtGui/QDoubleSpinBox>
+#include <QLayout>
+#include <QLineEdit>
+#include <QDoubleSpinBox>
 
 #include <kcombobox.h>
 

@@ -24,8 +24,8 @@
 #include <klocale.h>
 #include <klineedit.h>
 
-#include <QtGui/QLabel>
-#include <QtGui/QGridLayout>
+#include <QLabel>
+#include <QGridLayout>
 
 /**
   Private class that helps to provide binary compatibility between releases.

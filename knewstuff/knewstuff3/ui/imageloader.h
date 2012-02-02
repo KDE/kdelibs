@@ -19,7 +19,7 @@
 #ifndef KNEWSTUFF3_IMAGELOADER_H
 #define KNEWSTUFF3_IMAGELOADER_H
 
-#include <QtGui/QImage>
+#include <QImage>
 #include <QtCore/QObject>
 #include <QtCore/QByteArray>
 

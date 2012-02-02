@@ -24,7 +24,7 @@
 #include "object_binding.h"
 
 #include <QtCore/QDebug>
-#include <QtGui/QImage>
+#include <QImage>
 #include <QtCore/QPoint>
 #include <QtCore/QSize>
 

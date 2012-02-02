@@ -18,10 +18,10 @@
  *
  */
 
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
+#include <QLabel>
+#include <QLayout>
 //Added by qt3to4:
-#include <QtGui/QBoxLayout>
+#include <QBoxLayout>
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <kassistantdialog.h>

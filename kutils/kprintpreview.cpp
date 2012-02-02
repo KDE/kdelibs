@@ -20,9 +20,9 @@
 #include "kprintpreview.h"
 
 #include <QtCore/QFile>
-#include <QtGui/QLabel>
-#include <QtGui/QPrinter>
-#include <QtGui/QShowEvent>
+#include <QLabel>
+#include <QPrinter>
+#include <QShowEvent>
 #include <qtemporarydir.h>
 
 #include <kmimetypetrader.h>

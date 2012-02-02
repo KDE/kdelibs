@@ -21,7 +21,7 @@
 #include "kiconcache.h"
 
 #include <QtCore/QString>
-#include <QtGui/QPixmap>
+#include <QPixmap>
 #include <QtCore/QFile>
 #include <QtCore/QDataStream>
 #include <QtCore/QFileInfo>

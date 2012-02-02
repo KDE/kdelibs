@@ -26,9 +26,9 @@
 #define KHTMLFONT_H
 
 #include <QCache>
-#include <QtGui/QFont>
-#include <QtGui/QFontMetrics>
-#include <QtGui/QPainter>
+#include <QFont>
+#include <QFontMetrics>
+#include <QPainter>
 
 #include "misc/shared.h"
 

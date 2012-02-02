@@ -21,7 +21,7 @@
 #define KCURSOR_H
 
 #include <kdeui_export.h>
-#include <QtGui/QCursor>
+#include <QCursor>
 
 class QEvent;
 class QWidget;

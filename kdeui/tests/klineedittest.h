@@ -1,7 +1,7 @@
 #ifndef _KLINEEDITTEST_H
 #define _KLINEEDITTEST_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QtCore/QPointer>
 
 class QLabel;

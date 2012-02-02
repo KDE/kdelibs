@@ -24,7 +24,7 @@
 
 #include "knumvalidator.h"
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QtCore/QCharRef>
 
 #include <klocale.h>

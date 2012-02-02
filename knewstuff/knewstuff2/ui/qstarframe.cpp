@@ -18,8 +18,8 @@
 
 #include "qstarframe.h"
 
-#include <QtGui/QPainter>
-#include <QtGui/QPixmap>
+#include <QPainter>
+#include <QPixmap>
 
 #include <kstandarddirs.h>
 

@@ -25,11 +25,11 @@
 #include "klineedit.h"
 
 #include <QtCore/QEvent>
-#include <QtGui/QApplication>
-#include <QtGui/QComboBox>
-#include <QtGui/QStyle>
-#include <QtGui/QScrollBar>
-#include <QtGui/QKeyEvent>
+#include <QApplication>
+#include <QComboBox>
+#include <QStyle>
+#include <QScrollBar>
+#include <QKeyEvent>
 
 #include <kdebug.h>
 #include <kconfig.h>

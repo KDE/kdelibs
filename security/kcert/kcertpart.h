@@ -23,7 +23,7 @@
 #include <config.h>
 
 #include <kparts/part.h>
-#include <QtGui/QTreeWidget>
+#include <QTreeWidget>
 #include <QtCore/QVariantList>
 
 class KSslCertificateBox;

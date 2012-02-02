@@ -15,8 +15,8 @@
 #define KICONDIALOG_P_H
 
 #include <QtCore/QStringList>
-#include <QtGui/QFileDialog>
-#include <QtGui/QPushButton>
+#include <QFileDialog>
+#include <QPushButton>
 
 #include <kiconloader.h>
 #include <klistwidget.h>

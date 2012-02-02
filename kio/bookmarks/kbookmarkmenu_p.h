@@ -29,9 +29,9 @@
 #include <klocale.h>
 #include <kaction.h>
 #include <kactionmenu.h>
-#include <QtGui/QBoxLayout>
-#include <QtGui/QTreeWidget>
-#include <QtGui/QLabel>
+#include <QBoxLayout>
+#include <QTreeWidget>
+#include <QLabel>
 
 #include "kbookmark.h"
 #include "kbookmarkimporter.h"

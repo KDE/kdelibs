@@ -20,7 +20,7 @@
 #include "kpreviewprops.h"
 #include <kio/previewjob.h>
 
-#include <QtGui/QLayout>
+#include <QLayout>
 
 #include <kfilemetapreview.h>
 #include <kglobalsettings.h>

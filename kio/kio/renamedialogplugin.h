@@ -27,7 +27,7 @@
 #define KIO_RENAMEDIALOGPLUGIN_H
 
 #include <kio/renamedialog.h>
-#include <QtGui/QDialog>
+#include <QDialog>
 #include <sys/types.h>
 #include <QtCore/QString>
 #include <QtCore/QStringList>

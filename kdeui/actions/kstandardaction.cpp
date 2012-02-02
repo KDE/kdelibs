@@ -22,11 +22,11 @@
 #include "moc_kstandardaction_p.cpp"
 
 #include <QtCore/QMutableStringListIterator>
-#include <QtGui/QToolButton>
+#include <QToolButton>
 
 #include <kaboutdata.h>
 #include <kaction.h>
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <kcomponentdata.h>
 #include <kdebug.h>
 #include <kglobal.h>

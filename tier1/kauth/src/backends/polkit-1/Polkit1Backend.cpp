@@ -26,8 +26,8 @@
 #include <QtCore/QDebug>
 #include <QtCore/QTimer>
 
-#include <QtGui/QApplication>
-#include <QtGui/QWidget>
+#include <QApplication>
+#include <QWidget>
 
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusConnectionInterface>

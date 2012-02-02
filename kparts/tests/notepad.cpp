@@ -23,10 +23,10 @@
 #include <kparts/partmanager.h>
 #include <kparts/mainwindow.h>
 
-#include <QtGui/QSplitter>
+#include <QSplitter>
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
-#include <QtGui/QTextEdit>
+#include <QTextEdit>
 
 #include <kaboutdata.h>
 #include <kapplication.h>

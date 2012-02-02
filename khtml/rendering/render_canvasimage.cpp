@@ -32,7 +32,7 @@
 
 #include <config.h>
 
-#include <QtGui/QPainter>
+#include <QPainter>
 #include <QtCore/QDebug>
 
 #include <css/csshelper.h>

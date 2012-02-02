@@ -21,7 +21,7 @@
 #ifndef KRATINGWIDGET_H
 #define KRATINGWIDGET_H
 
-#include <QtGui/QFrame>
+#include <QFrame>
 
 #include <kdeui_export.h>
 

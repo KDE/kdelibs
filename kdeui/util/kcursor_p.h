@@ -24,7 +24,7 @@
 #include <QtCore/QHash>
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
-#include <QtGui/QCursor>
+#include <QCursor>
 
 class QWidget;
 

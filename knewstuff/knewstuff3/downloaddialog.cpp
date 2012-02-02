@@ -23,9 +23,9 @@
 #include "downloaddialog.h"
 
 #include <QtCore/QTimer>
-#include <QtGui/QSortFilterProxyModel>
-#include <QtGui/QScrollBar>
-#include <QtGui/QKeyEvent>
+#include <QSortFilterProxyModel>
+#include <QScrollBar>
+#include <QKeyEvent>
 
 #include <kmessagebox.h>
 #include <kcomponentdata.h>

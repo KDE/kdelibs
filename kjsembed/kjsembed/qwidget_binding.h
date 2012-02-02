@@ -23,7 +23,7 @@
 #ifndef QWIDGET_BINDING_H
 #define QWIDGET_BINDING_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 #include "qobject_binding.h" //krazy:exclude=includes (not a Qt header)
 

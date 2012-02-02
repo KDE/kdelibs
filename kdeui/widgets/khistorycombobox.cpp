@@ -22,11 +22,11 @@
 
 #include "khistorycombobox.h"
 
-#include <QtGui/QAbstractItemView>
-#include <QtGui/QApplication>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QMenu>
-#include <QtGui/QWheelEvent>
+#include <QAbstractItemView>
+#include <QApplication>
+#include <QKeyEvent>
+#include <QMenu>
+#include <QWheelEvent>
 
 #include <klocale.h>
 #include <knotification.h>

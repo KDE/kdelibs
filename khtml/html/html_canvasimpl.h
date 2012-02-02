@@ -49,12 +49,12 @@
 #include "misc/khtmllayout.h"
 #include "rendering/render_object.h"
 
-#include <QtGui/QRegion>
+#include <QRegion>
 #include <QtCore/QMap>
 #include <QtCore/QList>
 #include <QtCore/QStack>
-#include <QtGui/QPixmap>
-#include <QtGui/QGradient>
+#include <QPixmap>
+#include <QGradient>
 
 namespace khtmlImLoad {
     class CanvasImage;

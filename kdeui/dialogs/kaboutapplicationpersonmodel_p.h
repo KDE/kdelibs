@@ -30,7 +30,7 @@
 #include <kurl.h>
 
 #include <QtCore/QAbstractListModel>
-#include <QtGui/QPixmap>
+#include <QPixmap>
 #include <QtNetwork/QNetworkReply>
 
 // Forward declarations to make Attica-related members work

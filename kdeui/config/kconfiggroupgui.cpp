@@ -21,8 +21,8 @@
 #include <kconfiggroup.h>
 
 #include <QtCore/QMutableStringListIterator>
-#include <QtGui/QColor>
-#include <QtGui/QFont>
+#include <QColor>
+#include <QFont>
 
 #include <kconfiggroup_p.h>
 #include <kdebug.h>

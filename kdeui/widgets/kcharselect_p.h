@@ -28,7 +28,7 @@
 #include <QFont>
 #include <QApplication>
 #include <QMimeData>
-#include <QtGui/QTableView>
+#include <QTableView>
 #include <klocale.h>
 
 #include "kcharselectdata_p.h"

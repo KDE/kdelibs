@@ -28,7 +28,7 @@
 
 #include <kdebug.h>
 #include <assert.h>
-#include <QtGui/QPainter>
+#include <QPainter>
 #include <kglobal.h>
 
 #include "render_text.h"

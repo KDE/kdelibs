@@ -26,8 +26,8 @@
 #include <kfind.h>
 #include <kcolorscheme.h>
 
-#include <QtGui/QMenu>
-#include <QtGui/QLineEdit>
+#include <QMenu>
+#include <QLineEdit>
 
 #define d this
 

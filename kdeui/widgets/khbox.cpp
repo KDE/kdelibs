@@ -19,9 +19,9 @@
 #include "khbox.h"
 
 #include <QtCore/QEvent>
-#include <QtGui/QApplication>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
+#include <QApplication>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 
 KHBox::KHBox( QWidget* parent )
   : QFrame( parent ),

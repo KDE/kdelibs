@@ -32,8 +32,8 @@
 #include <kcolorscheme.h>
 
 // Qt includes
-#include <QtGui/QTextDocumentFragment>
-#include <QtGui/QMouseEvent>
+#include <QTextDocumentFragment>
+#include <QMouseEvent>
 
 /**
   Private class that helps to provide binary compatibility between releases.

@@ -23,7 +23,7 @@
 #define KCOLORUTILS_H
 
 #include <kdeui_export.h>
-#include <QtGui/QPainter>
+#include <QPainter>
 
 class QColor;
 

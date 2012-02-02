@@ -23,7 +23,7 @@
 #ifndef KDE_KSTATUSBAROFFLINEINDICATOR_H
 #define KDE_KSTATUSBAROFFLINEINDICATOR_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <kio/kio_export.h>
 #include <solid/networking.h>
 

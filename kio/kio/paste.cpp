@@ -35,8 +35,8 @@
 #include <kmessagebox.h>
 #include <kmimetype.h>
 
-#include <QtGui/QApplication>
-#include <QtGui/QClipboard>
+#include <QApplication>
+#include <QClipboard>
 #include <QMimeData>
 #include <qtemporaryfile.h>
 

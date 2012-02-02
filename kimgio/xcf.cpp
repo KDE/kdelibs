@@ -22,8 +22,8 @@
 #include "xcf.h"
 
 #include <stdlib.h>
-#include <QtGui/QImage>
-#include <QtGui/QPainter>
+#include <QImage>
+#include <QPainter>
 #include <QtCore/QIODevice>
 #include <QtCore/QStack>
 #include <QtCore/QVector>

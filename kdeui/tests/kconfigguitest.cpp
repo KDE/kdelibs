@@ -22,7 +22,7 @@
 
 #include <kconfig.h>
 #include <kdebug.h>
-#include <QtGui/QFont>
+#include <QFont>
 #include <kconfiggroup.h>
 #include <kcursor.h>
 

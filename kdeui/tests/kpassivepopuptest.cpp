@@ -2,7 +2,7 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kpassivepopup.h>
-#include <QtGui/QPushButton>
+#include <QPushButton>
 #include <ksystemtrayicon.h>
 
 QPushButton *pb;

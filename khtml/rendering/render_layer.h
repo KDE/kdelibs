@@ -44,7 +44,7 @@
 #ifndef render_layer_h
 #define render_layer_h
 
-#include <QtGui/QColor>
+#include <QColor>
 #include <QtCore/QRect>
 #include <assert.h>
 

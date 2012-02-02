@@ -24,7 +24,7 @@
 #include <QtCore/QMetaEnum>
 #include <QtCore/QMetaType>
 #include <QtCore/QDebug>
-#include <QtGui/QWidget>
+#include <QWidget>
 
 #include <kjs/interpreter.h>
 

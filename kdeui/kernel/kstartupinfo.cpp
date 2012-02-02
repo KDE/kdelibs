@@ -32,7 +32,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include "kstartupinfo.h"
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QtCore/QBool>
 
 #include <config.h>
@@ -46,7 +46,7 @@ DEALINGS IN THE SOFTWARE.
 #include <sys/time.h>
 #include <stdlib.h>
 #include <QtCore/QTimer>
-#include <QtGui/QActionEvent>
+#include <QActionEvent>
 #ifdef Q_WS_X11
 #include <qx11info_x11.h>
 #include <netwm.h>

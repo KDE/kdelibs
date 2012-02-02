@@ -10,12 +10,12 @@
 
 #include "kimagefilepreview.h"
 
-#include <QtGui/QLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QPainter>
-#include <QtGui/QComboBox>
-#include <QtGui/QCheckBox>
-#include <QtGui/QResizeEvent>
+#include <QLayout>
+#include <QLabel>
+#include <QPainter>
+#include <QComboBox>
+#include <QCheckBox>
+#include <QResizeEvent>
 #include <QtCore/QTimer>
 #include <QtCore/QTimeLine>
 

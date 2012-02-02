@@ -43,7 +43,7 @@ application palette (light and dark shades are\ncalculated)."), 0},
 
 */
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>

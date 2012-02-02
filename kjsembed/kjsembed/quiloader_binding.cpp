@@ -21,7 +21,7 @@
 */
 #include "quiloader_binding.h"
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QtCore/QFile>
 #include <QtCore/QDebug>
 

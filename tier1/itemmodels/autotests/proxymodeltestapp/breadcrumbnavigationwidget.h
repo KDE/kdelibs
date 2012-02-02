@@ -22,7 +22,7 @@
 #ifndef BREADCRUMBNAVIGATION_WIDGET_H
 #define BREADCRUMBNAVIGATION_WIDGET_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QItemSelection>
 #include <QLabel>
 #include <QListView>

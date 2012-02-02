@@ -22,7 +22,7 @@
 #define KPIXMAPPROVIDER_H
 
 #include <kdeui_export.h>
-#include <QtGui/QPixmap>
+#include <QPixmap>
 
 /**
  * A tiny abstract class with just one method:

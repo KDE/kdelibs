@@ -18,9 +18,9 @@
 
 #include "uploaddialog.h"
 
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
-#include <QtGui/QDoubleSpinBox>
+#include <QLabel>
+#include <QLayout>
+#include <QDoubleSpinBox>
 #include <QtCore/QString>
 
 #include <kaboutdata.h>

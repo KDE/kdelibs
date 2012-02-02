@@ -28,10 +28,10 @@
 #include "netwm.h"
 #include "netwm_p.h"
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #ifdef Q_WS_X11 //FIXME
 
-#include <QtGui/qx11info_x11.h>
+#include <qx11info_x11.h>
 
 #include <kwindowsystem.h>
 #include <kxutils.h>

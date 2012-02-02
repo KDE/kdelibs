@@ -36,21 +36,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <QtGui/QButtonGroup>
-#include <QtGui/QCheckBox>
-#include <QtGui/QDesktopWidget>
-#include <QtGui/QRadioButton>
-#include <QtGui/qdrawutil.h>
-#include <QtGui/QActionEvent>
+#include <QButtonGroup>
+#include <QCheckBox>
+#include <QDesktopWidget>
+#include <QRadioButton>
+#include <qdrawutil.h>
+#include <QActionEvent>
 #include <QtCore/QFile>
-#include <QtGui/QHeaderView>
-#include <QtGui/QImage>
-#include <QtGui/QStyledItemDelegate>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
-#include <QtGui/QPainter>
-#include <QtGui/QPushButton>
-#include <QtGui/QScrollBar>
+#include <QHeaderView>
+#include <QImage>
+#include <QStyledItemDelegate>
+#include <QLabel>
+#include <QLayout>
+#include <QPainter>
+#include <QPushButton>
+#include <QScrollBar>
 #include <QtCore/QTimer>
 
 #include <kapplication.h>

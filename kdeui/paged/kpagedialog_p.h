@@ -22,7 +22,7 @@
 
 #include "paged/kpagedialog.h"
 #include "../dialogs/kdialog_p.h"
-#include <QtGui/QLayout>
+#include <QLayout>
 
 class KDEUI_EXPORT KPageDialogPrivate : public KDialogPrivate
 {

@@ -24,7 +24,7 @@
 #include <kplotting_export.h>
 
 #include <QtCore/QString>
-#include <QtGui/QColor>
+#include <QColor>
 
 class QBrush;
 class QPainter;

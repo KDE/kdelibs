@@ -20,7 +20,7 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
-#include <QtGui/QImageReader>
+#include <QImageReader>
 
 #include <kpluginfactory.h>
 #include <kdebug.h>

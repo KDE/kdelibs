@@ -19,10 +19,10 @@
 #include <editorchooser.h>
 #include "moc_editorchooser.cpp"
 
-#include <QtGui/QComboBox>
+#include <QComboBox>
 #include <QtCore/QStringList>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
+#include <QLabel>
+#include <QLayout>
 
 #include <kmimetypetrader.h>
 #include <kconfig.h>

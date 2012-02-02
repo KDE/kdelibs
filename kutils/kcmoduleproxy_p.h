@@ -22,7 +22,7 @@
 
 #include "kcmoduleinfo.h"
 #include "kcmoduleproxy.h"
-#include <QtGui/QLabel>
+#include <QLabel>
 class QVBoxLayout;
 
 class KCModuleProxyPrivate

@@ -18,7 +18,7 @@
 #ifndef KNEWSTUFF3_UI_ITEMSVIEW_H
 #define KNEWSTUFF3_UI_ITEMSVIEW_H
 
-#include <QtGui/QListView>
+#include <QListView>
 
 namespace KNS3
 {

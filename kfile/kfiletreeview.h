@@ -22,7 +22,7 @@
 #ifndef KFILETREEVIEW_H
 #define KFILETREEVIEW_H
 
-#include <QtGui/QTreeView>
+#include <QTreeView>
 
 #include <kurl.h>
 

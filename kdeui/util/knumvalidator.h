@@ -24,7 +24,7 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QValidator>
+#include <QValidator>
 
 class QWidget;
 class QString;

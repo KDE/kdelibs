@@ -23,7 +23,7 @@
 
 #include "pic_rw.h"
 #include <QtCore/QVariant>
-#include <QtGui/QImage>
+#include <QImage>
 
 #include <iostream>
 

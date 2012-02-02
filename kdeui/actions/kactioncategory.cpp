@@ -18,7 +18,7 @@
 
 #include "kactioncategory.h"
 
-#include <QtGui/QAction>
+#include <QAction>
 
 #include "kaction.h"
 

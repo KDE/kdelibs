@@ -22,11 +22,11 @@
 #include <klocale.h>
 #include <kicon.h>
 #include <kdebug.h>
-#include <QtGui/QApplication>
-#include <QtGui/QToolButton>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
-#include <QtGui/QActionEvent>
+#include <QApplication>
+#include <QToolButton>
+#include <QLabel>
+#include <QLayout>
+#include <QActionEvent>
 #include <QListWidget>
 
 class KActionSelectorPrivate {

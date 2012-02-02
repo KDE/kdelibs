@@ -20,7 +20,7 @@
 #define KBUILDSYCOCAPROGRESSDIALOG_H
 
 #include <QtCore/QTimer>
-#include <QtGui/QProgressDialog>
+#include <QProgressDialog>
 #include <kio/kio_export.h>
 
 class KBuildSycocaProgressDialogPrivate;

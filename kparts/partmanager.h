@@ -20,7 +20,7 @@
 #ifndef __kpartmanager_h__
 #define __kpartmanager_h__
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 #include <kparts/kparts_export.h>
 

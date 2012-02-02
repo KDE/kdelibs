@@ -23,9 +23,9 @@
 #define KNEWSTUFF2_UI_ITEMSVIEW_H
 
 #include <QtCore/QSet>
-#include <QtGui/QListView>
-#include <QtGui/QLabel>
-#include <QtGui/QSortFilterProxyModel>
+#include <QListView>
+#include <QLabel>
+#include <QSortFilterProxyModel>
 
 #include <knewstuff2/dxs/dxsengine.h>
 #include <knewstuff2/core/category.h>

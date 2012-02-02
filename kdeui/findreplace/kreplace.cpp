@@ -21,7 +21,7 @@
 #include "kreplace.h"
 #include "kfind_p.h"
 
-#include <QtGui/QLabel>
+#include <QLabel>
 #include <kapplication.h>
 #include <kdebug.h>
 

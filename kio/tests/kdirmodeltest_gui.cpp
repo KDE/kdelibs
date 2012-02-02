@@ -23,8 +23,8 @@
 #include <kdirmodel.h>
 #include <kurl.h>
 
-#include <QtGui/QTreeView>
-#include <QtGui/QListView>
+#include <QTreeView>
+#include <QListView>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <kmimetyperesolver.h>

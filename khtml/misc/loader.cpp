@@ -57,12 +57,12 @@
 
 //#include <qasyncio.h>
 //#include <qasyncimageio.h>
-#include <QtGui/QApplication>
-#include <QtGui/QDesktopWidget>
-#include <QtGui/QPainter>
-#include <QtGui/QBitmap>
-#include <QtGui/QMovie>
-#include <QtGui/QWidget>
+#include <QApplication>
+#include <QDesktopWidget>
+#include <QPainter>
+#include <QBitmap>
+#include <QMovie>
+#include <QWidget>
 #include <QtCore/QDebug>
 #include <kauthorized.h>
 #include <kio/job.h>

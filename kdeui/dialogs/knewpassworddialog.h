@@ -23,7 +23,7 @@
 #define KNEWPASSWORDDIALOG_H
 
 // ### KDE 5: remove
-#include <QtGui/QLineEdit>
+#include <QLineEdit>
 
 #include <kdialog.h>
 

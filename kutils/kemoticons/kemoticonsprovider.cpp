@@ -21,7 +21,7 @@
 
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
-#include <QtGui/QTextDocument>
+#include <QTextDocument>
 
 #include <kio/netaccess.h>
 #include "kstandarddirs.h"

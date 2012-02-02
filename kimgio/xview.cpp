@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <QtGui/QImage>
+#include <QImage>
 
 #define BUFSIZE 1024
 

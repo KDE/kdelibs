@@ -24,9 +24,9 @@
 #include <QtCore/QRect>
 #include <QtCore/QDate>
 #include <QtCore/QTimer>
-#include <QtGui/QColor>
-#include <QtGui/QFont>
-#include <QtGui/QBrush>
+#include <QColor>
+#include <QFont>
+#include <QBrush>
 
 TestObject::TestObject(QObject* parent, const QString& name)
     : QObject(parent)

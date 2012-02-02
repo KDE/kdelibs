@@ -31,13 +31,13 @@
 #include <typeinfo>
 #include <sys/stat.h>
 
-#include <QtGui/QWidget>
-#include <QtGui/QLabel>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QPlainTextEdit>
-#include <QtGui/QApplication>
-#include <QtGui/QDesktopWidget>
+#include <QWidget>
+#include <QLabel>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QPlainTextEdit>
+#include <QApplication>
+#include <QDesktopWidget>
 
 #include <kmimetypetrader.h>
 #include <kmimetype.h>

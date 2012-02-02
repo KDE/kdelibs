@@ -26,7 +26,7 @@
 #include <kjs/object.h>
 #include <QtCore/QDebug>
 
-#include <QtGui/QAction>
+#include <QAction>
 #include <QtUiTools/QUiLoader>
 
 namespace KJSEmbed

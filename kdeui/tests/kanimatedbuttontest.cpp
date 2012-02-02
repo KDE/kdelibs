@@ -22,11 +22,11 @@
 
 #include "kanimatedbutton.h"
 
-#include <QtGui/QLabel>
-#include <QtGui/qlayout.h>
-#include <QtGui/QLineEdit>
-#include <QtGui/QPushButton>
-#include <QtGui/QSpinBox>
+#include <QLabel>
+#include <qlayout.h>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QSpinBox>
 
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>

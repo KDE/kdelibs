@@ -25,7 +25,7 @@
 #include <kdeui_export.h>
 
 #include <QtCore/QDateTime>
-#include <QtGui/QFrame>
+#include <QFrame>
 
 #include <klocale.h>
 

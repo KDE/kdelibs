@@ -21,7 +21,7 @@
 #ifndef _KDIRLISTERTEST_GUI_H_
 #define _KDIRLISTERTEST_GUI_H_
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QtCore/QString>
 
 #include <kurl.h>

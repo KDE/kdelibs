@@ -20,9 +20,9 @@
 
 #include "qstarframe.h"
 
-#include <QtGui/QLayout>
-#include <QtGui/QSlider>
-#include <QtGui/QLabel>
+#include <QLayout>
+#include <QSlider>
+#include <QLabel>
 
 #include <klocale.h>
 #include <kstandarddirs.h>

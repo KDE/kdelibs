@@ -22,7 +22,7 @@
 #include <knewstuff2/core/provider.h>
 #include <knewstuff2/core/entry.h>
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 namespace KNS
 {

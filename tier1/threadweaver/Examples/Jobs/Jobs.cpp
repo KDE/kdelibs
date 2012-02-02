@@ -21,10 +21,10 @@ extern "C" {
 #include <stdlib.h>
 }
 
-#include <QtGui/QWidget>
-#include <QtGui/QCheckBox>
-#include <QtGui/QProgressBar>
-#include <QtGui/QApplication>
+#include <QWidget>
+#include <QCheckBox>
+#include <QProgressBar>
+#include <QApplication>
 
 #include <Thread.h>
 #include <JobCollection.h>

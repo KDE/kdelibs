@@ -20,7 +20,7 @@
 #ifndef KANIMATEDBUTTONTEST_H
 #define KANIMATEDBUTTONTEST_H
 
-#include <QtGui/QGroupBox>
+#include <QGroupBox>
 
 #include "kmainwindow.h"
 

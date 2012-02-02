@@ -27,7 +27,7 @@
 #include <QtCore/QHash>
 #include <QtCore/QMap>
 #include <QtCore/QStringList>
-#include <QtGui/QPixmap>
+#include <QPixmap>
 
 #include <kimproxy_export.h>
 

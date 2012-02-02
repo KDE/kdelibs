@@ -24,7 +24,7 @@
 #include <kmimetype.h>
 #include <config-kfile.h>
 #include <QtCore/QEvent>
-#include <QtGui/QLineEdit>
+#include <QLineEdit>
 
 class KFileFilterCombo::Private
 {

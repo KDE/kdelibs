@@ -27,7 +27,7 @@
 #include "kshortcut.h"
 #include <kconfiggroup.h>
 
-#include <QtGui/QKeySequence>
+#include <QKeySequence>
 #ifdef Q_WS_X11
 #include <qx11info_x11.h>
 #endif

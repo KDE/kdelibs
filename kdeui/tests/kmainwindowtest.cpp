@@ -19,7 +19,7 @@
 */
 
 #include <QtCore/QTimer>
-#include <QtGui/QLabel>
+#include <QLabel>
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>

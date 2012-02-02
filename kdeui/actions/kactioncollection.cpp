@@ -39,7 +39,7 @@
 #include <QtCore/QSet>
 #include <QtCore/QMap>
 #include <QtCore/QList>
-#include <QtGui/QAction>
+#include <QAction>
 
 #include <stdio.h>
 #include "kcomponentdata.h"

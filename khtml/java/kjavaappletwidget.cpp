@@ -26,7 +26,7 @@
 #include <kdebug.h>
 #include <klocale.h>
 
-#include <QtGui/QLabel>
+#include <QLabel>
 
 #ifndef Q_WS_X11
 #define QXEmbed QWidget

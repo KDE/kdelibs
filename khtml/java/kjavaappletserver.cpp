@@ -44,11 +44,11 @@
 #include <QtCore/QPointer>
 #include <QtCore/QDir>
 #include <QtCore/QEventLoop>
-#include <QtGui/QApplication>
-#include <QtGui/QLabel>
-#include <QtGui/QDialog>
-#include <QtGui/QPushButton>
-#include <QtGui/QLayout>
+#include <QApplication>
+#include <QLabel>
+#include <QDialog>
+#include <QPushButton>
+#include <QLayout>
 #include <QtCore/QRegExp>
 
 #include <stdlib.h>

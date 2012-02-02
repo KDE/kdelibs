@@ -23,7 +23,7 @@
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <kglobal.h>
 #include <kdeui_export.h>
 

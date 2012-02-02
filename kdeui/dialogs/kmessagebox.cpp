@@ -20,14 +20,14 @@
 #include "kmessagebox.h"
 
 #include <QtCore/QPointer>
-#include <QtGui/QCheckBox>
-#include <QtGui/QGroupBox>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
-#include <QtGui/QListWidget>
-#include <QtGui/QScrollArea>
-#include <QtGui/QScrollBar>
-#include <QtGui/QTextDocumentFragment>
+#include <QCheckBox>
+#include <QGroupBox>
+#include <QLabel>
+#include <QLayout>
+#include <QListWidget>
+#include <QScrollArea>
+#include <QScrollBar>
+#include <QTextDocumentFragment>
 
 #include <kapplication.h>
 #include <kconfig.h>

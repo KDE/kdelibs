@@ -28,13 +28,13 @@
 #ifdef Q_WS_X11
 #  include <private/qfontengine_x11_p.h>
 #endif
-#include <QtGui/QFontDatabase>
-#include <QtGui/QFont>
+#include <QFontDatabase>
+#include <QFont>
 #include "khtml_settings.h"
-#include <QtGui/QImage>
+#include <QImage>
 #include <assert.h>
-#include <QtGui/QX11Info>
-#include <QtGui/QPainter>
+#include <QX11Info>
+#include <QPainter>
 #include <fixx11h.h>
 #include <QtGlobal>
 #include <kdebug.h>
@@ -506,8 +506,8 @@ void DCOPClient::processSocketData( int )
 {
 }*/
 
-#include <QtGui/QApplication>
-#include <QtGui/QPalette>
+#include <QApplication>
+#include <QPalette>
 
 #if 0
 KDE_EXPORT void QApplication::setPalette( const QPalette &, bool ,

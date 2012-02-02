@@ -24,11 +24,11 @@
  */
 
 #include "kpixmapregionselectorwidget.h"
-#include <QtGui/QPainter>
-#include <QtGui/QColor>
-#include <QtGui/QImage>
+#include <QPainter>
+#include <QColor>
+#include <QImage>
 #include <QLabel>
-#include <QtGui/QLayout>
+#include <QLayout>
 #include <QRubberBand>
 #include <kdebug.h>
 #include <kicon.h>
@@ -36,8 +36,8 @@
 #include <kmenu.h>
 #include <kaction.h>
 #include <stdlib.h>
-#include <QtGui/QCursor>
-#include <QtGui/QApplication>
+#include <QCursor>
+#include <QApplication>
 #include <QMouseEvent>
 #include "kactioncollection.h"
 

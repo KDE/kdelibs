@@ -37,7 +37,7 @@
 #include <config.h>
 
 #include <QtCore/QTimer>
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <kinputdialog.h>
@@ -54,9 +54,9 @@
 #endif
 #include <kglobalsettings.h>
 #include <assert.h>
-#include <QtGui/QStyle>
+#include <QStyle>
 #include <QtCore/QObject>
-#include <QtGui/QTextDocument>
+#include <QTextDocument>
 #include <kstringhandler.h>
 
 #include "kjs_proxy.h"

@@ -24,9 +24,9 @@
 #include <ksharedconfig.h>
 #include <kdebug.h>
 #include <kdeversion.h>
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <QtCore/QPointer>
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <ktoolinvocation.h>
 
 #include <kglobal.h>

@@ -25,8 +25,8 @@ class KConfigGroup;
 
 #include <khtml_export.h>
 
-#include <QtGui/QColor>
-#include <QtGui/QFont> // ### KDE 5: remove
+#include <QColor>
+#include <QFont> // ### KDE 5: remove
 #include <QtCore/QMap> // ### KDE 5: remove
 #include <QtCore/QStringList>
 #include <QtCore/QPair>

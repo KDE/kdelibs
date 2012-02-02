@@ -25,8 +25,8 @@
 #include <kservice.h>
 #include <kde_file.h>
 #include <kcmdlineargs.h>
-#include <QtGui/QPushButton>
-#include <QtGui/QLayout>
+#include <QPushButton>
+#include <QLayout>
 
 #include <stdlib.h>
 #include <unistd.h>

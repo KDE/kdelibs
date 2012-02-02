@@ -20,11 +20,11 @@
 
 #include "kurlnavigatorprotocolcombo_p.h"
 
-#include <QtGui/QAction>
-#include <QtGui/QMenu>
-#include <QtGui/QPainter>
-#include <QtGui/QPaintEvent>
-#include <QtGui/QStyleOption>
+#include <QAction>
+#include <QMenu>
+#include <QPainter>
+#include <QPaintEvent>
+#include <QStyleOption>
 
 #include <klocale.h>
 #include <kprotocolinfo.h>

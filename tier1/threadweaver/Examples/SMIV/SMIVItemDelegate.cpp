@@ -19,7 +19,7 @@
 #include "SMIVItem.h"
 
 #include <QtCore/QModelIndex>
-#include <QtGui/QPainter>
+#include <QPainter>
 
 #include <DebuggingAids.h>
 

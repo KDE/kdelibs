@@ -21,7 +21,7 @@
   DEALINGS IN THE SOFTWARE.
 
 */
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <X11/Xlib.h>
 #include <iostream>
 using namespace std;

@@ -19,9 +19,9 @@
 
 #include "klistwidgetsearchline.h"
 
-#include <QtGui/QListWidget>
-#include <QtGui/QApplication>
-#include <QtGui/QKeyEvent>
+#include <QListWidget>
+#include <QApplication>
+#include <QKeyEvent>
 #include <QtCore/QEvent>
 
 #include <QtCore/QTimer>

@@ -22,8 +22,8 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QWidget>
-#include <QtGui/QPixmap>
+#include <QWidget>
+#include <QPixmap>
 
 /**
  * KXYSelector is the base class for other widgets which

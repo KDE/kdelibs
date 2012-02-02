@@ -37,9 +37,9 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QCommonStyle>
-#include <QtGui/QPalette>
-#include <QtGui/QStylePlugin>
+#include <QCommonStyle>
+#include <QPalette>
+#include <QStylePlugin>
 #include <typeinfo>
 
 class QStyleOptionProgressBar;

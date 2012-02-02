@@ -28,7 +28,7 @@
 #include "misc/loader_client.h"
 #include "rendering/render_object.h"
 
-#include <QtGui/QRegion>
+#include <QRegion>
 
 namespace DOM {
 

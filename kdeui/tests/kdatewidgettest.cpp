@@ -1,5 +1,5 @@
 #include "kdatewidget.h"
-#include <QtGui/QLineEdit>
+#include <QLineEdit>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kapplication.h>

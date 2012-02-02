@@ -20,7 +20,7 @@
 #ifndef KNEWSTUFF2_UI_QPROGRESSINDICATOR_H
 #define KNEWSTUFF2_UI_QPROGRESSINDICATOR_H
 
-#include <QtGui/QFrame>
+#include <QFrame>
 #include <QtCore/QHash>
 
 #include <QtCore/QString>

@@ -17,8 +17,8 @@
 
 #include "imagepreviewwidget.h"
 
-#include <QtGui/QPaintEvent>
-#include <QtGui/QPainter>
+#include <QPaintEvent>
+#include <QPainter>
 
 #include <kstandarddirs.h>
 

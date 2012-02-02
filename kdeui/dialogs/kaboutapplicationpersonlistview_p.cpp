@@ -17,7 +17,7 @@
 
 #include "kaboutapplicationpersonlistview_p.h"
 
-#include <QtGui/QScrollBar>
+#include <QScrollBar>
 
 namespace KDEPrivate
 {

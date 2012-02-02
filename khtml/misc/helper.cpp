@@ -23,7 +23,7 @@
 #include "helper.h"
 #include "khtmllayout.h"
 #include <QtCore/QMap>
-#include <QtGui/QPainter>
+#include <QPainter>
 #include <dom/dom_string.h>
 #include <xml/dom_stringimpl.h>
 #include <rendering/render_object.h>
@@ -31,7 +31,7 @@
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>
 #include <kglobalsettings.h>
-#include <QtGui/QToolTip>
+#include <QToolTip>
 #include "css/cssvalues.h"
 
 using namespace DOM;

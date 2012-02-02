@@ -24,12 +24,12 @@
 
 #include <QtCore/QEvent>
 #include <QtCore/QTimer>
-#include <QtGui/QAbstractProxyModel>
-#include <QtGui/QApplication>
-#include <QtGui/QHeaderView>
-#include <QtGui/QListView>
-#include <QtGui/QResizeEvent>
-#include <QtGui/QScrollBar>
+#include <QAbstractProxyModel>
+#include <QApplication>
+#include <QHeaderView>
+#include <QListView>
+#include <QResizeEvent>
+#include <QScrollBar>
 
 KDirOperatorDetailView::KDirOperatorDetailView(QWidget *parent) :
     QTreeView(parent),

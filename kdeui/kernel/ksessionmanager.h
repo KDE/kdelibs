@@ -24,7 +24,7 @@
 #include <kdeui_export.h>
 
 #include <QtCore/QList>
-#include <QtGui/QSessionManager>
+#include <QSessionManager>
 
 /**
    Provides highlevel access to session management on a per-object

@@ -22,7 +22,7 @@
 
 #include <kconfig.h>
 #include <kdebug.h>
-#include <QtGui/QFont>
+#include <QFont>
 
 
 QTEST_KDEMAIN( KConfigSkeletonTest, NoGUI )

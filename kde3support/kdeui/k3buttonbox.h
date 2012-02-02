@@ -22,7 +22,7 @@
 
 #include <kde3support_export.h>
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 class QPushButton;
 class KGuiItem;

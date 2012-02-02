@@ -26,7 +26,7 @@
 //#include <QtCore/QObject>
 //#include <QtCore/QDir>
 //#include <QtXml/QDomAttr>
-//#include <QtGui/QAction>
+//#include <QAction>
 //#include <QtCore/QUrl>
 
 #include <kdemacros.h>

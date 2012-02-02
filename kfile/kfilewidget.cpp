@@ -56,15 +56,15 @@
 #include <kio/kfileitemdelegate.h>
 #include <kde_file.h>
 
-#include <QtGui/QCheckBox>
-#include <QtGui/QDockWidget>
-#include <QtGui/QLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QLineEdit>
-#include <QtGui/QSplitter>
-#include <QtGui/QAbstractProxyModel>
-#include <QtGui/QHelpEvent>
-#include <QtGui/QApplication>
+#include <QCheckBox>
+#include <QDockWidget>
+#include <QLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QSplitter>
+#include <QAbstractProxyModel>
+#include <QHelpEvent>
+#include <QApplication>
 #include <QtCore/QFSFileEngine>
 #include <kshell.h>
 #include <kmessagebox.h>

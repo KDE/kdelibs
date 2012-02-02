@@ -22,7 +22,7 @@
 #include <kde3support_export.h>
 #include <ksharedconfig.h>
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QtCore/QStringList>
 
 class QCheckBox;

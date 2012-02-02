@@ -19,8 +19,8 @@
 
 #include "kjobtrackerstest.h"
 
-#include <QtGui/QMainWindow>
-#include <QtGui/QStatusBar>
+#include <QMainWindow>
+#include <QStatusBar>
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>

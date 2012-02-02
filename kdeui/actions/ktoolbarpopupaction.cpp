@@ -28,8 +28,8 @@
 #include "ktoolbarpopupaction.h"
 #include "kmenu.h"
 
-#include <QtGui/QToolBar>
-#include <QtGui/QToolButton>
+#include <QToolBar>
+#include <QToolButton>
 
 #include <kdebug.h>
 #include <klocale.h>

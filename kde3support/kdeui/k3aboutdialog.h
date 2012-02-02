@@ -32,7 +32,7 @@
 
 #include <kde3support_export.h>
 
-#include <QtGui/QFrame>
+#include <QFrame>
 #include <kdialog.h>
 
 class QLabel;

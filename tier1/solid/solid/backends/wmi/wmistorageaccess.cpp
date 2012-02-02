@@ -21,8 +21,8 @@
 #include "wmistorageaccess.h"
 
 #include <QtCore/QDebug>
-#include <QtGui/QApplication>
-#include <QtGui/QWidget>
+#include <QApplication>
+#include <QWidget>
 
 #include <unistd.h>
 

@@ -18,7 +18,7 @@
 
 #include "kdxscomment.h"
 
-#include <QtGui/QLayout>
+#include <QLayout>
 
 #include <klocale.h>
 #include <ktextedit.h>

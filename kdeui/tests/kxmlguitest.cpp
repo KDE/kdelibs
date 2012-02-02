@@ -11,7 +11,7 @@
 #include <kicon.h>
 #include <kstandardaction.h>
 #include <kstandarddirs.h>
-#include <QtGui/QLineEdit>
+#include <QLineEdit>
 #include <QtCore/QDir>
 
 void Client::slotSec()

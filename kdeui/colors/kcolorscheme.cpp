@@ -25,9 +25,9 @@
 #include <kglobalsettings.h>
 #include <kcolorutils.h>
 
-#include <QtGui/QColor>
-#include <QtGui/QBrush>
-#include <QtGui/QWidget>
+#include <QColor>
+#include <QBrush>
+#include <QWidget>
 
 //BEGIN StateEffects
 class StateEffects {

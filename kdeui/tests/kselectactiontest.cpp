@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <QtGui/QToolBar>
+#include <QToolBar>
 
 #include <kcmdlineargs.h>
 #include <kapplication.h>

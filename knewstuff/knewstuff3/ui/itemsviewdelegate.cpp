@@ -20,10 +20,10 @@
 
 #include "itemsviewdelegate.h"
 
-#include <QtGui/QPainter>
-#include <QtGui/QSortFilterProxyModel>
-#include <QtGui/QApplication>
-#include <QtGui/QToolButton>
+#include <QPainter>
+#include <QSortFilterProxyModel>
+#include <QApplication>
+#include <QToolButton>
 #include <QMenu>
 #include <kdebug.h>
 #include <kstandarddirs.h>

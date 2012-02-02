@@ -27,8 +27,8 @@
 #include <kde3support_export.h>
 
 #include <QtCore/QPointer>
-#include <QtGui/QPushButton>
-#include <QtGui/QWidget>
+#include <QPushButton>
+#include <QWidget>
 #include <Qt3Support/Q3PtrList>
 
 #ifndef NO_KDE2

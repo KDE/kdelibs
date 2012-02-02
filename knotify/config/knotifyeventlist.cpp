@@ -26,10 +26,10 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 
-#include <QtGui/QStyledItemDelegate>
-#include <QtGui/QPainter>
-#include <QtGui/QHeaderView>
-#include <QtGui/QFontMetrics>
+#include <QStyledItemDelegate>
+#include <QPainter>
+#include <QHeaderView>
+#include <QFontMetrics>
 
 //BEGIN KNotifyEventListDelegate
 

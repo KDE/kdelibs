@@ -39,7 +39,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QRegExp>
 #include <QtCore/QTextCodec>
-#include <QtGui/QTextDocument>
+#include <QTextDocument>
 
 
 #ifdef HAVE_SYS_TYPES_H

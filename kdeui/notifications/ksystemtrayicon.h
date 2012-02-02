@@ -23,7 +23,7 @@
 #include <kdeui_export.h>
 #include <kglobal.h>
 
-#include <QtGui/QSystemTrayIcon>
+#include <QSystemTrayIcon>
 
 class KActionCollection;
 class KSystemTrayIconPrivate;

@@ -21,11 +21,11 @@
 #include "kratingwidget.h"
 #include "kratingpainter.h"
 
-#include <QtGui/QPainter>
-#include <QtGui/QPixmap>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QImage>
-#include <QtGui/QIcon>
+#include <QPainter>
+#include <QPixmap>
+#include <QKeyEvent>
+#include <QImage>
+#include <QIcon>
 
 class KRatingWidget::Private
 {

@@ -22,14 +22,14 @@
 
 #include <QtCore/QList>
 #include <QtCore/QTimer>
-#include <QtGui/QApplication>
-#include <QtGui/QContextMenuEvent>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QHeaderView>
-#include <QtGui/QLabel>
-#include <QtGui/QMenu>
-#include <QtGui/QToolButton>
-#include <QtGui/QTreeWidget>
+#include <QApplication>
+#include <QContextMenuEvent>
+#include <QHBoxLayout>
+#include <QHeaderView>
+#include <QLabel>
+#include <QMenu>
+#include <QToolButton>
+#include <QTreeWidget>
 
 #include <kdebug.h>
 #include <klocale.h>

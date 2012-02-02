@@ -39,14 +39,14 @@
 
 #include <QtCore/QDate>
 #include <QtCore/QCharRef>
-#include <QtGui/QPen>
-#include <QtGui/QPainter>
-#include <QtGui/QStyle>
-#include <QtGui/QStyleOptionViewItem>
-#include <QtGui/QDialog>
-#include <QtGui/QActionEvent>
+#include <QPen>
+#include <QPainter>
+#include <QStyle>
+#include <QStyleOptionViewItem>
+#include <QDialog>
+#include <QActionEvent>
 #include <QtCore/QHash>
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <assert.h>
 
 #include <cmath>

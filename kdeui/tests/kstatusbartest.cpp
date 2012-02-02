@@ -1,13 +1,13 @@
 #define QT3_SUPPORT
 #define QT3_SUPPORT_WARNINGS
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QtCore/QString>
-#include <QtGui/QMessageBox>
-#include <QtGui/QTextEdit>
+#include <QMessageBox>
+#include <QTextEdit>
 #include <QtCore/QCOORD>
-#include <QtGui/QPixmap>
-#include <QtGui/QCursor>
+#include <QPixmap>
+#include <QCursor>
 
 #include <stdlib.h>
 

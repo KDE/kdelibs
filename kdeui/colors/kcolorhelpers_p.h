@@ -21,7 +21,7 @@
 #ifndef KDEUI_COLORS_KCOLORHELPERS_P_H
 #define KDEUI_COLORS_KCOLORHELPERS_P_H
 
-#include <QtGui/QColor>
+#include <QColor>
 
 // normalize: like qBound(a, 0.0, 1.0) but without needing the args and with
 // "safer" behavior on NaN (isnan(a) -> return 0.0)

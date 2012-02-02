@@ -30,7 +30,7 @@
 #include <kguiitem.h>
 #include <kshortcut.h>
 
-#include <QtGui/QWidgetAction>
+#include <QWidgetAction>
 
 class KIcon;
 class KShapeGesture;

@@ -17,7 +17,7 @@
 #include <kdeui_export.h>
 
 #include <QtCore/QStringList>
-#include <QtGui/QPushButton>
+#include <QPushButton>
 
 #include <kdialog.h>
 

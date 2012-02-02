@@ -24,7 +24,7 @@
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QFile>
-#include <QtGui/QMessageBox>
+#include <QMessageBox>
 #include <QtCore/QTextStream>
 #include <QtCore/QDebug>
 #include <QtCore/QMetaType>

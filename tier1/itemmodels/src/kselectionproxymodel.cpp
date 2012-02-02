@@ -22,7 +22,7 @@
 #include <QtCore/QStack>
 #include <QtCore/QStringList>
 #include <QtCore/QWeakPointer>
-#include <QtGui/QItemSelectionRange>
+#include <QItemSelectionRange>
 
 #include "kmodelindexproxymapper.h"
 #include "kbihash_p.h"

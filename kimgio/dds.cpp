@@ -22,7 +22,7 @@
 #include "dds.h"
 
 #include <QtCore/QStringList>
-#include <QtGui/QImage>
+#include <QImage>
 #include <QtCore/QDataStream>
 
 #include <kdebug.h>

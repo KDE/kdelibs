@@ -12,13 +12,13 @@
 #include <kiconloader.h>
 #include <kconfig.h>
 
-#include <QtGui/QPushButton>
-#include <QtGui/QLayout>
-#include <QtGui/QPixmap>
-#include <QtGui/QLabel>
+#include <QPushButton>
+#include <QLayout>
+#include <QPixmap>
+#include <QLabel>
 #include <khbox.h>
 #include <QtCore/QTimer>
-#include <QtGui/QBoxLayout>
+#include <QBoxLayout>
 
 #include <kcombobox.h>
 #include <khistorycombobox.h>

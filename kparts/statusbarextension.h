@@ -21,7 +21,7 @@
 #ifndef KPARTS_STATUSBAREXTENSION_H
 #define KPARTS_STATUSBAREXTENSION_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 #include <kparts/kparts_export.h>
 #include <QtCore/QList>

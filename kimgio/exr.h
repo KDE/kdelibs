@@ -11,7 +11,7 @@
 #ifndef KIMG_EXR_H
 #define KIMG_EXR_H
 
-#include <QtGui/QImageIOPlugin>
+#include <QImageIOPlugin>
 
 class EXRHandler : public QImageIOHandler
 {

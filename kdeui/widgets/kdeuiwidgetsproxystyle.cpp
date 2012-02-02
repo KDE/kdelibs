@@ -21,9 +21,9 @@
 
 #include "kdeuiwidgetsproxystyle_p.h"
 
-#include <QtGui/QApplication>
-#include <QtGui/QWidget>
-#include <QtGui/QWindowsStyle>
+#include <QApplication>
+#include <QWidget>
+#include <QWindowsStyle>
 
 KdeUiProxyStyle::KdeUiProxyStyle(QWidget *referenceWidget)
     : QStyle(), m_referenceWidget(referenceWidget)

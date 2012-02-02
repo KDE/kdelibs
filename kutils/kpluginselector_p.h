@@ -22,7 +22,7 @@
 #define KPLUGINSELECTOR_P_H
 
 #include <QtCore/QAbstractListModel>
-#include <QtGui/QAbstractItemDelegate>
+#include <QAbstractItemDelegate>
 
 #include <kconfiggroup.h>
 #include <kplugininfo.h>

@@ -21,7 +21,7 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 /**
  * @short Standard title widget with a white background and round border.

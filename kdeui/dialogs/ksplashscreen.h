@@ -22,7 +22,7 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QSplashScreen>
+#include <QSplashScreen>
 
 class QPixmap;
 

@@ -27,11 +27,11 @@
 #include <kdebug.h>
 #include <kxerrorhandler.h>
 #include <netwm.h>
-#include <QtGui/QBitmap>
+#include <QBitmap>
 #include <QDesktopWidget>
-#include <QtGui/QDialog>
+#include <QDialog>
 #include <QtDBus/QtDBus>
-#include <QtGui/QX11Info>
+#include <QX11Info>
 #include <X11/Xatom.h>
 
 struct KWindowInfo::Private

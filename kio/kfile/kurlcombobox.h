@@ -24,7 +24,7 @@
 #include <QtCore/QList>
 #include <QtCore/QMap>
 #include <QtCore/QStringList>
-#include <QtGui/QIcon>
+#include <QIcon>
 
 #include <kcombobox.h>
 #include <kurl.h>

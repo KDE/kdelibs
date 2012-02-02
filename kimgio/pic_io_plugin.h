@@ -21,7 +21,7 @@
 #ifndef __PIC_IO_PLUGIN_H__
 #define __PIC_IO_PLUGIN_H__
 
-#include <QtGui/QImageIOPlugin>
+#include <QImageIOPlugin>
 
 class SoftimagePICPlugin : public QImageIOPlugin {
 public:

@@ -21,7 +21,7 @@
 */
 
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <QtCore/QDebug>
 #include <QtCore/QStringList>
 

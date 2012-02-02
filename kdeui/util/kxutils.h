@@ -21,8 +21,8 @@
 #ifndef KXUTILS_H
 #define KXUTILS_H
 
-#include <QtGui/QWidget>
-#include <QtGui/QPixmap>
+#include <QWidget>
+#include <QPixmap>
 
 #ifdef Q_WS_X11
 

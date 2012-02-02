@@ -18,8 +18,8 @@
 
 #include "kdxstranslation.h"
 
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
+#include <QLabel>
+#include <QLayout>
 
 #include <kcombobox.h>
 #include <klineedit.h>

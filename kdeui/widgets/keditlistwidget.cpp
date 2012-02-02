@@ -22,10 +22,10 @@
 #include "keditlistwidget.h"
 
 #include <QtCore/QStringList>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
-#include <QtGui/QListView>
+#include <QKeyEvent>
+#include <QLabel>
+#include <QLayout>
+#include <QListView>
 
 #include <kcombobox.h>
 #include <kdebug.h>

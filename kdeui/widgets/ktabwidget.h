@@ -24,7 +24,7 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QTabWidget>
+#include <QTabWidget>
 
 class QTab;
 

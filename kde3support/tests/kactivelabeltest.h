@@ -8,7 +8,7 @@
 #ifndef KACTIVELABELTEST_H
 #define KACTIVELABELTEST_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 
 class KActiveLabelTest : public QWidget
 {

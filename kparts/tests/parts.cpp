@@ -25,12 +25,12 @@
 #include <kactionmenu.h>
 #include <kactioncollection.h>
 
-#include <QtGui/QCheckBox>
+#include <QCheckBox>
 #include <QtCore/QFile>
 #include <QtCore/QDir>
 #include <QtCore/QTextStream>
-#include <QtGui/QTextEdit>
-#include <QtGui/QLineEdit>
+#include <QTextEdit>
+#include <QLineEdit>
 
 #include <kicon.h>
 #include <kdebug.h>

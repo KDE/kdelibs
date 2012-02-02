@@ -40,7 +40,7 @@
 
 #include <QtCore/QTextCodec>
 #include <QtCore/QFile>
-#include <QtGui/QPrinter>
+#include <QPrinter>
 #include <QtCore/QFileInfo>
 #include <QtCore/QRegExp>
 #include <QtCore/QLocale>

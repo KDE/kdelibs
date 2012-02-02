@@ -19,7 +19,7 @@
 #ifndef KSHORTCUTWIDGET_H
 #define KSHORTCUTWIDGET_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include "kshortcut.h"
 
 class KActionCollection;

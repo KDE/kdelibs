@@ -22,14 +22,14 @@
 
 #include "kcharselect_p.h"
 
-#include <QtGui/QActionEvent>
-#include <QtGui/QDoubleSpinBox>
-#include <QtGui/QHeaderView>
-#include <QtGui/QBoxLayout>
-#include <QtGui/QShortcut>
-#include <QtGui/QSplitter>
-#include <QtGui/QPushButton>
-#include <QtGui/QToolButton>
+#include <QActionEvent>
+#include <QDoubleSpinBox>
+#include <QHeaderView>
+#include <QBoxLayout>
+#include <QShortcut>
+#include <QSplitter>
+#include <QPushButton>
+#include <QToolButton>
 
 #include <kcombobox.h>
 #include <kdebug.h>

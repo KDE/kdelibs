@@ -27,7 +27,7 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QToolBar>
+#include <QToolBar>
 
 class QDomElement;
 

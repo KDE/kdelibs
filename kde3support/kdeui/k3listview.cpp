@@ -24,15 +24,15 @@
 #include <config.h>
 
 #include <Qt3Support/Q3ColorDrag>
-#include <QtGui/QActionEvent>
+#include <QActionEvent>
 #include <QtCore/QTimer>
 #include <Qt3Support/Q3Header>
-#include <QtGui/QCursor>
+#include <QCursor>
 
-#include <QtGui/QStyle>
+#include <QStyle>
 #include <QStyleOptionFocusRect>
 #include <QApplication>
-#include <QtGui/QPainter>
+#include <QPainter>
 
 #include <kglobalsettings.h>
 #include <kcolorscheme.h>

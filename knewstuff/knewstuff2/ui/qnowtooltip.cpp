@@ -18,7 +18,7 @@
 
 #include "qnowtooltip.h"
 
-#include <QtGui/QLabel>
+#include <QLabel>
 #include <QtCore/QTimer>
 
 void QNowToolTip::display(QWidget *parent, const QRect& rect, const QString& text)

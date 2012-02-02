@@ -20,10 +20,10 @@
 #include "kfontrequester.h"
 #include "fonthelpers_p.h"
 
-#include <QtGui/QLabel>
-#include <QtGui/QPushButton>
-#include <QtGui/QLayout>
-#include <QtGui/QFontDatabase>
+#include <QLabel>
+#include <QPushButton>
+#include <QLayout>
+#include <QFontDatabase>
 
 #include <kfontdialog.h>
 #include <klocale.h>

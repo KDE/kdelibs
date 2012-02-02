@@ -23,7 +23,7 @@
 #define KKEYSEQUENCEWIDGET_H
 
 #include <QtCore/QList>
-#include <QtGui/QPushButton>
+#include <QPushButton>
 
 #include <kshortcut.h>
 

@@ -24,7 +24,7 @@
 #include <QtCore/QMap>
 #include <QtCore/QModelIndex>
 #include <QtCore/QObject>
-#include <QtGui/QImage>
+#include <QImage>
 
 #include "core/engine.h"
 #include "core/entryinternal.h"

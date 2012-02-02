@@ -25,14 +25,14 @@
 
 #include <QtCore/QDate>
 #include <QtCore/QFileInfo>
-#include <QtGui/QCheckBox>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
-#include <QtGui/QPixmap>
-#include <QtGui/QScrollArea>
-#include <QtGui/QScrollBar>
-#include <QtGui/QApplication>
-#include <QtGui/QDesktopWidget>
+#include <QCheckBox>
+#include <QLabel>
+#include <QLayout>
+#include <QPixmap>
+#include <QScrollArea>
+#include <QScrollBar>
+#include <QApplication>
+#include <QDesktopWidget>
 #include <QtCore/QDir>
 
 #include <klineedit.h>

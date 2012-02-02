@@ -27,7 +27,7 @@
 #include <kmessagebox.h>
 #include <kdebug.h>
 
-#include <QtGui/QLabel>
+#include <QLabel>
 #include <QtCore/QRegExp>
 #include <QtCore/QHash>
 #include <QTextDocument>

@@ -24,7 +24,7 @@
 
 #include <QtCore/QStringList>
 #include <QtCore/QObject>
-#include <QtGui/qwindowdefs.h> // krazy:exclude=includes (for WId)
+#include <qwindowdefs.h> // krazy:exclude=includes (for WId)
 
 #include <kdeui_export.h>
 

@@ -21,14 +21,14 @@
 #include "kpixmapcache.h"
 
 #include <QtCore/QString>
-#include <QtGui/QPixmap>
+#include <QPixmap>
 #include <QtCore/QFile>
 #include <QtCore/QDataStream>
 #include <QtCore/QFileInfo>
 #include <QtCore/QDateTime>
-#include <QtGui/QPixmapCache>
+#include <QPixmapCache>
 #include <QtCore/QtGlobal>
-#include <QtGui/QPainter>
+#include <QPainter>
 #include <QtCore/QQueue>
 #include <QtCore/QTimer>
 #include <QtCore/QMutex>

@@ -23,7 +23,7 @@
 #ifndef QLAYOUT_BINDING_H
 #define QLAYOUT_BINDING_H
 
-#include <QtGui/QLayout>
+#include <QLayout>
 
 #include "qobject_binding.h" //krazy:exclude=includes (not a Qt header)
 

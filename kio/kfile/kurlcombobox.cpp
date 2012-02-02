@@ -19,8 +19,8 @@
 #include "kurlcombobox.h"
 
 #include <QtCore/QDir>
-#include <QtGui/QMouseEvent>
-#include <QtGui/QDrag>
+#include <QMouseEvent>
+#include <QDrag>
 
 #include <kdebug.h>
 #include <kglobalsettings.h>

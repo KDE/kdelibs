@@ -19,9 +19,9 @@
 #include "kmessagetest.h"
 
 #include <QtCore/QString>
-#include <QtGui/QMessageBox>
-#include <QtGui/QPushButton>
-#include <QtGui/QBoxLayout>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QBoxLayout>
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>

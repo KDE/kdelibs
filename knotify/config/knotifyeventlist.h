@@ -23,7 +23,7 @@
 #include "knotifyconfigelement.h"
 
 
-#include <QtGui/QTreeWidget>
+#include <QTreeWidget>
 
 class KNotifyConfigElement;
 class KNotifyEventListItem;

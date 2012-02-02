@@ -19,14 +19,14 @@
 */
 #include "browserextension.h"
 
-#include <QtGui/QApplication>
-#include <QtGui/QClipboard>
+#include <QApplication>
+#include <QClipboard>
 #include <QtCore/QTimer>
 #include <QtCore/QObject>
 #include <QtCore/QMap>
 #include <QtCore/QMetaEnum>
 #include <QtCore/QRegExp>
-#include <QtGui/QTextDocument>
+#include <QTextDocument>
 
 #include <kdebug.h>
 #include <klocale.h>

@@ -23,7 +23,7 @@
 
 #include <QtCore/QStringList>
 #include <QtCore/QProcess>
-#include <QtGui/QFileDialog>
+#include <QFileDialog>
 #include <QtCore/QDebug>
 
 #include <kjs/object.h>

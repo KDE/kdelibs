@@ -25,11 +25,11 @@
 
 #include <kssl.h>
 
-#include <QtGui/QFrame>
+#include <QFrame>
 #include <QtCore/QDate>
 #include <QtCore/QFile>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
+#include <QLabel>
+#include <QLayout>
 #include <QtCore/Q_PID>
 #include <QtNetwork/QSslCertificate>
 

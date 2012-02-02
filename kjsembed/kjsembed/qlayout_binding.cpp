@@ -26,9 +26,9 @@
 #include <kjs/object.h>
 #include <QtCore/QDebug>
 
-#include <QtGui/QWidget>
-#include <QtGui/QAction>
-#include <QtGui/QLayout>
+#include <QWidget>
+#include <QAction>
+#include <QLayout>
 #include <QtUiTools/QUiLoader>
 
 namespace KJSEmbed

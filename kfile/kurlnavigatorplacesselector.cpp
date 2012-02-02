@@ -27,11 +27,11 @@
 #include <kmimetype.h>
 #include <kdebug.h>
 
-#include <QtGui/QDragEnterEvent>
-#include <QtGui/QDragLeaveEvent>
-#include <QtGui/QDropEvent>
-#include <QtGui/QPainter>
-#include <QtGui/QPixmap>
+#include <QDragEnterEvent>
+#include <QDragLeaveEvent>
+#include <QDropEvent>
+#include <QPainter>
+#include <QPixmap>
 #include <kicon.h>
 
 namespace KDEPrivate

@@ -19,8 +19,8 @@
 
 #include "componentsdialog_p.h"
 #include <klocale.h>
-#include <QtGui/QLayout>
-#include <QtGui/QLabel>
+#include <QLayout>
+#include <QLabel>
 #include <kplugininfo.h>
 #include <kiconloader.h>
 #include <kdebug.h>
@@ -28,7 +28,7 @@
 #include <kseparator.h>
 
 #include <QtCore/QList>
-#include <QtGui/QTreeWidget>
+#include <QTreeWidget>
 
 namespace KSettings
 {

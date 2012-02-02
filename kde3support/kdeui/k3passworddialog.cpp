@@ -28,12 +28,12 @@
 #include <QtCore/QRegExp>
 #include <QtCore/QSize>
 #include <QtCore/QString>
-#include <QtGui/QCheckBox>
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QProgressBar>
-#include <QtGui/QWidget>
+#include <QCheckBox>
+#include <QLabel>
+#include <QLayout>
+#include <QKeyEvent>
+#include <QProgressBar>
+#include <QWidget>
 
 #include <Q3PtrDict>
 

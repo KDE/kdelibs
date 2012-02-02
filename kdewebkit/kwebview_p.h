@@ -28,8 +28,8 @@
 #define KWEBVIEW_P_H
 
 #include <QtCore/QEvent>
-#include <QtGui/QClipboard>
-#include <QtGui/QApplication>
+#include <QClipboard>
+#include <QApplication>
 #include <QtWebKit/QWebFrame>
 #include <QtWebKit/QWebElement>
 

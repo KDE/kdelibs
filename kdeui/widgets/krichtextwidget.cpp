@@ -31,7 +31,7 @@
 #include <kdebug.h>
 
 // Qt includes
-#include <QtGui/QTextList>
+#include <QTextList>
 
 #include "klinkdialog.h"
 

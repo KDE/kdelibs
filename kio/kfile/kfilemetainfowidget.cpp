@@ -26,15 +26,15 @@
 #include <kstringvalidator.h>
 #include <kdebug.h>
 
-#include <QtGui/QLabel>
-#include <QtGui/QCheckBox>
-#include <QtGui/QDoubleSpinBox>
-#include <QtGui/QDateEdit>
-#include <QtGui/QPixmap>
-#include <QtGui/QImage>
-#include <QtGui/QLayout>
-#include <QtGui/QSizePolicy>
-#include <QtGui/QDoubleValidator>
+#include <QLabel>
+#include <QCheckBox>
+#include <QDoubleSpinBox>
+#include <QDateEdit>
+#include <QPixmap>
+#include <QImage>
+#include <QLayout>
+#include <QSizePolicy>
+#include <QDoubleValidator>
 
 class KFileMetaInfoWidgetPrivate
 {

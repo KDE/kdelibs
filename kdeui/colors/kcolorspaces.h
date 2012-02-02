@@ -26,7 +26,7 @@
 #ifndef KCOLORSPACES_H
 #define KCOLORSPACES_H
 
-#include <QtGui/QColor>
+#include <QColor>
 
 namespace KColorSpaces
 {

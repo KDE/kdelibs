@@ -7,10 +7,10 @@
 #include "eps.h"
 #include <unistd.h>
 #include <stdio.h>
-#include <QtGui/QImage>
+#include <QImage>
 #include <QtCore/QFile>
-#include <QtGui/QPainter>
-#include <QtGui/QPrinter>
+#include <QPainter>
+#include <QPrinter>
 #include <QtCore/QTextStream>
 #include <QtCore/QTemporaryFile>
 #include <kapplication.h>

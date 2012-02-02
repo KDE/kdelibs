@@ -36,9 +36,9 @@ class QWidget;
 #include <ktextedit.h>
 #include <kurlrequester.h>
 #include <klineedit.h>
-#include <QtGui/QCheckBox>
-#include <QtGui/QRadioButton>
-#include <QtGui/QPushButton>
+#include <QCheckBox>
+#include <QRadioButton>
+#include <QPushButton>
 #include <klistwidget.h>
 #include <kcombobox.h>
 #include "dom/dom_misc.h"

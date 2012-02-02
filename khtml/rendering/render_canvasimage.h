@@ -34,8 +34,8 @@
 #include "dom/dom_string.h"
 
 #include <QtCore/QMap>
-#include <QtGui/QImage>
-#include <QtGui/QPainter>
+#include <QImage>
+#include <QPainter>
 
 #include "imload/imagepainter.h"
 

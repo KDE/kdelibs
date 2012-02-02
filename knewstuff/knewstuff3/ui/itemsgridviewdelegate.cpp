@@ -19,9 +19,9 @@
 
 #include "itemsgridviewdelegate.h"
 
-#include <QtGui/QPainter>
-#include <QtGui/QSortFilterProxyModel>
-#include <QtGui/QApplication>
+#include <QPainter>
+#include <QSortFilterProxyModel>
+#include <QApplication>
 #include <QLabel>
 #include <QToolButton>
 #include <QMenu>

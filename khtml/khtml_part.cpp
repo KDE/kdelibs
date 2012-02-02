@@ -116,11 +116,11 @@ using namespace DOM;
 #include <kstatusbar.h>
 #include <kurllabel.h>
 
-#include <QtGui/QClipboard>
-#include <QtGui/QToolTip>
+#include <QClipboard>
+#include <QToolTip>
 #include <QtCore/QFile>
 #include <QtCore/QMetaEnum>
-#include <QtGui/QTextDocument>
+#include <QTextDocument>
 #include <QtCore/QDate>
 #include <QtNetwork/QSslCertificate>
 

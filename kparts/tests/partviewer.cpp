@@ -30,7 +30,7 @@
 #include <kcmdlineargs.h>
 #include <kpluginloader.h>
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 

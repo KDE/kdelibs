@@ -52,7 +52,7 @@
 #include <QtCore/QDate>
 #include <QtCore/QFileInfo>
 #include <QtCore/QRegExp>
-#include <QtGui/QFont>
+#include <QFont>
 #include <kcomponentdata.h>
 #include <klibrary.h>
 #include <kdemacros.h>

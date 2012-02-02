@@ -34,7 +34,7 @@
 
 #include <QFile>
 #include <QFileInfo>
-#include <QtGui/QFontDatabase>
+#include <QFontDatabase>
 #include <QByteArray>
 
 /**

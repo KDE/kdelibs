@@ -26,7 +26,7 @@
 #include "partmanager.h"
 #include "browserextension.h"
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <qtemporaryfile.h>

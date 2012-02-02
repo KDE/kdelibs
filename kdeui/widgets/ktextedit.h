@@ -22,7 +22,7 @@
 
 #include <kdeui_export.h>
 #include <sonnet/highlighter.h>
-#include <QtGui/QTextEdit>
+#include <QTextEdit>
 
 /**
  * This interface is a workaround to keep binary compatibility in KDE4, because

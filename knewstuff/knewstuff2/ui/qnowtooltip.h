@@ -21,7 +21,7 @@
 
 #include <QtCore/QRect>
 #include <QtCore/QString>
-#include <QtGui/QWidget>
+#include <QWidget>
 
 /**
  * Convenience class for tooltips.

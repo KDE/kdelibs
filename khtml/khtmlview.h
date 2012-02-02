@@ -29,7 +29,7 @@
 #include <khtml_export.h>
 
 // qt includes and classes
-#include <QtGui/QScrollArea>
+#include <QScrollArea>
 
 class QPainter;
 class QRect;

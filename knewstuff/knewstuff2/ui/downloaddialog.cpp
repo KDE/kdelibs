@@ -24,8 +24,8 @@
 
 // qt/kde includes
 #include <QtCore/QTimer>
-#include <QtGui/QPixmap>
-#include <QtGui/QSortFilterProxyModel>
+#include <QPixmap>
+#include <QSortFilterProxyModel>
 #include <kaboutdata.h>
 #include <kcomponentdata.h>
 #include <kmessagebox.h>

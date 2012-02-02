@@ -26,7 +26,7 @@
 #ifndef render_object_h
 #define render_object_h
 
-#include <QtGui/QColor>
+#include <QColor>
 #include <QtCore/QRect>
 #include <assert.h>
 #include <QList>

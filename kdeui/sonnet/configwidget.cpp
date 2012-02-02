@@ -29,8 +29,8 @@
 #include <kconfig.h>
 #include <klocale.h>
 
-#include <QtGui/QCheckBox>
-#include <QtGui/QLayout>
+#include <QCheckBox>
+#include <QLayout>
 
 using namespace Sonnet;
 

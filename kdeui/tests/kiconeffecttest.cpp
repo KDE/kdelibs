@@ -1,6 +1,6 @@
-#include <QtGui/QLabel>
-#include <QtGui/QSlider>
-#include <QtGui/QGridLayout>
+#include <QLabel>
+#include <QSlider>
+#include <QGridLayout>
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>

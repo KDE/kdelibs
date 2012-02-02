@@ -18,7 +18,7 @@
 #ifndef KABOUT_APPLICATION_PERSON_LIST_VIEW_H
 #define KABOUT_APPLICATION_PERSON_LIST_VIEW_H
 
-#include <QtGui/QListView>
+#include <QListView>
 
 namespace KDEPrivate
 {

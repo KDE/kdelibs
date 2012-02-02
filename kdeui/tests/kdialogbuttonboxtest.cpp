@@ -20,11 +20,11 @@
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 #include "kdialogbuttonbox.h"
-#include <QtGui/QLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QDialog>
-#include <QtGui/QPushButton>
-#include <QtGui/QBoxLayout>
+#include <QLayout>
+#include <QLabel>
+#include <QDialog>
+#include <QPushButton>
+#include <QBoxLayout>
 
 int main(int argc, char **argv) {
    KAboutData about("kdialogbuttonboxtest", 0, qi18n("kbuttonboxtest"), "version");

@@ -19,8 +19,8 @@
 
 #include "kurlrequesterdialog.h"
 
-#include <QtGui/QLabel>
-#include <QtGui/QLayout>
+#include <QLabel>
+#include <QLayout>
 
 #include <kfiledialog.h>
 #include <klineedit.h>

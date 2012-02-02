@@ -21,7 +21,7 @@
 */
 #include "qformbuilder_binding.h"
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QtDesigner/QFormBuilder>
 #include <QtCore/QFile>
 #include <QtCore/QDebug>

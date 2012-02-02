@@ -22,8 +22,8 @@
 
 #include <kdeui_export.h>
 
-#include <QtGui/QPixmap>
-#include <QtGui/QWidget>
+#include <QPixmap>
+#include <QWidget>
 
 class KMenu;
 

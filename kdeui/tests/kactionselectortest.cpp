@@ -23,8 +23,8 @@
 #include <kaboutdata.h>
 #include <kdebug.h>
 
-#include <QtGui/QApplication>
-#include <QtGui/QListWidget>
+#include <QApplication>
+#include <QListWidget>
 
 int main( int argc, char *argv[] )
 {

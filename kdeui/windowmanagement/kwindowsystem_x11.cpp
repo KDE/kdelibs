@@ -28,12 +28,12 @@
 #include <kxerrorhandler.h>
 #include <kxutils.h>
 #include <netwm.h>
-#include <QtGui/QApplication>
-#include <QtGui/QBitmap>
+#include <QApplication>
+#include <QBitmap>
 #include <QDesktopWidget>
-#include <QtGui/QDialog>
+#include <QDialog>
 #include <QtDBus/QtDBus>
-#include <QtGui/QX11Info>
+#include <QX11Info>
 #include <X11/Xatom.h>
 
 #include <config.h>
