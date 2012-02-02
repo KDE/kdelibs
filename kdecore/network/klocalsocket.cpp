@@ -80,7 +80,11 @@ void KLocalSocket::connectToHostImplementation(const QString &path, quint16 type
 
 void KLocalSocket::disconnectFromHostImplementation()
 {
+  // This class needs to be ported to Qt5 (which no longer calls the fooImplementation
+  // as pseudo-virtual slots) or  it should be removed entirely.
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     QTcpSocket::disconnectFromHostImplementation();
+#endif
 
     d->peerPath.clear();
     d->localPath.clear();
