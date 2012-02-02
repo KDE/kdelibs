@@ -24,6 +24,11 @@
 #include <QDrag>
 #include <QMimeData>
 #include <QPainter>
+// Nice SiC here. This needs to be included or else the compiler message is:
+// /home/stephen/dev/src/kf5/kdeui/colors/kcolormimedata.cpp: In function 'QDrag* KColorMimeData::createDrag(const QColor&, QWidget*)':
+// /home/stephen/dev/src/kf5/kdeui/colors/kcolormimedata.cpp:63:59: error: invalid static_cast from type 'QWidget*' to type 'QObject*'
+// Not very imformative...
+#include <QWidget>
 
 void
 KColorMimeData::populateMimeData(QMimeData *mimeData, const QColor &color)
