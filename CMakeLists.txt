@@ -330,14 +330,6 @@ add_subdirectory( kdeui )
 add_subdirectory( dnssd )
 add_subdirectory( security )
 add_subdirectory( kio )
-
-if (QT5_BUILD)
-  # This should be moved down and eventually removed when everything
-  # can be built with Qt5.
-  # The current problem is kdeui because it uses X11 stuff which is no longer in Qt.
-  return()
-endif()
-
 add_subdirectory( kded       )
 if (QT_QT3SUPPORT_FOUND)
    add_subdirectory( kde3support  )
@@ -347,14 +339,22 @@ if(NOT WINCE)
 add_subdirectory( kdoctools  )
 endif(NOT WINCE)
 add_subdirectory( kioslave   )
-add_subdirectory( knewstuff  )
 add_subdirectory( kparts     )
-add_subdirectory( kutils     )
-add_subdirectory( kinit  )
+add_subdirectory( kunitconversion )
 if(NOT WINCE)
 # TO BE SPLITTED OUT add_subdirectory( khtml  )
 endif(NOT WINCE)
+
+if (QT5_BUILD)
+  # This should be moved down and eventually removed when everything
+  # can be built with Qt5.
+  # The current problem is kdeui because it uses X11 stuff which is no longer in Qt.
+  return()
+endif()
 add_subdirectory( interfaces  )
+add_subdirectory( knewstuff  )
+add_subdirectory( kutils     )
+add_subdirectory( kinit  )
 #if ( NOT CMAKE_CROSSCOMPILING AND QT_QTDESIGNER_FOUND )
 add_subdirectory( kdewidgets  )
 #endif ( NOT CMAKE_CROSSCOMPILING AND QT_QTDESIGNER_FOUND )
@@ -370,7 +370,6 @@ macro_log_feature(KDEPIMLIBS_FOUND "kdepimlibs" "KDE PIM libraries" "http://www.
 if(KDEPIMLIBS_FOUND AND NOT WINCE)
   add_subdirectory( plasma )
 endif()
-add_subdirectory( kunitconversion )
 add_subdirectory( kdewebkit )
 add_subdirectory( includes )
 
