@@ -217,10 +217,14 @@ void KCookieServer::checkCookies(KHttpCookieList *cookieList, qlonglong windowId
                                      mCookieJar->preferredDefaultPolicy(),
                                      mCookieJar->showCookieDetails() );
     if (windowId > 0) {
+#ifndef KDE_NO_WINDOWSYSTEM
 #ifndef Q_WS_WIN
         KWindowSystem::setMainWindow(kw, static_cast<WId>(windowId));
 #else
         KWindowSystem::setMainWindow(kw, (HWND)(long)windowId);
+#endif
+#else
+#warning QT5 PORT TO QPA
 #endif
     }
 
