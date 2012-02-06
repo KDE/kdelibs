@@ -1,5 +1,10 @@
 project(kdeui)
 
+#set(KDEUI_NO_ATTICA FALSE)
+#if(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
+#    set(KDEUI_NO_ATTICA TRUE)
+#endif(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
+# TODO QT5 Make the above work and port it to whatever parts of QtGui actually need attica.
 set(KDEUI_NO_ATTICA TRUE)
 
 include_directories(
