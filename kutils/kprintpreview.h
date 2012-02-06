@@ -24,6 +24,8 @@
 
 #include <kdialog.h>
 
+#include <QPrinter>
+
 class KPrintPreviewPrivate;
 
 /**
