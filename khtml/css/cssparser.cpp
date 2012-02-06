@@ -2275,8 +2275,11 @@ bool CSSParser::parseFontFaceSrc()
             expectComma = true;
         } else if (val->unit == Value::Function) {
             // There are two allowed functions: local() and format().
+            // For both we expect a string argument
             ValueList *args = val->function->args;
-            if (args && args->size() == 1) {
+            if (args && args->size() == 1 &&
+                (args->current()->unit == CSSPrimitiveValue::CSS_STRING ||
+                 args->current()->unit == CSSPrimitiveValue::CSS_IDENT)) {
                 if (!strcasecmp(domString(val->function->name), "local(") && !expectComma) {
                     expectComma = true;
                     allowFormat = false;
