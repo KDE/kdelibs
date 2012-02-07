@@ -175,10 +175,7 @@ class KGlobalSettings::Private
          */
         void applyCursorTheme();
 
-        /**
-         * drop cached values for settings that aren't in any of the previous groups
-         */
-        static void rereadOtherSettings();
+        static void reloadStyleSettings();
 
         KGlobalSettings *q;
         bool activated;
@@ -788,7 +785,7 @@ KGlobalSettings::GraphicEffects KGlobalSettings::graphicEffectsLevel()
 
     if (!_graphicEffectsInitialized) {
         _graphicEffectsInitialized = true;
-        Private::rereadOtherSettings();
+        Private::reloadStyleSettings();
     }
 
     return _graphicEffects;
@@ -872,18 +869,24 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
 
     case SettingsChanged: {
         KGlobal::config()->reparseConfiguration();
-        rereadOtherSettings();
         SettingsCategory category = static_cast<SettingsCategory>(arg);
-        if (category == SETTINGS_MOUSE) {
-            KGlobalSettingsData::self()->dropMouseSettingsCache();
-        }
         if (category == SETTINGS_QT) {
             if (activated) {
                 propagateQtSettings();
             }
         } else {
-            if (category == SETTINGS_LOCALE) {
-                KGlobal::locale()->reparseConfiguration();
+            switch (category) {
+                case SETTINGS_STYLE:
+                    reloadStyleSettings();
+                    break;
+                case SETTINGS_MOUSE:
+                    KGlobalSettingsData::self()->dropMouseSettingsCache();
+                    break;
+                case SETTINGS_LOCALE:
+                    KGlobal::locale()->reparseConfiguration();
+                    break;
+                default:
+                    break;
             }
             emit q->settingsChanged(category);
         }
@@ -1083,7 +1086,7 @@ void KGlobalSettings::Private::kdisplaySetStyle()
 }
 
 
-void KGlobalSettings::Private::rereadOtherSettings()
+void KGlobalSettings::Private::reloadStyleSettings()
 {
     KConfigGroup g( KGlobal::config(), "KDE-Global GUI Settings" );
 
