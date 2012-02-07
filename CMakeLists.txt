@@ -355,6 +355,12 @@ if(NOT WINCE)
   add_subdirectory( kimgio )
 endif(NOT WINCE)
 add_subdirectory( knewstuff  )
+if(Qt5WebKit_FOUND)
+  add_subdirectory( kdewebkit )
+endif()
+add_subdirectory( includes )
+macro_optional_add_subdirectory( doc  )
+add_subdirectory( experimental )
 
 if (QT5_BUILD)
   # This should be moved down and eventually removed when everything
@@ -370,11 +376,7 @@ macro_log_feature(KDEPIMLIBS_FOUND "kdepimlibs" "KDE PIM libraries" "http://www.
 if(KDEPIMLIBS_FOUND AND NOT WINCE)
   add_subdirectory( plasma )
 endif()
-add_subdirectory( kdewebkit )
-add_subdirectory( includes )
 
-add_subdirectory( experimental )
-macro_optional_add_subdirectory( doc  )
 
 ################# write dependency file which will be installed #################
 
