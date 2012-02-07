@@ -411,7 +411,7 @@ QString NetAccess::fish_executeInternal(const KUrl & url, const QString &command
   QTemporaryFile tmpFile;
   tmpFile.open();
 
-  if( url.protocol() == "fish" )
+  if( url.scheme() == "fish" )
   {
     // construct remote temp filename
     tempPathUrl = url;
@@ -448,7 +448,7 @@ QString NetAccess::fish_executeInternal(const KUrl & url, const QString &command
   }
   else
   {
-    resultData = i18n( "ERROR: Unknown protocol '%1'", url.protocol() );
+    resultData = i18n( "ERROR: Unknown protocol '%1'", url.scheme() );
   }
   return resultData;
 }

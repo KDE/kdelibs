@@ -438,7 +438,7 @@ void KDirSelectDialog::setCurrentUrl( const KUrl& url )
     if ( !url.isValid() )
         return;
 
-    if (url.protocol() != d->m_rootUrl.protocol()) {
+    if (url.scheme() != d->m_rootUrl.scheme()) {
         KUrl u( url );
         u.cd("/");//NOTE portability?
         d->m_treeView->setRootUrl( u );

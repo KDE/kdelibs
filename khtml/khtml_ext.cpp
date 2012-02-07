@@ -445,7 +445,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
 
     if (!url.isEmpty()) {
         QList<QAction *> linkActions;
-        if (url.protocol() == "mailto") {
+        if (url.scheme() == "mailto") {
             KAction *action = new KAction( i18n( "&Copy Email Address" ), this );
             d->m_actionCollection->addAction( "copylinklocation", action );
             connect( action, SIGNAL(triggered(bool)), this, SLOT(slotCopyLinkLocation()) );
@@ -586,7 +586,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
             partActions.append(action);
 
             if (!d->m_imageURL.host().isEmpty() &&
-                !d->m_imageURL.protocol().isEmpty())
+                !d->m_imageURL.scheme().isEmpty())
             {
                 action = new KAction( i18n( "Block Images From %1" , d->m_imageURL.host()), this );
                 d->m_actionCollection->addAction( "blockhost", action );
@@ -716,7 +716,7 @@ void KHTMLPopupGUIClient::slotSaveImageAs()
 
 void KHTMLPopupGUIClient::slotBlockHost()
 {
-    QString name=d->m_imageURL.protocol()+"://"+d->m_imageURL.host()+"/*";
+    QString name=d->m_imageURL.scheme()+"://"+d->m_imageURL.host()+"/*";
     KHTMLGlobal::defaultHTMLSettings()->addAdFilter( name );
     d->m_khtml->reparseConfiguration();
 }

@@ -854,7 +854,7 @@ static QString iconFromDesktopFile(const QString& path)
         if ( !emptyIcon.isEmpty() ) {
             const QString u = cfg.readUrl();
             const KUrl url( u );
-            if ( url.protocol() == "trash" ) {
+            if ( url.scheme() == "trash" ) {
                 // We need to find if the trash is empty, preferably without using a KIO job.
                 // So instead kio_trash leaves an entry in its config file for us.
                 KConfig trashConfig( "trashrc", KConfig::SimpleConfig );

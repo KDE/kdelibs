@@ -57,21 +57,21 @@ int main(int argc, char **argv)
         cmd << "--noclose";
 
     cmd << "-e";
-        if ( url.protocol() == "telnet" )
+        if ( url.scheme() == "telnet" )
             cmd << "telnet";
-        else if ( url.protocol() == "ssh" )
+        else if ( url.scheme() == "ssh" )
             cmd << "ssh";
-        else if ( url.protocol() == "rlogin" )
+        else if ( url.scheme() == "rlogin" )
             cmd << "rlogin";
         else {
-            kError() << "Invalid protocol " << url.protocol() << endl;
+            kError() << "Invalid protocol " << url.scheme() << endl;
             return 2;
         }
 
         if (!KAuthorized::authorize("shell_access"))
         {
             KMessageBox::sorry(0,
-                i18n("You do not have permission to access the %1 protocol.", url.protocol()));
+                i18n("You do not have permission to access the %1 protocol.", url.scheme()));
             return 3;
         }
 
@@ -96,7 +96,7 @@ int main(int argc, char **argv)
         cmd << host;
 
     if (url.port() > 0){
-            if ( url.protocol() == "ssh" )
+            if ( url.scheme() == "ssh" )
         cmd << "-p" << QString::number(url.port());
         else
         cmd << QString::number(url.port());

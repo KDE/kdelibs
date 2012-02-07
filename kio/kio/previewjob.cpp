@@ -355,7 +355,7 @@ void PreviewJobPrivate::startPreview()
             item.plugin = *plugin;
             items.append(item);
             if (!bNeedCache && bSave &&
-                ((*kit).url().protocol() != "file" ||
+                ((*kit).url().scheme() != "file" ||
                  !(*kit).url().directory( KUrl::AppendTrailingSlash ).startsWith(thumbRoot)) &&
                 (*plugin)->property("CacheThumbnail").toBool())
                 bNeedCache = true;
@@ -466,7 +466,7 @@ void PreviewJob::slotResult( KJob *job )
             const KIO::filesize_t size = (KIO::filesize_t)entry.numberValue( KIO::UDSEntry::UDS_SIZE, 0 );
             const KUrl itemUrl = d->currentItem.item.mostLocalUrl();
 
-            if (itemUrl.isLocalFile() || KProtocolInfo::protocolClass(itemUrl.protocol()) == QLatin1String(":local"))
+            if (itemUrl.isLocalFile() || KProtocolInfo::protocolClass(itemUrl.scheme()) == QLatin1String(":local"))
             {
                 skipCurrentItem = !d->ignoreMaximumSize && size > d->maximumLocalSize
                                   && !d->currentItem.plugin->property("IgnoreMaximumSize").toBool();
@@ -672,7 +672,7 @@ void PreviewJobPrivate::slotThumbData(KIO::Job *, const QByteArray &data)
 {
     bool save = bSave &&
                 currentItem.plugin->property("CacheThumbnail").toBool() &&
-                (currentItem.item.url().protocol() != "file" ||
+                (currentItem.item.url().scheme() != "file" ||
                  !currentItem.item.url().directory( KUrl::AppendTrailingSlash ).startsWith(thumbRoot)) && !sequenceIndex;
     QImage thumb;
 #ifdef Q_OS_UNIX

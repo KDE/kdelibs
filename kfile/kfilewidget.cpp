@@ -2555,7 +2555,7 @@ KUrl KFileWidget::getStartUrl( const KUrl& startDir,
     bool useDefaultStartDir = startDir.isEmpty();
     if ( !useDefaultStartDir )
     {
-        if ( startDir.protocol() == "kfiledialog" )
+        if ( startDir.scheme() == "kfiledialog" )
         {
 
 //  The startDir URL with this protocol may be in the format:

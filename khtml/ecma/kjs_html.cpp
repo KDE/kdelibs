@@ -1855,7 +1855,7 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     }
     case AnchorPathName:        return jsString(KUrl(href).path());
     case AnchorPort:            return jsString(QString::number(KUrl(href).port()));
-    case AnchorProtocol:        return jsString(KUrl(href).protocol()+":");
+    case AnchorProtocol:        return jsString(KUrl(href).scheme()+":");
     case AnchorSearch:          { KUrl u(href);
                                   QString q = u.query();
                                   if (q.length() == 1)
@@ -1921,7 +1921,7 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
         return jsString(url.path());
       }
       case AreaPort:            return jsString(QString::number(url.port()));
-      case AreaProtocol:        return jsString(url.isEmpty() ? "" : QString(url.protocol()+":"));
+      case AreaProtocol:        return jsString(url.isEmpty() ? "" : QString(url.scheme()+":"));
       case AreaSearch:          return jsString(url.query());
     }
   }

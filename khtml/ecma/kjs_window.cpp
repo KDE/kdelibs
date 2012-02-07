@@ -2676,7 +2676,7 @@ JSValue* Location::getValueProperty(ExecState *exec, int token) const
     case Port:
       return jsString( UString(url.port() > 0 ? QString::number((int)url.port()) : QLatin1String("")) );
     case Protocol:
-      return jsString( UString(url.protocol()+':') );
+      return jsString( UString(url.scheme()+':') );
     case Search:
       return jsString( UString(url.query()) );
     case EqualEqual: // [[==]]

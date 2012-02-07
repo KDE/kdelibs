@@ -55,7 +55,7 @@ typedef QList<KSSLCSession> KSSLCSessions;
 static KSSLCSessions *sessions = 0L;
 
 static QString URLtoKey(const KUrl &kurl) {
-    return kurl.host() + ':' + kurl.protocol() + ':' + QString::number(kurl.port());
+    return kurl.host() + ':' + kurl.scheme() + ':' + QString::number(kurl.port());
 }
 
 

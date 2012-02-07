@@ -301,7 +301,7 @@ void DeleteJobPrivate::deleteNextFile()
             } else
             { // if remote - or if unlink() failed (we'll use the job's error handling in that case)
                 //kDebug(7007) << "calling file_delete on" << *it;
-                if (isHttpProtocol(it->protocol()))
+                if (isHttpProtocol(it->scheme()))
                   job = KIO::http_delete( *it, KIO::HideProgressInfo );
                 else
                   job = KIO::file_delete( *it, KIO::HideProgressInfo );

@@ -950,7 +950,7 @@ void KNewFileMenuPrivate::_k_slotUrlDesktopFile()
 
     KDesktopFile df(tempFileName);
     KConfigGroup group = df.desktopGroup();
-    group.writeEntry("Icon", KProtocolInfo::icon(linkUrl.protocol()));
+    group.writeEntry("Icon", KProtocolInfo::icon(linkUrl.scheme()));
     group.writePathEntry("URL", linkUrl.prettyUrl());
     df.sync();
 

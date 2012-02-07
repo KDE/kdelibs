@@ -120,7 +120,7 @@ void BrowserRun::scanFile()
   // Let's check for well-known extensions
   // Not when there is a query in the URL, in any case.
   // Optimization for http/https, findByURL doesn't trust extensions over http.
-  QString protocol = KRun::url().protocol();
+  QString protocol = KRun::url().scheme();
 
   if (!KProtocolInfo::proxiedBy(protocol).isEmpty()) {
     QString dummy;
@@ -141,7 +141,7 @@ void BrowserRun::scanFile()
 
     QMap<QString, QString>& metaData = d->m_args.metaData();
     if ( d->m_part ) {
-        const QString proto = d->m_part->url().protocol().toLower();
+        const QString proto = d->m_part->url().scheme().toLower();
 
       if (proto == "https" || proto == "webdavs") {
             metaData.insert("main_frame_request", "TRUE" );
@@ -158,7 +158,7 @@ void BrowserRun::scanFile()
   }
 
   KIO::TransferJob *job;
-    if ( d->m_browserArgs.doPost() && KRun::url().protocol().startsWith(QLatin1String("http"))) {
+    if ( d->m_browserArgs.doPost() && KRun::url().scheme().startsWith(QLatin1String("http"))) {
         job = KIO::http_post( KRun::url(), d->m_browserArgs.postData, KIO::HideProgressInfo );
         job->addMetaData( "content-type", d->m_browserArgs.contentType() );
     } else {

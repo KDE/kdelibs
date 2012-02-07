@@ -448,7 +448,7 @@ void Connection::connectToRemote(const QString &address)
 {
     //kDebug(7017) << "Connection requested to " << address;
     KUrl url = address;
-    QString scheme = url.protocol();
+    QString scheme = url.scheme();
 
     if (scheme == QLatin1String("local")) {
         d->setBackend(new SocketConnectionBackend(SocketConnectionBackend::LocalSocketMode, this));

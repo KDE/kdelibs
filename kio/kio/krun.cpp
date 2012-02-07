@@ -391,7 +391,7 @@ static bool isProtocolInSupportedList(const KUrl& url, const QStringList& suppor
 {
     if (supportedProtocols.contains("KIO"))
         return true;
-    return url.isLocalFile() || supportedProtocols.contains(url.protocol().toLower());
+    return url.isLocalFile() || supportedProtocols.contains(url.scheme().toLower());
 }
 
 QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List& _urls, bool tempFiles, const QString& suggestedFileName)
@@ -737,7 +737,7 @@ static KUrl::List resolveURLs(const KUrl::List& _urls, const KService& _service)
             const KUrl url = *it;
             bool supported = isProtocolInSupportedList(url, appSupportedProtocols);
             kDebug(7010) << "Looking at url=" << url << " supported=" << supported;
-            if (!supported && KProtocolInfo::protocolClass(url.protocol()) == ":local") {
+            if (!supported && KProtocolInfo::protocolClass(url.scheme()) == ":local") {
                 // Maybe we can resolve to a local URL?
                 KUrl localURL = KIO::NetAccess::mostLocalUrl(url, 0);
                 if (localURL != url) {
@@ -1152,7 +1152,7 @@ void KRun::init()
         d->m_bIsLocalFile = true;
     }
 
-    if (!d->m_externalBrowser.isEmpty() && d->m_strURL.protocol().startsWith(QLatin1String("http"))) {
+    if (!d->m_externalBrowser.isEmpty() && d->m_strURL.scheme().startsWith(QLatin1String("http"))) {
         if (d->runExecutable(d->m_externalBrowser)) {
             return;
         }
@@ -1190,7 +1190,7 @@ void KRun::init()
     }
     else if (KProtocolInfo::isHelperProtocol(d->m_strURL)) {
         kDebug(7010) << "Helper protocol";
-        const QString exec = KProtocolInfo::exec(d->m_strURL.protocol());
+        const QString exec = KProtocolInfo::exec(d->m_strURL.scheme());
         if (exec.isEmpty()) {
             mimeTypeDetermined(KProtocolManager::defaultMimetype(d->m_strURL));
             return;
@@ -1403,7 +1403,7 @@ void KRun::slotStatResult(KJob * job)
 void KRun::slotScanMimeType(KIO::Job *, const QString &mimetype)
 {
     if (mimetype.isEmpty()) {
-        kWarning(7010) << "get() didn't emit a mimetype! Probably a kioslave bug, please check the implementation of" << url().protocol();
+        kWarning(7010) << "get() didn't emit a mimetype! Probably a kioslave bug, please check the implementation of" << url().scheme();
     }
     mimeTypeDetermined(mimetype);
     d->m_job = 0;

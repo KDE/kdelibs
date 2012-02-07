@@ -299,7 +299,7 @@ bool NetRC::lookup( const KUrl& url, AutoLogin& login, bool userealnetrc,
 
   QString type = _type;
   if ( type.isEmpty() )
-    type = url.protocol();
+    type = url.scheme();
 
   if ( d->loginMap.isEmpty() || d->isDirty )
   {

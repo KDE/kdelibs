@@ -82,7 +82,7 @@ void KUrlNavigatorButton::setUrl(const KUrl& url)
         if (protocols.isEmpty()) {
             protocols << "fish" << "ftp" << "nfs" << "sftp" << "smb" << "webdav";
         }
-        startTextResolving = !protocols.contains(m_url.protocol());
+        startTextResolving = !protocols.contains(m_url.scheme());
     }
 
     if (startTextResolving) {
@@ -105,7 +105,7 @@ void KUrlNavigatorButton::setText(const QString& text)
 {
     QString adjustedText = text;
     if (adjustedText.isEmpty()) {
-        adjustedText = m_url.protocol();
+        adjustedText = m_url.scheme();
     }
     // Assure that the button always consists of one line
     adjustedText.remove(QLatin1Char('\n'));

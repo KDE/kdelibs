@@ -50,7 +50,7 @@ static QScriptValue protocol(QScriptContext *ctx, QScriptEngine *eng)
         self->setProtocol(v);
     }
 
-    return QScriptValue(eng, self->protocol());
+    return QScriptValue(eng, self->scheme());
 }
 
 static QScriptValue host(QScriptContext *ctx, QScriptEngine *eng)

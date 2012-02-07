@@ -390,7 +390,7 @@ KDirOperator::KDirOperator(const KUrl& _url, QWidget *parent) :
         d->currUrl.setPath(strPath);
     } else {
         d->currUrl = _url;
-        if (d->currUrl.protocol().isEmpty())
+        if (d->currUrl.scheme().isEmpty())
             d->currUrl.setProtocol(QLatin1String("file"));
 
         d->currUrl.addPath("/"); // make sure we have a trailing slash!

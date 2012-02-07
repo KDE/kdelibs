@@ -169,7 +169,7 @@ void CommandRecorder::slotCopyingDone(KIO::Job *job, const KUrl &from, const KUr
 
   if (m_cmd.m_type == FileUndoManager::Trash)
   {
-      Q_ASSERT(to.protocol() == "trash");
+      Q_ASSERT(to.scheme() == "trash");
       const QMap<QString, QString> metaData = job->metaData();
       QMap<QString, QString>::ConstIterator it = metaData.find("trashURL-" + from.path());
       if (it != metaData.constEnd()) {

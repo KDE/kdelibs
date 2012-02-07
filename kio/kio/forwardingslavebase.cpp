@@ -88,7 +88,7 @@ bool ForwardingSlaveBasePrivate::internalRewriteUrl(const KUrl &url, KUrl &newUR
 {
     bool result = true;
 
-    if ( url.protocol() == q->mProtocol )
+    if ( url.scheme() == q->mProtocol )
     {
         result = q->rewriteUrl(url, newURL);
     }

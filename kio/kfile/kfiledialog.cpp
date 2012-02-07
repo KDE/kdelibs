@@ -721,7 +721,7 @@ QString KFileDialogPrivate::getSaveFileName(const KUrl& dir, const QString& filt
 {
     if (KFileDialogPrivate::isNative()) {
         bool defaultDir = dir.isEmpty();
-        bool specialDir = !defaultDir && dir.protocol() == "kfiledialog";
+        bool specialDir = !defaultDir && dir.scheme() == "kfiledialog";
         KUrl startDir;
         QString recentDirClass;
         if (specialDir) {

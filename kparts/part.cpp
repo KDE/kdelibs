@@ -551,7 +551,7 @@ bool ReadOnlyPart::openUrl( const KUrl &url )
     if (d->m_url.isLocalFile()) {
         d->m_file = d->m_url.toLocalFile();
         return d->openLocalFile();
-    } else if (KProtocolInfo::protocolClass(url.protocol()) == ":local") {
+    } else if (KProtocolInfo::protocolClass(url.scheme()) == ":local") {
         // Maybe we can use a "local path", to avoid a temp copy?
         KIO::JobFlags flags = d->m_showProgressInfo ? KIO::DefaultFlags : KIO::HideProgressInfo;
         d->m_statJob = KIO::mostLocalUrl(d->m_url, flags);

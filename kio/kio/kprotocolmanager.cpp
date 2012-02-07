@@ -432,7 +432,7 @@ static QStringList getSystemProxyFor( const KUrl& url )
   }
 #else
   // On Unix/Linux use system environment variables if any are set.
-  QString proxyVar (KProtocolManager::proxyFor(url.protocol()));
+  QString proxyVar (KProtocolManager::proxyFor(url.scheme()));
   // Check for SOCKS proxy, if not proxy is found for given url.
   if (!proxyVar.isEmpty()) {
     const QString proxy (QString::fromLocal8Bit(qgetenv(proxyVar.toLocal8Bit())).trimmed());
@@ -467,7 +467,7 @@ QStringList KProtocolManager::proxiesForUrl( const KUrl &url )
       case WPADProxy:
       {
         KUrl u (url);
-        const QString protocol = adjustProtocol(u.protocol());
+        const QString protocol = adjustProtocol(u.scheme());
         u.setProtocol(protocol);
 
         if (KProtocolInfo::protocolClass(protocol) != QL1S(":local")) {
@@ -484,7 +484,7 @@ QStringList KProtocolManager::proxiesForUrl( const KUrl &url )
         break;
       case ManualProxy:
       {
-        QString proxy (proxyFor(url.protocol()));
+        QString proxy (proxyFor(url.scheme()));
         if (!proxy.isEmpty())
           proxyList << proxy;
         // Add the socks proxy as an alternate proxy if it exists,
@@ -538,7 +538,7 @@ static void extractProxyCacheKeyFromUrl(const KUrl& u, QString* key)
     if (!key)
         return;
 
-    *key = u.protocol();
+    *key = u.scheme();
     *key += u.host();
 
     if (u.port() > 0)
@@ -556,7 +556,7 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QStringList &proxyList)
 
   // Do not perform a proxy lookup for any url classified as a ":local" url or
   // one that does not have a host component or if proxy is disabled.
-  QString protocol (url.protocol());
+  QString protocol (url.scheme());
   if (!url.hasHost()
       || KProtocolInfo::protocolClass(protocol) == QL1S(":local")
       || KProtocolManager::proxyType() == KProtocolManager::NoProxy) {
@@ -583,7 +583,7 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QStringList &proxyList)
               proxyList << proxy;
           } else {
               KUrl u (proxy);
-              if (!u.isEmpty() && u.isValid() && !u.protocol().isEmpty()) {
+              if (!u.isEmpty() && u.isValid() && !u.scheme().isEmpty()) {
                   proxyList << proxy;
               }
           }
@@ -598,8 +598,8 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QStringList &proxyList)
       && KProtocolInfo::isKnownProtocol(protocol)) {
       Q_FOREACH(const QString& proxy, proxyList) {
           KUrl u (proxy);
-          if (u.isValid() && KProtocolInfo::isKnownProtocol(u.protocol())) {
-              protocol = u.protocol();
+          if (u.isValid() && KProtocolInfo::isKnownProtocol(u.scheme())) {
+              protocol = u.scheme();
               break;
           }
       }
@@ -992,7 +992,7 @@ QString KProtocolManager::proxyConfigScript()
 
 static KProtocolInfo::Ptr findProtocol(const KUrl &url)
 {
-   QString protocol = url.protocol();
+   QString protocol = url.scheme();
 
    if ( !KProtocolInfo::proxiedBy( protocol ).isEmpty() )
    {

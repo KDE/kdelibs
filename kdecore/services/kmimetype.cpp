@@ -287,7 +287,7 @@ QString KMimeType::iconNameForUrl( const QUrl & url, mode_t mode )
         i = favIconForUrl( _url ); // maybe there is a favicon?
 
         if ( i.isEmpty() )
-            i = KProtocolInfo::icon( _url.protocol() );
+            i = KProtocolInfo::icon( _url.scheme() );
 
         // root of protocol: if we found nothing, revert to mimeTypeIcon (which is usually "folder")
         if ( _url.path().length() <= 1 && ( i == unknown || i.isEmpty() ) )

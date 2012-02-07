@@ -474,7 +474,7 @@ void KUrlNavigator::Private::openContextMenu()
 void KUrlNavigator::Private::slotPathBoxChanged(const QString& text)
 {
     if (text.isEmpty()) {
-        const QString protocol = q->locationUrl().protocol();
+        const QString protocol = q->locationUrl().scheme();
         m_protocols->setProtocol(protocol);
         m_protocols->show();
     } else {
@@ -667,7 +667,7 @@ void KUrlNavigator::Private::updateButtonVisibility()
         // Check whether going upwards is possible. If this is the case, show the drop-down button.
         KUrl url = m_navButtons.front()->url();
         url.adjustPath(KUrl::AddTrailingSlash);
-        const bool visible = !url.equals(url.upUrl()) && (url.protocol() != "nepomuksearch");
+        const bool visible = !url.equals(url.upUrl()) && (url.scheme() != "nepomuksearch");
         m_dropDownButton->setVisible(visible);
     }
 }
@@ -692,7 +692,7 @@ QString KUrlNavigator::Private::firstButtonText() const
             text = m_showFullPath ? QLatin1String("/") : i18n("Custom Path");
 #endif
         } else {
-            text = currentUrl.protocol() + QLatin1Char(':');
+            text = currentUrl.scheme() + QLatin1Char(':');
             if (!currentUrl.host().isEmpty()) {
                 text += QLatin1Char(' ') + currentUrl.host();
             }
@@ -994,7 +994,7 @@ void KUrlNavigator::setLocationUrl(const KUrl& newUrl)
     KUrl url = newUrl;
     url.cleanPath();
 
-    if ((url.protocol() == QLatin1String("tar")) || (url.protocol() == QLatin1String("zip"))) {
+    if ((url.scheme() == QLatin1String("tar")) || (url.scheme() == QLatin1String("zip"))) {
         // The URL represents a tar- or zip-file. Check whether
         // the URL is really part of the tar- or zip-file, otherwise
         // replace it by the local path again.

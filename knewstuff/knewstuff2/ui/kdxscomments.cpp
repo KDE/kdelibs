@@ -79,7 +79,7 @@ void KDXSComments::addComment(const QString& username, const QString& comment)
 void urlSelected(const QString & link, int, int, const QString &, KParts::URLArgs)
 {
 KURL url(link);
-QString urlProtocol = url.protocol();
+QString urlProtocol = url.scheme();
 QString urlPath = url.path();
 if(urlProtocol == "mailto")
 {

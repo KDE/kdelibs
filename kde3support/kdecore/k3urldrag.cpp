@@ -271,7 +271,7 @@ QString K3URLDrag::urlToString(const KUrl &url)
 #endif
     }
 
-    if ( url.protocol() == "mailto" ) {
+    if ( url.scheme() == "mailto" ) {
         return url.path();
     }
 

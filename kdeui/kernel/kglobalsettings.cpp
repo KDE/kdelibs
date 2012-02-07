@@ -805,7 +805,7 @@ KGlobalSettings::GraphicEffects KGlobalSettings::graphicEffectsLevelDefault()
 bool KGlobalSettings::showFilePreview(const KUrl &url)
 {
     KConfigGroup g(KGlobal::config(), "PreviewSettings");
-    QString protocol = url.protocol();
+    QString protocol = url.scheme();
     bool defaultSetting = KProtocolInfo::showFilePreview( protocol );
     return g.readEntry(protocol, defaultSetting );
 }

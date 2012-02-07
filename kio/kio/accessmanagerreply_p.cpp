@@ -156,7 +156,7 @@ void AccessManagerReply::putOnHold()
 
 bool AccessManagerReply::isLocalRequest (const KUrl& url)
 {
-    const QString scheme (url.protocol());
+    const QString scheme (url.scheme());
     return (KProtocolInfo::isKnownProtocol(scheme) &&
             KProtocolInfo::protocolClass(scheme).compare(QL1S(":local"), Qt::CaseInsensitive) == 0);
 }

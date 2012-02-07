@@ -1050,10 +1050,10 @@ static inline bool securityCheckUrl(const KUrl& fullURL, KHTMLPart* part, DOM::D
 {
     if (!fullURL.isValid())
         return false;
-    if (part && part->onlyLocalReferences() && fullURL.protocol() != "file" && fullURL.protocol() != "data")
+    if (part && part->onlyLocalReferences() && fullURL.scheme() != "file" && fullURL.scheme() != "data")
         return false;
     if (doRedirectCheck && doc) {
-        if (isImg && part && part->forcePermitLocalImages() && fullURL.protocol() == "file")
+        if (isImg && part && part->forcePermitLocalImages() && fullURL.scheme() == "file")
             return true;
         else
             return KAuthorized::authorizeUrlAction("redirect", doc->URL(), fullURL);

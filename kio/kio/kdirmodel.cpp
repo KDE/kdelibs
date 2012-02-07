@@ -222,7 +222,7 @@ KDirModelNode* KDirModelPrivate::expandAllParentsUntil(const KUrl& _url) const /
         return m_rootNode;
 
     // Protocol mismatch? Don't even start comparing paths then. #171721
-    if (url.protocol() != nodeUrl.protocol())
+    if (url.scheme() != nodeUrl.scheme())
         return 0;
 
     const QString pathStr = url.path(); // no trailing slash
@@ -235,7 +235,7 @@ KDirModelNode* KDirModelPrivate::expandAllParentsUntil(const KUrl& _url) const /
     for (;;) {
         const QString nodePath = nodeUrl.path(KUrl::AddTrailingSlash);
         if(!pathStr.startsWith(nodePath)) {
-            kError(7008) << "The kioslave for" << url.protocol() << "violates the hierarchy structure:"
+            kError(7008) << "The kioslave for" << url.scheme() << "violates the hierarchy structure:"
                          << "I arrived at node" << nodePath << ", but" << pathStr << "does not start with that path.";
             return 0;
         }

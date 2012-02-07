@@ -129,7 +129,7 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const KUrl::List& urls,
     if (ask) {
         QStringList prettyList;
         Q_FOREACH(const KUrl& url, urls) {
-            if ( url.protocol() == "trash" ) {
+            if ( url.scheme() == "trash" ) {
                 QString path = url.path();
                 // HACK (#98983): remove "0-foo". Note that it works better than
                 // displaying KFileItem::name(), for files under a subdir.

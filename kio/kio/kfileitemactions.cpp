@@ -204,7 +204,7 @@ int KFileItemActions::addServiceActionsTo(QMenu* mainMenu)
 {
     const KFileItemList items = d->m_props.items();
     const KFileItem firstItem = items.first();
-    const QString protocol = firstItem.url().protocol(); // assumed to be the same for all items
+    const QString protocol = firstItem.url().scheme(); // assumed to be the same for all items
     const bool isLocal = !firstItem.localPath().isEmpty();
     const bool isSingleLocal = items.count() == 1 && isLocal;
     const KUrl::List urlList = d->m_props.urlList();

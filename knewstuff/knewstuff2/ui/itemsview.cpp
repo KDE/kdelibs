@@ -358,7 +358,7 @@ void EntryView::urlSelected(const QString &link)
     //kDebug() << "Clicked on URL " << link;
 
     KUrl url(link);
-    QString urlProtocol = url.protocol();
+    QString urlProtocol = url.scheme();
     QString urlPath = url.path();
 
     if (urlProtocol == "mailto") {

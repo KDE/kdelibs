@@ -2017,7 +2017,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
     {
         QString str = content.string().toLower().trimmed();
         KUrl url = v->part()->url();
-        if ((str == "no-cache") && url.protocol().startsWith(QLatin1String("http")))
+        if ((str == "no-cache") && url.scheme().startsWith(QLatin1String("http")))
         {
            KIO::http_update_cache(url, true, 0);
         }
@@ -2572,11 +2572,11 @@ bool DocumentImpl::isURLAllowed(const QString& url) const
         return false;
 
     // Prohibit non-file URLs if we are asked to.
-    if (!thisPart || ( thisPart->onlyLocalReferences() && newURL.protocol() != "file" && newURL.protocol() != "data" ))
+    if (!thisPart || ( thisPart->onlyLocalReferences() && newURL.scheme() != "file" && newURL.scheme() != "data" ))
         return false;
 
     // do we allow this suburl ?
-    if (newURL.protocol() != "javascript" && !KAuthorized::authorizeUrlAction("redirect", thisPart->url(), newURL))
+    if (newURL.scheme() != "javascript" && !KAuthorized::authorizeUrlAction("redirect", thisPart->url(), newURL))
         return false;
 
     // We allow one level of self-reference because some sites depend on that.

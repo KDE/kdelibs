@@ -391,8 +391,8 @@ public:
         return m_kurl;
     }
 
-    QString protocol() const {
-        return m_kurl.protocol();
+    QString scheme() const {
+        return m_kurl.scheme();
     }
     // The directory with a trailing '/'
     QString dir() const {
@@ -611,7 +611,7 @@ QString KUrlCompletion::makeCompletion(const QString& text)
     // Replace user directories and variables
     url.filter(d->replace_home, d->replace_env);
 
-    //kDebug() << "Filtered: proto=" << url.protocol()
+    //kDebug() << "Filtered: proto=" << url.scheme()
     //          << ", dir=" << url.dir()
     //          << ", file=" << url.file()
     //          << ", kurl url=" << *url.kurl();
@@ -736,7 +736,7 @@ bool KUrlCompletionPrivate::isAutoCompletion()
 
 bool KUrlCompletionPrivate::userCompletion(const KUrlCompletionPrivate::MyURL& url, QString* pMatch)
 {
-    if (url.protocol() != QLatin1String("file")
+    if (url.scheme() != QLatin1String("file")
             || !url.dir().isEmpty()
             || !url.file().startsWith(QLatin1Char('~')))
         return false;
@@ -815,7 +815,7 @@ bool KUrlCompletionPrivate::envCompletion(const KUrlCompletionPrivate::MyURL& ur
 
 bool KUrlCompletionPrivate::exeCompletion(const KUrlCompletionPrivate::MyURL& url, QString* pMatch)
 {
-    if (url.protocol() != QLatin1String("file"))
+    if (url.scheme() != QLatin1String("file"))
         return false;
 
     QString directory = unescape(url.dir());  // remove escapes
@@ -876,7 +876,7 @@ bool KUrlCompletionPrivate::exeCompletion(const KUrlCompletionPrivate::MyURL& ur
 
 bool KUrlCompletionPrivate::fileCompletion(const KUrlCompletionPrivate::MyURL& url, QString* pMatch)
 {
-    if (url.protocol() != QLatin1String("file"))
+    if (url.scheme() != QLatin1String("file"))
         return false;
 
     QString directory = unescape(url.dir());
@@ -959,7 +959,7 @@ static bool isLocalProtocol(const QString& protocol)
 bool KUrlCompletionPrivate::urlCompletion(const KUrlCompletionPrivate::MyURL& url, QString* pMatch)
 {
     //kDebug() << *url.kurl();
-    if (onlyLocalProto && isLocalProtocol(url.protocol()))
+    if (onlyLocalProto && isLocalProtocol(url.scheme()))
         return false;
 
     // Use d->cwd as base url in case url is not absolute
@@ -975,7 +975,7 @@ bool KUrlCompletionPrivate::urlCompletion(const KUrlCompletionPrivate::MyURL& ur
         return false;
 
     // non local urls
-    if (!isLocalProtocol(url.protocol())) {
+    if (!isLocalProtocol(url.scheme())) {
         // url does not specify host
         if (url_dir.host().isEmpty())
             return false;

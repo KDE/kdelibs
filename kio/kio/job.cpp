@@ -942,7 +942,7 @@ StatJob *KIO::stat(const KUrl& url, KIO::StatJob::StatSide side, short int detai
 
 SimpleJob *KIO::http_update_cache( const KUrl& url, bool no_cache, time_t expireDate)
 {
-    Q_ASSERT(url.protocol() == "http" || url.protocol() == "https");
+    Q_ASSERT(url.scheme() == "http" || url.scheme() == "https");
     // Send http update_cache command (2)
     KIO_ARGS << (int)2 << url << no_cache << qlonglong(expireDate);
     SimpleJob * job = SimpleJobPrivate::newJob(url, CMD_SPECIAL, packedArgs);
@@ -1515,7 +1515,7 @@ static int isUrlPortBad(const KUrl& url)
     }
 
     // filter out non https? protocols
-    if ((url.protocol() != "http") && (url.protocol() != "https" ))
+    if ((url.scheme() != "http") && (url.scheme() != "https" ))
         _error = KIO::ERR_POST_DENIED;
 
     if (!_error && !KAuthorized::authorizeUrlAction("open", KUrl(), url))
@@ -1994,7 +1994,7 @@ void FileCopyJobPrivate::slotStart()
    if ( m_move )
    {
       // The if() below must be the same as the one in startBestCopyMethod
-      if ((m_src.protocol() == m_dest.protocol()) &&
+      if ((m_src.scheme() == m_dest.scheme()) &&
           (m_src.host() == m_dest.host()) &&
           (m_src.port() == m_dest.port()) &&
           (m_src.user() == m_dest.user()) &&
@@ -2021,7 +2021,7 @@ void FileCopyJobPrivate::slotStart()
 
 void FileCopyJobPrivate::startBestCopyMethod()
 {
-   if ((m_src.protocol() == m_dest.protocol()) &&
+   if ((m_src.scheme() == m_dest.scheme()) &&
        (m_src.host() == m_dest.host()) &&
        (m_src.port() == m_dest.port()) &&
        (m_src.user() == m_dest.user()) &&
@@ -2797,7 +2797,7 @@ void MultiGetJobPrivate::flushQueue(RequestQueue &queue)
    while ( wqit != wqend )
    {
       const GetRequest& entry = *wqit;
-      if ((m_url.protocol() == entry.url.protocol()) &&
+      if ((m_url.scheme() == entry.url.scheme()) &&
           (m_url.host() == entry.url.host()) &&
           (m_url.port() == entry.url.port()) &&
           (m_url.user() == entry.url.user()))
@@ -2831,7 +2831,7 @@ void MultiGetJobPrivate::start(Slave *slave)
 
    m_url = entry.url;
 
-   if (!entry.url.protocol().startsWith(QLatin1String("http")))
+   if (!entry.url.scheme().startsWith(QLatin1String("http")))
    {
       // Use normal get
       KIO_ARGS << entry.url;

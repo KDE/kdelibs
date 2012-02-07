@@ -172,20 +172,20 @@ void KUrlNavigatorTest::bug251553_goUpFromArchive()
 {
     m_navigator->setLocationUrl(KUrl("zip:/test/archive.zip"));
     QCOMPARE(m_navigator->locationUrl().path(), QLatin1String("/test/archive.zip"));
-    QCOMPARE(m_navigator->locationUrl().protocol(), QLatin1String("zip"));
+    QCOMPARE(m_navigator->locationUrl().scheme(), QLatin1String("zip"));
 
     bool ok = m_navigator->goUp();
     QVERIFY(ok);
     QCOMPARE(m_navigator->locationUrl().path(KUrl::AddTrailingSlash), QLatin1String("/test/"));
-    QCOMPARE(m_navigator->locationUrl().protocol(), QLatin1String("file"));
+    QCOMPARE(m_navigator->locationUrl().scheme(), QLatin1String("file"));
 
     m_navigator->setLocationUrl(KUrl("tar:/test/archive.tar.gz"));
     QCOMPARE(m_navigator->locationUrl().path(), QLatin1String("/test/archive.tar.gz"));
-    QCOMPARE(m_navigator->locationUrl().protocol(), QLatin1String("tar"));
+    QCOMPARE(m_navigator->locationUrl().scheme(), QLatin1String("tar"));
 
     ok = m_navigator->goUp();
     QVERIFY(ok);
     QCOMPARE(m_navigator->locationUrl().path(KUrl::AddTrailingSlash), QLatin1String("/test/"));
-    QCOMPARE(m_navigator->locationUrl().protocol(), QLatin1String("file"));
+    QCOMPARE(m_navigator->locationUrl().scheme(), QLatin1String("file"));
 }
 

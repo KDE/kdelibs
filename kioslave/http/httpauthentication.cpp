@@ -613,7 +613,7 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
 
         Q_FOREACH (const KUrl &u, info.digestURIs)
         {
-          send &= (m_resource.protocol().toLower() == u.protocol().toLower());
+          send &= (m_resource.scheme().toLower() == u.scheme().toLower());
           send &= (m_resource.host().toLower() == u.host().toLower());
 
           if (m_resource.port() > 0 && u.port() > 0)

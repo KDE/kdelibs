@@ -279,7 +279,7 @@ void KToolInvocation::invokeHelp( const QString& anchor,
 
     // launch a browser for URIs not handled by khelpcenter
     // (following KCMultiDialog::slotHelpClicked())
-    if (!(url.protocol() == QLatin1String("help") || url.protocol() == QLatin1String("man") || url.protocol() == QLatin1String("info"))) {
+    if (!(url.scheme() == QLatin1String("help") || url.scheme() == QLatin1String("man") || url.scheme() == QLatin1String("info"))) {
         invokeBrowser(url.url());
         return;
     }

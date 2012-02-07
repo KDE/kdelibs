@@ -621,7 +621,7 @@ bool KHTMLPartPrivate::isLocalAnchorJump( const KUrl& url )
 {
     // kio_help actually uses fragments to identify different pages, so
     // always reload with it.
-    if (url.protocol() == QLatin1String("help"))
+    if (url.scheme() == QLatin1String("help"))
         return false;
 
     return url.hasRef() && url.equals( q->url(),
@@ -655,7 +655,7 @@ bool KHTMLPart::openUrl( const KUrl &url )
   // check to see if this is an "error://" URL. This is caused when an error
   // occurs before this part was loaded (e.g. KonqRun), and is passed to
   // khtmlpart so that it can display the error.
-  if ( url.protocol() == "error" ) {
+  if ( url.scheme() == "error" ) {
     closeUrl();
 
     if(  d->m_bJScriptEnabled ) {
@@ -807,7 +807,7 @@ bool KHTMLPart::openUrl( const KUrl &url )
   // initializing m_url to the new url breaks relative links when opening such a link after this call and _before_ begin() is called (when the first
   // data arrives) (Simon)
   d->m_workingURL = url;
-  if(url.protocol().startsWith( "http" ) && !url.host().isEmpty() &&
+  if(url.scheme().startsWith( "http" ) && !url.host().isEmpty() &&
      url.path().isEmpty()) {
     d->m_workingURL.setPath("/");
     emit d->m_extension->setLocationBarUrl( d->m_workingURL.prettyUrl() );
@@ -833,7 +833,7 @@ bool KHTMLPart::openUrl( const KUrl &url )
   else
      d->m_cachePolicy = KProtocolManager::cacheControl();
 
-  if ( browserArgs.doPost() && (url.protocol().startsWith("http")) )
+  if ( browserArgs.doPost() && (url.scheme().startsWith("http")) )
   {
       d->m_job = KIO::http_post( url, browserArgs.postData, KIO::HideProgressInfo );
       d->m_job->addMetaData("content-type", browserArgs.contentType() );
@@ -1811,7 +1811,7 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KUrl& reqUr
   // This is somewhat confusing, but we have to escape the externally-
   // controlled URL twice: once for i18n, and once for HTML.
   url = Qt::escape( Qt::escape( reqUrl.prettyUrl() ) );
-  protocol = reqUrl.protocol();
+  protocol = reqUrl.scheme();
   datetime = KGlobal::locale()->formatDateTime( QDateTime::currentDateTime(),
                                                 KLocale::LongDate );
 
@@ -1934,7 +1934,7 @@ void KHTMLPart::slotFinished( KJob * job )
 
   KHTMLPageCache::self()->endData(d->m_cacheId);
 
-  if ( d->m_doc && d->m_doc->docLoader()->expireDate() && url().protocol().toLower().startsWith("http"))
+  if ( d->m_doc && d->m_doc->docLoader()->expireDate() && url().scheme().toLower().startsWith("http"))
       KIO::http_update_cache(url(), false, d->m_doc->docLoader()->expireDate());
 
   d->m_workingURL = KUrl();
@@ -2020,7 +2020,7 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
   d->m_pageReferrer.clear();
 
   KUrl ref(url);
-  d->m_referrer = ref.protocol().startsWith("http") ? ref.url() : "";
+  d->m_referrer = ref.scheme().startsWith("http") ? ref.url() : "";
 
   setUrl(url);
 
@@ -2673,7 +2673,7 @@ QString KHTMLPart::defaultEncoding() const
     return encoding;
   // HTTP requires the default encoding to be latin1, when neither
   // the user nor the page requested a particular encoding.
-  if ( url().protocol().startsWith( "http" ) )
+  if ( url().scheme().startsWith( "http" ) )
     return "iso-8859-1";
   else
     return KGlobal::locale()->encoding();
@@ -3625,7 +3625,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
         extra = i18n(" (In other frame)");
     }
 
-    if (u.protocol() == QLatin1String("mailto")) {
+    if (u.scheme() == QLatin1String("mailto")) {
       QString mailtoMsg /* = QString::fromLatin1("<img src=%1>").arg(locate("icon", QString::fromLatin1("locolor/16x16/actions/mail_send.png")))*/;
       mailtoMsg += i18n("Email to: ") + KUrl::fromPercentEncoding(u.path().toLatin1());
       const QStringList queries = u.query().mid(1).split('&');
@@ -3645,7 +3645,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     }
    // Is this check necessary at all? (Frerich)
 #if 0
-    else if (u.protocol() == QLatin1String("http")) {
+    else if (u.scheme() == QLatin1String("http")) {
         DOM::Node hrefNode = nodeUnderMouse().parentNode();
         while (hrefNode.nodeName().string() != QLatin1String("A") && !hrefNode.isNull())
           hrefNode = hrefNode.parentNode();
@@ -4269,7 +4269,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KUrl &url, const 
   // We know the frame will be text/html if the HTML says <frame src=""> or <frame src="about:blank">,
   // no need to KHTMLRun to figure out the mimetype"
   // ### What if we're inside an XML document?
-  if ((url.isEmpty() || url.url() == "about:blank" || url.protocol() == "javascript") && args.mimeType().isEmpty())
+  if ((url.isEmpty() || url.url() == "about:blank" || url.scheme() == "javascript") && args.mimeType().isEmpty())
     args.setMimeType(QLatin1String("text/html"));
 
   if ( args.mimeType().isEmpty() ) {
@@ -4476,7 +4476,7 @@ bool KHTMLPart::navigateLocalProtocol( khtml::ChildFrame* /*child*/, KParts::Rea
 
 bool KHTMLPart::navigateChild( khtml::ChildFrame *child, const KUrl& url )
 {
-    if (url.protocol() == "javascript" || url.url() == "about:blank") {
+    if (url.scheme() == "javascript" || url.url() == "about:blank") {
         return navigateLocalProtocol(child, child->m_part.data(), url);
     } else if ( !url.isEmpty() ) {
         kDebug( 6031 ) << "opening" << url << "in frame" << child->m_part;
@@ -4702,7 +4702,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
    */
 
   if (!d->m_submitForm) {
-    if (u.protocol() != "https" && u.protocol() != "mailto") {
+    if (u.scheme() != "https" && u.scheme() != "mailto") {
       if (d->m_ssl_in_use) {    // Going from SSL -> nonSSL
         int rc = KMessageBox::warningContinueCancel(NULL, i18n("Warning:  This is a secure form but it is attempting to send your data back unencrypted."
                                                                "\nA third party may be able to intercept and view this information."
@@ -4736,7 +4736,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
       }
     }
 
-    if (u.protocol() == "mailto") {
+    if (u.scheme() == "mailto") {
       int rc = KMessageBox::warningContinueCancel(NULL,
                                                   i18n("This site is attempting to submit form data via email.\n"
                                                        "Do you want to continue?"),
@@ -4789,7 +4789,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   browserArgs.frameName = _target.isEmpty() ? d->m_doc->baseTarget() : _target ;
 
   // Handle mailto: forms
-  if (u.protocol() == "mailto") {
+  if (u.scheme() == "mailto") {
       // 1)  Check for attach= and strip it
       QString q = u.query().mid(1);
       QStringList nvps = q.split("&");
@@ -4843,7 +4843,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   }
 
   if ( strcmp( action, "get" ) == 0 ) {
-    if (u.protocol() != "mailto")
+    if (u.scheme() != "mailto")
        u.setQuery( QString::fromLatin1( formData.data(), formData.size() ) );
     browserArgs.setDoPost( false );
   }
@@ -5925,10 +5925,10 @@ QString KHTMLPart::pageReferrer() const
    KUrl referrerURL = KUrl( d->m_pageReferrer );
    if (referrerURL.isValid())
    {
-      QString protocol = referrerURL.protocol();
+      QString protocol = referrerURL.scheme();
 
       if ((protocol == "http") ||
-         ((protocol == "https") && (url().protocol() == "https")))
+         ((protocol == "https") && (url().scheme() == "https")))
       {
           referrerURL.setRef(QString());
           referrerURL.setUser(QString());

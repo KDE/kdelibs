@@ -430,7 +430,7 @@ KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KUrl *reqUrl /*= 0L
   QString url, protocol, datetime;
   if ( reqUrl ) {
     url = Qt::escape(reqUrl->prettyUrl());
-    protocol = reqUrl->protocol();
+    protocol = reqUrl->scheme();
   } else {
     url = i18nc("@info url", "(unknown)" );
   }
@@ -478,7 +478,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
   if ( reqUrl ) {
     url = reqUrl->prettyUrl();
     host = reqUrl->host();
-    protocol = reqUrl->protocol();
+    protocol = reqUrl->scheme();
 
     if ( host.startsWith( QLatin1String( "www." ) ) )
       domain = host.mid(4);

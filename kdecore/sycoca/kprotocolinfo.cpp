@@ -321,7 +321,7 @@ QString KProtocolInfo::exec(const QString& protocol)
 
 KProtocolInfo::ExtraFieldList KProtocolInfo::extraFields( const KUrl &url )
 {
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url.protocol());
+  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url.scheme());
   if ( !prot )
     return ExtraFieldList();
 
@@ -416,12 +416,12 @@ KProtocolInfo::FileNameUsedForCopying KProtocolInfo::fileNameUsedForCopying() co
 
 bool KProtocolInfo::isFilterProtocol( const KUrl &url )
 {
-  return isFilterProtocol (url.protocol());
+  return isFilterProtocol (url.scheme());
 }
 
 bool KProtocolInfo::isHelperProtocol( const KUrl &url )
 {
-  return isHelperProtocol (url.protocol());
+  return isHelperProtocol (url.scheme());
 }
 
 bool KProtocolInfo::isHelperProtocol( const QString &protocol )
@@ -437,7 +437,7 @@ bool KProtocolInfo::isHelperProtocol( const QString &protocol )
 
 bool KProtocolInfo::isKnownProtocol( const KUrl &url )
 {
-  return isKnownProtocol (url.protocol());
+  return isKnownProtocol (url.scheme());
 }
 
 bool KProtocolInfo::isKnownProtocol( const QString &protocol )

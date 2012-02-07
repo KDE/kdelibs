@@ -547,7 +547,7 @@ bool KCookieJar::parseUrl(const QString &_url,
                           int *port)
 {
     KUrl kurl(_url);
-    if (!kurl.isValid() || kurl.protocol().isEmpty())
+    if (!kurl.isValid() || kurl.scheme().isEmpty())
        return false;
 
     _fqdn = kurl.host().toLower();

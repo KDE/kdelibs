@@ -94,8 +94,8 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
   KUrl _url(_u);
   _url.cleanPath(); // kill consecutive slashes
 
-  if (!_url.host().isEmpty() && KProtocolInfo::protocolClass(_url.protocol()) == ":local"
-      && _url.protocol() != "file") {
+  if (!_url.host().isEmpty() && KProtocolInfo::protocolClass(_url.scheme()) == ":local"
+      && _url.scheme() != "file") {
       // ":local" protocols ignore the hostname, so strip it out preventively - #160057
       // kio_file is special cased since it does honor the hostname (by redirecting to e.g. smb)
       _url.setHost(QString());

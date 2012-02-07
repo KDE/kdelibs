@@ -351,7 +351,7 @@ void KCMultiDialog::slotHelpClicked()
   }
 
   KUrl docUrl( KUrl( "help:/" ), docPath );
-  if ( docUrl.protocol() == "help" || docUrl.protocol() == "man" || docUrl.protocol() == "info" ) {
+  if ( docUrl.scheme() == "help" || docUrl.scheme() == "man" || docUrl.scheme() == "info" ) {
     QProcess::startDetached("khelpcenter", QStringList() << docUrl.url());
   } else {
     KToolInvocation::invokeBrowser( docUrl.url() );

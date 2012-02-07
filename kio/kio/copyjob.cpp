@@ -692,7 +692,7 @@ void CopyJobPrivate::statCurrentSrc()
             // Append filename or dirname to destination URL, if allowed
             if (destinationState == DEST_IS_DIR && !m_asMethod) {
                 if (
-                    (m_currentSrcURL.protocol() == info.uDest.protocol()) &&
+                    (m_currentSrcURL.scheme() == info.uDest.scheme()) &&
                     (m_currentSrcURL.host() == info.uDest.host()) &&
                     (m_currentSrcURL.port() == info.uDest.port()) &&
                     (m_currentSrcURL.user() == info.uDest.user()) &&
@@ -729,7 +729,7 @@ void CopyJobPrivate::statCurrentSrc()
             ) {
            // If moving, before going for the full stat+[list+]copy+del thing, try to rename
            // The logic is pretty similar to FileCopyJobPrivate::slotStart()
-           if ( (m_currentSrcURL.protocol() == m_dest.protocol()) &&
+           if ( (m_currentSrcURL.scheme() == m_dest.scheme()) &&
               (m_currentSrcURL.host() == m_dest.host()) &&
               (m_currentSrcURL.port() == m_dest.port()) &&
               (m_currentSrcURL.user() == m_dest.user()) &&
@@ -1036,7 +1036,7 @@ void CopyJobPrivate::slotResultConflictCreatingDirs( KJob * job )
     if ( m_conflictError == ERR_DIR_ALREADY_EXIST )
     {
         if( (*it).uSource == (*it).uDest ||
-            ((*it).uSource.protocol() == (*it).uDest.protocol() &&
+            ((*it).uSource.scheme() == (*it).uDest.scheme() &&
               (*it).uSource.path( KUrl::RemoveTrailingSlash ) == linkDest) )
           mode = (RenameDialog_Mode)( mode | M_OVERWRITE_ITSELF);
         else
@@ -1360,7 +1360,7 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
         else
         {
             if ( (*it).uSource == (*it).uDest  ||
-                 ((*it).uSource.protocol() == (*it).uDest.protocol() &&
+                 ((*it).uSource.scheme() == (*it).uDest.scheme() &&
                    (*it).uSource.path( KUrl::RemoveTrailingSlash ) == linkDest) )
                 mode = M_OVERWRITE_ITSELF;
             else
@@ -1454,7 +1454,7 @@ KIO::Job* CopyJobPrivate::linkNextFile( const KUrl& uSource, const KUrl& uDest, 
 {
     //kDebug(7007) << "Linking";
     if (
-        (uSource.protocol() == uDest.protocol()) &&
+        (uSource.scheme() == uDest.scheme()) &&
         (uSource.host() == uDest.host()) &&
         (uSource.port() == uDest.port()) &&
         (uSource.user() == uDest.user()) &&
@@ -1490,7 +1490,7 @@ KIO::Job* CopyJobPrivate::linkNextFile( const KUrl& uSource, const KUrl& uDest, 
                 config.writePathEntry( "URL", url.url() );
                 config.writeEntry( "Name", url.url() );
                 config.writeEntry( "Type", QString::fromLatin1("Link") );
-                QString protocol = uSource.protocol();
+                QString protocol = uSource.scheme();
                 if ( protocol == QLatin1String("ftp") )
                     config.writeEntry( "Icon", QString::fromLatin1("folder-remote") );
                 else if ( protocol == QLatin1String("http") )
@@ -1576,7 +1576,7 @@ void CopyJobPrivate::copyNextFile()
             if (!newjob)
                 return;
         } else if ( !(*it).linkDest.isEmpty() &&
-                  (uSource.protocol() == uDest.protocol()) &&
+                  (uSource.scheme() == uDest.scheme()) &&
                   (uSource.host() == uDest.host()) &&
                   (uSource.port() == uDest.port()) &&
                   (uSource.user() == uDest.user()) &&

@@ -538,7 +538,7 @@ void KPropertiesDialog::KPropertiesDialogPrivate::insertPages()
     QString query = QString::fromLatin1(
             "((not exist [X-KDE-Protocol]) or "
             " ([X-KDE-Protocol] == '%1'  )   )"
-            ).arg(item.url().protocol());
+            ).arg(item.url().scheme());
 
     kDebug( 250 ) << "trader query: " << query;
     const KService::List offers = KMimeTypeTrader::self()->query( mimetype, "KPropertiesDialog/Plugin", query );
@@ -730,9 +730,9 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     bool hasRoot = url.path() == QLatin1String("/");
     QString iconStr = item.iconName();
     QString directory = properties->kurl().directory();
-    QString protocol = properties->kurl().protocol();
+    QString protocol = properties->kurl().scheme();
     d->bKDesktopMode = protocol == QLatin1String("desktop") ||
-                properties->currentDir().protocol() == QLatin1String("desktop");
+                properties->currentDir().scheme() == QLatin1String("desktop");
     QString mimeComment = item.mimeComment();
     d->mimeType = item.mimetype();
     KIO::filesize_t totalSize = item.size();
@@ -775,7 +775,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     {
         QString path;
         if ( !d->m_bFromTemplate ) {
-            isTrash = ( properties->kurl().protocol().toLower() == "trash" );
+            isTrash = ( properties->kurl().scheme().toLower() == "trash" );
             // Extract the full name, but without file: for local files
             if ( isReallyLocal )
                 path = properties->kurl().toLocalFile();
@@ -835,7 +835,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
                 iconStr = "document-multiple";
             if ( url.directory() != directory )
                 directory.clear();
-            if ( url.protocol() != protocol )
+            if ( url.scheme() != protocol )
                 protocol.clear();
             if ( !mimeComment.isNull() && (*kit).mimeComment() != mimeComment )
                 mimeComment.clear();
@@ -1581,7 +1581,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     QString path = properties->kurl().path(KUrl::RemoveTrailingSlash);
     QString fname = properties->kurl().fileName();
     bool isLocal = properties->kurl().isLocalFile();
-    bool isTrash = ( properties->kurl().protocol().toLower() == "trash" );
+    bool isTrash = ( properties->kurl().scheme().toLower() == "trash" );
     bool IamRoot = (geteuid() == 0);
 
     const KFileItem item = properties->item();
@@ -3006,8 +3006,8 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
 
     properties->addPage(d->m_frame, i18n("&Application"));
 
-    bool bKDesktopMode = properties->kurl().protocol() == QLatin1String("desktop") ||
-                    properties->currentDir().protocol() == QLatin1String("desktop");
+    bool bKDesktopMode = properties->kurl().scheme() == QLatin1String("desktop") ||
+                    properties->currentDir().scheme() == QLatin1String("desktop");
 
     if (bKDesktopMode)
     {

@@ -286,7 +286,7 @@ static bool isValidProxy(const KUrl &u)
 
 static bool isHttpProxy(const KUrl &u)
 {
-    return isValidProxy(u) && u.protocol() == QLatin1String("http");
+    return isValidProxy(u) && u.scheme() == QLatin1String("http");
 }
 
 static QIODevice* createPostBufferDeviceFor (KIO::filesize_t size)
@@ -483,7 +483,7 @@ void HTTPProtocol::resetSessionSettings()
      KUrl refUrl(metaData(QLatin1String("referrer")));
      if (refUrl.isValid()) {
         // Sanitize
-        QString protocol = refUrl.protocol();
+        QString protocol = refUrl.scheme();
         if (protocol.startsWith(QLatin1String("webdav"))) {
            protocol.replace(0, 6, QLatin1String("http"));
            refUrl.setProtocol(protocol);
@@ -1374,9 +1374,9 @@ void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, KIO::JobFlags f
 
   // destination has to be "http(s)://..."
   KUrl newDest = dest;
-  if (newDest.protocol() == QLatin1String("webdavs"))
+  if (newDest.scheme() == QLatin1String("webdavs"))
     newDest.setProtocol(QLatin1String("https"));
-  else if (newDest.protocol() == QLatin1String("webdav"))
+  else if (newDest.scheme() == QLatin1String("webdav"))
     newDest.setProtocol(QLatin1String("http"));
 
   m_request.method = DAV_COPY;
@@ -1404,9 +1404,9 @@ void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flag
 
   // destination has to be "http://..."
   KUrl newDest = dest;
-  if (newDest.protocol() == QLatin1String("webdavs"))
+  if (newDest.scheme() == QLatin1String("webdavs"))
     newDest.setProtocol(QLatin1String("https"));
-  else if (newDest.protocol() == QLatin1String("webdav"))
+  else if (newDest.scheme() == QLatin1String("webdav"))
     newDest.setProtocol(QLatin1String("http"));
 
   m_request.method = DAV_MOVE;
@@ -2206,7 +2206,7 @@ bool HTTPProtocol::httpOpenConnection()
         KUrl::List badProxyUrls;
         Q_FOREACH(const QString& proxyUrl, m_request.proxyUrls) {
             const KUrl url (proxyUrl);
-            const QString scheme (url.protocol());
+            const QString scheme (url.scheme());
 
             if (!supportedProxyScheme(scheme)) {
                 connectError = ERR_COULD_NOT_CONNECT;
@@ -2216,7 +2216,7 @@ bool HTTPProtocol::httpOpenConnection()
 
             const bool isDirectConnect = (proxyUrl == QLatin1String("DIRECT"));
             QNetworkProxy::ProxyType proxyType = QNetworkProxy::NoProxy;
-            if (url.protocol() == QLatin1String("socks")) {
+            if (url.scheme() == QLatin1String("socks")) {
                 proxyType = QNetworkProxy::Socks5Proxy;
             } else if (!isDirectConnect && isAutoSsl()) {
                 proxyType = QNetworkProxy::HttpProxy;
@@ -2333,7 +2333,7 @@ QString HTTPProtocol::formatRequestUri() const
     if (isHttpProxy(m_request.proxyUrl) && !isAutoSsl()) {
         KUrl u;
 
-        QString protocol = m_request.url.protocol();
+        QString protocol = m_request.url.scheme();
         if (protocol.startsWith(QLatin1String("webdav"))) {
             protocol.replace(0, qstrlen("webdav"), QLatin1String("http"));
         }
@@ -3657,7 +3657,7 @@ endParsing:
             // the fragment:
             if (m_request.url.hasRef() && !u.hasRef() &&
                 (m_request.url.host() == u.host()) &&
-                (m_request.url.protocol() == u.protocol()))
+                (m_request.url.scheme() == u.scheme()))
                 u.setRef(m_request.url.ref());
 
             m_isRedirection = true;
@@ -3669,9 +3669,9 @@ endParsing:
 
             // If we're redirected to a http:// url, remember that we're doing webdav...
             if (m_protocol == "webdav" || m_protocol == "webdavs"){
-                if(u.protocol() == QLatin1String("http")){
+                if(u.scheme() == QLatin1String("http")){
                     u.setProtocol(QLatin1String("webdav"));
-                }else if(u.protocol() == QLatin1String("https")){
+                }else if(u.scheme() == QLatin1String("https")){
                     u.setProtocol(QLatin1String("webdavs"));
                 }
 

@@ -81,13 +81,13 @@ class URLActionRule
      {
         if (baseProtWildCard)
         {
-           if ( !baseProt.isEmpty() && !url.protocol().startsWith(baseProt) &&
+           if ( !baseProt.isEmpty() && !url.scheme().startsWith(baseProt) &&
                 (protClass.isEmpty() || (protClass != baseProt)) )
               return false;
         }
         else
         {
-           if ( (url.protocol() != baseProt) &&
+           if ( (url.scheme() != baseProt) &&
                 (protClass.isEmpty() || (protClass != baseProt)) )
               return false;
         }
@@ -118,19 +118,19 @@ class URLActionRule
      {
         if (destProtEqual)
         {
-           if ( (url.protocol() != base.protocol()) &&
+           if ( (url.scheme() != base.scheme()) &&
                 (protClass.isEmpty() || baseClass.isEmpty() || protClass != baseClass) )
               return false;
         }
         else if (destProtWildCard)
         {
-           if ( !destProt.isEmpty() && !url.protocol().startsWith(destProt) &&
+           if ( !destProt.isEmpty() && !url.scheme().startsWith(destProt) &&
                 (protClass.isEmpty() || (protClass != destProt)) )
               return false;
         }
         else
         {
-           if ( (url.protocol() != destProt) &&
+           if ( (url.scheme() != destProt) &&
                 (protClass.isEmpty() || (protClass != destProt)) )
               return false;
         }
@@ -342,8 +342,8 @@ void KAuthorized::allowUrlAction(const QString &action, const KUrl &_baseURL, co
      return;
 
   d->urlActionRestrictions.append( URLActionRule
-      ( action.toLatin1(), _baseURL.protocol(), _baseURL.host(), _baseURL.path(KUrl::RemoveTrailingSlash),
-        _destURL.protocol(), _destURL.host(), _destURL.path(KUrl::RemoveTrailingSlash), true));
+      ( action.toLatin1(), _baseURL.scheme(), _baseURL.host(), _baseURL.path(KUrl::RemoveTrailingSlash),
+        _destURL.scheme(), _destURL.host(), _destURL.path(KUrl::RemoveTrailingSlash), true));
 }
 
 bool KAuthorized::authorizeUrlAction(const QString &action, const KUrl &_baseURL, const KUrl &_destURL)
@@ -361,10 +361,10 @@ bool KAuthorized::authorizeUrlAction(const QString &action, const KUrl &_baseURL
 
   KUrl baseURL(_baseURL);
   baseURL.setPath(QDir::cleanPath(baseURL.path()));
-  QString baseClass = KProtocolInfo::protocolClass(baseURL.protocol());
+  QString baseClass = KProtocolInfo::protocolClass(baseURL.scheme());
   KUrl destURL(_destURL);
   destURL.setPath(QDir::cleanPath(destURL.path()));
-  QString destClass = KProtocolInfo::protocolClass(destURL.protocol());
+  QString destClass = KProtocolInfo::protocolClass(destURL.scheme());
 
   foreach(const URLActionRule &rule, d->urlActionRestrictions) {
      if ((result != rule.permission) && // No need to check if it doesn't make a difference
