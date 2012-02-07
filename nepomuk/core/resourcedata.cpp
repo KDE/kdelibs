@@ -1,7 +1,7 @@
 /*
  * This file is part of the Nepomuk KDE project.
  * Copyright (C) 2006-2010 Sebastian Trueg <trueg@kde.org>
- * Copyright (C) 2010 Vishesh Handa <handa.vish@gmail.com>
+ * Copyright (C) 2010-2012 Vishesh Handa <handa.vish@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,7 +22,6 @@
 #include "resourcedata.h"
 #include "resourcemanager.h"
 #include "resourcemanager_p.h"
-#include "resourcefiltermodel.h"
 #include "resource.h"
 #include "tools.h"
 #include "nie.h"
@@ -31,6 +30,8 @@
 #include "nepomukmainmodel.h"
 #include "dbusconnectionpool.h"
 #include "class.h"
+#include "dbustypes.h"
+#include "resourcewatcher.h"
 
 #include <Soprano/Statement>
 #include <Soprano/StatementIterator>
@@ -50,10 +51,11 @@
 
 #include <kdebug.h>
 #include <kurl.h>
+#include <kcomponentdata.h>
 
 using namespace Soprano;
 
-#define MAINMODEL static_cast<ResourceFilterModel*>(m_rm->m_manager->mainModel())
+#define MAINMODEL (m_rm->m_manager->mainModel())
 
 
 Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QUrl& kickOffUri, const QUrl& type, ResourceManagerPrivate* rm )
@@ -141,7 +143,7 @@ void Nepomuk::ResourceData::setTypes( const QList<QUrl>& types )
     }
 
     // update the data store
-    MAINMODEL->updateProperty( m_uri, Soprano::Vocabulary::RDF::type(), nodes );
+    setProperty(Soprano::Vocabulary::RDF::type(), Nepomuk::Variant(types) );
 }
 
 
@@ -150,8 +152,12 @@ void Nepomuk::ResourceData::resetAll( bool isDelete )
 {
     // remove us from all caches (store() will re-insert us later if necessary)
     m_rm->mutex.lock();
-    if( !m_uri.isEmpty() )
+    if( !m_uri.isEmpty() ) {
         m_rm->m_initializedData.remove( m_uri );
+        if( m_rm->m_watcher ) {
+            m_rm->m_watcher->removeResource(m_uri);
+        }
+    }
     Q_FOREACH( const KUrl& uri, m_kickoffUris )
         m_rm->m_uriKickoffData.remove( uri );
     m_rm->mutex.unlock();
@@ -259,8 +265,37 @@ bool Nepomuk::ResourceData::store()
 
     if ( m_uri.isEmpty() ) {
         QMutexLocker rmlock(&m_rm->mutex);
-        // create a random URI and add us to the initialized data, i.e. make us "valid"
-        m_uri = m_rm->m_manager->generateUniqueUri( QString() );
+
+        if ( m_nieUrl.isValid() &&
+             m_nieUrl.isLocalFile() &&
+             m_mainType == Soprano::Vocabulary::RDFS::Resource() ) {
+            m_mainType = Nepomuk::Vocabulary::NFO::FileDataObject();
+            m_types << m_mainType;
+        }
+
+        QDBusConnection bus = QDBusConnection::sessionBus();
+        QDBusMessage msg = QDBusMessage::createMethodCall( QLatin1String("org.kde.nepomuk.DataManagement"),
+                                                           QLatin1String("/datamanagement"),
+                                                           QLatin1String("org.kde.nepomuk.DataManagement"),
+                                                           QLatin1String("createResource") );
+        QString app = KGlobal::mainComponent().componentName();
+        QVariantList arguments;
+
+        //FIXME: Maybe we should be setting the 'label' over here.
+        arguments << DBus::convertUriList(m_types) << QString() << QString() << app;
+        msg.setArguments( arguments );
+
+        QDBusMessage reply = bus.call( msg );
+        if( reply.type() == QDBusMessage::ErrorMessage ) {
+            //TODO: Set the error somehow
+            kWarning() << reply.errorMessage();
+            return false;
+        }
+        else if( reply.type() == QDBusMessage::ReplyMessage ) {
+            m_uri = reply.arguments().at(0).toUrl();
+        }
+
+        // Add us to the initialized data, i.e. make us "valid"
         m_rm->m_initializedData.insert( m_uri, this );
 
         // each initialized resource has to be in a kickoff list
@@ -269,55 +304,23 @@ bool Nepomuk::ResourceData::store()
             m_kickoffUris.insert( m_uri );
             m_rm->addToKickOffList( this, m_kickoffUris );
         }
-    }
-
-    QList<Statement> statements;
-
-    if ( !exists() ) {
-        // save the creation date
-        statements.append( Statement( m_uri, Soprano::Vocabulary::NAO::created(), Soprano::LiteralValue( QDateTime::currentDateTime() ) ) );
-
-        // save the kickoff identifier (other identifiers are stored via setProperty)
-        Q_FOREACH ( const KUrl & url, m_kickoffUris ) {
-            if( url.scheme().isEmpty() ) {
-                statements.append( Statement( m_uri, Soprano::Vocabulary::NAO::identifier(), LiteralValue(url.url()) ) );
-                break;
-            }
-        }
-
-        // save the type (additional types are saved in setTypes)
-        statements.append( Statement( m_uri, Soprano::Vocabulary::RDF::type(), m_mainType ) );
-
-        // the only situation in which determineUri keeps the kickoff URI is for file URLs.
-        if ( m_nieUrl.isValid() ) {
-            statements.append( Statement( m_uri, Nepomuk::Vocabulary::NIE::url(), m_nieUrl ) );
-            if ( m_nieUrl.isLocalFile() &&
-                 m_mainType == Soprano::Vocabulary::RDFS::Resource() ) {
-                m_mainType = Nepomuk::Vocabulary::NFO::FileDataObject();
-            }
-        }
 
         // store our grounding occurrence in case we are a thing created by the pimoThing() method
         if( m_groundingOccurence ) {
             if( m_groundingOccurence != this )
                 m_groundingOccurence->store();
-            statements.append( Statement( m_uri, Vocabulary::PIMO::groundingOccurrence(), m_groundingOccurence->uri() ) );
+            setProperty(Vocabulary::PIMO::groundingOccurrence(), Variant(m_groundingOccurence->uri()) );
+        }
+
+        foreach( const KUrl& url, m_kickoffUris ) {
+            if( url.scheme().isEmpty() )
+                setProperty( Soprano::Vocabulary::NAO::identifier(), Variant(url.url()) );
+            else
+                setProperty( Nepomuk::Vocabulary::NIE::url(), Variant(url.url()) );
         }
     }
 
-    // save type (There should be no need to save all the types since there is only one way
-    // that m_types contains more than one element: if we loaded them)
-    // The first type, however, can be set at creation time to any value
-    else if ( !MAINMODEL->containsAnyStatement( m_uri, Soprano::Vocabulary::RDF::type(), m_mainType ) ) {
-        statements.append( Statement( m_uri, Soprano::Vocabulary::RDF::type(), m_mainType ) );
-    }
-
-    if ( !statements.isEmpty() ) {
-        return MAINMODEL->addStatements( statements ) == Soprano::Error::ErrorNone;
-    }
-    else {
-        return true;
-    }
+    return true;
 }
 
 
@@ -432,12 +435,35 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
         // step 0: make sure this resource is in the store
         QMutexLocker lock(&m_modificationMutex);
 
-        // make sure resource values are in the store
-        if ( value.simpleType() == qMetaTypeId<Resource>() ) {
-            QList<Resource> l = value.toResourceList();
-            for( QList<Resource>::iterator resIt = l.begin(); resIt != l.end(); ++resIt ) {
-                resIt->m_data->store();
+        // update the store
+        QDBusConnection bus = QDBusConnection::sessionBus();
+        QDBusMessage msg = QDBusMessage::createMethodCall( QLatin1String("org.kde.nepomuk.DataManagement"),
+                                                           QLatin1String("/datamanagement"),
+                                                           QLatin1String("org.kde.nepomuk.DataManagement"),
+                                                           QLatin1String("setProperty") );
+        QVariantList varList;
+        foreach( const Nepomuk::Variant var, value.toVariantList() ) {
+            // make sure resource values are in the store
+            if( var.simpleType() == qMetaTypeId<Resource>() ) {
+                var.toResource().m_data->store();
+                varList << var.toUrl();
             }
+            else {
+                varList << var.variant();
+            }
+        }
+
+        msg.setArguments( QVariantList()
+                          << DBus::convertUriList(QList<QUrl>() << m_uri)
+                          << DBus::convertUri(uri)
+                          << QVariant(DBus::normalizeVariantList(varList))
+                          << KGlobal::mainComponent().componentName() );
+
+        QDBusMessage reply = bus.call( msg );
+        if( reply.type() == QDBusMessage::ErrorMessage ) {
+            //TODO: Set the error somehow
+            kWarning() << reply.errorMessage();
+            return;
         }
 
         // update the cache for now
@@ -446,8 +472,54 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
         else
             m_cache.remove(uri);
 
+        // update the kickofflists
+        updateKickOffLists( uri, value );
+    }
+}
+
+
+void Nepomuk::ResourceData::addProperty( const QUrl& uri, const Nepomuk::Variant& value )
+{
+    Q_ASSERT( uri.isValid() );
+
+    if( value.isValid() && store() ) {
+        // step 0: make sure this resource is in the store
+        QMutexLocker lock(&m_modificationMutex);
+
         // update the store
-        MAINMODEL->updateProperty( m_uri, uri, value.toNodeList() );
+        QDBusConnection bus = QDBusConnection::sessionBus();
+        QDBusMessage msg = QDBusMessage::createMethodCall( QLatin1String("org.kde.nepomuk.DataManagement"),
+                                                           QLatin1String("/datamanagement"),
+                                                           QLatin1String("org.kde.nepomuk.DataManagement"),
+                                                           QLatin1String("addProperty") );
+        QVariantList varList;
+        foreach( const Nepomuk::Variant var, value.toVariantList() ) {
+            // make sure resource values are in the store
+            if( var.simpleType() == qMetaTypeId<Resource>() ) {
+                var.toResource().m_data->store();
+                varList << var.toUrl();
+            }
+            else {
+                varList << var.variant();
+            }
+        }
+
+        msg.setArguments( QVariantList()
+                          << DBus::convertUriList(QList<QUrl>() << m_uri)
+                          << DBus::convertUri(uri)
+                          << QVariant(DBus::normalizeVariantList(varList))
+                          << KGlobal::mainComponent().componentName() );
+
+        QDBusMessage reply = bus.call( msg );
+        if( reply.type() == QDBusMessage::ErrorMessage ) {
+            //TODO: Set the error somehow
+            kWarning() << reply.errorMessage();
+            return;
+        }
+
+        // update the cache for now
+        if( value.isValid() )
+            m_cache[uri].append(value);
 
         // update the kickofflists
         updateKickOffLists( uri, value );
@@ -461,8 +533,25 @@ void Nepomuk::ResourceData::removeProperty( const QUrl& uri )
     if( !m_uri.isEmpty() ) {
         QMutexLocker lock(&m_modificationMutex);
 
+        QDBusConnection bus = QDBusConnection::sessionBus();
+        QDBusMessage msg = QDBusMessage::createMethodCall( QLatin1String("org.kde.nepomuk.DataManagement"),
+                                                           QLatin1String("/datamanagement"),
+                                                           QLatin1String("org.kde.nepomuk.DataManagement"),
+                                                           QLatin1String("removeProperties") );
+        msg.setArguments( QVariantList()
+                          << DBus::convertUri(m_uri)
+                          << DBus::convertUri(uri)
+                          << KGlobal::mainComponent().componentName() );
+
+        QDBusMessage reply = bus.call( msg );
+        if( reply.type() == QDBusMessage::ErrorMessage ) {
+            //TODO: Set the error somehow
+            kWarning() << reply.errorMessage();
+            return;
+        }
+
+        // Update the cache
         m_cache.remove( uri );
-        MAINMODEL->removeProperty( m_uri, uri );
 
         // update the kickofflists
         updateKickOffLists( uri, Variant() );
@@ -472,12 +561,26 @@ void Nepomuk::ResourceData::removeProperty( const QUrl& uri )
 
 void Nepomuk::ResourceData::remove( bool recursive )
 {
+    Q_UNUSED(recursive)
     QMutexLocker lock(&m_modificationMutex);
 
     if( !m_uri.isEmpty() ) {
-        MAINMODEL->removeAllStatements( Statement( m_uri, Node(), Node() ) );
-        if ( recursive ) {
-            MAINMODEL->removeAllStatements( Statement( Node(), Node(), m_uri ) );
+        QDBusConnection bus = QDBusConnection::sessionBus();
+        QDBusMessage msg = QDBusMessage::createMethodCall( QLatin1String("org.kde.nepomuk.DataManagement"),
+                                                           QLatin1String("/datamanagement"),
+                                                           QLatin1String("org.kde.nepomuk.DataManagement"),
+                                                           QLatin1String("removeResources") );
+        // TODO: Set the flag over here
+        msg.setArguments( QVariantList()
+                          << DBus::convertUri(m_uri)
+                          << 0 /* no flags */
+                          << KGlobal::mainComponent().componentName());
+
+        QDBusMessage reply = bus.call( msg );
+        if( reply.type() == QDBusMessage::ErrorMessage ) {
+            //TODO: Set the error somehow
+            kWarning() << reply.errorMessage();
+            return;
         }
     }
 
@@ -488,7 +591,9 @@ void Nepomuk::ResourceData::remove( bool recursive )
 bool Nepomuk::ResourceData::exists()
 {
     if( m_uri.isValid() ) {
-        return MAINMODEL->containsAnyStatement( Statement( m_uri, Node(), Node() ) );
+        const QString query = QString::fromLatin1("ask { %1 ?p ?o . }")
+                              .arg( Soprano::Node::resourceToN3(m_uri) );
+        return MAINMODEL->executeQuery( query, Soprano::Query::QueryLanguageSparql ).boolValue();
     }
     else {
         return false;
@@ -591,6 +696,18 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::determineUri()
         ResourceDataHash::iterator it = m_rm->m_initializedData.find(m_uri);
         if( it == m_rm->m_initializedData.end() ) {
             m_rm->m_initializedData.insert( m_uri, this );
+            if(!m_rm->m_watcher) {
+                m_rm->m_watcher = new ResourceWatcher(m_rm->m_manager);
+                QObject::connect( m_rm->m_watcher, SIGNAL(propertyAdded(QUrl, Nepomuk::Types::Property, QVariant)),
+                                  m_rm->m_manager, SLOT(slotPropertyAdded(QUrl, Nepomuk::Types::Property, QVariant)) );
+                QObject::connect( m_rm->m_watcher, SIGNAL(propertyRemoved(QUrl, Nepomuk::Types::Property, QVariant)),
+                                  m_rm->m_manager, SLOT(slotPropertyRemoved(QUrl, Nepomuk::Types::Property, QVariant)) );
+                m_rm->m_watcher->addResource( m_uri );
+                m_rm->m_watcher->start();
+            }
+            else {
+                m_rm->m_watcher->addResource( m_uri );
+            }
         }
         else {
             return it.value();

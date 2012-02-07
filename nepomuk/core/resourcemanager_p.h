@@ -39,7 +39,7 @@ namespace Nepomuk {
 
     class ResourceManager;
     class MainModel;
-    class ResourceFilterModel;
+    class ResourceWatcher;
 
     typedef QHash<KUrl, Nepomuk::ResourceData*> ResourceDataHash;
 
@@ -49,7 +49,6 @@ namespace Nepomuk {
         ResourceManagerPrivate( ResourceManager* manager );
 
         Nepomuk::MainModel* mainModel;
-        ResourceFilterModel* resourceFilterModel;
         Soprano::Model* overrideModel;
 
         /// used to protect the initialization
@@ -68,6 +67,8 @@ namespace Nepomuk {
         QAtomicInt dataCnt;
 
         ResourceManager* m_manager;
+
+        ResourceWatcher* m_watcher;
 
         /**
          * The Nepomuk lib is based on the fact that for each uri only one ResourceData object is

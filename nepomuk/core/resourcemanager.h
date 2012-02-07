@@ -36,6 +36,10 @@ namespace Nepomuk {
     class Variant;
     class ResourceManagerHelper;
     class ResourceManagerPrivate;
+    namespace Types {
+        class Class;
+        class Property;
+    }
 
     /**
      * \class ResourceManager resourcemanager.h Nepomuk/ResourceManager
@@ -263,7 +267,8 @@ namespace Nepomuk {
         void nepomukSystemStopped();
 
     private Q_SLOTS:
-        void slotStoreChanged();
+        void slotPropertyAdded(const QUrl &res, const Nepomuk::Types::Property &prop, const QVariant &value);
+        void slotPropertyRemoved(const QUrl &res, const Nepomuk::Types::Property &prop, const QVariant &value);
 
     private:
         friend class Nepomuk::Resource;

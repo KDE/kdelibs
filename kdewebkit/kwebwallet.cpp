@@ -39,13 +39,14 @@
 #define QL1S(x)   QLatin1String(x)
 #define QL1C(x)   QLatin1Char(x)
 
-// Form parsing JS code adapted from Arora.
+// The following form parsing JS code was adapted from Arora project.
 // See https://github.com/Arora/arora/blob/master/src/data/parseForms.js
 #define FORM_PARSING_JS "(function (){ \
     var forms; \
-    var numForms = document.forms.length; \
+    var doc = (this.contentDocument ? this.contentDocument : document); \
+    var numForms = doc.forms.length; \
     if (numForms > 0 ) { \
-        var forms = new Array; \
+        forms = new Array; \
         for (var i = 0; i < numForms; ++i) { \
             var form = document.forms[i]; \
             if (form.method.toLowerCase() != 'post') \

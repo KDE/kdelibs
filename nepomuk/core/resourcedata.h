@@ -30,7 +30,6 @@
 
 #include "variant.h"
 #include "thing.h"
-
 #include <kurl.h>
 
 #include <soprano/statement.h>
@@ -107,6 +106,8 @@ namespace Nepomuk {
          */
         void setProperty( const QUrl& uri, const Variant& value );
 
+        void addProperty( const QUrl& uri, const Variant& value );
+
         void removeProperty( const QUrl& uri );
 
         /**
@@ -176,15 +177,17 @@ namespace Nepomuk {
         /// This is a set since Resource::determineFinalResourceData may add additional uris
         QSet<KUrl> m_kickoffUris;
 
+        QHash<QUrl, Variant> m_cache;
+
+        /// Updates both m_kickoffUris and ResourceMangerPrivate's list
+        void updateKickOffLists( const QUrl & prop, const Variant & v );
+
     private:
         void loadType( const QUrl& type );
 
         /// Will reset this instance to 0 as if constructed without parameters
         /// Used by remove() and deleteData()
         void resetAll( bool isDelete = false );
-
-        /// Updates both m_kickoffUris and ResourceMangerPrivate's list
-        void updateKickOffLists( const QUrl & prop, const Variant & v );
 
         /// final resource URI created by determineUri
         KUrl m_uri;
@@ -199,7 +202,6 @@ namespace Nepomuk {
 
         mutable QMutex m_modificationMutex;
 
-        QHash<QUrl, Variant> m_cache;
         bool m_cacheDirty;
 
         // using a pointer to avoid infinite creation loop

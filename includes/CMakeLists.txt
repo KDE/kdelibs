@@ -70,6 +70,7 @@ install( FILES
   KArchiveDirectory
   KArchiveEntry
   KArchiveFile
+  KAscii
   KAssistantDialog
   KAuthorized
   KAutoMount
