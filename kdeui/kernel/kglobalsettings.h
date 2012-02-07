@@ -592,7 +592,7 @@ public:
      */
     enum SettingsCategory { SETTINGS_MOUSE, SETTINGS_COMPLETION, SETTINGS_PATHS,
                             SETTINGS_POPUPMENU, SETTINGS_QT, SETTINGS_SHORTCUTS,
-                            SETTINGS_LOCALE };
+                            SETTINGS_LOCALE, SETTINGS_STYLE };
 
 Q_SIGNALS:
     /**
