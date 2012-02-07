@@ -354,6 +354,7 @@ add_subdirectory( kinit  )
 if(NOT WINCE)
   add_subdirectory( kimgio )
 endif(NOT WINCE)
+add_subdirectory( knewstuff  )
 
 if (QT5_BUILD)
   # This should be moved down and eventually removed when everything
@@ -361,7 +362,6 @@ if (QT5_BUILD)
   # The current problem is kdeui because it uses X11 stuff which is no longer in Qt.
   return()
 endif()
-add_subdirectory( knewstuff  )
 add_subdirectory( knotify )
 
 find_package(KdepimLibs 4.5.60)

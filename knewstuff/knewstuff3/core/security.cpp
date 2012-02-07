@@ -28,8 +28,13 @@
 #include <QtCore/QTextStream>
 #include <QtCore/QTimer>
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+#include <QCryptographicHash>
+typedef QCryptographicHash Q5CryptographicHash;
+#else
 //currently inqt5
 #include <q5cryptographichash.h>
+#endif
 
 //kde includes
 #include <kdebug.h>

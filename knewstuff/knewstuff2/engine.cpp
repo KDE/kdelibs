@@ -205,8 +205,10 @@ KNS::Entry::List Engine::downloadDialogModal(QWidget* parent)
     KDialog *existingDialog = EnginePrivate::s_dialogs.value(d->componentName());
     if (existingDialog) {
         existingDialog->show();
+#ifndef KDE_NO_WINDOWSYSTEM
         KWindowSystem::setOnDesktop(existingDialog->winId(), KWindowSystem::currentDesktop());
         KWindowSystem::activateWindow(existingDialog->winId());
+#endif
         return QList<KNS::Entry*>();
     }
 
@@ -228,8 +230,10 @@ void Engine::downloadDialog()
     if (existingDialog) {
         //kDebug() << "got an existing dialog";
         existingDialog->show();
+#ifndef KDE_NO_WINDOWSYSTEM
         KWindowSystem::setOnDesktop(existingDialog->winId(), KWindowSystem::currentDesktop());
         KWindowSystem::activateWindow(existingDialog->winId());
+#endif
         return;
     }
 
