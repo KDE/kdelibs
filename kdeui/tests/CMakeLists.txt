@@ -46,7 +46,6 @@ KDEUI_UNIT_TESTS(
   kstandardactiontest
   kstandardshortcuttest
   kuniqueapptest
-  kwordwraptest
   kapplication_unittest
   kcolorutilstest
   kxmlgui_unittest
@@ -61,6 +60,12 @@ KDEUI_UNIT_TESTS(
   kdatecomboboxtest
   kdatetimeedittest
 )
+
+if(NOT QT5_BUILD)
+  KDEUI_UNIT_TESTS(
+    kwordwraptest
+  )
+endif()
 
 KDEUI_EXECUTABLE_TESTS(
   kaccelgentest
