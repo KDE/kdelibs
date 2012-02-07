@@ -113,7 +113,8 @@ void* loadLibrary(const char* libname, const char* functionname)
             return 0;
         }
     }
-    void* funcPtr = lib.resolve(functionname);
+#warning QT5 Port kross to QFunctionPointer
+    void* funcPtr = (void*)lib.resolve(functionname);
     Q_ASSERT(funcPtr);
     return funcPtr;
 }

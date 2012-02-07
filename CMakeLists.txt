@@ -348,6 +348,7 @@ if(NOT WINCE)
 endif(NOT WINCE)
 add_subdirectory( interfaces  )
 add_subdirectory( kdewidgets  )
+add_subdirectory( kross )
 
 if (QT5_BUILD)
   # This should be moved down and eventually removed when everything
@@ -362,7 +363,6 @@ add_subdirectory( knotify )
 if(NOT WINCE)
 add_subdirectory( kimgio )
 endif(NOT WINCE)
-add_subdirectory( kross )
 
 find_package(KdepimLibs 4.5.60)
 macro_log_feature(KDEPIMLIBS_FOUND "kdepimlibs" "KDE PIM libraries" "http://www.kde.org" FALSE "" "Needed for building several Plasma DataEngines")
