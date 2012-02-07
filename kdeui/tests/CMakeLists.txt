@@ -7,6 +7,8 @@ include_directories( ${KDE4_KDEUI_INCLUDES} proxymodeltestsuite )
 # The alternative (which requires Qt>=4.6) is #include <QTestGui>
 add_definitions(-DQT_GUI_LIB)
 
+add_definitions(-DQT_WIDGETS_LIB)
+
 
 MACRO(KDEUI_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
