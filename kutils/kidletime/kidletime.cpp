@@ -200,7 +200,11 @@ void KIdleTimePrivate::loadSystem()
 #ifdef Q_WS_MAC
     poller = new MacPoller();
 #else
+#ifdef Q_WS_WIN
     poller = new WindowsPoller();
+#else
+#warning QT5 port to QPA
+#endif
 #endif
 #endif
 
