@@ -5,8 +5,6 @@ set(libkde4support_SRCS
 )
 
 include_directories(
-    ${CMAKE_SOURCE_DIR}/libinqt5/src/
-    ${CMAKE_BINARY_DIR}/libinqt5/src/
     ${CMAKE_SOURCE_DIR}/kdecore/kernel/ # for KComponentData
     ${CMAKE_BINARY_DIR}/kdecore/
     ${CMAKE_SOURCE_DIR}/kdecore/config/

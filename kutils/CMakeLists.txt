@@ -6,8 +6,6 @@ include_directories( ${KDE4_KDEUI_INCLUDES}
                      ${karchive_BINARY_DIR}/src
                      ${CMAKE_SOURCE_DIR}/tier1/kauth/src/
                      ${CMAKE_BINARY_DIR}/tier1/kauth/src/
-		     ${CMAKE_SOURCE_DIR}/libinqt5/src
-		     ${CMAKE_BINARY_DIR}/libinqt5/src
 )
 
 ########### kemoticons ################

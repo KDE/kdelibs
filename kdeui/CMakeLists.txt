@@ -24,8 +24,6 @@ include_directories(
  ${kcoreaddons_SOURCE_DIR}/src/kernel
  ${kcoreaddons_SOURCE_DIR}/src/randomness
  ${CMAKE_SOURCE_DIR}/kdeui
- ${CMAKE_SOURCE_DIR}/libinqt5/src
- ${CMAKE_BINARY_DIR}/libinqt5/src
  ${KDE4_KDECORE_INCLUDES}
  ${CMAKE_CURRENT_SOURCE_DIR}/actions
  ${CMAKE_CURRENT_SOURCE_DIR}/colors

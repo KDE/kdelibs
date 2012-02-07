@@ -23,8 +23,6 @@ enable_testing() # should go into ECMQtFramework ?
 # Qt itself isn't that strict, and frowns at Q_FOREACH
 remove_definitions(-DQT_NO_KEYWORDS)
 
-include_directories( ${CMAKE_SOURCE_DIR}/libinqt5/src )
-include_directories( ${CMAKE_BINARY_DIR}/libinqt5/src )
 
 add_subdirectory(src)
 add_subdirectory(examples)

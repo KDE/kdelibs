@@ -33,8 +33,6 @@ configure_file(localization/config-localization.h.cmake ${CMAKE_CURRENT_BINARY_D
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 include_directories( ${ZLIB_INCLUDE_DIR} )
 include_directories( ${QT_INCLUDES} )
-include_directories( ${CMAKE_SOURCE_DIR}/libinqt5/src )
-include_directories( ${CMAKE_BINARY_DIR}/libinqt5/src )
 include_directories( ${CMAKE_SOURCE_DIR}/libqtmimetypes/include/QtMimeTypes )
 include_directories( ${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/jobs )
 include_directories( ${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/io )

@@ -54,6 +54,10 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${EXTRA_CMAKE_MODULES_MODULE_PATH})
 if (NOT QT5_BUILD)
   add_subdirectory( libinqt5 )
   set(INQT5_LIBRARY inqt5)
+  include_directories(
+      ${CMAKE_SOURCE_DIR}/libinqt5/src/
+      ${CMAKE_BINARY_DIR}/libinqt5/src/
+  )
 endif()
 add_subdirectory( libqtmimetypes )
 add_subdirectory( tier1 )
@@ -219,8 +223,6 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_BINARY_DIR}/staging/kde4support/src
                           ${CMAKE_SOURCE_DIR}/staging/kde4support/src
                           ${CMAKE_SOURCE_DIR}/libqtmimetypes/include/QtMimeTypes
-			  ${CMAKE_SOURCE_DIR}/libinqt5/src/
-			  ${CMAKE_BINARY_DIR}/libinqt5/src/
                           ${QT_INCLUDES}
                           ${_KDE4_PLATFORM_INCLUDE_DIRS})
 # kdeui depends on kdecore
