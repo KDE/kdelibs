@@ -135,9 +135,11 @@ void KNotifyConfigActionsWidget::slotPlay(  )
 		if ( search.isEmpty() )*/
 		soundURL = KUrl::fromPath( KStandardDirs::locate( "sound", soundString ) );
 	}
+#ifndef KDE_NO_PHONON
 	Phonon::MediaObject* media = Phonon::createPlayer( Phonon::NotificationCategory, soundURL );
 	media->play();
 	connect(media, SIGNAL(finished()), media, SLOT(deleteLater()));
+#endif
 }
 
 void KNotifyConfigActionsWidget::slotKTTSComboChanged()

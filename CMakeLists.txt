@@ -310,6 +310,8 @@ check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 
 # TODO: Port away from this:
 add_definitions(-DKDE_NO_WINDOWSYSTEM)
+add_definitions(-DKDE_NO_PHONON)
+
 
 ################# list the subdirectories #################
 
@@ -361,13 +363,6 @@ endif()
 add_subdirectory( includes )
 macro_optional_add_subdirectory( doc  )
 add_subdirectory( experimental )
-
-if (QT5_BUILD)
-  # This should be moved down and eventually removed when everything
-  # can be built with Qt5.
-  # The current problem is kdeui because it uses X11 stuff which is no longer in Qt.
-  return()
-endif()
 add_subdirectory( knotify )
 
 find_package(KdepimLibs 4.5.60)
