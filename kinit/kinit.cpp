@@ -121,7 +121,9 @@ static char sock_file[MAX_SOCK_FILE];
 #elif defined(Q_WS_WIN)
 #define DISPLAY "WIN_DISPLAY"
 #else
-#error Use QT/X11 or QT/Embedded
+#warning QT 5 Port to QPA
+#define DISPLAY ""
+// #error Use QT/X11 or QT/Embedded
 #endif
 
 /* Group data */
@@ -699,10 +701,12 @@ static pid_t launch(int argc, const char *_name, const char *args,
         exit(255);
      }
 
-     void * sym = l.resolve( "kdeinitmain");
+#warning QT5 Port to QFunctionPointer
+     void* sym = (void*)l.resolve( "kdeinitmain");
      if (!sym )
         {
-        sym = l.resolve( "kdemain" );
+#warning QT5 Port to QFunctionPointer
+        sym = (void*)l.resolve( "kdemain" );
         if ( !sym )
            {
             QString ltdlError = l.errorString();

@@ -108,9 +108,10 @@ int main(int argc, char **argv)
                 qPrintable (lib.errorString()) );
         exit(1);
 #endif
-     }  
+     }
 
-     void* sym = lib.resolve("kdemain");
+#warning QT5 Port to QFunctionPointer
+     void* sym = (void*)lib.resolve("kdemain");
      if (!sym )
      {
         fprintf(stderr, "Could not find kdemain: %s\n", qPrintable(lib.errorString() ));
