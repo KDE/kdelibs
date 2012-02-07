@@ -2,6 +2,7 @@
 #include <QKeyEvent>
 #include <QMenu>
 #include <QtCore/QMimeData>
+#include <QDrag>
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>
