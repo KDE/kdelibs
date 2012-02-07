@@ -256,7 +256,11 @@ bool EPSHandler::write(const QImage &image)
         return false;
 
     psOut.setOutputFileName(tmpFile.fileName());
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     psOut.setOutputFormat(QPrinter::PostScriptFormat);
+#else
+#warning QT5 Port to whatever replaces this?
+#endif
     psOut.setFullPage(true);
 
     // painting the pixmap to the "printer" which is a file
