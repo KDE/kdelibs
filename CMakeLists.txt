@@ -153,7 +153,7 @@ find_package(QCA2)
 macro_log_feature(QCA2_FOUND "QCA2" "Support for remote plasma widgets" "http://delta.affinix.com/qca" FALSE "2.0.0" "")
 
 find_package(DBusMenuQt)
-macro_log_feature(DBUSMENUQT_FOUND "DBusMenuQt" "Support for notification area menus via the DBusMenu protocol" "git clone git://gitorious.org/dbusmenu/dbusmenu-qt.git" TRUE "" "")
+macro_log_feature(DBUSMENUQT_FOUND "DBusMenuQt" "Support for notification area menus via the DBusMenu protocol" "https://launchpad.net/libdbusmenu-qt" TRUE "" "")
 
 ################# Disallow in-source build #################
 

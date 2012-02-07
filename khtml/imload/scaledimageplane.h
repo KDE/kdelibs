@@ -24,6 +24,8 @@
 #ifndef SCALED_IMAGE_PLANE_H
 #define SCALED_IMAGE_PLANE_H
 
+#include <cassert>
+
 #include "array2d.h"
 #include "imageplane.h"
 #include "rawimageplane.h"
@@ -48,21 +50,25 @@ private:
 
         //### I bet this has all sorts of imprecision problems w/high ratios
         unsigned int* origin = new unsigned int[scaled];
-        
+
         //### FIXME: replace with something that clamps on right edge later?
         double ratio    = double(orig)/double(scaled);
-        int    intRatio = int(ratio*65536.0 + 1);
-        int    pos      = 0;
-        
+
+        // Should be assured by ImageManager::isAcceptableScaleSize
+        assert(ratio < 65536);
+
+        unsigned intRatio = unsigned(ratio*65536.0 + 1);
+        unsigned pos      = 0;
+
         for (unsigned int pix = 0; pix < scaled; pix++)
         {
             origin[pix]  =  pos >> 16;
             pos          += intRatio;
         }
-        
+
         return origin;
     }
-    
+
     unsigned int* xScaleTable;
     unsigned int* yScaleTable;
 public:
