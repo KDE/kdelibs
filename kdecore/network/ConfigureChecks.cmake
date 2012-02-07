@@ -7,7 +7,7 @@ include(CheckTypeSize)
 include(CheckStructMember)
 
 macro_push_required_vars()
-  set(CMAKE_REQUIRED_INCLUDES "${CMAKE_REQUIRED_INCLUDES};${QT_INCLUDE_DIR}")
+  set(CMAKE_REQUIRED_INCLUDES "${CMAKE_REQUIRED_INCLUDES};${QT_INCLUDES}")
   if (QT_USE_FRAMEWORKS)
     set(CMAKE_REQUIRED_FLAGS "-F${QT_LIBRARY_DIR} ")
   endif (QT_USE_FRAMEWORKS)
