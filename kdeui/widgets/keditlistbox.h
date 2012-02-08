@@ -116,7 +116,7 @@ public:
        * it will be checked if you press the Add-button. It is not
        * possible to enter items twice into the listbox.
        */
-      explicit KDE_DEPRECATED KEditListBox(QWidget *parent, const char *name,
+      explicit KDEUI_DEPRECATED KEditListBox(QWidget *parent, const char *name,
                             bool checkAtEntering = false, Buttons buttons = All );
       /**
        * Create an editable listbox.
@@ -126,7 +126,7 @@ public:
        * The same as the other constructor, additionally it takes
        * @p title, which will be the title of the frame around the listbox.
        */
-      explicit KDE_DEPRECATED KEditListBox(const QString& title, QWidget *parent,
+      explicit KDEUI_DEPRECATED KEditListBox(const QString& title, QWidget *parent,
                             const char *name, bool checkAtEntering = false,
                             Buttons buttons = All );
 

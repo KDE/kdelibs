@@ -185,7 +185,7 @@ public:
      * @param config Config object
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void exportConfiguration( KConfig *config) const;
+    KDEUI_DEPRECATED void exportConfiguration( KConfig *config) const;
 #endif
     void exportConfiguration( KConfigBase *config) const;
 
@@ -198,7 +198,7 @@ public:
      * @param config Config object
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void importConfiguration( KConfig *config);
+    KDEUI_DEPRECATED void importConfiguration( KConfig *config);
 #endif
     void importConfiguration( KConfigBase *config);
 

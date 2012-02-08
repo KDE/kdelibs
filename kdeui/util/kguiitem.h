@@ -61,7 +61,7 @@ public:
 
     /// @deprecated use icon() instead
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED QIcon iconSet( KIconLoader::Group=KIconLoader::Small, int size = 0) const;
+    KDEUI_DEPRECATED QIcon iconSet( KIconLoader::Group=KIconLoader::Small, int size = 0) const;
 #endif
 
     KIcon icon( ) const;
@@ -72,7 +72,7 @@ public:
     bool isEnabled() const;
     bool hasIcon() const;
 #if !defined(KDE_NO_COMPAT) && !defined(KDE_NO_DEPRECATED)
-    KDE_DEPRECATED bool hasIconSet() const { return hasIcon(); }
+    KDEUI_DEPRECATED bool hasIconSet() const { return hasIcon(); }
 #endif
 
     void setText( const QString &text );

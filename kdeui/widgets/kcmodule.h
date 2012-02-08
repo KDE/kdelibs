@@ -121,9 +121,9 @@ public:
   Q_DECLARE_FLAGS( Buttons, Button )
 
 #ifdef KDE3_SUPPORT
-  KDE_CONSTRUCTOR_DEPRECATED KCModule( QWidget *parent, const char *name, const QStringList& args = QStringList() );
+  KDEUI_DEPRECATED KCModule( QWidget *parent, const char *name, const QStringList& args = QStringList() );
 
-  KDE_CONSTRUCTOR_DEPRECATED KCModule(const KComponentData &componentData, QWidget *parent, const QStringList& args);
+  KDEUI_DEPRECATED KCModule(const KComponentData &componentData, QWidget *parent, const QStringList& args);
 #endif
 
   /**

@@ -109,13 +109,13 @@ public:
      * Creates a popup for the specified widget.
      * THIS WILL BE REMOVED, USE setPopupStyle().
      */
-    explicit KPassivePopup( int popupStyle, QWidget *parent=0, Qt::WFlags f=0 ) KDE_DEPRECATED;
+    explicit KPassivePopup( int popupStyle, QWidget *parent=0, Qt::WFlags f=0 ) KDEUI_DEPRECATED;
 
     /**
      * Creates a popup for the specified window.
      * THIS WILL BE REMOVED, USE setPopupStyle().
      */
-    KPassivePopup( int popupStyle, WId parent, Qt::WFlags f=0 ) KDE_DEPRECATED;
+    KPassivePopup( int popupStyle, WId parent, Qt::WFlags f=0 ) KDEUI_DEPRECATED;
 #endif
 
     /**

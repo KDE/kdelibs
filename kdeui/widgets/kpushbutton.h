@@ -113,7 +113,7 @@ public:
      * with KIcon("name") so that the icons are themeable.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setIcon( const QIcon &pix );
+    KDEUI_DEPRECATED void setIcon( const QIcon &pix );
 #endif
 
     /**

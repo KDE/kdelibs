@@ -25,6 +25,8 @@
 
 #include <kdeui_export.h>
 
+#include <qglobal.h>
+
 #if defined Q_WS_X11 /*or defined Q_WS_WIN*/
 #include "kkeyserver_x11.h"
 #elif defined Q_WS_MACX
@@ -32,6 +34,8 @@
 #elif defined Q_WS_WIN
 #include "kkeyserver_win.h"
 #endif
+
+class QString;
 
 /**
  * A collection of functions for the conversion of key presses and
@@ -46,7 +50,7 @@ namespace KKeyServer {
 	 * @return the user-readable string
 	 */
 	KDEUI_EXPORT QString modToStringUser( uint mod );
-    
+
 	/**
      * Converts the modifier given as user-readable string
      * to KKey::ModFlag modifier, or 0.

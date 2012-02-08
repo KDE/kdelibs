@@ -182,13 +182,13 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void insertURL( const KUrl& url, int index = -1 )
+    KDEUI_DEPRECATED void insertURL( const KUrl& url, int index = -1 )
     { insertUrl( index < 0 ? count() : index, url ); }
-    KDE_DEPRECATED void insertURL( const QPixmap& pixmap, const KUrl& url, int index = -1 )
+    KDEUI_DEPRECATED void insertURL( const QPixmap& pixmap, const KUrl& url, int index = -1 )
     { insertUrl( index < 0 ? count() : index, QIcon(pixmap), url ); }
-    KDE_DEPRECATED void changeURL( const KUrl& url, int index )
+    KDEUI_DEPRECATED void changeURL( const KUrl& url, int index )
     { changeUrl( index, url ); }
-    KDE_DEPRECATED void changeURL( const QPixmap& pixmap, const KUrl& url, int index )
+    KDEUI_DEPRECATED void changeURL( const QPixmap& pixmap, const KUrl& url, int index )
     { changeUrl( index, QIcon(pixmap), url ); }
 #endif
 
@@ -289,7 +289,7 @@ public:
     * @deprecated use setContextMenuPolicy
     */
 #ifndef KDE_NO_DEPRECATED
-    virtual KDE_DEPRECATED void setContextMenuEnabled( bool showMenu );
+    virtual KDEUI_DEPRECATED void setContextMenuEnabled( bool showMenu );
 #endif
 
     /**

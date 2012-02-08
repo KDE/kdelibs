@@ -190,7 +190,7 @@ namespace KStandardAction
 
   /// @deprecated use name()
 #ifndef KDE_NO_DEPRECATED
-  inline KDE_DEPRECATED const char* stdName(StandardAction act_enum) { return name( act_enum ); }
+  inline KDEUI_DEPRECATED const char* stdName(StandardAction act_enum) { return name( act_enum ); }
 #endif
 
   /**

@@ -43,7 +43,7 @@ class KCategorizedView;
 class KDEUI_EXPORT KCategoryDrawer
 {
 public:
-    KDE_DEPRECATED KCategoryDrawer();
+    KDEUI_DEPRECATED KCategoryDrawer();
 
     virtual ~KCategoryDrawer();
 
@@ -117,16 +117,16 @@ class KDEUI_EXPORT KCategoryDrawerV2
     Q_OBJECT
 
 public:
-    KDE_DEPRECATED KCategoryDrawerV2(QObject *parent = 0);
+    KDEUI_DEPRECATED KCategoryDrawerV2(QObject *parent = 0);
     virtual ~KCategoryDrawerV2();
 
-    KDE_DEPRECATED virtual void mouseButtonPressed(const QModelIndex &index, QMouseEvent *event);
+    KDEUI_DEPRECATED virtual void mouseButtonPressed(const QModelIndex &index, QMouseEvent *event);
 
-    KDE_DEPRECATED virtual void mouseButtonReleased(const QModelIndex &index, QMouseEvent *event);
+    KDEUI_DEPRECATED virtual void mouseButtonReleased(const QModelIndex &index, QMouseEvent *event);
 
-    KDE_DEPRECATED virtual void mouseButtonMoved(const QModelIndex &index, QMouseEvent *event);
+    KDEUI_DEPRECATED virtual void mouseButtonMoved(const QModelIndex &index, QMouseEvent *event);
 
-    KDE_DEPRECATED virtual void mouseButtonDoubleClicked(const QModelIndex &index, QMouseEvent *event);
+    KDEUI_DEPRECATED virtual void mouseButtonDoubleClicked(const QModelIndex &index, QMouseEvent *event);
 
 Q_SIGNALS:
     /**

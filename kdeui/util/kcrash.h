@@ -24,6 +24,8 @@
 
 #include <kdeui_export.h>
 
+#include <qglobal.h>
+
 class QString;
 
 /**

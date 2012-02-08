@@ -313,7 +313,7 @@ protected Q_SLOTS:
       * @warning Deprecated since 4.4.
       */
 #ifndef KDE_NO_DEPRECATED
-    virtual KDE_DEPRECATED void rowsInsertedArtifficial(const QModelIndex &parent,
+    virtual KDEUI_DEPRECATED void rowsInsertedArtifficial(const QModelIndex &parent,
                                                         int start,
                                                         int end);
 #endif
@@ -323,7 +323,7 @@ protected Q_SLOTS:
       * @warning Deprecated since 4.4.
       */
 #ifndef KDE_NO_DEPRECATED
-    virtual KDE_DEPRECATED void rowsRemoved(const QModelIndex &parent,
+    virtual KDEUI_DEPRECATED void rowsRemoved(const QModelIndex &parent,
                                             int start,
                                             int end);
 #endif

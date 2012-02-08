@@ -81,7 +81,7 @@ class KDEUI_EXPORT KXErrorHandler
          * @deprecated Use the variant with XErrorEvent.
          */
 #ifndef KDE_NO_DEPRECATED
-        explicit KXErrorHandler( bool (*handler)( int request, int error_code, unsigned long resource_id ), Display* dpy = QX11Info::display()) KDE_DEPRECATED;
+        explicit KXErrorHandler( bool (*handler)( int request, int error_code, unsigned long resource_id ), Display* dpy = QX11Info::display()) KDEUI_DEPRECATED;
 #endif
         /**
          * This function returns true if the error flag is set (i.e. no custom handler

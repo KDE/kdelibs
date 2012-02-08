@@ -60,7 +60,7 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void remove( KAction* );
+    KDEUI_DEPRECATED void remove( KAction* );
 #endif
 
     void addAction(QAction* action);
@@ -75,7 +75,7 @@ public:
      * @deprecated use menu() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    inline KDE_DEPRECATED KMenu* popupMenu() { return menu(); }
+    inline KDEUI_DEPRECATED KMenu* popupMenu() { return menu(); }
 #endif
 
     /**

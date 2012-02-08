@@ -182,7 +182,7 @@ public:
      * @return A standard help menu.
      * @deprecated use KHelpMenu directly
      */
-    KDE_DEPRECATED KMenu* helpMenu(const QString &aboutAppText = QString(),
+    KDEUI_DEPRECATED KMenu* helpMenu(const QString &aboutAppText = QString(),
                                    bool showWhatsThis = true );
 
     /**
@@ -208,7 +208,7 @@ public:
      * @return A standard help menu.
      * @deprecated use XMLGUI instead, or KHelpMenu directly
      */
-    KDE_DEPRECATED KMenu* customHelpMenu( bool showWhatsThis = true );
+    KDEUI_DEPRECATED KMenu* customHelpMenu( bool showWhatsThis = true );
 
     /**
      * If the session did contain so high a number, @p true is returned,
@@ -663,7 +663,7 @@ protected Q_SLOTS:
     * \endcode
     * @deprecated use KHelpMenu
     */
-    virtual KDE_DEPRECATED void showAboutApplication();
+    virtual KDEUI_DEPRECATED void showAboutApplication();
 
    /**
     * This slot should only be called in case you reimplement closeEvent() and

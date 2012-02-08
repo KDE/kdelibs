@@ -160,7 +160,7 @@ public:
      * @deprecated Simply reimplement QWidget::contextMenuEvent() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    static KDE_DEPRECATED int contextMenuKey ();
+    static KDEUI_DEPRECATED int contextMenuKey ();
 #endif
 
     /**

@@ -24,6 +24,7 @@ include_directories(
  ${kcoreaddons_SOURCE_DIR}/src/kernel
  ${kcoreaddons_SOURCE_DIR}/src/randomness
  ${CMAKE_SOURCE_DIR}/kdeui
+ ${CMAKE_BINARY_DIR}/kdeui
  ${KDE4_KDECORE_INCLUDES}
  ${CMAKE_CURRENT_SOURCE_DIR}/actions
  ${CMAKE_CURRENT_SOURCE_DIR}/colors
@@ -419,6 +420,7 @@ set(knotify_xml ${CMAKE_CURRENT_SOURCE_DIR}/notifications/org.kde.KNotify.xml)
 qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
+generate_export_header(kdeui)
 
 target_link_libraries(kdeui itemmodels sonnetcore kauth ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
                             ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} kcoreaddons)
@@ -494,7 +496,7 @@ install( FILES widgets/kcharselect-data  DESTINATION  ${DATA_INSTALL_DIR}/kchars
 install( FILES xmlgui/ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
 
 install( FILES
- kdeui_export.h
+ ${CMAKE_CURRENT_BINARY_DIR}/kdeui_export.h
  actions/kactioncollection.h
  actions/kactioncategory.h
  actions/kaction.h

@@ -428,7 +428,7 @@ public:
      * Use isGlobalShortcutEnabled() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED bool globalShortcutAllowed() const;
+    KDEUI_DEPRECATED bool globalShortcutAllowed() const;
 #endif
 
     /**
@@ -440,7 +440,7 @@ public:
      *                if any.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setGlobalShortcutAllowed(bool allowed, GlobalShortcutLoading loading = Autoloading);
+    KDEUI_DEPRECATED void setGlobalShortcutAllowed(bool allowed, GlobalShortcutLoading loading = Autoloading);
 #endif
 
     /**

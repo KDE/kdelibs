@@ -233,7 +233,7 @@ public:
      * a shortcut from an action.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setCheckActionList(const QList<QAction*> &checkList);
+    KDEUI_DEPRECATED void setCheckActionList(const QList<QAction*> &checkList);
 #endif
 
 	/**

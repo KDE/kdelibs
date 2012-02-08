@@ -38,7 +38,7 @@ class KArrowButtonPrivate;
  *
  * @author Frerich Raabe
  */
-class KDEUI_EXPORT_DEPRECATED KArrowButton : public QPushButton
+class KDEUI_DEPRECATED_EXPORT KArrowButton : public QPushButton
 {
 	Q_OBJECT
 	/**

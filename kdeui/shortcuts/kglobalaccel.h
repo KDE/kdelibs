@@ -167,7 +167,7 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED bool isEnabled() const;
+    KDEUI_DEPRECATED bool isEnabled() const;
 #endif
 
     /**
@@ -176,7 +176,7 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setEnabled(bool enabled);
+    KDEUI_DEPRECATED void setEnabled(bool enabled);
 #endif
 
     /**
@@ -196,7 +196,7 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void overrideMainComponentData(const KComponentData &componentData);
+    KDEUI_DEPRECATED void overrideMainComponentData(const KComponentData &componentData);
 #endif
 
     /**
@@ -206,7 +206,7 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED QList<QStringList> allMainComponents();
+    KDEUI_DEPRECATED QList<QStringList> allMainComponents();
 #endif
 
     /**
@@ -215,7 +215,7 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED QList<QStringList> allActionsForComponent(const QStringList &actionId);
+    KDEUI_DEPRECATED QList<QStringList> allActionsForComponent(const QStringList &actionId);
 #endif
 
     /**
@@ -224,7 +224,7 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED static QStringList findActionNameSystemwide(const QKeySequence &seq);
+    KDEUI_DEPRECATED static QStringList findActionNameSystemwide(const QKeySequence &seq);
 #endif
 
     /**
@@ -233,7 +233,7 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED static bool promptStealShortcutSystemwide(QWidget *parent, const QStringList &actionIdentifier, const QKeySequence &seq);
+    KDEUI_DEPRECATED static bool promptStealShortcutSystemwide(QWidget *parent, const QStringList &actionIdentifier, const QKeySequence &seq);
 #endif
 
 private:

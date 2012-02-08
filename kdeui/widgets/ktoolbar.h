@@ -134,7 +134,7 @@ public:
      * @deprecated use setContextMenuPolicy
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setContextMenuEnabled( bool enable = true );
+    KDEUI_DEPRECATED void setContextMenuEnabled( bool enable = true );
 #endif
 
     /**
@@ -143,7 +143,7 @@ public:
      * @deprecated use contextMenuPolicy
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED bool contextMenuEnabled() const;
+    KDEUI_DEPRECATED bool contextMenuEnabled() const;
 #endif
 
     /**

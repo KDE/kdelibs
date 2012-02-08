@@ -128,7 +128,7 @@ protected:
      *          indexes that want to be updated.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void paintWidgets(QPainter *painter, const QStyleOptionViewItem &option,
+    KDEUI_DEPRECATED void paintWidgets(QPainter *painter, const QStyleOptionViewItem &option,
                                      const QPersistentModelIndex &index) const;
 #endif
 

@@ -128,7 +128,7 @@ class KDEUI_EXPORT KRatingWidget : public QFrame
      * \deprecated use setRating( int rating )
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setRating( unsigned int rating );
+    KDEUI_DEPRECATED void setRating( unsigned int rating );
 #endif
 
     /**
@@ -142,7 +142,7 @@ class KDEUI_EXPORT KRatingWidget : public QFrame
      * \deprecated use setMaxRating( int max )
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setMaxRating( unsigned int max );
+    KDEUI_DEPRECATED void setMaxRating( unsigned int max );
 #endif
 
     /**
@@ -155,7 +155,7 @@ class KDEUI_EXPORT KRatingWidget : public QFrame
      * \deprecated Use setHalfStepsEnabled
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setOnlyPaintFullSteps( bool );
+    KDEUI_DEPRECATED void setOnlyPaintFullSteps( bool );
 #endif
 
     /**
@@ -191,7 +191,7 @@ class KDEUI_EXPORT KRatingWidget : public QFrame
      * \deprecated use setCustomPixmap
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setPixmap( const QPixmap& );
+    KDEUI_DEPRECATED void setPixmap( const QPixmap& );
 #endif
 
     /**

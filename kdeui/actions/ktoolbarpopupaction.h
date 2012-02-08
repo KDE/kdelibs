@@ -77,7 +77,7 @@ class KDEUI_EXPORT KToolBarPopupAction : public KAction
      * \deprecated use menu() instead
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED KMenu *popupMenu() const;
+    KDEUI_DEPRECATED KMenu *popupMenu() const;
 #endif
 
     /**

@@ -227,6 +227,7 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${_KDE4_PLATFORM_INCLUDE_DIRS})
 # kdeui depends on kdecore
 set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdeui
+                        ${CMAKE_BINARY_DIR}/kdeui
                         ${CMAKE_SOURCE_DIR}/kdeui/actions
                         ${CMAKE_SOURCE_DIR}/kdeui/colors
                         ${CMAKE_SOURCE_DIR}/kdeui/config

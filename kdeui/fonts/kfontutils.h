@@ -25,6 +25,8 @@
 
 #include "kdeui_export.h"
 
+#include <qglobal.h>
+
 class QPainter;
 class QSizeF;
 class QString;

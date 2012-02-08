@@ -160,14 +160,14 @@ public:
    *
    **/
 #ifndef KDE_NO_DEPRECATED
-  KDE_DEPRECATED void setMinValue(int);
+  KDEUI_DEPRECATED void setMinValue(int);
 #endif
 
   /**
    * Returns the minimal value of the ruler pointer.
    **/
 #ifndef KDE_NO_DEPRECATED
-  KDE_DEPRECATED int minValue() const;
+  KDEUI_DEPRECATED int minValue() const;
 #endif
 
   /**
@@ -177,14 +177,14 @@ public:
    * to the main event loop.
    */
 #ifndef KDE_NO_DEPRECATED
-  KDE_DEPRECATED void setMaxValue(int);
+  KDEUI_DEPRECATED void setMaxValue(int);
 #endif
 
   /**
    * Returns the maximal value of the ruler pointer.
    */
 #ifndef KDE_NO_DEPRECATED
-  KDE_DEPRECATED int maxValue() const;
+  KDEUI_DEPRECATED int maxValue() const;
 #endif
 
 

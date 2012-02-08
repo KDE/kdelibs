@@ -171,7 +171,7 @@ public:
    * @see sessionConfig()
    * @deprecated use qApp->isSessionRestored()
    */
-  inline KDE_DEPRECATED bool isRestored() const { return QApplication::isSessionRestored(); }
+  inline KDEUI_DEPRECATED bool isRestored() const { return QApplication::isSessionRestored(); }
 #endif
 
   /**
@@ -220,7 +220,7 @@ public:
    * @return the application icon
    * @deprecated Use QApplication::windowIcon()
    */
-  inline KDE_DEPRECATED QPixmap icon() const {
+  inline KDEUI_DEPRECATED QPixmap icon() const {
       int size = IconSize(KIconLoader::Desktop);
       return windowIcon().pixmap(size,size);
   }
@@ -230,7 +230,7 @@ public:
    * @return the application's mini icon
    * @deprecated Use QApplication::windowIcon()
    */
-  inline KDE_DEPRECATED QPixmap miniIcon() const {
+  inline KDEUI_DEPRECATED QPixmap miniIcon() const {
       int size = IconSize(KIconLoader::Small);
       return windowIcon().pixmap(size,size);
   }
@@ -257,7 +257,7 @@ public:
    * @deprecated use QTemporaryFile, KSaveFile or KAutoSaveFile instead
    */
 #ifndef KDE_NO_DEPRECATED
-  static KDE_DEPRECATED QString tempSaveName( const QString& pFilename );
+  static KDEUI_DEPRECATED QString tempSaveName( const QString& pFilename );
 #endif
 
   /**
@@ -278,7 +278,7 @@ public:
    * @return the X11 Display
    * @deprecated use QX11Info::display()
    */
-  static inline KDE_DEPRECATED Display *getDisplay() { return QX11Info::display(); }
+  static inline KDEUI_DEPRECATED Display *getDisplay() { return QX11Info::display(); }
 #endif
 #endif
 
@@ -305,7 +305,7 @@ public:
    * @return A truly unpredictable number in the range [0, RAND_MAX)
    * @deprecated Use KRandom::random()
    */
-  static inline KDE_DEPRECATED int random() { return KRandom::random(); }
+  static inline KDEUI_DEPRECATED int random() { return KRandom::random(); }
 
   /**
    * Generates a random string.  It operates in the range [A-Za-z0-9]
@@ -313,7 +313,7 @@ public:
    * @return the random string
    * @deprecated use KRandom::randomString() instead.
    */
-  static inline KDE_DEPRECATED QString randomString(int length) { return KRandom::randomString(length); }
+  static inline KDEUI_DEPRECATED QString randomString(int length) { return KRandom::randomString(length); }
 #endif
 
   /**
@@ -372,7 +372,7 @@ public:
     *
     * </code>
     */
-  static inline KDE_DEPRECATED QString geometryArgument() {
+  static inline KDEUI_DEPRECATED QString geometryArgument() {
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
     return args->isSet("geometry") ? args->getOption("geometry") : QString();
   }
