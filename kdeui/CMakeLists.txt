@@ -729,3 +729,7 @@ if (NOT Q_WS_X11)
     # install our copy of the rgb.txt named colors list on systems without X11
     install(FILES colors/rgb.txt DESTINATION ${DATA_INSTALL_DIR}/kdeui)
 endif (NOT Q_WS_X11)
+
+install( FILES
+    KDEUIMacros.cmake
+    DESTINATION ${DATA_INSTALL_DIR}/cmake/modules COMPONENT Devel )
