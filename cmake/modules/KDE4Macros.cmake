@@ -1106,8 +1106,10 @@ endfunction(KDE4_INSTALL_AUTH_ACTIONS)
 
 # TODO: Move this to kde4support
 if (_kdeBootStrapping)
+  include("${CMAKE_SOURCE_DIR}/kdecore/KDECoreMacros.cmake")
   include("${CMAKE_SOURCE_DIR}/kde3support/KDE3SupportMacros.cmake")
 else()
+  include("${KDE4_MODULE_DIR}/KDECoreMacros.cmake")
   include("${KDE4_MODULE_DIR}/KDE3SupportMacros.cmake")
 endif()
 

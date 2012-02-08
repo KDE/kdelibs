@@ -463,3 +463,6 @@ install( FILES
    DESTINATION  ${SERVICETYPES_INSTALL_DIR}
 )
 
+install( FILES
+    KDECoreMacros.cmake
+    DESTINATION ${DATA_INSTALL_DIR}/cmake/modules COMPONENT Devel )
