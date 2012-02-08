@@ -162,3 +162,7 @@ endif (UNIX)
 install( FILES
     kio/kio/renamedlg.h
     DESTINATION  ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel )
+
+install( FILES
+    KDE3SupportMacros.cmake
+    DESTINATION ${DATA_INSTALL_DIR}/cmake/modules COMPONENT Devel )
