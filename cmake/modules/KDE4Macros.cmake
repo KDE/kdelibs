@@ -502,18 +502,6 @@ macro(KDE4_REMOVE_OBSOLETE_CMAKE_FILES)
 
 endmacro(KDE4_REMOVE_OBSOLETE_CMAKE_FILES)
 
-macro(KDE4_CREATE_EXPORTS_HEADER _outputFile _libName)
-   string(TOUPPER ${_libName} _libNameUpperCase)
-   string(REGEX REPLACE "[^_A-Za-z0-9]" "_" _libNameUpperCase ${_libNameUpperCase})
-   # the next line is is required, because in CMake arguments to macros are not real
-   # variables, but handled differently. The next line create a real CMake variable,
-   # so configure_file() will replace it correctly.
-   set(_libName ${_libName})
-   # compared to write(FILE) configure_file() only really writes the file if the
-   # contents have changed. Otherwise we would have a lot of recompiles.
-   configure_file(${KDE4_MODULE_DIR}/kde4exportsheader.h.in ${_outputFile})
-endmacro(KDE4_CREATE_EXPORTS_HEADER _outputFile _libName)
-
 # This macro is only kept around for compatibility, it is not needed/used anymore
 # since CMake 2.6.0. With CMake 2.6.0 it is not necessary anymore link libraries again
 # ("relink") to change their RPATH. Since this is fast now, they are now always built with
