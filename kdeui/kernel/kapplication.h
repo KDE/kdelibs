@@ -38,6 +38,7 @@ class KConfig;
 #endif
 
 typedef unsigned long Atom;
+#include <qplatformdefs.h>
 #if !defined(Q_WS_X11)
 typedef void Display;
 #endif
