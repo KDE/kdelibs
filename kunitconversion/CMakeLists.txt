@@ -7,8 +7,6 @@ endif(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-kunitconversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kunitconversion.h)
 
-add_subdirectory(tests)
-
 set(kunitconversion_LIB_SRCS
     converter.cpp
     value.cpp
@@ -38,7 +36,7 @@ set(kunitconversion_HEADERS
     value.h
     unit.h
     unitcategory.h
-    kunitconversion_export.h
+    ${CMAKE_CURRENT_BINARY_DIR}/kunitconversion_export.h
 )
 
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=930)
@@ -56,10 +54,12 @@ if(NOT KUNITCONVERSION_NO_SOLID)
     set(KUNITCONVERSION_EXTRA_LIBS ${KUNITCONVERSION_EXTRA_LIBS} ${KDE4_SOLID_LIBS})
 endif(NOT KUNITCONVERSION_NO_SOLID)
 
-include_directories (${CMAKE_SOURCE_DIR} ${KDE4_KDECORE_INCLUDES})
+include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${KDE4_KDECORE_INCLUDES})
 
+add_subdirectory(tests)
 
 kde4_add_library(kunitconversion ${LIBRARY_TYPE} ${kunitconversion_LIB_SRCS})
+generate_export_header(kunitconversion)
 target_link_libraries(kunitconversion ${KDE4_KDECORE_LIBS} ${KUNITCONVERSION_EXTRA_LIBS} kcoreaddons)
 set_target_properties(kunitconversion PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 install(TARGETS kunitconversion ${INSTALL_TARGETS_DEFAULT_ARGS})
