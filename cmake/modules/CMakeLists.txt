@@ -147,7 +147,6 @@ set(cmakeFiles CheckCXXSourceCompiles.cmake
                config-alsa.h.cmake
                create_exe_symlink.cmake
                kde4_exec_via_sh.cmake
-               kde4uic.cmake
                cmake-modules-styleguide.txt
                kde4init_dummy.cpp.in
                kde4init_win32lib_dummy.cpp.in

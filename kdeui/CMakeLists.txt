@@ -734,4 +734,5 @@ endif (NOT Q_WS_X11)
 
 install( FILES
     KDEUIMacros.cmake
+    kde4uic.cmake
     DESTINATION ${DATA_INSTALL_DIR}/cmake/modules COMPONENT Devel )
