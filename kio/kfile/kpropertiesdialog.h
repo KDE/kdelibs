@@ -369,7 +369,7 @@ public:
    * @deprecated use KFileItem::isDesktopFile
    */
 #ifndef KDE_NO_DEPRECATED
-  static KDE_DEPRECATED bool isDesktopFile( const KFileItem& _item );
+  static KIO_DEPRECATED bool isDesktopFile( const KFileItem& _item );
 #endif
 
   void setDirty( bool b );

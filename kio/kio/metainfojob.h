@@ -112,7 +112,7 @@ namespace KIO {
      * @return the MetaInfoJob to retrieve the items
      * @deprecated use strigi or KFileMetaInfo
      */
-    KIO_EXPORT_DEPRECATED MetaInfoJob* fileMetaInfo(const KFileItemList& items);
+    KIO_DEPRECATED_EXPORT MetaInfoJob* fileMetaInfo(const KFileItemList& items);
 
     /**
      * Retrieves meta information for the given items.
@@ -121,7 +121,7 @@ namespace KIO {
      * @return the MetaInfoJob to retrieve the items
      * @deprecated use strigi or KFileMetaInfo
      */
-    KIO_EXPORT_DEPRECATED MetaInfoJob* fileMetaInfo(const KUrl::List& items);
+    KIO_DEPRECATED_EXPORT MetaInfoJob* fileMetaInfo(const KUrl::List& items);
 }
 
 #endif

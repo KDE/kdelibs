@@ -126,7 +126,7 @@ namespace KIO {
          * @param job the job to schedule
          */
 #ifndef KDE_NO_DEPRECATED
-        KDE_DEPRECATED static void scheduleJob(SimpleJob *job);
+        KIO_DEPRECATED static void scheduleJob(SimpleJob *job);
 #endif
 
         /**

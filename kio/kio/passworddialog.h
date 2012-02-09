@@ -34,7 +34,7 @@ namespace KIO {
  * instead of directly instantiating this dialog.
  * @short dialog for requesting login and password from the end user
  */
-class KIO_EXPORT_DEPRECATED PasswordDialog : public KPasswordDialog
+class KIO_DEPRECATED_EXPORT PasswordDialog : public KPasswordDialog
 {
     Q_OBJECT
 

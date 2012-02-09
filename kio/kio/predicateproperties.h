@@ -37,7 +37,7 @@ class KIO_EXPORT PredicateProperties {
 friend class PredicatePropertyProvider;
 public:
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED PredicateProperties(const QString& predicate = QString());
+    KIO_DEPRECATED PredicateProperties(const QString& predicate = QString());
 #endif
     PredicateProperties(const PredicateProperties& p);
     ~PredicateProperties();

@@ -325,6 +325,7 @@ install(FILES kssl/ksslcertificatemanager.upd
         DESTINATION  ${DATA_INSTALL_DIR}/kconf_update)
 
 kde4_add_library(kio ${LIBRARY_TYPE} ${kio_LIB_SRCS})
+generate_export_header(kio)
 
 if(NOT KIO_NO_NEPOMUK)
   kde4_add_executable(kfilemetadatareader ${kfilemetadatareaderprocess_SRCS})
@@ -374,7 +375,7 @@ DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 
 install( FILES kioslave.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
 install(  FILES
-  kio/kio_export.h
+  ${CMAKE_CURRENT_BINARY_DIR}/kio_export.h
   kio/accessmanager.h
   kio/connection.h
   kio/slaveinterface.h

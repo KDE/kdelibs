@@ -226,7 +226,7 @@ namespace KIO {
      * @return the job handling the operation.
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_EXPORT_DEPRECATED StatJob * stat( const KUrl& url, bool sideIsSource,
+    KIO_DEPRECATED_EXPORT StatJob * stat( const KUrl& url, bool sideIsSource,
                                           short int details, JobFlags flags = DefaultFlags );
 #endif
 

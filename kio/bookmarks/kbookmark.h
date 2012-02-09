@@ -20,7 +20,8 @@
 #ifndef __kbookmark_h
 #define __kbookmark_h
 
-#include <kio/kio_export.h>
+#include "kio_export.h"
+#include "kdemacros.h"
 
 #include <QtCore/QString>
 #include <QtCore/QList>
@@ -77,7 +78,7 @@ public:
          * @deprecated use fromMimeData(mimeData, doc), to avoid crashes
          */
 #ifndef KDE_NO_DEPRECATED
-        static KDE_DEPRECATED KBookmark::List fromMimeData( const QMimeData *mimeData );
+        static KIO_DEPRECATED KBookmark::List fromMimeData( const QMimeData *mimeData );
 #endif
 
         /**
@@ -422,7 +423,7 @@ public:
     bool moveBookmark( const KBookmark & bookmark, const KBookmark & after);
 
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED bool moveItem( const KBookmark & item, const KBookmark & after );
+    KIO_DEPRECATED bool moveItem( const KBookmark & item, const KBookmark & after );
 #endif
 
     /**

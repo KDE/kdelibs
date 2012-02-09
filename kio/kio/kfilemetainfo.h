@@ -144,13 +144,13 @@ public:
      * Deprecated
      **/
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED KFileMetaInfoGroupList preferredGroups() const;
+    KIO_DEPRECATED KFileMetaInfoGroupList preferredGroups() const;
 #endif
     /**
      * Deprecated
      **/
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED KFileMetaInfoGroupList supportedGroups() const;
+    KIO_DEPRECATED KFileMetaInfoGroupList supportedGroups() const;
 #endif
     KFileMetaInfoGroupList groups() const;
     QStringList keys() const;

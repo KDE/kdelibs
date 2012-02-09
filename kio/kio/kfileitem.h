@@ -309,7 +309,7 @@ public:
      */
     KDateTime time( FileTimes which ) const;
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED time_t time( unsigned int which ) const;
+    KIO_DEPRECATED time_t time( unsigned int which ) const;
 #endif
 
     /**
@@ -321,7 +321,7 @@ public:
      */
     QString timeString( FileTimes which = ModificationTime ) const;
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED QString timeString( unsigned int which) const;
+    KIO_DEPRECATED QString timeString( unsigned int which) const;
 #endif
 
     /**
@@ -435,7 +435,7 @@ public:
      * @deprecated File Managers implement more complete tooltips.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED QString getToolTipText(int maxcount = 6) const;
+    KIO_DEPRECATED QString getToolTipText(int maxcount = 6) const;
 #endif
 
     /**
@@ -449,7 +449,7 @@ public:
      * KDirModel has setDropsAllowed for similar (but configurable) logic.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED bool acceptsDrops() const;
+    KIO_DEPRECATED bool acceptsDrops() const;
 #endif
 
     /**
@@ -545,7 +545,7 @@ public:
      * @deprecated use model/view (KDirModel) and you won't need this anymore
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setExtraData( const void *key, void *value );
+    KIO_DEPRECATED void setExtraData( const void *key, void *value );
 #endif
 
     /**
@@ -558,7 +558,7 @@ public:
      * @deprecated use model/view (KDirModel) and you won't need this anymore
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED const void * extraData( const void *key ) const;
+    KIO_DEPRECATED const void * extraData( const void *key ) const;
 #endif
 
     /**
@@ -568,7 +568,7 @@ public:
      * @deprecated use model/view (KDirModel) and you won't need this anymore
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void removeExtraData( const void *key );
+    KIO_DEPRECATED void removeExtraData( const void *key );
 #endif
 
     /**
@@ -594,7 +594,7 @@ public:
      * @deprecated simply use '='
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void assign( const KFileItem & item );
+    KIO_DEPRECATED void assign( const KFileItem & item );
 #endif
 
     /**
@@ -617,7 +617,7 @@ public:
      * now that it's a value class?
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setUDSEntry( const KIO::UDSEntry& entry, const KUrl& url,
+    KIO_DEPRECATED void setUDSEntry( const KIO::UDSEntry& entry, const KUrl& url,
                                      bool delayedMimeTypes = false,
                                      bool urlIsDirectory = false );
 #endif

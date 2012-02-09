@@ -122,7 +122,7 @@ public:
      * @deprecated Use setWindow
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setCookieJarWindowId(WId id);
+    KIO_DEPRECATED void setCookieJarWindowId(WId id);
 #endif
 
     /**
@@ -150,7 +150,7 @@ public:
      * @deprecated Use KIO::Integration::CookieJar::windowId
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED WId cookieJarWindowid() const;
+    KIO_DEPRECATED WId cookieJarWindowid() const;
 #endif
 
     /**

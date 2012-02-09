@@ -25,7 +25,7 @@
 #if defined(MAKE_KIO_LIB) || defined(MAKE_KLAUNCHER)
 # define KIO_CONNECTION_EXPORT  KIO_EXPORT
 #else
-# define KIO_CONNECTION_EXPORT  KIO_EXPORT_DEPRECATED
+# define KIO_CONNECTION_EXPORT  KIO_DEPRECATED_EXPORT
 #endif
 
 #include "kio_export.h"

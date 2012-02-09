@@ -102,7 +102,7 @@ namespace KIO {
    * Note that you'll have to tell the user in case of an error (no data to paste),
    * while pasteMimeSource did that.
    */
-  KIO_EXPORT_DEPRECATED CopyJob* pasteMimeSource( const QMimeData* data, const KUrl& destURL,
+  KIO_DEPRECATED_EXPORT CopyJob* pasteMimeSource( const QMimeData* data, const KUrl& destURL,
                                        const QString& dialogText, QWidget* widget,
                                        bool clipboard = false );
 

@@ -69,7 +69,7 @@ public:
 	 *  @deprecated
 	 */
 #ifndef KDE_NO_DEPRECATED
-	KDE_DEPRECATED void setup(QStringList certs, bool saveChecked = false, bool sendChecked = true);
+	KIO_DEPRECATED void setup(QStringList certs, bool saveChecked = false, bool sendChecked = true);
 #endif
 
 	/**

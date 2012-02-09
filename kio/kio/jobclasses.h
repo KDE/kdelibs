@@ -175,7 +175,7 @@ namespace KIO {
          *             and job->ui()->showErrorMessage() instead
          */
 #ifndef KDE_NO_DEPRECATED
-        KDE_DEPRECATED void showErrorDialog( QWidget *parent = 0 );
+        KIO_DEPRECATED void showErrorDialog( QWidget *parent = 0 );
 #endif
 
         /**
@@ -466,7 +466,7 @@ namespace KIO {
          * @param source true for "source" mode, false for "dest" mode
          */
 #ifndef KDE_NO_DEPRECATED
-        KDE_DEPRECATED void setSide( bool source );
+        KIO_DEPRECATED void setSide( bool source );
 #endif
 
         /**
@@ -597,7 +597,7 @@ namespace KIO {
          *             automatically since KDE-4.2.1
          */
 #ifndef KDE_NO_DEPRECATED
-        KDE_DEPRECATED void setReportDataSent(bool enabled);
+        KIO_DEPRECATED void setReportDataSent(bool enabled);
 #endif
 
         /**
@@ -608,7 +608,7 @@ namespace KIO {
          *             automatically since KDE-4.2.1 (and not useful as public API)
          */
 #ifndef KDE_NO_DEPRECATED
-        KDE_DEPRECATED bool reportDataSent() const;
+        KIO_DEPRECATED bool reportDataSent() const;
 #endif
 
         /**

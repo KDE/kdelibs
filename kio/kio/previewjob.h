@@ -83,7 +83,7 @@ namespace KIO {
          *             with the setter-methods instead. Note that the semantics of
          *             \p enabledPlugins has been slightly changed.
          */
-        KDE_DEPRECATED PreviewJob(const KFileItemList& items, int width, int height,
+        KIO_DEPRECATED PreviewJob(const KFileItemList& items, int width, int height,
                                   int iconSize, int iconAlpha, bool scale, bool save,
                                   const QStringList *enabledPlugins);
 #endif
@@ -205,7 +205,7 @@ namespace KIO {
          *             The returned file size is only valid for local URLs.
          */
 #ifndef KDE_NO_DEPRECATED
-        KDE_DEPRECATED static KIO::filesize_t maximumFileSize();
+        KIO_DEPRECATED static KIO::filesize_t maximumFileSize();
 #endif
 
 
@@ -258,7 +258,7 @@ namespace KIO {
      *             with the setter-methods instead. Note that the semantics of
      *             \p enabledPlugins has been slightly changed.
      */
-    KIO_EXPORT_DEPRECATED PreviewJob *filePreview( const KFileItemList &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 ); // KDE5: use enums instead of bool scale + bool save
+    KIO_DEPRECATED_EXPORT PreviewJob *filePreview( const KFileItemList &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 ); // KDE5: use enums instead of bool scale + bool save
 
     /**
      * Creates a PreviewJob to generate or retrieve a preview image
@@ -283,7 +283,7 @@ namespace KIO {
      *             with the setter-methods instead. Note that the semantics of
      *             \p enabledPlugins has been slightly changed.
      */
-    KIO_EXPORT_DEPRECATED PreviewJob *filePreview( const KUrl::List &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 );
+    KIO_DEPRECATED_EXPORT PreviewJob *filePreview( const KUrl::List &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 );
 #endif
 
     /**

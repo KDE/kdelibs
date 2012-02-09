@@ -192,7 +192,7 @@ public:
     static bool file_copy( const KUrl& src, const KUrl& target, QWidget* window = 0 );
     /// @deprecated, use file_copy instead
 #ifndef KDE_NO_DEPRECATED
-    static KDE_DEPRECATED bool copy( const KUrl& src, const KUrl& target,
+    static KIO_DEPRECATED bool copy( const KUrl& src, const KUrl& target,
                                      QWidget* window = 0 );
 #endif
 
@@ -229,7 +229,7 @@ public:
      * @deprecated use KIO::move and then KIO::NetAccess::synchronousRun (or job->exec())
      */
 #ifndef KDE_NO_DEPRECATED
-    static KDE_DEPRECATED bool move( const KUrl& src, const KUrl& target, QWidget* window = 0L );
+    static KIO_DEPRECATED bool move( const KUrl& src, const KUrl& target, QWidget* window = 0L );
 #endif
 
     /**
@@ -238,7 +238,7 @@ public:
      * @deprecated use KIO::move and then KIO::NetAccess::synchronousRun (or job->exec())
      */
 #ifndef KDE_NO_DEPRECATED
-    static KDE_DEPRECATED bool move( const KUrl::List& src, const KUrl& target, QWidget* window = 0L );
+    static KIO_DEPRECATED bool move( const KUrl::List& src, const KUrl& target, QWidget* window = 0L );
 #endif
 
     /**
@@ -259,7 +259,7 @@ public:
      * @deprecated use the StatSide enum instead of the bool source
      */
 #ifndef KDE_NO_DEPRECATED
-    static KDE_DEPRECATED bool exists(const KUrl& url, bool source, QWidget* window);
+    static KIO_DEPRECATED bool exists(const KUrl& url, bool source, QWidget* window);
 #endif
 
     /**

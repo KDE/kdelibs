@@ -104,7 +104,7 @@ public:
      * @deprecated, use iconName()
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED QPixmap icon() const;
+    KIO_DEPRECATED QPixmap icon() const;
 #endif
     /**
      * Returns the mini icon of this data tool.
@@ -112,7 +112,7 @@ public:
      * @deprecated, use iconName()
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED QPixmap miniIcon() const;
+    KIO_DEPRECATED QPixmap miniIcon() const;
 #endif
     /**
      * Returns the icon name for this DataTool.

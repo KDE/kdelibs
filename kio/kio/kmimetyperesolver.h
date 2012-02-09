@@ -54,19 +54,19 @@ public:
      * WARNING: if you call KDirModel::setDirLister, do it before creating the KMimeTypeResolver
      * If this is a problem, tell me and I'll add a signal...
      */
-    KDE_DEPRECATED KMimeTypeResolver(QAbstractItemView* view, KDirModel* model);
+    KIO_DEPRECATED KMimeTypeResolver(QAbstractItemView* view, KDirModel* model);
 
     /**
      * This constructor should be used when the view uses a proxy model instead of a KDirModel.
      * The source model must be a KDirModel however, and the above warning applies
      * to this constructor as well.
      */
-    KDE_DEPRECATED KMimeTypeResolver(QAbstractItemView* view, QAbstractProxyModel* model);
+    KIO_DEPRECATED KMimeTypeResolver(QAbstractItemView* view, QAbstractProxyModel* model);
 
     /**
      * @internal
      */
-    explicit KDE_DEPRECATED KMimeTypeResolver(KAbstractViewAdapter* adapter);
+    explicit KIO_DEPRECATED KMimeTypeResolver(KAbstractViewAdapter* adapter);
 
     ~KMimeTypeResolver();
 

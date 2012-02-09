@@ -240,7 +240,7 @@ public Q_SLOTS:
      * @deprecated Use setUrl(KUrl(path)) instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setPath(const QString& path);
+    KIO_DEPRECATED void setPath(const QString& path);
 #endif
 
     /**

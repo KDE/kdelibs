@@ -22,6 +22,9 @@
 
 #include "thumbcreator.h"
 
+#include <qglobal.h>
+
+
 /**
  * @see ThumbCreator
  *
@@ -29,7 +32,7 @@
  * a file. If your thumbnail plugin can create a thumbnail sequence, you should base it
  * on ThumbSequenceCreator instead of ThumbCreator, and should use sequenceIndex()
  * to decide what thumbnail you generate.
- * 
+ *
  * You also need to set the following key in the thumbcreator .desktop file
  * \code
  * HandleSequences=true;
@@ -47,7 +50,7 @@ public:
     /**
      * If this thumb-creator can create a sequence of thumbnails,
      * it should use this to decide what sequence item to use.
-     * 
+     *
      * If the value is zero, the standard thumbnail should be created.
      *
      * This can be used for example to create thumbnails for different

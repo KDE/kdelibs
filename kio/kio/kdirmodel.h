@@ -77,7 +77,7 @@ public:
      * @deprecated use the method that takes a KFileItem by value
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED QModelIndex indexForItem( const KFileItem* ) const;
+    KIO_DEPRECATED QModelIndex indexForItem( const KFileItem* ) const;
 #endif
 
     /**

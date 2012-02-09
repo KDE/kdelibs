@@ -109,7 +109,7 @@ namespace KIO
    * @return calculated remaining time
    */
 #ifndef KDE_NO_DEPRECATED
-  KIO_EXPORT_DEPRECATED QTime calculateRemaining( KIO::filesize_t totalSize, KIO::filesize_t processedSize, KIO::filesize_t speed );
+  KIO_DEPRECATED_EXPORT QTime calculateRemaining( KIO::filesize_t totalSize, KIO::filesize_t processedSize, KIO::filesize_t speed );
 #endif
 
   /**

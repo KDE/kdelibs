@@ -19,6 +19,8 @@
 
 #include "thumbcreator.h"
 
+#include <qglobal.h>
+
 ThumbCreator::~ThumbCreator()
 {
 }

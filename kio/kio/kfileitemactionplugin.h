@@ -35,7 +35,7 @@ class KFileItemListProperties;
  * (introduced in kdelibs-4.6.1 in order to remove the erroneous
  * "const" in the actions method)
  */
-class KIO_EXPORT_DEPRECATED KFileItemActionPlugin : public QObject
+class KIO_DEPRECATED_EXPORT KFileItemActionPlugin : public QObject
 {
     Q_OBJECT
 
