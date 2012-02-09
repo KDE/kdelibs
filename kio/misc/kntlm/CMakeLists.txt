@@ -1,11 +1,13 @@
 include_directories(
   ${kcoreaddons_SOURCE_DIR}/src/randomness
   ${kcoreaddons_BINARY_DIR}/src
+  ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 set(kntlm_LIB_SRCS kntlm.cpp des.cpp )
 
 kde4_add_library(kntlm ${LIBRARY_TYPE} ${kntlm_LIB_SRCS})
+generate_export_header(kntlm)
 
 target_link_libraries(kntlm  ${KDE4_KDECORE_LIBS} kcoreaddons)
 
@@ -13,5 +15,5 @@ set_target_properties(kntlm PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION 
 
 install(TARGETS kntlm  ${INSTALL_TARGETS_DEFAULT_ARGS})
 
-install( FILES kntlm_export.h kntlm.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kntlm_export.h kntlm.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
 

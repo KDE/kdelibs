@@ -252,6 +252,7 @@ set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdeui
 # kio depends on kdeui
 set(KDE4_KIO_INCLUDES ${CMAKE_SOURCE_DIR}/kio
                       ${CMAKE_BINARY_DIR}/kio
+                      ${CMAKE_BINARY_DIR}/kio/misc/kntlm
                       ${CMAKE_SOURCE_DIR}/kio/bookmarks
                       ${CMAKE_SOURCE_DIR}/kio/kio
                       ${CMAKE_SOURCE_DIR}/kio/kfile
