@@ -48,7 +48,7 @@
 
 <!-- Tekstschema's -->
 <!ENTITY meld.fouten            '<para>Op- of aanmerkingen over de vertalingen van de toepassing en haar documentatie kunt u melden op <ulink url="http://www.kde.nl/bugs">http://www.kde.nl/bugs</ulink>.</para>'>
-<!ENTITY ged.vertaald           '<othercredit role=\"translator\"><firstname>Dit document is nog maar gedeeltelijk vertaald.</firstname> <surname>Wilt u meehelpen, stuur een bericht naar:</surname><affiliation><address> <email>kde-i18n-nl@kde.org</email></address></affiliation> <contrib>Nieuwe vertaler</contrib></othercredit>'>
+<!ENTITY ged.vertaald           '<othercredit role="translator"><firstname>Dit document is nog maar gedeeltelijk vertaald.</firstname> <surname>Wilt u meehelpen, stuur een bericht naar:</surname><affiliation><address> <email>kde-i18n-nl@kde.org</email></address></affiliation> <contrib>Nieuwe vertaler</contrib></othercredit>'>
 
 <!-- Entities voor vertalers (voor CREDITS_FOR_TRANSLATORS)-->
 <!ENTITY vertaling.bram         "<para>Dit document is vertaald in het Nederlands door &Bram.Schoenmakers;.</para>">
