@@ -15,6 +15,7 @@ qt4_add_dbus_interface(kimproxy_LIB_SRCS ../interface/org.kde.KIMIface.xml kimif
 
 
 kde4_add_library(kimproxy ${LIBRARY_TYPE} ${kimproxy_LIB_SRCS})
+generate_export_header(kimproxy)
 
 target_link_libraries(kimproxy  ${KDE4_KIO_LIBS} )
 target_link_libraries(kimproxy  LINK_INTERFACE_LIBRARIES ${QT_QTCORE_LIBRARY} )
@@ -27,4 +28,4 @@ set_target_properties(kimproxy PROPERTIES
 ########### install files ###############
 
 install(TARGETS kimproxy  ${INSTALL_TARGETS_DEFAULT_ARGS})
-install( FILES kimproxy_export.h kimproxy.h DESTINATION  ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kimproxy_export.h kimproxy.h DESTINATION  ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
