@@ -9,6 +9,10 @@ if(Soprano_FOUND)
 include_directories(${SOPRANO_INCLUDE_DIR})
 endif(Soprano_FOUND)
 
+include_directories(
+  ${CMAKE_CURRENT_BINARY_DIR}
+)
+
 add_subdirectory(tests)
 
 set(kfile_LIB_SRCS
@@ -39,6 +43,7 @@ set(kfile_LIB_SRCS
 )
 
 kde4_add_library(kfile ${LIBRARY_TYPE} ${kfile_LIB_SRCS})
+generate_export_header(kfile)
 target_link_libraries(kfile
    ${KDE4_KIO_LIBS}
    ${ZLIB_LIBRARY}
@@ -72,7 +77,7 @@ install( FILES
   kurlnavigator.h
   knewfilemenu.h
   knameandurlinputdialog.h
-  kfile_export.h
+  ${CMAKE_CURRENT_BINARY_DIR}/kfile_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 ############ module used by KFileDialog ##########

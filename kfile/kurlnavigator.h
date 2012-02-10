@@ -282,7 +282,7 @@ public:
      * @return     The current URL of the location.
      * @deprecated Use KUrlNavigator::locationUrl() instead.
      */
-    KDE_DEPRECATED const KUrl& url() const;
+    KFILE_DEPRECATED const KUrl& url() const;
 
     /**
      * @return The portion of the current URL up to the path part given
@@ -294,7 +294,7 @@ public:
      * - index >= 3: /home/peter/Documents/Music
      * @deprecated It should not be necessary for a client of KUrlNavigator to query this information.
      */
-    KDE_DEPRECATED KUrl url(int index) const;
+    KFILE_DEPRECATED KUrl url(int index) const;
 
     /**
      * @return URL for the history element with the index \a historyIndex.
@@ -302,23 +302,23 @@ public:
      * @since 4.3
      * @deprecated Use KUrlNavigator::locationUrl(historyIndex) instead.
      */
-    KDE_DEPRECATED KUrl historyUrl(int historyIndex) const;
+    KFILE_DEPRECATED KUrl historyUrl(int historyIndex) const;
 
     /**
      * @return The saved root URL for the current URL (see KUrlNavigator::saveRootUrl()).
      * @deprecated Use KUrlNavigator::locationState() instead.
      */
-    KDE_DEPRECATED const KUrl& savedRootUrl() const;
+    KFILE_DEPRECATED const KUrl& savedRootUrl() const;
 
     /**
      * @return The saved contents position of the upper left corner
      *         for the current URL.
      * @deprecated Use KUrlNavigator::locationState() instead.
      */
-    KDE_DEPRECATED QPoint savedPosition() const;
+    KFILE_DEPRECATED QPoint savedPosition() const;
 
     /** @deprecated Use setHomeUrl(const KUrl& url) instead. */
-    KDE_DEPRECATED void setHomeUrl(const QString& homeUrl);
+    KFILE_DEPRECATED void setHomeUrl(const QString& homeUrl);
 #endif
 
 public Q_SLOTS:
@@ -348,19 +348,19 @@ public Q_SLOTS:
      * Sets the location to \a url.
      * @deprecated Use KUrlNavigator::setLocationUrl(url).
      */
-    KDE_DEPRECATED void setUrl(const KUrl& url);
+    KFILE_DEPRECATED void setUrl(const KUrl& url);
 
     /**
      * Saves the used root URL of the content for the current history element.
      * @deprecated Use KUrlNavigator::saveLocationState() instead.
      */
-    KDE_DEPRECATED void saveRootUrl(const KUrl& url);
+    KFILE_DEPRECATED void saveRootUrl(const KUrl& url);
 
     /**
      * Saves the coordinates of the contents for the current history element.
      * @deprecated Use KUrlNavigator::saveLocationState() instead.
      */
-    KDE_DEPRECATED void savePosition(int x, int y);
+    KFILE_DEPRECATED void savePosition(int x, int y);
 #endif
 
 Q_SIGNALS:
