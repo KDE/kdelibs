@@ -18,6 +18,7 @@ set(kemoticons_LIB_SRCS
 )
 
 kde4_add_library(kemoticons ${LIBRARY_TYPE} ${kemoticons_LIB_SRCS})
+generate_export_header(kemoticons)
 target_link_libraries(kemoticons ${KDE4_KIO_LIBS} karchive kcoreaddons)
 target_link_libraries(kemoticons LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY})
 set_target_properties(kemoticons PROPERTIES
@@ -27,7 +28,7 @@ set_target_properties(kemoticons PROPERTIES
 install(FILES kemoticons/kemoticonsTheme.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
 
 install(FILES
-    kemoticons_export.h
+    ${CMAKE_CURRENT_BINARY_DIR}/kemoticons_export.h
     kemoticons/kemoticons.h
     kemoticons/kemoticonstheme.h
     kemoticons/kemoticonsprovider.h
@@ -64,6 +65,7 @@ elseif (Q_WS_WIN)
 endif (Q_WS_X11)
 
 kde4_add_library(kidletime ${LIBRARY_TYPE} ${kidletime_LIB_SRCS})
+generate_export_header(kidletime)
 target_link_libraries(kidletime LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY})
 target_link_libraries(kidletime ${KDE4_KDEUI_LIBS})
 
@@ -81,7 +83,7 @@ set_target_properties(kidletime PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}
                       SOVERSION ${GENERIC_LIB_SOVERSION})
 install( FILES
- kidletime_export.h
+ ${CMAKE_CURRENT_BINARY_DIR}/kidletime_export.h
  kidletime/kidletime.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
@@ -104,6 +106,7 @@ set(kcmutils_LIB_SRCS
 )
 
 kde4_add_library(kcmutils ${LIBRARY_TYPE} ${kcmutils_LIB_SRCS})
+generate_export_header(kcmutils)
 
 target_link_libraries(kcmutils ${KDE4_KDEUI_LIBS} kauth kcoreaddons )
 target_link_libraries(kcmutils LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY})
@@ -112,7 +115,7 @@ set_target_properties(kcmutils PROPERTIES
                       SOVERSION ${GENERIC_LIB_SOVERSION})
 
 install( FILES
- kcmutils_export.h
+ ${CMAKE_CURRENT_BINARY_DIR}/kcmutils_export.h
  kcmoduleinfo.h
  kcmoduleloader.h
  kcmultidialog.h
@@ -137,6 +140,7 @@ set(kprintutils_LIB_SRCS
 )
 
 kde4_add_library(kprintutils ${LIBRARY_TYPE} ${kprintutils_LIB_SRCS})
+generate_export_header(kprintutils)
 
 target_link_libraries(kprintutils ${KDE4_KPARTS_LIBS} kcoreaddons)
 target_link_libraries(kprintutils LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY})
@@ -145,7 +149,7 @@ set_target_properties(kprintutils PROPERTIES
                       SOVERSION ${GENERIC_LIB_SOVERSION})
 
 install( FILES
- kprintutils_export.h
+ ${CMAKE_CURRENT_BINARY_DIR}/kprintutils_export.h
  kprintpreview.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
