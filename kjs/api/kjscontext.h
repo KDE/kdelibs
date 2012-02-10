@@ -24,6 +24,8 @@
 
 #include "kjsapi_export.h"
 
+#include <QString>
+
 class KJSObject;
 class KJSArray;
 class KJSInterpreter;

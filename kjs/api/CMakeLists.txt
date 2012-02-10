@@ -9,6 +9,7 @@ set(kjsapi_LIB_SRCS
    )
 
 kde4_add_library(kjsapi ${LIBRARY_TYPE} ${kjsapi_LIB_SRCS})
+generate_export_header(kjsapi)
 
 target_link_libraries(kjsapi ${KJSLIBNAME} ${KDE4_KDECORE_LIBS})
 
@@ -16,7 +17,7 @@ set_target_properties(kjsapi PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION
 install(TARGETS kjsapi ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
-        kjsapi_export.h
+        ${CMAKE_CURRENT_BINARY_DIR}/kjsapi_export.h
         kjsinterpreter.h
         kjscontext.h
         kjsobject.h
