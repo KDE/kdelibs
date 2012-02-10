@@ -23,6 +23,7 @@
 #include <QtCore/QCharRef>
 
 #include <kiconloader.h>
+#include <kicon.h>
 #include <klocale.h>
 #include <kglobalsettings.h>
 #include <kguiitem.h>
