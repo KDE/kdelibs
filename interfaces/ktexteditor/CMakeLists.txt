@@ -31,6 +31,7 @@ set(ktexteditor_LIB_SRCS
 kde4_add_ui_files(ktexteditor_LIB_SRCS editorchooser_ui.ui )
 
 kde4_add_library(ktexteditor ${LIBRARY_TYPE} ${ktexteditor_LIB_SRCS})
+generate_export_header(ktexteditor)
 
 target_link_libraries(ktexteditor  ${KDE4_KDECORE_LIBS} ${QT_QTDBUS_LIBRARY} ${KDE4_KPARTS_LIBS} )
 target_link_libraries(ktexteditor  LINK_INTERFACE_LIBRARIES ${KDE4_KPARTS_LIBS} )
@@ -43,7 +44,7 @@ install(TARGETS ktexteditor ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
 install( FILES
-    ktexteditor_export.h
+    ${CMAKE_CURRENT_BINARY_DIR}/ktexteditor_export.h
     factory.h
     editor.h
     document.h
