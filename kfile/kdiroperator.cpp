@@ -368,7 +368,7 @@ KDirOperator::Private::~Private()
     progressDelayTimer = 0;
 }
 
-KDirOperator::KDirOperator(const KUrl& _url, QWidget *parent) :
+KDirOperator::KDirOperator(const QUrl& _url, QWidget *parent) :
     QWidget(parent),
     d(new Private(this))
 {

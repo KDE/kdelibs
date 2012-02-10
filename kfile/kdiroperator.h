@@ -122,7 +122,7 @@ public:
      *
      * This constructor doesn't start loading the url, setView will do it.
      */
-    explicit KDirOperator(const KUrl& urlName = KUrl(),
+    explicit KDirOperator(const QUrl &urlName  = QUrl(),
                           QWidget *parent = 0);
     /**
      * Destroys the KDirOperator.
