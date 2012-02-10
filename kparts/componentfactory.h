@@ -53,7 +53,7 @@ namespace KParts
          */
 #ifndef KDE_NO_DEPRECATED
         template <class T>
-        KDE_DEPRECATED T *createPartInstanceFromFactory( KParts::Factory *factory,
+        KPARTS_DEPRECATED T *createPartInstanceFromFactory( KParts::Factory *factory,
                                           QWidget *parentWidget = 0,
                                           QObject *parent = 0,
                                           const QStringList &args = QStringList() )
@@ -75,7 +75,7 @@ namespace KParts
          */
 #ifndef KDE_NO_DEPRECATED
         template <class T>
-        KDE_DEPRECATED T *createPartInstanceFromLibrary( const char *libraryName,
+        KPARTS_DEPRECATED T *createPartInstanceFromLibrary( const char *libraryName,
                                           QWidget *parentWidget = 0,
                                           QObject *parent = 0,
                                           const QStringList &args = QStringList(),
@@ -121,7 +121,7 @@ namespace KParts
          */
 #ifndef KDE_NO_DEPRECATED
         template <class T>
-        KDE_DEPRECATED T *createPartInstanceFromService( const KService::Ptr &service,
+        KPARTS_DEPRECATED T *createPartInstanceFromService( const KService::Ptr &service,
                                           QWidget *parentWidget = 0,
                                           QObject *parent = 0,
                                           const QStringList &args = QStringList(),
@@ -142,7 +142,7 @@ namespace KParts
 
 #ifndef KDE_NO_DEPRECATED
         template <class T, class ServiceIterator>
-        KDE_DEPRECATED T *createPartInstanceFromServices( ServiceIterator begin,
+        KPARTS_DEPRECATED T *createPartInstanceFromServices( ServiceIterator begin,
                                            ServiceIterator end,
                                            QWidget *parentWidget = 0,
                                            QObject *parent = 0,
@@ -200,7 +200,7 @@ namespace KParts
          */
 #ifndef KDE_NO_DEPRECATED
         template <class T>
-        KDE_DEPRECATED T *createPartInstanceFromQuery( const QString &mimeType,
+        KPARTS_DEPRECATED T *createPartInstanceFromQuery( const QString &mimeType,
                                         const QString &constraint,
                                         QWidget *parentWidget = 0,
                                         QObject *parent = 0,

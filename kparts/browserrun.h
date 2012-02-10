@@ -92,7 +92,7 @@ namespace KParts {
          * @endcode
          */
 #ifndef KDE_NO_DEPRECATED
-        static KDE_DEPRECATED AskSaveResult askSave( const KUrl & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFileName = QString() );
+        static KPARTS_DEPRECATED AskSaveResult askSave( const KUrl & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFileName = QString() );
 #endif
 
         enum AskEmbedOrSaveFlags { InlineDisposition = 0, AttachmentDisposition = 1 };
@@ -112,7 +112,7 @@ namespace KParts {
          * @endcode
          */
 #ifndef KDE_NO_DEPRECATED
-        static KDE_DEPRECATED AskSaveResult askEmbedOrSave( const KUrl & url, const QString& mimeType, const QString & suggestedFileName = QString(), int flags = 0 );
+        static KPARTS_DEPRECATED AskSaveResult askEmbedOrSave( const KUrl & url, const QString& mimeType, const QString & suggestedFileName = QString(), int flags = 0 );
 #endif
 
         // virtual so that KHTML can implement differently (HTML cache)

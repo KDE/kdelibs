@@ -170,7 +170,7 @@ protected:
      * @return The plugin created from the library @p libname
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED static Plugin* loadPlugin( QObject * parent, const char* libname );
+    KPARTS_DEPRECATED static Plugin* loadPlugin( QObject * parent, const char* libname );
 #endif
 
     /**
@@ -178,7 +178,7 @@ protected:
      * @return The plugin created from the library @p libname
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED static Plugin* loadPlugin( QObject * parent, const QByteArray &libname );
+    KPARTS_DEPRECATED static Plugin* loadPlugin( QObject * parent, const QByteArray &libname );
 #endif
 
     /**

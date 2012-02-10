@@ -4,6 +4,7 @@ include_directories(
  ${KDE4_KDECORE_INCLUDES}
  ${KDE4_KDEUI_INCLUDES}
  ${KDE4_KIO_INCLUDES}
+ ${KDE4_KPARTS_INCLUDES}
 )
 
 set(kdewebkit_LIB_SRCS

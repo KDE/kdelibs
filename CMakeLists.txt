@@ -263,6 +263,7 @@ set(KDE4_KPTY_INCLUDES ${CMAKE_SOURCE_DIR}/kpty ${KDE4_KIO_INCLUDES} )
 
 # kparts depends on kio
 set(KDE4_KPARTS_INCLUDES ${CMAKE_SOURCE_DIR}/kparts
+                         ${CMAKE_BINARY_DIR}/kparts
                          ${KDE4_KIO_INCLUDES})
 
 # kde3support depends on kparts

@@ -1,8 +1,9 @@
 project(kparts)
 
+include_directories(${KDE4_KIO_INCLUDES} ${kparts_BINARY_DIR})
+
 add_subdirectory( tests )
 
-include_directories(${KDE4_KIO_INCLUDES} ${kparts_BINARY_DIR})
 if(HAVE_NEPOMUK)
     include_directories(${nepomuk_SOURCE_DIR} ${nepomuk_SOURCE_DIR}/core ${nepomuk_SOURCE_DIR}/types)
 endif(HAVE_NEPOMUK)
@@ -33,6 +34,7 @@ set(kparts_LIB_SRCS
    )
 
 kde4_add_library(kparts ${LIBRARY_TYPE} ${kparts_LIB_SRCS})
+generate_export_header(kparts)
 
 target_link_libraries(kparts  ${KDE4_KDECORE_LIBS} kdeui kio kcoreaddons)
 target_link_libraries(kparts  LINK_INTERFACE_LIBRARIES kio kdeui kdecore ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} )
@@ -51,7 +53,7 @@ install(TARGETS kparts ${INSTALL_TARGETS_DEFAULT_ARGS})
 ########### install files ###############
 
 install( FILES kpart.desktop krop.desktop krwp.desktop browserview.desktop   DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
-install( FILES kparts_export.h part.h plugin.h partmanager.h mainwindow.h event.h
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kparts_export.h part.h plugin.h partmanager.h mainwindow.h event.h
          browserextension.h factory.h historyprovider.h browserinterface.h genericfactory.h
          componentfactory.h browserrun.h statusbarextension.h browseropenorsavequestion.h
          scriptableextension.h textextension.h htmlextension.h fileinfoextension.h

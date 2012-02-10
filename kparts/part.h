@@ -684,14 +684,14 @@ protected:
      * @internal
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED bool isLocalFileTemporary() const;
+    KPARTS_DEPRECATED bool isLocalFileTemporary() const;
 #endif
 
     /**
      * @internal
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setLocalFileTemporary( bool temp );
+    KPARTS_DEPRECATED void setLocalFileTemporary( bool temp );
 #endif
 
     /**
