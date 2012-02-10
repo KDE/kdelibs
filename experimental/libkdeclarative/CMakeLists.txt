@@ -27,6 +27,7 @@ set(kdeclarative_LIB_SRCS
     bindings/url.cpp)
 
 kde4_add_library(kdeclarative SHARED ${kdeclarative_LIB_SRCS})
+generate_export_header(kdeclarative)
 
 set_target_properties(kdeclarative PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION})
 
@@ -45,7 +46,7 @@ target_link_libraries(kdeclarativetest kdeclarative ${KDE4_KDECORE_LIBS} ${QT_QT
 
 set(kdeclarative_LIB_HEADERS
     kdeclarative.h
-    kdeclarative_export.h)
+    ${CMAKE_CURRENT_BINARY_DIR}/kdeclarative_export.h)
 
 install(FILES ${kdeclarative_LIB_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR}/ COMPONENT Devel)
 
