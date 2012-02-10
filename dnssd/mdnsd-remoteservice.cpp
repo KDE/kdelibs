@@ -151,4 +151,4 @@ void resolve_callback    (    DNSServiceRef,
 
 }
 
-#include "remoteservice.moc"
+#include "moc_remoteservice.cpp"

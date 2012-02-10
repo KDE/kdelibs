@@ -95,4 +95,4 @@ void PublicService::virtual_hook(int, void*)
 
 }
 
-#include "publicservice.moc"
+#include "moc_publicservice.cpp"

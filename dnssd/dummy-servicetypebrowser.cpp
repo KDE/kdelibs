@@ -47,4 +47,4 @@ bool ServiceTypeBrowser::isRunning() const
 #endif
 
 }
-#include "servicetypebrowser.moc"
+#include "moc_servicetypebrowser.cpp"

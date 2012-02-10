@@ -58,4 +58,4 @@ void RemoteService::virtual_hook(int, void*)
 
 }
 
-#include "remoteservice.moc"
+#include "moc_remoteservice.cpp"
