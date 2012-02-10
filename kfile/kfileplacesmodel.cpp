@@ -604,7 +604,7 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
 
     } else if (data->hasFormat("text/uri-list")) {
         // The operation is an add
-        KUrl::List urls = KUrl::List::fromMimeData(data);
+        QList<KUrl> urls = KUrl::List::fromMimeData(data);
 
         KBookmarkGroup group = d->bookmarkManager->root();
 

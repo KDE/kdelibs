@@ -81,7 +81,7 @@ public:
     /**
      * Returns the files that the popup is shown for
      */
-    KUrl::List popupFiles() const;
+    QList<KUrl> popupFiles() const;
 
     /**
      * Sets the modality of dialogs created by KNewFile. Set to false if you do not want to block
@@ -99,7 +99,7 @@ public:
      * Set the files the popup is shown for
      * Call this before showing up the menu
      */
-    void setPopupFiles(const KUrl::List& files);
+    void setPopupFiles(const QList<KUrl>& files);
     
     /**
      * Only show the files in a given set of mimetypes.

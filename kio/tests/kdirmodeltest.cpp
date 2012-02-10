@@ -1216,7 +1216,7 @@ void KDirModelTest::testDeleteFiles()
 {
     const int oldTopLevelRowCount = m_dirModel->rowCount();
     const QString file = m_tempDir->path() + "/toplevelfile_";
-    KUrl::List urls;
+    QList<KUrl> urls;
     urls << KUrl(file + '1') << KUrl(file + '2') << KUrl(file + '3');
 
     QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));

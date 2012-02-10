@@ -70,7 +70,7 @@ void KRunUnitTest::testBinaryName()
 
 //static const char *bt(bool tr) { return tr?"true":"false"; }
 static void checkPDE(const char* exec, const char* term, const char* sus,
-                     const KUrl::List &urls, bool tf, const QString& b)
+                     const QList<KUrl> &urls, bool tf, const QString& b)
 {
     QFile out( "kruntest.desktop" );
     if ( !out.open( QIODevice::WriteOnly ) )
@@ -100,7 +100,7 @@ static void checkPDE(const char* exec, const char* term, const char* sus,
 
 void KRunUnitTest::testProcessDesktopExec()
 {
-    KUrl::List l0;
+    QList<KUrl> l0;
     static const char
         * const execs[] = { "Exec=date -u", "Exec=echo $PWD" },
         * const terms[] = { "Terminal=false", "Terminal=true\nTerminalOptions=-T \"%f - %c\"" },
@@ -136,15 +136,15 @@ void KRunUnitTest::testProcessDesktopExec()
 void KRunUnitTest::testProcessDesktopExecNoFile_data()
 {
     QTest::addColumn<QString>("execLine");
-    QTest::addColumn<KUrl::List>("urls");
+    QTest::addColumn<QList<KUrl> >("urls");
     QTest::addColumn<bool>("tempfiles");
     QTest::addColumn<QString>("expected");
 
-    KUrl::List l0;
-    KUrl::List l1; l1 << KUrl( "file:/tmp" );
-    KUrl::List l2; l2 << KUrl( "http://localhost/foo" );
-    KUrl::List l3; l3 << KUrl( "file:/local/file" ) << KUrl( "http://remotehost.org/bar" );
-    KUrl::List l4; l4 << KUrl( "http://login:password@www.kde.org" );
+    QList<KUrl> l0;
+    QList<KUrl> l1; l1 << KUrl( "file:/tmp" );
+    QList<KUrl> l2; l2 << KUrl( "http://localhost/foo" );
+    QList<KUrl> l3; l3 << KUrl( "file:/local/file" ) << KUrl( "http://remotehost.org/bar" );
+    QList<KUrl> l4; l4 << KUrl( "http://login:password@www.kde.org" );
 
     // A real-world use case would be kate.
     // But I picked kdeinit4 since it's installed by kdelibs
@@ -190,7 +190,7 @@ void KRunUnitTest::testProcessDesktopExecNoFile()
 {
     QFETCH(QString, execLine);
     KService service("dummy", execLine, "app");
-    QFETCH(KUrl::List, urls);
+    QFETCH(QList<KUrl>, urls);
     QFETCH(bool, tempfiles);
     QFETCH(QString, expected);
     QCOMPARE(KShell::joinArgs(KRun::processDesktopExec(service,urls,tempfiles)), expected);

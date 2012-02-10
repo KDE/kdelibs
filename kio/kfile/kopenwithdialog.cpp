@@ -433,7 +433,7 @@ public:
     /**
      * Determine mime type from URLs
      */
-    void setMimeType(const KUrl::List &_urls);
+    void setMimeType(const QList<KUrl> &_urls);
 
     void addToMimeAppsList(const QString& serviceId);
 
@@ -475,7 +475,7 @@ public:
     KService::Ptr m_pService;
 };
 
-KOpenWithDialog::KOpenWithDialog( const KUrl::List& _urls, QWidget* parent )
+KOpenWithDialog::KOpenWithDialog( const QList<KUrl>& _urls, QWidget* parent )
     : KDialog(parent), d(new KOpenWithDialogPrivate(this))
 {
     setObjectName( QLatin1String( "openwith" ) );
@@ -496,7 +496,7 @@ KOpenWithDialog::KOpenWithDialog( const KUrl::List& _urls, QWidget* parent )
     d->init(text, QString());
 }
 
-KOpenWithDialog::KOpenWithDialog( const KUrl::List& _urls, const QString&_text,
+KOpenWithDialog::KOpenWithDialog( const QList<KUrl>& _urls, const QString&_text,
                             const QString& _value, QWidget *parent)
     : KDialog(parent), d(new KOpenWithDialogPrivate(this))
 {
@@ -542,7 +542,7 @@ KOpenWithDialog::KOpenWithDialog( QWidget *parent)
     d->init(text, QString());
 }
 
-void KOpenWithDialogPrivate::setMimeType(const KUrl::List &_urls)
+void KOpenWithDialogPrivate::setMimeType(const QList<KUrl> &_urls)
 {
   if ( _urls.count() == 1 )
   {

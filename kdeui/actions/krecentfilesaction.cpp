@@ -130,7 +130,7 @@ static QString titleWithSensibleWidth(const QString& nameValue, const QString& v
 
     QString title = nameValue + " [" + value + ']';
     if (fontMetrics.width(title) > maxWidthForTitles){
-        // If it does not fit, try to cut only the whole path, though if the 
+        // If it does not fit, try to cut only the whole path, though if the
         // name is too long (more than 3/4 of the whole text) we cut it a bit too
         const int nameValueMaxWidth = maxWidthForTitles * 3 / 4;
         const int nameWidth = fontMetrics.width(nameValue);

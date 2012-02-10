@@ -694,7 +694,7 @@ void KFilePreviewGenerator::Private::updateCutItems()
 
     KFileItemList items;
     KDirLister* dirLister = dirModel->dirLister();
-    const KUrl::List dirs = dirLister->directories();
+    const QList<KUrl> dirs = dirLister->directories();
     foreach (const KUrl& url, dirs) {
         items << dirLister->itemsForDir(url);
     }
@@ -880,7 +880,7 @@ void KFilePreviewGenerator::Private::resolveMimeType()
 bool KFilePreviewGenerator::Private::isCutItem(const KFileItem& item) const
 {
     const QMimeData* mimeData = QApplication::clipboard()->mimeData();
-    const KUrl::List cutUrls = KUrl::List::fromMimeData(mimeData);
+    const QList<KUrl> cutUrls = KUrl::List::fromMimeData(mimeData);
     return cutUrls.contains(item.url());
 }
 

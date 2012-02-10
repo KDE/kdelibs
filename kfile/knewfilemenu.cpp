@@ -347,7 +347,7 @@ public:
      * When the user pressed the right mouse button over an URL a popup menu
      * is displayed. The URL belonging to this popup menu is stored here.
      */
-    KUrl::List m_popupFiles;
+    QList<KUrl> m_popupFiles;
 
     QStringList m_supportedMimeTypes;
     QString m_tempFileToDelete; // set when a tempfile was created for a Type=URL desktop file
@@ -426,7 +426,7 @@ void KNewFileMenuPrivate::executeOtherDesktopFile(const KNewFileMenuSingleton::E
         return;
     }
 
-    KUrl::List::const_iterator it = m_popupFiles.constBegin();
+    QList<KUrl>::const_iterator it = m_popupFiles.constBegin();
     for (; it != m_popupFiles.constEnd(); ++it)
     {
         QString text = entry.text;
@@ -533,13 +533,13 @@ void KNewFileMenuPrivate::executeStrategy()
 
     // The template is not a desktop file [or it's a URL one]
     // Copy it.
-    KUrl::List::const_iterator it = m_popupFiles.constBegin();
+    QList<KUrl>::const_iterator it = m_popupFiles.constBegin();
     for (; it != m_popupFiles.constEnd(); ++it)
     {
         KUrl dest(*it);
         dest.addPath(KIO::encodeFileName(chosenFileName));
 
-        KUrl::List lstSrc;
+        QList<KUrl> lstSrc;
         lstSrc.append(uSrc);
         KIO::Job* kjob;
         if (m_strategy.m_isSymlink) {
@@ -1063,7 +1063,7 @@ bool KNewFileMenu::isModal() const
     return d->m_modal;
 }
 
-KUrl::List KNewFileMenu::popupFiles() const
+QList<KUrl> KNewFileMenu::popupFiles() const
 {
     return d->m_popupFiles;
 }
@@ -1073,7 +1073,7 @@ void KNewFileMenu::setModal(bool modal)
     d->m_modal = modal;
 }
 
-void KNewFileMenu::setPopupFiles(const KUrl::List& files)
+void KNewFileMenu::setPopupFiles(const QList<KUrl>& files)
 {
     d->m_popupFiles = files;
     if (files.isEmpty()) {

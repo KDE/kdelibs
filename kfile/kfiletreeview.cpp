@@ -125,9 +125,9 @@ KUrl KFileTreeView::selectedUrl() const
     return d->urlForProxyIndex(firstIndex);
 }
 
-KUrl::List KFileTreeView::selectedUrls() const
+QList<KUrl> KFileTreeView::selectedUrls() const
 {
-    KUrl::List urls;
+    QList<KUrl> urls;
 
     if (!selectionModel()->hasSelection())
         return urls;

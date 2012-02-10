@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 {
     KCmdLineArgs::init(argc, argv, "kopenwithdialogtest", 0, qi18n("kopenwithdialogtest"), "0.1", qi18n("kopenwithdialogtest"));
     KApplication app;
-    KUrl::List list;
+    QList<KUrl> list;
 
     list += KUrl("file:///tmp/testfile.txt");
 

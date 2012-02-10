@@ -171,10 +171,10 @@ Q_SIGNALS:
   void urlSelected( const KUrl& url );
 
   /**
-   *  This signal gets emitted when the user clear list. 
+   *  This signal gets emitted when the user clear list.
    *  So when user store url in specific config file it can saveEntry.
    *  @since 4.3
-   */ 
+   */
   void recentListCleared();
 
 private:
@@ -183,7 +183,7 @@ private:
     // Don't warn about the virtual overload. As the comment of the other
     // addAction() says, addAction( QAction* ) should not be used.
     using KSelectAction::addAction;
-    
+
     Q_PRIVATE_SLOT( d_func(), void _k_urlSelected(QAction*) )
 };
 

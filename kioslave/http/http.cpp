@@ -2203,7 +2203,7 @@ bool HTTPProtocol::httpOpenConnection()
     if (m_request.proxyUrls.isEmpty()) {
         connectError = connectToHost(m_request.url.host(), m_request.url.port(defaultPort()), &errorString);
     } else {
-        KUrl::List badProxyUrls;
+        QList<KUrl> badProxyUrls;
         Q_FOREACH(const QString& proxyUrl, m_request.proxyUrls) {
             const KUrl url (proxyUrl);
             const QString scheme (url.scheme());

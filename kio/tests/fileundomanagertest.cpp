@@ -58,9 +58,9 @@ static QString destLink() { return destDir() + "symlink"; }
 static QString srcSubDir() { return homeTmpDir() + "subdir"; }
 static QString destSubDir() { return destDir() + "subdir"; }
 
-static KUrl::List sourceList()
+static QList<KUrl> sourceList()
 {
-    KUrl::List lst;
+    QList<KUrl> lst;
     lst << KUrl( srcFile() );
 #ifndef Q_WS_WIN
     lst << KUrl( srcLink() );
@@ -138,14 +138,14 @@ public:
         Q_UNUSED( destTime );
         return true;
     }
-    virtual bool confirmDeletion( const KUrl::List& files ) {
+    virtual bool confirmDeletion( const QList<KUrl>& files ) {
         m_files = files;
         return m_nextReplyToConfirmDeletion;
     }
     void setNextReplyToConfirmDeletion( bool b ) {
         m_nextReplyToConfirmDeletion = b;
     }
-    KUrl::List files() const { return m_files; }
+    QList<KUrl> files() const { return m_files; }
     KUrl dest() const { return m_dest; }
     void clear() {
         m_dest = KUrl();
@@ -154,7 +154,7 @@ public:
 private:
     bool m_nextReplyToConfirmDeletion;
     KUrl m_dest;
-    KUrl::List m_files;
+    QList<KUrl> m_files;
 };
 
 void FileUndoManagerTest::initTestCase()
@@ -210,7 +210,7 @@ void FileUndoManagerTest::testCopyFiles()
     kDebug() ;
     // Initially inspired from JobTest::copyFileToSamePartition()
     const QString destdir = destDir();
-    KUrl::List lst = sourceList();
+    QList<KUrl> lst = sourceList();
     const KUrl d( destdir );
     KIO::CopyJob* job = KIO::copy( lst, d, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
@@ -266,7 +266,7 @@ void FileUndoManagerTest::testMoveFiles()
 {
     kDebug() ;
     const QString destdir = destDir();
-    KUrl::List lst = sourceList();
+    QList<KUrl> lst = sourceList();
     const KUrl d( destdir );
     KIO::CopyJob* job = KIO::move( lst, d, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
@@ -309,7 +309,7 @@ void FileUndoManagerTest::testCopyFilesOverwrite()
 void FileUndoManagerTest::testCopyDirectory()
 {
     const QString destdir = destDir();
-    KUrl::List lst; lst << srcSubDir();
+    QList<KUrl> lst; lst << srcSubDir();
     const KUrl d( destdir );
     KIO::CopyJob* job = KIO::copy( lst, d, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
@@ -330,7 +330,7 @@ void FileUndoManagerTest::testCopyDirectory()
 void FileUndoManagerTest::testMoveDirectory()
 {
     const QString destdir = destDir();
-    KUrl::List lst; lst << srcSubDir();
+    QList<KUrl> lst; lst << srcSubDir();
     const KUrl d( destdir );
     KIO::CopyJob* job = KIO::move( lst, d, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
@@ -352,7 +352,7 @@ void FileUndoManagerTest::testRenameFile()
 {
     const KUrl oldUrl( srcFile() );
     const KUrl newUrl( srcFile() + ".new" );
-    KUrl::List lst;
+    QList<KUrl> lst;
     lst.append(oldUrl);
     QSignalSpy spyUndoAvailable( FileUndoManager::self(), SIGNAL(undoAvailable(bool)) );
     QVERIFY( spyUndoAvailable.isValid() );
@@ -377,7 +377,7 @@ void FileUndoManagerTest::testRenameDir()
 {
     const KUrl oldUrl( srcSubDir() );
     const KUrl newUrl( srcSubDir() + ".new" );
-    KUrl::List lst;
+    QList<KUrl> lst;
     lst.append(oldUrl);
     KIO::Job* job = KIO::moveAs( oldUrl, newUrl, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
@@ -430,7 +430,7 @@ void FileUndoManagerTest::testTrashFiles()
         QSKIP( "kio_trash not installed", SkipAll );
 
     // Trash it all at once: the file, the symlink, the subdir.
-    KUrl::List lst = sourceList();
+    QList<KUrl> lst = sourceList();
     lst.append( srcSubDir() );
     KIO::Job* job = KIO::trash( lst, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
@@ -482,7 +482,7 @@ void FileUndoManagerTest::testModifyFileBeforeUndo()
 {
     // based on testCopyDirectory (so that we check that it works for files in subdirs too)
     const QString destdir = destDir();
-    KUrl::List lst; lst << srcSubDir();
+    QList<KUrl> lst; lst << srcSubDir();
     const KUrl d( destdir );
     KIO::CopyJob* job = KIO::copy( lst, d, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );

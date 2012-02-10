@@ -49,7 +49,7 @@ public:
      * if the dialog is used to choose an application but not for some particular URLs.
      * @param parent parent widget
      */
-    explicit KOpenWithDialog(const KUrl::List &urls, QWidget *parent = 0);
+    explicit KOpenWithDialog(const QList<KUrl> &urls, QWidget *parent = 0);
 
     /**
      * Create a dialog that asks for a application to open a given
@@ -60,7 +60,7 @@ public:
      * @param value  is the initial value of the line
      * @param parent parent widget
      */
-    KOpenWithDialog( const KUrl::List& urls, const QString& text, const QString& value,
+    KOpenWithDialog( const QList<KUrl>& urls, const QString& text, const QString& value,
                   QWidget *parent = 0 );
 
     /**

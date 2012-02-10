@@ -194,7 +194,7 @@ public:
         QString filter;
         QString selectedFilter;
         QStringList mimeTypes;
-        KUrl::List selectedUrls;
+        QList<KUrl> selectedUrls;
         KFile::Modes mode;
         KAbstractFileWidget::OperationMode operationMode;
     };
@@ -226,7 +226,7 @@ public:
     static QStringList getOpenFileNames(const KUrl& startDir, const QString& filter,
                                         QWidget *parent, const QString& caption,
                                         QString *selectedFilter);
-    static KUrl::List getOpenUrls(const KUrl& startDir, const QString& filter,
+    static QList<KUrl> getOpenUrls(const KUrl& startDir, const QString& filter,
                                   QWidget *parent, const QString& caption,
                                   QString *selectedFilter);
     static QString getSaveFileName(const KUrl& dir, const QString& filter,
@@ -576,7 +576,7 @@ KUrl KFileDialogPrivate::getOpenUrl(const KUrl& startDir, const QString& filter,
     return dlg.selectedUrl();
 }
 
-KUrl::List KFileDialog::getOpenUrls(const KUrl& startDir,
+QList<KUrl> KFileDialog::getOpenUrls(const KUrl& startDir,
                                     const QString& filter,
                                     QWidget *parent,
                                     const QString& caption)
@@ -584,7 +584,7 @@ KUrl::List KFileDialog::getOpenUrls(const KUrl& startDir,
     return KFileDialogPrivate::getOpenUrls(startDir, filter, parent, caption, 0);
 }
 
-KUrl::List KFileDialogPrivate::getOpenUrls(const KUrl& startDir,
+QList<KUrl> KFileDialogPrivate::getOpenUrls(const KUrl& startDir,
                                            const QString& filter,
                                            QWidget *parent,
                                            const QString& caption,
@@ -671,7 +671,7 @@ KUrl KFileDialog::selectedUrl() const
     return d->w->selectedUrl();
 }
 
-KUrl::List KFileDialog::selectedUrls() const
+QList<KUrl> KFileDialog::selectedUrls() const
 {
     if (d->native)
         return d->native->selectedUrls;
@@ -688,7 +688,7 @@ QString KFileDialog::selectedFile() const
 QStringList KFileDialog::selectedFiles() const
 {
     if (d->native)
-        return selectedUrls().toStringList();
+        return KUrl::List(selectedUrls()).toStringList();
     return d->w->selectedFiles();
 }
 
@@ -991,7 +991,7 @@ int KFileDialog::exec()
             break;
         }
         else if (d->native->mode & KFile::Files) {
-            KUrl::List urls( KFileDialogPrivate::getOpenUrls(
+            QList<KUrl> urls( KFileDialogPrivate::getOpenUrls(
                 d->native->startDir(), d->native->filter, parentWidget(), windowTitle(), &d->native->selectedFilter ) );
             if (urls.isEmpty()) {
                 res = QDialog::Rejected;

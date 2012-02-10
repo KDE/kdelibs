@@ -1501,8 +1501,8 @@ void KFilePropsPlugin::postApplyChanges()
     applyIconChanges();
 
     const KFileItemList items = properties->items();
-    const KUrl::List lst = items.urlList();
-    org::kde::KDirNotify::emitFilesChanged( lst.toStringList() );
+    const QList<KUrl> lst = items.urlList();
+    org::kde::KDirNotify::emitFilesChanged( KUrl::List(lst).toStringList() );
 }
 
 class KFilePermissionsPropsPlugin::KFilePermissionsPropsPluginPrivate

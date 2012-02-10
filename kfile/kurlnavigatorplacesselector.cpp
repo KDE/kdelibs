@@ -183,7 +183,7 @@ void KUrlNavigatorPlacesSelector::dropEvent(QDropEvent* event)
     setDisplayHintEnabled(DraggedHint, false);
     update();
 
-    const KUrl::List urlList = KUrl::List::fromMimeData(event->mimeData());
+    const QList<KUrl> urlList = KUrl::List::fromMimeData(event->mimeData());
     if (urlList.isEmpty()) {
         return;
     }

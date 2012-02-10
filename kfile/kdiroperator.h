@@ -864,7 +864,7 @@ Q_SIGNALS:
      * @param event the drop event itself.
      * @param urls the urls that where dropped.
      */
-    void dropped(const KFileItem &item, QDropEvent *event, const KUrl::List &urls);
+    void dropped(const KFileItem &item, QDropEvent *event, const QList<KUrl> &urls);
 
     /**
      * Emitted just before the context menu is shown, allows users to

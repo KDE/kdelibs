@@ -289,7 +289,7 @@ protected:
      *
      * @see formsToFill
      */
-    virtual void fillFormDataFromCache(const KUrl::List &list);
+    virtual void fillFormDataFromCache(const QList<KUrl> &list);
 
     /**
      * Stores form data associated with @p key to a persistent storage.

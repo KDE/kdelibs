@@ -77,7 +77,7 @@ void KFileMetaDataReaderApplication::readAndSendMetaData()
 {
     const KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-    KUrl::List urls;
+    QList<KUrl> urls;
     for (int i = 0; i < args->count(); ++i) {
         urls.append(KUrl(args->arg(i)));
     }

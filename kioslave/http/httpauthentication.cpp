@@ -441,7 +441,7 @@ struct DigestAuthInfo
     QByteArray cnonce;
     QByteArray username;
     QByteArray password;
-    KUrl::List digestURIs;
+    QList<KUrl> digestURIs;
     QByteArray algorithm;
     QByteArray entityBody;
 };

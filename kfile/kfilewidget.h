@@ -86,7 +86,7 @@ public:
     /**
      * @returns The list of selected URLs.
      */
-    virtual KUrl::List selectedUrls() const;
+    virtual QList<KUrl> selectedUrls() const;
 
     /**
      * @returns the currently shown directory.

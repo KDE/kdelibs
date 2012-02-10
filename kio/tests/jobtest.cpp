@@ -1226,7 +1226,7 @@ void JobTest::deleteManyDirs(bool using_fast_path)
     kio_resolve_local_urls = !using_fast_path;
 
     const int numDirs = 50;
-    KUrl::List dirs;
+    QList<KUrl> dirs;
     for (int i = 0; i < numDirs; ++i) {
         const QString dir = homeTmpDir() + "dir" + QString::number(i);
         createTestDirectory(dir);
@@ -1292,7 +1292,7 @@ void JobTest::deleteManyFilesTogether(bool using_fast_path)
     const int numFiles = 100; // Use 1000 for performance testing
     const QString baseDir = homeTmpDir();
     createManyFiles(baseDir, numFiles);
-    KUrl::List urls;
+    QList<KUrl> urls;
     for (int i = 0; i < numFiles; ++i) {
         const QString file = baseDir + QString::number(i);
         QVERIFY(QFile::exists(file));
@@ -1409,7 +1409,7 @@ void JobTest::moveFileDestAlreadyExists() // #157601
     const QString existingDest = otherTmpDir() + "fileFromHome";
     createTestFile( existingDest );
 
-    KUrl::List urls; urls << KUrl(file1) << KUrl(file2);
+    QList<KUrl> urls; urls << KUrl(file1) << KUrl(file2);
     KIO::CopyJob* job = KIO::move(urls, otherTmpDir(), KIO::HideProgressInfo);
     job->setUiDelegate(0);
     job->setAutoSkip(true);
@@ -1468,7 +1468,7 @@ void JobTest::moveDestAlreadyExistsAutoRename(const QString& destDir, bool moveD
             createTestFile(source);
     }
 
-    KUrl::List urls; urls << KUrl(file1) << KUrl(file2);
+    QList<KUrl> urls; urls << KUrl(file1) << KUrl(file2);
     KIO::CopyJob* job = KIO::move(urls, destDir, KIO::HideProgressInfo);
     job->setUiDelegate(0);
     job->setAutoRename(true);

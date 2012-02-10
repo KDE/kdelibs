@@ -59,7 +59,7 @@ class KFILE_EXPORT KFileTreeView : public QTreeView  // KDE5: remove KFILE_EXPOR
         /**
          * Returns all selected urls.
          */
-        KUrl::List selectedUrls() const;
+        QList<KUrl> selectedUrls() const;
 
         /**
          * Returns the current root url of the view.

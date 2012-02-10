@@ -305,7 +305,7 @@ public:
 
     KActionMenu *decorationMenu;
     KToggleAction *leftAction;
-    KUrl::List itemsToBeSetAsCurrent;
+    QList<KUrl> itemsToBeSetAsCurrent;
     bool shouldFetchForItems;
     InlinePreviewState inlinePreviewState;
 };
@@ -738,7 +738,7 @@ void KDirOperator::Private::_k_slotToggleIgnoreCase()
 
 void KDirOperator::mkdir()
 {
-    d->newFileMenu->setPopupFiles(url());
+    d->newFileMenu->setPopupFiles(KUrl::List() << url());
     d->newFileMenu->setViewShowsHiddenFiles(showHiddenFiles());
     d->newFileMenu->createDirectory();
 }
@@ -789,7 +789,7 @@ KIO::DeleteJob * KDirOperator::del(const KFileItemList& items,
         parent = this;
     }
 
-    KUrl::List urls;
+    QList<KUrl> urls;
     QStringList files;
     foreach (const KFileItem &item, items) {
         const KUrl url = item.url();
@@ -847,7 +847,7 @@ KIO::CopyJob * KDirOperator::trash(const KFileItemList& items,
         return 0L;
     }
 
-    KUrl::List urls;
+    QList<KUrl> urls;
     QStringList files;
     foreach (const KFileItem &item, items) {
         const KUrl url = item.url();
@@ -1320,7 +1320,7 @@ void KDirOperator::activatedMenu(const KFileItem &item, const QPoint &pos)
     Q_UNUSED(item);
     updateSelectionDependentActions();
 
-    d->newFileMenu->setPopupFiles(url());
+    d->newFileMenu->setPopupFiles(KUrl::List() << url());
     d->newFileMenu->setViewShowsHiddenFiles(showHiddenFiles());
     d->newFileMenu->checkUpToDate();
 
@@ -2521,7 +2521,7 @@ void KDirOperator::Private::_k_slotExpandToUrl(const QModelIndex &index)
     if (!item.isDir()) {
         const QModelIndex proxyIndex = proxyModel->mapFromSource(index);
 
-        KUrl::List::Iterator it = itemsToBeSetAsCurrent.begin();
+        QList<KUrl>::Iterator it = itemsToBeSetAsCurrent.begin();
         while (it != itemsToBeSetAsCurrent.end()) {
             const KUrl url = *it;
             if (url.isParentOf(item.url())) {
