@@ -13,6 +13,7 @@ kmediaplayeradaptor.cpp
 
 
 kde4_add_library(kmediaplayer ${LIBRARY_TYPE} ${kmediaplayer_LIB_SRCS})
+generate_export_header(kmediaplayer)
 
 target_link_libraries(kmediaplayer  ${KDE4_KPARTS_LIBS} )
 target_link_libraries(kmediaplayer  LINK_INTERFACE_LIBRARIES ${KDE4_KPARTS_LIBS} ${QT_QTGUI_LIBRARY} )
@@ -26,7 +27,7 @@ install(TARGETS kmediaplayer ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
 
-install( FILES kmediaplayer_export.h player.h view.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kmediaplayer  COMPONENT Devel)
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kmediaplayer_export.h player.h view.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kmediaplayer  COMPONENT Devel)
 
 install( FILES kmediaplayerengine.desktop kmediaplayer.desktop  DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 install( FILES org.kde.KMediaPlayer.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR} )
