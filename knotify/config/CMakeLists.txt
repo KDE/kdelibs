@@ -16,6 +16,7 @@ set( knotifyconfig_UI knotifyconfigactionswidgetbase.ui )
 kde4_add_ui_files(knotifyconfig_LIB_SRCS ${knotifyconfig_UI} )
 
 kde4_add_library(knotifyconfig ${LIBRARY_TYPE} ${knotifyconfig_LIB_SRCS})
+generate_export_header(knotifyconfig)
 
 # Needs KIO for KUrlRequester
 target_link_libraries(knotifyconfig  ${KDE4_KIO_LIBS} kcoreaddons)
@@ -28,7 +29,7 @@ set_target_properties(knotifyconfig PROPERTIES
 install(TARGETS knotifyconfig ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
-install( FILES knotifyconfig_export.h knotifyconfigwidget.h  DESTINATION  ${INCLUDE_INSTALL_DIR}  COMPONENT Devel)
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/knotifyconfig_export.h knotifyconfigwidget.h  DESTINATION  ${INCLUDE_INSTALL_DIR}  COMPONENT Devel)
 
 
 
