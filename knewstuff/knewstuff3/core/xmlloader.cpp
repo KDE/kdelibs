@@ -36,7 +36,7 @@ namespace KNS3
     {
     }
 
-    void XmlLoader::load(const KUrl &url)
+    void XmlLoader::load(const QUrl &url)
     {
         m_jobdata.clear();
 

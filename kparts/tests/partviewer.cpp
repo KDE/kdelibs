@@ -66,7 +66,7 @@ PartViewer::~PartViewer()
     delete m_part;
 }
 
-void PartViewer::openUrl( const KUrl & url )
+void PartViewer::openUrl( const QUrl & url )
 {
     delete m_part;
     const QString mimeType = KMimeType::findByUrl(url)->name();

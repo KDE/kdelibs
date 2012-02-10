@@ -66,7 +66,7 @@ KTranslatable Provider::name() const
     return mName;
 }
 
-void Provider::setIcon(const KUrl &url)
+void Provider::setIcon(const QUrl &url)
 {
     mIcon = url;
 }
@@ -76,7 +76,7 @@ KUrl Provider::icon() const
     return mIcon;
 }
 
-void Provider::setUploadUrl(const KUrl &url)
+void Provider::setUploadUrl(const QUrl &url)
 {
     mUploadUrl = url;
 }
@@ -86,7 +86,7 @@ KUrl Provider::uploadUrl() const
     return mUploadUrl;
 }
 
-void Provider::setNoUploadUrl(const KUrl &url)
+void Provider::setNoUploadUrl(const QUrl &url)
 {
     mNoUploadUrl = url;
 }
@@ -96,7 +96,7 @@ KUrl Provider::noUploadUrl() const
     return mNoUploadUrl;
 }
 
-void Provider::setWebAccess(const KUrl &url)
+void Provider::setWebAccess(const QUrl &url)
 {
     mWebAccess = url;
 }
@@ -106,7 +106,7 @@ KUrl Provider::webAccess() const
     return mWebAccess;
 }
 
-void Provider::setWebService(const KUrl &url)
+void Provider::setWebService(const QUrl &url)
 {
     mWebService = url;
 }

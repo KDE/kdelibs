@@ -145,7 +145,7 @@ void KConfigDialogManager::initMaps()
     s_changedMap->insert( "KTextEdit", SIGNAL(textChanged()));
     s_changedMap->insert( "KUrlRequester",  SIGNAL(textChanged (const QString& )));
     s_changedMap->insert( "KUrlComboRequester",  SIGNAL(textChanged (const QString& )));
-    s_changedMap->insert( "KUrlComboBox",  SIGNAL(urlActivated (const KUrl& )));
+    s_changedMap->insert( "KUrlComboBox",  SIGNAL(urlActivated (const QUrl & )));
     s_changedMap->insert( "KIntNumInput", SIGNAL(valueChanged (int)));
     s_changedMap->insert( "KIntSpinBox", SIGNAL(valueChanged (int)));
     s_changedMap->insert( "KDoubleNumInput", SIGNAL(valueChanged (double)));

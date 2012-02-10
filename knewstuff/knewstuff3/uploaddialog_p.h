@@ -125,7 +125,7 @@ namespace KNS3 {
         void _k_fileUploadFinished(Attica::BaseJob*);
 
         void uploadFileFinished();
-        void doUpload(const QString& index, const KUrl& filePath);
+        void doUpload(const QString& index, const QUrl & filePath);
 
         void _k_priceToggled(bool);
         void _k_updateContentsToggled(bool update);

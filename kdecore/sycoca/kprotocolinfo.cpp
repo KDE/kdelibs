@@ -319,7 +319,7 @@ QString KProtocolInfo::exec(const QString& protocol)
   return QString();
 }
 
-KProtocolInfo::ExtraFieldList KProtocolInfo::extraFields( const KUrl &url )
+KProtocolInfo::ExtraFieldList KProtocolInfo::extraFields( const QUrl &url )
 {
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(url.scheme());
   if ( !prot )
@@ -414,12 +414,12 @@ KProtocolInfo::FileNameUsedForCopying KProtocolInfo::fileNameUsedForCopying() co
     return d->fileNameUsedForCopying;
 }
 
-bool KProtocolInfo::isFilterProtocol( const KUrl &url )
+bool KProtocolInfo::isFilterProtocol( const QUrl &url )
 {
   return isFilterProtocol (url.scheme());
 }
 
-bool KProtocolInfo::isHelperProtocol( const KUrl &url )
+bool KProtocolInfo::isHelperProtocol( const QUrl &url )
 {
   return isHelperProtocol (url.scheme());
 }
@@ -435,7 +435,7 @@ bool KProtocolInfo::isHelperProtocol( const QString &protocol )
   return !service.isNull();
 }
 
-bool KProtocolInfo::isKnownProtocol( const KUrl &url )
+bool KProtocolInfo::isKnownProtocol( const QUrl &url )
 {
   return isKnownProtocol (url.scheme());
 }

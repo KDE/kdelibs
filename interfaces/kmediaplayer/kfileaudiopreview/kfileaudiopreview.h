@@ -41,7 +41,7 @@ public:
     ~KFileAudioPreview();
 
 public Q_SLOTS:
-    virtual void showPreview(const KUrl &url);
+    virtual void showPreview(const QUrl &url);
     virtual void clearPreview();
 
 private Q_SLOTS:

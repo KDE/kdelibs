@@ -130,7 +130,7 @@ public:
      */
     QString category() const;
 
-    void setHomepage(const KUrl& page);
+    void setHomepage(const QUrl & page);
     KUrl homepage() const;
 
     /**

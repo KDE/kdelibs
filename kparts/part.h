@@ -533,7 +533,7 @@ public Q_SLOTS:
      * If you reimplement it, don't forget to set the caption, usually with
      * emit setWindowCaption( url.prettyUrl() );
      */
-    virtual bool openUrl( const KUrl &url );
+    virtual bool openUrl( const QUrl &url );
 
 public:
     /**
@@ -584,7 +584,7 @@ public:
      * every ReadOnlyPart has a URL (see url()), so this simply sets it.
      * @return true if the part supports progressive loading and accepts data, false otherwise.
      */
-    bool openStream( const QString& mimeType, const KUrl& url );
+    bool openStream( const QString& mimeType, const QUrl & url );
 
     /**
      * Send some data to the part. openStream must have been called previously,
@@ -697,7 +697,7 @@ protected:
     /**
      * Sets the url associated with this part.
      */
-    void setUrl(const KUrl &url);
+    void setUrl(const QUrl &url);
 
     /**
      * Returns the local file path associated with this part.
@@ -812,7 +812,7 @@ public:
      *
      * Calls save(), no need to reimplement
      */
-    virtual bool saveAs( const KUrl &url );
+    virtual bool saveAs( const QUrl &url );
 
     /**
      *  Sets the modified flag of the part.

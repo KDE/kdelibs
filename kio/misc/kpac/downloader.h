@@ -36,8 +36,8 @@ namespace KPAC
     public:
         Downloader( QObject* );
 
-        void download( const KUrl& );
-        const KUrl& scriptUrl() { return m_scriptURL; }
+        void download( const QUrl & );
+        const QUrl & scriptUrl() { return m_scriptURL; }
         const QString& script() { return m_script; }
         const QString& error() { return m_error; }
 
@@ -49,7 +49,7 @@ namespace KPAC
         void setError( const QString& );
 
     private Q_SLOTS:
-        void redirection( KIO::Job*, const KUrl& );
+        void redirection( KIO::Job*, const QUrl & );
         void data( KIO::Job*, const QByteArray& );
         void result( KJob* );
 

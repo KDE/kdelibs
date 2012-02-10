@@ -291,7 +291,7 @@ void KWebPage::downloadRequest(const QNetworkRequest &request)
                      request.attribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::MetaData)).toMap());
 }
 
-void KWebPage::downloadUrl(const KUrl &url)
+void KWebPage::downloadUrl(const QUrl &url)
 {
     downloadResource(url, QString(), view());
 }

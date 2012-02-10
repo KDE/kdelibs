@@ -170,7 +170,7 @@ namespace KStandardAction
    * object and @p slot, and is owned by @p parent.
    *
    * The signal that is connected to @p slot is triggered(bool), except for the case of
-   * OpenRecent standard action, which uses the urlSelected(const KUrl &) signal of
+   * OpenRecent standard action, which uses the urlSelected(const QUrl &) signal of
    * KRecentFilesAction.
    *
    * @param id The StandardAction identifier to create a KAction for.
@@ -227,10 +227,10 @@ namespace KStandardAction
 
   /**
    * Open a recently used document. The signature of the slot being called
-   * is of the form slotURLSelected( const KUrl & ).
+   * is of the form slotURLSelected( const QUrl & ).
    * @param recvr object to receive slot
    * @param slot The SLOT to invoke when a URL is selected. The slot's
-   * signature is slotURLSelected( const KUrl & ).
+   * signature is slotURLSelected( const QUrl & ).
    * @param parent parent widget
    */
   KDEUI_EXPORT KRecentFilesAction *openRecent(const QObject *recvr, const char *slot, QObject *parent);

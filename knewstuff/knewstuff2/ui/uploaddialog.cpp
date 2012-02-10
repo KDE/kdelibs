@@ -135,12 +135,12 @@ void UploadDialog::slotOk()
     accept();
 }
 
-void UploadDialog::setPreviewFile(const KUrl& previewFile)
+void UploadDialog::setPreviewFile(const QUrl & previewFile)
 {
     mPreviewUrl->setUrl(previewFile);
 }
 
-void UploadDialog::setPayloadFile(const KUrl& payloadFile)
+void UploadDialog::setPayloadFile(const QUrl & payloadFile)
 {
     mPayloadUrl = payloadFile;
 

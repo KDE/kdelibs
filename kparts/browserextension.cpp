@@ -42,7 +42,7 @@ class OpenUrlEvent::OpenUrlEventPrivate
 {
 public:
   OpenUrlEventPrivate( ReadOnlyPart *part,
-                       const KUrl &url,
+                       const QUrl &url,
                        const OpenUrlArguments &args,
                        const BrowserArguments &browserArgs )
     : m_part( part )
@@ -64,7 +64,7 @@ public:
 const char *OpenUrlEvent::OpenUrlEventPrivate::s_strOpenUrlEvent =
                         "KParts/BrowserExtension/OpenURLevent";
 
-OpenUrlEvent::OpenUrlEvent( ReadOnlyPart *part, const KUrl &url,
+OpenUrlEvent::OpenUrlEvent( ReadOnlyPart *part, const QUrl &url,
                             const OpenUrlArguments &args,
                             const BrowserArguments &browserArgs )
     : Event( OpenUrlEventPrivate::s_strOpenUrlEvent )
@@ -537,8 +537,8 @@ BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent )
 
   connect( d->m_part, SIGNAL( completed() ),
            this, SLOT( slotCompleted() ) );
-  connect( this, SIGNAL( openUrlRequest( const KUrl &, const KParts::OpenUrlArguments &, const KParts::BrowserArguments & ) ),
-           this, SLOT( slotOpenUrlRequest( const KUrl &, const KParts::OpenUrlArguments &, const KParts::BrowserArguments & ) ) );
+  connect( this, SIGNAL( openUrlRequest( const QUrl &, const KParts::OpenUrlArguments &, const KParts::BrowserArguments & ) ),
+           this, SLOT( slotOpenUrlRequest( const QUrl &, const KParts::OpenUrlArguments &, const KParts::BrowserArguments & ) ) );
   connect( this, SIGNAL( enableAction( const char *, bool ) ),
            this, SLOT( slotEnableAction( const char *, bool ) ) );
   connect( this, SIGNAL( setActionText( const char *, const QString& ) ),
@@ -649,7 +649,7 @@ void BrowserExtension::pasteRequest()
     }
 }
 
-void BrowserExtension::slotOpenUrlRequest( const KUrl &url, const KParts::OpenUrlArguments& args, const KParts::BrowserArguments &browserArgs )
+void BrowserExtension::slotOpenUrlRequest( const QUrl &url, const KParts::OpenUrlArguments& args, const KParts::BrowserArguments &browserArgs )
 {
     //kDebug() << this << " BrowserExtension::slotOpenURLRequest(): url=" << url.url();
     BrowserExtensionPrivate::DelayedRequest req;
@@ -776,7 +776,7 @@ const QList<KParts::ReadOnlyPart*> BrowserHostExtension::frames() const
   return QList<KParts::ReadOnlyPart*>();
 }
 
-bool BrowserHostExtension::openUrlInFrame( const KUrl &,
+bool BrowserHostExtension::openUrlInFrame( const QUrl &,
                                            const KParts::OpenUrlArguments&,
                                            const KParts::BrowserArguments & )
 {

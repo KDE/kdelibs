@@ -249,7 +249,7 @@ private:
 class KPARTS_EXPORT OpenUrlEvent : public Event
 {
 public:
-  OpenUrlEvent( ReadOnlyPart *part, const KUrl &url,
+  OpenUrlEvent( ReadOnlyPart *part, const QUrl &url,
                 const OpenUrlArguments& args = OpenUrlArguments(),
                 const BrowserArguments& browserArgs = BrowserArguments() );
   virtual ~OpenUrlEvent();
@@ -294,7 +294,7 @@ private:
   * @li @p cut : Copy selected items to clipboard and store 'not cut' in clipboard.
   * @li @p copy : Copy selected items to clipboard and store 'cut' in clipboard.
   * @li @p paste : Paste clipboard into view URL.
-  * @li @p pasteTo(const KUrl &) : Paste clipboard into given URL.
+  * @li @p pasteTo(const QUrl &) : Paste clipboard into given URL.
   * @li @p searchProvider : Lookup selected text at default search provider
   *
   * [normal actions]
@@ -517,7 +517,7 @@ public:  // yes, those signals are public; don't tell moc, doxygen or kdevelop :
    * appropriate fields in the @p args structure.
    * Hosts should not connect to this signal but to openUrlRequestDelayed().
    */
-  void openUrlRequest( const KUrl &url,
+  void openUrlRequest( const QUrl &url,
                        const KParts::OpenUrlArguments& arguments = KParts::OpenUrlArguments(),
                        const KParts::BrowserArguments &browserArguments = KParts::BrowserArguments() );
 
@@ -527,7 +527,7 @@ public:  // yes, those signals are public; don't tell moc, doxygen or kdevelop :
    * being destroyed. Parts should never use this signal, hosts should only connect
    * to this signal.
    */
-  void openUrlRequestDelayed( const KUrl &url,
+  void openUrlRequestDelayed( const QUrl &url,
                               const KParts::OpenUrlArguments& arguments,
                               const KParts::BrowserArguments &browserArguments );
 
@@ -556,7 +556,7 @@ public:  // yes, those signals are public; don't tell moc, doxygen or kdevelop :
   /**
    * Sets the URL of an icon for the currently displayed page.
    */
-  void setIconUrl( const KUrl &url );
+  void setIconUrl( const QUrl &url );
 
   /**
    * Asks the hosting browser to open a new window for the given @p url
@@ -572,7 +572,7 @@ public:  // yes, those signals are public; don't tell moc, doxygen or kdevelop :
    * if the mimeType is set in the @p browserArguments.
    * (otherwise the request cannot be processed synchronously).
    */
-    void createNewWindow( const KUrl &url,
+    void createNewWindow( const QUrl &url,
                           const KParts::OpenUrlArguments& arguments = KParts::OpenUrlArguments(),
                           const KParts::BrowserArguments &browserArguments = KParts::BrowserArguments(),
                           const KParts::WindowArgs &windowArgs = KParts::WindowArgs(),
@@ -624,7 +624,7 @@ public:  // yes, those signals are public; don't tell moc, doxygen or kdevelop :
    * @param flags enables/disables certain builtin actions in the popupmenu
    * @param actionGroups named groups of actions which should be inserted into the popup, see ActionGroupMap
    */
-  void popupMenu( const QPoint &global, const KUrl &url,
+  void popupMenu( const QPoint &global, const QUrl &url,
                   mode_t mode = static_cast<mode_t>(-1),
                   const KParts::OpenUrlArguments &args = KParts::OpenUrlArguments(),
                   const KParts::BrowserArguments &browserArgs = KParts::BrowserArguments(),
@@ -658,7 +658,7 @@ public:  // yes, those signals are public; don't tell moc, doxygen or kdevelop :
    * Ask the hosting application to add a new HTML (aka Mozilla/Netscape)
    * SideBar entry.
    */
-  void addWebSideBar(const KUrl &url, const QString& name);
+  void addWebSideBar(const QUrl &url, const QString& name);
 
   /**
    * Ask the hosting application to move the top level widget.
@@ -688,7 +688,7 @@ public:  // yes, those signals are public; don't tell moc, doxygen or kdevelop :
 
 private Q_SLOTS:
   void slotCompleted();
-  void slotOpenUrlRequest( const KUrl &url,
+  void slotOpenUrlRequest( const QUrl &url,
                            const KParts::OpenUrlArguments& arguments = KParts::OpenUrlArguments(),
                            const KParts::BrowserArguments &browserArguments = KParts::BrowserArguments() );
 
@@ -741,7 +741,7 @@ public:
    * Opens the given url in a hosted child frame. The frame name is specified in the
    * frameName variable in the @p browserArguments parameter (see KParts::BrowserArguments ) .
    */
-  virtual bool openUrlInFrame( const KUrl &url,
+  virtual bool openUrlInFrame( const QUrl &url,
                                const KParts::OpenUrlArguments& arguments,
                                const KParts::BrowserArguments &browserArguments );
 

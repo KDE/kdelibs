@@ -107,7 +107,7 @@ public:
     /**
      * Sets the upload URL.
      */
-    void setUploadUrl(const KUrl &);
+    void setUploadUrl(const QUrl &);
 
     /**
      * Retrieves the upload URL.
@@ -120,7 +120,7 @@ public:
      * Sets the URL where a user is led if the provider does not support
      * uploads.
      */
-    void setNoUploadUrl(const KUrl &);
+    void setNoUploadUrl(const QUrl &);
 
     /**
      * Retrieves the URL where a user is led if the provider does not
@@ -133,7 +133,7 @@ public:
     /**
      * Sets the URL of a web frontend for the provider.
      */
-    void setWebAccess(const KUrl &);
+    void setWebAccess(const QUrl &);
 
     /**
      * Retrieves the web frontend URL.
@@ -145,7 +145,7 @@ public:
     /**
      * Sets the URL of the DXS, if offered by the provider.
      */
-    void setWebService(const KUrl &);
+    void setWebService(const QUrl &);
 
     /**
      * Retrieves the URL to the DXS Web Service.
@@ -159,7 +159,7 @@ public:
      * The icon should be in 32x32 format. If not set, the default icon
      * of KDialogBase is used.
      */
-    void setIcon(const KUrl &);
+    void setIcon(const QUrl &);
 
     /**
      * Retrieves the icon URL for this provider.

@@ -59,7 +59,7 @@ KTranslatable Feed::description() const
     return d->mDescription;
 }
 
-void Feed::setFeedUrl(const KUrl& feedurl)
+void Feed::setFeedUrl(const QUrl & feedurl)
 {
     d->mFeed = feedurl;
 }

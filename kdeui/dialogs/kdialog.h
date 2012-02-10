@@ -541,7 +541,7 @@ class KDEUI_EXPORT KDialog : public QDialog //krazy:exclude=qclasses
      * Reimplemented from QDialog.
      */
     virtual QSize minimumSizeHint() const;
-	
+
 	/**
 	 * Allow embedding the dialogs based on KDialog into a graphics view. By default embedding is not allowed, dialogs
 	 * will appear as separate windows.

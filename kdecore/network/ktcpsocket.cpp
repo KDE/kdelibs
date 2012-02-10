@@ -510,7 +510,7 @@ void KTcpSocket::connectToHost(const QHostAddress &hostAddress, quint16 port, Pr
 }
 
 
-void KTcpSocket::connectToHost(const KUrl &url, ProxyPolicy policy)
+void KTcpSocket::connectToHost(const QUrl &url, ProxyPolicy policy)
 {
     if (policy == AutoProxy) {
         //###

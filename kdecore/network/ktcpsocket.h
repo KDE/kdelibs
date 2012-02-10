@@ -253,7 +253,7 @@ public:
      * depend on high-level information like protocol or username.
      * @see KProtocolManager::proxyForUrl()
      */
-    void connectToHost(const KUrl &url, ProxyPolicy policy = AutoProxy);
+    void connectToHost(const QUrl &url, ProxyPolicy policy = AutoProxy);
     void disconnectFromHost();
     Error error() const; //### QAbstractSocket's model is strange. error() should be related to the
                          //current state and *NOT* just report the last error if there was one.

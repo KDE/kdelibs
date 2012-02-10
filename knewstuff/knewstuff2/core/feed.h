@@ -82,7 +82,7 @@ public:
     /**
      * Sets the URL for this feed.
      */
-    void setFeedUrl(const KUrl& feedurl);
+    void setFeedUrl(const QUrl & feedurl);
 
     /**
      * Retrieve the URL of the feed.

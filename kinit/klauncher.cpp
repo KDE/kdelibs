@@ -156,7 +156,7 @@ IdleSlave::match(const QString &protocol, const QString &host, bool needConnecte
 }
 
 bool
-IdleSlave::onHold(const KUrl &url) const
+IdleSlave::onHold(const QUrl &url) const
 {
    if (!mOnHold) return false;
    return (url == mUrl);
@@ -1063,7 +1063,7 @@ KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
 ///// IO-Slave functions
 
 pid_t
-KLauncher::requestHoldSlave(const KUrl &url, const QString &app_socket)
+KLauncher::requestHoldSlave(const QUrl &url, const QString &app_socket)
 {
     IdleSlave *slave = 0;
     foreach (IdleSlave *p, mSlaveList)

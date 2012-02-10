@@ -202,7 +202,7 @@ KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
       if (id == OpenRecent) {
           // FIXME KAction port: probably a good idea to find a cleaner way to do this
           // Open Recent is a special case - provide the selected URL
-          QObject::connect(pAction, SIGNAL(urlSelected(const KUrl &)), recvr, slot);
+          QObject::connect(pAction, SIGNAL(urlSelected(const QUrl &)), recvr, slot);
       } else if (id == ConfigureToolbars) { // #200815
           QObject::connect(pAction, SIGNAL(triggered(bool)), recvr, slot, Qt::QueuedConnection);
       } else {

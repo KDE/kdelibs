@@ -492,7 +492,7 @@ public:
      *
      * @return Returns true if user wants to show previews.
      */
-    static bool showFilePreview(const KUrl &);
+    static bool showFilePreview(const QUrl &);
 
     /**
      * Whether the user wishes to use opaque resizing. Primarily

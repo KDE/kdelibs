@@ -51,7 +51,7 @@ namespace KParts {
           Always pass false for @p trustedSource, except for local directory views.
          * @param hideErrorDialog if true, no dialog will be shown in case of errors.
          */
-        BrowserRun( const KUrl& url,
+        BrowserRun( const QUrl & url,
                     const KParts::OpenUrlArguments& args,
                     const KParts::BrowserArguments& browserArgs,
                     KParts::ReadOnlyPart *part,
@@ -92,7 +92,7 @@ namespace KParts {
          * @endcode
          */
 #ifndef KDE_NO_DEPRECATED
-        static KPARTS_DEPRECATED AskSaveResult askSave( const KUrl & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFileName = QString() );
+        static KPARTS_DEPRECATED AskSaveResult askSave( const QUrl & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFileName = QString() );
 #endif
 
         enum AskEmbedOrSaveFlags { InlineDisposition = 0, AttachmentDisposition = 1 };
@@ -112,14 +112,14 @@ namespace KParts {
          * @endcode
          */
 #ifndef KDE_NO_DEPRECATED
-        static KPARTS_DEPRECATED AskSaveResult askEmbedOrSave( const KUrl & url, const QString& mimeType, const QString & suggestedFileName = QString(), int flags = 0 );
+        static KPARTS_DEPRECATED AskSaveResult askEmbedOrSave( const QUrl & url, const QString& mimeType, const QString & suggestedFileName = QString(), int flags = 0 );
 #endif
 
         // virtual so that KHTML can implement differently (HTML cache)
-        virtual void save( const KUrl & url, const QString & suggestedFileName );
+        virtual void save( const QUrl & url, const QString & suggestedFileName );
 
         // static so that it can be called from other classes
-        static void simpleSave( const KUrl & url, const QString & suggestedFileName,
+        static void simpleSave( const QUrl & url, const QString & suggestedFileName,
                                 QWidget* window =0 ); // KDE5: remove
         /**
          * If kget integration is enabled, passes the url to kget.
@@ -133,7 +133,7 @@ namespace KParts {
          * Starts the KIO file copy job to download @p srcUrl into @p destUrl.
          * @since 4.4
          */
-        static void saveUrlUsingKIO(const KUrl & srcUrl, const KUrl& destUrl,
+        static void saveUrlUsingKIO(const QUrl & srcUrl, const QUrl & destUrl,
                                     QWidget* window, const QMap<QString, QString> &metaData);
 
         static bool allowExecution( const QString &mimeType, const KUrl &url );

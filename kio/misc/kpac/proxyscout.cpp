@@ -70,7 +70,7 @@ namespace KPAC
         return Unknown;
     }
 
-    ProxyScout::QueuedRequest::QueuedRequest( const QDBusMessage &reply, const KUrl& u, bool sendall )
+    ProxyScout::QueuedRequest::QueuedRequest( const QDBusMessage &reply, const QUrl & u, bool sendall )
         : transaction( reply ), url( u ), sendAll(sendall)
     {
     }
@@ -276,7 +276,7 @@ namespace KPAC
         m_downloader->download( KUrl( path ) );
     }
 
-    QStringList ProxyScout::handleRequest( const KUrl& url )
+    QStringList ProxyScout::handleRequest( const QUrl & url )
     {
         try
         {

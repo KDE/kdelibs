@@ -110,7 +110,7 @@ void KFileAudioPreview::stateChanged( Phonon::State newstate, Phonon::State olds
         d->controls->setEnabled( true );
 }
 
-void KFileAudioPreview::showPreview( const KUrl &url )
+void KFileAudioPreview::showPreview( const QUrl &url )
 {
     d->controls->setEnabled(false);
     if (!d->player) {

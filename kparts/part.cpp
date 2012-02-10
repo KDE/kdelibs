@@ -468,7 +468,7 @@ KUrl ReadOnlyPart::url() const
     return d->m_url;
 }
 
-void ReadOnlyPart::setUrl(const KUrl &url)
+void ReadOnlyPart::setUrl(const QUrl &url)
 {
     Q_D(ReadOnlyPart);
 
@@ -530,7 +530,7 @@ void ReadOnlyPart::showProgressInfo( bool show )
 }
 #endif
 
-bool ReadOnlyPart::openUrl( const KUrl &url )
+bool ReadOnlyPart::openUrl( const QUrl &url )
 {
     Q_D(ReadOnlyPart);
 
@@ -720,7 +720,7 @@ void ReadOnlyPart::guiActivateEvent( GUIActivateEvent * event )
     }
 }
 
-bool ReadOnlyPart::openStream( const QString& mimeType, const KUrl& url )
+bool ReadOnlyPart::openStream( const QString& mimeType, const QUrl & url )
 {
     Q_D(ReadOnlyPart);
 
@@ -880,7 +880,7 @@ bool ReadWritePart::save()
     return false;
 }
 
-bool ReadWritePart::saveAs( const KUrl & kurl )
+bool ReadWritePart::saveAs( const QUrl & kurl )
 {
     Q_D(ReadWritePart);
 

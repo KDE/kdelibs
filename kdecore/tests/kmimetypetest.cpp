@@ -142,7 +142,7 @@ void KMimeTypeTest::cleanupTestCase()
     proc.waitForFinished();
 }
 
-static void checkIcon( const KUrl& url, const QString& expectedIcon )
+static void checkIcon( const QUrl & url, const QString& expectedIcon )
 {
     QString icon = KMimeType::iconNameForUrl( url );
     QCOMPARE( icon, expectedIcon );

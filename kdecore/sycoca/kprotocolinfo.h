@@ -74,7 +74,7 @@ public:
    * @return true if the protocol is known
    * @see name()
    */
-  static bool isKnownProtocol( const KUrl &url );
+  static bool isKnownProtocol( const QUrl &url );
 
   /**
    * Same as above except you can supply just the protocol instead of
@@ -135,7 +135,7 @@ public:
    * Those two lists should be separated with ',' in the protocol description file.
    * See ExtraField for details about names and types
    */
-  static ExtraFieldList extraFields( const KUrl& url );
+  static ExtraFieldList extraFields( const QUrl & url );
 
   /**
    * Returns whether the protocol can act as a helper protocol.
@@ -149,7 +149,7 @@ public:
    * @return true if the protocol is a helper protocol (e.g. vnc), false
    *              if not (e.g. http)
    */
-  static bool isHelperProtocol( const KUrl &url );
+  static bool isHelperProtocol( const QUrl &url );
 
   /**
    * Same as above except you can supply just the protocol instead of
@@ -173,7 +173,7 @@ public:
    * @return true if the protocol is a filter (e.g. gzip), false if the
    *         protocol is a helper or source
    */
-  static bool isFilterProtocol( const KUrl &url );
+  static bool isFilterProtocol( const QUrl &url );
 
   /**
    * Same as above except you can supply just the protocol instead of

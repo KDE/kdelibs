@@ -31,7 +31,7 @@ public:
   PartViewer();
   virtual ~PartViewer();
 
-  void openUrl( const KUrl & url );
+  void openUrl( const QUrl & url );
 
 protected Q_SLOTS:
   void slotFileOpen();

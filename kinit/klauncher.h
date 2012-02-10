@@ -57,7 +57,7 @@ public:
    pid_t pid() const { return mPid;}
    int age(time_t now) const;
    void reparseConfiguration();
-   bool onHold(const KUrl &url) const;
+   bool onHold(const QUrl &url) const;
    QString protocol() const   {return mProtocol;}
 
 Q_SIGNALS:
@@ -244,7 +244,7 @@ public: // remote methods, called by KLauncherAdaptor
      */
     bool start_service_by_name(const QString &serviceName, const QStringList &urls, const QStringList &envs, const QString &startup_id, bool blind, const QDBusMessage &msg); // KDE5: remove
 
-    pid_t requestHoldSlave(const KUrl &url, const QString &app_socket);
+    pid_t requestHoldSlave(const QUrl &url, const QString &app_socket);
 
     pid_t requestSlave(const QString &protocol, const QString &host,
                        const QString &app_socket, QString &error);

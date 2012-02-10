@@ -134,7 +134,7 @@ public:
 
     static Type typeFromAttica( const QString &atticaType );
 
-    KAboutApplicationPersonProfileOcsLink( Type type, const KUrl &url )
+    KAboutApplicationPersonProfileOcsLink( Type type, const QUrl &url )
         : m_type( type )
         , m_url( url )
     {}
@@ -143,7 +143,7 @@ public:
     QString prettyType() const;
     void setIcon( const QIcon &icon ) { m_icon = icon; }
     const QIcon &icon() const { return m_icon; }
-    const KUrl & url() const { return m_url; }
+    const QUrl & url() const { return m_url; }
 
 private:
     Type m_type;
@@ -170,7 +170,7 @@ public:
         , m_ocsUsername( ocsUsername )
     {}
 
-    void setHomepage( const KUrl &url ) { m_homepage = url; }
+    void setHomepage( const QUrl &url ) { m_homepage = url; }
     void setAvatar( const QPixmap &pixmap ) { m_avatar = pixmap; }
     void setLocation( const QString &location ) { m_location = location; }
     void setOcsProfileUrl( const QString &url ) { m_ocsProfileUrl = url; }
@@ -183,7 +183,7 @@ public:
     const QString & email() const { return m_email; }
     const QString & ocsUsername() const { return m_ocsUsername; }
     const QString & ocsProfileUrl() const { return m_ocsProfileUrl; }
-    const KUrl & homepage() const { return m_homepage; }
+    const QUrl & homepage() const { return m_homepage; }
     const QPixmap & avatar() const { return m_avatar; }
     const QString & location() const { return m_location; }
     const QStringList & additionalStrings() const { return m_additionalStrings; }

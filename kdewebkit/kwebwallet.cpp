@@ -505,7 +505,7 @@ void KWebWallet::rejectSaveFormDataRequest(const QString & key)
     d->pendingSaveRequests.remove(key);
 }
 
-void KWebWallet::fillWebForm(const KUrl &url, const KWebWallet::WebFormList &forms)
+void KWebWallet::fillWebForm(const QUrl &url, const KWebWallet::WebFormList &forms)
 {
     QWeakPointer<QWebFrame> frame = d->pendingFillRequests.value(url).frame;
     if (!frame)
@@ -532,7 +532,7 @@ void KWebWallet::fillWebForm(const KUrl &url, const KWebWallet::WebFormList &for
     emit fillFormRequestCompleted(wasFilled);
 }
 
-KWebWallet::WebFormList KWebWallet::formsToFill(const KUrl &url) const
+KWebWallet::WebFormList KWebWallet::formsToFill(const QUrl &url) const
 {
     return d->pendingFillRequests.value(url).forms;
 }

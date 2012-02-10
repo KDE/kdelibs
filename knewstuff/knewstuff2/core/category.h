@@ -84,7 +84,7 @@ public:
     /**
      * Sets the icon.
      */
-    void setIcon(const KUrl& icon);
+    void setIcon(const QUrl & icon);
 
     /**
      * Retrieve the icon of the category.

@@ -251,7 +251,7 @@ protected:
      * This function returns an empty list if there is no pending requests
      * for filling forms associated with @p url.
      */
-    WebFormList formsToFill(const KUrl &url) const;
+    WebFormList formsToFill(const QUrl &url) const;
 
     /**
      * Returns a list of for @p key that are waiting to be saved.
@@ -277,7 +277,7 @@ protected:
      *
      * @see fillFormDataFromCache.
      */
-    void fillWebForm(const KUrl &url, const WebFormList &forms);
+    void fillWebForm(const QUrl &url, const WebFormList &forms);
 
     /**
      * Fills form data from persistent storage.

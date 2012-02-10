@@ -183,7 +183,7 @@ KUrl UnitCategory::url() const
     return d->url;
 }
 
-void UnitCategory::setUrl(const KUrl& url)
+void UnitCategory::setUrl(const QUrl & url)
 {
     d->url = url;
 }

@@ -197,7 +197,7 @@ public Q_SLOTS:
      * This slot first prompts the user where to save the requested
      * resource and then downloads it using KIO.
      */
-    virtual void downloadUrl(const KUrl &url);
+    virtual void downloadUrl(const QUrl &url);
 
     /**
      * Download the resource specified by @p reply using KIO.

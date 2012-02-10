@@ -166,7 +166,7 @@ KUrl EntryInternal::homepage() const
     return d->mHomepage;
 }
 
-void EntryInternal::setHomepage(const KUrl& page)
+void EntryInternal::setHomepage(const QUrl & page)
 {
     d->mHomepage = page;
 }

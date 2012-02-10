@@ -63,7 +63,7 @@ public:
      *
      * @param url location of the XML file
      */
-    void load(const KUrl & url);
+    void load(const QUrl & url);
 
 Q_SIGNALS:
     /**

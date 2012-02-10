@@ -74,7 +74,7 @@ public:
 
       @param payloadFile the payload data file
     */
-    void setUploadFile(const KUrl& payloadFile);
+    void setUploadFile(const QUrl & payloadFile);
 
     /**
       Set the suggested title for the upload.
@@ -121,7 +121,7 @@ public:
       @param file A URL to the file to be used as preview image
       @since 4.6
       */ 
-    void setPreviewImageFile(uint number, const KUrl& file);
+    void setPreviewImageFile(uint number, const QUrl & file);
 
     /**
      Enable the UI to let the user to set a price for the uploaded item.

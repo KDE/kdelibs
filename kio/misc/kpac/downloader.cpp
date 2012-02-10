@@ -36,7 +36,7 @@ namespace KPAC
     {
     }
 
-    void Downloader::download( const KUrl& url )
+    void Downloader::download( const QUrl & url )
     {
         m_data.resize( 0 );
         m_script.clear();
@@ -45,8 +45,8 @@ namespace KPAC
         KIO::TransferJob* job = KIO::get( url, KIO::NoReload, KIO::HideProgressInfo );
         connect( job, SIGNAL( data( KIO::Job*, const QByteArray& ) ),
                  SLOT( data( KIO::Job*, const QByteArray& ) ) );
-        connect( job, SIGNAL ( redirection( KIO::Job*, const KUrl& ) ),
-                 SLOT( redirection( KIO::Job*, const KUrl& ) ) );
+        connect( job, SIGNAL ( redirection( KIO::Job*, const QUrl & ) ),
+                 SLOT( redirection( KIO::Job*, const QUrl & ) ) );
         connect( job, SIGNAL( result( KJob* ) ), SLOT( result( KJob* ) ) );
     }
 
@@ -60,7 +60,7 @@ namespace KPAC
         m_error = error;
     }
 
-    void Downloader::redirection( KIO::Job* , const KUrl& url )
+    void Downloader::redirection( KIO::Job* , const QUrl & url )
     {
         m_scriptURL = url;
     }

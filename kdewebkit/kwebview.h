@@ -119,7 +119,7 @@ Q_SIGNALS:
      * @see QClipboard
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEWEBKIT_DEPRECATED void selectionClipboardUrlPasted(const KUrl &url);
+    KDEWEBKIT_DEPRECATED void selectionClipboardUrlPasted(const QUrl &url);
 #endif
 
     /**
@@ -144,7 +144,7 @@ Q_SIGNALS:
      * @see QClipboard
      * @since 4.6
      */
-    void selectionClipboardUrlPasted(const KUrl &url, const QString& searchText);
+    void selectionClipboardUrlPasted(const QUrl &url, const QString& searchText);
 
     /**
      * Emitted when a link is clicked with the left mouse button while SHIFT is
@@ -155,7 +155,7 @@ Q_SIGNALS:
      *
      * @param url  the URL of the clicked link
      */
-    void linkShiftClicked(const KUrl &url);
+    void linkShiftClicked(const QUrl &url);
 
     /**
      * Emitted when a link is clicked with the middle mouse button or clicked
@@ -166,7 +166,7 @@ Q_SIGNALS:
      *
      * @param url  the URL of the clicked link
      */
-    void linkMiddleOrCtrlClicked(const KUrl &url);
+    void linkMiddleOrCtrlClicked(const QUrl &url);
 
 protected:
     /**

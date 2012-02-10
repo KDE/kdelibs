@@ -518,7 +518,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
         actionCollection->removeAction(d->action_text_superscript);
         d->action_text_superscript = 0;
     }
-    
+
 
     disconnect(this, SIGNAL(currentCharFormatChanged(const QTextCharFormat &)),
                this, SLOT(_k_updateCharFormatActions(const QTextCharFormat &)));
@@ -619,7 +619,7 @@ void KRichTextWidget::Private::_k_updateMiscActions()
 
     if ( richTextSupport & SupportDedentLists ) {
         if ( richTextEnabled ) {
-            action_list_dedent->setEnabled( q->canDedentList() );   
+            action_list_dedent->setEnabled( q->canDedentList() );
         } else {
             action_list_dedent->setEnabled( false );
         }

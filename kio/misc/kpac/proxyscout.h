@@ -56,7 +56,7 @@ namespace KPAC
 
     private:
         bool startDownload();
-        QStringList handleRequest( const KUrl& url );
+        QStringList handleRequest( const QUrl & url );
 
         KComponentData m_componentData;
         Downloader* m_downloader;
@@ -65,7 +65,7 @@ namespace KPAC
         struct QueuedRequest
         {
             QueuedRequest() {}
-            QueuedRequest( const QDBusMessage&, const KUrl&, bool sendall = false);
+            QueuedRequest( const QDBusMessage&, const QUrl &, bool sendall = false);
 
             QDBusMessage transaction;
             KUrl url;

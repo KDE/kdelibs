@@ -802,7 +802,7 @@ KGlobalSettings::GraphicEffects KGlobalSettings::graphicEffectsLevelDefault()
     return ComplexAnimationEffects;
 }
 
-bool KGlobalSettings::showFilePreview(const KUrl &url)
+bool KGlobalSettings::showFilePreview(const QUrl &url)
 {
     KConfigGroup g(KGlobal::config(), "PreviewSettings");
     QString protocol = url.scheme();

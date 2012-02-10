@@ -433,7 +433,7 @@ bool UploadDialog::init(const QString &configfile)
     return true;
 }
 
-void UploadDialog::setUploadFile(const KUrl& payloadFile)
+void UploadDialog::setUploadFile(const QUrl & payloadFile)
 {
     d->uploadFile = payloadFile;
 
@@ -488,7 +488,7 @@ void UploadDialog::setVersion(const QString& version)
     d->ui.mVersionEdit->setText(version);
 }
 
-void UploadDialog::setPreviewImageFile(uint number, const KUrl& file)
+void UploadDialog::setPreviewImageFile(uint number, const QUrl & file)
 {
     QPixmap preview(file.toLocalFile());
     switch(number) {
@@ -689,7 +689,7 @@ void UploadDialog::Private::_k_contentAdded(Attica::BaseJob* baseJob)
     }
 }
 
-void UploadDialog::Private::doUpload(const QString& index, const KUrl& path)
+void UploadDialog::Private::doUpload(const QString& index, const QUrl & path)
 {
     QFile file(path.toLocalFile());
     if (!file.open(QIODevice::ReadOnly)) {

@@ -346,7 +346,7 @@ void KShortcutsEditorItem::commit()
     }
 #endif
 
-    delete m_oldLocalShortcut; 
+    delete m_oldLocalShortcut;
     m_oldLocalShortcut = 0;
     delete m_oldGlobalShortcut;
     m_oldGlobalShortcut = 0;

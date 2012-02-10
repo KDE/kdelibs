@@ -54,7 +54,7 @@ public:
     QString m_contentDisposition;
 };
 
-BrowserRun::BrowserRun( const KUrl& url, const KParts::OpenUrlArguments& args,
+BrowserRun::BrowserRun( const QUrl & url, const KParts::OpenUrlArguments& args,
                         const KParts::BrowserArguments& browserArgs,
                         KParts::ReadOnlyPart *part, QWidget* window,
                         bool removeReferrer, bool trustedSource, bool hideErrorDialog )
@@ -337,7 +337,7 @@ bool BrowserRun::allowExecution( const QString &mimeType, const KUrl &url )
 
 //static, deprecated
 #ifndef KDE_NO_DEPRECATED
-BrowserRun::AskSaveResult BrowserRun::askSave( const KUrl & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFileName )
+BrowserRun::AskSaveResult BrowserRun::askSave( const QUrl & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFileName )
 {
     Q_UNUSED(offer);
     BrowserOpenOrSaveQuestion question(0, url, mimeType);
@@ -351,7 +351,7 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KUrl & url, KService::Ptr o
 
 //static, deprecated
 #ifndef KDE_NO_DEPRECATED
-BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KUrl & url, const QString& mimeType, const QString & suggestedFileName, int flags )
+BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const QUrl & url, const QString& mimeType, const QString & suggestedFileName, int flags )
 {
     BrowserOpenOrSaveQuestion question(0, url, mimeType);
     question.setSuggestedFileName(suggestedFileName);
@@ -363,13 +363,13 @@ BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KUrl & url, const QS
 #endif
 
 // Default implementation, overridden in KHTMLRun
-void BrowserRun::save( const KUrl & url, const QString & suggestedFileName )
+void BrowserRun::save( const QUrl & url, const QString & suggestedFileName )
 {
     saveUrl(url, suggestedFileName, d->m_window, d->m_args);
 }
 
 // static
-void BrowserRun::simpleSave( const KUrl & url, const QString & suggestedFileName,
+void BrowserRun::simpleSave( const QUrl & url, const QString & suggestedFileName,
                              QWidget* window )
 {
     saveUrl(url, suggestedFileName, window, KParts::OpenUrlArguments());
@@ -443,7 +443,7 @@ void KParts::BrowserRun::saveUrl(const KUrl & url, const QString & suggestedFile
     delete dlg;
 }
 
-void BrowserRun::saveUrlUsingKIO(const KUrl & srcUrl, const KUrl& destUrl,
+void BrowserRun::saveUrlUsingKIO(const QUrl & srcUrl, const QUrl & destUrl,
                                  QWidget* window, const QMap<QString, QString> &metaData)
 {
     KIO::FileCopyJob *job = KIO::file_copy(srcUrl, destUrl, -1, KIO::Overwrite);

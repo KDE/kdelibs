@@ -71,7 +71,7 @@ public:
 
       @param previewFile the preview image file
     */
-    void setPreviewFile(const KUrl& previewFile);
+    void setPreviewFile(const QUrl & previewFile);
 
     /**
       Sets the payload filename.
@@ -80,7 +80,7 @@ public:
 
       @param payloadFile the payload data file
     */
-    void setPayloadFile(const KUrl& payloadFile);
+    void setPayloadFile(const QUrl & payloadFile);
 
     Entry *entry() const;
 

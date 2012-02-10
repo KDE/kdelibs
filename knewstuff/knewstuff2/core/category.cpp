@@ -67,7 +67,7 @@ KTranslatable Category::description() const
     return d->mDescription;
 }
 
-void Category::setIcon(const KUrl& icon)
+void Category::setIcon(const QUrl & icon)
 {
     d->mIcon = icon;
 }

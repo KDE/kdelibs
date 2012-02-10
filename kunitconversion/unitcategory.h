@@ -125,7 +125,7 @@ protected:
     void addUnitMapValues(UnitPtr unit, const QString& names);
     void addIdMapValue(UnitPtr unit, int id);
     void setDescription(const QString& desc);
-    void setUrl(const KUrl& url);
+    void setUrl(const QUrl & url);
     void setSymbolStringFormat(const KLocalizedString& symbolStringFormat);
     void setMostCommonUnits(const QList<int>& units);
     KLocalizedString symbolStringFormat() const;

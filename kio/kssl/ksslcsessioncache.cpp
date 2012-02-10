@@ -54,7 +54,7 @@ typedef QList<KSSLCSession> KSSLCSessions;
 
 static KSSLCSessions *sessions = 0L;
 
-static QString URLtoKey(const KUrl &kurl) {
+static QString URLtoKey(const QUrl &kurl) {
     return kurl.host() + ':' + kurl.scheme() + ':' + QString::number(kurl.port());
 }
 
@@ -71,7 +71,7 @@ static void setup() {
 
 #endif
 
-QString KSSLCSessionCache::getSessionForUrl(const KUrl &kurl) {
+QString KSSLCSessionCache::getSessionForUrl(const QUrl &kurl) {
 #ifdef KSSL_HAVE_SSL
     if (!sessions) return QString();
     QString key = URLtoKey(kurl);
@@ -96,7 +96,7 @@ QString KSSLCSessionCache::getSessionForUrl(const KUrl &kurl) {
 }
 
 
-void KSSLCSessionCache::putSessionForUrl(const KUrl &kurl, const QString &session) {
+void KSSLCSessionCache::putSessionForUrl(const QUrl &kurl, const QString &session) {
 #ifdef KSSL_HAVE_SSL
     if (!sessions) setup();
     QString key = URLtoKey(kurl);
