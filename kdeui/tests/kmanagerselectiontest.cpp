@@ -158,7 +158,7 @@ int main(int argc, char *argv[]) \
     KApplication app; \
     app.setApplicationName( QLatin1String("qttest") ); \
     qRegisterMetaType<KUrl>(); /*as done by kapplication*/ \
-    qRegisterMetaType<QList<KUrl> >(); \
+    qRegisterMetaType<QList<QUrl> >(); \
     TestObject tc; \
     KGlobal::ref(); /* don't quit qeventloop after closing a mainwindow */ \
     return QTest::qExec( &tc, argc, argv ); \

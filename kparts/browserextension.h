@@ -646,7 +646,7 @@ public:  // yes, those signals are public; don't tell moc, doxygen or kdevelop :
    * Inform the hosting application about the current selection.
    * Used when a set of URLs is selected.
    */
-  void selectionInfo( const QList<KUrl> &urls );
+  void selectionInfo( const QList<QUrl> &urls );
 
   /**
    * Inform the hosting application that the user moved the mouse over an item.

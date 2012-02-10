@@ -319,7 +319,7 @@ void KWebWallet::KWebWalletPrivate::_k_openWalletDone(bool ok)
 
         // Do pending fill requests...
         if (!pendingFillRequests.isEmpty()) {
-            QList<KUrl> urlList;
+            QList<QUrl> urlList;
             QMutableHashIterator<KUrl, FormsData> requestIt (pendingFillRequests);
             while (requestIt.hasNext()) {
                requestIt.next();
@@ -404,7 +404,7 @@ void KWebWallet::fillFormData(QWebFrame *frame, bool recursive)
     if (!frame)
         return;
 
-    QList<KUrl> urlList;
+    QList<QUrl> urlList;
     WebFormList formsList = d->parseFormData(frame);
     if (!formsList.isEmpty()) {
         const QUrl url (urlForFrame(frame));
@@ -549,12 +549,12 @@ bool KWebWallet::hasCachedFormData(const WebForm &form) const
                                              walletKey(form));
 }
 
-void KWebWallet::fillFormDataFromCache(const QList<KUrl> &urlList)
+void KWebWallet::fillFormDataFromCache(const QList<QUrl> &urlList)
 {
     if (d->wallet) {
-        QListIterator<KUrl> urlIt (urlList);
+        QListIterator<QUrl> urlIt (urlList);
         while (urlIt.hasNext()) {
-            const KUrl url = urlIt.next();
+            const QUrl url = urlIt.next();
             WebFormList list = formsToFill(url);
             d->fillDataFromCache(list);
             fillWebForm(url, list);

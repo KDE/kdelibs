@@ -507,7 +507,7 @@ bool KWebPage::handleReply(QNetworkReply* reply, QString* contentType, KIO::Meta
                 if (isMimeTypeAssociatedWithSelf(offer)) {
                     reloadRequestWithoutDisposition(reply);
                 } else {
-                    QList<KUrl> list;
+                    QList<QUrl> list;
                     list.append(replyUrl);
                     bool success = false;
                     // kDebug(800) << "Suggested file name:" << suggestedFileName;

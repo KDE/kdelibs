@@ -174,7 +174,7 @@ void KDeclarative::setupBindings()
 
     // Add stuff from KDE libs
     bindI18N(engine);
-    qScriptRegisterSequenceMetaType<QList<KUrl> >(engine);
+    qScriptRegisterSequenceMetaType<QList<QUrl> >(engine);
     global.setProperty("Url", constructKUrlClass(engine));
 
     // setup ImageProvider for KDE icons

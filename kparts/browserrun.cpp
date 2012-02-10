@@ -521,7 +521,7 @@ KUrl BrowserRun::makeErrorUrl(int error, const QString& errorText, const QString
     return newURL;
 
     // The kde3 approach broke with invalid urls, now that they become empty in qt4.
-    //QList<KUrl> lst;
+    //QList<QUrl> lst;
     //lst << newURL << runURL;
     //return KUrl::join(lst);
 }
