@@ -45,4 +45,4 @@ bool DomainBrowser::isRunning() const
 }
 
 }
-#include "domainbrowser.moc"
+#include "dummy-domainbrowser.moc"
