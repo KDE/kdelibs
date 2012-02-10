@@ -30,3 +30,7 @@ include(FeatureSummary)
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   feature_summary(WHAT ALL   FATAL_ON_MISSING_REQUIRED_PACKAGES)
 endif()
+
+install( FILES
+    KAuthMacros.cmake
+    DESTINATION ${DATA_INSTALL_DIR}/cmake/modules COMPONENT Devel )
