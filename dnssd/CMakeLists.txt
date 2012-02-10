@@ -64,6 +64,9 @@ endif (HAVE_AVAHI)
 
 
 kde4_add_library(kdnssd ${LIBRARY_TYPE} ${kdnssd_LIB_SRCS})
+generate_export_header(kdnssd
+  EXPORT_FILE_NAME dnssd_export.h
+)
 
 # KDE 5: don't link against KDEUI_LIBS (when settings.kfgc is changed)
 if (HAVE_DNSSD)
@@ -81,7 +84,7 @@ set_target_properties(kdnssd PROPERTIES
 install(TARGETS kdnssd ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
-install( FILES dnssd_export.h domainbrowser.h remoteservice.h servicetypebrowser.h publicservice.h 
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/dnssd_export.h domainbrowser.h remoteservice.h servicetypebrowser.h publicservice.h
                servicebase.h servicebrowser.h  servicemodel.h domainmodel.h ${CMAKE_CURRENT_BINARY_DIR}/settings.h
          DESTINATION  ${INCLUDE_INSTALL_DIR}/dnssd COMPONENT Devel)
 
