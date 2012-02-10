@@ -117,7 +117,7 @@ KRuler::KRuler(QWidget *parent)
   setRange(INIT_MIN_VALUE, INIT_MAX_VALUE);
   setPageStep(10);
   setValue(INIT_VALUE);
-  init(Qt::Horizontal);
+  initWidget(Qt::Horizontal);
   setFixedHeight(FIX_WIDTH);
 }
 
@@ -131,7 +131,7 @@ KRuler::KRuler(Qt::Orientation orient,
   setPageStep(10);
   setValue(INIT_VALUE);
   setWindowFlags(f);
-  init(orient);
+  initWidget(orient);
   if (orient == Qt::Horizontal)
     setFixedHeight(FIX_WIDTH);
   else
@@ -148,7 +148,7 @@ KRuler::KRuler(Qt::Orientation orient, int widgetWidth,
   setPageStep(10);
   setValue(INIT_VALUE);
   setWindowFlags(f);
-  init(orient);
+  initWidget(orient);
   if (orient == Qt::Horizontal)
     setFixedHeight(widgetWidth);
   else
@@ -156,7 +156,7 @@ KRuler::KRuler(Qt::Orientation orient, int widgetWidth,
 }
 
 
-void KRuler::init(Qt::Orientation orientation)
+void KRuler::initWidget(Qt::Orientation orientation)
 {
 #ifdef __GNUC__
   #warning FIXME setFrameStyle(WinPanel | Raised);

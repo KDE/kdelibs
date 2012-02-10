@@ -217,7 +217,7 @@ Q_SIGNALS:
     void tableClicked();
 
 private:
-    void init( const QDate &date );
+    void initWidget( const QDate &date );
     class KDatePickerPrivate;
     friend class KDatePickerPrivate;
     KDatePickerPrivate *const d;

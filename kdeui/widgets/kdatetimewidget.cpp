@@ -38,7 +38,7 @@ KDateTimeWidget::KDateTimeWidget(QWidget * parent)
   : QWidget(parent)
   , d( new KDateTimeWidgetPrivate )
 {
-  init();
+  initWidget();
 }
 
 KDateTimeWidget::KDateTimeWidget(const QDateTime & datetime,
@@ -47,7 +47,7 @@ KDateTimeWidget::KDateTimeWidget(const QDateTime & datetime,
   , d( new KDateTimeWidgetPrivate )
 
 {
-  init();
+  initWidget();
 
   setDateTime(datetime);
 }
@@ -57,7 +57,7 @@ KDateTimeWidget::~KDateTimeWidget()
   delete d;
 }
 
-void KDateTimeWidget::init()
+void KDateTimeWidget::initWidget()
 {
   QHBoxLayout *layout = new QHBoxLayout(this);
   layout->setMargin(0);

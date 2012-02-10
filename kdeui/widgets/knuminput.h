@@ -409,7 +409,7 @@ protected:
     void resizeEvent ( QResizeEvent * );
 
 private:
-    void init(int value, int _base);
+    void initWidget(int value, int _base);
 
 private:
     class KIntNumInputPrivate;
@@ -687,7 +687,7 @@ protected:
 
     friend class KDoubleLine;
 private:
-    void init(double value, double lower, double upper,
+    void initWidget(double value, double lower, double upper,
     double singleStep, int precision);
     double mapSliderToSpin(int) const;
     void updateLegacyMembers();

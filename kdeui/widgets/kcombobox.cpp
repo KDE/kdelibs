@@ -57,13 +57,13 @@ public:
 KComboBox::KComboBox( QWidget *parent )
     : QComboBox( parent ), d(new KComboBoxPrivate)
 {
-    init();
+    initWidget();
 }
 
 KComboBox::KComboBox( bool rw, QWidget *parent )
     : QComboBox( parent ), d(new KComboBoxPrivate)
 {
-    init();
+    initWidget();
     setEditable( rw );
 }
 
@@ -72,7 +72,7 @@ KComboBox::~KComboBox()
     delete d;
 }
 
-void KComboBox::init()
+void KComboBox::initWidget()
 {
     // Permanently set some parameters in the parent object.
     QComboBox::setAutoCompletion( false );

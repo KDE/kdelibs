@@ -213,7 +213,7 @@ private:
     class KCharSelectPrivate;
     KCharSelectPrivate* const d;
 
-    void init(const Controls, KActionCollection *);
+    void initWidget(const Controls, KActionCollection *);
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KCharSelect::Controls)

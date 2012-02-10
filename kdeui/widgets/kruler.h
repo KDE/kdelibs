@@ -421,7 +421,7 @@ protected:
   virtual void paintEvent(QPaintEvent *);
 
 private:
-  void init(Qt::Orientation orientation);
+  void initWidget(Qt::Orientation orientation);
 
 private:
   class KRulerPrivate;

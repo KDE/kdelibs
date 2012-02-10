@@ -66,7 +66,7 @@ public:
 KHistoryComboBox::KHistoryComboBox( QWidget *parent )
      : KComboBox( true, parent ), d(new Private(this))
 {
-    init( true ); // using completion
+    initWidget( true ); // using completion
 }
 
 // we are always read-write
@@ -74,10 +74,10 @@ KHistoryComboBox::KHistoryComboBox( bool useCompletion,
                               QWidget *parent )
     : KComboBox( true, parent ), d(new Private(this))
 {
-    init( useCompletion );
+    initWidget( useCompletion );
 }
 
-void KHistoryComboBox::init( bool useCompletion )
+void KHistoryComboBox::initWidget( bool useCompletion )
 {
     // Set a default history size to something reasonable, Qt sets it to INT_MAX by default
     setMaxCount( 50 );

@@ -649,7 +649,7 @@ private:
     /**
      * Initializes variables.  Called from the constructors.
      */
-    void init();
+    void initWidget();
 
     bool copySqueezedText( bool clipboard ) const;
 

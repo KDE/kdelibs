@@ -247,14 +247,14 @@ KDateTable::KDateTable( const QDate& date, QWidget* parent )
            : QWidget( parent ),
              d( new KDateTablePrivate( this ) )
 {
-    init( date );
+    initWidget( date );
 }
 
 KDateTable::KDateTable( QWidget *parent )
            : QWidget( parent ),
              d( new KDateTablePrivate( this ) )
 {
-    init( QDate::currentDate() );
+    initWidget( QDate::currentDate() );
 }
 
 KDateTable::~KDateTable()
@@ -262,7 +262,7 @@ KDateTable::~KDateTable()
     delete d;
 }
 
-void KDateTable::init( const QDate &date )
+void KDateTable::initWidget( const QDate &date )
 {
     d->m_numWeekRows = 7;
 

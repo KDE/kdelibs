@@ -234,13 +234,13 @@ bool KLineEditPrivate::s_initialized = false;
 KLineEdit::KLineEdit( const QString &string, QWidget *parent )
     : QLineEdit( string, parent ), d(new KLineEditPrivate(this))
 {
-    init();
+    initWidget();
 }
 
 KLineEdit::KLineEdit( QWidget *parent )
     : QLineEdit( parent ), d(new KLineEditPrivate(this))
 {
-    init();
+    initWidget();
 }
 
 
@@ -249,7 +249,7 @@ KLineEdit::~KLineEdit ()
     delete d;
 }
 
-void KLineEdit::init()
+void KLineEdit::initWidget()
 {
     d->possibleTripleClick = false;
     d->bgRole = backgroundRole();

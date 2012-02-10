@@ -210,7 +210,7 @@ private:
      * Internal.
      * Initialize the KPushButton instance
      */
-    void init( const KGuiItem &item );
+    void initWidget( const KGuiItem &item );
 
 private:
     class KPushButtonPrivate;

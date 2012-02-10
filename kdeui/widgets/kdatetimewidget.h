@@ -78,7 +78,7 @@ Q_SIGNALS:
   void valueChanged(const QDateTime & datetime);
 
 private:
-  void init();
+  void initWidget();
 
 private Q_SLOTS:
   void slotValueChanged();

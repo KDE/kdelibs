@@ -340,7 +340,7 @@ KIntNumInput::KIntNumInput(KNumInput* below, int val, QWidget *parent, int _base
     : KNumInput(parent, below)
     , d(new KIntNumInputPrivate(this, val))
 {
-    init(val, _base);
+    initWidget(val, _base);
 }
 #endif
 
@@ -348,14 +348,14 @@ KIntNumInput::KIntNumInput(QWidget *parent)
     : KNumInput(parent)
     , d(new KIntNumInputPrivate(this, 0))
 {
-    init(0, 10);
+    initWidget(0, 10);
 }
 
 KIntNumInput::KIntNumInput(int val, QWidget *parent, int _base)
     : KNumInput(parent)
     , d(new KIntNumInputPrivate(this, val))
 {
-    init(val, _base);
+    initWidget(val, _base);
 }
 
 QSpinBox *KIntNumInput::spinBox() const
@@ -363,7 +363,7 @@ QSpinBox *KIntNumInput::spinBox() const
     return d->intSpinBox;
 }
 
-void KIntNumInput::init(int val, int _base)
+void KIntNumInput::initWidget(int val, int _base)
 {
     d->intSpinBox = new KIntSpinBox(INT_MIN, INT_MAX, 1, val, this, _base);
     d->intSpinBox->setObjectName("KIntNumInput::KIntSpinBox");
@@ -699,7 +699,7 @@ KDoubleNumInput::KDoubleNumInput(QWidget *parent)
     , d(new KDoubleNumInputPrivate(0.0))
 
 {
-    init(0.0, 0.0, 9999.0, 0.01, 2);
+    initWidget(0.0, 0.0, 9999.0, 0.01, 2);
 }
 
 KDoubleNumInput::KDoubleNumInput(double lower, double upper, double value, QWidget *parent,
@@ -707,7 +707,7 @@ KDoubleNumInput::KDoubleNumInput(double lower, double upper, double value, QWidg
     : KNumInput(parent)
     , d(new KDoubleNumInputPrivate(value))
 {
-    init(value, lower, upper, singleStep, precision);
+    initWidget(value, lower, upper, singleStep, precision);
 }
 
 #ifndef KDE_NO_DEPRECATED
@@ -717,7 +717,7 @@ KDoubleNumInput::KDoubleNumInput(KNumInput *below,
     : KNumInput(parent, below)
     , d(new KDoubleNumInputPrivate(value))
 {
-    init(value, lower, upper, singleStep, precision);
+    initWidget(value, lower, upper, singleStep, precision);
 }
 #endif
 
@@ -732,7 +732,7 @@ QString KDoubleNumInput::specialValueText() const
 }
 
 
-void KDoubleNumInput::init(double value, double lower, double upper,
+void KDoubleNumInput::initWidget(double value, double lower, double upper,
                            double singleStep, int precision)
 {
     d->spin = new QDoubleSpinBox(this);

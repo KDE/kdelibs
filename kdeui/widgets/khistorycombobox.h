@@ -265,7 +265,7 @@ private Q_SLOTS:
     void slotSimulateActivated( const QString& );
 
 private:
-    void init( bool useCompletion );
+    void initWidget( bool useCompletion );
     void rotateUp();
     void rotateDown();
 

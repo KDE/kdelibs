@@ -58,16 +58,16 @@ public:
 
 KDateWidget::KDateWidget( QWidget *parent ) : QWidget( parent ), d( new KDateWidgetPrivate )
 {
-    init( QDate::currentDate() );
+    initWidget( QDate::currentDate() );
 }
 
 KDateWidget::KDateWidget( const QDate &date, QWidget *parent )
             : QWidget( parent ), d( new KDateWidgetPrivate )
 {
-    init( date );
+    initWidget( date );
 }
 
-void KDateWidget::init( const QDate &date )
+void KDateWidget::initWidget( const QDate &date )
 {
     QHBoxLayout *layout = new QHBoxLayout( this );
     layout->setMargin( 0 );

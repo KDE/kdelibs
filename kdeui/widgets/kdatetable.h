@@ -314,7 +314,7 @@ private:
     friend class KDateTablePrivate;
     KDateTablePrivate * const d;
 
-    void init( const QDate &date );
+    void initWidget( const QDate &date );
     void initAccels();
     void paintCell( QPainter *painter, int row, int col, const KColorScheme &colorScheme );
 

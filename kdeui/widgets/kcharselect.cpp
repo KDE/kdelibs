@@ -309,7 +309,7 @@ void KCharSelectTable::keyPressEvent(QKeyEvent *e)
 KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
         : QWidget(parent), d(new KCharSelectPrivate(this))
 {
-    init(controls, NULL);
+    initWidget(controls, NULL);
 }
 #endif
 
@@ -319,10 +319,10 @@ KCharSelect::KCharSelect(
         ,const Controls controls)
     : QWidget(parent), d(new KCharSelectPrivate(this))
 {
-    init(controls, collection);
+    initWidget(controls, collection);
 }
 
-void KCharSelect::init(const Controls controls, KActionCollection *collection)
+void KCharSelect::initWidget(const Controls controls, KActionCollection *collection)
 {
     if (collection==NULL) {
         d->actions = new KActionCollection(this);

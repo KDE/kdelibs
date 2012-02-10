@@ -526,7 +526,7 @@ private:
     /**
      * Initializes the variables upon construction.
      */
-    void init();
+    void initWidget();
 
 private:
     class KComboBoxPrivate;

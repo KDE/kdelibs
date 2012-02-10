@@ -213,16 +213,16 @@ QDate KDatePicker::KDatePickerPrivate::validDateInYearMonth( int year, int month
 
 KDatePicker::KDatePicker( QWidget* parent ) : QFrame( parent ), d( new KDatePickerPrivate( this ) )
 {
-    init( QDate::currentDate() );
+    initWidget( QDate::currentDate() );
 }
 
 KDatePicker::KDatePicker( const QDate& date_, QWidget* parent )
             : QFrame( parent ), d( new KDatePickerPrivate( this ) )
 {
-    init( date_ );
+    initWidget( date_ );
 }
 
-void KDatePicker::init( const QDate &date_ )
+void KDatePicker::initWidget( const QDate &date_ )
 {
     QBoxLayout * topLayout = new QVBoxLayout( this );
     topLayout->setSpacing( 0 );

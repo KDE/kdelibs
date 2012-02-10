@@ -152,26 +152,26 @@ void KPushButton::KPushButtonPrivate::readSettings()
 KPushButton::KPushButton( QWidget *parent )
     : QPushButton( parent ), d( new KPushButtonPrivate(this) )
 {
-    init( KGuiItem( "" ) );
+    initWidget( KGuiItem( "" ) );
 }
 
 KPushButton::KPushButton( const QString &text, QWidget *parent )
     : QPushButton( parent ), d( new KPushButtonPrivate(this) )
 {
-    init( KGuiItem( text ) );
+    initWidget( KGuiItem( text ) );
 }
 
 KPushButton::KPushButton( const QIcon &icon, const QString &text,
                           QWidget *parent )
     : QPushButton( text, parent ), d( new KPushButtonPrivate(this) )
 {
-    init( KGuiItem( text, icon ) );
+    initWidget( KGuiItem( text, icon ) );
 }
 
 KPushButton::KPushButton( const KGuiItem &item, QWidget *parent )
     : QPushButton( parent ), d( new KPushButtonPrivate(this) )
 {
-    init( item );
+    initWidget( item );
 }
 
 KPushButton::~KPushButton()
@@ -179,7 +179,7 @@ KPushButton::~KPushButton()
     delete d;
 }
 
-void KPushButton::init( const KGuiItem &item )
+void KPushButton::initWidget( const KGuiItem &item )
 {
     d->item = item;
     d->itemType = (KStandardGuiItem::StandardItem) 0;

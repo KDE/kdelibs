@@ -119,7 +119,7 @@ Q_SIGNALS:
     void changed( const QDate& date );
 
 protected:
-    void init( const QDate& date );
+    void initWidget( const QDate& date );
 
 protected Q_SLOTS:
     void slotDateChanged();
