@@ -24,6 +24,7 @@
 #include <QTextDocument>
 #include <QTimer>
 
+#include <kicon.h>
 #include <kcombobox.h>
 #include <kconfig.h>
 #include <kiconloader.h>

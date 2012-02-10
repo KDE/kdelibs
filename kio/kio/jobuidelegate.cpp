@@ -21,6 +21,7 @@
 
 #include "jobuidelegate.h"
 
+#include <kicon.h>
 #include <kdebug.h>
 #include <kjob.h>
 #include <klocale.h>

@@ -74,7 +74,7 @@ class KDEUI_EXPORT KToggleAction : public KAction
      * @param text The text that will be displayed.
      * @param parent The action's parent object.
      */
-    KToggleAction( const KIcon& icon, const QString& text, QObject *parent );
+    KToggleAction( const QIcon& icon, const QString& text, QObject *parent );
 
     /**
      * Destructor

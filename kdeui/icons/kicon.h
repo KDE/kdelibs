@@ -82,7 +82,7 @@ public:
      */
     ~KIcon();
 
-    KIcon& operator=( const KIcon &other );
+    KIcon& operator=( const QIcon &other );
 
 private:
     class Private;

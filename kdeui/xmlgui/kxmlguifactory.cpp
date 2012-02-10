@@ -34,6 +34,7 @@
 #include <QtCore/QVariant>
 #include <QTextCodec>
 
+#include <kicon.h>
 #include <kdebug.h>
 #include <kcomponentdata.h>
 #include <kglobal.h>

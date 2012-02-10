@@ -91,7 +91,7 @@ KFontAction::KFontAction(const QString & text, QObject *parent)
     setEditable( true );
 }
 
-KFontAction::KFontAction(const KIcon &icon, const QString &text, QObject *parent)
+KFontAction::KFontAction(const QIcon &icon, const QString &text, QObject *parent)
   : KSelectAction(icon, text, parent), d(new KFontActionPrivate(this))
 {
     QStringList list;

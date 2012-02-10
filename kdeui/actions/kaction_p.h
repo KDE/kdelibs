@@ -61,7 +61,7 @@ class KActionPrivate
 
         KAuth::Action *authAction;
         // TODO: Remove whenever QIcon overlays will get fixed
-        KIcon oldIcon;
+        QIcon oldIcon;
 };
 
 #endif

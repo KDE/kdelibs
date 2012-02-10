@@ -28,6 +28,7 @@
 #include <QCheckBox>
 #include <QStyleOptionViewItemV4>
 
+#include <kicon.h>
 #include <kdebug.h>
 #include <klineedit.h>
 #include <kdialog.h>

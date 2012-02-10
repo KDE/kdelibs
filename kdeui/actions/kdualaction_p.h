@@ -20,6 +20,8 @@
 #ifndef KDUALACTION_P_H
 #define KDUALACTION_P_H
 
+#include <kicon.h>
+
 class KDualActionPrivate
 {
 public:

@@ -26,7 +26,7 @@
 
 class QWidget;
 
-class KIcon;
+
 
 /**
  * KPageWidgetItem is used by @ref KPageWidget and represents
@@ -52,7 +52,7 @@ class KDEUI_EXPORT KPageWidgetItem : public QObject
   Q_OBJECT
   Q_PROPERTY( QString name READ name WRITE setName )
   Q_PROPERTY( QString header READ header WRITE setHeader )
-  Q_PROPERTY( KIcon icon READ icon WRITE setIcon )
+  Q_PROPERTY( QIcon icon READ icon WRITE setIcon )
   Q_PROPERTY( bool checkable READ isCheckable WRITE setCheckable )
   Q_PROPERTY( bool checked READ isChecked WRITE setChecked )
     /**
@@ -121,12 +121,12 @@ class KDEUI_EXPORT KPageWidgetItem : public QObject
      * Sets the icon of the page widget item.
      * @param icon Icon of the page widget item.
      */
-    void setIcon( const KIcon &icon );
+    void setIcon( const QIcon &icon );
 
     /**
      * Returns the icon of the page widget item.
      */
-    KIcon icon() const;
+    QIcon icon() const;
 
     /**
      * Sets whether the page widget item is checkable in the view.

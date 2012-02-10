@@ -70,11 +70,11 @@ protected slots:
 protected:
     Engine* m_engine;
     QAbstractItemView *m_itemView;
-    KIcon m_iconInvalid;
-    KIcon m_iconDownloadable;
-    KIcon m_iconInstall;
-    KIcon m_iconUpdate;
-    KIcon m_iconDelete;
+    QIcon m_iconInvalid;
+    QIcon m_iconDownloadable;
+    QIcon m_iconInstall;
+    QIcon m_iconUpdate;
+    QIcon m_iconDelete;
     QPixmap m_frameImage;
     QPixmap m_noImage;
     QSize m_buttonSize;

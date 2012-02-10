@@ -47,7 +47,7 @@ class KToolBarPopupAction::Private
     bool stickyMenu:1;
 };
 
-KToolBarPopupAction::KToolBarPopupAction(const KIcon& icon, const QString& text, QObject *parent)
+KToolBarPopupAction::KToolBarPopupAction(const QIcon& icon, const QString& text, QObject *parent)
   : KAction(icon, text, parent),
     d( new Private )
 {

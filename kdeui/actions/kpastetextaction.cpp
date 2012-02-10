@@ -73,7 +73,7 @@ KPasteTextAction::KPasteTextAction(const QString &text, QObject *parent)
   setText(text);
 }
 
-KPasteTextAction::KPasteTextAction(const KIcon &icon, const QString &text, QObject *parent)
+KPasteTextAction::KPasteTextAction(const QIcon &icon, const QString &text, QObject *parent)
   : KAction(icon, text, parent), d(new KPasteTextActionPrivate(this))
 {
   d->init();

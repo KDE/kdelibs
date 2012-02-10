@@ -29,6 +29,7 @@
 #include <kdeversion.h>
 #include <kglobalsettings.h>
 #include <klocale.h>
+#include <kicon.h>
 #include <kstandarddirs.h>
 #include <ktitlewidget.h>
 

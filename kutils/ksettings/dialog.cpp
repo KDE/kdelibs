@@ -23,6 +23,7 @@
 #include "dispatcher.h"
 //#include "componentsdialog_p.h"
 
+#include <kicon.h>
 #include <klocale.h>
 #include <kservicegroup.h>
 #include <kdebug.h>

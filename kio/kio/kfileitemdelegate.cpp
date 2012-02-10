@@ -127,7 +127,7 @@ class KFileItemDelegate::Private
         bool showToolTipWhenElided;
         QTextOption::WrapMode wrapMode;
         bool jobTransfersVisible;
-        KIcon downArrowIcon;
+        QIcon downArrowIcon;
 
     private:
         KFileItemDelegate * const q;

@@ -27,6 +27,7 @@
 #include <QGroupBox>
 #include <QCloseEvent>
 
+#include <kicon.h>
 #include <kaboutdata.h>
 #include <kcombobox.h>
 #include <ktoolinvocation.h>

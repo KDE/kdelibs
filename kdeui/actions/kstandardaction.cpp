@@ -45,7 +45,7 @@
 
 namespace KStandardAction
 {
-AutomaticAction::AutomaticAction(const KIcon &icon, const QString &text, const KShortcut &shortcut, const char *slot,
+AutomaticAction::AutomaticAction(const QIcon &icon, const QString &text, const KShortcut &shortcut, const char *slot,
                                  QObject *parent)
     : KAction(parent)
 {

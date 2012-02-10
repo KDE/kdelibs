@@ -319,7 +319,7 @@ void ItemsGridViewDelegate::displayOperationBar(const QRect &rect,const QModelIn
         bool installable = false;
         bool enabled = true;
         QString text;
-        KIcon icon;
+        QIcon icon;
 
         switch (entry.status()) {
         case Entry::Installed:

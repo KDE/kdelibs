@@ -20,6 +20,7 @@
 
 #include <kaction.h>
 #include <klocale.h>
+#include <kicon.h>
 #include <kactioncollection.h>
 
 using namespace KNS3;

@@ -149,7 +149,7 @@ KAction::KAction(const QString &text, QObject *parent)
   setText(text);
 }
 
-KAction::KAction(const KIcon &icon, const QString &text, QObject *parent)
+KAction::KAction(const QIcon &icon, const QString &text, QObject *parent)
   : QWidgetAction(parent), d(new KActionPrivate)
 {
   d->init(this);

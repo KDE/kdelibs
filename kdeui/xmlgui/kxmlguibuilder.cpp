@@ -32,6 +32,7 @@
 #include "kaction.h"
 #include "kglobalsettings.h"
 #include <klocale.h>
+#include <kicon.h>
 #include <kiconloader.h>
 #include <kdebug.h>
 #include <QtXml/QDomElement>
@@ -186,7 +187,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
       i18nText = i18nc( context, text );
 
     const QString icon = element.attribute( d->attrIcon );
-    KIcon pix;
+    QIcon pix;
     if (!icon.isEmpty()) {
         pix = KIcon( icon );
     }
@@ -351,7 +352,7 @@ QAction* KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const 
         i18nText = i18n( text );
 
       QString icon = element.attribute( d->attrIcon );
-      KIcon pix;
+      QIcon pix;
 
       if ( !icon.isEmpty() )
       {

@@ -19,6 +19,7 @@
 */
 
 #include "browseropenorsavequestion.h"
+#include <kicon.h>
 #include <kdebug.h>
 #include <kaction.h>
 #include <kfileitemactions.h>
@@ -59,7 +60,7 @@ public:
     static const KDialog::ButtonCode OpenDefault = KDialog::User2;
     static const KDialog::ButtonCode OpenWith = KDialog::User1;
     static const KDialog::ButtonCode Cancel = KDialog::Cancel;
-        
+
     BrowserOpenOrSaveQuestionPrivate(QWidget* parent, const KUrl& url, const QString& mimeType)
         : KDialog(parent), url(url), mimeType(mimeType),
           features(0)

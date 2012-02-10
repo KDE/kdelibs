@@ -32,6 +32,7 @@
 #include <QMenu>
 #include <QEvent>
 
+#include <kicon.h>
 #include <kurl.h>
 #include <kpushbutton.h>
 #include <ksqueezedtextlabel.h>

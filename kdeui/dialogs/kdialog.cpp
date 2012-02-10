@@ -38,6 +38,7 @@
 #include <QVBoxLayout>
 #include <QWhatsThis>
 
+#include <kicon.h>
 #include <klocale.h>
 #include <kpushbutton.h>
 #include <kseparator.h>
@@ -739,14 +740,14 @@ QString KDialog::buttonText( ButtonCode id ) const
     return QString();
 }
 
-void KDialog::setButtonIcon( ButtonCode id, const KIcon &icon )
+void KDialog::setButtonIcon( ButtonCode id, const QIcon &icon )
 {
   KPushButton *button = this->button( id );
   if ( button )
     button->setIcon( icon );
 }
 
-KIcon KDialog::buttonIcon( ButtonCode id ) const
+QIcon KDialog::buttonIcon( ButtonCode id ) const
 {
   KPushButton *button = this->button( id );
   if ( button )

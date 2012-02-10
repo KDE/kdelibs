@@ -65,7 +65,7 @@ KFontSizeAction::KFontSizeAction(const QString &text, QObject *parent)
   d->init();
 }
 
-KFontSizeAction::KFontSizeAction(const KIcon &icon, const QString &text, QObject *parent)
+KFontSizeAction::KFontSizeAction(const QIcon &icon, const QString &text, QObject *parent)
   : KSelectAction(icon, text, parent),
     d(new Private(this))
 {

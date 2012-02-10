@@ -21,6 +21,7 @@
 #include <kstandardguiitem.h>
 #include <klocale.h>
 #include <kdebug.h>
+#include <kicon.h>
 
 #include <QHash>
 

@@ -35,6 +35,7 @@
 #include <QApplication>
 #include <QDomDocument>
 
+#include <kicon.h>
 #include <kmessagebox.h>
 #include <kxmlguiclient.h>
 #include <kxmlguifactory.h>

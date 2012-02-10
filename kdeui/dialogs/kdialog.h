@@ -268,12 +268,12 @@ class KDEUI_EXPORT KDialog : public QDialog //krazy:exclude=qclasses
      * @param id The button identifier.
      * @param icon Button icon.
      */
-    void setButtonIcon( ButtonCode id, const KIcon &icon );
+    void setButtonIcon( ButtonCode id, const QIcon &icon );
 
     /**
      * Returns the icon of any button.
      */
-    KIcon buttonIcon( ButtonCode id ) const;
+    QIcon buttonIcon( ButtonCode id ) const;
 
     /**
      * Sets the tooltip text of any button.

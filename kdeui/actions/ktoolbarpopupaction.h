@@ -62,7 +62,7 @@ class KDEUI_EXPORT KToolBarPopupAction : public KAction
      * @param text The text that will be displayed.
      * @param parent This action's parent.
      */
-    KToolBarPopupAction(const KIcon& icon, const QString& text, QObject *parent);
+    KToolBarPopupAction(const QIcon& icon, const QString& text, QObject *parent);
 
     /**
      * Destroys the toolbar popup action.

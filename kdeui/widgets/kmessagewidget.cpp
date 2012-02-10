@@ -221,7 +221,7 @@ KMessageWidget::MessageType KMessageWidget::messageType() const
 void KMessageWidget::setMessageType(KMessageWidget::MessageType type)
 {
     d->messageType = type;
-    KIcon icon;
+    QIcon icon;
     KColorScheme::BackgroundRole bgRole;
     KColorScheme::ForegroundRole fgRole;
     KColorScheme::ColorSet colorSet = KColorScheme::Window;

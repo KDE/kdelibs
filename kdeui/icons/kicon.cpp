@@ -57,7 +57,7 @@ KIcon::~KIcon()
     //delete d;
 }
 
-KIcon& KIcon::operator=( const KIcon &other )
+KIcon& KIcon::operator=( const QIcon &other )
 {
     if (this != &other) {
         // copy d-pointer

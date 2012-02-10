@@ -31,6 +31,7 @@
 #include <QPushButton>
 #include <QToolButton>
 
+#include <kicon.h>
 #include <kcombobox.h>
 #include <kdebug.h>
 #include <kdialog.h>

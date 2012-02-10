@@ -15,6 +15,7 @@
 
 #include <QtCore/QFileInfo>
 
+#include <kicon.h>
 #include <kiconloader.h>
 #include "kicondialog.h"
 

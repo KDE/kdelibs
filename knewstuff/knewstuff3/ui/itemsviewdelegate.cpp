@@ -113,7 +113,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         bool installable = false;
         bool enabled = true;
         QString text;
-        KIcon icon;
+        QIcon icon;
 
         switch (entry.status()) {
         case Entry::Installed:

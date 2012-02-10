@@ -73,7 +73,7 @@ KCodecAction::KCodecAction(const QString &text, QObject *parent,bool showAutoOpt
     d->init(showAutoOptions);
 }
 
-KCodecAction::KCodecAction(const KIcon &icon, const QString &text, QObject *parent,bool showAutoOptions)
+KCodecAction::KCodecAction(const QIcon &icon, const QString &text, QObject *parent,bool showAutoOptions)
     : KSelectAction(icon, text, parent)
     , d(new Private(this))
 {

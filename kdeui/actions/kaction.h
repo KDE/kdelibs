@@ -32,7 +32,7 @@
 
 #include <QWidgetAction>
 
-class KIcon;
+
 class KShapeGesture;
 class KRockerGesture;
 
@@ -276,7 +276,7 @@ public:
      * @param text The text that will be displayed.
      * @param parent The parent for this action.
      */
-    KAction(const KIcon& icon, const QString& text, QObject *parent);
+    KAction(const QIcon& icon, const QString& text, QObject *parent);
 
     /**
      * Standard destructor

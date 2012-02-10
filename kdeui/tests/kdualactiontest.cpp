@@ -21,6 +21,8 @@
 
 #include "qtest_kde.h"
 
+#include "kicon.h"
+
 Q_DECLARE_METATYPE(KAction*)
 
 static const QString INACTIVE_TEXT = "Show Foo";

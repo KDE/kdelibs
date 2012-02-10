@@ -25,7 +25,7 @@
 #include <QPointer>
 #include <QWidget>
 
-#include <kicon.h>
+#include <QIcon>
 
 class KPageWidgetItem::Private
 {
@@ -43,7 +43,7 @@ class KPageWidgetItem::Private
 
     QString name;
     QString header;
-    KIcon icon;
+    QIcon icon;
     QPointer<QWidget> widget;
     bool checkable : 1;
     bool checked : 1;
@@ -127,14 +127,14 @@ QString KPageWidgetItem::header() const
   return d->header;
 }
 
-void KPageWidgetItem::setIcon( const KIcon &icon )
+void KPageWidgetItem::setIcon( const QIcon &icon )
 {
   d->icon = icon;
 
   emit changed();
 }
 
-KIcon KPageWidgetItem::icon() const
+QIcon KPageWidgetItem::icon() const
 {
   return d->icon;
 }

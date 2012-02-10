@@ -58,7 +58,7 @@ public:
     QPoint startPos;
     KAuth::Action *authAction;
     // TODO: Remove whenever QIcon overlays will get fixed
-    KIcon oldIcon;
+    QIcon oldIcon;
 
     void slotSettingsChanged( int );
     void slotPressedInternal();
@@ -161,7 +161,7 @@ KPushButton::KPushButton( const QString &text, QWidget *parent )
     init( KGuiItem( text ) );
 }
 
-KPushButton::KPushButton( const KIcon &icon, const QString &text,
+KPushButton::KPushButton( const QIcon &icon, const QString &text,
                           QWidget *parent )
     : QPushButton( text, parent ), d( new KPushButtonPrivate(this) )
 {
@@ -248,7 +248,7 @@ void KPushButton::setText( const QString &text )
     d->item.setText(text);
 }
 
-void KPushButton::setIcon( const KIcon &icon )
+void KPushButton::setIcon( const QIcon &icon )
 {
     d->item.setIcon(icon);
 
@@ -257,13 +257,6 @@ void KPushButton::setIcon( const KIcon &icon )
     else
         QPushButton::setIcon( QIcon() );
 }
-
-#ifndef KDE_NO_DEPRECATED
-void KPushButton::setIcon( const QIcon &qicon )
-{
-    d->item.setIcon(KIcon(qicon));
-}
-#endif
 
 void KPushButton::setDragEnabled( bool enable )
 {

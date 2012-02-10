@@ -58,7 +58,7 @@ public:
     void _k_slotActivated( int );
 
     KUrlComboBox *m_parent;
-    KIcon dirIcon;
+    QIcon dirIcon;
     bool urlAdded;
     int myMaximum;
     Mode myMode; // can be used as parameter to KUR::path( int ) or url( int )

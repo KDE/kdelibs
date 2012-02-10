@@ -19,6 +19,7 @@
 #include <QTextEdit>
 #include <QTimer>
 
+#include <kicon.h>
 #include <kapplication.h>
 #include <kxmlguiwindow.h>
 #include <kaboutdata.h>

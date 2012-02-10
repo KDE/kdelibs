@@ -31,6 +31,7 @@
 #include "kwebpluginfactory.h"
 
 // KDE
+#include <kicon.h>
 #include <kaction.h>
 #include <kfiledialog.h>
 #include <kprotocolmanager.h>

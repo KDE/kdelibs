@@ -41,7 +41,7 @@ class KDEUI_EXPORT KFontSizeAction : public KSelectAction
 public:
     explicit KFontSizeAction(QObject *parent);
     KFontSizeAction(const QString &text, QObject *parent);
-    KFontSizeAction(const KIcon &icon, const QString &text, QObject *parent);
+    KFontSizeAction(const QIcon &icon, const QString &text, QObject *parent);
 
     virtual ~KFontSizeAction();
 

@@ -21,6 +21,7 @@
 #include <kaction.h>
 #include <klocale.h>
 #include <kactioncollection.h>
+#include <kicon.h>
 
 using namespace KNS;
 

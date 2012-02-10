@@ -21,6 +21,7 @@
 #include "krichtextwidget.h"
 
 // KDE includes
+#include <kicon.h>
 #include <kactioncollection.h>
 #include <kcolordialog.h>
 #include <kcolorscheme.h>

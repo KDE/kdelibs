@@ -26,7 +26,7 @@
 
 class QDrag;
 class QMenu;
-class KIcon;
+
 
 namespace KAuth {
     class Action;
@@ -63,7 +63,7 @@ public:
     /**
      * Constructor, that sets an icon and the button-text to @p text
      */
-    KPushButton( const KIcon &icon, const QString &text, QWidget *parent = 0 );
+    KPushButton( const QIcon &icon, const QString &text, QWidget *parent = 0 );
 
     /**
      * Constructor that takes a KGuiItem for the text, the icon, the tooltip
@@ -105,16 +105,7 @@ public:
      * Sets the Icon Set for this button. It also takes into account the
      * KGlobalSettings::showIconsOnPushButtons() setting.
      */
-    void setIcon( const KIcon &icon );
-
-    /**
-     * Sets the pixmap for this button. Rarely used. This one exists mostly for usage in Qt designer,
-     * with icons embedded into the ui file. But you should rather save them separately, and load them
-     * with KIcon("name") so that the icons are themeable.
-     */
-#ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED void setIcon( const QIcon &pix );
-#endif
+    void setIcon( const QIcon &icon );
 
     /**
     * Sets the text of the button

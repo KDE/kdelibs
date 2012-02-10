@@ -54,6 +54,7 @@
 #include <QScrollBar>
 #include <QtCore/QTimer>
 
+#include <kicon.h>
 #include <kapplication.h>
 #include <kcombobox.h>
 #include <kconfig.h>

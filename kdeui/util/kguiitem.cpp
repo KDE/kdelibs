@@ -60,7 +60,7 @@ public:
     QString m_whatsThis;
     QString m_statusText;
     QString m_iconName;
-    KIcon m_icon;
+    QIcon m_icon;
     bool m_hasIcon : 1;
     bool m_enabled : 1;
 };
@@ -80,7 +80,7 @@ KGuiItem::KGuiItem( const QString &text,    const QString &iconName,
     setIconName( iconName );
 }
 
-KGuiItem::KGuiItem( const QString &text,    const KIcon &icon,
+KGuiItem::KGuiItem( const QString &text,    const QIcon &icon,
                     const QString &toolTip, const QString &whatsThis )
 {
     d = new KGuiItemPrivate;
@@ -148,7 +148,7 @@ QString KGuiItem::plainText() const
 }
 
 
-KIcon KGuiItem::icon( ) const
+QIcon KGuiItem::icon( ) const
 {
     if (d->m_hasIcon) {
         if (!d->m_iconName.isEmpty()) {
@@ -206,7 +206,7 @@ void KGuiItem::setText( const QString &text )
     d->m_text = text;
 }
 
-void KGuiItem::setIcon( const KIcon &icon )
+void KGuiItem::setIcon( const QIcon &icon )
 {
     d->m_icon = icon;
     d->m_iconName.clear();

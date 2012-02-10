@@ -70,7 +70,7 @@ KSelectAction::KSelectAction(const QString &text, QObject *parent)
   setText(text);
 }
 
-KSelectAction::KSelectAction(const KIcon & icon, const QString &text, QObject *parent)
+KSelectAction::KSelectAction(const QIcon & icon, const QString &text, QObject *parent)
   : KAction(icon, text, parent)
   , d_ptr(new KSelectActionPrivate())
 {
@@ -268,7 +268,7 @@ KAction* KSelectAction::addAction(const QString &text)
   return newAction;
 }
 
-KAction* KSelectAction::addAction(const KIcon& icon, const QString& text)
+KAction* KSelectAction::addAction(const QIcon& icon, const QString& text)
 {
   KAction* newAction = addAction(text);
   newAction->setIcon(icon);

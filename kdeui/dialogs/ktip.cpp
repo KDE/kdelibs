@@ -32,6 +32,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QLabel>
 #include <QLayout>
 
+#include <kicon.h>
 #include <kaboutdata.h>
 #include <kconfig.h>
 #include <kdebug.h>

@@ -71,7 +71,7 @@ KToggleAction::KToggleAction( const QString & text, QObject *parent )
   d->init();
 }
 
-KToggleAction::KToggleAction( const KIcon & icon, const QString & text, QObject *parent )
+KToggleAction::KToggleAction( const QIcon & icon, const QString & text, QObject *parent )
   : KAction( icon, text, parent ),
     d( new Private( this ) )
 {
@@ -102,7 +102,7 @@ void KToggleAction::slotToggled( bool )
     setToolTip( string );
 
     if ( d->checkedGuiItem->hasIcon() ) {
-      KIcon icon = d->checkedGuiItem->icon();
+      QIcon icon = d->checkedGuiItem->icon();
       d->checkedGuiItem->setIcon( KIcon(this->icon()) );
       QAction::setIcon( icon );
     }

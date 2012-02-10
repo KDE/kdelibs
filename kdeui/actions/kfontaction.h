@@ -42,7 +42,7 @@ public:
     KFontAction(uint fontListCriteria, QObject *parent);
     explicit KFontAction(QObject *parent);
     KFontAction(const QString& text, QObject *parent);
-    KFontAction(const KIcon &icon, const QString &text, QObject *parent);
+    KFontAction(const QIcon &icon, const QString &text, QObject *parent);
     virtual ~KFontAction();
 
     QString font() const;

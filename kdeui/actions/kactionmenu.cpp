@@ -64,7 +64,7 @@ KActionMenu::KActionMenu(const QString &text, QObject *parent)
   setText(text);
 }
 
-KActionMenu::KActionMenu(const KIcon & icon, const QString & text, QObject *parent)
+KActionMenu::KActionMenu(const QIcon & icon, const QString & text, QObject *parent)
   : KAction(icon, text, parent)
   , d(new KActionMenuPrivate)
 {

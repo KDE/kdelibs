@@ -63,7 +63,7 @@ void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 	QRect rect=option.rect;
 
 	QStringList optionsList = prstring.split ('|');
-	QList<KIcon> iconList;
+	QList<QIcon> iconList;
 	iconList << ( optionsList.contains("Sound")   ? KIcon("media-playback-start") : KIcon() );
 	iconList << ( optionsList.contains("Popup")   ? KIcon("dialog-information")   : KIcon() );
 	iconList << ( optionsList.contains("Logfile") ? KIcon("text-x-generic")       : KIcon() );
@@ -76,7 +76,7 @@ void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 	
 	int iconWidth = option.decorationSize.width();
 	int iconHeight = option.decorationSize.height();
-	foreach(const KIcon &icon, iconList)
+	foreach(const QIcon &icon, iconList)
 	{
 		icon.paint(painter, rect.left() + mc_x + 4, rect.top() + (rect.height() - iconHeight) / 2, iconWidth, iconHeight);
 		mc_x += iconWidth + 4;

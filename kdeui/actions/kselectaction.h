@@ -96,7 +96,7 @@ public:
      * @param text The text that will be displayed.
      * @param parent The action's parent object.
      */
-    KSelectAction(const KIcon& icon, const QString& text, QObject *parent);
+    KSelectAction(const QIcon& icon, const QString& text, QObject *parent);
 
     /**
      * Destructor
@@ -234,7 +234,7 @@ public:
      *
      * The newly created action is checkable and not user configurable.
      */
-    KAction* addAction(const KIcon& icon, const QString& text);
+    KAction* addAction(const QIcon& icon, const QString& text);
 
     /**
      * Remove the specified \a action from this action selector.

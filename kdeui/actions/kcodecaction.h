@@ -48,7 +48,7 @@ public:
 
 	KCodecAction(const QString &text, QObject *parent,bool showAutoOptions=false);
 
-	KCodecAction(const KIcon &icon, const QString &text, QObject *parent,bool showAutoOptions=false);
+	KCodecAction(const QIcon &icon, const QString &text, QObject *parent,bool showAutoOptions=false);
 
 	virtual ~KCodecAction();
 

@@ -72,7 +72,7 @@ private slots:
 private:
     KMenu * InstallMenu(const QToolButton* button, Entry::Status status) const;
 
-    QList<KIcon> m_statusicons;
+    QList<QIcon> m_statusicons;
     QImage m_frameImage;
 };
 }

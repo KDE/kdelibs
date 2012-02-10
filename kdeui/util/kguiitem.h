@@ -25,7 +25,6 @@
 #include <QtCore/QString>
 
 #include <kicontheme.h>
-#include <kicon.h>
 
 /**
  * @short An abstract class for GUI data such as ToolTip and Icon.
@@ -47,7 +46,7 @@ public:
                        const QString &toolTip   = QString(),
                        const QString &whatsThis = QString() );
 
-    KGuiItem( const QString &text, const KIcon &icon,
+    KGuiItem( const QString &text, const QIcon &icon,
               const QString &toolTip   = QString(),
               const QString &whatsThis = QString() );
 
@@ -64,7 +63,7 @@ public:
     KDEUI_DEPRECATED QIcon iconSet( KIconLoader::Group=KIconLoader::Small, int size = 0) const;
 #endif
 
-    KIcon icon( ) const;
+    QIcon icon( ) const;
 
     QString iconName() const;
     QString toolTip() const;
@@ -76,7 +75,7 @@ public:
 #endif
 
     void setText( const QString &text );
-    void setIcon( const KIcon &iconset );
+    void setIcon( const QIcon &iconset );
     void setIconName( const QString &iconName );
     void setToolTip( const QString &tooltip );
     void setWhatsThis( const QString &whatsThis );

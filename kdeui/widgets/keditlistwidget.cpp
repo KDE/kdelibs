@@ -27,6 +27,7 @@
 #include <QLayout>
 #include <QListView>
 
+#include <kicon.h>
 #include <kcombobox.h>
 #include <kdebug.h>
 #include <kdialog.h>
