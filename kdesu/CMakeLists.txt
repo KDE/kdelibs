@@ -25,6 +25,7 @@ set(kdesu_LIB_SRCS
 
 
 kde4_add_library(kdesu ${LIBRARY_TYPE} ${kdesu_LIB_SRCS})
+generate_export_header(kdesu)
 
 target_link_libraries(kdesu ${KDE4_KPTY_LIBS} )
 target_link_libraries(kdesu LINK_INTERFACE_LIBRARIES ${QT_QTCORE_LIBRARY} )
@@ -52,7 +53,7 @@ install(TARGETS kdesu_stub DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 
 ########### install files ###############
-install( FILES kdesu_export.h client.h process.h su.h ssh.h stub.h defaults.h 
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kdesu_export.h client.h process.h su.h ssh.h stub.h defaults.h
          DESTINATION  ${INCLUDE_INSTALL_DIR}/kdesu COMPONENT Devel)
 
 
