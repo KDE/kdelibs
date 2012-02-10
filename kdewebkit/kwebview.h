@@ -119,7 +119,7 @@ Q_SIGNALS:
      * @see QClipboard
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void selectionClipboardUrlPasted(const KUrl &url);
+    KDEWEBKIT_DEPRECATED void selectionClipboardUrlPasted(const KUrl &url);
 #endif
 
     /**

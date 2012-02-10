@@ -18,6 +18,7 @@ set(kdewebkit_LIB_SRCS
 kde4_add_library(kdewebkit ${LIBRARY_TYPE} 
     ${kdewebkit_LIB_SRCS} 
 )
+generate_export_header(kdewebkit)
 
 target_link_libraries(kdewebkit ${KDE4_KPARTS_LIBS} ${QT_QTWEBKIT_LIBRARY} kcoreaddons)
 target_link_libraries(kdewebkit LINK_INTERFACE_LIBRARIES kparts kio kdecore ${QT_QTWEBKIT_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY})
@@ -27,7 +28,7 @@ set_target_properties(kdewebkit PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION
 install(TARGETS kdewebkit ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
-    kdewebkit_export.h
+    ${CMAKE_CURRENT_BINARY_DIR}/kdewebkit_export.h
     kwebwallet.h
     kgraphicswebview.h
     kwebpluginfactory.h
