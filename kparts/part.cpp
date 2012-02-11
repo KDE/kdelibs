@@ -880,19 +880,19 @@ bool ReadWritePart::save()
     return false;
 }
 
-bool ReadWritePart::saveAs( const QUrl & kurl )
+bool ReadWritePart::saveAs(const QUrl & url)
 {
     Q_D(ReadWritePart);
 
-    if (!kurl.isValid())
+    if (!url.isValid())
     {
-        kError(1000) << "saveAs: Malformed URL " << kurl.url() << endl;
+        kError(1000) << "saveAs: Malformed URL " << url << endl;
         return false;
     }
     d->m_duringSaveAs = true;
     d->m_originalURL = d->m_url;
     d->m_originalFilePath = d->m_file;
-    d->m_url = kurl; // Store where to upload in saveToURL
+    d->m_url = url; // Store where to upload in saveToURL
     d->prepareSaving();
     bool result = save(); // Save local file and upload local file
     if (result) {
