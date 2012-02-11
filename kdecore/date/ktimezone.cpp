@@ -481,13 +481,13 @@ int KTimeZoneBackend::offsetAtZoneTime(const KTimeZone* caller, const QDateTime 
         // significant CPU in real life applications.
         if (!d->cachedTransitionTimesValid)
         {
-            int offset = transitions[index].phase().utcOffset();
-	    int preoffset = (index > 0) ? transitions[index - 1].phase().utcOffset() : d->data ? d->data->previousUtcOffset() : 0;
-            d->cachedTransitionStartZoneTime = transitions[index].time().addSecs(qMax(offset, preoffset));
+            int offset = transitions.at(index).phase().utcOffset();
+	    int preoffset = (index > 0) ? transitions.at(index - 1).phase().utcOffset() : d->data ? d->data->previousUtcOffset() : 0;
+            d->cachedTransitionStartZoneTime = transitions.at(index).time().addSecs(qMax(offset, preoffset));
             if (index + 1 < transitions.count())
 	    {
-                int postoffset = transitions[index + 1].phase().utcOffset();
-                d->cachedTransitionEndZoneTime = transitions[index + 1].time().addSecs(qMin(offset, postoffset));
+                int postoffset = transitions.at(index + 1).phase().utcOffset();
+                d->cachedTransitionEndZoneTime = transitions.at(index + 1).time().addSecs(qMin(offset, postoffset));
 	    }
             d->cachedTransitionTimesValid = true;
         }
@@ -497,7 +497,7 @@ int KTimeZoneBackend::offsetAtZoneTime(const KTimeZone* caller, const QDateTime 
         &&  (index + 1 >= transitions.count() || dtutc < d->cachedTransitionEndZoneTime))
         {
             // The time falls within the cached transition limits, so return its UTC offset
-            int offset = transitions[index].phase().utcOffset();
+            int offset = transitions.at(index).phase().utcOffset();
             if (secondOffset)
                 *secondOffset = offset;
 #ifdef COMPILING_TESTS
@@ -514,12 +514,12 @@ int KTimeZoneBackend::offsetAtZoneTime(const KTimeZone* caller, const QDateTime 
     bool validTime;
     int secondIndex = -1;
     index = caller->transitionIndex(zoneDateTime, (secondOffset ? &secondIndex : 0), &validTime);
-    const KTimeZone::Transition* tr = (index >= 0) ? &transitions[index] : 0;
+    const KTimeZone::Transition* tr = (index >= 0) ? &transitions.at(index) : 0;
     int offset = tr ? tr->phase().utcOffset()
                     : validTime ? (d->data ? d->data->previousUtcOffset() : 0)
                                 : KTimeZone::InvalidOffset;
     if (secondOffset)
-        *secondOffset = (secondIndex >= 0) ? transitions[secondIndex].phase().utcOffset() : offset;
+        *secondOffset = (secondIndex >= 0) ? transitions.at(secondIndex).phase().utcOffset() : offset;
 
     // Cache transition data for subsequent date/time values which occur after the same transition.
     d->cachedTransitionIndex = index;
@@ -536,10 +536,10 @@ int KTimeZoneBackend::offsetAtUtc(const KTimeZone* caller, const QDateTime &utcD
     if (index >= 0 && index < transitions.count())
     {
         // There is a cached transition - check whether utcDateTime uses it.
-        int offset = transitions[index].phase().utcOffset();
-        if (utcDateTime >= transitions[index].time()
+        int offset = transitions.at(index).phase().utcOffset();
+        if (utcDateTime >= transitions.at(index).time()
         &&  (index + 1 >= transitions.count()
-             || utcDateTime < transitions[index + 1].time()))
+             || utcDateTime < transitions.at(index + 1).time()))
         {
             // The time falls within the cached transition, so return its UTC offset
 #ifdef COMPILING_TESTS
@@ -556,7 +556,7 @@ int KTimeZoneBackend::offsetAtUtc(const KTimeZone* caller, const QDateTime &utcD
     index = caller->transitionIndex(utcDateTime);
     d->cachedTransitionIndex = index;   // cache transition data
     d->cachedTransitionTimesValid = false;
-    const KTimeZone::Transition* tr = (index >= 0) ? &transitions[index] : 0;
+    const KTimeZone::Transition* tr = (index >= 0) ? &transitions.at(index) : 0;
     return tr ? tr->phase().utcOffset() : (d->data ? d->data->previousUtcOffset() : 0);
 }
 
@@ -819,7 +819,7 @@ QDateTime KTimeZone::toZoneTime(const QDateTime &utcDateTime, bool *secondOccurr
         }
 
         int index = d->d->data->transitionIndex(utcDateTime);
-        int secs = (index >= 0) ? d->d->data->transitions()[index].phase().utcOffset() : d->d->data->previousUtcOffset();
+        int secs = (index >= 0) ? d->d->data->transitions().at(index).phase().utcOffset() : d->d->data->previousUtcOffset();
         QDateTime dt = utcDateTime.addSecs(secs);
         if (secondOccurrence)
         {
