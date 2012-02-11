@@ -45,7 +45,7 @@ install(TARGETS ktexteditor ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
 install( FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/ktexteditor_export.h
+    ${CMAKE_CURRENT_BINARY_DIR}/ktexteditor/ktexteditor_export.h
     factory.h
     editor.h
     document.h
