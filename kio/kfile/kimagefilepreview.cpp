@@ -103,16 +103,16 @@ void KImageFilePreview::showPreview()
 }
 
 // called via KPreviewWidgetBase interface
-void KImageFilePreview::showPreview( const KUrl& url )
+void KImageFilePreview::showPreview( const QUrl& url )
 {
     showPreview( url, false );
 }
 
-void KImageFilePreview::showPreview( const KUrl &url, bool force )
+void KImageFilePreview::showPreview( const QUrl &url, bool force )
 {
     if (!url.isValid() ||
         (d->lastShownURL.isValid() &&
-         url.equals(d->lastShownURL, KUrl::CompareWithoutTrailingSlash) &&
+         KUrl(url).equals(d->lastShownURL, KUrl::CompareWithoutTrailingSlash) &&
          d->currentURL.isValid()))
         return;
 
@@ -153,7 +153,7 @@ void KImageFilePreview::showPreview( const KUrl &url, bool force )
 void KImageFilePreview::resizeEvent( QResizeEvent * )
 {
     clearPreview();
-    d->currentURL = KUrl(); // force this to actually happen
+    d->currentURL = QUrl(); // force this to actually happen
     showPreview( d->lastShownURL );
 }
 
@@ -162,7 +162,7 @@ QSize KImageFilePreview::sizeHint() const
     return QSize( 100, 200 );
 }
 
-KIO::PreviewJob * KImageFilePreview::createJob( const KUrl& url, int w, int h )
+KIO::PreviewJob * KImageFilePreview::createJob( const QUrl& url, int w, int h )
 {
     if (url.isValid()) {
         KFileItemList items;
@@ -274,7 +274,7 @@ void KImageFilePreview::clearPreview()
             d->m_timeLine->setDirection(QTimeLine::Backward);
             d->m_timeLine->start();
         }
-        d->currentURL = KUrl();
+        d->currentURL = QUrl();
         d->clear = true;
     }
     else

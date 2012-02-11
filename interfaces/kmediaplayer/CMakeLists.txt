@@ -13,7 +13,8 @@ kmediaplayeradaptor.cpp
 
 
 kde4_add_library(kmediaplayer ${LIBRARY_TYPE} ${kmediaplayer_LIB_SRCS})
-generate_export_header(kmediaplayer)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/kmediaplayer)
+generate_export_header(kmediaplayer EXPORT_FILE_NAME kmediaplayer/kmediaplayer_export.h)
 
 target_link_libraries(kmediaplayer  ${KDE4_KPARTS_LIBS} )
 target_link_libraries(kmediaplayer  LINK_INTERFACE_LIBRARIES ${KDE4_KPARTS_LIBS} ${QT_QTGUI_LIBRARY} )

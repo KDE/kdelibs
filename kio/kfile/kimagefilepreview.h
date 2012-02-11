@@ -13,8 +13,7 @@
 #define KIMAGEFILEPREVIEW_H
 
 #include <QPixmap>
-
-#include <kurl.h>
+#include <QUrl>
 #include <kpreviewwidgetbase.h>
 
 class KFileItem;
@@ -50,7 +49,7 @@ class KIO_EXPORT KImageFilePreview : public KPreviewWidgetBase
         /**
          * Shows a preview for the given @p url.
          */
-        virtual void showPreview(const KUrl &url);
+        virtual void showPreview(const QUrl &url);
 
         /**
          * Clears the preview.
@@ -59,13 +58,13 @@ class KIO_EXPORT KImageFilePreview : public KPreviewWidgetBase
 
     protected Q_SLOTS:
         void showPreview();
-        void showPreview( const KUrl& url, bool force );
+        void showPreview( const QUrl& url, bool force );
 
         virtual void gotPreview( const KFileItem&, const QPixmap& );
 
     protected:
         virtual void resizeEvent( QResizeEvent *event );
-        virtual KIO::PreviewJob * createJob( const KUrl& url, int width, int height );
+        virtual KIO::PreviewJob * createJob( const QUrl& url, int width, int height );
 
     private:
         class KImageFilePreviewPrivate;
