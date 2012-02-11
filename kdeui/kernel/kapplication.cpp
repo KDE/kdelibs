@@ -594,6 +594,7 @@ void KApplicationPrivate::init(bool GUIenabled)
 #endif
 
   qRegisterMetaType<KUrl>();
+  qRegisterMetaType<QList<KUrl> >();
   qRegisterMetaType<QList<QUrl> >();
 
 #ifdef Q_WS_WIN
