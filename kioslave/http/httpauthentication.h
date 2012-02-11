@@ -150,6 +150,12 @@ public:
 
 protected:
     void authInfoBoilerplate(KIO::AuthInfo *a) const;
+    /**
+     * Returns any authentication data that should be cached for future use.
+     *
+     * NOTE: Do not reimplement this function for connection based authentication
+     * schemes such as NTLM.
+     */
     virtual QByteArray authDataToCache() const { return QByteArray(); }
     void generateResponseCommon(const QString &user, const QString &password);
 
@@ -220,8 +226,6 @@ public:
     virtual void setChallenge(const QByteArray &c, const KUrl &resource, const QByteArray &httpMethod);
     virtual void fillKioAuthInfo(KIO::AuthInfo *ai) const;
     virtual void generateResponse(const QString &user, const QString &password);
-protected:
-    virtual QByteArray authDataToCache() const { return m_challengeText; }
 private:
     friend class KAbstractHttpAuthentication;
     KHttpNtlmAuthentication(KConfigGroup *config = 0)
