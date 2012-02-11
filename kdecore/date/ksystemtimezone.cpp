@@ -376,7 +376,7 @@ void KSystemTimeZonesPrivate::setLocalZone()
     if (m_localZone.isValid() && m_instance)
     {
         // Add the new time zone to the list
-        KTimeZone oldzone = m_instance->zone(zonename);
+        const KTimeZone oldzone = m_instance->zone(zonename);
         if (!oldzone.isValid() || oldzone.type() != "KTzfileTimeZone")
         {
             m_instance->remove(oldzone);
@@ -444,17 +444,17 @@ void KSystemTimeZonesPrivate::readZoneTab(bool update)
     if (!f.open(QIODevice::ReadOnly))
         return;
     QTextStream str(&f);
-    QRegExp lineSeparator(QLatin1String("[ \t]"));
-    QRegExp ordinateSeparator(QLatin1String("[+-]"));
+    const QRegExp lineSeparator(QLatin1String("[ \t]"));
+    const QRegExp ordinateSeparator(QLatin1String("[+-]"));
     if (!m_source)
         m_source = new KSystemTimeZoneSource;
     while (!str.atEnd())
     {
-        QString line = str.readLine();
+        const QString line = str.readLine();
         if (line.isEmpty() || line[0] == QLatin1Char('#'))
             continue;
         QStringList tokens = KStringHandler::perlSplit(lineSeparator, line, 4);
-        int n = tokens.count();
+        const int n = tokens.count();
         if (n < 3)
         {
             kError(161) << "readZoneTab(): invalid record: " << line << endl;
@@ -462,15 +462,15 @@ void KSystemTimeZonesPrivate::readZoneTab(bool update)
         }
 
         // Got three tokens. Now check for two ordinates plus first one is "".
-        int i = tokens[1].indexOf(ordinateSeparator, 1);
+        const int i = tokens[1].indexOf(ordinateSeparator, 1);
         if (i < 0)
         {
             kError(161) << "readZoneTab() " << tokens[2] << ": invalid coordinates: " << tokens[1] << endl;
             continue;
         }
 
-        float latitude = convertCoordinate(tokens[1].left(i));
-        float longitude = convertCoordinate(tokens[1].mid(i));
+        const float latitude = convertCoordinate(tokens[1].left(i));
+        const float longitude = convertCoordinate(tokens[1].mid(i));
 
         // Add entry to list.
         if (tokens[0] == QLatin1String("??"))
@@ -479,7 +479,7 @@ void KSystemTimeZonesPrivate::readZoneTab(bool update)
         // Clean it up.
         if (n > 3  && tokens[3] == QLatin1String("-"))
             tokens[3] = QString::fromLatin1("");
-        KSystemTimeZone tz(m_source, tokens[2], tokens[0], latitude, longitude, (n > 3 ? tokens[3] : QString()));
+        const KSystemTimeZone tz(m_source, tokens[2], tokens[0], latitude, longitude, (n > 3 ? tokens[3] : QString()));
         if (update)
         {
             // Update the existing collection with the new zone definition
@@ -566,7 +566,7 @@ int KSystemTimeZoneBackend::offsetAtZoneTime(const KTimeZone *caller, const QDat
     const QByteArray originalZone = qgetenv("TZ");   // save the original local time zone
     QByteArray tz = caller->name().toUtf8();
     tz.prepend(":");
-    bool change = (tz != originalZone);
+    const bool change = (tz != originalZone);
     if (change)
     {
         ::setenv("TZ", tz, 1);
@@ -582,7 +582,7 @@ int KSystemTimeZoneBackend::offsetAtZoneTime(const KTimeZone *caller, const QDat
     tmtime.tm_mon    = zoneDateTime.date().month() - 1;
     tmtime.tm_year   = zoneDateTime.date().year() - 1900;
     tmtime.tm_isdst  = -1;
-    time_t t = mktime(&tmtime);
+    const time_t t = mktime(&tmtime);
     int offset1 = (t == (time_t)-1) ? 0 : gmtoff(t);
     if (secondOffset)
     {
@@ -592,7 +592,7 @@ int KSystemTimeZoneBackend::offsetAtZoneTime(const KTimeZone *caller, const QDat
             // Check if there is a backward DST change near to this time, by
             // checking if the UTC offset is different 1 hour later or earlier.
             // ASSUMPTION: DST SHIFTS ARE NEVER GREATER THAN 1 HOUR.
-            int maxShift = 3600;
+            const int maxShift = 3600;
             offset2 = gmtoff(t + maxShift);
             if (offset2 < offset1)
             {
@@ -606,7 +606,7 @@ int KSystemTimeZoneBackend::offsetAtZoneTime(const KTimeZone *caller, const QDat
                 if (offset2 - offset1 < maxShift)
                     offset2 = gmtoff(t - (offset2 - offset1));
                 // Put UTC offsets into the correct order
-                int o = offset1;
+                const int o = offset1;
                 offset1 = offset2;
                 offset2 = o;
             }
@@ -641,14 +641,14 @@ int KSystemTimeZoneBackend::offset(const KTimeZone *caller, time_t t) const
     const QByteArray originalZone = qgetenv("TZ");   // save the original local time zone
     QByteArray tz = caller->name().toUtf8();
     tz.prepend(":");
-    bool change = (tz != originalZone);
+    const bool change = (tz != originalZone);
     if (change)
     {
         ::setenv("TZ", tz, 1);
         ::tzset();
     }
 
-    int secs = gmtoff(t);
+    const int secs = gmtoff(t);
 
     if (change)
     {
@@ -677,7 +677,7 @@ bool KSystemTimeZoneBackend::isDst(const KTimeZone *caller, time_t t) const
         if (localtime_r(&t, &tmtime))
             return tmtime.tm_isdst > 0;
 #else
-        tm *tmtime = localtime(&t);
+        const tm *tmtime = localtime(&t);
         if (tmtime)
             return tmtime->tm_isdst > 0;
 #endif
@@ -740,7 +740,7 @@ KSystemTimeZoneSource::~KSystemTimeZoneSource()
 
 KTimeZoneData* KSystemTimeZoneSource::parse(const KTimeZone &zone) const
 {
-    QByteArray tz = zone.name().toUtf8();
+    const QByteArray tz = zone.name().toUtf8();
     KSystemTimeZoneSourcePrivate::setTZ(tz);   // make this time zone the current local time zone
 
     tzset();    // initialize the tzname array
@@ -869,7 +869,7 @@ QByteArray KSystemTimeZoneData::abbreviation(const QDateTime &utcDateTime) const
             abbr = tzname[(tmtime.tm_isdst > 0) ? 1 : 0];
 #endif
 #else
-        tm *tmtime = localtime(&t);
+        const tm *tmtime = localtime(&t);
         if (tmtime)
 #ifdef HAVE_STRUCT_TM_TM_ZONE
             abbr = tmtime->tm_zone;

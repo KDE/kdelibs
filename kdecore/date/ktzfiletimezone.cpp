@@ -42,7 +42,7 @@ static QDateTime fromTime_t(qint32 seconds)
 {
     static const QDate epochDate(1970,1,1);
     static const QTime epochTime(0,0,0);
-    int secs = (seconds >= 0) ? seconds % 86400 : -(-seconds % 86400);
+    const int secs = (seconds >= 0) ? seconds % 86400 : -(-seconds % 86400);
     return QDateTime(epochDate.addDays(seconds / 86400), epochTime.addSecs(secs), Qt::UTC);
 }
 
@@ -263,7 +263,7 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone &zone) const
     }
     QByteArray array(abbrCharCount, 0);
     str.readRawData(array.data(), array.size());
-    char *abbrs = array.data();
+    const char *abbrs = array.data();
     if (abbrs[abbrCharCount - 1] != 0)
     {
         // These abbreviations are corrupt!
@@ -400,7 +400,7 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone &zone) const
                 stdoffset = offset;   // keep note of latest standard time offset
         }
 
-        KTimeZone::Phase phase = phases[lttLookup[tt->localTimeIndex]];
+        const KTimeZone::Phase phase = phases[lttLookup[tt->localTimeIndex]];
 //kDebug(161) << "Transition time "<<i<<": "<<fromTime_t(tt->time)<<", offset="<<phase.utcOffset()/60;
         transitions += KTimeZone::Transition(fromTime_t(tt->time), phase);
     }
