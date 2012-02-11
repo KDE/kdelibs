@@ -129,8 +129,8 @@ void KAboutApplicationPersonListDelegate::updateItemWidgets( const QList<QWidget
     action->setVisible( true );
     if( !profile.homepage().isEmpty() ) {
         action = qobject_cast< KAction * >( mainLinks->actions().at( HomepageAction ) );
-        action->setToolTip( i18n( "Visit contributor's homepage\n%1", profile.homepage().url() ) );
-        action->setData( profile.homepage().url() );
+        action->setToolTip( i18n( "Visit contributor's homepage\n%1", profile.homepage().toString() ) );
+        action->setData( profile.homepage().toString() );
         action->setVisible( true );
     }
     if( !profile.ocsProfileUrl().isEmpty() ) {
@@ -159,23 +159,23 @@ void KAboutApplicationPersonListDelegate::updateItemWidgets( const QList<QWidget
         action = qobject_cast< KAction * >( socialLinks->actions().at( currentSocialLinkAction ) );
         if( link.type() == KAboutApplicationPersonProfileOcsLink::Other ) {
             action->setToolTip( i18n( "Visit contributor's page\n%1",
-                                      link.url().url() ) );
+                                      link.url().toString() ) );
         }
         else if( link.type() == KAboutApplicationPersonProfileOcsLink::Blog ) {
             action->setToolTip( i18n( "Visit contributor's blog\n%1",
-                                      link.url().url() ) );
+                                      link.url().toString() ) );
         }
         else if( link.type() == KAboutApplicationPersonProfileOcsLink::Homepage ) {
             action->setToolTip( i18n( "Visit contributor's homepage\n%1",
-                                      link.url().url() ) );
+                                      link.url().toString() ) );
         }
         else {
             action->setToolTip( i18n( "Visit contributor's profile on %1\n%2",
                                       link.prettyType(),
-                                      link.url().url() ) );
+                                      link.url().toString() ) );
         }
         action->setIcon( link.icon() );
-        action->setData( link.url().url() );
+        action->setData( link.url().toString() );
         action->setVisible( true );
 
         currentSocialLinkAction++;
