@@ -67,7 +67,7 @@ class View;
  * \author Niko Sams \<niko.sams@gmail.com\>
  * \since 4.2
  */
-class KTEXTEDITOR_EXPORT_DEPRECATED CodeCompletionModelControllerInterface
+class KTEXTEDITOR_DEPRECATED CodeCompletionModelControllerInterface
 {
 public:
     CodeCompletionModelControllerInterface();
@@ -167,7 +167,7 @@ public:
 };
 
 ///Extension of CodeCompletionModelControllerInterface
-class KTEXTEDITOR_EXPORT_DEPRECATED CodeCompletionModelControllerInterface2 : public CodeCompletionModelControllerInterface {
+class KTEXTEDITOR_DEPRECATED CodeCompletionModelControllerInterface2 : public CodeCompletionModelControllerInterface {
   public:
     enum MatchReaction {
       None,
