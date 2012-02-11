@@ -79,6 +79,7 @@ include(CreateKDEPlatformProfile.cmake)
 
 if(KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
    set(KDE_NO_DEPRECATED TRUE)
+   set(CMAKE_AUTOMOC_MOC_OPTIONS "-DKDE_NO_DEPRECATED")
 endif(KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
 
 ############### Load the CTest options ###############
