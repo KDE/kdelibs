@@ -29,6 +29,7 @@
 #include <kio/jobuidelegate.h>
 #include <kio/joburlcache_p.h>
 #include <kurl.h>
+#include <kurlmimedata.h>
 #include <kdebug.h>
 #include <QMimeData>
 #include <QFile>
@@ -901,7 +902,7 @@ KUrl::List KDirModel::simplifiedUrlList(const KUrl::List &urls)
 
 QStringList KDirModel::mimeTypes( ) const
 {
-    return KUrl::List::mimeDataTypes();
+    return KUrlMimeData::mimeDataTypes();
 }
 
 QMimeData * KDirModel::mimeData( const QModelIndexList & indexes ) const
@@ -921,9 +922,9 @@ QMimeData * KDirModel::mimeData( const QModelIndexList & indexes ) const
     urls = simplifiedUrlList(urls);
     if (different) {
         mostLocalUrls = simplifiedUrlList(mostLocalUrls);
-        urls.populateMimeData(mostLocalUrls, data);
+        KUrlMimeData::setUrls(urls, mostLocalUrls, data);
     } else {
-        urls.populateMimeData(data);
+        data->setUrls(urls);
     }
 
     // for compatibility reasons (when dropping or pasting into kde3 applications)

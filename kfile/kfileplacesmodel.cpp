@@ -42,6 +42,7 @@
 #include <kicon.h>
 #include <kmimetype.h>
 #include <kdebug.h>
+#include <kurlmimedata.h>
 
 #include <kbookmarkmanager.h>
 #include <kbookmark.h>
@@ -548,7 +549,7 @@ QMimeData *KFilePlacesModel::mimeData(const QModelIndexList &indexes) const
     QMimeData *mimeData = new QMimeData();
 
     if (!urls.isEmpty())
-        urls.populateMimeData(mimeData);
+        mimeData->setUrls(urls);
 
     mimeData->setData(_k_internalMimetype(this), itemData);
 
@@ -604,7 +605,7 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
 
     } else if (data->hasFormat("text/uri-list")) {
         // The operation is an add
-        QList<KUrl> urls = KUrl::List::fromMimeData(data);
+        const QList<QUrl> urls = KUrlMimeData::urlsFromMimeData(data);
 
         KBookmarkGroup group = d->bookmarkManager->root();
 

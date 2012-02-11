@@ -42,6 +42,7 @@
 #include <kmenu.h>
 #include <kstandardaction.h>
 #include <kstandardshortcut.h>
+#include <kurlmimedata.h>
 
 #include <QtCore/QTimer>
 #include <QClipboard>
@@ -1324,7 +1325,7 @@ void KLineEdit::dropEvent(QDropEvent *e)
 {
     if( d->handleURLDrops )
     {
-        const KUrl::List urlList = KUrl::List::fromMimeData( e->mimeData() );
+        const QList<QUrl> urlList = KUrlMimeData::urlsFromMimeData(e->mimeData());
         if ( !urlList.isEmpty() )
         {
             // Let's replace the current text with the dropped URL(s), rather than appending.
@@ -1338,13 +1339,13 @@ void KLineEdit::dropEvent(QDropEvent *e)
             // where Single replaces and Multiple appends.
             QString dropText;
             //QString dropText = text();
-            KUrl::List::ConstIterator it;
+            QList<QUrl>::ConstIterator it;
             for( it = urlList.begin() ; it != urlList.end() ; ++it )
             {
                 if(!dropText.isEmpty())
                     dropText+=' ';
 
-                dropText += (*it).prettyUrl();
+                dropText += (*it).toString(); // Qt5 TODO toDisplayString()
             }
 
             setText(dropText);

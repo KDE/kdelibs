@@ -27,7 +27,7 @@
 #include <kstringhandler.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <assert.h>
+#include <kurlmimedata.h>
 #include <kbookmarkmanager.h>
 
 #include <qdatetime.h>
@@ -690,19 +690,19 @@ void KBookmark::List::populateMimeData( QMimeData* mimeData ) const
     }
 
     // This sets text/uri-list and text/plain into the mimedata
-    urls.populateMimeData( mimeData, KUrl::MetaDataMap() );
+    mimeData->setUrls(urls);
 
     mimeData->setData( "application/x-xbel", doc.toByteArray() );
 }
 
 bool KBookmark::List::canDecode( const QMimeData *mimeData )
 {
-    return mimeData->hasFormat( "application/x-xbel" )  || KUrl::List::canDecode(mimeData);
+    return mimeData->hasFormat( "application/x-xbel" )  || mimeData->hasUrls();
 }
 
 QStringList KBookmark::List::mimeDataTypes()
 {
-    return QStringList()<<("application/x-xbel")<<KUrl::List::mimeDataTypes();
+    return QStringList() << ("application/x-xbel") << KUrlMimeData::mimeDataTypes();
 }
 
 #ifndef KDE_NO_DEPRECATED
@@ -728,17 +728,10 @@ KBookmark::List KBookmark::List::fromMimeData( const QMimeData *mimeData, QDomDo
         }
         return bookmarks;
     }
-    const QList<KUrl> urls = KUrl::List::fromMimeData( mimeData );
-    if ( !urls.isEmpty() )
-    {
-        QList<KUrl>::ConstIterator uit = urls.begin();
-        QList<KUrl>::ConstIterator uEnd = urls.end();
-        for ( ; uit != uEnd ; ++uit )
-        {
-            //kDebug(7043) << "url=" << (*uit);
-            bookmarks.append( KBookmark::standaloneBookmark(
-                                  (*uit).prettyUrl(), (*uit) ));
-        }
+    const QList<QUrl> urls = KUrlMimeData::urlsFromMimeData(mimeData);
+    for (int i = 0; i < urls.size(); ++i) {
+        const QUrl url = urls.at(i);
+        bookmarks.append(KBookmark::standaloneBookmark(url.toString(), url)); // Qt5 TODO: toDisplayString()
     }
     return bookmarks;
 }

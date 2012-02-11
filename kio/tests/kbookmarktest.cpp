@@ -52,7 +52,7 @@ void KBookmarkTest::testMimeDataOneBookmark()
     bookmark.populateMimeData( mimeData );
 
     QDomDocument doc;
-    QVERIFY( KUrl::List::canDecode( mimeData ) );
+    QVERIFY(mimeData->hasUrls());
     QVERIFY( KBookmark::List::canDecode( mimeData ) );
     const KBookmark::List decodedBookmarks = KBookmark::List::fromMimeData( mimeData, doc );
     QVERIFY( !decodedBookmarks.isEmpty() );
@@ -85,7 +85,7 @@ void KBookmarkTest::testMimeDataBookmarkList()
     initialBookmarks.populateMimeData( mimeData );
 
     QDomDocument doc;
-    QVERIFY( KUrl::List::canDecode( mimeData ) );
+    QVERIFY(mimeData->hasUrls());
     QVERIFY( KBookmark::List::canDecode( mimeData ) );
     const KBookmark::List decodedBookmarks = KBookmark::List::fromMimeData( mimeData, doc );
     QCOMPARE( decodedBookmarks.count(), 2 );

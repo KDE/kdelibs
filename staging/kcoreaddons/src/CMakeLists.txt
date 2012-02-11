@@ -43,6 +43,7 @@ set(libkcoreaddons_SRCS
     io/ksavefile.cpp
     io/kbackup.cpp
     io/kurl.cpp
+    io/kurlmimedata.cpp
     jobs/kcompositejob.cpp
     jobs/kjob.cpp
     jobs/kjobtrackerinterface.cpp
@@ -124,6 +125,7 @@ install(FILES
     io/ksavefile.h
     io/kbackup.h
     io/kurl.h
+    io/kurlmimedata.h
     jobs/kcompositejob.h
     jobs/kcompositejob_p.h
     jobs/kjob.h

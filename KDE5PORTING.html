@@ -78,6 +78,9 @@ KDE 4.x when you want to port them to KDE Frameworks 5.<br>
 
 <ul>
 <li>kdecore has been split up into a number of independent libraries: libkarchive, libkauth, libkdbus, etc.</li>
+<li>KUrl has been deprecated in favour of QUrl. Warning, look at the KUrl documentation for proper porting.
+Do not just do a global search and replace, KUrl(QString) means "absolute local file or absolute url" while
+QUrl(QString) means "relative url or absolute url".
 <li>KMimeType::comment and KMimeType::iconName no longer take a KUrl argument. If you were passing such an argument
 (to support .directory files in directories), port the code to KFileItem::mimeComment and KFileItem::iconName.</li>
 <li>KStandardDirs: KDE applications can keep using it, but independent frameworks should use QStandardPaths instead.

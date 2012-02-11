@@ -217,11 +217,14 @@ public:
        * @param metaData KIO metadata shipped in the mime data, which is used for instance to
        * set a correct HTTP referrer (some websites require it for downloading e.g. an image)
        * @param flags set NoTextExport to prevent setting plain/text data into @p mimeData
-       * In such a case, setExportAsText( false ) should be called.
+       *
+       * @deprecated use QMimeData::setUrls, followed by KUrlMimeData::setMetaData if you have metadata.
        */
-      void populateMimeData( QMimeData* mimeData,
+#ifndef KDE_NO_DEPRECATED
+      KCOREADDONS_DEPRECATED void populateMimeData( QMimeData* mimeData,
                              const KUrl::MetaDataMap& metaData = MetaDataMap(),
                              MimeDataFlags flags = DefaultMimeDataFlags ) const;
+#endif
 
       /**
        * Adds URLs into the given QMimeData.
@@ -253,28 +256,37 @@ public:
        *                      (some websites require it for downloading e.g. an
        *                      image)
        * @param flags         set NoTextExport to prevent setting plain/text
-       *                      data into @p mimeData. In such a case,
-       *                      <code>setExportAsText(false)</code> should be called.
+       *                      data into @p mimeData.
        * @since 4.2
+       * @deprecated use KUrlMimeData::setUrls, followed by KUrlMimeData::setMetaData if you have metadata.
        */
-      void populateMimeData(const KUrl::List& mostLocalUrls,
+#ifndef KDE_NO_DEPRECATED
+      KCOREADDONS_DEPRECATED void populateMimeData(const KUrl::List& mostLocalUrls,
                             QMimeData* mimeData,
                             const KUrl::MetaDataMap& metaData = MetaDataMap(),
                             MimeDataFlags flags = DefaultMimeDataFlags) const;
+#endif
 
       /**
        * Return true if @p mimeData contains URI data
+       * @deprecated use QMimeData::hasUrls
        */
-      static bool canDecode( const QMimeData *mimeData );
+#ifndef KDE_NO_DEPRECATED
+      KCOREADDONS_DEPRECATED static bool canDecode( const QMimeData *mimeData );
+#endif
 
       /**
-        * Return the list of mimeTypes that can be decoded by fromMimeData
-        */
-      static QStringList mimeDataTypes();
+       * Return the list of mimeTypes that can be decoded by fromMimeData
+       * @deprecated use KUrlMimeData::mimeDataTypes
+       */
+#ifndef KDE_NO_DEPRECATED
+      KCOREADDONS_DEPRECATED static QStringList mimeDataTypes();
+#endif
 
       /**
        * Flags to be used in fromMimeData.
        * @since 4.2.3
+       * @deprecated use KUrlMimeData
        */
       enum DecodeOptions {
         /**
@@ -302,11 +314,13 @@ public:
        * @param metaData optional pointer to a map holding the metadata
        * @return the list of urls
        * @since 4.2.3
+       * @deprecated use KUrlMimeData::urlsFromMimeData
        */
-      static KUrl::List fromMimeData( const QMimeData *mimeData,
+#ifndef KDE_NO_DEPRECATED
+      KCOREADDONS_DEPRECATED static KUrl::List fromMimeData( const QMimeData *mimeData,
                                       DecodeOptions decodeOptions = PreferKdeUrls,
                                       KUrl::MetaDataMap* metaData = 0 );
-
+#endif
   };
   /**
    * Constructs an empty URL.
@@ -840,6 +854,7 @@ public:
    * Returns the URL as a string, using the standard conventions for mime data
    * (drag-n-drop or copy-n-paste).
    * Internally used by KUrl::List::fromMimeData, which is probably what you want to use instead.
+   * @deprecated use QMimeData::setUrls directly, or KUrlMimeData::setUrls
    */
   QString toMimeDataString() const;
 
@@ -1005,13 +1020,6 @@ public:
 #endif
 
   /**
-   * Creates a KUrl from a string, using the standard conventions for mime data
-   * (drag-n-drop or copy-n-paste).
-   * Internally used by KUrl::List::fromMimeData, which is probably what you want to use instead.
-   */
-  static KUrl fromMimeDataByteArray( const QByteArray& str );
-
-  /**
    * Adds URL data into the given QMimeData.
    *
    * By default, populateMimeData also exports the URL as plain text, for e.g. dropping
@@ -1025,11 +1033,15 @@ public:
    * @param metaData KIO metadata shipped in the mime data, which is used for instance to
    * set a correct HTTP referrer (some websites require it for downloading e.g. an image)
    * @param flags set NoTextExport to prevent setting plain/text data into @p mimeData
-   * In such a case, setExportAsText( false ) should be called.
+   *
+   * @deprecated use QMimeData::setUrls(QList<QUrl>() << url),
+   *      followed by KUrlMimeData::setMetaData if you have metadata.
    */
-  void populateMimeData( QMimeData* mimeData,
+#ifndef KDE_NO_DEPRECATED
+  KCOREADDONS_DEPRECATED void populateMimeData( QMimeData* mimeData,
                          const MetaDataMap& metaData = MetaDataMap(),
                          MimeDataFlags flags = DefaultMimeDataFlags ) const;
+#endif
 
   /**
    * Convert unicoded string to local encoding and use %-style

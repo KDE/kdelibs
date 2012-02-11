@@ -399,8 +399,7 @@ void KUrlNavigator::Private::switchView()
 
 void KUrlNavigator::Private::dropUrls(const KUrl& destination, QDropEvent* event)
 {
-    const QList<KUrl> urls = KUrl::List::fromMimeData(event->mimeData());
-    if (!urls.isEmpty()) {
+    if (event->mimeData()->hasUrls()) {
         emit q->urlsDropped(destination, event);
     }
 }

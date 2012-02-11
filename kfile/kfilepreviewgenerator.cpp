@@ -29,6 +29,7 @@
 #include <kdirlister.h>
 #include <kdirmodel.h>
 #include <ksharedconfig.h>
+#include <kurlmimedata.h>
 
 #include <QApplication>
 #include <QAbstractItemView>
@@ -880,7 +881,7 @@ void KFilePreviewGenerator::Private::resolveMimeType()
 bool KFilePreviewGenerator::Private::isCutItem(const KFileItem& item) const
 {
     const QMimeData* mimeData = QApplication::clipboard()->mimeData();
-    const QList<KUrl> cutUrls = KUrl::List::fromMimeData(mimeData);
+    const QList<QUrl> cutUrls = KUrlMimeData::urlsFromMimeData(mimeData);
     return cutUrls.contains(item.url());
 }
 
@@ -897,7 +898,7 @@ void KFilePreviewGenerator::Private::applyCutItemEffect(const KFileItemList& ite
         return;
     }
 
-    const QSet<KUrl> cutUrls = KUrl::List::fromMimeData(mimeData).toSet();
+    const QSet<QUrl> cutUrls = KUrlMimeData::urlsFromMimeData(mimeData).toSet();
 
     DataChangeObtainer obt(this);
     KIconEffect *iconEffect = KIconLoader::global()->iconEffect();
@@ -1072,7 +1073,7 @@ void KFilePreviewGenerator::Private::killPreviewJobs()
     }
     m_previewJobs.clear();
     m_sequenceIndices.clear();
-    
+
     m_iconUpdateTimer->stop();
     m_scrollAreaTimer->stop();
     m_changedItemsTimer->stop();

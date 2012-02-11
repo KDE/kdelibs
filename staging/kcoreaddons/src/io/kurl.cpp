@@ -26,6 +26,7 @@
  */
 
 #include "kurl.h"
+#include "kurlmimedata.h"
 
 #include <kglobal.h>
 
@@ -37,7 +38,7 @@
 
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
-#include <QtCore/QMutableStringListIterator>
+#include <QtCore/QStringList>
 #include <QtCore/QRegExp>
 #include <QtCore/QMimeData>
 #include <QtCore/QTextCodec>
@@ -222,88 +223,55 @@ QStringList KUrl::List::toStringList(KUrl::AdjustPathOption trailing) const
     return lst;
 }
 
-static QByteArray uriListData(const KUrl::List& urls)
+static void populateMimeDataHelper(const KUrl::List& urls,
+                                   QMimeData* mimeData,
+                                   const KUrl::MetaDataMap& metaData,
+                                   KUrl::MimeDataFlags flags)
 {
-    QList<QByteArray> urlStringList;
-    KUrl::List::ConstIterator uit = urls.constBegin();
-    const KUrl::List::ConstIterator uEnd = urls.constEnd();
-    for (; uit != uEnd ; ++uit) {
-        // Get each URL encoded in utf8 - and since we get it in escaped
-        // form on top of that, .toLatin1() is fine.
-        urlStringList.append((*uit).toMimeDataString().toLatin1());
+    const QString oldText = mimeData->text();
+    mimeData->setUrls(urls); // set text/uri-list and text/plain
+
+    if ((flags & KUrl::NoTextExport) == 0) {
+        mimeData->setText(oldText);
     }
 
-    QByteArray uriListData;
-    for (int i = 0, n = urlStringList.count(); i < n; ++i) {
-      uriListData += urlStringList.at(i);
-        if (i < n-1)
-          uriListData += "\r\n";
+    if (!metaData.isEmpty()) {
+        KUrlMimeData::setMetaData(metaData, mimeData);
     }
-    return uriListData;
 }
-
-static const char s_kdeUriListMime[] = "application/x-kde4-urilist";
 
 void KUrl::List::populateMimeData( QMimeData* mimeData,
                                    const KUrl::MetaDataMap& metaData,
                                    MimeDataFlags flags ) const
 {
-    mimeData->setData(QString::fromLatin1("text/uri-list"), uriListData(*this));
-
-    if ( ( flags & KUrl::NoTextExport ) == 0 )
-    {
-        QStringList prettyURLsList;
-        KUrl::List::ConstIterator uit = constBegin();
-        const KUrl::List::ConstIterator uEnd = constEnd();
-        for ( ; uit != uEnd ; ++uit ) {
-            QString prettyURL = (*uit).prettyUrl();
-            if ( (*uit).protocol() == QLatin1String("mailto") ) {
-                prettyURL = (*uit).path(); // remove mailto: when pasting into konsole
-            }
-            prettyURLsList.append( prettyURL );
-        }
-
-        QByteArray plainTextData = prettyURLsList.join(QString(QLatin1Char('\n'))).toLocal8Bit();
-        if( count() > 1 ) // terminate last line, unless it's the only line
-            plainTextData.append( "\n" );
-        mimeData->setData( QString::fromLatin1("text/plain"), plainTextData );
-    }
-
-    if ( !metaData.isEmpty() )
-    {
-        QByteArray metaDataData; // :)
-        for( KUrl::MetaDataMap::const_iterator it = metaData.begin(); it != metaData.end(); ++it )
-        {
-            metaDataData += it.key().toUtf8();
-            metaDataData += "$@@$";
-            metaDataData += it.value().toUtf8();
-            metaDataData += "$@@$";
-        }
-        mimeData->setData( QString::fromLatin1("application/x-kio-metadata"), metaDataData );
-    }
+    populateMimeDataHelper(*this, mimeData, metaData, flags);
 }
-
 
 void KUrl::List::populateMimeData(const KUrl::List& mostLocalUrls,
                                   QMimeData* mimeData,
                                   const KUrl::MetaDataMap& metaData,
                                   MimeDataFlags flags) const
 {
-    // Export the most local urls as text/uri-list and plain text.
-    mostLocalUrls.populateMimeData(mimeData, metaData, flags);
+    const QString oldText = mimeData->text();
+    KUrlMimeData::setUrls(*this, mostLocalUrls, mimeData);
 
-    mimeData->setData(QString::fromLatin1(s_kdeUriListMime), uriListData(*this));
+    if ((flags & KUrl::NoTextExport) == 0) {
+        mimeData->setText(oldText);
+    }
+
+    if (!metaData.isEmpty()) {
+        KUrlMimeData::setMetaData(metaData, mimeData);
+    }
 }
 
 bool KUrl::List::canDecode( const QMimeData *mimeData )
 {
-    return mimeData->hasFormat(QString::fromLatin1("text/uri-list")) ||
-        mimeData->hasFormat(QString::fromLatin1(s_kdeUriListMime));
+    return mimeData->hasUrls();
 }
 
 QStringList KUrl::List::mimeDataTypes()
 {
-    return QStringList() << QString::fromLatin1(s_kdeUriListMime) << QString::fromLatin1("text/uri-list");
+    return KUrlMimeData::mimeDataTypes();
 }
 
 
@@ -311,58 +279,10 @@ KUrl::List KUrl::List::fromMimeData(const QMimeData *mimeData,
                                     DecodeOptions decodeOptions,
                                     KUrl::MetaDataMap* metaData)
 {
-
-    KUrl::List uris;
-    const char* firstMimeType = s_kdeUriListMime;
-    const char* secondMimeType = "text/uri-list";
-    if (decodeOptions == PreferLocalUrls) {
-        qSwap(firstMimeType, secondMimeType);
-    }
-    QByteArray payload = mimeData->data(QString::fromLatin1(firstMimeType));
-    if (payload.isEmpty())
-        payload = mimeData->data(QString::fromLatin1(secondMimeType));
-    if ( !payload.isEmpty() ) {
-        int c = 0;
-        const char* d = payload.constData();
-        while ( c < payload.size() && d[c] ) {
-            int f = c;
-            // Find line end
-            while (c < payload.size() && d[c] && d[c]!='\r'
-                   && d[c] != '\n')
-                c++;
-            QByteArray s( d+f, c-f );
-            if ( s[0] != '#' ) // non-comment?
-                uris.append( KUrl::fromMimeDataByteArray( s ) );
-            // Skip junk
-            while ( c < payload.size() && d[c] &&
-                    ( d[c] == '\n' || d[c] == '\r' ) )
-                ++c;
-        }
-    }
-    if ( metaData )
-    {
-        const QByteArray metaDataPayload = mimeData->data(QLatin1String("application/x-kio-metadata"));
-        if ( !metaDataPayload.isEmpty() )
-        {
-            QString str = QString::fromUtf8( metaDataPayload.data() );
-            Q_ASSERT(str.endsWith(QLatin1String("$@@$")));
-            str.truncate( str.length() - 4 );
-            const QStringList lst = str.split(QLatin1String("$@@$"));
-            QStringList::ConstIterator it = lst.begin();
-            bool readingKey = true; // true, then false, then true, etc.
-            QString key;
-            for ( ; it != lst.end(); ++it ) {
-                if ( readingKey )
-                    key = *it;
-                else
-                    metaData->insert( key, *it );
-                readingKey = !readingKey;
-            }
-            Q_ASSERT( readingKey ); // an odd number of items would be, well, odd ;-)
-        }
-    }
-
-    return uris;
+    KUrlMimeData::DecodeOptions options = KUrlMimeData::PreferKdeUrls;
+    if (decodeOptions == PreferLocalUrls)
+        options = KUrlMimeData::PreferLocalUrls;
+    return KUrlMimeData::urlsFromMimeData(mimeData, options, metaData);
 }
 
 KUrl::List::operator QVariant() const
@@ -1178,7 +1098,7 @@ QString KUrl::toMimeDataString() const // don't fold this into populateMimeData,
     // According to the XDND spec, file:/ URLs for DND must have
     // the hostname part. But in really it just breaks many apps,
     // so it's disabled for now.
-    const QString s = url( 0, KGlobal::locale()->fileEncodingMib() );
+    const QString s = url();
     if( !s.startsWith( QLatin1String ( "file://" ) ))
     {
         char hostname[257];
@@ -1197,14 +1117,6 @@ QString KUrl::toMimeDataString() const // don't fold this into populateMimeData,
     return safeUrl.url();
   }
   return url();
-}
-
-KUrl KUrl::fromMimeDataByteArray( const QByteArray& str )
-{
-  if ( str.startsWith( "file:" ) ) // krazy:exclude=strings
-    return KUrl( str /*, QTextCodec::codecForLocale()->mibEnum()*/ );
-
-  return KUrl( str /*, 106*/ ); // 106 is mib enum for utf8 codec;
 }
 
 KUrl::List KUrl::split( const KUrl& _url )
@@ -1874,8 +1786,7 @@ void KUrl::populateMimeData( QMimeData* mimeData,
                              const MetaDataMap& metaData,
                              MimeDataFlags flags ) const
 {
-  KUrl::List lst( *this );
-  lst.populateMimeData( mimeData, metaData, flags );
+  populateMimeDataHelper(KUrl::List(*this), mimeData, metaData, flags);
 }
 
 bool KUrl::hasRef() const

@@ -44,10 +44,10 @@ public:
     }
     ~KUrlDragPushButton() {}
 
-    void setURL( const KUrl& url )
+    void setURL(const QUrl& url)
     {
         m_urls.clear();
-        m_urls.append( url );
+        m_urls.append(url);
     }
 
 protected:
@@ -58,13 +58,13 @@ protected:
 
         QDrag *drag = new QDrag(this);
         QMimeData *mimeData = new QMimeData;
-        m_urls.populateMimeData(mimeData);
+        mimeData->setUrls(m_urls);
         drag->setMimeData(mimeData);
         return drag;
     }
 
 private:
-    KUrl::List m_urls;
+    QList<QUrl> m_urls;
 
 };
 
@@ -450,7 +450,7 @@ KComboBox * KUrlRequester::comboBox() const
 
 void KUrlRequester::KUrlRequesterPrivate::_k_slotUpdateUrl()
 {
-    KUrl u( KUrl::fromPath( QDir::currentPath() + '/' ), url().url() );
+    KUrl u( KUrl::fromLocalFile( QDir::currentPath() + '/' ), url().url() );
     myButton->setURL( u );
 }
 

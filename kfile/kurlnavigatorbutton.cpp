@@ -291,8 +291,7 @@ void KUrlNavigatorButton::keyPressEvent(QKeyEvent* event)
 
 void KUrlNavigatorButton::dropEvent(QDropEvent* event)
 {
-    const QList<KUrl> urls = KUrl::List::fromMimeData(event->mimeData());
-    if (!urls.isEmpty()) {
+    if (event->mimeData()->hasUrls()) {
         setDisplayHintEnabled(DraggedHint, true);
 
         emit urlsDropped(m_url, event);

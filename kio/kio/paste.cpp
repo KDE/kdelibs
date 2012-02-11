@@ -34,6 +34,7 @@
 #include <kinputdialog.h>
 #include <kmessagebox.h>
 #include <kmimetype.h>
+#include <kurlmimedata.h>
 
 #include <QApplication>
 #include <QClipboard>
@@ -61,7 +62,7 @@ static bool decodeIsCutSelection(const QMimeData *mimeData)
 //KIO_EXPORT Job *pasteClipboardUrls(const KUrl& destDir, JobFlags flags = DefaultFlags);
 static KIO::Job *pasteClipboardUrls(const QMimeData* mimeData, const KUrl& destDir, KIO::JobFlags flags = KIO::DefaultFlags)
 {
-    const KUrl::List urls = KUrl::List::fromMimeData(mimeData, KUrl::List::PreferLocalUrls);
+    const KUrl::List urls = KUrlMimeData::urlsFromMimeData(mimeData, KUrlMimeData::PreferLocalUrls);
     if (!urls.isEmpty()) {
         const bool move = decodeIsCutSelection(mimeData);
         KIO::Job *job = 0;
@@ -81,8 +82,8 @@ static KIO::Job *pasteClipboardUrls(const QMimeData* mimeData, const KUrl& destD
                 newUrls.append(dUrl);
             }
 
-            QMimeData* mime = new QMimeData();
-            newUrls.populateMimeData(mime);
+            QMimeData* mime = new QMimeData;
+            mime->setUrls(newUrls);
             QApplication::clipboard()->setMimeData(mime);
         }
         return job;
@@ -340,7 +341,7 @@ KIO_EXPORT KIO::Job *KIO::pasteClipboard( const KUrl& destUrl, QWidget* widget, 
   // mess up the clipboard and that don't need QtGui.
   const QMimeData *mimeData = QApplication::clipboard()->mimeData();
 
-  if (KUrl::List::canDecode(mimeData)) {
+  if (mimeData->hasUrls()) {
       // We can ignore the bool move, KIO::paste decodes it
       KIO::Job* job = pasteClipboardUrls(mimeData, destUrl);
       if (job) {
@@ -378,10 +379,11 @@ KIO_EXPORT KIO::CopyJob* KIO::pasteDataAsync( const KUrl& u, const QByteArray& _
 
 // NOTE: DolphinView::pasteInfo() has a better version of this
 // (but which requires KonqFileItemCapabilities)
+// (KFileItemCapabilities exists now, but are missing the KFileItem for the dest dir)
 KIO_EXPORT QString KIO::pasteActionText()
 {
     const QMimeData *mimeData = QApplication::clipboard()->mimeData();
-    const KUrl::List urls = KUrl::List::fromMimeData( mimeData );
+    const QList<QUrl> urls = KUrlMimeData::urlsFromMimeData( mimeData );
     if ( !urls.isEmpty() ) {
         if ( urls.first().isLocalFile() )
             return i18np( "&Paste File", "&Paste %1 Files", urls.count() );

@@ -26,6 +26,7 @@
 #include <kmenu.h>
 #include <kmimetype.h>
 #include <kdebug.h>
+#include <kurlmimedata.h>
 
 #include <QDragEnterEvent>
 #include <QDragLeaveEvent>
@@ -183,10 +184,7 @@ void KUrlNavigatorPlacesSelector::dropEvent(QDropEvent* event)
     setDisplayHintEnabled(DraggedHint, false);
     update();
 
-    const QList<KUrl> urlList = KUrl::List::fromMimeData(event->mimeData());
-    if (urlList.isEmpty()) {
-        return;
-    }
+    const QList<QUrl> urlList = KUrlMimeData::urlsFromMimeData(event->mimeData());
     foreach(const KUrl &url, urlList) {
         KMimeType::Ptr mimetype = KMimeType::findByUrl(url);
         if (mimetype->is("inode/directory")) {
