@@ -21,8 +21,6 @@
 #include <QtTest>
 #include <QMimeData>
 #include <kurl.h>
-#include <kdebug.h>
-
 
 QTEST_MAIN( KUrlMimeTest )
 
