@@ -10,6 +10,7 @@ include_directories(
   ${kcoreaddons_SOURCE_DIR}/src/io   # kurl.h
   ${kcoreaddons_SOURCE_DIR}/src/text # kmacroexpander.h
   ${kcoreaddons_BINARY_DIR}/src
+  ${CMAKE_BINARY_DIR}/kdewebkit
   ${KDE4_KIO_INCLUDES}
  )
 
