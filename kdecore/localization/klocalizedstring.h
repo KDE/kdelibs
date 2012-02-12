@@ -26,6 +26,8 @@
 #include <QtCore/QLatin1Char>
 #include <QtCore/QStringList>
 
+#include "qlocalizedstring_porting.h"
+
 class KLocale;
 struct KCatalogName;
 class KLocalizedStringPrivate;
@@ -329,6 +331,8 @@ public:
      * Destructor.
      */
     ~KLocalizedString ();
+
+    KDECORE_DEPRECATED_EXPORT operator QLocalizedString() { return QLocalizedString(toString().toLatin1().constData()); }
 
     /**
      * Finalizes the translation, creates QString with placeholders

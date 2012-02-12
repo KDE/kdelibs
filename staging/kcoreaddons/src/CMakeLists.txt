@@ -134,6 +134,8 @@ install(FILES
     jobs/kjobuidelegate.h
     kernel/kaboutdata.h
     kernel/kcmdlineargs.h
+    # Only so that we can build kdepimlibs against kf5.
+    kernel/qlocalizedstring_porting.h
     randomness/krandom.h
     randomness/krandomsequence.h
     text/kcharsets.h

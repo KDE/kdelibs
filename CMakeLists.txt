@@ -224,6 +224,9 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/libqtmimetypes/include/QtMimeTypes
                           ${QT_INCLUDES}
                           ${_KDE4_PLATFORM_INCLUDE_DIRS})
+
+include_directories(${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/kernel) # For QLocalizedString
+
 # kdeui depends on kdecore
 set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdeui
                         ${CMAKE_BINARY_DIR}/kdeui
