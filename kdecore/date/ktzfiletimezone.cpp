@@ -263,7 +263,7 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone &zone) const
     }
     QByteArray array(abbrCharCount, 0);
     str.readRawData(array.data(), array.size());
-    const char *abbrs = array.data();
+    const char *abbrs = array.constData();
     if (abbrs[abbrCharCount - 1] != 0)
     {
         // These abbreviations are corrupt!
