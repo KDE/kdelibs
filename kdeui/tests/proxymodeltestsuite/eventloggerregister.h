@@ -40,6 +40,7 @@ public:
   static EventLoggerRegister* instance(Behaviour behaviour = InstallMsgHandler);
 
   void registerLogger(ModelEventLogger *logger);
+  void unregisterLogger(ModelEventLogger *logger);
 
   void writeLogs();
 
