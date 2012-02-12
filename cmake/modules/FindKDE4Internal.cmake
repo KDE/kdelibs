@@ -741,7 +741,7 @@ set(LIB_SUFFIX "${_Init_LIB_SUFFIX}" CACHE STRING "Define suffix of directory na
 # this has to be after find_xxx() block above, since there KDELibsDependencies.cmake is included
 # which contains the install dirs from kdelibs, which are reused below
 
-if (WIN32)
+if (WIN32 OR QT5_BUILD)
 # use relative install prefix to avoid hardcoded install paths in cmake_install.cmake files
 
    set(LIB_INSTALL_DIR      "lib${LIB_SUFFIX}" )            # The subdirectory relative to the install prefix where libraries will be installed (default is ${EXEC_INSTALL_PREFIX}/lib${LIB_SUFFIX})
@@ -783,7 +783,7 @@ if (WIN32)
    set(DBUS_SERVICES_INSTALL_DIR "share/dbus-1/services"     ) # The dbus services install dir (default  ${SHARE_INSTALL_PREFIX}/dbus-1/services)")
    set(DBUS_SYSTEM_SERVICES_INSTALL_DIR "share/dbus-1/system-services"     ) # The dbus system services install dir (default  ${SHARE_INSTALL_PREFIX}/dbus-1/system-services)")
 
-else (WIN32)
+else ()
 
    # This macro implements some very special logic how to deal with the cache.
    # By default the various install locations inherit their value from their "parent" variable
@@ -856,7 +856,7 @@ else (WIN32)
    _set_fancy(DBUS_SERVICES_INSTALL_DIR      "${SHARE_INSTALL_PREFIX}/dbus-1/services"     "The dbus services install dir (default  ${SHARE_INSTALL_PREFIX}/dbus-1/services)")
    _set_fancy(DBUS_SYSTEM_SERVICES_INSTALL_DIR      "${SHARE_INSTALL_PREFIX}/dbus-1/system-services"     "The dbus system services install dir (default  ${SHARE_INSTALL_PREFIX}/dbus-1/system-services)")
 
-endif (WIN32)
+endif ()
 
 
 # For more documentation see above.
