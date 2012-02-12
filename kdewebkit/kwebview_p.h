@@ -33,6 +33,7 @@
 #include <QtWebKit/QWebFrame>
 #include <QtWebKit/QWebElement>
 
+#include <kdemacros.h>
 #include <kurl.h>
 #include <kurifilter.h>
 
