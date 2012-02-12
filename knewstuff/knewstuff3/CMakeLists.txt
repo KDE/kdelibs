@@ -65,7 +65,7 @@ set_target_properties(knewstuff3 PROPERTIES
    SOVERSION ${GENERIC_LIB_SOVERSION}
 )
 
-install(TARGETS knewstuff3 ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS knewstuff3 EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   downloaddialog.h

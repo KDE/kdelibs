@@ -91,7 +91,7 @@ set_target_properties(kde3support PROPERTIES VERSION ${GENERIC_LIB_VERSION}
                                              SOVERSION ${GENERIC_LIB_SOVERSION} 
                      )
 
-install(TARGETS kde3support ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kde3support EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
 

@@ -15,7 +15,7 @@ set_target_properties(kunittest PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}
    SOVERSION ${GENERIC_LIB_SOVERSION}
 )
-install(TARGETS kunittest ${INSTALL_TARGETS_DEFAULT_ARGS} )
+install(TARGETS kunittest EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 
 ########### next target ###############

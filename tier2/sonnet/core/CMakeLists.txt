@@ -39,7 +39,7 @@ set_target_properties(sonnetcore PROPERTIES VERSION ${GENERIC_LIB_VERSION}
                                           SOVERSION ${GENERIC_LIB_SOVERSION}
 )
 
-install(TARGETS sonnetcore ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS sonnetcore EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 
 install( FILES backgroundchecker.h speller.h globals.h ${CMAKE_CURRENT_BINARY_DIR}/sonnetcore_export.h

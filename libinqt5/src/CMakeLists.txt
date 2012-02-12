@@ -18,7 +18,7 @@ set_target_properties(inqt5 PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                        SOVERSION ${ECM_SOVERSION}
 )
 
-install(TARGETS inqt5 ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS inqt5 EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 #install(FILES
 #    qstandardpaths.h

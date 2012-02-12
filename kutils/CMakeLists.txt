@@ -37,7 +37,7 @@ install(FILES
     COMPONENT Devel
 )
 
-install(TARGETS kemoticons ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kemoticons EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 
 ######## kidletime ####################
@@ -88,7 +88,7 @@ install( FILES
  kidletime/kidletime.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
-install(TARGETS kidletime ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kidletime EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 
 ########### kcmutils ###############
@@ -132,7 +132,7 @@ install(FILES
         DESTINATION ${INCLUDE_INSTALL_DIR}/ksettings
         COMPONENT Devel)
 
-install(TARGETS kcmutils ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kcmutils EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 
 ########### kprintutils ###############
@@ -154,7 +154,7 @@ install( FILES
  kprintpreview.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
-install(TARGETS kprintutils ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kprintutils EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 
 ########### kutils ###############
@@ -172,6 +172,6 @@ set_target_properties(kutils PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}
                       SOVERSION ${GENERIC_LIB_SOVERSION})
 
-install(TARGETS kutils ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kutils EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 endif(NOT KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
 

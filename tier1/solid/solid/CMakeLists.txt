@@ -393,7 +393,8 @@ set_target_properties(solid PROPERTIES
    VERSION ${ECM_VERSION_STRING}
    SOVERSION ${ECM_SOVERSION}
 )
-install(TARGETS solid ${ECM_TARGET_DEFAULT_ARGS})
+
+install(TARGETS solid EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 # TODO Should this be in ECM?
 set(DBUS_INTERFACES_INSTALL_DIR "share/dbus-1/interfaces")

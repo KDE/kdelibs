@@ -27,5 +27,5 @@ set_target_properties(kimproxy PROPERTIES
 
 ########### install files ###############
 
-install(TARGETS kimproxy  ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kimproxy  EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kimproxy_export.h kimproxy.h DESTINATION  ${INCLUDE_INSTALL_DIR} COMPONENT Devel)

@@ -144,7 +144,7 @@ if (UNIX)
    if (NOT HAVE_TRUNC)
        target_link_libraries(kdefakes  m )
    endif (NOT HAVE_TRUNC)
-   install(TARGETS kdefakes ${INSTALL_TARGETS_DEFAULT_ARGS} )
+   install(TARGETS kdefakes EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 endif (UNIX)
 
@@ -321,7 +321,7 @@ set_target_properties(kdecore PROPERTIES
                      )
 
 
-install(TARGETS kdecore ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kdecore EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### next target ###############
 

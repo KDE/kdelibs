@@ -20,7 +20,7 @@ set_target_properties(krossui PROPERTIES VERSION ${GENERIC_LIB_VERSION}
                      )
 
 
-install(TARGETS krossui ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS krossui EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
 

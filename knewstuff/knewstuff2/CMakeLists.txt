@@ -66,7 +66,7 @@ set_target_properties(knewstuff2 PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}
    SOVERSION ${GENERIC_LIB_SOVERSION}
 )
-install(TARGETS knewstuff2 ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS knewstuff2 EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   core/author.h

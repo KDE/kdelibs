@@ -50,6 +50,6 @@ set(kdeclarative_LIB_HEADERS
 
 install(FILES ${kdeclarative_LIB_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR}/ COMPONENT Devel)
 
-install(TARGETS kdeclarative ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kdeclarative EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 
