@@ -28,7 +28,7 @@ install(TARGETS kmediaplayer EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFA
 
 ########### install files ###############
 
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kmediaplayer_export.h player.h view.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kmediaplayer  COMPONENT Devel)
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kmediaplayer/kmediaplayer_export.h player.h view.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kmediaplayer  COMPONENT Devel)
 
 install( FILES kmediaplayerengine.desktop kmediaplayer.desktop  DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 install( FILES org.kde.KMediaPlayer.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR} )
