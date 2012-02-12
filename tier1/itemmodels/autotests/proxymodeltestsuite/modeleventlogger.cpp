@@ -232,6 +232,7 @@ ModelEventLogger::~ModelEventLogger()
 {
   writeLog();
   delete m_modelDumper;
+  EventLoggerRegister::instance()->unregisterLogger(this);
 }
 
 void ModelEventLogger::dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight)

@@ -27,8 +27,6 @@
 
 EventLoggerRegister::~EventLoggerRegister()
 {
-  qDeleteAll(m_loggers);
-  m_loggers.clear();
 }
 
 EventLoggerRegister* EventLoggerRegister::s_instance = 0;
@@ -47,6 +45,11 @@ EventLoggerRegister* EventLoggerRegister::instance(Behaviour behaviour)
 void EventLoggerRegister::registerLogger(ModelEventLogger* logger)
 {
   m_loggers.append(logger);
+}
+
+void EventLoggerRegister::unregisterLogger(ModelEventLogger* logger)
+{
+  m_loggers.remove(m_loggers.indexOf(logger));
 }
 
 void EventLoggerRegister::writeLogs()

@@ -143,7 +143,7 @@ private:
  * The log creates the same structure as the @p model, and can be compiled
  * to reproduce failure cases.
  *
- * The log is written to the QIODevice @p device.
+ * The log is written to a file, see writeLog for the file naming.
  */
 class PROXYMODELTESTSUITE_EXPORT ModelEventLogger : public QObject
 {
