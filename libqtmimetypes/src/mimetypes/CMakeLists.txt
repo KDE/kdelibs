@@ -26,4 +26,4 @@ target_link_libraries( QtMimeTypes LINK_PUBLIC ${INQT5_LIBRARY} ${QT_QTCORE_LIBR
 set_target_properties( QtMimeTypes PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                        SOVERSION ${ECM_SOVERSION})
 
-install(TARGETS QtMimeTypes ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS QtMimeTypes EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})

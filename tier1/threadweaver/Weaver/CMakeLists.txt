@@ -32,7 +32,7 @@ set_target_properties(threadweaver PROPERTIES
     VERSION ${ECM_VERSION_STRING}
     SOVERSION ${ECM_SOVERSION}
 )
-install(TARGETS threadweaver ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS threadweaver EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install(FILES
     WeaverInterface.h

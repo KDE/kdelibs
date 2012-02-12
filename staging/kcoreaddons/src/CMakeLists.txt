@@ -115,7 +115,7 @@ set_target_properties(kcoreaddons PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                        SOVERSION ${ECM_SOVERSION}
 )
 
-install(TARGETS kcoreaddons ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS kcoreaddons EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install(FILES
     caching/kshareddatacache.h

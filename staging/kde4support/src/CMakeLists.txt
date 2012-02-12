@@ -19,7 +19,7 @@ generate_export_header(kde4support)
 target_link_libraries(kde4support ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} kdecore kcoreaddons)
 set_target_properties(kde4support PROPERTIES VERSION ${ECM_VERSION_STRING} SOVERSION ${ECM_SOVERSION})
 
-install(TARGETS kde4support ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS kde4support EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install(FILES
     ktemporaryfile.h

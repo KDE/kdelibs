@@ -14,7 +14,7 @@ set_target_properties(kdbusaddons PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                              SOVERSION ${ECM_SOVERSION}
 )
 
-install(TARGETS kdbusaddons ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS kdbusaddons EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install(FILES
     kdbusconnectionpool.h

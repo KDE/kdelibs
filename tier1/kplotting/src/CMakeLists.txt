@@ -16,7 +16,7 @@ set_target_properties(kplotting PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                             SOVERSION ${ECM_SOVERSION}
 )
 
-install(TARGETS kplotting ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS kplotting EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install( FILES
   kplotaxis.h

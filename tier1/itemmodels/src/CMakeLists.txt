@@ -21,7 +21,7 @@ set_target_properties(itemmodels PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                             SOVERSION ${ECM_SOVERSION}
 )
 
-install(TARGETS itemmodels ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS itemmodels EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install(FILES
   kbreadcrumbselectionmodel.h

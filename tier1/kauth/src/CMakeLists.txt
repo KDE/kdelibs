@@ -71,7 +71,7 @@ if ( NOT WINCE )
     endif (NOT "${KDE4_AUTH_HELPER_BACKEND_NAME}" STREQUAL "FAKE")
 endif ( NOT WINCE )
 
-install(TARGETS kauth ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS kauth EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install(FILES
     kauthaction.h
