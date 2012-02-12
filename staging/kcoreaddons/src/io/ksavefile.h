@@ -24,6 +24,8 @@
 
 #include <kcoreaddons_export.h>
 
+#include "kbackup.h"
+
 #include <QtCore/QFile>
 #include <QtCore/QString>
 
@@ -172,7 +174,12 @@ public:
      * @return true if successful, or false if an error has occurred.
      **/
     bool finalize();
-    
+
+    // TODO KF5 Should be deprecated since KF 5.0
+    KCOREADDONS_DEPRECATED_EXPORT static bool backupFile( const QString& filename) {
+      return KBackup::backupFile(filename);
+    }
+
 private:
     Q_DISABLE_COPY(KSaveFile)
 
