@@ -4,9 +4,11 @@
 
 #include "kviewstateserializer.h"
 
+#include "kdeui_export.h"
+
 class KConfigGroup;
 
-class KConfigViewStateSaver : public KViewStateSerializer
+class KDEUI_EXPORT KConfigViewStateSaver : public KViewStateSerializer
 {
   Q_OBJECT
 public:
