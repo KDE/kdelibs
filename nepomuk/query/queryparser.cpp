@@ -39,6 +39,7 @@
 
 #include "resourcemanager.h"
 #include "property.h"
+#include "literal.h"
 
 #include <Soprano/Node>
 #include <Soprano/Model>
@@ -171,6 +172,9 @@ namespace {
             newTerm.setProperty( term.toComparisonTerm().property() );
             newTerm.setSubTerm( resolveFields( term.toComparisonTerm().subTerm(), parser ) );
 
+            // needLiteralRange states if we need a literal range. A value of false does not mean that we need a resource though.
+            bool needLiteralRange = newTerm.subTerm().isLiteralTerm() && !newTerm.subTerm().toLiteralTerm().value().isString();
+
             // A very dumb test to see if the property is set or not: does the URI have a scheme.
             // With a proper parser and in-place property matching there will be no need for this anymore
             if ( newTerm.property().uri().scheme().isEmpty() ) {
@@ -178,16 +182,41 @@ namespace {
                 if ( properties.count() > 0 ) {
                     if ( properties.count() == 1 ) {
                         newTerm.setProperty( properties.first() );
+                        if(needLiteralRange) {
+                            QVariant v = newTerm.subTerm().toLiteralTerm().value().variant();
+                            v.convert(properties[0].literalRangeType().dataType());
+                            newTerm.setSubTerm(Nepomuk::Query::LiteralTerm(v));
+                            if(newTerm.comparator() == Nepomuk::Query::ComparisonTerm::Contains && v.type() != QVariant::String) {
+                                newTerm.setComparator(Nepomuk::Query::ComparisonTerm::Equal);
+                            }
+                        }
                         return newTerm;
                     }
                     else {
                         // we only use a max of 4 properties, otherwise the queries get too big
+                        // in addition we try to exclude properties which do not make sense:
+                        // - numerical values can never match a resource
                         Nepomuk::Query::OrTerm orTerm;
-                        for( int i = 0; i < qMin(properties.count(), 4); ++i ) {
+                        for( int i = 0; i < properties.count() && orTerm.subTerms().count() < 4; ++i ) {
                             const Nepomuk::Types::Property& property = properties[i];
-                            Nepomuk::Query::ComparisonTerm t( newTerm );
-                            t.setProperty( property );
-                            orTerm.addSubTerm( t );
+                            if(!property.range().isValid() || !needLiteralRange) {
+                                QVariant v = newTerm.subTerm().toLiteralTerm().value().variant();
+                                if(property.range().isValid() ||
+                                   v.convert(property.literalRangeType().dataType())) {
+                                    Nepomuk::Query::ComparisonTerm t( newTerm );
+                                    t.setProperty( property );
+                                    t.setSubTerm(Nepomuk::Query::LiteralTerm(v));
+                                    // only strings can be matched via bif:contains
+                                    if(t.comparator() == Nepomuk::Query::ComparisonTerm::Contains && v.type() != QVariant::String) {
+                                        t.setComparator(Nepomuk::Query::ComparisonTerm::Equal);
+                                    }
+                                    orTerm.addSubTerm( t );
+                                }
+                            }
+                        }
+                        if(!orTerm.isValid()) {
+                            // FIXME: actually the whole query might be invalid at this point.
+                            return Nepomuk::Query::Term();
                         }
                         return orTerm;
                     }
