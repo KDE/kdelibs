@@ -272,6 +272,7 @@ void PreviewJobPrivate::startPreview()
     // Load the list of plugins to determine which mimetypes are supported
     const KService::List plugins = KServiceTypeTrader::self()->query("ThumbCreator");
     QMap<QString, KService::Ptr> mimeMap;
+    QHash<QString, QHash<QString, KService::Ptr> > protocolMap;
     for (KService::List::ConstIterator it = plugins.constBegin(); it != plugins.constEnd(); ++it) {
         const QStringList protocols = (*it)->property("X-KDE-Protocol").toStringList();
         foreach (const QString &protocol, protocols) {
@@ -287,6 +288,7 @@ void PreviewJobPrivate::startPreview()
             // support a given scheme + mimetype
             QStringList &_ms = m_remoteProtocolPlugins[protocol];
             foreach (const QString &_m, mtypes) {
+                protocolMap[protocol].insert(_m, *it);
                 if (!_ms.contains(_m)) {
                     _ms.append(_m);
                 }
@@ -308,56 +310,73 @@ void PreviewJobPrivate::startPreview()
         PreviewItem item;
         item.item = *kit;
         const QString mimeType = item.item.mimetype();
-        QMap<QString, KService::Ptr>::ConstIterator plugin = mimeMap.constFind(mimeType);
-        if (plugin == mimeMap.constEnd())
+        KService::Ptr plugin(0);
 
-        {
-            QString groupMimeType = mimeType;
-            groupMimeType.replace(QRegExp("/.*"), "/*");
-            plugin = mimeMap.constFind(groupMimeType);
-
-            if (plugin == mimeMap.constEnd())
-            {
-                // check mime type inheritance, resolve aliases
-                const KMimeType::Ptr mimeInfo = KMimeType::mimeType(mimeType, KMimeType::ResolveAliases);
-                if (mimeInfo) {
-                    const QStringList parentMimeTypes = mimeInfo->allParentMimeTypes();
-                    Q_FOREACH(const QString& parentMimeType, parentMimeTypes) {
-                        plugin = mimeMap.constFind(parentMimeType);
-                        if (plugin != mimeMap.constEnd()) break;
-                    }
-                }
+        // look for specialized thumbnail plugins first
+        QHash<QString, QHash<QString, KService::Ptr> >::ConstIterator it = protocolMap.constFind(item.item.url().protocol());
+        if(it != protocolMap.constEnd()) {
+            if(it.value().contains(mimeType)) {
+                plugin = it.value()[mimeType];
             }
-#if 0 // KDE4: should be covered by inheritance above, all text mimetypes inherit from text/plain
-            // if that's not enough, we need to invent something else
-            if (plugin == mimeMap.end())
+        }
+
+        if(!plugin)
+        {
+            QMap<QString, KService::Ptr>::ConstIterator pluginIt = mimeMap.constFind(mimeType);
+            if (pluginIt == mimeMap.constEnd())
             {
-                // check X-KDE-Text property
-                KMimeType::Ptr mimeInfo = KMimeType::mimeType(mimeType);
-                QVariant textProperty = mimeInfo->property("X-KDE-text");
-                if (textProperty.isValid() && textProperty.type() == QVariant::Bool)
+                QString groupMimeType = mimeType;
+                groupMimeType.replace(QRegExp("/.*"), "/*");
+                pluginIt = mimeMap.constFind(groupMimeType);
+
+                if (pluginIt == mimeMap.constEnd())
                 {
-                    if (textProperty.toBool())
-                    {
-                        plugin = mimeMap.find("text/plain");
-                        if (plugin == mimeMap.end())
-                        {
-                            plugin = mimeMap.find( "text/*" );
+                    // check mime type inheritance, resolve aliases
+                    const KMimeType::Ptr mimeInfo = KMimeType::mimeType(mimeType, KMimeType::ResolveAliases);
+                    if (mimeInfo) {
+                        const QStringList parentMimeTypes = mimeInfo->allParentMimeTypes();
+                        Q_FOREACH(const QString& parentMimeType, parentMimeTypes) {
+                            pluginIt = mimeMap.constFind(parentMimeType);
+                            if (pluginIt != mimeMap.constEnd()) break;
                         }
                     }
                 }
-            }
+#if 0 // KDE4: should be covered by inheritance above, all text mimetypes inherit from text/plain
+                // if that's not enough, we need to invent something else
+                if (pluginIt == mimeMap.end())
+                {
+                    // check X-KDE-Text property
+                    KMimeType::Ptr mimeInfo = KMimeType::mimeType(mimeType);
+                    QVariant textProperty = mimeInfo->property("X-KDE-text");
+                    if (textProperty.isValid() && textProperty.type() == QVariant::Bool)
+                    {
+                        if (textProperty.toBool())
+                        {
+                            pluginIt = mimeMap.find("text/plain");
+                            if (pluginIt == mimeMap.end())
+                            {
+                                pluginIt = mimeMap.find( "text/*" );
+                            }
+                        }
+                    }
+                }
 #endif
+            }
+
+            if (pluginIt != mimeMap.constEnd())
+            {
+                plugin = *pluginIt;
+            }
         }
 
-        if (plugin != mimeMap.constEnd())
+        if(plugin)
         {
-            item.plugin = *plugin;
+            item.plugin = plugin;
             items.append(item);
             if (!bNeedCache && bSave &&
                 ((*kit).url().scheme() != "file" ||
                  !(*kit).url().directory( KUrl::AppendTrailingSlash ).startsWith(thumbRoot)) &&
-                (*plugin)->property("CacheThumbnail").toBool())
+                plugin->property("CacheThumbnail").toBool())
                 bNeedCache = true;
         }
         else
