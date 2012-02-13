@@ -172,6 +172,7 @@ class KDEUI_EXPORT KViewStateSaver : public QObject
 public:
   /**
     Constructor
+    @param parent standard parent object, but ignored since this object will delete itself
   */
   explicit KViewStateSaver(QObject *parent = 0);
 

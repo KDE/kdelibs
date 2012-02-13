@@ -2843,8 +2843,7 @@ void HTTPProtocol::fixupResponseContentEncoding()
                    m_mimeType != QLatin1String("application/x-compressed-tar") &&
                    m_mimeType != QLatin1String("application/x-tgz") && // deprecated name
                    m_mimeType != QLatin1String("application/x-targz") && // deprecated name
-                   m_mimeType != QLatin1String("application/x-gzip") &&
-                   !m_request.url.path().endsWith(QLatin1String(".gz")))) {
+                   m_mimeType != QLatin1String("application/x-gzip"))) {
             // Unzip!
         } else {
             m_contentEncodings.removeLast();

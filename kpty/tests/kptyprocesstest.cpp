@@ -183,12 +183,16 @@ void KPtyProcessTest::test_pty_signals()
 
 void KPtyProcessTest::test_ctty()
 {
+#ifdef Q_OS_MAC
+    QSKIP("This test currently hangs on OSX", SkipSingle);
+#else
     KPtyProcess p;
     p.setShellCommand("echo this is a test > /dev/tty");
     p.execute(1000);
     p.pty()->waitForReadyRead(1000);
     QString output = p.pty()->readAll();
     QCOMPARE(output, QLatin1String("this is a test\r\n"));
+#endif
 }
 
 QTEST_KDEMAIN_CORE( KPtyProcessTest )

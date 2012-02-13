@@ -603,8 +603,15 @@ void KIdentityProxyModelPrivate::_k_sourceLayoutChanged()
 
     Q_Q(KIdentityProxyModel);
 
+    // We need to ensure that we don't modify persistent model indexes whose
+    // column lies outside the source model. For example, KPIM::StatisticsProxyModel
+    // adds additional columns and manages their persistent indexes.
+    // We need to avoid calling changePersistentIndex with those.
+    const int columnCount = q->sourceModel()->columnCount();
     for (int i = 0; i < proxyIndexes.size(); ++i) {
-        q->changePersistentIndex(proxyIndexes.at(i), q->mapFromSource(layoutChangePersistentIndexes.at(i)));
+        const QModelIndex oldProxyIndex = proxyIndexes.at(i);
+        if (oldProxyIndex.column() < columnCount)
+            q->changePersistentIndex(oldProxyIndex, q->mapFromSource(layoutChangePersistentIndexes.at(i)));
     }
 
     layoutChangePersistentIndexes.clear();
