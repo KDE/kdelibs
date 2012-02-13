@@ -205,9 +205,12 @@ public:
      * Sets the network reply object to emit readyRead when it receives meta data.
      *
      * Meta data is any information that is not the actual content itself, e.g.
-     * HTTP response headers of the HTTP protocol. You should only call this
-     * function, when an application does not connect to a reply object's
-     * metaDataChanged signal.
+     * HTTP response headers of the HTTP protocol.
+     *
+     * Calling this function will force the code connecting to QNetworkReply's
+     * readyRead signal to prematurely start dealing with the content that might
+     * not yet have arrived. However, it is essential to make the put ioslave on
+     * hold functionality of KIO work in libraries like QtWebKit.
      *
      * @see QNetworkReply::metaDataChanged
      * @since 4.7
