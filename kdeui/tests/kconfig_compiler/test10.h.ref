@@ -18,7 +18,7 @@ class Test10 : public KConfigSkeleton
       Get foo bar
     */
     static
-    KUrl fooBar()
+    QUrl fooBar()
     {
       return self()->mFooBar;
     }
@@ -28,7 +28,7 @@ class Test10 : public KConfigSkeleton
       Get bar foo
     */
     static
-    QList<KUrl> barFoo()
+    QList<QUrl> barFoo()
     {
       return self()->mBarFoo;
     }
@@ -39,8 +39,8 @@ class Test10 : public KConfigSkeleton
 
 
     // Foo
-    KUrl mFooBar;
-    QList<KUrl> mBarFoo;
+    QUrl mFooBar;
+    QList<QUrl> mBarFoo;
 
   private:
 };

@@ -112,8 +112,8 @@ QVConversions(QPointF, unsupported, supported);
 QVConversions(QByteArray, supported, supported);
 QVConversions(QStringList, unsupported, supported);
 QVConversions(QVariantList, unsupported, supported);
-QVConversions(KUrl, supported, supported);
-QVConversions(KUrl::List, unsupported, supported);
+QVConversions(QUrl, supported, supported);
+QVConversions(QList<QUrl>, unsupported, supported);
 }
 
 #endif

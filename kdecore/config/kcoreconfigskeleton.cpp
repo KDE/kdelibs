@@ -200,9 +200,9 @@ KCoreConfigSkeleton::ItemPath::ItemPath( const QString &_group, const QString &_
 }
 
 KCoreConfigSkeleton::ItemUrl::ItemUrl( const QString &_group, const QString &_key,
-                                    KUrl &reference,
-                                    const KUrl &defaultValue )
-  : KConfigSkeletonGenericItem<KUrl>( _group, _key, reference, defaultValue )
+                                    QUrl &reference,
+                                    const QUrl &defaultValue )
+  : KConfigSkeletonGenericItem<QUrl>( _group, _key, reference, defaultValue )
 {
 }
 
@@ -214,7 +214,7 @@ void KCoreConfigSkeleton::ItemUrl::writeConfig( KConfig *config )
         if ((mDefault == mReference) && !cg.hasDefault( mKey))
             cg.revertToDefault( mKey );
         else
-            cg.writeEntry<QString>( mKey, mReference.url() );
+            cg.writeEntry<QString>( mKey, mReference.toString() );
     }
 }
 
@@ -222,7 +222,7 @@ void KCoreConfigSkeleton::ItemUrl::readConfig( KConfig *config )
 {
     KConfigGroup cg(config, mGroup );
 
-    mReference = KUrl( cg.readEntry<QString>( mKey, mDefault.url() ) );
+    mReference = QUrl( cg.readEntry<QString>( mKey, mDefault.toString() ) );
     mLoadedValue = mReference;
 
     readImmutability( cg );
@@ -230,17 +230,17 @@ void KCoreConfigSkeleton::ItemUrl::readConfig( KConfig *config )
 
 void KCoreConfigSkeleton::ItemUrl::setProperty(const QVariant & p)
 {
-    mReference = qvariant_cast<KUrl>(p);
+    mReference = qvariant_cast<QUrl>(p);
 }
 
 bool KCoreConfigSkeleton::ItemUrl::isEqual(const QVariant &v) const
 {
-    return mReference == qvariant_cast<KUrl>(v);
+    return mReference == qvariant_cast<QUrl>(v);
 }
 
 QVariant KCoreConfigSkeleton::ItemUrl::property() const
 {
-    return qVariantFromValue<KUrl>(mReference);
+    return qVariantFromValue<QUrl>(mReference);
 }
 
 KCoreConfigSkeleton::ItemProperty::ItemProperty( const QString &_group,
@@ -892,9 +892,9 @@ void KCoreConfigSkeleton::ItemPathList::writeConfig( KConfig *config )
 }
 
 KCoreConfigSkeleton::ItemUrlList::ItemUrlList( const QString &_group, const QString &_key,
-                                            KUrl::List &reference,
-                                            const KUrl::List &defaultValue )
-  : KConfigSkeletonGenericItem<KUrl::List>( _group, _key, reference, defaultValue )
+                                            QList<QUrl> &reference,
+                                            const QList<QUrl> &defaultValue )
+  : KConfigSkeletonGenericItem<QList<QUrl> >( _group, _key, reference, defaultValue )
 {
 }
 
@@ -903,8 +903,17 @@ void KCoreConfigSkeleton::ItemUrlList::readConfig( KConfig *config )
     KConfigGroup cg(config, mGroup );
     if ( !cg.hasKey( mKey ) )
         mReference = mDefault;
-    else
-        mReference = KUrl::List( cg.readEntry<QStringList>( mKey, mDefault.toStringList() ) );
+    else {
+        QStringList strList;
+        foreach (const QUrl& url, mDefault) {
+            strList.append(url.toString());
+        }
+        mReference.clear();
+        const QStringList readList = cg.readEntry<QStringList>(mKey, strList);
+        foreach (const QString& str, readList) {
+            mReference.append(str);
+        }
+    }
     mLoadedValue = mReference;
 
     readImmutability( cg );
@@ -917,24 +926,29 @@ void KCoreConfigSkeleton::ItemUrlList::writeConfig( KConfig *config )
         KConfigGroup cg(config, mGroup );
         if ((mDefault == mReference) && !cg.hasDefault( mKey))
             cg.revertToDefault( mKey );
-        else
-            cg.writeEntry<QStringList>( mKey, mReference.toStringList() );
+        else {
+            QStringList strList;
+            foreach (const QUrl& url, mReference) {
+                strList.append(url.toString());
+            }
+            cg.writeEntry<QStringList>(mKey, strList);
+        }
     }
 }
 
 void KCoreConfigSkeleton::ItemUrlList::setProperty(const QVariant & p)
 {
-    mReference = qvariant_cast<KUrl::List>(p);
+    mReference = qvariant_cast<QList<QUrl> >(p);
 }
 
 bool KCoreConfigSkeleton::ItemUrlList::isEqual(const QVariant &v) const
 {
-    return mReference == qvariant_cast<KUrl::List>(v);
+    return mReference == qvariant_cast<QList<QUrl> >(v);
 }
 
 QVariant KCoreConfigSkeleton::ItemUrlList::property() const
 {
-    return qVariantFromValue<KUrl::List>(mReference);
+    return qVariantFromValue<QList<QUrl> >(mReference);
 }
 
 Q_DECLARE_METATYPE( QList<int> )

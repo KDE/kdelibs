@@ -156,7 +156,7 @@
     /**
      * Check whether the item is equal to p.
      *
-     * Use this function to compare items that use custom types such as KUrl,
+     * Use this function to compare items that use custom types,
      * because QVariant::operator== will not work for those.
      *
      * @param p QVariant to compare to
@@ -443,15 +443,15 @@ public:
     /**
      * Class for handling a url preferences item.
      */
-    class KDECORE_EXPORT ItemUrl:public KConfigSkeletonGenericItem < KUrl >
+    class KDECORE_EXPORT ItemUrl:public KConfigSkeletonGenericItem < QUrl >
     {
     public:
 
         /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem
          */
         ItemUrl(const QString & _group, const QString & _key,
-                   KUrl & reference,
-                   const KUrl & defaultValue = KUrl());
+                   QUrl & reference,
+                   const QUrl & defaultValue = QUrl());
 
         /** @copydoc KConfigSkeletonItem::writeConfig(KConfig*) */
         void writeConfig(KConfig * config);
@@ -920,13 +920,13 @@ public:
     /**
      * Class for handling a url list preferences item.
      */
-    class KDECORE_EXPORT ItemUrlList:public KConfigSkeletonGenericItem < KUrl::List >
+    class KDECORE_EXPORT ItemUrlList:public KConfigSkeletonGenericItem < QList<QUrl> >
     {
     public:
         /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
         ItemUrlList(const QString & _group, const QString & _key,
-                     KUrl::List & reference,
-                     const KUrl::List & defaultValue = KUrl::List());
+                     QList<QUrl> & reference,
+                     const QList<QUrl> & defaultValue = QList<QUrl>());
 
         /** @copydoc KConfigSkeletonItem::readConfig(KConfig*) */
         void readConfig(KConfig * config);

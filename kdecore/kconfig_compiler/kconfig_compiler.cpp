@@ -521,7 +521,8 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
     } else if ( type == QLatin1String("Path") && !defaultValue.isEmpty() ) {
       defaultValue = literalString( defaultValue );
     } else if ( type == QLatin1String("Url") && !defaultValue.isEmpty() ) {
-      defaultValue = QString::fromLatin1("KUrl( ") + literalString(defaultValue) + QLatin1Char(')');
+      // Use fromUserInput in order to support absolute paths and absolute urls, like KDE4's KUrl(QString) did.
+      defaultValue = QString::fromLatin1("QUrl::fromUserInput( ") + literalString(defaultValue) + QLatin1Char(')');
     } else if ( ( type == QLatin1String("UrlList") || type == QLatin1String("StringList") || type == QLatin1String("PathList")) && !defaultValue.isEmpty() ) {
       QTextStream cpp( &code, QIODevice::WriteOnly | QIODevice::Append );
       if (!code.isEmpty())
@@ -532,8 +533,8 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
       QStringList::ConstIterator it;
       for( it = defaults.constBegin(); it != defaults.constEnd(); ++it ) {
         cpp << "  default" << name << ".append( ";
-        if( type == "UrlList" ) {
-          cpp << "KUrl(";
+        if( type == QLatin1String("UrlList") ) {
+          cpp << "QUrl::fromUserInput(";
         }
         cpp << "QString::fromUtf8( \"" << *it << "\" ) ";
         if( type == QLatin1String("UrlList") ) {
@@ -891,8 +892,8 @@ QString param( const QString &t )
     else if ( type == "path" )        return "const QString &";
     else if ( type == "pathlist" )    return "const QStringList &";
     else if ( type == "password" )    return "const QString &";
-    else if ( type == "url" )         return "const KUrl &";
-    else if ( type == "urllist" )     return "const KUrl::List &";
+    else if ( type == "url" )         return "const QUrl &";
+    else if ( type == "urllist" )     return "const QList<QUrl> &";
     else {
         cerr <<"kconfig_compiler does not support type \""<< type <<"\""<<endl;
         return "QString"; //For now, but an assert would be better
@@ -924,8 +925,8 @@ QString cppType( const QString &t )
     else if ( type == "path" )        return "QString";
     else if ( type == "pathlist" )    return "QStringList";
     else if ( type == "password" )    return "QString";
-    else if ( type == "url" )         return "KUrl";
-    else if ( type == "urllist" )     return "KUrl::List";
+    else if ( type == "url" )         return "QUrl";
+    else if ( type == "urllist" )     return "QList<QUrl>";
     else {
         cerr<<"kconfig_compiler does not support type \""<< type <<"\""<<endl;
         return "QString"; //For now, but an assert would be better
@@ -954,8 +955,8 @@ QString defaultValue( const QString &t )
     else if ( type == "path" )        return "\"\""; // Use empty string, not null string!
     else if ( type == "pathlist" )    return "QStringList()";
     else if ( type == "password" )    return "\"\""; // Use empty string, not null string!
-    else if ( type == "url" )         return "KUrl()";
-    else if ( type == "urllist" )     return "KUrl::List()";
+    else if ( type == "url" )         return "QUrl()";
+    else if ( type == "urllist" )     return "QList<QUrl>()";
     else {
         cerr<<"Error, kconfig_compiler does not support the \""<< type <<"\" type!"<<endl;
         return "QString"; //For now, but an assert would be better
