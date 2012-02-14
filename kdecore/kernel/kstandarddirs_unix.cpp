@@ -22,6 +22,10 @@
 #include <config.h>
 #include <QFile>
 
+#ifdef Q_OS_WIN
+QString getKde4Prefix();
+#endif
+
 QString KStandardDirs::installPath(const char *type)
 {
     Q_ASSERT(type != NULL);
@@ -39,7 +43,11 @@ QString KStandardDirs::installPath(const char *type)
             if (strcmp("kcfg", type) == 0)
                 return QFile::decodeName(KCFG_INSTALL_DIR "/");
             if (strcmp("kdedir", type) == 0)
+#ifdef Q_OS_WIN
+                return getKde4Prefix();
+#else
                 return QFile::decodeName(KDEDIR "/");
+#endif
             break;
         case 'd':
             if (strcmp("data", type) == 0)

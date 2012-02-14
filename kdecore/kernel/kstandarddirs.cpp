@@ -1103,14 +1103,19 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
 
         QStringList dirs;
         dirs = m_relatives.value(type);
-        const QString typeInstallPath = installPath(type); // could be empty
 // better #ifdef incasesensitive_filesystem
-#ifdef Q_WS_WIN
-        const QString installdir = typeInstallPath.isEmpty() ? QString() : realPath(typeInstallPath).toLower();
+#ifdef Q_OS_WIN
         const QString installprefix = installPath("kdedir").toLower();
 #else
-        const QString installdir = typeInstallPath.isEmpty() ? QString() : realPath(typeInstallPath);
         const QString installprefix = installPath("kdedir");
+#endif
+        QString typeInstallPath = installPath(type); // returns a relative path, in KF5
+        if (!typeInstallPath.isEmpty())
+            typeInstallPath.prepend(installprefix); // make absolute
+#ifdef Q_OS_WIN
+        const QString installdir = typeInstallPath.isEmpty() ? QString() : realPath(typeInstallPath).toLower();
+#else
+        const QString installdir = typeInstallPath.isEmpty() ? QString() : realPath(typeInstallPath);
 #endif
         if (!dirs.isEmpty())
         {
