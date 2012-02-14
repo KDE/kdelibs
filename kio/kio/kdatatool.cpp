@@ -298,7 +298,7 @@ QList<QAction*> KDataToolAction::dataToolActionList( const QList<KDataToolInfo> 
             const QString name = (*entry).service()->entryPath(); // something unique
             KDataToolAction * action = new KDataToolAction( *uit, *entry, *cit, parent );
             parent->addAction( name, action );
-            connect( action, SIGNAL( toolActivated( const KDataToolInfo &, const QString & ) ),
+            connect( action, SIGNAL(toolActivated(KDataToolInfo,QString)),
                      receiver, slot );
             actionList.append( action );
         }

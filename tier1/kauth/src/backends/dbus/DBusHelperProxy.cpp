@@ -61,7 +61,7 @@ bool DBusHelperProxy::executeActions(const QList<QPair<QString, QVariantMap> > &
 
     QDBusConnection::systemBus().interface()->startService(helperID);
 
-    if (!QDBusConnection::systemBus().connect(helperID, QLatin1String("/"), QLatin1String("org.kde.auth"), QLatin1String("remoteSignal"), this, SLOT(remoteSignalReceived(int, const QString &, QByteArray)))) {
+    if (!QDBusConnection::systemBus().connect(helperID, QLatin1String("/"), QLatin1String("org.kde.auth"), QLatin1String("remoteSignal"), this, SLOT(remoteSignalReceived(int,QString,QByteArray)))) {
         return false;
     }
 
@@ -93,7 +93,7 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
 
     QDBusConnection::systemBus().interface()->startService(helperID);
 
-    if (!QDBusConnection::systemBus().connect(helperID, QLatin1String("/"), QLatin1String("org.kde.auth"), QLatin1String("remoteSignal"), this, SLOT(remoteSignalReceived(int, const QString &, QByteArray)))) {
+    if (!QDBusConnection::systemBus().connect(helperID, QLatin1String("/"), QLatin1String("org.kde.auth"), QLatin1String("remoteSignal"), this, SLOT(remoteSignalReceived(int,QString,QByteArray)))) {
         ActionReply errorReply = ActionReply::DBusErrorReply;
         errorReply.setErrorDescription(tr("DBus Backend error: connection to helper failed. ")
 				       + QDBusConnection::systemBus().lastError().message());

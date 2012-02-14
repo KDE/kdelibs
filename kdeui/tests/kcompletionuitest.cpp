@@ -68,8 +68,8 @@ Form1::Form1( QWidget* parent )
     combo->setCompletionObject( edit->completionObject() );
     // combo->setMaxCount( 5 );
     combo->setHistoryItems( defaultItems(), true );
-    connect( combo, SIGNAL( activated( const QString& )),
-	     combo, SLOT( addToHistory( const QString& )));
+    connect( combo, SIGNAL(activated(QString)),
+	     combo, SLOT(addToHistory(QString)));
     combo->setToolTip( "KHistoryComboBox" );
     Layout2->addWidget( combo );
 
@@ -80,7 +80,7 @@ Form1::Form1( QWidget* parent )
     PushButton1 = new QPushButton( GroupBox1 );
     PushButton1->setObjectName( "PushButton1" );
     PushButton1->setText( "Add" );
-    connect( PushButton1, SIGNAL( clicked() ), SLOT( slotAdd() ));
+    connect( PushButton1, SIGNAL(clicked()), SLOT(slotAdd()));
     Layout2->addWidget( PushButton1 );
     Layout9->addLayout( Layout2 );
 
@@ -93,7 +93,7 @@ Form1::Form1( QWidget* parent )
     PushButton1_4 = new QPushButton( GroupBox1 );
     PushButton1_4->setObjectName( "PushButton1_4" );
     PushButton1_4->setText( "Remove" );
-    connect( PushButton1_4, SIGNAL( clicked() ), SLOT( slotRemove() ));
+    connect( PushButton1_4, SIGNAL(clicked()), SLOT(slotRemove()));
     Layout3->addWidget( PushButton1_4 );
     Layout9->addLayout( Layout3 );
 
@@ -103,8 +103,8 @@ Form1::Form1( QWidget* parent )
 
     ListBox1 = new QListWidget( GroupBox1 );
     Layout8->addWidget( ListBox1 );
-    connect( ListBox1, SIGNAL( currentRowChanged( int )),
-	     SLOT( slotHighlighted( int )));
+    connect( ListBox1, SIGNAL(currentRowChanged(int)),
+	     SLOT(slotHighlighted(int)));
     ListBox1->setToolTip("Contains the contents of the completion object.\n:x is the weighting, i.e. how often an item has been inserted");
 
     Layout7 = new QVBoxLayout;
@@ -114,14 +114,14 @@ Form1::Form1( QWidget* parent )
     PushButton1_3 = new QPushButton( GroupBox1 );
     PushButton1_3->setObjectName( "PushButton1_3" );
     PushButton1_3->setText( "Completion items" );
-    connect( PushButton1_3, SIGNAL( clicked() ), SLOT( slotList() ));
+    connect( PushButton1_3, SIGNAL(clicked()), SLOT(slotList()));
     Layout7->addWidget( PushButton1_3 );
 
     PushButton1_2 = new QPushButton( GroupBox1 );
     PushButton1_2->setObjectName( "PushButton1_2" );
     PushButton1_2->setText( "Clear" );
-    connect( PushButton1_2, SIGNAL( clicked() ),
-	     edit->completionObject(), SLOT( clear() ));
+    connect( PushButton1_2, SIGNAL(clicked()),
+	     edit->completionObject(), SLOT(clear()));
     Layout7->addWidget( PushButton1_2 );
     Layout8->addLayout( Layout7 );
     Layout9->addLayout( Layout8 );

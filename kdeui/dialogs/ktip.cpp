@@ -317,10 +317,10 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   KConfigGroup config( KGlobal::config(), "TipOfDay" );
   d->tipOnStart->setChecked( config.readEntry( "RunOnStart", true ) );
 
-  connect( next, SIGNAL( clicked() ), this, SLOT( _k_nextTip() ) );
-  connect( prev, SIGNAL( clicked() ), this, SLOT( _k_prevTip() ) );
-  connect( ok, SIGNAL( clicked() ), this, SLOT( accept() ) );
-  connect( d->tipOnStart, SIGNAL( toggled( bool ) ), this, SLOT( _k_showOnStart( bool ) ) );
+  connect( next, SIGNAL(clicked()), this, SLOT(_k_nextTip()) );
+  connect( prev, SIGNAL(clicked()), this, SLOT(_k_prevTip()) );
+  connect( ok, SIGNAL(clicked()), this, SLOT(accept()) );
+  connect( d->tipOnStart, SIGNAL(toggled(bool)), this, SLOT(_k_showOnStart(bool)) );
 
   ok->setFocus();
 

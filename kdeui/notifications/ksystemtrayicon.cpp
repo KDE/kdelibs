@@ -145,16 +145,16 @@ void KSystemTrayIcon::init( QWidget* parent )
     d->menu = new KMenu( parent );
     d->titleAction = d->menu->addTitle( qApp->windowIcon(), KGlobal::caption() );
     d->menu->setTitle( KGlobal::mainComponent().aboutData()->programName() );
-    connect( d->menu, SIGNAL( aboutToShow() ), this, SLOT( contextMenuAboutToShow() ) );
+    connect( d->menu, SIGNAL(aboutToShow()), this, SLOT(contextMenuAboutToShow()) );
     setContextMenu( d->menu );
 
-    KStandardAction::quit( this, SLOT( maybeQuit() ), d->actionCollection );
+    KStandardAction::quit( this, SLOT(maybeQuit()), d->actionCollection );
 
     if ( parent )
     {
         QAction *action = d->actionCollection->addAction("minimizeRestore");
         action->setText(i18n("Minimize"));
-        connect( action, SIGNAL( triggered( bool ) ), this, SLOT( minimizeRestoreAction() ) );
+        connect( action, SIGNAL(triggered(bool)), this, SLOT(minimizeRestoreAction()) );
 
 #ifdef Q_WS_X11
         KWindowInfo info = KWindowSystem::windowInfo( parent->winId(), NET::WMDesktop );
@@ -168,8 +168,8 @@ void KSystemTrayIcon::init( QWidget* parent )
         d->onAllDesktops = false;
     }
 
-    connect( this, SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),
-             SLOT( activateOrHide( QSystemTrayIcon::ActivationReason ) ) );
+    connect( this, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+             SLOT(activateOrHide(QSystemTrayIcon::ActivationReason)) );
 }
 
 QWidget *KSystemTrayIcon::parentWidget() const

@@ -57,7 +57,7 @@ KFilePlacesItem::KFilePlacesItem(KBookmarkManager *manager,
         m_volume = m_device.as<Solid::StorageVolume>();
         m_disc = m_device.as<Solid::OpticalDisc>();
         if (m_access) {
-            connect(m_access, SIGNAL(accessibilityChanged(bool, const QString &)),
+            connect(m_access, SIGNAL(accessibilityChanged(bool,QString)),
                     this, SLOT(onAccessibilityChanged()));
         }
     }

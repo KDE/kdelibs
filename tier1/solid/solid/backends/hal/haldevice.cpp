@@ -147,11 +147,11 @@ HalDevice::HalDevice(const QString &udi)
     d->device.connection().connect("org.freedesktop.Hal",
                                     udi, "org.freedesktop.Hal.Device",
                                     "PropertyModified",
-                                    this, SLOT(slotPropertyModified(int, const QList<ChangeDescription> &)));
+                                    this, SLOT(slotPropertyModified(int,QList<ChangeDescription>)));
     d->device.connection().connect("org.freedesktop.Hal",
                                     udi, "org.freedesktop.Hal.Device",
                                     "Condition",
-                                    this, SLOT(slotCondition(const QString &, const QString &)));
+                                    this, SLOT(slotCondition(QString,QString)));
 }
 
 HalDevice::~HalDevice()

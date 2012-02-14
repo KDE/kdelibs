@@ -197,7 +197,7 @@ void KCharSelectTable::setContents(QList<QChar> chars)
     setSelectionModel(selectionModel);
     setSelectionBehavior(QAbstractItemView::SelectItems);
     setSelectionMode(QAbstractItemView::SingleSelection);
-    connect(selectionModel, SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), this, SLOT(_k_slotSelectionChanged(const QItemSelection &, const QItemSelection &)));
+    connect(selectionModel, SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(_k_slotSelectionChanged(QItemSelection,QItemSelection)));
     connect(d->model, SIGNAL(showCharRequested(QChar)), this, SIGNAL(showCharRequested(QChar)));
     delete m; // this should hopefully delete aold selection models too, since it is the parent of them (didn't track, if there are setParent calls somewhere. Check that (jowenn)
 }
@@ -400,7 +400,7 @@ void KCharSelect::initWidget(const Controls controls, KActionCollection *collect
     d->fontSizeSpinBox->setSingleStep(1);
     d->fontSizeSpinBox->setToolTip(i18n("Set font size"));
 
-    connect(d->fontCombo, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(_k_fontSelected()));
+    connect(d->fontCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(_k_fontSelected()));
     connect(d->fontSizeSpinBox, SIGNAL(valueChanged(int)), this, SLOT(_k_fontSelected()));
 
     if ((HistoryButtons & controls) || (FontCombo & controls) || (FontSize & controls) || (BlockCombos & controls)) {
@@ -443,10 +443,10 @@ void KCharSelect::initWidget(const Controls controls, KActionCollection *collect
 
     setCurrentFont(QFont());
 
-    connect(d->charTable, SIGNAL(focusItemChanged(const QChar &)), this, SLOT(_k_updateCurrentChar(const QChar &)));
-    connect(d->charTable, SIGNAL(activated(const QChar &)), this, SIGNAL(charSelected(const QChar &)));
-    connect(d->charTable, SIGNAL(focusItemChanged(const QChar &)),
-            this, SIGNAL(currentCharChanged(const QChar &)));
+    connect(d->charTable, SIGNAL(focusItemChanged(QChar)), this, SLOT(_k_updateCurrentChar(QChar)));
+    connect(d->charTable, SIGNAL(activated(QChar)), this, SIGNAL(charSelected(QChar)));
+    connect(d->charTable, SIGNAL(focusItemChanged(QChar)),
+            this, SIGNAL(currentCharChanged(QChar)));
 
     connect(d->charTable, SIGNAL(showCharRequested(QChar)), this, SLOT(setCurrentChar(QChar)));
 

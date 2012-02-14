@@ -552,17 +552,17 @@ void XMLHttpRequest::send(const QString& _body, int& ec)
     return;
   }
 
-  qObject->connect( job, SIGNAL( result( KJob* ) ),
-		    SLOT( slotFinished( KJob* ) ) );
+  qObject->connect( job, SIGNAL(result(KJob*)),
+		    SLOT(slotFinished(KJob*)) );
 #ifdef APPLE_CHANGES
-  qObject->connect( job, SIGNAL( data( KIO::Job*, const char*, int ) ),
-		    SLOT( slotData( KIO::Job*, const char*, int ) ) );
+  qObject->connect( job, SIGNAL(data(KIO::Job*,const char*,int)),
+		    SLOT(slotData(KIO::Job*,const char*,int)) );
 #else
-  qObject->connect( job, SIGNAL( data( KIO::Job*, const QByteArray& ) ),
-		    SLOT( slotData( KIO::Job*, const QByteArray& ) ) );
+  qObject->connect( job, SIGNAL(data(KIO::Job*,QByteArray)),
+		    SLOT(slotData(KIO::Job*,QByteArray)) );
 #endif
-  qObject->connect( job, SIGNAL(redirection(KIO::Job*, const KUrl& ) ),
-		    SLOT( slotRedirection(KIO::Job*, const KUrl&) ) );
+  qObject->connect( job, SIGNAL(redirection(KIO::Job*,KUrl)),
+		    SLOT(slotRedirection(KIO::Job*,KUrl)) );
 
 #ifdef APPLE_CHANGES
   KWQServeRequest(khtml::Cache::loader(), doc->docLoader(), job);

@@ -136,8 +136,8 @@ void EnginePrivate::workflow()
         connect(this, SIGNAL(signalEntriesFinished()),
                 SLOT(slotEntriesFinished()));
         connect(this,
-                SIGNAL(signalEntryChanged(KNS::Entry *)),
-                SLOT(slotEntryChanged(KNS::Entry *)));
+                SIGNAL(signalEntryChanged(KNS::Entry*)),
+                SLOT(slotEntryChanged(KNS::Entry*)));
         connect(this,
                 SIGNAL(signalProvidersFailed()),
                 SLOT(slotDownloadDialogClosed()));

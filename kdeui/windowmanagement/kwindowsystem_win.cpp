@@ -628,9 +628,9 @@ void KWindowSystem::connectNotify( const char* signal )
         what = INFO_WINDOWS;
     else if( QLatin1String( signal ) == SIGNAL(strutChanged()))
         what = INFO_WINDOWS;
-    else if( QLatin1String( signal ) == QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId,const unsigned long*))).constData())
+    else if( QLatin1String( signal ) == QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId,const ulong*))).constData())
         what = INFO_WINDOWS;
-    else if( QLatin1String( signal ) ==  QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId,unsigned int))).constData())
+    else if( QLatin1String( signal ) ==  QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId,uint))).constData())
         what = INFO_WINDOWS;
     else if( QLatin1String( signal ) ==  QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId))).constData())
         what = INFO_WINDOWS;

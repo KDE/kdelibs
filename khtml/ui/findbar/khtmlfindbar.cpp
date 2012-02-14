@@ -64,7 +64,7 @@ KHTMLFindBar::KHTMLFindBar( QWidget *parent ) :
     centralWidget()->setFocusProxy( m_find );
 
     connect( m_selectedText, SIGNAL(toggled(bool)), this, SLOT(slotSelectedTextToggled(bool)) );
-    connect( m_find, SIGNAL(editTextChanged(const QString &)), this, SIGNAL(searchChanged()) );
+    connect( m_find, SIGNAL(editTextChanged(QString)), this, SIGNAL(searchChanged()) );
     connect( m_find->lineEdit(), SIGNAL(clearButtonClicked()), this, SLOT(slotAddPatternToHistory()) );
     connect( this, SIGNAL(hideMe()), this, SLOT(slotAddPatternToHistory()) );
     connect( this, SIGNAL(searchChanged()), this, SLOT(slotSearchChanged()) );

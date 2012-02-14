@@ -136,8 +136,8 @@ BackgroundTest::BackgroundTest()
     m_checker = new BackgroundChecker(this);
     connect(m_checker, SIGNAL(done()),
             SLOT(slotDone()));
-    connect(m_checker, SIGNAL(misspelling(const QString&, int)),
-            SLOT(slotMisspelling(const QString&, int)));
+    connect(m_checker, SIGNAL(misspelling(QString,int)),
+            SLOT(slotMisspelling(QString,int)));
     m_len = strlen( text );
     m_checker->setText(text);
     m_timer.start();

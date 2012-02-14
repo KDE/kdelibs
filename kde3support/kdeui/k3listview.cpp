@@ -186,7 +186,7 @@ K3ListViewLineEdit::K3ListViewLineEdit(K3ListView *parent)
 {
         setFrame( false );
         hide();
-        connect( parent, SIGNAL( selectionChanged() ), SLOT( slotSelectionChanged() ));
+        connect( parent, SIGNAL(selectionChanged()), SLOT(slotSelectionChanged()));
 }
 
 K3ListViewLineEdit::~K3ListViewLineEdit()
@@ -423,10 +423,10 @@ K3ListView::K3ListView( QWidget *parent )
   d->createEditor(this);
   setDragAutoScroll(true);
 
-  connect( this, SIGNAL( onViewport() ),
-                   this, SLOT( slotOnViewport() ) );
-  connect( this, SIGNAL( onItem( Q3ListViewItem * ) ),
-                   this, SLOT( slotOnItem( Q3ListViewItem * ) ) );
+  connect( this, SIGNAL(onViewport()),
+                   this, SLOT(slotOnViewport()) );
+  connect( this, SIGNAL(onItem(Q3ListViewItem*)),
+                   this, SLOT(slotOnItem(Q3ListViewItem*)) );
 
   connect (this, SIGNAL(contentsMoving(int,int)),
                    this, SLOT(cleanDropVisualizer()));
@@ -434,28 +434,28 @@ K3ListView::K3ListView( QWidget *parent )
                    this, SLOT(cleanItemHighlighter()));
 
   slotSettingsChanged(KGlobalSettings::SETTINGS_MOUSE);
-  connect( KGlobalSettings::self(), SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
+  connect( KGlobalSettings::self(), SIGNAL(settingsChanged(int)), SLOT(slotSettingsChanged(int)) );
 
   d->autoSelect.setSingleShot( true );
-  connect(&d->autoSelect, SIGNAL( timeout() ),
-                  this, SLOT( slotAutoSelect() ) );
-  connect(&d->dragExpand, SIGNAL( timeout() ),
-                  this, SLOT( slotDragExpand() ) );
+  connect(&d->autoSelect, SIGNAL(timeout()),
+                  this, SLOT(slotAutoSelect()) );
+  connect(&d->dragExpand, SIGNAL(timeout()),
+                  this, SLOT(slotDragExpand()) );
 
   // context menu handling
   if (d->showContextMenusOnPress)
         {
-          connect (this, SIGNAL (rightButtonPressed (Q3ListViewItem*, const QPoint&, int)),
-                           this, SLOT (emitContextMenu (Q3ListViewItem*, const QPoint&, int)));
+          connect (this, SIGNAL (rightButtonPressed(Q3ListViewItem*,QPoint,int)),
+                           this, SLOT (emitContextMenu(Q3ListViewItem*,QPoint,int)));
         }
   else
         {
-          connect (this, SIGNAL (rightButtonClicked (Q3ListViewItem*, const QPoint&, int)),
-                           this, SLOT (emitContextMenu (Q3ListViewItem*, const QPoint&, int)));
+          connect (this, SIGNAL (rightButtonClicked(Q3ListViewItem*,QPoint,int)),
+                           this, SLOT (emitContextMenu(Q3ListViewItem*,QPoint,int)));
         }
 
-  connect (this, SIGNAL (menuShortCutPressed (K3ListView*, Q3ListViewItem*)),
-                   this, SLOT (emitContextMenu (K3ListView*, Q3ListViewItem*)));
+  connect (this, SIGNAL (menuShortCutPressed(K3ListView*,Q3ListViewItem*)),
+                   this, SLOT (emitContextMenu(K3ListView*,Q3ListViewItem*)));
   d->alternateBackground = KColorScheme(QPalette::Active, KColorScheme::View).background(KColorScheme::AlternateBackground).color();
 }
 
@@ -539,12 +539,12 @@ void K3ListView::slotSettingsChanged(int category)
     d->dragDelay =  KGlobalSettings::dndEventDelay();
     d->bUseSingle = KGlobalSettings::singleClick();
 
-    disconnect(this, SIGNAL (mouseButtonClicked (int, Q3ListViewItem*, const QPoint &, int)),
-               this, SLOT (slotMouseButtonClicked (int, Q3ListViewItem*, const QPoint &, int)));
+    disconnect(this, SIGNAL (mouseButtonClicked(int,Q3ListViewItem*,QPoint,int)),
+               this, SLOT (slotMouseButtonClicked(int,Q3ListViewItem*,QPoint,int)));
 
     if( d->bUseSingle )
-      connect (this, SIGNAL (mouseButtonClicked (int, Q3ListViewItem*, const QPoint &, int)),
-               this, SLOT (slotMouseButtonClicked( int, Q3ListViewItem*, const QPoint &, int)));
+      connect (this, SIGNAL (mouseButtonClicked(int,Q3ListViewItem*,QPoint,int)),
+               this, SLOT (slotMouseButtonClicked(int,Q3ListViewItem*,QPoint,int)));
 
     d->bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
     if ( !d->disableAutoSelection )
@@ -560,17 +560,17 @@ void K3ListView::slotSettingsChanged(int category)
 
     if (d->showContextMenusOnPress)
     {
-      disconnect (0L, 0L, this, SLOT (emitContextMenu (Q3ListViewItem*, const QPoint&, int)));
+      disconnect (0L, 0L, this, SLOT (emitContextMenu(Q3ListViewItem*,QPoint,int)));
 
-      connect(this, SIGNAL (rightButtonPressed (Q3ListViewItem*, const QPoint&, int)),
-              this, SLOT (emitContextMenu (Q3ListViewItem*, const QPoint&, int)));
+      connect(this, SIGNAL (rightButtonPressed(Q3ListViewItem*,QPoint,int)),
+              this, SLOT (emitContextMenu(Q3ListViewItem*,QPoint,int)));
     }
     else
     {
-      disconnect (0L, 0L, this, SLOT (emitContextMenu (Q3ListViewItem*, const QPoint&, int)));
+      disconnect (0L, 0L, this, SLOT (emitContextMenu(Q3ListViewItem*,QPoint,int)));
 
-      connect(this, SIGNAL (rightButtonClicked (Q3ListViewItem*, const QPoint&, int)),
-              this, SLOT (emitContextMenu (Q3ListViewItem*, const QPoint&, int)));
+      connect(this, SIGNAL (rightButtonClicked(Q3ListViewItem*,QPoint,int)),
+              this, SLOT (emitContextMenu(Q3ListViewItem*,QPoint,int)));
     }
     break;
 

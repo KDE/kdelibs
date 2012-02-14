@@ -81,12 +81,12 @@ KJavaDownloader::KJavaDownloader( int ID, const QString& url )
 
     d->job = KIO::get( *d->url, KIO::NoReload, KIO::HideProgressInfo );
     d->job->addMetaData("PropagateHttpHeader", "true");
-    connect( d->job,  SIGNAL(data( KIO::Job*, const QByteArray& )),
-             this,    SLOT(slotData( KIO::Job*, const QByteArray& )) );
+    connect( d->job,  SIGNAL(data(KIO::Job*,QByteArray)),
+             this,    SLOT(slotData(KIO::Job*,QByteArray)) );
     connect( d->job, SIGNAL(connected(KIO::Job*)),
              this, SLOT(slotConnected(KIO::Job*)));
-    connect( d->job, SIGNAL(mimetype(KIO::Job*, const QString&)),
-             this, SLOT(slotMimetype(KIO::Job*, const QString&)));
+    connect( d->job, SIGNAL(mimetype(KIO::Job*,QString)),
+             this, SLOT(slotMimetype(KIO::Job*,QString)));
     connect( d->job, SIGNAL(result(KJob*)),
              this,   SLOT(slotResult(KJob*)) );
 }
@@ -215,8 +215,8 @@ void KJavaUploader::start()
     // create a suspended job
     d->job = KIO::put( *d->url, -1, KIO::HideProgressInfo );
     d->job->suspend();
-    connect( d->job, SIGNAL(dataReq( KIO::Job*, QByteArray& )),
-            this,   SLOT(slotDataRequest( KIO::Job*, QByteArray& )) );
+    connect( d->job, SIGNAL(dataReq(KIO::Job*,QByteArray&)),
+            this,   SLOT(slotDataRequest(KIO::Job*,QByteArray&)) );
     connect( d->job, SIGNAL(result(KJob*)),
             this,   SLOT(slotResult(KJob*)) );
     server->sendURLData( d->loaderID, CONNECTED, d->file );

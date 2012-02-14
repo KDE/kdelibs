@@ -207,8 +207,8 @@ KLauncher::KLauncher()
 
 #ifndef USE_KPROCESS_FOR_KIOSLAVES
    kdeinitNotifier = new QSocketNotifier(kdeinitSocket, QSocketNotifier::Read);
-   connect(kdeinitNotifier, SIGNAL( activated( int )),
-           this, SLOT( slotKDEInitData( int )));
+   connect(kdeinitNotifier, SIGNAL(activated(int)),
+           this, SLOT(slotKDEInitData(int)));
    kdeinitNotifier->setEnabled( true );
 #endif
    lastRequest = 0;
@@ -628,7 +628,7 @@ KLauncher::requestStart(KLaunchRequest *request)
    KProcess *process  = new KProcess;
    process->setOutputChannelMode(KProcess::MergedChannels);
    connect(process ,SIGNAL(readyReadStandardOutput()),this, SLOT(slotGotOutput()) );
-   connect(process ,SIGNAL(finished(int, QProcess::ExitStatus)),this, SLOT(slotFinished(int, QProcess::ExitStatus)) );
+   connect(process ,SIGNAL(finished(int,QProcess::ExitStatus)),this, SLOT(slotFinished(int,QProcess::ExitStatus)) );
    request->process = process;
 
 // process.setEnvironment(envlist);
@@ -1021,7 +1021,7 @@ KLauncher::queueRequest(KLaunchRequest *request)
    if (!bProcessingQueue)
    {
       bProcessingQueue = true;
-      QTimer::singleShot(0, this, SLOT( slotDequeue() ));
+      QTimer::singleShot(0, this, SLOT(slotDequeue()));
    }
 }
 
@@ -1235,8 +1235,8 @@ KLauncher::acceptSlave()
     mConnectionServer.setNextPendingConnection(&slave->mConn);
     mSlaveList.append(slave);
     connect(slave, SIGNAL(destroyed()), this, SLOT(slotSlaveGone()));
-    connect(slave, SIGNAL(statusUpdate(IdleSlave *)),
-           this, SLOT(slotSlaveStatus(IdleSlave *)));
+    connect(slave, SIGNAL(statusUpdate(IdleSlave*)),
+           this, SLOT(slotSlaveStatus(IdleSlave*)));
     if (!mTimer.isActive())
     {
        mTimer.start(1000*10);

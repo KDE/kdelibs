@@ -56,7 +56,7 @@ void KPreviewPropsPlugin::createLayout()
     preview = new KFileMetaPreview(topframe);
 
     tmp->addWidget(preview) ;
-    connect( properties, SIGNAL( currentPageChanged( KPageWidgetItem *, KPageWidgetItem * ) ), SLOT( currentPageChanged( KPageWidgetItem *, KPageWidgetItem * ) ) );
+    connect( properties, SIGNAL(currentPageChanged(KPageWidgetItem*,KPageWidgetItem*)), SLOT(currentPageChanged(KPageWidgetItem*,KPageWidgetItem*)) );
 }
 
 KPreviewPropsPlugin::~KPreviewPropsPlugin()
@@ -85,7 +85,7 @@ void KPreviewPropsPlugin::currentPageChanged( KPageWidgetItem *current, KPageWid
     if ( current->widget() != preview->parent() )
         return;
 
-    disconnect( properties, SIGNAL( currentPageChanged( KPageWidgetItem *, KPageWidgetItem * ) ), this, SLOT( currentPageChanged( KPageWidgetItem *, KPageWidgetItem * ) ) );
+    disconnect( properties, SIGNAL(currentPageChanged(KPageWidgetItem*,KPageWidgetItem*)), this, SLOT(currentPageChanged(KPageWidgetItem*,KPageWidgetItem*)) );
     preview->showPreview(properties->item().url());
 }
 

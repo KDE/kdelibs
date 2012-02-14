@@ -98,8 +98,8 @@ void KEditListWidgetPrivate::init( bool check, KEditListWidget::Buttons newButto
     buttons = 0;
     q->setButtons( newButtons );
 
-    q->connect(listView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
-               SLOT(slotSelectionChanged(const QItemSelection&, const QItemSelection&)));
+    q->connect(listView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
+               SLOT(slotSelectionChanged(QItemSelection,QItemSelection)));
 }
 
 
@@ -124,7 +124,7 @@ void KEditListWidgetPrivate::setEditor( KLineEdit* newLineEdit, QWidget* represe
     lineEdit->setTrapReturnKey(true);
     lineEdit->installEventFilter(q);
 
-    q->connect(lineEdit,SIGNAL(textChanged(const QString&)),SLOT(typedSomething(const QString&)));
+    q->connect(lineEdit,SIGNAL(textChanged(QString)),SLOT(typedSomething(QString)));
     q->connect(lineEdit,SIGNAL(returnPressed()),SLOT(addItem()));
 
     // maybe supplied lineedit has some text already

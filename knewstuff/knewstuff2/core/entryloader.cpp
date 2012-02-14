@@ -51,12 +51,12 @@ void EntryLoader::load(const Provider *provider, Feed *feed)
     //kDebug() << "EntryLoader::load(): stuffUrl: " << stuffurl.url();
 
     KIO::TransferJob *job = KIO::get(stuffurl, KIO::NoReload, KIO::HideProgressInfo);
-    connect(job, SIGNAL(result(KJob *)),
-            SLOT(slotJobResult(KJob *)));
-    connect(job, SIGNAL(data(KIO::Job *, const QByteArray &)),
-            SLOT(slotJobData(KIO::Job *, const QByteArray &)));
-    connect(job, SIGNAL(percent(KJob*, unsigned long)),
-            this, SIGNAL(signalProgress(KJob*, unsigned long)));
+    connect(job, SIGNAL(result(KJob*)),
+            SLOT(slotJobResult(KJob*)));
+    connect(job, SIGNAL(data(KIO::Job*,QByteArray)),
+            SLOT(slotJobData(KIO::Job*,QByteArray)));
+    connect(job, SIGNAL(percent(KJob*,ulong)),
+            this, SIGNAL(signalProgress(KJob*,ulong)));
 }
 
 Feed *EntryLoader::feed() const

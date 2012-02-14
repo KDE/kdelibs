@@ -77,12 +77,12 @@ ComponentsDialog::ComponentsDialog( QWidget * parent, const char * name )
 
     d->listview->setAcceptDrops( false );
 
-    connect( d->listview, SIGNAL( itemPressed( QTreeWidgetItem *, int ) ), this,
-            SLOT( executed( QTreeWidgetItem *, int ) ) );
-    connect( d->listview, SIGNAL( itemActivated( QTreeWidgetItem *, int ) ), this,
-            SLOT( executed( QTreeWidgetItem *, int ) ) );
-    connect( d->listview, SIGNAL( itemSelectionChanged( QTreeWidgetItem *, int ) ), this,
-            SLOT( executed( QTreeWidgetItem *, int ) ) );
+    connect( d->listview, SIGNAL(itemPressed(QTreeWidgetItem*,int)), this,
+            SLOT(executed(QTreeWidgetItem*,int)) );
+    connect( d->listview, SIGNAL(itemActivated(QTreeWidgetItem*,int)), this,
+            SLOT(executed(QTreeWidgetItem*,int)) );
+    connect( d->listview, SIGNAL(itemSelectionChanged(QTreeWidgetItem*,int)), this,
+            SLOT(executed(QTreeWidgetItem*,int)) );
 }
 
 ComponentsDialog::~ComponentsDialog()

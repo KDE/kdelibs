@@ -596,7 +596,7 @@ bool KResolver::resolveAsync(QObject* userObj, const char *userSlot,
 			     int flags, int families)
 {
   KResolver* qres = new KResolver(host, service, QCoreApplication::instance());
-  QObject::connect(qres, SIGNAL(finished(const KNetwork::KResolverResults&)),
+  QObject::connect(qres, SIGNAL(finished(KNetwork::KResolverResults)),
 		   userObj, userSlot);
   qres->setObjectName(QString::fromLatin1("asynchronous KResolver"));
   qres->setFlags(flags);

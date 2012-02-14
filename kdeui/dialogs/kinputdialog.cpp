@@ -68,8 +68,8 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
     if (!mask.isEmpty())
         m_lineEdit->setInputMask(mask);
 
-    connect(m_lineEdit, SIGNAL(textChanged(const QString&)),
-            SLOT(slotEditTextChanged(const QString&)));
+    connect(m_lineEdit, SIGNAL(textChanged(QString)),
+            SLOT(slotEditTextChanged(QString)));
 
     setMainWidget(frame);
     slotEditTextChanged(value);
@@ -198,8 +198,8 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
         m_comboBox->setCurrentIndex(current);
         layout->addWidget(m_comboBox);
 
-        connect(m_comboBox, SIGNAL(editTextChanged(const QString&)),
-                SLOT(slotUpdateButtons(const QString&)));
+        connect(m_comboBox, SIGNAL(editTextChanged(QString)),
+                SLOT(slotUpdateButtons(QString)));
         slotUpdateButtons(m_comboBox->currentText());
         m_comboBox->setFocus();
     } else {

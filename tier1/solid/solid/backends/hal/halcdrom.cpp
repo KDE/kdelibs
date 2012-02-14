@@ -33,11 +33,11 @@ using namespace Solid::Backends::Hal;
 Cdrom::Cdrom(HalDevice *device)
     : Storage(device), m_ejectInProgress(false)
 {
-    connect(device, SIGNAL(conditionRaised(const QString &, const QString &)),
-             this, SLOT(slotCondition(const QString &, const QString &)));
+    connect(device, SIGNAL(conditionRaised(QString,QString)),
+             this, SLOT(slotCondition(QString,QString)));
     m_device->registerAction("eject", this,
                              SLOT(slotEjectRequested()),
-                             SLOT(slotEjectDone(int, const QString&)));
+                             SLOT(slotEjectDone(int,QString)));
 }
 
 Cdrom::~Cdrom()
@@ -164,15 +164,15 @@ bool Cdrom::callHalDriveEject()
 
 
     return c.callWithCallback(msg, this,
-                              SLOT(slotDBusReply(const QDBusMessage &)),
-                              SLOT(slotDBusError(const QDBusError &)));
+                              SLOT(slotDBusReply(QDBusMessage)),
+                              SLOT(slotDBusError(QDBusError)));
 }
 
 bool Solid::Backends::Hal::Cdrom::callSystemEject()
 {
     const QString device = m_device->prop("block.device").toString();
     m_process = FstabHandling::callSystemCommand("eject", device,
-                                                 this, SLOT(slotProcessFinished(int, QProcess::ExitStatus)));
+                                                 this, SLOT(slotProcessFinished(int,QProcess::ExitStatus)));
 
     return m_process!=0;
 }

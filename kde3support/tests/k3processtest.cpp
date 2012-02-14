@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
  //
 
  p1 << "kghostview";
- QObject::connect(&p1, SIGNAL(processExited(K3Process *)),  &dummy, SLOT(printMessage(K3Process *)));
+ QObject::connect(&p1, SIGNAL(processExited(K3Process*)),  &dummy, SLOT(printMessage(K3Process*)));
 
  printf("starting kghostview blocking (close to continue)\n");
  p1.start(K3Process::Block);
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
  printf("Starting konsole with /bin/tcsh as shell (close to continue)\n");
  p2 << "konsole" << "-e" << "/bin/tcsh";
  p2.setWorkingDirectory("/tmp");
- QObject::connect(&p2, SIGNAL(processExited(K3Process *)),  &dummy, SLOT(printMessage(K3Process *)));
+ QObject::connect(&p2, SIGNAL(processExited(K3Process*)),  &dummy, SLOT(printMessage(K3Process*)));
  p2.start(K3Process::Block);
 
  //
@@ -73,13 +73,13 @@ int main(int argc, char *argv[])
  //
 
  p3 << "ls" << "-l";
- QObject::connect(&p3, SIGNAL(processExited(K3Process *)),
-		  &dummy, SLOT(printMessage(K3Process *)));
+ QObject::connect(&p3, SIGNAL(processExited(K3Process*)),
+		  &dummy, SLOT(printMessage(K3Process*)));
 
- QObject::connect(&p3, SIGNAL(receivedStdout(K3Process *, char *, int)),
-		  &dummy, SLOT(gotOutput(K3Process *, char *, int)));
- QObject::connect(&p3, SIGNAL(receivedStderr(K3Process *, char *, int)),
-		  &dummy, SLOT(gotOutput(K3Process *, char *, int)));
+ QObject::connect(&p3, SIGNAL(receivedStdout(K3Process*,char*,int)),
+		  &dummy, SLOT(gotOutput(K3Process*,char*,int)));
+ QObject::connect(&p3, SIGNAL(receivedStderr(K3Process*,char*,int)),
+		  &dummy, SLOT(gotOutput(K3Process*,char*,int)));
 
  p3.start(K3Process::NotifyOnExit, K3Process::AllOutput);
 
@@ -96,16 +96,16 @@ int main(int argc, char *argv[])
  //
 
  p4 << "sort";
- QObject::connect(&p4, SIGNAL(processExited(K3Process *)),
-		  &dummy, SLOT(printMessage(K3Process *)));
+ QObject::connect(&p4, SIGNAL(processExited(K3Process*)),
+		  &dummy, SLOT(printMessage(K3Process*)));
 
- QObject::connect(&p4, SIGNAL(receivedStdout(K3Process *, char *, int)),
-		  &dummy, SLOT(gotOutput(K3Process *, char *, int)));
- QObject::connect(&p4, SIGNAL(receivedStderr(K3Process *, char *, int)),
-		  &dummy, SLOT(gotOutput(K3Process *, char *, int)));
+ QObject::connect(&p4, SIGNAL(receivedStdout(K3Process*,char*,int)),
+		  &dummy, SLOT(gotOutput(K3Process*,char*,int)));
+ QObject::connect(&p4, SIGNAL(receivedStderr(K3Process*,char*,int)),
+		  &dummy, SLOT(gotOutput(K3Process*,char*,int)));
 
- QObject::connect(&p4, SIGNAL(wroteStdin(K3Process *)),
-		  &dummy, SLOT(outputDone(K3Process *)));
+ QObject::connect(&p4, SIGNAL(wroteStdin(K3Process*)),
+		  &dummy, SLOT(outputDone(K3Process*)));
 
  p4.start(K3Process::NotifyOnExit, K3Process::All);
  printf("after p4.start");

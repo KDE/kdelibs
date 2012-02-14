@@ -111,8 +111,8 @@ KFileMetaDataReader::KFileMetaDataReader(const QList<KUrl>& urls, QObject* paren
 
     d->m_process->setOutputChannelMode(KProcess::OnlyStdoutChannel);
     d->m_process->setNextOpenMode(QIODevice::ReadOnly);
-    connect(d->m_process, SIGNAL(finished(int, QProcess::ExitStatus)),
-            this, SLOT(slotLoadingFinished(int, QProcess::ExitStatus)));
+    connect(d->m_process, SIGNAL(finished(int,QProcess::ExitStatus)),
+            this, SLOT(slotLoadingFinished(int,QProcess::ExitStatus)));
 }
 
 KFileMetaDataReader::~KFileMetaDataReader()

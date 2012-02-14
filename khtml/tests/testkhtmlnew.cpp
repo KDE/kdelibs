@@ -54,12 +54,12 @@ TestKHTML::TestKHTML()
     m_indicator->setMovie(m_movie);
 
     m_part = new KHTMLPart( this, this, KHTMLPart::BrowserViewGUI );
-    connect( m_part->browserExtension(), SIGNAL(openUrlRequest(const KUrl&, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &)),
-             this, SLOT(openUrl( const KUrl&, const KParts::OpenUrlArguments&, const KParts::BrowserArguments & )));
+    connect( m_part->browserExtension(), SIGNAL(openUrlRequest(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)),
+             this, SLOT(openUrl(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)));
 
     m_combo = new KComboBox;
     m_combo->setEditable(true);
-    connect(m_combo, SIGNAL(returnPressed(const QString&)), this, SLOT(openUrl(const QString&)));
+    connect(m_combo, SIGNAL(returnPressed(QString)), this, SLOT(openUrl(QString)));
 
     m_goButton = new QToolButton;
     m_goButton->setText("Go");
@@ -90,10 +90,10 @@ TestKHTML::TestKHTML()
     m_part->setPluginsEnabled(true);
     m_part->setURLCursor(QCursor(Qt::PointingHandCursor));
 
-    connect(m_part, SIGNAL(setWindowCaption(const QString &)),
-            m_part->widget()->topLevelWidget(), SLOT(setCaption(const QString &)));
+    connect(m_part, SIGNAL(setWindowCaption(QString)),
+            m_part->widget()->topLevelWidget(), SLOT(setCaption(QString)));
 
-    connect(m_part, SIGNAL(started(KIO::Job *)), this, SLOT(startLoading()));
+    connect(m_part, SIGNAL(started(KIO::Job*)), this, SLOT(startLoading()));
     connect(m_part, SIGNAL(completed()), this, SLOT(finishedLoading()));
 }
 
@@ -165,7 +165,7 @@ void TestKHTML::setupActions()
     actionCollection()->addAction( "navigable", ta );
     ta->setShortcuts( KShortcut() );
     ta->setChecked(m_part->isCaretMode());
-    connect(ta, SIGNAL(toggled(bool)), this, SLOT( toggleNavigable(bool) ));
+    connect(ta, SIGNAL(toggled(bool)), this, SLOT(toggleNavigable(bool)));
 
     ta = new KToggleAction( KIcon("document-properties"), "Editable", this );
     actionCollection()->addAction( "editable", ta );

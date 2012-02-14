@@ -324,8 +324,8 @@ bool NetAccess::filecopyInternal(const KUrl& src, const KUrl& target, int permis
                    ? KIO::file_move( src, target, permissions, flags )
                    : KIO::file_copy( src, target, permissions, flags );
   job->ui()->setWindow (window);
-  connect( job, SIGNAL( result (KJob *) ),
-           this, SLOT( slotResult (KJob *) ) );
+  connect( job, SIGNAL(result(KJob*)),
+           this, SLOT(slotResult(KJob*)) );
 
   enter_loop();
   return d->bJobOK;
@@ -340,8 +340,8 @@ bool NetAccess::dircopyInternal(const KUrl::List& src, const KUrl& target,
                    ? KIO::move( src, target )
                    : KIO::copy( src, target );
   job->ui()->setWindow (window);
-  connect( job, SIGNAL( result (KJob *) ),
-           this, SLOT( slotResult (KJob *) ) );
+  connect( job, SIGNAL(result(KJob*)),
+           this, SLOT(slotResult(KJob*)) );
 
   enter_loop();
   return d->bJobOK;
@@ -356,8 +356,8 @@ bool NetAccess::statInternal( const KUrl & url, int details, StatSide side,
   job->ui()->setWindow (window);
   job->setDetails( details );
   job->setSide( side == SourceSide ? StatJob::SourceSide : StatJob::DestinationSide );
-  connect( job, SIGNAL( result (KJob *) ),
-           this, SLOT( slotResult (KJob *) ) );
+  connect( job, SIGNAL(result(KJob*)),
+           this, SLOT(slotResult(KJob*)) );
   enter_loop();
   return d->bJobOK;
 }
@@ -367,8 +367,8 @@ bool NetAccess::delInternal( const KUrl & url, QWidget* window )
   d->bJobOK = true; // success unless further error occurs
   KIO::Job * job = KIO::del( url );
   job->ui()->setWindow (window);
-  connect( job, SIGNAL( result (KJob *) ),
-           this, SLOT( slotResult (KJob *) ) );
+  connect( job, SIGNAL(result(KJob*)),
+           this, SLOT(slotResult(KJob*)) );
   enter_loop();
   return d->bJobOK;
 }
@@ -379,8 +379,8 @@ bool NetAccess::mkdirInternal( const KUrl & url, int permissions,
   d->bJobOK = true; // success unless further error occurs
   KIO::Job * job = KIO::mkdir( url, permissions );
   job->ui()->setWindow (window);
-  connect( job, SIGNAL( result (KJob *) ),
-           this, SLOT( slotResult (KJob *) ) );
+  connect( job, SIGNAL(result(KJob*)),
+           this, SLOT(slotResult(KJob*)) );
   enter_loop();
   return d->bJobOK;
 }
@@ -391,10 +391,10 @@ QString NetAccess::mimetypeInternal( const KUrl & url, QWidget* window )
   d->m_mimetype = QLatin1String("unknown");
   KIO::Job * job = KIO::mimetype( url );
   job->ui()->setWindow (window);
-  connect( job, SIGNAL( result (KJob *) ),
-           this, SLOT( slotResult (KJob *) ) );
-  connect( job, SIGNAL( mimetype (KIO::Job *, const QString &) ),
-           this, SLOT( slotMimetype (KIO::Job *, const QString &) ) );
+  connect( job, SIGNAL(result(KJob*)),
+           this, SLOT(slotResult(KJob*)) );
+  connect( job, SIGNAL(mimetype(KIO::Job*,QString)),
+           this, SLOT(slotMimetype(KIO::Job*,QString)) );
   enter_loop();
   return d->m_mimetype;
 }
@@ -428,8 +428,8 @@ QString NetAccess::fish_executeInternal(const KUrl & url, const QString &command
 
     KIO::Job * job = KIO::special( tempPathUrl, packedArgs );
     job->ui()->setWindow( window );
-    connect( job, SIGNAL( result (KJob *) ),
-             this, SLOT( slotResult (KJob *) ) );
+    connect( job, SIGNAL(result(KJob*)),
+             this, SLOT(slotResult(KJob*)) );
     enter_loop();
 
     // since the KIO::special does not provide feedback we need to download the result
@@ -472,21 +472,21 @@ bool NetAccess::synchronousRunInternal( Job* job, QWidget* window, QByteArray* d
       }
   }
 
-  connect( job, SIGNAL( result (KJob *) ),
-           this, SLOT( slotResult (KJob *) ) );
+  connect( job, SIGNAL(result(KJob*)),
+           this, SLOT(slotResult(KJob*)) );
 
   const QMetaObject* meta = job->metaObject();
 
   static const char dataSignal[] = "data(KIO::Job*,QByteArray)";
   if ( meta->indexOfSignal( dataSignal ) != -1 ) {
-      connect( job, SIGNAL(data(KIO::Job*,const QByteArray&)),
-               this, SLOT(slotData(KIO::Job*,const QByteArray&)) );
+      connect( job, SIGNAL(data(KIO::Job*,QByteArray)),
+               this, SLOT(slotData(KIO::Job*,QByteArray)) );
   }
 
   static const char redirSignal[] = "redirection(KIO::Job*,KUrl)";
   if ( meta->indexOfSignal( redirSignal ) != -1 ) {
-      connect( job, SIGNAL(redirection(KIO::Job*,const KUrl&)),
-               this, SLOT(slotRedirection(KIO::Job*, const KUrl&)) );
+      connect( job, SIGNAL(redirection(KIO::Job*,KUrl)),
+               this, SLOT(slotRedirection(KIO::Job*,KUrl)) );
   }
 
   enter_loop();

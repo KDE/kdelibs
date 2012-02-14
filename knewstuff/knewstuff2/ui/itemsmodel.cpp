@@ -128,8 +128,8 @@ void ItemsModel::addEntry(Entry * entry)
     if (!preview.isEmpty()) {
         m_imageIndexes.insert(preview, index(m_entries.count() - 1, 0));
         QAsyncImage *pix = new QAsyncImage(preview, this);
-        connect(pix, SIGNAL(signalLoaded(const QString &, const QImage&)),
-                this, SLOT(slotEntryPreviewLoaded(const QString &, const QImage&)));
+        connect(pix, SIGNAL(signalLoaded(QString,QImage)),
+                this, SLOT(slotEntryPreviewLoaded(QString,QImage)));
     }
 }
 

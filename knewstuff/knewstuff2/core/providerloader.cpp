@@ -45,10 +45,10 @@ void ProviderLoader::load(const QString &providersurl)
     //kDebug(550) << "ProviderLoader::load(): providersUrl: " << providersurl;
 
     KIO::TransferJob *job = KIO::get(KUrl(providersurl), KIO::NoReload, KIO::HideProgressInfo);
-    connect(job, SIGNAL(result(KJob *)),
-            SLOT(slotJobResult(KJob *)));
-    connect(job, SIGNAL(data(KIO::Job *, const QByteArray &)),
-            SLOT(slotJobData(KIO::Job *, const QByteArray &)));
+    connect(job, SIGNAL(result(KJob*)),
+            SLOT(slotJobResult(KJob*)));
+    connect(job, SIGNAL(data(KIO::Job*,QByteArray)),
+            SLOT(slotJobData(KIO::Job*,QByteArray)));
 }
 
 void ProviderLoader::slotJobData(KIO::Job *, const QByteArray &data)

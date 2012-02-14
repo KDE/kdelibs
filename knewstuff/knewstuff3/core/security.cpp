@@ -84,8 +84,8 @@ void Security::readKeys()
     << "--no-tty"
     << "--with-colon"
     << "--list-keys";
-    connect(m_process, SIGNAL(finished(int, QProcess::ExitStatus)),
-            this, SLOT(slotFinished(int, QProcess::ExitStatus)));
+    connect(m_process, SIGNAL(finished(int,QProcess::ExitStatus)),
+            this, SLOT(slotFinished(int,QProcess::ExitStatus)));
     connect(m_process, SIGNAL(readyReadStandardOutput()),
             this, SLOT(slotReadyReadStandardOutput()));
     m_process->start();
@@ -110,8 +110,8 @@ void Security::readSecretKeys()
     << "--no-tty"
     << "--with-colon"
     << "--list-secret-keys";
-    connect(m_process, SIGNAL(finished(int, QProcess::ExitStatus)),
-            this, SLOT(slotFinished(int, QProcess::ExitStatus)));
+    connect(m_process, SIGNAL(finished(int,QProcess::ExitStatus)),
+            this, SLOT(slotFinished(int,QProcess::ExitStatus)));
     connect(m_process, SIGNAL(readyReadStandardOutput()),
             this, SLOT(slotReadyReadStandardOutput()));
     m_process->start();
@@ -284,8 +284,8 @@ void Security::slotCheckValidity()
     << "--verify"
     << f.path() + "/signature"
     << m_fileName;
-    connect(m_process, SIGNAL(finished(int, QProcess::ExitStatus)),
-            this, SLOT(slotFinished(int, QProcess::ExitStatus)));
+    connect(m_process, SIGNAL(finished(int,QProcess::ExitStatus)),
+            this, SLOT(slotFinished(int,QProcess::ExitStatus)));
     connect(m_process, SIGNAL(readyReadStandardOutput()),
             this, SLOT(slotReadyReadStandardOutput()));
     m_process->start();
@@ -369,8 +369,8 @@ void Security::slotSignFile()
     << "-o"
     << f.path() + "/signature"
     << m_fileName;
-    connect(m_process, SIGNAL(finished(int, QProcess::ExitStatus)),
-            this, SLOT(slotFinished(int, QProcess::ExitStatus)));
+    connect(m_process, SIGNAL(finished(int,QProcess::ExitStatus)),
+            this, SLOT(slotFinished(int,QProcess::ExitStatus)));
     connect(m_process, SIGNAL(readyReadStandardOutput()),
             this, SLOT(slotReadyReadStandardOutput()));
     m_runMode = Sign;

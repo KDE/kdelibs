@@ -258,7 +258,7 @@ void KApplication::installX11EventFilter( QWidget* filter )
         return;
     if (!x11Filter)
         x11Filter = new QList< QWeakPointer< QWidget > >;
-    connect ( filter, SIGNAL( destroyed() ), this, SLOT( _k_x11FilterDestroyed() ) );
+    connect ( filter, SIGNAL(destroyed()), this, SLOT(_k_x11FilterDestroyed()) );
     x11Filter->append( filter );
 }
 
@@ -301,7 +301,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
             if( d->app_started_timer == NULL )
             {
                 d->app_started_timer = new QTimer( this );
-                connect( d->app_started_timer, SIGNAL( timeout()), SLOT( _k_checkAppStartedSlot()));
+                connect( d->app_started_timer, SIGNAL(timeout()), SLOT(_k_checkAppStartedSlot()));
             }
             if( !d->app_started_timer->isActive()) {
                 d->app_started_timer->setSingleShot( true );
@@ -574,7 +574,7 @@ void KApplicationPrivate::init(bool GUIenabled)
     KCheckAccelerators::initiateIfNeeded(q);
     KGestureMap::self()->installEventFilterOnMe( q );
 
-    q->connect(KToolInvocation::self(), SIGNAL(kapplication_hook(QStringList&, QByteArray&)),
+    q->connect(KToolInvocation::self(), SIGNAL(kapplication_hook(QStringList&,QByteArray&)),
                q, SLOT(_k_slot_KToolInvocation_hook(QStringList&,QByteArray&)));
   }
 

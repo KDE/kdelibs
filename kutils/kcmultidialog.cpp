@@ -218,8 +218,8 @@ void KCMultiDialogPrivate::init()
     q->connect(q, SIGNAL(user1Clicked()), SLOT(slotUser1Clicked()));
     q->connect(q, SIGNAL(resetClicked()), SLOT(slotUser1Clicked()));
 
-    q->connect(q, SIGNAL(currentPageChanged(KPageWidgetItem*, KPageWidgetItem*)),
-            SLOT(_k_slotCurrentPageChanged(KPageWidgetItem*, KPageWidgetItem*)));
+    q->connect(q, SIGNAL(currentPageChanged(KPageWidgetItem*,KPageWidgetItem*)),
+            SLOT(_k_slotCurrentPageChanged(KPageWidgetItem*,KPageWidgetItem*)));
 
     q->setInitialSize(QSize(800, 550));
 }

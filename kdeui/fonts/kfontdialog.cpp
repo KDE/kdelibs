@@ -79,7 +79,7 @@ KFontDialog::KFontDialog( QWidget *parent,
                                    sizeIsRelativeState );
     d->chooser->setObjectName( "fontChooser" );
 
-    connect( d->chooser , SIGNAL(fontSelected(const QFont&)) , this , SIGNAL(fontSelected(const QFont&)) );
+    connect( d->chooser , SIGNAL(fontSelected(QFont)) , this , SIGNAL(fontSelected(QFont)) );
 
     setMainWidget( d->chooser );
 }

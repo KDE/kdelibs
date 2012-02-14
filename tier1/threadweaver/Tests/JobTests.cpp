@@ -400,18 +400,18 @@ void JobTests::JobSignalsAreEmittedAsynchronouslyTest()
     QString sequence;
     QList<Job*> jobs;
     ThreadWeaver::JobCollection collection;
-    connect( &collection, SIGNAL( started( ThreadWeaver::Job* ) ),
-             SLOT( jobStarted( ThreadWeaver::Job* ) ) );
-    connect( &collection, SIGNAL( done( ThreadWeaver::Job* ) ),
-             SLOT( jobDone( ThreadWeaver::Job* ) ) );
+    connect( &collection, SIGNAL(started(ThreadWeaver::Job*)),
+             SLOT(jobStarted(ThreadWeaver::Job*)) );
+    connect( &collection, SIGNAL(done(ThreadWeaver::Job*)),
+             SLOT(jobDone(ThreadWeaver::Job*)) );
     for ( int counter = 0; counter < NumberOfBits; ++counter )
     {
         Job* job = new AppendCharacterJob( bits[counter], &sequence, this );
 
-        connect ( job, SIGNAL( started( ThreadWeaver::Job* ) ),
-                  SLOT( jobStarted( ThreadWeaver::Job* ) ) );
-        connect ( job, SIGNAL( done( ThreadWeaver::Job* ) ),
-                  SLOT( jobDone( ThreadWeaver::Job* ) ) );
+        connect ( job, SIGNAL(started(ThreadWeaver::Job*)),
+                  SLOT(jobStarted(ThreadWeaver::Job*)) );
+        connect ( job, SIGNAL(done(ThreadWeaver::Job*)),
+                  SLOT(jobDone(ThreadWeaver::Job*)) );
 
         jobs.append( job );
         collection.addJob( job );

@@ -48,11 +48,11 @@ void UDisksStorageAccess::connectDBusSignals()
 {
     m_device->registerAction("setup", this,
                              SLOT(slotSetupRequested()),
-                             SLOT(slotSetupDone(int, const QString&)));
+                             SLOT(slotSetupDone(int,QString)));
 
     m_device->registerAction("teardown", this,
                              SLOT(slotTeardownRequested()),
-                             SLOT(slotTeardownDone(int, const QString&)));
+                             SLOT(slotTeardownDone(int,QString)));
 }
 
 bool UDisksStorageAccess::isLuksDevice() const
@@ -276,8 +276,8 @@ bool UDisksStorageAccess::mount()
     msg << QStringList();   // options, unused now
 
     return c.callWithCallback(msg, this,
-                              SLOT(slotDBusReply(const QDBusMessage &)),
-                              SLOT(slotDBusError(const QDBusError &)));
+                              SLOT(slotDBusReply(QDBusMessage)),
+                              SLOT(slotDBusError(QDBusError)));
 }
 
 bool UDisksStorageAccess::unmount()
@@ -297,8 +297,8 @@ bool UDisksStorageAccess::unmount()
     msg << QStringList();   // options, unused now
 
     return c.callWithCallback(msg, this,
-                              SLOT(slotDBusReply(const QDBusMessage &)),
-                              SLOT(slotDBusError(const QDBusError &)),
+                              SLOT(slotDBusReply(QDBusMessage)),
+                              SLOT(slotDBusError(QDBusError)),
                               s_unmountTimeout);
 }
 
@@ -359,8 +359,8 @@ void UDisksStorageAccess::callCryptoSetup( const QString & passphrase )
     msg << QStringList();   // options, unused now
 
     c.callWithCallback(msg, this,
-                       SLOT(slotDBusReply(const QDBusMessage &)),
-                       SLOT(slotDBusError(const QDBusError &)));
+                       SLOT(slotDBusReply(QDBusMessage)),
+                       SLOT(slotDBusError(QDBusError)));
 }
 
 bool UDisksStorageAccess::callCryptoTeardown(bool actOnParent)
@@ -372,7 +372,7 @@ bool UDisksStorageAccess::callCryptoTeardown(bool actOnParent)
     msg << QStringList();   // options, unused now
 
     return c.callWithCallback(msg, this,
-                              SLOT(slotDBusReply(const QDBusMessage &)),
-                              SLOT(slotDBusError(const QDBusError &)));
+                              SLOT(slotDBusReply(QDBusMessage)),
+                              SLOT(slotDBusError(QDBusError)));
 }
 

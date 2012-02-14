@@ -223,8 +223,8 @@ KCursorPrivateAutoHideEventFilter::KCursorPrivateAutoHideEventFilter( QWidget* w
     , m_isOwnCursor( false )
 {
     mouseWidget()->setMouseTracking( true );
-    connect( &m_autoHideTimer, SIGNAL( timeout() ),
-             this, SLOT( hideCursor() ) );
+    connect( &m_autoHideTimer, SIGNAL(timeout()),
+             this, SLOT(hideCursor()) );
 }
 
 KCursorPrivateAutoHideEventFilter::~KCursorPrivateAutoHideEventFilter()
@@ -374,15 +374,15 @@ void KCursorPrivate::setAutoHideCursor( QWidget *w, bool enable, bool customEven
         m_eventFilters.insert( w, filter );
         if (viewport) {
             m_eventFilters.insert( viewport, filter );
-            connect(viewport, SIGNAL(destroyed(QObject *)), this, SLOT(slotViewportDestroyed(QObject *)));
+            connect(viewport, SIGNAL(destroyed(QObject*)), this, SLOT(slotViewportDestroyed(QObject*)));
         }
         if ( !customEventFilter ) {
             w->installEventFilter( filter ); // for key events
             if (viewport)
                 viewport->installEventFilter( filter ); // for mouse events
         }
-        connect( w, SIGNAL( destroyed(QObject*) ),
-                 this, SLOT( slotWidgetDestroyed(QObject*) ) );
+        connect( w, SIGNAL(destroyed(QObject*)),
+                 this, SLOT(slotWidgetDestroyed(QObject*)) );
     }
     else
     {
@@ -392,12 +392,12 @@ void KCursorPrivate::setAutoHideCursor( QWidget *w, bool enable, bool customEven
         w->removeEventFilter( filter );
         if (viewport) {
             m_eventFilters.remove( viewport );
-            disconnect(viewport, SIGNAL(destroyed(QObject *)), this, SLOT(slotViewportDestroyed(QObject *)));
+            disconnect(viewport, SIGNAL(destroyed(QObject*)), this, SLOT(slotViewportDestroyed(QObject*)));
             viewport->removeEventFilter( filter );
         }
         delete filter;
-        disconnect( w, SIGNAL( destroyed(QObject*) ),
-                    this, SLOT( slotWidgetDestroyed(QObject*) ) );
+        disconnect( w, SIGNAL(destroyed(QObject*)),
+                    this, SLOT(slotWidgetDestroyed(QObject*)) );
     }
 }
 

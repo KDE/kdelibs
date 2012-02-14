@@ -118,12 +118,12 @@ FormFileWidget::FormFileWidget(QWidget* parent, const QString& startDirOrVariabl
     //KFileDialog::setMode( KFile::File | KFile::LocalOnly );
 
     // slotOk() emits accepted, accept() emits fileSelected()
-    QObject::connect(d->filewidget, SIGNAL(fileSelected(const QString&)), this, SLOT(slotFileSelected(const QString&)));
+    QObject::connect(d->filewidget, SIGNAL(fileSelected(QString)), this, SLOT(slotFileSelected(QString)));
 
-    QObject::connect(d->filewidget, SIGNAL(fileSelected(const QString&)), this, SIGNAL(fileSelected(const QString&)));
-    QObject::connect(d->filewidget, SIGNAL(fileHighlighted(const QString&)), this, SIGNAL(fileHighlighted(const QString&)));
+    QObject::connect(d->filewidget, SIGNAL(fileSelected(QString)), this, SIGNAL(fileSelected(QString)));
+    QObject::connect(d->filewidget, SIGNAL(fileHighlighted(QString)), this, SIGNAL(fileHighlighted(QString)));
     QObject::connect(d->filewidget, SIGNAL(selectionChanged()), this, SIGNAL(selectionChanged()));
-    QObject::connect(d->filewidget, SIGNAL(filterChanged(const QString&)), this, SIGNAL(filterChanged(const QString&)));
+    QObject::connect(d->filewidget, SIGNAL(filterChanged(QString)), this, SIGNAL(filterChanged(QString)));
 
 //     d->impl->setOperationMode(d->mode);
 //     if( d->mimeFilter.count() > 0 )

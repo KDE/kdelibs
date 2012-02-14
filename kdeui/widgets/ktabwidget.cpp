@@ -239,16 +239,16 @@ KTabWidget::KTabWidget( QWidget *parent, Qt::WFlags flags )
   setObjectName( "tabbar" );
   setAcceptDrops( true );
 
-  connect(tabBar(), SIGNAL(contextMenu( int, const QPoint & )), SLOT(contextMenu( int, const QPoint & )));
-  connect(tabBar(), SIGNAL(tabDoubleClicked( int )), SLOT(mouseDoubleClick( int )));
+  connect(tabBar(), SIGNAL(contextMenu(int,QPoint)), SLOT(contextMenu(int,QPoint)));
+  connect(tabBar(), SIGNAL(tabDoubleClicked(int)), SLOT(mouseDoubleClick(int)));
   connect(tabBar(), SIGNAL(newTabRequest()), this, SIGNAL(mouseDoubleClick())); // #185487
-  connect(tabBar(), SIGNAL(mouseMiddleClick( int )), SLOT(mouseMiddleClick( int )));
-  connect(tabBar(), SIGNAL(initiateDrag( int )), SLOT(initiateDrag( int )));
-  connect(tabBar(), SIGNAL(testCanDecode(const QDragMoveEvent *, bool & )), SIGNAL(testCanDecode(const QDragMoveEvent *, bool & )));
-  connect(tabBar(), SIGNAL(receivedDropEvent( int, QDropEvent * )), SLOT(receivedDropEvent( int, QDropEvent * )));
-  connect(tabBar(), SIGNAL(moveTab( int, int )), SLOT(moveTab( int, int )));
-  connect(tabBar(), SIGNAL(tabMoved( int, int )), SLOT(slotTabMoved( int, int )));
-  connect(tabBar(), SIGNAL(tabCloseRequested( int )), SLOT(closeRequest( int )));
+  connect(tabBar(), SIGNAL(mouseMiddleClick(int)), SLOT(mouseMiddleClick(int)));
+  connect(tabBar(), SIGNAL(initiateDrag(int)), SLOT(initiateDrag(int)));
+  connect(tabBar(), SIGNAL(testCanDecode(const QDragMoveEvent*,bool&)), SIGNAL(testCanDecode(const QDragMoveEvent*,bool&)));
+  connect(tabBar(), SIGNAL(receivedDropEvent(int,QDropEvent*)), SLOT(receivedDropEvent(int,QDropEvent*)));
+  connect(tabBar(), SIGNAL(moveTab(int,int)), SLOT(moveTab(int,int)));
+  connect(tabBar(), SIGNAL(tabMoved(int,int)), SLOT(slotTabMoved(int,int)));
+  connect(tabBar(), SIGNAL(tabCloseRequested(int)), SLOT(closeRequest(int)));
 }
 
 KTabWidget::~KTabWidget()

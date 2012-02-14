@@ -430,8 +430,8 @@ void K3PasswordDialog::init()
         d->m_MatchLabel->setText(i18n("Passwords do not match"));
 
 
-        connect( m_pEdit, SIGNAL(textChanged(const QString&)), SLOT(enableOkBtn()) );
-        connect( m_pEdit2, SIGNAL(textChanged(const QString&)), SLOT(enableOkBtn()) );
+        connect( m_pEdit, SIGNAL(textChanged(QString)), SLOT(enableOkBtn()) );
+        connect( m_pEdit2, SIGNAL(textChanged(QString)), SLOT(enableOkBtn()) );
         enableOkBtn();
     }
 

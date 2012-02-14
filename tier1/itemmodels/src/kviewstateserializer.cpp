@@ -86,8 +86,8 @@ public:
 
     if ( !hasPendingChanges() )
     {
-      q->disconnect( getModel(), SIGNAL( rowsInserted( const QModelIndex&, int, int ) ),
-          q, SLOT( rowsInserted( const QModelIndex&, int, int ) ) );
+      q->disconnect( getModel(), SIGNAL(rowsInserted(QModelIndex,int,int)),
+          q, SLOT(rowsInserted(QModelIndex,int,int)) );
       q->deleteLater();
     }
   }
@@ -157,10 +157,10 @@ void KViewStateSerializerPrivate::listenToPendingChanges()
     const QAbstractItemModel *model = getModel();
     if ( model )
     {
-      q->disconnect( model, SIGNAL( rowsInserted( const QModelIndex&, int, int ) ),
-          q, SLOT( rowsInserted( const QModelIndex&, int, int ) ) );
-      q->connect( model, SIGNAL( rowsInserted( const QModelIndex&, int, int ) ),
-          SLOT( rowsInserted( const QModelIndex&, int, int ) ) );
+      q->disconnect( model, SIGNAL(rowsInserted(QModelIndex,int,int)),
+          q, SLOT(rowsInserted(QModelIndex,int,int)) );
+      q->connect( model, SIGNAL(rowsInserted(QModelIndex,int,int)),
+          SLOT(rowsInserted(QModelIndex,int,int)) );
       return;
     } else {
       q->deleteLater();
@@ -273,7 +273,7 @@ void KViewStateSerializer::restoreScrollState(int verticalScoll, int horizontalS
   d->m_verticalScrollBarValue = verticalScoll;
   d->m_horizontalScrollBarValue = horizontalScroll;
 
-  QTimer::singleShot( 0, this, SLOT( restoreScrollBarState() ) );
+  QTimer::singleShot( 0, this, SLOT(restoreScrollBarState()) );
 }
 
 void KViewStateSerializerPrivate::restoreSelection()

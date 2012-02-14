@@ -84,15 +84,15 @@ K3SpellDlg::K3SpellDlg( QWidget * parent, bool _progressbar, bool _modal )
 
     connect(this, SIGNAL(user1Clicked()), this, SLOT(stop()));
 
-    connect( d->ui.m_replacement, SIGNAL(textChanged(const QString &)),
-             SLOT(textChanged(const QString &)) );
+    connect( d->ui.m_replacement, SIGNAL(textChanged(QString)),
+             SLOT(textChanged(QString)) );
 
     connect( d->ui.m_replacement, SIGNAL(returnPressed()),   SLOT(replace()) );
     connect( d->ui.m_suggestions, SIGNAL(selectionChanged(Q3ListViewItem*)),
              SLOT(slotSelectionChanged(Q3ListViewItem*)) );
 
-    connect( d->ui.m_suggestions, SIGNAL( doubleClicked ( Q3ListViewItem *, const QPoint &, int ) ),
-             SLOT( replace() ) );
+    connect( d->ui.m_suggestions, SIGNAL(doubleClicked(Q3ListViewItem*,QPoint,int)),
+             SLOT(replace()) );
     d->spellConfig = new K3SpellConfig( 0, 0 , false );
     d->spellConfig->fillDicts( d->ui.m_language );
     connect( d->ui.m_language, SIGNAL(activated(int)),

@@ -388,8 +388,8 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
     palette.setColor(viewport()->foregroundRole(), palette.color(QPalette::WindowText));
     viewport()->setPalette(palette);
 
-    connect(this, SIGNAL(clicked(const QModelIndex&)),
-            this, SLOT(_k_placeClicked(const QModelIndex&)));
+    connect(this, SIGNAL(clicked(QModelIndex)),
+            this, SLOT(_k_placeClicked(QModelIndex)));
     // Note: Don't connect to the activated() signal, as the behavior when it is
     // committed depends on the used widget style. The click behavior of
     // KFilePlacesView should be style independent.
@@ -413,10 +413,10 @@ KFilePlacesView::KFilePlacesView(QWidget *parent)
     d->itemDisappearTimeline.setCurveShape(QTimeLine::EaseInOutCurve);
 
     viewport()->installEventFilter(d->watcher);
-    connect(d->watcher, SIGNAL(entryEntered(const QModelIndex&)),
-            this, SLOT(_k_placeEntered(const QModelIndex&)));
-    connect(d->watcher, SIGNAL(entryLeft(const QModelIndex&)),
-            this, SLOT(_k_placeLeft(const QModelIndex&)));
+    connect(d->watcher, SIGNAL(entryEntered(QModelIndex)),
+            this, SLOT(_k_placeEntered(QModelIndex)));
+    connect(d->watcher, SIGNAL(entryLeft(QModelIndex)),
+            this, SLOT(_k_placeLeft(QModelIndex)));
 
     d->pollDevices.setInterval(5000);
     connect(&d->pollDevices, SIGNAL(timeout()), this, SLOT(_k_triggerDevicePolling()));
@@ -841,10 +841,10 @@ void KFilePlacesView::setModel(QAbstractItemModel *model)
     // called. In case of an item move the remove+add will be done before
     // we adapt the item size (otherwise we'd get it wrong as we'd execute
     // it after the remove only).
-    connect(model, SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
+    connect(model, SIGNAL(rowsRemoved(QModelIndex,int,int)),
             this, SLOT(adaptItemSize()), Qt::QueuedConnection);
-    connect(selectionModel(), SIGNAL(currentChanged(const QModelIndex&,const QModelIndex&)),
-            d->watcher, SLOT(currentIndexChanged(const QModelIndex&)));
+    connect(selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)),
+            d->watcher, SLOT(currentIndexChanged(QModelIndex)));
 }
 
 void KFilePlacesView::rowsInserted(const QModelIndex &parent, int start, int end)
@@ -1063,8 +1063,8 @@ void KFilePlacesView::Private::_k_placeClicked(const QModelIndex &index)
     lastClickedIndex = QPersistentModelIndex();
 
     if (placesModel->setupNeeded(index)) {
-        QObject::connect(placesModel, SIGNAL(setupDone(const QModelIndex &, bool)),
-                         q, SLOT(_k_storageSetupDone(const QModelIndex &, bool)));
+        QObject::connect(placesModel, SIGNAL(setupDone(QModelIndex,bool)),
+                         q, SLOT(_k_storageSetupDone(QModelIndex,bool)));
 
         lastClickedIndex = index;
         placesModel->requestSetup(index);
@@ -1100,8 +1100,8 @@ void KFilePlacesView::Private::_k_storageSetupDone(const QModelIndex &index, boo
 
     KFilePlacesModel *placesModel = qobject_cast<KFilePlacesModel*>(q->model());
 
-    QObject::disconnect(placesModel, SIGNAL(setupDone(const QModelIndex &, bool)),
-                        q, SLOT(_k_storageSetupDone(const QModelIndex &, bool)));
+    QObject::disconnect(placesModel, SIGNAL(setupDone(QModelIndex,bool)),
+                        q, SLOT(_k_storageSetupDone(QModelIndex,bool)));
 
     if (success) {
         setCurrentIndex(lastClickedIndex);

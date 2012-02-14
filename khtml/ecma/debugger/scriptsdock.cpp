@@ -45,8 +45,8 @@ ScriptsDock::ScriptsDock(QWidget *parent)
     m_widget = new QTreeWidget;
     m_widget->header()->hide();
 
-    connect(m_widget, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
-            this, SLOT(scriptSelected(QTreeWidgetItem *, int)));
+    connect(m_widget, SIGNAL(itemClicked(QTreeWidgetItem*,int)),
+            this, SLOT(scriptSelected(QTreeWidgetItem*,int)));
 
     setWidget(m_widget);
 }

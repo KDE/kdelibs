@@ -36,8 +36,8 @@ void TestDialog::check( const QString& buffer )
 {
     Sonnet::Dialog *dlg = new Sonnet::Dialog(
         new BackgroundChecker(this), 0);
-    connect(dlg, SIGNAL(done(const QString&)),
-            SLOT(doneChecking(const QString&)));
+    connect(dlg, SIGNAL(done(QString)),
+            SLOT(doneChecking(QString)));
     dlg->setBuffer(buffer);
     dlg->show();
 }

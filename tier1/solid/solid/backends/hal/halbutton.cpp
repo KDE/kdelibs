@@ -25,8 +25,8 @@ using namespace Solid::Backends::Hal;
 Button::Button(HalDevice *device)
     : DeviceInterface(device)
 {
-    connect(device, SIGNAL(conditionRaised(const QString &, const QString &)),
-             this, SLOT(slotConditionRaised(const QString &, const QString &)));
+    connect(device, SIGNAL(conditionRaised(QString,QString)),
+             this, SLOT(slotConditionRaised(QString,QString)));
 }
 
 Button::~Button()

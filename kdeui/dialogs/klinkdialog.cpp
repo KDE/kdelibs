@@ -74,7 +74,7 @@ KLinkDialog::KLinkDialog(QWidget *parent)
 
     d->textLineEdit->setFocus();
     enableButtonOk( false );
-    connect(d->textLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(slotTextChanged(const QString&)));
+    connect(d->textLineEdit, SIGNAL(textChanged(QString)), this, SLOT(slotTextChanged(QString)));
 }
 
 KLinkDialog::~KLinkDialog()

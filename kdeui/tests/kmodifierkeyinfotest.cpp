@@ -136,11 +136,11 @@ TestWidget::TestWidget() : QWidget(0), m_lock(this)
 
     setLayout(layout);
 
-    connect(&m_lock, SIGNAL(keyPressed(Qt::Key, bool)), SLOT(keyPressed(Qt::Key, bool)));
-    connect(&m_lock, SIGNAL(keyLatched(Qt::Key, bool)), SLOT(keyLatched(Qt::Key, bool)));
-    connect(&m_lock, SIGNAL(keyLocked(Qt::Key, bool)), SLOT(keyLocked(Qt::Key, bool)));
-    connect(&m_lock, SIGNAL(buttonPressed(Qt::MouseButton, bool)),
-                     SLOT(mouseButtonPressed(Qt::MouseButton, bool)));
+    connect(&m_lock, SIGNAL(keyPressed(Qt::Key,bool)), SLOT(keyPressed(Qt::Key,bool)));
+    connect(&m_lock, SIGNAL(keyLatched(Qt::Key,bool)), SLOT(keyLatched(Qt::Key,bool)));
+    connect(&m_lock, SIGNAL(keyLocked(Qt::Key,bool)), SLOT(keyLocked(Qt::Key,bool)));
+    connect(&m_lock, SIGNAL(buttonPressed(Qt::MouseButton,bool)),
+                     SLOT(mouseButtonPressed(Qt::MouseButton,bool)));
     connect(&m_lock, SIGNAL(keyAdded(Qt::Key)), SLOT(keyAdded(Qt::Key)));
     connect(&m_lock, SIGNAL(keyRemoved(Qt::Key)), SLOT(keyRemoved(Qt::Key)));
 }

@@ -1214,10 +1214,10 @@ void Loader::scheduleRequest(Request* req)
         }
     }
 
-    connect( job, SIGNAL( result( KJob * ) ), this, SLOT( slotFinished( KJob * ) ) );
-    connect( job, SIGNAL( mimetype( KIO::Job *, const QString& ) ), this, SLOT( slotMimetype( KIO::Job *, const QString& ) ) );
-    connect( job, SIGNAL( data( KIO::Job*, const QByteArray &)),
-             SLOT( slotData( KIO::Job*, const QByteArray &)));
+    connect( job, SIGNAL(result(KJob*)), this, SLOT(slotFinished(KJob*)) );
+    connect( job, SIGNAL(mimetype(KIO::Job*,QString)), this, SLOT(slotMimetype(KIO::Job*,QString)) );
+    connect( job, SIGNAL(data(KIO::Job*,QByteArray)),
+             SLOT(slotData(KIO::Job*,QByteArray)));
 
     KIO::Scheduler::setJobPriority( job, req->priority );
 

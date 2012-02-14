@@ -520,12 +520,12 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
     }
 
 
-    disconnect(this, SIGNAL(currentCharFormatChanged(const QTextCharFormat &)),
-               this, SLOT(_k_updateCharFormatActions(const QTextCharFormat &)));
+    disconnect(this, SIGNAL(currentCharFormatChanged(QTextCharFormat)),
+               this, SLOT(_k_updateCharFormatActions(QTextCharFormat)));
     disconnect(this, SIGNAL(cursorPositionChanged()),
                this, SLOT(_k_updateMiscActions()));
-    connect(this, SIGNAL(currentCharFormatChanged(const QTextCharFormat &)),
-            this, SLOT(_k_updateCharFormatActions(const QTextCharFormat &)));
+    connect(this, SIGNAL(currentCharFormatChanged(QTextCharFormat)),
+            this, SLOT(_k_updateCharFormatActions(QTextCharFormat)));
     connect(this, SIGNAL(cursorPositionChanged()),
             this, SLOT(_k_updateMiscActions()));
 

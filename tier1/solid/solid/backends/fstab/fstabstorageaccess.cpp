@@ -50,11 +50,11 @@ void FstabStorageAccess::connectDBusSignals()
 {
     m_fstabDevice->registerAction("setup", this,
                              SLOT(slotSetupRequested()),
-                             SLOT(slotSetupDone(int, const QString&)));
+                             SLOT(slotSetupDone(int,QString)));
 
     m_fstabDevice->registerAction("teardown", this,
                              SLOT(slotTeardownRequested()),
-                             SLOT(slotTeardownDone(int, const QString&)));
+                             SLOT(slotTeardownDone(int,QString)));
 }
 
 const Solid::Backends::Fstab::FstabDevice *FstabStorageAccess::fstabDevice() const
@@ -93,7 +93,7 @@ bool FstabStorageAccess::setup()
     }
     m_fstabDevice->broadcastActionRequested("setup");
     m_process = FstabHandling::callSystemCommand("mount", filePath(),
-                                                 this, SLOT(slotSetupFinished(int, QProcess::ExitStatus)));
+                                                 this, SLOT(slotSetupFinished(int,QProcess::ExitStatus)));
 
     return m_process!=0;
 }
@@ -110,7 +110,7 @@ bool FstabStorageAccess::teardown()
     }
     m_fstabDevice->broadcastActionRequested("teardown");
     m_process = FstabHandling::callSystemCommand("umount", filePath(),
-                                                 this, SLOT(slotTeardownFinished(int, QProcess::ExitStatus)));
+                                                 this, SLOT(slotTeardownFinished(int,QProcess::ExitStatus)));
 
     return m_process!=0;
 }

@@ -203,8 +203,8 @@ void KPushButton::initWidget( const KGuiItem &item )
 
     setWhatsThis(item.whatsThis());
 
-    connect( KGlobalSettings::self(), SIGNAL( settingsChanged(int) ),
-             SLOT( slotSettingsChanged(int) ) );
+    connect( KGlobalSettings::self(), SIGNAL(settingsChanged(int)),
+             SLOT(slotSettingsChanged(int)) );
 }
 
 bool KPushButton::isDragEnabled() const

@@ -82,7 +82,7 @@ KIconEffectTestWidget::KIconEffectTestWidget(QWidget *parent)
     connect(slider, SIGNAL(valueChanged(int)), this, SLOT(slotColorizeValue(int)));
     layout->addWidget(slider, 17, 1);
     KColorButton *btn = new KColorButton(colorizedColor, frame);
-    connect(btn, SIGNAL(changed(const QColor &)), this, SLOT(slotColorizeColor(const QColor &)));
+    connect(btn, SIGNAL(changed(QColor)), this, SLOT(slotColorizeColor(QColor)));
     layout->addWidget(btn, 18, 1);
 
     tmp = img;

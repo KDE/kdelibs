@@ -51,8 +51,8 @@ void ServiceTypeBrowser::startBrowse()
 	if (!rep.isValid()) return;
 	org::freedesktop::Avahi::ServiceTypeBrowser *b=new org::freedesktop::Avahi::ServiceTypeBrowser("org.freedesktop.Avahi",rep.value().path(),
 	    QDBusConnection::systemBus());
-	connect(b,SIGNAL(ItemNew(int,int,const QString&,const QString&,uint)),d, SLOT(gotNewServiceType(int,int,const QString&,const QString&, uint)));
-	connect(b,SIGNAL(ItemRemove(int,int,const QString&,const QString&,uint)),d, SLOT(gotRemoveServiceType(int,int,const QString&,const QString&, uint)));
+	connect(b,SIGNAL(ItemNew(int,int,QString,QString,uint)),d, SLOT(gotNewServiceType(int,int,QString,QString,uint)));
+	connect(b,SIGNAL(ItemRemove(int,int,QString,QString,uint)),d, SLOT(gotRemoveServiceType(int,int,QString,QString,uint)));
 	connect(b,SIGNAL(AllForNow()),d,SLOT(finished()));
 	connect(&d->m_timer,SIGNAL(timeout()), d, SLOT(finished()));
 	d->m_browser=b;

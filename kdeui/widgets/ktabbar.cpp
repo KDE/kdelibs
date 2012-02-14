@@ -61,12 +61,12 @@ KTabBar::KTabBar( QWidget *parent )
 
   d->mActivateDragSwitchTabTimer = new QTimer( this );
   d->mActivateDragSwitchTabTimer->setSingleShot( true );
-  connect( d->mActivateDragSwitchTabTimer, SIGNAL( timeout() ), SLOT( activateDragSwitchTab() ) );
+  connect( d->mActivateDragSwitchTabTimer, SIGNAL(timeout()), SLOT(activateDragSwitchTab()) );
 #ifndef KDE_NO_DEPRECATED
   connect( this, SIGNAL(tabCloseRequested(int)), this, SIGNAL(closeRequest(int))); // just for backward compatibility, KDE5 remove
 #endif
 
-  //connect( this, SIGNAL( layoutChanged() ), SLOT( onLayoutChange() ) );
+  //connect( this, SIGNAL(layoutChanged()), SLOT(onLayoutChange()) );
 }
 
 KTabBar::~KTabBar()

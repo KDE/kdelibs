@@ -32,8 +32,8 @@ KNotifyTestWindow::KNotifyTestWindow(QWidget *parent)
 	setCentralWidget(w);
 
 	// set up the actions
-        actionCollection()->addAction(KStandardAction::Quit, this, SLOT( close() ));
-        actionCollection()->addAction(KStandardAction::KeyBindings, guiFactory(), SLOT( configureShortcuts() ));
+        actionCollection()->addAction(KStandardAction::Quit, this, SLOT(close()));
+        actionCollection()->addAction(KStandardAction::KeyBindings, guiFactory(), SLOT(configureShortcuts()));
 
 	createGUI();
 
@@ -63,7 +63,7 @@ void KNotifyTestWindow::slotSendMessageEvent( )
 		KNotification *n=new KNotification( "message", this, KNotification::Persistent );
 		n->setText(i18n( "new message : %1" ,  view.c_text->toPlainText() ));
 		n->setActions( QStringList( i18n("Read") ) );
-		connect( n , SIGNAL(activated(unsigned int )), this , SLOT(slotMessageRead()));
+		connect( n , SIGNAL(activated(uint)), this , SLOT(slotMessageRead()));
 
 		m_readNotif=n;
 	}

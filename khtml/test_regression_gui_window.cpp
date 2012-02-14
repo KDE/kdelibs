@@ -62,8 +62,8 @@ TestRegressionWindow::TestRegressionWindow(QWidget *parent)
 	connect(m_ui.pauseContinueButton, SIGNAL(clicked(bool)), SLOT(pauseContinueButtonClicked()));
 	connect(m_ui.saveLogButton, SIGNAL(clicked(bool)), SLOT(saveLogButtonClicked()));
 
-	connect(m_ui.treeWidget, SIGNAL(customContextMenuRequested(const QPoint &)),
-			this, SLOT(treeWidgetContextMenuRequested(const QPoint &)));
+	connect(m_ui.treeWidget, SIGNAL(customContextMenuRequested(QPoint)),
+			this, SLOT(treeWidgetContextMenuRequested(QPoint)));
 
 	// Setup actions' default state
 	m_ui.progressBar->setValue(0);
@@ -227,10 +227,10 @@ void TestRegressionWindow::initTestsDirectory()
 		KUrl listUrl = m_testsUrl; listUrl.addPath("tests");
 		KIO::ListJob *job = KIO::listRecursive(listUrl, KIO::HideProgressInfo, false /* no hidden files */);
 
-		connect(job, SIGNAL(result(KJob *)), SLOT(directoryListingFinished(KJob *)));
+		connect(job, SIGNAL(result(KJob*)), SLOT(directoryListingFinished(KJob*)));
 
-		connect(job, SIGNAL(entries(KIO::Job *, const KIO::UDSEntryList &)),
-				this, SLOT(directoryListingResult(KIO::Job *, const KIO::UDSEntryList &)));
+		connect(job, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)),
+				this, SLOT(directoryListingResult(KIO::Job*,KIO::UDSEntryList)));
 	}
 }
 
@@ -654,7 +654,7 @@ void TestRegressionWindow::initRegressionTesting(const QString &testFileName)
 	if(Q_HAS_FLAG(m_flags, NoXvfbUse))
 		arguments << "--noxvfb";
 
-	connect(m_activeProcess, SIGNAL(finished(int, QProcess::ExitStatus)), SLOT(testerExited(int, QProcess::ExitStatus)));
+	connect(m_activeProcess, SIGNAL(finished(int,QProcess::ExitStatus)), SLOT(testerExited(int,QProcess::ExitStatus)));
 	connect(m_activeProcess, SIGNAL(readyReadStandardOutput()), SLOT(testerReceivedData()));
 
 	// Clear processing queue before starting...

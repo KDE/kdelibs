@@ -299,11 +299,11 @@ K3DictSpellingHighlighter::K3DictSpellingHighlighter( Q3TextEdit *textEdit,
     textEdit->viewport()->installEventFilter( this );
 
     d->rehighlightRequest = new QTimer(this);
-    connect( d->rehighlightRequest, SIGNAL( timeout() ),
-	     this, SLOT( slotRehighlight() ));
+    connect( d->rehighlightRequest, SIGNAL(timeout()),
+	     this, SLOT(slotRehighlight()));
     d->spellTimeout = new QTimer(this);
-    connect( d->spellTimeout, SIGNAL( timeout() ),
-	     this, SLOT( slotK3SpellNotResponding() ));
+    connect( d->spellTimeout, SIGNAL(timeout()),
+	     this, SLOT(slotK3SpellNotResponding()));
 
     if ( d->globalConfig ) {
         d->spellKey = spellKey();
@@ -313,8 +313,8 @@ K3DictSpellingHighlighter::K3DictSpellingHighlighter( Q3TextEdit *textEdit,
     }
     else {
         d->mDict = new Q3Dict<int>(4001);
-        connect( d->mSpellConfig, SIGNAL( configChanged() ),
-                 this, SLOT( slotLocalSpellConfigChanged() ) );
+        connect( d->mSpellConfig, SIGNAL(configChanged()),
+                 this, SLOT(slotLocalSpellConfigChanged()) );
     }
 
     slotDictionaryChanged();
@@ -333,8 +333,8 @@ void K3DictSpellingHighlighter::slotSpellReady( K3Spell *spell )
 {
     kDebug(0) << "KDictSpellingHighlighter::slotSpellReady( " << spell << " )";
     if ( d->globalConfig ) {
-        connect( d->sDictionaryMonitor, SIGNAL( destroyed()),
-                 this, SLOT( slotDictionaryChanged() ));
+        connect( d->sDictionaryMonitor, SIGNAL(destroyed()),
+                 this, SLOT(slotDictionaryChanged()));
     }
     if ( spell != d->spell )
     {
@@ -346,10 +346,10 @@ void K3DictSpellingHighlighter::slotSpellReady( K3Spell *spell )
     for ( QStringList::ConstIterator it = l.begin(); it != l.end(); ++it ) {
         d->spell->addPersonal( *it );
     }
-    connect( spell, SIGNAL( misspelling( const QString &, const QStringList &, unsigned int )),
-	     this, SLOT( slotMisspelling( const QString &, const QStringList &, unsigned int )));
-    connect( spell, SIGNAL( corrected( const QString &, const QString &, unsigned int )),
-	     this, SLOT( slotCorrected( const QString &, const QString &, unsigned int )));
+    connect( spell, SIGNAL(misspelling(QString,QStringList,uint)),
+	     this, SLOT(slotMisspelling(QString,QStringList,uint)));
+    connect( spell, SIGNAL(corrected(QString,QString,uint)),
+	     this, SLOT(slotCorrected(QString,QString,uint)));
     d->checksRequested = 0;
     d->checksDone = 0;
     d->completeRehighlightRequired = true;
@@ -505,7 +505,7 @@ void K3DictSpellingHighlighter::slotRehighlight()
     }
     if (d->checksDone == d->checksRequested)
 	d->completeRehighlightRequired = false;
-    QTimer::singleShot( 0, this, SLOT( slotAutoDetection() ));
+    QTimer::singleShot( 0, this, SLOT(slotAutoDetection()));
 }
 
 void K3DictSpellingHighlighter::slotDictionaryChanged()
@@ -517,7 +517,7 @@ void K3DictSpellingHighlighter::slotDictionaryChanged()
     d->autoDict.clear();
 
     d->spell = new K3Spell( 0, i18n( "Incremental Spellcheck" ), this,
-		SLOT( slotSpellReady( K3Spell * ) ), d->mSpellConfig );
+		SLOT(slotSpellReady(K3Spell*)), d->mSpellConfig );
 }
 
 void K3DictSpellingHighlighter::slotLocalSpellConfigChanged()
@@ -648,7 +648,7 @@ bool K3DictSpellingHighlighter::eventFilter( QObject *o, QEvent *e)
 	if ( k->key() == Qt::Key_Space ||
 	     k->key() == Qt::Key_Enter ||
 	     k->key() == Qt::Key_Return ) {
-	    QTimer::singleShot( 0, this, SLOT( slotAutoDetection() ));
+	    QTimer::singleShot( 0, this, SLOT(slotAutoDetection()));
 	}
     }
 

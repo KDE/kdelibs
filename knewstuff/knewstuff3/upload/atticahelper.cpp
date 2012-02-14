@@ -199,7 +199,7 @@ void AtticaHelper::contentLoaded(Attica::BaseJob* baseJob)
         if (! url.isEmpty()) {
             m_previewJob[previewNum-1] = KIO::get(url, KIO::NoReload, KIO::HideProgressInfo);
             connect(m_previewJob[previewNum-1], SIGNAL(result(KJob*)), SLOT(slotPreviewDownload(KJob*)));
-            connect(m_previewJob[previewNum-1], SIGNAL(data(KIO::Job*, const QByteArray&)), SLOT(slotPreviewData(KIO::Job*, const QByteArray&)));
+            connect(m_previewJob[previewNum-1], SIGNAL(data(KIO::Job*,QByteArray)), SLOT(slotPreviewData(KIO::Job*,QByteArray)));
             KIO::Scheduler::setJobPriority(m_previewJob[previewNum-1], 1);
         }
     }

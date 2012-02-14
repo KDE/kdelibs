@@ -67,8 +67,8 @@ K3ListViewSearchLine::K3ListViewSearchLine(QWidget *parent, K3ListView *listView
     d = new K3ListViewSearchLinePrivate;
     setClearButtonShown( true );
 
-    connect(this, SIGNAL(textChanged(const QString &)),
-            this, SLOT(queueSearch(const QString &)));
+    connect(this, SIGNAL(textChanged(QString)),
+            this, SLOT(queueSearch(QString)));
 
     setListView( listView );
     if( !listView)
@@ -82,8 +82,8 @@ K3ListViewSearchLine::K3ListViewSearchLine(QWidget *parent,
     d = new K3ListViewSearchLinePrivate;
     setClearButtonShown( true );
 
-    connect(this, SIGNAL(textChanged(const QString &)),
-            this, SLOT(queueSearch(const QString &)));
+    connect(this, SIGNAL(textChanged(QString)),
+            this, SLOT(queueSearch(QString)));
 
     setListViews( listViews );
 }
@@ -332,18 +332,18 @@ void K3ListViewSearchLine::contextMenuEvent( QContextMenuEvent*e )
 
 void K3ListViewSearchLine::connectListView(K3ListView *lv)
 {
-    connect(lv, SIGNAL(destroyed( QObject * )),
-            this, SLOT(listViewDeleted( QObject *)));
-    connect(lv, SIGNAL(itemAdded(Q3ListViewItem *)),
-            this, SLOT(itemAdded(Q3ListViewItem *)));
+    connect(lv, SIGNAL(destroyed(QObject*)),
+            this, SLOT(listViewDeleted(QObject*)));
+    connect(lv, SIGNAL(itemAdded(Q3ListViewItem*)),
+            this, SLOT(itemAdded(Q3ListViewItem*)));
 }
 
 void K3ListViewSearchLine::disconnectListView(K3ListView *lv)
 {
-    disconnect(lv, SIGNAL(destroyed( QObject * )),
-              this, SLOT(listViewDeleted( QObject *)));
-    disconnect(lv, SIGNAL(itemAdded(Q3ListViewItem *)),
-              this, SLOT(itemAdded(Q3ListViewItem *)));
+    disconnect(lv, SIGNAL(destroyed(QObject*)),
+              this, SLOT(listViewDeleted(QObject*)));
+    disconnect(lv, SIGNAL(itemAdded(Q3ListViewItem*)),
+              this, SLOT(itemAdded(Q3ListViewItem*)));
 }
 
 bool K3ListViewSearchLine::canChooseColumnsCheck()

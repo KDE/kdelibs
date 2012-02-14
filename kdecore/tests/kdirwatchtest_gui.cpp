@@ -71,9 +71,9 @@ KDirWatchTest_GUI::KDirWatchTest_GUI() : QWidget()
     w2->setObjectName("w2");
     w3 = new KDirWatch();
     w3->setObjectName("w3");
-    connect(w1, SIGNAL(dirty(const QString &)), this, SLOT(slotDir1(const QString &)));
-    connect(w2, SIGNAL(dirty(const QString &)), this, SLOT(slotDir2(const QString &)));
-    connect(w3, SIGNAL(dirty(const QString &)), this, SLOT(slotDir3(const QString &)));
+    connect(w1, SIGNAL(dirty(QString)), this, SLOT(slotDir1(QString)));
+    connect(w2, SIGNAL(dirty(QString)), this, SLOT(slotDir2(QString)));
+    connect(w3, SIGNAL(dirty(QString)), this, SLOT(slotDir3(QString)));
     w1->addDir(dir);
     w2->addDir(dir);
     w3->addDir(dir);
@@ -81,16 +81,16 @@ KDirWatchTest_GUI::KDirWatchTest_GUI() : QWidget()
     KDirWatch* w4 = new KDirWatch(this);
     w4->setObjectName("w4");
     w4->addDir(dir, KDirWatch::WatchFiles|KDirWatch::WatchSubDirs);
-    connect(w1, SIGNAL(dirty(const QString &)), this, SLOT(slotDirty(const QString &)));
-    connect(w1, SIGNAL(created(const QString &)), this, SLOT(slotCreated(const QString &)));
-    connect(w1, SIGNAL(deleted(const QString &)), this, SLOT(slotDeleted(const QString &)));
+    connect(w1, SIGNAL(dirty(QString)), this, SLOT(slotDirty(QString)));
+    connect(w1, SIGNAL(created(QString)), this, SLOT(slotCreated(QString)));
+    connect(w1, SIGNAL(deleted(QString)), this, SLOT(slotDeleted(QString)));
 
     KDirWatch* w5 = new KDirWatch(this);
     w5->setObjectName("w5");
     w5->addFile(file);
-    connect(w5, SIGNAL(dirty(const QString &)), this, SLOT(slotDirty(const QString &)));
-    connect(w5, SIGNAL(created(const QString &)), this, SLOT(slotCreated(const QString &)));
-    connect(w5, SIGNAL(deleted(const QString &)), this, SLOT(slotDeleted(const QString &)));
+    connect(w5, SIGNAL(dirty(QString)), this, SLOT(slotDirty(QString)));
+    connect(w5, SIGNAL(created(QString)), this, SLOT(slotCreated(QString)));
+    connect(w5, SIGNAL(deleted(QString)), this, SLOT(slotDeleted(QString)));
 
     lay->addWidget(new QLabel("Directory = " + dir, this));
     lay->addWidget(new QLabel("File = " + file, this));

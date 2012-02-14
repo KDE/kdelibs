@@ -38,7 +38,7 @@ KHTMLViewBarWidget::KHTMLViewBarWidget( bool addCloseButton, QWidget *parent )
         QToolButton *hideButton = new QToolButton( this );
         hideButton->setAutoRaise( true );
         hideButton->setIcon( KIcon( "dialog-close" ) );
-        connect( hideButton, SIGNAL( clicked() ), SIGNAL( hideMe() ) );
+        connect( hideButton, SIGNAL(clicked()), SIGNAL(hideMe()) );
         layout->addWidget( hideButton );
         layout->setAlignment( hideButton, Qt::AlignLeft | Qt::AlignTop );
     }

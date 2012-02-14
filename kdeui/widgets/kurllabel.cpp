@@ -42,7 +42,7 @@ class KUrlLabel::Private
         floatEnabled( false ),
         timer( new QTimer( parent ) )
     {
-      connect( timer, SIGNAL( timeout() ), parent, SLOT( updateColor() ) );
+      connect( timer, SIGNAL(timeout()), parent, SLOT(updateColor()) );
     }
 
     ~Private ()

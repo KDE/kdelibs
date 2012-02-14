@@ -119,7 +119,7 @@ DescendantProxyModelWidget::DescendantProxyModelWidget(QWidget* parent): QWidget
 //   QTreeView *matchView = new QTreeView(w);
 //   matchView->setModel(m_selectionProxyModel);
 //   m_lineEdit = new QLineEdit(w);
-//   connect(m_lineEdit, SIGNAL(textChanged(const QString &)), SLOT(doMatch(const QString &)));
+//   connect(m_lineEdit, SIGNAL(textChanged(QString)), SLOT(doMatch(QString)));
 //   connect(m_descView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), SLOT(refreshMatch()));
 
 //   vLayout->addWidget(m_lineEdit);

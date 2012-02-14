@@ -216,9 +216,9 @@ void DownloadWidgetPrivate::init(const QString& configFile)
     ui.backButton->setGuiItem(KStandardGuiItem::Back);
     q->connect(ui.backButton, SIGNAL(clicked()), q, SLOT(slotShowOverview()));
     
-    q->connect(engine, SIGNAL(signalBusy(const QString&)), ui.progressIndicator, SLOT(busy(const QString&)));
-    q->connect(engine, SIGNAL(signalError(const QString&)), ui.progressIndicator, SLOT(error(const QString&)));
-    q->connect(engine, SIGNAL(signalIdle(const QString&)), ui.progressIndicator, SLOT(idle(const QString&)));
+    q->connect(engine, SIGNAL(signalBusy(QString)), ui.progressIndicator, SLOT(busy(QString)));
+    q->connect(engine, SIGNAL(signalError(QString)), ui.progressIndicator, SLOT(error(QString)));
+    q->connect(engine, SIGNAL(signalIdle(QString)), ui.progressIndicator, SLOT(idle(QString)));
 
     q->connect(engine, SIGNAL(signalProvidersLoaded()), q, SLOT(slotProvidersLoaded()));
     // Entries have been fetched and should be shown:
@@ -250,7 +250,7 @@ void DownloadWidgetPrivate::init(const QString& configFile)
     q->connect(ui.mostDownloadsRadio,  SIGNAL(clicked()), q, SLOT(sortingChanged()));
     q->connect(ui.installedRadio,  SIGNAL(clicked()), q, SLOT(sortingChanged()));
 
-    q->connect(ui.m_searchEdit, SIGNAL(textChanged(const QString &)), q, SLOT(slotSearchTextChanged()));
+    q->connect(ui.m_searchEdit, SIGNAL(textChanged(QString)), q, SLOT(slotSearchTextChanged()));
     q->connect(ui.m_searchEdit, SIGNAL(editingFinished()), q, SLOT(slotUpdateSearch()));
 
     ui.m_providerLabel->setVisible(false);

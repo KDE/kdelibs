@@ -103,7 +103,7 @@ void KAssistantDialog::Private::init()
     q->connect(q, SIGNAL(user2Clicked()), q, SLOT(next()));
     q->connect(q, SIGNAL(user1Clicked()), q, SLOT(accept()));
 
-    q->connect(q, SIGNAL(currentPageChanged(KPageWidgetItem *, KPageWidgetItem *)), q, SLOT(_k_slotUpdateButtons()));
+    q->connect(q, SIGNAL(currentPageChanged(KPageWidgetItem*,KPageWidgetItem*)), q, SLOT(_k_slotUpdateButtons()));
 }
 
 

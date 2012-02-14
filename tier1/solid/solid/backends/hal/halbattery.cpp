@@ -25,8 +25,8 @@ using namespace Solid::Backends::Hal;
 Battery::Battery(HalDevice *device)
     : DeviceInterface(device)
 {
-    connect(device, SIGNAL(propertyChanged(const QMap<QString,int> &)),
-             this, SLOT(slotPropertyChanged(const QMap<QString,int> &)));
+    connect(device, SIGNAL(propertyChanged(QMap<QString,int>)),
+             this, SLOT(slotPropertyChanged(QMap<QString,int>)));
 }
 
 Battery::~Battery()

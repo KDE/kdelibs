@@ -32,8 +32,8 @@ StorageAccess::StorageAccess(WmiDevice *device)
     : DeviceInterface(device), m_setupInProgress(false), m_teardownInProgress(false),
       m_passphraseRequested(false)
 {
-    connect(device, SIGNAL(propertyChanged(const QMap<QString,int> &)),
-             this, SLOT(slotPropertyChanged(const QMap<QString,int> &)));
+    connect(device, SIGNAL(propertyChanged(QMap<QString,int>)),
+             this, SLOT(slotPropertyChanged(QMap<QString,int>)));
 }
 
 StorageAccess::~StorageAccess()
@@ -189,8 +189,8 @@ bool StorageAccess::callWmiVolumeMount()
     // msg << "" << "" << options;
 
     // return c.callWithCallback(msg, this,
-                              // SLOT(slotDBusReply(const QDBusMessage &)),
-                              // SLOT(slotDBusError(const QDBusError &)));
+                              // SLOT(slotDBusReply(QDBusMessage)),
+                              // SLOT(slotDBusError(QDBusError)));
     return false;
 }
 
@@ -205,8 +205,8 @@ bool StorageAccess::callWmiVolumeUnmount()
     // msg << QStringList();
 
     // return c.callWithCallback(msg, this,
-                              // SLOT(slotDBusReply(const QDBusMessage &)),
-                              // SLOT(slotDBusError(const QDBusError &)));
+                              // SLOT(slotDBusReply(QDBusMessage)),
+                              // SLOT(slotDBusError(QDBusError)));
     return false;
 }
 
@@ -215,7 +215,7 @@ bool Solid::Backends::Wmi::StorageAccess::callSystemMount()
 /*
     const QString device = m_device->property("block.device").toString();
     m_process = FstabHandling::callSystemCommand("mount", device,
-                                                 this, SLOT(slotProcessFinished(int, QProcess::ExitStatus)));
+                                                 this, SLOT(slotProcessFinished(int,QProcess::ExitStatus)));
 
     return m_process!=0;
 */
@@ -227,7 +227,7 @@ bool Solid::Backends::Wmi::StorageAccess::callSystemUnmount()
 /*
     const QString device = m_device->property("block.device").toString();
     m_process = FstabHandling::callSystemCommand("umount", device,
-                                                 this, SLOT(slotProcessFinished(int, QProcess::ExitStatus)));
+                                                 this, SLOT(slotProcessFinished(int,QProcess::ExitStatus)));
 
     return m_process!=0;
 */

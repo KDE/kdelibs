@@ -124,16 +124,16 @@ public:
             sender = edit;
 
         if (combo )
-            connect( sender, SIGNAL( editTextChanged( const QString& )),
-                     receiver, SIGNAL( textChanged( const QString& )));
+            connect( sender, SIGNAL(editTextChanged(QString)),
+                     receiver, SIGNAL(textChanged(QString)));
         else
-            connect( sender, SIGNAL( textChanged( const QString& )),
-                     receiver, SIGNAL( textChanged( const QString& )));
+            connect( sender, SIGNAL(textChanged(QString)),
+                     receiver, SIGNAL(textChanged(QString)));
 
-        connect( sender, SIGNAL( returnPressed() ),
-                 receiver, SIGNAL( returnPressed() ));
-        connect( sender, SIGNAL( returnPressed( const QString& ) ),
-                 receiver, SIGNAL( returnPressed( const QString& ) ));
+        connect( sender, SIGNAL(returnPressed()),
+                 receiver, SIGNAL(returnPressed()));
+        connect( sender, SIGNAL(returnPressed(QString)),
+                 receiver, SIGNAL(returnPressed(QString)));
     }
 
     void setCompletionObject( KCompletion *comp )
@@ -259,7 +259,7 @@ void KUrlRequester::KUrlRequesterPrivate::init()
 
     QAction* openAction = new QAction(m_parent);
     openAction->setShortcut(KStandardShortcut::Open);
-    m_parent->connect(openAction, SIGNAL(triggered(bool)), SLOT( _k_slotOpenDialog() ));
+    m_parent->connect(openAction, SIGNAL(triggered(bool)), SLOT(_k_slotOpenDialog()));
 }
 
 void KUrlRequester::setUrl( const KUrl& url )

@@ -297,11 +297,11 @@ void PartMonitor::waitForCompletion()
 
         enterLoop();
 
-        //connect(m_timeout_timer, SIGNAL(timeout()), this, SLOT( timeout() ) );
+        //connect(m_timeout_timer, SIGNAL(timeout()), this, SLOT(timeout()) );
         //m_timeout_timer->stop();
 	//m_timeout_timer->start( visual ? 100 : 2, true );
     }
-    QTimer::singleShot( 0, this, SLOT( finishTimers() ) );
+    QTimer::singleShot( 0, this, SLOT(finishTimers()) );
     enterLoop();
 }
 
@@ -332,7 +332,7 @@ void PartMonitor::finishTimers()
     --m_timer_waits;
     if ( m_timer_waits && ((w && w->winq->hasTimers()) || m_part->inProgress())) {
         // wait a bit
-        QTimer::singleShot( 10, this, SLOT(finishTimers() ) );
+        QTimer::singleShot( 10, this, SLOT(finishTimers()) );
         return;
     }
     exitLoop();
@@ -342,7 +342,7 @@ void PartMonitor::partCompleted()
 {
     m_completed = true;
     m_timeout_timer->stop();
-    connect(m_timeout_timer, SIGNAL(timeout()),this, SLOT( timeout() ) );
+    connect(m_timeout_timer, SIGNAL(timeout()),this, SLOT(timeout()) );
 	m_timeout_timer->setSingleShot(true);
 	m_timeout_timer->start(visual ? 100 : 2);
     disconnect(m_part,SIGNAL(completed()),this,SLOT(partCompleted()));
@@ -802,10 +802,10 @@ int main(int argc, char *argv[])
                                                         args->isSet("genoutput"),
                                                         !args->isSet( "html" ),
                                                         !args->isSet( "js" ));
-    QObject::connect(part->browserExtension(), SIGNAL(openUrlRequest(const KUrl&, const KParts::OpenUrlArguments&, const KParts::BrowserArguments&)),
-		     regressionTest, SLOT(slotOpenURL(const KUrl&, const KParts::OpenUrlArguments&, const KParts::BrowserArguments&)));
-    QObject::connect(part->browserExtension(), SIGNAL(resizeTopLevelWidget( int, int )),
-		     regressionTest, SLOT(resizeTopLevelWidget( int, int )));
+    QObject::connect(part->browserExtension(), SIGNAL(openUrlRequest(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)),
+		     regressionTest, SLOT(slotOpenURL(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)));
+    QObject::connect(part->browserExtension(), SIGNAL(resizeTopLevelWidget(int,int)),
+		     regressionTest, SLOT(resizeTopLevelWidget(int,int)));
 
     bool result = false;
     QStringList tests = args->getOptionList("test");

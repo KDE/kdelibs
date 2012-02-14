@@ -60,12 +60,12 @@ static QString findExe( const char* exeName )
 KFileSharePrivate::KFileSharePrivate()
 {
   KDirWatch::self()->addFile(FILESHARECONF);
-  connect(KDirWatch::self(), SIGNAL(dirty (const QString&)),this,
-          SLOT(slotFileChange(const QString &)));
-  connect(KDirWatch::self(), SIGNAL(created(const QString&)),this,
-          SLOT(slotFileChange(const QString &)));
-  connect(KDirWatch::self(), SIGNAL(deleted(const QString&)),this,
-          SLOT(slotFileChange(const QString &)));
+  connect(KDirWatch::self(), SIGNAL(dirty(QString)),this,
+          SLOT(slotFileChange(QString)));
+  connect(KDirWatch::self(), SIGNAL(created(QString)),this,
+          SLOT(slotFileChange(QString)));
+  connect(KDirWatch::self(), SIGNAL(deleted(QString)),this,
+          SLOT(slotFileChange(QString)));
 }
 
 KFileSharePrivate::~KFileSharePrivate()

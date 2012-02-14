@@ -656,7 +656,7 @@ void RenderPart::setWidget( QWidget *widget )
     if (widget) {
         widget->setFocusPolicy(Qt::WheelFocus);
         if(widget->inherits("KHTMLView"))
-            connect( widget, SIGNAL( cleared() ), this, SLOT( slotViewCleared() ) );
+            connect( widget, SIGNAL(cleared()), this, SLOT(slotViewCleared()) );
     }
 
     setNeedsLayoutAndMinMaxRecalc();

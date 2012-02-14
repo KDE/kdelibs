@@ -644,7 +644,7 @@ void Wallet::walletAsyncOpened(int tId, int handle) {
     }
     
     // disconnect the async signal
-    disconnect(this, SLOT(walletAsyncOpened(int, int)));
+    disconnect(this, SLOT(walletAsyncOpened(int,int)));
     
     d->handle = handle;
     emit walletOpened(handle > 0);

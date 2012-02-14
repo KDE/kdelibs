@@ -194,8 +194,8 @@ void ItemsView::buildContents()
                     f->setFrameStyle(QFrame::Panel | QFrame::Sunken);
                     QAsyncImage *pix = new QAsyncImage(imageurl, m_root);
                     f->setFixedSize(64, 64);
-                    //connect(pix, SIGNAL(signalLoaded(const QImage&)),
-                    //        f, SLOT(setImage(const QImage&)));
+                    //connect(pix, SIGNAL(signalLoaded(QImage)),
+                    //        f, SLOT(setImage(QImage)));
                     previewLayout->addWidget(f);
                 }
                 //previewLayout->addWidget(dxsbutton);
@@ -213,7 +213,7 @@ void ItemsView::buildContents()
 EntryView::EntryView(QWidget * _parent)
         : QLabel(_parent)
 {
-    connect(this, SIGNAL(linkActivated(const QString&)), SLOT(urlSelected(const QString&)));
+    connect(this, SIGNAL(linkActivated(QString)), SLOT(urlSelected(QString)));
 }
 
 void EntryView::setEntry(Entry *entry)

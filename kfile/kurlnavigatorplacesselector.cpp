@@ -49,11 +49,11 @@ KUrlNavigatorPlacesSelector::KUrlNavigatorPlacesSelector(QWidget* parent, KFileP
 
     updateMenu();
 
-    connect(m_placesModel, SIGNAL(rowsInserted(const QModelIndex&, int, int)),
+    connect(m_placesModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
             this, SLOT(updateMenu()));
-    connect(m_placesModel, SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
+    connect(m_placesModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
             this, SLOT(updateMenu()));
-    connect(m_placesModel, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)),
+    connect(m_placesModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
             this, SLOT(updateMenu()));
     connect(m_placesMenu, SIGNAL(triggered(QAction*)),
             this, SLOT(activatePlace(QAction*)));
@@ -207,8 +207,8 @@ void KUrlNavigatorPlacesSelector::activatePlace(QAction* action)
     m_lastClickedIndex = QPersistentModelIndex();
 
     if (m_placesModel->setupNeeded(index)) {
-        connect(m_placesModel, SIGNAL(setupDone(const QModelIndex &, bool)),
-                this, SLOT(onStorageSetupDone(const QModelIndex &, bool)));
+        connect(m_placesModel, SIGNAL(setupDone(QModelIndex,bool)),
+                this, SLOT(onStorageSetupDone(QModelIndex,bool)));
 
         m_lastClickedIndex = index;
         m_placesModel->requestSetup(index);

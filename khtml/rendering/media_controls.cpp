@@ -60,7 +60,7 @@ MediaControls::MediaControls(MediaPlayer* mediaPlayer, QWidget* parent) : QWidge
     layout()->addWidget(m_fullscreen); 
 
     slotStateChanged(mediaObject->state());
-    connect(mediaObject, SIGNAL(stateChanged(Phonon::State, Phonon::State)), SLOT(slotStateChanged(Phonon::State)));
+    connect(mediaObject, SIGNAL(stateChanged(Phonon::State,Phonon::State)), SLOT(slotStateChanged(Phonon::State)));
 }
 
 void MediaControls::slotToggled(bool t)

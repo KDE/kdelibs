@@ -255,8 +255,8 @@ Wallet::Wallet(int handle, const QString& name)
 
         connect(&walletLauncher->getInterface(), SIGNAL(walletClosed(int)), SLOT(slotWalletClosed(int)));
         connect(&walletLauncher->getInterface(), SIGNAL(folderListUpdated(QString)), SLOT(slotFolderListUpdated(QString)));
-        connect(&walletLauncher->getInterface(), SIGNAL(folderUpdated(QString,QString)), SLOT(slotFolderUpdated(QString, QString)));
-        connect(&walletLauncher->getInterface(), SIGNAL(applicationDisconnected(QString, QString)), SLOT(slotApplicationDisconnected(QString, QString)));
+        connect(&walletLauncher->getInterface(), SIGNAL(folderUpdated(QString,QString)), SLOT(slotFolderUpdated(QString,QString)));
+        connect(&walletLauncher->getInterface(), SIGNAL(applicationDisconnected(QString,QString)), SLOT(slotApplicationDisconnected(QString,QString)));
 
         // Verify that the wallet is still open
         if (d->handle != -1) {
@@ -478,8 +478,8 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
 
         // connect the daemon's opened signal to the slot filtering the
         // signals we need
-        connect(&walletLauncher->getInterface(), SIGNAL(walletAsyncOpened(int, int)),
-                wallet, SLOT(walletAsyncOpened(int, int)));
+        connect(&walletLauncher->getInterface(), SIGNAL(walletAsyncOpened(int,int)),
+                wallet, SLOT(walletAsyncOpened(int,int)));
 
         // Use an eventloop for synchronous calls
         QEventLoop loop;
@@ -1604,7 +1604,7 @@ void Wallet::walletAsyncOpened(int tId, int handle) {
         }
 
         // disconnect the async signal
-        disconnect(this, SLOT(walletAsyncOpened(int, int)));
+        disconnect(this, SLOT(walletAsyncOpened(int,int)));
 
         d->handle = handle;
         emit walletOpened(handle > 0);

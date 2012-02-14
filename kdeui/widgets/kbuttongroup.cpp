@@ -33,9 +33,9 @@ class KButtonGroup::Private
       : q(q), clickedMapper(), pressedMapper(), releasedMapper(),
         currentId( -1 ), nextId( 0 ), wantToBeId( -1 )
     {
-      connect( &clickedMapper, SIGNAL( mapped( int ) ), q, SLOT( slotClicked( int ) ) );
-      connect( &pressedMapper, SIGNAL( mapped( int ) ), q, SIGNAL( pressed( int ) ) );
-      connect( &releasedMapper, SIGNAL( mapped( int ) ), q, SIGNAL( released( int ) ) );
+      connect( &clickedMapper, SIGNAL(mapped(int)), q, SLOT(slotClicked(int)) );
+      connect( &pressedMapper, SIGNAL(mapped(int)), q, SIGNAL(pressed(int)) );
+      connect( &releasedMapper, SIGNAL(mapped(int)), q, SIGNAL(released(int)) );
     }
 
     void slotClicked( int id );
@@ -100,13 +100,13 @@ void KButtonGroup::childEvent( QChildEvent* event )
     QAbstractButton* button = qobject_cast<QAbstractButton*>( event->child() );
     if ( !d->btnMap.contains( event->child() ) && button )
     {
-      connect( button, SIGNAL( clicked() ), &d->clickedMapper, SLOT( map() ) );
+      connect( button, SIGNAL(clicked()), &d->clickedMapper, SLOT(map()) );
       d->clickedMapper.setMapping( button, d->nextId );
 
-      connect( button, SIGNAL( pressed() ), &d->pressedMapper, SLOT( map() ) );
+      connect( button, SIGNAL(pressed()), &d->pressedMapper, SLOT(map()) );
       d->pressedMapper.setMapping( button, d->nextId );
 
-      connect( button, SIGNAL( released() ), &d->releasedMapper, SLOT( map() ) );
+      connect( button, SIGNAL(released()), &d->releasedMapper, SLOT(map()) );
       d->releasedMapper.setMapping( button, d->nextId );
 
       d->btnMap[ button ] = d->nextId;

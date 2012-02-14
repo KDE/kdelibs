@@ -230,13 +230,13 @@ Q3PopupMenu *K3TextEdit::createPopupMenu( const QPoint &pos )
 
         menu->insertSeparator();
         id = menu->insertItem( KIcon( "tools-check-spelling" ), i18n( "Check Spelling..." ),
-                                   this, SLOT( checkSpelling() ) );
+                                   this, SLOT(checkSpelling()) );
 
         if( text().isEmpty() )
             menu->setItemEnabled( id, false );
 
         id = menu->insertItem( i18n( "Auto Spell Check" ),
-                               this, SLOT( toggleAutoSpellCheck() ) );
+                               this, SLOT(toggleAutoSpellCheck()) );
         menu->setItemChecked(id, d->checkSpellingEnabled);
 	menu->insertSeparator();
 	id=menu->insertItem(i18n("Allow Tabulations"),this,SLOT(slotAllowTab()));
@@ -346,16 +346,16 @@ void K3TextEdit::checkSpelling()
 {
     delete d->spell;
     d->spell = new K3Spell( this, i18n( "Spell Checking" ),
-                          this, SLOT( slotSpellCheckReady( K3Spell *) ), 0, true, true);
+                          this, SLOT(slotSpellCheckReady(K3Spell*)), 0, true, true);
 
-    connect( d->spell, SIGNAL( death() ),
-             this, SLOT( spellCheckerFinished() ) );
+    connect( d->spell, SIGNAL(death()),
+             this, SLOT(spellCheckerFinished()) );
 
-    connect( d->spell, SIGNAL( misspelling( const QString &, const QStringList &, unsigned int ) ),
-             this, SLOT( spellCheckerMisspelling( const QString &, const QStringList &, unsigned int ) ) );
+    connect( d->spell, SIGNAL(misspelling(QString,QStringList,uint)),
+             this, SLOT(spellCheckerMisspelling(QString,QStringList,uint)) );
 
-    connect( d->spell, SIGNAL( corrected( const QString &, const QString &, unsigned int ) ),
-             this, SLOT( spellCheckerCorrected( const QString &, const QString &, unsigned int ) ) );
+    connect( d->spell, SIGNAL(corrected(QString,QString,uint)),
+             this, SLOT(spellCheckerCorrected(QString,QString,uint)) );
 }
 
 void K3TextEdit::spellCheckerMisspelling( const QString &text, const QStringList &, unsigned int pos )
@@ -393,7 +393,7 @@ void K3TextEdit::spellCheckerFinished()
 void K3TextEdit::slotSpellCheckReady( K3Spell *s )
 {
     s->check( text() );
-    connect( s, SIGNAL( done( const QString & ) ), this, SLOT( slotSpellCheckDone( const QString & ) ) );
+    connect( s, SIGNAL(done(QString)), this, SLOT(slotSpellCheckDone(QString)) );
 }
 
 void K3TextEdit::slotSpellCheckDone( const QString &s )

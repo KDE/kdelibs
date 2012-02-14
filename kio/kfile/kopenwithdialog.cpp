@@ -366,16 +366,16 @@ KApplicationView::~KApplicationView()
 void KApplicationView::setModel(QAbstractItemModel *model)
 {
     if (d->appModel) {
-        disconnect(selectionModel(), SIGNAL(selectionChanged(QItemSelection, QItemSelection)),
-                this, SLOT(slotSelectionChanged(QItemSelection, QItemSelection)));
+        disconnect(selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
+                this, SLOT(slotSelectionChanged(QItemSelection,QItemSelection)));
     }
 
     QTreeView::setModel(model);
 
     d->appModel = qobject_cast<KApplicationModel*>(model);
     if (d->appModel) {
-        connect(selectionModel(), SIGNAL(selectionChanged(QItemSelection, QItemSelection)),
-                this, SLOT(slotSelectionChanged(QItemSelection, QItemSelection)));
+        connect(selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
+                this, SLOT(slotSelectionChanged(QItemSelection,QItemSelection)));
     }
 }
 
@@ -626,10 +626,10 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
     topLayout->addWidget(view);
     topLayout->setStretchFactor(view, 1);
 
-    QObject::connect(view, SIGNAL(selected(QString, QString)),
-                     q, SLOT(slotSelected(QString, QString)));
-    QObject::connect(view, SIGNAL(highlighted(QString, QString)),
-                     q, SLOT(slotHighlighted(QString, QString)));
+    QObject::connect(view, SIGNAL(selected(QString,QString)),
+                     q, SLOT(slotSelected(QString,QString)));
+    QObject::connect(view, SIGNAL(highlighted(QString,QString)),
+                     q, SLOT(slotHighlighted(QString,QString)));
     QObject::connect(view, SIGNAL(doubleClicked(QModelIndex)),
                      q, SLOT(_k_slotDbClick()));
 

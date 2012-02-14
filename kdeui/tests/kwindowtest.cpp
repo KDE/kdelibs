@@ -62,7 +62,7 @@ TestWindow::TestWindow (QWidget *parent)
     //            tooltiptext, size
 	testComboBox = new KComboBox(toolBar());
     //K3WidgetAction* comboAction = new K3WidgetAction(testComboBox, QString(), 0, 0, 0, actionCollection(), "combobox");
-    //connect(testComboBox, SIGNAL(activated(const QString&)), this, SLOT(slotList(const QString&)));
+    //connect(testComboBox, SIGNAL(activated(QString)), this, SLOT(slotList(QString)));
 
 
     // Then one line editor
@@ -75,7 +75,7 @@ TestWindow::TestWindow (QWidget *parent)
     // Now add another button and align it right
     exitAction = new KAction(KIcon( "application-exit" ), "Exit", this);
     actionCollection()->addAction("exit", exitAction);
-    connect (exitAction, SIGNAL(triggered(bool)), KApplication::kApplication(), SLOT( quit() ));
+    connect (exitAction, SIGNAL(triggered(bool)), KApplication::kApplication(), SLOT(quit()));
 
     // Another toolbar
 

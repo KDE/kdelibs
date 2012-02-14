@@ -27,14 +27,14 @@
 Solid::Battery::Battery(QObject *backendObject)
     : DeviceInterface(*new BatteryPrivate(), backendObject)
 {
-    connect(backendObject, SIGNAL(chargePercentChanged(int, const QString &)),
-             this, SIGNAL(chargePercentChanged(int, const QString &)));
+    connect(backendObject, SIGNAL(chargePercentChanged(int,QString)),
+             this, SIGNAL(chargePercentChanged(int,QString)));
 
-    connect(backendObject, SIGNAL(chargeStateChanged(int, const QString &)),
-             this, SIGNAL(chargeStateChanged(int, const QString &)));
+    connect(backendObject, SIGNAL(chargeStateChanged(int,QString)),
+             this, SIGNAL(chargeStateChanged(int,QString)));
 
-    connect(backendObject, SIGNAL(plugStateChanged(bool, const QString &)),
-             this, SIGNAL(plugStateChanged(bool, const QString &)));
+    connect(backendObject, SIGNAL(plugStateChanged(bool,QString)),
+             this, SIGNAL(plugStateChanged(bool,QString)));
 }
 
 Solid::Battery::~Battery()

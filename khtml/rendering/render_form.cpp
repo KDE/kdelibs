@@ -706,7 +706,7 @@ LineEditWidget::LineEditWidget(DOM::HTMLInputElementImpl* input, KHTMLView* view
     m_kwp->setIsRedirected( true );
     setMouseTracking(true);
     KActionCollection *ac = new KActionCollection(this);
-    m_spellAction = KStandardAction::spelling( this, SLOT( slotCheckSpelling() ), ac );
+    m_spellAction = KStandardAction::spelling( this, SLOT(slotCheckSpelling()), ac );
 
     setCompletionBox( new CompletionWidget( this ) );
     completionBox()->setObjectName("completion box");
@@ -723,9 +723,9 @@ void LineEditWidget::slotCheckSpelling()
         return;
     }
     Sonnet::Dialog *spellDialog = new Sonnet::Dialog(new Sonnet::BackgroundChecker(this), 0);
-    connect(spellDialog, SIGNAL(replace( const QString&, int,const QString&)), this, SLOT(spellCheckerCorrected( const QString&, int,const QString&)));
-    connect(spellDialog, SIGNAL(misspelling( const QString&, int)), this, SLOT(spellCheckerMisspelling(const QString &,int)));
-    connect(spellDialog, SIGNAL(done(const QString&)), this, SLOT(slotSpellCheckDone(const QString&)));
+    connect(spellDialog, SIGNAL(replace(QString,int,QString)), this, SLOT(spellCheckerCorrected(QString,int,QString)));
+    connect(spellDialog, SIGNAL(misspelling(QString,int)), this, SLOT(spellCheckerMisspelling(QString,int)));
+    connect(spellDialog, SIGNAL(done(QString)), this, SLOT(slotSpellCheckDone(QString)));
     connect(spellDialog, SIGNAL(cancel()), this, SLOT(spellCheckerFinished()));
     connect(spellDialog, SIGNAL(stop()), this, SLOT(spellCheckerFinished()));
     spellDialog->setBuffer(text());
@@ -1403,8 +1403,8 @@ RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
     w->completionObject()->setDir(KGlobalSettings::documentPath());
 
     connect(w->lineEdit(), SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
-    connect(w->lineEdit(), SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
-    connect(w, SIGNAL(urlSelected(const KUrl &)),this,SLOT(slotUrlSelected(const KUrl &)));
+    connect(w->lineEdit(), SIGNAL(textChanged(QString)),this,SLOT(slotTextChanged(QString)));
+    connect(w, SIGNAL(urlSelected(KUrl)),this,SLOT(slotUrlSelected(KUrl)));
 
     setQWidget(w);
     m_haveFocus = false;
@@ -2004,7 +2004,7 @@ ListBoxWidget* RenderSelect::createListBox()
 {
     ListBoxWidget *lb = new ListBoxWidget(view()->widget());
     lb->setSelectionMode(m_multiple ? QListWidget::ExtendedSelection : QListWidget::SingleSelection);
-    connect( lb, SIGNAL( itemSelectionChanged() ), this, SLOT( slotSelectionChanged() ) );
+    connect( lb, SIGNAL(itemSelectionChanged()), this, SLOT(slotSelectionChanged()) );
     m_ignoreSelectEvents = false;
     lb->setMouseTracking(true);
 

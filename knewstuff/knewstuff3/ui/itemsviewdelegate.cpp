@@ -66,7 +66,7 @@ QList<QWidget*> ItemsViewDelegate::createItemWidgets() const
     setBlockedEventTypes(installButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
                          << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
     connect(installButton, SIGNAL(clicked()), this, SLOT(slotInstallClicked()));
-    connect(installButton, SIGNAL(triggered(QAction *)), this, SLOT(slotInstallActionTriggered(QAction *)));
+    connect(installButton, SIGNAL(triggered(QAction*)), this, SLOT(slotInstallActionTriggered(QAction*)));
 
     QToolButton* detailsButton = new QToolButton();
     detailsButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);

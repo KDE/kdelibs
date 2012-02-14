@@ -133,8 +133,8 @@ void KPassivePopup::init( WId window )
         setPalette(QToolTip::palette());
         //XXX dead ? setAutoMask(true);
     }
-    connect( d->hideTimer, SIGNAL( timeout() ), SLOT( hide() ) );
-    connect( this, SIGNAL( clicked() ), SLOT( hide() ) );
+    connect( d->hideTimer, SIGNAL(timeout()), SLOT(hide()) );
+    connect( this, SIGNAL(clicked()), SLOT(hide()) );
 }
 
 KPassivePopup::~KPassivePopup()

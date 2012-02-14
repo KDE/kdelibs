@@ -43,8 +43,8 @@ void KPageViewPrivate::_k_rebuildGui()
 
   QModelIndex currentLastIndex;
   if ( view && view->selectionModel() ) {
-        QObject::disconnect(view->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
-                q, SLOT(_k_pageSelected(const QItemSelection &, const QItemSelection &)));
+        QObject::disconnect(view->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
+                q, SLOT(_k_pageSelected(QItemSelection,QItemSelection)));
         currentLastIndex = view->selectionModel()->currentIndex();
   }
 
@@ -62,7 +62,7 @@ void KPageViewPrivate::_k_rebuildGui()
 
   // setup new view
   if ( view->selectionModel() ) {
-    QObject::connect(view->selectionModel(), SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)), q, SLOT(_k_pageSelected(const QItemSelection &, const QItemSelection &)));
+    QObject::connect(view->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), q, SLOT(_k_pageSelected(QItemSelection,QItemSelection)));
 
     if ( currentLastIndex.isValid() )
       view->selectionModel()->setCurrentIndex( currentLastIndex, QItemSelectionModel::Select );
@@ -328,16 +328,16 @@ void KPageView::setModel(QAbstractItemModel *model)
   // clean up old model
   if ( d->model ) {
         disconnect(d->model, SIGNAL(layoutChanged()), this, SLOT(_k_modelChanged()));
-        disconnect(d->model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
-                this, SLOT(_k_dataChanged(const QModelIndex &, const QModelIndex &)));
+        disconnect(d->model, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+                this, SLOT(_k_dataChanged(QModelIndex,QModelIndex)));
   }
 
   d->model = model;
 
   if ( d->model ) {
         connect(d->model, SIGNAL(layoutChanged()), this, SLOT(_k_modelChanged()));
-        connect(d->model, SIGNAL(dataChanged(const QModelIndex &, const QModelIndex &)),
-                this, SLOT(_k_dataChanged(const QModelIndex &, const QModelIndex &)));
+        connect(d->model, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+                this, SLOT(_k_dataChanged(QModelIndex,QModelIndex)));
 
     // set new model in navigation view
     if ( d->view )

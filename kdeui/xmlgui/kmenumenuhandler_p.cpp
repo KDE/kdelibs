@@ -53,7 +53,7 @@ KMenuMenuHandler::KMenuMenuHandler( KXMLGUIBuilder *builder )
 
 void KMenuMenuHandler::insertKMenu( KMenu *popup )
 {
-  popup->contextMenu()->addAction( i18n("Configure Shortcut...") , this , SLOT( slotSetShortcut() ));
+  popup->contextMenu()->addAction( i18n("Configure Shortcut...") , this , SLOT(slotSetShortcut()));
 
   KMainWindow *window=qobject_cast<KMainWindow*>(m_builder->widget());
   if(window)

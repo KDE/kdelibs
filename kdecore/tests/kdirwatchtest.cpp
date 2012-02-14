@@ -42,9 +42,9 @@ int main (int argc, char **argv)
   KDirWatch *dirwatch1 = KDirWatch::self();
   KDirWatch *dirwatch2 = new KDirWatch;
 
-  testObject.connect(dirwatch1, SIGNAL( dirty( const QString &)), SLOT( dirty( const QString &)) );
-  testObject.connect(dirwatch1, SIGNAL( created( const QString &)), SLOT( created( const QString &)) );
-  testObject.connect(dirwatch1, SIGNAL( deleted( const QString &)), SLOT( deleted( const QString &)) );
+  testObject.connect(dirwatch1, SIGNAL(dirty(QString)), SLOT(dirty(QString)) );
+  testObject.connect(dirwatch1, SIGNAL(created(QString)), SLOT(created(QString)) );
+  testObject.connect(dirwatch1, SIGNAL(deleted(QString)), SLOT(deleted(QString)) );
 
   if (args->count() >0) {
     for(int i = 0; i < args->count(); i++) {

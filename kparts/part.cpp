@@ -195,8 +195,8 @@ Part::~Part()
     if ( d->m_widget )
     {
         // We need to disconnect first, to avoid calling it !
-        disconnect( d->m_widget, SIGNAL( destroyed() ),
-                    this, SLOT( slotWidgetDestroyed() ) );
+        disconnect( d->m_widget, SIGNAL(destroyed()),
+                    this, SLOT(slotWidgetDestroyed()) );
     }
 
     if ( d->m_manager )
@@ -281,8 +281,8 @@ void Part::setWidget( QWidget *widget )
 {
     Q_D(Part);
     d->m_widget = widget;
-    connect( d->m_widget, SIGNAL( destroyed() ),
-             this, SLOT( slotWidgetDestroyed() ), Qt::UniqueConnection );
+    connect( d->m_widget, SIGNAL(destroyed()),
+             this, SLOT(slotWidgetDestroyed()), Qt::UniqueConnection );
 }
 
 void Part::setSelectable( bool selectable )
@@ -620,7 +620,7 @@ void ReadOnlyPartPrivate::openRemoteFile()
     m_job->ui()->setWindow(q->widget() ? q->widget()->topLevelWidget() : 0);
     emit q->started(m_job);
     QObject::connect(m_job, SIGNAL(result(KJob*)), q, SLOT(_k_slotJobFinished(KJob*)));
-    QObject::connect(m_job, SIGNAL(mimetype(KIO::Job*, QString)),
+    QObject::connect(m_job, SIGNAL(mimetype(KIO::Job*,QString)),
                      q, SLOT(_k_slotGotMimeType(KIO::Job*,QString)));
 }
 
@@ -974,7 +974,7 @@ bool ReadWritePart::saveToUrl()
         }
         d->m_uploadJob = KIO::file_move( uploadUrl, d->m_url, -1, KIO::Overwrite );
         d->m_uploadJob->ui()->setWindow( widget() ? widget()->topLevelWidget() : 0 );
-        connect( d->m_uploadJob, SIGNAL( result( KJob * ) ), this, SLOT( _k_slotUploadFinished (KJob *) ) );
+        connect( d->m_uploadJob, SIGNAL(result(KJob*)), this, SLOT(_k_slotUploadFinished(KJob*)) );
         return true;
     }
 }

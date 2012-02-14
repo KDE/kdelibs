@@ -1633,10 +1633,10 @@ void CopyJobPrivate::copyNextFile()
             m_bURLDirty = true;
         }
         q->addSubjob(newjob);
-        q->connect( newjob, SIGNAL( processedSize( KJob*, qulonglong ) ),
-                    SLOT( slotProcessedSize( KJob*, qulonglong ) ) );
-        q->connect( newjob, SIGNAL( totalSize( KJob*, qulonglong ) ),
-                    SLOT( slotTotalSize( KJob*, qulonglong ) ) );
+        q->connect( newjob, SIGNAL(processedSize(KJob*,qulonglong)),
+                    SLOT(slotProcessedSize(KJob*,qulonglong)) );
+        q->connect( newjob, SIGNAL(totalSize(KJob*,qulonglong)),
+                    SLOT(slotTotalSize(KJob*,qulonglong)) );
     }
     else
     {

@@ -130,8 +130,8 @@ KShortcutsDialog::KShortcutsDialog( KShortcutsEditor::ActionTypes types, KShortc
     setButtonText(Reset,i18n("Reset to Defaults"));
 
     d->m_schemeEditor = new KShortcutSchemesEditor(this);
-    connect( d->m_schemeEditor, SIGNAL(shortcutsSchemeChanged(const QString&)),
-             this, SLOT(changeShortcutScheme(const QString&)) );
+    connect( d->m_schemeEditor, SIGNAL(shortcutsSchemeChanged(QString)),
+             this, SLOT(changeShortcutScheme(QString)) );
     setDetailsWidget(d->m_schemeEditor);
 
     connect( this, SIGNAL(resetClicked()), d->m_keyChooser, SLOT(allDefault()) );

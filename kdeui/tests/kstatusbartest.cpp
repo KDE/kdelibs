@@ -28,7 +28,7 @@ testWindow::testWindow (QWidget *)
     QAction *action = fileMenu->addAction("&Exit");
     action->setShortcut( Qt::ALT + Qt::Key_Q );
 
-    connect( action, SIGNAL( triggered() ), KApplication::kApplication(), SLOT( quit() ) );
+    connect( action, SIGNAL(triggered()), KApplication::kApplication(), SLOT(quit()) );
 
     statusbar = new KStatusBar (this);
     statusbar->insertItem("Zoom: XXXX", 0);

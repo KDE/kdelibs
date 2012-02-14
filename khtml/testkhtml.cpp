@@ -54,8 +54,8 @@ int main(int argc, char *argv[])
     KHTMLPart *doc = new KHTMLPart( toplevel, toplevel, KHTMLPart::BrowserViewGUI );
 
     Dummy *dummy = new Dummy( doc );
-    QObject::connect( doc->browserExtension(), SIGNAL( openUrlRequest(const KUrl&, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &) ),
-		      dummy, SLOT( slotOpenURL( const KUrl&, const KParts::OpenUrlArguments&, const KParts::BrowserArguments& ) ) );
+    QObject::connect( doc->browserExtension(), SIGNAL(openUrlRequest(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)),
+		      dummy, SLOT(slotOpenURL(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)) );
 
     QObject::connect( doc, SIGNAL(completed()), dummy, SLOT(handleDone()) );
 
@@ -98,27 +98,27 @@ int main(int argc, char *argv[])
 
     KAction *action = new KAction(KIcon("view-refresh"),  "Reload", doc );
     doc->actionCollection()->addAction( "reload", action );
-    QObject::connect(action, SIGNAL(triggered(bool)), dummy, SLOT( reload() ));
+    QObject::connect(action, SIGNAL(triggered(bool)), dummy, SLOT(reload()));
     action->setShortcut(Qt::Key_F5);
 
     KAction *bench = new KAction( KIcon(), "Benchmark...", doc );
     doc->actionCollection()->addAction( "debugDoBenchmark", bench );
-    QObject::connect(bench, SIGNAL(triggered(bool)), dummy, SLOT( doBenchmark() ));
+    QObject::connect(bench, SIGNAL(triggered(bool)), dummy, SLOT(doBenchmark()));
 
     KAction *kprint = new KAction(KIcon("document-print"),  "Print", doc );
     doc->actionCollection()->addAction( "print", kprint );
-    QObject::connect(kprint, SIGNAL(triggered(bool)), doc->browserExtension(), SLOT( print() ));
+    QObject::connect(kprint, SIGNAL(triggered(bool)), doc->browserExtension(), SLOT(print()));
     kprint->setEnabled(true);
     KToggleAction *ta = new KToggleAction( KIcon("edit-rename"), "Navigable", doc );
     doc->actionCollection()->addAction( "navigable", ta );
     ta->setShortcuts( KShortcut() );
     ta->setChecked(doc->isCaretMode());
-    QWidget::connect(ta, SIGNAL(toggled(bool)), dummy, SLOT( toggleNavigable(bool) ));
+    QWidget::connect(ta, SIGNAL(toggled(bool)), dummy, SLOT(toggleNavigable(bool)));
     ta = new KToggleAction( KIcon("document-properties"), "Editable", doc );
     doc->actionCollection()->addAction( "editable", ta );
     ta->setShortcuts( KShortcut() );
     ta->setChecked(doc->isEditable());
-    QWidget::connect(ta, SIGNAL(toggled(bool)), dummy, SLOT( toggleEditable(bool) ));
+    QWidget::connect(ta, SIGNAL(toggled(bool)), dummy, SLOT(toggleEditable(bool)));
     toplevel->guiFactory()->addClient( doc );
 
     doc->setJScriptEnabled(true);
@@ -126,8 +126,8 @@ int main(int argc, char *argv[])
     doc->setPluginsEnabled( true );
     doc->setURLCursor(QCursor(Qt::PointingHandCursor));
     a.setTopWidget(doc->widget());
-    QWidget::connect(doc, SIGNAL(setWindowCaption(const QString &)),
-		     doc->widget()->topLevelWidget(), SLOT(setCaption(const QString &)));
+    QWidget::connect(doc, SIGNAL(setWindowCaption(QString)),
+		     doc->widget()->topLevelWidget(), SLOT(setCaption(QString)));
     doc->widget()->show();
     toplevel->show();
     doc->view()->viewport()->show();

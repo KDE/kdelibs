@@ -50,10 +50,10 @@ Weaver::Weaver ( QObject* parent )
     , d (new Private)
 {
     d->weaverinterface = makeWeaverImpl();
-    connect ( d->weaverinterface, SIGNAL ( finished() ), SIGNAL ( finished() ) );
-    connect ( d->weaverinterface, SIGNAL ( suspended() ), SIGNAL ( suspended() ) );
-    connect ( d->weaverinterface, SIGNAL ( jobDone( ThreadWeaver::Job* ) ),
-              SIGNAL ( jobDone ( ThreadWeaver::Job* ) ) );
+    connect ( d->weaverinterface, SIGNAL (finished()), SIGNAL (finished()) );
+    connect ( d->weaverinterface, SIGNAL (suspended()), SIGNAL (suspended()) );
+    connect ( d->weaverinterface, SIGNAL (jobDone(ThreadWeaver::Job*)),
+              SIGNAL (jobDone(ThreadWeaver::Job*)) );
 }
 
 Weaver::~Weaver()

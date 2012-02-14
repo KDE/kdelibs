@@ -82,9 +82,9 @@ void KDateWidget::initWidget( const QDate &date )
     layout->addWidget( d->m_month );
     layout->addWidget( d->m_year );
 
-    connect( d->m_day, SIGNAL( valueChanged( int ) ), this, SLOT( slotDateChanged() ) );
-    connect( d->m_month, SIGNAL( activated( int ) ), this, SLOT( slotDateChanged() ) );
-    connect( d->m_year, SIGNAL( valueChanged( int ) ), this, SLOT( slotDateChanged() ) );
+    connect( d->m_day, SIGNAL(valueChanged(int)), this, SLOT(slotDateChanged()) );
+    connect( d->m_month, SIGNAL(activated(int)), this, SLOT(slotDateChanged()) );
+    connect( d->m_year, SIGNAL(valueChanged(int)), this, SLOT(slotDateChanged()) );
 
     setFocusProxy(d->m_day);
     setFocusPolicy(Qt::StrongFocus);

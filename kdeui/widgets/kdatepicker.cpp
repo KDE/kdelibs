@@ -67,7 +67,7 @@ KDatePickerPrivateYearSelector::KDatePickerPrivateYearSelector(
                    calendar->year( calendar->latestValidDate() ) );
     setValidator( val );
 
-    connect( this, SIGNAL( returnPressed() ), SLOT( yearEnteredSlot() ) );
+    connect( this, SIGNAL(returnPressed()), SLOT(yearEnteredSlot()) );
 }
 
 void KDatePickerPrivateYearSelector::yearEnteredSlot()
@@ -300,17 +300,17 @@ void KDatePicker::initWidget( const QDate &date_ )
         d->monthBackward->setIcon( KIcon( QLatin1String( "arrow-left" ) ) );
     }
 
-    connect( d->table, SIGNAL( dateChanged( const QDate& ) ), SLOT( dateChangedSlot( const QDate& ) ) );
-    connect( d->table, SIGNAL( tableClicked() ), SLOT( tableClickedSlot() ) );
-    connect( d->monthForward, SIGNAL( clicked() ), SLOT( monthForwardClicked() ) );
-    connect( d->monthBackward, SIGNAL( clicked() ), SLOT( monthBackwardClicked() ) );
-    connect( d->yearForward, SIGNAL( clicked() ), SLOT( yearForwardClicked() ) );
-    connect( d->yearBackward, SIGNAL( clicked() ), SLOT( yearBackwardClicked() ) );
-    connect( d->selectWeek, SIGNAL( activated( int ) ), SLOT( weekSelected( int ) ) );
-    connect( d->todayButton, SIGNAL( clicked() ), SLOT( todayButtonClicked() ) );
-    connect( d->selectMonth, SIGNAL( clicked() ), SLOT( selectMonthClicked() ) );
-    connect( d->selectYear, SIGNAL( toggled( bool ) ), SLOT( selectYearClicked() ) );
-    connect( d->line, SIGNAL( returnPressed() ), SLOT( lineEnterPressed() ) );
+    connect( d->table, SIGNAL(dateChanged(QDate)), SLOT(dateChangedSlot(QDate)) );
+    connect( d->table, SIGNAL(tableClicked()), SLOT(tableClickedSlot()) );
+    connect( d->monthForward, SIGNAL(clicked()), SLOT(monthForwardClicked()) );
+    connect( d->monthBackward, SIGNAL(clicked()), SLOT(monthBackwardClicked()) );
+    connect( d->yearForward, SIGNAL(clicked()), SLOT(yearForwardClicked()) );
+    connect( d->yearBackward, SIGNAL(clicked()), SLOT(yearBackwardClicked()) );
+    connect( d->selectWeek, SIGNAL(activated(int)), SLOT(weekSelected(int)) );
+    connect( d->todayButton, SIGNAL(clicked()), SLOT(todayButtonClicked()) );
+    connect( d->selectMonth, SIGNAL(clicked()), SLOT(selectMonthClicked()) );
+    connect( d->selectYear, SIGNAL(toggled(bool)), SLOT(selectYearClicked()) );
+    connect( d->line, SIGNAL(returnPressed()), SLOT(lineEnterPressed()) );
 
 
     topLayout->addWidget( d->table );
@@ -505,7 +505,7 @@ void KDatePicker::selectYearClicked()
     picker->setYear( thisDate.year() );
     picker->selectAll();
     popup->setMainWidget( picker );
-    connect( picker, SIGNAL( closeMe( int ) ), popup, SLOT( close( int ) ) );
+    connect( picker, SIGNAL(closeMe(int)), popup, SLOT(close(int)) );
     picker->setFocus();
 
     if( popup->exec( d->selectYear->mapToGlobal( QPoint( 0, d->selectMonth->height() ) ) ) ) {
@@ -655,8 +655,8 @@ void KDatePicker::setCloseButton( bool enable )
         d->navigationLayout->addWidget( d->closeButton );
         d->closeButton->setToolTip( i18nc( "@action:button", "Close" ) );
         d->closeButton->setIcon( SmallIcon( "window-close" ) );
-        connect( d->closeButton, SIGNAL( clicked() ),
-                 topLevelWidget(), SLOT( close() ) );
+        connect( d->closeButton, SIGNAL(clicked()),
+                 topLevelWidget(), SLOT(close()) );
     } else {
         delete d->closeButton;
         d->closeButton = 0L;

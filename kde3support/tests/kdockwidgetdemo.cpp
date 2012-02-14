@@ -120,8 +120,8 @@ SFileDialog::SFileDialog( QString initially, const QStringList& filter, const ch
   fd->setParent( d_fd );
   d_fd->setWidget( fd );
 
-  connect( dirView, SIGNAL( folderSelected( const QString & ) ), fd, SLOT( setDir2( const QString & ) ) );
-  connect( fd, SIGNAL( dirEntered( const QString & ) ), dirView, SLOT( setDir( const QString & ) ) );
+  connect( dirView, SIGNAL(folderSelected(QString)), fd, SLOT(setDir2(QString)) );
+  connect( fd, SIGNAL(dirEntered(QString)), dirView, SLOT(setDir(QString)) );
 
   d_fd->setDockSite( K3DockWidget::DockTop|K3DockWidget::DockLeft|K3DockWidget::DockRight|K3DockWidget::DockBottom );
   d_fd->setEnableDocking(K3DockWidget::DockNone);
@@ -132,11 +132,11 @@ SFileDialog::SFileDialog( QString initially, const QStringList& filter, const ch
   d_dirView->manualDock( d_fd, K3DockWidget::DockLeft, 20 );
   d_preview->manualDock( d_fd, K3DockWidget::DockBottom, 70 );
 
-  connect(fd, SIGNAL(fileHighlighted(const QString&)), preview, SLOT(showPreview(const QString&)));
+  connect(fd, SIGNAL(fileHighlighted(QString)), preview, SLOT(showPreview(QString)));
   connect(fd, SIGNAL(signalDone(int)), this, SLOT(done(int)));
 
-  connect(fd, SIGNAL(dirEntered(const QString&)), this, SLOT(changeDir(const QString&)));
-  connect(dirView, SIGNAL(folderSelected(const QString&)), this, SLOT(changeDir(const QString&)));
+  connect(fd, SIGNAL(dirEntered(QString)), this, SLOT(changeDir(QString)));
+  connect(dirView, SIGNAL(folderSelected(QString)), this, SLOT(changeDir(QString)));
 
   b_tree = new QToolButton( fd );
   b_tree->setToolTip( "Show/Hide Tree" );
@@ -404,7 +404,7 @@ CustomFileDialog::CustomFileDialog( QWidget* parent )
   p->setToolTip( tr("Bookmarks") );
 
   bookmarkMenu = new Q3PopupMenu( this );
-  connect( bookmarkMenu, SIGNAL( activated( int ) ), this, SLOT( bookmarkChosen( int ) ) );
+  connect( bookmarkMenu, SIGNAL(activated(int)), this, SLOT(bookmarkChosen(int)) );
   addId = bookmarkMenu->insertItem( "Add bookmark" );
   clearId = bookmarkMenu->insertItem( QPixmap(folder_trash), "Clear bookmarks" );
   bookmarkMenu->addSeparator();
@@ -417,7 +417,7 @@ CustomFileDialog::CustomFileDialog( QWidget* parent )
   b->setToolTip( tr("Go Home!") );
 
   b->setIcon( QIcon( QPixmap( homepage_xpm ) ) );
-  connect( b, SIGNAL( clicked() ), this, SLOT( goHome() ) );
+  connect( b, SIGNAL(clicked()), this, SLOT(goHome()) );
 
   addToolButton( b );
 }
@@ -689,12 +689,12 @@ QString Directory::text( int column ) const
 DirectoryView::DirectoryView( QWidget *parent, const char *name )
 :Q3ListView( parent, name )
 {
-  connect( this, SIGNAL( clicked( Q3ListViewItem * ) ),
-           this, SLOT( slotFolderSelected( Q3ListViewItem * ) ) );
-  connect( this, SIGNAL( doubleClicked( Q3ListViewItem * ) ),
-           this, SLOT( slotFolderSelected( Q3ListViewItem * ) ) );
-  connect( this, SIGNAL( returnPressed( Q3ListViewItem * ) ),
-           this, SLOT( slotFolderSelected( Q3ListViewItem * ) ) );
+  connect( this, SIGNAL(clicked(Q3ListViewItem*)),
+           this, SLOT(slotFolderSelected(Q3ListViewItem*)) );
+  connect( this, SIGNAL(doubleClicked(Q3ListViewItem*)),
+           this, SLOT(slotFolderSelected(Q3ListViewItem*)) );
+  connect( this, SIGNAL(returnPressed(Q3ListViewItem*)),
+           this, SLOT(slotFolderSelected(Q3ListViewItem*)) );
 
   setAcceptDrops( true );
   viewport()->setAcceptDrops( true );

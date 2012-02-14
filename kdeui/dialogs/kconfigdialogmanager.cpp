@@ -107,48 +107,48 @@ void KConfigDialogManager::initMaps()
     // a ButtonGroup that is checkable.
 //    s_changedMap->insert("QButtonGroup", SIGNAL(buttonClicked(int)));
     s_changedMap->insert("QGroupBox", SIGNAL(toggled(bool)));
-    s_changedMap->insert("QComboBox", SIGNAL(activated (int)));
+    s_changedMap->insert("QComboBox", SIGNAL(activated(int)));
     //qsqlproperty map doesn't store the text, but the value!
-    //s_changedMap->insert("QComboBox", SIGNAL(textChanged(const QString &)));
-    s_changedMap->insert("QDateEdit", SIGNAL(dateChanged(const QDate &)));
-    s_changedMap->insert("QTimeEdit", SIGNAL(timeChanged(const QTime &)));
-    s_changedMap->insert("QDateTimeEdit", SIGNAL(dateTimeChanged(const QDateTime &)));
-    s_changedMap->insert("QDial", SIGNAL(valueChanged (int)));
+    //s_changedMap->insert("QComboBox", SIGNAL(textChanged(QString)));
+    s_changedMap->insert("QDateEdit", SIGNAL(dateChanged(QDate)));
+    s_changedMap->insert("QTimeEdit", SIGNAL(timeChanged(QTime)));
+    s_changedMap->insert("QDateTimeEdit", SIGNAL(dateTimeChanged(QDateTime)));
+    s_changedMap->insert("QDial", SIGNAL(valueChanged(int)));
     s_changedMap->insert("QDoubleSpinBox", SIGNAL(valueChanged(double)));
-    s_changedMap->insert("QLineEdit", SIGNAL(textChanged(const QString &)));
+    s_changedMap->insert("QLineEdit", SIGNAL(textChanged(QString)));
     s_changedMap->insert("QSlider", SIGNAL(valueChanged(int)));
     s_changedMap->insert("QSpinBox", SIGNAL(valueChanged(int)));
     s_changedMap->insert("QTextEdit", SIGNAL(textChanged()));
-    s_changedMap->insert("QTextBrowser", SIGNAL(sourceChanged(const QString &)));
+    s_changedMap->insert("QTextBrowser", SIGNAL(sourceChanged(QString)));
     s_changedMap->insert("QPlainTextEdit", SIGNAL(textChanged()));
     s_changedMap->insert("QTabWidget", SIGNAL(currentChanged(int)));
 
     // KDE
-    s_changedMap->insert( "KComboBox", SIGNAL(activated (int)));
-    s_changedMap->insert( "KFontComboBox", SIGNAL(activated (int)));
-    s_changedMap->insert( "KFontRequester", SIGNAL(fontSelected(const QFont &)));
-    s_changedMap->insert( "KFontChooser",  SIGNAL(fontSelected(const QFont &)));
-    s_changedMap->insert( "KHistoryCombo", SIGNAL(activated (int)));
-    s_changedMap->insert( "KColorCombo", SIGNAL(activated (const QColor &)));
+    s_changedMap->insert( "KComboBox", SIGNAL(activated(int)));
+    s_changedMap->insert( "KFontComboBox", SIGNAL(activated(int)));
+    s_changedMap->insert( "KFontRequester", SIGNAL(fontSelected(QFont)));
+    s_changedMap->insert( "KFontChooser",  SIGNAL(fontSelected(QFont)));
+    s_changedMap->insert( "KHistoryCombo", SIGNAL(activated(int)));
+    s_changedMap->insert( "KColorCombo", SIGNAL(activated(QColor)));
 
-    s_changedMap->insert( "KColorButton", SIGNAL(changed(const QColor &)));
-    s_changedMap->insert( "KDatePicker", SIGNAL(dateSelected (QDate)));
-    s_changedMap->insert( "KDateWidget", SIGNAL(changed (QDate)));
-    s_changedMap->insert( "KDateTimeWidget", SIGNAL(valueChanged (const QDateTime &)));
+    s_changedMap->insert( "KColorButton", SIGNAL(changed(QColor)));
+    s_changedMap->insert( "KDatePicker", SIGNAL(dateSelected(QDate)));
+    s_changedMap->insert( "KDateWidget", SIGNAL(changed(QDate)));
+    s_changedMap->insert( "KDateTimeWidget", SIGNAL(valueChanged(QDateTime)));
     s_changedMap->insert( "KEditListBox", SIGNAL(changed()));
     s_changedMap->insert( "KEditListWidget", SIGNAL(changed()));
     s_changedMap->insert( "KListWidget", SIGNAL(itemSelectionChanged()));
-    s_changedMap->insert( "KLineEdit", SIGNAL(textChanged(const QString &)));
-    s_changedMap->insert( "KPasswordEdit", SIGNAL(textChanged(const QString &)));
-    s_changedMap->insert( "KRestrictedLine", SIGNAL(textChanged(const QString &)));
-    s_changedMap->insert( "KTextBrowser", SIGNAL(sourceChanged(const QString &)));
+    s_changedMap->insert( "KLineEdit", SIGNAL(textChanged(QString)));
+    s_changedMap->insert( "KPasswordEdit", SIGNAL(textChanged(QString)));
+    s_changedMap->insert( "KRestrictedLine", SIGNAL(textChanged(QString)));
+    s_changedMap->insert( "KTextBrowser", SIGNAL(sourceChanged(QString)));
     s_changedMap->insert( "KTextEdit", SIGNAL(textChanged()));
-    s_changedMap->insert( "KUrlRequester",  SIGNAL(textChanged (const QString& )));
-    s_changedMap->insert( "KUrlComboRequester",  SIGNAL(textChanged (const QString& )));
-    s_changedMap->insert( "KUrlComboBox",  SIGNAL(urlActivated (const QUrl & )));
-    s_changedMap->insert( "KIntNumInput", SIGNAL(valueChanged (int)));
-    s_changedMap->insert( "KIntSpinBox", SIGNAL(valueChanged (int)));
-    s_changedMap->insert( "KDoubleNumInput", SIGNAL(valueChanged (double)));
+    s_changedMap->insert( "KUrlRequester",  SIGNAL(textChanged(QString)));
+    s_changedMap->insert( "KUrlComboRequester",  SIGNAL(textChanged(QString)));
+    s_changedMap->insert( "KUrlComboBox",  SIGNAL(urlActivated(QUrl)));
+    s_changedMap->insert( "KIntNumInput", SIGNAL(valueChanged(int)));
+    s_changedMap->insert( "KIntSpinBox", SIGNAL(valueChanged(int)));
+    s_changedMap->insert( "KDoubleNumInput", SIGNAL(valueChanged(double)));
     s_changedMap->insert( "KButtonGroup", SIGNAL(changed(int)));
   }
 }
@@ -277,7 +277,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
 
             QComboBox *cb = qobject_cast<QComboBox *>(childWidget);
             if (cb && cb->isEditable())
-              connect(cb, SIGNAL(editTextChanged(const QString &)),
+              connect(cb, SIGNAL(editTextChanged(QString)),
                     this, SIGNAL(widgetModified()));
 	  }
         }

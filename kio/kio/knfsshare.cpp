@@ -167,8 +167,8 @@ KNFSShare::KNFSShare()
 {
   if (QFile::exists(d->exportsFile)) {
     KDirWatch::self()->addFile(d->exportsFile);
-    connect(KDirWatch::self(), SIGNAL(dirty (const QString&)),this,
-   	        SLOT(_k_slotFileChange(const QString&)));
+    connect(KDirWatch::self(), SIGNAL(dirty(QString)),this,
+               SLOT(_k_slotFileChange(QString)));
   }
 }
 

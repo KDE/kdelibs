@@ -27,8 +27,8 @@ using namespace Solid::Backends::Wmi;
 Cdrom::Cdrom(WmiDevice *device)
     : Storage(device), m_ejectInProgress(false)
 {
-    connect(device, SIGNAL(conditionRaised(const QString &, const QString &)),
-             this, SLOT(slotCondition(const QString &, const QString &)));
+    connect(device, SIGNAL(conditionRaised(QString,QString)),
+             this, SLOT(slotCondition(QString,QString)));
 }
 
 Cdrom::~Cdrom()
@@ -144,8 +144,8 @@ bool Cdrom::callWmiDriveEject()
 
 
     // return c.callWithCallback(msg, this,
-                              // SLOT(slotDBusReply(const QDBusMessage &)),
-                              // SLOT(slotDBusError(const QDBusError &)));
+                              // SLOT(slotDBusReply(QDBusMessage)),
+                              // SLOT(slotDBusError(QDBusError)));
     return false;
 }
 

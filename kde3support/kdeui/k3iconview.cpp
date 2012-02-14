@@ -60,18 +60,18 @@ K3IconView::K3IconView( QWidget *parent, const char *name, Qt::WFlags f )
 {
     d = new K3IconViewPrivate;
 
-    connect( this, SIGNAL( onViewport() ),
-             this, SLOT( slotOnViewport() ) );
-    connect( this, SIGNAL( onItem( Q3IconViewItem * ) ),
-             this, SLOT( slotOnItem( Q3IconViewItem * ) ) );
+    connect( this, SIGNAL(onViewport()),
+             this, SLOT(slotOnViewport()) );
+    connect( this, SIGNAL(onItem(Q3IconViewItem*)),
+             this, SLOT(slotOnItem(Q3IconViewItem*)) );
     slotSettingsChanged( KGlobalSettings::SETTINGS_MOUSE );
-    connect( KGlobalSettings::self(), SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
+    connect( KGlobalSettings::self(), SIGNAL(settingsChanged(int)), SLOT(slotSettingsChanged(int)) );
 
     m_pCurrentItem = 0L;
 
     m_pAutoSelect = new QTimer( this );
-    connect( m_pAutoSelect, SIGNAL( timeout() ),
-             this, SLOT( slotAutoSelect() ) );
+    connect( m_pAutoSelect, SIGNAL(timeout()),
+             this, SLOT(slotAutoSelect()) );
 
     connect( &d->dragHoldTimer, SIGNAL(timeout()), this, SLOT(slotDragHoldTimeout()) );
 }

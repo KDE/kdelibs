@@ -50,48 +50,48 @@ KDirListerTest::KDirListerTest( QWidget *parent )
   layout->addWidget( test );
   resize( layout->sizeHint() );
 
-  connect( startR, SIGNAL( clicked() ), SLOT( startRoot() ) );
-  connect( startH, SIGNAL( clicked() ), SLOT( startHome() ) );
-  connect( startT, SIGNAL( clicked() ), SLOT( startTar() ) );
-  connect( test, SIGNAL( clicked() ), SLOT( test() ) );
+  connect( startR, SIGNAL(clicked()), SLOT(startRoot()) );
+  connect( startH, SIGNAL(clicked()), SLOT(startHome()) );
+  connect( startT, SIGNAL(clicked()), SLOT(startTar()) );
+  connect( test, SIGNAL(clicked()), SLOT(test()) );
 
-  connect( lister, SIGNAL( started( const KUrl & ) ),
-           debug,  SLOT( started( const KUrl & ) ) );
-  connect( lister, SIGNAL( completed() ),
-           debug,  SLOT( completed() ) );
-  connect( lister, SIGNAL( completed( const KUrl & ) ),
-           debug,  SLOT( completed( const KUrl & ) ) );
-  connect( lister, SIGNAL( canceled() ),
-           debug,  SLOT( canceled() ) );
-  connect( lister, SIGNAL( canceled( const KUrl & ) ),
-           debug,  SLOT( canceled( const KUrl & ) ) );
-  connect( lister, SIGNAL( redirection( const KUrl & ) ),
-           debug,  SLOT( redirection( const KUrl & ) ) );
-  connect( lister, SIGNAL( redirection( const KUrl &, const KUrl & ) ),
-           debug,  SLOT( redirection( const KUrl &, const KUrl & ) ) );
-  connect( lister, SIGNAL( clear() ),
-           debug,  SLOT( clear() ) );
-  connect( lister, SIGNAL( newItems( const KFileItemList & ) ),
-           debug,  SLOT( newItems( const KFileItemList & ) ) );
-  connect( lister, SIGNAL( itemsFilteredByMime( const KFileItemList & ) ),
-           debug,  SLOT( itemsFilteredByMime( const KFileItemList & ) ) );
-  connect( lister, SIGNAL( deleteItem( const KFileItem & ) ),
-           debug,  SLOT( deleteItem( const KFileItem & ) ) );
-  connect( lister, SIGNAL( refreshItems( const QList<QPair<KFileItem, KFileItem> > & ) ),
-           debug,  SLOT( refreshItems( const QList<QPair<KFileItem, KFileItem> > & ) ) );
-  connect( lister, SIGNAL( infoMessage( const QString& ) ),
-           debug,  SLOT( infoMessage( const QString& ) ) );
-  connect( lister, SIGNAL( percent( int ) ),
-           debug,  SLOT( percent( int ) ) );
-  connect( lister, SIGNAL( totalSize( KIO::filesize_t ) ),
-           debug,  SLOT( totalSize( KIO::filesize_t ) ) );
-  connect( lister, SIGNAL( processedSize( KIO::filesize_t ) ),
-           debug,  SLOT( processedSize( KIO::filesize_t ) ) );
-  connect( lister, SIGNAL( speed( int ) ),
-           debug,  SLOT( speed( int ) ) );
+  connect( lister, SIGNAL(started(KUrl)),
+           debug,  SLOT(started(KUrl)) );
+  connect( lister, SIGNAL(completed()),
+           debug,  SLOT(completed()) );
+  connect( lister, SIGNAL(completed(KUrl)),
+           debug,  SLOT(completed(KUrl)) );
+  connect( lister, SIGNAL(canceled()),
+           debug,  SLOT(canceled()) );
+  connect( lister, SIGNAL(canceled(KUrl)),
+           debug,  SLOT(canceled(KUrl)) );
+  connect( lister, SIGNAL(redirection(KUrl)),
+           debug,  SLOT(redirection(KUrl)) );
+  connect( lister, SIGNAL(redirection(KUrl,KUrl)),
+           debug,  SLOT(redirection(KUrl,KUrl)) );
+  connect( lister, SIGNAL(clear()),
+           debug,  SLOT(clear()) );
+  connect( lister, SIGNAL(newItems(KFileItemList)),
+           debug,  SLOT(newItems(KFileItemList)) );
+  connect( lister, SIGNAL(itemsFilteredByMime(KFileItemList)),
+           debug,  SLOT(itemsFilteredByMime(KFileItemList)) );
+  connect( lister, SIGNAL(deleteItem(KFileItem)),
+           debug,  SLOT(deleteItem(KFileItem)) );
+  connect( lister, SIGNAL(refreshItems(QList<QPair<KFileItem,KFileItem> >)),
+           debug,  SLOT(refreshItems(QList<QPair<KFileItem,KFileItem> >)) );
+  connect( lister, SIGNAL(infoMessage(QString)),
+           debug,  SLOT(infoMessage(QString)) );
+  connect( lister, SIGNAL(percent(int)),
+           debug,  SLOT(percent(int)) );
+  connect( lister, SIGNAL(totalSize(KIO::filesize_t)),
+           debug,  SLOT(totalSize(KIO::filesize_t)) );
+  connect( lister, SIGNAL(processedSize(KIO::filesize_t)),
+           debug,  SLOT(processedSize(KIO::filesize_t)) );
+  connect( lister, SIGNAL(speed(int)),
+           debug,  SLOT(speed(int)) );
 
-  connect( lister, SIGNAL( completed() ),
-           this,  SLOT( completed() ) );
+  connect( lister, SIGNAL(completed()),
+           this,  SLOT(completed()) );
 }
 
 KDirListerTest::~KDirListerTest()

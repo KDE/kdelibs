@@ -374,8 +374,8 @@ KDirOperator::KDirOperator(const QUrl& _url, QWidget *parent) :
 {
     d->splitter = new QSplitter(this);
     d->splitter->setChildrenCollapsible(false);
-    connect(d->splitter, SIGNAL(splitterMoved(int, int)),
-            this, SLOT(_k_slotSplitterMoved(int, int)));
+    connect(d->splitter, SIGNAL(splitterMoved(int,int)),
+            this, SLOT(_k_slotSplitterMoved(int,int)));
 
     d->preview = 0;
 
@@ -402,8 +402,8 @@ KDirOperator::KDirOperator(const QUrl& _url, QWidget *parent) :
     setLayoutDirection(Qt::LeftToRight);
     setDirLister(new KDirLister());
 
-    connect(&d->completion, SIGNAL(match(const QString&)),
-            SLOT(slotCompletionMatch(const QString&)));
+    connect(&d->completion, SIGNAL(match(QString)),
+            SLOT(slotCompletionMatch(QString)));
 
     d->progressBar = new QProgressBar(this);
     d->progressBar->setObjectName("d->progressBar");
@@ -1584,16 +1584,16 @@ void KDirOperator::setView(QAbstractItemView *view)
     if (treeView) {
         QHeaderView* headerView = treeView->header();
         headerView->setSortIndicator(d->sortColumn(), d->sortOrder());
-        connect(headerView, SIGNAL(sortIndicatorChanged (int, Qt::SortOrder)),
-                this, SLOT(_k_synchronizeSortingState(int, Qt::SortOrder)));
+        connect(headerView, SIGNAL(sortIndicatorChanged(int,Qt::SortOrder)),
+                this, SLOT(_k_synchronizeSortingState(int,Qt::SortOrder)));
     }
 
-    connect(d->itemView, SIGNAL(activated(const QModelIndex&)),
-            this, SLOT(_k_slotActivated(const QModelIndex&)));
-    connect(d->itemView, SIGNAL(customContextMenuRequested(const QPoint&)),
-            this, SLOT(_k_openContextMenu(const QPoint&)));
-    connect(d->itemView, SIGNAL(entered(const QModelIndex&)),
-            this, SLOT(_k_triggerPreview(const QModelIndex&)));
+    connect(d->itemView, SIGNAL(activated(QModelIndex)),
+            this, SLOT(_k_slotActivated(QModelIndex)));
+    connect(d->itemView, SIGNAL(customContextMenuRequested(QPoint)),
+            this, SLOT(_k_openContextMenu(QPoint)));
+    connect(d->itemView, SIGNAL(entered(QModelIndex)),
+            this, SLOT(_k_triggerPreview(QModelIndex)));
 
     updateViewActions();
     d->splitter->insertWidget(0, d->itemView);
@@ -1612,10 +1612,10 @@ void KDirOperator::setView(QAbstractItemView *view)
     }
 
     connect(d->itemView->selectionModel(),
-            SIGNAL(currentChanged(const QModelIndex&,const QModelIndex&)),
-            this, SLOT(_k_triggerPreview(const QModelIndex&)));
+            SIGNAL(currentChanged(QModelIndex,QModelIndex)),
+            this, SLOT(_k_triggerPreview(QModelIndex)));
     connect(d->itemView->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+            SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
             this, SLOT(_k_slotSelectionChanged()));
 
     // if we cannot cast it to a QListView, disable the "Icon Position" menu. Note that this check
@@ -1686,14 +1686,14 @@ void KDirOperator::setDirLister(KDirLister *lister)
 
     connect(d->dirLister, SIGNAL(percent(int)),
             SLOT(_k_slotProgress(int)));
-    connect(d->dirLister, SIGNAL(started(const KUrl&)), SLOT(_k_slotStarted()));
+    connect(d->dirLister, SIGNAL(started(KUrl)), SLOT(_k_slotStarted()));
     connect(d->dirLister, SIGNAL(completed()), SLOT(_k_slotIOFinished()));
     connect(d->dirLister, SIGNAL(canceled()), SLOT(_k_slotCanceled()));
-    connect(d->dirLister, SIGNAL(redirection(const KUrl&)),
-            SLOT(_k_slotRedirected(const KUrl&)));
-    connect(d->dirLister, SIGNAL(newItems(const KFileItemList&)), SLOT(_k_slotItemsChanged()));
-    connect(d->dirLister, SIGNAL(itemsDeleted(const KFileItemList&)), SLOT(_k_slotItemsChanged()));
-    connect(d->dirLister, SIGNAL(itemsFilteredByMime(const KFileItemList&)), SLOT(_k_slotItemsChanged()));
+    connect(d->dirLister, SIGNAL(redirection(KUrl)),
+            SLOT(_k_slotRedirected(KUrl)));
+    connect(d->dirLister, SIGNAL(newItems(KFileItemList)), SLOT(_k_slotItemsChanged()));
+    connect(d->dirLister, SIGNAL(itemsDeleted(KFileItemList)), SLOT(_k_slotItemsChanged()));
+    connect(d->dirLister, SIGNAL(itemsFilteredByMime(KFileItemList)), SLOT(_k_slotItemsChanged()));
     connect(d->dirLister, SIGNAL(clear()), SLOT(_k_slotItemsChanged()));
 }
 
@@ -1943,17 +1943,17 @@ void KDirOperator::setupActions()
     KToggleAction *detailedAction = new KToggleAction(i18n("Detailed View"), this);
     d->actionCollection->addAction("detailed view", detailedAction);
     detailedAction->setIcon(KIcon(QLatin1String("view-list-details")));
-    connect(detailedAction, SIGNAL(triggered ()), SLOT(_k_slotDetailedView()));
+    connect(detailedAction, SIGNAL(triggered()), SLOT(_k_slotDetailedView()));
 
     KToggleAction *treeAction = new KToggleAction(i18n("Tree View"), this);
     d->actionCollection->addAction("tree view", treeAction);
     treeAction->setIcon(KIcon(QLatin1String("view-list-tree")));
-    connect(treeAction, SIGNAL(triggered ()), SLOT(_k_slotTreeView()));
+    connect(treeAction, SIGNAL(triggered()), SLOT(_k_slotTreeView()));
 
     KToggleAction *detailedTreeAction = new KToggleAction(i18n("Detailed Tree View"), this);
     d->actionCollection->addAction("detailed tree view", detailedTreeAction);
     detailedTreeAction->setIcon(KIcon(QLatin1String("view-list-tree")));
-    connect(detailedTreeAction, SIGNAL(triggered ()), SLOT(_k_slotDetailedTreeView()));
+    connect(detailedTreeAction, SIGNAL(triggered()), SLOT(_k_slotDetailedTreeView()));
 
     QActionGroup* viewGroup = new QActionGroup(this);
     shortAction->setActionGroup(viewGroup);

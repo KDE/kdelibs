@@ -285,7 +285,7 @@ void ItemsGridViewDelegate::createOperationBar()
     setBlockedEventTypes(m_installButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
                          << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
     connect(m_installButton, SIGNAL(clicked()), this, SLOT(slotInstallClicked()));
-    connect(m_installButton, SIGNAL(triggered(QAction *)), this, SLOT(slotInstallActionTriggered(QAction *)));
+    connect(m_installButton, SIGNAL(triggered(QAction*)), this, SLOT(slotInstallActionTriggered(QAction*)));
 
     
     if (m_installButton->menu()) {

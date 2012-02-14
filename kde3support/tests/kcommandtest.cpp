@@ -73,8 +73,8 @@ void KCommandTest::testCommandHistoryAdd()
     KActionCollection actionCollection( ( QWidget*)0 );
     {
         K3CommandHistory ch( &actionCollection );
-        connect( &ch, SIGNAL( commandExecuted( K3Command* ) ), this, SLOT( slotCommandExecuted( K3Command* ) ) );
-        connect( &ch, SIGNAL( documentRestored() ), this, SLOT( slotDocumentRestored() ) );
+        connect( &ch, SIGNAL(commandExecuted(K3Command*)), this, SLOT(slotCommandExecuted(K3Command*)) );
+        connect( &ch, SIGNAL(documentRestored()), this, SLOT(slotDocumentRestored()) );
 
         // Checking the empty state
         QAction* undo = actionCollection.action( "edit_undo" );
@@ -209,8 +209,8 @@ void KCommandTest::testDocumentRestored()
     m_documentRestored = 0;
     {
         K3CommandHistory ch;
-        connect( &ch, SIGNAL( commandExecuted( K3Command* ) ), this, SLOT( slotCommandExecuted( K3Command* ) ) );
-        connect( &ch, SIGNAL( documentRestored() ), this, SLOT( slotDocumentRestored() ) );
+        connect( &ch, SIGNAL(commandExecuted(K3Command*)), this, SLOT(slotCommandExecuted(K3Command*)) );
+        connect( &ch, SIGNAL(documentRestored()), this, SLOT(slotDocumentRestored()) );
 
         ch.documentSaved(); // saved with empty history
 

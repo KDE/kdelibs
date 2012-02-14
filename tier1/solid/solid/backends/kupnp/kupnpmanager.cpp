@@ -65,12 +65,12 @@ KUPnPManager::KUPnPManager(QObject* parent)
                            "/org/kde/Cagibi",
                            "org.kde.Cagibi",
                            "devicesAdded",
-                           this, SLOT(onDevicesAdded( const DeviceTypeMap& )) );
+                           this, SLOT(onDevicesAdded(DeviceTypeMap)) );
     dbusConnection.connect("org.kde.Cagibi",
                            "/org/kde/Cagibi",
                            "org.kde.Cagibi",
                            "devicesRemoved",
-                           this, SLOT(onDevicesRemoved( const DeviceTypeMap& )) );
+                           this, SLOT(onDevicesRemoved(DeviceTypeMap)) );
 
     mDeviceFactories
         << new MediaServer1Factory()

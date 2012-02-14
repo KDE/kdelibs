@@ -202,7 +202,7 @@ KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
       if (id == OpenRecent) {
           // FIXME KAction port: probably a good idea to find a cleaner way to do this
           // Open Recent is a special case - provide the selected URL
-          QObject::connect(pAction, SIGNAL(urlSelected(const QUrl &)), recvr, slot);
+          QObject::connect(pAction, SIGNAL(urlSelected(QUrl)), recvr, slot);
       } else if (id == ConfigureToolbars) { // #200815
           QObject::connect(pAction, SIGNAL(triggered(bool)), recvr, slot, Qt::QueuedConnection);
       } else {
@@ -488,27 +488,27 @@ static KAction *buildAutomaticAction( QObject* parent, StandardAction id, const 
 
 KAction *cut( QObject* parent )
 {
-  return buildAutomaticAction( parent, Cut, SLOT( cut() ) );
+  return buildAutomaticAction( parent, Cut, SLOT(cut()) );
 }
 
 KAction *copy( QObject* parent )
 {
-  return buildAutomaticAction( parent, Copy, SLOT( copy() ) );
+  return buildAutomaticAction( parent, Copy, SLOT(copy()) );
 }
 
 KAction *paste( QObject* parent )
 {
-  return buildAutomaticAction( parent, Paste, SLOT( paste() ) );
+  return buildAutomaticAction( parent, Paste, SLOT(paste()) );
 }
 
 KAction *clear( QObject* parent )
 {
-  return buildAutomaticAction( parent, Clear, SLOT( clear() ) );
+  return buildAutomaticAction( parent, Clear, SLOT(clear()) );
 }
 
 KAction *selectAll( QObject* parent )
 {
-  return buildAutomaticAction( parent, SelectAll, SLOT( selectAll() ) );
+  return buildAutomaticAction( parent, SelectAll, SLOT(selectAll()) );
 }
 
 KToggleAction *showMenubar(const QObject *recvr, const char *slot, QObject *parent)
@@ -525,7 +525,7 @@ KToggleAction *showMenubar(const QObject *recvr, const char *slot, QObject *pare
   ret->setChecked( true );
 
   if ( recvr && slot )
-    QObject::connect( ret, SIGNAL( triggered( bool ) ), recvr, slot );
+    QObject::connect( ret, SIGNAL(triggered(bool)), recvr, slot );
 
   KActionCollection *collection = qobject_cast<KActionCollection *>(parent);
   if (collection)
@@ -545,7 +545,7 @@ KToggleAction *showStatusbar(const QObject *recvr, const char *slot, QObject *pa
   ret->setChecked( true );
 
   if ( recvr && slot )
-    QObject::connect( ret, SIGNAL( triggered( bool ) ), recvr, slot );
+    QObject::connect( ret, SIGNAL(triggered(bool)), recvr, slot );
 
   KActionCollection *collection = qobject_cast<KActionCollection *>(parent);
   if (collection)

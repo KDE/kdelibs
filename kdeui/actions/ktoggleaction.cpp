@@ -48,8 +48,8 @@ class KToggleAction::Private
     void init()
     {
       parent->setCheckable( true );
-      connect( parent, SIGNAL( toggled( bool ) ),
-               parent, SLOT( slotToggled( bool ) ) );
+      connect( parent, SIGNAL(toggled(bool)),
+               parent, SLOT(slotToggled(bool)) );
     }
 
     KToggleAction* parent;

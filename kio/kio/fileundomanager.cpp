@@ -140,8 +140,8 @@ CommandRecorder::CommandRecorder(FileUndoManager::CommandType op, const KUrl::Li
   if (op != FileUndoManager::Mkdir && op != FileUndoManager::Put) {
       connect(job, SIGNAL(copyingDone(KIO::Job*,KUrl,KUrl,time_t,bool,bool)),
               this, SLOT(slotCopyingDone(KIO::Job*,KUrl,KUrl,time_t,bool,bool)));
-      connect(job, SIGNAL(copyingLinkDone(KIO::Job *,KUrl,QString,KUrl)),
-              this, SLOT(slotCopyingLinkDone(KIO::Job *,KUrl,QString,KUrl)));
+      connect(job, SIGNAL(copyingLinkDone(KIO::Job*,KUrl,QString,KUrl)),
+              this, SLOT(slotCopyingLinkDone(KIO::Job*,KUrl,QString,KUrl)));
   }
 }
 

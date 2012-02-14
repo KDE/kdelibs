@@ -759,7 +759,7 @@ private:
 /**
  * An extension class for LiveConnect, i.e. a call from JavaScript
  * from a HTML page which embeds this part.
- * A part can have an object hierarchie by using objid as a reference
+ * A part can have an object hierarchy by using objid as a reference
  * to an object.
  */
 class KPARTS_EXPORT LiveConnectExtension : public QObject

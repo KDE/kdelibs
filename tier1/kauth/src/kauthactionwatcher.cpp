@@ -52,11 +52,11 @@ ActionWatcher::ActionWatcher(const QString &action)
     HelperProxy *helper = BackendsManager::helperProxy();
 
     connect(helper, SIGNAL(actionStarted(QString)), this, SLOT(actionStartedSlot(QString)));
-    connect(helper, SIGNAL(actionPerformed(QString, ActionReply)), this, SLOT(actionPerformedSlot(QString, ActionReply)));
-    connect(helper, SIGNAL(progressStep(QString, int)), this, SLOT(progressStepSlot(QString, int)));
-    connect(helper, SIGNAL(progressStep(QString, QVariantMap)), this, SLOT(progressStepSlot(QString, QVariantMap)));
-    connect(BackendsManager::authBackend(), SIGNAL(actionStatusChanged(QString, Action::AuthStatus)),
-            this, SLOT(statusChangedSlot(QString, Action::AuthStatus)));
+    connect(helper, SIGNAL(actionPerformed(QString,ActionReply)), this, SLOT(actionPerformedSlot(QString,ActionReply)));
+    connect(helper, SIGNAL(progressStep(QString,int)), this, SLOT(progressStepSlot(QString,int)));
+    connect(helper, SIGNAL(progressStep(QString,QVariantMap)), this, SLOT(progressStepSlot(QString,QVariantMap)));
+    connect(BackendsManager::authBackend(), SIGNAL(actionStatusChanged(QString,Action::AuthStatus)),
+            this, SLOT(statusChangedSlot(QString,Action::AuthStatus)));
 }
 
 ActionWatcher::~ActionWatcher()

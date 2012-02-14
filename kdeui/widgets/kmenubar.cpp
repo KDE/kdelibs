@@ -134,10 +134,10 @@ Atom KMenuBar::KMenuBarPrivate::makeSelectionAtom()
 KMenuBar::KMenuBar(QWidget *parent)
     : QMenuBar(parent), d(new KMenuBarPrivate)
 {
-    connect( &d->selection_timer, SIGNAL( timeout()),
-        this, SLOT( selectionTimeout()));
+    connect( &d->selection_timer, SIGNAL(timeout()),
+        this, SLOT(selectionTimeout()));
 
-    connect( qApp->desktop(), SIGNAL( resized( int )), SLOT( updateFallbackSize()));
+    connect( qApp->desktop(), SIGNAL(resized(int)), SLOT(updateFallbackSize()));
 
     // toolbarAppearanceChanged(int) is sent when changing macstyle
     connect( KGlobalSettings::self(), SIGNAL(toolbarAppearanceChanged(int)),
@@ -175,10 +175,10 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
 #ifdef Q_WS_X11
       d->selection = new KSelectionWatcher( KMenuBarPrivate::makeSelectionAtom(),
           DefaultScreen( QX11Info::display()));
-      connect( d->selection, SIGNAL( newOwner( Window )),
-          this, SLOT( updateFallbackSize()));
-      connect( d->selection, SIGNAL( lostOwner()),
-          this, SLOT( updateFallbackSize()));
+      connect( d->selection, SIGNAL(newOwner(Window)),
+          this, SLOT(updateFallbackSize()));
+      connect( d->selection, SIGNAL(lostOwner()),
+          this, SLOT(updateFallbackSize()));
 #endif
       d->frameStyle = 0; //frameStyle();
       d->lineWidth = 0; //lineWidth();

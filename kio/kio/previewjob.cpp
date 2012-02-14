@@ -650,7 +650,7 @@ void PreviewJobPrivate::createThumbnail( const QString &pixPath )
     thumbURL.setPath(pixPath);
     KIO::TransferJob *job = KIO::get(thumbURL, NoReload, HideProgressInfo);
     q->addSubjob(job);
-    q->connect(job, SIGNAL(data(KIO::Job *, const QByteArray &)), SLOT(slotThumbData(KIO::Job *, const QByteArray &)));
+    q->connect(job, SIGNAL(data(KIO::Job*,QByteArray)), SLOT(slotThumbData(KIO::Job*,QByteArray)));
     bool save = bSave && currentItem.plugin->property("CacheThumbnail").toBool() && !sequenceIndex;
     job->addMetaData("mimeType", currentItem.item.mimetype());
     job->addMetaData("width", QString().setNum(save ? cacheWidth : width));

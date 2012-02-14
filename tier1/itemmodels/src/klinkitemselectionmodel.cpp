@@ -66,7 +66,7 @@ KLinkItemSelectionModel::KLinkItemSelectionModel(QAbstractItemModel *model, QIte
         : QItemSelectionModel(model, parent),
         d_ptr(new KLinkItemSelectionModelPrivate(this, model, proxySelector))
 {
-    connect(proxySelector, SIGNAL(selectionChanged(QItemSelection, QItemSelection)), SLOT(sourceSelectionChanged(QItemSelection, QItemSelection)));
+    connect(proxySelector, SIGNAL(selectionChanged(QItemSelection,QItemSelection)), SLOT(sourceSelectionChanged(QItemSelection,QItemSelection)));
 }
 
 KLinkItemSelectionModel::~KLinkItemSelectionModel()

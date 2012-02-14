@@ -32,14 +32,14 @@ InternetGateway::InternetGateway(QObject* backendObject) :
     DeviceInterface(*new InternetGatewayPrivate(), backendObject)
 {
     connect(backendObject,
-            SIGNAL(portMappingAdded(const QString&, qint16, const NetworkProtocol&, qint16, const QString&)),
+            SIGNAL(portMappingAdded(QString,qint16,NetworkProtocol,qint16,QString)),
             this,
-            SIGNAL(portMappingAdded(const QString&, qint16, const NetworkProtocol&, qint16, const QString&)));
+            SIGNAL(portMappingAdded(QString,qint16,NetworkProtocol,qint16,QString)));
 
     connect(backendObject,
-            SIGNAL(portMappingDeleted(const QString&, qint16, const NetworkProtocol&)),
+            SIGNAL(portMappingDeleted(QString,qint16,NetworkProtocol)),
             this,
-            SIGNAL(portMappingDeleted(const QString&, qint16, const NetworkProtocol&)));
+            SIGNAL(portMappingDeleted(QString,qint16,NetworkProtocol)));
 
     connect(backendObject,
             SIGNAL(enabledForInternet(bool)),
@@ -51,14 +51,14 @@ InternetGateway::InternetGateway(InternetGatewayPrivate& dd, QObject* backendObj
     : DeviceInterface(dd, backendObject)
 {
     connect(backendObject,
-            SIGNAL(portMappingAdded(const QString&, qint16, const NetworkProtocol&, qint16, const QString&)),
+            SIGNAL(portMappingAdded(QString,qint16,NetworkProtocol,qint16,QString)),
             this,
-            SIGNAL(portMappingAdded(const QString&, qint16, const NetworkProtocol&, qint16, const QString&)));
+            SIGNAL(portMappingAdded(QString,qint16,NetworkProtocol,qint16,QString)));
 
     connect(backendObject,
-            SIGNAL(portMappingDeleted(const QString&, qint16, const NetworkProtocol&)),
+            SIGNAL(portMappingDeleted(QString,qint16,NetworkProtocol)),
             this,
-            SIGNAL(portMappingDeleted(const QString&, qint16, const NetworkProtocol&)));
+            SIGNAL(portMappingDeleted(QString,qint16,NetworkProtocol)));
 
     connect(backendObject,
             SIGNAL(enabledForInternet(bool)),

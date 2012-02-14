@@ -137,8 +137,8 @@ KJavaAppletServer::KJavaAppletServer()
 {
     process = new KJavaProcess();
 
-    connect( process, SIGNAL(received(const QByteArray&)),
-             this,    SLOT(slotJavaRequest(const QByteArray&)) );
+    connect( process, SIGNAL(received(QByteArray)),
+             this,    SLOT(slotJavaRequest(QByteArray)) );
 
     setupJava( process );
 
@@ -201,7 +201,7 @@ void KJavaAppletServer::freeJavaServer()
         if( group.readEntry( "ShutdownAppletServer", true )  )
         {
             const int value = group.readEntry( "AppletServerTimeout", 60 );
-            QTimer::singleShot( value*1000, self, SLOT( checkShutdown() ) );
+            QTimer::singleShot( value*1000, self, SLOT(checkShutdown()) );
         }
     }
 }
@@ -823,10 +823,10 @@ QString PermissionDialog::exec( const QString & cert, const QString & perm ) {
     dialog->resize( dialog->minimumSizeHint() );
     //clearWState( WState_Polished );
 
-    connect( no, SIGNAL( clicked() ), this, SLOT( clicked() ) );
-    connect( reject, SIGNAL( clicked() ), this, SLOT( clicked() ) );
-    connect( yes, SIGNAL( clicked() ), this, SLOT( clicked() ) );
-    connect( grant, SIGNAL( clicked() ), this, SLOT( clicked() ) );
+    connect( no, SIGNAL(clicked()), this, SLOT(clicked()) );
+    connect( reject, SIGNAL(clicked()), this, SLOT(clicked()) );
+    connect( yes, SIGNAL(clicked()), this, SLOT(clicked()) );
+    connect( grant, SIGNAL(clicked()), this, SLOT(clicked()) );
 
     dialog->exec();
     delete dialog;

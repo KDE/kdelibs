@@ -137,7 +137,7 @@ void ServiceBrowserPrivate::customEvent(QEvent* event)
 		RemoteService::Ptr svr(new RemoteService(aev->m_name,aev->m_type.left(aev->m_type.length()-1),aev->m_domain));
 		if (aev->m_op==AddRemoveEvent::Add) {
 		    if (m_autoResolve) {
-			connect(svr.data(),SIGNAL(resolved(bool )),this,SLOT(serviceResolved(bool )));
+			connect(svr.data(),SIGNAL(resolved(bool)),this,SLOT(serviceResolved(bool)));
 			m_duringResolve+=svr;
 			svr->resolveAsync();
 		    } else {

@@ -59,18 +59,18 @@ ActionCollectionModel::ActionCollectionModel(QObject* parent, ActionCollection* 
     //setSupportedDragActions(Qt::MoveAction);
 
     //ActionCollection propagates signals to parent
-    QObject::connect( d->collection, SIGNAL( dataChanged( Action* ) ), this, SLOT( slotDataChanged( Action* ) ) );
-    QObject::connect( d->collection, SIGNAL( dataChanged( ActionCollection* ) ), this, SLOT( slotDataChanged( ActionCollection* ) ) );
+    QObject::connect( d->collection, SIGNAL(dataChanged(Action*)), this, SLOT(slotDataChanged(Action*)) );
+    QObject::connect( d->collection, SIGNAL(dataChanged(ActionCollection*)), this, SLOT(slotDataChanged(ActionCollection*)) );
 
-    QObject::connect( d->collection, SIGNAL( collectionToBeInserted( ActionCollection*, ActionCollection* ) ), this, SLOT( slotCollectionToBeInserted( ActionCollection*, ActionCollection* ) ) );
-    QObject::connect( d->collection, SIGNAL( collectionInserted( ActionCollection*, ActionCollection* ) ), this, SLOT( slotCollectionInserted( ActionCollection*, ActionCollection* ) ) );
-    QObject::connect( d->collection, SIGNAL( collectionToBeRemoved( ActionCollection*, ActionCollection* ) ), this, SLOT( slotCollectionToBeRemoved( ActionCollection*, ActionCollection* ) ) );
-    QObject::connect( d->collection, SIGNAL( collectionRemoved( ActionCollection*, ActionCollection* ) ), this, SLOT( slotCollectionRemoved( ActionCollection*, ActionCollection* ) ) );
+    QObject::connect( d->collection, SIGNAL(collectionToBeInserted(ActionCollection*,ActionCollection*)), this, SLOT(slotCollectionToBeInserted(ActionCollection*,ActionCollection*)) );
+    QObject::connect( d->collection, SIGNAL(collectionInserted(ActionCollection*,ActionCollection*)), this, SLOT(slotCollectionInserted(ActionCollection*,ActionCollection*)) );
+    QObject::connect( d->collection, SIGNAL(collectionToBeRemoved(ActionCollection*,ActionCollection*)), this, SLOT(slotCollectionToBeRemoved(ActionCollection*,ActionCollection*)) );
+    QObject::connect( d->collection, SIGNAL(collectionRemoved(ActionCollection*,ActionCollection*)), this, SLOT(slotCollectionRemoved(ActionCollection*,ActionCollection*)) );
 
-    QObject::connect( d->collection, SIGNAL( actionToBeInserted( Action*, ActionCollection* ) ), this, SLOT( slotActionToBeInserted( Action*, ActionCollection* ) ) );
-    QObject::connect( d->collection, SIGNAL( actionInserted( Action*, ActionCollection* ) ), this, SLOT( slotActionInserted( Action*, ActionCollection* ) ) );
-    QObject::connect( d->collection, SIGNAL( actionToBeRemoved( Action*, ActionCollection* ) ), this, SLOT( slotActionToBeRemoved( Action*, ActionCollection* ) ) );
-    QObject::connect( d->collection, SIGNAL( actionRemoved( Action*, ActionCollection* ) ), this, SLOT( slotActionRemoved( Action*, ActionCollection* ) ) );
+    QObject::connect( d->collection, SIGNAL(actionToBeInserted(Action*,ActionCollection*)), this, SLOT(slotActionToBeInserted(Action*,ActionCollection*)) );
+    QObject::connect( d->collection, SIGNAL(actionInserted(Action*,ActionCollection*)), this, SLOT(slotActionInserted(Action*,ActionCollection*)) );
+    QObject::connect( d->collection, SIGNAL(actionToBeRemoved(Action*,ActionCollection*)), this, SLOT(slotActionToBeRemoved(Action*,ActionCollection*)) );
+    QObject::connect( d->collection, SIGNAL(actionRemoved(Action*,ActionCollection*)), this, SLOT(slotActionRemoved(Action*,ActionCollection*)) );
 }
 
 ActionCollectionModel::~ActionCollectionModel()

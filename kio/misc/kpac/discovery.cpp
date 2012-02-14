@@ -60,12 +60,12 @@ namespace KPAC
         : Downloader( parent ),
           m_helper( new KProcess(this) )
     {
-        connect( m_helper, SIGNAL( readyReadStandardOutput() ), SLOT( helperOutput() ) );
-        connect( m_helper, SIGNAL( finished( int, QProcess::ExitStatus ) ), SLOT( failed() ) );
+        connect( m_helper, SIGNAL(readyReadStandardOutput()), SLOT(helperOutput()) );
+        connect( m_helper, SIGNAL(finished(int,QProcess::ExitStatus)), SLOT(failed()) );
         *m_helper << KStandardDirs::findExe("kpac_dhcp_helper");
         m_helper->start();
         if ( !m_helper->waitForStarted() )
-            QTimer::singleShot( 0, this, SLOT( failed() ) );
+            QTimer::singleShot( 0, this, SLOT(failed()) );
     }
 
     bool Discovery::initDomainName()

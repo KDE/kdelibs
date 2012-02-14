@@ -119,7 +119,7 @@ KFileMetaPropsPlugin::KFileMetaPropsPlugin(KPropertiesDialog* props)
     QLabel* configureLabel = new QLabel("<a href=\"configure\">" +
                                         i18nc("@action:button", "Configure...") +
                                         "</a>");
-    connect(configureLabel, SIGNAL(linkActivated(const QString&)),
+    connect(configureLabel, SIGNAL(linkActivated(QString)),
             this, SLOT(configureShownMetaData()));
 
     QWidget* mainWidget = new QWidget();

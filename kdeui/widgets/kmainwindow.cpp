@@ -493,8 +493,8 @@ KMenu* KMainWindow::customHelpMenu( bool showWhatsThis )
     K_D(KMainWindow);
     if (!d->helpMenu) {
         d->helpMenu = new KHelpMenu( this, QString(), showWhatsThis );
-        connect(d->helpMenu, SIGNAL( showAboutApplication()),
-                this, SLOT( showAboutApplication() ));
+        connect(d->helpMenu, SIGNAL(showAboutApplication()),
+                this, SLOT(showAboutApplication()));
     }
 
     return d->helpMenu->menu();

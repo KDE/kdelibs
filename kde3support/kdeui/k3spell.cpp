@@ -395,8 +395,8 @@ K3Spell::startIspell()
     connect( proc, SIGNAL(readyReadStandardError()),
              this, SLOT(ispellErrors()) );
 
-    connect( proc, SIGNAL(finished(int, QProcess::ExitStatus)),
-             this, SLOT(ispellExit ()) );
+    connect( proc, SIGNAL(finished(int,QProcess::ExitStatus)),
+             this, SLOT(ispellExit()) );
 
     proc->setOutputChannelMode( KProcess::SeparateChannels );
     proc->setNextOpenMode( QIODevice::ReadWrite | QIODevice::Text );
@@ -478,8 +478,8 @@ K3Spell::setUpDialog( bool reallyuseprogressbar )
 
   connect( ksdlg, SIGNAL(command(int)),
            this, SLOT(slotStopCancel(int)) );
-  connect( this, SIGNAL(progress(unsigned int)),
-	   ksdlg, SLOT(slotProgress(unsigned int)) );
+  connect( this, SIGNAL(progress(uint)),
+	   ksdlg, SLOT(slotProgress(uint)) );
 
   if ( modaldlg )
     ksdlg->setFocus();
@@ -896,7 +896,7 @@ bool K3Spell::checkList (QStringList *_wordlist, bool _usedialog)
   setUpDialog();
 
   //set the dialog signal handler
-  dialog3slot = SLOT (checkList4 ());
+  dialog3slot = SLOT (checkList4());
 
   proc->write(QByteArray( '%' ) ); // turn off terse mode & check one word at a time
 
@@ -1547,12 +1547,12 @@ void K3Spell::slotModalReady()
   //kDebug(750) << "MODAL READY------------------";
 
   Q_ASSERT( m_status == Running );
-  connect( this, SIGNAL( done( const QString & ) ),
-           this, SLOT( slotModalDone( const QString & ) ) );
-  QObject::connect( this, SIGNAL( corrected( const QString&, const QString&, unsigned int ) ),
-                    this, SLOT( slotSpellCheckerCorrected( const QString&, const QString &, unsigned int ) ) );
-  QObject::connect( this, SIGNAL( death() ),
-                    this, SLOT( slotModalSpellCheckerFinished( ) ) );
+  connect( this, SIGNAL(done(QString)),
+           this, SLOT(slotModalDone(QString)) );
+  QObject::connect( this, SIGNAL(corrected(QString,QString,uint)),
+                    this, SLOT(slotSpellCheckerCorrected(QString,QString,uint)) );
+  QObject::connect( this, SIGNAL(death()),
+                    this, SLOT(slotModalSpellCheckerFinished()) );
   check( modaltext );
 }
 
@@ -1587,8 +1587,8 @@ void K3Spell::initialize( QWidget *_parent, const QString &_caption,
   d->checking = false;
   d->aspellV6 = false;
   d->checkNextTimer = new QTimer( this );
-  connect( d->checkNextTimer, SIGNAL( timeout() ),
-	   this, SLOT( checkNext() ));
+  connect( d->checkNextTimer, SIGNAL(timeout()),
+	   this, SLOT(checkNext()));
   autoDelete = false;
   modaldlg = _modal;
   progressbar = _progressbar;
@@ -1683,10 +1683,10 @@ void K3Spell::initialize( QWidget *_parent, const QString &_caption,
 
   if ( obj && slot )
       // caller wants to know when k3spell is ready
-      connect( this, SIGNAL(ready(K3Spell *)), obj, slot);
+      connect( this, SIGNAL(ready(K3Spell*)), obj, slot);
   else
       // Hack for modal spell checking
-      connect( this, SIGNAL(ready(K3Spell *)), this, SLOT(slotModalReady()) );
+      connect( this, SIGNAL(ready(K3Spell*)), this, SLOT(slotModalReady()) );
 
   proc = new KProcess();
 

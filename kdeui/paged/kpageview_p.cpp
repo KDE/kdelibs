@@ -119,9 +119,9 @@ void KPageListView::setModel( QAbstractItemModel *model )
   proxy->setSourceModel( model );
   proxy->rebuildMap();
 
-  connect( model, SIGNAL( layoutChanged() ), proxy, SLOT( rebuildMap() ) );
+  connect( model, SIGNAL(layoutChanged()), proxy, SLOT(rebuildMap()) );
 */
-  connect( model, SIGNAL( layoutChanged() ), this, SLOT( updateWidth() ) );
+  connect( model, SIGNAL(layoutChanged()), this, SLOT(updateWidth()) );
 
 //  QListView::setModel( proxy );
   QListView::setModel( model );
@@ -159,7 +159,7 @@ KPageTreeView::KPageTreeView( QWidget *parent )
 
 void KPageTreeView::setModel( QAbstractItemModel *model )
 {
-  connect( model, SIGNAL( layoutChanged() ), this, SLOT( updateWidth() ) );
+  connect( model, SIGNAL(layoutChanged()), this, SLOT(updateWidth()) );
 
   QTreeView::setModel( model );
 
@@ -215,7 +215,7 @@ KPageTabbedView::KPageTabbedView( QWidget *parent )
   layout->setMargin( 0 );
 
   mTabWidget = new QTabWidget( this );
-  connect( mTabWidget, SIGNAL( currentChanged( int ) ), this, SLOT( currentPageChanged( int ) ) );
+  connect( mTabWidget, SIGNAL(currentChanged(int)), this, SLOT(currentPageChanged(int)) );
 
   layout->addWidget( mTabWidget );
 }
@@ -238,7 +238,7 @@ void KPageTabbedView::setModel( QAbstractItemModel *model )
 {
   QAbstractItemView::setModel( model );
 
-  connect( model, SIGNAL( layoutChanged() ), this, SLOT( layoutChanged() ) );
+  connect( model, SIGNAL(layoutChanged()), this, SLOT(layoutChanged()) );
 
   layoutChanged();
 }
@@ -364,7 +364,7 @@ KPageListViewDelegate::KPageListViewDelegate( QObject *parent )
 {
     mIconSize = KIconLoader::global()->currentSize( KIconLoader::Dialog );
 
-    connect(KGlobalSettings::self(), SIGNAL( iconChanged( int ) ), this, SLOT( iconSettingsChanged( int ) ) );
+    connect(KGlobalSettings::self(), SIGNAL(iconChanged(int)), this, SLOT(iconSettingsChanged(int)) );
 }
 
 void KPageListViewDelegate::iconSettingsChanged( int group )

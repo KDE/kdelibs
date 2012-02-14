@@ -90,7 +90,7 @@ KACLEditWidget::KACLEditWidget( QWidget *parent )
     d->m_listView = new KACLListView(this);
     hbox->addWidget(d->m_listView);
     connect(d->m_listView->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection& )),
+            SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
             this,
             SLOT(_k_slotUpdateButtons()));
     QVBoxLayout *vbox = new QVBoxLayout();
@@ -445,10 +445,10 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
         m_defaultCB = new QCheckBox( i18n("Default for new files in this folder"), page );
         m_defaultCB->setObjectName( QLatin1String( "defaultCB" ) );
         mainLayout->addWidget( m_defaultCB );
-        connect( m_defaultCB, SIGNAL( toggled( bool ) ),
-                 this, SLOT( slotUpdateAllowedUsersAndGroups() ) );
-        connect( m_defaultCB, SIGNAL( toggled( bool ) ),
-                 this, SLOT( slotUpdateAllowedTypes() ) );
+        connect( m_defaultCB, SIGNAL(toggled(bool)),
+                 this, SLOT(slotUpdateAllowedUsersAndGroups()) );
+        connect( m_defaultCB, SIGNAL(toggled(bool)),
+                 this, SLOT(slotUpdateAllowedTypes()) );
     }
 
     QRadioButton *ownerType = new QRadioButton( i18n("Owner"), gb );
@@ -484,8 +484,8 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
 
     mainLayout->addWidget( gb );
 
-    connect( m_buttonGroup, SIGNAL( buttonClicked( QAbstractButton* ) ),
-             this, SLOT( slotSelectionChanged( QAbstractButton * ) ) );
+    connect( m_buttonGroup, SIGNAL(buttonClicked(QAbstractButton*)),
+             this, SLOT(slotSelectionChanged(QAbstractButton*)) );
 
     m_widgetStack = new QStackedWidget( page );
     mainLayout->addWidget( m_widgetStack );
@@ -660,8 +660,8 @@ KACLListView::KACLListView( QWidget* parent )
     m_allUsers.sort();
     m_allGroups.sort();
 
-    connect( this, SIGNAL( itemClicked( QTreeWidgetItem*, int ) ),
-             this, SLOT( slotItemClicked( QTreeWidgetItem*, int ) ) );
+    connect( this, SIGNAL(itemClicked(QTreeWidgetItem*,int)),
+             this, SLOT(slotItemClicked(QTreeWidgetItem*,int)) );
 }
 
 

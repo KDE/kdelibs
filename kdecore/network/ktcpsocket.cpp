@@ -386,13 +386,13 @@ KTcpSocket::KTcpSocket(QObject *parent)
     connect(&d->sock, SIGNAL(encrypted()), this, SIGNAL(encrypted()));
     connect(&d->sock, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
 #ifndef QT_NO_NETWORKPROXY
-    connect(&d->sock, SIGNAL(proxyAuthenticationRequired(const QNetworkProxy &, QAuthenticator *)),
-            this, SIGNAL(proxyAuthenticationRequired(const QNetworkProxy &, QAuthenticator *)));
+    connect(&d->sock, SIGNAL(proxyAuthenticationRequired(QNetworkProxy,QAuthenticator*)),
+            this, SIGNAL(proxyAuthenticationRequired(QNetworkProxy,QAuthenticator*)));
 #endif
     connect(&d->sock, SIGNAL(error(QAbstractSocket::SocketError)),
             this, SLOT(reemitSocketError(QAbstractSocket::SocketError)));
-    connect(&d->sock, SIGNAL(sslErrors(const QList<QSslError> &)),
-            this, SLOT(reemitSslErrors(const QList<QSslError> &)));
+    connect(&d->sock, SIGNAL(sslErrors(QList<QSslError>)),
+            this, SLOT(reemitSslErrors(QList<QSslError>)));
     connect(&d->sock, SIGNAL(hostFound()), this, SIGNAL(hostFound()));
     connect(&d->sock, SIGNAL(stateChanged(QAbstractSocket::SocketState)),
             this, SLOT(reemitStateChanged(QAbstractSocket::SocketState)));

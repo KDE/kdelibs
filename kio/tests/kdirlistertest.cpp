@@ -335,8 +335,8 @@ void KDirListerTest::testRefreshItems()
     QVERIFY(!cachedItem.isNull());
     QCOMPARE(cachedItem.mimetype(), QString("application/octet-stream"));
 
-    connect(&m_dirLister, SIGNAL(refreshItems(const QList<QPair<KFileItem, KFileItem> > &)),
-            this, SLOT(slotRefreshItems(const QList<QPair<KFileItem, KFileItem> > &)));
+    connect(&m_dirLister, SIGNAL(refreshItems(QList<QPair<KFileItem,KFileItem> >)),
+            this, SLOT(slotRefreshItems(QList<QPair<KFileItem,KFileItem> >)));
 
     QFile file(fileName);
     QVERIFY(file.open(QIODevice::Append));
@@ -382,8 +382,8 @@ void KDirListerTest::testRefreshRootItem()
     MyDirLister dirLister2;
     fillDirLister2(dirLister2, path);
 
-    connect(&m_dirLister, SIGNAL(refreshItems(const QList<QPair<KFileItem, KFileItem> > &)),
-            this, SLOT(slotRefreshItems(const QList<QPair<KFileItem, KFileItem> > &)));
+    connect(&m_dirLister, SIGNAL(refreshItems(QList<QPair<KFileItem,KFileItem> >)),
+            this, SLOT(slotRefreshItems(QList<QPair<KFileItem,KFileItem> >)));
 
     org::kde::KDirNotify::emitFilesChanged(QStringList() << KUrl(path).url());
     waitForRefreshedItems();
@@ -440,7 +440,7 @@ void KDirListerTest::testDeleteItem()
     const int origItemCount = m_items.count();
     QCOMPARE(fileCount(), origItemCount);
     const QString path = m_tempDir.path() + '/';
-    connect(&m_dirLister, SIGNAL(deleteItem(const KFileItem&)), this, SLOT(exitLoop()));
+    connect(&m_dirLister, SIGNAL(deleteItem(KFileItem)), this, SLOT(exitLoop()));
 
     //kDebug() << "Removing " << path+"toplevelfile_1";
     QFile::remove(path+"toplevelfile_1");
@@ -472,8 +472,8 @@ void KDirListerTest::testRenameItem()
 {
     m_refreshedItems.clear();
     const QString dirPath = m_tempDir.path() + '/';
-    connect(&m_dirLister, SIGNAL(refreshItems(const QList<QPair<KFileItem, KFileItem> > &)),
-            this, SLOT(slotRefreshItems(const QList<QPair<KFileItem, KFileItem> > &)));
+    connect(&m_dirLister, SIGNAL(refreshItems(QList<QPair<KFileItem,KFileItem> >)),
+            this, SLOT(slotRefreshItems(QList<QPair<KFileItem,KFileItem> >)));
     const QString path = dirPath+"toplevelfile_2";
     const QString newPath = dirPath+"toplevelfile_2.renamed.html";
 
@@ -519,8 +519,8 @@ void KDirListerTest::testRenameAndOverwrite() // has to be run after testRenameI
     QCOMPARE(existingItem.url().path(), path);
 
     m_refreshedItems.clear();
-    connect(&m_dirLister, SIGNAL(refreshItems(const QList<QPair<KFileItem, KFileItem> > &)),
-            this, SLOT(slotRefreshItems(const QList<QPair<KFileItem, KFileItem> > &)));
+    connect(&m_dirLister, SIGNAL(refreshItems(QList<QPair<KFileItem,KFileItem> >)),
+            this, SLOT(slotRefreshItems(QList<QPair<KFileItem,KFileItem> >)));
     const QString newPath = dirPath+"toplevelfile_2.renamed.html";
 
     KIO::SimpleJob* job = KIO::rename(newPath, path, KIO::Overwrite | KIO::HideProgressInfo);
@@ -891,7 +891,7 @@ void KDirListerTest::testRedirection()
 
     // then wait for the redirection signal
     qDebug("waiting for redirection");
-    connect(&m_dirLister, SIGNAL(redirection(KUrl, KUrl)), this, SLOT(exitLoop()));
+    connect(&m_dirLister, SIGNAL(redirection(KUrl,KUrl)), this, SLOT(exitLoop()));
     enterLoop();
     QCOMPARE(m_dirLister.spyStarted.count(), 1);
     QCOMPARE(m_dirLister.spyCompleted.count(), 0); // we stopped before the listing.
@@ -994,8 +994,8 @@ void KDirListerTest::fillDirLister2(MyDirLister& lister, const QString& path)
 {
     m_items2.clear();
     connect(&lister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems2(KFileItemList)));
-    connect(&lister, SIGNAL(refreshItems(QList<QPair<KFileItem, KFileItem> >)),
-            this, SLOT(slotRefreshItems2(QList<QPair<KFileItem, KFileItem> >)));
+    connect(&lister, SIGNAL(refreshItems(QList<QPair<KFileItem,KFileItem> >)),
+            this, SLOT(slotRefreshItems2(QList<QPair<KFileItem,KFileItem> >)));
     lister.openUrl(KUrl(path), KDirLister::NoFlags);
     connect(&lister, SIGNAL(completed()), this, SLOT(exitLoop()));
     enterLoop();

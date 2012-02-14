@@ -68,8 +68,8 @@ WeaverImpl::WeaverImpl( QObject* parent )
     m_states[Destructed] = new DestructedState( this );
 
     // FIXME (0.7) this is supposedly unnecessary
-    connect ( this, SIGNAL ( asyncThreadSuspended( ThreadWeaver::Thread* ) ),
-              SIGNAL ( threadSuspended( ThreadWeaver::Thread* ) ),
+    connect ( this, SIGNAL (asyncThreadSuspended(ThreadWeaver::Thread*)),
+              SIGNAL (threadSuspended(ThreadWeaver::Thread*)),
               Qt::QueuedConnection );
     setState(  WorkingHard );
 }
@@ -161,16 +161,16 @@ int WeaverImpl::currentNumberOfThreads () const
 
 void WeaverImpl::registerObserver ( WeaverObserver *ext )
 {
-    connect ( this,  SIGNAL ( stateChanged ( ThreadWeaver::State* ) ),
-              ext,  SIGNAL ( weaverStateChanged ( ThreadWeaver::State* ) ) );
-    connect ( this,  SIGNAL ( threadStarted ( ThreadWeaver::Thread* ) ),
-              ext,  SIGNAL ( threadStarted ( ThreadWeaver::Thread* ) ) );
-    connect ( this,  SIGNAL ( threadBusy( ThreadWeaver::Thread*, ThreadWeaver::Job* ) ),
-              ext,  SIGNAL ( threadBusy ( ThreadWeaver::Thread*, ThreadWeaver::Job* ) ) );
-    connect ( this,  SIGNAL ( threadSuspended ( ThreadWeaver::Thread* ) ),
-              ext,  SIGNAL ( threadSuspended ( ThreadWeaver::Thread* ) ) );
-    connect ( this,  SIGNAL ( threadExited ( ThreadWeaver::Thread* ) ) ,
-              ext,  SIGNAL ( threadExited ( ThreadWeaver::Thread* ) ) );
+    connect ( this,  SIGNAL (stateChanged(ThreadWeaver::State*)),
+              ext,  SIGNAL (weaverStateChanged(ThreadWeaver::State*)) );
+    connect ( this,  SIGNAL (threadStarted(ThreadWeaver::Thread*)),
+              ext,  SIGNAL (threadStarted(ThreadWeaver::Thread*)) );
+    connect ( this,  SIGNAL (threadBusy(ThreadWeaver::Thread*,ThreadWeaver::Job*)),
+              ext,  SIGNAL (threadBusy(ThreadWeaver::Thread*,ThreadWeaver::Job*)) );
+    connect ( this,  SIGNAL (threadSuspended(ThreadWeaver::Thread*)),
+              ext,  SIGNAL (threadSuspended(ThreadWeaver::Thread*)) );
+    connect ( this,  SIGNAL (threadExited(ThreadWeaver::Thread*)) ,
+              ext,  SIGNAL (threadExited(ThreadWeaver::Thread*)) );
 }
 
 void WeaverImpl::enqueue(Job* job)
@@ -212,12 +212,12 @@ void WeaverImpl::adjustInventory ( int numberOfNewJobs )
             Thread *th = createThread();
             th->moveToThread( th ); // be sane from the start
             m_inventory.append(th);
-            connect ( th,  SIGNAL ( jobStarted ( ThreadWeaver::Thread*, ThreadWeaver::Job* ) ),
-                      SIGNAL ( threadBusy ( ThreadWeaver::Thread*, ThreadWeaver::Job* ) ) );
-            connect ( th,  SIGNAL ( jobDone( ThreadWeaver::Job* ) ),
-                      SIGNAL ( jobDone( ThreadWeaver::Job* ) ) );
-            connect ( th,  SIGNAL ( started ( ThreadWeaver::Thread* ) ),
-                      SIGNAL ( threadStarted ( ThreadWeaver::Thread* ) ) );
+            connect ( th,  SIGNAL (jobStarted(ThreadWeaver::Thread*,ThreadWeaver::Job*)),
+                      SIGNAL (threadBusy(ThreadWeaver::Thread*,ThreadWeaver::Job*)) );
+            connect ( th,  SIGNAL (jobDone(ThreadWeaver::Job*)),
+                      SIGNAL (jobDone(ThreadWeaver::Job*)) );
+            connect ( th,  SIGNAL (started(ThreadWeaver::Thread*)),
+                      SIGNAL (threadStarted(ThreadWeaver::Thread*)) );
 
             th->start ();
             debug ( 2, "WeaverImpl::adjustInventory: thread created, "

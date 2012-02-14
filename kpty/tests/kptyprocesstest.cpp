@@ -176,7 +176,7 @@ void KPtyProcessTest::test_pty_signals()
     sp.start();
     sp.pty()->closeSlave();
     phase = 0;
-    QTest::kWaitForSignal(&sp, SIGNAL(finished(int, QProcess::ExitStatus)), 1000);
+    QTest::kWaitForSignal(&sp, SIGNAL(finished(int,QProcess::ExitStatus)), 1000);
     QCOMPARE(QLatin1String(log), QLatin1String(want));
 }
 

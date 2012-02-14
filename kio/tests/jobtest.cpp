@@ -144,11 +144,11 @@ void JobTest::storedGet()
     m_result = -1;
 
     KIO::StoredTransferJob* job = KIO::storedGet( u, KIO::NoReload, KIO::HideProgressInfo );
-    QSignalSpy spyPercent(job, SIGNAL(percent(KJob*, unsigned long)));
+    QSignalSpy spyPercent(job, SIGNAL(percent(KJob*,ulong)));
     QVERIFY(spyPercent.isValid());
     job->setUiDelegate( 0 );
-    connect( job, SIGNAL( result( KJob* ) ),
-            this, SLOT( slotGetResult( KJob* ) ) );
+    connect( job, SIGNAL(result(KJob*)),
+            this, SLOT(slotGetResult(KJob*)) );
     enterLoop();
     QCOMPARE( m_result, 0 ); // no error
     QCOMPARE( m_data, QByteArray("Hello\0world", 11) );
@@ -172,10 +172,10 @@ void JobTest::put()
     mtime.setTime_t(mtime.toTime_t()); // hack for losing the milliseconds
     job->setModificationTime(mtime);
     job->setUiDelegate( 0 );
-    connect( job, SIGNAL( result(KJob*) ),
-            this, SLOT( slotResult(KJob*) ) );
-    connect( job, SIGNAL(dataReq(KIO::Job*, QByteArray&)),
-             this, SLOT(slotDataReq(KIO::Job*, QByteArray&)) );
+    connect( job, SIGNAL(result(KJob*)),
+            this, SLOT(slotResult(KJob*)) );
+    connect( job, SIGNAL(dataReq(KIO::Job*,QByteArray&)),
+             this, SLOT(slotDataReq(KIO::Job*,QByteArray&)) );
     m_result = -1;
     m_dataReqCount = 0;
     enterLoop();
@@ -216,7 +216,7 @@ void JobTest::storedPut()
     KUrl u(filePath);
     QByteArray putData = "This is the put data";
     KIO::TransferJob* job = KIO::storedPut( putData, u, 0600, KIO::Overwrite | KIO::HideProgressInfo );
-    QSignalSpy spyPercent(job, SIGNAL(percent(KJob*, unsigned long)));
+    QSignalSpy spyPercent(job, SIGNAL(percent(KJob*,ulong)));
     QVERIFY(spyPercent.isValid());
     QDateTime mtime = QDateTime::currentDateTime().addSecs( -30 ); // 30 seconds ago
     mtime.setTime_t(mtime.toTime_t()); // hack for losing the milliseconds
@@ -264,7 +264,7 @@ void JobTest::copyLocalFile( const QString& src, const QString& dest )
     // cleanup and retry with KIO::copy()
     QFile::remove( dest );
     job = KIO::copy(u, d, KIO::HideProgressInfo );
-    QSignalSpy spyCopyingDone(job, SIGNAL(copyingDone(KIO::Job*,const KUrl&,const KUrl&,time_t,bool,bool)));
+    QSignalSpy spyCopyingDone(job, SIGNAL(copyingDone(KIO::Job*,KUrl,KUrl,time_t,bool,bool)));
     job->setUiDelegate(0);
     ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( ok );
@@ -587,8 +587,8 @@ void JobTest::listRecursive()
 #endif
     KIO::ListJob* job = KIO::listRecursive( KUrl(src), KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
-    connect( job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList& ) ),
-             SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList& ) ) );
+    connect( job, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)),
+             SLOT(slotEntries(KIO::Job*,KIO::UDSEntryList)) );
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     QVERIFY( ok );
     m_names.sort();
@@ -1089,8 +1089,8 @@ void JobTest::copyFileToSystem( bool resolve_local_urls )
     m_mimetype.clear();
     KIO::FileCopyJob* job = KIO::file_copy(u, d, -1, KIO::HideProgressInfo);
     job->setUiDelegate( 0 );
-    connect( job, SIGNAL(mimetype(KIO::Job*,const QString&)),
-             this, SLOT(slotMimetype(KIO::Job*,const QString&)) );
+    connect( job, SIGNAL(mimetype(KIO::Job*,QString)),
+             this, SLOT(slotMimetype(KIO::Job*,QString)) );
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     QVERIFY( ok );
 
@@ -1381,7 +1381,7 @@ void JobTest::mimeType()
     createTestFile( filePath );
     KIO::MimetypeJob* job = KIO::mimetype(filePath, KIO::HideProgressInfo);
     QVERIFY(job);
-    QSignalSpy spyMimeType(job, SIGNAL(mimetype(KIO::Job*, QString)));
+    QSignalSpy spyMimeType(job, SIGNAL(mimetype(KIO::Job*,QString)));
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY(ok);
     QCOMPARE(spyMimeType.count(), 1);
@@ -1391,7 +1391,7 @@ void JobTest::mimeType()
     // Testing mimetype over HTTP
     KIO::MimetypeJob* job = KIO::mimetype(KUrl("http://www.kde.org"), KIO::HideProgressInfo);
     QVERIFY(job);
-    QSignalSpy spyMimeType(job, SIGNAL(mimetype(KIO::Job*, QString)));
+    QSignalSpy spyMimeType(job, SIGNAL(mimetype(KIO::Job*,QString)));
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY(ok);
     QCOMPARE(spyMimeType.count(), 1);

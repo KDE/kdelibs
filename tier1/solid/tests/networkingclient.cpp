@@ -60,12 +60,12 @@ TestClient::TestClient()
     appDisconnected();
 
     qDebug() << "About to connect";
-    connect( Solid::Networking::notifier(), SIGNAL( statusChanged( Solid::Networking::Status ) ), SLOT( networkStatusChanged( Solid::Networking::Status ) ) );
+    connect( Solid::Networking::notifier(), SIGNAL(statusChanged(Solid::Networking::Status)), SLOT(networkStatusChanged(Solid::Networking::Status)) );
     qDebug() << "Connected.";
-    connect( Solid::Networking::notifier(), SIGNAL( shouldConnect() ), this, SLOT( doConnect() ) );
-    connect( Solid::Networking::notifier(), SIGNAL( shouldDisconnect() ), this, SLOT( doDisconnect() ) );
+    connect( Solid::Networking::notifier(), SIGNAL(shouldConnect()), this, SLOT(doConnect()) );
+    connect( Solid::Networking::notifier(), SIGNAL(shouldDisconnect()), this, SLOT(doDisconnect()) );
 
-    connect( ui.connectButton, SIGNAL( clicked() ), SLOT( connectButtonClicked() ) );
+    connect( ui.connectButton, SIGNAL(clicked()), SLOT(connectButtonClicked()) );
 }
 
 TestClient::~TestClient()

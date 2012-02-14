@@ -82,7 +82,7 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget,
     // with
     m_khtml->setAutoDeletePart( false );
 
-    connect( m_khtml->view(), SIGNAL( finishedLayout() ), this, SLOT( restoreScrollPosition() ) );
+    connect( m_khtml->view(), SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()) );
 
     setWidget( box );
 
@@ -105,14 +105,14 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget,
     // forward opening requests to parent frame (if existing)
     KHTMLPart *p = qobject_cast<KHTMLPart*>(parent);
     KParts::BrowserExtension *be = p ? p->browserExtension() : m_ext;
-    connect(m_khtml->browserExtension(), SIGNAL(openUrlRequestDelayed(const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &)),
-    		be, SIGNAL(openUrlRequestDelayed(const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &)));
+    connect(m_khtml->browserExtension(), SIGNAL(openUrlRequestDelayed(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)),
+               be, SIGNAL(openUrlRequestDelayed(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)));
 
     connect(m_khtml->browserExtension(), SIGNAL(popupMenu(QPoint,KUrl,mode_t,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)),
             this, SLOT(slotPopupMenu(QPoint,KUrl,mode_t,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)));
 
-    connect( m_khtml->browserExtension(), SIGNAL( enableAction( const char *, bool ) ),
-             m_ext, SIGNAL( enableAction( const char *, bool ) ) );
+    connect( m_khtml->browserExtension(), SIGNAL(enableAction(const char*,bool)),
+             m_ext, SIGNAL(enableAction(const char*,bool)) );
 
     m_ext->setURLDropHandlingEnabled( true );
 }
@@ -172,8 +172,8 @@ bool KHTMLImage::openUrl( const KUrl &url )
     m_khtml->end();
 
     /*
-    connect( khtml::Cache::loader(), SIGNAL( requestDone( khtml::DocLoader*, khtml::CachedObject *) ),
-            this, SLOT( updateWindowCaption() ) );
+    connect( khtml::Cache::loader(), SIGNAL(requestDone(khtml::DocLoader*,khtml::CachedObject*)),
+            this, SLOT(updateWindowCaption()) );
             */
     return true;
 }
@@ -245,7 +245,7 @@ void KHTMLImage::slotImageJobFinished( KIO::Job *job )
     else
     {
         emit completed();
-        QTimer::singleShot( 0, this, SLOT( updateWindowCaption() ) );
+        QTimer::singleShot( 0, this, SLOT(updateWindowCaption()) );
     }
 }
 

@@ -40,55 +40,55 @@ KPageWidgetTest::KPageWidgetTest( QWidget *parent )
   mWidget = new KPageWidget( this );
   layout->addWidget( mWidget, 0, 0, 7, 1 );
 
-  connect( mWidget, SIGNAL( currentPageChanged( KPageWidgetItem*, KPageWidgetItem* ) ),
-           this, SLOT( currentPageChanged( KPageWidgetItem*, KPageWidgetItem* ) ) );
-  connect( mWidget, SIGNAL( pageToggled( KPageWidgetItem*, bool ) ),
-           this, SLOT( pageToggled( KPageWidgetItem*, bool ) ) );
+  connect( mWidget, SIGNAL(currentPageChanged(KPageWidgetItem*,KPageWidgetItem*)),
+           this, SLOT(currentPageChanged(KPageWidgetItem*,KPageWidgetItem*)) );
+  connect( mWidget, SIGNAL(pageToggled(KPageWidgetItem*,bool)),
+           this, SLOT(pageToggled(KPageWidgetItem*,bool)) );
 
   int rowCount = 0;
   QPushButton *button = new QPushButton( "Auto", this );
   layout->addWidget( button, rowCount, 1 );
-  connect( button, SIGNAL( clicked() ), this, SLOT( setAutoFace() ) );
+  connect( button, SIGNAL(clicked()), this, SLOT(setAutoFace()) );
   rowCount++;
 
   button = new QPushButton( "Plain", this );
   layout->addWidget( button, rowCount, 1 );
-  connect( button, SIGNAL( clicked() ), this, SLOT( setPlainFace() ) );
+  connect( button, SIGNAL(clicked()), this, SLOT(setPlainFace()) );
   rowCount++;
 
   button = new QPushButton( "List", this );
   layout->addWidget( button, rowCount, 1 );
-  connect( button, SIGNAL( clicked() ), this, SLOT( setListFace() ) );
+  connect( button, SIGNAL(clicked()), this, SLOT(setListFace()) );
   rowCount++;
 
   button = new QPushButton( "Tree", this );
   layout->addWidget( button, rowCount, 1 );
-  connect( button, SIGNAL( clicked() ), this, SLOT( setTreeFace() ) );
+  connect( button, SIGNAL(clicked()), this, SLOT(setTreeFace()) );
   rowCount++;
 
   button = new QPushButton( "Tabbed", this );
   layout->addWidget( button, rowCount, 1 );
-  connect( button, SIGNAL( clicked() ), this, SLOT( setTabbedFace() ) );
+  connect( button, SIGNAL(clicked()), this, SLOT(setTabbedFace()) );
   rowCount++;
 
   button = new QPushButton( "Add Page", this );
   layout->addWidget( button, rowCount, 1 );
-  connect( button, SIGNAL( clicked() ), this, SLOT( addPage() ) );
+  connect( button, SIGNAL(clicked()), this, SLOT(addPage()) );
   rowCount++;
 
   button = new QPushButton( "Add Sub Page", this );
   layout->addWidget( button, rowCount, 1 );
-  connect( button, SIGNAL( clicked() ), this, SLOT( addSubPage() ) );
+  connect( button, SIGNAL(clicked()), this, SLOT(addSubPage()) );
   rowCount++;
 
   button = new QPushButton( "Insert Page", this );
   layout->addWidget( button, rowCount, 1 );
-  connect( button, SIGNAL( clicked() ), this, SLOT( insertPage() ) );
+  connect( button, SIGNAL(clicked()), this, SLOT(insertPage()) );
   rowCount++;
 
   button = new QPushButton( "Delete Page", this );
   layout->addWidget( button, rowCount, 1 );
-  connect( button, SIGNAL( clicked() ), this, SLOT( deletePage() ) );
+  connect( button, SIGNAL(clicked()), this, SLOT(deletePage()) );
   rowCount++;
 
   KPageWidgetItem *item = mWidget->addPage( new QPushButton( "folder" ), "folder" );

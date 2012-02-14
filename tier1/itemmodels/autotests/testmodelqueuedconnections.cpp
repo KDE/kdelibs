@@ -58,8 +58,8 @@ private Q_SLOTS:
   {
     ModelInsertAndRemoveQueuedCommand *insAndRem = new ModelInsertAndRemoveQueuedCommand(m_rootModel, this);
 
-    connect (m_rootModel, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
-             SLOT(rowsInserted(const QModelIndex &, int, int)));
+    connect (m_rootModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
+             SLOT(rowsInserted(QModelIndex,int,int)));
 
     insAndRem->setStartRow(0);
     insAndRem->setEndRow(9);

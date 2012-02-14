@@ -78,10 +78,10 @@ int NumberBar::bugLine() const
 void NumberBar::setTextEdit( QTextEdit *edit )
 {
     this->edit = edit;
-    connect( edit->document()->documentLayout(), SIGNAL( update(const QRectF &) ),
-	     this, SLOT( update() ) );
-    connect( edit->verticalScrollBar(), SIGNAL(valueChanged(int) ),
-	     this, SLOT( update() ) );
+    connect( edit->document()->documentLayout(), SIGNAL(update(QRectF)),
+	     this, SLOT(update()) );
+    connect( edit->verticalScrollBar(), SIGNAL(valueChanged(int)),
+	     this, SLOT(update()) );
 }
 
 void NumberBar::paintEvent( QPaintEvent * )

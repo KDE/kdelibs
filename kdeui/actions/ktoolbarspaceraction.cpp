@@ -107,8 +107,8 @@ QWidget * KToolBarSpacerAction::createWidget( QWidget * _parent )
   spacer->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Fixed );
 
   d->spacers.append( spacer );
-  connect( spacer, SIGNAL( destroyed( QObject* ) ),
-           SLOT( _k_spacerDestroyed( QObject* ) ) );
+  connect( spacer, SIGNAL(destroyed(QObject*)),
+           SLOT(_k_spacerDestroyed(QObject*)) );
 
   return spacer;
 }

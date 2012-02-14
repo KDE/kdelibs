@@ -55,7 +55,7 @@ void UploadDialog::Private::init()
     q->connect(atticaHelper, SIGNAL(contentLoaded(Attica::Content)), q, SLOT(_k_updatedContentFetched(Attica::Content)));
     q->connect(atticaHelper, SIGNAL(detailsLinkLoaded(QUrl)), q, SLOT(_k_detailsLinkLoaded(QUrl)));
     q->connect(atticaHelper, SIGNAL(currencyLoaded(QString)), q, SLOT(_k_currencyLoaded(QString)));
-    q->connect(atticaHelper, SIGNAL(previewLoaded(int, QImage)), q, SLOT(_k_previewLoaded(int, QImage)));
+    q->connect(atticaHelper, SIGNAL(previewLoaded(int,QImage)), q, SLOT(_k_previewLoaded(int,QImage)));
     atticaHelper->init();
 
     q->connect(ui.changePreview1Button, SIGNAL(clicked()), q, SLOT(_k_changePreview1()));

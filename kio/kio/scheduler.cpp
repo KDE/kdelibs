@@ -534,10 +534,10 @@ Slave *ProtoQueue::createSlave(const QString &protocol, SimpleJob *job, const KU
     QString errortext;
     Slave *slave = Slave::createSlave(protocol, url, error, errortext);
     if (slave) {
-        scheduler()->connect(slave, SIGNAL(slaveDied(KIO::Slave *)),
-                             SLOT(slotSlaveDied(KIO::Slave *)));
-        scheduler()->connect(slave, SIGNAL(slaveStatus(pid_t,const QByteArray&,const QString &, bool)),
-                             SLOT(slotSlaveStatus(pid_t,const QByteArray&, const QString &, bool)));
+        scheduler()->connect(slave, SIGNAL(slaveDied(KIO::Slave*)),
+                             SLOT(slotSlaveDied(KIO::Slave*)));
+        scheduler()->connect(slave, SIGNAL(slaveStatus(pid_t,QByteArray,QString,bool)),
+                             SLOT(slotSlaveStatus(pid_t,QByteArray,QString,bool)));
     } else {
         kError() << "couldn't create slave:" << errortext;
         if (job) {
@@ -1235,8 +1235,8 @@ Slave *SchedulerPrivate::getConnectedSlave(const KUrl &url, const KIO::MetaData 
         slave->send( CMD_CONNECT );
         q->connect(slave, SIGNAL(connected()),
                    SLOT(slotSlaveConnected()));
-        q->connect(slave, SIGNAL(error(int, const QString &)),
-                   SLOT(slotSlaveError(int, const QString &)));
+        q->connect(slave, SIGNAL(error(int,QString)),
+                   SLOT(slotSlaveError(int,QString)));
     }
     kDebug(7006) << url << slave;
     return slave;
@@ -1323,7 +1323,7 @@ void SchedulerPrivate::registerWindow(QWidget *wid)
       // access QWidget::winId() (already destructed)
       WId windowId = window->winId();
       m_windowList.insert(obj, windowId);
-      q->connect(window, SIGNAL(destroyed(QObject *)),
+      q->connect(window, SIGNAL(destroyed(QObject*)),
                  SLOT(slotUnregisterWindow(QObject*)));
       QDBusInterface("org.kde.kded", "/kded", "org.kde.kded").
           call(QDBus::NoBlock, "registerWindowId", qlonglong(windowId));
@@ -1339,7 +1339,7 @@ void SchedulerPrivate::slotUnregisterWindow(QObject *obj)
    if (it == m_windowList.end())
       return;
    WId windowId = it.value();
-   q->disconnect(it.key(), SIGNAL(destroyed(QObject *)),
+   q->disconnect(it.key(), SIGNAL(destroyed(QObject*)),
                  q, SLOT(slotUnregisterWindow(QObject*)));
    m_windowList.erase( it );
    QDBusInterface("org.kde.kded", "/kded", "org.kde.kded").

@@ -174,7 +174,7 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
 //  slave = KIO::Scheduler::getConnectedSlave(KUrl("ftp://ftp.kde.org"));
   KIO::Scheduler::connect(SIGNAL(slaveConnected(KIO::Slave*)),
 	this, SLOT(slotSlaveConnected()));
-  KIO::Scheduler::connect(SIGNAL(slaveError(KIO::Slave*,int,const QString&)),
+  KIO::Scheduler::connect(SIGNAL(slaveError(KIO::Slave*,int,QString)),
 	this, SLOT(slotSlaveError()));
 }
 
@@ -236,14 +236,14 @@ void KioslaveTest::startJob() {
   switch ( selectedOperation ) {
   case List:
     myJob = KIO::listDir( src );
-    connect(myJob, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
-            SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList&)));
+    connect(myJob, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)),
+            SLOT(slotEntries(KIO::Job*,KIO::UDSEntryList)));
     break;
 
   case ListRecursive:
     myJob = KIO::listRecursive( src );
-    connect(myJob, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList&)),
-            SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList&)));
+    connect(myJob, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)),
+            SLOT(slotEntries(KIO::Job*,KIO::UDSEntryList)));
     break;
 
   case Stat:
@@ -252,8 +252,8 @@ void KioslaveTest::startJob() {
 
   case Get:
     myJob = KIO::get( src, KIO::Reload );
-    connect(myJob, SIGNAL( data( KIO::Job*, const QByteArray &)),
-            SLOT( slotData( KIO::Job*, const QByteArray &)));
+    connect(myJob, SIGNAL(data(KIO::Job*,QByteArray)),
+            SLOT(slotData(KIO::Job*,QByteArray)));
     break;
 
   case Put:
@@ -262,8 +262,8 @@ void KioslaveTest::startJob() {
     KIO::TransferJob* tjob = KIO::put( src, -1, KIO::Overwrite );
     tjob->setTotalSize(48*1024*1024);
     myJob = tjob;
-    connect(tjob, SIGNAL( dataReq( KIO::Job*, QByteArray &)),
-            SLOT( slotDataReq( KIO::Job*, QByteArray &)));
+    connect(tjob, SIGNAL(dataReq(KIO::Job*,QByteArray&)),
+            SLOT(slotDataReq(KIO::Job*,QByteArray&)));
     break;
   }
 
@@ -296,11 +296,11 @@ void KioslaveTest::startJob() {
 
   statusBar()->addWidget( statusTracker->widget(job), 0 );
 
-  connect( job, SIGNAL( result( KJob * ) ),
-           SLOT( slotResult( KJob * ) ) );
+  connect( job, SIGNAL(result(KJob*)),
+           SLOT(slotResult(KJob*)) );
 
-  connect( job, SIGNAL( canceled( KJob * ) ),
-           SLOT( slotResult( KJob * ) ) );
+  connect( job, SIGNAL(canceled(KJob*)),
+           SLOT(slotResult(KJob*)) );
 
   if (progressMode == ProgressStatus) {
     statusTracker->registerJob( job );

@@ -293,8 +293,8 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         const QString fileName = d->dest.fileName();
         d->setRenameBoxText(KIO::decodeFileName(fileName));
 
-        connect(d->m_pLineEdit, SIGNAL(textChanged(const QString &)),
-                SLOT(enableRenameButton(const QString &)));
+        connect(d->m_pLineEdit, SIGNAL(textChanged(QString)),
+                SLOT(enableRenameButton(QString)));
 
         d->m_pLineEdit->setFocus();
     } else {
@@ -609,14 +609,14 @@ void RenameDialog::resizePanels()
                                QSize(d->m_destPreview->width() * qreal(0.9), d->m_destPreview->height()));
     destJob->setScaleType(KIO::PreviewJob::Unscaled);
 
-    connect(srcJob, SIGNAL(gotPreview(const KFileItem&, const QPixmap&)),
-            this, SLOT(showSrcPreview(const KFileItem&, const QPixmap&)));
-    connect(destJob, SIGNAL(gotPreview(const KFileItem&, const QPixmap&)),
-            this, SLOT(showDestPreview(const KFileItem&, const QPixmap&)));
-    connect(srcJob, SIGNAL(failed(const KFileItem&)),
-            this, SLOT(showSrcIcon(const KFileItem&)));
-    connect(destJob, SIGNAL(failed(const KFileItem&)),
-            this, SLOT(showDestIcon(const KFileItem&)));
+    connect(srcJob, SIGNAL(gotPreview(KFileItem,QPixmap)),
+            this, SLOT(showSrcPreview(KFileItem,QPixmap)));
+    connect(destJob, SIGNAL(gotPreview(KFileItem,QPixmap)),
+            this, SLOT(showDestPreview(KFileItem,QPixmap)));
+    connect(srcJob, SIGNAL(failed(KFileItem)),
+            this, SLOT(showSrcIcon(KFileItem)));
+    connect(destJob, SIGNAL(failed(KFileItem)),
+            this, SLOT(showDestIcon(KFileItem)));
 }
 
 QScrollArea* RenameDialog::createContainerLayout(QWidget* parent, const KFileItem& item, QLabel* preview)
@@ -629,7 +629,7 @@ QScrollArea* RenameDialog::createContainerLayout(QWidget* parent, const KFileIte
 
     metaWidget->setReadOnly(true);
     metaWidget->setItems(itemList);
-    connect(metaWidget, SIGNAL(metaDataRequestFinished(const KFileItemList&)), this, SLOT(resizePanels()));
+    connect(metaWidget, SIGNAL(metaDataRequestFinished(KFileItemList)), this, SLOT(resizePanels()));
 
     // Encapsulate the MetaDataWidgets inside a container with stretch at the bottom.
     // This prevents that the meta data widgets get vertically stretched

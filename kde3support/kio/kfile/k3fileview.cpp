@@ -138,16 +138,16 @@ void K3FileView::setParentView(K3FileView *parent)
                                                         const QPoint& ) ),
                 parent->sig, SIGNAL( activatedMenu(const KFileItem &,
                                                         const QPoint& )));
-        QObject::connect(sig, SIGNAL( dirActivated(const KFileItem &)),
-                parent->sig, SIGNAL( dirActivated(const KFileItem&)));
-        QObject::connect(sig, SIGNAL( fileSelected(const KFileItem &)),
-                parent->sig, SIGNAL( fileSelected(const KFileItem&)));
-        QObject::connect(sig, SIGNAL( fileHighlighted(const KFileItem &) ),
-                            parent->sig,SIGNAL(fileHighlighted(const KFileItem&)));
-        QObject::connect(sig, SIGNAL( sortingChanged( QDir::SortFlags ) ),
-                            parent->sig, SIGNAL(sortingChanged( QDir::SortFlags)));
-        QObject::connect(sig, SIGNAL( dropped(const KFileItem &, QDropEvent*, const KUrl::List&) ),
-                            parent->sig, SIGNAL(dropped(const KFileItem &, QDropEvent*, const KUrl::List&)));
+        QObject::connect(sig, SIGNAL(dirActivated(KFileItem)),
+                parent->sig, SIGNAL(dirActivated(KFileItem)));
+        QObject::connect(sig, SIGNAL(fileSelected(KFileItem)),
+                parent->sig, SIGNAL(fileSelected(KFileItem)));
+        QObject::connect(sig, SIGNAL(fileHighlighted(KFileItem)),
+                            parent->sig,SIGNAL(fileHighlighted(KFileItem)));
+        QObject::connect(sig, SIGNAL(sortingChanged(QDir::SortFlags)),
+                            parent->sig, SIGNAL(sortingChanged(QDir::SortFlags)));
+        QObject::connect(sig, SIGNAL(dropped(KFileItem,QDropEvent*,KUrl::List)),
+                            parent->sig, SIGNAL(dropped(KFileItem,QDropEvent*,KUrl::List)));
     }
 }
 

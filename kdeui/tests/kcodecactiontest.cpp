@@ -32,14 +32,14 @@ CodecActionTest::CodecActionTest(QWidget *parent)
     m_comboCodec->setToolBarMode(KCodecAction::ComboBoxMode);
     connect(m_comboCodec, SIGNAL(triggered(QAction*)), SLOT(triggered(QAction*)));
     connect(m_comboCodec, SIGNAL(triggered(int)), SLOT(triggered(int)));
-    connect(m_comboCodec, SIGNAL(triggered(const QString&)), SLOT(triggered(const QString&)));
-    connect(m_comboCodec, SIGNAL(triggered(QTextCodec *)), SLOT(triggered(QTextCodec *)));
+    connect(m_comboCodec, SIGNAL(triggered(QString)), SLOT(triggered(QString)));
+    connect(m_comboCodec, SIGNAL(triggered(QTextCodec*)), SLOT(triggered(QTextCodec*)));
 
     m_buttonCodec->setToolBarMode(KCodecAction::MenuMode);
     connect(m_buttonCodec, SIGNAL(triggered(QAction*)), SLOT(triggered(QAction*)));
     connect(m_buttonCodec, SIGNAL(triggered(int)), SLOT(triggered(int)));
-    connect(m_buttonCodec, SIGNAL(triggered(const QString&)), SLOT(triggered(const QString&)));
-    connect(m_buttonCodec, SIGNAL(triggered(QTextCodec *)), SLOT(triggered(QTextCodec *)));
+    connect(m_buttonCodec, SIGNAL(triggered(QString)), SLOT(triggered(QString)));
+    connect(m_buttonCodec, SIGNAL(triggered(QTextCodec*)), SLOT(triggered(QTextCodec*)));
 
     menuBar()->addAction(m_comboCodec);
     menuBar()->addAction(m_buttonCodec);

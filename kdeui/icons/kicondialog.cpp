@@ -121,8 +121,8 @@ KIconCanvas::KIconCanvas(QWidget *parent)
     setMovement(Static);
     setIconSize(QSize(60, 60));
     connect(m_timer, SIGNAL(timeout()), this, SLOT(loadFiles()));
-    connect(this, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
-            this, SLOT(currentListItemChanged(QListWidgetItem *)));
+    connect(this, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
+            this, SLOT(_k_slotCurrentChanged(QListWidgetItem*)));
     setGridSize(QSize(100,80));
 
     setItemDelegate(m_delegate);
@@ -343,7 +343,7 @@ void KIconDialog::KIconDialogPrivate::init()
 
 
     mpCanvas = new KIconCanvas(main);
-    connect(mpCanvas, SIGNAL(itemActivated(QListWidgetItem *)), q, SLOT(_k_slotAcceptIcons()));
+    connect(mpCanvas, SIGNAL(itemActivated(QListWidgetItem*)), q, SLOT(_k_slotAcceptIcons()));
     top->addWidget(mpCanvas);
     searchLine->setListWidget(mpCanvas);
 

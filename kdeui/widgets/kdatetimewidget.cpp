@@ -69,7 +69,7 @@ void KDateTimeWidget::initWidget()
 
   connect(d->dateWidget, SIGNAL(changed(QDate)),
           SLOT(slotValueChanged()));
-  connect(d->timeWidget, SIGNAL(timeChanged(const QTime &)),
+  connect(d->timeWidget, SIGNAL(timeChanged(QTime)),
           SLOT(slotValueChanged()));
 }
 

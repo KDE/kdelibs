@@ -392,8 +392,8 @@ void DeleteJobPrivate::currentSourceStated(bool isDir, bool isLink)
             newjob->addMetaData("details", "0");
             newjob->setUnrestricted(true); // No KIOSK restrictions
             Scheduler::setJobPriority(newjob, 1);
-            QObject::connect(newjob, SIGNAL(entries(KIO::Job*, const KIO::UDSEntryList&)),
-                             q, SLOT(slotEntries(KIO::Job*,const KIO::UDSEntryList&)));
+            QObject::connect(newjob, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)),
+                             q, SLOT(slotEntries(KIO::Job*,KIO::UDSEntryList)));
             q->addSubjob(newjob);
             // Note that this listing job will happen in parallel with other stat jobs.
         }

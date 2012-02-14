@@ -59,17 +59,17 @@ DownloadDialog::DownloadDialog(DxsEngine* _engine, QWidget * _parent)
     setButtons(0);
 
     m_engine = _engine;
-    connect(m_engine, SIGNAL(signalProgress(QString, int)), SLOT(slotProgress(QString, int)));
+    connect(m_engine, SIGNAL(signalProgress(QString,int)), SLOT(slotProgress(QString,int)));
     connect(m_engine, SIGNAL(signalEntryChanged(KNS::Entry*)), SLOT(slotEntryChanged(KNS::Entry*)));
     connect(m_engine, SIGNAL(signalPayloadFailed(KNS::Entry*)), SLOT(slotPayloadFailed(KNS::Entry*)));
     connect(m_engine, SIGNAL(signalPayloadLoaded(KUrl)), SLOT(slotPayloadLoaded(KUrl)));
     connect(m_engine, SIGNAL(signalProvidersFailed()), SLOT(slotProvidersFailed()));
     connect(m_engine, SIGNAL(signalEntriesFailed()), SLOT(slotEntriesFailed()));
 
-    connect(m_engine, SIGNAL(signalEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)),
-            this, SLOT(slotEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)));
-    connect(m_engine, SIGNAL(signalEntryRemoved(KNS::Entry*, const KNS::Feed*)),
-            this, SLOT(slotEntryRemoved(KNS::Entry *, const KNS::Feed *)));
+    connect(m_engine, SIGNAL(signalEntryLoaded(KNS::Entry*,const KNS::Feed*,const KNS::Provider*)),
+            this, SLOT(slotEntryLoaded(KNS::Entry*,const KNS::Feed*,const KNS::Provider*)));
+    connect(m_engine, SIGNAL(signalEntryRemoved(KNS::Entry*,const KNS::Feed*)),
+            this, SLOT(slotEntryRemoved(KNS::Entry*,const KNS::Feed*)));
 
     // initialize the private classes
     messageTimer = new QTimer(this);
@@ -92,16 +92,16 @@ DownloadDialog::DownloadDialog(DxsEngine* _engine, QWidget * _parent)
     // create the delegate
     mDelegate = new ItemsViewDelegate(m_listView, this);
     m_listView->setItemDelegate(mDelegate);
-    connect(mDelegate, SIGNAL(performAction(DownloadDialog::EntryAction, KNS::Entry *)),
-            SLOT(slotPerformAction(DownloadDialog::EntryAction, KNS::Entry *)));
+    connect(mDelegate, SIGNAL(performAction(DownloadDialog::EntryAction,KNS::Entry*)),
+            SLOT(slotPerformAction(DownloadDialog::EntryAction,KNS::Entry*)));
 
     // create the filter model
     m_filteredModel = new QSortFilterProxyModel(this);
     m_filteredModel->setFilterRole(ItemsModel::kNameRole);
     m_filteredModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_listView->setModel(m_filteredModel);
-    connect(m_listView->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
-            this, SLOT(slotListIndexChanged(const QModelIndex &, const QModelIndex &)));
+    connect(m_listView->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)),
+            this, SLOT(slotListIndexChanged(QModelIndex,QModelIndex)));
 
     // create left picture widget (if picture found)
     //QPixmap p( KStandardDirs::locate( "data", "knewstuff/pics/ghns.png" ) );
@@ -112,12 +112,12 @@ DownloadDialog::DownloadDialog(DxsEngine* _engine, QWidget * _parent)
 
     connect(m_sourceCombo, SIGNAL(currentIndexChanged(int)), SLOT(slotLoadProviderDXS()));
     connect(m_sortCombo, SIGNAL(currentIndexChanged(int)), SLOT(slotSortingSelected(int)));
-    connect(m_searchEdit, SIGNAL(textChanged(const QString &)), SLOT(slotSearchTextChanged()));
+    connect(m_searchEdit, SIGNAL(textChanged(QString)), SLOT(slotSearchTextChanged()));
     connect(m_searchEdit, SIGNAL(editingFinished()), SLOT(slotUpdateSearch()));
 
     // FIXME: not sure if this is better, or setting openExternalLinks
-    //connect( m_providerLinkLabel, SIGNAL( linkActivated(const QString &)),
-    //        KToolInvocation::self(), SLOT(invokeBrowser(const QString &)));
+    //connect( m_providerLinkLabel, SIGNAL(linkActivated(QString)),
+    //        KToolInvocation::self(), SLOT(invokeBrowser(QString)));
 
     // load the last size from config
     KConfigGroup group(KGlobal::config(), ConfigGroup);

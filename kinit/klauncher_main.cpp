@@ -123,7 +123,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
        return 1;
    }
    QSocketNotifier* signotif = new QSocketNotifier( sigpipe[ 0 ], QSocketNotifier::Read, launcher );
-   QObject::connect( signotif, SIGNAL( activated( int )), launcher, SLOT( destruct()));
+   QObject::connect( signotif, SIGNAL(activated(int)), launcher, SLOT(destruct()));
    KCrash::setEmergencySaveFunction(sig_handler);
    KDE_signal( SIGHUP, sig_handler);
    KDE_signal( SIGPIPE, SIG_IGN);

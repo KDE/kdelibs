@@ -71,10 +71,10 @@ void ServiceBrowser::startBrowse()
 	d->m_browserFinished=true;
 	org::freedesktop::Avahi::ServiceBrowser *b=new org::freedesktop::Avahi::ServiceBrowser("org.freedesktop.Avahi",rep.value().path(),
 	    QDBusConnection::systemBus());
-	connect(b,SIGNAL(ItemNew(int,int,const QString&,const QString&,const QString&,uint)),d, 
-	    SLOT(gotNewService(int,int,const QString&,const QString&,const QString&, uint)));
-	connect(b,SIGNAL(ItemRemove(int,int,const QString&,const QString&,const QString&,uint)),d, 
-	    SLOT(gotRemoveService(int,int,const QString&,const QString&,const QString&, uint)));
+	connect(b,SIGNAL(ItemNew(int,int,QString,QString,QString,uint)),d,
+	    SLOT(gotNewService(int,int,QString,QString,QString,uint)));
+	connect(b,SIGNAL(ItemRemove(int,int,QString,QString,QString,uint)),d,
+	    SLOT(gotRemoveService(int,int,QString,QString,QString,uint)));
 	connect(b,SIGNAL(AllForNow()),d,SLOT(browserFinished()));
 	d->m_browser=b;
 	connect(&d->m_timer,SIGNAL(timeout()), d, SLOT(browserFinished()));
@@ -110,7 +110,7 @@ void ServiceBrowserPrivate::gotNewService(int,int,const QString& name, const QSt
 	m_timer.start(TIMEOUT_LAST_SERVICE);
 	RemoteService::Ptr svr(new RemoteService(name, type,domain));
 	if (m_autoResolve) {
-		connect(svr.data(),SIGNAL(resolved(bool )),this,SLOT(serviceResolved(bool )));
+		connect(svr.data(),SIGNAL(resolved(bool)),this,SLOT(serviceResolved(bool)));
 		m_duringResolve+=svr;
 		svr->resolveAsync();
 	} else	{

@@ -115,7 +115,7 @@ KFontRequester::KFontRequester( QWidget *parent, bool onlyFixed )
   layout->addWidget( d->m_sampleLabel, 1 );
   layout->addWidget( d->m_button );
 
-  connect( d->m_button, SIGNAL( clicked() ), SLOT( _k_buttonClicked() ) );
+  connect( d->m_button, SIGNAL(clicked()), SLOT(_k_buttonClicked()) );
 
   d->displaySampleText();
   d->setToolTip();

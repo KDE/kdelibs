@@ -61,9 +61,9 @@ void UPnPInternetGateway::setEnabledForInternet(bool enabled) const
                 inArgs["NewEnabledForInternet"].setValue(enabled);
 
                 connect(setEnabledForInternetAction,
-                        SIGNAL(invokeComplete(Herqq::Upnp::HClientAction *, const Herqq::Upnp::HClientActionOp &)),
+                        SIGNAL(invokeComplete(Herqq::Upnp::HClientAction*,Herqq::Upnp::HClientActionOp)),
                         this,
-                        SLOT(setEnabledForInternetInvokeCallback(Herqq::Upnp::HClientAction *, const Herqq::Upnp::HClientActionOp &)));
+                        SLOT(setEnabledForInternetInvokeCallback(Herqq::Upnp::HClientAction*,Herqq::Upnp::HClientActionOp)));
 
                 qDebug() << "setEnabledForInternetAction begin invoke";
 
@@ -159,9 +159,9 @@ void UPnPInternetGateway::deletePortMapping(const QString& remoteHost, qint16 ex
                 }
 
                 connect(deletePortMappingAction,
-                        SIGNAL(invokeComplete(Herqq::Upnp::HClientAction *, const Herqq::Upnp::HClientActionOp &)),
+                        SIGNAL(invokeComplete(Herqq::Upnp::HClientAction*,Herqq::Upnp::HClientActionOp)),
                         this,
-                        SLOT(deletePortMappingInvokeCallback(Herqq::Upnp::HClientAction *, const Herqq::Upnp::HClientActionOp &)));
+                        SLOT(deletePortMappingInvokeCallback(Herqq::Upnp::HClientAction*,Herqq::Upnp::HClientActionOp)));
 
                 qDebug() << "deletePortMappingAction begin invoke";
                 qDebug() << "inArgs:"
@@ -252,9 +252,9 @@ void UPnPInternetGateway::addPortMapping(const QString& remoteHost, qint16 exter
                 inArgs["NewLeaseDuration"].setValue(0);
 
                 connect(addPortMappingAction,
-                        SIGNAL(invokeComplete(Herqq::Upnp::HClientAction *, const Herqq::Upnp::HClientActionOp &)),
+                        SIGNAL(invokeComplete(Herqq::Upnp::HClientAction*,Herqq::Upnp::HClientActionOp)),
                         this,
-                        SLOT(addPortMappingInvokeCallback(Herqq::Upnp::HClientAction *, const Herqq::Upnp::HClientActionOp &)));
+                        SLOT(addPortMappingInvokeCallback(Herqq::Upnp::HClientAction*,Herqq::Upnp::HClientActionOp)));
 
                 qDebug() << "addPortMappingAction begin invoke";
                 qDebug() << "inArgs:"
@@ -350,9 +350,9 @@ void UPnPInternetGateway::requestCurrentConnections()
                 int numberOfActiveConnections = getNumberOfActiveConnections();
                 if (numberOfActiveConnections > 0) {
                     connect(getActiveConnectionAction,
-                            SIGNAL(invokeComplete(Herqq::Upnp::HClientAction *, const Herqq::Upnp::HClientActionOp &)),
+                            SIGNAL(invokeComplete(Herqq::Upnp::HClientAction*,Herqq::Upnp::HClientActionOp)),
                             this,
-                            SLOT(getActiveConnectionActionInvokeCallback(Herqq::Upnp::HClientAction *, const Herqq::Upnp::HClientActionOp &)));
+                            SLOT(getActiveConnectionActionInvokeCallback(Herqq::Upnp::HClientAction*,Herqq::Upnp::HClientActionOp)));
 
                     for (int i = 0; i < numberOfActiveConnections; ++i) {
                         Herqq::Upnp::HActionArguments inArgs = getActiveConnectionAction->info().inputArguments();

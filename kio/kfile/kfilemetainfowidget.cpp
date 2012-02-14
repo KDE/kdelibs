@@ -301,7 +301,7 @@ QWidget* KFileMetaInfoWidget::makeStringWidget()
             b->setCurrentIndex(i);
         else
             b->setEditText(d->m_item.value().toString());
-        connect(b, SIGNAL(activated(const QString &)), this, SLOT(slotComboChanged(const QString &)));
+        connect(b, SIGNAL(activated(QString)), this, SLOT(slotComboChanged(QString)));
         b->setValidator(val);
         reparentValidator(b, val);
         return b;
@@ -312,8 +312,8 @@ QWidget* KFileMetaInfoWidget::makeStringWidget()
         KTextEdit *edit = new KTextEdit( this );
         edit->setAcceptRichText(false);
         edit->setPlainText(d->m_item.value().toString());
-        connect( edit, SIGNAL( textChanged() ),
-                 this, SLOT( slotMultiLineEditChanged() ));
+        connect( edit, SIGNAL(textChanged()),
+                 this, SLOT(slotMultiLineEditChanged()));
         // can't use a validator with a KTextEdit, but we may need to delete it
         if (d->m_validator)
             reparentValidator(edit, d->m_validator);
@@ -326,16 +326,16 @@ QWidget* KFileMetaInfoWidget::makeStringWidget()
         e->setValidator(d->m_validator);
         reparentValidator(e, d->m_validator);
     }
-    connect(e,    SIGNAL(textChanged(const QString&)),
-            this, SLOT(slotLineEditChanged(const QString&)));
+    connect(e,    SIGNAL(textChanged(QString)),
+            this, SLOT(slotLineEditChanged(QString)));
     return e;
 }
 
 QWidget* KFileMetaInfoWidget::makeDateWidget()
 {
   QWidget *e = new QDateEdit(d->m_item.value().toDate(), this);
-  connect(e,    SIGNAL(valueChanged(const QDate&)),
-          this, SLOT(slotDateChanged(const QDate&)));
+  connect(e,    SIGNAL(valueChanged(QDate)),
+          this, SLOT(slotDateChanged(QDate)));
   return e;
 }
 

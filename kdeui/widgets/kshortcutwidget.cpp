@@ -44,10 +44,10 @@ KShortcutWidget::KShortcutWidget(QWidget *parent)
 {
     d->holdChangedSignal = false;
     d->ui.setupUi(this);
-    connect(d->ui.priEditor, SIGNAL(keySequenceChanged(const QKeySequence &)),
-            this, SLOT(priKeySequenceChanged(const QKeySequence &)));
-    connect(d->ui.altEditor, SIGNAL(keySequenceChanged(const QKeySequence &)),
-            this, SLOT(altKeySequenceChanged(const QKeySequence &)));
+    connect(d->ui.priEditor, SIGNAL(keySequenceChanged(QKeySequence)),
+            this, SLOT(priKeySequenceChanged(QKeySequence)));
+    connect(d->ui.altEditor, SIGNAL(keySequenceChanged(QKeySequence)),
+            this, SLOT(altKeySequenceChanged(QKeySequence)));
 }
 
 

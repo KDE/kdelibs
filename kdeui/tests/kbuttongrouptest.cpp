@@ -118,10 +118,10 @@ void KButtonGroupTest::testManualSelection()
 
 void KButtonGroupTest::testSignals()
 {
-  QSignalSpy spyClicked( kbuttongroup, SIGNAL( clicked( int ) ) );
-  QSignalSpy spyPressed( kbuttongroup, SIGNAL( pressed( int ) ) );
-  QSignalSpy spyReleased( kbuttongroup, SIGNAL( released( int ) ) );
-  QSignalSpy spyChanged( kbuttongroup, SIGNAL( changed( int ) ) );
+  QSignalSpy spyClicked( kbuttongroup, SIGNAL(clicked(int)) );
+  QSignalSpy spyPressed( kbuttongroup, SIGNAL(pressed(int)) );
+  QSignalSpy spyReleased( kbuttongroup, SIGNAL(released(int)) );
+  QSignalSpy spyChanged( kbuttongroup, SIGNAL(changed(int)) );
 
   QTest::mouseClick( buttons[2], Qt::LeftButton, 0, QPoint(), 10 );
   QCOMPARE( spyClicked.count(), 1 );

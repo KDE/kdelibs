@@ -393,12 +393,12 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     d->ops->setObjectName( "KFileWidget::ops" );
     d->ops->setIsSaving(d->operationMode == Saving);
     opsWidgetLayout->addWidget(d->ops);
-    connect(d->ops, SIGNAL(urlEntered(const KUrl&)),
-            SLOT(_k_urlEntered(const KUrl&)));
-    connect(d->ops, SIGNAL(fileHighlighted(const KFileItem &)),
-            SLOT(_k_fileHighlighted(const KFileItem &)));
-    connect(d->ops, SIGNAL(fileSelected(const KFileItem &)),
-            SLOT(_k_fileSelected(const KFileItem &)));
+    connect(d->ops, SIGNAL(urlEntered(KUrl)),
+            SLOT(_k_urlEntered(KUrl)));
+    connect(d->ops, SIGNAL(fileHighlighted(KFileItem)),
+            SLOT(_k_fileHighlighted(KFileItem)));
+    connect(d->ops, SIGNAL(fileSelected(KFileItem)),
+            SLOT(_k_fileSelected(KFileItem)));
     connect(d->ops, SIGNAL(finishedLoading()),
             SLOT(_k_slotLoadingFinished()));
 
@@ -427,21 +427,21 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     coll->action( "mkdir" )->setShortcut( QKeySequence(Qt::Key_F10) );
     coll->action( "mkdir" )->setWhatsThis(i18n("Click this button to create a new folder."));
 
-    KAction *goToNavigatorAction = coll->addAction( "gotonavigator", this, SLOT( _k_activateUrlNavigator() ) );
+    KAction *goToNavigatorAction = coll->addAction( "gotonavigator", this, SLOT(_k_activateUrlNavigator()) );
     goToNavigatorAction->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_L) );
 
     KToggleAction *showSidebarAction =
         new KToggleAction(i18n("Show Places Navigation Panel"), this);
     coll->addAction("toggleSpeedbar", showSidebarAction);
     showSidebarAction->setShortcut( QKeySequence(Qt::Key_F9) );
-    connect( showSidebarAction, SIGNAL( toggled( bool ) ),
-             SLOT( _k_toggleSpeedbar( bool )) );
+    connect( showSidebarAction, SIGNAL(toggled(bool)),
+             SLOT(_k_toggleSpeedbar(bool)) );
 
     KToggleAction *showBookmarksAction =
         new KToggleAction(i18n("Show Bookmarks"), this);
     coll->addAction("toggleBookmarks", showBookmarksAction);
-    connect( showBookmarksAction, SIGNAL( toggled( bool ) ),
-             SLOT( _k_toggleBookmarks( bool )) );
+    connect( showBookmarksAction, SIGNAL(toggled(bool)),
+             SLOT(_k_toggleBookmarks(bool)) );
 
     KActionMenu *menu = new KActionMenu( KIcon("configure"), i18n("Options"), this);
     coll->addAction("extra menu", menu);
@@ -470,8 +470,8 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     menu->addAction( coll->action( "preview" ));
 
     menu->setDelayed( false );
-    connect( menu->menu(), SIGNAL( aboutToShow() ),
-             d->ops, SLOT( updateSelectionDependentActions() ));
+    connect( menu->menu(), SIGNAL(aboutToShow()),
+             d->ops, SLOT(updateSelectionDependentActions()));
 
     d->iconSizeSlider = new QSlider(this);
     d->iconSizeSlider->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
@@ -523,10 +523,10 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     pathCombo->setCompletionObject( pathCompletionObj );
     pathCombo->setAutoDeleteCompletionObject( true );
 
-    connect( d->urlNavigator, SIGNAL( urlChanged( const KUrl&  )),
-             this,  SLOT( _k_enterUrl( const KUrl& ) ));
-    connect( d->urlNavigator, SIGNAL( returnPressed() ),
-             d->ops,  SLOT( setFocus() ));
+    connect( d->urlNavigator, SIGNAL(urlChanged(KUrl)),
+             this,  SLOT(_k_enterUrl(KUrl)));
+    connect( d->urlNavigator, SIGNAL(returnPressed()),
+             d->ops,  SLOT(setFocus()));
 
     QString whatsThisText;
 
@@ -538,8 +538,8 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     // huge dialogs that can't be resized to smaller (it would be as big as the longest
     // item in this combo box). (ereslibre)
     d->locationEdit->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLength);
-    connect( d->locationEdit, SIGNAL( editTextChanged( const QString& ) ),
-             SLOT( _k_slotLocationChanged( const QString& )) );
+    connect( d->locationEdit, SIGNAL(editTextChanged(QString)),
+             SLOT(_k_slotLocationChanged(QString)) );
 
     d->updateLocationWhatsThis();
     d->locationLabel->setBuddy(d->locationEdit);
@@ -547,11 +547,11 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     KUrlCompletion *fileCompletionObj = new KUrlCompletion( KUrlCompletion::FileCompletion );
     d->locationEdit->setCompletionObject( fileCompletionObj );
     d->locationEdit->setAutoDeleteCompletionObject( true );
-    connect( fileCompletionObj, SIGNAL( match( const QString& ) ),
-             SLOT( _k_fileCompletion( const QString& )) );
+    connect( fileCompletionObj, SIGNAL(match(QString)),
+             SLOT(_k_fileCompletion(QString)) );
 
-    connect(d->locationEdit, SIGNAL( returnPressed( const QString&  )),
-            this,  SLOT( _k_locationAccepted( const QString& ) ));
+    connect(d->locationEdit, SIGNAL(returnPressed(QString)),
+            this,  SLOT(_k_locationAccepted(QString)));
 
     // the Filter label/edit
     whatsThisText = i18n("<qt>This is the filter to apply to the file list. "
@@ -1143,8 +1143,8 @@ void KFileWidgetPrivate::setDummyHistoryEntry( const QString& text, const QPixma
     // setCurrentItem() will cause textChanged() being emitted,
     // so slotLocationChanged() will be called. Make sure we don't clear
     // the KDirOperator's view-selection in there
-    QObject::disconnect( locationEdit, SIGNAL( editTextChanged( const QString& ) ),
-                        q, SLOT( _k_slotLocationChanged( const QString& ) ) );
+    QObject::disconnect( locationEdit, SIGNAL(editTextChanged(QString)),
+                        q, SLOT(_k_slotLocationChanged(QString)) );
 
     bool dummyExists = dummyAdded;
 
@@ -1182,8 +1182,8 @@ void KFileWidgetPrivate::setDummyHistoryEntry( const QString& text, const QPixma
 
     locationEdit->lineEdit()->setCursorPosition( cursorPosition );
 
-    QObject::connect( locationEdit, SIGNAL( editTextChanged ( const QString& ) ),
-                    q, SLOT( _k_slotLocationChanged( const QString& )) );
+    QObject::connect( locationEdit, SIGNAL(editTextChanged(QString)),
+                    q, SLOT(_k_slotLocationChanged(QString)) );
 }
 
 void KFileWidgetPrivate::removeDummyHistoryEntry()
@@ -1195,8 +1195,8 @@ void KFileWidgetPrivate::removeDummyHistoryEntry()
     // setCurrentItem() will cause textChanged() being emitted,
     // so slotLocationChanged() will be called. Make sure we don't clear
     // the KDirOperator's view-selection in there
-    QObject::disconnect( locationEdit, SIGNAL( editTextChanged( const QString& ) ),
-                        q, SLOT( _k_slotLocationChanged( const QString& ) ) );
+    QObject::disconnect( locationEdit, SIGNAL(editTextChanged(QString)),
+                        q, SLOT(_k_slotLocationChanged(QString)) );
 
     if (locationEdit->count()) {
         locationEdit->removeItem( 0 );
@@ -1204,8 +1204,8 @@ void KFileWidgetPrivate::removeDummyHistoryEntry()
     locationEdit->setCurrentIndex( -1 );
     dummyAdded = false;
 
-    QObject::connect( locationEdit, SIGNAL( editTextChanged ( const QString& ) ),
-                    q, SLOT( _k_slotLocationChanged( const QString& )) );
+    QObject::connect( locationEdit, SIGNAL(editTextChanged(QString)),
+                    q, SLOT(_k_slotLocationChanged(QString)) );
 }
 
 void KFileWidgetPrivate::setLocationText(const KUrl& url)
@@ -2508,8 +2508,8 @@ void KFileWidgetPrivate::_k_toggleBookmarks(bool show)
         }
 
         bookmarkHandler = new KFileBookmarkHandler( q );
-        q->connect( bookmarkHandler, SIGNAL( openUrl( const QString& )),
-                    SLOT( _k_enterUrl( const QString& )));
+        q->connect( bookmarkHandler, SIGNAL(openUrl(QString)),
+                    SLOT(_k_enterUrl(QString)));
 
         bookmarkButton = new KActionMenu(KIcon("bookmarks"),i18n("Bookmarks"), q);
         bookmarkButton->setDelayed(false);

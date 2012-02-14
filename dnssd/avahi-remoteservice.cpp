@@ -69,7 +69,7 @@ void RemoteService::resolveAsync()
 	connect(b,SIGNAL(Found(int,int,const QString &,const QString &,const QString &,const QString &, int, const QString &,ushort,
 	     const QList<QByteArray>&, uint)),d, SLOT(gotFound(int,int,const QString &,const QString &,const QString &,const QString &,
 	     int, const QString &,ushort , const QList<QByteArray>&, uint)));
-	connect(b,SIGNAL(Failure(const QString&)),d, SLOT(gotError()));
+	connect(b,SIGNAL(Failure(QString)),d, SLOT(gotError()));
 	d->m_running=true;
 }
 

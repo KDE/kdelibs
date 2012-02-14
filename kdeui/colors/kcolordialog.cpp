@@ -586,12 +586,12 @@ KColorTable::KColorTable(QWidget *parent, int minWidth, int cols)
     d->mNamedColorList->setFixedSize(minSize);
     d->mNamedColorList->hide();
     layout->addWidget(d->mNamedColorList);
-    connect(d->mNamedColorList, SIGNAL(currentTextChanged(const QString &)),
-            this, SLOT(slotColorTextSelected(const QString &)));
+    connect(d->mNamedColorList, SIGNAL(currentTextChanged(QString)),
+            this, SLOT(slotColorTextSelected(QString)));
 
     setFixedSize(sizeHint());
-    connect(d->combo, SIGNAL(activated(const QString &)),
-            this, SLOT(slotSetColors(const QString &)));
+    connect(d->combo, SIGNAL(activated(QString)),
+            this, SLOT(slotSetColors(QString)));
 }
 
 KColorTable::~KColorTable()
@@ -836,10 +836,10 @@ KColorTable::setColors(const QString &_collectionName)
             for (int i = 0; i < d->mPalette->count(); i++) {
                 d->cells->setColor(i, d->mPalette->color(i));
             }
-            connect(d->cells, SIGNAL(colorSelected(int , const QColor&)),
-                    SLOT(slotColorCellSelected(int , const QColor&)));
-            connect(d->cells, SIGNAL(colorDoubleClicked(int , const QColor&)),
-                    SLOT(slotColorCellDoubleClicked(int , const QColor&)));
+            connect(d->cells, SIGNAL(colorSelected(int,QColor)),
+                    SLOT(slotColorCellSelected(int,QColor)));
+            connect(d->cells, SIGNAL(colorDoubleClicked(int,QColor)),
+                    SLOT(slotColorCellDoubleClicked(int,QColor)));
             d->sv->setWidget(d->cells);
             d->cells->show();
 
@@ -1024,8 +1024,8 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
 #endif
     d->cbDefaultColor = 0L;
     d->_mode = ChooserClassic;
-    connect(this, SIGNAL(okClicked(void)), this, SLOT(slotWriteSettings(void)));
-    connect(this, SIGNAL(closeClicked(void)), this, SLOT(slotWriteSettings(void)));
+    connect(this, SIGNAL(okClicked()), this, SLOT(slotWriteSettings()));
+    connect(this, SIGNAL(closeClicked()), this, SLOT(slotWriteSettings()));
 
     QLabel *label;
 
@@ -1060,8 +1060,8 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
     d->hsSelector = new KHueSaturationSelector(page);
     d->hsSelector->setMinimumSize(256, 256);
     l_ltop->addWidget(d->hsSelector, 8);
-    connect(d->hsSelector, SIGNAL(valueChanged(int, int)),
-            SLOT(slotHSChanged(int, int)));
+    connect(d->hsSelector, SIGNAL(valueChanged(int,int)),
+            SLOT(slotHSChanged(int,int)));
 
     d->valuePal = new KColorValueSelector(page);
     d->valuePal->setMinimumSize(26, 70);
@@ -1194,13 +1194,13 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
     d->table = new KColorTable(page);
     d->l_right->addWidget(d->table, 10);
 
-    connect(d->table, SIGNAL(colorSelected(const QColor &, const QString &)),
-            SLOT(slotColorSelected(const QColor &, const QString &)));
+    connect(d->table, SIGNAL(colorSelected(QColor,QString)),
+            SLOT(slotColorSelected(QColor,QString)));
 
     connect(
         d->table,
-        SIGNAL(colorDoubleClicked(const QColor &, const QString &)),
-        SLOT(slotColorDoubleClicked(const QColor &, const QString &))
+        SIGNAL(colorDoubleClicked(QColor,QString)),
+        SLOT(slotColorDoubleClicked(QColor,QString))
     );
     // Store the default value for saving time.
     d->originalPalette = d->table->name();
@@ -1262,14 +1262,14 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
     d->htmlName->setFixedWidth(w);
     l_grid->addWidget(d->htmlName, 1, 2, Qt::AlignLeft);
 
-    connect(d->htmlName, SIGNAL(textChanged(const QString &)),
+    connect(d->htmlName, SIGNAL(textChanged(QString)),
             SLOT(slotHtmlChanged()));
 
     d->patch = new KColorPatch(page);
     d->patch->setFixedSize(48, 48);
     l_grid->addWidget(d->patch, 0, 0, 2, 1, Qt::AlignHCenter | Qt::AlignVCenter);
-    connect(d->patch, SIGNAL(colorChanged(const QColor&)),
-            SLOT(setColor(const QColor&)));
+    connect(d->patch, SIGNAL(colorChanged(QColor)),
+            SLOT(setColor(QColor)));
 
     //
     // chain fields together

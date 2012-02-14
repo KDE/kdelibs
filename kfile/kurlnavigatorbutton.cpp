@@ -406,8 +406,8 @@ void KUrlNavigatorButton::startSubDirsJob()
     m_subDirsJob = KIO::listDir(url, KIO::HideProgressInfo, false /*no hidden files*/);
     m_subDirs.clear(); // just to be ++safe
 
-    connect(m_subDirsJob, SIGNAL(entries(KIO::Job*, const KIO::UDSEntryList &)),
-            this, SLOT(addEntriesToSubDirs(KIO::Job*, const KIO::UDSEntryList&)));
+    connect(m_subDirsJob, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)),
+            this, SLOT(addEntriesToSubDirs(KIO::Job*,KIO::UDSEntryList)));
 
     if (m_replaceButton) {
         connect(m_subDirsJob, SIGNAL(result(KJob*)), this, SLOT(replaceButton(KJob*)));
@@ -646,8 +646,8 @@ void KUrlNavigatorButton::initMenu(KUrlNavigatorMenu* menu, int startIndex)
 {
     connect(menu, SIGNAL(middleMouseButtonClicked(QAction*)),
             this, SLOT(slotMenuActionClicked(QAction*)));
-    connect(menu, SIGNAL(urlsDropped(QAction*, QDropEvent*)),
-            this, SLOT(urlsDropped(QAction*, QDropEvent*)));
+    connect(menu, SIGNAL(urlsDropped(QAction*,QDropEvent*)),
+            this, SLOT(urlsDropped(QAction*,QDropEvent*)));
 
     menu->setLayoutDirection(Qt::LeftToRight);
 

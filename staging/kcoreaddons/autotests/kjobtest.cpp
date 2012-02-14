@@ -46,8 +46,8 @@ void KJobTest::testEmitResult()
 {
     TestJob *job = new TestJob;
 
-    connect( job, SIGNAL( result( KJob* ) ),
-             this, SLOT( slotResult( KJob* ) ) );
+    connect( job, SIGNAL(result(KJob*)),
+             this, SLOT(slotResult(KJob*)) );
 
     QFETCH(int, errorCode);
     QFETCH(QString, errorText);
@@ -55,7 +55,7 @@ void KJobTest::testEmitResult()
     job->setError( errorCode );
     job->setErrorText( errorText );
 
-    QSignalSpy destroyed_spy( job, SIGNAL( destroyed( QObject* ) ) );
+    QSignalSpy destroyed_spy( job, SIGNAL(destroyed(QObject*)) );
     job->start();
     loop.exec();
 
@@ -66,7 +66,7 @@ void KJobTest::testEmitResult()
 
     // Verify that the job is not deleted immediately...
     QCOMPARE( destroyed_spy.size(), 0 );
-    QTimer::singleShot( 0, &loop, SLOT( quit() ) );
+    QTimer::singleShot( 0, &loop, SLOT(quit()) );
     // ... but when we enter the event loop again.
     loop.exec();
     QCOMPARE( destroyed_spy.size(), 1 );
@@ -82,9 +82,9 @@ void KJobTest::testProgressTracking()
     qRegisterMetaType<KJob*>("KJob*");
     qRegisterMetaType<qulonglong>("qulonglong");
 
-    QSignalSpy processed_spy( job, SIGNAL( processedAmount( KJob*, KJob::Unit, qulonglong ) ) );
-    QSignalSpy total_spy( job, SIGNAL( totalAmount( KJob*, KJob::Unit, qulonglong ) ) );
-    QSignalSpy percent_spy( job, SIGNAL( percent( KJob*, unsigned long ) ) );
+    QSignalSpy processed_spy( job, SIGNAL(processedAmount(KJob*,KJob::Unit,qulonglong)) );
+    QSignalSpy total_spy( job, SIGNAL(totalAmount(KJob*,KJob::Unit,qulonglong)) );
+    QSignalSpy percent_spy( job, SIGNAL(percent(KJob*,ulong)) );
 
 
     /* Process a first item. Corresponding signal should be emitted.
@@ -202,7 +202,7 @@ void KJobTest::testExec()
     job->setError( errorCode );
     job->setErrorText( errorText );
 
-    QSignalSpy destroyed_spy( job, SIGNAL( destroyed( QObject* ) ) );
+    QSignalSpy destroyed_spy( job, SIGNAL(destroyed(QObject*)) );
 
     bool status = job->exec();
 
@@ -212,7 +212,7 @@ void KJobTest::testExec()
 
     // Verify that the job is not deleted immediately...
     QCOMPARE( destroyed_spy.size(), 0 );
-    QTimer::singleShot( 0, &loop, SLOT( quit() ) );
+    QTimer::singleShot( 0, &loop, SLOT(quit()) );
     // ... but when we enter the event loop again.
     loop.exec();
     QCOMPARE( destroyed_spy.size(), 1 );
@@ -242,10 +242,10 @@ void KJobTest::testKill()
 {
     TestJob *job = new TestJob;
 
-    connect( job, SIGNAL( result( KJob* ) ),
-             this, SLOT( slotResult( KJob* ) ) );
-    connect( job, SIGNAL( finished( KJob* ) ),
-             this, SLOT( slotFinished( KJob* ) ) );
+    connect( job, SIGNAL(result(KJob*)),
+             this, SLOT(slotResult(KJob*)) );
+    connect( job, SIGNAL(finished(KJob*)),
+             this, SLOT(slotFinished(KJob*)) );
 
     m_lastError = KJob::NoError;
     m_lastErrorText.clear();
@@ -258,7 +258,7 @@ void KJobTest::testKill()
     QFETCH(int, resultEmitCount);
     QFETCH(int, finishedEmitCount);
 
-    QSignalSpy destroyed_spy( job, SIGNAL( destroyed( QObject* ) ) );
+    QSignalSpy destroyed_spy( job, SIGNAL(destroyed(QObject*)) );
 
     job->kill( ( KJob::KillVerbosity )killVerbosity );
     loop.processEvents( QEventLoop::AllEvents, 2000 );
@@ -274,7 +274,7 @@ void KJobTest::testKill()
 
     // Verify that the job is not deleted immediately...
     QCOMPARE( destroyed_spy.size(), 0 );
-    QTimer::singleShot( 0, &loop, SLOT( quit() ) );
+    QTimer::singleShot( 0, &loop, SLOT(quit()) );
     // ... but when we enter the event loop again.
     loop.exec();
     QCOMPARE( destroyed_spy.size(), 1 );
@@ -298,21 +298,21 @@ void KJobTest::testDelegateUsage()
 void KJobTest::testNestedExec()
 {
   m_innerJob = 0;
-  QTimer::singleShot( 100, this, SLOT( slotStartInnerJob() ) );
+  QTimer::singleShot( 100, this, SLOT(slotStartInnerJob()) );
   m_outerJob = new WaitJob();
   m_outerJob->exec();
 }
 
 void KJobTest::slotStartInnerJob()
 {
-  QTimer::singleShot( 100, this, SLOT( slotFinishOuterJob() ) );
+  QTimer::singleShot( 100, this, SLOT(slotFinishOuterJob()) );
   m_innerJob = new WaitJob();
   m_innerJob->exec();
 }
 
 void KJobTest::slotFinishOuterJob()
 {
-  QTimer::singleShot( 100, this, SLOT( slotFinishInnerJob() ) );
+  QTimer::singleShot( 100, this, SLOT(slotFinishInnerJob()) );
   m_outerJob->makeItFinish();
 }
 
@@ -363,7 +363,7 @@ TestJob::~TestJob()
 
 void TestJob::start()
 {
-    QTimer::singleShot( 0, this, SLOT( doEmit() ) );
+    QTimer::singleShot( 0, this, SLOT(doEmit()) );
 }
 
 bool TestJob::doKill()

@@ -47,8 +47,8 @@ KPageWidget::KPageWidget(KPageWidgetPrivate &dd, QWidget *parent)
     : KPageView(dd, parent)
 {
     Q_D(KPageWidget);
-    connect(this, SIGNAL(currentPageChanged(const QModelIndex &, const QModelIndex &)),
-            this, SLOT(_k_slotCurrentPageChanged(const QModelIndex &, const QModelIndex &)));
+    connect(this, SIGNAL(currentPageChanged(QModelIndex,QModelIndex)),
+            this, SLOT(_k_slotCurrentPageChanged(QModelIndex,QModelIndex)));
 
     if (!d->KPageViewPrivate::model) {
         setModel(new KPageWidgetModel(this));
@@ -56,21 +56,21 @@ KPageWidget::KPageWidget(KPageWidgetPrivate &dd, QWidget *parent)
         Q_ASSERT(qobject_cast<KPageWidgetModel *>(d->KPageViewPrivate::model));
     }
 
-    connect(d->model(), SIGNAL(toggled(KPageWidgetItem *, bool)),
-            this, SIGNAL(pageToggled(KPageWidgetItem *, bool)));
+    connect(d->model(), SIGNAL(toggled(KPageWidgetItem*,bool)),
+            this, SIGNAL(pageToggled(KPageWidgetItem*,bool)));
 }
 
 KPageWidget::KPageWidget( QWidget *parent )
     : KPageView(*new KPageWidgetPrivate(this), parent)
 {
     Q_D(KPageWidget);
-    connect(this, SIGNAL(currentPageChanged(const QModelIndex &, const QModelIndex &)),
-            this, SLOT(_k_slotCurrentPageChanged(const QModelIndex &, const QModelIndex &)));
+    connect(this, SIGNAL(currentPageChanged(QModelIndex,QModelIndex)),
+            this, SLOT(_k_slotCurrentPageChanged(QModelIndex,QModelIndex)));
 
     setModel(new KPageWidgetModel(this));
 
-    connect(d->model(), SIGNAL(toggled(KPageWidgetItem *, bool)),
-            this, SIGNAL(pageToggled(KPageWidgetItem *, bool)));
+    connect(d->model(), SIGNAL(toggled(KPageWidgetItem*,bool)),
+            this, SIGNAL(pageToggled(KPageWidgetItem*,bool)));
 }
 
 KPageWidget::~KPageWidget()

@@ -42,13 +42,13 @@ SkipDialog::SkipDialog(QWidget *parent, bool _multi, const QString& _error_text 
     setButtons( Cancel | User1 | User2 );
 
     setButtonText( User1, i18n( "Skip" ) );
-    connect( this, SIGNAL( user1Clicked() ), SLOT(skipPressed()) );
+    connect( this, SIGNAL(user1Clicked()), SLOT(skipPressed()) );
 
     setButtonText( User2, i18n( "AutoSkip" ) );
-    connect( this, SIGNAL( user2Clicked() ), SLOT(autoSkipPressed()) );
+    connect( this, SIGNAL(user2Clicked()), SLOT(autoSkipPressed()) );
   }
 
-  connect( this, SIGNAL( cancelClicked() ), SLOT(cancelPressed()) );
+  connect( this, SIGNAL(cancelClicked()), SLOT(cancelPressed()) );
 
   setMainWidget( new QLabel( _error_text, this ) );
 

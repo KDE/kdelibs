@@ -210,14 +210,14 @@ void KDXSButton::setEngine(DxsEngine *engine)
     // FIXME: another thing: shouldn't dxsengine own the dxs object?
 
     connect(m_dxs,
-            SIGNAL(signalInfo(QString, QString, QString)),
-            SLOT(slotInfo(QString, QString, QString)));
+            SIGNAL(signalInfo(QString,QString,QString)),
+            SLOT(slotInfo(QString,QString,QString)));
     connect(m_dxs,
             SIGNAL(signalCategories(QList<KNS::Category*>)),
             SLOT(slotCategories(QList<KNS::Category*>)));
     connect(m_dxs,
-            SIGNAL(signalEntries(KNS::Entry::List, Feed *)),
-            SLOT(slotEntries(KNS::Entry::List, Feed *)));
+            SIGNAL(signalEntries(KNS::Entry::List,Feed*)),
+            SLOT(slotEntries(KNS::Entry::List,Feed*)));
     connect(m_dxs,
             SIGNAL(signalComments(QStringList)),
             SLOT(slotComments(QStringList)));
@@ -455,8 +455,8 @@ void KDXSButton::slotTriggered(QAction *action)
                 SIGNAL(signalPayloadLoaded(KUrl)),
                 SLOT(slotPayloadLoaded(KUrl)));
         connect(m_engine,
-                SIGNAL(signalPayloadFailed(KNS::Entry *)),
-                SLOT(slotPayloadFailed(KNS::Entry *)));
+                SIGNAL(signalPayloadFailed(KNS::Entry*)),
+                SLOT(slotPayloadFailed(KNS::Entry*)));
 
         m_engine->downloadPayload(m_entry);
     }
