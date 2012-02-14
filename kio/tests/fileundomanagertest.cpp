@@ -138,7 +138,7 @@ public:
         Q_UNUSED( destTime );
         return true;
     }
-    virtual bool confirmDeletion( const QList<KUrl>& files ) {
+    virtual bool confirmDeletion(const KUrl::List &files) {
         m_files = files;
         return m_nextReplyToConfirmDeletion;
     }
