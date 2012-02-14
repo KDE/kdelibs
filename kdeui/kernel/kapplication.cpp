@@ -830,6 +830,12 @@ void KApplicationPrivate::parseCommandLine( )
             qWarning() << i18n("The style '%1' was not found", reqStyle);
     }
 
+    if (args && args->isSet("config"))
+    {
+        QString config = args->getOption("config");
+        componentData.setConfigName(config);
+    }
+
     if ( q->type() != KApplication::Tty ) {
         if (args && args->isSet("icon"))
         {
@@ -842,12 +848,6 @@ void KApplicationPrivate::parseCommandLine( )
 
     if (!args)
         return;
-
-    if (args->isSet("config"))
-    {
-        QString config = args->getOption("config");
-        componentData.setConfigName(config);
-    }
 
     bool nocrashhandler = (!qgetenv("KDE_DEBUG").isEmpty());
     if (!nocrashhandler && args->isSet("crashhandler"))
