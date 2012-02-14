@@ -86,7 +86,6 @@ if (WIN32)
    LIST(APPEND kdecore_OPTIONAL_SRCS
       kernel/kkernel_win.cpp
       kernel/ktoolinvocation_win.cpp
-      kernel/kstandarddirs_win.cpp
       localization/klocale_win.cpp
       network/klocalsocket_win.cpp
       util/kde_file_win.cpp
@@ -113,7 +112,6 @@ endif (WIN32)
 if (UNIX)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
       kernel/ktoolinvocation_x11.cpp
-      kernel/kstandarddirs_unix.cpp
       localization/klocale_unix.cpp
       network/klocalsocket_unix.cpp
       network/netsupp.cpp
