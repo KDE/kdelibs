@@ -216,14 +216,42 @@ namespace {
 
         // property with literal range
         else if(ct.subTerm().isLiteralTerm()) {
+            // only strings can be matched via bif:contains
+            if(ct.comparator() == Nepomuk::Query::ComparisonTerm::Contains &&
+               ct.property().literalRangeType().dataType() != QVariant::String) {
+                ct.setComparator(Nepomuk::Query::ComparisonTerm::Equal);
+            }
+
+            // try to convert the value via QVariant
             QVariant v = ct.subTerm().toLiteralTerm().value().variant();
             if(v.convert(ct.property().literalRangeType().dataType())) {
                 ct.setSubTerm(Nepomuk::Query::LiteralTerm(v));
-                // only strings can be matched via bif:contains
-                if(ct.comparator() == Nepomuk::Query::ComparisonTerm::Contains && v.type() != QVariant::String) {
-                    ct.setComparator(Nepomuk::Query::ComparisonTerm::Equal);
-                }
                 return true;
+            }
+
+            // try some heuristics
+            else {
+                if(ct.property().literalRangeType().dataType() == QVariant::DateTime) {
+                    // if it is an int with 4 digits it is very likely a year
+                    if(ct.subTerm().toLiteralTerm().value().isInt() ) {
+                        const int year = ct.subTerm().toLiteralTerm().value().toInt();
+                        if( year >= 1000 && year <= 9999) {
+                            QDate date(year, 1, 1);
+                            QTime time(0,0);
+                            // greater than last day in same year
+                            // greater or equal than the first day in same year
+                            // smaller than first day in same year
+                            // smaller or equal than last day in same year
+                            if(ct.comparator() == ComparisonTerm::Greater ||
+                               ct.comparator() == ComparisonTerm::SmallerOrEqual) {
+                                date.setYMD(date.year(), 12, 31);
+                                time.setHMS(23,59,59,999);
+                            }
+                            ct.setSubTerm(Nepomuk::Query::LiteralTerm(QDateTime(date, time)));
+                            return true;
+                        }
+                    }
+                }
             }
         }
 
