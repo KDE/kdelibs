@@ -916,7 +916,8 @@ void KMimeTypeTest::testHelperProtocols()
     QVERIFY(KProtocolInfo::isKnownProtocol("mailto"));
     QVERIFY(KProtocolInfo::isHelperProtocol("mailto"));
     QVERIFY(KProtocolInfo::isHelperProtocol(KUrl("mailto:faure@kde.org")));
-    QCOMPARE(KProtocolInfo::exec("mailto"), QString::fromLatin1("kmail -caption \"%c\"")); // comes from KMail2.desktop
+    QVERIFY2(KProtocolInfo::exec("mailto").contains(QLatin1String("kmail -caption \"%c\"")), // comes from KMail2.desktop
+                qPrintable(KProtocolInfo::exec("mailto")));
     QVERIFY(!KProtocolInfo::isHelperProtocol("http"));
     QVERIFY(!KProtocolInfo::isHelperProtocol("ftp"));
     QVERIFY(!KProtocolInfo::isHelperProtocol("file"));
