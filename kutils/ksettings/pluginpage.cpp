@@ -49,9 +49,9 @@ PluginPage::PluginPage(const KComponentData &componentData, QWidget *parent, con
     //d->q_ptr = this;
 //    ( new QVBoxLayout( this, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
     d->selwid = new KPluginSelector( this );
-    connect( d->selwid, SIGNAL( changed( bool ) ), this, SIGNAL( changed( bool ) ) );
-    connect(d->selwid, SIGNAL(configCommitted(const QByteArray &)), this,
-            SLOT(_k_reparseConfiguration(const QByteArray &)));
+    connect( d->selwid, SIGNAL(changed(bool)), this, SIGNAL(changed(bool)) );
+    connect(d->selwid, SIGNAL(configCommitted(QByteArray)), this,
+            SLOT(_k_reparseConfiguration(QByteArray)));
 }
 
 void PluginPagePrivate::_k_reparseConfiguration(const QByteArray &a)

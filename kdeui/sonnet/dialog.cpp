@@ -138,16 +138,16 @@ void Dialog::initConnections()
              SLOT(slotSkipAll()) );
     connect( d->ui.m_suggestBtn, SIGNAL(clicked()),
              SLOT(slotSuggest()) );
-    connect( d->ui.m_language, SIGNAL(activated(const QString&)),
-             SLOT(slotChangeLanguage(const QString&)) );
+    connect( d->ui.m_language, SIGNAL(activated(QString)),
+             SLOT(slotChangeLanguage(QString)) );
     connect( d->ui.m_suggestions, SIGNAL(clicked(QModelIndex)),
 	     SLOT(slotSelectionChanged(QModelIndex)) );
-    connect( d->checker, SIGNAL(misspelling(const QString&, int)),
-             SLOT(slotMisspelling(const QString&, int)) );
+    connect( d->checker, SIGNAL(misspelling(QString,int)),
+             SLOT(slotMisspelling(QString,int)) );
     connect( d->checker, SIGNAL(done()),
              SLOT(slotDone()) );
     connect( d->ui.m_suggestions, SIGNAL(doubleClicked(QModelIndex)),
-             SLOT( slotReplaceWord() ) );
+             SLOT(slotReplaceWord()) );
     connect( this, SIGNAL(user1Clicked()), this, SLOT(slotFinished()) );
     connect( this, SIGNAL(cancelClicked()),this, SLOT(slotCancel()) );
     connect( d->ui.m_replacement, SIGNAL(returnPressed()), this, SLOT(slotReplaceWord()) );

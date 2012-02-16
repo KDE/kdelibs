@@ -62,7 +62,7 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QUrl& kickOffUri, co
     : m_uri(uri),
       m_mainType( type ),
       m_modificationMutex(QMutex::Recursive),
-      m_cacheDirty(true),
+      m_cacheDirty(false),
       m_pimoThing(0),
       m_groundingOccurence(0),
       m_rm(rm)
@@ -83,6 +83,16 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QUrl& kickOffUri, co
     }
     if( !kickOffUri.isEmpty() ) {
         m_kickoffUris.insert( kickOffUri );
+
+        if( kickOffUri.scheme().isEmpty() ) {
+            // Label
+            const QString label = kickOffUri.toString();
+            m_cache.insert( Soprano::Vocabulary::NAO::identifier(), label );
+        }
+        else if( kickOffUri.scheme() != QLatin1String("nepomuk") ) {
+            // It's probably the nie:url
+            m_cache.insert( Nepomuk::Vocabulary::NIE::url(), kickOffUri );
+        }
     }
     m_rm->addToKickOffList( this, m_kickoffUris );
 }
@@ -691,6 +701,7 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::determineUri()
     // Move us to the final data hash now that the URI is known
     //
     if( !m_uri.isEmpty() ) {
+        m_cacheDirty = true;
         //vHanda: Is there some way to avoid this hash lookup every time?
         //        It sure would speed things up.
         ResourceDataHash::iterator it = m_rm->m_initializedData.find(m_uri);

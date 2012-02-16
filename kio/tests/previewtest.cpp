@@ -34,8 +34,8 @@ void PreviewTest::slotGenerate()
 
     KIO::PreviewJob *job = KIO::filePreview(items, QSize(m_preview->width(), m_preview->height()));
     connect(job, SIGNAL(result(KJob*)), SLOT(slotResult(KJob*)));
-    connect(job, SIGNAL(gotPreview(const KFileItem&, const QPixmap &)), SLOT(slotPreview(const KFileItem&, const QPixmap &)));
-    connect(job, SIGNAL(failed(const KFileItem&)), SLOT(slotFailed()));
+    connect(job, SIGNAL(gotPreview(KFileItem,QPixmap)), SLOT(slotPreview(KFileItem,QPixmap)));
+    connect(job, SIGNAL(failed(KFileItem)), SLOT(slotFailed()));
 }
 
 void PreviewTest::slotResult(KJob*)

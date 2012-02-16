@@ -124,14 +124,14 @@ void KImageFilePreview::showPreview( const KUrl &url, bool force )
     int h = d->imageLabel->contentsRect().height() - 4;
 
     if (d->m_job) {
-        disconnect(d->m_job, SIGNAL(result(KJob *)),
-                    this, SLOT( _k_slotResult( KJob * )));
+        disconnect(d->m_job, SIGNAL(result(KJob*)),
+                    this, SLOT(_k_slotResult(KJob*)));
         disconnect(d->m_job, SIGNAL(gotPreview(const KFileItem&,
                                                 const QPixmap& )), this,
-                SLOT( gotPreview( const KFileItem&, const QPixmap& ) ));
+                SLOT(gotPreview(KFileItem,QPixmap)));
 
-        disconnect(d->m_job, SIGNAL(failed(const KFileItem&)),
-                    this, SLOT(_k_slotFailed(const KFileItem&)));
+        disconnect(d->m_job, SIGNAL(failed(KFileItem)),
+                    this, SLOT(_k_slotFailed(KFileItem)));
 
         d->m_job->kill();
     }
@@ -140,14 +140,14 @@ void KImageFilePreview::showPreview( const KUrl &url, bool force )
     if ( force ) // explicitly requested previews shall always be generated!
         d->m_job->setIgnoreMaximumSize(true);
 
-    connect(d->m_job, SIGNAL(result(KJob *)),
-                this, SLOT( _k_slotResult( KJob * )));
+    connect(d->m_job, SIGNAL(result(KJob*)),
+                this, SLOT(_k_slotResult(KJob*)));
     connect(d->m_job, SIGNAL(gotPreview(const KFileItem&,
                                         const QPixmap& )),
-                SLOT( gotPreview( const KFileItem&, const QPixmap& ) ));
+                SLOT(gotPreview(KFileItem,QPixmap)));
 
-    connect(d->m_job, SIGNAL(failed(const KFileItem&)),
-                this, SLOT(_k_slotFailed(const KFileItem&)));
+    connect(d->m_job, SIGNAL(failed(KFileItem)),
+                this, SLOT(_k_slotFailed(KFileItem)));
 }
 
 void KImageFilePreview::resizeEvent( QResizeEvent * )

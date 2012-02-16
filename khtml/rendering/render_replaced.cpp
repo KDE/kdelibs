@@ -294,7 +294,7 @@ void RenderWidget::setQWidget(QWidget *widget)
     {
         if (m_widget) {
             m_widget->removeEventFilter(this);
-            disconnect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
+            disconnect( m_widget, SIGNAL(destroyed()), this, SLOT(slotWidgetDestructed()));
             m_widget->hide();
             if (m_ownsWidget)
                 m_widget->deleteLater(); //Might happen due to event on the widget, so be careful
@@ -315,7 +315,7 @@ void RenderWidget::setQWidget(QWidget *widget)
             m_widget->setParent(m_view->widget());
             if (isRedirectedSubFrame)
                 static_cast<KHTMLView*>(m_widget)->setHasStaticBackground();
-            connect( m_widget, SIGNAL( destroyed()), this, SLOT( slotWidgetDestructed()));
+            connect( m_widget, SIGNAL(destroyed()), this, SLOT(slotWidgetDestructed()));
             m_widget->installEventFilter(this);
             if (isRedirectedWidget()) {
                 if (!qobject_cast<QFrame*>(m_widget))

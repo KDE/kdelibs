@@ -137,7 +137,7 @@ void ChmodJobPrivate::_k_processList()
                 KIO::ListJob * listJob = KIO::listRecursive( item.url(), KIO::HideProgressInfo );
                 q->connect( listJob, SIGNAL(entries( KIO::Job *,
                                                      const KIO::UDSEntryList& )),
-                            SLOT(_k_slotEntries( KIO::Job*, const KIO::UDSEntryList& )));
+                            SLOT(_k_slotEntries(KIO::Job*,KIO::UDSEntryList)));
                 q->addSubjob( listJob );
                 return; // we'll come back later, when this one's finished
             }

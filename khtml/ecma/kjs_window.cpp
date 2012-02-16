@@ -1297,7 +1297,7 @@ void Window::scheduleClose()
 {
   kDebug(6070) << "Window::scheduleClose window.close() " << m_frame;
   Q_ASSERT(winq);
-  QTimer::singleShot( 0, winq, SLOT( timeoutClose() ) );
+  QTimer::singleShot( 0, winq, SLOT(timeoutClose()) );
 }
 
 void Window::closeNow()
@@ -2318,8 +2318,8 @@ WindowQObject::WindowQObject(Window *w)
   if ( !parent->m_frame )
       kDebug(6070) << "WARNING: null part in " ;
   else
-      connect( parent->m_frame, SIGNAL( destroyed() ),
-               this, SLOT( parentDestroyed() ) );
+      connect( parent->m_frame, SIGNAL(destroyed()),
+               this, SLOT(parentDestroyed()) );
   pauseLevel  = 0;
   lastTimerId = 0;
   currentlyDispatching = false;

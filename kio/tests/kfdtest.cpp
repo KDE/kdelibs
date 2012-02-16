@@ -10,7 +10,7 @@ KFDTest::KFDTest( const KUrl& startDir, QObject *parent, const char *name )
       m_startDir( startDir )
 {
     setObjectName( name );
-    QTimer::singleShot( 1000, this, SLOT( doit() ));
+    QTimer::singleShot( 1000, this, SLOT(doit()));
 }
 
 void KFDTest::doit()

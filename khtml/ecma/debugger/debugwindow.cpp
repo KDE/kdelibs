@@ -116,8 +116,8 @@ DebugWindow::DebugWindow(QWidget *parent)
     m_callStack = new CallStackDock;
     //m_breakpoints = new BreakpointsDock;
     m_console = new ConsoleDock;
-    connect(m_console, SIGNAL(requestEval(const QString&)),
-            this,      SLOT  (doEval(const QString&)));
+    connect(m_console, SIGNAL(requestEval(QString)),
+            this,      SLOT  (doEval(QString)));
 
 
     addDockWidget(Qt::LeftDockWidgetArea, m_scripts);
@@ -145,9 +145,9 @@ DebugWindow::DebugWindow(QWidget *parent)
 
     connect(m_scripts, SIGNAL(displayScript(KJSDebugger::DebugDocument*)),
             this, SLOT(displayScript(KJSDebugger::DebugDocument*)));
-    connect(m_callStack, SIGNAL(displayScript(KJSDebugger::DebugDocument*, int)),
-            this, SLOT(displayScript(KJSDebugger::DebugDocument*, int)));
-    connect(m_callStack, SIGNAL(displayScript(KJSDebugger::DebugDocument*, int)),
+    connect(m_callStack, SIGNAL(displayScript(KJSDebugger::DebugDocument*,int)),
+            this, SLOT(displayScript(KJSDebugger::DebugDocument*,int)));
+    connect(m_callStack, SIGNAL(displayScript(KJSDebugger::DebugDocument*,int)),
             this, SLOT(updateVarView()));
 
     m_breakAtNext = false;

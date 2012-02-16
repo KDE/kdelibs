@@ -47,8 +47,8 @@ StorageAccess::StorageAccess(HalDevice *device)
     : DeviceInterface(device), m_setupInProgress(false), m_teardownInProgress(false), m_ejectInProgress(false),
       m_passphraseRequested(false)
 {
-    connect(device, SIGNAL(propertyChanged(const QMap<QString,int> &)),
-             this, SLOT(slotPropertyChanged(const QMap<QString,int> &)));
+    connect(device, SIGNAL(propertyChanged(QMap<QString,int>)),
+             this, SLOT(slotPropertyChanged(QMap<QString,int>)));
     // Delay connecting to DBus signals to avoid the related time penalty
     // in hot paths such as predicate matching
     QTimer::singleShot(0, this, SLOT(connectDBusSignals()));
@@ -63,15 +63,15 @@ void StorageAccess::connectDBusSignals()
 {
     m_device->registerAction("setup", this,
                              SLOT(slotSetupRequested()),
-                             SLOT(slotSetupDone(int, const QString&)));
+                             SLOT(slotSetupDone(int,QString)));
 
     m_device->registerAction("teardown", this,
                              SLOT(slotTeardownRequested()),
-                             SLOT(slotTeardownDone(int, const QString&)));
+                             SLOT(slotTeardownDone(int,QString)));
 
     m_device->registerAction("eject", this,
                              SLOT(slotEjectRequested()),
-                             SLOT(slotEjectDone(int, const QString&)));
+                             SLOT(slotEjectDone(int,QString)));
 }
 
 void StorageAccess::slotSetupDone(int error, const QString &errorString)
@@ -235,7 +235,7 @@ void StorageAccess::slotDBusReply(const QDBusMessage &/*reply*/)
             m_ejectInProgress = true;
             m_device->broadcastActionRequested("eject");
             m_process = FstabHandling::callSystemCommand("eject", args,
-                                                         this, SLOT(slotProcessFinished(int, QProcess::ExitStatus)));
+                                                         this, SLOT(slotProcessFinished(int,QProcess::ExitStatus)));
         }
     } else if (m_ejectInProgress) {
         m_ejectInProgress = false;
@@ -432,8 +432,8 @@ bool StorageAccess::callHalVolumeMount()
     msg << "" << fstype << options;
 
     return c.callWithCallback(msg, this,
-                              SLOT(slotDBusReply(const QDBusMessage &)),
-                              SLOT(slotDBusError(const QDBusError &)));
+                              SLOT(slotDBusReply(QDBusMessage)),
+                              SLOT(slotDBusError(QDBusError)));
 }
 
 bool StorageAccess::callHalVolumeUnmount()
@@ -447,8 +447,8 @@ bool StorageAccess::callHalVolumeUnmount()
     msg << QStringList();
 
     return c.callWithCallback(msg, this,
-                              SLOT(slotDBusReply(const QDBusMessage &)),
-                              SLOT(slotDBusError(const QDBusError &)));
+                              SLOT(slotDBusReply(QDBusMessage)),
+                              SLOT(slotDBusError(QDBusError)));
 }
 
 bool StorageAccess::callHalVolumeEject()
@@ -463,15 +463,15 @@ bool StorageAccess::callHalVolumeEject()
     msg << QStringList();
 
     return c.callWithCallback(msg, this,
-                              SLOT(slotDBusReply(const QDBusMessage &)),
-                              SLOT(slotDBusError(const QDBusError &)));
+                              SLOT(slotDBusReply(QDBusMessage)),
+                              SLOT(slotDBusError(QDBusError)));
 }
 
 bool Solid::Backends::Hal::StorageAccess::callSystemMount()
 {
     const QString device = m_device->prop("block.device").toString();
     m_process = FstabHandling::callSystemCommand("mount", device,
-                                                 this, SLOT(slotProcessFinished(int, QProcess::ExitStatus)));
+                                                 this, SLOT(slotProcessFinished(int,QProcess::ExitStatus)));
 
     return m_process!=0;
 }
@@ -480,7 +480,7 @@ bool Solid::Backends::Hal::StorageAccess::callSystemUnmount()
 {
     const QString device = m_device->prop("block.device").toString();
     m_process = FstabHandling::callSystemCommand("umount", device,
-                                                 this, SLOT(slotProcessFinished(int, QProcess::ExitStatus)));
+                                                 this, SLOT(slotProcessFinished(int,QProcess::ExitStatus)));
 
     return m_process!=0;
 }
@@ -496,8 +496,8 @@ void StorageAccess::callCryptoSetup(const QString &passphrase)
     msg << passphrase;
 
     c.callWithCallback(msg, this,
-                       SLOT(slotDBusReply(const QDBusMessage &)),
-                       SLOT(slotDBusError(const QDBusError &)));
+                       SLOT(slotDBusReply(QDBusMessage)),
+                       SLOT(slotDBusError(QDBusError)));
 }
 
 bool StorageAccess::callCryptoTeardown()
@@ -509,8 +509,8 @@ bool StorageAccess::callCryptoTeardown()
                                                       "Teardown");
 
     return c.callWithCallback(msg, this,
-                              SLOT(slotDBusReply(const QDBusMessage &)),
-                              SLOT(slotDBusError(const QDBusError &)));
+                              SLOT(slotDBusReply(QDBusMessage)),
+                              SLOT(slotDBusError(QDBusError)));
 }
 
 #include "backends/hal/halstorageaccess.moc"

@@ -228,9 +228,9 @@ ScriptableLiveConnectExtension::ScriptableLiveConnectExtension(QObject* p, LiveC
         ScriptableExtension(p), wrapee(old)
 {
     connect(wrapee,
-            SIGNAL(partEvent(const unsigned long, const QString &, const KParts::LiveConnectExtension::ArgList &)),
+            SIGNAL(partEvent(ulong,QString,KParts::LiveConnectExtension::ArgList)),
             this,
-            SLOT(liveConnectEvent(const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList &)));
+            SLOT(liveConnectEvent(ulong,QString,KParts::LiveConnectExtension::ArgList)));
 }
 
 QVariant ScriptableLiveConnectExtension::rootObject()

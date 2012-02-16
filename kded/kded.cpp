@@ -412,7 +412,7 @@ KDEDModule *Kded::loadModule(const KService::Ptr& s, bool onDemand)
             module->setModuleName(obj);
             m_modules.insert(obj, module);
             //m_libs.insert(obj, lib);
-            connect(module, SIGNAL(moduleDeleted(KDEDModule *)), SLOT(slotKDEDModuleRemoved(KDEDModule *)));
+            connect(module, SIGNAL(moduleDeleted(KDEDModule*)), SLOT(slotKDEDModuleRemoved(KDEDModule*)));
             kDebug(7020) << "Successfully loaded module" << obj;
             return module;
         } else {
@@ -477,12 +477,12 @@ void Kded::updateDirWatch()
   delete m_pDirWatch;
   m_pDirWatch = new KDirWatch;
 
-  QObject::connect( m_pDirWatch, SIGNAL(dirty(const QString&)),
-           this, SLOT(update(const QString&)));
-  QObject::connect( m_pDirWatch, SIGNAL(created(const QString&)),
-           this, SLOT(update(const QString&)));
-  QObject::connect( m_pDirWatch, SIGNAL(deleted(const QString&)),
-           this, SLOT(dirDeleted(const QString&)));
+  QObject::connect( m_pDirWatch, SIGNAL(dirty(QString)),
+           this, SLOT(update(QString)));
+  QObject::connect( m_pDirWatch, SIGNAL(created(QString)),
+           this, SLOT(update(QString)));
+  QObject::connect( m_pDirWatch, SIGNAL(deleted(QString)),
+           this, SLOT(dirDeleted(QString)));
 
   // For each resource
   for( QStringList::ConstIterator it = m_allResourceDirs.constBegin();
@@ -714,7 +714,7 @@ KUpdateD::KUpdateD()
     m_pTimer = new QTimer;
     m_pTimer->setSingleShot( true );
     connect(m_pTimer, SIGNAL(timeout()), this, SLOT(runKonfUpdate()));
-    QObject::connect( m_pDirWatch, SIGNAL(dirty(const QString&)),
+    QObject::connect( m_pDirWatch, SIGNAL(dirty(QString)),
            this, SLOT(slotNewUpdateFile()));
 
     const QStringList dirs = KGlobal::dirs()->findDirs("data", "kconf_update");

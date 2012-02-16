@@ -61,19 +61,19 @@ void KJobTrackerInterface::registerJob(KJob *job)
                      this, SLOT(description(KJob*, const QString&,
                                             const QPair<QString, QString>&,
                                             const QPair<QString, QString>&)));
-    QObject::connect(job, SIGNAL(infoMessage(KJob*, const QString&, const QString&)),
-                     this, SLOT(infoMessage(KJob*, const QString&, const QString&)));
-    QObject::connect(job, SIGNAL(warning(KJob*, const QString&, const QString&)),
-                     this, SLOT(warning(KJob*, const QString&, const QString&)));
+    QObject::connect(job, SIGNAL(infoMessage(KJob*,QString,QString)),
+                     this, SLOT(infoMessage(KJob*,QString,QString)));
+    QObject::connect(job, SIGNAL(warning(KJob*,QString,QString)),
+                     this, SLOT(warning(KJob*,QString,QString)));
 
-    QObject::connect(job, SIGNAL(totalAmount(KJob*, KJob::Unit, qulonglong)),
-                     this, SLOT(totalAmount(KJob*, KJob::Unit, qulonglong)));
-    QObject::connect(job, SIGNAL(processedAmount(KJob*, KJob::Unit, qulonglong)),
-                     this, SLOT(processedAmount(KJob*, KJob::Unit, qulonglong)));
-    QObject::connect(job, SIGNAL(percent(KJob*, unsigned long)),
-                     this, SLOT(percent(KJob*, unsigned long)));
-    QObject::connect(job, SIGNAL(speed(KJob*, unsigned long)),
-                     this, SLOT(speed(KJob*, unsigned long)));
+    QObject::connect(job, SIGNAL(totalAmount(KJob*,KJob::Unit,qulonglong)),
+                     this, SLOT(totalAmount(KJob*,KJob::Unit,qulonglong)));
+    QObject::connect(job, SIGNAL(processedAmount(KJob*,KJob::Unit,qulonglong)),
+                     this, SLOT(processedAmount(KJob*,KJob::Unit,qulonglong)));
+    QObject::connect(job, SIGNAL(percent(KJob*,ulong)),
+                     this, SLOT(percent(KJob*,ulong)));
+    QObject::connect(job, SIGNAL(speed(KJob*,ulong)),
+                     this, SLOT(speed(KJob*,ulong)));
 }
 
 void KJobTrackerInterface::unregisterJob(KJob *job)

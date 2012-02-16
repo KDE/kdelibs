@@ -396,7 +396,7 @@ void KDirModelTest::testModifyFile()
     const KUrl url(file);
 
 #if 1
-    QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
+    QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)));
 #else
     ModelSpy modelSpy(m_dirModel);
 #endif
@@ -435,7 +435,7 @@ void KDirModelTest::testRenameFile()
     const KUrl url(m_tempDir->name() + "toplevelfile_2");
     const KUrl newUrl(m_tempDir->name() + "toplevelfile_2_renamed");
 
-    QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
+    QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)));
     connect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
              &m_eventLoop, SLOT(exitLoop()) );
 
@@ -538,7 +538,7 @@ void KDirModelTest::testRenameDirectory() // #172945, #174703, (and #180156)
     enterLoop();
 
     // Now do the renaming
-    QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
+    QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)));
     connect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
              &m_eventLoop, SLOT(exitLoop()) );
     KIO::SimpleJob* job = KIO::rename(url, newUrl, KIO::HideProgressInfo);
@@ -636,7 +636,7 @@ void KDirModelTest::testRenameDirectoryInCache() // #188807
 
 void KDirModelTest::testChmodDirectory() // #53397
 {
-    QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
+    QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)));
     connect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
              &m_eventLoop, SLOT(exitLoop()) );
     const QString path = m_tempDir->name();
@@ -938,7 +938,7 @@ void KDirModelTest::testShowHiddenFiles() // #174788
 {
     KDirLister* dirLister = m_dirModel->dirLister();
 
-    QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex, int, int)));
+    QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
     QSignalSpy spyNewItems(dirLister, SIGNAL(newItems(KFileItemList)));
     QSignalSpy spyRowsInserted(m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)));
     dirLister->setShowingDotFiles(true);
@@ -1251,7 +1251,7 @@ void KDirModelTest::testRenameFileToHidden() // #174721
     const KUrl url(m_tempDir->name() + "toplevelfile_2");
     const KUrl newUrl(m_tempDir->name() + ".toplevelfile_2");
 
-    QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)));
+    QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)));
     QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
     QSignalSpy spyRowsInserted(m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)));
     connect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),

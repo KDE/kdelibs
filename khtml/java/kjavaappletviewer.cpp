@@ -366,9 +366,9 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
     KParts::Part::setWidget (m_view);
 
     connect (applet->getContext(), SIGNAL(appletLoaded()), this, SLOT(appletLoaded()));
-    connect (applet->getContext(), SIGNAL(showDocument(const QString&, const QString&)), m_browserextension, SLOT(showDocument(const QString&, const QString&)));
-    connect (applet->getContext(), SIGNAL(showStatus(const QString &)), this, SLOT(infoMessage(const QString &)));
-    connect (applet, SIGNAL(jsEvent (const QStringList &)), m_liveconnect, SLOT(jsEvent (const QStringList &)));
+    connect (applet->getContext(), SIGNAL(showDocument(QString,QString)), m_browserextension, SLOT(showDocument(QString,QString)));
+    connect (applet->getContext(), SIGNAL(showStatus(QString)), this, SLOT(infoMessage(QString)));
+    connect (applet, SIGNAL(jsEvent(QStringList)), m_liveconnect, SLOT(jsEvent(QStringList)));
 }
 
 CoverWidget * KJavaAppletViewer::view () const
@@ -428,7 +428,7 @@ bool KJavaAppletViewer::openUrl (const KUrl & url) {
     if (applet->size().width() > 0 || m_view->isVisible())
         w->showApplet ();
     else
-        QTimer::singleShot (10, this, SLOT (delayedCreateTimeOut ()));
+        QTimer::singleShot (10, this, SLOT (delayedCreateTimeOut()));
     if (!applet->failed ())
         emit started (0L);
     return url.isValid ();

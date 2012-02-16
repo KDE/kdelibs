@@ -25,8 +25,8 @@ using namespace Solid::Backends::Fake;
 FakeStorageAccess::FakeStorageAccess(FakeDevice *device)
     : FakeDeviceInterface(device)
 {
-    connect(device, SIGNAL(propertyChanged(const QMap<QString, int>&)),
-            this, SLOT(onPropertyChanged(const QMap<QString, int>&)));
+    connect(device, SIGNAL(propertyChanged(QMap<QString,int>)),
+            this, SLOT(onPropertyChanged(QMap<QString,int>)));
 }
 
 FakeStorageAccess::~FakeStorageAccess()

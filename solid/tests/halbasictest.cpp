@@ -113,8 +113,8 @@ void HalBasicTest::testSignalHandling()
     m_device = qobject_cast<Solid::Backends::Hal::HalDevice *>(manager->createDevice("/org/freedesktop/Hal/devices/computer"));
 
 #if 0
-    connect(m_device, SIGNAL(propertyChanged(const QMap<QString,int> &)),
-             this, SLOT(slotPropertyChanged(const QMap<QString,int> &)));
+    connect(m_device, SIGNAL(propertyChanged(QMap<QString,int>)),
+             this, SLOT(slotPropertyChanged(QMap<QString,int>)));
 
     // HAL locking support being broken anyway...
     QVERIFY(!m_device->isLocked());

@@ -54,7 +54,7 @@ void KFadeWidgetEffectTest::createEffect()
 void KFadeWidgetEffectTest::startEffect()
 {
     fade->start(250);
-    QVERIFY(QTest::kWaitForSignal(fade, SIGNAL(destroyed(QObject *)), 2000));
+    QVERIFY(QTest::kWaitForSignal(fade, SIGNAL(destroyed(QObject*)), 2000));
 }
 
 void KFadeWidgetEffectTest::cleanupTestCase()

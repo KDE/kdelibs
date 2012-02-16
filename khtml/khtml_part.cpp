@@ -250,14 +250,14 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   if ( prof == BrowserViewGUI ) {
     d->m_paViewDocument = new KAction( i18n( "View Do&cument Source" ), this );
     actionCollection()->addAction( "viewDocumentSource", d->m_paViewDocument );
-    connect( d->m_paViewDocument, SIGNAL( triggered( bool ) ), this, SLOT( slotViewDocumentSource() ) );
+    connect( d->m_paViewDocument, SIGNAL(triggered(bool)), this, SLOT(slotViewDocumentSource()) );
     if (!parentPart()) {
         d->m_paViewDocument->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_U) );
     }
 
     d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), this );
     actionCollection()->addAction( "viewFrameSource", d->m_paViewFrame );
-    connect( d->m_paViewFrame, SIGNAL( triggered( bool ) ), this, SLOT( slotViewFrameSource() ) );
+    connect( d->m_paViewFrame, SIGNAL(triggered(bool)), this, SLOT(slotViewFrameSource()) );
     if (!parentPart()) {
         d->m_paViewFrame->setShortcut( QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_U) );
     }
@@ -267,20 +267,20 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
     if (!parentPart()) {
         d->m_paViewInfo->setShortcut( QKeySequence(Qt::CTRL+Qt::Key_I) );
     }
-    connect( d->m_paViewInfo, SIGNAL( triggered( bool ) ), this, SLOT( slotViewPageInfo() ) );
+    connect( d->m_paViewInfo, SIGNAL(triggered(bool)), this, SLOT(slotViewPageInfo()) );
 
     d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As..." ), this );
     actionCollection()->addAction( "saveBackground", d->m_paSaveBackground );
-    connect( d->m_paSaveBackground, SIGNAL( triggered( bool ) ), this, SLOT( slotSaveBackground() ) );
+    connect( d->m_paSaveBackground, SIGNAL(triggered(bool)), this, SLOT(slotSaveBackground()) );
 
     d->m_paSaveDocument = actionCollection()->addAction( KStandardAction::SaveAs, "saveDocument",
-                                                       this, SLOT( slotSaveDocument() ) );
+                                                       this, SLOT(slotSaveDocument()) );
     if ( parentPart() )
         d->m_paSaveDocument->setShortcuts( KShortcut() ); // avoid clashes
 
     d->m_paSaveFrame = new KAction( i18n( "Save &Frame As..." ), this );
     actionCollection()->addAction( "saveFrame", d->m_paSaveFrame );
-    connect( d->m_paSaveFrame, SIGNAL( triggered( bool ) ), this, SLOT( slotSaveFrame() ) );
+    connect( d->m_paSaveFrame, SIGNAL(triggered(bool)), this, SLOT(slotSaveFrame()) );
   } else {
     d->m_paViewDocument = 0;
     d->m_paViewFrame = 0;
@@ -292,30 +292,30 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_paSecurity = new KAction( i18n( "SSL" ), this );
   actionCollection()->addAction( "security", d->m_paSecurity );
-  connect( d->m_paSecurity, SIGNAL( triggered( bool ) ), this, SLOT( slotSecurity() ) );
+  connect( d->m_paSecurity, SIGNAL(triggered(bool)), this, SLOT(slotSecurity()) );
 
   d->m_paDebugRenderTree = new KAction( i18n( "Print Rendering Tree to STDOUT" ), this );
   actionCollection()->addAction( "debugRenderTree", d->m_paDebugRenderTree );
-  connect( d->m_paDebugRenderTree, SIGNAL( triggered( bool ) ), this, SLOT( slotDebugRenderTree() ) );
+  connect( d->m_paDebugRenderTree, SIGNAL(triggered(bool)), this, SLOT(slotDebugRenderTree()) );
 
   d->m_paDebugDOMTree = new KAction( i18n( "Print DOM Tree to STDOUT" ), this );
   actionCollection()->addAction( "debugDOMTree", d->m_paDebugDOMTree );
-  connect( d->m_paDebugDOMTree, SIGNAL( triggered( bool ) ), this, SLOT( slotDebugDOMTree() ) );
+  connect( d->m_paDebugDOMTree, SIGNAL(triggered(bool)), this, SLOT(slotDebugDOMTree()) );
 
   KAction* paDebugFrameTree = new KAction( i18n( "Print frame tree to STDOUT" ), this );
   actionCollection()->addAction( "debugFrameTree", paDebugFrameTree );
-  connect( paDebugFrameTree, SIGNAL( triggered( bool ) ), this, SLOT( slotDebugFrameTree() ) );
+  connect( paDebugFrameTree, SIGNAL(triggered(bool)), this, SLOT(slotDebugFrameTree()) );
 
   d->m_paStopAnimations = new KAction( i18n( "Stop Animated Images" ), this );
   actionCollection()->addAction( "stopAnimations", d->m_paStopAnimations );
-  connect( d->m_paStopAnimations, SIGNAL( triggered( bool ) ), this, SLOT( slotStopAnimations() ) );
+  connect( d->m_paStopAnimations, SIGNAL(triggered(bool)), this, SLOT(slotStopAnimations()) );
 
   d->m_paSetEncoding = new KCodecAction( KIcon("character-set"), i18n( "Set &Encoding" ), this, true );
   actionCollection()->addAction( "setEncoding", d->m_paSetEncoding );
 //   d->m_paSetEncoding->setDelayed( false );
 
-  connect( d->m_paSetEncoding, SIGNAL(triggered(const QString&)), this, SLOT( slotSetEncoding(const QString &)));
-  connect( d->m_paSetEncoding, SIGNAL(triggered(KEncodingDetector::AutoDetectScript)), this, SLOT( slotAutomaticDetectionLanguage(KEncodingDetector::AutoDetectScript)));
+  connect( d->m_paSetEncoding, SIGNAL(triggered(QString)), this, SLOT(slotSetEncoding(QString)));
+  connect( d->m_paSetEncoding, SIGNAL(triggered(KEncodingDetector::AutoDetectScript)), this, SLOT(slotAutomaticDetectionLanguage(KEncodingDetector::AutoDetectScript)));
 
   if ( KGlobal::config()->hasGroup( "HTML Settings" ) ) {
     KConfigGroup config( KGlobal::config(), "HTML Settings" );
@@ -351,19 +351,19 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_paUseStylesheet = new KSelectAction( i18n( "Use S&tylesheet"), this );
   actionCollection()->addAction( "useStylesheet", d->m_paUseStylesheet );
-  connect( d->m_paUseStylesheet, SIGNAL( triggered( int ) ), this, SLOT( slotUseStylesheet() ) );
+  connect( d->m_paUseStylesheet, SIGNAL(triggered(int)), this, SLOT(slotUseStylesheet()) );
 
   if ( prof == BrowserViewGUI ) {
       d->m_paIncZoomFactor = new KHTMLZoomFactorAction( this, true, "format-font-size-more", i18n( "Enlarge Font" ), this );
       actionCollection()->addAction( "incFontSizes", d->m_paIncZoomFactor );
-      connect(d->m_paIncZoomFactor, SIGNAL(triggered(bool)), SLOT( slotIncFontSizeFast() ));
+      connect(d->m_paIncZoomFactor, SIGNAL(triggered(bool)), SLOT(slotIncFontSizeFast()));
       d->m_paIncZoomFactor->setWhatsThis( i18n( "<qt>Enlarge Font<br /><br />"
                                                 "Make the font in this window bigger. "
                             "Click and hold down the mouse button for a menu with all available font sizes.</qt>" ) );
 
       d->m_paDecZoomFactor = new KHTMLZoomFactorAction( this, false, "format-font-size-less", i18n( "Shrink Font" ), this );
       actionCollection()->addAction( "decFontSizes", d->m_paDecZoomFactor );
-      connect(d->m_paDecZoomFactor, SIGNAL(triggered(bool)), SLOT( slotDecFontSizeFast() ));
+      connect(d->m_paDecZoomFactor, SIGNAL(triggered(bool)), SLOT(slotDecFontSizeFast()));
       d->m_paDecZoomFactor->setWhatsThis( i18n( "<qt>Shrink Font<br /><br />"
                                                 "Make the font in this window smaller. "
                             "Click and hold down the mouse button for a menu with all available font sizes.</qt>" ) );
@@ -378,17 +378,17 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       }
   }
 
-  d->m_paFind = actionCollection()->addAction( KStandardAction::Find, "find", this, SLOT( slotFind() ) );
+  d->m_paFind = actionCollection()->addAction( KStandardAction::Find, "find", this, SLOT(slotFind()) );
   d->m_paFind->setWhatsThis( i18n( "<qt>Find text<br /><br />"
                                    "Shows a dialog that allows you to find text on the displayed page.</qt>" ) );
 
-  d->m_paFindNext = actionCollection()->addAction( KStandardAction::FindNext, "findNext", this, SLOT( slotFindNext() ) );
+  d->m_paFindNext = actionCollection()->addAction( KStandardAction::FindNext, "findNext", this, SLOT(slotFindNext()) );
   d->m_paFindNext->setWhatsThis( i18n( "<qt>Find next<br /><br />"
                                        "Find the next occurrence of the text that you "
                                        "have found using the <b>Find Text</b> function.</qt>" ) );
 
   d->m_paFindPrev = actionCollection()->addAction( KStandardAction::FindPrev, "findPrevious",
-                                                   this, SLOT( slotFindPrev() ) );
+                                                   this, SLOT(slotFindPrev()) );
   d->m_paFindPrev->setWhatsThis( i18n( "<qt>Find previous<br /><br />"
                                        "Find the previous occurrence of the text that you "
                                        "have found using the <b>Find Text</b> function.</qt>" ) );
@@ -398,7 +398,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   actionCollection()->addAction( "findAheadText", d->m_paFindAheadText );
   d->m_paFindAheadText->setShortcuts( KShortcut( '/' ) );
   d->m_paFindAheadText->setHelpText(i18n("This shortcut shows the find bar, for finding text in the displayed page. It cancels the effect of \"Find Links as You Type\", which sets the \"Find links only\" option."));
-  connect( d->m_paFindAheadText, SIGNAL( triggered( bool ) ), this, SLOT( slotFindAheadText()) );
+  connect( d->m_paFindAheadText, SIGNAL(triggered(bool)), this, SLOT(slotFindAheadText()) );
 
   d->m_paFindAheadLinks = new KAction( i18n("Find Links as You Type"), this );
   actionCollection()->addAction( "findAheadLink", d->m_paFindAheadLinks );
@@ -407,7 +407,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   // Better let advanced users configure a shortcut for this advanced option
   //d->m_paFindAheadLinks->setShortcuts( KShortcut( '\'' ) );
   d->m_paFindAheadLinks->setHelpText(i18n("This shortcut shows the find bar, and sets the option \"Find links only\"."));
-  connect( d->m_paFindAheadLinks, SIGNAL( triggered( bool ) ), this, SLOT( slotFindAheadLink() ) );
+  connect( d->m_paFindAheadLinks, SIGNAL(triggered(bool)), this, SLOT(slotFindAheadLink()) );
 
   if ( parentPart() )
   {
@@ -421,7 +421,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paPrintFrame = new KAction( i18n( "Print Frame..." ), this );
   actionCollection()->addAction( "printFrame", d->m_paPrintFrame );
   d->m_paPrintFrame->setIcon( KIcon( "document-print-frame" ) );
-  connect( d->m_paPrintFrame, SIGNAL( triggered( bool ) ), this, SLOT( slotPrintFrame() ) );
+  connect( d->m_paPrintFrame, SIGNAL(triggered(bool)), this, SLOT(slotPrintFrame()) );
   d->m_paPrintFrame->setWhatsThis( i18n( "<qt>Print Frame<br /><br />"
                                          "Some pages have several frames. To print only a single frame, click "
                                          "on it and then use this function.</qt>" ) );
@@ -432,14 +432,14 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   // to use the name KStandardAction::name(KStandardAction::SelectAll) but we
   // can't for the same reason.
   d->m_paSelectAll = actionCollection()->addAction( KStandardAction::SelectAll, "selectAll",
-                                                    this, SLOT( slotSelectAll() ) );
+                                                    this, SLOT(slotSelectAll()) );
   if ( parentPart() ) // Only the frameset has the shortcut, but the slot uses the current frame.
       d->m_paSelectAll->setShortcuts( KShortcut() ); // avoid clashes
 
   d->m_paToggleCaretMode = new KToggleAction(i18n("Toggle Caret Mode"), this );
   actionCollection()->addAction( "caretMode", d->m_paToggleCaretMode );
   d->m_paToggleCaretMode->setShortcut( QKeySequence(Qt::Key_F7) );
-  connect( d->m_paToggleCaretMode, SIGNAL( triggered( bool ) ), this, SLOT(slotToggleCaretMode()) );
+  connect( d->m_paToggleCaretMode, SIGNAL(triggered(bool)), this, SLOT(slotToggleCaretMode()) );
   d->m_paToggleCaretMode->setChecked(isCaretMode());
   if (parentPart())
       d->m_paToggleCaretMode->setShortcut(KShortcut()); // avoid clashes
@@ -484,31 +484,31 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   }
   actionCollection()->associateWidget(view);
 
-  connect( view, SIGNAL( zoomView( int ) ), SLOT( slotZoomView( int ) ) );
+  connect( view, SIGNAL(zoomView(int)), SLOT(slotZoomView(int)) );
 
-  connect( this, SIGNAL( completed() ),
-           this, SLOT( updateActions() ) );
-  connect( this, SIGNAL( completed( bool ) ),
-           this, SLOT( updateActions() ) );
-  connect( this, SIGNAL( started( KIO::Job * ) ),
-           this, SLOT( updateActions() ) );
+  connect( this, SIGNAL(completed()),
+           this, SLOT(updateActions()) );
+  connect( this, SIGNAL(completed(bool)),
+           this, SLOT(updateActions()) );
+  connect( this, SIGNAL(started(KIO::Job*)),
+           this, SLOT(updateActions()) );
 
   // #### FIXME: the process wide loader is going to signal every part about every loaded object.
   //      That's quite inefficient. Should be per-document-tree somehow. Even signaling to
   //      child parts that a request from an ancestor has loaded is inefficent..
-  connect( khtml::Cache::loader(), SIGNAL( requestStarted( khtml::DocLoader*, khtml::CachedObject* ) ),
-           this, SLOT( slotLoaderRequestStarted( khtml::DocLoader*, khtml::CachedObject* ) ) );
-  connect( khtml::Cache::loader(), SIGNAL( requestDone( khtml::DocLoader*, khtml::CachedObject *) ),
-           this, SLOT( slotLoaderRequestDone( khtml::DocLoader*, khtml::CachedObject *) ) );
-  connect( khtml::Cache::loader(), SIGNAL( requestFailed( khtml::DocLoader*, khtml::CachedObject *) ),
-           this, SLOT( slotLoaderRequestDone( khtml::DocLoader*, khtml::CachedObject *) ) );
+  connect( khtml::Cache::loader(), SIGNAL(requestStarted(khtml::DocLoader*,khtml::CachedObject*)),
+           this, SLOT(slotLoaderRequestStarted(khtml::DocLoader*,khtml::CachedObject*)) );
+  connect( khtml::Cache::loader(), SIGNAL(requestDone(khtml::DocLoader*,khtml::CachedObject*)),
+           this, SLOT(slotLoaderRequestDone(khtml::DocLoader*,khtml::CachedObject*)) );
+  connect( khtml::Cache::loader(), SIGNAL(requestFailed(khtml::DocLoader*,khtml::CachedObject*)),
+           this, SLOT(slotLoaderRequestDone(khtml::DocLoader*,khtml::CachedObject*)) );
 
-  connect ( &d->m_progressUpdateTimer, SIGNAL( timeout() ), this, SLOT( slotProgressUpdate() ) );
+  connect ( &d->m_progressUpdateTimer, SIGNAL(timeout()), this, SLOT(slotProgressUpdate()) );
 
   findTextBegin(); //reset find variables
 
-  connect( &d->m_redirectionTimer, SIGNAL( timeout() ),
-           this, SLOT( slotRedirect() ) );
+  connect( &d->m_redirectionTimer, SIGNAL(timeout()),
+           this, SLOT(slotRedirect()) );
 
   if (QDBusConnection::sessionBus().isConnected()) {
       new KHTMLPartIface(this); // our "adaptor"
@@ -550,12 +550,12 @@ KHTMLPart::~KHTMLPart()
   if (!d->m_bComplete)
     closeUrl();
 
-  disconnect( khtml::Cache::loader(), SIGNAL( requestStarted( khtml::DocLoader*, khtml::CachedObject* ) ),
-           this, SLOT( slotLoaderRequestStarted( khtml::DocLoader*, khtml::CachedObject* ) ) );
-  disconnect( khtml::Cache::loader(), SIGNAL( requestDone( khtml::DocLoader*, khtml::CachedObject *) ),
-           this, SLOT( slotLoaderRequestDone( khtml::DocLoader*, khtml::CachedObject *) ) );
-  disconnect( khtml::Cache::loader(), SIGNAL( requestFailed( khtml::DocLoader*, khtml::CachedObject *) ),
-           this, SLOT( slotLoaderRequestDone( khtml::DocLoader*, khtml::CachedObject *) ) );
+  disconnect( khtml::Cache::loader(), SIGNAL(requestStarted(khtml::DocLoader*,khtml::CachedObject*)),
+           this, SLOT(slotLoaderRequestStarted(khtml::DocLoader*,khtml::CachedObject*)) );
+  disconnect( khtml::Cache::loader(), SIGNAL(requestDone(khtml::DocLoader*,khtml::CachedObject*)),
+           this, SLOT(slotLoaderRequestDone(khtml::DocLoader*,khtml::CachedObject*)) );
+  disconnect( khtml::Cache::loader(), SIGNAL(requestFailed(khtml::DocLoader*,khtml::CachedObject*)),
+           this, SLOT(slotLoaderRequestDone(khtml::DocLoader*,khtml::CachedObject*)) );
 
   clear();
   hide();
@@ -610,7 +610,7 @@ bool KHTMLPart::restoreURL( const KUrl &url )
   disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
   connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
 
-  KHTMLPageCache::self()->fetchData( d->m_cacheId, this, SLOT(slotRestoreData(const QByteArray &)));
+  KHTMLPageCache::self()->fetchData( d->m_cacheId, this, SLOT(slotRestoreData(QByteArray)));
 
   emit started( 0L );
 
@@ -848,14 +848,14 @@ bool KHTMLPart::openUrl( const KUrl &url )
      d->m_job->ui()->setWindow(widget()->topLevelWidget());
   d->m_job->addMetaData(metaData);
 
-  connect( d->m_job, SIGNAL( result( KJob* ) ),
-           SLOT( slotFinished( KJob* ) ) );
-  connect( d->m_job, SIGNAL( data( KIO::Job*, const QByteArray& ) ),
-           SLOT( slotData( KIO::Job*, const QByteArray& ) ) );
-  connect ( d->m_job, SIGNAL( infoMessage( KJob*, const QString&, const QString& ) ),
-           SLOT( slotInfoMessage(KJob*, const QString& ) ) );
-  connect( d->m_job, SIGNAL(redirection(KIO::Job*, const KUrl& ) ),
-           SLOT( slotRedirection(KIO::Job*, const KUrl&) ) );
+  connect( d->m_job, SIGNAL(result(KJob*)),
+           SLOT(slotFinished(KJob*)) );
+  connect( d->m_job, SIGNAL(data(KIO::Job*,QByteArray)),
+           SLOT(slotData(KIO::Job*,QByteArray)) );
+  connect ( d->m_job, SIGNAL(infoMessage(KJob*,QString,QString)),
+           SLOT(slotInfoMessage(KJob*,QString)) );
+  connect( d->m_job, SIGNAL(redirection(KIO::Job*,KUrl)),
+           SLOT(slotRedirection(KIO::Job*,KUrl)) );
 
   d->m_bComplete = false;
   d->m_bLoadEventEmitted = false;
@@ -873,14 +873,14 @@ bool KHTMLPart::openUrl( const KUrl &url )
   d->m_bPluginsEnabled = KHTMLGlobal::defaultHTMLSettings()->isPluginsEnabled(url.host());
 
 
-  connect( d->m_job, SIGNAL( speed( KJob*, unsigned long ) ),
-           this, SLOT( slotJobSpeed( KJob*, unsigned long ) ) );
+  connect( d->m_job, SIGNAL(speed(KJob*,ulong)),
+           this, SLOT(slotJobSpeed(KJob*,ulong)) );
 
-  connect( d->m_job, SIGNAL( percent( KJob*, unsigned long ) ),
-           this, SLOT( slotJobPercent( KJob*, unsigned long ) ) );
+  connect( d->m_job, SIGNAL(percent(KJob*,ulong)),
+           this, SLOT(slotJobPercent(KJob*,ulong)) );
 
-  connect( d->m_job, SIGNAL( result( KJob* ) ),
-           this, SLOT( slotJobDone( KJob* ) ) );
+  connect( d->m_job, SIGNAL(result(KJob*)),
+           this, SLOT(slotJobDone(KJob*)) );
 
   d->m_jobspeed = 0;
 
@@ -889,8 +889,8 @@ bool KHTMLPart::openUrl( const KUrl &url )
   if ( args.reload() && !settings()->userStyleSheet().isEmpty() ) {
     KUrl url( settings()->userStyleSheet() );
     KIO::StatJob *job = KIO::stat( url, KIO::HideProgressInfo );
-    connect( job, SIGNAL( result( KJob * ) ),
-             this, SLOT( slotUserSheetStatDone( KJob * ) ) );
+    connect( job, SIGNAL(result(KJob*)),
+             this, SLOT(slotUserSheetStatDone(KJob*)) );
   }
   startingJob( d->m_job );
   emit started( 0L );
@@ -1449,7 +1449,7 @@ void KHTMLPart::setAutoloadImages( bool enable )
     d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), this );
     actionCollection()->addAction( "loadImages", d->m_paLoadImages );
     d->m_paLoadImages->setIcon( KIcon( "image-loading" ) );
-    connect( d->m_paLoadImages, SIGNAL( triggered( bool ) ), this, SLOT( slotLoadImages() ) );
+    connect( d->m_paLoadImages, SIGNAL(triggered(bool)), this, SLOT(slotLoadImages()) );
   }
 
   if ( d->m_paLoadImages ) {
@@ -1532,8 +1532,8 @@ void KHTMLPart::clear()
 
   // We don't want to change between parts if we are going to delete all of them anyway
   if (partManager()) {
-        disconnect( partManager(), SIGNAL( activePartChanged( KParts::Part * ) ),
-                    this, SLOT( slotActiveFrameChanged( KParts::Part * ) ) );
+        disconnect( partManager(), SIGNAL(activePartChanged(KParts::Part*)),
+                    this, SLOT(slotActiveFrameChanged(KParts::Part*)) );
   }
 
   if (d->m_frames.count())
@@ -1570,8 +1570,8 @@ void KHTMLPart::clear()
 
   // Listen to part changes again
   if (partManager()) {
-        connect( partManager(), SIGNAL( activePartChanged( KParts::Part * ) ),
-                 this, SLOT( slotActiveFrameChanged( KParts::Part * ) ) );
+        connect( partManager(), SIGNAL(activePartChanged(KParts::Part*)),
+                 this, SLOT(slotActiveFrameChanged(KParts::Part*)) );
   }
 
   d->clearRedirection();
@@ -1586,7 +1586,7 @@ void KHTMLPart::clear()
       killTimer(d->editor_context.m_caretBlinkTimer);
   d->editor_context.reset();
 #ifndef QT_NO_CLIPBOARD
-  connect( qApp->clipboard(), SIGNAL( selectionChanged()), SLOT( slotClearSelection()));
+  connect( qApp->clipboard(), SIGNAL(selectionChanged()), SLOT(slotClearSelection()));
 #endif
 
   d->m_jobPercent = 0;
@@ -4539,49 +4539,49 @@ void KHTMLPart::connectToChildPart( khtml::ChildFrame *child, KParts::ReadOnlyPa
     if (sb)
       sb->setStatusBar( d->m_statusBarExtension->statusBar() );
 
-    connect( part, SIGNAL( started( KIO::Job *) ),
-             this, SLOT( slotChildStarted( KIO::Job *) ) );
-    connect( part, SIGNAL( completed() ),
-             this, SLOT( slotChildCompleted() ) );
-    connect( part, SIGNAL( completed(bool) ),
-             this, SLOT( slotChildCompleted(bool) ) );
-    connect( part, SIGNAL( setStatusBarText( const QString & ) ),
-                this, SIGNAL( setStatusBarText( const QString & ) ) );
+    connect( part, SIGNAL(started(KIO::Job*)),
+             this, SLOT(slotChildStarted(KIO::Job*)) );
+    connect( part, SIGNAL(completed()),
+             this, SLOT(slotChildCompleted()) );
+    connect( part, SIGNAL(completed(bool)),
+             this, SLOT(slotChildCompleted(bool)) );
+    connect( part, SIGNAL(setStatusBarText(QString)),
+                this, SIGNAL(setStatusBarText(QString)) );
     if ( part->inherits( "KHTMLPart" ) )
     {
-      connect( this, SIGNAL( completed() ),
-               part, SLOT( slotParentCompleted() ) );
-      connect( this, SIGNAL( completed(bool) ),
-               part, SLOT( slotParentCompleted() ) );
+      connect( this, SIGNAL(completed()),
+               part, SLOT(slotParentCompleted()) );
+      connect( this, SIGNAL(completed(bool)),
+               part, SLOT(slotParentCompleted()) );
       // As soon as the child's document is created, we need to set its domain
       // (but we do so only once, so it can't be simply done in the child)
-      connect( part, SIGNAL( docCreated() ),
-               this, SLOT( slotChildDocCreated() ) );
+      connect( part, SIGNAL(docCreated()),
+               this, SLOT(slotChildDocCreated()) );
     }
 
     child->m_extension = KParts::BrowserExtension::childObject( part );
 
     if ( KParts::BrowserExtension* kidBrowserExt = child->m_extension.data() )
     {
-      connect( kidBrowserExt, SIGNAL( openUrlNotify() ),
-               d->m_extension, SIGNAL( openUrlNotify() ) );
+      connect( kidBrowserExt, SIGNAL(openUrlNotify()),
+               d->m_extension, SIGNAL(openUrlNotify()) );
 
-      connect( kidBrowserExt, SIGNAL( openUrlRequestDelayed( const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments & ) ),
-               this, SLOT( slotChildURLRequest( const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments & ) ) );
+      connect( kidBrowserExt, SIGNAL(openUrlRequestDelayed(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)),
+               this, SLOT(slotChildURLRequest(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)) );
 
-      connect( kidBrowserExt, SIGNAL( createNewWindow( const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &, const KParts::WindowArgs &, KParts::ReadOnlyPart ** ) ),
-               d->m_extension, SIGNAL( createNewWindow( const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments & , const KParts::WindowArgs &, KParts::ReadOnlyPart **) ) );
+      connect( kidBrowserExt, SIGNAL(createNewWindow(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::WindowArgs,KParts::ReadOnlyPart**)),
+               d->m_extension, SIGNAL(createNewWindow(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::WindowArgs,KParts::ReadOnlyPart**)) );
 
       connect( kidBrowserExt, SIGNAL(popupMenu(QPoint,KFileItemList,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)),
              d->m_extension, SIGNAL(popupMenu(QPoint,KFileItemList,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)) );
       connect( kidBrowserExt, SIGNAL(popupMenu(QPoint,KUrl,mode_t,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)),
              d->m_extension, SIGNAL(popupMenu(QPoint,KUrl,mode_t,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)) );
 
-      connect( kidBrowserExt, SIGNAL( infoMessage( const QString & ) ),
-               d->m_extension, SIGNAL( infoMessage( const QString & ) ) );
+      connect( kidBrowserExt, SIGNAL(infoMessage(QString)),
+               d->m_extension, SIGNAL(infoMessage(QString)) );
 
-      connect( kidBrowserExt, SIGNAL( requestFocus( KParts::ReadOnlyPart * ) ),
-               this, SLOT( slotRequestFocus( KParts::ReadOnlyPart * ) ) );
+      connect( kidBrowserExt, SIGNAL(requestFocus(KParts::ReadOnlyPart*)),
+               this, SLOT(slotRequestFocus(KParts::ReadOnlyPart*)) );
 
       kidBrowserExt->setBrowserInterface( d->m_extension->browserInterface() );
     }
@@ -4647,10 +4647,10 @@ KParts::PartManager *KHTMLPart::partManager()
     d->m_manager = new KParts::PartManager( d->m_view->topLevelWidget(), this );
     d->m_manager->setObjectName( "khtml part manager" );
     d->m_manager->setAllowNestedParts( true );
-    connect( d->m_manager, SIGNAL( activePartChanged( KParts::Part * ) ),
-             this, SLOT( slotActiveFrameChanged( KParts::Part * ) ) );
-    connect( d->m_manager, SIGNAL( partRemoved( KParts::Part * ) ),
-             this, SLOT( slotPartRemoved( KParts::Part * ) ) );
+    connect( d->m_manager, SIGNAL(activePartChanged(KParts::Part*)),
+             this, SLOT(slotActiveFrameChanged(KParts::Part*)) );
+    connect( d->m_manager, SIGNAL(partRemoved(KParts::Part*)),
+             this, SLOT(slotPartRemoved(KParts::Part*)) );
   }
 
   return d->m_manager;
@@ -5037,7 +5037,7 @@ void KHTMLPart::slotChildDocCreated()
       d->propagateInitialDomainAndBaseTo(htmlFrame);
 
   // So it only happens once
-  disconnect( sender(), SIGNAL( docCreated() ), this, SLOT( slotChildDocCreated() ) );
+  disconnect( sender(), SIGNAL(docCreated()), this, SLOT(slotChildDocCreated()) );
 }
 
 void KHTMLPartPrivate::propagateInitialDomainAndBaseTo(KHTMLPart* kid)
@@ -6583,9 +6583,9 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
     QString text = selectedText();
     text.replace(QChar(0xa0), ' ');
     if (!text.isEmpty()) {
-        disconnect( qApp->clipboard(), SIGNAL( selectionChanged()), this, SLOT( slotClearSelection()));
+        disconnect( qApp->clipboard(), SIGNAL(selectionChanged()), this, SLOT(slotClearSelection()));
         qApp->clipboard()->setText(text,QClipboard::Selection);
-        connect( qApp->clipboard(), SIGNAL( selectionChanged()), SLOT( slotClearSelection()));
+        connect( qApp->clipboard(), SIGNAL(selectionChanged()), SLOT(slotClearSelection()));
     }
 #endif
     //kDebug( 6000 ) << "selectedText = " << text;
@@ -6646,14 +6646,14 @@ void KHTMLPart::slotSelectAll()
 
 void KHTMLPart::startAutoScroll()
 {
-   connect(&d->m_scrollTimer, SIGNAL( timeout() ), this, SLOT( slotAutoScroll() ));
+   connect(&d->m_scrollTimer, SIGNAL(timeout()), this, SLOT(slotAutoScroll()));
    d->m_scrollTimer.setSingleShot(false);
    d->m_scrollTimer.start(100);
 }
 
 void KHTMLPart::stopAutoScroll()
 {
-   disconnect(&d->m_scrollTimer, SIGNAL( timeout() ), this, SLOT( slotAutoScroll() ));
+   disconnect(&d->m_scrollTimer, SIGNAL(timeout()), this, SLOT(slotAutoScroll()));
    if (d->m_scrollTimer.isActive())
        d->m_scrollTimer.stop();
 }
@@ -7332,7 +7332,7 @@ void KHTMLPart::setDebugScript( bool enable )
     if (!d->m_paDebugScript) {
       d->m_paDebugScript = new KAction( i18n( "JavaScript &Debugger" ), this );
       actionCollection()->addAction( "debugScript", d->m_paDebugScript );
-      connect( d->m_paDebugScript, SIGNAL( triggered( bool ) ), this, SLOT( slotDebugScript() ) );
+      connect( d->m_paDebugScript, SIGNAL(triggered(bool)), this, SLOT(slotDebugScript()) );
     }
     d->m_paDebugScript->setEnabled( d->m_frame ? d->m_frame->m_jscript : 0L );
     QList<QAction*> lst;

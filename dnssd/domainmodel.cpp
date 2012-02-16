@@ -36,9 +36,9 @@ DomainModel::DomainModel(DomainBrowser* browser, QObject* parent)
 {
     d->m_browser=browser;
     browser->setParent(this);
-    connect(browser, SIGNAL(domainAdded(const QString&)), this,
+    connect(browser, SIGNAL(domainAdded(QString)), this,
 	SIGNAL(layoutChanged()));
-    connect(browser, SIGNAL(domainRemoved(const QString&)), this,
+    connect(browser, SIGNAL(domainRemoved(QString)), this,
 	SIGNAL(layoutChanged()));
     browser->startBrowse();
 }

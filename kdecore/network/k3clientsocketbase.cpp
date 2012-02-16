@@ -147,10 +147,10 @@ bool KClientSocketBase::lookup()
       // don't restart the lookups if they had succeeded and
       // the input values weren't changed
       QObject::connect(&d->peerResolver,
-		       SIGNAL(finished(const KNetwork::KResolverResults&)),
+		       SIGNAL(finished(KNetwork::KResolverResults)),
 		       this, SLOT(lookupFinishedSlot()));
       QObject::connect(&d->localResolver,
-		       SIGNAL(finished(const KNetwork::KResolverResults&)),
+		       SIGNAL(finished(KNetwork::KResolverResults)),
 		       this, SLOT(lookupFinishedSlot()));
 
       if (d->localResolver.status() <= 0)

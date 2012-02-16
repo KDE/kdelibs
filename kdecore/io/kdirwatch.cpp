@@ -233,8 +233,8 @@ KDirWatchPrivate::KDirWatchPrivate()
     fcntl(m_inotify_fd, F_SETFD, FD_CLOEXEC);
 
     mSn = new QSocketNotifier( m_inotify_fd, QSocketNotifier::Read, this );
-    connect( mSn, SIGNAL(activated( int )),
-             this, SLOT( inotifyEventReceived() ) );
+    connect( mSn, SIGNAL(activated(int)),
+             this, SLOT(inotifyEventReceived()) );
   }
 #endif
 #ifdef HAVE_QFILESYSTEMWATCHER

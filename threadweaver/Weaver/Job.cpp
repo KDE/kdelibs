@@ -123,12 +123,12 @@ void Job::execute(Thread *th)
 {
 //    P_ASSERT (sm_dep()->values(this).isEmpty());
     JobRunHelper helper;
-    connect ( &helper,  SIGNAL ( started ( ThreadWeaver::Job* ) ),
-              SIGNAL ( started ( ThreadWeaver::Job* ) ) );
-    connect ( &helper,  SIGNAL ( done ( ThreadWeaver::Job* ) ),
-              SIGNAL ( done ( ThreadWeaver::Job* ) ) );
-    connect ( &helper, SIGNAL( failed( ThreadWeaver::Job* ) ),
-              SIGNAL( failed( ThreadWeaver::Job* ) ) );
+    connect ( &helper,  SIGNAL (started(ThreadWeaver::Job*)),
+              SIGNAL (started(ThreadWeaver::Job*)) );
+    connect ( &helper,  SIGNAL (done(ThreadWeaver::Job*)),
+              SIGNAL (done(ThreadWeaver::Job*)) );
+    connect ( &helper, SIGNAL(failed(ThreadWeaver::Job*)),
+              SIGNAL(failed(ThreadWeaver::Job*)) );
 
     debug(3, "Job::execute: executing job of type %s %s in thread %i.\n",
           metaObject()->className(), objectName().isEmpty() ? "" : qPrintable( objectName() ), th->id());

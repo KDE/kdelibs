@@ -87,8 +87,8 @@ QWidget * KActionMenu::createWidget( QWidget * _parent )
   button->setFocusPolicy(Qt::NoFocus);
   button->setIconSize(parent->iconSize());
   button->setToolButtonStyle(parent->toolButtonStyle());
-  QObject::connect(parent, SIGNAL(iconSizeChanged(const QSize&)),
-                   button, SLOT(setIconSize(const QSize&)));
+  QObject::connect(parent, SIGNAL(iconSizeChanged(QSize)),
+                   button, SLOT(setIconSize(QSize)));
   QObject::connect(parent, SIGNAL(toolButtonStyleChanged(Qt::ToolButtonStyle)),
                    button, SLOT(setToolButtonStyle(Qt::ToolButtonStyle)));
   button->setDefaultAction(this);

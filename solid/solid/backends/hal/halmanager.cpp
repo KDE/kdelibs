@@ -52,13 +52,13 @@ HalManager::HalManager(QObject *parent)
                                      "/org/freedesktop/Hal/Manager",
                                      "org.freedesktop.Hal.Manager",
                                      "DeviceAdded",
-                                     this, SLOT(slotDeviceAdded(const QString &)));
+                                     this, SLOT(slotDeviceAdded(QString)));
 
     d->manager.connection().connect("org.freedesktop.Hal",
                                      "/org/freedesktop/Hal/Manager",
                                      "org.freedesktop.Hal.Manager",
                                      "DeviceRemoved",
-                                     this, SLOT(slotDeviceRemoved(const QString &)));
+                                     this, SLOT(slotDeviceRemoved(QString)));
 
     d->supportedInterfaces << Solid::DeviceInterface::GenericInterface
                            << Solid::DeviceInterface::Processor

@@ -42,7 +42,7 @@ void ImageLoader::start()
     if (!url.isEmpty()) {
         m_job = KIO::get(url, KIO::NoReload, KIO::HideProgressInfo);
         connect(m_job, SIGNAL(result(KJob*)), SLOT(slotDownload(KJob*)));
-        connect(m_job, SIGNAL(data(KIO::Job*, const QByteArray&)), SLOT(slotData(KIO::Job*, const QByteArray&)));
+        connect(m_job, SIGNAL(data(KIO::Job*,QByteArray)), SLOT(slotData(KIO::Job*,QByteArray)));
         KIO::Scheduler::setJobPriority(m_job, 1);
     }
 }

@@ -53,16 +53,16 @@ class KListWidget::KListWidgetPrivate
 KListWidget::KListWidget( QWidget *parent )
     : QListWidget(parent), d(new KListWidgetPrivate(this))
 {
-    connect( this, SIGNAL( viewportEntered() ),
-             this, SLOT( _k_slotOnViewport() ) );
-    connect( this, SIGNAL( itemEntered( QListWidgetItem * ) ),
-             this, SLOT( _k_slotItemEntered( QListWidgetItem * ) ) );
+    connect( this, SIGNAL(viewportEntered()),
+             this, SLOT(_k_slotOnViewport()) );
+    connect( this, SIGNAL(itemEntered(QListWidgetItem*)),
+             this, SLOT(_k_slotItemEntered(QListWidgetItem*)) );
     d->_k_slotSettingsChanged(KGlobalSettings::SETTINGS_MOUSE);
-    connect( KGlobalSettings::self(), SIGNAL( settingsChanged(int) ), SLOT( _k_slotSettingsChanged(int) ) );
+    connect( KGlobalSettings::self(), SIGNAL(settingsChanged(int)), SLOT(_k_slotSettingsChanged(int)) );
 
     d->m_pAutoSelect = new QTimer( this );
-    connect( d->m_pAutoSelect, SIGNAL( timeout() ),
-             this, SLOT( _k_slotAutoSelect() ) );
+    connect( d->m_pAutoSelect, SIGNAL(timeout()),
+             this, SLOT(_k_slotAutoSelect()) );
 }
 
 KListWidget::~KListWidget()
@@ -98,18 +98,18 @@ void KListWidget::KListWidgetPrivate::_k_slotSettingsChanged(int category)
         return;
     m_bUseSingle = KGlobalSettings::singleClick();
 
-    q->disconnect(q, SIGNAL(itemClicked( QListWidgetItem *)));
-    q->disconnect(q, SIGNAL(itemDoubleClicked( QListWidgetItem *)));
+    q->disconnect(q, SIGNAL(itemClicked(QListWidgetItem*)));
+    q->disconnect(q, SIGNAL(itemDoubleClicked(QListWidgetItem*)));
 
     if( m_bUseSingle )
     {
-        q->connect(q, SIGNAL(itemClicked(QListWidgetItem *)),
-                   SIGNAL(executed(QListWidgetItem *)));
+        q->connect(q, SIGNAL(itemClicked(QListWidgetItem*)),
+                   SIGNAL(executed(QListWidgetItem*)));
     }
     else
     {
-        q->connect(q, SIGNAL(itemDoubleClicked(QListWidgetItem *)),
-                   SIGNAL(executed(QListWidgetItem *)));
+        q->connect(q, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
+                   SIGNAL(executed(QListWidgetItem*)));
     }
 
     m_bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();

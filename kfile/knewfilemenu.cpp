@@ -482,7 +482,7 @@ void KNewFileMenuPrivate::executeRealFileOrDir(const KNewFileMenuSingleton::Entr
     lineEdit->setText(text);
 
     _k_slotTextChanged(text);
-    QObject::connect(lineEdit, SIGNAL(textChanged(const QString &)), q, SLOT(_k_slotTextChanged(const QString &)));
+    QObject::connect(lineEdit, SIGNAL(textChanged(QString)), q, SLOT(_k_slotTextChanged(QString)));
     
     layout->addWidget(label);
     layout->addWidget(lineEdit);
@@ -779,7 +779,7 @@ void KNewFileMenuPrivate::_k_slotCreateDirectory(bool writeHiddenDir)
       if (job) {
         // We want the error handling to be done by slotResult so that subclasses can reimplement it
         job->ui()->setAutoErrorHandlingEnabled(false);
-        QObject::connect(job, SIGNAL(result(KJob *)), q, SLOT(slotResult(KJob *)));
+        QObject::connect(job, SIGNAL(result(KJob*)), q, SLOT(slotResult(KJob*)));
       }
     }
     else {
@@ -805,11 +805,11 @@ void KNewFileMenuPrivate::_k_slotFillTemplates()
             //kDebug(1203) << "Templates resource dir:" << *it;
             s->dirWatch->addDir(*it);
         }
-        QObject::connect(s->dirWatch, SIGNAL(dirty(const QString &)),
+        QObject::connect(s->dirWatch, SIGNAL(dirty(QString)),
                          q, SLOT(_k_slotFillTemplates()));
-        QObject::connect(s->dirWatch, SIGNAL(created(const QString &)),
+        QObject::connect(s->dirWatch, SIGNAL(created(QString)),
                          q, SLOT(_k_slotFillTemplates()));
-        QObject::connect(s->dirWatch, SIGNAL(deleted(const QString &)),
+        QObject::connect(s->dirWatch, SIGNAL(deleted(QString)),
                          q, SLOT(_k_slotFillTemplates()));
         // Ok, this doesn't cope with new dirs in KDEDIRS, but that's another story
     }
@@ -1043,7 +1043,7 @@ void KNewFileMenu::createDirectory()
     lineEdit->setText(name);
 
     d->_k_slotTextChanged(name); // have to save string in d->m_text in case user does not touch dialog
-    connect(lineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(_k_slotTextChanged(const QString &)));
+    connect(lineEdit, SIGNAL(textChanged(QString)), this, SLOT(_k_slotTextChanged(QString)));
     layout->addWidget(label);
     layout->addWidget(lineEdit);
     

@@ -241,7 +241,7 @@ void KToolBar::Private::init(bool readConfig, bool _isMainToolBar)
     // Get notified when settings change
     connect(q, SIGNAL(allowedAreasChanged(Qt::ToolBarAreas)),
              q->mainWindow(), SLOT(setSettingsDirty()));
-    connect(q, SIGNAL(iconSizeChanged(const QSize&)),
+    connect(q, SIGNAL(iconSizeChanged(QSize)),
              q->mainWindow(), SLOT(setSettingsDirty()));
     connect(q, SIGNAL(toolButtonStyleChanged(Qt::ToolButtonStyle)),
              q->mainWindow(), SLOT(setSettingsDirty()));

@@ -63,10 +63,10 @@ RatingPainterTestWidget::RatingPainterTestWidget()
 
     layout->addWidget( m_buttonIcon );
 
-    connect( m_comboAlignmentH, SIGNAL( activated( int ) ),
-             this, SLOT( slotAlignmentChanged() ) );
-    connect( m_comboAlignmentV, SIGNAL( activated( int ) ),
-             this, SLOT( slotAlignmentChanged() ) );
+    connect( m_comboAlignmentH, SIGNAL(activated(int)),
+             this, SLOT(slotAlignmentChanged()) );
+    connect( m_comboAlignmentV, SIGNAL(activated(int)),
+             this, SLOT(slotAlignmentChanged()) );
     connect( m_spinMaxRating, SIGNAL(valueChanged(int)),
              m_ratingWidget, SLOT(setMaxRating(int)) );
     connect( m_spinRating, SIGNAL(valueChanged(int)),

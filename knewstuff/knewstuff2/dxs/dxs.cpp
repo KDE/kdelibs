@@ -36,7 +36,7 @@ Dxs::Dxs(QObject* parent, KNS::Provider * provider)
         : QObject(parent), m_provider(provider)
 {
     m_soap = new Soap(this);
-    connect(m_soap, SIGNAL(signalResult(QDomNode, int)), SLOT(slotResult(QDomNode, int)));
+    connect(m_soap, SIGNAL(signalResult(QDomNode,int)), SLOT(slotResult(QDomNode,int)));
     connect(m_soap, SIGNAL(signalError()), SLOT(slotError()));
 }
 

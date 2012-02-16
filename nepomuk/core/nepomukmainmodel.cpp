@@ -176,14 +176,14 @@ bool Nepomuk::MainModel::init()
     s_modelContainer->init( true );
     if ( s_modelContainer->dbusModel ) {
         // we have to use the dbus model for signals in any case
-        connect( s_modelContainer->dbusModel, SIGNAL( statementsAdded() ),
-                 this, SIGNAL( statementsAdded() ) );
-        connect( s_modelContainer->dbusModel, SIGNAL( statementsRemoved() ),
-                 this, SIGNAL( statementsRemoved() ) );
-        connect( s_modelContainer->dbusModel, SIGNAL( statementAdded(const Soprano::Statement&) ),
-                 this, SIGNAL( statementAdded(const Soprano::Statement&) ) );
-        connect( s_modelContainer->dbusModel, SIGNAL( statementRemoved(const Soprano::Statement&) ),
-                 this, SIGNAL( statementRemoved(const Soprano::Statement&) ) );
+        connect( s_modelContainer->dbusModel, SIGNAL(statementsAdded()),
+                 this, SIGNAL(statementsAdded()) );
+        connect( s_modelContainer->dbusModel, SIGNAL(statementsRemoved()),
+                 this, SIGNAL(statementsRemoved()) );
+        connect( s_modelContainer->dbusModel, SIGNAL(statementAdded(Soprano::Statement)),
+                 this, SIGNAL(statementAdded(Soprano::Statement)) );
+        connect( s_modelContainer->dbusModel, SIGNAL(statementRemoved(Soprano::Statement)),
+                 this, SIGNAL(statementRemoved(Soprano::Statement)) );
     }
     return isValid();
 }

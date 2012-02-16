@@ -132,12 +132,12 @@ void KFileSharePropsPlugin::init()
             // Everything ok, show the share/unshare GUI
             QButtonGroup *rbGroup = new QButtonGroup( d->m_widget );
             d->m_rbUnShare = new QRadioButton( i18n("Not shared"), d->m_widget );
-            connect( d->m_rbUnShare, SIGNAL( toggled(bool) ), SIGNAL( changed() ) );
+            connect( d->m_rbUnShare, SIGNAL(toggled(bool)), SIGNAL(changed()) );
             vbox->addWidget( d->m_rbUnShare, 0 );
             rbGroup->addButton( d->m_rbUnShare );
 
             d->m_rbShare = new QRadioButton( i18n("Shared"), d->m_widget );
-            connect( d->m_rbShare, SIGNAL( toggled(bool) ), SIGNAL( changed() ) );
+            connect( d->m_rbShare, SIGNAL(toggled(bool)), SIGNAL(changed()) );
             vbox->addWidget( d->m_rbShare, 0 );
             rbGroup->addButton( d->m_rbShare );
 
@@ -160,7 +160,7 @@ void KFileSharePropsPlugin::init()
 	    label->setWordWrap(true);
 	    vbox->addWidget( label, 0 );
 	    d->m_pbConfig = new QPushButton( i18n("Configure File Sharing..."), d->m_widget );
-	    connect( d->m_pbConfig, SIGNAL( clicked() ), SLOT( slotConfigureFileSharing() ) );
+	    connect( d->m_pbConfig, SIGNAL(clicked()), SLOT(slotConfigureFileSharing()) );
 	    vbox->addWidget( d->m_pbConfig, 0, Qt::AlignHCenter );
 
             vbox->addStretch( 10 );
@@ -184,7 +184,7 @@ void KFileSharePropsPlugin::init()
         QHBoxLayout* hBox = new QHBoxLayout( (QWidget *)0L );
         vbox->addLayout( hBox, 0 );
         d->m_pbConfig = new QPushButton( i18n("Configure File Sharing..."), d->m_widget );
-        connect( d->m_pbConfig, SIGNAL( clicked() ), SLOT( slotConfigureFileSharing() ) );
+        connect( d->m_pbConfig, SIGNAL(clicked()), SLOT(slotConfigureFileSharing()) );
         hBox->addWidget( d->m_pbConfig, 0, Qt::AlignHCenter );
         vbox->addStretch( 10 ); // align items on top
         break;

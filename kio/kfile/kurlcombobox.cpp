@@ -107,7 +107,7 @@ void KUrlComboBox::KUrlComboBoxPrivate::init( Mode mode )
 
     opendirIcon = KIcon(QLatin1String("folder-open"));
 
-    m_parent->connect( m_parent, SIGNAL( activated( int )), SLOT( _k_slotActivated( int )));
+    m_parent->connect( m_parent, SIGNAL(activated(int)), SLOT(_k_slotActivated(int)));
 }
 
 

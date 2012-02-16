@@ -166,9 +166,9 @@ void SolidHwTest::testDeviceSignals()
     Solid::Device device("/org/kde/solid/fakehw/acpi_LID0");
 
     // We'll spy our button
-    connect(device.as<Solid::GenericInterface>(), SIGNAL(propertyChanged(const QMap<QString,int> &)),
-             this, SLOT(slotPropertyChanged(const QMap<QString,int> &)));
-    QSignalSpy condition_raised(device.as<Solid::GenericInterface>(), SIGNAL(conditionRaised(QString, QString)));
+    connect(device.as<Solid::GenericInterface>(), SIGNAL(propertyChanged(QMap<QString,int>)),
+             this, SLOT(slotPropertyChanged(QMap<QString,int>)));
+    QSignalSpy condition_raised(device.as<Solid::GenericInterface>(), SIGNAL(conditionRaised(QString,QString)));
 
     fake->setProperty("stateValue", true); // The button is now pressed (modified property)
     fake->raiseCondition("Lid Closed", "Why not?"); // Since it's a LID we notify this change
@@ -215,7 +215,7 @@ void SolidHwTest::testDeviceExistence()
 
     // Note the extra space
     QCOMPARE(Solid::Device("/org/kde/solid/fakehw/computer ").isValid(), false);
-    QCOMPARE(Solid::Device("#'({(à]").isValid(), false);
+    QCOMPARE(Solid::Device("#'({(]").isValid(), false);
     QCOMPARE(Solid::Device(QString()).isValid(), false);
 
     // Now try to see if isValid() changes on plug/unplug events

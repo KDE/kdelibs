@@ -57,8 +57,8 @@ public:
             label->setUnderline( false );
             layout->addWidget( label );
 
-            connect( label, SIGNAL(leftClickedUrl(const QString&)),
-                     parent, SIGNAL(tagClicked(const QString&)) );
+            connect( label, SIGNAL(leftClickedUrl(QString)),
+                     parent, SIGNAL(tagClicked(QString)) );
         }
 
         layout->addStretch( 1 );

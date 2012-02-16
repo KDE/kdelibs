@@ -59,7 +59,7 @@ void Solid::NetworkingPrivate::initialize()
             QDBusConnection::sessionBus(),
             this);
 
-    //connect( iface, SIGNAL( statusChanged( uint ) ), globalNetworkManager, SIGNAL( statusChanged( Networking::Status ) ) );
+    //connect( iface, SIGNAL(statusChanged(uint)), globalNetworkManager, SIGNAL(statusChanged(Networking::Status)) );
     connect(iface, SIGNAL(statusChanged(uint)), this, SLOT(serviceStatusChanged(uint)));
 
     QDBusReply<uint> reply = iface->status();

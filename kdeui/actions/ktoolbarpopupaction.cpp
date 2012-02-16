@@ -79,12 +79,12 @@ QWidget * KToolBarPopupAction::createWidget( QWidget * _parent )
   button->setToolButtonStyle( parent->toolButtonStyle() );
   button->setDefaultAction( this );
 
-  connect( parent, SIGNAL( iconSizeChanged( const QSize& ) ),
-           button, SLOT( setIconSize( const QSize& ) ) );
-  connect( parent, SIGNAL( toolButtonStyleChanged( Qt::ToolButtonStyle ) ),
-           button, SLOT( setToolButtonStyle( Qt::ToolButtonStyle ) ) );
-  connect( button, SIGNAL( triggered( QAction* ) ),
-           parent, SIGNAL( actionTriggered( QAction* ) ) );
+  connect( parent, SIGNAL(iconSizeChanged(QSize)),
+           button, SLOT(setIconSize(QSize)) );
+  connect( parent, SIGNAL(toolButtonStyleChanged(Qt::ToolButtonStyle)),
+           button, SLOT(setToolButtonStyle(Qt::ToolButtonStyle)) );
+  connect( button, SIGNAL(triggered(QAction*)),
+           parent, SIGNAL(actionTriggered(QAction*)) );
 
   if ( d->delayed )
     if ( d->stickyMenu )

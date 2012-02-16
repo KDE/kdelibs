@@ -212,8 +212,8 @@ void KNewStuff2Download::run()
                 SIGNAL(signalProvidersFailed()),
                 SLOT(slotProvidersFailed()));
         connect(m_engine,
-                SIGNAL(signalEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)),
-                SLOT(slotEntryLoaded(KNS::Entry*, const KNS::Feed*, const KNS::Provider*)));
+                SIGNAL(signalEntryLoaded(KNS::Entry*,const KNS::Feed*,const KNS::Provider*)),
+                SLOT(slotEntryLoaded(KNS::Entry*,const KNS::Feed*,const KNS::Provider*)));
         connect(m_engine,
                 SIGNAL(signalEntriesFailed()),
                 SLOT(slotEntriesFailed()));

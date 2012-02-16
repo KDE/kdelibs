@@ -70,19 +70,19 @@ FakeDevice::FakeDevice(const QString &udi, const QMap<QString, QVariant> &proper
         createDeviceInterface(type);
     }
 
-    connect(d.data(), SIGNAL(propertyChanged(const QMap<QString,int> &)),
-            this, SIGNAL(propertyChanged(const QMap<QString,int> &)));
-    connect(d.data(), SIGNAL(conditionRaised(const QString &, const QString &)),
-            this, SIGNAL(conditionRaised(const QString &, const QString &)));
+    connect(d.data(), SIGNAL(propertyChanged(QMap<QString,int>)),
+            this, SIGNAL(propertyChanged(QMap<QString,int>)));
+    connect(d.data(), SIGNAL(conditionRaised(QString,QString)),
+            this, SIGNAL(conditionRaised(QString,QString)));
 }
 
 FakeDevice::FakeDevice(const FakeDevice& dev)
     : Solid::Ifaces::Device(), d(dev.d)
 {
-    connect(d.data(), SIGNAL(propertyChanged(const QMap<QString,int> &)),
-            this, SIGNAL(propertyChanged(const QMap<QString,int> &)));
-    connect(d.data(), SIGNAL(conditionRaised(const QString &, const QString &)),
-            this, SIGNAL(conditionRaised(const QString &, const QString &)));
+    connect(d.data(), SIGNAL(propertyChanged(QMap<QString,int>)),
+            this, SIGNAL(propertyChanged(QMap<QString,int>)));
+    connect(d.data(), SIGNAL(conditionRaised(QString,QString)),
+            this, SIGNAL(conditionRaised(QString,QString)));
 }
 
 FakeDevice::~FakeDevice()

@@ -70,8 +70,8 @@ KJavaAppletWidget::~KJavaAppletWidget()
 void KJavaAppletWidget::showApplet()
 {
 #ifdef Q_WS_X11
-    connect( KWindowSystem::self(), SIGNAL( windowAdded( WId ) ),
-	         this,  SLOT( setWindow( WId ) ) );
+    connect( KWindowSystem::self(), SIGNAL(windowAdded(WId)),
+	         this,  SLOT(setWindow(WId)) );
 
     KWindowSystem::doNotManage( m_swallowTitle );
 
@@ -95,8 +95,8 @@ void KJavaAppletWidget::setWindow( WId w )
         d->tmplabel = 0;
 
         // disconnect from KWM events
-        disconnect( KWindowSystem::self(), SIGNAL( windowAdded( WId ) ),
-                    this,  SLOT( setWindow( WId ) ) );
+        disconnect( KWindowSystem::self(), SIGNAL(windowAdded(WId)),
+                    this,  SLOT(setWindow(WId)) );
 
         embedClient( w );
         setFocus();

@@ -386,8 +386,8 @@ KPropertiesDialog::~KPropertiesDialog()
 
 void KPropertiesDialog::insertPlugin (KPropertiesDialogPlugin* plugin)
 {
-    connect (plugin, SIGNAL (changed ()),
-             plugin, SLOT (setDirty ()));
+    connect (plugin, SIGNAL (changed()),
+             plugin, SLOT (setDirty()));
 
     d->m_pageList.append(plugin);
 }
@@ -932,8 +932,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
                 d->m_lined->setSelection(0, lastDot);
         }
 
-        connect( d->m_lined, SIGNAL( textChanged( const QString & ) ),
-                 this, SLOT( nameFileChanged(const QString & ) ) );
+        connect( d->m_lined, SIGNAL(textChanged(QString)),
+                 this, SLOT(nameFileChanged(QString)) );
     }
 
     grid->addWidget(d->nameArea, curRow++, 2);
@@ -961,7 +961,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         else
             button->setText(i18n("File Type Options"));
 
-        connect( button, SIGNAL( clicked() ), SLOT( slotEditFileType() ));
+        connect( button, SIGNAL(clicked()), SLOT(slotEditFileType()));
 
         if (!KAuthorized::authorizeKAction("editfiletype"))
             button->hide();
@@ -1013,8 +1013,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         // buttons
         d->m_sizeDetermineButton = new QPushButton( i18n("Calculate"), d->m_frame );
         d->m_sizeStopButton = new QPushButton( i18n("Stop"), d->m_frame );
-        connect( d->m_sizeDetermineButton, SIGNAL( clicked() ), this, SLOT( slotSizeDetermine() ) );
-        connect( d->m_sizeStopButton, SIGNAL( clicked() ), this, SLOT( slotSizeStop() ) );
+        connect( d->m_sizeDetermineButton, SIGNAL(clicked()), this, SLOT(slotSizeDetermine()) );
+        connect( d->m_sizeStopButton, SIGNAL(clicked()), this, SLOT(slotSizeStop()) );
         sizelay->addWidget(d->m_sizeDetermineButton, 0);
         sizelay->addWidget(d->m_sizeStopButton, 0);
         sizelay->addStretch(10); // so that the buttons don't grow horizontally
@@ -1243,11 +1243,11 @@ void KFilePropsPlugin::slotSizeDetermine()
 
     d->dirSizeJob = KIO::directorySize( properties->items() );
     d->dirSizeUpdateTimer = new QTimer(this);
-    connect( d->dirSizeUpdateTimer, SIGNAL( timeout() ),
-             SLOT( slotDirSizeUpdate() ) );
+    connect( d->dirSizeUpdateTimer, SIGNAL(timeout()),
+             SLOT(slotDirSizeUpdate()) );
     d->dirSizeUpdateTimer->start(500);
-    connect( d->dirSizeJob, SIGNAL( result( KJob * ) ),
-             SLOT( slotDirSizeFinished( KJob * ) ) );
+    connect( d->dirSizeJob, SIGNAL(result(KJob*)),
+             SLOT(slotDirSizeFinished(KJob*)) );
     d->m_sizeStopButton->setEnabled(true);
     d->m_sizeDetermineButton->setEnabled(false);
 
@@ -1340,10 +1340,10 @@ void KFilePropsPlugin::applyChanges()
             else // Copying a template
                 job = KIO::copyAs( oldurl, properties->kurl() );
 
-            connect( job, SIGNAL( result( KJob * ) ),
-                     SLOT( slotCopyFinished( KJob * ) ) );
-            connect( job, SIGNAL( renamed( KIO::Job *, const KUrl &, const KUrl & ) ),
-                     SLOT( slotFileRenamed( KIO::Job *, const KUrl &, const KUrl & ) ) );
+            connect( job, SIGNAL(result(KJob*)),
+                     SLOT(slotCopyFinished(KJob*)) );
+            connect( job, SIGNAL(renamed(KIO::Job*,KUrl,KUrl)),
+                     SLOT(slotFileRenamed(KIO::Job*,KUrl,KUrl)) );
             // wait for job
             QEventLoop eventLoop;
             connect(this, SIGNAL(leaveModality()),
@@ -1698,7 +1698,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     l = d->ownerPermCombo = new KComboBox(gb);
     lbl->setBuddy(l);
     gl->addWidget(l, 1, 1);
-    connect(l, SIGNAL( activated(int) ), this, SIGNAL( changed() ));
+    connect(l, SIGNAL(activated(int)), this, SIGNAL(changed()));
     l->setWhatsThis(i18n("Specifies the actions that the owner is allowed to do."));
 
     lbl = new QLabel( i18n("Gro&up:"), gb);
@@ -1706,7 +1706,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     l = d->groupPermCombo = new KComboBox(gb);
     lbl->setBuddy(l);
     gl->addWidget(l, 2, 1);
-    connect(l, SIGNAL( activated(int) ), this, SIGNAL( changed() ));
+    connect(l, SIGNAL(activated(int)), this, SIGNAL(changed()));
     l->setWhatsThis(i18n("Specifies the actions that the members of the group are allowed to do."));
 
     lbl = new QLabel( i18n("O&thers:"), gb);
@@ -1714,7 +1714,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     l = d->othersPermCombo = new KComboBox(gb);
     lbl->setBuddy(l);
     gl->addWidget(l, 3, 1);
-    connect(l, SIGNAL( activated(int) ), this, SIGNAL( changed() ));
+    connect(l, SIGNAL(activated(int)), this, SIGNAL(changed()));
     l->setWhatsThis(i18n("Specifies the actions that all users, who are neither "
                          "owner nor in the group, are allowed to do."));
 
@@ -1723,7 +1723,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
                                              i18n("Only own&er can rename and delete folder content") :
                                              i18n("Is &executable"),
                                              gb );
-        connect( d->extraCheckbox, SIGNAL( clicked() ), this, SIGNAL( changed() ) );
+        connect( d->extraCheckbox, SIGNAL(clicked()), this, SIGNAL(changed()) );
         gl->addWidget(l, 4, 1);
         l->setWhatsThis(hasDir ? i18n("Enable this option to allow only the folder's owner to "
                                       "delete or rename the contained files and folders. Other "
@@ -1738,7 +1738,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
 
         pbAdvancedPerm = new QPushButton(i18n("A&dvanced Permissions"), gb);
         gl->addWidget(pbAdvancedPerm, 6, 0, 1, 2, Qt::AlignRight);
-        connect(pbAdvancedPerm, SIGNAL( clicked() ), this, SLOT( slotShowAdvancedPermissions() ));
+        connect(pbAdvancedPerm, SIGNAL(clicked()), this, SLOT(slotShowAdvancedPermissions()));
     }
     else
         d->extraCheckbox = 0;
@@ -1779,8 +1779,8 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
                                       KGlobalSettings::CompletionNone);
         d->usrEdit->setText(d->strOwner);
         gl->addWidget(d->usrEdit, 1, 1);
-        connect( d->usrEdit, SIGNAL( textChanged( const QString & ) ),
-                 this, SIGNAL( changed() ) );
+        connect( d->usrEdit, SIGNAL(textChanged(QString)),
+                 this, SIGNAL(changed()) );
     }
     else
     {
@@ -1846,8 +1846,8 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
         d->grpEdit->setCompletionMode(KGlobalSettings::CompletionAuto);
         d->grpEdit->setText(d->strGroup);
         gl->addWidget(d->grpEdit, 2, 1);
-        connect( d->grpEdit, SIGNAL( textChanged( const QString & ) ),
-                 this, SIGNAL( changed() ) );
+        connect( d->grpEdit, SIGNAL(textChanged(QString)),
+                 this, SIGNAL(changed()) );
     }
     else if ((groupList.count() > 1) && isMyFile && isLocal)
     {
@@ -1856,8 +1856,8 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
         d->grpCombo->addItems(groupList);
         d->grpCombo->setCurrentIndex(groupList.indexOf(d->strGroup));
         gl->addWidget(d->grpCombo, 2, 1);
-        connect( d->grpCombo, SIGNAL( activated( int ) ),
-                 this, SIGNAL( changed() ) );
+        connect( d->grpCombo, SIGNAL(activated(int)),
+                 this, SIGNAL(changed()) );
     }
     else
     {
@@ -1871,7 +1871,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     if ( hasDir && !isLink && !isTrash  )
     {
         d->cbRecursive = new QCheckBox( i18n("Apply changes to all subfolders and their contents"), d->m_frame );
-        connect( d->cbRecursive, SIGNAL( clicked() ), this, SIGNAL( changed() ) );
+        connect( d->cbRecursive, SIGNAL(clicked()), this, SIGNAL(changed()) );
         box->addWidget( d->cbRecursive );
     }
 
@@ -2522,8 +2522,8 @@ void KFilePermissionsPropsPlugin::applyChanges()
         if ( defaultACLChange && d->fileSystemSupportsACLs )
             job->addMetaData( "DEFAULT_ACL_STRING", d->defaultACL.isValid()?d->defaultACL.asString():"ACL_DELETE" );
 
-        connect( job, SIGNAL( result( KJob * ) ),
-                 SLOT( slotChmodResult( KJob * ) ) );
+        connect( job, SIGNAL(result(KJob*)),
+                 SLOT(slotChmodResult(KJob*)) );
         QEventLoop eventLoop;
         connect(this, SIGNAL(leaveModality()),
                 &eventLoop, SLOT(quit()));
@@ -2537,8 +2537,8 @@ void KFilePermissionsPropsPlugin::applyChanges()
         if ( defaultACLChange && d->fileSystemSupportsACLs )
             job->addMetaData( "DEFAULT_ACL_STRING", d->defaultACL.isValid()?d->defaultACL.asString():"ACL_DELETE" );
 
-        connect( job, SIGNAL( result( KJob * ) ),
-                 SLOT( slotChmodResult( KJob * ) ) );
+        connect( job, SIGNAL(result(KJob*)),
+                 SLOT(slotChmodResult(KJob*)) );
         QEventLoop eventLoop;
         connect(this, SIGNAL(leaveModality()),
                 &eventLoop, SLOT(quit()));
@@ -2609,8 +2609,8 @@ KUrlPropsPlugin::KUrlPropsPlugin( KPropertiesDialog *_props )
         }
     }
 
-    connect( d->URLEdit, SIGNAL( textChanged( const QString & ) ),
-             this, SIGNAL( changed() ) );
+    connect( d->URLEdit, SIGNAL(textChanged(QString)),
+             this, SIGNAL(changed()) );
 
     layout->addStretch (1);
 }
@@ -2756,8 +2756,8 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropertie
     d->device->setEditable( true );
     d->device->addItems( devices );
     layout->addWidget(d->device, 0, 1);
-    connect( d->device, SIGNAL( activated( int ) ),
-             this, SLOT( slotActivated( int ) ) );
+    connect( d->device, SIGNAL(activated(int)),
+             this, SLOT(slotActivated(int)) );
 
     d->readonly = new QCheckBox( d->m_frame );
     d->readonly->setObjectName( QLatin1String( "CheckBox_readonly" ) );
@@ -2841,15 +2841,15 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropertie
 
     d->readonly->setChecked( ro );
 
-    connect( d->device, SIGNAL( activated( int ) ),
-             this, SIGNAL( changed() ) );
-    connect( d->device, SIGNAL( textChanged( const QString & ) ),
-             this, SIGNAL( changed() ) );
-    connect( d->readonly, SIGNAL( toggled( bool ) ),
-             this, SIGNAL( changed() ) );
+    connect( d->device, SIGNAL(activated(int)),
+             this, SIGNAL(changed()) );
+    connect( d->device, SIGNAL(textChanged(QString)),
+             this, SIGNAL(changed()) );
+    connect( d->readonly, SIGNAL(toggled(bool)),
+             this, SIGNAL(changed()) );
 
-    connect( d->device, SIGNAL( textChanged( const QString & ) ),
-             this, SLOT( slotDeviceChanged() ) );
+    connect( d->device, SIGNAL(textChanged(QString)),
+             this, SLOT(slotDeviceChanged()) );
 }
 
 KDevicePropsPlugin::~KDevicePropsPlugin()
@@ -3022,16 +3022,16 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
     d->w->pathEdit->setMode(KFile::Directory | KFile::LocalOnly);
     d->w->pathEdit->lineEdit()->setAcceptDrops(false);
 
-    connect( d->w->nameEdit, SIGNAL( textChanged( const QString & ) ), this, SIGNAL( changed() ) );
-    connect( d->w->genNameEdit, SIGNAL( textChanged( const QString & ) ), this, SIGNAL( changed() ) );
-    connect( d->w->commentEdit, SIGNAL( textChanged( const QString & ) ), this, SIGNAL( changed() ) );
-    connect( d->w->commandEdit, SIGNAL( textChanged( const QString & ) ), this, SIGNAL( changed() ) );
-    connect( d->w->pathEdit, SIGNAL( textChanged( const QString & ) ), this, SIGNAL( changed() ) );
+    connect( d->w->nameEdit, SIGNAL(textChanged(QString)), this, SIGNAL(changed()) );
+    connect( d->w->genNameEdit, SIGNAL(textChanged(QString)), this, SIGNAL(changed()) );
+    connect( d->w->commentEdit, SIGNAL(textChanged(QString)), this, SIGNAL(changed()) );
+    connect( d->w->commandEdit, SIGNAL(textChanged(QString)), this, SIGNAL(changed()) );
+    connect( d->w->pathEdit, SIGNAL(textChanged(QString)), this, SIGNAL(changed()) );
 
-    connect( d->w->browseButton, SIGNAL( clicked() ), this, SLOT( slotBrowseExec() ) );
-    connect( d->w->addFiletypeButton, SIGNAL( clicked() ), this, SLOT( slotAddFiletype() ) );
-    connect( d->w->delFiletypeButton, SIGNAL( clicked() ), this, SLOT( slotDelFiletype() ) );
-    connect( d->w->advancedButton, SIGNAL( clicked() ), this, SLOT( slotAdvanced() ) );
+    connect( d->w->browseButton, SIGNAL(clicked()), this, SLOT(slotBrowseExec()) );
+    connect( d->w->addFiletypeButton, SIGNAL(clicked()), this, SLOT(slotAddFiletype()) );
+    connect( d->w->delFiletypeButton, SIGNAL(clicked()), this, SLOT(slotDelFiletype()) );
+    connect( d->w->advancedButton, SIGNAL(clicked()), this, SLOT(slotAdvanced()) );
 
     // now populate the page
 
@@ -3360,22 +3360,22 @@ void KDesktopPropsPlugin::slotAdvanced()
         delete kcom;
     }
 
-    connect( w.terminalEdit, SIGNAL( textChanged( const QString & ) ),
-             this, SIGNAL( changed() ) );
-    connect( w.terminalCloseCheck, SIGNAL( toggled( bool ) ),
-             this, SIGNAL( changed() ) );
-    connect( w.terminalCheck, SIGNAL( toggled( bool ) ),
-             this, SIGNAL( changed() ) );
-    connect( w.suidCheck, SIGNAL( toggled( bool ) ),
-             this, SIGNAL( changed() ) );
-    connect( w.suidEdit, SIGNAL( textChanged( const QString & ) ),
-             this, SIGNAL( changed() ) );
-    connect( w.startupInfoCheck, SIGNAL( toggled( bool ) ),
-             this, SIGNAL( changed() ) );
-    connect( w.systrayCheck, SIGNAL( toggled( bool ) ),
-             this, SIGNAL( changed() ) );
-    connect( w.dbusCombo, SIGNAL( activated( int ) ),
-             this, SIGNAL( changed() ) );
+    connect( w.terminalEdit, SIGNAL(textChanged(QString)),
+             this, SIGNAL(changed()) );
+    connect( w.terminalCloseCheck, SIGNAL(toggled(bool)),
+             this, SIGNAL(changed()) );
+    connect( w.terminalCheck, SIGNAL(toggled(bool)),
+             this, SIGNAL(changed()) );
+    connect( w.suidCheck, SIGNAL(toggled(bool)),
+             this, SIGNAL(changed()) );
+    connect( w.suidEdit, SIGNAL(textChanged(QString)),
+             this, SIGNAL(changed()) );
+    connect( w.startupInfoCheck, SIGNAL(toggled(bool)),
+             this, SIGNAL(changed()) );
+    connect( w.systrayCheck, SIGNAL(toggled(bool)),
+             this, SIGNAL(changed()) );
+    connect( w.dbusCombo, SIGNAL(activated(int)),
+             this, SIGNAL(changed()) );
 
     if ( dlg.exec() == QDialog::Accepted )
     {

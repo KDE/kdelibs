@@ -1,20 +1,8 @@
 Known Issues [PENDING]:
 =======================
-* [QtWebKit] HTML 5 <video> tag will not properly work for most users depending
-  on how their distro created their Qt library package. As a result of differences
-  between the Phonon library needed by KDE and bundled with Qt, most distros opt for
-  disabling Phonon support (-no-phonon) when compiling Qt and simply use the Phonon
-  libraries from kdesupport to ensure multimedia in KDE is functional. Unfortunately,
-  compiling Qt without phonon support means no HTML 5 <video> support in QtWebKit.
-  See http://bugreports.qt.nokia.com/browse/QTWEBKIT-9 and http://webkit.org/b/34631.
-
-* [QtWebKit] Spell checking support. See https://webkit.org/b/44114
-
 * [QtWebKit] Form completion like the one available in native Qt widgets such
   as QLineEdit is missing due to lack of access to form elements.
   See http://webkit.org/b/36668.
-
-* [QtWebKit] HTML access key support has not yet been implemented in QtWebKit.
 
 Known Issues [FIXED]:
 =====================
@@ -39,7 +27,25 @@ Known Issues [FIXED]:
 * [QtWebKit] No way to stop <meta> tag based page refresh. [QtWebKit 2.0**]
   See http://webkit.org/b/29899
 
+* [QtWebKit] Spell checking support. See https://webkit.org/b/44114 [ QtWebKit > 2.2 ]
+  Some support was implemented but did not quite make it into QtWebKit 2.2.0 branch.
+  It will be in future released. However, it was determined that spell checking
+  support can easily be implemented at the browser level. Consult the specific browser
+  engine, e.g. kwebkitpart, for details.
+
+* [QtWebKit] HTML 5 <video> tag will not properly work for most users depending [ QtWebKit >= 2.2 ]
+  on how their distro created their Qt library package. As a result of differences
+  between the Phonon library needed by KDE and bundled with Qt, most distros opt for
+  disabling Phonon support (-no-phonon) when compiling Qt and simply use the Phonon
+  libraries from kdesupport to ensure multimedia in KDE is functional. Unfortunately,
+  compiling Qt without phonon support means no HTML 5 <video> support in QtWebKit.
+  See http://bugreports.qt.nokia.com/browse/QTWEBKIT-9 and http://webkit.org/b/34631.
+
+* [QtWebKit] HTML access key support has not yet been implemented in QtWebKit. [ N/A ]
+  This functionality was something that was deemed to be browser specific and
+  should be implemented at that level.
 
 NOTES:
 ======
-** Qt 4.7.X comes with QtWebkit 2.0.
+** Qt 4.7.x comes with QtWebkit 2.0.x
+** Qt 4.8.x comes with QtWebKit 2.2.x

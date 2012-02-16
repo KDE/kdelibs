@@ -74,14 +74,14 @@ class AccessManager::AccessManagerPrivate
 public:
     AccessManagerPrivate()
       : externalContentAllowed(true),
-        emitReadReadOnMetaDataChange(false),
+        emitReadyReadOnMetaDataChange(false),
         window(0)
     {}
 
     void setMetaDataForRequest(QNetworkRequest request, KIO::MetaData& metaData);
 
     bool externalContentAllowed;
-    bool emitReadReadOnMetaDataChange;
+    bool emitReadyReadOnMetaDataChange;
     KIO::MetaData requestMetaData;
     KIO::MetaData sessionMetaData;
     QWidget* window;
@@ -204,7 +204,7 @@ void AccessManager::putReplyOnHold(QNetworkReply* reply)
 
 void AccessManager::setEmitReadyReadOnMetaDataChange(bool enable)
 {
-    d->emitReadReadOnMetaDataChange = enable;
+    d->emitReadyReadOnMetaDataChange = enable;
 }
 
 QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData)
@@ -230,7 +230,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         !KDEPrivate::AccessManagerReply::isLocalRequest(reqUrl) &&
         reqUrl.scheme() != QL1S("data")) {
         kDebug( 7044 ) << "Blocked: " << reqUrl;
-        KDEPrivate::AccessManagerReply* reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadReadOnMetaDataChange, this);
+        KDEPrivate::AccessManagerReply* reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadyReadOnMetaDataChange, this);
         reply->setStatus(i18n("Blocked request."),QNetworkReply::ContentAccessDenied);
         return reply;
     }
@@ -292,7 +292,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             //kDebug(7044) << "CustomOperation:" << reqUrl << "method:" << method << "outgoing data:" << outgoingData;
 
             if (method.isEmpty()) {
-                KDEPrivate::AccessManagerReply* reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadReadOnMetaDataChange, this);
+                KDEPrivate::AccessManagerReply* reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadyReadOnMetaDataChange, this);
                 reply->setStatus(i18n("Unknown HTTP verb."), QNetworkReply::ProtocolUnknownError);
                 return reply;
             }
@@ -335,7 +335,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     kioJob->setMetaData(metaData);
 
     // Create the reply...
-    KDEPrivate::AccessManagerReply *reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadReadOnMetaDataChange, this);
+    KDEPrivate::AccessManagerReply *reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadyReadOnMetaDataChange, this);
 
     if (ignoreContentDisposition) {
         kDebug(7044) << "Content-Disposition WILL BE IGNORED!";

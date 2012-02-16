@@ -433,8 +433,8 @@ void DialogPrivate::createDialogFromServices()
 
     QObject::connect(q, SIGNAL(okClicked()), q, SLOT(_k_syncConfiguration()));
     QObject::connect(q, SIGNAL(applyClicked()), q, SLOT(_k_syncConfiguration()));
-    QObject::connect(q, SIGNAL(configCommitted(const QByteArray &)), q,
-            SLOT(_k_reparseConfiguration(const QByteArray &)));
+    QObject::connect(q, SIGNAL(configCommitted(QByteArray)), q,
+            SLOT(_k_reparseConfiguration(QByteArray)));
 }
 
 void DialogPrivate::connectItemCheckBox(KPageWidgetItem *item, const KPluginInfo &pinfo, bool isEnabled)

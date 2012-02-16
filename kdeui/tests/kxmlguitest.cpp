@@ -58,7 +58,7 @@ int main( int argc, char **argv )
     a = new KAction( KIcon( "security-low" ), "sec", part );
     part->actionCollection()->addAction( "security", a );
     a->setShortcut( KShortcut(Qt::ALT + Qt::Key_1), KAction::DefaultShortcut );
-    a->connect( a, SIGNAL(triggered(bool)), part, SLOT( slotSec() ) );
+    a->connect( a, SIGNAL(triggered(bool)), part, SLOT(slotSec()) );
 
     part->setXMLFile( KDESRCDIR "/kxmlguitest_part.rc" );
 

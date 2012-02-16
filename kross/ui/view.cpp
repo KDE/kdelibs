@@ -333,7 +333,7 @@ ActionCollectionView::ActionCollectionView(QWidget* parent)
     d->collection->addAction("remove", removeaction);
     connect(removeaction, SIGNAL(triggered()), this, SLOT(slotRemove()) );
 
-    connect(this, SIGNAL(enabledChanged(const QString&)), this, SLOT(slotEnabledChanged(const QString&)));
+    connect(this, SIGNAL(enabledChanged(QString)), this, SLOT(slotEnabledChanged(QString)));
     //expandAll();
 }
 
@@ -350,10 +350,10 @@ void ActionCollectionView::setModel(QAbstractItemModel* m)
     QItemSelectionModel* selectionmodel = new QItemSelectionModel(m, this);
     setSelectionModel(selectionmodel);
 
-    connect(selectionModel(), SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)),
+    connect(selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
             this, SLOT(slotSelectionChanged()));
-    connect(m, SIGNAL(dataChanged(const QModelIndex&,const QModelIndex&)),
-            this, SLOT(slotDataChanged(const QModelIndex&,const QModelIndex&)));
+    connect(m, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+            this, SLOT(slotDataChanged(QModelIndex,QModelIndex)));
 }
 
 bool ActionCollectionView::isModified() const

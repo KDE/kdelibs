@@ -125,7 +125,7 @@ KMultiPart::KMultiPart( QWidget *parentWidget,
     m_tempFile = 0;
 
     m_timer = new QTimer( this );
-    connect( m_timer, SIGNAL( timeout() ), this, SLOT( slotProgressInfo() ) );
+    connect( m_timer, SIGNAL(timeout()), this, SLOT(slotProgressInfo()) );
 }
 
 KMultiPart::~KMultiPart()
@@ -178,10 +178,10 @@ bool KMultiPart::openUrl( const KUrl &url )
 
     emit started( 0 /*m_job*/ ); // don't pass the job, it would interfere with our own infoMessage
 
-    connect( m_job, SIGNAL( result( KJob * ) ),
-             this, SLOT( slotJobFinished( KJob * ) ) );
-    connect( m_job, SIGNAL( data( KIO::Job *, const QByteArray & ) ),
-             this, SLOT( slotData( KIO::Job *, const QByteArray & ) ) );
+    connect( m_job, SIGNAL(result(KJob*)),
+             this, SLOT(slotJobFinished(KJob*)) );
+    connect( m_job, SIGNAL(data(KIO::Job*,QByteArray)),
+             this, SLOT(slotData(KIO::Job*,QByteArray)) );
 
     m_numberOfFrames = 0;
     m_numberOfFramesSkipped = 0;
@@ -342,8 +342,8 @@ void KMultiPart::setPart( const QString& mimeType )
     insertChildClient( m_part );
     m_part->widget()->show();
 
-    connect( m_part, SIGNAL( completed() ),
-             this, SLOT( slotPartCompleted() ) );
+    connect( m_part, SIGNAL(completed()),
+             this, SLOT(slotPartCompleted()) );
     connect( m_part, SIGNAL(completed(bool)),
              this, SLOT(slotPartCompleted()) );
 
@@ -356,14 +356,14 @@ void KMultiPart::setPart( const QString& mimeType )
         // Forward signals from the part's browser extension
         // this is very related (but not exactly like) KHTMLPart::processObjectRequest
 
-        connect( childExtension, SIGNAL( openURLNotify() ),
-                 m_extension, SIGNAL( openURLNotify() ) );
+        connect( childExtension, SIGNAL(openURLNotify()),
+                 m_extension, SIGNAL(openURLNotify()) );
 
-        connect( childExtension, SIGNAL( openUrlRequestDelayed( const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments& ) ),
-                 m_extension, SIGNAL( openUrlRequest( const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments & ) ) );
+        connect( childExtension, SIGNAL(openUrlRequestDelayed(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)),
+                 m_extension, SIGNAL(openUrlRequest(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)) );
 
-        connect( childExtension, SIGNAL( createNewWindow( const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments&, const KParts::WindowArgs &, KParts::ReadOnlyPart** ) ),
-                 m_extension, SIGNAL( createNewWindow( const KUrl &, const KParts::OpenUrlArguments&, const KParts::BrowserArguments& , const KParts::WindowArgs &, KParts::ReadOnlyPart**) ) );
+        connect( childExtension, SIGNAL(createNewWindow(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::WindowArgs,KParts::ReadOnlyPart**)),
+                 m_extension, SIGNAL(createNewWindow(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::WindowArgs,KParts::ReadOnlyPart**)) );
 
         // Keep in sync with khtml_part.cpp
         connect( childExtension, SIGNAL(popupMenu(QPoint,KFileItemList,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)),
@@ -372,35 +372,35 @@ void KMultiPart::setPart( const QString& mimeType )
              m_extension, SIGNAL(popupMenu(QPoint,KUrl,mode_t,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)) );
 
         if ( m_isHTMLPart )
-            connect( childExtension, SIGNAL( infoMessage( const QString & ) ),
-                     m_extension, SIGNAL( infoMessage( const QString & ) ) );
+            connect( childExtension, SIGNAL(infoMessage(QString)),
+                     m_extension, SIGNAL(infoMessage(QString)) );
         // For non-HTML we prefer to show our infoMessage ourselves.
 
         childExtension->setBrowserInterface( m_extension->browserInterface() );
 
-        connect( childExtension, SIGNAL( enableAction( const char *, bool ) ),
-                 m_extension, SIGNAL( enableAction( const char *, bool ) ) );
-        connect( childExtension, SIGNAL( setLocationBarURL( const QString& ) ),
-                 m_extension, SIGNAL( setLocationBarURL( const QString& ) ) );
-        connect( childExtension, SIGNAL( setIconUrl( const KUrl& ) ),
-                 m_extension, SIGNAL( setIconUrl( const KUrl& ) ) );
-        connect( childExtension, SIGNAL( loadingProgress( int ) ),
-                 m_extension, SIGNAL( loadingProgress( int ) ) );
+        connect( childExtension, SIGNAL(enableAction(const char*,bool)),
+                 m_extension, SIGNAL(enableAction(const char*,bool)) );
+        connect( childExtension, SIGNAL(setLocationBarURL(QString)),
+                 m_extension, SIGNAL(setLocationBarURL(QString)) );
+        connect( childExtension, SIGNAL(setIconUrl(KUrl)),
+                 m_extension, SIGNAL(setIconUrl(KUrl)) );
+        connect( childExtension, SIGNAL(loadingProgress(int)),
+                 m_extension, SIGNAL(loadingProgress(int)) );
         if ( m_isHTMLPart ) // for non-HTML we have our own
-            connect( childExtension, SIGNAL( speedProgress( int ) ),
-                     m_extension, SIGNAL( speedProgress( int ) ) );
-        connect( childExtension, SIGNAL( selectionInfo( const KFileItemList& ) ),
-                 m_extension, SIGNAL( selectionInfo( const KFileItemList& ) ) );
-        connect( childExtension, SIGNAL( selectionInfo( const QString& ) ),
-                 m_extension, SIGNAL( selectionInfo( const QString& ) ) );
-        connect( childExtension, SIGNAL( selectionInfo( const KUrl::List& ) ),
-                 m_extension, SIGNAL( selectionInfo( const KUrl::List& ) ) );
-        connect( childExtension, SIGNAL( mouseOverInfo( const KFileItem& ) ),
-                 m_extension, SIGNAL( mouseOverInfo( const KFileItem& ) ) );
-        connect( childExtension, SIGNAL( moveTopLevelWidget( int, int ) ),
-                 m_extension, SIGNAL( moveTopLevelWidget( int, int ) ) );
-        connect( childExtension, SIGNAL( resizeTopLevelWidget( int, int ) ),
-                 m_extension, SIGNAL( resizeTopLevelWidget( int, int ) ) );
+            connect( childExtension, SIGNAL(speedProgress(int)),
+                     m_extension, SIGNAL(speedProgress(int)) );
+        connect( childExtension, SIGNAL(selectionInfo(KFileItemList)),
+                 m_extension, SIGNAL(selectionInfo(KFileItemList)) );
+        connect( childExtension, SIGNAL(selectionInfo(QString)),
+                 m_extension, SIGNAL(selectionInfo(QString)) );
+        connect( childExtension, SIGNAL(selectionInfo(KUrl::List)),
+                 m_extension, SIGNAL(selectionInfo(KUrl::List)) );
+        connect( childExtension, SIGNAL(mouseOverInfo(KFileItem)),
+                 m_extension, SIGNAL(mouseOverInfo(KFileItem)) );
+        connect( childExtension, SIGNAL(moveTopLevelWidget(int,int)),
+                 m_extension, SIGNAL(moveTopLevelWidget(int,int)) );
+        connect( childExtension, SIGNAL(resizeTopLevelWidget(int,int)),
+                 m_extension, SIGNAL(resizeTopLevelWidget(int,int)) );
     }
 
     m_partIsLoading = false;
@@ -565,7 +565,7 @@ void KMultiPart::slotJobFinished( KJob *job )
 
         emit completed();
 
-        //QTimer::singleShot( 0, this, SLOT( updateWindowCaption() ) );
+        //QTimer::singleShot( 0, this, SLOT(updateWindowCaption()) );
     }
     m_job = 0L;
 }

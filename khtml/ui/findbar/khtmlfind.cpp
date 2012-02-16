@@ -267,12 +267,12 @@ void KHTMLFind::createNewKFind( const QString &str, long options, QWidget *paren
   delete d->m_find;
   d->m_find = new KFind( str, options, parent, findDialog );
   d->m_find->closeFindNextDialog(); // we use KFindDialog non-modal, so we don't want other dlg popping up
-  connect( d->m_find, SIGNAL( highlight( const QString &, int, int ) ),
-           this, SLOT( slotHighlight( const QString &, int, int ) ) );
-  connect( d->m_find, SIGNAL( destroyed() ),
-           this, SLOT( slotFindDestroyed() ) );
-  //connect(d->m_find, SIGNAL( findNext() ),
-  //        this, SLOT( slotFindNext() ) );
+  connect( d->m_find, SIGNAL(highlight(QString,int,int)),
+           this, SLOT(slotHighlight(QString,int,int)) );
+  connect( d->m_find, SIGNAL(destroyed()),
+           this, SLOT(slotFindDestroyed()) );
+  //connect(d->m_find, SIGNAL(findNext()),
+  //        this, SLOT(slotFindNext()) );
 
   if ( !findDialog )
   {

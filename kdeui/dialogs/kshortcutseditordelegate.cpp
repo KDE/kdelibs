@@ -193,10 +193,10 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 
             editor->setCheckActionCollections(m_checkActionCollections);
 
-            connect(m_editor, SIGNAL(keySequenceChanged(const QKeySequence &)),
-                    this, SLOT(keySequenceChanged(const QKeySequence &)));
-            connect(m_editor, SIGNAL(stealShortcut(const QKeySequence &, KAction*)),
-                    this, SLOT(stealShortcut(const QKeySequence&, KAction*)));
+            connect(m_editor, SIGNAL(keySequenceChanged(QKeySequence)),
+                    this, SLOT(keySequenceChanged(QKeySequence)));
+            connect(m_editor, SIGNAL(stealShortcut(QKeySequence,KAction*)),
+                    this, SLOT(stealShortcut(QKeySequence,KAction*)));
 
         } else if (column == RockerGesture) {
             m_editor = new QLabel("A lame placeholder", viewport);

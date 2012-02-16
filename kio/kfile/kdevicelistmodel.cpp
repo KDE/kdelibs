@@ -186,10 +186,10 @@ void KDeviceListModel::Private::_k_initDeviceList()
 {
     Solid::DeviceNotifier *notifier = Solid::DeviceNotifier::instance();
 
-    connect(notifier, SIGNAL(deviceAdded(const QString&)),
-            q, SLOT(_k_deviceAdded(const QString&)));
-    connect(notifier, SIGNAL(deviceRemoved(const QString&)),
-            q, SLOT(_k_deviceRemoved(const QString&)));
+    connect(notifier, SIGNAL(deviceAdded(QString)),
+            q, SLOT(_k_deviceAdded(QString)));
+    connect(notifier, SIGNAL(deviceRemoved(QString)),
+            q, SLOT(_k_deviceRemoved(QString)));
 
     // Use allDevices() from the manager if the predicate is not valid
     // otherwise the returned list is empty

@@ -201,7 +201,7 @@ void KXmlGuiWindow::setupGUI( const QSize & defaultSize, StandardWindowOptions o
     if( options & ToolBar ){
         setStandardToolBarMenuEnabled( true );
         KStandardAction::configureToolbars(this,
-                      SLOT(configureToolbars() ), actionCollection());
+                      SLOT(configureToolbars()), actionCollection());
     }
 
     d->defaultSize = defaultSize;

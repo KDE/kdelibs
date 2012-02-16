@@ -528,8 +528,8 @@ QWidget * KSelectAction::createWidget( QWidget * parent )
       button->setFocusPolicy(Qt::NoFocus);
       button->setIconSize(toolBar->iconSize());
       button->setToolButtonStyle(toolBar->toolButtonStyle());
-      QObject::connect(toolBar, SIGNAL(iconSizeChanged(const QSize&)),
-                       button, SLOT(setIconSize(const QSize&)));
+      QObject::connect(toolBar, SIGNAL(iconSizeChanged(QSize)),
+                       button, SLOT(setIconSize(QSize)));
       QObject::connect(toolBar, SIGNAL(toolButtonStyleChanged(Qt::ToolButtonStyle)),
                        button, SLOT(setToolButtonStyle(Qt::ToolButtonStyle)));
       button->setDefaultAction(this);

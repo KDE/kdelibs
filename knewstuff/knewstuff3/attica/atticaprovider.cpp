@@ -43,9 +43,9 @@ AtticaProvider::AtticaProvider(const QStringList& categories)
     foreach (const QString& category, categories)
         mCategoryMap.insert(category, Attica::Category());
 
-    connect(&m_providerManager, SIGNAL(providerAdded(const Attica::Provider&)), SLOT(providerLoaded(const Attica::Provider&)));
-    connect(&m_providerManager, SIGNAL(authenticationCredentialsMissing(const Provider&)),
-            SLOT(authenticationCredentialsMissing(const Provider&)));
+    connect(&m_providerManager, SIGNAL(providerAdded(Attica::Provider)), SLOT(providerLoaded(Attica::Provider)));
+    connect(&m_providerManager, SIGNAL(authenticationCredentialsMissing(Provider)),
+            SLOT(authenticationCredentialsMissing(Provider)));
 }
 
 AtticaProvider::AtticaProvider(const Attica::Provider& provider, const QStringList& categories)

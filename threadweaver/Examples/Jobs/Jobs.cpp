@@ -54,16 +54,16 @@ Jobs::Jobs ( QWidget *parent )
 {
     ui.setupUi( this );
 
-    connect ( Weaver::instance(), SIGNAL ( finished() ), SLOT (slotStopped () ) );
-    connect ( Weaver::instance(), SIGNAL ( jobDone(ThreadWeaver::Job*) ),
-              SLOT (slotJobDone (ThreadWeaver::Job*) ) );
-    connect ( Weaver::instance(), SIGNAL ( suspended() ), SLOT (slotStopped () ) );
+    connect ( Weaver::instance(), SIGNAL (finished()), SLOT (slotStopped()) );
+    connect ( Weaver::instance(), SIGNAL (jobDone(ThreadWeaver::Job*)),
+              SLOT (slotJobDone(ThreadWeaver::Job*)) );
+    connect ( Weaver::instance(), SIGNAL (suspended()), SLOT (slotStopped()) );
 
-    connect ( ui.pbStart,  SIGNAL ( clicked() ),  SLOT ( slotStart() ) );
-    connect ( ui.pbStop,  SIGNAL ( clicked() ),  SLOT ( slotStop() ) );
-    connect ( ui.pbQuit,  SIGNAL ( clicked () ),  SLOT ( slotQuit() ) );
-    connect ( ui.cbLog, SIGNAL (stateChanged ( int )),
-	      SLOT (slotLogStateChanged ( int )));
+    connect ( ui.pbStart,  SIGNAL (clicked()),  SLOT (slotStart()) );
+    connect ( ui.pbStop,  SIGNAL (clicked()),  SLOT (slotStop()) );
+    connect ( ui.pbQuit,  SIGNAL (clicked()),  SLOT (slotQuit()) );
+    connect ( ui.cbLog, SIGNAL (stateChanged(int)),
+	      SLOT (slotLogStateChanged(int)));
     setState (Initial);
     ui.threadGrid->attach ( Weaver::instance() );
 }

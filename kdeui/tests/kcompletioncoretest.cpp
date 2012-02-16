@@ -56,7 +56,7 @@ Test_KCompletion::insertionOrder()
 {
 	KCompletion completion;
 	completion.setSoundsEnabled(false);
-	QSignalSpy spy1(&completion, SIGNAL(match(const QString &)));
+	QSignalSpy spy1(&completion, SIGNAL(match(QString)));
 	QSignalSpy spy3(&completion, SIGNAL(multipleMatches()));
 
 	completion.setOrder(KCompletion::Insertion);
@@ -71,7 +71,7 @@ Test_KCompletion::insertionOrder()
 	QVERIFY(spy1.takeFirst().at(0).toString() == QString("carp"));
 	QVERIFY(spy3.count() == 1); spy3.takeFirst();
 
-	QSignalSpy spy2(&completion, SIGNAL(matches(const QStringList &)));
+	QSignalSpy spy2(&completion, SIGNAL(matches(QStringList)));
 	completion.makeCompletion("ca");
 	QCOMPARE(spy2.count(), 1);
 	QVERIFY(spy3.count() == 0); // shouldn't be signaled on 2nd call
@@ -91,7 +91,7 @@ Test_KCompletion::sortedOrder()
 {
 	KCompletion completion;
 	completion.setSoundsEnabled(false);
-	QSignalSpy spy1(&completion, SIGNAL(match(const QString &)));
+	QSignalSpy spy1(&completion, SIGNAL(match(QString)));
 	QSignalSpy spy3(&completion, SIGNAL(multipleMatches()));
 
 	completion.setOrder(KCompletion::Sorted);
@@ -106,7 +106,7 @@ Test_KCompletion::sortedOrder()
 	QCOMPARE(spy1.takeFirst().at(0).toString(), QString("carp"));
 	QVERIFY(spy3.count() == 1); spy3.takeFirst();
 
-	QSignalSpy spy2(&completion, SIGNAL(matches(const QStringList &)));
+	QSignalSpy spy2(&completion, SIGNAL(matches(QStringList)));
 	completion.makeCompletion("ca");
 	QCOMPARE(spy2.count(), 1);
 	QVERIFY(spy3.count() == 0); // shouldn't be signaled on 2nd call
@@ -127,7 +127,7 @@ Test_KCompletion::weightedOrder()
 {
 	KCompletion completion;
 	completion.setSoundsEnabled(false);
-	QSignalSpy spy1(&completion, SIGNAL(match(const QString &)));
+	QSignalSpy spy1(&completion, SIGNAL(match(QString)));
 	QSignalSpy spy3(&completion, SIGNAL(multipleMatches()));
 
 	completion.setOrder(KCompletion::Weighted);
@@ -141,7 +141,7 @@ Test_KCompletion::weightedOrder()
 	spy1.takeFirst(); // empty the list
 	QVERIFY(spy3.count() == 1); spy3.takeFirst();
 
-	QSignalSpy spy2(&completion, SIGNAL(matches(const QStringList &)));
+	QSignalSpy spy2(&completion, SIGNAL(matches(QStringList)));
 	completion.makeCompletion("ca");
 	QCOMPARE(spy2.count(), 1);
 	QVERIFY(spy3.count() == 0); // shouldn't be signaled on 2nd call

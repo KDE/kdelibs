@@ -59,17 +59,17 @@ KIO::PasteDialog::PasteDialog( const QString &caption, const QString &label,
 
     layout->addStretch();
 
-    //connect( m_lineEdit, SIGNAL( textChanged( const QString & ) ),
-    //    SLOT( slotEditTextChanged( const QString & ) ) );
-    //connect( this, SIGNAL( user1Clicked() ), m_lineEdit, SLOT( clear() ) );
+    //connect( m_lineEdit, SIGNAL(textChanged(QString)),
+    //    SLOT(slotEditTextChanged(QString)) );
+    //connect( this, SIGNAL(user1Clicked()), m_lineEdit, SLOT(clear()) );
 
     //slotEditTextChanged( value );
     setMinimumWidth( 350 );
 
     m_clipboardChanged = false;
     if ( clipboard )
-        connect( QApplication::clipboard(), SIGNAL( dataChanged() ),
-                 this, SLOT( slotClipboardDataChanged() ) );
+        connect( QApplication::clipboard(), SIGNAL(dataChanged()),
+                 this, SLOT(slotClipboardDataChanged()) );
 }
 
 void KIO::PasteDialog::slotClipboardDataChanged()

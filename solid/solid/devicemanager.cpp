@@ -232,8 +232,8 @@ Solid::DevicePrivate *Solid::DeviceManagerPrivate::findRegisteredDevice(const QS
         m_devicesMap[udi] = ptr;
         m_reverseMap[devData] = udi;
 
-        connect(devData, SIGNAL(destroyed(QObject *)),
-                this, SLOT(_k_destroyed(QObject *)));
+        connect(devData, SIGNAL(destroyed(QObject*)),
+                this, SLOT(_k_destroyed(QObject*)));
 
         return devData;
     }

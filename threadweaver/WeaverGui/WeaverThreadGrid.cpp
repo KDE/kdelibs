@@ -56,12 +56,12 @@ namespace ThreadWeaver {
     void WeaverThreadGrid::attach ( Weaver *weaver )
     {
         weaver->registerObserver ( &m_observer );
-        connect ( &m_observer,  SIGNAL ( threadStarted( ThreadWeaver::Thread* ) ),
-                  SLOT ( threadStarted ( ThreadWeaver::Thread* ) ) );
-        connect ( &m_observer,  SIGNAL ( threadBusy( ThreadWeaver::Thread*, ThreadWeaver::Job* ) ),
-                  SLOT ( threadBusy ( ThreadWeaver::Thread*, ThreadWeaver::Job* ) ) );
-        connect ( &m_observer,  SIGNAL ( threadSuspended( ThreadWeaver::Thread* ) ),
-                  SLOT ( threadSuspended ( ThreadWeaver::Thread* ) ) );
+        connect ( &m_observer,  SIGNAL (threadStarted(ThreadWeaver::Thread*)),
+                  SLOT (threadStarted(ThreadWeaver::Thread*)) );
+        connect ( &m_observer,  SIGNAL (threadBusy(ThreadWeaver::Thread*,ThreadWeaver::Job*)),
+                  SLOT (threadBusy(ThreadWeaver::Thread*,ThreadWeaver::Job*)) );
+        connect ( &m_observer,  SIGNAL (threadSuspended(ThreadWeaver::Thread*)),
+                  SLOT (threadSuspended(ThreadWeaver::Thread*)) );
     }
 
     void WeaverThreadGrid::paintEvent ( QPaintEvent *e )

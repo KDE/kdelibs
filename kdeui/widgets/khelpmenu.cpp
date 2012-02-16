@@ -278,7 +278,7 @@ void KHelpMenu::aboutApplication()
     if( !d->mAboutApp )
     {
       d->mAboutApp = new KAboutApplicationDialog( d->mAboutData, d->mParent );
-      connect( d->mAboutApp, SIGNAL(finished()), this, SLOT( dialogFinished()) );
+      connect( d->mAboutApp, SIGNAL(finished()), this, SLOT(dialogFinished()) );
     }
     d->mAboutApp->show();
   }
@@ -293,7 +293,7 @@ void KHelpMenu::aboutApplication()
       d->mAboutApp->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
       d->mAboutApp->setDefaultButton( KDialog::Yes );
       d->mAboutApp->setEscapeButton( KDialog::Yes );
-      connect( d->mAboutApp, SIGNAL(finished()), this, SLOT( dialogFinished()) );
+      connect( d->mAboutApp, SIGNAL(finished()), this, SLOT(dialogFinished()) );
 
       KHBox *hbox = new KHBox( d->mAboutApp );
       d->mAboutApp->setMainWidget( hbox );
@@ -317,7 +317,7 @@ void KHelpMenu::aboutKDE()
   if( !d->mAboutKDE )
   {
     d->mAboutKDE = new KAboutKdeDialog( d->mParent );
-    connect( d->mAboutKDE, SIGNAL(finished()), this, SLOT( dialogFinished()) );
+    connect( d->mAboutKDE, SIGNAL(finished()), this, SLOT(dialogFinished()) );
   }
   d->mAboutKDE->show();
 }
@@ -328,7 +328,7 @@ void KHelpMenu::reportBug()
   if( !d->mBugReport )
   {
     d->mBugReport = new KBugReport( d->mParent, false, d->mAboutData );
-    connect( d->mBugReport, SIGNAL(finished()),this,SLOT( dialogFinished()) );
+    connect( d->mBugReport, SIGNAL(finished()),this,SLOT(dialogFinished()) );
   }
   d->mBugReport->show();
 }
@@ -339,7 +339,7 @@ void KHelpMenu::switchApplicationLanguage()
   if ( !d->mSwitchApplicationLanguage )
   {
     d->mSwitchApplicationLanguage = new KSwitchLanguageDialog( d->mParent );
-    connect( d->mSwitchApplicationLanguage, SIGNAL(finished()), this, SLOT( dialogFinished()) );
+    connect( d->mSwitchApplicationLanguage, SIGNAL(finished()), this, SLOT(dialogFinished()) );
   }
   d->mSwitchApplicationLanguage->show();
 }

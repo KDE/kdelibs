@@ -1362,7 +1362,7 @@ static void handle_requests(pid_t waitForPid)
 
            if( WIFEXITED( exit_status )) // fix process return value
                exit_status = WEXITSTATUS(exit_status);
-           else if( WIFSIGNALED( exit_status ))
+           else if( WIFSIGNALED(exit_status))
                exit_status = 128 + WTERMSIG( exit_status );
            child_died(exit_pid, exit_status);
 

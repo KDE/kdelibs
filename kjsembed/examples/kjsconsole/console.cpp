@@ -48,7 +48,7 @@ Console::Console( QWidget *parent ) :
     m_ui.mObjectModel->setModel(m_model);
     m_model->updateModel(obj);
 
-    connect(m_ui.mCommand, SIGNAL(activated(const QString&)), this, SLOT(on_mExecute_clicked()));
+    connect(m_ui.mCommand, SIGNAL(activated(QString)), this, SLOT(on_mExecute_clicked()));
 }
 
 Console::~Console()

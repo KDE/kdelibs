@@ -39,7 +39,7 @@ KCommentWidget::KCommentWidget(QWidget* parent) :
     m_label = new QLabel(this);
     m_label->setWordWrap(true);
     m_label->setAlignment(Qt::AlignTop);
-    connect(m_label, SIGNAL(linkActivated(const QString&)), this, SLOT(slotLinkActivated(const QString&)));
+    connect(m_label, SIGNAL(linkActivated(QString)), this, SLOT(slotLinkActivated(QString)));
     
     m_sizeHintHelper = new QLabel(this);
     m_sizeHintHelper->hide();

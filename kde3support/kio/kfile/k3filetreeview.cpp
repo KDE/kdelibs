@@ -45,32 +45,32 @@ K3FileTreeView::K3FileTreeView( QWidget *parent )
     setSelectionModeExt( K3ListView::Single );
 
     m_animationTimer = new QTimer( this );
-    connect( m_animationTimer, SIGNAL( timeout() ),
-             this, SLOT( slotAnimation() ) );
+    connect( m_animationTimer, SIGNAL(timeout()),
+             this, SLOT(slotAnimation()) );
 
     m_currentBeforeDropItem = 0;
     m_dropItem = 0;
 
     m_autoOpenTimer = new QTimer( this );
-    connect( m_autoOpenTimer, SIGNAL( timeout() ),
-             this, SLOT( slotAutoOpenFolder() ) );
+    connect( m_autoOpenTimer, SIGNAL(timeout()),
+             this, SLOT(slotAutoOpenFolder()) );
 
     /* The executed-Slot only opens  a path, while the expanded-Slot populates it */
-    connect( this, SIGNAL( executed( Q3ListViewItem * ) ),
-             this, SLOT( slotExecuted( Q3ListViewItem * ) ) );
-    connect( this, SIGNAL( expanded ( Q3ListViewItem *) ),
-    	     this, SLOT( slotExpanded( Q3ListViewItem *) ));
-    connect( this, SIGNAL( collapsed( Q3ListViewItem *) ),
-	     this, SLOT( slotCollapsed( Q3ListViewItem* )));
+    connect( this, SIGNAL(executed(Q3ListViewItem*)),
+             this, SLOT(slotExecuted(Q3ListViewItem*)) );
+    connect( this, SIGNAL(expanded(Q3ListViewItem*)),
+             this, SLOT(slotExpanded(Q3ListViewItem*)));
+    connect( this, SIGNAL(collapsed(Q3ListViewItem*)),
+	     this, SLOT(slotCollapsed(Q3ListViewItem*)));
 
 
     /* connections from the konqtree widget */
-    connect( this, SIGNAL( selectionChanged() ),
-             this, SLOT( slotSelectionChanged() ) );
-    connect( this, SIGNAL( onItem( Q3ListViewItem * )),
-	     this, SLOT( slotOnItem( Q3ListViewItem * ) ) );
-    connect( this, SIGNAL(itemRenamed(Q3ListViewItem*, const QString &, int)),
-             this, SLOT(slotItemRenamed(Q3ListViewItem*, const QString &, int)));
+    connect( this, SIGNAL(selectionChanged()),
+             this, SLOT(slotSelectionChanged()) );
+    connect( this, SIGNAL(onItem(Q3ListViewItem*)),
+	     this, SLOT(slotOnItem(Q3ListViewItem*)) );
+    connect( this, SIGNAL(itemRenamed(Q3ListViewItem*,QString,int)),
+             this, SLOT(slotItemRenamed(Q3ListViewItem*,QString,int)));
 
 
     m_bDrag = false;
@@ -376,8 +376,8 @@ KFileTreeBranch* K3FileTreeView::addBranch( const KUrl &path, const QString& nam
 
 KFileTreeBranch *K3FileTreeView::addBranch(KFileTreeBranch *newBranch)
 {
-   connect( newBranch, SIGNAL(populateFinished( K3FileTreeViewItem* )),
-            this, SLOT( slotPopulateFinished( K3FileTreeViewItem* )));
+   connect( newBranch, SIGNAL(populateFinished(K3FileTreeViewItem*)),
+            this, SLOT(slotPopulateFinished(K3FileTreeViewItem*)));
 
    connect( newBranch, SIGNAL( newTreeViewItems( KFileTreeBranch*,
                                const K3FileTreeViewItemList& )),

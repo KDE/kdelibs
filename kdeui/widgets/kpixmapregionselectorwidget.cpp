@@ -197,14 +197,14 @@ KMenu *KPixmapRegionSelectorWidget::createPopupMenu()
     QAction *action = actions->addAction("rotateclockwise");
     action->setText(i18n("&Rotate Clockwise"));
     action->setIcon( KIcon( "object-rotate-right" ) );
-    connect( action, SIGNAL( triggered( bool ) ), this, SLOT(rotateClockwise()) );
+    connect( action, SIGNAL(triggered(bool)), this, SLOT(rotateClockwise()) );
 
     popup->addAction(action);
 
     action = actions->addAction("rotatecounterclockwise");
     action->setText(i18n("Rotate &Counterclockwise"));
     action->setIcon( KIcon( "object-rotate-left" ) );
-    connect( action, SIGNAL( triggered( bool ) ), this, SLOT(rotateCounterclockwise()) );
+    connect( action, SIGNAL(triggered(bool)), this, SLOT(rotateCounterclockwise()) );
 
     popup->addAction(action);
 

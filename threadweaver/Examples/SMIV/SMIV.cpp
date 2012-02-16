@@ -34,10 +34,10 @@ SMIV::SMIV ( Weaver* w )
     , m_quit ( false )
 {
     ui.setupUi ( this );
-    connect ( m_weaver,  SIGNAL ( finished() ),  SLOT ( slotJobsDone() ) );
-    connect ( m_weaver,  SIGNAL ( jobDone ( ThreadWeaver::Job* ) ),
-              SLOT( slotJobDone( ThreadWeaver::Job* ) ) );
-    connect ( m_weaver,  SIGNAL ( suspended () ),  SLOT ( weaverSuspended() ) );
+    connect ( m_weaver,  SIGNAL (finished()),  SLOT (slotJobsDone()) );
+    connect ( m_weaver,  SIGNAL (jobDone(ThreadWeaver::Job*)),
+              SLOT(slotJobDone(ThreadWeaver::Job*)) );
+    connect ( m_weaver,  SIGNAL (suspended()),  SLOT (weaverSuspended()) );
     ui.listView->setModel ( &model );
     ui.listView->setItemDelegate( &del );
 }
@@ -67,8 +67,8 @@ void SMIV::on_pbSelectFiles_clicked()
         for (int index = 0; index < files.size(); ++index)
         {
             SMIVItem *item = new SMIVItem ( m_weaver, files.at(index ), this );
-            connect ( item,  SIGNAL( thumbReady(SMIVItem* ) ),
-                      SLOT ( slotThumbReady( SMIVItem* ) ) );
+            connect ( item,  SIGNAL(thumbReady(SMIVItem*)),
+                      SLOT (slotThumbReady(SMIVItem*)) );
         }
         m_startTime.start();
         m_weaver->resume();

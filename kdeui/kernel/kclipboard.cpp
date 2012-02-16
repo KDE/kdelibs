@@ -94,11 +94,11 @@ void KClipboardSynchronizer::Private::setupSignals()
     QClipboard *clip = QApplication::clipboard();
     disconnect( clip, NULL, q, NULL );
     if( s_sync )
-        connect( clip, SIGNAL( selectionChanged() ),
-                 q, SLOT( _k_slotSelectionChanged() ));
+        connect( clip, SIGNAL(selectionChanged()),
+                 q, SLOT(_k_slotSelectionChanged()));
     if( s_reverse_sync )
-        connect( clip, SIGNAL( dataChanged() ),
-                 q, SLOT( _k_slotClipboardChanged() ));
+        connect( clip, SIGNAL(dataChanged()),
+                 q, SLOT(_k_slotClipboardChanged()));
 
     QDBusConnection::sessionBus().connect( QString(), "/KGlobalSettings", "org.kde.KGlobalSettings",
                                            "notifyChange", q, SLOT(_k_slotNotifyChange(int,int)) );

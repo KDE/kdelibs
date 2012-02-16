@@ -71,8 +71,8 @@ void DxsEngine::loadEntries(Provider *provider)
         Dxs * dxs = new Dxs(this, provider);
         dxs->setEndpoint(provider->webService());
         // connect entries signal
-        connect(dxs, SIGNAL(signalEntries(KNS::Entry::List, Feed*)),
-                SLOT(slotEntriesLoadedDXS(KNS::Entry::List, Feed*)));
+        connect(dxs, SIGNAL(signalEntries(KNS::Entry::List,Feed*)),
+                SLOT(slotEntriesLoadedDXS(KNS::Entry::List,Feed*)));
         // FIXME: which one of signalFault()/signalError()? Or both?
         connect(dxs, SIGNAL(signalFault()),
                 SLOT(slotEntriesFailed()));

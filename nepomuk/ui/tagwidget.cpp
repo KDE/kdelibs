@@ -167,7 +167,7 @@ Nepomuk::TagCheckBox* Nepomuk::TagWidgetPrivate::getTagCheckBox( const Tag& tag 
         kDebug() << "Creating checkbox for" << tag.genericLabel();
         TagCheckBox* checkBox = new TagCheckBox( tag, this, q );
         q->connect( checkBox, SIGNAL(tagClicked(Nepomuk::Tag)), SIGNAL(tagClicked(Nepomuk::Tag)) );
-        q->connect( checkBox, SIGNAL(tagStateChanged(Nepomuk::Tag, int)), SLOT(slotTagStateChanged(Nepomuk::Tag, int)) );
+        q->connect( checkBox, SIGNAL(tagStateChanged(Nepomuk::Tag,int)), SLOT(slotTagStateChanged(Nepomuk::Tag,int)) );
         m_checkBoxHash.insert( tag, checkBox );
         m_flowLayout->addWidget( checkBox );
         return checkBox;
@@ -237,8 +237,8 @@ void Nepomuk::TagWidgetPrivate::updateResources()
 {
     if ( !m_resources.isEmpty() ) {
         Nepomuk::MassUpdateJob* job = Nepomuk::MassUpdateJob::tagResources( m_resources, q->selectedTags() );
-        q->connect( job, SIGNAL( result( KJob* ) ),
-                    SLOT( slotTagUpdateDone() ) );
+        q->connect( job, SIGNAL(result(KJob*)),
+                    SLOT(slotTagUpdateDone()) );
         q->setEnabled( false ); // no updates during execution
         job->start();
     }

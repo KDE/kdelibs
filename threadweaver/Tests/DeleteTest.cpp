@@ -39,8 +39,8 @@ DeleteTest::DeleteTest(int argc, char **argv)
 
   for (int i = 0; i < 100; ++i) {
     ThreadWeaver::JobSequence* jobSeq = new ThreadWeaver::JobSequence( this );
-    connect ( jobSeq, SIGNAL( done( ThreadWeaver::Job* ) ),
-              SLOT( deleteSequence( ThreadWeaver::Job* ) ) );
+    connect ( jobSeq, SIGNAL(done(ThreadWeaver::Job*)),
+              SLOT(deleteSequence(ThreadWeaver::Job*)) );
 
     jobSeq->addJob( new BusyJob );
     jobSeq->addJob( new BusyJob );

@@ -623,8 +623,8 @@ MkdirJob::~MkdirJob()
 void MkdirJobPrivate::start(Slave *slave)
 {
     Q_Q(MkdirJob);
-    q->connect( slave, SIGNAL( redirection(const KUrl &) ),
-                SLOT( slotRedirection(const KUrl &) ) );
+    q->connect( slave, SIGNAL(redirection(KUrl)),
+                SLOT(slotRedirection(KUrl)) );
 
     SimpleJobPrivate::start(slave);
 }
@@ -840,10 +840,10 @@ void StatJobPrivate::start(Slave *slave)
     m_outgoingMetaData.insert( "statSide", m_bSource ? "source" : "dest" );
     m_outgoingMetaData.insert( "details", QString::number(m_details) );
 
-    q->connect( slave, SIGNAL( statEntry( const KIO::UDSEntry& ) ),
-             SLOT( slotStatEntry( const KIO::UDSEntry & ) ) );
-    q->connect( slave, SIGNAL( redirection(const KUrl &) ),
-             SLOT( slotRedirection(const KUrl &) ) );
+    q->connect( slave, SIGNAL(statEntry(KIO::UDSEntry)),
+             SLOT(slotStatEntry(KIO::UDSEntry)) );
+    q->connect( slave, SIGNAL(redirection(KUrl)),
+             SLOT(slotRedirection(KUrl)) );
 
     SimpleJobPrivate::start(slave);
 }
@@ -1215,30 +1215,30 @@ void TransferJobPrivate::start(Slave *slave)
     Q_Q(TransferJob);
     Q_ASSERT(slave);
     JobPrivate::emitTransferring(q, m_url);
-    q->connect( slave, SIGNAL( data( const QByteArray & ) ),
-             SLOT( slotData( const QByteArray & ) ) );
+    q->connect( slave, SIGNAL(data(QByteArray)),
+             SLOT(slotData(QByteArray)) );
 
     if (m_outgoingDataSource)
-        q->connect( slave, SIGNAL( dataReq() ),
-                SLOT( slotDataReqFromDevice() ) );
+        q->connect( slave, SIGNAL(dataReq()),
+                SLOT(slotDataReqFromDevice()) );
     else
-        q->connect( slave, SIGNAL( dataReq() ),
-                SLOT( slotDataReq() ) );
+        q->connect( slave, SIGNAL(dataReq()),
+                SLOT(slotDataReq()) );
 
-    q->connect( slave, SIGNAL( redirection(const KUrl &) ),
-             SLOT( slotRedirection(const KUrl &) ) );
+    q->connect( slave, SIGNAL(redirection(KUrl)),
+             SLOT(slotRedirection(KUrl)) );
 
-    q->connect( slave, SIGNAL(mimeType( const QString& ) ),
-             SLOT( slotMimetype( const QString& ) ) );
+    q->connect( slave, SIGNAL(mimeType(QString)),
+             SLOT(slotMimetype(QString)) );
 
-    q->connect( slave, SIGNAL(errorPage() ),
-             SLOT( slotErrorPage() ) );
+    q->connect( slave, SIGNAL(errorPage()),
+             SLOT(slotErrorPage()) );
 
-    q->connect( slave, SIGNAL( needSubUrlData() ),
-             SLOT( slotNeedSubUrlData() ) );
+    q->connect( slave, SIGNAL(needSubUrlData()),
+             SLOT(slotNeedSubUrlData()) );
 
-    q->connect( slave, SIGNAL(canResume( KIO::filesize_t ) ),
-             SLOT( slotCanResume( KIO::filesize_t ) ) );
+    q->connect( slave, SIGNAL(canResume(KIO::filesize_t)),
+             SLOT(slotCanResume(KIO::filesize_t)) );
 
     if (slave->suspended())
     {
@@ -1258,8 +1258,8 @@ void TransferJobPrivate::slotNeedSubUrlData()
     // Job needs data from subURL.
     m_subJob = KIO::get( m_subUrl, NoReload, HideProgressInfo);
     internalSuspend(); // Put job on hold until we have some data.
-    q->connect(m_subJob, SIGNAL( data(KIO::Job*,const QByteArray &)),
-            SLOT( slotSubUrlData(KIO::Job*,const QByteArray &)));
+    q->connect(m_subJob, SIGNAL(data(KIO::Job*,QByteArray)),
+            SLOT(slotSubUrlData(KIO::Job*,QByteArray)));
     q->addSubjob(m_subJob);
 }
 
@@ -1693,10 +1693,10 @@ TransferJob *KIO::put( const KUrl& url, int permissions, JobFlags flags )
 StoredTransferJob::StoredTransferJob(StoredTransferJobPrivate &dd)
     : TransferJob(dd)
 {
-    connect( this, SIGNAL( data( KIO::Job *, const QByteArray & ) ),
-             SLOT( slotStoredData( KIO::Job *, const QByteArray & ) ) );
-    connect( this, SIGNAL( dataReq( KIO::Job *, QByteArray & ) ),
-             SLOT( slotStoredDataReq( KIO::Job *, QByteArray & ) ) );
+    connect( this, SIGNAL(data(KIO::Job*,QByteArray)),
+             SLOT(slotStoredData(KIO::Job*,QByteArray)) );
+    connect( this, SIGNAL(dataReq(KIO::Job*,QByteArray&)),
+             SLOT(slotStoredDataReq(KIO::Job*,QByteArray&)) );
 }
 
 StoredTransferJob::~StoredTransferJob()
@@ -1877,8 +1877,8 @@ DirectCopyJob::~DirectCopyJob()
 void DirectCopyJobPrivate::start( Slave* slave )
 {
     Q_Q(DirectCopyJob);
-    q->connect( slave, SIGNAL(canResume( KIO::filesize_t ) ),
-             SLOT( slotCanResume( KIO::filesize_t ) ) );
+    q->connect( slave, SIGNAL(canResume(KIO::filesize_t)),
+             SLOT(slotCanResume(KIO::filesize_t)) );
     SimpleJobPrivate::start(slave);
 }
 
@@ -2087,8 +2087,8 @@ void FileCopyJobPrivate::startCopyJob(const KUrl &slave_url)
     m_copyJob = new DirectCopyJob(slave_url, packedArgs);
     q->addSubjob( m_copyJob );
     connectSubjob( m_copyJob );
-    q->connect( m_copyJob, SIGNAL(canResume(KIO::Job *, KIO::filesize_t)),
-                SLOT(slotCanResume(KIO::Job *, KIO::filesize_t)));
+    q->connect( m_copyJob, SIGNAL(canResume(KIO::Job*,KIO::filesize_t)),
+                SLOT(slotCanResume(KIO::Job*,KIO::filesize_t)));
 }
 
 void FileCopyJobPrivate::startRenameJob(const KUrl &slave_url)
@@ -2104,14 +2104,14 @@ void FileCopyJobPrivate::startRenameJob(const KUrl &slave_url)
 void FileCopyJobPrivate::connectSubjob( SimpleJob * job )
 {
     Q_Q(FileCopyJob);
-    q->connect( job, SIGNAL(totalSize( KJob*, qulonglong )),
-                SLOT( slotTotalSize(KJob*, qulonglong)) );
+    q->connect( job, SIGNAL(totalSize(KJob*,qulonglong)),
+                SLOT(slotTotalSize(KJob*,qulonglong)) );
 
-    q->connect( job, SIGNAL(processedSize( KJob*, qulonglong )),
-                SLOT( slotProcessedSize(KJob*, qulonglong)) );
+    q->connect( job, SIGNAL(processedSize(KJob*,qulonglong)),
+                SLOT(slotProcessedSize(KJob*,qulonglong)) );
 
-    q->connect( job, SIGNAL(percent( KJob*, unsigned long )),
-                SLOT( slotPercent(KJob*, unsigned long)) );
+    q->connect( job, SIGNAL(percent(KJob*,ulong)),
+                SLOT(slotPercent(KJob*,ulong)) );
 
 }
 
@@ -2192,10 +2192,10 @@ void FileCopyJobPrivate::startDataPump()
 
     // The first thing the put job will tell us is whether we can
     // resume or not (this is always emitted)
-    q->connect( m_putJob, SIGNAL(canResume(KIO::Job *, KIO::filesize_t)),
-                SLOT( slotCanResume(KIO::Job *, KIO::filesize_t)));
-    q->connect( m_putJob, SIGNAL(dataReq(KIO::Job *, QByteArray&)),
-                SLOT( slotDataReq(KIO::Job *, QByteArray&)));
+    q->connect( m_putJob, SIGNAL(canResume(KIO::Job*,KIO::filesize_t)),
+                SLOT(slotCanResume(KIO::Job*,KIO::filesize_t)));
+    q->connect( m_putJob, SIGNAL(dataReq(KIO::Job*,QByteArray&)),
+                SLOT(slotDataReq(KIO::Job*,QByteArray&)));
     q->addSubjob( m_putJob );
 }
 
@@ -2260,8 +2260,8 @@ void FileCopyJobPrivate::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
                 m_getJob->addMetaData( "resume", KIO::number(offset) );
 
                 // Might or might not get emitted
-                q->connect( m_getJob, SIGNAL(canResume(KIO::Job *, KIO::filesize_t)),
-                            SLOT( slotCanResume(KIO::Job *, KIO::filesize_t)));
+                q->connect( m_getJob, SIGNAL(canResume(KIO::Job*,KIO::filesize_t)),
+                            SLOT(slotCanResume(KIO::Job*,KIO::filesize_t)));
             }
             jobSlave(m_putJob)->setOffset( offset );
 
@@ -2270,10 +2270,10 @@ void FileCopyJobPrivate::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
             connectSubjob( m_getJob ); // Progress info depends on get
             m_getJob->d_func()->internalResume(); // Order a beer
 
-            q->connect( m_getJob, SIGNAL(data(KIO::Job*,const QByteArray&)),
-                        SLOT( slotData(KIO::Job*,const QByteArray&)) );
-            q->connect( m_getJob, SIGNAL(mimetype(KIO::Job*,const QString&) ),
-                        SLOT(slotMimetype(KIO::Job*,const QString&)) );
+            q->connect( m_getJob, SIGNAL(data(KIO::Job*,QByteArray)),
+                        SLOT(slotData(KIO::Job*,QByteArray)) );
+            q->connect( m_getJob, SIGNAL(mimetype(KIO::Job*,QString)),
+                        SLOT(slotMimetype(KIO::Job*,QString)) );
         }
         else // copyjob
         {
@@ -2565,8 +2565,8 @@ void ListJobPrivate::slotListEntries( const KIO::UDSEntryList& list )
                                                prefix + filename + '/',
                                                includeHidden);
                     Scheduler::setJobPriority(job, 1);
-                    q->connect(job, SIGNAL(entries( KIO::Job *, const KIO::UDSEntryList& )),
-                               SLOT( gotEntries( KIO::Job*, const KIO::UDSEntryList& )));
+                    q->connect(job, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)),
+                               SLOT(gotEntries(KIO::Job*,KIO::UDSEntryList)));
                     q->addSubjob(job);
                 }
             }
@@ -2707,12 +2707,12 @@ void ListJobPrivate::start(Slave *slave)
         QTimer::singleShot(0, q, SLOT(slotFinished()) );
         return;
     }
-    q->connect( slave, SIGNAL( listEntries( const KIO::UDSEntryList& )),
-             SLOT( slotListEntries( const KIO::UDSEntryList& )));
-    q->connect( slave, SIGNAL( totalSize( KIO::filesize_t ) ),
-             SLOT( slotTotalSize( KIO::filesize_t ) ) );
-    q->connect( slave, SIGNAL( redirection(const KUrl &) ),
-             SLOT( slotRedirection(const KUrl &) ) );
+    q->connect( slave, SIGNAL(listEntries(KIO::UDSEntryList)),
+             SLOT(slotListEntries(KIO::UDSEntryList)));
+    q->connect( slave, SIGNAL(totalSize(KIO::filesize_t)),
+             SLOT(slotTotalSize(KIO::filesize_t)) );
+    q->connect( slave, SIGNAL(redirection(KUrl)),
+             SLOT(slotRedirection(KUrl)) );
 
     SimpleJobPrivate::start(slave);
 }

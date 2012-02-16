@@ -121,7 +121,7 @@ void KPasswordDialog::KPasswordDialogPrivate::init()
     }
     else
     {
-        QObject::connect( ui.anonymousCheckBox, SIGNAL(stateChanged (int)), q, SLOT(updateFields()) );
+        QObject::connect( ui.anonymousCheckBox, SIGNAL(stateChanged(int)), q, SLOT(updateFields()) );
     }
     
     if ( !( m_flags & KPasswordDialog::ShowDomainLine ) )
@@ -362,8 +362,8 @@ void KPasswordDialog::setKnownLogins( const QMap<QString, QString>& knownLogins 
     d->userEditCombo->addItems( knownLogins.keys() );
     d->userEditCombo->setFocus();
 
-    connect( d->userEditCombo, SIGNAL( activated( const QString& ) ),
-             this, SLOT( activated( const QString& ) ) );
+    connect( d->userEditCombo, SIGNAL(activated(QString)),
+             this, SLOT(activated(QString)) );
 }
 
 void KPasswordDialog::KPasswordDialogPrivate::activated( const QString& userName )

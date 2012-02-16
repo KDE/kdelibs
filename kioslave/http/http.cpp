@@ -403,8 +403,8 @@ HTTPProtocol::HTTPProtocol( const QByteArray &protocol, const QByteArray &pool,
 {
     reparseConfiguration();
     setBlocking(true);
-    connect(socket(), SIGNAL(proxyAuthenticationRequired(const QNetworkProxy &, QAuthenticator *)),
-            this, SLOT(proxyAuthenticationForSocket(const QNetworkProxy &, QAuthenticator *)));
+    connect(socket(), SIGNAL(proxyAuthenticationRequired(QNetworkProxy,QAuthenticator*)),
+            this, SLOT(proxyAuthenticationForSocket(QNetworkProxy,QAuthenticator*)));
 }
 
 HTTPProtocol::~HTTPProtocol()
@@ -422,6 +422,8 @@ void HTTPProtocol::reparseConfiguration()
     m_wwwAuth = 0;
     m_request.proxyUrl.clear(); //TODO revisit
     m_request.proxyUrls.clear();
+
+    TCPSlaveBase::reparseConfiguration();
 }
 
 void HTTPProtocol::resetConnectionSettings()
@@ -4584,11 +4586,11 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
   // redirection ignores the body
   if (!m_isRedirection) {
-      QObject::connect(&chain, SIGNAL(output(const QByteArray &)),
-                       this, SLOT(slotData(const QByteArray &)));
+      QObject::connect(&chain, SIGNAL(output(QByteArray)),
+                       this, SLOT(slotData(QByteArray)));
   }
-  QObject::connect(&chain, SIGNAL(error(const QString &)),
-          this, SLOT(slotFilterError(const QString &)));
+  QObject::connect(&chain, SIGNAL(error(QString)),
+          this, SLOT(slotFilterError(QString)));
 
    // decode all of the transfer encodings
   while (!m_transferEncodings.isEmpty())

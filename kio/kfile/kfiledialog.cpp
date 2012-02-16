@@ -287,7 +287,7 @@ KFileDialog::KFileDialog( const KUrl& startDir, const QString& filter,
     d->w->okButton()->show();
     connect(d->w->okButton(), SIGNAL(clicked()), SLOT(slotOk()));
     d->w->cancelButton()->show();
-    connect(d->w->cancelButton(), SIGNAL( clicked() ), SLOT( slotCancel() ));
+    connect(d->w->cancelButton(), SIGNAL(clicked()), SLOT(slotCancel()));
 
     // Publish signals
     // TODO: Move the relevant signal declarations from KFileWidget to the

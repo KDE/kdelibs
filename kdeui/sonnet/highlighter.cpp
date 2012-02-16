@@ -58,7 +58,7 @@ public:
     bool automatic;
     bool completeRehighlightRequired;
     bool intraWordEditing;
-    bool spellCheckerFound;
+    bool spellCheckerFound; //cached d->dict->isValid() value
     int disablePercentage;
     int disableWordCount;
     int wordCount, errorCount;
@@ -87,7 +87,6 @@ Highlighter::Highlighter(QTextEdit *textEdit,
     d->errorCount = 0;
     d->intraWordEditing = false;
     d->completeRehighlightRequired = false;
-    d->spellCheckerFound = true;
     d->spellColor = _col.isValid() ? _col : Qt::red;
     d->suggestionListeners = 0;
 
@@ -107,30 +106,28 @@ Highlighter::Highlighter(QTextEdit *textEdit,
         }
     }
 
-    d->dict   = new Sonnet::Speller();
-    if(!d->dict->isValid()) {
-	d->spellCheckerFound = false;
-    } else {
-        d->dictCache.insert(d->dict->language(),
-                            d->dict);
+    d->dict = new Sonnet::Speller();
+    d->spellCheckerFound = d->dict->isValid();
+    if(!d->spellCheckerFound)
+        return;
 
-        d->disablePercentage = d->loader->settings()->disablePercentageWordError();
+    d->dictCache.insert(d->dict->language(), d->dict);
 
-        d->disableWordCount = d->loader->settings()->disableWordErrorCount();
+    d->disablePercentage = d->loader->settings()->disablePercentageWordError();
+    d->disableWordCount = d->loader->settings()->disableWordErrorCount();
 
-        //Add kde personal word
-        const QStringList l = Highlighter::personalWords();
-        for ( QStringList::ConstIterator it = l.begin(); it != l.end(); ++it ) {
-            d->dict->addToSession( *it );
-        }
-        d->rehighlightRequest = new QTimer(this);
-        connect( d->rehighlightRequest, SIGNAL( timeout() ),
-                 this, SLOT( slotRehighlight() ));
-        d->completeRehighlightRequired = true;
-        d->rehighlightRequest->setInterval(0);
-        d->rehighlightRequest->setSingleShot(true);
-        d->rehighlightRequest->start();
+    //Add kde personal word
+    const QStringList l = Highlighter::personalWords();
+    for ( QStringList::ConstIterator it = l.begin(); it != l.end(); ++it ) {
+        d->dict->addToSession( *it );
     }
+    d->rehighlightRequest = new QTimer(this);
+    connect( d->rehighlightRequest, SIGNAL(timeout()),
+             this, SLOT(slotRehighlight()));
+    d->completeRehighlightRequired = true;
+    d->rehighlightRequest->setInterval(0);
+    d->rehighlightRequest->setSingleShot(true);
+    d->rehighlightRequest->start();
 }
 
 Highlighter::~Highlighter()
@@ -175,7 +172,7 @@ void Highlighter::slotRehighlight()
     }
     //if (d->checksDone == d->checksRequested)
     //d->completeRehighlightRequired = false;
-    QTimer::singleShot( 0, this, SLOT( slotAutoDetection() ));
+    QTimer::singleShot( 0, this, SLOT(slotAutoDetection()));
 }
 
 
@@ -307,6 +304,7 @@ void Highlighter::setCurrentLanguage(const QString &lang)
         if (d->dict->isValid()) {
             d->dictCache.insert(lang, d->dict);
         } else {
+            d->spellCheckerFound = false;
             kDebug()<<"No dictionary for \""
                     <<lang
                     <<"\" staying with the current language."
@@ -315,6 +313,7 @@ void Highlighter::setCurrentLanguage(const QString &lang)
         }
     }
     d->dict = d->dictCache[lang];
+    d->spellCheckerFound = d->dict->isValid();
     d->wordCount = 0;
     d->errorCount = 0;
     if (d->automatic)
@@ -349,7 +348,7 @@ bool Highlighter::eventFilter( QObject *o, QEvent *e)
     }
 #endif
     if (!d->spellCheckerFound)
-	return false;
+        return false;
     if (o == d->edit  && (e->type() == QEvent::KeyPress)) {
 	QKeyEvent *k = static_cast<QKeyEvent *>(e);
 	//d->autoReady = true;
@@ -392,7 +391,7 @@ bool Highlighter::eventFilter( QObject *o, QEvent *e)
 	if ( k->key() == Qt::Key_Space ||
 	     k->key() == Qt::Key_Enter ||
 	     k->key() == Qt::Key_Return ) {
-	    QTimer::singleShot( 0, this, SLOT( slotAutoDetection() ));
+	    QTimer::singleShot( 0, this, SLOT(slotAutoDetection()));
 	}
     }
 

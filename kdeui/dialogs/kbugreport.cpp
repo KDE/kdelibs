@@ -137,8 +137,8 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
     // Configure email button
     d->m_configureEmail = new QPushButton( i18n("Configure Email..."),
                                         parent );
-    connect( d->m_configureEmail, SIGNAL( clicked() ), this,
-             SLOT( _k_slotConfigureEmail() ) );
+    connect( d->m_configureEmail, SIGNAL(clicked()), this,
+             SLOT(_k_slotConfigureEmail()) );
     glay->addWidget( d->m_configureEmail, 0, 2, 3, 1, Qt::AlignTop|Qt::AlignRight );
 
     // To
@@ -363,7 +363,7 @@ void KBugReportPrivate::_k_slotConfigureEmail()
 {
   if (m_process) return;
   m_process = new QProcess;
-  QObject::connect( m_process, SIGNAL(finished( int, QProcess::ExitStatus )), q, SLOT(_k_slotSetFrom()) );
+  QObject::connect( m_process, SIGNAL(finished(int,QProcess::ExitStatus)), q, SLOT(_k_slotSetFrom()) );
   m_process->start( QString::fromLatin1("kcmshell4"), QStringList() << QString::fromLatin1("kcm_useraccount") );
   if ( !m_process->waitForStarted() )
   {

@@ -260,8 +260,8 @@ void DebugDocument::setupViewerDocument()
     assert(imark);
 
     imark->setEditableMarks(KTextEditor::MarkInterface::BreakpointActive);
-    connect(m_kteDoc, SIGNAL(markChanged(KTextEditor::Document*, KTextEditor::Mark, KTextEditor::MarkInterface::MarkChangeAction)),
-                DebugWindow::window(), SLOT(markSet(KTextEditor::Document*, KTextEditor::Mark, KTextEditor::MarkInterface::MarkChangeAction)));
+    connect(m_kteDoc, SIGNAL(markChanged(KTextEditor::Document*,KTextEditor::Mark,KTextEditor::MarkInterface::MarkChangeAction)),
+                DebugWindow::window(), SLOT(markSet(KTextEditor::Document*,KTextEditor::Mark,KTextEditor::MarkInterface::MarkChangeAction)));
 
     imark->setMarkDescription(KTextEditor::MarkInterface::BreakpointActive,
                                           i18n("Breakpoint"));

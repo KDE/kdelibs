@@ -70,8 +70,8 @@ KEditTagsDialog::KEditTagsDialog(const QList<Nepomuk::Tag>& tags,
     QLabel* newTagLabel = new QLabel(i18nc("@label", "Create new tag:"));
     m_newTagEdit = new KLineEdit(this);
     m_newTagEdit->setClearButtonShown(true);
-    connect(m_newTagEdit, SIGNAL(textEdited(const QString&)),
-            this, SLOT(slotTextEdited(const QString&)));
+    connect(m_newTagEdit, SIGNAL(textEdited(QString)),
+            this, SLOT(slotTextEdited(QString)));
 
     QHBoxLayout* newTagLayout = new QHBoxLayout();
     newTagLayout->addWidget(newTagLabel);

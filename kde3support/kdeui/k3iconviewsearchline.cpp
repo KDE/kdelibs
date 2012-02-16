@@ -161,15 +161,15 @@ void K3IconViewSearchLine::setCaseSensitive( bool cs )
 void K3IconViewSearchLine::setIconView( Q3IconView *iv )
 {
   if ( d->iconView != NULL )
-    disconnect( d->iconView, SIGNAL( destroyed() ),
-		this,        SLOT(   iconViewDeleted() ) );
+    disconnect( d->iconView, SIGNAL(destroyed()),
+		this,        SLOT(iconViewDeleted()) );
 
   d->iconView = iv;
 
   if ( iv != NULL )
     {
-      connect( d->iconView, SIGNAL( destroyed() ),
-	       this,        SLOT(   iconViewDeleted() ) );
+      connect( d->iconView, SIGNAL(destroyed()),
+	       this,        SLOT(iconViewDeleted()) );
       setEnabled( true );
     }
   else
@@ -199,13 +199,13 @@ void K3IconViewSearchLine::init( Q3IconView *iconView )
 
   d->iconView = iconView;
 
-  connect( this, SIGNAL( textChanged( const QString & ) ),
-	   this, SLOT(   queueSearch( const QString & ) ) );
+  connect( this, SIGNAL(textChanged(QString)),
+	   this, SLOT(queueSearch(QString)) );
 
   if ( iconView != NULL )
   {
-      connect( iconView, SIGNAL( destroyed() ),
-              this,     SLOT(   iconViewDeleted() ) );
+      connect( iconView, SIGNAL(destroyed()),
+              this,     SLOT(iconViewDeleted()) );
       setEnabled( true );
   } else {
       setEnabled( false );
@@ -243,7 +243,7 @@ void K3IconViewSearchLine::queueSearch( const QString &s )
 {
   d->queuedSearches++;
   d->search = s;
-  QTimer::singleShot( 200, this, SLOT( activateSearch() ) );
+  QTimer::singleShot( 200, this, SLOT(activateSearch()) );
 }
 
 void K3IconViewSearchLine::activateSearch()

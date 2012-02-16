@@ -148,8 +148,8 @@ Nepomuk::Utils::SearchWidget::SearchWidget(QWidget *parent)
     d->m_resourceModel = new Utils::SimpleResourceModel(this);
     d->m_itemWidget->setModel(d->m_resourceModel);
     connect(d->m_itemWidget->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SIGNAL(selectionChanged()));
-    connect(d->m_itemWidget->selectionModel(), SIGNAL(currentChanged( const QModelIndex &,const QModelIndex&)),
-            this, SLOT(_k_forwardCurrentChanged(const QModelIndex &, const QModelIndex &)));
+    connect(d->m_itemWidget->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)),
+            this, SLOT(_k_forwardCurrentChanged(QModelIndex,QModelIndex)));
 
     //facets widget
     d->m_facetWidget = new Nepomuk::Utils::FacetWidget(this);

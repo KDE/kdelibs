@@ -172,10 +172,10 @@ void BrowserRun::scanFile()
 
     job->addMetaData( metaData );
     job->ui()->setWindow( d->m_window );
-  connect( job, SIGNAL( result( KJob *)),
-           this, SLOT( slotBrowserScanFinished(KJob *)));
-  connect( job, SIGNAL( mimetype( KIO::Job *, const QString &)),
-           this, SLOT( slotBrowserMimetype(KIO::Job *, const QString &)));
+  connect( job, SIGNAL(result(KJob*)),
+           this, SLOT(slotBrowserScanFinished(KJob*)));
+  connect( job, SIGNAL(mimetype(KIO::Job*,QString)),
+           this, SLOT(slotBrowserMimetype(KIO::Job*,QString)));
   setJob( job );
 }
 
@@ -301,8 +301,8 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& _
                 destURL.setPath( tempFile.fileName() );
                 KIO::Job *job = KIO::file_copy( KRun::url(), destURL, 0600, KIO::Overwrite );
                 job->ui()->setWindow(d->m_window);
-                connect( job, SIGNAL(result(KJob *)),
-                         this, SLOT(slotCopyToTempFileResult(KJob *)) );
+                connect( job, SIGNAL(result(KJob*)),
+                         this, SLOT(slotCopyToTempFileResult(KJob*)) );
                 return Delayed; // We'll continue after the job has finished
             }
             if (selectedService)

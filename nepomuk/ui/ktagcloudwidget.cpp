@@ -157,8 +157,8 @@ void KTagCloudWidget::buildTagCloud()
          it != d->tagMap.constEnd(); ++it ) {
         tags.append( it.key() );
         d->labelMap[it.key()] = d->createLabel( this, it.key() );
-        connect( d->labelMap[it.key()], SIGNAL(leftClickedUrl(const QString&)),
-                 this, SIGNAL(tagClicked(const QString&)) );
+        connect( d->labelMap[it.key()], SIGNAL(leftClickedUrl(QString)),
+                 this, SIGNAL(tagClicked(QString)) );
     }
 
     // for now we display the tags sorted alphabetically

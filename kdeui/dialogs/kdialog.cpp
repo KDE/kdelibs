@@ -159,7 +159,7 @@ void KDialogPrivate::appendButton(KDialog::ButtonCode key, const KGuiItem &item)
   mButtonSignalMapper.setMapping( button, key );
 
     QObject::connect(button, SIGNAL(clicked()),
-           &mButtonSignalMapper, SLOT( map() ) );
+           &mButtonSignalMapper, SLOT(map()) );
 
     if (key == mDefaultButton) {
         // Now that it exists, set it as default
@@ -1083,7 +1083,7 @@ void KDialogQueue::queueDialog( QDialog *dialog )
   KDialogQueue *_this = self();
   _this->d->queue.append( dialog );
 
-  QTimer::singleShot( 0, _this, SLOT( slotShowQueuedDialog() ) );
+  QTimer::singleShot( 0, _this, SLOT(slotShowQueuedDialog()) );
 }
 
 void KDialogQueue::Private::slotShowQueuedDialog()
@@ -1105,7 +1105,7 @@ void KDialogQueue::Private::slotShowQueuedDialog()
   delete dialog;
 
   if ( !queue.isEmpty() )
-    QTimer::singleShot( 20, q, SLOT( slotShowQueuedDialog() ) );
+    QTimer::singleShot( 20, q, SLOT(slotShowQueuedDialog()) );
 }
 
 #include "kdialog.moc"

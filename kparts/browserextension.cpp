@@ -33,7 +33,6 @@
 #include <kmessagebox.h>
 #include <kurifilter.h>
 #include <kglobal.h>
-#include <assert.h>
 
 using namespace KParts;
 
@@ -483,14 +482,14 @@ K_GLOBAL_STATIC(BrowserExtension::ActionNumberMap, s_actionNumberMap)
 
 void BrowserExtension::BrowserExtensionPrivate::createActionSlotMap()
 {
-    s_actionSlotMap->insert( "cut", SLOT( cut() ) );
-    s_actionSlotMap->insert( "copy", SLOT( copy() ) );
-    s_actionSlotMap->insert( "paste", SLOT( paste() ) );
-    s_actionSlotMap->insert( "print", SLOT( print() ) );
+    s_actionSlotMap->insert( "cut", SLOT(cut()) );
+    s_actionSlotMap->insert( "copy", SLOT(copy()) );
+    s_actionSlotMap->insert( "paste", SLOT(paste()) );
+    s_actionSlotMap->insert( "print", SLOT(print()) );
     // Tricky. Those aren't actions in fact, but simply methods that a browserextension
     // can have or not. No need to return them here.
-    //s_actionSlotMap->insert( "reparseConfiguration", SLOT( reparseConfiguration() ) );
-    //s_actionSlotMap->insert( "refreshMimeTypes", SLOT( refreshMimeTypes() ) );
+    //s_actionSlotMap->insert( "reparseConfiguration", SLOT(reparseConfiguration()) );
+    //s_actionSlotMap->insert( "refreshMimeTypes", SLOT(refreshMimeTypes()) );
 
     // Create the action-number map
     ActionSlotMap::ConstIterator it = s_actionSlotMap->constBegin();
@@ -535,14 +534,14 @@ BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent )
       d->m_actionStatus.setBit( i, slotNames.contains( it.key()+"()" ) );
   }
 
-  connect( d->m_part, SIGNAL( completed() ),
-           this, SLOT( slotCompleted() ) );
-  connect( this, SIGNAL( openUrlRequest( const KUrl &, const KParts::OpenUrlArguments &, const KParts::BrowserArguments & ) ),
-           this, SLOT( slotOpenUrlRequest( const KUrl &, const KParts::OpenUrlArguments &, const KParts::BrowserArguments & ) ) );
-  connect( this, SIGNAL( enableAction( const char *, bool ) ),
-           this, SLOT( slotEnableAction( const char *, bool ) ) );
-  connect( this, SIGNAL( setActionText( const char *, const QString& ) ),
-           this, SLOT( slotSetActionText( const char *, const QString& ) ) );
+  connect( d->m_part, SIGNAL(completed()),
+           this, SLOT(slotCompleted()) );
+  connect( this, SIGNAL(openUrlRequest(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)),
+           this, SLOT(slotOpenUrlRequest(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)) );
+  connect( this, SIGNAL(enableAction(const char*,bool)),
+           this, SLOT(slotEnableAction(const char*,bool)) );
+  connect( this, SIGNAL(setActionText(const char*,QString)),
+           this, SLOT(slotSetActionText(const char*,QString)) );
 }
 
 BrowserExtension::~BrowserExtension()
@@ -657,7 +656,7 @@ void BrowserExtension::slotOpenUrlRequest( const KUrl &url, const KParts::OpenUr
     req.m_delayedArgs = args;
     req.m_delayedBrowserArgs = browserArgs;
     d->m_requests.append( req );
-    QTimer::singleShot( 0, this, SLOT( slotEmitOpenUrlRequestDelayed() ) );
+    QTimer::singleShot( 0, this, SLOT(slotEmitOpenUrlRequestDelayed()) );
 }
 
 void BrowserExtension::slotEmitOpenUrlRequestDelayed()

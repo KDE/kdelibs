@@ -232,28 +232,28 @@ void ActionCollection::connectSignals(ActionCollection *collection, bool conn)
         connect(collection, SIGNAL(dataChanged(Action*)), this, SIGNAL(dataChanged(Action*)));
         connect(collection, SIGNAL(dataChanged(ActionCollection*)), this, SIGNAL(dataChanged(ActionCollection*)));
 
-        connect(collection, SIGNAL(collectionToBeInserted(ActionCollection*, ActionCollection*)), this, SIGNAL(collectionToBeInserted(ActionCollection*, ActionCollection*)));
-        connect(collection, SIGNAL(collectionInserted(ActionCollection*, ActionCollection*)), this, SIGNAL(collectionInserted(ActionCollection*, ActionCollection*)));
-        connect(collection, SIGNAL(collectionToBeRemoved(ActionCollection*, ActionCollection*)), this, SIGNAL(collectionToBeRemoved(ActionCollection*, ActionCollection*)));
-        connect(collection, SIGNAL(collectionRemoved(ActionCollection*, ActionCollection*)), this, SIGNAL(collectionRemoved(ActionCollection*, ActionCollection*)));
+        connect(collection, SIGNAL(collectionToBeInserted(ActionCollection*,ActionCollection*)), this, SIGNAL(collectionToBeInserted(ActionCollection*,ActionCollection*)));
+        connect(collection, SIGNAL(collectionInserted(ActionCollection*,ActionCollection*)), this, SIGNAL(collectionInserted(ActionCollection*,ActionCollection*)));
+        connect(collection, SIGNAL(collectionToBeRemoved(ActionCollection*,ActionCollection*)), this, SIGNAL(collectionToBeRemoved(ActionCollection*,ActionCollection*)));
+        connect(collection, SIGNAL(collectionRemoved(ActionCollection*,ActionCollection*)), this, SIGNAL(collectionRemoved(ActionCollection*,ActionCollection*)));
 
-        connect(collection, SIGNAL(actionToBeInserted(Action*, ActionCollection*)), this, SIGNAL(actionToBeInserted(Action*, ActionCollection*)));
-        connect(collection, SIGNAL(actionInserted(Action*, ActionCollection*)), this, SIGNAL(actionInserted(Action*, ActionCollection*)));
-        connect(collection, SIGNAL(actionToBeRemoved(Action*, ActionCollection*)), this, SIGNAL(actionToBeRemoved(Action*, ActionCollection*)));
-        connect(collection, SIGNAL(actionRemoved(Action*, ActionCollection*)), this, SIGNAL(actionRemoved(Action*, ActionCollection*)));
+        connect(collection, SIGNAL(actionToBeInserted(Action*,ActionCollection*)), this, SIGNAL(actionToBeInserted(Action*,ActionCollection*)));
+        connect(collection, SIGNAL(actionInserted(Action*,ActionCollection*)), this, SIGNAL(actionInserted(Action*,ActionCollection*)));
+        connect(collection, SIGNAL(actionToBeRemoved(Action*,ActionCollection*)), this, SIGNAL(actionToBeRemoved(Action*,ActionCollection*)));
+        connect(collection, SIGNAL(actionRemoved(Action*,ActionCollection*)), this, SIGNAL(actionRemoved(Action*,ActionCollection*)));
         connect(collection, SIGNAL(updated()), this, SLOT(emitUpdated()));
     } else {
         disconnect(collection, SIGNAL(dataChanged(ActionCollection*)), this, SIGNAL(dataChanged(ActionCollection*)));
 
-        disconnect(collection, SIGNAL(collectionToBeInserted(ActionCollection*, ActionCollection*)), this, SIGNAL(collectionToBeInserted(ActionCollection*, ActionCollection*)));
-        disconnect(collection, SIGNAL(collectionInserted(ActionCollection*, ActionCollection*)), this, SIGNAL(collectionInserted(ActionCollection*, ActionCollection*)));
-        disconnect(collection, SIGNAL(collectionToBeRemoved(ActionCollection*, ActionCollection*)), this, SIGNAL(collectionToBeRemoved(ActionCollection*, ActionCollection*)));
-        disconnect(collection, SIGNAL(collectionRemoved(ActionCollection*, ActionCollection*)), this, SIGNAL(collectionRemoved(ActionCollection*, ActionCollection*)));
+        disconnect(collection, SIGNAL(collectionToBeInserted(ActionCollection*,ActionCollection*)), this, SIGNAL(collectionToBeInserted(ActionCollection*,ActionCollection*)));
+        disconnect(collection, SIGNAL(collectionInserted(ActionCollection*,ActionCollection*)), this, SIGNAL(collectionInserted(ActionCollection*,ActionCollection*)));
+        disconnect(collection, SIGNAL(collectionToBeRemoved(ActionCollection*,ActionCollection*)), this, SIGNAL(collectionToBeRemoved(ActionCollection*,ActionCollection*)));
+        disconnect(collection, SIGNAL(collectionRemoved(ActionCollection*,ActionCollection*)), this, SIGNAL(collectionRemoved(ActionCollection*,ActionCollection*)));
 
-        disconnect(collection, SIGNAL(actionToBeInserted(Action*, ActionCollection*)), this, SIGNAL(actionToBeInserted(Action*, ActionCollection*)));
-        disconnect(collection, SIGNAL(actionInserted(Action*, ActionCollection*)), this, SIGNAL(actionInserted(Action*, ActionCollection*)));
-        disconnect(collection, SIGNAL(actionToBeRemoved(Action*, ActionCollection*)), this, SIGNAL(actionToBeRemoved(Action*, ActionCollection*)));
-        disconnect(collection, SIGNAL(actionRemoved(Action*, ActionCollection*)), this, SIGNAL(actionRemoved(Action*, ActionCollection*)));
+        disconnect(collection, SIGNAL(actionToBeInserted(Action*,ActionCollection*)), this, SIGNAL(actionToBeInserted(Action*,ActionCollection*)));
+        disconnect(collection, SIGNAL(actionInserted(Action*,ActionCollection*)), this, SIGNAL(actionInserted(Action*,ActionCollection*)));
+        disconnect(collection, SIGNAL(actionToBeRemoved(Action*,ActionCollection*)), this, SIGNAL(actionToBeRemoved(Action*,ActionCollection*)));
+        disconnect(collection, SIGNAL(actionRemoved(Action*,ActionCollection*)), this, SIGNAL(actionRemoved(Action*,ActionCollection*)));
         disconnect(collection, SIGNAL(updated()), this, SLOT(emitUpdated()));
     }
 }
@@ -325,8 +325,8 @@ bool ActionCollection::readXml(const QDomElement& element, const QStringList& se
 
                 a = new Action(this, name);
                 addAction(name, a);
-                connect(a, SIGNAL( started(Kross::Action*) ), &Manager::self(), SIGNAL( started(Kross::Action*)) );
-                connect(a, SIGNAL( finished(Kross::Action*) ), &Manager::self(), SIGNAL( finished(Kross::Action*) ));
+                connect(a, SIGNAL(started(Kross::Action*)), &Manager::self(), SIGNAL(started(Kross::Action*)) );
+                connect(a, SIGNAL(finished(Kross::Action*)), &Manager::self(), SIGNAL(finished(Kross::Action*)));
             }
             a->fromDomElement(elem, searchPath);
         }

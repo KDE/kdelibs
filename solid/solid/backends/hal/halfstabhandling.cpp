@@ -171,7 +171,7 @@ QProcess *Solid::Backends::Hal::FstabHandling::callSystemCommand(const QString &
 
     QProcess *process = new QProcess(obj);
 
-    QObject::connect(process, SIGNAL(finished(int, QProcess::ExitStatus)),
+    QObject::connect(process, SIGNAL(finished(int,QProcess::ExitStatus)),
                      obj, slot);
 
     process->setEnvironment(env);

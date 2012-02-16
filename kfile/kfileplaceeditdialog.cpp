@@ -155,7 +155,7 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
     }
     else
         m_appLocal = 0L;
-    connect(m_urlEdit->lineEdit(),SIGNAL(textChanged ( const QString & )),this,SLOT(urlChanged(const QString & )));
+    connect(m_urlEdit->lineEdit(),SIGNAL(textChanged(QString)),this,SLOT(urlChanged(QString)));
     if (!label.isEmpty()) {
         // editing existing entry
         m_labelEdit->setFocus();

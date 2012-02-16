@@ -63,8 +63,8 @@ KEmoTest::KEmoTest()
     vb->addWidget(&lb);
     setLayout(vb);
     
-    connect(&kl, SIGNAL(textChanged(const QString&)), this, SLOT(changed()));
-    connect(&cb, SIGNAL(activated(const QString&)), this, SLOT(changeTheme(const QString&)));
+    connect(&kl, SIGNAL(textChanged(QString)), this, SLOT(changed()));
+    connect(&cb, SIGNAL(activated(QString)), this, SLOT(changeTheme(QString)));
 }
 
 void KEmoTest::changed()

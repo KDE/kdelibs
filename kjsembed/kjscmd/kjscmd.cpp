@@ -175,7 +175,7 @@ int main( int argc, char **argv )
     {
 	qDebug("no KDE");
         app = new QApplication( argc, argv );
-        dynamic_cast<QApplication*>(app)->connect( app, SIGNAL( lastWindowClosed() ), SLOT(quit()) );
+        dynamic_cast<QApplication*>(app)->connect( app, SIGNAL(lastWindowClosed()), SLOT(quit()) );
     }
     else
     {

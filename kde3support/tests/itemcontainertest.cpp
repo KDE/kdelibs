@@ -74,8 +74,8 @@ TopLevel::TopLevel(QWidget *parent)
     m_pbgMode->setExclusive( true );
     vBox->addWidget( selectionModeBox );
 
-    connect( m_pbgMode, SIGNAL( buttonClicked( int ) ),
-	     this, SLOT( slotSwitchMode( int ) ) );
+    connect( m_pbgMode, SIGNAL(buttonClicked(int)),
+	     this, SLOT(slotSwitchMode(int)) );
 
     //Signal labels
     QGroupBox* gbWiget = new QGroupBox(  "Widget", this);
@@ -91,8 +91,8 @@ TopLevel::TopLevel(QWidget *parent)
     QGroupBox* bgListView = new QGroupBox( "K3ListView", this);
     QCheckBox* cbListView = new QCheckBox("Single Column", bgListView);
     vBox->addWidget( bgListView );
-    connect( cbListView, SIGNAL( toggled( bool ) ),
-	     this, SLOT( slotToggleSingleColumn( bool ) ) );
+    connect( cbListView, SIGNAL(toggled(bool)),
+	     this, SLOT(slotToggleSingleColumn(bool)) );
 
     KGlobal::config()->reparseConfiguration();
 
@@ -101,8 +101,8 @@ TopLevel::TopLevel(QWidget *parent)
     m_pIconView = new K3IconView( gbIconView );
     hBox->addWidget( gbIconView );
     hBox->addSpacing( 5 );
-    connect( m_pIconView, SIGNAL( executed( Q3IconViewItem* ) ),
-	     this, SLOT( slotIconViewExec( Q3IconViewItem* ) ) );
+    connect( m_pIconView, SIGNAL(executed(Q3IconViewItem*)),
+	     this, SLOT(slotIconViewExec(Q3IconViewItem*)) );
 
     //Create ListView
     QGroupBox* gbListView = new QGroupBox(  "K3ListView", this);
@@ -111,15 +111,15 @@ TopLevel::TopLevel(QWidget *parent)
     m_pListView->addColumn("Text");
     hBox->addWidget( gbListView );
     hBox->addSpacing( 5 );
-    connect( m_pListView, SIGNAL( executed( Q3ListViewItem* ) ),
-	     this, SLOT( slotListViewExec( Q3ListViewItem* ) ) );
+    connect( m_pListView, SIGNAL(executed(Q3ListViewItem*)),
+	     this, SLOT(slotListViewExec(Q3ListViewItem*)) );
 
     //Create ListBox
     QGroupBox* gbListBox = new QGroupBox(  "KListWidget", this);
     m_pListBox = new KListWidget( gbListBox );
     hBox->addWidget( gbListBox );
-    connect( m_pListBox, SIGNAL( executed( QListWidgetItem* ) ),
-	     this, SLOT( slotListBoxExec( QListWidgetItem* ) ) );
+    connect( m_pListBox, SIGNAL(executed(QListWidgetItem*)),
+	     this, SLOT(slotListBoxExec(QListWidgetItem*)) );
 
     //Initialize buttons
     cbListView->setChecked( !m_pListView->allColumnsShowFocus() );
@@ -139,10 +139,10 @@ TopLevel::TopLevel(QWidget *parent)
       listWidgetItem->setText( QString("Item%1").arg(i) );
     }
 
-    connect( m_pIconView, SIGNAL( clicked( Q3IconViewItem* ) ),
-	     this, SLOT( slotClicked( Q3IconViewItem* ) ) );
-    connect( m_pIconView, SIGNAL( doubleClicked( Q3IconViewItem* ) ),
-	     this, SLOT( slotDoubleClicked( Q3IconViewItem* ) ) );
+    connect( m_pIconView, SIGNAL(clicked(Q3IconViewItem*)),
+	     this, SLOT(slotClicked(Q3IconViewItem*)) );
+    connect( m_pIconView, SIGNAL(doubleClicked(Q3IconViewItem*)),
+	     this, SLOT(slotDoubleClicked(Q3IconViewItem*)) );
 }
 
 void TopLevel::slotSwitchMode( int id ) 

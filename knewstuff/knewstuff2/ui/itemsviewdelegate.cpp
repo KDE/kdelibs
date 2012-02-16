@@ -84,7 +84,7 @@ QList<QWidget*> ItemsViewDelegate::createItemWidgets() const
     list << installButton;
     setBlockedEventTypes(installButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
                          << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
-    connect(installButton, SIGNAL(triggered(QAction *)), this, SLOT(slotActionTriggered(QAction *)));
+    connect(installButton, SIGNAL(triggered(QAction*)), this, SLOT(slotActionTriggered(QAction*)));
     connect(installButton, SIGNAL(clicked()), this, SLOT(slotInstallClicked()));
 
     QLabel * ratingLabel = new QLabel();

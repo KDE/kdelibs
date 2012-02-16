@@ -298,8 +298,8 @@ void Solid::DevicePrivate::setBackendObject(Ifaces::Device *object)
     m_backendObject = object;
 
     if (object) {
-        connect(object, SIGNAL(destroyed(QObject *)),
-                this, SLOT(_k_destroyed(QObject *)));
+        connect(object, SIGNAL(destroyed(QObject*)),
+                this, SLOT(_k_destroyed(QObject*)));
     }
 
     if (!m_ifaces.isEmpty()) {

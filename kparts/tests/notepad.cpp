@@ -75,9 +75,9 @@ void NotepadPart::setReadWrite( bool rw )
 {
     m_edit->setReadOnly( !rw );
     if (rw)
-        connect( m_edit, SIGNAL( textChanged() ), this, SLOT( setModified() ) );
+        connect( m_edit, SIGNAL(textChanged()), this, SLOT(setModified()) );
     else
-        disconnect( m_edit, SIGNAL( textChanged() ), this, SLOT( setModified() ) );
+        disconnect( m_edit, SIGNAL(textChanged()), this, SLOT(setModified()) );
 
     ReadWritePart::setReadWrite( rw );
 }
