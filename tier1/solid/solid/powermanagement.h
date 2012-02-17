@@ -70,7 +70,7 @@ namespace Solid
         SOLID_EXPORT QSet<SleepState> supportedSleepStates();
 
         /**
-         * Requests that the system goes to sleep
+         * Requests that the system go to sleep
          *
          * @param state the sleep state use
          * @param receiver the object to call a slot on once the operation completes
@@ -118,7 +118,7 @@ namespace Solid
          * @param cookie The cookie acquired when requesting screen power management suppression
          * @return true if the suppression was stopped, false if an invalid cookie was given
          *
-         * @note Since 4.8, this function also inhibites screensaver
+         * @note Since 4.8, this function also inhibits screensaver
          *
          * @since 4.6
          */
