@@ -1,5 +1,6 @@
 /*
     Copyright 2006 Kevin Ottens <ervin@kde.org>
+    Copyright 2012 Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -66,6 +67,15 @@ namespace Ifaces
          */
         virtual int chargePercent() const = 0;
 
+        /**
+          * The capacity of the power source expressed as a percentage between 0 and 100.
+          * The capacity of the battery will reduce with age.
+          * A capacity value less than 75% is usually a sign that you should renew your battery.
+          *
+          * @return the current capacity normalized to percent
+          */
+        virtual int capacity() const = 0;
+
 
         /**
          * Indicates if the battery is rechargeable.
@@ -82,6 +92,37 @@ namespace Ifaces
          * @see Solid::Battery::ChargeState
          */
         virtual Solid::Battery::ChargeState chargeState() const = 0;
+
+        /**
+          * Retrieves the technology used to manufacture the battery.
+          *
+          * @return the battery technology
+          * @see Solid::Battery::Technology
+          */
+        virtual Solid::Battery::Technology technology() const = 0;
+
+        /**
+          * Amount of energy (measured in Wh) currently available in the power source.
+          *
+          * @return amount of battery energy in Wh
+          */
+        virtual double energy() const = 0;
+
+        /**
+          * Amount of energy being drained from the source, measured in W.
+          * If positive, the source is being discharged, if negative it's being charged.
+          *
+          * @return battery rate in Watts
+          *
+          */
+        virtual double energyRate() const = 0;
+
+        /**
+          * Voltage in the Cell or being recorded by the meter.
+          *
+          * @return voltage in Volts
+          */
+        virtual double voltage() const = 0;
 
     protected:
     //Q_SIGNALS:
@@ -114,10 +155,29 @@ namespace Ifaces
          */
         virtual void plugStateChanged(bool newState, const QString &udi) = 0;
 
+        /**
+         * This signal is emitted when the energy value of this
+         * battery has changed.
+         *
+         * @param energy the new energy value of the battery
+         * @param udi the UDI of the battery with the new charge percent
+         */
+        virtual void energyChanged(double energy, const QString &udi) = 0;
+
+        /**
+         * This signal is emitted when the energy rate value of this
+         * battery has changed.
+         *
+         * If positive, the source is being discharged, if negative it's being charged.
+         *
+         * @param energyRate the new energy rate value of the battery
+         * @param udi the UDI of the battery with the new charge percent
+         */
+        virtual void energyRateChanged(double energyRate, const QString &udi) = 0;
     };
 }
 }
 
-Q_DECLARE_INTERFACE(Solid::Ifaces::Battery, "org.kde.Solid.Ifaces.Battery/0.1")
+Q_DECLARE_INTERFACE(Solid::Ifaces::Battery, "org.kde.Solid.Ifaces.Battery/0.2")
 
 #endif
