@@ -129,12 +129,17 @@ namespace {
             return s;
     }
 
-    bool positiveTerm( const QString& s ) {
+    bool positiveTerm( const QString& s_ ) {
+        const QString s = s_.toLower().simplified();
         if(s.isEmpty())
             return true;
         else if(s == "+")
             return true;
         else if(s == "-")
+            return false;
+        else if(s == "!")
+            return false;
+        else if(s == "not")
             return false;
         else //unrecognized capture
             return true;
@@ -370,8 +375,8 @@ namespace {
 
     // a field differs from a plain term in that it does never allow comparators
     const char* s_fieldNamePattern = "([^\\s\"':=<>]+|(?:([\"'])[^\"':=<>]+\\%1))";
-    const char* s_plainTermPattern = "([^\\s\"':=<>]+|(?:([\"'])[^\"']+\\%1))";
-    const char* s_inExclusionPattern = "([\\+\\-]?)";
+    const char* s_plainTermPattern = "([^-][^\\s\"':=<>]*|(?:([\"'])[^\"']+\\%1))";
+    const char* s_inExclusionPattern = "((?:[\\+\\-\\s*]|\\!\\s*|[nN][oO][tT]\\s+)?)";
     const char* s_uriPattern = "<([^<>]+)>";
     const char* s_comparatorPattern = "(:|\\<=|\\>=|=|\\<|\\>)";
 
