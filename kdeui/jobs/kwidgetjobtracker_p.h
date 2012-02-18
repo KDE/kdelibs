@@ -111,7 +111,7 @@ public:
     KPushButton *openFile;
     KPushButton *openLocation;
     QCheckBox   *keepOpenCheck;
-    KUrl        location;
+    QUrl        location;
     QTime       startTime;
     KPushButton *pauseButton;
     KSqueezedTextLabel *sourceEdit;
@@ -133,7 +133,7 @@ public:
     void init();
     void showTotals();
     void setDestVisible(bool visible);
-    void checkDestination(const KUrl &dest);
+    void checkDestination(const QUrl &dest);
     void ref();
     void deref();
     void closeNow();

@@ -23,6 +23,7 @@
 #include "kwidgetjobtracker.h"
 #include "kwidgetjobtracker_p.h"
 
+#include <QDir>
 #include <QProcess>
 #include <QTimer>
 #include <QLabel>
@@ -279,7 +280,7 @@ void KWidgetJobTracker::Private::ProgressWidget::description(const QString &titl
         setDestVisible(false);
     } else {
         setDestVisible(true);
-        checkDestination(KUrl(field2.second));
+        checkDestination(QUrl(field2.second));
         destInvite->setText(i18nc("%1 is the label, we add a ':' to it", "%1:", field2.first));
         destEdit->setText(field2.second);
     }
@@ -589,14 +590,15 @@ void KWidgetJobTracker::Private::ProgressWidget::setDestVisible(bool visible)
     setMaximumHeight(sizeHint().height());
 }
 
-void KWidgetJobTracker::Private::ProgressWidget::checkDestination(const KUrl &dest)
+void KWidgetJobTracker::Private::ProgressWidget::checkDestination(const QUrl &dest)
 {
     bool ok = true;
 
     if (dest.isLocalFile()) {
-        QString path = dest.toLocalFile( KUrl::RemoveTrailingSlash );
-        const QStringList tmpDirs = KGlobal::dirs()->resourceDirs( "tmp" );
-        for (QStringList::ConstIterator it = tmpDirs.begin() ; ok && it != tmpDirs.end() ; ++it)
+        const QString path = dest.toLocalFile();
+        QStringList tmpDirs = KGlobal::dirs()->resourceDirs("tmp");
+        tmpDirs += QDir::tempPath();
+        for (QStringList::const_iterator it = tmpDirs.constBegin() ; ok && it != tmpDirs.constEnd() ; ++it)
             if (path.contains(*it))
                 ok = false; // it's in the tmp resource
     }
@@ -621,7 +623,9 @@ void KWidgetJobTracker::Private::ProgressWidget::_k_keepOpenToggled(bool keepOpe
 
 void KWidgetJobTracker::Private::ProgressWidget::_k_openFile()
 {
-    QProcess::startDetached("kde-open", QStringList() << location.prettyUrl());
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QProcess::startDetached("kde-open", QStringList() << location.toDisplayString());
+#endif
 }
 
 void KWidgetJobTracker::Private::ProgressWidget::_k_openLocation()
