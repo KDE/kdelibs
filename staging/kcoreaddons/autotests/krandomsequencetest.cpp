@@ -64,13 +64,13 @@ main( /*int argc, char *argv[]*/ )
    seq.setSeed(KRandom::random());
 
    QList<QString> list;
-   list.append(QString("A"));
-   list.append(QString("B"));
-   list.append(QString("C"));
-   list.append(QString("D"));
-   list.append(QString("E"));
-   list.append(QString("F"));
-   list.append(QString("G"));
+   list.append(QLatin1String("A"));
+   list.append(QLatin1String("B"));
+   list.append(QLatin1String("C"));
+   list.append(QLatin1String("D"));
+   list.append(QLatin1String("E"));
+   list.append(QLatin1String("F"));
+   list.append(QLatin1String("G"));
 
    for(QList<QString>::Iterator str = list.begin(); str != list.end(); ++str)
       printf("%s", str->toLatin1().data());

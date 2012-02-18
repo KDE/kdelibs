@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <QtCore/QDir>
-#include <kdebug.h>
+#include <QtCore/QDebug>
 
 #if 1
 int
@@ -45,7 +45,7 @@ main(int argc, char *argv[])
       printf("Option 'baud' is set.\n");
    }
 
-   kDebug() << "allArguments:" << KCmdLineArgs::allArguments();
+   qDebug() << "allArguments:" << KCmdLineArgs::allArguments();
 
    // Read the value of an option.
    QString baudrate = args->getOption("baud"); // 9600 is the default value.
@@ -66,22 +66,22 @@ main(int argc, char *argv[])
    }
 
    // Check how KCmdLineArgs::url() works
-   QUrl u = KCmdLineArgs::makeURL("/tmp");
-   kDebug() << u;
-   assert(u.toLocalFile() == "/tmp");
-   u = KCmdLineArgs::makeURL("foo");
-   kDebug() << u << "  expected: " << QUrl(QDir::currentPath()+"/foo");
-   assert(u.toLocalFile() == QDir::currentPath()+"/foo");
-   u = KCmdLineArgs::makeURL("http://www.kde.org");
-   kDebug() << u;
-   assert(u.url() == "http://www.kde.org");
+   QUrl u = KCmdLineArgs::makeURL(QByteArray("/tmp"));
+   qDebug() << u;
+   assert(u.toLocalFile() == QLatin1String("/tmp"));
+   u = KCmdLineArgs::makeURL(QByteArray("foo"));
+   qDebug() << u << "  expected: " << QUrl(QDir::currentPath()+QLatin1String("/foo"));
+   assert(u.toLocalFile() == QDir::currentPath()+QLatin1String("/foo"));
+   u = KCmdLineArgs::makeURL(QByteArray("http://www.kde.org"));
+   qDebug() << u;
+   assert(u.toString() == QLatin1String("http://www.kde.org"));
 
-   QFile file("a:b");
+   QFile file(QLatin1String("a:b"));
 #ifndef Q_WS_WIN
    bool ok = file.open(QIODevice::WriteOnly);
    assert(ok);
 #endif
-   u = KCmdLineArgs::makeURL("a:b");
+   u = KCmdLineArgs::makeURL(QByteArray("a:b"));
    qDebug() << u.toLocalFile();
    assert(u.isLocalFile());
    assert(u.toLocalFile().endsWith(QLatin1String("a:b")));
