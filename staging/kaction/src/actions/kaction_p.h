@@ -20,7 +20,7 @@
 #define KACTION_P_H
 
 #include "kglobalaccel.h"
-#include "kgesturemap.h"
+#include "staging/kaction/src/shortcuts/kgesturemap.h"
 #include <kcomponentdata.h>
 
 class KAction;

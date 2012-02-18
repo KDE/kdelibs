@@ -229,7 +229,7 @@ include_directories(${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/kernel) # For QL
 # kdeui depends on kdecore
 set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdeui
                         ${CMAKE_BINARY_DIR}/kdeui
-                        ${CMAKE_SOURCE_DIR}/kdeui/actions
+                        ${CMAKE_SOURCE_DIR}/staging/kaction/src/actions
                         ${CMAKE_SOURCE_DIR}/kdeui/colors
                         ${CMAKE_SOURCE_DIR}/kdeui/config
                         ${CMAKE_SOURCE_DIR}/kdeui/dialogs
@@ -242,7 +242,7 @@ set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdeui
                         ${CMAKE_SOURCE_DIR}/kdeui/notifications
                         ${CMAKE_SOURCE_DIR}/kdeui/paged
                         ${CMAKE_SOURCE_DIR}/kdeui/plotting
-                        ${CMAKE_SOURCE_DIR}/kdeui/shortcuts
+                        ${CMAKE_SOURCE_DIR}/staging/kaction/src/shortcuts
                         ${CMAKE_SOURCE_DIR}/kdeui/sonnet
                         ${CMAKE_SOURCE_DIR}/kdeui/util
                         ${CMAKE_SOURCE_DIR}/kdeui/widgets

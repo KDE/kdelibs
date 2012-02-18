@@ -18,6 +18,8 @@ include_directories(
  ${CMAKE_SOURCE_DIR}/tier1/kauth/src/
  ${CMAKE_SOURCE_DIR}/staging/kwindowsystem/src
  ${CMAKE_BINARY_DIR}/staging/kwindowsystem/src
+ ${CMAKE_SOURCE_DIR}/staging/kaction/src/shortcuts
+ ${CMAKE_SOURCE_DIR}/staging/kaction/src/actions
  ${kcoreaddons_BINARY_DIR}/src
  ${kcoreaddons_SOURCE_DIR}/src/caching
  ${kcoreaddons_SOURCE_DIR}/src/io
@@ -40,7 +42,7 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/kernel
  ${CMAKE_CURRENT_SOURCE_DIR}/notifications
  ${CMAKE_CURRENT_SOURCE_DIR}/paged
- ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts
+ ${CMAKE_SOURCE_DIR}/staging/kaction/src/shortcuts
  ${CMAKE_CURRENT_SOURCE_DIR}/sonnet
  ${CMAKE_CURRENT_SOURCE_DIR}/util
  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
@@ -74,24 +76,6 @@ add_subdirectory( sonnet/tests )
 
 ########### next target ###############
 set(kdeui_LIB_SRCS
- actions/kactioncollection.cpp
- actions/kactioncategory.cpp
- actions/kaction.cpp
- actions/kactionmenu.cpp
- actions/kcodecaction.cpp
- actions/kdualaction.cpp
- actions/kfontaction.cpp
- actions/kfontsizeaction.cpp
- actions/kpastetextaction.cpp
- actions/krecentfilesaction.cpp
- actions/kselectaction.cpp
- actions/kstandardaction.cpp
- actions/ktoggleaction.cpp
- actions/ktoggletoolbaraction.cpp
- actions/ktogglefullscreenaction.cpp
- actions/ktoolbarlabelaction.cpp
- actions/ktoolbarpopupaction.cpp
- actions/ktoolbarspaceraction.cpp
  colors/kcolorspaces.cpp
  colors/kcolorutils.cpp
  colors/kcolorscheme.cpp
@@ -187,16 +171,6 @@ set(kdeui_LIB_SRCS
  paged/kpageview_p.cpp
  paged/kpagewidget.cpp
  paged/kpagewidgetmodel.cpp
- shortcuts/kshortcut.cpp
- shortcuts/kshortcutschemeshelper.cpp
- shortcuts/kstandardshortcut.cpp
- shortcuts/kglobalaccel.cpp
- shortcuts/kglobalshortcutinfo.cpp
- shortcuts/kglobalshortcutinfo_dbus.cpp
- shortcuts/kacceleratormanager.cpp
- shortcuts/kcheckaccelerators.cpp
- shortcuts/kgesture.cpp
- shortcuts/kgesturemap.cpp
  sonnet/dialog.cpp
  sonnet/configwidget.cpp
  sonnet/highlighter.cpp
@@ -388,12 +362,12 @@ qt4_add_dbus_adaptor(kdeui_LIB_SRCS     ${CMAKE_CURRENT_SOURCE_DIR}/notification
                      ${CMAKE_CURRENT_SOURCE_DIR}/notifications/kstatusnotifieritemdbus_p.h KStatusNotifierItemDBus)
 endif(NOT WINCE)
 
-set(kglobalaccel_xml ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts/org.kde.KGlobalAccel.xml)
+set(kglobalaccel_xml ${CMAKE_SOURCE_DIR}/staging/kaction/src/shortcuts/org.kde.KGlobalAccel.xml)
 set_source_files_properties(${kglobalaccel_xml} PROPERTIES INCLUDE "kglobalshortcutinfo_p.h")
 qt4_add_dbus_interface(kdeui_LIB_SRCS ${kglobalaccel_xml} kglobalaccel_interface )
 install(FILES ${kglobalaccel_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
-set(kglobalaccel_component_xml ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts/org.kde.kglobalaccel.Component.xml)
+set(kglobalaccel_component_xml ${CMAKE_SOURCE_DIR}/staging/kaction/src/shortcuts/org.kde.kglobalaccel.Component.xml)
 set_source_files_properties(${kglobalaccel_component_xml} PROPERTIES INCLUDE "kglobalshortcutinfo_p.h")
 qt4_add_dbus_interface(kdeui_LIB_SRCS ${kglobalaccel_component_xml} kglobalaccel_component_interface )
 install(FILES ${kglobalaccel_component_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
@@ -479,24 +453,6 @@ install( FILES xmlgui/ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
 
 install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kdeui_export.h
- actions/kactioncollection.h
- actions/kactioncategory.h
- actions/kaction.h
- actions/kactionmenu.h
- actions/kdualaction.h
- actions/kcodecaction.h
- actions/kfontaction.h
- actions/kfontsizeaction.h
- actions/kpastetextaction.h
- actions/krecentfilesaction.h
- actions/kselectaction.h
- actions/kstandardaction.h
- actions/ktoggleaction.h
- actions/ktoggletoolbaraction.h
- actions/ktogglefullscreenaction.h
- actions/ktoolbarlabelaction.h
- actions/ktoolbarpopupaction.h
- actions/ktoolbarspaceraction.h
  colors/kcolorutils.h
  colors/kcolorscheme.h
  colors/kcolorcollection.h
@@ -577,14 +533,6 @@ install( FILES
  paged/kpageview.h
  paged/kpagewidget.h
  paged/kpagewidgetmodel.h
- shortcuts/kshortcut.h
- shortcuts/kstandardshortcut.h
- shortcuts/kglobalaccel.h
- shortcuts/kglobalshortcutinfo.h
- shortcuts/kglobalshortcutinfo_p.h
- shortcuts/kacceleratormanager.h
- shortcuts/kgesture.h
- util/kaccelgen.h
  util/kcompletion.h
  util/kcrash.h
  util/kcursor.h
@@ -666,6 +614,7 @@ install( FILES
  xmlgui/kxmlguiclient.h
  xmlgui/kxmlguibuilder.h
  xmlgui/kxmlguifactory.h
+ ${CMAKE_SOURCE_DIR}/kaction.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 if(NOT KDE_NO_DEPRECATED)
@@ -712,3 +661,8 @@ install( FILES
     KDEUIMacros.cmake
     kde4uic.cmake
     DESTINATION ${DATA_INSTALL_DIR}/cmake/modules COMPONENT Devel )
+
+
+
+
+

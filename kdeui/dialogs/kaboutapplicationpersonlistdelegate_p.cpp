@@ -20,7 +20,7 @@
 #include "kaboutapplicationpersonmodel_p.h"
 #include "kaboutapplicationpersonlistview_p.h"
 #include "kdeui/widgets/ktoolbar.h"
-#include "kdeui/actions/kaction.h"
+#include "staging/kaction/src/actions/kaction.h"
 #include "kdeui/icons/kicon.h"
 
 #include <kdebug.h>
