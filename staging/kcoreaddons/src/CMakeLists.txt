@@ -123,7 +123,6 @@ install(FILES
     io/klockfile.h
     io/ksavefile.h
     io/kbackup.h
-    io/kurl.h
     io/kurlmimedata.h
     jobs/kcompositejob.h
     jobs/kcompositejob_p.h

@@ -387,6 +387,7 @@ install( FILES
    io/kmessage.h
    io/kprocess.h
    io/kmountpoint.h
+   io/kurl.h
    kernel/kauthorized.h
    kernel/kglobal.h
    kernel/kcomponentdata.h
