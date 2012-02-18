@@ -1,5 +1,5 @@
 /*
- * This file is part of the Nepomuk KDE project.
+ * This file is part of the KDE Frameworks.
  * Copyright (C) 2010 Sebastian Trueg <trueg@kde.org>
  * Copyright (C) 2010 David Faure <faure@kde.org>
  *
@@ -31,7 +31,7 @@ public:
     KDBusConnectionPoolPrivate()
         : m_connection( QDBusConnection::connectToBus(
                             QDBusConnection::SessionBus,
-                            QString::fromLatin1("NepomukQueryServiceConnection%1").arg(newNumber()) ) )
+                            QString::fromLatin1("KDBusConnectionPoolConnection%1").arg(newNumber()) ) )
     {
     }
 
