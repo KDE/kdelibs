@@ -32,7 +32,6 @@ KCOREADDONS_UNIT_TESTS(
     kjobtest
     klockfiletest
     kautosavefiletest
-    kurlmimetest
 )
 
 # Helper for klockfiletest
