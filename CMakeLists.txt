@@ -377,9 +377,10 @@ endif()
 add_subdirectory( knotify )
 
 find_package(KdepimLibs 4.5.60)
+find_package(Gpgme)
 macro_log_feature(KDEPIMLIBS_FOUND "kdepimlibs" "KDE PIM libraries" "http://www.kde.org" FALSE "" "Needed for building several Plasma DataEngines")
 # Plasma needs gpgme++
-if(KDEPIMLIBS_FOUND AND NOT WINCE)
+if(KDEPIMLIBS_FOUND AND GPGME_FOUND AND NOT WINCE)
   add_subdirectory( plasma )
 endif()
 
