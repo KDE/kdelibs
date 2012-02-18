@@ -29,7 +29,7 @@ class QString;
 class QStringList;
 class QByteArray;
 class QDataStream;
-class KUrl;
+class QUrl;
 
 class KCmdLineArgs;
 class KCmdLineArgsPrivate;
@@ -563,7 +563,7 @@ public:
    *
    *  @return a URL representing the n'th argument.
    */
-  KUrl url(int n) const;
+  QUrl url(int n) const;
 
   /**
    * Used by url().
@@ -571,7 +571,7 @@ public:
    * @param urlArg the argument
    * @return the url.
    */
-  static KUrl makeURL( const QByteArray &urlArg );
+  static QUrl makeURL( const QByteArray &urlArg );
 
   /**
    * Made public for apps that don't use KCmdLineArgs
