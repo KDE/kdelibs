@@ -1,6 +1,6 @@
 #include <kcmdlineargs.h>
 #include <QtCore/QCoreApplication>
-#include <kurl.h>
+#include <QtCore/QUrl>
 
 #include <stdio.h>
 #include <assert.h>
@@ -62,15 +62,15 @@ main(int argc, char *argv[])
    for(int i = 0; i < args->count(); i++)
    {
       printf("%d: %s\n", i, args->arg(i).toLocal8Bit().data());
-      printf("%d: %s\n", i, args->url(i).url().toLocal8Bit().data());
+      printf("%d: %s\n", i, args->url(i).toEncoded().data());
    }
 
    // Check how KCmdLineArgs::url() works
-   KUrl u = KCmdLineArgs::makeURL("/tmp");
+   QUrl u = KCmdLineArgs::makeURL("/tmp");
    kDebug() << u;
    assert(u.toLocalFile() == "/tmp");
    u = KCmdLineArgs::makeURL("foo");
-   kDebug() << u << "  expected: " << KUrl(QDir::currentPath()+"/foo");
+   kDebug() << u << "  expected: " << QUrl(QDir::currentPath()+"/foo");
    assert(u.toLocalFile() == QDir::currentPath()+"/foo");
    u = KCmdLineArgs::makeURL("http://www.kde.org");
    kDebug() << u;
