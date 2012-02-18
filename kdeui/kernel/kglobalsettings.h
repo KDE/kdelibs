@@ -306,8 +306,9 @@ public:
      * setting (the default is to use KGlobal::config())
      * @return the contrast (between 0.0 for minimum and 1.0 for maximum
      *         contrast)
+     * @deprecated since 5.0, use KColorScheme::contrast(config)
      */
-    static qreal contrastF(const KSharedConfigPtr &config = KSharedConfigPtr());
+    static KDEUI_DEPRECATED qreal contrastF(const KSharedConfigPtr &config = KSharedConfigPtr());
 
     /**
      * Returns if the sorted column in a K3ListView shall be drawn with a

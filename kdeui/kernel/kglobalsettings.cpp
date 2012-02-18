@@ -364,11 +364,7 @@ int KGlobalSettings::contrast()
 
 qreal KGlobalSettings::contrastF(const KSharedConfigPtr &config)
 {
-    if (config) {
-        KConfigGroup g( config, "KDE" );
-        return 0.1 * g.readEntry( "contrast", 7 );
-    }
-    return 0.1 * (qreal)contrast();
+    return KColorScheme::contrast(config);
 }
 
 bool KGlobalSettings::shadeSortColumn()
@@ -1048,7 +1044,7 @@ void KGlobalSettings::Private::kdisplaySetPalette()
     }
     emit q->kdisplayPaletteChanged();
     emit q->appearanceChanged();
-#endif    
+#endif
 }
 
 
