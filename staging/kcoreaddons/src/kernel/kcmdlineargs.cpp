@@ -1587,14 +1587,13 @@ QUrl KCmdLineArgs::makeURL(const QByteArray &_urlArg)
     const QString urlArg = QString::fromUtf8(_urlArg.data());
     QFileInfo fileInfo(urlArg);
     if (!fileInfo.isRelative()) { // i.e. starts with '/', on unix
-        QUrl result;
-        result.setPath(QDir::fromNativeSeparators(urlArg));
+        QUrl result = QUrl::fromLocalFile(QDir::fromNativeSeparators(urlArg));
         return result; // Absolute path.
     }
 
-    if ( fileInfo.isRelative() || fileInfo.exists() ) {
-        QUrl result;
-        result.setPath(cwd()+QLatin1Char('/')+urlArg);
+    QUrl qurl(urlArg);
+    if ( qurl.isRelative() || fileInfo.exists() ) {
+        QUrl result = QUrl::fromLocalFile(cwd()+QLatin1Char('/')+urlArg);
 #if 0 //Qt5 TODO: QUrlInfo::cleanPath
         result.cleanPath(); //This did use KUrl::cleanPath()
 #endif
