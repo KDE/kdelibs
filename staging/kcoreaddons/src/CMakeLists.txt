@@ -42,7 +42,6 @@ set(libkcoreaddons_SRCS
     io/kfilesystemtype_p.cpp
     io/ksavefile.cpp
     io/kbackup.cpp
-    io/kurl.cpp
     io/kurlmimedata.cpp
     jobs/kcompositejob.cpp
     jobs/kjob.cpp
