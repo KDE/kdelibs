@@ -284,8 +284,7 @@ void PreviewJobPrivate::startPreview()
                     mtypes.removeAll(_mtype);
                 }
             }
-            // Add already existing protocols, so more than one plugin can
-            // support a given scheme + mimetype
+            // Add supported mimetype for this protocol
             QStringList &_ms = m_remoteProtocolPlugins[protocol];
             foreach (const QString &_m, mtypes) {
                 protocolMap[protocol].insert(_m, *it);
@@ -312,75 +311,48 @@ void PreviewJobPrivate::startPreview()
         const QString mimeType = item.item.mimetype();
         KService::Ptr plugin(0);
 
-        // look for specialized thumbnail plugins first
-        QHash<QString, QHash<QString, KService::Ptr> >::ConstIterator it = protocolMap.constFind(item.item.url().protocol());
-        if(it != protocolMap.constEnd()) {
-            if(it.value().contains(mimeType)) {
-                plugin = it.value()[mimeType];
-            }
+        // look for protocol-specific thumbnail plugins first
+        QHash<QString, QHash<QString, KService::Ptr> >::const_iterator it = protocolMap.constFind(item.item.url().protocol());
+        if (it != protocolMap.constEnd()) {
+            plugin = it.value().value(mimeType);
         }
 
-        if(!plugin)
-        {
+        if (!plugin) {
             QMap<QString, KService::Ptr>::ConstIterator pluginIt = mimeMap.constFind(mimeType);
-            if (pluginIt == mimeMap.constEnd())
-            {
+            if (pluginIt == mimeMap.constEnd()) {
                 QString groupMimeType = mimeType;
                 groupMimeType.replace(QRegExp("/.*"), "/*");
                 pluginIt = mimeMap.constFind(groupMimeType);
 
-                if (pluginIt == mimeMap.constEnd())
-                {
+                if (pluginIt == mimeMap.constEnd()) {
                     // check mime type inheritance, resolve aliases
-                    const KMimeType::Ptr mimeInfo = KMimeType::mimeType(mimeType, KMimeType::ResolveAliases);
+                    const KMimeType::Ptr mimeInfo = KMimeType::mimeType(mimeType);
                     if (mimeInfo) {
                         const QStringList parentMimeTypes = mimeInfo->allParentMimeTypes();
                         Q_FOREACH(const QString& parentMimeType, parentMimeTypes) {
                             pluginIt = mimeMap.constFind(parentMimeType);
-                            if (pluginIt != mimeMap.constEnd()) break;
+                            if (pluginIt != mimeMap.constEnd())
+                                break;
                         }
                     }
                 }
-#if 0 // KDE4: should be covered by inheritance above, all text mimetypes inherit from text/plain
-                // if that's not enough, we need to invent something else
-                if (pluginIt == mimeMap.end())
-                {
-                    // check X-KDE-Text property
-                    KMimeType::Ptr mimeInfo = KMimeType::mimeType(mimeType);
-                    QVariant textProperty = mimeInfo->property("X-KDE-text");
-                    if (textProperty.isValid() && textProperty.type() == QVariant::Bool)
-                    {
-                        if (textProperty.toBool())
-                        {
-                            pluginIt = mimeMap.find("text/plain");
-                            if (pluginIt == mimeMap.end())
-                            {
-                                pluginIt = mimeMap.find( "text/*" );
-                            }
-                        }
-                    }
-                }
-#endif
             }
 
-            if (pluginIt != mimeMap.constEnd())
-            {
+            if (pluginIt != mimeMap.constEnd()) {
                 plugin = *pluginIt;
             }
         }
 
-        if(plugin)
-        {
+        if (plugin) {
             item.plugin = plugin;
             items.append(item);
             if (!bNeedCache && bSave &&
                 ((*kit).url().scheme() != "file" ||
                  !(*kit).url().directory( KUrl::AppendTrailingSlash ).startsWith(thumbRoot)) &&
-                plugin->property("CacheThumbnail").toBool())
+                plugin->property("CacheThumbnail").toBool()) {
                 bNeedCache = true;
-        }
-        else
-        {
+            }
+        } else {
             emit q->failed( *kit );
         }
     }
@@ -607,7 +579,7 @@ void PreviewJobPrivate::getOrCreateThumbnail()
     // We still need to load the orig file ! (This is getting tedious) :)
     const KFileItem& item = currentItem.item;
     const QString localPath = item.localPath();
-    if (!localPath.isEmpty()) {  
+    if (!localPath.isEmpty()) {
         createThumbnail( localPath );
     } else {
         const KUrl fileUrl = item.url();

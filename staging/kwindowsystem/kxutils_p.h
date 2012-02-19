@@ -26,7 +26,7 @@
 
 #ifdef Q_WS_X11
 
-#include <kdeui_export.h>
+#include <kwindowsystem_export.h>
 
 /**
  * Namespace with various generic X11-related functionality.
@@ -40,20 +40,20 @@ namespace KXUtils
  * also handle the case when the depth of the pixmap differs from the native QPixmap depth.
  * @since 4.0.2
  */
-KDEUI_EXPORT QPixmap createPixmapFromHandle( WId pixmap, WId mask = 0 );
+QPixmap createPixmapFromHandle( WId pixmap, WId mask = 0 );
 
 /**
  * Compares two X timestamps, taking into account wrapping and 64bit architectures.
  * Return value is like with strcmp(), 0 for equal, -1 for time1 < time2, 1 for time1 > time2.
  * @since 4.1.0
  */
-KDEUI_EXPORT int timestampCompare( unsigned long time1, unsigned long time2 );
+int timestampCompare( unsigned long time1, unsigned long time2 );
 /**
  * Returns a difference of two X timestamps, time2 - time1, where time2 must be later than time1,
  * as returned by timestampCompare().
  * @since 4.1.0
  */
-KDEUI_EXPORT int timestampDiff( unsigned long time1, unsigned long time2 );
+int timestampDiff( unsigned long time1, unsigned long time2 );
 
 } // namespace
 

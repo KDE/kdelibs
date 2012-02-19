@@ -17,12 +17,11 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "windoweffects.h"
+#include "kwindoweffects.h"
+
 #include <QVarLengthArray>
 
-#include <kwindowsystem.h>
-
-#include "theme.h"
+#include "kwindowsystem.h"
 
 #ifdef Q_WS_X11
     #include <X11/Xlib.h>
@@ -34,16 +33,12 @@
     static const char *DASHBOARD_WIN_CLASS = "dashboard";
 #endif
 
-namespace Plasma
+namespace KWindowEffects
 {
 
-namespace WindowEffects
-{
-
-//FIXME: check if this works for any atom?
 bool isEffectAvailable(Effect effect)
 {
-    if (!Plasma::Theme::defaultTheme()->windowTranslucencyEnabled()) {
+    if (!KWindowSystem::self()->compositingActive()) {
         return false;
     }
 #ifdef Q_WS_X11
@@ -51,29 +46,29 @@ bool isEffectAvailable(Effect effect)
 
     switch (effect) {
     case Slide:
-        effectName = "_KDE_SLIDE";
+        effectName = QLatin1String("_KDE_SLIDE");
         break;
     case WindowPreview:
-        effectName = "_KDE_WINDOW_PREVIEW";
+        effectName = QLatin1String("_KDE_WINDOW_PREVIEW");
         break;
     case PresentWindows:
-        effectName = "_KDE_PRESENT_WINDOWS_DESKTOP";
+        effectName = QLatin1String("_KDE_PRESENT_WINDOWS_DESKTOP");
         break;
     case PresentWindowsGroup:
-        effectName = "_KDE_PRESENT_WINDOWS_GROUP";
+        effectName = QLatin1String("_KDE_PRESENT_WINDOWS_GROUP");
         break;
     case HighlightWindows:
-        effectName = "_KDE_WINDOW_HIGHLIGHT";
+        effectName = QLatin1String("_KDE_WINDOW_HIGHLIGHT");
         break;
     case OverrideShadow:
-        effectName = "_KDE_SHADOW_OVERRIDE";
+        effectName = QLatin1String("_KDE_SHADOW_OVERRIDE");
         break;
     case BlurBehind:
-        effectName = "_KDE_NET_WM_BLUR_BEHIND_REGION";
+        effectName = QLatin1String("_KDE_NET_WM_BLUR_BEHIND_REGION");
         break;
     case Dashboard:
         // TODO: Better namespacing for atoms
-        effectName = "_WM_EFFECT_KDE_DASHBOARD";
+        effectName = QLatin1String("_WM_EFFECT_KDE_DASHBOARD");
         break;
     default:
         return false;
@@ -82,7 +77,7 @@ bool isEffectAvailable(Effect effect)
     // hackish way to find out if KWin has the effect enabled,
     // TODO provide proper support
     Display *dpy = QX11Info::display();
-    Atom atom = XInternAtom(dpy, effectName.toLatin1(), False);
+    Atom atom = XInternAtom(dpy, effectName.toLatin1().data(), False);
     int cnt;
     Atom *list = XListProperties(dpy, DefaultRootWindow(dpy), &cnt);
     if (list != NULL) {
@@ -94,7 +89,7 @@ bool isEffectAvailable(Effect effect)
     return false;
 }
 
-void slideWindow(WId id, Plasma::Location location, int offset)
+void slideWindow(WId id, SlideFromLocation location, int offset)
 {
 #ifdef Q_WS_X11
     Display *dpy = QX11Info::display();
@@ -119,7 +114,7 @@ void slideWindow(WId id, Plasma::Location location, int offset)
         break;
     }
 
-    if (location == Desktop || location == Floating) {
+    if (location == NoEdge) {
         XDeleteProperty(dpy, id, atom);
     } else {
         XChangeProperty(dpy, id, atom, atom, 32, PropModeReplace,
@@ -128,7 +123,7 @@ void slideWindow(WId id, Plasma::Location location, int offset)
 #endif
 }
 
-void slideWindow(QWidget *widget, Plasma::Location location)
+void slideWindow(QWidget *widget, SlideFromLocation location)
 {
 #ifdef Q_WS_X11
     Display *dpy = QX11Info::display();
@@ -152,7 +147,7 @@ void slideWindow(QWidget *widget, Plasma::Location location)
         break;
     }
 
-    if (location == Desktop || location == Floating) {
+    if (location == NoEdge) {
         XDeleteProperty(dpy, widget->effectiveWinId(), atom);
     } else {
         XChangeProperty(dpy, widget->effectiveWinId(), atom, atom, 32, PropModeReplace,
@@ -164,7 +159,7 @@ void slideWindow(QWidget *widget, Plasma::Location location)
 QList<QSize> windowSizes(const QList<WId> &ids)
 {
     QList<QSize> windowSizes;
-    foreach (WId id, ids) {
+    Q_FOREACH (WId id, ids) {
 #ifdef Q_WS_X11
         if (id > 0) {
             KWindowInfo info = KWindowSystem::windowInfo(id, NET::WMGeometry|NET::WMFrameExtents);
@@ -316,7 +311,7 @@ void enableBlurBehind(WId window, bool enable, const QRegion &region)
     if (enable) {
         QVector<QRect> rects = region.rects();
         QVector<unsigned long> data;
-        foreach (const QRect &r, rects) {
+        Q_FOREACH (const QRect &r, rects) {
             data << r.x() << r.y() << r.width() << r.height();
         }
 
@@ -340,4 +335,3 @@ void markAsDashboard(WId window)
 
 }
 
-}

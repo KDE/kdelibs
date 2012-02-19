@@ -18,7 +18,7 @@
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#include "ksystemeventfilter.h"
+#include "ksystemeventfilter_p.h"
 
 #include <QObject>
 #include <QWidget>

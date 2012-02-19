@@ -27,7 +27,7 @@
 #ifndef   netwm_h
 #define   netwm_h
 
-#include <kdeui_export.h>
+#include <kwindowsystem_export.h>
 #include <QWidget>
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
@@ -55,7 +55,7 @@ template <class Z> class NETRArray;
    @see NETWinInfo
  **/
 
-class KDEUI_EXPORT NETRootInfo : public NET {
+class KWINDOWSYSTEM_EXPORT NETRootInfo : public NET {
 public:
     /**
         Indexes for the properties array.
@@ -826,7 +826,7 @@ private:
    @see http://www.freedesktop.org/standards/wm-spec/
  **/
 
-class KDEUI_EXPORT NETWinInfo : public NET {
+class KWINDOWSYSTEM_EXPORT NETWinInfo : public NET {
 public:
     /**
         Indexes for the properties array.
@@ -1378,7 +1378,7 @@ private:
  use it instead of NETWinInfo and override also the added virtual methods.
  @since 4.2
 */
-class KDEUI_EXPORT NETWinInfo2 : public NETWinInfo {
+class KWINDOWSYSTEM_EXPORT NETWinInfo2 : public NETWinInfo {
 public:
     NETWinInfo2(Display *display, Window window, Window rootWindow,
                 const unsigned long properties[], int properties_size,

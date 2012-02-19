@@ -23,17 +23,19 @@
 
 #include <kiconloader.h>
 #include <klocale.h>
-#include <kdebug.h>
-#include <ksystemeventfilter.h>
-#include <kxerrorhandler.h>
-#include <kxutils.h>
+#include <QDebug>
+#include <ksystemeventfilter_p.h>
+#include <kxerrorhandler_p.h>
+#include <kxutils_p.h>
 #include <netwm.h>
+
 #include <QApplication>
 #include <QBitmap>
 #include <QDesktopWidget>
-#include <QDialog>
+#include <QIcon>
 #include <QtDBus/QtDBus>
 #include <QX11Info>
+
 #include <X11/Xatom.h>
 
 #include <config.h>
@@ -157,7 +159,7 @@ bool KWindowSystemPrivate::x11Event( XEvent * ev )
         bool haveOwner = event->owner != None;
         if (compositingEnabled != haveOwner) {
             compositingEnabled = haveOwner;
-            emit s_q->compositingChanged( compositingEnabled );
+            Q_EMIT s_q->compositingChanged( compositingEnabled );
         }
         return true;
     }
@@ -172,25 +174,25 @@ bool KWindowSystemPrivate::x11Event( XEvent * ev )
 	NETRootInfo::event( ev, m, 5 );
 
 	if (( m[ PROTOCOLS ] & CurrentDesktop ) && currentDesktop() != old_current_desktop )
-	    emit s_q->currentDesktopChanged( currentDesktop() );
+	    Q_EMIT s_q->currentDesktopChanged( currentDesktop() );
 	if (( m[ PROTOCOLS ] & DesktopViewport ) && mapViewport() && currentDesktop() != old_current_desktop )
-	    emit s_q->currentDesktopChanged( currentDesktop() );
+	    Q_EMIT s_q->currentDesktopChanged( currentDesktop() );
 	if (( m[ PROTOCOLS ] & ActiveWindow ) && activeWindow() != old_active_window )
-	    emit s_q->activeWindowChanged( activeWindow() );
+	    Q_EMIT s_q->activeWindowChanged( activeWindow() );
 	if ( m[ PROTOCOLS ] & DesktopNames )
-	    emit s_q->desktopNamesChanged();
+	    Q_EMIT s_q->desktopNamesChanged();
 	if (( m[ PROTOCOLS ] & NumberOfDesktops ) && numberOfDesktops() != old_number_of_desktops )
-	    emit s_q->numberOfDesktopsChanged( numberOfDesktops() );
+	    Q_EMIT s_q->numberOfDesktopsChanged( numberOfDesktops() );
 	if (( m[ PROTOCOLS ] & DesktopGeometry ) && mapViewport() && numberOfDesktops() != old_number_of_desktops )
-	    emit s_q->numberOfDesktopsChanged( numberOfDesktops() );
+	    Q_EMIT s_q->numberOfDesktopsChanged( numberOfDesktops() );
 	if ( m[ PROTOCOLS ] & WorkArea )
-	    emit s_q->workAreaChanged();
+	    Q_EMIT s_q->workAreaChanged();
 	if ( m[ PROTOCOLS ] & ClientListStacking ) {
 	    updateStackingOrder();
-	    emit s_q->stackingOrderChanged();
+	    Q_EMIT s_q->stackingOrderChanged();
 	}
         if(( m[ PROTOCOLS2 ] & WM2ShowingDesktop ) && showingDesktop() != old_showing_desktop ) {
-	    emit s_q->showingDesktopChanged( showingDesktop());
+	    Q_EMIT s_q->showingDesktopChanged( showingDesktop());
         }
     } else  if ( windows.contains( ev->xany.window ) ){
 	NETWinInfo ni( QX11Info::display(), ev->xany.window, QX11Info::appRootWindow(), 0 );
@@ -216,11 +218,11 @@ bool KWindowSystemPrivate::x11Event( XEvent * ev )
         	possibleStrutWindows.append( ev->xany.window );
 	}
 	if ( dirty[ NETWinInfo::PROTOCOLS ] || dirty[ NETWinInfo::PROTOCOLS2 ] ) {
-	    emit s_q->windowChanged( ev->xany.window );
-	    emit s_q->windowChanged( ev->xany.window, dirty );
-	    emit s_q->windowChanged( ev->xany.window, dirty[ NETWinInfo::PROTOCOLS ] );
+	    Q_EMIT s_q->windowChanged( ev->xany.window );
+	    Q_EMIT s_q->windowChanged( ev->xany.window, dirty );
+	    Q_EMIT s_q->windowChanged( ev->xany.window, dirty[ NETWinInfo::PROTOCOLS ] );
 	    if ( (dirty[ NETWinInfo::PROTOCOLS ] & NET::WMStrut) != 0 )
-		emit s_q->strutChanged();
+		Q_EMIT s_q->strutChanged();
 	}
     }
 
@@ -266,9 +268,9 @@ void KWindowSystemPrivate::addClient(Window w)
         possibleStrutWindows.append( w );
 
     windows.append( w );
-    emit s_q->windowAdded( w );
+    Q_EMIT s_q->windowAdded( w );
     if ( emit_strutChanged )
-        emit s_q->strutChanged();
+        Q_EMIT s_q->strutChanged();
 }
 
 void KWindowSystemPrivate::removeClient(Window w)
@@ -286,9 +288,9 @@ void KWindowSystemPrivate::removeClient(Window w)
 
     possibleStrutWindows.removeAll( w );
     windows.removeAll( w );
-    emit s_q->windowRemoved( w );
+    Q_EMIT s_q->windowRemoved( w );
     if ( emit_strutChanged )
-        emit s_q->strutChanged();
+        Q_EMIT s_q->strutChanged();
 }
 
 bool KWindowSystemPrivate::mapViewport()
@@ -682,10 +684,10 @@ QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale, int fla
 
 	    XClassHint	hint;
 	    if( XGetClassHint( QX11Info::display(), win, &hint ) ) {
-	        QString className = hint.res_class;
+	        QString className = QLatin1String(hint.res_class);
 
-                QPixmap pm = KIconLoader::global()->loadIcon( className.toLower(), KIconLoader::Small, iconWidth,
-                                                           KIconLoader::DefaultState, QStringList(), 0, true );
+                const QIcon icon = QIcon::fromTheme(className.toLower());
+                const QPixmap pm = icon.isNull() ? QPixmap() : icon.pixmap(iconWidth, iconWidth);
 	        if( scale && !pm.isNull() )
 		    result = QPixmap::fromImage( pm.toImage().scaled( width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
 	        else
@@ -701,8 +703,8 @@ QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale, int fla
         // If the icon is still a null pixmap, load the icon for X applications
         // as a last resort:
         if ( result.isNull() ) {
-            QPixmap pm = KIconLoader::global()->loadIcon( "xorg", KIconLoader::Small, iconWidth,
-                                                          KIconLoader::DefaultState, QStringList(), 0, true );
+            const QIcon icon = QIcon::fromTheme(QLatin1String("xorg"));
+            const QPixmap pm = icon.isNull() ? QPixmap() : icon.pixmap(iconWidth, iconWidth);
 	    if( scale && !pm.isNull() )
 		result = QPixmap::fromImage( pm.toImage().scaled( width, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
 	    else
@@ -893,7 +895,7 @@ QString KWindowSystem::desktopName( int desktop )
     if ( name && name[0] )
         return QString::fromUtf8( name );
 
-    return i18n("Desktop %1",  desktop );
+    return tr("Desktop %1").arg(desktop);
 }
 
 void KWindowSystem::setDesktopName( int desktop, const QString& name )
@@ -1004,8 +1006,8 @@ QString KWindowSystem::readNameProperty( WId win, unsigned long atom )
 
 void KWindowSystem::doNotManage( const QString& title )
 {
-    QDBusInterface("org.kde.kwin", "/KWin", "org.kde.KWin", QDBusConnection::sessionBus())
-        .call("doNotManage", title);
+    QDBusInterface(QLatin1String("org.kde.kwin"), QLatin1String("/KWin"), QLatin1String("org.kde.KWin"), QDBusConnection::sessionBus())
+        .call(QLatin1String("doNotManage"), title);
 }
 
 void KWindowSystem::allowExternalProcessWindowActivation( int pid )
