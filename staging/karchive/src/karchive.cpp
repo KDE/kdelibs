@@ -22,10 +22,11 @@
 #include "karchive.h"
 #include "klimitediodevice_p.h"
 
+#include <qplatformdefs.h> // QT_STATBUF, QT_LSTAT
+
 #include <config.h>
 
 #include <ksavefile.h>
-#include <kde_file.h>
 
 #include <QStack>
 #include <QtCore/QMap>
@@ -211,8 +212,8 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
         return false;
     }
 
-    KDE_struct_stat fi;
-    if (KDE::lstat(fileName,&fi) == -1) {
+    QT_STATBUF fi;
+    if (QT_LSTAT(QFile::encodeName(fileName).constData(), &fi) == -1) {
         /*qWarning() << "stat'ing" << fileName
         	<< "failed:" << strerror(errno);*/
         return false;

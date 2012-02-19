@@ -27,7 +27,6 @@ include_directories(
   ${QT_INCLUDES}
   ${CMAKE_CURRENT_BINARY_DIR}
   ${ZLIB_INCLUDE_DIR}
-  ${KDE4_KDECORE_INCLUDES} # TODO REMOVE
 )
 
 add_subdirectory(src)

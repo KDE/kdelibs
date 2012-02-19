@@ -3,9 +3,11 @@ include(ConfigureChecks.cmake)
 configure_file(config-compression.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compression.h)
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 
-# For KSaveFile - TODO put that into Qt
+# For KSaveFile - TODO put that into Qt (David is working on that)
 include_directories( ${kcoreaddons_SOURCE_DIR}/src/io
-                     ${kcoreaddons_BINARY_DIR}/src )
+                     ${kcoreaddons_BINARY_DIR}/src
+                     ${CMAKE_SOURCE_DIR}/libqtmimetypes/include/QtMimeTypes
+                   )
 add_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 if(BZIP2_FOUND)
