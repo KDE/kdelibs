@@ -1,6 +1,6 @@
 /*
     Copyright 2009 Pino Toscano <pino@kde.org>
-    Copyright 2010 Lukas Tinkl <ltinkl@redhat.com>
+    Copyright 2010, 2012 Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -78,6 +78,11 @@ int Battery::chargePercent() const
     return qRound(m_device->prop("Percentage").toDouble());
 }
 
+int Battery::capacity() const
+{
+    return qRound(m_device->prop("Capacity").toDouble());
+}
+
 bool Battery::isRechargeable() const
 {
     return m_device->prop("IsRechargeable").toBool();
@@ -110,6 +115,43 @@ Solid::Battery::ChargeState Battery::chargeState() const
     return result;
 }
 
+Solid::Battery::Technology Battery::technology() const
+{
+    const uint tech = m_device->prop("Technology").toUInt();
+    switch (tech)
+    {
+    case 1:
+        return Solid::Battery::LithiumIon;
+    case 2:
+        return Solid::Battery::LithiumPolymer;
+    case 3:
+        return Solid::Battery::LithiumIronPhosphate;
+    case 4:
+        return Solid::Battery::LeadAcid;
+    case 5:
+        return Solid::Battery::NickelCadmium;
+    case 6:
+        return Solid::Battery::NickelMetalHydride;
+    default:
+        return Solid::Battery::UnknownTechnology;
+    }
+}
+
+double Battery::energy() const
+{
+    return m_device->prop("Energy").toDouble();
+}
+
+double Battery::energyRate() const
+{
+    return m_device->prop("EnergyRate").toDouble();
+}
+
+double Battery::voltage() const
+{
+    return m_device->prop("Voltage").toDouble();
+}
+
 void Battery::slotChanged()
 {
     if (!m_device)
@@ -118,6 +160,8 @@ void Battery::slotChanged()
     const bool old_isPlugged = m_isPlugged;
     const int old_chargePercent = m_chargePercent;
     const Solid::Battery::ChargeState old_chargeState = m_chargeState;
+    const double old_energy = m_energy;
+    const double old_energyRate = m_energyRate;
     updateCache();
 
     if (old_chargePercent != m_chargePercent)
@@ -134,6 +178,14 @@ void Battery::slotChanged()
     {
         Q_EMIT plugStateChanged(m_isPlugged, m_device->udi());
     }
+
+    if (old_energy != m_energy) {
+        Q_EMIT energyChanged(m_energy, m_device->udi());
+    }
+
+    if (old_energyRate != m_energyRate) {
+        Q_EMIT energyRateChanged(m_energyRate, m_device->udi());
+    }
 }
 
 void Battery::updateCache()
@@ -141,5 +193,6 @@ void Battery::updateCache()
     m_isPlugged = isPlugged();
     m_chargePercent = chargePercent();
     m_chargeState = chargeState();
+    m_energy = energy();
+    m_energyRate = energyRate();
 }
-

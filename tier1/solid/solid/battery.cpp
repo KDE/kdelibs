@@ -1,5 +1,6 @@
 /*
     Copyright 2006-2007 Kevin Ottens <ervin@kde.org>
+    Copyright 2012 Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -35,6 +36,12 @@ Solid::Battery::Battery(QObject *backendObject)
 
     connect(backendObject, SIGNAL(plugStateChanged(bool,QString)),
              this, SIGNAL(plugStateChanged(bool,QString)));
+
+    connect(backendObject, SIGNAL(energyChanged(double,QString)),
+            this, SIGNAL(energyChanged(double,QString)));
+
+    connect(backendObject, SIGNAL(energyRateChanged(double,QString)),
+            this, SIGNAL(energyRateChanged(double,QString)));
 }
 
 Solid::Battery::~Battery()
@@ -60,6 +67,12 @@ int Solid::Battery::chargePercent() const
     return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), 0, chargePercent());
 }
 
+int Solid::Battery::capacity() const
+{
+    Q_D(const Battery);
+    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), 0, capacity());
+}
+
 bool Solid::Battery::isRechargeable() const
 {
     Q_D(const Battery);
@@ -72,3 +85,26 @@ Solid::Battery::ChargeState Solid::Battery::chargeState() const
     return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), NoCharge, chargeState());
 }
 
+Solid::Battery::Technology Solid::Battery::technology() const
+{
+    Q_D(const Battery);
+    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), UnknownTechnology, technology());
+}
+
+double Solid::Battery::energy() const
+{
+    Q_D(const Battery);
+    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), 0.0, energy());
+}
+
+double Solid::Battery::energyRate() const
+{
+    Q_D(const Battery);
+    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), 0.0, energyRate());
+}
+
+double Solid::Battery::voltage() const
+{
+    Q_D(const Battery);
+    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), 0.0, voltage());
+}

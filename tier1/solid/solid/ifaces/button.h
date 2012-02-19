@@ -53,7 +53,7 @@ namespace Ifaces
         virtual Solid::Button::ButtonType type() const = 0;
 
         /**
-         * Indicates if the button mantains state (Can toggled on/off).
+         * Indicates if the button mantains state (Can be toggled on/off).
          *
          * @return true if the button maintains state, false otherwise.
          * @see stateValue()

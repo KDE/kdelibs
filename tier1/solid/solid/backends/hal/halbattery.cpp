@@ -1,5 +1,6 @@
 /*
     Copyright 2006 Kevin Ottens <ervin@kde.org>
+    Copyright 2012 Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -83,6 +84,11 @@ int Battery::chargePercent() const
     return m_device->prop("battery.charge_level.percentage").toInt();
 }
 
+int Battery::capacity() const
+{
+    return qRound(m_device->prop("battery.charge_level.last_full").toInt() / m_device->prop("battery.charge_level.design").toInt() * 100);
+}
+
 bool Battery::isRechargeable() const
 {
     return m_device->prop("battery.is_rechargeable").toBool();
@@ -107,6 +113,39 @@ Solid::Battery::ChargeState Battery::chargeState() const
     }
 }
 
+Solid::Battery::Technology Battery::technology() const
+{
+    const QString tech = m_device->prop("battery.technology").toString();
+
+    if (tech == "lithium-ion")
+        return Solid::Battery::LithiumIon;
+    else if (tech == "lead-acid")
+        return Solid::Battery::LeadAcid;
+    else if (tech == "lithium-polymer")
+        return Solid::Battery::LithiumPolymer;
+    else if (tech == "nickel-metal-hydride")
+        return Solid::Battery::NickelMetalHydride;
+    else if (tech == "lithium-iron-phosphate")
+        return Solid::Battery::LithiumIronPhosphate;
+
+    return Solid::Battery::UnknownTechnology;
+}
+
+double Battery::energy() const
+{
+    return m_device->prop("battery.charge_level.current").toInt() / 1000;
+}
+
+double Battery::energyRate() const
+{
+    return m_device->prop("battery.charge_level.rate").toInt() / 1000;
+}
+
+double Battery::voltage() const
+{
+    return m_device->prop("battery.voltage.current").toInt() / 1000;
+}
+
 void Battery::slotPropertyChanged(const QMap<QString,int> &changes)
 {
     if (changes.contains("battery.charge_level.percentage"))
@@ -125,5 +164,12 @@ void Battery::slotPropertyChanged(const QMap<QString,int> &changes)
         Q_EMIT plugStateChanged(isPlugged(), m_device->udi());
     }
 
-}
+    if ( changes.contains( "battery.charge_level.current" ) ) {
+        Q_EMIT energyChanged(energy(), m_device->udi());
+    }
 
+    if ( changes.contains( "battery.charge_level.rate" ) ) {
+        Q_EMIT energyRateChanged(energyRate(), m_device->udi());
+    }
+
+}

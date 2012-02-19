@@ -1,5 +1,6 @@
 /*
     Copyright 2006-2007 Kevin Ottens <ervin@kde.org>
+    Copyright 2012 Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -75,6 +76,19 @@ namespace Solid
          */
         enum ChargeState { NoCharge, Charging, Discharging };
 
+        /**
+          * Technology used in the battery
+          *
+          * 0: Unknown
+          * 1: Lithium ion
+          * 2: Lithium polymer
+          * 3: Lithium iron phosphate
+          * 4: Lead acid
+          * 5: Nickel cadmium
+          * 6: Nickel metal hydride
+          */
+        enum Technology { UnknownTechnology = 0, LithiumIon, LithiumPolymer, LithiumIronPhosphate,
+                          LeadAcid, NickelCadmium, NickelMetalHydride };
 
     private:
         /**
@@ -127,6 +141,14 @@ namespace Solid
          */
         int chargePercent() const;
 
+        /**
+          * The capacity of the power source expressed as a percentage between 0 and 100.
+          * The capacity of the battery will reduce with age.
+          * A capacity value less than 75% is usually a sign that you should renew your battery.
+          *
+          * @return the current capacity normalized to percent
+          */
+        int capacity() const;
 
 
         /**
@@ -144,6 +166,38 @@ namespace Solid
          * @see Solid::Battery::ChargeState
          */
         ChargeState chargeState() const;
+
+        /**
+          * Retrieves the technology used to manufacture the battery.
+          *
+          * @return the battery technology
+          * @see Solid::Battery::Technology
+          */
+        Solid::Battery::Technology technology() const;
+
+        /**
+          * Amount of energy (measured in Wh) currently available in the power source.
+          *
+          * @return amount of battery energy in Wh
+          */
+        double energy() const;
+
+        /**
+          * Amount of energy being drained from the source, measured in W.
+          * If positive, the source is being discharged, if negative it's being charged.
+          *
+          * @return battery rate in Watts
+          *
+          */
+        double energyRate() const;
+
+        /**
+          * Voltage in the Cell or being recorded by the meter.
+          *
+          * @return voltage in Volts
+          */
+        double voltage() const;
+
 
     Q_SIGNALS:
         /**
@@ -174,6 +228,26 @@ namespace Solid
          * @param udi the UDI of the battery with the new plugging state
          */
         void plugStateChanged(bool newState, const QString &udi);
+
+        /**
+         * This signal is emitted when the energy value of this
+         * battery has changed.
+         *
+         * @param energy the new energy value of the battery
+         * @param udi the UDI of the battery with the new charge percent
+         */
+        void energyChanged(double energy, const QString &udi);
+
+        /**
+         * This signal is emitted when the energy rate value of this
+         * battery has changed.
+         *
+         * If positive, the source is being discharged, if negative it's being charged.
+         *
+         * @param energyRate the new energy rate value of the battery
+         * @param udi the UDI of the battery with the new charge percent
+         */
+        void energyRateChanged(double energyRate, const QString &udi);
     };
 }
 

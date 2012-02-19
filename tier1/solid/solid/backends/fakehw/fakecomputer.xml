@@ -33,6 +33,11 @@
             <property key="voltage">11999</property>
             <property key="isRechargeable">true</property>
             <property key="chargeState">discharging</property>
+            <property key="capacity">85</property>
+            <property key="technology">1</property>
+            <property key="energy">72.25</property>
+            <property key="energyRate">21.5</property>
+            <property key="voltage">12.5</property>
         </device>
 
 

@@ -1,6 +1,6 @@
 /*
     Copyright 2009 Pino Toscano <pino@kde.org>
-    Copyright 2010 Lukas Tinkl <ltinkl@redhat.com>
+    Copyright 2010, 2012 Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -41,19 +41,31 @@ public:
     virtual ~Battery();
 
     virtual bool isPlugged() const;
+
     virtual Solid::Battery::BatteryType type() const;
 
     virtual int chargePercent() const;
 
+    virtual int capacity() const;
+
     virtual bool isRechargeable() const;
+
     virtual Solid::Battery::ChargeState chargeState() const;
 
-    // TODO report stuff like capacity, technology, time-to-full, time-to-empty, energy rates, vendor, etc.
+    virtual Solid::Battery::Technology technology() const;
+
+    virtual double energy() const;
+
+    virtual double energyRate() const;
+
+    virtual double voltage() const;
 
 Q_SIGNALS:
     void chargePercentChanged(int value, const QString &udi);
     void chargeStateChanged(int newState, const QString &udi);
     void plugStateChanged(bool newState, const QString &udi);
+    void energyChanged(double energy, const QString &udi);
+    void energyRateChanged(double energyRate, const QString &udi);
 
 private Q_SLOTS:
     void slotChanged();
@@ -64,6 +76,8 @@ private:
     bool m_isPlugged;
     int m_chargePercent;
     Solid::Battery::ChargeState m_chargeState;
+    double m_energy;
+    double m_energyRate;
 };
 }
 }

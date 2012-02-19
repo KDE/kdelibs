@@ -1,5 +1,6 @@
 /*
     Copyright 2006 Kevin Ottens <ervin@kde.org>
+    Copyright 2012 Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -45,16 +46,28 @@ public Q_SLOTS:
 
     virtual int chargePercent() const;
 
+    virtual int capacity() const;
+
     virtual bool isRechargeable() const;
     virtual Solid::Battery::ChargeState chargeState() const;
 
     void setChargeState(Solid::Battery::ChargeState newState);
     void setChargeLevel(int newLevel);
 
+    virtual Solid::Battery::Technology technology() const;
+
+    virtual double energy() const;
+
+    virtual double energyRate() const;
+
+    virtual double voltage() const;
+
 Q_SIGNALS:
     void chargePercentChanged(int value, const QString &udi);
     void chargeStateChanged(int newState, const QString &udi);
     void plugStateChanged(bool newState, const QString &udi);
+    void energyChanged(double energy, const QString &udi);
+    void energyRateChanged(double energyRate, const QString &udi);
 };
 }
 }

@@ -1,5 +1,6 @@
 /*
     Copyright 2006 Kevin Ottens <ervin@kde.org>
+    Copyright 2012 Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -85,6 +86,11 @@ int FakeBattery::chargePercent() const
     return percent;
 }
 
+int FakeBattery::capacity() const
+{
+    return fakeDevice()->property("capacity").toInt();
+}
+
 bool FakeBattery::isRechargeable() const
 {
     return fakeDevice()->property("isRechargeable").toBool();
@@ -135,3 +141,22 @@ void FakeBattery::setChargeLevel(int newLevel)
     Q_EMIT chargePercentChanged(chargePercent(), fakeDevice()->udi());
 }
 
+Solid::Battery::Technology FakeBattery::technology() const
+{
+    return (Solid::Battery::Technology) fakeDevice()->property("technology").toInt();
+}
+
+double FakeBattery::energy() const
+{
+    return fakeDevice()->property("energy").toDouble();
+}
+
+double FakeBattery::energyRate() const
+{
+    return fakeDevice()->property("energyRate").toDouble();
+}
+
+double FakeBattery::voltage() const
+{
+    return fakeDevice()->property("voltage").toDouble();
+}
