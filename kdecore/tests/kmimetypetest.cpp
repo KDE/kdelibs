@@ -501,6 +501,10 @@ void KMimeTypeTest::testAllMimeTypes()
         // Note: this happens with x-win-lnk when your kde.xml defines it as an alias, while
         // /usr/share/mime/packages/kde.xml defines it as a real mimetype. This is a false positive,
         // remove one of the kde.xml files.
+        //
+        // It also happens with application/x-pkcs7-certificates due to
+        // /usr/share/mime/packages/gcr-crypto-types.xml. Remove that file and run
+        // `update-mime-database /usr/share/mime`.
     }
 }
 
