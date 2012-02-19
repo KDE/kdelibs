@@ -24,7 +24,7 @@
 #ifndef KWINDOWINFO_H
 #define KWINDOWINFO_H
 
-#include <kdeui_export.h>
+#include <kwindowsystem_export.h>
 #include <QWidgetList> //For WId
 
 #include <netwm_def.h>
@@ -32,7 +32,7 @@
 /**
  * Information about a window.
  */
-class KDEUI_EXPORT KWindowInfo
+class KWINDOWSYSTEM_EXPORT KWindowInfo
 {
 public:
     /**

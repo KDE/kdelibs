@@ -38,11 +38,11 @@
 #include <QtCore/QFile>
 #include <QtCore/QHash>
 #include <QtCore/QTextCodec>
+#include <QtCore/QUrl>
 
 #include "kaboutdata.h"
 #include "kdeversion.h"
 #include "kglobal.h"
-#include "kurl.h"
 
 // PORTING HACK (KDE5 TODO: clean up)
 #define i18nc(a,b) QObject::tr(b, a)
@@ -1576,30 +1576,31 @@ KCmdLineArgs::arg(int n) const
    return QString::fromLocal8Bit(d->parsedArgList->at(n).data());
 }
 
-KUrl
+QUrl
 KCmdLineArgs::url(int n) const
 {
    return makeURL( arg(n).toUtf8() );
 }
 
-KUrl KCmdLineArgs::makeURL(const QByteArray &_urlArg)
+QUrl KCmdLineArgs::makeURL(const QByteArray &_urlArg)
 {
     const QString urlArg = QString::fromUtf8(_urlArg.data());
     QFileInfo fileInfo(urlArg);
     if (!fileInfo.isRelative()) { // i.e. starts with '/', on unix
-        KUrl result;
-        result.setPath(QDir::fromNativeSeparators(urlArg));
+        QUrl result = QUrl::fromLocalFile(QDir::fromNativeSeparators(urlArg));
         return result; // Absolute path.
     }
 
-    if ( KUrl::isRelativeUrl(urlArg) || fileInfo.exists() ) {
-        KUrl result;
-        result.setPath(cwd()+QLatin1Char('/')+urlArg);
-        result.cleanPath();
+    QUrl qurl(urlArg);
+    if ( qurl.isRelative() || fileInfo.exists() ) {
+        QUrl result = QUrl::fromLocalFile(cwd()+QLatin1Char('/')+urlArg);
+#if 0 //Qt5 TODO: QUrlInfo::cleanPath
+        result.cleanPath(); //This did use KUrl::cleanPath()
+#endif
         return result;  // Relative path
     }
 
-    return KUrl(urlArg); // Argument is a URL
+    return QUrl(urlArg); // Argument is a URL
 }
 
 void

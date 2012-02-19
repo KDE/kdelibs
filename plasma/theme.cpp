@@ -42,12 +42,12 @@
 #include <kimagecache.h>
 #include <ksharedconfig.h>
 #include <kstandarddirs.h>
+#include <kwindoweffects.h>
 #include <kwindowsystem.h>
 
 
 #include "libplasma-theme-global.h"
 #include "private/packages_p.h"
-#include "windoweffects.h"
 
 namespace Plasma
 {
@@ -258,7 +258,7 @@ QString ThemePrivate::findInTheme(const QString &image, const QString &theme, bo
     } else if (!compositingActive) {
         search = QLatin1Literal("desktoptheme/") % theme % QLatin1Literal("/opaque/") % image;
         search =  KStandardDirs::locate("data", search);
-    } else if (WindowEffects::isEffectAvailable(WindowEffects::BlurBehind)) {
+    } else if (KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind)) {
         search = QLatin1Literal("desktoptheme/") % theme % QLatin1Literal("/translucent/") % image;
         search =  KStandardDirs::locate("data", search);
     }
@@ -1051,12 +1051,12 @@ void Theme::setCacheLimit(int kbytes)
     }
 }
 
-KUrl Theme::homepage() const
+QUrl Theme::homepage() const
 {
     const QString metadataPath(KStandardDirs::locate("data", QLatin1Literal("desktoptheme/") % d->themeName % QLatin1Literal("/metadata.desktop")));
     KConfig metadata(metadataPath);
     KConfigGroup brandConfig(&metadata, "Branding");
-    return brandConfig.readEntry("homepage", KUrl("http://www.kde.org"));
+    return brandConfig.readEntry("homepage", QUrl("http://www.kde.org"));
 }
 
 int Theme::toolTipDelay() const

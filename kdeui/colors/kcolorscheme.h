@@ -223,7 +223,7 @@ public:
          * Fifth color; used for (visited) links. As with LinkText, may be used
          * for items that have already been "visited" or accessed. May also be
          * used to indicate "historical" (i.e. "old") items or information,
-         * especially if InactiveText is being used in the same context to 
+         * especially if InactiveText is being used in the same context to
          * express something different.
          */
         VisitedText = 4,
@@ -347,6 +347,15 @@ public:
      * darker than the base color, with light() == mid().
      */
     QColor shade(ShadeRole) const;
+
+    /**
+     * Returns the contrast for borders as a floating point value.
+     * @param config pointer to the config from which to read the contrast
+     * setting (the default is to use KGlobal::config())
+     * @return the contrast (between 0.0 for minimum and 1.0 for maximum
+     *         contrast)
+     */
+    static qreal contrast(const KSharedConfigPtr &config = KSharedConfigPtr());
 
     /**
      * Retrieve the requested shade color, using the specified color as the

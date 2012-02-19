@@ -28,7 +28,8 @@
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 #include <QtCore/QTextCodec>
-#include <qtemporaryfile.h>
+#include <QUrl>
+#include <QTemporaryFile>
 #ifdef _WIN32_WCE
 #include <QtCore/QDir>
 #endif
@@ -42,7 +43,6 @@
 #include <kstandarddirs.h>
 #include <kaboutdata.h>
 #include <kcomponentdata.h>
-#include <kurl.h>
 
 #include "kconfigutils.h"
 
@@ -138,11 +138,12 @@ KonfUpdate::KonfUpdate()
         updateFiles.append(file);
     } else if (args->count()) {
         for (int i = 0; i < args->count(); i++) {
-            KUrl url = args->url(i);
-            if (!url.isLocalFile()) {
+            QUrl url = args->url(i);
+            if (url.isLocalFile()) {
+                updateFiles.append(url.toLocalFile());
+            } else {
                 KCmdLineArgs::usageError(i18n("Only local files are supported."));
             }
-            updateFiles.append(url.path());
         }
     } else {
         if (cg.readEntry("autoUpdateDisabled", false))

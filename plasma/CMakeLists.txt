@@ -33,6 +33,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${CMAKE_SOURCE_DIR}/tier1/threadweaver/
                     ${CMAKE_BINARY_DIR}/tier1/threadweaver/
                     ${CMAKE_BINARY_DIR}/tier1/threadweaver/Weaver
+                    ${CMAKE_SOURCE_DIR}/staging/kwindowsystem/
+                    ${CMAKE_BINARY_DIR}/staging/kwindowsystem/
                     ${CMAKE_SOURCE_DIR}/plasma/remote
                     ${CMAKE_SOURCE_DIR}/plasma/private/qtjolie-branch/qtjolie
                     ${CMAKE_SOURCE_DIR}/plasma/private/qtjolie-branch
@@ -81,7 +83,7 @@ endif(QCA2_FOUND)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-plasma.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-plasma.h)
 
 #FIXME: gpgme++ is in kdepimlibs, must move somewhere else!
-include_directories(${KDEPIMLIBS_INCLUDE_DIRS})
+include_directories(${KDEPIMLIBS_INCLUDE_DIRS} ${GPGME_INCLUDES})
 
 add_subdirectory(tests)
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=1209)
@@ -168,7 +170,6 @@ set(plasma_LIB_SRCS
     version.cpp
     view.cpp
     wallpaper.cpp
-    windoweffects.cpp
 
 
     #Temporary QtJolie branch
@@ -274,7 +275,7 @@ kde4_add_library(plasmaqgv ${LIBRARY_TYPE} ${plasmaqgv_LIB_SRCS})
 
 target_link_libraries(plasma ${QT_QTUITOOLS_LIBRARY} ${QT_QTWEBKIT_LIBRARY}
                              ${QT_QTSCRIPT_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTSQL_LIBRARY} ${QT_QTDECLARATIVE_LIBRARY}
-                             ${KDE4_KDEUI_LIBS} kdnssd threadweaver kdeclarative kauth ${PLASMA_EXTRA_LIBS} kcoreaddons)
+                             ${KDE4_KDEUI_LIBS} kdnssd threadweaver kdeclarative kauth kwindowsystem ${PLASMA_EXTRA_LIBS} kcoreaddons)
 #FIXME gpgme++ is in kdepimlibs, neeeds to be elsewhere
 target_link_libraries(plasma ${KDEPIMLIBS_GPGMEPP_LIBS} karchive)
 
@@ -298,7 +299,7 @@ if(DL_LIBRARY)
     target_link_libraries(plasma ${DL_LIBRARY})
 endif(DL_LIBRARY)
 
-target_link_libraries(plasma LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTGUI_LIBRARY})
+target_link_libraries(plasma LINK_INTERFACE_LIBRARIES kdeui kdecore kwindowsystem ${QT_QTGUI_LIBRARY})
 
 #do NOT use GENERIC versioning -- the plasma team will take care of versioning
 set_target_properties(plasma PROPERTIES
@@ -335,7 +336,6 @@ set(plasma_LIB_INCLUDES
     dialog.h
     pluginloader.h
     paintutils.h
-    windoweffects.h
     framesvg.h
     package.h
     packagestructure.h

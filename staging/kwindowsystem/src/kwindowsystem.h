@@ -24,7 +24,7 @@
 #ifndef KWINDOWSYSTEM_H
 #define KWINDOWSYSTEM_H
 
-#include <kdeui_export.h>
+#include <kwindowsystem_export.h>
 #include <QtCore/QObject>
 #include <QWidgetList> //For WId
 #include <netwm_def.h>
@@ -52,7 +52,7 @@ class KWindowSystemPrivate;
  * @short Class for interaction with the window manager.
  * @author Matthias Ettrich (ettrich@kde.org)
  */
-class KDEUI_EXPORT KWindowSystem : public QObject, public NET
+class KWINDOWSYSTEM_EXPORT KWindowSystem : public QObject, public NET
 {
     Q_OBJECT
 

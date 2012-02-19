@@ -25,7 +25,7 @@
 
 #ifndef   netwm_def_h
 #define   netwm_def_h
-#include <kdeui_export.h>
+#include <kwindowsystem_export.h>
 
 /**
   Simple point class for NET classes.
@@ -280,7 +280,7 @@ struct NETFullscreenMonitors {
   @see http://www.freedesktop.org/standards/wm-spec/
  **/
 
-class KDEUI_EXPORT NET {
+class KWINDOWSYSTEM_EXPORT NET {
 public:
     /**
        Application role.  This is used internally to determine how several action

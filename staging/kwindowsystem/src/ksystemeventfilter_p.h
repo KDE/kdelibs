@@ -21,7 +21,7 @@
 #ifndef KSYSTEMEVENTFILTER_H
 #define KSYSTEMEVENTFILTER_H
 
-#include <kdeui_export.h>
+#include <kwindowsystem_export.h>
 
 class QWidget;
 
@@ -54,12 +54,12 @@ namespace KSystemEventFilter
      * @warning Only do this when absolutely necessary. An installed event filter
      *          can slow things down.
      */
-    void KDEUI_EXPORT installEventFilter(QWidget *filter);
+    void installEventFilter(QWidget *filter);
 
     /**
      * Removes a global widget filter.
      */
-    void KDEUI_EXPORT removeEventFilter(const QWidget *filter);
+    void removeEventFilter(const QWidget *filter);
 }
 
 #endif

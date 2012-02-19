@@ -18,14 +18,15 @@
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>
  */
 
-#include "ksystemeventfilter.h"
+#include "ksystemeventfilter_p.h"
 
 #include <QObject>
 #include <QWidget>
 #include <QWeakPointer>
 #include <QSet>
 #include <QAbstractEventDispatcher>
-#include <kglobal.h>
+
+#include "globalstaticdef_p.h"
 
 // Our global event-filter which will pass events to all registered
 // widget filters.
@@ -84,7 +85,7 @@ public:
     QAbstractEventDispatcher::EventFilter m_nextFilter;
 };
 
-K_GLOBAL_STATIC(KSystemEventFilterPrivate, kSystemEventFilter)
+KWINDOWSYSTEM_GLOBAL_STATIC(KSystemEventFilterPrivate, kSystemEventFilter)
 
 bool _k_eventFilter(void *message)
 {

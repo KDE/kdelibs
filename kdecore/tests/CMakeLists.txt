@@ -83,9 +83,7 @@ endif(UNIX)
 
 KDECORE_EXECUTABLE_TESTS(
  kdirwatchtest
- krandomsequencetest
  kdebugtest
- kcmdlineargstest
  kmemtest
  dbuscalltest
  kmdcodectest

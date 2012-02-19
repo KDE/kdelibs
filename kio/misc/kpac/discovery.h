@@ -23,7 +23,7 @@
 
 #include "downloader.h"
 
-class KProcess;
+class QProcess;
 
 namespace KPAC
 {
@@ -43,7 +43,7 @@ namespace KPAC
         bool initDomainName();
         bool checkDomain() const;
 
-        KProcess* m_helper;
+        QProcess* m_helper;
         QString m_domainName;
     };
 }

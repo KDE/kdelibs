@@ -22,5 +22,6 @@ KDE4SUPPORT_UNIT_TESTS(
   kmd5benchmark
   ktempdirtest
   ktemporaryfiletest
+  kurlmimetest
 )
 

@@ -16,6 +16,8 @@ include_directories(
  ${CMAKE_SOURCE_DIR}/tier1/itemmodels/src
  ${CMAKE_BINARY_DIR}/tier1/kauth/src/
  ${CMAKE_SOURCE_DIR}/tier1/kauth/src/
+ ${CMAKE_SOURCE_DIR}/staging/kwindowsystem/
+ ${CMAKE_BINARY_DIR}/staging/kwindowsystem/
  ${kcoreaddons_BINARY_DIR}/src
  ${kcoreaddons_SOURCE_DIR}/src/caching
  ${kcoreaddons_SOURCE_DIR}/src/io
@@ -42,7 +44,6 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/sonnet
  ${CMAKE_CURRENT_SOURCE_DIR}/util
  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
- ${CMAKE_CURRENT_SOURCE_DIR}/windowmanagement
  ${CMAKE_CURRENT_SOURCE_DIR}/xmlgui
  ${CMAKE_CURRENT_BINARY_DIR}/util
  ${DBUSMENUQT_INCLUDE_DIR}
@@ -177,7 +178,6 @@ set(kdeui_LIB_SRCS
  kernel/kstyle.cpp
  kernel/kstartupinfo.cpp
  kernel/kglobalsettings.cpp
- kernel/ksystemeventfilter.cpp
  notifications/knotification.cpp
  notifications/knotificationmanager.cpp
  notifications/knotificationrestrictions.cpp
@@ -222,7 +222,6 @@ set(kdeui_LIB_SRCS
  util/kwordwrap.cpp
  util/kxerrorhandler.cpp
  util/kxmessages.cpp
- util/kxutils.cpp
  util/kundostack.cpp
  util/kpixmapsequence.cpp
  util/kpixmapsequenceoverlaypainter.cpp
@@ -341,23 +340,6 @@ if (Q_WS_WIN)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kernel/kapplication_win.cpp util/kkeyserver_win.cpp )
 endif (Q_WS_WIN)
 
-if (Q_WS_X11)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_x11.cpp
-                                         windowmanagement/kwindowinfo_x11.cpp
-                                         windowmanagement/netwm.cpp )
-endif (Q_WS_X11)
-if (Q_WS_MAC)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_mac.cpp
-                                         windowmanagement/kwindowinfo_mac.cpp)
-endif (Q_WS_MAC)
-if (Q_WS_WIN)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_win.cpp
-                                         windowmanagement/kwindowinfo_win.cpp)
-endif (Q_WS_WIN)
-if (Q_WS_QWS)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} windowmanagement/kwindowsystem_qws.cpp)
-endif (Q_WS_QWS)
-
 if (Q_WS_X11 AND X11_Xkb_FOUND)
     include_directories (
         ${X11_Xkb_INCLUDE_PATH}
@@ -423,7 +405,7 @@ kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 generate_export_header(kdeui)
 
 target_link_libraries(kdeui itemmodels sonnetcore kauth ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
-                            ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} kcoreaddons)
+                            ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} kcoreaddons kwindowsystem)
 
 if(NOT WINCE)
 target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY})
@@ -586,7 +568,6 @@ install( FILES
  kernel/kstyle.h
  kernel/kstartupinfo.h
  kernel/kglobalsettings.h
- kernel/ksystemeventfilter.h
  notifications/kstatusnotifieritem.h
  notifications/ksystemtrayicon.h
  notifications/knotification.h
@@ -621,7 +602,6 @@ install( FILES
  util/kwallet.h
  util/kwordwrap.h
  util/kxerrorhandler.h
- util/kxutils.h
  util/kxmessages.h
  util/kundostack.h
  util/kpixmapsequence.h
@@ -682,10 +662,6 @@ install( FILES
  widgets/kurllabel.h
  widgets/kvbox.h
  widgets/kxyselector.h
- windowmanagement/kwindowsystem.h
- windowmanagement/kwindowinfo.h
- windowmanagement/netwm_def.h
- windowmanagement/netwm.h
  xmlgui/kxmlguiwindow.h
  xmlgui/kxmlguiclient.h
  xmlgui/kxmlguibuilder.h
