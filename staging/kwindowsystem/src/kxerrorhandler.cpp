@@ -22,7 +22,7 @@
 
 */
 
-#include "kxerrorhandler.h"
+#include "kxerrorhandler_p.h"
 
 #ifdef Q_WS_X11 //FIXME
 
