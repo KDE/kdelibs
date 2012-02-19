@@ -24,7 +24,7 @@
 
 #ifdef Q_WS_X11
 
-#include <kxerrorhandler.h>
+#include <kxerrorhandler_p.h>
 #include <qbitmap.h>
 #include <qpixmap.h>
 

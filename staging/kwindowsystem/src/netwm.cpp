@@ -34,7 +34,7 @@
 #include <qx11info_x11.h>
 
 #include <kwindowsystem.h>
-#include <kxutils.h>
+#include <kxutils_p.h>
 
 #include <string.h>
 #include <stdio.h>
