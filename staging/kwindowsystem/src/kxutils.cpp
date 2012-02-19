@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kxutils.h"
+#include "kxutils_p.h"
 
 #include <config.h>
 
