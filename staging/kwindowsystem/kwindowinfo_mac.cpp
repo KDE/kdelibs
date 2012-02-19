@@ -24,7 +24,7 @@
 
 #include <kiconloader.h>
 #include <klocale.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kxerrorhandler.h>
 #include <netwm.h>
 #include <QBitmap>
