@@ -22,8 +22,6 @@
 #include "kwindowinfo.h"
 #include "kwindowsystem.h"
 
-#include <kiconloader.h>
-#include <klocale.h>
 #include <QDebug>
 #include <kxerrorhandler.h>
 #include <netwm.h>

@@ -25,7 +25,8 @@
 #include <QWeakPointer>
 #include <QSet>
 #include <QAbstractEventDispatcher>
-#include <kglobal.h>
+
+#include "globalstaticdef_p.h"
 
 // Our global event-filter which will pass events to all registered
 // widget filters.
@@ -84,7 +85,7 @@ public:
     QAbstractEventDispatcher::EventFilter m_nextFilter;
 };
 
-K_GLOBAL_STATIC(KSystemEventFilterPrivate, kSystemEventFilter)
+KWINDOWSYSTEM_GLOBAL_STATIC(KSystemEventFilterPrivate, kSystemEventFilter)
 
 bool _k_eventFilter(void *message)
 {

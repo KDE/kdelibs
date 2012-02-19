@@ -20,14 +20,14 @@
 
 #include "kwindowsystem.h"
 
-#include <kiconloader.h>
-#include <klocale.h>
 #include <kxerrorhandler.h>
 #include <QBitmap>
 #include <QDesktopWidget>
 #include <QDialog>
 #include <QtDBus/QtDBus>
 #include <QDebug>
+
+#include "globalstaticdef_p.h"
 
 class KWindowSystemStaticContainer {
 public:
@@ -36,7 +36,7 @@ public:
     KWindowSystemPrivate* d;
 };
 
-K_GLOBAL_STATIC(KWindowSystemStaticContainer, g_kwmInstanceContainer)
+KWINDOWSYSTEM_GLOBAL_STATIC(KWindowSystemStaticContainer, g_kwmInstanceContainer)
 
 KWindowSystem* KWindowSystem::self()
 {

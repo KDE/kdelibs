@@ -22,8 +22,6 @@
 #include "kwindowsystem.h"
 #include "kwindowinfo_mac_p.h"
 
-#include <kiconloader.h>
-#include <klocale.h>
 #include <kxerrorhandler.h>
 #include <QBitmap>
 #include <QDesktopWidget>
@@ -92,7 +90,7 @@ public:
     KWindowSystemPrivate* d;
 };
 
-K_GLOBAL_STATIC(KWindowSystemStaticContainer, g_kwmInstanceContainer)
+KWINDOWSYSTEM_GLOBAL_STATIC(KWindowSystemStaticContainer, g_kwmInstanceContainer)
 
 static OSStatus applicationEventHandler(EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void * inUserData)
 {

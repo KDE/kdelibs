@@ -21,8 +21,6 @@
 
 #include "kwindowsystem.h"
 
-#include <kiconloader.h>
-#include <klocale.h>
 #include <QDebug>
 #include <ksystemeventfilter_p.h>
 #include <kxerrorhandler_p.h>
@@ -38,6 +36,8 @@
 
 #include <X11/Xatom.h>
 
+#include "globalstaticdef_p.h"
+
 #include <config.h>
 
 #ifdef HAVE_XFIXES
@@ -52,7 +52,7 @@ public:
 };
 
 
-K_GLOBAL_STATIC(KWindowSystemStaticContainer, g_kwmInstanceContainer)
+KWINDOWSYSTEM_GLOBAL_STATIC(KWindowSystemStaticContainer, g_kwmInstanceContainer)
 
 static Atom net_wm_cm;
 static void create_atoms( Display* dpy = QX11Info::display() );

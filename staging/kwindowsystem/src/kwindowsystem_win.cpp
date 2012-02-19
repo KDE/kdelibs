@@ -27,12 +27,12 @@
 #include <QPixmap>
 #include <QtCore/QLibrary>
 
-#include "kglobal.h"
 #include "QDebug"
-#include "klocalizedstring.h"
 
 #include <windows.h>
 #include <windowsx.h>
+
+#include "globalstaticdef_p.h"
 
 #ifdef __WIN64
 #define GCL_HICON GCLP_HICON
@@ -55,9 +55,9 @@ public:
     KWindowSystemPrivate* d;
 };
 
-K_GLOBAL_STATIC(KWindowSystemStaticContainer, g_kwmInstanceContainer)
+KWINDOWSYSTEM_GLOBAL_STATIC(KWindowSystemStaticContainer, g_kwmInstanceContainer)
 
-K_GLOBAL_STATIC(QDesktopWidget, s_deskWidget)
+KWINDOWSYSTEM_GLOBAL_STATIC(QDesktopWidget, s_deskWidget)
 
 
 struct InternalWindowInfo
