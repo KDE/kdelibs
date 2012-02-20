@@ -35,8 +35,6 @@ endif(NOT KIO_NO_NEPOMUK)
 
 # This applies to all subdirs; let's put kio's dependencies (and own dirs) here, once and for all
 include_directories(
-   ${CMAKE_SOURCE_DIR}/staging/kwindowsystem/
-   ${CMAKE_BINARY_DIR}/staging/kwindowsystem/
    ${CMAKE_CURRENT_SOURCE_DIR}/bookmarks
    ${CMAKE_CURRENT_SOURCE_DIR}/kio
    ${CMAKE_CURRENT_SOURCE_DIR}/kfile
