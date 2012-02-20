@@ -40,7 +40,7 @@
 ****************************************************************************/
 
 
-#define QT_NO_CAST_FROM_ASCII
+//#define QT_NO_CAST_FROM_ASCII
 
 #include "qmimemagicrule_p.h"
 
