@@ -16,8 +16,8 @@ include_directories(
  ${CMAKE_SOURCE_DIR}/tier1/itemmodels/src
  ${CMAKE_BINARY_DIR}/tier1/kauth/src/
  ${CMAKE_SOURCE_DIR}/tier1/kauth/src/
- ${CMAKE_SOURCE_DIR}/staging/kwindowsystem/
- ${CMAKE_BINARY_DIR}/staging/kwindowsystem/
+ ${CMAKE_SOURCE_DIR}/staging/kwindowsystem/src
+ ${CMAKE_BINARY_DIR}/staging/kwindowsystem/src
  ${kcoreaddons_BINARY_DIR}/src
  ${kcoreaddons_SOURCE_DIR}/src/caching
  ${kcoreaddons_SOURCE_DIR}/src/io
