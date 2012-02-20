@@ -52,7 +52,7 @@
 #include <kdebug.h>
 #include <kdialog.h>
 #include <kfiledialog.h>
-#include <kgenericfactory.h>
+#include <kpluginfactory.h>
 #include <kglobal.h>
 #include <klineedit.h>
 #include <klocale.h>
