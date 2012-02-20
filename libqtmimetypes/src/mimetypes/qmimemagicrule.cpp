@@ -1,22 +1,46 @@
-/**************************************************************************
+/****************************************************************************
 **
-** This file is part of QMime
+** Copyright (C) 2012 Nokia Corporation and/or its subsidiary(-ies).
+** Contact: http://www.qt-project.org/
 **
-** Based on Qt Creator source code
+** This file is part of the QtCore module of the Qt Toolkit.
 **
-** Qt Creator Copyright (c) 2011 Nokia Corporation and/or its subsidiary(-ies).
-**
-**
+** $QT_BEGIN_LICENSE:LGPL$
 ** GNU Lesser General Public License Usage
-**
 ** This file may be used under the terms of the GNU Lesser General Public
 ** License version 2.1 as published by the Free Software Foundation and
-** appearing in the file LICENSE.LGPL included in the packaging of this file.
-** Please review the following information to ensure the GNU Lesser General
-** Public License version 2.1 requirements will be met:
+** appearing in the file LICENSE.LGPL included in the packaging of this
+** file. Please review the following information to ensure the GNU Lesser
+** General Public License version 2.1 requirements will be met:
 ** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-**************************************************************************/
+** In addition, as a special exception, Nokia gives you certain additional
+** rights. These rights are described in the Nokia Qt LGPL Exception
+** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU General
+** Public License version 3.0 as published by the Free Software Foundation
+** and appearing in the file LICENSE.GPL included in the packaging of this
+** file. Please review the following information to ensure the GNU General
+** Public License version 3.0 requirements will be met:
+** http://www.gnu.org/copyleft/gpl.html.
+**
+** Other Usage
+** Alternatively, this file may be used in accordance with the terms and
+** conditions contained in a signed written agreement between you and Nokia.
+**
+**
+**
+**
+**
+**
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
+
+#define QT_NO_CAST_FROM_ASCII
 
 #include "qmimemagicrule_p.h"
 
@@ -47,7 +71,7 @@ QMimeMagicRule::Type QMimeMagicRule::type(const QByteArray &theTypeName)
 {
     for (int i = String; i <= Byte; ++i) {
         if (theTypeName == magicRuleTypes_string + magicRuleTypes_indices[i])
-            return static_cast<Type>(i);
+            return Type(i);
     }
     return Invalid;
 }
@@ -57,8 +81,9 @@ QByteArray QMimeMagicRule::typeName(QMimeMagicRule::Type theType)
     return magicRuleTypes_string + magicRuleTypes_indices[theType];
 }
 
-struct QMimeMagicRulePrivate
+class QMimeMagicRulePrivate
 {
+public:
     bool operator==(const QMimeMagicRulePrivate &other) const;
 
     QMimeMagicRule::Type type;
@@ -71,7 +96,7 @@ struct QMimeMagicRulePrivate
     quint32 number;
     quint32 numberMask;
 
-    typedef bool (*MatchFunction)(QMimeMagicRulePrivate *d, const QByteArray &data);
+    typedef bool (*MatchFunction)(const QMimeMagicRulePrivate *d, const QByteArray &data);
     MatchFunction matchFunction;
 };
 
@@ -89,24 +114,16 @@ bool QMimeMagicRulePrivate::operator==(const QMimeMagicRulePrivate &other) const
 }
 
 // Used by both providers
-bool QMimeMagicRule::matchSubstring(const char* dataPtr, int dataSize, int rangeStart, int rangeLength, int valueLength, const char* valueData, const char* mask)
+bool QMimeMagicRule::matchSubstring(const char *dataPtr, int dataSize, int rangeStart, int rangeLength,
+                                    int valueLength, const char *valueData, const char *mask)
 {
-    const int dataNeeded = qMin(rangeLength + valueLength - 1, dataSize - rangeStart);
-
-// callgrind says QByteArray::indexOf is much slower
-// #define WITH_BYTEARRAY
-#ifdef WITH_BYTEARRAY
     // Size of searched data.
     // Example: value="ABC", rangeLength=3 -> we need 3+3-1=5 bytes (ABCxx,xABCx,xxABC would match)
-    const QByteArray searchedData = QByteArray::fromRawData(dataPtr + rangeStart, dataNeeded);
-#endif
+    const int dataNeeded = qMin(rangeLength + valueLength - 1, dataSize - rangeStart);
 
     if (!mask) {
-#ifdef WITH_BYTEARRAY
-        const QByteArray value = QByteArray::fromRawData(valueData, valueLength);
-        if (searchedData.indexOf(value) == -1)
-            return false;
-#else
+        // callgrind says QByteArray::indexOf is much slower, since our strings are typically too
+        // short for be worth Boyer-Moore matching (1 to 71 bytes, 11 bytes on average).
         bool found = false;
         for (int i = rangeStart; i < rangeStart + rangeLength; ++i) {
             if (i + valueLength > dataSize)
@@ -119,17 +136,16 @@ bool QMimeMagicRule::matchSubstring(const char* dataPtr, int dataSize, int range
         }
         if (!found)
             return false;
-#endif
     } else {
         bool found = false;
-        const char* readDataBase = dataPtr + rangeStart;
+        const char *readDataBase = dataPtr + rangeStart;
         // Example (continued from above):
         // deviceSize is 4, so dataNeeded was max'ed to 4.
         // maxStartPos = 4 - 3 + 1 = 2, and indeed
         // we need to check for a match a positions 0 and 1 (ABCx and xABC).
         const int maxStartPos = dataNeeded - valueLength + 1;
         for (int i = 0; i < maxStartPos; ++i) {
-            const char* d = readDataBase + i;
+            const char *d = readDataBase + i;
             bool valid = true;
             for (int idx = 0; idx < valueLength; ++idx) {
                 if (((*d++) & mask[idx]) != (valueData[idx] & mask[idx])) {
@@ -147,14 +163,14 @@ bool QMimeMagicRule::matchSubstring(const char* dataPtr, int dataSize, int range
     return true;
 }
 
-static bool matchString(QMimeMagicRulePrivate *d, const QByteArray &data)
+static bool matchString(const QMimeMagicRulePrivate *d, const QByteArray &data)
 {
     const int rangeLength = d->endPos - d->startPos + 1;
     return QMimeMagicRule::matchSubstring(data.constData(), data.size(), d->startPos, rangeLength, d->pattern.size(), d->pattern.constData(), d->mask.constData());
 }
 
 template <typename T>
-static bool matchNumber(QMimeMagicRulePrivate *d, const QByteArray &data)
+static bool matchNumber(const QMimeMagicRulePrivate *d, const QByteArray &data)
 {
     const T value(d->number);
     const T mask(d->numberMask);
@@ -297,7 +313,7 @@ QMimeMagicRule::~QMimeMagicRule()
 {
 }
 
-QMimeMagicRule& QMimeMagicRule::operator=(const QMimeMagicRule &other)
+QMimeMagicRule &QMimeMagicRule::operator=(const QMimeMagicRule &other)
 {
     *d = *other.d;
     return *this;

@@ -117,12 +117,15 @@ An easy case is KStandardDirs::findExe -&gt; QStandardPaths::findExecutable. Wel
    if (mime) -&gt; if (mime.isValid())
    KMimeType::mimeType(name) -&gt; db.mimeTypeForName(name)
    KMimeType::mimeType(name, DontResolveAlias) -&gt; db.mimeTypeForName(name) // there is no separate mime object for the alias
-   KMimeType::findByUrl(url) -&gt; db.findByUrl(url)
-   KMimeType::findByPath(path) -&gt; db.findByFile(path)
-   KMimeType::findByPath(path, 0, true) -&gt; db.findByName(path) // TODO: delayed mimetype determination says conflicting globs should return default.
-   KMimeType::findByContent(data) -&gt; db.findByData(data)
-   KMimeType::findByNameAndContent(name, data_or_device) -&gt; db.findByNameAndData(name, data_or_device)
-   KMimeType::findByFileContent(path) -&gt; QFile f(path); if (f.open(QIODevice::ReadOnly)) db.findByData(&amp;f)
+   KMimeType::findByUrl(url) -&gt; db.mimeTypeForUrl(url)
+   KMimeType::findByPath(path) -&gt; db.mimeTypeForFile(path)
+   KMimeType::findByPath(path, 0, true) -&gt; db.mimeTypeForFile(path, QMimeDatabase::MatchExtension)
+       (this is slightly different in case of conflicting globs though, findByPath used to return empty,
+        so that delayed mimetype determination could then refine this; mimeTypesForFileName can be useful
+        to detect this case. But for most applications this detail doesn't matter).
+   KMimeType::findByContent(data) -&gt; db.mimeTypeForData(data)
+   KMimeType::findByNameAndContent(name, data_or_device) -&gt; db.mimeTypeForNameAndData(name, data_or_device)
+   KMimeType::findByFileContent(path) -&gt; db.mimeTypeForFile(path, QMimeDatabase::MatchContent)
    mime->name() == KMimeType::defaultMimeType() -&gt; mime.isDefault()
    KMimeType::extractKnownExtension(fileName) -&gt; db.suffixForFileName(fileName)
 </ul>

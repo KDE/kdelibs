@@ -1,8 +1,51 @@
-#ifndef QMIMEGLOBPATTERN_H
-#define QMIMEGLOBPATTERN_H
+/****************************************************************************
+**
+** Copyright (C) 2012 Nokia Corporation and/or its subsidiary(-ies).
+** Contact: http://www.qt-project.org/
+**
+** This file is part of the QtCore module of the Qt Toolkit.
+**
+** $QT_BEGIN_LICENSE:LGPL$
+** GNU Lesser General Public License Usage
+** This file may be used under the terms of the GNU Lesser General Public
+** License version 2.1 as published by the Free Software Foundation and
+** appearing in the file LICENSE.LGPL included in the packaging of this
+** file. Please review the following information to ensure the GNU Lesser
+** General Public License version 2.1 requirements will be met:
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+**
+** In addition, as a special exception, Nokia gives you certain additional
+** rights. These rights are described in the Nokia Qt LGPL Exception
+** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU General
+** Public License version 3.0 as published by the Free Software Foundation
+** and appearing in the file LICENSE.GPL included in the packaging of this
+** file. Please review the following information to ensure the GNU General
+** Public License version 3.0 requirements will be met:
+** http://www.gnu.org/copyleft/gpl.html.
+**
+** Other Usage
+** Alternatively, this file may be used in accordance with the terms and
+** conditions contained in a signed written agreement between you and Nokia.
+**
+**
+**
+**
+**
+**
+** $QT_END_LICENSE$
+**
+****************************************************************************/
 
-#include <QStringList>
-#include <QHash>
+#ifndef QMIMEGLOBPATTERN_P_H
+#define QMIMEGLOBPATTERN_P_H
+
+#include <QtCore/qstringlist.h>
+#include <QtCore/qhash.h>
+
+QT_BEGIN_NAMESPACE
 
 struct QMimeGlobMatchResult
 {
@@ -10,7 +53,7 @@ struct QMimeGlobMatchResult
     : m_weight(0), m_matchingPatternLength(0)
     {}
 
-    void addMatch(const QString& mimeType, int weight, const QString &pattern);
+    void addMatch(const QString &mimeType, int weight, const QString &pattern);
 
     QStringList m_matchingMimeTypes;
     int m_weight;
@@ -34,16 +77,12 @@ public:
     }
     ~QMimeGlobPattern() {}
 
-    bool matchFileName(const QString& filename) const;
+    bool matchFileName(const QString &filename) const;
 
-    inline const QString& pattern() const
-    { return m_pattern; }
-    inline unsigned weight() const
-    { return m_weight; }
-    inline const QString& mimeType() const
-    { return m_mimeType; }
-    inline bool isCaseSensitive() const
-    { return m_caseSensitivity == Qt::CaseSensitive; }
+    inline const QString &pattern() const { return m_pattern; }
+    inline unsigned weight() const { return m_weight; }
+    inline const QString &mimeType() const { return m_mimeType; }
+    inline bool isCaseSensitive() const { return m_caseSensitivity == Qt::CaseSensitive; }
 
 private:
     QString m_pattern;
@@ -55,7 +94,7 @@ private:
 class QMimeGlobPatternList : public QList<QMimeGlobPattern>
 {
 public:
-    bool hasPattern(const QString& mimeType, const QString& pattern) const
+    bool hasPattern(const QString &mimeType, const QString &pattern) const
     {
         const_iterator it = begin();
         const const_iterator myend = end();
@@ -68,7 +107,7 @@ public:
     /*!
         "noglobs" is very rare occurrence, so it's ok if it's slow
      */
-    void removeMimeType(const QString& mimeType)
+    void removeMimeType(const QString &mimeType)
     {
         QMutableListIterator<QMimeGlobPattern> it(*this);
         while (it.hasNext()) {
@@ -95,10 +134,13 @@ public:
     void addGlob(const QMimeGlobPattern &glob);
     void removeMimeType(const QString &mimeType);
     QStringList matchingGlobs(const QString &fileName, QString *foundSuffix) const;
+    void clear();
 
     PatternsMap m_fastPatterns; // example: "doc" -> "application/msword", "text/plain"
     QMimeGlobPatternList m_highWeightGlobs;
     QMimeGlobPatternList m_lowWeightGlobs; // <= 50, including the non-fast 50 patterns
 };
 
-#endif // QMIMEGLOBPATTERN_H
+QT_END_NAMESPACE
+
+#endif // QMIMEGLOBPATTERN_P_H

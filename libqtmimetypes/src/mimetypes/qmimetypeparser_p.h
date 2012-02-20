@@ -1,22 +1,44 @@
-/**************************************************************************
+/****************************************************************************
 **
-** This file is part of QMime
+** Copyright (C) 2012 Nokia Corporation and/or its subsidiary(-ies).
+** Contact: http://www.qt-project.org/
 **
-** Based on Qt Creator source code
+** This file is part of the QtCore module of the Qt Toolkit.
 **
-** Qt Creator Copyright (c) 2011 Nokia Corporation and/or its subsidiary(-ies).
-**
-**
+** $QT_BEGIN_LICENSE:LGPL$
 ** GNU Lesser General Public License Usage
-**
 ** This file may be used under the terms of the GNU Lesser General Public
 ** License version 2.1 as published by the Free Software Foundation and
-** appearing in the file LICENSE.LGPL included in the packaging of this file.
-** Please review the following information to ensure the GNU Lesser General
-** Public License version 2.1 requirements will be met:
+** appearing in the file LICENSE.LGPL included in the packaging of this
+** file. Please review the following information to ensure the GNU Lesser
+** General Public License version 2.1 requirements will be met:
 ** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-**************************************************************************/
+** In addition, as a special exception, Nokia gives you certain additional
+** rights. These rights are described in the Nokia Qt LGPL Exception
+** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU General
+** Public License version 3.0 as published by the Free Software Foundation
+** and appearing in the file LICENSE.GPL included in the packaging of this
+** file. Please review the following information to ensure the GNU General
+** Public License version 3.0 requirements will be met:
+** http://www.gnu.org/copyleft/gpl.html.
+**
+** Other Usage
+** Alternatively, this file may be used in accordance with the terms and
+** conditions contained in a signed written agreement between you and Nokia.
+**
+**
+**
+**
+**
+**
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
 
 #ifndef MIMETYPEPARSER_P_H
 #define MIMETYPEPARSER_P_H
@@ -52,22 +74,22 @@ extern const char *const matchTypeAttributeC;
 extern const char *const matchOffsetAttributeC;
 extern const char *const matchMaskAttributeC;
 
-class BaseMimeTypeParser
+class QMimeTypeParserBase
 {
-    Q_DISABLE_COPY(BaseMimeTypeParser)
+    Q_DISABLE_COPY(QMimeTypeParserBase)
 
 public:
-    BaseMimeTypeParser() {}
-    virtual ~BaseMimeTypeParser() {}
+    QMimeTypeParserBase() {}
+    virtual ~QMimeTypeParserBase() {}
 
     bool parse(QIODevice *dev, const QString &fileName, QString *errorMessage);
 
 protected:
     virtual bool process(const QMimeType &t, QString *errorMessage) = 0;
     virtual bool process(const QMimeGlobPattern &t, QString *errorMessage) = 0;
-    virtual void processParent(const QString& child, const QString& parent) = 0;
-    virtual void processAlias(const QString& alias, const QString& name) = 0;
-    virtual void processMagicMatcher(const QMimeMagicRuleMatcher& matcher) = 0;
+    virtual void processParent(const QString &child, const QString &parent) = 0;
+    virtual void processAlias(const QString &alias, const QString &name) = 0;
+    virtual void processMagicMatcher(const QMimeMagicRuleMatcher &matcher) = 0;
 
 private:
     enum ParseState {
@@ -90,10 +112,10 @@ private:
 };
 
 
-class MimeTypeParser : public BaseMimeTypeParser
+class QMimeTypeParser : public QMimeTypeParserBase
 {
 public:
-    explicit MimeTypeParser(QMimeXMLProvider &provider) : m_provider(provider) {}
+    explicit QMimeTypeParser(QMimeXMLProvider &provider) : m_provider(provider) {}
 
 protected:
     inline bool process(const QMimeType &t, QString *)
@@ -108,7 +130,7 @@ protected:
     inline void processAlias(const QString &alias, const QString &name)
     { m_provider.addAlias(alias, name); }
 
-    inline void processMagicMatcher(const QMimeMagicRuleMatcher& matcher)
+    inline void processMagicMatcher(const QMimeMagicRuleMatcher &matcher)
     { m_provider.addMagicMatcher(matcher); }
 
 private:

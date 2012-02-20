@@ -169,9 +169,9 @@ KMimeType::Ptr KMimeType::findByUrl( const QUrl& url, mode_t mode,
     if (accuracy)
         *accuracy = 80; // not supported anymore; was it really used for anything?
     if (fast_mode) {
-        return KMimeType::Ptr(new KMimeType(db.findByName(url.path())));
+        return KMimeType::Ptr(new KMimeType(db.mimeTypeForFile(url.path(), QMimeDatabase::MatchExtension)));
     }
-    return KMimeType::Ptr(new KMimeType(db.findByUrl(url)));
+    return KMimeType::Ptr(new KMimeType(db.mimeTypeForUrl(url)));
 }
 
 KMimeType::Ptr KMimeType::findByPath( const QString& path, mode_t mode,
@@ -182,9 +182,9 @@ KMimeType::Ptr KMimeType::findByPath( const QString& path, mode_t mode,
     if (accuracy)
         *accuracy = 80; // not supported anymore; was it really used for anything?
     if (fast_mode) {
-        return KMimeType::Ptr(new KMimeType(db.findByName(path)));
+        return KMimeType::Ptr(new KMimeType(db.mimeTypeForFile(path, QMimeDatabase::MatchExtension)));
     }
-    return KMimeType::Ptr(new KMimeType(db.findByFile(path)));
+    return KMimeType::Ptr(new KMimeType(db.mimeTypeForFile(path)));
 }
 
 KMimeType::Ptr KMimeType::findByNameAndContent( const QString& name, const QByteArray& data,
@@ -194,7 +194,7 @@ KMimeType::Ptr KMimeType::findByNameAndContent( const QString& name, const QByte
     if (accuracy)
         *accuracy = 80; // not supported anymore; was it really used for anything?
     QMimeDatabase db;
-    return KMimeType::Ptr(new KMimeType(db.findByNameAndData(name, data)));
+    return KMimeType::Ptr(new KMimeType(db.mimeTypeForNameAndData(name, data)));
 }
 
 KMimeType::Ptr KMimeType::findByNameAndContent( const QString& name, QIODevice* device,
@@ -204,7 +204,7 @@ KMimeType::Ptr KMimeType::findByNameAndContent( const QString& name, QIODevice* 
     if (accuracy)
         *accuracy = 80; // not supported anymore; was it really used for anything?
     QMimeDatabase db;
-    return KMimeType::Ptr(new KMimeType(db.findByNameAndData(name, device)));
+    return KMimeType::Ptr(new KMimeType(db.mimeTypeForNameAndData(name, device)));
 }
 
 QString KMimeType::extractKnownExtension(const QString &fileName)
@@ -218,7 +218,7 @@ KMimeType::Ptr KMimeType::findByContent( const QByteArray &data, int *accuracy )
     QMimeDatabase db;
     if (accuracy)
         *accuracy = 80; // not supported anymore; was it really used for anything?
-    return KMimeType::Ptr(new KMimeType(db.findByData(data)));
+    return KMimeType::Ptr(new KMimeType(db.mimeTypeForData(data)));
 }
 
 KMimeType::Ptr KMimeType::findByContent( QIODevice* device, int* accuracy )
@@ -226,7 +226,7 @@ KMimeType::Ptr KMimeType::findByContent( QIODevice* device, int* accuracy )
     QMimeDatabase db;
     if (accuracy)
         *accuracy = 80; // not supported anymore; was it really used for anything?
-    return KMimeType::Ptr(new KMimeType(db.findByData(device)));
+    return KMimeType::Ptr(new KMimeType(db.mimeTypeForData(device)));
 }
 
 KMimeType::Ptr KMimeType::findByFileContent( const QString &fileName, int *accuracy )
@@ -242,7 +242,7 @@ KMimeType::Ptr KMimeType::findByFileContent( const QString &fileName, int *accur
     }
 #endif
     QMimeDatabase db;
-    KMimeType::Ptr mime(new KMimeType(db.findByData(&device)));
+    KMimeType::Ptr mime(new KMimeType(db.mimeTypeForData(&device)));
     if (accuracy)
         *accuracy = mime->isDefault() ? 0 : 80; // not supported anymore; was it really used for anything?
     return mime;
@@ -338,7 +338,7 @@ QStringList KMimeType::parentMimeTypes() const
 
 QStringList KMimeType::allParentMimeTypes() const
 {
-    return d_ptr->m_qmime.allParentMimeTypes();
+    return d_ptr->m_qmime.allAncestors();
 }
 
 QString KMimeType::defaultMimeType()

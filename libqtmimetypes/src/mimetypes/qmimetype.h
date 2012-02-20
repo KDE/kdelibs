@@ -1,46 +1,65 @@
 /****************************************************************************
 **
-** This file is part of QMime
+** Copyright (C) 2012 Nokia Corporation and/or its subsidiary(-ies).
+** Contact: http://www.qt-project.org/
 **
-** Based on Qt Creator source code
+** This file is part of the QtCore module of the Qt Toolkit.
 **
-** Qt Creator Copyright (c) 2011 Nokia Corporation and/or its subsidiary(-ies).
-**
-**
+** $QT_BEGIN_LICENSE:LGPL$
 ** GNU Lesser General Public License Usage
-**
 ** This file may be used under the terms of the GNU Lesser General Public
 ** License version 2.1 as published by the Free Software Foundation and
-** appearing in the file LICENSE.LGPL included in the packaging of this file.
-** Please review the following information to ensure the GNU Lesser General
-** Public License version 2.1 requirements will be met:
+** appearing in the file LICENSE.LGPL included in the packaging of this
+** file. Please review the following information to ensure the GNU Lesser
+** General Public License version 2.1 requirements will be met:
 ** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+**
+** In addition, as a special exception, Nokia gives you certain additional
+** rights. These rights are described in the Nokia Qt LGPL Exception
+** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU General
+** Public License version 3.0 as published by the Free Software Foundation
+** and appearing in the file LICENSE.GPL included in the packaging of this
+** file. Please review the following information to ensure the GNU General
+** Public License version 3.0 requirements will be met:
+** http://www.gnu.org/copyleft/gpl.html.
+**
+** Other Usage
+** Alternatively, this file may be used in accordance with the terms and
+** conditions contained in a signed written agreement between you and Nokia.
+**
+**
+**
+**
+**
+**
+** $QT_END_LICENSE$
 **
 ****************************************************************************/
 
-#ifndef QMIMETYPE_H_INCLUDED
-#define QMIMETYPE_H_INCLUDED
+
+#ifndef QMIMETYPE_H
+#define QMIMETYPE_H
+
+#include <QtCore/qshareddata.h>
+#include <QtCore/qstring.h>
 
 #include "qmime_global.h"
 
-#include <QtCore/QExplicitlySharedDataPointer>
-#include <QtCore/QString>
-
-QT_BEGIN_NAMESPACE struct QMimeTypePrivate; QT_END_NAMESPACE
-
-QT_BEGIN_NAMESPACE class QFileinfo; QT_END_NAMESPACE
-QT_BEGIN_NAMESPACE class QStringList; QT_END_NAMESPACE
-
 QT_BEGIN_NAMESPACE
+
+class QMimeTypePrivate;
+class QFileinfo;
+class QStringList;
 
 class QMIME_EXPORT QMimeType
 {
 public:
     QMimeType();
     QMimeType(const QMimeType &other);
-#if !defined(Q_COMPILER_RVALUE_REFS) || TEST_COMPILER_RVALUE_REFS == 0
     QMimeType &operator=(const QMimeType &other);
-#endif
 #ifdef Q_COMPILER_RVALUE_REFS
     QMimeType(QMimeType &&other);
 
@@ -69,15 +88,12 @@ public:
     bool isDefault() const;
 
     QString name() const;
-#if 0
-    QStringList aliases() const;
-#endif
-    QString comment(const QString &localeName = QString()) const;
+    QString comment() const;
     QString genericIconName() const;
     QString iconName() const;
     QStringList globPatterns() const;
     QStringList parentMimeTypes() const;
-    QStringList allParentMimeTypes() const;
+    QStringList allAncestors() const;
     QStringList suffixes() const;
     QString preferredSuffix() const;
 
@@ -86,9 +102,9 @@ public:
     QString filterString() const;
 
 protected:
-    friend class BaseMimeTypeParser;
+    friend class QMimeTypeParserBase;
     friend class MimeTypeMapEntry;
-    friend struct QMimeDatabasePrivate;
+    friend class QMimeDatabasePrivate;
     friend class QMimeXMLProvider;
     friend class QMimeBinaryProvider;
     friend class QMimeTypePrivate;
@@ -98,4 +114,4 @@ protected:
 
 QT_END_NAMESPACE
 
-#endif   // QMIMETYPE_H_INCLUDED
+#endif   // QMIMETYPE_H

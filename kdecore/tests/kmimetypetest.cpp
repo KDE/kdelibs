@@ -42,6 +42,16 @@
 #include <qtemporaryfile.h>
 #include <kdesktopfile.h>
 
+int initializeLang()
+{
+    qputenv("LC_ALL", "en_US");
+    qputenv("LANG", "en_US");
+    return 0;
+}
+
+// Set LANG before QCoreApplication is created
+Q_CONSTRUCTOR_FUNCTION(initializeLang)
+
 void KMimeTypeTest::initTestCase()
 {
     // Clean up local xdg dir in case of leftover mimetype definitions

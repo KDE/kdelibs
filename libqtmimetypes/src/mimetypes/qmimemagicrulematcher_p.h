@@ -1,39 +1,57 @@
-/**************************************************************************
+/****************************************************************************
 **
-** This file is part of QMime
+** Copyright (C) 2012 Nokia Corporation and/or its subsidiary(-ies).
+** Contact: http://www.qt-project.org/
 **
-** Based on Qt Creator source code
+** This file is part of the QtCore module of the Qt Toolkit.
 **
-** Qt Creator Copyright (c) 2011 Nokia Corporation and/or its subsidiary(-ies).
-**
-**
+** $QT_BEGIN_LICENSE:LGPL$
 ** GNU Lesser General Public License Usage
-**
 ** This file may be used under the terms of the GNU Lesser General Public
 ** License version 2.1 as published by the Free Software Foundation and
-** appearing in the file LICENSE.LGPL included in the packaging of this file.
-** Please review the following information to ensure the GNU Lesser General
-** Public License version 2.1 requirements will be met:
+** appearing in the file LICENSE.LGPL included in the packaging of this
+** file. Please review the following information to ensure the GNU Lesser
+** General Public License version 2.1 requirements will be met:
 ** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-**************************************************************************/
+** In addition, as a special exception, Nokia gives you certain additional
+** rights. These rights are described in the Nokia Qt LGPL Exception
+** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU General
+** Public License version 3.0 as published by the Free Software Foundation
+** and appearing in the file LICENSE.GPL included in the packaging of this
+** file. Please review the following information to ensure the GNU General
+** Public License version 3.0 requirements will be met:
+** http://www.gnu.org/copyleft/gpl.html.
+**
+** Other Usage
+** Alternatively, this file may be used in accordance with the terms and
+** conditions contained in a signed written agreement between you and Nokia.
+**
+**
+**
+**
+**
+**
+** $QT_END_LICENSE$
+**
+****************************************************************************/
 
-#ifndef MAGICMATCHER_H
-#define MAGICMATCHER_H
 
-#include "qmime_global.h"
+#ifndef QMIMEMAGICRULEMATCHER_P_H
+#define QMIMEMAGICRULEMATCHER_P_H
 
-#include <QtCore/QByteArray>
-#include <QtCore/QHash>
-#include <QtCore/QList>
-#include <QtCore/QSharedPointer>
-#include <QtCore/QString>
+#include <QtCore/qbytearray.h>
+#include <QtCore/qlist.h>
+#include <QtCore/qstring.h>
 
 #include "qmimemagicrule_p.h"
 
 QT_BEGIN_NAMESPACE
 
-class QMIME_EXPORT QMimeMagicRuleMatcher
+class QMimeMagicRuleMatcher
 {
 public:
     explicit QMimeMagicRuleMatcher(const QString &mime, unsigned priority = 65535);
@@ -47,9 +65,6 @@ public:
     bool matches(const QByteArray &data) const;
 
     unsigned priority() const;
-#if 0
-    void setPriority(unsigned priority);
-#endif
 
     QString mimetype() const { return m_mimetype; }
 
@@ -61,4 +76,4 @@ private:
 
 QT_END_NAMESPACE
 
-#endif // MAGICMATCHER_H
+#endif // QMIMEMAGICRULEMATCHER_P_H

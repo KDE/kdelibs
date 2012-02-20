@@ -96,14 +96,14 @@ bool KTar::createDevice(QIODevice::OpenMode mode)
             // we can still do the right thing here.
             QFile f(fileName());
             if (f.open(QIODevice::ReadOnly)) {
-                mime = db.findByData(&f);
+                mime = db.mimeTypeForData(&f);
             }
             if (!mime.isValid()) {
                 // Unable to determine mimetype from contents, get it from file name
-                mime = db.findByName(fileName());
+                mime = db.mimeTypeForFile(fileName(), QMimeDatabase::MatchExtension);
             }
         } else {
-            mime = db.findByName(fileName());
+            mime = db.mimeTypeForFile(fileName(), QMimeDatabase::MatchExtension);
         }
 
         //qDebug() << mode << mime->name();

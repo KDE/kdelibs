@@ -26,16 +26,13 @@ int main(int argc, char *argv[])
         qstdin.open(stdin, QIODevice::ReadOnly);
         const QByteArray data = qstdin.readAll();
         //mime = QMimeType::findByContent(data, &accuracy);
-        mime = db.findByData(data);
+        mime = db.mimeTypeForData(data);
     } else if (option == QLatin1String("-c")) {
-        QFile file(fileName);
-        if (file.open(QIODevice::ReadOnly)) {
-            mime = db.findByData(file.read(32000));
-        }
+        mime = db.mimeTypeForFile(fileName, QMimeDatabase::MatchContent);
     } else if (option == QLatin1String("-f")) {
-        mime = db.findByName(fileName);
+        mime = db.mimeTypeForFile(fileName, QMimeDatabase::MatchExtension);
     } else {
-        mime = db.findByFile(fileName);
+        mime = db.mimeTypeForFile(fileName);
     }
     if ( mime.isValid() /*&& !mime.isDefault()*/ ) {
         printf("%s\n", mime.name().toLatin1().constData());

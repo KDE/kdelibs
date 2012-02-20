@@ -26,4 +26,3 @@ remove_definitions(-DQT_NO_KEYWORDS)
 
 add_subdirectory(src)
 add_subdirectory(examples)
-add_subdirectory(tests)

@@ -9,12 +9,12 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../../include/QtMimeTypes )
 
 set(SOURCES
  qmimedatabase.cpp
- mimetypeparser.cpp
  qmimeglobpattern.cpp
  qmimemagicrule.cpp
  qmimemagicrulematcher.cpp
  qmimeprovider.cpp
  qmimetype.cpp
+ qmimetypeparser.cpp
 )
 
 qt4_add_resources( SOURCES mimetypes.qrc )

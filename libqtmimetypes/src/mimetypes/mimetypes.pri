@@ -1,42 +1,25 @@
-INCLUDEPATH *= $$PWD/../include
-DEPENDPATH  *= $$PWD
+# Qt core mimetype module
 
-INCLUDEPATH += $$PWD/inqt5
-CONFIG += depend_includepath
+HEADERS += \
+        mimetypes/qmimedatabase.h \
+        mimetypes/qmimetype.h \
+        mimetypes/qmimemagicrulematcher_p.h \
+        mimetypes/qmimetype_p.h \
+        mimetypes/qmimetypeparser_p.h \
+        mimetypes/qmimedatabase_p.h \
+        mimetypes/qmimemagicrule_p.h \
+        mimetypes/qmimeglobpattern_p.h \
+        mimetypes/qmimeprovider_p.h
 
-QT     = core
-
-DEFINES += QT_NO_CAST_FROM_ASCII
-
-SOURCES += qmimedatabase.cpp \
-    qmimetype.cpp \
-    magicmatcher.cpp \
-    mimetypeparser.cpp \
-    qmimemagicrule.cpp \
-    qmimeglobpattern.cpp \
-    qmimeprovider.cpp
-
-HEADERS += qmime_global.h \
-    qmimedatabase.h \
-    qmimetype.h \
-    magicmatcher.h \
-    qmimetype_p.h \
-    magicmatcher_p.h \
-    mimetypeparser_p.h \
-    qmimedatabase_p.h \
-    qmimemagicrule.h \
-    qmimeglobpattern_p.h \
-    qmimeprovider_p.h
-
-SOURCES += inqt5/qstandardpaths.cpp
-win32: SOURCES += inqt5/qstandardpaths_win.cpp
-unix: {
-       macx-*: {
-            SOURCES += inqt5/qstandardpaths_mac.cpp
-        } else {
-            SOURCES += inqt5/qstandardpaths_unix.cpp
-        }
-}
+SOURCES += \
+        mimetypes/qmimedatabase.cpp \
+        mimetypes/qmimetype.cpp \
+        mimetypes/qmimemagicrulematcher.cpp \
+        mimetypes/qmimetypeparser.cpp \
+        mimetypes/qmimemagicrule.cpp \
+        mimetypes/qmimeglobpattern.cpp \
+        mimetypes/qmimeprovider.cpp
 
 RESOURCES += \
-    qmime.qrc
+        mimetypes/mimetypes.qrc
+

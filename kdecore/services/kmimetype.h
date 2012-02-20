@@ -43,6 +43,7 @@ class KMimeTypePrivate;
  * services (apps and components) "which can open text/plain".
  *
  * @see KServiceType
+ * @deprecated use QMimeType
  */
 class KDECORE_EXPORT KMimeType : public QSharedData
 {

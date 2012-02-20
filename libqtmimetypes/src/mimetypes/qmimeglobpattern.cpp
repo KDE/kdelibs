@@ -1,8 +1,51 @@
+/****************************************************************************
+**
+** Copyright (C) 2012 Nokia Corporation and/or its subsidiary(-ies).
+** Contact: http://www.qt-project.org/
+**
+** This file is part of the QtCore module of the Qt Toolkit.
+**
+** $QT_BEGIN_LICENSE:LGPL$
+** GNU Lesser General Public License Usage
+** This file may be used under the terms of the GNU Lesser General Public
+** License version 2.1 as published by the Free Software Foundation and
+** appearing in the file LICENSE.LGPL included in the packaging of this
+** file. Please review the following information to ensure the GNU Lesser
+** General Public License version 2.1 requirements will be met:
+** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+**
+** In addition, as a special exception, Nokia gives you certain additional
+** rights. These rights are described in the Nokia Qt LGPL Exception
+** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU General
+** Public License version 3.0 as published by the Free Software Foundation
+** and appearing in the file LICENSE.GPL included in the packaging of this
+** file. Please review the following information to ensure the GNU General
+** Public License version 3.0 requirements will be met:
+** http://www.gnu.org/copyleft/gpl.html.
+**
+** Other Usage
+** Alternatively, this file may be used in accordance with the terms and
+** conditions contained in a signed written agreement between you and Nokia.
+**
+**
+**
+**
+**
+**
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
 #include "qmimeglobpattern_p.h"
 
 #include <QRegExp>
 #include <QStringList>
 #include <QDebug>
+
+QT_BEGIN_NAMESPACE
 
 /*!
     \internal
@@ -46,12 +89,12 @@ void QMimeGlobMatchResult::addMatch(const QString &mimeType, int weight, const Q
     \sa QMimeType, QMimeDatabase, QMimeMagicRuleMatcher, QMimeMagicRule
 */
 
-bool QMimeGlobPattern::matchFileName(const QString& _filename) const
+bool QMimeGlobPattern::matchFileName(const QString &inputFilename) const
 {
     // "Applications MUST match globs case-insensitively, except when the case-sensitive
     // attribute is set to true."
     // The constructor takes care of putting case-insensitive patterns in lowercase.
-    const QString filename = m_caseSensitivity == Qt::CaseInsensitive ? _filename.toLower() : _filename;
+    const QString filename = m_caseSensitivity == Qt::CaseInsensitive ? inputFilename.toLower() : inputFilename;
 
     const int pattern_len = m_pattern.length();
     if (!pattern_len)
@@ -96,7 +139,7 @@ bool QMimeGlobPattern::matchFileName(const QString& _filename) const
     return rx.exactMatch(filename);
 }
 
-static bool isFastPattern(const QString& pattern)
+static bool isFastPattern(const QString &pattern)
 {
    // starts with "*.", has no other '*' and no other '.'
    return pattern.lastIndexOf(QLatin1Char('*')) == 0
@@ -107,12 +150,10 @@ static bool isFastPattern(const QString& pattern)
       ;
 }
 
-void QMimeAllGlobPatterns::addGlob(const QMimeGlobPattern& glob)
+void QMimeAllGlobPatterns::addGlob(const QMimeGlobPattern &glob)
 {
     const QString &pattern = glob.pattern();
     Q_ASSERT(!pattern.isEmpty());
-
-    //kDebug() << "pattern" << pattern << "glob.weight=" << glob.weight() << "isFast=" << isFastPattern(pattern) << glob.flags;
 
     // Store each patterns into either m_fastPatternDict (*.txt, *.html etc. with default weight 50)
     // or for the rest, like core.*, *.tar.bz2, *~, into highWeightPatternOffset (>50)
@@ -121,7 +162,7 @@ void QMimeAllGlobPatterns::addGlob(const QMimeGlobPattern& glob)
     if (glob.weight() == 50 && isFastPattern(pattern) && !glob.isCaseSensitive()) {
         // The bulk of the patterns is *.foo with weight 50 --> those go into the fast patterns hash.
         const QString extension = pattern.mid(2).toLower();
-        QStringList& patterns = m_fastPatterns[extension]; // find or create
+        QStringList &patterns = m_fastPatterns[extension]; // find or create
         // This would just slow things down: if (!patterns.contains(glob.mimeType()))
         patterns.append(glob.mimeType());
     } else {
@@ -135,7 +176,7 @@ void QMimeAllGlobPatterns::addGlob(const QMimeGlobPattern& glob)
     }
 }
 
-void QMimeAllGlobPatterns::removeMimeType(const QString& mimeType)
+void QMimeAllGlobPatterns::removeMimeType(const QString &mimeType)
 {
     QMutableHashIterator<QString, QStringList> it(m_fastPatterns);
     while (it.hasNext()) {
@@ -188,3 +229,12 @@ QStringList QMimeAllGlobPatterns::matchingGlobs(const QString &fileName, QString
         *foundSuffix = result.m_foundSuffix;
     return result.m_matchingMimeTypes;
 }
+
+void QMimeAllGlobPatterns::clear()
+{
+    m_fastPatterns.clear();
+    m_highWeightGlobs.clear();
+    m_lowWeightGlobs.clear();
+}
+
+QT_END_NAMESPACE

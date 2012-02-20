@@ -1520,7 +1520,7 @@ KMimeType::Ptr KFileItem::mimeTypePtr() const
         KUrl url = mostLocalUrl(isLocalUrl);
         if (d->m_delayedMimeTypes) {
             QMimeDatabase db;
-            const QList<QMimeType> mimeTypes = db.findMimeTypesByFileName(url.path());
+            const QList<QMimeType> mimeTypes = db.mimeTypesForFileName(url.path());
             if (mimeTypes.isEmpty()) {
                 d->m_pMimeType = KMimeType::defaultMimeTypePtr();
                 d->m_bMimeTypeKnown = false;
