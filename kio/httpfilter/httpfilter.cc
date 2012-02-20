@@ -21,7 +21,6 @@
 #include "httpfilter.h"
 #include <kcompressiondevice.h>
 #include <kfilterbase.h>
-#include <kdebug.h>
 
 #include <klocale.h>
 

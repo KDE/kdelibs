@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.5)
 
-project(kcoreaddons)
+project(kwindowsystem)
 
 find_package(extra-cmake-modules 0.0.2 REQUIRED)
 
