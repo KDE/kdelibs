@@ -1,5 +1,6 @@
 /* This file is part of the KDE project
  * Copyright (C) 2007 Matthew Woehlke <mw_triad@users.sourceforge.net>
+ * Copyright (C) 2007 Olaf Schmidt <ojschmidt@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -17,35 +18,20 @@
  * Boston, MA 02110-1301, USA.
  */
 
-/*
- * If you use KColorSpaces in your own KDE code, please drop me a line at
- * mw_triad@users.sourceforge.net, as I would like to track if people find it
- * useful. Thanks!
- */
-
-#ifndef KCOLORSPACES_H
-#define KCOLORSPACES_H
+#ifndef KGUIADDONS_KCOLORHELPERS_P_H
+#define KGUIADDONS_KCOLORHELPERS_P_H
 
 #include <QColor>
 
-namespace KColorSpaces
+// normalize: like qBound(a, 0.0, 1.0) but without needing the args and with
+// "safer" behavior on NaN (isnan(a) -> return 0.0)
+static inline qreal normalize(qreal a)
 {
-
-class KHCY
-{
-public:
-    explicit KHCY(const QColor&);
-    explicit KHCY(qreal h_, qreal c_, qreal y_, qreal a_ = 1.0);
-    QColor qColor() const;
-    qreal h, c, y, a;
-    static qreal luma(const QColor&);
-private:
-    static qreal gamma(qreal);
-    static qreal igamma(qreal);
-    static qreal lumag(qreal, qreal, qreal);
-};
-
+    return (a < 1.0 ? (a > 0.0 ? a : 0.0) : 1.0);
 }
 
-#endif
-// kate: space-indent on; indent-width 4; replace-tabs on; auto-insert-doxygen on;
+class QPainter;
+class QRect;
+class QBrush;
+
+#endif // KDEUI_COLORS_KCOLORHELPERS_P_H

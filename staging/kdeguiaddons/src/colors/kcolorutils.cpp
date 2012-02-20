@@ -20,7 +20,7 @@
  */
 #include <kcolorutils.h>
 #include "kcolorspaces.h"
-#include "kcolorhelpers_p.h"
+#include "kdeguiaddons_colorhelpers_p.h"
 
 #include <QColor>
 #include <QImage>

@@ -22,7 +22,7 @@
 #ifndef KDELIBS_KCOLORCOLLECTION_H
 #define KDELIBS_KCOLORCOLLECTION_H
 
-#include <kdeui_export.h>
+#include <kdeguiaddons_export.h>
 
 #include <QColor>
 #include <QtCore/QList>
@@ -39,7 +39,7 @@
  *
  * @author Waldo Bastian (bastian@kde.org)
  **/
-class KDEUI_EXPORT KColorCollection
+class KDEGUIADDONS_EXPORT KColorCollection
 {
 public:
    /**

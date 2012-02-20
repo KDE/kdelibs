@@ -267,6 +267,8 @@ set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdeui
                         ${CMAKE_SOURCE_DIR}/tier1/kwindowsystem/src
                         ${CMAKE_BINARY_DIR}/tier2/kauth/src/
                         ${CMAKE_SOURCE_DIR}/tier2/kauth/src/
+                        ${CMAKE_BINARY_DIR}/staging/kdeguiaddons/src/
+                        ${CMAKE_SOURCE_DIR}/staging/kdeguiaddons/src/colors
                         ${KDE4_KDECORE_INCLUDES})
 
 # kio depends on kdeui
