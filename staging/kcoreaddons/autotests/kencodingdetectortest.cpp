@@ -17,8 +17,9 @@
 */
 
 #include "kencodingdetectortest.h"
-#include "qtest_kde.h"
-#include <kdebug.h>
+
+#include <QTest>
+
 #include <kencodingdetector.h>
 
 
@@ -44,10 +45,10 @@ void KEncodingDetectorTest::testDecode()
     QCOMPARE(ed->decodedInvalidCharacters(), false);
     QString s2 = ed->decode( data2, sizeof(data2)-1);
     QCOMPARE(ed->decodedInvalidCharacters(), true);
-    QCOMPARE( s == data1, true );
+    QCOMPARE(s, QString::fromLatin1(data1));
 
     ed->resetDecoder();
-    QCOMPARE(ed->decodedInvalidCharacters(), false);
+    QVERIFY(!ed->decodedInvalidCharacters());
 
     // set to automatic detection
     ed->setEncoding( "", KEncodingDetector::DefaultEncoding );
@@ -62,9 +63,9 @@ void KEncodingDetectorTest::testDecode()
 
     // force encoding, as the high bytes must have switched the encoding
     // to anything *but* utf-8
-    QCOMPARE(QString("utf-8").startsWith(ed->encoding(), Qt::CaseInsensitive), false);
+    QCOMPARE(QString::fromLatin1("utf-8").startsWith(QString::fromLatin1(ed->encoding()), Qt::CaseInsensitive), false);
     ed->setEncoding( "utf-8", KEncodingDetector::UserChosenEncoding );
-    QCOMPARE(QString("utf-8").startsWith(ed->encoding(), Qt::CaseInsensitive), true);
+    QCOMPARE(QString::fromLatin1("utf-8").startsWith(QString::fromLatin1(ed->encoding()), Qt::CaseInsensitive), true);
 
     // force decoding now
     s = ed->flush();
@@ -85,4 +86,4 @@ void KEncodingDetectorTest::testDecode()
     QCOMPARE( ed->decodedInvalidCharacters(), true );
 }
 
-QTEST_KDEMAIN_CORE(KEncodingDetectorTest)
+QTEST_MAIN(KEncodingDetectorTest)
