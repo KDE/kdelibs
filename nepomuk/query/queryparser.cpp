@@ -39,6 +39,7 @@
 
 #include "resourcemanager.h"
 #include "property.h"
+#include "literal.h"
 
 #include <Soprano/Node>
 #include <Soprano/Model>
@@ -128,79 +129,20 @@ namespace {
             return s;
     }
 
-    bool positiveTerm( const QString& s ) {
+    bool positiveTerm( const QString& s_ ) {
+        const QString s = s_.toLower().simplified();
         if(s.isEmpty())
             return true;
         else if(s == "+")
             return true;
         else if(s == "-")
             return false;
+        else if(s == "!")
+            return false;
+        else if(s == "not")
+            return false;
         else //unrecognized capture
             return true;
-    }
-
-    // TODO do this dorectly while parsing (but only once we have a real parser based on bison or whatever
-    Nepomuk::Query::Term resolveFields( const Nepomuk::Query::Term& term, const Nepomuk::Query::QueryParser* parser )
-    {
-        switch( term.type() ) {
-        case Nepomuk::Query::Term::And:
-        case Nepomuk::Query::Term::Or: {
-            QList<Nepomuk::Query::Term> newSubTerms;
-            foreach( const Nepomuk::Query::Term& t, static_cast<const Nepomuk::Query::GroupTerm&>( term ).subTerms() ) {
-                Nepomuk::Query::Term resolvedTerm = resolveFields(t, parser);
-                if ( resolvedTerm.isValid() )
-                    newSubTerms << resolvedTerm;
-                else
-                    return Nepomuk::Query::Term();
-            }
-            if ( term.isAndTerm() )
-                return Nepomuk::Query::AndTerm( newSubTerms );
-            else
-                return Nepomuk::Query::OrTerm( newSubTerms );
-        }
-
-
-        case Nepomuk::Query::Term::Negation: {
-            return Nepomuk::Query::NegationTerm::negateTerm( resolveFields( term.toNegationTerm().subTerm(), parser ) );
-        }
-
-
-        case Nepomuk::Query::Term::Comparison: {
-            Nepomuk::Query::ComparisonTerm newTerm;
-            newTerm.setComparator( term.toComparisonTerm().comparator() );
-            newTerm.setProperty( term.toComparisonTerm().property() );
-            newTerm.setSubTerm( resolveFields( term.toComparisonTerm().subTerm(), parser ) );
-
-            // A very dumb test to see if the property is set or not: does the URI have a scheme.
-            // With a proper parser and in-place property matching there will be no need for this anymore
-            if ( newTerm.property().uri().scheme().isEmpty() ) {
-                QList<Nepomuk::Types::Property> properties = parser->matchProperty( term.toComparisonTerm().property().uri().toString() );
-                if ( properties.count() > 0 ) {
-                    if ( properties.count() == 1 ) {
-                        newTerm.setProperty( properties.first() );
-                        return newTerm;
-                    }
-                    else {
-                        // we only use a max of 4 properties, otherwise the queries get too big
-                        Nepomuk::Query::OrTerm orTerm;
-                        for( int i = 0; i < qMin(properties.count(), 4); ++i ) {
-                            const Nepomuk::Types::Property& property = properties[i];
-                            Nepomuk::Query::ComparisonTerm t( newTerm );
-                            t.setProperty( property );
-                            orTerm.addSubTerm( t );
-                        }
-                        return orTerm;
-                    }
-                }
-                else {
-                    return Nepomuk::Query::Term();
-                }
-            }
-        }
-
-        default:
-            return term;
-        }
     }
 
     // A filename pattern needs to contain one dot and at least one '*' or '?':
@@ -256,6 +198,70 @@ namespace {
         else {
             return term;
         }
+    }
+
+    /**
+     * Tries to setup the sub-term of the given comparisonterm according to its property.
+     * This can fail if the sub-term cannot be converted to the property's range.
+     *
+     * This is used in QueryParser::Private::resolveFields
+     */
+    bool setupComparisonTermSubTerm(Nepomuk::Query::ComparisonTerm& ct)
+    {
+        // property with resource range
+        if(ct.property().range().isValid()) {
+            if(ct.subTerm().isLiteralTerm()) {
+                // here we need a string. everything else does not work since we match labels
+                return ct.subTerm().toLiteralTerm().value().isString();
+            }
+            else {
+                return true;
+            }
+        }
+
+        // property with literal range
+        else if(ct.subTerm().isLiteralTerm()) {
+            // only strings can be matched via bif:contains
+            if(ct.comparator() == Nepomuk::Query::ComparisonTerm::Contains &&
+               ct.property().literalRangeType().dataType() != QVariant::String) {
+                ct.setComparator(Nepomuk::Query::ComparisonTerm::Equal);
+            }
+
+            // try to convert the value via QVariant
+            QVariant v = ct.subTerm().toLiteralTerm().value().variant();
+            if(v.convert(ct.property().literalRangeType().dataType())) {
+                ct.setSubTerm(Nepomuk::Query::LiteralTerm(v));
+                return true;
+            }
+
+            // try some heuristics
+            else {
+                if(ct.property().literalRangeType().dataType() == QVariant::DateTime) {
+                    // if it is an int with 4 digits it is very likely a year
+                    if(ct.subTerm().toLiteralTerm().value().isInt() ) {
+                        const int year = ct.subTerm().toLiteralTerm().value().toInt();
+                        if( year >= 1000 && year <= 9999) {
+                            QDate date(year, 1, 1);
+                            QTime time(0,0);
+                            // greater than last day in same year
+                            // greater or equal than the first day in same year
+                            // smaller than first day in same year
+                            // smaller or equal than last day in same year
+                            if(ct.comparator() == ComparisonTerm::Greater ||
+                               ct.comparator() == ComparisonTerm::SmallerOrEqual) {
+                                date.setYMD(date.year(), 12, 31);
+                                time.setHMS(23,59,59,999);
+                            }
+                            ct.setSubTerm(Nepomuk::Query::LiteralTerm(QDateTime(date, time)));
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        // fallback
+        return false;
     }
 
 #ifndef Q_CC_MSVC
@@ -369,8 +375,8 @@ namespace {
 
     // a field differs from a plain term in that it does never allow comparators
     const char* s_fieldNamePattern = "([^\\s\"':=<>]+|(?:([\"'])[^\"':=<>]+\\%1))";
-    const char* s_plainTermPattern = "([^\\s\"':=<>]+|(?:([\"'])[^\"']+\\%1))";
-    const char* s_inExclusionPattern = "([\\+\\-]?)";
+    const char* s_plainTermPattern = "([^-][^\\s\"':=<>]*|(?:([\"'])[^\"']+\\%1))";
+    const char* s_inExclusionPattern = "((?:[\\+\\-\\s*]|\\!\\s*|[nN][oO][tT]\\s+)?)";
     const char* s_uriPattern = "<([^<>]+)>";
     const char* s_comparatorPattern = "(:|\\<=|\\>=|=|\\<|\\>)";
 
@@ -443,16 +449,93 @@ namespace {
 class Nepomuk::Query::QueryParser::Private
 {
 public:
+    QueryParser* q;
+
     QSet<QString> andKeywords;
     QSet<QString> orKeywords;
     mutable QHash<QString, QList<Types::Property> > fieldMatchCache;
     QMutex fieldMatchCacheMutex;
+
+    /// set by resolveFields if the query is in fact invalid
+    bool m_invalidQuery;
+
+    /**
+     * Resolve the fields in all ComparisonTerms by looking up possible matching
+     * properties.
+     * This method will set m_invalidQuery in case there is one term for which
+     * no property can be matched.
+     */
+    Nepomuk::Query::Term resolveFields( const Nepomuk::Query::Term& term );
 };
+
+
+
+Term QueryParser::Private::resolveFields(const Term &term)
+{
+    switch( term.type() ) {
+    case Nepomuk::Query::Term::And:
+    case Nepomuk::Query::Term::Or: {
+        QList<Nepomuk::Query::Term> newSubTerms;
+        foreach( const Nepomuk::Query::Term& t, static_cast<const Nepomuk::Query::GroupTerm&>( term ).subTerms() ) {
+            Nepomuk::Query::Term resolvedTerm = resolveFields(t);
+            if ( resolvedTerm.isValid() )
+                newSubTerms << resolvedTerm;
+            else
+                return Nepomuk::Query::Term();
+        }
+        if ( term.isAndTerm() )
+            return Nepomuk::Query::AndTerm( newSubTerms );
+        else
+            return Nepomuk::Query::OrTerm( newSubTerms );
+    }
+
+
+    case Nepomuk::Query::Term::Negation: {
+        return Nepomuk::Query::NegationTerm::negateTerm( resolveFields( term.toNegationTerm().subTerm() ) );
+    }
+
+
+    case Nepomuk::Query::Term::Comparison: {
+        Nepomuk::Query::ComparisonTerm newTerm;
+        newTerm.setComparator( term.toComparisonTerm().comparator() );
+        newTerm.setProperty( term.toComparisonTerm().property() );
+        newTerm.setSubTerm( resolveFields( term.toComparisonTerm().subTerm() ) );
+
+        // A very dumb test to see if the property is set or not: does the URI have a scheme.
+        // With a proper parser and in-place property matching there will be no need for this anymore
+        if ( newTerm.property().uri().scheme().isEmpty() ) {
+            QList<Nepomuk::Types::Property> properties = q->matchProperty( term.toComparisonTerm().property().uri().toString() );
+            // we only use a max of 4 properties, otherwise the queries get too big
+            // in addition we try to exclude properties which do not make sense:
+            // - numerical values can never match a resource
+            Nepomuk::Query::OrTerm orTerm;
+            for( int i = 0; i < properties.count() && orTerm.subTerms().count() < 4; ++i ) {
+                const Nepomuk::Types::Property& property = properties[i];
+                Nepomuk::Query::ComparisonTerm t( newTerm );
+                t.setProperty( property );
+                if(setupComparisonTermSubTerm(t)) {
+                    orTerm.addSubTerm( t );
+                }
+            }
+            if(!orTerm.isValid()) {
+                m_invalidQuery = true;
+                return Nepomuk::Query::Term();
+            }
+            return orTerm.optimized();
+        }
+    }
+
+    default:
+        return term;
+    }
+}
 
 
 Nepomuk::Query::QueryParser::QueryParser()
     : d( new Private() )
 {
+    d->q = this;
+
     QString andListStr = i18nc( "Boolean AND keyword in desktop search strings. "
                                 "You can add several variants separated by spaces, "
                                 "e.g. retain the English one alongside the translation; "
@@ -705,8 +788,14 @@ Nepomuk::Query::Query Nepomuk::Query::QueryParser::parse( const QString& query, 
         final.setTerm( t );
     }
 
-    final.setTerm( mergeLiteralTerms( resolveFields( final.term(), this ) ) );
-    return final;
+    d->m_invalidQuery = false;
+    final.setTerm( mergeLiteralTerms( d->resolveFields( final.term() ) ) );
+    if(d->m_invalidQuery) {
+        return Query();
+    }
+    else {
+        return final;
+    }
 }
 
 

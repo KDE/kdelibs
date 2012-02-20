@@ -142,7 +142,7 @@ KonfUpdate::KonfUpdate()
             if (!url.isLocalFile()) {
                 KCmdLineArgs::usageError(i18n("Only local files are supported."));
             }
-            updateFiles.append(url.path());
+            updateFiles.append(url.toLocalFile());
         }
     } else {
         if (cg.readEntry("autoUpdateDisabled", false))
