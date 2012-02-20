@@ -1,7 +1,7 @@
 set(libkde4support_SRCS
-    ktemporaryfile.cpp
-    ktempdir.cpp
-    kmd5.cpp
+    kdecore/ktemporaryfile.cpp
+    kdecore/ktempdir.cpp
+    kdecore/kmd5.cpp
 )
 
 include_directories(
@@ -22,7 +22,15 @@ set_target_properties(kde4support PROPERTIES VERSION ${ECM_VERSION_STRING} SOVER
 install(TARGETS kde4support EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install(FILES
-    ktemporaryfile.h
+    kdecore/ktemporaryfile.h
+    kdecore/ktempdir.h
+    kdecore/kmd5.h
     ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
+)
+
+# kparts/*.h
+install(FILES
+    kparts/genericfactory.h
+    DESTINATION ${INCLUDE_INSTALL_DIR}/kparts COMPONENT Devel
 )
