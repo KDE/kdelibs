@@ -53,7 +53,7 @@ static const TranslationItem g_translations[] = {
     { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#relatedTo", I18N_NOOP2_NOSTRIP("@label", "Related To") },
     { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#subject", I18N_NOOP2_NOSTRIP("@label", "Subject") },
     { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#title", I18N_NOOP2_NOSTRIP("@label music title", "Title") },
-    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#url", I18N_NOOP2_NOSTRIP("@label file URL", "Location") },
+    { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#url", I18N_NOOP2_NOSTRIP("@label file URL", "File Location") },
     { "http://www.semanticdesktop.org/ontologies/2007/03/22/nco#creator", I18N_NOOP2_NOSTRIP("@label", "Creator") },
     { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#averageBitrate", I18N_NOOP2_NOSTRIP("@label", "Average Bitrate") },
     { "http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#channels", I18N_NOOP2_NOSTRIP("@label", "Channels") },
