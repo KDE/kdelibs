@@ -145,6 +145,8 @@ bool KGenericFactoryBase<T>::s_createComponentDataCalled = false;
  *
  *     K_EXPORT_COMPONENT_FACTORY( libmyplugin, KGenericFactory<MyPlugin> )
  * \endcode
+ *
+ * @deprecated use KPluginFactory
  */
 template <class Product, class ParentType = QObject>
 class KDECORE_DEPRECATED KGenericFactory : public KGenericFactoryBase<Product>
