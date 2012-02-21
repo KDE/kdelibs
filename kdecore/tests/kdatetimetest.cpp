@@ -1344,7 +1344,7 @@ void KDateTimeTest::toZone()
 
     // This test relies on kded running, and on kdebase/runtime being installed
     if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded")) {
-        QSKIP("kded not running", SkipSingle);
+        QSKIP_PORTING("kded not running", SkipSingle);
     }
     QDBusInterface ktimezoned("org.kde.kded", "/modules/ktimezoned", "org.kde.kded.KTimeZoned");
     if (!ktimezoned.isValid())
@@ -1353,7 +1353,7 @@ void KDateTimeTest::toZone()
         QDBusInterface kded("org.kde.kded", "/kded", "org.kde.kded");
         QDBusReply<bool> reply = kded.call("loadModule", "ktimezoned");
         if (!reply.isValid() || !reply)
-            QSKIP("Could not load ktimezoned kded module", SkipSingle);
+            QSKIP_PORTING("Could not load ktimezoned kded module", SkipSingle);
     }
 
     KTimeZone london = KSystemTimeZones::zone("Europe/London");

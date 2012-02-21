@@ -60,7 +60,7 @@ void KEmoticonTest::testEmoticonParser()
         // check if the expected output file exists
         // if it doesn't, skip the testcase
         if (! expectedFile.exists()) {
-            QSKIP("Warning! expected output for testcase not found. Skiping testcase", SkipSingle);
+            QSKIP_PORTING("Warning! expected output for testcase not found. Skiping testcase", SkipSingle);
             continue;
         }
         if (inputFile.open(QIODevice::ReadOnly) && expectedFile.open(QIODevice::ReadOnly)) {
@@ -72,7 +72,7 @@ void KEmoticonTest::testEmoticonParser()
 
             const QString path = KGlobal::dirs()->findResource("emoticons", "kde4/smile.png").remove("smile.png");
             if (path.isEmpty())
-                QSKIP("Emoticons not installed, skipping. kdebase-runtime needed.", SkipAll);
+                QSKIP_PORTING("Emoticons not installed, skipping. kdebase-runtime needed.", SkipAll);
 
             QString result = emo.parseEmoticons(inputData, KEmoticonsTheme::RelaxedParse | KEmoticonsTheme::SkipHTML).replace(path, QString());
 
@@ -94,7 +94,7 @@ void KEmoticonTest::testEmoticonParser()
                 QCOMPARE(result, expectedData);
             }
         } else {
-            QSKIP("Warning! can't open testcase files. Skiping testcase", SkipSingle);
+            QSKIP_PORTING("Warning! can't open testcase files. Skiping testcase", SkipSingle);
             continue;
         }
     }

@@ -47,7 +47,7 @@ QTEST_KDEMAIN_CORE(KSycocaDictTest)
 void KSycocaDictTest::testStandardDict()
 {
     if (!KServiceType::serviceType("KCModule"))
-        QSKIP( "Missing servicetypes", SkipAll );
+        QSKIP_PORTING( "Missing servicetypes", SkipAll );
 
     QStringList serviceTypes;
     serviceTypes << "KUriFilter/Plugin"

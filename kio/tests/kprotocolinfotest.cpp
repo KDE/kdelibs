@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
     //assert(capabilities.contains("ACL"));
 
     if (!QFile::exists(KStandardDirs::locate("services", "zip.protocol"))) {
-        //QSKIP("kdebase not installed", SkipAll);
+        //QSKIP_PORTING("kdebase not installed", SkipAll);
     } else {
         QString zip = KProtocolManager::protocolForArchiveMimetype("application/zip");
         assert( zip == "zip");

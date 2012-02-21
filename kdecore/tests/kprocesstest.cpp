@@ -70,7 +70,7 @@ void KProcessTest::test_channels()
     TESTCHAN(OnlyStdoutChannel, "forwarded stderr", EE, EO, "");
     TESTCHAN(MergedChannels, "merged", "", EO EE, "");
 #else
-    QSKIP("This test needs a UNIX system", SkipSingle);
+    QSKIP_PORTING("This test needs a UNIX system", SkipSingle);
 #endif
 }
 
@@ -78,7 +78,7 @@ void KProcessTest::test_setShellCommand()
 {
 // Condition copied from kprocess.cpp
 #if !defined(__linux__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && !defined(__OpenBSD__) && !defined(__DragonFly__) && !defined(__GNU__)
-    QSKIP("This test needs a free UNIX system", SkipSingle);
+    QSKIP_PORTING("This test needs a free UNIX system", SkipSingle);
 #else
     KProcess p;
 

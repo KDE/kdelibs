@@ -111,7 +111,7 @@ static bool isKdelibsInstalled()
 void KStandarddirsTest::testFindResource()
 {
     if ( !isKdelibsInstalled() )
-        QSKIP( "kdelibs not installed", SkipAll );
+        QSKIP_PORTING( "kdelibs not installed", SkipAll );
 
 #ifdef Q_WS_WIN
 #define EXT ".exe"
@@ -143,7 +143,7 @@ static bool oneEndsWith( const QStringList& lst, const QString& str)
 void KStandarddirsTest::testFindAllResources()
 {
     if ( !isKdelibsInstalled() )
-        QSKIP( "kdelibs not installed", SkipAll );
+        QSKIP_PORTING( "kdelibs not installed", SkipAll );
 
     const QStringList cmakeModulesFiles = KGlobal::dirs()->findAllResources( "data", "cmake/modules/" );
     QVERIFY( !cmakeModulesFiles.isEmpty() );
@@ -231,7 +231,7 @@ void KStandarddirsTest::testFindAllResourcesNewDir()
 void KStandarddirsTest::testFindDirs()
 {
     if ( !isKdelibsInstalled() )
-        QSKIP( "kdelibs not installed", SkipAll );
+        QSKIP_PORTING( "kdelibs not installed", SkipAll );
 
     const QString t = KStandardDirs::locateLocal("data", "kconf_update/" );
     QCOMPARE(t, QString(m_kdehome + "/xdg/local/kconf_update/"));
@@ -244,7 +244,7 @@ void KStandarddirsTest::testFindDirs()
 void KStandarddirsTest::testFindResourceDir()
 {
     if ( !isKdelibsInstalled() )
-        QSKIP( "kdelibs not installed", SkipAll );
+        QSKIP_PORTING( "kdelibs not installed", SkipAll );
 
     const QString configDir = KGlobal::dirs()->findResourceDir( "config", "foorc" );
     QVERIFY( !configDir.isEmpty() );
@@ -254,7 +254,7 @@ void KStandarddirsTest::testFindResourceDir()
 void KStandarddirsTest::testFindExe()
 {
     if ( !isKdelibsInstalled() )
-        QSKIP( "kdelibs not installed", SkipAll );
+        QSKIP_PORTING( "kdelibs not installed", SkipAll );
 
     // findExe with a result in bin
     const QString kdeinit = KGlobal::dirs()->findExe( "kdeinit4" );
@@ -330,7 +330,7 @@ void KStandarddirsTest::testLocate()
         }
     }
     if( textPlain == "text/x-patch.xml" )
-        QSKIP("xdg-share-mime not installed", SkipAll);
+        QSKIP_PORTING("xdg-share-mime not installed", SkipAll);
 
     const QString res = KGlobal::dirs()->locate("xdgdata-mime", "text/x-patch.xml");
     QCOMPARE_PATHS(res, textPlain);
@@ -346,7 +346,7 @@ void KStandarddirsTest::testRelativeLocation()
 void KStandarddirsTest::testAddResourceType()
 {
     if ( !isKdelibsInstalled() )
-        QSKIP( "kdelibs not installed", SkipAll );
+        QSKIP_PORTING( "kdelibs not installed", SkipAll );
 
     QString ret = KStandardDirs::locate( "dtd", "customization/catalog.xml" );
     QCOMPARE(ret, QString()); // normal, there's no "dtd" resource in kstandarddirs by default

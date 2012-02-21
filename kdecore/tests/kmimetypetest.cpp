@@ -366,7 +366,7 @@ void KMimeTypeTest::testFindByUrl()
     QCOMPARE( mime->name(), QString::fromLatin1( "application/octet-stream" ) ); // HTTP can't know before downloading
 
     if ( !KProtocolInfo::isKnownProtocol(KUrl("man:/")) )
-        QSKIP( "man protocol not installed", SkipSingle );
+        QSKIP_PORTING( "man protocol not installed", SkipSingle );
 
 #if 0 // no such logic in QMimeType, we get default mimetype, KRun will figure it out
     mime = KMimeType::findByUrl( KUrl("man:/ls") );
@@ -586,7 +586,7 @@ void KMimeTypeTest::testMimeTypeParent()
     // Check that text/x-mrml knows that it inherits from text/plain (implicitly)
     const KMimeType::Ptr mrml = KMimeType::mimeType("text/x-mrml");
     if (!mrml)
-        QSKIP("kdelibs not installed", SkipAll);
+        QSKIP_PORTING("kdelibs not installed", SkipAll);
     QVERIFY(mrml->is("text/plain"));
     QVERIFY(mrml->is("application/octet-stream"));
 }
@@ -648,7 +648,7 @@ static bool offerListHasService( const KService::List& offers,
 void KMimeTypeTest::testMimeTypeTraderForTextPlain()
 {
     if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll );
+        QSKIP_PORTING( "ksycoca not available", SkipAll );
 
     // Querying mimetype trader for services associated with text/plain
     KService::List offers = KMimeTypeTrader::self()->query("text/plain", "KParts/ReadOnlyPart");
@@ -670,7 +670,7 @@ void KMimeTypeTest::testMimeTypeTraderForTextPlain()
 void KMimeTypeTest::testMimeTypeTraderForDerivedMimeType()
 {
     if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll );
+        QSKIP_PORTING( "ksycoca not available", SkipAll );
 
     // Querying mimetype trader for services associated with text/x-patch, which inherits from text/plain
     KService::List offers = KMimeTypeTrader::self()->query("text/x-patch", "KParts/ReadOnlyPart");
@@ -705,7 +705,7 @@ void KMimeTypeTest::testPreferredService()
 void KMimeTypeTest::testMimeTypeTraderForAlias()
 {
     if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll );
+        QSKIP_PORTING( "ksycoca not available", SkipAll );
 
     const KService::List referenceOffers = KMimeTypeTrader::self()->query("application/xml", "KParts/ReadOnlyPart");
     QVERIFY(offerListHasService(referenceOffers, "faketextpart.desktop"));
@@ -785,11 +785,11 @@ void KMimeTypeTest::testPatterns()
     QStringList mimePatterns = mime->patterns();
 
     if (mimeType == "application/vnd.oasis.opendocument.text" && mimePatterns.contains("*.fodt")) {
-        QSKIP("Skipping test which would fail due to an upstream bug, see https://bugs.freedesktop.org/show_bug.cgi?id=31242", SkipSingle);
+        QSKIP_PORTING("Skipping test which would fail due to an upstream bug, see https://bugs.freedesktop.org/show_bug.cgi?id=31242", SkipSingle);
     }
 
     if (mimeType == "application/vnd.oasis.opendocument.presentation" && mimePatterns.contains("*.fodp")) {
-        QSKIP("Skipping test which would fail due to an upstream bug, see https://bugs.freedesktop.org/show_bug.cgi?id=31242", SkipSingle);
+        QSKIP_PORTING("Skipping test which would fail due to an upstream bug, see https://bugs.freedesktop.org/show_bug.cgi?id=31242", SkipSingle);
     }
 
     // shared-mime-info 0.30 adds *,v to text/plain, let's add it from this test so that it works
@@ -835,7 +835,7 @@ void KMimeTypeTest::testHelperProtocols()
 
     KService::Ptr kmail2 = KService::serviceByStorageId("KMail2.desktop");
     if (!kmail2) {
-        QSKIP( "kmail2 not installed", SkipSingle );
+        QSKIP_PORTING( "kmail2 not installed", SkipSingle );
     }
 
     QVERIFY(KProtocolInfo::isKnownProtocol("mailto"));

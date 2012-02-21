@@ -427,7 +427,7 @@ void FileUndoManagerTest::testCreateDir()
 void FileUndoManagerTest::testTrashFiles()
 {
     if ( !KProtocolInfo::isKnownProtocol( "trash" ) )
-        QSKIP( "kio_trash not installed", SkipAll );
+        QSKIP_PORTING( "kio_trash not installed", SkipAll );
 
     // Trash it all at once: the file, the symlink, the subdir.
     QList<KUrl> lst = sourceList();

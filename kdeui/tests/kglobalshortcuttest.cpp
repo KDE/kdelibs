@@ -97,7 +97,7 @@ void KGlobalShortcutTest::testSetShortcut()
     setupTest("testSetShortcut");
 
     if (!m_daemonInstalled)
-        QSKIP("kglobalaccel not installed", SkipAll);
+        QSKIP_PORTING("kglobalaccel not installed", SkipAll);
 
     // Just ensure that the desired values are set for both actions
     KShortcut cutA(sequenceA, sequenceB);
@@ -117,7 +117,7 @@ void KGlobalShortcutTest::testFindActionByKey()
     // Skip this. The above testcase hasn't changed the actions
     setupTest("testFindActionByKey");
     if (!m_daemonInstalled)
-        QSKIP("kglobalaccel not installed", SkipAll);
+        QSKIP_PORTING("kglobalaccel not installed", SkipAll);
 
     QList<KGlobalShortcutInfo> actionId = KGlobalAccel::self()->getGlobalShortcutsByKey(sequenceB);
     QCOMPARE(actionId.size(), 1);
@@ -147,7 +147,7 @@ void KGlobalShortcutTest::testChangeShortcut()
     setupTest("testChangeShortcut");
 
     if (!m_daemonInstalled)
-        QSKIP("kglobalaccel not installed", SkipAll);
+        QSKIP_PORTING("kglobalaccel not installed", SkipAll);
     // Change the shortcut
     KShortcut newCutA(sequenceC);
     m_actionA->setGlobalShortcut(newCutA, KAction::ActiveShortcut, KAction::NoAutoloading);
@@ -180,7 +180,7 @@ void KGlobalShortcutTest::testStealShortcut()
 {
     setupTest("testStealShortcut");
     if (!m_daemonInstalled)
-        QSKIP("kglobalaccel not installed", SkipAll);
+        QSKIP_PORTING("kglobalaccel not installed", SkipAll);
 
     // Steal a shortcut from an action. First ensure the initial state is
     // correct
@@ -237,7 +237,7 @@ void KGlobalShortcutTest::testListActions()
 {
     setupTest("testListActions");
     if (!m_daemonInstalled)
-        QSKIP("kglobalaccel not installed", SkipAll);
+        QSKIP_PORTING("kglobalaccel not installed", SkipAll);
 
     // As in kdebase/workspace/kcontrol/keys/globalshortcuts.cpp
     KGlobalAccel *kga = KGlobalAccel::self();
@@ -406,7 +406,7 @@ void KGlobalShortcutTest::testForgetGlobalShortcut()
     KAction a("Test", NULL);
     a.forgetGlobalShortcut();
     if (!m_daemonInstalled)
-        QSKIP("kglobalaccel not installed", SkipAll);
+        QSKIP_PORTING("kglobalaccel not installed", SkipAll);
 
     // We forget these two shortcuts and check that the component is gone
     // after that. If not it can mean the forgetGlobalShortcut() call is

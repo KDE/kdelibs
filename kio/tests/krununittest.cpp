@@ -153,7 +153,7 @@ void KRunUnitTest::testProcessDesktopExecNoFile_data()
 
     QString kioexec = KStandardDirs::findExe("kioexec");
     if (kioexec.isEmpty())
-        QSKIP("kioexec not found, kdebase needed", SkipAll);
+        QSKIP_PORTING("kioexec not found, kdebase needed", SkipAll);
 
     QString kmailservice = KStandardDirs::findExe("kmailservice");
     if (kmailservice.isEmpty()) kmailservice = "kmailservice";

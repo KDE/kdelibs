@@ -20,7 +20,7 @@
 #include <QtCore/QString>
 #include <kdebug.h>
 #include <qstandardpaths.h>
-#include <qtest.h>
+#include <qtest_kde.h>
 #include "kconfigcompiler_test.h"
 
 // QT5 TODO QTEST_GUILESS_MAIN(KConfigCompiler_Test)
@@ -153,7 +153,7 @@ void KConfigCompiler_Test::performCompare(const QString &fileName, bool fail)
 	}
 	else
 	{
-		QSKIP("Can't open file for comparison", SkipSingle);
+		QSKIP_PORTING("Can't open file for comparison", SkipSingle);
 	}
 }
 

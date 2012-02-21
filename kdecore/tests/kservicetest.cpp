@@ -186,7 +186,7 @@ void KServiceTest::cleanupTestCase()
 void KServiceTest::testByName()
 {
     if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll );
+        QSKIP_PORTING( "ksycoca not available", SkipAll );
 
     KServiceType::Ptr s0 = KServiceType::serviceType("KParts/ReadOnlyPart");
     QVERIFY( s0 );
@@ -225,7 +225,7 @@ void KServiceTest::testProperty()
 void KServiceTest::testAllServiceTypes()
 {
     if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll );
+        QSKIP_PORTING( "ksycoca not available", SkipAll );
 
     const KServiceType::List allServiceTypes = KServiceType::allServiceTypes();
 
@@ -243,7 +243,7 @@ void KServiceTest::testAllServiceTypes()
 void KServiceTest::testAllServices()
 {
     if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll );
+        QSKIP_PORTING( "ksycoca not available", SkipAll );
     const KService::List lst = KService::allServices();
     QVERIFY( !lst.isEmpty() );
 
@@ -299,9 +299,9 @@ static bool offerListHasService( const KService::List& offers,
 void KServiceTest::testDBUSStartupType()
 {
     if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll );
+        QSKIP_PORTING( "ksycoca not available", SkipAll );
     if ( !m_hasKde4Konsole )
-        QSKIP( "kde4-konsole.desktop not available", SkipAll );
+        QSKIP_PORTING( "kde4-konsole.desktop not available", SkipAll );
     //KService::Ptr konsole = KService::serviceByMenuId( "kde4-konsole.desktop" );
     KService::Ptr konsole = KService::serviceByDesktopName( "konsole" );
     QVERIFY(konsole);
@@ -313,7 +313,7 @@ void KServiceTest::testDBUSStartupType()
 void KServiceTest::testByStorageId()
 {
     if ( !KSycoca::isAvailable() )
-        QSKIP("ksycoca not available", SkipAll);
+        QSKIP_PORTING("ksycoca not available", SkipAll);
     QVERIFY(KService::serviceByMenuId("kde4-kmailservice.desktop"));
     QVERIFY(!KService::serviceByMenuId("kde4-kmailservice")); // doesn't work, extension mandatory
     QVERIFY(KService::serviceByStorageId("kde4-kmailservice.desktop"));
@@ -334,7 +334,7 @@ void KServiceTest::testByStorageId()
 void KServiceTest::testServiceTypeTraderForReadOnlyPart()
 {
     if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll );
+        QSKIP_PORTING( "ksycoca not available", SkipAll );
 
     // Querying trader for services associated with KParts/ReadOnlyPart
     KService::List offers = KServiceTypeTrader::self()->query("KParts/ReadOnlyPart");
@@ -375,7 +375,7 @@ void KServiceTest::testServiceTypeTraderForReadOnlyPart()
 void KServiceTest::testTraderConstraints()
 {
     if ( !KSycoca::isAvailable() )
-        QSKIP( "ksycoca not available", SkipAll );
+        QSKIP_PORTING( "ksycoca not available", SkipAll );
 
     KService::List offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin", "Library == 'faketextplugin'");
     QCOMPARE(offers.count(), 1);
@@ -461,7 +461,7 @@ void KServiceTest::testDefaultOffers()
     QVERIFY( offerListHasService( offers, "fakepart2.desktop" ) ); // it's here even though it's disabled in the profile
     QVERIFY( offerListHasService( offers, "otherpart.desktop" ) );
     if ( m_firstOffer.isEmpty() )
-        QSKIP( "testServiceTypeTraderForReadOnlyPart not run", SkipAll );
+        QSKIP_PORTING( "testServiceTypeTraderForReadOnlyPart not run", SkipAll );
     QCOMPARE( offers[0]->entryPath(), m_firstOffer );
 }
 
@@ -475,7 +475,7 @@ void KServiceTest::testDeleteServiceTypeProfile()
     QVERIFY( offerListHasService( offers, "fakepart2.desktop" ) ); // it's back
 
     if ( m_firstOffer.isEmpty() )
-        QSKIP( "testServiceTypeTraderForReadOnlyPart not run", SkipAll );
+        QSKIP_PORTING( "testServiceTypeTraderForReadOnlyPart not run", SkipAll );
     QCOMPARE( offers[0]->entryPath(), m_firstOffer );
 }
 
@@ -483,7 +483,7 @@ void KServiceTest::testActionsAndDataStream()
 {
     const QString servicePath = KStandardDirs::locate( "services", "ScreenSavers/krandom.desktop" );
     if (servicePath.isEmpty() )
-        QSKIP("kdebase not installed, krandom.desktop not found", SkipAll);
+        QSKIP_PORTING("kdebase not installed, krandom.desktop not found", SkipAll);
     KService service( servicePath );
     QVERIFY(!service.property("Name[fr]", QVariant::String).isValid());
     const QList<KServiceAction> actions = service.actions();

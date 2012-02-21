@@ -45,7 +45,7 @@ private Q_SLOTS:
     void testSetSelected()
     {
         if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded")) {
-            QSKIP("kded not running", SkipSingle);
+            QSKIP_PORTING("kded not running", SkipSingle);
         }
 
         KTimeZoneWidget tzw;
@@ -76,7 +76,7 @@ private Q_SLOTS:
     void testCheckableItems()
     {
         //if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded")) {
-        //    QSKIP("kded not running", SkipSingle);
+        //    QSKIP_PORTING("kded not running", SkipSingle);
         //}
 
         KTimeZoneWidget tzw;

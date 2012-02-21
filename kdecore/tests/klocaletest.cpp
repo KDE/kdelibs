@@ -817,7 +817,7 @@ KLocaleTest::formatDateTime()
 
 	// The use of KSystemTimeZones requires kded to be running
 	if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded")) {
-	    QSKIP( "kded not running", SkipAll );
+	    QSKIP_PORTING( "kded not running", SkipAll );
 	}
 
 	small = "%Y-%m-%d %H:%M";
@@ -827,7 +827,7 @@ KLocaleTest::formatDateTime()
 	KDateTime kdt;
 	const KTimeZone tz = KSystemTimeZones::zone("Pacific/Fiji");
         if (!tz.isValid())
-            QSKIP( "Pacific/Fiji timezone not available", SkipAll );
+            QSKIP_PORTING( "Pacific/Fiji timezone not available", SkipAll );
 	kdt = KDateTime::currentDateTime(tz);
 	today = kdt.date();
 	nowt = kdt.time();
