@@ -372,6 +372,7 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   QVERIFY( !userName.isEmpty() );
   tilde.setPath( QString::fromUtf8( "~%1/Matériel" ).arg( userName ) );
   QString homeDir = currentUser.homeDir();
+  QEXPECT_FAIL("", "No more user-expansion in KUrl", Continue);
   QCOMPARE( tilde.url(), QString("file://%1/Mat%C3%A9riel").arg(homeDir));
   tilde = KUrl("http://foo.bar/index.html");
   tilde.setPath( "~slajsjdlsjd/test.html" );
@@ -1853,6 +1854,7 @@ void KUrlTest::testPathOrURL()
   const QString userName = currentUser.loginName();
   QVERIFY( !userName.isEmpty() );
   uloc = KUrl(QString::fromUtf8("~%1/konqtests/Matériel").arg(userName));
+  QEXPECT_FAIL("", "No more user-expansion in KUrl", Continue);
   QCOMPARE( uloc.path(), QString::fromUtf8("%1/konqtests/Matériel").arg(currentUser.homeDir()) );
 #endif
 
@@ -1911,8 +1913,10 @@ void KUrlTest::testAssignment()
   const QString userName = currentUser.loginName();
   QVERIFY( !userName.isEmpty() );
   uloc = QString::fromUtf8("~%1/konqtests/Matériel").arg(userName);
+  QEXPECT_FAIL("", "No more user-expansion in KUrl", Continue);
   QCOMPARE( uloc.path(), QString::fromUtf8("%1/konqtests/Matériel").arg(currentUser.homeDir()) );
   uloc = QByteArray('~' + userName.toUtf8() + "/konqtests/Matériel");
+  QEXPECT_FAIL("", "No more user-expansion in KUrl", Continue);
   QCOMPARE( uloc.path(), QString::fromUtf8("%1/konqtests/Matériel").arg(currentUser.homeDir()) );
 
   // Assigning a KUrl to a QUrl and back
@@ -1920,6 +1924,7 @@ void KUrlTest::testAssignment()
   QCOMPARE( qurl.toEncoded(), uloc.toEncoded() );
   uloc = KUrl(qurl);
   QCOMPARE( qurl.toEncoded(), uloc.toEncoded() );
+  QEXPECT_FAIL("", "No more user-expansion in KUrl", Continue);
   QCOMPARE( uloc.path(), QString::fromUtf8("%1/konqtests/Matériel").arg(currentUser.homeDir()) );
 #endif
 }
