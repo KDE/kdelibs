@@ -31,7 +31,8 @@ KDE4SUPPORT_UNIT_TESTS(
 if(NOT KDE_NO_DEPRECATED)
 set(klibloadertestmodule_PART_SRCS klibloadertest_module.cpp )
 
-kde4_add_plugin(klibloadertestmodule ${klibloadertestmodule_PART_SRCS})
+add_library(klibloadertestmodule MODULE ${klibloadertestmodule_PART_SRCS})
+set_target_properties(klibloadertestmodule PROPERTIES PREFIX "") # remove lib prefix - missing from cmake
 
 target_link_libraries(klibloadertestmodule kde4support kdecore ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY})
 
@@ -44,7 +45,8 @@ if (NOT WIN32) # TODO: reenable for win32
 
 set(klibloadertestmodule4_PART_SRCS klibloadertest4_module.cpp )
 
-kde4_add_plugin(klibloadertestmodule4 ${klibloadertestmodule4_PART_SRCS})
+add_library(klibloadertestmodule4 MODULE ${klibloadertestmodule4_PART_SRCS})
+set_target_properties(klibloadertestmodule4 PROPERTIES PREFIX "") # remove lib prefix - missing from cmake
 
 target_link_libraries(klibloadertestmodule4 kde4support kdecore ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY})
 

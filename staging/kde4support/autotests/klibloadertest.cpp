@@ -33,7 +33,7 @@ QTEST_MAIN( KLibLoaderTest )
 
 void KLibLoaderTest::initTestCase()
 {
-    const QString libdir = QDir::currentPath() + "/../../lib";
+    const QString libdir = QDir::currentPath() + "/../../../lib";
     KGlobal::dirs()->addResourceDir( "module", libdir );
     //qDebug( "initTestCase: added %s to 'module' resource", qPrintable(libdir) );
 }
@@ -61,9 +61,9 @@ void KLibLoaderTest::testFindLibrary()
     QVERIFY( !library.isEmpty() );
     const QString libraryPath = QFileInfo( library ).canonicalFilePath();
 #if defined(Q_OS_WIN) || defined(Q_OS_CYGWIN)
-    const QString expectedPath = QFileInfo( QDir::currentPath() + "/../../lib/" + s_kgenericFactoryModule + ".dll" ).canonicalFilePath();
+    const QString expectedPath = QFileInfo( QDir::currentPath() + "/../../../lib/" + s_kgenericFactoryModule + ".dll" ).canonicalFilePath();
 #else
-    const QString expectedPath = QFileInfo( QDir::currentPath() + "/../../lib/" + s_kgenericFactoryModule + ".so" ).canonicalFilePath();
+    const QString expectedPath = QFileInfo( QDir::currentPath() + "/../../../lib/" + s_kgenericFactoryModule + ".so" ).canonicalFilePath();
 #endif
     QCOMPARE( library, expectedPath );
 }
