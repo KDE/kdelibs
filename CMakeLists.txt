@@ -56,6 +56,7 @@ if (NOT QT5_BUILD)
       ${CMAKE_SOURCE_DIR}/libinqt5/src/
       ${CMAKE_BINARY_DIR}/libinqt5/src/
   )
+  set(kwindowsystem_LIBRARY kwindowsystem)
 endif()
 add_subdirectory( libqtmimetypes )
 add_subdirectory( tier1 )
@@ -317,7 +318,6 @@ check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 # TODO: Port away from this:
 add_definitions(-DKDE_NO_WINDOWSYSTEM)
 add_definitions(-DKDE_NO_PHONON)
-
 
 ################# list the subdirectories #################
 
