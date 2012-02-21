@@ -20,15 +20,16 @@
 
 #include "klibloadertest.h"
 
-#include <qtest_kde.h>
 #include "klibloadertest.moc"
 
-QTEST_KDEMAIN_CORE( KLibLoaderTest )
+#include <QtTest>
+
+QTEST_MAIN( KLibLoaderTest )
 
 #include <klibloader.h>
 #include <kstandarddirs.h>
 #include <QtCore/QDir>
-#include <kdebug.h>
+#include <QDebug>
 
 void KLibLoaderTest::initTestCase()
 {
@@ -44,7 +45,7 @@ void KLibLoaderTest::testNonWorking()
     QCOMPARE( obj, (QObject*)0 );
     QCOMPARE( error, (int)KLibLoader::ErrNoLibrary );
     QString errorString = KLibLoader::errorString( error );
-    kDebug() << errorString;
+    qDebug() << errorString;
     QVERIFY( !errorString.isEmpty() );
 
     KPluginFactory* factory = KPluginLoader( "idontexist2" ).factory();
@@ -73,7 +74,7 @@ void KLibLoaderTest::testWorking_KLibLoader_KGenericFactory()
     int error = 0;
     QObject* obj = KLibLoader::createInstance<QObject>( s_kgenericFactoryModule, 0, QStringList(), &error );
     if ( error )
-        kWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage();
+        qWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage();
     QVERIFY( obj != 0 );
     delete obj;
 }
@@ -87,7 +88,7 @@ void KLibLoaderTest::testWrongClass_KLibLoader_KGenericFactory()
     QCOMPARE( obj, (KLibLoaderTest*)0 );
     QCOMPARE( error, (int)KLibLoader::ErrNoComponent );
     QString errorString = KLibLoader::errorString( error );
-    kDebug() << errorString;
+    qDebug() << errorString;
     QVERIFY( !errorString.isEmpty() );
 }
 
@@ -99,7 +100,7 @@ void KLibLoaderTest::testWorking_KLibLoader_KPluginFactory()
     int error = 0;
     QObject* obj = KLibLoader::createInstance<QObject>( s_kpluginFactoryModule, 0, QStringList(), &error );
     if ( error )
-        kWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage();
+        qWarning() << "error=" << error << " lastErrorMessage=" << KLibLoader::self()->lastErrorMessage();
     QVERIFY( obj != 0 );
     delete obj;
 }
@@ -110,12 +111,12 @@ void KLibLoaderTest::testWorking_KPluginLoader_KGenericFactory()
     KPluginLoader loader(s_kgenericFactoryModule);
     KPluginFactory* factory = loader.factory();
     if (!factory) {
-        kWarning() << "error=" << loader.errorString();
+        qWarning() << "error=" << loader.errorString();
         QVERIFY(factory);
     } else {
         QObject* obj = factory->create<QObject>();
         if (!obj) {
-            kWarning() << "Error creating object";
+            qWarning() << "Error creating object";
         }
         QVERIFY(obj);
         delete obj;
@@ -128,12 +129,12 @@ void KLibLoaderTest::testWorking_KPluginLoader_KPluginFactory()
     KPluginLoader loader(s_kpluginFactoryModule);
     KPluginFactory* factory = loader.factory();
     if (!factory) {
-        kWarning() << "error=" << loader.errorString();
+        qWarning() << "error=" << loader.errorString();
         QVERIFY(factory);
     } else {
         QObject* obj = factory->create<QObject>();
         if (!obj) {
-            kWarning() << "Error creating object";
+            qWarning() << "Error creating object";
         }
         QVERIFY(obj);
         delete obj;
