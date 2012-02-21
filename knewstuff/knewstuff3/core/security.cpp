@@ -27,6 +27,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QTextStream>
 #include <QtCore/QTimer>
+#include <QtCore/QStringList>
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QCryptographicHash>
@@ -42,7 +43,6 @@ typedef QCryptographicHash Q5CryptographicHash;
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kpassworddialog.h>
-#include <kprocess.h>
 #include <kstandarddirs.h>
 
 using namespace KNS3;
@@ -78,9 +78,9 @@ void Security::readKeys()
     }
     m_runMode = List;
     m_keys.clear();
-    m_process = new KProcess();
-    *m_process << gpgExecutable()
-    << "--no-secmem-warning"
+    m_process = new QProcess();
+    QStringList arguments;
+    arguments << "--no-secmem-warning"
     << "--no-tty"
     << "--with-colon"
     << "--list-keys";
@@ -88,7 +88,7 @@ void Security::readKeys()
             this, SLOT(slotFinished(int,QProcess::ExitStatus)));
     connect(m_process, SIGNAL(readyReadStandardOutput()),
             this, SLOT(slotReadyReadStandardOutput()));
-    m_process->start();
+    m_process->start(gpgExecutable(), arguments);
     if (!m_process->waitForStarted()) {
         KMessageBox::error(0L, i18n("<qt>Cannot start <i>gpg</i> and retrieve the available keys. Make sure that <i>gpg</i> is installed, otherwise verification of downloaded resources will not be possible.</qt>"));
         delete m_process;
@@ -104,9 +104,9 @@ void Security::readSecretKeys()
         return;
     }
     m_runMode = ListSecret;
-    m_process = new KProcess();
-    *m_process << gpgExecutable()
-    << "--no-secmem-warning"
+    m_process = new QProcess();
+    QStringList arguments;
+    arguments << "--no-secmem-warning"
     << "--no-tty"
     << "--with-colon"
     << "--list-secret-keys";
@@ -114,7 +114,7 @@ void Security::readSecretKeys()
             this, SLOT(slotFinished(int,QProcess::ExitStatus)));
     connect(m_process, SIGNAL(readyReadStandardOutput()),
             this, SLOT(slotReadyReadStandardOutput()));
-    m_process->start();
+    m_process->start(gpgExecutable(), arguments);
     if (!m_process->waitForStarted()) {
         delete m_process;
         m_process = 0;
@@ -276,9 +276,9 @@ void Security::slotCheckValidity()
     m_signatureKey.trusted = false;
 
     //verify the signature
-    m_process = new KProcess();
-    *m_process << gpgExecutable()
-    << "--no-secmem-warning"
+    m_process = new QProcess();
+    QStringList arguments;
+    arguments << "--no-secmem-warning"
     << "--status-fd=2"
     << "--command-fd=0"
     << "--verify"
@@ -288,7 +288,7 @@ void Security::slotCheckValidity()
             this, SLOT(slotFinished(int,QProcess::ExitStatus)));
     connect(m_process, SIGNAL(readyReadStandardOutput()),
             this, SLOT(slotReadyReadStandardOutput()));
-    m_process->start();
+    m_process->start(gpgExecutable(), arguments);
     if (m_process->waitForStarted())
         m_gpgRunning = true;
     else {
@@ -357,9 +357,9 @@ void Security::slotSignFile()
         m_secretKey = secretKeys[0];
 
     //verify the signature
-    m_process = new KProcess();
-    *m_process << gpgExecutable()
-    << "--no-secmem-warning"
+    m_process = new QProcess();
+    QStringList arguments;
+    arguments << "--no-secmem-warning"
     << "--status-fd=2"
     << "--command-fd=0"
     << "--no-tty"
@@ -374,7 +374,7 @@ void Security::slotSignFile()
     connect(m_process, SIGNAL(readyReadStandardOutput()),
             this, SLOT(slotReadyReadStandardOutput()));
     m_runMode = Sign;
-    m_process->start();
+    m_process->start(gpgExecutable(), arguments);
     if (m_process->waitForStarted())
         m_gpgRunning = true;
     else {

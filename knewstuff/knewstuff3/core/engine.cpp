@@ -34,7 +34,6 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 #include <kcodecs.h>
-#include <kprocess.h>
 #include <kshell.h>
 
 #include <kio/job.h>

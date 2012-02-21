@@ -24,11 +24,11 @@
 #include <QFile>
 #include <QDir>
 #include <QSharedPointer>
+#include <QtCore/QProcess>
 #include <qtemporaryfile.h>
 
 // KDE
 #include <kdebug.h>
-#include <kprocess.h>
 #include <kstandarddirs.h>
 
 #include <qtest.h>
@@ -67,7 +67,7 @@ static QTemporaryFile* writeUpdFile(const QString &content)
 static void runKConfUpdate(const QString &updPath)
 {
     QString exePath = KStandardDirs::findExe("kconf_update");
-    KProcess::execute(QStringList() << exePath << "--debug" << updPath);
+    QProcess::execute(exePath, QStringList() << "--debug" << updPath);
 }
 
 void TestKConfUpdate::test_data()

@@ -24,7 +24,7 @@ QTEST_KDEMAIN( KGlobalSettingsTest, GUI )
 
 #include <kglobalsettings.h>
 #include <kdebug.h>
-#include <kprocess.h>
+#include <QtCore/QProcess>
 #include <QtCore/QEventLoop>
 #include <QtDBus/QtDBus>
 
@@ -61,21 +61,22 @@ void KGlobalSettingsTest::initTestCase()
     QSignalSpy appearance_spy( settings, SIGNAL(appearanceChanged()) )
 
 static void callClient( const QString& opt, const char* signalToWaitFor ) {
-    KProcess proc;
+    QProcess proc;
+    QString processName;
 #ifdef Q_OS_WIN
-    proc << "kglobalsettingsclient.exe";
+    processName = "kglobalsettingsclient.exe";
 #else
     if (QFile::exists("./kglobalsettingsclient.shell"))
-        proc << "./kglobalsettingsclient.shell";
+        processName = "./kglobalsettingsclient.shell";
     else {
         QVERIFY(QFile::exists("./kglobalsettingsclient"));
-        proc << "./kglobalsettingsclient";
+        processName = "./kglobalsettingsclient";
     }
 #endif
-    proc << opt;
 //     kDebug() << proc.args();
-    int ok = proc.execute();
-    QVERIFY(ok == 0);
+    proc.start(processName, QStringList() << opt);
+    bool ok = proc.waitForFinished();
+    QVERIFY(ok);
 
     QVERIFY(QTest::kWaitForSignal(KGlobalSettings::self(), signalToWaitFor, 5000));
 }

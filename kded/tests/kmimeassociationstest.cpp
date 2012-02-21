@@ -19,7 +19,7 @@
 */
 
 #include <QDir>
-#include <kprocess.h>
+#include <QtCore/QProcess>
 #include <kconfiggroup.h>
 #include <kdesktopfile.h>
 #include <kmimetypetrader.h>
@@ -401,12 +401,12 @@ private:
         // (The real KCM code simply does the refresh in a slot, asynchronously)
         QEventLoop loop;
         QObject::connect(KSycoca::self(), SIGNAL(databaseChanged(QStringList)), &loop, SLOT(quit()));
-        KProcess proc;
+        QProcess proc;
         const QString kbuildsycoca = KStandardDirs::findExe(KBUILDSYCOCA_EXENAME);
         QVERIFY(!kbuildsycoca.isEmpty());
-        proc << kbuildsycoca;
-        proc.setOutputChannelMode(KProcess::MergedChannels); // silence kbuildsycoca output
-        proc.execute();
+        proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output
+        proc.start(kbuildsycoca);
+        proc.waitForFinished();
         loop.exec();
     }
 

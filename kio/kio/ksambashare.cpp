@@ -29,11 +29,11 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QTextStream>
 #include <QtCore/QStringList>
+#include <QtCore/QProcess>
 
 #include <kdirwatch.h>
 #include <kdebug.h>
 #include <kglobal.h>
-#include <kprocess.h>
 #include <kuser.h>
 
 // Default smb.conf locations
@@ -108,11 +108,10 @@ void KSambaSharePrivate::setUserSharePath()
 int KSambaSharePrivate::runProcess(const QString &progName, const QStringList &args,
                                    QByteArray &stdOut, QByteArray &stdErr)
 {
-    KProcess process;
+    QProcess process;
 
-    process.setProgram(progName, args);
-    process.setOutputChannelMode(KProcess::SeparateChannels);
-    process.start();
+    process.setProcessChannelMode(QProcess::SeparateChannels);
+    process.start(progName, args);
     //TODO: make it async in future
     process.waitForFinished();
 
@@ -359,7 +358,7 @@ KSambaShareData::UserShareError KSambaSharePrivate::remove(const KSambaShareData
 
     args << QLatin1String("usershare") << QLatin1String("delete") << shareData.name();
 
-    int result = KProcess::execute(QLatin1String("net"), args);
+    int result = QProcess::execute(QLatin1String("net"), args);
     return (result == 0) ? KSambaShareData::UserShareOk : KSambaShareData::UserShareSystemError;
 }
 

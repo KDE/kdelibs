@@ -33,7 +33,6 @@
 #endif
 
 class KFileItemList;
-class KProcess;
 class KUrl;
 class QWidget;
 

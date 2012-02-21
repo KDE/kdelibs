@@ -625,8 +625,8 @@ KLauncher::requestStart(KLaunchRequest *request)
    requestList.append( request );
    lastRequest = request;
 
-   KProcess *process  = new KProcess;
-   process->setOutputChannelMode(KProcess::MergedChannels);
+   QProcess *process  = new QProcess;
+   process->setProcessChannelMode(QProcess::MergedChannels);
    connect(process ,SIGNAL(readyReadStandardOutput()),this, SLOT(slotGotOutput()) );
    connect(process ,SIGNAL(finished(int,QProcess::ExitStatus)),this, SLOT(slotFinished(int,QProcess::ExitStatus)) );
    request->process = process;
@@ -642,8 +642,7 @@ KLauncher::requestStart(KLaunchRequest *request)
    if (!bundlepath.isEmpty())
       executable = bundlepath;
 #endif
-   process->setProgram(executable,args);
-   process->start();
+   process->start(executable,args);
 
    if (!process->waitForStarted())
    {
@@ -1299,7 +1298,7 @@ void
 KLauncher::slotGotOutput()
 {
 #ifdef USE_KPROCESS_FOR_KIOSLAVES
-  KProcess *p = static_cast<KProcess *>(sender());
+  QProcess *p = static_cast<QProcess *>(sender());
   QByteArray _stdout = p->readAllStandardOutput();
   kDebug(7016) << _stdout.data();
 #endif
@@ -1309,7 +1308,7 @@ void
 KLauncher::slotFinished(int exitCode, QProcess::ExitStatus exitStatus )
 {
 #ifdef USE_KPROCESS_FOR_KIOSLAVES
-    KProcess *p = static_cast<KProcess *>(sender());
+    QProcess *p = static_cast<QProcess *>(sender());
     kDebug(7016) << "process finished exitcode=" << exitCode << "exitStatus=" << exitStatus;
 
     foreach (KLaunchRequest *request, requestList)

@@ -32,7 +32,6 @@ struct KeyStruct {
     bool secret;
 };
 
-class KProcess;
 namespace KNS3
 {
 
@@ -126,7 +125,7 @@ private:
     QMap<QString, KeyStruct> m_keys; /// holds information about the available key
     QString m_fileName; /// the file to sign/verify
     QString m_secretKey; /// the key used for signing
-    KProcess *m_process;
+    QProcess *m_process;
 
 private Q_SLOTS:
     void slotFinished(int exitCode, QProcess::ExitStatus exitStatus);

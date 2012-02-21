@@ -25,10 +25,10 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QDateTime>
 #include <QtCore/QMutex>
+#include <QtCore/QProcess>
 #include <QtXml/QDomDocument>
 #include <kdebug.h>
 #include <klocale.h>
-#include <kprocess.h>
 #include <kstandarddirs.h>
 
 #ifndef KUNITCONVERSION_NO_SOLID
@@ -550,7 +550,10 @@ Value Currency::convert(const Value& value, UnitPtr to)
             */
             kDebug() << "Removed previous cache:" << QFile::remove(m_cache);
 #ifndef KUNITCONVERSION_NO_KIO
-            if (KProcess::execute(QStringList() << "kioclient" << "copy" << "--noninteractive" << URL << m_cache) == 0) {
+            QProcess copyProcess;
+            copyProcess.start("kioclient", QStringList() << "copy" << "--noninteractive" << URL << m_cache);
+            copyProcess.waitForFinished(-1);
+            if (copyProcess.exitStatus() == QProcess::NormalExit && copyProcess.exitCode() == 0) {
                 m_update = true;
             }
 #else

@@ -24,10 +24,10 @@
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <kdebug.h>
-#include <kprocess.h>
 
 #include <QTimer>
 #include <QFile>
+#include <QtCore/QProcess>
 
 class TestApp : public KUniqueApplication
 {
@@ -40,19 +40,19 @@ public:
 private Q_SLOTS:
     void executeNewChild() {
         // Duplicated from kglobalsettingstest.cpp - make a shared helper method?
-        KProcess* proc = new KProcess(this);
-        const QString appName = "kuniqueapptest";
+        QProcess* proc = new QProcess(this);
+        QString appName = "kuniqueapptest";
 #ifdef Q_OS_WIN
-        (*proc) << appName + ".exe";
+        appName = appName + ".exe";
 #else
         if (QFile::exists(appName+".shell"))
-            (*proc) << "./" + appName+".shell";
+            appName = "./" + appName+".shell";
         else {
             Q_ASSERT(QFile::exists(appName));
-            (*proc) << "./" + appName;
+            appName = "./" + appName;
         }
 #endif
-        proc->start();
+        proc->start(appName);
     }
 private:
     int m_callCount;

@@ -43,7 +43,7 @@ private:
 };
 
 KJavaProcess::KJavaProcess( QObject* parent )
-	: KProcess( parent ),
+	: QProcess( parent ),
 	d(new KJavaProcessPrivate)
 
 {
@@ -229,9 +229,8 @@ bool KJavaProcess::invokeJVM()
 
     kDebug(6100) << "Invoking JVM" << d->jvmPath << "now...with arguments = " << KShell::joinArgs(args);
 
-    setOutputChannelMode(KProcess::SeparateChannels);
-    setProgram( d->jvmPath, args );
-    start();
+    setProcessChannelMode(QProcess::SeparateChannels);
+    start(d->jvmPath, args);
 
     return waitForStarted();
 }

@@ -60,7 +60,6 @@
 #include <kmessagebox.h>
 #include <kpassworddialog.h>
 #include <knewpassworddialog.h>
-#include <kprocess.h>
 #include <kpushbutton.h>
 #include <k3resolver.h>
 #include <kseparator.h>

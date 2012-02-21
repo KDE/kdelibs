@@ -5,7 +5,6 @@
 #include <kstandarddirs.h>
 #include <kservicegroup.h>
 #include <kprotocolinfo.h>
-#include <kprocess.h>
 #include <QtCore/QTimer>
 #include <kcmdlineargs.h>
 #include "kdcopcheck.h"

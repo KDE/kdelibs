@@ -40,10 +40,10 @@
 #include <QtCore/QTimer>
 #include <QtCore/QList>
 #include <QtCore/QObject>
+#include <QtCore/QProcess>
 #include <QtDBus/QtDBus>
 
 #include <kservice.h>
-#include <kprocess.h>
 #include <kurl.h>
 #include <kio/connection.h>
 
@@ -107,7 +107,7 @@ public:
    QString cwd;
 #ifdef USE_KPROCESS_FOR_KIOSLAVES
 protected:
-   KProcess *process;
+   QProcess *process;
    friend class KLauncher;
 #endif
 };

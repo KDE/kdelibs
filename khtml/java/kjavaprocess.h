@@ -24,7 +24,7 @@
 #ifndef KJAVAPROCESS_H
 #define KJAVAPROCESS_H
 
-#include <kprocess.h>
+#include <QtCore/QProcess>
 
 /**
  * @short A class for invoking a Java VM
@@ -38,7 +38,7 @@
  */
 
 class KJavaProcessPrivate;
-class KJavaProcess : public KProcess //QObject
+class KJavaProcess : public QProcess //QObject
 {
 Q_OBJECT
 
