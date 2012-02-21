@@ -191,13 +191,15 @@ void KUrlTest::testIsLocalFile()
   KUrl local_file_2("file://www.kde.org/my/file");
   QVERIFY( !local_file_2.isLocalFile() );
 
+#if 0 // fragile test; assumes $HOSTNAME and hostname() are equal, or that hostname() doesn't have ".site"
   KUrl local_file_3;
   QString host = QString::fromLocal8Bit(qgetenv("HOSTNAME"));
   host.truncate(host.indexOf('.'));
   local_file_3.setHost(host);
   local_file_3.setPath("/my/file");
-  //qDebug("URL=%s\n", qPrintable( local_file_3.url() ));
+  qDebug("URL=%s\n", qPrintable( local_file_3.url() ));
   QVERIFY( local_file_3.isLocalFile() );
+#endif
 
   KUrl local_file_4("file:///my/file");
   QVERIFY( local_file_4.isLocalFile() );
