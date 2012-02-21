@@ -86,7 +86,7 @@ int Battery::chargePercent() const
 
 int Battery::capacity() const
 {
-    return qRound(m_device->prop("battery.charge_level.last_full").toInt() / m_device->prop("battery.charge_level.design").toInt() * 100);
+    return qRound(m_device->prop("battery.charge_level.last_full").toInt() / (m_device->prop("battery.charge_level.design").toInt() * 100.0));
 }
 
 bool Battery::isRechargeable() const
