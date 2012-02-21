@@ -21,21 +21,25 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
+#include <qtemporarydir.h>
 
 class KSaveFileTest : public QObject
 {
     Q_OBJECT
 
 private Q_SLOTS:
-
+    void initTestCase();
     void test_ksavefile();
     void test_numberedBackupFile();
     void test_rcsBackupFile();
     void test_simpleBackupFile();
     void cleanupTestCase();
-    
+
 private:
     QStringList filesToRemove;
+
+    QTemporaryDir tmpDir; // destination for backups
+    QString tmp;
 };
 
 #endif

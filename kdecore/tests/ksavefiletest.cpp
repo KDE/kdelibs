@@ -39,7 +39,10 @@
 
 QTEST_KDEMAIN_CORE( KSaveFileTest )
 
-QString tmp(QDir::tempPath() + '/');
+void KSaveFileTest::initTestCase()
+{
+    tmp = tmpDir.path() + '/';
+}
 
 void KSaveFileTest::test_ksavefile()
 {
@@ -383,4 +386,3 @@ void KSaveFileTest::cleanupTestCase()
         QFile::remove(fileToRemove);
     }
 }
-
