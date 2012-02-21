@@ -267,7 +267,11 @@ protected:
     QTest::addColumn<PersistentChangeList>("changeList");
 
     QTest::newRow(failTag()) << SignalList() << PersistentChangeList();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    QSKIP("Test not implemented");
+#else
     QSKIP("Test not implemented", SkipSingle);
+#endif
   }
 
   void skipTestData(const QString &name)
