@@ -16,6 +16,8 @@
     Boston, MA 02110-1301, USA.
 */
 
+#undef QT_NO_CAST_FROM_ASCII
+
 #include "klibloadertest.h"
 
 #include <qtest_kde.h>

@@ -67,12 +67,6 @@ if(NOT QT5_BUILD)
   )
 endif()
 
-if(NOT KDE_NO_DEPRECATED)
- KDECORE_UNIT_TESTS(
-  klibloadertest
- )
-endif(NOT KDE_NO_DEPRECATED)
-
 if(UNIX)
  KDECORE_UNIT_TESTS(
   klocalsockettest
@@ -114,30 +108,4 @@ if(NOT QT5_BUILD)
   kde4_add_unit_test(kmimetypetest TESTNAME kdecore-kmimetypetest ${kmimetypetest_SRCS})
   target_link_libraries(kmimetypetest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
 endif()
-
-########### module for klibloadertest ###############
-
-if(NOT KDE_NO_DEPRECATED)
-set(klibloadertestmodule_PART_SRCS klibloadertest_module.cpp )
-
-kde4_add_plugin(klibloadertestmodule ${klibloadertestmodule_PART_SRCS})
-
-target_link_libraries(klibloadertestmodule  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
-
-set_target_properties(klibloadertestmodule PROPERTIES SKIP_BUILD_RPATH FALSE BUILD_WITH_INSTALL_RPATH FALSE)
-endif(NOT KDE_NO_DEPRECATED)
-
-########### module for klibloadertest4 ###############
-
-if (NOT WIN32) # TODO: reenable for win32
-
-set(klibloadertestmodule4_PART_SRCS klibloadertest4_module.cpp )
-
-kde4_add_plugin(klibloadertestmodule4 ${klibloadertestmodule4_PART_SRCS})
-
-target_link_libraries(klibloadertestmodule4  ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY})
-
-set_target_properties(klibloadertestmodule4 PROPERTIES SKIP_BUILD_RPATH FALSE BUILD_WITH_INSTALL_RPATH FALSE)
-
-endif (NOT WIN32)
 
