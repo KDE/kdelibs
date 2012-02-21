@@ -1147,13 +1147,13 @@ KParts::SelectorInterface::Element KHTMLHtmlExtension::querySelector(const QStri
         WTF::RefPtr<DOM::ElementImpl> domElem = part()->document().handle()->querySelector(query, ec);
         element = convertDomElement(domElem.get());
         break;
-    }    
+    }
     case KParts::SelectorInterface::SelectedContent:
         if (part()->hasSelection()) {
             DOM::Element domElem = part()->selection().cloneContents().querySelector(query);
             element = convertDomElement(static_cast<DOM::ElementImpl*>(domElem.handle()));
         }
-        break;        
+        break;
     default:
         break;
     }
@@ -1205,6 +1205,76 @@ QList<KParts::SelectorInterface::Element> KHTMLHtmlExtension::querySelectorAll(c
 
     return elements;
 }
+
+QVariant KHTMLHtmlExtension::htmlSettingsProperty(HtmlSettingsInterface::HtmlSettingsType type) const
+{
+    if (part()) {
+        switch (type) {
+        case KParts::HtmlSettingsInterface::AutoLoadImages:
+            return part()->autoloadImages();
+        case KParts::HtmlSettingsInterface::DnsPrefetchEnabled:
+            return (part()->dnsPrefetch() == KHTMLPart::DNSPrefetchEnabled);
+        case KParts::HtmlSettingsInterface::JavaEnabled:
+            return part()->javaEnabled();
+        case KParts::HtmlSettingsInterface::JavascriptEnabled:
+            return part()->jScriptEnabled();
+        case KParts::HtmlSettingsInterface::MetaRefreshEnabled:
+            return part()->metaRefreshEnabled();
+        case KParts::HtmlSettingsInterface::PluginsEnabled:
+            return part()->pluginsEnabled();
+        default:
+            break;
+        }
+    }
+    return QVariant();
+}
+
+bool KHTMLHtmlExtension::setHtmlSettingsProperty(HtmlSettingsInterface::HtmlSettingsType type, const QVariant& value)
+{
+    KHTMLPart* p = part();
+
+    if (p) {
+        switch (type) {
+        case KParts::HtmlSettingsInterface::AutoLoadImages:
+            p->setAutoloadImages(value.toBool());
+            return true;
+        case KParts::HtmlSettingsInterface::DnsPrefetchEnabled:
+            p->setDNSPrefetch((value.toBool() ? KHTMLPart::DNSPrefetchEnabled : KHTMLPart::DNSPrefetchDisabled));
+            return true;
+        case KParts::HtmlSettingsInterface::JavaEnabled:
+            p->setJavaEnabled(value.toBool());
+            return true;
+        case KParts::HtmlSettingsInterface::JavascriptEnabled:
+            p->setJScriptEnabled(value.toBool());
+            return true;
+        case KParts::HtmlSettingsInterface::MetaRefreshEnabled:
+            p->setMetaRefreshEnabled(value.toBool());
+            return true;
+        case KParts::HtmlSettingsInterface::PluginsEnabled:
+            p->setPluginsEnabled(value.toBool());
+            return true;
+        case KParts::HtmlSettingsInterface::UserDefinedStyleSheetURL: {
+            const KUrl url (value.toUrl());
+            if (url.protocol() == QLatin1String("data")) {
+                const QByteArray data (url.encodedPath());
+                if (!data.isEmpty()) {
+                    const int index = data.indexOf(',');
+                    const QByteArray decodedData ((index > -1 ? QByteArray::fromBase64(data.mid(index)) : QByteArray()));
+                    part()->setUserStyleSheet(QString::fromUtf8(decodedData.constData(), decodedData.size()));
+                }
+            } else {
+                part()->setUserStyleSheet(url);
+            }
+            return true;
+        }
+        default:
+            break; // Unsupported property...
+        }
+    }
+
+    return false;
+}
+
 
 KHTMLPart* KHTMLHtmlExtension::part() const
 {
