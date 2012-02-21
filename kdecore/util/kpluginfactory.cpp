@@ -38,7 +38,7 @@ KPluginFactory::KPluginFactory(const char *componentName, const char *catalogNam
     d->q_ptr = this;
 
     if (componentName)
-        d->componentData = KComponentData(componentName, catalogName);
+        d->componentData = KComponentData(componentName, catalogName, KComponentData::SkipMainComponentRegistration);
 
     factorycleanup->add(this);
 }
@@ -49,7 +49,7 @@ KPluginFactory::KPluginFactory(const KAboutData *aboutData, QObject *parent)
 {
     Q_D(KPluginFactory);
     d->q_ptr = this;
-    d->componentData = KComponentData(*aboutData);
+    d->componentData = KComponentData(*aboutData, KComponentData::SkipMainComponentRegistration);
 
     factorycleanup->add(this);
 }
@@ -60,7 +60,7 @@ KPluginFactory::KPluginFactory(const KAboutData &aboutData, QObject *parent)
 {
     Q_D(KPluginFactory);
     d->q_ptr = this;
-    d->componentData = KComponentData(aboutData);
+    d->componentData = KComponentData(aboutData, KComponentData::SkipMainComponentRegistration);
 
     factorycleanup->add(this);
 }
