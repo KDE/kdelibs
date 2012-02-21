@@ -18,3 +18,4 @@ find_package(Qt5Transitional REQUIRED Core)
 
 add_subdirectory(src)
 add_subdirectory(autotests)
+add_subdirectory(examples)
