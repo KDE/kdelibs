@@ -32,7 +32,7 @@
 #include <kconfiggroup.h>
 #include <kdebug.h>
 
-#include <qtest_kde.h>
+#include <qtest_kde.h> // WARNING: do not port to qtest.h without adding a putenv for XDG_DATA_HOME! User data loss will occur otherwise.
 #include <qstandardpaths.h>
 #include <qprocess.h>
 #include <kprotocolinfo.h>
