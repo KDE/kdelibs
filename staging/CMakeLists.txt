@@ -1,5 +1,7 @@
 add_subdirectory(kcoreaddons)
 add_subdirectory(karchive)
 add_subdirectory(kde4support)
-add_subdirectory(kwindowsystem)
+if(NOT QT5_BUILD)
+  add_subdirectory(kwindowsystem)
+endif()
 
