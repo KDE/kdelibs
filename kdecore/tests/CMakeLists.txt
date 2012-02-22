@@ -25,7 +25,6 @@ ENDMACRO(KDECORE_EXECUTABLE_TESTS)
 ########### next target ###############
 
 KDECORE_UNIT_TESTS(
- kdirwatch_unittest
  klocaletimeformattest
  klocalizedstringtest
  kmountpointtest

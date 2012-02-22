@@ -35,6 +35,7 @@ KCOREADDONS_UNIT_TESTS(
     kautosavefiletest
     kurlmimedatatest
     kencodingdetectortest
+    kdirwatch_unittest
 )
 
 # Helper for klockfiletest
