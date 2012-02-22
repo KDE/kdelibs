@@ -376,7 +376,7 @@ namespace {
     // a field differs from a plain term in that it does never allow comparators
     const char* s_fieldNamePattern = "([^\\s\"':=<>]+|(?:([\"'])[^\"':=<>]+\\%1))";
     const char* s_plainTermPattern = "([^-][^\\s\"':=<>]*|(?:([\"'])[^\"']+\\%1))";
-    const char* s_inExclusionPattern = "((?:[\\+\\-\\s*]|\\!\\s*|[nN][oO][tT]\\s+)?)";
+    const char* s_inExclusionPattern = "((?:[\\+\\-\\!]\\s*|[nN][oO][tT]\\s+)?)";
     const char* s_uriPattern = "<([^<>]+)>";
     const char* s_comparatorPattern = "(:|\\<=|\\>=|=|\\<|\\>)";
 
