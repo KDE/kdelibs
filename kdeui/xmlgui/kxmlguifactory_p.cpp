@@ -28,6 +28,7 @@
 
 #include <assert.h>
 #include <kcomponentdata.h>
+#include <ktoolbar.h>
 
 using namespace KXMLGUI;
 
@@ -795,6 +796,16 @@ void BuildHelper::processContainerElement( const QDomElement &e, const QString &
         containerNode = new ContainerNode( container, tag, name, parentNode,
                                            m_state.guiClient, builder, containerAction,
                                            mergingName, group, cusTags, conTags );
+    } else {
+        if ( tag == QLatin1String( "toolbar" ) ) {
+            KToolBar *bar = qobject_cast<KToolBar*>(containerNode->container);
+            if (bar) {
+                if ( m_state.guiClient && !m_state.guiClient->xmlFile().isEmpty() )
+                    bar->addXMLGUIClient(m_state.guiClient);
+            } else {
+                kWarning() << "toolbar container is not a KToolBar";
+            }
+        }
     }
 
     BuildHelper( m_state, containerNode ).build( e );

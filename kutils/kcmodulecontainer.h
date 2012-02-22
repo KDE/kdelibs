@@ -163,13 +163,15 @@ class KCMUTILS_EXPORT KCModuleContainer : public KCModule
 class KCModuleContainer##factoryName : public KCModuleContainer \
 { \
     public: \
-        KCModuleContainer##factoryName(QWidget *parent, const QStringList &) \
+        KCModuleContainer##factoryName(QWidget *parent, const QVariantList &) \
             : KCModuleContainer(parent, QLatin1String(modules)) \
         { \
         } \
 }; \
-typedef KGenericFactory<KCModuleContainer#factoryName> KCModuleContainer##factoryName##Factory; \
-K_EXPORT_COMPONENT_FACTORY(factoryName, KCModuleContainer##factoryName##Factory)
+K_PLUGIN_FACTORY(KCModuleContainer##factoryName##Factory, \
+         registerPlugin<KCModuleContainer#factoryName>(); \
+                ) \
+K_EXPORT_PLUGIN(KCModuleContainer##factoryName##Factory)
 
 #endif // KCMODULECONTAINER_H
 

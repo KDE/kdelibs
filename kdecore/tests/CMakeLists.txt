@@ -48,6 +48,7 @@ KDECORE_UNIT_TESTS(
  klockfiletest
  ktempdirtest
  ksharedptrtest
+ kshareddatacachetest
  kdatetimetest
  ksavefiletest
  kautosavefiletest

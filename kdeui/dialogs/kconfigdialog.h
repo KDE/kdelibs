@@ -24,6 +24,7 @@
 #include <kpagedialog.h>
 
 class KConfig;
+class KCoreConfigSkeleton;
 class KConfigSkeleton;
 class KConfigDialogManager;
 
@@ -100,6 +101,23 @@ public:
    */
   KConfigDialog( QWidget *parent, const QString& name,
                  KConfigSkeleton *config );
+
+  /**
+   * @since 4.8.1
+   *
+   * @param parent - The parent of this object.  Even though the class
+   * deletes itself the parent should be set so the dialog can be centered
+   * with the application on the screen.
+   *
+   * @param name - The name of this object.  The name is used in determining if
+   * there can be more than one dialog at a time.  Use names such as:
+   * "Font Settings" or "Color Settings" and not just "Settings" in
+   * applications where there is more than one dialog.
+   *
+   * @param config - Config object containing settings.
+   */
+  KConfigDialog( QWidget *parent, const QString& name,
+                 KCoreConfigSkeleton *config );
 
   /**
    * Deconstructor, removes name from the list of open dialogs.

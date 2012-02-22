@@ -2594,8 +2594,10 @@ KUrl KFileWidget::getStartUrl( const KUrl& startDir,
             {
                 ret = startDir;				// will be checked by stat later
                 // If we won't be able to list it (e.g. http), then use default
-                if ( !KProtocolManager::supportsListing( ret ) )
+                if ( !KProtocolManager::supportsListing( ret ) ) {
                     useDefaultStartDir = true;
+                    fileName = startDir.fileName();
+                }
             }
             else					// file name only
             {

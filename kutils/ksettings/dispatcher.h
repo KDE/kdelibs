@@ -44,8 +44,8 @@ namespace Dispatcher
     /**
      * Register a slot to be called when the configuration for the componentData
      * has changed. @p componentData is the KComponentData object
-     * that is passed to KGenericFactory (if it is used). You can query
-     * it with KGenericFactory<YourClassName>::componentData().
+     * that is passed to KPluginFactory (if it is used). You can query
+     * it with MyPluginFactory::componentData().
      * componentData.componentName() is also the same name that is put into the
      * .desktop file of the KCMs for the X-KDE-ParentComponents.
      *

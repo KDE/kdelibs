@@ -37,8 +37,38 @@
 class KConfigDialog::KConfigDialogPrivate
 {
 public:
-  KConfigDialogPrivate(KConfigDialog *q)
-    : q(q), shown(false), manager(0) { }
+  KConfigDialogPrivate(KConfigDialog *q, const QString& name, KCoreConfigSkeleton *config)
+    : q(q), shown(false), manager(0)
+  {
+    q->setCaption( i18n("Configure") );
+    q->setFaceType( List );
+    q->setButtons( Default|Ok|Apply|Cancel|Help );
+    q->setHelp( QString(), KGlobal::mainComponent().componentName() );
+    q->setDefaultButton( Ok );
+    q->setObjectName( name );
+
+    if ( !name.isEmpty() ) {
+      openDialogs.insert(name, q);
+    } else {
+      QString genericName;
+      genericName.sprintf("SettingsDialog-%p", static_cast<void*>(q));
+      openDialogs.insert(genericName, q);
+      q->setObjectName(genericName);
+    }
+
+    connect(q, SIGNAL(okClicked()), q, SLOT(updateSettings()));
+    connect(q, SIGNAL(applyClicked()), q, SLOT(updateSettings()));
+    connect(q, SIGNAL(applyClicked()), q, SLOT(_k_updateButtons()));
+    connect(q, SIGNAL(cancelClicked()), q, SLOT(updateWidgets()));
+    connect(q, SIGNAL(defaultClicked()), q, SLOT(updateWidgetsDefault()));
+    connect(q, SIGNAL(defaultClicked()), q, SLOT(_k_updateButtons()));
+    connect(q, SIGNAL(pageRemoved(KPageWidgetItem*)), q, SLOT(onPageRemoved(KPageWidgetItem*)));
+
+    manager = new KConfigDialogManager(q, config);
+    setupManagerConnections(manager);
+
+    q->enableButton(Apply, false);
+  }
 
   KPageWidgetItem* addPageInternal(QWidget *page, const QString &itemName,
                            const QString &pixmapName, const QString &header);
@@ -64,36 +94,15 @@ QHash<QString,KConfigDialog *> KConfigDialog::KConfigDialogPrivate::openDialogs;
 KConfigDialog::KConfigDialog( QWidget *parent, const QString& name,
           KConfigSkeleton *config ) :
     KPageDialog( parent ),
-    d(new KConfigDialogPrivate(this))
+    d(new KConfigDialogPrivate(this, name, config))
 {
-  setCaption( i18n("Configure") );
-  setFaceType( List );
-  setButtons( Default|Ok|Apply|Cancel|Help );
-  setHelp( QString(), KGlobal::mainComponent().componentName() );
-  setDefaultButton( Ok );
-  setObjectName( name );
+}
 
-  if ( !name.isEmpty() ) {
-    KConfigDialogPrivate::openDialogs.insert(name, this);
-  } else {
-    QString genericName;
-    genericName.sprintf("SettingsDialog-%p", static_cast<void*>(this));
-    KConfigDialogPrivate::openDialogs.insert(genericName, this);
-    setObjectName(genericName);
-  }
-
-  connect(this, SIGNAL(okClicked()), this, SLOT(updateSettings()));
-  connect(this, SIGNAL(applyClicked()), this, SLOT(updateSettings()));
-  connect(this, SIGNAL(applyClicked()), this, SLOT(_k_updateButtons()));
-  connect(this, SIGNAL(cancelClicked()), this, SLOT(updateWidgets()));
-  connect(this, SIGNAL(defaultClicked()), this, SLOT(updateWidgetsDefault()));
-  connect(this, SIGNAL(defaultClicked()), this, SLOT(_k_updateButtons()));
-  connect(this, SIGNAL(pageRemoved(KPageWidgetItem*)), this, SLOT(onPageRemoved(KPageWidgetItem*)));
-
-  d->manager = new KConfigDialogManager(this, config);
-  d->setupManagerConnections(d->manager);
-
-  enableButton(Apply, false);
+KConfigDialog::KConfigDialog( QWidget *parent, const QString& name,
+          KCoreConfigSkeleton *config ) :
+    KPageDialog( parent ),
+    d(new KConfigDialogPrivate(this, name, config))
+{
 }
 
 KConfigDialog::~KConfigDialog()
