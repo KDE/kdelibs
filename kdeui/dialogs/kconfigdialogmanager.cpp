@@ -418,6 +418,18 @@ QByteArray KConfigDialogManager::getUserProperty(const QWidget *widget) const
         return QByteArray(); //no USER property
     }
   }
+  const QComboBox *cb = qobject_cast<const QComboBox *>(widget);
+  if (cb) {
+    const char *qcomboUserPropertyName = cb->QComboBox::metaObject()->userProperty().name();
+    const int qcomboUserPropertyIndex = qcomboUserPropertyName ? cb->QComboBox::metaObject()->indexOfProperty(qcomboUserPropertyName) : -1;
+    const char *widgetUserPropertyName = widget->metaObject()->userProperty().name();
+    const int widgetUserPropertyIndex = widgetUserPropertyName ? cb->metaObject()->indexOfProperty(widgetUserPropertyName) : -1;
+
+    if (qcomboUserPropertyIndex == widgetUserPropertyIndex) {
+        return QByteArray(); // use the q/kcombobox special code
+    }
+  }
+
   return s_propertyMap->value( widget->metaObject()->className() );
 }
 
@@ -448,6 +460,9 @@ void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
 
     QByteArray userproperty = getCustomProperty(w);
     if (userproperty.isEmpty()) {
+        userproperty = getUserProperty(w);
+    }
+    if (userproperty.isEmpty()) {
         QComboBox *cb = qobject_cast<QComboBox *>(w);
         if (cb) {
             if (cb->isEditable()) {
@@ -462,9 +477,6 @@ void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
             }
             return;
         }
-    }
-    if (userproperty.isEmpty()) {
-        userproperty = getUserProperty(w);
     }
     if (userproperty.isEmpty()) {
         kWarning(d->debugArea()) << w->metaObject()->className() << " widget not handled!";
@@ -482,6 +494,9 @@ QVariant KConfigDialogManager::property(QWidget *w) const
 
     QByteArray userproperty = getCustomProperty(w);
     if (userproperty.isEmpty()) {
+        userproperty = getUserProperty(w);
+    }
+    if (userproperty.isEmpty()) {
         QComboBox *cb = qobject_cast<QComboBox *>(w);
         if (cb) {
             if (cb->isEditable()) {
@@ -490,9 +505,6 @@ QVariant KConfigDialogManager::property(QWidget *w) const
                 return QVariant(cb->currentIndex());
             }
         }
-    }
-    if (userproperty.isEmpty()) {
-        userproperty = getUserProperty(w);
     }
     if (userproperty.isEmpty()) {
         kWarning(d->debugArea()) << w->metaObject()->className() << " widget not handled!";
