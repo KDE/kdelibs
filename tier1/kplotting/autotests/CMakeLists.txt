@@ -20,6 +20,7 @@ ENDMACRO(KPLOTTING_UNIT_TESTS)
 ########### next target ###############
 
 KPLOTTING_UNIT_TESTS(
+    kplotpointtest
     kplotaxistest
     kplotobjecttest
 )
