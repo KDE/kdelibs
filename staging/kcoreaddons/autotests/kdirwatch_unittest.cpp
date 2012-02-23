@@ -18,19 +18,18 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kstandarddirs.h>
-#include <kconfiggroup.h>
-#include <QDir>
-#include <kdebug.h>
-#include <qtemporarydir.h>
-#include <qtest_kde.h>
-#include <qtestevent.h>
 #include <kdirwatch.h>
+
+#include <QDir>
+#include <QDebug>
+#include <QFileInfo>
+#include <qtemporarydir.h>
+#include <QtTest>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <time.h>
-#include <kde_file.h>
 
+#include <kde_qt5_compat.h>
 // Debugging notes: to see which inotify signals are emitted, either set s_verboseDebug=true
 // at the top of kdirwatch.cpp, or use the command-line tool "inotifywait -m /path"
 
@@ -60,8 +59,10 @@ class KDirWatch_UnitTest : public QObject
 public:
     KDirWatch_UnitTest()
     {
-        m_path = m_tempDir.path() + '/';
+        m_path = m_tempDir.path() + QLatin1Char('/');
 
+        #pragma message("KDE5 TODO: Remove dependencies on Kconfig and KGlobal") 
+#if 0
         KConfigGroup config(KGlobal::config(), "DirWatch");
         const QByteArray testMethod = qgetenv("KDIRWATCHTEST_METHOD");
         if (!testMethod.isEmpty()) {
@@ -71,19 +72,19 @@ public:
         }
         // Speed up the test by making the kdirwatch timer (to compress changes) faster
         config.writeEntry("PollInterval", 50);
-
+#endif
         KDirWatch foo;
         m_slow = (foo.internalMethod() == KDirWatch::FAM || foo.internalMethod() == KDirWatch::Stat);
-        kDebug() << "Using method" << methodToString(foo.internalMethod());
+        qDebug() << "Using method" << methodToString(foo.internalMethod());
     }
 
 private Q_SLOTS: // test methods
     void initTestCase() {
         // By creating the files upfront, we save waiting a full second for an mtime change
-        createFile(m_path + "ExistingFile");
-        createFile(m_path + "TestFile");
-        createFile(m_path + "nested_0");
-        createFile(m_path + "nested_1");
+        createFile(m_path + QLatin1String("ExistingFile"));
+        createFile(m_path + QLatin1String("TestFile"));
+        createFile(m_path + QLatin1String("nested_0"));
+        createFile(m_path + QLatin1String("nested_1"));
     }
     void touchOneFile();
     void touch1000Files();
@@ -120,7 +121,7 @@ private:
     bool m_slow;
 };
 
-QTEST_KDEMAIN_CORE(KDirWatch_UnitTest)
+QTEST_MAIN(KDirWatch_UnitTest)
 
 // Just to make the inotify packets bigger
 static const char s_filePrefix[] = "This_is_a_test_file_";
@@ -135,13 +136,13 @@ void KDirWatch_UnitTest::createFile(const QString& path)
     Q_ASSERT(ok);
     file.write(QByteArray("foo"));
     file.close();
-    //kDebug() << path;
+    //qDebug() << path;
 }
 
 // helper method: create a file (identified by number)
 QString KDirWatch_UnitTest::createFile(int num)
 {
-    const QString fileName = s_filePrefix + QString::number(num);
+    const QString fileName = QLatin1String(s_filePrefix) + QString::number(num);
     createFile(m_path + fileName);
     return m_path + fileName;
 }
@@ -149,7 +150,7 @@ QString KDirWatch_UnitTest::createFile(int num)
 // helper method: delete a file (identified by number)
 void KDirWatch_UnitTest::removeFile(int num)
 {
-    const QString fileName = s_filePrefix + QString::number(num);
+    const QString fileName = QLatin1String(s_filePrefix) + QString::number(num);
     QFile::remove(m_path + fileName);
 }
 
@@ -162,14 +163,17 @@ static QByteArray printableTime(time_t mtime)
     return outstr;
 }
 
+
 void KDirWatch_UnitTest::waitUntilMTimeChange(const QString& path)
 {
    // Wait until the current second is more than the file's mtime
-    // otherwise this change will go unnoticed
-    KDE_struct_stat stat_buf;
-    QCOMPARE(KDE::stat(path, &stat_buf), 0);
-    const time_t ctime = qMax(stat_buf.st_ctime, stat_buf.st_mtime);
+   // otherwise this change will go unnoticed
+
+    QFileInfo fi(path);
+    QVERIFY(fi.exists());
+    const time_t ctime = qMax(fi.lastModified(), fi.created()).toTime_t();
     waitUntilAfter(ctime);
+
 }
 
 void KDirWatch_UnitTest::waitUntilNewSecond()
@@ -199,7 +203,7 @@ void KDirWatch_UnitTest::waitUntilAfter(time_t ctime)
         }
     }
     //if (totalWait > 0)
-    kDebug() << "Waited" << totalWait << "ms so that now" << printableTime(now_tv.tv_sec) << "is >" << printableTime(ctime);
+    qDebug() << "Waited" << totalWait << "ms so that now" << printableTime(now_tv.tv_sec) << "is >" << printableTime(ctime);
 }
 
 // helper method: modifies a file
@@ -214,26 +218,25 @@ void KDirWatch_UnitTest::appendToFile(const QString& path)
     QVERIFY(file.open(QIODevice::Append | QIODevice::WriteOnly));
     file.write(QByteArray("foobar"));
     file.close();
-
     if (0) {
-        KDE_struct_stat stat_buf;
-        QCOMPARE(KDE::stat(path, &stat_buf), 0);
-        kDebug() << "After append: file ctime=" << printableTime(stat_buf.st_ctime);
-        QCOMPARE(KDE::stat(path, &stat_buf), 0);
-        kDebug() << "After append: directory mtime=" << printableTime(stat_buf.st_ctime);
+        QFileInfo fi(path);
+        QCOMPARE(!fi.exists(), 0);
+        qDebug() << "After append: file ctime=" << printableTime(fi.lastModified().toTime_t());
+        QCOMPARE(!fi.exists(), 0);
+        qDebug() << "After append: directory mtime=" << printableTime(fi.created().toTime_t());
     }
 }
 
 // helper method: modifies a file (identified by number)
 void KDirWatch_UnitTest::appendToFile(int num)
 {
-    const QString fileName = s_filePrefix + QString::number(num);
+    const QString fileName = QLatin1String(s_filePrefix) + QString::number(num);
     appendToFile(m_path + fileName);
 }
 
 static QString removeTrailingSlash(const QString& path)
 {
-    if (path.endsWith('/')) {
+    if (path.endsWith(QLatin1Char('/'))) {
         return path.left(path.length()-1);
     } else {
         return path;
@@ -248,7 +251,7 @@ QList<QVariantList> KDirWatch_UnitTest::waitForDirtySignal(KDirWatch& watch, int
     // Give time for KDirWatch to notify us
     while (spyDirty.count() < expected) {
         if (++numTries > s_maxTries) {
-            kWarning() << "Timeout waiting for KDirWatch. Got" << spyDirty.count() << "dirty() signals, expected" << expected;
+            qWarning() << "Timeout waiting for KDirWatch. Got" << spyDirty.count() << "dirty() signals, expected" << expected;
             return spyDirty;
         }
         QTest::qWait(50);
@@ -265,7 +268,7 @@ bool KDirWatch_UnitTest::waitForOneSignal(KDirWatch& watch, const char* sig, con
         // Give time for KDirWatch to notify us
         while (spyDirty.isEmpty()) {
             if (++numTries > s_maxTries) {
-                kWarning() << "Timeout waiting for KDirWatch signal" << QByteArray(sig).mid(1) << "(" << path << ")";
+                qWarning() << "Timeout waiting for KDirWatch signal" << QByteArray(sig).mid(1) << "(" << path << ")";
                 return false;
             }
             QTest::qWait(50);
@@ -273,11 +276,11 @@ bool KDirWatch_UnitTest::waitForOneSignal(KDirWatch& watch, const char* sig, con
         const QString got = spyDirty[0][0].toString();
         if (got == expectedPath)
             return true;
-        if (got.startsWith(expectedPath + '/')) {
-            kDebug() << "Ignoring (inotify) notification of" << sig << '(' << got << ')';
+        if (got.startsWith(expectedPath + QLatin1Char('/'))) {
+            qDebug() << "Ignoring (inotify) notification of" << sig << '(' << got << ')';
             continue;
         }
-        kWarning() << "Expected" << sig << '(' << removeTrailingSlash(path) << ')' << "but got" << sig << '(' << got << ')';
+        qWarning() << "Expected" << sig << '(' << removeTrailingSlash(path) << ')' << "but got" << sig << '(' << got << ')';
         return false;
     }
 }
@@ -289,7 +292,7 @@ QList<QVariantList> KDirWatch_UnitTest::waitForCreatedSignal(KDirWatch& watch, i
     // Give time for KDirWatch to notify us
     while (spyCreated.count() < expected) {
         if (++numTries > s_maxTries) {
-            kWarning() << "Timeout waiting for KDirWatch. Got" << spyCreated.count() << "created() signals, expected" << expected;
+            qWarning() << "Timeout waiting for KDirWatch. Got" << spyCreated.count() << "created() signals, expected" << expected;
             return spyCreated;
         }
         QTest::qWait(50);
@@ -304,7 +307,7 @@ QList<QVariantList> KDirWatch_UnitTest::waitForDeletedSignal(KDirWatch& watch, i
     // Give time for KDirWatch to notify us
     while (spyDeleted.count() < expected) {
         if (++numTries > s_maxTries) {
-            kWarning() << "Timeout waiting for KDirWatch. Got" << spyDeleted.count() << "deleted() signals, expected" << expected;
+            qWarning() << "Timeout waiting for KDirWatch. Got" << spyDeleted.count() << "deleted() signals, expected" << expected;
             return spyDeleted;
         }
         QTest::qWait(50);
@@ -357,7 +360,7 @@ void KDirWatch_UnitTest::touch1000Files()
 void KDirWatch_UnitTest::watchAndModifyOneFile() // watch a specific file, and modify it
 {
     KDirWatch watch;
-    const QString existingFile = m_path + "ExistingFile";
+    const QString existingFile = m_path + QLatin1String("ExistingFile");
     watch.addFile(existingFile);
     watch.startScan();
     if (m_slow)
@@ -382,7 +385,7 @@ void KDirWatch_UnitTest::removeAndReAdd()
     if (watch.internalMethod() != KDirWatch::INotify)
         waitUntilMTimeChange(m_path); // necessary for FAM and QFSWatcher
     const QString file1 = createFile(1);
-    //kDebug() << "created" << file1;
+    //qDebug() << "created" << file1;
     QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), m_path));
 }
 
@@ -390,7 +393,7 @@ void KDirWatch_UnitTest::watchNonExistent()
 {
     KDirWatch watch;
     // Watch "subdir", that doesn't exist yet
-    const QString subdir = m_path + "subdir";
+    const QString subdir = m_path + QLatin1String("subdir");
     QVERIFY(!QFile::exists(subdir));
     watch.addDir(subdir);
     watch.startScan();
@@ -399,7 +402,7 @@ void KDirWatch_UnitTest::watchNonExistent()
         waitUntilNewSecond();
 
     // Now create it, KDirWatch should emit created()
-    kDebug() << "Creating" << subdir;
+    qDebug() << "Creating" << subdir;
     QDir().mkdir(subdir);
 
     QVERIFY(waitForOneSignal(watch, SIGNAL(created(QString)), subdir));
@@ -412,9 +415,9 @@ void KDirWatch_UnitTest::watchNonExistent()
     watch.addDir(subdir);
 
     // Now watch files that don't exist yet
-    const QString file = subdir + "/0";
+    const QString file = subdir + QLatin1String("/0");
     watch.addFile(file); // doesn't exist yet
-    const QString file1 = subdir + "/1";
+    const QString file1 = subdir + QLatin1String("/1");
     watch.addFile(file1); // doesn't exist yet
     watch.removeFile(file1); // forget it again
 
@@ -422,7 +425,7 @@ void KDirWatch_UnitTest::watchNonExistent()
 
     QVERIFY(!QFile::exists(file));
     // Now create it, KDirWatch should emit created
-    kDebug() << "Creating" << file;
+    qDebug() << "Creating" << file;
     createFile(file);
     QVERIFY(waitForOneSignal(watch, SIGNAL(created(QString)), file));
 
@@ -436,7 +439,7 @@ void KDirWatch_UnitTest::watchNonExistent()
 
 void KDirWatch_UnitTest::watchNonExistentWithSingleton()
 {
-    const QString file = "/root/.ssh/authorized_keys";
+    const QString file = QLatin1String("/root/.ssh/authorized_keys");
     KDirWatch::self()->addFile(file);
     // When running this test in KDIRWATCHTEST_METHOD=QFSWatch, or when FAM is not available
     // and we fallback to qfswatch when inotify fails above, we end up creating the fsWatch
@@ -446,7 +449,7 @@ void KDirWatch_UnitTest::watchNonExistentWithSingleton()
 
 void KDirWatch_UnitTest::testDelete()
 {
-    const QString file1 = m_path + "del";
+    const QString file1 = m_path + QLatin1String("del");
     if (!QFile::exists(file1))
         createFile(file1);
     waitUntilMTimeChange(file1);
@@ -466,9 +469,9 @@ void KDirWatch_UnitTest::testDelete()
 
 void KDirWatch_UnitTest::testDeleteAndRecreateFile() // Useful for /etc/localtime for instance
 {
-    const QString subdir = m_path + "subdir";
+    const QString subdir = m_path + QLatin1String("subdir");
     QDir().mkdir(subdir);
-    const QString file1 = subdir + "/1";
+    const QString file1 = subdir + QLatin1String("/1");
     if (!QFile::exists(file1))
         createFile(file1);
     waitUntilMTimeChange(file1);
@@ -479,7 +482,7 @@ void KDirWatch_UnitTest::testDeleteAndRecreateFile() // Useful for /etc/localtim
 
     //KDE_struct_stat stat_buf;
     //QCOMPARE(KDE::stat(QFile::encodeName(file1), &stat_buf), 0);
-    //kDebug() << "initial inode" << stat_buf.st_ino;
+    //qDebug() << "initial inode" << stat_buf.st_ino;
 
     QFile::remove(file1);
     // And recreate immediately, to try and fool KDirWatch with unchanged ctime/mtime ;)
@@ -491,7 +494,7 @@ void KDirWatch_UnitTest::testDeleteAndRecreateFile() // Useful for /etc/localtim
         QSKIP_PORTING("Deleting and recreating a file is not detected by FAM (at least with gamin) or Stat", SkipAll);
     }
     //QCOMPARE(KDE::stat(QFile::encodeName(file1), &stat_buf), 0);
-    //kDebug() << "new inode" << stat_buf.st_ino; // same!
+    //qDebug() << "new inode" << stat_buf.st_ino; // same!
 
     if (watch.internalMethod() == KDirWatch::INotify) {
         QVERIFY(waitForOneSignal(watch, SIGNAL(deleted(QString)), file1));
@@ -516,14 +519,14 @@ void KDirWatch_UnitTest::testDeleteAndRecreateDir()
 {
     // Like KDirModelTest::testOverwriteFileWithDir does at the end.
     // The linux-2.6.31 bug made kdirwatch emit deletion signals about the -new- dir!
-    QTemporaryDir* tempDir1 = new QTemporaryDir(QDir::tempPath() + QLatin1Char('/') + "olddir-");
+    QTemporaryDir* tempDir1 = new QTemporaryDir(QDir::tempPath() + QLatin1Char('/') + QLatin1String("olddir-"));
     KDirWatch watch;
-    const QString path1 = tempDir1->path() + '/';
+    const QString path1 = tempDir1->path() + QLatin1Char('/');
     watch.addDir(path1);
 
     delete tempDir1;
-    QTemporaryDir* tempDir2 = new QTemporaryDir(QDir::tempPath() + QLatin1Char('/') + "newdir-");
-    const QString path2 = tempDir2->path() + '/';
+    QTemporaryDir* tempDir2 = new QTemporaryDir(QDir::tempPath() + QLatin1Char('/') + QLatin1String("newdir-"));
+    const QString path2 = tempDir2->path() + QLatin1Char('/');
     watch.addDir(path2);
 
     QVERIFY(waitForOneSignal(watch, SIGNAL(deleted(QString)), path1));
@@ -544,7 +547,7 @@ void KDirWatch_UnitTest::testMoveTo()
     // That's inconsistent, and after removeFile() a dangling sub-entry would be left.
 
     // Initial data: creating file subdir/1
-    const QString file1 = m_path + "moveTo";
+    const QString file1 = m_path + QLatin1String("moveTo");
     createFile(file1);
 
     KDirWatch watch;
@@ -556,10 +559,10 @@ void KDirWatch_UnitTest::testMoveTo()
         waitUntilMTimeChange(m_path);
 
     // Atomic rename of "temp" to "file1", much like KAutoSave would do when saving file1 again
-    const QString filetemp = m_path + "temp";
+    const QString filetemp = m_path + QLatin1String("temp");
     createFile(filetemp);
-    QVERIFY(KDE::rename(filetemp, file1) == 0); // overwrite file1 with the tempfile
-    kDebug() << "Overwrite file1 with tempfile";
+    QVERIFY(QFile::rename(filetemp, file1)); // overwrite file1 with the tempfile
+    qDebug() << "Overwrite file1 with tempfile";
 
     QSignalSpy spyCreated(&watch, SIGNAL(created(QString)));
     QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), m_path));
@@ -574,10 +577,10 @@ void KDirWatch_UnitTest::testMoveTo()
     appendToFile(file1);
     QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), file1));
 
-    //kDebug() << "after created";
+    //qDebug() << "after created";
     //KDirWatch::statistics();
     watch.removeFile(file1); // now we remove it
-    //kDebug() << "after removeFile";
+    //qDebug() << "after removeFile";
     //KDirWatch::statistics();
 
     // Just touch another file to trigger a findSubEntry - this where the crash happened
@@ -590,9 +593,9 @@ void KDirWatch_UnitTest::nestedEventLoop() // #220153: watch two files, and modi
 {
     KDirWatch watch;
 
-    const QString file0 = m_path + "nested_0";
+    const QString file0 = m_path + QLatin1String("nested_0");
     watch.addFile(file0);
-    const QString file1 = m_path + "nested_1";
+    const QString file1 = m_path + QLatin1String("nested_1");
     watch.addFile(file1);
     watch.startScan();
 
@@ -617,17 +620,17 @@ void KDirWatch_UnitTest::nestedEventLoopSlot()
     // let's not come in this slot again
     disconnect(watch, SIGNAL(dirty(QString)), this, SLOT(nestedEventLoopSlot()));
 
-    const QString file1 = m_path + "nested_1";
+    const QString file1 = m_path + QLatin1String("nested_1");
     appendToFile(file1);
-    //kDebug() << "now waiting for signal";
+    //qDebug() << "now waiting for signal";
     // The nested event processing here was from a messagebox in #220153
     QList<QVariantList> spy = waitForDirtySignal(*watch, 1);
     QVERIFY(spy.count() >= 1);
     QCOMPARE(spy[spy.count()-1][0].toString(), file1);
-    //kDebug() << "done";
+    //qDebug() << "done";
 
     // Now the user pressed reload...
-    const QString file0 = m_path + "nested_0";
+    const QString file0 = m_path + QLatin1String("nested_0");
     watch->removeFile(file0);
     watch->addFile(file0);
 }
@@ -642,7 +645,7 @@ void KDirWatch_UnitTest::testHardlinkChange()
     // being recreated. Better watch the directory, for that.
     // Well, it works with inotify (and fam - which uses inotify I guess?)
 
-    const QString existingFile = m_path + "ExistingFile";
+    const QString existingFile = m_path + QLatin1String("ExistingFile");
     KDirWatch watch;
     watch.addFile(existingFile);
     watch.startScan();
@@ -651,9 +654,8 @@ void KDirWatch_UnitTest::testHardlinkChange()
     //waitUntilMTimeChange(m_path);
 
     QFile::remove(existingFile);
-    const QString testFile = m_path + "TestFile";
-    ::link(QFile::encodeName(testFile), QFile::encodeName(existingFile)); // make ExistingFile "point" to TestFile
-
+    const QString testFile = m_path + QLatin1String("TestFile");
+    QFile::link(testFile, existingFile); // make ExistingFile "point" to TestFile
     QVERIFY(QFile::exists(existingFile));
     //QVERIFY(waitForOneSignal(watch, SIGNAL(deleted(QString)), existingFile));
     if (watch.internalMethod() == KDirWatch::INotify || watch.internalMethod() == KDirWatch::FAM)
