@@ -24,7 +24,7 @@
 #include <kconfiggroup.h>
 #include <qtest_kde.h>
 #include <kdebug.h>
-#include <kprocess.h>
+#include <QtCore/QProcess>
 #include <kstandarddirs.h>
 
 QTEST_KDEMAIN_CORE( KDebugTest )
@@ -271,23 +271,25 @@ void KDebugTest::testHasNullOutput()
 void KDebugTest::testNoMainComponentData()
 {
     // This test runs kdebug_qcoreapptest and checks its output
-    KProcess proc;
-    proc.setEnv("KDE_DEBUG_NOPROCESSINFO", "1");
-    proc.setEnv("KDE_DEBUG_TIMESTAMP", "0");
-    proc.setOutputChannelMode(KProcess::OnlyStderrChannel);
+    QProcess proc;
+    QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
+	environment.insert("KDE_DEBUG_NOPROCESSINFO", "1");
+    environment.insert("KDE_DEBUG_TIMESTAMP", "0");
+	proc.setProcessEnvironment(environment);
+    proc.setProcessChannelMode(QProcess::SeparateChannels);
 #ifdef Q_OS_WIN
-    proc << "kdebug_qcoreapptest.exe";
+    proc.start("kdebug_qcoreapptest.exe");
 #else
     if (QFile::exists("./kdebug_qcoreapptest.shell"))
-        proc << "./kdebug_qcoreapptest.shell";
+        proc.start("./kdebug_qcoreapptest.shell");
     else {
         QVERIFY(QFile::exists("./kdebug_qcoreapptest"));
-        proc << "./kdebug_qcoreapptest";
+        proc.start("./kdebug_qcoreapptest");
     }
 #endif
     //     kDebug() << proc.args();
-    const int ok = proc.execute();
-    QVERIFY(ok == 0);
+    const bool ok = proc.waitForFinished();
+    QVERIFY(ok);
     const QByteArray allOutput = proc.readAllStandardError();
     const QList<QByteArray> receivedLines = allOutput.split('\n');
     //qDebug() << receivedLines;
