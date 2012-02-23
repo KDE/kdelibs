@@ -91,6 +91,8 @@ configure_file(${CMAKE_SOURCE_DIR}/CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCu
 set (QT_MIN_VERSION "4.8.0")
 
 find_package(KDE4Internal REQUIRED)
+set(KDE4_KDEUI_LIBRARY itemmodels sonnetcore ${KDE4_KDEUI_LIBRARY} )
+set(KDE4_KDEUI_LIBS    ${KDE4_KDEUI_LIBRARY} )
 include(KDE4Defaults)
 include (MacroLibrary)
 if (APPLE)
