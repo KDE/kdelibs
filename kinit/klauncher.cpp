@@ -561,7 +561,7 @@ KLauncher::requestDone(KLaunchRequest *request)
    {
       requestResult.result = 1;
       requestResult.dbusName.clear();
-      requestResult.error = i18n("KDEInit could not launch '%1'.", request->name);
+      requestResult.error = i18n("KDEInit could not launch '%1'", request->name);
       if (!request->errorMsg.isEmpty())
           requestResult.error += QString::fromLatin1(":\n") + request->errorMsg;
       requestResult.pid = 0;
