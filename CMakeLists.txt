@@ -397,6 +397,11 @@ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h  DESTINATION  ${INCLUDE_I
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake DESTINATION ${DATA_INSTALL_DIR}/cmake/modules)
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDEPlatformProfile.cmake  DESTINATION ${DATA_INSTALL_DIR}/cmake/modules)
 
+## TEMPORARY
+install(FILES
+  kde_qt5_compat.h
+DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
+
 
 # run a script before installing the exports files which deletes previously installed
 # configuration specific export files KDELibs4(Library|Tools)Targets-<config>.cmake

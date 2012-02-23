@@ -32,6 +32,8 @@
 #include <QtCore/QEventLoop>
 #include <QtTest/QSignalSpy>
 
+#include "kde_qt5_compat.h"
+
 namespace QTest
 {
     /**
@@ -154,14 +156,5 @@ int main(int argc, char *argv[]) \
  * \see QTestLib
  */
 #define QTEST_KDEMAIN_CORE(TestObject) QTEST_KDEMAIN_CORE_WITH_COMPONENTNAME(TestObject, "qttest")
-
-#pragma message("Port to Qt5 version of QSKIP_PORTING")
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-#define SkipSingle 0
-#define SkipAll 0
-#define QSKIP_PORTING(message, argument) QSKIP(message)
-#else
-#define QSKIP_PORTING(message, argument) QSKIP(message, argument)
-#endif
 
 #endif /* QTEST_KDE_H */
