@@ -273,9 +273,9 @@ void KDebugTest::testNoMainComponentData()
     // This test runs kdebug_qcoreapptest and checks its output
     QProcess proc;
     QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
-	environment.insert("KDE_DEBUG_NOPROCESSINFO", "1");
+    environment.insert("KDE_DEBUG_NOPROCESSINFO", "1");
     environment.insert("KDE_DEBUG_TIMESTAMP", "0");
-	proc.setProcessEnvironment(environment);
+    proc.setProcessEnvironment(environment);
     proc.setProcessChannelMode(QProcess::SeparateChannels);
 #ifdef Q_OS_WIN
     proc.start("kdebug_qcoreapptest.exe");
