@@ -232,7 +232,7 @@ bool KTar::KTarPrivate::readLonglink(char *buffer,QByteArray &longlink) {
   }/*wend*/
   // jump over the rest
   const int skip = 0x200 - (n % 0x200);
-  if (skip < 0x200) {
+  if (skip <= 0x200) {
     if (dev->read(buffer,skip) != skip)
         return false;
   }

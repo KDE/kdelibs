@@ -554,12 +554,7 @@ void KArchiveTest::testTarMaxLength()
     QCOMPARE( listing[  3], QString("mode=100644 user=testu group=testg path=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0000000101 type=file size=3") );
     QCOMPARE( listing[  4], QString("mode=100644 user=testu group=testg path=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0000000102 type=file size=3") );
 
-    // TODO:
-    // ################################################# BUG! ###########################
-    // There seems to be a bug (which is in kde3 too), we miss 512 and 513.
-    // But note that tar tvzf says "skipping next header" (and it skips 511),
-    // so the bug is probably during writing...
-    QCOMPARE( listing.count(), 414 ); // TODO investigate 514 - 98
+    QCOMPARE( listing.count(), 416 );
 
     QVERIFY( tar.close() );
 
