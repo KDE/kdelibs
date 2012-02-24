@@ -177,7 +177,9 @@ void KTar::setOrigFileName( const QByteArray & fileName ) {
 qint64 KTar::KTarPrivate::readRawHeader( char *buffer ) {
   // Read header
   qint64 n = q->device()->read( buffer, 0x200 );
-  if ( n == 0x200 && buffer[0] != 0 ) {
+  // we need to test if there is a prefix value because the file name can be null
+  // and the prefix can have a value and in this case we don't reset n.
+  if ( n == 0x200 && (buffer[0] != 0 || buffer[0x159] != 0) ) {
     // Make sure this is actually a tar header
     if (strncmp(buffer + 257, "ustar", 5)) {
       // The magic isn't there (broken/old tars), but maybe a correct checksum?

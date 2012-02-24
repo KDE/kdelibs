@@ -607,6 +607,33 @@ void KArchiveTest::testTarPrefix()
     QVERIFY( tar.close() );
 }
 
+void KArchiveTest::testTarDirectoryForgotten()
+{
+    KTar tar( QString::fromLatin1(KDESRCDIR) + QLatin1String( "tar_directory_forgotten.tar.bz2" ) );
+    QVERIFY( tar.open( QIODevice::ReadOnly ) );
+
+    const KArchiveDirectory* dir = tar.directory();
+    QVERIFY( dir != 0 );
+
+    const QStringList listing = recursiveListEntries( dir, "", WithUserGroup );
+
+    QCOMPARE( listing[  0], QString("mode=40775 user=root group=root path=Test type=dir") );
+    QCOMPARE( listing[  1], QString("mode=40775 user=root group=root path=Test/qt-jambi-qtjambi-4_7 type=dir") );
+    QCOMPARE( listing[  2], QString("mode=40775 user=root group=root path=Test/qt-jambi-qtjambi-4_7/examples type=dir") );
+    QCOMPARE( listing[  3], QString("mode=40775 user=root group=root path=Test/qt-jambi-qtjambi-4_7/examples/generator type=dir") );
+    QCOMPARE( listing[  4], QString("mode=40775 user=root group=root path=Test/qt-jambi-qtjambi-4_7/examples/generator/trolltech_original type=dir") );
+    QCOMPARE( listing[  5], QString("mode=40775 user=root group=root path=Test/qt-jambi-qtjambi-4_7/examples/generator/trolltech_original/java type=dir") );
+    QCOMPARE( listing[  6], QString("mode=40775 user=root group=root path=Test/qt-jambi-qtjambi-4_7/examples/generator/trolltech_original/java/com type=dir") );
+    QCOMPARE( listing[  7], QString("mode=40775 user=root group=root path=Test/qt-jambi-qtjambi-4_7/examples/generator/trolltech_original/java/com/trolltech type=dir") );
+    QCOMPARE( listing[  8], QString("mode=40775 user=root group=root path=Test/qt-jambi-qtjambi-4_7/examples/generator/trolltech_original/java/com/trolltech/examples type=dir") );
+    QCOMPARE( listing[  9], QString("mode=40777 user=nef group=users path=Test/qt-jambi-qtjambi-4_7/examples/generator/trolltech_original/java/com/trolltech/examples/generator type=dir") );
+    QCOMPARE( listing[ 10], QString("mode=664 user=root group=root path=Test/qt-jambi-qtjambi-4_7/examples/generator/trolltech_original/java/com/trolltech/examples/generator/GeneratorExample.html type=file size=43086") );
+
+    QCOMPARE( listing.count(), 11 );
+
+    QVERIFY( tar.close() );
+}
+
 ///
 
 static const char s_zipFileName[] = "karchivetest.zip";
