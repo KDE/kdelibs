@@ -19,7 +19,6 @@ MACRO(KCOREADDONS_UNIT_TESTS)
 ENDMACRO(KCOREADDONS_UNIT_TESTS)
 
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/../src/randomness
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/kernel
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/text
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/jobs
@@ -41,7 +40,6 @@ KCOREADDONS_UNIT_TESTS(
 # Helper for klockfiletest
 KCOREADDONS_EXECUTABLE_TESTS(
     klockfile_testlock
-    krandomsequencetest
 )
 
 ########### kdirwatchtest_gui ###############
