@@ -247,7 +247,9 @@ void Manager::slotInterfacesRemoved(const QDBusObjectPath &object_path, const QS
 {
     const QString udi = object_path.path();
 
-    Q_EMIT deviceRemoved(udi);
+    if (interfaces.isEmpty() && !udi.isEmpty())
+        Q_EMIT deviceRemoved(udi);
+
     if (!interfaces.contains(UD2_DBUS_INTERFACE_FILESYSTEM))  // don't remove our optical disc from the cache
         m_deviceCache.removeAll(udi);
 }
