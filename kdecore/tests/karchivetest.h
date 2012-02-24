@@ -48,6 +48,7 @@ private Q_SLOTS:
     void testTarMaxLength_data();
     void testTarMaxLength();
     void testTarGlobalHeader();
+    void testTarPrefix();
 
     void testCreateZip();
     void testCreateZipError();

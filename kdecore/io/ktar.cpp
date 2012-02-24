@@ -368,6 +368,11 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
                 name.truncate( name.length() - 1 );
             }
 
+            QByteArray prefix = QByteArray(buffer + 0x159, 155);
+            if (prefix[0] != '\0') {
+                name = (QString::fromLatin1(prefix.constData()) + QLatin1Char('/') +  name);
+            }
+
             int pos = name.lastIndexOf( QLatin1Char('/') );
             QString nm = ( pos == -1 ) ? name : name.mid( pos + 1 );
 
