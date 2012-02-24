@@ -15,13 +15,14 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
+#undef QT_NO_CAST_FROM_ASCII
 
 #include "kdirwatchtest.h"
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QFile>
 
-#include <kdebug.h>
+#include <QDebug>
 #include <kcmdlineargs.h>
 
 int main (int argc, char **argv)
@@ -48,32 +49,32 @@ int main (int argc, char **argv)
 
   if (args->count() >0) {
     for(int i = 0; i < args->count(); i++) {
-      kDebug() << "Watching: " << args->arg(i);
+      qDebug() << "Watching: " << args->arg(i);
       dirwatch2->addDir( args->arg(i));
     }
   }
 
   QString home = QString(getenv ("HOME")) + '/';
   QString desk = home + "Desktop/";
-  kDebug() << "Watching: " << home;
+  qDebug() << "Watching: " << home;
   dirwatch1->addDir(home);
-  kDebug() << "Watching file: " << home << "foo ";
+  qDebug() << "Watching file: " << home << "foo ";
   dirwatch1->addFile(home+"foo");
-  kDebug() << "Watching: " << desk;
+  qDebug() << "Watching: " << desk;
   dirwatch1->addDir(desk);
   QString test = home + "test/";
-  kDebug() << "Watching: (but skipped) " << test;
+  qDebug() << "Watching: (but skipped) " << test;
   dirwatch1->addDir(test);
 
   dirwatch1->startScan();
   dirwatch2->startScan();
 
   if(!dirwatch1->stopDirScan(home))
-      kDebug() << "stopDirscan: " << home << " error!";
+      qDebug() << "stopDirscan: " << home << " error!";
   if(!dirwatch1->restartDirScan(home))
-      kDebug() << "restartDirScan: " << home << "error!";
+      qDebug() << "restartDirScan: " << home << "error!";
   if (!dirwatch1->stopDirScan(test))
-     kDebug() << "stopDirScan: error";
+     qDebug() << "stopDirScan: error";
 
   KDirWatch::statistics();
 
