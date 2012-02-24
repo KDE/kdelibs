@@ -54,23 +54,23 @@ KDirWatchTest_GUI::KDirWatchTest_GUI() : QWidget()
 
     QVBoxLayout *lay = new QVBoxLayout(this);
     lay->setMargin( 0 );
-    lay->addWidget(l1 = new QLineEdit( "Test 1", this));
-    lay->addWidget(l2 = new QLineEdit( "Test 2", this));
-    lay->addWidget(l3 = new QLineEdit( "Test 3", this));
+    lay->addWidget(l1 = new QLineEdit( QLatin1String("Test 1"), this));
+    lay->addWidget(l2 = new QLineEdit( QLatin1String("Test 2"), this));
+    lay->addWidget(l3 = new QLineEdit( QLatin1String("Test 3"), this));
     lay->addWidget(m_eventBrowser = new QTextBrowser(this));
-    lay->addWidget(d = new QLineEdit( "Status", this));
-    lay->addWidget(e = new QPushButton("new file", this));
-    lay->addWidget(f = new QPushButton("delete file", this));
+    lay->addWidget(d = new QLineEdit( QLatin1String("Status"), this));
+    lay->addWidget(e = new QPushButton(QLatin1String("new file"), this));
+    lay->addWidget(f = new QPushButton(QLatin1String("delete file"), this));
 
     dir = QDir::currentPath();
-    file = dir + "/testfile_kdirwatchtest_gui";
+    file = dir + QLatin1String("/testfile_kdirwatchtest_gui");
 
     w1 = new KDirWatch();
-    w1->setObjectName("w1");
+    w1->setObjectName(QLatin1String("w1"));
     w2 = new KDirWatch();
-    w2->setObjectName("w2");
+    w2->setObjectName(QLatin1String("w2"));
     w3 = new KDirWatch();
-    w3->setObjectName("w3");
+    w3->setObjectName(QLatin1String("w3"));
     connect(w1, SIGNAL(dirty(QString)), this, SLOT(slotDir1(QString)));
     connect(w2, SIGNAL(dirty(QString)), this, SLOT(slotDir2(QString)));
     connect(w3, SIGNAL(dirty(QString)), this, SLOT(slotDir3(QString)));
@@ -79,21 +79,21 @@ KDirWatchTest_GUI::KDirWatchTest_GUI() : QWidget()
     w3->addDir(dir);
 
     KDirWatch* w4 = new KDirWatch(this);
-    w4->setObjectName("w4");
+    w4->setObjectName(QLatin1String("w4"));
     w4->addDir(dir, KDirWatch::WatchFiles|KDirWatch::WatchSubDirs);
     connect(w1, SIGNAL(dirty(QString)), this, SLOT(slotDirty(QString)));
     connect(w1, SIGNAL(created(QString)), this, SLOT(slotCreated(QString)));
     connect(w1, SIGNAL(deleted(QString)), this, SLOT(slotDeleted(QString)));
 
     KDirWatch* w5 = new KDirWatch(this);
-    w5->setObjectName("w5");
+    w5->setObjectName(QLatin1String(QLatin1String("w5")));
     w5->addFile(file);
     connect(w5, SIGNAL(dirty(QString)), this, SLOT(slotDirty(QString)));
     connect(w5, SIGNAL(created(QString)), this, SLOT(slotCreated(QString)));
     connect(w5, SIGNAL(deleted(QString)), this, SLOT(slotDeleted(QString)));
 
-    lay->addWidget(new QLabel("Directory = " + dir, this));
-    lay->addWidget(new QLabel("File = " + file, this));
+    lay->addWidget(new QLabel(QLatin1String("Directory = ") + dir, this));
+    lay->addWidget(new QLabel(QLatin1String("File = ") + file, this));
 
     connect(e, SIGNAL(clicked()), this, SLOT(slotNewClicked()));
     connect(f, SIGNAL(clicked()), this, SLOT(slotDeleteClicked()));
@@ -104,49 +104,49 @@ KDirWatchTest_GUI::KDirWatchTest_GUI() : QWidget()
 
 void KDirWatchTest_GUI::slotDir1(const QString &a)
 {
-  l1->setText("Test 1 changed " + a + " at " + QTime::currentTime().toString());
+  l1->setText(QLatin1String("Test 1 changed ") + a + QLatin1String(" at ") + QTime::currentTime().toString());
 }
 
 void KDirWatchTest_GUI::slotDir2(const QString &a)
 {
   // This used to cause bug #119341, fixed now
 #if 1
-  w2->stopDirScan(a.toLatin1().constData());
-  w2->restartDirScan(a.toLatin1().constData());
+  w2->stopDirScan(QLatin1String(a.toLatin1().constData()));
+  w2->restartDirScan(QLatin1String(a.toLatin1().constData()));
 #endif
-  l2->setText("Test 2 changed " + a + " at " + QTime::currentTime().toString());
+  l2->setText(QLatin1String("Test 2 changed ") + a + QLatin1String(" at ") + QTime::currentTime().toString());
 }
 
 void KDirWatchTest_GUI::slotDir3(const QString &a)
 {
-  l3->setText("Test 3 changed " + a + " at " + QTime::currentTime().toString());
+  l3->setText(QLatin1String("Test 3 changed ") + a + QLatin1String(" at )") + QTime::currentTime().toString());
 }
 
 void KDirWatchTest_GUI::slotDeleteClicked()
 {
   remove(file.toLatin1().constData());
-  d->setText("Delete clicked at " + QTime::currentTime().toString());
+  d->setText(QLatin1String("Delete clicked at ") + QTime::currentTime().toString());
 }
 
 void KDirWatchTest_GUI::slotNewClicked()
 {
   fclose(fopen(file.toLatin1().constData(), "wb"));
-  d->setText("New clicked at " + QTime::currentTime().toString());
+  d->setText(QLatin1String("New clicked at ") + QTime::currentTime().toString());
 }
 
 void KDirWatchTest_GUI::slotDirty(const QString& path)
 {
-    m_eventBrowser->append( "Dirty(" + sender()->objectName() + "): " + path + '\n' );
+    m_eventBrowser->append( QLatin1String("Dirty(") + sender()->objectName() + QLatin1String("): ") + path + QLatin1Char('\n') );
 }
 
 void KDirWatchTest_GUI::slotCreated(const QString& path)
 {
-    m_eventBrowser->append( "Created(" + sender()->objectName() + "): " + path + '\n' );
+    m_eventBrowser->append( QLatin1String("Created(") + sender()->objectName() + QLatin1String("): ") + path + QLatin1Char('\n') );
 }
 
 void KDirWatchTest_GUI::slotDeleted(const QString& path)
 {
-    m_eventBrowser->append( "Deleted(" + sender()->objectName() + "): " + path + '\n' );
+    m_eventBrowser->append( QLatin1String("Deleted(") + sender()->objectName() + QLatin1String("): ") + path + QLatin1Char('\n') );
 }
 
 #include "kdirwatchtest_gui.moc"
