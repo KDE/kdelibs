@@ -43,12 +43,15 @@ Q_DECLARE_METATYPE(DBUSManagerStruct)
 #define UD2_DBUS_PATH_MANAGER            "/org/freedesktop/UDisks2/Manager"
 #define UD2_DBUS_PATH_DRIVES             "/org/freedesktop/UDisks2/drives/"
 #define DBUS_INTERFACE_PROPS             "org.freedesktop.DBus.Properties"
+#define DBUS_INTERFACE_INTROSPECT        "org.freedesktop.DBus.Introspectable"
 #define DBUS_INTERFACE_MANAGER           "org.freedesktop.DBus.ObjectManager"
 #define UD2_DBUS_INTERFACE_BLOCK         "org.freedesktop.UDisks2.Block"
 #define UD2_DBUS_INTERFACE_DRIVE         "org.freedesktop.UDisks2.Drive"
 #define UD2_DBUS_INTERFACE_PARTITION     "org.freedesktop.UDisks2.Partition"
+#define UD2_DBUS_INTERFACE_PARTITIONTABLE   "org.freedesktop.UDisks2.PartitionTable"
 #define UD2_DBUS_INTERFACE_FILESYSTEM    "org.freedesktop.UDisks2.Filesystem"
 #define UD2_DBUS_INTERFACE_ENCRYPTED     "org.freedesktop.UDisks2.Encrypted"
+#define UD2_DBUS_INTERFACE_SWAP          "org.freedesktop.UDisks2.Swapspace"
 
 /* errors */
 #define UD2_ERROR_UNAUTHORIZED            "org.freedesktop.PolicyKit.Error.NotAuthorized"

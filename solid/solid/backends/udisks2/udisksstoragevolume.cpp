@@ -20,6 +20,7 @@
 */
 
 #include "udisksstoragevolume.h"
+#include "udisks2.h"
 
 using namespace Solid::Backends::UDisks2;
 
@@ -70,11 +71,11 @@ Solid::StorageVolume::UsageType StorageVolume::usage() const
 {
     const QString usage = m_device->prop("IdUsage").toString();
 
-    if (usage == "filesystem")
+    if (m_device->hasInterface(UD2_DBUS_INTERFACE_FILESYSTEM))
     {
         return Solid::StorageVolume::FileSystem;
     }
-    else if (usage == "partitiontable")  // FIXME udisks2
+    else if (m_device->isPartitionTable())
     {
         return Solid::StorageVolume::PartitionTable;
     }
@@ -82,7 +83,7 @@ Solid::StorageVolume::UsageType StorageVolume::usage() const
     {
         return Solid::StorageVolume::Raid;
     }
-    else if (usage == "crypto")
+    else if (m_device->isEncryptedContainer())
     {
         return Solid::StorageVolume::Encrypted;
     }
@@ -98,5 +99,8 @@ Solid::StorageVolume::UsageType StorageVolume::usage() const
 
 bool StorageVolume::isIgnored() const
 {
-    return m_device->prop("HintIgnore").toBool(); // FIXME tune
+    const Solid::StorageVolume::UsageType usg = usage();
+    return m_device->prop("HintIgnore").toBool() || m_device->isSwap() ||
+            usg == Solid::StorageVolume::Unused || usg == Solid::StorageVolume::Other ||
+            usg == Solid::StorageVolume::PartitionTable; // FIXME check for empty and audio CDs
 }

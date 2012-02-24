@@ -27,7 +27,7 @@
 #include <solid/solidnamespace.h>
 
 #include <QtDBus/QDBusInterface>
-#include <QtCore/QSet>
+#include <QtCore/QStringList>
 
 namespace Solid
 {
@@ -43,7 +43,6 @@ public:
     Device(const QString &udi);
     virtual ~Device();
 
-
     virtual QObject* createDeviceInterface(const Solid::DeviceInterface::Type& type);
     virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type& type) const;
     virtual QString description() const;
@@ -58,17 +57,24 @@ public:
     bool propertyExists(const QString &key) const;
     QVariantMap allProperties() const;
 
+    bool hasInterface(const QString & name) const;
+    QStringList interfaces() const;
+
     QString errorToString(const QString & error) const;
     Solid::ErrorType errorToSolidError(const QString & error) const;
 
     bool isBlock() const;
     bool isPartition() const;
+    bool isPartitionTable() const;
+    bool isStorageVolume() const;
     bool isStorageAccess() const;
     bool isDrive() const;
     bool isOpticalDrive() const;
     bool isOpticalDisc() const;
     bool isMounted() const;
-    bool isEncrypted() const;
+    bool isEncryptedContainer() const;
+    bool isEncryptedCleartext() const;
+    bool isSwap() const;
 
 Q_SIGNALS:
     void changed();
@@ -83,7 +89,11 @@ private:
     QString m_udi;
     mutable QVariantMap m_cache;
 
+    void initInterfaces();
+    QStringList m_interfaces;
+
     void checkCache(const QString &key) const;
+    QString introspect() const;
 };
 
 }

@@ -33,12 +33,13 @@
 #include <solid/deviceinterface.h>
 #include <solid/device.h>
 
-#include <QtCore/QStringList>
 #include <QtCore/QDebug>
 
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusMetaType>
 #include <QtDBus/QDBusPendingReply>
+
+#include <QtXml/QDomDocument>
 
 using namespace Solid::Backends::UDisks2;
 
@@ -96,9 +97,12 @@ Device::Device(const QString &udi)
                                   QString(), // no interface, we aggregate them
                                   QDBusConnection::systemBus());
 
-    if (m_device->isValid())
+    if (m_device->isValid()) {
         QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, m_udi, DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
                                              SLOT(slotPropertiesChanged(QString,QVariantMap,QStringList)));
+
+        initInterfaces();
+    }
 }
 
 Device::~Device()
@@ -150,7 +154,7 @@ bool Device::queryDeviceInterface(const Solid::DeviceInterface::Type& type) cons
     case Solid::DeviceInterface::Block:
         return isBlock();
     case Solid::DeviceInterface::StorageVolume:  // partition
-        return isPartition();
+        return isStorageVolume();
     case Solid::DeviceInterface::StorageAccess:  // filesystem
         return isStorageAccess();
     case Solid::DeviceInterface::StorageDrive:
@@ -485,7 +489,7 @@ QString Device::volumeDescription() const
     const bool drive_is_hotpluggable = storageDrive.isHotpluggable();
 
     QString size_str = formatByteSize(storageVolume.size());
-    if (isEncrypted())
+    if (isEncryptedContainer())
     {
         if (!size_str.isEmpty())
             description = QObject::tr("%1 Encrypted Container", "%1 is the size").arg(size_str);
@@ -672,6 +676,20 @@ void Device::checkCache(const QString &key) const
     }
 }
 
+QString Device::introspect() const
+{
+    QDBusMessage call = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, m_udi,
+                                                       DBUS_INTERFACE_INTROSPECT, "Introspect");
+    QDBusPendingReply<QString> reply = QDBusConnection::systemBus().asyncCall(call);
+    reply.waitForFinished();
+
+    if (reply.isValid())
+        return reply.value();
+    else {
+        return QString();
+    }
+}
+
 QVariant Device::prop(const QString &key) const
 {
     checkCache(key);
@@ -699,18 +717,39 @@ QVariantMap Device::allProperties() const
     return m_cache;
 }
 
+bool Device::hasInterface(const QString &name) const
+{
+    return m_interfaces.contains(name);
+}
+
+QStringList Device::interfaces() const
+{
+    return m_interfaces;
+}
+
+void Device::initInterfaces()
+{
+    m_interfaces.clear();
+    const QString xmlData = introspect();
+    QDomDocument dom;
+    dom.setContent(xmlData);
+    QDomNodeList ifaceNodeList = dom.elementsByTagName("interface");
+    for (int i = 0; i < ifaceNodeList.count(); i++) {
+        QDomElement ifaceElem = ifaceNodeList.item(i).toElement();
+        if (!ifaceElem.isNull())
+            m_interfaces.append(ifaceElem.attribute("name"));
+    }
+}
+
 void Device::slotPropertiesChanged(const QString &ifaceName, const QVariantMap &changedProps, const QStringList &invalidatedProps)
 {
     Q_UNUSED(ifaceName);
+    Q_UNUSED(invalidatedProps);
 
     QMapIterator<QString, QVariant> i(changedProps);
     while (i.hasNext()) {
         i.next();
         m_cache.insert(i.key(), i.value());  // replace the value
-    }
-
-    Q_FOREACH(const QString & key, invalidatedProps) {
-        m_cache.remove(key);
     }
 
     Q_EMIT changed();
@@ -767,22 +806,32 @@ Solid::ErrorType Device::errorToSolidError(const QString & error) const
 
 bool Device::isBlock() const
 {
-    return prop("DeviceNumber").toULongLong() > 0;
+    return hasInterface(UD2_DBUS_INTERFACE_BLOCK);
 }
 
 bool Device::isPartition() const
 {
-    return isStorageAccess() || isOpticalDisc();
+    return hasInterface(UD2_DBUS_INTERFACE_PARTITION);
+}
+
+bool Device::isPartitionTable() const
+{
+    return hasInterface(UD2_DBUS_INTERFACE_PARTITIONTABLE);
+}
+
+bool Device::isStorageVolume() const
+{
+    return isPartition() || isPartitionTable() || isStorageAccess() || isOpticalDisc();
 }
 
 bool Device::isStorageAccess() const
 {
-    return prop("IdUsage").toString()=="filesystem" || prop("IdUsage").toString()=="crypto";
+    return hasInterface(UD2_DBUS_INTERFACE_FILESYSTEM) || isEncryptedContainer();
 }
 
 bool Device::isDrive() const
 {
-    return m_udi.startsWith(UD2_DBUS_PATH_DRIVES);
+    return hasInterface(UD2_DBUS_INTERFACE_DRIVE);
 }
 
 bool Device::isOpticalDrive() const
@@ -805,7 +854,21 @@ bool Device::isMounted() const
     return propertyExists("MountPoints") && !prop("MountPoints").value<QByteArrayList>().isEmpty();
 }
 
-bool Device::isEncrypted() const
+bool Device::isEncryptedContainer() const
 {
-    return prop("IdUsage").toString() == "crypto";
+    return hasInterface(UD2_DBUS_INTERFACE_ENCRYPTED);
+}
+
+bool Device::isEncryptedCleartext() const
+{
+    const QString holderDevice = prop("CryptoBackingDevice").toString();
+    if (holderDevice.isEmpty() || holderDevice == "/")
+        return false;
+    else
+        return true;
+}
+
+bool Device::isSwap() const
+{
+    return hasInterface(UD2_DBUS_INTERFACE_SWAP);
 }

@@ -57,12 +57,12 @@ Q_SIGNALS:
     void teardownRequested(const QString &udi);
 
 public Q_SLOTS:
-    Q_SCRIPTABLE Q_NOREPLY void passphraseReply( const QString & passphrase );
+    Q_SCRIPTABLE Q_NOREPLY void passphraseReply(const QString & passphrase);
 
 private Q_SLOTS:
     void slotChanged();
-    void slotDBusReply( const QDBusMessage & reply );
-    void slotDBusError( const QDBusError & error );
+    void slotDBusReply(const QDBusMessage & reply);
+    void slotDBusError(const QDBusError & error);
 
     void connectDBusSignals();
 
@@ -92,6 +92,7 @@ private:
     bool m_teardownInProgress;
     bool m_passphraseRequested;
     QString m_lastReturnObject;
+    QString m_clearTextPath;  // path to the unlocked cleartext device
 
     static const int s_unmountTimeout = 0x7fffffff;
 };

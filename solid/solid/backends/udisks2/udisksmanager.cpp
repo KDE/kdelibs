@@ -135,7 +135,6 @@ QStringList Manager::allDevices()
             const QString udi = path.path();
             if (udi == UD2_DBUS_PATH_MANAGER)
                 continue;
-            const QVariantMapMap interfaces = reply.value().values().keys();  //FIXME change m_deviceCache to QMap<QString, QStringList>
             m_deviceCache.append(udi);
         }
     }
