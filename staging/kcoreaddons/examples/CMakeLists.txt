@@ -19,5 +19,6 @@ ENDMACRO()
 
 KDE4SUPPORT_EXAMPLES(
   kdirwatchtest
+  kcmdlineargstest
 )
 
