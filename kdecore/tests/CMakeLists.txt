@@ -94,11 +94,6 @@ set(kdatetimeformattertest_SRCS kdatetimeformattertest.cpp ../date/kdatetimeform
 kde4_add_unit_test(kdatetimeformattertest ${kdatetimeformattertest_SRCS})
 target_link_libraries(kdatetimeformattertest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
 
-########### kdirwatchtest_gui ###############
-
-kde4_add_executable(kdirwatchtest_gui TEST kdirwatchtest_gui.cpp)
-target_link_libraries(kdirwatchtest_gui ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${QT_QTTEST_LIBRARY} kcoreaddons)
-
 ########### kmimetypetest ###############
 
 if(NOT QT5_BUILD)
