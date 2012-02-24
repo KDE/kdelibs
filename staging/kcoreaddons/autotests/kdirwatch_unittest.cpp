@@ -28,6 +28,7 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <time.h>
+#include <unistd.h>
 
 #include <kde_qt5_compat.h>
 // Debugging notes: to see which inotify signals are emitted, either set s_verboseDebug=true
@@ -559,6 +560,7 @@ void KDirWatch_UnitTest::testMoveTo()
         waitUntilMTimeChange(m_path);
 
     // Atomic rename of "temp" to "file1", much like KAutoSave would do when saving file1 again
+    // ### TODO: this isn't an atomic rename anymore. We need ::rename for that, or API from Qt.
     const QString filetemp = m_path + QLatin1String("temp");
     createFile(filetemp);
     QFile::remove(file1);
@@ -656,7 +658,7 @@ void KDirWatch_UnitTest::testHardlinkChange()
 
     QFile::remove(existingFile);
     const QString testFile = m_path + QLatin1String("TestFile");
-    QFile::link(testFile, existingFile); // make ExistingFile "point" to TestFile
+    ::link(QFile::encodeName(testFile).constData(), QFile::encodeName(existingFile).constData()); // make ExistingFile "point" to TestFile
     QVERIFY(QFile::exists(existingFile));
     //QVERIFY(waitForOneSignal(watch, SIGNAL(deleted(QString)), existingFile));
     if (watch.internalMethod() == KDirWatch::INotify || watch.internalMethod() == KDirWatch::FAM)
