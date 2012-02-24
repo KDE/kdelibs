@@ -846,7 +846,7 @@ bool Device::isOpticalDisc() const
         return false;
 
     Device drive(drivePath);
-    return drive.isOpticalDrive();
+    return drive.prop("Optical").toBool();
 }
 
 bool Device::isMounted() const
