@@ -74,7 +74,6 @@ if(UNIX)
 endif(UNIX)
 
 KDECORE_EXECUTABLE_TESTS(
- kdirwatchtest
  kdebugtest
  kmemtest
  dbuscalltest

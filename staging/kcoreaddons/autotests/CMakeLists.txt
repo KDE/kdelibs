@@ -40,6 +40,7 @@ KCOREADDONS_UNIT_TESTS(
 
 # Helper for klockfiletest
 KCOREADDONS_EXECUTABLE_TESTS(
+    kdirwatchtest
     klockfile_testlock
     kcmdlineargstest
     krandomsequencetest
