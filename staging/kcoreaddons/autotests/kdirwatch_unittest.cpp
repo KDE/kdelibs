@@ -220,9 +220,9 @@ void KDirWatch_UnitTest::appendToFile(const QString& path)
     file.close();
     if (0) {
         QFileInfo fi(path);
-        QCOMPARE(!fi.exists(), 0);
+        QVERIFY(fi.exists());
         qDebug() << "After append: file ctime=" << printableTime(fi.lastModified().toTime_t());
-        QCOMPARE(!fi.exists(), 0);
+        QVERIFY(fi.exists());
         qDebug() << "After append: directory mtime=" << printableTime(fi.created().toTime_t());
     }
 }
