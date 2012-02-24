@@ -561,6 +561,7 @@ void KDirWatch_UnitTest::testMoveTo()
     // Atomic rename of "temp" to "file1", much like KAutoSave would do when saving file1 again
     const QString filetemp = m_path + QLatin1String("temp");
     createFile(filetemp);
+    QFile::remove(file1);
     QVERIFY(QFile::rename(filetemp, file1)); // overwrite file1 with the tempfile
     qDebug() << "Overwrite file1 with tempfile";
 
