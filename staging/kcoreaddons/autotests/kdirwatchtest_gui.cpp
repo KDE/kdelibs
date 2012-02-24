@@ -17,6 +17,8 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#undef QT_NO_CAST_FROM_ASCII
+
 #include "kdirwatchtest_gui.h"
 
 #include <kaboutdata.h>
