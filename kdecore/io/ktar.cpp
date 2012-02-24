@@ -360,6 +360,7 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
         if (n == 0x200)
         {
             bool isdir = false;
+            bool isGlobalHeader = false;
 
             if ( name.endsWith( QLatin1Char( '/' ) ) )
             {
@@ -391,7 +392,11 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
             char typeflag = buffer[ 0x9c ];
             // '0' for files, '1' hard link, '2' symlink, '5' for directory
             // (and 'L' for longlink fileNames, 'K' for longlink symlink targets)
-            // and 'D' for GNU tar extension DUMPDIR
+            // 'D' for GNU tar extension DUMPDIR, 'x' for Extended header referring
+            // to the next file in the archive and 'g' for Global extended header
+            if ( typeflag == 'g' )
+                isGlobalHeader = true;
+
             if ( typeflag == '5' )
                 isdir = true;
 
@@ -447,6 +452,9 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
                 if (! dev->seek( dev->pos() + skip ) )
                     kWarning(7041) << "skipping" << skip << "failed";
             }
+
+            if (isGlobalHeader)
+                continue;
 
             if ( pos == -1 )
             {

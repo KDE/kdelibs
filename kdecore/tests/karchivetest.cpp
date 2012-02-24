@@ -562,6 +562,25 @@ void KArchiveTest::testTarMaxLength()
     QFile::remove( fileName );
 }
 
+void KArchiveTest::testTarGlobalHeader()
+{
+    KTar tar( QString::fromLatin1(KDESRCDIR) + QLatin1String( "global_header_test.tar.bz2" ) );
+    QVERIFY( tar.open( QIODevice::ReadOnly ) );
+
+    const KArchiveDirectory* dir = tar.directory();
+    QVERIFY( dir != 0 );
+
+    const QStringList listing = recursiveListEntries( dir, "", WithUserGroup );
+
+    QCOMPARE( listing[  0], QString("mode=40775 user=root group=root path=Test type=dir") );
+    QCOMPARE( listing[  1], QString("mode=664 user=root group=root path=Test/test.txt type=file size=0") );
+
+    QCOMPARE( listing.count(), 2 );
+
+    QVERIFY( tar.close() );
+}
+
+
 ///
 
 static const char s_zipFileName[] = "karchivetest.zip";

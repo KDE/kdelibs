@@ -47,6 +47,7 @@ private Q_SLOTS:
     void testTarReadWrite();
     void testTarMaxLength_data();
     void testTarMaxLength();
+    void testTarGlobalHeader();
 
     void testCreateZip();
     void testCreateZipError();
