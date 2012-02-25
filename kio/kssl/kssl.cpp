@@ -47,8 +47,6 @@
 #include <klocale.h>
 
 #include <QtNetwork/QAbstractSocket>
-#include <k3clientsocketbase.h>
-#include <k3socketdevice.h>
 
 #ifdef __GNUC__
 #warning "kssl.cc contains temporary functions! Clean up"
