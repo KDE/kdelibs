@@ -255,8 +255,8 @@ inline uint qHash(const KShortcut &key)
 inline uint qHash(const QKeySequence &key)
 {
     uint hash = 0;
-    for(uint i = 0; i < key.count(); i++)
-       hash += qHash(key[i]);
+    for(int i = 0; i < key.count(); i++)
+       hash += qHash(key[uint(i)]);
     return hash;
 }
 
