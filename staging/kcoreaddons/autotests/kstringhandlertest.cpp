@@ -1,4 +1,3 @@
-#undef QT_NO_CAST_FROM_ASCII
 
 #include "kstringhandlertest.h"
 
