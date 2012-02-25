@@ -17,7 +17,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qtest_kde.h>
+#undef QT_NO_CAST_FROM_ASCII
+
+#include <QTest>
 #include <kmacroexpander.h>
 
 #include <QtCore/QHash>
@@ -275,6 +277,6 @@ KMacroExpanderTest::expandMacrosSubClass()
     QCOMPARE(s, QLatin1String("subst expanded but not %not equ %"));
 }
 
-QTEST_KDEMAIN_CORE(KMacroExpanderTest)
+QTEST_MAIN(KMacroExpanderTest)
 
 #include "kmacroexpandertest.moc"
