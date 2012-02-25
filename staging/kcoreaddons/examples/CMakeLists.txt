@@ -24,3 +24,7 @@ KDE4SUPPORT_EXAMPLES(
   krandomsequencetest
 )
 
+########### kdirwatchtest_gui ###############
+
+kde4_add_executable(kdirwatchtest_gui TEST kdirwatchtest_gui.cpp)
+target_link_libraries(kdirwatchtest_gui ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${QT_QTTEST_LIBRARY} kcoreaddons)
