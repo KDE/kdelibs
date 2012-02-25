@@ -1,8 +1,10 @@
+#undef QT_NO_CAST_FROM_ASCII
+
 #include "kstringhandlertest.h"
 
-#include "qtest_kde.h"
+#include <QTest>
 
-QTEST_KDEMAIN_CORE(KStringHandlerTest)
+QTEST_MAIN(KStringHandlerTest)
 
 #include "kstringhandler.h"
 
@@ -148,7 +150,7 @@ void KStringHandlerTest::obscure()
   QString test = "!TEST!";
   QString obscured = KStringHandler::obscure( test );
   QByteArray obscuredBytes = obscured.toUtf8();
-  QCOMPARE( KStringHandler::obscure( QString::fromUtf8( obscuredBytes ) ), test );
+  QCOMPARE( KStringHandler::obscure( QString::fromUtf8( obscuredBytes.data() ) ), test );
 }
 
 void KStringHandlerTest::preProcessWrap_data()
