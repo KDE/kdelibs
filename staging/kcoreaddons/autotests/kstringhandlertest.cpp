@@ -150,7 +150,7 @@ void KStringHandlerTest::obscure()
   QString test = "!TEST!";
   QString obscured = KStringHandler::obscure( test );
   QByteArray obscuredBytes = obscured.toUtf8();
-  QCOMPARE( KStringHandler::obscure( QString::fromUtf8( obscuredBytes.data() ) ), test );
+  QCOMPARE( KStringHandler::obscure( QString::fromUtf8( obscuredBytes.constData() ) ), test );
 }
 
 void KStringHandlerTest::preProcessWrap_data()
