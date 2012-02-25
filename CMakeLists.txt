@@ -316,8 +316,11 @@ check_library_exists(nsl gethostbyname "" HAVE_NSL_LIBRARY)
 check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 
 # TODO: Port away from this:
-add_definitions(-DKDE_NO_WINDOWSYSTEM)
-add_definitions(-DKDE_NO_PHONON)
+if (QT5_BUILD)
+  add_definitions(-DKDE_NO_WINDOWSYSTEM)
+  include_directories(kwindowsystem_dummy)
+  add_definitions(-DKDE_NO_PHONON)
+endif()
 
 ################# list the subdirectories #################
 
