@@ -32,7 +32,6 @@ KDECORE_UNIT_TESTS(
  kstringhandlertest
  cplusplustest
  ksortablelisttest
- kmacroexpandertest
  kshelltest
  kasciitest
  ktimezonestest
