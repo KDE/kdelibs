@@ -36,6 +36,7 @@ KCOREADDONS_UNIT_TESTS(
     kencodingdetectortest
     kdirwatch_unittest
     kmacroexpandertest
+    kstringhandlertest
 )
 
 # Helper for klockfiletest

@@ -29,7 +29,6 @@ KDECORE_UNIT_TESTS(
  klocalizedstringtest
  kmountpointtest
  kurltest
- kstringhandlertest
  cplusplustest
  ksortablelisttest
  kshelltest
