@@ -10,17 +10,17 @@ include_directories(
    ${KDE4_KDECORE_INCLUDES}
 )
 
-MACRO(KDE4SUPPORT_EXAMPLES)
+MACRO(KCOREADDONS_EXAMPLES)
        FOREACH(_testname ${ARGN})
                add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
-               target_link_libraries(${_testname} kde4support ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} kdecore kcoreaddons)
+               target_link_libraries(${_testname} ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} kcoreaddons)
                if(WINCE)
                 target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
                endif(WINCE)
        ENDFOREACH(_testname)
 ENDMACRO()
 
-KDE4SUPPORT_EXAMPLES(
+KCOREADDONS_EXAMPLES(
   kdirwatchtest
   kcmdlineargstest
   krandomsequencetest
@@ -28,5 +28,6 @@ KDE4SUPPORT_EXAMPLES(
 
 ########### kdirwatchtest_gui ###############
 
-kde4_add_executable(kdirwatchtest_gui TEST kdirwatchtest_gui.cpp)
-target_link_libraries(kdirwatchtest_gui ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${QT_QTTEST_LIBRARY} kcoreaddons)
+add_executable(kdirwatchtest_gui kdirwatchtest_gui.cpp)
+target_link_libraries(kdirwatchtest_gui ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} kcoreaddons)
+
