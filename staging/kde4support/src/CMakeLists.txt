@@ -31,6 +31,7 @@ install(FILES
 
 # kparts/*.h
 install(FILES
+    kparts/componentfactory.h
     kparts/genericfactory.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/kparts COMPONENT Devel
 )

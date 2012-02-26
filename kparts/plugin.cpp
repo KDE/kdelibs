@@ -20,7 +20,8 @@
 
 #include <kparts/plugin.h>
 #include <kparts/part.h>
-#include <kparts/componentfactory.h>
+#include <klibloader.h>
+#include <kpluginfactory.h>
 
 #include <assert.h>
 
