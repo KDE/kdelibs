@@ -90,16 +90,6 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo& mod, ErrorReporting rep
         if (module) {
             return module;
         }
-#ifndef KDE_NO_DEPRECATED
-        // might be using K_EXPORT_COMPONENT_FACTORY
-        int error2 = 0;
-        module = KService::createInstance<KCModule>(mod.service(), parent, args, &error2);
-        if (module) {
-            kWarning(1208) << "This module still uses K_EXPORT_COMPONENT_FACTORY. Please port it to use KPluginFactory and K_EXPORT_PLUGIN.";
-            return module;
-        }
-        error += KLibLoader::errorString(error2);
-#endif
 //#ifndef NDEBUG
         {
             // get the create_ function
