@@ -192,7 +192,7 @@ QList<KParts::Plugin *> Plugin::pluginObjects( QObject *parent )
   if (!parent )
     return objects;
 
-  // TODO: move to a new method KGlobal::findDirectChildren, if there is more than one use of this?
+  // TODO: Qt5: use QObject::findChildren(... FindDirectChildrenOnly)
   const QObjectList plugins = parent->children();
 
   QObjectList::ConstIterator it = plugins.begin();
