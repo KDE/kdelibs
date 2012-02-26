@@ -1,4 +1,3 @@
-// krazy:excludeall=qclasses
 /*
  *  Copyright (C) 2006 Dirk Stoecker <kde@dstoecker.de>
  *
@@ -19,12 +18,8 @@
 
 #include "kdirwatchtest_gui.h"
 
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
 #include <kdirwatch.h>
-#include <QtCore/QDate>
-#include <QDialog>
-#include <QtCore/QDir>
+#include <QDir>
 #include <QApplication>
 #include <QLabel>
 #include <QLayout>
@@ -34,13 +29,6 @@
 
 int main(int argc, char **argv)
 {
-    KAboutData about(QByteArray("KDirWatchTest_GUI"), QByteArray(), qi18n("KDirWatchTest_GUI"),
-            QByteArray("0.1"),
-        qi18n("KDirWatchTest_GUI"), KAboutData::License_LGPL,
-        qi18n("(C) 2006 Dirk Stoecker"), QLocalizedString(), QByteArray(),
-        QByteArray("kde@dstoecker.de"));
-    about.addAuthor( qi18n("Dirk Stoecker"), QLocalizedString(), QByteArray("kde@dstoecker.de") );
-    KCmdLineArgs::init(argc, argv, &about);
     QApplication app(argc, argv);
 
     KDirWatchTest_GUI *mainWin = new KDirWatchTest_GUI();
