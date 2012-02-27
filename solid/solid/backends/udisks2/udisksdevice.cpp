@@ -744,7 +744,10 @@ void Device::initInterfaces()
 void Device::slotPropertiesChanged(const QString &ifaceName, const QVariantMap &changedProps, const QStringList &invalidatedProps)
 {
     Q_UNUSED(ifaceName);
-    Q_UNUSED(invalidatedProps);
+
+    Q_FOREACH(const QString & key, invalidatedProps) {
+        m_cache.remove(key);
+    }
 
     QMapIterator<QString, QVariant> i(changedProps);
     while (i.hasNext()) {
