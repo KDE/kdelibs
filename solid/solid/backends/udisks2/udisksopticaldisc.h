@@ -51,7 +51,7 @@ public:
     virtual Solid::OpticalDisc::ContentTypes availableContent() const;
 
 private Q_SLOTS:
-    void slotChanged();
+    void slotDrivePropertiesChanged(const QString & ifaceName, const QVariantMap & changedProps, const QStringList & invalidatedProps);
 
 private:
     QString media() const;

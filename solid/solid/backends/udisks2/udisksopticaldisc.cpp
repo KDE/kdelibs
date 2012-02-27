@@ -25,7 +25,9 @@
 #include <fcntl.h>
 
 #include <QtCore/QFile>
+#include <QtDBus/QDBusConnection>
 
+#include "udisks2.h"
 #include "udisksopticaldisc.h"
 
 // inspired by http://cgit.freedesktop.org/hal/tree/hald/linux/probing/probe-volume.c
@@ -165,7 +167,8 @@ OpticalDisc::OpticalDisc(Device *device)
     : StorageVolume(device), m_needsReprobe(true), m_cachedContent(Solid::OpticalDisc::NoContent)
 {
     m_drive = new Device(m_device->prop("Drive").value<QDBusObjectPath>().path());
-    connect(device, SIGNAL(changed()), this, SLOT(slotChanged()));
+    QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, m_drive->udi(), DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
+                                         SLOT(slotDrivePropertiesChanged(QString,QVariantMap,QStringList)));
 }
 
 OpticalDisc::~OpticalDisc()
@@ -251,10 +254,14 @@ Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
     return m_cachedContent;
 }
 
-void OpticalDisc::slotChanged()
+void OpticalDisc::slotDrivePropertiesChanged(const QString &ifaceName, const QVariantMap &changedProps, const QStringList &invalidatedProps)
 {
-    m_needsReprobe = true;  // FIXME just check for Media changes, on drive!
-    m_cachedContent = Solid::OpticalDisc::NoContent;
+    Q_UNUSED(ifaceName);
+
+    if (changedProps.keys().contains("Media") || invalidatedProps.contains("Media")) {
+        m_needsReprobe = true;
+        m_cachedContent = Solid::OpticalDisc::NoContent;
+    }
 }
 
 QString OpticalDisc::media() const
