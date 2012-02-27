@@ -67,7 +67,7 @@ class KResolverEntryPrivate;
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_DEPRECATED_EXPORT KResolverEntry
+class KDE4SUPPORT_DEPRECATED_EXPORT KResolverEntry
 {
 public:
   /**
@@ -211,7 +211,7 @@ class KResolverResultsPrivate;
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_DEPRECATED_EXPORT KResolverResults: public QList<KResolverEntry>
+class KDE4SUPPORT_DEPRECATED_EXPORT KResolverResults: public QList<KResolverEntry>
 {
 public:
   /**
@@ -311,7 +311,7 @@ class KResolverPrivate;
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_DEPRECATED_EXPORT KResolver: public QObject
+class KDE4SUPPORT_DEPRECATED_EXPORT KResolver: public QObject
 {
   Q_OBJECT
 

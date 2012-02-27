@@ -48,7 +48,7 @@ class KReverseResolverPrivate;
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_DEPRECATED_EXPORT KReverseResolver: public QObject
+class KDE4SUPPORT_DEPRECATED_EXPORT KReverseResolver: public QObject
 {
   Q_OBJECT
 

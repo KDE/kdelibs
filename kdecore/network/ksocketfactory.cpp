@@ -28,8 +28,6 @@
 
 #include "klocalizedstring.h"
 
-#include <config-network.h>
-
 using namespace KSocketFactory;
 
 class _k_internal_QTcpSocketSetError: public QAbstractSocket

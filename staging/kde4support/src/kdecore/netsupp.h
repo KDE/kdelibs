@@ -21,7 +21,7 @@
 #ifndef _NETSUPP_H_
 #define _NETSUPP_H_
 
-#include <kdecore_export.h>
+#include <kde4support_export.h>
 
 #include <config.h>
 #include <config-network.h>

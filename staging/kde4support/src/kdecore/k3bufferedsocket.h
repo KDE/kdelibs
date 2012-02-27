@@ -25,7 +25,7 @@
 #ifndef KBUFFEREDSOCKET_H
 #define KBUFFEREDSOCKET_H
 
-#include <kdecore_export.h>
+#include <kde4support_export.h>
 #include "k3streamsocket.h"
 
 #include <QtCore/QObject>
@@ -55,7 +55,7 @@ class KBufferedSocketPrivate;
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_DEPRECATED_EXPORT KBufferedSocket: public KStreamSocket
+class KDE4SUPPORT_DEPRECATED_EXPORT KBufferedSocket: public KStreamSocket
 {
   Q_OBJECT
 public:

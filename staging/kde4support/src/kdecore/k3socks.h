@@ -21,7 +21,7 @@
 #if defined(I_KNOW_KSOCKS_ISNT_PUBLIC)
 /* "ksocks.h is not public API" */
 
-#include <kdecore_export.h>
+#include <kde4support_export.h>
 
 #include <QtCore/QStringList>
 #include <sys/types.h>
@@ -46,7 +46,7 @@ struct sockaddr;
  * @short Access to a SOCKS Proxy.
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_DEPRECATED_EXPORT KSocks {
+class KDE4SUPPORT_DEPRECATED_EXPORT KSocks {
 public:
 
    /**

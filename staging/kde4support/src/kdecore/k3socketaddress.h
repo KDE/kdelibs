@@ -26,7 +26,7 @@
 #ifndef KSOCKETADDRESS_H
 #define KSOCKETADDRESS_H
 
-#include <kdecore_export.h>
+#include <kde4support_export.h>
 #include <QtCore/QByteArray>
 
 struct sockaddr;
@@ -59,7 +59,7 @@ class KUnixSocketAddress;
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_DEPRECATED_EXPORT KIpAddress
+class KDE4SUPPORT_DEPRECATED_EXPORT KIpAddress
 {
 public:
   /**
@@ -411,7 +411,7 @@ class KSocketAddressData;
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_DEPRECATED_EXPORT KSocketAddress //krazy:exclude=dpointer (we got one, just not called Private)
+class KDE4SUPPORT_DEPRECATED_EXPORT KSocketAddress //krazy:exclude=dpointer (we got one, just not called Private)
 {
 public:
   /**
@@ -640,7 +640,7 @@ public:				// static
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_DEPRECATED_EXPORT KInetSocketAddress: public KSocketAddress
+class KDE4SUPPORT_DEPRECATED_EXPORT KInetSocketAddress: public KSocketAddress
 {
   friend class KSocketAddress;
 public:
@@ -830,7 +830,7 @@ private:
  * @author Thiago Macieira <thiago@kde.org>
  * @deprecated Use KSocketFactory or KLocalSocket instead
  */
-class KDECORE_DEPRECATED_EXPORT KUnixSocketAddress: public KSocketAddress
+class KDE4SUPPORT_DEPRECATED_EXPORT KUnixSocketAddress: public KSocketAddress
 {
   friend class KSocketAddress;
 public:
