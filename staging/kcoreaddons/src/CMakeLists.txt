@@ -106,7 +106,7 @@ add_library(kcoreaddons ${LIBRARY_TYPE} ${libkcoreaddons_SRCS})
 generate_export_header(kcoreaddons)
 
 target_link_libraries(kcoreaddons
-  LINK_PUBLIC ${QT_QTCORE_LIBRARY} ${kcoreaddons_OPTIONAL_LIBS} ${INQT5_LIBRARY}
+  LINK_PUBLIC ${QT_QTCORE_LIBRARY} ${kcoreaddons_OPTIONAL_LIBS} ${INQT5_LIBRARY} kdeqt5staging
   LINK_PRIVATE pthread
 )
 
