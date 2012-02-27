@@ -133,7 +133,7 @@ QStringList Manager::allDevices()
     if (!reply.isError()) {  // enum devices
         Q_FOREACH(const QDBusObjectPath &path, reply.value().keys()) {
             const QString udi = path.path();
-            if (udi == UD2_DBUS_PATH_MANAGER)
+            if (udi == UD2_DBUS_PATH_MANAGER || udi == UD2_UDI_DISKS_PREFIX)
                 continue;
             m_deviceCache.append(udi);
         }
