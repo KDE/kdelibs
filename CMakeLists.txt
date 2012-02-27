@@ -59,6 +59,11 @@ if (NOT QT5_BUILD)
   set(kwindowsystem_LIBRARY kwindowsystem)
 endif()
 add_subdirectory( libqtmimetypes )
+add_subdirectory( libkdeqt5staging )
+  include_directories(
+      ${CMAKE_SOURCE_DIR}/libkdeqt5staging/src/
+      ${CMAKE_BINARY_DIR}/libkdeqt5staging/src/
+  )
 add_subdirectory( tier1 )
 
 set(CMAKE_AUTOMOC ON)
