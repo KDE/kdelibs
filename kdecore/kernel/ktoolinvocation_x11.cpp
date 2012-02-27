@@ -159,22 +159,22 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
         command = QLatin1String("kmail --composer -s %s -c %c -b %b --body %B --attach %A -- %t");
         if ( !_to.isEmpty() )
         {
-            KUrl url;
-            url.setProtocol(QLatin1String("mailto"));
+            QUrl url;
+            url.setScheme(QLatin1String("mailto"));
             url.setPath(_to);
             to = QString::fromLatin1(url.toEncoded());
         }
         if ( !_cc.isEmpty() )
         {
-            KUrl url;
-            url.setProtocol(QLatin1String("mailto"));
+            QUrl url;
+            url.setScheme(QLatin1String("mailto"));
             url.setPath(_cc);
             cc = QString::fromLatin1(url.toEncoded());
         }
         if ( !_bcc.isEmpty() )
         {
-            KUrl url;
-            url.setProtocol(QLatin1String("mailto"));
+            QUrl url;
+            url.setScheme(QLatin1String("mailto"));
             url.setPath(_bcc);
             bcc = QString::fromLatin1(url.toEncoded());
         }
@@ -196,8 +196,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
     QStringList cmdTokens = KShell::splitArgs(command);
     QString cmd = cmdTokens.takeFirst();
 
-    KUrl url;
-    //QStringList qry;
+    QUrl url;
     if (!to.isEmpty())
     {
         QStringList tos = splitEmailAddressList( to );
@@ -205,29 +204,22 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
         tos.erase( tos.begin() );
         for (QStringList::ConstIterator it = tos.constBegin(); it != tos.constEnd(); ++it)
             url.addQueryItem(QString::fromLatin1("to"), *it);
-        //qry.append( "to=" + QLatin1String(KUrl::toPercentEncoding( *it ) ));
     }
     const QStringList ccs = splitEmailAddressList( cc );
     for (QStringList::ConstIterator it = ccs.constBegin(); it != ccs.constEnd(); ++it)
         url.addQueryItem(QString::fromLatin1("cc"), *it);
-    //qry.append( "cc=" + QLatin1String(KUrl::toPercentEncoding( *it ) ));
     const QStringList bccs = splitEmailAddressList( bcc );
     for (QStringList::ConstIterator it = bccs.constBegin(); it != bccs.constEnd(); ++it)
         url.addQueryItem(QString::fromLatin1("bcc"), *it);
-    //qry.append( "bcc=" + QLatin1String(KUrl::toPercentEncoding( *it ) ));
     for (QStringList::ConstIterator it = attachURLs.constBegin(); it != attachURLs.constEnd(); ++it)
         url.addQueryItem(QString::fromLatin1("attach"), *it);
-    //qry.append( "attach=" + QLatin1String(KUrl::toPercentEncoding( *it ) ));
     if (!subject.isEmpty())
         url.addQueryItem(QString::fromLatin1("subject"), subject);
-    //qry.append( "subject=" + QLatin1String(KUrl::toPercentEncoding( subject ) ));
     if (!body.isEmpty())
         url.addQueryItem(QString::fromLatin1("body"), body);
-    //qry.append( "body=" + QLatin1String(KUrl::toPercentEncoding( body ) ));
-    //url.setQuery( qry.join( "&" ) );
 
     if ( ! (to.isEmpty() && (!url.hasQuery())) )
-        url.setProtocol(QString::fromLatin1("mailto"));
+        url.setScheme(QString::fromLatin1("mailto"));
 
     QHash<QChar, QString> keyMap;
     keyMap.insert(QLatin1Char('t'), to);
@@ -235,7 +227,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
     keyMap.insert(QLatin1Char('c'), cc);
     keyMap.insert(QLatin1Char('b'), bcc);
     keyMap.insert(QLatin1Char('B'), body);
-    keyMap.insert(QLatin1Char('u'), url.url());
+    keyMap.insert(QLatin1Char('u'), url.toString());
 
     QString attachlist = attachURLs.join(QString::fromLatin1(","));
     attachlist.prepend(QLatin1Char('\''));

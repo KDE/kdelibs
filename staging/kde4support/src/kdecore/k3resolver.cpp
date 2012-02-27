@@ -44,6 +44,7 @@
 #include <QCoreApplication>
 #include <QPointer>
 #include <QSet>
+#include <QUrl>
 
 #include <QStringList>
 #include <QSharedData>
@@ -52,7 +53,6 @@
 
 // KDE
 #include <klocale.h>
-#include <kurl.h>
 
 // Us
 #include "k3socketaddress.h"
@@ -1017,7 +1017,7 @@ static void KResolver_initIdnDomains()
     {
       QByteArray kde_use_idn = qgetenv("KDE_USE_IDN");
       if (!kde_use_idn.isEmpty())
-        KUrl::setIdnWhitelist(QString::fromLatin1(kde_use_idn).toLower().split(QLatin1Char(':')));
+        QUrl::setIdnWhitelist(QString::fromLatin1(kde_use_idn).toLower().split(QLatin1Char(':')));
       init = true;
     }
 }
@@ -1026,7 +1026,7 @@ static void KResolver_initIdnDomains()
 QByteArray KResolver::domainToAscii(const QString& unicodeDomain)
 {
   KResolver_initIdnDomains();
-  return KUrl::toAce(unicodeDomain);
+  return QUrl::toAce(unicodeDomain);
 }
 
 QString KResolver::domainToUnicode(const QByteArray& asciiDomain)
@@ -1040,7 +1040,7 @@ QString KResolver::domainToUnicode(const QString& asciiDomain)
   if (asciiDomain.isEmpty())
     return asciiDomain;
   KResolver_initIdnDomains();
-  return KUrl::fromAce(asciiDomain.toLatin1());
+  return QUrl::fromAce(asciiDomain.toLatin1());
 }
 
 QString KResolver::normalizeDomain(const QString& domain)
