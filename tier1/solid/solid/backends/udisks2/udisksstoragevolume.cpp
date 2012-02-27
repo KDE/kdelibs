@@ -87,7 +87,7 @@ Solid::StorageVolume::UsageType StorageVolume::usage() const
     {
         return Solid::StorageVolume::Encrypted;
     }
-    else if (usage == "unused")         // FIXME udisks2
+    else if (usage == "unused" || usage.isEmpty())
     {
         return Solid::StorageVolume::Unused;
     }
