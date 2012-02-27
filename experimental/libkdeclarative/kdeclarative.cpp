@@ -23,10 +23,10 @@
 #include "private/engineaccess_p.h"
 #include "private/kiconprovider_p.h"
 
-#include <QtDeclarative/QDeclarativeComponent>
-#include <QtDeclarative/QDeclarativeContext>
-#include <QtDeclarative/QDeclarativeEngine>
-#include <QtDeclarative/QDeclarativeExpression>
+#include <QDeclarativeComponent>
+#include <QDeclarativeContext>
+#include <QDeclarativeEngine>
+#include <QDeclarativeExpression>
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptValueIterator>
 #include <QtCore/QWeakPointer>

@@ -376,12 +376,7 @@ if(Qt5WebKit_FOUND OR NOT QT5_BUILD)
 endif()
 add_subdirectory( includes )
 macro_optional_add_subdirectory( doc  )
-if (NOT QT5_BUILD)
-    # The QDeclarativeView class no longer exists.
-    # We need to wait until declarative settles
-    # before being able to build against it.
-    add_subdirectory( experimental )
-endif()
+add_subdirectory( experimental )
 add_subdirectory( knotify )
 
 find_package(KdepimLibs 4.5.60)
