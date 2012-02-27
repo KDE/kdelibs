@@ -762,33 +762,33 @@ void Device::slotPropertiesChanged(const QString &ifaceName, const QVariantMap &
 QString Device::errorToString(const QString & error) const
 {
     if (error == UD2_ERROR_UNAUTHORIZED || error == UD2_ERROR_NOT_AUTHORIZED)
-        return QObject::tr("You are not authorized to perform this operation.");
+        return QObject::tr("You are not authorized to perform this operation");
     else if (error == UD2_ERROR_BUSY)
-        return QObject::tr("The device is currently busy.");
+        return QObject::tr("The device is currently busy");
     else if (error == UD2_ERROR_FAILED)
-        return QObject::tr("The requested operation has failed.");
+        return QObject::tr("The requested operation has failed");
     else if (error == UD2_ERROR_CANCELED)
-        return QObject::tr("The requested operation has been canceled.");
+        return QObject::tr("The requested operation has been canceled");
     else if (error == UD2_ERROR_INVALID_OPTION)
-        return QObject::tr("An invalid or malformed option has been given.");
+        return QObject::tr("An invalid or malformed option has been given");
     else if (error == UD2_ERROR_MISSING_DRIVER)
-        return QObject::tr("The kernel driver for this filesystem type is not available.");
+        return QObject::tr("The kernel driver for this filesystem type is not available");
     else if (error == UD2_ERROR_ALREADY_MOUNTED)
-        return QObject::tr("The device is already mounted.");
+        return QObject::tr("The device is already mounted");
     else if (error == UD2_ERROR_NOT_MOUNTED)
-        return QObject::tr("The device is not mounted.");
+        return QObject::tr("The device is not mounted");
     else if (error == UD2_ERROR_MOUNTED_BY_OTHER_USER)
-        return QObject::tr("The device is mounted by another user.");
+        return QObject::tr("The device is mounted by another user");
     else if (error == UD2_ERROR_ALREADY_UNMOUNTING)
-        return QObject::tr("The device is already unmounting.");
+        return QObject::tr("The device is already unmounting");
     else if (error == UD2_ERROR_TIMED_OUT)
-        return QObject::tr("The operation timed out.");
+        return QObject::tr("The operation timed out");
     else if (error == UD2_ERROR_WOULD_WAKEUP)
-        return QObject::tr("The operation would wake up a disk that is in a deep-sleep state.");
+        return QObject::tr("The operation would wake up a disk that is in a deep-sleep state");
     else if (error == UD2_ERROR_ALREADY_CANCELLED)
-        return QObject::tr("The operation has already been canceled.");
+        return QObject::tr("The operation has already been canceled");
     else
-        return QObject::tr("An unspecified error has occurred.");
+        return QObject::tr("An unspecified error has occurred");
 }
 
 Solid::ErrorType Device::errorToSolidError(const QString & error) const
