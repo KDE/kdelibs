@@ -383,6 +383,19 @@ bool Nepomuk::ResourceData::load()
     if ( m_cacheDirty ) {
         m_cache.clear();
 
+        if(!m_rm->m_watcher) {
+            m_rm->m_watcher = new ResourceWatcher(m_rm->m_manager);
+            QObject::connect( m_rm->m_watcher, SIGNAL(propertyAdded(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)),
+                              m_rm->m_manager, SLOT(slotPropertyAdded(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)) );
+            QObject::connect( m_rm->m_watcher, SIGNAL(propertyRemoved(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)),
+                              m_rm->m_manager, SLOT(slotPropertyRemoved(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)) );
+            m_rm->m_watcher->addResource( Nepomuk::Resource::fromResourceUri(m_uri) );
+            m_rm->m_watcher->start();
+        }
+        else {
+            m_rm->m_watcher->addResource( Nepomuk::Resource::fromResourceUri(m_uri) );
+        }
+
         if ( m_uri.isValid() ) {
             //
             // We exclude properties that are part of the inference graph
@@ -707,18 +720,6 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::determineUri()
         ResourceDataHash::iterator it = m_rm->m_initializedData.find(m_uri);
         if( it == m_rm->m_initializedData.end() ) {
             m_rm->m_initializedData.insert( m_uri, this );
-            if(!m_rm->m_watcher) {
-                m_rm->m_watcher = new ResourceWatcher(m_rm->m_manager);
-                QObject::connect( m_rm->m_watcher, SIGNAL(propertyAdded(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)),
-                                  m_rm->m_manager, SLOT(slotPropertyAdded(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)) );
-                QObject::connect( m_rm->m_watcher, SIGNAL(propertyRemoved(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)),
-                                  m_rm->m_manager, SLOT(slotPropertyRemoved(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)) );
-                m_rm->m_watcher->addResource( Nepomuk::Resource::fromResourceUri(m_uri) );
-                m_rm->m_watcher->start();
-            }
-            else {
-                m_rm->m_watcher->addResource( Nepomuk::Resource::fromResourceUri(m_uri) );
-            }
         }
         else {
             return it.value();
