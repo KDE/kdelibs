@@ -44,7 +44,7 @@ private Q_SLOTS:
         m_kPlotAxis->setVisible(false);
         QCOMPARE(m_kPlotAxis->isVisible(), false);
     }
-    
+
     void testTickLabelsShown()
     {
         m_kPlotAxis->setTickLabelsShown(true);
@@ -68,6 +68,47 @@ private Q_SLOTS:
         QCOMPARE(m_kPlotAxis->tickLabelFormat(), 'e');
         QCOMPARE(m_kPlotAxis->tickLabelWidth(), 3);
         QCOMPARE(m_kPlotAxis->tickLabelPrecision(), 2);
+    }
+
+    void testTickMarks()
+    {
+        m_kPlotAxis->setTickMarks(0.0, 12.0);
+
+        QCOMPARE(m_kPlotAxis->majorTickMarks().size(), 4);
+        QCOMPARE(m_kPlotAxis->majorTickMarks().at(0), 0.0);
+        QCOMPARE(m_kPlotAxis->majorTickMarks().at(1), 4.0);
+        QCOMPARE(m_kPlotAxis->majorTickMarks().at(2), 8.0);
+        QCOMPARE(m_kPlotAxis->majorTickMarks().at(3), 12.0);
+
+        QCOMPARE(m_kPlotAxis->minorTickMarks().size(), 9);
+        QCOMPARE(m_kPlotAxis->minorTickMarks().at(0), 1.0);
+        QCOMPARE(m_kPlotAxis->minorTickMarks().at(1), 2.0);
+        QCOMPARE(m_kPlotAxis->minorTickMarks().at(2), 3.0);
+        QCOMPARE(m_kPlotAxis->minorTickMarks().at(3), 5.0);
+        QCOMPARE(m_kPlotAxis->minorTickMarks().at(4), 6.0);
+        QCOMPARE(m_kPlotAxis->minorTickMarks().at(5), 7.0);
+        QCOMPARE(m_kPlotAxis->minorTickMarks().at(6), 9.0);
+        QCOMPARE(m_kPlotAxis->minorTickMarks().at(7), 10.0);
+        QCOMPARE(m_kPlotAxis->minorTickMarks().at(8), 11.0);
+
+        m_kPlotAxis->setTickMarks(0.0, 120.0);
+
+        QCOMPARE(m_kPlotAxis->majorTickMarks().size(), 4);
+        QCOMPARE(m_kPlotAxis->majorTickMarks().at(0), 0.0);
+        QCOMPARE(m_kPlotAxis->majorTickMarks().at(1), 40.0);
+        QCOMPARE(m_kPlotAxis->majorTickMarks().at(2), 80.0);
+        QCOMPARE(m_kPlotAxis->majorTickMarks().at(3), 120.0);
+
+        QCOMPARE(m_kPlotAxis->minorTickMarks().size(), 9);
+        QCOMPARE(m_kPlotAxis->minorTickMarks().at(0), 10.0);
+        QCOMPARE(m_kPlotAxis->minorTickMarks().at(1), 20.0);
+        QCOMPARE(m_kPlotAxis->minorTickMarks().at(2), 30.0);
+        QCOMPARE(m_kPlotAxis->minorTickMarks().at(3), 50.0);
+        QCOMPARE(m_kPlotAxis->minorTickMarks().at(4), 60.0);
+        QCOMPARE(m_kPlotAxis->minorTickMarks().at(5), 70.0);
+        QCOMPARE(m_kPlotAxis->minorTickMarks().at(6), 90.0);
+        QCOMPARE(m_kPlotAxis->minorTickMarks().at(7), 100.0);
+        QCOMPARE(m_kPlotAxis->minorTickMarks().at(8), 110.0);
     }
 
 private:
