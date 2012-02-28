@@ -34,4 +34,5 @@ include_directories (${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
 
 add_subdirectory(src)
-add_subdirectory( tests )
+add_subdirectory(autotests)
+add_subdirectory(tests)
