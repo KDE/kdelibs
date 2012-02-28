@@ -10,7 +10,7 @@ add_executable(fakehardwaretest ${fakehardwaretest_SRCS})
 add_test(fakehardwaretest fakehardwaretest)
 
 target_link_libraries(fakehardwaretest solid_static ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} )
-add_definitions(-DTEST_DATA="\\"${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw/fakecomputer.xml\\"")
+add_definitions(-DTEST_DATA="${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw/fakecomputer.xml")
 
 
 ########### halbasictest ###############
@@ -31,7 +31,7 @@ set(solidhwtest_SRCS
 
 add_executable(solidhwtest ${solidhwtest_SRCS})
 add_test(solidhwtest solidhwtest)
-add_definitions(-DFAKE_COMPUTER_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw/fakecomputer.xml\\"")
+add_definitions(-DFAKE_COMPUTER_XML="${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw/fakecomputer.xml")
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw )
 
@@ -45,7 +45,7 @@ set(solidmttest_SRCS
 
 add_executable(solidmttest ${solidmttest_SRCS})
 add_test(solidmttest solidmttest)
-add_definitions(-DFAKE_COMPUTER_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw/fakecomputer.xml\\"")
+add_definitions(-DFAKE_COMPUTER_XML="${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw/fakecomputer.xml")
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw )
 
