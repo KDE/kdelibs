@@ -28,10 +28,10 @@ remove_definitions(-DQT_USE_FAST_OPERATOR_PLUS)
 
 find_package(Qt5Transitional REQUIRED Core DBus Gui Test)
 
-include_directories (${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+include_directories (${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src)
 
 # Put this in QtFramework along with an if exists?
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
 
-add_subdirectory( solid )
+add_subdirectory(src)
 add_subdirectory( tests )
