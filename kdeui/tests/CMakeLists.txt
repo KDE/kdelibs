@@ -47,8 +47,8 @@ KDEUI_UNIT_TESTS(
   kstandardshortcuttest
   kuniqueapptest
   kcolorutilstest
+  kapplication_unittest
   kxmlgui_unittest
-  ktimezonewidget_unittest
   kiconloader_unittest
   ktabwidget_unittest
   ktoolbar_unittest
@@ -76,9 +76,6 @@ KDEUI_EXECUTABLE_TESTS(
   kbugreporttest
   kcategorizedviewtest
   kcodecactiontest
-  kcolorcollectiontest
-  kcolordlgtest
-  kcolorcombotest
   kcomboboxtest
   kcompletionuitest
   kdatepicktest
@@ -154,10 +151,3 @@ KDEUI_EXECUTABLE_TESTS(
 target_link_libraries(kmanagerselectiontest ${X11_X11_LIB})
 target_link_libraries(kxerrorhandlertest ${X11_X11_LIB})
 endif (Q_WS_X11)
-
-## kcolorutilsdemo
-
-SET(kcolorUtilsDemoSources kcolorutilsdemo.cpp kimageframe.cpp ../colors/kcolorspaces.cpp)
-kde4_add_ui_files(kcolorUtilsDemoSources kcolorutilsdemo.ui)
-kde4_add_executable(kcolorutilsdemo ${kcolorUtilsDemoSources})
-target_link_libraries(kcolorutilsdemo ${KDE4_KDEUI_LIBS} ${KDEWIN_LIBRARIES} kcoreaddons )

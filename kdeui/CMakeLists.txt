@@ -92,18 +92,6 @@ set(kdeui_LIB_SRCS
  actions/ktoolbarlabelaction.cpp
  actions/ktoolbarpopupaction.cpp
  actions/ktoolbarspaceraction.cpp
- colors/kcolorspaces.cpp
- colors/kcolorutils.cpp
- colors/kcolorscheme.cpp
- colors/kcolorcollection.cpp
- colors/kcolorhelpers.cpp
- colors/kcolorbutton.cpp
- colors/kcolorcombo.cpp
- colors/kcolorchoosermode.cpp
- colors/kcolordialog.cpp
- colors/kcolormimedata.cpp
- colors/kcolorvalueselector.cpp
- colors/khuesaturationselect.cpp
  config/kconfigskeleton.cpp
  config/kconfiggroupgui.cpp
  dialogs/kaboutkdedialog_p.cpp
