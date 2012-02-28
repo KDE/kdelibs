@@ -12,12 +12,19 @@ include_directories(
   ${CMAKE_CURRENT_BINARY_DIR}/../../../kdecore
   ${CMAKE_CURRENT_BINARY_DIR}/../../../staging/kcoreaddons/src
 )
-########### next target ###############
 
-# TODO automate and merge with test_filter?
-set(test_suggest_SRCS test.cpp)
+########### unittests ###############
 
-add_executable(test_suggest ${test_suggest_SRCS})
+MACRO(SONNET_UNIT_TESTS)
+       FOREACH(_testname ${ARGN})
+               add_executable(${_testname} ${_testname}.cpp)
+               add_test(sonnet-${_testname} ${_testname})
+               target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} sonnetcore ${QT_QTTEST_LIBRARY} ${QT_QTXML_LIBRARY} ${KDEWIN_LIBRARIES})
+       ENDFOREACH(_testname)
+ENDMACRO(SONNET_UNIT_TESTS)
 
-target_link_libraries(test_suggest ${KDE4_KDECORE_LIBS} sonnetcore)
+SONNET_UNIT_TESTS(
+ test_filter
+ test_core
+)
 

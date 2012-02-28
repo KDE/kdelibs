@@ -28,4 +28,5 @@ remove_definitions(-DQT_USE_FAST_OPERATOR_PLUS)
 find_package(Qt5Transitional REQUIRED Core DBus Gui Test)
 
 add_subdirectory(src)
+add_subdirectory(autotests)
 add_subdirectory(tests)
