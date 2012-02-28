@@ -52,5 +52,3 @@ install( FILES
    DESTINATION  ${SERVICETYPES_INSTALL_DIR}
 )
 
-# add tests
-add_subdirectory (tests)

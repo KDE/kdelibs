@@ -3,7 +3,14 @@ set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../../tier1/kcoreaddons/src/kernel
+  ${CMAKE_CURRENT_SOURCE_DIR}/../src/core
+  ${CMAKE_CURRENT_BINARY_DIR}/../src/core
+
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../../kdecore/config
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../../kdecore/io
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../../kdecore/util
+  ${CMAKE_CURRENT_BINARY_DIR}/../../../kdecore
+  ${CMAKE_CURRENT_BINARY_DIR}/../../../staging/kcoreaddons/src
 )
 ########### next target ###############
 

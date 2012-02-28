@@ -23,7 +23,8 @@
 #include "speller.h"
 #include "globals.h"
 
-#include <qtest_kde.h>
+#include <qtest.h>
+#include <kde_qt5_compat.h>
 #include <kdebug.h>
 
 // QT5 TODO QTEST_GUILESS_MAIN(SonnetCoreTest)
