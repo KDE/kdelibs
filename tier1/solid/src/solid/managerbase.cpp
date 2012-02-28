@@ -21,7 +21,7 @@
 #include "managerbase_p.h"
 
 #include <stdlib.h>
-#if !defined (Q_WS_WIN) && !defined (Q_OS_MAC)
+#if !defined (Q_OS_WIN) && !defined (Q_OS_MAC)
 #include <config-solid.h>
 #endif
 
@@ -44,7 +44,7 @@
 
 #include "backends/fstab/fstabmanager.h"
 
-#elif defined (Q_WS_WIN) && defined(HAVE_WBEM) && !defined(_WIN32_WCE)
+#elif defined (Q_OS_WIN) && defined(HAVE_WBEM) && !defined(_WIN32_WCE)
 #include "backends/wmi/wmimanager.h"
 #endif
 
@@ -68,7 +68,7 @@ void Solid::ManagerBasePrivate::loadBackends()
 #        if defined(Q_OS_MAC)
             m_backends << new Solid::Backends::IOKit::IOKitManager(0);
 
-#        elif defined(Q_WS_WIN) && defined(HAVE_WBEM) && !defined(_WIN32_WCE)
+#        elif defined(Q_OS_WIN) && defined(HAVE_WBEM) && !defined(_WIN32_WCE)
             m_backends << new Solid::Backends::Wmi::WmiManager(0);
 
 #        elif defined(Q_OS_UNIX) && !defined(Q_OS_LINUX)
