@@ -37,6 +37,7 @@ FstabManager::FstabManager(QObject *parent)
     m_deviceList = FstabHandling::deviceList();
 
     connect(FstabWatcher::instance(), SIGNAL(fstabChanged()), this, SLOT(onFstabChanged()));
+    connect(FstabWatcher::instance(), SIGNAL(mtabChanged()), this, SLOT(onMtabChanged()));
 }
 
 QString FstabManager::udiPrefix() const
@@ -89,30 +90,55 @@ QObject *FstabManager::createDevice(const QString &udi)
         root->setIcon("folder-remote");
 
         return root;
+
     } else {
-        return new FstabDevice(udi);
+        // global device manager makes sure udi starts with udi prefix + '/'
+        QString internalName = udi.mid( udiPrefix().length()+1, -1 );
+        if (!m_deviceList.contains(internalName))
+            return 0;
+
+        QObject* device = new FstabDevice(udi);
+        connect (this, SIGNAL(mtabChanged(QString)), device, SLOT(onMtabChanged(QString)));
+        return device;
+
     }
 }
 
 void FstabManager::onFstabChanged()
 {
+    FstabHandling::flushFstabCache();
+    _k_updateDeviceList();
+}
+
+void FstabManager::_k_updateDeviceList()
+{
     QStringList deviceList = FstabHandling::deviceList();
-    if (deviceList.count() > m_deviceList.count()) {
-        //new device
-        foreach (const QString &device, deviceList) {
-            if (!m_deviceList.contains(device)) {
-                emit deviceAdded(udiPrefix() + "/" + device);
-            }
-        }
-    } else {
-        //device has been removed
-        foreach (const QString &device, m_deviceList) {
-            if (!deviceList.contains(device)) {
-                emit deviceRemoved(udiPrefix() + "/" + device);
-            }
-        }
+    QSet<QString> newlist = deviceList.toSet();
+    QSet<QString> oldlist = m_deviceList.toSet();
+
+    foreach(const QString &device, newlist) {
+        if ( !oldlist.contains(device) )
+            emit deviceAdded(udiPrefix() + "/" + device);
     }
+
+    foreach(const QString &device, oldlist) {
+        if ( !newlist.contains(device) )
+            emit deviceRemoved(udiPrefix() + "/" + device);
+    }
+
     m_deviceList = deviceList;
+}
+
+void FstabManager::onMtabChanged()
+{
+    FstabHandling::flushMtabCache();
+
+    _k_updateDeviceList(); // devicelist is union of mtab and fstab
+
+    foreach(const QString &device, m_deviceList) {
+        // notify storageaccess objects via device ...
+        emit mtabChanged(device);
+    }
 }
 
 FstabManager::~FstabManager()
