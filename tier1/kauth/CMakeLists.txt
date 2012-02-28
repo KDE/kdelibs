@@ -32,5 +32,5 @@ if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
 endif()
 
 install( FILES
-    KAuthMacros.cmake
+    cmake/KAuthMacros.cmake
     DESTINATION ${DATA_INSTALL_DIR}/cmake/modules COMPONENT Devel )
