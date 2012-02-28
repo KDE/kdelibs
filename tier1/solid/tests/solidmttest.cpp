@@ -21,7 +21,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QThread>
 #include <QtCore/QThreadPool>
-#include <QtCore/qtconcurrentrun.h>
+#include <qtconcurrentrun.h>
 
 #include <QtTest/QtTest>
 

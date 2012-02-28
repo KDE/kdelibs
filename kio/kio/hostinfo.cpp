@@ -30,11 +30,11 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 #include <QtCore/QList>
 #include <QtCore/QPair>
 #include <QtCore/QThread>
-#include <QtCore/QFutureWatcher>
+#include <QFutureWatcher>
 #include <QtCore/QMetaType>
 #include <QtCore/QSemaphore>
 #include <QtCore/QSharedPointer>
-#include <QtCore/QtConcurrentRun>
+#include <QtConcurrentRun>
 #include <QtNetwork/QHostInfo>
 #include "kdebug.h"
 
