@@ -23,4 +23,5 @@ KPLOTTING_UNIT_TESTS(
     kplotpointtest
     kplotaxistest
     kplotobjecttest
+    kplotwidgettest
 )
