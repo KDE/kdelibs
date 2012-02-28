@@ -425,8 +425,8 @@ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h solidnamespace.h devic
 set(lexer_FILE predicate_lexer)
 set(parser_FILE predicate_parser)
 
-find_package(Flex)
-set_package_properties(Flex PROPERTIES
+find_package(FLEX)
+set_package_properties(FLEX PROPERTIES
     URL "http://flex.sourceforge.net"
     DESCRIPTION "Allows the Solid predicate parser to be updated"
     TYPE OPTIONAL
