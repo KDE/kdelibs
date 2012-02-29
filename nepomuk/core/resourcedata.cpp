@@ -162,14 +162,21 @@ void Nepomuk::ResourceData::resetAll( bool isDelete )
 {
     // remove us from all caches (store() will re-insert us later if necessary)
     m_rm->mutex.lock();
+
+    // IMPORTANT:
+    // Remove from the kickOffList before removing from the resource watcher
+    // This is required cause otherwise the Resource::fromResourceUri creates a new
+    // resource which is correctly identified to the ResourceData (this), and it is
+    // then deleted, which calls resetAll and this cycle continues.
+    Q_FOREACH( const KUrl& uri, m_kickoffUris )
+        m_rm->m_uriKickoffData.remove( uri );
+
     if( !m_uri.isEmpty() ) {
         m_rm->m_initializedData.remove( m_uri );
         if( m_rm->m_watcher ) {
             m_rm->m_watcher->removeResource(Resource::fromResourceUri(m_uri));
         }
     }
-    Q_FOREACH( const KUrl& uri, m_kickoffUris )
-        m_rm->m_uriKickoffData.remove( uri );
     m_rm->mutex.unlock();
 
     // reset all variables
