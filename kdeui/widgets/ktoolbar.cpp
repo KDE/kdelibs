@@ -851,11 +851,13 @@ void KToolBar::saveSettings(KConfigGroup &cg)
     }
 }
 
+#ifndef KDE_NO_DEPRECATED
 void KToolBar::setXMLGUIClient(KXMLGUIClient *client)
 {
     d->xmlguiClients.clear();
     d->xmlguiClients << client;
 }
+#endif
 
 void KToolBar::addXMLGUIClient( KXMLGUIClient *client )
 {
