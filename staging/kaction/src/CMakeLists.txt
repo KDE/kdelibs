@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.5)
 
-project(kdeui_kactions)
+project(kactions)
 
 find_package(extra-cmake-modules 0.0.2 REQUIRED)
 
@@ -26,7 +26,7 @@ ${kcoreaddons_SOURCE_DIR}/src/randomness
 )       
 
 
-set(kdeui_kactions_SRCS
+set(kactions_SRCS
  actions/kactioncollection.cpp
  actions/kactioncategory.cpp
  actions/kaction.cpp
@@ -90,14 +90,14 @@ install( FILES
  )
 
 
-add_library(kdeui_kactions ${LIBRARY_TYPE} ${kdeui_kactions_SRCS})
+add_library(kactions ${LIBRARY_TYPE} ${kactions_SRCS})
 
-generate_export_header(kdeui_kactions)
+generate_export_header(kactions)
 
-set_target_properties(kdeui_kactions PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
+set_target_properties(kactions PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 
-target_link_libraries(kdeui_kactions kdeui kdecore kdecoreaddons ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${KDEUI_EXTRA_LIBS})
+target_link_libraries(kactions kdeui kdecore kdecoreaddons ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${KDEUI_EXTRA_LIBS})
 
-install(TARGETS kdeui_kactions EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kactions EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 
