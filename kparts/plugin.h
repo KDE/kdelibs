@@ -158,6 +158,9 @@ public:
     static QList<Plugin *> pluginObjects( QObject *parent );
 
 protected:
+    virtual void setComponentData(const KComponentData &instance);
+
+private:
     /**
      * Look for plugins in the @p instance's "data" directory (+"/kpartplugins")
      *
@@ -169,27 +172,7 @@ protected:
      * @internal
      * @return The plugin created from the library @p libname
      */
-#ifndef KDE_NO_DEPRECATED
-    KPARTS_DEPRECATED static Plugin* loadPlugin( QObject * parent, const char* libname );
-#endif
-
-    /**
-     * @internal, added only for source compatibility
-     * @return The plugin created from the library @p libname
-     */
-#ifndef KDE_NO_DEPRECATED
-    KPARTS_DEPRECATED static Plugin* loadPlugin( QObject * parent, const QByteArray &libname );
-#endif
-
-    /**
-     * @internal
-     * @return The plugin created from the library @p libname
-     */
-    static Plugin* loadPlugin( QObject * parent, const QString &libname );
-
-    static Plugin* loadPlugin( QObject * parent, const QString &libname, const QString &keyword  );
-
-    virtual void setComponentData(const KComponentData &instance);
+    static Plugin* loadPlugin(QObject * parent, const QString &libname, const QString &keyword = QString());
 
 private:
     static bool hasPlugin( QObject* parent, const QString& library );

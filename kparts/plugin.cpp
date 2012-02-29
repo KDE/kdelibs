@@ -20,7 +20,8 @@
 
 #include <kparts/plugin.h>
 #include <kparts/part.h>
-#include <kparts/componentfactory.h>
+#include <kpluginfactory.h>
+#include <kpluginloader.h>
 
 #include <assert.h>
 
@@ -167,31 +168,6 @@ void Plugin::loadPlugins( QObject *parent, const QList<PluginInfo> &pluginInfos 
    loadPlugins(parent, pluginInfos, KComponentData());
 }
 
-// static, deprecated
-#ifndef KDE_NO_DEPRECATED
-Plugin* Plugin::loadPlugin( QObject * parent, const char* libname )
-{
-    Plugin* plugin = KLibLoader::createInstance<Plugin>( libname, parent );
-    if ( !plugin )
-        return 0;
-    plugin->d->m_library = libname;
-    return plugin;
-}
-#endif
-
-// static, deprecated
-#ifndef KDE_NO_DEPRECATED
-Plugin* Plugin::loadPlugin( QObject * parent, const QByteArray &libname )
-{
-    return loadPlugin( parent, libname.data() );
-}
-#endif
-
-Plugin* Plugin::loadPlugin( QObject * parent, const QString &libname )
-{
-    return loadPlugin( parent, libname, "" );
-}
-
 // static
 Plugin* Plugin::loadPlugin( QObject * parent, const QString &libname, const QString &keyword )
 {
@@ -216,7 +192,7 @@ QList<KParts::Plugin *> Plugin::pluginObjects( QObject *parent )
   if (!parent )
     return objects;
 
-  // TODO: move to a new method KGlobal::findDirectChildren, if there is more than one use of this?
+  // TODO: Qt5: use QObject::findChildren(... FindDirectChildrenOnly)
   const QObjectList plugins = parent->children();
 
   QObjectList::ConstIterator it = plugins.begin();

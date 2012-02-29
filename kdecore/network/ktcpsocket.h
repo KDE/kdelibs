@@ -139,7 +139,6 @@ private:
 
 class KTcpSocketPrivate;
 class QHostAddress;
-class KUrl;
 
 class KDECORE_EXPORT KTcpSocket: public QIODevice
 {

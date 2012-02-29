@@ -25,7 +25,7 @@
 #include <QtCore/QProcess>
 #include <QtCore/QIODevice>
 #include <QtCore/QTextStream>
-#include <QtCore/QtConcurrentRun>
+#include <QtConcurrentRun>
 
 namespace QTest {
 

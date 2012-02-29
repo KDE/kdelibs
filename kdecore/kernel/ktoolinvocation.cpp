@@ -21,14 +21,12 @@
 #include "ktoolinvocation.h"
 #include "klauncher_iface.h"
 #include "kdebug.h"
-//#include "kglobal.h"
-//#include "kcomponentdata.h"
-#include "kurl.h"
 #include "kmessage.h"
 #include "kservice.h"
 #include <klockfile.h>
 #include <klocale.h>
 
+#include <QUrl>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QCoreApplication>
@@ -254,7 +252,6 @@ void KToolInvocation::invokeHelp( const QString& anchor,
     if (!isMainThreadActive())
         return;
 
-    KUrl url;
     QString appname;
     QString docPath;
     if (_appname.isEmpty()) {
@@ -267,8 +264,9 @@ void KToolInvocation::invokeHelp( const QString& anchor,
         docPath = service->docPath();
     }
 
+    QUrl url;
     if (!docPath.isEmpty()) {
-        url = KUrl(KUrl("help:/"), docPath);
+        url = QUrl(QLatin1String("help:/")).resolved(docPath);
     } else {
         url = QString::fromLatin1("help:/%1/index.html").arg(appname);
     }
@@ -280,7 +278,7 @@ void KToolInvocation::invokeHelp( const QString& anchor,
     // launch a browser for URIs not handled by khelpcenter
     // (following KCMultiDialog::slotHelpClicked())
     if (!(url.scheme() == QLatin1String("help") || url.scheme() == QLatin1String("man") || url.scheme() == QLatin1String("info"))) {
-        invokeBrowser(url.url());
+        invokeBrowser(url.toString());
         return;
     }
 
@@ -293,9 +291,9 @@ void KToolInvocation::invokeHelp( const QString& anchor,
         QString error;
 #ifdef Q_WS_WIN
         // startServiceByDesktopName() does not work yet; KRun:processDesktopExec returned 'KRun: syntax error in command "khelpcenter %u" , service "KHelpCenter" '
-        if (kdeinitExec(QLatin1String("khelpcenter"), QStringList() << url.url(), &error, 0, startup_id))
+        if (kdeinitExec(QLatin1String("khelpcenter"), QStringList() << url.toString(), &error, 0, startup_id))
 #else
-        if (startServiceByDesktopName(QLatin1String("khelpcenter"), url.url(), &error, 0, 0, startup_id, false))
+        if (startServiceByDesktopName(QLatin1String("khelpcenter"), url.toString(), &error, 0, 0, startup_id, false))
 #endif
         {
             KMessage::message(KMessage::Error,
@@ -312,7 +310,7 @@ void KToolInvocation::invokeHelp( const QString& anchor,
                                    QDBusConnection::sessionBus());
     }
 
-    iface->call(QString::fromLatin1("openUrl"), url.url(), startup_id );
+    iface->call(QString::fromLatin1("openUrl"), url.toString(), startup_id );
     delete iface;
 }
 
@@ -325,7 +323,7 @@ void KToolInvocation::invokeMailer(const QString &address, const QString &subjec
                  QStringList(), startup_id );
 }
 
-void KToolInvocation::invokeMailer(const KUrl &mailtoURL, const QByteArray& startup_id, bool allowAttachments )
+void KToolInvocation::invokeMailer(const QUrl &mailtoURL, const QByteArray& startup_id, bool allowAttachments )
 {
     if (!isMainThreadActive())
         return;
@@ -336,32 +334,26 @@ void KToolInvocation::invokeMailer(const KUrl &mailtoURL, const QByteArray& star
     QString bcc;
     QString body;
 
-    const QStringList queries = mailtoURL.query().mid(1).split(QLatin1Char('&'));
+    QList<QPair<QString, QString> > queryItems = mailtoURL.queryItems();
     const QChar comma = QChar::fromLatin1(',');
     QStringList attachURLs;
-    for (QStringList::ConstIterator it = queries.begin(); it != queries.end(); ++it)
-    {
-        QString q = (*it).toLower();
-        if (q.startsWith(QLatin1String("subject=")))
-            subject = KUrl::fromPercentEncoding((*it).mid(8).toLatin1());
-        else
-            if (q.startsWith(QLatin1String("cc=")))
-                cc = cc.isEmpty()? KUrl::fromPercentEncoding((*it).mid(3).toLatin1()): cc + comma + KUrl::fromPercentEncoding((*it).mid(3).toLatin1());
-            else
-                if (q.startsWith(QLatin1String("bcc=")))
-                    bcc = bcc.isEmpty()? KUrl::fromPercentEncoding((*it).mid(4).toLatin1()): bcc + comma + KUrl::fromPercentEncoding((*it).mid(4).toLatin1());
-                else
-                    if (q.startsWith(QLatin1String("body=")))
-                        body = KUrl::fromPercentEncoding((*it).mid(5).toLatin1());
-                    else
-                        if (allowAttachments && q.startsWith(QLatin1String("attach=")))
-                            attachURLs.push_back(KUrl::fromPercentEncoding((*it).mid(7).toLatin1()));
-                        else
-                            if (allowAttachments && q.startsWith(QLatin1String("attachment=")))
-                                attachURLs.push_back(KUrl::fromPercentEncoding((*it).mid(11).toLatin1()));
-                            else
-                                if (q.startsWith(QLatin1String("to=")))
-                                    address = address.isEmpty()? KUrl::fromPercentEncoding((*it).mid(3).toLatin1()): address + comma + KUrl::fromPercentEncoding((*it).mid(3).toLatin1());
+    for (int i = 0; i < queryItems.count(); ++i) {
+        const QString q = queryItems.at(i).first.toLower();
+        const QString value = queryItems.at(i).second;
+        if (q == QLatin1String("subject"))
+            subject = value;
+        else if (q == QLatin1String("cc"))
+            cc = cc.isEmpty() ? value : cc + comma + value;
+        else if (q == QLatin1String("bcc"))
+            bcc = bcc.isEmpty()? value : bcc + comma + value;
+        else if (q == QLatin1String("body"))
+            body = value;
+        else if (allowAttachments && q == QLatin1String("attach"))
+            attachURLs.push_back(value);
+        else if (allowAttachments && q == QLatin1String("attachment"))
+            attachURLs.push_back(value);
+        else if (q == QLatin1String("to"))
+            address = address.isEmpty() ? value : address + comma + value;
     }
 
     invokeMailer( address, cc, bcc, subject, body, QString(), attachURLs, startup_id );

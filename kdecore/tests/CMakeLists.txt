@@ -29,10 +29,8 @@ KDECORE_UNIT_TESTS(
  klocalizedstringtest
  kmountpointtest
  kurltest
- kstringhandlertest
  cplusplustest
  ksortablelisttest
- kmacroexpandertest
  kshelltest
  kasciitest
  ktimezonestest
@@ -74,7 +72,6 @@ if(UNIX)
 endif(UNIX)
 
 KDECORE_EXECUTABLE_TESTS(
- kdirwatchtest
  kdebugtest
  kmemtest
  dbuscalltest
@@ -94,11 +91,6 @@ target_link_libraries(klocaletest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kcor
 set(kdatetimeformattertest_SRCS kdatetimeformattertest.cpp ../date/kdatetimeformatter.cpp ../date/kdayperiod.cpp)
 kde4_add_unit_test(kdatetimeformattertest ${kdatetimeformattertest_SRCS})
 target_link_libraries(kdatetimeformattertest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
-
-########### kdirwatchtest_gui ###############
-
-kde4_add_executable(kdirwatchtest_gui TEST kdirwatchtest_gui.cpp)
-target_link_libraries(kdirwatchtest_gui ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${QT_QTTEST_LIBRARY} kcoreaddons)
 
 ########### kmimetypetest ###############
 

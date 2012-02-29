@@ -65,7 +65,7 @@
 #include <QAbstractProxyModel>
 #include <QHelpEvent>
 #include <QApplication>
-#include <QtCore/QFSFileEngine>
+// #include <QtCore/QFSFileEngine>
 #include <kshell.h>
 #include <kmessagebox.h>
 #include <kauthorized.h>
@@ -356,6 +356,7 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     KUrl u;
     KUrlComboBox *pathCombo = d->urlNavigator->editor();
 #ifdef Q_WS_WIN
+#if 0
     foreach( const QFileInfo &drive,QFSFileEngine::drives() )
     {
         u.setPath( drive.filePath() );
@@ -363,6 +364,9 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
                                  KIO::pixmapForUrl( u, 0, KIconLoader::Small ),
                                  i18n("Drive: %1",  u.toLocalFile()));
     }
+#else
+#pragma message(QT5 PORT)
+#endif
 #else
     u.setPath(QDir::rootPath());
     pathCombo->addDefaultUrl(u,

@@ -23,8 +23,8 @@
 
 #include "kmessage.h"
 #include "klocale.h"
-#include "kurl.h"
 
+#include <QUrl>
 #include <QProcess>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QHash>
@@ -56,13 +56,13 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
                                 const QString & /*messageFile TODO*/, const QStringList &attachURLs,
                                 const QByteArray& startup_id )
 {
-  KUrl url(QLatin1String("mailto:")+_to);
+  QUrl url(QLatin1String("mailto:")+_to);
   url.setQuery(QLatin1String("?subject=")+subject);
   url.addQueryItem(QLatin1String("cc"), _cc);
   url.addQueryItem(QLatin1String("bcc"), _bcc);
   url.addQueryItem(QLatin1String("body"), body);
   foreach (const QString& attachURL, attachURLs)
-    url.addQueryItem(QLatin1String("attach"), QLatin1String( KUrl::toPercentEncoding(attachURL) ));
+    url.addQueryItem(QLatin1String("attach"), attachURL);
 
 #ifndef _WIN32_WCE
    QString sOpen = QLatin1String( "open" );

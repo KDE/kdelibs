@@ -195,16 +195,17 @@
  * headers for KDE.
  */
 
+// QT5 KF5 TODO: Mark this macro deprecated or remove it entirely.
 #ifndef KDE_CONSTRUCTOR_DEPRECATED
 # ifdef __GNUC__
 #  if __GNUC__ == 3 && __GNUC_MINOR__ <= 3 
     /* GCC 3.3.x cannot handle Qt 4.1.2's definition of Q_DECL_CONSTRUCTOR_DEPRECATED */
 #   define KDE_CONSTRUCTOR_DEPRECATED
 #  else
-#   define KDE_CONSTRUCTOR_DEPRECATED Q_DECL_CONSTRUCTOR_DEPRECATED
+#   define KDE_CONSTRUCTOR_DEPRECATED Q_DECL_DEPRECATED
 #  endif
 # else
-#  define KDE_CONSTRUCTOR_DEPRECATED Q_DECL_CONSTRUCTOR_DEPRECATED
+#  define KDE_CONSTRUCTOR_DEPRECATED Q_DECL_DEPRECATED
 # endif
 #endif
 

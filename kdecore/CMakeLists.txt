@@ -16,9 +16,8 @@ macro_bool_to_01(FAM_FOUND HAVE_FAM)
 check_include_files(sys/inotify.h SYS_INOTIFY_H_FOUND)
 macro_bool_to_01(SYS_INOTIFY_H_FOUND HAVE_SYS_INOTIFY_H)
 
-# Configure checks for network/ but also for netsupp.*
-include(network/ConfigureChecks.cmake)
-configure_file(network/config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/network/config-network.h )
+check_struct_member("struct sockaddr" sa_len "sys/types.h;sys/socket.h" HAVE_STRUCT_SOCKADDR_SA_LEN)
+configure_file(network/config-klocalsocket.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/network/config-klocalsocket.h )
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/network )
 
 # Configure checks for date/
@@ -101,11 +100,6 @@ if (WIN32)
           util/kuser_wince.cpp
        )
    endif(NOT WINCE)
-   if(NOT MSVC)
-      LIST(APPEND kdecore_OPTIONAL_SRCS
-         network/netsupp.cpp
-      )
-   endif(NOT MSVC)
 endif (WIN32)
 
 
@@ -114,17 +108,10 @@ if (UNIX)
       kernel/ktoolinvocation_x11.cpp
       localization/klocale_unix.cpp
       network/klocalsocket_unix.cpp
-      network/netsupp.cpp
       util/kshell_unix.cpp
       util/kuser_unix.cpp
       fakes.c
    )
-   if (NOT KDECORE_NO_KDE3SUPPORT)
-      set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
-         network/k3socks.cpp
-         network/k3sockssocketdevice.cpp
-      )
-   endif (NOT KDECORE_NO_KDE3SUPPORT)
 endif (UNIX)
 
 add_subdirectory( kconfig_compiler )
@@ -212,24 +199,6 @@ set(kdecore_LIB_SRCS
    services/lex.c
    services/kplugininfo.cpp
 )
-
-if (NOT KDECORE_NO_KDE3SUPPORT)
-   set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
-      network/k3socketdevice.cpp
-      network/k3bufferedsocket.cpp
-      network/k3clientsocketbase.cpp
-      network/k3resolver.cpp
-      network/k3resolvermanager.cpp
-      network/k3resolverworkerbase.cpp
-      network/k3resolverstandardworkers.cpp
-      network/k3reverseresolver.cpp
-      network/k3serversocket.cpp
-      network/k3socketaddress.cpp
-      network/k3socketbase.cpp
-      network/k3streamsocket.cpp
-      network/k3socketbuffer.cpp
-   )
-endif (NOT KDECORE_NO_KDE3SUPPORT)
 
 set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    network/klocalsocket.cpp
@@ -395,23 +364,6 @@ install( FILES
    kernel/ktoolinvocation.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
-
-if (NOT KDECORE_NO_KDE3SUPPORT)
-   install(FILES
-      network/k3bufferedsocket.h
-      network/k3clientsocketbase.h
-      network/k3resolver.h
-      network/k3reverseresolver.h
-      network/k3serversocket.h
-      network/k3socketaddress.h
-      network/k3socketbase.h
-      network/k3socketdevice.h
-      network/k3socks.h
-      network/k3sockssocketdevice.h
-      network/k3streamsocket.h
-      DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
-   )
-endif (NOT KDECORE_NO_KDE3SUPPORT)
 
 install(FILES
    network/klocalsocket.h

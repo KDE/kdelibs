@@ -59,6 +59,11 @@ if (NOT QT5_BUILD)
   set(kwindowsystem_LIBRARY kwindowsystem)
 endif()
 add_subdirectory( libqtmimetypes )
+add_subdirectory( libkdeqt5staging )
+  include_directories(
+      ${CMAKE_SOURCE_DIR}/libkdeqt5staging/src/
+      ${CMAKE_BINARY_DIR}/libkdeqt5staging/src/
+  )
 add_subdirectory( tier1 )
 
 set(CMAKE_AUTOMOC ON)
@@ -316,8 +321,11 @@ check_library_exists(nsl gethostbyname "" HAVE_NSL_LIBRARY)
 check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 
 # TODO: Port away from this:
-add_definitions(-DKDE_NO_WINDOWSYSTEM)
-add_definitions(-DKDE_NO_PHONON)
+if (QT5_BUILD)
+  add_definitions(-DKDE_NO_WINDOWSYSTEM)
+  include_directories(kwindowsystem_dummy)
+  add_definitions(-DKDE_NO_PHONON)
+endif()
 
 ################# list the subdirectories #################
 
@@ -368,12 +376,7 @@ if(Qt5WebKit_FOUND OR NOT QT5_BUILD)
 endif()
 add_subdirectory( includes )
 macro_optional_add_subdirectory( doc  )
-if (NOT QT5_BUILD)
-    # The QDeclarativeView class no longer exists.
-    # We need to wait until declarative settles
-    # before being able to build against it.
-    add_subdirectory( experimental )
-endif()
+add_subdirectory( experimental )
 add_subdirectory( knotify )
 
 find_package(KdepimLibs 4.5.60)

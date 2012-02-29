@@ -29,3 +29,4 @@ configure_file(src/io/config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/src/i
 
 add_subdirectory(src)
 add_subdirectory(autotests)
+add_subdirectory(examples)

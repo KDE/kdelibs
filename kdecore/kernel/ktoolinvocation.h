@@ -32,7 +32,7 @@
 #include <QtCore/QStringList>
 
 class OrgKdeKLauncherInterface;
-class KUrl;
+class QUrl;
 class KToolInvocationPrivate;
 
 /**
@@ -117,8 +117,8 @@ public Q_SLOTS:
    * @param allowAttachments whether attachments specified in mailtoURL should be honoured.
                The default is false; do not honor requests for attachments.
    */
-  static void invokeMailer( const KUrl &mailtoURL, const QByteArray& startup_id = QByteArray(),
-          bool allowAttachments = false );
+  static void invokeMailer(const QUrl &mailtoURL, const QByteArray& startup_id = QByteArray(),
+                           bool allowAttachments = false);
 
   /**
    * Convenience method; invokes the standard email application.

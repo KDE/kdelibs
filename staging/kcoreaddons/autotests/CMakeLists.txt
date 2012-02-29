@@ -1,5 +1,7 @@
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+
 MACRO(KCOREADDONS_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
                add_executable(${_testname} ${_testname}.cpp)
@@ -19,7 +21,6 @@ MACRO(KCOREADDONS_UNIT_TESTS)
 ENDMACRO(KCOREADDONS_UNIT_TESTS)
 
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/../src/randomness
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/kernel
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/text
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/jobs
@@ -36,11 +37,12 @@ KCOREADDONS_UNIT_TESTS(
     kurlmimedatatest
     kencodingdetectortest
     kdirwatch_unittest
+    kmacroexpandertest
+    kstringhandlertest
 )
 
 # Helper for klockfiletest
 KCOREADDONS_EXECUTABLE_TESTS(
     klockfile_testlock
-    kcmdlineargstest
-    krandomsequencetest
 )
+

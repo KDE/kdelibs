@@ -17,7 +17,7 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-#include <config-network.h>
+#include <config-klocalsocket.h>
 
 #include <sys/types.h>
 #include <sys/time.h>

@@ -23,7 +23,7 @@
 
 #include <kdecore_export.h>
 
-class KUrl;
+class QUrl;
 class QString;
 class QStringList;
 
@@ -61,7 +61,7 @@ namespace KAuthorized
    * @param destUrl The object of the action
    * @return true when the action is authorized, false otherwise.
    */
-  KDECORE_EXPORT bool authorizeUrlAction(const QString& action, const KUrl& baseUrl, const KUrl& destUrl);
+  KDECORE_EXPORT bool authorizeUrlAction(const QString& action, const QUrl& baseUrl, const QUrl& destUrl);
 
   /**
    * Allow a certain URL action. This can be useful if your application
@@ -71,7 +71,7 @@ namespace KAuthorized
    * @param baseUrl The url where the action originates from
    * @param _destUrl The object of the action
    */
-  KDECORE_EXPORT void allowUrlAction(const QString& action, const KUrl& baseUrl, const KUrl&  _destUrl);
+  KDECORE_EXPORT void allowUrlAction(const QString& action, const QUrl& baseUrl, const QUrl&  _destUrl);
 
   /**
    * Returns whether access to a certain control module is authorized.

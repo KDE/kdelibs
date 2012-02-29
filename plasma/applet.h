@@ -1014,12 +1014,15 @@ class PLASMA_EXPORT Applet : public QGraphicsWidget
         //Corona needs to access setFailedToLaunch and init
         friend class Corona;
         friend class CoronaPrivate;
+        friend class CoronaBase;
+        friend class CoronaBasePrivate;
         friend class Containment;
         friend class ContainmentPrivate;
         friend class AppletScript;
         friend class AppletHandle;
         friend class AppletPrivate;
         friend class AccessAppletJobPrivate;
+        friend class GraphicsViewAppletPrivate;
         friend class PluginLoader;
         friend class PopupApplet;
         friend class PopupAppletPrivate;

@@ -25,11 +25,11 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
+#include <QUrl>
 #include <qstandardpaths.h>
 
 #include "kconfig_p.h"
 #include "kdebug.h"
-#include "kurl.h"
 #include "kconfiggroup.h"
 #include "kauthorized.h"
 #include "kstandarddirs.h"
@@ -229,7 +229,7 @@ QString KDesktopFile::readUrl() const
         if ( !url.isEmpty() && !QDir::isRelativePath(url) )
         {
             // Handle absolute paths as such (i.e. we need to escape them)
-            return KUrl(url).url();
+            return QUrl::fromLocalFile(url).toString();
         }
         return url;
     }
