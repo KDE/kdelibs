@@ -24,6 +24,7 @@ set(LIBEXEC_INSTALL_DIR ${LIB_INSTALL_DIR}/kde4/libexec)
 
 
 add_subdirectory(src)
+add_subdirectory(autotests)
 
 include(FeatureSummary)
 
