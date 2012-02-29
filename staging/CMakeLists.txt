@@ -1,3 +1,4 @@
+add_subdirectory(kauth)
 add_subdirectory(sonnet)
 add_subdirectory(kcoreaddons)
 add_subdirectory(karchive)
