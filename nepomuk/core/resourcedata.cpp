@@ -63,6 +63,7 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QUrl& kickOffUri, co
       m_mainType( type ),
       m_modificationMutex(QMutex::Recursive),
       m_cacheDirty(false),
+      m_addedToWatcher(false),
       m_pimoThing(0),
       m_groundingOccurence(0),
       m_rm(rm)
@@ -173,8 +174,9 @@ void Nepomuk::ResourceData::resetAll( bool isDelete )
 
     if( !m_uri.isEmpty() ) {
         m_rm->m_initializedData.remove( m_uri );
-        if( m_rm->m_watcher ) {
+        if( m_rm->m_watcher && m_addedToWatcher ) {
             m_rm->m_watcher->removeResource(Resource::fromResourceUri(m_uri));
+            m_addedToWatcher = false;
         }
     }
     m_rm->mutex.unlock();
@@ -402,6 +404,7 @@ bool Nepomuk::ResourceData::load()
         else {
             m_rm->m_watcher->addResource( Nepomuk::Resource::fromResourceUri(m_uri) );
         }
+        m_addedToWatcher = true;
 
         if ( m_uri.isValid() ) {
             //
