@@ -36,7 +36,7 @@ namespace ThreadWeaver {
     The allocated memory gets freed on destruction of the object, or when
     freeMemory() is called.
 */
-class FileLoaderJob : public Job
+class THREADWEAVER_EXPORT FileLoaderJob : public Job
 {
     Q_OBJECT
 public:

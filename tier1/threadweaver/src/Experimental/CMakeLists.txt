@@ -5,10 +5,10 @@ include_directories(${QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${CMAKE_CURRENT_S
 
 set(ThreadWeaverExperimental_LIB_SRCS FileLoaderJob.cpp )
 
-include_directories( ../Weaver )
+include_directories(../Weaver ${CMAKE_CURRENT_BINARY_DIR}/../Weaver)
 
-kde4_add_library(ThreadWeaverExperimental ${LIBRARY_TYPE} ${ThreadWeaverExperimental_LIB_SRCS})
-target_link_libraries(ThreadWeaverExperimental threadweaver)
+add_library(ThreadWeaverExperimental ${LIBRARY_TYPE} ${ThreadWeaverExperimental_LIB_SRCS})
+target_link_libraries(ThreadWeaverExperimental threadweaver ${QT_QTCORE_LIBRARY})
 set_target_properties(ThreadWeaverExperimental PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 
 install(TARGETS ThreadWeaverExperimental EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})

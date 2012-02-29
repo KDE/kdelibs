@@ -4,10 +4,10 @@ include_directories(${QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${QT_QTGUI_INCLUD
 set(ThreadWeaverGui_LIB_SRCS  WeaverThreadGrid.cpp )
 
 
-include_directories( ../Weaver )
+include_directories(../Weaver ${CMAKE_CURRENT_BINARY_DIR}/../Weaver)
 
-kde4_add_library(ThreadWeaverGui ${LIBRARY_TYPE} ${ThreadWeaverGui_LIB_SRCS})
-target_link_libraries(ThreadWeaverGui threadweaver ${QT_QTGUI_LIBRARY})
+add_library(ThreadWeaverGui ${LIBRARY_TYPE} ${ThreadWeaverGui_LIB_SRCS})
+target_link_libraries(ThreadWeaverGui threadweaver ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY})
 set_target_properties(ThreadWeaverGui PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 
 install(TARGETS ThreadWeaverGui EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})

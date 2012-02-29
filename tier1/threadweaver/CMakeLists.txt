@@ -16,10 +16,7 @@ include(ECMQtFramework)
 
 find_package(Qt5Transitional REQUIRED Core Test)
 
-add_subdirectory(Weaver)
-# disabled for default kdelibs build:
-# add_subdirectory(WeaverGui)
-# add_subdirectory(Experimental)
- add_subdirectory(Tests)
-# add_subdirectory(Examples)
+add_subdirectory(src)
+add_subdirectory(autotests)
+#add_subdirectory(examples)
 
