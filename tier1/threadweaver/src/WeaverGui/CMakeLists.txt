@@ -10,7 +10,7 @@ add_library(ThreadWeaverGui ${LIBRARY_TYPE} ${ThreadWeaverGui_LIB_SRCS})
 target_link_libraries(ThreadWeaverGui threadweaver ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY})
 set_target_properties(ThreadWeaverGui PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 
-install(TARGETS ThreadWeaverGui EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS ThreadWeaverGui EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install(FILES WeaverThreadGrid.h
         DESTINATION ${INCLUDE_INSTALL_DIR}/threadweaver/ COMPONENT Devel

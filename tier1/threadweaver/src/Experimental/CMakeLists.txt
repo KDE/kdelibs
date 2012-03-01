@@ -11,7 +11,7 @@ add_library(ThreadWeaverExperimental ${LIBRARY_TYPE} ${ThreadWeaverExperimental_
 target_link_libraries(ThreadWeaverExperimental threadweaver ${QT_QTCORE_LIBRARY})
 set_target_properties(ThreadWeaverExperimental PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 
-install(TARGETS ThreadWeaverExperimental EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS ThreadWeaverExperimental EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install(FILES FileLoaderJob.h
         DESTINATION ${INCLUDE_INSTALL_DIR}/threadweaver/ COMPONENT Devel )
