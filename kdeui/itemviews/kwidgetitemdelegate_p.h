@@ -47,6 +47,7 @@ public:
     void _k_slotDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
     void _k_slotLayoutChanged();
     void _k_slotModelReset();
+    void _k_slotSelectionChanged (const QItemSelection &selected, const QItemSelection &deselected);
 
     void updateRowRange(const QModelIndex &parent, int start, int end, bool isRemoving);
 
@@ -60,6 +61,7 @@ public:
     QAbstractItemView *itemView;
     KWidgetItemDelegatePool *widgetPool;
     QAbstractItemModel *model;
+    QItemSelectionModel *selectionModel;
     bool viewDestroyed;
 
     KWidgetItemDelegate *q;
