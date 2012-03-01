@@ -407,11 +407,13 @@ public:
      */
     KIconTheme *theme() const;
 
+#ifndef KICONLOADER_WITHOUTEFFECTS
     /**
      * Returns a pointer to the KIconEffect object used by the icon loader.
      * @return the KIconEffect.
      */
     KIconEffect *iconEffect() const;
+#endif;
 
     /**
      * Called by KComponentData::newIconLoader to reconfigure the icon loader.

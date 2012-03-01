@@ -20,6 +20,7 @@
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptContext>
 
+#define KICONLOADER_WITHOUTEFFECTS
 #include <kicon.h>
 
 #include "backportglobal.h"

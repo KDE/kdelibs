@@ -288,7 +288,9 @@ public:
     KIconGroup *mpGroups;
     KIconThemeNode *mpThemeRoot;
     KStandardDirs *mpDirs;
+#ifndef KICONLOADER_WITHOUTEFFECTS
     KIconEffect mpEffect;
+#endif
     QList<KIconThemeNode *> links;
 
     // This shares the icons across all processes
@@ -770,8 +772,12 @@ QString KIconLoaderPrivate::makeCacheKey(const QString &name, KIconLoader::Group
            % QString::number(size)
            % QLatin1Char('_')
            % overlays.join("_")
+#ifndef KICONLOADER_WITHOUTEFFECTS
            % ( group >= 0 ? mpEffect.fingerprint(group, state)
                           : *NULL_EFFECT_FINGERPRINT);
+#else
+           % NULL_EFFECT_FINGERPRINT);
+#endif
 }
 
 QImage KIconLoaderPrivate::createIconImage(const QString &path, int size)
@@ -1272,10 +1278,12 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
 
     QImage img = d->createIconImage(icon.path, size);
 
+#ifndef KICONLOADER_WITHOUTEFFECTS
     if (group >= 0)
     {
         img = d->mpEffect.apply(img, group, state);
     }
+#endif
 
     if (favIconOverlay)
     {
@@ -1563,10 +1571,12 @@ bool KIconLoader::hasContext(KIconLoader::Context context) const
     return false;
 }
 
+#ifndef KICONLOADER_WITHOUTEFFECTS
 KIconEffect * KIconLoader::iconEffect() const
 {
     return &d->mpEffect;
 }
+#endif
 
 bool KIconLoader::alphaBlending(KIconLoader::Group group) const
 {

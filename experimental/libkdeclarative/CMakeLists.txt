@@ -24,13 +24,22 @@ set(kdeclarative_LIB_SRCS
     bindings/qscriptnonguibookkeeping.cpp
     bindings/i18n.cpp
     bindings/icon.cpp
-    bindings/url.cpp)
+    bindings/url.cpp
+    ${CMAKE_SOURCE_DIR}/kdeui/icons/kicon.cpp
+    ${CMAKE_SOURCE_DIR}/kdeui/icons/kiconengine.cpp
+    ${CMAKE_SOURCE_DIR}/kdeui/icons/kiconloader.cpp
+    #${CMAKE_SOURCE_DIR}/kdeui/icons/kiconeffect.cpp
+    ${CMAKE_SOURCE_DIR}/kdeui/icons/kicontheme.cpp
+    ${CMAKE_SOURCE_DIR}/kdeui/kernel/kglobalsettings.cpp
+    ${CMAKE_SOURCE_DIR}/kdeui/colors/kcolorscheme.cpp
+    ${CMAKE_SOURCE_DIR}/kdeui/colors/kcolorspaces.cpp
+    ${CMAKE_SOURCE_DIR}/kdeui/colors/kcolorutils.cpp)
 
 kde4_add_library(kdeclarative SHARED ${kdeclarative_LIB_SRCS})
 
 set_target_properties(kdeclarative PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION})
 
-target_link_libraries(kdeclarative ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${QT_QTSCRIPT_LIBRARY} ${QT_QTDECLARATIVE_LIBRARY})
+target_link_libraries(kdeclarative ${KDE4_KDECORE_LIBS} ${QT_QTSVG_LIBRARY} ${QT_QTGUI_LIBRARY}  ${QT_QTSCRIPT_LIBRARY} ${X11_LIBRARIES} ${X11_Xcursor_LIB} ${QT_QTDECLARATIVE_LIBRARY})
 
 
 ## test
