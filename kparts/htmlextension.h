@@ -224,6 +224,60 @@ public:
     };
 };
 
+/**
+ * @short An interface for modifying the settings of browser engines.
+ *
+ *  This interface provides a generic means for querying or changing the
+ *  settings of browser engines that implement it.
+ *
+ *  To use this class simply cast an instance of the HTMLExtension object
+ *  using qobject_cast<KParts::HtmlSettingsInterface>.
+ *
+ *  Example:
+ *  <code>
+ *  KParts::HTMLExtension* extension = KParts::HTMLExtension::childObject(part);
+ *  KParts::HtmlSettingsInterface* settings = qobject_cast&lt;KParts::HtmlSettingsInterface&gt;(extension);
+ *  const bool autoLoadImages = settings->attribute(KParts::AutoLoadImages);
+ *  </code>
+ *
+ *  @since 4.9.0
+ */
+class KPARTS_EXPORT HtmlSettingsInterface
+{
+public:
+    /**
+     * Settings attribute types.
+     */
+    enum HtmlSettingsType {
+        AutoLoadImages,
+        DnsPrefetchEnabled,
+        JavaEnabled,
+        JavascriptEnabled,
+        MetaRefreshEnabled,
+        PluginsEnabled,
+        PrivateBrowsingEnabled,
+        OfflineStorageDatabaseEnabled,
+        OfflineWebApplicationCacheEnabled,
+        LocalStorageEnabled,
+        UserDefinedStyleSheetURL
+    };
+
+    /**
+     * Destructor
+     */
+    virtual ~HtmlSettingsInterface() {}
+
+    /**
+     * Returns the value of the browser engine's attribute @p type.
+     */
+    virtual QVariant htmlSettingsProperty(HtmlSettingsType type) const = 0;
+
+    /**
+     * Sets the value of the browser engine's attribute @p type to @p value.
+     */
+    virtual bool setHtmlSettingsProperty(HtmlSettingsType type, const QVariant& value) = 0;
+};
+
 } // namespace KParts
 
 inline void qSwap( KParts::SelectorInterface::Element & lhs, KParts::SelectorInterface::Element & rhs )
@@ -237,5 +291,8 @@ Q_DECLARE_TYPEINFO(KParts::SelectorInterface::Element, Q_MOVABLE_TYPE);
 
 Q_DECLARE_INTERFACE(KParts::SelectorInterface,
                     "org.kde.KParts.SelectorInterface")
+Q_DECLARE_INTERFACE(KParts::HtmlSettingsInterface,
+                    "org.kde.KParts.HtmlSettingsInterface")
+
 
 #endif /* KPARTS_HTMLEXTENSION_H */

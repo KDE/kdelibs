@@ -203,6 +203,7 @@ namespace Nepomuk {
         mutable QMutex m_modificationMutex;
 
         bool m_cacheDirty;
+        bool m_addedToWatcher;
 
         // using a pointer to avoid infinite creation loop
         Thing* m_pimoThing;

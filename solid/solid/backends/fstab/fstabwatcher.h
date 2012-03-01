@@ -24,6 +24,8 @@
 #include <QObject>
 
 class QFileSystemWatcher;
+class QFile;
+class QSocketNotifier;
 
 namespace Solid
 {
@@ -51,6 +53,8 @@ namespace Fstab
     private:
         bool m_isRoutineInstalled;
         QFileSystemWatcher *m_fileSystemWatcher;
+        QSocketNotifier *m_mtabSocketNotifier;
+        QFile *m_mtabFile;
     };
 }
 }
