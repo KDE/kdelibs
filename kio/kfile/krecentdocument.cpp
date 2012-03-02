@@ -30,7 +30,6 @@
 
 #include <kcomponentdata.h>
 #include <kstandarddirs.h>
-#include <kurl.h>
 #include <kdebug.h>
 #include <kmimetype.h>
 #include <kdesktopfile.h>
@@ -40,6 +39,7 @@
 #include <QtCore/QTextStream>
 #include <QtCore/QMutableStringListIterator>
 #include <QtCore/QRegExp>
+#include <qurlpathinfo.h>
 
 #include <sys/types.h>
 #include <kconfiggroup.h>
@@ -74,7 +74,7 @@ QStringList KRecentDocument::recentDocuments()
            pathDesktop = d.absoluteFilePath( *it );
        }
        KDesktopFile tmpDesktopFile( pathDesktop );
-       KUrl urlDesktopFile(tmpDesktopFile.desktopGroup().readPathEntry("URL", QString()));
+       QUrl urlDesktopFile(tmpDesktopFile.desktopGroup().readPathEntry("URL", QString()));
        if (urlDesktopFile.isLocalFile() && !QFile(urlDesktopFile.toLocalFile()).exists()) {
            d.remove(pathDesktop);
        } else {
@@ -85,18 +85,22 @@ QStringList KRecentDocument::recentDocuments()
     return fullList;
 }
 
-void KRecentDocument::add(const KUrl& url)
+void KRecentDocument::add(const QUrl& url)
 {
     KRecentDocument::add(url, KGlobal::mainComponent().componentName());
     // ### componentName might not match the service filename...
 }
 
-void KRecentDocument::add(const KUrl& url, const QString& desktopEntryName)
+void KRecentDocument::add(const QUrl& url, const QString& desktopEntryName)
 {
     if ( url.isLocalFile() && KGlobal::dirs()->relativeLocation( "tmp", url.toLocalFile() ) != url.toLocalFile() )
       return; // inside tmp resource, do not save
 
-    QString openStr = url.url();
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    QString openStr = url.toString();
+#else
+    QString openStr = url.toDisplayString();
+#endif
     openStr.replace( QRegExp("\\$"), "$$" ); // Desktop files with type "Link" are $-variable expanded
 
     kDebug(250) << "KRecentDocument::add for " << openStr;
@@ -109,7 +113,7 @@ void KRecentDocument::add(const KUrl& url, const QString& desktopEntryName)
 
     QString path = recentDocumentDirectory();
 
-    QString dStr = path + url.fileName();
+    QString dStr = path + QUrlPathInfo(url).fileName();
 
     QString ddesktop = dStr + QLatin1String(".desktop");
 
@@ -149,18 +153,16 @@ void KRecentDocument::add(const KUrl& url, const QString& desktopEntryName)
     conf.writePathEntry( "URL", openStr );
     // If you change the line below, change the test in the above loop
     conf.writeEntry( "X-KDE-LastOpenedWith", desktopEntryName );
-    conf.writeEntry( "Name", url.fileName() );
+    conf.writeEntry( "Name", QUrlPathInfo(url).fileName() );
     conf.writeEntry( "Icon", KMimeType::iconNameForUrl( url ) );
 }
 
 void KRecentDocument::add(const QString &openStr, bool isUrl)
 {
-    if( isUrl ) {
-        add( KUrl( openStr ) );
+    if (isUrl) {
+        add(QUrl(openStr));
     } else {
-        KUrl url;
-        url.setPath( openStr );
-        add( url );
+        add(QUrl::fromLocalFile(openStr));
     }
 }
 

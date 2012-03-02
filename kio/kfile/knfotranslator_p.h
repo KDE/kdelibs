@@ -23,7 +23,7 @@
 #include <QHash>
 #include <QString>
 
-class KUrl;
+class QUrl;
 
 /**
  * @brief Returns translations for Nepomuk File Ontology URIs.
@@ -34,7 +34,7 @@ class KNfoTranslator
 {
 public:
     static KNfoTranslator& instance();
-    QString translation(const KUrl& uri) const;
+    QString translation(const QUrl& uri) const;
 
 protected:
     KNfoTranslator();

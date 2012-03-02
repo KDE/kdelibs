@@ -31,7 +31,7 @@
 #include <kio/kio_export.h>
 
 #include <QtCore/QString>
-#include <kurl.h>
+#include <QUrl>
 
 /**
  * Manage the "Recent Document Menu" entries displayed by
@@ -66,7 +66,7 @@ public:
      *
      * @param url The url to add.
      */
-    static void add(const KUrl& url);
+    static void add(const QUrl& url);
 
     /**
      * Add a new item to the Recent Document menu, specifying the application to open it with.
@@ -77,7 +77,7 @@ public:
      * @param url The url to add.
      * @param desktopEntryName The desktopEntryName of the service to use for opening this document.
      */
-    static void add(const KUrl& url, const QString& desktopEntryName);
+    static void add(const QUrl& url, const QString& desktopEntryName);
 
     /**
      *
@@ -85,8 +85,9 @@ public:
      *
      * @param documentStr The full path to the document or URL to add.
      * @param isURL Set to @p true if @p documentStr is an URL and not a local file path.
+     * @deprecated call add(QUrl(str)) if isURL=true, and add(QUrl::fromLocalFile(str)) if isURL=false.
      */
-    static void add(const QString &documentStr, bool isURL = false);
+    static KIO_DEPRECATED void add(const QString &documentStr, bool isURL = false);
 
     /**
      * Clear the recent document menu of all entries.
