@@ -177,7 +177,7 @@ void StorageAccess::slotDBusReply( const QDBusMessage & reply )
         }
         else
         {
-            if (m_device->prop("Ejectable").toBool() && !m_device->isOpticalDrive()) // optical drives have their Eject method
+            if (m_device->prop("Ejectable").toBool() && !m_device->isOpticalDisc()) // optical drives have their Eject method
             {
                 // try to "eject" (aka safely remove) from the (parent) drive, e.g. SD card from a reader
                 QString drivePath = m_device->prop("Drive").value<QDBusObjectPath>().path();
