@@ -85,6 +85,7 @@ QUrl(QString) means "relative url or absolute url".
 <pre>
     KUrlRequester: urlSelected(const KUrl&amp;) &gt; urlSelected(const QUrl&amp;)
     KRecentFilesAction: urlSelected(const KUrl&amp;) &gt; urlSelected(const QUrl&amp;)
+    KUrlComboBox: urlActivated(const KUrl&amp;) &gt; urlActivated(const QUrl&amp;)
 </pre>
 Remember to update your connect statements and your slots!
 <li>KMimeType::comment and KMimeType::iconName no longer take a KUrl argument. If you were passing such an argument

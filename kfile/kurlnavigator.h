@@ -329,7 +329,7 @@ public Q_SLOTS:
      * KUrlNavigator::locationUrl() to read the location.
      * @since 4.5
      */
-    void setLocationUrl(const KUrl& url);
+    void setLocationUrl(const QUrl& url);
 
     /**
      * Activates the URL navigator (KUrlNavigator::isActive() will return true)
