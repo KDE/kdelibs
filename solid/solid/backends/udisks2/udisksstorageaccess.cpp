@@ -32,8 +32,9 @@ using namespace Solid::Backends::UDisks2;
 StorageAccess::StorageAccess(Device *device)
     : DeviceInterface(device), m_setupInProgress(false), m_teardownInProgress(false), m_passphraseRequested(false)
 {
-    connect(device, SIGNAL(changed()), this, SLOT(slotChanged()));  // FIXME only listen to MountPoints changes
     updateCache();
+    QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, m_device->udi(), DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
+                                         SLOT(slotPropertiesChanged(QString,QVariantMap,QStringList)));
 
     // Delay connecting to DBus signals to avoid the related time penalty
     // in hot paths such as predicate matching
@@ -57,7 +58,6 @@ void StorageAccess::connectDBusSignals()
 
 bool StorageAccess::isLuksDevice() const
 {
-    // FIXME check
     return m_device->isEncryptedContainer(); // encrypted (and unlocked) device
 }
 
@@ -125,20 +125,28 @@ bool StorageAccess::teardown()
     return unmount();
 }
 
-void StorageAccess::slotChanged()
+void StorageAccess::slotPropertiesChanged(const QString &ifaceName, const QVariantMap &changedProps, const QStringList &invalidatedProps)
 {
-    const bool old_isAccessible = m_isAccessible;
-    updateCache();
+    Q_UNUSED(ifaceName);
 
-    if (old_isAccessible != m_isAccessible)
-    {
-        Q_EMIT accessibilityChanged(m_isAccessible, m_device->udi());  // FIXME account for encrypted devices
+    if (changedProps.keys().contains("MountPoints") || invalidatedProps.contains("MountPoints")) {
+        Q_EMIT accessibilityChanged(isAccessible(), isLuksDevice() ? m_clearTextPath : m_device->udi());
     }
 }
 
 void StorageAccess::updateCache()
 {
     m_isAccessible = isAccessible();
+}
+
+void StorageAccess::checkAccessibility()
+{
+    const bool old_isAccessible = m_isAccessible;
+    updateCache();
+
+    if (old_isAccessible != m_isAccessible) {
+        Q_EMIT accessibilityChanged(isAccessible(), isLuksDevice() ? m_clearTextPath : m_device->udi());
+    }
 }
 
 void StorageAccess::slotDBusReply( const QDBusMessage & reply )
@@ -155,7 +163,7 @@ void StorageAccess::slotDBusReply( const QDBusMessage & reply )
             m_setupInProgress = false;
             m_device->broadcastActionDone("setup");
 
-            slotChanged();
+            checkAccessibility();
         }
     }
     else if (m_teardownInProgress)  // FIXME
@@ -185,7 +193,7 @@ void StorageAccess::slotDBusReply( const QDBusMessage & reply )
             m_teardownInProgress = false;
             m_device->broadcastActionDone("teardown");
 
-            slotChanged();
+            checkAccessibility();
         }
     }
 }
@@ -198,7 +206,7 @@ void StorageAccess::slotDBusError( const QDBusError & error )
         m_device->broadcastActionDone("setup", m_device->errorToSolidError(error.name()),
                                       m_device->errorToString(error.name()) + ": " +error.message());
 
-        slotChanged();
+        checkAccessibility();
     }
     else if (m_teardownInProgress)
     {
@@ -206,7 +214,7 @@ void StorageAccess::slotDBusError( const QDBusError & error )
         m_clearTextPath.clear();
         m_device->broadcastActionDone("teardown", m_device->errorToSolidError(error.name()),
                                       m_device->errorToString(error.name()) + ": " + error.message());
-        slotChanged();
+        checkAccessibility();
     }
 }
 
