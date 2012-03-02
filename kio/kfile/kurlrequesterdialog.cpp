@@ -26,7 +26,6 @@
 #include <klineedit.h>
 #include <klocale.h>
 #include <krecentdocument.h>
-#include <kurl.h>
 #include <kurlrequester.h>
 
 class KUrlRequesterDialogPrivate
@@ -111,17 +110,17 @@ void KUrlRequesterDialogPrivate::_k_slotClear()
     urlRequester->clear();
 }
 
-KUrl KUrlRequesterDialog::selectedUrl() const
+QUrl KUrlRequesterDialog::selectedUrl() const
 {
     if ( result() == QDialog::Accepted )
         return d->urlRequester->url();
     else
-        return KUrl();
+        return QUrl();
 }
 
 
-KUrl KUrlRequesterDialog::getUrl(const QString& dir, QWidget *parent,
-                              const QString& caption)
+QUrl KUrlRequesterDialog::getUrl(const QString& dir, QWidget *parent,
+                                 const QString& caption)
 {
     KUrlRequesterDialog dlg(dir, parent);
 
@@ -129,7 +128,7 @@ KUrl KUrlRequesterDialog::getUrl(const QString& dir, QWidget *parent,
 
     dlg.exec();
 
-    const KUrl& url = dlg.selectedUrl();
+    const QUrl& url = dlg.selectedUrl();
     if (url.isValid())
         KRecentDocument::add(url);
 

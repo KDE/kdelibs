@@ -23,7 +23,7 @@
 
 #include <kio/kio_export.h>
 #include <kdialog.h>
-#include <kurl.h>
+#include <QUrl>
 
 class KUrlRequester;
 class KFileDialog;
@@ -70,7 +70,7 @@ public:
     /**
      * Returns the fully qualified filename.
      */
-    KUrl selectedUrl() const;
+    QUrl selectedUrl() const;
 
     /**
      * Creates a modal dialog, executes it and returns the selected URL.
@@ -79,8 +79,8 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The caption to use for the dialog.
      */
-    static KUrl getUrl(const QString& url = QString(),
-            QWidget *parent= 0, const QString& caption = QString());
+    static QUrl getUrl(const QString& url = QString(),
+                       QWidget *parent= 0, const QString& caption = QString());
 
     /**
      * Returns a pointer to the file dialog used by the KUrlRequester.
