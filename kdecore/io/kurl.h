@@ -371,6 +371,8 @@ public:
    * If this is a relative URL it will be combined with @p _baseurl.
    * Note that _rel_url should be encoded too, in any case.
    * So do NOT pass a path here (use setPath or addPath instead).
+   *
+   * @deprecated use QUrl(_baseurl).resolved(QUrl(_rel_url))
    */
   KUrl( const KUrl& _baseurl, const QString& _rel_url );
 
