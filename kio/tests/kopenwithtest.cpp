@@ -23,7 +23,7 @@
 #include <QtCore/QMutableStringListIterator>
 #include <QtCore/QDir>
 #include <kopenwithdialog.h>
-#include <kurl.h>
+#include <QUrl>
 #include <kdebug.h>
 #include <kcmdlineargs.h>
 
@@ -31,9 +31,9 @@ int main(int argc, char **argv)
 {
     KCmdLineArgs::init(argc, argv, "kopenwithdialogtest", 0, qi18n("kopenwithdialogtest"), "0.1", qi18n("kopenwithdialogtest"));
     KApplication app;
-    QList<KUrl> list;
+    QList<QUrl> list;
 
-    list += KUrl("file:///tmp/testfile.txt");
+    list += QUrl("file:///tmp/testfile.txt");
 
     // Test with one URL
     KOpenWithDialog* dlg = new KOpenWithDialog(list, "OpenWith_Text", "OpenWith_Value", 0);
@@ -45,7 +45,7 @@ int main(int argc, char **argv)
     delete dlg;
 
     // Test with two URLs
-    list += KUrl("http://www.kde.org/index.html");
+    list += QUrl("http://www.kde.org/index.html");
     dlg = new KOpenWithDialog(list, "OpenWith_Text", "OpenWith_Value", 0);
     if(dlg->exec()) {
         kDebug() << "Dialog ended successfully\ntext: " << dlg->text();

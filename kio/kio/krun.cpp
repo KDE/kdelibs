@@ -168,7 +168,7 @@ bool KRun::runUrl(const KUrl& u, const QString& _mimetype, QWidget* window, bool
         return false;
     }
 
-    KUrl::List lst;
+    QList<QUrl> lst;
     lst.append(u);
 
     KService::Ptr offer = KMimeTypeTrader::self()->preferredService(_mimetype);
