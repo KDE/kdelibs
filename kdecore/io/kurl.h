@@ -781,6 +781,7 @@ public:
    *         is returned. For example <tt>file:///hallo/torben/</tt> would return "/hallo/torben/" while
    *         <tt>file:///hallo/torben</tt> would return "hallo/". The returned string is decoded.
    *         QString() is returned when there is no path.
+   * @deprecated since 5.0, use QUrlPathInfo(url).directory()
    */
   QString directory( const DirectoryOptions& options = IgnoreTrailingSlash ) const;
 
@@ -817,6 +818,8 @@ public:
    * @return The complete URL, with all escape sequences intact, encoded
    * in a given charset.
    * @see prettyUrl()
+   *
+   * @deprecated since 5.0, use QUrl::toString() instead.
    */
   QString url( AdjustPathOption trailing = LeaveTrailingSlash ) const;
 
@@ -831,6 +834,8 @@ public:
    * @return A human readable URL, with no non-necessary encodings/escaped
    * characters. Password will not be shown.
    * @see url()
+   *
+   * @deprecated since 5.0, use QUrl::toDisplayString() instead.
    */
   QString prettyUrl( AdjustPathOption trailing = LeaveTrailingSlash ) const;
 
@@ -843,14 +848,16 @@ public:
    * both paths and urls.
    *
    * @return the new KUrl
+   * @deprecated since 5.0, use QUrl::toDisplayString(QUrl::PreferLocalFile) instead.
    */
   QString pathOrUrl() const;
   /**
    * Overload with @p trailing parameter
    * @param trailing use to add or remove a trailing slash to/from the path. see adjustPath.
    * @since 4.2
+   * @deprecated since 5.0, use QUrl::toDisplayString(QUrl::PreferLocalFile | ...) instead.
    */
-  QString pathOrUrl(AdjustPathOption trailing) const; // KDE5: merge with above. Rename to toUrlOrLocalFile?
+  QString pathOrUrl(AdjustPathOption trailing) const;
 
   /**
    * Returns the URL as a string, using the standard conventions for mime data
@@ -1113,6 +1120,7 @@ public:
    *
    * @param _url URL to examine
    * @return true when the URL is likely to be "relative", false otherwise.
+   * @deprecated use QUrl(_url)::isRelative instead
    */
   static bool isRelativeUrl(const QString &_url);
 
