@@ -126,7 +126,7 @@ void UploadDialog::slotOk()
         cg.writeEntry("author-email", mEmailEdit->text());
         cg.writeEntry("version", mVersionEdit->text());
         cg.writeEntry("license", mLicenseCombo->currentText());
-        cg.writeEntry("preview", mPreviewUrl->url().url());
+        cg.writeEntry("preview", mPreviewUrl->url().toString());
         cg.writeEntry("summary", mSummaryEdit->toPlainText());
         cg.writeEntry("language", mLanguageCombo->currentText());
         KGlobal::config()->sync();

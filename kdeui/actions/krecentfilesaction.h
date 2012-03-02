@@ -168,7 +168,7 @@ Q_SIGNALS:
    *
    *  @param url The URL thats the user selected.
    */
-  void urlSelected( const KUrl& url );
+  void urlSelected( const QUrl& url );
 
   /**
    *  This signal gets emitted when the user clear list.

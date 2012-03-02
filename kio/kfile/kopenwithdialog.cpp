@@ -623,7 +623,7 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
   }
 
     QObject::connect(edit, SIGNAL(textChanged(QString)), q, SLOT(slotTextChanged()));
-    QObject::connect(edit, SIGNAL(urlSelected(KUrl)), q, SLOT(_k_slotFileSelected()));
+    QObject::connect(edit, SIGNAL(urlSelected(QUrl)), q, SLOT(_k_slotFileSelected()));
 
     view = new KApplicationView(mainWidget);
     view->setModel(new KApplicationModel(view));
