@@ -269,7 +269,7 @@ KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config,
                                          SetDefaultColors defaults)
 {
     KConfigGroup cfg( config, group );
-    _contrast = KColorScheme::contrast( config );
+    _contrast = KColorScheme::contrastF( config );
 
     // loaded-from-config colors (no adjustment)
     _brushes.bg[0] = cfg.readEntry( "BackgroundNormal", SET_DEFAULT(NormalBackground) );
@@ -286,7 +286,7 @@ KColorSchemePrivate::KColorSchemePrivate(const KSharedConfigPtr &config,
                                          const QBrush &tint)
 {
     KConfigGroup cfg( config, group );
-    _contrast = KColorScheme::contrast( config );
+    _contrast = KColorScheme::contrastF( config );
 
     // loaded-from-config colors
     _brushes.bg[0] = cfg.readEntry( "BackgroundNormal", SET_DEFAULT(NormalBackground) );
@@ -450,7 +450,15 @@ KColorScheme::KColorScheme(QPalette::ColorGroup state, ColorSet set, KSharedConf
     }
 }
 
-qreal KColorScheme::contrast(const KSharedConfigPtr &config)
+// static
+int KColorScheme::contrast()
+{
+    KConfigGroup g( KGlobal::config(), "KDE" );
+    return g.readEntry( "contrast", 7 );
+}
+
+// static
+qreal KColorScheme::contrastF(const KSharedConfigPtr &config)
 {
     if (config) {
         KConfigGroup g( config, "KDE" );
@@ -481,7 +489,7 @@ QColor KColorScheme::shade(ShadeRole role) const
 
 QColor KColorScheme::shade(const QColor &color, ShadeRole role)
 {
-    return shade(color, role, KColorScheme::contrast());
+    return shade(color, role, KColorScheme::contrastF());
 }
 
 QColor KColorScheme::shade(const QColor &color, ShadeRole role, qreal contrast, qreal chromaAdjust)

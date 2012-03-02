@@ -349,13 +349,20 @@ public:
     QColor shade(ShadeRole) const;
 
     /**
+     * Returns the contrast for borders.
+     * @return the contrast (between 0 for minimum and 10 for maximum
+     *         contrast)
+     */
+    static int contrast();
+
+    /**
      * Returns the contrast for borders as a floating point value.
      * @param config pointer to the config from which to read the contrast
      * setting (the default is to use KGlobal::config())
      * @return the contrast (between 0.0 for minimum and 1.0 for maximum
      *         contrast)
      */
-    static qreal contrast(const KSharedConfigPtr &config = KSharedConfigPtr());
+    static qreal contrastF(const KSharedConfigPtr &config = KSharedConfigPtr());
 
     /**
      * Retrieve the requested shade color, using the specified color as the

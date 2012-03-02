@@ -297,8 +297,9 @@ public:
      * Returns the contrast for borders.
      * @return the contrast (between 0 for minimum and 10 for maximum
      *         contrast)
+     * @deprecated since 5.0, use KColorScheme::contrast()
      */
-    static int contrast();
+    static KDEUI_DEPRECATED int contrast();
 
     /**
      * Returns the contrast for borders as a floating point value.
@@ -306,7 +307,7 @@ public:
      * setting (the default is to use KGlobal::config())
      * @return the contrast (between 0.0 for minimum and 1.0 for maximum
      *         contrast)
-     * @deprecated since 5.0, use KColorScheme::contrast(config)
+     * @deprecated since 5.0, use KColorScheme::contrastF(config)
      */
     static KDEUI_DEPRECATED qreal contrastF(const KSharedConfigPtr &config = KSharedConfigPtr());
 

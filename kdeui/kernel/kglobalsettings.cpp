@@ -358,13 +358,12 @@ QColor KGlobalSettings::activeTextColor()
 
 int KGlobalSettings::contrast()
 {
-    KConfigGroup g( KGlobal::config(), "KDE" );
-    return g.readEntry( "contrast", 7 );
+    return KColorScheme::contrast();
 }
 
 qreal KGlobalSettings::contrastF(const KSharedConfigPtr &config)
 {
-    return KColorScheme::contrast(config);
+    return KColorScheme::contrastF(config);
 }
 
 bool KGlobalSettings::shadeSortColumn()
