@@ -738,7 +738,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     KIO::filesize_t totalSize = item.size();
     QString magicMimeComment;
     if ( isLocal ) {
-        KMimeType::Ptr magicMimeType = KMimeType::findByFileContent( url.path() );
+        KMimeType::Ptr magicMimeType = KMimeType::findByFileContent(url.toLocalFile());
         if ( magicMimeType->name() != KMimeType::defaultMimeType() )
             magicMimeComment = magicMimeType->comment();
     }
@@ -805,7 +805,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         filename = nameFromFileName( filename );
 
         if ( d->bKDesktopMode && d->bDesktopFile ) {
-            KDesktopFile config( url.path() );
+            KDesktopFile config(url.toLocalFile());
             if ( config.desktopGroup().hasKey( "Name" ) ) {
                 filename = config.readName();
             }
@@ -840,7 +840,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
             if ( !mimeComment.isNull() && (*kit).mimeComment() != mimeComment )
                 mimeComment.clear();
             if ( isLocal && !magicMimeComment.isNull() ) {
-                KMimeType::Ptr magicMimeType = KMimeType::findByFileContent( url.path() );
+                KMimeType::Ptr magicMimeType = KMimeType::findByFileContent(url.toLocalFile());
                 if ( magicMimeType->comment() != magicMimeComment )
                     magicMimeComment.clear();
             }
@@ -879,7 +879,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         iconButton->setStrictIconSize(false);
         QString iconStr = KMimeType::findByUrl(url, mode)->iconName(url);
         if (bDesktopFile && isLocal) {
-            KDesktopFile config( url.path() );
+            KDesktopFile config(url.toLocalFile());
             KConfigGroup group = config.desktopGroup();
             iconStr = group.readEntry( "Icon" );
             if ( config.hasDeviceType() )
@@ -1077,7 +1077,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     if ( isLocal && hasDirs )  // only for directories
     {
 
-        KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath( url.path() );
+        KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath(url.toLocalFile());
         if (mp) {
             KDiskFreeSpaceInfo info = KDiskFreeSpaceInfo::freeSpaceInfo( mp->mountPoint() );
             if(info.size() != 0 )
@@ -1260,10 +1260,12 @@ void KFilePropsPlugin::slotSizeDetermine()
         bool isLocal;
         const KFileItem item = properties->item();
         KUrl url = item.mostLocalUrl( isLocal );
-        KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath( url.path() );
-        if (mp) {
-            KDiskFreeSpaceInfo info = KDiskFreeSpaceInfo::freeSpaceInfo( mp->mountPoint() );
-            slotFoundMountPoint( info.mountPoint(), info.size()/1024, info.used()/1024, info.available()/1024);
+        if (isLocal) {
+            KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath(url.toLocalFile());
+            if (mp) {
+                KDiskFreeSpaceInfo info = KDiskFreeSpaceInfo::freeSpaceInfo( mp->mountPoint() );
+                slotFoundMountPoint( info.mountPoint(), info.size()/1024, info.used()/1024, info.available()/1024);
+            }
         }
     }
 }
@@ -2644,7 +2646,7 @@ bool KUrlPropsPlugin::supports( const KFileItemList& _items )
         return false;
     }
 
-    KDesktopFile config( url.path() );
+    KDesktopFile config(url.toLocalFile());
     return config.hasLinkType();
 }
 
@@ -2656,8 +2658,7 @@ void KUrlPropsPlugin::applyChanges()
         return;
     }
 
-    QString path = url.path();
-
+    QString path = url.toLocalFile();
     QFile f( path );
     if ( !f.open( QIODevice::ReadWrite ) ) {
         KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have "
@@ -2940,7 +2941,7 @@ bool KDevicePropsPlugin::supports( const KFileItemList& _items )
         return false;
     }
 
-    KDesktopFile config( url.path() );
+    KDesktopFile config(url.toLocalFile());
     return config.hasDeviceType();
 }
 
@@ -3424,7 +3425,7 @@ bool KDesktopPropsPlugin::supports( const KFileItemList& _items )
         return false;
     }
 
-    KDesktopFile config( url.path() );
+    KDesktopFile config(url.toLocalFile());
     return config.hasApplicationType() &&
             KAuthorized::authorize("run_desktop_files") &&
             KAuthorized::authorize("shell_access");
