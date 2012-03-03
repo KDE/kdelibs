@@ -1,6 +1,8 @@
 add_subdirectory(kcoreaddons)
 add_subdirectory(karchive)
 add_subdirectory(kde4support)
+add_subdirectory(kcolorwidgets)
+add_subdirectory(kdeguiaddons_
 if(NOT QT5_BUILD)
   add_subdirectory(kwindowsystem)
   # TODO: Remove this:
