@@ -21,7 +21,7 @@
 #include <klocale.h>
 #include <kstandarddirs.h>
 
-#include <kurl.h>
+#include <QUrl>
 
 #include <config-kio.h>
 #ifndef KIO_NO_NEPOMUK
@@ -36,7 +36,7 @@ struct TranslationItem {
 };
 
 // TODO: a lot of NFOs are missing yet
-static const TranslationItem g_translations[] = {    
+static const TranslationItem g_translations[] = {
     { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#comment", I18N_NOOP2_NOSTRIP("@label", "Comment") },
     { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#contentCreated", I18N_NOOP2_NOSTRIP("@label creation date", "Created") },
     { "http://www.semanticdesktop.org/ontologies/2007/01/19/nie#contentSize", I18N_NOOP2_NOSTRIP("@label file content size", "Size") },
@@ -123,9 +123,9 @@ KNfoTranslator& KNfoTranslator::instance()
     return s_nfoTranslator->instance;
 }
 
-QString KNfoTranslator::translation(const KUrl& uri) const
+QString KNfoTranslator::translation(const QUrl& uri) const
 {
-    const QString key = uri.url();
+    const QString key = uri.toString();
     if (m_hash.contains(key)) {
         return m_hash.value(key);
     }

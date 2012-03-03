@@ -12,7 +12,6 @@
 #include <QHash>
 #include <QStackedWidget>
 #include <kpreviewwidgetbase.h>
-#include <kurl.h>
 #include <kmimetype.h>
 
 class KIO_EXPORT KFileMetaPreview : public KPreviewWidgetBase

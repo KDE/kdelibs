@@ -479,7 +479,7 @@ endmacro()
 
 # TODO: Move this to kde4support
 if (_kdeBootStrapping)
-  include("${CMAKE_SOURCE_DIR}/tier1/kauth/KAuthMacros.cmake")
+  include("${CMAKE_SOURCE_DIR}/staging/kauth/cmake/KAuthMacros.cmake")
   include("${CMAKE_SOURCE_DIR}/kdecore/KDECoreMacros.cmake")
   include("${CMAKE_SOURCE_DIR}/kdeui/KDEUIMacros.cmake")
   include("${CMAKE_SOURCE_DIR}/kdoctools/KDocToolsMacros.cmake")

@@ -28,11 +28,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${CMAKE_BINARY_DIR}/experimental/libkdeclarative
                     ${karchive_SOURCE_DIR}/src
                     ${karchive_BINARY_DIR}/src
-                    ${CMAKE_SOURCE_DIR}/tier1/kauth/src/
-                    ${CMAKE_BINARY_DIR}/tier1/kauth/src/
-                    ${CMAKE_SOURCE_DIR}/tier1/threadweaver/
-                    ${CMAKE_BINARY_DIR}/tier1/threadweaver/
-                    ${CMAKE_BINARY_DIR}/tier1/threadweaver/Weaver
+                    ${CMAKE_SOURCE_DIR}/staging/kauth/src/
+                    ${CMAKE_BINARY_DIR}/staging/kauth/src/
+                    ${CMAKE_SOURCE_DIR}/tier1/threadweaver/src
+                    ${CMAKE_BINARY_DIR}/tier1/threadweaver/src
+                    ${CMAKE_BINARY_DIR}/tier1/threadweaver/src/Weaver
                     ${CMAKE_SOURCE_DIR}/staging/kwindowsystem/
                     ${CMAKE_BINARY_DIR}/staging/kwindowsystem/
                     ${CMAKE_SOURCE_DIR}/plasma/remote
@@ -94,28 +94,21 @@ set(plasma_LIB_SRCS
     abstractrunner.cpp
     ${plasmagik_SRCS}
     abstractdialogmanager.cpp
-    abstracttoolbox.cpp
-    dialog.cpp
     configloader.cpp
-    containment.cpp
     containmentactions.cpp
     containmentactionspluginsconfig.cpp
-    corona.cpp
+    coronabase.cpp
     datacontainer.cpp
     dataengine.cpp
     dataenginemanager.cpp
-    
     package.cpp
     packagestructure.cpp
     paintutils.cpp
     pluginloader.cpp
     framesvg.cpp
     plasma.cpp
-    applet.cpp
-    popupapplet.cpp
     pluginloader.cpp
 
-    private/applethandle.cpp
     private/associatedapplicationmanager.cpp
     private/componentinstaller.cpp
     private/datacontainer_p.cpp
@@ -133,13 +126,12 @@ set(plasma_LIB_SRCS
     private/serviceprovider.cpp
     private/storage.cpp
     private/storagethread.cpp
-    private/style.cpp
     private/tooltip.cpp
     private/wallpaperrenderthread.cpp
     private/windowpreview.cpp
     private/windowshadows.cpp
     private/appletprivate.cpp
-    
+
     querymatch.cpp
     remote/accessmanager.cpp
     remote/accessappletjob.cpp
@@ -189,7 +181,14 @@ set(plasma_LIB_SRCS
     #FIXME: all these must move into the qgv library
     private/themedwidgetinterface.cpp
     widgets/iconwidget.cpp
+    abstracttoolbox.cpp
     view.cpp
+    applet.cpp
+    containment.cpp
+    corona.cpp
+    dialog.cpp
+    popupapplet.cpp
+    private/applethandle.cpp
 )
 
 set (plasmaqgv_LIB_SRCS
@@ -197,7 +196,7 @@ set (plasmaqgv_LIB_SRCS
     #FIXME: this is duplicated with libplasma because iconwidget requires it!
     private/themedwidgetinterface.cpp
 
-    graphicsview/graphicsviewappletprivate.cpp
+    graphicsview/private/graphicsviewappletprivate.cpp
     animator.cpp
     animations/animation.cpp
     animations/easinganimation.cpp

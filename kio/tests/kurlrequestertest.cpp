@@ -1,17 +1,16 @@
-#include <kapplication.h>
-#include <kcmdlineargs.h>
+#include <qapplication.h>
 #include <keditlistbox.h>
 #include <kurlrequester.h>
 #include <kurlrequesterdialog.h>
+#include <QDebug>
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init(argc, argv, "kurlrequestertest", 0, qi18n("kurlrequestertest"), "0", qi18n("test app"));
-    KApplication app;
+    QApplication app(argc, argv);
     app.setQuitOnLastWindowClosed(false);
 
-    KUrl url = KUrlRequesterDialog::getUrl( "ftp://ftp.kde.org" );
-    qDebug( "Selected url: %s", url.url().toLatin1().constData());
+    QUrl url = KUrlRequesterDialog::getUrl( "ftp://ftp.kde.org" );
+    qDebug() << "Selected url:" << url;
 
     KUrlRequester *req = new KUrlRequester();
 #ifndef KDE_NO_DEPRECATED

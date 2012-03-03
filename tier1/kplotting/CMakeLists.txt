@@ -19,6 +19,7 @@ find_package(Qt5Transitional REQUIRED Core Gui)
 
 add_subdirectory(src)
 add_subdirectory(examples)
+add_subdirectory(autotests)
 
 include(FeatureSummary)
 feature_summary(WHAT ENABLED_FEATURES)

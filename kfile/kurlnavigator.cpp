@@ -246,8 +246,8 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
 
     connect(m_pathBox, SIGNAL(returnPressed()),
             q, SLOT(slotReturnPressed()));
-    connect(m_pathBox, SIGNAL(urlActivated(KUrl)),
-            q, SLOT(setLocationUrl(KUrl)));
+    connect(m_pathBox, SIGNAL(urlActivated(QUrl)),
+            q, SLOT(setLocationUrl(QUrl)));
     connect(m_pathBox, SIGNAL(editTextChanged(QString)),
             q, SLOT(slotPathBoxChanged(QString)));
 
@@ -460,7 +460,7 @@ void KUrlNavigator::Private::openContextMenu()
         mimeData->setText(q->locationUrl().pathOrUrl());
         clipboard->setMimeData(mimeData);
     } else if (activatedAction == pasteAction) {
-        q->setLocationUrl(KUrl(clipboard->text()));
+        q->setLocationUrl(QUrl::fromUserInput(clipboard->text()));
     } else if (activatedAction == editAction) {
         q->setUrlEditable(true);
     } else if (activatedAction == navigateAction) {
@@ -887,7 +887,7 @@ bool KUrlNavigator::goUp()
 void KUrlNavigator::goHome()
 {
     if (d->m_homeUrl.isEmpty() || !d->m_homeUrl.isValid()) {
-        setLocationUrl(KUrl(QDir::homePath()));
+        setLocationUrl(QUrl::fromLocalFile(QDir::homePath()));
     } else {
         setLocationUrl(d->m_homeUrl);
     }
@@ -984,7 +984,7 @@ KUrl KUrlNavigator::uncommittedUrl() const
     }
 }
 
-void KUrlNavigator::setLocationUrl(const KUrl& newUrl)
+void KUrlNavigator::setLocationUrl(const QUrl& newUrl)
 {
     if (newUrl == locationUrl()) {
         return;

@@ -22,6 +22,7 @@
 #include <QMouseEvent>
 #include <QDrag>
 #include <QMimeData>
+#include <qurlpathinfo.h>
 
 #include <kdebug.h>
 #include <kglobalsettings.h>
@@ -30,7 +31,7 @@
 #include <kmimetype.h>
 #include <kiconloader.h>
 
-class KUrlComboBox::KUrlComboBoxPrivate
+class KUrlComboBoxPrivate
 {
 public:
     KUrlComboBoxPrivate(KUrlComboBox *parent)
@@ -44,16 +45,19 @@ public:
       qDeleteAll( defaultList );
     }
 
-    typedef struct {
-        QString text;
-        KUrl url;
+    struct KUrlComboItem {
+        KUrlComboItem(const QUrl &url, const QIcon &icon, const QString &text = QString())
+            : url(url), icon(icon), text(text) {}
+        QUrl url;
         QIcon icon;
-    } KUrlComboItem;
+        QString text; // if empty, calculated from the QUrl
+    };
 
-    void init( Mode mode );
+    void init(KUrlComboBox::Mode mode);
+    QString textForItem(const KUrlComboItem* item) const;
     void insertUrlItem( const KUrlComboItem * );
-    QIcon getIcon( const KUrl& url ) const;
-    void updateItem( const KUrlComboItem *item, int index, const QIcon& icon );
+    QIcon getIcon( const QUrl& url ) const;
+    void updateItem(const KUrlComboItem *item, int index, const QIcon& icon);
 
     void _k_slotActivated( int );
 
@@ -61,8 +65,8 @@ public:
     QIcon dirIcon;
     bool urlAdded;
     int myMaximum;
-    Mode myMode; // can be used as parameter to KUR::path( int ) or url( int )
-                 // to specify if we want a trailing slash or not
+    KUrlComboBox::Mode myMode; // can be used as parameter to KUrl::path( int ) or url( int )
+                               // to specify if we want a trailing slash or not
     QPoint m_dragPoint;
 
     QList<const KUrlComboItem*> itemList;
@@ -72,6 +76,25 @@ public:
     QIcon opendirIcon;
 };
 
+QString KUrlComboBoxPrivate::textForItem(const KUrlComboItem* item) const
+{
+    if (!item->text.isEmpty())
+        return item->text;
+    const QUrl& url = item->url;
+    if (url.isLocalFile()) {
+        return QUrlPathInfo(url).localPath(myMode == KUrlComboBox::Directories
+                                             ? QUrlPathInfo::AppendTrailingSlash
+                                             : QUrlPathInfo::StripTrailingSlash);
+    } else {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+        return url.toString();
+#else
+        return url.toDisplayString(myMode == Directories
+                                   ? QUrl::None /* Qt5 TODO! QUrl::AppendTrailingSlash */
+                                   : QUrl::StripTrailingSlash);
+#endif
+    }
+}
 
 KUrlComboBox::KUrlComboBox( Mode mode, QWidget *parent)
     : KComboBox( parent),d(new KUrlComboBoxPrivate(this))
@@ -93,12 +116,12 @@ KUrlComboBox::~KUrlComboBox()
 }
 
 
-void KUrlComboBox::KUrlComboBoxPrivate::init( Mode mode )
+void KUrlComboBoxPrivate::init(KUrlComboBox::Mode mode)
 {
     myMode = mode;
     urlAdded = false;
     myMaximum = 10; // default
-    m_parent->setInsertPolicy( NoInsert );
+    m_parent->setInsertPolicy(KUrlComboBox::NoInsert);
     m_parent->setTrapReturnKey( true );
     m_parent->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ));
     m_parent->setLayoutDirection( Qt::LeftToRight );
@@ -132,26 +155,16 @@ QStringList KUrlComboBox::urls() const
 }
 
 
-void KUrlComboBox::addDefaultUrl( const KUrl& url, const QString& text )
+void KUrlComboBox::addDefaultUrl( const QUrl& url, const QString& text )
 {
     addDefaultUrl( url, d->getIcon( url ), text );
 }
 
 
-void KUrlComboBox::addDefaultUrl( const KUrl& url, const QIcon& icon,
-                                  const QString& text )
+void KUrlComboBox::addDefaultUrl(const QUrl& url, const QIcon& icon,
+                                 const QString& text)
 {
-    KUrlComboBoxPrivate::KUrlComboItem *item = new KUrlComboBoxPrivate::KUrlComboItem;
-    item->url = url;
-    item->icon = icon;
-    if ( text.isEmpty() )
-        item->text = url.pathOrUrl(d->myMode == Directories
-                                   ? KUrl::AddTrailingSlash
-                                   : KUrl::RemoveTrailingSlash);
-    else
-        item->text = text;
-
-    d->defaultList.append( item );
+    d->defaultList.append(new KUrlComboBoxPrivate::KUrlComboItem(url, icon, text));
 }
 
 
@@ -217,7 +230,7 @@ void KUrlComboBox::setUrls( const QStringList &_urls, OverLoadResolving remove )
             ++it;
             continue;
         }
-        KUrl u = *it;
+        QUrl u = *it;
 
         // Don't restore if file doesn't exist anymore
         if (u.isLocalFile() && !QFile::exists(u.toLocalFile())) {
@@ -225,13 +238,7 @@ void KUrlComboBox::setUrls( const QStringList &_urls, OverLoadResolving remove )
             continue;
         }
 
-        item = new KUrlComboBoxPrivate::KUrlComboItem;
-        item->url = u;
-        item->icon = d->getIcon( u );
-        item->text = u.pathOrUrl(d->myMode == Directories
-                                 ? KUrl::AddTrailingSlash
-                                 : KUrl::RemoveTrailingSlash);
-
+        item = new KUrlComboBoxPrivate::KUrlComboItem(u, d->getIcon(u));
         d->insertUrlItem( item );
         d->itemList.append( item );
         ++it;
@@ -239,7 +246,7 @@ void KUrlComboBox::setUrls( const QStringList &_urls, OverLoadResolving remove )
 }
 
 
-void KUrlComboBox::setUrl( const KUrl& url )
+void KUrlComboBox::setUrl( const QUrl& url )
 {
     if ( url.isEmpty() )
         return;
@@ -248,11 +255,11 @@ void KUrlComboBox::setUrl( const KUrl& url )
 
     // check for duplicates
     QMap<int,const KUrlComboBoxPrivate::KUrlComboItem*>::ConstIterator mit = d->itemMapper.constBegin();
-    QString urlToInsert = url.url(KUrl::RemoveTrailingSlash);
+    QString urlToInsert = url.toString(QUrl::StripTrailingSlash);
     while ( mit != d->itemMapper.constEnd() ) {
       Q_ASSERT( mit.value() );
 
-      if ( urlToInsert == mit.value()->url.url(KUrl::RemoveTrailingSlash) ) {
+      if (urlToInsert == mit.value()->url.toString(QUrl::StripTrailingSlash)) {
             setCurrentIndex( mit.key() );
 
             if (d->myMode == Directories)
@@ -279,21 +286,14 @@ void KUrlComboBox::setUrl( const KUrl& url )
     for ( int i = offset; i < d->itemList.count(); i++ )
         d->insertUrlItem( d->itemList[i] );
 
-    KUrlComboBoxPrivate::KUrlComboItem *item = new KUrlComboBoxPrivate::KUrlComboItem;
-    item->url = url;
-    item->icon = d->getIcon( url );
-    item->text = url.pathOrUrl(d->myMode == Directories
-                               ? KUrl::AddTrailingSlash
-                               : KUrl::RemoveTrailingSlash);
-     kDebug(250) << "setURL: text=" << item->text;
+    KUrlComboBoxPrivate::KUrlComboItem *item = new KUrlComboBoxPrivate::KUrlComboItem(url, d->getIcon(url));
 
-    int id = count();
-    QString text = /*isEditable() ? item->url.prettyUrl( (KUrl::AdjustPathOption)myMode ) : */ item->text;
-
+    const int id = count();
+    const QString text = d->textForItem(item);
     if (d->myMode == Directories)
-        KComboBox::insertItem( id, d->opendirIcon, text);
+        KComboBox::insertItem(id, d->opendirIcon, text);
     else
-        KComboBox::insertItem( id,item->icon, text);
+        KComboBox::insertItem(id, item->icon, text);
 
     d->itemMapper.insert( id, item );
     d->itemList.append( item );
@@ -305,7 +305,7 @@ void KUrlComboBox::setUrl( const KUrl& url )
 }
 
 
-void KUrlComboBox::KUrlComboBoxPrivate::_k_slotActivated( int index )
+void KUrlComboBoxPrivate::_k_slotActivated( int index )
 {
     const KUrlComboItem *item = itemMapper.value(index);
 
@@ -316,13 +316,13 @@ void KUrlComboBox::KUrlComboBoxPrivate::_k_slotActivated( int index )
 }
 
 
-void KUrlComboBox::KUrlComboBoxPrivate::insertUrlItem( const KUrlComboBoxPrivate::KUrlComboItem *item )
+void KUrlComboBoxPrivate::insertUrlItem( const KUrlComboBoxPrivate::KUrlComboItem *item )
 {
     Q_ASSERT( item );
 
-// kDebug(250) << "insertURLItem " << item->text;
+// kDebug(250) << "insertURLItem " << d->textForItem(item);
     int id = m_parent->count();
-    m_parent->KComboBox::insertItem(id, item->icon, item->text);
+    m_parent->KComboBox::insertItem(id, item->icon, textForItem(item));
     itemMapper.insert( id, item );
 }
 
@@ -353,11 +353,11 @@ int KUrlComboBox::maxItems() const
     return d->myMaximum;
 }
 
-void KUrlComboBox::removeUrl( const KUrl& url, bool checkDefaultURLs )
+void KUrlComboBox::removeUrl( const QUrl& url, bool checkDefaultURLs )
 {
     QMap<int,const KUrlComboBoxPrivate::KUrlComboItem*>::ConstIterator mit = d->itemMapper.constBegin();
     while ( mit != d->itemMapper.constEnd() ) {
-      if ( url.url(KUrl::RemoveTrailingSlash) == mit.value()->url.url(KUrl::RemoveTrailingSlash) ) {
+      if (url.toString(QUrl::StripTrailingSlash) == mit.value()->url.toString(QUrl::StripTrailingSlash)) {
             if ( !d->itemList.removeAll( mit.value() ) && checkDefaultURLs )
                 d->defaultList.removeAll( mit.value() );
         }
@@ -404,14 +404,17 @@ void KUrlComboBox::mousePressEvent(QMouseEvent *event)
 void KUrlComboBox::mouseMoveEvent(QMouseEvent *event)
 {
     const int index = currentIndex();
+    const KUrlComboBoxPrivate::KUrlComboItem *item = d->itemMapper.value(index);
 
-    if (!itemIcon(index).isNull() && !d->m_dragPoint.isNull() && event->buttons() & Qt::LeftButton &&
+    if (item && !d->m_dragPoint.isNull() && event->buttons() & Qt::LeftButton &&
         (event->pos() - d->m_dragPoint).manhattanLength() > KGlobalSettings::dndEventDelay()) {
         QDrag *drag = new QDrag(this);
         QMimeData *mime = new QMimeData();
-        mime->setUrls(QList<QUrl>() << KUrl(itemText(index)));
+        mime->setUrls(QList<QUrl>() << item->url);
         mime->setText(itemText(index));
-        drag->setPixmap(itemIcon(index).pixmap(KIconLoader::SizeMedium));
+        if (!itemIcon(index).isNull()) {
+            drag->setPixmap(itemIcon(index).pixmap(KIconLoader::SizeMedium));
+        }
         drag->setMimeData(mime);
         drag->exec();
     }
@@ -419,29 +422,28 @@ void KUrlComboBox::mouseMoveEvent(QMouseEvent *event)
     KComboBox::mouseMoveEvent(event);
 }
 
-QIcon KUrlComboBox::KUrlComboBoxPrivate::getIcon( const KUrl& url ) const
+QIcon KUrlComboBoxPrivate::getIcon( const QUrl& url ) const
 {
-    if (myMode == Directories)
+    if (myMode == KUrlComboBox::Directories)
         return dirIcon;
     else
         return KIcon(KMimeType::iconNameForUrl(url, 0));
 }
 
 
-// updates "item" with icon "icon" and sets the URL instead of text
-void KUrlComboBox::KUrlComboBoxPrivate::updateItem( const KUrlComboBoxPrivate::KUrlComboItem *item,
-                                                    int index, const QIcon& icon)
+// updates "item" with icon "icon"
+// KDE4 used to also say "and sets the URL instead of text", but this breaks const-ness,
+// now that it would require clearing the text, and I don't see the point since the URL was already in the text.
+void KUrlComboBoxPrivate::updateItem(const KUrlComboBoxPrivate::KUrlComboItem *item,
+                                     int index, const QIcon& icon)
 {
     m_parent->setItemIcon(index,icon);
-
+#if 0
     if ( m_parent->isEditable() ) {
-        m_parent->setItemText(index, item->url.pathOrUrl(myMode == Directories
-                                                         ? KUrl::AddTrailingSlash
-                                                         : KUrl::RemoveTrailingSlash));
+        item->text.clear(); // so that it gets recalculated
     }
-    else {
-        m_parent->setItemText(index,item->text);
-    }
+#endif
+    m_parent->setItemText(index, textForItem(item));
 }
 
 

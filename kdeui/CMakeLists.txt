@@ -10,12 +10,12 @@ set(KDEUI_NO_ATTICA TRUE)
 include_directories(
  ${CMAKE_SOURCE_DIR}/interfaces
  ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor
- ${CMAKE_BINARY_DIR}/tier2/sonnet/core
- ${CMAKE_SOURCE_DIR}/tier2/sonnet/core
+ ${CMAKE_BINARY_DIR}/staging/sonnet/src/core
+ ${CMAKE_SOURCE_DIR}/staging/sonnet/src/core
  ${CMAKE_BINARY_DIR}/tier1/itemmodels/src
  ${CMAKE_SOURCE_DIR}/tier1/itemmodels/src
- ${CMAKE_BINARY_DIR}/tier1/kauth/src/
- ${CMAKE_SOURCE_DIR}/tier1/kauth/src/
+ ${CMAKE_BINARY_DIR}/staging/kauth/src/
+ ${CMAKE_SOURCE_DIR}/staging/kauth/src/
  ${CMAKE_SOURCE_DIR}/staging/kwindowsystem/src
  ${CMAKE_BINARY_DIR}/staging/kwindowsystem/src
  ${kcoreaddons_BINARY_DIR}/src

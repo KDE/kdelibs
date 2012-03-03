@@ -21,7 +21,7 @@
 
 #include <kfile.h>
 #include <kpushbutton.h>
-#include <kurl.h>
+#include <QUrl>
 #include <khbox.h>
 
 #ifndef KDE_NO_DEPRECATED
@@ -60,7 +60,7 @@ class QEvent;
 class KIO_EXPORT KUrlRequester : public KHBox
 {
     Q_OBJECT
-    Q_PROPERTY( KUrl url READ url WRITE setUrl NOTIFY textChanged USER true )
+    Q_PROPERTY( QUrl url READ url WRITE setUrl NOTIFY textChanged USER true )
     Q_PROPERTY( QString filter READ filter WRITE setFilter )
     Q_PROPERTY( KFile::Modes mode READ mode WRITE setMode )
     Q_PROPERTY( QString clickMessage READ clickMessage WRITE setClickMessage )
@@ -76,7 +76,7 @@ public:
     /**
      * Constructs a KUrlRequester widget with the initial URL @p url.
      */
-    explicit KUrlRequester( const KUrl& url, QWidget *parent=0);
+    explicit KUrlRequester(const QUrl& url, QWidget *parent = 0);
 
     /**
      * Special constructor, which creates a KUrlRequester widget with a custom
@@ -95,13 +95,13 @@ public:
      * entered something weird. ~user or environment variables are substituted
      * for local files.
      */
-    KUrl url() const;
+    QUrl url() const;
 
     /**
      * @returns the current start dir
      * @since 4.3
      */
-    KUrl startDir() const;
+    QUrl startDir() const;
 
     /**
      * @returns the current text in the lineedit or combobox.
@@ -222,22 +222,22 @@ public Q_SLOTS:
     /**
      * Sets the url in the lineedit to @p url.
      */
-    void setUrl( const KUrl& url );
+    void setUrl(const QUrl& url);
 
     /**
      * Sets the start dir @p startDir.
      * The start dir is only used when the URL isn't set.
      * @since 4.3
      */
-    void setStartDir( const KUrl& startDir );
+    void setStartDir(const QUrl& startDir);
 
     /**
-     * Sets the url in the lineedit to @p KUrl::fromPath(path).
+     * Sets the url in the lineedit to @p QUrl::fromLocalFile(path).
      * This is only for local paths; do not pass a url here.
      * This method is mostly for "local paths only" url requesters,
      * for instance those set up with setMode(KFile::File|KFile::ExistingOnly|KFile::LocalOnly)
      *
-     * @deprecated Use setUrl(KUrl(path)) instead.
+     * @deprecated Use setUrl(QUrl::fromLocalFile(path)) instead.
      */
 #ifndef KDE_NO_DEPRECATED
     KIO_DEPRECATED void setPath(const QString& path);
@@ -295,7 +295,7 @@ Q_SIGNALS:
      * Emitted when the user changed the URL via the file dialog.
      * The parameter contains the contents of the lineedit.
      */
-    void urlSelected( const KUrl& );
+    void urlSelected(const QUrl&);
 
 protected:
     virtual void changeEvent (QEvent *e);

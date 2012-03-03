@@ -32,6 +32,7 @@
 #include <QStyle>
 #include <QStyleOptionButton>
 #include <qstandardpaths.h>
+#include <qurlpathinfo.h>
 
 #include <kauthorized.h>
 #include <khistorycombobox.h>
@@ -433,7 +434,7 @@ public:
     /**
      * Determine mime type from URLs
      */
-    void setMimeType(const QList<KUrl> &_urls);
+    void setMimeType(const QList<QUrl> &_urls);
 
     void addToMimeAppsList(const QString& serviceId);
 
@@ -475,7 +476,7 @@ public:
     KService::Ptr m_pService;
 };
 
-KOpenWithDialog::KOpenWithDialog( const QList<KUrl>& _urls, QWidget* parent )
+KOpenWithDialog::KOpenWithDialog( const QList<QUrl>& _urls, QWidget* parent )
     : KDialog(parent), d(new KOpenWithDialogPrivate(this))
 {
     setObjectName( QLatin1String( "openwith" ) );
@@ -487,7 +488,7 @@ KOpenWithDialog::KOpenWithDialog( const QList<KUrl>& _urls, QWidget* parent )
     {
         text = i18n("<qt>Select the program that should be used to open <b>%1</b>. "
                      "If the program is not listed, enter the name or click "
-                     "the browse button.</qt>",  _urls.first().fileName() );
+                     "the browse button.</qt>",  QUrlPathInfo(_urls.first()).fileName() );
     }
     else
         // Should never happen ??
@@ -496,15 +497,19 @@ KOpenWithDialog::KOpenWithDialog( const QList<KUrl>& _urls, QWidget* parent )
     d->init(text, QString());
 }
 
-KOpenWithDialog::KOpenWithDialog( const QList<KUrl>& _urls, const QString&_text,
+KOpenWithDialog::KOpenWithDialog( const QList<QUrl>& _urls, const QString&_text,
                             const QString& _value, QWidget *parent)
     : KDialog(parent), d(new KOpenWithDialogPrivate(this))
 {
   setObjectName( QLatin1String( "openwith" ) );
   setModal( true );
   QString caption;
-  if (_urls.count()>0 && !_urls.first().isEmpty())
-     caption = KStringHandler::csqueeze( _urls.first().prettyUrl() );
+    if (!_urls.isEmpty() && !_urls.first().isEmpty())
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+        caption = KStringHandler::csqueeze(_urls.first().toString());
+#else
+        caption = KStringHandler::csqueeze(_urls.first().toDisplayString());
+#endif
   if (_urls.count() > 1)
       caption += QString::fromLatin1("...");
   setCaption(caption);
@@ -542,10 +547,9 @@ KOpenWithDialog::KOpenWithDialog( QWidget *parent)
     d->init(text, QString());
 }
 
-void KOpenWithDialogPrivate::setMimeType(const QList<KUrl> &_urls)
+void KOpenWithDialogPrivate::setMimeType(const QList<QUrl> &_urls)
 {
-  if ( _urls.count() == 1 )
-  {
+  if (_urls.count() == 1) {
     qMimeType = KMimeType::findByUrl( _urls.first())->name();
     if (qMimeType == QLatin1String("application/octet-stream"))
       qMimeType.clear();
@@ -619,7 +623,7 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
   }
 
     QObject::connect(edit, SIGNAL(textChanged(QString)), q, SLOT(slotTextChanged()));
-    QObject::connect(edit, SIGNAL(urlSelected(KUrl)), q, SLOT(_k_slotFileSelected()));
+    QObject::connect(edit, SIGNAL(urlSelected(QUrl)), q, SLOT(_k_slotFileSelected()));
 
     view = new KApplicationView(mainWidget);
     view->setModel(new KApplicationModel(view));

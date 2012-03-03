@@ -26,6 +26,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/kdecore/config/
     ${CMAKE_SOURCE_DIR}/kdecore/io/
     ${CMAKE_SOURCE_DIR}/kdecore/util/
+    ${CMAKE_SOURCE_DIR}/kdecore/localization/
     ${kcoreaddons_SOURCE_DIR}/src/randomness # for KRandom
     ${kcoreaddons_BINARY_DIR}/src
 )

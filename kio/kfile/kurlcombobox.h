@@ -27,7 +27,8 @@
 #include <QIcon>
 
 #include <kcombobox.h>
-#include <kurl.h>
+class QUrl;
+class KUrlComboBoxPrivate;
 
 /**
  * This combobox shows a number of recent URLs/directories, as well as some
@@ -35,7 +36,7 @@
  * It will manage the default dirs root-directory, home-directory and
  * Desktop-directory, as well as a number of URLs set via setUrls()
  * and one additional entry to be set via setUrl().
- * 
+ *
  * This widget forces the layout direction to be Qt::LeftToRight instead
  * of inheriting the layout direction like a normal widget. This means
  * that even in RTL desktops the widget will be displayed in LTR mode,
@@ -97,7 +98,7 @@ public:
      * Note that you won't receive any signals, e.g. textChanged(),
      * returnPressed() or activated() upon calling this method.
      */
-    void setUrl( const KUrl& url );
+    void setUrl(const QUrl &url);
 
     /**
      * Inserts @p urls into the combobox below the "default urls" (see
@@ -149,7 +150,7 @@ public:
      * the pixmap parameter.
      * Default URLs will be inserted into the combobox by setDefaults()
      */
-    void addDefaultUrl( const KUrl& url, const QString& text = QString() );
+    void addDefaultUrl(const QUrl &url, const QString &text = QString());
 
     /**
      * Adds a url that will always be shown in the combobox, it can't be
@@ -159,8 +160,8 @@ public:
      * the pixmap parameter.
      * Default URLs will be inserted into the combobox by setDefaults()
      */
-    void addDefaultUrl( const KUrl& url, const QIcon& icon,
-			const QString& text = QString() );
+    void addDefaultUrl(const QUrl &url, const QIcon &icon,
+		       const QString &text = QString());
 
     /**
      * Clears all items and inserts the default urls into the combo. Will be
@@ -173,7 +174,7 @@ public:
      * Removes any occurrence of @p url. If @p checkDefaultUrls is false
      * default-urls won't be removed.
      */
-    void removeUrl( const KUrl& url, bool checkDefaultURLs = true );
+    void removeUrl(const QUrl &url, bool checkDefaultURLs = true);
 
     /**
      * Reimplemented from KComboBox (from KCompletion)
@@ -187,14 +188,14 @@ Q_SIGNALS:
      * @param url is the url of the now current item. If it is a local url,
      * it won't have a protocol (file:/), otherwise it will.
      */
-    void urlActivated( const KUrl& url );
+    void urlActivated(const QUrl &url);
 
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
 
 private:
-    class KUrlComboBoxPrivate;
+    friend class KUrlComboBoxPrivate;
     KUrlComboBoxPrivate* const d;
 
     Q_DISABLE_COPY(KUrlComboBox)

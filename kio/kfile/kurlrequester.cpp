@@ -151,7 +151,7 @@ public:
     /**
      * replaces ~user or $FOO, if necessary
      */
-    KUrl url() const {
+    QUrl url() const {
         const QString txt = text();
         KUrlCompletion *comp;
         if ( combo )
@@ -160,9 +160,9 @@ public:
             comp = qobject_cast<KUrlCompletion*>(edit->completionObject());
 
         if ( comp )
-            return KUrl( comp->replacedPath( txt ) );
+            return QUrl::fromUserInput(comp->replacedPath(txt));
         else
-            return KUrl( txt );
+            return QUrl::fromUserInput(txt);
     }
 
     // slots
@@ -170,7 +170,7 @@ public:
     void _k_slotOpenDialog();
     void _k_slotFileDialogFinished();
 
-    KUrl m_startDir;
+    QUrl m_startDir;
     KUrlRequester *m_parent;
     KLineEdit *edit;
     KComboBox *combo;
@@ -211,7 +211,7 @@ KUrlRequester::KUrlRequester( QWidget *parent)
 }
 
 
-KUrlRequester::KUrlRequester( const KUrl& url, QWidget *parent)
+KUrlRequester::KUrlRequester( const QUrl& url, QWidget *parent)
   : KHBox( parent),d(new KUrlRequesterPrivate(this))
 {
     d->init();
@@ -262,9 +262,13 @@ void KUrlRequester::KUrlRequesterPrivate::init()
     m_parent->connect(openAction, SIGNAL(triggered(bool)), SLOT(_k_slotOpenDialog()));
 }
 
-void KUrlRequester::setUrl( const KUrl& url )
+void KUrlRequester::setUrl(const QUrl& url)
 {
-    d->setText( url.pathOrUrl() );
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    d->setText(url.toString());
+#else
+    d->setText(url.toDisplayString(QUrl::PreferLocalFile));
+#endif
 }
 
 #ifndef KDE_NO_DEPRECATED
@@ -279,7 +283,7 @@ void KUrlRequester::setText(const QString& text)
     d->setText(text);
 }
 
-void KUrlRequester::setStartDir(const KUrl& startDir)
+void KUrlRequester::setStartDir(const QUrl& startDir)
 {
     d->m_startDir = startDir;
     if (startDir.isLocalFile())
@@ -296,12 +300,12 @@ void KUrlRequester::changeEvent(QEvent *e)
    KHBox::changeEvent(e);
 }
 
-KUrl KUrlRequester::url() const
+QUrl KUrlRequester::url() const
 {
     return d->url();
 }
 
-KUrl KUrlRequester::startDir() const
+QUrl KUrlRequester::startDir() const
 {
     return d->m_startDir;
 }
@@ -327,12 +331,12 @@ void KUrlRequester::KUrlRequesterPrivate::_k_slotOpenDialog()
          (myFileDialog && (myFileDialog->mode() & KFile::Directory) &&
                           (myFileDialog->mode() & (KFile::File | KFile::Files)) == 0) )
     {
-        const KUrl openUrl = (!m_parent->url().isEmpty() && !m_parent->url().isRelative() )
+        const QUrl openUrl = (!m_parent->url().isEmpty() && !m_parent->url().isRelative() )
           ? m_parent->url() : m_startDir;
 
         /* FIXME We need a new abstract interface for using KDirSelectDialog in a non-modal way */
 
-        KUrl newurl;
+        QUrl newurl;
         if (fileDialogMode & KFile::LocalOnly)
             newurl = KFileDialog::getExistingDirectory( openUrl, m_parent);
         else
@@ -352,12 +356,12 @@ void KUrlRequester::KUrlRequesterPrivate::_k_slotOpenDialog()
         KFileDialog *dlg = m_parent->fileDialog();
 
         if ( !url().isEmpty() && !url().isRelative() ) {
-          KUrl u( url() );
-          // If we won't be able to list it (e.g. http), then don't try :)
-          if ( KProtocolManager::supportsListing( u ) )
-              dlg->setSelection( u.url() );
+            QUrl u(url());
+            // If we won't be able to list it (e.g. http), then don't try :)
+            if (KProtocolManager::supportsListing(u))
+                dlg->setSelection(u.toString());
         } else {
-          dlg->setUrl(m_startDir);
+            dlg->setUrl(m_startDir);
         }
 
         //Update the file dialog window modality
@@ -380,7 +384,7 @@ void KUrlRequester::KUrlRequesterPrivate::_k_slotFileDialogFinished()
 
     if ( myFileDialog->result() == QDialog::Accepted )
     {
-        KUrl newUrl = myFileDialog->selectedUrl();
+        QUrl newUrl = myFileDialog->selectedUrl();
         if ( newUrl.isValid() )
         {
             m_parent->setUrl( newUrl );
@@ -450,8 +454,11 @@ KComboBox * KUrlRequester::comboBox() const
 
 void KUrlRequester::KUrlRequesterPrivate::_k_slotUpdateUrl()
 {
-    KUrl u( KUrl::fromLocalFile( QDir::currentPath() + '/' ), url().url() );
-    myButton->setURL( u );
+    const QUrl visibleUrl = url();
+    QUrl u = visibleUrl;
+    if (visibleUrl.isRelative())
+        u = QUrl::fromLocalFile(QDir::currentPath() + '/').resolved(visibleUrl);
+    myButton->setURL(u);
 }
 
 bool KUrlRequester::eventFilter( QObject *obj, QEvent *ev )

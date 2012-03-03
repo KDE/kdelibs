@@ -23,7 +23,7 @@
 #include <kio/kio_export.h>
 
 #include <kdialog.h>
-#include <kurl.h>
+#include <QUrl>
 #include <kservice.h>
 
 class KOpenWithDialogPrivate;
@@ -49,7 +49,7 @@ public:
      * if the dialog is used to choose an application but not for some particular URLs.
      * @param parent parent widget
      */
-    explicit KOpenWithDialog(const QList<KUrl> &urls, QWidget *parent = 0);
+    explicit KOpenWithDialog(const QList<QUrl> &urls, QWidget *parent = 0);
 
     /**
      * Create a dialog that asks for a application to open a given
@@ -60,7 +60,7 @@ public:
      * @param value  is the initial value of the line
      * @param parent parent widget
      */
-    KOpenWithDialog( const QList<KUrl>& urls, const QString& text, const QString& value,
+    KOpenWithDialog( const QList<QUrl>& urls, const QString& text, const QString& value,
                   QWidget *parent = 0 );
 
     /**

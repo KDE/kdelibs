@@ -57,6 +57,7 @@ KWidgetItemDelegatePrivate::KWidgetItemDelegatePrivate(KWidgetItemDelegate *q, Q
     , itemView(0)
     , widgetPool(new KWidgetItemDelegatePool(q))
     , model(0)
+    , selectionModel(0)
     , viewDestroyed(false)
     , q(q)
 {
@@ -116,6 +117,22 @@ void KWidgetItemDelegatePrivate::_k_slotModelReset()
 {
     widgetPool->fullClear();
     QTimer::singleShot(0, this, SLOT(initializeModel()));
+}
+
+void KWidgetItemDelegatePrivate::_k_slotSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
+{
+    foreach (const QModelIndex &index, selected.indexes()) {
+        QStyleOptionViewItemV4 optionView;
+        optionView.initFrom(itemView->viewport());
+        optionView.rect = itemView->visualRect(index);
+        widgetPool->findWidgets(index, optionView);
+    }
+    foreach (const QModelIndex &index, deselected.indexes()) {
+        QStyleOptionViewItemV4 optionView;
+        optionView.initFrom(itemView->viewport());
+        optionView.rect = itemView->visualRect(index);
+        widgetPool->findWidgets(index, optionView);
+    }
 }
 
 void KWidgetItemDelegatePrivate::updateRowRange(const QModelIndex &parent, int start, int end, bool isRemoving)
@@ -254,6 +271,15 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
         connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), q, SLOT(_k_slotDataChanged(QModelIndex,QModelIndex)));
         connect(model, SIGNAL(layoutChanged()), q, SLOT(_k_slotLayoutChanged()));
         connect(model, SIGNAL(modelReset()), q, SLOT(_k_slotModelReset()));
+        QTimer::singleShot(0, this, SLOT(initializeModel()));
+    }
+
+    if (selectionModel != itemView->selectionModel()) {
+        if (selectionModel) {
+            disconnect(selectionModel, SIGNAL(selectionChanged(QItemSelection,QItemSelection)), q, SLOT(_k_slotSelectionChanged(QItemSelection,QItemSelection)));
+        }
+        selectionModel = itemView->selectionModel();
+        connect(selectionModel, SIGNAL(selectionChanged(QItemSelection,QItemSelection)), q, SLOT(_k_slotSelectionChanged(QItemSelection,QItemSelection)));
         QTimer::singleShot(0, this, SLOT(initializeModel()));
     }
 

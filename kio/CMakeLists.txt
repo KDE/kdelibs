@@ -58,8 +58,8 @@ if (NOT KIO_NO_SOPRANO)
 endif (NOT KIO_NO_SOPRANO)
 
 if(NOT KIO_NO_SOLID)
-   include_directories(${CMAKE_BINARY_DIR}/tier1/solid/)
-   include_directories(${CMAKE_SOURCE_DIR}/tier1/solid/)
+   include_directories(${CMAKE_BINARY_DIR}/tier1/solid/src)
+   include_directories(${CMAKE_SOURCE_DIR}/tier1/solid/src)
    set(KIO_EXTRA_LIBS ${KIO_EXTRA_LIBS} ${KDE4_SOLID_LIBS})
 endif(NOT KIO_NO_SOLID)
 

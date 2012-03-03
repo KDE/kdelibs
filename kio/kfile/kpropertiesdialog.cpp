@@ -2663,7 +2663,7 @@ void KUrlPropsPlugin::applyChanges()
     KDesktopFile config( path );
     KConfigGroup dg = config.desktopGroup();
     dg.writeEntry( "Type", QString::fromLatin1("Link"));
-    dg.writePathEntry( "URL", d->URLEdit->url().url() );
+    dg.writePathEntry("URL", d->URLEdit->url().toString());
     // Users can't create a Link .desktop file with a Name field,
     // but distributions can. Update the Name field in that case.
     if ( dg.hasKey("Name") )

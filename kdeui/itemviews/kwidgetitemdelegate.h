@@ -34,6 +34,7 @@ class QPainter;
 class QStyleOption;
 class QStyleOptionViewItem;
 class QAbstractItemView;
+class QItemSelection;
 
 class KWidgetItemDelegatePrivate;
 class KWidgetItemDelegatePool;
@@ -163,6 +164,7 @@ private:
     Q_PRIVATE_SLOT(d, void _k_slotDataChanged(const QModelIndex&,const QModelIndex&))
     Q_PRIVATE_SLOT(d, void _k_slotLayoutChanged())
     Q_PRIVATE_SLOT(d, void _k_slotModelReset())
+    Q_PRIVATE_SLOT(d, void _k_slotSelectionChanged(const QItemSelection&,const QItemSelection&))
     //@endcond
 };
 

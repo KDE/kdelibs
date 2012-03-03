@@ -131,9 +131,9 @@ void QUrlPathInfo::setUrl(const QUrl &u)
     Returns the path of the URL, formatted using \a options
 
     Do not use this as a local path, this is not portable.
-    Use url().toLocalFile() instead.
+    Use toLocalPath(options) or url().toLocalFile() instead.
 
-    \sa setPath(), url()
+    \sa setPath(), toLocalPath(), url()
 */
 QString QUrlPathInfo::path(PathFormattingOptions options) const
 {
@@ -155,6 +155,24 @@ QString QUrlPathInfo::path(PathFormattingOptions options) const
 void QUrlPathInfo::setPath(const QString &path)
 {
     d->url.setPath(path);
+}
+
+/*!
+    Returns the path for this URL, formatted as a local file path, using \a options
+
+    The path returned will use forward slashes, even if it was originally created
+    from one with backslashes.
+
+    \sa setPath(), url(), QUrl::toLocalFile()
+*/
+QString QUrlPathInfo::localPath(PathFormattingOptions options) const
+{
+    QString path = d->url.toLocalFile();
+    while ((options & StripTrailingSlash) && path.endsWith(QLatin1Char('/')) && path.length() > 1)
+        path.chop(1);
+    if ((options & AppendTrailingSlash) && !path.endsWith(QLatin1Char('/')))
+        path += QLatin1Char('/');
+    return path;
 }
 
 /*!

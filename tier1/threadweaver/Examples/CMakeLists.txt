@@ -1,5 +1,0 @@
-add_subdirectory(Construction)
-add_subdirectory(Jobs)
-add_subdirectory(SMIV)
-add_subdirectory(QProcessJob)
-#add_subdirectory(Actions)

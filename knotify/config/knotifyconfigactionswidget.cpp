@@ -59,7 +59,7 @@ KNotifyConfigActionsWidget::KNotifyConfigActionsWidget( QWidget * parent )
 		m_ui.KTTS_select->setVisible(false);
 		m_ui.KTTS_combo->setVisible(false);
 	}
-	
+
 }
 
 void KNotifyConfigActionsWidget::setConfigElement( KNotifyConfigElement * config )
@@ -77,7 +77,7 @@ void KNotifyConfigActionsWidget::setConfigElement( KNotifyConfigElement * config
 
 	m_ui.Sound_select->setUrl( KUrl( config->readEntry( "Sound" , true ) ) );
 	m_ui.Logfile_select->setUrl( KUrl( config->readEntry( "Logfile" , true ) ) );
-	m_ui.Execute_select->setUrl( KUrl( config->readEntry( "Execute"  ) ) );
+	m_ui.Execute_select->setUrl(QUrl::fromLocalFile(config->readEntry("Execute")));
 	m_ui.KTTS_select->setText( config->readEntry( "KTTS"  )  );
 	if(m_ui.KTTS_select->text() == QLatin1String("%e"))
 		m_ui.KTTS_combo->setCurrentIndex(1);
@@ -106,9 +106,9 @@ void KNotifyConfigActionsWidget::save( KNotifyConfigElement * config )
 
 	config->writeEntry( "Action" , actions.join("|") );
 
-	config->writeEntry( "Sound" , m_ui.Sound_select->url().url() );
-	config->writeEntry( "Logfile" , m_ui.Logfile_select->url().url() );
-	config->writeEntry( "Execute" , m_ui.Execute_select->url().path() );
+	config->writeEntry("Sound", m_ui.Sound_select->url().toString());
+	config->writeEntry("Logfile", m_ui.Logfile_select->url().toString());
+	config->writeEntry("Execute", m_ui.Execute_select->url().toLocalFile());
 	switch(m_ui.KTTS_combo->currentIndex())
 	{
 		case 0:

@@ -80,6 +80,8 @@ public:
     QString path(PathFormattingOptions options = None) const;
     void setPath(const QString &path);
 
+    QString localPath(PathFormattingOptions options = None) const;
+
     bool isEmpty() const;
 
     void clear();
