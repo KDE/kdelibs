@@ -20,13 +20,13 @@
 
 #include <kshareddatacache.h>
 
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QDir>
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 #include <string.h> // strcpy
 
 class KSharedDataCacheTest : public QObject
@@ -47,7 +47,7 @@ void KSharedDataCacheTest::simpleInsert()
     const QLatin1String cacheName("myTestCache");
     const QLatin1String key("mypic");
     // clear the cache
-    QString cacheFile = KGlobal::dirs()->locateLocal("cache", cacheName + QLatin1String(".kcache"));
+    QString cacheFile = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QLatin1String("/") + cacheName + QLatin1String(".kcache");
     QFile file(cacheFile);
     if (file.exists())
         QVERIFY(file.remove());
@@ -71,6 +71,6 @@ void KSharedDataCacheTest::simpleInsert()
     QCOMPARE(result, data);
 }
 
-QTEST_KDEMAIN_CORE(KSharedDataCacheTest)
+QTEST_MAIN(KSharedDataCacheTest)
 
 #include "kshareddatacachetest.moc"

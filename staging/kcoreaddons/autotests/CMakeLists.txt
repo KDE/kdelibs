@@ -25,6 +25,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/text
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/jobs
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/io
+    ${CMAKE_CURRENT_SOURCE_DIR}/../src/caching
     ${CMAKE_CURRENT_BINARY_DIR}/../src
 )
 
@@ -39,6 +40,7 @@ KCOREADDONS_UNIT_TESTS(
     kdirwatch_unittest
     kmacroexpandertest
     kstringhandlertest
+    kshareddatacachetest
 )
 
 # Helper for klockfiletest

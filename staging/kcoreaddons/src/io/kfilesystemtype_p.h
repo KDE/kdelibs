@@ -21,7 +21,7 @@
 #define KFILESYSTEMTYPE_P_H
 
 #include <QtCore/QString>
-#include <kdecore_export.h>
+#include <kcoreaddons_export.h>
 
 namespace KFileSystemType
 {
@@ -33,7 +33,7 @@ namespace KFileSystemType
        Other // ext, reiser, and so on. "Normal" local filesystems.
    };
 
-   KDECORE_EXPORT Type fileSystemType(const QString& path);
+   KCOREADDONS_EXPORT Type fileSystemType(const QString& path);
 
 }
 

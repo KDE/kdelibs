@@ -20,7 +20,7 @@
 #ifndef KSHAREDDATACACHE_H
 #define KSHAREDDATACACHE_H
 
-#include <kdecore_export.h>
+#include <kcoreaddons_export.h>
 
 class QString;
 class QByteArray;
@@ -55,7 +55,7 @@ class QByteArray;
  * @see KImageCache
  * @since 4.5
  */
-class KDECORE_EXPORT KSharedDataCache
+class KCOREADDONS_EXPORT KSharedDataCache
 {
 public:
     /**
