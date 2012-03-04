@@ -90,8 +90,6 @@ set(libkcoreaddons_SRCS
 
 
 include_directories(
-    ${CMAKE_BINARY_DIR}/kdecore/ # kde_export.h (required by kglobal.h)
-    ${CMAKE_SOURCE_DIR}/kdecore/kernel/ # K_GLOBAL_STATIC (TODO remove)
     ${CMAKE_CURRENT_BINARY_DIR}/io/
     ${CMAKE_CURRENT_SOURCE_DIR}/io/
     ${CMAKE_CURRENT_SOURCE_DIR}/jobs/

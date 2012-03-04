@@ -1,6 +1,5 @@
-####### checks for kdecore/io ###############
+####### checks for kcoreaddons/src/io ###############
 include(CheckIncludeFile)
-
 
 if(WIN32)
     if (NOT HAVE_QFILESYSTEMWATCHER)

@@ -22,7 +22,6 @@
 
 #include "kentities.c"
 
-#include "kglobal.h"
 #include "qlocalizedstring_porting.h"
 
 #include <QtCore/QDir>

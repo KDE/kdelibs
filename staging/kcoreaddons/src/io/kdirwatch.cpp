@@ -58,8 +58,6 @@
 #include <QtCore/QTimer>
 #include <QtCore/QCoreApplication>
 
-#include <kglobal.h>
-
 #include <qplatformdefs.h> // QT_LSTAT, QT_STAT, QT_STATBUF
 
 #include <stdlib.h>
@@ -160,7 +158,7 @@ KDirWatchPrivate::KDirWatchPrivate()
   timer.setObjectName(QLatin1String("KDirWatchPrivate::timer"));
   connect (&timer, SIGNAL(timeout()), this, SLOT(slotRescan()));
 
-#pragma message("KDE5 TODO: Remove dependencies on Kconfig and KGlobal") 
+#pragma message("KDE5 TODO: Remove dependencies on Kconfig and KGlobal")
 #if 0
   KConfigGroup config(KGlobal::config(), "DirWatch");
   m_nfsPollInterval = config.readEntry("NFSPollInterval", 5000);
@@ -177,7 +175,7 @@ KDirWatchPrivate::KDirWatchPrivate()
   m_PollInterval = 500;
   m_preferredMethod = methodFromString(QLatin1String("inotify"));
   m_nfsPreferredMethod = methodFromString(QLatin1String("Fam"));
-  
+
   QList<QByteArray> availableMethods;
 
   availableMethods << "Stat";
@@ -1731,22 +1729,24 @@ void KDirWatchPrivate::fswEventReceived(const QString &path)
 // Class KDirWatch
 //
 
-#pragma message("KDE5 TODO: Use Q_GLOBAL_STATIC, only the exists method is used")
-K_GLOBAL_STATIC(KDirWatch, s_pKDirWatchSelf)
+Q_GLOBAL_STATIC(KDirWatch, s_pKDirWatchSelf)
 KDirWatch* KDirWatch::self()
 {
-  return s_pKDirWatchSelf;
+  return s_pKDirWatchSelf();
 }
 
-#pragma message("KDE5: is this used anywhere?")
+// <steve> is this used anywhere?
+// <dfaure> yes, see kio/kdirlister_p.h:328
 bool KDirWatch::exists()
 {
-  return s_pKDirWatchSelf.exists();
+#pragma message("Qt5 TODO: use new Q_GLOBAL_STATIC isDestroyed")
+//  return s_pKDirWatchSelf.exists();
+    return true;
 }
 
 static void cleanupQFSWatcher()
 {
-  s_pKDirWatchSelf->deleteQFSWatcher();
+  s_pKDirWatchSelf()->deleteQFSWatcher();
 }
 
 KDirWatch::KDirWatch (QObject* parent)

@@ -25,7 +25,6 @@
 
 #include "qstandardpaths.h"
 
-#include <kglobal.h>
 #include <krandom.h>
 
 #include <QtCore/QDateTime>
@@ -1127,7 +1126,7 @@ class KSharedDataCache::Private
 
     bool lock() const
     {
-        if (KDE_ISLIKELY(shm && shm->shmLock.type == m_expectedType)) {
+        if (Q_LIKELY(shm && shm->shmLock.type == m_expectedType)) {
             return m_lock->lock();
         }
 
@@ -1378,7 +1377,7 @@ bool KSharedDataCache::insert(const QString &key, const QByteArray &data)
                               / d->shm->cacheSize);
     bool cullCollisions = false;
 
-    if (KDE_ISUNLIKELY(loadFactor >= mustCullPoint)) {
+    if (Q_UNLIKELY(loadFactor >= mustCullPoint)) {
         cullCollisions = true;
     }
     else if (loadFactor > startCullPoint) {

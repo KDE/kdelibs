@@ -515,7 +515,7 @@ class KCOREADDONS_EXPORT KAboutData
      * Use this if you need to have an application logo
      * in AboutData other than the application icon.
      *
-     * Because KAboutData is in kdecore it cannot use QImage directly,
+     * Because KAboutData is in kcoreaddons it cannot use QImage directly,
      * so this is a QVariant that should contain a QImage.
      *
      * @param image logo image.
@@ -700,7 +700,7 @@ class KCOREADDONS_EXPORT KAboutData
     /**
      * Returns the program logo image.
      *
-     * Because KAboutData is in kdecore it cannot use QImage directly,
+     * Because KAboutData is in kcoreaddons it cannot use QImage directly,
      * so this is a QVariant containing a QImage.
      *
      * @return the program logo data, or a null image if there is
