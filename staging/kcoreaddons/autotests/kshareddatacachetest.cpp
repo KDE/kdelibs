@@ -47,7 +47,7 @@ void KSharedDataCacheTest::simpleInsert()
     const QLatin1String cacheName("myTestCache");
     const QLatin1String key("mypic");
     // clear the cache
-    QString cacheFile = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QLatin1String("/") + cacheName + QLatin1String(".kcache");
+    QString cacheFile = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + QLatin1String("/") + cacheName + QLatin1String(".kcache");
     QFile file(cacheFile);
     if (file.exists())
         QVERIFY(file.remove());
