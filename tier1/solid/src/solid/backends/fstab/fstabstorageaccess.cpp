@@ -35,9 +35,16 @@ FstabStorageAccess::FstabStorageAccess(Solid::Backends::Fstab::FstabDevice *devi
     QObject(device),
     m_fstabDevice(device)
 {
-    m_currentMountPoints = FstabHandling::currentMountPoints();
+    QStringList currentMountPoints = FstabHandling::currentMountPoints(device->device());
+    if (currentMountPoints.isEmpty()) {
+        m_filePath = FstabHandling::mountPoints(device->device()).first();
+        m_isAccessible = false;
+    } else {
+        m_filePath = currentMountPoints.first();
+        m_isAccessible = true;
+    }
 
-    connect(FstabWatcher::instance(), SIGNAL(mtabChanged()), this, SLOT(onMtabChanged()));
+    connect(device, SIGNAL(mtabChanged(QString)), this, SLOT(onMtabChanged(QString)));
     QTimer::singleShot(0, this, SLOT(connectDBusSignals()));
 }
 
@@ -64,21 +71,12 @@ const Solid::Backends::Fstab::FstabDevice *FstabStorageAccess::fstabDevice() con
 
 bool FstabStorageAccess::isAccessible() const
 {
-    if (m_currentMountPoints.contains(m_fstabDevice->device())) {
-        return true;
-    } else {
-        return false;
-    }
+    return m_isAccessible;
 }
 
 QString FstabStorageAccess::filePath() const
 {
-    QStringList points = FstabHandling::mountPoints(m_fstabDevice->device());
-    if (!points.isEmpty()) {
-        return points.first();
-    } else {
-        return QString();
-    }
+    return m_filePath;
 }
 
 bool FstabStorageAccess::isIgnored() const
@@ -150,20 +148,18 @@ void FstabStorageAccess::slotTeardownDone(int error, const QString &errorString)
     Q_EMIT teardownDone(static_cast<Solid::ErrorType>(error), errorString, m_fstabDevice->udi());
 }
 
-void FstabStorageAccess::onMtabChanged()
+void FstabStorageAccess::onMtabChanged(const QString& device)
 {
-    QStringList currentMountPoints = FstabHandling::currentMountPoints();
-    if (currentMountPoints.count() > m_currentMountPoints.count()) {
-        // device mounted
-        if (currentMountPoints.contains(m_fstabDevice->device()) && !m_currentMountPoints.contains(m_fstabDevice->device())) {
-            Q_EMIT accessibilityChanged(true, QString(FSTAB_UDI_PREFIX) + "/" + m_fstabDevice->device());
-        }
-    } else {
+    QStringList currentMountPoints = FstabHandling::currentMountPoints(device);
+    if (currentMountPoints.isEmpty()) {
         // device umounted
-        if (!currentMountPoints.contains(m_fstabDevice->device()) && m_currentMountPoints.contains(m_fstabDevice->device())) {
-            Q_EMIT accessibilityChanged(false, QString(FSTAB_UDI_PREFIX) + "/" + m_fstabDevice->device());
-        }
+        m_filePath = FstabHandling::mountPoints(device).first();
+        m_isAccessible = false;
+        Q_EMIT accessibilityChanged(false, QString(FSTAB_UDI_PREFIX) + "/" + device);
+    } else {
+        // device added
+        m_filePath = currentMountPoints.first();
+        m_isAccessible = true;
+        Q_EMIT accessibilityChanged(true, QString(FSTAB_UDI_PREFIX) + "/" + device);
     }
-
-    m_currentMountPoints = currentMountPoints;
 }

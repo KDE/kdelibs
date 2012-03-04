@@ -23,6 +23,8 @@
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QFileSystemWatcher>
+#include <QtCore/QSocketNotifier>
+#include <QtCore/QFile>
 #include <QtCore/QStringList>
 
 using namespace Solid::Backends::Fstab;
@@ -43,7 +45,19 @@ FstabWatcher::FstabWatcher()
     if (qApp) {
         connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(orphanFileSystemWatcher()));
     }
-    m_fileSystemWatcher->addPath(MTAB);
+
+    m_mtabFile = new QFile(MTAB, this);
+    if (m_mtabFile && m_mtabFile->symLinkTarget().startsWith("/proc/")
+        && m_mtabFile->open(QIODevice::ReadOnly) ) {
+
+        m_mtabSocketNotifier = new QSocketNotifier(m_mtabFile->handle(),
+                QSocketNotifier::Exception, this);
+        connect(m_mtabSocketNotifier,
+                SIGNAL(activated(int)), this, SIGNAL(mtabChanged()) );
+    } else {
+        m_fileSystemWatcher->addPath(MTAB);
+    }
+
     m_fileSystemWatcher->addPath(FSTAB);
     connect(m_fileSystemWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
 }

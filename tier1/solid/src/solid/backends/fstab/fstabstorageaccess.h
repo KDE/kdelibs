@@ -70,7 +70,7 @@ namespace Fstab
         private Q_SLOTS:
             void slotSetupFinished(int exitCode, QProcess::ExitStatus exitStatus);
             void slotTeardownFinished(int exitCode, QProcess::ExitStatus exitStatus);
-            void onMtabChanged();
+            void onMtabChanged(const QString& device);
             void connectDBusSignals();
 
             void slotSetupRequested();
@@ -81,7 +81,8 @@ namespace Fstab
         private:
             Solid::Backends::Fstab::FstabDevice *m_fstabDevice;
             QProcess *m_process;
-            QStringList m_currentMountPoints;
+            QString m_filePath;
+            bool m_isAccessible;
     };
 
 }

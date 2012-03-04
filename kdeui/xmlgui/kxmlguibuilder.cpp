@@ -220,7 +220,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     if ( qobject_cast<KMainWindow*>( d->m_widget ) )
     {
         if ( d->m_client && !d->m_client->xmlFile().isEmpty() )
-            bar->setXMLGUIClient( d->m_client );
+            bar->addXMLGUIClient( d->m_client );
     }
 
     bar->loadState( element );

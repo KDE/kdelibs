@@ -36,6 +36,7 @@ KDECORE_UNIT_TESTS(
  ktimezonestest
  kentrymaptest
  ksharedptrtest
+ kshareddatacachetest
  kdatetimetest
  ksavefiletest
  kdesktopfiletest

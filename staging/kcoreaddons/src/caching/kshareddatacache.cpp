@@ -1374,15 +1374,15 @@ bool KSharedDataCache::insert(const QString &key, const QByteArray &data)
     static double mustCullPoint = 0.96l;
 
     // cacheAvail is in pages, cacheSize is in bytes.
-    double loadFactor = (1.0l * d->shm->cacheAvail * d->shm->cachePageSize()
+    double loadFactor = 1.0 - (1.0l * d->shm->cacheAvail * d->shm->cachePageSize()
                               / d->shm->cacheSize);
     bool cullCollisions = false;
 
     if (KDE_ISUNLIKELY(loadFactor >= mustCullPoint)) {
         cullCollisions = true;
     }
-    else {
-        int tripWireValue = RAND_MAX * (loadFactor - startCullPoint) / (mustCullPoint - startCullPoint);
+    else if (loadFactor > startCullPoint) {
+        const int tripWireValue = RAND_MAX * (loadFactor - startCullPoint) / (mustCullPoint - startCullPoint);
         if (KRandom::random() >= tripWireValue) {
             cullCollisions = true;
         }

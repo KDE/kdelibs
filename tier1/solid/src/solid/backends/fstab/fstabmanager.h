@@ -48,12 +48,17 @@ public:
     virtual QStringList devicesFromQuery(const QString &parentUdi, Solid::DeviceInterface::Type type);
     virtual QObject *createDevice(const QString &udi);
 
+Q_SIGNALS:
+    void mtabChanged(const QString& device);
+
 private Q_SLOTS:
     void onFstabChanged();
+    void onMtabChanged();
 
 private:
     QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
     QStringList m_deviceList;
+    void _k_updateDeviceList();
 };
 
 }

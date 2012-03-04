@@ -237,8 +237,8 @@ void KPlotObject::draw( QPainter *painter, KPlotWidget *pw ) {
         painter->setPen( barPen() );
         painter->setBrush( barBrush() );
 
+        double w = 0;
         for ( int i=0; i<d->pList.size(); ++i ) {
-            double w = 0;
             if ( d->pList[i]->barWidth() == 0.0 ) {
                 if ( i<d->pList.size()-1 ) 
                     w = d->pList[i+1]->x() - d->pList[i]->x();

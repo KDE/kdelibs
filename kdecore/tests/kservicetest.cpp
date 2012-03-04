@@ -314,6 +314,9 @@ void KServiceTest::testByStorageId()
 {
     if ( !KSycoca::isAvailable() )
         QSKIP_PORTING("ksycoca not available", SkipAll);
+    if (KGlobal::dirs()->locate("xdgdata-apps", "kde4/kmailservice.desktop").isEmpty()) {
+        QSKIP_PORTING("kde4/kmailservice.desktop not available", SkipAll);
+    }
     QVERIFY(KService::serviceByMenuId("kde4-kmailservice.desktop"));
     QVERIFY(!KService::serviceByMenuId("kde4-kmailservice")); // doesn't work, extension mandatory
     QVERIFY(KService::serviceByStorageId("kde4-kmailservice.desktop"));
