@@ -267,7 +267,8 @@ void KUrlRequester::setUrl(const QUrl& url)
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     d->setText(url.toString());
 #else
-    d->setText(url.toDisplayString(QUrl::PreferLocalFile));
+#pragma message("Uncomment when this is merged: http://codereview.qt-project.org/#change,18638")
+//     d->setText(url.toDisplayString(QUrl::PreferLocalFile));
 #endif
 }
 
