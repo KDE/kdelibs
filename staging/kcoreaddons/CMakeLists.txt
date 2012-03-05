@@ -24,7 +24,6 @@ check_include_files(sys/inotify.h SYS_INOTIFY_H_FOUND)
 macro_bool_to_01(SYS_INOTIFY_H_FOUND HAVE_SYS_INOTIFY_H)
 
 # Generate io/config-kdirwatch.h
-include(src/io/ConfigureChecks.cmake)
 configure_file(src/io/config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/src/io/config-kdirwatch.h)
 
 add_subdirectory(src)
