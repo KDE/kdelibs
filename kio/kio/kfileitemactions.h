@@ -131,6 +131,14 @@ public:
      */
     int addServiceActionsTo(QMenu* menu);
 
+Q_SIGNALS:
+    /**
+     * Emitted before the "Open With" dialog is shown
+     * This is used e.g in folderview to close the folder peek popups on invoking the "Open With" menu action
+     * @since 4.8.2
+     */
+    void openWithDialogAboutToBeShown();
+
 public Q_SLOTS:
     /**
      * Slot used to execute a list of files in their respective preferred application.
@@ -142,6 +150,7 @@ public Q_SLOTS:
 
 private:
     KFileItemActionsPrivate* const d;
+    friend class KFileItemActionsPrivate;
 };
 
 #endif /* KFILEITEMACTIONS_H */

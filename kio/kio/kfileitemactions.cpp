@@ -90,8 +90,9 @@ ServiceList& PopupServices::selectList(const QString& priority, const QString& s
 
 ////
 
-KFileItemActionsPrivate::KFileItemActionsPrivate()
+KFileItemActionsPrivate::KFileItemActionsPrivate(KFileItemActions *qq)
     : QObject(),
+      q(qq),
       m_executeServiceActionGroup(static_cast<QWidget *>(0)),
       m_runApplicationActionGroup(static_cast<QWidget *>(0)),
       m_parentWidget(0)
@@ -176,7 +177,7 @@ void KFileItemActionsPrivate::slotExecuteService(QAction* act)
 ////
 
 KFileItemActions::KFileItemActions(QObject* parent)
-    : QObject(parent), d(new KFileItemActionsPrivate)
+    : QObject(parent), d(new KFileItemActionsPrivate(this))
 {
 }
 
@@ -661,6 +662,7 @@ void KFileItemActionsPrivate::slotRunApplication(QAction* act)
 void KFileItemActionsPrivate::slotOpenWithDialog()
 {
     // The item 'Other...' or 'Open With...' has been selected
+    emit q->openWithDialogAboutToBeShown();
     KRun::displayOpenWithDialog(m_props.urlList(), m_parentWidget);
 }
 

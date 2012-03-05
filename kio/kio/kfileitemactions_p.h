@@ -29,13 +29,15 @@
 #include <QActionGroup>
 #include <QObject>
 
+class KFileItemActions;
+
 typedef QList<KServiceAction> ServiceList;
 
 class KFileItemActionsPrivate : public QObject
 {
     Q_OBJECT
 public:
-    KFileItemActionsPrivate();
+    KFileItemActionsPrivate(KFileItemActions *qq);
     ~KFileItemActionsPrivate();
 
     int insertServicesSubmenus(const QMap<QString, ServiceList>& list, QMenu* menu, bool isBuiltin);
@@ -74,6 +76,7 @@ private Q_SLOTS:
     void slotOpenWithDialog();
 
 public:
+    KFileItemActions* const q;
     KFileItemListProperties m_props;
     QStringList m_mimeTypeList;
     QString m_traderConstraint;
