@@ -749,16 +749,21 @@ void Device::slotPropertiesChanged(const QString &ifaceName, const QVariantMap &
 {
     Q_UNUSED(ifaceName);
 
+    QMap<QString, int> changeMap;
+
     Q_FOREACH(const QString & key, invalidatedProps) {
         m_cache.remove(key);
+        changeMap.insert(key, Solid::GenericInterface::PropertyRemoved);
     }
 
     QMapIterator<QString, QVariant> i(changedProps);
     while (i.hasNext()) {
         i.next();
         m_cache.insert(i.key(), i.value());  // replace the value
+        changeMap.insert(i.key(), Solid::GenericInterface::PropertyModified);
     }
 
+    Q_EMIT propertyChanged(changeMap);
     Q_EMIT changed();
 }
 
