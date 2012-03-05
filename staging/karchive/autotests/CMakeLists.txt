@@ -13,6 +13,8 @@ MACRO(KARCHIVE_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
                add_test(karchive-${_testname} ${_testname})
+               # TODO: QT5 Port to QFINDTESTDATA
+               set_target_properties(${_testname} PROPERTIES COMPILE_FLAGS -DKDESRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}/\\"")
                target_link_libraries(${_testname} karchive ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} kcoreaddons)
                if(WINCE)
                 target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
@@ -28,9 +30,6 @@ MACRO(KARCHIVE_EXECUTABLE_TESTS) # TODO move to ../examples
                endif(WINCE)
        ENDFOREACH(_testname)
 ENDMACRO(KARCHIVE_EXECUTABLE_TESTS)
-
-# TODO: QT5 Port to QFINDTESTDATA
-add_definitions("-DKDESRCDIR=\"${CMAKE_CURRENT_SOURCE_DIR}/\"")
 
 KARCHIVE_UNIT_TESTS(
   karchivetest
