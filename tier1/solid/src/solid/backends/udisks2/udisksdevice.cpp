@@ -222,7 +222,6 @@ QString Device::storageDescription() const
     const UDisks2::StorageDrive storageDrive(const_cast<Device*>(this));
     Solid::StorageDrive::DriveType drive_type = storageDrive.driveType();
     bool drive_is_hotpluggable = storageDrive.isHotpluggable();
-    const UDisks2::StorageVolume storageVolume(const_cast<Device*>(this));
 
     if (drive_type == Solid::StorageDrive::CdromDrive)
     {
@@ -298,7 +297,7 @@ QString Device::storageDescription() const
 
     if (drive_type == Solid::StorageDrive::HardDisk && !drive_is_removable)
     {
-        QString size_str = formatByteSize(storageVolume.size());
+        QString size_str = formatByteSize(storageDrive.size());
         if (!size_str.isEmpty())
         {
             if (drive_is_hotpluggable)
@@ -360,7 +359,9 @@ QString Device::volumeDescription() const
     if (!volume_label.isEmpty())
         return volume_label;
 
-    const UDisks2::StorageDrive storageDrive(const_cast<Device*>(this));
+    const QString drivePath = prop("Drive").value<QDBusObjectPath>().path();
+    UDisks2::Device storageDevice(drivePath);
+    const UDisks2::StorageDrive storageDrive(&storageDevice);
     Solid::StorageDrive::DriveType drive_type = storageDrive.driveType();
 
     // Handle media in optical drives
@@ -534,7 +535,7 @@ QString Device::icon() const
     }
     else
     {        
-        if ( isPartition() )      // this is a slave device, we need to return its parent's icon  //FIXME
+        if ( isPartition() )      // this is a slave device, we need to return its parent's icon
         {
             Device* parent = 0;
             if ( !parentUdi().isEmpty() )
@@ -550,14 +551,17 @@ QString Device::icon() const
                 return iconName;
         }
 
+        const QString drivePath = prop("Drive").value<QDBusObjectPath>().path();
+        Device drive(drivePath);
+
         // handle media
-        const QString media = prop("Media").toString();
+        const QString media = drive.prop("Media").toString();
 
         if ( !media.isEmpty() )
         {
             if ( isOpticalDisc() )    // optical stuff
             {
-                bool isWritable = prop("OpticalBlank").toBool() && !prop("ReadOnly").toBool();  //FIXME could be RW?
+                bool isWritable = drive.prop("OpticalBlank").toBool();
 
                 const UDisks2::OpticalDisc disc(const_cast<Device*>(this));
                 Solid::OpticalDisc::ContentTypes availContent = disc.availableContent();
@@ -602,14 +606,14 @@ QString Device::icon() const
         }
 
         // handle drives
-        const bool isRemovable = prop("Removable").toBool();
-        const QString conn = prop("ConnectionBus").toString();
+        const bool isRemovable = drive.prop("Removable").toBool();
+        const QString conn = drive.prop("ConnectionBus").toString();
 
         if (isOpticalDrive())
             return "drive-optical";
         else if (isRemovable && !isOpticalDisc())
         {
-            if ( conn == "usb" )
+            if (conn == "usb")
                 return "drive-removable-media-usb";
             else
                 return "drive-removable-media";
@@ -647,12 +651,12 @@ QString Device::parentUdi() const
 {
     QString parent;
 
-    if (prop("IdUsage").toString() == "crypto")
+    if (isEncryptedContainer())
         parent = prop("CryptoBackingDevice").value<QDBusObjectPath>().path();
-    else if (propertyExists("Table"))  // partition
-        parent = prop("Table").value<QDBusObjectPath>().path();
     else if (propertyExists("Drive"))  // block
         parent = prop("Drive").value<QDBusObjectPath>().path();
+    else if (propertyExists("Table"))  // partition
+        parent = prop("Table").value<QDBusObjectPath>().path();
     else if (parent.isEmpty() || parent=="/") {
         parent = UD2_UDI_DISKS_PREFIX;
     }
