@@ -782,14 +782,16 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
             path = properties->url().toString();
 #else
-            path = properties->url().toDisplayString(QUrl::PreferLocalFile);
+#pragma message("Uncomment when patch is in Qt")
+//             path = properties->url().toDisplayString(QUrl::PreferLocalFile);
 #endif
         } else {
             path = QUrlPathInfo(properties->currentDir()).path(QUrlPathInfo::AppendTrailingSlash) + properties->defaultName();
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
             directory = properties->currentDir().toString();
 #else
-            directory = properties->currentDir().toDisplayString(QUrl::PreferLocalFile);
+#pragma message("Uncomment when patch is in Qt")
+//             directory = properties->currentDir().toDisplayString(QUrl::PreferLocalFile);
 #endif
         }
 
