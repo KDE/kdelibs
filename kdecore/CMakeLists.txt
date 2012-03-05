@@ -32,7 +32,9 @@ configure_file(localization/config-localization.h.cmake ${CMAKE_CURRENT_BINARY_D
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 include_directories( ${ZLIB_INCLUDE_DIR} )
 include_directories( ${QT_INCLUDES} )
-include_directories( ${CMAKE_SOURCE_DIR}/libqtmimetypes/include/QtMimeTypes )
+IF(NOT QT5_BUILD)
+    include_directories( ${CMAKE_SOURCE_DIR}/libqtmimetypes/include/QtMimeTypes )
+endif()
 include_directories( ${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/jobs )
 include_directories( ${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/io )
 include_directories( ${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/text )
@@ -252,7 +254,7 @@ target_link_libraries(kdecore
   LINK_PUBLIC
     ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons
   LINK_PRIVATE
-    QtMimeTypes ${QT_QTXML_LIBRARY} ${kdecore_OPTIONAL_LIBS}
+    ${QtMimeTypes_LIBRARY} ${QT_QTXML_LIBRARY} ${kdecore_OPTIONAL_LIBS}
 )
 
 if(WINCE)

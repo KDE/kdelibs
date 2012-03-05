@@ -57,8 +57,9 @@ if (NOT QT5_BUILD)
       ${CMAKE_BINARY_DIR}/libinqt5/src/
   )
   set(kwindowsystem_LIBRARY kwindowsystem)
+  add_subdirectory( libqtmimetypes )
+  set(QtMimeTypes_LIBRARY QtMimeTypes)
 endif()
-add_subdirectory( libqtmimetypes )
 add_subdirectory( libkdeqt5staging )
 include_directories(
     ${CMAKE_SOURCE_DIR}/libkdeqt5staging/src/
@@ -225,9 +226,14 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/jobs
                           ${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/text
                           ${CMAKE_BINARY_DIR}/staging/kcoreaddons/src
-                          ${CMAKE_SOURCE_DIR}/libqtmimetypes/include/QtMimeTypes
                           ${QT_INCLUDES}
                           ${_KDE4_PLATFORM_INCLUDE_DIRS})
+
+if (NOT QT5_BUILD)
+  list(APPEND KDE4_KDECORE_INCLUDES
+                          ${CMAKE_SOURCE_DIR}/libqtmimetypes/include/QtMimeTypes
+  )
+endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/kernel) # For QLocalizedString
 
