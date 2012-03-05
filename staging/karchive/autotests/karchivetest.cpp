@@ -558,7 +558,7 @@ void KArchiveTest::testTarMaxLength()
 void KArchiveTest::testTarGlobalHeader()
 {
     KTar tar( QString::fromLatin1(KDESRCDIR) + QLatin1String( "global_header_test.tar.bz2" ) );
-    QVERIFY( tar.open( QIODevice::ReadOnly ) );
+    QVERIFY2(tar.open( QIODevice::ReadOnly ), "global_header_test.tar.bz2");
 
     const KArchiveDirectory* dir = tar.directory();
     QVERIFY( dir != 0 );
