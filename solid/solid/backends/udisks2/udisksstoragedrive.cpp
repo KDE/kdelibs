@@ -42,7 +42,7 @@ qulonglong StorageDrive::size() const
 
 bool StorageDrive::isHotpluggable() const
 {
-    return !m_device->prop("HintSystem").toBool() || m_device->prop("Removable").toBool();
+    return m_device->prop("Removable").toBool();
 }
 
 bool StorageDrive::isRemovable() const
@@ -139,4 +139,3 @@ Solid::StorageDrive::Bus StorageDrive::bus() const
     else
         return Solid::StorageDrive::Platform;
 }
-
