@@ -17,7 +17,6 @@ check_include_files(sys/inotify.h SYS_INOTIFY_H_FOUND)
 macro_bool_to_01(SYS_INOTIFY_H_FOUND HAVE_SYS_INOTIFY_H)
 
 # Generate io/config-kdirwatch.h
-include(io/ConfigureChecks.cmake)
 configure_file(io/config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/io/config-kdirwatch.h )
 
 # Configure checks for network/ but also for netsupp.*
