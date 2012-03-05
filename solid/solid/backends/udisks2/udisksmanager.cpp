@@ -126,14 +126,15 @@ QStringList Manager::devicesFromQuery(const QString& parentUdi, Solid::DeviceInt
 QStringList Manager::allDevices()
 {
     m_deviceCache.clear();
-    m_deviceCache << udiPrefix();
 
     QDBusPendingReply<DBUSManagerStruct> reply = m_manager.GetManagedObjects();
     reply.waitForFinished();
     if (!reply.isError()) {  // enum devices
+        m_deviceCache << udiPrefix();
+
         Q_FOREACH(const QDBusObjectPath &path, reply.value().keys()) {
             const QString udi = path.path();
-            if (udi == UD2_DBUS_PATH_MANAGER || udi == UD2_UDI_DISKS_PREFIX)
+            if (udi == UD2_DBUS_PATH_MANAGER || udi == UD2_UDI_DISKS_PREFIX || udi.startsWith(UD2_DBUS_PATH_JOBS))
                 continue;
             m_deviceCache.append(udi);
         }
