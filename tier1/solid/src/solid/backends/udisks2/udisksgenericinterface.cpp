@@ -1,5 +1,6 @@
 /*
     Copyright 2009 Pino Toscano <pino@kde.org>
+    Copyright 2012 Lukáš Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -27,12 +28,8 @@ using namespace Solid::Backends::UDisks2;
 GenericInterface::GenericInterface(Device *device)
     : DeviceInterface(device)
 {
-/* TODO
-    connect(device, SIGNAL(propertyChanged(const QMap<QString,int> &)),
-            this, SIGNAL(propertyChanged(const QMap<QString,int> &)));
-    connect(device, SIGNAL(conditionRaised(const QString &, const QString &)),
-            this, SIGNAL(conditionRaised(const QString &, const QString &)));
-*/
+    connect(device, SIGNAL(propertyChanged(QMap<QString,int>)),
+            this, SIGNAL(propertyChanged(QMap<QString,int>)));
 }
 
 GenericInterface::~GenericInterface()
