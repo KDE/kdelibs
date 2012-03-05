@@ -108,13 +108,9 @@ public:
     void setIcon( const KIcon &icon );
 
     /**
-     * Sets the pixmap for this button. Rarely used. This one exists mostly for usage in Qt designer,
-     * with icons embedded into the ui file. But you should rather save them separately, and load them
-     * with KIcon("name") so that the icons are themeable.
+     * Sets the pixmap for this button. This one exists mostly for usage in Qt designer.
      */
-#ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setIcon( const QIcon &pix );
-#endif
+    void setIcon( const QIcon &pix );
 
     /**
     * Sets the text of the button

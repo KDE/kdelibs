@@ -110,7 +110,7 @@ namespace Nepomuk {
          *
          * \sa setResources()
          */
-        void addResource( const QUrl & res );
+        void addResource( const Nepomuk::Resource & res );
 
         /**
          * \brief Add a property to be watched.
@@ -139,7 +139,7 @@ namespace Nepomuk {
          *
          * \sa setResources()
          */
-        void removeResource( const QUrl & res );
+        void removeResource( const Nepomuk::Resource & res );
 
         /**
          * \brief Remove a property to be watched.
@@ -168,7 +168,7 @@ namespace Nepomuk {
          *
          * \sa addResource()
          */
-        void setResources( const QList<QUrl> & resources_ );
+        void setResources( const QList<Nepomuk::Resource> & resources_ );
 
         /**
          * \brief Set the properties to be watched.
@@ -194,7 +194,7 @@ namespace Nepomuk {
          * Every change to one of these resources will be
          * signalled, depending on the configured properties().
          */
-        QList<QUrl> resources() const;
+        QList<Nepomuk::Resource> resources() const;
 
         /**
          * \brief The properties that have been configured via addProperty() and setProperties().
@@ -229,7 +229,7 @@ namespace Nepomuk {
          * \param types The types the new resource has. If types() have been configured this list will always
          * contain one of the configured types.
          */
-        void resourceCreated( const QUrl & resource, const QList<QUrl>& types ); //FIXME: Use either Resource or uri, not a mix
+        void resourceCreated( const Nepomuk::Resource & resource, const QList<QUrl>& types ); //FIXME: Use either Resource or uri, not a mix
 
         /**
          * \brief This signal is emitted when a resource is deleted.
@@ -245,7 +245,7 @@ namespace Nepomuk {
          * \param res The changed resource.
          * \param type The newly added type. If types() have been configured it will be one of them.
          */
-        void resourceTypeAdded( const QUrl & res, const Types::Class & type );
+        void resourceTypeAdded( const Nepomuk::Resource & res, const Types::Class & type );
 
         /**
          * \brief This signal is emitted when a type has been removed from a resource.
@@ -255,7 +255,7 @@ namespace Nepomuk {
          * \param res The changed resource.
          * \param type The removed type. If types() have been configured it will be one of them.
          */
-        void resourceTypeRemoved( const QUrl & res, const Types::Class & type );
+        void resourceTypeRemoved( const Nepomuk::Resource & res, const Types::Class & type );
 
         /**
          * \brief This signal is emitted when a property value is added.
@@ -263,7 +263,7 @@ namespace Nepomuk {
          * \param property The property which has a new value.
          * \param value The newly added property value.
          */
-        void propertyAdded( const QUrl & resource,
+        void propertyAdded( const Nepomuk::Resource & resource,
                             const Nepomuk::Types::Property & property,
                             const QVariant & value );
 
@@ -273,7 +273,7 @@ namespace Nepomuk {
          * \param property The property which was changed.
          * \param value The removed property value.
          */
-        void propertyRemoved( const QUrl & resource,
+        void propertyRemoved( const Nepomuk::Resource & resource,
                               const Nepomuk::Types::Property & property,
                               const QVariant & value );
 
@@ -291,7 +291,7 @@ namespace Nepomuk {
          * \param property The property which was changed.
          * \param oldValue The removed property value.
          */
-        void propertyChanged( const QUrl & resource,
+        void propertyChanged( const Nepomuk::Resource & resource,
                               const Nepomuk::Types::Property & property,
                               const QVariantList & oldValue,
                               const QVariantList & newValue );

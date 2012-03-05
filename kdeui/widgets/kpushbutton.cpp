@@ -258,12 +258,10 @@ void KPushButton::setIcon( const KIcon &icon )
         QPushButton::setIcon( QIcon() );
 }
 
-#ifndef KDE_NO_DEPRECATED
 void KPushButton::setIcon( const QIcon &qicon )
 {
     d->item.setIcon(KIcon(qicon));
 }
-#endif
 
 void KPushButton::setDragEnabled( bool enable )
 {

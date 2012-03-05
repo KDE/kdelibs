@@ -26,6 +26,7 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QDir>
+#include <kstandarddirs.h>
 #include <string.h> // strcpy
 
 class KSharedDataCacheTest : public QObject
@@ -43,19 +44,31 @@ void KSharedDataCacheTest::initTestCase()
 
 void KSharedDataCacheTest::simpleInsert()
 {
-    KSharedDataCache cache("myCache", 5*1024*1024);
+    const QLatin1String cacheName("myTestCache");
+    const QLatin1String key("mypic");
+    // clear the cache
+    QString cacheFile = KGlobal::dirs()->locateLocal("cache", cacheName + QLatin1String(".kcache"));
+    QFile file(cacheFile);
+    if (file.exists())
+        QVERIFY(file.remove());
+    // insert something into it
+    KSharedDataCache cache(cacheName, 5*1024*1024);
+    QVERIFY(file.exists()); // make sure we got the cache filename right
     QByteArray data;
     data.resize(9228);
     strcpy(data.data(), "Hello world");
-    const QString key = "mypic";
     QVERIFY(cache.insert(key, data));
-
+    // read it out again
     QByteArray result;
     QVERIFY(cache.find(key, &result));
-#if 0
+    QCOMPARE(result, data);
+    // another insert
+    strcpy(data.data(), "Hello KDE");
+    QVERIFY(cache.insert(key, data));
+    // and another read
+    QVERIFY(cache.find(key, &result));
     QEXPECT_FAIL("", "Bug in findNamedEntry!", Continue);
     QCOMPARE(result, data);
-#endif
 }
 
 QTEST_KDEMAIN_CORE(KSharedDataCacheTest)

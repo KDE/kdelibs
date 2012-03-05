@@ -508,9 +508,9 @@ Soprano::Model* Nepomuk::ResourceManager::mainModel()
 }
 
 
-void Nepomuk::ResourceManager::slotPropertyAdded(const QUrl &res, const Types::Property &prop, const QVariant &value)
+void Nepomuk::ResourceManager::slotPropertyAdded(const Resource &res, const Types::Property &prop, const QVariant &value)
 {
-    ResourceDataHash::iterator it = d->m_initializedData.find(res);
+    ResourceDataHash::iterator it = d->m_initializedData.find(res.resourceUri());
     if(it != d->m_initializedData.end()) {
         ResourceData* data = *it;
         data->m_cache[prop.uri()].append(Variant(value));
@@ -518,9 +518,9 @@ void Nepomuk::ResourceManager::slotPropertyAdded(const QUrl &res, const Types::P
     }
 }
 
-void Nepomuk::ResourceManager::slotPropertyRemoved(const QUrl& res, const Nepomuk::Types::Property& prop, const QVariant& value_)
+void Nepomuk::ResourceManager::slotPropertyRemoved(const Resource &res, const Types::Property &prop, const QVariant &value_)
 {
-    ResourceDataHash::iterator it = d->m_initializedData.find(res);
+    ResourceDataHash::iterator it = d->m_initializedData.find(res.resourceUri());
     if(it != d->m_initializedData.end()) {
         ResourceData* data = *it;
 

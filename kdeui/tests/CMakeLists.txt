@@ -71,6 +71,7 @@ KDEUI_UNIT_TESTS(
   ktimecomboboxtest
   kdatecomboboxtest
   kdatetimeedittest
+  kconfigdialog_unittest
 )
 
 KDEUI_PROXYMODEL_TESTS(

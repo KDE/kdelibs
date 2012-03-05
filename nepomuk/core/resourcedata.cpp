@@ -63,6 +63,7 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QUrl& kickOffUri, co
       m_mainType( type ),
       m_modificationMutex(QMutex::Recursive),
       m_cacheDirty(false),
+      m_addedToWatcher(false),
       m_pimoThing(0),
       m_groundingOccurence(0),
       m_rm(rm)
@@ -162,14 +163,22 @@ void Nepomuk::ResourceData::resetAll( bool isDelete )
 {
     // remove us from all caches (store() will re-insert us later if necessary)
     m_rm->mutex.lock();
-    if( !m_uri.isEmpty() ) {
-        m_rm->m_initializedData.remove( m_uri );
-        if( m_rm->m_watcher ) {
-            m_rm->m_watcher->removeResource(m_uri);
-        }
-    }
+
+    // IMPORTANT:
+    // Remove from the kickOffList before removing from the resource watcher
+    // This is required cause otherwise the Resource::fromResourceUri creates a new
+    // resource which is correctly identified to the ResourceData (this), and it is
+    // then deleted, which calls resetAll and this cycle continues.
     Q_FOREACH( const KUrl& uri, m_kickoffUris )
         m_rm->m_uriKickoffData.remove( uri );
+
+    if( !m_uri.isEmpty() ) {
+        m_rm->m_initializedData.remove( m_uri );
+        if( m_rm->m_watcher && m_addedToWatcher ) {
+            m_rm->m_watcher->removeResource(Resource::fromResourceUri(m_uri));
+            m_addedToWatcher = false;
+        }
+    }
     m_rm->mutex.unlock();
 
     // reset all variables
@@ -382,6 +391,20 @@ bool Nepomuk::ResourceData::load()
 
     if ( m_cacheDirty ) {
         m_cache.clear();
+
+        if(!m_rm->m_watcher) {
+            m_rm->m_watcher = new ResourceWatcher(m_rm->m_manager);
+            QObject::connect( m_rm->m_watcher, SIGNAL(propertyAdded(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)),
+                              m_rm->m_manager, SLOT(slotPropertyAdded(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)) );
+            QObject::connect( m_rm->m_watcher, SIGNAL(propertyRemoved(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)),
+                              m_rm->m_manager, SLOT(slotPropertyRemoved(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)) );
+            m_rm->m_watcher->addResource( Nepomuk::Resource::fromResourceUri(m_uri) );
+            m_rm->m_watcher->start();
+        }
+        else {
+            m_rm->m_watcher->addResource( Nepomuk::Resource::fromResourceUri(m_uri) );
+        }
+        m_addedToWatcher = true;
 
         if ( m_uri.isValid() ) {
             //
@@ -707,18 +730,6 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::determineUri()
         ResourceDataHash::iterator it = m_rm->m_initializedData.find(m_uri);
         if( it == m_rm->m_initializedData.end() ) {
             m_rm->m_initializedData.insert( m_uri, this );
-            if(!m_rm->m_watcher) {
-                m_rm->m_watcher = new ResourceWatcher(m_rm->m_manager);
-                QObject::connect( m_rm->m_watcher, SIGNAL(propertyAdded(QUrl, Nepomuk::Types::Property, QVariant)),
-                                  m_rm->m_manager, SLOT(slotPropertyAdded(QUrl, Nepomuk::Types::Property, QVariant)) );
-                QObject::connect( m_rm->m_watcher, SIGNAL(propertyRemoved(QUrl, Nepomuk::Types::Property, QVariant)),
-                                  m_rm->m_manager, SLOT(slotPropertyRemoved(QUrl, Nepomuk::Types::Property, QVariant)) );
-                m_rm->m_watcher->addResource( m_uri );
-                m_rm->m_watcher->start();
-            }
-            else {
-                m_rm->m_watcher->addResource( m_uri );
-            }
         }
         else {
             return it.value();
