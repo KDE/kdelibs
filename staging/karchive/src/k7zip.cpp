@@ -1619,8 +1619,6 @@ QByteArray K7Zip::K7ZipPrivate::readAndDecodePackedStreams(bool readMainStreamIn
                 return QByteArray();
             }
 
-            const int bytesOut = unpackSize - filter->outBufferAvailable();
-
             filter->terminate();
             delete filter;
 
@@ -1675,8 +1673,8 @@ void K7Zip::K7ZipPrivate::createItemsFromEntities(const KArchiveDirectory * dir,
             if (fileInfo->size > 0) {
                 fileInfo->hasStream = true;
                 data.append(outData.mid(fileEntry->position(), fileEntry->size()));
+                unpackSizes.append(fileInfo->size);
             }
-            unpackSizes.append(fileInfo->size);
             fileInfos.append(fileInfo);
         }
 
@@ -2090,19 +2088,6 @@ QByteArray K7Zip::K7ZipPrivate::encodeStream(QVector<quint64> &packSizes, QVecto
         filter->terminate();
         delete filter;
     }
-    /*QBuffer* out = new QBuffer();
-    out->open(QBuffer::ReadWrite);
-    KCompressionDevice compression(out, true, KCompressionDevice::Xz);
-    compression.open(QIODevice::WriteOnly);
-    compression.write(header.data(), header.size());
-    compression.close();
-
-    QByteArray encodedData = out->data();*/
-
-    // remove xz header + lzma2 header
-    /*encodedData.remove(0, 6+18);
-    // remove xz + lzma2 footer
-    encodedData.remove(encodedData.size() - 24, 24);*/
 
     packSizes.append(encodedData.size());
     return encodedData;
@@ -2310,11 +2295,10 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
 
     QIODevice* dev = device();
 
-    char header[32];
-
     if ( !dev )
         return false;
 
+    char header[32];
     // check signature
     qint64 n = dev->read( header, 32 );
     if (n != 32) {
@@ -2387,12 +2371,14 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
     }
 
     int type = d->readByte();
+    QByteArray decodedData;
     if (type != kHeader) {
         if (type != kEncodedHeader) {
             qDebug() << "error in header";
             return false;
         }
-        QByteArray decodedData = d->readAndDecodePackedStreams();
+
+        decodedData = d->readAndDecodePackedStreams();
 
         int external = d->readByte();
         if (external != 0) {
@@ -2400,7 +2386,7 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
             if (dataIndex < 0) {
                 qDebug() << "dataIndex error";
             }
-            d->buffer = decodedData.data();
+            d->buffer = decodedData.constData();
             d->pos = 0;
             d->end = decodedData.size();
         }
@@ -2412,6 +2398,7 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
         }
     }
     // read header
+
     type = d->readByte();
 
     if (type == kArchiveProperties) {
@@ -2445,6 +2432,7 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
     if (type == kEnd) {
         return true;
     }
+
     if (type != kFilesInfo) {
         qDebug() << "read header error";
         return false;
@@ -2922,8 +2910,9 @@ bool K7Zip::closeArchive()
     return true;
 }
 
-bool K7Zip::doFinishWriting( qint64 /*size*/ ) {
+bool K7Zip::doFinishWriting( qint64 size ) {
 
+    d->m_currentFile->setSize(size);
     d->m_currentFile = 0L;
 
     return true;
@@ -2941,8 +2930,6 @@ bool K7Zip::writeData(const char * data, qint64 size)
         d->outData.remove(d->m_currentFile->position(), d->m_currentFile->size());
         d->outData.insert(d->m_currentFile->position(), data, size);
     }
-
-    d->m_currentFile->setSize(size);
 
     return true;
 }

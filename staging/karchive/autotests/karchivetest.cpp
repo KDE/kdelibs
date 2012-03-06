@@ -916,7 +916,7 @@ void KArchiveTest::testCreate7Zip()
     QVERIFY(fileInfo.exists());
     qDebug() << "fileInfo.size()" << fileInfo.size();
     // We can't check for an exact size because of the addLocalFile, whose data is system-dependent
-    QVERIFY(fileInfo.size() > 700);
+    QVERIFY(fileInfo.size() > 400);
 
     }
 }
