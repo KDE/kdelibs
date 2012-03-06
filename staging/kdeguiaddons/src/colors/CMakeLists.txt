@@ -35,7 +35,6 @@ install( FILES
  kcolorutils.h
  kcolorscheme.h
  kcolorcollection.h
- kcolorchoosermode.h
  kcolormimedata.h
 
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel

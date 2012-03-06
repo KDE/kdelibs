@@ -37,6 +37,7 @@ install( FILES
  kcolordialog.h
  kcolorvalueselector.h
  khuesaturationselect.h
+ kcolorchoosermode.h
 
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
