@@ -32,6 +32,7 @@ target_link_libraries(kdeguiaddons ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${KD
 install(TARGETS kdeguiaddons EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
+ ${CMAKE_CURRENT_BINARY_DIR}/kdeguiaddons_export.h
  kcolorutils.h
  kcolorscheme.h
  kcolorcollection.h
