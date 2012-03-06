@@ -46,6 +46,7 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
  ${CMAKE_CURRENT_SOURCE_DIR}/xmlgui
  ${CMAKE_CURRENT_BINARY_DIR}/util
+ ${CMAKE_SOURCE_DIR}/staging/kdeguiaddons/src/colors
  ${DBUSMENUQT_INCLUDE_DIR}
 )
 
@@ -253,7 +254,6 @@ set(kdeui_LIB_SRCS
  widgets/krichtextedit.cpp
  widgets/krichtextwidget.cpp
  widgets/kruler.cpp
- widgets/kselector.cpp
  widgets/kseparator.cpp
  widgets/kshortcutwidget.cpp
  widgets/ksqueezedtextlabel.cpp
@@ -269,7 +269,6 @@ set(kdeui_LIB_SRCS
  widgets/ktoolbar.cpp
  widgets/kurllabel.cpp
  widgets/kvbox.cpp
- widgets/kxyselector.cpp
  widgets/kdeuiwidgetsproxystyle.cpp
  widgets/nestedlisthelper.cpp
  xmlgui/kxmlguibuilder.cpp
@@ -392,11 +391,11 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 generate_export_header(kdeui)
 
-target_link_libraries(kdeui itemmodels sonnetcore kauth ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
+target_link_libraries(kdeui kdecolorwidgets kdeguiaddons itemmodels sonnetcore kauth ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
                             ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} kcoreaddons ${kwindowsystem_LIBRARY})
 
 if(NOT WINCE)
-target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY})
+target_link_libraries(kdeui ${QT_QTSVG_LIBRARY})
 endif(NOT WINCE)
 
 if(HAVE_DBUSMENUQT)
@@ -643,13 +642,11 @@ install( FILES
  widgets/ktabbar.h
  widgets/ktabwidget.h
  widgets/kruler.h
- widgets/kselector.h
  widgets/kshortcutwidget.h
  widgets/kstatusbar.h
  widgets/ktoolbar.h
  widgets/kurllabel.h
  widgets/kvbox.h
- widgets/kxyselector.h
  xmlgui/kxmlguiwindow.h
  xmlgui/kxmlguiclient.h
  xmlgui/kxmlguibuilder.h

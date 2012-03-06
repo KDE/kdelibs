@@ -30,7 +30,7 @@
 #include <QComboBox>
 #include <QtCore/QList>
 
-#include <kdeui_export.h>
+#include <kcolorwidgets_export.h>
 
 class KColorComboPrivate;
 
@@ -42,7 +42,7 @@ class KColorComboPrivate;
  *
  * \image html kcolorcombo.png "KDE Color Combo Box"
  */
-class KDEUI_EXPORT KColorCombo : public QComboBox
+class KCOLORWIDGETS_EXPORT KColorCombo : public QComboBox
 {
     Q_OBJECT
     Q_PROPERTY( QColor color READ color WRITE setColor NOTIFY activated USER true )

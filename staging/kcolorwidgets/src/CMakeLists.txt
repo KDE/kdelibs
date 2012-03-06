@@ -26,12 +26,12 @@ add_library(kdecolorwidgets ${LIBRARY_TYPE} ${kdecolorwidgets_LIB_SRCS})
 
 generate_export_header(kdecolorwidgets)
 
-target_link_libraries(kdecolorwidgets ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${KDEUI_EXTRA_LIBS})
+target_link_libraries(kdecolorwidgets kdeguiaddons ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${KDEUI_EXTRA_LIBS})
 
 install(TARGETS kdecolorwidgets EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
- ${CMAKE_CURRENT_BINARY_DIR}/kdeui_export.h
+ ${CMAKE_CURRENT_BINARY_DIR}/kcolorwidgets_export.h
  kcolorbutton.h
  kcolorcombo.h
  kcolordialog.h

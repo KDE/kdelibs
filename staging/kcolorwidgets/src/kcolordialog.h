@@ -37,7 +37,7 @@
 *
 * @author Martin Jones <mjones@kde.org>
 */
-class KDEUI_EXPORT KColorCells : public QTableWidget
+class KCOLORWIDGETS_EXPORT KColorCells : public QTableWidget
 {
   Q_OBJECT
 public:
