@@ -454,7 +454,7 @@ private:
  * new state. Using KStatefulBrush will allow your application to inherit these
  * changes "for free", without even recompiling.
  */
-class KDEUI_EXPORT KStatefulBrush
+class KDEGUIADDONS_EXPORT KStatefulBrush
 {
 public:
     /**

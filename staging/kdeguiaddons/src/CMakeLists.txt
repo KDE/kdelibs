@@ -1,26 +1,17 @@
-cmake_minimum_required(VERSION 2.8.7)
-
-project(kdeguiaddons)
-
-find_package(extra-cmake-modules 0.0.2 REQUIRED)
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${EXTRA_CMAKE_MODULES_MODULE_PATH})
-
-include(ECMVersion)
-
 include_directories(
  ${KDE4_KDECORE_INCLUDES}
- ${CMAKE_CURRENT_SOURCE_DIR}/colors
+ ${CMAKE_CURRENT_SOURCE_DIR}
  ${DBUSMENUQT_INCLUDE_DIR}
+ ${CMAKE_BINARY_DIR}/staging/kdeguiaddons/src/colors
 )
 
 set(kdeguiaddons_LIB_SRCS
- kcolorspaces.cpp
- kcolorutils.cpp
- kcolorscheme.cpp
- kcolorcollection.cpp
- kcolorhelpers.cpp
- kcolormimedata.cpp
+ colors/kcolorspaces.cpp
+ colors/kcolorutils.cpp
+ colors/kcolorscheme.cpp
+ colors/kcolorcollection.cpp
+ colors/kcolorhelpers.cpp
+ colors/kcolormimedata.cpp
 )
 
 add_library(kdeguiaddons ${LIBRARY_TYPE} ${kdeguiaddons_LIB_SRCS})
@@ -32,13 +23,11 @@ target_link_libraries(kdeguiaddons ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${KD
 install(TARGETS kdeguiaddons EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
- ${CMAKE_CURRENT_BINARY_DIR}/kdeguiaddons_export.h
- kcolorutils.h
- kcolorscheme.h
- kcolorcollection.h
- kcolormimedata.h
+ ${CMAKE_CURRENT_BINARY_DIR}/staging/kdeguiaddons/src/kdeguiaddons_export.h
+ colors/kcolorutils.h
+ colors/kcolorscheme.h
+ colors/kcolorcollection.h
+ colors/kcolormimedata.h
 
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
-
-add_subdirectory(tests)
