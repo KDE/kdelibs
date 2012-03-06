@@ -1670,10 +1670,15 @@ void K7Zip::K7ZipPrivate::createItemsFromEntities(const KArchiveDirectory * dir,
             fileInfo->attributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + ((entry->permissions() & 0xFFFF) << 16);
             fileInfo->size = fileEntry->size();
             sizeItems += fileInfo->size;
+            QString symLink = fileEntry->symLinkTarget();
             if (fileInfo->size > 0) {
                 fileInfo->hasStream = true;
                 data.append(outData.mid(fileEntry->position(), fileEntry->size()));
                 unpackSizes.append(fileInfo->size);
+            } else if (!symLink.isEmpty()) {
+                fileInfo->hasStream = true;
+                data.append(symLink.toUtf8());
+                unpackSizes.append(symLink.size());
             }
             fileInfos.append(fileInfo);
         }
@@ -1749,11 +1754,9 @@ void K7Zip::K7ZipPrivate::writeUInt32(quint32 value)
 void K7Zip::K7ZipPrivate::writeUInt64(quint64 value)
 {
     for (int i = 0; i < 8; i++) {
-        printf("%02x", (unsigned char)value);
         writeByte((unsigned char)value);
         value >>= 8;
     }
-    printf("\n");
 }
 
 void K7Zip::K7ZipPrivate::writeAlignedBoolHeader(const QVector<bool> &v, int numDefined, int type, unsigned itemSize)
@@ -2384,7 +2387,7 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
         if (external != 0) {
             int dataIndex = (int)d->readNumber();
             if (dataIndex < 0) {
-                qDebug() << "dataIndex error";
+                //qDebug() << "dataIndex error";
             }
             d->buffer = decodedData.constData();
             d->pos = 0;
@@ -3042,7 +3045,7 @@ bool K7Zip::doWriteSymLink(const QString &name, const QString &target,
     }
     QByteArray encodedTarget = QFile::encodeName(target);
 
-    K7ZipFileEntry* e = new K7ZipFileEntry( this, fileName, perm, mtime, user, group, target, d->outData.size(), target.size(), 0 );
+    K7ZipFileEntry* e = new K7ZipFileEntry( this, fileName, perm, mtime, user, group, target, 0, 0, 0 );
     d->outData.append(encodedTarget);
 
     parentDir->addEntry( e );

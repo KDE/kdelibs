@@ -425,7 +425,7 @@ void KArchiveTest::testUncompress()
     KFilterDev filterDev(fileName);
     QByteArray buffer;
     buffer.resize(8*1024);
-    qDebug() << "buffer.size()=" << buffer.size();
+    //qDebug() << "buffer.size()=" << buffer.size();
     QVERIFY(filterDev.open(QIODevice::ReadOnly));
 
     qint64 totalSize = 0;
@@ -914,7 +914,7 @@ void KArchiveTest::testCreate7Zip()
 
     QFileInfo fileInfo(QFile::encodeName(fileName));
     QVERIFY(fileInfo.exists());
-    qDebug() << "fileInfo.size()" << fileInfo.size();
+    //qDebug() << "fileInfo.size()" << fileInfo.size();
     // We can't check for an exact size because of the addLocalFile, whose data is system-dependent
     QVERIFY(fileInfo.size() > 400);
 

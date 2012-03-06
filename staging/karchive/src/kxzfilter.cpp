@@ -131,51 +131,9 @@ bool KXzFilter::init( int mode, Flag flag, const QVector<unsigned char>& propert
         }
         case BCJ:
         {
-            qDebug() << "LZMA_FILTER_X86 supported : " << (bool)lzma_filter_decoder_is_supported(LZMA_FILTER_X86);
-            /*unsigned char props[5] = {0x5d, 0x00, 0x00, 0x08, 0x00};
-            d->filters[0].id = LZMA_FILTER_LZMA1;
-            d->filters[0].options = NULL;
-            result = lzma_properties_decode(&d->filters[0], NULL, props, sizeof(props));
-            if (result != LZMA_OK) {
-                qWarning() << "lzma_properties_decode1 returned" << result;
-                return false;
-            }
-            d->filters[1].id = LZMA_FILTER_LZMA1;
-            d->filters[1].options = NULL;
-            result = lzma_properties_decode(&d->filters[1], NULL, props, sizeof(props));
-            if (result != LZMA_OK) {
-                qWarning() << "lzma_properties_decode2 returned" << result;
-                return false;
-            }
-            d->filters[2].id = LZMA_FILTER_LZMA1;
-            d->filters[2].options = NULL;
-            result = lzma_properties_decode(&d->filters[2], NULL, props, sizeof(props));
-            if (result != LZMA_OK) {
-                qWarning() << "lzma_properties_decode3 returned" << result;
-                return false;
-            }*/
-
-            //d->filters[3].id = LZMA_FILTER_X86;
-            //d->filters[3].options = NULL;
-
             d->filters[0].id = LZMA_FILTER_X86;
-            /*if (!properties.isEmpty()) {
-                Q_ASSERT(properties.size() >= 4);
-                quint32 start_offset = (quint32)properties[0];
-                start_offset |= (quint32)properties[1] << 8;
-                start_offset |= (quint32)properties[2] << 16;
-                start_offset |= (quint32)properties[3] << 24;*/
+            d->filters[0].options = NULL;
 
-                //lzma_options_bcj *opt = new lzma_options_bcj();
-                //opt->start_offset = 0;
-                //opt->start_offset = start_offset;
-                //d->filters[0].options = opt;
-                d->filters[0].options = NULL;
-            /*} else {
-                d->filters[0].options = NULL;
-            }*/
-
-            //result = lzma_properties_decode(&d->filters[1], NULL, NULL, 0);
             unsigned char props[5] = {0x5d, 0x00, 0x00, 0x08, 0x00};
             d->filters[1].id = LZMA_FILTER_LZMA1;
             d->filters[1].options = NULL;
@@ -188,11 +146,6 @@ bool KXzFilter::init( int mode, Flag flag, const QVector<unsigned char>& propert
             d->filters[2].id = LZMA_VLI_UNKNOWN;
             d->filters[2].options = NULL;
 
-            //result = lzma_properties_decode(&d->filters[0], NULL, props, sizeof(props));
-            /*if (result != LZMA_OK) {
-                qWarning() << "lzma_properties_decode returned" << result;
-                return false;
-            }*/
             break;
         }
         case POWERPC:
@@ -200,7 +153,7 @@ bool KXzFilter::init( int mode, Flag flag, const QVector<unsigned char>& propert
         case ARM:
         case ARMTHUMB:
         case SPARC:
-            qDebug() << "flag" << flag << "props size" << properties.size();
+            //qDebug() << "flag" << flag << "props size" << properties.size();
             break;
         }
 
@@ -219,26 +172,12 @@ bool KXzFilter::init( int mode, Flag flag, const QVector<unsigned char>& propert
             if (LZMA2) {
                 lzma_options_lzma lzma_opt;
                 lzma_lzma_preset(&lzma_opt, LZMA_PRESET_DEFAULT);
-                qDebug() << "write dictSize" << lzma_opt.dict_size;
-                 //lzma_opt.dict_size = properties[0];
-                qDebug() << "dict properties" << properties[0];
 
                 d->filters[0].id = LZMA_FILTER_LZMA2;
                 d->filters[0].options = &lzma_opt;
                 d->filters[1].id = LZMA_VLI_UNKNOWN;
                 d->filters[1].options = NULL;
-
             }
-            /*lzma_lzma_preset(&d->opt, LZMA_PRESET_DEFAULT);
-            d->opt.dict_size = 8 << 20; //use dictSize ?
-            //opt.preset_dict = preset_dict_buffer;
-            //opt.preset_dict_size = preset_dict_size;
-            if (flag == LZMA) {
-                d->filters[0].id = LZMA_FILTER_LZMA1;
-            } else {
-            }
-            d->filters[0].options = &d->opt;
-            d->filters[1].id = LZMA_VLI_UNKNOWN;*/
             result = lzma_raw_encoder(&d->zStream, d->filters);
         }
         if (result != LZMA_OK) {
@@ -307,10 +246,10 @@ KXzFilter::Result KXzFilter::uncompress()
     lzma_ret result;
     result = lzma_code(&d->zStream, LZMA_RUN);
 
-    if (result != LZMA_OK) {
+    /*if (result != LZMA_OK) {
         qDebug() << "lzma_code returned " << result;
         //qDebug() << "KXzFilter::uncompress " << ( result == LZMA_STREAM_END ? KFilterBase::End : KFilterBase::Error );
-    }
+    }*/
 
     switch (result) {
         case LZMA_OK:
@@ -326,7 +265,6 @@ KXzFilter::Result KXzFilter::compress( bool finish )
 {
     //qDebug() << "Calling lzma_code with avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable();
     lzma_ret result = lzma_code(&d->zStream, finish ? LZMA_FINISH : LZMA_RUN );
-    //lzma_ret ret = lzma_raw_buffer_encode(d->filters, NULL, in, in_size, out, &out_used, out_size);
     switch (result) {
         case LZMA_OK:
                 return KFilterBase::Ok;
