@@ -30,7 +30,7 @@
 #include <KRichTextWidget>
 #include <kmessagebox.h>
 #include <kio/netaccess.h>
-#include <ksavefile.h>
+#include <qsavefile.h>
 #include <kstatusbar.h>
 
 
@@ -94,14 +94,17 @@ void KRichTextEditor::newFile()
 
 void KRichTextEditor::saveFileAs(const QString &outputFileName)
 {
-    KSaveFile file(outputFileName);
-    file.open();
+    QSaveFile file(outputFileName);
+    if (!file.open(QIODevice::WriteOnly)) {
+        return;
+    }
 
     QByteArray outputByteArray;
     outputByteArray.append(textArea->toHtml().toUtf8());
     file.write(outputByteArray);
-    file.finalize();
-    file.close();
+    if (!file.commit()) {
+        return;
+    }
 
     fileName = outputFileName;
 }

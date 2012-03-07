@@ -25,7 +25,7 @@
 #include <QtCore/QTextStream>
 #include <kstandarddirs.h>
 #include <kglobal.h>
-#include <ksavefile.h>
+#include <qsavefile.h>
 #include <kstringhandler.h>
 
 //BEGIN KColorCollectionPrivate
@@ -141,8 +141,8 @@ bool
 KColorCollection::save()
 {
    QString filename = KStandardDirs::locateLocal("config", "colors/" + d->name);
-   KSaveFile sf(filename);
-   if (!sf.open()) return false;
+   QSaveFile sf(filename);
+   if (!sf.open(QIODevice::WriteOnly)) return false;
 
    QTextStream str ( &sf );
 
@@ -158,8 +158,7 @@ KColorCollection::save()
        str << r << " " << g << " " << b << " " << node.name << "\n";
    }
 
-   sf.flush();
-   return sf.finalize();
+   return sf.commit();
 }
 
 QString KColorCollection::description() const
