@@ -3,6 +3,7 @@ set(libinqt5_SRCS
     qstandardpaths.cpp
     qstandardpaths_unix.cpp
     qtemporarydir.cpp
+    qsavefile.cpp
 )
 
 # TODO windows: qstandardpaths_win.cpp
