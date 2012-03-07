@@ -23,6 +23,5 @@ ENDMACRO(INQT5_UNIT_TESTS)
 
 INQT5_UNIT_TESTS(
   tst_qstandardpaths
-  tst_qsavefile
 )
 

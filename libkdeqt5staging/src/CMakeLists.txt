@@ -1,5 +1,6 @@
 set(libkdeqt5staging_SRCS
     qurlpathinfo.cpp
+    qsavefile.cpp
 )
 
 add_library(kdeqt5staging ${LIBRARY_TYPE} ${libkdeqt5staging_SRCS})
@@ -17,6 +18,7 @@ install(TARGETS kdeqt5staging EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_
 # Install into a kdeqt5staging subdir to prevent clashes with real Qt header files
 install(FILES
     qurlpathinfo.h
+    qsavefile.h
     ${CMAKE_CURRENT_BINARY_DIR}/kdeqt5staging_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/kdeqt5staging COMPONENT Devel
 )
