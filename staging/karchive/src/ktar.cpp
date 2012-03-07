@@ -129,7 +129,7 @@ bool KTar::createDevice(QIODevice::OpenMode mode)
         if (!KArchive::createDevice(mode))
             return false;
         if (!d->mimetype.isEmpty()) {
-            // Create a compression filter on top of the KSaveFile device that KArchive created.
+            // Create a compression filter on top of the QSaveFile device that KArchive created.
             //qDebug() << "creating KFilterDev for" << d->mimetype;
             KCompressionDevice::CompressionType type = KFilterDev::compressionTypeForMimeType(d->mimetype);
             KCompressionDevice* compressionDevice = new KCompressionDevice(device(), true, type);
@@ -502,8 +502,8 @@ bool KTar::KTarPrivate::writeBackTempFile( const QString & fileName )
         QLatin1String(application_lzma) == mimetype || QLatin1String(application_xz) == mimetype)
         forced = true;
 
-    // #### TODO this should use KSaveFile to avoid problems on disk full
-    // (KArchive uses KSaveFile by default, but the temp-uncompressed-file trick
+    // #### TODO this should use QSaveFile to avoid problems on disk full
+    // (KArchive uses QSaveFile by default, but the temp-uncompressed-file trick
     // circumvents that).
 
     KFilterDev dev(fileName);
