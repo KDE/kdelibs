@@ -18,7 +18,7 @@ add_library(kcolorwidgets ${LIBRARY_TYPE} ${kcolorwidgets_LIB_SRCS})
 
 generate_export_header(kcolorwidgets)
 
-target_link_libraries(kcolorwidgets kdeguiaddons ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${KDEUI_EXTRA_LIBS})
+target_link_libraries(kcolorwidgets kdeguiaddons kwidgets ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${KDEUI_EXTRA_LIBS})
 
 install(TARGETS kcolorwidgets EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 

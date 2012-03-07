@@ -232,7 +232,6 @@ set(kdeui_LIB_SRCS
  widgets/kdatewidget.cpp
  widgets/keditlistwidget.cpp
  widgets/kfadewidgeteffect.cpp
- widgets/khbox.cpp
  widgets/khelpmenu.cpp
  widgets/khistorycombobox.cpp
  widgets/kkeysequencewidget.cpp
@@ -267,7 +266,6 @@ set(kdeui_LIB_SRCS
  widgets/ktitlewidget.cpp
  widgets/ktoolbar.cpp
  widgets/kurllabel.cpp
- widgets/kvbox.cpp
  widgets/kdeuiwidgetsproxystyle.cpp
  widgets/nestedlisthelper.cpp
  xmlgui/kxmlguibuilder.cpp
@@ -600,7 +598,6 @@ install( FILES
  widgets/kdialogbuttonbox.h
  widgets/keditlistwidget.h
  widgets/kfadewidgeteffect.h
- widgets/khbox.h
  widgets/khelpmenu.h
  widgets/khistorycombobox.h
  widgets/kkeysequencewidget.h
@@ -635,7 +632,6 @@ install( FILES
  widgets/kstatusbar.h
  widgets/ktoolbar.h
  widgets/kurllabel.h
- widgets/kvbox.h
  xmlgui/kxmlguiwindow.h
  xmlgui/kxmlguiclient.h
  xmlgui/kxmlguibuilder.h
