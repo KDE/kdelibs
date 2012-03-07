@@ -36,6 +36,7 @@
 #include <QtCore/QList>
 #include <QtCore/QMutex>
 #include <QtCore/QMutexLocker>
+#include <QDir>
 
 #include <sys/types.h>
 #include <sys/mman.h>
@@ -961,7 +962,11 @@ class KSharedDataCache::Private
         cacheSize = qMax(pageSize * 256, cacheSize);
 
         // The m_cacheName is used to find the file to store the cache in.
-        QString cacheName = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + QLatin1String("/") + m_cacheName + QLatin1String(".kcache");
+        const QString cacheDir = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation);
+        if (!QDir().mkpath(cacheDir)) {
+            return;
+        }
+        QString cacheName = cacheDir + QLatin1String("/") + m_cacheName + QLatin1String(".kcache");
         QFile file(cacheName);
 
         // The basic idea is to open the file that we want to map into shared
