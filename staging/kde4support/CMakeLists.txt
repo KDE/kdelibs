@@ -16,6 +16,11 @@ include(ECMQtFramework)
 
 find_package(Qt5Transitional REQUIRED Core)
 
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
+remove_definitions(-DQT_NO_CAST_TO_ASCII)
+remove_definitions(-DQT_NO_KEYWORDS)
+
 add_subdirectory(src)
 add_subdirectory(autotests)
 add_subdirectory(examples)

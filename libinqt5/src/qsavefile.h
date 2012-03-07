@@ -92,9 +92,6 @@ public:
 
     bool resize(qint64 sz);
 
-    QFile::Permissions permissions() const;
-    bool setPermissions(QFile::Permissions permissionSpec);
-
     int handle() const;
 
 protected:

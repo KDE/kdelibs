@@ -48,7 +48,7 @@
 #include <kdebug.h>
 #include <kdirwatch.h>
 #include <kstandarddirs.h>
-#include <ksavefile.h>
+#include <qsavefile.h>
 #include <klocale.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
@@ -400,14 +400,12 @@ bool KBuildSycoca::recreate()
 {
   QString path(sycocaPath());
 
-  // KSaveFile first writes to a temp file.
-  // Upon finalize() it moves the stuff to the right place.
-  KSaveFile database(path);
-  bool openedOK = database.open();
+  QSaveFile database(path);
+  bool openedOK = database.open(QIODevice::WriteOnly);
   if (!openedOK && database.error() == QFile::PermissionsError && QFile::exists(path))
   {
     QFile::remove( path );
-    openedOK = database.open();
+    openedOK = database.open(QIODevice::WriteOnly);
   }
   if (!openedOK)
   {
@@ -429,14 +427,14 @@ bool KBuildSycoca::recreate()
   g_serviceFactory = new KBuildServiceFactory(stf, mimeTypeFactory, g_buildServiceGroupFactory);
   (void) new KBuildProtocolInfoFactory();
 
-  if( build()) // Parse dirs
+  if (build()) // Parse dirs
   {
     save(str); // Save database
-    if (str->status() != QDataStream::Ok) // ######## TODO: does this detect write errors, e.g. disk full?
-      database.abort(); // Error
+    if (str->status() != QDataStream::Ok) // Probably unnecessary now in Qt5, since QSaveFile detects write errors
+      database.cancelWriting(); // Error
     delete str;
     str = 0;
-    if (!database.finalize())
+    if (!database.commit())
     {
       fprintf(stderr, "kbuildsycoca4: ERROR writing database '%s'!\n", database.fileName().toLocal8Bit().data());
       fprintf(stderr, "kbuildsycoca4: Disk full?\n");
@@ -447,7 +445,7 @@ bool KBuildSycoca::recreate()
   {
     delete str;
     str = 0;
-    database.abort();
+    database.cancelWriting();
     if (bMenuTest)
        return true;
     kDebug(7021) << "Database is up to date";

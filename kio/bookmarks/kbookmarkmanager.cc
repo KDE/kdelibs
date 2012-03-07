@@ -36,7 +36,7 @@
 #include <kdirwatch.h>
 #include <klocale.h>
 #include <kmessagebox.h>
-#include <ksavefile.h>
+#include <qsavefile.h>
 #include <kstandarddirs.h>
 
 #include "kbookmarkmenu.h"
@@ -408,15 +408,14 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
     const QString cacheFilename = filename + QLatin1String(".tbcache");
     if(toolbarCache && !root().isToolbarGroup())
     {
-        KSaveFile cacheFile( cacheFilename );
-        if ( cacheFile.open() )
-        {
+        QSaveFile cacheFile( cacheFilename );
+        if (cacheFile.open(QIODevice::WriteOnly)) {
             QString str;
             QTextStream stream(&str, QIODevice::WriteOnly);
             stream << root().findToolbar();
             const QByteArray cstr = str.toUtf8();
             cacheFile.write( cstr.data(), cstr.length() );
-            cacheFile.finalize();
+            cacheFile.commit();
         }
     }
     else // remove any (now) stale cache
@@ -424,22 +423,19 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
         QFile::remove( cacheFilename );
     }
 
-    KSaveFile file( filename );
-    if ( file.open() )
-    {
+    QSaveFile file(filename);
+    if (file.open(QIODevice::WriteOnly)) {
         KBackup::simpleBackupFile( file.fileName(), QString(), ".bak" );
         QTextStream stream(&file);
         stream.setCodec( QTextCodec::codecForName( "UTF-8" ) );
         stream << internalDocument().toString();
         stream.flush();
-        if ( file.finalize() )
-        {
+        if (file.commit()) {
             return true;
         }
     }
 
     static int hadSaveError = false;
-    file.abort();
     if ( !hadSaveError ) {
         QString err = i18n("Unable to save bookmarks in %1. Reported error was: %2. "
                              "This error message will only be shown once. The cause "

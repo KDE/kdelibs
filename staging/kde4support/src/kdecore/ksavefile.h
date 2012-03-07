@@ -22,7 +22,7 @@
 #ifndef KSAVEFILE_H
 #define KSAVEFILE_H
 
-#include <kcoreaddons_export.h>
+#include <kde4support_export.h>
 
 #include "kbackup.h"
 
@@ -94,7 +94,7 @@
  * @author Jaison Lee <lee.jaison@gmail.com>
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KCOREADDONS_EXPORT KSaveFile : public QFile
+class KDE4SUPPORT_EXPORT KSaveFile : public QFile
 {
 public:
     /**
@@ -176,7 +176,7 @@ public:
     bool finalize();
 
     // TODO KF5 Should be deprecated since KF 5.0
-    KCOREADDONS_DEPRECATED_EXPORT static bool backupFile( const QString& filename) {
+    KDE4SUPPORT_DEPRECATED_EXPORT static bool backupFile( const QString& filename) {
       return KBackup::backupFile(filename);
     }
 

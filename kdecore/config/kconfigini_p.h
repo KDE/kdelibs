@@ -71,8 +71,8 @@ protected:
     static char charFromHex(const char *str, const QFile& file, int line);
     static QString warningProlog(const QFile& file, int line);
 
-    void writeEntries(const QByteArray& locale, QFile& file, const KEntryMap& map);
-    void writeEntries(const QByteArray& locale, QFile& file, const KEntryMap& map,
+    void writeEntries(const QByteArray& locale, QIODevice& file, const KEntryMap& map);
+    void writeEntries(const QByteArray& locale, QIODevice& file, const KEntryMap& map,
                       bool defaultGroup, bool &firstEntry);
 };
 
