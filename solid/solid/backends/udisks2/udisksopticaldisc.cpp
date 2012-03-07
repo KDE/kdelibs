@@ -27,6 +27,8 @@
 #include <QtCore/QFile>
 #include <QtDBus/QDBusConnection>
 
+#include "../shared/udevqtclient.h"
+
 #include "udisks2.h"
 #include "udisksopticaldisc.h"
 
@@ -166,6 +168,9 @@ using namespace Solid::Backends::UDisks2;
 OpticalDisc::OpticalDisc(Device *device)
     : StorageVolume(device), m_needsReprobe(true), m_cachedContent(Solid::OpticalDisc::NoContent)
 {
+    UdevQt::Client client(this);
+    m_udevDevice = client.deviceByDeviceFile(QFile::decodeName(m_device->prop("Device").toByteArray()));
+
     m_drive = new Device(m_device->prop("Drive").value<QDBusObjectPath>().path());
     QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, m_drive->udi(), DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
                                          SLOT(slotDrivePropertiesChanged(QString,QVariantMap,QStringList)));
@@ -197,8 +202,7 @@ bool OpticalDisc::isBlank() const
 
 bool OpticalDisc::isAppendable() const
 {
-    // FIXME doesn't exist in udisks2
-    return false;
+    return m_udevDevice.deviceProperty("ID_CDROM_MEDIA_STATE").toString() == QLatin1String("appendable");
 }
 
 Solid::OpticalDisc::DiscType OpticalDisc::discType() const
@@ -226,7 +230,7 @@ Solid::OpticalDisc::DiscType OpticalDisc::discType() const
     //map[Solid::OpticalDisc::MountRainer] ="optical_mrw";
     //map[Solid::OpticalDisc::MountRainerWritable] ="optical_mrw_w";
 
-    return map.key(media(), Solid::OpticalDisc::UnknownDiscType);
+    return map.key(media(), Solid::OpticalDisc::UnknownDiscType);  // FIXME optimize, lookup by value, not key
 }
 
 Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
