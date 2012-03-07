@@ -3,10 +3,6 @@ include(ConfigureChecks.cmake)
 configure_file(config-compression.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compression.h)
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 
-# For KSaveFile - TODO put that into Qt (David is working on that)
-include_directories( ${kcoreaddons_SOURCE_DIR}/src/io
-                     ${kcoreaddons_BINARY_DIR}/src
-                   )
 if (NOT QT5_BUILD)
     include_directories(
         ${CMAKE_SOURCE_DIR}/libqtmimetypes/include/QtMimeTypes
@@ -44,8 +40,7 @@ set(karchive_SRCS
 add_library(karchive ${LIBRARY_TYPE} ${karchive_SRCS} ${karchive_OPTIONAL_SRCS})
 generate_export_header(karchive)
 
-# Links to kcoreaddons for KSaveFile - TODO REMOVE
-target_link_libraries(karchive ${QT_QTCORE_LIBRARY} ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY} kcoreaddons ${QtMimeTypes_LIBRARY})
+target_link_libraries(karchive ${QT_QTCORE_LIBRARY} ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY} ${QtMimeTypes_LIBRARY})
 
 set_target_properties(karchive PROPERTIES VERSION  ${GENERIC_LIB_VERSION}
                                           SOVERSION ${GENERIC_LIB_SOVERSION}
