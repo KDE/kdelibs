@@ -2,7 +2,7 @@ include_directories(
  ${KDE4_KDECORE_INCLUDES}
  ${CMAKE_CURRENT_SOURCE_DIR}
  ${DBUSMENUQT_INCLUDE_DIR}
- ${CMAKE_BINARY_DIR}/staging/kdeguiaddons/src/colors
+ ${CMAKE_BINARY_DIR}/staging/kdeguiaddons/src/
 )
 
 set(kdeguiaddons_LIB_SRCS
@@ -23,7 +23,7 @@ target_link_libraries(kdeguiaddons ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${KD
 install(TARGETS kdeguiaddons EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
- ${CMAKE_CURRENT_BINARY_DIR}/staging/kdeguiaddons/src/kdeguiaddons_export.h
+ ${CMAKE_CURRENT_BINARY_DIR}/kdeguiaddons_export.h
  colors/kcolorutils.h
  colors/kcolorscheme.h
  colors/kcolorcollection.h

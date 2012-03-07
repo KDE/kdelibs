@@ -46,7 +46,6 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
  ${CMAKE_CURRENT_SOURCE_DIR}/xmlgui
  ${CMAKE_CURRENT_BINARY_DIR}/util
- ${CMAKE_SOURCE_DIR}/staging/kdeguiaddons/src/colors
  ${DBUSMENUQT_INCLUDE_DIR}
 )
 
@@ -391,7 +390,7 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 generate_export_header(kdeui)
 
-target_link_libraries(kdeui kdecolorwidgets kdeguiaddons itemmodels sonnetcore kauth ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
+target_link_libraries(kdeui kcolorwidgets kdeguiaddons itemmodels sonnetcore kauth ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
                             ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} kcoreaddons ${kwindowsystem_LIBRARY})
 
 if(NOT WINCE)
@@ -484,16 +483,6 @@ install( FILES
  actions/ktoolbarlabelaction.h
  actions/ktoolbarpopupaction.h
  actions/ktoolbarspaceraction.h
- colors/kcolorutils.h
- colors/kcolorscheme.h
- colors/kcolorcollection.h
- colors/kcolorbutton.h
- colors/kcolorchoosermode.h
- colors/kcolorcombo.h
- colors/kcolordialog.h
- colors/kcolormimedata.h
- colors/kcolorvalueselector.h
- colors/khuesaturationselect.h
  config/kconfigskeleton.h
  dialogs/kaboutapplicationdialog.h
  dialogs/kassistantdialog.h
@@ -673,9 +662,6 @@ install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
 if (Q_WS_MAC)
   install(PROGRAMS kernel/start-session-bus.sh DESTINATION ${BIN_INSTALL_DIR} )
 endif (Q_WS_MAC)
-
-install( FILES colors/40.colors colors/Oxygen.colors colors/Web.colors colors/Royal.colors colors/Rainbow.colors
-         DESTINATION ${CONFIG_INSTALL_DIR}/colors)
 
 install( FILES
   jobs/org.kde.JobViewServer.xml

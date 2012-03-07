@@ -30,13 +30,13 @@ KDEUI_EXECUTABLE_TESTS(
   kcolorcollectiontest
   kcolordlgtest
 )
-MESSAGE(STATUS "edw" ${CMAKE_SOURCE_DIR})
 
 ## kcolorutilsdemo
 SET(kcolorUtilsDemoSources kcolorutilsdemo.cpp
 	${CMAKE_SOURCE_DIR}/kdeui/tests/kimageframe.cpp
-../kcolorspaces.cpp)
-MESSAGE(STATUS "edw" ${CMAKE_SOURCE_DIR})
+	${CMAKE_SOURCE_DIR}/staging/kdeguiaddons/src/colors/kcolorspaces.cpp
+)
+
 kde4_add_ui_files(kcolorUtilsDemoSources kcolorutilsdemo.ui)
 kde4_add_executable(kcolorutilsdemo ${kcolorUtilsDemoSources})
 target_link_libraries(kcolorutilsdemo ${KDE4_KDEUI_LIBS} ${KDEWIN_LIBRARIES} kcoreaddons )
