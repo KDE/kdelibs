@@ -93,6 +93,8 @@
  *
  * @author Jaison Lee <lee.jaison@gmail.com>
  * @author Waldo Bastian <bastian@kde.org>
+ *
+ * @deprecated since 5.0, port to QSaveFile.
  */
 class KDE4SUPPORT_EXPORT KSaveFile : public QFile
 {

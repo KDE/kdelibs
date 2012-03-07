@@ -91,6 +91,14 @@ QUrl(QString) means "relative url or absolute url".
 Remember to update your connect statements and your slots!
 <li>KMimeType::comment and KMimeType::iconName no longer take a KUrl argument. If you were passing such an argument
 (to support .directory files in directories), port the code to KFileItem::mimeComment and KFileItem::iconName.</li>
+<li>KSaveFile has been deprecated in favour of the new QSaveFile:
+<pre>
+     open() -&gt; open(QIODevice::WriteOnly)
+     finalize() -&gt; commit()
+     abort() -&gt; cancelWriting()
+     close() -&gt; do not call close, call commit or cancelWriting directly
+     the return value from write() calls does not need to be checked anymore, commit will cancel in case of a write error.
+</pre>
 <li>KStandardDirs: KDE applications can keep using it, but independent frameworks should use QStandardPaths instead.
 The porting depends on the resource type:
 <pre>
