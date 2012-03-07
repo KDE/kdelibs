@@ -23,7 +23,7 @@ endif(BZIP2_FOUND)
 
 if(LIBLZMA_FOUND)
    include_directories(${LIBLZMA_INCLUDE_DIRS})
-   set(karchive_OPTIONAL_SRCS ${karchive_OPTIONAL_SRCS} kxzfilter.cpp )
+   set(karchive_OPTIONAL_SRCS ${karchive_OPTIONAL_SRCS} kxzfilter.cpp k7zip.cpp )
    set(karchive_OPTIONAL_LIBS ${karchive_OPTIONAL_LIBS} ${LIBLZMA_LIBRARIES})
 endif(LIBLZMA_FOUND)
 
@@ -39,7 +39,6 @@ set(karchive_SRCS
   knonefilter.cpp
   ktar.cpp
   kzip.cpp
-  k7zip.cpp
 )
 
 add_library(karchive ${LIBRARY_TYPE} ${karchive_SRCS} ${karchive_OPTIONAL_SRCS})
@@ -62,9 +61,16 @@ install( FILES
   kfilterdev.h
   ktar.h
   kzip.h
-  k7zip.h
 
   ${CMAKE_CURRENT_BINARY_DIR}/karchive_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 
+
+if(LIBLZMA_FOUND)
+   install( FILES
+   k7zip.h
+
+   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
+)
+endif(LIBLZMA_FOUND)
