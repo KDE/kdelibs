@@ -19,7 +19,7 @@
 #ifndef KHBOX_H
 #define KHBOX_H
 
-#include <kdeui_export.h>
+#include <kwidgets_export.h>
 
 #include <QFrame>
 
@@ -37,7 +37,7 @@ class QChildEvent;
  *
  * @see KVBox
  */
-class KDEUI_EXPORT KHBox : public QFrame
+class KWIDGETS_EXPORT KHBox : public QFrame
 {
   Q_OBJECT
   

@@ -21,6 +21,7 @@ include_directories(
  ${CMAKE_BINARY_DIR}/staging/kwidgets/src
  ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/utils
  ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/icons
+ ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/widgets
  ${kcoreaddons_BINARY_DIR}/src
  ${kcoreaddons_SOURCE_DIR}/src/caching
  ${kcoreaddons_SOURCE_DIR}/src/io
@@ -238,7 +239,6 @@ set(kdeui_LIB_SRCS
  widgets/kdatewidget.cpp
  widgets/keditlistwidget.cpp
  widgets/kfadewidgeteffect.cpp
- widgets/khbox.cpp
  widgets/khelpmenu.cpp
  widgets/khistorycombobox.cpp
  widgets/kkeysequencewidget.cpp
@@ -274,7 +274,6 @@ set(kdeui_LIB_SRCS
  widgets/ktitlewidget.cpp
  widgets/ktoolbar.cpp
  widgets/kurllabel.cpp
- widgets/kvbox.cpp
  widgets/kxyselector.cpp
  widgets/kdeuiwidgetsproxystyle.cpp
  widgets/nestedlisthelper.cpp
@@ -609,7 +608,6 @@ install( FILES
  widgets/kdialogbuttonbox.h
  widgets/keditlistwidget.h
  widgets/kfadewidgeteffect.h
- widgets/khbox.h
  widgets/khelpmenu.h
  widgets/khistorycombobox.h
  widgets/kkeysequencewidget.h
@@ -645,7 +643,6 @@ install( FILES
  widgets/kstatusbar.h
  widgets/ktoolbar.h
  widgets/kurllabel.h
- widgets/kvbox.h
  widgets/kxyselector.h
  xmlgui/kxmlguiwindow.h
  xmlgui/kxmlguiclient.h

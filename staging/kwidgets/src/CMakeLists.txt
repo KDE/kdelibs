@@ -6,6 +6,8 @@ set(kwidgets_LIB_SRCS
   icons/kiconengine.cpp
   icons/kiconloader.cpp
   icons/kicontheme.cpp
+  widgets/khbox.cpp
+  widgets/kvbox.cpp
 )
 
 add_library(kwidgets ${LIBRARY_TYPE} ${kwidgets_LIB_SRCS})
@@ -32,6 +34,8 @@ install(FILES
   icons/kiconloader.h
   icons/kicon.h
   icons/kiconeffect.h
+  widgets/khbox.h
+  widgets/kvbox.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

@@ -89,7 +89,6 @@ KDEUI_EXECUTABLE_TESTS(
   kdialogtest
   keditlistwidgettest
   kfontdialogtest
-  khboxtest
   kicondialogtest
   kinputdialogtest
   kjobtrackerstest

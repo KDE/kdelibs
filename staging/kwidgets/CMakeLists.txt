@@ -27,6 +27,7 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/staging/kdeguiaddons/src/colors
   ${CMAKE_CURRENT_SOURCE_DIR}/src/utils
   ${CMAKE_CURRENT_SOURCE_DIR}/src/icons
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/widgets
 )
 
 # TODO: Remove these

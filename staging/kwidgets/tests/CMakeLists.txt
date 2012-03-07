@@ -27,6 +27,7 @@ kwidgets_executable_tests(
     kglobalsettingsclient # helper program for kglobalsettingstest
     kiconloadertest
     kiconeffecttest
+    khboxtest
 )
 
 kwidgets_unit_tests(
