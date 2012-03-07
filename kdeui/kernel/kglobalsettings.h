@@ -103,8 +103,8 @@ public:
      * }
      * \endcode
      * @return the threshold for drag & drop in pixels
+     * @deprecated since 5.0, use QApplication::startDragDistance() instead.
      */
-
     static int dndEventDelay();
 
     /**
