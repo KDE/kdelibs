@@ -1,7 +1,7 @@
 include_directories(
  ${KDE4_KDECORE_INCLUDES}
- ${CMAKE_CURRENT_SOURCE_DIR}/colors
  ${DBUSMENUQT_INCLUDE_DIR}
+ ${CMAKE_BINARY_DIR}/staging/kcolorwidgets/src
 )
 
 set(kcolorwidgets_LIB_SRCS
@@ -10,6 +10,8 @@ set(kcolorwidgets_LIB_SRCS
  kcolordialog.cpp
  kcolorvalueselector.cpp
  khuesaturationselect.cpp
+ kselector.cpp
+ kxyselector.cpp
 )
 
 add_library(kcolorwidgets ${LIBRARY_TYPE} ${kcolorwidgets_LIB_SRCS})
@@ -28,6 +30,8 @@ install( FILES
  kcolorvalueselector.h
  khuesaturationselect.h
  kcolorchoosermode.h
+ kselector.h
+ kxyselector.h
 
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

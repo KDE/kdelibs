@@ -129,7 +129,7 @@ private:
  * \image html kgradientselector.png "KDE Gradient Selector Widget"
  *
  **/
-class KDEUI_EXPORT KGradientSelector : public KSelector
+class KCOLORWIDGETS_EXPORT KGradientSelector : public KSelector
 {
   Q_OBJECT
 
