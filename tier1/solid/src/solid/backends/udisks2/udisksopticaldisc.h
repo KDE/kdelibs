@@ -24,6 +24,8 @@
 
 #include <solid/ifaces/opticaldisc.h>
 
+#include "../shared/udevqtdevice.h"
+
 #include "udisksstoragevolume.h"
 #include "udisksdevice.h"
 
@@ -58,6 +60,7 @@ private:
     mutable bool m_needsReprobe;
     mutable Solid::OpticalDisc::ContentTypes m_cachedContent;
     Device * m_drive;
+    UdevQt::Device m_udevDevice;
 };
 
 }
