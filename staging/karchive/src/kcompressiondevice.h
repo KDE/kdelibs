@@ -107,9 +107,12 @@ public:
     static KFilterBase* filterForCompressionType(CompressionType type);
 
 protected:
+    friend class K7Zip;
+
     virtual qint64 readData( char *data, qint64 maxlen );
     virtual qint64 writeData( const char *data, qint64 len );
 
+    KFilterBase* filterBase();
 private:
     class Private;
     Private* const d;

@@ -2031,65 +2031,23 @@ QByteArray K7Zip::K7ZipPrivate::encodeStream(QVector<quint64> &packSizes, QVecto
     QByteArray encodedData;
     if (header.size() > 0) {
         QByteArray enc;
-        enc.resize(BUFFER_SIZE);
-        KFilterBase* filter = KCompressionDevice::filterForCompressionType(KCompressionDevice::Xz);
+        QBuffer inBuffer(&enc);
 
-        filter->setOutBuffer( enc.data(), enc.size() );
+        KCompressionDevice flt(&inBuffer, false, KCompressionDevice::Xz);
+        flt.open(QIODevice::WriteOnly);
+
+        KFilterBase* filter = flt.filterBase();
 
         static_cast<KXzFilter*>(filter)->init(QIODevice::WriteOnly, KXzFilter::LZMA2, info->properties);
 
-        const char *data = header.data();
-        uint len = header.size();
-
-        bool finish = (data == 0L);
-        if (!finish) {
-            filter->setInBuffer( data, len );
+        const int ret = flt.write(header);
+        if (ret != header.size()) {
+            qDebug() << "write error write " << ret << "expected" << header.size();
+            return encodedData;
         }
 
-        uint dataWritten = 0;
-        uint availIn = len;
-
-        while ( dataWritten < len || finish) {
-
-            KFilterBase::Result result = filter->compress( finish );
-
-            if (result == KFilterBase::Error) {
-                qDebug() << "compress failed";
-                return QByteArray();
-            }
-
-            if (filter->inBufferEmpty() || (result == KFilterBase::End)) {
-
-                uint wrote = availIn - filter->inBufferAvailable();
-                data += wrote;
-                dataWritten += wrote;
-
-                availIn = len - dataWritten;
-                if ( availIn > 0 ) {
-                    filter->setInBuffer( data, availIn );
-                }
-
-            }
-
-            if (filter->outBufferFull() || (result == KFilterBase::End) || finish) {
-                int towrite = enc.size() - filter->outBufferAvailable();
-                if ( towrite > 0 ) {
-                    encodedData.append(enc.data(), towrite);
-                }
-                if (result == KFilterBase::End) {
-                    break;
-                }
-                enc.resize(BUFFER_SIZE);
-                filter->setOutBuffer( enc.data(), enc.size() );
-            }
-            if (!(dataWritten < len || finish)) {
-                filter->setInBuffer( 0, 0 );
-                finish = true;
-            }
-        }
-
-        filter->terminate();
-        delete filter;
+        flt.close();
+        encodedData = inBuffer.data();
     }
 
     packSizes.append(encodedData.size());
@@ -2800,65 +2758,23 @@ bool K7Zip::closeArchive()
     QByteArray encodedData;
     if (d->outData.size() > 0) {
         QByteArray enc;
-        enc.resize(BUFFER_SIZE);
-        KFilterBase* filter = KCompressionDevice::filterForCompressionType(KCompressionDevice::Xz);
+        QBuffer inBuffer(&enc);
 
-        filter->setOutBuffer( enc.data(), enc.size() );
+        KCompressionDevice flt(&inBuffer, false, KCompressionDevice::Xz);
+        flt.open(QIODevice::WriteOnly);
+
+        KFilterBase* filter = flt.filterBase();
 
         static_cast<KXzFilter*>(filter)->init(QIODevice::WriteOnly, KXzFilter::LZMA2, info->properties);
 
-        const char *data = d->outData.data();
-        uint len = d->outData.size();
-
-        bool finish = (data == 0L);
-        if (!finish) {
-            filter->setInBuffer( data, len );
+        const int ret = flt.write(d->outData);
+        if (ret != d->outData.size()) {
+            qDebug() << "write error";
+            return false;
         }
 
-        uint dataWritten = 0;
-        uint availIn = len;
-
-        while ( dataWritten < len || finish) {
-
-            KFilterBase::Result result = filter->compress( finish );
-
-            if (result == KFilterBase::Error) {
-                qDebug() << "compress failed";
-                return false;
-            }
-
-            if (filter->inBufferEmpty() || (result == KFilterBase::End)) {
-
-                uint wrote = availIn - filter->inBufferAvailable();
-                data += wrote;
-                dataWritten += wrote;
-
-                availIn = len - dataWritten;
-                if ( availIn > 0 ) {
-                    filter->setInBuffer( data, availIn );
-                }
-
-            }
-
-            if (filter->outBufferFull() || (result == KFilterBase::End) || finish) {
-                int towrite = enc.size() - filter->outBufferAvailable();
-                if ( towrite > 0 ) {
-                    encodedData.append(enc.data(), towrite);
-                }
-                if (result == KFilterBase::End) {
-                    break;
-                }
-                enc.resize(BUFFER_SIZE);
-                filter->setOutBuffer( enc.data(), enc.size() );
-            }
-            if (!(dataWritten < len || finish)) {
-                filter->setInBuffer( 0, 0 );
-                finish = true;
-            }
-        }
-
-        filter->terminate();
-        delete filter;
+        flt.close();
+        encodedData = inBuffer.data();
     }
 
     d->packSizes.append(encodedData.size());
