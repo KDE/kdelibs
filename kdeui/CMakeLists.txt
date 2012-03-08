@@ -232,7 +232,6 @@ set(kdeui_LIB_SRCS
  widgets/kdatewidget.cpp
  widgets/keditlistwidget.cpp
  widgets/kfadewidgeteffect.cpp
- widgets/khbox.cpp
  widgets/khelpmenu.cpp
  widgets/khistorycombobox.cpp
  widgets/kkeysequencewidget.cpp
@@ -253,7 +252,6 @@ set(kdeui_LIB_SRCS
  widgets/krichtextedit.cpp
  widgets/krichtextwidget.cpp
  widgets/kruler.cpp
- widgets/kselector.cpp
  widgets/kseparator.cpp
  widgets/kshortcutwidget.cpp
  widgets/ksqueezedtextlabel.cpp
@@ -268,8 +266,6 @@ set(kdeui_LIB_SRCS
  widgets/ktitlewidget.cpp
  widgets/ktoolbar.cpp
  widgets/kurllabel.cpp
- widgets/kvbox.cpp
- widgets/kxyselector.cpp
  widgets/kdeuiwidgetsproxystyle.cpp
  widgets/nestedlisthelper.cpp
  xmlgui/kxmlguibuilder.cpp
@@ -392,11 +388,11 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 generate_export_header(kdeui)
 
-target_link_libraries(kdeui itemmodels sonnetcore kauth ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
+target_link_libraries(kdeui kcolorwidgets kdeguiaddons itemmodels sonnetcore kauth ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
                             ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} kcoreaddons ${kwindowsystem_LIBRARY})
 
 if(NOT WINCE)
-target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY})
+target_link_libraries(kdeui ${QT_QTSVG_LIBRARY})
 endif(NOT WINCE)
 
 if(HAVE_DBUSMENUQT)
@@ -485,16 +481,6 @@ install( FILES
  actions/ktoolbarlabelaction.h
  actions/ktoolbarpopupaction.h
  actions/ktoolbarspaceraction.h
- colors/kcolorutils.h
- colors/kcolorscheme.h
- colors/kcolorcollection.h
- colors/kcolorbutton.h
- colors/kcolorchoosermode.h
- colors/kcolorcombo.h
- colors/kcolordialog.h
- colors/kcolormimedata.h
- colors/kcolorvalueselector.h
- colors/khuesaturationselect.h
  config/kconfigskeleton.h
  dialogs/kaboutapplicationdialog.h
  dialogs/kassistantdialog.h
@@ -612,7 +598,6 @@ install( FILES
  widgets/kdialogbuttonbox.h
  widgets/keditlistwidget.h
  widgets/kfadewidgeteffect.h
- widgets/khbox.h
  widgets/khelpmenu.h
  widgets/khistorycombobox.h
  widgets/kkeysequencewidget.h
@@ -643,13 +628,10 @@ install( FILES
  widgets/ktabbar.h
  widgets/ktabwidget.h
  widgets/kruler.h
- widgets/kselector.h
  widgets/kshortcutwidget.h
  widgets/kstatusbar.h
  widgets/ktoolbar.h
  widgets/kurllabel.h
- widgets/kvbox.h
- widgets/kxyselector.h
  xmlgui/kxmlguiwindow.h
  xmlgui/kxmlguiclient.h
  xmlgui/kxmlguibuilder.h
@@ -676,9 +658,6 @@ install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
 if (Q_WS_MAC)
   install(PROGRAMS kernel/start-session-bus.sh DESTINATION ${BIN_INSTALL_DIR} )
 endif (Q_WS_MAC)
-
-install( FILES colors/40.colors colors/Oxygen.colors colors/Web.colors colors/Royal.colors colors/Rainbow.colors
-         DESTINATION ${CONFIG_INSTALL_DIR}/colors)
 
 install( FILES
   jobs/org.kde.JobViewServer.xml

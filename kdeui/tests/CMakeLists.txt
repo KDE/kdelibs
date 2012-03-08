@@ -86,7 +86,6 @@ KDEUI_EXECUTABLE_TESTS(
   keditlistwidgettest
   kfontdialogtest
   kglobalsettingsclient # helper program for kglobalsettingstest
-  khboxtest
   kiconeffecttest
   kicondialogtest
   kiconloadertest

@@ -30,14 +30,14 @@
 #include <QScrollArea>
 #include <QTableWidget>
 #include <kcolorchoosermode.h>
-
+#include <kcolorwidgets_export.h>
 
 /**
 * A table of editable color cells.
 *
 * @author Martin Jones <mjones@kde.org>
 */
-class KDEUI_EXPORT KColorCells : public QTableWidget
+class KCOLORWIDGETS_EXPORT KColorCells : public QTableWidget
 {
   Q_OBJECT
 public:
@@ -107,7 +107,7 @@ private:
  *
  * \image html kcolorpatch.png "KDE Color Patch"
  */
-class KDEUI_EXPORT KColorPatch : public QFrame
+class KCOLORWIDGETS_EXPORT KColorPatch : public QFrame
 {
     Q_OBJECT
     Q_PROPERTY(QColor color READ color WRITE setColor)
@@ -201,7 +201,7 @@ private:
  * the currently selected color is a KColorPatch.
  *
  **/
-class KDEUI_EXPORT KColorDialog : public KDialog
+class KCOLORWIDGETS_EXPORT KColorDialog : public KDialog
 {
   Q_OBJECT
 

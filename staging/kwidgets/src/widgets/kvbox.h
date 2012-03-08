@@ -33,7 +33,7 @@
  *
  * @see KHBox
  */
-class KDEUI_EXPORT KVBox : public KHBox
+class KWIDGETS_EXPORT KVBox : public KHBox
 {
   Q_OBJECT
   

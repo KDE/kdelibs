@@ -25,7 +25,7 @@
 #include "kcolorchoosermode.h"
 #include <QPixmap>
 
-class KDEUI_EXPORT KColorValueSelector : public KSelector
+class KCOLORWIDGETS_EXPORT KColorValueSelector : public KSelector
 {
     Q_OBJECT
     Q_PROPERTY( int hue READ hue WRITE setHue )

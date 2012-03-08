@@ -235,7 +235,6 @@ include_directories(${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/kernel) # For QL
 set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdeui
                         ${CMAKE_BINARY_DIR}/kdeui
                         ${CMAKE_SOURCE_DIR}/kdeui/actions
-                        ${CMAKE_SOURCE_DIR}/kdeui/colors
                         ${CMAKE_SOURCE_DIR}/kdeui/config
                         ${CMAKE_SOURCE_DIR}/kdeui/dialogs
                         ${CMAKE_SOURCE_DIR}/kdeui/findreplace
@@ -255,6 +254,12 @@ set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdeui
                         ${CMAKE_SOURCE_DIR}/kdeui/xmlgui
                         ${CMAKE_BINARY_DIR}/staging/kwindowsystem/src
                         ${CMAKE_SOURCE_DIR}/staging/kwindowsystem/src
+                        ${CMAKE_BINARY_DIR}/staging/kdeguiaddons/src
+                        ${CMAKE_SOURCE_DIR}/staging/kdeguiaddons/src
+                        ${CMAKE_BINARY_DIR}/staging/kcolorwidgets/src
+                        ${CMAKE_SOURCE_DIR}/staging/kcolorwidgets/src
+                        ${CMAKE_BINARY_DIR}/staging/kwidgets/src
+                        ${CMAKE_SOURCE_DIR}/staging/kwidgets/src
                         ${KDE4_KDECORE_INCLUDES})
 
 # kio depends on kdeui
