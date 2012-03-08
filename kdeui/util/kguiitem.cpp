@@ -20,10 +20,8 @@
 
 #include "kguiitem.h"
 
-#include <kiconloader.h> // TODO remove
 #include <kdebug.h>
 #include <kicon.h>
-#include <kcomponentdata.h>
 
 #include <assert.h>
 
@@ -152,7 +150,7 @@ QIcon KGuiItem::icon( ) const
 {
     if (d->m_hasIcon) {
         if (!d->m_iconName.isEmpty()) {
-            return KIcon(d->m_iconName, KGlobal::mainComponent().isValid() ? KIconLoader::global() : 0);
+            return KIcon(d->m_iconName);
         } else {
             return d->m_icon;
         }
@@ -164,7 +162,7 @@ QIcon KGuiItem::icon( ) const
 #ifndef KDE_NO_DEPRECATED
 QIcon KGuiItem::iconSet( KIconLoader::Group group, int size ) const
 {
-    if (d->m_hasIcon && KGlobal::mainComponent().isValid()) {
+    if (d->m_hasIcon) {
         if( !d->m_iconName.isEmpty()) {
             KIconLoader* iconLoader = KIconLoader::global();
             return iconLoader->loadIconSet( d->m_iconName, group, size );
