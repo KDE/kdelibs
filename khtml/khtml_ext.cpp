@@ -1260,10 +1260,10 @@ bool KHTMLHtmlExtension::setHtmlSettingsProperty(HtmlSettingsInterface::HtmlSett
                 if (!data.isEmpty()) {
                     const int index = data.indexOf(',');
                     const QByteArray decodedData ((index > -1 ? QByteArray::fromBase64(data.mid(index)) : QByteArray()));
-                    part()->setUserStyleSheet(QString::fromUtf8(decodedData.constData(), decodedData.size()));
+                    p->setUserStyleSheet(QString::fromUtf8(decodedData.constData(), decodedData.size()));
                 }
             } else {
-                part()->setUserStyleSheet(url);
+                p->setUserStyleSheet(url);
             }
             return true;
         }
