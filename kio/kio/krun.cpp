@@ -77,7 +77,7 @@
 #include <kdialog.h>
 #include <kstandardguiitem.h>
 #include <kguiitem.h>
-#include <ksavefile.h>
+#include <qsavefile.h>
 
 #ifdef Q_WS_X11
 #include <kwindowsystem.h>
@@ -825,9 +825,9 @@ static bool makeFileExecutable(const QString &fileName)
 
     if (header != "#!") {
         // Add header
-        KSaveFile saveFile;
+        QSaveFile saveFile;
         saveFile.setFileName(fileName);
-        if (!saveFile.open()) {
+        if (!saveFile.open(QIODevice::WriteOnly)) {
             kError(7010) << "Unable to open replacement file for" << fileName << saveFile.errorString();
             return false;
         }
@@ -835,7 +835,7 @@ static bool makeFileExecutable(const QString &fileName)
         QByteArray shebang("#!/usr/bin/env xdg-open\n");
         if (saveFile.write(shebang) != shebang.size()) {
             kError(7010) << "Error occurred adding header for" << fileName << saveFile.errorString();
-            saveFile.abort();
+            saveFile.cancelWriting();
             return false;
         }
 
@@ -843,18 +843,18 @@ static bool makeFileExecutable(const QString &fileName)
         QByteArray desktopData(desktopFile.readAll());
         if (desktopData.isEmpty()) {
             kError(7010) << "Unable to read service" << fileName << desktopFile.errorString();
-            saveFile.abort();
+            saveFile.cancelWriting();
             return false;
         }
 
         if (saveFile.write(desktopData) != desktopData.size()) {
             kError(7010) << "Error copying service" << fileName << saveFile.errorString();
-            saveFile.abort();
+            saveFile.cancelWriting();
             return false;
         }
 
         desktopFile.close();
-        if (!saveFile.finalize()) { // Figures....
+        if (!saveFile.commit()) { // Figures....
             kError(7010) << "Error committing changes to service" << fileName << saveFile.errorString();
             return false;
         }
