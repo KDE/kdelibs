@@ -287,7 +287,7 @@ void DeleteJobPrivate::deleteNextFile()
             // Normal deletion
             // If local file, try do it directly
 #ifdef Q_WS_WIN
-            if ( (*it).isLocalFile() && DeleteFileW( (LPCWSTR)(*it).toLocalFile().utf16() ) == 0 ) {
+            if ( (*it).isLocalFile() && DeleteFileW( (LPCWSTR)(*it).toLocalFile().utf16() ) != 0 ) {
 #else
             if ( (*it).isLocalFile() && unlink( QFile::encodeName((*it).toLocalFile()) ) == 0 ) {
 #endif
