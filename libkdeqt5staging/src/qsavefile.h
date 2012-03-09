@@ -42,7 +42,7 @@
 #ifndef QSAVEFILE_H
 #define QSAVEFILE_H
 
-#include "inqt5_export.h"
+#include "kdeqt5staging_export.h"
 #include <QtCore/qfile.h>
 #include <QtCore/qstring.h>
 
@@ -58,7 +58,7 @@ QT_BEGIN_NAMESPACE
 class QAbstractFileEngine;
 class QSaveFilePrivate;
 
-class INQT5_EXPORT QSaveFile : public QIODevice
+class KDEQT5STAGING_EXPORT QSaveFile : public QIODevice
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(QSaveFile)
