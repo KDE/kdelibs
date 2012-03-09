@@ -204,13 +204,11 @@ void KNewFileMenuSingleton::parseFiles()
 
 K_GLOBAL_STATIC(KNewFileMenuSingleton, kNewMenuGlobals)
 
-
-class KNewFileMenuStrategy
+class KNewFileMenuCopyData
 {
-friend class KNewFileMenuPrivate;
 public:
-    KNewFileMenuStrategy() { m_isSymlink = false;}
-    ~KNewFileMenuStrategy() {}
+    KNewFileMenuCopyData() { m_isSymlink = false;}
+    ~KNewFileMenuCopyData() {}
     QString chosenFileName() const { return m_chosenFileName; }
 
     // If empty, no copy is performed.
@@ -218,7 +216,6 @@ public:
     QString tempFileToDelete() const { return m_tempFileToDelete; }
     bool m_isSymlink;
 
-protected:
     QString m_chosenFileName;
     QString m_src;
     QString m_tempFileToDelete;
@@ -253,7 +250,7 @@ public:
     void executeRealFileOrDir(const KNewFileMenuSingleton::Entry& entry);
 
     /**
-      * Actually performs file handling. Reads in m_strategy for needed data, that has been collected by execute*() before
+      * Actually performs file handling. Reads in m_copyData for needed data, that has been collected by execute*() before
       */
     void executeStrategy();
 
@@ -356,8 +353,7 @@ public:
 
     KNewFileMenu* q;
 
-    class Strategy;
-    KNewFileMenuStrategy m_strategy;
+    KNewFileMenuCopyData m_copyData;
 };
 
 bool KNewFileMenuPrivate::checkSourceExists(const QString& src)
@@ -458,7 +454,7 @@ void KNewFileMenuPrivate::executeRealFileOrDir(const KNewFileMenuSingleton::Entr
     QString text = entry.text;
     text.remove("..."); // the ... is fine for the menu item but not for the default filename
     text = text.trimmed(); // In some languages, there is a space in front of "...", see bug 268895
-    m_strategy.m_src = entry.templatePath;
+    m_copyData.m_src = entry.templatePath;
 
     KUrl defaultFile(m_popupFiles.first());
     defaultFile.addPath(KIO::encodeFileName(text));
@@ -509,9 +505,9 @@ void KNewFileMenuPrivate::executeSymLink(const KNewFileMenuSingleton::Entry& ent
 
 void KNewFileMenuPrivate::executeStrategy()
 {
-    m_tempFileToDelete = m_strategy.tempFileToDelete();
-    const QString src = m_strategy.sourceFileToCopy();
-    QString chosenFileName = expandTilde(m_strategy.chosenFileName(), true);
+    m_tempFileToDelete = m_copyData.tempFileToDelete();
+    const QString src = m_copyData.sourceFileToCopy();
+    QString chosenFileName = expandTilde(m_copyData.chosenFileName(), true);
 
     if (src.isEmpty())
         return;
@@ -523,13 +519,13 @@ void KNewFileMenuPrivate::executeStrategy()
         if (item.isLink())
             uSrc.setPath(item.linkDest());
 
-        if (!m_strategy.m_isSymlink) {
+        if (!m_copyData.m_isSymlink) {
             // If the file is not going to be detected as a desktop file, due to a
             // known extension (e.g. ".pl"), append ".desktop". #224142.
             QFile srcFile(uSrc.toLocalFile());
             if (srcFile.open(QIODevice::ReadOnly)) {
                 KMimeType::Ptr wantedMime = KMimeType::findByUrl(uSrc);
-                KMimeType::Ptr mime = KMimeType::findByNameAndContent(m_strategy.m_chosenFileName, srcFile.read(1024));
+                KMimeType::Ptr mime = KMimeType::findByNameAndContent(m_copyData.m_chosenFileName, srcFile.read(1024));
                 //kDebug() << "mime=" << mime->name() << "wantedMime=" << wantedMime->name();
                 if (!mime->is(wantedMime->name()))
                     chosenFileName += wantedMime->mainExtension();
@@ -548,7 +544,7 @@ void KNewFileMenuPrivate::executeStrategy()
         KUrl::List lstSrc;
         lstSrc.append(uSrc);
         KIO::Job* kjob;
-        if (m_strategy.m_isSymlink) {
+        if (m_copyData.m_isSymlink) {
             kjob = KIO::symlink(src, dest);
             // This doesn't work, FileUndoManager registers new links in copyingLinkDone,
             // which KIO::symlink obviously doesn't emit... Needs code in FileUndoManager.
@@ -568,7 +564,7 @@ void KNewFileMenuPrivate::executeStrategy()
 void KNewFileMenuPrivate::executeUrlDesktopFile(const KNewFileMenuSingleton::Entry& entry)
 {
     KNameAndUrlInputDialog* dlg = new KNameAndUrlInputDialog(i18n("File name:"), entry.comment, m_popupFiles.first(), m_parentWidget);
-    m_strategy.m_templatePath = entry.templatePath;
+    m_copyData.m_templatePath = entry.templatePath;
     dlg->setModal(q->isModal());
     dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setCaption(i18n("Create link to URL"));
@@ -731,10 +727,10 @@ void KNewFileMenuPrivate::_k_slotActionTriggered(QAction* action)
 
     const bool createSymlink = entry.templatePath == "__CREATE_SYMLINK__";
 
-    m_strategy = KNewFileMenuStrategy();
+    m_copyData = KNewFileMenuCopyData();
 
     if (createSymlink) {
-        m_strategy.m_isSymlink = true;
+        m_copyData.m_isSymlink = true;
 	executeSymLink(entry);
     }
     else if (KDesktopFile::isDesktopFile(entry.templatePath)) {
@@ -860,7 +856,7 @@ void KNewFileMenuPrivate::_k_slotOtherDesktopFile()
 
 void KNewFileMenuPrivate::_k_slotRealFileOrDir()
 {
-    m_strategy.m_chosenFileName = m_text;
+    m_copyData.m_chosenFileName = m_text;
     _k_slotAbortDialog();
     executeStrategy();
 }
@@ -869,16 +865,16 @@ void KNewFileMenuPrivate::_k_slotSymLink()
 {
     KNameAndUrlInputDialog* dlg = static_cast<KNameAndUrlInputDialog*>(m_fileDialog);
 
-    m_strategy.m_chosenFileName = dlg->name(); // no path
+    m_copyData.m_chosenFileName = dlg->name(); // no path
     KUrl linkUrl = dlg->url(); // the url to put in the file
 
-    if (m_strategy.m_chosenFileName.isEmpty() || linkUrl.isEmpty())
+    if (m_copyData.m_chosenFileName.isEmpty() || linkUrl.isEmpty())
         return;
 
     if (linkUrl.isRelative())
-        m_strategy.m_src = linkUrl.url();
+        m_copyData.m_src = linkUrl.url();
     else if (linkUrl.isLocalFile())
-        m_strategy.m_src = linkUrl.toLocalFile();
+        m_copyData.m_src = linkUrl.toLocalFile();
     else {
 	KDialog* dialog = new KDialog(m_parentWidget);
 	dialog->setCaption( i18n("Sorry") );
@@ -910,7 +906,7 @@ void KNewFileMenuPrivate::_k_slotUrlDesktopFile()
 {
     KNameAndUrlInputDialog* dlg = static_cast<KNameAndUrlInputDialog*>(m_fileDialog);
 
-    m_strategy.m_chosenFileName = dlg->name(); // no path
+    m_copyData.m_chosenFileName = dlg->name(); // no path
     KUrl linkUrl = dlg->url();
 
     // Filter user input so that short uri entries, e.g. www.kde.org, are
@@ -925,7 +921,7 @@ void KNewFileMenuPrivate::_k_slotUrlDesktopFile()
         linkUrl = uriData.uri();
     }
 
-    if (m_strategy.m_chosenFileName.isEmpty() || linkUrl.isEmpty())
+    if (m_copyData.m_chosenFileName.isEmpty() || linkUrl.isEmpty())
         return;
 
     // It's a "URL" desktop file; we need to make a temp copy of it, to modify it
@@ -937,14 +933,14 @@ void KNewFileMenuPrivate::_k_slotUrlDesktopFile()
         return;
     }
 
-    if (!checkSourceExists(m_strategy.m_templatePath)) {
+    if (!checkSourceExists(m_copyData.m_templatePath)) {
         return;
     }
 
     // First copy the template into the temp file
-    QFile file(m_strategy.m_templatePath);
+    QFile file(m_copyData.m_templatePath);
     if (!file.open(QIODevice::ReadOnly)) {
-        kError() << "Couldn't open template" << m_strategy.m_templatePath;
+        kError() << "Couldn't open template" << m_copyData.m_templatePath;
         return;
     }
     const QByteArray data = file.readAll();
@@ -960,8 +956,8 @@ void KNewFileMenuPrivate::_k_slotUrlDesktopFile()
     group.writePathEntry("URL", linkUrl.prettyUrl());
     df.sync();
 
-    m_strategy.m_src = tempFileName;
-    m_strategy.m_tempFileToDelete = tempFileName;
+    m_copyData.m_src = tempFileName;
+    m_copyData.m_tempFileToDelete = tempFileName;
 
     executeStrategy();
 }
