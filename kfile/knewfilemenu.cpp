@@ -513,22 +513,28 @@ void KNewFileMenuPrivate::executeStrategy()
     const QString src = m_strategy.sourceFileToCopy();
     QString chosenFileName = expandTilde(m_strategy.chosenFileName(), true);
 
-    // If the file is not going to be detected as a desktop file, due to a
-    // known extension (e.g. ".pl"), append ".desktop". #224142.
-    KMimeType::Ptr mime = KMimeType::findByNameAndContent(chosenFileName, "[Desktop Entry]\n");
-    if (!mime->is(QLatin1String("application/x-desktop")))
-        chosenFileName += QLatin1String(".desktop");
-
     if (src.isEmpty())
         return;
     KUrl uSrc(src);
-
     if (uSrc.isLocalFile()) {
         // In case the templates/.source directory contains symlinks, resolve
         // them to the target files. Fixes bug #149628.
         KFileItem item(uSrc, QString(), KFileItem::Unknown);
         if (item.isLink())
             uSrc.setPath(item.linkDest());
+
+        if (!m_strategy.m_isSymlink) {
+            // If the file is not going to be detected as a desktop file, due to a
+            // known extension (e.g. ".pl"), append ".desktop". #224142.
+            QFile srcFile(uSrc.toLocalFile());
+            if (srcFile.open(QIODevice::ReadOnly)) {
+                KMimeType::Ptr wantedMime = KMimeType::findByUrl(uSrc);
+                KMimeType::Ptr mime = KMimeType::findByNameAndContent(m_strategy.m_chosenFileName, srcFile.read(1024));
+                //kDebug() << "mime=" << mime->name() << "wantedMime=" << wantedMime->name();
+                if (!mime->is(wantedMime->name()))
+                    chosenFileName += wantedMime->mainExtension();
+            }
+        }
     }
 
     // The template is not a desktop file [or it's a URL one]
@@ -902,8 +908,8 @@ void KNewFileMenuPrivate::_k_slotTextChanged(const QString & text)
 
 void KNewFileMenuPrivate::_k_slotUrlDesktopFile()
 {
-    KNameAndUrlInputDialog* dlg = (KNameAndUrlInputDialog*) m_fileDialog;
-    
+    KNameAndUrlInputDialog* dlg = static_cast<KNameAndUrlInputDialog*>(m_fileDialog);
+
     m_strategy.m_chosenFileName = dlg->name(); // no path
     KUrl linkUrl = dlg->url();
 

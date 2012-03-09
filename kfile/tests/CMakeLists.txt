@@ -25,5 +25,6 @@ KFILE_UNIT_TESTS(
   kfileplacesmodeltest
   kurlnavigatortest
   kdiroperatortest
+  knewfilemenutest
 )
 
