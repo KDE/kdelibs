@@ -153,9 +153,9 @@ bool Device::queryDeviceInterface(const Solid::DeviceInterface::Type& type) cons
         return true;
     case Solid::DeviceInterface::Block:
         return isBlock();
-    case Solid::DeviceInterface::StorageVolume:  // partition
+    case Solid::DeviceInterface::StorageVolume:
         return isStorageVolume();
-    case Solid::DeviceInterface::StorageAccess:  // filesystem
+    case Solid::DeviceInterface::StorageAccess:
         return isStorageAccess();
     case Solid::DeviceInterface::StorageDrive:
         return isDrive();
@@ -174,25 +174,17 @@ QStringList Device::emblems() const
 
     if (queryDeviceInterface(Solid::DeviceInterface::StorageAccess))
     {
-
-        bool isEncrypted = false;
-        if (queryDeviceInterface(Solid::DeviceInterface::StorageVolume))
-        {
-            const UDisks2::StorageVolume volIface(const_cast<Device *>(this));
-            isEncrypted = (volIface.usage() == Solid::StorageVolume::Encrypted);
-        }
-
         const UDisks2::StorageAccess accessIface(const_cast<Device *>(this));
         if (accessIface.isAccessible())
         {
-            if (isEncrypted)
+            if (isEncryptedContainer())
                 res << "emblem-encrypted-unlocked";
             else
                 res << "emblem-mounted";
         }
         else
         {
-            if (isEncrypted)
+            if (isEncryptedContainer())
                 res << "emblem-encrypted-locked";
             else
                 res << "emblem-unmounted";
@@ -858,7 +850,7 @@ bool Device::isOpticalDisc() const
         return false;
 
     Device drive(drivePath);
-    return drive.prop("Optical").toBool();
+    return drive.prop("Optical").toBool();  // FIXME maybe check for drive.isOpticalDrive()
 }
 
 bool Device::isMounted() const
