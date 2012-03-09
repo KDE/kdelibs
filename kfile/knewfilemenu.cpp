@@ -79,11 +79,11 @@ public:
           templatesVersion(0)
     {
     }
-    
+
     ~KNewFileMenuSingleton()
     {
 	delete dirWatch;
-        delete templatesList;        
+        delete templatesList;
     }
 
 
@@ -103,7 +103,7 @@ public:
     enum EntryType { Unknown, LinkToTemplate = 1, Template, Separator };
 
     KDirWatch * dirWatch;
-    
+
     struct Entry {
         QString text;
         QString filePath; // empty for Separator
@@ -120,7 +120,7 @@ public:
      * the same order as the 'New' menu.
      */
     typedef QList<Entry> EntryList;
-    
+
     /**
      * Set back to false each time new templates are found,
      * and to true on the first call to parseFiles
@@ -217,8 +217,8 @@ public:
     QString sourceFileToCopy() const { return m_src; }
     QString tempFileToDelete() const { return m_tempFileToDelete; }
     bool m_isSymlink;
-    
-protected:    
+
+protected:
     QString m_chosenFileName;
     QString m_src;
     QString m_tempFileToDelete;
@@ -229,24 +229,24 @@ class KNewFileMenuPrivate
 {
 public:
     KNewFileMenuPrivate(KNewFileMenu* qq)
-        : m_menuItemsVersion(0),          
+        : m_menuItemsVersion(0),
           m_modal(true),
           m_viewShowsHiddenFiles(false),
           q(qq)
     {}
-        
+
     bool checkSourceExists(const QString& src);
-    
+
     /**
       * Asks user whether to create a hidden directory with a dialog
       */
     void confirmCreatingHiddenDir(const QString& name);
-    
+
     /**
       *	The strategy used for other desktop files than Type=Link. Example: Application, Device.
-      */ 
+      */
     void executeOtherDesktopFile(const KNewFileMenuSingleton::Entry& entry);
-    
+
     /**
       * The strategy used for "real files or directories" (the common case)
       */
@@ -256,12 +256,12 @@ public:
       * Actually performs file handling. Reads in m_strategy for needed data, that has been collected by execute*() before
       */
     void executeStrategy();
-        
+
     /**
       *	The strategy used when creating a symlink
-      */ 
-    void executeSymLink(const KNewFileMenuSingleton::Entry& entry);    
-        
+      */
+    void executeSymLink(const KNewFileMenuSingleton::Entry& entry);
+
     /**
       * The strategy used for "url" desktop files
       */
@@ -271,67 +271,67 @@ public:
      * Fills the menu from the templates list.
      */
     void fillMenu();
-      
+
     /**
       * Just clears the string buffer d->m_text, but I need a slot for this to occur
       */
     void _k_slotAbortDialog();
-    
+
     /**
      * Called when New->* is clicked
      */
     void _k_slotActionTriggered(QAction* action);
-  
+
     /**
      * Callback function that reads in directory name from dialog and processes it
      */
     void _k_slotCreateDirectory(bool writeHiddenDir = false);
-    
+
     /**
      * Callback function that reads in directory name from dialog and processes it. This will wirte
      * a hidden directory without further questions
      */
     void _k_slotCreateHiddenDirectory();
-            
+
     /**
      * Fills the templates list.
      */
     void _k_slotFillTemplates();
-    
+
     /**
       * Callback in KNewFileMenu for the OtherDesktopFile Dialog. Handles dialog input and gives over
-      * to exectueStrategy()
+      * to executeStrategy()
       */
     void _k_slotOtherDesktopFile();
-    
+
     /**
       * Callback in KNewFileMenu for the RealFile Dialog. Handles dialog input and gives over
-      * to exectueStrategy()
+      * to executeStrategy()
       */
     void _k_slotRealFileOrDir();
-        
+
     /**
-      * Dialogs use this slot to write the changed string into KNewFile menu when the user 
+      * Dialogs use this slot to write the changed string into KNewFile menu when the user
       * changes touches them
       */
     void _k_slotTextChanged(const QString & text);
-        
+
     /**
       * Callback in KNewFileMenu for the Symlink Dialog. Handles dialog input and gives over
-      * to exectueStrategy()
+      * to executeStrategy()
       */
     void _k_slotSymLink();
-    
+
     /**
       * Callback in KNewFileMenu for the Url/Desktop Dialog. Handles dialog input and gives over
-      * to exectueStrategy()
+      * to executeStrategy()
       */
     void _k_slotUrlDesktopFile();
 
 
     KActionCollection * m_actionCollection;
     KDialog* m_fileDialog;
-    
+
     KActionMenu *m_menuDev;
     int m_menuItemsVersion;
     bool m_modal;
@@ -364,7 +364,7 @@ bool KNewFileMenuPrivate::checkSourceExists(const QString& src)
 {
     if (!QFile::exists(src)) {
         kWarning(1203) << src << "doesn't exist" ;
-	
+
 	KDialog* dialog = new KDialog(m_parentWidget);
 	dialog->setCaption( i18n("Sorry") );
 	dialog->setButtons( KDialog::Ok );
@@ -373,14 +373,14 @@ bool KNewFileMenuPrivate::checkSourceExists(const QString& src)
 	dialog->setAttribute(Qt::WA_DeleteOnClose);
 	dialog->setDefaultButton( KDialog::Ok );
 	dialog->setEscapeButton( KDialog::Ok );
-	
-	KMessageBox::createKMessageBox(dialog, QMessageBox::Warning, 
-	  i18n("<qt>The template file <b>%1</b> does not exist.</qt>", src), 
+
+	KMessageBox::createKMessageBox(dialog, QMessageBox::Warning,
+	  i18n("<qt>The template file <b>%1</b> does not exist.</qt>", src),
 	  QStringList(), QString(), 0, KMessageBox::NoExec,
 	  QString());
-	
+
 	dialog->show();
-	
+
         return false;
     }
     return true;
@@ -392,17 +392,17 @@ void KNewFileMenuPrivate::confirmCreatingHiddenDir(const QString& name)
 	_k_slotCreateHiddenDirectory();
 	return;
     }
-  
+
     KGuiItem continueGuiItem(KStandardGuiItem::cont());
     continueGuiItem.setText(i18nc("@action:button", "Create directory"));
     KGuiItem cancelGuiItem(KStandardGuiItem::cancel());
     cancelGuiItem.setText(i18nc("@action:button", "Enter a different name"));
-    
+
     KDialog* confirmDialog = new KDialog(m_parentWidget);
     confirmDialog->setCaption(i18n("Create hidden directory?"));
     confirmDialog->setModal(m_modal);
     confirmDialog->setAttribute(Qt::WA_DeleteOnClose);
-    KMessageBox::createKMessageBox(confirmDialog, QMessageBox::Warning, 
+    KMessageBox::createKMessageBox(confirmDialog, QMessageBox::Warning,
 	  i18n("The name \"%1\" starts with a dot, so the directory will be hidden by default.", name),
 	  QStringList(),
 	  i18n("Do not ask again"),
@@ -411,13 +411,13 @@ void KNewFileMenuPrivate::confirmCreatingHiddenDir(const QString& name)
 	  QString());
     confirmDialog->setButtonGuiItem(KDialog::Ok, continueGuiItem);
     confirmDialog->setButtonGuiItem(KDialog::Cancel, cancelGuiItem);
-    
+
     QObject::connect(confirmDialog, SIGNAL(accepted()), q, SLOT(_k_slotCreateHiddenDirectory()));
     QObject::connect(confirmDialog, SIGNAL(rejected()), q, SLOT(createDirectory()));
-    
+
     m_fileDialog = confirmDialog;
     confirmDialog->show();
-    
+
 }
 
 void KNewFileMenuPrivate::executeOtherDesktopFile(const KNewFileMenuSingleton::Entry& entry)
@@ -441,7 +441,7 @@ void KNewFileMenuPrivate::executeOtherDesktopFile(const KNewFileMenuSingleton::E
             text = KIO::RenameDialog::suggestName(*it, text);
 
         const KUrl templateUrl(entry.templatePath);
-	
+
 	KDialog* dlg = new KPropertiesDialog(templateUrl, *it, text, m_parentWidget);
 	dlg->setModal(q->isModal());
 	dlg->setAttribute(Qt::WA_DeleteOnClose);
@@ -464,12 +464,12 @@ void KNewFileMenuPrivate::executeRealFileOrDir(const KNewFileMenuSingleton::Entr
     defaultFile.addPath(KIO::encodeFileName(text));
     if (defaultFile.isLocalFile() && QFile::exists(defaultFile.toLocalFile()))
         text = KIO::RenameDialog::suggestName(m_popupFiles.first(), text);
-    
+
     KDialog* fileDialog = new KDialog(m_parentWidget);
     fileDialog->setAttribute(Qt::WA_DeleteOnClose);
     fileDialog->setModal(q->isModal());
     fileDialog->setButtons(KDialog::Ok | KDialog::Cancel);
-    
+
     QWidget* mainWidget = new QWidget(fileDialog);
     QVBoxLayout *layout = new QVBoxLayout(mainWidget);
     QLabel *label = new QLabel(entry.comment);
@@ -483,14 +483,14 @@ void KNewFileMenuPrivate::executeRealFileOrDir(const KNewFileMenuSingleton::Entr
 
     _k_slotTextChanged(text);
     QObject::connect(lineEdit, SIGNAL(textChanged(QString)), q, SLOT(_k_slotTextChanged(QString)));
-    
+
     layout->addWidget(label);
     layout->addWidget(lineEdit);
-    
+
     fileDialog->setMainWidget(mainWidget);
     QObject::connect(fileDialog, SIGNAL(accepted()), q, SLOT(_k_slotRealFileOrDir()));
     QObject::connect(fileDialog, SIGNAL(rejected()), q, SLOT(_k_slotAbortDialog()));
- 
+
     fileDialog->show();
     lineEdit->selectAll();
     lineEdit->setFocus();
@@ -504,7 +504,7 @@ void KNewFileMenuPrivate::executeSymLink(const KNewFileMenuSingleton::Entry& ent
     dlg->setCaption(i18n("Create Symlink"));
     m_fileDialog = dlg;
     QObject::connect(dlg, SIGNAL(accepted()), q, SLOT(_k_slotSymLink()));
-    dlg->show();    
+    dlg->show();
 }
 
 void KNewFileMenuPrivate::executeStrategy()
@@ -574,7 +574,7 @@ void KNewFileMenuPrivate::executeUrlDesktopFile(const KNewFileMenuSingleton::Ent
     dlg->setCaption(i18n("Create link to URL"));
     m_fileDialog = dlg;
     QObject::connect(dlg, SIGNAL(accepted()), q, SLOT(_k_slotUrlDesktopFile()));
-    dlg->show();    
+    dlg->show();
 }
 
 void KNewFileMenuPrivate::fillMenu()
@@ -732,11 +732,11 @@ void KNewFileMenuPrivate::_k_slotActionTriggered(QAction* action)
     const bool createSymlink = entry.templatePath == "__CREATE_SYMLINK__";
 
     m_strategy = KNewFileMenuStrategy();
-    
+
     if (createSymlink) {
         m_strategy.m_isSymlink = true;
 	executeSymLink(entry);
-    } 
+    }
     else if (KDesktopFile::isDesktopFile(entry.templatePath)) {
         KDesktopFile df(entry.templatePath);
         if (df.readType() == "Link") {
@@ -744,21 +744,21 @@ void KNewFileMenuPrivate::_k_slotActionTriggered(QAction* action)
         } else { // any other desktop file (Device, App, etc.)
 	    executeOtherDesktopFile(entry);
         }
-    } 
+    }
     else {
 	executeRealFileOrDir(entry);
     }
-    
+
 }
 
 void KNewFileMenuPrivate::_k_slotCreateDirectory(bool writeHiddenDir)
-{    
+{
     KUrl url;
     KUrl baseUrl = m_popupFiles.first();
     bool askAgain = false;
-  
+
     QString name = expandTilde(m_text);
-    
+
     if (!name.isEmpty()) {
       if ((name[0] == '/'))
         url.setPath(name);
@@ -796,7 +796,7 @@ void KNewFileMenuPrivate::_k_slotCreateDirectory(bool writeHiddenDir)
 
 void KNewFileMenuPrivate::_k_slotCreateHiddenDirectory()
 {
-    _k_slotCreateDirectory(true);    
+    _k_slotCreateDirectory(true);
 }
 
 void KNewFileMenuPrivate::_k_slotFillTemplates()
@@ -868,13 +868,13 @@ void KNewFileMenuPrivate::_k_slotRealFileOrDir()
 void KNewFileMenuPrivate::_k_slotSymLink()
 {
     KNameAndUrlInputDialog* dlg = static_cast<KNameAndUrlInputDialog*>(m_fileDialog);
-    
+
     m_strategy.m_chosenFileName = dlg->name(); // no path
     KUrl linkUrl = dlg->url(); // the url to put in the file
-    
+
     if (m_strategy.m_chosenFileName.isEmpty() || linkUrl.isEmpty())
         return;
-    
+
     if (linkUrl.isRelative())
         m_strategy.m_src = linkUrl.url();
     else if (linkUrl.isLocalFile())
@@ -889,12 +889,12 @@ void KNewFileMenuPrivate::_k_slotSymLink()
 	dialog->setDefaultButton( KDialog::Ok );
 	dialog->setEscapeButton( KDialog::Ok );
 	m_fileDialog = dialog;
-	
-	KMessageBox::createKMessageBox(dialog, QMessageBox::Warning, 
-	  i18n("Basic links can only point to local files or directories.\nPlease use \"Link to Location\" for remote URLs."), 
+
+	KMessageBox::createKMessageBox(dialog, QMessageBox::Warning,
+	  i18n("Basic links can only point to local files or directories.\nPlease use \"Link to Location\" for remote URLs."),
 	  QStringList(), QString(), 0, KMessageBox::NoExec,
 	  QString());
-	
+
 	dialog->show();
 	return;
     }
@@ -1025,18 +1025,18 @@ void KNewFileMenu::createDirectory()
 	return;
 
     KUrl baseUrl = d->m_popupFiles.first();
-    QString name = d->m_text.isEmpty()? i18nc("Default name for a new folder", "New Folder") : 
+    QString name = d->m_text.isEmpty()? i18nc("Default name for a new folder", "New Folder") :
       d->m_text;
-      
+
     if (baseUrl.isLocalFile() && QFileInfo(baseUrl.toLocalFile(KUrl::AddTrailingSlash) + name).exists())
 	name = KIO::RenameDialog::suggestName(baseUrl, name);
-    
+
     KDialog* fileDialog = new KDialog(d->m_parentWidget);
     fileDialog->setModal(isModal());
     fileDialog->setAttribute(Qt::WA_DeleteOnClose);
     fileDialog->setButtons(KDialog::Ok | KDialog::Cancel);
     fileDialog->setCaption(i18nc("@title:window", "New Folder"));
-    
+
     QWidget* mainWidget = new QWidget(fileDialog);
     QVBoxLayout *layout = new QVBoxLayout(mainWidget);
     QLabel *label = new QLabel(i18n("Create new folder in:\n%1", baseUrl.pathOrUrl()));
@@ -1052,13 +1052,13 @@ void KNewFileMenu::createDirectory()
     connect(lineEdit, SIGNAL(textChanged(QString)), this, SLOT(_k_slotTextChanged(QString)));
     layout->addWidget(label);
     layout->addWidget(lineEdit);
-    
+
     fileDialog->setMainWidget(mainWidget);
     connect(fileDialog, SIGNAL(accepted()), this, SLOT(_k_slotCreateDirectory()));
-    connect(fileDialog, SIGNAL(rejected()), this, SLOT(_k_slotAbortDialog()));    
-    
+    connect(fileDialog, SIGNAL(rejected()), this, SLOT(_k_slotAbortDialog()));
+
     d->m_fileDialog = fileDialog;
- 
+
     fileDialog->show();
     lineEdit->selectAll();
     lineEdit->setFocus();
