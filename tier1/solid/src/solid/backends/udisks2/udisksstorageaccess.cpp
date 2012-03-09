@@ -64,6 +64,8 @@ bool StorageAccess::isLuksDevice() const
 bool StorageAccess::isAccessible() const
 {
     if (isLuksDevice()) { // check if the cleartext slave is mounted
+        if (m_clearTextPath.isEmpty() || m_clearTextPath == "/")
+            return false;
         Device holderDevice(m_clearTextPath);
         return holderDevice.isMounted();
     }
@@ -145,7 +147,7 @@ void StorageAccess::checkAccessibility()
     updateCache();
 
     if (old_isAccessible != m_isAccessible) {
-        Q_EMIT accessibilityChanged(isAccessible(), isLuksDevice() ? m_clearTextPath : m_device->udi());
+        Q_EMIT accessibilityChanged(m_isAccessible, isLuksDevice() ? m_clearTextPath : m_device->udi());
     }
 }
 
