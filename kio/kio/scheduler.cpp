@@ -1283,8 +1283,11 @@ bool SchedulerPrivate::assignJobToSlave(KIO::Slave *slave, SimpleJob *job)
     kDebug(7006) << slave << job;
     // KDE5: queueing of jobs can probably be removed, it provides very little benefit
     ProtoQueue *pq = m_protocols.value(slave->protocol());
-    pq->removeJob(job);
-    return (pq ? pq->m_connectedSlaveQueue.queueJob(job, slave) : false);
+    if (pq) {
+        pq->removeJob(job);
+        return pq->m_connectedSlaveQueue.queueJob(job, slave);
+    }
+    return false;
 }
 
 bool SchedulerPrivate::disconnectSlave(KIO::Slave *slave)
