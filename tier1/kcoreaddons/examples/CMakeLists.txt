@@ -5,8 +5,8 @@ remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}/../src/randomness
+   ${CMAKE_CURRENT_SOURCE_DIR}/../src/io
    ${CMAKE_CURRENT_BINARY_DIR}/../src
-   ${KDE4_KDECORE_INCLUDES}
 )
 
 MACRO(KCOREADDONS_EXAMPLES)
@@ -27,5 +27,5 @@ KCOREADDONS_EXAMPLES(
 ########### kdirwatchtest_gui ###############
 
 add_executable(kdirwatchtest_gui kdirwatchtest_gui.cpp)
-target_link_libraries(kdirwatchtest_gui ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} kcoreaddons)
+target_link_libraries(kdirwatchtest_gui ${QT_QTGUI_LIBRARY} kcoreaddons)
 
