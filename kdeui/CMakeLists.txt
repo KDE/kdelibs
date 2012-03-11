@@ -42,7 +42,6 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/kernel
  ${CMAKE_CURRENT_SOURCE_DIR}/notifications
  ${CMAKE_CURRENT_SOURCE_DIR}/paged
- ${CMAKE_SOURCE_DIR}/staging/kaction/src/shortcuts
  ${CMAKE_CURRENT_SOURCE_DIR}/sonnet
  ${CMAKE_CURRENT_SOURCE_DIR}/util
  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
@@ -362,16 +361,6 @@ qt4_add_dbus_adaptor(kdeui_LIB_SRCS     ${CMAKE_CURRENT_SOURCE_DIR}/notification
                      ${CMAKE_CURRENT_SOURCE_DIR}/notifications/kstatusnotifieritemdbus_p.h KStatusNotifierItemDBus)
 endif(NOT WINCE)
 
-set(kglobalaccel_xml ${CMAKE_SOURCE_DIR}/staging/kaction/src/shortcuts/org.kde.KGlobalAccel.xml)
-set_source_files_properties(${kglobalaccel_xml} PROPERTIES INCLUDE "kglobalshortcutinfo_p.h")
-qt4_add_dbus_interface(kdeui_LIB_SRCS ${kglobalaccel_xml} kglobalaccel_interface )
-install(FILES ${kglobalaccel_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
-
-set(kglobalaccel_component_xml ${CMAKE_SOURCE_DIR}/staging/kaction/src/shortcuts/org.kde.kglobalaccel.Component.xml)
-set_source_files_properties(${kglobalaccel_component_xml} PROPERTIES INCLUDE "kglobalshortcutinfo_p.h")
-qt4_add_dbus_interface(kdeui_LIB_SRCS ${kglobalaccel_component_xml} kglobalaccel_component_interface )
-install(FILES ${kglobalaccel_component_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
-
 set(knotify_xml ${CMAKE_CURRENT_SOURCE_DIR}/notifications/org.kde.KNotify.xml)
 qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 
@@ -379,7 +368,7 @@ kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 generate_export_header(kdeui)
 
 target_link_libraries(kdeui itemmodels sonnetcore kauth ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
-                            ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} kcoreaddons ${kwindowsystem_LIBRARY})
+                            ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} kactions kcoreaddons ${kwindowsystem_LIBRARY})
 
 if(NOT WINCE)
 target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY})
