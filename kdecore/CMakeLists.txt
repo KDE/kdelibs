@@ -329,6 +329,7 @@ install( FILES
    config/kdesktopfile.h
    config/ksharedconfig.h
    config/kcoreconfigskeleton.h
+   config/kconfiggroup_kurl.h
    date/kcalendarsystem.h
    date/kdatetime.h
    date/klocalizeddate.h

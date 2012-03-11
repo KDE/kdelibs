@@ -29,7 +29,6 @@
 #include <QtCore/QPoint>
 #include <QtCore/QSize>
 #include <QtCore/QRect>
-#include <kurl.h>
 #include <QtCore/QVariant>
 
 namespace ConversionCheck {
