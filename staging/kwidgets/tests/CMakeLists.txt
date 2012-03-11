@@ -24,5 +24,9 @@ ENDMACRO(KDEUI_EXECUTABLE_TESTS)
 
 KDEUI_EXECUTABLE_TESTS(
   khboxtest
+  kdialogtest
 )
 
+KDEUI_UNIT_TESTS(
+  kdialog_unittest
+)

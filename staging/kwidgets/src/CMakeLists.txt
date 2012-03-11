@@ -9,6 +9,7 @@ include_directories(
 set(kwidgets_LIB_SRCS
  widgets/khbox.cpp
  widgets/kvbox.cpp
+ dialogs/kdialog.cpp
 )
 
 add_library(kwidgets ${LIBRARY_TYPE} ${kwidgets_LIB_SRCS})
@@ -23,6 +24,7 @@ install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_export.h
  widgets/khbox.h
  widgets/kvbox.h
+ dialogs/kdialog.h
 
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
