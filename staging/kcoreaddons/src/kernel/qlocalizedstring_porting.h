@@ -26,7 +26,7 @@
 #include <QtCore/QString>
 #include <QtCore/QLatin1String>
 
-#pragma message("KDE5 TODO: Remove this file once QLocalizedString is in Qt5")
+#pragma message("KDE5 TODO: Remove this file once QCommandLineArguments exists, and a KAboutData replacement uses normal QStrings.")
 
 #ifndef I18N_NOOP2
 #define I18N_NOOP2(comment,x) x
