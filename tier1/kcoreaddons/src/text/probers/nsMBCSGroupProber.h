@@ -36,7 +36,7 @@
 
 #define NUM_OF_PROBERS    7
 namespace kencodingprober {
-class KDE_NO_EXPORT nsMBCSGroupProber: public nsCharSetProber {
+class KCOREADDONS_NO_EXPORT nsMBCSGroupProber: public nsCharSetProber {
 public:
   nsMBCSGroupProber();
   virtual ~nsMBCSGroupProber();

@@ -31,7 +31,7 @@
 
 #define NUM_OF_ESC_CHARSETS   4
 namespace kencodingprober {
-class KDE_NO_EXPORT nsEscCharSetProber: public nsCharSetProber {
+class KCOREADDONS_NO_EXPORT nsEscCharSetProber: public nsCharSetProber {
 public:
   nsEscCharSetProber(void);
   virtual ~nsEscCharSetProber(void);

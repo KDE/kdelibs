@@ -31,7 +31,7 @@
 
 #define CN_NUM_OF_PROBERS    3
 namespace kencodingprober {
-class KDE_NO_EXPORT ChineseGroupProber: public nsCharSetProber {
+class KCOREADDONS_NO_EXPORT ChineseGroupProber: public nsCharSetProber {
 public:
   ChineseGroupProber();
   virtual ~ChineseGroupProber();

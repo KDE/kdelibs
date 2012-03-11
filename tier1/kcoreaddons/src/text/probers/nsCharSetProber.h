@@ -28,8 +28,6 @@
 
 #include "kencodingprober.h"
 
-#include "kdemacros.h"
-
 namespace kencodingprober {
 typedef enum {
   eDetecting = 0,   //We are still detecting, no sure answer yet, but caller can ask for confidence.
@@ -39,7 +37,7 @@ typedef enum {
 
 #define SHORTCUT_THRESHOLD      (float)0.95
 
-class KDE_NO_EXPORT nsCharSetProber {
+class KCOREADDONS_NO_EXPORT nsCharSetProber {
 public:
   virtual ~nsCharSetProber() {};
   virtual const char* GetCharSetName() = 0;

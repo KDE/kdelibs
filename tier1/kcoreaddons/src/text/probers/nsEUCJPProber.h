@@ -36,7 +36,7 @@
 #include "JpCntx.h"
 #include "CharDistribution.h"
 namespace kencodingprober {
-class KDE_NO_EXPORT nsEUCJPProber: public nsCharSetProber {
+class KCOREADDONS_NO_EXPORT nsEUCJPProber: public nsCharSetProber {
 public:
   nsEUCJPProber(void){mCodingSM = new nsCodingStateMachine(&EUCJPSMModel);
                       Reset();};

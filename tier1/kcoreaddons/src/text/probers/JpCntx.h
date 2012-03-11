@@ -26,7 +26,7 @@
 #ifndef __JPCNTX_H__
 #define __JPCNTX_H__
 
-#include "kdemacros.h"
+#include "kcoreaddons_export.h"
 
 #define NUM_OF_CATEGORY 6
 
@@ -36,7 +36,7 @@ namespace kencodingprober {
 //hiragana frequency category table
 extern const char jp2CharContext[83][83];
 
-class KDE_NO_EXPORT JapaneseContextAnalysis
+class KCOREADDONS_NO_EXPORT JapaneseContextAnalysis
 {
 public:
   JapaneseContextAnalysis() {Reset();};
@@ -90,7 +90,7 @@ protected:
 };
 
 
-class KDE_NO_EXPORT SJISContextAnalysis : public JapaneseContextAnalysis
+class KCOREADDONS_NO_EXPORT SJISContextAnalysis : public JapaneseContextAnalysis
 {
   //SJISContextAnalysis(){};
 protected:
@@ -107,7 +107,7 @@ protected:
   };
 };
 
-class KDE_NO_EXPORT EUCJPContextAnalysis : public JapaneseContextAnalysis
+class KCOREADDONS_NO_EXPORT EUCJPContextAnalysis : public JapaneseContextAnalysis
 {
 protected:
   int GetOrder(const char* str, unsigned int *charLen);

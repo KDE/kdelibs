@@ -30,7 +30,7 @@
 #include "nsCodingStateMachine.h"
 #include "CharDistribution.h"
 namespace kencodingprober {
-class KDE_NO_EXPORT nsEUCTWProber: public nsCharSetProber {
+class KCOREADDONS_NO_EXPORT nsEUCTWProber: public nsCharSetProber {
 public:
   nsEUCTWProber(void){mCodingSM = new nsCodingStateMachine(&EUCTWSMModel);
                       Reset();};

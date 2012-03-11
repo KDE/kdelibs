@@ -32,7 +32,7 @@
 
 // We use gb18030 to replace gb2312, because 18030 is a superset. 
 namespace kencodingprober {
-class KDE_NO_EXPORT nsGB18030Prober: public nsCharSetProber {
+class KCOREADDONS_NO_EXPORT nsGB18030Prober: public nsCharSetProber {
 public:
   nsGB18030Prober(void){mCodingSM = new nsCodingStateMachine(&GB18030SMModel);
                       Reset();};

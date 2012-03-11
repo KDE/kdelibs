@@ -33,7 +33,7 @@
 
 #define JP_NUM_OF_PROBERS    3
 namespace kencodingprober {
-class KDE_NO_EXPORT JapaneseGroupProber: public nsCharSetProber {
+class KCOREADDONS_NO_EXPORT JapaneseGroupProber: public nsCharSetProber {
 public:
   JapaneseGroupProber();
   virtual ~JapaneseGroupProber();

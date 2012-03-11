@@ -44,7 +44,7 @@
 #define NUM_OF_SBCS_PROBERS    14
 
 namespace kencodingprober {
-class KDE_NO_EXPORT nsSBCSGroupProber: public nsCharSetProber {
+class KCOREADDONS_NO_EXPORT nsSBCSGroupProber: public nsCharSetProber {
 public:
   nsSBCSGroupProber();
   virtual ~nsSBCSGroupProber();

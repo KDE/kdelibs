@@ -31,7 +31,7 @@
 
 #define NUM_OF_UNICODE_CHARSETS   3
 namespace kencodingprober {
-class KDE_NO_EXPORT UnicodeGroupProber: public nsCharSetProber {
+class KCOREADDONS_NO_EXPORT UnicodeGroupProber: public nsCharSetProber {
 public:
   UnicodeGroupProber(void);
   virtual ~UnicodeGroupProber(void);

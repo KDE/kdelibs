@@ -30,7 +30,7 @@
 
 #define FREQ_CAT_NUM    4
 namespace kencodingprober {
-class KDE_NO_EXPORT nsLatin1Prober: public nsCharSetProber {
+class KCOREADDONS_NO_EXPORT nsLatin1Prober: public nsCharSetProber {
 public:
   nsLatin1Prober(void){Reset();};
   virtual ~nsLatin1Prober(void){};
