@@ -753,7 +753,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 {
   QString path (_path);
   if (path.isEmpty()
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
      || path == QLatin1String("/dev")
      || (path.startsWith(QLatin1String("/dev/")) && !path.startsWith(QLatin1String("/dev/.")))
 #endif
@@ -1309,7 +1309,7 @@ void KDirWatchPrivate::emitEvent(const Entry* e, int event, const QString &fileN
     else {
 #ifdef Q_OS_UNIX
       path += QLatin1Char('/') + fileName;
-#elif defined(Q_WS_WIN)
+#elif defined(Q_OS_WIN)
       //current drive is passed instead of /
       path += QDir::currentPath().left(2) + QLatin1Char('/') + fileName;
 #endif

@@ -39,7 +39,7 @@
 #define GUESS_JA_H
 
 #include <qglobal.h>
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #undef UNICODE
 #endif 
 #ifdef SOLARIS

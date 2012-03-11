@@ -73,7 +73,7 @@ class QSocketNotifier;
 #ifdef HAVE_QFILESYSTEMWATCHER
 #include <QtCore/QFileSystemWatcher>
 
-#if defined Q_WS_WIN
+#if defined Q_OS_WIN
 /* Helper implemented as a workaround for limitation on Windows:
  * the maximum number of object handles is MAXIMUM_WAIT_OBJECTS (64) per thread.
  *
