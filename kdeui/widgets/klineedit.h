@@ -37,7 +37,7 @@
 class QAction;
 class QMenu;
 class KCompletionBox;
-class KUrl;
+class QUrl;
 class KLineEditPrivate;
 
 /**
@@ -185,10 +185,10 @@ public:
     virtual ~KLineEdit ();
 
     /**
-     * Sets @p url into the lineedit. It uses KUrl::prettyUrl() so
+     * Sets @p url into the lineedit. It uses QUrl::toDisplayString() so
      * that the url is properly decoded for displaying.
      */
-    void setUrl( const KUrl& url );
+    void setUrl(const QUrl& url);
 
      /**
      * Re-implemented from KCompletionBase for internal reasons.

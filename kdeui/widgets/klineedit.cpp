@@ -1422,9 +1422,13 @@ bool KLineEdit::trapReturnKey() const
     return d->grabReturnKeyEvents;
 }
 
-void KLineEdit::setUrl( const KUrl& url )
+void KLineEdit::setUrl(const QUrl& url)
 {
-    setText( url.prettyUrl() );
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    setText(url.toString());
+#else
+    setText(url.toDisplayString());
+#endif
 }
 
 void KLineEdit::setCompletionBox( KCompletionBox *box )
