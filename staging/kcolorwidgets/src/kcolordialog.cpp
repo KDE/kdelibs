@@ -40,11 +40,13 @@
 #include <QCheckBox>
 #include <QDesktopWidget>
 #include <QRadioButton>
+#include <QFrame>
 #include <qdrawutil.h>
 #include <QActionEvent>
 #include <QtCore/QFile>
 #include <QHeaderView>
 #include <QImage>
+#include <QHBoxLayout>
 #include <QDrag>
 #include <QStyledItemDelegate>
 #include <QLabel>
@@ -1161,7 +1163,16 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
     connect(d->bedit, SIGNAL(valueChanged(int)),
             SLOT(slotRGBChanged()));
 
-    d->alphaLabel = new KHBox(page);
+    //the layout
+    QHBoxLayout* layout = new QHBoxLayout( this );
+    layout->setSpacing( 0 );
+    layout->setMargin( 0 );
+
+    //the frame
+    QFrame *frame = new QFrame(page);
+    frame->setLayout( layout );
+
+    d->alphaLabel = frame;
     QWidget *spacer = new QWidget(d->alphaLabel);
     label = new QLabel(i18n("Alpha:"), d->alphaLabel);
     QStyleOptionButton option;
