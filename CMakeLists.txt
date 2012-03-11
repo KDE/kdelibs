@@ -273,6 +273,7 @@ set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdeui
                         ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/utils
                         ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/icons
                         ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/widgets
+                        ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/dialogs
                         ${KDE4_KDECORE_INCLUDES})
 
 # kio depends on kdeui

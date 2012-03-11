@@ -29,9 +29,11 @@ kwidgets_executable_tests(
     kiconeffecttest
     khboxtest
     kseparatortest
+    kdialogtest
 )
 
 kwidgets_unit_tests(
     kglobalsettingstest
     kiconloader_unittest
+    kdialog_unittest
 )

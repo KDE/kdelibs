@@ -81,7 +81,7 @@ if(QT_QTDESIGNER_FOUND)
 
     kde4_add_plugin(kdedeprecated ${kdedeprecated_PART_SRCS})
 
-    target_link_libraries(kdedeprecated  ${KDE4_KIO_LIBS})
+    target_link_libraries(kdedeprecated  ${KDE4_KIO_LIBS} kwidgets)
     if(NOT WIN32)
       set_target_properties(kdedeprecated PROPERTIES
                                           INSTALL_RPATH_USE_LINK_PATH TRUE
@@ -152,7 +152,7 @@ if(QT_QTDESIGNER_FOUND)
 
      kde4_add_plugin(kde3supportwidgets ${kde3supportwidgets_PART_SRCS})
 
-     target_link_libraries(kde3supportwidgets ${KDE4_KDE3SUPPORT_LIBS} ${KDE4_KIO_LIBS})
+     target_link_libraries(kde3supportwidgets ${KDE4_KDE3SUPPORT_LIBS} ${KDE4_KIO_LIBS} kwidgets)
      if(NOT WIN32)
         set_target_properties(kde3supportwidgets PROPERTIES
                                      INSTALL_RPATH_USE_LINK_PATH TRUE

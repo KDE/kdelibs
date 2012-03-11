@@ -25,6 +25,8 @@ include_directories(
   ${kcoreaddons_SOURCE_DIR}/src/caching
   ${kauth_BINARY_DIR}/src
   ${kauth_SOURCE_DIR}/src
+  ${kwindowsystem_BINARY_DIR}/src
+  ${kwindowsystem_SOURCE_DIR}/src
   ${CMAKE_BINARY_DIR}/staging/kdeguiaddons/src
   ${CMAKE_SOURCE_DIR}/staging/kdeguiaddons/src/colors
   ${CMAKE_CURRENT_SOURCE_DIR}/src/utils

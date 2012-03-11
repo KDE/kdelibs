@@ -13,6 +13,7 @@ set(kwidgets_LIB_SRCS
   widgets/kpushbutton.cpp
   utils/kstandardguiitem.cpp
   utils/kguiitem.cpp
+  dialogs/kdialog.cpp
 )
 
 add_library(kwidgets ${LIBRARY_TYPE} ${kwidgets_LIB_SRCS})
@@ -26,6 +27,7 @@ target_link_libraries(kwidgets
   ${KDE4_KDECORE_LIBS}
   kdeguiaddons
   kauth
+  ${kwindowsystem_LIBRARY}
 )
 
 set_target_properties(kwidgets PROPERTIES VERSION ${ECM_VERSION_STRING}
@@ -47,6 +49,7 @@ install(FILES
   widgets/kseparator.h
   widgets/kpushbutton.h
   widgets/kurllabel.h
+  dialogs/kdialog.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

@@ -24,6 +24,8 @@
 #ifndef KDIALOGQUEUE_H
 #define KDIALOGQUEUE_H
 
+#include <kwidgets_export.h>
+
 /**
  * \brief Queue for showing modal dialogs one after the other.
  *
@@ -38,7 +40,7 @@
  *
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KDialogQueue : public QObject
+class KWIDGETS_EXPORT KDialogQueue : public QObject
 {
   Q_OBJECT
 

@@ -39,7 +39,6 @@ KDEUI_UNIT_TESTS(
   klineedit_unittest
   ktextedit_unittest
   kcombobox_unittest
-  kdialog_unittest
   kreplacetest
   kshortcuttest
   kstandardactiontest
@@ -86,7 +85,6 @@ KDEUI_EXECUTABLE_TESTS(
   kdatewidgettest
   kdebugtest_gui
   kdialogbuttonboxtest
-  kdialogtest
   keditlistwidgettest
   kfontdialogtest
   kicondialogtest

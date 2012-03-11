@@ -22,6 +22,7 @@ include_directories(
  ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/utils
  ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/icons
  ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/widgets
+ ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/dialogs
  ${kcoreaddons_BINARY_DIR}/src
  ${kcoreaddons_SOURCE_DIR}/src/caching
  ${kcoreaddons_SOURCE_DIR}/src/io
@@ -112,7 +113,6 @@ set(kdeui_LIB_SRCS
  dialogs/kconfigdialog.cpp
  dialogs/kconfigdialogmanager.cpp
  dialogs/kbugreport.cpp
- dialogs/kdialog.cpp
  dialogs/kedittoolbar.cpp
  dialogs/kinputdialog.cpp
  dialogs/klinkdialog.cpp
@@ -499,7 +499,6 @@ install( FILES
  dialogs/kconfigdialog.h
  dialogs/kconfigdialogmanager.h
  dialogs/kdeprintdialog.h
- dialogs/kdialog.h
  dialogs/kedittoolbar.h
  dialogs/kinputdialog.h
  dialogs/kmessagebox.h
