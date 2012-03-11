@@ -22,7 +22,7 @@
 #include "speller.h"
 
 #include <QCoreApplication>
-#include <kdebug.h>
+#include <qdebug.h>
 #include <QtCore/QDate>
 
 using namespace Sonnet;
@@ -33,8 +33,8 @@ int main( int argc, char** argv )
 
     Speller dict("en_US");
 
-    kDebug()<< "Clients are "   << dict.availableBackends();
-    kDebug()<< "Languages are " << dict.availableLanguages();
+    qDebug()<< "Clients are "   << dict.availableBackends();
+    qDebug()<< "Languages are " << dict.availableLanguages();
 
     QStringList words;
 
@@ -84,13 +84,13 @@ int main( int argc, char** argv )
     for (QStringList::Iterator itr = words.begin();
          itr != words.end(); ++itr) {
         if (!dict.isCorrect(*itr)) {
-            //kDebug()<<"Word " << *itr <<" is misspelled";
+            //qDebug()<<"Word " << *itr <<" is misspelled";
             QStringList sug = dict.suggest(*itr);
-            //kDebug()<<"Suggestions : "<<sug;
+            //qDebug()<<"Suggestions : "<<sug;
         }
     }
     //mtime.stop();
-    kDebug()<<"Elapsed time is "<<mtime.elapsed();
+    qDebug()<<"Elapsed time is "<<mtime.elapsed();
 
     return 0;
 }

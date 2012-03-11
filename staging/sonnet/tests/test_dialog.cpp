@@ -25,9 +25,8 @@
 #include "backgroundchecker.h"
 #include "filter_p.h"
 
-#include <kapplication.h>
-#include <kcmdlineargs.h>
-#include <kdebug.h>
+#include <qapplication.h>
+#include <qdebug.h>
 using namespace Sonnet;
 
 TestDialog::TestDialog()
@@ -48,15 +47,13 @@ void TestDialog::check( const QString& buffer )
 
 void TestDialog::doneChecking( const QString& buf )
 {
-    kDebug()<<"Done with :"<<buf;
+    qDebug()<<"Done with :"<<buf;
     qApp->quit();
 }
 
 int main( int argc, char** argv )
 {
-    //KApplication::disableAutoDcopRegistration();
-    KCmdLineArgs::init( argc, argv, "test_dialog", 0, ki18n("test_dialog"), 0);
-    KApplication app; // with GUI
+    QApplication app(argc, argv);
 
     TestDialog test;
     test.check( "This is a sample buffer. Whih this thingg will "
