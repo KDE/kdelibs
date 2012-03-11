@@ -31,7 +31,9 @@
 #include "kdirwatch.h"
 
 #ifndef QT_NO_FILESYSTEMWATCHER
-#define HAVE_QFILESYSTEMWATCHER
+#define HAVE_QFILESYSTEMWATCHER 1
+#else
+#define HAVE_QFILESYSTEMWATCHER 0
 #endif
 
 #include <QtCore/QList>
@@ -43,12 +45,12 @@
 class QFileSystemWatcher;
 class QSocketNotifier;
 
-#ifdef HAVE_FAM
+#if HAVE_FAM
 #include <limits.h>
 #include <fam.h>
 #endif
 
-#ifdef HAVE_SYS_INOTIFY_H
+#if HAVE_SYS_INOTIFY_H
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/inotify.h>
@@ -70,7 +72,7 @@ class QSocketNotifier;
 
 #define invalid_ctime ((time_t)-1)
 
-#ifdef HAVE_QFILESYSTEMWATCHER
+#if HAVE_QFILESYSTEMWATCHER
 #include <QtCore/QFileSystemWatcher>
 
 #if defined Q_OS_WIN
@@ -172,11 +174,11 @@ public:
 
     QList<Client *> clientsForFileOrDir(const QString& tpath, bool* isDir) const;
 
-#ifdef HAVE_FAM
+#if HAVE_FAM
     FAMRequest fr;
 #endif
 
-#ifdef HAVE_SYS_INOTIFY_H
+#if HAVE_SYS_INOTIFY_H
     int wd;
     // Creation and Deletion of files happens infrequently, so
     // can safely be reported as they occur.  File changes i.e. those that emity "dirty()" can
@@ -243,7 +245,7 @@ public:
   bool rescan_all;
   QTimer rescan_timer;
 
-#ifdef HAVE_FAM
+#if HAVE_FAM
   QSocketNotifier *sn;
   FAMConnection fc;
   bool use_fam;
@@ -252,14 +254,14 @@ public:
   bool useFAM(Entry*);
 #endif
 
-#ifdef HAVE_SYS_INOTIFY_H
+#if HAVE_SYS_INOTIFY_H
   QSocketNotifier *mSn;
   bool supports_inotify;
   int m_inotify_fd;
 
   bool useINotify(Entry*);
 #endif
-#ifdef HAVE_QFILESYSTEMWATCHER
+#if HAVE_QFILESYSTEMWATCHER
   KFileSystemWatcher *fsWatcher;
   bool useQFSWatch(Entry* e);
 #endif

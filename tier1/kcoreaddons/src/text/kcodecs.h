@@ -25,7 +25,7 @@
 #define KBase64 KCodecs
 
 #include <kcoreaddons_export.h>
-#include <kdemacros.h>
+#include <QtCore/QString>
 
 class QByteArray;
 class QIODevice;

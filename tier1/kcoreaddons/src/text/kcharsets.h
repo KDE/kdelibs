@@ -19,7 +19,6 @@
 #ifndef KCHARSETS_H
 #define KCHARSETS_H
 
-#include <kdemacros.h>
 #include <kcoreaddons_export.h>
 #include <QtCore/QList>
 

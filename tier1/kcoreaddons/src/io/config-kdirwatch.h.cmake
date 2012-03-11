@@ -1,3 +1,3 @@
-#cmakedefine HAVE_FAM 1
+#cmakedefine01 HAVE_FAM
 
-#cmakedefine HAVE_SYS_INOTIFY_H 1
+#cmakedefine01 HAVE_SYS_INOTIFY_H

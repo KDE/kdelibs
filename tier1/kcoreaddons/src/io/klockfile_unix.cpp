@@ -20,13 +20,13 @@
 
 #include "klockfile.h"
 
-#include <config.h>
+#include <config-klockfile.h>
 
 #include <sys/types.h>
-#ifdef HAVE_SYS_STAT_H
+#if HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
-#ifdef HAVE_SYS_TIME_H
+#if HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
 #include <signal.h>
