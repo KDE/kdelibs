@@ -21,19 +21,12 @@
 
 #include "krandomsequence.h"
 #include "krandom.h"
-#include "kcmdlineargs.h"
-#include "kaboutdata.h"
-//#include "kapplication.h"
 
 #include <stdio.h>
 
 int
 main( /*int argc, char *argv[]*/ )
 {
-   //KAboutData about("krandomsequencetest", 0, qi18n("krandomsequencetest"), "version");
-   //KCmdLineArgs::init(argc, argv, &about);
-   //KApplication a;
-
    long seed;
    KRandomSequence seq;
 

@@ -77,7 +77,7 @@ main(int argc, char *argv[])
    assert(u.toString() == QLatin1String("http://www.kde.org"));
 
    QFile file(QLatin1String("a:b"));
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
    bool ok = file.open(QIODevice::WriteOnly);
    assert(ok);
 #endif

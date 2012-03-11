@@ -20,22 +20,18 @@
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QFile>
+#include <QStringList>
 
 #include <QDebug>
-#include <kcmdlineargs.h>
+
+// TODO debug crash when calling "./kdirwatchtest ./kdirwatchtest"
 
 int main (int argc, char **argv)
 {
-  KCmdLineOptions options;
-  options.add("+[directory ...]", qi18n("Directory(ies) to watch"));
-
-  KCmdLineArgs::init(argc, argv, "kdirwatchtest", 0, qi18n("KDirWatchTest"),
-		     "1.0", qi18n("Test for KDirWatch"));
-  KCmdLineArgs::addCmdLineOptions( options );
-  KCmdLineArgs::addStdCmdLineOptions();
+  // TODO port to QCommandLineArguments once it exists
+  //options.add("+[directory ...]", qi18n("Directory(ies) to watch"));
 
   QCoreApplication a(argc, argv);
-  KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
   myTest testObject;
 
@@ -46,11 +42,14 @@ int main (int argc, char **argv)
   testObject.connect(dirwatch1, SIGNAL(created(QString)), SLOT(created(QString)) );
   testObject.connect(dirwatch1, SIGNAL(deleted(QString)), SLOT(deleted(QString)) );
 
-  if (args->count() >0) {
-    for(int i = 0; i < args->count(); i++) {
-      qDebug() << "Watching: " << args->arg(i);
-      dirwatch2->addDir( args->arg(i));
-    }
+  // TODO port to QCommandLineArguments once it exists
+  const QStringList args = a.arguments();
+  for (int i = 1 ; i < args.count() ; ++i ) {
+      const QString arg = args.at(i);
+      if (!arg.startsWith("-")) {
+          qDebug() << "Watching: " << arg;
+          dirwatch2->addDir(arg);
+      }
   }
 
   QString home = QString(getenv ("HOME")) + '/';
