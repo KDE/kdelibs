@@ -21,7 +21,6 @@ ENDMACRO()
 
 KCOREADDONS_EXAMPLES(
   kdirwatchtest
-  kcmdlineargstest
   krandomsequencetest
 )
 

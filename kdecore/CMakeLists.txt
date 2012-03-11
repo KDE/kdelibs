@@ -172,6 +172,7 @@ set(kdecore_LIB_SRCS
    kernel/kauthorized.cpp
    kernel/kglobal.cpp
    kernel/kcomponentdata.cpp
+   kernel/kcmdlineargs.cpp
    kernel/kstandarddirs.cpp
    kernel/ktoolinvocation.cpp
    services/kmimetypefactory.cpp
@@ -344,6 +345,7 @@ install( FILES
    kernel/kauthorized.h
    kernel/kglobal.h
    kernel/kcomponentdata.h
+   kernel/kcmdlineargs.h
    kernel/kstandarddirs.h
    kernel/ktoolinvocation.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
