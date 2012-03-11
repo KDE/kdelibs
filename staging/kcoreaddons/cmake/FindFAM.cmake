@@ -18,5 +18,10 @@ FIND_LIBRARY(FAM_LIBRARIES NAMES fam )
 INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(FAM DEFAULT_MSG FAM_INCLUDE_DIR FAM_LIBRARIES )
 
+set_package_properties(FAM PROPERTIES
+    URL "http://oss.sgi.com/projects/fam"
+    DESCRIPTION "File alteration notification support via a separate service"
+)
+
 MARK_AS_ADVANCED(FAM_INCLUDE_DIR FAM_LIBRARIES)
 

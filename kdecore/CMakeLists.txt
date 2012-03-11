@@ -9,13 +9,6 @@ configure_file(kdefakes.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h )
 # Generate kdeversion.h
 configure_file(util/kdeversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h )
 
-# Configure checks for kdirwatch
-find_package(FAM)
-macro_bool_to_01(FAM_FOUND HAVE_FAM)
-
-check_include_files(sys/inotify.h SYS_INOTIFY_H_FOUND)
-macro_bool_to_01(SYS_INOTIFY_H_FOUND HAVE_SYS_INOTIFY_H)
-
 check_struct_member("struct sockaddr" sa_len "sys/types.h;sys/socket.h" HAVE_STRUCT_SOCKADDR_SA_LEN)
 configure_file(network/config-klocalsocket.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/network/config-klocalsocket.h )
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/network )
@@ -260,18 +253,6 @@ target_link_libraries(kdecore
 if(WINCE)
   target_link_libraries(kdecore ${WCECOMPAT_LIBRARIES} Ceshell.lib)
 endif(WINCE)
-
-set(SYS_INOTIFY_H_FOUND 0)
-if(SYS_INOTIFY_H_FOUND)
-   macro_log_feature(FAM_FOUND "FAM" "File alteration notification support via a separate service" "http://oss.sgi.com/projects/fam" FALSE "" "You have file alteration notification support built into your kernel, however you might consider installing FAM as it also supports NFS.")
-else(SYS_INOTIFY_H_FOUND)
-   macro_log_feature(FAM_FOUND "FAM" "File alteration notification support via a separate service" "http://oss.sgi.com/projects/fam" FALSE "" "Provides file alteration notification facilities using a separate service.")
-endif(SYS_INOTIFY_H_FOUND)
-
-if(FAM_FOUND)
-   include_directories(${FAM_INCLUDE_DIR})
-   target_link_libraries(kdecore ${FAM_LIBRARIES})
-endif(FAM_FOUND)
 
 if(WIN32)
   set(kdecore_LINK_INTERFACE_LIBRARIES  ${QT_QTDBUS_LIBRARY} ${QT_QTCORE_LIBRARY} ${KDEWIN_LIBRARIES})

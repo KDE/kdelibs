@@ -7,6 +7,7 @@ set(kcoreaddons_OPTIONAL_SRCS )
 set(kcoreaddons_OPTIONAL_LIBS )
 
 if (FAM_FOUND)
+   include_directories(${FAM_INCLUDE_DIR})
    set(kcoreaddons_OPTIONAL_LIBS ${kcoreaddons_OPTIONAL_LIBS} ${FAM_LIBRARIES})
 endif (FAM_FOUND)
 
