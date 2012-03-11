@@ -17,13 +17,12 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kcmdlineargs.h>
-#include <kaboutdata.h>
+//#include <kaboutdata.h>
 #include <klockfile.h>
 
 int main(int argc, char *argv[])
 {
-   KAboutData about("klockfile_testlock", 0, qi18n("klockfile_testlock"), "version");
+   //KAboutData about("klockfile_testlock", 0, qi18n("klockfile_testlock"), "version");
 
    if (argc <= 1) {
        return KLockFile::LockError;
