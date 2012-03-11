@@ -10,7 +10,7 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/../../../kdecore/io
   ${CMAKE_CURRENT_SOURCE_DIR}/../../../kdecore/util
   ${CMAKE_CURRENT_BINARY_DIR}/../../../kdecore
-  ${CMAKE_CURRENT_BINARY_DIR}/../../../staging/kcoreaddons/src
+  ${CMAKE_CURRENT_BINARY_DIR}/../../../tier1/kcoreaddons/src
 )
 
 ########### unittests ###############
