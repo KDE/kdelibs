@@ -20,6 +20,7 @@
 #include "kauthexecutejob.h"
 #include "BackendsManager.h"
 
+#include <QEventLoop>
 #include <QHash>
 #include <QTimer>
 #include <QDebug>
@@ -127,10 +128,24 @@ void ExecuteJob::start()
     }
 }
 
+void ExecuteJob::exec()
+{
+    QEventLoop e;
+    connect(this, SIGNAL(finished(KAuth::ExecuteJob*)), &e, SLOT(quit()));
+    start();
+    e.exec();
+}
+
 void ExecuteJob::Private::doExecuteAction()
 {
     if (isRunning || isFinished) {
         actionPerformedSlot(action.name(), ActionReply::AlreadyStartedReply);
+        return;
+    }
+
+    if (!action.isValid()) {
+        actionPerformedSlot(action.name(), ActionReply::InvalidActionReply);
+        return;
     }
 
     isRunning = true;
@@ -144,7 +159,12 @@ void ExecuteJob::Private::doExecuteAction()
         Action::AuthStatus s = BackendsManager::authBackend()->authorizeAction(action.name());
 
         if (s == Action::StatusAuthorized) {
-            BackendsManager::helperProxy()->executeAction(action.name(), action.helperID(), action.arguments());
+            if (action.hasHelper()) {
+                BackendsManager::helperProxy()->executeAction(action.name(), action.helperID(), action.arguments());
+            } else {
+                // Done
+                actionPerformedSlot(action.name(), ActionReply::SuccessReply);
+            }
         } else {
             // Abort if authorization fails
             switch (s) {
@@ -179,18 +199,6 @@ void ExecuteJob::Private::doExecuteAction()
         ActionReply r(ActionReply::BackendError);
         r.setErrorDescription(tr("The backend does not specify how to authorize"));
         actionPerformedSlot(action.name(), r);
-    }
-
-    if (action.hasHelper()) {
-        // Perform the pre auth here
-        if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::PreAuthActionCapability) {
-            BackendsManager::authBackend()->preAuthAction(action.name(), action.parentWidget());
-        }
-
-        BackendsManager::helperProxy()->executeAction(action.name(), action.helperID(), action.arguments());
-    } else {
-        // Ok, no action to be carried on, and auth succeeded.
-        actionPerformedSlot(action.name(), ActionReply::SuccessReply);
     }
 }
 

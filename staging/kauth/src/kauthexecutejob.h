@@ -58,6 +58,8 @@ public:
 
     void start();
 
+    void exec();
+
     bool succeeded() const;
 
     ActionReply::Error error() const;
@@ -83,7 +85,7 @@ Q_SIGNALS:
 
     void percent(uint percent);
 
-    void finished(ExecuteJob *job);
+    void finished(KAuth::ExecuteJob *job);
 
     void statusChanged(KAuth::Action::AuthStatus status);
 };
