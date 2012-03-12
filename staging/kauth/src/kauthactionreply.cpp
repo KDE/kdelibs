@@ -25,11 +25,20 @@
 namespace KAuth
 {
 
-class ActionReply::Private
+class ActionReplyData : public QSharedData
 {
 public:
+    ActionReplyData() {}
+    ActionReplyData(const ActionReplyData &other)
+        : QSharedData(other)
+        , data(other.data)
+        , errorCode(other.errorCode)
+        , errorDescription(errorDescription)
+        , type(type) {}
+    ~ActionReplyData() {}
+
     QVariantMap data; // User-defined data for success and helper error replies, empty for kauth errors
-    int errorCode;
+    uint errorCode;
     QString errorDescription;
     ActionReply::Type type;
 };
@@ -47,27 +56,26 @@ const ActionReply ActionReply::DBusErrorReply = ActionReply(ActionReply::DBusErr
 
 // Constructors
 ActionReply::ActionReply(const ActionReply &reply)
-        : d(new Private())
+    : d(reply.d)
 {
-    *this = reply;
 }
 
 ActionReply::ActionReply()
-        : d(new Private())
+        : d(new ActionReplyData())
 {
     d->errorCode = 0;
     d->type = Success;
 }
 
 ActionReply::ActionReply(ActionReply::Type type)
-        : d(new Private())
+        : d(new ActionReplyData())
 {
     d->errorCode = 0;
     d->type = type;
 }
 
 ActionReply::ActionReply(int error)
-        : d(new Private())
+        : d(new ActionReplyData())
 {
     d->errorCode = error;
     d->type = KAuthError;
@@ -75,7 +83,6 @@ ActionReply::ActionReply(int error)
 
 ActionReply::~ActionReply()
 {
-    delete d;
 }
 
 void ActionReply::setData(const QVariantMap &data)
@@ -153,13 +160,14 @@ ActionReply ActionReply::deserialize(const QByteArray &data)
 }
 
 // Operators
-ActionReply &ActionReply::operator=(const ActionReply & reply)
+ActionReply &ActionReply::operator=(const ActionReply &reply)
 {
-    d->data = reply.d->data;
-    d->errorCode = reply.d->errorCode;
-    d->errorDescription = reply.d->errorDescription;
-    d->type = reply.d->type;
+    if (this == &reply) {
+        // Protect against self-assignment
+        return *this;
+    }
 
+    d = reply.d;
     return *this;
 }
 

@@ -25,6 +25,7 @@
 #include <QtCore/QVariant>
 #include <QtCore/QMap>
 #include <QtCore/QDataStream>
+#include <QtCore/QSharedDataPointer>
 
 #include <kauth_export.h>
 /**
@@ -332,6 +333,8 @@
 namespace KAuth
 {
 
+class ActionReplyData;
+
 /**
 * @brief Class that encapsulates a reply coming from the helper after executing an action
 *
@@ -369,9 +372,6 @@ namespace KAuth
 */
 class KAUTH_EXPORT ActionReply
 {
-    class Private;
-    Private * const d;
-
 public:
     /**
      * Enumeration of the different kinds of replies.
@@ -600,6 +600,9 @@ public:
 
     /// Input streaming operator for QDataStream
     friend QDataStream &operator>>(QDataStream &, ActionReply &);
+
+private:
+    QSharedDataPointer<ActionReplyData> d;
 
 };
 
