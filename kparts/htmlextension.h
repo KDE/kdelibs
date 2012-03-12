@@ -240,7 +240,7 @@ public:
  *  const bool autoLoadImages = settings->attribute(KParts::AutoLoadImages);
  *  </code>
  *
- *  @since 4.9.0
+ *  @since 4.8.1
  */
 class KPARTS_EXPORT HtmlSettingsInterface
 {
@@ -263,6 +263,69 @@ public:
     };
 
     /**
+     * This enum specifies whether Java/JavaScript execution is allowed.
+     *
+     * @since 4.8.2
+     */
+    enum JavaScriptAdvice {
+        JavaScriptDunno=0,
+        JavaScriptAccept,
+        JavaScriptReject
+    };
+
+    /**
+     * This enum specifies the policy for window.open
+     *
+     * @since 4.8.2
+     */
+    enum JSWindowOpenPolicy {
+        JSWindowOpenAllow=0,
+        JSWindowOpenAsk,
+        JSWindowOpenDeny,
+        JSWindowOpenSmart
+    };
+
+    /**
+     * This enum specifies the policy for window.status and .defaultStatus
+     *
+     * @since 4.8.2
+     */
+    enum JSWindowStatusPolicy {
+        JSWindowStatusAllow=0,
+        JSWindowStatusIgnore
+    };
+
+    /**
+     * This enum specifies the policy for window.moveBy and .moveTo
+     *
+     * @since 4.8.2
+     */
+    enum JSWindowMovePolicy {
+        JSWindowMoveAllow=0,
+        JSWindowMoveIgnore
+    };
+
+    /**
+     * This enum specifies the policy for window.resizeBy and .resizeTo
+     *
+     * @since 4.8.2
+     */
+    enum JSWindowResizePolicy {
+        JSWindowResizeAllow=0,
+        JSWindowResizeIgnore
+    };
+
+    /**
+     * This enum specifies the policy for window.focus
+     *
+     * @since 4.8.2
+     */
+    enum JSWindowFocusPolicy {
+        JSWindowFocusAllow=0,
+        JSWindowFocusIgnore
+    };
+
+    /**
      * Destructor
      */
     virtual ~HtmlSettingsInterface() {}
@@ -276,6 +339,41 @@ public:
      * Sets the value of the browser engine's attribute @p type to @p value.
      */
     virtual bool setHtmlSettingsProperty(HtmlSettingsType type, const QVariant& value) = 0;
+
+   /**
+    * A convenience function that returns the javascript advice for @p text.
+    *
+    * If text is not either "accept" or "reject", this function returns
+    * @ref JavaScriptDunno.
+    *
+    *  @since 4.8.2
+    */
+    static JavaScriptAdvice textToJavascriptAdvice(const QString& text);
+
+   /**
+    * A convenience function Returns the text for the given JavascriptAdvice @p advice.
+    *
+    * If @p advice is not either JavaScriptAccept or JavaScriptReject, this
+    * function returns a NULL string.
+    *
+    *  @since 4.8.2
+    */
+    static const char* javascriptAdviceToText(JavaScriptAdvice advice);
+
+   /**
+    * A convenience function that splits @p text into @p domain, @p javaAdvice
+    * and @p jScriptAdvice.
+    *
+    * If @p text is empty or does not contain the proper delimiter (':'), this
+    * function will set @p domain to @p text and the other two parameters to
+    * JavaScriptDunno.
+    *
+    *  @since 4.8.2
+    */
+    static void splitDomainAdvice(const QString& text,
+                                  QString& domain,
+                                  JavaScriptAdvice& javaAdvice,
+                                  JavaScriptAdvice& javaScriptAdvice);
 };
 
 } // namespace KParts
