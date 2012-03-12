@@ -177,70 +177,6 @@ QWidget* Action::parentWidget() const
     return d->parent;
 }
 
-
-// Authorizaton methods
-Action::AuthStatus Action::authorize() const
-{
-    if (!isValid()) {
-        return Action::StatusInvalid;
-    }
-
-    // If there is any pre auth action, let's perform it
-    if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::PreAuthActionCapability) {
-        BackendsManager::authBackend()->preAuthAction(d->name, d->parent);
-    }
-
-    // Let's check capabilities
-    if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromClientCapability) {
-        // That's easy then
-        return BackendsManager::authBackend()->authorizeAction(d->name);
-    } else if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromHelperCapability) {
-        // We need to check if we have an helper in this case
-        if (hasHelper()) {
-            // Ok, we need to use "helper authorization".
-            return BackendsManager::helperProxy()->authorizeAction(d->name, d->helperId);
-        } else {
-            // Ok, in this case we have to fake and just pretend we are an helper
-            if (BackendsManager::authBackend()->isCallerAuthorized(d->name, BackendsManager::authBackend()->callerID())) {
-                return StatusAuthorized;
-            } else {
-                return StatusDenied;
-            }
-        }
-    } else {
-        // This should never, never happen
-        return StatusInvalid;
-    }
-}
-
-
-Action::AuthStatus Action::earlyAuthorize() const
-{
-    // Check the status first
-    AuthStatus s = status();
-    if (s == StatusAuthRequired) {
-        // Let's check what to do
-        if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromClientCapability) {
-            // In this case we can actually try an authorization
-            if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::PreAuthActionCapability) {
-                BackendsManager::authBackend()->preAuthAction(d->name, d->parent);
-            }
-
-            return BackendsManager::authBackend()->authorizeAction(d->name);
-        } else if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromHelperCapability) {
-            // In this case, just throw out Authorized, as the auth will take place later
-            return StatusAuthorized;
-        } else {
-            // This should never, never happen
-            return StatusInvalid;
-        }
-    } else {
-        // It's fine, return the status
-        return s;
-    }
-}
-
-
 Action::AuthStatus Action::status() const
 {
     if (!isValid()) {
@@ -250,15 +186,9 @@ Action::AuthStatus Action::status() const
     return BackendsManager::authBackend()->actionStatus(d->name);
 }
 
-ExecuteJob *Action::execute(bool autoDeleteJob)
+ExecuteJob *Action::execute(ExecutionMode mode, bool autoDeleteJob)
 {
-    return execute(helperID(), autoDeleteJob);
-}
-
-ExecuteJob *Action::execute(const QString &helperID, bool autoDeleteJob)
-{
-    setHelperID(helperID);
-    return new ExecuteJob(*this, autoDeleteJob, 0);
+    return new ExecuteJob(*this, mode, autoDeleteJob, 0);
 }
 
 bool Action::hasHelper() const

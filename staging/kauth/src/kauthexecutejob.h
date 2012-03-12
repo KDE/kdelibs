@@ -35,14 +35,15 @@ class KAUTH_EXPORT ExecuteJob : public QObject
     Q_OBJECT
     Q_DISABLE_COPY(ExecuteJob)
 
-    ExecuteJob(const KAuth::Action &action, bool autoDelete, QObject *parent);
+    ExecuteJob(const KAuth::Action &action, KAuth::Action::ExecutionMode mode, bool autoDelete, QObject *parent);
 
     friend class Action;
 
     class Private;
     Private * const d;
 
-    Q_PRIVATE_SLOT(d, void doStartAction())
+    Q_PRIVATE_SLOT(d, void doExecuteAction())
+    Q_PRIVATE_SLOT(d, void doAuthorizeAction())
     Q_PRIVATE_SLOT(d, void actionPerformedSlot(const QString &action, const KAuth::ActionReply &reply))
     Q_PRIVATE_SLOT(d, void progressStepSlot(const QString &action, int i))
     Q_PRIVATE_SLOT(d, void progressStepSlot(const QString &action, const QVariantMap &data))

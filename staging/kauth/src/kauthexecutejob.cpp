@@ -35,6 +35,7 @@ public:
     ExecuteJob *q;
     Action action;
 
+    Action::ExecutionMode mode;
     bool isRunning;
     bool isFinished;
     bool autoDeleteJob;
@@ -42,7 +43,8 @@ public:
     QString errorDescription;
     QVariantMap data;
 
-    void doStartAction();
+    void doExecuteAction();
+    void doAuthorizeAction();
     void actionPerformedSlot(const QString &action, const ActionReply &reply);
     void progressStepSlot(const QString &action, int i);
     void progressStepSlot(const QString &action, const QVariantMap &data);
@@ -51,12 +53,13 @@ public:
 
 static QHash<QString, ExecuteJob *> s_watchers;
 
-ExecuteJob::ExecuteJob(const Action &action, bool autoDelete, QObject *parent)
+ExecuteJob::ExecuteJob(const Action &action, Action::ExecutionMode mode, bool autoDelete, QObject *parent)
         : QObject(parent)
         , d(new Private(this))
 {
     d->action = action;
     d->autoDeleteJob = autoDelete;
+    d->mode = mode;
 
     HelperProxy *helper = BackendsManager::helperProxy();
 
@@ -107,10 +110,24 @@ void ExecuteJob::start()
         return;
     }
 
-    QTimer::singleShot(0, this, SLOT(doStartAction()));
+    switch (d->mode) {
+    case Action::ExecuteMode:
+        QTimer::singleShot(0, this, SLOT(doExecuteAction()));
+        break;
+    case Action::AuthorizeOnlyMode:
+        QTimer::singleShot(0, this, SLOT(doAuthorizeAction()));
+        break;
+    default:
+        {
+            ActionReply reply(ActionReply::InvalidActionError);
+            reply.setErrorDescription(tr("Unknown execution mode chosen"));
+            d->actionPerformedSlot(d->action.name(), reply);
+        }
+        break;
+    }
 }
 
-void ExecuteJob::Private::doStartAction()
+void ExecuteJob::Private::doExecuteAction()
 {
     if (isRunning || isFinished) {
         actionPerformedSlot(action.name(), ActionReply::AlreadyStartedReply);
@@ -118,7 +135,7 @@ void ExecuteJob::Private::doStartAction()
 
     isRunning = true;
 
-    // Save us an additional step
+    // If this action authorizes from the client, let's do it now
     if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromClientCapability) {
         if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::PreAuthActionCapability) {
             BackendsManager::authBackend()->preAuthAction(action.name(), action.parentWidget());
@@ -174,6 +191,38 @@ void ExecuteJob::Private::doStartAction()
     } else {
         // Ok, no action to be carried on, and auth succeeded.
         actionPerformedSlot(action.name(), ActionReply::SuccessReply);
+    }
+}
+
+void ExecuteJob::Private::doAuthorizeAction()
+{
+    // Check the status first
+    Action::AuthStatus s = action.status();
+    if (s == Action::StatusAuthRequired) {
+        // Let's check what to do
+        if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromClientCapability) {
+            // In this case we can actually try an authorization
+            if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::PreAuthActionCapability) {
+                BackendsManager::authBackend()->preAuthAction(action.name(), action.parentWidget());
+            }
+
+            s = BackendsManager::authBackend()->authorizeAction(action.name());
+        } else if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromHelperCapability) {
+            // In this case, just throw out success, as the auth will take place later
+            s = Action::StatusAuthorized;
+        } else {
+            // This should never, never happen
+            ActionReply r(ActionReply::BackendError);
+            r.setErrorDescription(tr("The backend does not specify how to authorize"));
+            actionPerformedSlot(action.name(), r);
+        }
+    }
+
+    // Return based on the current status
+    if (s == Action::StatusAuthorized) {
+        actionPerformedSlot(action.name(), ActionReply::SuccessReply);
+    } else {
+        actionPerformedSlot(action.name(), ActionReply::AuthorizationDeniedReply);
     }
 }
 

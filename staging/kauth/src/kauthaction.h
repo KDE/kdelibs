@@ -81,6 +81,11 @@ public:
         StatusUserCancelled ///< The user pressed Cancel the authentication dialog. Currently used only on the mac
     };
 
+    enum ExecutionMode {
+        ExecuteMode,
+        AuthorizeOnlyMode,
+    };
+
     /**
      * @brief Default constructor
      *
@@ -283,53 +288,6 @@ public:
     void addArgument(const QString &key, const QVariant &value);
 
     /**
-     * @brief Acquires authorization for an action without excuting it.
-     *
-     * @note Please use this method if you really know what you are doing. If you are
-     *       implementing a GUI, you probably should look into earlyAuthorize instead.
-     *
-     * @note Please remember that calling this method is not required for a successful action
-     *       execution: it is safe and advised to call execute() only, without a previous call
-     *       to authorize or earlyAuthorize.
-     *
-     * This method acquires the authorization rights for the action, asking
-     * the user to authenticate if needed. It tries very hard to resolve a possible
-     * challenge (AuthRequired); for this reason, it is meant only for advanced usages.
-     * If you are unsure, always use earlyAuthorize or execute the action directly.
-     *
-     * @return The result of the authorization process
-     *
-     * @see earlyAuthorize
-     */
-    AuthStatus authorize() const;
-
-    /**
-     * @brief Tries to resolve authorization status in the best possible way without executing the action
-     *
-     * This method checks for the status of the action, and tries to acquire authorization
-     * (if needed) if the backend being used supports client-side authorization.
-     *
-     * This means this method is not reliable - its purpose is to provide user interfaces with
-     * an efficient means to acquire authorization as early as possible, without interrupting
-     * the user's workflow. If the backend's authentication phase happens in the helper and the
-     * action requires authentication, \c Authorized will be returned.
-     *
-     * The main difference with authorize is that this method does not try to acquire authorization
-     * if the backend's authentication phase happens in the helper: using authorize in such a case
-     * might lead to ask the user its password twice, as the helper might time out, or in the case
-     * of a one shot authorization, the scope of the authorization would end with the authorization
-     * check itself. For this reason, you should @b always use this method instead of authorize, which
-     * is meant only for very advanced usages.
-     *
-     * This method is always safe to be called and used before an execution, even if not needed.
-     *
-     * @since 4.5
-     *
-     * @return The result of the early authorization process, with the caveats described above.
-     */
-    AuthStatus earlyAuthorize() const;
-
-    /**
      * @brief Gets information about the authorization status of an action
      *
      * This methods query the authorization backend to know if the user can try
@@ -376,18 +334,7 @@ public:
      *
      * @return The reply from the helper, or an error reply if something's wrong.
      */
-    ExecuteJob *execute(bool autoDeleteJob = true);
-
-    /**
-     * @brief Synchronously executes the action with a specific helperID
-     *
-     * This method does the exact same thing as execute(), but it takes a specific helperID, useful
-     * if you don't want to use the default one without changing it with setHelperID()
-     *
-     * @param helperID The helper ID to use for the execution of this action
-     * @return The reply from the helper, or an error if something's wrong.
-     */
-    ExecuteJob *execute(const QString &helperID, bool autoDeleteJob = true);
+    ExecuteJob *execute(ExecutionMode mode = ExecuteMode, bool autoDeleteJob = true);
 
     /**
      * @brief Sets a parent widget for the authentication dialog
