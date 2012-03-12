@@ -50,6 +50,7 @@ namespace KAuth
 class KAUTH_EXPORT ActionWatcher : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY(ActionWatcher)
 
     class Private;
     Private * const d;
@@ -58,10 +59,10 @@ class KAUTH_EXPORT ActionWatcher : public QObject
     ActionWatcher(const QString &action);
 
     Q_PRIVATE_SLOT(d, void actionStartedSlot(const QString &action))
-    Q_PRIVATE_SLOT(d, void actionPerformedSlot(const QString &action, const ActionReply &reply))
+    Q_PRIVATE_SLOT(d, void actionPerformedSlot(const QString &action, const KAuth::ActionReply &reply))
     Q_PRIVATE_SLOT(d, void progressStepSlot(const QString &action, int i))
     Q_PRIVATE_SLOT(d, void progressStepSlot(const QString &action, const QVariantMap &data))
-    Q_PRIVATE_SLOT(d, void statusChangedSlot(const QString &action, Action::AuthStatus status))
+    Q_PRIVATE_SLOT(d, void statusChangedSlot(const QString &action, KAuth::Action::AuthStatus status))
 
 public:
     /**
@@ -115,7 +116,7 @@ Q_SIGNALS:
      *
      * @param reply The reply coming from the helper
      */
-    void actionPerformed(const ActionReply &reply);
+    void actionPerformed(const KAuth::ActionReply &reply);
 
     /**
      * @brief Signal emitted by the helper to notify the action's progress
@@ -146,7 +147,7 @@ Q_SIGNALS:
     */
     void progressStep(const QVariantMap &data);
 
-    void statusChanged(int status);
+    void statusChanged(KAuth::Action::AuthStatus status);
 };
 
 } // namespace Auth

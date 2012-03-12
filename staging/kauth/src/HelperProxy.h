@@ -55,7 +55,7 @@ public:
 
 Q_SIGNALS:
     void actionStarted(const QString &action);
-    void actionPerformed(const QString &action, ActionReply reply);
+    void actionPerformed(const QString &action, KAuth::ActionReply reply);
     void progressStep(const QString &action, int progress);
     void progressStep(const QString &action, const QVariantMap &data);
 };

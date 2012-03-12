@@ -59,7 +59,7 @@ protected:
     void setCapabilities(Capabilities capabilities);
 
 Q_SIGNALS:
-    void actionStatusChanged(const QString &action, Action::AuthStatus status);
+    void actionStatusChanged(const QString &action, KAuth::Action::AuthStatus status);
 
 private:
     class Private;

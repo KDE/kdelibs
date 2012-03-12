@@ -605,4 +605,6 @@ public:
 
 } // namespace Auth
 
+Q_DECLARE_METATYPE(KAuth::ActionReply)
+
 #endif

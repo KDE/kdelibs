@@ -38,7 +38,7 @@ public:
     void actionPerformedSlot(const QString &action, const ActionReply &reply);
     void progressStepSlot(const QString &action, int i);
     void progressStepSlot(const QString &action, const QVariantMap &data);
-    void statusChangedSlot(const QString &action, Action::AuthStatus status);
+    void statusChangedSlot(const QString &action, KAuth::Action::AuthStatus status);
 };
 
 static QHash<QString, ActionWatcher *> s_watchers;
@@ -52,11 +52,11 @@ ActionWatcher::ActionWatcher(const QString &action)
     HelperProxy *helper = BackendsManager::helperProxy();
 
     connect(helper, SIGNAL(actionStarted(QString)), this, SLOT(actionStartedSlot(QString)));
-    connect(helper, SIGNAL(actionPerformed(QString,ActionReply)), this, SLOT(actionPerformedSlot(QString,ActionReply)));
+    connect(helper, SIGNAL(actionPerformed(QString,KAuth::ActionReply)), this, SLOT(actionPerformedSlot(QString,KAuth::ActionReply)));
     connect(helper, SIGNAL(progressStep(QString,int)), this, SLOT(progressStepSlot(QString,int)));
     connect(helper, SIGNAL(progressStep(QString,QVariantMap)), this, SLOT(progressStepSlot(QString,QVariantMap)));
-    connect(BackendsManager::authBackend(), SIGNAL(actionStatusChanged(QString,Action::AuthStatus)),
-            this, SLOT(statusChangedSlot(QString,Action::AuthStatus)));
+    connect(BackendsManager::authBackend(), SIGNAL(actionStatusChanged(QString,KAuth::Action::AuthStatus)),
+            this, SLOT(statusChangedSlot(QString,KAuth::Action::AuthStatus)));
 }
 
 ActionWatcher::~ActionWatcher()
