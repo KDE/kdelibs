@@ -29,16 +29,10 @@
 #include <QtCore/QHash>
 #include <QtCore/QDebug>
 
-#include "kglobal.h"
-//#include "klocale.h"
-#include "kpluginloader.h"
-#include "kservicetypetrader.h"
-//#include "kapplication.h"
 #include "kconfig.h"
 #include "kconfigini_p.h"
 #include "kconfigdata.h"
 #include "kdebug.h"
-#include "kstandarddirs.h"
 #include "kconfigbackend.moc"
 
 typedef KSharedPtr<KConfigBackend> BackendPtr;
@@ -69,6 +63,7 @@ BackendPtr KConfigBackend::create(const KComponentData& componentData, const QSt
     const QString system = (sys.isEmpty() ? Private::whatSystem(file) : sys);
     KConfigBackend* backend = 0;
 
+#if 0 // TODO port to Qt5 plugin loading
     if (system.compare(QLatin1String("INI"), Qt::CaseInsensitive) != 0) {
         const QString constraint = QString::fromLatin1("[X-KDE-PluginInfo-Name] ~~ '%1'").arg(system);
         KService::List offers = KServiceTypeTrader::self()->query(QLatin1String("KConfigBackend"), constraint);
@@ -83,6 +78,7 @@ BackendPtr KConfigBackend::create(const KComponentData& componentData, const QSt
             }
         } // foreach offers
     }
+#endif
 
     //qDebug() << "default creation of the Ini backend";
     backend = new KConfigIniBackend;
