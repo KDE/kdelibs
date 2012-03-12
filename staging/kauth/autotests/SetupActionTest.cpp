@@ -1,5 +1,7 @@
 #include <QtTest>
 #include <kauth.h>
+#include <kauthactionreply.h>
+#include <kauthexecutejob.h>
 #include "BackendsManager.h"
 
 class SetupActionTest : public QObject
@@ -17,6 +19,8 @@ private Q_SLOTS:
 
     void testNonExistentAction();
     void testBasicActionProperties();
+    void testUserAuthorization();
+    void testAuthorizationFail();
 
     void cleanup() {}
     void cleanupTestCase() {}
@@ -80,6 +84,51 @@ void SetupActionTest::testBasicActionProperties()
     QVERIFY(!action.hasHelper());
     QVERIFY(action.helperID().isEmpty());
     QCOMPARE(action.status(), KAuth::Action::StatusInvalid);
+}
+
+void SetupActionTest::testUserAuthorization()
+{
+    Q_EMIT changeCapabilities(KAuth::AuthBackend::CheckActionExistenceCapability);
+
+    KAuth::Action action(QLatin1String("requires.auth"), QLatin1String("details"));
+    QVERIFY(action.isValid());
+
+    QCOMPARE(action.status(), KAuth::Action::StatusAuthRequired);
+    KAuth::ExecuteJob *job = action.execute();
+
+    job->exec();
+
+    QVERIFY(!job->succeeded());
+    QCOMPARE(job->error(), KAuth::ActionReply::BackendError);
+
+    Q_EMIT changeCapabilities(KAuth::AuthBackend::CheckActionExistenceCapability | KAuth::AuthBackend::AuthorizeFromClientCapability);
+
+    QVERIFY(action.isValid());
+
+    QCOMPARE(action.status(), KAuth::Action::StatusAuthRequired);
+    job = action.execute();
+
+    job->exec();
+
+    QVERIFY(job->succeeded());
+    QVERIFY(job->data().isEmpty());
+}
+
+void SetupActionTest::testAuthorizationFail()
+{
+    Q_EMIT changeCapabilities(KAuth::AuthBackend::CheckActionExistenceCapability | KAuth::AuthBackend::AuthorizeFromClientCapability);
+
+    KAuth::Action action(QLatin1String("doomed.to.fail"), QLatin1String("details"));
+    QVERIFY(action.isValid());
+
+    QCOMPARE(action.status(), KAuth::Action::StatusDenied);
+    KAuth::ExecuteJob *job = action.execute();
+
+    job->exec();
+
+    QVERIFY(!job->succeeded());
+    QCOMPARE(job->error(), KAuth::ActionReply::AuthorizationDeniedError);
+    QVERIFY(job->data().isEmpty());
 }
 
 QTEST_MAIN(SetupActionTest)
