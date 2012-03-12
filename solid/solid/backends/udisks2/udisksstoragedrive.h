@@ -23,6 +23,9 @@
 #define UDISKS2STORAGEDRIVE_H
 
 #include <ifaces/storagedrive.h>
+
+#include "../shared/udevqtdevice.h"
+
 #include "udisksblock.h"
 
 namespace Solid
@@ -46,6 +49,9 @@ public:
     virtual bool isRemovable() const;
     virtual Solid::StorageDrive::DriveType driveType() const;
     virtual Solid::StorageDrive::Bus bus() const;
+
+private:
+    UdevQt::Device m_udevDevice;
 };
 
 }
