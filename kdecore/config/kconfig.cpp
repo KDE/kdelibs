@@ -34,7 +34,7 @@
 #include <kstandarddirs.h>
 #include <kurl.h>
 #include <kcomponentdata.h>
-#include <ktoolinvocation.h>
+#include <qprocess.h>
 #include <kaboutdata.h>
 #include <kdebug.h>
 
@@ -502,7 +502,11 @@ void KConfig::checkUpdate(const QString &id, const QString &updateFile)
     const QString cfg_id = updateFile+QLatin1Char(':')+id;
     const QStringList ids = cg.readEntry("update_info", QStringList());
     if (!ids.contains(cfg_id)) {
+#if 0
         KToolInvocation::kdeinitExecWait(QString::fromLatin1("kconf_update"), QStringList() << QString::fromLatin1("--check") << updateFile);
+#else
+        QProcess::execute(QString::fromLatin1("kconf_update"), QStringList() << QString::fromLatin1("--check") << updateFile);
+#endif
         reparseConfiguration();
     }
 }
