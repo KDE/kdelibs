@@ -28,10 +28,10 @@
 
 #include <kauth_export.h>
 
-#include "kauthactionreply.h"
-
 namespace KAuth
 {
+
+class ExecuteJob;
 
 class ActionData;
 /**
@@ -376,7 +376,7 @@ public:
      *
      * @return The reply from the helper, or an error reply if something's wrong.
      */
-    ActionReply execute() const;
+    ExecuteJob *execute(bool autoDeleteJob = true);
 
     /**
      * @brief Synchronously executes the action with a specific helperID
@@ -387,31 +387,7 @@ public:
      * @param helperID The helper ID to use for the execution of this action
      * @return The reply from the helper, or an error if something's wrong.
      */
-    ActionReply execute(const QString &helperID) const;
-
-    /**
-     * @brief Ask the helper to stop executing an action
-     *
-     * This method sends a request to the helper asking to stop the execution of an action. It is only
-     * useful for long-running actions, because short and fast actions won't obbey to this request most of the times.
-     * Calling this method will make the HelperSupport::isStopped() method to return true the next time it's called.
-     *
-     * It's the helper's responsibility to regularly call it and exit if requested
-     * The actionPerformed() signal is emitted normally because, actually, the helper exists regularly. The return data
-     * in this case is application-dependent.
-     */
-    void stop();
-
-    /**
-     * @brief Ask the helper to stop executing an action, using a specific helper ID
-     *
-     * This method works exactly as the stop() method, but it lets you specify an helper ID different from the
-     * default one.
-     *
-     * To stop an action you need to send the stop request to the helper that is executing that action. This of course means you have to
-     * use the same helperID used for the execution call (either passed as a parameter or set as default with setHelperID() )
-     */
-    void stop(const QString &helperID);
+    ExecuteJob *execute(const QString &helperID, bool autoDeleteJob = true);
 
     /**
      * @brief Sets a parent widget for the authentication dialog

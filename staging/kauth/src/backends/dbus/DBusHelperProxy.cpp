@@ -52,12 +52,8 @@ void DBusHelperProxy::stopAction(const QString &action, const QString &helperID)
     QDBusConnection::systemBus().asyncCall(message);
 }
 
-ActionReply DBusHelperProxy::executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments, bool async)
+void DBusHelperProxy::executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments)
 {
-    if (!m_actionsInProgress.isEmpty()) {
-        return ActionReply::HelperBusyReply;
-    }
-
     QByteArray blob;
     QDataStream stream(&blob, QIODevice::WriteOnly);
 
@@ -69,7 +65,7 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
         ActionReply errorReply = ActionReply::DBusErrorReply;
         errorReply.setErrorDescription(tr("DBus Backend error: connection to helper failed. ")
 				       + QDBusConnection::systemBus().lastError().message());
-        return errorReply;
+        Q_EMIT actionPerformed(action, errorReply);
     }
 
     QDBusMessage message;
@@ -83,16 +79,13 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
 
     QDBusPendingCall pendingCall = QDBusConnection::systemBus().asyncCall(message);
 
-    if (async) {
-        if (pendingCall.reply().type() == QDBusMessage::ErrorMessage) {
-            ActionReply r = ActionReply::DBusErrorReply;
-            r.setErrorDescription(tr("DBus Backend error: could not contact the helper. "
-                    "Connection error: ") + QDBusConnection::systemBus().lastError().message() + tr(". Message error: ") + pendingCall.reply().errorMessage());
-            qDebug() << pendingCall.reply().errorMessage();
-            return r;
-        } else {
-            return ActionReply::SuccessReply;
-        }
+    if (pendingCall.reply().type() == QDBusMessage::ErrorMessage) {
+        ActionReply r = ActionReply::DBusErrorReply;
+        r.setErrorDescription(tr("DBus Backend error: could not contact the helper. "
+                "Connection error: ") + QDBusConnection::systemBus().lastError().message() + tr(". Message error: ") + pendingCall.reply().errorMessage());
+        qDebug() << pendingCall.reply().errorMessage();
+
+        Q_EMIT actionPerformed(action, r);
     }
 
     // Process synchronously
@@ -102,31 +95,6 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
     e.exec();
 
     QDBusMessage reply = pendingCall.reply();
-
-    if (reply.type() == QDBusMessage::ErrorMessage) {
-        ActionReply r = ActionReply::DBusErrorReply;
-        r.setErrorDescription(tr("DBus Backend error: could not contact the helper. "
-                                 "Connection error: ") + QDBusConnection::systemBus().lastError().message() + tr(". Message error: ") + reply.errorMessage());
-        qDebug() << reply.errorMessage();
-
-        // The remote signal will never arrive: so let's erase the action from the list ourselves
-        m_actionsInProgress.removeOne(action);
-
-        return r;
-    }
-
-    if (reply.arguments().size() != 1) {
-        ActionReply errorReply = ActionReply::DBusErrorReply;
-        errorReply.setErrorDescription(tr("DBus Backend error: received corrupt data from helper ") + QString::number(reply.arguments().size())
-				       + QLatin1String(" ") + QDBusConnection::systemBus().lastError().message());
-
-        // The remote signal may never arrive: so let's erase the action from the list ourselves
-        m_actionsInProgress.removeOne(action);
-
-        return errorReply;
-    }
-
-    return ActionReply::deserialize(reply.arguments().first().toByteArray());
 }
 
 Action::AuthStatus DBusHelperProxy::authorizeAction(const QString& action, const QString& helperID)

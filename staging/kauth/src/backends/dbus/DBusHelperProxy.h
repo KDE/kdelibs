@@ -50,8 +50,8 @@ class DBusHelperProxy : public HelperProxy
 public:
     DBusHelperProxy() : responder(0), m_stopRequest(false) {}
 
-    virtual ActionReply executeAction(const QString &action, const QString &helperID,
-            const QVariantMap &arguments, bool async);
+    virtual void executeAction(const QString &action, const QString &helperID,
+            const QVariantMap &arguments);
     virtual Action::AuthStatus authorizeAction(const QString& action, const QString& helperID);
     virtual void stopAction(const QString &action, const QString &helperID);
 

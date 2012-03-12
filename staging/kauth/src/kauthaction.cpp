@@ -24,6 +24,8 @@
 #include <QRegExp>
 #include <QWidget>
 
+#include "kauthexecutejob.h"
+
 #include "BackendsManager.h"
 
 namespace KAuth
@@ -248,77 +250,15 @@ Action::AuthStatus Action::status() const
     return BackendsManager::authBackend()->actionStatus(d->name);
 }
 
-ActionReply Action::execute() const
+ExecuteJob *Action::execute(bool autoDeleteJob)
 {
-    return execute(helperID());
+    return execute(helperID(), autoDeleteJob);
 }
 
-ActionReply Action::execute(const QString &helperID) const
+ExecuteJob *Action::execute(const QString &helperID, bool autoDeleteJob)
 {
-    // Is the action valid?
-    if (!isValid()) {
-        return ActionReply::InvalidActionReply;
-    }
-
-    // What to do?
-    if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromClientCapability) {
-        if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::PreAuthActionCapability) {
-            BackendsManager::authBackend()->preAuthAction(d->name, d->parent);
-        }
-        // Authorize from here
-        AuthStatus s = BackendsManager::authBackend()->authorizeAction(d->name);
-
-        // Abort if authorization fails
-        switch (s) {
-        case StatusDenied:
-            return ActionReply::AuthorizationDeniedReply;
-        case StatusInvalid:
-            return ActionReply::InvalidActionReply;
-        case StatusUserCancelled:
-            return ActionReply::UserCancelledReply;
-        default:
-            break;
-        }
-    } else if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromHelperCapability) {
-        // In this case we care only if the action does not have an helper
-        if (!hasHelper()) {
-            // Authorize!
-            switch (authorize()) {
-            case StatusDenied:
-                return ActionReply::AuthorizationDeniedReply;
-            case StatusInvalid:
-                return ActionReply::InvalidActionReply;
-            case StatusUserCancelled:
-                return ActionReply::UserCancelledReply;
-            default:
-                break;
-            }
-        }
-    } else {
-        // What?
-        return ActionReply::InvalidActionReply;
-    }
-
-    if (hasHelper()) {
-        // Perform the pre auth here
-        if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::PreAuthActionCapability) {
-            BackendsManager::authBackend()->preAuthAction(d->name, d->parent);
-        }
-
-        return BackendsManager::helperProxy()->executeAction(d->name, helperID, d->args, false);
-    } else {
-        return ActionReply::SuccessReply;
-    }
-}
-
-void Action::stop()
-{
-    stop(helperID());
-}
-
-void Action::stop(const QString &helperID)
-{
-    BackendsManager::helperProxy()->stopAction(d->name, helperID);
+    setHelperID(helperID);
+    return new ExecuteJob(*this, autoDeleteJob, 0);
 }
 
 bool Action::hasHelper() const

@@ -9,7 +9,7 @@ configure_file(BackendsConfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/BackendsConfig
 set(libkauth_SRCS
     kauthaction.cpp
     kauthactionreply.cpp
-    kauthactionwatcher.cpp
+    kauthexecutejob.cpp
     AuthBackend.cpp
     BackendsManager.cpp
     HelperProxy.cpp
