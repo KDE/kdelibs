@@ -135,8 +135,14 @@ QStringList Manager::allDevices()
         Q_FOREACH(const QDBusObjectPath &path, reply.value().keys()) {
             const QString udi = path.path();
             //qDebug() << "Adding device" << udi;
+
             if (udi == UD2_DBUS_PATH_MANAGER || udi == UD2_UDI_DISKS_PREFIX || udi.startsWith(UD2_DBUS_PATH_JOBS))
                 continue;
+
+            Device device(udi);
+            if (device.mightBeOpticalDisc())
+                continue;
+
             m_deviceCache.append(udi);
         }
     }
@@ -241,10 +247,6 @@ void Manager::slotInterfacesAdded(const QDBusObjectPath &object_path, const QVar
         m_deviceCache.append(udi);
         Q_EMIT deviceAdded(udi);
     }
-    else if (interfaces_and_properties.keys().contains(UD2_DBUS_INTERFACE_FILESYSTEM))  // existing device, something changed
-    {
-        Q_EMIT deviceAdded(udi);
-    }
 }
 
 void Manager::slotInterfacesRemoved(const QDBusObjectPath &object_path, const QStringList &interfaces)
@@ -253,11 +255,12 @@ void Manager::slotInterfacesRemoved(const QDBusObjectPath &object_path, const QS
 
     qDebug() << udi << "lost interfaces:" << interfaces;
 
-    if (interfaces.isEmpty() && !udi.isEmpty())
-        Q_EMIT deviceRemoved(udi);
+    Device device(udi);
 
-    if (!interfaces.contains(UD2_DBUS_INTERFACE_FILESYSTEM))  // don't remove our optical disc from the cache
+    if ((interfaces.isEmpty() && !udi.isEmpty()) || device.mightBeOpticalDisc()) {
+        Q_EMIT deviceRemoved(udi);
         m_deviceCache.removeAll(udi);
+    }
 }
 
 const QStringList & Manager::deviceCache()

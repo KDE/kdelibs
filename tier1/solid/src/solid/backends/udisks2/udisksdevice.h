@@ -71,6 +71,7 @@ public:
     bool isDrive() const;
     bool isOpticalDrive() const;
     bool isOpticalDisc() const;
+    bool mightBeOpticalDisc() const;
     bool isMounted() const;
     bool isEncryptedContainer() const;
     bool isEncryptedCleartext() const;
