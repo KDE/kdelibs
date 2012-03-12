@@ -132,7 +132,7 @@ Action::AuthStatus Polkit1Backend::authorizeAction(const QString &action)
 {
     Q_UNUSED(action)
     // Always return Yes here, we'll authorize inside isCallerAuthorized
-    return Action::Authorized;
+    return Action::StatusAuthorized;
 }
 
 void Polkit1Backend::setupAction(const QString &action)
@@ -147,12 +147,12 @@ Action::AuthStatus Polkit1Backend::actionStatus(const QString &action)
                                                                                               PolkitQt1::Authority::None);
     switch (r) {
     case PolkitQt1::Authority::Yes:
-        return Action::Authorized;
+        return Action::StatusAuthorized;
     case PolkitQt1::Authority::No:
     case PolkitQt1::Authority::Unknown:
-        return Action::Denied;
+        return Action::StatusDenied;
     default:
-        return Action::AuthRequired;
+        return Action::StatusAuthRequired;
     }
 }
 

@@ -188,7 +188,7 @@ QWidget* Action::parentWidget() const
 Action::AuthStatus Action::authorize() const
 {
     if (!isValid()) {
-        return Action::Invalid;
+        return Action::StatusInvalid;
     }
 
     // If there is any pre auth action, let's perform it
@@ -208,14 +208,14 @@ Action::AuthStatus Action::authorize() const
         } else {
             // Ok, in this case we have to fake and just pretend we are an helper
             if (BackendsManager::authBackend()->isCallerAuthorized(d->name, BackendsManager::authBackend()->callerID())) {
-                return Authorized;
+                return StatusAuthorized;
             } else {
-                return Denied;
+                return StatusDenied;
             }
         }
     } else {
         // This should never, never happen
-        return Invalid;
+        return StatusInvalid;
     }
 }
 
@@ -224,7 +224,7 @@ Action::AuthStatus Action::earlyAuthorize() const
 {
     // Check the status first
     AuthStatus s = status();
-    if (s == AuthRequired) {
+    if (s == StatusAuthRequired) {
         // Let's check what to do
         if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromClientCapability) {
             // In this case we can actually try an authorization
@@ -235,10 +235,10 @@ Action::AuthStatus Action::earlyAuthorize() const
             return BackendsManager::authBackend()->authorizeAction(d->name);
         } else if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromHelperCapability) {
             // In this case, just throw out Authorized, as the auth will take place later
-            return Authorized;
+            return StatusAuthorized;
         } else {
             // This should never, never happen
-            return Invalid;
+            return StatusInvalid;
         }
     } else {
         // It's fine, return the status
@@ -250,7 +250,7 @@ Action::AuthStatus Action::earlyAuthorize() const
 Action::AuthStatus Action::status() const
 {
     if (!isValid()) {
-        return Action::Invalid;
+        return Action::StatusInvalid;
     }
 
     return BackendsManager::authBackend()->actionStatus(d->name);
@@ -275,9 +275,9 @@ bool Action::executeActions(const QList< Action >& actions, QList< Action >* den
 
             AuthStatus s = BackendsManager::authBackend()->authorizeAction(a.name());
 
-            if (s == Authorized) {
+            if (s == StatusAuthorized) {
                 list.push_back(QPair<QString, QVariantMap>(a.name(), a.arguments()));
-            } else if ((s == Denied || s == Invalid) && deniedActions) {
+            } else if ((s == StatusDenied || s == StatusInvalid) && deniedActions) {
                 *deniedActions << a;
             }
         } else if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromHelperCapability) {
@@ -330,11 +330,11 @@ ActionReply Action::execute(const QString &helperID) const
 
         // Abort if authorization fails
         switch (s) {
-        case Denied:
+        case StatusDenied:
             return ActionReply::AuthorizationDeniedReply;
-        case Invalid:
+        case StatusInvalid:
             return ActionReply::InvalidActionReply;
-        case UserCancelled:
+        case StatusUserCancelled:
             return ActionReply::UserCancelledReply;
         default:
             break;
@@ -344,11 +344,11 @@ ActionReply Action::execute(const QString &helperID) const
         if (!d->async && !hasHelper()) {
             // Authorize!
             switch (authorize()) {
-            case Denied:
+            case StatusDenied:
                 return ActionReply::AuthorizationDeniedReply;
-            case Invalid:
+            case StatusInvalid:
                 return ActionReply::InvalidActionReply;
-            case UserCancelled:
+            case StatusUserCancelled:
                 return ActionReply::UserCancelledReply;
             default:
                 break;

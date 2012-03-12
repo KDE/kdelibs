@@ -146,7 +146,7 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
 Action::AuthStatus DBusHelperProxy::authorizeAction(const QString& action, const QString& helperID)
 {
     if (!m_actionsInProgress.isEmpty()) {
-        return Action::Error;
+        return Action::StatusError;
     }
 
     QDBusConnection::systemBus().interface()->startService(helperID);
@@ -171,7 +171,7 @@ Action::AuthStatus DBusHelperProxy::authorizeAction(const QString& action, const
     QDBusMessage reply = pendingCall.reply();
 
     if (reply.type() == QDBusMessage::ErrorMessage || reply.arguments().size() != 1) {
-        return Action::Error;
+        return Action::StatusError;
     }
 
     return static_cast<Action::AuthStatus>(reply.arguments().first().toUInt());
@@ -323,7 +323,7 @@ QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArra
 uint DBusHelperProxy::authorizeAction(const QString& action, const QByteArray& callerID)
 {
     if (!m_currentAction.isEmpty()) {
-        return static_cast<uint>(Action::Error);
+        return static_cast<uint>(Action::StatusError);
     }
 
     m_currentAction = action;
@@ -334,9 +334,9 @@ uint DBusHelperProxy::authorizeAction(const QString& action, const QByteArray& c
     timer->stop();
 
     if (BackendsManager::authBackend()->isCallerAuthorized(action, callerID)) {
-        retVal = static_cast<uint>(Action::Authorized);
+        retVal = static_cast<uint>(Action::StatusAuthorized);
     } else {
-        retVal = static_cast<uint>(Action::Denied);
+        retVal = static_cast<uint>(Action::StatusDenied);
     }
 
     timer->start();
