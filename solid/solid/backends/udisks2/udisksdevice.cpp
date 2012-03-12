@@ -38,6 +38,7 @@
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusMetaType>
 #include <QtDBus/QDBusPendingReply>
+#include <QtDBus/QDBusArgument>
 
 #include <QtXml/QDomDocument>
 
@@ -668,7 +669,8 @@ void Device::checkCache(const QString &key) const
     if (reply.isValid()) {
         m_cache.insert(key, reply);
     } else {
-        m_cache.insert(key, QVariant());
+        qDebug() << "got invalid reply for cache:" << key;
+        //m_cache.insert(key, QVariant());
     }
 }
 
@@ -700,15 +702,20 @@ bool Device::propertyExists(const QString &key) const
 
 QVariantMap Device::allProperties() const
 {
-    QDBusMessage call = QDBusMessage::createMethodCall(m_device->service(), m_device->path(),
-                                                       DBUS_INTERFACE_PROPS, "GetAll");
-    QDBusPendingReply< QVariantMap > reply = QDBusConnection::systemBus().asyncCall(call);
-    reply.waitForFinished();
+    Q_FOREACH (const QString & iface, m_interfaces) {
+        if (iface.startsWith("org.freedesktop.DBus"))
+            continue;
+        QDBusMessage call = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, m_udi, DBUS_INTERFACE_PROPS, "GetAll");
+        call.setArguments(QList<QVariant>() << iface);
+        QDBusPendingReply<QVariantMap> reply = QDBusConnection::systemBus().asyncCall(call);
+        reply.waitForFinished();
 
-    if (reply.isValid())
-        m_cache = reply.value();
-    else
-        m_cache.clear();
+        if (reply.isValid())
+            m_cache.unite(reply.value());
+        else
+            qWarning() << "Error getting props:" << reply.error().name() << reply.error().message();
+        //qDebug() << "After iface" << iface << ", cache now contains" << m_cache.size() << "items";
+    }
 
     return m_cache;
 }
@@ -735,17 +742,21 @@ void Device::initInterfaces()
         if (!ifaceElem.isNull())
             m_interfaces.append(ifaceElem.attribute("name"));
     }
+    //qDebug() << "Device" << m_udi << "has interfaces:" << m_interfaces;
 }
 
 void Device::slotPropertiesChanged(const QString &ifaceName, const QVariantMap &changedProps, const QStringList &invalidatedProps)
 {
-    Q_UNUSED(ifaceName);
+    //Q_UNUSED(ifaceName);
+
+    qDebug() << m_udi << "'s interface" << ifaceName << "changed props:";
 
     QMap<QString, int> changeMap;
 
     Q_FOREACH(const QString & key, invalidatedProps) {
         m_cache.remove(key);
         changeMap.insert(key, Solid::GenericInterface::PropertyRemoved);
+        qDebug() << "\t invalidated:" << key;
     }
 
     QMapIterator<QString, QVariant> i(changedProps);
@@ -753,6 +764,7 @@ void Device::slotPropertiesChanged(const QString &ifaceName, const QVariantMap &
         i.next();
         m_cache.insert(i.key(), i.value());  // replace the value
         changeMap.insert(i.key(), Solid::GenericInterface::PropertyModified);
+        qDebug() << "\t modified:" << i.key() << ":" << m_cache.value(i.key());
     }
 
     Q_EMIT propertyChanged(changeMap);
@@ -850,12 +862,22 @@ bool Device::isOpticalDisc() const
         return false;
 
     Device drive(drivePath);
-    return drive.prop("Optical").toBool();  // FIXME maybe check for drive.isOpticalDrive()
+    return drive.prop("Optical").toBool();
+}
+
+bool Device::mightBeOpticalDisc() const
+{
+    QString drivePath = prop("Drive").value<QDBusObjectPath>().path();
+    if (drivePath.isEmpty() || drivePath == "/")
+        return false;
+
+    Device drive(drivePath);
+    return drive.isOpticalDrive() && !drive.prop("Optical").toBool();
 }
 
 bool Device::isMounted() const
 {
-    return propertyExists("MountPoints") && !prop("MountPoints").value<QByteArrayList>().isEmpty();
+    return propertyExists("MountPoints") && !qdbus_cast<QByteArrayList>(prop("MountPoints")).isEmpty();
 }
 
 bool Device::isEncryptedContainer() const
