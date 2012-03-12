@@ -42,6 +42,9 @@ public:
     virtual bool isCallerAuthorized(const QString &action, QByteArray callerID);
     virtual bool actionExists(const QString& action);
 
+public Q_SLOTS:
+    void setNewCapabilities(KAuth::AuthBackend::Capabilities capabilities);
+
 private:
     QHash<QString, KAuth::Action::AuthStatus> m_actionStatuses;
 };

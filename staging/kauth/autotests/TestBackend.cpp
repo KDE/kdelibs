@@ -20,6 +20,7 @@
 #include "TestBackend.h"
 
 #include <QCoreApplication>
+#include <QDebug>
 
 namespace KAuth
 {
@@ -27,7 +28,14 @@ namespace KAuth
 TestBackend::TestBackend()
     : AuthBackend()
 {
+    qDebug() << "Test backend loaded";
     setCapabilities(AuthorizeFromHelperCapability | CheckActionExistenceCapability);
+}
+
+void TestBackend::setNewCapabilities(AuthBackend::Capabilities capabilities)
+{
+    qDebug() << "Capabilities changing";
+    setCapabilities(capabilities);
 }
 
 Action::AuthStatus TestBackend::authorizeAction(const QString &action)
@@ -85,10 +93,12 @@ bool TestBackend::isCallerAuthorized(const QString &action, QByteArray callerID)
 
 bool TestBackend::actionExists(const QString& action)
 {
+    qDebug() << "Checking if action " << action << "exists";
     if (action != QLatin1String("doomed.to.fail") &&
         action != QLatin1String("requires.auth") &&
         action != QLatin1String("generates.error") &&
-        action != QLatin1String("always.authorized")) {
+        action != QLatin1String("always.authorized") &&
+        action != QLatin1String("/safinvalid124%$&")) {
         return false;
     }
 
