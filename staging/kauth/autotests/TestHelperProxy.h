@@ -41,7 +41,6 @@ class TestHelperProxy : public HelperProxy
         virtual bool initHelper(const QString& name);
         virtual void stopAction(const QString& action, const QString& helperID);
         virtual void executeAction(const QString& action, const QString& helperID, const QVariantMap& arguments);
-        virtual bool executeActions(const QList< QPair< QString, QVariantMap > >& list, const QString& helperID);
         virtual Action::AuthStatus authorizeAction(const QString& action, const QString& helperID);
 };
 
