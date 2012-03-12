@@ -25,7 +25,6 @@
 #include <QWidget>
 
 #include "BackendsManager.h"
-#include "kauthactionwatcher.h"
 
 namespace KAuth
 {
@@ -33,7 +32,7 @@ namespace KAuth
 class ActionData : public QSharedData
 {
 public:
-    ActionData() : valid(false), async(false), parent(0) {}
+    ActionData() : valid(false), parent(0) {}
     ActionData(const ActionData &other)
         : QSharedData(other)
         , name(other.name)
@@ -41,7 +40,6 @@ public:
         , helperId(other.helperId)
         , args(other.args)
         , valid(other.valid)
-        , async(other.async)
         , parent(other.parent) {}
     ~ActionData() {}
 
@@ -50,7 +48,6 @@ public:
     QString helperId;
     QVariantMap args;
     bool valid;
-    bool async;
     QWidget *parent;
 };
 
@@ -157,11 +154,6 @@ QVariantMap Action::arguments() const
     return d->args;
 }
 
-ActionWatcher *Action::watcher()
-{
-    return ActionWatcher::watcher(d->name);
-}
-
 QString Action::helperID() const
 {
     return d->helperId;
@@ -256,60 +248,8 @@ Action::AuthStatus Action::status() const
     return BackendsManager::authBackend()->actionStatus(d->name);
 }
 
-// Execution methods
-bool Action::executeActions(const QList<Action> &actions, QList<Action> *deniedActions, const QString &helperId)
-{
-    return executeActions(actions, deniedActions, helperId, 0);
-}
-
-bool Action::executeActions(const QList< Action >& actions, QList< Action >* deniedActions, const QString& helperId, QWidget* parent)
-{
-    QList<QPair<QString, QVariantMap> > list;
-
-    Q_FOREACH(const Action &a, actions) {
-        // Save us an additional step
-        if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromClientCapability) {
-            if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::PreAuthActionCapability) {
-                BackendsManager::authBackend()->preAuthAction(a.name(), parent);
-            }
-
-            AuthStatus s = BackendsManager::authBackend()->authorizeAction(a.name());
-
-            if (s == StatusAuthorized) {
-                list.push_back(QPair<QString, QVariantMap>(a.name(), a.arguments()));
-            } else if ((s == StatusDenied || s == StatusInvalid) && deniedActions) {
-                *deniedActions << a;
-            }
-        } else if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromHelperCapability) {
-            list.push_back(QPair<QString, QVariantMap>(a.name(), a.arguments()));
-        } else {
-            // There's something totally wrong here
-            return false;
-        }
-    }
-
-    if (list.isEmpty()) {
-        return false;
-    }
-
-    return BackendsManager::helperProxy()->executeActions(list, helperId);
-}
-
-bool Action::executesAsync() const
-{
-    return d->async;
-}
-
-void Action::setExecutesAsync(bool async)
-{
-    d->async = async;
-}
-
 ActionReply Action::execute() const
 {
-    if (!isValid())
-        return ActionReply::InvalidActionReply;
-
     return execute(helperID());
 }
 
@@ -340,8 +280,8 @@ ActionReply Action::execute(const QString &helperID) const
             break;
         }
     } else if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromHelperCapability) {
-        // In this case we care only if the action is not async and does not have an helper
-        if (!d->async && !hasHelper()) {
+        // In this case we care only if the action does not have an helper
+        if (!hasHelper()) {
             // Authorize!
             switch (authorize()) {
             case StatusDenied:
@@ -359,25 +299,15 @@ ActionReply Action::execute(const QString &helperID) const
         return ActionReply::InvalidActionReply;
     }
 
-    if (d->async) {
-        if (hasHelper()) {
-            // It makes no sense
-            return ActionReply::InvalidActionReply;
+    if (hasHelper()) {
+        // Perform the pre auth here
+        if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::PreAuthActionCapability) {
+            BackendsManager::authBackend()->preAuthAction(d->name, d->parent);
         }
 
-        return executeActions(QList<Action>() << *this, NULL, helperID) ?
-            ActionReply::SuccessReply : ActionReply::AuthorizationDeniedReply;
+        return BackendsManager::helperProxy()->executeAction(d->name, helperID, d->args, false);
     } else {
-        if (hasHelper()) {
-            // Perform the pre auth here
-            if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::PreAuthActionCapability) {
-                BackendsManager::authBackend()->preAuthAction(d->name, d->parent);
-            }
-
-            return BackendsManager::helperProxy()->executeAction(d->name, helperID, d->args);
-        } else {
-            return ActionReply::SuccessReply;
-        }
+        return ActionReply::SuccessReply;
     }
 }
 

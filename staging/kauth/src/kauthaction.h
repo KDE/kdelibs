@@ -33,8 +33,6 @@
 namespace KAuth
 {
 
-class ActionWatcher;
-
 class ActionData;
 /**
  * @brief Class to access, authorize and execute actions.
@@ -251,19 +249,6 @@ public:
     bool hasHelper() const;
 
     /**
-     * @brief Gets the ActionWatcher object for this action
-     *
-     * ActionWatcher objects are used to get notifications about the action
-     * execution status. Every action watcher is tied to an action and
-     * every action has a watcher. This means that if you call this method
-     * on two different Action objects with the same name, you'll get the
-     * same watcher object.
-     *
-     * @return The action watcher for this action
-     */
-    ActionWatcher *watcher();
-
-    /**
      * @brief Sets the map object used to pass arguments to the helper.
      *
      * This method sets the variant map that the application
@@ -403,52 +388,6 @@ public:
      * @return The reply from the helper, or an error if something's wrong.
      */
     ActionReply execute(const QString &helperID) const;
-
-    void setExecutesAsync(bool async);
-    bool executesAsync() const;
-
-    /**
-     * @brief Asynchronously executes a group of actions with a single request
-     *
-     * This method executes each action in the list. It checks for authorization of each action, and put the
-     * denied actions, if any, in the list pointed by the deniedActions parameter, if not NULL.
-     *
-     * Please note that with the D-Bus helper proxy (currently the only one implemented), the execution of a group
-     * of actions is very different from executing in sequence each action using, for example, executeAsync().
-     * Currently, the helper can execute only one request at the time. For this reason, if you have to call
-     * different actions in sequence, you can't call executeAsync() like this:
-     * @code
-     * action1.executeAsync();
-     * action2.executeAsync();
-     * @endcode
-     * because the second call will almost certainly return ActionReply::HelperBusy. You would have to execute the second
-     * action in the slot connected to the first action's actionPerformed() signal. This is not so good. This method
-     * allows the application to send a request with a list of actions. With this method, the code above becomes:
-     * @code
-     * QList<Action> list;
-     * list << action1 << action2;
-     * Action::executeActions(list);
-     * @endcode
-     * The return value will be false if communication errors occur. It will also be false if <b>all</b> the actions
-     * in the list are denied.
-     *
-     * @param actions The list of actions to execute
-     * @param deniedActions A pointer to a list to fill with the denied actions. Pass NULL if you don't need them.
-     * @param helperId The helper ID to execute the actions on.
-     */
-    static bool executeActions(const QList<Action> &actions, QList<Action> *deniedActions, const QString &helperId);
-
-    /**
-     * Convenience overload. This overload lets you specify, in addition, a QWidget which will be used as the
-     * authentication dialog's parent.
-     *
-     * @since 4.6
-     *
-     * @see executeActions
-     * @see setParentWidget
-     */
-    static bool executeActions(const QList<Action> &actions, QList<Action> *deniedActions, const QString &helperId,
-                               QWidget *parent);
 
     /**
      * @brief Ask the helper to stop executing an action

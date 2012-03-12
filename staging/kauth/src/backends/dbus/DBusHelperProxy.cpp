@@ -52,35 +52,7 @@ void DBusHelperProxy::stopAction(const QString &action, const QString &helperID)
     QDBusConnection::systemBus().asyncCall(message);
 }
 
-bool DBusHelperProxy::executeActions(const QList<QPair<QString, QVariantMap> > &list, const QString &helperID)
-{
-    QByteArray blob;
-    QDataStream stream(&blob, QIODevice::WriteOnly);
-
-    stream << list;
-
-    QDBusConnection::systemBus().interface()->startService(helperID);
-
-    if (!QDBusConnection::systemBus().connect(helperID, QLatin1String("/"), QLatin1String("org.kde.auth"), QLatin1String("remoteSignal"), this, SLOT(remoteSignalReceived(int,QString,QByteArray)))) {
-        return false;
-    }
-
-    QDBusMessage message;
-    message = QDBusMessage::createMethodCall(helperID, QLatin1String("/"), QLatin1String("org.kde.auth"), QLatin1String("performActions"));
-
-    QList<QVariant> args;
-    args << blob << BackendsManager::authBackend()->callerID();
-    message.setArguments(args);
-
-    QDBusPendingCall reply = QDBusConnection::systemBus().asyncCall(message); // This is a NO_REPLY method
-    if (reply.reply().type() == QDBusMessage::ErrorMessage) {
-        return false;
-    }
-
-    return true;
-}
-
-ActionReply DBusHelperProxy::executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments)
+ActionReply DBusHelperProxy::executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments, bool async)
 {
     if (!m_actionsInProgress.isEmpty()) {
         return ActionReply::HelperBusyReply;
@@ -109,8 +81,22 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
 
     m_actionsInProgress.push_back(action);
 
-    QEventLoop e;
     QDBusPendingCall pendingCall = QDBusConnection::systemBus().asyncCall(message);
+
+    if (async) {
+        if (pendingCall.reply().type() == QDBusMessage::ErrorMessage) {
+            ActionReply r = ActionReply::DBusErrorReply;
+            r.setErrorDescription(tr("DBus Backend error: could not contact the helper. "
+                    "Connection error: ") + QDBusConnection::systemBus().lastError().message() + tr(". Message error: ") + pendingCall.reply().errorMessage());
+            qDebug() << pendingCall.reply().errorMessage();
+            return r;
+        } else {
+            return ActionReply::SuccessReply;
+        }
+    }
+
+    // Process synchronously
+    QEventLoop e;
     QDBusPendingCallWatcher watcher(pendingCall, this);
     connect(&watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), &e, SLOT(quit()));
     e.exec();
@@ -244,26 +230,6 @@ bool DBusHelperProxy::hasToStopAction()
     loop.processEvents(QEventLoop::AllEvents);
 
     return m_stopRequest;
-}
-
-void DBusHelperProxy::performActions(QByteArray blob, const QByteArray &callerID)
-{
-    QDataStream stream(&blob, QIODevice::ReadOnly);
-    QList< QPair< QString, QVariantMap > > actions;
-
-    stream >> actions;
-
-    QList< QPair< QString, QVariantMap > >::const_iterator i = actions.constBegin();
-    while (i != actions.constEnd()) {
-        QByteArray blob;
-        QDataStream stream(&blob, QIODevice::WriteOnly);
-
-        stream << i->second;
-
-        performAction(i->first, callerID, blob);
-
-        i++;
-    }
 }
 
 QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArray &callerID, QByteArray arguments)

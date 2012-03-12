@@ -50,8 +50,8 @@ class DBusHelperProxy : public HelperProxy
 public:
     DBusHelperProxy() : responder(0), m_stopRequest(false) {}
 
-    virtual bool executeActions(const QList<QPair<QString, QVariantMap> > &list, const QString &helperID);
-    virtual ActionReply executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments);
+    virtual ActionReply executeAction(const QString &action, const QString &helperID,
+            const QVariantMap &arguments, bool async);
     virtual Action::AuthStatus authorizeAction(const QString& action, const QString& helperID);
     virtual void stopAction(const QString &action, const QString &helperID);
 
@@ -64,7 +64,6 @@ public:
 
 public Q_SLOTS:
     void stopAction(const QString &action);
-    void performActions(QByteArray blob, const QByteArray &callerID);
     QByteArray performAction(const QString &action, const QByteArray &callerID, QByteArray arguments);
     uint authorizeAction(const QString &action, const QByteArray &callerID);
 

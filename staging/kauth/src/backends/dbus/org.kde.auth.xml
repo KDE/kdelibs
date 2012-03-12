@@ -12,11 +12,6 @@
             <arg name="callerID" type="ay" direction="in" />
             <arg name="r" type="u" direction="out" />
         </method>
-        <method name="performActions" >
-            <arg name="blob" type="ay" direction="in" />
-            <arg name="callerID" type="ay" direction="in" />
-            <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
-        </method>
         <method name="stopAction" >
             <arg name="action" type="s" direction="in" />
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>

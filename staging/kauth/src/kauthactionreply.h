@@ -391,6 +391,7 @@ public:
     static const ActionReply AuthorizationDeniedReply; ///< errorCode() == AuthorizationDenied
     static const ActionReply UserCancelledReply; ///< errorCode() == UserCancelled
     static const ActionReply HelperBusyReply; ///< errorCode() == HelperBusy
+    static const ActionReply AlreadyStartedReply; ///< errorCode() == AlreadyStartedError
     static const ActionReply DBusErrorReply; ///< errorCode() == DBusError
 
     /**
@@ -404,7 +405,9 @@ public:
         AuthorizationDeniedError, ///< You don't have the authorization to execute the action
         UserCancelledError, ///< Action execution has been cancelled by the user
         HelperBusyError, ///< The helper is busy executing another action (or group of actions). Try later
-        DBusError ///< An error from D-Bus occurred
+        AlreadyStartedError, ///< The action was already started and is currently running
+        DBusError, ///< An error from D-Bus occurred
+        BackendError, ///< The underlying backend reported an error
     };
 
     /// Default constructor. Sets type() to Success and errorCode() to zero.

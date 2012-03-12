@@ -52,6 +52,7 @@ const ActionReply ActionReply::InvalidActionReply = ActionReply(ActionReply::Inv
 const ActionReply ActionReply::AuthorizationDeniedReply = ActionReply(ActionReply::AuthorizationDeniedError);
 const ActionReply ActionReply::UserCancelledReply = ActionReply(ActionReply::UserCancelledError);
 const ActionReply ActionReply::HelperBusyReply = ActionReply(ActionReply::HelperBusyError);
+const ActionReply ActionReply::AlreadyStartedReply = ActionReply(ActionReply::AlreadyStartedError);
 const ActionReply ActionReply::DBusErrorReply = ActionReply(ActionReply::DBusError);
 
 // Constructors
