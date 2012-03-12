@@ -30,10 +30,20 @@
 namespace KAuth
 {
 
-class Action::Private
+class ActionData : public QSharedData
 {
 public:
-    Private() : valid(false), async(false), parent(0) {}
+    ActionData() : valid(false), async(false), parent(0) {}
+    ActionData(const ActionData &other)
+        : QSharedData(other)
+        , name(other.name)
+        , details(other.details)
+        , helperId(other.helperId)
+        , args(other.args)
+        , valid(other.valid)
+        , async(other.async)
+        , parent(other.parent) {}
+    ~ActionData() {}
 
     QString name;
     QString details;
@@ -46,25 +56,24 @@ public:
 
 // Constructors
 Action::Action()
-        : d(new Private())
+    : d(new ActionData())
 {
 }
 
 Action::Action(const Action &action)
-        : d(new Private())
+    : d(action.d)
 {
-    *this = action;
 }
 
 Action::Action(const QString &name)
-        : d(new Private())
+        : d(new ActionData())
 {
     setName(name);
     BackendsManager::authBackend()->setupAction(d->name);
 }
 
 Action::Action(const QString &name, const QString &details)
-        : d(new Private())
+        : d(new ActionData())
 {
     setName(name);
     setDetails(details);
@@ -73,15 +82,17 @@ Action::Action(const QString &name, const QString &details)
 
 Action::~Action()
 {
-    delete d;
 }
 
 // Operators
-Action &Action::operator=(const Action & action)
+Action &Action::operator=(const Action &action)
 {
-    setName(action.d->name);
-    d->args = action.d->args;
+    if (this == &action) {
+        // Protect against self-assignment
+        return *this;
+    }
 
+    d = action.d;
     return *this;
 }
 

@@ -24,6 +24,7 @@
 #include <QtCore/QString>
 #include <QtCore/QVariant>
 #include <QtCore/QHash>
+#include <QtCore/QSharedDataPointer>
 
 #include <kauth_export.h>
 
@@ -34,6 +35,7 @@ namespace KAuth
 
 class ActionWatcher;
 
+class ActionData;
 /**
  * @brief Class to access, authorize and execute actions.
  *
@@ -68,9 +70,6 @@ class ActionWatcher;
  */
 class KAUTH_EXPORT Action
 {
-    class Private;
-    Private * const d;
-
 public:
     /**
      * The three values returned by authorization methods
@@ -499,6 +498,9 @@ public:
      * @returns A QWidget which will is being used as the dialog's parent
      */
     QWidget *parentWidget() const;
+
+private:
+    QSharedDataPointer<ActionData> d;
 };
 
 } // namespace Auth
