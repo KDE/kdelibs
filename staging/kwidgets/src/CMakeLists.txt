@@ -1,6 +1,6 @@
 include_directories(
  ${KDE4_KDECORE_INCLUDES}
- ${CMAKE_CURRENT_SOURCE_DIR}
+ ${CMAKE_CURRENT_SOURCE_DIR}/icons
  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
  ${DBUSMENUQT_INCLUDE_DIR}
  ${CMAKE_BINARY_DIR}/staging/kwidgets/src
@@ -15,6 +15,7 @@ set(kwidgets_LIB_SRCS
  icons/kicontheme.cpp
  icons/kiconengine.cpp
  icons/kiconeffect.cpp
+ utils/kguiitem.cpp
 )
 
 add_library(kwidgets ${LIBRARY_TYPE} ${kwidgets_LIB_SRCS})
@@ -34,6 +35,7 @@ install( FILES
  icons/kiconloader.h
  icons/kicontheme.h
  icons/kiconeffect.h
+ utils/kguiitem.h
 
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
