@@ -28,8 +28,6 @@
 
 #include <kdecore_export.h>
 #include <kconfigbase.h>
-#include <kdebug.h>
-#include <klocale.h>
 #include <ksharedptr.h>
 
 class KEntryMap;
@@ -174,7 +172,7 @@ public:
     /**
      * Lock the file
      */
-    virtual bool lock(const KComponentData& componentData) = 0;
+    virtual bool lock() = 0;
     /**
      * Release the lock on the file
      */

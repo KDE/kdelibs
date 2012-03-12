@@ -100,7 +100,7 @@ KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::Op
 bool KConfigPrivate::lockLocal()
 {
     if (mBackend) {
-        return mBackend->lock(componentData);
+        return mBackend->lock();
     }
     // anonymous object - pretend we locked it
     return true;
@@ -458,7 +458,7 @@ void KConfig::sync()
 
         if (d->wantGlobals() && writeGlobals) {
             KSharedPtr<KConfigBackend> tmp = KConfigBackend::create(componentData(), d->sGlobalFileName);
-            if (d->configState == ReadWrite && !tmp->lock(componentData())) {
+            if (d->configState == ReadWrite && !tmp->lock()) {
                 qWarning() << "couldn't lock global file";
                 return;
             }

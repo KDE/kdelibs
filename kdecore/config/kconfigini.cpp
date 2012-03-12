@@ -455,7 +455,7 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
                 return true;
             }
             // Couldn't write. Disk full?
-            kWarning() << "Couldn't write" << filePath() << ". Disk full?";
+            qWarning() << "Couldn't write" << filePath() << ". Disk full?";
             return false;
         }
     } else {
@@ -520,7 +520,7 @@ bool KConfigIniBackend::isWritable() const
 
 QString KConfigIniBackend::nonWritableErrorMessage() const
 {
-    return i18n("Configuration file \"%1\" not writable.\n", filePath());
+    return tr("Configuration file \"%1\" not writable.\n").arg(filePath());
 }
 
 void KConfigIniBackend::createEnclosing()
@@ -566,12 +566,12 @@ KConfigBase::AccessMode KConfigIniBackend::accessMode() const
     return KConfigBase::ReadOnly;
 }
 
-bool KConfigIniBackend::lock(const KComponentData& componentData)
+bool KConfigIniBackend::lock()
 {
     Q_ASSERT(!filePath().isEmpty());
 
     if (!lockFile) {
-        lockFile = new KLockFile(filePath() + QLatin1String(".lock"), componentData.componentName());
+        lockFile = new KLockFile(filePath() + QLatin1String(".lock"));
     }
 
     if (lockFile->lock() == KLockFile::LockStale) // attempt to break the lock

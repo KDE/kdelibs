@@ -27,11 +27,13 @@
 #include <kconfigbackend.h>
 #include <klockfile.h>
 
+class QIODevice;
+
 class KConfigIniBackend : public KConfigBackend
 {
 private:
     class BufferFragment;
-    
+
     KLockFile *lockFile;
 public:
 
@@ -53,7 +55,7 @@ public:
     KConfigBase::AccessMode accessMode() const;
     void createEnclosing();
     void setFilePath(const QString& path);
-    bool lock(const KComponentData& componentData);
+    bool lock();
     void unlock();
     bool isLocked() const;
 
