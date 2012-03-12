@@ -555,7 +555,9 @@ void KConfigPrivate::changeFileName(const QString& name, const char* type)
         } // else anonymous config.
         // KDE5: remove these magic overloads
     } else if (QDir::isAbsolutePath(fileName)) {
-        fileName = KStandardDirs::realFilePath(fileName);
+        fileName = QFileInfo(fileName).canonicalFilePath();
+        if (fileName.isEmpty()) // file doesn't exist (yet)
+            fileName = name;
         file = fileName;
     } else {
         if (type && *type)

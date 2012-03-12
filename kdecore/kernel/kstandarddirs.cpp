@@ -1048,7 +1048,7 @@ KStandardDirs::realPath(const QString &dirname)
 #endif
 }
 
-// ####### KDE4: should this be removed, in favor of QDir::canonicalPath()?
+// ####### KDE4: should this be removed, in favor of QFileInfo::canonicalFilePath()?
 // aseigo: QDir::canonicalPath returns QString() if the dir doesn't exist
 //         and this method is often used with the expectation for it to work
 //         even if the directory doesn't exist. so ... no, we can't drop this
