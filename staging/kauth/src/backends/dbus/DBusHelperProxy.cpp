@@ -87,14 +87,6 @@ void DBusHelperProxy::executeAction(const QString &action, const QString &helper
 
         Q_EMIT actionPerformed(action, r);
     }
-
-    // Process synchronously
-    QEventLoop e;
-    QDBusPendingCallWatcher watcher(pendingCall, this);
-    connect(&watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), &e, SLOT(quit()));
-    e.exec();
-
-    QDBusMessage reply = pendingCall.reply();
 }
 
 Action::AuthStatus DBusHelperProxy::authorizeAction(const QString& action, const QString& helperID)
