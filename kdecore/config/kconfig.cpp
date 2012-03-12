@@ -29,7 +29,6 @@
 
 #include "kconfigbackend.h"
 #include "kconfiggroup.h"
-#include <kde_file.h>
 #include <kstringhandler.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
@@ -170,6 +169,7 @@ QString KConfigPrivate::expandString(const QString& value)
             QString cmd = aValue.mid( nDollarPos+2, nEndPos-nDollarPos-3 );
 
             QString result;
+#if 0 // Removed in KDE Frameworks 5. No such concept anymore. Just set your PATH.
             QByteArray oldpath = qgetenv( "PATH" );
             QByteArray newpath;
             if (KGlobal::hasMainComponent()) {
@@ -179,6 +179,8 @@ QString KConfigPrivate::expandString(const QString& value)
             }
             newpath += oldpath;
             setenv( "PATH", newpath, 1/*overwrite*/ );
+#endif
+
 // FIXME: wince does not have pipes
 #ifndef _WIN32_WCE
             FILE *fs = popen(QFile::encodeName(cmd).data(), "r");
@@ -188,7 +190,9 @@ QString KConfigPrivate::expandString(const QString& value)
                 pclose(fs);
             }
 #endif
+#if 0 // Removed in KDE Frameworks 5, see above.
             setenv( "PATH", oldpath, 1/*overwrite*/ );
+#endif
             aValue.replace( nDollarPos, nEndPos-nDollarPos, result );
             nDollarPos += result.length();
         } else if( aValue[nDollarPos+1] != QLatin1Char('$') ) {

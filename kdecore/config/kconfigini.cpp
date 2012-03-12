@@ -27,7 +27,6 @@
 #include "bufferfragment_p.h"
 #include "kconfigdata.h"
 #include <qsavefile.h>
-#include <kde_file.h>
 #include "kstandarddirs.h"
 
 #include <qdatetime.h>
@@ -37,6 +36,10 @@
 #include <qdebug.h>
 #include <qmetaobject.h>
 #include <qregexp.h>
+
+#include <unistd.h> // getuid, close
+#include <sys/types.h> // uid_t
+#include <fcntl.h> // open
 
 extern bool kde_kiosk_exception;
 
@@ -458,13 +461,13 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
     } else {
         // Open existing file. *DON'T* create it if it suddenly does not exist!
 #ifdef Q_OS_UNIX
-        int fd = KDE_open(QFile::encodeName(filePath()), O_WRONLY | O_TRUNC);
+        int fd = ::open(QFile::encodeName(filePath()), O_WRONLY | O_TRUNC);
         if (fd < 0) {
             return false;
         }
-        FILE *fp = KDE_fdopen(fd, "w");
+        FILE *fp = ::fdopen(fd, "w");
         if (!fp) {
-            close(fd);
+            ::close(fd);
             return false;
         }
         QFile f;

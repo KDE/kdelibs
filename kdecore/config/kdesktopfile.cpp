@@ -34,7 +34,6 @@
 #include "kauthorized.h"
 #include "kstandarddirs.h"
 #include "kconfigini_p.h"
-#include "kde_file.h"
 
 class KDesktopFilePrivate : public KConfigPrivate
 {
