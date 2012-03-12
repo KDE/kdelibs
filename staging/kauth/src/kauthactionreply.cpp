@@ -45,13 +45,13 @@ public:
 
 // Predefined replies
 const ActionReply ActionReply::SuccessReply = ActionReply();
-const ActionReply ActionReply::HelperErrorReply = ActionReply(ActionReply::HelperError);
-const ActionReply ActionReply::NoResponderReply = ActionReply(ActionReply::NoResponder);
-const ActionReply ActionReply::NoSuchActionReply = ActionReply(ActionReply::NoSuchAction);
-const ActionReply ActionReply::InvalidActionReply = ActionReply(ActionReply::InvalidAction);
-const ActionReply ActionReply::AuthorizationDeniedReply = ActionReply(ActionReply::AuthorizationDenied);
-const ActionReply ActionReply::UserCancelledReply = ActionReply(ActionReply::UserCancelled);
-const ActionReply ActionReply::HelperBusyReply = ActionReply(ActionReply::HelperBusy);
+const ActionReply ActionReply::HelperErrorReply = ActionReply(ActionReply::TypeHelperError);
+const ActionReply ActionReply::NoResponderReply = ActionReply(ActionReply::NoResponderError);
+const ActionReply ActionReply::NoSuchActionReply = ActionReply(ActionReply::NoSuchActionError);
+const ActionReply ActionReply::InvalidActionReply = ActionReply(ActionReply::InvalidActionError);
+const ActionReply ActionReply::AuthorizationDeniedReply = ActionReply(ActionReply::AuthorizationDeniedError);
+const ActionReply ActionReply::UserCancelledReply = ActionReply(ActionReply::UserCancelledError);
+const ActionReply ActionReply::HelperBusyReply = ActionReply(ActionReply::HelperBusyError);
 const ActionReply ActionReply::DBusErrorReply = ActionReply(ActionReply::DBusError);
 
 // Constructors
@@ -64,7 +64,7 @@ ActionReply::ActionReply()
         : d(new ActionReplyData())
 {
     d->errorCode = 0;
-    d->type = Success;
+    d->type = TypeSuccess;
 }
 
 ActionReply::ActionReply(ActionReply::Type type)
@@ -78,7 +78,7 @@ ActionReply::ActionReply(int error)
         : d(new ActionReplyData())
 {
     d->errorCode = error;
-    d->type = KAuthError;
+    d->type = TypeKAuthError;
 }
 
 ActionReply::~ActionReply()
@@ -107,24 +107,24 @@ ActionReply::Type ActionReply::type() const
 
 bool ActionReply::succeeded() const
 {
-    return d->type == Success;
+    return d->type == TypeSuccess;
 }
 
 bool ActionReply::failed() const
 {
-    return d->type != Success;
+    return d->type != TypeSuccess;
 }
 
-int ActionReply::errorCode() const
+ActionReply::Error ActionReply::errorCode() const
 {
-    return d->errorCode;
+    return (ActionReply::Error)d->errorCode;
 }
 
-void ActionReply::setErrorCode(int errorCode)
+void ActionReply::setErrorCode(Error errorCode)
 {
     d->errorCode = errorCode;
-    if (d->type != HelperError) {
-        d->type = KAuthError;
+    if (d->type != TypeHelperError) {
+        d->type = TypeKAuthError;
     }
 }
 
