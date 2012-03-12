@@ -202,7 +202,6 @@ set(kdeui_LIB_SRCS
  util/kcompletionbase.cpp
  util/kcrash.cpp
  util/kcursor.cpp
- util/kguiitem.cpp
  util/kimagecache.cpp
  util/kkeyserver.cpp
  util/kmanagerselection.cpp
@@ -213,7 +212,6 @@ set(kdeui_LIB_SRCS
  util/kpassivepopupmessagehandler.cpp
  util/kpixmapcache.cpp
  util/kpixmapprovider.cpp
- util/kstandardguiitem.cpp
  util/kwordwrap.cpp
  util/kxerrorhandler.cpp
  util/kxmessages.cpp
@@ -570,7 +568,6 @@ install( FILES
  util/kcompletion.h
  util/kcrash.h
  util/kcursor.h
- util/kguiitem.h
  util/kkeyserver.h
  util/kmanagerselection.h
  util/kmodifierkeyinfo.h
@@ -580,7 +577,6 @@ install( FILES
  util/kpixmapcache.h
  util/kpixmapprovider.h
  util/kimagecache.h
- util/kstandardguiitem.h
  util/kwallet.h
  util/kwordwrap.h
  util/kxerrorhandler.h

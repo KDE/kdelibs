@@ -26,7 +26,7 @@
 
 #include <kicontheme.h>
 
-#include <kdeui_export.h>
+#include <kwidgets_export.h>
 
 class QPushButton;
 
@@ -36,7 +36,7 @@ class QPushButton;
  * @author Holger Freyther <freyher@yahoo.com>
  * @see KStandardGuiItem
  */
-class KDEUI_EXPORT KGuiItem
+class KWIDGETS_EXPORT KGuiItem
 {
 public:
     KGuiItem();
@@ -64,7 +64,7 @@ public:
 
     /// @deprecated use icon() instead
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED QIcon iconSet( KIconLoader::Group=KIconLoader::Small, int size = 0) const;
+    KWIDGETS_DEPRECATED QIcon iconSet( KIconLoader::Group=KIconLoader::Small, int size = 0) const;
 #endif
 
     QIcon icon( ) const;
@@ -75,7 +75,7 @@ public:
     bool isEnabled() const;
     bool hasIcon() const;
 #if !defined(KDE_NO_COMPAT) && !defined(KDE_NO_DEPRECATED)
-    KDEUI_DEPRECATED bool hasIconSet() const { return hasIcon(); }
+    KWIDGETS_DEPRECATED bool hasIconSet() const { return hasIcon(); }
 #endif
 
     void setText( const QString &text );

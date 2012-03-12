@@ -10,6 +10,8 @@ set(kwidgets_LIB_SRCS
   widgets/kvbox.cpp
   widgets/kseparator.cpp
   widgets/kurllabel.cpp
+  utils/kstandardguiitem.cpp
+  utils/kguiitem.cpp
 )
 
 add_library(kwidgets ${LIBRARY_TYPE} ${kwidgets_LIB_SRCS})
@@ -32,6 +34,8 @@ install(TARGETS kwidgets EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS}
 
 install(FILES
   utils/kglobalsettings.h
+  utils/kstandardguiitem.h
+  utils/kguiitem.h
   icons/kicontheme.h
   icons/kiconloader.h
   icons/kicon.h
