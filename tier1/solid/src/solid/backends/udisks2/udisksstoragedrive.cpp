@@ -21,14 +21,18 @@
 
 #include "udisksstoragedrive.h"
 
+#include "../shared/udevqtclient.h"
+
 #include <QtCore/QDebug>
+#include <QtCore/QFile>
 
 using namespace Solid::Backends::UDisks2;
 
 StorageDrive::StorageDrive(Device *device)
     : Block(device)
 {
-
+    UdevQt::Client client(this);
+    m_udevDevice = client.deviceByDeviceFile(QFile::decodeName(m_device->prop("Device").toByteArray()));
 }
 
 StorageDrive::~StorageDrive()
@@ -42,7 +46,8 @@ qulonglong StorageDrive::size() const
 
 bool StorageDrive::isHotpluggable() const
 {
-    return m_device->prop("Removable").toBool();
+    const Solid::StorageDrive::Bus _bus = bus();
+    return _bus == Solid::StorageDrive::Usb || _bus == Solid::StorageDrive::Ieee1394;
 }
 
 bool StorageDrive::isRemovable() const
@@ -54,7 +59,7 @@ Solid::StorageDrive::DriveType StorageDrive::driveType() const
 {
     const QStringList mediaTypes = m_device->prop("MediaCompatibility").toStringList();
 
-    if ( !mediaTypes.filter( "optical" ).isEmpty() ) // optical disks
+    if ( m_device->isOpticalDrive() ) // optical disks
     {
         return Solid::StorageDrive::CdromDrive;
     }
@@ -102,29 +107,27 @@ Solid::StorageDrive::DriveType StorageDrive::driveType() const
 
 Solid::StorageDrive::Bus StorageDrive::bus() const
 {
-    // FIXME, udisks2 knows only a few
+    const QString bus = m_device->prop("ConnectionBus").toString();
+    const QString udevBus = m_udevDevice.deviceProperty("ID_BUS").toString();
 
-    const QString bus = m_device->prop( "ConnectionBus" ).toString();
-
-    if ( bus == "ata" || bus == "ata_parallel" ) // parallel (classical) ATA
+    if (udevBus == "ata")
     {
-        return Solid::StorageDrive::Ide;
+        if (m_udevDevice.deviceProperty("ID_ATA_SATA").toInt() == 1) // serial ATA
+            return Solid::StorageDrive::Sata;
+        else  // parallel (classical) ATA
+            return Solid::StorageDrive::Ide;
     }
-    else if ( bus == "usb" )
+    else if (bus == "usb")
     {
         return Solid::StorageDrive::Usb;
     }
-    else if ( bus == "ieee1394" )
+    else if (bus == "ieee1394")
     {
         return Solid::StorageDrive::Ieee1394;
     }
-    else if ( bus == "scsi" )
+    else if (udevBus == "scsi")
     {
         return Solid::StorageDrive::Scsi;
-    }
-    else if ( bus == "ata_serial" || bus == "ata_serial_esata" ) // serial ATA
-    {
-        return Solid::StorageDrive::Sata;
     }
 #if 0  // TODO add these to Solid
     else if ( bus == "sdio" )
