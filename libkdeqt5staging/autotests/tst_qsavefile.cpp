@@ -60,6 +60,7 @@ class tst_QSaveFile : public QObject
 
 private Q_SLOTS:
     void transactionalWrite();
+    void autoFlush();
     void transactionalWriteNoPermissions();
     void transactionalWriteCanceled();
     void transactionalWriteErrorRenaming();
@@ -96,6 +97,23 @@ void tst_QSaveFile::transactionalWrite()
     QCOMPARE(QString::fromLatin1(reader.readAll().constData()), QString::fromLatin1("Hello"));
     reader.close();
 
+    QFile::remove(targetFile);
+}
+
+void tst_QSaveFile::autoFlush()
+{
+    const QString targetFile = QString::fromLatin1("outfile");
+    QFile::remove(targetFile);
+    QSaveFile file(targetFile);
+    QVERIFY(file.open(QIODevice::WriteOnly));
+
+    QTextStream ts(&file);
+    ts << "Auto-flush.";
+    // no flush
+    QVERIFY(file.commit()); // close will emit aboutToClose, which will flush the stream
+    QFile reader(targetFile);
+    QVERIFY(reader.open(QIODevice::ReadOnly));
+    QCOMPARE(QString::fromLatin1(reader.readAll().constData()), QString::fromLatin1("Auto-flush."));
     QFile::remove(targetFile);
 }
 

@@ -282,12 +282,12 @@ bool QSaveFile::commit()
     if (!d->tempFile)
         return false;
     Q_ASSERT(isOpen());
+    QIODevice::close(); // flush and close
     if (d->error != QFile::NoError) {
         d->tempFile->remove();
         unsetError();
         delete d->tempFile;
         d->tempFile = 0;
-        QIODevice::close();
         return false;
     }
     // atomically replace old file with new file
@@ -301,12 +301,10 @@ bool QSaveFile::commit()
         d->tempFile->remove();
         delete d->tempFile;
         d->tempFile = 0;
-        QIODevice::close();
         return false;
     }
     delete d->tempFile;
     d->tempFile = 0;
-    QIODevice::close();
     return true;
 }
 
