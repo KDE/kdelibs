@@ -25,11 +25,9 @@
 #define KCONFIG_P_H
 
 #include "kconfigdata.h"
-#include <kglobal.h>
 #include "kconfigbackend.h"
 #include "kconfiggroup.h"
 #include "kcomponentdata.h"
-#include "kstandarddirs.h"
 #include "klocale.h"
 
 #include <QtCore/QStringList>

@@ -26,7 +26,6 @@
 #include "kconfig.h"
 #include "kconfig_p.h"
 #include "ksharedconfig.h"
-#include "kstringhandler.h"
 #include "kconfigdata.h"
 #include <kdebug.h>
 

@@ -22,7 +22,6 @@
 #include "kcoreconfigskeleton.h"
 #include "kcoreconfigskeleton_p.h"
 
-#include "kstandarddirs.h"
 #include "kglobal.h"
 #include "kdebug.h"
 #include "kstringhandler.h"

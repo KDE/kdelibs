@@ -73,7 +73,7 @@ KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::Op
 #else
             QLatin1String("/etc/kde4rc");
 #endif
-        if (!KStandardDirs::checkAccess(etc_kderc, R_OK)) {
+        if (!QFileInfo(etc_kderc).isReadable()) {
             etc_kderc.clear();
         }
     }

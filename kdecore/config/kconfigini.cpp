@@ -27,15 +27,12 @@
 #include "bufferfragment_p.h"
 #include "kconfigdata.h"
 #include <qsavefile.h>
-#include "kstandarddirs.h"
 
 #include <qdatetime.h>
 #include <qdir.h>
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qdebug.h>
-#include <qmetaobject.h>
-#include <qregexp.h>
 
 #include <unistd.h> // getuid, close
 #include <sys/types.h> // uid_t
@@ -491,17 +488,19 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
     return true;
 }
 
+
 bool KConfigIniBackend::isWritable() const
 {
-    if (!filePath().isEmpty()) {
-        if (KStandardDirs::checkAccess(filePath(), W_OK)) {
+    const QString filePath = this->filePath();
+    if (!filePath.isEmpty()) {
+        // Qt 5 TODO: QFileInfo::canBeCreated or something.
+        if (::access(QFile::encodeName(filePath), W_OK) == 0) {
             return true;
         }
-        // The check might have failed because any of the containing dirs
-        // did not exist. If the file does not exist, check if the deepest
-        // existing dir is writable.
-        QFileInfo file(filePath());
+        QFileInfo file(filePath);
         if (!file.exists()) {
+            // If the file does not exist, check if the deepest
+            // existing dir is writable.
             QFileInfo dir(file.absolutePath());
             while (!dir.exists()) {
                 QString parent = dir.absolutePath(); // Go up. Can't use cdUp() on non-existing dirs.
