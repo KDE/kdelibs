@@ -23,7 +23,7 @@
 #ifndef KICONTHEME_H
 #define KICONTHEME_H
 
-#include <kdeui_export.h>
+#include <kwidgets_export.h>
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>
@@ -43,7 +43,7 @@ class K3Icon;
  *          the KCM needs it.
  * @see KIconLoader
  */
-class KDEUI_EXPORT KIconTheme
+class KWIDGETS_EXPORT KIconTheme
 {
 public:
     /**

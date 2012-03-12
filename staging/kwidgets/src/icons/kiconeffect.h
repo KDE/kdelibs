@@ -24,7 +24,7 @@
 #ifndef KICONEFFECT_H
 #define KICONEFFECT_H
 
-#include <kdeui_export.h>
+#include <kwidgets_export.h>
 
 #include <QImage>
 #include <QPixmap>
@@ -44,7 +44,7 @@ class KIconEffectPrivate;
  *
  * @see KIcon
  */
-class KDEUI_EXPORT KIconEffect
+class KWIDGETS_EXPORT KIconEffect
 {
 public:
   /**

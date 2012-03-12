@@ -133,11 +133,6 @@ set(kdeui_LIB_SRCS
  fonts/kfontutils.cpp
  icons/kiconbutton.cpp
  icons/kicondialog.cpp
- icons/kiconeffect.cpp
- icons/kiconengine.cpp
- icons/kicon.cpp
- icons/kiconloader.cpp
- icons/kicontheme.cpp
  icons/kiconcache.cpp
  itemviews/klistwidget.cpp
  itemviews/kconfigviewstatesaver.cpp
@@ -510,11 +505,7 @@ install( FILES
  fonts/kfontutils.h
  icons/kiconbutton.h
  icons/kicondialog.h
- icons/kiconeffect.h
- icons/kicon.h
  icons/k3icon_p.h      # we install the private header as it is needed by kcm (tokoe)
- icons/kiconloader.h
- icons/kicontheme.h
  icons/kiconcache.h
  itemviews/kconfigviewstatesaver.h
  itemviews/klistwidget.h

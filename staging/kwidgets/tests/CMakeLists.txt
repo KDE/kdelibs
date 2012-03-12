@@ -25,8 +25,11 @@ ENDMACRO(KDEUI_EXECUTABLE_TESTS)
 KDEUI_EXECUTABLE_TESTS(
   khboxtest
   kdialogtest
+  kiconloadertest
+  kiconeffecttest
 )
 
 KDEUI_UNIT_TESTS(
   kdialog_unittest
+  kiconloader_unittest
 )

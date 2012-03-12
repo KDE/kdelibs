@@ -19,7 +19,7 @@
 #ifndef KICON_H
 #define KICON_H
 
-#include <kdeui_export.h>
+#include <kwidgets_export.h>
 
 #include <QIcon>
 
@@ -37,7 +37,7 @@ class QStringList;
  *
  * \author Hamish Rodda <rodda@kde.org>
  */
-class KDEUI_EXPORT KIcon : public QIcon
+class KWIDGETS_EXPORT KIcon : public QIcon
 {
 public:
     /**
