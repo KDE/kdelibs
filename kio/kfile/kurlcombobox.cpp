@@ -89,7 +89,7 @@ QString KUrlComboBoxPrivate::textForItem(const KUrlComboItem* item) const
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         return url.toString();
 #else
-        return url.toDisplayString(myMode == Directories
+        return url.toDisplayString(myMode == KUrlComboBox::Directories
                                    ? QUrl::None /* Qt5 TODO! QUrl::AppendTrailingSlash */
                                    : QUrl::StripTrailingSlash);
 #endif

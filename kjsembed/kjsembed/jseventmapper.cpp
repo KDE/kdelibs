@@ -201,7 +201,6 @@ static EventType events[] = {
     EventType( KJS::Identifier("onDeactivateControlEvent"), QEvent::DeactivateControl ),
     EventType( KJS::Identifier("onContextMenuEvent"), QEvent::ContextMenu ),
     EventType( KJS::Identifier("onInputMethodEvent"), QEvent::InputMethod ),
-    EventType( KJS::Identifier("onAccessibilityPrepareEvent"), QEvent::AccessibilityPrepare ),
     EventType( KJS::Identifier("onTabletMoveEvent"), QEvent::TabletMove ),
     EventType( KJS::Identifier("onLocaleChangeEvent"), QEvent::LocaleChange ),
     EventType( KJS::Identifier("onLanguageChangeEvent"), QEvent::LanguageChange ),

@@ -59,6 +59,13 @@ namespace Fstab
             virtual QObject *createDeviceInterface(const Solid::DeviceInterface::Type &type);
 
             QString device() const;
+
+        Q_SIGNALS:
+            void mtabChanged(const QString& device);
+
+        private Q_SLOTS:
+            void onMtabChanged(const QString& device);
+
         private:
             QString m_uid;
             QString m_device;

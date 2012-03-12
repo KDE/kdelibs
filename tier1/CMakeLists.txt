@@ -7,6 +7,7 @@ add_subdirectory(kdbusaddons)
 add_subdirectory(kplotting)
 add_subdirectory(solid)
 add_subdirectory(threadweaver)
+add_subdirectory(kcoreaddons)
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   feature_summary(WHAT ALL   FATAL_ON_MISSING_REQUIRED_PACKAGES)

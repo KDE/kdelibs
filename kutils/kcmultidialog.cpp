@@ -27,6 +27,7 @@
 
 #include <QtCore/QStringList>
 #include <QtCore/QProcess>
+#include <QtCore/QUrl>
 
 #include <kauthorized.h>
 #include <kguiitem.h>
@@ -350,11 +351,11 @@ void KCMultiDialog::slotHelpClicked()
     }
   }
 
-  KUrl docUrl( KUrl( "help:/" ), docPath );
+  QUrl docUrl = QUrl("help:/").resolved(docPath);
   if ( docUrl.scheme() == "help" || docUrl.scheme() == "man" || docUrl.scheme() == "info" ) {
-    QProcess::startDetached("khelpcenter", QStringList() << docUrl.url());
+    QProcess::startDetached("khelpcenter", QStringList() << docUrl.toString());
   } else {
-    KToolInvocation::invokeBrowser( docUrl.url() );
+    KToolInvocation::invokeBrowser(docUrl.toString());
   }
 }
 

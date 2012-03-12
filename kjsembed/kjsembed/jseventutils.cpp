@@ -107,7 +107,6 @@ namespace JSEventUtils
             case QEvent::DeactivateControl:
             case QEvent::ContextMenu:
             case QEvent::InputMethod:
-            case QEvent::AccessibilityPrepare:
             case QEvent::TabletMove:
             case QEvent::LocaleChange:
             case QEvent::LanguageChange:

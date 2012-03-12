@@ -38,6 +38,7 @@
 #include <QtCore/QString>
 #include <QtCore/QTextStream>
 #include <QtCore/QDir>
+#include <QtCore/QUrl>
 
 #include <stdlib.h>
 
@@ -360,10 +361,6 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             return QUrl(QString::fromUtf8(value));
 
         default:
-            if( aDefault.canConvert<KUrl>() ) {
-                const KUrl url(QString::fromUtf8(value));
-                return qVariantFromValue<KUrl>( url );
-            }
             break;
     }
 
@@ -1021,13 +1018,9 @@ void KConfigGroup::writeEntry( const char* key, const QVariant &value,
                         "Please inform the KDE developers";
             break;
         case QVariant::Url:
-            data = KUrl(value.toUrl()).url().toUtf8();
+            data = QUrl(value.toUrl()).toString().toUtf8();
             break;
         default:
-            if( value.canConvert<KUrl>() ) {
-                data = qvariant_cast<KUrl>(value).url().toUtf8();
-                break;
-            }
             kWarning() << "KConfigGroup::writeEntry - unhandled type" << value.typeName() << "in group" << name();
         }
 

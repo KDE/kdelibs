@@ -41,7 +41,7 @@
 #include <ksystemtimezone.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <ksavefile.h>
+#include <qsavefile.h>
 #include <kdebug.h>
 
 #include <QtCore/QString>
@@ -1227,11 +1227,10 @@ static QString hostWithPort(const KHttpCookie* cookie)
 // On failure 'false' is returned.
 bool KCookieJar::saveCookies(const QString &_filename)
 {
-    KSaveFile cookieFile(_filename);
+    QSaveFile cookieFile(_filename);
 
-    if (!cookieFile.open())
+    if (!cookieFile.open(QIODevice::WriteOnly))
        return false;
-    cookieFile.setPermissions(QFile::ReadUser|QFile::WriteUser);
 
     QTextStream ts(&cookieFile);
 
@@ -1252,7 +1251,7 @@ bool KCookieJar::saveCookies(const QString &_filename)
         KHttpCookieList *cookieList = m_cookieDomains.value(domain);
         if (!cookieList)
             continue;
-        
+
         QMutableListIterator<KHttpCookie> cookieIterator(*cookieList);
         while (cookieIterator.hasNext()) {
             const KHttpCookie& cookie = cookieIterator.next();
@@ -1286,7 +1285,11 @@ bool KCookieJar::saveCookies(const QString &_filename)
         }
     }
 
-    return cookieFile.finalize();
+    if (cookieFile.commit()) {
+        QFile::setPermissions(_filename, QFile::ReadUser|QFile::WriteUser);
+        return true;
+    }
+    return false;
 }
 
 static const char *parseField(char* &buffer, bool keepQuotes=false)

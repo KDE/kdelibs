@@ -19,10 +19,13 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef OPTICALDISC_H
-#define OPTICALDISC_H
+#ifndef UDISKS2OPTICALDISC_H
+#define UDISKS2OPTICALDISC_H
 
 #include <solid/ifaces/opticaldisc.h>
+
+#include "../shared/udevqtdevice.h"
+
 #include "udisksstoragevolume.h"
 #include "udisksdevice.h"
 
@@ -35,7 +38,6 @@ namespace UDisks2
 
 class OpticalDisc: public StorageVolume, virtual public Solid::Ifaces::OpticalDisc
 {
-
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::OpticalDisc)
 
@@ -58,9 +60,10 @@ private:
     mutable bool m_needsReprobe;
     mutable Solid::OpticalDisc::ContentTypes m_cachedContent;
     Device * m_drive;
+    UdevQt::Device m_udevDevice;
 };
 
 }
 }
 }
-#endif // OPTICALDISC_H
+#endif // UDISKS2OPTICALDISC_H

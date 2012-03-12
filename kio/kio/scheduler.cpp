@@ -715,14 +715,26 @@ public:
     void slotSlaveError(int error, const QString &errorMsg);
     void slotUnregisterWindow(QObject *);
 
-    ProtoQueue *protoQ(const QString &p)
+    ProtoQueue *protoQ(const QString& protocol, const QString& host)
     {
-        ProtoQueue *pq = m_protocols.value(p, 0);
+        ProtoQueue *pq = m_protocols.value(protocol, 0);
         if (!pq) {
-            kDebug(7006) << "creating ProtoQueue instance for" << p;
-            pq = new ProtoQueue(this, KProtocolInfo::maxSlaves(p),
-                                KProtocolInfo::maxSlavesPerHost(p));
-            m_protocols.insert(p, pq);
+            kDebug(7006) << "creating ProtoQueue instance for" << protocol;
+
+            const int maxSlaves = KProtocolInfo::maxSlaves(protocol);
+            int maxSlavesPerHost = -1;
+            if (!host.isEmpty()) {
+                bool ok = false;
+                const int value = SlaveConfig::self()->configData(protocol, host, QLatin1String("MaxConnections")).toInt(&ok);
+                if (ok)
+                    maxSlavesPerHost = value;
+            }
+            if (maxSlavesPerHost == -1) {
+                maxSlavesPerHost = KProtocolInfo::maxSlavesPerHost(protocol);
+            }
+            // Never allow maxSlavesPerHost to exceed maxSlaves.
+            pq = new ProtoQueue(this, maxSlaves, qMin(maxSlaves, maxSlavesPerHost));
+            m_protocols.insert(protocol, pq);
         }
         return pq;
     }
@@ -959,7 +971,7 @@ void SchedulerPrivate::doJob(SimpleJob *job)
        m_checkOnHold = false;
     }
 
-    ProtoQueue *proto = protoQ(jobPriv->m_protocol);
+    ProtoQueue *proto = protoQ(jobPriv->m_protocol, job->url().host());
     proto->queueJob(job);
 }
 
@@ -974,7 +986,7 @@ void SchedulerPrivate::scheduleJob(SimpleJob *job)
 void SchedulerPrivate::setJobPriority(SimpleJob *job, int priority)
 {
     kDebug(7006) << job << priority;
-    ProtoQueue *proto = protoQ(SimpleJobPrivate::get(job)->m_protocol);
+    ProtoQueue *proto = protoQ(SimpleJobPrivate::get(job)->m_protocol, job->url().host());
     proto->changeJobPriority(job, priority);
 }
 
@@ -1225,7 +1237,7 @@ Slave *SchedulerPrivate::getConnectedSlave(const KUrl &url, const KIO::MetaData 
 {
     QStringList proxyList;
     const QString protocol = KProtocolManager::slaveProtocol(url, proxyList);
-    ProtoQueue *pq = protoQ(protocol);
+    ProtoQueue *pq = protoQ(protocol, url.host());
 
     Slave *slave = pq->createSlave(protocol, /* job */0, url);
     if (slave) {
@@ -1256,7 +1268,7 @@ void SchedulerPrivate::slotSlaveError(int errorNr, const QString &errorMsg)
 {
     Slave *slave = static_cast<Slave *>(q->sender());
     kDebug(7006) << slave << errorNr << errorMsg;
-    ProtoQueue *pq = protoQ(slave->protocol());
+    ProtoQueue *pq = protoQ(slave->protocol(), slave->host());
     if (!slave->isConnected() || pq->m_connectedSlaveQueue.isIdle(slave)) {
         // Only forward to application if slave is idle or still connecting.
         // ### KDE5: can we remove this apparently arbitrary behavior and just always emit SlaveError?

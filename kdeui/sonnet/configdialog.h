@@ -44,7 +44,12 @@ namespace Sonnet
          * @since 4.1
          */
         void setLanguage( const QString &language );
-
+        /**
+         * return selected language
+         * @since 4.8.1
+         */
+        QString language() const;
+        
     protected Q_SLOTS:
         virtual void slotOk();
         virtual void slotApply();
@@ -52,14 +57,20 @@ namespace Sonnet
     Q_SIGNALS:
 
         /**
-         * This is emitted when the user closed the dialog (and did not
-         * cancel it).
+         * This is emitted all the time when we change config and not just language
          *
          * @param language the language which the user has selected
          * @since 4.1
          */
+
         void languageChanged( const QString &language );
 
+        /**
+         * This is emitted when configChanged
+         * @since 4.8.1
+         */
+        void configChanged();
+        
     private:
         void init(KConfig *config);
     private:

@@ -3,11 +3,12 @@ include(ConfigureChecks.cmake)
 configure_file(config-compression.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compression.h)
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 
-# For KSaveFile - TODO put that into Qt (David is working on that)
-include_directories( ${kcoreaddons_SOURCE_DIR}/src/io
-                     ${kcoreaddons_BINARY_DIR}/src
-                     ${CMAKE_SOURCE_DIR}/libqtmimetypes/include/QtMimeTypes
-                   )
+if (NOT QT5_BUILD)
+    include_directories(
+        ${CMAKE_SOURCE_DIR}/libqtmimetypes/include/QtMimeTypes
+    )
+endif()
+
 add_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 if(BZIP2_FOUND)
@@ -18,7 +19,7 @@ endif(BZIP2_FOUND)
 
 if(LIBLZMA_FOUND)
    include_directories(${LIBLZMA_INCLUDE_DIRS})
-   set(karchive_OPTIONAL_SRCS ${karchive_OPTIONAL_SRCS} kxzfilter.cpp )
+   set(karchive_OPTIONAL_SRCS ${karchive_OPTIONAL_SRCS} kxzfilter.cpp k7zip.cpp )
    set(karchive_OPTIONAL_LIBS ${karchive_OPTIONAL_LIBS} ${LIBLZMA_LIBRARIES})
 endif(LIBLZMA_FOUND)
 
@@ -39,8 +40,7 @@ set(karchive_SRCS
 add_library(karchive ${LIBRARY_TYPE} ${karchive_SRCS} ${karchive_OPTIONAL_SRCS})
 generate_export_header(karchive)
 
-# Links to kcoreaddons for KSaveFile - TODO REMOVE
-target_link_libraries(karchive ${QT_QTCORE_LIBRARY} ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY} kcoreaddons QtMimeTypes)
+target_link_libraries(karchive ${QT_QTCORE_LIBRARY} ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY} ${QtMimeTypes_LIBRARY} kdeqt5staging)
 
 set_target_properties(karchive PROPERTIES VERSION  ${GENERIC_LIB_VERSION}
                                           SOVERSION ${GENERIC_LIB_SOVERSION}
@@ -61,3 +61,11 @@ install( FILES
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 
+
+if(LIBLZMA_FOUND)
+   install( FILES
+   k7zip.h
+
+   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
+)
+endif(LIBLZMA_FOUND)

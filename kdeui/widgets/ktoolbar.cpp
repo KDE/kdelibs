@@ -98,7 +98,6 @@ class KToolBar::Private
         enableContext(true),
 #endif
         unlockedMovable(true),
-        xmlguiClient(0),
         contextOrient(0),
         contextMode(0),
         contextSize(0),
@@ -143,6 +142,8 @@ class KToolBar::Private
     void loadKDESettings();
     void applyCurrentSettings();
 
+    QAction *findAction(const QString &actionName, KXMLGUIClient **client = 0) const;
+
     static Qt::ToolButtonStyle toolButtonStyleFromString(const QString& style);
     static QString toolButtonStyleToString(Qt::ToolButtonStyle);
     static Qt::ToolBarArea positionFromString(const QString& position);
@@ -156,7 +157,7 @@ class KToolBar::Private
     static bool s_editable;
     static bool s_locked;
 
-    KXMLGUIClient *xmlguiClient;
+    QSet<KXMLGUIClient *> xmlguiClients;
 
     QMenu* contextOrient;
     QMenu* contextMode;
@@ -543,6 +544,20 @@ void KToolBar::Private::applyCurrentSettings()
         kmw->setSettingsDirty();
 }
 
+QAction *KToolBar::Private::findAction(const QString &actionName, KXMLGUIClient **clientOut) const
+{
+    foreach (KXMLGUIClient* client, xmlguiClients) {
+        QAction* action = client->actionCollection()->action(actionName);
+        if (action) {
+            if (clientOut) {
+                *clientOut = client;
+            }
+            return action;
+        }
+    }
+    return 0;
+}
+
 void KToolBar::Private::slotContextAboutToShow()
 {
   /**
@@ -558,9 +573,7 @@ void KToolBar::Private::slotContextAboutToShow()
   // try to find "configure toolbars" action
   QAction *configureAction = 0;
   const char* actionName = KStandardAction::name(KStandardAction::ConfigureToolbars);
-  if (xmlguiClient) {
-    configureAction = xmlguiClient->actionCollection()->action(actionName);
-  }
+  configureAction = findAction(actionName);
 
   if (!configureAction && kmw) {
     configureAction = kmw->actionCollection()->action(actionName);
@@ -648,9 +661,7 @@ void KToolBar::Private::slotContextAboutToHide()
   // Unplug the configure toolbars action too, since it's afterwards anyway
   QAction *configureAction = 0;
   const char* actionName = KStandardAction::name(KStandardAction::ConfigureToolbars);
-  if (xmlguiClient) {
-    configureAction = xmlguiClient->actionCollection()->action(actionName);
-  }
+  configureAction = findAction(actionName);
 
   if (!configureAction && kmw) {
     configureAction = kmw->actionCollection()->action(actionName);
@@ -680,17 +691,28 @@ void KToolBar::Private::slotContextShowText()
                                        ? QAction::NormalPriority : QAction::LowPriority;
     contextButtonAction->setPriority(priority);
 
+    // Find to which xml file and componentData the action belongs to
+    KComponentData componentData;
+    QString filename;
+    KXMLGUIClient *client;
+    if (findAction(contextButtonAction->objectName(), &client)) {
+        componentData = client->componentData();
+        filename = client->xmlFile();
+    }
+    if (filename.isEmpty()) {
+        componentData = KGlobal::mainComponent();
+        filename = componentData.componentName() + "ui.rc";
+    }
+
     // Save the priority state of the action
-    const KComponentData& componentData = KGlobal::mainComponent();
-    const QString componentName = componentData.componentName() + "ui.rc";
-    const QString configFile = KXMLGUIFactory::readConfigFile(componentName, componentData);
+    const QString configFile = KXMLGUIFactory::readConfigFile(filename, componentData);
 
     QDomDocument document;
     document.setContent(configFile);
     QDomElement elem = KXMLGUIFactory::actionPropertiesElement(document);
     QDomElement actionElem = KXMLGUIFactory::findActionByName(elem, contextButtonAction->objectName(), true);
     actionElem.setAttribute("priority", priority);
-    KXMLGUIFactory::saveConfigFile(document, componentName, componentData);
+    KXMLGUIFactory::saveConfigFile(document, filename, componentData);
 }
 
 void KToolBar::Private::slotContextTop()
@@ -831,9 +853,17 @@ void KToolBar::saveSettings(KConfigGroup &cg)
     }
 }
 
+#ifndef KDE_NO_DEPRECATED
 void KToolBar::setXMLGUIClient(KXMLGUIClient *client)
 {
-    d->xmlguiClient = client;
+    d->xmlguiClients.clear();
+    d->xmlguiClients << client;
+}
+#endif
+
+void KToolBar::addXMLGUIClient( KXMLGUIClient *client )
+{
+    d->xmlguiClients << client;
 }
 
 void KToolBar::contextMenuEvent(QContextMenuEvent* event)

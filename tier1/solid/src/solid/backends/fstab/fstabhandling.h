@@ -23,6 +23,7 @@
 #define SOLID_BACKENDS_FSTAB_FSTABHANDLING_H
 
 #include <QtCore/QString>
+#include <QtCore/QMultiHash>
 
 class QProcess;
 class QObject;
@@ -33,11 +34,14 @@ namespace Backends
 {
 namespace Fstab
 {
+
 class FstabHandling
 {
 public:
+    FstabHandling();
+
     static QStringList deviceList();
-    static QStringList currentMountPoints();
+    static QStringList currentMountPoints(const QString &device);
     static QStringList mountPoints(const QString &device);
     static QProcess *callSystemCommand(const QString &commandName,
                                        const QStringList &args,
@@ -45,7 +49,22 @@ public:
     static QProcess *callSystemCommand(const QString &commandName,
                                        const QString &device,
                                        QObject *obj, const char *slot);
+    static void flushMtabCache();
+    static void flushFstabCache();
+
+private:
+    static void _k_updateMtabMountPointsCache();
+    static void _k_updateFstabMountPointsCache();
+
+    typedef QMultiHash<QString, QString> QStringMultiHash;
+
+    QStringMultiHash m_mtabCache;
+    QStringMultiHash m_fstabCache;
+    bool m_fstabCacheValid;
+    bool m_mtabCacheValid;
+
 };
+
 }
 }
 }

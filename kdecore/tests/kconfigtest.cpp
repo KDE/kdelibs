@@ -27,6 +27,7 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>
+#include <kconfiggroup_kurl.h>
 
 #include <QtNetwork/QHostInfo>
 
@@ -110,6 +111,8 @@ void KConfigTest::initTestCase()
   cg.writeEntry( "stringEntry3", STRINGENTRY3 );
   cg.writeEntry( "stringEntry4", STRINGENTRY4 );
   cg.writeEntry( "stringEntry5", STRINGENTRY5 );
+  cg.writeEntry( "urlEntry1", QUrl("http://qt-project.org") );
+  cg.writeEntry( "urlEntry2", KUrl("http://www.kde.org") ); // DO NOT PORT TO QUrl, this is for testing compat. Might have to move out though.
   cg.writeEntry( "keywith=equalsign", STRINGENTRY1 );
   cg.deleteEntry( "stringEntry5" );
   cg.deleteEntry( "stringEntry6" ); // deleting a nonexistent entry
@@ -320,6 +323,8 @@ void KConfigTest::testSimple()
   QCOMPARE( sc3.readEntry( "stringEntry5", QString("test") ), QString( "test" ) );
   QVERIFY( !sc3.hasKey( "stringEntry6" ) );
   QCOMPARE( sc3.readEntry( "stringEntry6", QString("foo") ), QString( "foo" ) );
+  QCOMPARE( sc3.readEntry( "urlEntry1", QUrl() ), QUrl("http://qt-project.org") );
+  QCOMPARE( sc3.readEntry( "urlEntry2", KUrl() ), KUrl("http://www.kde.org") ); // DO NOT PORT TO QUrl, this is for testing compat. Might have to move out though.
   QCOMPARE( sc3.readEntry( "boolEntry1", BOOLENTRY1 ), BOOLENTRY1 );
   QCOMPARE( sc3.readEntry( "boolEntry2", false ), BOOLENTRY2 );
   QCOMPARE( sc3.readEntry("keywith=equalsign", QString("wrong")), QString(STRINGENTRY1));

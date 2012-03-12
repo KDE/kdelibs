@@ -64,7 +64,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <kde_file.h>
-#include <ksavefile.h>
+#include <qsavefile.h>
 
 #ifdef Q_OS_LINUX
 #include <sys/prctl.h>
@@ -1617,11 +1617,11 @@ static void setupX()
 #endif
         QString xauth = s_instance->dirs()->saveLocation( "tmp" ) + QLatin1String( "xauth-" )
             + QString::number( getuid()) + QLatin1String( "-" ) + QString::fromLocal8Bit( display );
-        KSaveFile xauthfile( xauth );
+        QSaveFile xauthfile( xauth );
         QFile xauthfrom( QFile::decodeName( qgetenv( "XAUTHORITY" )));
         if( !xauthfrom.open( QFile::ReadOnly ) || !xauthfile.open( QFile::WriteOnly )
-            || xauthfile.write( xauthfrom.readAll()) != xauthfrom.size() || !xauthfile.finalize()) {
-            xauthfile.abort();
+            || xauthfile.write(xauthfrom.readAll()) != xauthfrom.size() || !xauthfile.commit()) {
+            // error
         } else {
             setenv( "XAUTHORITY", QFile::encodeName( xauth ), true );
         }

@@ -62,12 +62,13 @@ public:
 and in the cpp file:
 
 \code
-typedef KGenericFactory<MyAppConfig, QWidget> MyAppConfigFactory;
-K_EXPORT_COMPONENT_FACTORY( kcm_myappconfig, MyAppConfigFactory(
-    "kcm_myappconfig" ) );
+K_PLUGIN_FACTORY(MyAppConfigFactory,
+                  registerPlugin<MyAppConfig>();
+                 )
+K_EXPORT_PLUGIN(MyAppConfigFactory("kcm_myappconfig"));
 
-MyAppConfig::MyAppConfig( QWidget *parent, const char *, const QStringList &args )
-  : KCModule( MyAppConfigFactory::instance(), parent, args )
+MyAppConfig::MyAppConfig(QWidget *parent, const char *, const QVariantList &args)
+  : KCModule(MyAppConfigFactory::instance(), parent, args)
 {
   // create the pages GUI
   load();
@@ -97,7 +98,6 @@ Type=Service
 ServiceTypes=KCModule
 
 X-KDE-Library=myappconfig
-X-KDE-FactoryName=MyAppConfigFactory
 X-KDE-ParentApp=myapp
 X-KDE-ParentComponents=myapp
 X-KDE-Weight=10
@@ -115,9 +115,6 @@ Some explanation for those keys:
 - X-KDE-Library is the name of the library where the page is in. The library
   always needs to be prefixed with kcm_ but you don't write the prefix in the
   desktop file. For more docu on this look for the KCModule docu.
-- X-KDE-FactoryName is either the name of the Factory you used in the
-  KGenericFactory call or the suffix of the create_ function that you created.
-  Again for more info look for the KCModule docu.
 - X-KDE-ParentApp is the name of the application this config page belongs to. It
   is used by the first two \ref KSettings::Dialog constructors. The Dialog will
   use all modules that set X-KDE-ParentApp to
@@ -190,11 +187,13 @@ for the first.
 To create a plugin page you need the following code:
 
 \code
-typedef KGenericFactory<MyAppPluginConfig, QWidget> MyAppPluginConfigFactory;
-K_EXPORT_COMPONENT_FACTORY( kcm_myapppluginconfig, MyAppPluginConfigFactory( "kcm_myapppluginconfig" ) );
+K_PLUGIN_FACTORY(MyAppPluginConfigFactory,
+                  registerPlugin<MyAppPluginConfig>();
+                 )
+K_EXPORT_PLUGIN(MyAppConfigFactory("kcm_myapppluginconfig"));
 
-MyAppPluginConfig( QWidget * parent, const char *, const QStringList & args )
-    : PluginPage( MyAppPluginConfigFactory::instance(), parent, args )
+MyAppPluginConfig(QWidget * parent, const char *, const QVariantList & args)
+    : PluginPage(MyAppPluginConfigFactory::instance(), parent, args)
 {
     pluginSelector()->addPlugins( ... );
     pluginSelector()->addPlugins( ... );

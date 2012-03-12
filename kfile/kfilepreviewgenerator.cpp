@@ -1240,12 +1240,22 @@ void KFilePreviewGenerator::setPreviewShown(bool show)
         const bool blocked = dirModel->signalsBlocked();
         dirModel->blockSignals(true);
 
+        QList<QModelIndex> indexesWithKnownMimeType;
         foreach (const KFileItem& item, itemList) {
             const QModelIndex index = dirModel->indexForItem(item);
+            if (item.isMimeTypeKnown()) {
+                indexesWithKnownMimeType.append(index);
+            }
             dirModel->setData(index, QIcon(), Qt::DecorationRole);
         }
 
         dirModel->blockSignals(blocked);
+
+        // Items without a known mimetype will be handled (delayed) by updateIcons.
+        // So we need to update items with a known mimetype ourselves.
+        foreach (const QModelIndex& index, indexesWithKnownMimeType) {
+            dirModel->itemChanged(index);
+        }
     }
     updateIcons();
 }

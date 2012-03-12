@@ -142,7 +142,7 @@ namespace Ifaces
         void registerAction(const QString &actionName, QObject *dest, const char *requestSlot, const char *doneSlot) const;
 
         /**
-         * Allows to broadcat that an action just got requested on a device to all
+         * Allows to broadcast that an action just got requested on a device to all
          * the corresponding devices in other processes.
          *
          * @param actionName name of the action which just completed

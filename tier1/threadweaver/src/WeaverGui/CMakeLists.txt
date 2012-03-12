@@ -3,8 +3,11 @@ include_directories(${QT_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${QT_QTGUI_INCLUD
 
 set(ThreadWeaverGui_LIB_SRCS  WeaverThreadGrid.cpp )
 
+find_package(Qt5Transitional REQUIRED Gui)
 
-include_directories(../Weaver ${CMAKE_CURRENT_BINARY_DIR}/../Weaver)
+include_directories(../Weaver ${CMAKE_CURRENT_BINARY_DIR}/../Weaver
+  ${QT_INCLUDES}
+)
 
 add_library(ThreadWeaverGui ${LIBRARY_TYPE} ${ThreadWeaverGui_LIB_SRCS})
 target_link_libraries(ThreadWeaverGui threadweaver ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY})

@@ -22,7 +22,7 @@ add_subdirectory(src)
 add_subdirectory(autotests)
 
 install(FILES
-  ${CMAKE_BINARY_DIR}/itemmodels_version.h
+   ${CMAKE_CURRENT_BINARY_DIR}/itemmodels_version.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 

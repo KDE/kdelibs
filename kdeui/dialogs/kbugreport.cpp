@@ -40,6 +40,7 @@
 #include <kurllabel.h>
 #include <ktextedit.h>
 #include <ktitlewidget.h>
+#include <kurl.h>
 
 #include <stdio.h>
 #include <pwd.h>

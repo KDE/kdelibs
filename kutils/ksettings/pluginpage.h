@@ -37,11 +37,13 @@ namespace KSettings
  * PluginPage and add the appropriate plugin information to the KPluginSelector.
  * This is done using the pluginSelector() method:
  * \code
- * typedef KGenericFactory<MyAppPluginConfig, QWidget> MyAppPluginConfigFactory;
- * K_EXPORT_COMPONENT_FACTORY( kcm_myapppluginconfig, MyAppPluginConfigFactory( "kcm_myapppluginconfig" ) );
+ * K_PLUGIN_FACTORY(MyAppPluginConfigFactory,
+ *                  registerPlugin<MyAppPluginConfig>();
+ *                  )
+ * K_EXPORT_PLUGIN(MyAppConfigFactory("kcm_myapppluginconfig"));
  *
- * MyAppPluginConfig( QWidget * parent, const QStringList & args )
- *     : PluginPage( MyAppPluginConfigFactory::componentData(), parent, args )
+ * MyAppPluginConfig(QWidget * parent, const QVariantList & args)
+ *     : PluginPage(MyAppPluginConfigFactory::componentData(), parent, args)
  * {
  *     pluginSelector()->addPlugins( KGlobal::mainComponent().componentName(), i18n( "General Plugins" ), "General" );
  *     pluginSelector()->addPlugins( KGlobal::mainComponent().componentName(), i18n( "Effects" ), "Effects" );

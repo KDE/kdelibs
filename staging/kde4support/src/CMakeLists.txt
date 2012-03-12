@@ -2,6 +2,7 @@ set(libkde4support_SRCS
     kdecore/ktemporaryfile.cpp
     kdecore/ktempdir.cpp
     kdecore/kmd5.cpp
+    kdecore/ksavefile.cpp
     kdecore/k3socks.cpp
     kdecore/k3sockssocketdevice.cpp
     kdecore/k3socketdevice.cpp
@@ -28,17 +29,13 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/kdecore/util/
     ${CMAKE_SOURCE_DIR}/kdecore/localization/
     ${kcoreaddons_SOURCE_DIR}/src/randomness # for KRandom
+    ${kcoreaddons_SOURCE_DIR}/src/io # for KBackup
     ${kcoreaddons_BINARY_DIR}/src
 )
 
 # Configure checks for network/ but also for netsupp.*
 include(ConfigureChecks.cmake)
 configure_file(config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-network.h )
-
-remove_definitions(-DQT_NO_CAST_FROM_ASCII)
-remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
-remove_definitions(-DQT_NO_CAST_TO_ASCII)
-remove_definitions(-DQT_NO_KEYWORDS)
 
 add_library(kde4support ${LIBRARY_TYPE} ${libkde4support_SRCS})
 generate_export_header(kde4support)
@@ -52,6 +49,7 @@ install(FILES
     kdecore/ktemporaryfile.h
     kdecore/ktempdir.h
     kdecore/kmd5.h
+    kdecore/ksavefile.h
     kdecore/k3bufferedsocket.h
     kdecore/k3clientsocketbase.h
     kdecore/k3resolver.h

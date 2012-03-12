@@ -9,13 +9,6 @@ configure_file(kdefakes.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h )
 # Generate kdeversion.h
 configure_file(util/kdeversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h )
 
-# Configure checks for kdirwatch
-find_package(FAM)
-macro_bool_to_01(FAM_FOUND HAVE_FAM)
-
-check_include_files(sys/inotify.h SYS_INOTIFY_H_FOUND)
-macro_bool_to_01(SYS_INOTIFY_H_FOUND HAVE_SYS_INOTIFY_H)
-
 check_struct_member("struct sockaddr" sa_len "sys/types.h;sys/socket.h" HAVE_STRUCT_SOCKADDR_SA_LEN)
 configure_file(network/config-klocalsocket.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/network/config-klocalsocket.h )
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/network )
@@ -32,13 +25,15 @@ configure_file(localization/config-localization.h.cmake ${CMAKE_CURRENT_BINARY_D
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 include_directories( ${ZLIB_INCLUDE_DIR} )
 include_directories( ${QT_INCLUDES} )
-include_directories( ${CMAKE_SOURCE_DIR}/libqtmimetypes/include/QtMimeTypes )
-include_directories( ${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/jobs )
-include_directories( ${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/io )
-include_directories( ${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/text )
-include_directories( ${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/kernel )
-include_directories( ${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/randomness )
-include_directories( ${CMAKE_BINARY_DIR}/staging/kcoreaddons/src/ )
+IF(NOT QT5_BUILD)
+    include_directories( ${CMAKE_SOURCE_DIR}/libqtmimetypes/include/QtMimeTypes )
+endif()
+include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/jobs )
+include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io )
+include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/text )
+include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/kernel )
+include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/randomness )
+include_directories( ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src/ )
 
 if (KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
    set(KDECORE_NO_KDE3SUPPORT TRUE)
@@ -177,6 +172,7 @@ set(kdecore_LIB_SRCS
    kernel/kauthorized.cpp
    kernel/kglobal.cpp
    kernel/kcomponentdata.cpp
+   kernel/kcmdlineargs.cpp
    kernel/kstandarddirs.cpp
    kernel/ktoolinvocation.cpp
    services/kmimetypefactory.cpp
@@ -252,24 +248,12 @@ target_link_libraries(kdecore
   LINK_PUBLIC
     ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons
   LINK_PRIVATE
-    QtMimeTypes ${QT_QTXML_LIBRARY} ${kdecore_OPTIONAL_LIBS}
+    ${QtMimeTypes_LIBRARY} ${QT_QTXML_LIBRARY} ${kdecore_OPTIONAL_LIBS}
 )
 
 if(WINCE)
   target_link_libraries(kdecore ${WCECOMPAT_LIBRARIES} Ceshell.lib)
 endif(WINCE)
-
-set(SYS_INOTIFY_H_FOUND 0)
-if(SYS_INOTIFY_H_FOUND)
-   macro_log_feature(FAM_FOUND "FAM" "File alteration notification support via a separate service" "http://oss.sgi.com/projects/fam" FALSE "" "You have file alteration notification support built into your kernel, however you might consider installing FAM as it also supports NFS.")
-else(SYS_INOTIFY_H_FOUND)
-   macro_log_feature(FAM_FOUND "FAM" "File alteration notification support via a separate service" "http://oss.sgi.com/projects/fam" FALSE "" "Provides file alteration notification facilities using a separate service.")
-endif(SYS_INOTIFY_H_FOUND)
-
-if(FAM_FOUND)
-   include_directories(${FAM_INCLUDE_DIR})
-   target_link_libraries(kdecore ${FAM_LIBRARIES})
-endif(FAM_FOUND)
 
 if(WIN32)
   set(kdecore_LINK_INTERFACE_LIBRARIES  ${QT_QTDBUS_LIBRARY} ${QT_QTCORE_LIBRARY} ${KDEWIN_LIBRARIES})
@@ -346,6 +330,7 @@ install( FILES
    config/kdesktopfile.h
    config/ksharedconfig.h
    config/kcoreconfigskeleton.h
+   config/kconfiggroup_kurl.h
    date/kcalendarsystem.h
    date/kdatetime.h
    date/klocalizeddate.h
@@ -360,6 +345,7 @@ install( FILES
    kernel/kauthorized.h
    kernel/kglobal.h
    kernel/kcomponentdata.h
+   kernel/kcmdlineargs.h
    kernel/kstandarddirs.h
    kernel/ktoolinvocation.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel

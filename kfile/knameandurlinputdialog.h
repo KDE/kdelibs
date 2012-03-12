@@ -26,6 +26,7 @@
 class KLineEdit;
 class KUrlRequester;
 class KNameAndUrlInputDialogPrivate;
+class QUrl;
 
 /**
  * Dialog to ask for a name (e.g. filename) and a URL
@@ -43,7 +44,7 @@ public:
      * @param startDir start directory for the URL requester (optional)
      * @param parent parent widget
      */
-    KNameAndUrlInputDialog(const QString& nameLabel, const QString& urlLabel, const KUrl& startDir, QWidget *parent);
+    KNameAndUrlInputDialog(const QString& nameLabel, const QString& urlLabel, const QUrl& startDir, QWidget *parent);
 
     /**
      * Destructor.
@@ -57,7 +58,7 @@ public:
     /**
      * Pre-fill the URL requester.
      */
-    void setSuggestedUrl(const KUrl& url);
+    void setSuggestedUrl(const QUrl& url);
 
     /**
      * @return the name the user entered
@@ -68,7 +69,7 @@ public:
      * @return the URL the user entered
      * Empty if the dialog was cancelled.
      */
-    KUrl url() const;
+    QUrl url() const;
 
 private:
     Q_PRIVATE_SLOT(d, void _k_slotNameTextChanged(const QString&))

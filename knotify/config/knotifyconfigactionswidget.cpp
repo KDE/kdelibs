@@ -31,7 +31,7 @@ KNotifyConfigActionsWidget::KNotifyConfigActionsWidget( QWidget * parent )
 	//Show sounds directory by default
 	QStringList soundDirs = KGlobal::dirs()->resourceDirs( "sound" );
 	if ( !soundDirs.isEmpty() )
-		m_ui.Sound_select->setStartDir( KUrl( soundDirs.last() ) );
+            m_ui.Sound_select->setStartDir(QUrl::fromLocalFile(soundDirs.last()));
 
 	m_ui.Sound_play->setIcon(KIcon("media-playback-start"));
 	m_ui.Sound_check->setIcon(KIcon("media-playback-start"));
@@ -75,10 +75,10 @@ void KNotifyConfigActionsWidget::setConfigElement( KNotifyConfigElement * config
 	m_ui.Taskbar_check->setChecked( actions.contains("Taskbar") );
 	m_ui.KTTS_check->setChecked( actions.contains("KTTS") );
 
-	m_ui.Sound_select->setUrl( KUrl( config->readEntry( "Sound" , true ) ) );
-	m_ui.Logfile_select->setUrl( KUrl( config->readEntry( "Logfile" , true ) ) );
+	m_ui.Sound_select->setUrl(QUrl(config->readEntry("Sound", true)));
+	m_ui.Logfile_select->setUrl(QUrl(config->readEntry("Logfile", true)));
 	m_ui.Execute_select->setUrl(QUrl::fromLocalFile(config->readEntry("Execute")));
-	m_ui.KTTS_select->setText( config->readEntry( "KTTS"  )  );
+	m_ui.KTTS_select->setText(config->readEntry("KTTS"));
 	if(m_ui.KTTS_select->text() == QLatin1String("%e"))
 		m_ui.KTTS_combo->setCurrentIndex(1);
 	else if(m_ui.KTTS_select->text() == QLatin1String("%m") || m_ui.KTTS_select->text() == QLatin1String("%s"))
@@ -125,16 +125,15 @@ void KNotifyConfigActionsWidget::save( KNotifyConfigElement * config )
 
 void KNotifyConfigActionsWidget::slotPlay(  )
 {
-	KUrl soundURL = m_ui.Sound_select->url();
-	if ( soundURL.isRelative() )
-	{
-		QString soundString = soundURL.toLocalFile();
-		// we need a way to get the application name in order to ba able to do this :
-		/*QString search = QString("%1/sounds/%2").arg(config->appname).arg(soundFile);
-		search = KGlobal::mainComponent().dirs()->findResource("data", search);
-		if ( search.isEmpty() )*/
-		soundURL = KUrl::fromPath( KStandardDirs::locate( "sound", soundString ) );
-	}
+    QUrl soundURL = m_ui.Sound_select->url();
+    if (soundURL.isRelative()) {
+        const QString soundString = soundURL.toLocalFile();
+        // we need a way to get the application name in order to ba able to do this :
+        /*QString search = QString("%1/sounds/%2").arg(config->appname).arg(soundFile);
+          search = KGlobal::mainComponent().dirs()->findResource("data", search);
+          if ( search.isEmpty() )*/
+        soundURL = QUrl::fromLocalFile(KStandardDirs::locate("sound", soundString));
+    }
 #ifndef KDE_NO_PHONON
 	Phonon::MediaObject* media = Phonon::createPlayer( Phonon::NotificationCategory, soundURL );
 	media->play();

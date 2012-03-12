@@ -1,5 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 2006, 2010 David Faure <faure@kde.org>
+   Copyright (C) 2012 Mario Bensi <mbensi@ipsquad.net>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -17,11 +18,10 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <config-compression.h>
-
 #include "karchivetest.h"
 #include <ktar.h>
 #include <kzip.h>
+#include <k7zip.h>
 
 #include <QtTest/QtTest>
 #include <QtCore/QFileInfo>
@@ -323,7 +323,7 @@ void KArchiveTest::testCreateTar()
     }
 
     // NOTE The only .tar test, cleanup here
-    QFile::remove(fileName);
+    //QFile::remove(fileName);
 }
 
 /**
@@ -425,7 +425,7 @@ void KArchiveTest::testUncompress()
     KFilterDev filterDev(fileName);
     QByteArray buffer;
     buffer.resize(8*1024);
-    qDebug() << "buffer.size()=" << buffer.size();
+    //qDebug() << "buffer.size()=" << buffer.size();
     QVERIFY(filterDev.open(QIODevice::ReadOnly));
 
     qint64 totalSize = 0;
@@ -547,17 +547,75 @@ void KArchiveTest::testTarMaxLength()
     QCOMPARE( listing[  3], QString("mode=100644 user=testu group=testg path=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0000000101 type=file size=3") );
     QCOMPARE( listing[  4], QString("mode=100644 user=testu group=testg path=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0000000102 type=file size=3") );
 
-    // TODO:
-    // ################################################# BUG! ###########################
-    // There seems to be a bug (which is in kde3 too), we miss 512 and 513.
-    // But note that tar tvzf says "skipping next header" (and it skips 511),
-    // so the bug is probably during writing...
-    QCOMPARE( listing.count(), 414 ); // TODO investigate 514 - 98
+    QCOMPARE( listing.count(), 416 );
 
     QVERIFY( tar.close() );
 
     // NOTE Cleanup here
     QFile::remove( fileName );
+}
+
+void KArchiveTest::testTarGlobalHeader()
+{
+    KTar tar( QString::fromLatin1(KDESRCDIR) + QLatin1String( "global_header_test.tar.bz2" ) );
+    QVERIFY2(tar.open( QIODevice::ReadOnly ), "global_header_test.tar.bz2");
+
+    const KArchiveDirectory* dir = tar.directory();
+    QVERIFY( dir != 0 );
+
+    const QStringList listing = recursiveListEntries( dir, "", WithUserGroup );
+
+    QCOMPARE( listing[  0], QString("mode=40775 user=root group=root path=Test type=dir") );
+    QCOMPARE( listing[  1], QString("mode=664 user=root group=root path=Test/test.txt type=file size=0") );
+
+    QCOMPARE( listing.count(), 2 );
+
+    QVERIFY( tar.close() );
+}
+
+
+void KArchiveTest::testTarPrefix()
+{
+    KTar tar( QString::fromLatin1(KDESRCDIR) + QLatin1String( "tar_prefix_test.tar.bz2" ) );
+    QVERIFY( tar.open( QIODevice::ReadOnly ) );
+
+    const KArchiveDirectory* dir = tar.directory();
+    QVERIFY( dir != 0 );
+
+    const QStringList listing = recursiveListEntries( dir, "", WithUserGroup );
+
+    QCOMPARE( listing[  0], QString("mode=40775 user=root group=root path=Test type=dir") );
+    QCOMPARE( listing[  1], QString("mode=40775 user=root group=root path=Test/qt-jambi-qtjambi-4_7 type=dir") );
+    QCOMPARE( listing[  2], QString("mode=40775 user=root group=root path=Test/qt-jambi-qtjambi-4_7/examples type=dir") );
+    QCOMPARE( listing[  3], QString("mode=40775 user=root group=root path=Test/qt-jambi-qtjambi-4_7/examples/generator type=dir") );
+    QCOMPARE( listing[  4], QString("mode=40775 user=root group=root path=Test/qt-jambi-qtjambi-4_7/examples/generator/trolltech_original type=dir") );
+    QCOMPARE( listing[  5], QString("mode=40775 user=root group=root path=Test/qt-jambi-qtjambi-4_7/examples/generator/trolltech_original/java type=dir") );
+    QCOMPARE( listing[  6], QString("mode=40775 user=root group=root path=Test/qt-jambi-qtjambi-4_7/examples/generator/trolltech_original/java/com type=dir") );
+    QCOMPARE( listing[  7], QString("mode=40775 user=root group=root path=Test/qt-jambi-qtjambi-4_7/examples/generator/trolltech_original/java/com/trolltech type=dir") );
+    QCOMPARE( listing[  8], QString("mode=40775 user=root group=root path=Test/qt-jambi-qtjambi-4_7/examples/generator/trolltech_original/java/com/trolltech/examples type=dir") );
+    QCOMPARE( listing[  9], QString("mode=664 user=root group=root path=Test/qt-jambi-qtjambi-4_7/examples/generator/trolltech_original/java/com/trolltech/examples/GeneratorExample.html type=file size=43086") );
+
+    QCOMPARE( listing.count(), 10 );
+
+    QVERIFY( tar.close() );
+}
+
+void KArchiveTest::testTarDirectoryForgotten()
+{
+    KTar tar( QString::fromLatin1(KDESRCDIR) + QLatin1String( "tar_directory_forgotten.tar.bz2" ) );
+    QVERIFY( tar.open( QIODevice::ReadOnly ) );
+
+    const KArchiveDirectory* dir = tar.directory();
+    QVERIFY( dir != 0 );
+
+    const QStringList listing = recursiveListEntries( dir, "", WithUserGroup );
+
+    QVERIFY( listing[9].contains("trolltech/examples/generator") );
+    QVERIFY( listing[10].contains("trolltech/examples/generator/GeneratorExample.html") );
+
+    QCOMPARE( listing.count(), 11 );
+
+    QVERIFY( tar.close() );
 }
 
 ///
@@ -823,3 +881,203 @@ void KArchiveTest::cleanupTestCase()
     QFile::remove("test3_symlink");
 #endif
 }
+
+
+///
+
+#if HAVE_XZ_SUPPORT
+
+/**
+ * Prepares dataset for archive filter tests
+ */
+void KArchiveTest::setup7ZipData()
+{
+    QTest::addColumn<QString>("fileName");
+    QTest::newRow(".7z") << "karchivetest.7z";
+}
+
+/**
+ * @dataProvider testCreate7Zip_data
+ */
+void KArchiveTest::testCreate7Zip()
+{
+    QFETCH(QString, fileName);
+
+    QBENCHMARK {
+
+    K7Zip k7zip(fileName);
+    QVERIFY(k7zip.open(QIODevice::WriteOnly));
+
+    writeTestFilesToArchive(&k7zip);
+
+    QVERIFY(k7zip.close());
+
+    QFileInfo fileInfo(QFile::encodeName(fileName));
+    QVERIFY(fileInfo.exists());
+    //qDebug() << "fileInfo.size()" << fileInfo.size();
+    // We can't check for an exact size because of the addLocalFile, whose data is system-dependent
+    QVERIFY(fileInfo.size() > 400);
+
+    }
+}
+
+/**
+ * @dataProvider setupData
+ */
+void KArchiveTest::testRead7Zip() // testCreate7Zip must have been run first.
+{
+    QFETCH( QString, fileName );
+
+    QBENCHMARK {
+
+    K7Zip k7zip( fileName );
+
+    QVERIFY( k7zip.open( QIODevice::ReadOnly ) );
+
+    const KArchiveDirectory* dir = k7zip.directory();
+    QVERIFY( dir != 0 );
+    const QStringList listing = recursiveListEntries( dir, "", 0 );
+
+    QFileInfo localFileData("test3");
+
+#ifndef Q_WS_WIN
+    QCOMPARE( listing.count(), 15 );
+#else
+    QCOMPARE( listing.count(), 14 );
+#endif
+    QCOMPARE( listing[ 0], QString("mode=40755 path=aaaemptydir type=dir") );
+    QCOMPARE( listing[ 1], QString("mode=40777 path=dir type=dir") );
+    QCOMPARE( listing[ 2], QString("mode=40777 path=dir/subdir type=dir") );
+    QCOMPARE( listing[ 3], QString("mode=100644 path=dir/subdir/mediumfile2 type=file size=100") );
+    QCOMPARE( listing[ 4], QString("mode=100644 path=empty type=file size=0") );
+    QCOMPARE( listing[ 5], QString("mode=100644 path=hugefile type=file size=20000") );
+    QCOMPARE( listing[ 6], QString("mode=100644 path=mediumfile type=file size=100") );
+    QCOMPARE( listing[ 7], QString("mode=40777 path=my type=dir") );
+    QCOMPARE( listing[ 8], QString("mode=40777 path=my/dir type=dir") );
+    QCOMPARE( listing[ 9], QString("mode=100644 path=my/dir/test3 type=file size=29") );
+    QCOMPARE( listing[10], QString("mode=100440 path=test1 type=file size=5") );
+    QCOMPARE( listing[11], QString("mode=100644 path=test2 type=file size=8") );
+    QCOMPARE( listing[12], QString("mode=40777 path=z type=dir"));
+    // This one was added with addLocalFile, so ignore mode/user/group.
+    QString str = listing[13];
+    str.replace(QRegExp("mode.*path"), "path" );
+    QCOMPARE( str, QString("path=z/test3 type=file size=13") );
+#ifndef Q_OS_WIN
+    str = listing[14];
+    str.replace(QRegExp("mode.*path"), "path" );
+    QCOMPARE( str, QString("path=z/test3_symlink type=file size=0 symlink=test3") );
+#endif
+
+    QVERIFY( k7zip.close() );
+
+    }
+}
+
+/**
+ * @dataProvider setupData
+ */
+void KArchiveTest::test7ZipFileData()
+{
+    QFETCH(QString, fileName);
+
+    // testCreate7Zip must have been run first.
+    K7Zip k7zip(fileName);
+    QVERIFY(k7zip.open(QIODevice::ReadOnly));
+
+    testFileData(&k7zip);
+
+    QVERIFY(k7zip.close());
+}
+
+/**
+ * @dataProvider setupData
+ */
+void KArchiveTest::test7ZipCopyTo()
+{
+    QFETCH(QString, fileName);
+
+    // testCreateTar must have been run first.
+    K7Zip k7zip(fileName);
+    QVERIFY(k7zip.open(QIODevice::ReadOnly));
+
+    testCopyTo(&k7zip);
+
+    QVERIFY(k7zip.close());
+}
+
+/**
+ * @dataProvider setupData
+ */
+void KArchiveTest::test7ZipReadWrite()
+{
+    QFETCH(QString, fileName);
+
+    // testCreate7zip must have been run first.
+    K7Zip k7zip(fileName);
+    QVERIFY(k7zip.open(QIODevice::ReadWrite));
+
+    testReadWrite(&k7zip);
+    testFileData(&k7zip);
+
+    QVERIFY(k7zip.close());
+
+    // Reopen it and check it
+    {
+        K7Zip k7zip(fileName);
+        QVERIFY(k7zip.open(QIODevice::ReadOnly));
+        testFileData( &k7zip );
+        const KArchiveDirectory* dir = k7zip.directory();
+        const KArchiveEntry* e = dir->entry("newfile");
+        QVERIFY(e && e->isFile());
+        const KArchiveFile* f = (KArchiveFile*)e;
+        QCOMPARE(f->data().size(), 8);
+    }
+
+    // NOTE This is the last test for this dataset. so cleanup here
+    QFile::remove(fileName);
+}
+
+/**
+ * @dataProvider test7ZipMaxLength_data
+ */
+void KArchiveTest::test7ZipMaxLength()
+{
+    QFETCH( QString, fileName );
+
+    K7Zip k7zip( fileName );
+
+    QVERIFY( k7zip.open( QIODevice::WriteOnly ) );
+
+    // Generate long filenames of each possible length bigger than 98...
+    // Also exceed 512 byte block size limit to see how well the ././@LongLink
+    // implementation fares
+    for (int i = 98; i < 514 ; i++ )
+    {
+      QString str, num;
+      str.fill( 'a', i-10 );
+      num.setNum( i );
+      num = num.rightJustified( 10, '0' );
+      k7zip.writeFile( str+num, "testu", "testg", "hum", 3 );
+    }
+    // Result of this test : works perfectly now (failed at 482 formerly and
+    // before that at 154).
+    QVERIFY( k7zip.close() );
+
+    QVERIFY( k7zip.open( QIODevice::ReadOnly ) );
+
+    const KArchiveDirectory* dir = k7zip.directory();
+    QVERIFY( dir != 0 );
+    const QStringList listing = recursiveListEntries( dir, "", 0 );
+
+    QCOMPARE( listing[  0], QString("mode=100644 path=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0000000098 type=file size=3") );
+    QCOMPARE( listing[  3], QString("mode=100644 path=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0000000101 type=file size=3") );
+    QCOMPARE( listing[  4], QString("mode=100644 path=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0000000102 type=file size=3") );
+
+    QCOMPARE( listing.count(), 416 );
+
+    QVERIFY( k7zip.close() );
+
+    // NOTE Cleanup here
+    QFile::remove( fileName );
+}
+#endif

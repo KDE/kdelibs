@@ -26,7 +26,7 @@
 #include "kconfigbackend.h"
 #include "bufferfragment_p.h"
 #include "kconfigdata.h"
-#include <ksavefile.h>
+#include <qsavefile.h>
 #include <kde_file.h>
 #include "kstandarddirs.h"
 
@@ -260,7 +260,7 @@ next_line:
     return fileOptionImmutable ? ParseImmutable : ParseOk;
 }
 
-void KConfigIniBackend::writeEntries(const QByteArray& locale, QFile& file,
+void KConfigIniBackend::writeEntries(const QByteArray& locale, QIODevice& file,
                                      const KEntryMap& map, bool defaultGroup, bool &firstEntry)
 {
     QByteArray currentGroup;
@@ -347,7 +347,7 @@ void KConfigIniBackend::writeEntries(const QByteArray& locale, QFile& file,
     }
 }
 
-void KConfigIniBackend::writeEntries(const QByteArray& locale, QFile& file, const KEntryMap& map)
+void KConfigIniBackend::writeEntries(const QByteArray& locale, QIODevice& file, const KEntryMap& map)
 {
     bool firstEntry = true;
 
@@ -426,26 +426,17 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
     }
 
     if (createNew) {
-        KSaveFile file(filePath());
-        if (!file.open()) {
+        QSaveFile file(filePath());
+        if (!file.open(QIODevice::WriteOnly)) {
             return false;
         }
-
-        file.setPermissions(fileMode);
 
         file.setTextModeEnabled(true); // to get eol translation
         writeEntries(locale, file, writeMap);
 
-        if (!file.flush()) {
-            // Couldn't write. Disk full?
-            kWarning() << "Couldn't write" << filePath() << ". Disk full?";
-            file.abort();
-            return false;
-        }
-
         if (!file.size() && (fileMode == (QFile::ReadUser | QFile::WriteUser))) {
             // File is empty and doesn't have special permissions: delete it.
-            file.abort();
+            file.cancelWriting();
 
             if (fi.exists()) {
                 // also remove the old file in case it existed. this can happen
@@ -456,7 +447,13 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
             }
         } else {
             // Normal case: Close the file
-            return file.finalize();
+            if (file.commit()) {
+                QFile::setPermissions(filePath(), fileMode);
+                return true;
+            }
+            // Couldn't write. Disk full?
+            kWarning() << "Couldn't write" << filePath() << ". Disk full?";
+            return false;
         }
     } else {
         // Open existing file. *DON'T* create it if it suddenly does not exist!

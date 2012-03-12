@@ -61,14 +61,6 @@ bool OpticalDrive::eject()
 
     QString path = m_device->udi();
 
-    // check if the device is mounted and call umount if needed
-    if (m_device->isMounted())
-    {
-        QDBusMessage msg = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, path, UD2_DBUS_INTERFACE_FILESYSTEM, "Unmount");
-        msg << QVariantMap();   // options, unused now
-        c.call(msg, QDBus::NoBlock);
-    }
-
     QDBusMessage msg = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, path, UD2_DBUS_INTERFACE_DRIVE, "Eject");
     msg << QVariantMap();
     return c.callWithCallback(msg, this, SLOT(slotDBusReply(const QDBusMessage &)), SLOT(slotDBusError(const QDBusError &)));

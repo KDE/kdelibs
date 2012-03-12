@@ -73,6 +73,9 @@ void ConfigDialog::init(KConfig *config)
 	    */
     connect(d->ui, SIGNAL(configChanged()),
             this, SLOT(slotConfigChanged()));
+    
+    connect(d->ui, SIGNAL(configChanged()),
+            this, SIGNAL(configChanged()));
 }
 
 void ConfigDialog::slotOk()
@@ -89,6 +92,11 @@ void ConfigDialog::slotApply()
 void ConfigDialog::setLanguage( const QString &language )
 {
     d->ui->setLanguage( language );
+}
+
+QString ConfigDialog::language() const
+{
+    return d->ui->language();
 }
 
 #include "moc_configdialog.cpp"

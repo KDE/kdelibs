@@ -334,33 +334,40 @@ struct RangeLessThan
     }
 };
 
-static QItemSelection stableNormalizeSelection(QItemSelection selection)
+static QItemSelection stableNormalizeSelection(const QItemSelection &selection)
 {
     if (selection.size() <= 1)
         return selection;
 
-    QList<QItemSelectionRange>::iterator it = selection.begin();
+    QItemSelection::const_iterator it = selection.begin();
+    const QItemSelection::const_iterator end = selection.end();
 
-    Q_ASSERT(it != selection.end());
-    QList<QItemSelectionRange>::iterator scout = it + 1;
-    while (scout != selection.end()) {
-        Q_ASSERT(it != selection.end());
+    Q_ASSERT(it != end);
+    QItemSelection::const_iterator scout = it + 1;
+
+    QItemSelection result;
+    while (scout != end) {
+        Q_ASSERT(it != end);
         int bottom = it->bottom();
-        while (scout != selection.end() && it->parent() == scout->parent() && bottom + 1 == scout->top()) {
+        while (scout != end && it->parent() == scout->parent() && bottom + 1 == scout->top()) {
             bottom = scout->bottom();
-            scout = selection.erase(scout);
+            ++scout;
         }
         if (bottom != it->bottom()) {
             const QModelIndex topLeft = it->topLeft();
-            *it = QItemSelectionRange(topLeft, topLeft.sibling(bottom, it->right()));
+            result << QItemSelectionRange(topLeft, topLeft.sibling(bottom, it->right()));
         }
         Q_ASSERT(it != scout);
-        if (scout == selection.end())
+        if (scout == end)
             break;
+        if (it + 1 == scout)
+            result << *it;
         it = scout;
         ++scout;
+        if (scout == end)
+            result << *it;
     }
-    return selection;
+    return result;
 }
 
 QItemSelection kNormalizeSelection(QItemSelection selection)

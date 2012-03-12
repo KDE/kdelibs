@@ -25,9 +25,9 @@
 #define KPROPERTIESDIALOG_H
 
 #include <QtCore/QString>
+#include <QUrl>
 
 #include <kdemacros.h>
-#include <kurl.h>
 #include <kfileitem.h>
 #include <kpagedialog.h>
 
@@ -102,19 +102,20 @@ public:
    * non-file-manager applications, where you have a KUrl rather than a
    * KFileItem or KFileItemList.
    *
-   * @param _url the URL whose properties should be displayed
+   * @param url the URL whose properties should be displayed
    * @param parent is the parent of the dialog widget.
    * @param name is the internal name.
    *
    * IMPORTANT: This constructor, together with exec(), leads to a grave
    * display bug (due to KIO::stat() being run before the dialog has all the
    * necessary information). Do not use this combination for now.
-   * TODO: Check if the above is still true with Qt4.
+   * TODO: Check if the above is still true with Qt4/Qt5, and if so
+   * make the initialization asynchronous.
    * For local files with a known mimetype, simply create a KFileItem and pass
    * it to the other constructor.
    */
-  explicit KPropertiesDialog( const KUrl& _url,
-                              QWidget* parent = 0 );
+  explicit KPropertiesDialog(const QUrl& url,
+                             QWidget* parent = 0);
 
   /**
    * Creates a properties dialog for a new .desktop file (whose name
@@ -128,9 +129,9 @@ public:
    * @param parent is the parent of the dialog widget.
    * @param name is the internal name.
    */
-  KPropertiesDialog( const KUrl& _tempUrl, const KUrl& _currentDir,
-                     const QString& _defaultName,
-                     QWidget* parent = 0 );
+  KPropertiesDialog(const QUrl& _tempUrl, const QUrl& _currentDir,
+                    const QString& _defaultName,
+                    QWidget* parent = 0);
 
   /**
    * Creates an empty properties dialog (for applications that want use
@@ -170,7 +171,7 @@ public:
    *
    * @return true on successful dialog displaying (can be false on win32).
    */
-  static bool showDialog(const KUrl& _url, QWidget* parent = 0,
+  static bool showDialog(const QUrl& _url, QWidget* parent = 0,
                          bool modal = true);
 
   /**
@@ -200,14 +201,19 @@ public:
    */
   void insertPlugin (KPropertiesDialogPlugin *plugin);
 
-  /**
-   * The URL of the file that has its properties being displayed.
-   * This is only valid if the KPropertiesDialog was created/shown
-   * for one file or URL.
-   *
-   * @return a parsed URL.
-   */
-  KUrl kurl() const;
+    /**
+     * @deprecated since 5.0, use url()
+     */
+    KIO_DEPRECATED QUrl kurl() const { return url(); }
+
+    /**
+     * The URL of the file that has its properties being displayed.
+     * This is only valid if the KPropertiesDialog was created/shown
+     * for one file or URL.
+     *
+     * @return the single URL.
+     */
+    QUrl url() const;
 
   /**
    * @return the file item for which the dialog is shown
@@ -230,7 +236,7 @@ public:
    *
    * @return the current directory or QString()
    */
-  KUrl currentDir() const;
+  QUrl currentDir() const;
 
   /**
    * If the dialog is being built from a template, this method
@@ -244,9 +250,9 @@ public:
    * Updates the item URL (either called by rename or because
    * a global apps/mimelnk desktop file is being saved)
    * Can only be called if the dialog applies to a single file or URL.
-   * @param _newUrl the new URL
+   * @param newUrl the new URL
    */
-  void updateUrl( const KUrl& _newUrl );
+  void updateUrl(const QUrl& newUrl);
 
   /**
    * Renames the item to the specified name. This can only be called if
@@ -319,7 +325,7 @@ Q_SIGNALS:
    * The receiver may change @p newUrl to point to an alternative
    * save location.
    */
-  void saveAs(const KUrl &oldUrl, KUrl &newUrl);
+    void saveAs(const QUrl &oldUrl, QUrl &newUrl);
 
 Q_SIGNALS:
   void leaveModality();

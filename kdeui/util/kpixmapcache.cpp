@@ -39,7 +39,7 @@
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <klockfile.h>
-#include <ksavefile.h>
+#include <qsavefile.h>
 #ifndef _WIN32_WCE
 #include <QtSvg/QSvgRenderer>
 #endif
@@ -1166,7 +1166,7 @@ bool KPixmapCache::recreateCacheFiles()
     d->mEnabled = false;
 
     // Create index file
-    KSaveFile indexfile(d->mIndexFile);
+    QSaveFile indexfile(d->mIndexFile);
     if (!indexfile.open(QIODevice::WriteOnly)) {
         kError() << "Couldn't create index file" << d->mIndexFile;
         return false;
@@ -1183,7 +1183,7 @@ bool KPixmapCache::recreateCacheFiles()
     indexfile.write(reinterpret_cast<char*>(&indexHeader), sizeof indexHeader);
 
     // Create data file
-    KSaveFile datafile(d->mDataFile);
+    QSaveFile datafile(d->mDataFile);
     if (!datafile.open(QIODevice::WriteOnly)) {
         kError() << "Couldn't create data file" << d->mDataFile;
         return false;
@@ -1203,10 +1203,9 @@ bool KPixmapCache::recreateCacheFiles()
     d->mIndexRootOffset = d->mHeaderSize;
 
     // Close the files and mmap them (if mmapping is used)
-    indexfile.close();
-    datafile.close();
-    indexfile.finalize();
-    datafile.finalize();
+    if (!indexfile.commit() || !datafile.commit()) {
+        return false;
+    }
 
     d->mEnabled = true;
     d->mmapFiles();

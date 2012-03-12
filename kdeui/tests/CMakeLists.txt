@@ -54,6 +54,7 @@ KDEUI_UNIT_TESTS(
   ktimecomboboxtest
   kdatecomboboxtest
   kdatetimeedittest
+  kconfigdialog_unittest
 )
 
 if(NOT QT5_BUILD)

@@ -37,7 +37,6 @@ KDECORE_UNIT_TESTS(
  kentrymaptest
  ksharedptrtest
  kdatetimetest
- ksavefiletest
  kdesktopfiletest
  kautostarttest
  ksycocadicttest

@@ -163,8 +163,17 @@ public:
 
     /**
      * Sets the XML gui client.
+     * @deprecated use addXMLGUIClient.
      */
-    void setXMLGUIClient( KXMLGUIClient *client );
+#ifndef KDE_NO_DEPRECATED
+    KDEUI_DEPRECATED void setXMLGUIClient( KXMLGUIClient *client );
+#endif
+
+    /**
+     * Adds an XML gui client that uses this toolbar
+     * @since 4.8.1
+     */
+    void addXMLGUIClient( KXMLGUIClient *client );
 
     /**
      * Load state from an XML @param element, called by KXMLGUIBuilder.

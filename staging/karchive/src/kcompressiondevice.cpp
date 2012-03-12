@@ -397,3 +397,8 @@ void KCompressionDevice::setSkipHeaders()
 {
     d->bSkipHeaders = true;
 }
+
+KFilterBase* KCompressionDevice::filterBase()
+{
+    return d->filter;
+}

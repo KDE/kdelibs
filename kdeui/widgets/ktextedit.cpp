@@ -310,11 +310,11 @@ void KTextEdit::showSpellConfigDialog(const QString &configFileName,
     Sonnet::ConfigDialog dialog(&config, this);
     if (!d->spellCheckingLanguage.isEmpty())
         dialog.setLanguage(d->spellCheckingLanguage);
-    connect(&dialog, SIGNAL(languageChanged(QString)),
-            this, SLOT(setSpellCheckingLanguage(QString)));
     if (!windowIcon.isEmpty())
         dialog.setWindowIcon(KIcon(windowIcon));
-    dialog.exec();
+    if(dialog.exec()) {
+        setSpellCheckingLanguage( dialog.language() );
+    }
 }
 
 bool KTextEdit::event(QEvent* ev)

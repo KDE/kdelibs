@@ -443,6 +443,8 @@ public:
 
    * @return The current decoded path. This does not include the query. Can
    *         be QString() if no path is set.
+   *
+   * @deprecated Use QUrl::path() or QUrlPathInfo::path(flags)
    */
   QString path( AdjustPathOption trailing = LeaveTrailingSlash ) const;
 

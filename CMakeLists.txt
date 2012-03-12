@@ -57,13 +57,14 @@ if (NOT QT5_BUILD)
       ${CMAKE_BINARY_DIR}/libinqt5/src/
   )
   set(kwindowsystem_LIBRARY kwindowsystem)
+  add_subdirectory( libqtmimetypes )
+  set(QtMimeTypes_LIBRARY QtMimeTypes)
 endif()
-add_subdirectory( libqtmimetypes )
 add_subdirectory( libkdeqt5staging )
-  include_directories(
-      ${CMAKE_SOURCE_DIR}/libkdeqt5staging/src/
-      ${CMAKE_BINARY_DIR}/libkdeqt5staging/src/
-  )
+include_directories(
+    ${CMAKE_SOURCE_DIR}/libkdeqt5staging/src/
+    ${CMAKE_BINARY_DIR}/libkdeqt5staging/src/
+)
 add_subdirectory( tier1 )
 
 set(CMAKE_AUTOMOC ON)
@@ -201,8 +202,8 @@ if(NOT WINCE)
 endif(NOT WINCE)
 
 set(KDE4_KCONFIG_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore/config
-                          ${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/io # for kurl.h
-                          ${CMAKE_BINARY_DIR}/staging/kcoreaddons/src
+                          ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io # for kurl.h
+                          ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src
    )
 # kdecore depends on Qt and kcoreaddons (need only headers from kjs)
 set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
@@ -220,16 +221,21 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/kdecore/text
                           ${CMAKE_SOURCE_DIR}/kdecore/util
                           ${CMAKE_SOURCE_DIR}/kdecore/sonnet
-                          ${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/io
-                          ${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/kernel
-                          ${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/jobs
-                          ${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/text
-                          ${CMAKE_BINARY_DIR}/staging/kcoreaddons/src
-                          ${CMAKE_SOURCE_DIR}/libqtmimetypes/include/QtMimeTypes
+                          ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io
+                          ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/kernel
+                          ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/jobs
+                          ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/text
+                          ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src
                           ${QT_INCLUDES}
                           ${_KDE4_PLATFORM_INCLUDE_DIRS})
 
-include_directories(${CMAKE_SOURCE_DIR}/staging/kcoreaddons/src/kernel) # For QLocalizedString
+if (NOT QT5_BUILD)
+  list(APPEND KDE4_KDECORE_INCLUDES
+                          ${CMAKE_SOURCE_DIR}/libqtmimetypes/include/QtMimeTypes
+  )
+endif()
+
+include_directories(${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/kernel) # For QLocalizedString
 
 # kdeui depends on kdecore
 set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdeui

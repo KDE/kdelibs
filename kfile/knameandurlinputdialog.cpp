@@ -25,6 +25,7 @@
 #include <kprotocolmanager.h>
 #include <QFormLayout>
 #include <QLabel>
+#include <qurlpathinfo.h>
 
 class KNameAndUrlInputDialogPrivate
 {
@@ -49,7 +50,7 @@ public:
     KNameAndUrlInputDialog* q;
 };
 
-KNameAndUrlInputDialog::KNameAndUrlInputDialog(const QString& nameLabel, const QString& urlLabel, const KUrl& startDir, QWidget *parent)
+KNameAndUrlInputDialog::KNameAndUrlInputDialog(const QString& nameLabel, const QString& urlLabel, const QUrl& startDir, QWidget *parent)
     : KDialog(parent), d(new KNameAndUrlInputDialogPrivate(this))
 {
     setButtons(Ok | Cancel);
@@ -88,13 +89,13 @@ KNameAndUrlInputDialog::~KNameAndUrlInputDialog()
     delete d;
 }
 
-KUrl KNameAndUrlInputDialog::url() const
+QUrl KNameAndUrlInputDialog::url() const
 {
     if (result() == QDialog::Accepted) {
         return d->m_urlRequester->url();
     }
     else
-        return KUrl();
+        return QUrl();
 }
 
 QString KNameAndUrlInputDialog::name() const
@@ -117,11 +118,12 @@ void KNameAndUrlInputDialogPrivate::_k_slotURLTextChanged(const QString&)
         // use URL as default value for the filename
         // (we copy only its filename if protocol supports listing,
         // but for HTTP we don't want tons of index.html links)
-        KUrl url(m_urlRequester->url());
-        if (KProtocolManager::supportsListing(url) && !url.fileName().isEmpty())
-            m_leName->setText(url.fileName());
+        QUrl url(m_urlRequester->url());
+        QUrlPathInfo pathInfo(url);
+        if (KProtocolManager::supportsListing(url) && !pathInfo.fileName().isEmpty())
+            m_leName->setText(pathInfo.fileName());
         else
-            m_leName->setText(url.url());
+            m_leName->setText(url.toString());
         m_fileNameEdited = false; // slotNameTextChanged set it to true erroneously
     }
     q->enableButtonOk(!m_leName->text().isEmpty() && !m_urlRequester->url().isEmpty());
@@ -133,7 +135,7 @@ void KNameAndUrlInputDialog::setSuggestedName(const QString& name)
     d->m_urlRequester->setFocus();
 }
 
-void KNameAndUrlInputDialog::setSuggestedUrl(const KUrl& url)
+void KNameAndUrlInputDialog::setSuggestedUrl(const QUrl& url)
 {
     d->m_urlRequester->setUrl(url);
 }

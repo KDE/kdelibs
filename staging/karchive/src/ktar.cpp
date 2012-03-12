@@ -129,7 +129,7 @@ bool KTar::createDevice(QIODevice::OpenMode mode)
         if (!KArchive::createDevice(mode))
             return false;
         if (!d->mimetype.isEmpty()) {
-            // Create a compression filter on top of the KSaveFile device that KArchive created.
+            // Create a compression filter on top of the QSaveFile device that KArchive created.
             //qDebug() << "creating KFilterDev for" << d->mimetype;
             KCompressionDevice::CompressionType type = KFilterDev::compressionTypeForMimeType(d->mimetype);
             KCompressionDevice* compressionDevice = new KCompressionDevice(device(), true, type);
@@ -180,7 +180,9 @@ void KTar::setOrigFileName( const QByteArray & fileName ) {
 qint64 KTar::KTarPrivate::readRawHeader( char *buffer ) {
   // Read header
   qint64 n = q->device()->read( buffer, 0x200 );
-  if ( n == 0x200 && buffer[0] != 0 ) {
+  // we need to test if there is a prefix value because the file name can be null
+  // and the prefix can have a value and in this case we don't reset n.
+  if ( n == 0x200 && (buffer[0] != 0 || buffer[0x159] != 0) ) {
     // Make sure this is actually a tar header
     if (strncmp(buffer + 257, "ustar", 5)) {
       // The magic isn't there (broken/old tars), but maybe a correct checksum?
@@ -235,7 +237,7 @@ bool KTar::KTarPrivate::readLonglink(char *buffer,QByteArray &longlink) {
   }/*wend*/
   // jump over the rest
   const int skip = 0x200 - (n % 0x200);
-  if (skip < 0x200) {
+  if (skip <= 0x200) {
     if (dev->read(buffer,skip) != skip)
         return false;
   }
@@ -352,11 +354,17 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
         if (n == 0x200)
         {
             bool isdir = false;
+            bool isGlobalHeader = false;
 
             if ( name.endsWith( QLatin1Char( '/' ) ) )
             {
                 isdir = true;
                 name.truncate( name.length() - 1 );
+            }
+
+            QByteArray prefix = QByteArray(buffer + 0x159, 155);
+            if (prefix[0] != '\0') {
+                name = (QString::fromLatin1(prefix.constData()) + QLatin1Char('/') +  name);
             }
 
             int pos = name.lastIndexOf( QLatin1Char('/') );
@@ -383,7 +391,11 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
             char typeflag = buffer[ 0x9c ];
             // '0' for files, '1' hard link, '2' symlink, '5' for directory
             // (and 'L' for longlink fileNames, 'K' for longlink symlink targets)
-            // and 'D' for GNU tar extension DUMPDIR
+            // 'D' for GNU tar extension DUMPDIR, 'x' for Extended header referring
+            // to the next file in the archive and 'g' for Global extended header
+            if ( typeflag == 'g' )
+                isGlobalHeader = true;
+
             if ( typeflag == '5' )
                 isdir = true;
 
@@ -441,6 +453,9 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
                 }
             }
 
+            if (isGlobalHeader)
+                continue;
+
             if ( pos == -1 )
             {
                 if (nm == QLatin1String(".")) { // special case
@@ -487,8 +502,8 @@ bool KTar::KTarPrivate::writeBackTempFile( const QString & fileName )
         QLatin1String(application_lzma) == mimetype || QLatin1String(application_xz) == mimetype)
         forced = true;
 
-    // #### TODO this should use KSaveFile to avoid problems on disk full
-    // (KArchive uses KSaveFile by default, but the temp-uncompressed-file trick
+    // #### TODO this should use QSaveFile to avoid problems on disk full
+    // (KArchive uses QSaveFile by default, but the temp-uncompressed-file trick
     // circumvents that).
 
     KFilterDev dev(fileName);

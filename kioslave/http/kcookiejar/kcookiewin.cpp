@@ -43,6 +43,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QPushButton>
 #include <QRadioButton>
 #include <QShortcut>
+#include <QUrl>
 
 #include <kicon.h>
 #include <kwindowsystem.h>
