@@ -134,6 +134,7 @@ QStringList Manager::allDevices()
 
         Q_FOREACH(const QDBusObjectPath &path, reply.value().keys()) {
             const QString udi = path.path();
+            //qDebug() << "Adding device" << udi;
             if (udi == UD2_DBUS_PATH_MANAGER || udi == UD2_UDI_DISKS_PREFIX || udi.startsWith(UD2_DBUS_PATH_JOBS))
                 continue;
             m_deviceCache.append(udi);
@@ -229,9 +230,11 @@ void Manager::slotDeviceChanged(const QDBusObjectPath &opath)
 #endif
 
 
-void Manager::slotInterfacesAdded(const QDBusObjectPath &object_path, QVariantMapMap &interfaces_and_properties)
+void Manager::slotInterfacesAdded(const QDBusObjectPath &object_path, const QVariantMapMap &interfaces_and_properties)
 {
     const QString udi = object_path.path();
+
+    qDebug() << udi << "has new interfaces:" << interfaces_and_properties.keys();
 
     // new device, we don't know it yet
     if (!m_deviceCache.contains(udi)) {
@@ -247,6 +250,8 @@ void Manager::slotInterfacesAdded(const QDBusObjectPath &object_path, QVariantMa
 void Manager::slotInterfacesRemoved(const QDBusObjectPath &object_path, const QStringList &interfaces)
 {
     const QString udi = object_path.path();
+
+    qDebug() << udi << "lost interfaces:" << interfaces;
 
     if (interfaces.isEmpty() && !udi.isEmpty())
         Q_EMIT deviceRemoved(udi);
