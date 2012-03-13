@@ -43,9 +43,9 @@
 //#include "qplatformdefs.h"
 #include "qdebug.h"
 #include "qtemporaryfile.h"
-#include "qfsfileengine.h"
 #include "qtemporaryfile.h"
 #include "qsavefile_p.h"
+#include <qfileinfo.h>
 
 #include <stdio.h>
 #include <errno.h>
