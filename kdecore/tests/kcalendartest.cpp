@@ -2530,7 +2530,7 @@ void KCalendarTest::testKLocalizedDate()
     QCOMPARE(KLocalizedDate().isValid(),       false);
     QCOMPARE(testKLocalizedDate.isNull(),      testQDate.isNull());
     QCOMPARE(testKLocalizedDate.date(),        testQDate);
-    QCOMPARE(testKLocalizedDate.toJulianDay(), testQDate.toJulianDay());
+    QCOMPARE((qint64)testKLocalizedDate.toJulianDay(), (qint64)testQDate.toJulianDay());
     testKLocalizedDate.setDate(QDate(2010, 6, 1));
     testQDate.setDate(2010, 6, 1);
     QCOMPARE(testKLocalizedDate.date(),        testQDate);

@@ -51,15 +51,15 @@ KDECORE_UNIT_TESTS(
  qcoreapptest
  kdebug_qcoreapptest
  kmimetype_nomimetypes
+    kcalendartest
+    kservicetest
+    kglobaltest
 )
 
 if(NOT QT5_BUILD)
   KDECORE_UNIT_TESTS(
-    kcalendartest
     kstandarddirstest
-    kservicetest
     kconfigtest
-    kglobaltest
   )
 endif()
 
