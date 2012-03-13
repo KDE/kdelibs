@@ -88,9 +88,7 @@ target_link_libraries(kdatetimeformattertest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LI
 
 ########### kmimetypetest ###############
 
-if(NOT QT5_BUILD)
-  set(kmimetypetest_SRCS kmimetypetest.cpp)
-  kde4_add_unit_test(kmimetypetest TESTNAME kdecore-kmimetypetest ${kmimetypetest_SRCS})
-  target_link_libraries(kmimetypetest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
-endif()
+set(kmimetypetest_SRCS kmimetypetest.cpp)
+kde4_add_unit_test(kmimetypetest TESTNAME kdecore-kmimetypetest ${kmimetypetest_SRCS})
+target_link_libraries(kmimetypetest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
 
