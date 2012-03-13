@@ -250,7 +250,6 @@ set(kdeui_LIB_SRCS
  widgets/kmultitabbar.cpp
  widgets/knuminput.cpp
  widgets/kpixmapregionselectorwidget.cpp
- widgets/kpushbutton.cpp
  widgets/kratingpainter.cpp
  widgets/kratingwidget.cpp
  widgets/krestrictedline.cpp
@@ -615,7 +614,6 @@ install( FILES
  widgets/kmultitabbar.h
  widgets/knuminput.h
  widgets/kpixmapregionselectorwidget.h
- widgets/kpushbutton.h
  widgets/kratingpainter.h
  widgets/kratingwidget.h
  widgets/krestrictedline.h

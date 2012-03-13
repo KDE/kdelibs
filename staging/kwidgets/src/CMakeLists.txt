@@ -10,6 +10,7 @@ set(kwidgets_LIB_SRCS
   widgets/kvbox.cpp
   widgets/kseparator.cpp
   widgets/kurllabel.cpp
+  widgets/kpushbutton.cpp
   utils/kstandardguiitem.cpp
   utils/kguiitem.cpp
 )
@@ -24,6 +25,7 @@ target_link_libraries(kwidgets
   ${QT_QTSVG_LIBRARY}
   ${KDE4_KDECORE_LIBS}
   kdeguiaddons
+  kauth
 )
 
 set_target_properties(kwidgets PROPERTIES VERSION ${ECM_VERSION_STRING}
@@ -43,6 +45,7 @@ install(FILES
   widgets/khbox.h
   widgets/kvbox.h
   widgets/kseparator.h
+  widgets/kpushbutton.h
   widgets/kurllabel.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
