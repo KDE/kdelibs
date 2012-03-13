@@ -19,7 +19,7 @@
 #ifndef kstandardguiitem_h
 #define kstandardguiitem_h
 
-#include <kdeui_export.h>
+#include <kwidgets_export.h>
 
 #include <QtCore/QPair>
 
@@ -30,7 +30,7 @@ class QString;
 /**
  * @short Provides a set of standardized KGuiItems.
  *
- * The various KDEUI_EXPORT methods returns standardized @ref KGuiItem's
+ * The various KWIDGETS_EXPORT methods returns standardized @ref KGuiItem's
  * conforming to the KDE UI Standards. Use them instead of creating
  * your own.
  *
@@ -58,139 +58,139 @@ namespace KStandardGuiItem
      *
      * @param id the identifier to search for
      */
-    KDEUI_EXPORT KGuiItem guiItem( StandardItem id );
+    KWIDGETS_EXPORT KGuiItem guiItem( StandardItem id );
 
     /**
      * Returns the name of the gui item for the given identifier @param id.
      *
      * @param id the identifier to search for
      */
-    KDEUI_EXPORT QString standardItem( StandardItem id );
+    KWIDGETS_EXPORT QString standardItem( StandardItem id );
 
     /**
      * Returns the 'Ok' gui item.
      */
-    KDEUI_EXPORT KGuiItem ok();
+    KWIDGETS_EXPORT KGuiItem ok();
 
     /**
      * Returns the 'Cancel' gui item.
      */
-    KDEUI_EXPORT KGuiItem cancel();
+    KWIDGETS_EXPORT KGuiItem cancel();
 
     /**
      * Returns the 'Yes' gui item.
      */
-    KDEUI_EXPORT KGuiItem yes();
+    KWIDGETS_EXPORT KGuiItem yes();
 
     /**
      * Returns the 'No' gui item.
      */
-    KDEUI_EXPORT KGuiItem no();
+    KWIDGETS_EXPORT KGuiItem no();
 
     /**
      * Returns the 'Insert' gui item.
      */
-    KDEUI_EXPORT KGuiItem insert();
+    KWIDGETS_EXPORT KGuiItem insert();
 
     /**
      * Returns the 'Discard' gui item.
      */
-    KDEUI_EXPORT KGuiItem discard();
+    KWIDGETS_EXPORT KGuiItem discard();
 
     /**
      * Returns the 'Save' gui item.
      */
-    KDEUI_EXPORT KGuiItem save();
+    KWIDGETS_EXPORT KGuiItem save();
 
     /**
      * Returns the 'Help' gui item.
      */
-    KDEUI_EXPORT KGuiItem help();
+    KWIDGETS_EXPORT KGuiItem help();
 
     /**
      * Returns the 'DontSave' gui item.
      */
-    KDEUI_EXPORT KGuiItem dontSave();
+    KWIDGETS_EXPORT KGuiItem dontSave();
 
     /**
      * Returns the 'SaveAs' gui item.
      */
-    KDEUI_EXPORT KGuiItem saveAs();
+    KWIDGETS_EXPORT KGuiItem saveAs();
 
     /**
      * Returns the 'Apply' gui item.
      */
-    KDEUI_EXPORT KGuiItem apply();
+    KWIDGETS_EXPORT KGuiItem apply();
 
     /**
      * Returns the 'Clear' gui item.
      */
-    KDEUI_EXPORT KGuiItem clear();
+    KWIDGETS_EXPORT KGuiItem clear();
 
     /**
      * Returns the 'Defaults' gui item.
      */
-    KDEUI_EXPORT KGuiItem defaults();
+    KWIDGETS_EXPORT KGuiItem defaults();
 
     /**
      * Returns the 'Close' gui item.
      */
-    KDEUI_EXPORT KGuiItem close();
+    KWIDGETS_EXPORT KGuiItem close();
 
     /**
      * Returns the 'CloseWindow' gui item.
      * @since 4.3
      */
-    KDEUI_EXPORT KGuiItem closeWindow();
+    KWIDGETS_EXPORT KGuiItem closeWindow();
 
     /**
      * Returns the 'CloseDocument' gui item.
      * @since 4.3
      */
-    KDEUI_EXPORT KGuiItem closeDocument();
+    KWIDGETS_EXPORT KGuiItem closeDocument();
 
     /**
      * Returns the 'Print' gui item.
      */
-    KDEUI_EXPORT KGuiItem print();
+    KWIDGETS_EXPORT KGuiItem print();
 
     /**
      * Returns the 'Properties' gui item.
      */
-    KDEUI_EXPORT KGuiItem properties();
+    KWIDGETS_EXPORT KGuiItem properties();
 
     /**
      * Returns the 'Reset' gui item.
      */
-    KDEUI_EXPORT KGuiItem reset();
+    KWIDGETS_EXPORT KGuiItem reset();
 
     /**
      * Returns the 'Overwrite' gui item.
      */
-    KDEUI_EXPORT KGuiItem overwrite();
+    KWIDGETS_EXPORT KGuiItem overwrite();
 
     /**
      * Returns a KGuiItem suiting for cases where code or functionality
      * runs under root privileges. Used in conjunction with KConfig Modules.
      */
-    KDEUI_EXPORT KGuiItem adminMode();
+    KWIDGETS_EXPORT KGuiItem adminMode();
 
     /**
      * Returns the 'Continue' gui item. The short name is due to 'continue' being a
      * reserved word in the C++ language.
      */
-    KDEUI_EXPORT KGuiItem cont();
+    KWIDGETS_EXPORT KGuiItem cont();
 
     /**
      * Returns the 'Delete' gui item. The short name is due to 'delete' being a
      * reserved word in the C++ language.
      */
-    KDEUI_EXPORT KGuiItem del();
+    KWIDGETS_EXPORT KGuiItem del();
 
     /**
      * Returns the 'Open' gui item.
      */
-    KDEUI_EXPORT KGuiItem open();
+    KWIDGETS_EXPORT KGuiItem open();
 
     /**
      * Returns the 'Back' gui item, like Konqueror's back button.
@@ -202,7 +202,7 @@ namespace KStandardGuiItem
      * GUI item if you also want the 'forward' item. Those two are available
      * in the separate backAndForward() method.
      */
-    KDEUI_EXPORT KGuiItem back( BidiMode useBidi = IgnoreRTL );
+    KWIDGETS_EXPORT KGuiItem back( BidiMode useBidi = IgnoreRTL );
 
     /**
      * Returns the 'Forward' gui item, like Konqueror's forward
@@ -214,12 +214,12 @@ namespace KStandardGuiItem
      * GUI item if you also want the 'back' item. Those two are available
      * in the separate backAndForward() method.
      */
-    KDEUI_EXPORT KGuiItem forward( BidiMode useBidi = IgnoreRTL );
+    KWIDGETS_EXPORT KGuiItem forward( BidiMode useBidi = IgnoreRTL );
 
     /**
      * Returns the 'Configure' gui item.
      */
-    KDEUI_EXPORT KGuiItem configure();
+    KWIDGETS_EXPORT KGuiItem configure();
 
     /**
      * Return both a back and a forward gui item. This function always returns
@@ -227,37 +227,37 @@ namespace KStandardGuiItem
      * locales. If you have a reason for wanting the 'Western' back/forward
      * buttons, please use the back() and forward() items instead.
      */
-    KDEUI_EXPORT QPair<KGuiItem, KGuiItem> backAndForward();
+    KWIDGETS_EXPORT QPair<KGuiItem, KGuiItem> backAndForward();
 
     /**
      * Returns the 'Quit' gui item.
      */
-    KDEUI_EXPORT KGuiItem quit();
+    KWIDGETS_EXPORT KGuiItem quit();
 
     /**
      * Returns the 'Find' gui item.
      */
-    KDEUI_EXPORT KGuiItem find();
+    KWIDGETS_EXPORT KGuiItem find();
 
     /**
      * Returns the 'Stop' gui item.
      */
-    KDEUI_EXPORT KGuiItem stop();
+    KWIDGETS_EXPORT KGuiItem stop();
 
     /**
      * Returns the 'Add' gui item.
      */
-    KDEUI_EXPORT KGuiItem add();
+    KWIDGETS_EXPORT KGuiItem add();
 
     /**
      * Returns the 'Remove' gui item.
      */
-    KDEUI_EXPORT KGuiItem remove();
+    KWIDGETS_EXPORT KGuiItem remove();
 
     /**
      * Returns the 'Test' gui item.
      */
-    KDEUI_EXPORT KGuiItem test();
+    KWIDGETS_EXPORT KGuiItem test();
 
 }
 

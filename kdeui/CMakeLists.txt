@@ -199,7 +199,6 @@ set(kdeui_LIB_SRCS
  util/kpassivepopupmessagehandler.cpp
  util/kpixmapcache.cpp
  util/kpixmapprovider.cpp
- util/kstandardguiitem.cpp
  util/kwordwrap.cpp
  util/kxerrorhandler.cpp
  util/kxmessages.cpp
@@ -238,7 +237,6 @@ set(kdeui_LIB_SRCS
  widgets/kmultitabbar.cpp
  widgets/knuminput.cpp
  widgets/kpixmapregionselectorwidget.cpp
- widgets/kpushbutton.cpp
  widgets/kratingpainter.cpp
  widgets/kratingwidget.cpp
  widgets/krestrictedline.cpp
@@ -557,7 +555,6 @@ install( FILES
  util/kpixmapcache.h
  util/kpixmapprovider.h
  util/kimagecache.h
- util/kstandardguiitem.h
  util/kwallet.h
  util/kwordwrap.h
  util/kxerrorhandler.h
@@ -596,7 +593,6 @@ install( FILES
  widgets/kmultitabbar.h
  widgets/knuminput.h
  widgets/kpixmapregionselectorwidget.h
- widgets/kpushbutton.h
  widgets/kratingpainter.h
  widgets/kratingwidget.h
  widgets/krestrictedline.h

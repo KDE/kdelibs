@@ -2,6 +2,7 @@ include_directories(
  ${KDE4_KDECORE_INCLUDES}
  ${CMAKE_CURRENT_SOURCE_DIR}/icons
  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
+ ${CMAKE_CURRENT_SOURCE_DIR}/utils
  ${DBUSMENUQT_INCLUDE_DIR}
  ${CMAKE_BINARY_DIR}/staging/kwidgets/src
 )
@@ -11,6 +12,7 @@ set(kwidgets_LIB_SRCS
  widgets/kvbox.cpp
  widgets/kseparator.cpp
  widgets/kurllabel.cpp
+ widgets/kpushbutton.cpp
  dialogs/kdialog.cpp
  icons/kicon.cpp
  icons/kiconloader.cpp
@@ -18,6 +20,7 @@ set(kwidgets_LIB_SRCS
  icons/kiconengine.cpp
  icons/kiconeffect.cpp
  utils/kguiitem.cpp
+ utils/kstandardguiitem.cpp
 )
 
 add_library(kwidgets ${LIBRARY_TYPE} ${kwidgets_LIB_SRCS})
@@ -34,12 +37,14 @@ install( FILES
  widgets/kvbox.h
  widgets/kseparator.h
  widgets/kurllabel.h
+ widgets/kpushbutton.h
  dialogs/kdialog.h
  icons/kicon.h
  icons/kiconloader.h
  icons/kicontheme.h
  icons/kiconeffect.h
  utils/kguiitem.h
+ utils/kstandardguiitem.h
 
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

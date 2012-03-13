@@ -43,7 +43,7 @@ namespace KAuth {
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KDEUI_EXPORT KPushButton : public QPushButton
+class KWIDGETS_EXPORT KPushButton : public QPushButton
 {
     Q_OBJECT
     Q_PROPERTY(bool isDragEnabled READ isDragEnabled WRITE setDragEnabled)
