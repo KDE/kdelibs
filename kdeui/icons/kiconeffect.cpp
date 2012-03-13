@@ -44,7 +44,6 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <ksharedconfig.h>
-#include <kglobalsettings.h>
 #include <kcolorscheme.h>
 #include <kicontheme.h>
 #include <kconfiggroup.h>
