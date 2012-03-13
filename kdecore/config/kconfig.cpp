@@ -36,7 +36,6 @@
 #include <kcomponentdata.h>
 #include <qprocess.h>
 #include <kaboutdata.h>
-#include <kdebug.h>
 
 #include <qstandardpaths.h>
 #include <qbytearray.h>

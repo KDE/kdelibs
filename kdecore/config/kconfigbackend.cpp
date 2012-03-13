@@ -32,7 +32,6 @@
 #include "kconfig.h"
 #include "kconfigini_p.h"
 #include "kconfigdata.h"
-#include "kdebug.h"
 #include "kconfigbackend.moc"
 
 typedef KSharedPtr<KConfigBackend> BackendPtr;
