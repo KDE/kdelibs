@@ -39,7 +39,7 @@
 template class KDE_EXPORT QMap<QString, QString>;
 #endif
 
-class KUrl;
+class QUrl;
 class KJobTrackerInterface;
 
 class QTime;
@@ -371,7 +371,7 @@ namespace KIO
    *              Ignored if 0
    * @return the pixmap of the URL, can be a default icon if not found
    */
-  KIO_EXPORT QPixmap pixmapForUrl( const KUrl & _url, mode_t _mode = 0, KIconLoader::Group _group = KIconLoader::Desktop,
+  KIO_EXPORT QPixmap pixmapForUrl( const QUrl & _url, mode_t _mode = 0, KIconLoader::Group _group = KIconLoader::Desktop,
                                    int _force_size = 0, int _state = 0, QString * _path = 0 );
 
   KIO_EXPORT KJobTrackerInterface *getJobTracker();

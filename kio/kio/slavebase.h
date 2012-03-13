@@ -220,7 +220,7 @@ public:
      * Call this to signal a redirection
      * The job will take care of going to that url.
      */
-    void redirection( const KUrl &_url );
+    void redirection( const QUrl &_url );
 
     /**
      * Tell that we will only get an error page here.
@@ -292,7 +292,7 @@ public:
      * data() or finished() signal.
      */
     void setMetaData(const QString &key, const QString &value);
-    
+
     /**
      * Queries for the existence of a certain config/meta-data entry
      * send by the application to the slave.

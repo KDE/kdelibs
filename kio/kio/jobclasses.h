@@ -540,7 +540,7 @@ namespace KIO {
 
     private:
         Q_PRIVATE_SLOT(d_func(), void slotStatEntry( const KIO::UDSEntry & entry ))
-        Q_PRIVATE_SLOT(d_func(), void slotRedirection( const KUrl &url))
+        Q_PRIVATE_SLOT(d_func(), void slotRedirection(const QUrl &url))
         Q_DECLARE_PRIVATE(StatJob)
     };
 
@@ -698,7 +698,7 @@ namespace KIO {
 
 
     protected Q_SLOTS:
-        virtual void slotRedirection( const KUrl &url);
+        virtual void slotRedirection(const QUrl &url);
         virtual void slotFinished();
         virtual void slotData( const QByteArray &data);
         virtual void slotDataReq();
@@ -816,7 +816,7 @@ namespace KIO {
         void result( long id);
 
     protected Q_SLOTS:
-        virtual void slotRedirection( const KUrl &url);
+        virtual void slotRedirection(const QUrl &url);
         virtual void slotFinished();
         virtual void slotData( const QByteArray &data);
         virtual void slotMimetype( const QString &mimetype );
@@ -991,7 +991,7 @@ namespace KIO {
 
     private:
         Q_PRIVATE_SLOT(d_func(), void slotListEntries( const KIO::UDSEntryList& list ))
-        Q_PRIVATE_SLOT(d_func(), void slotRedirection( const KUrl &url ))
+        Q_PRIVATE_SLOT(d_func(), void slotRedirection(const QUrl &url))
         Q_PRIVATE_SLOT(d_func(), void gotEntries( KIO::Job * subjob, const KIO::UDSEntryList& list ))
         Q_DECLARE_PRIVATE(ListJob)
     };

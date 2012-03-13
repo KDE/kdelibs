@@ -574,7 +574,7 @@ void SlaveBase::speed( unsigned long _bytes_per_second )
     send( INF_SPEED, data );
 }
 
-void SlaveBase::redirection( const KUrl& _url )
+void SlaveBase::redirection( const QUrl& _url )
 {
     KIO_DATA << _url;
     send( INF_REDIRECTION, data );
@@ -974,7 +974,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
 {
     QDataStream stream( data );
 
-    KUrl url;
+    QUrl url;
     int i;
 
     switch( command ) {
@@ -1015,7 +1015,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         virtual_hook(AppConnectionMade, 0);
     } break;
     case CMD_SLAVE_HOLD: {
-        KUrl url;
+        QUrl url;
         QDataStream stream( data );
         stream >> url;
         d->onHoldUrl = url;
@@ -1102,7 +1102,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     } break;
     case CMD_RENAME: {
         qint8 iOverwrite;
-        KUrl url2;
+        QUrl url2;
         stream >> url >> url2 >> iOverwrite;
         JobFlags flags;
         if ( iOverwrite != 0 ) flags |= Overwrite;
@@ -1125,7 +1125,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_COPY: {
         int permissions;
         qint8 iOverwrite;
-        KUrl url2;
+        QUrl url2;
         stream >> url >> url2 >> permissions >> iOverwrite;
         JobFlags flags;
         if ( iOverwrite != 0 ) flags |= Overwrite;

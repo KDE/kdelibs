@@ -590,7 +590,7 @@ public:
         : SimpleJobPrivate(url, command, packedArgs)
         { }
     KUrl m_redirectionURL;
-    void slotRedirection(const KUrl &url);
+    void slotRedirection(const QUrl &url);
 
     /**
      * @internal
@@ -622,14 +622,14 @@ MkdirJob::~MkdirJob()
 void MkdirJobPrivate::start(Slave *slave)
 {
     Q_Q(MkdirJob);
-    q->connect( slave, SIGNAL(redirection(KUrl)),
-                SLOT(slotRedirection(KUrl)) );
+    q->connect(slave, SIGNAL(redirection(QUrl)),
+               SLOT(slotRedirection(QUrl)));
 
     SimpleJobPrivate::start(slave);
 }
 
 // Slave got a redirection request
-void MkdirJobPrivate::slotRedirection( const KUrl &url)
+void MkdirJobPrivate::slotRedirection(const QUrl &url)
 {
      Q_Q(MkdirJob);
      kDebug(7007) << url;
@@ -637,7 +637,11 @@ void MkdirJobPrivate::slotRedirection( const KUrl &url)
      {
          kWarning(7007) << "Redirection from" << m_url << "to" << url << "REJECTED!";
          q->setError( ERR_ACCESS_DENIED );
-         q->setErrorText( url.pathOrUrl() );
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+         q->setErrorText(url.toString());
+#else
+         q->setErrorText(url.toDisplayString());
+#endif
          return;
      }
      m_redirectionURL = url; // We'll remember that when the job finishes
@@ -766,7 +770,7 @@ public:
     bool m_bSource;
     short int m_details;
     void slotStatEntry( const KIO::UDSEntry & entry );
-    void slotRedirection( const KUrl &url);
+    void slotRedirection(const QUrl &url);
 
     /**
      * @internal
@@ -841,8 +845,8 @@ void StatJobPrivate::start(Slave *slave)
 
     q->connect( slave, SIGNAL(statEntry(KIO::UDSEntry)),
              SLOT(slotStatEntry(KIO::UDSEntry)) );
-    q->connect( slave, SIGNAL(redirection(KUrl)),
-             SLOT(slotRedirection(KUrl)) );
+    q->connect(slave, SIGNAL(redirection(QUrl)),
+               SLOT(slotRedirection(QUrl)));
 
     SimpleJobPrivate::start(slave);
 }
@@ -854,7 +858,7 @@ void StatJobPrivate::slotStatEntry( const KIO::UDSEntry & entry )
 }
 
 // Slave got a redirection request
-void StatJobPrivate::slotRedirection( const KUrl &url)
+void StatJobPrivate::slotRedirection(const QUrl &url)
 {
      Q_Q(StatJob);
      kDebug(7007) << m_url << "->" << url;
@@ -862,7 +866,11 @@ void StatJobPrivate::slotRedirection( const KUrl &url)
      {
        kWarning(7007) << "Redirection from " << m_url << " to " << url << " REJECTED!";
        q->setError( ERR_ACCESS_DENIED );
-       q->setErrorText( url.pathOrUrl() );
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+       q->setErrorText(url.toString());
+#else
+       q->setErrorText(url.toDisplayString());
+#endif
        return;
      }
      m_redirectionURL = url; // We'll remember that when the job finishes
@@ -987,7 +995,7 @@ void KIO::TransferJob::setTotalSize(KIO::filesize_t bytes)
 }
 
 // Slave got a redirection request
-void TransferJob::slotRedirection( const KUrl &url)
+void TransferJob::slotRedirection(const QUrl &url)
 {
     Q_D(TransferJob);
     kDebug(7007) << url;
@@ -1004,7 +1012,7 @@ void TransferJob::slotRedirection( const KUrl &url)
     {
        kDebug(7007) << "CYCLIC REDIRECTION!";
        setError( ERR_CYCLIC_LINK );
-       setErrorText( d->m_url.pathOrUrl() );
+       setErrorText(d->m_url.prettyUrl());
     }
     else
     {
@@ -1224,8 +1232,8 @@ void TransferJobPrivate::start(Slave *slave)
         q->connect( slave, SIGNAL(dataReq()),
                 SLOT(slotDataReq()) );
 
-    q->connect( slave, SIGNAL(redirection(KUrl)),
-             SLOT(slotRedirection(KUrl)) );
+    q->connect(slave, SIGNAL(redirection(QUrl)),
+               SLOT(slotRedirection(QUrl)));
 
     q->connect( slave, SIGNAL(mimeType(QString)),
              SLOT(slotMimetype(QString)) );
@@ -1417,7 +1425,7 @@ namespace KIO {
     };
 }
 
-static int isUrlPortBad(const KUrl& url)
+static int isUrlPortBad(const QUrl& url)
 {
     int _error = 0;
 
@@ -1524,7 +1532,7 @@ static int isUrlPortBad(const KUrl& url)
     return _error;
 }
 
-static KIO::PostErrorJob* precheckHttpPost( const KUrl& url, QIODevice* ioDevice, JobFlags flags )
+static KIO::PostErrorJob* precheckHttpPost(const QUrl& url, QIODevice* ioDevice, JobFlags flags)
 {
     // if request is not valid, return an invalid transfer job
     const int _error = isUrlPortBad(url);
@@ -1532,7 +1540,7 @@ static KIO::PostErrorJob* precheckHttpPost( const KUrl& url, QIODevice* ioDevice
     if (_error)
     {
         KIO_ARGS << (int)1 << url;
-        PostErrorJob * job = new PostErrorJob(_error, url.pathOrUrl(), packedArgs, ioDevice);
+        PostErrorJob * job = new PostErrorJob(_error, url.toString(), packedArgs, ioDevice);
         job->setUiDelegate(new JobUiDelegate());
         if (!(flags & HideProgressInfo)) {
             KIO::getJobTracker()->registerJob(job);
@@ -1544,7 +1552,7 @@ static KIO::PostErrorJob* precheckHttpPost( const KUrl& url, QIODevice* ioDevice
     return 0;
 }
 
-static KIO::PostErrorJob* precheckHttpPost( const KUrl& url, const QByteArray& postData, JobFlags flags )
+static KIO::PostErrorJob* precheckHttpPost(const QUrl& url, const QByteArray& postData, JobFlags flags)
 {
     // if request is not valid, return an invalid transfer job
     const int _error = isUrlPortBad(url);
@@ -1552,7 +1560,7 @@ static KIO::PostErrorJob* precheckHttpPost( const KUrl& url, const QByteArray& p
     if (_error)
     {
         KIO_ARGS << (int)1 << url;
-        PostErrorJob * job = new PostErrorJob(_error, url.pathOrUrl(), packedArgs, postData);
+        PostErrorJob * job = new PostErrorJob(_error, url.toString(), packedArgs, postData);
         job->setUiDelegate(new JobUiDelegate());
         if (!(flags & HideProgressInfo)) {
             KIO::getJobTracker()->registerJob(job);
@@ -2491,7 +2499,7 @@ public:
     virtual void start( Slave *slave );
 
     void slotListEntries( const KIO::UDSEntryList& list );
-    void slotRedirection( const KUrl &url );
+    void slotRedirection(const QUrl &url);
     void gotEntries( KIO::Job * subjob, const KIO::UDSEntryList& list );
 
     Q_DECLARE_PUBLIC(ListJob)
@@ -2619,7 +2627,7 @@ void ListJob::slotResult( KJob * job )
         emitResult();
 }
 
-void ListJobPrivate::slotRedirection( const KUrl & url )
+void ListJobPrivate::slotRedirection(const QUrl & url)
 {
     Q_Q(ListJob);
     if (!KAuthorized::authorizeUrlAction("redirect", m_url, url))
@@ -2713,8 +2721,8 @@ void ListJobPrivate::start(Slave *slave)
              SLOT(slotListEntries(KIO::UDSEntryList)));
     q->connect( slave, SIGNAL(totalSize(KIO::filesize_t)),
              SLOT(slotTotalSize(KIO::filesize_t)) );
-    q->connect( slave, SIGNAL(redirection(KUrl)),
-             SLOT(slotRedirection(KUrl)) );
+    q->connect( slave, SIGNAL(redirection(QUrl)),
+             SLOT(slotRedirection(QUrl)) );
 
     SimpleJobPrivate::start(slave);
 }
@@ -2876,7 +2884,7 @@ bool MultiGetJobPrivate::findCurrentEntry()
    }
 }
 
-void MultiGetJob::slotRedirection( const KUrl &url)
+void MultiGetJob::slotRedirection(const QUrl &url)
 {
   Q_D(MultiGetJob);
   if (!d->findCurrentEntry()) return; // Error
