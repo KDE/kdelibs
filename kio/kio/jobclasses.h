@@ -161,7 +161,7 @@ namespace KIO {
          * @return the following strings: caption, error + description,
          *         causes+solutions
          */
-        QStringList detailedErrorStrings(const KUrl *reqUrl = 0L,
+        QStringList detailedErrorStrings(const QUrl *reqUrl = 0L,
                                          int method = -1) const;
 
         /**
