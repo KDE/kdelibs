@@ -230,8 +230,9 @@ public:
     /**
      * The path to the desktop directory of the current user.
      * @return the user's desktop directory
+     * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::DesktopLocation).
      */
-    static QString desktopPath();
+    static KDEUI_DEPRECATED QString desktopPath();
 
     /**
      * The path to the autostart directory of the current user.
@@ -242,32 +243,37 @@ public:
     /**
      * The path where documents are stored of the current user.
      * @return the path of the document directory
+     * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation).
      */
-    static QString documentPath();
+    static KDEUI_DEPRECATED QString documentPath();
 
     /**
      * The path where music are stored of the current user.
      * @return the path of the music directory
+     * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::MusicLocation).
      */
-    static QString musicPath();
+    static KDEUI_DEPRECATED QString musicPath();
 
     /**
      * The path where videos are stored of the current user.
      * @return the path of the video directory
+     * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::MoviesLocation).
      */
-    static QString videosPath();
+    static KDEUI_DEPRECATED QString videosPath();
 
     /**
      * The path where download are stored of the current user.
      * @return the path of the download directory
+     * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::DownloadLocation).
      */
-    static QString downloadPath();
+    static KDEUI_DEPRECATED QString downloadPath();
 
     /**
      * The path where pictures are stored of the current user.
      * @return the path of the pictures directory
+     * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::PicturesLocation).
      */
-    static QString picturesPath();
+    static KDEUI_DEPRECATED QString picturesPath();
 
     /**
      * The default color to use for inactive titles.
