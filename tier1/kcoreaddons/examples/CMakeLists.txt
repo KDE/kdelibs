@@ -9,6 +9,8 @@ include_directories(
    ${CMAKE_CURRENT_BINARY_DIR}/../src
 )
 
+find_package(Qt5Transitional REQUIRED Gui)
+
 MACRO(KCOREADDONS_EXAMPLES)
        FOREACH(_testname ${ARGN})
                add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
