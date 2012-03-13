@@ -237,7 +237,7 @@ public:
      * The path to the autostart directory of the current user.
      * @return the path of the autostart directory
      */
-    static QString autostartPath();
+    //static QString autostartPath(); // Removed in KDE5, use XDG autostart paths
 
     /**
      * The path where documents are stored of the current user.

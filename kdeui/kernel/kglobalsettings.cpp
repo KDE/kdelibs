@@ -25,7 +25,6 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <kstandarddirs.h>
 #include <kprotocolinfo.h>
 #include <kcolorscheme.h>
 
@@ -625,7 +624,10 @@ QString KGlobalSettings::desktopPath()
     return path.isEmpty() ? QDir::homePath() : path;
 }
 
-// Autostart is not a XDG path, so we have our own code for it.
+// This was the KDE-specific autostart folder in KDEHOME.
+// KDE 5 : re-evaluate this, I'd say the xdg autostart spec supersedes this, and is sufficient
+// (since there's a GUI for creating the necessary desktop files)
+#if 0
 QString KGlobalSettings::autostartPath()
 {
     QString s_autostartPath;
@@ -638,6 +640,7 @@ QString KGlobalSettings::autostartPath()
     }
     return s_autostartPath;
 }
+#endif
 
 QString KGlobalSettings::documentPath()
 {
@@ -647,24 +650,8 @@ QString KGlobalSettings::documentPath()
 
 QString KGlobalSettings::downloadPath()
 {
-    // Qt 4.4.1 does not have DOWNLOAD, so we based on old code for now
-    QString downloadPath = QDir::homePath();
-#ifndef Q_WS_WIN
-    const QString xdgUserDirs = KGlobal::dirs()->localxdgconfdir() + QLatin1String( "user-dirs.dirs" );
-    if( QFile::exists( xdgUserDirs ) ) {
-        KConfig xdgUserConf( xdgUserDirs, KConfig::SimpleConfig );
-        KConfigGroup g( &xdgUserConf, "" );
-        downloadPath  = g.readPathEntry( "XDG_DOWNLOAD_DIR", downloadPath ).remove(  '"' );
-        if ( downloadPath.isEmpty() ) {
-            downloadPath = QDir::homePath();
-        }
-    }
-#endif
-    downloadPath = QDir::cleanPath( downloadPath );
-    if ( !downloadPath.endsWith( '/' ) ) {
-        downloadPath.append( QLatin1Char(  '/' ) );
-    }
-    return downloadPath;
+    QString path = QStandardPaths::writableLocation( QStandardPaths::DownloadLocation );
+    return path.isEmpty() ? QDir::homePath() : path;
 }
 
 QString KGlobalSettings::videosPath()
