@@ -359,7 +359,7 @@ void KConfigIniBackend::writeEntries(const QByteArray& locale, QIODevice& file, 
 }
 
 bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMap,
-                                    WriteOptions options, const KComponentData &data)
+                                    WriteOptions options)
 {
     Q_ASSERT(!filePath().isEmpty());
 

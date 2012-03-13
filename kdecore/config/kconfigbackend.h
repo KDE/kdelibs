@@ -58,13 +58,11 @@ public:
      * If no @p system is given, or the given @p system is unknown, this method tries
      * to determine the correct backend to use.
      *
-     * @param componentData the owning component
      * @param fileName      the absolute file name of the configuration file
      * @param system        the configuration system to use
      * @return a KConfigBackend object to be used with KConfig
      */
-    static KSharedPtr<KConfigBackend> create(const KComponentData& componentData,
-                                             const QString& fileName = QString(),
+    static KSharedPtr<KConfigBackend> create(const QString& fileName = QString(),
                                              const QString& system = QString());
 
     /**
@@ -123,12 +121,11 @@ public:
      * @param locale the locale to write entries for (if the backend supports localized entries)
      * @param entryMap the KEntryMap containing the config object's entries.
      * @param options @see WriteOptions
-     * @param data the component that requested the write
      *
      * @return @c true if the write was successful, @c false if writing the configuration failed
      */
     virtual bool writeConfig(const QByteArray& locale, KEntryMap& entryMap,
-                             WriteOptions options, const KComponentData &data) = 0;
+                             WriteOptions options) = 0;
 
     /**
      * If isWritable() returns false, writeConfig() will always fail.

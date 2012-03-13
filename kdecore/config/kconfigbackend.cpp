@@ -54,10 +54,8 @@ void KConfigBackend::registerMappings(const KEntryMap& /*entryMap*/)
 {
 }
 
-BackendPtr KConfigBackend::create(const KComponentData& componentData, const QString& file,
-                                  const QString& sys)
+BackendPtr KConfigBackend::create(const QString& file, const QString& sys)
 {
-    Q_UNUSED(componentData);
     //qDebug() << "creating a backend for file" << file << "with system" << sys;
     const QString system = (sys.isEmpty() ? Private::whatSystem(file) : sys);
     KConfigBackend* backend = 0;

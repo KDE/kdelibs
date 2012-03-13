@@ -80,12 +80,12 @@ KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::Op
 //    if (!mappingsRegistered) {
 //        KEntryMap tmp;
 //        if (!etc_kderc.isEmpty()) {
-//            KSharedPtr<KConfigBackend> backend = KConfigBackend::create(componentData, etc_kderc, QLatin1String("INI"));
+//            KSharedPtr<KConfigBackend> backend = KConfigBackend::create(etc_kderc, QLatin1String("INI"));
 //            backend->parseConfig( "en_US", tmp, KConfigBackend::ParseDefaults);
 //        }
 //        const QString kde4rc(QDir::home().filePath(".kde4rc"));
 //        if (KStandardDirs::checkAccess(kde4rc, R_OK)) {
-//            KSharedPtr<KConfigBackend> backend = KConfigBackend::create(componentData, kde4rc, QLatin1String("INI"));
+//            KSharedPtr<KConfigBackend> backend = KConfigBackend::create(kde4rc, QLatin1String("INI"));
 //            backend->parseConfig( "en_US", tmp, KConfigBackend::ParseOptions());
 //        }
 //        KConfigBackend::registerMappings(tmp);
@@ -265,7 +265,7 @@ KConfig::KConfig( const KComponentData& componentData, const QString& file, Open
 KConfig::KConfig(const QString& file, const QString& backend, const char* resourceType)
     : d_ptr(new KConfigPrivate(KGlobal::mainComponent(), SimpleConfig, resourceType))
 {
-    d_ptr->mBackend = KConfigBackend::create(d_ptr->componentData, file, backend);
+    d_ptr->mBackend = KConfigBackend::create(file, backend);
     d_ptr->bDynamicBackend = false;
     d_ptr->changeFileName(file, ""); // set the local file name
 
@@ -456,12 +456,12 @@ void KConfig::sync()
         d->bDirty = false; // will revert to true if a config write fails
 
         if (d->wantGlobals() && writeGlobals) {
-            KSharedPtr<KConfigBackend> tmp = KConfigBackend::create(componentData(), d->sGlobalFileName);
+            KSharedPtr<KConfigBackend> tmp = KConfigBackend::create(d->sGlobalFileName);
             if (d->configState == ReadWrite && !tmp->lock()) {
                 qWarning() << "couldn't lock global file";
                 return;
             }
-            if (!tmp->writeConfig(utf8Locale, d->entryMap, KConfigBackend::WriteGlobal, d->componentData)) {
+            if (!tmp->writeConfig(utf8Locale, d->entryMap, KConfigBackend::WriteGlobal)) {
                 d->bDirty = true;
                 // TODO KDE5: return false? (to tell the app that writing wasn't possible, e.g.
                 // config file is immutable or disk full)
@@ -472,7 +472,7 @@ void KConfig::sync()
         }
 
         if (writeLocals) {
-            if (!d->mBackend->writeConfig(utf8Locale, d->entryMap, KConfigBackend::WriteOptions(), d->componentData)) {
+            if (!d->mBackend->writeConfig(utf8Locale, d->entryMap, KConfigBackend::WriteOptions())) {
                 d->bDirty = true;
                 // TODO KDE5: return false? (to tell the app that writing wasn't possible, e.g.
                 // config file is immutable or disk full)
@@ -572,7 +572,7 @@ void KConfigPrivate::changeFileName(const QString& name, const char* type)
     bSuppressGlobal = (file == sGlobalFileName);
 
     if (bDynamicBackend || !mBackend) // allow dynamic changing of backend
-        mBackend = KConfigBackend::create(componentData, file);
+        mBackend = KConfigBackend::create(file);
     else
         mBackend->setFilePath(file);
 
@@ -628,7 +628,7 @@ void KConfigPrivate::parseGlobalFiles()
         if (file != sGlobalFileName)
             parseOpts |= KConfigBackend::ParseDefaults;
 
-        KSharedPtr<KConfigBackend> backend = KConfigBackend::create(componentData, file);
+        KSharedPtr<KConfigBackend> backend = KConfigBackend::create(file);
         if ( backend->parseConfig( utf8Locale, entryMap, parseOpts) == KConfigBackend::ParseImmutable)
             break;
     }
@@ -672,7 +672,7 @@ void KConfigPrivate::parseConfigFiles()
                     break;
                 }
             } else {
-                KSharedPtr<KConfigBackend> backend = KConfigBackend::create(componentData, file);
+                KSharedPtr<KConfigBackend> backend = KConfigBackend::create(file);
                 bFileImmutable = (backend->parseConfig(utf8Locale, entryMap,
                                         KConfigBackend::ParseDefaults|KConfigBackend::ParseExpansions)
                                   == KConfigBackend::ParseImmutable);

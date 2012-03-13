@@ -48,7 +48,7 @@ public:
                           ParseOptions options,
                           bool merging);
     bool writeConfig(const QByteArray& locale, KEntryMap& entryMap,
-                     WriteOptions options, const KComponentData &data);
+                     WriteOptions options);
 
     bool isWritable() const;
     QString nonWritableErrorMessage() const;
@@ -66,7 +66,7 @@ protected:
         KeyString = 1,
         ValueString = 2
     };
-    // Warning: this modifies data in-place. Other BufferFragment objects referencing the same buffer 
+    // Warning: this modifies data in-place. Other BufferFragment objects referencing the same buffer
     // fragment will get their data modified too.
     static void printableToString(BufferFragment* aString, const QFile& file, int line);
     static QByteArray stringToPrintable(const QByteArray& aString, StringType type);
