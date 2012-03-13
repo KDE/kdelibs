@@ -26,7 +26,8 @@
 #include <QtCore/QMap>
 #include <QtCore/QList>
 #include <QtCore/QStringList>
-#include <kurl.h>
+#include <QtCore/QUrl>
+#include <QtCore/QVariant> // Q_DECLARE_METATYPE
 
 class QDBusArgument;
 
@@ -63,7 +64,7 @@ class KIO_EXPORT AuthInfo
     KIO_EXPORT friend const QDBusArgument &operator>>(const QDBusArgument &argument, AuthInfo &a);
 
 public:
-    
+
    /**
     * Default constructor.
     */
@@ -77,7 +78,7 @@ public:
    /**
     * Destructor
     * @since 4.1
-    */ 
+    */
    ~AuthInfo();
 
    /**
@@ -107,7 +108,7 @@ public:
     * This setting is @em required except when prompting the
     * user for password.
     */
-   KUrl url;
+   QUrl url;
 
    /**
     * This is @em required for caching.
@@ -233,7 +234,7 @@ public:
 
    /**
     * Flags for extra fields
-    * @since 4.1 
+    * @since 4.1
     */
    enum FieldFlags
    {
@@ -243,9 +244,9 @@ public:
    };
 
    /**
-    * Set Extra Field Value. 
-    * Currently supported extra-fields: 
-    *    "domain" (QString), 
+    * Set Extra Field Value.
+    * Currently supported extra-fields:
+    *    "domain" (QString),
     *    "anonymous" (bool)
     * Setting it to an invalid QVariant() will disable the field.
     * Extra Fields are disabled by default.
@@ -262,7 +263,7 @@ public:
    /**
     * Get Extra Field Value
     * Check QVariant::isValid() to find out if the field exists.
-    * @since 4.1 
+    * @since 4.1
     */
    QVariant getExtraField(const QString &fieldName) const;
 
@@ -354,7 +355,7 @@ public:
    *        will be taken
    * @param mode the LookUpMode flags (ORed) for the query
    */
-  bool lookup( const KUrl& url, AutoLogin& login,
+  bool lookup( const QUrl& url, AutoLogin& login,
                bool userealnetrc = false,
                const QString &type = QString(),
                LookUpMode mode = LookUpMode(exactOnly) | defaultOnly );

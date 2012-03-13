@@ -5,9 +5,9 @@
 
 #include "authinfo.h"
 
-void output( const KUrl& u )
+void output( const QUrl& u )
 {
-    kDebug() << "Looking up auto login for: " << u.url();
+    kDebug() << "Looking up auto login for: " << u;
     KIO::NetRC::AutoLogin l;
     bool result = KIO::NetRC::self()->lookup( u, l, true );
     if ( !result )
@@ -50,13 +50,12 @@ int main(int argc, char **argv)
         args->usage();
     else
     {
-        KUrl u;
+        QUrl u;
         for( int i=0 ; i < count; i++ )
         {
-            u = args->arg(i);
-            if ( !u.isValid() )
-            {
-              kDebug() << u.url() << " is invalid! Ignoring...";
+            u = QUrl::fromUserInput(args->arg(i));
+            if (!u.isValid()) {
+              kDebug() << u << "is invalid! Ignoring...";
               continue;
             }
             output( u );
