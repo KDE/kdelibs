@@ -62,7 +62,7 @@ public:
     void setStatus(const QString& message, QNetworkReply::NetworkError);
     void putOnHold();
 
-    static bool isLocalRequest(const KUrl& url);
+    static bool isLocalRequest(const QUrl& url);
 
 protected:
     virtual qint64 readData(char *data, qint64 maxSize);
@@ -85,8 +85,6 @@ private:
     bool m_emitReadyReadOnMetaDataChange;
     QWeakPointer<KIO::SimpleJob> m_kioJob;
 };
-
-bool AccessManager_isLocalRequest(const KUrl&);
 
 }
 

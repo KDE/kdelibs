@@ -154,9 +154,9 @@ void AccessManagerReply::putOnHold()
     KIO::Scheduler::publishSlaveOnHold();
 }
 
-bool AccessManagerReply::isLocalRequest (const KUrl& url)
+bool AccessManagerReply::isLocalRequest(const QUrl& url)
 {
-    const QString scheme (url.scheme());
+    const QString scheme(url.scheme());
     return (KProtocolInfo::isKnownProtocol(scheme) &&
             KProtocolInfo::protocolClass(scheme).compare(QL1S(":local"), Qt::CaseInsensitive) == 0);
 }

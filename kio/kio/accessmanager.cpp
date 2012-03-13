@@ -94,7 +94,7 @@ class CookieJar::CookieJarPrivate
 {
 public:
   CookieJarPrivate()
-    : windowId((WId)-1), 
+    : windowId((WId)-1),
       isEnabled(true),
       isStorageDisabled(false)
   {}
@@ -225,7 +225,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     }
 
     KIO::SimpleJob *kioJob = 0;
-    const KUrl reqUrl (req.url());
+    const QUrl reqUrl(req.url());
 
     if (!d->externalContentAllowed &&
         !KDEPrivate::AccessManagerReply::isLocalRequest(reqUrl) &&
