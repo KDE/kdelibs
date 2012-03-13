@@ -42,7 +42,9 @@
 #include <qtemporaryfile.h>
 #include <kdesktopfile.h>
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QtConcurrent>
+#endif
 
 int initializeLang()
 {
