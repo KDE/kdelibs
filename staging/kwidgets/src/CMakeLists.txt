@@ -9,6 +9,8 @@ include_directories(
 set(kwidgets_LIB_SRCS
  widgets/khbox.cpp
  widgets/kvbox.cpp
+ widgets/kseparator.cpp
+ widgets/kurllabel.cpp
  dialogs/kdialog.cpp
  icons/kicon.cpp
  icons/kiconloader.cpp
@@ -30,6 +32,8 @@ install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_export.h
  widgets/khbox.h
  widgets/kvbox.h
+ widgets/kseparator.h
+ widgets/kurllabel.h
  dialogs/kdialog.h
  icons/kicon.h
  icons/kiconloader.h

@@ -20,7 +20,7 @@
 #ifndef KSEPARATOR_H
 #define KSEPARATOR_H
 
-#include <kdeui_export.h>
+#include <kwidgets_export.h>
 #include <QFrame>
 
 /**
@@ -31,7 +31,7 @@
  *
  * @author Michael Roth <mroth@wirlweb.de>
  */
-class KDEUI_EXPORT KSeparator : public QFrame
+class KWIDGETS_EXPORT KSeparator : public QFrame
 {
   Q_OBJECT
   Q_PROPERTY( Qt::Orientation orientation READ orientation WRITE setOrientation )

@@ -27,6 +27,7 @@ KDEUI_EXECUTABLE_TESTS(
   kdialogtest
   kiconloadertest
   kiconeffecttest
+  kseparatortest
 )
 
 KDEUI_UNIT_TESTS(
