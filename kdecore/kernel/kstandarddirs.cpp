@@ -1660,8 +1660,7 @@ QString KStandardDirs::saveLocation(const char *type,
     return fullPath;
 }
 
-// KDE5: make the method const
-QString KStandardDirs::relativeLocation(const char *type, const QString &absPath)
+QString KStandardDirs::relativeLocation(const char *type, const QString &absPath) const
 {
     QString fullPath = absPath;
     int i = absPath.lastIndexOf(QLatin1Char('/'));

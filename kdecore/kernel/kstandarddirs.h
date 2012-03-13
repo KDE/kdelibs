@@ -597,7 +597,7 @@ public:
      * will find @p absPath. If no such relative path exists, @p absPath
      * will be returned unchanged.
      */
-    QString relativeLocation(const char *type, const QString &absPath);
+    QString relativeLocation(const char *type, const QString &absPath) const;
 
     /**
      * Recursively creates still-missing directories in the given path.
