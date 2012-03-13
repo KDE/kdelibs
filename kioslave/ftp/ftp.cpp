@@ -520,12 +520,12 @@ bool Ftp::ftpLogin(bool* userChanged)
   }
 
   AuthInfo info;
-  info.url.setProtocol( "ftp" );
+  info.url.setScheme( "ftp" );
   info.url.setHost( m_host );
   if ( m_port > 0 && m_port != DEFAULT_FTP_PORT )
       info.url.setPort( m_port );
   if (!user.isEmpty())
-      info.url.setUser(user);
+      info.url.setUserName(user);
 
   // Check for cached authentication first and fallback to
   // anonymous login when no stored credentials are found.
@@ -598,7 +598,7 @@ bool Ftp::ftpLogin(bool* userChanged)
         {
           user = info.username;
           pass = info.password;
-        }        
+        }
         promptForRetry = true;
       }
     }
@@ -649,7 +649,7 @@ bool Ftp::ftpLogin(bool* userChanged)
       {
         // Update the username in case it was changed during login.
         if (!m_user.isEmpty()) {
-            info.url.setUser (user);
+            info.url.setUserName(user);
             m_user = user;
         }
 
