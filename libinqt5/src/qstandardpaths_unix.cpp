@@ -177,6 +177,9 @@ QString QStandardPaths::writableLocation(StandardLocation type)
         case MoviesLocation:
             key = QLatin1String("VIDEOS");
             break;
+        case DownloadLocation:
+            key = QLatin1String("DOWNLOAD");
+            break;
         default:
             break;
         }
@@ -214,7 +217,9 @@ QString QStandardPaths::writableLocation(StandardLocation type)
     case MoviesLocation:
         path = QDir::homePath() + QLatin1String("/Videos");
         break;
-
+    case DownloadLocation:
+        path = QDir::homePath() + QLatin1String("/Downloads");
+        break;
     case ApplicationsLocation:
         path = writableLocation(GenericDataLocation) + QLatin1String("/applications");
         break;
