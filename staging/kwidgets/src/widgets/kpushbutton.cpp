@@ -21,6 +21,7 @@
 #include <QStyleOptionToolButton>
 #include <QStylePainter>
 
+#include <QApplication>
 #include <QDrag>
 #include <QActionEvent>
 #include <QMenu>
@@ -280,7 +281,7 @@ void KPushButton::mouseMoveEvent( QMouseEvent *e )
 
     if ( (e->buttons() & Qt::LeftButton) &&
          (e->pos() - d->startPos).manhattanLength() >
-         KGlobalSettings::dndEventDelay() )
+         QApplication::startDragDistance() )
     {
         startDrag();
         setDown( false );
