@@ -78,7 +78,7 @@ private:
      * Use ~/.kde/share/apps/konqueror/bookmarks.xml for the konqueror bookmarks
      *
      * @param dbusObjectName a unique name that represents this bookmark collection,
-     * usually your kinstance (e.g. kapplication) name. This is "konqueror" for the
+     * usually your component (e.g. application) name. This is "konqueror" for the
      * konqueror bookmarks, "kfile" for KFileDialog bookmarks, etc.
      * The final DBus object path is /KBookmarkManager/dbusObjectName
      * An empty dbusObjectName disables the registration to dbus (used for temporary managers)
@@ -91,7 +91,7 @@ private:
      * @since 4.1
      */
     KBookmarkManager( const QString & bookmarksFile );
-    
+
     /**
      * Creates a temp bookmark manager
      */
@@ -177,7 +177,7 @@ public:
     /**
      * This returns the root of the toolbar menu.
      * In the XML, this is the group with the attribute toolbar=yes
-     * 
+     *
      * @return the toolbar group
      */
     KBookmarkGroup toolbar();
@@ -193,7 +193,7 @@ public:
 
     /**
      * Saves the bookmark file and notifies everyone.
-     * 
+     *
      **/
     void emitChanged();
 
@@ -242,7 +242,7 @@ public:
      * Use ~/.kde/share/apps/konqueror/bookmarks.xml for the konqueror bookmarks
      *
      * @param dbusObjectName a unique name that represents this bookmark collection,
-     * usually your kinstance (e.g. kapplication) name. This is "konqueror" for the
+     * usually your component (e.g. application) name. This is "konqueror" for the
      * konqueror bookmarks, "kfile" for KFileDialog bookmarks, etc.
      * The final DBus object path is /KBookmarkManager/dbusObjectName
      * An empty dbusObjectName disables the registration to dbus (used for temporary managers)
@@ -258,7 +258,7 @@ public:
      * @since 4.1
      */
     static KBookmarkManager* managerForExternalFile( const QString& bookmarksFile);
-    
+
     /**
      * only used for KBookmarkBar
      */
@@ -334,9 +334,9 @@ Q_SIGNALS:
      */
     void error(const QString &errorMessage);
 
-private Q_SLOTS:    
+private Q_SLOTS:
     void slotFileChanged(const QString& path); // external bookmarks
-    
+
 private:
     // consts added to avoid a copy-and-paste of internalDocument
     void parse() const;
@@ -351,7 +351,7 @@ private:
     */
     static KBookmarkManager* managerForFile( const QString&, int);
     void init( const QString& dbusPath );
-    
+
     class Private;
     Private * const d;
 
