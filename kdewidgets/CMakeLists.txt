@@ -51,7 +51,7 @@ if(QT_QTDESIGNER_FOUND)
 
   kde4_add_plugin(kdewidgets ${kdewidgets_PART_SRCS})
 
-  target_link_libraries(kdewidgets  ${KDE4_KIO_LIBS}  kplotting)
+  target_link_libraries(kdewidgets  ${KDE4_KIO_LIBS}  kplotting kwidgets)
   if(NOT WIN32)
     set_target_properties(kdewidgets PROPERTIES
                                      INSTALL_RPATH_USE_LINK_PATH TRUE

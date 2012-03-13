@@ -260,7 +260,6 @@ set(kdeui_LIB_SRCS
  widgets/krichtextwidget.cpp
  widgets/kruler.cpp
  widgets/kselector.cpp
- widgets/kseparator.cpp
  widgets/kshortcutwidget.cpp
  widgets/ksqueezedtextlabel.cpp
  widgets/kstatusbar.cpp
@@ -273,7 +272,6 @@ set(kdeui_LIB_SRCS
  widgets/ktimezonewidget.cpp
  widgets/ktitlewidget.cpp
  widgets/ktoolbar.cpp
- widgets/kurllabel.cpp
  widgets/kxyselector.cpp
  widgets/kdeuiwidgetsproxystyle.cpp
  widgets/nestedlisthelper.cpp
@@ -627,7 +625,6 @@ install( FILES
  widgets/krestrictedline.h
  widgets/krichtextedit.h
  widgets/krichtextwidget.h
- widgets/kseparator.h
  widgets/ksqueezedtextlabel.h
  widgets/kstringvalidator.h
  widgets/ktextbrowser.h
@@ -642,7 +639,6 @@ install( FILES
  widgets/kshortcutwidget.h
  widgets/kstatusbar.h
  widgets/ktoolbar.h
- widgets/kurllabel.h
  widgets/kxyselector.h
  xmlgui/kxmlguiwindow.h
  xmlgui/kxmlguiclient.h

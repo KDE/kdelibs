@@ -21,7 +21,7 @@
 #ifndef KURLLABEL_H
 #define KURLLABEL_H
 
-#include <kdeui_export.h>
+#include <kwidgets_export.h>
 
 #include <QColor>
 #include <QLabel>
@@ -66,7 +66,7 @@ class QCursor;
  * @author Kurt Granroth <granroth@kde.org> (Interface)
  * @author Peter Putzer <putzer@kde.org> (Rewrite)
  */
-class KDEUI_EXPORT KUrlLabel : public QLabel
+class KWIDGETS_EXPORT KUrlLabel : public QLabel
 {
   Q_OBJECT
   Q_PROPERTY(QString url READ url WRITE setUrl)
