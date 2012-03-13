@@ -450,8 +450,9 @@ public:
      * push buttons.
      *
      * @return Returns true if user wants to show icons.
+     * @deprecated since 5.0, use style->styleHint(QStyle::SH_DialogButtonBox_ButtonsHaveIcons, 0, widget);
      */
-    static bool showIconsOnPushButtons();
+    static KDEUI_DEPRECATED bool showIconsOnPushButtons();
 
     /**
      * Returns true, if user visible strings should be sorted in a natural way:

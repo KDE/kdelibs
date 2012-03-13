@@ -464,7 +464,7 @@ QIcon KStyle::standardIconImplementation(StandardPixmap standardIcon, const QSty
     switch (standardIcon) {
         case QStyle::SP_DesktopIcon:
             return KIcon("user-desktop");
-        case QStyle::SP_TrashIcon: 
+        case QStyle::SP_TrashIcon:
             return KIcon("user-trash");
         case QStyle::SP_ComputerIcon:
             return KIcon("computer");
@@ -811,7 +811,7 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         KStyle::IconOption* iconOpts = extractOption<KStyle::IconOption*>(kOpt);
         QIcon::Mode mode;
         QIcon::State iconState;
-        
+
         // Select the correct icon from the iconset
         if (flags & State_Enabled)
             if (iconOpts->active)
@@ -821,11 +821,11 @@ void KStyle::drawKStylePrimitive(WidgetType widgetType, int primitive,
         else
             mode = QIcon::Disabled;
 
-        if(  (flags & State_On) || (flags & State_Sunken) ) 
+        if(  (flags & State_On) || (flags & State_Sunken) )
             iconState = QIcon::On;
-        else 
+        else
             iconState = QIcon::Off;
-        
+
         QSize size = iconOpts->size;
         if(!size.isValid())
             size = QSize(pixelMetric(PM_SmallIconSize), pixelMetric(PM_SmallIconSize));
@@ -937,7 +937,7 @@ QSize KStyle::expandDim(const QSize& orig, WidgetType wt, int baseMarginMetric,
                     widgetLayoutProp(wt, baseMarginMetric + Top, opt, w) +
                     widgetLayoutProp(wt, baseMarginMetric + Bot, opt, w);
 
-    return QSize(orig.width() + (rotated? addHeight: addWidth), 
+    return QSize(orig.width() + (rotated? addHeight: addWidth),
                  orig.height() + (rotated? addWidth: addHeight));
 }
 
@@ -2573,8 +2573,11 @@ int KStyle::styleHint (StyleHint hint, const QStyleOption* option, const QWidget
             return true;
 
         case SH_DialogButtonBox_ButtonsHaveIcons:
-            return KGlobalSettings::showIconsOnPushButtons();
-
+        {
+            // was KGlobalSettings::showIconsOnPushButtons() :
+            KConfigGroup g(KGlobal::config(), "KDE");
+            return g.readEntry("ShowIconsOnPushButtons", KDE_DEFAULT_ICON_ON_PUSHBUTTON);
+        }
         case SH_ItemView_ArrowKeysNavigateIntoChildren:
             return true;
 

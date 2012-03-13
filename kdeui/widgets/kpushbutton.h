@@ -103,7 +103,7 @@ public:
 
     /**
      * Sets the Icon Set for this button. It also takes into account the
-     * KGlobalSettings::showIconsOnPushButtons() setting.
+     * "show icons on push buttons" user setting.
      */
     void setIcon( const QIcon &icon );
 
@@ -216,7 +216,6 @@ private:
     class KPushButtonPrivate;
     KPushButtonPrivate * const d;
 
-    Q_PRIVATE_SLOT(d, void slotSettingsChanged( int ))
     Q_PRIVATE_SLOT(d, void slotPressedInternal())
     Q_PRIVATE_SLOT(d, void slotClickedInternal())
     Q_PRIVATE_SLOT(d, void slotDelayedMenuTimeout())
