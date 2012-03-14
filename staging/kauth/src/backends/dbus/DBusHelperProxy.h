@@ -21,9 +21,11 @@
 #ifndef DBUS_HELPER_PROXY_H
 #define DBUS_HELPER_PROXY_H
 
-#include <QVariant>
 #include "HelperProxy.h"
 #include "kauthactionreply.h"
+
+#include <QDBusConnection>
+#include <QVariant>
 
 namespace KAuth
 {
@@ -38,6 +40,7 @@ class DBusHelperProxy : public HelperProxy
     QString m_currentAction;
     bool m_stopRequest;
     QList<QString> m_actionsInProgress;
+    QDBusConnection m_busConnection;
 
     enum SignalType {
         ActionStarted, // The blob argument is empty
@@ -48,7 +51,8 @@ class DBusHelperProxy : public HelperProxy
     };
 
 public:
-    DBusHelperProxy() : responder(0), m_stopRequest(false) {}
+    DBusHelperProxy();
+    DBusHelperProxy(const QDBusConnection &busConnection);
 
     virtual void executeAction(const QString &action, const QString &helperID,
             const QVariantMap &arguments);

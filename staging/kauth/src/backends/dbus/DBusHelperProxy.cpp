@@ -40,6 +40,20 @@ namespace KAuth
 
 static void debugMessageReceived(int t, const QString &message);
 
+DBusHelperProxy::DBusHelperProxy()
+    : responder(0)
+    , m_stopRequest(false)
+    , m_busConnection(QDBusConnection::systemBus())
+{
+}
+
+DBusHelperProxy::DBusHelperProxy(const QDBusConnection &busConnection)
+    : responder(0)
+    , m_stopRequest(false)
+    , m_busConnection(busConnection)
+{
+}
+
 void DBusHelperProxy::stopAction(const QString &action, const QString &helperID)
 {
     QDBusMessage message;
@@ -49,7 +63,7 @@ void DBusHelperProxy::stopAction(const QString &action, const QString &helperID)
     args << action;
     message.setArguments(args);
 
-    QDBusConnection::systemBus().asyncCall(message);
+    m_busConnection.asyncCall(message);
 }
 
 void DBusHelperProxy::executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments)
@@ -59,12 +73,12 @@ void DBusHelperProxy::executeAction(const QString &action, const QString &helper
 
     stream << arguments;
 
-    QDBusConnection::systemBus().interface()->startService(helperID);
+    m_busConnection.interface()->startService(helperID);
 
-    if (!QDBusConnection::systemBus().connect(helperID, QLatin1String("/"), QLatin1String("org.kde.auth"), QLatin1String("remoteSignal"), this, SLOT(remoteSignalReceived(int,QString,QByteArray)))) {
+    if (!m_busConnection.connect(helperID, QLatin1String("/"), QLatin1String("org.kde.auth"), QLatin1String("remoteSignal"), this, SLOT(remoteSignalReceived(int,QString,QByteArray)))) {
         ActionReply errorReply = ActionReply::DBusErrorReply();
         errorReply.setErrorDescription(tr("DBus Backend error: connection to helper failed. ")
-				       + QDBusConnection::systemBus().lastError().message());
+				       + m_busConnection.lastError().message());
         Q_EMIT actionPerformed(action, errorReply);
     }
 
@@ -77,12 +91,12 @@ void DBusHelperProxy::executeAction(const QString &action, const QString &helper
 
     m_actionsInProgress.push_back(action);
 
-    QDBusPendingCall pendingCall = QDBusConnection::systemBus().asyncCall(message);
+    QDBusPendingCall pendingCall = m_busConnection.asyncCall(message);
 
     if (pendingCall.reply().type() == QDBusMessage::ErrorMessage) {
         ActionReply r = ActionReply::DBusErrorReply();
         r.setErrorDescription(tr("DBus Backend error: could not contact the helper. "
-                "Connection error: ") + QDBusConnection::systemBus().lastError().message() + tr(". Message error: ") + pendingCall.reply().errorMessage());
+                "Connection error: ") + m_busConnection.lastError().message() + tr(". Message error: ") + pendingCall.reply().errorMessage());
         qDebug() << pendingCall.reply().errorMessage();
 
         Q_EMIT actionPerformed(action, r);
@@ -95,7 +109,7 @@ Action::AuthStatus DBusHelperProxy::authorizeAction(const QString& action, const
         return Action::StatusError;
     }
 
-    QDBusConnection::systemBus().interface()->startService(helperID);
+    m_busConnection.interface()->startService(helperID);
 
     QDBusMessage message;
     message = QDBusMessage::createMethodCall(helperID, QLatin1String("/"), QLatin1String("org.kde.auth"), QLatin1String("authorizeAction"));
@@ -107,7 +121,7 @@ Action::AuthStatus DBusHelperProxy::authorizeAction(const QString& action, const
     m_actionsInProgress.push_back(action);
 
     QEventLoop e;
-    QDBusPendingCall pendingCall = QDBusConnection::systemBus().asyncCall(message);
+    QDBusPendingCall pendingCall = m_busConnection.asyncCall(message);
     QDBusPendingCallWatcher watcher(pendingCall, this);
     connect(&watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), &e, SLOT(quit()));
     e.exec();
@@ -127,11 +141,11 @@ bool DBusHelperProxy::initHelper(const QString &name)
 {
     new AuthAdaptor(this);
 
-    if (!QDBusConnection::systemBus().registerService(name)) {
+    if (!m_busConnection.registerService(name)) {
         return false;
     }
 
-    if (!QDBusConnection::systemBus().registerObject(QLatin1String("/"), this)) {
+    if (!m_busConnection.registerObject(QLatin1String("/"), this)) {
         return false;
     }
 

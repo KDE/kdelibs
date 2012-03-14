@@ -21,9 +21,9 @@
 
 #include "BackendsConfig.h"
 
-// Include fake backends
+// Include backends directly
 #include "TestBackend.h"
-#include "TestHelperProxy.h"
+#include "backends/dbus/DBusHelperProxy.h"
 
 #include <QPluginLoader>
 #include <QDir>
@@ -48,7 +48,7 @@ void BackendsManager::init()
 
     if (!helper) {
         // Load the test helper backend
-        helper = new TestHelperProxy;
+        helper = new DBusHelperProxy(QDBusConnection::sessionBus());
     }
 }
 

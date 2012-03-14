@@ -4,6 +4,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${CMAKE_CURRENT_SOURCE_DIR}/../src
                     ${CMAKE_CURRENT_BINARY_DIR}/../src)
 
+qt4_add_dbus_adaptor(kauth_dbus_adaptor_tests_SRCS
+                     ../src/backends/dbus/org.kde.auth.xml
+                     ../src/backends/dbus/DBusHelperProxy.h
+                     KAuth::DBusHelperProxy)
+
 set(libkauth_tests_static_SRCS
     ../src/kauthaction.cpp
     ../src/kauthactionreply.cpp
@@ -14,7 +19,8 @@ set(libkauth_tests_static_SRCS
     ../src/HelperProxy.cpp
     ../src/kauthhelpersupport.cpp
     TestBackend.cpp
-    TestHelperProxy.cpp
+    ../src/backends/dbus/DBusHelperProxy.cpp
+    ${kauth_dbus_adaptor_tests_SRCS}
 )
 
 add_library(kauth_tests_static STATIC ${libkauth_tests_static_SRCS})
