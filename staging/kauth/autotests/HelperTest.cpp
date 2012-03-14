@@ -39,6 +39,7 @@ private Q_SLOTS:
 
     void testBasicActionExecution();
     void testExecuteJobSignals();
+    void testStartTwice();
 
     void cleanup() {}
     void cleanupTestCase() {}
@@ -151,6 +152,37 @@ void HelperTest::testExecuteJobSignals()
     QCOMPARE(statusChangedSpy.size(), 1);
     QCOMPARE(statusChangedSpy.first().first().value<KAuth::Action::AuthStatus>(), KAuth::Action::StatusAuthorized);
     QCOMPARE(percentSpy.size(), 100);
+    for (uint i = 1; i <= 100; ++i) {
+        QCOMPARE(percentSpy.at(i-1).first().toUInt(), i);
+    }
+    QCOMPARE(newDataSpy.size(), 1);
+    QCOMPARE(newDataSpy.first().first().value<QVariantMap>().value(QLatin1String("Answer")).toInt(), 42);
+
+    QVERIFY(job->succeeded());
+    QVERIFY(job->data().isEmpty());
+}
+
+void HelperTest::testStartTwice()
+{
+    KAuth::Action action(QLatin1String("org.kde.auth.autotest.longaction"));
+    action.setHelperID(QLatin1String("org.kde.auth.autotest"));
+    QVERIFY(action.isValid());
+
+    QCOMPARE(action.status(), KAuth::Action::StatusAuthRequired);
+
+    KAuth::ExecuteJob *job = action.execute();
+
+    job->start();
+    job->start();
+
+    QEventLoop e;
+    connect(job, SIGNAL(finished(KAuth::ExecuteJob*)), &e, SLOT(quit()));
+    e.exec();
+
+    QVERIFY(!job->succeeded());
+    QCOMPARE(job->error(), KAuth::ActionReply::AlreadyStartedError);
+
+    e.exec();
 
     QVERIFY(job->succeeded());
     QVERIFY(job->data().isEmpty());

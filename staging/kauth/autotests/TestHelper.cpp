@@ -54,7 +54,9 @@ ActionReply TestHelper::longaction(QVariantMap args)
         if (HelperSupport::isStopped())
             break;
         if (i == 50) {
-             HelperSupport::progressStep(QVariantMap());
+             QVariantMap map;
+             map.insert(QLatin1String("Answer"), 42);
+             HelperSupport::progressStep(map);
         }
         HelperSupport::progressStep(i);
         usleep(20000);
