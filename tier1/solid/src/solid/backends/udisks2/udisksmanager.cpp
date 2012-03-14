@@ -259,7 +259,9 @@ void Manager::slotInterfacesRemoved(const QDBusObjectPath &object_path, const QS
 
     qDebug() << udi << "lost interfaces:" << interfaces;
 
-    if (interfaces.isEmpty() && !udi.isEmpty()) {
+    Device device(udi);
+
+    if (!udi.isEmpty() && (interfaces.isEmpty() || device.interfaces().isEmpty() || device.interfaces().contains(UD2_DBUS_INTERFACE_FILESYSTEM))) {
         Q_EMIT deviceRemoved(udi);
         m_deviceCache.removeAll(udi);
     }
