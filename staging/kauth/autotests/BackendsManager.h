@@ -37,6 +37,7 @@ class KAUTH_EXPORT BackendsManager
 public:
     static AuthBackend *authBackend();
     static HelperProxy *helperProxy();
+    static void setProxyForThread(QThread *thread, HelperProxy *proxy);
 
 private:
     static void init();

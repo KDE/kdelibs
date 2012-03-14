@@ -28,12 +28,13 @@
 #include <QPluginLoader>
 #include <QDir>
 #include <QDebug>
+#include <QThread>
 
 namespace KAuth
 {
 
 AuthBackend *BackendsManager::auth = 0;
-HelperProxy *BackendsManager::helper = 0;
+QHash< QThread*, HelperProxy* > proxiesForThreads = QHash< QThread*, HelperProxy* >();
 
 BackendsManager::BackendsManager()
 {
@@ -46,9 +47,9 @@ void BackendsManager::init()
         auth = new TestBackend;
     }
 
-    if (!helper) {
+    if (!proxiesForThreads.contains(QThread::currentThread())) {
         // Load the test helper backend
-        helper = new DBusHelperProxy(QDBusConnection::sessionBus());
+        proxiesForThreads.insert(QThread::currentThread(), new DBusHelperProxy(QDBusConnection::sessionBus()));
     }
 }
 
@@ -63,11 +64,19 @@ AuthBackend *BackendsManager::authBackend()
 
 HelperProxy *BackendsManager::helperProxy()
 {
-    if (!helper) {
+    if (!proxiesForThreads.contains(QThread::currentThread())) {
+        qDebug() << "Creating new proxy for thread" << QThread::currentThread();
         init();
     }
 
-    return helper;
+    return proxiesForThreads[QThread::currentThread()];
+}
+
+void BackendsManager::setProxyForThread(QThread *thread, HelperProxy *proxy)
+{
+    qDebug() << "Adding proxy for thread" << thread;
+
+    proxiesForThreads.insert(thread, proxy);
 }
 
 } // namespace Auth
