@@ -669,7 +669,7 @@ void Device::checkCache(const QString &key) const
     if (reply.isValid()) {
         m_cache.insert(key, reply);
     } else {
-        qDebug() << "got invalid reply for cache:" << key;
+        //qDebug() << "got invalid reply for cache:" << key;
         //m_cache.insert(key, QVariant());
     }
 }
@@ -872,7 +872,7 @@ bool Device::mightBeOpticalDisc() const
         return false;
 
     Device drive(drivePath);
-    return drive.isOpticalDrive() && !drive.prop("Optical").toBool();
+    return drive.isOpticalDrive();
 }
 
 bool Device::isMounted() const
