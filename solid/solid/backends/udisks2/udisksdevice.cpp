@@ -19,7 +19,6 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "udisks2.h"
 #include "udisksdevice.h"
 #include "udisksblock.h"
 #include "udisksdeviceinterface.h"
@@ -101,6 +100,11 @@ Device::Device(const QString &udi)
     if (m_device->isValid()) {
         QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, m_udi, DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
                                              SLOT(slotPropertiesChanged(QString,QVariantMap,QStringList)));
+
+        QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, UD2_DBUS_PATH, DBUS_INTERFACE_MANAGER, "InterfacesAdded",
+                                             this, SLOT(slotInterfacesAdded(QDBusObjectPath,QVariantMapMap)));
+        QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, UD2_DBUS_PATH, DBUS_INTERFACE_MANAGER, "InterfacesRemoved",
+                                             this, SLOT(slotInterfacesRemoved(QDBusObjectPath,QStringList)));
 
         initInterfaces();
     }
@@ -769,6 +773,22 @@ void Device::slotPropertiesChanged(const QString &ifaceName, const QVariantMap &
 
     Q_EMIT propertyChanged(changeMap);
     Q_EMIT changed();
+}
+
+void Device::slotInterfacesAdded(const QDBusObjectPath &object_path, const QVariantMapMap &interfaces_and_properties)
+{
+    if (object_path.path() == m_udi) {
+        m_interfaces.append(interfaces_and_properties.keys());
+    }
+}
+
+void Device::slotInterfacesRemoved(const QDBusObjectPath &object_path, const QStringList &interfaces)
+{
+    if (object_path.path() == m_udi) {
+        Q_FOREACH(const QString & iface, interfaces) {
+            m_interfaces.removeAll(iface);
+        }
+    }
 }
 
 
