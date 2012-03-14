@@ -54,6 +54,7 @@ public:
 private Q_SLOTS:
     void slotInterfacesAdded(const QDBusObjectPath &object_path, const QVariantMapMap &interfaces_and_properties);
     void slotInterfacesRemoved(const QDBusObjectPath &object_path, const QStringList &interfaces);
+    void slotMediaChanged(const QDBusMessage &msg);
 
 private:
     const QStringList &deviceCache();
