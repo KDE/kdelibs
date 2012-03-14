@@ -35,3 +35,12 @@ add_executable(KAuthSetupActionTest ${SetupActionTest_SRCS})
 add_test(KAuthSetupActionTest KAuthSetupActionTest)
 
 target_link_libraries(KAuthSetupActionTest ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} kauth_tests_static)
+
+########### next target ###############
+
+set(HelperTest_SRCS HelperTest.cpp TestHelper.cpp)
+
+add_executable(KAuthHelperTest ${HelperTest_SRCS})
+add_test(KAuthHelperTest KAuthHelperTest)
+
+target_link_libraries(KAuthHelperTest ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} kauth_tests_static)

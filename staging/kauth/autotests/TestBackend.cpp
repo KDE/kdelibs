@@ -71,13 +71,11 @@ Action::AuthStatus TestBackend::actionStatus(const QString &action)
 
 QByteArray TestBackend::callerID() const
 {
-    return QCoreApplication::applicationName().toAscii();
+    return QByteArray("a random caller Id");
 }
 
-bool TestBackend::isCallerAuthorized(const QString &action, QByteArray callerID)
+bool TestBackend::isCallerAuthorized(const QString &action, QByteArray callerId)
 {
-    Q_UNUSED(callerID)
-
     if (action == QLatin1String("doomed.to.fail")) {
         return false;
     } else if (action == QLatin1String("requires.auth")) {
@@ -112,7 +110,8 @@ bool TestBackend::actionExists(const QString& action)
         action != QLatin1String("requires.auth") &&
         action != QLatin1String("generates.error") &&
         action != QLatin1String("always.authorized") &&
-        action != QLatin1String("/safinvalid124%$&")) {
+        action != QLatin1String("/safinvalid124%$&") &&
+        !action.startsWith(QLatin1String("org.kde.auth.autotest"))) {
         return false;
     }
 
