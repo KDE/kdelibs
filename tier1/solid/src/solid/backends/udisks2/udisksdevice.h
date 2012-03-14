@@ -22,11 +22,14 @@
 #ifndef UDISKS2DEVICE_H
 #define UDISKS2DEVICE_H
 
+#include "udisks2.h"
+
 #include <ifaces/device.h>
 #include <solid/deviceinterface.h>
 #include <solid/solidnamespace.h>
 
 #include <QtDBus/QDBusInterface>
+#include <QtDBus/QDBusObjectPath>
 #include <QtCore/QStringList>
 
 namespace Solid
@@ -83,6 +86,8 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void slotPropertiesChanged(const QString & ifaceName, const QVariantMap & changedProps, const QStringList & invalidatedProps);
+    void slotInterfacesAdded(const QDBusObjectPath &object_path, const QVariantMapMap &interfaces_and_properties);
+    void slotInterfacesRemoved(const QDBusObjectPath &object_path, const QStringList &interfaces);
 
 private:
     QString storageDescription() const;
