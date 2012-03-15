@@ -1409,7 +1409,7 @@ bool KSharedDataCache::insert(const QString &key, const QByteArray &data)
         // If we actually stumbled upon an old version of the key we are
         // overwriting, then use that position, do not skip over it.
 
-        if (KDE_ISUNLIKELY(indices[position].fileNameHash == keyHash)) {
+        if (Q_UNLIKELY(indices[position].fileNameHash == keyHash)) {
             break;
         }
 
