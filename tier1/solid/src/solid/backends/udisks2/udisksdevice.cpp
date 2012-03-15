@@ -530,24 +530,20 @@ QString Device::icon() const
     {
         return iconName;
     }
-    else
-    {        
-        if ( isPartition() )      // this is a slave device, we need to return its parent's icon
-        {
-            Device* parent = 0;
-            if ( !parentUdi().isEmpty() )
-                parent = new Device( parentUdi() );
+    else if (isDrive()) {
+        const bool isRemovable = prop("Removable").toBool();
+        const QString conn = prop("ConnectionBus").toString();
 
-            if ( parent )
-            {
-                iconName = parent->icon();
-                delete parent;
-            }
-
-            if ( !iconName.isEmpty() )
-                return iconName;
+        if (isOpticalDrive())
+            return "drive-optical";
+        else if (isRemovable && !isOpticalDisc()) {
+            if (conn == "usb")
+                return "drive-removable-media-usb";
+            else
+                return "drive-removable-media";
         }
-
+    }
+    else if (isBlock()) {
         const QString drivePath = prop("Drive").value<QDBusObjectPath>().path();
         Device drive(drivePath);
 
@@ -599,22 +595,9 @@ QString Device::icon() const
                 return "media-flash";
             else if ( media == "floppy" ) // the good ol' floppy
                 return "media-floppy";
-
         }
 
-        // handle drives
-        const bool isRemovable = drive.prop("Removable").toBool();
-        const QString conn = drive.prop("ConnectionBus").toString();
-
-        if (isOpticalDrive())
-            return "drive-optical";
-        else if (isRemovable && !isOpticalDisc())
-        {
-            if (conn == "usb")
-                return "drive-removable-media-usb";
-            else
-                return "drive-removable-media";
-        }
+        return drive.icon();
     }
 
     return "drive-harddisk";    // general fallback
