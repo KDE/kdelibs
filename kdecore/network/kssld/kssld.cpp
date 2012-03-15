@@ -158,7 +158,7 @@ void KSSLD::pruneExpiredRules()
             if (key == QLatin1String("CertificatePEM")) {
                 continue;
             }
-            KSslCertificateRule r = rule(certDigest, key);
+            KSslCertificateRule r = rule(QSslCertificate(certDigest), key);
         }
     }
 }
