@@ -18,7 +18,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <ktempdir.h>
 #include <qtest_kde.h>
 
 #include <QDialog>
@@ -28,6 +27,8 @@
 #include <kactioncollection.h>
 #include <kdebug.h>
 #include <knewfilemenu.h>
+
+#include <qtemporarydir.h>
 
 class KNewFileMenuTest : public QObject
 {
@@ -68,7 +69,7 @@ private Q_SLOTS:
         KNewFileMenu menu(&coll, "the_action", this);
         menu.setModal(false);
         menu.setParentWidget(&parentWidget);
-        KUrl u(m_tmpDir.name());
+        KUrl u(m_tmpDir.path());
         KUrl::List lst(u);
         menu.setPopupFiles(lst);
         menu.checkUpToDate();
@@ -100,13 +101,13 @@ private Q_SLOTS:
         QSignalSpy spy(&menu, SIGNAL(fileCreated(KUrl)));
         QTest::kWaitForSignal(&menu, SIGNAL(fileCreated(KUrl)));
         const KUrl url = spy.at(0).at(0).value<KUrl>();
-        const QString path = m_tmpDir.name() + expectedFilename;
+        const QString path = m_tmpDir.path() + '/' + expectedFilename;
         QCOMPARE(url.toLocalFile(), path);
         QFile::remove(path);
         m_first = false;
     }
 private:
-    KTempDir m_tmpDir;
+    QTemporaryDir m_tmpDir;
     bool m_first;
 };
 
