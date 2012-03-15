@@ -82,7 +82,7 @@ private Q_SLOTS:
         }
         if (!textAct && m_first) {
             const QString err = "action with text" + actionText + "not found. kde-baseapps not installed?";
-            QSKIP(qPrintable(err), SkipAll);
+            QSKIP_PORTING(qPrintable(err), SkipAll);
         }
         textAct->trigger();
         QDialog* dialog = qFindChild<QDialog *>(&parentWidget);
