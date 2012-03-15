@@ -2625,7 +2625,7 @@ bool HTTPProtocol::sendQuery()
     if (!contentType.isEmpty())
     {
       if (!contentType.startsWith(QLatin1String("content-type"), Qt::CaseInsensitive))
-        header += QLatin1String("Content-Type:");
+        header += QLatin1String("Content-Type: ");
       header += contentType;
       header += QLatin1String("\r\n");
     }

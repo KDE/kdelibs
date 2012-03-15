@@ -25,6 +25,7 @@
 #include <QMenu>
 #include <QLineEdit>
 #include <QWidgetAction>
+#include <QVector>
 
 #include "kdebug.h"
 #include "klocale.h"
@@ -47,6 +48,7 @@ public:
 
     void initDateWidget();
     void addMenuAction(const QString &text, const QDate &date);
+    void enableMenuDates();
     void updateDateWidget();
 
 // Q_PRIVATE_SLOTs
@@ -59,6 +61,7 @@ public:
 
     KDateComboBox *const q;
     QMenu *m_dateMenu;
+    QVector<QAction*> m_actions;
     KDatePicker *m_datePicker;
     QWidgetAction *m_datePickerAction;
 
@@ -132,15 +135,16 @@ void KDateComboBoxPrivate::initDateWidget()
     q->blockSignals(false);
 
     m_dateMenu->clear();
+    m_actions.clear();
 
-    if ((m_options &KDateComboBox::SelectDate) == KDateComboBox::SelectDate) {
+    if ((m_options & KDateComboBox::SelectDate) == KDateComboBox::SelectDate) {
 
-        if ((m_options &KDateComboBox::DatePicker) == KDateComboBox::DatePicker) {
+        if ((m_options & KDateComboBox::DatePicker) == KDateComboBox::DatePicker) {
             m_dateMenu->addAction(m_datePickerAction);
             m_dateMenu->addSeparator();
         }
 
-        if ((m_options &KDateComboBox::DateKeywords) == KDateComboBox::DateKeywords) {
+        if ((m_options & KDateComboBox::DateKeywords) == KDateComboBox::DateKeywords) {
             if (m_dateMap.isEmpty()) {
                 addMenuAction(i18nc("@option next year",  "Next Year" ), m_date.addYears(1).date());
                 addMenuAction(i18nc("@option next month", "Next Month"), m_date.addMonths(1).date());
@@ -166,8 +170,8 @@ void KDateComboBoxPrivate::initDateWidget()
                     }
                 }
             }
+            enableMenuDates();
         }
-
     }
 }
 
@@ -177,6 +181,16 @@ void KDateComboBoxPrivate::addMenuAction(const QString &text, const QDate &date)
     action->setText(text);
     action->setData(date);
     m_dateMenu->addAction(action);
+    m_actions << action;
+}
+
+void KDateComboBoxPrivate::enableMenuDates()
+{
+    // Hide menu dates if they are outside the date range
+    for (int i = 0; i < m_actions.count(); ++i) {
+        QDate date = m_actions[i]->data().toDate();
+        m_actions[i]->setVisible(!date.isValid() || (date >= m_minDate && date <= m_maxDate));
+    }
 }
 
 void KDateComboBoxPrivate::updateDateWidget()
@@ -408,6 +422,7 @@ void KDateComboBox::setDateRange(const QDate &minDate,
         d->m_minWarnMsg = minWarnMsg;
         d->m_maxWarnMsg = maxWarnMsg;
     }
+    d->enableMenuDates();
 }
 
 void KDateComboBox::resetDateRange()

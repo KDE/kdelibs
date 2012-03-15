@@ -1,4 +1,3 @@
-
 /**
  * This file is part of the DOM implementation for KDE.
  *

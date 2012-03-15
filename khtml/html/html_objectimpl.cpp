@@ -176,9 +176,7 @@ void HTMLObjectBaseElementImpl::parseAttribute(AttributeImpl *attr)
         case ATTR_TYPE:
         case ATTR_CODETYPE:
             if (attr->val()) {
-                DOM::DOMStringImpl *stringImpl = attr->val();
-                QString val = QString( stringImpl->s, stringImpl->l );
-                setServiceType( val );
+                setServiceType(attr->val()->string());
                 setNeedComputeContent();
             }
             break;

@@ -448,7 +448,7 @@ bool CSSStyleDeclarationImpl::isPropertyImplicit(int propertyID) const
     while ( lstValuesIt.hasNext() ) {
         current = lstValuesIt.next();
         if (current->m_id == propertyID)
-            return current->isImplicit();;
+            return current->isImplicit();
     }
     return false;
 }

@@ -84,10 +84,10 @@ JSValue *XMLSerializerProtoFunc::callAsFunction(ExecState *exec, JSObject *thisO
 	return jsUndefined();
       }
 
-      QString body;
+      DOMString body;
 
       try {
-	  body = node->toString().string();
+	  body = node->toString();
       } catch(DOM::DOMException&) {
 	  JSObject *err = Error::create(exec, GeneralError, "Exception serializing document");
 	  exec->setException(err);

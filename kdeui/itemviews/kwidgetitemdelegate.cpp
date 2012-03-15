@@ -290,6 +290,18 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
                 QTimer::singleShot(0, this, SLOT(initializeModel()));
             }
             break;
+        case QEvent::FocusIn:
+        case QEvent::FocusOut:
+            if (qobject_cast<QAbstractItemView*>(watched)) {
+                foreach (const QModelIndex &index, selectionModel->selectedIndexes()) {
+                    if (index.isValid()) {
+                        QStyleOptionViewItemV4 optionView;
+                        optionView.initFrom(itemView->viewport());
+                        optionView.rect = itemView->visualRect(index);
+                        widgetPool->findWidgets(index, optionView);
+                    }
+                }
+            }
         default:
             break;
     }

@@ -861,7 +861,7 @@ void DocumentImpl::setTitle(const DOMString& _title)
             titleStr[i] = ' ';
     titleStr = titleStr.simplified();
     if ( view() && !view()->part()->parentPart() ) {
-	if (titleStr.isNull() || titleStr.isEmpty()) {
+	if (titleStr.isEmpty()) {
 	    // empty title... set window caption as the URL
 	    KUrl url = m_url;
 	    url.setRef(QString());
