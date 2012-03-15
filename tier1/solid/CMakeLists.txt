@@ -26,7 +26,7 @@ remove_definitions(-DQT_USE_FAST_CONCATENATION)
 remove_definitions(-DQT_USE_FAST_OPERATOR_PLUS)
 
 
-find_package(Qt5Transitional REQUIRED Core DBus Gui Test)
+find_package(Qt5Transitional REQUIRED Xml Concurrent DBus Gui Test)
 
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src)
 
