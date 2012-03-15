@@ -479,10 +479,7 @@ void KNewFileMenuPrivate::executeRealFileOrDir(const KNewFileMenuSingleton::Entr
 
     _k_slotTextChanged(text);
     QObject::connect(lineEdit, SIGNAL(textChanged(QString)), q, SLOT(_k_slotTextChanged(QString)));
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/KDE/4.8
     layout->addWidget(label);
     layout->addWidget(lineEdit);
 
@@ -730,11 +727,7 @@ void KNewFileMenuPrivate::_k_slotActionTriggered(QAction* action)
 
     const bool createSymlink = entry.templatePath == "__CREATE_SYMLINK__";
 
-<<<<<<< HEAD
-    m_strategy = KNewFileMenuStrategy();
-=======
     m_copyData = KNewFileMenuCopyData();
->>>>>>> origin/KDE/4.8
 
     if (createSymlink) {
         m_copyData.m_isSymlink = true;
@@ -872,17 +865,10 @@ void KNewFileMenuPrivate::_k_slotSymLink()
 {
     KNameAndUrlInputDialog* dlg = static_cast<KNameAndUrlInputDialog*>(m_fileDialog);
 
-<<<<<<< HEAD
-    m_strategy.m_chosenFileName = dlg->name(); // no path
-    KUrl linkUrl = dlg->url(); // the url to put in the file
-
-    if (m_strategy.m_chosenFileName.isEmpty() || linkUrl.isEmpty())
-=======
     m_copyData.m_chosenFileName = dlg->name(); // no path
     KUrl linkUrl = dlg->url(); // the url to put in the file
 
     if (m_copyData.m_chosenFileName.isEmpty() || linkUrl.isEmpty())
->>>>>>> origin/KDE/4.8
         return;
 
     if (linkUrl.isRelative())
@@ -918,15 +904,9 @@ void KNewFileMenuPrivate::_k_slotTextChanged(const QString & text)
 
 void KNewFileMenuPrivate::_k_slotUrlDesktopFile()
 {
-<<<<<<< HEAD
-    KNameAndUrlInputDialog* dlg = (KNameAndUrlInputDialog*) m_fileDialog;
-
-    m_strategy.m_chosenFileName = dlg->name(); // no path
-=======
     KNameAndUrlInputDialog* dlg = static_cast<KNameAndUrlInputDialog*>(m_fileDialog);
 
     m_copyData.m_chosenFileName = dlg->name(); // no path
->>>>>>> origin/KDE/4.8
     KUrl linkUrl = dlg->url();
 
     // Filter user input so that short uri entries, e.g. www.kde.org, are
