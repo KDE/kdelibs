@@ -219,7 +219,7 @@ public:
      *
      * @return The default helper ID.
      */
-    QString helperID() const;
+    QString helperId() const;
 
     /**
      * @brief Sets the default helper ID used for actions execution
@@ -234,9 +234,9 @@ public:
      * @param id The default helper ID.
      *
      * @see hasHelper
-     * @see helperID
+     * @see helperId
      */
-    void setHelperID(const QString &id);
+    void setHelperId(const QString &id);
 
     /**
      * @brief Checks if the action has an helper

@@ -156,13 +156,13 @@ QVariantMap Action::arguments() const
     return d->args;
 }
 
-QString Action::helperID() const
+QString Action::helperId() const
 {
     return d->helperId;
 }
 
 // TODO: Check for helper id's syntax
-void Action::setHelperID(const QString &id)
+void Action::setHelperId(const QString &id)
 {
     d->helperId = id;
 }

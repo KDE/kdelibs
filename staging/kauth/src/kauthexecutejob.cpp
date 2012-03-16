@@ -160,7 +160,7 @@ void ExecuteJob::Private::doExecuteAction()
 
         if (s == Action::StatusAuthorized) {
             if (action.hasHelper()) {
-                BackendsManager::helperProxy()->executeAction(action.name(), action.helperID(), action.arguments());
+                BackendsManager::helperProxy()->executeAction(action.name(), action.helperId(), action.arguments());
             } else {
                 // Done
                 actionPerformedSlot(action.name(), ActionReply::SuccessReply());
@@ -193,7 +193,7 @@ void ExecuteJob::Private::doExecuteAction()
             actionPerformedSlot(action.name(), r);
             return;
         }
-        BackendsManager::helperProxy()->executeAction(action.name(), action.helperID(), action.arguments());
+        BackendsManager::helperProxy()->executeAction(action.name(), action.helperId(), action.arguments());
     } else {
         // There's something totally wrong here
         ActionReply r(ActionReply::BackendError);
