@@ -382,17 +382,17 @@ public:
         TypeSuccess ///< The action has been completed successfully
     };
 
-    static const ActionReply SuccessReply; ///< An empty successful reply. Same as using the default constructor
-    static const ActionReply HelperErrorReply; ///< An empty reply with type() == HelperError.
+    static const ActionReply SuccessReply(); ///< An empty successful reply. Same as using the default constructor
+    static const ActionReply HelperErrorReply(); ///< An empty reply with type() == HelperError.
 
-    static const ActionReply NoResponderReply; ///< errorCode() == NoResponder
-    static const ActionReply NoSuchActionReply; ///< errorCode() == NoSuchAction
-    static const ActionReply InvalidActionReply; ///< errorCode() == InvalidAction
-    static const ActionReply AuthorizationDeniedReply; ///< errorCode() == AuthorizationDenied
-    static const ActionReply UserCancelledReply; ///< errorCode() == UserCancelled
-    static const ActionReply HelperBusyReply; ///< errorCode() == HelperBusy
-    static const ActionReply AlreadyStartedReply; ///< errorCode() == AlreadyStartedError
-    static const ActionReply DBusErrorReply; ///< errorCode() == DBusError
+    static const ActionReply NoResponderReply(); ///< errorCode() == NoResponder
+    static const ActionReply NoSuchActionReply(); ///< errorCode() == NoSuchAction
+    static const ActionReply InvalidActionReply(); ///< errorCode() == InvalidAction
+    static const ActionReply AuthorizationDeniedReply(); ///< errorCode() == AuthorizationDenied
+    static const ActionReply UserCancelledReply(); ///< errorCode() == UserCancelled
+    static const ActionReply HelperBusyReply(); ///< errorCode() == HelperBusy
+    static const ActionReply AlreadyStartedReply(); ///< errorCode() == AlreadyStartedError
+    static const ActionReply DBusErrorReply(); ///< errorCode() == DBusError
 
     /**
      * The enumeration of the possible values of errorCode() when type() is ActionReply::KAuthError

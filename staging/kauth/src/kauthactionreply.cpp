@@ -44,16 +44,16 @@ public:
 };
 
 // Predefined replies
-const ActionReply ActionReply::SuccessReply = ActionReply();
-const ActionReply ActionReply::HelperErrorReply = ActionReply(ActionReply::TypeHelperError);
-const ActionReply ActionReply::NoResponderReply = ActionReply(ActionReply::NoResponderError);
-const ActionReply ActionReply::NoSuchActionReply = ActionReply(ActionReply::NoSuchActionError);
-const ActionReply ActionReply::InvalidActionReply = ActionReply(ActionReply::InvalidActionError);
-const ActionReply ActionReply::AuthorizationDeniedReply = ActionReply(ActionReply::AuthorizationDeniedError);
-const ActionReply ActionReply::UserCancelledReply = ActionReply(ActionReply::UserCancelledError);
-const ActionReply ActionReply::HelperBusyReply = ActionReply(ActionReply::HelperBusyError);
-const ActionReply ActionReply::AlreadyStartedReply = ActionReply(ActionReply::AlreadyStartedError);
-const ActionReply ActionReply::DBusErrorReply = ActionReply(ActionReply::DBusError);
+const ActionReply ActionReply::SuccessReply() { return ActionReply(); }
+const ActionReply ActionReply::HelperErrorReply() { return ActionReply(ActionReply::TypeHelperError); }
+const ActionReply ActionReply::NoResponderReply() { return ActionReply(ActionReply::NoResponderError); }
+const ActionReply ActionReply::NoSuchActionReply() { return ActionReply(ActionReply::NoSuchActionError); }
+const ActionReply ActionReply::InvalidActionReply() { return ActionReply(ActionReply::InvalidActionError); }
+const ActionReply ActionReply::AuthorizationDeniedReply() { return ActionReply(ActionReply::AuthorizationDeniedError); }
+const ActionReply ActionReply::UserCancelledReply() { return ActionReply(ActionReply::UserCancelledError); }
+const ActionReply ActionReply::HelperBusyReply() { return ActionReply(ActionReply::HelperBusyError); }
+const ActionReply ActionReply::AlreadyStartedReply() { return ActionReply(ActionReply::AlreadyStartedError); }
+const ActionReply ActionReply::DBusErrorReply() { return ActionReply(ActionReply::DBusError); }
 
 // Constructors
 ActionReply::ActionReply(const ActionReply &reply)

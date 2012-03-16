@@ -139,12 +139,12 @@ void ExecuteJob::exec()
 void ExecuteJob::Private::doExecuteAction()
 {
     if (isRunning || isFinished) {
-        actionPerformedSlot(action.name(), ActionReply::AlreadyStartedReply);
+        actionPerformedSlot(action.name(), ActionReply::AlreadyStartedReply());
         return;
     }
 
     if (!action.isValid()) {
-        actionPerformedSlot(action.name(), ActionReply::InvalidActionReply);
+        actionPerformedSlot(action.name(), ActionReply::InvalidActionReply());
         return;
     }
 
@@ -163,19 +163,19 @@ void ExecuteJob::Private::doExecuteAction()
                 BackendsManager::helperProxy()->executeAction(action.name(), action.helperID(), action.arguments());
             } else {
                 // Done
-                actionPerformedSlot(action.name(), ActionReply::SuccessReply);
+                actionPerformedSlot(action.name(), ActionReply::SuccessReply());
             }
         } else {
             // Abort if authorization fails
             switch (s) {
             case Action::StatusDenied:
-                actionPerformedSlot(action.name(), ActionReply::AuthorizationDeniedReply);
+                actionPerformedSlot(action.name(), ActionReply::AuthorizationDeniedReply());
                 break;
             case Action::StatusInvalid:
-                actionPerformedSlot(action.name(), ActionReply::InvalidActionReply);
+                actionPerformedSlot(action.name(), ActionReply::InvalidActionReply());
                 break;
             case Action::StatusUserCancelled:
-                actionPerformedSlot(action.name(), ActionReply::UserCancelledReply);
+                actionPerformedSlot(action.name(), ActionReply::UserCancelledReply());
                 break;
             default:
                 {
@@ -188,7 +188,7 @@ void ExecuteJob::Private::doExecuteAction()
         }
     } else if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromHelperCapability) {
         if (!action.hasHelper()) {
-            ActionReply r(ActionReply::InvalidActionReply);
+            ActionReply r(ActionReply::InvalidActionReply());
             r.setErrorDescription(tr("The current backend only allows helper authorization, but this action does not have an helper."));
             actionPerformedSlot(action.name(), r);
             return;
@@ -228,9 +228,9 @@ void ExecuteJob::Private::doAuthorizeAction()
 
     // Return based on the current status
     if (s == Action::StatusAuthorized) {
-        actionPerformedSlot(action.name(), ActionReply::SuccessReply);
+        actionPerformedSlot(action.name(), ActionReply::SuccessReply());
     } else {
-        actionPerformedSlot(action.name(), ActionReply::AuthorizationDeniedReply);
+        actionPerformedSlot(action.name(), ActionReply::AuthorizationDeniedReply());
     }
 }
 

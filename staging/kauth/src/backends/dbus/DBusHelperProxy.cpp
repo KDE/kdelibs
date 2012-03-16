@@ -62,7 +62,7 @@ void DBusHelperProxy::executeAction(const QString &action, const QString &helper
     QDBusConnection::systemBus().interface()->startService(helperID);
 
     if (!QDBusConnection::systemBus().connect(helperID, QLatin1String("/"), QLatin1String("org.kde.auth"), QLatin1String("remoteSignal"), this, SLOT(remoteSignalReceived(int,QString,QByteArray)))) {
-        ActionReply errorReply = ActionReply::DBusErrorReply;
+        ActionReply errorReply = ActionReply::DBusErrorReply();
         errorReply.setErrorDescription(tr("DBus Backend error: connection to helper failed. ")
 				       + QDBusConnection::systemBus().lastError().message());
         Q_EMIT actionPerformed(action, errorReply);
@@ -80,7 +80,7 @@ void DBusHelperProxy::executeAction(const QString &action, const QString &helper
     QDBusPendingCall pendingCall = QDBusConnection::systemBus().asyncCall(message);
 
     if (pendingCall.reply().type() == QDBusMessage::ErrorMessage) {
-        ActionReply r = ActionReply::DBusErrorReply;
+        ActionReply r = ActionReply::DBusErrorReply();
         r.setErrorDescription(tr("DBus Backend error: could not contact the helper. "
                 "Connection error: ") + QDBusConnection::systemBus().lastError().message() + tr(". Message error: ") + pendingCall.reply().errorMessage());
         qDebug() << pendingCall.reply().errorMessage();
@@ -195,11 +195,11 @@ bool DBusHelperProxy::hasToStopAction()
 QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArray &callerID, QByteArray arguments)
 {
     if (!responder) {
-        return ActionReply::NoResponderReply.serialized();
+        return ActionReply::NoResponderReply().serialized();
     }
 
     if (!m_currentAction.isEmpty()) {
-        return ActionReply::HelperBusyReply.serialized();
+        return ActionReply::HelperBusyReply().serialized();
     }
 
     QVariantMap args;
@@ -228,11 +228,11 @@ QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArra
                                                  Q_RETURN_ARG(ActionReply, retVal), Q_ARG(QVariantMap, args));
 
         if (!success) {
-            retVal = ActionReply::NoSuchActionReply;
+            retVal = ActionReply::NoSuchActionReply();
         }
 
     } else {
-        retVal = ActionReply::AuthorizationDeniedReply;
+        retVal = ActionReply::AuthorizationDeniedReply();
     }
 
     timer->start();
