@@ -25,7 +25,7 @@ set(libkauth_tests_static_SRCS
 
 add_library(kauth_tests_static STATIC ${libkauth_tests_static_SRCS})
 
-target_link_libraries(kauth_tests_static ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY})
+target_link_libraries(kauth_tests_static ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons)
 
 ########### next target ###############
 

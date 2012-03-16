@@ -39,7 +39,7 @@ private Q_SLOTS:
 
     void testBasicActionExecution();
     void testExecuteJobSignals();
-    void testStartTwice();
+    void testActionData();
 
     void cleanup() {}
     void cleanupTestCase() {}
@@ -103,7 +103,7 @@ void HelperTest::initTestCase()
             KAuth::BackendsManager::authBackend(), SLOT(setNewCapabilities(KAuth::AuthBackend::Capabilities)));
 
     qRegisterMetaType<KAuth::Action::AuthStatus>();
-    qRegisterMetaType<KAuth::ExecuteJob*>();
+    qRegisterMetaType<KJob*>();
 
     // Set up our HelperHandler
     m_handler = new HelperHandler;
@@ -118,77 +118,75 @@ void HelperTest::testBasicActionExecution()
     Q_EMIT changeCapabilities(KAuth::AuthBackend::AuthorizeFromHelperCapability | KAuth::AuthBackend::CheckActionExistenceCapability);
 
     KAuth::Action action(QLatin1String("org.kde.auth.autotest.standardaction"));
-    action.setHelperID(QLatin1String("org.kde.auth.autotest"));
+    action.setHelperId(QLatin1String("org.kde.auth.autotest"));
     QVERIFY(action.isValid());
 
     QCOMPARE(action.status(), KAuth::Action::StatusAuthRequired);
     KAuth::ExecuteJob *job = action.execute();
 
-    job->exec();
+    QVERIFY(job->exec());
 
-    QVERIFY(job->succeeded());
+    QVERIFY(!job->error());
     QVERIFY(job->data().isEmpty());
 }
 
 void HelperTest::testExecuteJobSignals()
 {
     KAuth::Action action(QLatin1String("org.kde.auth.autotest.longaction"));
-    action.setHelperID(QLatin1String("org.kde.auth.autotest"));
+    action.setHelperId(QLatin1String("org.kde.auth.autotest"));
     QVERIFY(action.isValid());
 
     QCOMPARE(action.status(), KAuth::Action::StatusAuthRequired);
 
     KAuth::ExecuteJob *job = action.execute();
 
-    QSignalSpy finishedSpy(job, SIGNAL(finished(KAuth::ExecuteJob*)));
+    QSignalSpy finishedSpy(job, SIGNAL(result(KJob*)));
     QSignalSpy newDataSpy(job, SIGNAL(newData(QVariantMap)));
-    QSignalSpy percentSpy(job, SIGNAL(percent(uint)));
+    QSignalSpy percentSpy(job, SIGNAL(percent(KJob*,unsigned long)));
     QSignalSpy statusChangedSpy(job, SIGNAL(statusChanged(KAuth::Action::AuthStatus)));
 
-    job->exec();
+    QVERIFY(job->exec());
 
     QCOMPARE(finishedSpy.size(), 1);
-    QCOMPARE(finishedSpy.first().first().value<KAuth::ExecuteJob*>(), job);
+    QCOMPARE(qobject_cast<KAuth::ExecuteJob*>(finishedSpy.first().first().value<KJob*>()), job);
     QCOMPARE(statusChangedSpy.size(), 1);
     QCOMPARE(statusChangedSpy.first().first().value<KAuth::Action::AuthStatus>(), KAuth::Action::StatusAuthorized);
     QCOMPARE(percentSpy.size(), 100);
-    for (uint i = 1; i <= 100; ++i) {
-        QCOMPARE(percentSpy.at(i-1).first().toUInt(), i);
+    for (ulong i = 1; i <= 100; ++i) {
+        QCOMPARE((unsigned long)percentSpy.at(i-1).last().toLongLong(), i);
+        QCOMPARE(qobject_cast<KAuth::ExecuteJob*>(percentSpy.at(i-1).first().value<KJob*>()), job);
     }
     QCOMPARE(newDataSpy.size(), 1);
     QCOMPARE(newDataSpy.first().first().value<QVariantMap>().value(QLatin1String("Answer")).toInt(), 42);
 
-    QVERIFY(job->succeeded());
+    QVERIFY(!job->error());
     QVERIFY(job->data().isEmpty());
 }
 
-void HelperTest::testStartTwice()
+void HelperTest::testActionData()
 {
-    KAuth::Action action(QLatin1String("org.kde.auth.autotest.longaction"));
-    action.setHelperID(QLatin1String("org.kde.auth.autotest"));
+    KAuth::Action action(QLatin1String("org.kde.auth.autotest.echoaction"));
+    action.setHelperId(QLatin1String("org.kde.auth.autotest"));
+
+    QVariantMap args;
+    // Fill with random data (and test heavy structures while we're at it)
+    for (int i = 0; i < 150; ++i) {
+        args.insert(QUuid::createUuid(), qrand());
+    }
+    action.setArguments(args);
+
     QVERIFY(action.isValid());
 
     QCOMPARE(action.status(), KAuth::Action::StatusAuthRequired);
-
     KAuth::ExecuteJob *job = action.execute();
 
-    job->start();
-    job->start();
+    QVERIFY(job->exec());
 
-    QEventLoop e;
-    connect(job, SIGNAL(finished(KAuth::ExecuteJob*)), &e, SLOT(quit()));
-    e.exec();
-
-    QVERIFY(!job->succeeded());
-    QCOMPARE(job->error(), KAuth::ActionReply::AlreadyStartedError);
-
-    e.exec();
-
-    QVERIFY(job->succeeded());
-    QVERIFY(job->data().isEmpty());
+    QVERIFY(!job->error());
+    QCOMPARE(job->data(), args);
 }
 
-Q_DECLARE_METATYPE(KAuth::ExecuteJob*)
+Q_DECLARE_METATYPE(KJob*)
 Q_DECLARE_METATYPE(KAuth::Action::AuthStatus)
 Q_DECLARE_METATYPE(QTimer*)
 QTEST_MAIN(HelperTest)

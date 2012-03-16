@@ -62,7 +62,7 @@ void SetupActionTest::testBasicActionProperties()
     QCOMPARE(action.name(), QLatin1String("always.authorized"));
     QCOMPARE(action.details(), QLatin1String("details"));
     QVERIFY(!action.hasHelper());
-    QVERIFY(action.helperID().isEmpty());
+    QVERIFY(action.helperId().isEmpty());
     QCOMPARE(action.status(), KAuth::Action::StatusAuthorized);
 
     QVERIFY(action.arguments().isEmpty());
@@ -82,7 +82,7 @@ void SetupActionTest::testBasicActionProperties()
     QCOMPARE(action.name(), QLatin1String("i.do.not.exist"));
     QCOMPARE(action.details(), QLatin1String("details"));
     QVERIFY(!action.hasHelper());
-    QVERIFY(action.helperID().isEmpty());
+    QVERIFY(action.helperId().isEmpty());
     QCOMPARE(action.status(), KAuth::Action::StatusInvalid);
 }
 
@@ -96,10 +96,9 @@ void SetupActionTest::testUserAuthorization()
     QCOMPARE(action.status(), KAuth::Action::StatusAuthRequired);
     KAuth::ExecuteJob *job = action.execute();
 
-    job->exec();
+    QVERIFY(!job->exec());
 
-    QVERIFY(!job->succeeded());
-    QCOMPARE(job->error(), KAuth::ActionReply::BackendError);
+    QCOMPARE(job->error(), (int)KAuth::ActionReply::BackendError);
 
     Q_EMIT changeCapabilities(KAuth::AuthBackend::CheckActionExistenceCapability | KAuth::AuthBackend::AuthorizeFromClientCapability);
 
@@ -108,9 +107,9 @@ void SetupActionTest::testUserAuthorization()
     QCOMPARE(action.status(), KAuth::Action::StatusAuthRequired);
     job = action.execute();
 
-    job->exec();
+    QVERIFY(job->exec());
 
-    QVERIFY(job->succeeded());
+    QVERIFY(!job->error());
     QVERIFY(job->data().isEmpty());
 }
 
@@ -124,10 +123,9 @@ void SetupActionTest::testAuthorizationFail()
     QCOMPARE(action.status(), KAuth::Action::StatusDenied);
     KAuth::ExecuteJob *job = action.execute();
 
-    job->exec();
+    QVERIFY(!job->exec());
 
-    QVERIFY(!job->succeeded());
-    QCOMPARE(job->error(), KAuth::ActionReply::AuthorizationDeniedError);
+    QCOMPARE(job->error(), (int)KAuth::ActionReply::AuthorizationDeniedError);
     QVERIFY(job->data().isEmpty());
 }
 

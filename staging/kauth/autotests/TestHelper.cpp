@@ -1,5 +1,5 @@
 /*
-*   Copyright (C) 2008 Nicola Gigante <nicola.gigante@gmail.com>
+*   Copyright (C) 2012 Dario Freddi <drf@kde.org>
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU Lesser General Public License as published by
@@ -29,7 +29,7 @@
 ActionReply TestHelper::echoaction(QVariantMap args)
 {
     qDebug() << "Echo action running";
-    ActionReply reply = ActionReply::SuccessReply;
+    ActionReply reply = ActionReply::SuccessReply();
     reply.setData(args);
 
     return reply;
@@ -39,10 +39,10 @@ ActionReply TestHelper::standardaction(QVariantMap args)
 {
     qDebug() << "Standard action running";
     if (args.contains(QLatin1String("fail")) && args[QLatin1String("fail")].toBool()) {
-        return ActionReply::HelperErrorReply;
+        return ActionReply::HelperErrorReply();
     }
 
-    return ActionReply::SuccessReply;
+    return ActionReply::SuccessReply();
 }
 
 ActionReply TestHelper::longaction(QVariantMap args)
@@ -62,5 +62,5 @@ ActionReply TestHelper::longaction(QVariantMap args)
         usleep(20000);
     }
 
-    return ActionReply::SuccessReply;
+    return ActionReply::SuccessReply();
 }
