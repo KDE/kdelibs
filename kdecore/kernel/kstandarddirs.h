@@ -63,9 +63,8 @@ class KConfig;
  * <b>Standard resources that kdelibs allocates are:</b>
  *
  * @li @c apps - Applications menu (.desktop files).
- * @li @c autostart - Autostart directories (both XDG and kde-specific)
+ * @li @c autostart - Autostart directories (both XDG and kde-specific) (deprecated since 5.0, use xdgconf-autostart)
  * @li @c cache - Cached information (e.g. favicons, web-pages)
- * @li @c cgi - CGIs to run from kdehelp.
  * @li @c config - Configuration files.
  * @li @c data - Where applications store data.
  * @li @c emoticons - Emoticons themes
@@ -75,7 +74,6 @@ class KConfig;
  * @li @c kcfg - KConfigXT config files.
  * @li @c lib - Libraries.
  * @li @c locale - Translation files for KLocale.
- * @li @c mime - Mime types defined by KDE-specific .desktop files.
  * @li @c module - Module (dynamically loaded library).
  * @li @c qtplugins - Qt plugins (dynamically loaded objects for Qt)
  * @li @c services - Services.
@@ -626,8 +624,6 @@ public:
      * @li @c locale - @c share/locale
      * @li @c services - @c share/kde4/services
      * @li @c servicetypes - @c share/kde4/servicetypes
-     * @li @c mime - @c share/mimelnk (deprecated)
-     * @li @c cgi - @c cgi-bin
      * @li @c wallpaper - @c share/wallpapers
      * @li @c templates - @c share/templates
      * @li @c exe - @c bin
@@ -636,6 +632,7 @@ public:
      * @li @c qtplugins - @c lib[suffix]/kde4/plugins
      * @li @c kcfg - @c share/config.kcfg
      * @li @c emoticons - @c share/emoticons
+     * @li @c xdgdata - @c shared files (QStandardPaths::GenericDataLocation)
      * @li @c xdgdata-apps - @c applications
      * @li @c xdgdata-icon - @c icons
      * @li @c xdgdata-pixmap - @c pixmaps

@@ -134,10 +134,6 @@ services
 share/kde4/services
 servicetypes
 share/kde4/servicetypes
-mime
-share/mimelnk
-cgi
-cgi-bin
 wallpaper
 share/wallpapers
 templates
@@ -152,6 +148,8 @@ kcfg
 share/config.kcfg
 emoticons
 share/emoticons
+xdgdata
+.
 xdgdata-apps
 applications
 xdgdata-icon
@@ -169,8 +167,6 @@ menus
 xdgconf-autostart
 autostart
 */
-
-// KDE5 TODO: remove cgi-bin and mimelnk stuff
 
 static const char types_string[] =
     "data\0"
@@ -193,10 +189,6 @@ static const char types_string[] =
     "share/kde4/services\0"
     "servicetypes\0"
     "share/kde4/servicetypes\0"
-    "mime\0"
-    "share/mimelnk\0"
-    "cgi\0"
-    "cgi-bin\0"
     "wallpaper\0"
     "share/wallpapers\0"
     "templates\0"
@@ -211,6 +203,7 @@ static const char types_string[] =
     "share/config.kcfg\0"
     "emoticons\0"
     "share/emoticons\0"
+    "xdgdata\0"
     "xdgdata-apps\0"
     "applications\0"
     "xdgdata-icon\0"
@@ -220,6 +213,7 @@ static const char types_string[] =
     "xdgdata-dirs\0"
     "desktop-directories\0"
     "xdgdata-mime\0"
+    "mime\0"
     "xdgconf\0"
     "xdgconf-menu\0"
     "menus\0"
@@ -230,11 +224,11 @@ static const char types_string[] =
 static const int types_indices[] = {
        0,    5,    7,   12,   27,   32,   44,   51,
       64,   71,   85,   90,  103,  109,  122,  129,
-     142,  151,  171,  184,  208,  213,  227,  231,
-     239,  249,  266,  276,  292,  296,  300,  307,
-     317,  327,  345,  350,  368,  378,  394,  407,
-     420,  433,  439,  454,  462,  475,  495,  208,
-     508,    5,  516,  529,  535,  553,   -1
+     142,  151,  171,  184,  208,  218,  235,  245,
+     261,  265,  269,  276,  286,  296,  314,  319,
+     337,  347,  363,    5,  371,  384,  397,  410,
+     416,  431,  439,  452,  472,  485,  490,    5,
+     498,  511,  517,  535,   -1
 };
 
 static void tokenize(QStringList& token, const QString& str,
@@ -1979,7 +1973,7 @@ void KStandardDirs::addKDEDefaults()
     addResourceDir("home", QDir::homePath(), false);
 
     addResourceType("autostart", "xdgconf-autostart", "/"); // merge them, start with xdg autostart
-    addResourceType("autostart", NULL, "share/autostart"); // KDE ones are higher priority
+    addResourceType("autostart", NULL, "share/autostart"); // KDE ones are higher priority - KDE 5: deprecated, use xdgconf-autostart
 }
 
 static QStringList lookupProfiles(const QString &mapFile)
