@@ -276,8 +276,6 @@ QString KStandardDirs::installPath(const char *type)
         case 'm':
             if (strcmp("module", type) == 0)
                 return QFile::decodeName(PLUGIN_INSTALL_DIR "/");
-            if (strcmp("mime", type) == 0)
-                return QFile::decodeName(MIME_INSTALL_DIR "/");
             break;
         case 'q':
             if (strcmp("qtplugins", type) == 0)
