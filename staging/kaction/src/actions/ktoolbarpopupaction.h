@@ -45,7 +45,7 @@ class KMenu;
  * used, and enough for menus, but in toolbars there is \e also an optional popup
  * to go back N steps or undo N steps.
  */
-class KDEUI_EXPORT KToolBarPopupAction : public KAction
+class KACTIONS_EXPORT KToolBarPopupAction : public KAction
 {
   Q_OBJECT
   Q_PROPERTY( bool delayed READ delayed WRITE setDelayed )

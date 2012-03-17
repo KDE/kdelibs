@@ -26,7 +26,7 @@
 #ifndef KACTION_H
 #define KACTION_H
 
-#include <kdeui_export.h>
+#include <kactions_export.h>
 #include <kguiitem.h>
 #include <kshortcut.h>
 
@@ -213,7 +213,7 @@ namespace KAuth {
  *
  * @see KStandardAction
  */
-class KDEUI_EXPORT KAction : public QWidgetAction
+class KACTIONS_EXPORT KAction : public QWidgetAction
 {
   Q_OBJECT
 

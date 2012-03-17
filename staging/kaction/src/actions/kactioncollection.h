@@ -53,7 +53,7 @@ class QString;
  * to the actions within, you have to call associateWidget() or
  * addAssociatedWidget() to have them working.
  */
-class KDEUI_EXPORT KActionCollection : public QObject
+class KACTIONS_EXPORT KActionCollection : public QObject
 {
   friend class KXMLGUIClient;
 

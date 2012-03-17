@@ -13,7 +13,7 @@ include(ECMVersion)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${EXTRA_CMAKE_MODULES_MODULE_PATH})
 
-#generate_export_header(kdeui_kactions)
+#generate_export_header(kactions)
 
 include_directories(
 ${kcoreaddons_BINARY_DIR}/src
@@ -87,6 +87,7 @@ install( FILES
  actions/ktoolbarlabelaction.h
  actions/ktoolbarpopupaction.h
  actions/ktoolbarspaceraction.h
+ ${CMAKE_CURRENT_BINARY_DIR}/kactions_export.h
  DESTINATION ${INCLUDE_INSTALL_DIR}
  )
 

@@ -37,7 +37,7 @@ class KGuiItem;
  *  This action provides two states: checked or not.
  *
  */
-class KDEUI_EXPORT KToggleAction : public KAction
+class KACTIONS_EXPORT KToggleAction : public KAction
 {
     Q_OBJECT
 

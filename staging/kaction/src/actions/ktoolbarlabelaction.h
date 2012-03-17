@@ -46,7 +46,7 @@
  *
  * @author Felix Berger <felixberger@beldesign.de>
  */
-class KDEUI_EXPORT KToolBarLabelAction : public KAction
+class KACTIONS_EXPORT KToolBarLabelAction : public KAction
 {
   Q_OBJECT
 

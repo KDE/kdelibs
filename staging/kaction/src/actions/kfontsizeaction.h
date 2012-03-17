@@ -33,7 +33,7 @@
  * An action to allow changing of the font size.
  * This action will be shown as a combobox on a toolbar with a proper set of font sizes.
  */
-class KDEUI_EXPORT KFontSizeAction : public KSelectAction
+class KACTIONS_EXPORT KFontSizeAction : public KSelectAction
 {
     Q_OBJECT
     Q_PROPERTY( int fontSize READ fontSize WRITE setFontSize )

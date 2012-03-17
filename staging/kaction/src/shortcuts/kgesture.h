@@ -20,7 +20,7 @@
 #ifndef KGESTURE_H
 #define KGESTURE_H
 
-#include <kdeui_export.h>
+#include <kactions_export.h>
 
 #include <QtCore/QString>
 #include <QPolygon>
@@ -34,7 +34,7 @@
 
 class KShapeGesturePrivate;
 //TODO: implement operator== for special situations like in KKeyChooser.
-class KDEUI_EXPORT KShapeGesture
+class KACTIONS_EXPORT KShapeGesture
 {
 public:
     /**
@@ -149,7 +149,7 @@ inline uint qHash(const KShapeGesture &key)
 
 class KRockerGesturePrivate;
 
-class KDEUI_EXPORT KRockerGesture
+class KACTIONS_EXPORT KRockerGesture
 {
 public:
     /**

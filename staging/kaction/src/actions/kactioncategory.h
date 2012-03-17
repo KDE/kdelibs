@@ -92,7 +92,7 @@ class QAction;
  *
  * \endcode
  */
-class KDEUI_EXPORT KActionCategory : public QObject
+class KACTIONS_EXPORT KActionCategory : public QObject
     {
     Q_OBJECT
 

@@ -46,7 +46,7 @@
  * state (for example, showNormal() resets all window states, not just
  * fullscreen). Use the KToggleFullScreenAction::setFullScreen() helper function.
  */
-class KDEUI_EXPORT KToggleFullScreenAction : public KToggleAction
+class KACTIONS_EXPORT KToggleFullScreenAction : public KToggleAction
 {
     Q_OBJECT
 

@@ -124,28 +124,28 @@ namespace KStandardShortcut
    * default keybinding will always be returned.
    * @param id the id of the accelerator
    */
-  KDEUI_EXPORT const KShortcut &shortcut(StandardShortcut id);
+  KACTIONS_EXPORT const KShortcut &shortcut(StandardShortcut id);
 
   /**
    * Returns a unique name for the given accel.
    * @param id the id of the accelerator
    * @return the unique name of the accelerator
    */
-  KDEUI_EXPORT QString name(StandardShortcut id);
+  KACTIONS_EXPORT QString name(StandardShortcut id);
 
   /**
    * Returns a localized label for user-visible display.
    * @param id the id of the accelerator
    * @return a localized label for the accelerator
    */
-  KDEUI_EXPORT QString label(StandardShortcut id);
+  KACTIONS_EXPORT QString label(StandardShortcut id);
 
   /**
    * Returns an extended WhatsThis description for the given accelerator.
    * @param id the id of the accelerator
    * @return a localized description of the accelerator
    */
-  KDEUI_EXPORT QString whatsThis(StandardShortcut id);
+  KACTIONS_EXPORT QString whatsThis(StandardShortcut id);
 
   /**
    * Return the StandardShortcut id of the standard accel action which
@@ -155,7 +155,7 @@ namespace KStandardShortcut
    * @return the id of the standard accelerator, or AccelNone if there
    *          is none
    */
-  KDEUI_EXPORT StandardShortcut find(const QKeySequence &keySeq);
+  KACTIONS_EXPORT StandardShortcut find(const QKeySequence &keySeq);
 
   /**
    * Return the StandardShortcut id of the standard accel action which
@@ -165,7 +165,7 @@ namespace KStandardShortcut
    * @return the id of the standard accelerator, or AccelNone if there
    *          is none
    */
-  KDEUI_EXPORT StandardShortcut find(const char *keyName);
+  KACTIONS_EXPORT StandardShortcut find(const char *keyName);
 
   /**
    * Returns the hardcoded default shortcut for @p id.
@@ -173,309 +173,309 @@ namespace KStandardShortcut
    * @param id the id of the accelerator
    * @return the default shortcut of the accelerator
    */
-  KDEUI_EXPORT KShortcut hardcodedDefaultShortcut(StandardShortcut id);
+  KACTIONS_EXPORT KShortcut hardcodedDefaultShortcut(StandardShortcut id);
 
   /**
    * Saves the new shortcut \a cut for standard accel \a id.
    */
-  KDEUI_EXPORT void saveShortcut(StandardShortcut id, const KShortcut &newShortcut);
+  KACTIONS_EXPORT void saveShortcut(StandardShortcut id, const KShortcut &newShortcut);
 
   /**
    * Open file. Default: Ctrl-o
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &open();
+  KACTIONS_EXPORT const KShortcut &open();
 
   /**
    * Create a new document (or whatever). Default: Ctrl-n
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &openNew();
+  KACTIONS_EXPORT const KShortcut &openNew();
 
   /**
    * Close current document. Default: Ctrl-w
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &close();
+  KACTIONS_EXPORT const KShortcut &close();
 
   /**
    * Save current document. Default: Ctrl-s
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &save();
+  KACTIONS_EXPORT const KShortcut &save();
 
   /**
    * Print current document. Default: Ctrl-p
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &print();
+  KACTIONS_EXPORT const KShortcut &print();
 
   /**
    * Quit the program. Default: Ctrl-q
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &quit();
+  KACTIONS_EXPORT const KShortcut &quit();
 
   /**
    * Undo last operation. Default: Ctrl-z
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &undo();
+  KACTIONS_EXPORT const KShortcut &undo();
 
   /**
    * Redo. Default: Shift-Ctrl-z
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &redo();
+  KACTIONS_EXPORT const KShortcut &redo();
 
   /**
    * Cut selected area and store it in the clipboard. Default: Ctrl-x
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &cut();
+  KACTIONS_EXPORT const KShortcut &cut();
 
   /**
    * Copy selected area into the clipboard. Default: Ctrl-c
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &copy();
+  KACTIONS_EXPORT const KShortcut &copy();
 
   /**
    * Paste contents of clipboard at mouse/cursor position. Default: Ctrl-v
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &paste();
+  KACTIONS_EXPORT const KShortcut &paste();
 
   /**
    * Paste the selection at mouse/cursor position. Default: Ctrl-Shift-Insert
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &pasteSelection();
+  KACTIONS_EXPORT const KShortcut &pasteSelection();
 
   /**
    * Select all. Default: Ctrl-A
    * @return the shortcut of the standard accelerator
    **/
-  KDEUI_EXPORT const KShortcut &selectAll();
+  KACTIONS_EXPORT const KShortcut &selectAll();
 
   /**
    * Delete a word back from mouse/cursor position. Default: Ctrl-Backspace
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &deleteWordBack();
+  KACTIONS_EXPORT const KShortcut &deleteWordBack();
 
   /**
    * Delete a word forward from mouse/cursor position. Default: Ctrl-Delete
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &deleteWordForward();
+  KACTIONS_EXPORT const KShortcut &deleteWordForward();
 
   /**
    * Find, search. Default: Ctrl-f
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &find();
+  KACTIONS_EXPORT const KShortcut &find();
 
   /**
    * Find/search next. Default: F3
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &findNext();
+  KACTIONS_EXPORT const KShortcut &findNext();
 
   /**
    * Find/search previous. Default: Shift-F3
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &findPrev();
+  KACTIONS_EXPORT const KShortcut &findPrev();
 
   /**
    * Find and replace matches. Default: Ctrl-r
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &replace();
+  KACTIONS_EXPORT const KShortcut &replace();
 
   /**
    * Zoom in. Default: Ctrl-Plus
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &zoomIn();
+  KACTIONS_EXPORT const KShortcut &zoomIn();
 
   /**
    * Zoom out. Default: Ctrl-Minus
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &zoomOut();
+  KACTIONS_EXPORT const KShortcut &zoomOut();
 
   /**
    * Toggle insert/overwrite (with visual feedback, e.g. in the statusbar). Default: Insert
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &insert();
+  KACTIONS_EXPORT const KShortcut &insert();
 
   /**
    * Goto home page. Default: Alt-Home
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &home();
+  KACTIONS_EXPORT const KShortcut &home();
 
   /**
    * Goto beginning of the document. Default: Ctrl-Home
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &begin();
+  KACTIONS_EXPORT const KShortcut &begin();
 
   /**
    * Goto end of the document. Default: Ctrl-End
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &end();
+  KACTIONS_EXPORT const KShortcut &end();
 
   /**
    * Goto beginning of current line. Default: Home
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &beginningOfLine();
+  KACTIONS_EXPORT const KShortcut &beginningOfLine();
 
   /**
    * Goto end of current line. Default: End
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &endOfLine();
+  KACTIONS_EXPORT const KShortcut &endOfLine();
 
   /**
    * Scroll up one page. Default: Prior
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &prior();
+  KACTIONS_EXPORT const KShortcut &prior();
 
   /**
    * Scroll down one page. Default: Next
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &next();
+  KACTIONS_EXPORT const KShortcut &next();
 
   /**
    * Go to line. Default: Ctrl+G
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &gotoLine();
+  KACTIONS_EXPORT const KShortcut &gotoLine();
 
   /**
    * Add current page to bookmarks. Default: Ctrl+B
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &addBookmark();
+  KACTIONS_EXPORT const KShortcut &addBookmark();
 
   /**
    * Next Tab. Default: Ctrl-<
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &tabNext();
+  KACTIONS_EXPORT const KShortcut &tabNext();
 
   /**
    * Previous Tab. Default: Ctrl->
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &tabPrev();
+  KACTIONS_EXPORT const KShortcut &tabPrev();
 
   /**
    * Full Screen Mode. Default: Ctrl+Shift+F
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &fullScreen();
+  KACTIONS_EXPORT const KShortcut &fullScreen();
 
   /**
    * Help the user in the current situation. Default: F1
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &help();
+  KACTIONS_EXPORT const KShortcut &help();
 
   /**
    * Complete text in input widgets. Default Ctrl+E
    * @return the shortcut of the standard accelerator
    **/
-  KDEUI_EXPORT const KShortcut &completion();
+  KACTIONS_EXPORT const KShortcut &completion();
 
   /**
    * Iterate through a list when completion returns
    * multiple items. Default: Ctrl+Up
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &prevCompletion();
+  KACTIONS_EXPORT const KShortcut &prevCompletion();
 
   /**
    * Iterate through a list when completion returns
    * multiple items. Default: Ctrl+Down
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &nextCompletion();
+  KACTIONS_EXPORT const KShortcut &nextCompletion();
 
   /**
    * Find a string within another string or list of strings.
    * Default: Ctrl-T
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &substringCompletion();
+  KACTIONS_EXPORT const KShortcut &substringCompletion();
 
   /**
    * Help users iterate through a list of entries. Default: Up
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &rotateUp();
+  KACTIONS_EXPORT const KShortcut &rotateUp();
 
   /**
    * Help users iterate through a list of entries. Default: Down
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &rotateDown();
+  KACTIONS_EXPORT const KShortcut &rotateDown();
 
   /**
    * What's This button. Default: Shift+F1
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &whatsThis();
+  KACTIONS_EXPORT const KShortcut &whatsThis();
 
   /**
    * Reload. Default: F5
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &reload();
+  KACTIONS_EXPORT const KShortcut &reload();
 
   /**
    * Up. Default: Alt+Up
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &up();
+  KACTIONS_EXPORT const KShortcut &up();
 
   /**
    * Back. Default: Alt+Left
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &back();
+  KACTIONS_EXPORT const KShortcut &back();
 
   /**
    * Forward. Default: ALT+Right
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &forward();
+  KACTIONS_EXPORT const KShortcut &forward();
 
   /**
    * BackwardWord. Default: Ctrl+Left
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &backwardWord();
+  KACTIONS_EXPORT const KShortcut &backwardWord();
 
   /**
    * ForwardWord. Default: Ctrl+Right
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &forwardWord();
+  KACTIONS_EXPORT const KShortcut &forwardWord();
 
   /**
    * Show Menu Bar.  Default: Ctrl-M
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &showMenubar();
+  KACTIONS_EXPORT const KShortcut &showMenubar();
 
 }
 

@@ -43,7 +43,7 @@ class KToolBar;
  * signal. It will be emitted after the toolbar's
  * visibility has changed, whenever it changes.
  */
-class KDEUI_EXPORT KToggleToolBarAction : public KToggleAction
+class KACTIONS_EXPORT KToggleToolBarAction : public KToggleAction
 {
     Q_OBJECT
 

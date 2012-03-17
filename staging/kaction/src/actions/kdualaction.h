@@ -55,7 +55,7 @@ class KDualActionPrivate;
  * @author Aurélien Gâteau <agateau@kde.org>
  * @since 4.6
  */
-class KDEUI_EXPORT KDualAction : public KAction
+class KACTIONS_EXPORT KDualAction : public KAction
 {
     Q_OBJECT
 public:

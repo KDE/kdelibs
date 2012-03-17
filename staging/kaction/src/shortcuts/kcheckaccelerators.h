@@ -22,7 +22,7 @@
 #ifndef KCHECKACCELERATORS_H_
 #define KCHECKACCELERATORS_H_
 
-#include <kdeui_export.h>
+#include <kactions_export.h>
 
 #include <QObject>
 #include <QPointer>

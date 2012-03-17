@@ -27,7 +27,7 @@
 #ifndef KSHORTCUT_H
 #define KSHORTCUT_H
 
-#include <kdeui_export.h>
+#include <kactions_export.h>
 
 #include <QtCore/QList>
 #include <QtCore/QMetaType>
@@ -54,7 +54,7 @@ class KShortcutPrivate;
 *  closeAction->setShortcut(closeShortcut);
 * \endcode
 */
-class KDEUI_EXPORT KShortcut
+class KACTIONS_EXPORT KShortcut
 {
 public:
     /**

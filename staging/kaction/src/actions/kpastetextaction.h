@@ -39,7 +39,7 @@ class KPasteTextActionPrivate;
  * If klipper is not running, the menu has only one
  * item: the current clipboard content.
  */
-class KDEUI_EXPORT KPasteTextAction: public KAction
+class KACTIONS_EXPORT KPasteTextAction: public KAction
 {
     Q_OBJECT
 public:

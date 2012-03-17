@@ -44,7 +44,7 @@ class KIcon;
  *
  *  @author Michael Koch
  */
-class KDEUI_EXPORT KRecentFilesAction : public KSelectAction
+class KACTIONS_EXPORT KRecentFilesAction : public KSelectAction
 {
   Q_OBJECT
   Q_PROPERTY( int maxItems READ maxItems WRITE setMaxItems )

@@ -22,7 +22,7 @@
 #ifndef _KGLOBALACCEL_H_
 #define _KGLOBALACCEL_H_
 
-#include "kdeui_export.h"
+#include "kactions_export.h"
 #include "kaction.h"
 #include "kglobalshortcutinfo.h"
 
@@ -43,7 +43,7 @@ class OrgKdeKglobalaccelComponentInterface;
  * @see KKeyChooser
  * @see KKeyDialog
  */
-class KDEUI_EXPORT KGlobalAccel : public QObject
+class KACTIONS_EXPORT KGlobalAccel : public QObject
 {
     Q_OBJECT
 
