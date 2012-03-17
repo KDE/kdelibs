@@ -23,6 +23,7 @@ ${kcoreaddons_SOURCE_DIR}/src/jobs
 ${kcoreaddons_SOURCE_DIR}/src/text
 ${kcoreaddons_SOURCE_DIR}/src/kernel
 ${kcoreaddons_SOURCE_DIR}/src/randomness
+${CMAKE_CURRENT_SOURCE_DIR}/shortcuts
 )       
 
 
@@ -90,13 +91,25 @@ install( FILES
  )
 
 
+
+set(kglobalaccel_component_xml ${CMAKE_SOURCE_DIR}/staging/kaction/src/shortcuts/org.kde.kglobalaccel.Component.xml)
+set_source_files_properties(${kglobalaccel_component_xml} PROPERTIES INCLUDE "kglobalshortcutinfo_p.h")
+qt4_add_dbus_interface(kactions_SRCS ${kglobalaccel_component_xml} kglobalaccel_component_interface )
+install(FILES ${kglobalaccel_component_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
+
+
+set(kglobalaccel_xml ${CMAKE_SOURCE_DIR}/staging/kaction/src/shortcuts/org.kde.KGlobalAccel.xml)
+set_source_files_properties(${kglobalaccel_xml} PROPERTIES INCLUDE "kglobalshortcutinfo_p.h")
+qt4_add_dbus_interface(kactions_SRCS ${kglobalaccel_xml} kglobalaccel_interface )
+install(FILES ${kglobalaccel_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
+
 add_library(kactions ${LIBRARY_TYPE} ${kactions_SRCS})
 
 generate_export_header(kactions)
 
 set_target_properties(kactions PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 
-target_link_libraries(kactions kdeui kdecore kdecoreaddons ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${KDEUI_EXTRA_LIBS})
+target_link_libraries(kactions kdecore kdecoreaddons ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${KDEUI_EXTRA_LIBS})
 
 install(TARGETS kactions EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
