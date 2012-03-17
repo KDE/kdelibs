@@ -117,27 +117,25 @@ public:
 data
 .
 html
-share/doc/HTML
+doc/HTML
 icon
-share/icons
+icons
 config
-share/config
+config
 pixmap
-share/pixmaps
-apps
-share/applnk
+pixmaps
 sound
-share/sounds
+sounds
 locale
-share/locale
+locale
 services
-share/kde4/services
+kde4/services
 servicetypes
-share/kde4/servicetypes
+kde4/servicetypes
 wallpaper
-share/wallpapers
+wallpapers
 templates
-share/templates
+templates
 exe
 bin
 module
@@ -145,9 +143,9 @@ module
 qtplugins
 %lib/kde4/plugins
 kcfg
-share/config.kcfg
+config.kcfg
 emoticons
-share/emoticons
+emoticons
 xdgdata
 .
 xdgdata-apps
@@ -172,27 +170,22 @@ static const char types_string[] =
     "data\0"
     ".\0"
     "html\0"
-    "share/doc/HTML\0"
+    "doc/HTML\0"
     "icon\0"
-    "share/icons\0"
+    "icons\0"
     "config\0"
-    "share/config\0"
     "pixmap\0"
-    "share/pixmaps\0"
-    "apps\0"
-    "share/applnk\0"
+    "pixmaps\0"
     "sound\0"
-    "share/sounds\0"
+    "sounds\0"
     "locale\0"
-    "share/locale\0"
     "services\0"
-    "share/kde4/services\0"
+    "kde4/services\0"
     "servicetypes\0"
-    "share/kde4/servicetypes\0"
+    "kde4/servicetypes\0"
     "wallpaper\0"
-    "share/wallpapers\0"
+    "wallpapers\0"
     "templates\0"
-    "share/templates\0"
     "exe\0"
     "bin\0"
     "module\0"
@@ -200,16 +193,13 @@ static const char types_string[] =
     "qtplugins\0"
     "%lib/kde4/plugins\0"
     "kcfg\0"
-    "share/config.kcfg\0"
+    "config.kcfg\0"
     "emoticons\0"
-    "share/emoticons\0"
     "xdgdata\0"
     "xdgdata-apps\0"
     "applications\0"
     "xdgdata-icon\0"
-    "icons\0"
     "xdgdata-pixmap\0"
-    "pixmaps\0"
     "xdgdata-dirs\0"
     "desktop-directories\0"
     "xdgdata-mime\0"
@@ -222,13 +212,13 @@ static const char types_string[] =
     "\0";
 
 static const int types_indices[] = {
-       0,    5,    7,   12,   27,   32,   44,   51,
-      64,   71,   85,   90,  103,  109,  122,  129,
-     142,  151,  171,  184,  208,  218,  235,  245,
-     261,  265,  269,  276,  286,  296,  314,  319,
-     337,  347,  363,    5,  371,  384,  397,  410,
-     416,  431,  439,  452,  472,  485,  490,    5,
-     498,  511,  517,  535,   -1
+       0,    5,    7,   12,   21,   26,   32,   32,
+      39,   46,   54,   60,   67,   67,   74,   83,
+      97,  110,  128,  138,  149,  149,  159,  163,
+     167,  174,  184,  194,  212,  217,  229,  229,
+     239,    5,  247,  260,  273,   26,  286,   46,
+     301,  314,  334,  347,  352,    5,  360,  373,
+     379,  397,   -1
 };
 
 static void tokenize(QStringList& token, const QString& str,
@@ -243,10 +233,6 @@ QString KStandardDirs::installPath(const char *type)
     Q_ASSERT(type != NULL);
 
     switch (type[0]) {
-        case 'a':
-            if (strcmp("apps", type) == 0)
-                return QFile::decodeName(APPLNK_INSTALL_DIR "/");
-            break;
         case 'c':
             if (strcmp("config", type) == 0)
                 return QFile::decodeName(CONFIG_INSTALL_DIR "/");
@@ -1231,15 +1217,19 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
                 }
             }
 
-            // KDE5 TODO: We should use xdgdata_prefixes for every resource in share/*,
+            // KDE5: We now use xdgdata_prefixes for every resource in share/*,
             // i.e. everything except exe, lib, config and xdgconf...
+            // Note: same logic is duplicated in saveLocation!
+            // So we could almost get rid of $KDEHOME, if we don't support binaries and libs in the user home dir?
+            const QByteArray typeBa(type);
             const QStringList *prefixList = 0;
-            if (strncmp(type, "xdgdata", 7) == 0 || strcmp(type, "data") == 0)
-                prefixList = &(xdgdata_prefixes);
-            else if (strncmp(type, "xdgconf", 7) == 0)
+            if (strncmp(type, "xdgconf", 7) == 0) {
                 prefixList = &(xdgconf_prefixes);
-            else
+            } else if (typeBa == "exe" || typeBa == "lib" || typeBa == "config" /*for kde4 compat (config file migration)*/) {
                 prefixList = &m_prefixes;
+            } else { // was: if (strncmp(type, "xdgdata", 7) == 0 || typeBa == "data")
+                prefixList = &(xdgdata_prefixes);
+            }
 
             for (QStringList::ConstIterator pit = prefixList->begin();
                  pit != prefixList->end();
@@ -1610,16 +1600,18 @@ QString KStandardDirs::saveLocation(const char *type,
                 QString rest = path.mid(pos + 1);
                 QString basepath = saveLocation(rel.toUtf8().constData(), QString(), create);
                 path = basepath + rest;
-            } else
-
+            } else {
                 // Check for existence of typed directory + suffix
-                if (strncmp(type, "xdgdata-", 8) == 0 || strcmp(type, "data") == 0) {
-                    path = realPath( localxdgdatadir() + path ) ;
-                } else if (strncmp(type, "xdgconf", 7) == 0) {
+                // Note: same logic is duplicated in resourceDirs!
+                const QByteArray typeBa(type);
+                if (strncmp(type, "xdgconf", 7) == 0) {
                     path = realPath( localxdgconfdir() + path );
-                } else {
+                } else if (typeBa == "exe" || typeBa == "lib" || typeBa == "config" /*for kde4 compat (config file migration)*/) {
                     path = realPath( localkdedir() + path );
+                } else {
+                    path = realPath( localxdgdatadir() + path ) ;
                 }
+            }
         }
         else {
             dirs = d->m_absolutes.value(type);

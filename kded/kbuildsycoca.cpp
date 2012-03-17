@@ -800,8 +800,8 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
       {
         // These directories may have been created with 0700 permission
         // better delete them if they are empty
-        QString applnkDir = KGlobal::dirs()->saveLocation("apps", QString(), false);
-        ::rmdir(QFile::encodeName(applnkDir));
+        QString appsDir = KGlobal::dirs()->saveLocation("xdgdata-apps", QString(), false);
+        ::rmdir(QFile::encodeName(appsDir));
         QString servicetypesDir = KGlobal::dirs()->saveLocation("servicetypes", QString(), false);
         ::rmdir(QFile::encodeName(servicetypesDir));
       }

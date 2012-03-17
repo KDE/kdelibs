@@ -62,7 +62,6 @@ class KConfig;
  *
  * <b>Standard resources that kdelibs allocates are:</b>
  *
- * @li @c apps - Applications menu (.desktop files).
  * @li @c autostart - Autostart directories (both XDG and kde-specific) (deprecated since 5.0, use xdgconf-autostart)
  * @li @c cache - Cached information (e.g. favicons, web-pages)
  * @li @c config - Configuration files.
@@ -371,9 +370,9 @@ public:
     /**
      * Tries to find all directories whose names consist of the
      * specified type and a relative path. So
-     * findDirs("apps", "Settings") would return
-     * @li /home/joe/.kde/share/applnk/Settings/
-     * @li /opt/kde/share/applnk/Settings/
+     * findDirs("xdgdata-apps", "Settings") would return
+     * @li /home/joe/.local/share/applications/Settings/
+     * @li /usr/share/applications/Settings/
      *
      * (from the most local to the most global)
      *
@@ -619,7 +618,6 @@ public:
      * @li @c icon - @c share/icon
      * @li @c config - @c share/config
      * @li @c pixmap - @c share/pixmaps
-     * @li @c apps - @c share/applnk (deprecated)
      * @li @c sound - @c share/sounds
      * @li @c locale - @c share/locale
      * @li @c services - @c share/kde4/services
