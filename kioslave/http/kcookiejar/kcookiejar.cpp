@@ -260,7 +260,7 @@ KCookieJar::KCookieJar()
     m_configChanged = false;
     m_cookiesChanged = false;
 
-    KConfig cfg( "khtml/domain_info", KConfig::NoGlobals, "data" );
+    KConfig cfg("khtml/domain_info", KConfig::NoGlobals, QStandardPaths::GenericDataLocation);
     KConfigGroup group( &cfg, QString() );
     m_gTLDs = QSet<QString>::fromList(group.readEntry("gTLDs", QStringList()));
     m_twoLevelTLD = QSet<QString>::fromList(group.readEntry("twoLevelTLD", QStringList()));
@@ -356,7 +356,7 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
           advice = cookieList->getAdvice();
 
        QMutableListIterator<KHttpCookie> cookieIt (*cookieList);
-       while (cookieIt.hasNext()) 
+       while (cookieIt.hasNext())
        {
           KHttpCookie& cookie = cookieIt.next();
           // If the we are setup to automatically accept all session cookies and to
@@ -372,10 +372,10 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
 
           if( cookie.isSecure() && !secureRequest )
              continue;
-          
+
           if( cookie.isHttpOnly() && useDOMFormat )
              continue;
-          
+
           // Do not send expired cookies.
           if ( cookie.isExpired())
           {
@@ -395,7 +395,7 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
 
           allCookies.append(cookie);
        }
-       
+
        if (it == itEnd)
           break; // Finished.
     }
@@ -410,10 +410,10 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
     {
         if (!useDOMFormat)
             cookieStr = QL1S("Cookie: ");
-        
+
         if (protVersion > 0)
             cookieStr = cookieStr + QL1S("$Version=") + QString::number(protVersion) + QL1S("; ");
-          
+
         Q_FOREACH(const KHttpCookie& cookie, allCookies)
             cookieStr = cookieStr + cookie.cookieStr(useDOMFormat) + QL1S("; ");
 
@@ -654,7 +654,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
 
     bool isRFC2965 = false;
     bool crossDomain = false;
-    const char *cookieStr = cookie_headers.constData();    
+    const char *cookieStr = cookie_headers.constData();
 
     QString defaultPath;
     const int index = path.lastIndexOf(QL1C('/'));
@@ -789,7 +789,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
             }
             else if (isRFC2965 && (Name.compare(QL1S("port"), Qt::CaseInsensitive) == 0 ||
                      (Name.isEmpty() && Value.compare(QL1S("port"), Qt::CaseInsensitive) == 0)))
-            {              
+            {
                 // Based on the port selection rule of RFC 2965 section 3.3.4...
                 if (Name.isEmpty())
                 {
@@ -1158,7 +1158,7 @@ void KCookieJar::eatSessionCookies( long windowId )
 {
     if (!windowId)
         return;
-    
+
     Q_FOREACH(const QString& domain, m_domainList)
         eatSessionCookies( domain, windowId, false );
 }
@@ -1440,7 +1440,7 @@ bool KCookieJar::loadCookies(const QString &_filename)
             KHttpCookie cookie(host, domain, path, name, value, expDate,
                                protVer, secure, httpOnly, explicitPath);
             if (ports.count())
-                cookie.mPorts = ports;            
+                cookie.mPorts = ports;
             addCookie(cookie);
         }
     }
@@ -1466,7 +1466,7 @@ void KCookieJar::saveConfig(KConfig *_config)
     policyGroup.writeEntry("CookieGlobalAdvice", adviceToStr( m_globalAdvice));
 
     QStringList domainSettings;
-    QStringListIterator it (m_domainList);    
+    QStringListIterator it (m_domainList);
     while (it.hasNext())
     {
          const QString& domain = it.next();
@@ -1516,7 +1516,7 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
         const int sepPos = value.lastIndexOf(QL1C(':'));
         if (sepPos <= 0)
           continue;
-        
+
         const QString domain(value.left(sepPos));
         KCookieAdvice advice = strToAdvice( value.mid(sepPos + 1) );
         setDomainAdvice(domain, advice);
