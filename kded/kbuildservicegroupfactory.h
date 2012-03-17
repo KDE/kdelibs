@@ -40,7 +40,7 @@ public:
   /**
    * Create new entry.
    */
-  virtual KServiceGroup * createEntry(const QString &, const char *) const;
+   virtual KServiceGroup * createEntry(const QString &) const;
 
   virtual KServiceGroup * createEntry(int) const { assert(0); return 0L; }
 
@@ -87,7 +87,7 @@ public:
   /**
    * Returns all resource types for this service factory
    */
-  static QStringList resourceTypes();
+   static QStringList resourceDirs();
 };
 
 #endif

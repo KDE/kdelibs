@@ -25,22 +25,26 @@
 
 struct KSycocaResource
 {
-   QString resource;
-   QString extension;
+    QByteArray resource;
+    QString subdir;
+    QString extension;
 };
 
 class KSycocaResourceList : public QLinkedList<KSycocaResource>
 {
 public:
-   KSycocaResourceList() { }
+    KSycocaResourceList() { }
 
-   void add(const QString &resource, const QString &filter)
-   {
-     KSycocaResource res;
-     res.resource = resource;
-     res.extension = filter.mid(1);
-     append(res);
-   }
+    // resource is just used in the databaseChanged signal
+    // subdir is always under QStandardPaths::GenericDataLocation. E.g. mime, kde4/services, etc.
+    void add(const QByteArray& resource, const QString& subdir, const QString &filter)
+    {
+        KSycocaResource res;
+        res.resource = resource;
+        res.subdir = subdir;
+        res.extension = filter.mid(1);
+        append(res);
+    }
 };
 
 #endif

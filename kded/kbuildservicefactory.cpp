@@ -48,18 +48,16 @@ KBuildServiceFactory::KBuildServiceFactory( KSycocaFactory *serviceTypeFactory,
     m_resourceList = new KSycocaResourceList();
     // We directly care about services desktop files.
     // All the application desktop files are parsed on demand from the vfolder menu code.
-    m_resourceList->add( "services", "*.desktop" );
+    m_resourceList->add("services", "kde4/services", "*.desktop");
 
     m_nameDict = new KSycocaDict();
     m_relNameDict = new KSycocaDict();
     m_menuIdDict = new KSycocaDict();
 }
 
-// return all service types for this factory
-// i.e. first arguments to m_resourceList->add() above
-QStringList KBuildServiceFactory::resourceTypes()
+QStringList KBuildServiceFactory::resourceDirs()
 {
-    return QStringList() << "services";
+    return QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "kde4/services", QStandardPaths::LocateDirectory);
 }
 
 KBuildServiceFactory::~KBuildServiceFactory()
@@ -82,7 +80,7 @@ KService::Ptr KBuildServiceFactory::findServiceByMenuId(const QString &menuId)
     return m_menuIdMemoryHash.value(menuId);
 }
 
-KSycocaEntry* KBuildServiceFactory::createEntry( const QString& file, const char *resource ) const
+KSycocaEntry* KBuildServiceFactory::createEntry(const QString& file) const
 {
     QString name = file;
     int pos = name.lastIndexOf('/');
@@ -91,7 +89,7 @@ KSycocaEntry* KBuildServiceFactory::createEntry( const QString& file, const char
     }
     // Is it a .desktop file?
     if (name.endsWith(QLatin1String(".desktop"))) {
-        KDesktopFile desktopFile(resource, file);
+        KDesktopFile desktopFile(QStandardPaths::GenericDataLocation, file);
 
         KService * serv = new KService(&desktopFile);
         //kDebug(7021) << "Creating KService from" << file << "entryPath=" << serv->entryPath();

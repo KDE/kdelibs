@@ -34,15 +34,15 @@ KBuildMimeTypeFactory::KBuildMimeTypeFactory() :
     KMimeTypeFactory()
 {
     m_resourceList = new KSycocaResourceList;
-    // We want all xml files under xdgdata-mime - but not packages/*.xml
-    m_resourceList->add( "xdgdata-mime", "*.xml" );
+    // We want all xml files under xdgdata/mime - but not mime/packages/*.xml
+    m_resourceList->add("xdgdata-mime", "mime", "*.xml");
 }
 
 // return all resource types for this factory
 // i.e. first arguments to m_resourceList->add() above
-QStringList KBuildMimeTypeFactory::resourceTypes()
+ QStringList KBuildMimeTypeFactory::resourceDirs()
 {
-    return QStringList() << "xdgdata-mime";
+    return QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "mime", QStandardPaths::LocateDirectory);
 }
 
 KBuildMimeTypeFactory::~KBuildMimeTypeFactory()
@@ -61,11 +61,12 @@ KSycocaEntry::List KBuildMimeTypeFactory::allEntries() const
     return lst;
 }
 
-KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file, const char *resource) const
+KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &_file) const
 {
-    Q_UNUSED(resource);
+    // file=mime/text/plain.xml  ->  name=plain.xml dirName=text
+    Q_ASSERT(_file.startsWith("mime/"));
+    const QString file = _file.mid(5);
 
-    // file=text/plain.xml  ->  name=plain.xml dirName=text
     const int pos = file.lastIndexOf('/');
     if (pos == -1) // huh?
         return 0;

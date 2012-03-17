@@ -34,14 +34,12 @@ KBuildServiceTypeFactory::KBuildServiceTypeFactory() :
     KServiceTypeFactory()
 {
     m_resourceList = new KSycocaResourceList;
-    m_resourceList->add("servicetypes", "*.desktop");
+    m_resourceList->add("servicetypes", "kde4/servicetypes", "*.desktop");
 }
 
-// return all service types for this factory
-// i.e. first arguments to m_resourceList->add() above
-QStringList KBuildServiceTypeFactory::resourceTypes()
+QStringList KBuildServiceTypeFactory::resourceDirs()
 {
-    return QStringList() << "servicetypes";
+    return QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "kde4/servicetypes", QStandardPaths::LocateDirectory);
 }
 
 KBuildServiceTypeFactory::~KBuildServiceTypeFactory()
@@ -58,7 +56,7 @@ KServiceType::Ptr KBuildServiceTypeFactory::findServiceTypeByName(const QString 
 }
 
 
-KSycocaEntry* KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource) const
+KSycocaEntry* KBuildServiceTypeFactory::createEntry(const QString &file) const
 {
     QString name = file;
     int pos = name.lastIndexOf('/');
@@ -69,7 +67,7 @@ KSycocaEntry* KBuildServiceTypeFactory::createEntry(const QString &file, const c
     if (name.isEmpty())
         return 0;
 
-    KDesktopFile desktopFile(resource, file);
+    KDesktopFile desktopFile(QStandardPaths::GenericDataLocation, file);
     const KConfigGroup desktopGroup = desktopFile.desktopGroup();
 
     if ( desktopGroup.readEntry( "Hidden", false ) == true )

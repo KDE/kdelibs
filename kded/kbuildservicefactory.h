@@ -56,7 +56,7 @@ public:
     /**
      * Construct a KService from a config file.
      */
-    virtual KSycocaEntry * createEntry(const QString &file, const char *resource) const;
+    virtual KSycocaEntry * createEntry(const QString &file) const;
 
     virtual KService * createEntry( int ) const { assert(0); return 0; }
 
@@ -81,7 +81,7 @@ public:
     /**
      * Returns all resource types for this service factory
      */
-    static QStringList resourceTypes();
+     static QStringList resourceDirs();
 
     void postProcessServices();
 
