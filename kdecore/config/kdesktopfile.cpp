@@ -38,19 +38,19 @@
 class KDesktopFilePrivate : public KConfigPrivate
 {
  public:
-    KDesktopFilePrivate(const char * resourceType, const QString &fileName);
+    KDesktopFilePrivate(QStandardPaths::StandardLocation resourceType, const QString &fileName);
     KConfigGroup desktopGroup;
 };
 
-KDesktopFilePrivate::KDesktopFilePrivate(const char * resourceType, const QString &fileName)
+KDesktopFilePrivate::KDesktopFilePrivate(QStandardPaths::StandardLocation resourceType, const QString &fileName)
     : KConfigPrivate(KGlobal::mainComponent(), KConfig::NoGlobals, resourceType)
 {
     mBackend = new KConfigIniBackend();
     bDynamicBackend = false;
-    changeFileName(fileName, resourceType);
+    changeFileName(fileName);
 }
 
-KDesktopFile::KDesktopFile(const char * resourceType, const QString &fileName)
+KDesktopFile::KDesktopFile(QStandardPaths::StandardLocation resourceType, const QString &fileName)
     : KConfig(*new KDesktopFilePrivate(resourceType, fileName))
 {
     Q_D(KDesktopFile);
@@ -59,7 +59,7 @@ KDesktopFile::KDesktopFile(const char * resourceType, const QString &fileName)
 }
 
 KDesktopFile::KDesktopFile(const QString &fileName)
-    : KConfig(*new KDesktopFilePrivate("apps", fileName)) // TODO KDE5: default to xdgdata-apps instead of apps
+    : KConfig(*new KDesktopFilePrivate(QStandardPaths::ApplicationsLocation, fileName))
 {
     Q_D(KDesktopFile);
     reparseConfiguration();
@@ -351,7 +351,7 @@ KDesktopFile* KDesktopFile::copyTo(const QString &file) const
   return config;
 }
 
-const char *KDesktopFile::resource() const
+QStandardPaths::StandardLocation KDesktopFile::resource() const
 {
     Q_D(const KDesktopFile);
     return d->resourceType;

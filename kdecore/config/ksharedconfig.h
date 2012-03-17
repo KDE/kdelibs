@@ -63,11 +63,11 @@ public:
      * @param resourceType The standard directory to look for the configuration
      *                     file in (see KStandardDirs)
      *
-     * @sa KConfig::KConfig(const QString&, OpenFlags, const char*)
+     * @sa KConfig
      */
     static KSharedConfig::Ptr openConfig(const QString& fileName = QString(),
                                          OpenFlags mode = FullConfig,
-                                         const char *resourceType = "config");
+                                         QStandardPaths::StandardLocation type = QStandardPaths::ConfigLocation);
 
     /**
      * Constructs a KSharedConfig object.
@@ -90,12 +90,12 @@ public:
      * @param resourceType  The standard directory to look for the configuration
      *                      file in (see KStandardDirs)
      *
-     * @sa KConfig::KConfig(const KComponentData&, const QString&, OpenFlags, const char*)
+     * @sa KConfig
      */
     static KSharedConfig::Ptr openConfig(const KComponentData &componentData,
                                          const QString &fileName = QString(),
                                          OpenFlags mode = FullConfig,
-                                         const char *resourceType = "config");
+                                         QStandardPaths::StandardLocation type = QStandardPaths::ConfigLocation);
 
     virtual ~KSharedConfig();
 
@@ -104,7 +104,7 @@ private:
     virtual const KConfigGroup groupImpl(const QByteArray& aGroup) const;
 
     KSharedConfig(const KComponentData& componentData, const QString& file, OpenFlags mode,
-                  const char* resourceType);
+                  QStandardPaths::StandardLocation resourceType);
 };
 
 typedef KSharedConfig::Ptr KSharedConfigPtr;

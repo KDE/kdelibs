@@ -133,28 +133,27 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
         return;
     }
 
-    const QByteArray resource = config->resource();
+    const QStandardPaths::StandardLocation resource = config->resource();
 
     if ( (m_strType == QLatin1String("Application")) &&
-         (!resource.isEmpty()) &&
-         (resource != "apps") &&
+         (resource != QStandardPaths::ApplicationsLocation) &&
          !absPath)
     {
-        kWarning(servicesDebugArea()) << "The desktop entry file " << entryPath
-                       << " has Type=" << m_strType << " but is located under \"" << resource
-                       << "\" instead of \"apps\"" << endl;
+        kWarning(servicesDebugArea())
+            << "The desktop entry file" << entryPath
+            << "has Type=" << m_strType << "but is located under \"" << QStandardPaths::displayName(resource)
+            << "\" instead of \"apps\"" << endl;
         m_bValid = false;
         return;
     }
 
     if ( (m_strType == QLatin1String("Service")) &&
-         (!resource.isEmpty()) &&
-         (resource != "services") &&
+         (resource != QStandardPaths::GenericDataLocation) &&
          !absPath)
     {
-        kWarning(servicesDebugArea()) << "The desktop entry file " << entryPath
-                       << " has Type=" << m_strType << " but is located under \"" << resource
-                       << "\" instead of \"services\"";
+        kWarning(servicesDebugArea()) << "The desktop entry file" << entryPath
+                       << "has Type=" << m_strType << "but is located under \"" << QStandardPaths::displayName(resource)
+                       << "\" instead of \"shared data\"";
         m_bValid = false;
         return;
     }

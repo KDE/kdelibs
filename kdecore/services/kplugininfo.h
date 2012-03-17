@@ -81,7 +81,7 @@ class KDECORE_EXPORT KPluginInfo
          * (e.g. "service", "apps"... KStandardDirs). Otherwise,
          * resource isn't used.
          */
-        explicit KPluginInfo( const QString & filename, const char* resource = 0 );
+        explicit KPluginInfo( const QString & filename /*, QStandardPaths::StandardLocation resource = ...? GenericDataLocation + services ? Is this used? */ );
 
         /**
          * Read plugin info from a KService object.

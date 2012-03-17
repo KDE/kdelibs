@@ -1234,7 +1234,7 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
             // KDE5 TODO: We should use xdgdata_prefixes for every resource in share/*,
             // i.e. everything except exe, lib, config and xdgconf...
             const QStringList *prefixList = 0;
-            if (strncmp(type, "xdgdata-", 8) == 0 || strcmp(type, "data") == 0)
+            if (strncmp(type, "xdgdata", 7) == 0 || strcmp(type, "data") == 0)
                 prefixList = &(xdgdata_prefixes);
             else if (strncmp(type, "xdgconf", 7) == 0)
                 prefixList = &(xdgconf_prefixes);

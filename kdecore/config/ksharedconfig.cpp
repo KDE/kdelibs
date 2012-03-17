@@ -28,24 +28,24 @@
 
 K_GLOBAL_STATIC(QList<KSharedConfig*>, globalSharedConfigList)
 
-KSharedConfigPtr KSharedConfig::openConfig( const QString& fileName,
-                                            OpenFlags flags ,
-                                            const char *resType)
+KSharedConfigPtr KSharedConfig::openConfig(const QString& fileName,
+                                           OpenFlags flags,
+                                           QStandardPaths::StandardLocation resType)
 {
     return openConfig(KGlobal::mainComponent(), fileName, flags, resType);
 }
 
-KSharedConfigPtr KSharedConfig::openConfig( const KComponentData &componentData,
-                                            const QString& fileName,
-                                            OpenFlags flags,
-                                            const char *resType)
+KSharedConfigPtr KSharedConfig::openConfig(const KComponentData &componentData,
+                                           const QString& fileName,
+                                           OpenFlags flags,
+                                           QStandardPaths::StandardLocation resType)
 {
     const QList<KSharedConfig*> *list = globalSharedConfigList;
     if (list) {
         for(QList<KSharedConfig*>::ConstIterator it = list->begin(); it != list->end(); ++it) {
             if ( (*it)->name() == fileName &&
                  (*it)->d_ptr->openFlags == flags &&
-//                 qstrcmp((*it)->resource(), resType) == 0 &&
+                 (*it)->locationType() == resType &&
 //                 (*it)->backEnd()->type() == backEnd &&
                  (*it)->componentData() == componentData
                ) {
@@ -60,7 +60,7 @@ KSharedConfigPtr KSharedConfig::openConfig( const KComponentData &componentData,
 KSharedConfig::KSharedConfig( const KComponentData &componentData,
                               const QString &fileName,
                               OpenFlags flags,
-                              const char *resType)
+                              QStandardPaths::StandardLocation resType)
     : KConfig(componentData, fileName, flags, resType)
 {
     globalSharedConfigList->append(this);

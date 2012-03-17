@@ -35,16 +35,14 @@
 #include <QtCore/QFile>
 #include <QtCore/QDir>
 
-#include <unistd.h>
-
 class KConfigPrivate
 {
     friend class KConfig;
 public:
     KConfig::OpenFlags openFlags;
-    const char* resourceType;
+    QStandardPaths::StandardLocation resourceType;
 
-    void changeFileName(const QString& fileName, const char* resourceType);
+    void changeFileName(const QString& fileName);
 
     // functions for KConfigGroup
     bool canWriteEntry(const QByteArray& group, const char* key, bool isDefault=false) const;
@@ -69,7 +67,7 @@ protected:
     KSharedPtr<KConfigBackend> mBackend;
 
     KConfigPrivate(const KComponentData &componentData_, KConfig::OpenFlags flags,
-           const char* resource);
+                   QStandardPaths::StandardLocation type);
 
     virtual ~KConfigPrivate()
     {

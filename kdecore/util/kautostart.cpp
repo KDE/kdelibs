@@ -24,7 +24,6 @@
 #include "kglobal.h"
 #include "kcomponentdata.h"
 #include "kdesktopfile.h"
-#include "kstandarddirs.h"
 #include "kconfiggroup.h"
 
 #include <QtCore/QFile>
@@ -57,15 +56,15 @@ void KAutostart::Private::copyIfNeeded()
         return;
     }
 
-    const QString local = KGlobal::dirs()->locateLocal("autostart", name);
+    const QString local = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1String("/autostart/") + name;
 
     if (!QFile::exists(local)) {
-        const QString global = KGlobal::dirs()->locate("autostart", name);
+        const QString global = QStandardPaths::locate(QStandardPaths::ConfigLocation, QLatin1String("autostart/") + name);
         if (!global.isEmpty()) {
-            KDesktopFile *newDf = df->copyTo(local); Q_UNUSED(newDf)
+            KDesktopFile *newDf = df->copyTo(local);
             delete df;
             delete newDf; //Force sync-to-disk
-            df = new KDesktopFile("autostart", name); //Recreate from disk
+            df = new KDesktopFile(QStandardPaths::ConfigLocation, QString::fromLatin1("autostart/") + name); //Recreate from disk
         }
     }
 
@@ -86,13 +85,13 @@ KAutostart::KAutostart(const QString& entryName, QObject* parent)
         d->name.append(QString::fromLatin1(".desktop"));
     }
 
-    const QString path = KGlobal::dirs()->locate("autostart", d->name);
+    const QString path = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1String("/autostart/") + d->name;
     if (path.isEmpty()) {
         // just a new KDesktopFile, since we have nothing to use
-        d->df = new KDesktopFile("autostart", d->name);
+        d->df = new KDesktopFile(QStandardPaths::ConfigLocation, QString::fromLatin1("autostart/") + d->name);
         d->copyIfNeededChecked = true;
     } else {
-        d->df = new KDesktopFile("autostart", path);
+        d->df = new KDesktopFile(path);
     }
 }
 
@@ -204,7 +203,8 @@ void KAutostart::setVisibleName(const QString &name)
 
 bool KAutostart::isServiceRegistered(const QString& entryName)
 {
-    return QFile::exists(KStandardDirs::locate("autostart", entryName + QString::fromLatin1(".desktop")));
+    const QString localDir = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1String("/autostart/");
+    return QFile::exists(localDir + entryName + QString::fromLatin1(".desktop"));
 }
 
 QString KAutostart::commandToCheck() const

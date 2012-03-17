@@ -76,17 +76,17 @@ QTEST_KDEMAIN_CORE( KConfigTest )
 
 void KConfigTest::initTestCase()
 {
-  // Use a different directory for the config files created by this test,
-  // so that cleanupTestCase doesn't delete kdebugrc
-  // This makes the save location for the config resource, "$HOME/.kde-unit-test/kconfigtestdir/"
-  KGlobal::dirs()->addResourceType("config", 0, "kconfigtestdir");
-  // to make sure all files from a previous failed run are deleted
-  // Important: must be done before any other KStandardDirs call, otherwise its cache
-  // can get confused by the unmonitored deletion.
-  cleanupTestCase();
+    const QString kdehome = QDir::home().canonicalPath() + "/.kde-unit-test";
 
-  const QString kdehome = QDir::home().canonicalPath() + "/.kde-unit-test";
-  QCOMPARE(KGlobal::dirs()->saveLocation("config"), QString(kdehome + "/kconfigtestdir/"));
+    // Use a different directory for the config files created by this test,
+    // so that cleanupTestCase doesn't delete kdebugrc
+    // This makes the save location for the config resource, "$HOME/.kde-unit-test/kconfigtestdir/"
+    m_xdgConfigHome = kdehome + "/kconfigtestdir";
+    qputenv("XDG_CONFIG_HOME", QFile::encodeName(m_xdgConfigHome));
+
+    // to make sure all files from a previous failed run are deleted
+    cleanupTestCase();
+
 
   KConfig sc( "kconfigtest" );
 
@@ -210,7 +210,7 @@ void KConfigTest::initTestCase()
 
 void KConfigTest::cleanupTestCase()
 {
-    QDir localConfig = KGlobal::dirs()->saveLocation("config");
+    QDir localConfig(m_xdgConfigHome);
     //qDebug() << "Erasing" << localConfig;
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     QTemporaryDir::removeRecursively(localConfig.path());
@@ -239,7 +239,7 @@ static QList<QByteArray> readLinesFrom(const QString& path)
 
 static QList<QByteArray> readLines(const char* fileName = "kconfigtest")
 {
-    const QString path = KStandardDirs::locateLocal("config", fileName);
+    const QString path = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + '/' + fileName;
     Q_ASSERT(!path.isEmpty());
     return readLinesFrom(path);
 }
@@ -289,7 +289,7 @@ void KConfigTest::testRevertAllEntries()
 void KConfigTest::testSimple()
 {
     // kdeglobals (which was created in initTestCase) must be found this way:
-    const QStringList kdeglobals = KGlobal::dirs()->findAllResources("config", QLatin1String("kdeglobals"));
+    const QStringList kdeglobals = QStandardPaths::locateAll(QStandardPaths::ConfigLocation, QLatin1String("kdeglobals"));
     QVERIFY(!kdeglobals.isEmpty());
 
   KConfig sc2( "kconfigtest" );
@@ -358,7 +358,7 @@ void KConfigTest::testDefaults()
     group.writeEntry("entry2", Value2);
     group.sync();
 
-    config.addConfigSources(QStringList() << KStandardDirs::locateLocal("config", DEFAULTS));
+    config.addConfigSources(QStringList() << QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + '/' + DEFAULTS);
 
     config.setReadDefaults(true);
     QCOMPARE(group.readEntry("entry1", QString()), Default);
@@ -462,7 +462,7 @@ void KConfigTest::testPath()
   QCOMPARE( sc3.entryMap()["homepath"], HOMEPATH );
 
   {
-      QFile file(KStandardDirs::locateLocal("config", "pathtest"));
+      QFile file(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/pathtest");
       file.open(QIODevice::WriteOnly|QIODevice::Text);
       QTextStream out(&file);
       out.setCodec("UTF-8");
@@ -855,7 +855,7 @@ void KConfigTest::testMerge()
     cg.writeEntry("another entry", "blah blah blah");
 
     { // simulate writing by another process
-        QFile file(KStandardDirs::locateLocal("config", "mergetest"));
+        QFile file(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/mergetest");
         file.open(QIODevice::WriteOnly|QIODevice::Text);
         QTextStream out(&file);
         out.setCodec("UTF-8");
@@ -882,7 +882,7 @@ void KConfigTest::testMerge()
                 << "entry[de]=German\n"
                 << "entry[es]=Spanish\n"
                 << "entry[fr]=French\n";
-        QFile file(KStandardDirs::locateLocal("config", "mergetest"));
+        QFile file(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/mergetest");
         file.open(QIODevice::ReadOnly|QIODevice::Text);
         foreach (const QByteArray& line, lines) {
             QCOMPARE(line, file.readLine());
@@ -893,7 +893,7 @@ void KConfigTest::testMerge()
 void KConfigTest::testImmutable()
 {
     {
-        QFile file(KStandardDirs::locateLocal("config", "immutabletest"));
+        QFile file(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/immutabletest");
         file.open(QIODevice::WriteOnly|QIODevice::Text);
         QTextStream out(&file);
         out.setCodec("UTF-8");
@@ -918,7 +918,7 @@ void KConfigTest::testImmutable()
 void KConfigTest::testOptionOrder()
 {
     {
-        QFile file(KStandardDirs::locateLocal("config", "doubleattrtest"));
+        QFile file(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/doubleattrtest");
         file.open(QIODevice::WriteOnly|QIODevice::Text);
         QTextStream out(&file);
         out.setCodec("UTF-8");
@@ -945,7 +945,7 @@ void KConfigTest::testOptionOrder()
               << "entry2=modified\n"
               << "entry2[de_DE][$i]=t2\n";
 
-        QFile file(KStandardDirs::locateLocal("config", "doubleattrtest"));
+        QFile file(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/doubleattrtest");
         file.open(QIODevice::ReadOnly|QIODevice::Text);
         foreach (const QByteArray& line, lines) {
             QCOMPARE(line, file.readLine());
@@ -1045,7 +1045,7 @@ void KConfigTest::testAddConfigSources()
 {
     KConfig cf("specificrc");
 
-    cf.addConfigSources(QStringList() << KStandardDirs::locateLocal("config", "baserc"));
+    cf.addConfigSources(QStringList() << QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/baserc");
     cf.reparseConfiguration();
 
     KConfigGroup specificgrp(&cf, "Specific Only Group");
@@ -1103,7 +1103,7 @@ void KConfigTest::testConfigCopyToSync()
     cf1.sync();
 
     // Copy to "destination"
-    const QString destination = KStandardDirs::locateLocal("config", "kconfigcopytotest");
+    const QString destination = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/kconfigcopytotest";
     QFile::remove(destination);
 
     KConfig cf2("kconfigcopytotest");
@@ -1130,7 +1130,7 @@ void KConfigTest::testConfigCopyTo()
 
     {
         // Copy to "destination"
-        const QString destination = KStandardDirs::locateLocal("config", "kconfigcopytotest");
+        const QString destination = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/kconfigcopytotest";
         QFile::remove(destination);
         KConfig cf2;
         cf1.copyTo(destination, &cf2);
@@ -1203,7 +1203,7 @@ void KConfigTest::testWriteOnSync()
     KConfig sc("kconfigtest", KConfig::IncludeGlobals);
 
     // Age the timestamp of global config file a few sec, and collect it.
-    QString globFile = KStandardDirs::locateLocal("config", "kdeglobals");
+    QString globFile = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/kdeglobals";
     ageTimeStamp(globFile, 2); // age 2 sec
     oldStamp = QFileInfo(globFile).lastModified();
 
@@ -1218,7 +1218,7 @@ void KConfigTest::testWriteOnSync()
     QCOMPARE(newStamp, oldStamp);
 
     // Age the timestamp of local config file a few sec, and collect it.
-    QString locFile = KStandardDirs::locateLocal("config", "kconfigtest");
+    QString locFile = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/kconfigtest";
     ageTimeStamp(locFile, 2); // age 2 sec
     oldStamp = QFileInfo(locFile).lastModified();
 
@@ -1245,7 +1245,7 @@ void KConfigTest::testDirtyOnEqual()
     sc.sync();
 
     // Age the timestamp of local config file a few sec, and collect it.
-    QString locFile = KStandardDirs::locateLocal("config", "kconfigtest");
+    QString locFile = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/kconfigtest";
     ageTimeStamp(locFile, 2); // age 2 sec
     oldStamp = QFileInfo(locFile).lastModified();
 
@@ -1546,7 +1546,7 @@ void KConfigTest::testNoKdeHome()
 {
     const QString xdgConfigHome = QDir::homePath() + "/.kde-unit-test-does-not-exist";
     QDir xdgConfigHomeDir(xdgConfigHome);
-    setenv("XDG_CONFIG_HOME", QFile::encodeName(xdgConfigHome), 1);
+    qputenv("XDG_CONFIG_HOME", QFile::encodeName(xdgConfigHome));
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     QTemporaryDir::removeRecursively(xdgConfigHome);
 #else
@@ -1575,6 +1575,9 @@ void KConfigTest::testNoKdeHome()
 #else
     xdgConfigHomeDir.removeRecursively();
 #endif
+
+    // Restore XDG_CONFIG_HOME
+    qputenv("XDG_CONFIG_HOME", QFile::encodeName(m_xdgConfigHome));
 }
 
 #include <QThreadPool>

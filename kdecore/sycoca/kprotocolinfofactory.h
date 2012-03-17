@@ -78,7 +78,7 @@ protected:
   /**
    * @internal Not used.
    */
-  virtual KSycocaEntry *createEntry(const QString &, const char *) const
+   virtual KSycocaEntry *createEntry(const QString &) const
     { return 0; }
 
   /**

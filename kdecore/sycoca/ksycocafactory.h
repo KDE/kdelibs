@@ -20,6 +20,7 @@
 #define KSYCOCAFACTORY_H
 
 #include <ksycocaentry.h>
+#include <qstandardpaths.h>
 
 class QString;
 class KSycocaDict;
@@ -62,7 +63,7 @@ public:
      * Construct an entry from a config file.
      * To be implemented in the real factories.
      */
-    virtual KSycocaEntry *createEntry(const QString &file, const char *resource) const = 0;
+     virtual KSycocaEntry *createEntry(const QString &file) const = 0;
 
     /**
      * Add an entry

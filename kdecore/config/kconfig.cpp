@@ -31,7 +31,7 @@
 #include "kconfiggroup.h"
 #include <kstringhandler.h>
 #include <klocale.h>
-#include <kstandarddirs.h>
+#include <kglobal.h>
 #include <kurl.h>
 #include <kcomponentdata.h>
 #include <qprocess.h>
@@ -53,13 +53,13 @@
 bool KConfigPrivate::mappingsRegistered=false;
 
 KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::OpenFlags flags,
-                               const char* resource)
-    : openFlags(flags), resourceType(resource), mBackend(0),
+                               QStandardPaths::StandardLocation resourceType)
+    : openFlags(flags), resourceType(resourceType), mBackend(0),
       bDynamicBackend(true),  bDirty(false), bReadDefaults(false),
       bFileImmutable(false), bForceGlobal(false), bSuppressGlobal(false),
       componentData(componentData_), configState(KConfigBase::NoAccess)
 {
-    sGlobalFileName = componentData.dirs()->saveLocation("config", QString(), false) + QLatin1String("kdeglobals");
+    sGlobalFileName = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1String("/kdeglobals");
 
     static int use_etc_kderc = -1;
     if (use_etc_kderc < 0)
@@ -242,32 +242,32 @@ QString KConfigPrivate::expandString(const QString& value)
 }
 
 
-KConfig::KConfig( const QString& file, OpenFlags mode,
-                  const char* resourceType)
+KConfig::KConfig(const QString& file, OpenFlags mode,
+                 QStandardPaths::StandardLocation resourceType)
   : d_ptr(new KConfigPrivate(KGlobal::mainComponent(), mode, resourceType))
 {
-    d_ptr->changeFileName(file, resourceType); // set the local file name
+    d_ptr->changeFileName(file); // set the local file name
 
     // read initial information off disk
     reparseConfiguration();
 }
 
-KConfig::KConfig( const KComponentData& componentData, const QString& file, OpenFlags mode,
-                  const char* resourceType)
+KConfig::KConfig(const KComponentData& componentData, const QString& file, OpenFlags mode,
+                 QStandardPaths::StandardLocation resourceType)
     : d_ptr(new KConfigPrivate(componentData, mode, resourceType))
 {
-    d_ptr->changeFileName(file, resourceType); // set the local file name
+    d_ptr->changeFileName(file); // set the local file name
 
     // read initial information off disk
     reparseConfiguration();
 }
 
-KConfig::KConfig(const QString& file, const QString& backend, const char* resourceType)
+KConfig::KConfig(const QString& file, const QString& backend, QStandardPaths::StandardLocation resourceType)
     : d_ptr(new KConfigPrivate(KGlobal::mainComponent(), SimpleConfig, resourceType))
 {
     d_ptr->mBackend = KConfigBackend::create(file, backend);
     d_ptr->bDynamicBackend = false;
-    d_ptr->changeFileName(file, ""); // set the local file name
+    d_ptr->changeFileName(file); // set the local file name
 
     // read initial information off disk
     reparseConfiguration();
@@ -514,8 +514,8 @@ KConfig* KConfig::copyTo(const QString &file, KConfig *config) const
 {
     Q_D(const KConfig);
     if (!config)
-        config = new KConfig(componentData(), QString(), SimpleConfig);
-    config->d_func()->changeFileName(file, d->resourceType);
+        config = new KConfig(componentData(), QString(), SimpleConfig, d->resourceType);
+    config->d_func()->changeFileName(file);
     config->d_func()->entryMap = d->entryMap;
     config->d_func()->bFileImmutable = false;
 
@@ -533,7 +533,7 @@ QString KConfig::name() const
     return d->fileName;
 }
 
-void KConfigPrivate::changeFileName(const QString& name, const char* type)
+void KConfigPrivate::changeFileName(const QString& name)
 {
     fileName = name;
 
@@ -543,12 +543,10 @@ void KConfigPrivate::changeFileName(const QString& name, const char* type)
             const QString appName = componentData.aboutData()->appName();
             if (!appName.isEmpty()) {
                 fileName = appName + QLatin1String("rc");
-                if (type && *type)
-                    resourceType = type; // only change it if it's not empty
-                file = KStandardDirs::locateLocal(resourceType, fileName, false, componentData);
+                file = QStandardPaths::writableLocation(resourceType) + QLatin1Char('/') + fileName;
             }
         } else if (wantGlobals()) { // accessing "kdeglobals" - XXX used anywhere?
-            resourceType = "config";
+            resourceType = QStandardPaths::ConfigLocation;
             fileName = QLatin1String("kdeglobals");
             file = sGlobalFileName;
         } // else anonymous config.
@@ -559,9 +557,7 @@ void KConfigPrivate::changeFileName(const QString& name, const char* type)
             fileName = name;
         file = fileName;
     } else {
-        if (type && *type)
-            resourceType = type; // only change it if it's not empty
-        file = KStandardDirs::locateLocal(resourceType, fileName, false, componentData);
+        file = QStandardPaths::writableLocation(resourceType) + QLatin1Char('/') + fileName;
     }
 
     if (file.isEmpty()) {
@@ -604,11 +600,10 @@ void KConfig::reparseConfiguration()
 
 QStringList KConfigPrivate::getGlobalFiles() const
 {
-    const KStandardDirs *const dirs = componentData.dirs();
     QStringList globalFiles;
-    foreach (const QString& dir1, dirs->findAllResources("config", QLatin1String("kdeglobals")))
+    foreach (const QString& dir1, QStandardPaths::locateAll(QStandardPaths::ConfigLocation, QLatin1String("kdeglobals")))
         globalFiles.push_front(dir1);
-    foreach (const QString& dir2, dirs->findAllResources("config", QLatin1String("system.kdeglobals")))
+    foreach (const QString& dir2, QStandardPaths::locateAll(QStandardPaths::ConfigLocation, QLatin1String("system.kdeglobals")))
         globalFiles.push_front(dir2);
     if (!etc_kderc.isEmpty())
         globalFiles.push_front(etc_kderc);
@@ -646,9 +641,12 @@ void KConfigPrivate::parseConfigFiles()
             if (bSuppressGlobal) {
                 files = getGlobalFiles();
             } else {
-                foreach (const QString& f, componentData.dirs()->findAllResources(
-                                                    resourceType, fileName))
-                    files.prepend(f);
+                if (QDir::isAbsolutePath(fileName)) {
+                    files << fileName;
+                } else {
+                    foreach (const QString& f, QStandardPaths::locateAll(resourceType, fileName))
+                        files.prepend(f);
+                }
             }
         } else {
             files << mBackend->filePath();
@@ -681,8 +679,11 @@ void KConfigPrivate::parseConfigFiles()
             if (bFileImmutable)
                 break;
         }
+#pragma message("TODO: enable kiosk feature again (resource restrictions), but without KStandardDirs... Needs a class in the kconfig framework.")
+#if 0
         if (componentData.dirs()->isRestrictedResource(resourceType, fileName))
             bFileImmutable = true;
+#endif
     }
 }
 
@@ -891,8 +892,13 @@ QString KConfigPrivate::lookupData(const QByteArray& group, const char* key,
     return entryMap.getEntry(group, key, QString(), flags, expand);
 }
 
+QStandardPaths::StandardLocation KConfig::locationType() const
+{
+    Q_D(const KConfig);
+    return d->resourceType;
+}
+
 void KConfig::virtual_hook(int /*id*/, void* /*data*/)
 {
 	/* nothing */
 }
-

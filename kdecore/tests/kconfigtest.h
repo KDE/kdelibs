@@ -83,6 +83,7 @@ private Q_SLOTS:
     void testSyncOnExit();
 private:
     void revertEntries();
+    QString m_xdgConfigHome;
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(KConfigTest::Flags)
 

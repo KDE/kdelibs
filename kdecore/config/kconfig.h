@@ -32,6 +32,7 @@
 #include <QtCore/QVariant>
 #include <QtCore/QByteArray>
 #include <QtCore/QList>
+#include <qstandardpaths.h>
 
 class KConfigGroup;
 class KComponentData;
@@ -107,7 +108,7 @@ public:
      * If an absolute path is specified for @p file, that file will be used
      * as the store for the configuration settings.  If a non-absolute path
      * is provided, the file will be looked for in the standard directory
-     * specified by resourceType.  If no path is provided, a default
+     * specified by type.  If no path is provided, a default
      * configuration file will be used based on the name of the main
      * application component.
      *
@@ -123,13 +124,13 @@ public:
      *                     requires any file in the filesystem at all.
      * @param mode         how global settings should affect the configuration
      *                     options exposed by this KConfig object
-     * @param resourceType The standard directory to look for the configuration
-     *                     file in (see KStandardDirs)
+     * @param type         The standard directory to look for the configuration
+     *                     file in
      *
      * @sa KSharedConfig::openConfig(const QString&, OpenFlags, const char*)
      */
     explicit KConfig(const QString& file = QString(), OpenFlags mode = FullConfig,
-                     const char* resourceType = "config");
+                     QStandardPaths::StandardLocation type = QStandardPaths::ConfigLocation);
 
     /**
      * Creates a KConfig object to manipulate the configuration for a specific
@@ -138,7 +139,7 @@ public:
      * If an absolute path is specified for @p file, that file will be used
      * as the store for the configuration settings.  If a non-absolute path
      * is provided, the file will be looked for in the standard directory
-     * specified by resourceType.  If no path is provided, a default
+     * specified by @p type.  If no path is provided, a default
      * configuration file will be used based on the component's name.
      *
      * @p mode determines whether the user or global settings will be allowed
@@ -156,13 +157,13 @@ public:
      * @param mode          how global settings should affect the configuration
      *                      options exposed by this KConfig object.
      *                      See OpenFlags
-     * @param resourceType  The standard directory to look for the configuration
+     * @param type          The standard directory to look for the configuration
      *                      file in
      *
      * @sa KSharedConfig::openConfig(const KComponentData&, const QString&, OpenFlags, const char*)
      */
     explicit KConfig(const KComponentData& componentData, const QString& file = QString(),
-                     OpenFlags mode = FullConfig, const char* resourceType = "config");
+                     OpenFlags mode = FullConfig, QStandardPaths::StandardLocation type = QStandardPaths::ConfigLocation);
 
     /**
      * @internal
@@ -172,11 +173,11 @@ public:
      *
      * @param file the file to be parsed
      * @param backend the backend to load
-     * @param resourceType where to look for the file if an absolute path is not provided
+     * @param type where to look for the file if an absolute path is not provided
      *
      * @since 4.1
      */
-    KConfig(const QString& file, const QString& backend, const char* resourceType = "config");
+    KConfig(const QString& file, const QString& backend, QStandardPaths::StandardLocation type = QStandardPaths::ConfigLocation);
 
     virtual ~KConfig();
 
@@ -184,6 +185,13 @@ public:
      * Returns the component data this configuration is for.
      */
     const KComponentData &componentData() const; // krazy:exclude=constref
+
+    /**
+     * Returns the standard location enum passed to the constructor.
+     * Used by KSharedConfig.
+     * @since 5.0
+     */
+    QStandardPaths::StandardLocation locationType() const;
 
     /**
      * Returns the filename used to store the configuration.

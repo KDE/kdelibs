@@ -76,10 +76,10 @@ class KPluginInfoPrivate : public QSharedData
     }
 };
 
-KPluginInfo::KPluginInfo( const QString & filename, const char* resource )
+KPluginInfo::KPluginInfo(const QString & filename /*, QStandardPaths::StandardLocation resource*/)
 : d( new KPluginInfoPrivate )
 {
-    KDesktopFile file( resource, filename );
+    KDesktopFile file(/*resource,*/ filename);
 
     d->entryPath = filename;
 
