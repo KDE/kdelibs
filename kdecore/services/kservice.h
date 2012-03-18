@@ -79,8 +79,9 @@ public:
     /**
      * Construct a service and take all information from a desktop file.
      * @param config the desktop file to read
+     * @param optional relative path to store for findByName
      */
-    explicit KService( const KDesktopFile *config );
+    explicit KService(const KDesktopFile *config, const QString& entryPath = QString());
 
     /**
      * @internal

@@ -392,8 +392,8 @@ KService::KService( const QString & _fullpath )
     d->init(&config, this);
 }
 
-KService::KService( const KDesktopFile *config )
-    : KSycocaEntry(*new KServicePrivate(config->fileName()))
+KService::KService(const KDesktopFile *config, const QString& entryPath)
+    : KSycocaEntry(*new KServicePrivate(entryPath.isEmpty() ? config->fileName() : entryPath))
 {
     Q_D(KService);
 

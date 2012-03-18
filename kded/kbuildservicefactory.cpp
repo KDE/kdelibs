@@ -26,6 +26,7 @@
 #include "ksycocaresourcelist.h"
 #include "kdesktopfile.h"
 
+#include <QDir>
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <klocale.h>
@@ -89,9 +90,16 @@ KSycocaEntry* KBuildServiceFactory::createEntry(const QString& file) const
     }
     // Is it a .desktop file?
     if (name.endsWith(QLatin1String(".desktop"))) {
-        KDesktopFile desktopFile(QStandardPaths::GenericDataLocation, file);
 
-        KService * serv = new KService(&desktopFile);
+        KService* serv;
+        if (QDir::isAbsolutePath(file)) { // vfolder sends us full paths for applications
+            serv = new KService(file);
+        } else { // we get relative paths for services
+            KDesktopFile desktopFile(QStandardPaths::GenericDataLocation, file);
+            Q_ASSERT(file.startsWith("kde4/services/"));
+            serv = new KService(&desktopFile, file.mid(strlen("kde4/services/")));
+        }
+
         //kDebug(7021) << "Creating KService from" << file << "entryPath=" << serv->entryPath();
         // Note that the menuId will be set by the vfolder_menu.cpp code just after
         // createEntry returns.
