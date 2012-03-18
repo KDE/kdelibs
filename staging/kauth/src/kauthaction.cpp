@@ -186,9 +186,9 @@ Action::AuthStatus Action::status() const
     return BackendsManager::authBackend()->actionStatus(d->name);
 }
 
-ExecuteJob *Action::execute(ExecutionMode mode, bool autoDeleteJob)
+ExecuteJob *Action::execute(ExecutionMode mode)
 {
-    return new ExecuteJob(*this, mode, autoDeleteJob, 0);
+    return new ExecuteJob(*this, mode, 0);
 }
 
 bool Action::hasHelper() const

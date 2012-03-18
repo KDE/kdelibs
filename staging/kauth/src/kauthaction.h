@@ -334,7 +334,7 @@ public:
      *
      * @return The reply from the helper, or an error reply if something's wrong.
      */
-    ExecuteJob *execute(ExecutionMode mode = ExecuteMode, bool autoDeleteJob = true);
+    ExecuteJob *execute(ExecutionMode mode = ExecuteMode);
 
     /**
      * @brief Sets a parent widget for the authentication dialog

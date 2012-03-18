@@ -20,7 +20,7 @@
 #ifndef ASYNC_ACTION_H
 #define ASYNC_ACTION_H
 
-#include <QtCore/QObject>
+#include <kjob.h>
 
 #include <kauth_export.h>
 
@@ -30,12 +30,12 @@
 namespace KAuth
 {
 
-class KAUTH_EXPORT ExecuteJob : public QObject
+class KAUTH_EXPORT ExecuteJob : public KJob
 {
     Q_OBJECT
     Q_DISABLE_COPY(ExecuteJob)
 
-    ExecuteJob(const KAuth::Action &action, KAuth::Action::ExecutionMode mode, bool autoDelete, QObject *parent);
+    ExecuteJob(const KAuth::Action &action, KAuth::Action::ExecutionMode mode, QObject *parent);
 
     friend class Action;
 
@@ -53,17 +53,10 @@ public:
     /// Virtual destructor
     virtual ~ExecuteJob();
 
-    /// Returns the action associated with this job
-    Action action() const;
-
     void start();
 
-    void exec();
-
-    bool succeeded() const;
-
-    ActionReply::Error error() const;
-    QString errorDescription() const;
+    /// Returns the action associated with this job
+    Action action() const;
 
     QVariantMap data() const;
 
@@ -82,10 +75,6 @@ Q_SIGNALS:
     * @param data The progress data from the helper
     */
     void newData(const QVariantMap &data);
-
-    void percent(uint percent);
-
-    void finished(KAuth::ExecuteJob *job);
 
     void statusChanged(KAuth::Action::AuthStatus status);
 };

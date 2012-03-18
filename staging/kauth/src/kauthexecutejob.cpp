@@ -31,17 +31,12 @@ namespace KAuth
 class ExecuteJob::Private
 {
 public:
-    Private(ExecuteJob *parent) : q(parent), isRunning(false), isFinished(false), error(ActionReply::NoError) {}
+    Private(ExecuteJob *parent) : q(parent) {}
 
     ExecuteJob *q;
     Action action;
 
     Action::ExecutionMode mode;
-    bool isRunning;
-    bool isFinished;
-    bool autoDeleteJob;
-    ActionReply::Error error;
-    QString errorDescription;
     QVariantMap data;
 
     void doExecuteAction();
@@ -54,12 +49,11 @@ public:
 
 static QHash<QString, ExecuteJob *> s_watchers;
 
-ExecuteJob::ExecuteJob(const Action &action, Action::ExecutionMode mode, bool autoDelete, QObject *parent)
-        : QObject(parent)
+ExecuteJob::ExecuteJob(const Action &action, Action::ExecutionMode mode, QObject *parent)
+        : KJob(parent)
         , d(new Private(this))
 {
     d->action = action;
-    d->autoDeleteJob = autoDelete;
     d->mode = mode;
 
     HelperProxy *helper = BackendsManager::helperProxy();
@@ -79,21 +73,6 @@ ExecuteJob::~ExecuteJob()
 Action ExecuteJob::action() const
 {
     return d->action;
-}
-
-bool ExecuteJob::succeeded() const
-{
-    return d->error == ActionReply::NoError && d->isFinished;
-}
-
-ActionReply::Error ExecuteJob::error() const
-{
-    return d->error;
-}
-
-QString ExecuteJob::errorDescription() const
-{
-    return d->errorDescription;
 }
 
 QVariantMap ExecuteJob::data() const
@@ -128,28 +107,8 @@ void ExecuteJob::start()
     }
 }
 
-void ExecuteJob::exec()
-{
-    QEventLoop e;
-    connect(this, SIGNAL(finished(KAuth::ExecuteJob*)), &e, SLOT(quit()));
-    start();
-    e.exec();
-}
-
 void ExecuteJob::Private::doExecuteAction()
 {
-    if (isRunning || isFinished) {
-        actionPerformedSlot(action.name(), ActionReply::AlreadyStartedReply());
-        return;
-    }
-
-    if (!action.isValid()) {
-        actionPerformedSlot(action.name(), ActionReply::InvalidActionReply());
-        return;
-    }
-
-    isRunning = true;
-
     // If this action authorizes from the client, let's do it now
     if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromClientCapability) {
         if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::PreAuthActionCapability) {
@@ -238,27 +197,20 @@ void ExecuteJob::Private::actionPerformedSlot(const QString &taction, const Acti
 {
     if (taction == action.name()) {
         if (reply.failed()) {
-            error = reply.errorCode();
-            errorDescription = reply.errorDescription();
+            q->setError(reply.errorCode());
+            q->setErrorText(reply.errorDescription());
         } else {
             data = reply.data();
         }
 
-        isRunning = false;
-        isFinished = true;
-
-        Q_EMIT q->finished(q);
-
-        if (autoDeleteJob) {
-            q->deleteLater();
-        }
+        q->emitResult();
     }
 }
 
 void ExecuteJob::Private::progressStepSlot(const QString &taction, int i)
 {
     if (taction == action.name()) {
-        Q_EMIT q->percent(i);
+        q->setPercent(i);
     }
 }
 
