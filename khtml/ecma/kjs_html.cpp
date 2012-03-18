@@ -61,7 +61,7 @@
 
 #include <kmessagebox.h>
 #include <kstringhandler.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include <kdebug.h>
 #include <QtCore/QList>

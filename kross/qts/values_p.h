@@ -41,7 +41,7 @@
 #include <QDebug>
 
 #include <kurl.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 using namespace Kross;
 

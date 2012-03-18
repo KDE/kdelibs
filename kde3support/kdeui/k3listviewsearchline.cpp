@@ -23,7 +23,7 @@
 #include <kiconloader.h>
 #include <ktoolbar.h>
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include <QApplication>
 #include <QTimer>

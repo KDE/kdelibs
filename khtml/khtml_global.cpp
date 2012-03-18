@@ -38,7 +38,7 @@
 #include <kcomponentdata.h>
 #include <kiconloader.h>
 #include <kaboutdata.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include <assert.h>
 

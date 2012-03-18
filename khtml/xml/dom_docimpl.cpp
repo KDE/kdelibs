@@ -51,7 +51,7 @@
 #include <QTimerEvent>
 #include <QtCore/QList>
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include <rendering/counter_tree.h>
 #include <rendering/render_canvas.h>

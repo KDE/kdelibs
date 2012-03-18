@@ -24,7 +24,7 @@
 #include "kaboutdata.h"
 #include "kaction.h"
 #include "kcomponentdata.h"
-#include "klocale.h"
+#include "klocalizedstring.h"
 #include "kmenu.h"
 #include "kmessagebox.h"
 #include "kshortcut.h"

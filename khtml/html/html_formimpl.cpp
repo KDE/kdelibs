@@ -51,7 +51,7 @@
 #include <kmimetype.h>
 #include <kmessagebox.h>
 #include <krandom.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #ifndef KHTML_NO_WALLET
 #include <kwallet.h>
 #endif

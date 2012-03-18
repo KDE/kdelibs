@@ -41,7 +41,7 @@
 
 #include <kmessagebox.h>
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include "k3sconfig.h"
 #include "k3spelldlg.h"
 #include <kprocess.h>

@@ -39,7 +39,7 @@
 #include <QFile>
 #include <QObject>
 
-#include "klocale.h"
+#include "klocalizedstring.h"
 
 #ifndef Q_CC_MSVC
 #include "netsupp.h"

@@ -22,7 +22,7 @@
 #include "kjavaappletwidget.h"
 #include "kjavaappletcontext.h"
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 #include <kparts/browserextension.h>
 

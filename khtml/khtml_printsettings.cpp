@@ -20,7 +20,7 @@
 #include "khtml_printsettings.h"
 
 #include <kdialog.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <QCheckBox>
 #include <QLayout>
 

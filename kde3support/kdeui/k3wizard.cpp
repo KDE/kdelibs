@@ -24,7 +24,7 @@
 
 #include <kiconloader.h>
 #include <kicon.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kglobalsettings.h>
 #include <kguiitem.h>
 #include <kstandardguiitem.h>

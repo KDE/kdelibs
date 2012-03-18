@@ -23,7 +23,7 @@
 #include "mediacontrols.h"
 #include <kicon.h>
 #include <kiconloader.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <phonon/volumeslider.h>
 #include <phonon/seekslider.h>
 #include <QToolButton>

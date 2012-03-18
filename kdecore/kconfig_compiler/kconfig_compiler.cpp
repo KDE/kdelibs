@@ -1909,7 +1909,7 @@ int main( int argc, char **argv )
 
   if ( cfg.sourceIncludes.count() > 0 ) cpp << endl;
 
-  if ( cfg.setUserTexts ) cpp << "#include <klocale.h>" << endl << endl;
+  if ( cfg.setUserTexts ) cpp << "#include <klocalizedstring.h>" << endl << endl;
 
   // Header required by singleton implementation
   if ( cfg.singleton )

@@ -29,7 +29,7 @@
 #include <kglobalsettings.h>
 #include <kstandardshortcut.h>
 #include <kicon.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <QKeyEvent>
 
 class K3TextEdit::K3TextEditPrivate

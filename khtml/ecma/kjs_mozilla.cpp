@@ -23,7 +23,7 @@
 
 #include "kjs_binding.h"
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 
 #include <kjs/lookup.h>

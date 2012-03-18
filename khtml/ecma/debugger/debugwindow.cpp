@@ -28,7 +28,7 @@
 
 #include <ktoolbar.h>
 #include <kstatusbar.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 #include <kicon.h>
 #include <kiconloader.h>

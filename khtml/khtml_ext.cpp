@@ -45,7 +45,7 @@
 #include <assert.h>
 
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kfiledialog.h>
 #include <kjobuidelegate.h>
 #include <kio/job.h>

@@ -16,7 +16,7 @@
 #include <kcmdlineargs.h>
 #include <k3aboutapplication.h>
 #include <kapplication.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 int main(int argc, char** argv)
 {

@@ -29,7 +29,7 @@
 
 #include "kdebug.h"
 #include "kdialog.h"
-#include "klocale.h"
+#include "klocalizedstring.h"
 #include "kdeversion.h"
 
 #include <fixx11h.h> // for enable-final

@@ -31,7 +31,7 @@
 #include <QLabel>
 
 #include "kkeysequencewidget.h"
-#include "klocale.h"
+#include "klocalizedstring.h"
 
 void TabConnectedWidget::paintEvent(QPaintEvent *e)
 {

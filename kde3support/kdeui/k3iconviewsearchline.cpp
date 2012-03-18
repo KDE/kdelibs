@@ -26,7 +26,6 @@
 #include "k3iconviewsearchline.h"
 
 #include <Qt3Support/Q3IconDrag>
-#include <klocale.h>
 #include <QtCore/QTimer>
 #include <kdebug.h>
 

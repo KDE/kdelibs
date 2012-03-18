@@ -6,7 +6,7 @@
 #include <kactioncollection.h>
 #include <kaction.h>
 #include <k3command.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 QTEST_KDEMAIN(KCommandTest, GUI)
 

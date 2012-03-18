@@ -24,7 +24,7 @@
 #include "khtmlpart_p.h"
 #include <kio/job.h>
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include "khtml_ext.h"
 #include <QImage>
 

@@ -83,7 +83,7 @@ namespace KJS {
  */
 
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #else // QT_ONLY
 

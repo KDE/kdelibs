@@ -35,7 +35,7 @@
 #include <kfind.h>
 #include <kfinddialog.h>
 #include <kiconloader.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kreplace.h>
 #include <kreplacedialog.h>

@@ -41,7 +41,7 @@
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <kinputdialog.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kcodecs.h>
 #include <kparts/browserinterface.h>
 #include <kwindowsystem.h>

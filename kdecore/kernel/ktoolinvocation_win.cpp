@@ -22,7 +22,7 @@
 #include <config.h>
 
 #include "kmessage.h"
-#include "klocale.h"
+#include "klocalizedstring.h"
 
 #include <QUrl>
 #include <QProcess>

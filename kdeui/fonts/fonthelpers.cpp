@@ -22,7 +22,7 @@
 
 #include "fonthelpers_p.h"
 
-#include "klocale.h"
+#include "klocalizedstring.h"
 
 #ifdef NEVERDEFINE // never true
 // Font names up for translation, listed for extraction.

@@ -39,7 +39,7 @@
 #include <QTextBlock>
 
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kurl.h>
 #include <kpushbutton.h>
 //#include <kurlcombobox.h>
@@ -53,7 +53,7 @@
 #include <kpluginfactory.h>
 #include <kparts/part.h>
 //#include <kio/netaccess.h>
-//#include <klocale.h>
+//#include <klocalizedstring.h>
 //#include <kmimetype.h>
 //#include <kstandarddirs.h>
 #include <kfilewidget.h>

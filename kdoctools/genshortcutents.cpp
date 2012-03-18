@@ -25,7 +25,7 @@
 #include "kaboutdata.h"
 #include "kcomponentdata.h"
 #include "kcmdlineargs.h"
-#include "klocale.h"
+#include "klocalizedstring.h"
 #include "kstandardshortcut.h"
 
 #include <QtCore/QDate>

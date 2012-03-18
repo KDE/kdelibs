@@ -36,7 +36,7 @@
 #include <kapplication.h>
 #include <kauthorized.h>
 #include <kaboutdata.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kstatusbar.h>
 #include <kiconloader.h>
 #include <kdebug.h>

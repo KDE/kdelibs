@@ -46,7 +46,7 @@
 #include <kactioncollection.h>
 #include <kcombobox.h>
 #include <kiconbutton.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <klineedit.h>
 #include <kurlrequester.h>
 

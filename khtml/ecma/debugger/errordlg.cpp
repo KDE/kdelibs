@@ -24,7 +24,7 @@
 #include <QBoxLayout>
 
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kiconloader.h>
 
 namespace KJSDebugger { 

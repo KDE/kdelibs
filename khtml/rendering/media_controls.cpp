@@ -35,7 +35,7 @@
 #include <ktogglefullscreenaction.h>
 #include <kshortcut.h>
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 namespace khtml {
 

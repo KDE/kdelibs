@@ -32,7 +32,7 @@
 #include <kjs/JSVariableObject.h>
 #include <kjs/object.h>
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include "value2string.h"
 

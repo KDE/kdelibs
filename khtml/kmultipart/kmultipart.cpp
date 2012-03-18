@@ -22,7 +22,7 @@
 
 #include <kcomponentdata.h>
 #include <kmimetype.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kjobuidelegate.h>
 #include <kio/job.h>
 #include <QtCore/QFile>

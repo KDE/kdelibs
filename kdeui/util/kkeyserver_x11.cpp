@@ -23,7 +23,7 @@
 #include "kkeyserver_x11.h"
 
 #include "kdebug.h"
-#include "klocale.h"
+#include "klocalizedstring.h"
 
 #include <QX11Info>
 # define XK_MISCELLANY

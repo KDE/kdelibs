@@ -22,7 +22,7 @@
 #include "fonthelpers_p.h"
 
 #include "kdebug.h"
-#include "klocale.h"
+#include "klocalizedstring.h"
 #include "kcolorscheme.h"
 #include "kglobalsettings.h"
 #include "kfontchooser.h"

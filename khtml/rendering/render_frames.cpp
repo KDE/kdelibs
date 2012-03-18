@@ -37,7 +37,7 @@
 
 #include <kmessagebox.h>
 #include <kmimetype.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 #include <QtCore/QTimer>
 #include <QPainter>

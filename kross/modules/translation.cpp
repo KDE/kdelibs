@@ -24,7 +24,7 @@
 #include <QVariantList>
 
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <klocalizedstring.h>
 #include <kpluginloader.h>
 #include <kpluginfactory.h>

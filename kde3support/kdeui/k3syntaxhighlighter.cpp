@@ -26,7 +26,7 @@
 #include <Qt3Support/Q3SyntaxHighlighter>
 #include <QtCore/QTimer>
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kglobal.h>

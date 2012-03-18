@@ -60,7 +60,7 @@
 #include <rendering/render_object.h>
 
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 // Turn off inlining to avoid warning with newer gcc.
 #undef __inline

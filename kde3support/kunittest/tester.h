@@ -138,7 +138,7 @@ SampleTest - 1 test passed, 1 test failed
  * #include <kapplication.h>
  * #include <kcmdlineargs.h>
  * #include <kcmdlineargs.h>
- * #include <klocale.h>
+ * #include <klocalizedstring.h>
  * #include <kunittest/runnergui.h>
  *
  * static const char description[] = I18N_NOOP("SampleTests");

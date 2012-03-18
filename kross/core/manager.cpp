@@ -32,7 +32,7 @@
 #include <QtCore/QCoreApplication>
 
 #include <kstandarddirs.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 extern "C"
 {

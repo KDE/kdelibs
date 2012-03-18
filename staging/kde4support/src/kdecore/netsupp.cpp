@@ -39,7 +39,7 @@
 
 #include <config.h>
 #include <config-network.h>
-#include "klocale.h"
+#include "klocalizedstring.h"
 
 #ifndef IN6_IS_ADDR_V4MAPPED
 #define NEED_IN6_TESTS

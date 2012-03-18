@@ -30,7 +30,7 @@
 #include <kapplication.h>
 #include <QLabel>
 #include <kglobal.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <QStyle>
 
 K3AboutApplication::K3AboutApplication( const KAboutData *aboutData, QWidget *parent, bool modal )

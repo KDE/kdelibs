@@ -36,7 +36,7 @@
 #include "kglobal.h"
 #include "kshell.h"
 #include "kmacroexpander.h"
-#include "klocale.h"
+#include "klocalizedstring.h"
 #include "kmessage.h"
 #include "kservice.h"
 

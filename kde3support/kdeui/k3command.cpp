@@ -25,7 +25,7 @@
 #include <kstandardaction.h>
 #include <kdebug.h>
 #include <kicon.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmenu.h>
 
 #include "ktoolbarpopupaction.h"

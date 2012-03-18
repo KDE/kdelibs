@@ -28,7 +28,7 @@
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include "runner.h"
 

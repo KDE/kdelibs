@@ -23,7 +23,7 @@
 
 #include "klocalsocket_p.h"
 
-#include "klocale.h"
+#include "klocalizedstring.h"
 
 void KLocalSocketPrivate::connectToPath(const QString &path, KLocalSocket::LocalSocketType aType,
                                         QAbstractSocket::OpenMode openMode)

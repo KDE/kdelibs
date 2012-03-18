@@ -23,7 +23,7 @@
 #include "kjavaappletserver.h"
 #include "kjavaprocess.h"
 #include "kjavaapplet.h"
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
 #include <QtCore/QMap>

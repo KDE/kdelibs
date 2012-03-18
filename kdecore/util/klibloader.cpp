@@ -29,7 +29,7 @@
 #include "kstandarddirs.h"
 #include "kcomponentdata.h"
 #include "kdebug.h"
-#include "klocale.h"
+#include "klocalizedstring.h"
 
 class KLibLoaderPrivate
 {

@@ -27,7 +27,7 @@
 #include "kaction.h"
 #include "kaction_p.h"
 #include "kglobalaccel_p.h"
-#include "klocale.h"
+#include "klocalizedstring.h"
 #include "kmessagebox.h"
 #include "kauthexecutejob.h"
 

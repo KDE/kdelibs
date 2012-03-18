@@ -40,7 +40,7 @@
 
 #include <kglobal.h>
 #include <kglobalsettings.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kiconloader.h>
 #include <kdebug.h>
 #include <ktextedit.h>

@@ -33,7 +33,7 @@
 #include <khtml_part.h>
 #include <kprotocolmanager.h>
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <unistd.h>
 #include <assert.h>
 #include <kjs/function.h>

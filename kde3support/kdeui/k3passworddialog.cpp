@@ -41,7 +41,8 @@
 #include <kglobal.h>
 #include <khbox.h>
 #include <kiconloader.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
+#include <ksharedconfig.h>
 #include <kmessagebox.h>
 
 #include <kconfiggroup.h>

@@ -21,7 +21,7 @@
 
 #include <QVBoxLayout>
 #include <QListWidget>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 namespace KJSDebugger {
 

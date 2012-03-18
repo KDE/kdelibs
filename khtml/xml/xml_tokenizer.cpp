@@ -34,7 +34,7 @@
 #include "khtml_part.h"
 #include <QtCore/QVariant>
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kencodingdetector.h>
 
 // SVG includes

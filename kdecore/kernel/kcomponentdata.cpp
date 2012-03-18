@@ -28,7 +28,7 @@
 #include "kconfig.h"
 #include "kglobal.h"
 #include "kglobal_p.h"
-#include "klocale.h"
+#include "klocalizedstring.h"
 #include "kconfiggroup.h"
 #include "kstandarddirs.h"
 #include <QtDebug>

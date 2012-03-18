@@ -21,7 +21,7 @@
 #include "khtmladaptorpart.h"
 #include <kjs/object.h>
 #include <QLabel>
-#include <klocale.h>
+#include <klocalizedstring.h>
 AdaptorView::AdaptorView(QWidget* wparent, QObject* parent,
                          const QStringList& /*args*/)
     : KParts::ReadOnlyPart(parent)

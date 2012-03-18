@@ -29,7 +29,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "klocale.h"
+#include "klocalizedstring.h"
 
 static inline int kSocket(int af, int socketype, int proto)
 {
