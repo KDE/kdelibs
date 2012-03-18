@@ -324,15 +324,13 @@ protected:
     /**
      * @reimp
      *
-     * This performs various integration-related actions when navigation
-     * is requested.  If you override this method, you should ensure you
-     * call KWebPage::acceptNaviationRequest (unless you want to block
-     * the request outright), even if you do not use the return value.
+     * This performs various integration-related actions when navigation is
+     * requested.  If you override this method, make sure you call the parent's
+     * implementation unless you want to block the request outright.
      *
      * If you do override acceptNavigationRequest and call this method,
-     * however, be aware of the effect of the page's
-     * linkDelegationPolicy on how * QWebPage::acceptNavigationRequest
-     * behaves.
+     * however, be aware of the effect of the page's linkDelegationPolicy on
+     * how * QWebPage::acceptNavigationRequest behaves.
      *
      * @see QWebPage::acceptNavigationRequest
      */
@@ -342,8 +340,8 @@ protected:
      * Attempts to handle @p reply and returns true on success, false otherwise.
      *
      * In KDE 4.8 and higher, if @p reply contains a QObject property called
-     * "DownloadManagerExe", then an attempt will be made to the command
-     * specified by that property to download the specified resource.
+     * "DownloadManagerExe", then an attempt will be made to let the command
+     * specified by that property to download the requested resource.
      *
      * If the "DownloadManagerExe" property is not defined or the command
      * specified by it could not be successfully executed, then the user will
