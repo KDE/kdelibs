@@ -100,6 +100,7 @@ void KWidgetItemDelegatePrivate::_k_slotDataChanged(const QModelIndex &topLeft, 
             QStyleOptionViewItemV4 optionView;
             optionView.initFrom(itemView->viewport());
             optionView.rect = itemView->visualRect(index);
+            optionView.decorationSize = itemView->iconSize();
             widgetPool->findWidgets(index, optionView);
         }
     }
@@ -125,12 +126,14 @@ void KWidgetItemDelegatePrivate::_k_slotSelectionChanged(const QItemSelection &s
         QStyleOptionViewItemV4 optionView;
         optionView.initFrom(itemView->viewport());
         optionView.rect = itemView->visualRect(index);
+        optionView.decorationSize = itemView->iconSize();
         widgetPool->findWidgets(index, optionView);
     }
     foreach (const QModelIndex &index, deselected.indexes()) {
         QStyleOptionViewItemV4 optionView;
         optionView.initFrom(itemView->viewport());
         optionView.rect = itemView->visualRect(index);
+        optionView.decorationSize = itemView->iconSize();
         widgetPool->findWidgets(index, optionView);
     }
 }
@@ -144,6 +147,7 @@ void KWidgetItemDelegatePrivate::updateRowRange(const QModelIndex &parent, int s
             QStyleOptionViewItemV4 optionView;
             optionView.initFrom(itemView->viewport());
             optionView.rect = itemView->visualRect(index);
+            optionView.decorationSize = itemView->iconSize();
 
             QList<QWidget*> widgetList = widgetPool->findWidgets(index, optionView, isRemoving ? KWidgetItemDelegatePool::NotUpdateWidgets
                                                                                                : KWidgetItemDelegatePool::UpdateWidgets);
@@ -173,6 +177,7 @@ void KWidgetItemDelegatePrivate::initializeModel(const QModelIndex &parent)
                 QStyleOptionViewItemV4 optionView;
                 optionView.initFrom(itemView->viewport());
                 optionView.rect = itemView->visualRect(index);
+                optionView.decorationSize = itemView->iconSize();
                 widgetPool->findWidgets(index, optionView);
             }
         }
@@ -298,6 +303,7 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
                         QStyleOptionViewItemV4 optionView;
                         optionView.initFrom(itemView->viewport());
                         optionView.rect = itemView->visualRect(index);
+                        optionView.decorationSize = itemView->iconSize();
                         widgetPool->findWidgets(index, optionView);
                     }
                 }
