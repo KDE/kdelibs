@@ -27,7 +27,6 @@
 
 
 #include "kshortcutsdialog_p.h"
-#include "staging/kaction/src/actions/kaction_p.h"
 
 #include <QApplication>
 #include <QHeaderView>
