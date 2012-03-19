@@ -1619,31 +1619,24 @@ void NETRootInfo::setDesktopLayout(NET::Orientation orientation, int columns, in
 }
 
 
-void NETRootInfo::setShowingDesktop( bool showing ) {
+void NETRootInfo::setShowingDesktop(bool showing)
+{
     if (p->role == WindowManager) {
-	long d = p->showing_desktop = showing;
-	XChangeProperty(p->display, p->root, net_showing_desktop, XA_CARDINAL, 32,
-			PropModeReplace, (unsigned char *) &d, 1);
+        uint32_t d = p->showing_desktop = showing;
+        xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->root, net_showing_desktop,
+                            XCB_ATOM_CARDINAL, 32, 1, (const void *) &d);
     } else {
-	XEvent e;
 
-	e.xclient.type = ClientMessage;
-	e.xclient.message_type = net_showing_desktop;
-	e.xclient.display = p->display;
-	e.xclient.window = 0;
-	e.xclient.format = 32;
-	e.xclient.data.l[0] = showing ? 1 : 0;
-	e.xclient.data.l[1] = 0;
-	e.xclient.data.l[2] = 0;
-	e.xclient.data.l[3] = 0;
-	e.xclient.data.l[4] = 0;
-
-	XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+        uint32_t data[5] = {
+            uint32_t(showing ? 1 : 0), 0, 0, 0, 0
+        };
+        send_client_message(p->conn, netwm_sendevent_mask, p->root, 0, net_showing_desktop, data);
     }
 }
 
 
-bool NETRootInfo::showingDesktop() const {
+bool NETRootInfo::showingDesktop() const
+{
     return p->showing_desktop;
 }
 
