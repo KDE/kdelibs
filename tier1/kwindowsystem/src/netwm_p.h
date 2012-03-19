@@ -92,6 +92,9 @@ struct NETRootInfoPrivate {
     const char *name;
     int screen;
 
+    uint32_t *temp_buf;
+    size_t temp_buf_size;
+
     // data that changes (either by the window manager or by a client)
     // and requires updates
     NETRArray<NETPoint> viewport;

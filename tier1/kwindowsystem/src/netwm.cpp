@@ -199,26 +199,26 @@ static Window *nwindup(const Window *w1, int n) {
 }
 
 
-static void refdec_nri(NETRootInfoPrivate *p) {
-
-#ifdef    NETWMDEBUG
+static void refdec_nri(NETRootInfoPrivate *p)
+{
+#ifdef NETWMDEBUG
     fprintf(stderr, "NET: decrementing NETRootInfoPrivate::ref (%d)\n", p->ref - 1);
 #endif
 
     if (! --p->ref) {
-
-#ifdef    NETWMDEBUG
-	fprintf(stderr, "NET: \tno more references, deleting\n");
+#ifdef NETWMDEBUG
+        fprintf(stderr, "NET: \tno more references, deleting\n");
 #endif
 
-	delete [] p->name;
-	delete [] p->stacking;
-	delete [] p->clients;
-	delete [] p->virtual_roots;
+        delete [] p->name;
+        delete [] p->stacking;
+        delete [] p->clients;
+        delete [] p->virtual_roots;
+        delete [] p->temp_buf;
 
-	int i;
-	for (i = 0; i < p->desktop_names.size(); i++)
-	    delete [] p->desktop_names[i];
+        int i;
+        for (i = 0; i < p->desktop_names.size(); i++)
+            delete [] p->desktop_names[i];
     }
 }
 
@@ -261,6 +261,20 @@ static int wcmp(const void *a, const void *b) {
     else
         return 0;
 }
+
+
+// KDE5: Remove this when we use xcb types everywhere
+static uint32_t *get_temp_buf(NETRootInfoPrivate *p, size_t count)
+{
+    if (p->temp_buf_size < count) {
+        delete [] p->temp_buf;
+        p->temp_buf_size = (count + 63) & ~63;
+        p->temp_buf = new uint32_t[p->temp_buf_size];
+    }
+
+    return p->temp_buf;
+}
+
 
 static const int netAtomCount = 89;
 
@@ -559,6 +573,9 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
 
     p->conn = XGetXCBConnection(display);
 
+    p->temp_buf = 0;
+    p->temp_buf_size = 0;
+
     const xcb_setup_t *setup = xcb_get_setup(p->conn);
     xcb_screen_iterator_t it = xcb_setup_roots_iterator(setup);
 
@@ -614,6 +631,9 @@ NETRootInfo::NETRootInfo(Display *display, const unsigned long properties[], int
 
     p->display = display;
     p->conn = XGetXCBConnection(display);
+
+    p->temp_buf = 0;
+    p->temp_buf_size = 0;
 
     const xcb_setup_t *setup = xcb_get_setup(p->conn);
     xcb_screen_iterator_t it = xcb_setup_roots_iterator(setup);
@@ -677,6 +697,9 @@ NETRootInfo::NETRootInfo(Display *display, unsigned long properties, int screen,
 
     p->display = display;
     p->conn = XGetXCBConnection(display);
+
+    p->temp_buf = 0;
+    p->temp_buf_size = 0;
 
     const xcb_setup_t *setup = xcb_get_setup(p->conn);
     xcb_screen_iterator_t it = xcb_setup_roots_iterator(setup);
@@ -773,41 +796,57 @@ void NETRootInfo::activate() {
 }
 
 
-void NETRootInfo::setClientList(const Window *windows, unsigned int count) {
-    if (p->role != WindowManager) return;
+void NETRootInfo::setClientList(const Window *windows, unsigned int count)
+{
+    if (p->role != WindowManager)
+        return;
 
     p->clients_count = count;
 
     delete [] p->clients;
     p->clients = nwindup(windows, count);
 
-#ifdef    NETWMDEBUG
+#ifdef NETWMDEBUG
     fprintf(stderr, "NETRootInfo::setClientList: setting list with %ld windows\n",
 	    p->clients_count);
 #endif
 
-    XChangeProperty(p->display, p->root, net_client_list, XA_WINDOW, 32,
-		    PropModeReplace, (unsigned char *)p->clients,
-		    p->clients_count);
+    // KDE5: Remove this when the parameter type is changed to xcb_window_t.
+    // Window is 64 bits on a 64 bit system, while the actual data is 32 bits.
+    uint32_t *data = get_temp_buf(p, count);
+    for (unsigned int i = 0; i < count; i++)
+        data[i] = windows[i];
+
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->root, net_client_list,
+                        XCB_ATOM_WINDOW, 32, p->clients_count,
+                        (const void *) data);
 }
 
 
-void NETRootInfo::setClientListStacking(const Window *windows, unsigned int count) {
-    if (p->role != WindowManager) return;
+void NETRootInfo::setClientListStacking(const Window *windows, unsigned int count)
+{
+    if (p->role != WindowManager)
+        return;
 
     p->stacking_count = count;
     delete [] p->stacking;
     p->stacking = nwindup(windows, count);
 
-#ifdef    NETWMDEBUG
+#ifdef NETWMDEBUG
     fprintf(stderr,
 	    "NETRootInfo::setClientListStacking: setting list with %ld windows\n",
 	    p->clients_count);
 #endif
 
-    XChangeProperty(p->display, p->root, net_client_list_stacking, XA_WINDOW, 32,
-		    PropModeReplace, (unsigned char *) p->stacking,
-		    p->stacking_count);
+    // KDE5: Remove this when the parameter type is changed to xcb_window_t.
+    // Window is 64 bits on a 64 bit system, while the actual data is 32 bits.
+    uint32_t *data = get_temp_buf(p, count);
+    for (unsigned int i = 0; i < count; i++)
+        data[i] = windows[i];
+
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->root, net_client_list_stacking,
+                        XCB_ATOM_WINDOW, 32, p->stacking_count,
+                        (const void *) data);
 }
 
 
