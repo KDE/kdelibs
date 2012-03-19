@@ -37,11 +37,10 @@ install( FILES
 )
 
 install( FILES 40.colors Oxygen.colors Web.colors
-		Royal.colors Rainbow.colors DESTINATION ${CONFIG_INSTALL_DIR}/colors)
+        Royal.colors Rainbow.colors DESTINATION ${CONFIG_INSTALL_DIR}/colors)
 
 if (NOT Q_WS_X11)
-	# install our copy of the rgb.txt named colors list on systems without
-	# X11
-	install(FILES colors/rgb.txt DESTINATION ${DATA_INSTALL_DIR}/kcolorwidgets)
+    # install our copy of the rgb.txt named colors list on systems without X11
+    install(FILES colors/rgb.txt DESTINATION ${DATA_INSTALL_DIR}/kcolorwidgets)
 endif (NOT Q_WS_X11)
 
