@@ -38,7 +38,6 @@
 #include <kaboutdata.h>
 #include <kcomponentdata.h>
 #include "kaction.h"
-#include "kaction_p.h"
 #include "kmessagebox.h"
 #include "kshortcut.h"
 
