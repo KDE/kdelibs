@@ -959,37 +959,29 @@ void NETRootInfo::setDesktopName(int desktop, const char *desktopName)
 }
 
 
-void NETRootInfo::setDesktopGeometry(int , const NETSize &geometry) {
-
-#ifdef    NETWMDEBUG
+void NETRootInfo::setDesktopGeometry(int , const NETSize &geometry)
+{
+#ifdef NETWMDEBUG
     fprintf(stderr, "NETRootInfo::setDesktopGeometry( -- , { %d, %d }) (%s)\n",
 	    geometry.width, geometry.height, (p->role == WindowManager) ? "WM" : "Client");
 #endif
 
     if (p->role == WindowManager) {
-	p->geometry = geometry;
+        p->geometry = geometry;
 
-	long data[2];
-	data[0] = p->geometry.width;
-	data[1] = p->geometry.height;
+        uint32_t data[2];
+        data[0] = p->geometry.width;
+        data[1] = p->geometry.height;
 
-	XChangeProperty(p->display, p->root, net_desktop_geometry, XA_CARDINAL, 32,
-			PropModeReplace, (unsigned char *) data, 2);
+        xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->root, net_desktop_geometry,
+                            XCB_ATOM_CARDINAL, 32, 2, (const void *) data);
     } else {
-	XEvent e;
+        uint32_t data[5] = {
+            uint32_t(geometry.width), uint32_t(geometry.height), 0, 0, 0
+        };
 
-	e.xclient.type = ClientMessage;
-	e.xclient.message_type = net_desktop_geometry;
-	e.xclient.display = p->display;
-	e.xclient.window = p->root;
-	e.xclient.format = 32;
-	e.xclient.data.l[0] = geometry.width;
-	e.xclient.data.l[1] = geometry.height;
-	e.xclient.data.l[2] = 0l;
-	e.xclient.data.l[3] = 0l;
-	e.xclient.data.l[4] = 0l;
-
-	XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+        send_client_message(p->conn, netwm_sendevent_mask, p->root,
+                            p->root, net_desktop_geometry, data);
     }
 }
 
