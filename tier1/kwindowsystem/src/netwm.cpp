@@ -51,119 +51,119 @@
 #include <X11/Xmd.h>
 
 // UTF-8 string
-static Atom UTF8_STRING = 0;
+static xcb_atom_t UTF8_STRING = 0;
 
 // root window properties
-static Atom net_supported            = 0;
-static Atom net_client_list          = 0;
-static Atom net_client_list_stacking = 0;
-static Atom net_desktop_geometry     = 0;
-static Atom net_desktop_viewport     = 0;
-static Atom net_current_desktop      = 0;
-static Atom net_desktop_names        = 0;
-static Atom net_number_of_desktops   = 0;
-static Atom net_active_window        = 0;
-static Atom net_workarea             = 0;
-static Atom net_supporting_wm_check  = 0;
-static Atom net_virtual_roots        = 0;
-static Atom net_showing_desktop      = 0;
-static Atom net_desktop_layout       = 0;
+static xcb_atom_t net_supported            = 0;
+static xcb_atom_t net_client_list          = 0;
+static xcb_atom_t net_client_list_stacking = 0;
+static xcb_atom_t net_desktop_geometry     = 0;
+static xcb_atom_t net_desktop_viewport     = 0;
+static xcb_atom_t net_current_desktop      = 0;
+static xcb_atom_t net_desktop_names        = 0;
+static xcb_atom_t net_number_of_desktops   = 0;
+static xcb_atom_t net_active_window        = 0;
+static xcb_atom_t net_workarea             = 0;
+static xcb_atom_t net_supporting_wm_check  = 0;
+static xcb_atom_t net_virtual_roots        = 0;
+static xcb_atom_t net_showing_desktop      = 0;
+static xcb_atom_t net_desktop_layout       = 0;
 
 // root window messages
-static Atom net_close_window         = 0;
-static Atom net_restack_window       = 0;
-static Atom net_wm_moveresize        = 0;
-static Atom net_moveresize_window    = 0;
+static xcb_atom_t net_close_window         = 0;
+static xcb_atom_t net_restack_window       = 0;
+static xcb_atom_t net_wm_moveresize        = 0;
+static xcb_atom_t net_moveresize_window    = 0;
 
 // application window properties
-static Atom net_wm_name              = 0;
-static Atom net_wm_visible_name      = 0;
-static Atom net_wm_icon_name         = 0;
-static Atom net_wm_visible_icon_name = 0;
-static Atom net_wm_desktop           = 0;
-static Atom net_wm_window_type       = 0;
-static Atom net_wm_state             = 0;
-static Atom net_wm_strut             = 0;
-static Atom net_wm_extended_strut    = 0; // the atom is called _NET_WM_STRUT_PARTIAL
-static Atom net_wm_icon_geometry     = 0;
-static Atom net_wm_icon              = 0;
-static Atom net_wm_pid               = 0;
-static Atom net_wm_user_time         = 0;
-static Atom net_wm_handled_icons     = 0;
-static Atom net_startup_id           = 0;
-static Atom net_wm_allowed_actions   = 0;
-static Atom wm_window_role           = 0;
-static Atom net_frame_extents        = 0;
-static Atom net_wm_window_opacity    = 0;
-static Atom kde_net_wm_frame_strut   = 0;
-static Atom net_wm_fullscreen_monitors = 0;
+static xcb_atom_t net_wm_name              = 0;
+static xcb_atom_t net_wm_visible_name      = 0;
+static xcb_atom_t net_wm_icon_name         = 0;
+static xcb_atom_t net_wm_visible_icon_name = 0;
+static xcb_atom_t net_wm_desktop           = 0;
+static xcb_atom_t net_wm_window_type       = 0;
+static xcb_atom_t net_wm_state             = 0;
+static xcb_atom_t net_wm_strut             = 0;
+static xcb_atom_t net_wm_extended_strut    = 0; // the atom is called _NET_WM_STRUT_PARTIAL
+static xcb_atom_t net_wm_icon_geometry     = 0;
+static xcb_atom_t net_wm_icon              = 0;
+static xcb_atom_t net_wm_pid               = 0;
+static xcb_atom_t net_wm_user_time         = 0;
+static xcb_atom_t net_wm_handled_icons     = 0;
+static xcb_atom_t net_startup_id           = 0;
+static xcb_atom_t net_wm_allowed_actions   = 0;
+static xcb_atom_t wm_window_role           = 0;
+static xcb_atom_t net_frame_extents        = 0;
+static xcb_atom_t net_wm_window_opacity    = 0;
+static xcb_atom_t kde_net_wm_frame_strut   = 0;
+static xcb_atom_t net_wm_fullscreen_monitors = 0;
 
 // KDE extensions
-static Atom kde_net_wm_window_type_override   = 0;
-static Atom kde_net_wm_window_type_topmenu    = 0;
-static Atom kde_net_wm_temporary_rules        = 0;
-static Atom kde_net_wm_frame_overlap          = 0;
-static Atom kde_net_wm_activities             = 0;
-static Atom kde_net_wm_block_compositing      = 0;
-static Atom kde_net_wm_shadow                 = 0;
+static xcb_atom_t kde_net_wm_window_type_override   = 0;
+static xcb_atom_t kde_net_wm_window_type_topmenu    = 0;
+static xcb_atom_t kde_net_wm_temporary_rules        = 0;
+static xcb_atom_t kde_net_wm_frame_overlap          = 0;
+static xcb_atom_t kde_net_wm_activities             = 0;
+static xcb_atom_t kde_net_wm_block_compositing      = 0;
+static xcb_atom_t kde_net_wm_shadow                 = 0;
 
 // application protocols
-static Atom wm_protocols = 0;
-static Atom net_wm_ping = 0;
-static Atom net_wm_take_activity = 0;
+static xcb_atom_t wm_protocols = 0;
+static xcb_atom_t net_wm_ping = 0;
+static xcb_atom_t net_wm_take_activity = 0;
 
 // application window types
-static Atom net_wm_window_type_normal  = 0;
-static Atom net_wm_window_type_desktop = 0;
-static Atom net_wm_window_type_dock    = 0;
-static Atom net_wm_window_type_toolbar = 0;
-static Atom net_wm_window_type_menu    = 0;
-static Atom net_wm_window_type_dialog  = 0;
-static Atom net_wm_window_type_utility = 0;
-static Atom net_wm_window_type_splash  = 0;
-static Atom net_wm_window_type_dropdown_menu = 0;
-static Atom net_wm_window_type_popup_menu    = 0;
-static Atom net_wm_window_type_tooltip       = 0;
-static Atom net_wm_window_type_notification  = 0;
-static Atom net_wm_window_type_combobox      = 0;
-static Atom net_wm_window_type_dnd           = 0;
+static xcb_atom_t net_wm_window_type_normal  = 0;
+static xcb_atom_t net_wm_window_type_desktop = 0;
+static xcb_atom_t net_wm_window_type_dock    = 0;
+static xcb_atom_t net_wm_window_type_toolbar = 0;
+static xcb_atom_t net_wm_window_type_menu    = 0;
+static xcb_atom_t net_wm_window_type_dialog  = 0;
+static xcb_atom_t net_wm_window_type_utility = 0;
+static xcb_atom_t net_wm_window_type_splash  = 0;
+static xcb_atom_t net_wm_window_type_dropdown_menu = 0;
+static xcb_atom_t net_wm_window_type_popup_menu    = 0;
+static xcb_atom_t net_wm_window_type_tooltip       = 0;
+static xcb_atom_t net_wm_window_type_notification  = 0;
+static xcb_atom_t net_wm_window_type_combobox      = 0;
+static xcb_atom_t net_wm_window_type_dnd           = 0;
 
 // application window state
-static Atom net_wm_state_modal        = 0;
-static Atom net_wm_state_sticky       = 0;
-static Atom net_wm_state_max_vert     = 0;
-static Atom net_wm_state_max_horiz    = 0;
-static Atom net_wm_state_shaded       = 0;
-static Atom net_wm_state_skip_taskbar = 0;
-static Atom net_wm_state_skip_pager   = 0;
-static Atom net_wm_state_hidden       = 0;
-static Atom net_wm_state_fullscreen   = 0;
-static Atom net_wm_state_above        = 0;
-static Atom net_wm_state_below        = 0;
-static Atom net_wm_state_demands_attention = 0;
+static xcb_atom_t net_wm_state_modal        = 0;
+static xcb_atom_t net_wm_state_sticky       = 0;
+static xcb_atom_t net_wm_state_max_vert     = 0;
+static xcb_atom_t net_wm_state_max_horiz    = 0;
+static xcb_atom_t net_wm_state_shaded       = 0;
+static xcb_atom_t net_wm_state_skip_taskbar = 0;
+static xcb_atom_t net_wm_state_skip_pager   = 0;
+static xcb_atom_t net_wm_state_hidden       = 0;
+static xcb_atom_t net_wm_state_fullscreen   = 0;
+static xcb_atom_t net_wm_state_above        = 0;
+static xcb_atom_t net_wm_state_below        = 0;
+static xcb_atom_t net_wm_state_demands_attention = 0;
 
 // allowed actions
-static Atom net_wm_action_move        = 0;
-static Atom net_wm_action_resize      = 0;
-static Atom net_wm_action_minimize    = 0;
-static Atom net_wm_action_shade       = 0;
-static Atom net_wm_action_stick       = 0;
-static Atom net_wm_action_max_vert    = 0;
-static Atom net_wm_action_max_horiz   = 0;
-static Atom net_wm_action_fullscreen  = 0;
-static Atom net_wm_action_change_desk = 0;
-static Atom net_wm_action_close       = 0;
+static xcb_atom_t net_wm_action_move        = 0;
+static xcb_atom_t net_wm_action_resize      = 0;
+static xcb_atom_t net_wm_action_minimize    = 0;
+static xcb_atom_t net_wm_action_shade       = 0;
+static xcb_atom_t net_wm_action_stick       = 0;
+static xcb_atom_t net_wm_action_max_vert    = 0;
+static xcb_atom_t net_wm_action_max_horiz   = 0;
+static xcb_atom_t net_wm_action_fullscreen  = 0;
+static xcb_atom_t net_wm_action_change_desk = 0;
+static xcb_atom_t net_wm_action_close       = 0;
 
 // KDE extension that's not in the specs - Replaced by state_above now?
-static Atom net_wm_state_stays_on_top = 0;
+static xcb_atom_t net_wm_state_stays_on_top = 0;
 
 // used to determine whether application window is managed or not
-static Atom xa_wm_state = 0;
+static xcb_atom_t xa_wm_state = 0;
 
 // ability flags
-static Atom net_wm_full_placement = 0;
+static xcb_atom_t net_wm_full_placement = 0;
 
-static Bool netwm_atoms_created      = False;
+static bool netwm_atoms_created = false;
 const unsigned long netwm_sendevent_mask = (SubstructureRedirectMask|
 					     SubstructureNotifyMask);
 
@@ -262,226 +262,134 @@ static int wcmp(const void *a, const void *b) {
         return 0;
 }
 
-
 static const int netAtomCount = 89;
-static void create_netwm_atoms(Display *d) {
-    static const char * const names[netAtomCount] =
-    {
-	"UTF8_STRING",
-	    "_NET_SUPPORTED",
-	    "_NET_SUPPORTING_WM_CHECK",
-	    "_NET_CLIENT_LIST",
-	    "_NET_CLIENT_LIST_STACKING",
-	    "_NET_NUMBER_OF_DESKTOPS",
-	    "_NET_DESKTOP_GEOMETRY",
-	    "_NET_DESKTOP_VIEWPORT",
-	    "_NET_CURRENT_DESKTOP",
-	    "_NET_DESKTOP_NAMES",
-	    "_NET_ACTIVE_WINDOW",
-	    "_NET_WORKAREA",
-	    "_NET_VIRTUAL_ROOTS",
-            "_NET_DESKTOP_LAYOUT",
-            "_NET_SHOWING_DESKTOP",
-	    "_NET_CLOSE_WINDOW",
-            "_NET_RESTACK_WINDOW",
 
-	    "_NET_WM_MOVERESIZE",
-            "_NET_MOVERESIZE_WINDOW",
-	    "_NET_WM_NAME",
-	    "_NET_WM_VISIBLE_NAME",
-	    "_NET_WM_ICON_NAME",
-	    "_NET_WM_VISIBLE_ICON_NAME",
-	    "_NET_WM_DESKTOP",
-	    "_NET_WM_WINDOW_TYPE",
-	    "_NET_WM_STATE",
-	    "_NET_WM_STRUT",
-            "_NET_WM_STRUT_PARTIAL",
-	    "_NET_WM_ICON_GEOMETRY",
-	    "_NET_WM_ICON",
-	    "_NET_WM_PID",
-	    "_NET_WM_USER_TIME",
-	    "_NET_WM_HANDLED_ICONS",
-            "_NET_STARTUP_ID",
-            "_NET_WM_ALLOWED_ACTIONS",
-	    "_NET_WM_PING",
-            "_NET_WM_TAKE_ACTIVITY",
-            "WM_WINDOW_ROLE",
-            "_NET_FRAME_EXTENTS",
-            "_NET_WM_WINDOW_OPACITY",
-            "_NET_WM_FULLSCREEN_MONITORS",
+static void create_netwm_atoms(xcb_connection_t *c)
+{
+    struct {
+        const char *name;
+        xcb_atom_t *atom;
+    } static const atoms[] = {
+        { "UTF8_STRING",                          &UTF8_STRING                      },
+        { "_NET_SUPPORTED",                       &net_supported                    },
+        { "_NET_SUPPORTING_WM_CHECK",             &net_supporting_wm_check          },
+        { "_NET_CLIENT_LIST",                     &net_client_list                  },
+        { "_NET_CLIENT_LIST_STACKING",            &net_client_list_stacking         },
+        { "_NET_NUMBER_OF_DESKTOPS",              &net_number_of_desktops           },
+        { "_NET_DESKTOP_GEOMETRY",                &net_desktop_geometry             },
+        { "_NET_DESKTOP_VIEWPORT",                &net_desktop_viewport             },
+        { "_NET_CURRENT_DESKTOP",                 &net_current_desktop              },
+        { "_NET_DESKTOP_NAMES",                   &net_desktop_names                },
+        { "_NET_ACTIVE_WINDOW",                   &net_active_window                },
+        { "_NET_WORKAREA",                        &net_workarea                     },
+        { "_NET_VIRTUAL_ROOTS",                   &net_virtual_roots                },
+        { "_NET_DESKTOP_LAYOUT",                  &net_desktop_layout               },
+        { "_NET_SHOWING_DESKTOP",                 &net_showing_desktop              },
+        { "_NET_CLOSE_WINDOW",                    &net_close_window                 },
+        { "_NET_RESTACK_WINDOW",                  &net_restack_window               },
 
-	    "_NET_WM_WINDOW_TYPE_NORMAL",
-	    "_NET_WM_WINDOW_TYPE_DESKTOP",
-	    "_NET_WM_WINDOW_TYPE_DOCK",
-	    "_NET_WM_WINDOW_TYPE_TOOLBAR",
-	    "_NET_WM_WINDOW_TYPE_MENU",
-	    "_NET_WM_WINDOW_TYPE_DIALOG",
-	    "_NET_WM_WINDOW_TYPE_UTILITY",
-	    "_NET_WM_WINDOW_TYPE_SPLASH",
-	    "_NET_WM_WINDOW_TYPE_DROPDOWN_MENU",
-	    "_NET_WM_WINDOW_TYPE_POPUP_MENU",
-	    "_NET_WM_WINDOW_TYPE_TOOLTIP",
-	    "_NET_WM_WINDOW_TYPE_NOTIFICATION",
-	    "_NET_WM_WINDOW_TYPE_COMBOBOX",
-	    "_NET_WM_WINDOW_TYPE_DND",
+        { "_NET_WM_MOVERESIZE",                   &net_wm_moveresize                },
+        { "_NET_MOVERESIZE_WINDOW",               &net_moveresize_window            },
+        { "_NET_WM_NAME",                         &net_wm_name                      },
+        { "_NET_WM_VISIBLE_NAME",                 &net_wm_visible_name              },
+        { "_NET_WM_ICON_NAME",                    &net_wm_icon_name                 },
+        { "_NET_WM_VISIBLE_ICON_NAME",            &net_wm_visible_icon_name         },
+        { "_NET_WM_DESKTOP",                      &net_wm_desktop                   },
+        { "_NET_WM_WINDOW_TYPE",                  &net_wm_window_type               },
+        { "_NET_WM_STATE",                        &net_wm_state                     },
+        { "_NET_WM_STRUT",                        &net_wm_strut                     },
+        { "_NET_WM_STRUT_PARTIAL",                &net_wm_extended_strut            },
+        { "_NET_WM_ICON_GEOMETRY",                &net_wm_icon_geometry             },
+        { "_NET_WM_ICON",                         &net_wm_icon                      },
+        { "_NET_WM_PID",                          &net_wm_pid                       },
+        { "_NET_WM_USER_TIME",                    &net_wm_user_time                 },
+        { "_NET_WM_HANDLED_ICONS",                &net_wm_handled_icons             },
+        { "_NET_STARTUP_ID",                      &net_startup_id                   },
+        { "_NET_WM_ALLOWED_ACTIONS",              &net_wm_allowed_actions           },
+        { "_NET_WM_PING",                         &net_wm_ping                      },
+        { "_NET_WM_TAKE_ACTIVITY",                &net_wm_take_activity             },
+        { "WM_WINDOW_ROLE",                       &wm_window_role                   },
+        { "_NET_FRAME_EXTENTS",                   &net_frame_extents                },
+        { "_NET_WM_WINDOW_OPACITY",               &net_wm_window_opacity            },
+        { "_NET_WM_FULLSCREEN_MONITORS",          &net_wm_fullscreen_monitors       },
 
-	    "_NET_WM_STATE_MODAL",
-	    "_NET_WM_STATE_STICKY",
-	    "_NET_WM_STATE_MAXIMIZED_VERT",
-	    "_NET_WM_STATE_MAXIMIZED_HORZ",
-	    "_NET_WM_STATE_SHADED",
-	    "_NET_WM_STATE_SKIP_TASKBAR",
-	    "_NET_WM_STATE_SKIP_PAGER",
-	    "_NET_WM_STATE_HIDDEN",
-	    "_NET_WM_STATE_FULLSCREEN",
-	    "_NET_WM_STATE_ABOVE",
-	    "_NET_WM_STATE_BELOW",
-	    "_NET_WM_STATE_DEMANDS_ATTENTION",
+        { "_NET_WM_WINDOW_TYPE_NORMAL",           &net_wm_window_type_normal        },
+        { "_NET_WM_WINDOW_TYPE_DESKTOP",          &net_wm_window_type_desktop       },
+        { "_NET_WM_WINDOW_TYPE_DOCK",             &net_wm_window_type_dock          },
+        { "_NET_WM_WINDOW_TYPE_TOOLBAR",          &net_wm_window_type_toolbar       },
+        { "_NET_WM_WINDOW_TYPE_MENU",             &net_wm_window_type_menu          },
+        { "_NET_WM_WINDOW_TYPE_DIALOG",           &net_wm_window_type_dialog        },
+        { "_NET_WM_WINDOW_TYPE_UTILITY",          &net_wm_window_type_utility       },
+        { "_NET_WM_WINDOW_TYPE_SPLASH",           &net_wm_window_type_splash        },
+        { "_NET_WM_WINDOW_TYPE_DROPDOWN_MENU",    &net_wm_window_type_dropdown_menu },
+        { "_NET_WM_WINDOW_TYPE_POPUP_MENU",       &net_wm_window_type_popup_menu    },
+        { "_NET_WM_WINDOW_TYPE_TOOLTIP",          &net_wm_window_type_tooltip       },
+        { "_NET_WM_WINDOW_TYPE_NOTIFICATION",     &net_wm_window_type_notification  },
+        { "_NET_WM_WINDOW_TYPE_COMBOBOX",         &net_wm_window_type_combobox      },
+        { "_NET_WM_WINDOW_TYPE_DND",              &net_wm_window_type_dnd           },
 
-            "_NET_WM_ACTION_MOVE",
-            "_NET_WM_ACTION_RESIZE",
-            "_NET_WM_ACTION_MINIMIZE",
-            "_NET_WM_ACTION_SHADE",
-            "_NET_WM_ACTION_STICK",
-            "_NET_WM_ACTION_MAXIMIZE_VERT",
-            "_NET_WM_ACTION_MAXIMIZE_HORZ",
-            "_NET_WM_ACTION_FULLSCREEN",
-            "_NET_WM_ACTION_CHANGE_DESKTOP",
-            "_NET_WM_ACTION_CLOSE",
+        { "_NET_WM_STATE_MODAL",                  &net_wm_state_modal               },
+        { "_NET_WM_STATE_STICKY",                 &net_wm_state_sticky              },
+        { "_NET_WM_STATE_MAXIMIZED_VERT",         &net_wm_state_max_vert            },
+        { "_NET_WM_STATE_MAXIMIZED_HORZ",         &net_wm_state_max_horiz           },
+        { "_NET_WM_STATE_SHADED",                 &net_wm_state_shaded              },
+        { "_NET_WM_STATE_SKIP_TASKBAR",           &net_wm_state_skip_taskbar        },
+        { "_NET_WM_STATE_SKIP_PAGER",             &net_wm_state_skip_pager          },
+        { "_NET_WM_STATE_HIDDEN",                 &net_wm_state_hidden              },
+        { "_NET_WM_STATE_FULLSCREEN",             &net_wm_state_fullscreen          },
+        { "_NET_WM_STATE_ABOVE",                  &net_wm_state_above               },
+        { "_NET_WM_STATE_BELOW",                  &net_wm_state_below               },
+        { "_NET_WM_STATE_DEMANDS_ATTENTION",      &net_wm_state_demands_attention   },
 
-	    "_NET_WM_STATE_STAYS_ON_TOP",
 
-	    "_KDE_NET_WM_FRAME_STRUT",
-	    "_KDE_NET_WM_WINDOW_TYPE_OVERRIDE",
-	    "_KDE_NET_WM_WINDOW_TYPE_TOPMENU",
-            "_KDE_NET_WM_TEMPORARY_RULES",
-            "_NET_WM_FRAME_OVERLAP",
+        { "_NET_WM_ACTION_MOVE",                  &net_wm_action_move               },
+        { "_NET_WM_ACTION_RESIZE",                &net_wm_action_resize             },
+        { "_NET_WM_ACTION_MINIMIZE",              &net_wm_action_minimize           },
+        { "_NET_WM_ACTION_SHADE",                 &net_wm_action_shade              },
+        { "_NET_WM_ACTION_STICK",                 &net_wm_action_stick              },
+        { "_NET_WM_ACTION_MAXIMIZE_VERT",         &net_wm_action_max_vert           },
+        { "_NET_WM_ACTION_MAXIMIZE_HORZ",         &net_wm_action_max_horiz          },
+        { "_NET_WM_ACTION_FULLSCREEN",            &net_wm_action_fullscreen         },
+        { "_NET_WM_ACTION_CHANGE_DESKTOP",        &net_wm_action_change_desk        },
+        { "_NET_WM_ACTION_CLOSE",                 &net_wm_action_close              },
 
-	    "WM_STATE",
-	    "WM_PROTOCOLS",
+        { "_NET_WM_STATE_STAYS_ON_TOP",           &net_wm_state_stays_on_top        },
 
-            "_NET_WM_FULL_PLACEMENT",
-            "_KDE_NET_WM_ACTIVITIES",
-            "_KDE_NET_WM_BLOCK_COMPOSITING",
-            "_KDE_NET_WM_SHADOW"
-	    };
+        { "_KDE_NET_WM_FRAME_STRUT",              &kde_net_wm_frame_strut           },
+        { "_KDE_NET_WM_WINDOW_TYPE_OVERRIDE",     &kde_net_wm_window_type_override  },
+        { "_KDE_NET_WM_WINDOW_TYPE_TOPMENU",      &kde_net_wm_window_type_topmenu   },
+        { "_KDE_NET_WM_TEMPORARY_RULES",          &kde_net_wm_temporary_rules       },
+        { "_NET_WM_FRAME_OVERLAP",                &kde_net_wm_frame_overlap         },
 
-    Atom atoms[netAtomCount], *atomsp[netAtomCount] =
-    {
-	&UTF8_STRING,
-	    &net_supported,
-	    &net_supporting_wm_check,
-	    &net_client_list,
-	    &net_client_list_stacking,
-	    &net_number_of_desktops,
-	    &net_desktop_geometry,
-	    &net_desktop_viewport,
-	    &net_current_desktop,
-	    &net_desktop_names,
-	    &net_active_window,
-	    &net_workarea,
-	    &net_virtual_roots,
-            &net_desktop_layout,
-            &net_showing_desktop,
-	    &net_close_window,
-            &net_restack_window,
+        { "WM_STATE",                             &xa_wm_state                      },
+        { "WM_PROTOCOLS",                         &wm_protocols                     },
 
-	    &net_wm_moveresize,
-            &net_moveresize_window,
-	    &net_wm_name,
-	    &net_wm_visible_name,
-	    &net_wm_icon_name,
-	    &net_wm_visible_icon_name,
-	    &net_wm_desktop,
-	    &net_wm_window_type,
-	    &net_wm_state,
-	    &net_wm_strut,
-            &net_wm_extended_strut,
-	    &net_wm_icon_geometry,
-	    &net_wm_icon,
-	    &net_wm_pid,
-	    &net_wm_user_time,
-	    &net_wm_handled_icons,
-            &net_startup_id,
-            &net_wm_allowed_actions,
-	    &net_wm_ping,
-            &net_wm_take_activity,
-            &wm_window_role,
-            &net_frame_extents,
-            &net_wm_window_opacity,
-            &net_wm_fullscreen_monitors,
+        { "_NET_WM_FULL_PLACEMENT",               &net_wm_full_placement            },
+        { "_KDE_NET_WM_ACTIVITIES",               &kde_net_wm_activities            },
+        { "_KDE_NET_WM_BLOCK_COMPOSITING",        &kde_net_wm_block_compositing     },
+        { "_KDE_NET_WM_SHADOW",                   &kde_net_wm_shadow                },
+        { 0,                                      0                                 }
+    };
 
-	    &net_wm_window_type_normal,
-	    &net_wm_window_type_desktop,
-	    &net_wm_window_type_dock,
-	    &net_wm_window_type_toolbar,
-	    &net_wm_window_type_menu,
-	    &net_wm_window_type_dialog,
-	    &net_wm_window_type_utility,
-	    &net_wm_window_type_splash,
-	    &net_wm_window_type_dropdown_menu,
-	    &net_wm_window_type_popup_menu,
-	    &net_wm_window_type_tooltip,
-	    &net_wm_window_type_notification,
-	    &net_wm_window_type_combobox,
-	    &net_wm_window_type_dnd,
+    assert(!netwm_atoms_created);
 
-	    &net_wm_state_modal,
-	    &net_wm_state_sticky,
-	    &net_wm_state_max_vert,
-	    &net_wm_state_max_horiz,
-	    &net_wm_state_shaded,
-	    &net_wm_state_skip_taskbar,
-	    &net_wm_state_skip_pager,
-	    &net_wm_state_hidden,
-	    &net_wm_state_fullscreen,
-	    &net_wm_state_above,
-	    &net_wm_state_below,
-	    &net_wm_state_demands_attention,
+    // Send the intern atom requests
+    xcb_intern_atom_cookie_t cookies[netAtomCount];
+    for (int i = 0; atoms[i].name; i++)
+        cookies[i] = xcb_intern_atom(c, false, strlen(atoms[i].name), atoms[i].name);
 
-            &net_wm_action_move,
-            &net_wm_action_resize,
-            &net_wm_action_minimize,
-            &net_wm_action_shade,
-            &net_wm_action_stick,
-            &net_wm_action_max_vert,
-            &net_wm_action_max_horiz,
-            &net_wm_action_fullscreen,
-            &net_wm_action_change_desk,
-            &net_wm_action_close,
+    // Get the replies
+    for (int i = 0; atoms[i].name; i++) {
+        xcb_intern_atom_reply_t *reply = xcb_intern_atom_reply(c, cookies[i], 0);
+        if (!reply)
+            continue;
 
-	    &net_wm_state_stays_on_top,
+        *atoms[i].atom = reply->atom;
+        free(reply);
+    }
 
-	    &kde_net_wm_frame_strut,
-	    &kde_net_wm_window_type_override,
-	    &kde_net_wm_window_type_topmenu,
-            &kde_net_wm_temporary_rules,
-            &kde_net_wm_frame_overlap,
-
-	    &xa_wm_state,
-	    &wm_protocols,
-
-            &net_wm_full_placement,
-            &kde_net_wm_activities,
-            &kde_net_wm_block_compositing,
-            &kde_net_wm_shadow
-	    };
-
-    assert( !netwm_atoms_created );
-
-    int i = netAtomCount;
-    while (i--)
-	atoms[i] = 0;
-
-    XInternAtoms(d, (char **) names, netAtomCount, False, atoms);
-
-    i = netAtomCount;
-    while (i--)
-	*atomsp[i] = atoms[i];
-
-    netwm_atoms_created = True;
+    netwm_atoms_created = true;
 }
-
 
 static void readIcon(Display* display, Window window, Atom property, NETRArray<NETIcon>& icons, int& icon_count) {
 
@@ -684,7 +592,8 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
 
     p->role = WindowManager;
 
-    if (! netwm_atoms_created) create_netwm_atoms(p->display);
+    if (! netwm_atoms_created)
+        create_netwm_atoms(p->conn);
 
     if (doActivate) activate();
 }
@@ -747,7 +656,8 @@ NETRootInfo::NETRootInfo(Display *display, const unsigned long properties[], int
 
     p->role = Client;
 
-    if (! netwm_atoms_created) create_netwm_atoms(p->display);
+    if (! netwm_atoms_created)
+        create_netwm_atoms(p->conn);
 
     if (doActivate) activate();
 }
@@ -796,7 +706,8 @@ NETRootInfo::NETRootInfo(Display *display, unsigned long properties, int screen,
 
     p->role = Client;
 
-    if (! netwm_atoms_created) create_netwm_atoms(p->display);
+    if (! netwm_atoms_created)
+        create_netwm_atoms(p->conn);
 
     if (doActivate) activate();
 }
@@ -2810,7 +2721,8 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
 
     p->role = role;
 
-    if (! netwm_atoms_created) create_netwm_atoms(p->display);
+    if (! netwm_atoms_created)
+        create_netwm_atoms(p->conn);
 
     update(p->properties);
 }
@@ -2870,7 +2782,8 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
 
     p->role = role;
 
-    if (! netwm_atoms_created) create_netwm_atoms(p->display);
+    if (! netwm_atoms_created)
+        create_netwm_atoms(p->conn);
 
     update(p->properties);
 }
