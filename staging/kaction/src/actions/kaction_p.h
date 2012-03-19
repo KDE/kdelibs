@@ -21,6 +21,8 @@
 
 #include "kglobalaccel.h"
 #include <kcomponentdata.h>
+#include <kgesture.h>
+#include <kgesturemap.h>
 
 class KAction;
 

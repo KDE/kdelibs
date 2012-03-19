@@ -31,7 +31,8 @@
 #include "kmessagebox.h"
 #include "kauthaction.h"
 #include "kauthactionwatcher.h"
-
+#include <kgesturemap.h>
+#include <kgesture.h>
 #include <QApplication>
 #include <QHBoxLayout>
 #include <QShortcutEvent>
