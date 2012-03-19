@@ -1539,30 +1539,31 @@ void NETRootInfo::setActiveWindow(Window window, NET::RequestSource src,
 }
 
 
-void NETRootInfo::setWorkArea(int desktop, const NETRect &workarea) {
-
-#ifdef    NETWMDEBUG
+void NETRootInfo::setWorkArea(int desktop, const NETRect &workarea)
+{
+#ifdef NETWMDEBUG
     fprintf(stderr, "NETRootInfo::setWorkArea(%d, { %d, %d, %d, %d }) (%s)\n",
 	    desktop, workarea.pos.x, workarea.pos.y, workarea.size.width, workarea.size.height,
 	    (p->role == WindowManager) ? "WM" : "Client");
 #endif
 
-    if (p->role != WindowManager || desktop < 1) return;
+    if (p->role != WindowManager || desktop < 1)
+        return;
 
     p->workarea[desktop - 1] = workarea;
 
-    long *wa = new long[p->number_of_desktops * 4];
+    uint32_t *wa = new uint32_t[p->number_of_desktops * 4];
     int i, o;
     for (i = 0, o = 0; i < p->number_of_desktops; i++) {
-	wa[o++] = p->workarea[i].pos.x;
-	wa[o++] = p->workarea[i].pos.y;
-	wa[o++] = p->workarea[i].size.width;
-	wa[o++] = p->workarea[i].size.height;
+        wa[o++] = p->workarea[i].pos.x;
+        wa[o++] = p->workarea[i].pos.y;
+        wa[o++] = p->workarea[i].size.width;
+        wa[o++] = p->workarea[i].size.height;
     }
 
-    XChangeProperty(p->display, p->root, net_workarea, XA_CARDINAL, 32,
-		    PropModeReplace, (unsigned char *) wa,
-		    p->number_of_desktops * 4);
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->root, net_workarea,
+                        XCB_ATOM_CARDINAL, 32, p->number_of_desktops * 4,
+                        (const void *) wa);
 
     delete [] wa;
 }
