@@ -867,71 +867,56 @@ void NETRootInfo::setClientListStacking(const Window *windows, unsigned int coun
 }
 
 
-void NETRootInfo::setNumberOfDesktops(int numberOfDesktops) {
-
-#ifdef    NETWMDEBUG
+void NETRootInfo::setNumberOfDesktops(int numberOfDesktops)
+{
+#ifdef NETWMDEBUG
     fprintf(stderr,
 	    "NETRootInfo::setNumberOfDesktops: setting desktop count to %d (%s)\n",
 	    numberOfDesktops, (p->role == WindowManager) ? "WM" : "Client");
 #endif
 
     if (p->role == WindowManager) {
-	p->number_of_desktops = numberOfDesktops;
- 	long d = numberOfDesktops;
-	XChangeProperty(p->display, p->root, net_number_of_desktops, XA_CARDINAL, 32,
-			PropModeReplace, (unsigned char *) &d, 1);
+        p->number_of_desktops = numberOfDesktops;
+        const uint32_t d = numberOfDesktops;
+        xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->root, net_number_of_desktops,
+                            XCB_ATOM_CARDINAL, 32, 1, (const void *) &d);
     } else {
-	XEvent e;
+        const uint32_t data[5] = {
+            uint32_t(numberOfDesktops), 0, 0, 0, 0
+        };
 
-	e.xclient.type = ClientMessage;
-	e.xclient.message_type = net_number_of_desktops;
-	e.xclient.display = p->display;
-	e.xclient.window = p->root;
-	e.xclient.format = 32;
-	e.xclient.data.l[0] = numberOfDesktops;
-	e.xclient.data.l[1] = 0l;
-	e.xclient.data.l[2] = 0l;
-	e.xclient.data.l[3] = 0l;
-	e.xclient.data.l[4] = 0l;
-
-	XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+        send_client_message(p->conn, netwm_sendevent_mask, p->root,
+                            p->root, net_number_of_desktops, data);
     }
 }
 
 
-void NETRootInfo::setCurrentDesktop(int desktop, bool ignore_viewport) {
-
-#ifdef    NETWMDEBUG
+void NETRootInfo::setCurrentDesktop(int desktop, bool ignore_viewport)
+{
+#ifdef NETWMDEBUG
     fprintf(stderr,
 	    "NETRootInfo::setCurrentDesktop: setting current desktop = %d (%s)\n",
 	    desktop, (p->role == WindowManager) ? "WM" : "Client");
 #endif
 
     if (p->role == WindowManager) {
-	p->current_desktop = desktop;
-	long d = p->current_desktop - 1;
-	XChangeProperty(p->display, p->root, net_current_desktop, XA_CARDINAL, 32,
-			PropModeReplace, (unsigned char *) &d, 1);
+        p->current_desktop = desktop;
+        uint32_t d = p->current_desktop - 1;
+        xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->root, net_current_desktop,
+                            XCB_ATOM_CARDINAL, 32, 1, (const void *) &d);
     } else {
 
-        if( !ignore_viewport && KWindowSystem::mapViewport()) {
-            KWindowSystem::setCurrentDesktop( desktop );
+        if (!ignore_viewport && KWindowSystem::mapViewport()) {
+            KWindowSystem::setCurrentDesktop(desktop);
             return;
         }
 
-	XEvent e;
-	e.xclient.type = ClientMessage;
-	e.xclient.message_type = net_current_desktop;
-	e.xclient.display = p->display;
-	e.xclient.window = p->root;
-	e.xclient.format = 32;
-	e.xclient.data.l[0] = desktop - 1;
-	e.xclient.data.l[1] = 0l;
-	e.xclient.data.l[2] = 0l;
-	e.xclient.data.l[3] = 0l;
-	e.xclient.data.l[4] = 0l;
+        const uint32_t data[5] = {
+            uint32_t(desktop - 1), 0, 0, 0, 0
+        };
 
-	XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+        send_client_message(p->conn, netwm_sendevent_mask, p->root,
+                            p->root, net_current_desktop, data);
     }
 }
 
