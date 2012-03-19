@@ -1331,7 +1331,7 @@ void KFilePropsPlugin::applyChanges()
             // Tell properties. Warning, this changes the result of properties->url() !
             properties->rename( newFileName );
 
-            // Update also relative path (for apps and mimetypes)
+            // Update also relative path (for apps)
             if ( !d->m_sRelativePath.isEmpty() )
                 determineRelativePath( properties->url().toLocalFile() );
 
@@ -1356,7 +1356,7 @@ void KFilePropsPlugin::applyChanges()
             return;
         }
         properties->updateUrl(properties->url());
-        // Update also relative path (for apps and mimetypes)
+        // Update also relative path (for apps)
         if ( !d->m_sRelativePath.isEmpty() )
             determineRelativePath( properties->url().toLocalFile() );
     }
@@ -1389,10 +1389,10 @@ void KFilePropsPlugin::slotCopyFinished( KJob * job )
     if (d->bDesktopFile && !d->m_sRelativePath.isEmpty())
     {
         kDebug(250) << "KFilePropsPlugin::slotCopyFinished " << d->m_sRelativePath;
-        KUrl newURL;
-        newURL.setPath( KDesktopFile::locateLocal(d->m_sRelativePath) );
-        kDebug(250) << "KFilePropsPlugin::slotCopyFinished path=" << newURL.path();
-        properties->updateUrl( newURL );
+        const QString newPath = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation) + '/' + d->m_sRelativePath;
+        const QUrl newURL = QUrl::fromLocalFile(newPath);
+        kDebug(250) << "KFilePropsPlugin::slotCopyFinished path=" << newURL;
+        properties->updateUrl(newURL);
     }
 
     if ( d->bKDesktopMode && d->bDesktopFile ) {
@@ -3429,4 +3429,3 @@ bool KDesktopPropsPlugin::supports( const KFileItemList& _items )
 
 #include "moc_kpropertiesdialog.cpp"
 #include "moc_kpropertiesdialog_p.cpp"
-
