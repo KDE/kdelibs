@@ -25,7 +25,7 @@
 #include <kio/jobuidelegate.h>
 #include <kio/scheduler.h>
 #include <kio/copyjob.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kshell.h>
 #include <kstringhandler.h>
 #include <kmimetypetrader.h>

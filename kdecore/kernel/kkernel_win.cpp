@@ -29,7 +29,7 @@
 #ifdef Q_OS_WIN
 
 #include "kglobal.h"
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include <QtCore/QDir>
 #include <QtCore/QString>

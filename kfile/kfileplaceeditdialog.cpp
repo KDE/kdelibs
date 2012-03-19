@@ -27,7 +27,7 @@
 #include <kiconloader.h>
 #include <kcomponentdata.h>
 #include <klineedit.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmimetype.h>
 #include <kio/global.h>
 #include <kprotocolinfo.h>

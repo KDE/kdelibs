@@ -38,7 +38,7 @@
 #include <kcompletionbox.h>
 #include <kicontheme.h>
 #include <kicon.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmenu.h>
 #include <kstandardaction.h>
 #include <kstandardshortcut.h>

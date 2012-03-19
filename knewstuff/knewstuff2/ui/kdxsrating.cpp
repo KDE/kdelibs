@@ -24,7 +24,7 @@
 #include <QSlider>
 #include <QLabel>
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kstandarddirs.h>
 
 KDXSRating::KDXSRating(QWidget *parent)

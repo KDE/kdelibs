@@ -24,7 +24,7 @@
 //#include <kio/job.h>
 #include <kglobal.h>
 //#include <kmessagebox.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include "feed.h"
 

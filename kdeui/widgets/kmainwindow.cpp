@@ -51,7 +51,7 @@
 #include <kdebug.h>
 #include <kdialog.h>
 #include <khelpmenu.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmenubar.h>
 #include <kstandarddirs.h>
 #include <kstatusbar.h>

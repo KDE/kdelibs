@@ -29,7 +29,7 @@
 
 #include <kconfig.h>
 #include <kguiitem.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kprogressdialog.h>
 #include <kdebug.h>

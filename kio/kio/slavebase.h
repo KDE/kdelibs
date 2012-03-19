@@ -24,7 +24,7 @@
 #include <kio/udsentry.h>
 #include <kio/authinfo.h>
 #include <kio/jobclasses.h> // for KIO::JobFlags
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include <QtCore/QByteArray>
 #include <QtNetwork/QHostInfo>

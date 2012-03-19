@@ -18,7 +18,7 @@
 #include "atticaprovider.h"
 
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kio/job.h>
 #include <kmessagebox.h>
 

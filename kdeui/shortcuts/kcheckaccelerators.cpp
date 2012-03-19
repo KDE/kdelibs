@@ -46,7 +46,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kcomponentdata.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kshortcut.h>
 #include <ktextbrowser.h>
 

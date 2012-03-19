@@ -19,9 +19,10 @@
 #include "kmimetypechooser.h"
 
 #include <kicon.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmimetype.h>
 #include <kshell.h>
+#include <ksharedconfig.h>
 #include <krun.h>
 #include <ksycoca.h>
 

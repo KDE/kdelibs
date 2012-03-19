@@ -27,7 +27,7 @@
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kurl.h>
 
 #include <kfiletreeview.h>

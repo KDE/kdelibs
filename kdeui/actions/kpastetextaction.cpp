@@ -33,7 +33,7 @@
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kicon.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include "kmenu.h"
 

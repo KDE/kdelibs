@@ -58,7 +58,7 @@
 #include <kglobalsettings.h>
 #include <ktoolinvocation.h>
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kprotocolmanager.h>
 #include <kstandarddirs.h>
 #include <kprocess.h>

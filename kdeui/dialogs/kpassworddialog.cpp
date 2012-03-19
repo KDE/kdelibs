@@ -29,7 +29,7 @@
 #include <kconfig.h>
 #include <kiconloader.h>
 #include <klineedit.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <khbox.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>

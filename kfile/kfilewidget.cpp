@@ -53,6 +53,7 @@
 #include <kio/scheduler.h>
 #include <krecentdirs.h>
 #include <kdebug.h>
+#include <klocale.h>
 #include <kio/kfileitemdelegate.h>
 #include <kde_file.h>
 

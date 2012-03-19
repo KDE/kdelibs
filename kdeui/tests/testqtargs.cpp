@@ -47,7 +47,7 @@ application palette (light and dark shades are\ncalculated)."), 0},
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 int main(int argc, char *argv[])
 {

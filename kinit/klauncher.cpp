@@ -43,7 +43,7 @@
 #include <kdebug.h>
 #include <kde_file.h>
 #include <klibrary.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kprotocolmanager.h>
 #include <kprotocolinfo.h>
 #include <krun.h>

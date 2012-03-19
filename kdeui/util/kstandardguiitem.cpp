@@ -21,7 +21,7 @@
 #include <QApplication>
 
 #include <kguiitem.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 namespace KStandardGuiItem
 {

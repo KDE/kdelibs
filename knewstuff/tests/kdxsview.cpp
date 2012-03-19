@@ -21,7 +21,7 @@
 #include <knewstuff2/ui/downloaddialog.h>
 #include <knewstuff2/dxs/dxs.h>
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kiconloader.h>
 #include <kdebug.h>
 

@@ -21,7 +21,7 @@
 #include "kaboutdata.h"
 #include <kcomponentdata.h>
 #include <kstandarddirs.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include "kpluginfactory.h"
 #include <kservice.h>
 #include "klibrary.h"

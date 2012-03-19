@@ -36,7 +36,7 @@
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <kaction.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kstandarddirs.h>
 
 Part1::Part1( QObject *parent, QWidget * parentWidget )

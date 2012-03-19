@@ -26,7 +26,7 @@
 
 #include <kmimetypetrader.h>
 #include <kconfig.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kglobal.h>
 
 #include "ui_editorchooser_ui.h"

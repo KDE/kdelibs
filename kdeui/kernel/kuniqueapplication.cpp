@@ -37,7 +37,7 @@
 #include <QtDBus/QtDBus>
 
 #include <kcmdlineargs.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kstandarddirs.h>
 #include <kaboutdata.h>
 #include <kconfiggroup.h>

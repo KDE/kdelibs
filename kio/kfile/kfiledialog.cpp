@@ -33,7 +33,7 @@
 #include <QDesktopWidget>
 
 #include <kimageio.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kpushbutton.h>
 #include <config-kfile.h>
 #include <krecentdocument.h>

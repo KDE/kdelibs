@@ -33,7 +33,7 @@
 #include <kdebug.h>
 #include <kfontdialog.h>
 #include <kicon.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kfontchooser.h>
 #include <kfontcombobox.h>
 

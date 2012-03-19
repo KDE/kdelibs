@@ -7,7 +7,7 @@
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kdialog.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <klineedit.h>
 #include <kglobalsettings.h>
 #include <kcompletionbox.h>

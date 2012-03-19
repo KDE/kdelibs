@@ -34,7 +34,7 @@
 #include <QtCore/QProcess>
 
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <ktoolinvocation.h>

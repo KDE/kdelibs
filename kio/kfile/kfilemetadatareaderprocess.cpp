@@ -23,7 +23,7 @@
 #include <kcmdlineargs.h>
 #include <kfilemetainfo.h>
 #include <kcomponentdata.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include <QtCore/QByteArray>
 #include <QtCore/QCoreApplication>

@@ -41,7 +41,7 @@ extern "C" {
 #include <QtCore/QFile>
 
 #include <kauthorized.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kde_file.h>

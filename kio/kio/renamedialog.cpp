@@ -41,7 +41,7 @@
 #include <kio/global.h>
 #include <kio/udsentry.h>
 #include <kdialog.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kglobal.h>
 #include <kdebug.h>
 #include <kurl.h>

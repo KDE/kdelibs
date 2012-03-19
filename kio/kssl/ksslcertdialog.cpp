@@ -29,7 +29,7 @@
 #include <QLabel>
 #include <QListWidget>
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kglobalsettings.h>
 #include <kpushbutton.h>
 #include <kseparator.h>

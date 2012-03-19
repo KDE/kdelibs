@@ -24,7 +24,7 @@
 #include "job.h"
 #include "jobuidelegate.h"
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <QtCore/QFile>

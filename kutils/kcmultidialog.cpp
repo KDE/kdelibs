@@ -33,7 +33,7 @@
 #include <kguiitem.h>
 #include <khbox.h>
 #include <kicon.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kpagewidgetmodel.h>
 #include <kpushbutton.h>
 #include <ktoolinvocation.h>

@@ -1,6 +1,6 @@
 
 #include "kactioncollectiontest.h"
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <QtCore/QPointer>
 
 #include <kapplication.h>

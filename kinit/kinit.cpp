@@ -61,7 +61,7 @@
 #include <kglobal.h>
 #include <kconfig.h>
 #include <kapplication.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 #include <kde_file.h>
 #include <qsavefile.h>

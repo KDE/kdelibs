@@ -34,7 +34,7 @@
 
 #include <kaboutdata.h>
 #include <kglobal.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include <QLabel>
 #include <QLayout>

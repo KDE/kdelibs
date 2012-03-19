@@ -22,7 +22,7 @@
 #include <kapplication.h>
 #include "kcolordialog.h"
 #include <kconfig.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 int main( int argc, char *argv[] )
 {

@@ -26,7 +26,7 @@
 #include <kdebug.h>
 #include <kdesktopfileactions.h>
 #include <kmenu.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kauthorized.h>
 #include <kconfiggroup.h>
 #include <kdesktopfile.h>

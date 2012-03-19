@@ -25,7 +25,7 @@
 #include <QRadioButton>
 #include <QButtonGroup>
 #include <QLayout>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <kio/kfileshare.h>

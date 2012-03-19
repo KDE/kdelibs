@@ -25,7 +25,7 @@
 #include <kactioncollection.h>
 #include <kmessagebox.h>
 #include <kpluginfactory.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 
 PluginSpellCheck::PluginSpellCheck( QObject* parent,

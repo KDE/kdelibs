@@ -20,7 +20,7 @@
 
 #include <kapplication.h>
 #include <kaboutdata.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kcmdlineargs.h>
 
 int main(int argc, char **argv)

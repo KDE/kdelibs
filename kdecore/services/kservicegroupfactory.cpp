@@ -24,7 +24,7 @@
 
 #include <QtCore/QCharRef>
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 
 K_GLOBAL_STATIC(KSycocaFactorySingleton<KServiceGroupFactory>, kServiceGroupFactoryInstance)

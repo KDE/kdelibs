@@ -21,7 +21,7 @@
 
 #include "klinkdialog.h"
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <klineedit.h>
 
 #include <QLabel>

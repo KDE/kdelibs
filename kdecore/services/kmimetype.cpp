@@ -26,7 +26,7 @@
 #include <kdebug.h>
 #include <kde_file.h> // KDE::stat
 #include <kdeversion.h> // KDE_MAKE_VERSION
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kprotocolinfo.h>
 #include <kprotocolinfofactory.h>
 #include <qstandardpaths.h>

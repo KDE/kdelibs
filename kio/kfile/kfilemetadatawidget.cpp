@@ -23,7 +23,7 @@
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kfileitem.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include <QGridLayout>
 #include <QLabel>

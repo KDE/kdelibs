@@ -24,7 +24,7 @@
 //#include "componentsdialog_p.h"
 
 #include <kicon.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kservicegroup.h>
 #include <kdebug.h>
 #include <kservicetypetrader.h>

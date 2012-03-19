@@ -28,7 +28,7 @@
 #include <QLineEdit>
 #include <QtCore/QRegExp>
 #include <khistorycombobox.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
 

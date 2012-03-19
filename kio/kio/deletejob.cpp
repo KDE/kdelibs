@@ -28,7 +28,7 @@
 #include "jobuidelegate.h"
 #include <kdirnotify.h>
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 #include <kde_file.h>
 

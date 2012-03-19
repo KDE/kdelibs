@@ -20,7 +20,7 @@
 #include "kservicetypetrader.h"
 #include "kservice.h"
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <ktoolinvocation.h>
 #include "QtDBus/QtDBus"
 

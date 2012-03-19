@@ -8,7 +8,7 @@
 
 #include <kstatusbar.h>
 #include <kmessagebox.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kstandardaction.h>
 #include <kaction.h>
 #include <kactioncollection.h>

@@ -6,7 +6,7 @@
 #include <kmacroexpander.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QHash>

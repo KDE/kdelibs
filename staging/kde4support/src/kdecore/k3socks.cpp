@@ -29,7 +29,7 @@
 #include <QtCore/QCharRef>
 #include <QtCore/QMap>
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 #include "klibloader.h"
 #include <kconfig.h>

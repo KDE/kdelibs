@@ -35,7 +35,7 @@
 
 #include <kfileitem.h>
 #include <kglobal.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kuser.h>
 #include <kstandarddirs.h>
 #include <kcomponentdata.h>

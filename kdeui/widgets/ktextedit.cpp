@@ -44,7 +44,7 @@
 #include <kstandardshortcut.h>
 #include <kicon.h>
 #include <kiconloader.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdialog.h>
 #include <kreplacedialog.h>
 #include <kfinddialog.h>

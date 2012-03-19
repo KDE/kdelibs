@@ -25,7 +25,7 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <assert.h>
 #include <QtCore/QHash>
 

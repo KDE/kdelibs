@@ -20,7 +20,7 @@
 
 #include "servicemodel.h"
 #include "servicebrowser.h"
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 namespace DNSSD
 {

@@ -34,7 +34,7 @@
 #include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <qsavefile.h>
 #include <kstandarddirs.h>

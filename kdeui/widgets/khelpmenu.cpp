@@ -40,7 +40,7 @@
 #include <kguiitem.h>
 #include <khbox.h>
 #include <kiconloader.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmenu.h>
 #include <kstandardshortcut.h>
 #include <kstandardaction.h>

@@ -29,7 +29,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <signal.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <ksslinfodialog.h>
 #include <kmessagebox.h>
 #include <time.h>

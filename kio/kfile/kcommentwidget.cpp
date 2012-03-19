@@ -21,7 +21,7 @@
 #include "kcommentwidget_p.h"
 
 #include <kdialog.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include <QEvent>
 #include <QLabel>

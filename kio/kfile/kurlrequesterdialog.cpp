@@ -24,7 +24,7 @@
 
 #include <kfiledialog.h>
 #include <klineedit.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <krecentdocument.h>
 #include <kurlrequester.h>
 

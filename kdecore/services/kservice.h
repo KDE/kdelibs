@@ -30,7 +30,7 @@
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
 #include <ksycocaentry.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 class KServiceType;
 class QDataStream;

@@ -31,7 +31,7 @@
 #include "kxmlguiwindow.h"
 #include "kaction.h"
 #include "kglobalsettings.h"
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kicon.h>
 #include <kiconloader.h>
 #include <kdebug.h>

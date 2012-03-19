@@ -34,7 +34,7 @@
 #include <kiconloader.h>
 #include <kicontheme.h>
 #include <klineedit.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kurl.h>
 #include <kicon.h>
 

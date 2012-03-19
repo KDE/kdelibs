@@ -16,7 +16,7 @@
 
 #include <kcombobox.h>
 #include <klistwidgetsearchline.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kstandarddirs.h>
 #include <kiconloader.h>
 #ifndef _WIN32_WCE

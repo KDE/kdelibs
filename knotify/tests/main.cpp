@@ -2,7 +2,7 @@
  * Copyright (C) 2005-2006 by Olivier Goffart <ogoffart at kde.org>
  */
 #include <kapplication.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 

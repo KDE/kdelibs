@@ -25,7 +25,7 @@
 #include <QApplication>
 #include <QStylePainter>
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include "kcolordialog.h"
 

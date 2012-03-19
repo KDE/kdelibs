@@ -24,7 +24,7 @@
 #include <kfilemetainfo.h>
 #include <kfilemetainfoitem.h>
 #include "knfotranslator_p.h"
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include <config-kio.h>
 #ifndef KIO_NO_NEPOMUK

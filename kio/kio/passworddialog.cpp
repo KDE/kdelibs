@@ -24,7 +24,7 @@
 #include <QTextLayout>
 
 #include <kconfig.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 using namespace KIO;
 

@@ -20,7 +20,7 @@
 #include "velocity.h"
 #include "converter.h"
 #include <math.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 using namespace KUnitConversion;
 

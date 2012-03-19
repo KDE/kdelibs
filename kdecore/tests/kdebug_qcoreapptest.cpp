@@ -28,7 +28,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QDir>
 #include <kcomponentdata.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kconfiggroup.h>
 #include <kglobal.h>
 #include <kdebug.h>

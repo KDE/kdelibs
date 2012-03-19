@@ -26,7 +26,7 @@
 #include <kcomponentdata.h>
 #include <kgenericfactory.tcc>
 #include <kglobal.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 
 #ifndef KDE_NO_DEPRECATED

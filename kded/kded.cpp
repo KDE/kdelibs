@@ -44,7 +44,7 @@
 #else
 #include <klibrary.h>
 #endif
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kglobal.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>

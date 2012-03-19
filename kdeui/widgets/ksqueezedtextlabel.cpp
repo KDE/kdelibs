@@ -18,7 +18,7 @@
 
 #include "ksqueezedtextlabel.h"
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <QContextMenuEvent>
 #include <kaction.h>
 #include <QMenu>

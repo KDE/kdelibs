@@ -58,7 +58,7 @@
 #include <kfileitemdelegate.h>
 #include <kicon.h>
 #include <kinputdialog.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kmenu.h>
 #include <kstandardaction.h>

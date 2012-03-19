@@ -29,7 +29,7 @@
 #include <QDir>
 #include <kglobal.h>
 #include <kstandarddirs.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 #include <assert.h>
 #include <kmimetypefactory.h>

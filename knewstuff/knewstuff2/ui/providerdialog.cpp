@@ -23,7 +23,7 @@
 #include <QTreeWidget>
 
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmessagebox.h>
 
 //#include "engine.h"

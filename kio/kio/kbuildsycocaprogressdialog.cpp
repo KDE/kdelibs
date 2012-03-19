@@ -18,7 +18,7 @@
 #include "kbuildsycocaprogressdialog.h"
 #include <ksycoca.h>
 #include <qstandardpaths.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <QtDBus/QtDBus>
 #include <QtCore/QProcess>
 

@@ -42,7 +42,7 @@
 #include <kio/netaccess.h>
 #include <kio/renamedialog.h>
 #include <jobuidelegate.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <krecentdirs.h>
 #include <ktoggleaction.h>

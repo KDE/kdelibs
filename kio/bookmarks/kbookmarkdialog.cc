@@ -27,7 +27,7 @@
 #include <QTreeWidget>
 #include <QHeaderView>
 #include <klineedit.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kiconloader.h>
 #include <kinputdialog.h>
 #include <kstandardguiitem.h>

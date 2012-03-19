@@ -24,7 +24,7 @@
 #include <kicon.h>
 #include <kdebug.h>
 #include <kjob.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <ksharedconfig.h>
 

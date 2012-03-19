@@ -32,7 +32,7 @@
 #include <ksslcertificatemanager.h>
 #include <ksslsettings.h>
 #include <kmessagebox.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <ktoolinvocation.h>
 #include <network/ktcpsocket.h>
 

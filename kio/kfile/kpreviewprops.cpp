@@ -24,7 +24,7 @@
 
 #include <kfilemetapreview.h>
 #include <kglobalsettings.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 class KPreviewPropsPlugin::KPreviewPropsPluginPrivate
 {

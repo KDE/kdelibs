@@ -24,7 +24,7 @@
 #include "core/xmlloader.h"
 
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include <QtCore/QTimer>
 

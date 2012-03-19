@@ -27,7 +27,7 @@
 #include <QBoxLayout>
 #include <QFrame>
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 /** @internal */
 KCupsOptionsSettingsWidget::KCupsOptionsSettingsWidget( QPrintDialog *parent ) : KCupsOptionsWidget( parent )

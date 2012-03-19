@@ -39,7 +39,8 @@
 #include <QWhatsThis>
 
 #include <kicon.h>
-#include <klocale.h>
+#include <kconfig.h>
+#include <klocalizedstring.h>
 #include <kpushbutton.h>
 #include <kseparator.h>
 #include <kstandardguiitem.h>

@@ -22,7 +22,7 @@
 #include <QApplication>
 
 #include <kaction.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kstandardshortcut.h>
 
 namespace KStandardAction

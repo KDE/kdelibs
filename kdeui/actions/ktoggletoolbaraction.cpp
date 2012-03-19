@@ -32,7 +32,7 @@
 #include <QtCore/QPointer>
 
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmainwindow.h>
 #include <ktoolbar.h>
 

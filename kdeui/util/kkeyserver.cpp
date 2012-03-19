@@ -23,9 +23,10 @@
 #include "kkeyserver.h"
 
 #include <config.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kglobal.h>
 #include <kconfig.h>
+#include <ksharedconfig.h>
 #include <kconfiggroup.h>
 
 namespace KKeyServer {

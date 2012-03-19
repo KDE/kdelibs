@@ -36,7 +36,8 @@
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kdebug.h>
-#include <klocale.h>
+#include <ksharedconfig.h>
+#include <klocalizedstring.h>
 #include <kstandarddirs.h>
 #include <kuser.h>
 

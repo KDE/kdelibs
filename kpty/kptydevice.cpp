@@ -29,7 +29,7 @@
 
 #include <QSocketNotifier>
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include <unistd.h>
 #include <errno.h>

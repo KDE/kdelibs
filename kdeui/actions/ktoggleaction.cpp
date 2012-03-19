@@ -30,7 +30,7 @@
 #include <kdebug.h>
 #include <kguiitem.h>
 #include <kicon.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 class KToggleAction::Private
 {

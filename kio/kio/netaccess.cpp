@@ -36,7 +36,7 @@
 #include <QtCore/QTextStream>
 #include <qtemporaryfile.h>
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kurl.h>
 #include <kstandarddirs.h>
 

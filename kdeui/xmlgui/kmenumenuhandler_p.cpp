@@ -27,7 +27,7 @@
 #include "kactioncollection.h"
 #include <kdialog.h>
 #include <kshortcutwidget.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 
 

@@ -24,7 +24,7 @@
 #include <QSortFilterProxyModel>
 
 #include <klineedit.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 /**
  * Private class that helps to provide binary compatibility between releases.

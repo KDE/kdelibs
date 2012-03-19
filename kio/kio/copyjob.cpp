@@ -25,7 +25,7 @@
 #include "kfileitem.h"
 #include "deletejob.h"
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdesktopfile.h>
 #include <kdebug.h>
 #include <kde_file.h>

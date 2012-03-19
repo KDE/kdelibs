@@ -52,7 +52,7 @@
 #include <QTimer>
 
 // KDE
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 // Us
 #include "k3socketaddress.h"

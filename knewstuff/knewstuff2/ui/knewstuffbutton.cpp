@@ -19,7 +19,7 @@
 #include "knewstuffbutton.h"
 
 #include <kiconloader.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kicon.h>
 
 #include "knewstuff2/engine.h"

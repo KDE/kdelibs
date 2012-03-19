@@ -38,7 +38,7 @@
 #include <khistorycombobox.h>
 #include <kdesktopfile.h>
 #include <klineedit.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kshell.h>
 #include <krun.h>

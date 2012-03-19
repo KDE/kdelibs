@@ -27,7 +27,7 @@
 
 #include <kdebug.h>
 #include <kde_file.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
 #include <kmessagebox.h>

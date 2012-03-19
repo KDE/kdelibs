@@ -23,7 +23,8 @@
 #include <kfileitem.h>
 #include <kfilemetadatawidget.h>
 #include <kfilemetadataconfigurationwidget.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
+#include <ksharedconfig.h>
 
 #include <QtCore/QPointer>
 #include <QLabel>

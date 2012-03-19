@@ -49,7 +49,8 @@
 #include <QtDBus/QDBusReply>
 
 #include <kglobal.h>
-#include <klocale.h>
+#include <kconfig.h>
+#include <klocalizedstring.h>
 #include <kcodecs.h>
 #include <kstringhandler.h>
 #include <ktoolinvocation.h>

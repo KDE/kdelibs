@@ -1,7 +1,7 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kapplication.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include "kcharselect.h"
 
 int main (int argc,char **argv)

@@ -19,7 +19,7 @@
 
 #include "kactionselector.h"
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kicon.h>
 #include <kdebug.h>
 #include <QApplication>

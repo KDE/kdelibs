@@ -34,7 +34,7 @@
 #include <kcomponentdata.h>
 #include <kinputdialog.h>
 #include <kdialog.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <klineedit.h>
 #include <kmessagebox.h>
 #include <kstandarddirs.h>

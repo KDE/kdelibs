@@ -32,7 +32,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kcmdlineargs.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <ksavefile.h>
 
 #include <qtest_kde.h>

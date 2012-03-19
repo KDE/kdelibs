@@ -20,7 +20,7 @@
 #include "kfilefiltercombo.h"
 
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmimetype.h>
 #include <config-kfile.h>
 #include <QtCore/QEvent>

@@ -23,7 +23,7 @@
 #include <kconfig.h>
 #include <kiconloader.h>
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kfileitem.h>
 #include <kio/previewjob.h>
 #include <kconfiggroup.h>

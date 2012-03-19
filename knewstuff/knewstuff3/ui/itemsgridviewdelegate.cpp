@@ -29,7 +29,7 @@
 #include <QAbstractItemView>
 
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmenu.h>
 #include <kratingwidget.h>
 #include <ksqueezedtextlabel.h>

@@ -43,7 +43,7 @@
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kde_file.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include "kremoteencoding.h"
 

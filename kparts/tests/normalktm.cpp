@@ -34,7 +34,7 @@
 #include <kmessagebox.h>
 #include <kaction.h>
 #include <kactioncollection.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kcmdlineargs.h>
 #include <kmenubar.h>
 #include <kicon.h>

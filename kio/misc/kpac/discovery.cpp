@@ -49,7 +49,7 @@
 #include <QtCore/QProcess>
 #include <QtNetwork/QHostInfo>
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kurl.h>
 #include <kstandarddirs.h>
 #include "moc_discovery.cpp"

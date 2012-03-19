@@ -32,7 +32,7 @@
 #include <kglobal.h>
 #include <kguiitem.h>
 #include <kiconloader.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kstandardshortcut.h>
 #include <kmainwindow.h>
 #include <kicon.h>

@@ -29,7 +29,7 @@
 #include <QTextDocument>
 
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kurifilter.h>
 #include <kglobal.h>

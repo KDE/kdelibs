@@ -37,7 +37,7 @@
 #include <QMouseEvent>
 #include <QHeaderView>
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kfileitem.h>
 #include <kdebug.h>
 #include <kdialog.h>

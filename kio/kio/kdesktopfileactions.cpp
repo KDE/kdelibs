@@ -30,7 +30,7 @@
 #include <kstandarddirs.h>
 #include <kdesktopfile.h>
 #include <kconfiggroup.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kservice.h>
 
 #ifndef KIO_NO_SOLID

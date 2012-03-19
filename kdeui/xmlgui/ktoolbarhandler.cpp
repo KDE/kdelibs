@@ -25,7 +25,7 @@
 #include <kactionmenu.h>
 #include <kauthorized.h>
 #include <kguiitem.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kxmlguiwindow.h>
 #include <kmenu.h>
 #include <ktoggletoolbaraction.h>

@@ -37,7 +37,7 @@
 #include <ktoolinvocation.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kcursor.h>
 #include <krun.h>
 
