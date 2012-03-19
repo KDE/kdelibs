@@ -1702,27 +1702,23 @@ void NETRootInfo::restackRequest(Window window, RequestSource src, Window above,
 }
 
 
-void NETRootInfo::sendPing( Window window, Time timestamp )
+void NETRootInfo::sendPing(Window window, Time timestamp)
 {
-    if (p->role != WindowManager) return;
-#ifdef   NETWMDEBUG
+    if (p->role != WindowManager)
+        return;
+
+#ifdef NETWMDEBUG
     fprintf(stderr, "NETRootInfo::setPing: window 0x%lx, timestamp %lu\n",
 	window, timestamp );
 #endif
-    XEvent e;
-    e.xclient.type = ClientMessage;
-    e.xclient.message_type = wm_protocols;
-    e.xclient.display = p->display;
-    e.xclient.window = window,
-    e.xclient.format = 32;
-    e.xclient.data.l[0] = net_wm_ping;
-    e.xclient.data.l[1] = timestamp;
-    e.xclient.data.l[2] = window;
-    e.xclient.data.l[3] = 0;
-    e.xclient.data.l[4] = 0;
 
-    XSendEvent(p->display, window, False, 0, &e);
+    const uint32_t data[5] = {
+        net_wm_ping, timestamp, window, 0, 0
+    };
+
+    send_client_message(p->conn, 0, window, window, net_restack_window, data);
 }
+
 
 void NETRootInfo::takeActivity( Window window, Time timestamp, long flags )
 {
