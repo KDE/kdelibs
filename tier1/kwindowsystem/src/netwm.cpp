@@ -1641,104 +1641,66 @@ bool NETRootInfo::showingDesktop() const
 }
 
 
-void NETRootInfo::closeWindowRequest(Window window) {
-
-#ifdef    NETWMDEBUG
+void NETRootInfo::closeWindowRequest(Window window)
+{
+#ifdef NETWMDEBUG
     fprintf(stderr, "NETRootInfo::closeWindowRequest: requesting close for 0x%lx\n",
 	    window);
 #endif
 
-    XEvent e;
-
-    e.xclient.type = ClientMessage;
-    e.xclient.message_type = net_close_window;
-    e.xclient.display = p->display;
-    e.xclient.window = window;
-    e.xclient.format = 32;
-    e.xclient.data.l[0] = 0l;
-    e.xclient.data.l[1] = 0l;
-    e.xclient.data.l[2] = 0l;
-    e.xclient.data.l[3] = 0l;
-    e.xclient.data.l[4] = 0l;
-
-    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+    const uint32_t data[5] = { 0, 0, 0, 0, 0 };
+    send_client_message(p->conn, netwm_sendevent_mask, p->root, window, net_close_window, data);
 }
 
 
 void NETRootInfo::moveResizeRequest(Window window, int x_root, int y_root,
 				    Direction direction)
 {
-
-#ifdef    NETWMDEBUG
+#ifdef NETWMDEBUG
     fprintf(stderr,
 	    "NETRootInfo::moveResizeRequest: requesting resize/move for 0x%lx (%d, %d, %d)\n",
 	    window, x_root, y_root, direction);
 #endif
 
-    XEvent e;
+    const uint32_t data[5] = {
+        uint32_t(x_root), uint32_t(y_root), uint32_t(direction), 0, 0
+    };
 
-    e.xclient.type = ClientMessage;
-    e.xclient.message_type = net_wm_moveresize;
-    e.xclient.display = p->display;
-    e.xclient.window = window,
-    e.xclient.format = 32;
-    e.xclient.data.l[0] = x_root;
-    e.xclient.data.l[1] = y_root;
-    e.xclient.data.l[2] = direction;
-    e.xclient.data.l[3] = 0l;
-    e.xclient.data.l[4] = 0l;
-
-    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+    send_client_message(p->conn, netwm_sendevent_mask, p->root, window, net_wm_moveresize, data);
 }
 
-void NETRootInfo::moveResizeWindowRequest(Window window, int flags, int x, int y, int width, int height )
-{
 
-#ifdef    NETWMDEBUG
+void NETRootInfo::moveResizeWindowRequest(Window window, int flags, int x, int y, int width, int height)
+{
+#ifdef NETWMDEBUG
     fprintf(stderr,
 	    "NETRootInfo::moveResizeWindowRequest: resizing/moving 0x%lx (%d, %d, %d, %d, %d)\n",
 	    window, flags, x, y, width, height);
 #endif
 
-    XEvent e;
+    const uint32_t data[5] = {
+        uint32_t(flags), uint32_t(x), uint32_t(y), uint32_t(width), uint32_t(height)
+    };
 
-    e.xclient.type = ClientMessage;
-    e.xclient.message_type = net_moveresize_window;
-    e.xclient.display = p->display;
-    e.xclient.window = window,
-    e.xclient.format = 32;
-    e.xclient.data.l[0] = flags;
-    e.xclient.data.l[1] = x;
-    e.xclient.data.l[2] = y;
-    e.xclient.data.l[3] = width;
-    e.xclient.data.l[4] = height;
-
-    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+    send_client_message(p->conn, netwm_sendevent_mask, p->root, window, net_moveresize_window, data);
 }
+
 
 void NETRootInfo::restackRequest(Window window, RequestSource src, Window above, int detail, Time timestamp )
 {
-#ifdef    NETWMDEBUG
+#ifdef NETWMDEBUG
     fprintf(stderr,
 	    "NETRootInfo::restackRequest: requesting restack for 0x%lx (%lx, %d)\n",
 	    window, above, detail);
 #endif
 
-    XEvent e;
+    const uint32_t data[5] = {
+        uint32_t(src), uint32_t(above), uint32_t(detail), uint32_t(timestamp), 0
+    };
 
-    e.xclient.type = ClientMessage;
-    e.xclient.message_type = net_restack_window;
-    e.xclient.display = p->display;
-    e.xclient.window = window,
-    e.xclient.format = 32;
-    e.xclient.data.l[0] = src;
-    e.xclient.data.l[1] = above;
-    e.xclient.data.l[2] = detail;
-    e.xclient.data.l[3] = timestamp;
-    e.xclient.data.l[4] = 0l;
-
-    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+    send_client_message(p->conn, netwm_sendevent_mask, p->root, window, net_restack_window, data);
 }
+
 
 void NETRootInfo::sendPing( Window window, Time timestamp )
 {
