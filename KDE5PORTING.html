@@ -112,10 +112,11 @@ If the resource is available in QStandardPaths (i.e. for all of the above), then
     KStandardDirs::locate("data", "kmyapp/my-data") -&gt; QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kmyapp/my-data")
     saveLocation -&gt; writableLocation (note that you might have to mkpath it if it doesn't exist)
     locateLocal(type, file) -&gt; writableLocation(type) + '/' + file (you might have to mkpath the directory)
+    resourceDirs("xdgdata-apps") -&gt; QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation)  (no trailing slashes anymore though)
 </pre>
 Otherwise, you need to use GenericDataLocation and add the subdirectory name manually.
 <pre>
-    dirs()-&gt;resourceDirs("xdgdata-icon") -&gt; QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "icons", QStandardPaths::LocateDirectory) // xdgata-icon is "the icons" subdir under the xdg data locations
+    dirs()-&gt;resourceDirs("xdgdata-icon") -&gt; QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "icons", QStandardPaths::LocateDirectory) // xdgata-icon is the "icons" subdir under the xdg data locations
     dirs()-&gt;findAllResources("xdgdata-mime", file) -&gt; QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "mime/" + file)
     dirs()-&gt;findAllResources("xdgdata-mime", "foo/*.txt") -&gt; QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation) + foreach + entryList, prepending the absolute path.
 </pre>

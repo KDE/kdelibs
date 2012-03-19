@@ -786,6 +786,7 @@ QString KService::storageId() const
     return d->storageId();
 }
 
+// not sure this is still used anywhere...
 QString KService::locateLocal() const
 {
     Q_D(const KService);
