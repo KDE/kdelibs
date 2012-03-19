@@ -1569,21 +1569,29 @@ void NETRootInfo::setWorkArea(int desktop, const NETRect &workarea)
 }
 
 
-void NETRootInfo::setVirtualRoots(const Window *windows, unsigned int count) {
-    if (p->role != WindowManager) return;
+void NETRootInfo::setVirtualRoots(const Window *windows, unsigned int count)
+{
+    if (p->role != WindowManager)
+        return;
 
     p->virtual_roots_count = count;
     delete[] p->virtual_roots;
-    p->virtual_roots = nwindup(windows,count);;
+    p->virtual_roots = nwindup(windows, count);
 
-#ifdef   NETWMDEBUG
+#ifdef NETWMDEBUG
     fprintf(stderr, "NETRootInfo::setVirtualRoots: setting list with %ld windows\n",
 	    p->virtual_roots_count);
 #endif
 
-    XChangeProperty(p->display, p->root, net_virtual_roots, XA_WINDOW, 32,
-		    PropModeReplace, (unsigned char *) p->virtual_roots,
-		    p->virtual_roots_count);
+    // KDE5: Remove this when the parameter type is changed to xcb_window_t.
+    // Window is 64 bits on a 64 bit system, while the actual data is 32 bits.
+    uint32_t *data = get_temp_buf(p, count);
+    for (unsigned int i = 0; i < count; i++)
+        data[i] = windows[i];
+
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->root, net_virtual_roots,
+                        XCB_ATOM_WINDOW, 32, p->virtual_roots_count,
+                        (const void *) data);
 }
 
 
