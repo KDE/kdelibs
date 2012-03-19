@@ -1508,37 +1508,33 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
         p->properties[ PROTOCOLS2 ] |= WM2KDEShadow;
 }
 
-void NETRootInfo::setActiveWindow(Window window) {
-    setActiveWindow( window, FromUnknown, QX11Info::appUserTime(), None );
+
+void NETRootInfo::setActiveWindow(Window window)
+{
+    setActiveWindow(window, FromUnknown, QX11Info::appUserTime(), None);
 }
 
-void NETRootInfo::setActiveWindow(Window window, NET::RequestSource src,
-    Time timestamp, Window active_window ) {
 
-#ifdef    NETWMDEBUG
+void NETRootInfo::setActiveWindow(Window window, NET::RequestSource src,
+                                  Time timestamp, Window active_window)
+{
+#ifdef NETWMDEBUG
     fprintf(stderr, "NETRootInfo::setActiveWindow(0x%lx) (%s)\n",
             window, (p->role == WindowManager) ? "WM" : "Client");
 #endif
 
     if (p->role == WindowManager) {
-	p->active = window;
-	XChangeProperty(p->display, p->root, net_active_window, XA_WINDOW, 32,
-			PropModeReplace, (unsigned char *) &(p->active), 1);
+        p->active = window;
+
+        xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->root, net_active_window,
+                            XCB_ATOM_WINDOW, 32, 1, (const void *) &(p->active));
     } else {
-	XEvent e;
+        const uint32_t data[5] = {
+            src, timestamp, active_window, 0, 0
+        };
 
-	e.xclient.type = ClientMessage;
-	e.xclient.message_type = net_active_window;
-	e.xclient.display = p->display;
-	e.xclient.window = window;
-	e.xclient.format = 32;
-	e.xclient.data.l[0] = src;
-	e.xclient.data.l[1] = timestamp;
-	e.xclient.data.l[2] = active_window;
-	e.xclient.data.l[3] = 0l;
-	e.xclient.data.l[4] = 0l;
-
-	XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+        send_client_message(p->conn, netwm_sendevent_mask, p->root,
+                            window, net_active_window, data);
     }
 }
 
