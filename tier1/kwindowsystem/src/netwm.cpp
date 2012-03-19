@@ -1720,26 +1720,21 @@ void NETRootInfo::sendPing(Window window, Time timestamp)
 }
 
 
-void NETRootInfo::takeActivity( Window window, Time timestamp, long flags )
+void NETRootInfo::takeActivity(Window window, Time timestamp, long flags)
 {
-    if (p->role != WindowManager) return;
-#ifdef   NETWMDEBUG
+    if (p->role != WindowManager)
+        return;
+
+#ifdef NETWMDEBUG
     fprintf(stderr, "NETRootInfo::takeActivity: window 0x%lx, timestamp %lu, flags 0x%lx\n",
 	window, timestamp, flags );
 #endif
-    XEvent e;
-    e.xclient.type = ClientMessage;
-    e.xclient.message_type = wm_protocols;
-    e.xclient.display = p->display;
-    e.xclient.window = window,
-    e.xclient.format = 32;
-    e.xclient.data.l[0] = net_wm_take_activity;
-    e.xclient.data.l[1] = timestamp;
-    e.xclient.data.l[2] = window;
-    e.xclient.data.l[3] = flags;
-    e.xclient.data.l[4] = 0;
 
-    XSendEvent(p->display, window, False, 0, &e);
+    const uint32_t data[5] = {
+        net_wm_take_activity, uint32_t(timestamp), uint32_t(window), uint32_t(flags), 0
+    };
+
+    send_client_message(p->conn, 0, window, window, wm_protocols, data);
 }
 
 
