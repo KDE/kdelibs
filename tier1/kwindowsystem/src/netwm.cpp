@@ -164,8 +164,8 @@ static xcb_atom_t xa_wm_state = 0;
 static xcb_atom_t net_wm_full_placement = 0;
 
 static bool netwm_atoms_created = false;
-const unsigned long netwm_sendevent_mask = (SubstructureRedirectMask|
-					     SubstructureNotifyMask);
+static const uint32_t netwm_sendevent_mask =
+        (XCB_EVENT_MASK_SUBSTRUCTURE_REDIRECT | XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY);
 
 
 const long MAX_PROP_SIZE = 100000;
@@ -501,6 +501,23 @@ fprintf(stderr, "NETWM: Warning readIcon() needs buffer adjustment!\n");
 #endif
 
     free(buffer);
+}
+
+static void send_client_message(xcb_connection_t *c, uint32_t mask,
+                                xcb_window_t destination, xcb_window_t window,
+                                xcb_atom_t message, const uint32_t data[])
+{
+    xcb_client_message_event_t event;
+    event.response_type = XCB_CLIENT_MESSAGE;
+    event.format = 32;
+    event.sequence = 0;
+    event.window = window;
+    event.type = message;
+
+    for (int i = 0; i < 5; i++)
+        event.data.data32[i] = data[i];
+
+    xcb_send_event(c, false, destination, mask, (const char *) &event);
 }
 
 
