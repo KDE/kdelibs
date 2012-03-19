@@ -125,6 +125,7 @@ struct NETWinInfoPrivate {
     NET::Role role;
 
     Display *display;
+    xcb_connection_t *conn;
     Window window, root;
     NET::MappingState mapping_state;
     Bool mapping_state_dirty;

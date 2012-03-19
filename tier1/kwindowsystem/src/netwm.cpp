@@ -2764,6 +2764,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->ref = 1;
 
     p->display = display;
+    p->conn = XGetXCBConnection(p->display);
     p->window = window;
     p->root = rootWindow;
     p->mapping_state = Withdrawn;
@@ -2828,6 +2829,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->ref = 1;
 
     p->display = display;
+    p->conn = XGetXCBConnection(p->display);
     p->window = window;
     p->root = rootWindow;
     p->mapping_state = Withdrawn;
