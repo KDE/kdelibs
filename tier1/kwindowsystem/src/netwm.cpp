@@ -986,45 +986,38 @@ void NETRootInfo::setDesktopGeometry(int , const NETSize &geometry)
 }
 
 
-void NETRootInfo::setDesktopViewport(int desktop, const NETPoint &viewport) {
-
-#ifdef    NETWMDEBUG
+void NETRootInfo::setDesktopViewport(int desktop, const NETPoint &viewport)
+{
+#ifdef NETWMDEBUG
     fprintf(stderr, "NETRootInfo::setDesktopViewport(%d, { %d, %d }) (%s)\n",
 	    desktop, viewport.x, viewport.y, (p->role == WindowManager) ? "WM" : "Client");
 #endif
 
-    if (desktop < 1) return;
+    if (desktop < 1)
+        return;
 
     if (p->role == WindowManager) {
-	p->viewport[desktop - 1] = viewport;
+        p->viewport[desktop - 1] = viewport;
 
-	int d, i, l;
-	l = p->number_of_desktops * 2;
-	long *data = new long[l];
-	for (d = 0, i = 0; d < p->number_of_desktops; d++) {
-	    data[i++] = p->viewport[d].x;
-	    data[i++] = p->viewport[d].y;
-	}
+        int d, i, l;
+        l = p->number_of_desktops * 2;
+        uint32_t *data = new uint32_t[l];
+        for (d = 0, i = 0; d < p->number_of_desktops; d++) {
+            data[i++] = p->viewport[d].x;
+            data[i++] = p->viewport[d].y;
+        }
 
-	XChangeProperty(p->display, p->root, net_desktop_viewport, XA_CARDINAL, 32,
-			PropModeReplace, (unsigned char *) data, l);
+        xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->root, net_desktop_viewport,
+                            XCB_ATOM_CARDINAL, 32, l, (const void *) data);
 
-	delete [] data;
+        delete [] data;
     } else {
-	XEvent e;
+        const uint32_t data[5] = {
+            uint32_t(viewport.x), uint32_t(viewport.y), 0, 0, 0
+        };
 
-	e.xclient.type = ClientMessage;
-	e.xclient.message_type = net_desktop_viewport;
-	e.xclient.display = p->display;
-	e.xclient.window = p->root;
-	e.xclient.format = 32;
-	e.xclient.data.l[0] = viewport.x;
-	e.xclient.data.l[1] = viewport.y;
-	e.xclient.data.l[2] = 0l;
-	e.xclient.data.l[3] = 0l;
-	e.xclient.data.l[4] = 0l;
-
-	XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+        send_client_message(p->conn, netwm_sendevent_mask, p->root,
+                            p->root, net_desktop_viewport, data);
     }
 }
 
