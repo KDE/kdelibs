@@ -26,7 +26,13 @@
 //#define NETWMDEBUG
 
 #include "netwm.h"
+
+#include <xcb/xcb.h>
+#include <xcb/xproto.h>
+
 #include "netwm_p.h"
+
+#include <X11/Xlib-xcb.h>
 
 #include <QWidget>
 #include <config-kwindowsystem.h>
@@ -643,13 +649,17 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
     p->display = display;
     p->name = nstrdup(wmName);
 
-    if (screen != -1) {
-	p->screen = screen;
-    } else {
-	p->screen = DefaultScreen(p->display);
+    p->conn = XGetXCBConnection(display);
+
+    const xcb_setup_t *setup = xcb_get_setup(p->conn);
+    xcb_screen_iterator_t it = xcb_setup_roots_iterator(setup);
+
+    if (screen != -1 && screen < setup->roots_len) {
+        for (int i = 0; i < screen; i++)
+            xcb_screen_next(&it);
     }
 
-    p->root = RootWindow(p->display, p->screen);
+    p->root = it.data->root;
     p->supportwindow = supportWindow;
     p->number_of_desktops = p->current_desktop = 0;
     p->active = None;
@@ -694,16 +704,19 @@ NETRootInfo::NETRootInfo(Display *display, const unsigned long properties[], int
     p->name = 0;
 
     p->display = display;
+    p->conn = XGetXCBConnection(display);
 
-    if (screen != -1) {
-	p->screen = screen;
-    } else {
-	p->screen = DefaultScreen(p->display);
+    const xcb_setup_t *setup = xcb_get_setup(p->conn);
+    xcb_screen_iterator_t it = xcb_setup_roots_iterator(setup);
+
+    if (screen != -1 && screen < setup->roots_len) {
+        for (int i = 0; i < screen; i++)
+            xcb_screen_next(&it);
     }
 
-    p->root = RootWindow(p->display, p->screen);
-    p->rootSize.width = WidthOfScreen(ScreenOfDisplay(p->display, p->screen));
-    p->rootSize.height = HeightOfScreen(ScreenOfDisplay(p->display, p->screen));
+    p->root = it.data->root;
+    p->rootSize.width = it.data->width_in_pixels;
+    p->rootSize.height = it.data->height_in_pixels;
 
     p->supportwindow = None;
     p->number_of_desktops = p->current_desktop = 0;
@@ -753,16 +766,19 @@ NETRootInfo::NETRootInfo(Display *display, unsigned long properties, int screen,
     p->name = 0;
 
     p->display = display;
+    p->conn = XGetXCBConnection(display);
 
-    if (screen != -1) {
-	p->screen = screen;
-    } else {
-	p->screen = DefaultScreen(p->display);
+    const xcb_setup_t *setup = xcb_get_setup(p->conn);
+    xcb_screen_iterator_t it = xcb_setup_roots_iterator(setup);
+
+    if (screen != -1 && screen < setup->roots_len) {
+        for (int i = 0; i < screen; i++)
+            xcb_screen_next(&it);
     }
 
-    p->root = RootWindow(p->display, p->screen);
-    p->rootSize.width = WidthOfScreen(ScreenOfDisplay(p->display, p->screen));
-    p->rootSize.height = HeightOfScreen(ScreenOfDisplay(p->display, p->screen));
+    p->root = it.data->root;
+    p->rootSize.width = it.data->width_in_pixels;
+    p->rootSize.height = it.data->height_in_pixels;
 
     p->supportwindow = None;
     p->number_of_desktops = p->current_desktop = 0;

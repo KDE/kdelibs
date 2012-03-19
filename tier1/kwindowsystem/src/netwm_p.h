@@ -85,6 +85,7 @@ struct NETRootInfoPrivate {
 
     // information about the X server
     Display *display;
+    xcb_connection_t *conn;
     NETSize rootSize;
     Window root;
     Window supportwindow;
