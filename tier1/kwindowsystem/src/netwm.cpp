@@ -1596,25 +1596,26 @@ void NETRootInfo::setVirtualRoots(const Window *windows, unsigned int count)
 
 
 void NETRootInfo::setDesktopLayout(NET::Orientation orientation, int columns, int rows,
-    NET::DesktopLayoutCorner corner)
+                                   NET::DesktopLayoutCorner corner)
 {
     p->desktop_layout_orientation = orientation;
     p->desktop_layout_columns = columns;
     p->desktop_layout_rows = rows;
     p->desktop_layout_corner = corner;
 
-#ifdef   NETWMDEBUG
+#ifdef NETWMDEBUG
     fprintf(stderr, "NETRootInfo::setDesktopLayout: %d %d %d %d\n",
 	    orientation, columns, rows, corner);
 #endif
 
-    long data[ 4 ];
-    data[ 0 ] = orientation;
-    data[ 1 ] = columns;
-    data[ 2 ] = rows;
-    data[ 3 ] = corner;
-    XChangeProperty(p->display, p->root, net_desktop_layout, XA_CARDINAL, 32,
-		    PropModeReplace, (unsigned char *) &data, 4);
+    uint32_t data[4];
+    data[0] = orientation;
+    data[1] = columns;
+    data[2] = rows;
+    data[3] = corner;
+
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->root, net_desktop_layout,
+                        XCB_ATOM_CARDINAL, 32, 4, (const void *) data);
 }
 
 
