@@ -108,6 +108,10 @@ Highlighter::Highlighter(QTextEdit *textEdit,
 
     d->dict = new Sonnet::Speller();
     d->spellCheckerFound = d->dict->isValid();
+    d->rehighlightRequest = new QTimer(this);
+    connect( d->rehighlightRequest, SIGNAL(timeout()),
+             this, SLOT(slotRehighlight()));
+
     if(!d->spellCheckerFound)
         return;
 
@@ -121,9 +125,6 @@ Highlighter::Highlighter(QTextEdit *textEdit,
     for ( QStringList::ConstIterator it = l.begin(); it != l.end(); ++it ) {
         d->dict->addToSession( *it );
     }
-    d->rehighlightRequest = new QTimer(this);
-    connect( d->rehighlightRequest, SIGNAL(timeout()),
-             this, SLOT(slotRehighlight()));
     d->completeRehighlightRequired = true;
     d->rehighlightRequest->setInterval(0);
     d->rehighlightRequest->setSingleShot(true);
