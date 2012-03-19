@@ -7,13 +7,7 @@ find_package(extra-cmake-modules 0.0.2 REQUIRED)
 
 include(ECMVersion)
 
-
-#include_directories(${KDE4_INCLUDES})
-
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${EXTRA_CMAKE_MODULES_MODULE_PATH})
-
-#generate_export_header(kactions)
 
 include_directories(
 ${kcoreaddons_BINARY_DIR}/src
@@ -25,7 +19,6 @@ ${kcoreaddons_SOURCE_DIR}/src/kernel
 ${kcoreaddons_SOURCE_DIR}/src/randomness
 ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts
 )       
-
 
 set(kactions_SRCS
  actions/kactioncollection.cpp
@@ -56,8 +49,6 @@ set(kactions_SRCS
  shortcuts/kcheckaccelerators.cpp
  shortcuts/kgesture.cpp
  shortcuts/kgesturemap.cpp
- # ${CMAKE_SOURCE_DIR}/kdeui/shortcuts/kgesturemap.cpp
- #${CMAKE_SOURCE_DIR}/kdeui/shortcuts/kgesture.cpp
 )
 
 install( FILES
@@ -91,13 +82,10 @@ install( FILES
  DESTINATION ${INCLUDE_INSTALL_DIR}
  )
 
-
-
 set(kglobalaccel_component_xml ${CMAKE_SOURCE_DIR}/staging/kaction/src/shortcuts/org.kde.kglobalaccel.Component.xml)
 set_source_files_properties(${kglobalaccel_component_xml} PROPERTIES INCLUDE "kglobalshortcutinfo_p.h")
 qt4_add_dbus_interface(kactions_SRCS ${kglobalaccel_component_xml} kglobalaccel_component_interface )
 install(FILES ${kglobalaccel_component_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
-
 
 set(kglobalaccel_xml ${CMAKE_SOURCE_DIR}/staging/kaction/src/shortcuts/org.kde.KGlobalAccel.xml)
 set_source_files_properties(${kglobalaccel_xml} PROPERTIES INCLUDE "kglobalshortcutinfo_p.h")
@@ -113,5 +101,3 @@ set_target_properties(kactions PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSI
 target_link_libraries(kactions kdecore kdecoreaddons ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${KDEUI_EXTRA_LIBS})
 
 install(TARGETS kactions EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
-
-
