@@ -1022,16 +1022,17 @@ void NETRootInfo::setDesktopViewport(int desktop, const NETPoint &viewport)
 }
 
 
-void NETRootInfo::setSupported() {
+void NETRootInfo::setSupported()
+{
     if (p->role != WindowManager) {
-#ifdef    NETWMDEBUG
+#ifdef NETWMDEBUG
 	fprintf(stderr, "NETRootInfo::setSupported - role != WindowManager\n");
 #endif
 
 	return;
     }
 
-    Atom atoms[netAtomCount];
+    xcb_atom_t atoms[netAtomCount];
     int pnum = 2;
 
     // Root window properties/messages
@@ -1260,24 +1261,26 @@ void NETRootInfo::setSupported() {
         atoms[pnum++] = kde_net_wm_shadow;
     }
 
-    XChangeProperty(p->display, p->root, net_supported, XA_ATOM, 32,
-		    PropModeReplace, (unsigned char *) atoms, pnum);
-    XChangeProperty(p->display, p->root, net_supporting_wm_check, XA_WINDOW, 32,
-	 	    PropModeReplace, (unsigned char *) &(p->supportwindow), 1);
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->root, net_supported,
+                        XCB_ATOM_ATOM, 32, pnum, (const void *) atoms);
 
-#ifdef    NETWMDEBUG
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->root, net_supporting_wm_check,
+                        XCB_ATOM_WINDOW, 32, 1, (const void *) &(p->supportwindow));
+
+#ifdef NETWMDEBUG
     fprintf(stderr,
 	    "NETRootInfo::setSupported: _NET_SUPPORTING_WM_CHECK = 0x%lx on 0x%lx\n"
 	    "                         : _NET_WM_NAME = '%s' on 0x%lx\n",
 	    p->supportwindow, p->supportwindow, p->name, p->supportwindow);
 #endif
 
-    XChangeProperty(p->display, p->supportwindow, net_supporting_wm_check,
-		    XA_WINDOW, 32, PropModeReplace,
-		    (unsigned char *) &(p->supportwindow), 1);
-    XChangeProperty(p->display, p->supportwindow, net_wm_name, UTF8_STRING, 8,
-		    PropModeReplace, (unsigned char *) p->name,
-		    strlen(p->name));
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->supportwindow,
+                        net_supporting_wm_check, XCB_ATOM_WINDOW, 32,
+                        1, (const void *) &(p->supportwindow));
+
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->supportwindow,
+                        net_wm_name, UTF8_STRING, 8, strlen(p->name),
+                        (const void *) p->name);
 }
 
 void NETRootInfo::updateSupportedProperties( Atom atom )
