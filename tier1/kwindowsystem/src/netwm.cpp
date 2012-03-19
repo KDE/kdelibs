@@ -921,9 +921,11 @@ void NETRootInfo::setCurrentDesktop(int desktop, bool ignore_viewport)
 }
 
 
-void NETRootInfo::setDesktopName(int desktop, const char *desktopName) {
-    // allow setting desktop names even for non-existent desktops, see the spec, sect.3.7.
-    if (desktop < 1) return;
+void NETRootInfo::setDesktopName(int desktop, const char *desktopName)
+{
+    // Allow setting desktop names even for non-existent desktops, see the spec, sect.3.7.
+    if (desktop < 1)
+        return;
 
     delete [] p->desktop_names[desktop - 1];
     p->desktop_names[desktop - 1] = nstrdup(desktopName);
@@ -943,15 +945,15 @@ void NETRootInfo::setDesktopName(int desktop, const char *desktopName) {
 	} else
 	    *propp++ = '\0';
 
-#ifdef    NETWMDEBUG
+#ifdef NETWMDEBUG
     fprintf(stderr,
 	    "NETRootInfo::setDesktopName(%d, '%s')\n"
 	    "NETRootInfo::setDesktopName: total property length = %d",
 	    desktop, desktopName, proplen);
 #endif
 
-    XChangeProperty(p->display, p->root, net_desktop_names, UTF8_STRING, 8,
-		    PropModeReplace, (unsigned char *) prop, proplen);
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->root, net_desktop_names,
+                        UTF8_STRING, 8, proplen, (const void *) prop);
 
     delete [] prop;
 }
