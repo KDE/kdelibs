@@ -54,12 +54,12 @@
 #include <dirent.h>
 #include <pwd.h>
 #include <grp.h>
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #include <windows.h>
 #ifdef _WIN32_WCE
 #include <basetyps.h>
 #endif
-#ifdef Q_WS_WIN64
+#ifdef Q_OS_WIN64
 // FIXME: did not find a reliable way to fix with kdewin mingw header
 #define interface struct
 #endif
@@ -681,7 +681,7 @@ static void lookupDirectory(const QString& path, const QString &relPart,
     {
         if (path.isEmpty()) //for sanity
             return;
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
         QString path_ = path + QLatin1String( "*.*" );
         WIN32_FIND_DATA findData;
         HANDLE hFile = FindFirstFile( (LPWSTR)path_.utf16(), &findData );
@@ -824,7 +824,7 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 
     if (prefix.isEmpty()) //for sanity
         return;
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     // what does this assert check ?
     assert(prefix.endsWith(QLatin1Char('/')));
 #endif
@@ -832,7 +832,7 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 
         QRegExp pathExp(path, Qt::CaseSensitive, QRegExp::Wildcard);
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
         QString prefix_ = prefix + QLatin1String( "*.*" );
         WIN32_FIND_DATA findData;
         HANDLE hFile = FindFirstFile( (LPWSTR)prefix_.utf16(), &findData );
@@ -975,7 +975,7 @@ KStandardDirs::findAllResources( const char *type,
 QString
 KStandardDirs::realPath(const QString &dirname)
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     const QString strRet = realFilePath(dirname);
     if (!strRet.endsWith(QLatin1Char('/')))
         return strRet + QLatin1Char('/');
@@ -1034,7 +1034,7 @@ KStandardDirs::realPath(const QString &dirname)
 QString
 KStandardDirs::realFilePath(const QString &filename)
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     LPCWSTR lpIn = (LPCWSTR)filename.utf16();
     QVarLengthArray<WCHAR, MAX_PATH> buf(MAX_PATH);
     DWORD len = GetFullPathNameW(lpIn, buf.size(), buf.data(), NULL);
@@ -1094,7 +1094,7 @@ void KStandardDirs::KStandardDirsPrivate::createSpecialResource(const char *type
             }
         }
     }
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     if (relink)
     {
         if (!makeDir(dir, 0700))
@@ -1202,7 +1202,7 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
                     for (QStringList::ConstIterator it2 = basedirs.begin();
                          it2 != basedirs.end(); ++it2)
                     {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
                         const QString path = realPath( *it2 + rest ).toLower();
 #else
                         const QString path = realPath( *it2 + rest );
@@ -1240,7 +1240,7 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
                     {
                         if ((*it).startsWith(QLatin1Char('%')))
                             continue;
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
                         const QString path = realPath( *pit + *it ).toLower();
 #else
                         const QString path = realPath( *pit + *it );
@@ -1283,7 +1283,7 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
             {
                 testdir.setPath(*it);
                 if (testdir.exists()) {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
                     const QString filename = realPath( *it ).toLower();
 #else
                     const QString filename = realPath( *it );
@@ -1350,7 +1350,7 @@ QStringList KStandardDirs::systemPaths( const QString& pstr )
     return exePaths;
 }
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
 static QString getBundle( const QString& path, bool ignore )
 {
     //kDebug(180) << "getBundle(" << path << ", " << ignore << ") called";
@@ -1378,7 +1378,7 @@ static QString getBundle( const QString& path, bool ignore )
 
 static QString checkExecutable( const QString& path, bool ignoreExecBit )
 {
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     QString bundle = getBundle( path, ignoreExecBit );
     if ( !bundle.isEmpty() ) {
         //kDebug(180) << "findExe(): returning " << bundle;
@@ -1512,7 +1512,7 @@ int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
         p = (*it) + QLatin1Char('/');
         p += appname;
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
         QString bundle = getBundle( p, (options & IgnoreExecBit) );
         if ( !bundle.isEmpty() ) {
             //kDebug(180) << "findExe(): returning " << bundle;
@@ -1533,7 +1533,7 @@ int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
 
 static inline QString equalizePath(QString &str)
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     // filter pathes through QFileInfo to have always
     // the same case for drive letters
     QFileInfo f(str);
@@ -1670,7 +1670,7 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
     if (QDir::isRelativePath(dir))
         return false;
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     return QDir().mkpath(dir);
 #else
     QString target = dir;
@@ -1809,9 +1809,9 @@ void KStandardDirs::addKDEDefaults()
         // defaults to ~/.config) + '/' + $KDECONFIG (which would default to e.g. "KDE")
         // This would mean ~/.config/KDE/ by default, more xdg-compliant.
 
-#if defined(Q_WS_MACX)
+#if defined(Q_OS_MAC)
         localKdeDir =  QDir::homePath() + QLatin1String("/Library/Preferences/KDE/");
-#elif defined(Q_WS_WIN)
+#elif defined(Q_OS_WIN)
 #ifndef _WIN32_WCE
         WCHAR wPath[MAX_PATH+1];
         if ( SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, wPath) == S_OK) {
@@ -1833,7 +1833,7 @@ void KStandardDirs::addKDEDefaults()
         addPrefix(localKdeDir);
     }
 
-#ifdef Q_WS_MACX
+#ifdef Q_OS_MAC
     // Adds the "Contents" directory of the current application bundle to
     // the search path. This way bundled resources can be found.
     QDir bundleDir(mac_app_filename());
@@ -1865,7 +1865,7 @@ void KStandardDirs::addKDEDefaults()
     {
         xdgdirList.clear();
         xdgdirList.append(QString::fromLatin1("/etc/xdg"));
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
         xdgdirList.append(installPath("kdedir") + QString::fromLatin1("etc/xdg"));
 #else
         xdgdirList.append(QFile::decodeName(KDESYSCONFDIR "/xdg"));
@@ -1877,7 +1877,7 @@ void KStandardDirs::addKDEDefaults()
         if (!localXdgDir.endsWith(QLatin1Char('/')))
             localXdgDir += QLatin1Char('/');
     } else {
-#ifdef Q_WS_MACX
+#ifdef Q_OS_MAC
         localXdgDir = QDir::homePath() + QString::fromLatin1("/Library/Preferences/XDG/");
 #else
         localXdgDir = QDir::homePath() + QString::fromLatin1("/.config/");
@@ -1918,7 +1918,7 @@ void KStandardDirs::addKDEDefaults()
         }
     } else {
         xdgdirList = kdedirDataDirs;
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
         xdgdirList.append(QString::fromLatin1("/usr/local/share/"));
         xdgdirList.append(QString::fromLatin1("/usr/share/"));
 #endif
