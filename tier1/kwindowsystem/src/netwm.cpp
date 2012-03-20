@@ -253,16 +253,6 @@ static void refdec_nwi(NETWinInfoPrivate *p) {
 }
 
 
-static int wcmp(const void *a, const void *b) {
-    if (*((Window *) a) < *((Window *) b))
-        return -1;
-    else if (*((Window *) a) > *((Window *) b))
-        return 1;
-    else
-        return 0;
-}
-
-
 // KDE5: Remove this when we use xcb types everywhere
 static uint32_t *get_temp_buf(NETRootInfoPrivate *p, size_t count)
 {
@@ -273,6 +263,101 @@ static uint32_t *get_temp_buf(NETRootInfoPrivate *p, size_t count)
     }
 
     return p->temp_buf;
+}
+
+
+template <typename T>
+T get_value_reply(xcb_connection_t *c, const xcb_get_property_cookie_t cookie, xcb_atom_t type, T def, bool *success = 0)
+{
+    T value = def;
+
+    xcb_get_property_reply_t *reply = xcb_get_property_reply(c, cookie, 0);
+
+    if (success)
+        *success = false;
+
+    if (reply) {
+        if (reply->type == type && reply->value_len == 1 && reply->format == sizeof(T) * 8) {
+            value = *reinterpret_cast<T*>(xcb_get_property_value(reply));
+
+            if (success)
+                *success = true;
+        }
+
+        free(reply);
+    }
+
+    return value;
+}
+
+
+template <typename T>
+QVector<T> get_array_reply(xcb_connection_t *c, const xcb_get_property_cookie_t cookie, xcb_atom_t type)
+{
+    xcb_get_property_reply_t *reply = xcb_get_property_reply(c, cookie, 0);
+    if (!reply)
+        return QVector<T>();
+
+    QVector<T> vector;
+
+    if (reply->type == type && reply->value_len > 0 && reply->format == sizeof(T) * 8) {
+        T *data = reinterpret_cast<T*>(xcb_get_property_value(reply));
+
+        vector.resize(reply->value_len);
+        memcpy((void *)&vector.first(), (void *)data, reply->value_len * sizeof(T));
+    }
+
+    free(reply);
+    return vector;
+}
+
+
+static QByteArray get_string_reply(xcb_connection_t *c,
+                                   const xcb_get_property_cookie_t cookie,
+                                   xcb_atom_t type)
+{
+    xcb_get_property_reply_t *reply = xcb_get_property_reply(c, cookie, 0);
+    if (!reply)
+        return QByteArray();
+
+    QByteArray value;
+
+    if (reply->type == type && reply->format == 8 && reply->value_len > 0) {
+        const char *data = (const char *) xcb_get_property_value(reply);
+        int len = xcb_get_property_value_length(reply);
+
+        if (data) {
+            value = QByteArray(data, data[len - 1] ? len : len - 1);
+        }
+    }
+
+    free(reply);
+    return value;
+}
+
+
+static QList<QByteArray> get_stringlist_reply(xcb_connection_t *c,
+                                              const xcb_get_property_cookie_t cookie,
+                                              xcb_atom_t type)
+{
+    xcb_get_property_reply_t *reply = xcb_get_property_reply(c, cookie, 0);
+    if (!reply)
+        return QList<QByteArray>();
+
+    QList<QByteArray> list;
+
+    if (reply->type == type && reply->format == 8 && reply->value_len > 0) {
+        const char *data = (const char *) xcb_get_property_value(reply);
+        int len = reply->value_len;
+
+        if (data) {
+            const QByteArray ba = QByteArray::fromRawData(data, data[len - 1] ? len : len - 1);
+            list = ba.split('\0');
+        }
+    }
+
+    free(reply);
+    return list;
 }
 
 
@@ -1999,115 +2084,137 @@ void NETRootInfo::event(xcb_generic_event_t *event, unsigned long* properties, i
 
 // private functions to update the data we keep
 
-void NETRootInfo::update( const unsigned long dirty_props[] )
+void NETRootInfo::update(const unsigned long dirty_props[])
 {
-    Atom type_ret;
-    int format_ret;
-    unsigned char *data_ret;
-    unsigned long nitems_ret, unused;
-    unsigned long props[ PROPERTIES_SIZE ];
-    for( int i = 0;
-         i < PROPERTIES_SIZE;
-         ++i )
-        props[ i ] = dirty_props[ i ] & p->client_properties[ i ];
-    const unsigned long& dirty = props[ PROTOCOLS ];
-    const unsigned long& dirty2 = props[ PROTOCOLS2 ];
+    unsigned long props[PROPERTIES_SIZE];
+    for (int i = 0; i < PROPERTIES_SIZE; ++i)
+        props[i] = dirty_props[i] & p->client_properties[i];
+
+    const unsigned long &dirty  = props[PROTOCOLS];
+    const unsigned long &dirty2 = props[PROTOCOLS2];
+
+    xcb_get_property_cookie_t cookies[255];
+    xcb_get_property_cookie_t wm_name_cookie;
+    int c = 0;
+
+    // Send the property requests
+    if (dirty & Supported)
+        cookies[c++] = xcb_get_property(p->conn, false, p->root, net_supported, XCB_ATOM_ATOM, 0, MAX_PROP_SIZE);
+
+    if (dirty & ClientList)
+        cookies[c++] = xcb_get_property(p->conn, false, p->root, net_client_list, XCB_ATOM_WINDOW, 0, MAX_PROP_SIZE);
+
+    if (dirty & ClientListStacking)
+        cookies[c++] = xcb_get_property(p->conn, false, p->root, net_client_list_stacking, XCB_ATOM_WINDOW, 0, MAX_PROP_SIZE);
+
+    if (dirty & NumberOfDesktops)
+        cookies[c++] = xcb_get_property(p->conn, false, p->root, net_number_of_desktops, XCB_ATOM_CARDINAL, 0, 1);
+
+    if (dirty & DesktopGeometry)
+        cookies[c++] = xcb_get_property(p->conn, false, p->root, net_desktop_geometry, XCB_ATOM_CARDINAL, 0, 2);
+
+    if (dirty & DesktopViewport)
+        cookies[c++] = xcb_get_property(p->conn, false, p->root, net_desktop_viewport, XCB_ATOM_CARDINAL, 0, MAX_PROP_SIZE);
+
+    if (dirty & CurrentDesktop)
+        cookies[c++] = xcb_get_property(p->conn, false, p->root, net_current_desktop, XCB_ATOM_CARDINAL, 0, 1);
+
+    if (dirty & DesktopNames)
+        cookies[c++] = xcb_get_property(p->conn, false, p->root, net_desktop_names, UTF8_STRING, 0, MAX_PROP_SIZE);
+
+    if (dirty & ActiveWindow)
+        cookies[c++] = xcb_get_property(p->conn, false, p->root, net_active_window, XCB_ATOM_WINDOW, 0, 1);
+
+    if (dirty & WorkArea)
+        cookies[c++] = xcb_get_property(p->conn, false, p->root, net_workarea, XCB_ATOM_CARDINAL, 0, MAX_PROP_SIZE);
+
+    if (dirty & SupportingWMCheck)
+        cookies[c++] = xcb_get_property(p->conn, false, p->root, net_supporting_wm_check, XCB_ATOM_WINDOW, 0, 1);
+
+    if (dirty & VirtualRoots)
+        cookies[c++] = xcb_get_property(p->conn, false, p->root, net_virtual_roots, XCB_ATOM_WINDOW, 0, 1);
+
+    if (dirty2 & WM2DesktopLayout)
+        cookies[c++] = xcb_get_property(p->conn, false, p->root, net_desktop_layout, XCB_ATOM_CARDINAL, 0, MAX_PROP_SIZE);
+
+    if (dirty2 & WM2ShowingDesktop)
+        cookies[c++] = xcb_get_property(p->conn, false, p->root, net_showing_desktop, XCB_ATOM_CARDINAL, 0, 1);
+
+
+    // Get the replies
+    c = 0;
 
     if (dirty & Supported ) {
-        // only in Client mode
-        for( int i = 0; i < PROPERTIES_SIZE; ++i )
-            p->properties[ i ] = 0;
-        if( XGetWindowProperty(p->display, p->root, net_supported,
-                               0l, MAX_PROP_SIZE, False, XA_ATOM, &type_ret,
-                               &format_ret, &nitems_ret, &unused, &data_ret)
-            == Success ) {
-            if( type_ret == XA_ATOM && format_ret == 32 ) {
-                Atom* atoms = (Atom*) data_ret;
-                for( unsigned int i = 0;
-                     i < nitems_ret;
-                     ++i )
-                    updateSupportedProperties( atoms[ i ] );
-            }
-	    if ( data_ret )
-		XFree(data_ret);
-        }
+        // Only in Client mode
+        for (int i = 0; i < PROPERTIES_SIZE; ++i)
+            p->properties[i] = 0;
+
+        const QVector<xcb_atom_t> atoms = get_array_reply<xcb_atom_t>(p->conn, cookies[c++], XCB_ATOM_ATOM);
+        Q_FOREACH (const xcb_atom_t atom, atoms)
+            updateSupportedProperties(atom);
     }
 
     if (dirty & ClientList) {
         QList<Window> clientsToRemove;
         QList<Window> clientsToAdd;
 
-        bool read_ok = false;
-	if (XGetWindowProperty(p->display, p->root, net_client_list,
-			       0l, MAX_PROP_SIZE, False, XA_WINDOW, &type_ret,
-			       &format_ret, &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_WINDOW && format_ret == 32) {
-		Window *wins = (Window *) data_ret;
+        QVector<xcb_window_t> clients = get_array_reply<xcb_window_t>(p->conn, cookies[c++], XCB_ATOM_WINDOW);
+        qSort(clients);
 
-		qsort(wins, nitems_ret, sizeof(Window), wcmp);
+        if (p->clients) {
+            if (p->role == Client) {
+                int new_index = 0, old_index = 0;
+                int old_count = p->clients_count;
+                int new_count = clients.count();
 
-		if (p->clients) {
-		    if (p->role == Client) {
-			unsigned long new_index = 0, old_index = 0;
-			unsigned long new_count = nitems_ret,
-				      old_count = p->clients_count;
+                while (old_index < old_count || new_index < new_count) {
+                    if (old_index == old_count) {
+                        clientsToAdd.append(clients[new_index++]);
+		    } else if (new_index == new_count) {
+                        clientsToRemove.append(p->clients[old_index++]);
+                    } else {
+                        if (p->clients[old_index] < clients[new_index]) {
+                            clientsToRemove.append(p->clients[old_index++]);
+                        } else if (clients[new_index] <
+                            p->clients[old_index]) {
+                            clientsToAdd.append(clients[new_index++]);
+                        } else {
+                            new_index++;
+                            old_index++;
+                        }
+                    }
+                }
+            }
 
-			while (old_index < old_count || new_index < new_count) {
-			    if (old_index == old_count) {
-				clientsToAdd.append(wins[new_index++]);
-			    } else if (new_index == new_count) {
-				clientsToRemove.append(p->clients[old_index++]);
-			    } else {
-				if (p->clients[old_index] <
-				    wins[new_index]) {
-				    clientsToRemove.append(p->clients[old_index++]);
-				} else if (wins[new_index] <
-					   p->clients[old_index]) {
-				    clientsToAdd.append(wins[new_index++]);
-				} else {
-				    new_index++;
-				    old_index++;
-				}
-			    }
-			}
-		    }
-
-		    delete [] p->clients;
-		} else {
-#ifdef    NETWMDEBUG
-		    fprintf(stderr, "NETRootInfo::update: client list null, creating\n");
+            delete [] p->clients;
+            p->clients = 0;
+	} else {
+#ifdef NETWMDEBUG
+            fprintf(stderr, "NETRootInfo::update: client list null, creating\n");
 #endif
 
-		    unsigned long n;
-		    for (n = 0; n < nitems_ret; n++) {
-			clientsToAdd.append(wins[n]);
-		    }
-		}
-
-		p->clients_count = nitems_ret;
-		p->clients = nwindup(wins, p->clients_count);
-                read_ok = true;
-	    }
-
-	    if ( data_ret )
-		XFree(data_ret);
-	}
-        if( !read_ok ) {
-            for( unsigned int i = 0; i < p->clients_count; ++ i )
-	        clientsToRemove.append(p->clients[i]);
-            p->clients_count = 0;
-            delete[] p->clients;
-            p->clients = NULL;
+            for (int i = 0; i < clients.count(); i++) {
+                clientsToAdd.append(clients[i]);
+            }
         }
 
-#ifdef    NETWMDEBUG
+        // KDE5: Change the clients type to xcb_window_t
+        if (clients.count() > 0) {
+            p->clients_count = clients.count();
+            p->clients = new Window[clients.count()];
+            for (int i = 0; i < clients.count(); i++)
+                p->clients[i] = clients.at(i);
+        }
+
+#ifdef NETWMDEBUG
 	fprintf(stderr, "NETRootInfo::update: client list updated (%ld clients)\n",
 		p->clients_count);
 #endif
+
         for (int i = 0; i < clientsToRemove.size(); ++i) {
             removeClient(clientsToRemove.at(i));
         }
+
         for (int i = 0; i < clientsToAdd.size(); ++i) {
             addClient(clientsToAdd.at(i));
         }
@@ -2115,309 +2222,207 @@ void NETRootInfo::update( const unsigned long dirty_props[] )
 
     if (dirty & ClientListStacking) {
         p->stacking_count = 0;
+
         delete[] p->stacking;
         p->stacking = NULL;
-	if (XGetWindowProperty(p->display, p->root, net_client_list_stacking,
-			       0, MAX_PROP_SIZE, False, XA_WINDOW, &type_ret,
-			       &format_ret, &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_WINDOW && format_ret == 32) {
-		Window *wins = (Window *) data_ret;
 
-		p->stacking_count = nitems_ret;
-		p->stacking = nwindup(wins, p->stacking_count);
-	    }
+        const QVector<xcb_window_t> wins = get_array_reply<xcb_window_t>(p->conn, cookies[c++], XCB_ATOM_WINDOW);
 
-#ifdef    NETWMDEBUG
-	    fprintf(stderr,"NETRootInfo::update: client stacking updated (%ld clients)\n",
-		    p->stacking_count);
+        // KDE5: Change the stacking type to xcb_window_t
+        if (wins.count() > 0) {
+            p->stacking_count = wins.count();
+            p->stacking = new Window[wins.count()];
+            for (int i = 0; i < wins.count(); i++)
+                p->stacking[i] = wins.at(i);
+        }
+
+#ifdef NETWMDEBUG
+        fprintf(stderr,"NETRootInfo::update: client stacking updated (%ld clients)\n",
+                p->stacking_count);
 #endif
-
-	    if ( data_ret )
-		XFree(data_ret);
-	}
     }
 
     if (dirty & NumberOfDesktops) {
-	p->number_of_desktops = 0;
+        p->number_of_desktops = get_value_reply<uint32_t>(p->conn, cookies[c++], XA_CARDINAL, 0);
 
-	if (XGetWindowProperty(p->display, p->root, net_number_of_desktops,
-			       0l, 1l, False, XA_CARDINAL, &type_ret, &format_ret,
-			       &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1) {
-		p->number_of_desktops = *((long *) data_ret);
-	    }
-
-#ifdef    NETWMDEBUG
-	    fprintf(stderr, "NETRootInfo::update: number of desktops = %d\n",
-		    p->number_of_desktops);
+#ifdef NETWMDEBUG
+        fprintf(stderr, "NETRootInfo::update: number of desktops = %d\n",
+                p->number_of_desktops);
 #endif
-	    if ( data_ret )
-		XFree(data_ret);
-	}
     }
 
     if (dirty & DesktopGeometry) {
         p->geometry = p->rootSize;
-	if (XGetWindowProperty(p->display, p->root, net_desktop_geometry,
-			       0l, 2l, False, XA_CARDINAL, &type_ret, &format_ret,
-			       &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
-		nitems_ret == 2) {
-		long *data = (long *) data_ret;
 
-		p->geometry.width  = data[0];
-		p->geometry.height = data[1];
-
-#ifdef    NETWMDEBUG
-		fprintf(stderr, "NETRootInfo::update: desktop geometry updated\n");
-#endif
-	    }
-	    if ( data_ret )
-		XFree(data_ret);
+        const QVector<uint32_t> data = get_array_reply<uint32_t>(p->conn, cookies[c++], XCB_ATOM_CARDINAL);
+        if (data.count() == 2) {
+            p->geometry.width  = data.at(0);
+            p->geometry.height = data.at(1);
 	}
+
+#ifdef NETWMDEBUG
+        fprintf(stderr, "NETRootInfo::update: desktop geometry updated\n");
+#endif
     }
 
     if (dirty & DesktopViewport) {
 	for (int i = 0; i < p->viewport.size(); i++)
 	    p->viewport[i].x = p->viewport[i].y = 0;
-	if (XGetWindowProperty(p->display, p->root, net_desktop_viewport,
-			       0l, 2l, False, XA_CARDINAL, &type_ret, &format_ret,
-			       &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
-		nitems_ret == 2) {
-		long *data = (long *) data_ret;
 
-		int d, i, n;
-		n = nitems_ret / 2;
-		for (d = 0, i = 0; d < n; d++) {
-		    p->viewport[d].x = data[i++];
-		    p->viewport[d].y = data[i++];
-		}
+        const QVector<uint32_t> data = get_array_reply<uint32_t>(p->conn, cookies[c++], XCB_ATOM_CARDINAL);
 
-#ifdef    NETWMDEBUG
-		fprintf(stderr,
-			"NETRootInfo::update: desktop viewport array updated (%d entries)\n",
-			p->viewport.size());
+	if (data.count() >= 2) {
+            int n = data.count() / 2;
+            for (int d = 0, i = 0; d < n; d++) {
+                p->viewport[d].x = data[i++];
+                p->viewport[d].y = data[i++];
+            }
 
-		if (nitems_ret % 2 != 0) {
-		    fprintf(stderr,
-			    "NETRootInfo::update(): desktop viewport array "
-			    "size not a multiple of 2\n");
-		}
+#ifdef NETWMDEBUG
+            fprintf(stderr,
+                    "NETRootInfo::update: desktop viewport array updated (%d entries)\n",
+                    p->viewport.size());
+
+            if (data.count() % 2 != 0) {
+                fprintf(stderr,
+                        "NETRootInfo::update(): desktop viewport array "
+                        "size not a multiple of 2\n");
+            }
 #endif
-	    }
-	    if ( data_ret )
-		XFree(data_ret);
 	}
     }
 
     if (dirty & CurrentDesktop) {
-	p->current_desktop = 0;
-	if (XGetWindowProperty(p->display, p->root, net_current_desktop,
-			       0l, 1l, False, XA_CARDINAL, &type_ret, &format_ret,
-			       &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1) {
-		p->current_desktop = *((long *) data_ret) + 1;
-	    }
+        p->current_desktop = get_value_reply<uint32_t>(p->conn, cookies[c++], XCB_ATOM_CARDINAL, 0) + 1;
 
-#ifdef    NETWMDEBUG
-	    fprintf(stderr, "NETRootInfo::update: current desktop = %d\n",
-		    p->current_desktop);
+#ifdef NETWMDEBUG
+        fprintf(stderr, "NETRootInfo::update: current desktop = %d\n",
+                p->current_desktop);
 #endif
-	    if ( data_ret )
-		XFree(data_ret);
-	}
     }
 
     if (dirty & DesktopNames) {
-        for( int i = 0; i < p->desktop_names.size(); ++i )
-            delete[] p->desktop_names[ i ];
+        for (int i = 0; i < p->desktop_names.size(); ++i)
+            delete[] p->desktop_names[i];
+
         p->desktop_names.reset();
-	if (XGetWindowProperty(p->display, p->root, net_desktop_names,
-			       0l, MAX_PROP_SIZE, False, UTF8_STRING, &type_ret,
-			       &format_ret, &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == UTF8_STRING && format_ret == 8) {
-		const char *d = (const char *) data_ret;
-		unsigned int s, n, index;
 
-		for (s = 0, n = 0, index = 0; n < nitems_ret; n++) {
-		    if (d[n] == '\0') {
-			delete [] p->desktop_names[index];
-			p->desktop_names[index++] = nstrndup((d + s), n - s + 1);
-			s = n + 1;
-		    }
-		}
-	    }
+        const QList<QByteArray> names = get_stringlist_reply(p->conn, cookies[c++], UTF8_STRING);
+        for (int i = 0; i < names.count(); i++) {
+            p->desktop_names[i] = nstrndup(names[i].constData(), names[i].length());
+        }
 
-#ifdef    NETWMDEBUG
-	    fprintf(stderr, "NETRootInfo::update: desktop names array updated (%d entries)\n",
-		    p->desktop_names.size());
+#ifdef NETWMDEBUG
+        fprintf(stderr, "NETRootInfo::update: desktop names array updated (%d entries)\n",
+                p->desktop_names.size());
 #endif
-	    if ( data_ret )
-		XFree(data_ret);
-	}
     }
 
     if (dirty & ActiveWindow) {
-        p->active = None;
-	if (XGetWindowProperty(p->display, p->root, net_active_window, 0l, 1l,
-			       False, XA_WINDOW, &type_ret, &format_ret,
-			       &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_WINDOW && format_ret == 32 && nitems_ret == 1) {
-		p->active = *((Window *) data_ret);
-	    }
+        p->active = get_value_reply<xcb_window_t>(p->conn, cookies[c++], XCB_ATOM_WINDOW, 0);
 
-#ifdef    NETWMDEBUG
-	    fprintf(stderr, "NETRootInfo::update: active window = 0x%lx\n",
-		    p->active);
+#ifdef NETWMDEBUG
+        fprintf(stderr, "NETRootInfo::update: active window = 0x%lx\n", p->active);
 #endif
-	    if ( data_ret )
-		XFree(data_ret);
-	}
     }
 
     if (dirty & WorkArea) {
         p->workarea.reset();
-	if (XGetWindowProperty(p->display, p->root, net_workarea, 0l,
-			       (p->number_of_desktops * 4), False, XA_CARDINAL,
-			       &type_ret, &format_ret, &nitems_ret, &unused,
-			       &data_ret)
-	    == Success) {
-	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
-		nitems_ret == (unsigned) (p->number_of_desktops * 4)) {
-		long *d = (long *) data_ret;
-		int i, j;
-		for (i = 0, j = 0; i < p->number_of_desktops; i++) {
-		    p->workarea[i].pos.x       = d[j++];
-		    p->workarea[i].pos.y       = d[j++];
-		    p->workarea[i].size.width  = d[j++];
-		    p->workarea[i].size.height = d[j++];
-		}
-	    }
 
-#ifdef    NETWMDEBUG
-	    fprintf(stderr, "NETRootInfo::update: work area array updated (%d entries)\n",
-		    p->workarea.size());
+        const QVector<uint32_t> data = get_array_reply<uint32_t>(p->conn, cookies[c++], XCB_ATOM_CARDINAL);
+        if (data.count() == p->number_of_desktops * 4) {
+            for (int i = 0, j = 0; i < p->number_of_desktops; i++) {
+                p->workarea[i].pos.x       = data[j++];
+                p->workarea[i].pos.y       = data[j++];
+                p->workarea[i].size.width  = data[j++];
+                p->workarea[i].size.height = data[j++];
+            }
+        }
+
+#ifdef NETWMDEBUG
+        fprintf(stderr, "NETRootInfo::update: work area array updated (%d entries)\n",
+                p->workarea.size());
 #endif
-	    if ( data_ret )
-		XFree(data_ret);
-	}
     }
 
-
     if (dirty & SupportingWMCheck) {
-        p->supportwindow = None;
         delete[] p->name;
         p->name = NULL;
-	if (XGetWindowProperty(p->display, p->root, net_supporting_wm_check,
-			       0l, 1l, False, XA_WINDOW, &type_ret, &format_ret,
-			       &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_WINDOW && format_ret == 32 && nitems_ret == 1) {
-		p->supportwindow = *((Window *) data_ret);
 
-		unsigned char *name_ret;
-		if (XGetWindowProperty(p->display, p->supportwindow,
-				       net_wm_name, 0l, MAX_PROP_SIZE, False,
-				       UTF8_STRING, &type_ret, &format_ret,
-				       &nitems_ret, &unused, &name_ret)
-		    == Success) {
-		    if (type_ret == UTF8_STRING && format_ret == 8)
-			p->name = nstrndup((const char *) name_ret, nitems_ret);
+        p->supportwindow = get_value_reply<xcb_window_t>(p->conn, cookies[c++], XCB_ATOM_WINDOW, 0);
 
-		    if ( name_ret )
-			XFree(name_ret);
-		}
-	    }
-
-#ifdef    NETWMDEBUG
-	    fprintf(stderr,
-		    "NETRootInfo::update: supporting window manager = '%s'\n",
-		    p->name);
-#endif
-	    if ( data_ret )
-		XFree(data_ret);
-	}
+        // We'll get the reply for this request at the bottom of this function,
+        // after we've processing the other pending replies
+        if (p->supportwindow)
+            wm_name_cookie = xcb_get_property(p->conn, false, p->supportwindow, net_wm_name,
+                                              UTF8_STRING, 0, MAX_PROP_SIZE);
     }
 
     if (dirty & VirtualRoots) {
         p->virtual_roots_count = 0;
+
         delete[] p->virtual_roots;
         p->virtual_roots = NULL;
-	if (XGetWindowProperty(p->display, p->root, net_virtual_roots,
-			       0, MAX_PROP_SIZE, False, XA_WINDOW, &type_ret,
-			       &format_ret, &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_WINDOW && format_ret == 32) {
-		Window *wins = (Window *) data_ret;
 
-		p->virtual_roots_count = nitems_ret;
-		p->virtual_roots = nwindup(wins, p->virtual_roots_count);
-	    }
+        const QVector<xcb_window_t> wins = get_array_reply<xcb_window_t>(p->conn, cookies[c++], XCB_ATOM_CARDINAL);
 
-#ifdef    NETWMDEBUG
-	    fprintf(stderr, "NETRootInfo::updated: virtual roots updated (%ld windows)\n",
-		    p->virtual_roots_count);
+        // KDE5: Change the virtual_roots type to xcb_window_t
+        if (wins.count() > 0) {
+            p->virtual_roots_count = wins.count();
+            p->virtual_roots = new Window[wins.count()];
+            for (int i = 0; i < wins.count(); i++)
+                p->virtual_roots[i] = wins.at(i);
+        }
+
+#ifdef NETWMDEBUG
+        fprintf(stderr, "NETRootInfo::updated: virtual roots updated (%ld windows)\n",
+                p->virtual_roots_count);
 #endif
-	    if ( data_ret )
-		XFree(data_ret);
-	}
     }
 
     if (dirty2 & WM2DesktopLayout) {
         p->desktop_layout_orientation = OrientationHorizontal;
         p->desktop_layout_corner = DesktopLayoutCornerTopLeft;
         p->desktop_layout_columns = p->desktop_layout_rows = 0;
-	if (XGetWindowProperty(p->display, p->root, net_desktop_layout,
-			       0, MAX_PROP_SIZE, False, XA_CARDINAL, &type_ret,
-			       &format_ret, &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_CARDINAL && format_ret == 32) {
-                long* data = (long*) data_ret;
-                if( nitems_ret >= 4 && data[ 3 ] >= 0 && data[ 3 ] <= 3 )
-                    p->desktop_layout_corner = (NET::DesktopLayoutCorner)data[ 3 ];
-                if( nitems_ret >= 3 ) {
-                    if( data[ 0 ] >= 0 && data[ 0 ] <= 1 )
-                        p->desktop_layout_orientation = (NET::Orientation)data[ 0 ];
-                    p->desktop_layout_columns = data[ 1 ];
-                    p->desktop_layout_rows = data[ 2 ];
-                }
-	    }
 
-#ifdef    NETWMDEBUG
-	    fprintf(stderr, "NETRootInfo::updated: desktop layout updated (%d %d %d %d)\n",
+        const QVector<uint32_t> data = get_array_reply<uint32_t>(p->conn, cookies[c++], XCB_ATOM_CARDINAL);
+
+        if (data.count() >= 4 && data[3] <= 3)
+            p->desktop_layout_corner = (NET::DesktopLayoutCorner)data[3];
+
+        if (data.count() >= 3) {
+            if (data[0] <= 1)
+                p->desktop_layout_orientation = (NET::Orientation)data[0];
+
+            p->desktop_layout_columns = data[1];
+            p->desktop_layout_rows = data[2];
+        }
+
+#ifdef NETWMDEBUG
+        fprintf(stderr, "NETRootInfo::updated: desktop layout updated (%d %d %d %d)\n",
                 p->desktop_layout_orientation, p->desktop_layout_columns,
                 p->desktop_layout_rows, p->desktop_layout_corner );
 #endif
-	    if ( data_ret )
-		XFree(data_ret);
-	}
     }
 
     if (dirty2 & WM2ShowingDesktop) {
-        p->showing_desktop = false;
-	if (XGetWindowProperty(p->display, p->root, net_showing_desktop,
-			       0, MAX_PROP_SIZE, False, XA_CARDINAL, &type_ret,
-			       &format_ret, &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1) {
-		p->showing_desktop = *((long *) data_ret);
-	    }
+        const uint32_t val = get_value_reply<uint32_t>(p->conn, cookies[c++], XCB_ATOM_CARDINAL, 0);
+        p->showing_desktop = bool(val);
 
-#ifdef    NETWMDEBUG
-	    fprintf(stderr, "NETRootInfo::update: showing desktop = %d\n",
-		    p->showing_desktop);
+#ifdef NETWMDEBUG
+        fprintf(stderr, "NETRootInfo::update: showing desktop = %d\n",
+                p->showing_desktop);
 #endif
-	    if ( data_ret )
-		XFree(data_ret);
-	}
+    }
+
+    if ((dirty & SupportingWMCheck) && p->supportwindow) {
+        const QByteArray ba = get_string_reply(p->conn, wm_name_cookie, UTF8_STRING);
+        if (ba.length() > 0)
+            p->name = nstrndup((const char *) ba.constData(), ba.length());
+
+#ifdef NETWMDEBUG
+        fprintf(stderr, "NETRootInfo::update: supporting window manager = '%s'\n", p->name);
+#endif
     }
 }
 
