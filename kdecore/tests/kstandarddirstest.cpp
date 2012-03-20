@@ -461,19 +461,20 @@ void KStandarddirsTest::testRestrictedResources()
 void KStandarddirsTest::testSymlinkResolution()
 {
 #ifndef Q_OS_WIN
-    // This makes the save location for the david resource, "$HOME/.kde-unit-test/symlink/test/"
+    // This makes the save location for the david resource, "<XDG_DATA_HOME>/symlink/test/"
     // where symlink points to "real", and the subdir test will be created later
     // This used to confuse KStandardDirs and make it return unresolved paths,
     // and thus making comparisons fail later on in KConfig.
-    const QString symlink = m_kdehome + "/symlink";
-    const QString expected = m_kdehome + "/real/test/";
+    QString baseDir = m_kdehome + "/xdg/local"; // XDG DATA HOME
+    const QString symlink = baseDir + "/symlink";
+    const QString expected = baseDir + "/real/test/";
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-    QVERIFY(QTemporaryDir::removeRecursively(m_kdehome + "/real"));
+    QVERIFY(QTemporaryDir::removeRecursively(baseDir + "/real"));
 #else
-    QDir d_(m_kdehome + "/real");
+    QDir d_(baseDir + "/real");
     QVERIFY(d_.removeRecursively());
 #endif
-    QVERIFY(QDir(m_kdehome).mkdir("real"));
+    QVERIFY(QDir(baseDir).mkdir("real"));
     QFile::remove(symlink);
     QVERIFY(!QFile::exists(symlink));
     QVERIFY(QFile::link("real", symlink));
@@ -488,7 +489,7 @@ void KStandarddirsTest::testSymlinkResolution()
     QVERIFY(!QFile::exists(saveLoc));
     QCOMPARE(saveLoc, KStandardDirs::realPath(saveLoc)); // must be resolved
     QCOMPARE(saveLoc, expected);
-    QVERIFY(QDir(m_kdehome).mkpath("real/test")); // KConfig calls mkdir on its own, we simulate that here
+    QVERIFY(QDir(baseDir).mkpath("real/test")); // KConfig calls mkdir on its own, we simulate that here
     const QString sameSaveLoc = KGlobal::dirs()->resourceDirs("david").first();
     QCOMPARE(sameSaveLoc, saveLoc);
     QCOMPARE(sameSaveLoc, KGlobal::dirs()->saveLocation("david"));
