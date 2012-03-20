@@ -3187,11 +3187,13 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask)
 }
 
 
-void NETWinInfo::setWindowType(WindowType type) {
-    if (p->role != Client) return;
+void NETWinInfo::setWindowType(WindowType type)
+{
+    if (p->role != Client)
+        return;
 
     int len;
-    long data[2];
+    uint32_t data[2];
 
     switch (type) {
     case Override:
@@ -3296,8 +3298,8 @@ void NETWinInfo::setWindowType(WindowType type) {
 	break;
     }
 
-    XChangeProperty(p->display, p->window, net_wm_window_type, XA_ATOM, 32,
-		    PropModeReplace, (unsigned char *) &data, len);
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, net_wm_window_type,
+                        XCB_ATOM_ATOM, 32, len, (const void *) &data);
 }
 
 
