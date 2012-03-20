@@ -80,6 +80,7 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QUrl& kickOffUri, co
     m_rm->dataCnt.ref();
 
     if( !uri.isEmpty() ) {
+        m_rm->m_initializedData.insert( uri, this );
         m_kickoffUris.insert( uri );
     }
     if( !kickOffUri.isEmpty() ) {
@@ -726,21 +727,19 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::determineUri()
                 }
             }
         }
-    }
 
-    //
-    // Move us to the final data hash now that the URI is known
-    //
-    if( !m_uri.isEmpty() ) {
-        m_cacheDirty = true;
-        //vHanda: Is there some way to avoid this hash lookup every time?
-        //        It sure would speed things up.
-        ResourceDataHash::iterator it = m_rm->m_initializedData.find(m_uri);
-        if( it == m_rm->m_initializedData.end() ) {
-            m_rm->m_initializedData.insert( m_uri, this );
-        }
-        else {
-            return it.value();
+        //
+        // Move us to the final data hash now that the URI is known
+        //
+        if( !m_uri.isEmpty() ) {
+            m_cacheDirty = true;
+            ResourceDataHash::iterator it = m_rm->m_initializedData.find(m_uri);
+            if( it == m_rm->m_initializedData.end() ) {
+                m_rm->m_initializedData.insert( m_uri, this );
+            }
+            else {
+                return it.value();
+            }
         }
     }
 
