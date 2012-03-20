@@ -3303,59 +3303,70 @@ void NETWinInfo::setWindowType(WindowType type)
 }
 
 
-void NETWinInfo::setName(const char *name) {
-    if (p->role != Client) return;
+void NETWinInfo::setName(const char *name)
+{
+    if (p->role != Client)
+        return;
 
     delete [] p->name;
     p->name = nstrdup(name);
-    if( p->name[ 0 ] != '\0' )
-        XChangeProperty(p->display, p->window, net_wm_name, UTF8_STRING, 8,
-		    PropModeReplace, (unsigned char *) p->name,
-		    strlen(p->name));
+
+    if (p->name[0] != '\0')
+        xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, net_wm_name,
+                            UTF8_STRING, 8, strlen(p->name), (const void *) p->name);
     else
-        XDeleteProperty(p->display, p->window, net_wm_name);
+        xcb_delete_property(p->conn, p->window, net_wm_name);
 }
 
 
-void NETWinInfo::setVisibleName(const char *visibleName) {
-    if (p->role != WindowManager) return;
+void NETWinInfo::setVisibleName(const char *visibleName)
+{
+    if (p->role != WindowManager)
+        return;
 
     delete [] p->visible_name;
     p->visible_name = nstrdup(visibleName);
-    if( p->visible_name[ 0 ] != '\0' )
-        XChangeProperty(p->display, p->window, net_wm_visible_name, UTF8_STRING, 8,
-		    PropModeReplace, (unsigned char *) p->visible_name,
-		    strlen(p->visible_name));
+
+    if (p->visible_name[0] != '\0')
+        xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, net_wm_name,
+                            UTF8_STRING, 8, strlen(p->visible_name),
+                            (const void *) p->visible_name);
     else
-        XDeleteProperty(p->display, p->window, net_wm_visible_name);
+        xcb_delete_property(p->conn, p->window, net_wm_visible_name);
 }
 
 
-void NETWinInfo::setIconName(const char *iconName) {
-    if (p->role != Client) return;
+void NETWinInfo::setIconName(const char *iconName)
+{
+    if (p->role != Client)
+        return;
 
     delete [] p->icon_name;
     p->icon_name = nstrdup(iconName);
-    if( p->icon_name[ 0 ] != '\0' )
-        XChangeProperty(p->display, p->window, net_wm_icon_name, UTF8_STRING, 8,
-		    PropModeReplace, (unsigned char *) p->icon_name,
-		    strlen(p->icon_name));
+
+    if (p->icon_name[0] != '\0')
+        xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, net_wm_icon_name,
+                            UTF8_STRING, 8, strlen(p->icon_name),
+                            (const void *) p->icon_name);
     else
-        XDeleteProperty(p->display, p->window, net_wm_icon_name);
+        xcb_delete_property(p->conn, p->window, net_wm_icon_name);
 }
 
 
-void NETWinInfo::setVisibleIconName(const char *visibleIconName) {
-    if (p->role != WindowManager) return;
+void NETWinInfo::setVisibleIconName(const char *visibleIconName)
+{
+    if (p->role != WindowManager)
+        return;
 
     delete [] p->visible_icon_name;
     p->visible_icon_name = nstrdup(visibleIconName);
-    if( p->visible_icon_name[ 0 ] != '\0' )
-        XChangeProperty(p->display, p->window, net_wm_visible_icon_name, UTF8_STRING, 8,
-		    PropModeReplace, (unsigned char *) p->visible_icon_name,
-		    strlen(p->visible_icon_name));
+
+    if (p->visible_icon_name[0] != '\0')
+        xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, net_wm_visible_icon_name,
+                            UTF8_STRING, 8, strlen(p->visible_icon_name),
+                            (const void *) p->visible_icon_name);
     else
-        XDeleteProperty(p->display, p->window, net_wm_visible_icon_name);
+        xcb_delete_property(p->conn, p->window, net_wm_visible_icon_name);
 }
 
 
