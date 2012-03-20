@@ -3406,41 +3406,49 @@ void NETWinInfo::setDesktop(int desktop, bool ignore_viewport)
 }
 
 
-void NETWinInfo::setPid(int pid) {
-    if (p->role != Client) return;
+void NETWinInfo::setPid(int pid)
+{
+    if (p->role != Client)
+        return;
 
     p->pid = pid;
-    long d = pid;
-    XChangeProperty(p->display, p->window, net_wm_pid, XA_CARDINAL, 32,
-		    PropModeReplace, (unsigned char *) &d, 1);
+    uint32_t d = pid;
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, net_wm_pid,
+                        XCB_ATOM_CARDINAL, 32, 1, (const void *) &d);
 }
 
 
-void NETWinInfo::setHandledIcons(Bool handled) {
-    if (p->role != Client) return;
+void NETWinInfo::setHandledIcons(Bool handled)
+{
+    if (p->role != Client)
+        return;
 
     p->handled_icons = handled;
-    long d = handled;
-    XChangeProperty(p->display, p->window, net_wm_handled_icons, XA_CARDINAL, 32,
-		    PropModeReplace, (unsigned char *) &d, 1);
+    uint32_t d = handled;
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, net_wm_handled_icons,
+                        XCB_ATOM_CARDINAL, 32, 1, (const void *) &d);
 }
 
-void NETWinInfo::setStartupId(const char* id) {
-    if (p->role != Client) return;
+void NETWinInfo::setStartupId(const char *id)
+{
+    if (p->role != Client)
+        return;
 
     delete[] p->startup_id;
     p->startup_id = nstrdup(id);
-    XChangeProperty(p->display, p->window, net_startup_id, UTF8_STRING, 8,
-        PropModeReplace, reinterpret_cast< unsigned char* >( p->startup_id ),
-        strlen( p->startup_id ));
+
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, net_startup_id,
+                        UTF8_STRING, 8, strlen(p->startup_id),
+                        (const void *) p->startup_id);
 }
 
-void NETWinInfo::setOpacity(unsigned long opacity) {
+void NETWinInfo::setOpacity(unsigned long opacity)
+{
 //    if (p->role != Client) return;
 
     p->opacity = opacity;
-    XChangeProperty(p->display, p->window, net_wm_window_opacity, XA_CARDINAL, 32,
-        PropModeReplace, reinterpret_cast< unsigned char* >( &p->opacity ), 1);
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, net_wm_window_opacity,
+                        XCB_ATOM_CARDINAL, 32, 1, (const void *) &p->opacity);
 }
 
 void NETWinInfo::setAllowedActions( unsigned long actions ) {
