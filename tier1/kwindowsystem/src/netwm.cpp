@@ -3370,50 +3370,38 @@ void NETWinInfo::setVisibleIconName(const char *visibleIconName)
 }
 
 
-void NETWinInfo::setDesktop(int desktop, bool ignore_viewport) {
+void NETWinInfo::setDesktop(int desktop, bool ignore_viewport)
+{
     if (p->mapping_state_dirty)
-	updateWMState();
+        updateWMState();
 
     if (p->role == Client && p->mapping_state != Withdrawn) {
-	// we only send a ClientMessage if we are 1) a client and 2) managed
+        // We only send a ClientMessage if we are 1) a client and 2) managed
 
-	if ( desktop == 0 )
-	    return; // we can't do that while being managed
+        if (desktop == 0)
+            return; // We can't do that while being managed
 
-        if( !ignore_viewport && KWindowSystem::mapViewport()) {
-            KWindowSystem::setOnDesktop( p->window, desktop );
+        if (!ignore_viewport && KWindowSystem::mapViewport()) {
+            KWindowSystem::setOnDesktop(p->window, desktop);
             return;
         }
 
-	XEvent e;
-	e.xclient.type = ClientMessage;
-	e.xclient.message_type = net_wm_desktop;
-	e.xclient.display = p->display;
-	e.xclient.window = p->window;
-	e.xclient.format = 32;
-	e.xclient.data.l[0] = desktop == OnAllDesktops ? OnAllDesktops : desktop - 1;
-	e.xclient.data.l[1] = 0l;
-	e.xclient.data.l[2] = 0l;
-	e.xclient.data.l[3] = 0l;
-	e.xclient.data.l[4] = 0l;
+        const uint32_t data[5] = {
+            desktop == OnAllDesktops ? 0xffffffff : desktop - 1, 0, 0, 0, 0
+        };
 
-	XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+        send_client_message(p->conn, netwm_sendevent_mask, p->root, p->window, net_wm_desktop, data);
     } else {
-	// otherwise we just set or remove the property directly
-	p->desktop = desktop;
-	long d = desktop;
+        // Otherwise we just set or remove the property directly
+        p->desktop = desktop;
 
-	if ( d != OnAllDesktops ) {
-	    if ( d == 0 ) {
-		XDeleteProperty( p->display, p->window, net_wm_desktop );
-		return;
-	    }
-
-	    d -= 1;
-	}
-
-	XChangeProperty(p->display, p->window, net_wm_desktop, XA_CARDINAL, 32,
-			PropModeReplace, (unsigned char *) &d, 1);
+        if (desktop == 0) {
+            xcb_delete_property(p->conn, p->window, net_wm_desktop);
+        } else {
+            uint32_t d = (desktop == OnAllDesktops ? 0xffffffff : desktop - 1);
+            xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, net_wm_desktop,
+                                XCB_ATOM_CARDINAL, 32, 1, (const void *) &d);
+        }
     }
 }
 
