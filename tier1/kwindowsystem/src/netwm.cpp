@@ -50,6 +50,22 @@
 
 #include <X11/Xmd.h>
 
+
+// This struct is defined here to avoid a dependency on xcb-icccm
+struct kde_wm_hints
+{
+    uint32_t      flags;
+    uint32_t      input;
+    int32_t       initial_state;
+    xcb_pixmap_t  icon_pixmap;
+    xcb_window_t  icon_window;
+    int32_t       icon_x;
+    int32_t       icon_y;
+    xcb_pixmap_t  icon_mask;
+    xcb_window_t  window_group;
+};
+
+
 // UTF-8 string
 static xcb_atom_t UTF8_STRING = 0;
 
@@ -507,102 +523,51 @@ static void create_netwm_atoms(xcb_connection_t *c)
     netwm_atoms_created = true;
 }
 
-static void readIcon(Display* display, Window window, Atom property, NETRArray<NETIcon>& icons, int& icon_count) {
-
-#ifdef    NETWMDEBUG
+static void readIcon(xcb_connection_t *c, const xcb_get_property_cookie_t cookie,
+                     NETRArray<NETIcon> &icons, int &icon_count)
+{
+#ifdef NETWMDEBUG
     fprintf(stderr, "NET: readIcon\n");
 #endif
-
-    Atom type_ret;
-    int format_ret;
-    unsigned long nitems_ret = 0, after_ret = 0;
-    unsigned char *data_ret = 0;
 
     // reset
     for (int i = 0; i < icons.size(); i++)
         delete [] icons[i].data;
+
     icons.reset();
     icon_count = 0;
 
-    // allocate buffers
-    unsigned char *buffer = 0;
-    unsigned long offset = 0;
-    unsigned long buffer_offset = 0;
-    unsigned long bufsize = 0;
+    xcb_get_property_reply_t *reply = xcb_get_property_reply(c, cookie, 0);
 
-    // read data
-    do {
-	if (XGetWindowProperty(display, window, property, offset,
-			       MAX_PROP_SIZE, False, XA_CARDINAL, &type_ret,
-			       &format_ret, &nitems_ret, &after_ret, &data_ret)
-	    == Success) {
-            if (!bufsize)
-            {
-               if (nitems_ret < 3 || type_ret != XA_CARDINAL ||
-                  format_ret != 32) {
-                  // either we didn't get the property, or the property has less than
-                  // 3 elements in it
-                  // NOTE: 3 is the ABSOLUTE minimum:
-                  //     width = 1, height = 1, length(data) = 1 (width * height)
-                  if ( data_ret )
-                     XFree(data_ret);
-                  return;
-               }
+    if (!reply || reply->value_len < 3 || reply->format != 32 || reply->type != XCB_ATOM_CARDINAL) {
+        if (reply)
+            free(reply);
 
-               bufsize = nitems_ret * sizeof(long) + after_ret;
-               buffer = (unsigned char *) malloc(bufsize);
-            }
-            else if (buffer_offset + nitems_ret*sizeof(long) > bufsize)
-            {
-fprintf(stderr, "NETWM: Warning readIcon() needs buffer adjustment!\n");
-               bufsize = buffer_offset + nitems_ret * sizeof(long) + after_ret;
-               buffer = (unsigned char *) realloc(buffer, bufsize);
-            }
-	    memcpy((buffer + buffer_offset), data_ret, nitems_ret * sizeof(long));
-	    buffer_offset += nitems_ret * sizeof(long);
-	    offset += nitems_ret;
-
-	    if ( data_ret )
-		XFree(data_ret);
-	} else {
-            if (buffer)
-               free(buffer);
-	    return; // Some error occurred cq. property didn't exist.
-	}
+        return;
     }
-    while (after_ret > 0);
 
-    CARD32 *data32;
-    unsigned long i, j, k, sz, s;
-    unsigned long *d = (unsigned long *) buffer;
-    for (i = 0, j = 0; i < bufsize;) {
-	icons[j].size.width = *d++;
-	i += sizeof(long);
-	icons[j].size.height = *d++;
-	i += sizeof(long);
+    uint32_t *data = (uint32_t *) xcb_get_property_value(reply);
 
-	sz = icons[j].size.width * icons[j].size.height;
-	s = sz * sizeof(long);
+    for (unsigned int i = 0, j = 0; j < reply->value_len; i++) {
+        uint32_t width  = data[j++];
+        uint32_t height = data[j++];
+        uint32_t size   = width * height * sizeof(uint32_t);
 
-	if ( i + s - 1 > bufsize || sz == 0 || sz > 1024 * 1024 ) {
-	    break;
-	}
+        icons[i].size.width  = width;
+        icons[i].size.height = height;
+        icons[i].data = new unsigned char[size];
 
-	delete [] icons[j].data;
-	data32 = new CARD32[sz];
-	icons[j].data = (unsigned char *) data32;
-	for (k = 0; k < sz; k++, i += sizeof(long)) {
-	    *data32++ = (CARD32) *d++;
-	}
-	j++;
+        memcpy((void *)icons[i].data, (const void *)&data[j], size);
+
+        j += width * height;
         icon_count++;
     }
 
-#ifdef    NETWMDEBUG
+    free(reply);
+
+#ifdef NETWMDEBUG
     fprintf(stderr, "NET: readIcon got %d icons\n", icon_count);
 #endif
-
-    free(buffer);
 }
 
 static void send_client_message(xcb_connection_t *c, uint32_t mask,
@@ -3867,614 +3832,539 @@ void NETWinInfo::updateWMState() {
     update( props );
 }
 
-void NETWinInfo::update(const unsigned long dirty_props[]) {
-    Atom type_ret;
-    int format_ret;
-    unsigned long nitems_ret, unused;
-    unsigned char *data_ret;
-    unsigned long props[ PROPERTIES_SIZE ];
-    for( int i = 0;
-         i < PROPERTIES_SIZE;
-         ++i )
-        props[ i ] = dirty_props[ i ] & p->properties[ i ];
-    const unsigned long& dirty = props[ PROTOCOLS ];
-    const unsigned long& dirty2 = props[ PROTOCOLS2 ];
+void NETWinInfo::update(const unsigned long dirty_props[])
+{
+    unsigned long props[PROPERTIES_SIZE];
+    for (int i = 0; i < PROPERTIES_SIZE; ++i)
+        props[ i ] = dirty_props[i] & p->properties[i];
 
-    // we *always* want to update WM_STATE if set in dirty_props
-    if( dirty_props[ PROTOCOLS ] & XAWMState )
-        props[ PROTOCOLS ] |= XAWMState;
+    const unsigned long &dirty  = props[PROTOCOLS];
+    const unsigned long &dirty2 = props[PROTOCOLS2];
+
+    // We *always* want to update WM_STATE if set in dirty_props
+    if (dirty_props[PROTOCOLS] & XAWMState)
+        props[PROTOCOLS] |= XAWMState;
+
+    xcb_get_property_cookie_t cookies[255];
+    int c = 0;
+
+    if (dirty & XAWMState)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, xa_wm_state, xa_wm_state, 0, 1);
+
+    if (dirty & WMState)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, net_wm_state, XCB_ATOM_ATOM, 0, 2048);
+
+    if (dirty & WMDesktop)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, net_wm_desktop, XCB_ATOM_CARDINAL, 0, 1);
+
+    if (dirty & WMName)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, net_wm_name, UTF8_STRING, 0, MAX_PROP_SIZE);
+
+    if (dirty & WMVisibleName)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, net_wm_visible_name, UTF8_STRING, 0, MAX_PROP_SIZE);
+
+    if (dirty & WMIconName)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, net_wm_icon_name, UTF8_STRING, 0, MAX_PROP_SIZE);
+
+    if (dirty & WMVisibleIconName)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, net_wm_visible_icon_name, UTF8_STRING, 0, MAX_PROP_SIZE);
+
+    if (dirty & WMWindowType)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, net_wm_window_type, XCB_ATOM_ATOM, 0, 2048);
+
+    if (dirty & WMStrut)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, net_wm_strut, XCB_ATOM_CARDINAL, 0, 4);
+
+    if (dirty2 & WM2ExtendedStrut)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, net_wm_extended_strut, XCB_ATOM_CARDINAL, 0, 12);
+
+    if (dirty2 & WM2FullscreenMonitors)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, net_wm_fullscreen_monitors, XCB_ATOM_CARDINAL, 0, 4);
+
+    if (dirty & WMIconGeometry)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, net_wm_icon_geometry, XCB_ATOM_CARDINAL, 0, 4);
+
+    if (dirty & WMIcon)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, net_wm_icon, XCB_ATOM_CARDINAL, 0, 0xffffffff);
+
+    if (dirty & WMFrameExtents) {
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, net_frame_extents, XCB_ATOM_CARDINAL, 0, 4);
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, kde_net_wm_frame_strut, XCB_ATOM_CARDINAL, 0, 4);
+    }
+
+    if (dirty2 & WM2FrameOverlap)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, kde_net_wm_frame_overlap, XCB_ATOM_CARDINAL, 0, 4);
+
+    if (dirty2 & WM2Activities)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, kde_net_wm_activities, XCB_ATOM_STRING, 0, MAX_PROP_SIZE);
+
+    if (dirty2 & WM2BlockCompositing)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, kde_net_wm_block_compositing, XCB_ATOM_CARDINAL, 0, 1);
+
+    if (dirty & WMPid)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, net_wm_pid, XCB_ATOM_CARDINAL, 0, 1);
+
+    if (dirty2 & WM2StartupId)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, net_startup_id, UTF8_STRING, 0, MAX_PROP_SIZE);
+
+    if (dirty2 & WM2Opacity)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, net_wm_window_opacity, XCB_ATOM_CARDINAL, 0, 1);
+
+    if (dirty2 & WM2AllowedActions)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, net_wm_allowed_actions, XCB_ATOM_ATOM, 0, 2048);
+
+    if (dirty2 & WM2UserTime)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, net_wm_user_time, XCB_ATOM_CARDINAL, 0, 1);
+
+    if (dirty2 & WM2TransientFor)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, XCB_ATOM_WM_TRANSIENT_FOR, XCB_ATOM_WINDOW, 0, 1);
+
+    if (dirty2 & WM2GroupLeader)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, XCB_ATOM_WM_HINTS, XCB_ATOM_WM_HINTS, 0, 9);
+
+    if (dirty2 & WM2WindowClass)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, XCB_ATOM_WM_CLASS, XCB_ATOM_STRING, 0, MAX_PROP_SIZE);
+
+    if (dirty2 & WM2WindowRole)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, wm_window_role, XCB_ATOM_STRING, 0, MAX_PROP_SIZE);
+
+    if (dirty2 & WM2ClientMachine)
+        cookies[c++] = xcb_get_property(p->conn, false, p->window, XCB_ATOM_WM_CLIENT_MACHINE, XCB_ATOM_STRING, 0, MAX_PROP_SIZE);
+
+    c = 0;
 
     if (dirty & XAWMState) {
         p->mapping_state = Withdrawn;
-	if (XGetWindowProperty(p->display, p->window, xa_wm_state, 0l, 1l,
-			       False, xa_wm_state, &type_ret, &format_ret,
-			       &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == xa_wm_state && format_ret == 32 &&
-		nitems_ret == 1) {
-		long *state = (long *) data_ret;
 
-		switch(*state) {
-		    case IconicState:
-			p->mapping_state = Iconic;
-			break;
-		    case NormalState:
-			p->mapping_state = Visible;
-                        break;
-		    case WithdrawnState:
-		    default:
-			p->mapping_state = Withdrawn;
-			break;
-		}
+        bool success;
+        uint32_t state = get_value_reply<uint32_t>(p->conn, cookies[c++], xa_wm_state, 0, &success);
 
-		p->mapping_state_dirty = False;
-	    }
-	    if ( data_ret )
-		XFree(data_ret);
-	}
+        if (success) {
+            switch(state) {
+            case 3: // IconicState
+                p->mapping_state = Iconic;
+                break;
+
+            case 1: // NormalState
+                p->mapping_state = Visible;
+                break;
+
+            case 0: // WithdrawnState
+            default:
+                p->mapping_state = Withdrawn;
+                break;
+            }
+
+            p->mapping_state_dirty = false;
+        }
     }
 
     if (dirty & WMState) {
-	p->state = 0;
-	if (XGetWindowProperty(p->display, p->window, net_wm_state, 0l, 2048l,
-			       False, XA_ATOM, &type_ret, &format_ret,
-			       &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_ATOM && format_ret == 32 && nitems_ret > 0) {
-		// determine window state
+        p->state = 0;
+        const QVector<xcb_atom_t> states = get_array_reply<xcb_atom_t>(p->conn, cookies[c++], XCB_ATOM_ATOM);
+
 #ifdef NETWMDEBUG
-		fprintf(stderr, "NETWinInfo::update: updating window state (%ld)\n",
-			nitems_ret);
+        fprintf(stderr, "NETWinInfo::update: updating window state (%ld)\n", states.count());
 #endif
 
-		long *states = (long *) data_ret;
-		unsigned long count;
-
-		for (count = 0; count < nitems_ret; count++) {
+        Q_FOREACH (const xcb_atom_t state, states) {
 #ifdef NETWMDEBUG
-                    char* data_ret = XGetAtomName(p->display, (Atom) states[count]);
-		    fprintf(stderr,
-			    "NETWinInfo::update:   adding window state %ld '%s'\n",
-			    states[count], data_ret );
-                    if ( data_ret )
-                        XFree( data_ret );
+            const QByteArray ba = get_atom_name(p->conn, state);
+            fprintf(stderr, "NETWinInfo::update:   adding window state %ld '%s'\n",
+                    state, ba.constData());
 #endif
+            if (state == net_wm_state_modal)
+                p->state |= Modal;
 
-		    if ((Atom) states[count] == net_wm_state_modal)
-			p->state |= Modal;
-		    else if ((Atom) states[count] == net_wm_state_sticky)
-			p->state |= Sticky;
-		    else if ((Atom) states[count] == net_wm_state_max_vert)
-			p->state |= MaxVert;
-		    else if ((Atom) states[count] == net_wm_state_max_horiz)
-			p->state |= MaxHoriz;
-		    else if ((Atom) states[count] == net_wm_state_shaded)
-			p->state |= Shaded;
-		    else if ((Atom) states[count] == net_wm_state_skip_taskbar)
-			p->state |= SkipTaskbar;
-		    else if ((Atom) states[count] == net_wm_state_skip_pager)
-			p->state |= SkipPager;
-		    else if ((Atom) states[count] == net_wm_state_hidden)
-			p->state |= Hidden;
-		    else if ((Atom) states[count] == net_wm_state_fullscreen)
-			p->state |= FullScreen;
-		    else if ((Atom) states[count] == net_wm_state_above)
-			p->state |= KeepAbove;
-		    else if ((Atom) states[count] == net_wm_state_below)
-			p->state |= KeepBelow;
-		    else if ((Atom) states[count] == net_wm_state_demands_attention)
-			p->state |= DemandsAttention;
-		    else if ((Atom) states[count] == net_wm_state_stays_on_top)
-			p->state |= StaysOnTop;
-		}
-	    }
-	    if ( data_ret )
-		XFree(data_ret);
-	}
+            else if (state == net_wm_state_sticky)
+                p->state |= Sticky;
+
+            else if (state == net_wm_state_max_vert)
+                p->state |= MaxVert;
+
+            else if (state == net_wm_state_max_horiz)
+                p->state |= MaxHoriz;
+
+            else if (state == net_wm_state_shaded)
+                p->state |= Shaded;
+
+            else if (state == net_wm_state_skip_taskbar)
+                p->state |= SkipTaskbar;
+
+            else if (state == net_wm_state_skip_pager)
+                p->state |= SkipPager;
+
+            else if (state == net_wm_state_hidden)
+                p->state |= Hidden;
+
+            else if (state == net_wm_state_fullscreen)
+                p->state |= FullScreen;
+
+            else if (state == net_wm_state_above)
+                p->state |= KeepAbove;
+
+            else if (state == net_wm_state_below)
+                p->state |= KeepBelow;
+
+            else if (state == net_wm_state_demands_attention)
+                p->state |= DemandsAttention;
+
+            else if (state == net_wm_state_stays_on_top)
+                p->state |= StaysOnTop;
+        }
     }
 
     if (dirty & WMDesktop) {
-	p->desktop = 0;
-	if (XGetWindowProperty(p->display, p->window, net_wm_desktop, 0l, 1l,
-			       False, XA_CARDINAL, &type_ret,
-			       &format_ret, &nitems_ret,
-			       &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
-		nitems_ret == 1) {
-		p->desktop = *((long *) data_ret);
-		if ((signed) p->desktop != OnAllDesktops)
-		    p->desktop++;
+        p->desktop = 0;
 
-		if ( p->desktop == 0 )
-		    p->desktop = OnAllDesktops;
-	    }
-	    if ( data_ret )
-		XFree(data_ret);
-	}
+        bool success;
+        uint32_t desktop = get_value_reply<uint32_t>(p->conn, cookies[c++], XCB_ATOM_CARDINAL, 0, &success);
+
+        if (success) {
+            if (desktop != 0xffffffff)
+                p->desktop = desktop + 1;
+            else
+                p->desktop = OnAllDesktops;
+        }
     }
 
     if (dirty & WMName) {
         delete[] p->name;
         p->name = NULL;
-	if (XGetWindowProperty(p->display, p->window, net_wm_name, 0l,
-			       MAX_PROP_SIZE, False, UTF8_STRING, &type_ret,
-			       &format_ret, &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == UTF8_STRING && format_ret == 8 && nitems_ret > 0) {
-		p->name = nstrndup((const char *) data_ret, nitems_ret);
-	    }
 
-	    if( data_ret )
-		XFree(data_ret);
-	}
+        const QByteArray str = get_string_reply(p->conn, cookies[c++], UTF8_STRING);
+        if (str.length() > 0)
+            p->name = nstrndup(str.constData(), str.length());
     }
 
     if (dirty & WMVisibleName) {
         delete[] p->visible_name;
         p->visible_name = NULL;
-	if (XGetWindowProperty(p->display, p->window, net_wm_visible_name, 0l,
-			       MAX_PROP_SIZE, False, UTF8_STRING, &type_ret,
-			       &format_ret, &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == UTF8_STRING && format_ret == 8 && nitems_ret > 0) {
-		p->visible_name = nstrndup((const char *) data_ret, nitems_ret);
-	    }
 
-	    if( data_ret )
-		XFree(data_ret);
-	}
+        const QByteArray str = get_string_reply(p->conn, cookies[c++], UTF8_STRING);
+        if (str.length() > 0)
+            p->visible_name = nstrndup(str.constData(), str.length());
     }
 
     if (dirty & WMIconName) {
         delete[] p->icon_name;
         p->icon_name = NULL;
-	if (XGetWindowProperty(p->display, p->window, net_wm_icon_name, 0l,
-			       MAX_PROP_SIZE, False, UTF8_STRING, &type_ret,
-			       &format_ret, &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == UTF8_STRING && format_ret == 8 && nitems_ret > 0) {
-		p->icon_name = nstrndup((const char *) data_ret, nitems_ret);
-	    }
 
-	    if( data_ret )
-		XFree(data_ret);
-	}
+        const QByteArray str = get_string_reply(p->conn, cookies[c++], UTF8_STRING);
+        if (str.length() > 0)
+            p->icon_name = nstrndup(str.constData(), str.length());
     }
 
-    if (dirty & WMVisibleIconName)
-    {
+    if (dirty & WMVisibleIconName) {
         delete[] p->visible_icon_name;
         p->visible_icon_name = NULL;
-	if (XGetWindowProperty(p->display, p->window, net_wm_visible_icon_name, 0l,
-			       MAX_PROP_SIZE, False, UTF8_STRING, &type_ret,
-			       &format_ret, &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == UTF8_STRING && format_ret == 8 && nitems_ret > 0) {
-		p->visible_icon_name = nstrndup((const char *) data_ret, nitems_ret);
-	    }
 
-	    if( data_ret )
-		XFree(data_ret);
-	}
+        const QByteArray str = get_string_reply(p->conn, cookies[c++], UTF8_STRING);
+        if (str.length() > 0)
+            p->visible_icon_name = nstrndup(str.constData(), str.length());
     }
 
     if (dirty & WMWindowType) {
-	p->types.reset();
-	p->types[ 0 ] = Unknown;
+        p->types.reset();
+        p->types[0] = Unknown;
         p->has_net_support = false;
-	if (XGetWindowProperty(p->display, p->window, net_wm_window_type, 0l, 2048l,
-			       False, XA_ATOM, &type_ret, &format_ret,
-			       &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_ATOM && format_ret == 32 && nitems_ret > 0) {
-		// determine the window type
+
+        const QVector<xcb_atom_t> types = get_array_reply<xcb_atom_t>(p->conn, cookies[c++], XCB_ATOM_ATOM);
+
+        if (types.count() > 0) {
 #ifdef NETWMDEBUG
-		fprintf(stderr, "NETWinInfo::update: getting window type (%ld)\n",
-			nitems_ret);
+            fprintf(stderr, "NETWinInfo::update: getting window type (%ld)\n", types.count());
 #endif
+            p->has_net_support = true;
+            int pos = 0;
 
-                p->has_net_support = true;
-
-		unsigned long count = 0;
-		long *types = (long *) data_ret;
-		int pos = 0;
-
-		while (count < nitems_ret) {
-		    // remember all window types we know
+            Q_FOREACH (const xcb_atom_t type, types) {
 #ifdef NETWMDEBUG
-                    char* debug_type = XGetAtomName(p->display, (Atom) types[count]);
-		    fprintf(stderr,
-			    "NETWinInfo::update:   examining window type %ld %s\n",
-			    types[count], debug_type );
-                    if ( debug_type )
-                        XFree( debug_type );
+                const QByteArray name = get_atom_name(p->conn, type);
+                fprintf(stderr,  "NETWinInfo::update:   examining window type %ld %s\n",
+                        type, name.constData());
 #endif
+                if (type == net_wm_window_type_normal)
+                    p->types[pos++] = Normal;
 
-		    if ((Atom) types[count] == net_wm_window_type_normal)
-			p->types[ pos++ ] = Normal;
-		    else if ((Atom) types[count] == net_wm_window_type_desktop)
-			p->types[ pos++ ] = Desktop;
-		    else if ((Atom) types[count] == net_wm_window_type_dock)
-			p->types[ pos++ ] = Dock;
-		    else if ((Atom) types[count] == net_wm_window_type_toolbar)
-			p->types[ pos++ ] = Toolbar;
-		    else if ((Atom) types[count] == net_wm_window_type_menu)
-			p->types[ pos++ ] = Menu;
-		    else if ((Atom) types[count] == net_wm_window_type_dialog)
-			p->types[ pos++ ] = Dialog;
-		    else if ((Atom) types[count] == net_wm_window_type_utility)
-			p->types[ pos++ ] = Utility;
-		    else if ((Atom) types[count] == net_wm_window_type_splash)
-			p->types[ pos++ ] = Splash;
-		    else if ((Atom) types[count] == net_wm_window_type_dropdown_menu)
-			p->types[ pos++ ] = DropdownMenu;
-		    else if ((Atom) types[count] == net_wm_window_type_popup_menu)
-			p->types[ pos++ ] = PopupMenu;
-		    else if ((Atom) types[count] == net_wm_window_type_tooltip)
-			p->types[ pos++ ] = Tooltip;
-		    else if ((Atom) types[count] == net_wm_window_type_notification)
-			p->types[ pos++ ] = Notification;
-		    else if ((Atom) types[count] == net_wm_window_type_combobox)
-			p->types[ pos++ ] = ComboBox;
-		    else if ((Atom) types[count] == net_wm_window_type_dnd)
-			p->types[ pos++ ] = DNDIcon;
-		    else if ((Atom) types[count] == kde_net_wm_window_type_override)
-			p->types[ pos++ ] = Override;
-		    else if ((Atom) types[count] == kde_net_wm_window_type_topmenu)
-			p->types[ pos++ ] = TopMenu;
+                else if (type == net_wm_window_type_desktop)
+                    p->types[pos++] = Desktop;
 
-		    count++;
-		}
-	    }
+                else if (type == net_wm_window_type_dock)
+                    p->types[pos++] = Dock;
 
-	    if ( data_ret )
-		XFree(data_ret);
-	}
+                else if (type == net_wm_window_type_toolbar)
+                    p->types[pos++] = Toolbar;
+
+                else if (type == net_wm_window_type_menu)
+                    p->types[pos++] = Menu;
+
+                else if (type == net_wm_window_type_dialog)
+                    p->types[pos++] = Dialog;
+
+                else if (type == net_wm_window_type_utility)
+                    p->types[ pos++ ] = Utility;
+
+                else if (type == net_wm_window_type_splash)
+                    p->types[pos++] = Splash;
+
+                else if (type == net_wm_window_type_dropdown_menu)
+                    p->types[pos++] = DropdownMenu;
+
+                else if (type == net_wm_window_type_popup_menu)
+                    p->types[pos++] = PopupMenu;
+
+                else if (type == net_wm_window_type_tooltip)
+                    p->types[pos++] = Tooltip;
+
+                else if (type == net_wm_window_type_notification)
+                    p->types[pos++] = Notification;
+
+                else if (type == net_wm_window_type_combobox)
+                    p->types[pos++] = ComboBox;
+
+                else if (type == net_wm_window_type_dnd)
+                    p->types[pos++] = DNDIcon;
+
+                else if (type == kde_net_wm_window_type_override)
+                    p->types[pos++] = Override;
+
+                else if (type == kde_net_wm_window_type_topmenu)
+                    p->types[pos++] = TopMenu;
+            }
+        }
     }
 
     if (dirty & WMStrut) {
         p->strut = NETStrut();
-	if (XGetWindowProperty(p->display, p->window, net_wm_strut, 0l, 4l,
-			       False, XA_CARDINAL, &type_ret, &format_ret,
-			       &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
-		nitems_ret == 4) {
-		long *d = (long *) data_ret;
-		p->strut.left   = d[0];
-		p->strut.right  = d[1];
-		p->strut.top    = d[2];
-		p->strut.bottom = d[3];
-	    }
-	    if ( data_ret )
-		XFree(data_ret);
-	}
+
+        QVector<uint32_t> data = get_array_reply<uint32_t>(p->conn, cookies[c++], XCB_ATOM_CARDINAL);
+        if (data.count() == 4) {
+            p->strut.left   = data[0];
+            p->strut.right  = data[1];
+            p->strut.top    = data[2];
+            p->strut.bottom = data[3];
+        }
     }
 
     if (dirty2 & WM2ExtendedStrut) {
         p->extended_strut = NETExtendedStrut();
-	if (XGetWindowProperty(p->display, p->window, net_wm_extended_strut, 0l, 12l,
-			       False, XA_CARDINAL, &type_ret, &format_ret,
-			       &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
-		nitems_ret == 12) {
-		long *d = (long *) data_ret;
-		p->extended_strut.left_width = d[0];
-		p->extended_strut.right_width = d[1];
-		p->extended_strut.top_width = d[2];
-		p->extended_strut.bottom_width = d[3];
-                p->extended_strut.left_start = d[4];
-                p->extended_strut.left_end = d[5];
-                p->extended_strut.right_start = d[6];
-                p->extended_strut.right_end = d[7];
-                p->extended_strut.top_start = d[8];
-                p->extended_strut.top_end = d[9];
-                p->extended_strut.bottom_start = d[10];
-                p->extended_strut.bottom_end = d[11];
-	    }
-	    if ( data_ret )
-		XFree(data_ret);
-	}
+
+        QVector<uint32_t> data = get_array_reply<uint32_t>(p->conn, cookies[c++], XCB_ATOM_CARDINAL);
+        if (data.count() == 12) {
+            p->extended_strut.left_width   = data[0];
+            p->extended_strut.right_width  = data[1];
+            p->extended_strut.top_width    = data[2];
+            p->extended_strut.bottom_width = data[3];
+            p->extended_strut.left_start   = data[4];
+            p->extended_strut.left_end     = data[5];
+            p->extended_strut.right_start  = data[6];
+            p->extended_strut.right_end    = data[7];
+            p->extended_strut.top_start    = data[8];
+            p->extended_strut.top_end      = data[9];
+            p->extended_strut.bottom_start = data[10];
+            p->extended_strut.bottom_end   = data[11];
+        }
     }
 
     if (dirty2 & WM2FullscreenMonitors) {
         p->fullscreen_monitors = NETFullscreenMonitors();
-        if (XGetWindowProperty(p->display, p->window, net_wm_fullscreen_monitors, 0l, 4l,
-                               False, XA_CARDINAL, &type_ret, &format_ret,
-                               &nitems_ret, &unused, &data_ret)
-            == Success) {
-            if (type_ret == XA_CARDINAL && format_ret == 32 &&
-                nitems_ret == 4) {
-                long *d = (long *) data_ret;
-                p->fullscreen_monitors.top = d[0];
-                p->fullscreen_monitors.bottom = d[1];
-                p->fullscreen_monitors.left = d[2];
-                p->fullscreen_monitors.right = d[3];
-             }
-            if ( data_ret )
-                XFree(data_ret);
+
+        QVector<uint32_t> data = get_array_reply<uint32_t>(p->conn, cookies[c++], XCB_ATOM_CARDINAL);
+        if (data.count() == 4) {
+            p->fullscreen_monitors.top    = data[0];
+            p->fullscreen_monitors.bottom = data[1];
+            p->fullscreen_monitors.left   = data[2];
+            p->fullscreen_monitors.right  = data[3];
         }
     }
 
     if (dirty & WMIconGeometry) {
         p->icon_geom = NETRect();
-	if (XGetWindowProperty(p->display, p->window, net_wm_icon_geometry, 0l, 4l,
-			       False, XA_CARDINAL, &type_ret, &format_ret,
-			       &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_CARDINAL && format_ret == 32 &&
-		nitems_ret == 4) {
-		long *d = (long *) data_ret;
-		p->icon_geom.pos.x       = d[0];
-		p->icon_geom.pos.y       = d[1];
-		p->icon_geom.size.width  = d[2];
-		p->icon_geom.size.height = d[3];
-	    }
-	    if ( data_ret )
-		XFree(data_ret);
-	}
+
+        QVector<uint32_t> data = get_array_reply<uint32_t>(p->conn, cookies[c++], XCB_ATOM_CARDINAL);
+        if (data.count() == 4) {
+            p->icon_geom.pos.x       = data[0];
+            p->icon_geom.pos.y       = data[1];
+            p->icon_geom.size.width  = data[2];
+            p->icon_geom.size.height = data[3];
+        }
     }
 
     if (dirty & WMIcon) {
-	readIcon(p->display,p->window,net_wm_icon,p->icons,p->icon_count);
+        readIcon(p->conn, cookies[c++], p->icons, p->icon_count);
         delete[] p->icon_sizes;
         p->icon_sizes = NULL;
     }
 
     if (dirty & WMFrameExtents) {
         p->frame_strut = NETStrut();
-        bool ok = false;
-	if (XGetWindowProperty(p->display, p->window, net_frame_extents,
-			       0l, 4l, False, XA_CARDINAL, &type_ret, &format_ret,
-			       &nitems_ret, &unused, &data_ret) == Success) {
-	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 4) {
-                ok = true;
-		long *d = (long *) data_ret;
 
-		p->frame_strut.left   = d[0];
-		p->frame_strut.right  = d[1];
-		p->frame_strut.top    = d[2];
-		p->frame_strut.bottom = d[3];
-	    }
-	    if ( data_ret )
-		XFree(data_ret);
+        QVector<uint32_t> data = get_array_reply<uint32_t>(p->conn, cookies[c++], XCB_ATOM_CARDINAL);
+
+        if (data.count() == 0)
+            data = get_array_reply<uint32_t>(p->conn, cookies[c++], XCB_ATOM_CARDINAL);
+        else
+            xcb_discard_reply(p->conn, cookies[c++].sequence);
+
+        if (data.count() == 4) {
+            p->frame_strut.left   = data[0];
+            p->frame_strut.right  = data[1];
+            p->frame_strut.top    = data[2];
+            p->frame_strut.bottom = data[3];
         }
-	if (!ok && XGetWindowProperty(p->display, p->window, kde_net_wm_frame_strut,
-			       0l, 4l, False, XA_CARDINAL, &type_ret, &format_ret,
-			       &nitems_ret, &unused, &data_ret) == Success) {
-	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 4) {
-                ok = true;
-		long *d = (long *) data_ret;
-
-		p->frame_strut.left   = d[0];
-		p->frame_strut.right  = d[1];
-		p->frame_strut.top    = d[2];
-		p->frame_strut.bottom = d[3];
-	    }
-	    if ( data_ret )
-		XFree(data_ret);
-	}
     }
 
     if (dirty2 & WM2FrameOverlap) {
         p->frame_overlap = NETStrut();
-        if (XGetWindowProperty(p->display, p->window, kde_net_wm_frame_overlap,
-                               0l, 4l, False, XA_CARDINAL, &type_ret, &format_ret,
-                               &nitems_ret, &unused, &data_ret) == Success) {
-            if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 4) {
-                long *d = (long *) data_ret;
 
-                p->frame_overlap.left   = d[0];
-                p->frame_overlap.right  = d[1];
-                p->frame_overlap.top    = d[2];
-                p->frame_overlap.bottom = d[3];
-            }
-            if ( data_ret )
-                XFree(data_ret);
+        QVector<uint32_t> data = get_array_reply<uint32_t>(p->conn, cookies[c++], XCB_ATOM_CARDINAL);
+        if (data.count() == 4) {
+            p->frame_overlap.left   = data[0];
+            p->frame_overlap.right  = data[1];
+            p->frame_overlap.top    = data[2];
+            p->frame_overlap.bottom = data[3];
         }
     }
 
     if (dirty2 & WM2Activities) {
         delete[] p->activities;
         p->activities = NULL;
-        if (XGetWindowProperty(p->display, p->window, kde_net_wm_activities, 0l,
-            MAX_PROP_SIZE, False, XA_STRING, &type_ret,
-            &format_ret, &nitems_ret, &unused, &data_ret)
-            == Success) {
-            if (type_ret == XA_STRING && format_ret == 8 && nitems_ret > 0) {
-                p->activities = nstrndup((const char *) data_ret, nitems_ret);
-            }
 
-            if( data_ret )
-                XFree(data_ret);
-        }
+        const QByteArray activities = get_string_reply(p->conn, cookies[c++], XCB_ATOM_STRING);
+        if (activities.length() > 0)
+            p->activities = nstrndup(activities.constData(), activities.length());
     }
 
     if (dirty2 & WM2BlockCompositing) {
-        p->blockCompositing = false;
-        if (XGetWindowProperty(p->display, p->window, kde_net_wm_block_compositing, 0l,
-                               1, False, XA_STRING, &type_ret,
-                               &format_ret, &nitems_ret, &unused, &data_ret) == Success) {
-            p->blockCompositing = (data_ret != None);
-            if (data_ret)  // stupid question to everyone - since the result is "Success", is this check required?
-                XFree(data_ret);
-        }
+        uint32_t data = get_value_reply<uint32_t>(p->conn, cookies[c++], XCB_ATOM_CARDINAL, 0);
+        p->blockCompositing = bool(data);
     }
 
     if (dirty & WMPid) {
-	p->pid = 0;
-	if (XGetWindowProperty(p->display, p->window, net_wm_pid, 0l, 1l,
-			       False, XA_CARDINAL, &type_ret, &format_ret,
-			       &nitems_ret, &unused, &data_ret) == Success) {
-	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1) {
-		p->pid = *((long *) data_ret);
-	    }
-	    if ( data_ret )
-		XFree(data_ret);
-	}
+        p->pid = get_value_reply<uint32_t>(p->conn, cookies[c++], XCB_ATOM_CARDINAL, 0);
     }
 
-    if (dirty2 & WM2StartupId)
-    {
+    if (dirty2 & WM2StartupId) {
         delete[] p->startup_id;
         p->startup_id = NULL;
-	if (XGetWindowProperty(p->display, p->window, net_startup_id, 0l,
-			       MAX_PROP_SIZE, False, UTF8_STRING, &type_ret,
-			       &format_ret, &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == UTF8_STRING && format_ret == 8 && nitems_ret > 0) {
-		p->startup_id = nstrndup((const char *) data_ret, nitems_ret);
-	    }
 
-	    if( data_ret )
-		XFree(data_ret);
-	}
+        const QByteArray id = get_string_reply(p->conn, cookies[c++], UTF8_STRING);
+        if (id.length() > 0)
+            p->startup_id = nstrndup(id.constData(), id.length());
     }
 
-    if (dirty2 & WM2Opacity)
-    {
-        p->opacity = 0xffffffffU;
-	if (XGetWindowProperty(p->display, p->window, net_wm_window_opacity, 0l,
-			       MAX_PROP_SIZE, False, XA_CARDINAL, &type_ret,
-			       &format_ret, &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 1) {
-                // 32bit values are passed as long, so on 64bit systems when reading
-                // 0xffffffff is apparently considered to be -1 and sign-extended to 64bits.
-                // Therefore convert it back to 32bits to fit the stupid _NET_WM_WINDOW_OPACITY format.
-		p->opacity = *((unsigned long*)data_ret) & 0xffffffffU;
-	    }
-
-	    if( data_ret )
-		XFree(data_ret);
-	}
+    if (dirty2 & WM2Opacity) {
+        p->opacity = get_value_reply<uint32_t>(p->conn, cookies[c++], XCB_ATOM_CARDINAL, 0xffffffff);
     }
 
-    if( dirty2 & WM2AllowedActions ) {
+    if (dirty2 & WM2AllowedActions) {
         p->allowed_actions = 0;
-	if (XGetWindowProperty(p->display, p->window, net_wm_allowed_actions, 0l, 2048l,
-			       False, XA_ATOM, &type_ret, &format_ret,
-			       &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_ATOM && format_ret == 32 && nitems_ret > 0) {
-		// determine actions
+
+        const QVector<xcb_atom_t> actions = get_array_reply<xcb_atom_t>(p->conn, cookies[c++], XCB_ATOM_ATOM);
+        if (actions.count() > 0) {
 #ifdef NETWMDEBUG
-		fprintf(stderr, "NETWinInfo::update: updating allowed actions (%ld)\n",
-			nitems_ret);
+            fprintf(stderr, "NETWinInfo::update: updating allowed actions (%ld)\n", actions.count());
 #endif
 
-		long *actions = (long *) data_ret;
-		unsigned long count;
-
-		for (count = 0; count < nitems_ret; count++) {
+            Q_FOREACH (const xcb_atom_t action, actions) {
 #ifdef NETWMDEBUG
-		    fprintf(stderr,
-			    "NETWinInfo::update:   adding allowed action %ld '%s'\n",
-			    actions[count],
-			    XGetAtomName(p->display, (Atom) actions[count]));
+                const QByteArray name = get_atom_name(p->conn, action);
+                fprintf(stderr,
+                        "NETWinInfo::update:   adding allowed action %ld '%s'\n",
+                        action, name.constData());
 #endif
+                if (action == net_wm_action_move)
+                    p->allowed_actions |= ActionMove;
 
-		    if ((Atom) actions[count] == net_wm_action_move)
-			p->allowed_actions |= ActionMove;
-		    if ((Atom) actions[count] == net_wm_action_resize)
-			p->allowed_actions |= ActionResize;
-		    if ((Atom) actions[count] == net_wm_action_minimize)
-			p->allowed_actions |= ActionMinimize;
-		    if ((Atom) actions[count] == net_wm_action_shade)
-			p->allowed_actions |= ActionShade;
-		    if ((Atom) actions[count] == net_wm_action_stick)
-			p->allowed_actions |= ActionStick;
-		    if ((Atom) actions[count] == net_wm_action_max_vert)
-			p->allowed_actions |= ActionMaxVert;
-		    if ((Atom) actions[count] == net_wm_action_max_horiz)
-			p->allowed_actions |= ActionMaxHoriz;
-		    if ((Atom) actions[count] == net_wm_action_fullscreen)
-			p->allowed_actions |= ActionFullScreen;
-		    if ((Atom) actions[count] == net_wm_action_change_desk)
-			p->allowed_actions |= ActionChangeDesktop;
-		    if ((Atom) actions[count] == net_wm_action_close)
-			p->allowed_actions |= ActionClose;
-		}
-	    }
-	    if ( data_ret )
-		XFree(data_ret);
-	}
+                else if (action == net_wm_action_resize)
+                    p->allowed_actions |= ActionResize;
+
+                else if (action == net_wm_action_minimize)
+                    p->allowed_actions |= ActionMinimize;
+
+                else if (action == net_wm_action_shade)
+                    p->allowed_actions |= ActionShade;
+
+                else if (action == net_wm_action_stick)
+                    p->allowed_actions |= ActionStick;
+
+                else if (action == net_wm_action_max_vert)
+                    p->allowed_actions |= ActionMaxVert;
+
+                else if (action == net_wm_action_max_horiz)
+                    p->allowed_actions |= ActionMaxHoriz;
+
+                else if (action == net_wm_action_fullscreen)
+                    p->allowed_actions |= ActionFullScreen;
+
+                else if (action == net_wm_action_change_desk)
+                    p->allowed_actions |= ActionChangeDesktop;
+
+                else if (action == net_wm_action_close)
+                   p->allowed_actions |= ActionClose;
+            }
+        }
     }
 
     if (dirty2 & WM2UserTime) {
-	p->user_time = -1U;
-	if (XGetWindowProperty(p->display, p->window, net_wm_user_time, 0l, 1l,
-			       False, XA_CARDINAL, &type_ret, &format_ret,
-			       &nitems_ret, &unused, &data_ret) == Success) {
-            // don't do nitems_ret check - Qt does PropModeAppend to avoid API call for it
-	    if (type_ret == XA_CARDINAL && format_ret == 32 /*&& nitems_ret == 1*/) {
-		p->user_time = *((long *) data_ret);
-	    }
-	    if ( data_ret )
-		XFree(data_ret);
-	}
+        p->user_time = -1U;
+
+        bool success;
+        uint32_t value = get_value_reply<uint32_t>(p->conn, cookies[c++], XCB_ATOM_CARDINAL, 0, &success);
+
+        if (success) {
+            p->user_time = value;
+        }
     }
 
     if (dirty2 & WM2TransientFor) {
-	p->transient_for = None;
-        XGetTransientForHint(p->display, p->window, &p->transient_for);
+        p->transient_for = get_value_reply<xcb_window_t>(p->conn, cookies[c++], XCB_ATOM_WINDOW, 0);
     }
 
     if (dirty2 & WM2GroupLeader) {
-        XWMHints *hints = XGetWMHints(p->display, p->window);
-        p->window_group = None;
-        if ( hints )
-        {
-            if( hints->flags & WindowGroupHint )
+        xcb_get_property_reply_t *reply = xcb_get_property_reply(p->conn, cookies[c++], 0);
+
+        if (reply && reply->format == 32 && reply->value_len == 9 && reply->type == XCB_ATOM_WM_HINTS) {
+            kde_wm_hints *hints = reinterpret_cast<kde_wm_hints*>(xcb_get_property_value(reply));
+
+            if (hints->flags & (1 << 6)/*WindowGroupHint*/)
                 p->window_group = hints->window_group;
-            XFree( reinterpret_cast< char* >( hints ));
         }
+
+        if (reply)
+            free(reply);
     }
 
-    if( dirty2 & WM2WindowClass ) {
-        delete[] p->class_class;
+    if (dirty2 & WM2WindowClass) {
         delete[] p->class_name;
-        p->class_class = NULL;
+        delete[] p->class_class;
         p->class_name = NULL;
-        XClassHint hint;
-        if( XGetClassHint( p->display, p->window, &hint )) {
-            p->class_class = nstrdup( hint.res_class );
-            p->class_name = nstrdup( hint.res_name );
-            XFree( hint.res_class );
-            XFree( hint.res_name );
+        p->class_class = NULL;
+
+        const QList<QByteArray> list = get_stringlist_reply(p->conn, cookies[c++], XCB_ATOM_STRING);
+        if (list.count() == 2) {
+            p->class_name  = nstrdup(list.at(0).constData());
+            p->class_class = nstrdup(list.at(1).constData());
         }
     }
 
-    if( dirty2 & WM2WindowRole ) {
+    if (dirty2 & WM2WindowRole) {
         delete[] p->window_role;
         p->window_role = NULL;
-	if (XGetWindowProperty(p->display, p->window, wm_window_role, 0l,
-			       MAX_PROP_SIZE, False, XA_STRING, &type_ret,
-			       &format_ret, &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_STRING && format_ret == 8 && nitems_ret > 0) {
-		p->window_role = nstrndup((const char *) data_ret, nitems_ret);
-	    }
-	    if( data_ret )
-		XFree(data_ret);
-	}
+
+        const QByteArray role = get_string_reply(p->conn, cookies[c++], XCB_ATOM_STRING);
+        if (role.length() > 0)
+            p->window_role = nstrndup(role.constData(), role.length());
     }
 
-    if( dirty2 & WM2ClientMachine ) {
+    if (dirty2 & WM2ClientMachine) {
         delete[] p->client_machine;
         p->client_machine = NULL;
-	if (XGetWindowProperty(p->display, p->window, XA_WM_CLIENT_MACHINE, 0l,
-			       MAX_PROP_SIZE, False, XA_STRING, &type_ret,
-			       &format_ret, &nitems_ret, &unused, &data_ret)
-	    == Success) {
-	    if (type_ret == XA_STRING && format_ret == 8 && nitems_ret > 0) {
-		p->client_machine = nstrndup((const char *) data_ret, nitems_ret);
-	    }
-	    if( data_ret )
-		XFree(data_ret);
-	}
+
+        const QByteArray value = get_string_reply(p->conn, cookies[c++], XCB_ATOM_STRING);
+        if (value.length() > 0)
+            p->client_machine = nstrndup(value.constData(), value.length());
     }
 }
 
