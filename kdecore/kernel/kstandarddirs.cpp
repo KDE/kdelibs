@@ -113,6 +113,7 @@ public:
  *        in tmpfile (no empty line at the beginning or at the end!)
  * 2) update the KStandardDirs class documentation
  * 3) update the list in kde-config.cpp
+ * 4) update the installPath() function below
 
 data
 .
@@ -223,6 +224,24 @@ static const int types_indices[] = {
 
 static void tokenize(QStringList& token, const QString& str,
                      const QString& delim);
+
+
+    enum BasePrefix { XdgConf, XdgData, KdePrefixes };
+static BasePrefix basePrefixForResource(const char* type)
+{
+    // KDE5: We now use xdgdata_prefixes for every resource in share/*,
+    // i.e. everything except exe, lib, config and xdgconf...
+    // So we could almost get rid of $KDEHOME, if we don't support binaries and libs in the user home dir?
+
+    const QByteArray typeBa(type);
+    if (typeBa.startsWith("xdgconf")) {
+        return XdgConf;
+    } else if (typeBa == "exe" || typeBa == "lib" || typeBa == "config" /*for kde4 compat (config file migration)*/) {
+        return KdePrefixes;
+    } else { // was: if (typeBa.startsWith("xdgdata") || typeBa == "data")
+        return XdgData;
+    }
+}
 
 #ifdef Q_OS_WIN
 QString getKde4Prefix();
@@ -1215,18 +1234,14 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
                 }
             }
 
-            // KDE5: We now use xdgdata_prefixes for every resource in share/*,
-            // i.e. everything except exe, lib, config and xdgconf...
-            // Note: same logic is duplicated in saveLocation!
-            // So we could almost get rid of $KDEHOME, if we don't support binaries and libs in the user home dir?
-            const QByteArray typeBa(type);
             const QStringList *prefixList = 0;
-            if (strncmp(type, "xdgconf", 7) == 0) {
+            const BasePrefix basePrefix = basePrefixForResource(type);
+            if (basePrefix == XdgConf) {
                 prefixList = &(xdgconf_prefixes);
-            } else if (typeBa == "exe" || typeBa == "lib" || typeBa == "config" /*for kde4 compat (config file migration)*/) {
-                prefixList = &m_prefixes;
-            } else { // was: if (strncmp(type, "xdgdata", 7) == 0 || typeBa == "data")
+            } else if (basePrefix == XdgData) {
                 prefixList = &(xdgdata_prefixes);
+            } else if (basePrefix == KdePrefixes) {
+                prefixList = &m_prefixes;
             }
 
             for (QStringList::ConstIterator pit = prefixList->begin();
@@ -1600,14 +1615,13 @@ QString KStandardDirs::saveLocation(const char *type,
                 path = basepath + rest;
             } else {
                 // Check for existence of typed directory + suffix
-                // Note: same logic is duplicated in resourceDirs!
-                const QByteArray typeBa(type);
-                if (strncmp(type, "xdgconf", 7) == 0) {
-                    path = realPath( localxdgconfdir() + path );
-                } else if (typeBa == "exe" || typeBa == "lib" || typeBa == "config" /*for kde4 compat (config file migration)*/) {
-                    path = realPath( localkdedir() + path );
+                const BasePrefix basePrefix = basePrefixForResource(type);
+                if (basePrefix == XdgConf) {
+                    path = realPath(localxdgconfdir() + path);
+                } else if (basePrefix == XdgData) {
+                    path = realPath(localxdgdatadir() + path);
                 } else {
-                    path = realPath( localxdgdatadir() + path ) ;
+                    path = realPath(localkdedir() + path);
                 }
             }
         }

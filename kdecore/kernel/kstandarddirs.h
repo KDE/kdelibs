@@ -197,6 +197,8 @@ public:
 
     /**
      * Adds another search dir to front of the @p fsstnd list.
+     * Since 5.0, this prefix is only used for "lib" and "exe" resources,
+     * and the compat "config" resource. Use addXdgDataPrefix for most others.
      *
      * @li When compiling kdelibs, the prefix is added to this.
      * @li @c KDEDIRS is taken into account
@@ -218,7 +220,6 @@ public:
     /**
      * Adds another search dir to front of the @c XDG_DATA_XXX list
      * of prefixes.
-     * This prefix is only used for resources that start with @c "xdgdata-"
      *
      * @param dir The directory to append relative paths to.
      */
