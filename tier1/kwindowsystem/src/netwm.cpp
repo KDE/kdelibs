@@ -2823,25 +2823,27 @@ const NETWinInfo &NETWinInfo::operator=(const NETWinInfo &wininfo) {
 }
 
 
-void NETWinInfo::setIcon(NETIcon icon, Bool replace) {
-    setIconInternal( p->icons, p->icon_count, net_wm_icon, icon, replace );
+void NETWinInfo::setIcon(NETIcon icon, Bool replace)
+{
+    setIconInternal(p->icons, p->icon_count, net_wm_icon, icon, replace);
 }
 
-void NETWinInfo::setIconInternal(NETRArray<NETIcon>& icons, int& icon_count, Atom property, NETIcon icon, Bool replace) {
-    if (p->role != Client) return;
 
-    int proplen, i, sz, j;
+void NETWinInfo::setIconInternal(NETRArray<NETIcon> &icons, int &icon_count, Atom property, NETIcon icon, Bool replace)
+{
+    if (p->role != Client)
+        return;
 
     if (replace) {
+        for (int i = 0; i < icons.size(); i++) {
+            delete [] icons[i].data;
 
-	for (i = 0; i < icons.size(); i++) {
-	    delete [] icons[i].data;
-	    icons[i].data = 0;
-	    icons[i].size.width = 0;
-	    icons[i].size.height = 0;
-	}
+            icons[i].data = 0;
+            icons[i].size.width = 0;
+            icons[i].size.height = 0;
+        }
 
-	icon_count = 0;
+        icon_count = 0;
     }
 
     // assign icon
@@ -2850,32 +2852,33 @@ void NETWinInfo::setIconInternal(NETRArray<NETIcon>& icons, int& icon_count, Ato
 
     // do a deep copy, we want to own the data
     NETIcon &ni = icons[icon_count - 1];
-    sz = ni.size.width * ni.size.height;
-    CARD32 *d = new CARD32[sz];
+    int sz = ni.size.width * ni.size.height;
+    uint32_t *d = new uint32_t[sz];
     ni.data = (unsigned char *) d;
-    memcpy(d, icon.data, sz * sizeof(CARD32));
+    memcpy(d, icon.data, sz * sizeof(uint32_t));
 
     // compute property length
-    for (i = 0, proplen = 0; i < icon_count; i++) {
-	proplen += 2 + (icons[i].size.width *
-			icons[i].size.height);
+    int proplen = 0;
+    for (int i = 0; i < icon_count; i++) {
+        proplen += 2 + (icons[i].size.width *
+                        icons[i].size.height);
     }
 
-    CARD32 *d32;
-    long *prop = new long[proplen], *pprop = prop;
-    for (i = 0; i < icon_count; i++) {
-	// copy size into property
-       	*pprop++ = icons[i].size.width;
-	*pprop++ = icons[i].size.height;
+    uint32_t *prop = new uint32_t[proplen], *pprop = prop;
+    for (int i = 0; i < icon_count; i++) {
+        // copy size into property
+        *pprop++ = icons[i].size.width;
+        *pprop++ = icons[i].size.height;
 
-	// copy data into property
-	sz = (icons[i].size.width * icons[i].size.height);
-	d32 = (CARD32 *) icons[i].data;
-	for (j = 0; j < sz; j++) *pprop++ = *d32++;
+        // copy data into property
+        sz = (icons[i].size.width * icons[i].size.height);
+        uint32_t *d32 = (uint32_t *) icons[i].data;
+        for (int j = 0; j < sz; j++)
+            *pprop++ = *d32++;
     }
 
-    XChangeProperty(p->display, p->window, property, XA_CARDINAL, 32,
-		    PropModeReplace, (unsigned char *) prop, proplen);
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, property,
+                        XCB_ATOM_CARDINAL, 32, proplen, (const void *) prop);
 
     delete [] prop;
     delete [] p->icon_sizes;
