@@ -2886,32 +2886,36 @@ void NETWinInfo::setIconInternal(NETRArray<NETIcon> &icons, int &icon_count, Ato
 }
 
 
-void NETWinInfo::setIconGeometry(NETRect geometry) {
-    if (p->role != Client) return;
+void NETWinInfo::setIconGeometry(NETRect geometry)
+{
+    if (p->role != Client)
+        return;
 
     p->icon_geom = geometry;
 
-    if( geometry.size.width == 0 ) // empty
-        XDeleteProperty(p->display, p->window, net_wm_icon_geometry);
+    if (geometry.size.width == 0) // Empty
+        xcb_delete_property(p->conn, p->window, net_wm_icon_geometry);
     else {
-        long data[4];
+        uint32_t data[4];
         data[0] = geometry.pos.x;
         data[1] = geometry.pos.y;
         data[2] = geometry.size.width;
         data[3] = geometry.size.height;
 
-        XChangeProperty(p->display, p->window, net_wm_icon_geometry, XA_CARDINAL,
-		    32, PropModeReplace, (unsigned char *) data, 4);
+        xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, net_wm_icon_geometry,
+                            XCB_ATOM_CARDINAL, 32, 4, (const void *) data);
     }
 }
 
 
-void NETWinInfo::setExtendedStrut(const NETExtendedStrut& extended_strut ) {
-    if (p->role != Client) return;
+void NETWinInfo::setExtendedStrut(const NETExtendedStrut &extended_strut)
+{
+    if (p->role != Client)
+        return;
 
     p->extended_strut = extended_strut;
 
-    long data[12];
+    uint32_t data[12];
     data[0] = extended_strut.left_width;
     data[1] = extended_strut.right_width;
     data[2] = extended_strut.top_width;
@@ -2925,40 +2929,44 @@ void NETWinInfo::setExtendedStrut(const NETExtendedStrut& extended_strut ) {
     data[10] = extended_strut.bottom_start;
     data[11] = extended_strut.bottom_end;
 
-    XChangeProperty(p->display, p->window, net_wm_extended_strut, XA_CARDINAL, 32,
-		    PropModeReplace, (unsigned char *) data, 12);
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, net_wm_extended_strut,
+                        XCB_ATOM_CARDINAL, 32, 12, (const void *) data);
 }
 
 
-void NETWinInfo::setStrut(NETStrut strut) {
-    if (p->role != Client) return;
+void NETWinInfo::setStrut(NETStrut strut)
+{
+    if (p->role != Client)
+        return;
 
     p->strut = strut;
 
-    long data[4];
+    uint32_t data[4];
     data[0] = strut.left;
     data[1] = strut.right;
     data[2] = strut.top;
     data[3] = strut.bottom;
 
-    XChangeProperty(p->display, p->window, net_wm_strut, XA_CARDINAL, 32,
-		    PropModeReplace, (unsigned char *) data, 4);
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, net_wm_strut,
+                        XCB_ATOM_CARDINAL, 32, 4, (const void *) data);
 }
 
 
-void NETWinInfo2::setFullscreenMonitors(NETFullscreenMonitors topology) {
-    if (p->role != Client) return;
+void NETWinInfo2::setFullscreenMonitors(NETFullscreenMonitors topology)
+{
+    if (p->role != Client)
+        return;
 
     p->fullscreen_monitors = topology;
 
-    long data[4];
+    uint32_t data[4];
     data[0] = topology.top;
     data[1] = topology.bottom;
     data[2] = topology.left;
     data[3] = topology.right;
 
-    XChangeProperty(p->display, p->window, net_wm_fullscreen_monitors, XA_CARDINAL, 32,
-                    PropModeReplace, (unsigned char *) data, 4);
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, net_wm_fullscreen_monitors,
+                        XCB_ATOM_CARDINAL, 32, 4, (const void *) data);
 }
 
 
