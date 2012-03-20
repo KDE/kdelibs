@@ -3451,37 +3451,37 @@ void NETWinInfo::setOpacity(unsigned long opacity)
                         XCB_ATOM_CARDINAL, 32, 1, (const void *) &p->opacity);
 }
 
-void NETWinInfo::setAllowedActions( unsigned long actions ) {
-    if( p->role != WindowManager )
+void NETWinInfo::setAllowedActions(unsigned long actions)
+{
+    if (p->role != WindowManager)
         return;
-    long data[50];
+
+    uint32_t data[50];
     int count = 0;
 
     p->allowed_actions = actions;
-    if (p->allowed_actions & ActionMove) data[count++] = net_wm_action_move;
-    if (p->allowed_actions & ActionResize) data[count++] = net_wm_action_resize;
-    if (p->allowed_actions & ActionMinimize) data[count++] = net_wm_action_minimize;
-    if (p->allowed_actions & ActionShade) data[count++] = net_wm_action_shade;
-    if (p->allowed_actions & ActionStick) data[count++] = net_wm_action_stick;
-    if (p->allowed_actions & ActionMaxVert) data[count++] = net_wm_action_max_vert;
-    if (p->allowed_actions & ActionMaxHoriz) data[count++] = net_wm_action_max_horiz;
-    if (p->allowed_actions & ActionFullScreen) data[count++] = net_wm_action_fullscreen;
+    if (p->allowed_actions & ActionMove)          data[count++] = net_wm_action_move;
+    if (p->allowed_actions & ActionResize)        data[count++] = net_wm_action_resize;
+    if (p->allowed_actions & ActionMinimize)      data[count++] = net_wm_action_minimize;
+    if (p->allowed_actions & ActionShade)         data[count++] = net_wm_action_shade;
+    if (p->allowed_actions & ActionStick)         data[count++] = net_wm_action_stick;
+    if (p->allowed_actions & ActionMaxVert)       data[count++] = net_wm_action_max_vert;
+    if (p->allowed_actions & ActionMaxHoriz)      data[count++] = net_wm_action_max_horiz;
+    if (p->allowed_actions & ActionFullScreen)    data[count++] = net_wm_action_fullscreen;
     if (p->allowed_actions & ActionChangeDesktop) data[count++] = net_wm_action_change_desk;
-    if (p->allowed_actions & ActionClose) data[count++] = net_wm_action_close;
+    if (p->allowed_actions & ActionClose)         data[count++] = net_wm_action_close;
 
 #ifdef NETWMDEBUG
     fprintf(stderr, "NETWinInfo::setAllowedActions: setting property (%d)\n", count);
     for (int i = 0; i < count; i++) {
-        char* data_ret = XGetAtomName(p->display, (Atom) data[i]);
+        const QByteArray ba = get_atom_name(p->conn, data[i]);
         fprintf(stderr, "NETWinInfo::setAllowedActions:   action %ld '%s'\n",
-	    data[i], data_ret);
-        if ( data_ret )
-            XFree(data_ret);
+                data[i], ba.constData());
     }
 #endif
 
-    XChangeProperty(p->display, p->window, net_wm_allowed_actions, XA_ATOM, 32,
-		    PropModeReplace, (unsigned char *) data, count);
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, net_wm_allowed_actions,
+                        XCB_ATOM_ATOM, 32, count, (const void *) data);
 }
 
 void NETWinInfo::setFrameExtents(NETStrut strut) {
