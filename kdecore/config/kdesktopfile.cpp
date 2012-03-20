@@ -30,9 +30,9 @@
 
 #include "kconfig_p.h"
 #include "kdebug.h"
+#include "kglobal.h"
 #include "kconfiggroup.h"
 #include "kauthorized.h"
-#include "kstandarddirs.h"
 #include "kconfigini_p.h"
 
 class KDesktopFilePrivate : public KConfigPrivate
@@ -79,6 +79,14 @@ KConfigGroup KDesktopFile::desktopGroup() const
 QString KDesktopFile::locateLocal(const QString &path)
 {
     QString relativePath;
+    // Relative to config? (e.g. for autostart)
+    Q_FOREACH(const QString& dir, QStandardPaths::standardLocations(QStandardPaths::ConfigLocation)) {
+        if (path.startsWith(dir) + '/') {
+            relativePath = dir.mid(path.length() + 1);
+            return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + relativePath;
+        }
+    }
+    // Relative to xdg data dir? (much more common)
     Q_FOREACH(const QString& dir, QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation)) {
         if (path.startsWith(dir) + '/')
             relativePath = dir.mid(path.length() + 1);
@@ -104,19 +112,25 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
   if (QDir::isRelativePath(path))
      return true; // Relative paths are ok.
 
-  KStandardDirs *dirs = KGlobal::dirs();
-  QStringList kdePrefixes;
-  kdePrefixes += dirs->resourceDirs("apps");
-  kdePrefixes += dirs->resourceDirs("services");
-  kdePrefixes += dirs->resourceDirs("xdgdata-apps");
-  kdePrefixes += dirs->resourceDirs("autostart");
-
-  const QString realPath = KStandardDirs::realPath(path);
+  const QString realPath = QFileInfo(path).canonicalFilePath();
 
   // Check if the .desktop file is installed as part of KDE or XDG.
-  foreach (const QString &prefix, kdePrefixes) {
-    if (realPath.startsWith(prefix))
+  const QStringList appsDirs = QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation);
+  foreach (const QString &prefix, appsDirs) {
+      if (realPath.startsWith(QFileInfo(prefix).canonicalFilePath()))
       return true;
+  }
+  const QString servicesDir = QLatin1String("kde4/services/"); // KGlobal::dirs()->xdgDataRelativePath("services")
+  foreach (const QString &xdgDataPrefix, QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation)) {
+      const QString prefix = QFileInfo(xdgDataPrefix).canonicalFilePath();
+      if (realPath.startsWith(prefix + QLatin1Char('/') + servicesDir))
+          return true;
+  }
+  const QString autostartDir = QLatin1String("autostart/");
+  foreach (const QString &xdgDataPrefix, QStandardPaths::standardLocations(QStandardPaths::ConfigLocation)) {
+      const QString prefix = QFileInfo(xdgDataPrefix).canonicalFilePath();
+      if (realPath.startsWith(prefix + QLatin1Char('/') + autostartDir))
+          return true;
   }
 
   // Forbid desktop files outside of standard locations if kiosk is set so
