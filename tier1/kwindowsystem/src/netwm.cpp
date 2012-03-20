@@ -3484,28 +3484,32 @@ void NETWinInfo::setAllowedActions(unsigned long actions)
                         XCB_ATOM_ATOM, 32, count, (const void *) data);
 }
 
-void NETWinInfo::setFrameExtents(NETStrut strut) {
-    if (p->role != WindowManager) return;
+void NETWinInfo::setFrameExtents(NETStrut strut)
+{
+    if (p->role != WindowManager)
+        return;
 
     p->frame_strut = strut;
 
-    long d[4];
+    uint32_t d[4];
     d[0] = strut.left;
     d[1] = strut.right;
     d[2] = strut.top;
     d[3] = strut.bottom;
 
-    XChangeProperty(p->display, p->window, net_frame_extents, XA_CARDINAL, 32,
-		    PropModeReplace, (unsigned char *) d, 4);
-    XChangeProperty(p->display, p->window, kde_net_wm_frame_strut, XA_CARDINAL, 32,
-		    PropModeReplace, (unsigned char *) d, 4);
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, net_frame_extents,
+                        XCB_ATOM_CARDINAL, 32, 4, (const void *) d);
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, kde_net_wm_frame_strut,
+                        XCB_ATOM_CARDINAL, 32, 4, (const void *) d);
 }
 
-NETStrut NETWinInfo::frameExtents() const {
+NETStrut NETWinInfo::frameExtents() const
+{
     return p->frame_strut;
 }
 
-void NETWinInfo::setFrameOverlap(NETStrut strut) {
+void NETWinInfo::setFrameOverlap(NETStrut strut)
+{
     if (strut.left != -1 || strut.top != -1 || strut.right != -1 || strut.bottom != -1) {
         strut.left   = qMax(0, strut.left);
         strut.top    = qMax(0, strut.top);
@@ -3515,36 +3519,50 @@ void NETWinInfo::setFrameOverlap(NETStrut strut) {
 
     p->frame_overlap = strut;
 
-    long d[4];
+    uint32_t d[4];
     d[0] = strut.left;
     d[1] = strut.right;
     d[2] = strut.top;
     d[3] = strut.bottom;
 
-    XChangeProperty(p->display, p->window, kde_net_wm_frame_overlap, XA_CARDINAL, 32,
-		    PropModeReplace, (unsigned char *) d, 4);
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, kde_net_wm_frame_overlap,
+                        XCB_ATOM_CARDINAL, 32, 4, (const void *) d);
 }
 
-NETStrut NETWinInfo::frameOverlap() const {
+NETStrut NETWinInfo::frameOverlap() const
+{
     return p->frame_overlap;
 }
 
-void NETWinInfo::kdeGeometry(NETRect& frame, NETRect& window) {
+void NETWinInfo::kdeGeometry(NETRect &frame, NETRect &window)
+{
     if (p->win_geom.size.width == 0 || p->win_geom.size.height == 0) {
-	Window unused;
-	int x, y;
-	unsigned int w, h, junk;
-	XGetGeometry(p->display, p->window, &unused, &x, &y, &w, &h, &junk, &junk);
-	XTranslateCoordinates(p->display, p->window, p->root, 0, 0, &x, &y, &unused
-			      );
+        const xcb_get_geometry_cookie_t geometry_cookie
+                = xcb_get_geometry(p->conn, p->window);
 
-	p->win_geom.pos.x = x;
-	p->win_geom.pos.y = y;
+        const xcb_translate_coordinates_cookie_t translate_cookie
+                = xcb_translate_coordinates(p->conn, p->window, p->root, 0, 0);
 
-	p->win_geom.size.width = w;
-	p->win_geom.size.height = h;
+        xcb_get_geometry_reply_t *geometry = xcb_get_geometry_reply(p->conn, geometry_cookie, 0);
+        xcb_translate_coordinates_reply_t *translated
+                    = xcb_translate_coordinates_reply(p->conn, translate_cookie, 0);
+
+        if (geometry && translated) {
+	    p->win_geom.pos.x = translated->dst_x;
+	    p->win_geom.pos.y = translated->dst_y;
+
+	    p->win_geom.size.width  = geometry->width;
+	    p->win_geom.size.height = geometry->height;
+        }
+
+        if (geometry)
+            free(geometry);
+
+        if (translated)
+            free(translated);
     }
-// TODO try to work also without _NET_WM_FRAME_EXTENTS
+
+    // TODO try to work also without _NET_WM_FRAME_EXTENTS
     window = p->win_geom;
 
     frame.pos.x = window.pos.x - p->frame_strut.left;
@@ -3606,13 +3624,16 @@ NETIcon NETWinInfo::iconInternal(NETRArray<NETIcon>& icons, int icon_count, int 
     return result;
 }
 
-void NETWinInfo::setUserTime( Time time ) {
-    if (p->role != Client) return;
+void NETWinInfo::setUserTime(Time time)
+{
+    if (p->role != Client)
+        return;
 
     p->user_time = time;
-    long d = time;
-    XChangeProperty(p->display, p->window, net_wm_user_time, XA_CARDINAL, 32,
-		    PropModeReplace, (unsigned char *) &d, 1);
+    uint32_t d = time;
+
+    xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, net_wm_user_time,
+                        XCB_ATOM_CARDINAL, 32, 1, (const void *) &d);
 }
 
 
