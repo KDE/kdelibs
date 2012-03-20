@@ -361,6 +361,23 @@ static QList<QByteArray> get_stringlist_reply(xcb_connection_t *c,
 }
 
 
+#ifdef NETWMDEBUG
+static QByteArray get_atom_name(xcb_connection_t *c, xcb_atom_t atom)
+{
+    const xcb_get_atom_name_cookie_t cookie = xcb_get_atom_name(c, atom);
+
+    xcb_get_atom_name_reply_t *reply = xcb_get_atom_name_reply(p->conn, cookie, 0);
+    if (!reply)
+        return QByteArray();
+
+    QByteArray ba(xcb_get_atom_name_name(reply));
+    free(reply);
+
+    return ba;
+}
+#endif
+
+
 static const int netAtomCount = 89;
 
 static void create_netwm_atoms(xcb_connection_t *c)
@@ -2970,17 +2987,20 @@ void NETWinInfo2::setFullscreenMonitors(NETFullscreenMonitors topology)
 }
 
 
-void NETWinInfo::setState(unsigned long state, unsigned long mask) {
+void NETWinInfo::setState(unsigned long state, unsigned long mask)
+{
     if (p->mapping_state_dirty)
 	updateWMState();
 
     // setState() needs to know the current state, so read it even if not requested
-    if( ( p->properties[ PROTOCOLS ] & WMState ) == 0 ) {
-        p->properties[ PROTOCOLS ] |= WMState;
-        unsigned long props[ PROPERTIES_SIZE ] = { WMState, 0 };
-        assert( PROPERTIES_SIZE == 2 ); // add elements above
-        update( props );
-        p->properties[ PROTOCOLS ] &= ~WMState;
+    if ((p->properties[PROTOCOLS] & WMState) == 0) {
+        p->properties[PROTOCOLS] |= WMState;
+
+        unsigned long props[PROPERTIES_SIZE] = { WMState, 0 };
+        assert(PROPERTIES_SIZE == 2); // Add elements above
+        update(props);
+
+        p->properties[PROTOCOLS] &= ~WMState;
     }
 
     if (p->role == Client && p->mapping_state != Withdrawn) {
@@ -2990,186 +3010,179 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
                 state, mask);
 #endif // NETWMDEBUG
 
-	XEvent e;
-	e.xclient.type = ClientMessage;
-	e.xclient.message_type = net_wm_state;
-	e.xclient.display = p->display;
-	e.xclient.window = p->window;
-	e.xclient.format = 32;
-	e.xclient.data.l[3] = 0l;
-	e.xclient.data.l[4] = 0l;
+        xcb_client_message_event_t event;
+        event.response_type = XCB_CLIENT_MESSAGE;
+        event.format = 32;
+        event.sequence = 0;
+        event.window = p->window;
+        event.type = net_wm_state;
+        event.data.data32[3] = 0;
+        event.data.data32[4] = 0;
 
 	if ((mask & Modal) && ((p->state & Modal) != (state & Modal))) {
-	    e.xclient.data.l[0] = (state & Modal) ? 1 : 0;
-	    e.xclient.data.l[1] = net_wm_state_modal;
-	    e.xclient.data.l[2] = 0l;
+	    event.data.data32[0] = (state & Modal) ? 1 : 0;
+	    event.data.data32[1] = net_wm_state_modal;
+	    event.data.data32[2] = 0l;
 
-	    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+            xcb_send_event(p->conn, false, p->root, netwm_sendevent_mask, (const char *) &event);
 	}
 
 	if ((mask & Sticky) && ((p->state & Sticky) != (state & Sticky))) {
-	    e.xclient.data.l[0] = (state & Sticky) ? 1 : 0;
-	    e.xclient.data.l[1] = net_wm_state_sticky;
-	    e.xclient.data.l[2] = 0l;
+	    event.data.data32[0] = (state & Sticky) ? 1 : 0;
+	    event.data.data32[1] = net_wm_state_sticky;
+	    event.data.data32[2] = 0l;
 
-	    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+            xcb_send_event(p->conn, false, p->root, netwm_sendevent_mask, (const char *) &event);
 	}
 
 	if ((mask & Max) && (( (p->state&mask) & Max) != (state & Max))) {
 
-	    unsigned long wishstate = (p->state & ~mask) | (state & mask);
-	    if ( ( (wishstate & MaxHoriz) != (p->state & MaxHoriz) )
-		 && ( (wishstate & MaxVert) != (p->state & MaxVert) ) ) {
-		if ( (wishstate & Max) == Max ) {
-		    e.xclient.data.l[0] = 1;
-		    e.xclient.data.l[1] = net_wm_state_max_horiz;
-		    e.xclient.data.l[2] = net_wm_state_max_vert;
-		    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
-		} else if ( (wishstate & Max) == 0 ) {
-		    e.xclient.data.l[0] = 0;
-		    e.xclient.data.l[1] = net_wm_state_max_horiz;
-		    e.xclient.data.l[2] = net_wm_state_max_vert;
-		    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
-		} else {
-		    e.xclient.data.l[0] = ( wishstate & MaxHoriz ) ? 1 : 0;
-		    e.xclient.data.l[1] = net_wm_state_max_horiz;
-		    e.xclient.data.l[2] = 0;
-		    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
-		    e.xclient.data.l[0] = ( wishstate & MaxVert ) ? 1 : 0;
-		    e.xclient.data.l[1] = net_wm_state_max_vert;
-		    e.xclient.data.l[2] = 0;
-		    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+            unsigned long wishstate = (p->state & ~mask) | (state & mask);
+            if (((wishstate & MaxHoriz) != (p->state & MaxHoriz))
+                 && ((wishstate & MaxVert) != (p->state & MaxVert))) {
+                if ( (wishstate & Max) == Max ) {
+                    event.data.data32[0] = 1;
+                    event.data.data32[1] = net_wm_state_max_horiz;
+                    event.data.data32[2] = net_wm_state_max_vert;
+                    xcb_send_event(p->conn, false, p->root, netwm_sendevent_mask, (const char *) &event);
+                } else if ((wishstate & Max) == 0) {
+                    event.data.data32[0] = 0;
+                    event.data.data32[1] = net_wm_state_max_horiz;
+                    event.data.data32[2] = net_wm_state_max_vert;
+                    xcb_send_event(p->conn, false, p->root, netwm_sendevent_mask, (const char *) &event);
+                } else {
+                    event.data.data32[0] = (wishstate & MaxHoriz) ? 1 : 0;
+                    event.data.data32[1] = net_wm_state_max_horiz;
+                    event.data.data32[2] = 0;
+                    xcb_send_event(p->conn, false, p->root, netwm_sendevent_mask, (const char *) &event);
+
+                    event.data.data32[0] = (wishstate & MaxVert) ? 1 : 0;
+                    event.data.data32[1] = net_wm_state_max_vert;
+                    event.data.data32[2] = 0;
+                    xcb_send_event(p->conn, false, p->root, netwm_sendevent_mask, (const char *) &event);
 		}
-	    } else	if ( (wishstate & MaxVert) != (p->state & MaxVert) ) {
-		e.xclient.data.l[0] = ( wishstate & MaxVert ) ? 1 : 0;
-		e.xclient.data.l[1] = net_wm_state_max_vert;
-		e.xclient.data.l[2] = 0;
-		XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
-	    } else if ( (wishstate & MaxHoriz) != (p->state & MaxHoriz) ) {
-		e.xclient.data.l[0] = ( wishstate & MaxHoriz ) ? 1 : 0;
-		e.xclient.data.l[1] = net_wm_state_max_horiz;
-		e.xclient.data.l[2] = 0;
-		XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
-	    }
-	}
+            } else if ((wishstate & MaxVert) != (p->state & MaxVert)) {
+                event.data.data32[0] = (wishstate & MaxVert) ? 1 : 0;
+                event.data.data32[1] = net_wm_state_max_vert;
+                event.data.data32[2] = 0;
 
-	if ((mask & Shaded) && ((p->state & Shaded) != (state & Shaded))) {
-	    e.xclient.data.l[0] = (state & Shaded) ? 1 : 0;
-	    e.xclient.data.l[1] = net_wm_state_shaded;
-	    e.xclient.data.l[2] = 0l;
+                xcb_send_event(p->conn, false, p->root, netwm_sendevent_mask, (const char *) &event);
+            } else if ( (wishstate & MaxHoriz) != (p->state & MaxHoriz) ) {
+                event.data.data32[0] = ( wishstate & MaxHoriz ) ? 1 : 0;
+                event.data.data32[1] = net_wm_state_max_horiz;
+                event.data.data32[2] = 0;
 
-	    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
-	}
-
-	if ((mask & SkipTaskbar) &&
-	    ((p->state & SkipTaskbar) != (state & SkipTaskbar))) {
-	    e.xclient.data.l[0] = (state & SkipTaskbar) ? 1 : 0;
-	    e.xclient.data.l[1] = net_wm_state_skip_taskbar;
-	    e.xclient.data.l[2] = 0l;
-
-	    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
-	}
-
-        if ((mask & SkipPager) &&
-	    ((p->state & SkipPager) != (state & SkipPager))) {
-            e.xclient.data.l[0] = (state & SkipPager) ? 1 : 0;
-            e.xclient.data.l[1] = net_wm_state_skip_pager;
-            e.xclient.data.l[2] = 0l;
-
-            XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+                xcb_send_event(p->conn, false, p->root, netwm_sendevent_mask, (const char *) &event);
+            }
         }
 
-        if ((mask & Hidden) &&
-	    ((p->state & Hidden) != (state & Hidden))) {
-            e.xclient.data.l[0] = (state & Hidden) ? 1 : 0;
-            e.xclient.data.l[1] = net_wm_state_hidden;
-            e.xclient.data.l[2] = 0l;
+        if ((mask & Shaded) && ((p->state & Shaded) != (state & Shaded))) {
+            event.data.data32[0] = (state & Shaded) ? 1 : 0;
+            event.data.data32[1] = net_wm_state_shaded;
+            event.data.data32[2] = 0l;
 
-            XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+            xcb_send_event(p->conn, false, p->root, netwm_sendevent_mask, (const char *) &event);
         }
 
-        if ((mask & FullScreen) &&
-	    ((p->state & FullScreen) != (state & FullScreen))) {
-            e.xclient.data.l[0] = (state & FullScreen) ? 1 : 0;
-            e.xclient.data.l[1] = net_wm_state_fullscreen;
-            e.xclient.data.l[2] = 0l;
+        if ((mask & SkipTaskbar) && ((p->state & SkipTaskbar) != (state & SkipTaskbar))) {
+            event.data.data32[0] = (state & SkipTaskbar) ? 1 : 0;
+            event.data.data32[1] = net_wm_state_skip_taskbar;
+            event.data.data32[2] = 0l;
 
-            XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+            xcb_send_event(p->conn, false, p->root, netwm_sendevent_mask, (const char *) &event);
         }
 
-        if ((mask & KeepAbove) &&
-	    ((p->state & KeepAbove) != (state & KeepAbove))) {
-            e.xclient.data.l[0] = (state & KeepAbove) ? 1 : 0;
-            e.xclient.data.l[1] = net_wm_state_above;
-            e.xclient.data.l[2] = 0l;
+        if ((mask & SkipPager) && ((p->state & SkipPager) != (state & SkipPager))) {
+            event.data.data32[0] = (state & SkipPager) ? 1 : 0;
+            event.data.data32[1] = net_wm_state_skip_pager;
+            event.data.data32[2] = 0l;
 
-            XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+            xcb_send_event(p->conn, false, p->root, netwm_sendevent_mask, (const char *) &event);
         }
 
-        if ((mask & KeepBelow) &&
-	    ((p->state & KeepBelow) != (state & KeepBelow))) {
-            e.xclient.data.l[0] = (state & KeepBelow) ? 1 : 0;
-            e.xclient.data.l[1] = net_wm_state_below;
-            e.xclient.data.l[2] = 0l;
+        if ((mask & Hidden) && ((p->state & Hidden) != (state & Hidden))) {
+            event.data.data32[0] = (state & Hidden) ? 1 : 0;
+            event.data.data32[1] = net_wm_state_hidden;
+            event.data.data32[2] = 0l;
 
-            XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+            xcb_send_event(p->conn, false, p->root, netwm_sendevent_mask, (const char *) &event);
+        }
+
+        if ((mask & FullScreen) && ((p->state & FullScreen) != (state & FullScreen))) {
+            event.data.data32[0] = (state & FullScreen) ? 1 : 0;
+            event.data.data32[1] = net_wm_state_fullscreen;
+            event.data.data32[2] = 0l;
+
+            xcb_send_event(p->conn, false, p->root, netwm_sendevent_mask, (const char *) &event);
+        }
+
+        if ((mask & KeepAbove) && ((p->state & KeepAbove) != (state & KeepAbove))) {
+            event.data.data32[0] = (state & KeepAbove) ? 1 : 0;
+            event.data.data32[1] = net_wm_state_above;
+            event.data.data32[2] = 0l;
+
+            xcb_send_event(p->conn, false, p->root, netwm_sendevent_mask, (const char *) &event);
+        }
+
+        if ((mask & KeepBelow) && ((p->state & KeepBelow) != (state & KeepBelow))) {
+            event.data.data32[0] = (state & KeepBelow) ? 1 : 0;
+            event.data.data32[1] = net_wm_state_below;
+            event.data.data32[2] = 0l;
+
+            xcb_send_event(p->conn, false, p->root, netwm_sendevent_mask, (const char *) &event);
         }
 
 	if ((mask & StaysOnTop) && ((p->state & StaysOnTop) != (state & StaysOnTop))) {
-	    e.xclient.data.l[0] = (state & StaysOnTop) ? 1 : 0;
-	    e.xclient.data.l[1] = net_wm_state_stays_on_top;
-	    e.xclient.data.l[2] = 0l;
+            event.data.data32[0] = (state & StaysOnTop) ? 1 : 0;
+            event.data.data32[1] = net_wm_state_stays_on_top;
+            event.data.data32[2] = 0l;
 
-	    XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
-	}
+            xcb_send_event(p->conn, false, p->root, netwm_sendevent_mask, (const char *) &event);
+        }
 
-        if ((mask & DemandsAttention) &&
-	    ((p->state & DemandsAttention) != (state & DemandsAttention))) {
-            e.xclient.data.l[0] = (state & DemandsAttention) ? 1 : 0;
-            e.xclient.data.l[1] = net_wm_state_demands_attention;
-            e.xclient.data.l[2] = 0l;
+        if ((mask & DemandsAttention) && ((p->state & DemandsAttention) != (state & DemandsAttention))) {
+            event.data.data32[0] = (state & DemandsAttention) ? 1 : 0;
+            event.data.data32[1] = net_wm_state_demands_attention;
+            event.data.data32[2] = 0l;
 
-            XSendEvent(p->display, p->root, False, netwm_sendevent_mask, &e);
+            xcb_send_event(p->conn, false, p->root, netwm_sendevent_mask, (const char *) &event);
         }
 
     } else {
 	p->state &= ~mask;
 	p->state |= state;
 
-	long data[50];
+	uint32_t data[50];
 	int count = 0;
 
-	// hints
-	if (p->state & Modal) data[count++] = net_wm_state_modal;
-	if (p->state & MaxVert) data[count++] = net_wm_state_max_vert;
-	if (p->state & MaxHoriz) data[count++] = net_wm_state_max_horiz;
-	if (p->state & Shaded) data[count++] = net_wm_state_shaded;
-	if (p->state & Hidden) data[count++] = net_wm_state_hidden;
-	if (p->state & FullScreen) data[count++] = net_wm_state_fullscreen;
+	// Hints
+	if (p->state & Modal)            data[count++] = net_wm_state_modal;
+	if (p->state & MaxVert)          data[count++] = net_wm_state_max_vert;
+	if (p->state & MaxHoriz)         data[count++] = net_wm_state_max_horiz;
+	if (p->state & Shaded)           data[count++] = net_wm_state_shaded;
+	if (p->state & Hidden)           data[count++] = net_wm_state_hidden;
+	if (p->state & FullScreen)       data[count++] = net_wm_state_fullscreen;
 	if (p->state & DemandsAttention) data[count++] = net_wm_state_demands_attention;
 
-	// policy
-	if (p->state & KeepAbove) data[count++] = net_wm_state_above;
-	if (p->state & KeepBelow) data[count++] = net_wm_state_below;
-	if (p->state & StaysOnTop) data[count++] = net_wm_state_stays_on_top;
-	if (p->state & Sticky) data[count++] = net_wm_state_sticky;
-	if (p->state & SkipTaskbar) data[count++] = net_wm_state_skip_taskbar;
-	if (p->state & SkipPager) data[count++] = net_wm_state_skip_pager;
+	// Policy
+	if (p->state & KeepAbove)      data[count++] = net_wm_state_above;
+	if (p->state & KeepBelow)      data[count++] = net_wm_state_below;
+	if (p->state & StaysOnTop)     data[count++] = net_wm_state_stays_on_top;
+	if (p->state & Sticky)         data[count++] = net_wm_state_sticky;
+	if (p->state & SkipTaskbar)    data[count++] = net_wm_state_skip_taskbar;
+	if (p->state & SkipPager)      data[count++] = net_wm_state_skip_pager;
 
 #ifdef NETWMDEBUG
 	fprintf(stderr, "NETWinInfo::setState: setting state property (%d)\n", count);
 	for (int i = 0; i < count; i++) {
-            char* data_ret = XGetAtomName(p->display, (Atom) data[i]);
+            const QByteArray ba = get_atom_name(p->conn, data[i]);
 	    fprintf(stderr, "NETWinInfo::setState:   state %ld '%s'\n",
-		    data[i], data_ret);
-            if ( data_ret )
-                XFree( data_ret );
+		    data[i], ba.constData());
         }
-
 #endif
 
-	XChangeProperty(p->display, p->window, net_wm_state, XA_ATOM, 32,
-			PropModeReplace, (unsigned char *) data, count);
+        xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, net_wm_state,
+                            XCB_ATOM_ATOM, 32, count, (const void *) data);
     }
 }
 
