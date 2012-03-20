@@ -4514,17 +4514,18 @@ const char* NETWinInfo::activities() const {
     return p->activities;
 }
 
-void NETWinInfo::setBlockingCompositing(bool active) {
-    if (p->role != Client) return;
+void NETWinInfo::setBlockingCompositing(bool active)
+{
+    if (p->role != Client)
+        return;
 
     p->blockCompositing = active;
     if (active) {
-        long d = 1;
-        XChangeProperty(p->display, p->window, kde_net_wm_block_compositing, XA_CARDINAL, 32,
-                        PropModeReplace, (unsigned char *) &d, 1);
-    }
-    else
-        XDeleteProperty(p->display, p->window, kde_net_wm_block_compositing);
+        uint32_t d = 1;
+        xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->root, kde_net_wm_block_compositing,
+                            XCB_ATOM_CARDINAL, 32, 1, (const void *) &d);
+    } else
+        xcb_delete_property(p->conn, p->window, kde_net_wm_block_compositing);
 }
 
 bool NETWinInfo::isBlockingCompositing() const {
