@@ -80,6 +80,7 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QUrl& kickOffUri, co
     m_rm->dataCnt.ref();
 
     if( !uri.isEmpty() ) {
+        m_cacheDirty = true;
         m_rm->m_initializedData.insert( uri, this );
         m_kickoffUris.insert( uri );
     }
