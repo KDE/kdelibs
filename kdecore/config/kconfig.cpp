@@ -34,9 +34,10 @@
 #include <kglobal.h>
 #include <kurl.h>
 #include <kcomponentdata.h>
-#include <qprocess.h>
 #include <kaboutdata.h>
 
+#include <qapplication.h>
+#include <qprocess.h>
 #include <qstandardpaths.h>
 #include <qbytearray.h>
 #include <qfile.h>
@@ -540,7 +541,7 @@ void KConfigPrivate::changeFileName(const QString& name)
     QString file;
     if (name.isEmpty()) {
         if (wantDefaults()) { // accessing default app-specific config "appnamerc"
-            const QString appName = componentData.aboutData()->appName();
+            const QString appName = QCoreApplication::applicationName();
             if (!appName.isEmpty()) {
                 fileName = appName + QLatin1String("rc");
                 file = QStandardPaths::writableLocation(resourceType) + QLatin1Char('/') + fileName;
@@ -824,10 +825,10 @@ bool KConfig::isConfigWritable(bool warnUser)
         // Note: We don't ask the user if we should not ask this question again because we can't save the answer.
         errorMsg += i18n("Please contact your system administrator.");
         QString cmdToExec = QStandardPaths::findExecutable(QString::fromLatin1("kdialog"));
-        if (!cmdToExec.isEmpty() && componentData().isValid())
+        if (!cmdToExec.isEmpty())
         {
             QProcess::execute(cmdToExec, QStringList()
-                              << QString::fromLatin1("--title") << componentData().componentName()
+                              << QString::fromLatin1("--title") << QCoreApplication::applicationName()
                               << QString::fromLatin1("--msgbox") << errorMsg);
         }
     }

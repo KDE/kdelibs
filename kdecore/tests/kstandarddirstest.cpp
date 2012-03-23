@@ -435,7 +435,7 @@ void KStandarddirsTest::testRestrictedResources()
     // Initialize restrictions.
     // Need a new componentdata to trigger restricted-resource initialization
     // And we need to write the config _before_ creating the KComponentData.
-    KConfig foorc("foorc");
+    KConfig foorc("qttestrc");
     KConfigGroup restrictionsGroup(&foorc, "KDE Resource Restrictions");
     restrictionsGroup.writeEntry("xdgdata-apps", false);
     restrictionsGroup.writeEntry("data_qttest", false);

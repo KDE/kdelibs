@@ -1567,7 +1567,7 @@ void KConfigTest::testNoKdeHome()
     group.writeEntry("Key", "Value");
     group.sync();
     QVERIFY(QFile::exists(xdgConfigHome));
-    QVERIFY(QFile::exists(xdgConfigHome + "/KConfigTestrc"));
+    QVERIFY(QFile::exists(xdgConfigHome + "/qttestrc"));
 
     // Cleanup
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
