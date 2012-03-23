@@ -100,9 +100,7 @@ public slots:
             }
         }
 
-        KService::List offers = KServiceTypeTrader::self()->query("KParts/ReadOnlyPart");
-        Q_ASSERT( offers.count() > 0 );
-        offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin");
+        KService::List offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin");
         Q_ASSERT( offerListHasService( offers, "faketextplugin.desktop" ) );
 
         offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin", "Library == 'faketextplugin'");
