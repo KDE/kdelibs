@@ -240,7 +240,7 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             const QList<int> list = asIntList(value);
 
             if ( list.count() != 2 ) {
-                kError() << errString( pKey, value, aDefault )
+                qWarning() << errString( pKey, value, aDefault )
                          << formatError( 2, list.count() );
                 return aDefault;
             }
@@ -250,7 +250,7 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             const QList<qreal> list = asRealList(value);
 
             if ( list.count() != 2 ) {
-                kError() << errString( pKey, value, aDefault )
+                qWarning() << errString( pKey, value, aDefault )
                          << formatError( 2, list.count() );
                 return aDefault;
             }
@@ -260,13 +260,13 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             const QList<int> list = asIntList(value);
 
             if ( list.count() != 4 ) {
-                kError() << errString( pKey, value, aDefault )
+                qWarning() << errString( pKey, value, aDefault )
                          << formatError( 4, list.count() );
                 return aDefault;
             }
             const QRect rect(list.at( 0 ), list.at( 1 ), list.at( 2 ), list.at( 3 ));
             if ( !rect.isValid() ) {
-                kError() << errString( pKey, value, aDefault );
+                qWarning() << errString( pKey, value, aDefault );
                 return aDefault;
             }
             return rect;
@@ -275,13 +275,13 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             const QList<qreal> list = asRealList(value);
 
             if ( list.count() != 4 ) {
-                kError() << errString( pKey, value, aDefault )
+                qWarning() << errString( pKey, value, aDefault )
                          << formatError( 4, list.count() );
                 return aDefault;
             }
             const QRectF rect(list.at( 0 ), list.at( 1 ), list.at( 2 ), list.at( 3 ));
             if ( !rect.isValid() ) {
-                kError() << errString( pKey, value, aDefault );
+                qWarning() << errString( pKey, value, aDefault );
                 return aDefault;
             }
             return rect;
@@ -290,13 +290,13 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             const QList<int> list = asIntList(value);
 
             if ( list.count() != 2 ) {
-                kError() << errString( pKey, value, aDefault )
+                qWarning() << errString( pKey, value, aDefault )
                          << formatError( 2, list.count() );
                 return aDefault;
             }
             const QSize size(list.at( 0 ), list.at( 1 ));
             if ( !size.isValid() ) {
-                kError() << errString( pKey, value, aDefault );
+                qWarning() << errString( pKey, value, aDefault );
                 return aDefault;
             }
             return size;
@@ -305,13 +305,13 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             const QList<qreal> list = asRealList(value);
 
             if ( list.count() != 2 ) {
-                kError() << errString( pKey, value, aDefault )
+                qWarning() << errString( pKey, value, aDefault )
                          << formatError( 2, list.count() );
                 return aDefault;
             }
             const QSizeF size(list.at( 0 ), list.at( 1 ));
             if ( !size.isValid() ) {
-                kError() << errString( pKey, value, aDefault );
+                qWarning() << errString( pKey, value, aDefault );
                 return aDefault;
             }
             return size;
@@ -319,7 +319,7 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
         case QVariant::DateTime: {
             const QList<int> list = asIntList(value);
             if ( list.count() != 6 ) {
-                kError() << errString( pKey, value, aDefault )
+                qWarning() << errString( pKey, value, aDefault )
                          << formatError( 6, list.count() );
                 return aDefault;
             }
@@ -327,7 +327,7 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             const QTime time( list.at( 3 ), list.at( 4 ), list.at( 5 ) );
             const QDateTime dt( date, time );
             if ( !dt.isValid() ) {
-                kError() << errString( pKey, value, aDefault );
+                qWarning() << errString( pKey, value, aDefault );
                 return aDefault;
             }
             return dt;
@@ -337,20 +337,20 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             if ( list.count() == 6 )
                 list = list.mid(0, 3); // don't break config files that stored QDate as QDateTime
             if ( list.count() != 3 ) {
-                kError() << errString( pKey, value, aDefault )
+                qWarning() << errString( pKey, value, aDefault )
                          << formatError( 3, list.count() );
                 return aDefault;
             }
             const QDate date( list.at( 0 ), list.at( 1 ), list.at( 2 ) );
             if ( !date.isValid() ) {
-                kError() << errString( pKey, value, aDefault );
+                qWarning() << errString( pKey, value, aDefault );
                 return aDefault;
             }
             return date;
         }
         case QVariant::Color:
         case QVariant::Font:
-            kWarning() << "KConfigGroup::readEntry was passed GUI type '"
+            qWarning() << "KConfigGroup::readEntry was passed GUI type '"
                     << aDefault.typeName()
                     << "' but kdeui isn't linked! If it is linked to your program, "
                     "this is a platform bug. Please inform the KDE developers";
@@ -362,7 +362,7 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             break;
     }
 
-    kWarning() << "unhandled type " << aDefault.typeName();
+    qWarning() << "unhandled type " << aDefault.typeName();
     return QVariant();
 }
 
@@ -766,7 +766,7 @@ QStringList KConfigGroup::readXdgListEntry(const char *key, const QStringList& a
         }
     }
     if (!val.isEmpty()) {
-        kWarning() << "List entry" << key << "in" << config()->name() << "is not compliant with XDG standard (missing trailing semicolon).";
+        qWarning() << "List entry" << key << "in" << config()->name() << "is not compliant with XDG standard (missing trailing semicolon).";
         value.append(val);
     }
     return value;
@@ -914,8 +914,8 @@ void KConfigGroup::writeEntry( const char* key, const QVariant &value,
             data = value.toString().toUtf8();
             break;
         case QVariant::List:
-            kError(!value.canConvert(QVariant::StringList))
-                << "not all types in \"" << key << "\" can convert to QString,"
+            if (!value.canConvert(QVariant::StringList))
+                qWarning() << "not all types in \"" << key << "\" can convert to QString,"
                    " information will be lost";
         case QVariant::StringList:
             writeEntry( key, value.toList(), flags );
@@ -1010,7 +1010,7 @@ void KConfigGroup::writeEntry( const char* key, const QVariant &value,
 
         case QVariant::Color:
         case QVariant::Font:
-            kWarning() << "KConfigGroup::writeEntry was passed GUI type '"
+            qWarning() << "KConfigGroup::writeEntry was passed GUI type '"
                      << value.typeName()
                      << "' but kdeui isn't linked! If it is linked to your program, this is a platform bug. "
                         "Please inform the KDE developers";
@@ -1019,7 +1019,7 @@ void KConfigGroup::writeEntry( const char* key, const QVariant &value,
             data = QUrl(value.toUrl()).toString().toUtf8();
             break;
         default:
-            kWarning() << "KConfigGroup::writeEntry - unhandled type" << value.typeName() << "in group" << name();
+            qWarning() << "KConfigGroup::writeEntry - unhandled type" << value.typeName() << "in group" << name();
         }
 
     writeEntry(key, data, flags);

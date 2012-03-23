@@ -24,13 +24,13 @@
 #include "kconfiggroup.h"
 #include "kconfig_p.h"
 
-K_GLOBAL_STATIC(QList<KSharedConfig*>, globalSharedConfigList)
+Q_GLOBAL_STATIC(QList<KSharedConfig*>, globalSharedConfigList)
 
 KSharedConfigPtr KSharedConfig::openConfig(const QString& fileName,
                                            OpenFlags flags,
                                            QStandardPaths::StandardLocation resType)
 {
-    const QList<KSharedConfig*> *list = globalSharedConfigList;
+    const QList<KSharedConfig*> *list = globalSharedConfigList();
     if (list) {
         for(QList<KSharedConfig*>::ConstIterator it = list->begin(); it != list->end(); ++it) {
             if ( (*it)->name() == fileName &&
@@ -51,14 +51,18 @@ KSharedConfig::KSharedConfig(const QString &fileName,
                              QStandardPaths::StandardLocation resType)
     : KConfig(fileName, flags, resType)
 {
-    globalSharedConfigList->append(this);
+    globalSharedConfigList()->append(this);
 }
 
 KSharedConfig::~KSharedConfig()
 {
-    if (!globalSharedConfigList.isDestroyed()) {
-        globalSharedConfigList->removeAll(this);
-    }
+#warning Qt5: re-enable once the new Q_GLOBAL_STATIC is in
+#if 0
+    if (!globalSharedConfigList.isDestroyed())
+#else
+    if (globalSharedConfigList())
+#endif
+        globalSharedConfigList()->removeAll(this);
 }
 
 KConfigGroup KSharedConfig::groupImpl(const QByteArray &groupName)
