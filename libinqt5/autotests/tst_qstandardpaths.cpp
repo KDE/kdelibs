@@ -43,6 +43,7 @@
 #include <qstandardpaths.h>
 #include <qdebug.h>
 #include <qstandardpaths.h>
+#include <qtemporarydir.h>
 #include <../../kde_qt5_compat.h> // QSKIP_PORTING
 
 #ifdef Q_OS_UNIX
@@ -71,14 +72,14 @@ private Q_SLOTS:
 
 private:
     void setCustomLocations() {
-        m_thisDir = QFile::decodeName(KDESRCDIR);
-        m_thisDir.chop(1); // remove trailing slash!
-
-        qputenv("XDG_CONFIG_HOME", QFile::encodeName(m_thisDir));
-        QDir parent(m_thisDir);
-        parent.cdUp();
-        m_globalDir = parent.path(); // gives us a trailing slash
-        qputenv("XDG_CONFIG_DIRS", QFile::encodeName(m_globalDir));
+        m_localConfigDir = m_localConfigTempDir.path();
+        m_globalConfigDir = m_globalConfigTempDir.path();
+        qputenv("XDG_CONFIG_HOME", QFile::encodeName(m_localConfigDir));
+        qputenv("XDG_CONFIG_DIRS", QFile::encodeName(m_globalConfigDir));
+        m_localAppDir = m_localAppTempDir.path();
+        m_globalAppDir = m_globalAppTempDir.path();
+        qputenv("XDG_DATA_HOME", QFile::encodeName(m_localAppDir));
+        qputenv("XDG_DATA_DIRS", QFile::encodeName(m_globalAppDir));
     }
     void setDefaultLocations() {
 #ifdef Q_XDG_PLATFORM
@@ -89,8 +90,17 @@ private:
 #endif
     }
 
-    QString m_thisDir;
-    QString m_globalDir;
+    // Config dirs
+    QString m_localConfigDir;
+    QTemporaryDir m_localConfigTempDir;
+    QString m_globalConfigDir;
+    QTemporaryDir m_globalConfigTempDir;
+
+    // App dirs
+    QString m_localAppDir;
+    QTemporaryDir m_localAppTempDir;
+    QString m_globalAppDir;
+    QTemporaryDir m_globalAppTempDir;
 };
 
 void tst_qstandardpaths::testDefaultLocations()
@@ -113,46 +123,64 @@ void tst_qstandardpaths::testDefaultLocations()
 #endif
 }
 
+static void createTestFile(const QString &fileName)
+{
+    QFile file(fileName);
+    QVERIFY(file.open(QIODevice::WriteOnly));
+    QVERIFY(file.write("Hello"));
+}
+
 void tst_qstandardpaths::testCustomLocations()
 {
-#ifndef Q_OS_WIN
+#ifdef Q_XDG_PLATFORM
     setCustomLocations();
 
     // test writableLocation()
-    QCOMPARE(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation), m_thisDir);
+    QCOMPARE(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation), m_localConfigDir);
 
     // test locate()
-    const QString thisFileName = QString::fromLatin1("tst_qstandardpaths.cpp");
-    QVERIFY(QFile::exists(m_thisDir + '/' + thisFileName));
+    const QString thisFileName = QString::fromLatin1("aFile");
+    createTestFile(m_localConfigDir + QLatin1Char('/') + thisFileName);
     const QString thisFile = QStandardPaths::locate(QStandardPaths::ConfigLocation, thisFileName);
     QVERIFY(!thisFile.isEmpty());
     QVERIFY(thisFile.endsWith(thisFileName));
 
-    const QString dir = QStandardPaths::locate(QStandardPaths::ConfigLocation, QString::fromLatin1("../autotests"), QStandardPaths::LocateDirectory);
-    QVERIFY(!dir.isEmpty());
-    const QString thisDirAsFile = QStandardPaths::locate(QStandardPaths::ConfigLocation, QString::fromLatin1("../tests")); // the default is LocateFile
+    const QString subdir = QString::fromLatin1("subdir");
+    const QString subdirPath = m_localConfigDir + QLatin1Char('/') + subdir;
+    QVERIFY(QDir().mkdir(subdirPath));
+    const QString dir = QStandardPaths::locate(QStandardPaths::ConfigLocation, subdir, QStandardPaths::LocateDirectory);
+    QCOMPARE(dir, subdirPath);
+    const QString thisDirAsFile = QStandardPaths::locate(QStandardPaths::ConfigLocation, subdir);
     QVERIFY(thisDirAsFile.isEmpty()); // not a file
 
     const QStringList dirs = QStandardPaths::standardLocations(QStandardPaths::ConfigLocation);
-    QCOMPARE(dirs, QStringList() << m_thisDir << m_globalDir);
+    QCOMPARE(dirs, QStringList() << m_localConfigDir << m_globalConfigDir);
 #endif
 }
 
-// We really need QTemporaryDir for this test...
-
 void tst_qstandardpaths::testLocateAll()
 {
-#ifdef Q_OS_UNIX
-    const QStringList appsDirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "applications", QStandardPaths::LocateDirectory);
-    Q_FOREACH(const QString &dir, appsDirs)
-        QVERIFY2(dir.endsWith(QLatin1String("/share/applications")), qPrintable(dir));
-
-    const QStringList appsDirs2 = QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation);
-    QCOMPARE(appsDirs, appsDirs2);
-
+#ifdef Q_XDG_PLATFORM
     setCustomLocations();
-    const QStringList allFiles = QStandardPaths::locateAll(QStandardPaths::ConfigLocation, "CMakeLists.txt");
-    QCOMPARE(allFiles.first(), QString(m_thisDir + QString::fromLatin1("/CMakeLists.txt")));
+    const QStringList appsDirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "applications", QStandardPaths::LocateDirectory);
+    QCOMPARE(appsDirs.count(), 0); // they don't exist yet
+    const QStringList expectedAppsDirs = QStringList() << m_localAppDir + QLatin1String("/applications")
+                                                       << m_globalAppDir + QLatin1String("/applications");
+    QDir().mkdir(expectedAppsDirs.at(0));
+    QDir().mkdir(expectedAppsDirs.at(1));
+    const QStringList appsDirs2 = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "applications", QStandardPaths::LocateDirectory);
+    QCOMPARE(appsDirs2, expectedAppsDirs);
+
+    const QStringList appsDirs3 = QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation);
+    QCOMPARE(appsDirs3, expectedAppsDirs);
+
+    const QString thisFileName = QString::fromLatin1("aFile");
+    const QStringList expectedFiles = QStringList() << m_localConfigDir + QLatin1Char('/') + thisFileName
+                                                    << m_globalConfigDir + QLatin1Char('/') + thisFileName;
+    createTestFile(expectedFiles.at(0));
+    createTestFile(expectedFiles.at(1));
+    const QStringList allFiles = QStandardPaths::locateAll(QStandardPaths::ConfigLocation, thisFileName);
+    QCOMPARE(allFiles, expectedFiles);
 #endif
 }
 
