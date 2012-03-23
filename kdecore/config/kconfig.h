@@ -53,10 +53,9 @@ class KConfigPrivate;
  * KConfig config( "/etc/kderc", KConfig::SimpleConfig );
  * \endcode
  *
- * Load the configuration of a specific component (taking into account
- * possible custom directories in KStandardDirs):
+ * Load the configuration of a specific component:
  * \code
- * KConfig config( componentData(), "pluginrc" );
+ * KConfig config( "pluginrc" );
  * \endcode
  *
  * In general it is recommended to use KSharedConfig instead of
@@ -180,11 +179,6 @@ public:
     KConfig(const QString& file, const QString& backend, QStandardPaths::StandardLocation type = QStandardPaths::ConfigLocation);
 
     virtual ~KConfig();
-
-    /**
-     * Returns the component data this configuration is for.
-     */
-    const KComponentData &componentData() const; // krazy:exclude=constref
 
     /**
      * Returns the standard location enum passed to the constructor.

@@ -45,9 +45,8 @@ KSharedConfigPtr KSharedConfig::openConfig(const KComponentData &componentData,
         for(QList<KSharedConfig*>::ConstIterator it = list->begin(); it != list->end(); ++it) {
             if ( (*it)->name() == fileName &&
                  (*it)->d_ptr->openFlags == flags &&
-                 (*it)->locationType() == resType &&
-//                 (*it)->backEnd()->type() == backEnd &&
-                 (*it)->componentData() == componentData
+                 (*it)->locationType() == resType
+//                 (*it)->backEnd()->type() == backEnd
                ) {
                 return KSharedConfigPtr(*it);
             }

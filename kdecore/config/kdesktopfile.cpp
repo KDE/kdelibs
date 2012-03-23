@@ -30,7 +30,6 @@
 
 #include "kconfig_p.h"
 #include "kdebug.h"
-#include "kglobal.h"
 #include "kconfiggroup.h"
 #include "kauthorized.h"
 #include "kconfigini_p.h"
@@ -43,7 +42,7 @@ class KDesktopFilePrivate : public KConfigPrivate
 };
 
 KDesktopFilePrivate::KDesktopFilePrivate(QStandardPaths::StandardLocation resourceType, const QString &fileName)
-    : KConfigPrivate(KGlobal::mainComponent(), KConfig::NoGlobals, resourceType)
+    : KConfigPrivate(KConfig::NoGlobals, resourceType)
 {
     mBackend = new KConfigIniBackend();
     bDynamicBackend = false;
@@ -118,7 +117,7 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
   const QStringList appsDirs = QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation);
   foreach (const QString &prefix, appsDirs) {
       if (realPath.startsWith(QFileInfo(prefix).canonicalFilePath()))
-      return true;
+          return true;
   }
   const QString servicesDir = QLatin1String("kde5/services/"); // KGlobal::dirs()->xdgDataRelativePath("services")
   foreach (const QString &xdgDataPrefix, QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation)) {

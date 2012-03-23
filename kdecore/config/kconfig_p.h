@@ -27,7 +27,6 @@
 #include "kconfigdata.h"
 #include "kconfigbackend.h"
 #include "kconfiggroup.h"
-#include "kcomponentdata.h"
 #include "klocale.h"
 
 #include <QtCore/QStringList>
@@ -66,7 +65,7 @@ public:
 protected:
     KSharedPtr<KConfigBackend> mBackend;
 
-    KConfigPrivate(const KComponentData &componentData_, KConfig::OpenFlags flags,
+    KConfigPrivate(KConfig::OpenFlags flags,
                    QStandardPaths::StandardLocation type);
 
     virtual ~KConfigPrivate()
@@ -93,7 +92,6 @@ private:
     QString locale;
     QString fileName;
     QString etc_kderc;
-    KComponentData componentData;
     KConfigBase::AccessMode configState;
 
     bool wantGlobals() const { return openFlags&KConfig::IncludeGlobals && !bSuppressGlobal; }

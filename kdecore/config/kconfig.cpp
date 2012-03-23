@@ -53,12 +53,12 @@
 
 bool KConfigPrivate::mappingsRegistered=false;
 
-KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::OpenFlags flags,
+KConfigPrivate::KConfigPrivate(KConfig::OpenFlags flags,
                                QStandardPaths::StandardLocation resourceType)
     : openFlags(flags), resourceType(resourceType), mBackend(0),
       bDynamicBackend(true),  bDirty(false), bReadDefaults(false),
       bFileImmutable(false), bForceGlobal(false), bSuppressGlobal(false),
-      componentData(componentData_), configState(KConfigBase::NoAccess)
+      configState(KConfigBase::NoAccess)
 {
     sGlobalFileName = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1String("/kdeglobals");
 
@@ -245,7 +245,7 @@ QString KConfigPrivate::expandString(const QString& value)
 
 KConfig::KConfig(const QString& file, OpenFlags mode,
                  QStandardPaths::StandardLocation resourceType)
-  : d_ptr(new KConfigPrivate(KGlobal::mainComponent(), mode, resourceType))
+  : d_ptr(new KConfigPrivate(mode, resourceType))
 {
     d_ptr->changeFileName(file); // set the local file name
 
@@ -255,7 +255,7 @@ KConfig::KConfig(const QString& file, OpenFlags mode,
 
 KConfig::KConfig(const KComponentData& componentData, const QString& file, OpenFlags mode,
                  QStandardPaths::StandardLocation resourceType)
-    : d_ptr(new KConfigPrivate(componentData, mode, resourceType))
+    : d_ptr(new KConfigPrivate(mode, resourceType))
 {
     d_ptr->changeFileName(file); // set the local file name
 
@@ -264,7 +264,7 @@ KConfig::KConfig(const KComponentData& componentData, const QString& file, OpenF
 }
 
 KConfig::KConfig(const QString& file, const QString& backend, QStandardPaths::StandardLocation resourceType)
-    : d_ptr(new KConfigPrivate(KGlobal::mainComponent(), SimpleConfig, resourceType))
+    : d_ptr(new KConfigPrivate(SimpleConfig, resourceType))
 {
     d_ptr->mBackend = KConfigBackend::create(file, backend);
     d_ptr->bDynamicBackend = false;
@@ -285,12 +285,6 @@ KConfig::~KConfig()
     if (d->bDirty && d->mBackend.isUnique())
         sync();
     delete d;
-}
-
-const KComponentData& KConfig::componentData() const
-{
-    Q_D(const KConfig);
-    return d->componentData;
 }
 
 QStringList KConfig::groupList() const
@@ -515,7 +509,7 @@ KConfig* KConfig::copyTo(const QString &file, KConfig *config) const
 {
     Q_D(const KConfig);
     if (!config)
-        config = new KConfig(componentData(), QString(), SimpleConfig, d->resourceType);
+        config = new KConfig(QString(), SimpleConfig, d->resourceType);
     config->d_func()->changeFileName(file);
     config->d_func()->entryMap = d->entryMap;
     config->d_func()->bFileImmutable = false;
