@@ -22,7 +22,6 @@
 #include "kcoreconfigskeleton.h"
 #include "kcoreconfigskeleton_p.h"
 
-#include "kglobal.h"
 #include "kstringhandler.h"
 
 KConfigSkeletonItem::KConfigSkeletonItem(const QString & _group,
@@ -993,14 +992,7 @@ KCoreConfigSkeleton::KCoreConfigSkeleton(const QString &configname, QObject* par
 {
     //kDebug(kCoreConfigSkeletionDebugArea()) << "Creating KCoreConfigSkeleton (" << (void *)this << ")";
 
-  if ( !configname.isEmpty() )
-  {
     d->mConfig = KSharedConfig::openConfig( configname );
-  }
-  else
-  {
-    d->mConfig = KGlobal::config();
-  }
 }
 
 KCoreConfigSkeleton::KCoreConfigSkeleton(KSharedConfig::Ptr pConfig, QObject* parent)
