@@ -838,20 +838,55 @@ QString Nepomuk::Resource::ratingUri()
 
 QStringList Nepomuk::Resource::symbols() const
 {
-    return property( Soprano::Vocabulary::NAO::hasSymbol() ).toStringList();
+    QList<Resource> symbolResources = property( Soprano::Vocabulary::NAO::hasSymbol() ).toResourceList();
+
+    QStringList symbolStrings;
+    foreach(const Nepomuk::Resource& symbolRes, symbolResources ) {
+        symbolStrings << symbolRes.label();
+    }
+
+    return symbolStrings;
 }
 
+namespace {
+    QUrl uriForSymbolName(const QString& symbolName) {
+        // Check if it exists
+        // We aren't using Soprano::Node::literalToN3 cause prefLabel has a range of a literal not
+        // of a string
+        QString query = QString::fromLatin1("select ?r where { ?r a %1 . ?r %2 \"%3\" . } LIMIT 1")
+                        .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::FreeDesktopIcon()),
+                              Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::prefLabel()),
+                              symbolName );
+
+        Soprano::Model* model = Nepomuk::ResourceManager::instance()->mainModel();
+        Soprano::QueryResultIterator it = model->executeQuery( query, Soprano::Query::QueryLanguageSparql );
+        if( it.next() ) {
+            return it["r"].uri();
+        }
+        else {
+            Nepomuk::Resource res(QUrl(), Soprano::Vocabulary::NAO::FreeDesktopIcon());
+            res.setLabel( symbolName );
+
+            return res.resourceUri();
+        }
+    }
+}
 
 void Nepomuk::Resource::setSymbols( const QStringList& value )
 {
-    setProperty( Soprano::Vocabulary::NAO::hasSymbol(), Variant( value ) );
+    QList<QUrl> symbolList;
+    foreach( const QString& symbolName, value ) {
+        symbolList << uriForSymbolName(symbolName);
+    }
+
+    setProperty( Soprano::Vocabulary::NAO::hasSymbol(), Variant(symbolList) );
 }
 
 
 void Nepomuk::Resource::addSymbol( const QString& value )
 {
     Variant v = property( Soprano::Vocabulary::NAO::hasSymbol() );
-    v.append( value );
+    v.append( uriForSymbolName(value) );
     setProperty( Soprano::Vocabulary::NAO::hasSymbol(), v );
 }
 
