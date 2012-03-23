@@ -189,7 +189,7 @@ void KServiceTest::testByName()
         QSKIP_PORTING( "ksycoca not available", SkipAll );
 
     KServiceType::Ptr s0 = KServiceType::serviceType("KParts/ReadOnlyPart");
-    QVERIFY( s0 );
+    QVERIFY2(s0, "KServiceType::serviceType(\"KParts/ReadOnlyPart\") failed!" );
     QCOMPARE( s0->name(), QString::fromLatin1("KParts/ReadOnlyPart") );
 
     KService::Ptr myService = KService::serviceByDesktopPath("fakepart.desktop");
