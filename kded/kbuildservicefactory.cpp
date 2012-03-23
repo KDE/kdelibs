@@ -49,7 +49,7 @@ KBuildServiceFactory::KBuildServiceFactory( KSycocaFactory *serviceTypeFactory,
     m_resourceList = new KSycocaResourceList();
     // We directly care about services desktop files.
     // All the application desktop files are parsed on demand from the vfolder menu code.
-    m_resourceList->add("services", "kde4/services", "*.desktop");
+    m_resourceList->add("services", "kde5/services", "*.desktop");
 
     m_nameDict = new KSycocaDict();
     m_relNameDict = new KSycocaDict();
@@ -58,7 +58,7 @@ KBuildServiceFactory::KBuildServiceFactory( KSycocaFactory *serviceTypeFactory,
 
 QStringList KBuildServiceFactory::resourceDirs()
 {
-    return QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "kde4/services", QStandardPaths::LocateDirectory);
+    return QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "kde5/services", QStandardPaths::LocateDirectory);
 }
 
 KBuildServiceFactory::~KBuildServiceFactory()
@@ -91,13 +91,15 @@ KSycocaEntry* KBuildServiceFactory::createEntry(const QString& file) const
     // Is it a .desktop file?
     if (name.endsWith(QLatin1String(".desktop"))) {
 
+        kDebug() << file;
+
         KService* serv;
         if (QDir::isAbsolutePath(file)) { // vfolder sends us full paths for applications
             serv = new KService(file);
         } else { // we get relative paths for services
             KDesktopFile desktopFile(QStandardPaths::GenericDataLocation, file);
-            Q_ASSERT(file.startsWith("kde4/services/"));
-            serv = new KService(&desktopFile, file.mid(strlen("kde4/services/")));
+            Q_ASSERT(file.startsWith("kde5/services/"));
+            serv = new KService(&desktopFile, file.mid(strlen("kde5/services/")));
         }
 
         //kDebug(7021) << "Creating KService from" << file << "entryPath=" << serv->entryPath();
@@ -105,6 +107,8 @@ KSycocaEntry* KBuildServiceFactory::createEntry(const QString& file) const
         // createEntry returns.
 
         if ( serv->isValid() && !serv->isDeleted() ) {
+            kDebug(7021) << "Creating KService from" << file << "entryPath=" << serv->entryPath() <<
+                "storageId=" << serv->storageId() << "menuId=" << serv->menuId();
             return serv;
         } else {
             if (!serv->isDeleted()) {

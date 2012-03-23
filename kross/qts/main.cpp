@@ -87,7 +87,6 @@ int main(int argc, char **argv)
     QScriptValue global = engine->globalObject();
 
     //qDebug()<<"QLibraryInfo::PluginsPath="<<QLibraryInfo::location(QLibraryInfo::PluginsPath);
-    //app->addLibraryPath("/home/kde4/kde4/lib/kde4/");
 
     engine->importExtension("kross").toString();
 

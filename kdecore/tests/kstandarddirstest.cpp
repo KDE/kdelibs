@@ -118,7 +118,7 @@ void KStandarddirsTest::testFindResource()
 #define KIOSLAVE "bin/kioslave.exe"
 #else
 #define EXT ""
-#define KIOSLAVE "kde4/libexec/kioslave"
+#define KIOSLAVE "kde5/libexec/kioslave"
 #endif
     const QString bin = KGlobal::dirs()->findResource( "exe", "kioslave" EXT );
     QVERIFY( !bin.isEmpty() );
@@ -270,7 +270,7 @@ void KStandarddirsTest::testFindExe()
     // findExe with a result in libexec
     const QString lnusertemp = KGlobal::dirs()->findExe( "lnusertemp" );
     QVERIFY( !lnusertemp.isEmpty() );
-    QVERIFY( lnusertemp.endsWith( "lib" KDELIBSUFF "/kde4/libexec/lnusertemp" EXT, PATH_SENSITIVITY ) );
+    QVERIFY( lnusertemp.endsWith( "lib" KDELIBSUFF "/kde5/libexec/lnusertemp" EXT, PATH_SENSITIVITY ) );
 #endif
 
 #ifndef Q_OS_MAC // kdeinit4 is a bundle on Mac, so the below doesn't work

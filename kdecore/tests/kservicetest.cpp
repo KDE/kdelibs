@@ -63,7 +63,7 @@ void KServiceTest::initTestCase()
         kDebug() << "Setting locale to fr_FR.utf8 failed";
     }
 
-    m_hasKde4Konsole = false;
+    m_hasKde5Konsole = false;
     eraseProfiles();
 
     // Create some fake services for the tests below, and ensure they are in ksycoca.
@@ -267,8 +267,8 @@ void KServiceTest::testAllServices()
             const QString menuId = service->menuId();
             if ( menuId.isEmpty() )
                 qWarning( "%s has an empty menuId!", qPrintable( entryPath ) );
-            else if ( menuId == "kde4-konsole.desktop" )
-                m_hasKde4Konsole = true;
+            else if ( menuId == "kde5-konsole.desktop" )
+                m_hasKde5Konsole = true;
             QVERIFY( !menuId.isEmpty() );
             lookedupService = KService::serviceByMenuId( menuId );
             QVERIFY( lookedupService ); // not null
@@ -300,12 +300,12 @@ void KServiceTest::testDBUSStartupType()
 {
     if ( !KSycoca::isAvailable() )
         QSKIP_PORTING( "ksycoca not available", SkipAll );
-    if ( !m_hasKde4Konsole )
-        QSKIP_PORTING( "kde4-konsole.desktop not available", SkipAll );
-    //KService::Ptr konsole = KService::serviceByMenuId( "kde4-konsole.desktop" );
+    if ( !m_hasKde5Konsole )
+        QSKIP_PORTING( "kde5-konsole.desktop not available", SkipAll );
+    //KService::Ptr konsole = KService::serviceByMenuId( "kde5-konsole.desktop" );
     KService::Ptr konsole = KService::serviceByDesktopName( "konsole" );
     QVERIFY(konsole);
-    QCOMPARE(konsole->menuId(), QString("kde4-konsole.desktop"));
+    QCOMPARE(konsole->menuId(), QString("kde5-konsole.desktop"));
     //qDebug() << konsole->entryPath();
     QCOMPARE((int)konsole->dbusStartupType(), (int)KService::DBusUnique);
 }
@@ -314,24 +314,24 @@ void KServiceTest::testByStorageId()
 {
     if ( !KSycoca::isAvailable() )
         QSKIP_PORTING("ksycoca not available", SkipAll);
-    if (KGlobal::dirs()->locate("xdgdata-apps", "kde4/kmailservice.desktop").isEmpty()) {
-        QSKIP_PORTING("kde4/kmailservice.desktop not available", SkipAll);
+    if (KGlobal::dirs()->locate("xdgdata-apps", "kde5/kmailservice.desktop").isEmpty()) {
+        QSKIP_PORTING("kde5/kmailservice.desktop not available", SkipAll);
     }
-    QVERIFY(KService::serviceByMenuId("kde4-kmailservice.desktop"));
-    QVERIFY(!KService::serviceByMenuId("kde4-kmailservice")); // doesn't work, extension mandatory
-    QVERIFY(KService::serviceByStorageId("kde4-kmailservice.desktop"));
-    //QVERIFY(!KService::serviceByStorageId("kde4-kmailservice")); // doesn't work, extension mandatory; also shows a debug
+    QVERIFY(KService::serviceByMenuId("kde5-kmailservice.desktop"));
+    QVERIFY(!KService::serviceByMenuId("kde5-kmailservice")); // doesn't work, extension mandatory
+    QVERIFY(KService::serviceByStorageId("kde5-kmailservice.desktop"));
+    //QVERIFY(!KService::serviceByStorageId("kde5-kmailservice")); // doesn't work, extension mandatory; also shows a debug
 
     // This one fails here; probably because there are two such files, so this would be too
     // ambiguous... According to the testAllServices output, the entryPaths are
-    // entryPath="/d/kde/inst/kde4/share/applications/kde4/kmailservice.desktop"
-    // entryPath= "/usr/share/applications/kde4/kmailservice.desktop"
+    // entryPath="/d/kde/inst/kde5/share/applications/kde5/kmailservice.desktop"
+    // entryPath= "/usr/share/applications/kde5/kmailservice.desktop"
     //
     //QVERIFY(KService::serviceByDesktopPath("kmailservice.desktop"));
 
     QVERIFY(KService::serviceByDesktopName("kmailservice"));
-    // This could fail if it finds the kde3 kmailservice from /usr/share. But who still has kde3 :-)
-    QCOMPARE(KService::serviceByDesktopName("kmailservice")->menuId(), QString("kde4-kmailservice.desktop"));
+    // This could fail if it finds the kde4 kmailservice from /usr/share.
+    //QCOMPARE(KService::serviceByDesktopName("kmailservice")->menuId(), QString("kde5-kmailservice.desktop"));
 }
 
 void KServiceTest::testServiceTypeTraderForReadOnlyPart()

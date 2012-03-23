@@ -34,12 +34,12 @@ KBuildServiceTypeFactory::KBuildServiceTypeFactory() :
     KServiceTypeFactory()
 {
     m_resourceList = new KSycocaResourceList;
-    m_resourceList->add("servicetypes", "kde4/servicetypes", "*.desktop");
+    m_resourceList->add("servicetypes", "kde5/servicetypes", "*.desktop");
 }
 
 QStringList KBuildServiceTypeFactory::resourceDirs()
 {
-    return QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "kde4/servicetypes", QStandardPaths::LocateDirectory);
+    return QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "kde5/servicetypes", QStandardPaths::LocateDirectory);
 }
 
 KBuildServiceTypeFactory::~KBuildServiceTypeFactory()

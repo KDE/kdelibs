@@ -518,7 +518,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
     KShell::Errors err;
     QStringList execlist = KShell::splitArgs(exec, KShell::AbortOnMeta | KShell::TildeExpand, &err);
     if (err == KShell::NoError && !execlist.isEmpty()) { // mx1 checked for syntax errors already
-        // Resolve the executable to ensure that helpers in lib/kde4/libexec/ are found.
+        // Resolve the executable to ensure that helpers in libexec are found.
         // Too bad for commands that need a shell - they must reside in $PATH.
         const QString exePath = KStandardDirs::findExe(execlist[0]);
         if (!exePath.isEmpty()) {

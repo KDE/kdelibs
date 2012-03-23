@@ -622,7 +622,9 @@ KService::Ptr KService::serviceByDesktopName( const QString& _name )
     // Prefer kde4-konsole over kde-konsole, if both are available
     QString name = _name.toLower();
     KService::Ptr s;
-    if (!_name.startsWith(QLatin1String("kde4-")))
+    if (!_name.startsWith(QLatin1String("kde5-")))
+        s = KServiceFactory::self()->findServiceByDesktopName(QString::fromLatin1("kde5-") + name);
+    if (!s && !_name.startsWith(QLatin1String("kde4-")))
         s = KServiceFactory::self()->findServiceByDesktopName(QString::fromLatin1("kde4-") + name);
     if (!s)
         s = KServiceFactory::self()->findServiceByDesktopName( name );

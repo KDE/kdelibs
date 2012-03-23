@@ -31,14 +31,14 @@ KBuildProtocolInfoFactory::KBuildProtocolInfoFactory() :
   KProtocolInfoFactory()
 {
    m_resourceList = new KSycocaResourceList();
-   m_resourceList->add("services", "kde4/services", "*.protocol");
+   m_resourceList->add("services", "kde5/services", "*.protocol");
 }
 
 // return all resource dirs for this factory
 // i.e. first arguments to m_resourceList->add() above
 QStringList KBuildProtocolInfoFactory::resourceDirs()
 {
-    return QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "kde4/services", QStandardPaths::LocateDirectory);
+    return QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "kde5/services", QStandardPaths::LocateDirectory);
 }
 
 KBuildProtocolInfoFactory::~KBuildProtocolInfoFactory()

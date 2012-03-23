@@ -106,7 +106,7 @@ private:
    QString m_trackId;
 
     QByteArray g_resource; // e.g. "services" (kstandarddirs resource)
-    QString g_resourceSubdir; // e.g. "kde4/services" (xdgdata subdir)
+    QString g_resourceSubdir; // e.g. "kde5/services" (xdgdata subdir)
 };
 
 #endif

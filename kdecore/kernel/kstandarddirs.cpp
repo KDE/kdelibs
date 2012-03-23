@@ -130,9 +130,9 @@ sounds
 locale
 locale
 services
-kde4/services
+kde5/services
 servicetypes
-kde4/servicetypes
+kde5/servicetypes
 wallpaper
 wallpapers
 templates
@@ -140,9 +140,9 @@ templates
 exe
 bin
 module
-%lib/kde4
+%lib/kde5
 qtplugins
-%lib/kde4/plugins
+%lib/kde5/plugins
 kcfg
 config.kcfg
 emoticons
@@ -181,18 +181,18 @@ static const char types_string[] =
     "sounds\0"
     "locale\0"
     "services\0"
-    "kde4/services\0"
+    "kde5/services\0"
     "servicetypes\0"
-    "kde4/servicetypes\0"
+    "kde5/servicetypes\0"
     "wallpaper\0"
     "wallpapers\0"
     "templates\0"
     "exe\0"
     "bin\0"
     "module\0"
-    "%lib/kde4\0"
+    "%lib/kde5\0"
     "qtplugins\0"
-    "%lib/kde4/plugins\0"
+    "%lib/kde5/plugins\0"
     "kcfg\0"
     "config.kcfg\0"
     "emoticons\0"
@@ -288,7 +288,7 @@ QString KStandardDirs::installPath(const char *type)
             if (strcmp("lib", type) == 0)
                 return QFile::decodeName(LIB_INSTALL_DIR "/");
             if (strcmp("libexec", type) == 0)
-                return QFile::decodeName(KDEDIR "/lib" KDELIBSUFF "/kde4/libexec/");
+                return QFile::decodeName(KDEDIR "/lib" KDELIBSUFF "/kde5/libexec/");
             if (strcmp("locale", type) == 0)
                 return QFile::decodeName(LOCALE_INSTALL_DIR "/");
             break;
@@ -1924,7 +1924,7 @@ void KStandardDirs::addKDEDefaults()
     if (!xdgdirs.isEmpty()) {
         tokenize(xdgdirList, xdgdirs, QString(QLatin1Char(KPATH_SEPARATOR)));
         // Ensure the kdedirDataDirs are in there too,
-        // otherwise resourceDirs() will add kdedir/share/applications/kde4
+        // otherwise resourceDirs() will add kdedir/share/applications/kde5
         // as returned by installPath(), and that's incorrect.
         Q_FOREACH(const QString& dir, kdedirDataDirs) {
             if (!xdgdirList.contains(dir))
@@ -1972,7 +1972,7 @@ void KStandardDirs::addKDEDefaults()
     // config resource: the XDG paths (xdg/config) have more priority than the KDE4 paths (share/config)
     addResourceType("config", "xdgconf", "/", true);
 
-    addResourceType("exe", "lib", "kde4/libexec", true );
+    addResourceType("exe", "lib", "kde5/libexec", true );
 
     addResourceDir("home", QDir::homePath(), false);
 
