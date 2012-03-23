@@ -27,7 +27,6 @@
 #include "kconfig_p.h"
 #include "ksharedconfig.h"
 #include "kconfigdata.h"
-#include <kdebug.h>
 
 #include <QtCore/QDate>
 #include <QtCore/QSharedData>

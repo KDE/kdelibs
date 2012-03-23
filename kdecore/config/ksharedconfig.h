@@ -69,41 +69,13 @@ public:
                                          OpenFlags mode = FullConfig,
                                          QStandardPaths::StandardLocation type = QStandardPaths::ConfigLocation);
 
-    /**
-     * Constructs a KSharedConfig object.
-     *
-     * If an absolute path is specified for @p fileName, that file will be used
-     * as the store for the configuration settings.  If a non-absolute path
-     * is provided, the file will be looked for in the standard directory
-     * specified by resourceType.  If no path is provided, a default
-     * configuration file will be used based on the component's name.
-     *
-     * @p mode determines whether the user or global settings will be allowed
-     * to influence the values returned by this object.  See KConfig::OpenFlags for
-     * more details.
-     *
-     * @param componentData the component that you wish to load a configuration
-     *                      file for
-     * @param fileName      the configuration file to open
-     * @param mode          how global settings should affect the configuration
-     *                      options exposed by this KConfig object
-     * @param resourceType  The standard directory to look for the configuration
-     *                      file in (see KStandardDirs)
-     *
-     * @sa KConfig
-     */
-    static KSharedConfig::Ptr openConfig(const KComponentData &componentData,
-                                         const QString &fileName = QString(),
-                                         OpenFlags mode = FullConfig,
-                                         QStandardPaths::StandardLocation type = QStandardPaths::ConfigLocation);
-
     virtual ~KSharedConfig();
 
 private:
     virtual KConfigGroup groupImpl(const QByteArray& aGroup);
     virtual const KConfigGroup groupImpl(const QByteArray& aGroup) const;
 
-    KSharedConfig(const KComponentData& componentData, const QString& file, OpenFlags mode,
+    KSharedConfig(const QString& file, OpenFlags mode,
                   QStandardPaths::StandardLocation resourceType);
 };
 

@@ -35,7 +35,6 @@
 #include <qstandardpaths.h>
 
 class KConfigGroup;
-class KComponentData;
 class KEntryMap;
 class KConfigPrivate;
 
@@ -130,39 +129,6 @@ public:
      */
     explicit KConfig(const QString& file = QString(), OpenFlags mode = FullConfig,
                      QStandardPaths::StandardLocation type = QStandardPaths::ConfigLocation);
-
-    /**
-     * Creates a KConfig object to manipulate the configuration for a specific
-     * component.
-     *
-     * If an absolute path is specified for @p file, that file will be used
-     * as the store for the configuration settings.  If a non-absolute path
-     * is provided, the file will be looked for in the standard directory
-     * specified by @p type.  If no path is provided, a default
-     * configuration file will be used based on the component's name.
-     *
-     * @p mode determines whether the user or global settings will be allowed
-     * to influence the values returned by this object.  See KConfig::OpenFlags for
-     * more details.
-     *
-     * @note You probably want to use KSharedConfig::openConfig instead.
-     *
-     * @param componentData the component that you wish to load a configuration
-     *                      file for
-     * @param file          overrides the configuration file name if not empty; if it is empty
-     *                      and SimpleConfig is passed in for the OpenFlags, then an in-memory
-     *                      KConfig object is created which will not write out to file nor which
-     *                      requires any file in the filesystem at all.
-     * @param mode          how global settings should affect the configuration
-     *                      options exposed by this KConfig object.
-     *                      See OpenFlags
-     * @param type          The standard directory to look for the configuration
-     *                      file in
-     *
-     * @sa KSharedConfig::openConfig(const KComponentData&, const QString&, OpenFlags, const char*)
-     */
-    explicit KConfig(const KComponentData& componentData, const QString& file = QString(),
-                     OpenFlags mode = FullConfig, QStandardPaths::StandardLocation type = QStandardPaths::ConfigLocation);
 
     /**
      * @internal
@@ -283,8 +249,7 @@ public:
      * All the sources provided to any call to this method will be overridden
      * by any files that cascade from the source provided to the constructor
      * (@see CascadeConfig), which will in turn be
-     * overridden by the source provided to the constructor (either explicitly
-     * or implicity via a KComponentData).
+     * overridden by the source provided to the constructor.
      *
      * Note that only the most specific file, ie: the file provided to the
      * constructor, will be written to by this object.

@@ -23,7 +23,6 @@
 #include "kcoreconfigskeleton_p.h"
 
 #include "kglobal.h"
-#include "kdebug.h"
 #include "kstringhandler.h"
 
 KConfigSkeletonItem::KConfigSkeletonItem(const QString & _group,
@@ -1086,7 +1085,7 @@ void KCoreConfigSkeleton::readConfig()
 
 void KCoreConfigSkeleton::writeConfig()
 {
-    kDebug(kCoreConfigSkeletionDebugArea());
+    //kDebug(kCoreConfigSkeletionDebugArea());
   KConfigSkeletonItem::List::ConstIterator it;
   for( it = d->mItems.constBegin(); it != d->mItems.constEnd(); ++it )
   {

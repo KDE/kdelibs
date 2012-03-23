@@ -455,7 +455,7 @@ void KStyle::drawItemPixmap(QPainter *painter, const QRect &rect,
 QPalette KStyle::standardPalette() const
 {
     return KGlobalSettings::createApplicationPalette(
-        KSharedConfig::openConfig(d->m_componentData));
+        KSharedConfig::openConfig());
 }
 
 QIcon KStyle::standardIconImplementation(StandardPixmap standardIcon, const QStyleOption *option,

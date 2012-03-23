@@ -31,7 +31,6 @@
 #include <ksharedptr.h>
 
 class KEntryMap;
-class KComponentData;
 class QFile;
 class QByteArray;
 class QDateTime;

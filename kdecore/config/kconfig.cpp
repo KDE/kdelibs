@@ -33,7 +33,6 @@
 #include <klocale.h>
 #include <kglobal.h>
 #include <kurl.h>
-#include <kcomponentdata.h>
 #include <kaboutdata.h>
 
 #include <qapplication.h>
@@ -246,16 +245,6 @@ QString KConfigPrivate::expandString(const QString& value)
 KConfig::KConfig(const QString& file, OpenFlags mode,
                  QStandardPaths::StandardLocation resourceType)
   : d_ptr(new KConfigPrivate(mode, resourceType))
-{
-    d_ptr->changeFileName(file); // set the local file name
-
-    // read initial information off disk
-    reparseConfiguration();
-}
-
-KConfig::KConfig(const KComponentData& componentData, const QString& file, OpenFlags mode,
-                 QStandardPaths::StandardLocation resourceType)
-    : d_ptr(new KConfigPrivate(mode, resourceType))
 {
     d_ptr->changeFileName(file); // set the local file name
 

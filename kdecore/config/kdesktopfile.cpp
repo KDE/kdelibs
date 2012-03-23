@@ -29,7 +29,6 @@
 #include <qstandardpaths.h>
 
 #include "kconfig_p.h"
-#include "kdebug.h"
 #include "kconfiggroup.h"
 #include "kauthorized.h"
 #include "kconfigini_p.h"

@@ -22,21 +22,11 @@
 #include "ksharedconfig.h"
 #include "kconfigbackend.h"
 #include "kconfiggroup.h"
-#include "kcomponentdata.h"
-#include "kglobal.h"
 #include "kconfig_p.h"
 
 K_GLOBAL_STATIC(QList<KSharedConfig*>, globalSharedConfigList)
 
 KSharedConfigPtr KSharedConfig::openConfig(const QString& fileName,
-                                           OpenFlags flags,
-                                           QStandardPaths::StandardLocation resType)
-{
-    return openConfig(KGlobal::mainComponent(), fileName, flags, resType);
-}
-
-KSharedConfigPtr KSharedConfig::openConfig(const KComponentData &componentData,
-                                           const QString& fileName,
                                            OpenFlags flags,
                                            QStandardPaths::StandardLocation resType)
 {
@@ -52,15 +42,14 @@ KSharedConfigPtr KSharedConfig::openConfig(const KComponentData &componentData,
             }
         }
     }
-    return KSharedConfigPtr(new KSharedConfig(componentData, fileName, flags, resType));
+    return KSharedConfigPtr(new KSharedConfig(fileName, flags, resType));
 }
 
 
-KSharedConfig::KSharedConfig( const KComponentData &componentData,
-                              const QString &fileName,
-                              OpenFlags flags,
-                              QStandardPaths::StandardLocation resType)
-    : KConfig(componentData, fileName, flags, resType)
+KSharedConfig::KSharedConfig(const QString &fileName,
+                             OpenFlags flags,
+                             QStandardPaths::StandardLocation resType)
+    : KConfig(fileName, flags, resType)
 {
     globalSharedConfigList->append(this);
 }
