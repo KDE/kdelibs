@@ -30,8 +30,6 @@
 #include "kconfigbackend.h"
 #include "kconfiggroup.h"
 #include <kstringhandler.h>
-#include <klocale.h>
-#include <kglobal.h>
 #include <kurl.h>
 
 #include <qapplication.h>
@@ -39,6 +37,7 @@
 #include <qstandardpaths.h>
 #include <qbytearray.h>
 #include <qfile.h>
+#include <qlocale.h>
 #include <qdir.h>
 #include <qdatetime.h>
 #include <qrect.h>
@@ -91,7 +90,11 @@ KConfigPrivate::KConfigPrivate(KConfig::OpenFlags flags,
 //        mappingsRegistered = true;
 //    }
 
+#if 0 // KDE4 code
     setLocale(KGlobal::hasLocale() ? KGlobal::locale()->language() : KLocale::defaultLanguage());
+#else
+    setLocale(QLocale::system().name());
+#endif
 }
 
 
@@ -805,7 +808,7 @@ bool KConfig::isConfigWritable(bool warnUser)
             errorMsg = d->mBackend->nonWritableErrorMessage();
 
         // Note: We don't ask the user if we should not ask this question again because we can't save the answer.
-        errorMsg += i18n("Please contact your system administrator.");
+        errorMsg += QCoreApplication::translate("KConfig", "Please contact your system administrator.");
         QString cmdToExec = QStandardPaths::findExecutable(QString::fromLatin1("kdialog"));
         if (!cmdToExec.isEmpty())
         {

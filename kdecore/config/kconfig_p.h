@@ -27,7 +27,6 @@
 #include "kconfigdata.h"
 #include "kconfigbackend.h"
 #include "kconfiggroup.h"
-#include "klocale.h"
 
 #include <QtCore/QStringList>
 #include <QtCore/QStack>
