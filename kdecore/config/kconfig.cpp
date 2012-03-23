@@ -33,7 +33,6 @@
 #include <klocale.h>
 #include <kglobal.h>
 #include <kurl.h>
-#include <kaboutdata.h>
 
 #include <qapplication.h>
 #include <qprocess.h>
