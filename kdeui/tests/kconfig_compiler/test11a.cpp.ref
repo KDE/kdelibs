@@ -3,7 +3,7 @@
 
 #include "test11a.h"
 
-#include <klocalizedstring.h>
+#include <klocale.h>
 
 Test11a::Test11a(  )
   : MyPrefs( QLatin1String( "korganizerrc" ) )
