@@ -29,11 +29,9 @@
 #include <kglobal.h>
 #include <ksharedconfig.h>
 #include <kprotocolinfo.h>
-#include <kstandarddirs.h>
 #include <stdlib.h> // srand(), rand()
 #include <unistd.h>
 #include <netdb.h>
-#include <kurl.h>
 #include <kconfiggroup.h>
 
 #include <QMutex>
@@ -325,9 +323,9 @@ static void initUrlActionRestrictions()
        urlPath.replace(0, 1, QDir::homePath());
 
     if (refPath.startsWith(QLatin1String("$TMP")))
-       refPath.replace(0, 4, KGlobal::dirs()->saveLocation("tmp"));
+       refPath.replace(0, 4, QDir::tempPath());
     if (urlPath.startsWith(QLatin1String("$TMP")))
-       urlPath.replace(0, 4, KGlobal::dirs()->saveLocation("tmp"));
+       urlPath.replace(0, 4, QDir::tempPath());
 
     d->urlActionRestrictions.append(
 	URLActionRule( action, refProt, refHost, refPath, urlProt, urlHost, urlPath, bEnabled));
