@@ -409,7 +409,7 @@ void KApplicationPrivate::preqapplicationhack()
 {
     preread_app_startup_id();
 
-    KSharedConfig::openConfig(); // initialize qt plugin path (see KComponentDataPrivate::lazyInit)
+    KGlobal::config(); // initialize qt plugin path (see KComponentDataPrivate::lazyInit)
 }
 
 int KApplication::xioErrhandler( Display* dpy )
