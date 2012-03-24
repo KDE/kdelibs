@@ -20,6 +20,9 @@
    Boston, MA 02110-1301, USA.
 */
 
+// Qt5 TODO: re-enable. No point in doing it before, it breaks on QString::fromUtf8(QByteArray), which exists in qt5.
+#undef QT_NO_CAST_FROM_BYTEARRAY
+
 #include "kconfiggroup.h"
 #include "kconfiggroup_p.h"
 
@@ -721,7 +724,7 @@ QVariantList KConfigGroup::readEntry( const char* key, const QVariantList& aDefa
         return aDefault;
 
     QVariantList value;
-    foreach(const QString& v, KConfigGroupPrivate::deserializeList(data))
+    Q_FOREACH(const QString& v, KConfigGroupPrivate::deserializeList(data))
         value << v;
 
     return value;
@@ -855,7 +858,7 @@ void KConfigGroup::writeEntry(const char* key, const QStringList &list, WriteCon
 
     QList<QByteArray> balist;
 
-    foreach(const QString &entry, list)
+    Q_FOREACH(const QString &entry, list)
         balist.append(entry.toUtf8());
 
     writeEntry(key, KConfigGroupPrivate::serializeList(balist), flags);
@@ -873,7 +876,7 @@ void KConfigGroup::writeEntry( const char* key, const QVariantList& list, WriteC
 
     QList<QByteArray> data;
 
-    foreach(const QVariant& v, list) {
+    Q_FOREACH(const QVariant& v, list) {
         if (v.type() == QVariant::ByteArray)
             data << v.toByteArray();
         else
@@ -1086,7 +1089,7 @@ void KConfigGroup::writePathEntry(const char *pKey, const QStringList &value, Wr
     Q_ASSERT_X(!d->bConst, "KConfigGroup::writePathEntry", "writing to a read-only group");
 
     QList<QByteArray> list;
-    foreach(const QString& path, value)
+    Q_FOREACH(const QString& path, value)
         list << translatePath(path).toUtf8();
 
     config()->d_func()->putData(d->fullName(), pKey, KConfigGroupPrivate::serializeList(list), pFlags, true);

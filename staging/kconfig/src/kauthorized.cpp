@@ -26,9 +26,7 @@
 #include <qurlpathinfo.h>
 
 #include <QCoreApplication>
-#include <kglobal.h>
 #include <ksharedconfig.h>
-#include <kprotocolinfo.h>
 #include <stdlib.h> // srand(), rand()
 #include <unistd.h>
 #include <netdb.h>
@@ -185,9 +183,9 @@ public:
   {
     Q_ASSERT_X(QCoreApplication::instance(),"KAuthorizedPrivate()","There has to be an existing QCoreApplication::instance() pointer");
 
-    KSharedConfig::Ptr config = KGlobal::config();
+    KSharedConfig::Ptr config = KSharedConfig::openConfig();
 
-    Q_ASSERT_X(config,"KAuthorizedPrivate()","There has to be an existing KGlobal::config() pointer");
+    Q_ASSERT_X(config,"KAuthorizedPrivate()","There has to be an existing KSharedConfig::openConfig() pointer");
     if (!config) {
       blockEverything=true;
       return;
@@ -217,7 +215,7 @@ bool KAuthorized::authorize(const QString &genericAction)
    if (!d->actionRestrictions)
       return true;
 
-   KConfigGroup cg(KGlobal::config(), "KDE Action Restrictions");
+   KConfigGroup cg(KSharedConfig::openConfig(), "KDE Action Restrictions");
    return cg.readEntry(genericAction, true);
 }
 
@@ -235,13 +233,13 @@ bool KAuthorized::authorizeControlModule(const QString &menuId)
 {
    if (menuId.isEmpty() || kde_kiosk_exception)
       return true;
-   KConfigGroup cg(KGlobal::config(), "KDE Control Module Restrictions");
+   KConfigGroup cg(KSharedConfig::openConfig(), "KDE Control Module Restrictions");
    return cg.readEntry(menuId, true);
 }
 
 QStringList KAuthorized::authorizeControlModules(const QStringList &menuIds)
 {
-   KConfigGroup cg(KGlobal::config(), "KDE Control Module Restrictions");
+   KConfigGroup cg(KSharedConfig::openConfig(), "KDE Control Module Restrictions");
    QStringList result;
    for(QStringList::ConstIterator it = menuIds.begin();
        it != menuIds.end(); ++it)
@@ -295,7 +293,7 @@ static void initUrlActionRestrictions()
 	URLActionRule("redirect", QLatin1String("about"), Any, Any, Any, Any, Any, true));
 
 
-  KConfigGroup cg(KGlobal::config(), "KDE URL Restrictions");
+  KConfigGroup cg(KSharedConfig::openConfig(), "KDE URL Restrictions");
   int count = cg.readEntry("rule_count", 0);
   QString keyFormat = QString::fromLatin1("rule_%1");
   for(int i = 1; i <= count; i++)
@@ -349,6 +347,7 @@ void KAuthorized::allowUrlAction(const QString &action, const QUrl &_baseURL, co
         _destURL.scheme(), _destURL.host(), destPath, true));
 }
 
+// TODO: move to KIO? With a helper here I guess, which takes protocol classes as arguments
 bool KAuthorized::authorizeUrlAction(const QString &action, const QUrl &_baseURL, const QUrl &_destURL)
 {
   MY_D
@@ -364,14 +363,19 @@ bool KAuthorized::authorizeUrlAction(const QString &action, const QUrl &_baseURL
 
   QUrl baseURL(_baseURL);
   baseURL.setPath(QDir::cleanPath(baseURL.path()));
-  QString baseClass = KProtocolInfo::protocolClass(baseURL.scheme());
+#warning TODO re-enable calls to KProtocolInfo::protocolClass, by moving the public API to KIO
+  //QString baseClass = KProtocolInfo::protocolClass(baseURL.scheme());
+  QString baseClass;
+
   QUrl destURL(_destURL);
   destURL.setPath(QDir::cleanPath(destURL.path()));
-  QString destClass = KProtocolInfo::protocolClass(destURL.scheme());
+#warning TODO re-enable calls to KProtocolInfo::protocolClass, by moving the public API to KIO
+  //QString destClass = KProtocolInfo::protocolClass(destURL.scheme());
+  QString destClass;
 
-  foreach(const URLActionRule &rule, d->urlActionRestrictions) {
+  Q_FOREACH(const URLActionRule &rule, d->urlActionRestrictions) {
      if ((result != rule.permission) && // No need to check if it doesn't make a difference
-         (action == QLatin1String(rule.action)) &&
+         (action == QLatin1String(rule.action.constData())) &&
          rule.baseMatch(baseURL, baseClass) &&
          rule.destMatch(destURL, destClass, baseURL, baseClass))
      {

@@ -37,7 +37,7 @@
  *
  * Note that, as with most of kdelibs, this is @b NOT threadsafe.
  */
-class KDECORE_EXPORT KSharedConfig : public KConfig, public QSharedData //krazy:exclude=dpointer (only for refcounting)
+class KCONFIG_EXPORT KSharedConfig : public KConfig, public QSharedData //krazy:exclude=dpointer (only for refcounting)
 {
 public:
   typedef KSharedPtr<KSharedConfig> Ptr;

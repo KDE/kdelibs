@@ -159,7 +159,7 @@ void KComponentDataPrivate::lazyInit()
     }
 }
 
-bool kde_kiosk_exception = false; // flag to disable kiosk restrictions
+extern KCONFIG_EXPORT bool kde_kiosk_exception;
 bool kde_kiosk_admin = false;
 
 void KComponentDataPrivate::configInit()

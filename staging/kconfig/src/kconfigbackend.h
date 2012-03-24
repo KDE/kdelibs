@@ -26,7 +26,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QString>
 
-#include <kdecore_export.h>
+#include <kconfig_export.h>
 #include <kconfigbase.h>
 #include <ksharedptr.h>
 
@@ -44,7 +44,7 @@ class QDateTime;
  * to create plugins that allow access to other file formats and
  * configuration systems.
  */
-class KDECORE_EXPORT KConfigBackend : public QObject, public KShared
+class KCONFIG_EXPORT KConfigBackend : public QObject, public KShared
 {
     Q_OBJECT
     Q_FLAGS(ParseOption)

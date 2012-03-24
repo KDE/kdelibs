@@ -228,6 +228,8 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/jobs
                           ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/text
                           ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src
+                          ${CMAKE_BINARY_DIR}/staging/kconfig/src
+                          ${CMAKE_SOURCE_DIR}/staging/kconfig/src
                           ${QT_INCLUDES}
                           ${_KDE4_PLATFORM_INCLUDE_DIRS})
 

@@ -38,7 +38,7 @@
 #include <sys/types.h> // uid_t
 #include <fcntl.h> // open
 
-extern bool kde_kiosk_exception;
+KCONFIG_EXPORT bool kde_kiosk_exception = false; // flag to disable kiosk restrictions
 
 QString KConfigIniBackend::warningProlog(const QFile &file, int line)
 {
@@ -253,7 +253,7 @@ next_line:
     }
 
     // now make sure immutable groups are marked immutable
-    foreach(const QByteArray& group, immutableGroups) {
+    Q_FOREACH(const QByteArray& group, immutableGroups) {
         entryMap.setEntry(group, QByteArray(), QByteArray(), KEntryMap::EntryImmutable);
     }
 
@@ -458,7 +458,7 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
     } else {
         // Open existing file. *DON'T* create it if it suddenly does not exist!
 #ifdef Q_OS_UNIX
-        int fd = ::open(QFile::encodeName(filePath()), O_WRONLY | O_TRUNC);
+        int fd = ::open(QFile::encodeName(filePath()).constData(), O_WRONLY | O_TRUNC);
         if (fd < 0) {
             return false;
         }
@@ -494,7 +494,7 @@ bool KConfigIniBackend::isWritable() const
     const QString filePath = this->filePath();
     if (!filePath.isEmpty()) {
         // Qt 5 TODO: QFileInfo::canBeCreated or something.
-        if (::access(QFile::encodeName(filePath), W_OK) == 0) {
+        if (::access(QFile::encodeName(filePath).constData(), W_OK) == 0) {
             return true;
         }
         QFileInfo file(filePath);

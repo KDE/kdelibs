@@ -26,7 +26,7 @@
 
 #include "kconfigbase.h"
 
-#include <kdecore_export.h>
+#include <kconfig_export.h>
 
 #include <QtCore/QExplicitlySharedDataPointer>
 #include <QtCore/QVariant>
@@ -50,7 +50,7 @@ typedef KSharedPtr<KSharedConfig> KSharedConfigPtr;
  * A KConfigGroup will be read-only if it is constructed from a
  * const config object or from another read-only group.
  */
-class KDECORE_EXPORT KConfigGroup : public KConfigBase
+class KCONFIG_EXPORT KConfigGroup : public KConfigBase
 {
 public:
     /**
@@ -150,7 +150,7 @@ public:
      * Create another KConfigGroup from the parent of this group instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDECORE_DEPRECATED void changeGroup(const QString &group);
+    KCONFIG_DEPRECATED void changeGroup(const QString &group);
 #endif
     /**
      * Overload for changeGroup(const QString&)
@@ -159,7 +159,7 @@ public:
      * Create another KConfigGroup from the parent of this group instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDECORE_DEPRECATED void changeGroup(const char *group);
+    KCONFIG_DEPRECATED void changeGroup(const char *group);
 #endif
 
     /**

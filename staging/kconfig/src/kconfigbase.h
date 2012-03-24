@@ -24,7 +24,7 @@
 #ifndef KCONFIGBASE_H
 #define KCONFIGBASE_H
 
-#include <kdecore_export.h>
+#include <kconfig_export.h>
 
 #include <QtCore/QtGlobal>
 
@@ -35,7 +35,7 @@ class KConfigBasePrivate;
 /**
  * \class KConfigBase kconfigbase.h <KConfigBase>
  */
-class KDECORE_EXPORT KConfigBase
+class KCONFIG_EXPORT KConfigBase
 {
 public:
     /**

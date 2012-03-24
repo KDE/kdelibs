@@ -19,6 +19,9 @@
   Boston, MA 02110-1301, USA.
 */
 
+// Qt5 TODO: re-enable. No point in doing it before, it breaks on QString::fromUtf8(QByteArray), which exists in qt5.
+#undef QT_NO_CAST_FROM_BYTEARRAY
+
 #include "kdesktopfile.h"
 
 #include <unistd.h>
@@ -114,18 +117,18 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
 
   // Check if the .desktop file is installed as part of KDE or XDG.
   const QStringList appsDirs = QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation);
-  foreach (const QString &prefix, appsDirs) {
+  Q_FOREACH (const QString &prefix, appsDirs) {
       if (realPath.startsWith(QFileInfo(prefix).canonicalFilePath()))
           return true;
   }
   const QString servicesDir = QLatin1String("kde5/services/"); // KGlobal::dirs()->xdgDataRelativePath("services")
-  foreach (const QString &xdgDataPrefix, QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation)) {
+  Q_FOREACH (const QString &xdgDataPrefix, QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation)) {
       const QString prefix = QFileInfo(xdgDataPrefix).canonicalFilePath();
       if (realPath.startsWith(prefix + QLatin1Char('/') + servicesDir))
           return true;
   }
   const QString autostartDir = QLatin1String("autostart/");
-  foreach (const QString &xdgDataPrefix, QStandardPaths::standardLocations(QStandardPaths::ConfigLocation)) {
+  Q_FOREACH (const QString &xdgDataPrefix, QStandardPaths::standardLocations(QStandardPaths::ConfigLocation)) {
       const QString prefix = QFileInfo(xdgDataPrefix).canonicalFilePath();
       if (realPath.startsWith(prefix + QLatin1Char('/') + autostartDir))
           return true;

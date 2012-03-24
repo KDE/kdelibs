@@ -133,14 +133,6 @@ endif (UNIX)
 ########### next target ###############
 
 set(kdecore_LIB_SRCS
-   config/kconfig.cpp
-   config/kconfigbase.cpp
-   config/kconfiggroup.cpp
-   config/kconfigbackend.cpp
-   config/kconfigini.cpp
-   config/kdesktopfile.cpp
-   config/ksharedconfig.cpp
-   config/kcoreconfigskeleton.cpp
    date/kcalendarera.cpp
    date/kcalendarsystem.cpp
    date/kcalendarsystemcoptic.cpp
@@ -169,7 +161,6 @@ set(kdecore_LIB_SRCS
    io/kmountpoint.cpp
    io/kprocess.cpp
    io/kurl.cpp
-   kernel/kauthorized.cpp
    kernel/kglobal.cpp
    kernel/kcomponentdata.cpp
    kernel/kcmdlineargs.cpp
@@ -246,7 +237,7 @@ generate_export_header(kdecore)
 
 target_link_libraries(kdecore
   LINK_PUBLIC
-    ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons
+    ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons kconfig
   LINK_PRIVATE
     ${QtMimeTypes_LIBRARY} ${QT_QTXML_LIBRARY} ${kdecore_OPTIONAL_LIBS}
 )
@@ -322,15 +313,6 @@ install( FILES localization/entry.desktop  DESTINATION  ${LOCALE_INSTALL_DIR}/en
 install( FILES kdebug.areas kdebugrc DESTINATION ${CONFIG_INSTALL_DIR} )
 install( FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kdecore_export.h
-   config/conversion_check.h
-   config/kconfig.h
-   #config/kconfigbackend.h re-enable post-API review and implementation (4.2?)
-   config/kconfigbase.h
-   config/kconfiggroup.h
-   config/kdesktopfile.h
-   config/ksharedconfig.h
-   config/kcoreconfigskeleton.h
-   config/kconfiggroup_kurl.h
    date/kcalendarsystem.h
    date/kdatetime.h
    date/klocalizeddate.h
@@ -342,7 +324,6 @@ install( FILES
    io/kprocess.h
    io/kmountpoint.h
    io/kurl.h
-   kernel/kauthorized.h
    kernel/kglobal.h
    kernel/kcomponentdata.h
    kernel/kcmdlineargs.h
@@ -388,7 +369,6 @@ install(FILES
    util/kpluginfactory.h
    util/kpluginloader.h
    util/kshell.h
-   util/ksharedptr.h
    util/ksortablelist.h
    util/ktypelist.h
    util/ktypelistutils.h
@@ -401,7 +381,7 @@ install(FILES
 )
 
 install( FILES
-   config/kconfigbackend.desktop
+   #config/kconfigbackend.desktop
    services/kplugininfo.desktop
    DESTINATION  ${SERVICETYPES_INSTALL_DIR}
 )

@@ -20,6 +20,9 @@
    Boston, MA 02110-1301, USA.
 */
 
+// Qt5 TODO: re-enable. No point in doing it before, it breaks on QString::fromUtf8(QByteArray), which exists in qt5.
+#undef QT_NO_CAST_FROM_BYTEARRAY
+
 #include "kconfig.h"
 #include "kconfig_p.h"
 
@@ -30,7 +33,6 @@
 #include "kconfigbackend.h"
 #include "kconfiggroup.h"
 #include <kstringhandler.h>
-#include <kurl.h>
 
 #include <qapplication.h>
 #include <qprocess.h>
@@ -39,14 +41,8 @@
 #include <qfile.h>
 #include <qlocale.h>
 #include <qdir.h>
-#include <qdatetime.h>
-#include <qrect.h>
-#include <qsize.h>
-#include <qcolor.h>
 #include <QtCore/QProcess>
-#include <QtCore/QPointer>
 #include <QtCore/QSet>
-#include <QtCore/QStack>
 
 bool KConfigPrivate::mappingsRegistered=false;
 
@@ -221,12 +217,12 @@ QString KConfigPrivate::expandString(const QString& value)
                 else
 #endif
                 {
-                    QByteArray pEnv = qgetenv( aVarName.toAscii() );
+                    QByteArray pEnv = qgetenv(aVarName.toAscii().constData());
                     if( !pEnv.isEmpty() )
                     // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
                     // An environment variable may contain values in 8bit
                     // locale specified encoding or UTF8 encoding
-                        env = KStringHandler::from8Bit( pEnv );
+                        env = KStringHandler::from8Bit(pEnv.constData());
                 }
                 aValue.replace(nDollarPos, nEndPos-nDollarPos, env);
                 nDollarPos += env.length();
@@ -425,7 +421,7 @@ void KConfig::sync()
         // Rewrite global/local config only if there is a dirty entry in it.
         bool writeGlobals = false;
         bool writeLocals = false;
-        foreach (const KEntry& e, d->entryMap) {
+        Q_FOREACH (const KEntry& e, d->entryMap) {
             if (e.bDirty) {
                 if (e.bGlobal) {
                     writeGlobals = true;
@@ -587,9 +583,9 @@ void KConfig::reparseConfiguration()
 QStringList KConfigPrivate::getGlobalFiles() const
 {
     QStringList globalFiles;
-    foreach (const QString& dir1, QStandardPaths::locateAll(QStandardPaths::ConfigLocation, QLatin1String("kdeglobals")))
+    Q_FOREACH (const QString& dir1, QStandardPaths::locateAll(QStandardPaths::ConfigLocation, QLatin1String("kdeglobals")))
         globalFiles.push_front(dir1);
-    foreach (const QString& dir2, QStandardPaths::locateAll(QStandardPaths::ConfigLocation, QLatin1String("system.kdeglobals")))
+    Q_FOREACH (const QString& dir2, QStandardPaths::locateAll(QStandardPaths::ConfigLocation, QLatin1String("system.kdeglobals")))
         globalFiles.push_front(dir2);
     if (!etc_kderc.isEmpty())
         globalFiles.push_front(etc_kderc);
@@ -604,7 +600,7 @@ void KConfigPrivate::parseGlobalFiles()
     // TODO: can we cache the values in etc_kderc / other global files
     //       on a per-application basis?
     const QByteArray utf8Locale = locale.toUtf8();
-    foreach(const QString& file, globalFiles) {
+    Q_FOREACH(const QString& file, globalFiles) {
         KConfigBackend::ParseOptions parseOpts = KConfigBackend::ParseGlobal|KConfigBackend::ParseExpansions;
         if (file != sGlobalFileName)
             parseOpts |= KConfigBackend::ParseDefaults;
@@ -630,7 +626,7 @@ void KConfigPrivate::parseConfigFiles()
                 if (QDir::isAbsolutePath(fileName)) {
                     files << fileName;
                 } else {
-                    foreach (const QString& f, QStandardPaths::locateAll(resourceType, fileName))
+                    Q_FOREACH (const QString& f, QStandardPaths::locateAll(resourceType, fileName))
                         files.prepend(f);
                 }
             }
@@ -643,7 +639,7 @@ void KConfigPrivate::parseConfigFiles()
 //        qDebug() << "parsing local files" << files;
 
         const QByteArray utf8Locale = locale.toUtf8();
-        foreach(const QString& file, files) {
+        Q_FOREACH(const QString& file, files) {
             if (file == mBackend->filePath()) {
                 switch (mBackend->parseConfig(utf8Locale, entryMap, KConfigBackend::ParseExpansions)) {
                 case KConfigBackend::ParseOk:
@@ -682,7 +678,7 @@ KConfig::AccessMode KConfig::accessMode() const
 void KConfig::addConfigSources(const QStringList& files)
 {
     Q_D(KConfig);
-    foreach(const QString& file, files) {
+    Q_FOREACH(const QString& file, files) {
         d->extraFiles.push(file);
     }
 
@@ -785,9 +781,9 @@ void KConfig::deleteGroupImpl(const QByteArray &aGroup, WriteConfigFlags flags)
     KEntryMap::EntryOptions options = convertToOptions(flags)|KEntryMap::EntryDeleted;
 
     const QSet<QByteArray> groups = d->allSubGroups(aGroup);
-    foreach (const QByteArray& group, groups) {
+    Q_FOREACH (const QByteArray& group, groups) {
         const QStringList keys = d->keyListImpl(group);
-        foreach (const QString& _key, keys) {
+        Q_FOREACH (const QString& _key, keys) {
             const QByteArray &key = _key.toUtf8();
             if (d->canWriteEntry(group, key.constData())) {
                 d->entryMap.setEntry(group, key, QByteArray(), options);
