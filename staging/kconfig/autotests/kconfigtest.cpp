@@ -17,28 +17,29 @@
     Boston, MA 02110-1301, USA.
 */
 
+// Qt5 TODO: re-enable. No point in doing it before, it breaks on QString::fromUtf8(QByteArray), which exists in qt5.
+#undef QT_NO_CAST_FROM_BYTEARRAY
+
 #include "kconfigtest.h"
 
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 #include <qtemporarydir.h>
 #include <kdesktopfile.h>
-#include <kstandarddirs.h>
 
-#include <kconfig.h>
-#include <kdebug.h>
+#include <ksharedconfig.h>
 #include <kconfiggroup.h>
-#include <kconfiggroup_kurl.h>
 
 #include <QtNetwork/QHostInfo>
 
 #ifdef Q_OS_UNIX
 #include <utime.h>
 #endif
+#include <unistd.h> // gethostname
 
 KCONFIGGROUP_DECLARE_ENUM_QOBJECT(KConfigTest,Testing)
 KCONFIGGROUP_DECLARE_FLAGS_QOBJECT(KConfigTest,Flags)
 
-QTEST_KDEMAIN_CORE( KConfigTest )
+QTEST_MAIN( KConfigTest )
 
 #define BOOLENTRY1 true
 #define BOOLENTRY2 false
@@ -112,7 +113,6 @@ void KConfigTest::initTestCase()
   cg.writeEntry( "stringEntry4", STRINGENTRY4 );
   cg.writeEntry( "stringEntry5", STRINGENTRY5 );
   cg.writeEntry( "urlEntry1", QUrl("http://qt-project.org") );
-  cg.writeEntry( "urlEntry2", KUrl("http://www.kde.org") ); // DO NOT PORT TO QUrl, this is for testing compat. Might have to move out though.
   cg.writeEntry( "keywith=equalsign", STRINGENTRY1 );
   cg.deleteEntry( "stringEntry5" );
   cg.deleteEntry( "stringEntry6" ); // deleting a nonexistent entry
@@ -296,7 +296,7 @@ void KConfigTest::testSimple()
   QCOMPARE(sc2.name(), QString("kconfigtest"));
 
   // make sure groupList() isn't returning something it shouldn't
-  foreach(const QString& group, sc2.groupList()) {
+  Q_FOREACH(const QString& group, sc2.groupList()) {
       QVERIFY(!group.isEmpty() && group != "<default>");
       QVERIFY(!group.contains(QChar(0x1d)));
   }
@@ -328,7 +328,6 @@ void KConfigTest::testSimple()
   QVERIFY( !sc3.hasKey( "stringEntry6" ) );
   QCOMPARE( sc3.readEntry( "stringEntry6", QString("foo") ), QString( "foo" ) );
   QCOMPARE( sc3.readEntry( "urlEntry1", QUrl() ), QUrl("http://qt-project.org") );
-  QCOMPARE( sc3.readEntry( "urlEntry2", KUrl() ), KUrl("http://www.kde.org") ); // DO NOT PORT TO QUrl, this is for testing compat. Might have to move out though.
   QCOMPARE( sc3.readEntry( "boolEntry1", BOOLENTRY1 ), BOOLENTRY1 );
   QCOMPARE( sc3.readEntry( "boolEntry2", false ), BOOLENTRY2 );
   QCOMPARE( sc3.readEntry("keywith=equalsign", QString("wrong")), QString(STRINGENTRY1));
@@ -488,7 +487,9 @@ void KConfigTest::testPath()
   // I don't know if this will work on windows
   // This test hangs on OS X
   QVERIFY(group.hasKey("hostname"));
-  QCOMPARE(group.readEntry("hostname", QString()), QHostInfo::localHostName());
+  char hostname[256];
+  QVERIFY(::gethostname(hostname, sizeof(hostname)) == 0);
+  QCOMPARE(group.readEntry("hostname", QString()), QString::fromLatin1(hostname));
 #endif
   QVERIFY(group.hasKey("noeol"));
   QCOMPARE(group.readEntry("noeol", QString()), QString("foo"));
@@ -747,13 +748,13 @@ void KConfigTest::testDelete()
   cf.sync();
 
   int count=0;
-  foreach(const QByteArray& item, readLines())
+  Q_FOREACH(const QByteArray& item, readLines())
       if (item.startsWith("devices|")) // krazy:exclude=strings
           count++;
   QCOMPARE(count, 2);
   cg.deleteEntry("devices|manual|/mnt/ipod");
   cf.sync();
-  foreach(const QByteArray& item, readLines())
+  Q_FOREACH(const QByteArray& item, readLines())
       QVERIFY(!item.contains("ipod"));
 }
 
@@ -790,7 +791,7 @@ void KConfigTest::testDefaultGroup()
     QCOMPARE(lines.first(), QByteArray("TestKey=defaultGroup\n"));
 
     // Now that the group exists make sure it isn't returned from groupList()
-    foreach(const QString& group, sc.groupList()) {
+    Q_FOREACH(const QString& group, sc.groupList()) {
         QVERIFY(!group.isEmpty() && group != "<default>");
     }
 
@@ -835,7 +836,7 @@ void KConfigTest::testEmptyGroup()
     QCOMPARE(lines.first(), QByteArray("TestKey=emptyGroup\n"));
 
     // Now that the group exists make sure it isn't returned from groupList()
-    foreach(const QString& group, sc.groupList()) {
+    Q_FOREACH(const QString& group, sc.groupList()) {
         QVERIFY(!group.isEmpty() && group != "<default>");
     }
     emptyGroup.deleteGroup();
@@ -884,7 +885,7 @@ void KConfigTest::testMerge()
                 << "entry[fr]=French\n";
         QFile file(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/mergetest");
         file.open(QIODevice::ReadOnly|QIODevice::Text);
-        foreach (const QByteArray& line, lines) {
+        Q_FOREACH (const QByteArray& line, lines) {
             QCOMPARE(line, file.readLine());
         }
     }
@@ -947,7 +948,7 @@ void KConfigTest::testOptionOrder()
 
         QFile file(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/doubleattrtest");
         file.open(QIODevice::ReadOnly|QIODevice::Text);
-        foreach (const QByteArray& line, lines) {
+        Q_FOREACH (const QByteArray& line, lines) {
             QCOMPARE(line, file.readLine());
         }
     }
@@ -1023,7 +1024,7 @@ void KConfigTest::testSubGroup()
     QCOMPARE(neg.groupList(), QStringList() << "NEG Child1" << "NEG Child4");
 
     // make sure groupList() isn't returning something it shouldn't
-    foreach(const QString& group, sc.groupList()) {
+    Q_FOREACH(const QString& group, sc.groupList()) {
       QVERIFY(!group.isEmpty() && group != "<default>");
       QVERIFY(!group.contains(QChar(0x1d)));
       QVERIFY(!group.contains("subgroup"));
@@ -1167,21 +1168,6 @@ void KConfigTest::testReparent()
     group.reparent(&cf); // see if it can make it a top-level group again
 //    QVERIFY(!parent.hasGroup(name));
     QCOMPARE(group.entryMap(), originalMap);
-}
-
-void KConfigTest::testKAboutDataOrganizationDomain()
-{
-    KAboutData data( "app", 0, qi18n("program"), "version",
-                     qi18n("description"), KAboutData::License_LGPL,
-                     qi18n("copyright"), qi18n("hello world"),
-                     "http://www.koffice.org" );
-    QCOMPARE( data.organizationDomain(), QString::fromLatin1( "koffice.org" ) );
-
-    KAboutData data2( "app", 0, qi18n("program"), "version",
-                      qi18n("description"), KAboutData::License_LGPL,
-                      qi18n("copyright"), qi18n("hello world"),
-                      "http://edu.kde.org/kig" );
-    QCOMPARE( data2.organizationDomain(), QString::fromLatin1( "kde.org" ) );
 }
 
 static void ageTimeStamp(const QString& path, int nsec)
@@ -1540,44 +1526,6 @@ void KConfigTest::testAnonymousConfig()
     QCOMPARE(general.readEntry("testKG"), QString()); // no kdeglobals merging
     general.writeEntry("Foo", "Bar");
     QCOMPARE(general.readEntry("Foo"), QString("Bar"));
-}
-
-void KConfigTest::testNoKdeHome()
-{
-    const QString xdgConfigHome = QDir::homePath() + "/.kde-unit-test-does-not-exist";
-    QDir xdgConfigHomeDir(xdgConfigHome);
-    qputenv("XDG_CONFIG_HOME", QFile::encodeName(xdgConfigHome));
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QTemporaryDir::removeRecursively(xdgConfigHome);
-#else
-    xdgConfigHomeDir.removeRecursively();
-#endif
-    QVERIFY(!QFile::exists(xdgConfigHome));
-
-    // Do what kde4-config does, and ensure kdehome doesn't get created (#233892)
-    KComponentData componentData("KConfigTest");
-    QVERIFY(!QFile::exists(xdgConfigHome));
-    componentData.dirs();
-    QVERIFY(!QFile::exists(xdgConfigHome));
-    componentData.config();
-    QVERIFY(!QFile::exists(xdgConfigHome));
-
-    // Now try to actually save something, see if it works.
-    KConfigGroup group(componentData.config(), "Group");
-    group.writeEntry("Key", "Value");
-    group.sync();
-    QVERIFY(QFile::exists(xdgConfigHome));
-    QVERIFY(QFile::exists(xdgConfigHome + "/qttestrc"));
-
-    // Cleanup
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QTemporaryDir::removeRecursively(xdgConfigHome);
-#else
-    xdgConfigHomeDir.removeRecursively();
-#endif
-
-    // Restore XDG_CONFIG_HOME
-    qputenv("XDG_CONFIG_HOME", QFile::encodeName(m_xdgConfigHome));
 }
 
 #include <QThreadPool>

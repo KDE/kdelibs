@@ -17,3 +17,4 @@ include(ECMQtFramework)
 find_package(Qt5Transitional REQUIRED Core Test)
 
 add_subdirectory(src)
+add_subdirectory(autotests)

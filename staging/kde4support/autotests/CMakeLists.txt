@@ -25,6 +25,7 @@ KDE4SUPPORT_UNIT_TESTS(
   kurlmimetest
   klibloadertest
   ksavefiletest
+  kconfigcompattest
 )
 
 ########### module for klibloadertest ###############

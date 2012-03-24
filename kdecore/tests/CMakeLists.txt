@@ -55,7 +55,8 @@ KDECORE_UNIT_TESTS(
  kservicetest
  kglobaltest
  kstandarddirstest
- kconfigtest
+ kconfignokdehometest
+ kaboutdatatest
 )
 
 if(UNIX)
