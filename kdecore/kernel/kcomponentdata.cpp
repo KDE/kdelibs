@@ -179,7 +179,8 @@ void KComponentDataPrivate::configInit()
     }
 
     if (!sharedConfig) {
-        sharedConfig = KSharedConfig::openConfig();
+        // was: KSharedConfig::openConfig(component)
+        sharedConfig = KSharedConfig::openConfig(aboutData.appName() + QLatin1String("rc"));
     }
 
     // Check if we are excempt from kiosk restrictions

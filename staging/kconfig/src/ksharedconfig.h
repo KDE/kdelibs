@@ -71,12 +71,18 @@ public:
 
     virtual ~KSharedConfig();
 
+    /**
+     * @internal (kde4 KComponentData compat)
+     */
+    static void setMainConfigName(const QString& str);
+
 private:
     virtual KConfigGroup groupImpl(const QByteArray& aGroup);
     virtual const KConfigGroup groupImpl(const QByteArray& aGroup) const;
 
     KSharedConfig(const QString& file, OpenFlags mode,
                   QStandardPaths::StandardLocation resourceType);
+
 };
 
 typedef KSharedConfig::Ptr KSharedConfigPtr;

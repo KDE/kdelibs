@@ -19,7 +19,7 @@
 
 #include <QObject>
 
-#include <QtTest/QtTest>
+#include <qtest_kde.h>
 #include <kstandarddirs.h>
 #include <ksharedconfig.h>
 
@@ -32,16 +32,26 @@ class KConfigCompatTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
+    void initTestCase();
     void testKUrl();
+    void testDefaultName();
+    void cleanupTestCase();
 };
 
-
-void KConfigCompatTest::testKUrl()
+void KConfigCompatTest::initTestCase()
 {
     // Qt5 TODO: should be done by qtestlib+qstandardpaths
     QString xdgConfigHome = QDir::home().canonicalPath() + "/.qttest-config";
     qputenv("XDG_CONFIG_HOME", QFile::encodeName(xdgConfigHome));
+}
 
+void KConfigCompatTest::cleanupTestCase()
+{
+    QFile::remove(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1String("/kconfig_compat_test"));
+}
+
+void KConfigCompatTest::testKUrl()
+{
     KConfig config("kconfig_compat_test");
     {
         KConfigGroup cg(&config, "Group");
@@ -51,10 +61,14 @@ void KConfigCompatTest::testKUrl()
         KConfigGroup cg(&config, "Group");
         QCOMPARE(cg.readEntry("kurlEntry", KUrl()), KUrl("http://www.kde.org"));
     }
-
-    QFile::remove(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1String("/kconfig_compat_test"));
 }
 
-QTEST_MAIN(KConfigCompatTest)
+void KConfigCompatTest::testDefaultName()
+{
+    QCOMPARE(KSharedConfig::openConfig()->name(), QString::fromLatin1("myapprc"));
+    QCOMPARE(KGlobal::config()->name(), QString::fromLatin1("myapprc"));
+}
+
+QTEST_KDEMAIN_CORE_WITH_COMPONENTNAME(KConfigCompatTest, "myapp")
 
 #include "kconfigcompattest.moc"

@@ -24,15 +24,28 @@
 #include "kconfiggroup.h"
 #include "kconfig_p.h"
 
-Q_GLOBAL_STATIC(QList<KSharedConfig*>, globalSharedConfigList)
+class GlobalSharedConfigList : public QList<KSharedConfig*>
+{
+public:
+    // in addition to the list, we need to hold the main config,
+    // so that it's not created and destroyed all the time.
+    KSharedConfigPtr mainConfig;
+    QString mainConfigName;
+};
 
-KSharedConfigPtr KSharedConfig::openConfig(const QString& fileName,
+
+Q_GLOBAL_STATIC(GlobalSharedConfigList, globalSharedConfigList)
+
+KSharedConfigPtr KSharedConfig::openConfig(const QString& _fileName,
                                            OpenFlags flags,
                                            QStandardPaths::StandardLocation resType)
 {
-    const QList<KSharedConfig*> *list = globalSharedConfigList();
+    QString fileName(_fileName);
+    GlobalSharedConfigList *list = globalSharedConfigList();
+    if (_fileName.isEmpty())
+        fileName = list->mainConfigName;
     if (list) {
-        for(QList<KSharedConfig*>::ConstIterator it = list->begin(); it != list->end(); ++it) {
+        for(QList<KSharedConfig*>::ConstIterator it = list->constBegin(); it != list->constEnd(); ++it) {
             if ( (*it)->name() == fileName &&
                  (*it)->d_ptr->openFlags == flags &&
                  (*it)->locationType() == resType
@@ -42,7 +55,10 @@ KSharedConfigPtr KSharedConfig::openConfig(const QString& fileName,
             }
         }
     }
-    return KSharedConfigPtr(new KSharedConfig(fileName, flags, resType));
+    KSharedConfigPtr ptr(new KSharedConfig(fileName, flags, resType));
+    if (_fileName.isEmpty() && flags == FullConfig && resType == QStandardPaths::ConfigLocation)
+        list->mainConfig = ptr;
+    return ptr;
 }
 
 
@@ -75,4 +91,10 @@ const KConfigGroup KSharedConfig::groupImpl(const QByteArray &groupName) const
 {
     const KSharedConfigPtr ptr(const_cast<KSharedConfig*>(this));
     return KConfigGroup( ptr, groupName.constData());
+}
+
+void KSharedConfig::setMainConfigName(const QString& str)
+{
+    GlobalSharedConfigList *list = globalSharedConfigList();
+    list->mainConfigName = str;
 }

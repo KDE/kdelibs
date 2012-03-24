@@ -522,11 +522,14 @@ void KConfigPrivate::changeFileName(const QString& name)
     QString file;
     if (name.isEmpty()) {
         if (wantDefaults()) { // accessing default app-specific config "appnamerc"
-            const QString appName = QCoreApplication::applicationName();
-            if (!appName.isEmpty()) {
-                fileName = appName + QLatin1String("rc");
-                file = QStandardPaths::writableLocation(resourceType) + QLatin1Char('/') + fileName;
+            QString appName = QCoreApplication::applicationName();
+            if (appName.isEmpty()) {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+                appName = qAppName();
+#endif
             }
+            fileName = appName + QLatin1String("rc");
+            file = QStandardPaths::writableLocation(resourceType) + QLatin1Char('/') + fileName;
         } else if (wantGlobals()) { // accessing "kdeglobals" - XXX used anywhere?
             resourceType = QStandardPaths::ConfigLocation;
             fileName = QLatin1String("kdeglobals");
@@ -543,6 +546,7 @@ void KConfigPrivate::changeFileName(const QString& name)
     }
 
     if (file.isEmpty()) {
+        qWarning("No filename!"); // how can this happen?
         openFlags = KConfig::SimpleConfig;
         return;
     }
