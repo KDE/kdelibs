@@ -25,7 +25,6 @@
 
 #include <kcmdlineargs.h>
 #include <klocale.h>
-#include <kcomponentdata.h>
 #include <kstandarddirs.h>
 #include <kglobal.h>
 #include <kconfig.h>
@@ -89,7 +88,6 @@ int main(int argc, char **argv)
     options.add("qt-plugins", qi18n("Location of installed Qt plugins"));
     KCmdLineArgs::addCmdLineOptions( options ); // Add my own options.
 
-    KComponentData a(&about);
     (void)KGlobal::dirs(); // trigger the creation
     (void)KSharedConfig::openConfig();
 
