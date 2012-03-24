@@ -145,7 +145,7 @@ public:
     * Read all key associations from @p config.
     *
     * If @p config is zero, read all key associations from the
-    * application's configuration file KGlobal::config(),
+    * application's configuration file KSharedConfig::openConfig(),
     * in the group set by setConfigGroup().
     */
   void readSettings( KConfigGroup* config = 0 );

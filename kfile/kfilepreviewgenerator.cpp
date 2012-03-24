@@ -481,7 +481,7 @@ KFilePreviewGenerator::Private::Private(KFilePreviewGenerator* parent,
     connect(m_changedItemsTimer, SIGNAL(timeout()),
             q, SLOT(delayedIconUpdate()));
 
-    KConfigGroup globalConfig(KGlobal::config(), "PreviewSettings");
+    KConfigGroup globalConfig(KSharedConfig::openConfig(), "PreviewSettings");
     m_enabledPlugins = globalConfig.readEntry("Plugins", QStringList()
                                                          << "directorythumbnail"
                                                          << "imagethumbnail"

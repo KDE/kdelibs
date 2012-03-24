@@ -1297,8 +1297,8 @@ void KConfigTest::testSyncOnExit()
 {
     // Often, the KGlobalPrivate global static's destructor ends up calling ~KConfig ->
     // KConfig::sync ... and if that code triggers KGlobal code again then things could crash.
-    // So here's a test for modifying KGlobal::config() and not syncing, the process exit will sync.
-    KConfigGroup grp(KGlobal::config(), "syncOnExit");
+    // So here's a test for modifying KSharedConfig::openConfig() and not syncing, the process exit will sync.
+    KConfigGroup grp(KSharedConfig::openConfig(), "syncOnExit");
     grp.writeEntry("key", "value");
 }
 

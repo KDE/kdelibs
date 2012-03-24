@@ -177,7 +177,7 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const KUrl::List& urls,
         }
         if (!keyName.isEmpty()) {
             // Check kmessagebox setting... erase & copy to konquerorrc.
-            KSharedConfig::Ptr config = KGlobal::config();
+            KSharedConfig::Ptr config = KSharedConfig::openConfig();
             KConfigGroup notificationGroup(config, "Notification Messages");
             if (!notificationGroup.readEntry(keyName, true)) {
                 notificationGroup.writeEntry(keyName, true);

@@ -76,7 +76,7 @@ KStatusBar::KStatusBar( QWidget *parent )
     // make the size grip stuff configurable
     // ...but off by default (sven)
     // ...but on by default on OSX, else windows with a KStatusBar are not resizable at all (marijn)
-    KSharedConfig::Ptr config = KGlobal::config();
+    KSharedConfig::Ptr config = KSharedConfig::openConfig();
     KConfigGroup group( config, QLatin1String("StatusBar style") );
 #ifdef Q_WS_MAC
     bool grip_enabled = group.readEntry(QLatin1String("SizeGripEnabled"), true);

@@ -159,7 +159,7 @@ KDirWatchPrivate::KDirWatchPrivate()
 
 #pragma message("KDE5 TODO: Remove dependencies on Kconfig and KGlobal")
 #if 0
-  KConfigGroup config(KGlobal::config(), "DirWatch");
+  KConfigGroup config(KSharedConfig::openConfig(), "DirWatch");
   m_nfsPollInterval = config.readEntry("NFSPollInterval", 5000);
   m_PollInterval = config.readEntry("PollInterval", 500);
 

@@ -74,7 +74,7 @@ DownloadDialog::DownloadDialog(const QString& configFile, QWidget * parent)
 void DownloadDialog::init(const QString& configFile)
 {
     // load the last size from config
-    KConfigGroup group(KGlobal::config(), ConfigGroup);
+    KConfigGroup group(KSharedConfig::openConfig(), ConfigGroup);
     restoreDialogSize(group);
     setMinimumSize(700, 400);
 
@@ -97,7 +97,7 @@ void DownloadDialog::init(const QString& configFile)
 
 DownloadDialog::~DownloadDialog()
 {
-    KConfigGroup group(KGlobal::config(), ConfigGroup);
+    KConfigGroup group(KSharedConfig::openConfig(), ConfigGroup);
     saveDialogSize(group, KConfigBase::Persistent);
     delete d;
 }

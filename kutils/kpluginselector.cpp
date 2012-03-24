@@ -332,7 +332,7 @@ void KPluginSelector::addPlugins(const QList<KPluginInfo> &pluginInfoList,
     if (pluginInfoList.isEmpty())
         return;
 
-    KConfigGroup cfgGroup(config ? config : KGlobal::config(), "Plugins");
+    KConfigGroup cfgGroup(config ? config : KSharedConfig::openConfig(), "Plugins");
     kDebug( 702 ) << "cfgGroup = " << &cfgGroup;
 
     d->pluginModel->addPlugins(pluginInfoList, categoryName, categoryKey, cfgGroup, pluginLoadMethod, true /* manually added */);

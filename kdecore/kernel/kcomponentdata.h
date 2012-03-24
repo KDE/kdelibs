@@ -36,7 +36,7 @@ class KComponentDataPrivate;
  * instance of one component.
  *
  * The application component data can always be accessed using KGlobal::mainComponent() (or the
- * convenience function KGlobal::dirs() and KGlobal::config()) while the
+ * convenience function KGlobal::dirs() and KSharedConfig::openConfig()) while the
  * component data of the currently active component (mainly used for KParts) can be accessed using
  * KGlobal::activeComponent().
  *

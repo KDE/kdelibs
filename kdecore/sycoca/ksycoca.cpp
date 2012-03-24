@@ -104,7 +104,7 @@ KSycocaPrivate::KSycocaPrivate()
 #else
     m_sycocaStrategy = StrategyMmap;
 #endif
-    KConfigGroup config(KGlobal::config(), "KSycoca");
+    KConfigGroup config(KSharedConfig::openConfig(), "KSycoca");
     setStrategyFromString(config.readEntry("strategy"));
 }
 

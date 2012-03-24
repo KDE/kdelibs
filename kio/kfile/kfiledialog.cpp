@@ -202,7 +202,7 @@ public:
     KFileDialogPrivate()
       : native(0),
         w(0),
-        cfgGroup(KGlobal::config(), ConfigGroup)
+        cfgGroup(KSharedConfig::openConfig(), ConfigGroup)
     {
         if (cfgGroup.readEntry("Native", NATIVE_FILEDIALOGS_BY_DEFAULT) &&
             KFileDialogPrivate::Native::s_allowNative)
@@ -213,7 +213,7 @@ public:
     {
         if(!KFileDialogPrivate::Native::s_allowNative)
             return false;
-        KConfigGroup cfgGroup(KGlobal::config(), ConfigGroup);
+        KConfigGroup cfgGroup(KSharedConfig::openConfig(), ConfigGroup);
         return cfgGroup.readEntry("Native", NATIVE_FILEDIALOGS_BY_DEFAULT);
     }
 
@@ -426,7 +426,7 @@ void KFileDialog::accept()
         return;
     setResult( QDialog::Accepted ); // keep old behavior; probably not needed though
     d->w->accept();
-    KConfigGroup cfgGroup(KGlobal::config(), ConfigGroup);
+    KConfigGroup cfgGroup(KSharedConfig::openConfig(), ConfigGroup);
     KDialog::accept();
     emit okClicked();
 }

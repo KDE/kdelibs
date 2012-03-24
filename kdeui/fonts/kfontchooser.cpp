@@ -430,7 +430,7 @@ KFontChooser::KFontChooser( QWidget *parent,
     if( sizeIsRelativeState && d->sizeIsRelativeCheckBox )
         setSizeIsRelative( *sizeIsRelativeState );
 
-    KConfigGroup cg(KGlobal::config(), QLatin1String("General"));
+    KConfigGroup cg(KSharedConfig::openConfig(), QLatin1String("General"));
     d->_k_showXLFDArea(cg.readEntry(QLatin1String("fontSelectorShowXLFD"), false));
 
     // Set focus to the size list as this is the most commonly changed property

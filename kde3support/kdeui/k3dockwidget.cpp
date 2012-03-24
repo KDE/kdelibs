@@ -2640,7 +2640,7 @@ void K3DockManager::writeConfig( KConfig* c, const QString &_group )
 {
   //debug("BEGIN Write Config");
   if (!c) {
-      c = KGlobal::config().data();
+      c = KShareConfig::openConfig().data();
   }
   QString group = _group.isEmpty() ? "dock_setting_default" : _group;
 
@@ -2788,7 +2788,7 @@ void K3DockManager::writeConfig( KConfig* c, const QString &_group )
 void K3DockManager::readConfig( KConfig* c, const QString &_group )
 {
   if (!c) {
-      c = KGlobal::config().data();
+      c = KShareConfig::openConfig().data();
   }
   QString group = _group.isEmpty() ? "dock_setting_default" : _group;
 

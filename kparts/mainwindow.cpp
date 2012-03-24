@@ -173,7 +173,7 @@ void MainWindow::createShellGUI( bool create )
 void KParts::MainWindow::saveNewToolbarConfig()
 {
     createGUI(d->m_activePart);
-    KConfigGroup cg(KGlobal::config(), QString());
+    KConfigGroup cg(KSharedConfig::openConfig(), QString());
     applyMainWindowSettings(cg);
 }
 

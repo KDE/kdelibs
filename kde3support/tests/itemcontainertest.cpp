@@ -94,7 +94,7 @@ TopLevel::TopLevel(QWidget *parent)
     connect( cbListView, SIGNAL(toggled(bool)),
 	     this, SLOT(slotToggleSingleColumn(bool)) );
 
-    KGlobal::config()->reparseConfiguration();
+    KSharedConfig::openConfig()->reparseConfiguration();
 
     //Create IconView
     QGroupBox* gbIconView = new QGroupBox( "K3IconView", this);

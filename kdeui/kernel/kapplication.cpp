@@ -198,7 +198,7 @@ public:
   }
 
 #ifndef KDE3_SUPPORT
-  KConfig *config() { return KGlobal::config().data(); }
+  KConfig *config() { return KSharedConfig::openConfig().data(); }
 #endif
 
   void _k_x11FilterDestroyed();
@@ -409,7 +409,7 @@ void KApplicationPrivate::preqapplicationhack()
 {
     preread_app_startup_id();
 
-    KGlobal::config(); // initialize qt plugin path (see KComponentDataPrivate::lazyInit)
+    KSharedConfig::openConfig(); // initialize qt plugin path (see KComponentDataPrivate::lazyInit)
 }
 
 int KApplication::xioErrhandler( Display* dpy )
@@ -616,7 +616,7 @@ KConfig* KApplication::sessionConfig()
 
 void KApplication::reparseConfiguration()
 {
-    KGlobal::config()->reparseConfiguration();
+    KSharedConfig::openConfig()->reparseConfiguration();
 }
 
 void KApplication::quit()

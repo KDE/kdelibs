@@ -584,7 +584,7 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
     lineEdit->setClearButtonShown(true);
     combo->setLineEdit(lineEdit);
     combo->setDuplicatesEnabled( false );
-    KConfigGroup cg( KGlobal::config(), QString::fromLatin1("Open-with settings") );
+    KConfigGroup cg( KSharedConfig::openConfig(), QString::fromLatin1("Open-with settings") );
     int max = cg.readEntry( "Maximum history", 15 );
     combo->setMaxCount( max );
     int mode = cg.readEntry( "CompletionMode", int(KGlobalSettings::completionMode()));
@@ -660,7 +660,7 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
 
   // check to see if we use konsole if not disable the nocloseonexit
   // because we don't know how to do this on other terminal applications
-  KConfigGroup confGroup( KGlobal::config(), QString::fromLatin1("General") );
+  KConfigGroup confGroup( KSharedConfig::openConfig(), QString::fromLatin1("General") );
   QString preferredTerminal = confGroup.readPathEntry("TerminalApplication", QString::fromLatin1("konsole"));
 
   if (bReadOnly || preferredTerminal != "konsole")
@@ -867,7 +867,7 @@ bool KOpenWithDialogPrivate::checkAccept()
     }
 
     if (terminal->isChecked()) {
-        KConfigGroup confGroup( KGlobal::config(), QString::fromLatin1("General") );
+        KConfigGroup confGroup( KSharedConfig::openConfig(), QString::fromLatin1("General") );
         preferredTerminal = confGroup.readPathEntry("TerminalApplication", QString::fromLatin1("konsole"));
         m_command = preferredTerminal;
         // only add --noclose when we are sure it is konsole we're using
@@ -972,7 +972,7 @@ void KOpenWithDialogPrivate::saveComboboxHistory()
     if (combo) {
         combo->addToHistory(edit->text());
 
-        KConfigGroup cg( KGlobal::config(), QString::fromLatin1("Open-with settings") );
+        KConfigGroup cg( KSharedConfig::openConfig(), QString::fromLatin1("Open-with settings") );
         cg.writeEntry( "History", combo->historyItems() );
         writeEntry( cg, "CompletionMode", combo->completionMode() );
         // don't store the completion-list, as it contains all of KUrlCompletion's

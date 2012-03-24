@@ -216,7 +216,7 @@ void tst_KActionCollection::insertReplaces2()
 
 KConfigGroup tst_KActionCollection::clearConfig()
 {
-    KSharedConfig::Ptr cfg = KGlobal::config();
+    KSharedConfig::Ptr cfg = KSharedConfig::openConfig();
     cfg->deleteGroup(collection->configGroup());
     return KConfigGroup(cfg, collection->configGroup());
 }

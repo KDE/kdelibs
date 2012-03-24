@@ -528,7 +528,7 @@ QString KIconTheme::current()
         return *_theme;
     }
 
-    KConfigGroup cg(KGlobal::config(), "Icons");
+    KConfigGroup cg(KSharedConfig::openConfig(), "Icons");
     *_theme = cg.readEntry("Theme", defaultThemeName());
     if ( *_theme == QLatin1String("hicolor") ) {
         *_theme = defaultThemeName();

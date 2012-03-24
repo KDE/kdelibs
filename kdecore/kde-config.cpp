@@ -91,7 +91,7 @@ int main(int argc, char **argv)
 
     KComponentData a(&about);
     (void)KGlobal::dirs(); // trigger the creation
-    (void)KGlobal::config();
+    (void)KSharedConfig::openConfig();
 
     // Get application specific arguments
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
@@ -214,7 +214,7 @@ int main(int argc, char **argv)
         }
         else if (type == QLatin1String("autostart"))
         {
-            KConfigGroup g( KGlobal::config(), "Paths" );
+            KConfigGroup g( KSharedConfig::openConfig(), "Paths" );
             QString path = QDir::homePath() + QLatin1String("/Autostart/");
             path = g.readPathEntry( "Autostart", path);
             path = QDir::cleanPath( path );

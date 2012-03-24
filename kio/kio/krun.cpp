@@ -193,7 +193,7 @@ bool KRun::displayOpenWithDialog(const KUrl::List& lst, QWidget* window, bool te
     }
 
 #ifdef Q_WS_WIN
-    KConfigGroup cfgGroup(KGlobal::config(), "KOpenWithDialog Settings");
+    KConfigGroup cfgGroup(KSharedConfig::openConfig(), "KOpenWithDialog Settings");
     if (cfgGroup.readEntry("Native", true)) {
         return KRun::KRunPrivate::displayNativeOpenWithDialog(lst, window, tempFiles,
                 suggestedFileName, asn);
@@ -496,7 +496,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
     */
 
     if (_service.terminal()) {
-        KConfigGroup cg(KGlobal::config(), "General");
+        KConfigGroup cg(KSharedConfig::openConfig(), "General");
         QString terminal = cg.readPathEntry("TerminalApplication", "konsole");
         if (terminal == "konsole") {
             if (!_service.path().isEmpty()) {
@@ -1550,7 +1550,7 @@ void KRun::setAutoDelete(bool b)
 void KRun::setEnableExternalBrowser(bool b)
 {
     if (b) {
-        d->m_externalBrowser = KConfigGroup(KGlobal::config(), "General").readEntry("BrowserApplication");
+        d->m_externalBrowser = KConfigGroup(KSharedConfig::openConfig(), "General").readEntry("BrowserApplication");
     }
     else {
         d->m_externalBrowser.clear();

@@ -348,7 +348,7 @@ void KPropertiesDialog::KPropertiesDialogPrivate::init()
 
     insertPages();
 
-    KConfigGroup group(KGlobal::config(), "KPropertiesDialog");
+    KConfigGroup group(KSharedConfig::openConfig(), "KPropertiesDialog");
     q->restoreDialogSize(group);
 }
 
@@ -381,7 +381,7 @@ KPropertiesDialog::~KPropertiesDialog()
     qDeleteAll(d->m_pageList);
     delete d;
 
-    KConfigGroup group(KGlobal::config(), "KPropertiesDialog");
+    KConfigGroup group(KSharedConfig::openConfig(), "KPropertiesDialog");
     saveDialogSize(group, KConfigBase::Persistent);
 }
 
@@ -3300,7 +3300,7 @@ void KDesktopPropsPlugin::slotAdvanced()
 
     // check to see if we use konsole if not do not add the nocloseonexit
     // because we don't know how to do this on other terminal applications
-    KConfigGroup confGroup( KGlobal::config(), QString::fromLatin1("General") );
+    KConfigGroup confGroup( KSharedConfig::openConfig(), QString::fromLatin1("General") );
     QString preferredTerminal = confGroup.readPathEntry("TerminalApplication",
                                                         QString::fromLatin1("konsole"));
 

@@ -1103,7 +1103,7 @@ void KCalendarTest::testFirstLast()
 
 void KCalendarTest::testEra()
 {
-    KConfigGroup lcg(KGlobal::config(), QString("Locale"));
+    KConfigGroup lcg(KSharedConfig::openConfig(), QString("Locale"));
     KConfigGroup cg = lcg.group(QString("KCalendarSystem %1").arg("gregorian"));
     cg.deleteGroup();
 
@@ -1417,7 +1417,7 @@ void KCalendarTest::testQDateCalendarYmd()
 
 void KCalendarTest::testQDateCalendarSpecialCases()
 {
-    KConfigGroup lcg(KGlobal::config(), QString("Locale"));
+    KConfigGroup lcg(KSharedConfig::openConfig(), QString("Locale"));
     KConfigGroup cg = lcg.group(QString("KCalendarSystem %1").arg("gregorian"));
     cg.deleteGroup();
 

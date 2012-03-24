@@ -74,7 +74,7 @@ void KFileMetaPropsPlugin::KFileMetaPropsPluginPrivate::configureShownMetaData()
     topLayout->addWidget(configWidget);
     dialog->setMainWidget(mainWidget);
 
-    KConfigGroup dialogConfig(KGlobal::config(), "KFileMetaPropsPlugin");
+    KConfigGroup dialogConfig(KSharedConfig::openConfig(), "KFileMetaPropsPlugin");
     dialog->restoreDialogSize(dialogConfig);
 
     if ((dialog->exec() == QDialog::Accepted) && (dialog != 0)) {

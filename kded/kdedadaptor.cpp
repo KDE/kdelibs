@@ -70,7 +70,7 @@ QStringList KdedAdaptor::loadedModules()
 
 void KdedAdaptor::reconfigure()
 {
-   KGlobal::config()->reparseConfiguration();
+   KSharedConfig::openConfig()->reparseConfiguration();
    Kded::self()->initModules();
    Kded::self()->loadSecondPhase();
 }

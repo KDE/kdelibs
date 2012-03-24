@@ -36,7 +36,7 @@ QTEST_KDEMAIN( KRunUnitTest, NoGUI )
 void KRunUnitTest::initTestCase()
 {
     // testProcessDesktopExec works only if your terminal application is set to "x-term"
-    KConfigGroup cg(KGlobal::config(), "General");
+    KConfigGroup cg(KSharedConfig::openConfig(), "General");
     cg.writeEntry("TerminalApplication", "x-term");
 
     // Determine the full path of sh - this is needed to make testProcessDesktopExecNoFile()

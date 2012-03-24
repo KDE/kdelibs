@@ -974,7 +974,7 @@ public:
    * Constructor.
    *
    * @param configname name of config file. If no name is given, the default
-   *                   config file as returned by KGlobal::config() is used
+   *                   config file as returned by KSharedConfig::openConfig() is used
    * @param parent the parent object (see QObject documentation)
    */
   explicit KCoreConfigSkeleton(const QString & configname = QString(), QObject* parent = 0);

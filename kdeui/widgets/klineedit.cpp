@@ -71,7 +71,7 @@ public:
         threeStars = false;
         completionRunning = false;
         if (!s_initialized) {
-            KConfigGroup config( KGlobal::config(), "General" );
+            KConfigGroup config( KSharedConfig::openConfig(), "General" );
             s_backspacePerformsCompletion = config.readEntry("Backspace performs completion", false);
             s_initialized = true;
         }
@@ -1851,7 +1851,7 @@ void KLineEdit::setPasswordMode(bool b)
 {
     if(b)
     {
-        KConfigGroup cg(KGlobal::config(), "Passwords");
+        KConfigGroup cg(KSharedConfig::openConfig(), "Passwords");
         const QString val = cg.readEntry("EchoMode", "OneStar");
         if (val == "NoEcho")
             setEchoMode(NoEcho);

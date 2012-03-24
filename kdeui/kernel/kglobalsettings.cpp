@@ -226,19 +226,19 @@ void KGlobalSettings::activate(ActivateOptions options)
 // so that apps can just use QApplication::startDragDistance().
 int KGlobalSettings::dndEventDelay()
 {
-    KConfigGroup g( KGlobal::config(), "General" );
+    KConfigGroup g( KSharedConfig::openConfig(), "General" );
     return g.readEntry("StartDragDist", QApplication::startDragDistance());
 }
 
 bool KGlobalSettings::singleClick()
 {
-    KConfigGroup g( KGlobal::config(), "KDE" );
+    KConfigGroup g( KSharedConfig::openConfig(), "KDE" );
     return g.readEntry("SingleClick", KDE_DEFAULT_SINGLECLICK );
 }
 
 bool KGlobalSettings::smoothScroll()
 {
-    KConfigGroup g( KGlobal::config(), "KDE" );
+    KConfigGroup g( KSharedConfig::openConfig(), "KDE" );
     return g.readEntry("SmoothScroll", KDE_DEFAULT_SMOOTHSCROLL );
 }
 
@@ -246,7 +246,7 @@ KGlobalSettings::TearOffHandle KGlobalSettings::insertTearOffHandle()
 {
     int tearoff;
     bool effectsenabled;
-    KConfigGroup g( KGlobal::config(), "KDE" );
+    KConfigGroup g( KSharedConfig::openConfig(), "KDE" );
     effectsenabled = g.readEntry( "EffectsEnabled", false);
     tearoff = g.readEntry("InsertTearOffHandle", KDE_DEFAULT_INSERTTEAROFFHANDLES);
     return effectsenabled ? (TearOffHandle) tearoff : Disable;
@@ -254,20 +254,20 @@ KGlobalSettings::TearOffHandle KGlobalSettings::insertTearOffHandle()
 
 bool KGlobalSettings::changeCursorOverIcon()
 {
-    KConfigGroup g( KGlobal::config(), "KDE" );
+    KConfigGroup g( KSharedConfig::openConfig(), "KDE" );
     return g.readEntry("ChangeCursor", KDE_DEFAULT_CHANGECURSOR);
 }
 
 int KGlobalSettings::autoSelectDelay()
 {
-    KConfigGroup g( KGlobal::config(), "KDE" );
+    KConfigGroup g( KSharedConfig::openConfig(), "KDE" );
     return g.readEntry("AutoSelectDelay", KDE_DEFAULT_AUTOSELECTDELAY);
 }
 
 KGlobalSettings::Completion KGlobalSettings::completionMode()
 {
     int completion;
-    KConfigGroup g( KGlobal::config(), "General" );
+    KConfigGroup g( KSharedConfig::openConfig(), "General" );
     completion = g.readEntry("completionMode", -1);
     if ((completion < (int) CompletionNone) ||
         (completion > (int) CompletionPopupAuto))
@@ -279,14 +279,14 @@ KGlobalSettings::Completion KGlobalSettings::completionMode()
 
 bool KGlobalSettings::showContextMenusOnPress ()
 {
-    KConfigGroup g(KGlobal::config(), "ContextMenus");
+    KConfigGroup g(KSharedConfig::openConfig(), "ContextMenus");
     return g.readEntry("ShowOnPress", true);
 }
 
 #ifndef KDE_NO_DEPRECATED
 int KGlobalSettings::contextMenuKey ()
 {
-    KConfigGroup g(KGlobal::config(), "Shortcuts");
+    KConfigGroup g(KSharedConfig::openConfig(), "Shortcuts");
     QString s = g.readEntry ("PopupMenuContext", "Menu");
 
     // this is a bit of a code duplication with KShortcut,
@@ -319,7 +319,7 @@ QColor KGlobalSettings::inactiveTitleColor()
 #ifdef Q_WS_WIN
     return qt_colorref2qrgb(GetSysColor(COLOR_INACTIVECAPTION));
 #else
-    KConfigGroup g( KGlobal::config(), "WM" );
+    KConfigGroup g( KSharedConfig::openConfig(), "WM" );
     return g.readEntry( "inactiveBackground", QColor(224,223,222) );
 #endif
 }
@@ -330,7 +330,7 @@ QColor KGlobalSettings::inactiveTextColor()
 #ifdef Q_WS_WIN
     return qt_colorref2qrgb(GetSysColor(COLOR_INACTIVECAPTIONTEXT));
 #else
-    KConfigGroup g( KGlobal::config(), "WM" );
+    KConfigGroup g( KSharedConfig::openConfig(), "WM" );
     return g.readEntry( "inactiveForeground", QColor(75,71,67) );
 #endif
 }
@@ -341,7 +341,7 @@ QColor KGlobalSettings::activeTitleColor()
 #ifdef Q_WS_WIN
     return qt_colorref2qrgb(GetSysColor(COLOR_ACTIVECAPTION));
 #else
-    KConfigGroup g( KGlobal::config(), "WM" );
+    KConfigGroup g( KSharedConfig::openConfig(), "WM" );
     return g.readEntry( "activeBackground", QColor(48,174,232));
 #endif
 }
@@ -352,7 +352,7 @@ QColor KGlobalSettings::activeTextColor()
 #ifdef Q_WS_WIN
     return qt_colorref2qrgb(GetSysColor(COLOR_CAPTIONTEXT));
 #else
-    KConfigGroup g( KGlobal::config(), "WM" );
+    KConfigGroup g( KSharedConfig::openConfig(), "WM" );
     return g.readEntry( "activeForeground", QColor(255,255,255) );
 #endif
 }
@@ -369,13 +369,13 @@ qreal KGlobalSettings::contrastF(const KSharedConfigPtr &config)
 
 bool KGlobalSettings::shadeSortColumn()
 {
-    KConfigGroup g( KGlobal::config(), "General" );
+    KConfigGroup g( KSharedConfig::openConfig(), "General" );
     return g.readEntry( "shadeSortColumn", KDE_DEFAULT_SHADE_SORT_COLUMN );
 }
 
 bool KGlobalSettings::allowDefaultBackgroundImages()
 {
-    KConfigGroup g( KGlobal::config(), "General" );
+    KConfigGroup g( KSharedConfig::openConfig(), "General" );
     return g.readEntry( "allowDefaultBackgroundImages", KDE_DEFAULT_ALLOW_DEFAULT_BACKGROUND_IMAGES );
 }
 
@@ -429,7 +429,7 @@ QFont KGlobalSettingsData::font( FontTypes fontType )
         cachedFont = new QFont( fontData.FontName, fontData.Size, fontData.Weight );
         cachedFont->setStyleHint( fontData.StyleHint );
 
-        const KConfigGroup configGroup( KGlobal::config(), fontData.ConfigGroupKey );
+        const KConfigGroup configGroup( KSharedConfig::openConfig(), fontData.ConfigGroupKey );
         *cachedFont = configGroup.readEntry( fontData.ConfigKey, *cachedFont );
 
         mFonts[fontType] = cachedFont;
@@ -556,7 +556,7 @@ KGlobalSettings::KMouseSettings& KGlobalSettingsData::mouseSettings()
         KGlobalSettings::KMouseSettings& s = *mMouseSettings; // for convenience
 
 #ifndef Q_WS_WIN
-        KConfigGroup g( KGlobal::config(), "Mouse" );
+        KConfigGroup g( KSharedConfig::openConfig(), "Mouse" );
         QString setting = g.readEntry("MouseButtonMapping");
         if (setting == "RightHanded")
             s.handed = KGlobalSettings::KMouseSettings::RightHanded;
@@ -631,7 +631,7 @@ QString KGlobalSettings::desktopPath()
 QString KGlobalSettings::autostartPath()
 {
     QString s_autostartPath;
-    KConfigGroup g( KGlobal::config(), "Paths" );
+    KConfigGroup g( KSharedConfig::openConfig(), "Paths" );
     s_autostartPath = KGlobal::dirs()->localkdedir() + "Autostart/";
     s_autostartPath = g.readPathEntry( "Autostart" , s_autostartPath );
     s_autostartPath = QDir::cleanPath( s_autostartPath );
@@ -687,7 +687,7 @@ bool KGlobalSettings::isMultiHead()
 
 bool KGlobalSettings::wheelMouseZooms()
 {
-    KConfigGroup g( KGlobal::config(), "KDE" );
+    KConfigGroup g( KSharedConfig::openConfig(), "KDE" );
     return g.readEntry( "WheelMouseZooms", KDE_DEFAULT_WHEEL_ZOOM );
 }
 
@@ -696,7 +696,7 @@ QRect KGlobalSettings::splashScreenDesktopGeometry()
     QDesktopWidget *dw = QApplication::desktop();
 
     if (dw->isVirtualDesktop()) {
-        KConfigGroup group(KGlobal::config(), "Windows");
+        KConfigGroup group(KSharedConfig::openConfig(), "Windows");
         int scr = group.readEntry("Unmanaged", -3);
         if (group.readEntry("XineramaEnabled", true) && scr != -2) {
             if (scr == -3)
@@ -715,7 +715,7 @@ QRect KGlobalSettings::desktopGeometry(const QPoint& point)
     QDesktopWidget *dw = QApplication::desktop();
 
     if (dw->isVirtualDesktop()) {
-        KConfigGroup group(KGlobal::config(), "Windows");
+        KConfigGroup group(KSharedConfig::openConfig(), "Windows");
         if (group.readEntry("XineramaEnabled", true) &&
             group.readEntry("XineramaPlacementEnabled", true)) {
             return dw->screenGeometry(dw->screenNumber(point));
@@ -732,7 +732,7 @@ QRect KGlobalSettings::desktopGeometry(const QWidget* w)
     QDesktopWidget *dw = QApplication::desktop();
 
     if (dw->isVirtualDesktop()) {
-        KConfigGroup group(KGlobal::config(), "Windows");
+        KConfigGroup group(KSharedConfig::openConfig(), "Windows");
         if (group.readEntry("XineramaEnabled", true) &&
             group.readEntry("XineramaPlacementEnabled", true)) {
             if (w)
@@ -748,14 +748,14 @@ QRect KGlobalSettings::desktopGeometry(const QWidget* w)
 
 bool KGlobalSettings::showIconsOnPushButtons()
 {
-    KConfigGroup g( KGlobal::config(), "KDE" );
+    KConfigGroup g( KSharedConfig::openConfig(), "KDE" );
     return g.readEntry("ShowIconsOnPushButtons",
                        KDE_DEFAULT_ICON_ON_PUSHBUTTON);
 }
 
 bool KGlobalSettings::naturalSorting()
 {
-    KConfigGroup g( KGlobal::config(), "KDE" );
+    KConfigGroup g( KSharedConfig::openConfig(), "KDE" );
     return g.readEntry("NaturalSorting",
                        KDE_DEFAULT_NATURAL_SORTING);
 }
@@ -785,7 +785,7 @@ KGlobalSettings::GraphicEffects KGlobalSettings::graphicEffectsLevelDefault()
 
 bool KGlobalSettings::showFilePreview(const QUrl &url)
 {
-    KConfigGroup g(KGlobal::config(), "PreviewSettings");
+    KConfigGroup g(KSharedConfig::openConfig(), "PreviewSettings");
     QString protocol = url.scheme();
     bool defaultSetting = KProtocolInfo::showFilePreview( protocol );
     return g.readEntry(protocol, defaultSetting );
@@ -793,13 +793,13 @@ bool KGlobalSettings::showFilePreview(const QUrl &url)
 
 bool KGlobalSettings::opaqueResize()
 {
-    KConfigGroup g( KGlobal::config(), "KDE" );
+    KConfigGroup g( KSharedConfig::openConfig(), "KDE" );
     return g.readEntry("OpaqueResize", KDE_DEFAULT_OPAQUE_RESIZE);
 }
 
 int KGlobalSettings::buttonLayout()
 {
-    KConfigGroup g( KGlobal::config(), "KDE" );
+    KConfigGroup g( KSharedConfig::openConfig(), "KDE" );
     return g.readEntry("ButtonLayout", KDE_DEFAULT_BUTTON_LAYOUT);
 }
 
@@ -825,26 +825,26 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
     switch(changeType) {
     case StyleChanged:
         if (activated) {
-            KGlobal::config()->reparseConfiguration();
+            KSharedConfig::openConfig()->reparseConfiguration();
             kdisplaySetStyle();
         }
         break;
 
     case ToolbarStyleChanged:
-        KGlobal::config()->reparseConfiguration();
+        KSharedConfig::openConfig()->reparseConfiguration();
         emit q->toolbarAppearanceChanged(arg);
         break;
 
     case PaletteChanged:
         if (activated) {
-            KGlobal::config()->reparseConfiguration();
+            KSharedConfig::openConfig()->reparseConfiguration();
             paletteCreated = false;
             kdisplaySetPalette();
         }
         break;
 
     case FontChanged:
-        KGlobal::config()->reparseConfiguration();
+        KSharedConfig::openConfig()->reparseConfiguration();
         KGlobalSettingsData::self()->dropFontSettingsCache();
         if (activated) {
             kdisplaySetFont();
@@ -852,7 +852,7 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
         break;
 
     case SettingsChanged: {
-        KGlobal::config()->reparseConfiguration();
+        KSharedConfig::openConfig()->reparseConfiguration();
         SettingsCategory category = static_cast<SettingsCategory>(arg);
         if (category == SETTINGS_QT) {
             if (activated) {
@@ -878,7 +878,7 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
     }
     case IconChanged:
         QPixmapCache::clear();
-        KGlobal::config()->reparseConfiguration();
+        KSharedConfig::openConfig()->reparseConfiguration();
         emit q->iconChanged(arg);
         break;
 
@@ -922,7 +922,7 @@ void KGlobalSettings::Private::applyGUIStyle()
 
     if (kde_overrideStyle.isEmpty()) {
         const QString &defaultStyle = KStyle::defaultStyle();
-        const KConfigGroup pConfig(KGlobal::config(), "General");
+        const KConfigGroup pConfig(KSharedConfig::openConfig(), "General");
         const QString &styleStr = pConfig.readEntry("widgetStyle", defaultStyle);
 
         if (styleStr.isEmpty() ||
@@ -967,7 +967,7 @@ QPalette KGlobalSettings::Private::createApplicationPalette(const KSharedConfigP
 {
     // This method is typically called once by KQGuiPlatformPlugin::palette and once again
     // by kdisplaySetPalette(), so we cache the palette to save time.
-    if (config == KGlobal::config() && paletteCreated) {
+    if (config == KSharedConfig::openConfig() && paletteCreated) {
         return applicationPalette;
     }
     return createNewApplicationPalette(config);
@@ -1012,7 +1012,7 @@ QPalette KGlobalSettings::Private::createNewApplicationPalette(const KSharedConf
         palette.setBrush( state, QPalette::LinkVisited, schemeView.foreground( KColorScheme::VisitedText ) );
     }
 
-    if (config == KGlobal::config()) {
+    if (config == KSharedConfig::openConfig()) {
         paletteCreated = true;
         applicationPalette = palette;
     }
@@ -1072,7 +1072,7 @@ void KGlobalSettings::Private::kdisplaySetStyle()
 
 void KGlobalSettings::Private::reloadStyleSettings()
 {
-    KConfigGroup g( KGlobal::config(), "KDE-Global GUI Settings" );
+    KConfigGroup g( KSharedConfig::openConfig(), "KDE-Global GUI Settings" );
 
     // Asking for hasKey we do not ask for graphicEffectsLevelDefault() that can
     // contain some very slow code. If we can save that time, do it. (ereslibre)
@@ -1118,7 +1118,7 @@ void KGlobalSettings::Private::applyCursorTheme()
 
 void KGlobalSettings::Private::propagateQtSettings()
 {
-    KConfigGroup cg( KGlobal::config(), "KDE" );
+    KConfigGroup cg( KSharedConfig::openConfig(), "KDE" );
 
     int num = cg.readEntry("CursorBlinkRate", QApplication::cursorFlashTime());
     if ((num != 0) && (num < 200))

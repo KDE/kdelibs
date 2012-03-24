@@ -52,7 +52,7 @@ K3SpellDlg::K3SpellDlg( QWidget * parent, bool _progressbar, bool _modal )
   setDefaultButton( Cancel );
   setButtonText( Cancel, i18n("&Finished") );
 
-  KConfigGroup cg( KGlobal::config(),"K3Spell" );
+  KConfigGroup cg( KSharedConfig::openConfig(),"K3Spell" );
   kDebug() << (cg.readEntry("K3Spell_DoSpellChecking"));
   kDebug() << "dospellchecking is " << cg.readEntry("K3Spell_DoSpellChecking", false);
   if ( (cg.readEntry("K3Spell_DoSpellChecking", false) == true) )  //dospellcheck ?

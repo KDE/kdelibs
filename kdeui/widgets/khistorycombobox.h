@@ -102,7 +102,7 @@ public:
      * You won't have the benefit of weighted completion though, so normally
      * you should do something like
      * \code
-     * KConfigGroup config(KGlobal::config(), "somegroup");
+     * KConfigGroup config(KSharedConfig::openConfig(), "somegroup");
      *
      * // load the history and completion list after creating the history combo
      * QStringList list;
@@ -116,7 +116,7 @@ public:
      * // save the history and completion list when the history combo is
      * // destroyed
      * QStringList list;
-     * KConfigGroup config(KGlobal::config(), "somegroup");
+     * KConfigGroup config(KSharedConfig::openConfig(), "somegroup");
      * list = combo->completionObject()->items();
      * config.writeEntry("Completion list", list);
      * list = combo->historyItems();

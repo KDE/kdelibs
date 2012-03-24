@@ -73,7 +73,7 @@ KIconEffect::~KIconEffect()
 
 void KIconEffect::init()
 {
-    KSharedConfig::Ptr config = KGlobal::config();
+    KSharedConfig::Ptr config = KSharedConfig::openConfig();
 
     int i, j, effect=-1;
     //FIXME: this really should be using KIconLoader::metaObject() to guarantee synchronization

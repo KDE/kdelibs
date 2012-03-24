@@ -78,7 +78,7 @@ MyAppConfig::MyAppConfig(QWidget *parent, const char *, const QVariantList &args
 \endcode
 
 For the KConfig object you can either use
-KGlobal::config() (I don't recommend it) or KSimpleConfig( "myapprc" ).
+KSharedConfig::openConfig() (I don't recommend it) or KSimpleConfig( "myapprc" ).
 I added a method to KSettings::Dispatcher that gives you the KConfig
 object for every registered instance name: \ref KSettings::Dispatcher::configForInstanceName
 

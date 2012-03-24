@@ -55,7 +55,7 @@ private Q_SLOTS:
         KDirOperator *dirOp = new KDirOperator;
         dirOp->setView(KFile::DetailTree);
         dirOp->setShowHiddenFiles(true);
-        KConfigGroup cg(KGlobal::config(), "diroperator");
+        KConfigGroup cg(KSharedConfig::openConfig(), "diroperator");
         dirOp->writeConfig(cg);
         delete dirOp;
 

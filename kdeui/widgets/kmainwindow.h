@@ -318,7 +318,7 @@ public:
      * Call this to enable "auto-save" of toolbar/menubar/statusbar settings
      * (and optionally window size).
      * If the *bars were moved around/shown/hidden when the window is closed,
-     * saveMainWindowSettings( KConfigGroup(KGlobal::config(), groupName) ) will be called.
+     * saveMainWindowSettings( KConfigGroup(KSharedConfig::openConfig(), groupName) ) will be called.
      *
      * @param groupName a name that identifies this "type of window".
      * You can have several types of window in the same application.
@@ -350,7 +350,7 @@ public:
 
     /**
      * Overload that lets you specify a KConfigGroup.
-     * This allows the settings to be saved into another file than KGlobal::config().
+     * This allows the settings to be saved into another file than KSharedConfig::openConfig().
      * @since 4.1
      */
     void setAutoSaveSettings(const KConfigGroup & group,

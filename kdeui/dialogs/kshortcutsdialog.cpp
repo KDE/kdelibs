@@ -138,14 +138,14 @@ KShortcutsDialog::KShortcutsDialog( KShortcutsEditor::ActionTypes types, KShortc
     connect( this, SIGNAL(user1Clicked()), d->m_keyChooser, SLOT(printShortcuts()) );
     connect(this, SIGNAL(cancelClicked()), SLOT(undoChanges()));
 
-    KConfigGroup group( KGlobal::config(), "KShortcutsDialog Settings" );
+    KConfigGroup group( KSharedConfig::openConfig(), "KShortcutsDialog Settings" );
     resize( group.readEntry( "Dialog Size", sizeHint() ) );
 }
 
 
 KShortcutsDialog::~KShortcutsDialog()
 {
-    KConfigGroup group( KGlobal::config(), "KShortcutsDialog Settings" );
+    KConfigGroup group( KSharedConfig::openConfig(), "KShortcutsDialog Settings" );
     group.writeEntry( "Dialog Size", size(), KConfigGroup::Persistent|KConfigGroup::Global );
     delete d;
 }

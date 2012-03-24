@@ -145,7 +145,7 @@ void KMainWindow_UnitTest::testSaveWindowSize()
     tb->setObjectName("testtb");
     mw.reallyResize(800, 600);
 
-    KConfigGroup cfg(KGlobal::config(), "TestWindowSize");
+    KConfigGroup cfg(KSharedConfig::openConfig(), "TestWindowSize");
     mw.saveMainWindowSettings(cfg);
     mw.close();
 

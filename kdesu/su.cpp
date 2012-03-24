@@ -76,7 +76,7 @@ SuProcess::SuProcess(const QByteArray &user, const QByteArray &command)
     m_User = user;
     m_Command = command;
 
-    KSharedConfig::Ptr config = KGlobal::config();
+    KSharedConfig::Ptr config = KSharedConfig::openConfig();
     KConfigGroup group(config, "super-user-command");
     d->m_superUserCommand = group.readEntry("super-user-command", DEFAULT_SUPER_USER_COMMAND);
 

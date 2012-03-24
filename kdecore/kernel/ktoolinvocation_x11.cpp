@@ -188,7 +188,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
 
     if (profileGrp.readEntry("TerminalClient", false))
     {
-        KConfigGroup confGroup( KGlobal::config(), "General" );
+        KConfigGroup confGroup( KSharedConfig::openConfig(), "General" );
         QString preferredTerminal = confGroup.readPathEntry("TerminalApplication", QString::fromLatin1("konsole"));
         command = preferredTerminal + QString::fromLatin1(" -e ") + command;
     }
@@ -304,7 +304,7 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
 
     if (exe.isEmpty()) {
         // We're in a KDE session (or there's no xdg-open installed)
-        KConfigGroup config(KGlobal::config(), "General");
+        KConfigGroup config(KSharedConfig::openConfig(), "General");
         const QString browserApp = config.readPathEntry("BrowserApplication", QString());
         if (!browserApp.isEmpty()) {
             exe = browserApp;
@@ -380,7 +380,7 @@ void KToolInvocation::invokeTerminal(const QString &command,
         return;
     }
 
-    KConfigGroup confGroup( KGlobal::config(), "General" );
+    KConfigGroup confGroup( KSharedConfig::openConfig(), "General" );
     QString exec = confGroup.readPathEntry("TerminalApplication", QString::fromLatin1("konsole"));
 
     if (!command.isEmpty()) {

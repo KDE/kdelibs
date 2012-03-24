@@ -81,7 +81,7 @@ bool KShortcutSchemesHelper::exportActionCollection(KActionCollection *collectio
 
 QString KShortcutSchemesHelper::currentShortcutSchemeName()
 {
-    return KGlobal::config()->group( "Shortcut Schemes" ).readEntry("Current Scheme", "Default");
+    return KSharedConfig::openConfig()->group( "Shortcut Schemes" ).readEntry("Current Scheme", "Default");
 }
 
 QString KShortcutSchemesHelper::shortcutSchemeFileName(const KXMLGUIClient *client, const QString &schemeName)

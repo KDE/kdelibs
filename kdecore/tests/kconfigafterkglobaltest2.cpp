@@ -49,7 +49,7 @@ int main(int argc, char **argv)
     QCoreApplication app(argc, argv);
     KComponentData componentData("kconfigafterkglobaltest");
 
-    KSharedConfigPtr cfg = KGlobal::config();
+    KSharedConfigPtr cfg = KSharedConfig::openConfig();
     KConfigGroup group = cfg->group("test");
     group.writeEntry("test", 1);
 

@@ -419,7 +419,7 @@ KColorScheme::~KColorScheme()
 KColorScheme::KColorScheme(QPalette::ColorGroup state, ColorSet set, KSharedConfigPtr config)
 {
     if (!config)
-        config = KGlobal::config();
+        config = KSharedConfig::openConfig();
 
     switch (set) {
         case Window:
@@ -453,7 +453,7 @@ KColorScheme::KColorScheme(QPalette::ColorGroup state, ColorSet set, KSharedConf
 // static
 int KColorScheme::contrast()
 {
-    KConfigGroup g( KGlobal::config(), "KDE" );
+    KConfigGroup g( KSharedConfig::openConfig(), "KDE" );
     return g.readEntry( "contrast", 7 );
 }
 
@@ -601,7 +601,7 @@ KStatefulBrush::KStatefulBrush(KColorScheme::ColorSet set, KColorScheme::Decorat
 KStatefulBrush::KStatefulBrush(const QBrush &brush, KSharedConfigPtr config)
 {
     if (!config)
-        config = KGlobal::config();
+        config = KSharedConfig::openConfig();
     d = new KStatefulBrushPrivate[3];
     d[0] = brush;
     d[1] = StateEffects(QPalette::Disabled, config).brush(brush);
@@ -612,7 +612,7 @@ KStatefulBrush::KStatefulBrush(const QBrush &brush, const QBrush &background,
                                KSharedConfigPtr config)
 {
     if (!config)
-        config = KGlobal::config();
+        config = KSharedConfig::openConfig();
     d = new KStatefulBrushPrivate[3];
     d[0] = brush;
     d[1] = StateEffects(QPalette::Disabled, config).brush(brush, background);

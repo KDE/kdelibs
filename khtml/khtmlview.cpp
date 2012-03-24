@@ -1172,7 +1172,7 @@ void KHTMLView::mousePressEvent( QMouseEvent *_mouse )
         bool hasHorBar = visibleWidth() < contentsWidth();
         bool hasVerBar = visibleHeight() < contentsHeight();
 
-        KConfigGroup cg( KGlobal::config(), "HTML Settings" );
+        KConfigGroup cg( KSharedConfig::openConfig(), "HTML Settings" );
         if ( cg.readEntry( "ShowMouseScrollIndicator", true ) ) {
             d->m_mouseScrollIndicator->show();
             d->m_mouseScrollIndicator->unsetCursor();

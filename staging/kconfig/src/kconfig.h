@@ -45,7 +45,7 @@ class KConfigPrivate;
  *
  * Quickstart:
  *
- * Get the default application config object via KGlobal::config().
+ * Get the default application config object via KSharedConfig::openConfig().
  *
  * Load a specific configuration file:
  * \code

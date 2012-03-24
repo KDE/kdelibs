@@ -40,7 +40,7 @@
 KShortcutSchemesEditor::KShortcutSchemesEditor(KShortcutsDialog *parent)
     :QGroupBox(i18n("Shortcut Schemes"), parent), m_dialog(parent)
 {
-    KConfigGroup group( KGlobal::config(), "Shortcut Schemes" );
+    KConfigGroup group( KSharedConfig::openConfig(), "Shortcut Schemes" );
 
     const QStringList schemeFiles = KGlobal::dirs()->findAllResources("appdata", "*shortcuts.rc");
     QStringList schemes;

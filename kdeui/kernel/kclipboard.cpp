@@ -77,7 +77,7 @@ KClipboardSynchronizer * KClipboardSynchronizer::self()
 KClipboardSynchronizer::KClipboardSynchronizer( QObject *parent )
     : QObject( parent ), d(new Private(this))
 {
-    KConfigGroup config( KGlobal::config(), "General" );
+    KConfigGroup config( KSharedConfig::openConfig(), "General" );
     Private::s_sync = config.readEntry("SynchronizeClipboardAndSelection", Private::s_sync);
     Private::s_reverse_sync = config.readEntry("ClipboardSetSelection", Private::s_reverse_sync);
 

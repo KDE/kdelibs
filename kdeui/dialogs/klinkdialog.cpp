@@ -69,7 +69,7 @@ KLinkDialog::KLinkDialog(QWidget *parent)
 
     setMainWidget(entries);
 
-    KConfigGroup group(KGlobal::config(), "KLinkDialog");
+    KConfigGroup group(KSharedConfig::openConfig(), "KLinkDialog");
     restoreDialogSize(group);
 
     d->textLineEdit->setFocus();
@@ -79,7 +79,7 @@ KLinkDialog::KLinkDialog(QWidget *parent)
 
 KLinkDialog::~KLinkDialog()
 {
-    KConfigGroup group(KGlobal::config(), "KLinkDialog");
+    KConfigGroup group(KSharedConfig::openConfig(), "KLinkDialog");
     saveDialogSize(group);
     delete d;
 }

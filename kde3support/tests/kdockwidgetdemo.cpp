@@ -86,7 +86,7 @@ SFileDialog::SFileDialog( QString initially, const QStringList& filter, const ch
 {
   setObjectName(name);
   setModal(true);
-  KConfigGroup config( KGlobal::config(), QLatin1String("SFileDialogData:") + name );
+  KConfigGroup config( KSharedConfig::openConfig(), QLatin1String("SFileDialogData:") + name );
   if ( initially.isNull() ){
     initially = config.readPathEntry( "InitiallyDir", QDir::currentPath() );
   }
@@ -170,7 +170,7 @@ void SFileDialog::dockChange()
 
 SFileDialog::~SFileDialog()
 {
-  KConfigGroup config(KGlobal::config(), QString("SFileDialogData:") + objectName() );
+  KConfigGroup config(KSharedConfig::openConfig(), QString("SFileDialogData:") + objectName() );
   config.writeEntry( "Bookmarks", fd->getBookmark() );
 
   qDebug("write config");
@@ -191,7 +191,7 @@ void SFileDialog::setDockDefaultPos( K3DockWidget* d )
 void SFileDialog::changeDir( const QString& f )
 {
   if ( !f.isEmpty() ){
-    KConfigGroup config( KGlobal::config(), QString("SFileDialogData:") + objectName() );
+    KConfigGroup config( KSharedConfig::openConfig(), QString("SFileDialogData:") + objectName() );
     config.writePathEntry( "InitiallyDir", f );
   }
 }

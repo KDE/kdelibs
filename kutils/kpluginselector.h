@@ -150,7 +150,7 @@ public:
       *                         ignored and all plugins are shown. Not match case
       * @param config           The KConfig object that holds the state of the
       *                         plugins being enabled or not. By default it will
-      *                         use KGlobal::config(). It is recommended to
+      *                         use KSharedConfig::openConfig(). It is recommended to
       *                         always pass a KConfig object if you use
       *                         KSettings::PluginPage since you never know from
       *                         where the page will be called (think global

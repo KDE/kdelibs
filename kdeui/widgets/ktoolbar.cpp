@@ -236,7 +236,7 @@ void KToolBar::Private::init(bool readConfig, bool _isMainToolBar)
   // also read in our configurable settings (for non-xmlgui toolbars)
   // KDE5: we can probably remove this, if people save settings then they load them too, e.g. using KMainWindow's autosave.
   if (readConfig) {
-      KConfigGroup cg(KGlobal::config(), QString());
+      KConfigGroup cg(KSharedConfig::openConfig(), QString());
       q->applySettings(cg);
   }
 
@@ -523,7 +523,7 @@ void KToolBar::Private::loadKDESettings()
         }
         **/
 
-        KConfigGroup group(KGlobal::config(), "Toolbar style");
+        KConfigGroup group(KSharedConfig::openConfig(), "Toolbar style");
         const QString value = group.readEntry("ToolButtonStyleOtherToolbars", fallBack);
         toolButtonStyleSettings[Level_KDEDefault] = KToolBar::Private::toolButtonStyleFromString(value);
     }
@@ -887,7 +887,7 @@ void KToolBar::contextMenuEvent(QContextMenuEvent* event)
 
 Qt::ToolButtonStyle KToolBar::toolButtonStyleSetting()
 {
-    KConfigGroup group(KGlobal::config(), "Toolbar style");
+    KConfigGroup group(KSharedConfig::openConfig(), "Toolbar style");
     const QString fallback = Private::toolButtonStyleToString(Qt::ToolButtonTextBesideIcon);
     return KToolBar::Private::toolButtonStyleFromString(group.readEntry("ToolButtonStyle", fallback));
 }
