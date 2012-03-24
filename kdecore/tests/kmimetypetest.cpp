@@ -132,6 +132,21 @@ void KMimeTypeTest::initTestCase()
         group.writeEntry("Categories", "Qt;KDE;");
     }
 
+    // Create fake text/plain app
+    m_textPlainApp = KStandardDirs::locateLocal("xdgdata-apps", "fake_textplain_application.desktop");
+    const bool mustCreateTextPlainApp = !QFile::exists(m_textPlainApp);
+    if (mustCreateTextPlainApp) {
+        mustUpdateKSycoca = true;
+        KDesktopFile file(m_textPlainApp);
+        KConfigGroup group = file.desktopGroup();
+        group.writeEntry("Name", "NonKDEApp");
+        group.writeEntry("Type", "Application");
+        group.writeEntry("Exec", "xterm");
+        group.writeEntry("MimeType", "text/plain;");
+        group.writeEntry("InitialPreference", "40");
+        group.writeEntry("Categories", "Qt;KDE;");
+    }
+
     if ( mustUpdateKSycoca ) {
         // Update ksycoca in ~/.kde-unit-test after creating the above
         QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME) );
@@ -709,6 +724,7 @@ void KMimeTypeTest::testPreferredService()
     // The "NotShowIn=KDE" service should not be the preferred one!
     KService::Ptr serv = KMimeTypeTrader::self()->preferredService("text/plain");
     QVERIFY( serv->entryPath() != m_nonKdeApp );
+    QCOMPARE(serv->entryPath(), m_textPlainApp);
 }
 
 void KMimeTypeTest::testMimeTypeTraderForAlias()
