@@ -126,12 +126,12 @@ KLocalePrivate &KLocalePrivate::operator=(const KLocalePrivate &rhs)
     return *this;
 }
 
-KConfig *KLocalePrivate::config()
+KSharedConfig::Ptr KLocalePrivate::config()
 {
     if (m_config != KSharedConfig::Ptr()) {
-        return m_config.data();
+        return m_config;
     } else {
-        return KSharedConfig::openConfig().data();
+        return KSharedConfig::openConfig();
     }
 }
 

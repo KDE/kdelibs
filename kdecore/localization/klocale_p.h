@@ -73,7 +73,7 @@ protected:
     /**
      * @internal Returns config object
      */
-    KConfig *config();
+    KSharedConfigPtr config();
 
     /**
      * @internal Copies object members
