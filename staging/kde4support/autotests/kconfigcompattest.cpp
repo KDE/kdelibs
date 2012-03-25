@@ -41,7 +41,7 @@ private Q_SLOTS:
 void KConfigCompatTest::initTestCase()
 {
     // Qt5 TODO: should be done by qtestlib+qstandardpaths
-    QString xdgConfigHome = QDir::home().canonicalPath() + "/.qttest-config";
+    QString xdgConfigHome = QDir::home().canonicalPath() + "/.qttest/config";
     qputenv("XDG_CONFIG_HOME", QFile::encodeName(xdgConfigHome));
 }
 
