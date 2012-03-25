@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kauthorized.h"
+#include "kcoreauthorized.h"
 
 #include <QtCore/QDir>
 #include <QtCore/QRegExp>
@@ -330,12 +330,13 @@ static void initUrlActionRestrictions()
   }
 }
 
-void KAuthorized::allowUrlAction(const QString &action, const QUrl &_baseURL, const QUrl &_destURL)
+namespace KAuthorized
+{
+// Called by KAuthorized::allowUrlAction in KIO
+KCONFIG_EXPORT void allowUrlActionInternal(const QString &action, const QUrl &_baseURL, const QUrl &_destURL)
 {
   MY_D
   QMutexLocker locker((&d->mutex));
-  if (authorizeUrlAction(action, _baseURL, _destURL))
-     return;
 
   //const QString basePath = _baseURL.path(QUrl::RemoveTrailingSlash);
   //const QString destPath = _destURL.path(QUrl::RemoveTrailingSlash);
@@ -347,8 +348,8 @@ void KAuthorized::allowUrlAction(const QString &action, const QUrl &_baseURL, co
         _destURL.scheme(), _destURL.host(), destPath, true));
 }
 
-// TODO: move to KIO? With a helper here I guess, which takes protocol classes as arguments
-bool KAuthorized::authorizeUrlAction(const QString &action, const QUrl &_baseURL, const QUrl &_destURL)
+// Called by KAuthorized::authorizeUrlAction in KIO
+KCONFIG_EXPORT bool authorizeUrlActionInternal(const QString& action, const QUrl &_baseURL, const QUrl &_destURL, const QString& baseClass, const QString& destClass)
 {
   MY_D
   QMutexLocker locker(&(d->mutex));
@@ -363,15 +364,9 @@ bool KAuthorized::authorizeUrlAction(const QString &action, const QUrl &_baseURL
 
   QUrl baseURL(_baseURL);
   baseURL.setPath(QDir::cleanPath(baseURL.path()));
-#warning TODO re-enable calls to KProtocolInfo::protocolClass, by moving the public API to KIO
-  //QString baseClass = KProtocolInfo::protocolClass(baseURL.scheme());
-  QString baseClass;
 
   QUrl destURL(_destURL);
   destURL.setPath(QDir::cleanPath(destURL.path()));
-#warning TODO re-enable calls to KProtocolInfo::protocolClass, by moving the public API to KIO
-  //QString destClass = KProtocolInfo::protocolClass(destURL.scheme());
-  QString destClass;
 
   Q_FOREACH(const URLActionRule &rule, d->urlActionRestrictions) {
      if ((result != rule.permission) && // No need to check if it doesn't make a difference
@@ -384,3 +379,5 @@ bool KAuthorized::authorizeUrlAction(const QString &action, const QUrl &_baseURL
   }
   return result;
 }
+
+} // namespace

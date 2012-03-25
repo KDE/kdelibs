@@ -23,7 +23,7 @@
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <kactionmenu.h>
-#include <kauthorized.h>
+#include <kcoreauthorized.h>
 #include <kguiitem.h>
 #include <klocalizedstring.h>
 #include <kxmlguiwindow.h>

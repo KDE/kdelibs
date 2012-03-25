@@ -29,8 +29,7 @@
 #include "klineedit_p.h"
 
 #include <kaction.h>
-#include <kapplication.h>
-#include <kauthorized.h>
+#include <kcoreauthorized.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kcursor.h>
@@ -45,6 +44,7 @@
 #include <kurlmimedata.h>
 
 #include <QtCore/QTimer>
+#include <QApplication>
 #include <QClipboard>
 #include <QStyleOption>
 #include <QToolTip>
@@ -414,7 +414,7 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
     if ( echoMode() != QLineEdit::Normal )
         mode = KGlobalSettings::CompletionNone; // Override the request.
 
-    if ( kapp && !KAuthorized::authorize("lineedit_text_completion") )
+    if (!KAuthorized::authorize("lineedit_text_completion"))
         mode = KGlobalSettings::CompletionNone;
 
     if ( mode == KGlobalSettings::CompletionPopupAuto ||

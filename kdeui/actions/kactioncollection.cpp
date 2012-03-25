@@ -26,7 +26,7 @@
 
 #include "kactioncollection.h"
 #include "kactioncategory.h"
-#include <kauthorized.h>
+#include <kcoreauthorized.h>
 #include "kxmlguiclient.h"
 #include "kxmlguifactory.h"
 

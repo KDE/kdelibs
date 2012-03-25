@@ -32,7 +32,7 @@
 #include <kcomponentdata.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
-#include <kauthorized.h>
+#include <kcoreauthorized.h>
 
 #include "kaction.h"
 #include "kactioncollection.h"

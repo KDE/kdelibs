@@ -13,7 +13,7 @@ set(libkconfig_SRCS
    kdesktopfile.cpp
    ksharedconfig.cpp
    kcoreconfigskeleton.cpp
-   kauthorized.cpp
+   kcoreauthorized.cpp
 )
 
 add_library(kconfig ${LIBRARY_TYPE} ${libkconfig_SRCS})
@@ -37,7 +37,7 @@ install( FILES
    ksharedconfig.h
    kcoreconfigskeleton.h
    kconfiggroup_kurl.h
-   kauthorized.h
+   kcoreauthorized.h
    ksharedptr.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

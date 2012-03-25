@@ -33,7 +33,7 @@
 
 #include "kconfig_p.h"
 #include "kconfiggroup.h"
-#include "kauthorized.h"
+#include "kcoreauthorized.h"
 #include "kconfigini_p.h"
 
 class KDesktopFilePrivate : public KConfigPrivate

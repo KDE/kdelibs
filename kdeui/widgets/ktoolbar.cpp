@@ -29,6 +29,7 @@
 #include <config.h>
 
 #include <QtCore/QPointer>
+#include <QApplication>
 #include <QDesktopWidget>
 #include <QFrame>
 #include <QLayout>
@@ -40,8 +41,7 @@
 
 #include <kaction.h>
 #include <kactioncollection.h>
-#include <kapplication.h>
-#include <kauthorized.h>
+#include <kcoreauthorized.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kedittoolbar.h>

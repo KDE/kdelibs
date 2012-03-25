@@ -33,7 +33,7 @@
 #include <QtDBus/QtDBus>
 #include <QtCore/QMetaType>
 
-#include "kauthorized.h"
+#include "kcoreauthorized.h"
 #include "kaboutdata.h"
 #include "kcheckaccelerators.h"
 #include "kcrash.h"

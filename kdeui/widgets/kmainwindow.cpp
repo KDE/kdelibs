@@ -46,7 +46,6 @@
 
 #include <kaction.h>
 #include <kapplication.h>
-#include <kauthorized.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kdialog.h>
@@ -451,11 +450,11 @@ void KMainWindow::parseGeometry(bool parsewidth)
          resize(w, h);
     } else {
         if ( (m & XNegative) )
-            x = KApplication::desktop()->width()  + x - w;
+            x = QApplication::desktop()->width()  + x - w;
         else if ( (m & XValue) )
             x = geometry().x();
         if ( (m & YNegative) )
-            y = KApplication::desktop()->height() + y - h;
+            y = QApplication::desktop()->height() + y - h;
         else if ( (m & YValue) )
             y = geometry().y();
 
