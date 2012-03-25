@@ -47,7 +47,8 @@ QScriptValue jsi18nc(QScriptContext *context, QScriptEngine *engine)
 {
     Q_UNUSED(engine)
 
-    if (context->argumentCount() < 2) {
+    const int numArgs = context->argumentCount();
+    if (numArgs < 2) {
         kDebug() << i18n("i18nc() takes at least two arguments");
         return engine->undefinedValue();
     }
@@ -55,7 +56,6 @@ QScriptValue jsi18nc(QScriptContext *context, QScriptEngine *engine)
     KLocalizedString message = ki18nc(context->argument(0).toString().toUtf8(),
                                       context->argument(1).toString().toUtf8());
 
-    const int numArgs = context->argumentCount();
     for (int i = 2; i < numArgs; ++i) {
         message = message.subs(context->argument(i).toString());
     }
@@ -67,7 +67,8 @@ QScriptValue jsi18np(QScriptContext *context, QScriptEngine *engine)
 {
     Q_UNUSED(engine)
 
-    if (context->argumentCount() < 2) {
+    const int numArgs = context->argumentCount();
+    if (numArgs < 2) {
         kDebug() << i18n("i18np() takes at least two arguments");
         return engine->undefinedValue();
     }
@@ -75,7 +76,6 @@ QScriptValue jsi18np(QScriptContext *context, QScriptEngine *engine)
     KLocalizedString message = ki18np(context->argument(0).toString().toUtf8(),
                                       context->argument(1).toString().toUtf8());
 
-    const int numArgs = context->argumentCount();
     for (int i = 2; i < numArgs; ++i) {
         QScriptValue v = context->argument(i);
         if (v.isNumber()) {
@@ -92,7 +92,8 @@ QScriptValue jsi18ncp(QScriptContext *context, QScriptEngine *engine)
 {
     Q_UNUSED(engine)
 
-    if (context->argumentCount() < 3) {
+    const int numArgs = context->argumentCount();
+    if (numArgs < 3) {
         kDebug() << i18n("i18ncp() takes at least three arguments");
         return engine->undefinedValue();
     }
@@ -101,9 +102,13 @@ QScriptValue jsi18ncp(QScriptContext *context, QScriptEngine *engine)
                                        context->argument(1).toString().toUtf8(),
                                        context->argument(2).toString().toUtf8());
 
-    const int numArgs = context->argumentCount();
     for (int i = 3; i < numArgs; ++i) {
-        message = message.subs(context->argument(i).toString());
+        QScriptValue v = context->argument(i);
+        if (v.isNumber()) {
+            message = message.subs(v.toInt32());
+        } else {
+            message = message.subs(v.toString());
+        }
     }
 
     return message.toString();
