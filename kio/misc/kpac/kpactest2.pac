@@ -1,7 +1,7 @@
 /*
    A script to test Microsoft's IPv6 extension to the PAC specification. If
    you want to test the original PAC specification, use 'kpactest.pac'.
-   
+
    To use this script, select "Use automatic proxy configuration URL:" in the
    KDE proxy configuration dialog and run:
 
