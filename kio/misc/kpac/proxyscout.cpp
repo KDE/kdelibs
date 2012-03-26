@@ -190,7 +190,7 @@ namespace KPAC
                     m_downloader = 0;
                 }
                 if (!m_downloader) {
-                    m_downloader = new Discovery(this);
+                    m_downloader = new Downloader(this);
                     connect(m_downloader, SIGNAL(result(bool)), this, SLOT(downloadResult(bool)));
                 }
 
@@ -277,14 +277,14 @@ namespace KPAC
         // Should never get called if we do not have a watcher...
         Q_ASSERT(m_watcher);
 
-        // if it does not exist, bogus file was given or it was deleted...
-        if (QFile::exists(path)) {
-            // if not contained, first attempt or file was renamed...
-            if (!m_watcher->files().contains(path)) {
-                m_watcher->removePaths(m_watcher->files());
-                m_watcher->addPath(path);
-            }
+        // Remove the current file being watched...
+        if (!m_watcher->files().isEmpty()) {
+           m_watcher->removePaths(m_watcher->files());
         }
+
+        // NOTE: QFileSystemWatcher only adds a path if it either exists or
+        // is not already being monitored.
+        m_watcher->addPath(path);
 
         // Reload...
         m_downloader->download( KUrl( path ) );

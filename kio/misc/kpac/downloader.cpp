@@ -72,9 +72,15 @@ namespace KPAC
         std::memcpy( m_data.data() + offset, data.data(), data.size() );
     }
 
+    static bool hasErrorPage(KJob* job)
+    {
+        KIO::TransferJob* tJob = qobject_cast<KIO::TransferJob*>(job);
+        return (tJob && tJob->isErrorPage());
+    }
+
     void Downloader::result( KJob* job )
     {
-        if ( !job->error() && !static_cast< KIO::TransferJob* >( job )->isErrorPage() )
+        if ( !job->error() && !hasErrorPage(job) )
         {
             bool dummy;
             m_script = KGlobal::charsets()->codecForName(
