@@ -97,21 +97,20 @@ using namespace DOM;
 
         QStyle* proxy() const { return m_proxy ? m_proxy : style(); }
 
-        QRect subElementRect(
-                SubElement element, const QStyleOption *option, const QWidget *widget
-            ) const
+        QRect subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const
         {
             QRect r = proxy()->subElementRect(element, option, widget);
             switch (element) {
               case QStyle::SE_PushButtonContents:
               case QStyle::SE_LineEditContents:
-              case QStyle::SE_FrameContents:
+              case QStyle::SE_ShapedFrameContents:
                 r.adjust(left, top, -right, -bottom);
               default:
                 break;
             }
             return r;
         }
+
         void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
         {
             if ( noBorder && element == QStyle::CE_PushButton ) {
@@ -126,9 +125,7 @@ using namespace DOM;
             KdeUiProxyStyle::drawControl(element,option,painter,widget);
         }
 
-
-        QRect subControlRect(ComplexControl cc, const QStyleOptionComplex* opt,
-                                SubControl sc, const QWidget* widget) const
+        QRect subControlRect(ComplexControl cc, const QStyleOptionComplex* opt, SubControl sc, const QWidget* widget) const
         {
             // Make sure we give combo popup's enough room to display contents;
             // Qt doesn't do this by default
