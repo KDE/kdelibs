@@ -51,6 +51,7 @@ target_link_libraries(kfile
    ${X11_LIBRARIES}
    ${QtMimeTypes_LIBRARY}
    kcoreaddons
+   kwidgets
 )
 
 if(X11_Xrender_FOUND)

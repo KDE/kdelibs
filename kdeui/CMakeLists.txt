@@ -18,6 +18,8 @@ include_directories(
  ${CMAKE_BINARY_DIR}/tier1/kwindowsystem/src
  ${CMAKE_BINARY_DIR}/staging/kdeguiaddons/src
  ${CMAKE_SOURCE_DIR}/staging/kdeguiaddons/src/colors
+ ${CMAKE_BINARY_DIR}/staging/kwidgets/src
+ ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/utils
  ${kcoreaddons_BINARY_DIR}/src
  ${kcoreaddons_SOURCE_DIR}/src/caching
  ${kcoreaddons_SOURCE_DIR}/src/io
@@ -174,7 +176,6 @@ set(kdeui_LIB_SRCS
  kernel/ksessionmanager.cpp
  kernel/kstyle.cpp
  kernel/kstartupinfo.cpp
- kernel/kglobalsettings.cpp
  notifications/knotification.cpp
  notifications/knotificationmanager.cpp
  notifications/knotificationrestrictions.cpp
@@ -401,7 +402,7 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 generate_export_header(kdeui)
 
-target_link_libraries(kdeui itemmodels sonnetcore kauth kdeguiaddons ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
+target_link_libraries(kdeui itemmodels sonnetcore kauth kdeguiaddons kwidgets ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
                             ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} kcoreaddons ${kwindowsystem_LIBRARY})
 
 if(NOT WINCE)
@@ -561,7 +562,6 @@ install( FILES
  kernel/ksessionmanager.h
  kernel/kstyle.h
  kernel/kstartupinfo.h
- kernel/kglobalsettings.h
  notifications/kstatusnotifieritem.h
  notifications/ksystemtrayicon.h
  notifications/knotification.h

@@ -18,7 +18,7 @@
 #ifndef _KGLOBALSETTINGS_H
 #define _KGLOBALSETTINGS_H
 
-#include <kdeui_export.h>
+#include <kwidgets_export.h>
 #include <ksharedconfig.h>
 #include <QtCore/QObject>
 #include <QtCore/QString>
@@ -55,7 +55,7 @@ class QWidget;
  *
  * @author David Faure \<faure@kde.org\>
  */
-class KDEUI_EXPORT KGlobalSettings : public QObject
+class KWIDGETS_EXPORT KGlobalSettings : public QObject
 {
     Q_OBJECT
 
@@ -106,7 +106,7 @@ public:
      * @deprecated since 5.0, use QApplication::startDragDistance() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    static KDEUI_DEPRECATED int dndEventDelay();
+    static KWIDGETS_DEPRECATED int dndEventDelay();
 #endif
 
     /**
@@ -117,7 +117,7 @@ public:
      * @deprecated since 5.0, use style->styleHint(QStyle::SH_ItemView_ActivateItemOnSingleClick, 0, widget)
      **/
 #ifndef KDE_NO_DEPRECATED
-    static KDEUI_DEPRECATED bool singleClick();
+    static KWIDGETS_DEPRECATED bool singleClick();
 #endif
 
     /**
@@ -148,7 +148,7 @@ public:
      * @deprecated Simply reimplement QWidget::contextMenuEvent() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    static KDEUI_DEPRECATED int contextMenuKey ();
+    static KWIDGETS_DEPRECATED int contextMenuKey ();
 #endif
 
     /**
@@ -220,7 +220,7 @@ public:
      * @return the user's desktop directory
      * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::DesktopLocation).
      */
-    static KDEUI_DEPRECATED QString desktopPath();
+    static KWIDGETS_DEPRECATED QString desktopPath();
 
     /**
      * The path to the autostart directory of the current user.
@@ -233,35 +233,35 @@ public:
      * @return the path of the document directory
      * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation).
      */
-    static KDEUI_DEPRECATED QString documentPath();
+    static KWIDGETS_DEPRECATED QString documentPath();
 
     /**
      * The path where music are stored of the current user.
      * @return the path of the music directory
      * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::MusicLocation).
      */
-    static KDEUI_DEPRECATED QString musicPath();
+    static KWIDGETS_DEPRECATED QString musicPath();
 
     /**
      * The path where videos are stored of the current user.
      * @return the path of the video directory
      * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::MoviesLocation).
      */
-    static KDEUI_DEPRECATED QString videosPath();
+    static KWIDGETS_DEPRECATED QString videosPath();
 
     /**
      * The path where download are stored of the current user.
      * @return the path of the download directory
      * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::DownloadLocation).
      */
-    static KDEUI_DEPRECATED QString downloadPath();
+    static KWIDGETS_DEPRECATED QString downloadPath();
 
     /**
      * The path where pictures are stored of the current user.
      * @return the path of the pictures directory
      * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::PicturesLocation).
      */
-    static KDEUI_DEPRECATED QString picturesPath();
+    static KWIDGETS_DEPRECATED QString picturesPath();
 
     /**
      * The default color to use for inactive titles.
@@ -293,7 +293,7 @@ public:
      *         contrast)
      * @deprecated since 5.0, use KColorScheme::contrast()
      */
-    static KDEUI_DEPRECATED int contrast();
+    static KWIDGETS_DEPRECATED int contrast();
 
     /**
      * Returns the contrast for borders as a floating point value.
@@ -303,7 +303,7 @@ public:
      *         contrast)
      * @deprecated since 5.0, use KColorScheme::contrastF(config)
      */
-    static KDEUI_DEPRECATED qreal contrastF(const KSharedConfigPtr &config = KSharedConfigPtr());
+    static KWIDGETS_DEPRECATED qreal contrastF(const KSharedConfigPtr &config = KSharedConfigPtr());
 
     /**
      * Returns if the sorted column in a K3ListView shall be drawn with a
@@ -440,7 +440,7 @@ public:
      * @return Returns true if user wants to show icons.
      * @deprecated since 5.0, use style->styleHint(QStyle::SH_DialogButtonBox_ButtonsHaveIcons, 0, widget);
      */
-    static KDEUI_DEPRECATED bool showIconsOnPushButtons();
+    static KWIDGETS_DEPRECATED bool showIconsOnPushButtons();
 
     /**
      * Returns true, if user visible strings should be sorted in a natural way:

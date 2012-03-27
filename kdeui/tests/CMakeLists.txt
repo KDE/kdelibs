@@ -34,7 +34,6 @@ KDEUI_UNIT_TESTS(
   kdualactiontest
   kfadewidgeteffecttest
   kfindtest
-  kglobalsettingstest
   kglobalshortcuttest
   kmainwindow_unittest
   klineedit_unittest
@@ -91,7 +90,6 @@ KDEUI_EXECUTABLE_TESTS(
   kdialogtest
   keditlistwidgettest
   kfontdialogtest
-  kglobalsettingsclient # helper program for kglobalsettingstest
   khboxtest
   kiconeffecttest
   kicondialogtest

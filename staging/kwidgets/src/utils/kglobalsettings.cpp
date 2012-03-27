@@ -892,7 +892,8 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
 }
 
 // Set by KApplication
-QString kde_overrideStyle;
+#pragma message("FIXME: KWidgets depends on KApplication")
+KWIDGETS_EXPORT QString kde_overrideStyle;
 
 void KGlobalSettings::Private::applyGUIStyle()
 {
