@@ -128,23 +128,6 @@ public:
     static bool smoothScroll();
 
     /**
-     * This enum describes the return type for insertTearOffHandle() whether to insert
-     * a handle or not. Applications who independently want to use handles in their popup menus
-     * should test for Application level before calling the appropriate function in KMenu.
-     **/
-    enum TearOffHandle {
-        Disable = 0, ///< disable tear-off handles
-        ApplicationLevel, ///< enable on application level
-        Enable ///< enable tear-off handles
-    };
-
-    /**
-     * Returns whether tear-off handles are inserted in KMenus.
-     * @return whether tear-off handles are inserted in KMenus.
-     **/
-    static TearOffHandle insertTearOffHandle();
-
-    /**
      * Checks whether the cursor changes over icons.
      * @return the KDE setting for "change cursor over icon"
      */

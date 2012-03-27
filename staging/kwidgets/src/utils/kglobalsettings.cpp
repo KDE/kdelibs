@@ -242,16 +242,6 @@ bool KGlobalSettings::smoothScroll()
     return g.readEntry("SmoothScroll", KDE_DEFAULT_SMOOTHSCROLL );
 }
 
-KGlobalSettings::TearOffHandle KGlobalSettings::insertTearOffHandle()
-{
-    int tearoff;
-    bool effectsenabled;
-    KConfigGroup g( KSharedConfig::openConfig(), "KDE" );
-    effectsenabled = g.readEntry( "EffectsEnabled", false);
-    tearoff = g.readEntry("InsertTearOffHandle", KDE_DEFAULT_INSERTTEAROFFHANDLES);
-    return effectsenabled ? (TearOffHandle) tearoff : Disable;
-}
-
 bool KGlobalSettings::changeCursorOverIcon()
 {
     KConfigGroup g( KSharedConfig::openConfig(), "KDE" );
