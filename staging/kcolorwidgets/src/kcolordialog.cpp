@@ -58,7 +58,6 @@
 #include <QListWidget>
 
 #include <kicon.h>
-#include <kapplication.h>
 #include <kcombobox.h>
 #include <kconfig.h>
 #include <kglobal.h>
