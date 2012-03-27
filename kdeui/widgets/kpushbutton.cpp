@@ -29,7 +29,6 @@
 #include <QtCore/QTimer>
 #include <QApplication>
 
-#include <kglobalsettings.h>
 #include <kguiitem.h>
 #include <kicon.h>
 
