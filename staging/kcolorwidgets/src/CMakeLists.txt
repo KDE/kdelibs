@@ -6,7 +6,7 @@ include_directories(
  ${kwidgets_SOURCE_DIR}/src/dialogs # kdialog
  ${kwidgets_SOURCE_DIR}/src/utils
  ${kwidgets_SOURCE_DIR}/src/icons
-
+ ${kwidgets_SOURCE_DIR}/src/widgets
 )
 
 set(kcolorwidgets_LIB_SRCS

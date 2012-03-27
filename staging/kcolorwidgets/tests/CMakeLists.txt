@@ -1,6 +1,17 @@
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
-include_directories( ${KDE4_KDEUI_INCLUDES} proxymodeltestsuite )
+include_directories(
+ ${KDE4_KDECORE_INCLUDES}
+ ${DBUSMENUQT_INCLUDE_DIR}
+ ${CMAKE_CURRENT_SOURCE_DIR}/../src
+ ${CMAKE_CURRENT_BINARY_DIR}/../src
+ ${kwidgets_BINARY_DIR}/src
+ ${kwidgets_SOURCE_DIR}/src/dialogs # kdialog
+ ${kwidgets_SOURCE_DIR}/src/utils
+ ${kwidgets_SOURCE_DIR}/src/icons
+ ${kwidgets_SOURCE_DIR}/src/widgets
+)
+
 
 add_definitions(-DQT_GUI_LIB)
 
