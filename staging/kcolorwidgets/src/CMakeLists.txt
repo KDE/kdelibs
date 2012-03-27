@@ -1,7 +1,12 @@
 include_directories(
  ${KDE4_KDECORE_INCLUDES}
  ${DBUSMENUQT_INCLUDE_DIR}
- ${CMAKE_BINARY_DIR}/staging/kcolorwidgets/src
+ ${CMAKE_CURRENT_BINARY_DIR}
+ ${kwidgets_BINARY_DIR}/src
+ ${kwidgets_SOURCE_DIR}/src/dialogs # kdialog
+ ${kwidgets_SOURCE_DIR}/src/utils
+ ${kwidgets_SOURCE_DIR}/src/icons
+
 )
 
 set(kcolorwidgets_LIB_SRCS
