@@ -55,6 +55,7 @@
 #include <QPushButton>
 #include <QScrollBar>
 #include <QtCore/QTimer>
+#include <QListWidget>
 
 #include <kicon.h>
 #include <kapplication.h>
@@ -65,7 +66,6 @@
 #include <khbox.h>
 #include <kiconloader.h>
 #include <klineedit.h>
-#include <klistwidget.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <knuminput.h>
@@ -539,7 +539,7 @@ public:
     KComboBox *combo;
     KColorCells *cells;
     QScrollArea *sv;
-    KListWidget *mNamedColorList;
+    QListWidget *mNamedColorList;
     KColorCollection *mPalette;
     int mMinWidth;
     int mCols;
@@ -583,7 +583,7 @@ KColorTable::KColorTable(QWidget *parent, int minWidth, int cols)
     d->sv->setFixedSize(minSize);
     layout->addWidget(d->sv);
 
-    d->mNamedColorList = new KListWidget(this);
+    d->mNamedColorList = new QListWidget(this);
     d->mNamedColorList->setObjectName("namedColorList");
     d->mNamedColorList->setFixedSize(minSize);
     d->mNamedColorList->hide();
