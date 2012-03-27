@@ -105,15 +105,20 @@ public:
      * @return the threshold for drag & drop in pixels
      * @deprecated since 5.0, use QApplication::startDragDistance() instead.
      */
-    static int dndEventDelay();
+#ifndef KDE_NO_DEPRECATED
+    static KWIDGETS_DEPRECATED int dndEventDelay();
+#endif
 
     /**
      * Returns whether KDE runs in single (default) or double click
      * mode.
      * see http://developer.kde.org/documentation/standards/kde/style/mouse/index.html
      * @return true if single click mode, or false if double click mode.
+     * @deprecated since 5.0, use style->styleHint(QStyle::SH_ItemView_ActivateItemOnSingleClick, 0, widget)
      **/
-    static bool singleClick();
+#ifndef KDE_NO_DEPRECATED
+    static KWIDGETS_DEPRECATED bool singleClick();
+#endif
 
     /**
      * Returns if item views should force smooth scrolling.
