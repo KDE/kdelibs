@@ -1,6 +1,7 @@
 include_directories(
  ${KDE4_KDECORE_INCLUDES}
  ${CMAKE_CURRENT_SOURCE_DIR}
+ ${CMAKE_CURRENT_SOURCE_DIR}/colors
  ${DBUSMENUQT_INCLUDE_DIR}
  ${CMAKE_BINARY_DIR}/staging/kdeguiaddons/src/
 )
@@ -10,7 +11,6 @@ set(kdeguiaddons_LIB_SRCS
  colors/kcolorutils.cpp
  colors/kcolorscheme.cpp
  colors/kcolorcollection.cpp
- colors/kcolorhelpers.cpp
  colors/kcolormimedata.cpp
 )
 
