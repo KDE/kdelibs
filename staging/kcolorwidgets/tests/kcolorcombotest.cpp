@@ -23,13 +23,11 @@
 
 #include <assert.h>
 
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kapplication.h>
 #include <kdebug.h>
 #include <kdialog.h>
 #include <kconfig.h>
 
+#include <QApplication>
 #include <QPushButton>
 #include <QLayout>
 #include <QLabel>
@@ -129,17 +127,14 @@ KColorComboTest::~KColorComboTest()
 
 void KColorComboTest::quitApp()
 {
-    kapp->closeAllWindows();
+    qApp->closeAllWindows();
 }
 
 int main(int argc, char **argv)
 {
-    KAboutData about("kcolorcombotest", 0, qi18n("kcolorcombotest"), "version");
-    KCmdLineArgs::init(argc, argv, &about);
+    QApplication a(argc, argv);
 
-    KApplication a;
-
-    KColorComboTest* t= new KColorComboTest;
+    KColorComboTest* t = new KColorComboTest;
     t->show();
     return a.exec();
 }
