@@ -39,7 +39,7 @@
 template class KDE_EXPORT QMap<QString, QString>;
 #endif
 
-class KUrl;
+class QUrl;
 class KJobTrackerInterface;
 
 class QTime;
@@ -291,7 +291,7 @@ namespace KIO
    * @return the created error string
    */
   KIO_EXPORT QString buildHTMLErrorString(int errorCode, const QString &errorText,
-                                const KUrl *reqUrl = 0L, int method = -1 );
+                                          const QUrl *reqUrl = 0, int method = -1 );
 
   /**
    * Returns translated error details for @p errorCode using the
@@ -310,7 +310,7 @@ namespace KIO
    * @li QStringList solutions - a liso of solutions for the error
    */
   KIO_EXPORT QByteArray rawErrorDetail(int errorCode, const QString &errorText,
-                                const KUrl *reqUrl = 0L, int method = -1 );
+                                       const QUrl *reqUrl = 0, int method = -1 );
 
   /**
    * Returns an appropriate error message if the given command @p cmd
@@ -371,7 +371,7 @@ namespace KIO
    *              Ignored if 0
    * @return the pixmap of the URL, can be a default icon if not found
    */
-  KIO_EXPORT QPixmap pixmapForUrl( const KUrl & _url, mode_t _mode = 0, KIconLoader::Group _group = KIconLoader::Desktop,
+  KIO_EXPORT QPixmap pixmapForUrl( const QUrl & _url, mode_t _mode = 0, KIconLoader::Group _group = KIconLoader::Desktop,
                                    int _force_size = 0, int _state = 0, QString * _path = 0 );
 
   KIO_EXPORT KJobTrackerInterface *getJobTracker();

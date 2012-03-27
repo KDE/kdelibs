@@ -29,7 +29,7 @@
 #include <kdirmodel.h>
 #include <kdirsortfilterproxymodel.h>
 #include <kfileitemdelegate.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <ktoggleaction.h>
 #include <kurl.h>
 

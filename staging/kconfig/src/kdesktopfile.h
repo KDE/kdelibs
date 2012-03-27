@@ -26,7 +26,7 @@ class KDesktopFilePrivate;
 
 /**
  * \class KDesktopFile kdesktopfile.h <KDesktopFile>
- * 
+ *
  * %KDE Desktop File Management.
  * This class implements %KDE's support for the freedesktop.org
  * <em>Desktop Entry Spec</em>.
@@ -35,31 +35,31 @@ class KDesktopFilePrivate;
  * @see  KConfigBase  KConfig
  * @see <a href="http://standards.freedesktop.org/desktop-entry-spec/latest/">Desktop Entry Spec</a>
  */
-class KDECORE_EXPORT KDesktopFile : public KConfig
+class KCONFIG_EXPORT KDesktopFile : public KConfig
 {
 public:
   /**
    * Constructs a KDesktopFile object.
    *
-   * See KStandardDirs for more information on resources.
+   * See QStandardPaths for more information on resources.
    *
    * @param resourceType   Allows you to change what sort of resource
    *                       to search for if @p fileName is not absolute.
-   *                       For instance, you might want to specify "config".
+   *                       For instance, you might want to specify ConfigLocation.
    * @param fileName       The name or path of the desktop file. If it
    *                       is not absolute, it will be located
    *                       using the resource type @p resType.
    */
-  explicit KDesktopFile(const char *resourceType, const QString &fileName);
+  explicit KDesktopFile(QStandardPaths::StandardLocation resourceType, const QString &fileName);
 
   /**
    * Constructs a KDesktopFile object.
    *
-   * See KStandardDirs for more information on resources.
+   * See QStandardPaths for more information on resources.
    *
    * @param fileName       The name or path of the desktop file. If it
    *                       is not absolute, it will be located
-   *                       using the resource type "apps"
+   *                       using the resource type ApplicationsLocation
    */
   explicit KDesktopFile(const QString &fileName);
 
@@ -241,7 +241,7 @@ public:
 
   QString fileName() const;
 
-  const char *resource() const;
+  QStandardPaths::StandardLocation resource() const;
 
 protected:
   /** Virtual hook, used to add new "virtual" functions while maintaining

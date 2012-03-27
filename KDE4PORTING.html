@@ -313,7 +313,7 @@ config-&gt;writeEntry("Key", 0);
 </pre>
 should be rewritten as
 <pre>
-KConfigGroup config = KGlobal::config()-&gt;group("Group");
+KConfigGroup config = KSharedConfig::openConfig()-&gt;group("Group");
 config.writeEntry("Key", 0);
 </pre>
 </li>
@@ -374,7 +374,7 @@ config-&gt;readXXX("entry name");
 </pre>
 should be rewritten as:
 <pre>
-KConfigGroup cg = KGlobal::config()-&gt;group("group name");
+KConfigGroup cg = KSharedConfig::openConfig()-&gt;group("group name");
   ...
 cg.readXXX("entry name");
 </pre>

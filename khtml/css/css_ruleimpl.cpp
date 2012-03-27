@@ -71,7 +71,8 @@ CSSFontFaceRuleImpl::CSSFontFaceRuleImpl(StyleBaseImpl *parent)
 
 CSSFontFaceRuleImpl::~CSSFontFaceRuleImpl()
 {
-;    if(m_style) m_style->deref();
+    if (m_style)
+        m_style->deref();
 }
 
 void CSSFontFaceRuleImpl::setDeclaration( CSSStyleDeclarationImpl* decl)

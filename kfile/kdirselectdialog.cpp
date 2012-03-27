@@ -42,7 +42,7 @@
 #include <kio/netaccess.h>
 #include <kio/renamedialog.h>
 #include <jobuidelegate.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <krecentdirs.h>
 #include <ktoggleaction.h>
@@ -372,7 +372,7 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     d->m_startDir = d->m_startURL;
     d->m_rootUrl = d->m_treeView->rootUrl();
 
-    d->readConfig( KGlobal::config(), "DirSelect Dialog" );
+    d->readConfig( KSharedConfig::openConfig(), "DirSelect Dialog" );
 
     mainLayout->addWidget( d->m_treeView, 1 );
     mainLayout->addWidget( d->m_urlCombo, 0 );
@@ -478,7 +478,7 @@ void KDirSelectDialog::accept()
 
 void KDirSelectDialog::hideEvent( QHideEvent *event )
 {
-    d->saveConfig( KGlobal::config(), "DirSelect Dialog" );
+    d->saveConfig( KSharedConfig::openConfig(), "DirSelect Dialog" );
 
     KDialog::hideEvent(event);
 }

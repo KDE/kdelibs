@@ -72,17 +72,14 @@ private Q_SLOTS:
     void testOptionOrder();
     void testLocaleConfig();
     void testKdeGlobals();
-    void testNoKdeHome();
 
     void testThreads();
-
-    // unrelated
-    void testKAboutDataOrganizationDomain();
 
     // should be last
     void testSyncOnExit();
 private:
     void revertEntries();
+    QString m_xdgConfigHome;
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(KConfigTest::Flags)
 

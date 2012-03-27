@@ -27,7 +27,7 @@
 #include <keditlistbox.h>
 #include <kcombobox.h>
 #include <kconfig.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include <QCheckBox>
 #include <QLayout>

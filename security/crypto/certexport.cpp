@@ -31,7 +31,7 @@
 #include <QLayout>
 #include <QLabel>
 #include <QGroupBox>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <ksslall.h>

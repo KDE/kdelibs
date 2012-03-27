@@ -27,7 +27,7 @@
 #include <config.h>
 #include <config-network.h>
 #include <QMutex>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include "k3socketdevice.h"
 

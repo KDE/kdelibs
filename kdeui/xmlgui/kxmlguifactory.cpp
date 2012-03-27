@@ -327,7 +327,7 @@ void KXMLGUIFactory::refreshActionProperties()
 
 static QString currentShortcutScheme()
 {
-    const KConfigGroup cg = KGlobal::config()->group("Shortcut Schemes");
+    const KConfigGroup cg = KSharedConfig::openConfig()->group("Shortcut Schemes");
     return cg.readEntry("Current Scheme", "Default");
 }
 
@@ -397,7 +397,7 @@ void KXMLGUIFactoryPrivate::saveDefaultActionProperties(const QList<QAction *>& 
 void KXMLGUIFactory::changeShortcutScheme(const QString &scheme)
 {
     kDebug(260) << "Changing shortcut scheme to" << scheme;
-    KConfigGroup cg = KGlobal::config()->group( "Shortcut Schemes" );
+    KConfigGroup cg = KSharedConfig::openConfig()->group( "Shortcut Schemes" );
     cg.writeEntry("Current Scheme", scheme);
 
     refreshActionProperties();
@@ -673,7 +673,7 @@ void KXMLGUIFactoryPrivate::configureAction( QAction *action, const QDomAttr &at
 QDomDocument KXMLGUIFactoryPrivate::shortcutSchemeDoc(KXMLGUIClient *client)
 {
     // Get the name of the current shorcut scheme
-    KConfigGroup cg = KGlobal::config()->group( "Shortcut Schemes" );
+    KConfigGroup cg = KSharedConfig::openConfig()->group( "Shortcut Schemes" );
     QString schemeName = cg.readEntry("Current Scheme", "Default");
 
     QDomDocument doc;
@@ -700,7 +700,7 @@ void KXMLGUIFactoryPrivate::applyShortcutScheme(KXMLGUIClient *client, const QLi
 {
     static const QString &actionPropElementName = KGlobal::staticQString( "ActionProperties" );
 
-    KConfigGroup cg = KGlobal::config()->group( "Shortcut Schemes" );
+    KConfigGroup cg = KSharedConfig::openConfig()->group( "Shortcut Schemes" );
     QString schemeName = cg.readEntry("Current Scheme", "Default");
 
     //First clear all existing shortcuts

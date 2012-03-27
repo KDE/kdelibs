@@ -27,7 +27,7 @@
 #include <QLayout>
 #include <QLabel>
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 #include <kdatepicker.h>
 #include <kpushbutton.h>

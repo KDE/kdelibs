@@ -126,12 +126,12 @@ KLocalePrivate &KLocalePrivate::operator=(const KLocalePrivate &rhs)
     return *this;
 }
 
-KConfig *KLocalePrivate::config()
+KSharedConfig::Ptr KLocalePrivate::config()
 {
     if (m_config != KSharedConfig::Ptr()) {
-        return m_config.data();
+        return m_config;
     } else {
-        return KGlobal::config().data();
+        return KSharedConfig::openConfig();
     }
 }
 
@@ -231,7 +231,7 @@ void KLocalePrivate::init(const QString& catalogName, const QString &language, c
     m_catalogName = catalogName;
 
     // Only keep the persistant config if it is not the global
-    if (persistantConfig != KSharedConfig::Ptr() && persistantConfig != KGlobal::config()) {
+    if (persistantConfig != KSharedConfig::Ptr() && persistantConfig != KSharedConfig::openConfig()) {
         m_config = persistantConfig;
     }
 
@@ -246,8 +246,8 @@ void KLocalePrivate::init(const QString& catalogName, const QString &language, c
     if (m_config != KSharedConfig::Ptr()) {
         cg = m_config->group(QLatin1String("Locale"));
         useEnvironmentVariables = false;
-    } else if (tempConfig == 0 || tempConfig == KGlobal::config().data()) {
-        cg = KGlobal::config()->group(QLatin1String("Locale"));
+    } else if (tempConfig == 0 || tempConfig == KSharedConfig::openConfig().data()) {
+        cg = KSharedConfig::openConfig()->group(QLatin1String("Locale"));
         useEnvironmentVariables = true;
     } else {
         cg = tempConfig->group(QLatin1String("Locale"));
@@ -281,8 +281,8 @@ void KLocalePrivate::initConfig(KConfig *config)
         m_config->setLocale(m_language);
     } else {
         // If no config given then use the global
-        if (config == 0 || config == KGlobal::config().data()) {
-            KGlobal::config()->setLocale(m_language);
+        if (config == 0 || config == KSharedConfig::openConfig().data()) {
+            KSharedConfig::openConfig()->setLocale(m_language);
         } else {
             config->setLocale(m_language);
             m_config = KSharedConfig::openConfig();
@@ -2905,7 +2905,7 @@ bool KLocalePrivate::setEncoding(int mibEnum)
 QStringList KLocalePrivate::allLanguagesList()
 {
     if (!m_languages) {
-        m_languages = new KConfig(QLatin1String("all_languages"), KConfig::NoGlobals, "locale");
+        m_languages = new KConfig(QLatin1String("locale/all_languages"), KConfig::NoGlobals, QStandardPaths::GenericDataLocation);
     }
     return m_languages->groupList();
 }
@@ -2925,7 +2925,7 @@ QStringList KLocalePrivate::installedLanguages()
 QString KLocalePrivate::languageCodeToName(const QString &language)
 {
     if (!m_languages) {
-        m_languages = new KConfig(QLatin1String("all_languages"), KConfig::NoGlobals, "locale");
+        m_languages = new KConfig(QLatin1String("locale/all_languages"), KConfig::NoGlobals, QStandardPaths::GenericDataLocation);
     }
 
     KConfigGroup cg(m_languages, language);

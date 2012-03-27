@@ -53,6 +53,7 @@
 #include <kio/scheduler.h>
 #include <krecentdirs.h>
 #include <kdebug.h>
+#include <klocale.h>
 #include <kio/kfileitemdelegate.h>
 #include <kde_file.h>
 
@@ -589,7 +590,7 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     d->initGUI(); // activate GM
 
     // read our configuration
-    KSharedConfig::Ptr config = KGlobal::config();
+    KSharedConfig::Ptr config = KSharedConfig::openConfig();
     KConfigGroup viewConfigGroup(config, ConfigGroup);
     d->readConfig(viewConfigGroup);
 
@@ -647,7 +648,7 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
 
 KFileWidget::~KFileWidget()
 {
-    KSharedConfig::Ptr config = KGlobal::config();
+    KSharedConfig::Ptr config = KSharedConfig::openConfig();
     config->sync();
 
     delete d;
@@ -1042,7 +1043,7 @@ void KFileWidget::accept()
         atmost--;
     }
 
-    KSharedConfig::Ptr config = KGlobal::config();
+    KSharedConfig::Ptr config = KSharedConfig::openConfig();
     KConfigGroup grp(config,ConfigGroup);
     d->writeConfig(grp);
     d->saveRecentFiles(grp);
@@ -1314,7 +1315,7 @@ void KFileWidgetPrivate::initSpeedbar()
     placesViewSplitter->insertWidget(0, placesDock);
 
     // initialize the size of the splitter
-    KConfigGroup configGroup(KGlobal::config(), ConfigGroup);
+    KConfigGroup configGroup(KSharedConfig::openConfig(), ConfigGroup);
     placesViewWidth = configGroup.readEntry(SpeedbarWidth, placesView->sizeHint().width());
 
     QList<int> sizes = placesViewSplitter->sizes();
@@ -1944,7 +1945,7 @@ void KFileWidget::slotCancel()
 
     d->ops->close();
 
-    KConfigGroup grp(KGlobal::config(), ConfigGroup);
+    KConfigGroup grp(KSharedConfig::openConfig(), ConfigGroup);
     d->writeConfig(grp);
 }
 

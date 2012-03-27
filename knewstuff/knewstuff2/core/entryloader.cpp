@@ -26,7 +26,7 @@
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kio/job.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 using namespace KNS;
 

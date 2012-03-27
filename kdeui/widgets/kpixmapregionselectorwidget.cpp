@@ -32,7 +32,7 @@
 #include <QRubberBand>
 #include <kdebug.h>
 #include <kicon.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmenu.h>
 #include <kaction.h>
 #include <stdlib.h>

@@ -24,7 +24,7 @@
 #include <kapplication.h>
 #include <kaction.h>
 #include <kactioncollection.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kfiledialog.h>
 #include <kmessagebox.h>
 #include <kcmdlineargs.h>

@@ -32,7 +32,7 @@
 #include <kdebug.h>
 #include <kdialog.h>
 #include <klineedit.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <knotification.h>
 #include <kpushbutton.h>
 

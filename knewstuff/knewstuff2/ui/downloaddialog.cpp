@@ -120,7 +120,7 @@ DownloadDialog::DownloadDialog(DxsEngine* _engine, QWidget * _parent)
     //        KToolInvocation::self(), SLOT(invokeBrowser(QString)));
 
     // load the last size from config
-    KConfigGroup group(KGlobal::config(), ConfigGroup);
+    KConfigGroup group(KSharedConfig::openConfig(), ConfigGroup);
     restoreDialogSize(group);
     setMinimumSize(700, 400);
 
@@ -159,7 +159,7 @@ DownloadDialog::DownloadDialog(DxsEngine* _engine, QWidget * _parent)
 
 DownloadDialog::~DownloadDialog()
 {
-    KConfigGroup group(KGlobal::config(), ConfigGroup);
+    KConfigGroup group(KSharedConfig::openConfig(), ConfigGroup);
     saveDialogSize(group, KConfigBase::Persistent);
 }
 
@@ -265,7 +265,7 @@ void DownloadDialog::slotListIndexChanged(const QModelIndex &index, const QModel
 
 void DownloadDialog::hideEvent(QHideEvent * event)
 {
-    KConfigGroup group(KGlobal::config(), ConfigGroup);
+    KConfigGroup group(KSharedConfig::openConfig(), ConfigGroup);
     saveDialogSize(group, KConfigBase::Persistent);
     KDialog::hideEvent(event);
 }

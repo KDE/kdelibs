@@ -28,7 +28,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QStack>
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kaction.h>
 #include <kactionmenu.h>
 #include <kicon.h>

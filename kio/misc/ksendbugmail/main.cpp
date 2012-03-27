@@ -27,7 +27,7 @@
 
 #include <kapplication.h>
 #include <kemailsettings.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <kdebug.h>

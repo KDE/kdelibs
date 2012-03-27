@@ -20,7 +20,7 @@
 #include <kuitformats_p.h>
 
 #include <config.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include <QStringList>
 #include <QRegExp>

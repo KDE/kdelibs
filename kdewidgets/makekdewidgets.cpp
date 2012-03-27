@@ -6,7 +6,7 @@
 #include <kmacroexpander.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QHash>
@@ -164,7 +164,9 @@ QString denamespace ( const QString &str ) {
 QString buildCollClass( KConfig &_input, const QStringList& classes ) {
     KConfigGroup input(&_input, "Global");
     QHash<QString, QString> defMap;
-    defMap.insert( "CollName", input.readEntry( "PluginName" ) );
+    const QString collName = input.readEntry("PluginName");
+    Q_ASSERT(!collName.isEmpty());
+    defMap.insert("CollName", collName);
     QString genCode;
 
     foreach ( const QString &myClass, classes )

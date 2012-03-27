@@ -36,10 +36,10 @@
  * @brief Encapsulates the maintenance of state between resets of QAbstractItemModel
  *
  * @code
- *   m_collectionViewStateMaintainer = new KViewStateMaintainer<Akonadi::ETMViewStateSaver>(KGlobal::config()->group("collectionView"));
+ *   m_collectionViewStateMaintainer = new KViewStateMaintainer<Akonadi::ETMViewStateSaver>(KSharedConfig::openConfig()->group("collectionView"));
  *   m_collectionViewStateMaintainer->setView(m_collectionView);
  *
- *   m_collectionCheckStateMaintainer = new KViewStateMaintainer<Akonadi::ETMViewStateSaver>(KGlobal::config()->group("collectionCheckState"));
+ *   m_collectionCheckStateMaintainer = new KViewStateMaintainer<Akonadi::ETMViewStateSaver>(KSharedConfig::openConfig()->group("collectionCheckState"));
  *   m_collectionCheckStateMaintainer->setSelectionModel(m_checkableProxy->selectionModel());
  * @endcode
  *

@@ -19,7 +19,7 @@
 */
 
 #include "kstatusnotifieritem.h"
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include "kstatusnotifieritemprivate_p.h"
 #include "kstatusnotifieritemdbus_p.h"
 

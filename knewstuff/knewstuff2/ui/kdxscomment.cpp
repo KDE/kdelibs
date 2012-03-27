@@ -20,7 +20,7 @@
 
 #include <QLayout>
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <ktextedit.h>
 
 KDXSComment::KDXSComment(QWidget *parent)

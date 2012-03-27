@@ -64,7 +64,7 @@ public:
 
         #pragma message("KDE5 TODO: Remove dependencies on Kconfig and KGlobal") 
 #if 0
-        KConfigGroup config(KGlobal::config(), "DirWatch");
+        KConfigGroup config(KSharedConfig::openConfig(), "DirWatch");
         const QByteArray testMethod = qgetenv("KDIRWATCHTEST_METHOD");
         if (!testMethod.isEmpty()) {
             config.writeEntry("PreferredMethod", testMethod);

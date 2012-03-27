@@ -30,6 +30,7 @@
 
 #include "kio_export.h"
 
+#include <QUrl>
 #include <QtCore/QObject>
 #include <QtCore/QString>
 
@@ -58,8 +59,9 @@ namespace KIO {
 
         /**
          * Connects to the remote address.
+         * @param address a local:// or tcp:// URL.
          */
-        void connectToRemote(const QString &address);
+        void connectToRemote(const QUrl &address);
 
         /// Closes the connection.
 	void close();
@@ -169,9 +171,9 @@ namespace KIO {
 
         /**
          * Returns the address for this connection if it is listening, an empty
-         * string if not.
+         * address if not.
          */
-        QString address() const;
+        QUrl address() const;
 
         Connection *nextPendingConnection();
         void setNextPendingConnection(Connection *conn);

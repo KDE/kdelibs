@@ -84,14 +84,14 @@ QString StorageAccess::filePath() const
         if (m_clearTextPath.isEmpty() || m_clearTextPath == "/")
             return QString();
         Device holderDevice(m_clearTextPath);
-        mntPoints = holderDevice.prop("MountPoints").value<QByteArrayList>();
+        mntPoints = qdbus_cast<QByteArrayList>(holderDevice.prop("MountPoints"));
         if (!mntPoints.isEmpty())
             return QFile::decodeName(mntPoints.first()); // FIXME Solid doesn't support multiple mount points
         else
             return QString();
     }
 
-    mntPoints = m_device->prop("MountPoints").value<QByteArrayList>();
+    mntPoints = qdbus_cast<QByteArrayList>(m_device->prop("MountPoints"));
 
     if (!mntPoints.isEmpty())
         return QFile::decodeName(mntPoints.first()); // FIXME Solid doesn't support multiple mount points

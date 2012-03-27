@@ -79,7 +79,7 @@ KComponentData::KComponentData(const QByteArray &name, const QByteArray &catalog
 
     if (kdeLibraryPathsAdded == NeedLazyInit) {
         kdeLibraryPathsAdded = LazyInitDone;
-        d->lazyInit(*this);
+        d->lazyInit();
     }
 
     if (registerAsMain == RegisterAsMainComponent) {
@@ -94,7 +94,7 @@ KComponentData::KComponentData(const KAboutData *aboutData, MainComponentRegistr
 
     if (kdeLibraryPathsAdded == NeedLazyInit) {
         kdeLibraryPathsAdded = LazyInitDone;
-        d->lazyInit(*this);
+        d->lazyInit();
     }
 
     if (registerAsMain == RegisterAsMainComponent) {
@@ -109,7 +109,7 @@ KComponentData::KComponentData(const KAboutData &aboutData, MainComponentRegistr
 
     if (kdeLibraryPathsAdded == NeedLazyInit) {
         kdeLibraryPathsAdded = LazyInitDone;
-        d->lazyInit(*this);
+        d->lazyInit();
     }
 
     if (registerAsMain == RegisterAsMainComponent) {
@@ -130,14 +130,14 @@ bool KComponentData::isValid() const
     return (d != 0);
 }
 
-void KComponentDataPrivate::lazyInit(const KComponentData &component)
+void KComponentDataPrivate::lazyInit()
 {
     if (dirs == 0) {
         dirs = new KStandardDirs();
         // install appdata resource type
         dirs->addResourceType("appdata", "data", aboutData.appName() + QLatin1Char('/'), true);
 
-        configInit(component);
+        configInit();
 
         if (dirs->addCustomized(sharedConfig.data()))
             sharedConfig->reparseConfiguration();
@@ -159,15 +159,15 @@ void KComponentDataPrivate::lazyInit(const KComponentData &component)
     }
 }
 
-bool kde_kiosk_exception = false; // flag to disable kiosk restrictions
+extern KCONFIG_EXPORT bool kde_kiosk_exception;
 bool kde_kiosk_admin = false;
 
-void KComponentDataPrivate::configInit(const KComponentData &component)
+void KComponentDataPrivate::configInit()
 {
     Q_ASSERT(!sharedConfig);
 
     if (!configName.isEmpty()) {
-        sharedConfig = KSharedConfig::openConfig(component, configName);
+        sharedConfig = KSharedConfig::openConfig(configName);
 
         //FIXME: this is broken and I don't know how to repair it
         // Check whether custom config files are allowed.
@@ -177,23 +177,24 @@ void KComponentDataPrivate::configInit(const KComponentData &component)
            sharedConfig = 0;
         }
     }
-    
+
     if (!sharedConfig) {
-        sharedConfig = KSharedConfig::openConfig(component);
+        // was: KSharedConfig::openConfig(component)
+        sharedConfig = KSharedConfig::openConfig(aboutData.appName() + QLatin1String("rc"));
     }
 
     // Check if we are excempt from kiosk restrictions
     if (kde_kiosk_admin && !kde_kiosk_exception && !qgetenv("KDE_KIOSK_NO_RESTRICTIONS").isEmpty()) {
         kde_kiosk_exception = true;
         sharedConfig = 0;
-        configInit(component); // Reread...
+        configInit(); // Reread...
     }
 }
 
 KStandardDirs *KComponentData::dirs() const
 {
     Q_ASSERT(d);
-    d->lazyInit(*this);
+    d->lazyInit();
 
     return d->dirs;
 }
@@ -201,7 +202,7 @@ KStandardDirs *KComponentData::dirs() const
 const KSharedConfig::Ptr &KComponentData::config() const
 {
     Q_ASSERT(d);
-    d->lazyInit(*this);
+    d->lazyInit();
 
     return d->sharedConfig;
 }

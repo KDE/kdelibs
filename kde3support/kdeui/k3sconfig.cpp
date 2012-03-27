@@ -86,7 +86,7 @@ K3SpellConfig::K3SpellConfig( QWidget *parent,
   , clientcombo(0)
   , d(new K3SpellConfigPrivate)
 {
-  kc = KGlobal::config();
+  kc = KSharedConfig::openConfig();
 
   if( !_ksc )
   {

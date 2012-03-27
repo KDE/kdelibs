@@ -23,9 +23,10 @@
 #include "kkeyserver.h"
 
 #include <config.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kglobal.h>
 #include <kconfig.h>
+#include <ksharedconfig.h>
 #include <kconfiggroup.h>
 
 namespace KKeyServer {
@@ -63,7 +64,7 @@ static bool g_bMacLabels;
 
 static void intializeKKeyLabels()
 {
-	KConfigGroup cg( KGlobal::config(), "Keyboard" );
+	KConfigGroup cg( KSharedConfig::openConfig(), "Keyboard" );
 	g_rgModInfo[0].sLabel = new QString( cg.readEntry( "Label Shift", i18nc(KEYCTXT, g_rgModInfo[0].psName) ) );
 	g_rgModInfo[1].sLabel = new QString( cg.readEntry( "Label Ctrl", i18nc(KEYCTXT, g_rgModInfo[1].psName) ) );
 	g_rgModInfo[2].sLabel = new QString( cg.readEntry( "Label Alt", i18nc(KEYCTXT, g_rgModInfo[2].psName) ) );

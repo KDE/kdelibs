@@ -21,7 +21,7 @@
 #include <kcombobox.h>
 #include <kfiledialog.h>
 #include <klineedit.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kurlcompletion.h>
 #include <kprotocolmanager.h>
 #include <khbox.h>

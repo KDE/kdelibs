@@ -21,7 +21,7 @@
 #include "configdialog.h"
 #include "configwidget.h"
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include <kvbox.h>
 

@@ -100,9 +100,7 @@ public slots:
             }
         }
 
-        KService::List offers = KServiceTypeTrader::self()->query("KParts/ReadOnlyPart");
-        Q_ASSERT( offers.count() > 0 );
-        offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin");
+        KService::List offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin");
         Q_ASSERT( offerListHasService( offers, "faketextplugin.desktop" ) );
 
         offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin", "Library == 'faketextplugin'");
@@ -195,7 +193,7 @@ static void runKBuildSycoca()
     const QString kbuildsycoca = QStandardPaths::findExecutable(KBUILDSYCOCA_EXENAME);
     QVERIFY(!kbuildsycoca.isEmpty());
     QStringList args;
-    proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output
+    //proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output
     proc.start(kbuildsycoca, args);
     kDebug() << "waiting for signal";
     QVERIFY(QTest::kWaitForSignal(KSycoca::self(), SIGNAL(databaseChanged(QStringList)), 10000));
@@ -297,6 +295,7 @@ int main(int argc, char** argv)
 {
     setenv("KDEHOME", QFile::encodeName(QDir::homePath() + QString::fromLatin1("/.kde-unit-test")), 1);
     setenv("XDG_DATA_HOME", QFile::encodeName(QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/local")), 1);
+    setenv("XDG_CACHE_HOME", QFile::encodeName(QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/cache")), 1);
     QCoreApplication app(argc, argv);
     KComponentData cData("ksycocathreadtest");
     KSycocaThreadTest mainObj;

@@ -123,6 +123,7 @@ QString QStandardPaths::writableLocation(StandardLocation type)
             result = convertCharArray(path);
         break;
 
+    case DownloadLocation: // TODO implement with SHGetKnownFolderPath(FOLDERID_Downloads) (starting from Vista)
     case DocumentsLocation:
         if (SHGetSpecialFolderPath(0, path, CSIDL_PERSONAL, FALSE))
             result = convertCharArray(path);
@@ -208,12 +209,6 @@ QStringList QStandardPaths::standardLocations(StandardLocation type)
     const QString localDir = writableLocation(type);
     dirs.prepend(localDir);
     return dirs;
-}
-
-QString QStandardPaths::displayName(StandardLocation type)
-{
-    Q_UNUSED(type);
-    return QString();
 }
 
 QT_END_NAMESPACE

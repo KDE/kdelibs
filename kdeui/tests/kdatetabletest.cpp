@@ -1,6 +1,6 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include "kdatetable.h"
 

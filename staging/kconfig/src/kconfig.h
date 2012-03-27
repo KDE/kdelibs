@@ -26,15 +26,15 @@
 
 #include "kconfigbase.h"
 
-#include <kdecore_export.h>
+#include <kconfig_export.h>
 
 #include <QtCore/QString>
 #include <QtCore/QVariant>
 #include <QtCore/QByteArray>
 #include <QtCore/QList>
+#include <qstandardpaths.h>
 
 class KConfigGroup;
-class KComponentData;
 class KEntryMap;
 class KConfigPrivate;
 
@@ -45,17 +45,16 @@ class KConfigPrivate;
  *
  * Quickstart:
  *
- * Get the default application config object via KGlobal::config().
+ * Get the default application config object via KSharedConfig::openConfig().
  *
  * Load a specific configuration file:
  * \code
  * KConfig config( "/etc/kderc", KConfig::SimpleConfig );
  * \endcode
  *
- * Load the configuration of a specific component (taking into account
- * possible custom directories in KStandardDirs):
+ * Load the configuration of a specific component:
  * \code
- * KConfig config( componentData(), "pluginrc" );
+ * KConfig config( "pluginrc" );
  * \endcode
  *
  * In general it is recommended to use KSharedConfig instead of
@@ -67,7 +66,7 @@ class KConfigPrivate;
  *
  * \sa KSharedConfig, KConfigGroup, <a href="http://techbase.kde.org/index.php?title=Development/Tutorials/KConfig">the techbase HOWTO on KConfig</a>.
  */
-class KDECORE_EXPORT KConfig : public KConfigBase
+class KCONFIG_EXPORT KConfig : public KConfigBase
 {
 public:
     /**
@@ -107,7 +106,7 @@ public:
      * If an absolute path is specified for @p file, that file will be used
      * as the store for the configuration settings.  If a non-absolute path
      * is provided, the file will be looked for in the standard directory
-     * specified by resourceType.  If no path is provided, a default
+     * specified by type.  If no path is provided, a default
      * configuration file will be used based on the name of the main
      * application component.
      *
@@ -123,46 +122,13 @@ public:
      *                     requires any file in the filesystem at all.
      * @param mode         how global settings should affect the configuration
      *                     options exposed by this KConfig object
-     * @param resourceType The standard directory to look for the configuration
-     *                     file in (see KStandardDirs)
+     * @param type         The standard directory to look for the configuration
+     *                     file in
      *
      * @sa KSharedConfig::openConfig(const QString&, OpenFlags, const char*)
      */
     explicit KConfig(const QString& file = QString(), OpenFlags mode = FullConfig,
-                     const char* resourceType = "config");
-
-    /**
-     * Creates a KConfig object to manipulate the configuration for a specific
-     * component.
-     *
-     * If an absolute path is specified for @p file, that file will be used
-     * as the store for the configuration settings.  If a non-absolute path
-     * is provided, the file will be looked for in the standard directory
-     * specified by resourceType.  If no path is provided, a default
-     * configuration file will be used based on the component's name.
-     *
-     * @p mode determines whether the user or global settings will be allowed
-     * to influence the values returned by this object.  See KConfig::OpenFlags for
-     * more details.
-     *
-     * @note You probably want to use KSharedConfig::openConfig instead.
-     *
-     * @param componentData the component that you wish to load a configuration
-     *                      file for
-     * @param file          overrides the configuration file name if not empty; if it is empty
-     *                      and SimpleConfig is passed in for the OpenFlags, then an in-memory
-     *                      KConfig object is created which will not write out to file nor which
-     *                      requires any file in the filesystem at all.
-     * @param mode          how global settings should affect the configuration
-     *                      options exposed by this KConfig object.
-     *                      See OpenFlags
-     * @param resourceType  The standard directory to look for the configuration
-     *                      file in
-     *
-     * @sa KSharedConfig::openConfig(const KComponentData&, const QString&, OpenFlags, const char*)
-     */
-    explicit KConfig(const KComponentData& componentData, const QString& file = QString(),
-                     OpenFlags mode = FullConfig, const char* resourceType = "config");
+                     QStandardPaths::StandardLocation type = QStandardPaths::ConfigLocation);
 
     /**
      * @internal
@@ -172,18 +138,20 @@ public:
      *
      * @param file the file to be parsed
      * @param backend the backend to load
-     * @param resourceType where to look for the file if an absolute path is not provided
+     * @param type where to look for the file if an absolute path is not provided
      *
      * @since 4.1
      */
-    KConfig(const QString& file, const QString& backend, const char* resourceType = "config");
+    KConfig(const QString& file, const QString& backend, QStandardPaths::StandardLocation type = QStandardPaths::ConfigLocation);
 
     virtual ~KConfig();
 
     /**
-     * Returns the component data this configuration is for.
+     * Returns the standard location enum passed to the constructor.
+     * Used by KSharedConfig.
+     * @since 5.0
      */
-    const KComponentData &componentData() const; // krazy:exclude=constref
+    QStandardPaths::StandardLocation locationType() const;
 
     /**
      * Returns the filename used to store the configuration.
@@ -281,8 +249,7 @@ public:
      * All the sources provided to any call to this method will be overridden
      * by any files that cascade from the source provided to the constructor
      * (@see CascadeConfig), which will in turn be
-     * overridden by the source provided to the constructor (either explicitly
-     * or implicity via a KComponentData).
+     * overridden by the source provided to the constructor.
      *
      * Note that only the most specific file, ie: the file provided to the
      * constructor, will be written to by this object.
@@ -349,7 +316,7 @@ public:
      * @see forceGlobal
      */
 #ifndef KDE_NO_DEPRECATED
-    KDECORE_DEPRECATED void setForceGlobal(bool force);
+    KCONFIG_DEPRECATED void setForceGlobal(bool force);
 #endif
     /**
      * @deprecated
@@ -361,7 +328,7 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDECORE_DEPRECATED bool forceGlobal() const;
+    KCONFIG_DEPRECATED bool forceGlobal() const;
 #endif
     /// @}
 

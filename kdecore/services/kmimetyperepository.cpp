@@ -120,7 +120,7 @@ bool KMimeTypeRepository::useFavIcons()
     m_mutex.lockForWrite();
     if (!m_useFavIconsChecked) {
         m_useFavIconsChecked = true;
-        KConfigGroup cg( KGlobal::config(), "HTML Settings" );
+        KConfigGroup cg( KSharedConfig::openConfig(), "HTML Settings" );
         m_useFavIcons = cg.readEntry("EnableFavicon", true);
     }
     m_mutex.unlock();

@@ -32,7 +32,7 @@
 #include <kfileplacesmodel.h>
 #include <kglobalsettings.h>
 #include <kicon.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmenu.h>
 #include <kprotocolinfo.h>
 #include <kurlcombobox.h>

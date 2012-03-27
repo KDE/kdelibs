@@ -19,7 +19,7 @@
 #include "knewstuffaction.h"
 
 #include <kaction.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kicon.h>
 #include <kactioncollection.h>
 

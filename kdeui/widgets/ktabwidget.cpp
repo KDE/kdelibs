@@ -56,7 +56,7 @@ class KTabWidget::Private
         m_tabBarHidden( false )
     {
 
-      KConfigGroup cg(KGlobal::config(), "General");
+      KConfigGroup cg(KSharedConfig::openConfig(), "General");
       m_maxLength = cg.readEntry("MaximumTabLength", 30);
       m_minLength = cg.readEntry("MinimumTabLength", 3);
       Q_ASSERT(m_maxLength >= m_minLength);

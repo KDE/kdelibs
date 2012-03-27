@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
 
 void Dummy::doBenchmark()
 {
-    KConfigGroup settings(KGlobal::config(), "bench");
+    KConfigGroup settings(KSharedConfig::openConfig(), "bench");
     results.clear();
 
     QString directory = KFileDialog::getExistingDirectory(settings.readPathEntry("path", QString()), m_part->view(), 
@@ -148,7 +148,7 @@ void Dummy::doBenchmark()
 
     if (!directory.isEmpty()) {
         settings.writePathEntry("path", directory);
-        KGlobal::config()->sync();
+        KSharedConfig::openConfig()->sync();
 
         QDir dirListing(directory, "*.html");
         for (unsigned i = 0; i < dirListing.count(); ++i) {

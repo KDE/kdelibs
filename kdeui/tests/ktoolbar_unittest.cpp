@@ -294,22 +294,22 @@ void tst_KToolBar::changeGlobalIconSizeSetting(int mainToolbarIconSize, int icon
 {
     // We could use KConfig::Normal|KConfig::Global here, to write to kdeglobals like kcmstyle does,
     // but we don't need to. Writing to the app's config file works too.
-    KConfigGroup mglobals(KGlobal::config(), "MainToolbarIcons");
+    KConfigGroup mglobals(KSharedConfig::openConfig(), "MainToolbarIcons");
     mglobals.writeEntry("Size", mainToolbarIconSize);
-    KConfigGroup globals(KGlobal::config(), "ToolbarIcons");
+    KConfigGroup globals(KSharedConfig::openConfig(), "ToolbarIcons");
     //globals.writeEntry("Size", iconSize, KConfig::Normal|KConfig::Global);
     globals.writeEntry("Size", iconSize);
-    KGlobal::config()->sync();
+    KSharedConfig::openConfig()->sync();
     QMetaObject::invokeMethod(KGlobalSettings::self(), "_k_slotNotifyChange", Q_ARG(int, KGlobalSettings::IconChanged), Q_ARG(int, 0));
 }
 
 void tst_KToolBar::deleteGlobalIconSizeSetting()
 {
-    KConfigGroup mglobals(KGlobal::config(), "MainToolbarIcons");
+    KConfigGroup mglobals(KSharedConfig::openConfig(), "MainToolbarIcons");
     mglobals.deleteEntry("Size");
-    KConfigGroup globals(KGlobal::config(), "ToolbarIcons");
+    KConfigGroup globals(KSharedConfig::openConfig(), "ToolbarIcons");
     globals.deleteEntry("Size");
-    KGlobal::config()->sync();
+    KSharedConfig::openConfig()->sync();
     QMetaObject::invokeMethod(KGlobalSettings::self(), "_k_slotNotifyChange", Q_ARG(int, KGlobalSettings::IconChanged), Q_ARG(int, 0));
 }
 
@@ -439,10 +439,10 @@ void tst_KToolBar::testToolButtonStyleXmlGui()
 
 void tst_KToolBar::changeGlobalToolButtonStyleSetting(const QString& mainToolBar, const QString& otherToolBars)
 {
-    KConfigGroup group(KGlobal::config(), "Toolbar style");
+    KConfigGroup group(KSharedConfig::openConfig(), "Toolbar style");
     group.writeEntry("ToolButtonStyle", mainToolBar);
     group.writeEntry("ToolButtonStyleOtherToolbars", otherToolBars);
-    KGlobal::config()->sync();
+    KSharedConfig::openConfig()->sync();
     // KGlobalSettings::emitChange(KGlobalSettings::ToolbarStyleChanged);
     // too racy: QEventLoop().processEvents( QEventLoop::AllEvents, 20 ); // need to process DBUS signal
     QMetaObject::invokeMethod(KGlobalSettings::self(), "_k_slotNotifyChange", Q_ARG(int, KGlobalSettings::ToolbarStyleChanged), Q_ARG(int, 0));
@@ -450,10 +450,10 @@ void tst_KToolBar::changeGlobalToolButtonStyleSetting(const QString& mainToolBar
 
 void tst_KToolBar::deleteGlobalToolButtonStyleSetting()
 {
-    KConfigGroup group(KGlobal::config(), "Toolbar style");
+    KConfigGroup group(KSharedConfig::openConfig(), "Toolbar style");
     group.deleteEntry("ToolButtonStyle");
     group.deleteEntry("ToolButtonStyleOtherToolbars");
-    KGlobal::config()->sync();
+    KSharedConfig::openConfig()->sync();
     QMetaObject::invokeMethod(KGlobalSettings::self(), "_k_slotNotifyChange", Q_ARG(int, KGlobalSettings::ToolbarStyleChanged), Q_ARG(int, 0));
 }
 

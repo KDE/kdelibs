@@ -33,7 +33,7 @@
 #include <QtDBus/QtDBus>
 #include <QtCore/QMetaType>
 
-#include "kauthorized.h"
+#include "kcoreauthorized.h"
 #include "kaboutdata.h"
 #include "kcheckaccelerators.h"
 #include "kcrash.h"
@@ -198,7 +198,7 @@ public:
   }
 
 #ifndef KDE3_SUPPORT
-  KConfig *config() { return KGlobal::config().data(); }
+  KConfig *config() { return KSharedConfig::openConfig().data(); }
 #endif
 
   void _k_x11FilterDestroyed();
@@ -616,7 +616,7 @@ KConfig* KApplication::sessionConfig()
 
 void KApplication::reparseConfiguration()
 {
-    KGlobal::config()->reparseConfiguration();
+    KSharedConfig::openConfig()->reparseConfiguration();
 }
 
 void KApplication::quit()

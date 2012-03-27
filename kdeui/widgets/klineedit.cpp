@@ -29,8 +29,7 @@
 #include "klineedit_p.h"
 
 #include <kaction.h>
-#include <kapplication.h>
-#include <kauthorized.h>
+#include <kcoreauthorized.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kcursor.h>
@@ -38,13 +37,14 @@
 #include <kcompletionbox.h>
 #include <kicontheme.h>
 #include <kicon.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmenu.h>
 #include <kstandardaction.h>
 #include <kstandardshortcut.h>
 #include <kurlmimedata.h>
 
 #include <QtCore/QTimer>
+#include <QApplication>
 #include <QClipboard>
 #include <QStyleOption>
 #include <QToolTip>
@@ -71,7 +71,7 @@ public:
         threeStars = false;
         completionRunning = false;
         if (!s_initialized) {
-            KConfigGroup config( KGlobal::config(), "General" );
+            KConfigGroup config( KSharedConfig::openConfig(), "General" );
             s_backspacePerformsCompletion = config.readEntry("Backspace performs completion", false);
             s_initialized = true;
         }
@@ -414,7 +414,7 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
     if ( echoMode() != QLineEdit::Normal )
         mode = KGlobalSettings::CompletionNone; // Override the request.
 
-    if ( kapp && !KAuthorized::authorize("lineedit_text_completion") )
+    if (!KAuthorized::authorize("lineedit_text_completion"))
         mode = KGlobalSettings::CompletionNone;
 
     if ( mode == KGlobalSettings::CompletionPopupAuto ||
@@ -1851,7 +1851,7 @@ void KLineEdit::setPasswordMode(bool b)
 {
     if(b)
     {
-        KConfigGroup cg(KGlobal::config(), "Passwords");
+        KConfigGroup cg(KSharedConfig::openConfig(), "Passwords");
         const QString val = cg.readEntry("EchoMode", "OneStar");
         if (val == "NoEcho")
             setEchoMode(NoEcho);

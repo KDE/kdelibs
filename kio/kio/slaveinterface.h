@@ -30,7 +30,7 @@
 #include <kio/udsentry.h>
 #include <kio/authinfo.h>
 
-class KUrl;
+class QUrl;
 
 namespace KIO {
 
@@ -140,7 +140,7 @@ Q_SIGNALS:
     void metaData( const KIO::MetaData & );
     void totalSize( KIO::filesize_t );
     void processedSize( KIO::filesize_t );
-    void redirection( const KUrl& );
+    void redirection( const QUrl& );
     void position( KIO::filesize_t );
 
     void speed( unsigned long );

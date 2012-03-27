@@ -31,7 +31,7 @@ class KSycocaDict;
 /**
  * @internal
  * A sycoca factory for service groups (e.g. list of applications)
- * It loads the services from parsing directories (e.g. applnk/)
+ * It loads the services from parsing directories (e.g. share/applications/)
  *
  * Exported for kbuildsycoca, but not installed.
  */
@@ -48,7 +48,7 @@ public:
   /**
    * Construct a KServiceGroup from a config file.
    */
-  virtual KSycocaEntry *createEntry(const QString &, const char *) const
+   virtual KSycocaEntry *createEntry(const QString &) const
     { assert(0); return 0; }
 
   /**

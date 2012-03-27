@@ -25,7 +25,7 @@
 #include <kapplication.h>
 #include <kdebug.h>
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include "kreplacedialog.h"
 #include <QtCore/QRegExp>

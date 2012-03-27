@@ -23,9 +23,8 @@
 #ifndef KCORECONFIGSKELETON_H
 #define KCORECONFIGSKELETON_H
 
-#include <kdecore_export.h>
+#include <kconfig_export.h>
 
-#include <kurl.h>
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>
 
@@ -34,6 +33,7 @@
 #include <QtCore/QRect>
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
+#include <QtCore/QUrl>
 
   class KConfigSkeletonItemPrivate;
   /**
@@ -49,7 +49,7 @@
    * addItem() functions of KCoreConfigSkeleton instead. If you subclass this class you will
    * have to register instances with the function KCoreConfigSkeleton::addItem().
    */
-  class KDECORE_EXPORT KConfigSkeletonItem
+  class KCONFIG_EXPORT KConfigSkeletonItem
   {
   public:
     typedef QList < KConfigSkeletonItem * >List;
@@ -363,14 +363,14 @@ template < typename T > class KConfigSkeletonGenericItem:public KConfigSkeletonI
    *
    * Use KConfigSkeleton if you need GUI types as well.
    */
-class KDECORE_EXPORT KCoreConfigSkeleton : public QObject
+class KCONFIG_EXPORT KCoreConfigSkeleton : public QObject
 {
   Q_OBJECT
 public:
   /**
    * Class for handling a string preferences item.
    */
-  class KDECORE_EXPORT ItemString:public KConfigSkeletonGenericItem < QString >
+  class KCONFIG_EXPORT ItemString:public KConfigSkeletonGenericItem < QString >
   {
   public:
     enum Type { Normal, Password, Path };
@@ -419,7 +419,7 @@ public:
   /**
    * Class for handling a password preferences item.
    */
-  class KDECORE_EXPORT ItemPassword:public ItemString
+  class KCONFIG_EXPORT ItemPassword:public ItemString
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -431,7 +431,7 @@ public:
   /**
    * Class for handling a path preferences item.
    */
-  class KDECORE_EXPORT ItemPath:public ItemString
+  class KCONFIG_EXPORT ItemPath:public ItemString
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -443,7 +443,7 @@ public:
     /**
      * Class for handling a url preferences item.
      */
-    class KDECORE_EXPORT ItemUrl:public KConfigSkeletonGenericItem < QUrl >
+    class KCONFIG_EXPORT ItemUrl:public KConfigSkeletonGenericItem < QUrl >
     {
     public:
 
@@ -472,7 +472,7 @@ public:
   /**
    * Class for handling a QVariant preferences item.
    */
-  class KDECORE_EXPORT ItemProperty:public KConfigSkeletonGenericItem < QVariant >
+  class KCONFIG_EXPORT ItemProperty:public KConfigSkeletonGenericItem < QVariant >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -493,7 +493,7 @@ public:
   /**
    * Class for handling a bool preferences item.
    */
-  class KDECORE_EXPORT ItemBool:public KConfigSkeletonGenericItem < bool >
+  class KCONFIG_EXPORT ItemBool:public KConfigSkeletonGenericItem < bool >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -517,7 +517,7 @@ public:
   /**
    * Class for handling a 32-bit integer preferences item.
    */
-  class KDECORE_EXPORT ItemInt:public KConfigSkeletonGenericItem < qint32 >
+  class KCONFIG_EXPORT ItemInt:public KConfigSkeletonGenericItem < qint32 >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -562,7 +562,7 @@ public:
   /**
    * Class for handling a 64-bit integer preferences item.
    */
-  class KDECORE_EXPORT ItemLongLong:public KConfigSkeletonGenericItem < qint64 >
+  class KCONFIG_EXPORT ItemLongLong:public KConfigSkeletonGenericItem < qint64 >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -600,13 +600,13 @@ public:
     qint64 mMax;
   };
 #ifndef KDE_NO_DEPRECATED
-  typedef KDECORE_DEPRECATED ItemLongLong ItemInt64;
+  typedef KCONFIG_DEPRECATED ItemLongLong ItemInt64;
 #endif
 
   /**
    * Class for handling enums.
    */
-  class KDECORE_EXPORT ItemEnum:public ItemInt
+  class KCONFIG_EXPORT ItemEnum:public ItemInt
   {
   public:
     //KDE5: remove the old Choice struct, rename Choice2 to Choice
@@ -654,7 +654,7 @@ public:
   /**
    * Class for handling an unsigned 32-bit integer preferences item.
    */
-  class KDECORE_EXPORT ItemUInt:public KConfigSkeletonGenericItem < quint32 >
+  class KCONFIG_EXPORT ItemUInt:public KConfigSkeletonGenericItem < quint32 >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -695,7 +695,7 @@ public:
   /**
    * Class for handling unsigned 64-bit integer preferences item.
    */
-  class KDECORE_EXPORT ItemULongLong:public KConfigSkeletonGenericItem < quint64 >
+  class KCONFIG_EXPORT ItemULongLong:public KConfigSkeletonGenericItem < quint64 >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -733,13 +733,13 @@ public:
     quint64 mMax;
   };
 #ifndef KDE_NO_DEPRECATED
-  typedef KDECORE_DEPRECATED ItemULongLong ItemUInt64;
+  typedef KCONFIG_DEPRECATED ItemULongLong ItemUInt64;
 #endif
 
   /**
    * Class for handling a floating point preference item.
    */
-  class KDECORE_EXPORT ItemDouble:public KConfigSkeletonGenericItem < double >
+  class KCONFIG_EXPORT ItemDouble:public KConfigSkeletonGenericItem < double >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -781,7 +781,7 @@ public:
   /**
    * Class for handling a QRect preferences item.
    */
-  class KDECORE_EXPORT ItemRect:public KConfigSkeletonGenericItem < QRect >
+  class KCONFIG_EXPORT ItemRect:public KConfigSkeletonGenericItem < QRect >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -805,7 +805,7 @@ public:
   /**
    * Class for handling a QPoint preferences item.
    */
-  class KDECORE_EXPORT ItemPoint:public KConfigSkeletonGenericItem < QPoint >
+  class KCONFIG_EXPORT ItemPoint:public KConfigSkeletonGenericItem < QPoint >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -829,7 +829,7 @@ public:
   /**
    * Class for handling a QSize preferences item.
    */
-  class KDECORE_EXPORT ItemSize:public KConfigSkeletonGenericItem < QSize >
+  class KCONFIG_EXPORT ItemSize:public KConfigSkeletonGenericItem < QSize >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -853,7 +853,7 @@ public:
   /**
    * Class for handling a QDateTime preferences item.
    */
-  class KDECORE_EXPORT ItemDateTime:public KConfigSkeletonGenericItem < QDateTime >
+  class KCONFIG_EXPORT ItemDateTime:public KConfigSkeletonGenericItem < QDateTime >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -878,7 +878,7 @@ public:
   /**
    * Class for handling a string list preferences item.
    */
-  class KDECORE_EXPORT ItemStringList:public KConfigSkeletonGenericItem < QStringList >
+  class KCONFIG_EXPORT ItemStringList:public KConfigSkeletonGenericItem < QStringList >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -903,7 +903,7 @@ public:
   /**
    * Class for handling a path list preferences item.
    */
-  class KDECORE_EXPORT ItemPathList:public ItemStringList
+  class KCONFIG_EXPORT ItemPathList:public ItemStringList
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -920,7 +920,7 @@ public:
     /**
      * Class for handling a url list preferences item.
      */
-    class KDECORE_EXPORT ItemUrlList:public KConfigSkeletonGenericItem < QList<QUrl> >
+    class KCONFIG_EXPORT ItemUrlList:public KConfigSkeletonGenericItem < QList<QUrl> >
     {
     public:
         /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -947,7 +947,7 @@ public:
   /**
    * Class for handling an integer list preferences item.
    */
-  class KDECORE_EXPORT ItemIntList:public KConfigSkeletonGenericItem < QList < int > >
+  class KCONFIG_EXPORT ItemIntList:public KConfigSkeletonGenericItem < QList < int > >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -974,7 +974,7 @@ public:
    * Constructor.
    *
    * @param configname name of config file. If no name is given, the default
-   *                   config file as returned by KGlobal::config() is used
+   *                   config file as returned by KSharedConfig::openConfig() is used
    * @param parent the parent object (see QObject documentation)
    */
   explicit KCoreConfigSkeleton(const QString & configname = QString(), QObject* parent = 0);
@@ -1165,7 +1165,7 @@ public:
    * Use addItemLongLong().
    */
 #ifndef KDE_NO_DEPRECATED
-  KDECORE_DEPRECATED ItemLongLong *addItemInt64( const QString& name, qint64 &reference,
+  KCONFIG_DEPRECATED ItemLongLong *addItemInt64( const QString& name, qint64 &reference,
                           qint64 defaultValue = 0,
                           const QString & key = QString());
 #endif
@@ -1190,7 +1190,7 @@ public:
    * Use addItemULongLong().
    */
 #ifndef KDE_NO_DEPRECATED
-  KDECORE_DEPRECATED ItemULongLong *addItemUInt64(const QString & name, quint64 &reference,
+  KCONFIG_DEPRECATED ItemULongLong *addItemUInt64(const QString & name, quint64 &reference,
                             quint64 defaultValue = 0,
                             const QString & key = QString());
 #endif

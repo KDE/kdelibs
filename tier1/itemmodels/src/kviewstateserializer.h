@@ -90,7 +90,7 @@ class KViewStateSerializerPrivate;
       ConcreteStateSaver saver;
       saver.setTreeView(m_view);
 
-      KConfigGroup cfg( KGlobal::config(), "ExampleViewState" );
+      KConfigGroup cfg( KSharedConfig::openConfig(), "ExampleViewState" );
       saver.saveState( cfg );
       cfg.sync();
     }
@@ -100,7 +100,7 @@ class KViewStateSerializerPrivate;
       // Will delete itself.
       ConcreteTreeStateSaver *saver = new ConcreteStateSaver();
       saver->setTreeView(m_view);
-      KConfigGroup cfg( KGlobal::config(), "ExampleViewState" );
+      KConfigGroup cfg( KSharedConfig::openConfig(), "ExampleViewState" );
       saver->restoreState( cfg );
     }
   @endcode

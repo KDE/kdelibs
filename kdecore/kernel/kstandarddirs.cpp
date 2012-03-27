@@ -54,12 +54,12 @@
 #include <dirent.h>
 #include <pwd.h>
 #include <grp.h>
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #include <windows.h>
 #ifdef _WIN32_WCE
 #include <basetyps.h>
 #endif
-#ifdef Q_WS_WIN64
+#ifdef Q_OS_WIN64
 // FIXME: did not find a reliable way to fix with kdewin mingw header
 #define interface struct
 #endif
@@ -113,45 +113,42 @@ public:
  *        in tmpfile (no empty line at the beginning or at the end!)
  * 2) update the KStandardDirs class documentation
  * 3) update the list in kde-config.cpp
+ * 4) update the installPath() function below
 
 data
 .
 html
-share/doc/HTML
+doc/HTML
 icon
-share/icons
+icons
 config
-share/config
+config
 pixmap
-share/pixmaps
-apps
-share/applnk
+pixmaps
 sound
-share/sounds
+sounds
 locale
-share/locale
+locale
 services
-share/kde4/services
+kde5/services
 servicetypes
-share/kde4/servicetypes
-mime
-share/mimelnk
-cgi
-cgi-bin
+kde5/servicetypes
 wallpaper
-share/wallpapers
+wallpapers
 templates
-share/templates
+templates
 exe
 bin
 module
-%lib/kde4
+%lib/kde5
 qtplugins
-%lib/kde4/plugins
+%lib/kde5/plugins
 kcfg
-share/config.kcfg
+config.kcfg
 emoticons
-share/emoticons
+emoticons
+xdgdata
+.
 xdgdata-apps
 applications
 xdgdata-icon
@@ -170,56 +167,44 @@ xdgconf-autostart
 autostart
 */
 
-// KDE5 TODO: remove cgi-bin and mimelnk stuff
-
 static const char types_string[] =
     "data\0"
     ".\0"
     "html\0"
-    "share/doc/HTML\0"
+    "doc/HTML\0"
     "icon\0"
-    "share/icons\0"
+    "icons\0"
     "config\0"
-    "share/config\0"
     "pixmap\0"
-    "share/pixmaps\0"
-    "apps\0"
-    "share/applnk\0"
+    "pixmaps\0"
     "sound\0"
-    "share/sounds\0"
+    "sounds\0"
     "locale\0"
-    "share/locale\0"
     "services\0"
-    "share/kde4/services\0"
+    "kde5/services\0"
     "servicetypes\0"
-    "share/kde4/servicetypes\0"
-    "mime\0"
-    "share/mimelnk\0"
-    "cgi\0"
-    "cgi-bin\0"
+    "kde5/servicetypes\0"
     "wallpaper\0"
-    "share/wallpapers\0"
+    "wallpapers\0"
     "templates\0"
-    "share/templates\0"
     "exe\0"
     "bin\0"
     "module\0"
-    "%lib/kde4\0"
+    "%lib/kde5\0"
     "qtplugins\0"
-    "%lib/kde4/plugins\0"
+    "%lib/kde5/plugins\0"
     "kcfg\0"
-    "share/config.kcfg\0"
+    "config.kcfg\0"
     "emoticons\0"
-    "share/emoticons\0"
+    "xdgdata\0"
     "xdgdata-apps\0"
     "applications\0"
     "xdgdata-icon\0"
-    "icons\0"
     "xdgdata-pixmap\0"
-    "pixmaps\0"
     "xdgdata-dirs\0"
     "desktop-directories\0"
     "xdgdata-mime\0"
+    "mime\0"
     "xdgconf\0"
     "xdgconf-menu\0"
     "menus\0"
@@ -228,17 +213,35 @@ static const char types_string[] =
     "\0";
 
 static const int types_indices[] = {
-       0,    5,    7,   12,   27,   32,   44,   51,
-      64,   71,   85,   90,  103,  109,  122,  129,
-     142,  151,  171,  184,  208,  213,  227,  231,
-     239,  249,  266,  276,  292,  296,  300,  307,
-     317,  327,  345,  350,  368,  378,  394,  407,
-     420,  433,  439,  454,  462,  475,  495,  208,
-     508,    5,  516,  529,  535,  553,   -1
+       0,    5,    7,   12,   21,   26,   32,   32,
+      39,   46,   54,   60,   67,   67,   74,   83,
+      97,  110,  128,  138,  149,  149,  159,  163,
+     167,  174,  184,  194,  212,  217,  229,  229,
+     239,    5,  247,  260,  273,   26,  286,   46,
+     301,  314,  334,  347,  352,    5,  360,  373,
+     379,  397,   -1
 };
 
 static void tokenize(QStringList& token, const QString& str,
                      const QString& delim);
+
+
+    enum BasePrefix { XdgConf, XdgData, KdePrefixes };
+static BasePrefix basePrefixForResource(const char* type)
+{
+    // KDE5: We now use xdgdata_prefixes for every resource in share/*,
+    // i.e. everything except exe, lib, config and xdgconf...
+    // So we could almost get rid of $KDEHOME, if we don't support binaries and libs in the user home dir?
+
+    const QByteArray typeBa(type);
+    if (typeBa.startsWith("xdgconf")) {
+        return XdgConf;
+    } else if (typeBa == "exe" || typeBa == "lib" || typeBa == "config" /*for kde4 compat (config file migration)*/) {
+        return KdePrefixes;
+    } else { // was: if (typeBa.startsWith("xdgdata") || typeBa == "data")
+        return XdgData;
+    }
+}
 
 #ifdef Q_OS_WIN
 QString getKde4Prefix();
@@ -249,10 +252,6 @@ QString KStandardDirs::installPath(const char *type)
     Q_ASSERT(type != NULL);
 
     switch (type[0]) {
-        case 'a':
-            if (strcmp("apps", type) == 0)
-                return QFile::decodeName(APPLNK_INSTALL_DIR "/");
-            break;
         case 'c':
             if (strcmp("config", type) == 0)
                 return QFile::decodeName(CONFIG_INSTALL_DIR "/");
@@ -289,15 +288,13 @@ QString KStandardDirs::installPath(const char *type)
             if (strcmp("lib", type) == 0)
                 return QFile::decodeName(LIB_INSTALL_DIR "/");
             if (strcmp("libexec", type) == 0)
-                return QFile::decodeName(KDEDIR "/lib" KDELIBSUFF "/kde4/libexec/");
+                return QFile::decodeName(KDEDIR "/lib" KDELIBSUFF "/kde5/libexec/");
             if (strcmp("locale", type) == 0)
                 return QFile::decodeName(LOCALE_INSTALL_DIR "/");
             break;
         case 'm':
             if (strcmp("module", type) == 0)
                 return QFile::decodeName(PLUGIN_INSTALL_DIR "/");
-            if (strcmp("mime", type) == 0)
-                return QFile::decodeName(MIME_INSTALL_DIR "/");
             break;
         case 'q':
             if (strcmp("qtplugins", type) == 0)
@@ -703,7 +700,7 @@ static void lookupDirectory(const QString& path, const QString &relPart,
     {
         if (path.isEmpty()) //for sanity
             return;
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
         QString path_ = path + QLatin1String( "*.*" );
         WIN32_FIND_DATA findData;
         HANDLE hFile = FindFirstFile( (LPWSTR)path_.utf16(), &findData );
@@ -846,7 +843,7 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 
     if (prefix.isEmpty()) //for sanity
         return;
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     // what does this assert check ?
     assert(prefix.endsWith(QLatin1Char('/')));
 #endif
@@ -854,7 +851,7 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 
         QRegExp pathExp(path, Qt::CaseSensitive, QRegExp::Wildcard);
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
         QString prefix_ = prefix + QLatin1String( "*.*" );
         WIN32_FIND_DATA findData;
         HANDLE hFile = FindFirstFile( (LPWSTR)prefix_.utf16(), &findData );
@@ -997,7 +994,7 @@ KStandardDirs::findAllResources( const char *type,
 QString
 KStandardDirs::realPath(const QString &dirname)
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     const QString strRet = realFilePath(dirname);
     if (!strRet.endsWith(QLatin1Char('/')))
         return strRet + QLatin1Char('/');
@@ -1048,7 +1045,7 @@ KStandardDirs::realPath(const QString &dirname)
 #endif
 }
 
-// ####### KDE4: should this be removed, in favor of QDir::canonicalPath()?
+// ####### KDE4: should this be removed, in favor of QFileInfo::canonicalFilePath()?
 // aseigo: QDir::canonicalPath returns QString() if the dir doesn't exist
 //         and this method is often used with the expectation for it to work
 //         even if the directory doesn't exist. so ... no, we can't drop this
@@ -1056,7 +1053,7 @@ KStandardDirs::realPath(const QString &dirname)
 QString
 KStandardDirs::realFilePath(const QString &filename)
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     LPCWSTR lpIn = (LPCWSTR)filename.utf16();
     QVarLengthArray<WCHAR, MAX_PATH> buf(MAX_PATH);
     DWORD len = GetFullPathNameW(lpIn, buf.size(), buf.data(), NULL);
@@ -1116,7 +1113,7 @@ void KStandardDirs::KStandardDirsPrivate::createSpecialResource(const char *type
             }
         }
     }
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     if (relink)
     {
         if (!makeDir(dir, 0700))
@@ -1224,7 +1221,7 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
                     for (QStringList::ConstIterator it2 = basedirs.begin();
                          it2 != basedirs.end(); ++it2)
                     {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
                         const QString path = realPath( *it2 + rest ).toLower();
 #else
                         const QString path = realPath( *it2 + rest );
@@ -1237,15 +1234,15 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
                 }
             }
 
-            // KDE5 TODO: We should use xdgdata_prefixes for every resource in share/*,
-            // i.e. everything except exe, lib, config and xdgconf...
             const QStringList *prefixList = 0;
-            if (strncmp(type, "xdgdata-", 8) == 0 || strcmp(type, "data") == 0)
-                prefixList = &(xdgdata_prefixes);
-            else if (strncmp(type, "xdgconf", 7) == 0)
+            const BasePrefix basePrefix = basePrefixForResource(type);
+            if (basePrefix == XdgConf) {
                 prefixList = &(xdgconf_prefixes);
-            else
+            } else if (basePrefix == XdgData) {
+                prefixList = &(xdgdata_prefixes);
+            } else if (basePrefix == KdePrefixes) {
                 prefixList = &m_prefixes;
+            }
 
             for (QStringList::ConstIterator pit = prefixList->begin();
                  pit != prefixList->end();
@@ -1258,7 +1255,7 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
                     {
                         if ((*it).startsWith(QLatin1Char('%')))
                             continue;
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
                         const QString path = realPath( *pit + *it ).toLower();
 #else
                         const QString path = realPath( *pit + *it );
@@ -1301,7 +1298,7 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
             {
                 testdir.setPath(*it);
                 if (testdir.exists()) {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
                     const QString filename = realPath( *it ).toLower();
 #else
                     const QString filename = realPath( *it );
@@ -1368,7 +1365,7 @@ QStringList KStandardDirs::systemPaths( const QString& pstr )
     return exePaths;
 }
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
 static QString getBundle( const QString& path, bool ignore )
 {
     //kDebug(180) << "getBundle(" << path << ", " << ignore << ") called";
@@ -1396,7 +1393,7 @@ static QString getBundle( const QString& path, bool ignore )
 
 static QString checkExecutable( const QString& path, bool ignoreExecBit )
 {
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     QString bundle = getBundle( path, ignoreExecBit );
     if ( !bundle.isEmpty() ) {
         //kDebug(180) << "findExe(): returning " << bundle;
@@ -1530,7 +1527,7 @@ int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
         p = (*it) + QLatin1Char('/');
         p += appname;
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
         QString bundle = getBundle( p, (options & IgnoreExecBit) );
         if ( !bundle.isEmpty() ) {
             //kDebug(180) << "findExe(): returning " << bundle;
@@ -1551,7 +1548,7 @@ int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
 
 static inline QString equalizePath(QString &str)
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     // filter pathes through QFileInfo to have always
     // the same case for drive letters
     QFileInfo f(str);
@@ -1616,16 +1613,17 @@ QString KStandardDirs::saveLocation(const char *type,
                 QString rest = path.mid(pos + 1);
                 QString basepath = saveLocation(rel.toUtf8().constData(), QString(), create);
                 path = basepath + rest;
-            } else
-
+            } else {
                 // Check for existence of typed directory + suffix
-                if (strncmp(type, "xdgdata-", 8) == 0 || strcmp(type, "data") == 0) {
-                    path = realPath( localxdgdatadir() + path ) ;
-                } else if (strncmp(type, "xdgconf", 7) == 0) {
-                    path = realPath( localxdgconfdir() + path );
+                const BasePrefix basePrefix = basePrefixForResource(type);
+                if (basePrefix == XdgConf) {
+                    path = realPath(localxdgconfdir() + path);
+                } else if (basePrefix == XdgData) {
+                    path = realPath(localxdgdatadir() + path);
                 } else {
-                    path = realPath( localkdedir() + path );
+                    path = realPath(localkdedir() + path);
                 }
+            }
         }
         else {
             dirs = d->m_absolutes.value(type);
@@ -1660,8 +1658,7 @@ QString KStandardDirs::saveLocation(const char *type,
     return fullPath;
 }
 
-// KDE5: make the method const
-QString KStandardDirs::relativeLocation(const char *type, const QString &absPath)
+QString KStandardDirs::relativeLocation(const char *type, const QString &absPath) const
 {
     QString fullPath = absPath;
     int i = absPath.lastIndexOf(QLatin1Char('/'));
@@ -1687,7 +1684,7 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
     if (QDir::isRelativePath(dir))
         return false;
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     return QDir().mkpath(dir);
 #else
     QString target = dir;
@@ -1826,9 +1823,9 @@ void KStandardDirs::addKDEDefaults()
         // defaults to ~/.config) + '/' + $KDECONFIG (which would default to e.g. "KDE")
         // This would mean ~/.config/KDE/ by default, more xdg-compliant.
 
-#if defined(Q_WS_MACX)
+#if defined(Q_OS_MAC)
         localKdeDir =  QDir::homePath() + QLatin1String("/Library/Preferences/KDE/");
-#elif defined(Q_WS_WIN)
+#elif defined(Q_OS_WIN)
 #ifndef _WIN32_WCE
         WCHAR wPath[MAX_PATH+1];
         if ( SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, wPath) == S_OK) {
@@ -1850,7 +1847,7 @@ void KStandardDirs::addKDEDefaults()
         addPrefix(localKdeDir);
     }
 
-#ifdef Q_WS_MACX
+#ifdef Q_OS_MAC
     // Adds the "Contents" directory of the current application bundle to
     // the search path. This way bundled resources can be found.
     QDir bundleDir(mac_app_filename());
@@ -1882,7 +1879,7 @@ void KStandardDirs::addKDEDefaults()
     {
         xdgdirList.clear();
         xdgdirList.append(QString::fromLatin1("/etc/xdg"));
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
         xdgdirList.append(installPath("kdedir") + QString::fromLatin1("etc/xdg"));
 #else
         xdgdirList.append(QFile::decodeName(KDESYSCONFDIR "/xdg"));
@@ -1894,7 +1891,7 @@ void KStandardDirs::addKDEDefaults()
         if (!localXdgDir.endsWith(QLatin1Char('/')))
             localXdgDir += QLatin1Char('/');
     } else {
-#ifdef Q_WS_MACX
+#ifdef Q_OS_MAC
         localXdgDir = QDir::homePath() + QString::fromLatin1("/Library/Preferences/XDG/");
 #else
         localXdgDir = QDir::homePath() + QString::fromLatin1("/.config/");
@@ -1927,7 +1924,7 @@ void KStandardDirs::addKDEDefaults()
     if (!xdgdirs.isEmpty()) {
         tokenize(xdgdirList, xdgdirs, QString(QLatin1Char(KPATH_SEPARATOR)));
         // Ensure the kdedirDataDirs are in there too,
-        // otherwise resourceDirs() will add kdedir/share/applications/kde4
+        // otherwise resourceDirs() will add kdedir/share/applications/kde5
         // as returned by installPath(), and that's incorrect.
         Q_FOREACH(const QString& dir, kdedirDataDirs) {
             if (!xdgdirList.contains(dir))
@@ -1935,7 +1932,7 @@ void KStandardDirs::addKDEDefaults()
         }
     } else {
         xdgdirList = kdedirDataDirs;
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
         xdgdirList.append(QString::fromLatin1("/usr/local/share/"));
         xdgdirList.append(QString::fromLatin1("/usr/share/"));
 #endif
@@ -1975,12 +1972,12 @@ void KStandardDirs::addKDEDefaults()
     // config resource: the XDG paths (xdg/config) have more priority than the KDE4 paths (share/config)
     addResourceType("config", "xdgconf", "/", true);
 
-    addResourceType("exe", "lib", "kde4/libexec", true );
+    addResourceType("exe", "lib", "kde5/libexec", true );
 
     addResourceDir("home", QDir::homePath(), false);
 
     addResourceType("autostart", "xdgconf-autostart", "/"); // merge them, start with xdg autostart
-    addResourceType("autostart", NULL, "share/autostart"); // KDE ones are higher priority
+    addResourceType("autostart", NULL, "share/autostart"); // KDE ones are higher priority - KDE 5: deprecated, use xdgconf-autostart
 }
 
 static QStringList lookupProfiles(const QString &mapFile)

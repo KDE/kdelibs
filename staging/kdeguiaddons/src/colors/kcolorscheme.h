@@ -358,7 +358,7 @@ public:
     /**
      * Returns the contrast for borders as a floating point value.
      * @param config pointer to the config from which to read the contrast
-     * setting (the default is to use KGlobal::config())
+     * setting (the default is to use KSharedConfig::openConfig())
      * @return the contrast (between 0.0 for minimum and 1.0 for maximum
      *         contrast)
      */

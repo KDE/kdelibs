@@ -26,16 +26,11 @@
 #include <QtCore/QObject>
 #include <QtCore/QString>
 
-#include <kdecore_export.h>
+#include <kconfig_export.h>
 #include <kconfigbase.h>
-#include <kdebug.h>
-#include <klocale.h>
-#include <kpluginfactory.h>
-#include <kpluginloader.h>
 #include <ksharedptr.h>
 
 class KEntryMap;
-class KComponentData;
 class QFile;
 class QByteArray;
 class QDateTime;
@@ -49,7 +44,7 @@ class QDateTime;
  * to create plugins that allow access to other file formats and
  * configuration systems.
  */
-class KDECORE_EXPORT KConfigBackend : public QObject, public KShared
+class KCONFIG_EXPORT KConfigBackend : public QObject, public KShared
 {
     Q_OBJECT
     Q_FLAGS(ParseOption)
@@ -62,13 +57,11 @@ public:
      * If no @p system is given, or the given @p system is unknown, this method tries
      * to determine the correct backend to use.
      *
-     * @param componentData the owning component
      * @param fileName      the absolute file name of the configuration file
      * @param system        the configuration system to use
      * @return a KConfigBackend object to be used with KConfig
      */
-    static KSharedPtr<KConfigBackend> create(const KComponentData& componentData,
-                                             const QString& fileName = QString(),
+    static KSharedPtr<KConfigBackend> create(const QString& fileName = QString(),
                                              const QString& system = QString());
 
     /**
@@ -127,12 +120,11 @@ public:
      * @param locale the locale to write entries for (if the backend supports localized entries)
      * @param entryMap the KEntryMap containing the config object's entries.
      * @param options @see WriteOptions
-     * @param data the component that requested the write
      *
      * @return @c true if the write was successful, @c false if writing the configuration failed
      */
     virtual bool writeConfig(const QByteArray& locale, KEntryMap& entryMap,
-                             WriteOptions options, const KComponentData &data) = 0;
+                             WriteOptions options) = 0;
 
     /**
      * If isWritable() returns false, writeConfig() will always fail.
@@ -176,7 +168,7 @@ public:
     /**
      * Lock the file
      */
-    virtual bool lock(const KComponentData& componentData) = 0;
+    virtual bool lock() = 0;
     /**
      * Release the lock on the file
      */
@@ -209,12 +201,14 @@ private:
 Q_DECLARE_OPERATORS_FOR_FLAGS(KConfigBackend::ParseOptions)
 Q_DECLARE_OPERATORS_FOR_FLAGS(KConfigBackend::WriteOptions)
 
+#if 0 // TODO port to Qt5 plugin loading
 /**
  * Register a KConfig backend when it is contained in a loadable module
  */
 #define K_EXPORT_KCONFIGBACKEND(libname, classname) \
 K_PLUGIN_FACTORY(factory, registerPlugin<classname>();) \
 K_EXPORT_PLUGIN(factory("kconfigbackend_" #libname))
+#endif
 
 
 #endif // KCONFIGBACKEND_H

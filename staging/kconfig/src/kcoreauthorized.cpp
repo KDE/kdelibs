@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kauthorized.h"
+#include "kcoreauthorized.h"
 
 #include <QtCore/QDir>
 #include <QtCore/QRegExp>
@@ -26,14 +26,10 @@
 #include <qurlpathinfo.h>
 
 #include <QCoreApplication>
-#include <kglobal.h>
 #include <ksharedconfig.h>
-#include <kprotocolinfo.h>
-#include <kstandarddirs.h>
 #include <stdlib.h> // srand(), rand()
 #include <unistd.h>
 #include <netdb.h>
-#include <kurl.h>
 #include <kconfiggroup.h>
 
 #include <QMutex>
@@ -187,9 +183,9 @@ public:
   {
     Q_ASSERT_X(QCoreApplication::instance(),"KAuthorizedPrivate()","There has to be an existing QCoreApplication::instance() pointer");
 
-    KSharedConfig::Ptr config = KGlobal::config();
+    KSharedConfig::Ptr config = KSharedConfig::openConfig();
 
-    Q_ASSERT_X(config,"KAuthorizedPrivate()","There has to be an existing KGlobal::config() pointer");
+    Q_ASSERT_X(config,"KAuthorizedPrivate()","There has to be an existing KSharedConfig::openConfig() pointer");
     if (!config) {
       blockEverything=true;
       return;
@@ -219,7 +215,7 @@ bool KAuthorized::authorize(const QString &genericAction)
    if (!d->actionRestrictions)
       return true;
 
-   KConfigGroup cg(KGlobal::config(), "KDE Action Restrictions");
+   KConfigGroup cg(KSharedConfig::openConfig(), "KDE Action Restrictions");
    return cg.readEntry(genericAction, true);
 }
 
@@ -237,13 +233,13 @@ bool KAuthorized::authorizeControlModule(const QString &menuId)
 {
    if (menuId.isEmpty() || kde_kiosk_exception)
       return true;
-   KConfigGroup cg(KGlobal::config(), "KDE Control Module Restrictions");
+   KConfigGroup cg(KSharedConfig::openConfig(), "KDE Control Module Restrictions");
    return cg.readEntry(menuId, true);
 }
 
 QStringList KAuthorized::authorizeControlModules(const QStringList &menuIds)
 {
-   KConfigGroup cg(KGlobal::config(), "KDE Control Module Restrictions");
+   KConfigGroup cg(KSharedConfig::openConfig(), "KDE Control Module Restrictions");
    QStringList result;
    for(QStringList::ConstIterator it = menuIds.begin();
        it != menuIds.end(); ++it)
@@ -297,7 +293,7 @@ static void initUrlActionRestrictions()
 	URLActionRule("redirect", QLatin1String("about"), Any, Any, Any, Any, Any, true));
 
 
-  KConfigGroup cg(KGlobal::config(), "KDE URL Restrictions");
+  KConfigGroup cg(KSharedConfig::openConfig(), "KDE URL Restrictions");
   int count = cg.readEntry("rule_count", 0);
   QString keyFormat = QString::fromLatin1("rule_%1");
   for(int i = 1; i <= count; i++)
@@ -325,21 +321,22 @@ static void initUrlActionRestrictions()
        urlPath.replace(0, 1, QDir::homePath());
 
     if (refPath.startsWith(QLatin1String("$TMP")))
-       refPath.replace(0, 4, KGlobal::dirs()->saveLocation("tmp"));
+       refPath.replace(0, 4, QDir::tempPath());
     if (urlPath.startsWith(QLatin1String("$TMP")))
-       urlPath.replace(0, 4, KGlobal::dirs()->saveLocation("tmp"));
+       urlPath.replace(0, 4, QDir::tempPath());
 
     d->urlActionRestrictions.append(
 	URLActionRule( action, refProt, refHost, refPath, urlProt, urlHost, urlPath, bEnabled));
   }
 }
 
-void KAuthorized::allowUrlAction(const QString &action, const QUrl &_baseURL, const QUrl &_destURL)
+namespace KAuthorized
+{
+// Called by KAuthorized::allowUrlAction in KIO
+KCONFIG_EXPORT void allowUrlActionInternal(const QString &action, const QUrl &_baseURL, const QUrl &_destURL)
 {
   MY_D
   QMutexLocker locker((&d->mutex));
-  if (authorizeUrlAction(action, _baseURL, _destURL))
-     return;
 
   //const QString basePath = _baseURL.path(QUrl::RemoveTrailingSlash);
   //const QString destPath = _destURL.path(QUrl::RemoveTrailingSlash);
@@ -351,7 +348,8 @@ void KAuthorized::allowUrlAction(const QString &action, const QUrl &_baseURL, co
         _destURL.scheme(), _destURL.host(), destPath, true));
 }
 
-bool KAuthorized::authorizeUrlAction(const QString &action, const QUrl &_baseURL, const QUrl &_destURL)
+// Called by KAuthorized::authorizeUrlAction in KIO
+KCONFIG_EXPORT bool authorizeUrlActionInternal(const QString& action, const QUrl &_baseURL, const QUrl &_destURL, const QString& baseClass, const QString& destClass)
 {
   MY_D
   QMutexLocker locker(&(d->mutex));
@@ -366,14 +364,13 @@ bool KAuthorized::authorizeUrlAction(const QString &action, const QUrl &_baseURL
 
   QUrl baseURL(_baseURL);
   baseURL.setPath(QDir::cleanPath(baseURL.path()));
-  QString baseClass = KProtocolInfo::protocolClass(baseURL.scheme());
+
   QUrl destURL(_destURL);
   destURL.setPath(QDir::cleanPath(destURL.path()));
-  QString destClass = KProtocolInfo::protocolClass(destURL.scheme());
 
-  foreach(const URLActionRule &rule, d->urlActionRestrictions) {
+  Q_FOREACH(const URLActionRule &rule, d->urlActionRestrictions) {
      if ((result != rule.permission) && // No need to check if it doesn't make a difference
-         (action == QLatin1String(rule.action)) &&
+         (action == QLatin1String(rule.action.constData())) &&
          rule.baseMatch(baseURL, baseClass) &&
          rule.destMatch(destURL, destClass, baseURL, baseClass))
      {
@@ -382,3 +379,5 @@ bool KAuthorized::authorizeUrlAction(const QString &action, const QUrl &_baseURL
   }
   return result;
 }
+
+} // namespace

@@ -22,7 +22,7 @@
 
 #include <QtCore/QFile>
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kservicetypetrader.h>
 
 class KScanDialog::KScanDialogPrivate

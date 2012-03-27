@@ -67,7 +67,7 @@ public:
    */
   virtual void save(QDataStream &str);
 
-  KSycocaEntry * createEntry(const QString &, const char *) const { return 0; }
+    KSycocaEntry * createEntry(const QString &) const { return 0; }
   KSycocaEntry * createEntry(int) const { return 0; }
 
   // Loads the dict and returns it; does not set m_ctimeDict;

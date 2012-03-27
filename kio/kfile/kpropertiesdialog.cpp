@@ -348,7 +348,7 @@ void KPropertiesDialog::KPropertiesDialogPrivate::init()
 
     insertPages();
 
-    KConfigGroup group(KGlobal::config(), "KPropertiesDialog");
+    KConfigGroup group(KSharedConfig::openConfig(), "KPropertiesDialog");
     q->restoreDialogSize(group);
 }
 
@@ -381,7 +381,7 @@ KPropertiesDialog::~KPropertiesDialog()
     qDeleteAll(d->m_pageList);
     delete d;
 
-    KConfigGroup group(KGlobal::config(), "KPropertiesDialog");
+    KConfigGroup group(KSharedConfig::openConfig(), "KPropertiesDialog");
     saveDialogSize(group, KConfigBase::Persistent);
 }
 
@@ -1179,15 +1179,11 @@ void KFilePropsPlugin::nameFileChanged(const QString &text )
 void KFilePropsPlugin::determineRelativePath( const QString & path )
 {
     // now let's make it relative
-    d->m_sRelativePath = KGlobal::dirs()->relativeLocation("apps", path);
+    d->m_sRelativePath =KGlobal::dirs()->relativeLocation("xdgdata-apps", path);
     if (d->m_sRelativePath.startsWith('/'))
-    {
-        d->m_sRelativePath =KGlobal::dirs()->relativeLocation("xdgdata-apps", path);
-        if (d->m_sRelativePath.startsWith('/'))
-            d->m_sRelativePath.clear();
-        else
-            d->m_sRelativePath = path;
-    }
+        d->m_sRelativePath.clear();
+    else
+        d->m_sRelativePath = path;
 }
 
 void KFilePropsPlugin::slotFoundMountPoint( const QString&,
@@ -1335,7 +1331,7 @@ void KFilePropsPlugin::applyChanges()
             // Tell properties. Warning, this changes the result of properties->url() !
             properties->rename( newFileName );
 
-            // Update also relative path (for apps and mimetypes)
+            // Update also relative path (for apps)
             if ( !d->m_sRelativePath.isEmpty() )
                 determineRelativePath( properties->url().toLocalFile() );
 
@@ -1360,7 +1356,7 @@ void KFilePropsPlugin::applyChanges()
             return;
         }
         properties->updateUrl(properties->url());
-        // Update also relative path (for apps and mimetypes)
+        // Update also relative path (for apps)
         if ( !d->m_sRelativePath.isEmpty() )
             determineRelativePath( properties->url().toLocalFile() );
     }
@@ -1393,10 +1389,10 @@ void KFilePropsPlugin::slotCopyFinished( KJob * job )
     if (d->bDesktopFile && !d->m_sRelativePath.isEmpty())
     {
         kDebug(250) << "KFilePropsPlugin::slotCopyFinished " << d->m_sRelativePath;
-        KUrl newURL;
-        newURL.setPath( KDesktopFile::locateLocal(d->m_sRelativePath) );
-        kDebug(250) << "KFilePropsPlugin::slotCopyFinished path=" << newURL.path();
-        properties->updateUrl( newURL );
+        const QString newPath = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation) + '/' + d->m_sRelativePath;
+        const QUrl newURL = QUrl::fromLocalFile(newPath);
+        kDebug(250) << "KFilePropsPlugin::slotCopyFinished path=" << newURL;
+        properties->updateUrl(newURL);
     }
 
     if ( d->bKDesktopMode && d->bDesktopFile ) {
@@ -3263,13 +3259,8 @@ void KDesktopPropsPlugin::applyChanges()
     config.sync();
 
     // KSycoca update needed?
-    QString sycocaPath = KGlobal::dirs()->relativeLocation("apps", path);
+    QString sycocaPath = KGlobal::dirs()->relativeLocation("xdgdata-apps", path);
     bool updateNeeded = !sycocaPath.startsWith('/');
-    if (!updateNeeded)
-    {
-        sycocaPath = KGlobal::dirs()->relativeLocation("xdgdata-apps", path);
-        updateNeeded = !sycocaPath.startsWith('/');
-    }
     if (updateNeeded)
         KBuildSycocaProgressDialog::rebuildKSycoca(d->m_frame);
 }
@@ -3309,7 +3300,7 @@ void KDesktopPropsPlugin::slotAdvanced()
 
     // check to see if we use konsole if not do not add the nocloseonexit
     // because we don't know how to do this on other terminal applications
-    KConfigGroup confGroup( KGlobal::config(), QString::fromLatin1("General") );
+    KConfigGroup confGroup( KSharedConfig::openConfig(), QString::fromLatin1("General") );
     QString preferredTerminal = confGroup.readPathEntry("TerminalApplication",
                                                         QString::fromLatin1("konsole"));
 
@@ -3438,4 +3429,3 @@ bool KDesktopPropsPlugin::supports( const KFileItemList& _items )
 
 #include "moc_kpropertiesdialog.cpp"
 #include "moc_kpropertiesdialog_p.cpp"
-

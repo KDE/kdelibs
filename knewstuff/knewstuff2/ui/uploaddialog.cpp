@@ -120,7 +120,7 @@ void UploadDialog::slotOk()
     m_entry->setSummary(summary);
 
     if (mPayloadUrl.isValid()) {
-        KConfigGroup cg(KGlobal::config(), QString("KNewStuffUpload:%1").arg(mPayloadUrl.fileName()));
+        KConfigGroup cg(KSharedConfig::openConfig(), QString("KNewStuffUpload:%1").arg(mPayloadUrl.fileName()));
         cg.writeEntry("name", mNameEdit->text());
         cg.writeEntry("author", mAuthorEdit->text());
         cg.writeEntry("author-email", mEmailEdit->text());
@@ -129,7 +129,7 @@ void UploadDialog::slotOk()
         cg.writeEntry("preview", mPreviewUrl->url().toString());
         cg.writeEntry("summary", mSummaryEdit->toPlainText());
         cg.writeEntry("language", mLanguageCombo->currentText());
-        KGlobal::config()->sync();
+        KSharedConfig::openConfig()->sync();
     }
 
     accept();
@@ -144,7 +144,7 @@ void UploadDialog::setPayloadFile(const QUrl & payloadFile)
 {
     mPayloadUrl = payloadFile;
 
-    KConfigGroup cg(KGlobal::config(), QString("KNewStuffUpload:%1").arg(mPayloadUrl.fileName()));
+    KConfigGroup cg(KSharedConfig::openConfig(), QString("KNewStuffUpload:%1").arg(mPayloadUrl.fileName()));
     QString name = cg.readEntry("name");
     QString author = cg.readEntry("author");
     QString email = cg.readEntry("author-email");

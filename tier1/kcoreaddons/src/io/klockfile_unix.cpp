@@ -173,7 +173,7 @@ void KLockFile::Private::writeIntoLockFile(QFile& file)
   gethostname(hostname, 255);
   hostname[255] = 0;
   m_hostname = QString::fromLocal8Bit(hostname);
-  if (m_componentName.isEmpty())
+  if (m_componentName.isEmpty() && QCoreApplication::instance()) // TODO Qt5: should be fixed by new Q_GLOBAL_STATIC: qcoreappdata() was dangling, in kconfigtest testSyncOnExit.
       m_componentName = QCoreApplication::applicationName();
 
   QTextStream stream(&file);

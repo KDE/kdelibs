@@ -25,7 +25,7 @@
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <kicon.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmenu.h>
 #include <krun.h>
 

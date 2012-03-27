@@ -31,7 +31,7 @@
 #include <QToolBar>
 
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmenu.h>
 
 class KActionMenuPrivate

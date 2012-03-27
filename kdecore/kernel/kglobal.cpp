@@ -133,8 +133,7 @@ KStandardDirs *KGlobal::dirs()
 
 KSharedConfig::Ptr KGlobal::config()
 {
-    PRIVATE_DATA;
-    return d->mainComponent.isValid() ? d->mainComponent.config() : fakeComponent->config();
+    return mainComponent().config();
 }
 
 const KComponentData &KGlobal::mainComponent()
@@ -240,6 +239,7 @@ void KGlobal::newComponentData(const KComponentData &c)
         return;
     }
     d->mainComponent = c;
+    KSharedConfig::setMainConfigName(c.aboutData()->appName() + QLatin1String("rc"));
     KGlobal::setActiveComponent(c);
 }
 

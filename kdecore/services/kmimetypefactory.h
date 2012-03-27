@@ -50,7 +50,7 @@ public:
     /**
      * Not meant to be called at this level
      */
-    virtual KSycocaEntry *createEntry(const QString &, const char *) const
+     virtual KSycocaEntry *createEntry(const QString &) const
     { assert(0); return 0; }
 
     /**

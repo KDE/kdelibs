@@ -25,7 +25,6 @@
 
 #include <kcmdlineargs.h>
 #include <klocale.h>
-#include <kcomponentdata.h>
 #include <kstandarddirs.h>
 #include <kglobal.h>
 #include <kconfig.h>
@@ -89,9 +88,8 @@ int main(int argc, char **argv)
     options.add("qt-plugins", qi18n("Location of installed Qt plugins"));
     KCmdLineArgs::addCmdLineOptions( options ); // Add my own options.
 
-    KComponentData a(&about);
     (void)KGlobal::dirs(); // trigger the creation
-    (void)KGlobal::config();
+    (void)KSharedConfig::openConfig();
 
     // Get application specific arguments
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
@@ -136,7 +134,6 @@ int main(int argc, char **argv)
             "apps", I18N_NOOP("Applications menu (.desktop files)"),
             "autostart", I18N_NOOP("Autostart directories"),
             "cache", I18N_NOOP("Cached information (e.g. favicons, web-pages)"),
-            "cgi", I18N_NOOP("CGIs to run from kdehelp"),
             "config", I18N_NOOP("Configuration files"),
             "data", I18N_NOOP("Where applications store data"),
             "emoticons", I18N_NOOP("Emoticons"),
@@ -147,7 +144,6 @@ int main(int argc, char **argv)
             "lib", I18N_NOOP("Libraries"),
             "include", I18N_NOOP("Includes/Headers"),
             "locale", I18N_NOOP("Translation files for KLocale"),
-            "mime", I18N_NOOP("Mime types"),
             "module", I18N_NOOP("Loadable modules"),
             "pixmap", I18N_NOOP("Legacy pixmaps"),
             "qtplugins", I18N_NOOP("Qt plugins"),
@@ -156,11 +152,13 @@ int main(int argc, char **argv)
             "sound", I18N_NOOP("Application sounds"),
             "templates", I18N_NOOP("Templates"),
             "wallpaper", I18N_NOOP("Wallpapers"),
+            "xdgdata", I18N_NOOP("XDG Shared Data"),
             "xdgdata-apps", I18N_NOOP("XDG Application menu (.desktop files)"),
             "xdgdata-dirs", I18N_NOOP("XDG Menu descriptions (.directory files)"),
             "xdgdata-icon", I18N_NOOP("XDG Icons"),
             "xdgdata-pixmap", I18N_NOOP("Legacy pixmaps"),
             "xdgdata-mime", I18N_NOOP("XDG Mime Types"),
+            "xdgconf", I18N_NOOP("XDG Configuration Files"),
             "xdgconf-menu", I18N_NOOP("XDG Menu layout (.menu files)"),
             "xdgconf-autostart", I18N_NOOP("XDG autostart directory"),
             "tmp", I18N_NOOP("Temporary files (specific for both current host and current user)"),
@@ -214,7 +212,7 @@ int main(int argc, char **argv)
         }
         else if (type == QLatin1String("autostart"))
         {
-            KConfigGroup g( KGlobal::config(), "Paths" );
+            KConfigGroup g( KSharedConfig::openConfig(), "Paths" );
             QString path = QDir::homePath() + QLatin1String("/Autostart/");
             path = g.readPathEntry( "Autostart", path);
             path = QDir::cleanPath( path );

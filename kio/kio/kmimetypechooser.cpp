@@ -19,9 +19,10 @@
 #include "kmimetypechooser.h"
 
 #include <kicon.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmimetype.h>
 #include <kshell.h>
+#include <ksharedconfig.h>
 #include <krun.h>
 #include <ksycoca.h>
 
@@ -338,13 +339,13 @@ void KMimeTypeChooserDialog::Private::init()
   q->setModal( true );
   q->setDefaultButton( Ok );
 
-  KConfigGroup group( KGlobal::config(), "KMimeTypeChooserDialog");
+  KConfigGroup group( KSharedConfig::openConfig(), "KMimeTypeChooserDialog");
   q->resize( group.readEntry("size", QSize(500,400)));
 }
 
 KMimeTypeChooserDialog::~KMimeTypeChooserDialog()
 {
-  KConfigGroup group( KGlobal::config(), "KMimeTypeChooserDialog");
+  KConfigGroup group( KSharedConfig::openConfig(), "KMimeTypeChooserDialog");
   group.writeEntry("size", size());
 
   delete d;

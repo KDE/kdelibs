@@ -176,7 +176,7 @@ PreviewJob::PreviewJob(const KFileItemList &items,
     if (enabledPlugins) {
         d->enabledPlugins = *enabledPlugins;
     } else {
-        const KConfigGroup globalConfig(KGlobal::config(), "PreviewSettings");
+        const KConfigGroup globalConfig(KSharedConfig::openConfig(), "PreviewSettings");
         d->enabledPlugins = globalConfig.readEntry("Plugins", QStringList()
                                                               << "directorythumbnail"
                                                               << "imagethumbnail"
@@ -357,7 +357,7 @@ void PreviewJobPrivate::startPreview()
         }
     }
 
-    KConfigGroup cg( KGlobal::config(), "PreviewSettings" );
+    KConfigGroup cg( KSharedConfig::openConfig(), "PreviewSettings" );
     maximumLocalSize = cg.readEntry( "MaximumSize", 5*1024*1024LL /* 5MB */ );
     maximumRemoteSize = cg.readEntry( "MaximumRemoteSize", 0 );
 
@@ -778,7 +778,7 @@ PreviewJob *KIO::filePreview(const KFileItemList &items, const QSize &size, cons
 #ifndef KDE_NO_DEPRECATED
 KIO::filesize_t PreviewJob::maximumFileSize()
 {
-    KConfigGroup cg( KGlobal::config(), "PreviewSettings" );
+    KConfigGroup cg( KSharedConfig::openConfig(), "PreviewSettings" );
     return cg.readEntry( "MaximumSize", 5*1024*1024LL /* 5MB */ );
 }
 #endif

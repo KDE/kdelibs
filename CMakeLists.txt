@@ -49,6 +49,8 @@ option(STATIC_LIBRARY "Build kdelibs as static libraries." FALSE)
 find_package(extra-cmake-modules 0.0.3 REQUIRED)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${EXTRA_CMAKE_MODULES_MODULE_PATH})
 
+find_package(Qt5Transitional)
+
 if (NOT QT5_BUILD)
   add_subdirectory( libinqt5 )
   set(INQT5_LIBRARY inqt5)
@@ -226,6 +228,8 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/jobs
                           ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/text
                           ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src
+                          ${CMAKE_BINARY_DIR}/staging/kconfig/src
+                          ${CMAKE_SOURCE_DIR}/staging/kconfig/src
                           ${QT_INCLUDES}
                           ${_KDE4_PLATFORM_INCLUDE_DIRS})
 
@@ -350,7 +354,9 @@ if (UNIX)
 endif (UNIX)
 if(NOT WINCE)
   add_subdirectory( kjs )
-  add_subdirectory( kjsembed )
+  if (Qt5UiTools_FOUND)
+      add_subdirectory( kjsembed )
+  endif()
 endif(NOT WINCE)
 add_subdirectory( kconf_update )
 add_subdirectory( licenses   )
@@ -375,7 +381,9 @@ if(NOT WINCE)
 endif(NOT WINCE)
 add_subdirectory( interfaces  )
 add_subdirectory( kdewidgets  )
-add_subdirectory( kross )
+if (Qt5Script_FOUND)
+    add_subdirectory( kross )
+endif()
 add_subdirectory( kutils     )
 add_subdirectory( kinit  )
 if(NOT WINCE)
@@ -387,7 +395,9 @@ if(Qt5WebKit_FOUND OR NOT QT5_BUILD)
 endif()
 add_subdirectory( includes )
 macro_optional_add_subdirectory( doc  )
-add_subdirectory( experimental )
+if (Qt5Quick1_FOUND)
+    add_subdirectory( experimental )
+endif()
 add_subdirectory( knotify )
 
 find_package(KdepimLibs 4.5.60)

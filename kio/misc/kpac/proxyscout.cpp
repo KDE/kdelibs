@@ -26,7 +26,7 @@
 #include "script.h"
 
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <knotification.h>
 #include <kprotocolmanager.h>
 #include <kpluginfactory.h>

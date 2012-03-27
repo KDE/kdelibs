@@ -19,7 +19,7 @@
 
 #include "angle.h"
 #include "converter.h"
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <math.h>
 
 using namespace KUnitConversion;

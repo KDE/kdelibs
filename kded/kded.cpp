@@ -44,7 +44,7 @@
 #else
 #include <klibrary.h>
 #endif
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kglobal.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -285,7 +285,7 @@ void Kded::initModules()
 void Kded::loadSecondPhase()
 {
     kDebug(7020) << "Loading second phase autoload";
-    KSharedConfig::Ptr config = KGlobal::config();
+    KSharedConfig::Ptr config = KSharedConfig::openConfig();
     KService::List kdedModules = KServiceTypeTrader::self()->query("KDEDModule");
     for(KService::List::ConstIterator it = kdedModules.constBegin(); it != kdedModules.constEnd(); ++it) {
         const KService::Ptr service = *it;
@@ -304,7 +304,7 @@ void Kded::noDemandLoad(const QString &obj)
 
 void Kded::setModuleAutoloading(const QString &obj, bool autoload)
 {
-    KSharedConfig::Ptr config = KGlobal::config();
+    KSharedConfig::Ptr config = KSharedConfig::openConfig();
     // Ensure the service exists.
     KService::Ptr service = KService::serviceByDesktopPath("kded/"+obj+".desktop");
     if (!service)
@@ -324,7 +324,7 @@ bool Kded::isModuleAutoloaded(const QString &obj) const
 
 bool Kded::isModuleAutoloaded(const KService::Ptr &module) const
 {
-    KSharedConfig::Ptr config = KGlobal::config();
+    KSharedConfig::Ptr config = KSharedConfig::openConfig();
     bool autoload = module->property("X-KDE-Kded-autoload", QVariant::Bool).toBool();
     KConfigGroup cg(config, QString("Module-%1").arg(module->desktopEntryName()));
     autoload = cg.readEntry("autoload", autoload);
@@ -341,7 +341,7 @@ bool Kded::isModuleLoadedOnDemand(const QString &obj) const
 
 bool Kded::isModuleLoadedOnDemand(const KService::Ptr &module) const
 {
-    KSharedConfig::Ptr config = KGlobal::config();
+    KSharedConfig::Ptr config = KSharedConfig::openConfig();
     bool loadOnDemand = true;
     QVariant p = module->property("X-KDE-Kded-load-on-demand", QVariant::Bool);
     if (p.isValid() && (p.toBool() == false))

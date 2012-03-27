@@ -36,7 +36,7 @@
 
 static KConfigGroup recentdirs_readList(QString &key, QStringList &result)
 {
-   KConfigGroup cg(KGlobal::config(), QLatin1String("Recent Dirs"));
+   KConfigGroup cg(KSharedConfig::openConfig(), QLatin1String("Recent Dirs"));
    if ((key.length() < 2) || (key[0] != ':'))
      key = ":default";
    if (key[1] == ':')

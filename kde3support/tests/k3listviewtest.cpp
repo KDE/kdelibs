@@ -33,12 +33,12 @@ int main( int argc, char **argv )
 	new K3ListViewItem( view, "Item 1");
 	new K3ListViewItem( view, "Item 2", "Some more", "Hi Mom :)" );
 
-	view->restoreLayout( KGlobal::config().data(), "ListView" );
+	view->restoreLayout( KSharedConfig::openConfig().data(), "ListView" );
 
 	new K3ListViewItem( view, "Item 3" );
 
 	dialog.exec();
-	view->saveLayout( KGlobal::config().data(), "ListView" );
+	view->saveLayout( KSharedConfig::openConfig().data(), "ListView" );
 
 	return 0;
 }

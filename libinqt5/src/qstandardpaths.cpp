@@ -72,7 +72,7 @@ QT_BEGIN_NAMESPACE
     \value DocumentsLocation Returns the user's document.
     \value FontsLocation Returns the user's fonts.
     \value ApplicationsLocation Returns the user's applications.
-    \value MusicLocation Returns the users music.
+    \value MusicLocation Returns the user's music.
     \value MoviesLocation Returns the user's movies.
     \value PicturesLocation Returns the user's pictures.
     \value TempLocation Returns the system's temporary directory.
@@ -89,6 +89,7 @@ QT_BEGIN_NAMESPACE
            files should be written. For instance unix local sockets.
     \value ConfigLocation Returns a directory location where user-specific
            configuration files should be written.
+    \value DownloadLocation Returns a directory for user's downloaded files.
 
 
     \sa writableLocation() standardLocations() displayName() locate() locateAll()
@@ -269,6 +270,48 @@ QString QStandardPaths::findExecutable(const QString &executableName, const QStr
     Returns a localized display name for the given location \a type or
     an empty QString if no relevant location can be found.
 */
+
+#ifndef Q_OS_MAC
+QString QStandardPaths::displayName(StandardLocation type)
+{
+    switch (type) {
+    case DesktopLocation:
+        return QCoreApplication::translate("QStandardPaths", "Desktop");
+    case DocumentsLocation:
+        return QCoreApplication::translate("QStandardPaths", "Documents");
+    case FontsLocation:
+        return QCoreApplication::translate("QStandardPaths", "Fonts");
+    case ApplicationsLocation:
+        return QCoreApplication::translate("QStandardPaths", "Applications");
+    case MusicLocation:
+        return QCoreApplication::translate("QStandardPaths", "Music");
+    case MoviesLocation:
+        return QCoreApplication::translate("QStandardPaths", "Movies");
+    case PicturesLocation:
+        return QCoreApplication::translate("QStandardPaths", "Pictures");
+    case TempLocation:
+        return QCoreApplication::translate("QStandardPaths", "Temporary Directory");
+    case HomeLocation:
+        return QCoreApplication::translate("QStandardPaths", "Home");
+    case DataLocation:
+        return QCoreApplication::translate("QStandardPaths", "Application Data");
+    case CacheLocation:
+        return QCoreApplication::translate("QStandardPaths", "Cache");
+    case GenericDataLocation:
+        return QCoreApplication::translate("QStandardPaths", "Shared Data");
+    case RuntimeLocation:
+        return QCoreApplication::translate("QStandardPaths", "Runtime");
+    case ConfigLocation:
+        return QCoreApplication::translate("QStandardPaths", "Configuration");
+    case GenericCacheLocation:
+        return QCoreApplication::translate("QStandardPaths", "Shared Cache");
+    case DownloadLocation:
+        return QCoreApplication::translate("QStandardPaths", "Download");
+    }
+    // not reached
+    return QString();
+}
+#endif
 
 QT_END_NAMESPACE
 

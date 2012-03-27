@@ -24,7 +24,7 @@
 #include <QImage>
 #include <QLabel>
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdialog.h>
 #include <kpixmapregionselectorwidget.h>
 #include <kvbox.h>

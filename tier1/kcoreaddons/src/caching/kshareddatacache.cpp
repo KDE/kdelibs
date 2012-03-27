@@ -1,6 +1,7 @@
 /*
  * This file is part of the KDE project.
- * Copyright © 2010 Michael Pyne <mpyne@kde.org>
+ * Copyright © 2010, 2012 Michael Pyne <mpyne@kde.org>
+ * Copyright © 2012 Ralf Jung <ralfjung-e@gmx.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -41,6 +42,10 @@
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <stdlib.h>
+
+/// The maximum number of probes to make while searching for a bucket in
+/// the presence of collisions in the cache index table.
+static const int MAX_PROBE_COUNT = 6;
 
 //-----------------------------------------------------------------------------
 // MurmurHashAligned, by Austin Appleby
@@ -689,9 +694,12 @@ struct SharedMemory
         uint position = keyHash % indexTableSize();
         int probeNumber = 1; // See insert() for description
 
+        // Imagine 3 entries A, B, C in this logical probing chain. If B is
+        // later removed then we can't find C either. So, we must keep
+        // searching for probeNumber number of tries (or we find the item,
+        // obviously).
         while (indexTable()[position].fileNameHash != keyHash &&
-              indexTable()[position].useCount > 0 &&
-              probeNumber < 6)
+               probeNumber < MAX_PROBE_COUNT)
         {
             position = (keyHash + (probeNumber + probeNumber * probeNumber) / 2)
                        % indexTableSize();
@@ -1392,11 +1400,19 @@ bool KSharedDataCache::insert(const QString &key, const QByteArray &data)
         }
     }
 
-    // In case of collisions, use quadratic chaining to attempt to find an
-    // empty slot. The equation we use is
+    // In case of collisions in the index table (i.e. identical positions), use
+    // quadratic chaining to attempt to find an empty slot. The equation we use
+    // is:
     // position = (hash + (i + i*i) / 2) % size, where i is the probe number.
     int probeNumber = 1;
-    while (indices[position].useCount > 0 && probeNumber < 6) {
+    while (indices[position].useCount > 0 && probeNumber < MAX_PROBE_COUNT) {
+        // If we actually stumbled upon an old version of the key we are
+        // overwriting, then use that position, do not skip over it.
+
+        if (Q_UNLIKELY(indices[position].fileNameHash == keyHash)) {
+            break;
+        }
+
         // If we are "culling" old entries, see if this one is old and if so
         // reduce its use count. If it reduces to zero then eliminate it and
         // use its old spot.

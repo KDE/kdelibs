@@ -27,7 +27,7 @@
 #include <kdebug.h>
 #include <kglobalsettings.h>
 #include <kicon.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmimetype.h>
 #include <kiconloader.h>
 

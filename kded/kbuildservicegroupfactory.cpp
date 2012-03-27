@@ -25,7 +25,7 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <assert.h>
 #include <QtCore/QHash>
 
@@ -38,11 +38,9 @@ KBuildServiceGroupFactory::KBuildServiceGroupFactory() :
    m_baseGroupDict = new KSycocaDict();
 }
 
-// return all service types for this factory
-// i.e. first arguments to m_resourceList->add() above
-QStringList KBuildServiceGroupFactory::resourceTypes()
+ QStringList KBuildServiceGroupFactory::resourceDirs()
 {
-    return QStringList(); // << "apps";
+    return QStringList();
 }
 
 KBuildServiceGroupFactory::~KBuildServiceGroupFactory()
@@ -50,8 +48,7 @@ KBuildServiceGroupFactory::~KBuildServiceGroupFactory()
    delete m_resourceList;
 }
 
-KServiceGroup *
-KBuildServiceGroupFactory::createEntry( const QString&, const char * ) const
+KServiceGroup* KBuildServiceGroupFactory::createEntry(const QString&) const
 {
   // Unused
   kWarning(7021) << "called!";

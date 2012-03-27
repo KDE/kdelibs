@@ -26,9 +26,10 @@
 #include "ksycocaresourcelist.h"
 #include "kdesktopfile.h"
 
+#include <QDir>
 #include <kglobal.h>
 #include <kstandarddirs.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 #include <assert.h>
 #include <kmimetypefactory.h>
@@ -48,18 +49,16 @@ KBuildServiceFactory::KBuildServiceFactory( KSycocaFactory *serviceTypeFactory,
     m_resourceList = new KSycocaResourceList();
     // We directly care about services desktop files.
     // All the application desktop files are parsed on demand from the vfolder menu code.
-    m_resourceList->add( "services", "*.desktop" );
+    m_resourceList->add("services", "kde5/services", "*.desktop");
 
     m_nameDict = new KSycocaDict();
     m_relNameDict = new KSycocaDict();
     m_menuIdDict = new KSycocaDict();
 }
 
-// return all service types for this factory
-// i.e. first arguments to m_resourceList->add() above
-QStringList KBuildServiceFactory::resourceTypes()
+QStringList KBuildServiceFactory::resourceDirs()
 {
-    return QStringList() << "services";
+    return QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "kde5/services", QStandardPaths::LocateDirectory);
 }
 
 KBuildServiceFactory::~KBuildServiceFactory()
@@ -82,7 +81,7 @@ KService::Ptr KBuildServiceFactory::findServiceByMenuId(const QString &menuId)
     return m_menuIdMemoryHash.value(menuId);
 }
 
-KSycocaEntry* KBuildServiceFactory::createEntry( const QString& file, const char *resource ) const
+KSycocaEntry* KBuildServiceFactory::createEntry(const QString& file) const
 {
     QString name = file;
     int pos = name.lastIndexOf('/');
@@ -91,14 +90,25 @@ KSycocaEntry* KBuildServiceFactory::createEntry( const QString& file, const char
     }
     // Is it a .desktop file?
     if (name.endsWith(QLatin1String(".desktop"))) {
-        KDesktopFile desktopFile(resource, file);
 
-        KService * serv = new KService(&desktopFile);
+        kDebug() << file;
+
+        KService* serv;
+        if (QDir::isAbsolutePath(file)) { // vfolder sends us full paths for applications
+            serv = new KService(file);
+        } else { // we get relative paths for services
+            KDesktopFile desktopFile(QStandardPaths::GenericDataLocation, file);
+            Q_ASSERT(file.startsWith("kde5/services/"));
+            serv = new KService(&desktopFile, file.mid(strlen("kde5/services/")));
+        }
+
         //kDebug(7021) << "Creating KService from" << file << "entryPath=" << serv->entryPath();
         // Note that the menuId will be set by the vfolder_menu.cpp code just after
         // createEntry returns.
 
         if ( serv->isValid() && !serv->isDeleted() ) {
+            kDebug(7021) << "Creating KService from" << file << "entryPath=" << serv->entryPath() <<
+                "storageId=" << serv->storageId() << "menuId=" << serv->menuId();
             return serv;
         } else {
             if (!serv->isDeleted()) {

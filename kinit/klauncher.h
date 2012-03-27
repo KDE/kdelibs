@@ -188,8 +188,8 @@ public: // remote methods, called by KLauncherAdaptor
      * Start a service by desktop name.
      *
      * 'serviceName' refers to a desktop file describing the service.
-     * The service is looked up anywhere in $KDEDIR/applnk and/or
-     * $KDEDIR/services.
+     * The service is looked up anywhere in the applications and services directories
+     * (see KStandardDirs resource "xdgdata-apps" and "services").
      * E.g. it should have the form "korganizer".
      *
      * 'url', if not empty, will be passed to the service as
@@ -207,10 +207,10 @@ public: // remote methods, called by KLauncherAdaptor
      * Start a service by desktop path.
      *
      * 'serviceName' refers to a desktop file describing the service.
-     * This may be an absolute path or a path relative to $KDEDIRS/applnk
-     * and/or $KDEDIRS/services
-     * E.g. it should have the form "Applications/korganizer.desktop" or
-     * "/opt/kde/share/applnk/Applications/korganizer.desktop".
+     * This may be an absolute path or a path relative to the applications
+     * and/or services directories (see KStandardDirs)
+     * E.g. it should have the form "korganizer.desktop" or
+     * "/opt/kde/share/applications/korganizer.desktop".
      * Note that for absolute paths the restrictions of
      * KDesktopFile::isAuthorizedDesktopFile() are obeyed for security.
      *

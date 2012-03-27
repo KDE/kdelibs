@@ -103,7 +103,7 @@ K3PasswordEdit::K3PasswordEdit(QWidget *parent) : QLineEdit(parent)
 {
     init();
 
-    KConfigGroup cg(KGlobal::config(), "Passwords");
+    KConfigGroup cg(KSharedConfig::openConfig(), "Passwords");
 
     const QString val = cg.readEntry("EchoMode", "OneStar");
     if (val == "ThreeStars")
@@ -322,7 +322,7 @@ void K3PasswordDialog::init()
 {
     m_Row = 0;
 
-    KConfigGroup cg(KGlobal::config(), "Passwords");
+    KConfigGroup cg(KSharedConfig::openConfig(), "Passwords");
     if (m_Keep && cg.readEntry("Keep", false))
 	++m_Keep;
 

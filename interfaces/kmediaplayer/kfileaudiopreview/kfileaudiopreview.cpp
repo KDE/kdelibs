@@ -84,7 +84,7 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent, const QVariantList & )
     d->controls->setAudioOutput( d->audioOutput );
 
     m_autoPlay = new QCheckBox( i18n("Play &automatically"), this );
-    KConfigGroup config( KGlobal::config(), ConfigGroup );
+    KConfigGroup config( KSharedConfig::openConfig(), ConfigGroup );
     m_autoPlay->setChecked( config.readEntry( "Autoplay sounds", true ) );
     connect( m_autoPlay, SIGNAL(toggled(bool)), SLOT(toggleAuto(bool)) );
 
@@ -98,7 +98,7 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent, const QVariantList & )
 
 KFileAudioPreview::~KFileAudioPreview()
 {
-    KConfigGroup config( KGlobal::config(), ConfigGroup );
+    KConfigGroup config( KSharedConfig::openConfig(), ConfigGroup );
     config.writeEntry( "Autoplay sounds", m_autoPlay->isChecked() );
 
     delete d;

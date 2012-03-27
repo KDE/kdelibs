@@ -58,7 +58,7 @@
 #include <kfileitemdelegate.h>
 #include <kicon.h>
 #include <kinputdialog.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kmenu.h>
 #include <kstandardaction.h>
@@ -1307,7 +1307,7 @@ bool KDirOperator::checkPreviewSupport()
     KToggleAction *previewAction = static_cast<KToggleAction*>(d->actionCollection->action("preview"));
 
     bool hasPreviewSupport = false;
-    KConfigGroup cg(KGlobal::config(), ConfigGroup);
+    KConfigGroup cg(KSharedConfig::openConfig(), ConfigGroup);
     if (cg.readEntry("Show Default Preview", true))
         hasPreviewSupport = d->checkPreviewInternal();
 
@@ -2038,7 +2038,7 @@ void KDirOperator::setupMenu(int whichActions)
         if (d->currUrl.isLocalFile() && !(QApplication::keyboardModifiers() & Qt::ShiftModifier)) {
             d->actionMenu->addAction(d->actionCollection->action("trash"));
         }
-        KConfigGroup cg(KGlobal::config(), QLatin1String("KDE"));
+        KConfigGroup cg(KSharedConfig::openConfig(), QLatin1String("KDE"));
         const bool del = !d->currUrl.isLocalFile() ||
                          (QApplication::keyboardModifiers() & Qt::ShiftModifier) ||
                          cg.readEntry("ShowDeleteCommand", false);

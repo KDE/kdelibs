@@ -38,7 +38,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kdebug.h>
 #include <kglobalsettings.h>
 #include <kcomponentdata.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kpushbutton.h>
 #include <krandom.h>
 #include <kseparator.h>
@@ -314,7 +314,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   ok->setDefault( true );
   buttonLayout->addWidget( ok );
 
-  KConfigGroup config( KGlobal::config(), "TipOfDay" );
+  KConfigGroup config( KSharedConfig::openConfig(), "TipOfDay" );
   d->tipOnStart->setChecked( config.readEntry( "RunOnStart", true ) );
 
   connect( next, SIGNAL(clicked()), this, SLOT(_k_nextTip()) );
@@ -350,7 +350,7 @@ void KTipDialog::showTip( QWidget *parent, const QString &tipFile, bool force )
 
 void KTipDialog::showMultiTip( QWidget *parent, const QStringList &tipFiles, bool force )
 {
-  KConfigGroup configGroup( KGlobal::config(), "TipOfDay" );
+  KConfigGroup configGroup( KSharedConfig::openConfig(), "TipOfDay" );
 
   const bool runOnStart = configGroup.readEntry( "RunOnStart", true );
 
@@ -390,7 +390,7 @@ void KTipDialog::showMultiTip( QWidget *parent, const QStringList &tipFiles, boo
 
 void KTipDialog::setShowOnStart( bool on )
 {
-  KConfigGroup config( KGlobal::config(), "TipOfDay" );
+  KConfigGroup config( KSharedConfig::openConfig(), "TipOfDay" );
   config.writeEntry( "RunOnStart", on );
 }
 

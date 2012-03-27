@@ -71,7 +71,7 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(KDEMainFlags)
 #define QTEST_KDEMAIN_WITH_COMPONENTNAME(TestObject, flags, componentName) \
 int main(int argc, char *argv[]) \
 { \
-    setenv("LC_ALL", "en_US", 1); \
+    setenv("LC_ALL", "C", 1); \
     assert( !QDir::homePath().isEmpty() ); \
     setenv("KDEHOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test") ).constData(), 1); \
     setenv("XDG_DATA_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/local") ).constData(), 1); \
@@ -123,7 +123,7 @@ int main(int argc, char *argv[]) \
 #define QTEST_KDEMAIN_CORE_WITH_COMPONENTNAME(TestObject, componentName) \
 int main(int argc, char *argv[]) \
 { \
-    setenv("LC_ALL", "en_US", 1); \
+    setenv("LC_ALL", "C", 1); \
     assert( !QDir::homePath().isEmpty() ); \
     setenv("KDEHOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test" )).constData(), 1); \
     setenv("XDG_DATA_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/local")).constData(), 1); \

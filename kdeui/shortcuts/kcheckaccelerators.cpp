@@ -46,7 +46,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kcomponentdata.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kshortcut.h>
 #include <ktextbrowser.h>
 
@@ -55,7 +55,7 @@
 
 void KCheckAccelerators::initiateIfNeeded(QObject* parent)
 {
-    KConfigGroup cg( KGlobal::config(), "Development" );
+    KConfigGroup cg( KSharedConfig::openConfig(), "Development" );
     QString sKey = cg.readEntry( "CheckAccelerators" ).trimmed();
     int key=0;
     if( !sKey.isEmpty() ) {
@@ -82,7 +82,7 @@ KCheckAccelerators::KCheckAccelerators(QObject* parent, int key_, bool autoCheck
 {
     setObjectName( "kapp_accel_filter" );
 
-    KConfigGroup cg( KGlobal::config(), "Development" );
+    KConfigGroup cg( KSharedConfig::openConfig(), "Development" );
     alwaysShow = cg.readEntry( "AlwaysShowCheckAccelerators", false );
     copyWidgetTextCommand = cg.readEntry( "CopyWidgetTextCommand", "" );
 

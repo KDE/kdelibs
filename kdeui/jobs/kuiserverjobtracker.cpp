@@ -24,7 +24,7 @@
 #include "jobviewiface.h"
 #include "jobviewifacev2.h"
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 #include <ktoolinvocation.h>
 #include <kcomponentdata.h>

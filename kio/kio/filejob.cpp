@@ -41,7 +41,7 @@ public:
     QString m_mimetype;
     KIO::filesize_t m_size;
 
-    void slotRedirection( const KUrl &url );
+    void slotRedirection(const QUrl &url);
     void slotData( const QByteArray &data );
     void slotMimetype( const QString &mimetype );
     void slotOpen( );
@@ -130,7 +130,7 @@ void FileJobPrivate::slotData( const QByteArray &_data)
     emit q_func()->data(q, _data);
 }
 
-void FileJobPrivate::slotRedirection( const KUrl &url)
+void FileJobPrivate::slotRedirection(const QUrl &url)
 {
     Q_Q(FileJob);
     kDebug(7007) << url;
@@ -187,8 +187,8 @@ void FileJobPrivate::start(Slave *slave)
     q->connect( slave, SIGNAL(data(QByteArray)),
                 SLOT(slotData(QByteArray)) );
 
-    q->connect( slave, SIGNAL(redirection(KUrl)),
-                SLOT(slotRedirection(KUrl)) );
+    q->connect(slave, SIGNAL(redirection(QUrl)),
+               SLOT(slotRedirection(QUrl)));
 
     q->connect( slave, SIGNAL(mimeType(QString)),
                 SLOT(slotMimetype(QString)) );

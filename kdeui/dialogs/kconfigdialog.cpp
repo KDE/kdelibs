@@ -27,7 +27,7 @@
 #include <kdebug.h>
 #include <kicon.h>
 #include <kiconloader.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kpagewidgetmodel.h>
 #include <kvbox.h>
 

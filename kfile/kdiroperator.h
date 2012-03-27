@@ -85,7 +85,7 @@ class DeleteJob;
  *   connect(op, SIGNAL(finishedLoading()),
  *           SLOT(slotLoadingFinished()));
  *
- *   KConfigGroup grp(KGlobal::config(),"Your KDiroperator ConfigGroup" );
+ *   KConfigGroup grp(KSharedConfig::openConfig(),"Your KDiroperator ConfigGroup" );
  *   op->readConfig( &grp);
  *   op->setView(KFile::Default);
  * \endcode
@@ -427,7 +427,7 @@ public:
      * instantiation can make use of it already.
      *
      * Note that KDirOperator does NOT take ownership of that object (typically
-     * it's KGlobal::config() anyway.
+     * it's KSharedConfig::openConfig() anyway.
      *
      * You must not delete the KConfig or KConfigGroup object (and master config object) before
      * either deleting the KDirOperator or  calling setViewConfig(0); or something like that

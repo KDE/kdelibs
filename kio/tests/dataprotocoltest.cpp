@@ -17,6 +17,7 @@
 #endif
 
 #include <kio/global.h>
+#include <kurl.h>
 
 #include <QtCore/QString>
 

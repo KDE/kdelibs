@@ -23,7 +23,7 @@
 
 #include <kfiledialog.h>
 #include <kstringhandler.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 #include <qtextcodec.h>
 #include <QApplication>

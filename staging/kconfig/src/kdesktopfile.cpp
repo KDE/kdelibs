@@ -19,6 +19,9 @@
   Boston, MA 02110-1301, USA.
 */
 
+// Qt5 TODO: re-enable. No point in doing it before, it breaks on QString::fromUtf8(QByteArray), which exists in qt5.
+#undef QT_NO_CAST_FROM_BYTEARRAY
+
 #include "kdesktopfile.h"
 
 #include <unistd.h>
@@ -29,29 +32,26 @@
 #include <qstandardpaths.h>
 
 #include "kconfig_p.h"
-#include "kdebug.h"
 #include "kconfiggroup.h"
-#include "kauthorized.h"
-#include "kstandarddirs.h"
+#include "kcoreauthorized.h"
 #include "kconfigini_p.h"
-#include "kde_file.h"
 
 class KDesktopFilePrivate : public KConfigPrivate
 {
  public:
-    KDesktopFilePrivate(const char * resourceType, const QString &fileName);
+    KDesktopFilePrivate(QStandardPaths::StandardLocation resourceType, const QString &fileName);
     KConfigGroup desktopGroup;
 };
 
-KDesktopFilePrivate::KDesktopFilePrivate(const char * resourceType, const QString &fileName)
-    : KConfigPrivate(KGlobal::mainComponent(), KConfig::NoGlobals, resourceType)
+KDesktopFilePrivate::KDesktopFilePrivate(QStandardPaths::StandardLocation resourceType, const QString &fileName)
+    : KConfigPrivate(KConfig::NoGlobals, resourceType)
 {
     mBackend = new KConfigIniBackend();
     bDynamicBackend = false;
-    changeFileName(fileName, resourceType);
+    changeFileName(fileName);
 }
 
-KDesktopFile::KDesktopFile(const char * resourceType, const QString &fileName)
+KDesktopFile::KDesktopFile(QStandardPaths::StandardLocation resourceType, const QString &fileName)
     : KConfig(*new KDesktopFilePrivate(resourceType, fileName))
 {
     Q_D(KDesktopFile);
@@ -60,7 +60,7 @@ KDesktopFile::KDesktopFile(const char * resourceType, const QString &fileName)
 }
 
 KDesktopFile::KDesktopFile(const QString &fileName)
-    : KConfig(*new KDesktopFilePrivate("apps", fileName)) // TODO KDE5: default to xdgdata-apps instead of apps
+    : KConfig(*new KDesktopFilePrivate(QStandardPaths::ApplicationsLocation, fileName))
 {
     Q_D(KDesktopFile);
     reparseConfiguration();
@@ -79,54 +79,24 @@ KConfigGroup KDesktopFile::desktopGroup() const
 
 QString KDesktopFile::locateLocal(const QString &path)
 {
-  QString local;
-  if (path.endsWith(QLatin1String(".directory")))
-  {
-    local = path;
-    if (!QDir::isRelativePath(local))
-    {
-      // Relative wrt apps?
-      local = KGlobal::dirs()->relativeLocation("apps", path);
+    QString relativePath;
+    // Relative to config? (e.g. for autostart)
+    Q_FOREACH(const QString& dir, QStandardPaths::standardLocations(QStandardPaths::ConfigLocation)) {
+        if (path.startsWith(dir) + '/') {
+            relativePath = dir.mid(path.length() + 1);
+            return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + relativePath;
+        }
     }
-
-    if (QDir::isRelativePath(local))
-    {
-      local = KStandardDirs::locateLocal("apps", local); // Relative to apps
+    // Relative to xdg data dir? (much more common)
+    Q_FOREACH(const QString& dir, QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation)) {
+        if (path.startsWith(dir) + '/')
+            relativePath = dir.mid(path.length() + 1);
     }
-    else
-    {
-      // XDG Desktop menu items come with absolute paths, we need to
-      // extract their relative path and then build a local path.
-      local = KGlobal::dirs()->relativeLocation("xdgdata-dirs", local);
-      if (!QDir::isRelativePath(local))
-      {
-        // Hm, that didn't work...
-        // What now? Use filename only and hope for the best.
-        local = path.mid(path.lastIndexOf(QLatin1Char('/'))+1);
-      }
-      local = KStandardDirs::locateLocal("xdgdata-dirs", local);
+    if (relativePath.isEmpty()) {
+        // What now? The desktop file doesn't come from XDG_DATA_DIRS. Use filename only and hope for the best.
+        relativePath = path.mid(path.lastIndexOf(QLatin1Char('/'))+1);
     }
-  }
-  else
-  {
-    if (QDir::isRelativePath(path))
-    {
-      local = KStandardDirs::locateLocal("apps", path); // Relative to apps
-    }
-    else
-    {
-      // XDG Desktop menu items come with absolute paths, we need to
-      // extract their relative path and then build a local path.
-      local = KGlobal::dirs()->relativeLocation("xdgdata-apps", path);
-      if (!QDir::isRelativePath(local))
-      {
-        // What now? Use filename only and hope for the best.
-        local = path.mid(path.lastIndexOf(QLatin1Char('/'))+1);
-      }
-      local = KStandardDirs::locateLocal("xdgdata-apps", local);
-    }
-  }
-  return local;
+    return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + relativePath;
 }
 
 bool KDesktopFile::isDesktopFile(const QString& path)
@@ -143,24 +113,30 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
   if (QDir::isRelativePath(path))
      return true; // Relative paths are ok.
 
-  KStandardDirs *dirs = KGlobal::dirs();
-  QStringList kdePrefixes;
-  kdePrefixes += dirs->resourceDirs("apps");
-  kdePrefixes += dirs->resourceDirs("services");
-  kdePrefixes += dirs->resourceDirs("xdgdata-apps");
-  kdePrefixes += dirs->resourceDirs("autostart");
-
-  const QString realPath = KStandardDirs::realPath(path);
+  const QString realPath = QFileInfo(path).canonicalFilePath();
 
   // Check if the .desktop file is installed as part of KDE or XDG.
-  foreach (const QString &prefix, kdePrefixes) {
-    if (realPath.startsWith(prefix))
-      return true;
+  const QStringList appsDirs = QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation);
+  Q_FOREACH (const QString &prefix, appsDirs) {
+      if (realPath.startsWith(QFileInfo(prefix).canonicalFilePath()))
+          return true;
+  }
+  const QString servicesDir = QLatin1String("kde5/services/"); // KGlobal::dirs()->xdgDataRelativePath("services")
+  Q_FOREACH (const QString &xdgDataPrefix, QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation)) {
+      const QString prefix = QFileInfo(xdgDataPrefix).canonicalFilePath();
+      if (realPath.startsWith(prefix + QLatin1Char('/') + servicesDir))
+          return true;
+  }
+  const QString autostartDir = QLatin1String("autostart/");
+  Q_FOREACH (const QString &xdgDataPrefix, QStandardPaths::standardLocations(QStandardPaths::ConfigLocation)) {
+      const QString prefix = QFileInfo(xdgDataPrefix).canonicalFilePath();
+      if (realPath.startsWith(prefix + QLatin1Char('/') + autostartDir))
+          return true;
   }
 
   // Forbid desktop files outside of standard locations if kiosk is set so
   if (!KAuthorized::authorize(QLatin1String("run_desktop_files"))) {
-     kWarning() << "Access to '" << path << "' denied because of 'run_desktop_files' restriction." << endl;
+     qWarning() << "Access to '" << path << "' denied because of 'run_desktop_files' restriction." << endl;
      return false;
   }
 
@@ -170,7 +146,7 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
   if (entryInfo.isExecutable() || entryInfo.ownerId() == 0)
       return true;
 
-  kWarning() << "Access to '" << path << "' denied, not owned by root, executable flag not set." << endl;
+  qWarning() << "Access to '" << path << "' denied, not owned by root, executable flag not set." << endl;
   return false;
 }
 
@@ -352,7 +328,7 @@ KDesktopFile* KDesktopFile::copyTo(const QString &file) const
   return config;
 }
 
-const char *KDesktopFile::resource() const
+QStandardPaths::StandardLocation KDesktopFile::resource() const
 {
     Q_D(const KDesktopFile);
     return d->resourceType;

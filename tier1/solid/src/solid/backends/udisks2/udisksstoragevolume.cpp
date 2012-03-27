@@ -101,6 +101,5 @@ bool StorageVolume::isIgnored() const
 {
     const Solid::StorageVolume::UsageType usg = usage();
     return m_device->prop("HintIgnore").toBool() || m_device->isSwap() ||
-            usg == Solid::StorageVolume::Unused || usg == Solid::StorageVolume::Other ||
-            usg == Solid::StorageVolume::PartitionTable; // FIXME check for empty and audio CDs
+            ((usg == Solid::StorageVolume::Unused || usg == Solid::StorageVolume::Other || usg == Solid::StorageVolume::PartitionTable) && !m_device->isOpticalDisc());
 }

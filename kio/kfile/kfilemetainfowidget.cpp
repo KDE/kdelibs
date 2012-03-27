@@ -19,7 +19,7 @@
 #include "kfilemetainfowidget.h"
 
 #include <ktextedit.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <knuminput.h>
 #include <kcombobox.h>
 #include <klineedit.h>

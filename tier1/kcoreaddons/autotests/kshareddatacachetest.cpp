@@ -67,7 +67,6 @@ void KSharedDataCacheTest::simpleInsert()
     QVERIFY(cache.insert(key, data));
     // and another read
     QVERIFY(cache.find(key, &result));
-    QEXPECT_FAIL("", "Bug in findNamedEntry!", Continue);
     QCOMPARE(result, data);
 }
 

@@ -1602,7 +1602,7 @@ int main( int argc, char **argv )
                 << (parameters.isEmpty() ? " = QString()" : ", ");
         else
             h << " KSharedConfig::Ptr config"
-                << (parameters.isEmpty() ? " = KGlobal::config()" : ", ");
+                << (parameters.isEmpty() ? " = KSharedConfig::openConfig()" : ", ");
     }
     for (QList<Param>::ConstIterator it = parameters.constBegin();
          it != parameters.constEnd(); ++it)

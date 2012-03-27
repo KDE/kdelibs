@@ -23,7 +23,7 @@
 
 #include <kcombobox.h>
 #include <klineedit.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <ktextedit.h>
 #include <kurlrequester.h>
 

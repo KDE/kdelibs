@@ -32,7 +32,7 @@ int main(int argc, char **argv)
         KComponentData componentData("globalcleanuptest");
         // letting componentData go out of scope here simulates the behaviour of KCmdLineArgs
     }
-    KSharedConfigPtr cfg = KGlobal::config();
+    KSharedConfigPtr cfg = KSharedConfig::openConfig();
     KConfigGroup group = cfg->group("test");
     group.writeEntry("test", 1);
 

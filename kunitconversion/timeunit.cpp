@@ -19,7 +19,7 @@
 
 #include "timeunit.h"
 #include "converter.h"
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 using namespace KUnitConversion;
 

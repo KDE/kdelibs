@@ -212,7 +212,7 @@ static void initialize(StandardShortcut id)
         Q_ASSERT(info->name);
     }
 
-    KConfigGroup cg(KGlobal::config(), "Shortcuts");
+    KConfigGroup cg(KSharedConfig::openConfig(), "Shortcuts");
 
 #ifdef Q_WS_X11
     // Code within this block breaks if we aren't running in GUI mode.
@@ -241,7 +241,7 @@ void saveShortcut(StandardShortcut id, const KShortcut &newShortcut)
     if(info->id == AccelNone)
         return;
 
-    KConfigGroup cg(KGlobal::config(), "Shortcuts");
+    KConfigGroup cg(KSharedConfig::openConfig(), "Shortcuts");
 
     info->cut = newShortcut;
     bool sameAsDefault = (newShortcut == hardcodedDefaultShortcut(id));

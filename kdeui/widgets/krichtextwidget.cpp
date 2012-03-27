@@ -27,7 +27,7 @@
 #include <kcolorscheme.h>
 #include <kfontaction.h>
 #include <kfontsizeaction.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <ktoggleaction.h>
 #include <kdebug.h>
 

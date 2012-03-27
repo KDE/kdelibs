@@ -64,7 +64,7 @@
 #include "kcmdlineargs.h"
 
 #include <kmessage.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kconfiggroup.h>
 #include <kurl.h>
 

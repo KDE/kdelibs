@@ -58,7 +58,7 @@
 #include <kglobalsettings.h>
 #include <ktoolinvocation.h>
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kprotocolmanager.h>
 #include <kstandarddirs.h>
 #include <kprocess.h>
@@ -193,7 +193,7 @@ bool KRun::displayOpenWithDialog(const KUrl::List& lst, QWidget* window, bool te
     }
 
 #ifdef Q_WS_WIN
-    KConfigGroup cfgGroup(KGlobal::config(), "KOpenWithDialog Settings");
+    KConfigGroup cfgGroup(KSharedConfig::openConfig(), "KOpenWithDialog Settings");
     if (cfgGroup.readEntry("Native", true)) {
         return KRun::KRunPrivate::displayNativeOpenWithDialog(lst, window, tempFiles,
                 suggestedFileName, asn);
@@ -496,7 +496,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
     */
 
     if (_service.terminal()) {
-        KConfigGroup cg(KGlobal::config(), "General");
+        KConfigGroup cg(KSharedConfig::openConfig(), "General");
         QString terminal = cg.readPathEntry("TerminalApplication", "konsole");
         if (terminal == "konsole") {
             if (!_service.path().isEmpty()) {
@@ -518,7 +518,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
     KShell::Errors err;
     QStringList execlist = KShell::splitArgs(exec, KShell::AbortOnMeta | KShell::TildeExpand, &err);
     if (err == KShell::NoError && !execlist.isEmpty()) { // mx1 checked for syntax errors already
-        // Resolve the executable to ensure that helpers in lib/kde4/libexec/ are found.
+        // Resolve the executable to ensure that helpers in libexec are found.
         // Too bad for commands that need a shell - they must reside in $PATH.
         const QString exePath = KStandardDirs::findExe(execlist[0]);
         if (!exePath.isEmpty()) {
@@ -1550,7 +1550,7 @@ void KRun::setAutoDelete(bool b)
 void KRun::setEnableExternalBrowser(bool b)
 {
     if (b) {
-        d->m_externalBrowser = KConfigGroup(KGlobal::config(), "General").readEntry("BrowserApplication");
+        d->m_externalBrowser = KConfigGroup(KSharedConfig::openConfig(), "General").readEntry("BrowserApplication");
     }
     else {
         d->m_externalBrowser.clear();

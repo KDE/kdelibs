@@ -233,7 +233,7 @@ bool KMenuBar::isTopLevelMenu() const
 
 void KMenuBar::slotReadConfig()
 {
-  KConfigGroup cg( KGlobal::config(), "KDE" );
+  KConfigGroup cg( KSharedConfig::openConfig(), "KDE" );
   setTopLevelMenuInternal( cg.readEntry( "macStyle", false ) );
 }
 
@@ -331,7 +331,7 @@ void KMenuBar::selectionTimeout()
     if ( d->topLevel )
     {
         d->fallback_mode = true; // KMenuBar is handling its position itself
-        KConfigGroup xineramaConfig(KGlobal::config(),"Xinerama");
+        KConfigGroup xineramaConfig(KSharedConfig::openConfig(),"Xinerama");
         int screen = xineramaConfig.readEntry("MenubarScreen",
             QApplication::desktop()->screenNumber(QPoint(0,0)) );
         QRect area = QApplication::desktop()->screenGeometry(screen);

@@ -20,13 +20,11 @@
 
 #include "authinfo.h"
 
-#include <config.h>
-
+#include <sys/types.h>
 #include <sys/stat.h> // don't move it down the include order, it breaks compilation on MSVC
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <sys/types.h>
 
 #include <QtCore/QByteArray>
 #include <QtCore/QDir>
@@ -114,7 +112,7 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, ExtraField &extra
     return argument;
 }
 
-class KIO::AuthInfoPrivate  
+class KIO::AuthInfoPrivate
 {
 public:
     QMap<QString, ExtraField> extraFields;
@@ -178,22 +176,22 @@ void AuthInfo::setExtraField(const QString &fieldName, const QVariant & value)
 {
     d->extraFields[fieldName].value = value;
 }
- 
+
 void AuthInfo::setExtraFieldFlags(const QString &fieldName, const FieldFlags flags)
 {
     d->extraFields[fieldName].flags = flags;
 }
- 
+
 QVariant AuthInfo::getExtraField(const QString &fieldName) const
 {
     if (!d->extraFields.contains(fieldName)) return QVariant();
-    return d->extraFields[fieldName].value; 
+    return d->extraFields[fieldName].value;
 }
- 
+
 AuthInfo::FieldFlags AuthInfo::getExtraFieldFlags(const QString &fieldName) const
 {
     if (!d->extraFields.contains(fieldName)) return AuthInfo::ExtraFieldNoFlags;
-    return d->extraFields[fieldName].flags; 
+    return d->extraFields[fieldName].flags;
 }
 
 void AuthInfo::registerMetaTypes()
@@ -231,7 +229,7 @@ QDBusArgument &KIO::operator<<(QDBusArgument &argument, const AuthInfo &a)
 {
     argument.beginStructure();
     argument << (quint8)1
-             << a.url.url() << a.username << a.password << a.prompt << a.caption
+             << a.url.toString() << a.username << a.password << a.prompt << a.caption
              << a.comment << a.commentLabel << a.realmValue << a.digestInfo
              << a.verifyPath << a.readOnly << a.keepPassword << a.modified
              << a.d->extraFields;
@@ -243,7 +241,7 @@ const QDBusArgument &KIO::operator>>(const QDBusArgument &argument, AuthInfo &a)
 {
     QString url;
     quint8 version;
-    
+
     argument.beginStructure();
     argument >> version
              >> url >> a.username >> a.password >> a.prompt >> a.caption
@@ -290,7 +288,7 @@ NetRC* NetRC::self()
     return instance;
 }
 
-bool NetRC::lookup( const KUrl& url, AutoLogin& login, bool userealnetrc,
+bool NetRC::lookup( const QUrl& url, AutoLogin& login, bool userealnetrc,
                     const QString &_type, LookUpMode mode )
 {
   // kDebug() << "AutoLogin lookup for: " << url.host();
@@ -311,7 +309,7 @@ bool NetRC::lookup( const KUrl& url, AutoLogin& login, bool userealnetrc,
     if ( userealnetrc )
     {
       filename =  QDir::homePath() + QLatin1String("/.netrc");
-      status |= parse (openf(filename));
+      status = status && parse(openf(filename));
     }
 
     if ( !status )

@@ -33,9 +33,8 @@
 #include <kdebug.h>
 #include <kcomponentdata.h>
 #include <kglobal.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kstandarddirs.h>
-#include <kurl.h>
 
 using namespace KIO;
 
@@ -158,7 +157,7 @@ void SocketConnectionBackend::setSuspended(bool enable)
     }
 }
 
-bool SocketConnectionBackend::connectToRemote(const KUrl &url)
+bool SocketConnectionBackend::connectToRemote(const QUrl &url)
 {
     Q_ASSERT(state == Idle);
     Q_ASSERT(!socket);
@@ -214,9 +213,9 @@ bool SocketConnectionBackend::listenForRemote()
         }
 
         QString sockname = socketfile.fileName();
-        KUrl addressUrl(sockname);
-        addressUrl.setProtocol("local");
-        address = addressUrl.url();
+        address.clear();
+        address.setScheme("local");
+        address.setPath(sockname);
         socketfile.remove(); // can't bind if there is such a file
 
         localServer = new KLocalSocketServer(this);
@@ -238,7 +237,7 @@ bool SocketConnectionBackend::listenForRemote()
             return false;
         }
 
-        address = "tcp://127.0.0.1:" + QString::number(tcpServer->serverPort());
+        address = QUrl("tcp://127.0.0.1:" + QString::number(tcpServer->serverPort()));
         connect(tcpServer, SIGNAL(newConnection()), SIGNAL(newConnection()));
     }
 
@@ -444,11 +443,10 @@ bool Connection::suspended() const
     return d->suspended;
 }
 
-void Connection::connectToRemote(const QString &address)
+void Connection::connectToRemote(const QUrl &address)
 {
     //kDebug(7017) << "Connection requested to " << address;
-    KUrl url = address;
-    QString scheme = url.scheme();
+    const QString scheme = address.scheme();
 
     if (scheme == QLatin1String("local")) {
         d->setBackend(new SocketConnectionBackend(SocketConnectionBackend::LocalSocketMode, this));
@@ -462,8 +460,8 @@ void Connection::connectToRemote(const QString &address)
     }
 
     // connection succeeded
-    if (!d->backend->connectToRemote(url)) {
-        //kWarning(7017) << "could not connect to " << url << "using scheme" << scheme ;
+    if (!d->backend->connectToRemote(address)) {
+        //kWarning(7017) << "could not connect to" << address << "using scheme" << scheme ;
         delete d->backend;
         d->backend = 0;
         return;
@@ -567,14 +565,14 @@ void ConnectionServer::listenForRemote()
     }
 
     connect(d->backend, SIGNAL(newConnection()), SIGNAL(newConnection()));
-    kDebug(7017) << "Listening on " << d->backend->address;
+    kDebug(7017) << "Listening on" << d->backend->address;
 }
 
-QString ConnectionServer::address() const
+QUrl ConnectionServer::address() const
 {
     if (d->backend)
         return d->backend->address;
-    return QString();
+    return QUrl();
 }
 
 bool ConnectionServer::isListening() const

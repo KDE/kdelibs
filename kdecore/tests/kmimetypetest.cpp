@@ -42,6 +42,10 @@
 #include <qtemporaryfile.h>
 #include <kdesktopfile.h>
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#include <QtConcurrent>
+#endif
+
 int initializeLang()
 {
     qputenv("LC_ALL", "en_US");
@@ -57,7 +61,12 @@ void KMimeTypeTest::initTestCase()
     // Clean up local xdg dir in case of leftover mimetype definitions
     const QString xdgDir = QString::fromLocal8Bit(getenv("XDG_DATA_HOME"));
     if (!xdgDir.isEmpty()) {
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
         QTemporaryDir::removeRecursively(xdgDir);
+#else
+        QDir d_(xdgDir);
+        d_.removeRecursively();
+#endif
         // No need to run update-mime-database here, the dir is entirely gone.
     }
 
@@ -120,6 +129,21 @@ void KMimeTypeTest::initTestCase()
         group.writeEntry("NotShowIn", "KDE;FVWM;");
         group.writeEntry("MimeType", "text/plain;");
         group.writeEntry("InitialPreference", "50");
+        group.writeEntry("Categories", "Qt;KDE;");
+    }
+
+    // Create fake text/plain app
+    m_textPlainApp = KStandardDirs::locateLocal("xdgdata-apps", "fake_textplain_application.desktop");
+    const bool mustCreateTextPlainApp = !QFile::exists(m_textPlainApp);
+    if (mustCreateTextPlainApp) {
+        mustUpdateKSycoca = true;
+        KDesktopFile file(m_textPlainApp);
+        KConfigGroup group = file.desktopGroup();
+        group.writeEntry("Name", "NonKDEApp");
+        group.writeEntry("Type", "Application");
+        group.writeEntry("Exec", "xterm");
+        group.writeEntry("MimeType", "text/plain;");
+        group.writeEntry("InitialPreference", "40");
         group.writeEntry("Categories", "Qt;KDE;");
     }
 
@@ -700,6 +724,7 @@ void KMimeTypeTest::testPreferredService()
     // The "NotShowIn=KDE" service should not be the preferred one!
     KService::Ptr serv = KMimeTypeTrader::self()->preferredService("text/plain");
     QVERIFY( serv->entryPath() != m_nonKdeApp );
+    QCOMPARE(serv->entryPath(), m_textPlainApp);
 }
 
 void KMimeTypeTest::testMimeTypeTraderForAlias()

@@ -526,7 +526,7 @@ void KUrlCompletionPrivate::init()
     mode = KUrlCompletion::FileCompletion;
 
     // Read settings
-    KConfigGroup cg(KGlobal::config(), "URLCompletion");
+    KConfigGroup cg(KSharedConfig::openConfig(), "URLCompletion");
 
     url_auto_completion = cg.readEntry("alwaysAutoComplete", true);
     popup_append_slash = cg.readEntry("popupAppendSlash", true);

@@ -37,7 +37,7 @@
  *
  * Note that, as with most of kdelibs, this is @b NOT threadsafe.
  */
-class KDECORE_EXPORT KSharedConfig : public KConfig, public QSharedData //krazy:exclude=dpointer (only for refcounting)
+class KCONFIG_EXPORT KSharedConfig : public KConfig, public QSharedData //krazy:exclude=dpointer (only for refcounting)
 {
 public:
   typedef KSharedPtr<KSharedConfig> Ptr;
@@ -63,48 +63,26 @@ public:
      * @param resourceType The standard directory to look for the configuration
      *                     file in (see KStandardDirs)
      *
-     * @sa KConfig::KConfig(const QString&, OpenFlags, const char*)
+     * @sa KConfig
      */
     static KSharedConfig::Ptr openConfig(const QString& fileName = QString(),
                                          OpenFlags mode = FullConfig,
-                                         const char *resourceType = "config");
-
-    /**
-     * Constructs a KSharedConfig object.
-     *
-     * If an absolute path is specified for @p fileName, that file will be used
-     * as the store for the configuration settings.  If a non-absolute path
-     * is provided, the file will be looked for in the standard directory
-     * specified by resourceType.  If no path is provided, a default
-     * configuration file will be used based on the component's name.
-     *
-     * @p mode determines whether the user or global settings will be allowed
-     * to influence the values returned by this object.  See KConfig::OpenFlags for
-     * more details.
-     *
-     * @param componentData the component that you wish to load a configuration
-     *                      file for
-     * @param fileName      the configuration file to open
-     * @param mode          how global settings should affect the configuration
-     *                      options exposed by this KConfig object
-     * @param resourceType  The standard directory to look for the configuration
-     *                      file in (see KStandardDirs)
-     *
-     * @sa KConfig::KConfig(const KComponentData&, const QString&, OpenFlags, const char*)
-     */
-    static KSharedConfig::Ptr openConfig(const KComponentData &componentData,
-                                         const QString &fileName = QString(),
-                                         OpenFlags mode = FullConfig,
-                                         const char *resourceType = "config");
+                                         QStandardPaths::StandardLocation type = QStandardPaths::ConfigLocation);
 
     virtual ~KSharedConfig();
+
+    /**
+     * @internal (kde4 KComponentData compat)
+     */
+    static void setMainConfigName(const QString& str);
 
 private:
     virtual KConfigGroup groupImpl(const QByteArray& aGroup);
     virtual const KConfigGroup groupImpl(const QByteArray& aGroup) const;
 
-    KSharedConfig(const KComponentData& componentData, const QString& file, OpenFlags mode,
-                  const char* resourceType);
+    KSharedConfig(const QString& file, OpenFlags mode,
+                  QStandardPaths::StandardLocation resourceType);
+
 };
 
 typedef KSharedConfig::Ptr KSharedConfigPtr;

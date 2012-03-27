@@ -20,7 +20,7 @@
 
 #include <kcombobox.h>
 #include <klineedit.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include <QApplication>
 #include <QLabel>

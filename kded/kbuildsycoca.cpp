@@ -1,4 +1,3 @@
-// -*- c-basic-offset: 3 -*-
 /*  This file is part of the KDE libraries
  *  Copyright (C) 1999 David Faure <faure@kde.org>
  *  Copyright (C) 2002-2003 Waldo Bastian <bastian@kde.org>
@@ -72,7 +71,6 @@ static KBuildServiceGroupFactory *g_buildServiceGroupFactory = 0;
 static KSycocaFactory *g_currentFactory = 0;
 static KCTimeInfo *g_ctimeInfo = 0; // factory
 static KCTimeDict *g_ctimeDict = 0; // old timestamps
-static QByteArray g_resource = 0;
 static KBSEntryDict *g_currentEntryDict = 0;
 static KBSEntryDict *g_serviceGroupEntryDict = 0;
 static KSycocaEntryListList *g_allEntries = 0; // entries from existing ksycoca
@@ -159,7 +157,7 @@ KSycocaEntry::Ptr KBuildSycoca::createEntry(const QString &file, bool addToFacto
    if (!entry)
    {
       // Create a new entry
-      entry = g_currentFactory->createEntry( file, g_resource );
+      entry = g_currentFactory->createEntry(file);
    }
    if ( entry && entry->isValid() )
    {
@@ -210,7 +208,7 @@ bool KBuildSycoca::build()
      entryDictList.append(entryDict);
   }
 
-  QStringList allResources; // we could use QSet<QString> - does order matter?
+  QMap<QString, QByteArray> allResourcesSubDirs; // dirs, kstandarddirs-resource-name
   // For each factory
   for (KSycocaFactoryList::Iterator factory = factories()->begin();
        factory != factories()->end();
@@ -219,35 +217,31 @@ bool KBuildSycoca::build()
     // For each resource the factory deals with
     const KSycocaResourceList *list = (*factory)->resourceList();
     if (!list) continue;
-
-    for( KSycocaResourceList::ConstIterator it1 = list->constBegin();
-         it1 != list->constEnd();
-         ++it1 )
-    {
-      KSycocaResource res = (*it1);
-      if (!allResources.contains(res.resource))
-         allResources.append(res.resource);
+    Q_FOREACH (const KSycocaResource& res, *list) {
+       // With this we would get dirs, but not a unique list of relative files (for global+local merging to work)
+       //const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, res.subdir, QStandardPaths::LocateDirectory);
+       //allResourcesSubDirs[res.resource] += dirs;
+       allResourcesSubDirs.insert(res.subdir, res.resource);
     }
   }
 
   g_ctimeInfo = new KCTimeInfo(); // This is a build factory too, don't delete!!
   bool uptodate = true;
-  // For all resources
-  for( QStringList::ConstIterator it1 = allResources.constBegin();
-       it1 != allResources.constEnd();
+  for( QMap<QString, QByteArray>::ConstIterator it1 = allResourcesSubDirs.constBegin();
+       it1 != allResourcesSubDirs.constEnd();
        ++it1 )
   {
      g_changed = false;
-     g_resource = (*it1).toLatin1();
+     g_resourceSubdir = it1.key();
+     g_resource = it1.value();
 
      QStringList relFiles;
-
-     (void) KGlobal::dirs()->findAllResources( g_resource,
-                                               QString(),
-                                               KStandardDirs::Recursive |
-                                               KStandardDirs::NoDuplicates,
-                                               relFiles);
-
+     (void) KGlobal::dirs()->findAllResources(g_resource,
+                                              QString(),
+                                              KStandardDirs::Recursive |
+                                              KStandardDirs::NoDuplicates,
+                                              relFiles);
+     kDebug() << g_resourceSubdir << KGlobal::dirs()->resourceDirs("xdgdata") << relFiles;
 
      // Now find all factories that use this resource....
      // For each factory
@@ -277,15 +271,19 @@ bool KBuildSycoca::build()
                 ++it3 )
            {
                // Check if file matches filter
-               if ((*it3).endsWith(res.extension))
-                   createEntry(*it3, true);
+              if ((*it3).endsWith(res.extension)) {
+                 QString entryPath = (*it3);
+                 if (!QDir::isAbsolutePath(entryPath))
+                    entryPath = g_resourceSubdir + '/' + entryPath;
+                 createEntry(entryPath, true);
+              }
            }
         }
      }
      if (g_changed || !g_allEntries)
      {
         uptodate = false;
-        //kDebug() << "CHANGED:" << g_resource;
+        //kDebug() << "CHANGED:" << resource;
         m_changedResources.append(g_resource);
      }
   }
@@ -306,6 +304,7 @@ bool KBuildSycoca::build()
   if (result || bMenuTest)
   {
      g_resource = "apps";
+     g_resourceSubdir = "applications";
      g_currentFactory = g_serviceFactory;
      g_currentEntryDict = serviceEntryDict;
      g_changed = false;
@@ -599,19 +598,12 @@ QStringList KBuildSycoca::existingResourceDirs()
        return *dirs;
    dirs = new QStringList;
    g_allResourceDirs = new QStringList;
-   // these are all resources cached by ksycoca
-   QStringList resources;
-   resources += KBuildServiceTypeFactory::resourceTypes();
-   resources += KBuildMimeTypeFactory::resourceTypes();
-   resources += KBuildServiceGroupFactory::resourceTypes();
-   resources += KBuildServiceFactory::resourceTypes();
-   resources += KBuildProtocolInfoFactory::resourceTypes();
-   while( !resources.empty())
-   {
-      QString res = resources.front();
-      *dirs += KGlobal::dirs()->resourceDirs( res.toLatin1());
-      resources.removeAll( res );
-   }
+   // these are all resource dirs cached by ksycoca
+   *dirs += KBuildServiceTypeFactory::resourceDirs();
+   *dirs += KBuildMimeTypeFactory::resourceDirs();
+   *dirs += KBuildServiceGroupFactory::resourceDirs();
+   *dirs += KBuildServiceFactory::resourceDirs();
+   *dirs += KBuildProtocolInfoFactory::resourceDirs();
 
    *g_allResourceDirs = *dirs;
 
@@ -808,8 +800,8 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
       {
         // These directories may have been created with 0700 permission
         // better delete them if they are empty
-        QString applnkDir = KGlobal::dirs()->saveLocation("apps", QString(), false);
-        ::rmdir(QFile::encodeName(applnkDir));
+        QString appsDir = KGlobal::dirs()->saveLocation("xdgdata-apps", QString(), false);
+        ::rmdir(QFile::encodeName(appsDir));
         QString servicetypesDir = KGlobal::dirs()->saveLocation("servicetypes", QString(), false);
         ::rmdir(QFile::encodeName(servicetypesDir));
       }
@@ -830,4 +822,3 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 
    return 0;
 }
-

@@ -27,18 +27,18 @@
 #include "bufferfragment_p.h"
 #include "kconfigdata.h"
 #include <qsavefile.h>
-#include <kde_file.h>
-#include "kstandarddirs.h"
 
 #include <qdatetime.h>
 #include <qdir.h>
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qdebug.h>
-#include <qmetaobject.h>
-#include <qregexp.h>
 
-extern bool kde_kiosk_exception;
+#include <unistd.h> // getuid, close
+#include <sys/types.h> // uid_t
+#include <fcntl.h> // open
+
+KCONFIG_EXPORT bool kde_kiosk_exception = false; // flag to disable kiosk restrictions
 
 QString KConfigIniBackend::warningProlog(const QFile &file, int line)
 {
@@ -253,7 +253,7 @@ next_line:
     }
 
     // now make sure immutable groups are marked immutable
-    foreach(const QByteArray& group, immutableGroups) {
+    Q_FOREACH(const QByteArray& group, immutableGroups) {
         entryMap.setEntry(group, QByteArray(), QByteArray(), KEntryMap::EntryImmutable);
     }
 
@@ -359,7 +359,7 @@ void KConfigIniBackend::writeEntries(const QByteArray& locale, QIODevice& file, 
 }
 
 bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMap,
-                                    WriteOptions options, const KComponentData &data)
+                                    WriteOptions options)
 {
     Q_ASSERT(!filePath().isEmpty());
 
@@ -452,19 +452,19 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
                 return true;
             }
             // Couldn't write. Disk full?
-            kWarning() << "Couldn't write" << filePath() << ". Disk full?";
+            qWarning() << "Couldn't write" << filePath() << ". Disk full?";
             return false;
         }
     } else {
         // Open existing file. *DON'T* create it if it suddenly does not exist!
 #ifdef Q_OS_UNIX
-        int fd = KDE_open(QFile::encodeName(filePath()), O_WRONLY | O_TRUNC);
+        int fd = ::open(QFile::encodeName(filePath()).constData(), O_WRONLY | O_TRUNC);
         if (fd < 0) {
             return false;
         }
-        FILE *fp = KDE_fdopen(fd, "w");
+        FILE *fp = ::fdopen(fd, "w");
         if (!fp) {
-            close(fd);
+            ::close(fd);
             return false;
         }
         QFile f;
@@ -488,17 +488,19 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
     return true;
 }
 
+
 bool KConfigIniBackend::isWritable() const
 {
-    if (!filePath().isEmpty()) {
-        if (KStandardDirs::checkAccess(filePath(), W_OK)) {
+    const QString filePath = this->filePath();
+    if (!filePath.isEmpty()) {
+        // Qt 5 TODO: QFileInfo::canBeCreated or something.
+        if (::access(QFile::encodeName(filePath).constData(), W_OK) == 0) {
             return true;
         }
-        // The check might have failed because any of the containing dirs
-        // did not exist. If the file does not exist, check if the deepest
-        // existing dir is writable.
-        QFileInfo file(filePath());
+        QFileInfo file(filePath);
         if (!file.exists()) {
+            // If the file does not exist, check if the deepest
+            // existing dir is writable.
             QFileInfo dir(file.absolutePath());
             while (!dir.exists()) {
                 QString parent = dir.absolutePath(); // Go up. Can't use cdUp() on non-existing dirs.
@@ -517,7 +519,7 @@ bool KConfigIniBackend::isWritable() const
 
 QString KConfigIniBackend::nonWritableErrorMessage() const
 {
-    return i18n("Configuration file \"%1\" not writable.\n", filePath());
+    return tr("Configuration file \"%1\" not writable.\n").arg(filePath());
 }
 
 void KConfigIniBackend::createEnclosing()
@@ -563,12 +565,12 @@ KConfigBase::AccessMode KConfigIniBackend::accessMode() const
     return KConfigBase::ReadOnly;
 }
 
-bool KConfigIniBackend::lock(const KComponentData& componentData)
+bool KConfigIniBackend::lock()
 {
     Q_ASSERT(!filePath().isEmpty());
 
     if (!lockFile) {
-        lockFile = new KLockFile(filePath() + QLatin1String(".lock"), componentData.componentName());
+        lockFile = new KLockFile(filePath() + QLatin1String(".lock"));
     }
 
     if (lockFile->lock() == KLockFile::LockStale) // attempt to break the lock

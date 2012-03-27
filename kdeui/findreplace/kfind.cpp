@@ -23,7 +23,7 @@
 #include "kfind_p.h"
 #include "kfinddialog.h"
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
 

@@ -62,10 +62,8 @@ class KConfig;
  *
  * <b>Standard resources that kdelibs allocates are:</b>
  *
- * @li @c apps - Applications menu (.desktop files).
- * @li @c autostart - Autostart directories (both XDG and kde-specific)
+ * @li @c autostart - Autostart directories (both XDG and kde-specific) (deprecated since 5.0, use xdgconf-autostart)
  * @li @c cache - Cached information (e.g. favicons, web-pages)
- * @li @c cgi - CGIs to run from kdehelp.
  * @li @c config - Configuration files.
  * @li @c data - Where applications store data.
  * @li @c emoticons - Emoticons themes
@@ -75,7 +73,6 @@ class KConfig;
  * @li @c kcfg - KConfigXT config files.
  * @li @c lib - Libraries.
  * @li @c locale - Translation files for KLocale.
- * @li @c mime - Mime types defined by KDE-specific .desktop files.
  * @li @c module - Module (dynamically loaded library).
  * @li @c qtplugins - Qt plugins (dynamically loaded objects for Qt)
  * @li @c services - Services.
@@ -200,6 +197,8 @@ public:
 
     /**
      * Adds another search dir to front of the @p fsstnd list.
+     * Since 5.0, this prefix is only used for "lib" and "exe" resources,
+     * and the compat "config" resource. Use addXdgDataPrefix for most others.
      *
      * @li When compiling kdelibs, the prefix is added to this.
      * @li @c KDEDIRS is taken into account
@@ -221,7 +220,6 @@ public:
     /**
      * Adds another search dir to front of the @c XDG_DATA_XXX list
      * of prefixes.
-     * This prefix is only used for resources that start with @c "xdgdata-"
      *
      * @param dir The directory to append relative paths to.
      */
@@ -373,9 +371,9 @@ public:
     /**
      * Tries to find all directories whose names consist of the
      * specified type and a relative path. So
-     * findDirs("apps", "Settings") would return
-     * @li /home/joe/.kde/share/applnk/Settings/
-     * @li /opt/kde/share/applnk/Settings/
+     * findDirs("xdgdata-apps", "Settings") would return
+     * @li /home/joe/.local/share/applications/Settings/
+     * @li /usr/share/applications/Settings/
      *
      * (from the most local to the most global)
      *
@@ -597,7 +595,7 @@ public:
      * will find @p absPath. If no such relative path exists, @p absPath
      * will be returned unchanged.
      */
-    QString relativeLocation(const char *type, const QString &absPath);
+    QString relativeLocation(const char *type, const QString &absPath) const;
 
     /**
      * Recursively creates still-missing directories in the given path.
@@ -621,21 +619,19 @@ public:
      * @li @c icon - @c share/icon
      * @li @c config - @c share/config
      * @li @c pixmap - @c share/pixmaps
-     * @li @c apps - @c share/applnk (deprecated)
      * @li @c sound - @c share/sounds
      * @li @c locale - @c share/locale
-     * @li @c services - @c share/kde4/services
-     * @li @c servicetypes - @c share/kde4/servicetypes
-     * @li @c mime - @c share/mimelnk (deprecated)
-     * @li @c cgi - @c cgi-bin
+     * @li @c services - @c share/kde5/services
+     * @li @c servicetypes - @c share/kde5/servicetypes
      * @li @c wallpaper - @c share/wallpapers
      * @li @c templates - @c share/templates
      * @li @c exe - @c bin
      * @li @c lib - @c lib[suffix]
-     * @li @c module - @c lib[suffix]/kde4
-     * @li @c qtplugins - @c lib[suffix]/kde4/plugins
+     * @li @c module - @c lib[suffix]/kde5
+     * @li @c qtplugins - @c lib[suffix]/kde5/plugins
      * @li @c kcfg - @c share/config.kcfg
      * @li @c emoticons - @c share/emoticons
+     * @li @c xdgdata - @c shared files (QStandardPaths::GenericDataLocation)
      * @li @c xdgdata-apps - @c applications
      * @li @c xdgdata-icon - @c icons
      * @li @c xdgdata-pixmap - @c pixmaps

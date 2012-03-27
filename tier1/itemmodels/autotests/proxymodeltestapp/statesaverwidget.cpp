@@ -84,7 +84,7 @@ void StateSaverWidget::saveState()
   DynamicTreeStateSaver saver;
   saver.setView(m_view);
 
-  KConfigGroup cfg( KGlobal::config(), "ExampleViewState" );
+  KConfigGroup cfg( KSharedConfig::openConfig(), "ExampleViewState" );
   saver.saveState( cfg );
   cfg.sync();
 }
@@ -93,7 +93,7 @@ void StateSaverWidget::restoreState()
 {
   DynamicTreeStateSaver *saver = new DynamicTreeStateSaver;
   saver->setView(m_view);
-  KConfigGroup cfg( KGlobal::config(), "ExampleViewState" );
+  KConfigGroup cfg( KSharedConfig::openConfig(), "ExampleViewState" );
   saver->restoreState( cfg );
 }
 

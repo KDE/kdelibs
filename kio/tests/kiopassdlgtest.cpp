@@ -1,5 +1,5 @@
 #include <kapplication.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kaboutdata.h>
 #include <kmessagebox.h>
 #include <kcmdlineargs.h>

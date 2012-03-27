@@ -217,7 +217,7 @@ void KSwitchLanguageDialog::slotOk()
     {
         QString languageString = languages.join(":");
         //list is different from defaults or saved languages list
-        KConfigGroup group(KGlobal::config(), "Locale");
+        KConfigGroup group(KSharedConfig::openConfig(), "Locale");
 
         group.writeEntry("Language", languageString);
         group.sync();
@@ -241,7 +241,7 @@ void KSwitchLanguageDialog::slotDefault()
 {
     const QStringList defaultLanguages = d->applicationLanguageList();
 
-    KConfigGroup group(KGlobal::config(), "Locale");
+    KConfigGroup group(KSharedConfig::openConfig(), "Locale");
 
     group.revertToDefault("Language");
     group.sync();
@@ -290,7 +290,7 @@ void KSwitchLanguageDialogPrivate::fillApplicationLanguages(KLanguageButton *but
 
 QStringList KSwitchLanguageDialogPrivate::applicationLanguageList()
 {
-    KSharedConfigPtr config = KGlobal::config();
+    KSharedConfigPtr config = KSharedConfig::openConfig();
     QStringList languagesList;
 
     if (config->hasGroup("Locale"))

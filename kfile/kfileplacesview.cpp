@@ -36,7 +36,7 @@
 #include <kdirnotify.h>
 #include <kglobalsettings.h>
 #include <kiconloader.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <knotification.h>
 #include <kio/job.h>

@@ -290,7 +290,7 @@ K3DictSpellingHighlighter::K3DictSpellingHighlighter( Q3TextEdit *textEdit,
     d->checksDone = 0;
     d->completeRehighlightRequired = false;
 
-    KConfigGroup cg( KGlobal::config(), "K3Spell" );
+    KConfigGroup cg( KSharedConfig::openConfig(), "K3Spell" );
     d->disablePercentage = cg.readEntry( "K3Spell_AsYouTypeDisablePercentage", QVariant(42 )).toInt();
     d->disablePercentage = qMin( d->disablePercentage, 101 );
     d->disableWordCount = cg.readEntry( "K3Spell_AsYouTypeDisableWordCount", QVariant(100 )).toInt();
@@ -530,8 +530,8 @@ void K3DictSpellingHighlighter::slotLocalSpellConfigChanged()
 
 QString K3DictSpellingHighlighter::spellKey()
 {
-    KGlobal::config()->reparseConfiguration();
-    KConfigGroup cg( KGlobal::config(), "K3Spell" );
+    KSharedConfig::openConfig()->reparseConfiguration();
+    KConfigGroup cg( KSharedConfig::openConfig(), "K3Spell" );
     QString key;
     key += QString::number( cg.readEntry( "K3Spell_NoRootAffix", QVariant(0 )).toInt());
     key += '/';

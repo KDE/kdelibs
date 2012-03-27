@@ -32,6 +32,7 @@
 #include <kplugininfo.h>
 #include <kservicetypetrader.h>
 #include <kstandarddirs.h>
+#include <klocale.h>
 
 #include "package.h"
 #include "pluginloader.h"
@@ -81,7 +82,7 @@ KConfigGroup AbstractRunner::config() const
         group = "UnnamedRunner";
     }
 
-    KConfigGroup runners(KGlobal::config(), "Runners");
+    KConfigGroup runners(KSharedConfig::openConfig(), "Runners");
     return KConfigGroup(&runners, group);
 }
 

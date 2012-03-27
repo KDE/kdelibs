@@ -40,7 +40,7 @@ bool backupFile( const QString& qFilename, const QString& backupDir )
     // get max number of backups from config, by default set to 10
 #pragma message("KDE5 TODO: Remove KConfig correctly")
 #if 0
-    KConfigGroup g(KGlobal::config(), "Backups"); // look in the Backups section
+    KConfigGroup g(KSharedConfig::openConfig(), "Backups"); // look in the Backups section
     QString type = g.readEntry( "Type", "simple" );
     QString extension = g.readEntry( "Extension", "~" );
     QString message = g.readEntry( "Message", "Automated KDE Commit" );

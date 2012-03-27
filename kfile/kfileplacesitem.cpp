@@ -25,7 +25,7 @@
 #include <kbookmarkmanager.h>
 #include <kiconloader.h>
 #include <kdirlister.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <solid/block.h>
 #include <solid/opticaldisc.h>
 #include <solid/storageaccess.h>

@@ -27,7 +27,7 @@
 #include <QTimer>
 
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kicon.h>
 
 class KDeviceListModel::Private

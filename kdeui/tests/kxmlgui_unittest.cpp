@@ -668,7 +668,7 @@ void KXmlGui_UnitTest::testHiddenToolBar()
         "  <Action name=\"go_up\"/>\n"
         "</ToolBar>\n"
         "</gui>\n";
-    KConfigGroup cg(KGlobal::config(), "testHiddenToolBar");
+    KConfigGroup cg(KSharedConfig::openConfig(), "testHiddenToolBar");
     TestXmlGuiWindow mainWindow(xml);
     mainWindow.setAutoSaveSettings(cg);
     mainWindow.createActions(QStringList() << "go_up");
@@ -712,7 +712,7 @@ void KXmlGui_UnitTest::testAutoSaveSettings()
         "</gui>\n";
     {
         // do not interfere with the "toolbarVisibility" unit test
-        KConfigGroup cg(KGlobal::config(), "testAutoSaveSettings");
+        KConfigGroup cg(KSharedConfig::openConfig(), "testAutoSaveSettings");
         TestXmlGuiWindow mw(xml);
         mw.setAutoSaveSettings(cg);
 
@@ -744,7 +744,7 @@ void KXmlGui_UnitTest::testAutoSaveSettings()
     }
 
     {
-        KConfigGroup cg(KGlobal::config(), "testAutoSaveSettings");
+        KConfigGroup cg(KSharedConfig::openConfig(), "testAutoSaveSettings");
         TestXmlGuiWindow mw2(xml);
         mw2.setAutoSaveSettings(cg);
         // Check window size was restored
@@ -785,7 +785,7 @@ void KXmlGui_UnitTest::testDeletedContainers() // deleted="true"
         "  <Action name=\"go_up\"/>\n"
         "</ToolBar>\n"
         "</gui>\n";
-    KConfigGroup cg(KGlobal::config(), "testDeletedToolBar");
+    KConfigGroup cg(KSharedConfig::openConfig(), "testDeletedToolBar");
     TestXmlGuiWindow mainWindow(xml);
     mainWindow.setAutoSaveSettings(cg);
     mainWindow.createActions(QStringList() << "go_up" << "file_new" << "game_new");

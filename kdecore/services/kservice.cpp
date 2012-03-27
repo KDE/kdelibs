@@ -34,7 +34,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QMap>
 
-#include <kauthorized.h>
+#include <kcoreauthorized.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kconfiggroup.h>
@@ -133,28 +133,27 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
         return;
     }
 
-    const QByteArray resource = config->resource();
+    const QStandardPaths::StandardLocation resource = config->resource();
 
     if ( (m_strType == QLatin1String("Application")) &&
-         (!resource.isEmpty()) &&
-         (resource != "apps") &&
+         (resource != QStandardPaths::ApplicationsLocation) &&
          !absPath)
     {
-        kWarning(servicesDebugArea()) << "The desktop entry file " << entryPath
-                       << " has Type=" << m_strType << " but is located under \"" << resource
-                       << "\" instead of \"apps\"" << endl;
+        kWarning(servicesDebugArea())
+            << "The desktop entry file" << entryPath
+            << "has Type=" << m_strType << "but is located under \"" << QStandardPaths::displayName(resource)
+            << "\" instead of \"apps\"" << endl;
         m_bValid = false;
         return;
     }
 
     if ( (m_strType == QLatin1String("Service")) &&
-         (!resource.isEmpty()) &&
-         (resource != "services") &&
+         (resource != QStandardPaths::GenericDataLocation) &&
          !absPath)
     {
-        kWarning(servicesDebugArea()) << "The desktop entry file " << entryPath
-                       << " has Type=" << m_strType << " but is located under \"" << resource
-                       << "\" instead of \"services\"";
+        kWarning(servicesDebugArea()) << "The desktop entry file" << entryPath
+                       << "has Type=" << m_strType << "but is located under \"" << QStandardPaths::displayName(resource)
+                       << "\" instead of \"shared data\"";
         m_bValid = false;
         return;
     }
@@ -393,8 +392,8 @@ KService::KService( const QString & _fullpath )
     d->init(&config, this);
 }
 
-KService::KService( const KDesktopFile *config )
-    : KSycocaEntry(*new KServicePrivate(config->fileName()))
+KService::KService(const KDesktopFile *config, const QString& entryPath)
+    : KSycocaEntry(*new KServicePrivate(entryPath.isEmpty() ? config->fileName() : entryPath))
 {
     Q_D(KService);
 
@@ -623,7 +622,9 @@ KService::Ptr KService::serviceByDesktopName( const QString& _name )
     // Prefer kde4-konsole over kde-konsole, if both are available
     QString name = _name.toLower();
     KService::Ptr s;
-    if (!_name.startsWith(QLatin1String("kde4-")))
+    if (!_name.startsWith(QLatin1String("kde5-")))
+        s = KServiceFactory::self()->findServiceByDesktopName(QString::fromLatin1("kde5-") + name);
+    if (!s && !_name.startsWith(QLatin1String("kde4-")))
         s = KServiceFactory::self()->findServiceByDesktopName(QString::fromLatin1("kde4-") + name);
     if (!s)
         s = KServiceFactory::self()->findServiceByDesktopName( name );
@@ -787,6 +788,7 @@ QString KService::storageId() const
     return d->storageId();
 }
 
+// not sure this is still used anywhere...
 QString KService::locateLocal() const
 {
     Q_D(const KService);

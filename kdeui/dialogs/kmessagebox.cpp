@@ -34,7 +34,7 @@
 #include <kdialog.h>
 #include <kdialogqueue_p.h>
 #include <kglobalsettings.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <knotification.h>
 #include <kiconloader.h>
 #include <kconfiggroup.h>
@@ -378,7 +378,7 @@ bool KMessageBox::shouldBeShownYesNo(const QString &dontShowAgainName,
     if ( dontShowAgainName.isEmpty() ) {
         return true;
     }
-    KConfigGroup cg( KMessageBox_againConfig ? KMessageBox_againConfig : KGlobal::config().data(), "Notification Messages" );
+    KConfigGroup cg( KMessageBox_againConfig ? KMessageBox_againConfig : KSharedConfig::openConfig().data(), "Notification Messages" );
     const QString dontAsk = cg.readEntry(dontShowAgainName, QString()).toLower();
     if (dontAsk == "yes" || dontAsk == "true") {
         result = Yes;
@@ -396,7 +396,7 @@ bool KMessageBox::shouldBeShownContinue(const QString &dontShowAgainName)
     if ( dontShowAgainName.isEmpty() ) {
         return true;
     }
-    KConfigGroup cg( KMessageBox_againConfig ? KMessageBox_againConfig : KGlobal::config().data(), "Notification Messages" );
+    KConfigGroup cg( KMessageBox_againConfig ? KMessageBox_againConfig : KSharedConfig::openConfig().data(), "Notification Messages" );
     return cg.readEntry(dontShowAgainName, true);
 }
 
@@ -410,7 +410,7 @@ void KMessageBox::saveDontShowAgainYesNo(const QString &dontShowAgainName,
     if (dontShowAgainName[0] == ':') {
         flags |= KConfigGroup::Global;
     }
-    KConfigGroup cg( KMessageBox_againConfig? KMessageBox_againConfig : KGlobal::config().data(), "Notification Messages" );
+    KConfigGroup cg( KMessageBox_againConfig? KMessageBox_againConfig : KSharedConfig::openConfig().data(), "Notification Messages" );
     cg.writeEntry( dontShowAgainName, result==Yes, flags );
     cg.sync();
 }
@@ -424,7 +424,7 @@ void KMessageBox::saveDontShowAgainContinue(const QString &dontShowAgainName)
     if (dontShowAgainName[0] == ':') {
         flags |= KConfigGroup::Global;
     }
-    KConfigGroup cg( KMessageBox_againConfig? KMessageBox_againConfig: KGlobal::config().data(), "Notification Messages" );
+    KConfigGroup cg( KMessageBox_againConfig? KMessageBox_againConfig: KSharedConfig::openConfig().data(), "Notification Messages" );
     cg.writeEntry( dontShowAgainName, false, flags );
     cg.sync();
 }
@@ -1051,7 +1051,7 @@ void KMessageBox::informationListWId(WId parent_id,const QString &text, const QS
 
 void KMessageBox::enableAllMessages()
 {
-   KConfig *config = KMessageBox_againConfig ? KMessageBox_againConfig : KGlobal::config().data();
+   KConfig *config = KMessageBox_againConfig ? KMessageBox_againConfig : KSharedConfig::openConfig().data();
    if (!config->hasGroup("Notification Messages")) {
       return;
    }
@@ -1070,7 +1070,7 @@ void KMessageBox::enableAllMessages()
 
 void KMessageBox::enableMessage(const QString &dontShowAgainName)
 {
-   KConfig *config = KMessageBox_againConfig ? KMessageBox_againConfig : KGlobal::config().data();
+   KConfig *config = KMessageBox_againConfig ? KMessageBox_againConfig : KSharedConfig::openConfig().data();
    if (!config->hasGroup("Notification Messages")) {
       return;
    }

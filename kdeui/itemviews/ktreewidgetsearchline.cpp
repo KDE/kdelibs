@@ -32,7 +32,7 @@
 #include <QTreeWidget>
 
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 class KTreeWidgetSearchLine::Private
 {

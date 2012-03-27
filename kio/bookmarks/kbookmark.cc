@@ -26,7 +26,7 @@
 #include <kmimetype.h>
 #include <kstringhandler.h>
 #include <kglobal.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kurlmimedata.h>
 #include <kbookmarkmanager.h>
 

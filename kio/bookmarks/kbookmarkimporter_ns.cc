@@ -26,7 +26,7 @@
 #include "kbookmarkmanager.h"
 #include <kfiledialog.h>
 #include <kstringhandler.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 #include <kde_file.h>
 #include <kcharsets.h>

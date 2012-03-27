@@ -61,6 +61,7 @@ private Q_SLOTS:
     void testThreads();
 private:
     QString m_nonKdeApp;
+    QString m_textPlainApp;
 };
 
 

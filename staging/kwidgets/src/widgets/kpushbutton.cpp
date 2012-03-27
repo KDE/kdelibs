@@ -29,18 +29,12 @@
 #include <QStyle>
 #include <QtCore/QTimer>
 
-#include <config.h>
-
-#include <kconfig.h>
-#include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kguiitem.h>
 #include <kicon.h>
 
 #include "kauthaction.h"
 #include "kauthactionwatcher.h"
-
-static bool s_useIcons = false;
 
 class KPushButton::KPushButtonPrivate
 {
@@ -61,19 +55,11 @@ public:
     // TODO: Remove whenever QIcon overlays will get fixed
     QIcon oldIcon;
 
-    void slotSettingsChanged( int );
     void slotPressedInternal();
     void slotClickedInternal();
     void authStatusChanged(int status);
     void slotDelayedMenuTimeout();
-    void readSettings();
 };
-
-void KPushButton::KPushButtonPrivate::slotSettingsChanged( int /* category */ )
-{
-    readSettings();
-    parent->setIcon( item.icon() );
-}
 
 void KPushButton::KPushButtonPrivate::slotPressedInternal()
 {
@@ -143,12 +129,6 @@ void KPushButton::KPushButtonPrivate::authStatusChanged(int status)
     }
 }
 
-void KPushButton::KPushButtonPrivate::readSettings()
-{
-    s_useIcons = KGlobalSettings::showIconsOnPushButtons();
-}
-
-
 
 KPushButton::KPushButton( QWidget *parent )
     : QPushButton( parent ), d( new KPushButtonPrivate(this) )
@@ -192,20 +172,11 @@ void KPushButton::initWidget( const KGuiItem &item )
     // set the GUI items text or check the state of the icon set
     QPushButton::setText( d->item.text() );
 
-    static bool initialized = false;
-    if ( !initialized ) {
-        d->readSettings();
-        initialized = true;
-    }
-
     setIcon( d->item.icon() );
 
     setToolTip( item.toolTip() );
 
     setWhatsThis(item.whatsThis());
-
-    connect( KGlobalSettings::self(), SIGNAL(settingsChanged(int)),
-             SLOT(slotSettingsChanged(int)) );
 }
 
 bool KPushButton::isDragEnabled() const
@@ -253,7 +224,8 @@ void KPushButton::setIcon( const QIcon &icon )
 {
     d->item.setIcon(icon);
 
-    if ( s_useIcons || text().isEmpty() )
+    const bool useIcons = style()->styleHint(QStyle::SH_DialogButtonBox_ButtonsHaveIcons, 0, this);
+    if (useIcons || text().isEmpty())
         QPushButton::setIcon( icon );
     else
         QPushButton::setIcon( QIcon() );

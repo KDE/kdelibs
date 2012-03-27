@@ -376,7 +376,7 @@ void KHTMLSettings::init()
   KConfig global( "khtmlrc", KConfig::NoGlobals );
   init( &global, true );
 
-  KSharedConfig::Ptr local = KGlobal::config();
+  KSharedConfig::Ptr local = KSharedConfig::openConfig();
   if ( !local )
     return;
 
@@ -1174,7 +1174,7 @@ void KHTMLSettings::setJSErrorsEnabled(bool enabled)
 {
   d->m_jsErrorsEnabled = enabled;
   // save it
-  KConfigGroup cg( KGlobal::config(), "HTML Settings");
+  KConfigGroup cg( KSharedConfig::openConfig(), "HTML Settings");
   cg.writeEntry("ReportJSErrors", enabled);
   cg.sync();
 }
@@ -1198,7 +1198,7 @@ void KHTMLSettings::setJSPopupBlockerPassivePopup(bool enabled)
 {
     d->m_jsPopupBlockerPassivePopup = enabled;
     // save it
-    KConfigGroup cg( KGlobal::config(), "Java/JavaScript Settings");
+    KConfigGroup cg( KSharedConfig::openConfig(), "Java/JavaScript Settings");
     cg.writeEntry("PopupBlockerPassivePopup", enabled);
     cg.sync();
 }

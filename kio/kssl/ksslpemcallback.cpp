@@ -24,7 +24,7 @@
 #include <ksslconfig.h>
 
 #include <kpassworddialog.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 int KSSLPemCallback(char *buf, int size, int rwflag, void *userdata) {
 #ifdef KSSL_HAVE_SSL

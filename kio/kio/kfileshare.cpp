@@ -22,7 +22,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QProcess>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kglobal.h>
 #include <qstandardpaths.h>
 #include <kdebug.h>

@@ -22,10 +22,10 @@
 #include "kcoreconfigskeleton.h"
 #include "kcoreconfigskeleton_p.h"
 
-#include "kstandarddirs.h"
-#include "kglobal.h"
-#include "kdebug.h"
 #include "kstringhandler.h"
+#include <QUrl>
+
+Q_DECLARE_METATYPE(QList<QUrl>)
 
 KConfigSkeletonItem::KConfigSkeletonItem(const QString & _group,
                                          const QString & _key)
@@ -436,7 +436,7 @@ KCoreConfigSkeleton::ItemEnum::ItemEnum( const QString &_group, const QString &_
                                      qint32 defaultValue )
   : ItemInt( _group, _key, reference, defaultValue )
 {
-    foreach (const ItemEnum::Choice &c, choices) {
+    Q_FOREACH (const ItemEnum::Choice &c, choices) {
         ItemEnum::Choice2 cc = { c.name, c.label, QString(), c.whatsThis };
         mChoices.append(cc);
     }
@@ -496,7 +496,7 @@ void KCoreConfigSkeleton::ItemEnum::writeConfig( KConfig *config )
 QList<KCoreConfigSkeleton::ItemEnum::Choice> KCoreConfigSkeleton::ItemEnum::choices() const
 {
     QList<KCoreConfigSkeleton::ItemEnum::Choice> r;
-    foreach (const KCoreConfigSkeleton::ItemEnum::Choice2 &c, mChoices) {
+    Q_FOREACH (const KCoreConfigSkeleton::ItemEnum::Choice2 &c, mChoices) {
         KCoreConfigSkeleton::ItemEnum::Choice cc = { c.name, c.label, c.whatsThis };
         r.append(cc);
     }
@@ -905,13 +905,13 @@ void KCoreConfigSkeleton::ItemUrlList::readConfig( KConfig *config )
         mReference = mDefault;
     else {
         QStringList strList;
-        foreach (const QUrl& url, mDefault) {
+        Q_FOREACH (const QUrl& url, mDefault) {
             strList.append(url.toString());
         }
         mReference.clear();
         const QStringList readList = cg.readEntry<QStringList>(mKey, strList);
-        foreach (const QString& str, readList) {
-            mReference.append(str);
+        Q_FOREACH (const QString& str, readList) {
+            mReference.append(QUrl(str));
         }
     }
     mLoadedValue = mReference;
@@ -928,7 +928,7 @@ void KCoreConfigSkeleton::ItemUrlList::writeConfig( KConfig *config )
             cg.revertToDefault( mKey );
         else {
             QStringList strList;
-            foreach (const QUrl& url, mReference) {
+            Q_FOREACH (const QUrl& url, mReference) {
                 strList.append(url.toString());
             }
             cg.writeEntry<QStringList>(mKey, strList);
@@ -987,7 +987,7 @@ QVariant KCoreConfigSkeleton::ItemIntList::property() const
     return qVariantFromValue< QList<int> >(mReference);
 }
 
-static int kCoreConfigSkeletionDebugArea() { static int s_area = KDebug::registerArea("kdecore (KConfigSkeleton)"); return s_area; }
+//static int kCoreConfigSkeletionDebugArea() { static int s_area = KDebug::registerArea("kdecore (KConfigSkeleton)"); return s_area; }
 
 KCoreConfigSkeleton::KCoreConfigSkeleton(const QString &configname, QObject* parent)
   : QObject(parent),
@@ -995,14 +995,7 @@ KCoreConfigSkeleton::KCoreConfigSkeleton(const QString &configname, QObject* par
 {
     //kDebug(kCoreConfigSkeletionDebugArea()) << "Creating KCoreConfigSkeleton (" << (void *)this << ")";
 
-  if ( !configname.isEmpty() )
-  {
     d->mConfig = KSharedConfig::openConfig( configname );
-  }
-  else
-  {
-    d->mConfig = KGlobal::config();
-  }
 }
 
 KCoreConfigSkeleton::KCoreConfigSkeleton(KSharedConfig::Ptr pConfig, QObject* parent)
@@ -1087,7 +1080,7 @@ void KCoreConfigSkeleton::readConfig()
 
 void KCoreConfigSkeleton::writeConfig()
 {
-    kDebug(kCoreConfigSkeletionDebugArea());
+    //kDebug(kCoreConfigSkeletionDebugArea());
   KConfigSkeletonItem::List::ConstIterator it;
   for( it = d->mItems.constBegin(); it != d->mItems.constEnd(); ++it )
   {
@@ -1099,7 +1092,7 @@ void KCoreConfigSkeleton::writeConfig()
 
   readConfig();
 
-  emit configChanged();
+  Q_EMIT configChanged();
 }
 
 bool KCoreConfigSkeleton::usrUseDefaults(bool)

@@ -23,15 +23,17 @@
 #ifndef KCONFIGINI_P_H
 #define KCONFIGINI_P_H
 
-#include <kdecore_export.h>
+#include <kconfig_export.h>
 #include <kconfigbackend.h>
 #include <klockfile.h>
+
+class QIODevice;
 
 class KConfigIniBackend : public KConfigBackend
 {
 private:
     class BufferFragment;
-    
+
     KLockFile *lockFile;
 public:
 
@@ -46,14 +48,14 @@ public:
                           ParseOptions options,
                           bool merging);
     bool writeConfig(const QByteArray& locale, KEntryMap& entryMap,
-                     WriteOptions options, const KComponentData &data);
+                     WriteOptions options);
 
     bool isWritable() const;
     QString nonWritableErrorMessage() const;
     KConfigBase::AccessMode accessMode() const;
     void createEnclosing();
     void setFilePath(const QString& path);
-    bool lock(const KComponentData& componentData);
+    bool lock();
     void unlock();
     bool isLocked() const;
 
@@ -64,7 +66,7 @@ protected:
         KeyString = 1,
         ValueString = 2
     };
-    // Warning: this modifies data in-place. Other BufferFragment objects referencing the same buffer 
+    // Warning: this modifies data in-place. Other BufferFragment objects referencing the same buffer
     // fragment will get their data modified too.
     static void printableToString(BufferFragment* aString, const QFile& file, int line);
     static QByteArray stringToPrintable(const QByteArray& aString, StringType type);

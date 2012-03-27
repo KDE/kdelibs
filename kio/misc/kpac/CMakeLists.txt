@@ -17,23 +17,25 @@ configure_file(config-kpac.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kpac.h)
 
 ########### next target ###############
 
-set(kded_proxyscout_PART_SRCS
-   proxyscout.cpp
-   script.cpp
-   downloader.cpp
-   discovery.cpp
-)
+if (Qt5Script_FOUND)
+    set(kded_proxyscout_PART_SRCS
+      proxyscout.cpp
+      script.cpp
+      downloader.cpp
+      discovery.cpp
+    )
 
-kde4_add_plugin(kded_proxyscout ${kded_proxyscout_PART_SRCS})
+    kde4_add_plugin(kded_proxyscout ${kded_proxyscout_PART_SRCS})
 
-target_link_libraries(kded_proxyscout ${QT_QTSCRIPT_LIBRARY} ${KPAC_EXTRA_LIBS} ${KDE4_KDECORE_LIBS} kio kcoreaddons)
+    target_link_libraries(kded_proxyscout ${QT_QTSCRIPT_LIBRARY} ${KPAC_EXTRA_LIBS} ${KDE4_KDECORE_LIBS} kio kcoreaddons)
 
-# this needs -lresolv e.g on Slackware, but not on FreeBSD
-if (HAVE_RESOLV_LIBRARY)
-   target_link_libraries(kded_proxyscout resolv)
-endif (HAVE_RESOLV_LIBRARY)
+    # this needs -lresolv e.g on Slackware, but not on FreeBSD
+    if (HAVE_RESOLV_LIBRARY)
+      target_link_libraries(kded_proxyscout resolv)
+    endif (HAVE_RESOLV_LIBRARY)
 
-install(TARGETS kded_proxyscout  DESTINATION ${PLUGIN_INSTALL_DIR} )
+    install(TARGETS kded_proxyscout  DESTINATION ${PLUGIN_INSTALL_DIR} )
+endif()
 
 ########### next target ###############
 

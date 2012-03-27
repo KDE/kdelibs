@@ -19,7 +19,6 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "udisks2.h"
 #include "udisksdevice.h"
 #include "udisksblock.h"
 #include "udisksdeviceinterface.h"
@@ -38,6 +37,7 @@
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusMetaType>
 #include <QtDBus/QDBusPendingReply>
+#include <QtDBus/QDBusArgument>
 
 #include <QtXml/QDomDocument>
 
@@ -101,6 +101,11 @@ Device::Device(const QString &udi)
         QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, m_udi, DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
                                              SLOT(slotPropertiesChanged(QString,QVariantMap,QStringList)));
 
+        QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, UD2_DBUS_PATH, DBUS_INTERFACE_MANAGER, "InterfacesAdded",
+                                             this, SLOT(slotInterfacesAdded(QDBusObjectPath,QVariantMapMap)));
+        QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, UD2_DBUS_PATH, DBUS_INTERFACE_MANAGER, "InterfacesRemoved",
+                                             this, SLOT(slotInterfacesRemoved(QDBusObjectPath,QStringList)));
+
         initInterfaces();
     }
 }
@@ -153,9 +158,9 @@ bool Device::queryDeviceInterface(const Solid::DeviceInterface::Type& type) cons
         return true;
     case Solid::DeviceInterface::Block:
         return isBlock();
-    case Solid::DeviceInterface::StorageVolume:  // partition
+    case Solid::DeviceInterface::StorageVolume:
         return isStorageVolume();
-    case Solid::DeviceInterface::StorageAccess:  // filesystem
+    case Solid::DeviceInterface::StorageAccess:
         return isStorageAccess();
     case Solid::DeviceInterface::StorageDrive:
         return isDrive();
@@ -174,25 +179,17 @@ QStringList Device::emblems() const
 
     if (queryDeviceInterface(Solid::DeviceInterface::StorageAccess))
     {
-
-        bool isEncrypted = false;
-        if (queryDeviceInterface(Solid::DeviceInterface::StorageVolume))
-        {
-            const UDisks2::StorageVolume volIface(const_cast<Device *>(this));
-            isEncrypted = (volIface.usage() == Solid::StorageVolume::Encrypted);
-        }
-
         const UDisks2::StorageAccess accessIface(const_cast<Device *>(this));
         if (accessIface.isAccessible())
         {
-            if (isEncrypted)
+            if (isEncryptedContainer())
                 res << "emblem-encrypted-unlocked";
             else
                 res << "emblem-mounted";
         }
         else
         {
-            if (isEncrypted)
+            if (isEncryptedContainer())
                 res << "emblem-encrypted-locked";
             else
                 res << "emblem-unmounted";
@@ -251,16 +248,16 @@ QString Device::storageDescription() const
         if ((mediumTypes & Solid::OpticalDrive::Dvdr) && (mediumTypes & Solid::OpticalDrive::Dvdplusr))
         {
             if(mediumTypes & Solid::OpticalDrive::Dvdplusdl)
-                second = QObject::tr("/DVD±R DL", "Second item of %1%2 Drive sentence");
+                second = QObject::trUtf8("/DVD±R DL", "Second item of %1%2 Drive sentence");
             else
-                second = QObject::tr("/DVD±R", "Second item of %1%2 Drive sentence");
+                second = QObject::trUtf8("/DVD±R", "Second item of %1%2 Drive sentence");
         }
         if ((mediumTypes & Solid::OpticalDrive::Dvdrw) && (mediumTypes & Solid::OpticalDrive::Dvdplusrw))
         {
             if((mediumTypes & Solid::OpticalDrive::Dvdplusdl) || (mediumTypes & Solid::OpticalDrive::Dvdplusdlrw))
-                second = QObject::tr("/DVD±RW DL", "Second item of %1%2 Drive sentence");
+                second = QObject::trUtf8("/DVD±RW DL", "Second item of %1%2 Drive sentence");
             else
-                second = QObject::tr("/DVD±RW", "Second item of %1%2 Drive sentence");
+                second = QObject::trUtf8("/DVD±RW", "Second item of %1%2 Drive sentence");
         }
         if (mediumTypes & Solid::OpticalDrive::Bd)
             second = QObject::tr("/BD-ROM", "Second item of %1%2 Drive sentence");
@@ -533,24 +530,20 @@ QString Device::icon() const
     {
         return iconName;
     }
-    else
-    {        
-        if ( isPartition() )      // this is a slave device, we need to return its parent's icon
-        {
-            Device* parent = 0;
-            if ( !parentUdi().isEmpty() )
-                parent = new Device( parentUdi() );
+    else if (isDrive()) {
+        const bool isRemovable = prop("Removable").toBool();
+        const QString conn = prop("ConnectionBus").toString();
 
-            if ( parent )
-            {
-                iconName = parent->icon();
-                delete parent;
-            }
-
-            if ( !iconName.isEmpty() )
-                return iconName;
+        if (isOpticalDrive())
+            return "drive-optical";
+        else if (isRemovable && !isOpticalDisc()) {
+            if (conn == "usb")
+                return "drive-removable-media-usb";
+            else
+                return "drive-removable-media";
         }
-
+    }
+    else if (isBlock()) {
         const QString drivePath = prop("Drive").value<QDBusObjectPath>().path();
         Device drive(drivePath);
 
@@ -602,22 +595,9 @@ QString Device::icon() const
                 return "media-flash";
             else if ( media == "floppy" ) // the good ol' floppy
                 return "media-floppy";
-
         }
 
-        // handle drives
-        const bool isRemovable = drive.prop("Removable").toBool();
-        const QString conn = drive.prop("ConnectionBus").toString();
-
-        if (isOpticalDrive())
-            return "drive-optical";
-        else if (isRemovable && !isOpticalDisc())
-        {
-            if (conn == "usb")
-                return "drive-removable-media-usb";
-            else
-                return "drive-removable-media";
-        }
+        return drive.icon();
     }
 
     return "drive-harddisk";    // general fallback
@@ -676,7 +656,8 @@ void Device::checkCache(const QString &key) const
     if (reply.isValid()) {
         m_cache.insert(key, reply);
     } else {
-        m_cache.insert(key, QVariant());
+        //qDebug() << "got invalid reply for cache:" << key;
+        //m_cache.insert(key, QVariant());
     }
 }
 
@@ -708,15 +689,20 @@ bool Device::propertyExists(const QString &key) const
 
 QVariantMap Device::allProperties() const
 {
-    QDBusMessage call = QDBusMessage::createMethodCall(m_device->service(), m_device->path(),
-                                                       DBUS_INTERFACE_PROPS, "GetAll");
-    QDBusPendingReply< QVariantMap > reply = QDBusConnection::systemBus().asyncCall(call);
-    reply.waitForFinished();
+    Q_FOREACH (const QString & iface, m_interfaces) {
+        if (iface.startsWith("org.freedesktop.DBus"))
+            continue;
+        QDBusMessage call = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, m_udi, DBUS_INTERFACE_PROPS, "GetAll");
+        call.setArguments(QList<QVariant>() << iface);
+        QDBusPendingReply<QVariantMap> reply = QDBusConnection::systemBus().asyncCall(call);
+        reply.waitForFinished();
 
-    if (reply.isValid())
-        m_cache = reply.value();
-    else
-        m_cache.clear();
+        if (reply.isValid())
+            m_cache.unite(reply.value());
+        else
+            qWarning() << "Error getting props:" << reply.error().name() << reply.error().message();
+        //qDebug() << "After iface" << iface << ", cache now contains" << m_cache.size() << "items";
+    }
 
     return m_cache;
 }
@@ -743,17 +729,21 @@ void Device::initInterfaces()
         if (!ifaceElem.isNull())
             m_interfaces.append(ifaceElem.attribute("name"));
     }
+    //qDebug() << "Device" << m_udi << "has interfaces:" << m_interfaces;
 }
 
 void Device::slotPropertiesChanged(const QString &ifaceName, const QVariantMap &changedProps, const QStringList &invalidatedProps)
 {
-    Q_UNUSED(ifaceName);
+    //Q_UNUSED(ifaceName);
+
+    qDebug() << m_udi << "'s interface" << ifaceName << "changed props:";
 
     QMap<QString, int> changeMap;
 
     Q_FOREACH(const QString & key, invalidatedProps) {
         m_cache.remove(key);
         changeMap.insert(key, Solid::GenericInterface::PropertyRemoved);
+        qDebug() << "\t invalidated:" << key;
     }
 
     QMapIterator<QString, QVariant> i(changedProps);
@@ -761,10 +751,27 @@ void Device::slotPropertiesChanged(const QString &ifaceName, const QVariantMap &
         i.next();
         m_cache.insert(i.key(), i.value());  // replace the value
         changeMap.insert(i.key(), Solid::GenericInterface::PropertyModified);
+        qDebug() << "\t modified:" << i.key() << ":" << m_cache.value(i.key());
     }
 
     Q_EMIT propertyChanged(changeMap);
     Q_EMIT changed();
+}
+
+void Device::slotInterfacesAdded(const QDBusObjectPath &object_path, const QVariantMapMap &interfaces_and_properties)
+{
+    if (object_path.path() == m_udi) {
+        m_interfaces.append(interfaces_and_properties.keys());
+    }
+}
+
+void Device::slotInterfacesRemoved(const QDBusObjectPath &object_path, const QStringList &interfaces)
+{
+    if (object_path.path() == m_udi) {
+        Q_FOREACH(const QString & iface, interfaces) {
+            m_interfaces.removeAll(iface);
+        }
+    }
 }
 
 
@@ -861,9 +868,19 @@ bool Device::isOpticalDisc() const
     return drive.prop("Optical").toBool();
 }
 
+bool Device::mightBeOpticalDisc() const
+{
+    QString drivePath = prop("Drive").value<QDBusObjectPath>().path();
+    if (drivePath.isEmpty() || drivePath == "/")
+        return false;
+
+    Device drive(drivePath);
+    return drive.isOpticalDrive();
+}
+
 bool Device::isMounted() const
 {
-    return propertyExists("MountPoints") && !prop("MountPoints").value<QByteArrayList>().isEmpty();
+    return propertyExists("MountPoints") && !qdbus_cast<QByteArrayList>(prop("MountPoints")).isEmpty();
 }
 
 bool Device::isEncryptedContainer() const

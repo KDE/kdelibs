@@ -29,7 +29,7 @@
 #include <QtCore/QCharRef>
 #include <QtCore/QMap>
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 #include "klibloader.h"
 #include <kconfig.h>
@@ -233,7 +233,7 @@ KSocks *KSocks::self() {
   // Note that we don't use a static deleter here. It makes no sense and tends to cause crashes.
   if (!_me) {
      if (KGlobal::hasMainComponent()) {
-        KConfigGroup cfg(KGlobal::config(), "Socks");
+        KConfigGroup cfg(KSharedConfig::openConfig(), "Socks");
         _me = new KSocks(&cfg);
      } else {
         _disabled = true;

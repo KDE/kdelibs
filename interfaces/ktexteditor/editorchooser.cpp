@@ -26,7 +26,7 @@
 
 #include <kmimetypetrader.h>
 #include <kconfig.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kglobal.h>
 
 #include "ui_editorchooser_ui.h"
@@ -95,7 +95,7 @@ EditorChooser:: ~EditorChooser()
 
 void EditorChooser::readAppSetting(const QString& postfix)
 {
-  KConfigGroup cg(KGlobal::config(), "KTEXTEDITOR:" + postfix);
+  KConfigGroup cg(KSharedConfig::openConfig(), "KTEXTEDITOR:" + postfix);
   QString editor = cg.readPathEntry("editor", QString());
   if (editor.isEmpty())
     d->chooser->editorCombo->setCurrentIndex(0);
@@ -109,7 +109,7 @@ void EditorChooser::readAppSetting(const QString& postfix)
 
 void EditorChooser::writeAppSetting(const QString& postfix)
 {
-  KConfigGroup cg(KGlobal::config(), "KTEXTEDITOR:" + postfix);
+  KConfigGroup cg(KSharedConfig::openConfig(), "KTEXTEDITOR:" + postfix);
   cg.writeEntry("DEVELOPER_INFO","NEVER TRY TO USE VALUES FROM THAT GROUP, THEY ARE SUBJECT TO CHANGES");
   cg.writePathEntry("editor", (d->chooser->editorCombo->currentIndex()<=0) ? //< for broken installations, where editor list is empty
   QString() : QString(d->elements.at(d->chooser->editorCombo->currentIndex()-1)));
@@ -119,7 +119,7 @@ KTextEditor::Editor *EditorChooser::editor(const QString& postfix,
                                            bool fallBackToKatePart)
 {
   // try to read the used library from the application's config
-  KConfigGroup cg(KGlobal::config(), "KTEXTEDITOR:" + postfix);
+  KConfigGroup cg(KSharedConfig::openConfig(), "KTEXTEDITOR:" + postfix);
   QString editor = cg.readPathEntry("editor", QString());
   if (editor.isEmpty())
   {

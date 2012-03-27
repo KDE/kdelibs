@@ -182,7 +182,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
         return;
     }
 
-    // Use KSharedConfig to avoid parsing the file many times, from each kinstance.
+    // Use KSharedConfig to avoid parsing the file many times, from each KComponentData.
     // Need to keep a ref to it to make this useful
     d->sharedConfig = KSharedConfig::openConfig(fileName);
 
@@ -528,7 +528,7 @@ QString KIconTheme::current()
         return *_theme;
     }
 
-    KConfigGroup cg(KGlobal::config(), "Icons");
+    KConfigGroup cg(KSharedConfig::openConfig(), "Icons");
     *_theme = cg.readEntry("Theme", defaultThemeName());
     if ( *_theme == QLatin1String("hicolor") ) {
         *_theme = defaultThemeName();

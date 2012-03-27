@@ -31,7 +31,7 @@
 #include <kapplication.h>
 #include <kglobal.h>
 #include <kicon.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <klineedit.h>
 #include <ktitlewidget.h>

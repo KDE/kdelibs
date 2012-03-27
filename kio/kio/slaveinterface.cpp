@@ -29,7 +29,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <signal.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <ksslinfodialog.h>
 #include <kmessagebox.h>
 #include <time.h>
@@ -255,7 +255,7 @@ bool SlaveInterface::dispatch(int _cmd, const QByteArray &rawdata)
         emit errorPage();
         break;
     case INF_REDIRECTION: {
-        KUrl url;
+        QUrl url;
         stream >> url;
         emit redirection( url );
         break;
@@ -409,7 +409,7 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
 
     // SMELL: the braindead way to support button icons
     KGuiItem buttonYesGui, buttonNoGui;
-    
+
     if (buttonYes == i18n("&Details"))
         buttonYesGui = KGuiItem(buttonYes, "help-about");
     else if (buttonYes == i18n("&Forever"))

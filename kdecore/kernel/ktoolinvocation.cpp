@@ -24,7 +24,7 @@
 #include "kmessage.h"
 #include "kservice.h"
 #include <klockfile.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include <QUrl>
 #include <QMutex>

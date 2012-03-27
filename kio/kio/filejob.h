@@ -132,7 +132,7 @@ protected:
     FileJob(FileJobPrivate &dd);
 
 private:
-    Q_PRIVATE_SLOT(d_func(), void slotRedirection( const KUrl &url))
+    Q_PRIVATE_SLOT(d_func(), void slotRedirection(const QUrl &))
     Q_PRIVATE_SLOT(d_func(), void slotData( const QByteArray &data))
     Q_PRIVATE_SLOT(d_func(), void slotMimetype( const QString &mimetype ))
     Q_PRIVATE_SLOT(d_func(), void slotOpen( ))

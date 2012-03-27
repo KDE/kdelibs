@@ -18,7 +18,7 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kurl.h>
 #include <kstatusbar.h>
 #include <kjobuidelegate.h>

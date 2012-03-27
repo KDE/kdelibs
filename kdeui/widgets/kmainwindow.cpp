@@ -46,12 +46,11 @@
 
 #include <kaction.h>
 #include <kapplication.h>
-#include <kauthorized.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kdialog.h>
 #include <khelpmenu.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmenubar.h>
 #include <kstandarddirs.h>
 #include <kstatusbar.h>
@@ -451,11 +450,11 @@ void KMainWindow::parseGeometry(bool parsewidth)
          resize(w, h);
     } else {
         if ( (m & XNegative) )
-            x = KApplication::desktop()->width()  + x - w;
+            x = QApplication::desktop()->width()  + x - w;
         else if ( (m & XValue) )
             x = geometry().x();
         if ( (m & YNegative) )
-            y = KApplication::desktop()->height() + y - h;
+            y = QApplication::desktop()->height() + y - h;
         else if ( (m & YValue) )
             y = geometry().y();
 
@@ -960,7 +959,7 @@ bool KMainWindow::settingsDirty() const
 
 void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindowSize )
 {
-    setAutoSaveSettings(KConfigGroup(KGlobal::config(), groupName), saveWindowSize);
+    setAutoSaveSettings(KConfigGroup(KSharedConfig::openConfig(), groupName), saveWindowSize);
 }
 
 void KMainWindow::setAutoSaveSettings( const KConfigGroup & group,

@@ -30,7 +30,7 @@
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
 #include <ksycocaentry.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 class KServiceType;
 class QDataStream;
@@ -79,8 +79,9 @@ public:
     /**
      * Construct a service and take all information from a desktop file.
      * @param config the desktop file to read
+     * @param optional relative path to store for findByName
      */
-    explicit KService( const KDesktopFile *config );
+    explicit KService(const KDesktopFile *config, const QString& entryPath = QString());
 
     /**
      * @internal
@@ -446,7 +447,7 @@ public:
 
     /**
      * Find a service by the name of its desktop file, not depending on
-     * its actual location (as long as it's under the applnk or service
+     * its actual location (as long as it's under the applications or service
      * directories). For instance "konqbrowser" or "kcookiejar". Note that
      * the ".desktop" extension is implicit.
      *

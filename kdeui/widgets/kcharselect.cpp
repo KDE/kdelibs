@@ -35,7 +35,7 @@
 #include <kcombobox.h>
 #include <kdebug.h>
 #include <kdialog.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <klineedit.h>
 #include <ktextbrowser.h>
 #include <kfontcombobox.h>

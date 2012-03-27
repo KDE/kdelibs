@@ -18,7 +18,7 @@
 */
 
 #include "componentsdialog_p.h"
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <QLayout>
 #include <QLabel>
 #include <kplugininfo.h>

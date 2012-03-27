@@ -81,7 +81,7 @@ static QString ftpCleanPath(const QString& path)
     if (path.endsWith(QLatin1String(";type=A"), Qt::CaseInsensitive) ||
         path.endsWith(QLatin1String(";type=I"), Qt::CaseInsensitive) ||
         path.endsWith(QLatin1String(";type=D"), Qt::CaseInsensitive)) {
-        return path.left((path.length() - strlen(";type=X")));
+        return path.left((path.length() - qstrlen(";type=X")));
     }
 
     return path;
@@ -253,6 +253,8 @@ const char* Ftp::ftpResponse(int iOffset)
   {
     int  iMore = 0;
     m_iRespCode = 0;
+
+    if (!pTxt) return 0; // avoid using a NULL when calling atoi.
 
     // If the server sends a multiline response starting with
     // "nnn-text" we loop here until a final "nnn text" line is
@@ -520,12 +522,12 @@ bool Ftp::ftpLogin(bool* userChanged)
   }
 
   AuthInfo info;
-  info.url.setProtocol( "ftp" );
+  info.url.setScheme( "ftp" );
   info.url.setHost( m_host );
   if ( m_port > 0 && m_port != DEFAULT_FTP_PORT )
       info.url.setPort( m_port );
   if (!user.isEmpty())
-      info.url.setUser(user);
+      info.url.setUserName(user);
 
   // Check for cached authentication first and fallback to
   // anonymous login when no stored credentials are found.
@@ -598,7 +600,7 @@ bool Ftp::ftpLogin(bool* userChanged)
         {
           user = info.username;
           pass = info.password;
-        }        
+        }
         promptForRetry = true;
       }
     }
@@ -649,7 +651,7 @@ bool Ftp::ftpLogin(bool* userChanged)
       {
         // Update the username in case it was changed during login.
         if (!m_user.isEmpty()) {
-            info.url.setUser (user);
+            info.url.setUserName(user);
             m_user = user;
         }
 
@@ -680,12 +682,12 @@ bool Ftp::ftpLogin(bool* userChanged)
   // Thanks to jk@soegaard.net (Jens Kristian Sgaard) for this hint
   if( ftpSendCmd("SYST") && (m_iRespType == 2) )
   {
-    if( !strncmp( ftpResponse(0), "215 Windows_NT", 14 ) ) // should do for any version
+    if( !qstrncmp( ftpResponse(0), "215 Windows_NT", 14 ) ) // should do for any version
     {
       ftpSendCmd( "site dirstyle" );
       // Check if it was already in Unix style
       // Patch from Keith Refson <Keith.Refson@earth.ox.ac.uk>
-      if( !strncmp( ftpResponse(0), "200 MSDOS-like directory output is on", 37 ))
+      if( !qstrncmp( ftpResponse(0), "200 MSDOS-like directory output is on", 37 ))
          //It was in Unix style already!
          ftpSendCmd( "site dirstyle" );
       // windows won't support chmod before KDE konquers their desktop...
@@ -1096,7 +1098,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
 
   if( !ftpSendCmd( tmp ) || (m_iRespType != 1) )
   {
-    if( _offset > 0 && strcmp(_command, "retr") == 0 && (m_iRespType == 4) )
+    if( _offset > 0 && qstrcmp(_command, "retr") == 0 && (m_iRespType == 4) )
       errorcode = ERR_CANNOT_RESUME;
     // The error here depends on the command
     errormessage = _path;
@@ -1105,7 +1107,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const QString & _path, char _mod
   else
   {
     // Only now we know for sure that we can resume
-    if ( _offset > 0 && strcmp(_command, "retr") == 0 )
+    if ( _offset > 0 && qstrcmp(_command, "retr") == 0 )
       canResume();
 
     if(m_server && !m_data) {
@@ -1631,7 +1633,7 @@ bool Ftp::ftpReadDir(FtpEntry& de)
     //kDebug(7102) << "p_access=" << p_access << " p_junk=" << p_junk << " p_owner=" << p_owner << " p_group=" << p_group << " p_size=" << p_size;
 
     de.access = 0;
-    if ( strlen( p_access ) == 1 && p_junk[0] == '[' ) { // Netware
+    if ( qstrlen( p_access ) == 1 && p_junk[0] == '[' ) { // Netware
       de.access = S_IRWXU | S_IRWXG | S_IRWXO; // unknown -> give all permissions
     }
 
@@ -1758,7 +1760,8 @@ bool Ftp::ftpReadDir(FtpEntry& de)
       tmptr->tm_min = 0;
       tmptr->tm_hour = 0;
       // Get day number (always second field)
-      tmptr->tm_mday = atoi( p_date_2 );
+      if (p_date_2)
+        tmptr->tm_mday = atoi( p_date_2 );
       // Get month from first field
       // NOTE : no, we don't want to use KLocale here
       // It seems all FTP servers use the English way
@@ -1766,7 +1769,7 @@ bool Ftp::ftpReadDir(FtpEntry& de)
       static const char * const s_months[12] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
                                                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
       for ( int c = 0 ; c < 12 ; c ++ )
-        if ( !strcmp( p_date_1, s_months[c]) )
+        if ( !qstrcmp( p_date_1, s_months[c]) )
         {
           //kDebug(7102) << "Found month " << c << " for " << p_date_1;
           tmptr->tm_mon = c;
@@ -1774,7 +1777,7 @@ bool Ftp::ftpReadDir(FtpEntry& de)
         }
 
       // Parse third field
-      if ( strlen( p_date_3 ) == 4 ) // 4 digits, looks like a year
+      if ( qstrlen( p_date_3 ) == 4 ) // 4 digits, looks like a year
         tmptr->tm_year = atoi( p_date_3 ) - 1900;
       else
       {
@@ -1789,7 +1792,7 @@ bool Ftp::ftpReadDir(FtpEntry& de)
 
         // and p_date_3 contains probably a time
         char * semicolon;
-        if ( ( semicolon = (char*)strchr( p_date_3, ':' ) ) )
+        if ( p_date_3 && ( semicolon = (char*)strchr( p_date_3, ':' ) ) )
         {
           *semicolon = '\0';
           tmptr->tm_min = atoi( semicolon + 1 );

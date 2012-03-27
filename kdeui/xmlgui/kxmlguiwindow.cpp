@@ -48,13 +48,11 @@
 #include <QWidget>
 #include <QtCore/QList>
 #include <kaction.h>
-#include <kapplication.h>
-#include <kauthorized.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kedittoolbar.h>
 #include <khelpmenu.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmenubar.h>
 #include <kstandarddirs.h>
 #include <kstatusbar.h>
@@ -161,7 +159,7 @@ KXMLGUIFactory *KXmlGuiWindow::guiFactory()
 void KXmlGuiWindow::configureToolbars()
 {
     K_D(KXmlGuiWindow);
-    KConfigGroup cg(KGlobal::config(), QString());
+    KConfigGroup cg(KSharedConfig::openConfig(), QString());
     saveMainWindowSettings(cg);
     if (!d->toolBarEditor) {
       d->toolBarEditor = new KEditToolBar(guiFactory(), this);
@@ -178,7 +176,7 @@ void KXmlGuiWindow::saveNewToolbarConfig()
     guiFactory()->removeClient(this);
     guiFactory()->addClient(this);
 
-    KConfigGroup cg(KGlobal::config(), QString());
+    KConfigGroup cg(KSharedConfig::openConfig(), QString());
     applyMainWindowSettings(cg);
 }
 

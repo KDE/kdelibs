@@ -20,15 +20,16 @@
    Boston, MA 02110-1301, USA.
 */
 
+// Qt5 TODO: re-enable. No point in doing it before, it breaks on QString::fromUtf8(QByteArray), which exists in qt5.
+#undef QT_NO_CAST_FROM_BYTEARRAY
+
 #include "kconfiggroup.h"
 #include "kconfiggroup_p.h"
 
 #include "kconfig.h"
 #include "kconfig_p.h"
 #include "ksharedconfig.h"
-#include "kstringhandler.h"
 #include "kconfigdata.h"
-#include <kdebug.h>
 
 #include <QtCore/QDate>
 #include <QtCore/QSharedData>
@@ -242,7 +243,7 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             const QList<int> list = asIntList(value);
 
             if ( list.count() != 2 ) {
-                kError() << errString( pKey, value, aDefault )
+                qWarning() << errString( pKey, value, aDefault )
                          << formatError( 2, list.count() );
                 return aDefault;
             }
@@ -252,7 +253,7 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             const QList<qreal> list = asRealList(value);
 
             if ( list.count() != 2 ) {
-                kError() << errString( pKey, value, aDefault )
+                qWarning() << errString( pKey, value, aDefault )
                          << formatError( 2, list.count() );
                 return aDefault;
             }
@@ -262,13 +263,13 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             const QList<int> list = asIntList(value);
 
             if ( list.count() != 4 ) {
-                kError() << errString( pKey, value, aDefault )
+                qWarning() << errString( pKey, value, aDefault )
                          << formatError( 4, list.count() );
                 return aDefault;
             }
             const QRect rect(list.at( 0 ), list.at( 1 ), list.at( 2 ), list.at( 3 ));
             if ( !rect.isValid() ) {
-                kError() << errString( pKey, value, aDefault );
+                qWarning() << errString( pKey, value, aDefault );
                 return aDefault;
             }
             return rect;
@@ -277,13 +278,13 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             const QList<qreal> list = asRealList(value);
 
             if ( list.count() != 4 ) {
-                kError() << errString( pKey, value, aDefault )
+                qWarning() << errString( pKey, value, aDefault )
                          << formatError( 4, list.count() );
                 return aDefault;
             }
             const QRectF rect(list.at( 0 ), list.at( 1 ), list.at( 2 ), list.at( 3 ));
             if ( !rect.isValid() ) {
-                kError() << errString( pKey, value, aDefault );
+                qWarning() << errString( pKey, value, aDefault );
                 return aDefault;
             }
             return rect;
@@ -292,13 +293,13 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             const QList<int> list = asIntList(value);
 
             if ( list.count() != 2 ) {
-                kError() << errString( pKey, value, aDefault )
+                qWarning() << errString( pKey, value, aDefault )
                          << formatError( 2, list.count() );
                 return aDefault;
             }
             const QSize size(list.at( 0 ), list.at( 1 ));
             if ( !size.isValid() ) {
-                kError() << errString( pKey, value, aDefault );
+                qWarning() << errString( pKey, value, aDefault );
                 return aDefault;
             }
             return size;
@@ -307,13 +308,13 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             const QList<qreal> list = asRealList(value);
 
             if ( list.count() != 2 ) {
-                kError() << errString( pKey, value, aDefault )
+                qWarning() << errString( pKey, value, aDefault )
                          << formatError( 2, list.count() );
                 return aDefault;
             }
             const QSizeF size(list.at( 0 ), list.at( 1 ));
             if ( !size.isValid() ) {
-                kError() << errString( pKey, value, aDefault );
+                qWarning() << errString( pKey, value, aDefault );
                 return aDefault;
             }
             return size;
@@ -321,7 +322,7 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
         case QVariant::DateTime: {
             const QList<int> list = asIntList(value);
             if ( list.count() != 6 ) {
-                kError() << errString( pKey, value, aDefault )
+                qWarning() << errString( pKey, value, aDefault )
                          << formatError( 6, list.count() );
                 return aDefault;
             }
@@ -329,7 +330,7 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             const QTime time( list.at( 3 ), list.at( 4 ), list.at( 5 ) );
             const QDateTime dt( date, time );
             if ( !dt.isValid() ) {
-                kError() << errString( pKey, value, aDefault );
+                qWarning() << errString( pKey, value, aDefault );
                 return aDefault;
             }
             return dt;
@@ -339,20 +340,20 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             if ( list.count() == 6 )
                 list = list.mid(0, 3); // don't break config files that stored QDate as QDateTime
             if ( list.count() != 3 ) {
-                kError() << errString( pKey, value, aDefault )
+                qWarning() << errString( pKey, value, aDefault )
                          << formatError( 3, list.count() );
                 return aDefault;
             }
             const QDate date( list.at( 0 ), list.at( 1 ), list.at( 2 ) );
             if ( !date.isValid() ) {
-                kError() << errString( pKey, value, aDefault );
+                qWarning() << errString( pKey, value, aDefault );
                 return aDefault;
             }
             return date;
         }
         case QVariant::Color:
         case QVariant::Font:
-            kWarning() << "KConfigGroup::readEntry was passed GUI type '"
+            qWarning() << "KConfigGroup::readEntry was passed GUI type '"
                     << aDefault.typeName()
                     << "' but kdeui isn't linked! If it is linked to your program, "
                     "this is a platform bug. Please inform the KDE developers";
@@ -364,7 +365,7 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
             break;
     }
 
-    kWarning() << "unhandled type " << aDefault.typeName();
+    qWarning() << "unhandled type " << aDefault.typeName();
     return QVariant();
 }
 
@@ -723,7 +724,7 @@ QVariantList KConfigGroup::readEntry( const char* key, const QVariantList& aDefa
         return aDefault;
 
     QVariantList value;
-    foreach(const QString& v, KConfigGroupPrivate::deserializeList(data))
+    Q_FOREACH(const QString& v, KConfigGroupPrivate::deserializeList(data))
         value << v;
 
     return value;
@@ -768,7 +769,7 @@ QStringList KConfigGroup::readXdgListEntry(const char *key, const QStringList& a
         }
     }
     if (!val.isEmpty()) {
-        kWarning() << "List entry" << key << "in" << config()->name() << "is not compliant with XDG standard (missing trailing semicolon).";
+        qWarning() << "List entry" << key << "in" << config()->name() << "is not compliant with XDG standard (missing trailing semicolon).";
         value.append(val);
     }
     return value;
@@ -857,7 +858,7 @@ void KConfigGroup::writeEntry(const char* key, const QStringList &list, WriteCon
 
     QList<QByteArray> balist;
 
-    foreach(const QString &entry, list)
+    Q_FOREACH(const QString &entry, list)
         balist.append(entry.toUtf8());
 
     writeEntry(key, KConfigGroupPrivate::serializeList(balist), flags);
@@ -875,7 +876,7 @@ void KConfigGroup::writeEntry( const char* key, const QVariantList& list, WriteC
 
     QList<QByteArray> data;
 
-    foreach(const QVariant& v, list) {
+    Q_FOREACH(const QVariant& v, list) {
         if (v.type() == QVariant::ByteArray)
             data << v.toByteArray();
         else
@@ -916,8 +917,8 @@ void KConfigGroup::writeEntry( const char* key, const QVariant &value,
             data = value.toString().toUtf8();
             break;
         case QVariant::List:
-            kError(!value.canConvert(QVariant::StringList))
-                << "not all types in \"" << key << "\" can convert to QString,"
+            if (!value.canConvert(QVariant::StringList))
+                qWarning() << "not all types in \"" << key << "\" can convert to QString,"
                    " information will be lost";
         case QVariant::StringList:
             writeEntry( key, value.toList(), flags );
@@ -1012,7 +1013,7 @@ void KConfigGroup::writeEntry( const char* key, const QVariant &value,
 
         case QVariant::Color:
         case QVariant::Font:
-            kWarning() << "KConfigGroup::writeEntry was passed GUI type '"
+            qWarning() << "KConfigGroup::writeEntry was passed GUI type '"
                      << value.typeName()
                      << "' but kdeui isn't linked! If it is linked to your program, this is a platform bug. "
                         "Please inform the KDE developers";
@@ -1021,7 +1022,7 @@ void KConfigGroup::writeEntry( const char* key, const QVariant &value,
             data = QUrl(value.toUrl()).toString().toUtf8();
             break;
         default:
-            kWarning() << "KConfigGroup::writeEntry - unhandled type" << value.typeName() << "in group" << name();
+            qWarning() << "KConfigGroup::writeEntry - unhandled type" << value.typeName() << "in group" << name();
         }
 
     writeEntry(key, data, flags);
@@ -1088,7 +1089,7 @@ void KConfigGroup::writePathEntry(const char *pKey, const QStringList &value, Wr
     Q_ASSERT_X(!d->bConst, "KConfigGroup::writePathEntry", "writing to a read-only group");
 
     QList<QByteArray> list;
-    foreach(const QString& path, value)
+    Q_FOREACH(const QString& path, value)
         list << translatePath(path).toUtf8();
 
     config()->d_func()->putData(d->fullName(), pKey, KConfigGroupPrivate::serializeList(list), pFlags, true);

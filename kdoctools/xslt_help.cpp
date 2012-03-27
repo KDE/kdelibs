@@ -14,7 +14,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QRegExp>
 #include <kcomponentdata.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <assert.h>
 #include <kfilterbase.h>
 #include <kfilterdev.h>

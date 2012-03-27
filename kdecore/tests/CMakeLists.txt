@@ -51,17 +51,13 @@ KDECORE_UNIT_TESTS(
  qcoreapptest
  kdebug_qcoreapptest
  kmimetype_nomimetypes
+ kcalendartest
+ kservicetest
+ kglobaltest
+ kstandarddirstest
+ kconfignokdehometest
+ kaboutdatatest
 )
-
-if(NOT QT5_BUILD)
-  KDECORE_UNIT_TESTS(
-    kcalendartest
-    kstandarddirstest
-    kservicetest
-    kconfigtest
-    kglobaltest
-  )
-endif()
 
 if(UNIX)
  KDECORE_UNIT_TESTS(
@@ -93,9 +89,7 @@ target_link_libraries(kdatetimeformattertest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LI
 
 ########### kmimetypetest ###############
 
-if(NOT QT5_BUILD)
-  set(kmimetypetest_SRCS kmimetypetest.cpp)
-  kde4_add_unit_test(kmimetypetest TESTNAME kdecore-kmimetypetest ${kmimetypetest_SRCS})
-  target_link_libraries(kmimetypetest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
-endif()
+set(kmimetypetest_SRCS kmimetypetest.cpp)
+kde4_add_unit_test(kmimetypetest TESTNAME kdecore-kmimetypetest ${kmimetypetest_SRCS})
+target_link_libraries(kmimetypetest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
 

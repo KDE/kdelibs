@@ -24,21 +24,21 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <assert.h>
 
 KBuildProtocolInfoFactory::KBuildProtocolInfoFactory() :
   KProtocolInfoFactory()
 {
    m_resourceList = new KSycocaResourceList();
-   m_resourceList->add( "services", "*.protocol" );
+   m_resourceList->add("services", "kde5/services", "*.protocol");
 }
 
-// return all service types for this factory
+// return all resource dirs for this factory
 // i.e. first arguments to m_resourceList->add() above
-QStringList KBuildProtocolInfoFactory::resourceTypes()
+QStringList KBuildProtocolInfoFactory::resourceDirs()
 {
-    return QStringList() << "services";
+    return QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "kde5/services", QStandardPaths::LocateDirectory);
 }
 
 KBuildProtocolInfoFactory::~KBuildProtocolInfoFactory()
@@ -46,8 +46,7 @@ KBuildProtocolInfoFactory::~KBuildProtocolInfoFactory()
    delete m_resourceList;
 }
 
-KProtocolInfo *
-KBuildProtocolInfoFactory::createEntry( const QString& file, const char * ) const
+KProtocolInfo *KBuildProtocolInfoFactory::createEntry(const QString& file) const
 {
    return new KProtocolInfo(file);
 }

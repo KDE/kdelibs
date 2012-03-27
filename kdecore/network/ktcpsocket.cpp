@@ -25,7 +25,7 @@
 #include <kglobal.h>
 #include <ksslcertificatemanager.h>
 #include <kstandarddirs.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include <QtCore/QStringList>
 #include <QtNetwork/QSslKey>

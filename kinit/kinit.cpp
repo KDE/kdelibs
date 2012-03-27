@@ -61,7 +61,7 @@
 #include <kglobal.h>
 #include <kconfig.h>
 #include <kapplication.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 #include <kde_file.h>
 #include <qsavefile.h>
@@ -500,8 +500,8 @@ static pid_t launch(int argc, const char *_name, const char *args,
         else {
             // try to match an absolute path to an executable binary (either in bin/ or in libexec/)
             // to a kdeinit module in the same prefix
-            if( lib.contains( QLatin1String( "/lib" KDELIBSUFF "/kde4/libexec/" ))) {
-                libpath = QString( lib ).replace( QLatin1String( "/lib" KDELIBSUFF "/kde4/libexec/" ),
+            if( lib.contains( QLatin1String( "/lib" KDELIBSUFF "/kde5/libexec/" ))) {
+                libpath = QString( lib ).replace( QLatin1String( "/lib" KDELIBSUFF "/kde5/libexec/" ),
                     QLatin1String("/lib" KDELIBSUFF "/libkdeinit4_")) + QLatin1String(".so");
             } else if( lib.contains( QLatin1String( "/bin/" ))) {
                 libpath = QString( lib ).replace( QLatin1String( "/bin/" ),

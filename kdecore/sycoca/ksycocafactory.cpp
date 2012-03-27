@@ -153,7 +153,7 @@ KSycocaFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
     KSycocaEntry::Ptr oldEntry = m_entryDict->value(newEntry->storageId());
     if (oldEntry) {
         // Already exists -> replace
-        // We found a more-local override, e.g. ~/.local/share/applications/kde4/foo.desktop
+        // We found a more-local override, e.g. ~/.local/share/applications/kde5/foo.desktop
         // So forget about the more global file.
         //
         // This can also happen with two .protocol files using the same protocol= entry.

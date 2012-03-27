@@ -44,7 +44,6 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <ksharedconfig.h>
-#include <kglobalsettings.h>
 #include <kcolorscheme.h>
 #include <kicontheme.h>
 #include <kconfiggroup.h>
@@ -74,7 +73,7 @@ KIconEffect::~KIconEffect()
 
 void KIconEffect::init()
 {
-    KSharedConfig::Ptr config = KGlobal::config();
+    KSharedConfig::Ptr config = KSharedConfig::openConfig();
 
     int i, j, effect=-1;
     //FIXME: this really should be using KIconLoader::metaObject() to guarantee synchronization

@@ -29,7 +29,7 @@
 #include <QApplication>
 #include <QMimeData>
 #include <QTableView>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include "kcharselectdata_p.h"
 

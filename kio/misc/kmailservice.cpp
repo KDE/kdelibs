@@ -18,7 +18,7 @@
 
 #include <kapplication.h>
 #include <ktoolinvocation.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kcmdlineargs.h>
 #include <kurl.h>
 

@@ -28,7 +28,7 @@
 #include <QMenu>
 #include <QWheelEvent>
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <knotification.h>
 #include <kpixmapprovider.h>
 #include <kstandardshortcut.h>

@@ -26,7 +26,7 @@
 
 #include "kactioncollection.h"
 #include "kactioncategory.h"
-#include <kauthorized.h>
+#include <kcoreauthorized.h>
 #include "kxmlguiclient.h"
 #include "kxmlguifactory.h"
 
@@ -413,7 +413,7 @@ void KActionCollection::importGlobalShortcuts( KConfigGroup* config )
 
 void KActionCollection::readSettings( KConfigGroup* config )
 {
-  KConfigGroup cg( KGlobal::config(), configGroup() );
+  KConfigGroup cg( KSharedConfig::openConfig(), configGroup() );
   if( !config )
       config = &cg;
 
@@ -569,7 +569,7 @@ void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAct
         return;
     }
 
-    KConfigGroup cg(KGlobal::config() , configGroup() );
+    KConfigGroup cg(KSharedConfig::openConfig() , configGroup() );
     if (!config) {
         config = &cg;
     }

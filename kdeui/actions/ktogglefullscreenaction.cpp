@@ -31,7 +31,7 @@
 
 #include <kdebug.h>
 #include <kicon.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 class KToggleFullScreenAction::Private
 {

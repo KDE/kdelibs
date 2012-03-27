@@ -22,7 +22,7 @@
 #include "kservicegroupfactory.h"
 #include "kservice.h"
 #include <ksycoca.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 #include <ksortablelist.h>
 #include <kdesktopfile.h>

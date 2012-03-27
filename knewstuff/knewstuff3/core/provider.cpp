@@ -24,7 +24,7 @@
 #include "xmlloader.h"
 
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kio/job.h>
 
 namespace KNS3

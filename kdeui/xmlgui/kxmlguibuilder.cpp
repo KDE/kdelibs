@@ -20,8 +20,7 @@
 
 #include "kxmlguibuilder.h"
 
-#include "kapplication.h"
-#include "kauthorized.h"
+#include "kcoreauthorized.h"
 #include "kxmlguiclient.h"
 #include "kmenubar.h"
 #include "kmenu.h"
@@ -31,7 +30,7 @@
 #include "kxmlguiwindow.h"
 #include "kaction.h"
 #include "kglobalsettings.h"
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kicon.h>
 #include <kiconloader.h>
 #include <kdebug.h>

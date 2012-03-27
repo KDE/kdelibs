@@ -24,7 +24,7 @@
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <QFrame>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 #include <QLabel>
 #include <QLayout>

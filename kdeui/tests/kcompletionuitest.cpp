@@ -9,7 +9,7 @@
 #include <kapplication.h>
 #include <klineedit.h>
 #include <khistorycombobox.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include "kcompletionuitest.h"
 
 /*

@@ -105,23 +105,28 @@ The porting depends on the resource type:
     KStandardDirs "data" -&gt; QStandardPaths::GenericDataLocation
     KStandardDirs "appdata" -&gt; QStandardPaths::DataLocation
     KStandardDirs "config" -&gt; QStandardPaths::ConfigLocation
+    KStandardDirs "xdgdata-apps" -&gt; QStandardPaths::ApplicationsLocation
 </pre>
 If the resource is available in QStandardPaths (i.e. for all of the above), then the porting is simple:
 <pre>
     KStandardDirs::locate("data", "kmyapp/my-data") -&gt; QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kmyapp/my-data")
     saveLocation -&gt; writableLocation (note that you might have to mkpath it if it doesn't exist)
     locateLocal(type, file) -&gt; writableLocation(type) + '/' + file (you might have to mkpath the directory)
+    resourceDirs("xdgdata-apps") -&gt; QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation)  (no trailing slashes anymore though)
 </pre>
 Otherwise, you need to use GenericDataLocation and add the subdirectory name manually.
 <pre>
-    dirs()-&gt;resourceDirs("xdgdata-apps") -&gt; QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "applications", QStandardPaths::LocateDirectory)
+    dirs()-&gt;resourceDirs("xdgdata-icon") -&gt; QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "icons", QStandardPaths::LocateDirectory) // xdgata-icon is the "icons" subdir under the xdg data locations
     dirs()-&gt;findAllResources("xdgdata-mime", file) -&gt; QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "mime/" + file)
     dirs()-&gt;findAllResources("xdgdata-mime", "foo/*.txt") -&gt; QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation) + foreach + entryList, prepending the absolute path.
 </pre>
 When the code uses wildcard filters or the Recursive flag in findAllResources, you cannot port it to one line of QStandardPaths.
 Either keep using KStandardDirs, or write your own filtering (easy) or recursive listing (not as easy).
+Also, check for absolute paths first, findAllResources(res, "/absolute/path") returned the path, QStandardPaths doesn't.
 
 An easy case is KStandardDirs::findExe -&gt; QStandardPaths::findExecutable. Well, not so easy: it doesn't support looking into "libexec" at this point. To be resolved.
+</li>
+<li>KConfig has been ported to QStandardPaths. This changes the "const char* resourceType" in the API into QStandardPaths::StandardLocation, and means that modifying the "config" resource before using KConfig has no effect on KConfig anymore.
 </li>
 <li>KTemporaryFile is deprecated, port to QTemporaryFile instead, see KTemporaryFile API documentation for details.</li>
 <li>KTempDir is deprecated, port to QTemporaryDir instead, see KTempDir API documentation for details.</li>

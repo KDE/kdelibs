@@ -69,18 +69,11 @@ public:
         //qDebug() << refCount + 1 << "->" << refCount << kBacktrace() << endl;
         if (refc == 0) {
             delete this;
-        } else if (refc == 1 && sharedConfig && sharedConfig->componentData().d == this) { //sharedConfig has a reference to us
-            if (sharedConfig.count() == 1) {    //we are the only class with a reference to the config object
-                delete this;
-            } else if (sharedConfig.count() > 0) {  //there are other references to it.
-                sharedConfig->ref.deref();  //we don't have a reference to the config object anymore, but it has still a reference to us
-                                            //this breaks the circular dependencies
-            }
         }
     }
 
-    void lazyInit(const KComponentData &component);
-    void configInit(const KComponentData &component);  //call this only from lazyInit()!
+    void lazyInit();
+    void configInit();  //call this only from lazyInit()!
 
     KStandardDirs *dirs;
     KAboutData aboutData;

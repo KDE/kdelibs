@@ -25,7 +25,7 @@
 #include <kmimetype.h>
 #include <kdebug.h>
 #include <kfilemetainfo.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <stdlib.h>
 
 // Recognized metadata entries:

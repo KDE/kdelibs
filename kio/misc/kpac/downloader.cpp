@@ -26,7 +26,7 @@
 
 #include <kcharsets.h>
 #include <kglobal.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kio/job.h>
 
 namespace KPAC

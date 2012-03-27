@@ -29,7 +29,7 @@
 #include <kapplication.h>
 #include <kiconloader.h>
 #include <kconfig.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include "knotify_interface.h"
 

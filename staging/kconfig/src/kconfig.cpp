@@ -20,6 +20,9 @@
    Boston, MA 02110-1301, USA.
 */
 
+// Qt5 TODO: re-enable. No point in doing it before, it breaks on QString::fromUtf8(QByteArray), which exists in qt5.
+#undef QT_NO_CAST_FROM_BYTEARRAY
+
 #include "kconfig.h"
 #include "kconfig_p.h"
 
@@ -29,39 +32,28 @@
 
 #include "kconfigbackend.h"
 #include "kconfiggroup.h"
-#include <kde_file.h>
 #include <kstringhandler.h>
-#include <klocale.h>
-#include <kstandarddirs.h>
-#include <kurl.h>
-#include <kcomponentdata.h>
-#include <ktoolinvocation.h>
-#include <kaboutdata.h>
-#include <kdebug.h>
 
+#include <qapplication.h>
+#include <qprocess.h>
 #include <qstandardpaths.h>
 #include <qbytearray.h>
 #include <qfile.h>
+#include <qlocale.h>
 #include <qdir.h>
-#include <qdatetime.h>
-#include <qrect.h>
-#include <qsize.h>
-#include <qcolor.h>
 #include <QtCore/QProcess>
-#include <QtCore/QPointer>
 #include <QtCore/QSet>
-#include <QtCore/QStack>
 
 bool KConfigPrivate::mappingsRegistered=false;
 
-KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::OpenFlags flags,
-                               const char* resource)
-    : openFlags(flags), resourceType(resource), mBackend(0),
+KConfigPrivate::KConfigPrivate(KConfig::OpenFlags flags,
+                               QStandardPaths::StandardLocation resourceType)
+    : openFlags(flags), resourceType(resourceType), mBackend(0),
       bDynamicBackend(true),  bDirty(false), bReadDefaults(false),
       bFileImmutable(false), bForceGlobal(false), bSuppressGlobal(false),
-      componentData(componentData_), configState(KConfigBase::NoAccess)
+      configState(KConfigBase::NoAccess)
 {
-    sGlobalFileName = componentData.dirs()->saveLocation("config", QString(), false) + QLatin1String("kdeglobals");
+    sGlobalFileName = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1String("/kdeglobals");
 
     static int use_etc_kderc = -1;
     if (use_etc_kderc < 0)
@@ -74,7 +66,7 @@ KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::Op
 #else
             QLatin1String("/etc/kde4rc");
 #endif
-        if (!KStandardDirs::checkAccess(etc_kderc, R_OK)) {
+        if (!QFileInfo(etc_kderc).isReadable()) {
             etc_kderc.clear();
         }
     }
@@ -82,26 +74,30 @@ KConfigPrivate::KConfigPrivate(const KComponentData &componentData_, KConfig::Op
 //    if (!mappingsRegistered) {
 //        KEntryMap tmp;
 //        if (!etc_kderc.isEmpty()) {
-//            KSharedPtr<KConfigBackend> backend = KConfigBackend::create(componentData, etc_kderc, QLatin1String("INI"));
+//            KSharedPtr<KConfigBackend> backend = KConfigBackend::create(etc_kderc, QLatin1String("INI"));
 //            backend->parseConfig( "en_US", tmp, KConfigBackend::ParseDefaults);
 //        }
 //        const QString kde4rc(QDir::home().filePath(".kde4rc"));
 //        if (KStandardDirs::checkAccess(kde4rc, R_OK)) {
-//            KSharedPtr<KConfigBackend> backend = KConfigBackend::create(componentData, kde4rc, QLatin1String("INI"));
+//            KSharedPtr<KConfigBackend> backend = KConfigBackend::create(kde4rc, QLatin1String("INI"));
 //            backend->parseConfig( "en_US", tmp, KConfigBackend::ParseOptions());
 //        }
 //        KConfigBackend::registerMappings(tmp);
 //        mappingsRegistered = true;
 //    }
 
+#if 0 // KDE4 code
     setLocale(KGlobal::hasLocale() ? KGlobal::locale()->language() : KLocale::defaultLanguage());
+#else
+    setLocale(QLocale::system().name());
+#endif
 }
 
 
 bool KConfigPrivate::lockLocal()
 {
     if (mBackend) {
-        return mBackend->lock(componentData);
+        return mBackend->lock();
     }
     // anonymous object - pretend we locked it
     return true;
@@ -170,6 +166,7 @@ QString KConfigPrivate::expandString(const QString& value)
             QString cmd = aValue.mid( nDollarPos+2, nEndPos-nDollarPos-3 );
 
             QString result;
+#if 0 // Removed in KDE Frameworks 5. No such concept anymore. Just set your PATH.
             QByteArray oldpath = qgetenv( "PATH" );
             QByteArray newpath;
             if (KGlobal::hasMainComponent()) {
@@ -179,6 +176,8 @@ QString KConfigPrivate::expandString(const QString& value)
             }
             newpath += oldpath;
             setenv( "PATH", newpath, 1/*overwrite*/ );
+#endif
+
 // FIXME: wince does not have pipes
 #ifndef _WIN32_WCE
             FILE *fs = popen(QFile::encodeName(cmd).data(), "r");
@@ -188,7 +187,9 @@ QString KConfigPrivate::expandString(const QString& value)
                 pclose(fs);
             }
 #endif
+#if 0 // Removed in KDE Frameworks 5, see above.
             setenv( "PATH", oldpath, 1/*overwrite*/ );
+#endif
             aValue.replace( nDollarPos, nEndPos-nDollarPos, result );
             nDollarPos += result.length();
         } else if( aValue[nDollarPos+1] != QLatin1Char('$') ) {
@@ -216,12 +217,12 @@ QString KConfigPrivate::expandString(const QString& value)
                 else
 #endif
                 {
-                    QByteArray pEnv = qgetenv( aVarName.toAscii() );
+                    QByteArray pEnv = qgetenv(aVarName.toAscii().constData());
                     if( !pEnv.isEmpty() )
                     // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
                     // An environment variable may contain values in 8bit
                     // locale specified encoding or UTF8 encoding
-                        env = KStringHandler::from8Bit( pEnv );
+                        env = KStringHandler::from8Bit(pEnv.constData());
                 }
                 aValue.replace(nDollarPos, nEndPos-nDollarPos, env);
                 nDollarPos += env.length();
@@ -239,32 +240,22 @@ QString KConfigPrivate::expandString(const QString& value)
 }
 
 
-KConfig::KConfig( const QString& file, OpenFlags mode,
-                  const char* resourceType)
-  : d_ptr(new KConfigPrivate(KGlobal::mainComponent(), mode, resourceType))
+KConfig::KConfig(const QString& file, OpenFlags mode,
+                 QStandardPaths::StandardLocation resourceType)
+  : d_ptr(new KConfigPrivate(mode, resourceType))
 {
-    d_ptr->changeFileName(file, resourceType); // set the local file name
+    d_ptr->changeFileName(file); // set the local file name
 
     // read initial information off disk
     reparseConfiguration();
 }
 
-KConfig::KConfig( const KComponentData& componentData, const QString& file, OpenFlags mode,
-                  const char* resourceType)
-    : d_ptr(new KConfigPrivate(componentData, mode, resourceType))
+KConfig::KConfig(const QString& file, const QString& backend, QStandardPaths::StandardLocation resourceType)
+    : d_ptr(new KConfigPrivate(SimpleConfig, resourceType))
 {
-    d_ptr->changeFileName(file, resourceType); // set the local file name
-
-    // read initial information off disk
-    reparseConfiguration();
-}
-
-KConfig::KConfig(const QString& file, const QString& backend, const char* resourceType)
-    : d_ptr(new KConfigPrivate(KGlobal::mainComponent(), SimpleConfig, resourceType))
-{
-    d_ptr->mBackend = KConfigBackend::create(d_ptr->componentData, file, backend);
+    d_ptr->mBackend = KConfigBackend::create(file, backend);
     d_ptr->bDynamicBackend = false;
-    d_ptr->changeFileName(file, ""); // set the local file name
+    d_ptr->changeFileName(file); // set the local file name
 
     // read initial information off disk
     reparseConfiguration();
@@ -281,12 +272,6 @@ KConfig::~KConfig()
     if (d->bDirty && d->mBackend.isUnique())
         sync();
     delete d;
-}
-
-const KComponentData& KConfig::componentData() const
-{
-    Q_D(const KConfig);
-    return d->componentData;
 }
 
 QStringList KConfig::groupList() const
@@ -436,7 +421,7 @@ void KConfig::sync()
         // Rewrite global/local config only if there is a dirty entry in it.
         bool writeGlobals = false;
         bool writeLocals = false;
-        foreach (const KEntry& e, d->entryMap) {
+        Q_FOREACH (const KEntry& e, d->entryMap) {
             if (e.bDirty) {
                 if (e.bGlobal) {
                     writeGlobals = true;
@@ -453,12 +438,12 @@ void KConfig::sync()
         d->bDirty = false; // will revert to true if a config write fails
 
         if (d->wantGlobals() && writeGlobals) {
-            KSharedPtr<KConfigBackend> tmp = KConfigBackend::create(componentData(), d->sGlobalFileName);
-            if (d->configState == ReadWrite && !tmp->lock(componentData())) {
+            KSharedPtr<KConfigBackend> tmp = KConfigBackend::create(d->sGlobalFileName);
+            if (d->configState == ReadWrite && !tmp->lock()) {
                 qWarning() << "couldn't lock global file";
                 return;
             }
-            if (!tmp->writeConfig(utf8Locale, d->entryMap, KConfigBackend::WriteGlobal, d->componentData)) {
+            if (!tmp->writeConfig(utf8Locale, d->entryMap, KConfigBackend::WriteGlobal)) {
                 d->bDirty = true;
                 // TODO KDE5: return false? (to tell the app that writing wasn't possible, e.g.
                 // config file is immutable or disk full)
@@ -469,7 +454,7 @@ void KConfig::sync()
         }
 
         if (writeLocals) {
-            if (!d->mBackend->writeConfig(utf8Locale, d->entryMap, KConfigBackend::WriteOptions(), d->componentData)) {
+            if (!d->mBackend->writeConfig(utf8Locale, d->entryMap, KConfigBackend::WriteOptions())) {
                 d->bDirty = true;
                 // TODO KDE5: return false? (to tell the app that writing wasn't possible, e.g.
                 // config file is immutable or disk full)
@@ -498,7 +483,11 @@ void KConfig::checkUpdate(const QString &id, const QString &updateFile)
     const QString cfg_id = updateFile+QLatin1Char(':')+id;
     const QStringList ids = cg.readEntry("update_info", QStringList());
     if (!ids.contains(cfg_id)) {
+#if 0
         KToolInvocation::kdeinitExecWait(QString::fromLatin1("kconf_update"), QStringList() << QString::fromLatin1("--check") << updateFile);
+#else
+        QProcess::execute(QString::fromLatin1("kconf_update"), QStringList() << QString::fromLatin1("--check") << updateFile);
+#endif
         reparseConfiguration();
     }
 }
@@ -507,8 +496,8 @@ KConfig* KConfig::copyTo(const QString &file, KConfig *config) const
 {
     Q_D(const KConfig);
     if (!config)
-        config = new KConfig(componentData(), QString(), SimpleConfig);
-    config->d_func()->changeFileName(file, d->resourceType);
+        config = new KConfig(QString(), SimpleConfig, d->resourceType);
+    config->d_func()->changeFileName(file);
     config->d_func()->entryMap = d->entryMap;
     config->d_func()->bFileImmutable = false;
 
@@ -526,36 +515,38 @@ QString KConfig::name() const
     return d->fileName;
 }
 
-void KConfigPrivate::changeFileName(const QString& name, const char* type)
+void KConfigPrivate::changeFileName(const QString& name)
 {
     fileName = name;
 
     QString file;
     if (name.isEmpty()) {
         if (wantDefaults()) { // accessing default app-specific config "appnamerc"
-            const QString appName = componentData.aboutData()->appName();
-            if (!appName.isEmpty()) {
-                fileName = appName + QLatin1String("rc");
-                if (type && *type)
-                    resourceType = type; // only change it if it's not empty
-                file = KStandardDirs::locateLocal(resourceType, fileName, false, componentData);
+            QString appName = QCoreApplication::applicationName();
+            if (appName.isEmpty()) {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+                appName = qAppName();
+#endif
             }
+            fileName = appName + QLatin1String("rc");
+            file = QStandardPaths::writableLocation(resourceType) + QLatin1Char('/') + fileName;
         } else if (wantGlobals()) { // accessing "kdeglobals" - XXX used anywhere?
-            resourceType = "config";
+            resourceType = QStandardPaths::ConfigLocation;
             fileName = QLatin1String("kdeglobals");
             file = sGlobalFileName;
         } // else anonymous config.
         // KDE5: remove these magic overloads
     } else if (QDir::isAbsolutePath(fileName)) {
-        fileName = KStandardDirs::realFilePath(fileName);
+        fileName = QFileInfo(fileName).canonicalFilePath();
+        if (fileName.isEmpty()) // file doesn't exist (yet)
+            fileName = name;
         file = fileName;
     } else {
-        if (type && *type)
-            resourceType = type; // only change it if it's not empty
-        file = KStandardDirs::locateLocal(resourceType, fileName, false, componentData);
+        file = QStandardPaths::writableLocation(resourceType) + QLatin1Char('/') + fileName;
     }
 
     if (file.isEmpty()) {
+        qWarning("No filename!"); // how can this happen?
         openFlags = KConfig::SimpleConfig;
         return;
     }
@@ -563,7 +554,7 @@ void KConfigPrivate::changeFileName(const QString& name, const char* type)
     bSuppressGlobal = (file == sGlobalFileName);
 
     if (bDynamicBackend || !mBackend) // allow dynamic changing of backend
-        mBackend = KConfigBackend::create(componentData, file);
+        mBackend = KConfigBackend::create(file);
     else
         mBackend->setFilePath(file);
 
@@ -595,11 +586,10 @@ void KConfig::reparseConfiguration()
 
 QStringList KConfigPrivate::getGlobalFiles() const
 {
-    const KStandardDirs *const dirs = componentData.dirs();
     QStringList globalFiles;
-    foreach (const QString& dir1, dirs->findAllResources("config", QLatin1String("kdeglobals")))
+    Q_FOREACH (const QString& dir1, QStandardPaths::locateAll(QStandardPaths::ConfigLocation, QLatin1String("kdeglobals")))
         globalFiles.push_front(dir1);
-    foreach (const QString& dir2, dirs->findAllResources("config", QLatin1String("system.kdeglobals")))
+    Q_FOREACH (const QString& dir2, QStandardPaths::locateAll(QStandardPaths::ConfigLocation, QLatin1String("system.kdeglobals")))
         globalFiles.push_front(dir2);
     if (!etc_kderc.isEmpty())
         globalFiles.push_front(etc_kderc);
@@ -614,12 +604,12 @@ void KConfigPrivate::parseGlobalFiles()
     // TODO: can we cache the values in etc_kderc / other global files
     //       on a per-application basis?
     const QByteArray utf8Locale = locale.toUtf8();
-    foreach(const QString& file, globalFiles) {
+    Q_FOREACH(const QString& file, globalFiles) {
         KConfigBackend::ParseOptions parseOpts = KConfigBackend::ParseGlobal|KConfigBackend::ParseExpansions;
         if (file != sGlobalFileName)
             parseOpts |= KConfigBackend::ParseDefaults;
 
-        KSharedPtr<KConfigBackend> backend = KConfigBackend::create(componentData, file);
+        KSharedPtr<KConfigBackend> backend = KConfigBackend::create(file);
         if ( backend->parseConfig( utf8Locale, entryMap, parseOpts) == KConfigBackend::ParseImmutable)
             break;
     }
@@ -637,9 +627,12 @@ void KConfigPrivate::parseConfigFiles()
             if (bSuppressGlobal) {
                 files = getGlobalFiles();
             } else {
-                foreach (const QString& f, componentData.dirs()->findAllResources(
-                                                    resourceType, fileName))
-                    files.prepend(f);
+                if (QDir::isAbsolutePath(fileName)) {
+                    files << fileName;
+                } else {
+                    Q_FOREACH (const QString& f, QStandardPaths::locateAll(resourceType, fileName))
+                        files.prepend(f);
+                }
             }
         } else {
             files << mBackend->filePath();
@@ -650,7 +643,7 @@ void KConfigPrivate::parseConfigFiles()
 //        qDebug() << "parsing local files" << files;
 
         const QByteArray utf8Locale = locale.toUtf8();
-        foreach(const QString& file, files) {
+        Q_FOREACH(const QString& file, files) {
             if (file == mBackend->filePath()) {
                 switch (mBackend->parseConfig(utf8Locale, entryMap, KConfigBackend::ParseExpansions)) {
                 case KConfigBackend::ParseOk:
@@ -663,7 +656,7 @@ void KConfigPrivate::parseConfigFiles()
                     break;
                 }
             } else {
-                KSharedPtr<KConfigBackend> backend = KConfigBackend::create(componentData, file);
+                KSharedPtr<KConfigBackend> backend = KConfigBackend::create(file);
                 bFileImmutable = (backend->parseConfig(utf8Locale, entryMap,
                                         KConfigBackend::ParseDefaults|KConfigBackend::ParseExpansions)
                                   == KConfigBackend::ParseImmutable);
@@ -672,8 +665,11 @@ void KConfigPrivate::parseConfigFiles()
             if (bFileImmutable)
                 break;
         }
+#pragma message("TODO: enable kiosk feature again (resource restrictions), but without KStandardDirs... Needs a class in the kconfig framework.")
+#if 0
         if (componentData.dirs()->isRestrictedResource(resourceType, fileName))
             bFileImmutable = true;
+#endif
     }
 }
 
@@ -686,7 +682,7 @@ KConfig::AccessMode KConfig::accessMode() const
 void KConfig::addConfigSources(const QStringList& files)
 {
     Q_D(KConfig);
-    foreach(const QString& file, files) {
+    Q_FOREACH(const QString& file, files) {
         d->extraFiles.push(file);
     }
 
@@ -789,9 +785,9 @@ void KConfig::deleteGroupImpl(const QByteArray &aGroup, WriteConfigFlags flags)
     KEntryMap::EntryOptions options = convertToOptions(flags)|KEntryMap::EntryDeleted;
 
     const QSet<QByteArray> groups = d->allSubGroups(aGroup);
-    foreach (const QByteArray& group, groups) {
+    Q_FOREACH (const QByteArray& group, groups) {
         const QStringList keys = d->keyListImpl(group);
-        foreach (const QString& _key, keys) {
+        Q_FOREACH (const QString& _key, keys) {
             const QByteArray &key = _key.toUtf8();
             if (d->canWriteEntry(group, key.constData())) {
                 d->entryMap.setEntry(group, key, QByteArray(), options);
@@ -812,12 +808,12 @@ bool KConfig::isConfigWritable(bool warnUser)
             errorMsg = d->mBackend->nonWritableErrorMessage();
 
         // Note: We don't ask the user if we should not ask this question again because we can't save the answer.
-        errorMsg += i18n("Please contact your system administrator.");
+        errorMsg += QCoreApplication::translate("KConfig", "Please contact your system administrator.");
         QString cmdToExec = QStandardPaths::findExecutable(QString::fromLatin1("kdialog"));
-        if (!cmdToExec.isEmpty() && componentData().isValid())
+        if (!cmdToExec.isEmpty())
         {
             QProcess::execute(cmdToExec, QStringList()
-                              << QString::fromLatin1("--title") << componentData().componentName()
+                              << QString::fromLatin1("--title") << QCoreApplication::applicationName()
                               << QString::fromLatin1("--msgbox") << errorMsg);
         }
     }
@@ -882,8 +878,13 @@ QString KConfigPrivate::lookupData(const QByteArray& group, const char* key,
     return entryMap.getEntry(group, key, QString(), flags, expand);
 }
 
+QStandardPaths::StandardLocation KConfig::locationType() const
+{
+    Q_D(const KConfig);
+    return d->resourceType;
+}
+
 void KConfig::virtual_hook(int /*id*/, void* /*data*/)
 {
 	/* nothing */
 }
-

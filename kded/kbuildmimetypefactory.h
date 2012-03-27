@@ -43,7 +43,7 @@ public:
   /**
    * Construct a KMimeType from a config file.
    */
-  virtual KSycocaEntry * createEntry(const QString &file, const char *resource) const;
+   virtual KSycocaEntry * createEntry(const QString &file) const;
 
   virtual MimeTypeEntry * createEntry( int ) const { assert(0); return 0L; }
 
@@ -65,7 +65,7 @@ public:
   /**
    * Returns all resource types for this factory
    */
-  static QStringList resourceTypes();
+   static QStringList resourceDirs();
 };
 
 #endif

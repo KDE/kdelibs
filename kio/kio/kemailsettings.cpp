@@ -28,7 +28,7 @@
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 
 class KEMailSettingsPrivate {

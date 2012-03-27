@@ -317,8 +317,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   connect( d->m_paSetEncoding, SIGNAL(triggered(QString)), this, SLOT(slotSetEncoding(QString)));
   connect( d->m_paSetEncoding, SIGNAL(triggered(KEncodingDetector::AutoDetectScript)), this, SLOT(slotAutomaticDetectionLanguage(KEncodingDetector::AutoDetectScript)));
 
-  if ( KGlobal::config()->hasGroup( "HTML Settings" ) ) {
-    KConfigGroup config( KGlobal::config(), "HTML Settings" );
+  if ( KSharedConfig::openConfig()->hasGroup( "HTML Settings" ) ) {
+    KConfigGroup config( KSharedConfig::openConfig(), "HTML Settings" );
 
     d->m_autoDetectLanguage = static_cast<KEncodingDetector::AutoDetectScript>(config.readEntry( "AutomaticDetectionLanguage", /*static_cast<int>(language) */0));
     if (d->m_autoDetectLanguage==KEncodingDetector::None) {
@@ -532,7 +532,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 KHTMLPart::~KHTMLPart()
 {
   kDebug(6050) << this;
-  KConfigGroup config( KGlobal::config(), "HTML Settings" );
+  KConfigGroup config( KSharedConfig::openConfig(), "HTML Settings" );
   config.writeEntry( "AutomaticDetectionLanguage", int(d->m_autoDetectLanguage) );
 
   if (d->m_manager) { // the PartManager for this part's children
@@ -4722,7 +4722,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
                                                       "WarnOnUnencryptedForm");
           // Move this setting into KSSL instead
           QString grpNotifMsgs = QLatin1String("Notification Messages");
-          KConfigGroup cg( KGlobal::config(), grpNotifMsgs );
+          KConfigGroup cg( KSharedConfig::openConfig(), grpNotifMsgs );
 
           if (!cg.readEntry("WarnOnUnencryptedForm", true)) {
             cg.deleteEntry("WarnOnUnencryptedForm");
@@ -5301,11 +5301,11 @@ bool KHTMLPart::frameExists( const QString &frameName )
 void KHTMLPartPrivate::renameFrameForContainer(DOM::HTMLPartContainerElementImpl* cont,
                                                const QString& newName)
 {
-	for (int i = 0; i < m_frames.size(); ++i) {
+    for (int i = 0; i < m_frames.size(); ++i) {
         khtml::ChildFrame* f = m_frames[i];
         if (f->m_partContainerElement.data() == cont)
             f->m_name = newName;
-	}
+    }
 }
 
 KJSProxy *KHTMLPart::framejScript(KParts::ReadOnlyPart *framePart)

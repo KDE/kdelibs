@@ -34,7 +34,7 @@
 #include <QtCore/QProcess>
 
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <ktoolinvocation.h>
@@ -414,7 +414,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
     if (protocol == "data")
         return new DataProtocol();
     Slave *slave = new Slave(protocol);
-    QString slaveAddress = slave->d_func()->slaveconnserver->address();
+    QUrl slaveAddress = slave->d_func()->slaveconnserver->address();
 
 #ifdef Q_OS_UNIX
     // In such case we start the slave via QProcess.
@@ -450,7 +450,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
           return 0;
        }
 
-       const QStringList args = QStringList() << lib_path << protocol << "" << slaveAddress;
+       const QStringList args = QStringList() << lib_path << protocol << "" << slaveAddress.toString();
        kDebug() << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString() << ", " << slaveAddress;
 
        QProcess::startDetached( KStandardDirs::locate("exe", "kioslave"), args );
@@ -461,7 +461,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
 
     org::kde::KLauncher* klauncher = KToolInvocation::klauncher();
     QString errorStr;
-    QDBusReply<int> reply = klauncher->requestSlave(protocol, url.host(), slaveAddress, errorStr);
+    QDBusReply<int> reply = klauncher->requestSlave(protocol, url.host(), slaveAddress.toString(), errorStr);
     if (!reply.isValid()) {
 	error_text = i18n("Cannot talk to klauncher: %1", klauncher->lastError().message() );
 	error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
@@ -488,8 +488,8 @@ Slave* Slave::holdSlave( const QString &protocol, const KUrl& url )
     if (protocol == "data")
         return 0;
     Slave *slave = new Slave(protocol);
-    QString slaveAddress = slave->d_func()->slaveconnserver->address();
-    QDBusReply<int> reply = KToolInvocation::klauncher()->requestHoldSlave(url.url(), slaveAddress);
+    QUrl slaveAddress = slave->d_func()->slaveconnserver->address();
+    QDBusReply<int> reply = KToolInvocation::klauncher()->requestHoldSlave(url.url(), slaveAddress.toString());
     if (!reply.isValid()) {
         delete slave;
         return 0;

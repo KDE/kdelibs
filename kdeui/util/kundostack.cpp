@@ -27,7 +27,7 @@
 #include <kstandardshortcut.h>
 #include <kicon.h>
 #include <kactioncollection.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 KUndoStack::KUndoStack(QObject* parent)
 : QUndoStack(parent)

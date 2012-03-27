@@ -22,7 +22,7 @@
 #include "ksycocadict_p.h"
 #include "kservice.h"
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 
 extern int servicesDebugArea();

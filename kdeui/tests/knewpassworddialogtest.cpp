@@ -21,7 +21,7 @@
 #include <kcmdlineargs.h>
 #include <kapplication.h>
 #include <knewpassworddialog.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <iostream>
 
 int main( int argc, char *argv[] )

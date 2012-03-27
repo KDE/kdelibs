@@ -224,10 +224,11 @@ void XMLHttpRequest::putValueProperty(ExecState *exec, int token, JSValue *value
 // Token according to RFC 2616
 static bool isValidFieldName(const QString& name)
 {
-    const QChar* c = name.constData();
     int l = name.length();
     if (l == 0)
         return false;
+    
+    const QChar* c = name.constData();
     for (int i = 0; i < l; ++i, ++c) {
         int u = c->unicode();
         if (u < 32 || u > 126)
@@ -248,15 +249,15 @@ static bool isValidFieldName(const QString& name)
 
 static bool isValidFieldValue(const QString& name)
 {
-    const QChar* c = name.constData();
     int l = name.length();
     if (l == 0)
         return true;
 
+    const QChar* c = name.constData();
     for (int i = 0; i < l; ++i, ++c) {
         int u = c->unicode();
-	if ( u == '\n' || u == '\r' )
-	  return false;
+        if ( u == '\n' || u == '\r' )
+           return false;
     }
 
     // ### what is invalid?

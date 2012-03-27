@@ -32,6 +32,7 @@
 #include <QtCore/QByteArray>
 #include <QtCore/QDate>
 #include <QTextDocument>
+#include <qurlpathinfo.h>
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -416,8 +417,8 @@ KIO_EXPORT QString KIO::unsupportedActionErrorString(const QString &protocol, in
   }/*end switch*/
 }
 
-KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KUrl *reqUrl /*= 0L*/,
-                                            int method /*= -1*/ ) const
+KIO_EXPORT QStringList KIO::Job::detailedErrorStrings(const QUrl *reqUrl /*= 0*/,
+                                                      int method /*= -1*/) const
 {
   QString errorName, techName, description, ret2;
   QStringList causes, solutions, ret;
@@ -429,7 +430,13 @@ KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KUrl *reqUrl /*= 0L
 
   QString url, protocol, datetime;
   if ( reqUrl ) {
-    url = Qt::escape(reqUrl->prettyUrl());
+    QString prettyUrl;
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    prettyUrl = reqUrl->toString();
+#else
+    prettyUrl = reqUrl->toDisplayString();
+#endif
+    url = Qt::escape(prettyUrl);
     protocol = reqUrl->scheme();
   } else {
     url = i18nc("@info url", "(unknown)" );
@@ -471,12 +478,16 @@ KIO_EXPORT QStringList KIO::Job::detailedErrorStrings( const KUrl *reqUrl /*= 0L
 }
 
 KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
-                               const KUrl *reqUrl /*= 0L*/, int /*method = -1*/ )
+                                          const QUrl *reqUrl /*= 0*/, int /*method = -1*/ )
 {
   QString url, host, protocol, datetime, domain, path, filename;
   bool isSlaveNetwork = false;
   if ( reqUrl ) {
-    url = reqUrl->prettyUrl();
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    url = reqUrl->toString();
+#else
+    url = reqUrl->toDisplayString();
+#endif
     host = reqUrl->host();
     protocol = reqUrl->scheme();
 
@@ -485,7 +496,8 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
     else
       domain = host;
 
-    filename = reqUrl->fileName();
+    QUrlPathInfo reqUrlPathInfo(*reqUrl);
+    filename = reqUrlPathInfo.fileName();
     path = reqUrl->path();
 
     // detect if protocol is a network protocol...
@@ -1236,7 +1248,7 @@ QString KIO::getCacheControlString(KIO::CacheControl cacheControl)
     return QString();
 }
 
-QPixmap KIO::pixmapForUrl( const KUrl & _url, mode_t _mode, KIconLoader::Group _group,
+QPixmap KIO::pixmapForUrl( const QUrl & _url, mode_t _mode, KIconLoader::Group _group,
                            int _force_size, int _state, QString * _path )
 {
     const QString iconName = KMimeType::iconNameForUrl( _url, _mode );

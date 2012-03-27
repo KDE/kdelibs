@@ -18,7 +18,7 @@
 #include "knotifyeventlist.h"
 
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kicon.h>
 #include <kiconloader.h>
 #include <kconfig.h>

@@ -118,7 +118,7 @@ void KStandarddirsTest::testFindResource()
 #define KIOSLAVE "bin/kioslave.exe"
 #else
 #define EXT ""
-#define KIOSLAVE "kde4/libexec/kioslave"
+#define KIOSLAVE "kde5/libexec/kioslave"
 #endif
     const QString bin = KGlobal::dirs()->findResource( "exe", "kioslave" EXT );
     QVERIFY( !bin.isEmpty() );
@@ -177,7 +177,9 @@ void KStandarddirsTest::testFindAllResources()
     const QStringList configFilesRecursiveWithFilter = KGlobal::dirs()->findAllResources( "config", "*rc",
                                                                                           KStandardDirs::Recursive );
     QVERIFY( !configFilesRecursiveWithFilter.isEmpty() );
-    QVERIFY( configFilesRecursiveWithFilter.count() >= 4 ); // kdebugrc, ui/ui_standards.rc
+    //qDebug() << configFilesRecursiveWithFilter;
+    QVERIFY( configFilesRecursiveWithFilter.count() >= 3 ); // foorc, kdebugrc, ui/ui_standards.rc
+    QVERIFY( oneEndsWith( configFilesRecursiveWithFilter, "kde-unit-test/xdg/config/foorc" ) );
     QVERIFY( oneEndsWith( configFilesRecursiveWithFilter, "etc/xdg/kdebugrc" ) );
     QVERIFY( oneEndsWith( configFilesRecursiveWithFilter, "etc/xdg/ui/ui_standards.rc" ) );
     QVERIFY( !oneEndsWith( configFilesRecursiveWithFilter, "etc/xdg/colors/Web.colors" ) ); // didn't match the filter
@@ -187,7 +189,8 @@ void KStandarddirsTest::testFindAllResources()
     QStringList fileNames;
     const QStringList configFilesWithFilter = KGlobal::dirs()->findAllResources("config", "*rc", KStandardDirs::NoDuplicates, fileNames);
     QVERIFY( !configFilesWithFilter.isEmpty() );
-    QVERIFY( configFilesWithFilter.count() >= 3 );
+    QVERIFY( configFilesWithFilter.count() >= 2 );
+    QVERIFY( oneEndsWith( configFilesWithFilter, "kde-unit-test/xdg/config/foorc" ) );
     QVERIFY( oneEndsWith( configFilesWithFilter, "kdebugrc" ) ); // either global (etc/xdg/) or local (XDG_HOME)
     QVERIFY( !oneEndsWith( configFilesWithFilter, "etc/xdg/ui/ui_standards.rc" ) ); // recursive not set
     QVERIFY( !oneEndsWith( configFilesWithFilter, "etc/xdg/accept-languages.codes" ) ); // didn't match the filter
@@ -270,7 +273,7 @@ void KStandarddirsTest::testFindExe()
     // findExe with a result in libexec
     const QString lnusertemp = KGlobal::dirs()->findExe( "lnusertemp" );
     QVERIFY( !lnusertemp.isEmpty() );
-    QVERIFY( lnusertemp.endsWith( "lib" KDELIBSUFF "/kde4/libexec/lnusertemp" EXT, PATH_SENSITIVITY ) );
+    QVERIFY( lnusertemp.endsWith( "lib" KDELIBSUFF "/kde5/libexec/lnusertemp" EXT, PATH_SENSITIVITY ) );
 #endif
 
 #ifndef Q_OS_MAC // kdeinit4 is a bundle on Mac, so the below doesn't work
@@ -461,14 +464,20 @@ void KStandarddirsTest::testRestrictedResources()
 void KStandarddirsTest::testSymlinkResolution()
 {
 #ifndef Q_OS_WIN
-    // This makes the save location for the david resource, "$HOME/.kde-unit-test/symlink/test/"
+    // This makes the save location for the david resource, "<XDG_DATA_HOME>/symlink/test/"
     // where symlink points to "real", and the subdir test will be created later
     // This used to confuse KStandardDirs and make it return unresolved paths,
     // and thus making comparisons fail later on in KConfig.
-    const QString symlink = m_kdehome + "/symlink";
-    const QString expected = m_kdehome + "/real/test/";
-    QVERIFY(QTemporaryDir::removeRecursively(m_kdehome + "/real"));
-    QVERIFY(QDir(m_kdehome).mkdir("real"));
+    QString baseDir = m_kdehome + "/xdg/local"; // XDG DATA HOME
+    const QString symlink = baseDir + "/symlink";
+    const QString expected = baseDir + "/real/test/";
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    QVERIFY(QTemporaryDir::removeRecursively(baseDir + "/real"));
+#else
+    QDir d_(baseDir + "/real");
+    QVERIFY(d_.removeRecursively());
+#endif
+    QVERIFY(QDir(baseDir).mkdir("real"));
     QFile::remove(symlink);
     QVERIFY(!QFile::exists(symlink));
     QVERIFY(QFile::link("real", symlink));
@@ -483,7 +492,7 @@ void KStandarddirsTest::testSymlinkResolution()
     QVERIFY(!QFile::exists(saveLoc));
     QCOMPARE(saveLoc, KStandardDirs::realPath(saveLoc)); // must be resolved
     QCOMPARE(saveLoc, expected);
-    QVERIFY(QDir(m_kdehome).mkpath("real/test")); // KConfig calls mkdir on its own, we simulate that here
+    QVERIFY(QDir(baseDir).mkpath("real/test")); // KConfig calls mkdir on its own, we simulate that here
     const QString sameSaveLoc = KGlobal::dirs()->resourceDirs("david").first();
     QCOMPARE(sameSaveLoc, saveLoc);
     QCOMPARE(sameSaveLoc, KGlobal::dirs()->saveLocation("david"));

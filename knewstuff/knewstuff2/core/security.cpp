@@ -39,7 +39,7 @@ typedef QCryptographicHash Q5CryptographicHash;
 //kde includes
 #include <kdebug.h>
 #include <kinputdialog.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kpassworddialog.h>
 #include <kprocess.h>

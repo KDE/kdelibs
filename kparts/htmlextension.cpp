@@ -22,6 +22,7 @@
 #include "part.h"
 
 #include <kglobal.h>
+#include <klocalizedstring.h>
 
 
 using namespace KParts;
@@ -104,4 +105,62 @@ QString SelectorInterface::Element::attribute(const QString& name, const QString
 bool SelectorInterface::Element::hasAttribute(const QString& name) const
 {
     return d->attributes.contains(name);
+}
+
+const char* HtmlSettingsInterface::javascriptAdviceToText(HtmlSettingsInterface::JavaScriptAdvice advice)
+{
+    // NOTE: The use of I18N_NOOP below is intended to allow GUI code to call
+    // i18n on the returned text without affecting use of untranslated text in
+    // config files.
+    switch (advice) {
+    case JavaScriptAccept:
+        return I18N_NOOP("Accept");
+    case JavaScriptReject:
+        return I18N_NOOP("Reject");
+    default:
+        break;
+    }
+
+    return 0;
+}
+
+HtmlSettingsInterface::JavaScriptAdvice HtmlSettingsInterface::textToJavascriptAdvice(const QString& text)
+{
+    JavaScriptAdvice ret = JavaScriptDunno;
+
+    if (!text.isEmpty()) {
+        if (text.compare(QLatin1String("accept"), Qt::CaseInsensitive) == 0) {
+            ret = JavaScriptAccept;
+        } else if (text.compare(QLatin1String("reject"), Qt::CaseInsensitive) == 0) {
+            ret = JavaScriptReject;
+        }
+    }
+
+    return ret;
+}
+
+void HtmlSettingsInterface::splitDomainAdvice(const QString& adviceStr, QString& domain, HtmlSettingsInterface::JavaScriptAdvice& javaAdvice, HtmlSettingsInterface::JavaScriptAdvice& javaScriptAdvice)
+{
+    const QString tmp(adviceStr);
+    const int splitIndex = tmp.indexOf(':');
+
+    if (splitIndex == -1) {
+        domain = adviceStr.toLower();
+        javaAdvice = JavaScriptDunno;
+        javaScriptAdvice = JavaScriptDunno;
+    } else {
+        domain = tmp.left(splitIndex).toLower();
+        const QString adviceString = tmp.mid(splitIndex+1, tmp.length());
+        const int splitIndex2 = adviceString.indexOf(QLatin1Char(':'));
+        if (splitIndex2 == -1) {
+            // Java advice only
+            javaAdvice = textToJavascriptAdvice(adviceString);
+            javaScriptAdvice = JavaScriptDunno;
+        } else {
+            // Java and JavaScript advice
+            javaAdvice = textToJavascriptAdvice(adviceString.left(splitIndex2));
+            javaScriptAdvice = textToJavascriptAdvice(adviceString.mid(splitIndex2+1,
+                                                      adviceString.length()));
+        }
+    }
 }

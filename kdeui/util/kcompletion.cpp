@@ -22,7 +22,7 @@
 #include "kcompletion_p.h"
 
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <knotification.h>
 #include <kglobal.h>
 #include <kstringhandler.h>

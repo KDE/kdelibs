@@ -1004,7 +1004,7 @@ VFolderMenu::processKDELegacyDirs()
     kDebug(7021);
 
    QHash<QString,KService::Ptr> items;
-   QString prefix = "kde4-";
+   QString prefix = "kde4-"; // leave this to be kde4. We don't install kde5 applications into the very old applnk dir.
 
    QStringList relFiles;
 

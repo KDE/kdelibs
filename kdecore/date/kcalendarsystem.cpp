@@ -1055,7 +1055,7 @@ void KCalendarSystemPrivate::loadShortYearWindowStartYear(const KConfigGroup & c
 KSharedConfig::Ptr KCalendarSystemPrivate::config()
 {
     if (m_config == KSharedConfig::Ptr()) {
-        return KGlobal::config();
+        return KSharedConfig::openConfig();
     } else {
         return m_config;
     }

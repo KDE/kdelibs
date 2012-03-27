@@ -348,7 +348,7 @@ KCursorPrivate::KCursorPrivate()
 {
     hideCursorDelay = 5000; // 5s default value
 
-    KConfigGroup cg( KGlobal::config(), QLatin1String("KDE") );
+    KConfigGroup cg( KSharedConfig::openConfig(), QLatin1String("KDE") );
     enabled = cg.readEntry( QLatin1String("Autohiding cursor enabled"), true);
 }
 

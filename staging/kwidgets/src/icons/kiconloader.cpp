@@ -480,7 +480,7 @@ void KIconLoaderPrivate::init( const QString& _appname, KStandardDirs *_dirs )
 
     // These have to match the order in kicontheme.h
     static const char * const groups[] = { "Desktop", "Toolbar", "MainToolbar", "Small", "Panel", "Dialog", 0L };
-    KSharedConfig::Ptr config = KGlobal::config();
+    KSharedConfig::Ptr config = KSharedConfig::openConfig();
 
     // loading config and default sizes
     initIconThemes();

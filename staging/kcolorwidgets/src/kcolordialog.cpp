@@ -1437,7 +1437,7 @@ KColorDialog::KColorDialogPrivate::slotModeChanged(int id)
 void
 KColorDialog::readSettings()
 {
-    KConfigGroup group(KGlobal::config(), "Colors");
+    KConfigGroup group(KSharedConfig::openConfig(), "Colors");
 
     QString collectionName = group.readEntry("CurrentPalette");
     if (collectionName.isEmpty()) {
@@ -1457,7 +1457,7 @@ KColorDialog::readSettings()
 void
 KColorDialog::KColorDialogPrivate::slotWriteSettings()
 {
-    KConfigGroup group(KGlobal::config(), "Colors");
+    KConfigGroup group(KSharedConfig::openConfig(), "Colors");
 
     QString collectionName = table->name();
     if (!group.hasDefault("CurrentPalette") && table->name() == originalPalette) {

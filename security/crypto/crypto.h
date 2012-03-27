@@ -23,7 +23,7 @@
 
 #include <ksslconfig.h>
 #include <ksslall.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <QCheckBox>
 #include <QDateTime>
 #include <QTreeWidget>

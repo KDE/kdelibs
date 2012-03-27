@@ -134,8 +134,19 @@ QStringList Manager::allDevices()
 
         Q_FOREACH(const QDBusObjectPath &path, reply.value().keys()) {
             const QString udi = path.path();
+            qDebug() << "Adding device" << udi;
+
             if (udi == UD2_DBUS_PATH_MANAGER || udi == UD2_UDI_DISKS_PREFIX || udi.startsWith(UD2_DBUS_PATH_JOBS))
                 continue;
+
+            Device device(udi);
+            if (device.mightBeOpticalDisc()) {
+                QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, udi, DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
+                                                     SLOT(slotMediaChanged(QDBusMessage)));
+                if (!device.isOpticalDisc())  // skip empty CD disc
+                    continue;
+            }
+
             m_deviceCache.append(udi);
         }
     }
@@ -229,17 +240,15 @@ void Manager::slotDeviceChanged(const QDBusObjectPath &opath)
 #endif
 
 
-void Manager::slotInterfacesAdded(const QDBusObjectPath &object_path, QVariantMapMap &interfaces_and_properties)
+void Manager::slotInterfacesAdded(const QDBusObjectPath &object_path, const QVariantMapMap &interfaces_and_properties)
 {
     const QString udi = object_path.path();
+
+    qDebug() << udi << "has new interfaces:" << interfaces_and_properties.keys();
 
     // new device, we don't know it yet
     if (!m_deviceCache.contains(udi)) {
         m_deviceCache.append(udi);
-        Q_EMIT deviceAdded(udi);
-    }
-    else if (interfaces_and_properties.keys().contains(UD2_DBUS_INTERFACE_FILESYSTEM))  // existing device, something changed
-    {
         Q_EMIT deviceAdded(udi);
     }
 }
@@ -248,11 +257,32 @@ void Manager::slotInterfacesRemoved(const QDBusObjectPath &object_path, const QS
 {
     const QString udi = object_path.path();
 
-    if (interfaces.isEmpty() && !udi.isEmpty())
-        Q_EMIT deviceRemoved(udi);
+    qDebug() << udi << "lost interfaces:" << interfaces;
 
-    if (!interfaces.contains(UD2_DBUS_INTERFACE_FILESYSTEM))  // don't remove our optical disc from the cache
+    Device device(udi);
+
+    if (!udi.isEmpty() && (interfaces.isEmpty() || device.interfaces().isEmpty() || device.interfaces().contains(UD2_DBUS_INTERFACE_FILESYSTEM))) {
+        Q_EMIT deviceRemoved(udi);
         m_deviceCache.removeAll(udi);
+    }
+}
+
+void Manager::slotMediaChanged(const QDBusMessage & msg)
+{
+    const QVariantMap properties = qdbus_cast<QVariantMap>(msg.arguments().at(1));
+    const QString udi = msg.path();
+    qulonglong size = properties.value("Size").toULongLong();
+    qDebug() << "MEDIA CHANGED in" << udi << "; size is:" << size;
+
+    if (!m_deviceCache.contains(udi) && size > 0) { // we don't know the optdisc, got inserted
+        m_deviceCache.append(udi);
+        Q_EMIT deviceAdded(udi);
+    }
+
+    if (m_deviceCache.contains(udi) && size == 0) {  // we know the optdisc, got removed
+        Q_EMIT deviceRemoved(udi);
+        m_deviceCache.removeAll(udi);
+    }
 }
 
 const QStringList & Manager::deviceCache()

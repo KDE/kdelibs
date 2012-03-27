@@ -30,7 +30,7 @@
 
 #include <kurl.h>
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kinputdialog.h>
 #include <kmessagebox.h>
 #include <kmimetype.h>

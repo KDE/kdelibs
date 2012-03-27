@@ -35,7 +35,7 @@ namespace KIO {
     {
         Q_OBJECT
     public:
-        QString address;
+        QUrl address;
         QString errorString;
         enum { Idle, Listening, Connected } state;
 
@@ -43,7 +43,7 @@ namespace KIO {
         ~AbstractConnectionBackend();
 
         virtual void setSuspended(bool enable) = 0;
-        virtual bool connectToRemote(const KUrl &url) = 0;
+        virtual bool connectToRemote(const QUrl &url) = 0;
         virtual bool listenForRemote() = 0;
         virtual bool waitForIncomingTask(int ms) = 0;
         virtual bool sendCommand(const Task &task) = 0;
@@ -80,7 +80,7 @@ namespace KIO {
         ~SocketConnectionBackend();
 
         void setSuspended(bool enable);
-        bool connectToRemote(const KUrl &url);
+        bool connectToRemote(const QUrl &url);
         bool listenForRemote();
         bool waitForIncomingTask(int ms);
         bool sendCommand(const Task &task);

@@ -27,7 +27,7 @@
 #include <kurl.h>
 #include <kio/netaccess.h>
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kcmdlineargs.h>
 
 #include <QtCore/QFileInfo>
