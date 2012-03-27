@@ -34,7 +34,11 @@ add_library(kwidgets ${LIBRARY_TYPE} ${kwidgets_LIB_SRCS})
 generate_export_header(kwidgets)
 
 target_link_libraries(kwidgets ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY}
-    ${QT_QTSVG_LIBRARY} ${KDEUI_EXTRA_LIBS} kdeguiaddons kwindowsystem kauth)
+    ${QT_QTSVG_LIBRARY} ${KDEUI_EXTRA_LIBS} ${X11_LIBRARIES} kdeguiaddons kwindowsystem kauth)
+
+if(X11_Xcursor_FOUND)
+    target_link_libraries(kwidgets ${X11_Xcursor_LIB})
+endif(X11_Xcursor_FOUND)
 
 install(TARGETS kwidgets EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
