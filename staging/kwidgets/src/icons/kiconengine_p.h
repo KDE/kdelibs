@@ -19,8 +19,6 @@
 #ifndef KICONENGINE_H
 #define KICONENGINE_H
 
-#include <kdeui_export.h>
-
 #include <QIconEngineV2>
 
 class KIconLoader;

@@ -4,7 +4,12 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
  ${CMAKE_CURRENT_SOURCE_DIR}/utils
  ${DBUSMENUQT_INCLUDE_DIR}
- ${CMAKE_BINARY_DIR}/staging/kwidgets/src
+ ${kdeguiaddons_BINARY_DIR}/src
+ ${kdeguiaddons_SOURCE_DIR}/src/colors # kcolorscheme
+ ${kauth_BINARY_DIR}/src
+ ${kauth_SOURCE_DIR}/src # kauthaction
+ ${kwindowsystem_BINARY_DIR}/src
+ ${kwindowsystem_SOURCE_DIR}/src # netwm
 )
 
 set(kwidgets_LIB_SRCS

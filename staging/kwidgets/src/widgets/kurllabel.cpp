@@ -21,7 +21,6 @@
 #include <QApplication>
 #include <QMouseEvent>
 
-#include <kcursor.h>
 #include <kcolorscheme.h>
 
 class KUrlLabel::Private
