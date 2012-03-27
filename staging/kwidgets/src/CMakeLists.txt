@@ -10,6 +10,8 @@ include_directories(
  ${kauth_SOURCE_DIR}/src # kauthaction
  ${kwindowsystem_BINARY_DIR}/src
  ${kwindowsystem_SOURCE_DIR}/src # netwm
+ ${kcoreaddons_BINARY_DIR}/src
+ ${kcoreaddons_SOURCE_DIR}/src/caching/ # kshareddatacache
 )
 
 set(kwidgets_LIB_SRCS
