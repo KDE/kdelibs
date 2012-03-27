@@ -114,24 +114,30 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
      return true; // Relative paths are ok.
 
   const QString realPath = QFileInfo(path).canonicalFilePath();
+  if (realPath.isEmpty())
+      return false; // File doesn't exist.
 
   // Check if the .desktop file is installed as part of KDE or XDG.
   const QStringList appsDirs = QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation);
   Q_FOREACH (const QString &prefix, appsDirs) {
-      if (realPath.startsWith(QFileInfo(prefix).canonicalFilePath()))
+      if (QDir(prefix).exists() && realPath.startsWith(QFileInfo(prefix).canonicalFilePath()))
           return true;
   }
   const QString servicesDir = QLatin1String("kde5/services/"); // KGlobal::dirs()->xdgDataRelativePath("services")
   Q_FOREACH (const QString &xdgDataPrefix, QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation)) {
-      const QString prefix = QFileInfo(xdgDataPrefix).canonicalFilePath();
-      if (realPath.startsWith(prefix + QLatin1Char('/') + servicesDir))
-          return true;
+      if (QDir(xdgDataPrefix).exists()) {
+          const QString prefix = QFileInfo(xdgDataPrefix).canonicalFilePath();
+          if (realPath.startsWith(prefix + QLatin1Char('/') + servicesDir))
+              return true;
+      }
   }
   const QString autostartDir = QLatin1String("autostart/");
   Q_FOREACH (const QString &xdgDataPrefix, QStandardPaths::standardLocations(QStandardPaths::ConfigLocation)) {
-      const QString prefix = QFileInfo(xdgDataPrefix).canonicalFilePath();
-      if (realPath.startsWith(prefix + QLatin1Char('/') + autostartDir))
-          return true;
+      if (QDir(xdgDataPrefix).exists()) {
+          const QString prefix = QFileInfo(xdgDataPrefix).canonicalFilePath();
+          if (realPath.startsWith(prefix + QLatin1Char('/') + autostartDir))
+              return true;
+      }
   }
 
   // Forbid desktop files outside of standard locations if kiosk is set so
