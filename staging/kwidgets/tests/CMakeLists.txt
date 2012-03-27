@@ -28,9 +28,11 @@ KDEUI_EXECUTABLE_TESTS(
   kiconloadertest
   kiconeffecttest
   kseparatortest
+  kglobalsettingsclient # helper program for kglobalsettingstest
 )
 
 KDEUI_UNIT_TESTS(
+  kglobalsettingstest
   kdialog_unittest
   kiconloader_unittest
 )

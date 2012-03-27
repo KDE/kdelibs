@@ -26,6 +26,7 @@ set(kwidgets_LIB_SRCS
  icons/kiconeffect.cpp
  utils/kguiitem.cpp
  utils/kstandardguiitem.cpp
+ utils/kglobalsettings.cpp
 )
 
 add_library(kwidgets ${LIBRARY_TYPE} ${kwidgets_LIB_SRCS})
@@ -51,6 +52,7 @@ install( FILES
  icons/kiconeffect.h
  utils/kguiitem.h
  utils/kstandardguiitem.h
+ utils/kglobalsettings.h
 
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
