@@ -97,11 +97,7 @@ void KWidgetItemDelegatePrivate::_k_slotDataChanged(const QModelIndex &topLeft, 
     for (int i = topLeft.row(); i <= bottomRight.row(); ++i) {
         for (int j = topLeft.column(); j <= bottomRight.column(); ++j) {
             const QModelIndex index = model->index(i, j, topLeft.parent());
-            QStyleOptionViewItemV4 optionView;
-            optionView.initFrom(itemView->viewport());
-            optionView.rect = itemView->visualRect(index);
-            optionView.decorationSize = itemView->iconSize();
-            widgetPool->findWidgets(index, optionView);
+            widgetPool->findWidgets(index, optionView(index));
         }
     }
 }
@@ -123,18 +119,10 @@ void KWidgetItemDelegatePrivate::_k_slotModelReset()
 void KWidgetItemDelegatePrivate::_k_slotSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
     foreach (const QModelIndex &index, selected.indexes()) {
-        QStyleOptionViewItemV4 optionView;
-        optionView.initFrom(itemView->viewport());
-        optionView.rect = itemView->visualRect(index);
-        optionView.decorationSize = itemView->iconSize();
-        widgetPool->findWidgets(index, optionView);
+        widgetPool->findWidgets(index, optionView(index));
     }
     foreach (const QModelIndex &index, deselected.indexes()) {
-        QStyleOptionViewItemV4 optionView;
-        optionView.initFrom(itemView->viewport());
-        optionView.rect = itemView->visualRect(index);
-        optionView.decorationSize = itemView->iconSize();
-        widgetPool->findWidgets(index, optionView);
+        widgetPool->findWidgets(index, optionView(index));
     }
 }
 
@@ -144,13 +132,8 @@ void KWidgetItemDelegatePrivate::updateRowRange(const QModelIndex &parent, int s
     while (i <= end) {
         for (int j = 0; j < model->columnCount(parent); ++j) {
             const QModelIndex index = model->index(i, j, parent);
-            QStyleOptionViewItemV4 optionView;
-            optionView.initFrom(itemView->viewport());
-            optionView.rect = itemView->visualRect(index);
-            optionView.decorationSize = itemView->iconSize();
-
-            QList<QWidget*> widgetList = widgetPool->findWidgets(index, optionView, isRemoving ? KWidgetItemDelegatePool::NotUpdateWidgets
-                                                                                               : KWidgetItemDelegatePool::UpdateWidgets);
+            QList<QWidget*> widgetList = widgetPool->findWidgets(index, optionView(index), isRemoving ? KWidgetItemDelegatePool::NotUpdateWidgets
+                                                                                                      : KWidgetItemDelegatePool::UpdateWidgets);
             if (isRemoving) {
                 widgetPool->d->allocatedWidgets.removeAll(widgetList);
                 foreach (QWidget *widget, widgetList) {
@@ -165,6 +148,15 @@ void KWidgetItemDelegatePrivate::updateRowRange(const QModelIndex &parent, int s
     }
 }
 
+inline QStyleOptionViewItemV4 KWidgetItemDelegatePrivate::optionView(const QModelIndex &index)
+{
+    QStyleOptionViewItemV4 optionView;
+    optionView.initFrom(itemView->viewport());
+    optionView.rect = itemView->visualRect(index);
+    optionView.decorationSize = itemView->iconSize();
+    return optionView;
+}
+
 void KWidgetItemDelegatePrivate::initializeModel(const QModelIndex &parent)
 {
     if (!model) {
@@ -174,11 +166,7 @@ void KWidgetItemDelegatePrivate::initializeModel(const QModelIndex &parent)
         for (int j = 0; j < model->columnCount(parent); ++j) {
             const QModelIndex index = model->index(i, j, parent);
             if (index.isValid()) {
-                QStyleOptionViewItemV4 optionView;
-                optionView.initFrom(itemView->viewport());
-                optionView.rect = itemView->visualRect(index);
-                optionView.decorationSize = itemView->iconSize();
-                widgetPool->findWidgets(index, optionView);
+                widgetPool->findWidgets(index, optionView(index));
             }
         }
         // Check if we need to go recursively through the children of parent (if any) to initialize
@@ -300,11 +288,7 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
             if (qobject_cast<QAbstractItemView*>(watched)) {
                 foreach (const QModelIndex &index, selectionModel->selectedIndexes()) {
                     if (index.isValid()) {
-                        QStyleOptionViewItemV4 optionView;
-                        optionView.initFrom(itemView->viewport());
-                        optionView.rect = itemView->visualRect(index);
-                        optionView.decorationSize = itemView->iconSize();
-                        widgetPool->findWidgets(index, optionView);
+                        widgetPool->findWidgets(index, optionView(index));
                     }
                 }
             }
