@@ -193,7 +193,7 @@ static void runKBuildSycoca()
     const QString kbuildsycoca = QStandardPaths::findExecutable(KBUILDSYCOCA_EXENAME);
     QVERIFY(!kbuildsycoca.isEmpty());
     QStringList args;
-    //proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output
+    proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output
     proc.start(kbuildsycoca, args);
     kDebug() << "waiting for signal";
     QVERIFY(QTest::kWaitForSignal(KSycoca::self(), SIGNAL(databaseChanged(QStringList)), 10000));
