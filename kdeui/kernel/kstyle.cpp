@@ -2665,14 +2665,6 @@ int KStyle::pixelMetric(PixelMetric metric, const QStyleOption* option, const QW
         case PM_ExclusiveIndicatorHeight:
             return widgetLayoutProp(WT_RadioButton, RadioButton::Size, option, widget);
 
-        case PM_CheckListControllerSize:
-        case PM_CheckListButtonSize:
-        {
-            int checkBoxSize = widgetLayoutProp(WT_CheckBox, CheckBox::Size, option, widget);
-            int radioButtonSize = widgetLayoutProp(WT_RadioButton, RadioButton::Size, option, widget);
-            return qMax(checkBoxSize, radioButtonSize);
-        }
-
         case PM_DockWidgetFrameWidth:
             return widgetLayoutProp(WT_DockWidget, DockWidget::FrameWidth, option, widget);
 
@@ -3174,110 +3166,6 @@ void  KStyle::drawComplexControl (ComplexControl cc, const QStyleOptionComplex* 
             }
             //Note: we falldown to the base intentionally
         }
-        break;
-
-        case CC_Q3ListView:
-        {
-            const QStyleOptionQ3ListView* lvOpt = qstyleoption_cast<const QStyleOptionQ3ListView*>(opt);
-            Q_ASSERT (lvOpt);
-
-            if (lvOpt->subControls & SC_Q3ListView)
-                QCommonStyle::drawComplexControl(cc, opt, p, w);
-
-            if (lvOpt->items.isEmpty())
-                return;
-
-            // If we have a branch or are expanded...
-            if (lvOpt->subControls & (SC_Q3ListViewBranch | SC_Q3ListViewExpand))
-            {
-                QStyleOptionQ3ListViewItem item  = lvOpt->items.at(0);
-
-                int y = r.y();
-
-                QStyleOption opt; //For painting
-                opt.palette   = lvOpt->palette;
-                opt.direction = Qt::LeftToRight;
-
-                //Remap the painter so (0,0) corresponds to the origin
-                //of the widget, to help out the line align code.
-                //Extract the paint offset. Here be dragons
-                //(and not the cute green Patron of the project, either)
-                int cX = w ? w->property("contentsX").toInt() : 0;
-                int cY = w ? w->property("contentsY").toInt() : 0;
-
-                QPoint adjustCoords = p->matrix().map(QPoint(0,0)) + QPoint(cX, cY);
-                p->translate(-adjustCoords);
-
-                if (lvOpt->activeSubControls == SC_All && (lvOpt->subControls & SC_Q3ListViewExpand)) {
-                    //### CHECKME: this is from KStyle3, and needs to be re-checked/tested
-                    // We only need to draw a vertical line
-                    //Route through the Qt4 style-call.
-                    QStyleOption opt;
-                    opt.rect  = QRect(r.topLeft() + adjustCoords, r.size());
-                    opt.state = State_Sibling;
-                    drawPrimitive(PE_IndicatorBranch, &opt, p, 0);
-                } else {
-                    int childPos = 1;
-
-                    // Draw all the expand/close boxes, and nearby branches
-                    while (childPos < lvOpt->items.size() && y < r.height())
-                    {
-                        const QStyleOptionQ3ListViewItem& child = lvOpt->items.at(childPos);
-                        if (!(child.features & QStyleOptionQ3ListViewItem::Visible))
-                        {
-                            childPos++;
-                            continue;
-                        }
-
-                        //Route through the Qt4 style-call.
-                        opt.rect  = QRect(r.x() + adjustCoords.x(), y + adjustCoords.y(),
-                                          r.width(), child.height);
-                        opt.state = State_Item;
-
-                        if (child.features & QStyleOptionQ3ListViewItem::Expandable || child.childCount)
-                        {
-                            opt.state |= State_Children;
-                            opt.state |= (child.state & State_Open);
-                        }
-
-                        //See if we have a visible sibling
-                        int siblingPos = 0;
-                        for (siblingPos = childPos + 1; siblingPos < lvOpt->items.size(); ++siblingPos)
-                        {
-                            if (lvOpt->items.at(siblingPos).features & QStyleOptionQ3ListViewItem::Visible)
-                            {
-                                opt.state |= State_Sibling;
-                                break;
-                            }
-                        }
-
-                        //If on screen, paint it
-                        if (y + child.height > 0)
-                            drawPrimitive(PE_IndicatorBranch, &opt, p, 0);
-
-                        if (!siblingPos)
-                            break;
-
-                        //If we have a sibling, and an expander, also have to draw
-                        //a line for below the immediate area
-                        if ((opt.state & State_Children) && (opt.state & State_Sibling))
-                        {
-                            opt.state = State_Sibling;
-                            opt.rect  = QRect(r.x() + adjustCoords.x(),
-                                              y + adjustCoords.y() + child.height,
-                                              r.width(), child.totalHeight - child.height);
-                            if (opt.rect.height())
-                                drawPrimitive(PE_IndicatorBranch, &opt, p, 0);
-                        }
-
-                        y += child.totalHeight;
-                        childPos = siblingPos;
-                    } //loop through items
-                } //complex case
-
-                p->translate(adjustCoords);
-            } //if have branch or expander
-        } //CC_Q3ListView
         break;
 
         case CC_Slider:
