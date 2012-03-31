@@ -70,8 +70,7 @@ class KBiAssociativeContainer
     struct _iterator_impl_ctor<QMap<T, U>, T, U> : public QMap<T, U>::iterator
     {
         /* implicit */ _iterator_impl_ctor(const typename QMap<T, U>::iterator it)
-            // Using internals here because I was too lazy to write my own iterator.
-          : QMap<T, U>::iterator(static_cast<QMapData::Node*>(it))
+          : QMap<T, U>::iterator(it)
         {
 
         }
