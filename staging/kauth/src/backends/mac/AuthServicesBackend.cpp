@@ -76,11 +76,11 @@ Action::AuthStatus AuthServicesBackend::actionStatus(const QString &action)
 
     switch (result) {
     case errAuthorizationSuccess:
-        return Action::StatusAuthorized;
+        return Action::AuthorizedStatus;
     case errAuthorizationInteractionNotAllowed:
-        return Action::StatusAuthRequired;
+        return Action::AuthRequiredStatus;
     default:
-        return Action::StatusDenied;
+        return Action::DeniedStatus;
     }
 }
 

@@ -63,7 +63,7 @@ void SetupActionTest::testBasicActionProperties()
     QCOMPARE(action.details(), QLatin1String("details"));
     QVERIFY(!action.hasHelper());
     QVERIFY(action.helperId().isEmpty());
-    QCOMPARE(action.status(), KAuth::Action::StatusAuthorized);
+    QCOMPARE(action.status(), KAuth::Action::AuthorizedStatus);
 
     QVERIFY(action.arguments().isEmpty());
     QVariantMap args;
@@ -83,7 +83,7 @@ void SetupActionTest::testBasicActionProperties()
     QCOMPARE(action.details(), QLatin1String("details"));
     QVERIFY(!action.hasHelper());
     QVERIFY(action.helperId().isEmpty());
-    QCOMPARE(action.status(), KAuth::Action::StatusInvalid);
+    QCOMPARE(action.status(), KAuth::Action::InvalidStatus);
 }
 
 void SetupActionTest::testUserAuthorization()
@@ -93,7 +93,7 @@ void SetupActionTest::testUserAuthorization()
     KAuth::Action action(QLatin1String("requires.auth"), QLatin1String("details"));
     QVERIFY(action.isValid());
 
-    QCOMPARE(action.status(), KAuth::Action::StatusAuthRequired);
+    QCOMPARE(action.status(), KAuth::Action::AuthRequiredStatus);
     KAuth::ExecuteJob *job = action.execute();
 
     QVERIFY(!job->exec());
@@ -104,7 +104,7 @@ void SetupActionTest::testUserAuthorization()
 
     QVERIFY(action.isValid());
 
-    QCOMPARE(action.status(), KAuth::Action::StatusAuthRequired);
+    QCOMPARE(action.status(), KAuth::Action::AuthRequiredStatus);
     job = action.execute();
 
     QVERIFY(job->exec());
@@ -120,7 +120,7 @@ void SetupActionTest::testAuthorizationFail()
     KAuth::Action action(QLatin1String("doomed.to.fail"), QLatin1String("details"));
     QVERIFY(action.isValid());
 
-    QCOMPARE(action.status(), KAuth::Action::StatusDenied);
+    QCOMPARE(action.status(), KAuth::Action::DeniedStatus);
     KAuth::ExecuteJob *job = action.execute();
 
     QVERIFY(!job->exec());

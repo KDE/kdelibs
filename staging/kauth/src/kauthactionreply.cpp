@@ -45,7 +45,7 @@ public:
 
 // Predefined replies
 const ActionReply ActionReply::SuccessReply() { return ActionReply(); }
-const ActionReply ActionReply::HelperErrorReply() { return ActionReply(ActionReply::TypeHelperError); }
+const ActionReply ActionReply::HelperErrorReply() { return ActionReply(ActionReply::HelperErrorType); }
 const ActionReply ActionReply::NoResponderReply() { return ActionReply(ActionReply::NoResponderError); }
 const ActionReply ActionReply::NoSuchActionReply() { return ActionReply(ActionReply::NoSuchActionError); }
 const ActionReply ActionReply::InvalidActionReply() { return ActionReply(ActionReply::InvalidActionError); }
@@ -65,7 +65,7 @@ ActionReply::ActionReply()
         : d(new ActionReplyData())
 {
     d->errorCode = 0;
-    d->type = TypeSuccess;
+    d->type = SuccessType;
 }
 
 ActionReply::ActionReply(ActionReply::Type type)
@@ -79,7 +79,7 @@ ActionReply::ActionReply(int error)
         : d(new ActionReplyData())
 {
     d->errorCode = error;
-    d->type = TypeKAuthError;
+    d->type = KAuthErrorType;
 }
 
 ActionReply::~ActionReply()
@@ -108,12 +108,12 @@ ActionReply::Type ActionReply::type() const
 
 bool ActionReply::succeeded() const
 {
-    return d->type == TypeSuccess;
+    return d->type == SuccessType;
 }
 
 bool ActionReply::failed() const
 {
-    return d->type != TypeSuccess;
+    return !succeeded();
 }
 
 ActionReply::Error ActionReply::errorCode() const
@@ -124,8 +124,8 @@ ActionReply::Error ActionReply::errorCode() const
 void ActionReply::setErrorCode(Error errorCode)
 {
     d->errorCode = errorCode;
-    if (d->type != TypeHelperError) {
-        d->type = TypeKAuthError;
+    if (d->type != HelperErrorType) {
+        d->type = KAuthErrorType;
     }
 }
 

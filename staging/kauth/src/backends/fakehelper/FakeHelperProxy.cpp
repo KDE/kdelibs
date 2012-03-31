@@ -81,7 +81,7 @@ Action::AuthStatus FakeHelperProxy::authorizeAction(const QString& action, const
 {
     Q_UNUSED(action)
     Q_UNUSED(helperID)
-    return Action::StatusDenied;
+    return Action::DeniedStatus;
 }
 
 }

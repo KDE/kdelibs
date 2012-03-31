@@ -31,7 +31,7 @@ FakeBackend::FakeBackend()
 Action::AuthStatus FakeBackend::authorizeAction(const QString &action)
 {
     Q_UNUSED(action)
-    return Action::StatusDenied;
+    return Action::DeniedStatus;
 }
 
 void FakeBackend::setupAction(const QString &action)
@@ -42,7 +42,7 @@ void FakeBackend::setupAction(const QString &action)
 Action::AuthStatus FakeBackend::actionStatus(const QString &action)
 {
     Q_UNUSED(action)
-    return Action::StatusDenied;
+    return Action::DeniedStatus;
 }
 
 QByteArray FakeBackend::callerID() const

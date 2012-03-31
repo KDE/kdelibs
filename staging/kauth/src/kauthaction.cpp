@@ -180,7 +180,7 @@ QWidget* Action::parentWidget() const
 Action::AuthStatus Action::status() const
 {
     if (!isValid()) {
-        return Action::StatusInvalid;
+        return Action::InvalidStatus;
     }
 
     return BackendsManager::authBackend()->actionStatus(d->name);

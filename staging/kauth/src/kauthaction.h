@@ -73,12 +73,12 @@ public:
      * The three values returned by authorization methods
      */
     enum AuthStatus {
-        StatusDenied, ///< The authorization has been denied by the authorization backend
-        StatusError, ///< An error occurred
-        StatusInvalid, ///< An invalid action cannot be authorized
-        StatusAuthorized, ///< The authorization has been granted by the authorization backend
-        StatusAuthRequired, ///< The user could obtain the authorization after authentication
-        StatusUserCancelled ///< The user pressed Cancel the authentication dialog. Currently used only on the mac
+        DeniedStatus, ///< The authorization has been denied by the authorization backend
+        ErrorStatus, ///< An error occurred
+        InvalidStatus, ///< An invalid action cannot be authorized
+        AuthorizedStatus, ///< The authorization has been granted by the authorization backend
+        AuthRequiredStatus, ///< The user could obtain the authorization after authentication
+        UserCancelledStatus ///< The user pressed Cancel the authentication dialog. Currently used only on the mac
     };
 
     enum ExecutionMode {

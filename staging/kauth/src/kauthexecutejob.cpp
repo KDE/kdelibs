@@ -117,7 +117,7 @@ void ExecuteJob::Private::doExecuteAction()
 
         Action::AuthStatus s = BackendsManager::authBackend()->authorizeAction(action.name());
 
-        if (s == Action::StatusAuthorized) {
+        if (s == Action::AuthorizedStatus) {
             if (action.hasHelper()) {
                 BackendsManager::helperProxy()->executeAction(action.name(), action.helperId(), action.arguments());
             } else {
@@ -127,13 +127,13 @@ void ExecuteJob::Private::doExecuteAction()
         } else {
             // Abort if authorization fails
             switch (s) {
-            case Action::StatusDenied:
+            case Action::DeniedStatus:
                 actionPerformedSlot(action.name(), ActionReply::AuthorizationDeniedReply());
                 break;
-            case Action::StatusInvalid:
+            case Action::InvalidStatus:
                 actionPerformedSlot(action.name(), ActionReply::InvalidActionReply());
                 break;
-            case Action::StatusUserCancelled:
+            case Action::UserCancelledStatus:
                 actionPerformedSlot(action.name(), ActionReply::UserCancelledReply());
                 break;
             default:
@@ -165,7 +165,7 @@ void ExecuteJob::Private::doAuthorizeAction()
 {
     // Check the status first
     Action::AuthStatus s = action.status();
-    if (s == Action::StatusAuthRequired) {
+    if (s == Action::AuthRequiredStatus) {
         // Let's check what to do
         if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromClientCapability) {
             // In this case we can actually try an authorization
@@ -176,7 +176,7 @@ void ExecuteJob::Private::doAuthorizeAction()
             s = BackendsManager::authBackend()->authorizeAction(action.name());
         } else if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromHelperCapability) {
             // In this case, just throw out success, as the auth will take place later
-            s = Action::StatusAuthorized;
+            s = Action::AuthorizedStatus;
         } else {
             // This should never, never happen
             ActionReply r(ActionReply::BackendError);
@@ -186,7 +186,7 @@ void ExecuteJob::Private::doAuthorizeAction()
     }
 
     // Return based on the current status
-    if (s == Action::StatusAuthorized) {
+    if (s == Action::AuthorizedStatus) {
         actionPerformedSlot(action.name(), ActionReply::SuccessReply());
     } else {
         actionPerformedSlot(action.name(), ActionReply::AuthorizationDeniedReply());

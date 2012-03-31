@@ -121,7 +121,7 @@ void HelperTest::testBasicActionExecution()
     action.setHelperId(QLatin1String("org.kde.auth.autotest"));
     QVERIFY(action.isValid());
 
-    QCOMPARE(action.status(), KAuth::Action::StatusAuthRequired);
+    QCOMPARE(action.status(), KAuth::Action::AuthRequiredStatus);
     KAuth::ExecuteJob *job = action.execute();
 
     QVERIFY(job->exec());
@@ -136,7 +136,7 @@ void HelperTest::testExecuteJobSignals()
     action.setHelperId(QLatin1String("org.kde.auth.autotest"));
     QVERIFY(action.isValid());
 
-    QCOMPARE(action.status(), KAuth::Action::StatusAuthRequired);
+    QCOMPARE(action.status(), KAuth::Action::AuthRequiredStatus);
 
     KAuth::ExecuteJob *job = action.execute();
 
@@ -150,7 +150,7 @@ void HelperTest::testExecuteJobSignals()
     QCOMPARE(finishedSpy.size(), 1);
     QCOMPARE(qobject_cast<KAuth::ExecuteJob*>(finishedSpy.first().first().value<KJob*>()), job);
     QCOMPARE(statusChangedSpy.size(), 1);
-    QCOMPARE(statusChangedSpy.first().first().value<KAuth::Action::AuthStatus>(), KAuth::Action::StatusAuthorized);
+    QCOMPARE(statusChangedSpy.first().first().value<KAuth::Action::AuthStatus>(), KAuth::Action::AuthorizedStatus);
     QCOMPARE(percentSpy.size(), 100);
     for (ulong i = 1; i <= 100; ++i) {
         QCOMPARE((unsigned long)percentSpy.at(i-1).last().toLongLong(), i);
@@ -177,7 +177,7 @@ void HelperTest::testActionData()
 
     QVERIFY(action.isValid());
 
-    QCOMPARE(action.status(), KAuth::Action::StatusAuthRequired);
+    QCOMPARE(action.status(), KAuth::Action::AuthRequiredStatus);
     KAuth::ExecuteJob *job = action.execute();
 
     QVERIFY(job->exec());

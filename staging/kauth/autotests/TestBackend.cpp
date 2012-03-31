@@ -41,22 +41,22 @@ void TestBackend::setNewCapabilities(AuthBackend::Capabilities capabilities)
 Action::AuthStatus TestBackend::authorizeAction(const QString &action)
 {
     if (action == QLatin1String("doomed.to.fail")) {
-        return Action::StatusDenied;
+        return Action::DeniedStatus;
     }
 
-    return Action::StatusAuthorized;
+    return Action::AuthorizedStatus;
 }
 
 void TestBackend::setupAction(const QString &action)
 {
     if (action == QLatin1String("doomed.to.fail")) {
-        m_actionStatuses.insert(action, Action::StatusDenied);
+        m_actionStatuses.insert(action, Action::DeniedStatus);
     } else if (action == QLatin1String("requires.auth") || action == QLatin1String("generates.error")) {
-        m_actionStatuses.insert(action, Action::StatusAuthRequired);
+        m_actionStatuses.insert(action, Action::AuthRequiredStatus);
     } else if (action == QLatin1String("always.authorized")) {
-        m_actionStatuses.insert(action, Action::StatusAuthorized);
+        m_actionStatuses.insert(action, Action::AuthorizedStatus);
     } else if (action.startsWith(QLatin1String("org.kde.auth.autotest"))) {
-        m_actionStatuses.insert(action, Action::StatusAuthRequired);
+        m_actionStatuses.insert(action, Action::AuthRequiredStatus);
     }
 }
 
@@ -66,7 +66,7 @@ Action::AuthStatus TestBackend::actionStatus(const QString &action)
         return m_actionStatuses.value(action);
     }
 
-    return Action::StatusInvalid;
+    return Action::InvalidStatus;
 }
 
 QByteArray TestBackend::callerID() const
@@ -79,24 +79,24 @@ bool TestBackend::isCallerAuthorized(const QString &action, QByteArray callerId)
     if (action == QLatin1String("doomed.to.fail")) {
         return false;
     } else if (action == QLatin1String("requires.auth")) {
-        m_actionStatuses.insert(action, Action::StatusAuthorized);
-        Q_EMIT actionStatusChanged(action, Action::StatusAuthorized);
+        m_actionStatuses.insert(action, Action::AuthorizedStatus);
+        Q_EMIT actionStatusChanged(action, Action::AuthorizedStatus);
         return true;
     } else if (action == QLatin1String("generates.error")) {
-        m_actionStatuses.insert(action, Action::StatusError);
-        Q_EMIT actionStatusChanged(action, Action::StatusError);
+        m_actionStatuses.insert(action, Action::ErrorStatus);
+        Q_EMIT actionStatusChanged(action, Action::ErrorStatus);
         return false;
     } else if (action == QLatin1String("always.authorized")) {
         return true;
     } else if (action.startsWith(QLatin1String("org.kde.auth.autotest"))) {
         qDebug() << "Caller ID:" << callerId;
         if (callerId == callerID()) {
-            m_actionStatuses.insert(action, Action::StatusAuthorized);
-            Q_EMIT actionStatusChanged(action, Action::StatusAuthorized);
+            m_actionStatuses.insert(action, Action::AuthorizedStatus);
+            Q_EMIT actionStatusChanged(action, Action::AuthorizedStatus);
             return true;
         } else {
-            m_actionStatuses.insert(action, Action::StatusDenied);
-            Q_EMIT actionStatusChanged(action, Action::StatusDenied);
+            m_actionStatuses.insert(action, Action::DeniedStatus);
+            Q_EMIT actionStatusChanged(action, Action::DeniedStatus);
         }
     }
 
