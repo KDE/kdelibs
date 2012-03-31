@@ -21,9 +21,11 @@
 #ifndef DBUS_HELPER_PROXY_H
 #define DBUS_HELPER_PROXY_H
 
-#include <QVariant>
 #include "HelperProxy.h"
 #include "kauthactionreply.h"
+
+#include <QDBusConnection>
+#include <QVariant>
 
 namespace KAuth
 {
@@ -38,6 +40,7 @@ class DBusHelperProxy : public HelperProxy
     QString m_currentAction;
     bool m_stopRequest;
     QList<QString> m_actionsInProgress;
+    QDBusConnection m_busConnection;
 
     enum SignalType {
         ActionStarted, // The blob argument is empty
@@ -48,10 +51,11 @@ class DBusHelperProxy : public HelperProxy
     };
 
 public:
-    DBusHelperProxy() : responder(0), m_stopRequest(false) {}
+    DBusHelperProxy();
+    DBusHelperProxy(const QDBusConnection &busConnection);
 
-    virtual bool executeActions(const QList<QPair<QString, QVariantMap> > &list, const QString &helperID);
-    virtual ActionReply executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments);
+    virtual void executeAction(const QString &action, const QString &helperID,
+            const QVariantMap &arguments);
     virtual Action::AuthStatus authorizeAction(const QString& action, const QString& helperID);
     virtual void stopAction(const QString &action, const QString &helperID);
 
@@ -64,7 +68,6 @@ public:
 
 public Q_SLOTS:
     void stopAction(const QString &action);
-    void performActions(QByteArray blob, const QByteArray &callerID);
     QByteArray performAction(const QString &action, const QByteArray &callerID, QByteArray arguments);
     uint authorizeAction(const QString &action, const QByteArray &callerID);
 

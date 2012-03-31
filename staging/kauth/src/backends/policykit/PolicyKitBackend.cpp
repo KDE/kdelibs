@@ -38,9 +38,9 @@ Action::AuthStatus PolicyKitBackend::authorizeAction(const QString &action)
 {
     switch (PolkitQt::Auth::computeAndObtainAuth(action)) {
     case PolkitQt::Auth::Yes:
-        return Action::Authorized;
+        return Action::StatusAuthorized;
     default:
-        return Action::Denied;
+        return Action::StatusDenied;
     }
 }
 
@@ -60,12 +60,12 @@ Action::AuthStatus PolicyKitBackend::actionStatus(const QString &action)
                                false);
     switch (r) {
     case PolkitQt::Auth::Yes:
-        return Action::Authorized;
+        return Action::StatusAuthorized;
     case PolkitQt::Auth::No:
     case PolkitQt::Auth::Unknown:
-        return Action::Denied;
+        return Action::StatusDenied;
     default:
-        return Action::AuthRequired;
+        return Action::StatusAuthRequired;
     }
 }
 

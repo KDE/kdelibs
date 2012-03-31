@@ -1,6 +1,6 @@
 /*
+*   Copyright (C) 2009-2012 Dario Freddi <drf@kde.org>
 *   Copyright (C) 2008 Nicola Gigante <nicola.gigante@gmail.com>
-*   Copyright (C) 2009 Dario Freddi <drf@kde.org>
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU Lesser General Public License as published by
@@ -25,57 +25,65 @@
 namespace KAuth
 {
 
-class ActionReply::Private
+class ActionReplyData : public QSharedData
 {
 public:
+    ActionReplyData() {}
+    ActionReplyData(const ActionReplyData &other)
+        : QSharedData(other)
+        , data(other.data)
+        , errorCode(other.errorCode)
+        , errorDescription(errorDescription)
+        , type(type) {}
+    ~ActionReplyData() {}
+
     QVariantMap data; // User-defined data for success and helper error replies, empty for kauth errors
-    int errorCode;
+    uint errorCode;
     QString errorDescription;
     ActionReply::Type type;
 };
 
 // Predefined replies
-const ActionReply ActionReply::SuccessReply = ActionReply();
-const ActionReply ActionReply::HelperErrorReply = ActionReply(ActionReply::HelperError);
-const ActionReply ActionReply::NoResponderReply = ActionReply(ActionReply::NoResponder);
-const ActionReply ActionReply::NoSuchActionReply = ActionReply(ActionReply::NoSuchAction);
-const ActionReply ActionReply::InvalidActionReply = ActionReply(ActionReply::InvalidAction);
-const ActionReply ActionReply::AuthorizationDeniedReply = ActionReply(ActionReply::AuthorizationDenied);
-const ActionReply ActionReply::UserCancelledReply = ActionReply(ActionReply::UserCancelled);
-const ActionReply ActionReply::HelperBusyReply = ActionReply(ActionReply::HelperBusy);
-const ActionReply ActionReply::DBusErrorReply = ActionReply(ActionReply::DBusError);
+const ActionReply ActionReply::SuccessReply() { return ActionReply(); }
+const ActionReply ActionReply::HelperErrorReply() { return ActionReply(ActionReply::HelperErrorType); }
+const ActionReply ActionReply::NoResponderReply() { return ActionReply(ActionReply::NoResponderError); }
+const ActionReply ActionReply::NoSuchActionReply() { return ActionReply(ActionReply::NoSuchActionError); }
+const ActionReply ActionReply::InvalidActionReply() { return ActionReply(ActionReply::InvalidActionError); }
+const ActionReply ActionReply::AuthorizationDeniedReply() { return ActionReply(ActionReply::AuthorizationDeniedError); }
+const ActionReply ActionReply::UserCancelledReply() { return ActionReply(ActionReply::UserCancelledError); }
+const ActionReply ActionReply::HelperBusyReply() { return ActionReply(ActionReply::HelperBusyError); }
+const ActionReply ActionReply::AlreadyStartedReply() { return ActionReply(ActionReply::AlreadyStartedError); }
+const ActionReply ActionReply::DBusErrorReply() { return ActionReply(ActionReply::DBusError); }
 
 // Constructors
 ActionReply::ActionReply(const ActionReply &reply)
-        : d(new Private())
+    : d(reply.d)
 {
-    *this = reply;
 }
 
 ActionReply::ActionReply()
-        : d(new Private())
+        : d(new ActionReplyData())
 {
     d->errorCode = 0;
-    d->type = Success;
+    d->type = SuccessType;
 }
 
 ActionReply::ActionReply(ActionReply::Type type)
-        : d(new Private())
+        : d(new ActionReplyData())
 {
     d->errorCode = 0;
     d->type = type;
 }
 
 ActionReply::ActionReply(int error)
-        : d(new Private())
+        : d(new ActionReplyData())
 {
     d->errorCode = error;
-    d->type = KAuthError;
+    d->type = KAuthErrorType;
 }
 
 ActionReply::~ActionReply()
 {
-    delete d;
 }
 
 void ActionReply::setData(const QVariantMap &data)
@@ -100,24 +108,24 @@ ActionReply::Type ActionReply::type() const
 
 bool ActionReply::succeeded() const
 {
-    return d->type == Success;
+    return d->type == SuccessType;
 }
 
 bool ActionReply::failed() const
 {
-    return d->type != Success;
+    return !succeeded();
 }
 
-int ActionReply::errorCode() const
+ActionReply::Error ActionReply::errorCode() const
 {
-    return d->errorCode;
+    return (ActionReply::Error)d->errorCode;
 }
 
-void ActionReply::setErrorCode(int errorCode)
+void ActionReply::setErrorCode(Error errorCode)
 {
     d->errorCode = errorCode;
-    if (d->type != HelperError) {
-        d->type = KAuthError;
+    if (d->type != HelperErrorType) {
+        d->type = KAuthErrorType;
     }
 }
 
@@ -153,13 +161,14 @@ ActionReply ActionReply::deserialize(const QByteArray &data)
 }
 
 // Operators
-ActionReply &ActionReply::operator=(const ActionReply & reply)
+ActionReply &ActionReply::operator=(const ActionReply &reply)
 {
-    d->data = reply.d->data;
-    d->errorCode = reply.d->errorCode;
-    d->errorDescription = reply.d->errorDescription;
-    d->type = reply.d->type;
+    if (this == &reply) {
+        // Protect against self-assignment
+        return *this;
+    }
 
+    d = reply.d;
     return *this;
 }
 

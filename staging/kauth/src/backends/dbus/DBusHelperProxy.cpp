@@ -40,6 +40,20 @@ namespace KAuth
 
 static void debugMessageReceived(int t, const QString &message);
 
+DBusHelperProxy::DBusHelperProxy()
+    : responder(0)
+    , m_stopRequest(false)
+    , m_busConnection(QDBusConnection::systemBus())
+{
+}
+
+DBusHelperProxy::DBusHelperProxy(const QDBusConnection &busConnection)
+    : responder(0)
+    , m_stopRequest(false)
+    , m_busConnection(busConnection)
+{
+}
+
 void DBusHelperProxy::stopAction(const QString &action, const QString &helperID)
 {
     QDBusMessage message;
@@ -49,55 +63,23 @@ void DBusHelperProxy::stopAction(const QString &action, const QString &helperID)
     args << action;
     message.setArguments(args);
 
-    QDBusConnection::systemBus().asyncCall(message);
+    m_busConnection.asyncCall(message);
 }
 
-bool DBusHelperProxy::executeActions(const QList<QPair<QString, QVariantMap> > &list, const QString &helperID)
+void DBusHelperProxy::executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments)
 {
-    QByteArray blob;
-    QDataStream stream(&blob, QIODevice::WriteOnly);
-
-    stream << list;
-
-    QDBusConnection::systemBus().interface()->startService(helperID);
-
-    if (!QDBusConnection::systemBus().connect(helperID, QLatin1String("/"), QLatin1String("org.kde.auth"), QLatin1String("remoteSignal"), this, SLOT(remoteSignalReceived(int,QString,QByteArray)))) {
-        return false;
-    }
-
-    QDBusMessage message;
-    message = QDBusMessage::createMethodCall(helperID, QLatin1String("/"), QLatin1String("org.kde.auth"), QLatin1String("performActions"));
-
-    QList<QVariant> args;
-    args << blob << BackendsManager::authBackend()->callerID();
-    message.setArguments(args);
-
-    QDBusPendingCall reply = QDBusConnection::systemBus().asyncCall(message); // This is a NO_REPLY method
-    if (reply.reply().type() == QDBusMessage::ErrorMessage) {
-        return false;
-    }
-
-    return true;
-}
-
-ActionReply DBusHelperProxy::executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments)
-{
-    if (!m_actionsInProgress.isEmpty()) {
-        return ActionReply::HelperBusyReply;
-    }
-
     QByteArray blob;
     QDataStream stream(&blob, QIODevice::WriteOnly);
 
     stream << arguments;
 
-    QDBusConnection::systemBus().interface()->startService(helperID);
+    m_busConnection.interface()->startService(helperID);
 
-    if (!QDBusConnection::systemBus().connect(helperID, QLatin1String("/"), QLatin1String("org.kde.auth"), QLatin1String("remoteSignal"), this, SLOT(remoteSignalReceived(int,QString,QByteArray)))) {
-        ActionReply errorReply = ActionReply::DBusErrorReply;
+    if (!m_busConnection.connect(helperID, QLatin1String("/"), QLatin1String("org.kde.auth"), QLatin1String("remoteSignal"), this, SLOT(remoteSignalReceived(int,QString,QByteArray)))) {
+        ActionReply errorReply = ActionReply::DBusErrorReply();
         errorReply.setErrorDescription(tr("DBus Backend error: connection to helper failed. ")
-				       + QDBusConnection::systemBus().lastError().message());
-        return errorReply;
+				       + m_busConnection.lastError().message());
+        Q_EMIT actionPerformed(action, errorReply);
     }
 
     QDBusMessage message;
@@ -109,47 +91,25 @@ ActionReply DBusHelperProxy::executeAction(const QString &action, const QString 
 
     m_actionsInProgress.push_back(action);
 
-    QEventLoop e;
-    QDBusPendingCall pendingCall = QDBusConnection::systemBus().asyncCall(message);
-    QDBusPendingCallWatcher watcher(pendingCall, this);
-    connect(&watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), &e, SLOT(quit()));
-    e.exec();
+    QDBusPendingCall pendingCall = m_busConnection.asyncCall(message);
 
-    QDBusMessage reply = pendingCall.reply();
-
-    if (reply.type() == QDBusMessage::ErrorMessage) {
-        ActionReply r = ActionReply::DBusErrorReply;
+    if (pendingCall.reply().type() == QDBusMessage::ErrorMessage) {
+        ActionReply r = ActionReply::DBusErrorReply();
         r.setErrorDescription(tr("DBus Backend error: could not contact the helper. "
-                                 "Connection error: ") + QDBusConnection::systemBus().lastError().message() + tr(". Message error: ") + reply.errorMessage());
-        qDebug() << reply.errorMessage();
+                "Connection error: ") + m_busConnection.lastError().message() + tr(". Message error: ") + pendingCall.reply().errorMessage());
+        qDebug() << pendingCall.reply().errorMessage();
 
-        // The remote signal will never arrive: so let's erase the action from the list ourselves
-        m_actionsInProgress.removeOne(action);
-
-        return r;
+        Q_EMIT actionPerformed(action, r);
     }
-
-    if (reply.arguments().size() != 1) {
-        ActionReply errorReply = ActionReply::DBusErrorReply;
-        errorReply.setErrorDescription(tr("DBus Backend error: received corrupt data from helper ") + QString::number(reply.arguments().size())
-				       + QLatin1String(" ") + QDBusConnection::systemBus().lastError().message());
-
-        // The remote signal may never arrive: so let's erase the action from the list ourselves
-        m_actionsInProgress.removeOne(action);
-
-        return errorReply;
-    }
-
-    return ActionReply::deserialize(reply.arguments().first().toByteArray());
 }
 
 Action::AuthStatus DBusHelperProxy::authorizeAction(const QString& action, const QString& helperID)
 {
     if (!m_actionsInProgress.isEmpty()) {
-        return Action::Error;
+        return Action::ErrorStatus;
     }
 
-    QDBusConnection::systemBus().interface()->startService(helperID);
+    m_busConnection.interface()->startService(helperID);
 
     QDBusMessage message;
     message = QDBusMessage::createMethodCall(helperID, QLatin1String("/"), QLatin1String("org.kde.auth"), QLatin1String("authorizeAction"));
@@ -161,7 +121,7 @@ Action::AuthStatus DBusHelperProxy::authorizeAction(const QString& action, const
     m_actionsInProgress.push_back(action);
 
     QEventLoop e;
-    QDBusPendingCall pendingCall = QDBusConnection::systemBus().asyncCall(message);
+    QDBusPendingCall pendingCall = m_busConnection.asyncCall(message);
     QDBusPendingCallWatcher watcher(pendingCall, this);
     connect(&watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), &e, SLOT(quit()));
     e.exec();
@@ -171,7 +131,7 @@ Action::AuthStatus DBusHelperProxy::authorizeAction(const QString& action, const
     QDBusMessage reply = pendingCall.reply();
 
     if (reply.type() == QDBusMessage::ErrorMessage || reply.arguments().size() != 1) {
-        return Action::Error;
+        return Action::ErrorStatus;
     }
 
     return static_cast<Action::AuthStatus>(reply.arguments().first().toUInt());
@@ -181,11 +141,11 @@ bool DBusHelperProxy::initHelper(const QString &name)
 {
     new AuthAdaptor(this);
 
-    if (!QDBusConnection::systemBus().registerService(name)) {
+    if (!m_busConnection.registerService(name)) {
         return false;
     }
 
-    if (!QDBusConnection::systemBus().registerObject(QLatin1String("/"), this)) {
+    if (!m_busConnection.registerObject(QLatin1String("/"), this)) {
         return false;
     }
 
@@ -246,34 +206,14 @@ bool DBusHelperProxy::hasToStopAction()
     return m_stopRequest;
 }
 
-void DBusHelperProxy::performActions(QByteArray blob, const QByteArray &callerID)
-{
-    QDataStream stream(&blob, QIODevice::ReadOnly);
-    QList< QPair< QString, QVariantMap > > actions;
-
-    stream >> actions;
-
-    QList< QPair< QString, QVariantMap > >::const_iterator i = actions.constBegin();
-    while (i != actions.constEnd()) {
-        QByteArray blob;
-        QDataStream stream(&blob, QIODevice::WriteOnly);
-
-        stream << i->second;
-
-        performAction(i->first, callerID, blob);
-
-        i++;
-    }
-}
-
 QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArray &callerID, QByteArray arguments)
 {
     if (!responder) {
-        return ActionReply::NoResponderReply.serialized();
+        return ActionReply::NoResponderReply().serialized();
     }
 
     if (!m_currentAction.isEmpty()) {
-        return ActionReply::HelperBusyReply.serialized();
+        return ActionReply::HelperBusyReply().serialized();
     }
 
     QVariantMap args;
@@ -302,11 +242,11 @@ QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArra
                                                  Q_RETURN_ARG(ActionReply, retVal), Q_ARG(QVariantMap, args));
 
         if (!success) {
-            retVal = ActionReply::NoSuchActionReply;
+            retVal = ActionReply::NoSuchActionReply();
         }
 
     } else {
-        retVal = ActionReply::AuthorizationDeniedReply;
+        retVal = ActionReply::AuthorizationDeniedReply();
     }
 
     timer->start();
@@ -323,7 +263,7 @@ QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArra
 uint DBusHelperProxy::authorizeAction(const QString& action, const QByteArray& callerID)
 {
     if (!m_currentAction.isEmpty()) {
-        return static_cast<uint>(Action::Error);
+        return static_cast<uint>(Action::ErrorStatus);
     }
 
     m_currentAction = action;
@@ -334,9 +274,9 @@ uint DBusHelperProxy::authorizeAction(const QString& action, const QByteArray& c
     timer->stop();
 
     if (BackendsManager::authBackend()->isCallerAuthorized(action, callerID)) {
-        retVal = static_cast<uint>(Action::Authorized);
+        retVal = static_cast<uint>(Action::AuthorizedStatus);
     } else {
-        retVal = static_cast<uint>(Action::Denied);
+        retVal = static_cast<uint>(Action::DeniedStatus);
     }
 
     timer->start();

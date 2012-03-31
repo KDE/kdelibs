@@ -1,6 +1,5 @@
 /*
-*   Copyright (C) 2008 Nicola Gigante <nicola.gigante@gmail.com>
-*   Copyright (C) 2009-2012 Dario Freddi <drf@kde.org>
+*   Copyright (C) 2012 Dario Freddi <drf@kde.org>
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,12 +17,31 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .
 */
 
-#ifndef KAUTH_H
-#define KAUTH_H
+#ifndef BACKENDS_MANAGER_H
+#define BACKENDS_MANAGER_H
 
-#include "kauthaction.h"
-#include "kauthactionreply.h"
-#include "kauthexecutejob.h"
-#include "kauthhelpersupport.h"
+#include "AuthBackend.h"
+#include "HelperProxy.h"
+#include <kauth_export.h>
+
+namespace KAuth
+{
+
+class KAUTH_EXPORT BackendsManager
+{
+    static AuthBackend *auth;
+    static HelperProxy *helper;
+
+    BackendsManager();
+public:
+    static AuthBackend *authBackend();
+    static HelperProxy *helperProxy();
+    static void setProxyForThread(QThread *thread, HelperProxy *proxy);
+
+private:
+    static void init();
+};
+
+} // namespace Auth
 
 #endif

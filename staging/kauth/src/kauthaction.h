@@ -1,6 +1,6 @@
 /*
+*   Copyright (C) 2009-2012 Dario Freddi <drf@kde.org>
 *   Copyright (C) 2008 Nicola Gigante <nicola.gigante@gmail.com>
-*   Copyright (C) 2009 Dario Freddi <drf@kde.org>
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU Lesser General Public License as published by
@@ -24,16 +24,16 @@
 #include <QtCore/QString>
 #include <QtCore/QVariant>
 #include <QtCore/QHash>
+#include <QtCore/QSharedDataPointer>
 
 #include <kauth_export.h>
-
-#include "kauthactionreply.h"
 
 namespace KAuth
 {
 
-class ActionWatcher;
+class ExecuteJob;
 
+class ActionData;
 /**
  * @brief Class to access, authorize and execute actions.
  *
@@ -68,20 +68,22 @@ class ActionWatcher;
  */
 class KAUTH_EXPORT Action
 {
-    class Private;
-    Private * const d;
-
 public:
     /**
      * The three values returned by authorization methods
      */
     enum AuthStatus {
-        Denied, ///< The authorization has been denied by the authorization backend
-        Error, ///< An error occurred
-        Invalid, ///< An invalid action cannot be authorized
-        Authorized, ///< The authorization has been granted by the authorization backend
-        AuthRequired, ///< The user could obtain the authorization after authentication
-        UserCancelled ///< The user pressed Cancel the authentication dialog. Currently used only on the mac
+        DeniedStatus, ///< The authorization has been denied by the authorization backend
+        ErrorStatus, ///< An error occurred
+        InvalidStatus, ///< An invalid action cannot be authorized
+        AuthorizedStatus, ///< The authorization has been granted by the authorization backend
+        AuthRequiredStatus, ///< The user could obtain the authorization after authentication
+        UserCancelledStatus ///< The user pressed Cancel the authentication dialog. Currently used only on the mac
+    };
+
+    enum ExecutionMode {
+        ExecuteMode,
+        AuthorizeOnlyMode,
     };
 
     /**
@@ -217,7 +219,7 @@ public:
      *
      * @return The default helper ID.
      */
-    QString helperID() const;
+    QString helperId() const;
 
     /**
      * @brief Sets the default helper ID used for actions execution
@@ -232,9 +234,9 @@ public:
      * @param id The default helper ID.
      *
      * @see hasHelper
-     * @see helperID
+     * @see helperId
      */
-    void setHelperID(const QString &id);
+    void setHelperId(const QString &id);
 
     /**
      * @brief Checks if the action has an helper
@@ -250,19 +252,6 @@ public:
      * @see setHelperID
      */
     bool hasHelper() const;
-
-    /**
-     * @brief Gets the ActionWatcher object for this action
-     *
-     * ActionWatcher objects are used to get notifications about the action
-     * execution status. Every action watcher is tied to an action and
-     * every action has a watcher. This means that if you call this method
-     * on two different Action objects with the same name, you'll get the
-     * same watcher object.
-     *
-     * @return The action watcher for this action
-     */
-    ActionWatcher *watcher();
 
     /**
      * @brief Sets the map object used to pass arguments to the helper.
@@ -297,53 +286,6 @@ public:
     * @param value The value of the new entry
     */
     void addArgument(const QString &key, const QVariant &value);
-
-    /**
-     * @brief Acquires authorization for an action without excuting it.
-     *
-     * @note Please use this method if you really know what you are doing. If you are
-     *       implementing a GUI, you probably should look into earlyAuthorize instead.
-     *
-     * @note Please remember that calling this method is not required for a successful action
-     *       execution: it is safe and advised to call execute() only, without a previous call
-     *       to authorize or earlyAuthorize.
-     *
-     * This method acquires the authorization rights for the action, asking
-     * the user to authenticate if needed. It tries very hard to resolve a possible
-     * challenge (AuthRequired); for this reason, it is meant only for advanced usages.
-     * If you are unsure, always use earlyAuthorize or execute the action directly.
-     *
-     * @return The result of the authorization process
-     *
-     * @see earlyAuthorize
-     */
-    AuthStatus authorize() const;
-
-    /**
-     * @brief Tries to resolve authorization status in the best possible way without executing the action
-     *
-     * This method checks for the status of the action, and tries to acquire authorization
-     * (if needed) if the backend being used supports client-side authorization.
-     *
-     * This means this method is not reliable - its purpose is to provide user interfaces with
-     * an efficient means to acquire authorization as early as possible, without interrupting
-     * the user's workflow. If the backend's authentication phase happens in the helper and the
-     * action requires authentication, \c Authorized will be returned.
-     *
-     * The main difference with authorize is that this method does not try to acquire authorization
-     * if the backend's authentication phase happens in the helper: using authorize in such a case
-     * might lead to ask the user its password twice, as the helper might time out, or in the case
-     * of a one shot authorization, the scope of the authorization would end with the authorization
-     * check itself. For this reason, you should @b always use this method instead of authorize, which
-     * is meant only for very advanced usages.
-     *
-     * This method is always safe to be called and used before an execution, even if not needed.
-     *
-     * @since 4.5
-     *
-     * @return The result of the early authorization process, with the caveats described above.
-     */
-    AuthStatus earlyAuthorize() const;
 
     /**
      * @brief Gets information about the authorization status of an action
@@ -392,88 +334,7 @@ public:
      *
      * @return The reply from the helper, or an error reply if something's wrong.
      */
-    ActionReply execute() const;
-
-    /**
-     * @brief Synchronously executes the action with a specific helperID
-     *
-     * This method does the exact same thing as execute(), but it takes a specific helperID, useful
-     * if you don't want to use the default one without changing it with setHelperID()
-     *
-     * @param helperID The helper ID to use for the execution of this action
-     * @return The reply from the helper, or an error if something's wrong.
-     */
-    ActionReply execute(const QString &helperID) const;
-
-    void setExecutesAsync(bool async);
-    bool executesAsync() const;
-
-    /**
-     * @brief Asynchronously executes a group of actions with a single request
-     *
-     * This method executes each action in the list. It checks for authorization of each action, and put the
-     * denied actions, if any, in the list pointed by the deniedActions parameter, if not NULL.
-     *
-     * Please note that with the D-Bus helper proxy (currently the only one implemented), the execution of a group
-     * of actions is very different from executing in sequence each action using, for example, executeAsync().
-     * Currently, the helper can execute only one request at the time. For this reason, if you have to call
-     * different actions in sequence, you can't call executeAsync() like this:
-     * @code
-     * action1.executeAsync();
-     * action2.executeAsync();
-     * @endcode
-     * because the second call will almost certainly return ActionReply::HelperBusy. You would have to execute the second
-     * action in the slot connected to the first action's actionPerformed() signal. This is not so good. This method
-     * allows the application to send a request with a list of actions. With this method, the code above becomes:
-     * @code
-     * QList<Action> list;
-     * list << action1 << action2;
-     * Action::executeActions(list);
-     * @endcode
-     * The return value will be false if communication errors occur. It will also be false if <b>all</b> the actions
-     * in the list are denied.
-     *
-     * @param actions The list of actions to execute
-     * @param deniedActions A pointer to a list to fill with the denied actions. Pass NULL if you don't need them.
-     * @param helperId The helper ID to execute the actions on.
-     */
-    static bool executeActions(const QList<Action> &actions, QList<Action> *deniedActions, const QString &helperId);
-
-    /**
-     * Convenience overload. This overload lets you specify, in addition, a QWidget which will be used as the
-     * authentication dialog's parent.
-     *
-     * @since 4.6
-     *
-     * @see executeActions
-     * @see setParentWidget
-     */
-    static bool executeActions(const QList<Action> &actions, QList<Action> *deniedActions, const QString &helperId,
-                               QWidget *parent);
-
-    /**
-     * @brief Ask the helper to stop executing an action
-     *
-     * This method sends a request to the helper asking to stop the execution of an action. It is only
-     * useful for long-running actions, because short and fast actions won't obbey to this request most of the times.
-     * Calling this method will make the HelperSupport::isStopped() method to return true the next time it's called.
-     *
-     * It's the helper's responsibility to regularly call it and exit if requested
-     * The actionPerformed() signal is emitted normally because, actually, the helper exists regularly. The return data
-     * in this case is application-dependent.
-     */
-    void stop();
-
-    /**
-     * @brief Ask the helper to stop executing an action, using a specific helper ID
-     *
-     * This method works exactly as the stop() method, but it lets you specify an helper ID different from the
-     * default one.
-     *
-     * To stop an action you need to send the stop request to the helper that is executing that action. This of course means you have to
-     * use the same helperID used for the execution call (either passed as a parameter or set as default with setHelperID() )
-     */
-    void stop(const QString &helperID);
+    ExecuteJob *execute(ExecutionMode mode = ExecuteMode);
 
     /**
      * @brief Sets a parent widget for the authentication dialog
@@ -499,6 +360,9 @@ public:
      * @returns A QWidget which will is being used as the dialog's parent
      */
     QWidget *parentWidget() const;
+
+private:
+    QSharedDataPointer<ActionData> d;
 };
 
 } // namespace Auth

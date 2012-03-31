@@ -1,6 +1,5 @@
 /*
-*   Copyright (C) 2008 Nicola Gigante <nicola.gigante@gmail.com>
-*   Copyright (C) 2009-2012 Dario Freddi <drf@kde.org>
+*   Copyright (C) 2012 Dario Freddi <drf@kde.org>
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU Lesser General Public License as published by
@@ -18,12 +17,23 @@
 *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .
 */
 
-#ifndef KAUTH_H
-#define KAUTH_H
+#ifndef HELPER_CLASS_H
+#define HELPER_CLASS_H
 
-#include "kauthaction.h"
-#include "kauthactionreply.h"
-#include "kauthexecutejob.h"
-#include "kauthhelpersupport.h"
+#include <QObject>
+
+#include <kauth.h>
+
+using namespace KAuth;
+
+class TestHelper : public QObject
+{
+    Q_OBJECT
+
+public Q_SLOTS:
+    ActionReply echoaction(QVariantMap args);
+    ActionReply standardaction(QVariantMap args);
+    ActionReply longaction(QVariantMap args);
+};
 
 #endif

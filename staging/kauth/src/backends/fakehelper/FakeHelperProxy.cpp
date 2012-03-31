@@ -70,26 +70,18 @@ void FakeHelperProxy::stopAction(const QString& action, const QString& helperID)
     Q_UNUSED(helperID)
 }
 
-KAuth::ActionReply FakeHelperProxy::executeAction(const QString& action, const QString& helperID, const QVariantMap& arguments)
+void FakeHelperProxy::executeAction(const QString& action, const QString& helperID, const QVariantMap& arguments)
 {
-    Q_UNUSED(action)
     Q_UNUSED(helperID)
     Q_UNUSED(arguments)
-    return KAuth::ActionReply::NoSuchActionReply;
-}
-
-bool FakeHelperProxy::executeActions(const QList< QPair< QString, QVariantMap > >& list, const QString& helperID)
-{
-    Q_UNUSED(list)
-    Q_UNUSED(helperID)
-    return false;
+    Q_EMIT actionPerformed(action, KAuth::ActionReply::NoSuchActionReply());
 }
 
 Action::AuthStatus FakeHelperProxy::authorizeAction(const QString& action, const QString& helperID)
 {
     Q_UNUSED(action)
     Q_UNUSED(helperID)
-    return Action::Denied;
+    return Action::DeniedStatus;
 }
 
 }

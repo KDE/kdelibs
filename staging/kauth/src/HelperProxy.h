@@ -40,8 +40,8 @@ public:
     virtual ~HelperProxy();
 
     // Application-side methods
-    virtual bool executeActions(const QList<QPair<QString, QVariantMap> > &list, const QString &helperID) = 0;
-    virtual ActionReply executeAction(const QString &action, const QString &helperID, const QVariantMap &arguments) = 0;
+    virtual void executeAction(const QString &action, const QString &helperID,
+            const QVariantMap &arguments) = 0;
     virtual Action::AuthStatus authorizeAction(const QString &action, const QString &helperID) = 0;
     virtual void stopAction(const QString &action, const QString &helperID) = 0;
 
@@ -55,7 +55,7 @@ public:
 
 Q_SIGNALS:
     void actionStarted(const QString &action);
-    void actionPerformed(const QString &action, ActionReply reply);
+    void actionPerformed(const QString &action, const KAuth::ActionReply &reply);
     void progressStep(const QString &action, int progress);
     void progressStep(const QString &action, const QVariantMap &data);
 };
