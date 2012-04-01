@@ -190,7 +190,7 @@ void HelperTest::testActionData()
     QVariantMap args;
     // Fill with random data (and test heavy structures while we're at it)
     for (int i = 0; i < 150; ++i) {
-        args.insert(QUuid::createUuid(), qrand());
+        args.insert(QUuid::createUuid().toString(), qrand());
     }
     action.setArguments(args);
 
