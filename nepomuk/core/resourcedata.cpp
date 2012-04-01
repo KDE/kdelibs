@@ -422,9 +422,8 @@ bool Nepomuk::ResourceData::load()
             // It would only pollute the user interface
             //
             Soprano::QueryResultIterator it = MAINMODEL->executeQuery(QString("select distinct ?p ?o where { "
-                                                                              "graph ?g { %1 ?p ?o . } . FILTER(?g!=<urn:crappyinference2:inferredtriples>) . "
-                                                                              "}").arg(Soprano::Node::resourceToN3(m_uri)),
-                                                                      Soprano::Query::QueryLanguageSparql);
+                                                                              "%1 ?p ?o . }").arg(Soprano::Node::resourceToN3(m_uri)),
+                                                                      Soprano::Query::QueryLanguageSparqlNoInference);
             while ( it.next() ) {
                 QUrl p = it["p"].uri();
                 Soprano::Node o = it["o"];
@@ -452,7 +451,7 @@ bool Nepomuk::ResourceData::load()
                 QueryResultIterator pimoIt = MAINMODEL->executeQuery( QString( "select ?r where { ?r <%1> <%2> . }")
                                                                       .arg( Vocabulary::PIMO::groundingOccurrence().toString() )
                                                                       .arg( QString::fromAscii( m_uri.toEncoded() ) ),
-                                                                      Soprano::Query::QueryLanguageSparql );
+                                                                      Soprano::Query::QueryLanguageSparqlNoInference );
                 if( pimoIt.next() ) {
                     m_pimoThing = new Thing( pimoIt.binding("r").uri() );
                 }
