@@ -138,7 +138,8 @@ QString Nepomuk::Utils::formatPropertyValue( const Nepomuk::Types::Property& pro
     }
 
     else if(property == Vocabulary::NIE::mimeType()) {
-        valueString = KMimeType::mimeType(value.toString())->comment();
+        KMimeType::Ptr mimeType = KMimeType::mimeType(value.toString());
+        valueString = (mimeType ? mimeType->comment() : value.toString());
     }
 
     else {
