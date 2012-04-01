@@ -249,13 +249,10 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
             //
             bool firstUse = true;
             QString v1 = getMainVariableName(qbd, &firstUse);
-            QString v2 = qbd->uniqueVarName();
-            QString pattern = QString::fromLatin1( "%1%2 %3 %4 . %3 %5 %6 . " )
+            QString pattern = QString::fromLatin1( "%1%2 %4 %3 . " )
                     .arg( firstUse ? corePattern.arg(v1) : QString(),
                           v1,
-                          v2,
                           QLatin1String("%1"), // funny way to have a resulting string which takes only one arg
-                          Soprano::Node::resourceToN3( Soprano::Vocabulary::RDFS::subPropertyOf() ), // using crappy inferencing for now
                           Soprano::Node::resourceToN3( Soprano::Vocabulary::RDFS::label() ) );
 
             if ( m_comparator == ComparisonTerm::Equal ) {
