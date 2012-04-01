@@ -28,7 +28,7 @@
 #include <kprotocolinfo.h>
 #include <kcolorscheme.h>
 
-#include <kstyle.h>
+//#include <kstyle.h>
 
 #include <QColor>
 #include <QCursor>
@@ -63,7 +63,7 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 #ifdef HAVE_XCURSOR
 #include <X11/Xcursor/Xcursor.h>
 #endif
-#include "fixx11h.h"
+//#include "fixx11h.h"
 #include <QX11Info>
 #endif
 
@@ -896,6 +896,7 @@ QString kde_overrideStyle;
 
 void KGlobalSettings::Private::applyGUIStyle()
 {
+#if 0 // Disabled for KF5. TODO Qt5: check that the KDE style is correctly applied.
   //Platform plugin only loaded on X11 systems
 #ifdef Q_WS_X11
     if (!kde_overrideStyle.isEmpty()) {
@@ -941,6 +942,7 @@ void KGlobalSettings::Private::applyGUIStyle()
     }
     emit q->kdisplayStyleChanged();
 #endif //Q_WS_X11
+#endif
 }
 
 QPalette KGlobalSettings::createApplicationPalette(const KSharedConfigPtr &config)
