@@ -125,26 +125,26 @@ void KCMultiDialogPrivate::_k_clientChanged()
 
         if (q->button(KDialog::Apply)) {
             q->disconnect(q, SIGNAL(applyClicked()), q, SLOT(slotApplyClicked()));
-            q->disconnect(q->button(KDialog::Apply), SIGNAL(authorized(KAuth::Action*)), q, SLOT(slotApplyClicked()));
+            q->disconnect(q->button(KDialog::Apply), SIGNAL(authorized(KAuth::Action)), q, SLOT(slotApplyClicked()));
             q->button(KDialog::Apply)->setEnabled(change);
         }
 
         if (q->button(KDialog::Ok)) {
             q->disconnect(q, SIGNAL(okClicked()), q, SLOT(slotOkClicked()));
-            q->disconnect(q->button(KDialog::Ok), SIGNAL(authorized(KAuth::Action*)), q, SLOT(slotOkClicked()));
+            q->disconnect(q->button(KDialog::Ok), SIGNAL(authorized(KAuth::Action)), q, SLOT(slotOkClicked()));
         }
 
         if (activeModule->realModule()->needsAuthorization()) {
             if (q->button(KDialog::Apply)) {
                 q->button(KDialog::Apply)->setAuthAction(activeModule->realModule()->authAction());
-                activeModule->realModule()->authAction()->setParentWidget(activeModule->realModule());
-                q->connect(q->button(KDialog::Apply), SIGNAL(authorized(KAuth::Action*)), SLOT(slotApplyClicked()));
+                activeModule->realModule()->authAction().setParentWidget(activeModule->realModule());
+                q->connect(q->button(KDialog::Apply), SIGNAL(authorized(KAuth::Action)), SLOT(slotApplyClicked()));
             }
 
             if (q->button(KDialog::Ok)) {
                 q->button(KDialog::Ok)->setAuthAction(activeModule->realModule()->authAction());
-                activeModule->realModule()->authAction()->setParentWidget(activeModule->realModule());
-                q->connect(q->button(KDialog::Ok), SIGNAL(authorized(KAuth::Action*)), SLOT(slotOkClicked()));
+                activeModule->realModule()->authAction().setParentWidget(activeModule->realModule());
+                q->connect(q->button(KDialog::Ok), SIGNAL(authorized(KAuth::Action)), SLOT(slotOkClicked()));
             }
         } else {
             if (q->button(KDialog::Apply)) {

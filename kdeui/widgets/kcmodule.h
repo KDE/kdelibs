@@ -25,6 +25,8 @@
 
 #include <kdeui_export.h>
 
+#include <kauthaction.h>
+
 #include <QtCore/QVariant>
 #include <QWidget>
 
@@ -39,10 +41,6 @@ class KCoreConfigSkeleton;
 class KConfigSkeleton;
 class KCModulePrivate;
 class KComponentData;
-
-namespace KAuth {
-    class Action;
-}
 
 /**
  * The base class for configuration modules.
@@ -238,7 +236,7 @@ public:
    *
    * @return The action that has to be authorized to execute the save() method.
    */
-  KAuth::Action *authAction() const;
+  KAuth::Action authAction() const;
 
   /**
    * Returns the value set by setExportText();
@@ -379,7 +377,7 @@ protected Q_SLOTS:
   /**
    * The status of the auth action, if one, has changed
    */
-   void authStatusChanged(int);
+   void authStatusChanged(KAuth::Action::AuthStatus status);
 
 protected:
 

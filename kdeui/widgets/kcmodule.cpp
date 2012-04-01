@@ -37,7 +37,7 @@
 #include <kcomponentdata.h>
 #include <klocale.h>
 #include "kauthaction.h"
-#include "kauthactionwatcher.h"
+#include "kauthexecutejob.h"
 
 class KCModulePrivate
 {
@@ -65,8 +65,8 @@ public:
     bool _firstshow : 1;
 
     bool  _needsAuthorization : 1;
-    KAuth::Action *_authAction;
-    
+    KAuth::Action _authAction;
+
     // this member is used to record the state on non-automatically
     // managed widgets, allowing for mixed KConfigXT-drive and manual
     // widgets to coexist peacefully and do the correct thing with
@@ -147,15 +147,13 @@ void KCModule::setNeedsAuthorization(bool needsAuth)
 {
     d->_needsAuthorization = needsAuth;
     if (needsAuth && d->_about) {
-        d->_authAction = new KAuth::Action(QString("org.kde.kcontrol." + d->_about->appName() + ".save"));
-        d->_needsAuthorization = d->_authAction->isValid();
-        d->_authAction->setHelperID("org.kde.kcontrol." + d->_about->appName());
-        d->_authAction->setParentWidget(this);
-        connect(d->_authAction->watcher(), SIGNAL(statusChanged(int)),
-                this, SLOT(authStatusChanged(int)));
-        authStatusChanged(d->_authAction->status());
+        d->_authAction = KAuth::Action(QString("org.kde.kcontrol." + d->_about->appName() + ".save"));
+        d->_needsAuthorization = d->_authAction.isValid();
+        d->_authAction.setHelperId("org.kde.kcontrol." + d->_about->appName());
+        d->_authAction.setParentWidget(this);
+        authStatusChanged(d->_authAction.status());
     } else {
-        d->_authAction = 0;
+        d->_authAction = KAuth::Action();
     }
 }
 
@@ -164,20 +162,18 @@ bool KCModule::needsAuthorization() const
     return d->_needsAuthorization;
 }
 
-KAuth::Action *KCModule::authAction() const
+KAuth::Action KCModule::authAction() const
 {
     return d->_authAction;
 }
 
-void KCModule::authStatusChanged(int status)
+void KCModule::authStatusChanged(KAuth::Action::AuthStatus status)
 {
-    KAuth::Action::AuthStatus s = (KAuth::Action::AuthStatus)status;
-
-    switch(s) {
-        case KAuth::Action::Authorized:
+    switch(status) {
+        case KAuth::Action::AuthorizedStatus:
             setUseRootOnlyMessage(false);
             break;
-        case KAuth::Action::AuthRequired:
+        case KAuth::Action::AuthRequiredStatus:
             setUseRootOnlyMessage(true);
             setRootOnlyMessage(i18n("You will be asked to authenticate before saving"));
             break;

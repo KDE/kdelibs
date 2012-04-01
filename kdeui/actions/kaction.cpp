@@ -29,8 +29,7 @@
 #include "kglobalaccel_p.h"
 #include "klocale.h"
 #include "kmessagebox.h"
-#include "kauthaction.h"
-#include "kauthactionwatcher.h"
+#include "kauthexecutejob.h"
 
 #include <QApplication>
 #include <QHBoxLayout>
@@ -71,34 +70,29 @@ void KActionPrivate::slotTriggered()
 #endif
   emit q->triggered(QApplication::mouseButtons(), QApplication::keyboardModifiers());
 
-  if (authAction) {
-      KAuth::Action::AuthStatus s = authAction->earlyAuthorize();
-      switch(s) {
-      case KAuth::Action::Denied:
-          q->setEnabled(false);
-          break;
-      case KAuth::Action::Authorized:
+  if (authAction.isValid()) {
+      KAuth::ExecuteJob *job = authAction.execute(KAuth::Action::AuthorizeOnlyMode);
+      q->connect(job, SIGNAL(statusChanged(KAuth::Action::AuthStatus)),
+                 q, SLOT(authStatusChanged(KAuth::Action::AuthStatus)));
+      if (job->exec()) {
           emit q->authorized(authAction);
-          break;
-      default:
-          break;
+      } else {
+          q->setEnabled(false);
       }
   }
 }
 
-void KActionPrivate::authStatusChanged(int status)
+void KActionPrivate::authStatusChanged(KAuth::Action::AuthStatus status)
 {
-    KAuth::Action::AuthStatus s = (KAuth::Action::AuthStatus)status;
-
-    switch(s) {
-        case KAuth::Action::Authorized:
+    switch (status) {
+        case KAuth::Action::AuthorizedStatus:
             q->setEnabled(true);
             if(!oldIcon.isNull()) {
                 q->setIcon(oldIcon);
                 oldIcon = KIcon();
             }
             break;
-        case KAuth::Action::AuthRequired:
+        case KAuth::Action::AuthRequiredStatus:
             q->setEnabled(true);
             oldIcon = KIcon(q->icon());
             q->setIcon(KIcon("dialog-password"));
@@ -382,7 +376,7 @@ void KAction::setHelpText(const QString& text)
         setWhatsThis(text);
 }
 
-KAuth::Action *KAction::authAction() const
+KAuth::Action KAction::authAction() const
 {
     return d->authAction;
 }
@@ -390,38 +384,32 @@ KAuth::Action *KAction::authAction() const
 void KAction::setAuthAction(const QString &actionName)
 {
     if (actionName.isEmpty()) {
-        setAuthAction(0);
+        setAuthAction(KAuth::Action());
     } else {
-        setAuthAction(new KAuth::Action(actionName));
+        setAuthAction(KAuth::Action(actionName));
     }
 }
 
-void KAction::setAuthAction(KAuth::Action *action)
+void KAction::setAuthAction(const KAuth::Action &action)
 {
     if (d->authAction == action) {
         return;
     }
 
-    if (d->authAction) {
-        disconnect(d->authAction->watcher(), SIGNAL(statusChanged(int)),
-                this, SLOT(authStatusChanged(int)));
-        //delete d->authAction;
-        d->authAction = 0;
+    if (d->authAction.isValid()) {
         if (!d->oldIcon.isNull()) {
             setIcon(d->oldIcon);
             d->oldIcon = KIcon();
         }
     }
 
-    if (action != 0) {
+    if (action.isValid()) {
         d->authAction = action;
 
         // Set the parent widget
-        d->authAction->setParentWidget(parentWidget());
+        d->authAction.setParentWidget(parentWidget());
 
-        connect(d->authAction->watcher(), SIGNAL(statusChanged(int)),
-                this, SLOT(authStatusChanged(int)));
-        d->authStatusChanged(d->authAction->status());
+        d->authStatusChanged(d->authAction.status());
     }
 }
 

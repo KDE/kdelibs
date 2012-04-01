@@ -29,16 +29,13 @@
 #include <kdeui_export.h>
 #include <kguiitem.h>
 #include <kshortcut.h>
+#include <kauthaction.h>
 
 #include <QWidgetAction>
 
 
 class KShapeGesture;
 class KRockerGesture;
-
-namespace KAuth {
-    class Action;
-}
 
 //TODO Reduce the word count. This is not very focused and takes too long to read.
 //Keep in mind that QAction also has documentation that we don't need to repeat here.
@@ -472,7 +469,7 @@ public:
      *
      * @returns the KAuth::Action associated with this action.
      */
-     KAuth::Action *authAction() const;
+     KAuth::Action authAction() const;
 
     /**
      * Sets the action object associated with this action
@@ -484,7 +481,7 @@ public:
      *
      * @param action the KAuth::Action to associate with this action.
      */
-     void setAuthAction(KAuth::Action *action);
+     void setAuthAction(const KAuth::Action &action);
 
      /**
      * Sets the action object associated with this action
@@ -532,7 +529,7 @@ Q_SIGNALS:
      *
      * @param action The object set with setAuthAction()
      */
-    void authorized(KAuth::Action *action);
+    void authorized(const KAuth::Action &action);
 
     /**
      * Emitted when the global shortcut is changed. A global shortcut is
@@ -545,7 +542,7 @@ private:
     friend class KActionCollectionPrivate; // Needs access to the component
     friend class KShortcutsEditorDelegate; // Needs access to the component
     Q_PRIVATE_SLOT(d, void slotTriggered())
-    Q_PRIVATE_SLOT(d, void authStatusChanged(int))
+    Q_PRIVATE_SLOT(d, void authStatusChanged(KAuth::Action::AuthStatus))
     class KActionPrivate* const d;
     friend class KActionPrivate;
     friend class KGlobalShortcutTest;

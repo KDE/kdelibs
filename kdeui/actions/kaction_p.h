@@ -38,7 +38,7 @@ class KActionPrivate
         }
 
         void slotTriggered();
-        void authStatusChanged(int status);
+        void authStatusChanged(KAuth::Action::AuthStatus status);
 
         void init(KAction *q_ptr);
         void setActiveGlobalShortcutNoEnable(const KShortcut &cut);
@@ -59,7 +59,7 @@ class KActionPrivate
         bool neverSetGlobalShortcut : 1;
         KAction *q;
 
-        KAuth::Action *authAction;
+        KAuth::Action authAction;
         // TODO: Remove whenever QIcon overlays will get fixed
         QIcon oldIcon;
 };

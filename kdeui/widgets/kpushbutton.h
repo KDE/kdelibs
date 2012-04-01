@@ -24,13 +24,11 @@
 
 #include <kstandardguiitem.h>
 
+#include <kauthaction.h>
+
 class QDrag;
 class QMenu;
 
-
-namespace KAuth {
-    class Action;
-}
 
 /**
  * @brief A QPushButton with drag-support and KGuiItem support
@@ -135,7 +133,7 @@ public:
      *
      * @returns the KAuth::Action associated with this button.
      */
-     KAuth::Action *authAction() const;
+     KAuth::Action authAction() const;
 
     /**
      * Sets the action object associated with this button
@@ -147,7 +145,7 @@ public:
      *
      * @param action the KAuth::Action to associate with this button.
      */
-     void setAuthAction(KAuth::Action *action);
+     void setAuthAction(const KAuth::Action &action);
 
      /**
      * Sets the action object associated with this button
@@ -203,7 +201,7 @@ Q_SIGNALS:
      *
      * @param action The object set with setAuthAction()
      */
-    void authorized(KAuth::Action *action);
+    void authorized(const KAuth::Action &action);
 
 private:
     /**
@@ -219,7 +217,7 @@ private:
     Q_PRIVATE_SLOT(d, void slotPressedInternal())
     Q_PRIVATE_SLOT(d, void slotClickedInternal())
     Q_PRIVATE_SLOT(d, void slotDelayedMenuTimeout())
-    Q_PRIVATE_SLOT(d, void authStatusChanged(int))
+    Q_PRIVATE_SLOT(d, void authStatusChanged(KAuth::Action::AuthStatus))
 };
 
 #endif // KPUSHBUTTON_H
