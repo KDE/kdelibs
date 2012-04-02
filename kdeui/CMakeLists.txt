@@ -14,8 +14,6 @@ include_directories(
  ${CMAKE_SOURCE_DIR}/staging/sonnet/src/core
  ${CMAKE_BINARY_DIR}/tier1/itemmodels/src
  ${CMAKE_SOURCE_DIR}/tier1/itemmodels/src
- ${CMAKE_BINARY_DIR}/tier2/kauth/src/
- ${CMAKE_SOURCE_DIR}/tier2/kauth/src/
  ${CMAKE_SOURCE_DIR}/tier1/kwindowsystem/src
  ${CMAKE_BINARY_DIR}/tier1/kwindowsystem/src
  ${kcoreaddons_BINARY_DIR}/src
