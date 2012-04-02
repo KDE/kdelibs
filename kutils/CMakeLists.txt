@@ -5,8 +5,8 @@ include_directories( ${KDE4_KDEUI_INCLUDES}
                      ${CMAKE_CURRENT_BINARY_DIR}
                      ${karchive_SOURCE_DIR}/src
                      ${karchive_BINARY_DIR}/src
-                     ${CMAKE_SOURCE_DIR}/staging/kauth/src/
-                     ${CMAKE_BINARY_DIR}/staging/kauth/src/
+                     ${CMAKE_SOURCE_DIR}/tier2/kauth/src/
+                     ${CMAKE_BINARY_DIR}/tier2/kauth/src/
 )
 
 ########### kemoticons ################
