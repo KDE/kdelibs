@@ -38,7 +38,7 @@ class KAutoMountPrivate;
  * This class implements synchronous mounting of devices,
  * as well as showing a file-manager window after mounting a device, optionally.
  * It is a wrapper around the asychronous KIO::special() call for mount,
- * used by KMimeType.
+ * used by KDesktopFileActions.
  *
  * @short This class implements synchronous mounting of devices.
  */
@@ -78,7 +78,7 @@ class KAutoUnmountPrivate;
 /**
  * This class implements synchronous unmounting of devices,
  * It is a wrapper around the asychronous KIO::special() call for unmount,
- * used by KMimeType.
+ * used by KDesktopFileActions.
  *
  * @short This class implements synchronous unmounting of devices,
  */

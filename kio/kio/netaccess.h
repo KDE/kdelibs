@@ -407,10 +407,10 @@ public:
      *
      * This is a convenience function for KIO::mimetype.  You
      * should call this only when really necessary.
-     * KMimeType::findByUrl can determine extension a lot faster, but
-     * less reliably for remote files. Only when findByUrl() returns
-     * unknown (application/octet-stream) then this one should be
-     * used.
+     * QMimeDatabase::mimeTypeForUrl can determine the mimetype a lot faster, but
+     * less reliably for remote files. When mimeTypeForUrl() returns
+     * unknown (application/octet-stream) for a remote file, then this one
+     * should be used.
      *
      * @param url The URL whose mimetype we are interested in.
      * @param window main window associated with this job. This is used to
