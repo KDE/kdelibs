@@ -156,7 +156,6 @@ static KMimeType::Ptr findFromMode( const QString& path /*only used if is_local_
  Note: in KDE we want the file views to sniff in a delayed manner.
  So there's also a fast mode which is:
   if no glob matches, or if more than one glob matches, use default mimetype and mark as "can be refined".
- ===> KDE5 TODO, implement (in qmime, I guess)
 */
 
 KMimeType::Ptr KMimeType::findByUrl( const QUrl& url, mode_t mode,
@@ -269,28 +268,25 @@ KMimeType::~KMimeType()
 
 QString KMimeType::iconNameForUrl( const QUrl & url, mode_t mode )
 {
-    KUrl _url(url);
-    const KMimeType::Ptr mt = findByUrl( _url, mode, _url.isLocalFile(),
-                                         false /*HACK*/);
-    if (!mt) {
-        return QString();
-    }
+    Q_UNUSED(mode); // see findByUrl
+    QMimeDatabase db;
+    const QMimeType mt = db.mimeTypeForUrl(url);
     static const QString& unknown = KGlobal::staticQString("unknown");
-    const QString mimeTypeIcon = mt->iconName();
+    const QString mimeTypeIcon = mt.iconName();
     QString i = mimeTypeIcon;
 
     // if we don't find an icon, maybe we can use the one for the protocol
-    if ( i == unknown || i.isEmpty() || mt->name() == defaultMimeType()
+    if (i == unknown || i.isEmpty() || mt.isDefault()
         // and for the root of the protocol (e.g. trash:/) the protocol icon has priority over the mimetype icon
-        || _url.path().length() <= 1 )
+        || url.path().length() <= 1)
     {
-        i = favIconForUrl( _url ); // maybe there is a favicon?
+        i = favIconForUrl(url); // maybe there is a favicon?
 
-        if ( i.isEmpty() )
-            i = KProtocolInfo::icon( _url.scheme() );
+        if (i.isEmpty())
+            i = KProtocolInfo::icon(url.scheme());
 
         // root of protocol: if we found nothing, revert to mimeTypeIcon (which is usually "folder")
-        if ( _url.path().length() <= 1 && ( i == unknown || i.isEmpty() ) )
+        if (url.path().length() <= 1 && (i == unknown || i.isEmpty()))
             i = mimeTypeIcon;
     }
     return !i.isEmpty() ? i : unknown;

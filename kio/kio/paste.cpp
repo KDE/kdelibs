@@ -33,13 +33,13 @@
 #include <klocalizedstring.h>
 #include <kinputdialog.h>
 #include <kmessagebox.h>
-#include <kmimetype.h>
 #include <kurlmimedata.h>
 
 #include <QApplication>
 #include <QClipboard>
 #include <QMimeData>
 #include <qtemporaryfile.h>
+#include <qmimedatabase.h>
 
 static bool decodeIsCutSelection(const QMimeData *mimeData)
 {
@@ -177,14 +177,15 @@ static QByteArray chooseFormatAndUrl(const KUrl& u, const QMimeData* mimeData,
                                      bool clipboard,
                                      KUrl* newUrl)
 {
+    QMimeDatabase db;
     QStringList formatLabels;
     for ( int i = 0; i < formats.size(); ++i ) {
         const QString& fmt = formats[i];
-        KMimeType::Ptr mime = KMimeType::mimeType(fmt, KMimeType::ResolveAliases);
-        if (mime)
-            formatLabels.append( i18n("%1 (%2)", mime->comment(), fmt) );
+        QMimeType mime = db.mimeTypeForName(fmt);
+        if (mime.isValid())
+            formatLabels.append(i18n("%1 (%2)", mime.comment(), fmt));
         else
-            formatLabels.append( fmt );
+            formatLabels.append(fmt);
     }
 
     QString dialogText( text );

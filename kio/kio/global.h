@@ -354,6 +354,15 @@ namespace KIO
   KIO_EXPORT QString getCacheControlString(KIO::CacheControl cacheControl);
 
   /**
+   * Return the icon name for a URL.
+   * Most of the time this returns the mimetype icon,
+   * but also has fallback to favicon and protocol-specific icon.
+   *
+   * @since 5.0
+   */
+  KIO_EXPORT QString iconNameForUrl(const QUrl& url);
+
+  /**
    * Convenience method to find the pixmap for a URL.
    *
    * Call this one when you don't know the mimetype.

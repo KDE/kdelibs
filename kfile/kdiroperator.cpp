@@ -79,8 +79,7 @@
 #include <ktoggleaction.h>
 #include <kactionmenu.h>
 #include <kconfiggroup.h>
-#include <kdeversion.h>
-
+#include <qmimedatabase.h>
 
 template class QHash<QString, KFileItem>;
 
@@ -1407,6 +1406,7 @@ bool KDirOperator::Private::checkPreviewInternal() const
 
     QStringList mimeTypes = dirLister->mimeFilters();
     const QStringList nameFilter = dirLister->nameFilter().split(' ', QString::SkipEmptyParts);
+    QMimeDatabase db;
 
     if (mimeTypes.isEmpty() && nameFilter.isEmpty() && !supported.isEmpty())
         return true;
@@ -1435,10 +1435,10 @@ bool KDirOperator::Private::checkPreviewInternal() const
                     return true;
                 }
 
-                KMimeType::Ptr mt = KMimeType::findByPath(*it1, 0, true /*fast mode, no file contents exist*/);
-                if (!mt)
+                QMimeType mt = db.mimeTypeForFile(*it1, QMimeDatabase::MatchExtension /*fast mode, no file contents exist*/);
+                if (!mt.isValid())
                     continue;
-                QString mime = mt->name();
+                QString mime = mt.name();
 
                 // the "mimetypes" we get from the PreviewJob can be "image/*"
                 // so we need to check in wildcard mode

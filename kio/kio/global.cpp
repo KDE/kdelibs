@@ -26,8 +26,9 @@
 #include <kglobal.h>
 #include <kiconloader.h>
 #include <kprotocolmanager.h>
-#include <kmimetype.h>
+#include <qmimedatabase.h>
 #include <kdynamicjobtracker_p.h>
+#include <QtDBus/QtDBus>
 
 #include <QtCore/QByteArray>
 #include <QtCore/QDate>
@@ -1248,10 +1249,64 @@ QString KIO::getCacheControlString(KIO::CacheControl cacheControl)
     return QString();
 }
 
+static bool useFavIcons()
+{
+    // this method will be called quite often, so better not read the config
+    // again and again.
+    static bool s_useFavIconsChecked = false;
+    static bool s_useFavIcons = false;
+    if (!s_useFavIconsChecked) {
+        s_useFavIconsChecked = true;
+        KConfigGroup cg( KSharedConfig::openConfig(), "HTML Settings" );
+        s_useFavIcons = cg.readEntry("EnableFavicon", true);
+    }
+    return s_useFavIcons;
+}
+
+static QString favIconForUrl(const QUrl& url)
+{
+    if (url.isLocalFile()
+        || !url.scheme().startsWith(QLatin1String("http"))
+        || !useFavIcons())
+        return QString();
+
+    QDBusInterface kded( QString::fromLatin1("org.kde.kded"),
+                         QString::fromLatin1("/modules/favicons"),
+                         QString::fromLatin1("org.kde.FavIcon") );
+    QDBusReply<QString> result = kded.call( QString::fromLatin1("iconForUrl"), url.url() );
+    return result;              // default is QString()
+}
+
+QString KIO::iconNameForUrl(const QUrl& url)
+{
+    QMimeDatabase db;
+    const QMimeType mt = db.mimeTypeForUrl(url);
+    static const QString& unknown = KGlobal::staticQString("unknown");
+    const QString mimeTypeIcon = mt.iconName();
+    QString i = mimeTypeIcon;
+
+    // if we don't find an icon, maybe we can use the one for the protocol
+    if (i == unknown || i.isEmpty() || mt.isDefault()
+        // and for the root of the protocol (e.g. trash:/) the protocol icon has priority over the mimetype icon
+        || url.path().length() <= 1)
+    {
+        i = KMimeType::favIconForUrl(url); // maybe there is a favicon?
+
+        if (i.isEmpty())
+            i = KProtocolInfo::icon(url.scheme());
+
+        // root of protocol: if we found nothing, revert to mimeTypeIcon (which is usually "folder")
+        if (url.path().length() <= 1 && (i == unknown || i.isEmpty()))
+            i = mimeTypeIcon;
+    }
+    return !i.isEmpty() ? i : unknown;
+}
+
 QPixmap KIO::pixmapForUrl( const QUrl & _url, mode_t _mode, KIconLoader::Group _group,
                            int _force_size, int _state, QString * _path )
 {
-    const QString iconName = KMimeType::iconNameForUrl( _url, _mode );
+    Q_UNUSED(_mode);
+    const QString iconName = KIO::iconNameForUrl(_url);
     return KIconLoader::global()->loadMimeTypeIcon( iconName, _group, _force_size, _state, QStringList(), _path );
 }
 

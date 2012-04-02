@@ -34,6 +34,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QtCore/QDir>
+#include <qmimedatabase.h>
 
 #include <klineedit.h>
 #include <kmessagebox.h>
@@ -46,7 +47,6 @@
 #include <kdebug.h>
 #include <kurl.h>
 #include <kfileitem.h>
-#include <kmimetype.h>
 #include <kseparator.h>
 #include <kstringhandler.h>
 #include <kstandardguiitem.h>
@@ -75,7 +75,8 @@ public:
 
     void setRenameBoxText(const QString& fileName) {
         // sets the text in file name line edit box, selecting the filename (but not the extension if there is one).
-        const QString extension = KMimeType::extractKnownExtension(fileName);
+        QMimeDatabase db;
+        const QString extension = db.suffixForFileName(fileName);
         m_pLineEdit->setText(fileName);
 
         if (!extension.isEmpty()) {

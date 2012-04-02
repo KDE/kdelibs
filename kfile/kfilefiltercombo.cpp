@@ -21,7 +21,7 @@
 
 #include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kmimetype.h>
+#include <qmimedatabase.h>
 #include <config-kfile.h>
 #include <QtCore/QEvent>
 #include <QLineEdit>
@@ -142,6 +142,7 @@ void KFileFilterCombo::setMimeFilter( const QStringList& types,
     QString delim = QLatin1String(", ");
     d->hasAllSupportedFiles = false;
     bool hasAllFilesFilter = false;
+    QMimeDatabase db;
 
     d->m_allTypes = defaultType.isEmpty() && (types.count() > 1);
 
@@ -149,14 +150,9 @@ void KFileFilterCombo::setMimeFilter( const QStringList& types,
     for(QStringList::ConstIterator it = types.begin(); it != types.end(); ++it)
     {
         kDebug(kfile_area) << *it;
-        KMimeType::Ptr type = KMimeType::mimeType( *it );
+        QMimeType type = db.mimeTypeForName(*it);
 
-        if (!type) {
-            kDebug(kfile_area) << "Could not create mimetype!\n";
-            continue;
-        }
-
-        if ( type->name().startsWith( QLatin1String( "all/" ) ) ) {
+        if (type.name().startsWith(QLatin1String("all/"))) {
             hasAllFilesFilter = true;
             continue;
         }
@@ -166,14 +162,14 @@ void KFileFilterCombo::setMimeFilter( const QStringList& types,
             allTypes += ' ';
         }
 
-        d->m_filters.append( type->name() );
+        d->m_filters.append(type.name());
         if ( d->m_allTypes )
         {
-            allTypes += type->name();
-            allComments += type->comment();
+            allTypes += type.name();
+            allComments += type.comment();
         }
-        addItem( type->comment() );
-        if ( type->name() == defaultType )
+        addItem( type.comment() );
+        if (type.name() == defaultType)
             setCurrentIndex( count() - 1 );
     }
 
