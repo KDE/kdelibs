@@ -265,6 +265,8 @@ set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdeui
                         ${CMAKE_SOURCE_DIR}/kdeui/xmlgui
                         ${CMAKE_BINARY_DIR}/tier1/kwindowsystem/src
                         ${CMAKE_SOURCE_DIR}/tier1/kwindowsystem/src
+                        ${CMAKE_BINARY_DIR}/staging/kauth/src/
+                        ${CMAKE_SOURCE_DIR}/staging/kauth/src/
                         ${KDE4_KDECORE_INCLUDES})
 
 # kio depends on kdeui

@@ -25,6 +25,8 @@ include_directories(
  ${kcoreaddons_SOURCE_DIR}/src/text
  ${kcoreaddons_SOURCE_DIR}/src/kernel
  ${kcoreaddons_SOURCE_DIR}/src/randomness
+ ${kauth_BINARY_DIR}/src
+ ${kauth_SOURCE_DIR}/src
  ${CMAKE_SOURCE_DIR}/kdeui
  ${CMAKE_BINARY_DIR}/kdeui
  ${KDE4_KDECORE_INCLUDES}
