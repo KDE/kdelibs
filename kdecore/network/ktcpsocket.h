@@ -161,6 +161,8 @@ public:
         SslV3 = 0x04,
         TlsV1 = 0x08,
         SslV3_1 = 0x08,
+        TlsV1SslV3 = 0x10,
+        SecureProtocols = 0x20,
         AnySslVersion = SslV2 | SslV3 | TlsV1
     };
     Q_DECLARE_FLAGS(SslVersions, SslVersion)

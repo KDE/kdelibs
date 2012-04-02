@@ -44,6 +44,10 @@ static KTcpSocket::SslVersion kSslVersionFromQ(QSsl::SslProtocol protocol)
         return KTcpSocket::TlsV1;
     case QSsl::AnyProtocol:
         return KTcpSocket::AnySslVersion;
+    case QSsl::TlsV1SslV3:
+        return KTcpSocket::TlsV1SslV3;
+    case QSsl::SecureProtocols:
+        return KTcpSocket::SecureProtocols;
     default:
         return KTcpSocket::UnknownSslVersion;
     }
@@ -68,6 +72,11 @@ static QSsl::SslProtocol qSslProtocolFromK(KTcpSocket::SslVersion sslVersion)
         return QSsl::SslV3;
     case KTcpSocket::TlsV1:
         return QSsl::TlsV1;
+    case KTcpSocket::TlsV1SslV3:
+        return QSsl::TlsV1SslV3;
+    case KTcpSocket::SecureProtocols:
+        return QSsl::SecureProtocols;
+
     default:
         //QSslSocket doesn't really take arbitrary combinations. It's one or all.
         return QSsl::AnyProtocol;
