@@ -47,7 +47,6 @@
 #include <kglobal.h>
 #include <kiconloader.h>
 #include <klocale.h>
-#include <kmimetype.h>
 #include <krun.h>
 #include <kde_file.h>
 #include <kdesktopfile.h>
@@ -73,7 +72,7 @@ public:
           m_strText(),
           m_iconName(),
           m_strLowerCaseName(),
-          m_pMimeType( 0 ),
+          m_mimeType(),
           m_fileMode( mode ),
           m_permissions( permissions ),
           m_bMarked( false ),
@@ -160,7 +159,7 @@ public:
     /**
      * The mimetype of the file
      */
-    mutable KMimeType::Ptr m_pMimeType;
+    mutable QMimeType m_mimeType;
 
     /**
      * The file mode
@@ -275,10 +274,11 @@ void KFileItemPrivate::readUDSEntry( bool _urlIsDirectory )
         if ( m_url.isLocalFile() )
             m_bIsLocalUrl = true;
     }
+    QMimeDatabase db;
     const QString mimeTypeStr = m_entry.stringValue( KIO::UDSEntry::UDS_MIME_TYPE );
     m_bMimeTypeKnown = !mimeTypeStr.isEmpty();
     if ( m_bMimeTypeKnown )
-        m_pMimeType = KMimeType::mimeType( mimeTypeStr );
+        m_mimeType = db.mimeTypeForName(mimeTypeStr);
 
     m_guessedMimeType = m_entry.stringValue( KIO::UDSEntry::UDS_GUESSED_MIME_TYPE );
     m_bLink = !m_entry.stringValue( KIO::UDSEntry::UDS_LINK_DEST ).isEmpty(); // we don't store the link dest
@@ -497,8 +497,10 @@ KFileItem::KFileItem( const KUrl &url, const QString &mimeType, mode_t mode )
                              url, false, false))
 {
     d->m_bMimeTypeKnown = !mimeType.isEmpty();
-    if (d->m_bMimeTypeKnown)
-        d->m_pMimeType = KMimeType::mimeType( mimeType );
+    if (d->m_bMimeTypeKnown) {
+        QMimeDatabase db;
+        d->m_mimeType = db.mimeTypeForName(mimeType);
+    }
 }
 
 
@@ -529,7 +531,7 @@ void KFileItem::refresh()
 
 void KFileItem::refreshMimeType()
 {
-    d->m_pMimeType = 0;
+    d->m_mimeType = QMimeType();
     d->m_bMimeTypeKnown = false;
     d->m_iconName.clear();
 }
@@ -721,23 +723,24 @@ bool KFileItem::isSlow() const
 QString KFileItem::mimetype() const
 {
     KFileItem * that = const_cast<KFileItem *>(this);
-    return that->determineMimeType()->name();
+    return that->determineMimeType().name();
 }
 
-KMimeType::Ptr KFileItem::determineMimeType() const
+QMimeType KFileItem::determineMimeType() const
 {
-    if ( !d->m_pMimeType || !d->m_bMimeTypeKnown )
-    {
+    if (!d->m_mimeType.isValid() || !d->m_bMimeTypeKnown) {
+        QMimeDatabase db;
         bool isLocalUrl;
         KUrl url = mostLocalUrl(isLocalUrl);
-
-        d->m_pMimeType = KMimeType::findByUrl( url, d->m_fileMode, isLocalUrl );
-        Q_ASSERT(d->m_pMimeType);
-        //kDebug() << d << "finding final mimetype for" << url << ":" << d->m_pMimeType->name();
+        d->m_mimeType = db.mimeTypeForUrl(url);
+        // was:  d->m_mimeType = KMimeType::findByUrl( url, d->m_fileMode, isLocalUrl );
+        // => we are no longer using d->m_fileMode for remote URLs.
+        Q_ASSERT(d->m_mimeType.isValid());
+        //qDebug() << d << "finding final mimetype for" << url << ":" << d->m_mimeType.name();
         d->m_bMimeTypeKnown = true;
     }
 
-    return d->m_pMimeType;
+    return d->m_mimeType;
 }
 
 bool KFileItem::isMimeTypeKnown() const
@@ -777,10 +780,10 @@ QString KFileItem::mimeComment() const
     bool isLocalUrl;
     KUrl url = mostLocalUrl(isLocalUrl);
 
-    KMimeType::Ptr mime = mimeTypePtr();
+    QMimeType mime = currentMimeType();
     // This cannot move to kio_file (with UDS_DISPLAY_TYPE) because it needs
     // the mimetype to be determined, which is done here, and possibly delayed...
-    if (isLocalUrl && !d->isSlow() && mime->is("application/x-desktop")) {
+    if (isLocalUrl && !d->isSlow() && mime.inherits("application/x-desktop")) {
         KDesktopFile cfg( url.toLocalFile() );
         QString comment = cfg.desktopGroup().readEntry( "Comment" );
         if (!comment.isEmpty())
@@ -797,12 +800,12 @@ QString KFileItem::mimeComment() const
             return comment;
     }
 
-    const QString comment = mime->comment();
-    //kDebug() << "finding comment for " << url.url() << " : " << d->m_pMimeType->name();
+    const QString comment = mime.comment();
+    //kDebug() << "finding comment for " << url.url() << " : " << d->m_mimeType->name();
     if (!comment.isEmpty())
         return comment;
     else
-        return mime->name();
+        return mime.name();
 }
 
 static QString iconFromDirectoryFile(const QString& path)
@@ -882,15 +885,16 @@ QString KFileItem::iconName() const
     bool isLocalUrl;
     KUrl url = mostLocalUrl(isLocalUrl);
 
-    KMimeType::Ptr mime;
+    QMimeDatabase db;
+    QMimeType mime;
     // Use guessed mimetype for the icon
     if (!d->m_guessedMimeType.isEmpty()) {
-        mime = KMimeType::mimeType(d->m_guessedMimeType);
+        mime = db.mimeTypeForName(d->m_guessedMimeType);
     } else {
-        mime = mimeTypePtr();
+        mime = currentMimeType();
     }
 
-    if (isLocalUrl && !isSlow() && mime->is("application/x-desktop")) {
+    if (isLocalUrl && !isSlow() && mime.inherits("application/x-desktop")) {
         d->m_iconName = iconFromDesktopFile(url.toLocalFile());
         if (!d->m_iconName.isEmpty()) {
             d->m_useIconNameCache = d->m_bMimeTypeKnown;
@@ -906,7 +910,7 @@ QString KFileItem::iconName() const
         }
     }
 
-    d->m_iconName = mime->iconName();
+    d->m_iconName = mime.iconName();
     d->m_useIconNameCache = d->m_bMimeTypeKnown;
     return d->m_iconName;
 }
@@ -932,8 +936,8 @@ static bool checkDesktopFile(const KFileItem& item, bool _determineMimeType)
         return false;
 
     // return true if desktop file
-    KMimeType::Ptr mime = _determineMimeType ? item.determineMimeType() : item.mimeTypePtr();
-    return mime->is("application/x-desktop");
+    QMimeType mime = _determineMimeType ? item.determineMimeType() : item.currentMimeType();
+    return mime.inherits("application/x-desktop");
 }
 
 QStringList KFileItem::overlays() const
@@ -984,8 +988,8 @@ QStringList KFileItem::overlays() const
     }
 #endif  // Q_OS_WIN
 
-    if ( d->m_pMimeType && d->m_url.fileName().endsWith( QLatin1String( ".gz" ) ) &&
-         d->m_pMimeType->is("application/x-gzip") ) {
+    if (d->m_url.fileName().endsWith(QLatin1String(".gz")) &&
+        d->m_mimeType.inherits("application/x-gzip")) {
         names.append("application-zip");
     }
 
@@ -1004,14 +1008,16 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
     if ( !udsIconName.isEmpty() )
         return DesktopIcon(udsIconName, _size, _state);
 
-    if (!d->m_useIconNameCache && !d->m_pMimeType) {
+    QMimeDatabase db;
+
+    if (!d->m_useIconNameCache && !d->m_mimeType.isValid()) {
         // No mimetype determined yet, go for a fast default icon
         if (S_ISDIR(d->m_fileMode)) {
             static const QString * defaultFolderIcon = 0;
             if ( !defaultFolderIcon ) {
-                const KMimeType::Ptr mimeType = KMimeType::mimeType( "inode/directory" );
-                if ( mimeType )
-                    defaultFolderIcon = &KGlobal::staticQString( mimeType->iconName() );
+                const QMimeType mimeType = db.mimeTypeForName("inode/directory");
+                if (mimeType.isValid())
+                    defaultFolderIcon = &KGlobal::staticQString(mimeType.iconName());
                else
                     kWarning(7000) << "No mimetype for inode/directory could be found. Check your installation.";
             }
@@ -1022,30 +1028,29 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
         return DesktopIcon( "unknown", _size, _state );
     }
 
-    KMimeType::Ptr mime;
+    QMimeType mime;
     // Use guessed mimetype for the icon
     if (!d->m_guessedMimeType.isEmpty())
-        mime = KMimeType::mimeType( d->m_guessedMimeType );
+        mime = db.mimeTypeForName(d->m_guessedMimeType);
     else
-        mime = d->m_pMimeType;
+        mime = d->m_mimeType;
 
     QString icon = iconName();
 
     // Support for gzipped files: extract mimetype of contained file
     // See also the relevant code in overlays, which adds the zip overlay.
-    if ( mime->name() == "application/x-gzip" && d->m_url.fileName().endsWith( QLatin1String( ".gz" ) ) )
-    {
-        KUrl sf;
-        sf.setPath( d->m_url.path().left( d->m_url.path().length() - 3 ) );
+    if (mime.name() == "application/x-gzip" && d->m_url.fileName().endsWith(QLatin1String(".gz"))) {
+        KUrl sf(d->m_url);
+        sf.setPath(sf.path().left(sf.path().length() - 3));
         //kDebug() << "subFileName=" << subFileName;
-        mime = KMimeType::findByUrl(sf, 0, d->m_bIsLocalUrl);
-        icon = mime->iconName();
+        mime = db.mimeTypeForUrl(sf);
+        icon = mime.iconName();
     }
 
     QPixmap p = KIconLoader::global()->loadMimeTypeIcon(icon, KIconLoader::Desktop, _size, _state);
-    //kDebug() << "finding pixmap for" << url << "mime=" << mime->name() << "icon=" << icon;
+    //kDebug() << "finding pixmap for" << url << "mime=" << mime.name() << "icon=" << icon;
     if (p.isNull())
-        kWarning() << "Pixmap not found for mimetype" << mime->name() << "icon" << icon;
+        kWarning() << "Pixmap not found for mimetype" << mime.name() << "icon" << icon;
 
     return p;
 }
@@ -1288,7 +1293,7 @@ void KFileItem::setUDSEntry( const KIO::UDSEntry& _entry, const KUrl& _url,
     d->m_strText.clear();
     d->m_iconName.clear();
     d->m_strLowerCaseName.clear();
-    d->m_pMimeType = 0;
+    d->m_mimeType = QMimeType();
     d->m_fileMode = KFileItem::Unknown;
     d->m_permissions = KFileItem::Unknown;
     d->m_bMarked = false;
@@ -1375,7 +1380,9 @@ KFileMetaInfo KFileItem::metaInfo(bool autoget, int what) const
     {
         bool isLocalUrl;
         KUrl url(mostLocalUrl(isLocalUrl));
-        d->m_metaInfo = KFileMetaInfo(url.toLocalFile(), mimetype(), (KFileMetaInfo::What)what);
+        if (isLocalUrl) {
+            d->m_metaInfo = KFileMetaInfo(url.toLocalFile(), mimetype(), (KFileMetaInfo::What)what);
+        }
     }
     return d->m_metaInfo;
 }
@@ -1502,39 +1509,39 @@ KUrl KFileItem::nepomukUri() const
 /*
  * Mimetype handling.
  *
- * Initial state: m_pMimeType = 0.
- * When mimeTypePtr() is called first: fast mimetype determination,
+ * Initial state: m_mimeType = QMimeType().
+ * When currentMimeType() is called first: fast mimetype determination,
  *   might either find an accurate mimetype (-> Final state), otherwise we
- *   set m_pMimeType but not m_bMimeTypeKnown (-> Intermediate state)
+ *   set m_mimeType but not m_bMimeTypeKnown (-> Intermediate state)
  * Intermediate state: determineMimeType() does the real determination -> Final state.
  *
  * If delayedMimeTypes isn't set, then we always go to the Final state directly.
  */
 
-KMimeType::Ptr KFileItem::mimeTypePtr() const
+QMimeType KFileItem::currentMimeType() const
 {
-    if (!d->m_pMimeType) {
+    if (!d->m_mimeType.isValid()) {
         // On-demand fast (but not always accurate) mimetype determination
         Q_ASSERT(!d->m_url.isEmpty());
-        bool isLocalUrl;
-        KUrl url = mostLocalUrl(isLocalUrl);
+        QMimeDatabase db;
+        const KUrl url = mostLocalUrl();
         if (d->m_delayedMimeTypes) {
-            QMimeDatabase db;
             const QList<QMimeType> mimeTypes = db.mimeTypesForFileName(url.path());
             if (mimeTypes.isEmpty()) {
-                d->m_pMimeType = KMimeType::defaultMimeTypePtr();
+                d->m_mimeType = db.mimeTypeForName("application/octet-stream");
                 d->m_bMimeTypeKnown = false;
             } else {
-                d->m_pMimeType = KMimeType::Ptr(new KMimeType(mimeTypes.first()));
+                d->m_mimeType = mimeTypes.first();
                 // If there were conflicting globs. determineMimeType will be able to do better.
                 d->m_bMimeTypeKnown = (mimeTypes.count() == 1);
             }
         } else {
-            d->m_pMimeType = KMimeType::findByUrl(url, d->m_fileMode, isLocalUrl);
+            // ## d->m_fileMode isn't used anymore (for remote urls)
+            d->m_mimeType = db.mimeTypeForUrl(url);
             d->m_bMimeTypeKnown = true;
         }
     }
-    return d->m_pMimeType;
+    return d->m_mimeType;
 }
 
 KIO::UDSEntry KFileItem::entry() const

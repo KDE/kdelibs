@@ -27,7 +27,7 @@
 #include <kurl.h>
 
 #include <kacl.h>
-#include <kmimetype.h>
+#include <qmimetype.h>
 #include <kfilemetainfo.h>
 #include <kdatetime.h>
 #include <QtCore/QList>
@@ -360,14 +360,14 @@ public:
      * the mimetype first.
      * @return the mime type
      */
-    KMimeType::Ptr determineMimeType() const;
+    QMimeType determineMimeType() const;
 
     /**
      * Returns the currently known mimetype of the file item.
      * This will not try to determine the mimetype if unknown.
      * @return the known mime type
      */
-    KMimeType::Ptr mimeTypePtr() const;
+    QMimeType currentMimeType() const; // KDE4: was mimeTypePtr()
 
     /**
      * @return true if we have determined the mimetype of this file already,
@@ -626,7 +626,7 @@ public:
      * Tries to give a local URL for this file item if possible.
      * The given boolean indicates if the returned url is local or not.
      */
-    KUrl mostLocalUrl(bool &local) const; // KDE4 TODO: bool* local = 0
+    KUrl mostLocalUrl(bool &local) const; // KDE5 TODO: bool* local = 0
 
     /**
      * Tries to give a local URL for this file item if possible.
