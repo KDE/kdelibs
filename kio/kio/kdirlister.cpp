@@ -35,6 +35,7 @@
 #include "kmountpoint.h"
 
 #include <QFile>
+#include <qmimedatabase.h>
 
 // Enable this to get printDebug() called often, to see the contents of the cache
 //#define DEBUG_CACHE
@@ -416,7 +417,7 @@ void KDirListerCache::stop( KDirLister *lister, bool silent )
     Q_FOREACH(const KUrl& url, urls) {
         stopListingUrl(lister, url, silent);
     }
-    
+
 #if 0 // test code
     QHash<QString,KDirListerCacheDirectoryData>::iterator dirit = directoryData.begin();
     const QHash<QString,KDirListerCacheDirectoryData>::iterator dirend = directoryData.end();
@@ -2344,14 +2345,15 @@ bool KDirLister::doMimeFilter( const QString& mime, const QStringList& filters )
   if ( filters.isEmpty() )
     return true;
 
-  const KMimeType::Ptr mimeptr = KMimeType::mimeType(mime);
-  if ( !mimeptr )
+  QMimeDatabase db;
+  const QMimeType mimeptr = db.mimeTypeForName(mime);
+  if (!mimeptr.isValid())
     return false;
 
   //kDebug(7004) << "doMimeFilter: investigating: "<<mimeptr->name();
   QStringList::const_iterator it = filters.begin();
   for ( ; it != filters.end(); ++it )
-    if ( mimeptr->is(*it) )
+    if (mimeptr.inherits(*it))
       return true;
     //else   kDebug(7004) << "doMimeFilter: compared without result to  "<<*it;
 
