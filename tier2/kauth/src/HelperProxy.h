@@ -27,7 +27,6 @@
 
 #include "kauthaction.h"
 #include "kauthactionreply.h"
-#include "kauthactionwatcher.h"
 
 namespace KAuth
 {
