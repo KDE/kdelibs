@@ -30,7 +30,7 @@
 #include <kdebug.h>
 #include <kauthorized.h>
 #include <kprotocolinfo.h>
-#include <kmimetype.h>
+#include <qmimedatabase.h>
 
 #include <QtNetwork/QSslConfiguration>
 
@@ -239,13 +239,11 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
                 if (m_ignoreContentDisposition) {
                     // If the server returned application/octet-stream, try to determine the
                     // real content type from the disposition filename.
-                    if (mimeType == KMimeType::defaultMimeType()) {
-                        int accuracy = 0;
+                    if (mimeType == QL1S("application/octet-stream")) {
                         const QString fileName (metaData.value(QL1S("content-disposition-filename")));
-                        KMimeType::Ptr mime = KMimeType::findByUrl((fileName.isEmpty() ? url().path() : fileName), 0, false, true, &accuracy);
-                        if (!mime->isDefault() && accuracy == 100) {
-                            mimeType = mime->name();
-                        }
+                        QMimeDatabase db;
+                        QMimeType mime = db.mimeTypeForFile((fileName.isEmpty() ? url().path() : fileName), QMimeDatabase::MatchExtension);
+                        mimeType = mime.name();
                     }
                     metaData.remove(QL1S("content-disposition-type"));
                     metaData.remove(QL1S("content-disposition-filename"));
