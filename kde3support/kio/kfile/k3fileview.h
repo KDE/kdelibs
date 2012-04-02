@@ -26,6 +26,7 @@ class QPoint;
 class QWidget;
 class QDropEvent;
 class KActionCollection;
+class KConfigGroup;
 
 #include "kde3support_export.h"
 #include "kfileitem.h"
