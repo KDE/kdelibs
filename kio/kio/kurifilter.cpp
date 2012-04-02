@@ -25,8 +25,8 @@
 #include <kdebug.h>
 #include <kiconloader.h>
 #include <kservicetypetrader.h>
-#include <kmimetype.h>
 #include <kstandarddirs.h>
+#include <kio/global.h>
 
 #include <QtCore/QHashIterator>
 #include <QtCore/QStringBuilder>
@@ -44,18 +44,8 @@ static QString lookupIconNameFor(const KUrl &url, KUriFilterData::UriTypes type)
     switch ( type )
     {
         case KUriFilterData::NetProtocol:
-            iconName = KMimeType::favIconForUrl(url);
-            if (iconName.isEmpty())
-                iconName = KMimeType::iconNameForUrl( url );
-            else
-                iconName = KStandardDirs::locate("cache", iconName + QLatin1String(".png"));
+            iconName = KIO::iconNameForUrl( url );
             break;
-        case KUriFilterData::LocalFile:
-        case KUriFilterData::LocalDir:
-        {
-            iconName = KMimeType::iconNameForUrl( url );
-            break;
-        }
         case KUriFilterData::Executable:
         {
             QString exeName = url.path();

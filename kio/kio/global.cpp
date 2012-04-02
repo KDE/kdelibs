@@ -21,6 +21,7 @@
 
 #include <config.h>
 
+#include <kconfiggroup.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kglobal.h>
@@ -1273,7 +1274,7 @@ static QString favIconForUrl(const QUrl& url)
     QDBusInterface kded( QString::fromLatin1("org.kde.kded"),
                          QString::fromLatin1("/modules/favicons"),
                          QString::fromLatin1("org.kde.FavIcon") );
-    QDBusReply<QString> result = kded.call( QString::fromLatin1("iconForUrl"), url.url() );
+    QDBusReply<QString> result = kded.call( QString::fromLatin1("iconForUrl"), url.toString() );
     return result;              // default is QString()
 }
 
@@ -1290,7 +1291,7 @@ QString KIO::iconNameForUrl(const QUrl& url)
         // and for the root of the protocol (e.g. trash:/) the protocol icon has priority over the mimetype icon
         || url.path().length() <= 1)
     {
-        i = KMimeType::favIconForUrl(url); // maybe there is a favicon?
+        i = favIconForUrl(url); // maybe there is a favicon?
 
         if (i.isEmpty())
             i = KProtocolInfo::icon(url.scheme());
