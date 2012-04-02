@@ -1,3 +1,18 @@
+
+if (X11_Xfixes_FOUND)
+   set (HAVE_XFIXES 1)
+else (X11_Xfixes_FOUND)
+   set (HAVE_XFIXES 0)
+endif (X11_Xfixes_FOUND)
+
+if (X11_Xrender_FOUND)
+   set (HAVE_XRENDER 1)
+else (X11_Xrender_FOUND)
+   set (HAVE_XRENDER 0)
+endif (X11_Xrender_FOUND)
+
+configure_file(config-kwindowsystem.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kwindowsystem.h )
+
 set(kwindowsystem_SRCS
     kwindoweffects.cpp
     ksystemeventfilter.cpp

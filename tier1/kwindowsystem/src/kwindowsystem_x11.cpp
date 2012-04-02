@@ -38,7 +38,7 @@
 
 #include "globalstaticdef_p.h"
 
-#include <config.h>
+#include <config-kwindowsystem.h>
 
 #ifdef HAVE_XFIXES
 #include <X11/extensions/Xfixes.h>

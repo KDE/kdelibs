@@ -20,7 +20,7 @@
 
 #include "kxutils_p.h"
 
-#include <config.h>
+#include <config-kwindowsystem.h>
 
 #ifdef Q_WS_X11
 
