@@ -23,6 +23,12 @@ set(PLUGIN_INSTALL_DIR ${LIB_INSTALL_DIR}/kde4)
 set(LIBEXEC_INSTALL_DIR ${LIB_INSTALL_DIR}/kde4/libexec)
 
 
+include_directories(
+     ${kcoreaddons_SOURCE_DIR}/src/jobs # for KJob
+     ${kcoreaddons_BINARY_DIR}/src
+)
+
+
 add_subdirectory(src)
 add_subdirectory(autotests)
 
