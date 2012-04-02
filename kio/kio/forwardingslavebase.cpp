@@ -23,9 +23,8 @@
 #include "job.h"
 
 #include <kdebug.h>
-#include <kmimetype.h>
+#include <qmimedatabase.h>
 
-#include <QApplication>
 #include <QtCore/QEventLoop>
 
 namespace KIO
@@ -136,7 +135,8 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
             new_url.addPath( name );
         }
 
-        mimetype = KMimeType::findByUrl(new_url)->name();
+        QMimeDatabase db;
+        mimetype = db.mimeTypeForUrl(new_url).name();
 
         entry.insert( KIO::UDSEntry::UDS_MIME_TYPE, mimetype );
 

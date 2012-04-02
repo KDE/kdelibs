@@ -50,6 +50,7 @@
 #include <QtCore/QLinkedList>
 #include <kconfiggroup.h>
 #include <kprotocolinfo.h>
+#include <qmimedatabase.h>
 
 #include "jobuidelegate.h"
 #include "job_p.h"
@@ -325,10 +326,11 @@ void PreviewJobPrivate::startPreview()
                 pluginIt = mimeMap.constFind(groupMimeType);
 
                 if (pluginIt == mimeMap.constEnd()) {
+                    QMimeDatabase db;
                     // check mime type inheritance, resolve aliases
-                    const KMimeType::Ptr mimeInfo = KMimeType::mimeType(mimeType);
-                    if (mimeInfo) {
-                        const QStringList parentMimeTypes = mimeInfo->allParentMimeTypes();
+                    const QMimeType mimeInfo = db.mimeTypeForName(mimeType);
+                    if (mimeInfo.isValid()) {
+                        const QStringList parentMimeTypes = mimeInfo.allAncestors();
                         Q_FOREACH(const QString& parentMimeType, parentMimeTypes) {
                             pluginIt = mimeMap.constFind(parentMimeType);
                             if (pluginIt != mimeMap.constEnd())
@@ -470,8 +472,8 @@ void PreviewJob::slotResult( KJob *job )
                 // Remote directories are not supported, don't try to do a file_copy on them
                 if (!skipCurrentItem) {
                     // TODO update item.mimeType from the UDS entry, in case it wasn't set initially
-                    KMimeType::Ptr mime = d->currentItem.item.mimeTypePtr();
-                    if (mime && mime->is("inode/directory")) {
+                    // But we don't use the mimetype anymore, we just use isDir().
+                    if (d->currentItem.item.isDir()) {
                         skipCurrentItem = true;
                     }
                 }

@@ -148,6 +148,7 @@ An easy case is KStandardDirs::findExe -&gt; QStandardPaths::findExecutable. Wel
    KMimeType::findByNameAndContent(name, data_or_device) -&gt; db.mimeTypeForNameAndData(name, data_or_device)
    KMimeType::findByFileContent(path) -&gt; db.mimeTypeForFile(path, QMimeDatabase::MatchContent)
    mime->name() == KMimeType::defaultMimeType() -&gt; mime.isDefault()
+   mime.allParentMimeTypes() -&gt; mime.allAncestors()
    KMimeType::extractKnownExtension(fileName) -&gt; db.suffixForFileName(fileName)
 </ul>
 

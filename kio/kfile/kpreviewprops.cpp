@@ -71,11 +71,11 @@ bool KPreviewPropsPlugin::supports( const KFileItemList &_items )
     bool metaDataEnabled = KGlobalSettings::showFilePreview(_items.first().url());
     if (!metaDataEnabled)
         return false;
-    const KMimeType::Ptr mime = _items.first().mimeTypePtr();
+    const QMimeType mime = _items.first().determineMimeType();
     const QStringList supportedMimeTypes = KIO::PreviewJob::supportedMimeTypes();
     foreach(const QString& supportedMime, supportedMimeTypes) {
-        if (mime->is(supportedMime))
-    return true;
+        if (mime.inherits(supportedMime))
+            return true;
     }
     return false;
 }

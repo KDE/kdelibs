@@ -49,6 +49,7 @@ target_link_libraries(kfile
    ${ZLIB_LIBRARY}
    ${KDE4_SOLID_LIBS}
    ${X11_LIBRARIES}
+   ${QtMimeTypes_LIBRARY}
    kcoreaddons
 )
 

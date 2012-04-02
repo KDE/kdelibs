@@ -36,6 +36,7 @@
 #include <QListView>
 #include <QPaintEngine>
 #include <qmath.h>
+#include <qmimedatabase.h>
 
 #include <kglobal.h>
 #include <klocale.h>
@@ -1482,7 +1483,8 @@ void KFileItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index)
     textedit->insertPlainText(text);
     textedit->selectAll();
 
-    const QString extension = KMimeType::extractKnownExtension(text);
+    QMimeDatabase db;
+    const QString extension = db.suffixForFileName(text);
     if (!extension.isEmpty()) {
         // The filename contains an extension. Assure that only the filename
         // gets selected.

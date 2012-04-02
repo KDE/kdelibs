@@ -52,6 +52,7 @@
 #include <kio/kurifilter.h>
 
 #include <kpropertiesdialog.h>
+#include <qmimedatabase.h>
 #include <utime.h>
 
 static QString expandTilde(const QString& name, bool isfile = false)
@@ -524,11 +525,12 @@ void KNewFileMenuPrivate::executeStrategy()
             // known extension (e.g. ".pl"), append ".desktop". #224142.
             QFile srcFile(uSrc.toLocalFile());
             if (srcFile.open(QIODevice::ReadOnly)) {
-                KMimeType::Ptr wantedMime = KMimeType::findByUrl(uSrc);
-                KMimeType::Ptr mime = KMimeType::findByNameAndContent(m_copyData.m_chosenFileName, srcFile.read(1024));
+                QMimeDatabase db;
+                QMimeType wantedMime = db.mimeTypeForUrl(uSrc);
+                QMimeType mime = db.mimeTypeForNameAndData(m_copyData.m_chosenFileName, srcFile.read(1024));
                 //kDebug() << "mime=" << mime->name() << "wantedMime=" << wantedMime->name();
-                if (!mime->is(wantedMime->name()))
-                    chosenFileName += wantedMime->mainExtension();
+                if (!mime.inherits(wantedMime.name()))
+                    chosenFileName += wantedMime.preferredSuffix();
             }
         }
     }
@@ -632,20 +634,17 @@ void KNewFileMenuPrivate::fillMenu()
                         } else if (!KDesktopFile::isDesktopFile(entry.templatePath)) {
 
                             // Determine mimetype on demand
-                            KMimeType::Ptr mime;
+                            QMimeDatabase db;
+                            QMimeType mime;
                             if (entry.mimeType.isEmpty()) {
-                                mime = KMimeType::findByPath(entry.templatePath);
-                                if (mime) {
-                                    //kDebug() << entry.templatePath << "is" << mime->name();
-                                    entry.mimeType = mime->name();
-                                } else {
-                                    entry.mimeType = KMimeType::defaultMimeType();
-                                }
+                                mime = db.mimeTypeForFile(entry.templatePath);
+                                //kDebug() << entry.templatePath << "is" << mime.name();
+                                entry.mimeType = mime.name();
                             } else {
-                                mime = KMimeType::mimeType(entry.mimeType);
+                                mime = db.mimeTypeForName(entry.mimeType);
                             }
                             Q_FOREACH(const QString& supportedMime, m_supportedMimeTypes) {
-                                if (mime && mime->is(supportedMime)) {
+                                if (mime.inherits(supportedMime)) {
                                     keep = true;
                                     break;
                                 }

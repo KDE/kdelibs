@@ -35,6 +35,7 @@
 #include <kstandarddirs.h>
 #include <kservicetypetrader.h>
 #include <QFile>
+#include <qmimedatabase.h>
 #include <QtAlgorithms>
 
 #include <QtDBus/QtDBus>
@@ -256,7 +257,8 @@ int KFileItemActions::addServiceActionsTo(QMenu* mainMenu)
 
     const QString commonMimeType = d->m_props.mimeType();
     const QString commonMimeGroup = d->m_props.mimeGroup();
-    const KMimeType::Ptr mimeTypePtr = commonMimeType.isEmpty() ? KMimeType::Ptr() : KMimeType::mimeType(commonMimeType);
+    const QMimeDatabase db;
+    const QMimeType mimeTypePtr = commonMimeType.isEmpty() ? QMimeType() : db.mimeTypeForName(commonMimeType);
     const KService::List entries = KServiceTypeTrader::self()->query("KonqPopupMenu/Plugin");
     KService::List::const_iterator eEnd = entries.end();
     for (KService::List::const_iterator it2 = entries.begin(); it2 != eEnd; ++it2) {
@@ -361,7 +363,7 @@ int KFileItemActions::addServiceActionsTo(QMenu* mainMenu)
 
                 // if we have a mimetype, see if we have an exact or a type globbed match
                 if (!ok && (
-                    (mimeTypePtr && mimeTypePtr->is(*it)) ||
+                    (mimeTypePtr.inherits(*it)) ||
                     (!commonMimeGroup.isEmpty() &&
                      ((*it).right(1) == "*" &&
                       (*it).left((*it).indexOf('/')) == commonMimeGroup)))) {

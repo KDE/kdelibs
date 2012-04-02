@@ -50,6 +50,7 @@
 #include <QLabel>
 #include <QPainter>
 #include <QStyleOption>
+#include <qmimedatabase.h>
 
 #include <fixx11h.h>
 
@@ -765,17 +766,18 @@ QString KUrlNavigator::Private::retrievePlacePath() const
 
 bool KUrlNavigator::Private::isCompressedPath(const KUrl& url) const
 {
-    const KMimeType::Ptr mime = KMimeType::findByPath(url.path(KUrl::RemoveTrailingSlash));
+    QMimeDatabase db;
+    const QMimeType mime = db.mimeTypeForUrl(url);
     // Note: this list of MIME types depends on the protocols implemented by kio_archive
-    return  mime->is("application/x-compressed-tar") ||
-            mime->is("application/x-bzip-compressed-tar") ||
-            mime->is("application/x-lzma-compressed-tar") ||
-            mime->is("application/x-xz-compressed-tar") ||
-            mime->is("application/x-tar") ||
-            mime->is("application/x-tarz") ||
-            mime->is("application/x-tzo") || // (not sure KTar supports those?)
-            mime->is("application/zip") ||
-            mime->is("application/x-archive");
+    return  mime.inherits("application/x-compressed-tar") ||
+            mime.inherits("application/x-bzip-compressed-tar") ||
+            mime.inherits("application/x-lzma-compressed-tar") ||
+            mime.inherits("application/x-xz-compressed-tar") ||
+            mime.inherits("application/x-tar") ||
+            mime.inherits("application/x-tarz") ||
+            mime.inherits("application/x-tzo") || // (not sure KTar supports those?)
+            mime.inherits("application/zip") ||
+            mime.inherits("application/x-archive");
 }
 
 void KUrlNavigator::Private::removeTrailingSlash(QString& url) const

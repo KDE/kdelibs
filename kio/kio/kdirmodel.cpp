@@ -565,7 +565,7 @@ void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileIte
                 m_nodeHash.insert(cleanupUrl(newUrl), node);
             }
             // Mimetype changed -> forget cached icon (e.g. from "cut", #164185 comment #13)
-            if (fit->first.mimeTypePtr()->name() != fit->second.mimeTypePtr()->name()) {
+            if (fit->first.determineMimeType().name() != fit->second.determineMimeType().name()) {
                 node->setPreview(QIcon());
             }
 
@@ -1052,7 +1052,7 @@ Qt::ItemFlags KDirModel::flags( const QModelIndex & index ) const
                 else if (d->m_dropsAllowed & DropOnLocalExecutable) {
                     if (!item.localPath().isEmpty()) {
                         // Desktop file?
-                        if (item.mimeTypePtr()->is("application/x-desktop"))
+                        if (item.determineMimeType().inherits("application/x-desktop"))
                             f |= Qt::ItemIsDropEnabled;
                         // Executable, shell script ... ?
                         else if ( QFileInfo( item.localPath() ).isExecutable() )
