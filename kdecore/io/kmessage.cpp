@@ -46,7 +46,7 @@ public:
 protected:
     KMessageHandler *m_handler;
 };
-K_GLOBAL_STATIC(StaticMessageHandler, s_messageHandler)
+Q_GLOBAL_STATIC(StaticMessageHandler, s_messageHandler)
 
 static void internalMessageFallback(KMessage::MessageType messageType, const QString &text, const QString &caption)
 {
@@ -86,15 +86,15 @@ static void internalMessageFallback(KMessage::MessageType messageType, const QSt
 void KMessage::setMessageHandler(KMessageHandler *handler)
 {
     // Delete old message handler.
-    s_messageHandler->setHandler(handler);
+    s_messageHandler()->setHandler(handler);
 }
 
 void KMessage::message(KMessage::MessageType messageType, const QString &text, const QString &caption)
 {
     // Use current message handler if available, else use stdout
-    if(s_messageHandler->handler())
+    if(s_messageHandler()->handler())
     {
-        s_messageHandler->handler()->message(messageType, text, caption);
+        s_messageHandler()->handler()->message(messageType, text, caption);
     }
     else
     {

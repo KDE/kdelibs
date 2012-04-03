@@ -68,7 +68,7 @@ public:
     QMutex mutex;
 };
 
-K_GLOBAL_STATIC(KCatalogStaticData, catalogStaticData)
+Q_GLOBAL_STATIC(KCatalogStaticData, catalogStaticData)
 
 class KCatalogPrivate
 {
@@ -211,7 +211,7 @@ void KCatalogPrivate::resetSystemLanguage ()
 
 QString KCatalog::translate(const char * msgid) const
 {
-  QMutexLocker locker(&catalogStaticData->mutex);
+  QMutexLocker locker(&catalogStaticData()->mutex);
   d->setupGettextEnv();
   const char *msgstr = dgettext(d->name, msgid);
   d->resetSystemLanguage();
@@ -220,7 +220,7 @@ QString KCatalog::translate(const char * msgid) const
 
 QString KCatalog::translate(const char * msgctxt, const char * msgid) const
 {
-  QMutexLocker locker(&catalogStaticData->mutex);
+  QMutexLocker locker(&catalogStaticData()->mutex);
   d->setupGettextEnv();
   const char *msgstr = dpgettext_expr(d->name, msgctxt, msgid);
   d->resetSystemLanguage();
@@ -230,7 +230,7 @@ QString KCatalog::translate(const char * msgctxt, const char * msgid) const
 QString KCatalog::translate(const char * msgid, const char * msgid_plural,
                             unsigned long n) const
 {
-  QMutexLocker locker(&catalogStaticData->mutex);
+  QMutexLocker locker(&catalogStaticData()->mutex);
   d->setupGettextEnv();
   const char *msgstr = dngettext(d->name, msgid, msgid_plural, n);
   d->resetSystemLanguage();
@@ -240,7 +240,7 @@ QString KCatalog::translate(const char * msgid, const char * msgid_plural,
 QString KCatalog::translate(const char * msgctxt, const char * msgid,
                             const char * msgid_plural, unsigned long n) const
 {
-  QMutexLocker locker(&catalogStaticData->mutex);
+  QMutexLocker locker(&catalogStaticData()->mutex);
   d->setupGettextEnv();
   const char *msgstr = dnpgettext_expr(d->name, msgctxt, msgid, msgid_plural, n);
   d->resetSystemLanguage();
@@ -249,7 +249,7 @@ QString KCatalog::translate(const char * msgctxt, const char * msgid,
 
 QString KCatalog::translateStrict(const char * msgid) const
 {
-  QMutexLocker locker(&catalogStaticData->mutex);
+  QMutexLocker locker(&catalogStaticData()->mutex);
   d->setupGettextEnv();
   const char *msgstr = dgettext(d->name, msgid);
   d->resetSystemLanguage();
@@ -258,7 +258,7 @@ QString KCatalog::translateStrict(const char * msgid) const
 
 QString KCatalog::translateStrict(const char * msgctxt, const char * msgid) const
 {
-  QMutexLocker locker(&catalogStaticData->mutex);
+  QMutexLocker locker(&catalogStaticData()->mutex);
   d->setupGettextEnv();
   const char *msgstr = dpgettext_expr(d->name, msgctxt, msgid);
   d->resetSystemLanguage();
@@ -268,7 +268,7 @@ QString KCatalog::translateStrict(const char * msgctxt, const char * msgid) cons
 QString KCatalog::translateStrict(const char * msgid, const char * msgid_plural,
                                   unsigned long n) const
 {
-  QMutexLocker locker(&catalogStaticData->mutex);
+  QMutexLocker locker(&catalogStaticData()->mutex);
   d->setupGettextEnv();
   const char *msgstr = dngettext(d->name, msgid, msgid_plural, n);
   d->resetSystemLanguage();
@@ -278,7 +278,7 @@ QString KCatalog::translateStrict(const char * msgid, const char * msgid_plural,
 QString KCatalog::translateStrict(const char * msgctxt, const char * msgid,
                                   const char * msgid_plural, unsigned long n) const
 {
-  QMutexLocker locker(&catalogStaticData->mutex);
+  QMutexLocker locker(&catalogStaticData()->mutex);
   d->setupGettextEnv();
   const char *msgstr = dnpgettext_expr(d->name, msgctxt, msgid, msgid_plural, n);
   d->resetSystemLanguage();

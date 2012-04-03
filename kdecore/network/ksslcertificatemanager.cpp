@@ -443,7 +443,7 @@ public:
     KSslCertificateManager sslCertificateManager;
 };
 
-K_GLOBAL_STATIC(KSslCertificateManagerContainer, g_instance)
+Q_GLOBAL_STATIC(KSslCertificateManagerContainer, g_instance)
 
 
 KSslCertificateManager::KSslCertificateManager()
@@ -465,7 +465,7 @@ KSslCertificateManager::~KSslCertificateManager()
 //static
 KSslCertificateManager *KSslCertificateManager::self()
 {
-    return &g_instance->sslCertificateManager;
+    return &g_instance()->sslCertificateManager;
 }
 
 

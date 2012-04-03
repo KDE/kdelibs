@@ -39,7 +39,7 @@ public:
 };
 
 
-K_GLOBAL_STATIC(KGestureMapContainer, g_instance)
+Q_GLOBAL_STATIC(KGestureMapContainer, g_instance)
 
 
 KGestureMap::~KGestureMap()
@@ -49,7 +49,7 @@ KGestureMap::~KGestureMap()
 
 KGestureMap *KGestureMap::self()
 {
-    return &g_instance->gestureMap;
+    return &g_instance()->gestureMap;
 }
 
 

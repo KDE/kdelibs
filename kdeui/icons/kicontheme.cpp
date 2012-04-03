@@ -72,7 +72,7 @@ public:
     QList<KIconThemeDir *> mDirs;
 };
 K_GLOBAL_STATIC(QString, _theme)
-K_GLOBAL_STATIC(QStringList, _theme_list)
+Q_GLOBAL_STATIC(QStringList, _theme_list)
 
 /**
  * A subdirectory in an icon theme.
@@ -547,8 +547,8 @@ QString KIconTheme::current()
 QStringList KIconTheme::list()
 {
     // Static pointer because of unloading problems wrt DSO's.
-    if (!_theme_list->isEmpty()) {
-        return *_theme_list;
+    if (!_theme_list()->isEmpty()) {
+        return *_theme_list();
     }
 
     const QStringList icnlibs = KGlobal::dirs()->resourceDirs("icon")
@@ -577,19 +577,19 @@ QStringList KIconTheme::list()
                 continue;
             }
 
-            if (!_theme_list->contains(*it2)) {
-                _theme_list->append(*it2);
+            if (!_theme_list()->contains(*it2)) {
+                _theme_list()->append(*it2);
             }
         }
     }
-    return *_theme_list;
+    return *_theme_list();
 }
 
 // static
 void KIconTheme::reconfigure()
 {
     _theme->clear();
-    _theme_list->clear();
+    _theme_list()->clear();
 }
 
 // static

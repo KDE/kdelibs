@@ -235,13 +235,13 @@ namespace KIO
 
 using namespace KIO;
 
-K_GLOBAL_STATIC(HostInfoAgentPrivate, hostInfoAgentPrivate)
-K_GLOBAL_STATIC(NameLookUpThread, nameLookUpThread)
+Q_GLOBAL_STATIC(HostInfoAgentPrivate, hostInfoAgentPrivate)
+Q_GLOBAL_STATIC(NameLookUpThread, nameLookUpThread)
 
 void HostInfo::lookupHost(const QString& hostName, QObject* receiver,
     const char* member)
 {
-    hostInfoAgentPrivate->lookupHost(hostName, receiver, member);
+    hostInfoAgentPrivate()->lookupHost(hostName, receiver, member);
 }
 
 QHostInfo HostInfo::lookupHost(const QString& hostName, unsigned long timeout)
@@ -264,16 +264,16 @@ QHostInfo HostInfo::lookupHost(const QString& hostName, unsigned long timeout)
 
     // Failing all of the above, do the lookup...
     QSharedPointer<NameLookupThreadRequest> request = QSharedPointer<NameLookupThreadRequest>(new NameLookupThreadRequest(hostName));
-    nameLookUpThread->semaphore()->acquire();
-    nameLookUpThread->semaphore()->release();
-    QMetaObject::invokeMethod(nameLookUpThread->worker(), "lookupHost", Qt::QueuedConnection, Q_ARG(QSharedPointer<NameLookupThreadRequest>, request));
+    nameLookUpThread()->semaphore()->acquire();
+    nameLookUpThread()->semaphore()->release();
+    QMetaObject::invokeMethod(nameLookUpThread()->worker(), "lookupHost", Qt::QueuedConnection, Q_ARG(QSharedPointer<NameLookupThreadRequest>, request));
     if (request->semaphore()->tryAcquire(1, timeout)) {
         hostInfo = request->result();
         if (!hostInfo.hostName().isEmpty() && hostInfo.error() == QHostInfo::NoError) {
             HostInfo::cacheLookup(hostInfo); // cache the look up...
         }
     } else {
-        QMetaObject::invokeMethod(nameLookUpThread->worker(), "abortLookup", Qt::QueuedConnection, Q_ARG(QSharedPointer<NameLookupThreadRequest>, request));
+        QMetaObject::invokeMethod(nameLookUpThread()->worker(), "abortLookup", Qt::QueuedConnection, Q_ARG(QSharedPointer<NameLookupThreadRequest>, request));
     }
 
     //kDebug(7022) << "Name look up succeeded for" << hostName;
@@ -282,27 +282,27 @@ QHostInfo HostInfo::lookupHost(const QString& hostName, unsigned long timeout)
 
 QHostInfo HostInfo::lookupCachedHostInfoFor(const QString& hostName)
 {
-    return hostInfoAgentPrivate->lookupCachedHostInfoFor(hostName);
+    return hostInfoAgentPrivate()->lookupCachedHostInfoFor(hostName);
 }
 
 void HostInfo::cacheLookup(const QHostInfo& info)
 {
-    hostInfoAgentPrivate->cacheLookup(info);
+    hostInfoAgentPrivate()->cacheLookup(info);
 }
 
 void HostInfo::prefetchHost(const QString& hostName)
 {
-    hostInfoAgentPrivate->lookupHost(hostName, 0, 0);
+    hostInfoAgentPrivate()->lookupHost(hostName, 0, 0);
 }
 
 void HostInfo::setCacheSize(int s)
 {
-    hostInfoAgentPrivate->setCacheSize(s);
+    hostInfoAgentPrivate()->setCacheSize(s);
 }
 
 void HostInfo::setTTL(int ttl)
 {
-    hostInfoAgentPrivate->setTTL(ttl);
+    hostInfoAgentPrivate()->setTTL(ttl);
 }
 
 HostInfoAgentPrivate::HostInfoAgentPrivate(int cacheSize)

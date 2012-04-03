@@ -202,11 +202,11 @@ class KIO::FileUndoManagerSingleton
 public:
     FileUndoManager self;
 };
-K_GLOBAL_STATIC(KIO::FileUndoManagerSingleton, globalFileUndoManager)
+Q_GLOBAL_STATIC(KIO::FileUndoManagerSingleton, globalFileUndoManager)
 
 FileUndoManager *FileUndoManager::self()
 {
-    return &globalFileUndoManager->self;
+    return &globalFileUndoManager()->self;
 }
 
 

@@ -116,11 +116,11 @@ class KNfoTranslatorSingleton
 public:
     KNfoTranslator instance;
 };
-K_GLOBAL_STATIC(KNfoTranslatorSingleton, s_nfoTranslator)
+Q_GLOBAL_STATIC(KNfoTranslatorSingleton, s_nfoTranslator)
 
 KNfoTranslator& KNfoTranslator::instance()
 {
-    return s_nfoTranslator->instance;
+    return s_nfoTranslator()->instance;
 }
 
 QString KNfoTranslator::translation(const QUrl& uri) const

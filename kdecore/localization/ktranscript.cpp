@@ -447,12 +447,12 @@ TsConfig readConfig (const QString &fname)
 
 // ----------------------------------------------------------------------
 // Dynamic loading.
-K_GLOBAL_STATIC(KTranscriptImp, globalKTI)
+Q_GLOBAL_STATIC(KTranscriptImp, globalKTI)
 extern "C"
 {
     KDECORE_EXPORT KTranscript *load_transcript ()
     {
-        return globalKTI;
+        return globalKTI();
     }
 }
 
@@ -846,7 +846,7 @@ JSValue *ScriptfaceProtoFunc::callAsFunction (ExecState *exec, JSObject *thisObj
 
 JSValue *Scriptface::loadf (ExecState *exec, const List &fnames)
 {
-    if (globalKTI->currentModulePath.isEmpty())
+    if (globalKTI()->currentModulePath.isEmpty())
         return throwError(exec, GeneralError,
                           SPREF"load: no current module path, aiiie...");
 
@@ -858,7 +858,7 @@ JSValue *Scriptface::loadf (ExecState *exec, const List &fnames)
     for (int i = 0; i < fnames.size(); ++i)
     {
         QString qfname = fnames[i]->getString().qstring();
-        QString qfpath = globalKTI->currentModulePath + QLatin1Char('/') + qfname + QLatin1String(".js");
+        QString qfpath = globalKTI()->currentModulePath + QLatin1Char('/') + qfname + QLatin1String(".js");
 
         QFile file(qfpath);
         if (!file.open(QIODevice::ReadOnly))
@@ -921,7 +921,7 @@ JSValue *Scriptface::setcallf (ExecState *exec, JSValue *name,
 
     // Set current module path as module path for this call,
     // in case it contains load subcalls.
-    fpaths[qname] = globalKTI->currentModulePath;
+    fpaths[qname] = globalKTI()->currentModulePath;
 
     return jsUndefined();
 }
@@ -958,7 +958,7 @@ JSValue *Scriptface::acallf (ExecState *exec, const List &argv)
 
     // Recover module path from the time of definition of this call,
     // for possible load calls.
-    globalKTI->currentModulePath = fpaths[callname];
+    globalKTI()->currentModulePath = fpaths[callname];
 
     // Execute function.
     List arglist;
@@ -1000,7 +1000,7 @@ JSValue *Scriptface::setcallForallf (ExecState *exec, JSValue *name,
 
     // Set current module path as module path for this call,
     // in case it contains load subcalls.
-    fpaths[qname] = globalKTI->currentModulePath;
+    fpaths[qname] = globalKTI()->currentModulePath;
 
     // Put in the queue order for execution on all messages.
     nameForalls.append(qname);
@@ -1132,7 +1132,7 @@ JSValue *Scriptface::normKeyf (ExecState *exec, JSValue *phrase)
 
 JSValue *Scriptface::loadPropsf (ExecState *exec, const List &fnames)
 {
-    if (globalKTI->currentModulePath.isEmpty()) {
+    if (globalKTI()->currentModulePath.isEmpty()) {
         return throwError(exec, GeneralError,
                           SPREF"loadProps: no current module path, aiiie...");
     }
@@ -1147,7 +1147,7 @@ JSValue *Scriptface::loadPropsf (ExecState *exec, const List &fnames)
     for (int i = 0; i < fnames.size(); ++i)
     {
         QString qfname = fnames[i]->getString().qstring();
-        QString qfpath_base = globalKTI->currentModulePath + QLatin1Char('/') + qfname;
+        QString qfpath_base = globalKTI()->currentModulePath + QLatin1Char('/') + qfname;
 
         // Determine which kind of map is available.
         // Give preference to compiled map.

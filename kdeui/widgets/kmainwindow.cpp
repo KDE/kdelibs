@@ -209,8 +209,8 @@ public:
     }
 };
 
-K_GLOBAL_STATIC(KMWSessionManager, ksm)
-K_GLOBAL_STATIC(QList<KMainWindow*>, sMemberList)
+Q_GLOBAL_STATIC(KMWSessionManager, ksm)
+Q_GLOBAL_STATIC(QList<KMainWindow*>, sMemberList)
 static bool being_first = true;
 
 KMainWindow::KMainWindow( QWidget* parent, Qt::WFlags f )
@@ -257,9 +257,9 @@ void KMainWindowPrivate::init(KMainWindow *_q)
                      q, SLOT(_k_slotSettingsChanged(int)));
 
     // force KMWSessionManager creation - someone a better idea?
-    ksm->dummyInit();
+    ksm()->dummyInit();
 
-    sMemberList->append( q );
+    sMemberList()->append( q );
 
     settingsDirty = false;
     autoSaveSettings = false;
@@ -465,7 +465,7 @@ void KMainWindow::parseGeometry(bool parsewidth)
 
 KMainWindow::~KMainWindow()
 {
-    sMemberList->removeAll( this );
+    sMemberList()->removeAll( this );
     delete static_cast<QObject *>(k_ptr->dockResizeListener);  //so we don't get anymore events after k_ptr is destroyed
     delete k_ptr;
     KGlobal::deref();
@@ -1172,7 +1172,7 @@ QList<KToolBar*> KMainWindow::toolBars() const
     return ret;
 }
 
-QList<KMainWindow*> KMainWindow::memberList() { return *sMemberList; }
+QList<KMainWindow*> KMainWindow::memberList() { return *sMemberList(); }
 
 QString KMainWindow::dbusName() const
 {

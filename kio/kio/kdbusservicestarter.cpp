@@ -35,23 +35,23 @@ class KDBusServiceStarterPrivate
         KDBusServiceStarter *q;
 };
 
-K_GLOBAL_STATIC(KDBusServiceStarterPrivate, privateObject)
+Q_GLOBAL_STATIC(KDBusServiceStarterPrivate, privateObject)
 
 KDBusServiceStarter* KDBusServiceStarter::self()
 {
-    if (!privateObject->q) {
+    if (!privateObject()->q) {
         new KDBusServiceStarter;
-        Q_ASSERT(privateObject->q);
+        Q_ASSERT(privateObject()->q);
     }
-    return privateObject->q;
+    return privateObject()->q;
 }
 
 KDBusServiceStarter::KDBusServiceStarter()
 {
     // Set the singleton instance - useful when a derived KDBusServiceStarter
     // was created (before self() was called)
-    Q_ASSERT(!privateObject->q);
-    privateObject->q = this;
+    Q_ASSERT(!privateObject()->q);
+    privateObject()->q = this;
 }
 
 KDBusServiceStarter::~KDBusServiceStarter()

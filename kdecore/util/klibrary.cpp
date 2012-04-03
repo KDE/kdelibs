@@ -91,7 +91,7 @@ KLibrary::~KLibrary()
 
 typedef QHash<QString, QPointer<KPluginFactory> > FactoryHash;
 
-K_GLOBAL_STATIC(FactoryHash, s_createdKde3Factories)
+Q_GLOBAL_STATIC(FactoryHash, s_createdKde3Factories)
 
 static KPluginFactory* kde3Factory(KLibrary *lib, const QByteArray &factoryname)
 {
@@ -103,7 +103,7 @@ static KPluginFactory* kde3Factory(KLibrary *lib, const QByteArray &factoryname)
     }
 
     const QString hashKey = lib->fileName() + QLatin1Char(':') + QString::fromLatin1(symname);
-    KPluginFactory *factory = s_createdKde3Factories->value(hashKey);
+    KPluginFactory *factory = s_createdKde3Factories()->value(hashKey);
     if (factory) {
         return factory;
     }
@@ -129,7 +129,7 @@ static KPluginFactory* kde3Factory(KLibrary *lib, const QByteArray &factoryname)
         kDebug(kLibraryDebugArea()) << "The library" << lib->fileName() << "does not offer a KDE compatible factory.";
         return 0;
     }
-    s_createdKde3Factories->insert(hashKey, factory);
+    s_createdKde3Factories()->insert(hashKey, factory);
 
     return factory;
 }

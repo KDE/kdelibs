@@ -29,11 +29,11 @@ public:
     JobUrlCache instance;
 };
 
-K_GLOBAL_STATIC(JobUrlCacheSingleton, s_jobUrlCache)
+Q_GLOBAL_STATIC(JobUrlCacheSingleton, s_jobUrlCache)
 
 JobUrlCache& JobUrlCache::instance()
 {
-    return s_jobUrlCache->instance;
+    return s_jobUrlCache()->instance;
 }
 
 JobUrlCache::JobUrlCache() : QObject(0)

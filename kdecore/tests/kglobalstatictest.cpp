@@ -39,7 +39,7 @@ class B
         }
 };
 
-K_GLOBAL_STATIC(B, globalB)
+Q_GLOBAL_STATIC(B, globalB)
 
 int main(int, char**)
 {

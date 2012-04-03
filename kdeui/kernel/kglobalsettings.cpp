@@ -134,11 +134,11 @@ KGlobalSettingsData::~KGlobalSettingsData()
     delete mMouseSettings;
 }
 
-K_GLOBAL_STATIC( KGlobalSettingsData, globalSettingsDataSingleton )
+Q_GLOBAL_STATIC( KGlobalSettingsData, globalSettingsDataSingleton )
 
 inline KGlobalSettingsData* KGlobalSettingsData::self()
 {
-    return globalSettingsDataSingleton;
+    return globalSettingsDataSingleton();
 }
 
 

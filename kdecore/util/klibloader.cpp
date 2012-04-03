@@ -39,13 +39,13 @@ public:
     QString errorString;
 };
 
-K_GLOBAL_STATIC(KLibLoaderPrivate, kLibLoaderPrivate)
+Q_GLOBAL_STATIC(KLibLoaderPrivate, kLibLoaderPrivate)
 
 #define KLIBLOADER_PRIVATE KLibLoaderPrivate *const d = kLibLoaderPrivate
 
 KLibLoader* KLibLoader::self()
 {
-    return &kLibLoaderPrivate->instance;
+    return &kLibLoaderPrivate()->instance;
 }
 
 KLibLoader::KLibLoader()
@@ -95,7 +95,7 @@ KLibrary* KLibLoader::library( const QString &_name, QLibrary::LoadHints hint )
 
     // Klibrary search magic did work?
     if (lib->fileName().isEmpty()) {
-        kLibLoaderPrivate->errorString = i18n("Library \"%1\" not found",_name);
+        kLibLoaderPrivate()->errorString = i18n("Library \"%1\" not found",_name);
         delete lib;
         return 0;
     }
@@ -105,19 +105,19 @@ KLibrary* KLibLoader::library( const QString &_name, QLibrary::LoadHints hint )
     lib->load();
 
     if (!lib->isLoaded()) {
-        kLibLoaderPrivate->errorString = lib->errorString();
+        kLibLoaderPrivate()->errorString = lib->errorString();
         delete lib;
         return 0;
     }
 
-    kLibLoaderPrivate->cleanuphandler.add(lib);
+    kLibLoaderPrivate()->cleanuphandler.add(lib);
 
     return lib;
 }
 
 QString KLibLoader::lastErrorMessage() const
 {
-    return kLibLoaderPrivate->errorString;
+    return kLibLoaderPrivate()->errorString;
 }
 
 void KLibLoader::unloadLibrary( const QString &)
@@ -132,7 +132,7 @@ KPluginFactory* KLibLoader::factory( const QString &_name, QLibrary::LoadHints h
 
     KPluginFactory* fac = lib->factory();
     if ( !fac ) {
-        kLibLoaderPrivate->errorString = errorString( ErrNoFactory );
+        kLibLoaderPrivate()->errorString = errorString( ErrNoFactory );
         return 0;
     }
 
@@ -147,7 +147,7 @@ QString KLibLoader::errorString( int componentLoadingError )
     case ErrServiceProvidesNoLibrary:
         return i18n( "The service provides no library, the Library key is missing in the .desktop file." );
     case ErrNoLibrary:
-        return kLibLoaderPrivate->instance.lastErrorMessage();
+        return kLibLoaderPrivate()->instance.lastErrorMessage();
     case ErrNoFactory:
         return i18n( "The library does not export a factory for creating components." );
     case ErrNoComponent:

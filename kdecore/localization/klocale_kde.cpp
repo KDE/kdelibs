@@ -94,7 +94,7 @@ KLocaleStaticData::KLocaleStaticData()
     languagesUsingDigitSet.insert(KLocale::ThaiDigits, QStringList() << QString::fromLatin1("th"));
 }
 
-K_GLOBAL_STATIC(KLocaleStaticData, staticData)
+Q_GLOBAL_STATIC(KLocaleStaticData, staticData)
 
 
 QDebug operator<<(QDebug debug, const KCatalogName &cn)
@@ -294,7 +294,7 @@ void KLocalePrivate::initConfig(KConfig *config)
 
 void KLocalePrivate::initMainCatalogs()
 {
-    KLocaleStaticData *s = staticData;
+    KLocaleStaticData *s = staticData();
     QMutexLocker lock(kLocaleMutex());
 
     if (!s->maincatalog.isEmpty()) {
@@ -1147,7 +1147,7 @@ QString KLocalePrivate::convertDigits(const QString &str, KLocale::DigitSet digi
         // Fall back to Western Arabic digits if requested digit set
         // is not appropriate for current application language.
         // FIXME: Temporary until full language-sensitivity implemented.
-        KLocaleStaticData *s = staticData;
+        KLocaleStaticData *s = staticData();
         if (m_languageSensitiveDigits && !s->languagesUsingDigitSet[digitSet].contains(m_language)) {
             digitSet = KLocale::ArabicDigits;
         }
@@ -1855,7 +1855,7 @@ QString KLocalePrivate::formatDate(const QDate &date, KLocale::DateFormat format
 
 void KLocalePrivate::setMainCatalog(const char *catalog)
 {
-    KLocaleStaticData *s = staticData;
+    KLocaleStaticData *s = staticData();
     s->maincatalog = QString::fromUtf8(catalog);
 }
 

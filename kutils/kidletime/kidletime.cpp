@@ -50,15 +50,15 @@ public:
     KIdleTime *q;
 };
 
-K_GLOBAL_STATIC(KIdleTimeHelper, s_globalKIdleTime)
+Q_GLOBAL_STATIC(KIdleTimeHelper, s_globalKIdleTime)
 
 KIdleTime *KIdleTime::instance()
 {
-    if (!s_globalKIdleTime->q) {
+    if (!s_globalKIdleTime()->q) {
         new KIdleTime;
     }
 
-    return s_globalKIdleTime->q;
+    return s_globalKIdleTime()->q;
 }
 
 class KIdleTimePrivate
@@ -84,8 +84,8 @@ KIdleTime::KIdleTime()
         : QObject(0)
         , d_ptr(new KIdleTimePrivate())
 {
-    Q_ASSERT(!s_globalKIdleTime->q);
-    s_globalKIdleTime->q = this;
+    Q_ASSERT(!s_globalKIdleTime()->q);
+    s_globalKIdleTime()->q = this;
 
     d_ptr->q_ptr = this;
 

@@ -203,7 +203,7 @@ void KNewFileMenuSingleton::parseFiles()
     }
 }
 
-K_GLOBAL_STATIC(KNewFileMenuSingleton, kNewMenuGlobals)
+Q_GLOBAL_STATIC(KNewFileMenuSingleton, kNewMenuGlobals)
 
 class KNewFileMenuCopyData
 {
@@ -588,7 +588,7 @@ void KNewFileMenuPrivate::fillMenu()
     QAction* linkApp = 0;
     QAction* linkPath = 0;
 
-    KNewFileMenuSingleton* s = kNewMenuGlobals;
+    KNewFileMenuSingleton* s = kNewMenuGlobals();
     int i = 1;
     KNewFileMenuSingleton::EntryList::iterator templ = s->templatesList->begin();
     const KNewFileMenuSingleton::EntryList::iterator templ_end = s->templatesList->end();
@@ -721,7 +721,7 @@ void KNewFileMenuPrivate::_k_slotActionTriggered(QAction* action)
     const int id = action->data().toInt();
     Q_ASSERT(id > 0);
 
-    KNewFileMenuSingleton* s = kNewMenuGlobals;
+    KNewFileMenuSingleton* s = kNewMenuGlobals();
     const KNewFileMenuSingleton::Entry entry = s->templatesList->at(id - 1);
 
     const bool createSymlink = entry.templatePath == "__CREATE_SYMLINK__";
@@ -796,7 +796,7 @@ void KNewFileMenuPrivate::_k_slotCreateHiddenDirectory()
 
 void KNewFileMenuPrivate::_k_slotFillTemplates()
 {
-    KNewFileMenuSingleton* s = kNewMenuGlobals;
+    KNewFileMenuSingleton* s = kNewMenuGlobals();
     //kDebug(1203);
     // Ensure any changes in the templates dir will call this
     if (! s->dirWatch) {
@@ -986,7 +986,7 @@ KNewFileMenu::~KNewFileMenu()
 
 void KNewFileMenu::checkUpToDate()
 {
-    KNewFileMenuSingleton* s = kNewMenuGlobals;
+    KNewFileMenuSingleton* s = kNewMenuGlobals();
     //kDebug(1203) << this << "m_menuItemsVersion=" << d->m_menuItemsVersion
     //              << "s->templatesVersion=" << s->templatesVersion;
     if (d->m_menuItemsVersion < s->templatesVersion || s->templatesVersion == 0) {

@@ -320,7 +320,7 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     xmlEntitiesInverse[QString(QLatin1Char('"'))] = QString::fromLatin1("quot");
 }
 
-K_GLOBAL_STATIC(KuitSemanticsStaticData, semanticsStaticData)
+Q_GLOBAL_STATIC(KuitSemanticsStaticData, semanticsStaticData)
 
 
 // -----------------------------------------------------------------------------
@@ -904,7 +904,7 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromContextMarker (
     Q_UNUSED(text);
     #endif
 
-    KuitSemanticsStaticData *s = semanticsStaticData;
+    KuitSemanticsStaticData *s = semanticsStaticData();
 
     // Semantic context marker is in the form @rolname:cuename/fmtname,
     // and must start just after any leading whitespace in the context string.
@@ -1001,7 +1001,7 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromContextMarker (
 
 Kuit::FmtVar KuitSemanticsPrivate::formatFromTags (const QString &text)
 {
-    KuitSemanticsStaticData *s = semanticsStaticData;
+    KuitSemanticsStaticData *s = semanticsStaticData();
     static QRegExp staticTagRx(QString::fromLatin1("<\\s*(\\w+)[^>]*>"));
 
     QRegExp tagRx = staticTagRx; // for thread-safety
@@ -1019,7 +1019,7 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromTags (const QString &text)
 QString KuitSemanticsPrivate::equipTopTag (const QString &text_,
                                            Kuit::TagVar &toptag)
 {
-    KuitSemanticsStaticData *s = semanticsStaticData;
+    KuitSemanticsStaticData *s = semanticsStaticData();
 
     // Unless the text opens either with TopLong or TopShort tags,
     // make a guess: if it opens with one of Title, Subtitle, Para,
@@ -1086,7 +1086,7 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
                                                     Kuit::FmtVar fmtExp_,
                                                     Kuit::FmtVar fmtImp_) const
 {
-    KuitSemanticsStaticData *s = semanticsStaticData;
+    KuitSemanticsStaticData *s = semanticsStaticData();
 
     // Replace &-shortcut marker with "&amp;", not to confuse the parser;
     // but do not touch & which forms an XML entity as it is.
@@ -1210,7 +1210,7 @@ KuitSemanticsPrivate::parseOpenEl (const QXmlStreamReader &xml,
     Q_UNUSED(text);
     #endif
 
-    KuitSemanticsStaticData *s = semanticsStaticData;
+    KuitSemanticsStaticData *s = semanticsStaticData();
 
     OpenEl oel;
     oel.name = xml.name().toString().toLower();
@@ -1302,7 +1302,7 @@ QString KuitSemanticsPrivate::formatSubText (const QString &ptext,
                                              Kuit::FmtVar fmt,
                                              int numctx) const
 {
-    KuitSemanticsStaticData *s = semanticsStaticData;
+    KuitSemanticsStaticData *s = semanticsStaticData();
 
     if (oel.handling == OpenEl::Proper) {
         // Select formatting pattern.
@@ -1421,7 +1421,7 @@ QString KuitSemanticsPrivate::finalizeVisualText (const QString &final,
                                                   bool hadQtTag,
                                                   bool hadAnyHtmlTag) const
 {
-    KuitSemanticsStaticData *s = semanticsStaticData;
+    KuitSemanticsStaticData *s = semanticsStaticData();
 
     QString text = final;
 
@@ -1475,7 +1475,7 @@ QString KuitSemanticsPrivate::finalizeVisualText (const QString &final,
 QString KuitSemanticsPrivate::salvageMarkup (const QString &text_,
                                              Kuit::FmtVar fmt) const
 {
-    KuitSemanticsStaticData *s = semanticsStaticData;
+    KuitSemanticsStaticData *s = semanticsStaticData();
     QString text = text_;
     QString ntext;
     int pos;
@@ -1560,7 +1560,7 @@ QString KuitSemantics::format (const QString &text, const QString &ctxt) const
 
 bool KuitSemantics::mightBeRichText (const QString &text)
 {
-    KuitSemanticsStaticData *s = semanticsStaticData;
+    KuitSemanticsStaticData *s = semanticsStaticData();
 
     // Check by appearance of a valid XML entity at first ampersand.
     int p1 = text.indexOf(QLatin1Char('&'));

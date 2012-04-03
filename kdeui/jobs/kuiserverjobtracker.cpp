@@ -31,7 +31,7 @@
 #include <kaboutdata.h>
 #include <kjob.h>
 
-K_GLOBAL_STATIC(KSharedUiServerProxy, serverProxy)
+Q_GLOBAL_STATIC(KSharedUiServerProxy, serverProxy)
 
 class KUiServerJobTracker::Private
 {
@@ -91,7 +91,7 @@ void KUiServerJobTracker::registerJob(KJob *job)
     }
 
     QWeakPointer<KJob> jobWatch = job;
-    QDBusReply<QDBusObjectPath> reply = serverProxy->uiserver().requestView(componentData.aboutData()->programName(),
+    QDBusReply<QDBusObjectPath> reply = serverProxy()->uiserver().requestView(componentData.aboutData()->programName(),
                                                                             programIconName,
                                                                             job->capabilities());
 

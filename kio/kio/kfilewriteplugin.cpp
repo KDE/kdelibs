@@ -32,11 +32,11 @@ KFileWritePlugin::KFileWritePlugin(QObject* parent, const QStringList&)
 KFileWritePlugin::~KFileWritePlugin() {
 }
 
-K_GLOBAL_STATIC(KFileWriterProvider, staticKFileWriterProvider)
+Q_GLOBAL_STATIC(KFileWriterProvider, staticKFileWriterProvider)
 
 KFileWriterProvider*
 KFileWriterProvider::self() {
-    return staticKFileWriterProvider;
+    return staticKFileWriterProvider();
 }
 
 KFileWriterProvider::~KFileWriterProvider() {

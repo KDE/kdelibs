@@ -743,28 +743,28 @@ private:
 };
 
 
-K_GLOBAL_STATIC(SchedulerPrivate, schedulerPrivate)
+Q_GLOBAL_STATIC(SchedulerPrivate, schedulerPrivate)
 
 Scheduler *Scheduler::self()
 {
-    return schedulerPrivate->q;
+    return schedulerPrivate()->q;
 }
 
 SchedulerPrivate *Scheduler::d_func()
 {
-    return schedulerPrivate;
+    return schedulerPrivate();
 }
 
 //static
 Scheduler *scheduler()
 {
-    return schedulerPrivate->q;
+    return schedulerPrivate()->q;
 }
 
 //static
 Slave *heldSlaveForJob(SimpleJob *job)
 {
-    return schedulerPrivate->heldSlaveForJob(job);
+    return schedulerPrivate()->heldSlaveForJob(job);
 }
 
 
@@ -790,80 +790,80 @@ Scheduler::~Scheduler()
 
 void Scheduler::doJob(SimpleJob *job)
 {
-    schedulerPrivate->doJob(job);
+    schedulerPrivate()->doJob(job);
 }
 
 #ifndef KDE_NO_DEPRECATED
 void Scheduler::scheduleJob(SimpleJob *job)
 {
-    schedulerPrivate->scheduleJob(job);
+    schedulerPrivate()->scheduleJob(job);
 }
 #endif
 
 void Scheduler::setJobPriority(SimpleJob *job, int priority)
 {
-    schedulerPrivate->setJobPriority(job, priority);
+    schedulerPrivate()->setJobPriority(job, priority);
 }
 
 void Scheduler::cancelJob(SimpleJob *job)
 {
-    schedulerPrivate->cancelJob(job);
+    schedulerPrivate()->cancelJob(job);
 }
 
 void Scheduler::jobFinished(KIO::SimpleJob *job, KIO::Slave *slave)
 {
-    schedulerPrivate->jobFinished(job, slave);
+    schedulerPrivate()->jobFinished(job, slave);
 }
 
 void Scheduler::putSlaveOnHold(KIO::SimpleJob *job, const KUrl &url)
 {
-    schedulerPrivate->putSlaveOnHold(job, url);
+    schedulerPrivate()->putSlaveOnHold(job, url);
 }
 
 void Scheduler::removeSlaveOnHold()
 {
-    schedulerPrivate->removeSlaveOnHold();
+    schedulerPrivate()->removeSlaveOnHold();
 }
 
 void Scheduler::publishSlaveOnHold()
 {
-    schedulerPrivate->publishSlaveOnHold();
+    schedulerPrivate()->publishSlaveOnHold();
 }
 
 bool Scheduler::isSlaveOnHoldFor(const KUrl& url)
 {
-    return schedulerPrivate->isSlaveOnHoldFor(url);
+    return schedulerPrivate()->isSlaveOnHoldFor(url);
 }
 
 void Scheduler::updateInternalMetaData(SimpleJob* job)
 {
-    schedulerPrivate->updateInternalMetaData(job);
+    schedulerPrivate()->updateInternalMetaData(job);
 }
 
 KIO::Slave *Scheduler::getConnectedSlave(const KUrl &url,
         const KIO::MetaData &config )
 {
-    return schedulerPrivate->getConnectedSlave(url, config);
+    return schedulerPrivate()->getConnectedSlave(url, config);
 }
 
 bool Scheduler::assignJobToSlave(KIO::Slave *slave, KIO::SimpleJob *job)
 {
-    return schedulerPrivate->assignJobToSlave(slave, job);
+    return schedulerPrivate()->assignJobToSlave(slave, job);
 }
 
 bool Scheduler::disconnectSlave(KIO::Slave *slave)
 {
-    return schedulerPrivate->disconnectSlave(slave);
+    return schedulerPrivate()->disconnectSlave(slave);
 }
 
 void Scheduler::registerWindow(QWidget *wid)
 {
-    schedulerPrivate->registerWindow(wid);
+    schedulerPrivate()->registerWindow(wid);
 }
 
 void Scheduler::unregisterWindow(QObject *wid)
 {
-    schedulerPrivate->slotUnregisterWindow(wid);
+    schedulerPrivate()->slotUnregisterWindow(wid);
 }
 
 bool Scheduler::connect( const char *signal, const QObject *receiver,
@@ -892,16 +892,16 @@ bool Scheduler::connect( const QObject *sender, const char *signal,
 
 void Scheduler::checkSlaveOnHold(bool b)
 {
-    schedulerPrivate->checkSlaveOnHold(b);
+    schedulerPrivate()->checkSlaveOnHold(b);
 }
 
 void Scheduler::emitReparseSlaveConfiguration()
 {
     // Do it immediately in this process, otherwise we might send a request before reparsing
     // (e.g. when changing useragent in the plugin)
-    schedulerPrivate->slotReparseSlaveConfiguration(QString(), QDBusMessage());
+    schedulerPrivate()->slotReparseSlaveConfiguration(QString(), QDBusMessage());
 
-    schedulerPrivate->m_ignoreConfigReparse = true;
+    schedulerPrivate()->m_ignoreConfigReparse = true;
     emit self()->reparseSlaveConfiguration( QString() );
 }
 
@@ -1056,7 +1056,7 @@ void SchedulerPrivate::jobFinished(SimpleJob *job, Slave *slave)
 void setupSlave(KIO::Slave *slave, const KUrl &url, const QString &protocol,
                 const QStringList &proxyList , bool newSlave, const KIO::MetaData *config)
 {
-    schedulerPrivate->setupSlave(slave, url, protocol, proxyList, newSlave, config);
+    schedulerPrivate()->setupSlave(slave, url, protocol, proxyList, newSlave, config);
 }
 
 MetaData SchedulerPrivate::metaDataFor(const QString &protocol, const QStringList &proxyList, const KUrl &url)

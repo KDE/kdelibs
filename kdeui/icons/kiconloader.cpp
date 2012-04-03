@@ -352,7 +352,7 @@ void KIconLoaderGlobalData::parseGenericIconsFiles(const QString& fileName)
     }
 }
 
-K_GLOBAL_STATIC(KIconLoaderGlobalData, s_globalData)
+Q_GLOBAL_STATIC(KIconLoaderGlobalData, s_globalData)
 
 void KIconLoaderPrivate::drawOverlays(const KIconLoader *iconLoader, KIconLoader::Group group, int state, QPixmap& pix, const QStringList& overlays)
 {
@@ -899,7 +899,7 @@ K3Icon KIconLoaderPrivate::findMatchingIconWithGenericFallbacks(const QString& n
     if (icon.isValid())
         return icon;
 
-    const QString genericIcon = s_globalData->genericIconFor(name);
+    const QString genericIcon = s_globalData()->genericIconFor(name);
     if (!genericIcon.isEmpty()) {
         icon = findMatchingIcon(genericIcon, size);
     }

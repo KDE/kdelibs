@@ -28,7 +28,7 @@
 using namespace KNS3;
 
 typedef QHash<QString, QWeakPointer<Cache> > CacheHash;
-K_GLOBAL_STATIC(CacheHash, s_caches)
+Q_GLOBAL_STATIC(CacheHash, s_caches)
 
 Cache::Cache(const QString &appName): QObject(0)
 {
@@ -40,13 +40,13 @@ Cache::Cache(const QString &appName): QObject(0)
 
 QSharedPointer<Cache> Cache::getCache(const QString &appName)
 {
-    CacheHash::const_iterator it = s_caches->constFind(appName);
-    if ((it != s_caches->constEnd()) && !(*it).isNull()) {
+    CacheHash::const_iterator it = s_caches()->constFind(appName);
+    if ((it != s_caches()->constEnd()) && !(*it).isNull()) {
         return QSharedPointer<Cache>(*it);
     }
 
     QSharedPointer<Cache> p(new Cache(appName));
-    s_caches->insert(appName, QWeakPointer<Cache>(p));
+    s_caches()->insert(appName, QWeakPointer<Cache>(p));
 
     return p;
 }

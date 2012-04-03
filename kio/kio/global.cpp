@@ -47,7 +47,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
-K_GLOBAL_STATIC(KDynamicJobTracker, globalJobTracker)
+Q_GLOBAL_STATIC(KDynamicJobTracker, globalJobTracker)
 
 // If someone wants the SI-standard prefixes kB/MB/GB/TB, I would recommend
 // a hidden kconfig option and getting the code from #57240 into the same
@@ -1313,7 +1313,7 @@ QPixmap KIO::pixmapForUrl( const QUrl & _url, mode_t _mode, KIconLoader::Group _
 
 KJobTrackerInterface *KIO::getJobTracker()
 {
-    return globalJobTracker;
+    return globalJobTracker();
 }
 
 

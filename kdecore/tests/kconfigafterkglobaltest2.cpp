@@ -39,11 +39,11 @@ void Tester::initConfig()
     m_config = new KConfig("kconfigafterkglobaltest");
 }
 
-K_GLOBAL_STATIC(Tester, globalTestObject)
+Q_GLOBAL_STATIC(Tester, globalTestObject)
 
 int main(int argc, char **argv)
 {
-    Tester *t = globalTestObject;
+    Tester *t = globalTestObject();
     Q_UNUSED(t);
 
     QCoreApplication app(argc, argv);

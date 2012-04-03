@@ -92,10 +92,10 @@ public:
     };
 };
 
-K_GLOBAL_STATIC(ConverterPrivate, static_d)
+Q_GLOBAL_STATIC(ConverterPrivate, static_d)
 
 Converter::Converter(QObject* parent)
-: QObject(parent), d(static_cast<ConverterPrivate *>(static_d))
+: QObject(parent), d(static_d())
 {
 }
 

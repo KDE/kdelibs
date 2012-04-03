@@ -35,15 +35,15 @@ public:
     XSyncBasedPoller *q;
 };
 
-K_GLOBAL_STATIC(XSyncBasedPollerHelper, s_globalXSyncBasedPoller)
+Q_GLOBAL_STATIC(XSyncBasedPollerHelper, s_globalXSyncBasedPoller)
 
 XSyncBasedPoller *XSyncBasedPoller::instance()
 {
-    if (!s_globalXSyncBasedPoller->q) {
+    if (!s_globalXSyncBasedPoller()->q) {
         new XSyncBasedPoller;
     }
 
-    return s_globalXSyncBasedPoller->q;
+    return s_globalXSyncBasedPoller()->q;
 }
 
 XSyncBasedPoller::XSyncBasedPoller(QWidget *parent)
@@ -53,8 +53,8 @@ XSyncBasedPoller::XSyncBasedPoller(QWidget *parent)
         , m_resetAlarm(X::None)
         , m_available(true)
 {
-    Q_ASSERT(!s_globalXSyncBasedPoller->q);
-    s_globalXSyncBasedPoller->q = this;
+    Q_ASSERT(!s_globalXSyncBasedPoller()->q);
+    s_globalXSyncBasedPoller()->q = this;
 
     int sync_major, sync_minor;
     int ncounters;
