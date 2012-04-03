@@ -597,6 +597,9 @@ QString Device::icon() const
                 return "media-floppy";
         }
 
+        if (drive.prop("ConnectionBus").toString() == "sdio")  // hack for SD cards connected thru sdio bus
+            return "media-flash-sd-mmc";
+
         return drive.icon();
     }
 
