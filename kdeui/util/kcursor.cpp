@@ -18,9 +18,7 @@
 
 #include "kcursor.h"
 #include "kcursor_p.h"
-#include <kdebug.h>
 
-#include <QBitmap>
 #include <QCursor>
 #include <QEvent>
 #include <QAbstractScrollArea>
@@ -28,7 +26,6 @@
 #include <QWidget>
 #include <QFile>
 
-#include <kglobal.h>
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>
 
