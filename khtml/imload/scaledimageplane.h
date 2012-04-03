@@ -2,6 +2,7 @@
     Large image displaying library.
 
     Copyright (C) 2004,2005 Maks Orlovich (maksim@kde.org)
+    Copyright (C) 2012 Martin Sandsmark (martin.sandsmark@kde.org)
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +25,6 @@
 #ifndef SCALED_IMAGE_PLANE_H
 #define SCALED_IMAGE_PLANE_H
 
-#include <cassert>
-
 #include "array2d.h"
 #include "imageplane.h"
 #include "rawimageplane.h"
@@ -38,51 +37,12 @@ namespace khtmlImLoad {
 */
 class ScaledImagePlane: public ImagePlane
 {
-private:
-    RawImagePlane*     parent;
-    Array2D<ImageTile> tiles;
-
-    
-    unsigned int* calcScaleTable(unsigned int orig, unsigned int scaled)
-    {
-        if (scaled == 0)
-            return 0; // Don't need to compute origin for 0 pixels..
-
-        //### I bet this has all sorts of imprecision problems w/high ratios
-        unsigned int* origin = new unsigned int[scaled];
-
-        //### FIXME: replace with something that clamps on right edge later?
-        double ratio    = double(orig)/double(scaled);
-
-        // Should be assured by ImageManager::isAcceptableScaleSize
-        assert(ratio < 65536);
-
-        unsigned intRatio = unsigned(ratio*65536.0 + 1);
-        unsigned pos      = 0;
-
-        for (unsigned int pix = 0; pix < scaled; pix++)
-        {
-            origin[pix]  =  pos >> 16;
-            pos          += intRatio;
-        }
-
-        return origin;
-    }
-
-    unsigned int* xScaleTable;
-    unsigned int* yScaleTable;
 public:
     virtual ~ScaledImagePlane();
 
     virtual void flushCache();
 
-    ScaledImagePlane(unsigned int _width, unsigned int _height, RawImagePlane* _parent):
-            ImagePlane(_width, _height), parent(_parent), tiles(tilesWidth, tilesHeight)
-    {
-        //Create the mapping tables
-        yScaleTable = calcScaleTable(parent->height, height);
-        xScaleTable = calcScaleTable(parent->width , width );
-    }
+    ScaledImagePlane(unsigned int _width, unsigned int _height, RawImagePlane* _parent);
 
 
     virtual bool isUpToDate(unsigned int tileX, unsigned int tileY,
@@ -90,6 +50,10 @@ public:
 
     virtual void ensureUpToDate(unsigned int tileX, unsigned int tileY,
                             PixmapTile* tile);
+private:
+    RawImagePlane*     parent;
+    Array2D<ImageTile> tiles;
+    int m_width, m_height;
 };
 
 }
