@@ -52,7 +52,7 @@ bool StorageDrive::isHotpluggable() const
 
 bool StorageDrive::isRemovable() const
 {
-    return m_device->prop("MediaRemovable").toBool();
+    return m_device->prop("MediaRemovable").toBool() || m_device->prop("Removable").toBool();
 }
 
 Solid::StorageDrive::DriveType StorageDrive::driveType() const
