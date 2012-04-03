@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2009 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2009-2012 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -35,7 +35,7 @@ namespace Nepomuk {
 
             TermPrivate* clone() const { return new NegationTermPrivate( *this ); }
 
-            QString toSparqlGraphPattern( const QString& resourceVarName, const TermPrivate* parentTerm, QueryBuilderData* qbd ) const;
+            QString toSparqlGraphPattern( const QString& resourceVarName, const TermPrivate* parentTerm, const QString& additionalFilters, QueryBuilderData* qbd ) const;
         };
     }
 }

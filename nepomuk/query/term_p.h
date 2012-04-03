@@ -41,7 +41,7 @@ namespace Nepomuk {
             virtual TermPrivate* clone() const { return new TermPrivate( *this ); }
 
             virtual bool isValid() const { return false; }
-            virtual QString toSparqlGraphPattern( const QString&, const TermPrivate*, QueryBuilderData* ) const { return QString(); }
+            virtual QString toSparqlGraphPattern( const QString&, const TermPrivate*, const QString&, QueryBuilderData* ) const { return QString(); }
             virtual bool equals( const TermPrivate* other ) const {
                 return m_type == other->m_type;
             }

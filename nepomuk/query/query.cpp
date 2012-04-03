@@ -452,21 +452,18 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags sparqlFlags ) const
 
     //
     // We restrict results to user visible types only. There is no need for this with file queries as normally all files are visible.
-    // We need the additional type pattern to ensure that the variable ?r is actually available to the filter (in case there is only
-    // UNIONs before.
     //
     QString userVisibilityRestriction;
     if( !(queryFlags()&NoResultRestrictions) && !d->m_isFileQuery ) {
-        userVisibilityRestriction = QString::fromLatin1("?r a %1 . FILTER EXISTS { ?r a [ %2 %3 ] . } . ")
-                                    .arg(qbd.uniqueVarName(),
-                                         Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::userVisible()),
+        userVisibilityRestriction = QString::fromLatin1("FILTER EXISTS { ?r a [ %1 %2 ] . } . ")
+                                    .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::userVisible()),
                                          Soprano::Node::literalToN3(Soprano::LiteralValue(true)));
     }
 
 
     QString termGraphPattern;
     if( term.isValid() ) {
-        termGraphPattern = term.d_ptr->toSparqlGraphPattern( QLatin1String( "?r" ), 0, &qbd );
+        termGraphPattern = term.d_ptr->toSparqlGraphPattern( QLatin1String( "?r" ), 0, userVisibilityRestriction, &qbd );
         if( termGraphPattern.isEmpty() ) {
             kDebug() << "Got no valid SPARQL pattern from" << term;
             return QString();
@@ -484,9 +481,8 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags sparqlFlags ) const
     }
 
     // build the core of the query - the part that never changes
-    QString queryBase = QString::fromLatin1( "where { %1 %2 }" )
-                        .arg( termGraphPattern,
-                              userVisibilityRestriction );
+    QString queryBase = QString::fromLatin1( "where { %1 }" )
+                        .arg( termGraphPattern );
 
     // build the final query
     QString query;
