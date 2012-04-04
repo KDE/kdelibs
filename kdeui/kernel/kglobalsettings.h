@@ -87,7 +87,7 @@ public:
      * {
      *    if( !(e->state() && LeftButton)) return;
      *
-     *    int delay = KGlobalSettings::dndEventDelay();
+     *    int delay = QApplication::startDragDistance();
      *    QPoint newPos = e->pos();
      *    if(newPos.x() > mOldPos.x()+delay || newPos.x() < mOldPos.x()-delay ||
      *       newPos.y() > mOldPos.y()+delay || newPos.y() < mOldPos.y()-delay)

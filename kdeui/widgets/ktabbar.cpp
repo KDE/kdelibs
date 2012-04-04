@@ -119,7 +119,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *event )
       d->mDragSwitchTab = 0;
     }
 
-    int delay = KGlobalSettings::dndEventDelay();
+    int delay = QApplication::startDragDistance();
     QPoint newPos = event->pos();
     if ( newPos.x() > d->mDragStart.x() + delay || newPos.x() < d->mDragStart.x() - delay ||
          newPos.y() > d->mDragStart.y() + delay || newPos.y() < d->mDragStart.y() - delay ) {
@@ -130,7 +130,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *event )
     }
   } else if ( event->buttons() == Qt::MidButton && !isMovable() ) {
     if ( d->mReorderStartTab == -1 ) {
-      int delay = KGlobalSettings::dndEventDelay();
+      int delay = QApplication::startDragDistance();
       QPoint newPos = event->pos();
 
       if ( newPos.x() > d->mDragStart.x() + delay || newPos.x() < d->mDragStart.x() - delay ||

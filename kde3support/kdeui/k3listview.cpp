@@ -78,7 +78,7 @@ public:
     : pCurrentItem (0),
       autoSelectDelay(0),
       dragOverItem(0),
-      dragDelay (KGlobalSettings::dndEventDelay()),
+      dragDelay (QApplication::startDragDistance()),
       editor (0),
       cursorInExecuteArea(false),
       itemsMovable (true),
@@ -536,7 +536,7 @@ void K3ListView::slotSettingsChanged(int category)
   switch (category)
   {
   case KGlobalSettings::SETTINGS_MOUSE:
-    d->dragDelay =  KGlobalSettings::dndEventDelay();
+    d->dragDelay =  QApplication::startDragDistance();
     d->bUseSingle = KGlobalSettings::singleClick();
 
     disconnect(this, SIGNAL (mouseButtonClicked(int,Q3ListViewItem*,QPoint,int)),

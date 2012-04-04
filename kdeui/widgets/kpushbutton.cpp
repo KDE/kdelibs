@@ -27,6 +27,7 @@
 #include <QtCore/QPointer>
 #include <QStyle>
 #include <QtCore/QTimer>
+#include <QApplication>
 
 #include <kglobalsettings.h>
 #include <kguiitem.h>
@@ -247,7 +248,7 @@ void KPushButton::mouseMoveEvent( QMouseEvent *e )
 
     if ( (e->buttons() & Qt::LeftButton) &&
          (e->pos() - d->startPos).manhattanLength() >
-         KGlobalSettings::dndEventDelay() )
+         QApplication::startDragDistance() )
     {
         startDrag();
         setDown( false );

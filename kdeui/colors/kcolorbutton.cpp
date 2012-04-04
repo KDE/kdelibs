@@ -240,7 +240,7 @@ void KColorButton::mousePressEvent( QMouseEvent *e)
 void KColorButton::mouseMoveEvent( QMouseEvent *e)
 {
   if( (e->buttons() & Qt::LeftButton) &&
-    (e->pos()-d->mPos).manhattanLength() > KGlobalSettings::dndEventDelay() )
+    (e->pos()-d->mPos).manhattanLength() > QApplication::startDragDistance() )
   {
     KColorMimeData::createDrag(color(),this)->start();
     setDown(false);

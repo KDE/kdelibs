@@ -6384,7 +6384,7 @@ bool KHTMLPart::handleMouseMoveEventDrag(khtml::MouseMoveEvent *event)
   if( (d->m_bMousePressed &&
        ( (!d->m_strSelectedURL.isEmpty() && !isEditable())
         || (!d->m_mousePressNode.isNull() && d->m_mousePressNode.elementId() == ID_IMG) ) )
-        && ( d->m_dragStartPos - QPoint(event->x(), event->y()) ).manhattanLength() > KGlobalSettings::dndEventDelay() ) {
+        && ( d->m_dragStartPos - QPoint(event->x(), event->y()) ).manhattanLength() > QApplication::startDragDistance() ) {
 
     DOM::DOMString url = event->url();
 

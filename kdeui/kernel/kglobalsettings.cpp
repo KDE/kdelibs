@@ -224,7 +224,7 @@ void KGlobalSettings::activate(ActivateOptions options)
 
 // Qt5 TODO: implement QPlatformIntegration::styleHint so that it reads a Qt or KDE setting,
 // so that apps can just use QApplication::startDragDistance().
-int KGlobalSettings::dndEventDelay()
+int QApplication::startDragDistance()
 {
     KConfigGroup g( KSharedConfig::openConfig(), "General" );
     return g.readEntry("StartDragDist", QApplication::startDragDistance());

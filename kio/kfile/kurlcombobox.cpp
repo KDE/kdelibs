@@ -22,6 +22,7 @@
 #include <QMouseEvent>
 #include <QDrag>
 #include <QMimeData>
+#include <QApplication>
 #include <qurlpathinfo.h>
 
 #include <kdebug.h>
@@ -407,7 +408,7 @@ void KUrlComboBox::mouseMoveEvent(QMouseEvent *event)
     const KUrlComboBoxPrivate::KUrlComboItem *item = d->itemMapper.value(index);
 
     if (item && !d->m_dragPoint.isNull() && event->buttons() & Qt::LeftButton &&
-        (event->pos() - d->m_dragPoint).manhattanLength() > KGlobalSettings::dndEventDelay()) {
+        (event->pos() - d->m_dragPoint).manhattanLength() > QApplication::startDragDistance()) {
         QDrag *drag = new QDrag(this);
         QMimeData *mime = new QMimeData();
         mime->setUrls(QList<QUrl>() << item->url);
