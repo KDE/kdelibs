@@ -56,13 +56,13 @@ void KDateTimeTest::initTestCase()
     f.close();
     QDir dir(mDataDir);
     QVERIFY(dir.mkdir("Africa"));
-    QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Cairo"), mDataDir + QLatin1String("/Africa/Cairo"));
+    QVERIFY(QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Cairo"), mDataDir + QLatin1String("/Africa/Cairo")));
     QVERIFY(dir.mkdir("America"));
-    QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Los_Angeles"), mDataDir + QLatin1String("/America/Los_Angeles"));
+    QVERIFY(QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Los_Angeles"), mDataDir + QLatin1String("/America/Los_Angeles")));
     QVERIFY(dir.mkdir("Europe"));
-    QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Berlin"), mDataDir + QLatin1String("/Europe/Berlin"));
-    QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/London"), mDataDir + QLatin1String("/Europe/London"));
-    QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Paris"), mDataDir + QLatin1String("/Europe/Paris"));
+    QVERIFY(QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Berlin"), mDataDir + QLatin1String("/Europe/Berlin")));
+    QVERIFY(QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/London"), mDataDir + QLatin1String("/Europe/London")));
+    QVERIFY(QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Paris"), mDataDir + QLatin1String("/Europe/Paris")));
 
     KConfig config("ktimezonedrc");
     KConfigGroup group(&config, "TimeZones");
