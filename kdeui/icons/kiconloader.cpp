@@ -64,7 +64,7 @@
 #include "k3icon_p.h"
 
 // Used to make cache keys for icons with no group. Result type is QString*
-K_GLOBAL_STATIC_WITH_ARGS(QString, NULL_EFFECT_FINGERPRINT, (QString::fromLatin1("noeffect")))
+Q_GLOBAL_STATIC_WITH_ARGS(QString, NULL_EFFECT_FINGERPRINT, (QString::fromLatin1("noeffect")))
 
 // Qt implements Tiny SVG specification. This specification does not cover important elements
 // that are pretty globally used on our icons, like blurring (and other filters). TT seems to have
@@ -771,7 +771,7 @@ QString KIconLoaderPrivate::makeCacheKey(const QString &name, KIconLoader::Group
            % QLatin1Char('_')
            % overlays.join("_")
            % ( group >= 0 ? mpEffect.fingerprint(group, state)
-                          : *NULL_EFFECT_FINGERPRINT);
+                          : *NULL_EFFECT_FINGERPRINT());
 }
 
 QImage KIconLoaderPrivate::createIconImage(const QString &path, int size)
@@ -1701,11 +1701,11 @@ QPixmap KIconLoader::unknown()
 }
 
 /*** the global icon loader ***/
-K_GLOBAL_STATIC_WITH_ARGS(KIconLoader, globalIconLoader, (KGlobal::mainComponent(), 0))
+Q_GLOBAL_STATIC_WITH_ARGS(KIconLoader, globalIconLoader, (KGlobal::mainComponent(), 0))
 
 KIconLoader *KIconLoader::global()
 {
-    return globalIconLoader;
+    return globalIconLoader();
 }
 
 void KIconLoader::newIconLoader()

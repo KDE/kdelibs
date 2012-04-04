@@ -121,14 +121,14 @@ KCatalogLoader::KCatalogLoader(const QString &catalogName)
 
 
 K_GLOBAL_STATIC(KGlobalPrivate, globalData)
-K_GLOBAL_STATIC_WITH_ARGS(KComponentData, fakeComponent, (KGlobalPrivate::initFakeComponent()))
+Q_GLOBAL_STATIC_WITH_ARGS(KComponentData, fakeComponent, (KGlobalPrivate::initFakeComponent()))
 
 #define PRIVATE_DATA KGlobalPrivate *d = globalData
 
 KStandardDirs *KGlobal::dirs()
 {
     PRIVATE_DATA;
-    return d->mainComponent.isValid() ? d->mainComponent.dirs() : fakeComponent->dirs();
+    return d->mainComponent.isValid() ? d->mainComponent.dirs() : fakeComponent()->dirs();
 }
 
 KSharedConfig::Ptr KGlobal::config()
@@ -139,7 +139,7 @@ KSharedConfig::Ptr KGlobal::config()
 const KComponentData &KGlobal::mainComponent()
 {
     PRIVATE_DATA;
-    return d->mainComponent.isValid() ? d->mainComponent : *fakeComponent;
+    return d->mainComponent.isValid() ? d->mainComponent : *fakeComponent();
 }
 
 bool KGlobal::hasMainComponent()

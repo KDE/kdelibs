@@ -137,12 +137,12 @@ bool KAcceleratorManagerPrivate::programmers_mode = false;
 QString KAcceleratorManagerPrivate::changed_string;
 QString KAcceleratorManagerPrivate::added_string;
 QString KAcceleratorManagerPrivate::removed_string;
-K_GLOBAL_STATIC_WITH_ARGS(QStringList, kaccmp_sns, (KStandardAction::internal_stdNames()))
+Q_GLOBAL_STATIC_WITH_ARGS(QStringList, kaccmp_sns, (KStandardAction::internal_stdNames()))
 QMap<QWidget*, int> KAcceleratorManagerPrivate::ignored_widgets;
 
 bool KAcceleratorManagerPrivate::standardName(const QString &str)
 {
-    return kaccmp_sns->contains(str);
+    return kaccmp_sns()->contains(str);
 }
 
 KAcceleratorManagerPrivate::Item::~Item()
