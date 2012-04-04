@@ -42,7 +42,6 @@
 #include <QPen>
 
 #include <kdebug.h>
-#include <kglobal.h>
 #include <ksharedconfig.h>
 #include <kcolorscheme.h>
 #include <kicontheme.h>

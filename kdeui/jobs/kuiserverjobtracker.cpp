@@ -26,6 +26,7 @@
 
 #include <klocalizedstring.h>
 #include <kdebug.h>
+#include <kglobal.h>
 #include <ktoolinvocation.h>
 #include <kcomponentdata.h>
 #include <kaboutdata.h>

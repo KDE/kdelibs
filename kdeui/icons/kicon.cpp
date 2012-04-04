@@ -18,7 +18,6 @@
 
 #include "kicon.h"
 
-#include <kglobal.h>
 
 #include "kiconloader.h"
 #include "kiconengine_p.h"

@@ -20,7 +20,6 @@
 #include "joburlcache_p.h"
 #include "kuiserver_interface.h"
 
-#include <kglobal.h>
 
 
 class JobUrlCacheSingleton

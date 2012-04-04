@@ -45,7 +45,6 @@ Boston, MA 02110-1301, USA.
 #include <kcharsets.h>
 #include <kconfig.h>
 #include <kdialog.h>
-#include <kglobal.h>
 #include <kglobalsettings.h>
 #include <klistwidget.h>
 #include <klocalizedstring.h>

@@ -19,7 +19,6 @@
 #ifndef KPROTOCOLINFO_H
 #define KPROTOCOLINFO_H
 
-#include <kglobal.h>
 
 #include <kurl.h>
 #include <ksycocaentry.h>

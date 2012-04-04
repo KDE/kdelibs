@@ -18,7 +18,6 @@
 #ifndef KDECORE_KEXPORTPLUGIN_H
 #define KDECORE_KEXPORTPLUGIN_H
 
-#include <kglobal.h>
 #include <kdeversion.h>
 
 #include <QtCore/QPluginLoader>

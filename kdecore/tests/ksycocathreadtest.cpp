@@ -28,7 +28,6 @@
 #include <kconfiggroup.h>
 #include <kdesktopfile.h>
 #include <ksycoca.h>
-#include <kglobal.h>
 #include <kstandarddirs.h>
 
 #include <kdebug.h>

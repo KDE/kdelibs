@@ -20,7 +20,6 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "hostinfo_p.h"
 
-#include <kglobal.h>
 #include <QtCore/QString>
 #include <QtCore/QHash>
 #include <QtCore/QCache>

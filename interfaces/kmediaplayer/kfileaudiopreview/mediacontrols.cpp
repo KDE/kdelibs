@@ -22,7 +22,6 @@
 
 #include <phonon/mediaobject.h>
 #include <phonon/audiooutput.h>
-#include <kglobal.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <QBoxLayout>

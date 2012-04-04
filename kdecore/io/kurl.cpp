@@ -28,7 +28,6 @@
 #include "kurl.h"
 #include "kurlmimedata.h"
 
-#include <kglobal.h>
 
 #include <stdio.h>
 #include <assert.h>

@@ -25,7 +25,6 @@
 #include <ktypelist.h>
 #include <kcomponentdata.h>
 #include <kgenericfactory.tcc>
-#include <kglobal.h>
 #include <klocalizedstring.h>
 #include <kdebug.h>
 

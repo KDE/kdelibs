@@ -43,7 +43,6 @@
 #include <kio/udsentry.h>
 #include <kdialog.h>
 #include <klocalizedstring.h>
-#include <kglobal.h>
 #include <kdebug.h>
 #include <kurl.h>
 #include <kfileitem.h>

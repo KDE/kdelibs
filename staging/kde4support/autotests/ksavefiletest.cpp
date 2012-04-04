@@ -30,7 +30,6 @@
 #include <qtemporaryfile.h>
 
 #include <kdebug.h>
-#include <kglobal.h>
 #include <kcmdlineargs.h>
 #include <klocalizedstring.h>
 #include <ksavefile.h>

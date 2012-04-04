@@ -20,7 +20,6 @@
 #include "kjsinterpreter.h"
 #include "kjsscript.h"
 
-//#include <kglobal.h>
 //#include <kstandarddirs.h>
 
 // The in krossconfig.h defined KROSS_EXPORT_INTERPRETER macro defines an

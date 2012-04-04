@@ -24,7 +24,6 @@
 #include <kconfig.h>
 #include <kcomponentdata.h>
 #include <assert.h>
-#include <kglobal.h>
 
 namespace KSettings
 {

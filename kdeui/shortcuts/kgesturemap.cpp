@@ -23,7 +23,6 @@
 #include <kaction.h>
 #include <QActionEvent>
 
-#include <kglobal.h>
 
 #include <kdebug.h>
 

@@ -29,7 +29,6 @@
 #include <QtCore/QString>
 
 #include <kapplication.h>
-#include <kglobal.h>
 #include <kicon.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>

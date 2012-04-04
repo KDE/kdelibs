@@ -32,7 +32,6 @@
 
 #include <kconfigskeleton.h>
 #include <kdebug.h>
-#include <kglobal.h>
 
 #include <assert.h>
 

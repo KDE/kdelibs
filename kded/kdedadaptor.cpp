@@ -20,7 +20,6 @@
 
 #include "kdedadaptor.h"
 #include "kded.h"
-#include <kglobal.h>
 #include <kconfig.h>
 #include <QCoreApplication>
 

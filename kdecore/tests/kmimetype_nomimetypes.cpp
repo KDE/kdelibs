@@ -24,7 +24,6 @@
 #include <kcomponentdata.h>
 #include <kmimetype.h>
 #include <kmessage.h>
-#include <kglobal.h>
 #include <kdebug.h>
 
 class KTestMessageHandler : public KMessageHandler

@@ -26,7 +26,6 @@
 #include <kpluginloader.h>
 #include <klibrary.h>
 #include <klocalizedstring.h>
-#include <kglobal.h>
 #include <kcomponentdata.h>
 #include <assert.h>
 

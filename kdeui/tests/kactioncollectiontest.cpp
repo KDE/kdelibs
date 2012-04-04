@@ -5,7 +5,6 @@
 
 #include <kapplication.h>
 #include <kaction.h>
-#include <kglobal.h>
 #include <kconfig.h>
 
 #include <assert.h>

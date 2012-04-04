@@ -25,7 +25,6 @@
 
 #include "settings_p.h"
 
-#include <kglobal.h>
 #include <kdebug.h>
 
 namespace Sonnet

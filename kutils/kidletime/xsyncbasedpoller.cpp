@@ -21,7 +21,6 @@
 #include <QX11Info>
 
 #include <klocalizedstring.h>
-#include <kglobal.h>
 
 #include <fixx11h.h>
 

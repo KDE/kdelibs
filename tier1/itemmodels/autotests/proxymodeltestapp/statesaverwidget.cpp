@@ -26,7 +26,6 @@
 #include <QTreeView>
 #include <QApplication>
 
-#include <kglobal.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>

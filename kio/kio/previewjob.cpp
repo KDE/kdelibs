@@ -44,7 +44,6 @@
 #include <kfileitem.h>
 #include <kde_file.h>
 #include <kservicetypetrader.h>
-#include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kservice.h>
 #include <QtCore/QLinkedList>

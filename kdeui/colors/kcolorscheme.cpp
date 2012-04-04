@@ -20,7 +20,6 @@
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kglobal.h>
 #include <ksharedconfig.h>
 #include <kcolorutils.h>
 

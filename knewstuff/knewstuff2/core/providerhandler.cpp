@@ -22,7 +22,6 @@
 //#include <kconfig.h>
 #include <kdebug.h>
 //#include <kio/job.h>
-#include <kglobal.h>
 //#include <kmessagebox.h>
 #include <klocalizedstring.h>
 

@@ -27,7 +27,6 @@
 
 #include <kdesktopfile.h>
 #include <kdebug.h>
-#include <kglobal.h>
 #include <kstandarddirs.h>
 #include <klocalizedstring.h>
 

@@ -22,7 +22,6 @@
 
 #include <kdebug.h>
 #include <kurl.h>
-#include <kglobal.h>
 #include <ksslcertificatemanager.h>
 #include <kstandarddirs.h>
 #include <klocalizedstring.h>

@@ -30,7 +30,6 @@
 #include <kauthorized.h>
 #include <kconfiggroup.h>
 #include <kdesktopfile.h>
-#include <kglobal.h>
 #include <kicon.h>
 #include <kstandarddirs.h>
 #include <kservicetypetrader.h>

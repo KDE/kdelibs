@@ -22,7 +22,6 @@
 #include <config.h>
 
 #include <kdecore_export.h>
-#include <kglobal.h>
 
 //#include <unistd.h>
 

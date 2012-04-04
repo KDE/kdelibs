@@ -24,6 +24,7 @@
 #include "qmimedatabase.h"
 
 #include <kdebug.h>
+#include <kglobal.h>
 #include <kde_file.h> // KDE::stat
 #include <kdeversion.h> // KDE_MAKE_VERSION
 #include <klocalizedstring.h>

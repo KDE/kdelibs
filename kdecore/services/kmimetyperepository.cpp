@@ -22,6 +22,7 @@
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>
 #include "kmimetype.h"
+#include "kglobal.h"
 #include <kdeversion.h> // KDE_MAKE_VERSION
 #include <qstandardpaths.h>
 #include <QFile>

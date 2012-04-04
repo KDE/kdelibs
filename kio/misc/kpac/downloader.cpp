@@ -25,7 +25,6 @@
 #include <QtCore/QTextCodec>
 
 #include <kcharsets.h>
-#include <kglobal.h>
 #include <klocalizedstring.h>
 #include <kio/job.h>
 

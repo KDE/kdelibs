@@ -19,9 +19,9 @@
 #ifndef KSYCOCAENTRY_H
 #define KSYCOCAENTRY_H
 
-#include <kglobal.h>
 #include <ksycocatype.h>
 #include <ksharedptr.h>
+#include <kdecore_export.h>
 
 #include <QtCore/QDataStream>
 #include <QtCore/QStringList>

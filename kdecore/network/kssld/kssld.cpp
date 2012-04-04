@@ -28,7 +28,6 @@
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <QtCore/QFile>
-#include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <QtCore/QDate>

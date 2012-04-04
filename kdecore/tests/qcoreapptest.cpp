@@ -22,7 +22,6 @@
 #include <QtCore/QtGlobal>
 #include <kcomponentdata.h>
 #include <klocale.h>
-#include <kglobal.h>
 #include <kconfiggroup.h>
 #include <kdebug.h>
 

@@ -24,7 +24,6 @@
 
 #include <config.h>
 #include <klocalizedstring.h>
-#include <kglobal.h>
 #include <kconfig.h>
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>

@@ -38,7 +38,6 @@
 #include <QWeakPointer>
 #include <QSet>
 
-#include <kglobal.h>
 
 class KIdleTimeHelper
 {

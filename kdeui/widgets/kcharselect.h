@@ -24,8 +24,8 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QWidget>
-#include <kglobal.h>
 #include <kdeui_export.h>
+#include <kdemacros.h>
 
 class KActionCollection;
 

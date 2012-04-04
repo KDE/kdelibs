@@ -21,6 +21,7 @@
 #include <ksycoca.h>
 #include <ksycocadict_p.h>
 #include <kdebug.h>
+#include <kglobal.h>
 
 extern int servicesDebugArea();
 

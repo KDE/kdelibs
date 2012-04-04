@@ -30,7 +30,6 @@
 #include <kcharsets.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kglobal.h>
 
 #include <QMenu>
 #include <QVariant>
