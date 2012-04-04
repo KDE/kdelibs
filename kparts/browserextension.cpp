@@ -520,7 +520,11 @@ BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent )
   {
       QMetaMethod method = metaObject()->method( methodOffset + i );
       if ( method.methodType() == QMetaMethod::Slot )
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
           slotNames.append( method.signature() );
+#else
+          slotNames.append( method.methodSignature() );
+#endif
   }
 
   // Set the initial status of the actions depending on whether

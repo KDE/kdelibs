@@ -19,7 +19,11 @@ find_package(Qt5Transitional REQUIRED Core Gui)
 include(FeatureSummary)
 
 add_subdirectory(src)
-add_subdirectory(autotests)
+if (NOT QT5_BUILD)
+  # Re-enable when we don't support Qt4 anymore.
+  # Avoiding source incompatibility in QMetaMethod.
+  add_subdirectory(autotests)
+endif()
 
 install(FILES
    ${CMAKE_CURRENT_BINARY_DIR}/itemmodels_version.h
