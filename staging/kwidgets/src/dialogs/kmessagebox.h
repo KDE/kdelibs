@@ -59,7 +59,7 @@ class KDialog;
   *
   * @author Waldo Bastian (bastian@kde.org)
   */
-class KDEUI_EXPORT KMessageBox
+class KWIDGETS_EXPORT KMessageBox
 {
 public:
   /**

@@ -102,7 +102,6 @@ set(kdeui_LIB_SRCS
  dialogs/kedittoolbar.cpp
  dialogs/kinputdialog.cpp
  dialogs/klinkdialog.cpp
- dialogs/kmessagebox.cpp
  dialogs/kmessageboxmessagehandler.cpp
  dialogs/kaboutapplicationdialog.cpp
  dialogs/kaboutapplicationpersonmodel_p.cpp
@@ -213,7 +212,6 @@ set(kdeui_LIB_SRCS
  widgets/kcharselect.cpp
  widgets/kcharselectdata.cpp
  widgets/kcmodule.cpp
- widgets/kcombobox.cpp
  widgets/kcompletionbox.cpp
  widgets/kdatecombobox.cpp
  widgets/kdatepicker.cpp
@@ -234,7 +232,6 @@ set(kdeui_LIB_SRCS
  widgets/kmenubar.cpp
  widgets/kmessagewidget.cpp
  widgets/kmultitabbar.cpp
- widgets/knuminput.cpp
  widgets/kpixmapregionselectorwidget.cpp
  widgets/kratingpainter.cpp
  widgets/kratingwidget.cpp
@@ -478,7 +475,6 @@ install( FILES
  dialogs/kdeprintdialog.h
  dialogs/kedittoolbar.h
  dialogs/kinputdialog.h
- dialogs/kmessagebox.h
  dialogs/kmessageboxmessagehandler.h
  dialogs/knewpassworddialog.h
  dialogs/kpassworddialog.h
@@ -567,7 +563,6 @@ install( FILES
  widgets/kdatepicker.h
  widgets/kcapacitybar.h
  widgets/kcmodule.h
- widgets/kcombobox.h
  widgets/kcompletionbox.h
  widgets/kbuttongroup.h
  widgets/kcharselect.h
@@ -589,7 +584,6 @@ install( FILES
  widgets/kmenubar.h
  widgets/kmessagewidget.h
  widgets/kmultitabbar.h
- widgets/knuminput.h
  widgets/kpixmapregionselectorwidget.h
  widgets/kratingpainter.h
  widgets/kratingwidget.h

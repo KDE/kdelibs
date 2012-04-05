@@ -3,6 +3,7 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/icons
  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
  ${CMAKE_CURRENT_SOURCE_DIR}/utils
+ ${CMAKE_CURRENT_SOURCE_DIR}/dialogs #kdialogqueue_p.h
  ${DBUSMENUQT_INCLUDE_DIR}
  ${kdeguiaddons_BINARY_DIR}/src
  ${kdeguiaddons_SOURCE_DIR}/src/colors # kcolorscheme
@@ -20,7 +21,10 @@ set(kwidgets_LIB_SRCS
  widgets/kseparator.cpp
  widgets/kurllabel.cpp
  widgets/kpushbutton.cpp
+ widgets/kcombobox.cpp
+ widgets/knuminput.cpp
  dialogs/kdialog.cpp
+ dialogs/kmessagebox.cpp
  icons/kicon.cpp
  icons/kiconloader.cpp
  icons/kicontheme.cpp
@@ -51,7 +55,10 @@ install( FILES
  widgets/kseparator.h
  widgets/kurllabel.h
  widgets/kpushbutton.h
+ widgets/kcombobox.h
+ widgets/knuminput.h
  dialogs/kdialog.h
+ dialogs/kmessagebox.h
  icons/kicon.h
  icons/kiconloader.h
  icons/kicontheme.h

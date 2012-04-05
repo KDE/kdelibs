@@ -38,7 +38,6 @@ KDEUI_UNIT_TESTS(
   kmainwindow_unittest
   klineedit_unittest
   ktextedit_unittest
-  kcombobox_unittest
   kreplacetest
   kshortcuttest
   kstandardactiontest
@@ -72,7 +71,6 @@ KDEUI_EXECUTABLE_TESTS(
   kbugreporttest
   kcategorizedviewtest
   kcodecactiontest
-  kcomboboxtest
   kcompletionuitest
   kdatepicktest
   kdatetabletest
@@ -89,13 +87,11 @@ KDEUI_EXECUTABLE_TESTS(
   klineedittest
   kmainwindowtest
   kmainwindowrestoretest
-  kmessageboxtest
   kmessagetest
   kmodifierkeyinfotest
   knewpassworddialogtest
   kstatusnotifieritemtest
   knotificationrestrictionstest
-  knuminputtest
   kpagedialogtest
   kpagewidgettest
   kpassivepopuptest

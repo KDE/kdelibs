@@ -29,10 +29,14 @@ KDEUI_EXECUTABLE_TESTS(
   kiconeffecttest
   kseparatortest
   kglobalsettingsclient # helper program for kglobalsettingstest
+  kcomboboxtest
+  kmessageboxtest
+  knuminputtest
 )
 
 KDEUI_UNIT_TESTS(
   kglobalsettingstest
   kdialog_unittest
   kiconloader_unittest
+  kcombobox_unittest
 )

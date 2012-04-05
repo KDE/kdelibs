@@ -146,7 +146,7 @@ class KUrl;
  *
  * @author Dawit Alemayehu <adawit@kde.org>
  */
-class KDEUI_EXPORT KComboBox : public QComboBox, public KCompletionBase //krazy:exclude=qclasses
+class KWIDGETS_EXPORT KComboBox : public QComboBox, public KCompletionBase //krazy:exclude=qclasses
 {
   Q_OBJECT
   Q_PROPERTY( bool autoCompletion READ autoCompletion WRITE setAutoCompletion )
@@ -183,13 +183,13 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED void insertURL( const KUrl& url, int index = -1 )
+    KWIDGETS_DEPRECATED void insertURL( const KUrl& url, int index = -1 )
     { insertUrl( index < 0 ? count() : index, url ); }
-    KDEUI_DEPRECATED void insertURL( const QPixmap& pixmap, const KUrl& url, int index = -1 )
+    KWIDGETS_DEPRECATED void insertURL( const QPixmap& pixmap, const KUrl& url, int index = -1 )
     { insertUrl( index < 0 ? count() : index, QIcon(pixmap), url ); }
-    KDEUI_DEPRECATED void changeURL( const KUrl& url, int index )
+    KWIDGETS_DEPRECATED void changeURL( const KUrl& url, int index )
     { changeUrl( index, url ); }
-    KDEUI_DEPRECATED void changeURL( const QPixmap& pixmap, const KUrl& url, int index )
+    KWIDGETS_DEPRECATED void changeURL( const QPixmap& pixmap, const KUrl& url, int index )
     { changeUrl( index, QIcon(pixmap), url ); }
 #endif
 
@@ -290,7 +290,7 @@ public:
     * @deprecated use setContextMenuPolicy
     */
 #ifndef KDE_NO_DEPRECATED
-    virtual KDEUI_DEPRECATED void setContextMenuEnabled( bool showMenu );
+    virtual KWIDGETS_DEPRECATED void setContextMenuEnabled( bool showMenu );
 #endif
 
     /**
