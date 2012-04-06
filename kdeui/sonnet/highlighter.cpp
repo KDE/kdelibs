@@ -28,10 +28,10 @@
 #include "settings_p.h"
 
 #include <kconfig.h>
-#include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 
+#include <QDebug>
 #include <QTextEdit>
 #include <QTextCharFormat>
 #include <QTimer>
@@ -158,7 +158,6 @@ void Highlighter::disconnectNotify(const char* signal)
 
 void Highlighter::slotRehighlight()
 {
-    kDebug(0) << "Highlighter::slotRehighlight()";
     if (d->completeRehighlightRequired) {
         d->wordCount  = 0;
         d->errorCount = 0;
@@ -244,7 +243,6 @@ void Highlighter::slotAutoDetection()
         d->completeRehighlightRequired = true;
         d->rehighlightRequest->setInterval(100);
         d->rehighlightRequest->setSingleShot(true);
-        kDebug()<<" Highlighter::slotAutoDetection :"<<d->active;
     }
 
 }
@@ -304,10 +302,7 @@ void Highlighter::setCurrentLanguage(const QString &lang)
             d->dictCache.insert(lang, d->dict);
         } else {
             d->spellCheckerFound = false;
-            kDebug()<<"No dictionary for \""
-                    <<lang
-                    <<"\" staying with the current language."
-                    <<endl;
+            qWarning() << "No dictionary for \"" << lang << "\" staying with the current language.";
             return;
         }
     }

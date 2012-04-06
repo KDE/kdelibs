@@ -20,8 +20,7 @@
 #include "dictionarycombobox.h"
 
 #include <qapplication.h>
-#include <kdebug.h>
-
+#include <QDebug>
 #include <QHBoxLayout>
 #include <QPushButton>
 
@@ -46,18 +45,18 @@ class DictionaryComboBoxTest : public QWidget
     public slots:
         void dump()
         {
-            kDebug() << "Current dictionary: " << dcb->currentDictionary();
-            kDebug() << "Current dictionary name: " << dcb->currentDictionaryName();
+            qDebug() << "Current dictionary: " << dcb->currentDictionary();
+            qDebug() << "Current dictionary name: " << dcb->currentDictionaryName();
         }
 
         void dictChanged( const QString &name )
         {
-            kDebug() << "Current dictionary changed: " << name;
+            qDebug() << "Current dictionary changed: " << name;
         }
 
         void dictNameChanged( const QString &name )
         {
-            kDebug() << "Current dictionary name changed: " << name;
+            qDebug() << "Current dictionary name changed: " << name;
         }
 
     private:

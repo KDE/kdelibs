@@ -24,7 +24,7 @@
 using namespace Sonnet;
 
 #include <qapplication.h>
-#include <kdebug.h>
+#include <qdebug.h>
 
 const char *text = "Rationale \
 ========= \
@@ -145,14 +145,13 @@ BackgroundTest::BackgroundTest()
 
 void BackgroundTest::slotDone()
 {
-    kDebug()<<"Text of length "<<m_len<<" checked in "
-             << m_timer.elapsed() << " msec."<<endl;
+    qDebug() << "Text of length" << m_len << "checked in" << m_timer.elapsed() << "msec.";
     QApplication::exit();
 }
 
 void BackgroundTest::slotMisspelling( const QString& word, int start )
 {
-    kDebug()<<"Misspelling \""<< word << "\" at " << start;
+    qDebug() << "Misspelling \""<< word << "\" at" << start;
     m_checker->continueChecking();
 }
 

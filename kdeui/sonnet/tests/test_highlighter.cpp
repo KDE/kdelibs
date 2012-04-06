@@ -23,7 +23,7 @@
 #include "filter_p.h"
 
 #include <qapplication.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <QTextEdit>
 #include <QAction>
 #include <QMenu>
@@ -37,7 +37,7 @@ TestSpell::TestSpell()
 
 void TestSpell::contextMenuEvent(QContextMenuEvent *e)
 {
-    kDebug()<<"TestSpell::contextMenuEvent\n";
+    qDebug()<<"TestSpell::contextMenuEvent";
     QMenu *popup = createStandardContextMenu();
     QMenu *subMenu = new QMenu( popup );
     subMenu->setTitle( "Text highlighting" );
@@ -52,7 +52,7 @@ void TestSpell::contextMenuEvent(QContextMenuEvent *e)
 
 void TestSpell::slotActivate()
 {
-    kDebug()<<"Activate or not highlight :";
+    qDebug()<<"Activate or not highlight :";
     hl->setActive(!hl->isActive());
 }
 

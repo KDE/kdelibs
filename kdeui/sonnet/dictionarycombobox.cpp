@@ -20,8 +20,8 @@
 
 #include "dictionarycombobox.h"
 
-#include <kdebug.h>
 #include <speller.h>
+#include <qdebug.h>
 
 namespace Sonnet
 {
@@ -37,7 +37,6 @@ class DictionaryComboBox::Private
 
 void DictionaryComboBox::Private::slotDictionaryChanged( int idx )
 {
-    kDebug() << idx;
     emit q->dictionaryChanged( q->itemData( idx ).toString() );
     emit q->dictionaryNameChanged( q->itemText( idx ) );
 }
@@ -73,7 +72,7 @@ void DictionaryComboBox::setCurrentByDictionaryName( const QString & name )
 
     int idx = findText( name );
     if ( idx == -1 ) {
-        kDebug() << "name not found" << name;
+        //qDebug() << "name not found" << name;
         return;
     }
 
@@ -88,7 +87,7 @@ void DictionaryComboBox::setCurrentByDictionary( const QString & dictionary )
 
     int idx = findData( dictionary );
     if ( idx == -1 ) {
-        kDebug() << "dictionary not found" << dictionary;
+        qDebug() << "dictionary not found" << dictionary;
         return;
     }
 
@@ -104,7 +103,7 @@ void DictionaryComboBox::reloadCombo()
     QMapIterator<QString, QString> i( dictionaries );
     while ( i.hasNext() ) {
         i.next();
-        kDebug() << "Populate combo:" << i.key() << ":" << i.value();
+        //qDebug() << "Populate combo:" << i.key() << ":" << i.value();
         addItem( i.key(), i.value() );
     }
     delete speller;

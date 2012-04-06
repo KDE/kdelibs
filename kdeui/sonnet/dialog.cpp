@@ -32,7 +32,6 @@
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kprogressdialog.h>
-#include <kdebug.h>
 
 #include <QListView>
 #include <QStringListModel>
@@ -199,7 +198,6 @@ void Dialog::slotAutocorrect()
 {
     setGuiEnabled(false);
     setProgressDialogVisible(true);
-    kDebug();
     emit autoCorrect(d->currentWord.word, d->ui.m_replacement->text() );
     slotReplaceWord();
 }
@@ -238,7 +236,6 @@ void Dialog::setProgressDialogVisible(bool b)
 
 void Dialog::slotFinished()
 {
-    kDebug();
     setProgressDialogVisible(false);
     emit stop();
     //FIXME: should we emit done here?
@@ -249,7 +246,6 @@ void Dialog::slotFinished()
 
 void Dialog::slotCancel()
 {
-    kDebug();
     d->canceled = true;
     d->deleteProgressDialog(false); // this method can be called in response to
                                     // pressing 'Cancel' on the dialog
@@ -306,7 +302,6 @@ void Dialog::updateDialog( const QString& word )
 
 void Dialog::show()
 {
-    kDebug()<<"Showing dialog";
     d->canceled = false;
     fillDictionaryComboBox();
     updateDictionaryComboBox();
@@ -413,7 +408,6 @@ void Dialog::slotMisspelling(const QString& word, int start)
     if (!updatesEnabled())
         return;
 
-    kDebug()<<"Dialog misspelling!!";
     d->currentWord = Word( word, start );
     if ( d->replaceAllMap.contains( word ) ) {
         d->ui.m_replacement->setText( d->replaceAllMap[ word ] );
@@ -437,7 +431,6 @@ void Dialog::slotDone()
     else
     {
         setProgressDialogVisible(false);
-        kDebug()<<"Dialog done!";
         emit spellCheckStatus(i18n("Spell check complete."));
         accept();
         if(!d->canceled && d->showCompletionMessageBox)
