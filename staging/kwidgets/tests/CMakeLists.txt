@@ -25,8 +25,11 @@ endmacro()
 
 kwidgets_executable_tests(
     kglobalsettingsclient # helper program for kglobalsettingstest
+    kiconloadertest
+    kiconeffecttest
 )
 
 kwidgets_unit_tests(
     kglobalsettingstest
+    kiconloader_unittest
 )

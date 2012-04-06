@@ -55,6 +55,7 @@ target_link_libraries(knewstuff3
     ${KDE4_KIO_LIBS}
     ${KDE4_KDECORE_LIBS}
     kcoreaddons
+    kwidgets
 )
 
 target_link_libraries(knewstuff3 ${LIBATTICA_LIBRARIES} karchive)

@@ -48,7 +48,6 @@ KDEUI_UNIT_TESTS(
   kcolorutilstest
   kxmlgui_unittest
   ktimezonewidget_unittest
-  kiconloader_unittest
   ktabwidget_unittest
   ktoolbar_unittest
   krichtextedittest
@@ -91,9 +90,7 @@ KDEUI_EXECUTABLE_TESTS(
   keditlistwidgettest
   kfontdialogtest
   khboxtest
-  kiconeffecttest
   kicondialogtest
-  kiconloadertest
   kinputdialogtest
   kjobtrackerstest
   kledtest

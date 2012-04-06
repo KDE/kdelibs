@@ -14,15 +14,18 @@ ecm_version(5 0 0)
 
 include(ECMQtFramework)
 
-find_package(Qt5Transitional REQUIRED Core Gui)
+find_package(Qt5Transitional REQUIRED Core Gui Svg)
 
 include(FeatureSummary)
 
 include_directories(
   ${QT_INCLUDES}
   ${KDE4_KDECORE_INCLUDES}
+  ${kcoreaddons_BINARY_DIR}
+  ${kcoreaddons_SOURCE_DIR}/src/caching
   ${CMAKE_BINARY_DIR}/staging/kdeguiaddons/src
   ${CMAKE_SOURCE_DIR}/staging/kdeguiaddons/src/colors
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/utils
   ${CMAKE_CURRENT_SOURCE_DIR}/src/icons
 )
 
@@ -40,7 +43,7 @@ add_subdirectory(src)
 add_subdirectory(tests)
 
 install(FILES
-   ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_version.h
+  ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_version.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 

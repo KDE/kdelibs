@@ -1,6 +1,11 @@
 
 set(kwidgets_LIB_SRCS
   utils/kglobalsettings.cpp
+  icons/kicon.cpp
+  icons/kiconeffect.cpp
+  icons/kiconengine.cpp
+  icons/kiconloader.cpp
+  icons/kicontheme.cpp
 )
 
 add_library(kwidgets ${LIBRARY_TYPE} ${kwidgets_LIB_SRCS})
@@ -10,6 +15,7 @@ target_link_libraries(kwidgets
   ${X11_LIBRARIES} ${X11_Xcursor_LIB}
   ${QT_QTCORE_LIBRARY}
   ${QT_QTGUI_LIBRARY}
+  ${QT_QTSVG_LIBRARY}
   ${KDE4_KDECORE_LIBS}
   kdeguiaddons
 )
@@ -22,6 +28,10 @@ install(TARGETS kwidgets EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS}
 
 install(FILES
   utils/kglobalsettings.h
+  icons/kicontheme.h
+  icons/kiconloader.h
+  icons/kicon.h
+  icons/kiconeffect.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
