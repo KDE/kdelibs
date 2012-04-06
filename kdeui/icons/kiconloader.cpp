@@ -1701,7 +1701,7 @@ QPixmap KIconLoader::unknown()
 }
 
 /*** the global icon loader ***/
-Q_GLOBAL_STATIC_WITH_ARGS(KIconLoader, globalIconLoader, (KGlobal::mainComponent(), 0))
+Q_GLOBAL_STATIC_WITH_ARGS(KIconLoader, globalIconLoader, (KGlobal::mainComponent(), (KIconLoader*)0))
 
 KIconLoader *KIconLoader::global()
 {
