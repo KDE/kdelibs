@@ -23,8 +23,6 @@
 
 #include <klocalizedstring.h>
 
-#include <kvbox.h>
-
 using namespace Sonnet;
 
 class ConfigDialog::Private

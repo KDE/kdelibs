@@ -31,7 +31,7 @@
 #include <kguiitem.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
-#include <kprogressdialog.h>
+#include <qprogressdialog.h>
 
 #include <QListView>
 #include <QStringListModel>
@@ -60,7 +60,7 @@ public:
     Ui_SonnetUi ui;
     ReadOnlyStringListModel *suggestionsModel;
     QWidget *wdg;
-    KProgressDialog *progressDialog;
+    QProgressDialog *progressDialog;
     QString   originalBuffer;
     BackgroundChecker *checker;
 
@@ -219,17 +219,18 @@ void Dialog::setProgressDialogVisible(bool b)
     {
       return;
     }
-    d->progressDialog = new KProgressDialog(this, i18nc("@title:window", "Check Spelling"),
-                                                    i18nc("progress label", "Spell checking in progress..."));
+    d->progressDialog = new QProgressDialog(this);
+    d->progressDialog->setLabelText(i18nc("progress label", "Spell checking in progress..."));
+    d->progressDialog->setWindowTitle(i18nc("@title:window", "Check Spelling"));
     d->progressDialog->setModal(true);
     d->progressDialog->setAutoClose(false);
     d->progressDialog->setAutoReset(false);
     // create an 'indefinite' progress box as we currently cannot get progress feedback from
     // the speller
-    d->progressDialog->progressBar()->reset();
-    d->progressDialog->progressBar()->setRange(0, 0);
-    d->progressDialog->progressBar()->setValue(0);
-    connect(d->progressDialog, SIGNAL(cancelClicked()), this, SLOT(slotCancel()));
+    d->progressDialog->reset();
+    d->progressDialog->setRange(0, 0);
+    d->progressDialog->setValue(0);
+    connect(d->progressDialog, SIGNAL(canceled()), this, SLOT(slotCancel()));
     d->progressDialog->setMinimumDuration(d->progressDialogTimeout);
   }
 }
