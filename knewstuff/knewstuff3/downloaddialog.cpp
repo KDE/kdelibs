@@ -90,7 +90,7 @@ void DownloadDialog::init(const QString& configFile)
     d->downloadWidget->d->ui.m_titleWidget->setPixmap(KIcon(KGlobal::activeComponent().aboutData()->programIconName()));
     d->downloadWidget->d->ui.m_titleWidget->setVisible(true);
     d->downloadWidget->d->ui.closeButton->setVisible(true);
-    d->downloadWidget->d->ui.closeButton->setGuiItem(KStandardGuiItem::Close);
+    KGuiItem::assign(d->downloadWidget->d->ui.closeButton, KStandardGuiItem::Close);
     d->downloadWidget->d->dialogMode = true;
     connect(d->downloadWidget->d->ui.closeButton, SIGNAL(clicked()), this, SLOT(accept()));
 }

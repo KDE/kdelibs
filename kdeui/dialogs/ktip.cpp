@@ -302,15 +302,18 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   d->tipOnStart = new QCheckBox( i18n( "&Show tips on startup" ) );
   buttonLayout->addWidget( d->tipOnStart, 1 );
 
-  KPushButton *prev = new KPushButton( KStandardGuiItem::back( KStandardGuiItem::UseRTL ) );
+  KPushButton *prev = new KPushButton;
+  KGuiItem::assign(prev, KStandardGuiItem::back( KStandardGuiItem::UseRTL ));
   prev->setText( i18n( "&Previous" ) );
   buttonLayout->addWidget( prev );
 
-  KPushButton *next = new KPushButton( KStandardGuiItem::forward( KStandardGuiItem::UseRTL ));
+  KPushButton *next = new KPushButton;
+  KGuiItem::assign(next, KStandardGuiItem::forward( KStandardGuiItem::UseRTL ));
   next->setText( i18nc( "Opposite to Previous", "&Next" ) );
   buttonLayout->addWidget( next );
 
-  KPushButton *ok = new KPushButton( KStandardGuiItem::close());
+  KPushButton *ok = new KPushButton;
+  KGuiItem::assign(ok, KStandardGuiItem::close());
   ok->setDefault( true );
   buttonLayout->addWidget( ok );
 

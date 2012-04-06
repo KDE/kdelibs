@@ -404,7 +404,7 @@ void KWidgetJobTracker::Private::ProgressWidget::speed(unsigned long value)
 void KWidgetJobTracker::Private::ProgressWidget::slotClean()
 {
     percent(100);
-    cancelClose->setGuiItem(KStandardGuiItem::close());
+    KGuiItem::assign(cancelClose, KStandardGuiItem::close());
     openFile->setEnabled(true);
     if (!totalSizeKnown || totalSize < processedSize)
         totalSize = processedSize;
@@ -545,7 +545,8 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
 
     hBox->addStretch(1);
 
-    cancelClose = new KPushButton(KStandardGuiItem::cancel(), this);
+    cancelClose = new KPushButton(this);
+    KGuiItem::assign(cancelClose, KStandardGuiItem::cancel());
     connect(cancelClose, SIGNAL(clicked()), this, SLOT(_k_stop()));
     hBox->addWidget(cancelClose);
 

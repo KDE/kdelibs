@@ -45,7 +45,8 @@ QPushButton *KDialogButtonBox::addButton(const QString & text, ButtonRole role, 
 
 KPushButton *KDialogButtonBox::addButton(  const KGuiItem& guiitem, ButtonRole role, QObject *receiver,  const char *slot)
 {
-  KPushButton *pb=new KPushButton(guiitem, this);
+  KPushButton *pb=new KPushButton(this);
+  KGuiItem::assign(pb, guiitem);
   QDialogButtonBox::addButton(static_cast<QAbstractButton*>(pb),role);
 
   if (receiver && slot)

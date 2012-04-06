@@ -124,7 +124,8 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
 
     setWindowTitle(_caption);
 
-    d->bCancel = new KPushButton(KStandardGuiItem::cancel(), this);
+    d->bCancel = new KPushButton(this);
+    KGuiItem::assign(d->bCancel, KStandardGuiItem::cancel());
     connect(d->bCancel, SIGNAL(clicked()), this, SLOT(cancelPressed()));
 
     if (_mode & M_MULTI) {

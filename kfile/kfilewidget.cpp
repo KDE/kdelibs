@@ -320,9 +320,11 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
     kDebug(kfile_area) << "startDir" << startDir;
     QString filename;
 
-    d->okButton = new KPushButton(KStandardGuiItem::ok(), this);
+    d->okButton = new KPushButton(this);
+    KGuiItem::assign(d->okButton, KStandardGuiItem::ok());
     d->okButton->setDefault(true);
-    d->cancelButton = new KPushButton(KStandardGuiItem::cancel(), this);
+    d->cancelButton = new KPushButton(this);
+    KGuiItem::assign(d->cancelButton, KStandardGuiItem::cancel());
     // The dialog shows them
     d->okButton->hide();
     d->cancelButton->hide();
@@ -1968,14 +1970,15 @@ void KFileWidget::setOperationMode( OperationMode mode )
     d->filterWidget->setEditable( !d->hasDefaultFilter || mode != Saving );
     if ( mode == Opening ) {
         // don't use KStandardGuiItem::open() here which has trailing ellipsis!
-        d->okButton->setGuiItem( KGuiItem( i18n( "&Open" ), "document-open") );
+        d->okButton->setText(i18n("&Open"));
+        d->okButton->setIcon(KIcon("document-open"));
         // hide the new folder actions...usability team says they shouldn't be in open file dialog
         actionCollection()->removeAction( actionCollection()->action("mkdir" ) );
     } else if ( mode == Saving ) {
-        d->okButton->setGuiItem( KStandardGuiItem::save() );
+        KGuiItem::assign(d->okButton, KStandardGuiItem::save());
         d->setNonExtSelection();
     } else {
-        d->okButton->setGuiItem( KStandardGuiItem::ok() );
+        KGuiItem::assign(d->okButton, KStandardGuiItem::ok());
     }
     d->updateLocationWhatsThis();
     d->updateAutoSelectExtension();

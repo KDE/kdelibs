@@ -154,7 +154,8 @@ void KDialogPrivate::appendButton(KDialog::ButtonCode key, const KGuiItem &item)
   if ( role == QDialogButtonBox::InvalidRole )
     return;
 
-  KPushButton *button = new KPushButton( item );
+  KPushButton *button = new KPushButton;
+  KGuiItem::assign(button, item);
   mButtonBox->addButton( button, role );
 
   mButtonList.insert( key, button );
@@ -704,7 +705,7 @@ void KDialog::setButtonGuiItem( ButtonCode id, const KGuiItem &item )
   if ( !button )
     return;
 
-  button->setGuiItem( item );
+  KGuiItem::assign(button, item);
 }
 
 void KDialog::setButtonMenu( ButtonCode id, QMenu *menu, ButtonPopupMode popupmode)
