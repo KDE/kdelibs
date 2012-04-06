@@ -26,6 +26,8 @@
 
 #include <kicontheme.h>
 
+class QPushButton;
+
 /**
  * @short An abstract class for GUI data such as ToolTip and Icon.
  *
@@ -81,6 +83,8 @@ public:
     void setWhatsThis( const QString &whatsThis );
     void setEnabled( bool enable );
 
+    static void assign(QPushButton *button, const KGuiItem &item);
+    static void assign(QPushButton *button, int);
 private:
     class KGuiItemPrivate;
     KGuiItemPrivate *d; //krazy:exclude=dpointer (implicitly shared)

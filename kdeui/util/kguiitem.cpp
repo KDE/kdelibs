@@ -22,6 +22,9 @@
 
 #include <kdebug.h>
 #include <kicon.h>
+#include <QPushButton>
+
+#include "kstandardguiitem.h"
 
 #include <assert.h>
 
@@ -233,4 +236,18 @@ void KGuiItem::setEnabled( bool enabled )
     d->m_enabled = enabled;
 }
 
+void KGuiItem::assign(QPushButton *button, const KGuiItem &item)
+{
+    button->setText(item.d->m_text);
+    button->setIcon(item.icon());
+    button->setToolTip(item.d->m_toolTip);
+    button->setWhatsThis(item.d->m_whatsThis);
+}
+
+void KGuiItem::assign(QPushButton *button, int item)
+{
+    KGuiItem::assign(button, KStandardGuiItem::guiItem(KStandardGuiItem::StandardItem(item)));
+}
+
 // vim: set et sw=4:
+
