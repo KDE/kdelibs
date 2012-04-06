@@ -43,7 +43,6 @@
 #include <kio/authinfo.h>
 #include <misc/kntlm/kntlm.h>
 
-#include <QtNetwork/QHostInfo>
 #include <QtCore/QTextCodec>
 
 
@@ -216,7 +215,7 @@ static QByteArray valueForKey(const QList<QByteArray> &ba, const QByteArray &key
 }
 
 KAbstractHttpAuthentication::KAbstractHttpAuthentication(KConfigGroup *config)
-                            :m_config(config), m_finalAuthStage(true)
+                            :m_config(config), m_finalAuthStage(false)
 {
     reset();
 }
@@ -318,7 +317,6 @@ void KAbstractHttpAuthentication::reset()
     m_headerFragment.clear();
     m_username.clear();
     m_password.clear();
-    m_config = 0;
 }
 
 void KAbstractHttpAuthentication::setChallenge(const QByteArray &c, const KUrl &resource,
@@ -371,6 +369,7 @@ void KAbstractHttpAuthentication::generateResponseCommon(const QString &user, co
     m_isError = false;
     m_forceKeepAlive = false;
     m_forceDisconnect = false;
+    m_finalAuthStage = true;
 }
 
 
@@ -702,14 +701,21 @@ QByteArray KHttpNtlmAuthentication::scheme() const
 
 
 void KHttpNtlmAuthentication::setChallenge(const QByteArray &c, const KUrl &resource,
-                                             const QByteArray &httpMethod)
+                                           const QByteArray &httpMethod)
 {
-    KAbstractHttpAuthentication::setChallenge(c, resource, httpMethod);
-    if (m_challenge.isEmpty()) {
-        // The type 1 message we're going to send needs no credentials;
-        // they come later in the type 3 message.
-        m_needCredentials = false;
+    QString oldUsername, oldPassword;
+    if (!m_finalAuthStage && !m_username.isEmpty() && !m_password.isEmpty()) {
+        oldUsername = m_username;
+        oldPassword = m_password;
     }
+    KAbstractHttpAuthentication::setChallenge(c, resource, httpMethod);
+    if (!oldUsername.isEmpty() && !oldPassword.isEmpty()) {
+        m_username = oldUsername;
+        m_password = oldPassword;
+    }
+    // The type 1 message we're going to send needs no credentials;
+    // they come later in the type 3 message.
+    m_needCredentials = m_challenge.isEmpty();
 }
 
 
@@ -759,7 +765,7 @@ void KHttpNtlmAuthentication::generateResponse(const QString &_user, const QStri
             flags |= KNTLM::Force_V1;
         }
 
-        if (!KNTLM::getAuth(buf, challenge, user, password, domain, QHostInfo::localHostName(), flags)) {
+        if (!KNTLM::getAuth(buf, challenge, user, m_password, domain, QLatin1String("WORKSTATION"), flags)) {
             kWarning(7113) << "Error while constructing Type 3 NTLM authentication request";
             m_isError = true;
             return;
@@ -906,7 +912,7 @@ void KHttpNegotiateAuthentication::generateResponse(const QString &user, const Q
     }
 
     m_headerFragment = "Negotiate ";
-    m_headerFragment += QByteArray::fromRawData((const char *)output_token.value,
+    m_headerFragment += QByteArray::fromRawData(static_cast<const char *>(output_token.value),
                                                 output_token.length).toBase64();
     m_headerFragment += "\r\n";
 

@@ -3135,54 +3135,11 @@ endParsing:
         const bool isAuthError = isAuthenticationRequired(m_request.responseCode);
         const bool sameAuthError = (m_request.responseCode == m_request.prevResponseCode);
         kDebug(7113) << "wasAuthError=" << wasAuthError << "isAuthError=" << isAuthError
-                     << "sameAuthError=" << sameAuthError;
+                    << "sameAuthError=" << sameAuthError;
         // Not the same authorization error as before and no generic error?
         // -> save the successful credentials.
         if (wasAuthError && (m_request.responseCode < 400 || (isAuthError && !sameAuthError))) {
-            KIO::AuthInfo authinfo;
-            bool alreadyCached = false;
-            KAbstractHttpAuthentication *auth = 0;
-            switch (m_request.prevResponseCode) {
-            case 401:
-                auth = m_wwwAuth;
-                alreadyCached = config()->readEntry("cached-www-auth", false);
-                break;
-            case 407:
-                auth = m_proxyAuth;
-                alreadyCached = config()->readEntry("cached-proxy-auth", false);
-                break;
-            default:
-                Q_ASSERT(false); // should never happen!
-            }
-
-            kDebug(7113) << "authentication object:" << auth;
-
-            // Prevent recaching of the same credentials over and over again.
-            if (auth && (!auth->realm().isEmpty() || !alreadyCached)) {
-                auth->fillKioAuthInfo(&authinfo);
-                if (auth == m_wwwAuth) {
-                    setMetaData(QLatin1String("{internal~currenthost}cached-www-auth"), QLatin1String("true"));
-                    if (!authinfo.realmValue.isEmpty())
-                        setMetaData(QLatin1String("{internal~currenthost}www-auth-realm"), authinfo.realmValue);
-                    if (!authinfo.digestInfo.isEmpty())
-                        setMetaData(QLatin1String("{internal~currenthost}www-auth-challenge"), authinfo.digestInfo);
-                } else {
-                    setMetaData(QLatin1String("{internal~allhosts}cached-proxy-auth"), QLatin1String("true"));
-                    if (!authinfo.realmValue.isEmpty())
-                        setMetaData(QLatin1String("{internal~allhosts}proxy-auth-realm"), authinfo.realmValue);
-                    if (!authinfo.digestInfo.isEmpty())
-                        setMetaData(QLatin1String("{internal~allhosts}proxy-auth-challenge"), authinfo.digestInfo);
-                }
-
-                kDebug(7113) << "Cache authentication info ?" << authinfo.keepPassword;
-
-                if (authinfo.keepPassword) {
-                    cacheAuthentication(authinfo);
-                    kDebug(7113) << "Cached authentication for" << m_request.url;
-                }
-            }
-            // Update our server connection state which includes www and proxy username and password.
-            m_server.updateCredentials(m_request);
+            saveAuthenticationData();
         }
 
         // done with the first line; now tokenize the other lines
@@ -3480,160 +3437,14 @@ endParsing:
         // TODO cache the proxy auth data (not doing this means a small performance regression for now)
 
         // we may need to send (Proxy or WWW) authorization data
-        authRequiresAnotherRoundtrip = false;
         if (!m_request.doNotAuthenticate && isAuthenticationRequired(m_request.responseCode)) {
-            KIO::AuthInfo authinfo;
-            KAbstractHttpAuthentication **auth;
-
-            if (m_request.responseCode == 401) {
-                auth = &m_wwwAuth;
-                tIt = tokenizer.iterator("www-authenticate");
-                authinfo.url = m_request.url;
-                authinfo.username = m_server.url.user();
-                authinfo.prompt = i18n("You need to supply a username and a "
-                                       "password to access this site.");
-                authinfo.commentLabel = i18n("Site:");
-            } else {
-                // make sure that the 407 header hasn't escaped a lower layer when it shouldn't.
-                // this may break proxy chains which were never tested anyway, and AFAIK they are
-                // rare to nonexistent in the wild.
-                Q_ASSERT(QNetworkProxy::applicationProxy().type() == QNetworkProxy::NoProxy);
-                auth = &m_proxyAuth;
-                tIt = tokenizer.iterator("proxy-authenticate");
-                authinfo.url = m_request.proxyUrl;
-                authinfo.username = m_request.proxyUrl.user();
-                authinfo.prompt = i18n("You need to supply a username and a password for "
-                                       "the proxy server listed below before you are allowed "
-                                       "to access any sites." );
-                authinfo.commentLabel = i18n("Proxy:");
+            authRequiresAnotherRoundtrip = handleAuthenticationHeader(&tokenizer);
+            if (m_iError) {
+                // If error is set, then handleAuthenticationHeader failed.
+                return false;
             }
-
-            QList<QByteArray> authTokens = KAbstractHttpAuthentication::splitOffers(tIt.all());
-            // Workaround brain dead server responses that violate the spec and
-            // incorrectly return a 401/407 without the required WWW/Proxy-Authenticate
-            // header fields. See bug 215736...
-            if (!authTokens.isEmpty()) {
-                authRequiresAnotherRoundtrip = true;
-                kDebug(7113) << "parsing authentication request; response code =" << m_request.responseCode;
-
-            try_next_auth_scheme:
-                QByteArray bestOffer = KAbstractHttpAuthentication::bestOffer(authTokens);
-                if (*auth) {
-                    if (!bestOffer.toLower().startsWith((*auth)->scheme().toLower())) {
-                        // huh, the strongest authentication scheme offered has changed.
-                        kDebug(7113) << "deleting old auth class...";
-                        delete *auth;
-                        *auth = 0;
-                    }
-                }
-
-                if (!(*auth)) {
-                    *auth = KAbstractHttpAuthentication::newAuth(bestOffer, config());
-                }
-
-                kDebug(7113) << "pointer to auth class is now" << *auth;
-
-                if (*auth) {
-                    kDebug(7113) << "Trying authentication scheme:" << (*auth)->scheme();
-
-                    // remove trailing space from the method string, or digest auth will fail
-                    (*auth)->setChallenge(bestOffer, authinfo.url, m_request.methodString());
-
-                    QString username;
-                    QString password;
-                    bool generateAuthorization = true;
-                    if ((*auth)->needCredentials()) {
-                        // use credentials supplied by the application if available
-                        if (!m_request.url.user().isEmpty() && !m_request.url.pass().isEmpty()) {
-                            username = m_request.url.user();
-                            password = m_request.url.pass();
-                            // don't try this password any more
-                            m_request.url.setPass(QString());
-                        } else {
-                            // try to get credentials from kpasswdserver's cache, then try asking the user.
-                            authinfo.verifyPath = false; // we have realm, no path based checking please!
-                            authinfo.realmValue = (*auth)->realm();
-                            if (authinfo.realmValue.isEmpty() && !(*auth)->supportsPathMatching())
-                                authinfo.realmValue = QLatin1String((*auth)->scheme());
-
-                            // Save the current authinfo url because it can be modified by the call to
-                            // checkCachedAuthentication. That way we can restore it if the call
-                            // modified it.
-                            const KUrl reqUrl = authinfo.url;
-                            if (!checkCachedAuthentication(authinfo) ||
-                                ((*auth)->wasFinalStage() && m_request.responseCode == m_request.prevResponseCode)) {
-                                QString errorMsg;
-                                if ((*auth)->wasFinalStage()) {
-                                    switch (m_request.prevResponseCode) {
-                                    case 401:
-                                        errorMsg = i18n("Authentication Failed.");
-                                        break;
-                                    case 407:
-                                        errorMsg = i18n("Proxy Authentication Failed.");
-                                        break;
-                                    default:
-                                        break;
-                                    }
-                                }
-
-                                // Reset url to the saved url...
-                                authinfo.url = reqUrl;
-                                authinfo.keepPassword = true;
-                                authinfo.comment = i18n("<b>%1</b> at <b>%2</b>",
-                                                        htmlEscape(authinfo.realmValue), authinfo.url.host());
-
-                                if (!openPasswordDialog(authinfo, errorMsg)) {
-                                    if (sendErrorPageNotification()) {
-                                        generateAuthorization = false;
-                                        authRequiresAnotherRoundtrip = false;
-                                    } else {
-                                        error(ERR_ACCESS_DENIED, reqUrl.host());
-                                        return false;
-                                    }
-                                }
-                            }
-                            username = authinfo.username;
-                            password = authinfo.password;
-                        }
-                    }
-
-                    if (generateAuthorization) {
-                        (*auth)->generateResponse(username, password);
-                        (*auth)->setCachePasswordEnabled(authinfo.keepPassword);
-
-                        kDebug(7113) << "Auth State: isError=" << (*auth)->isError()
-                                     << "needCredentials=" << (*auth)->needCredentials()
-                                     << "forceKeepAlive=" << (*auth)->forceKeepAlive()
-                                     << "forceDisconnect=" << (*auth)->forceDisconnect()
-                                     << "headerFragment=" << (*auth)->headerFragment();
-
-                        if ((*auth)->isError()) {
-                            authTokens.removeOne(bestOffer);
-                            if (!authTokens.isEmpty())
-                                goto try_next_auth_scheme;
-                            else {
-                                error(ERR_UNSUPPORTED_ACTION, i18n("Authorization failed."));
-                                return false;
-                            }
-                            //### return false; ?
-                        } else if ((*auth)->forceKeepAlive()) {
-                            //### think this through for proxied / not proxied
-                            m_request.isKeepAlive = true;
-                        } else if ((*auth)->forceDisconnect()) {
-                            //### think this through for proxied / not proxied
-                            m_request.isKeepAlive = false;
-                            httpCloseConnection();
-                        }
-                    }
-                } else {
-                    if (sendErrorPageNotification())
-                        authRequiresAnotherRoundtrip = false;
-                    else {
-                        error(ERR_UNSUPPORTED_ACTION, i18n("Unknown Authorization method."));
-                        return false;
-                    }
-                }
-            }
+        } else {
+            authRequiresAnotherRoundtrip = false;
         }
 
         QString locationStr;
@@ -5455,5 +5266,213 @@ void HTTPProtocol::saveProxyAuthenticationForSocket()
     delete m_socketProxyAuth;
     m_socketProxyAuth = 0;
 }
+
+void HTTPProtocol::saveAuthenticationData()
+{
+    KIO::AuthInfo authinfo;
+    bool alreadyCached = false;
+    KAbstractHttpAuthentication *auth = 0;
+    switch (m_request.prevResponseCode) {
+    case 401:
+        auth = m_wwwAuth;
+        alreadyCached = config()->readEntry("cached-www-auth", false);
+        break;
+    case 407:
+        auth = m_proxyAuth;
+        alreadyCached = config()->readEntry("cached-proxy-auth", false);
+        break;
+    default:
+        Q_ASSERT(false); // should never happen!
+    }
+
+    // Prevent recaching of the same credentials over and over again.
+    if (auth && (!auth->realm().isEmpty() || !alreadyCached)) {
+        auth->fillKioAuthInfo(&authinfo);
+        if (auth == m_wwwAuth) {
+            setMetaData(QLatin1String("{internal~currenthost}cached-www-auth"), QLatin1String("true"));
+            if (!authinfo.realmValue.isEmpty())
+                setMetaData(QLatin1String("{internal~currenthost}www-auth-realm"), authinfo.realmValue);
+            if (!authinfo.digestInfo.isEmpty())
+                setMetaData(QLatin1String("{internal~currenthost}www-auth-challenge"), authinfo.digestInfo);
+        } else {
+            setMetaData(QLatin1String("{internal~allhosts}cached-proxy-auth"), QLatin1String("true"));
+            if (!authinfo.realmValue.isEmpty())
+                setMetaData(QLatin1String("{internal~allhosts}proxy-auth-realm"), authinfo.realmValue);
+            if (!authinfo.digestInfo.isEmpty())
+                setMetaData(QLatin1String("{internal~allhosts}proxy-auth-challenge"), authinfo.digestInfo);
+        }
+
+        kDebug(7113) << "Cache authentication info ?" << authinfo.keepPassword;
+
+        if (authinfo.keepPassword) {
+            cacheAuthentication(authinfo);
+            kDebug(7113) << "Cached authentication for" << m_request.url;
+        }
+    }
+    // Update our server connection state which includes www and proxy username and password.
+    m_server.updateCredentials(m_request);
+}
+
+bool HTTPProtocol::handleAuthenticationHeader(const HeaderTokenizer* tokenizer)
+{
+    KIO::AuthInfo authinfo;
+    QList<QByteArray> authTokens;
+    KAbstractHttpAuthentication **auth;
+
+    if (m_request.responseCode == 401) {
+        auth = &m_wwwAuth;
+        authTokens = tokenizer->iterator("www-authenticate").all();
+        authinfo.url = m_request.url;
+        authinfo.username = m_server.url.user();
+        authinfo.prompt = i18n("You need to supply a username and a "
+                                "password to access this site.");
+        authinfo.commentLabel = i18n("Site:");
+    } else {
+        // make sure that the 407 header hasn't escaped a lower layer when it shouldn't.
+        // this may break proxy chains which were never tested anyway, and AFAIK they are
+        // rare to nonexistent in the wild.
+        Q_ASSERT(QNetworkProxy::applicationProxy().type() == QNetworkProxy::NoProxy);
+        auth = &m_proxyAuth;
+        authTokens = tokenizer->iterator("proxy-authenticate").all();
+        authinfo.url = m_request.proxyUrl;
+        authinfo.username = m_request.proxyUrl.user();
+        authinfo.prompt = i18n("You need to supply a username and a password for "
+                                "the proxy server listed below before you are allowed "
+                                "to access any sites." );
+        authinfo.commentLabel = i18n("Proxy:");
+    }
+
+    bool authRequiresAnotherRoundtrip = false;
+
+    // Workaround brain dead server responses that violate the spec and
+    // incorrectly return a 401/407 without the required WWW/Proxy-Authenticate
+    // header fields. See bug 215736...
+    if (!authTokens.isEmpty()) {
+        QString errorMsg;
+        authRequiresAnotherRoundtrip = true;
+
+        if (m_request.responseCode == m_request.prevResponseCode && *auth) {
+            // Authentication attempt failed. Retry...
+            if ((*auth)->wasFinalStage()) {
+                errorMsg = (m_request.responseCode == 401 ?
+                            i18n("Authentication Failed.") :
+                            i18n("Proxy Authentication Failed."));
+                delete *auth;
+                *auth = 0;
+            } else {     // Create authentication header
+                //  WORKAROUND: The following piece of code prevents brain dead IIS
+                // servers that send back multiple "WWW-Authenticate" headers from
+                // screwing up our authentication logic during the challenge
+                // phase (Type 2) of NTLM authenticaiton.
+                QMutableListIterator<QByteArray> it (authTokens);
+                const QByteArray authScheme ((*auth)->scheme().trimmed());
+                while (it.hasNext()) {
+                    if (qstrnicmp(authScheme.constData(), it.next().constData(), authScheme.length()) != 0) {
+                        it.remove();
+                    }
+                }
+            }
+        }
+
+try_next_auth_scheme:
+        QByteArray bestOffer = KAbstractHttpAuthentication::bestOffer(authTokens);
+        if (*auth) {
+            const QByteArray authScheme ((*auth)->scheme().trimmed());
+            if (qstrnicmp(authScheme.constData(), bestOffer.constData(), authScheme.length()) != 0) {
+                // huh, the strongest authentication scheme offered has changed.
+                delete *auth;
+                *auth = 0;
+            }
+        }
+
+        if (!(*auth)) {
+            *auth = KAbstractHttpAuthentication::newAuth(bestOffer, config());
+        }
+
+        if (*auth) {
+            kDebug(7113) << "Trying authentication scheme:" << (*auth)->scheme();
+
+            // remove trailing space from the method string, or digest auth will fail
+            (*auth)->setChallenge(bestOffer, authinfo.url, m_request.methodString());
+
+            QString username, password;
+            bool generateAuthHeader = true;
+            if ((*auth)->needCredentials()) {
+                // use credentials supplied by the application if available
+                if (!m_request.url.user().isEmpty() && !m_request.url.pass().isEmpty()) {
+                    username = m_request.url.user();
+                    password = m_request.url.pass();
+                    // don't try this password any more
+                    m_request.url.setPass(QString());
+                } else {
+                    // try to get credentials from kpasswdserver's cache, then try asking the user.
+                    authinfo.verifyPath = false; // we have realm, no path based checking please!
+                    authinfo.realmValue = (*auth)->realm();
+                    if (authinfo.realmValue.isEmpty() && !(*auth)->supportsPathMatching())
+                        authinfo.realmValue = QLatin1String((*auth)->scheme());
+
+                    // Save the current authinfo url because it can be modified by the call to
+                    // checkCachedAuthentication. That way we can restore it if the call
+                    // modified it.
+                    const KUrl reqUrl = authinfo.url;
+                    if (!errorMsg.isEmpty() || !checkCachedAuthentication(authinfo)) {
+                        // Reset url to the saved url...
+                        authinfo.url = reqUrl;
+                        authinfo.keepPassword = true;
+                        authinfo.comment = i18n("<b>%1</b> at <b>%2</b>",
+                                                htmlEscape(authinfo.realmValue), authinfo.url.host());
+
+                        if (!openPasswordDialog(authinfo, errorMsg)) {
+                            generateAuthHeader = false;
+                            authRequiresAnotherRoundtrip = false;
+                            if (!sendErrorPageNotification()) {
+                                error(ERR_ACCESS_DENIED, reqUrl.host());
+                            }
+                        }
+                    }
+                    username = authinfo.username;
+                    password = authinfo.password;
+                    kDebug(7113) << "username:" << username << "password:" << password;
+                }
+            }
+
+            if (generateAuthHeader) {
+                (*auth)->generateResponse(username, password);
+                (*auth)->setCachePasswordEnabled(authinfo.keepPassword);
+
+                kDebug(7113) << "isError=" << (*auth)->isError()
+                             << "needCredentials=" << (*auth)->needCredentials()
+                             << "forceKeepAlive=" << (*auth)->forceKeepAlive()
+                             << "forceDisconnect=" << (*auth)->forceDisconnect();
+
+                if ((*auth)->isError()) {
+                    authTokens.removeOne(bestOffer);
+                    if (!authTokens.isEmpty()) {
+                        goto try_next_auth_scheme;
+                    } else {
+                        error(ERR_UNSUPPORTED_ACTION, i18n("Authorization failed."));
+                        authRequiresAnotherRoundtrip = false;
+                    }
+                    //### return false; ?
+                } else if ((*auth)->forceKeepAlive()) {
+                    //### think this through for proxied / not proxied
+                    m_request.isKeepAlive = true;
+                } else if ((*auth)->forceDisconnect()) {
+                    //### think this through for proxied / not proxied
+                    m_request.isKeepAlive = false;
+                    httpCloseConnection();
+                }
+            }
+        } else {
+            authRequiresAnotherRoundtrip = false;
+            if (!sendErrorPageNotification()) {
+                error(ERR_UNSUPPORTED_ACTION, i18n("Unknown Authorization method."));
+            }
+        }
+    }
+
+    return authRequiresAnotherRoundtrip;
+}
+
 
 #include "http.moc"
