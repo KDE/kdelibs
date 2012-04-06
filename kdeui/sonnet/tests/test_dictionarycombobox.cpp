@@ -19,8 +19,7 @@
 
 #include "dictionarycombobox.h"
 
-#include <kapplication.h>
-#include <kcmdlineargs.h>
+#include <qapplication.h>
 #include <kdebug.h>
 
 #include <QHBoxLayout>
@@ -67,8 +66,7 @@ class DictionaryComboBoxTest : public QWidget
 
 int main( int argc, char** argv )
 {
-    KCmdLineArgs::init( argc, argv, "SonnetTest", 0, qi18n("SonnetTest"), 0 );
-    KApplication app;
+    QApplication app(argc, argv);
 
     DictionaryComboBoxTest *test = new DictionaryComboBoxTest();
     test->show();

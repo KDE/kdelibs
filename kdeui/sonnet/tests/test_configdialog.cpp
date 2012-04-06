@@ -21,17 +21,14 @@
 #include "configdialog.h"
 #include "speller.h"
 
-#include <kapplication.h>
+#include <qapplication.h>
 #include <kconfig.h>
-#include <kcmdlineargs.h>
-#include <kdebug.h>
+
 using namespace Sonnet;
 
 int main( int argc, char** argv )
 {
-    //KApplication::disableAutoDcopRegistration();
-    KCmdLineArgs::init( argc, argv, "test_configdialog", 0, qi18n("test_configdialog"), 0);
-    KApplication app; // with GUI
+    QApplication app(argc, argv);
 
     KConfig config("sonnetrc");
     ConfigDialog *dialog = new ConfigDialog(&config, 0);

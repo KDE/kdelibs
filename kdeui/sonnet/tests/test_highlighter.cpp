@@ -22,9 +22,8 @@
 #include "test_highlighter.h"
 #include "filter_p.h"
 
-#include <kapplication.h>
+#include <qapplication.h>
 #include <kdebug.h>
-#include <kcmdlineargs.h>
 #include <QTextEdit>
 #include <QAction>
 #include <QMenu>
@@ -59,9 +58,7 @@ void TestSpell::slotActivate()
 
 int main( int argc, char** argv )
 {
-    KCmdLineArgs::init( argc, argv, "SonnetTest", 0, qi18n("SonnetTest"), 0 );
-
-    KApplication app;
+    QApplication app(argc, argv);
 
     QTextEdit *test = new TestSpell();
     test->show();

@@ -23,9 +23,9 @@
 #include "speller.h"
 using namespace Sonnet;
 
-#include <kapplication.h>
+#include <qapplication.h>
 #include <kdebug.h>
-#include <kcmdlineargs.h>
+
 const char *text = "Rationale \
 ========= \
  \
@@ -159,8 +159,7 @@ void BackgroundTest::slotMisspelling( const QString& word, int start )
 
 int main( int argc, char** argv )
 {
-    KCmdLineArgs::init( argc, argv, "SonnetTest", 0, qi18n("SonnetTest"), 0 );
-    KApplication app;
+    QApplication app(argc, argv);
 
     BackgroundTest test;
 
