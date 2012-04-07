@@ -20,6 +20,7 @@
 #define KBUGREPORT_H
 
 #include <kdialog.h>
+#include <kdeui_export.h>
 
 class KAboutData;
 class KBugReportPrivate;

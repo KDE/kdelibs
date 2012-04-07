@@ -26,6 +26,7 @@
 #include <QLineEdit>
 
 #include <kdialog.h>
+#include <kdeui_export.h>
 
 class QWidget;
 

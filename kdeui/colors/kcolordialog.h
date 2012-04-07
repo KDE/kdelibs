@@ -31,6 +31,7 @@
 #include <QTableWidget>
 #include <kcolorchoosermode.h>
 
+#include <kdeui_export.h>
 
 /**
 * A table of editable color cells.

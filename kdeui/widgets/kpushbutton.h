@@ -26,6 +26,8 @@
 
 #include <kauthaction.h>
 
+#include <kdeui_export.h>
+
 class QDrag;
 class QMenu;
 

@@ -24,6 +24,7 @@
 #define SONNET_DIALOG_H
 
 #include <kdialog.h>
+#include <kdeui_export.h>
 
 class QListWidgetItem;
 class QModelIndex;

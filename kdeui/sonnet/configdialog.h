@@ -22,6 +22,7 @@
 #define SONNET_CONFIGDIALOG_H
 
 #include <kdialog.h>
+#include <kdeui_export.h>
 #include <kconfig.h>
 
 namespace Sonnet

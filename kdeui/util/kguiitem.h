@@ -26,6 +26,8 @@
 
 #include <kicontheme.h>
 
+#include <kdeui_export.h>
+
 class QPushButton;
 
 /**

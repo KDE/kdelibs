@@ -23,6 +23,7 @@
 #include <QProgressBar>
 
 #include <kdialog.h>
+#include <kdeui_export.h>
 
 /**
  * @short A dialog with a progress bar

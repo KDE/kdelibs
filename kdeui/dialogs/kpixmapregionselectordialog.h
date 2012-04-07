@@ -22,6 +22,8 @@
 
 #include <kdialog.h>
 
+#include <kdeui_export.h>
+
 class KPixmapRegionSelectorWidget;
 
 class QImage;

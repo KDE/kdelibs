@@ -22,6 +22,7 @@
 #define KFINDDIALOG_H
 
 #include <kdialog.h>
+#include <kdeui_export.h>
 
 /**
  * @brief A generic "find" dialog.

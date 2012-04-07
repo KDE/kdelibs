@@ -22,6 +22,7 @@
 #define KPASSWORDDIALOG_H
 
 #include <kdialog.h>
+#include <kdeui_export.h>
 #include <QtCore/QFlags>
 
 /**

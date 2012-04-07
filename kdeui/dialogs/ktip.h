@@ -29,6 +29,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QtCore/QStringList>
 
 #include <kdialog.h>
+#include <kdeui_export.h>
 
 /**
  * A database for tips-of-the-day.

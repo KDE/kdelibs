@@ -22,6 +22,7 @@
 #define KFIND_H
 
 #include <kdialog.h>
+#include <kdeui_export.h>
 #include <QtCore/QRect>
 
 /**
