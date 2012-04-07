@@ -19,9 +19,9 @@
 
 #include "kaboutapplicationpersonmodel_p.h"
 #include "kaboutapplicationpersonlistview_p.h"
-#include "kdeui/widgets/ktoolbar.h"
-#include "kdeui/actions/kaction.h"
-#include "kdeui/icons/kicon.h"
+#include "ktoolbar.h"
+#include "kaction.h"
+#include "kicon.h"
 
 #include <kdebug.h>
 #include <klocalizedstring.h>

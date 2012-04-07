@@ -26,11 +26,11 @@
 #include "kaboutapplicationpersonmodel_p.h"
 #include "kaboutapplicationpersonlistview_p.h"
 #include "kaboutapplicationpersonlistdelegate_p.h"
-#include "kdeui/icons/kiconloader.h"
-#include "kdeui/kernel/kapplication.h"
-#include "kdeui/kernel/kglobalsettings.h"
-#include "kdeui/widgets/ktextbrowser.h"
-#include "kdeui/widgets/ktitlewidget.h"
+#include "kiconloader.h"
+#include "kapplication.h"
+#include "kglobalsettings.h"
+#include "ktextbrowser.h"
+#include "ktitlewidget.h"
 
 #include <kaboutdata.h>
 #include <kglobal.h>

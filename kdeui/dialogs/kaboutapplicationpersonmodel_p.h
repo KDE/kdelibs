@@ -18,7 +18,7 @@
 #ifndef KABOUT_APPLICATION_PERSON_MODEL_H
 #define KABOUT_APPLICATION_PERSON_MODEL_H
 
-#include "kdeui/icons/kicon.h"
+#include "kicon.h"
 #include "dialogs/kaboutapplicationconfigattica_p.h"
 
 #ifdef HAVE_ATTICA
