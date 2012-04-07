@@ -753,21 +753,32 @@ void KTcpSocket::setVerificationPeerName(const QString& hostName)
 }
 
 
-//TODO
 void KTcpSocket::setPrivateKey(const KSslKey &key)
 {
-    Q_UNUSED(key)
+    // We cannot map KSslKey::Algorithm:Dh to anything in QSsl::KeyAlgorithm.
+    if (key.algorithm() == KSslKey::Dh)
+        return;
+
+    QSslKey _key(key.toDer(),
+        (key.algorithm() == KSslKey::Rsa) ? QSsl::Rsa : QSsl::Dsa,
+        QSsl::Der,
+        (key.secrecy() == KSslKey::PrivateKey) ? QSsl::PrivateKey : QSsl::PublicKey);
+
+    d->sock.setPrivateKey(_key);
 }
 
 
-//TODO
 void KTcpSocket::setPrivateKey(const QString &fileName, KSslKey::Algorithm algorithm,
                                QSsl::EncodingFormat format, const QByteArray &passPhrase)
 {
-    Q_UNUSED(fileName)
-    Q_UNUSED(algorithm)
-    Q_UNUSED(format)
-    Q_UNUSED(passPhrase)
+    // We cannot map KSslKey::Algorithm:Dh to anything in QSsl::KeyAlgorithm.
+    if (algorithm == KSslKey::Dh)
+        return;
+
+    d->sock.setPrivateKey(fileName,
+        (algorithm == KSslKey::Rsa) ? QSsl::Rsa : QSsl::Dsa,
+        format,
+        passPhrase);
 }
 
 
