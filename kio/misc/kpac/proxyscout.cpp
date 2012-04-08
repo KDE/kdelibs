@@ -175,15 +175,29 @@ namespace KPAC
         switch ( KProtocolManager::proxyType() )
         {
             case KProtocolManager::WPADProxy:
-                m_downloader = new Discovery( this );
+                if (m_downloader && !qobject_cast<Discovery*>(m_downloader)) {
+                    delete m_downloader;
+                    m_downloader = 0;
+                }
+                if (!m_downloader) {
+                    m_downloader = new Discovery(this);
+                    connect(m_downloader, SIGNAL(result(bool)), this, SLOT(downloadResult(bool)));
+                }
                 break;
-            case KProtocolManager::PACProxy:
-            {
-                m_downloader = new Downloader( this );
-                KUrl url( KProtocolManager::proxyConfigScript() );
+            case KProtocolManager::PACProxy: {
+                if (m_downloader && !qobject_cast<Downloader*>(m_downloader)) {
+                    delete m_downloader;
+                    m_downloader = 0;
+                }
+                if (!m_downloader) {
+                    m_downloader = new Downloader(this);
+                    connect(m_downloader, SIGNAL(result(bool)), this, SLOT(downloadResult(bool)));
+                }
+
+                const KUrl url (KProtocolManager::proxyConfigScript());
                 if (url.isLocalFile()) {
                     if (!m_watcher) {
-                        m_watcher = new QFileSystemWatcher( this );
+                        m_watcher = new QFileSystemWatcher(this);
                         connect (m_watcher, SIGNAL(fileChanged(QString)), SLOT(proxyScriptFileChanged(QString)));
                     }
                     proxyScriptFileChanged(url.path());
@@ -198,7 +212,6 @@ namespace KPAC
                 return false;
         }
 
-        connect(m_downloader, SIGNAL(result(bool)), SLOT(downloadResult(bool)));
         return true;
     }
 
@@ -215,7 +228,9 @@ namespace KPAC
         if ( success ) {
             try
             {
-                m_script = new Script( m_downloader->script() );
+                if (!m_script) {
+                    m_script = new Script(m_downloader->script());
+                }
             }
             catch ( const Script::Error& e )
             {
@@ -250,8 +265,7 @@ namespace KPAC
         }
 
         m_requestQueue.clear();
-        m_downloader->deleteLater();
-        m_downloader = 0;
+
         // Suppress further attempts for 5 minutes
         if ( !success ) {
             m_suspendTime = std::time( 0 );
@@ -263,14 +277,14 @@ namespace KPAC
         // Should never get called if we do not have a watcher...
         Q_ASSERT(m_watcher);
 
-        // if it does not exist, bogus file was given or it was deleted...
-        if (QFile::exists(path)) {
-            // if not contained, first attempt or file was renamed...
-            if (!m_watcher->files().contains(path)) {
-                m_watcher->removePaths(m_watcher->files());
-                m_watcher->addPath(path);
-            }
+        // Remove the current file being watched...
+        if (!m_watcher->files().isEmpty()) {
+           m_watcher->removePaths(m_watcher->files());
         }
+
+        // NOTE: QFileSystemWatcher only adds a path if it either exists or
+        // is not already being monitored.
+        m_watcher->addPath(path);
 
         // Reload...
         m_downloader->download( KUrl( path ) );

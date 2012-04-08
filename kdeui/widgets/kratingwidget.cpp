@@ -204,8 +204,30 @@ void KRatingWidget::setOnlyPaintFullSteps( bool fs )
 void KRatingWidget::mousePressEvent( QMouseEvent* e )
 {
     if ( e->button() == Qt::LeftButton ) {
+        const int prevRating = d->rating;
         d->hoverRating = d->ratingPainter.ratingFromPosition( contentsRect(), e->pos() );
-        setRating( d->hoverRating );
+        if ( !( d->hoverRating % 2 ) ) {
+            if ( d->hoverRating == prevRating + 1 ) {
+                setRating( d->hoverRating - 2 );
+            }
+            else if ( d->hoverRating == prevRating ) {
+                setRating( d->hoverRating - 1 );
+            }
+            else {
+                setRating( d->hoverRating );
+            }
+        }
+        else {
+            if ( d->hoverRating == prevRating - 1 ) {
+                setRating( d->hoverRating );
+            }
+            else if ( d->hoverRating == prevRating ) {
+                setRating( d->hoverRating - 1 );
+            }
+            else {
+                setRating( d->hoverRating + 1 );
+            }
+        }
     }
 }
 
@@ -215,11 +237,24 @@ void KRatingWidget::mouseMoveEvent( QMouseEvent* e )
     // when moving the mouse we show the user what the result of clicking will be
     const int prevHoverRating = d->hoverRating;
     d->hoverRating = d->ratingPainter.ratingFromPosition( contentsRect(), e->pos() );
+    if ( !( d->hoverRating % 2 ) ) {
+        if ( d->hoverRating == prevHoverRating + 1 ) {
+            d->hoverRating -= 2;
+        }
+        else if ( d->hoverRating == prevHoverRating ) {
+            d->hoverRating -= 1;
+        }
+    }
+    else {
+        if ( d->hoverRating == prevHoverRating ) {
+            d->hoverRating -= 1;
+        }
+        else {
+            d->hoverRating += 1;
+        }
+    }
     if ( d->hoverRating != prevHoverRating ) {
         update();
-    }
-    if ( d->hoverRating >= 0 && e->buttons() & Qt::LeftButton ) {
-        setRating( d->hoverRating );
     }
 }
 

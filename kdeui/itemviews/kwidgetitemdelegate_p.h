@@ -50,6 +50,7 @@ public:
     void _k_slotSelectionChanged (const QItemSelection &selected, const QItemSelection &deselected);
 
     void updateRowRange(const QModelIndex &parent, int start, int end, bool isRemoving);
+    QStyleOptionViewItemV4 optionView(const QModelIndex &index);
 
 public Q_SLOTS:
     void initializeModel(const QModelIndex &parent = QModelIndex());

@@ -121,7 +121,9 @@ KStatusNotifierItem::~KStatusNotifierItem()
     delete d->statusNotifierWatcher;
     delete d->notificationsClient;
     delete d->systemTrayIcon;
-    delete d->menu;
+    if (!qApp->closingDown()) {
+        delete d->menu;
+    }
     delete d;
     KGlobal::deref();
 }

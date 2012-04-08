@@ -1,9 +1,17 @@
-// This is a script to test KPAC.
-// To use it: set this script as proxy config file and run
-// dcop kded proxyscout proxyForUrl http://blah (URL doesn't matter)
-// The answer must be http://<your IP>/<test results>
-// If you see "failed" in the output, lookup the test name in the comments
-// below and let me now at <malte@kde.org> or try to fix it yourself
+/*
+   A script to test the PAC specification.
+
+   To use this script, select "Use automatic proxy configuration URL:" in the
+   KDE proxy configuration dialog and run:
+
+   qdbus org.kde,kded /modules/proxyscout proxyForUrl http://blah (URL doesn't matter)
+
+   If everything succeeds, the output you get will be http://<your IP>/. If not,
+   you would get http://<your IP>/<test-result> where <test-result> contains the
+   tests that "failed". You can lookup the failed test name in the comments below
+   and file a report in the KDE bug tracking system if you feel the problem is in
+   the implementation.
+*/
 
 function FindProxyForURL( url, host )
 {
