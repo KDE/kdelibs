@@ -376,7 +376,6 @@ DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 
 install( FILES kioslave.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
 install(  FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/kio_export.h
   kio/accessmanager.h
   kio/connection.h
   kio/slaveinterface.h
@@ -485,6 +484,7 @@ install( FILES
   bookmarks/kbookmarkdombuilder.h
   bookmarks/konqbookmarkmenu.h
   bookmarks/kbookmarkdialog.h
+  ${CMAKE_CURRENT_BINARY_DIR}/kio_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
 if(NOT KDE_NO_DEPRECATED)
