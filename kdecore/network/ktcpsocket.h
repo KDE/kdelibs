@@ -306,10 +306,10 @@ public:
     //### void setCiphers(const QString &ciphers); //what about i18n?
     void setLocalCertificate(const QSslCertificate &certificate);
     void setLocalCertificate(const QString &fileName, QSsl::EncodingFormat format = QSsl::Pem);
-    void setPrivateKey(const KSslKey &key); //implement
+    void setPrivateKey(const KSslKey &key);
     void setPrivateKey(const QString &fileName, KSslKey::Algorithm algorithm = KSslKey::Rsa,
                        QSsl::EncodingFormat format = QSsl::Pem,
-                       const QByteArray &passPhrase = QByteArray()); //TODO
+                       const QByteArray &passPhrase = QByteArray());
     void setAdvertisedSslVersion(SslVersion version);
     SslVersion advertisedSslVersion() const;    //always equal to last setSslAdvertisedVersion
     SslVersion negotiatedSslVersion() const;     //negotiated version; downgrades are possible.
