@@ -489,7 +489,6 @@ install( FILES
  colors/kcolorchoosermode.h
  colors/kcolorcombo.h
  colors/kcolordialog.h
- colors/kcolormimedata.h
  colors/kcolorvalueselector.h
  colors/khuesaturationselect.h
  config/kconfigskeleton.h
