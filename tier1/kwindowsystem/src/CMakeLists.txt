@@ -21,6 +21,12 @@ set(kwindowsystem_SRCS
     )
 
 set(platformLinkLibraries)
+
+if (QT5_BUILD)
+    message(WARNING "KWindowSystem not implemented")
+    set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_qpa.cpp)
+endif()
+
 if (Q_WS_X11)
     set(platformLinkLibraries ${X11_LIBRARIES} ${X11_Xfixes_LIB} ${X11_Xrender_LIB})
     set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_x11.cpp
