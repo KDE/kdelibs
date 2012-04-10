@@ -20,6 +20,7 @@
 #include "kservice.h"
 #include "kservicetype.h"
 #include "kservicetypefactory.h"
+#include "kstandarddirs.h"
 
 #include <kconfig.h>
 #include <kapplication.h>
@@ -29,6 +30,7 @@
 
 #include <qtl.h>
 
+#include <qvaluelist.h>
 template class QPtrList<KServiceTypeProfile>;
 typedef QPtrList<KServiceTypeProfile> KServiceTypeProfileList;
 
@@ -46,6 +48,7 @@ void KServiceTypeProfile::initStatic()
 {
   if ( s_lstProfiles )
     return;
+  kdDebug(7014) << "KServiceTypeProfile::initStatic" << endl;
 
   // Make sure that a KServiceTypeFactory gets created.
   (void) KServiceTypeFactory::self();
@@ -88,12 +91,81 @@ void KServiceTypeProfile::initStatic()
         }
 
         bool allow = config.readBoolEntry( "AllowAsDefault" );
-        //kdDebug(7014) << "KServiceTypeProfile::initStatic adding service " << application << " to profile for " << type << "," << type2 << " with preference " << pref << endl;
+        kdDebug(7014) << "KServiceTypeProfile::initStatic adding service " << application << " to profile for " 
+                      << type << "," << type2 << " with preference " << pref << endl;
         p->addService( application, pref, allow );
       }
     }
   }
+  initKDE4compatibility();
 }
+
+  // KDE4 Compatibility
+  // in KDE4 profilerc is no longer used instead preffered applications
+  // are saved in the file mimeapps.list in xdgdata-apps.
+  // The goal of this compatibility code is to parse the mimeapps.list files
+  // and use the information from that file for KDE3 and the kuserprofile class.
+  //
+  // Code is in parts reused from kdelibs 4 /kded/kmimeassociations.cpp
+
+void KServiceTypeProfile::initKDE4compatibility()
+{
+    // Using the "merged view" from KConfig is not enough since we -add- at every level, we don't replace.
+    const QStringList mimeappsFiles = KGlobal::dirs()->findAllResources("xdgdata-apps",
+            QString::fromLatin1("mimeapps.list"), true, false);
+    if (mimeappsFiles.isEmpty()) {
+        kdDebug(7014) << "mimeapps files is empty"<< endl;
+        return;
+    }
+
+    int basePreference = 1000; // start high :)
+    QStringList::const_iterator mimeappsIter = mimeappsFiles.begin();
+    for ( ; mimeappsIter != mimeappsFiles.end(); mimeappsIter++ )
+    {
+        parseMimeAppsList(*(mimeappsIter), basePreference, QString::fromLatin1("Added Associations"));
+        basePreference -= 50;
+    }
+}
+void KServiceTypeProfile::parseMimeAppsList(const QString& file, int basePreference, const QString& group)
+{
+    KConfig applist(file, true, false);
+    kdDebug(7014) << "KServiceTypeProfile::ParseMimeAppsList" << file << endl;
+    QMap<QString, QString> mimemapping = applist.entryMap(group);
+
+    for (QMap<QString, QString>::Iterator aIt = mimemapping.begin();
+         aIt != mimemapping.end(); ++aIt) {
+      // Key is the mimetype like message/rfc822 value is the list of associated
+      // desktop files
+
+      kdDebug(7014) << "Found mimetype " << aIt.key() << " Mapping: " << aIt.data() << endl;
+
+      QStringList desktopNames = QStringList::split(QString::fromLatin1(";"), aIt.data());
+      int pref = basePreference;
+      for (QStringList::const_iterator serviceIt = desktopNames.begin();
+              serviceIt != desktopNames.end(); serviceIt++) {
+            KService::Ptr pService = KService::serviceByStorageId(*(serviceIt));
+            if (!pService) {
+                kdDebug(7014) << file << " specifies unknown service: " 
+                              << *(serviceIt) << " for " << aIt.key() << endl;
+            } else {
+                KServiceTypeProfile* p =
+                    KServiceTypeProfile::serviceTypeProfile( aIt.key(), "Application" );
+
+                if ( !p ) {
+                    kdDebug(7014) << "Created new ServiceTypeProfile" << endl;
+                    p = new KServiceTypeProfile( aIt.key(), "Application" );
+                    s_lstProfiles->append( p );
+                }
+
+                kdDebug(7014) << "KServiceTypeProfile::parseMimeAppsList adding service " << *(serviceIt)
+                              << " to profile for " << aIt.key() << " with preference " << pref << endl;
+                p->addService(*(serviceIt), pref, true);
+                --pref;
+            }
+        }
+    }
+}
+
 
 //static
 void KServiceTypeProfile::clear()
@@ -152,7 +224,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
     OfferList::Iterator itOffers = offers.begin();
     for( ; itOffers != offers.end(); ++itOffers )
         serviceList += (*itOffers).service()->desktopEntryPath(); // this should identify each service uniquely
-    //kdDebug(7014) << "serviceList: " << serviceList.join(",") << endl;
+    kdDebug(7014) << "serviceList: " << serviceList.join(",") << endl;
 
     // Now complete with any other offers that aren't in the profile
     // This can be because the services have been installed after the profile was written,
@@ -179,7 +251,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
 
     qBubbleSort( offers );
 
-#if 0
+#if 1
     // debug code, comment if you wish but don't remove.
     kdDebug(7014) << "Sorted list:" << endl;
     OfferList::Iterator itOff = offers.begin();
@@ -187,7 +259,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
         kdDebug(7014) << (*itOff).service()->name() << " allow-as-default=" << (*itOff).allowAsDefault() << endl;
 #endif
 
-    //kdDebug(7014) << "Returning " << offers.count() << " offers" << endl;
+    kdDebug(7014) << "Returning " << offers.count() << " offers" << endl;
     return offers;
 }
 
@@ -261,12 +333,33 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers() const
 {
   OfferList offers;
 
-  kdDebug(7014) << "KServiceTypeProfile::offers serviceType=" << m_strServiceType << " genericServiceType=" << m_strGenericServiceType << endl;
+  //kdDebug(7014) << "KServiceTypeProfile::offers() serviceType=" << m_strServiceType << " genericServiceType=" << m_strGenericServiceType << endl;
   KService::List list = KServiceType::offers( m_strServiceType );
+
+  // KDE4 compatibility:
+  // Also look into the services registrerd for this mimetype in the profile
+  // but not in the desktop file database.
+  // This allows a more generic mapping which is used here to correctly find the
+  // preffered application.
+  //
+  // HACK: Search the map to find those services
+  QMapConstIterator<QString, Service> mapIt = m_mapServices.constBegin();
+  for ( ; mapIt != m_mapServices.end(); mapIt++ ) {
+      KService::Ptr pService = KService::serviceByStorageId(mapIt.key());
+      if ( pService ) {
+//          kdDebug(7014) << "Additionally adding " << mapIt.key() << " to available services for: "
+//                        << m_strServiceType << " as configured. " << endl;
+          list.append(pService);
+      } else {
+          kdDebug(7014) << mapIt.key() << " specifies unknown service in service map for "
+                        << m_strServiceType << endl;
+      }
+  }
+
   QValueListIterator<KService::Ptr> it = list.begin();
   for( ; it != list.end(); ++it )
   {
-    //kdDebug(7014) << "KServiceTypeProfile::offers considering " << (*it)->name() << endl;
+    kdDebug(7014) << "KServiceTypeProfile::offers() considering " << (*it)->name() << endl;
     if ( m_strGenericServiceType.isEmpty() || (*it)->hasServiceType( m_strGenericServiceType ) )
     {
       // Now look into the profile, to find this service's preference.
@@ -296,7 +389,7 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers() const
 
   qBubbleSort( offers );
 
-  //kdDebug(7014) << "KServiceTypeProfile::offers returning " << offers.count() << " offers" << endl;
+  kdDebug(7014) << "KServiceTypeProfile::offers returning " << offers.count() << " offers" << endl;
   return offers;
 }
 
@@ -311,7 +404,7 @@ KService::Ptr KServiceTypeProfile::preferredService( const QString & _serviceTyp
   if( itOff != lst.end() && (*itOff).allowAsDefault() )
     return (*itOff).service();
 
-  //kdDebug(7014) << "No offers, or none allowed as default" << endl;
+  kdDebug(7014) << "No offers, or none allowed as default" << endl;
   return 0L;
 }
 

@@ -243,6 +243,16 @@ protected:
 
 private:
   /**
+   * Adds KDE4 compatibility code to use kde4 application-mimetype associations
+   */
+  static void initKDE4compatibility();
+
+  /**
+   * Reads a KDE4 used mimeapps.list and adds those offeres with according preferences
+   */
+  static void parseMimeAppsList(const QString& file, int basePreference, const QString& group);
+
+  /**
    * Represents the users assessment of a special service
    */
   struct Service
