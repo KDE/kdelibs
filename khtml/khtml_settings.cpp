@@ -170,14 +170,18 @@ public slots:
       KIO::StoredTransferJob *tJob = qobject_cast<KIO::StoredTransferJob*>(job);
       Q_ASSERT(tJob);
 
-      if ( job->error() == KJob::NoError )
-      {
+      if ( tJob->error() ) {
+          kDebug(6000) << "Failed to download" << tJob->url() << "with message:" << tJob->errorText();
+      }
+      else if ( tJob->isErrorPage() ) { // 4XX error code
+          kDebug(6000) << "Failed to fetch filter list" << tJob->url();
+      }
+      else {
           const QByteArray byteArray = tJob->data();
           const QString localFileName = tJob->property( "khtmlsettings_adBlock_filename" ).toString();
 
           QFile file(localFileName);
-          if ( file.open(QFile::WriteOnly) )
-          {
+          if ( file.open(QFile::WriteOnly) ) {
               bool success = file.write(byteArray) == byteArray.size();
               file.close();
               if ( success )
@@ -188,9 +192,8 @@ public slots:
           else
               kDebug(6000) << "Cannot open file" << localFileName << "for filter list";
       }
-      else
-          kDebug(6000) << "Downloading" << tJob->url() << "failed with message:" << job->errorText();
-  }
+
+    }
 };
 
 
