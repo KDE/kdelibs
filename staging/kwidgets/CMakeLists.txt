@@ -23,8 +23,8 @@ include_directories(
   ${KDE4_KDECORE_INCLUDES}
   ${kcoreaddons_BINARY_DIR}
   ${kcoreaddons_SOURCE_DIR}/src/caching
-  ${kauth_BINARY_DIR}/src
-  ${kauth_SOURCE_DIR}/src
+  ${CMAKE_BINARY_DIR}/tier2/kauth/src
+  ${CMAKE_SOURCE_DIR}/tier2/kauth/src
   ${kwindowsystem_BINARY_DIR}/src
   ${kwindowsystem_SOURCE_DIR}/src
   ${CMAKE_BINARY_DIR}/staging/kdeguiaddons/src
