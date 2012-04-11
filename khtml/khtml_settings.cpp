@@ -410,59 +410,63 @@ void KHTMLSettings::init( KConfig * config, bool reset )
       d->adBlackList.clear();
       d->adWhiteList.clear();
 
-      /** read maximum age for filter list files, minimum is one day */
-      int htmlFilterListMaxAgeDays = cgFilter.readEntry(QString("HTMLFilterListMaxAgeDays")).toInt();
-      if (htmlFilterListMaxAgeDays < 1)
-          htmlFilterListMaxAgeDays = 1;
+      if (d->m_adFilterEnabled) {
 
-      QMap<QString,QString> entryMap = cgFilter.entryMap();
-      QMap<QString,QString>::ConstIterator it;
-      for( it = entryMap.constBegin(); it != entryMap.constEnd(); ++it )
-      {
-          int id = -1;
-          QString name = it.key();
-          QString url = it.value();
+          /** read maximum age for filter list files, minimum is one day */
+          int htmlFilterListMaxAgeDays = cgFilter.readEntry(QString("HTMLFilterListMaxAgeDays")).toInt();
+          if (htmlFilterListMaxAgeDays < 1)
+              htmlFilterListMaxAgeDays = 1;
 
-          if (name.startsWith("Filter"))
+          QMap<QString,QString> entryMap = cgFilter.entryMap();
+          QMap<QString,QString>::ConstIterator it;
+          for( it = entryMap.constBegin(); it != entryMap.constEnd(); ++it )
           {
-              if (url.startsWith(QLatin1String("@@")))
-                  d->adWhiteList.addFilter(url);
-              else
-                  d->adBlackList.addFilter(url);
-          } else if (name.startsWith("HTMLFilterListName-") && (id = name.mid(19).toInt()) > 0)
-          {
-              /** check if entry is enabled */
-              bool filterEnabled = cgFilter.readEntry(QString("HTMLFilterListEnabled-").append(QString::number(id))) != QLatin1String("false");
+              int id = -1;
+              QString name = it.key();
+              QString url = it.value();
 
-              /** get url for HTMLFilterList */
-              KUrl url(cgFilter.readEntry(QString("HTMLFilterListURL-").append(QString::number(id))));
+              if (name.startsWith("Filter"))
+              {
+                  if (url.startsWith(QLatin1String("@@")))
+                      d->adWhiteList.addFilter(url);
+                  else
+                      d->adBlackList.addFilter(url);
+              } else if (name.startsWith("HTMLFilterListName-") && (id = name.mid(19).toInt()) > 0)
+              {
+                  /** check if entry is enabled */
+                  bool filterEnabled = cgFilter.readEntry(QString("HTMLFilterListEnabled-").append(QString::number(id))) != QLatin1String("false");
 
-              if (filterEnabled && url.isValid()) {
-                  /** determine where to cache HTMLFilterList file */
-                  QString localFile = cgFilter.readEntry(QString("HTMLFilterListLocalFilename-").append(QString::number(id)));
-                  localFile = KStandardDirs::locateLocal("data", "khtml/" + localFile);
+                  /** get url for HTMLFilterList */
+                  KUrl url(cgFilter.readEntry(QString("HTMLFilterListURL-").append(QString::number(id))));
 
-                  /** determine existence and age of cache file */
-                  QFileInfo fileInfo(localFile);
+                  if (filterEnabled && url.isValid()) {
+                      /** determine where to cache HTMLFilterList file */
+                      QString localFile = cgFilter.readEntry(QString("HTMLFilterListLocalFilename-").append(QString::number(id)));
+                      localFile = KStandardDirs::locateLocal("data", "khtml/" + localFile);
 
-                  /** load cached file if it exists, irrespective of age */
-                  if (fileInfo.exists())
-                      d->adblockFilterLoadList( localFile );
+                      /** determine existence and age of cache file */
+                      QFileInfo fileInfo(localFile);
 
-                  /** if no cache list file exists or if it is too old ... */
-                  if (!fileInfo.exists() || fileInfo.lastModified().daysTo(QDateTime::currentDateTime()) > htmlFilterListMaxAgeDays)
-                  {
-                      /** ... in this case, refetch list asynchronously */
-                      kDebug(6000) << "Asynchronously fetching filter list from" << url << "to" << localFile;
+                      /** load cached file if it exists, irrespective of age */
+                      if (fileInfo.exists())
+                          d->adblockFilterLoadList( localFile );
 
-                      KIO::StoredTransferJob *job = KIO::storedGet( url, KIO::Reload, KIO::HideProgressInfo );
-                      QObject::connect( job, SIGNAL(result(KJob*)), d, SLOT(adblockFilterResult(KJob*)) );
-                      /** for later reference, store name of cache file */
-                      job->setProperty("khtmlsettings_adBlock_filename", localFile);
+                      /** if no cache list file exists or if it is too old ... */
+                      if (!fileInfo.exists() || fileInfo.lastModified().daysTo(QDateTime::currentDateTime()) > htmlFilterListMaxAgeDays)
+                      {
+                          /** ... in this case, refetch list asynchronously */
+                          kDebug(6000) << "Asynchronously fetching filter list from" << url << "to" << localFile;
+
+                          KIO::StoredTransferJob *job = KIO::storedGet( url, KIO::Reload, KIO::HideProgressInfo );
+                          QObject::connect( job, SIGNAL(result(KJob*)), d, SLOT(adblockFilterResult(KJob*)) );
+                          /** for later reference, store name of cache file */
+                          job->setProperty("khtmlsettings_adBlock_filename", localFile);
+                      }
                   }
               }
           }
       }
+
   }
 
   KConfigGroup cgHtml( config, "HTML Settings" );
