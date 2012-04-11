@@ -24,7 +24,7 @@
 
 class KKeySequenceButton: public QPushButton
 {
-	Q_OBJECT 
+	Q_OBJECT
 
 public:
 	explicit KKeySequenceButton(KKeySequenceWidgetPrivate *d, QWidget *parent)
@@ -32,9 +32,6 @@ public:
 	   d(d) {}
 
 	virtual ~KKeySequenceButton();
-
-	//Reimplemented
-	void setText(const QString &text);
 
 protected:
 	/**

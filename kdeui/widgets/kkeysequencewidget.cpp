@@ -427,13 +427,6 @@ void KKeySequenceWidget::applyStealShortcut()
     d->stealActions.clear();
 }
 
-void KKeySequenceButton::setText(const QString &text)
-{
-    QPushButton::setText(text);
-    //setFixedSize( sizeHint().width()+12, sizeHint().height()+8 );
-}
-
-
 void KKeySequenceWidgetPrivate::startRecording()
 {
     nKey = 0;
