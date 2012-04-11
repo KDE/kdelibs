@@ -29,6 +29,7 @@
 
 #include <kaboutdata.h>
 #include <kcomponentdata.h>
+#include <kicon.h>
 #include <kfiledialog.h>
 #include <kmessagebox.h>
 #include <kstandarddirs.h>

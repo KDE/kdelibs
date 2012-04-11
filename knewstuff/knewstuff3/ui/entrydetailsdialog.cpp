@@ -19,6 +19,7 @@
 
 #include <kmenu.h>
 #include <kdebug.h>
+#include <kicon.h>
 
 #include <knewstuff3/core/engine.h>
 #include <knewstuff3/ui/imageloader.h>

@@ -89,6 +89,7 @@ extern "C" {
 #include <kiconbutton.h>
 #include <kurl.h>
 #include <kurlrequester.h>
+#include <kicon.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>

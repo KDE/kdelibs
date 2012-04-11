@@ -28,6 +28,7 @@
 #include <kcomponentdata.h>
 #include <kconfig.h>
 #include <kglobal.h>
+#include <kicon.h>
 #include <klineedit.h>
 #include <klocale.h>
 #include <kmessagebox.h>

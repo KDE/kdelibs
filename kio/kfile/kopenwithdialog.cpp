@@ -42,6 +42,7 @@
 #include <kmessagebox.h>
 #include <kshell.h>
 #include <krun.h>
+#include <kicon.h>
 #include <kstringhandler.h>
 #include <kurlcompletion.h>
 #include <kurlrequester.h>

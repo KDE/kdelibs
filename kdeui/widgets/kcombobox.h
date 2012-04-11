@@ -25,7 +25,6 @@
 #include <QComboBox>
 
 #include <kcompletion.h>
-#include <kicon.h>
 
 class QLineEdit;
 class QMenu;

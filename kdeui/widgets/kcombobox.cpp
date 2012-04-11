@@ -31,12 +31,9 @@
 #include <kselectaction.h>
 #include <kcompletionbox.h>
 #include <kcursor.h>
-#include <kiconloader.h>
-#include <kicontheme.h>
 #include <klineedit.h>
 #include <klocalizedstring.h>
 #include <kurl.h>
-#include <kicon.h>
 
 #include <kdebug.h>
 

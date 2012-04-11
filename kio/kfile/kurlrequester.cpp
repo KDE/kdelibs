@@ -27,6 +27,7 @@
 #include <khbox.h>
 #include <kstandardshortcut.h>
 #include <kdebug.h>
+#include <kicon.h>
 
 #include <QEvent>
 #include <QDrag>
