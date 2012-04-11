@@ -46,8 +46,8 @@ static QDateTime fromTime_t(qint32 seconds)
     seconds -= days * 86400;
     if (seconds < 0)
     {
-	--days;
-	seconds += 86400;
+        --days;
+        seconds += 86400;
     }
     return QDateTime(epochDate.addDays(days), epochTime.addSecs(seconds), Qt::UTC);
 }
