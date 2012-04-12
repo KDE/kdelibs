@@ -22,8 +22,6 @@
 #include <QStyleOptionFrame>
 #include <QPainter>
 
-#include <assert.h>
-
 class KArrowButtonPrivate
 {
 	public:
@@ -107,7 +105,7 @@ void KArrowButton::paintEvent(QPaintEvent*)
 		case Qt::RightArrow: e = QStyle::PE_IndicatorArrowRight; break;
 		case Qt::UpArrow: e = QStyle::PE_IndicatorArrowUp; break;
 		case Qt::DownArrow: e = QStyle::PE_IndicatorArrowDown; break;
-		case Qt::NoArrow: assert( 0 ); break;
+		case Qt::NoArrow: Q_ASSERT( 0 ); break;
 	}
 
 	opt.state |= QStyle::State_Enabled;
