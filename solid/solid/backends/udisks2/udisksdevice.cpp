@@ -350,9 +350,9 @@ QString Device::volumeDescription() const
 {
     QString description;
     const UDisks2::StorageVolume storageVolume(const_cast<Device*>(this));
-    QString volume_label = QString::fromUtf8(prop("IdLabel").toByteArray());
+    QString volume_label = prop("IdLabel").toString();
     if (volume_label.isEmpty())
-        volume_label = QString::fromUtf8(prop("Name").toByteArray());
+        volume_label = prop("Name").toString();
     if (!volume_label.isEmpty())
         return volume_label;
 
@@ -608,10 +608,10 @@ QString Device::icon() const
 
 QString Device::product() const
 {
-    QString product = QString::fromUtf8(prop("Model").toByteArray());
+    QString product = prop("Model").toString();
 
     if (!isDrive()) {
-        QString label = QString::fromUtf8(prop("IdLabel").toByteArray());
+        QString label = prop("IdLabel").toString();
         if (!label.isEmpty()) {
             product = label;
         }
@@ -622,7 +622,7 @@ QString Device::product() const
 
 QString Device::vendor() const
 {
-    return QString::fromUtf8(prop("Vendor").toByteArray());
+    return prop("Vendor").toString();
 }
 
 QString Device::udi() const
