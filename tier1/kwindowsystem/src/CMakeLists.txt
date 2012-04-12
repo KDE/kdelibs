@@ -1,4 +1,6 @@
 
+find_package(X11)
+
 if (X11_Xfixes_FOUND)
    set (HAVE_XFIXES 1)
 else (X11_Xfixes_FOUND)
