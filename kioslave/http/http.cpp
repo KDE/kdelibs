@@ -5432,7 +5432,6 @@ try_next_auth_scheme:
                     }
                     username = authinfo.username;
                     password = authinfo.password;
-                    kDebug(7113) << "username:" << username << "password:" << password;
                 }
             }
 
