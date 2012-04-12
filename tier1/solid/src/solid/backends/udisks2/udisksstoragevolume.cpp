@@ -49,16 +49,16 @@ qulonglong StorageVolume::size() const
 
 QString StorageVolume::uuid() const
 {
-    return QString::fromUtf8(m_device->prop("IdUUID").toByteArray());
+    return m_device->prop("IdUUID").toString();
 }
 
 QString StorageVolume::label() const
 {
     QString label = m_device->prop("HintName").toString();
     if (label.isEmpty())
-        label = QString::fromUtf8(m_device->prop("IdLabel").toByteArray());
+        label = m_device->prop("IdLabel").toString();
     if (label.isEmpty())
-        label = QString::fromUtf8(m_device->prop("Name").toByteArray());
+        label = m_device->prop("Name").toString();
     return label;
 }
 
