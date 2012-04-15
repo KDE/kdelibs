@@ -1744,6 +1744,14 @@ void KUrlTest::testOtherProtocols()
   QCOMPARE( leo.url(), QString("data:text/html,http://www.invalid/" ) );
   QCOMPARE( leo.path(), QString("text/html,http://www.invalid/" ) );
 
+  KUrl testFrag( "data:,test#foo" );
+  QVERIFY( testFrag.isValid() );
+  QCOMPARE( testFrag.protocol(), QString("data" ) );
+  QCOMPARE( testFrag.url(), QString("data:,test#foo" ) );
+  QCOMPARE( testFrag.path(), QString(",test" ) );
+  QVERIFY( testFrag.hasFragment() );
+  QCOMPARE( testFrag.fragment(), QString("foo") );
+
   KUrl ptal( "ptal://mlc:usb@PC_970" ); // User=mlc, password=usb, host=PC_970
 #if QT_VERSION >= 0x040600 && QT_VERSION <= 0x040602 // Hostnames with underscores were invalid in 4.6.0 to 4.6.2, then allowed again in e301c82693c33c0f96c6a756d15fe35a9d877443
   QCOMPARE(ptal.url(), QString("ptal://mlc:usb@")); // The host "PC_970" is invalid according to STD3 validation
