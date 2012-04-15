@@ -101,6 +101,13 @@ public:
      */
     void setPopupFiles(const QList<KUrl>& files);
     
+#ifndef KDE_NO_DEPRECATED
+    void setPopupFiles(const KUrl& file)
+    {
+        setPopupFiles(QList<KUrl>() << file);
+    }
+#endif
+
     /**
      * Only show the files in a given set of mimetypes.
      * This is useful in specialized applications (while file managers, on
