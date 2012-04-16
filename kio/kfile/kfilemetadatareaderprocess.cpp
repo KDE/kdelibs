@@ -151,51 +151,63 @@ QHash<KUrl, Nepomuk::Variant> KFileMetaDataReaderApplication::readFileAndContext
     QString comment;
     QList<Nepomuk::Tag> tags;
 
-    bool first = true;
-    foreach (const KUrl& url, urls) {
-        Nepomuk::Resource file(url);
-        if (!file.isValid()) {
-            continue;
-        }
+    if (urls.count() == 1) {
+        // Read the metadata of the file that are provided as properties
+        // (e.g. image-size, artist, album, ...)
+        bool useReadFromFileFallback = true;
 
-        if (!first && (rating != file.rating())) {
-            rating = 0; // Reset rating
-        } else if (first) {
-            rating = file.rating();
-        }
-
-        if (!first && (comment != file.description())) {
-            comment.clear(); // Reset comment
-        } else if (first) {
-            comment = file.description();
-        }
-
-        if (!first && (tags != file.tags())) {
-            tags.clear(); // Reset tags
-        } else if (first) {
-            tags = file.tags();
-        }
-
-        if (first && (urls.count() == 1)) {
-            // Get cached meta data by checking the indexed files
+        Nepomuk::Resource file(urls.first());
+        if (file.isValid() && !file.resourceUri().isEmpty()) {
             QHash<QUrl, Nepomuk::Variant> variants = file.properties();
             QHash<QUrl, Nepomuk::Variant>::const_iterator it = variants.constBegin();
             while (it != variants.constEnd()) {
                 Nepomuk::Types::Property prop(it.key());
                 metaData.insert(prop.uri(), Nepomuk::Utils::formatPropertyValue(prop, it.value(),
-                                                                            QList<Nepomuk::Resource>() << file,
-                                                                            Nepomuk::Utils::WithKioLinks));
+                                                                                QList<Nepomuk::Resource>() << file,
+                                                                                Nepomuk::Utils::WithKioLinks));
                 ++it;
             }
+            useReadFromFileFallback = variants.isEmpty();
 
-            if (variants.isEmpty()) {
-                // The file has not been indexed, query the meta data
-                // directly from the file.
-                metaData = readFileMetaData(QList<KUrl>() << urls.first());
-            }
+            rating = file.rating();
+            comment = file.description();
+            tags = file.tags();
         }
 
-        first = false;
+        if (useReadFromFileFallback) {
+            // No metadata could be received with Nepomuk. Parse the file
+            // itself as fallback to extract metadata.
+            metaData = readFileMetaData(QList<KUrl>() << urls.first());
+        }
+    } else {
+        // Read the data for rating, comment and tags
+        bool first = true;
+        foreach (const KUrl& url, urls) {
+            Nepomuk::Resource file(url);
+            if (!file.isValid()) {
+                continue;
+            }
+
+            if (!first && rating != file.rating()) {
+                rating = 0; // Reset rating
+            } else if (first) {
+                rating = file.rating();
+            }
+
+            if (!first && comment != file.description()) {
+                comment.clear(); // Reset comment
+            } else if (first) {
+                comment = file.description();
+            }
+
+            if (!first && tags != file.tags()) {
+                tags.clear(); // Reset tags
+            } else if (first) {
+                tags = file.tags();
+            }
+
+            first = false;
+        }
     }
 
     if (Nepomuk::ResourceManager::instance()->initialized()) {
