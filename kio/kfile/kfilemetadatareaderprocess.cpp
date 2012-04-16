@@ -147,6 +147,15 @@ QHash<KUrl, Nepomuk::Variant> KFileMetaDataReaderApplication::readFileAndContext
 {
     QHash<KUrl, Nepomuk::Variant> metaData;
 
+    bool isNepomukIndexerActive = false;
+    if (Nepomuk::ResourceManager::instance()->initialized()) {
+        KConfig config("nepomukserverrc");
+        isNepomukIndexerActive = config.group("Service-nepomukfileindexer").readEntry("autostart", false);
+    } else {
+        // No context meta data can be read without enabled Nepomuk
+        return readFileMetaData(urls);
+    }
+
     unsigned int rating = 0;
     QString comment;
     QList<Nepomuk::Tag> tags;
@@ -167,7 +176,7 @@ QHash<KUrl, Nepomuk::Variant> KFileMetaDataReaderApplication::readFileAndContext
                                                                                 Nepomuk::Utils::WithKioLinks));
                 ++it;
             }
-            useReadFromFileFallback = variants.isEmpty();
+            useReadFromFileFallback = !isNepomukIndexerActive || variants.isEmpty();
 
             rating = file.rating();
             comment = file.description();
@@ -210,16 +219,14 @@ QHash<KUrl, Nepomuk::Variant> KFileMetaDataReaderApplication::readFileAndContext
         }
     }
 
-    if (Nepomuk::ResourceManager::instance()->initialized()) {
-        metaData.insert(KUrl("kfileitem#rating"), rating);
-        metaData.insert(KUrl("kfileitem#comment"), comment);
+    metaData.insert(KUrl("kfileitem#rating"), rating);
+    metaData.insert(KUrl("kfileitem#comment"), comment);
 
-        QList<Nepomuk::Variant> tagVariants;
-        foreach (const Nepomuk::Tag& tag, tags) {
-            tagVariants.append(Nepomuk::Variant(tag));
-        }
-        metaData.insert(KUrl("kfileitem#tags"), tagVariants);
+    QList<Nepomuk::Variant> tagVariants;
+    foreach (const Nepomuk::Tag& tag, tags) {
+        tagVariants.append(Nepomuk::Variant(tag));
     }
+    metaData.insert(KUrl("kfileitem#tags"), tagVariants);
 
     return metaData;
 }
