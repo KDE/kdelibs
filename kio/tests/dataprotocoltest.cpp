@@ -37,6 +37,18 @@ public:
     attributes_expected.erase(it);
   }
 
+  void setAllMetaData(const KIO::MetaData &md) {
+    KIO::MetaData::ConstIterator it = md.begin();
+    KIO::MetaData::ConstIterator end = md.end();
+
+    for (; it != end; ++it) {
+      KIO::MetaData::Iterator eit = attributes_expected.find(it.key());
+      QVERIFY(eit != attributes_expected.end());
+      QCOMPARE(eit.value(), it.value());
+      attributes_expected.erase(eit);
+    }
+  }
+
   void sendMetaData() {
     // check here if attributes_expected contains any excess keys
     KIO::MetaData::ConstIterator it = attributes_expected.constBegin();
@@ -56,8 +68,18 @@ public:
     }/*end if*/
   }
 
+  void dispatch_data(const QByteArray &a) {
+    data(a);
+  }
+
   void finished() {
   }
+
+  void dispatch_finished() {
+  }
+
+  void ref() {}
+  void deref() {}
 
 private:
   // -- testcase related members

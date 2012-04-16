@@ -33,7 +33,7 @@
 #  include <stdlib.h>
 #endif
 
-#if !defined(DATAKIOSLAVE) && !defined(TESTKIO)
+#if !defined(DATAKIOSLAVE)
 #  define DISPATCH(f) dispatch_##f
 #else
 #  define DISPATCH(f) f
@@ -286,7 +286,7 @@ void DataProtocol::get(const KUrl& url) {
   totalSize(outData.size());
 
   //kDebug() << "emit setMetaData@"<<this;
-#if defined(TESTKIO) || defined(DATAKIOSLAVE)
+#if defined(DATAKIOSLAVE)
   MetaData::ConstIterator it;
   for (it = hdr.attributes.constBegin(); it != hdr.attributes.constEnd(); ++it) {
     setMetaData(it.key(),it.value());
