@@ -1,6 +1,7 @@
-// testing the data kioslave
-// (C) 2002, 2003 Leo Savernik
-// (C) 2012 Rolf Eike Beer <kde@opensource.sf-tec.de>
+/*
+ * Copyright (C) 2002,2003 Leo Savernik <l.savernik@aon.at>
+ * Copyright (C) 2012 Rolf Eike Beer <kde@opensource.sf-tec.de>
+ */
 
 #ifdef DATAKIOSLAVE
 #  undef DATAKIOSLAVE
