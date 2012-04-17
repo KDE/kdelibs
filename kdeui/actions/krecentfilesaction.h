@@ -28,7 +28,7 @@
 #define KRECENTFILESACTION_H
 
 #include <kselectaction.h>
-#include <kurl.h>
+#include <qurl.h>
 
 class KConfigGroup;
 class KRecentFilesActionPrivate;
@@ -96,7 +96,7 @@ public:
    * Do not use addAction(QAction*), as no url will be associated, and
    * consequently urlSelected() will not be emitted when \a action is selected.
    */
-  void addAction(QAction* action, const KUrl& url, const QString& name);
+  void addAction(QAction* action, const QUrl& url, const QString& name);
 
   /**
    * Reimplemented for internal reasons.
@@ -148,19 +148,19 @@ public:
    *  @param url The URL of the file
    *  @param name The user visible pretty name that appears before the URL
    */
-  void addUrl( const KUrl& url, const QString& name = QString() );
+  void addUrl(const QUrl& url, const QString& name = QString());
 
   /**
    *  Remove an URL from the recent files list.
    *
    *  @param url The URL of the file
    */
-  void removeUrl( const KUrl& url );
+  void removeUrl(const QUrl& url);
 
   /**
    *  Retrieve a list of all URLs in the recent files list.
    */
-  KUrl::List urls() const;
+  QList<QUrl> urls() const;
 
 Q_SIGNALS:
   /**
@@ -168,7 +168,7 @@ Q_SIGNALS:
    *
    *  @param url The URL thats the user selected.
    */
-  void urlSelected( const QUrl& url );
+  void urlSelected(const QUrl& url);
 
   /**
    *  This signal gets emitted when the user clear list.

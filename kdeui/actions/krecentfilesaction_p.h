@@ -53,7 +53,7 @@ public:
 
   int m_maxItems;
   QMap<QAction*, QString> m_shortNames;
-  QMap<QAction*, KUrl> m_urls;
+  QMap<QAction*, QUrl> m_urls;
   QAction *m_noEntriesAction;
   QAction *clearSeparator;
   QAction *clearAction;

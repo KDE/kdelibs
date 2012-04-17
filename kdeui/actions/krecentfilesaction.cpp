@@ -33,6 +33,7 @@
 #ifdef Q_OS_WIN
 #include <QtCore/QDir>
 #endif
+#include <qurlpathinfo.h>
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -147,7 +148,7 @@ static QString titleWithSensibleWidth(const QString& nameValue, const QString& v
     return title;
 }
 
-void KRecentFilesAction::addUrl( const KUrl& _url, const QString& name )
+void KRecentFilesAction::addUrl(const QUrl& _url, const QString& name)
 {
     Q_D(KRecentFilesAction);
     /**
@@ -155,21 +156,30 @@ void KRecentFilesAction::addUrl( const KUrl& _url, const QString& name )
      * urlSelected() signal, we will delete it in the removeAction() call below.
      * but access it again in the addAction call... => crash
      */
-    const KUrl url( _url );
+    const QUrl url(_url);
 
     if ( url.isLocalFile() && KGlobal::dirs()->relativeLocation("tmp", url.toLocalFile()) != url.toLocalFile() )
        return;
-    const QString tmpName = name.isEmpty() ?  url.fileName() : name;
+    QUrlPathInfo urlPathInfo(url);
+    const QString tmpName = name.isEmpty() ? urlPathInfo.fileName() : name;
+//#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    const QString pathOrUrl = url.toString();
+//#else
+#pragma message("Uncomment when this is merged: http://codereview.qt-project.org/#change,18638")
+//   const QString pathOrUrl(url.toDisplayString(QUrl::PreferLocalFile));
+//#endif
+
 #ifdef Q_OS_WIN
-    const QString file = url.isLocalFile() ? QDir::toNativeSeparators( url.pathOrUrl() ) : url.pathOrUrl();
+    const QString file = url.isLocalFile() ? QDir::toNativeSeparators(pathOrUrl) : pathOrUrl;
 #else
-    const QString file = url.pathOrUrl();
+    const QString file = pathOrUrl;
 #endif
 
     // remove file if already in list
     foreach (QAction* action, selectableActionGroup()->actions())
     {
-      if ( d->m_urls[action].pathOrUrl().endsWith(file) )
+#pragma message("use toDisplayString(QUrl::PreferLocalFile)")
+      if ( d->m_urls[action].toString().endsWith(file) )
       {
         removeAction(action)->deleteLater();
         break;
@@ -192,7 +202,7 @@ void KRecentFilesAction::addUrl( const KUrl& _url, const QString& name )
     addAction(action, url, tmpName);
 }
 
-void KRecentFilesAction::addAction(QAction* action, const KUrl& url, const QString& name)
+void KRecentFilesAction::addAction(QAction* action, const QUrl& url, const QString& name)
 {
   Q_D(KRecentFilesAction);
   //qDebug () << "KRecentFilesAction::addAction(" << action << ")";
@@ -223,20 +233,20 @@ QAction* KRecentFilesAction::removeAction(QAction* action)
   return action;
 }
 
-void KRecentFilesAction::removeUrl( const KUrl& url )
+void KRecentFilesAction::removeUrl(const QUrl& url)
 {
   Q_D(KRecentFilesAction);
-  for (QMap<QAction*, KUrl>::ConstIterator it = d->m_urls.constBegin(); it != d->m_urls.constEnd(); ++it)
+  for (QMap<QAction*, QUrl>::ConstIterator it = d->m_urls.constBegin(); it != d->m_urls.constEnd(); ++it)
     if (it.value() == url) {
       delete removeAction(it.key());
       return;
     }
 }
 
-KUrl::List KRecentFilesAction::urls() const
+QList<QUrl> KRecentFilesAction::urls() const
 {
   Q_D(const KRecentFilesAction);
-  return d->m_urls.values ();
+  return d->m_urls.values();
 }
 
 void KRecentFilesAction::clear()
@@ -267,7 +277,7 @@ void KRecentFilesAction::loadEntries( const KConfigGroup& _config)
     QString     nameKey;
     QString     nameValue;
     QString      title;
-    KUrl        url;
+    QUrl        url;
 
     KConfigGroup cg = _config;
     if ( cg.name().isEmpty())
@@ -280,7 +290,7 @@ void KRecentFilesAction::loadEntries( const KConfigGroup& _config)
         key = QString( "File%1" ).arg( i );
         value = cg.readPathEntry( key, QString() );
         if (value.isEmpty()) continue;
-        url = KUrl( value );
+        url = QUrl(value);
 
         // Don't restore if file doesn't exist anymore
         if (url.isLocalFile() && !QFile::exists(url.toLocalFile()))
@@ -297,7 +307,8 @@ void KRecentFilesAction::loadEntries( const KConfigGroup& _config)
 #endif
 
         nameKey = QString( "Name%1" ).arg( i );
-        nameValue = cg.readPathEntry( nameKey, url.fileName() );
+        QUrlPathInfo urlPathInfo(url);
+        nameValue = cg.readPathEntry(nameKey, urlPathInfo.fileName());
         title = titleWithSensibleWidth(nameValue, value);
         if (!value.isNull())
         {
@@ -332,7 +343,8 @@ void KRecentFilesAction::saveEntries( const KConfigGroup &_cg )
     {
         key = QString( "File%1" ).arg( i );
         // i - 1 because we started from 1
-        value = d->m_urls[ selectableActionGroup()->actions()[ i - 1 ] ].pathOrUrl();
+#pragma message("use toDisplayString(QUrl::PreferLocalFile) instead of toString")
+        value = d->m_urls[ selectableActionGroup()->actions()[ i - 1 ] ].toString();
         cg.writePathEntry( key, value );
         key = QString( "Name%1" ).arg( i );
         value = d->m_shortNames[ selectableActionGroup()->actions()[ i - 1 ] ];
