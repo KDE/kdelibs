@@ -117,18 +117,18 @@ public:
     void writeConfig(KConfigGroup &configGroup);
     void setNonExtSelection();
     void setLocationText(const KUrl&);
-    void setLocationText(const QList<KUrl>&);
+    void setLocationText(const QList<QUrl>&);
     void appendExtension(KUrl &url);
     void updateLocationEditExtension(const QString &);
     void updateFilter();
-    QList<KUrl>& parseSelectedUrls();
+    QList<QUrl>& parseSelectedUrls();
     /**
      * Parses the string "line" for files. If line doesn't contain any ", the
      * whole line will be interpreted as one file. If the number of " is odd,
      * an empty list will be returned. Otherwise, all items enclosed in " "
      * will be returned as correct urls.
      */
-    QList<KUrl> tokenize(const QString& line) const;
+    QList<QUrl> tokenize(const QString& line) const;
     /**
      * Reads the recent used files and inserts them into the location combobox
      */
@@ -240,7 +240,7 @@ public:
 
     QList<KIO::StatJob*> statJobs;
 
-    QList<KUrl> urlList; //the list of selected urls
+    QList<QUrl> urlList; //the list of selected urls
 
     KFileWidget::OperationMode operationMode;
 
@@ -773,7 +773,7 @@ void KFileWidget::slotOk()
     const KFileItemList items = d->ops->selectedItems();
     const QString locationEditCurrentText(KShell::tildeExpand(d->locationEditCurrentText()));
 
-    QList<KUrl> locationEditCurrentTextList(d->tokenize(locationEditCurrentText));
+    QList<QUrl> locationEditCurrentTextList(d->tokenize(locationEditCurrentText));
     KFile::Modes mode = d->ops->mode();
 
     // if there is nothing to do, just return from here
@@ -818,7 +818,7 @@ void KFileWidget::slotOk()
           * This example has been written for 2 urls, but this works for any number of urls.
           */
         if (!d->differentHierarchyLevelItemsEntered) {     // avoid infinite recursion. running this
-            QList<KUrl> urlList;                            // one time is always enough.
+            QList<QUrl> urlList;                            // one time is always enough.
             int start = 0;
             KUrl topMostUrl;
             KIO::StatJob *statJob = 0;
@@ -935,7 +935,7 @@ void KFileWidget::slotOk()
     // that the File mode will iterate only one time here
     bool directoryMode = (mode & KFile::Directory);
     bool onlyDirectoryMode = directoryMode && !(mode & KFile::File) && !(mode & KFile::Files);
-    QList<KUrl>::ConstIterator it = locationEditCurrentTextList.constBegin();
+    QList<QUrl>::ConstIterator it = locationEditCurrentTextList.constBegin();
     bool filesInList = false;
     while (it != locationEditCurrentTextList.constEnd()) {
         KUrl url(*it);
@@ -1021,8 +1021,8 @@ void KFileWidget::accept()
     // clear the topmost item, we insert it as full path later on as item 1
     d->locationEdit->setItemText( 0, QString() );
 
-    const QList<KUrl> list = selectedUrls();
-    QList<KUrl>::const_iterator it = list.begin();
+    const QList<QUrl> list = selectedUrls();
+    QList<QUrl>::const_iterator it = list.begin();
     int atmost = d->locationEdit->maxItems(); //don't add more items than necessary
     for ( ; it != list.end() && atmost > 0; ++it ) {
         const KUrl& url = *it;
@@ -1136,7 +1136,7 @@ void KFileWidgetPrivate::multiSelectionChanged()
         return;
     }
 
-    QList<KUrl> urlList;
+    QList<QUrl> urlList;
     foreach (const KFileItem &fileItem, list) {
         urlList << fileItem.url();
     }
@@ -1241,7 +1241,7 @@ void KFileWidgetPrivate::setLocationText(const KUrl& url)
     }
 }
 
-void KFileWidgetPrivate::setLocationText( const QList<KUrl>& urlList )
+void KFileWidgetPrivate::setLocationText( const QList<QUrl>& urlList )
 {
     const KUrl currUrl = ops->url();
 
@@ -1561,7 +1561,7 @@ void KFileWidgetPrivate::_k_slotLocationChanged( const QString& text )
     }
 
     if (!locationEdit->lineEdit()->text().isEmpty()) {
-        const QList<KUrl> urlList(tokenize(text));
+        const QList<QUrl> urlList(tokenize(text));
         QStringList stringList;
         foreach (const KUrl &url, urlList) {
             stringList << url.url();
@@ -1582,11 +1582,11 @@ KUrl KFileWidget::selectedUrl() const
         return KUrl();
 }
 
-QList<KUrl> KFileWidget::selectedUrls() const
+QList<QUrl> KFileWidget::selectedUrls() const
 {
 //     kDebug(kfile_area);
 
-    QList<KUrl> list;
+    QList<QUrl> list;
     if ( d->inAccept ) {
         if (d->ops->mode() & KFile::Files)
             list = d->parseSelectedUrls();
@@ -1597,7 +1597,7 @@ QList<KUrl> KFileWidget::selectedUrls() const
 }
 
 
-QList<KUrl>& KFileWidgetPrivate::parseSelectedUrls()
+QList<QUrl>& KFileWidgetPrivate::parseSelectedUrls()
 {
 //     kDebug(kfile_area);
 
@@ -1632,11 +1632,11 @@ QList<KUrl>& KFileWidgetPrivate::parseSelectedUrls()
 
 
 // FIXME: current implementation drawback: a filename can't contain quotes
-QList<KUrl> KFileWidgetPrivate::tokenize( const QString& line ) const
+QList<QUrl> KFileWidgetPrivate::tokenize( const QString& line ) const
 {
 //     kDebug(kfile_area);
 
-    QList<KUrl> urls;
+    QList<QUrl> urls;
     KUrl u( ops->url() );
     u.adjustPath(KUrl::AddTrailingSlash);
     QString name;
@@ -1714,8 +1714,8 @@ QStringList KFileWidget::selectedFiles() const
 
     if (d->inAccept) {
         if (d->ops->mode() & KFile::Files) {
-            const QList<KUrl> urls = d->parseSelectedUrls();
-            QList<KUrl>::const_iterator it = urls.begin();
+            const QList<QUrl> urls = d->parseSelectedUrls();
+            QList<QUrl>::const_iterator it = urls.begin();
             while (it != urls.end()) {
                 KUrl url = d->mostLocalUrl(*it);
                 if (url.isLocalFile())
@@ -2436,8 +2436,8 @@ void KFileWidgetPrivate::addToRecentDocuments()
     }
 
     else { // urls
-        const QList<KUrl> urls = q->selectedUrls();
-        QList<KUrl>::ConstIterator it = urls.begin();
+        const QList<QUrl> urls = q->selectedUrls();
+        QList<QUrl>::ConstIterator it = urls.begin();
         for ( ; it != urls.end() && atmost > 0; ++it ) {
             if ( (*it).isValid() ) {
                 KRecentDocument::add( *it );

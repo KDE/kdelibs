@@ -60,7 +60,7 @@ int main (int argc, char **argv)
     dlg.setMode(KFile::Files | KFile::Directory);
     dlg.setCaption(QString("Test for bug 173137"));
     dlg.exec();
-    QList<KUrl> selectedUrls = dlg.selectedUrls();
+    QList<QUrl> selectedUrls = dlg.selectedUrls();
     if (selectedUrls.count()) {
         QString str("The listed files and folders below were asked to be opened:\n");
         foreach (const KUrl &filename, selectedUrls) {
@@ -126,7 +126,7 @@ int main (int argc, char **argv)
     //       of a QStringList object.
     //     - From the previous point it is expectable that its behavior should be the same as
     //       getOpenFileNames.
-    QList<KUrl> getOpenUrls = KFileDialog::getOpenUrls(QString(),QString(),0,
+    QList<QUrl> getOpenUrls = KFileDialog::getOpenUrls(QString(),QString(),0,
                                                       QString("Test getOpenUrls"));
     if (getOpenUrls.count()) {
         QString str("The listed files below were asked to be opened:\n");

@@ -135,7 +135,7 @@ public:
     /**
      * @returns The list of selected URLs.
      */
-    QList<KUrl> selectedUrls() const;
+    QList<QUrl> selectedUrls() const;
 
     /**
      * @returns the currently shown directory.
@@ -454,7 +454,7 @@ public:
      *
      * @see KFileWidget::KFileWidget()
      */
-    static QList<KUrl> getOpenUrls( const KUrl& startDir = KUrl(),
+    static QList<QUrl> getOpenUrls(const KUrl& startDir = KUrl(),
                                    const QString& filter = QString(),
                                    QWidget *parent = 0,
                                    const QString& caption = QString() );

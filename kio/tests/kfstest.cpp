@@ -169,11 +169,11 @@ int main(int argc, char **argv)
 //        types.append( KMimeType::mimeType( "text/html" ) );
 //        dlg.setFilterMimeType( "Filetypes:", types, types.first() );
         if ( dlg.exec() == QDialog::Accepted ) {
-            const QList<KUrl> list = dlg.selectedUrls();
-            QList<KUrl>::ConstIterator it = list.constBegin();
+            const QList<QUrl> list = dlg.selectedUrls();
+            QList<QUrl>::ConstIterator it = list.constBegin();
             qDebug("*** selectedUrls(): ");
             while ( it != list.constEnd() ) {
-                name1 = (*it).url();
+                name1 = (*it).toString();
                 qDebug("  -> %s", name1.toLatin1().constData());
                 ++it;
             }

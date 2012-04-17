@@ -80,7 +80,7 @@ public:
     /**
      * @returns The list of selected URLs.
      */
-    virtual QList<KUrl> selectedUrls() const = 0;
+    virtual QList<QUrl> selectedUrls() const = 0;
 
     /**
      * @returns the currently shown directory.
