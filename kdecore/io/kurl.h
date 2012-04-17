@@ -335,6 +335,9 @@ public:
   /**
    * Usual constructor, to construct from a string.
    * @param urlOrPath An encoded URL or a path.
+   *
+   * @deprecated use QUrl(str) if it's a URL, QUrl::fromLocalFile(str) if it's a local path,
+   * and QUrl::fromUserInput() if it could be either.
    */
   KUrl( const QString& urlOrPath );
   /**
@@ -342,6 +345,9 @@ public:
    * of the URL, exactly like the usual constructor. This is useful when
    * the URL, in its encoded form, is strictly ascii.
    * @param urlOrPath An encoded URL, or a path.
+   *
+   * @deprecated use QUrl(str) if it's a URL, QUrl::fromLocalFile(str) if it's a local path,
+   * and QUrl::fromUserInput() if it could be either.
    */
   explicit KUrl( const char * urlOrPath );
   /**
@@ -349,6 +355,9 @@ public:
    * of the URL, exactly like the usual constructor. This is useful when
    * the URL, in its encoded form, is strictly ascii.
    * @param urlOrPath An encoded URL, or a path.
+   *
+   * @deprecated use QUrl(str) if it's a URL, QUrl::fromLocalFile(str) if it's a local path,
+   * and QUrl::fromUserInput() if it could be either.
    */
   explicit KUrl( const QByteArray& urlOrPath );
 
