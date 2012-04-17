@@ -32,9 +32,9 @@
 #include <QGridLayout>
 #include <QMenu>
 #include <QEvent>
+#include <qurlpathinfo.h>
 
 #include <kicon.h>
-#include <kurl.h>
 #include <kpushbutton.h>
 #include <ksqueezedtextlabel.h>
 #include <kguiitem.h>
@@ -631,9 +631,9 @@ void KWidgetJobTracker::Private::ProgressWidget::_k_openFile()
 
 void KWidgetJobTracker::Private::ProgressWidget::_k_openLocation()
 {
-    KUrl dirLocation(location);
+    QUrlPathInfo dirLocation(location);
     dirLocation.setFileName(QString());
-    QProcess::startDetached("kde-open", QStringList() << dirLocation.prettyUrl());
+    QProcess::startDetached("kde-open", QStringList() << dirLocation.url().toString());
 }
 
 void KWidgetJobTracker::Private::ProgressWidget::_k_pauseResumeClicked()

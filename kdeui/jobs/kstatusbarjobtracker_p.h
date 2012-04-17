@@ -27,9 +27,6 @@
 #include <QBoxLayout>
 #include <QStackedWidget>
 
-#include <kdebug.h>
-#include <kurl.h>
-
 class KPushButton;
 class QCheckBox;
 class KLineEdit;

@@ -29,9 +29,9 @@
 #include <QTime>
 #include <QQueue>
 #include <QCheckBox>
+#include <QUrl>
+#include <QDebug>
 
-#include <kdebug.h>
-#include <kurl.h>
 #include <kglobal.h>
 
 class KPushButton;
@@ -178,8 +178,7 @@ void KWidgetJobTracker::Private::setStopOnClose(KJob *job, bool stopOnClose)
 bool KWidgetJobTracker::Private::stopOnClose(KJob *job) const
 {
     if (!progressWidget.contains(job)) {
-        kWarning() << "not found widget for job " << job << ". This method will return a "
-                        "hardcoded value";
+        qWarning() << "no widget found for job" << job;
         return true;
     }
     return progressWidget[job]->stopOnClose;
@@ -196,8 +195,7 @@ void KWidgetJobTracker::Private::setAutoDelete(KJob *job, bool autoDelete)
 bool KWidgetJobTracker::Private::autoDelete(KJob *job) const
 {
     if (!progressWidget.contains(job)) {
-        kWarning() << "not found widget for job " << job << ". This method will return a "
-                        "hardcoded value";
+        qWarning() << "no widget found for job" << job;
         return true;
     }
     return progressWidget[job]->testAttribute(Qt::WA_DeleteOnClose);
