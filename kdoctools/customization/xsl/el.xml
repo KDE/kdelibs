@@ -7,6 +7,64 @@
    <l:gentext key="footer-doc-feedback" text="Στείλτε τις συνεισφορές σας στην"/>
    <l:gentext key="footer-doc-teamname" text="ομάδα τεκμηρίωσης του KDE"/>
 
+   <!-- Remove when the following fixes will be included into official docbook-xsl packages -->
+   <l:dingbat key="startquote" text="«"/>
+   <l:dingbat key="endquote" text="»"/>
+   <l:dingbat key="nestedstartquote" text="«"/>
+   <l:dingbat key="nestedendquote" text="»"/>
+   <l:context name="title">
+     <l:template name="bridgehead" text="«%t»"/>
+     <l:template name="refsection" text="«%t»"/>
+     <l:template name="refsect1" text="«%t»"/>
+     <l:template name="refsect2" text="«%t»"/>
+     <l:template name="refsect3" text="«%t»"/>
+     <l:template name="sect1" text="«%t»"/>
+     <l:template name="sect2" text="«%t»"/>
+     <l:template name="sect3" text="«%t»"/>
+     <l:template name="sect4" text="«%t»"/>
+     <l:template name="sect5" text="«%t»"/>
+     <l:template name="section" text="«%t»"/>
+     <l:template name="simplesect" text="«%t»"/>
+   </l:context>
+   <l:context name="xref">
+     <l:template name="bridgehead" text="«%t»"/>
+     <l:template name="refsection" text="«%t»"/>
+     <l:template name="refsect1" text="«%t»"/>
+     <l:template name="refsect2" text="«%t»"/>
+     <l:template name="refsect3" text="«%t»"/>
+     <l:template name="sect1" text="«%t»"/>
+     <l:template name="sect2" text="«%t»"/>
+     <l:template name="sect3" text="«%t»"/>
+     <l:template name="sect4" text="«%t»"/>
+     <l:template name="sect5" text="«%t»"/>
+     <l:template name="section" text="«%t»"/>
+     <l:template name="simplesect" text="«%t»"/>
+   </l:context>
+   <l:context name="xref-number-and-title">
+     <l:template name="bridgehead" text="Τμήμα %n, «%t»"/>
+     <l:template name="chapter" text="Κεφάλαιο %n, %t"/>
+     <l:template name="equation" text="Εξίσωση %n, «%t»"/>
+     <l:template name="example" text="Παράδειγμα %n, «%t»"/>
+     <l:template name="figure" text="Σχήμα %n, «%t»"/>
+     <l:template name="part" text="Μέρος %n, «%t»"/>
+     <l:template name="procedure" text="Διαδικασία %n, «%t»"/>
+     <l:template name="productionset" text="Παραγωγή %n, «%t»"/>
+     <l:template name="qandadiv" text="Ε και Α %n, «%t»"/>
+     <l:template name="refsect1" text="το τμήμα ονομάζεται «%t»"/>
+     <l:template name="refsect2" text="το τμήμα ονομάζεται «%t»"/>
+     <l:template name="refsect3" text="το τμήμα ονομάζεται «%t»"/>
+     <l:template name="refsection" text="το τμήμα ονομάζεται «%t»"/>
+     <l:template name="sect1" text="Τμήμα %n, «%t»"/>
+     <l:template name="sect2" text="Τμήμα %n, «%t»"/>
+     <l:template name="sect3" text="Τμήμα %n, «%t»"/>
+     <l:template name="sect4" text="Τμήμα %n, «%t»"/>
+     <l:template name="sect5" text="Τμήμα %n, «%t»"/>
+     <l:template name="section" text="Τμήμα %n, «%t»"/>
+     <l:template name="simplesect" text="το τμήμα ονομάζεται «%t»"/>
+     <l:template name="table" text="Πίνακας %n, «%t»"/>
+   </l:context>
+   <!-- End of the content that should be removed -->
+
    <l:context name="datetime">
       <l:template name="format" text="d/m/Y"/>
    </l:context>
