@@ -2727,7 +2727,7 @@ bool HTTPProtocol::parseHeaderFromCache()
     }
 
     Q_FOREACH (const QString &str, m_responseHeaders) {
-        const QString header = str.trimmed().toLower();
+        const QString header = str.trimmed();
         if (header.startsWith(QLatin1String("content-type:")), Qt::CaseInsensitive) {
             int pos = header.indexOf(QLatin1String("charset="), Qt::CaseInsensitive);
             if (pos != -1) {
