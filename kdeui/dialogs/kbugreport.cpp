@@ -78,7 +78,7 @@ public:
     QString kde_version;
     QString appname;
     QString os;
-    KUrl url;
+    QUrl url;
     QList<QRadioButton*> severityButtons;
     int currentSeverity() {
         for (int i=0;i<severityButtons.count();i++)
@@ -325,7 +325,7 @@ void KBugReport::setMessageBody(const QString &messageBody)
 
 void KBugReportPrivate::_k_updateUrl()
 {
-    url = KUrl( "https://bugs.kde.org/wizard.cgi" );
+    url = QUrl("https://bugs.kde.org/wizard.cgi");
     url.addQueryItem( "os", os );
     url.addQueryItem( "compiler", KDE_COMPILER_VERSION );
     url.addQueryItem( "kdeVersion", kde_version );
@@ -409,7 +409,7 @@ void KBugReportPrivate::_k_slotSetFrom()
 void KBugReport::accept()
 {
     if ( d->submitBugWeb ) {
-        KToolInvocation::invokeBrowser( d->url.url() );
+        KToolInvocation::invokeBrowser(d->url.toString());
         return;
     }
 

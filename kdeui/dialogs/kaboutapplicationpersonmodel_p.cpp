@@ -162,7 +162,7 @@ void KAboutApplicationPersonModel::onPersonJobFinished( Attica::BaseJob *job )  
 
             KAboutApplicationPersonProfileOcsLink::Type type =
                     KAboutApplicationPersonProfileOcsLink::typeFromAttica( atticaType );
-            ocsLinks.append( KAboutApplicationPersonProfileOcsLink( type, KUrl( url ) ) );
+            ocsLinks.append(KAboutApplicationPersonProfileOcsLink(type, QUrl(url)));
             if( !m_ocsLinkIcons.contains( type ) && !m_ocsLinkIconUrls.contains( type ) ) {
                 m_ocsLinkIconUrls.insert( type, p.extendedAttribute( QString( "homepageicon%1" ).arg( i ) ) );
             }
@@ -193,7 +193,7 @@ void KAboutApplicationPersonModel::onPersonJobFinished( Attica::BaseJob *job )  
         {
             KAboutApplicationPersonProfileOcsLink::Type type =
                 KAboutApplicationPersonProfileOcsLink::typeFromAttica( p.extendedAttribute( "homepagetype" ) );
-            ocsLinks.insert( 0, KAboutApplicationPersonProfileOcsLink( type, KUrl( p.homepage() ) ) );   //we prepend the main homepage
+            ocsLinks.insert(0, KAboutApplicationPersonProfileOcsLink(type, p.homepage()));   //we prepend the main homepage
             if( !m_ocsLinkIcons.contains( type ) && !m_ocsLinkIconUrls.contains( type ) ) {
                 m_ocsLinkIconUrls.insert( type, p.extendedAttribute( "homepageicon" ) );
             }

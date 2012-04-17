@@ -83,7 +83,7 @@ void KTextBrowser::setSource( const QUrl& name )
      QWhatsThis::showText( QCursor::pos(), whatsthis.cap( 1 ) );
   } else if ( strName.indexOf( '@' ) > -1 ) {
     if ( !d->notifyClick ) {
-      KToolInvocation::invokeMailer( KUrl( strName ) );
+      KToolInvocation::invokeMailer(QUrl(strName));
     } else {
       emit mailClick( QString(), strName );
     }

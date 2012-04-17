@@ -27,7 +27,7 @@
 #endif //HAVE_ATTICA
 
 #include <kaboutdata.h>
-#include <kurl.h>
+#include <qurl.h>
 
 #include <QtCore/QAbstractListModel>
 #include <QPixmap>
@@ -147,7 +147,7 @@ public:
 
 private:
     Type m_type;
-    KUrl m_url;
+    QUrl m_url;
     QIcon m_icon;
 };
 
@@ -195,7 +195,7 @@ private:
     QString m_email;
     QString m_ocsUsername;
     QString m_ocsProfileUrl;
-    KUrl m_homepage;
+    QUrl m_homepage;
     QPixmap m_avatar;
     QString m_location;
     QStringList m_additionalStrings;

@@ -242,9 +242,9 @@ void KAboutApplicationPersonListDelegate::paint( QPainter *painter,
 void KAboutApplicationPersonListDelegate::launchUrl( QAction *action ) const
 {
     QString url = action->data().toString();
-    if( !url.isEmpty() ) {
-        if( url.startsWith( "mailto:" ) )
-            KToolInvocation::invokeMailer( KUrl( url ) );
+    if (!url.isEmpty()) {
+        if (url.startsWith("mailto:"))
+            KToolInvocation::invokeMailer(QUrl(url));
         else
             KToolInvocation::invokeBrowser( url );
     }
