@@ -63,8 +63,8 @@ int main (int argc, char **argv)
     QList<QUrl> selectedUrls = dlg.selectedUrls();
     if (selectedUrls.count()) {
         QString str("The listed files and folders below were asked to be opened:\n");
-        foreach (const KUrl &filename, selectedUrls) {
-            str += QString("\n%1").arg(filename.url());
+        foreach (const QUrl &filename, selectedUrls) {
+            str += QString("\n%1").arg(filename.toString());
         }
         KMessageBox::information(0, str, "Dialog for bug #173137 accepted");
     } else {

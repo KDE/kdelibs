@@ -76,9 +76,9 @@ KEncodingFileDialog::KEncodingFileDialog(const QString& startDir, const QString&
       insert++;
     }
   }
-  
+
   if ( !foundRequested )
-    d->encoding->setCurrentIndex(system); 
+    d->encoding->setCurrentIndex(system);
 
 }
 
@@ -201,7 +201,7 @@ KEncodingFileDialog::Result  KEncodingFileDialog::getSaveUrlAndEncoding(const QS
 
     Result res;
     if (dlg.exec() == QDialog::Accepted) {
-      KUrl url = dlg.selectedUrl();
+      QUrl url = dlg.selectedUrl();
       if (url.isValid())
           KRecentDocument::add( url );
       res.URLs<<url;

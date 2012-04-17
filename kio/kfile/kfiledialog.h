@@ -130,7 +130,7 @@ public:
     /**
      * @returns The selected fully qualified filename.
      */
-    KUrl selectedUrl() const;
+    QUrl selectedUrl() const;
 
     /**
      * @returns The list of selected URLs.

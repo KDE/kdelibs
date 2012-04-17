@@ -114,10 +114,10 @@ KUrl KFileTreeView::currentUrl() const
     return d->urlForProxyIndex(currentIndex());
 }
 
-KUrl KFileTreeView::selectedUrl() const
+QUrl KFileTreeView::selectedUrl() const
 {
     if (!selectionModel()->hasSelection())
-        return KUrl();
+        return QUrl();
 
     const QItemSelection selection = selectionModel()->selection();
     const QModelIndex firstIndex = selection.indexes().first();
@@ -125,16 +125,16 @@ KUrl KFileTreeView::selectedUrl() const
     return d->urlForProxyIndex(firstIndex);
 }
 
-QList<KUrl> KFileTreeView::selectedUrls() const
+QList<QUrl> KFileTreeView::selectedUrls() const
 {
-    QList<KUrl> urls;
+    QList<QUrl> urls;
 
     if (!selectionModel()->hasSelection())
         return urls;
 
     const QModelIndexList indexes = selectionModel()->selection().indexes();
     foreach (const QModelIndex &index, indexes) {
-        const KUrl url = d->urlForProxyIndex(index);
+        const QUrl url = d->urlForProxyIndex(index);
         if (url.isValid())
             urls.append(url);
     }

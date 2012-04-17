@@ -240,7 +240,7 @@ void KDirSelectDialog::Private::slotNewFolder()
 
 void KDirSelectDialog::Private::slotMoveToTrash()
 {
-    const KUrl url = m_treeView->selectedUrl();
+    const QUrl url = m_treeView->selectedUrl();
     KIO::JobUiDelegate job;
     if (job.askDeleteConfirmation(QList<KUrl>() << url, KIO::JobUiDelegate::Trash, KIO::JobUiDelegate::DefaultConfirmation)) {
         KIO::CopyJob* copyJob = KIO::trash(url);
@@ -251,7 +251,7 @@ void KDirSelectDialog::Private::slotMoveToTrash()
 
 void KDirSelectDialog::Private::slotDelete()
 {
-    const KUrl url = m_treeView->selectedUrl();
+    const QUrl url = m_treeView->selectedUrl();
     KIO::JobUiDelegate job;
     if (job.askDeleteConfirmation(QList<KUrl>() << url, KIO::JobUiDelegate::Delete, KIO::JobUiDelegate::DefaultConfirmation)) {
         KIO::DeleteJob* deleteJob = KIO::del(url);
@@ -461,16 +461,20 @@ void KDirSelectDialog::setCurrentUrl( const KUrl& url )
 
 void KDirSelectDialog::accept()
 {
-    KUrl selectedUrl = url();
+    QUrl selectedUrl = url();
     if (!selectedUrl.isValid()) {
         return;
     }
 
     if (!d->m_recentDirClass.isEmpty()) {
-        KRecentDirs::add(d->m_recentDirClass, selectedUrl.url());
+        KRecentDirs::add(d->m_recentDirClass, selectedUrl.toString());
     }
 
-    d->m_urlCombo->addToHistory( selectedUrl.prettyUrl() );
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    d->m_urlCombo->addToHistory(selectedUrl.toString());
+#else
+    d->m_urlCombo->addToHistory(selectedUrl.toDisplayString());
+#endif
     KFileDialog::setStartDir( url() );
 
     KDialog::accept();

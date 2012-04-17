@@ -664,10 +664,10 @@ KUrl KFileDialog::getImageOpenUrl( const KUrl& startDir, QWidget *parent,
     return dlg.selectedUrl();
 }
 
-KUrl KFileDialog::selectedUrl() const
+QUrl KFileDialog::selectedUrl() const
 {
     if (d->native)
-        return d->native->selectedUrls.isEmpty() ? KUrl() : d->native->selectedUrls.first();
+        return d->native->selectedUrls.isEmpty() ? QUrl() : d->native->selectedUrls.first();
     return d->w->selectedUrl();
 }
 
@@ -695,7 +695,7 @@ QStringList KFileDialog::selectedFiles() const
 KUrl KFileDialog::baseUrl() const
 {
     if (d->native)
-        return selectedUrl().isEmpty() ? KUrl() : KUrl::fromPath(selectedUrl().path());
+        return selectedUrl().isEmpty() ? QUrl() : KUrl::fromPath(selectedUrl().path()); /* shouldn't that be .directory()? */
     return d->w->baseUrl();
 }
 
@@ -840,7 +840,7 @@ KUrl KFileDialogPrivate::getSaveUrl(const KUrl& dir, const QString& filter,
 
     dlg.exec();
     if(selectedFilter) *selectedFilter = dlg.currentMimeFilter();
-    KUrl url = dlg.selectedUrl();
+    QUrl url = dlg.selectedUrl();
     if (url.isValid())
         KRecentDocument::add( url );
 

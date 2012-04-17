@@ -81,7 +81,7 @@ public:
     /**
      * @returns The selected fully qualified filename.
      */
-    virtual KUrl selectedUrl() const;
+    virtual QUrl selectedUrl() const;
 
     /**
      * @returns The list of selected URLs.

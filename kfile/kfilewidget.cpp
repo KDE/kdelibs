@@ -1572,7 +1572,7 @@ void KFileWidgetPrivate::_k_slotLocationChanged( const QString& text )
     updateFilter();
 }
 
-KUrl KFileWidget::selectedUrl() const
+QUrl KFileWidget::selectedUrl() const
 {
 //     kDebug(kfile_area);
 

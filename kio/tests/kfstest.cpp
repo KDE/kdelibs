@@ -122,7 +122,7 @@ int main(int argc, char **argv)
         }
 #endif
         if ( dlg->exec() == KDialog::Accepted )
-            name1 = dlg->selectedUrl().url();
+            name1 = dlg->selectedUrl().toString();
     }
 
     else if ( argv1 == QLatin1String("eventloop") )
@@ -178,7 +178,7 @@ int main(int argc, char **argv)
                 ++it;
             }
             qDebug("*** selectedFile: %s", dlg.selectedFile().toLatin1().constData());
-            qDebug("*** selectedUrl: %s", dlg.selectedUrl().url().toLatin1().constData());
+            qDebug("*** selectedUrl: %s", dlg.selectedUrl().toString().toLatin1().constData());
             qDebug("*** selectedFiles: ");
             QStringList l = dlg.selectedFiles();
             QStringList::Iterator it2 = l.begin();

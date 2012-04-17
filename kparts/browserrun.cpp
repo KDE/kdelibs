@@ -434,7 +434,7 @@ void KParts::BrowserRun::saveUrl(const KUrl & url, const QString & suggestedFile
     dlg->setSelection(name);
     if ( dlg->exec() )
     {
-        KUrl destURL( dlg->selectedUrl() );
+        QUrl destURL(dlg->selectedUrl());
         if ( destURL.isValid() )
         {
             saveUrlUsingKIO(url, destURL, window, args.metaData());
