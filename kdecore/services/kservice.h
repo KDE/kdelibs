@@ -91,8 +91,6 @@ public:
 
     virtual ~KService();
 
-    // TODO KDE5: add mimeTypes() accessor
-
     /**
      * Services are either applications (executables) or dlopened libraries (plugins).
      * @return true if this service is an application, i.e. it has Type=Application in its
@@ -261,6 +259,14 @@ public:
      * @return the list of VFolder categories
      */
     QStringList categories() const;
+
+    /**
+     * Returns the list of mime types that this service supports.
+     * Note that this doesn't include inherited mimetypes,
+     * only the mimetypes types listed in the .desktop file.
+     * @since 4.8.3
+     */
+    QStringList mimeTypes() const;
 
     /**
      * Returns the service types that this service supports.

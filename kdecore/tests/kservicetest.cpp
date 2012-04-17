@@ -356,6 +356,7 @@ void KServiceTest::testHasServiceType1() // with services constructed with a ful
     KService fakepart( fakepartPath );
     QVERIFY( fakepart.hasServiceType( "KParts/ReadOnlyPart" ) );
     QVERIFY( fakepart.hasServiceType( "KParts/ReadWritePart" ) );
+    QCOMPARE(fakepart.mimeTypes(), QStringList() << "text/plain");
 
     QString faketextPluginPath = KStandardDirs::locate( "services", "faketextplugin.desktop" );
     QVERIFY( !faketextPluginPath.isEmpty() );
@@ -370,6 +371,7 @@ void KServiceTest::testHasServiceType2() // with services coming from ksycoca
     QVERIFY( !fakepart.isNull() );
     QVERIFY( fakepart->hasServiceType( "KParts/ReadOnlyPart" ) );
     QVERIFY( fakepart->hasServiceType( "KParts/ReadWritePart" ) );
+    QCOMPARE(fakepart->mimeTypes(), QStringList() << "text/plain");
 
     KService::Ptr faketextPlugin = KService::serviceByDesktopPath( "faketextplugin.desktop" );
     QVERIFY( !faketextPlugin.isNull() );
