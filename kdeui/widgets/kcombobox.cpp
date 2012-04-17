@@ -25,15 +25,14 @@
 #include <QClipboard>
 #include <QLineEdit>
 #include <QMenu>
-#include <QApplication>
 #include <QActionEvent>
+#include <QUrl>
 
 #include <kselectaction.h>
 #include <kcompletionbox.h>
 #include <kcursor.h>
 #include <klineedit.h>
 #include <klocalizedstring.h>
-#include <kurl.h>
 
 #include <kdebug.h>
 
@@ -198,40 +197,68 @@ bool KComboBox::trapReturnKey() const
 }
 
 
-void KComboBox::setEditUrl( const KUrl& url )
+void KComboBox::setEditUrl(const QUrl& url)
 {
-    QComboBox::setEditText( url.prettyUrl() );
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    QComboBox::setEditText(url.toString());
+#else
+    QComboBox::setEditText(url.toDisplayString());
+#endif
 }
 
-void KComboBox::addUrl( const KUrl& url )
+void KComboBox::addUrl(const QUrl& url)
 {
-    QComboBox::addItem( url.prettyUrl() );
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    QComboBox::addItem(url.toString());
+#else
+    QComboBox::addItem(url.toDisplayString());
+#endif
 }
 
-void KComboBox::addUrl( const QIcon& icon, const KUrl& url )
+void KComboBox::addUrl(const QIcon& icon, const QUrl& url)
 {
-    QComboBox::addItem( icon, url.prettyUrl() );
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    QComboBox::addItem(icon, url.toString());
+#else
+    QComboBox::addItem(icon, url.toDisplayString());
+#endif
 }
 
-void KComboBox::insertUrl( int index, const KUrl& url )
+void KComboBox::insertUrl(int index, const QUrl& url)
 {
-    QComboBox::insertItem( index, url.prettyUrl() );
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    QComboBox::insertItem(index, url.toString());
+#else
+    QComboBox::insertItem(index, url.toDisplayString());
+#endif
 }
 
-void KComboBox::insertUrl( int index, const QIcon& icon, const KUrl& url )
+void KComboBox::insertUrl(int index, const QIcon& icon, const QUrl& url)
 {
-    QComboBox::insertItem( index, icon, url.prettyUrl() );
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    QComboBox::insertItem(index, icon, url.toString());
+#else
+    QComboBox::insertItem(index, icon, url.toDisplayString());
+#endif
 }
 
-void KComboBox::changeUrl( int index, const KUrl& url )
+void KComboBox::changeUrl(int index, const QUrl& url)
 {
-    QComboBox::setItemText( index, url.prettyUrl() );
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    QComboBox::setItemText(index, url.toString());
+#else
+    QComboBox::setItemText(index, url.toDisplayString());
+#endif
 }
 
-void KComboBox::changeUrl( int index, const QIcon& icon, const KUrl& url )
+void KComboBox::changeUrl(int index, const QIcon& icon, const QUrl& url)
 {
-	QComboBox::setItemIcon( index, icon );
-	QComboBox::setItemText( index, url.prettyUrl() );
+    QComboBox::setItemIcon(index, icon);
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    QComboBox::setItemText(index, url.toString());
+#else
+    QComboBox::setItemText(index, url.toDisplayString());
+#endif
 }
 
 void KComboBox::setCompletedItems( const QStringList& items, bool autosubject )
