@@ -1016,7 +1016,7 @@ void KFileWidget::accept()
 
     *lastDirectory = d->ops->url();
     if (!d->fileClass.isEmpty())
-       KRecentDirs::add(d->fileClass, d->ops->url().url());
+       KRecentDirs::add(d->fileClass, d->ops->url().toString());
 
     // clear the topmost item, we insert it as full path later on as item 1
     d->locationEdit->setItemText( 0, QString() );
@@ -1852,7 +1852,7 @@ void KFileWidgetPrivate::readConfig(KConfigGroup &configGroup)
     // our current directory (that was very probably set on the constructor)
     KUrlCompletion *completion = dynamic_cast<KUrlCompletion*>(locationEdit->completionObject());
     if (completion) {
-        completion->setDir(ops->url().url());
+        completion->setDir(ops->url().toString());
     }
 
     // show or don't show the speedbar

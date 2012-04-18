@@ -74,7 +74,7 @@ class DeleteJob;
  *
  * Basic usage is like this:
  * \code
- *   KDirOperator *op = new KDirOperator( KUrl( "file:/home/gis" ), this );
+ *   KDirOperator *op = new KDirOperator(QUrl("file:///home/gis"), this);
  *   // some signals you might be interested in
  *   connect(op, SIGNAL(urlEntered(const QUrl&)),
  *           SLOT(urlEntered(const QUrl&)));
@@ -223,14 +223,14 @@ public:
     /**
      * @returns the current url
      */
-    KUrl url() const;
+    QUrl url() const;
 
     /**
      * Sets a new url to list.
      * @param clearforward specifies whether the "forward" history should be cleared.
      * @param url the URL to set
      */
-    virtual void setUrl(const KUrl& url, bool clearforward);
+    virtual void setUrl(const QUrl& url, bool clearforward);
 
     /**
      * Clears the current selection and attempts to set @p url

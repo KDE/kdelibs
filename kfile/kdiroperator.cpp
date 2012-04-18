@@ -199,12 +199,12 @@ public:
     // private methods
     bool checkPreviewInternal() const;
     void checkPath(const QString &txt, bool takeFiles = false);
-    bool openUrl(const KUrl &url, KDirLister::OpenUrlFlags flags = KDirLister::NoFlags);
+    bool openUrl(const QUrl &url, KDirLister::OpenUrlFlags flags = KDirLister::NoFlags);
     int sortColumn() const;
     Qt::SortOrder sortOrder() const;
     void updateSorting(QDir::SortFlags sort);
 
-    static bool isReadable(const KUrl &url);
+    static bool isReadable(const QUrl &url);
 
     KFile::FileView allViews();
 
@@ -384,7 +384,7 @@ KDirOperator::KDirOperator(const QUrl& _url, QWidget *parent) :
     if (_url.isEmpty()) { // no dir specified -> current dir
         QString strPath = QDir::currentPath();
         strPath.append(QChar('/'));
-        d->currUrl = KUrl();
+        d->currUrl = QUrl();
         d->currUrl.setProtocol(QLatin1String("file"));
         d->currUrl.setPath(strPath);
     } else {
@@ -1028,12 +1028,12 @@ void KDirOperator::Private::checkPath(const QString &, bool /*takeFiles*/) // SL
     kDebug(kfile_area) << "TODO KDirOperator::checkPath()";
 }
 
-void KDirOperator::setUrl(const KUrl& _newurl, bool clearforward)
+void KDirOperator::setUrl(const QUrl& _newurl, bool clearforward)
 {
     KUrl newurl;
 
     if (!_newurl.isValid())
-        newurl.setPath(QDir::homePath());
+        newurl = QUrl::fromLocalFile(QDir::homePath());
     else
         newurl = _newurl;
 
@@ -1108,7 +1108,7 @@ void KDirOperator::rereadDir()
 }
 
 
-bool KDirOperator::Private::openUrl(const KUrl& url, KDirLister::OpenUrlFlags flags)
+bool KDirOperator::Private::openUrl(const QUrl& url, KDirLister::OpenUrlFlags flags)
 {
     const bool result = KProtocolManager::supportsListing(url) && dirLister->openUrl(url, flags);
     if (!result)   // in that case, neither completed() nor canceled() will be emitted by KDL
@@ -1243,7 +1243,7 @@ void KDirOperator::forward()
     delete s;
 }
 
-KUrl KDirOperator::url() const
+QUrl KDirOperator::url() const
 {
     return d->currUrl;
 }
@@ -1257,9 +1257,7 @@ void KDirOperator::cdUp()
 
 void KDirOperator::home()
 {
-    KUrl u;
-    u.setPath(QDir::homePath());
-    setUrl(u, true);
+    setUrl(QUrl::fromLocalFile(QDir::homePath()), true);
 }
 
 void KDirOperator::clearFilter()
@@ -2632,21 +2630,16 @@ void KDirOperator::setDecorationPosition(QStyleOptionViewItem::Position position
 
 // ### temporary code
 #include <dirent.h>
-bool KDirOperator::Private::isReadable(const KUrl& url)
+bool KDirOperator::Private::isReadable(const QUrl& url)
 {
     if (!url.isLocalFile())
         return true; // what else can we say?
 
     KDE_struct_stat buf;
-#ifdef Q_WS_WIN
     QString ts = url.toLocalFile();
-#else
-    QString ts = url.path(KUrl::AddTrailingSlash);
-#endif
     bool readable = (KDE::stat(ts, &buf) == 0);
     if (readable) { // further checks
-        DIR *test;
-        test = opendir(QFile::encodeName(ts));    // we do it just to test here
+        DIR *test = opendir(QFile::encodeName(ts));    // we do it just to test here
         readable = (test != 0);
         if (test)
             closedir(test);
