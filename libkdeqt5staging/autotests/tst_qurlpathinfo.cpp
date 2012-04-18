@@ -54,6 +54,8 @@ private Q_SLOTS:
     void setFileName();
     void path_data();
     void path();
+    void addPath_data();
+    void addPath();
 };
 
 void tst_QUrlPathInfo::directoryAndFileName_data()
@@ -142,6 +144,39 @@ void tst_QUrlPathInfo::path()
     QCOMPARE(info.path(), expectedPath);
     QCOMPARE(info.path(QUrlPathInfo::StripTrailingSlash), expectedPathNoSlash);
     QCOMPARE(info.path(QUrlPathInfo::AppendTrailingSlash), expectedPathWithSlash);
+}
+
+
+void tst_QUrlPathInfo::addPath_data()
+{
+    QTest::addColumn<QString>("initialUrl");
+    QTest::addColumn<QString>("toAdd");
+    QTest::addColumn<QString>("expectedUrl");
+
+    QTest::newRow("absoluteDir+fileName") << "file:///temp" << "tmp.txt" << "file:///temp/tmp.txt";
+    QTest::newRow("absoluteDir+/fileName") << "file:///temp" << "/tmp.txt" << "file:///temp/tmp.txt";
+    QTest::newRow("absoluteDir/+fileName") << "file:///temp/" << "tmp.txt" << "file:///temp/tmp.txt";
+    QTest::newRow("absoluteDir/+/fileName") << "file:///temp/" << "/tmp.txt" << "file:///temp/tmp.txt";
+
+    QTest::newRow("absoluteDir+subdir/fileName") << "file:///temp/" << "/temp/tmp.txt" << "file:///temp/temp/tmp.txt";
+    QTest::newRow("absoluteInRoot+/") << "file:///" << "/" << "file:///";
+    QTest::newRow("relative") << "temp" << "foo" << "temp/foo";
+}
+
+void tst_QUrlPathInfo::addPath()
+{
+    QFETCH(QString, initialUrl);
+    QFETCH(QString, toAdd);
+    QFETCH(QString, expectedUrl);
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    const QUrl url(initialUrl);
+#else
+    const QUrl url = QUrl::fromEncoded(initialUrl.toUtf8());
+#endif
+    QUrlPathInfo info(url);
+    info.addPath(toAdd);
+    QCOMPARE(info.url().toString(), expectedUrl);
 }
 
 QTEST_MAIN(tst_QUrlPathInfo)

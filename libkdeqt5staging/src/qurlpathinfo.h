@@ -79,6 +79,7 @@ public:
 
     QString path(PathFormattingOptions options = None) const;
     void setPath(const QString &path);
+    void addPath(const QString &relativePath);
 
     QString localPath(PathFormattingOptions options = None) const;
 
