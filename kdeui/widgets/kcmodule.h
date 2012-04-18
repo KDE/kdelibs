@@ -97,7 +97,7 @@ class KComponentData;
  * The example executes the given code in a shell and uses the stdout output for
  * the Hidden value (so it's either Hidden=true or Hidden=false).
  *
- * See http://developer.kde.org/documentation/other/kcm_howto.html
+ * See http://techbase.kde.org/Development/Tutorials/KCM_HowTo
  * for more detailed documentation.
  *
  * @author Matthias Hoelzer-Kluepfel <hoelzer@kde.org>

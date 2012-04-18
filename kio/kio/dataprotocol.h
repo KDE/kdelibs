@@ -59,10 +59,6 @@ public:
   virtual ~DataProtocol();
   virtual void mimetype(const KUrl &url);
   virtual void get(const KUrl &url);
-#if defined(TESTKIO)
-  void ref() {}
-  void deref() {}
-#endif
 };
 
 }/*end namespace*/

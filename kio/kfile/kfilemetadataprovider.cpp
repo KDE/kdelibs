@@ -404,6 +404,7 @@ void KFileMetaDataProvider::setItems(const KFileItemList& items)
     }
 
     d->m_latestMetaDataReader = new KFileMetaDataReader(urls);
+    d->m_latestMetaDataReader->setReadContextData(d->m_nepomukActivated);
     connect(d->m_latestMetaDataReader, SIGNAL(finished()), this, SLOT(slotLoadingFinished()));
     d->m_metaDataReaders.append(d->m_latestMetaDataReader);
     d->m_latestMetaDataReader->start();

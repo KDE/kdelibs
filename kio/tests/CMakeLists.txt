@@ -31,6 +31,7 @@ KIO_UNIT_TESTS(
   kdirlistertest
   fileundomanagertest
   kfilemetainfotest
+  dataprotocoltest
 )
 
 KIO_EXECUTABLE_TESTS(
@@ -45,7 +46,6 @@ KIO_EXECUTABLE_TESTS(
   kionetrctest
   kpropsdlgtest
   kmfitest
-  dataprotocoltest
   ksycocaupdatetest
   netaccesstest
   kdirmodeltest_gui

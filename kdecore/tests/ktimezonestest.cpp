@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (c) 2005-2007,2011 David Jarvie <djarvie@kde.org>
+   Copyright (c) 2005-2007,2011-2012 David Jarvie <djarvie@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -120,7 +120,7 @@ void KTimeZonesTest::local()
     KTimeZone local = KSystemTimeZones::local();
     QVERIFY(local.isValid());
     QCOMPARE(local.name(), QString::fromLatin1("Europe/Paris"));
-    QCOMPARE(local.type(), QByteArray("KSystemTimeZone"));
+    QCOMPARE(local.type(), QByteArray("KTzfileTimeZone"));
 }
 
 void KTimeZonesTest::zone()
@@ -274,8 +274,8 @@ void KTimeZonesTest::offsetAtZoneTime()
     int offset2;
     QCOMPARE(london.offsetAtZoneTime(aGmt, &offset2), 0);
     QCOMPARE(offset2, 0);
-    QCOMPARE(london.offsetAtZoneTime(aInvalid, &offset2), 3600);
-    QCOMPARE(offset2, 3600);
+    QCOMPARE(london.offsetAtZoneTime(aInvalid, &offset2), KTimeZone::InvalidOffset);
+    QCOMPARE(offset2, KTimeZone::InvalidOffset);
     QCOMPARE(london.offsetAtZoneTime(aBst, &offset2), 3600);
     QCOMPARE(offset2, 3600);
     QCOMPARE(london.offsetAtZoneTime(a2Bst, &offset2), 3600);
@@ -415,6 +415,45 @@ void KTimeZonesTest::tzfile()
     tzcairo = new KTzfileTimeZone(&tzsource, "Africa/Cairo");
     QCOMPARE(tzcairo->offsetAtUtc(winter), 7200);
     delete tzcairo;
+}
+
+void KTimeZonesTest::tzfileDstShifts()
+{
+    // Check time zone conversions against zdump output for zone
+    KTzfileTimeZoneSource tzsource(KSystemTimeZones::zoneinfoDir());
+    KTimeZone berlin = KTzfileTimeZone(&tzsource, "Europe/Berlin");
+    KTimeZone losAngeles = KTzfileTimeZone(&tzsource, "America/Los_Angeles");
+    KTimeZone tz = berlin;
+    for (int n = 0; n < 2; ++n, tz = losAngeles)
+    {
+        qDebug() << tz.name();
+        QVERIFY(tz.isValid());
+        QCOMPARE(tz.type(), QByteArray("KTzfileTimeZone"));
+        QFile file(QString::fromLatin1(KDESRCDIR) + tz.name().remove(QRegExp("^.+/")) + QLatin1String(".zdump"));
+        QVERIFY(file.open(QIODevice::ReadOnly));
+        QTextStream in(&file);
+qWarning()<<"Temporarily suppress errors for first 3 times, pending API change"; int i = 0;
+        QString line;
+        while (!(line = in.readLine()).isNull())
+        {
+            QStringList parts = line.split(" ", QString::SkipEmptyParts);
+            QCOMPARE(parts[6], QString::fromLatin1("UTC"));
+            QCOMPARE(parts[7], QString::fromLatin1("="));
+            QCOMPARE(parts[14].left(6), QString::fromLatin1("isdst="));
+            QCOMPARE(parts[15].left(7), QString::fromLatin1("gmtoff="));
+            QDateTime utc = QDateTime::fromString(static_cast<QStringList>(parts.mid(1, 5)).join(" "));
+            utc.setTimeSpec(Qt::UTC);
+            QDateTime local = QDateTime::fromString(static_cast<QStringList>(parts.mid(8, 5)).join(" "));
+            local.setTimeSpec(Qt::LocalTime);
+            QCOMPARE(tz.toZoneTime(utc), local);
+if (++i > 3) // Temporary - need API change to get correct abbreviation before the first defined transition
+            QCOMPARE(parts[13], QString::fromLatin1(tz.abbreviation(utc)));
+            bool dst = (parts[14].right(1) != "0");
+            QCOMPARE(tz.isDstAtUtc(utc), dst);
+            QCOMPARE(parts[15].mid(7).toInt(), tz.offsetAtUtc(utc));
+        }
+        file.close();
+    }
 }
 
 void KTimeZonesTest::tzfileToZoneTime()

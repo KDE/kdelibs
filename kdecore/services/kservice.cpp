@@ -942,6 +942,19 @@ QStringList KService::serviceTypes() const
     return d->serviceTypes();
 }
 
+QStringList KService::mimeTypes() const
+{
+    Q_D(const KService);
+    QStringList ret;
+    QVector<KService::ServiceTypeAndPreference>::const_iterator it = d->m_serviceTypes.begin();
+    for ( ; it < d->m_serviceTypes.end(); ++it ) {
+        const QString sv = (*it).serviceType;
+        if (KMimeType::mimeType(sv)) // keep only mimetypes, filter out servicetypes
+            ret.append(sv);
+    }
+    return ret;
+}
+
 bool KService::allowAsDefault() const
 {
     Q_D(const KService);

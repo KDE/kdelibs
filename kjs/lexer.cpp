@@ -312,14 +312,8 @@ int Lexer::lex()
         state = InString;
         record16(convertHex(current, next1));
         shift(1);
-      } else if (current == stringType) {
-        record16('x');
-        shift(1);
-        setDone(String);
       } else {
-        record16('x');
-        record16(current);
-        state = InString;
+        setDone(Bad);
       }
       break;
     case InUnicodeEscape:

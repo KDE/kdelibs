@@ -22,8 +22,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef HTTP_H_
-#define HTTP_H_
+#ifndef HTTP_H
+#define HTTP_H
 
 
 #include <sys/types.h>
@@ -498,6 +498,16 @@ protected:
    * Returns true on successful retrieval of all content data.
    */
   bool retrieveAllData();
+
+  /**
+   * Saves HTTP authentication data.
+   */
+  void saveAuthenticationData();
+
+  /**
+   * Handles HTTP authentication.
+   */
+  bool handleAuthenticationHeader(const HeaderTokenizer* tokenizer);
 
 protected:
   HTTPServerState m_server;

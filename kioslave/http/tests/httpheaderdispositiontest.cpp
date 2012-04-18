@@ -329,6 +329,9 @@ void HeaderDispositionTest::runAllTests_data()
 // percent encoding, invalid second character
     QTest::newRow("percent-second-char-missing") << "attachment; filename*=UTF-8''foo-%f.html" <<
                    QByteArray("type\tattachment");
+// percent encoding, too short value
+    QTest::newRow("percent-short-encoding-at-end") << "attachment; filename*=UTF-8''foo-%f" <<
+                   QByteArray("type\tattachment");
 }
 
 #if 0

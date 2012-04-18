@@ -44,6 +44,7 @@ private Q_SLOTS:
     void toZoneTime();
     void convert();
     void tzfile();
+    void tzfileDstShifts();
     void tzfileToZoneTime();
     void tzfileOffsetAtUtc();
     void tzfileOffsetAtZoneTime();

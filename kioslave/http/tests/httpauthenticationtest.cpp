@@ -187,6 +187,20 @@ void HTTPAuthenticationTest::testAuthentication_data()
         << QByteArray("Circle Of Life")
         << QByteArray("http://www.nowhere.org/dir/index.html")
         << QByteArray("0a4f113b");
+    QTest::newRow("ntlm-negotiate-type1")
+        << QByteArray("NTLM")
+        << QByteArray("NTLM TlRMTVNTUAABAAAABQIAAAAAAAAAAAAAAAAAAAAAAAA=")
+        << QByteArray()
+        << QByteArray()
+        << QByteArray()
+        << QByteArray();
+    QTest::newRow("ntlm-challenge-type2")
+        << QByteArray("NTLM TlRMTVNTUAACAAAAAAAAACgAAAABggAAU3J2Tm9uY2UAAAAAAAAAAA==")
+        << QByteArray("NTLM TlRMTVNTUAADAAAAGAAYAFgAAAAYABgAQAAAAAAAAAAAAAAAAAAAAHAAAAAWABYAcAAAAAAAAAAAAAAAAYIAAJSg10BK9h+dU9d6Ijn04m4iDZHzFECXU3sG2ZrxJPWBGnO3BnTKK13Ku1qYqpcE6VcATwBSAEsAUwBUAEEAVABJAE8ATgA=")
+        << QByteArray("Ursa-Minor\\Zaphod")
+        << QByteArray("Beeblebrox")
+        << QByteArray()
+        << QByteArray();
 }
 
 void HTTPAuthenticationTest::testAuthentication()
@@ -206,6 +220,6 @@ void HTTPAuthenticationTest::testAuthentication()
         authObj->setDigestNonceValue(cnonce);
     authObj->setChallenge(bestOffer, KUrl(url), "GET");
     authObj->generateResponse(QString(user), QString(pass));
-    QCOMPARE(authObj->headerFragment().trimmed(), expectedResponse);
+    QCOMPARE(authObj->headerFragment().trimmed().constData(), expectedResponse.constData());
     delete authObj;
 }

@@ -42,8 +42,14 @@ static QDateTime fromTime_t(qint32 seconds)
 {
     static const QDate epochDate(1970,1,1);
     static const QTime epochTime(0,0,0);
-    const int secs = (seconds >= 0) ? seconds % 86400 : -(-seconds % 86400);
-    return QDateTime(epochDate.addDays(seconds / 86400), epochTime.addSecs(secs), Qt::UTC);
+    int days = seconds / 86400;
+    seconds -= days * 86400;
+    if (seconds < 0)
+    {
+        --days;
+        seconds += 86400;
+    }
+    return QDateTime(epochDate.addDays(days), epochTime.addSecs(seconds), Qt::UTC);
 }
 
 /******************************************************************************/
@@ -373,8 +379,6 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone &zone) const
 
     // Compile the transition list
     QList<KTimeZone::Transition> transitions;
-    int stdoffset = firstoffset;
-    int offset    = stdoffset;
     TransitionTime *tt = transitionTimes;
     for (i = 0;  i < nTransitionTimes;  ++tt, ++i)
     {
@@ -386,20 +390,6 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone &zone) const
 
         // Convert local transition times to UTC
         ltt = &localTimeTypes[tt->localTimeIndex];
-        if (!ltt->isutc)
-        {
-            /* The transition time is in local time, so convert it to UTC.
-             * If the transition is in "local wall clock time", use the UTC offset
-             * set up by the previous transition; otherwise, the transition is in
-             * standard time, so use the UTC offset set up by the last non-daylight
-             * savings time transition.
-             */
-            tt->time -= ltt->isstd ? stdoffset : offset;
-            offset = ltt->gmtoff;     // keep note of latest offset
-            if (!ltt->isdst)
-                stdoffset = offset;   // keep note of latest standard time offset
-        }
-
         const KTimeZone::Phase phase = phases[lttLookup[tt->localTimeIndex]];
 //kDebug(161) << "Transition time "<<i<<": "<<fromTime_t(tt->time)<<", offset="<<phase.utcOffset()/60;
         transitions += KTimeZone::Transition(fromTime_t(tt->time), phase);

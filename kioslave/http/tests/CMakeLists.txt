@@ -17,3 +17,16 @@ target_link_libraries(httpauthenticationtest ${KDE4_KDECORE_LIBS} kntlm ${QT_QTT
 if(GSSAPI_FOUND)
   target_link_libraries(httpauthenticationtest ${GSSAPI_LIBS})
 endif(GSSAPI_FOUND)
+
+kde4_add_unit_test(httpobjecttest httpobjecttest.cpp
+   ${kioslave-http_SOURCE_DIR}/http.cpp
+   ${kioslave-http_SOURCE_DIR}/httpauthentication.cpp
+   ${httpfilter_STAT_SRCS}
+   ${CMAKE_SOURCE_DIR}/kio/httpfilter/httpfilter.cc
+
+)
+target_link_libraries(httpobjecttest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY}
+                      ${QT_QTGUI_LIBRARY} ${KDE4_KIO_LIBS} kntlm)
+if(GSSAPI_FOUND)
+  target_link_libraries(httpobjecttest ${GSSAPI_LIBS})
+endif(GSSAPI_FOUND)
