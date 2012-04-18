@@ -295,10 +295,10 @@ KFileDialog::KFileDialog(const QUrl& startDir, const QString& filter,
     // Answer: you cannot define signals in a non-qobject base class (DF).
     //         I simply documentde them in kabstractfilewidget.h now.
     kDebug (kfile_area) << "KFileDialog connecting signals";
-    connect(fileQWidget, SIGNAL(fileSelected(KUrl)),
-                         SIGNAL(fileSelected(KUrl)));
-    connect(fileQWidget, SIGNAL(fileHighlighted(KUrl)),
-                         SIGNAL(fileHighlighted(KUrl)));
+    connect(fileQWidget, SIGNAL(fileSelected(QUrl)),
+                         SIGNAL(fileSelected(QUrl)));
+    connect(fileQWidget, SIGNAL(fileHighlighted(QUrl)),
+                         SIGNAL(fileHighlighted(QUrl)));
     connect(fileQWidget, SIGNAL(fileSelected(QString)),
                          SIGNAL(fileSelected(QString)));
     connect(fileQWidget, SIGNAL(fileHighlighted(QString)),

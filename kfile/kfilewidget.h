@@ -45,7 +45,7 @@ public:
       * Constructs a file selector widget.
       *
       * @param startDir This can either be:
-      *         @li An empty URL (KUrl()) to start in the current working directory,
+      *         @li An empty URL (QUrl()) to start in the current working directory,
       *             or the last directory where a file has been selected.
       *         @li The path or URL of a starting directory.
       *         @li An initial file name to select, with the starting directory being
@@ -71,7 +71,7 @@ public:
       * @param parent The parent widget of this widget
       *
       */
-    KFileWidget(const KUrl& startDir, QWidget *parent);
+    KFileWidget(const QUrl& startDir, QWidget *parent);
 
     /**
      * Destructor
@@ -91,7 +91,7 @@ public:
     /**
      * @returns the currently shown directory.
      */
-    virtual KUrl baseUrl() const;
+    virtual QUrl baseUrl() const;
 
     /**
      * Returns the full path of the selected file in the local filesystem.
@@ -111,7 +111,7 @@ public:
      * @param clearforward Indicates whether the forward queue
      * should be cleared.
      */
-    virtual void setUrl(const KUrl &url, bool clearforward = true);
+    virtual void setUrl(const QUrl &url, bool clearforward = true);
 
     /**
      * Sets the file name to preselect to @p name
@@ -362,10 +362,10 @@ public:
      *         KDirSelectDialog).
      * @see KFileWidget::KFileWidget()
      */
-    static KUrl getStartUrl( const KUrl& startDir, QString& recentDirClass );
+    static QUrl getStartUrl( const QUrl& startDir, QString& recentDirClass );
 
     /**
-     * Similar to getStartUrl(const KUrl& startDir,QString& recentDirClass),
+     * Similar to getStartUrl(const QUrl& startDir,QString& recentDirClass),
      * but allows both the recent start directory keyword and a suggested file name
      * to be returned.
      * @param startDir A URL specifying the initial directory and/or filename,
@@ -384,13 +384,13 @@ public:
      * @see KFileWidget::KFileWidget()
      * @since 4.3
      */
-    static KUrl getStartUrl( const KUrl& startDir, QString& recentDirClass, QString& fileName );
+    static QUrl getStartUrl( const QUrl& startDir, QString& recentDirClass, QString& fileName );
 
     /**
      * @internal
      * Used by KDirSelectDialog to share the dialog's start directory.
      */
-    static void setStartDir( const KUrl& directory );
+    static void setStartDir( const QUrl& directory );
 
     /**
      * Set a custom widget that should be added to the file dialog.
@@ -441,10 +441,10 @@ Q_SIGNALS:
       *
       * \since 4.4
       */
-    void fileSelected(const KUrl&);
+    void fileSelected(const QUrl&);
 
     /**
-     * @deprecated, connect to fileSelected(const KUrl&) instead
+     * @deprecated, connect to fileSelected(const QUrl&) instead
      */
     QT_MOC_COMPAT void fileSelected(const QString&); // TODO KDE5: remove
 
@@ -452,9 +452,9 @@ Q_SIGNALS:
      * Emitted when the user highlights a file.
      * \since 4.4
      */
-    void fileHighlighted(const KUrl&);
+    void fileHighlighted(const QUrl&);
     /**
-     * @deprecated, connect to fileSelected(const KUrl&) instead
+     * @deprecated, connect to fileSelected(const QUrl&) instead
      */
     QT_MOC_COMPAT void fileHighlighted(const QString&); // TODO KDE5: remove
 
@@ -505,8 +505,8 @@ private:
     KFileWidgetPrivate* const d;
 
     Q_PRIVATE_SLOT(d, void _k_slotLocationChanged(const QString&))
-    Q_PRIVATE_SLOT(d, void _k_urlEntered(const KUrl&))
-    Q_PRIVATE_SLOT(d, void _k_enterUrl(const KUrl&))
+    Q_PRIVATE_SLOT(d, void _k_urlEntered(const QUrl&))
+    Q_PRIVATE_SLOT(d, void _k_enterUrl(const QUrl&))
     Q_PRIVATE_SLOT(d, void _k_enterUrl(const QString&))
     Q_PRIVATE_SLOT(d, void _k_locationAccepted(const QString&))
     Q_PRIVATE_SLOT(d, void _k_slotFilterChanged())

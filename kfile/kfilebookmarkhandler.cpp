@@ -60,12 +60,16 @@ void KFileBookmarkHandler::openBookmark( const KBookmark & bm, Qt::MouseButtons,
 
 QString KFileBookmarkHandler::currentUrl() const
 {
-    return m_widget->baseUrl().url();
+    return m_widget->baseUrl().toString();
 }
 
 QString KFileBookmarkHandler::currentTitle() const
 {
-    return m_widget->baseUrl().prettyUrl();
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    return m_widget->baseUrl().toString();
+#else
+    return m_widget->baseUrl().toDisplayString();
+#endif
 }
 
 #include "moc_kfilebookmarkhandler_p.cpp"

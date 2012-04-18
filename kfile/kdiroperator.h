@@ -76,8 +76,8 @@ class DeleteJob;
  * \code
  *   KDirOperator *op = new KDirOperator( KUrl( "file:/home/gis" ), this );
  *   // some signals you might be interested in
- *   connect(op, SIGNAL(urlEntered(const KUrl&)),
- *           SLOT(urlEntered(const KUrl&)));
+ *   connect(op, SIGNAL(urlEntered(const QUrl&)),
+ *           SLOT(urlEntered(const QUrl&)));
  *   connect(op, SIGNAL(fileHighlighted(const KFileItem &)),
  *           SLOT(fileHighlighted(const KFileItem &)));
  *   connect(op, SIGNAL(fileSelected(const KFileItem &)),
@@ -837,7 +837,7 @@ protected Q_SLOTS:
     void slotCompletionMatch(const QString &match);
 
 Q_SIGNALS:
-    void urlEntered(const KUrl&);
+    void urlEntered(const QUrl&);
     void updateInformation(int files, int dirs);
     void completion(const QString&);
     void finishedLoading();

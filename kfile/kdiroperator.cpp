@@ -322,7 +322,7 @@ KDirOperator::Private::Private(KDirOperator *_parent) :
     previewUrl(),
     previewWidth(0),
     dirHighlighting(false),
-    onlyDoubleClickSelectsFiles(!KGlobalSettings::singleClick()),
+    onlyDoubleClickSelectsFiles(!qApp->style()->styleHint(QStyle::SH_ItemView_ActivateItemOnSingleClick)),
     progressDelayTimer(0),
     dropOptions(0),
     actionMenu(0),

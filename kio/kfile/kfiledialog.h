@@ -764,9 +764,9 @@ Q_SIGNALS:
       *
       * \since 4.4
       */
-    void fileSelected(const KUrl&);
+    void fileSelected(const QUrl&);
     /**
-     * @deprecated, connect to fileSelected(const KUrl&) instead
+     * @deprecated, connect to fileSelected(const QUrl&) instead
      */
     QT_MOC_COMPAT void fileSelected(const QString&); // TODO KDE5: remove
 
@@ -775,9 +775,9 @@ Q_SIGNALS:
       *
       * \since 4.4
       */
-    void fileHighlighted(const KUrl&);
+    void fileHighlighted(const QUrl&);
     /**
-     * @deprecated, connect to fileSelected(const KUrl&) instead
+     * @deprecated, connect to fileSelected(const QUrl&) instead
      */
     QT_MOC_COMPAT void fileHighlighted(const QString&); // TODO KDE5: remove
 

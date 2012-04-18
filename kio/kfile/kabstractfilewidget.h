@@ -27,7 +27,6 @@
 
 class KPreviewWidgetBase;
 
-#include "kurl.h"
 #include "kfile.h"
 #include <kmimetype.h>
 
@@ -47,8 +46,8 @@ class KFileFilterCombo;
  * In addition to the pure virtual methods defined below, the implementations
  * of KAbstractFileWidget are expected to define the following signals:
  * <ul>
- * <li>fileSelected(const KUrl&)</li>
- * <li>fileHighlighted(const KUrl&)</li>
+ * <li>fileSelected(const QUrl&)</li>
+ * <li>fileHighlighted(const QUrl&)</li>
  * <li>selectionChanged()</li>
  * <li>filterChanged(const QString&)</li>
  * <li>accepted()</li>
@@ -85,7 +84,7 @@ public:
     /**
      * @returns the currently shown directory.
      */
-    virtual KUrl baseUrl() const = 0;
+    virtual QUrl baseUrl() const = 0;
 
     /**
      * Returns the full path of the selected file in the local filesystem.
@@ -105,7 +104,7 @@ public:
      * @param clearforward Indicates whether the forward queue
      * should be cleared.
      */
-    virtual void setUrl(const KUrl &url, bool clearforward = true) = 0;
+    virtual void setUrl(const QUrl &url, bool clearforward = true) = 0;
 
     /**
      * Sets the file name to preselect to @p name
