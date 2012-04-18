@@ -567,6 +567,8 @@ public:
    * The query may contain the 0 character.
    *
    * The query should start with a '?'. If it doesn't '?' is prepended.
+   *
+   * @deprecated use QUrl::setEncodedQuery(QByteArray), but note that it's encoded, and doesn't start with '?'.
    */
   void setQuery( const QString& query );
 
@@ -577,6 +579,8 @@ public:
    * A single '?' means an empty query.
    * An empty string means no query.
    * @return The encoded query, or QString() if there is none.
+   *
+   * @deprecated use QByteArray QUrl::encodedQuery(), but note that it's encoded, and doesn't start with '?'.
    */
   QString query() const;
 
