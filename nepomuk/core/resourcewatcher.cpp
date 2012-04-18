@@ -60,6 +60,8 @@ public:
 
     org::kde::nepomuk::ResourceWatcherConnection * m_connectionInterface;
     org::kde::nepomuk::ResourceWatcher * m_watchManagerInterface;
+
+    QDBusServiceWatcher* m_rwServiceWatcher;
 };
 
 Nepomuk::ResourceWatcher::ResourceWatcher(QObject* parent)
@@ -71,6 +73,7 @@ Nepomuk::ResourceWatcher::ResourceWatcher(QObject* parent)
                                                       "/resourcewatcher",
                                                       QDBusConnection::sessionBus() );
     d->m_connectionInterface = 0;
+    d->m_rwServiceWatcher = 0;
 }
 
 Nepomuk::ResourceWatcher::~ResourceWatcher()
@@ -81,12 +84,23 @@ Nepomuk::ResourceWatcher::~ResourceWatcher()
 
 bool Nepomuk::ResourceWatcher::start()
 {
+    stop();
+
     //
     // Convert to list of strings
     //
     QList<QString> uris = convertUris(d->m_resources);
     QList<QString> props = convertUris(d->m_properties);
     QList<QString> types_ = convertUris(d->m_types);
+
+    //
+    // Watch for the RW service to (re-)appear and then re-connect to make sure we always get updates
+    // We create this watcher even if we fail to connect below. Thus, once the rw service comes up we
+    // can re-attach.
+    //
+    d->m_rwServiceWatcher = new QDBusServiceWatcher(QLatin1String("org.kde.nepomuk.DataManagement"),
+                                                    QDBusConnection::sessionBus());
+    connect(d->m_rwServiceWatcher, SIGNAL(serviceRegistered(QString)), this, SLOT(start()));
 
     //
     // Create the dbus object to watch
@@ -126,6 +140,9 @@ void Nepomuk::ResourceWatcher::stop()
         delete d->m_connectionInterface;
         d->m_connectionInterface = 0;
     }
+
+    delete d->m_rwServiceWatcher;
+    d->m_rwServiceWatcher = 0;
 }
 
 void Nepomuk::ResourceWatcher::addProperty(const Nepomuk::Types::Property& property)

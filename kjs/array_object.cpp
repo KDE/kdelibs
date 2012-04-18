@@ -389,12 +389,13 @@ JSValue* ArrayProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, cons
     // 15.4.4.12 - oh boy this is huge
     JSObject *resObj = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinArray()->construct(exec,List::empty()));
     result = resObj;
-    int begin = args[0]->toUInt32(exec);
-    if ( begin < 0 )
-      begin = maxInt( begin + length, 0 );
+    double start = args[0]->toInteger(exec);
+    uint32_t begin = 0;
+    if ( start < 0 )
+      begin = static_cast<uint32_t>(std::max<double>(start + length, 0));
     else
-      begin = minInt( begin, length );
-    unsigned int deleteCount = minInt( maxInt( args[1]->toUInt32(exec), 0 ), length - begin );
+      begin = static_cast<uint32_t>(std::min<double>(start, length));
+    uint32_t deleteCount = static_cast<uint32_t>(std::min<double>(std::max<double>(args[1]->toInteger(exec), 0 ), length - begin));
 
     //printf( "Splicing from %d, deleteCount=%d \n", begin, deleteCount );
     for(unsigned int k = 0; k < deleteCount; k++) {

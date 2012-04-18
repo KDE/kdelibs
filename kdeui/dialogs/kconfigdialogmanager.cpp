@@ -289,7 +289,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
       }
       else
       {
-        kFatal(d->debugArea()) << "A widget named '" << widgetName << "' was found but there is no setting named '" << configId << "'";
+        kWarning(d->debugArea()) << "A widget named '" << widgetName << "' was found but there is no setting named '" << configId << "'";
       }
     }
     else if (QLabel *label = qobject_cast<QLabel*>(childWidget))

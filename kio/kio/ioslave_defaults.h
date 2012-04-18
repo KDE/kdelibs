@@ -31,6 +31,7 @@
 
 // NORMAL PORT DEFAULTS
 #define DEFAULT_FTP_PORT                    21
+#define DEFAULT_SFTP_PORT                   22
 #define DEFAULT_SMTP_PORT                   25
 #define DEFAULT_HTTP_PORT                   80
 #define DEFAULT_POP3_PORT                  110

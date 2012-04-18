@@ -1093,6 +1093,7 @@ QPair<int, int> KSelectionProxyModelPrivate::beginRemoveRows(const QModelIndex& 
             }
             return qMakePair(proxyStartRow, proxyEndRow);
         }
+        return qMakePair(-1, -1);
     }
 
     QList<QPersistentModelIndex>::const_iterator rootIt = m_rootIndexList.constBegin();

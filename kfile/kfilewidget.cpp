@@ -2344,7 +2344,7 @@ void KFileWidgetPrivate::updateFilter()
                         if ( p != "*" ) { // never match the catch-all filter
                             filterWidget->setCurrentFilter( filter );
                         }
-                        break;
+                        return; // do not repeat, could match a later filter
                     }
                 }
             }

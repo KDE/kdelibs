@@ -80,6 +80,8 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QUrl& kickOffUri, co
     m_rm->dataCnt.ref();
 
     if( !uri.isEmpty() ) {
+        m_cacheDirty = true;
+        m_rm->m_initializedData.insert( uri, this );
         m_kickoffUris.insert( uri );
     }
     if( !kickOffUri.isEmpty() ) {
@@ -175,7 +177,8 @@ void Nepomuk::ResourceData::resetAll( bool isDelete )
     if( !m_uri.isEmpty() ) {
         m_rm->m_initializedData.remove( m_uri );
         if( m_rm->m_watcher && m_addedToWatcher ) {
-            m_rm->m_watcher->removeResource(Resource::fromResourceUri(m_uri));
+            // See load() for an explanation of the QMetaObject call
+            QMetaObject::invokeMethod(m_rm->m_watcher, "removeResource", Qt::AutoConnection, Q_ARG(Nepomuk::Resource, Resource::fromResourceUri(m_uri)));
             m_addedToWatcher = false;
         }
     }
@@ -393,16 +396,23 @@ bool Nepomuk::ResourceData::load()
         m_cache.clear();
 
         if(!m_rm->m_watcher) {
+            //
+            // The ResourceWatcher is not thread-safe. Thus, we need to ensure the safety ourselves.
+            // We do that by simply handling all RW related operations in the manager thread.
+            // This also means to invoke methods on the watcher through QMetaObject to make sure they
+            // get queued in case of calls between different threads.
+            //
             m_rm->m_watcher = new ResourceWatcher(m_rm->m_manager);
+            m_rm->m_watcher->moveToThread(m_rm->m_manager->thread());
             QObject::connect( m_rm->m_watcher, SIGNAL(propertyAdded(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)),
                               m_rm->m_manager, SLOT(slotPropertyAdded(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)) );
             QObject::connect( m_rm->m_watcher, SIGNAL(propertyRemoved(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)),
                               m_rm->m_manager, SLOT(slotPropertyRemoved(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)) );
             m_rm->m_watcher->addResource( Nepomuk::Resource::fromResourceUri(m_uri) );
-            m_rm->m_watcher->start();
+            QMetaObject::invokeMethod(m_rm->m_watcher, "start", Qt::AutoConnection);
         }
         else {
-            m_rm->m_watcher->addResource( Nepomuk::Resource::fromResourceUri(m_uri) );
+            QMetaObject::invokeMethod(m_rm->m_watcher, "addResource", Qt::AutoConnection, Q_ARG(Nepomuk::Resource, Nepomuk::Resource::fromResourceUri(m_uri)) );
         }
         m_addedToWatcher = true;
 
@@ -718,21 +728,19 @@ Nepomuk::ResourceData* Nepomuk::ResourceData::determineUri()
                 }
             }
         }
-    }
 
-    //
-    // Move us to the final data hash now that the URI is known
-    //
-    if( !m_uri.isEmpty() ) {
-        m_cacheDirty = true;
-        //vHanda: Is there some way to avoid this hash lookup every time?
-        //        It sure would speed things up.
-        ResourceDataHash::iterator it = m_rm->m_initializedData.find(m_uri);
-        if( it == m_rm->m_initializedData.end() ) {
-            m_rm->m_initializedData.insert( m_uri, this );
-        }
-        else {
-            return it.value();
+        //
+        // Move us to the final data hash now that the URI is known
+        //
+        if( !m_uri.isEmpty() ) {
+            m_cacheDirty = true;
+            ResourceDataHash::iterator it = m_rm->m_initializedData.find(m_uri);
+            if( it == m_rm->m_initializedData.end() ) {
+                m_rm->m_initializedData.insert( m_uri, this );
+            }
+            else {
+                return it.value();
+            }
         }
     }
 

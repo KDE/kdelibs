@@ -1036,12 +1036,14 @@ if (UNIX)
       set(CMAKE_INSTALL_NAME_DIR ${LIB_INSTALL_DIR})
    else (APPLE)
       # add our LIB_INSTALL_DIR to the RPATH (but only when it is not one of the standard system link
-      # directories listed in CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES) and use the RPATH figured out by cmake when compiling
+      # directories listed in CMAKE_{PLATFORM,C,CXX}_IMPLICIT_LINK_DIRECTORIES) and use the RPATH figured out by cmake when compiling
 
-      list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${LIB_INSTALL_DIR}" _isSystemLibDir)
-      if("${_isSystemLibDir}" STREQUAL "-1")
+      list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${LIB_INSTALL_DIR}" _isSystemPlatformLibDir)
+      list(FIND CMAKE_C_IMPLICIT_LINK_DIRECTORIES "${LIB_INSTALL_DIR}" _isSystemCLibDir)
+      list(FIND CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "${LIB_INSTALL_DIR}" _isSystemCxxLibDir)
+      if("${_isSystemPlatformLibDir}" STREQUAL "-1" AND "${_isSystemCLibDir}" STREQUAL "-1" AND "${_isSystemCxxLibDir}" STREQUAL "-1")
          set(CMAKE_INSTALL_RPATH "${LIB_INSTALL_DIR}")
-      endif("${_isSystemLibDir}" STREQUAL "-1")
+      endif("${_isSystemPlatformLibDir}" STREQUAL "-1" AND "${_isSystemCLibDir}" STREQUAL "-1" AND "${_isSystemCxxLibDir}" STREQUAL "-1")
 
       set(CMAKE_SKIP_BUILD_RPATH FALSE)
       set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)

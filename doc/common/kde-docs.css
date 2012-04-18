@@ -333,3 +333,18 @@ a.footer_email {
     color: #282828;
     text-decoration: underline;
 }
+
+@media print {
+    #header_right {
+        color: black;
+        text-shadow: gray 2px 2px 2px;
+    }
+
+    .navCenter {
+        display: none;
+    }
+
+    #footer {
+        border-top: 1px solid #DDD;
+    }
+}

@@ -23,6 +23,7 @@
 #include <kcmdlineargs.h>
 #include <kfilemetainfo.h>
 #include <kcomponentdata.h>
+#include <kconfiggroup.h>
 #include <klocale.h>
 
 #include <QtCore/QByteArray>
@@ -147,67 +148,86 @@ QHash<KUrl, Nepomuk::Variant> KFileMetaDataReaderApplication::readFileAndContext
 {
     QHash<KUrl, Nepomuk::Variant> metaData;
 
+    bool isNepomukIndexerActive = false;
+    if (Nepomuk::ResourceManager::instance()->initialized()) {
+        KConfig config("nepomukserverrc");
+        isNepomukIndexerActive = config.group("Service-nepomukfileindexer").readEntry("autostart", false);
+    } else {
+        // No context meta data can be read without enabled Nepomuk
+        return readFileMetaData(urls);
+    }
+
     unsigned int rating = 0;
     QString comment;
     QList<Nepomuk::Tag> tags;
 
-    bool first = true;
-    foreach (const KUrl& url, urls) {
-        Nepomuk::Resource file(url);
-        if (!file.isValid()) {
-            continue;
-        }
+    if (urls.count() == 1) {
+        // Read the metadata of the file that are provided as properties
+        // (e.g. image-size, artist, album, ...)
+        bool useReadFromFileFallback = true;
 
-        if (!first && (rating != file.rating())) {
-            rating = 0; // Reset rating
-        } else if (first) {
-            rating = file.rating();
-        }
-
-        if (!first && (comment != file.description())) {
-            comment.clear(); // Reset comment
-        } else if (first) {
-            comment = file.description();
-        }
-
-        if (!first && (tags != file.tags())) {
-            tags.clear(); // Reset tags
-        } else if (first) {
-            tags = file.tags();
-        }
-
-        if (first && (urls.count() == 1)) {
-            // Get cached meta data by checking the indexed files
+        Nepomuk::Resource file(urls.first());
+        if (file.isValid() && !file.resourceUri().isEmpty()) {
             QHash<QUrl, Nepomuk::Variant> variants = file.properties();
             QHash<QUrl, Nepomuk::Variant>::const_iterator it = variants.constBegin();
             while (it != variants.constEnd()) {
                 Nepomuk::Types::Property prop(it.key());
                 metaData.insert(prop.uri(), Nepomuk::Utils::formatPropertyValue(prop, it.value(),
-                                                                            QList<Nepomuk::Resource>() << file,
-                                                                            Nepomuk::Utils::WithKioLinks));
+                                                                                QList<Nepomuk::Resource>() << file,
+                                                                                Nepomuk::Utils::WithKioLinks));
                 ++it;
             }
+            useReadFromFileFallback = !isNepomukIndexerActive || variants.isEmpty();
 
-            if (variants.isEmpty()) {
-                // The file has not been indexed, query the meta data
-                // directly from the file.
-                metaData = readFileMetaData(QList<KUrl>() << urls.first());
+            rating = file.rating();
+            comment = file.description();
+            tags = file.tags();
+        }
+
+        if (useReadFromFileFallback) {
+            // No metadata could be received with Nepomuk. Parse the file
+            // itself as fallback to extract metadata.
+            metaData = readFileMetaData(QList<KUrl>() << urls.first());
+        }
+    } else {
+        // Read the data for rating, comment and tags
+        bool first = true;
+        foreach (const KUrl& url, urls) {
+            Nepomuk::Resource file(url);
+            if (!file.isValid()) {
+                continue;
             }
-        }
 
-        first = false;
+            if (!first && rating != file.rating()) {
+                rating = 0; // Reset rating
+            } else if (first) {
+                rating = file.rating();
+            }
+
+            if (!first && comment != file.description()) {
+                comment.clear(); // Reset comment
+            } else if (first) {
+                comment = file.description();
+            }
+
+            if (!first && tags != file.tags()) {
+                tags.clear(); // Reset tags
+            } else if (first) {
+                tags = file.tags();
+            }
+
+            first = false;
+        }
     }
 
-    if (Nepomuk::ResourceManager::instance()->initialized()) {
-        metaData.insert(KUrl("kfileitem#rating"), rating);
-        metaData.insert(KUrl("kfileitem#comment"), comment);
+    metaData.insert(KUrl("kfileitem#rating"), rating);
+    metaData.insert(KUrl("kfileitem#comment"), comment);
 
-        QList<Nepomuk::Variant> tagVariants;
-        foreach (const Nepomuk::Tag& tag, tags) {
-            tagVariants.append(Nepomuk::Variant(tag));
-        }
-        metaData.insert(KUrl("kfileitem#tags"), tagVariants);
+    QList<Nepomuk::Variant> tagVariants;
+    foreach (const Nepomuk::Tag& tag, tags) {
+        tagVariants.append(Nepomuk::Variant(tag));
     }
+    metaData.insert(KUrl("kfileitem#tags"), tagVariants);
 
     return metaData;
 }

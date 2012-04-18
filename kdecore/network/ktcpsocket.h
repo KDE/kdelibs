@@ -161,6 +161,8 @@ public:
         SslV3 = 0x04,
         TlsV1 = 0x08,
         SslV3_1 = 0x08,
+        TlsV1SslV3 = 0x10,
+        SecureProtocols = 0x20,
         AnySslVersion = SslV2 | SslV3 | TlsV1
     };
     Q_DECLARE_FLAGS(SslVersions, SslVersion)
@@ -304,10 +306,10 @@ public:
     //### void setCiphers(const QString &ciphers); //what about i18n?
     void setLocalCertificate(const QSslCertificate &certificate);
     void setLocalCertificate(const QString &fileName, QSsl::EncodingFormat format = QSsl::Pem);
-    void setPrivateKey(const KSslKey &key); //implement
+    void setPrivateKey(const KSslKey &key);
     void setPrivateKey(const QString &fileName, KSslKey::Algorithm algorithm = KSslKey::Rsa,
                        QSsl::EncodingFormat format = QSsl::Pem,
-                       const QByteArray &passPhrase = QByteArray()); //TODO
+                       const QByteArray &passPhrase = QByteArray());
     void setAdvertisedSslVersion(SslVersion version);
     SslVersion advertisedSslVersion() const;    //always equal to last setSslAdvertisedVersion
     SslVersion negotiatedSslVersion() const;     //negotiated version; downgrades are possible.

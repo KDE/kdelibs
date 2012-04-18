@@ -191,7 +191,6 @@ private:
         
         //OK, time to start input
         png_read_update_info(pngReadStruct, pngInfoStruct);
-        png_start_read_image(pngReadStruct);
     }
     
     void haveRow(unsigned int rowNum, int pass, unsigned char* data)

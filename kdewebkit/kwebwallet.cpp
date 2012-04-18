@@ -102,6 +102,23 @@ static QUrl urlForFrame(QWebFrame* frame)
     return (frame->url().isEmpty() ? frame->baseUrl().resolved(frame->url()) : frame->url());
 }
 
+/*
+  Returns the top most window associated with widget.
+
+  Unlike QWidget::window(), this function does its best to find and return the
+  main application window associated with a given widget. It will not stop when
+  it encounters a dialog which likely "has (or could have) a window-system frame".
+*/
+static QWidget* topLevelWindow(QObject* obj)
+{
+    QWebPage *page = qobject_cast<QWebPage*>(obj);
+    QWidget* widget = (page ? page->view() : qobject_cast<QWidget*>(page));
+    while (widget && widget->parentWidget()) {
+        widget = widget->parentWidget();
+    }
+    return (widget ? widget->window() : 0);
+}
+
 class KWebWallet::KWebWalletPrivate
 {
 public:
@@ -362,12 +379,11 @@ KWebWallet::KWebWallet(QObject *parent, WId wid)
            :QObject(parent), d(new KWebWalletPrivate(this))
 {
     if (!wid) {
-        // If wid is 0, make the best effort the discern it from our parent.
-        QWebPage *page = qobject_cast<QWebPage*>(parent);
-        if (page) {
-            QWidget *widget = page->view();
-            if (widget && widget->window())
-                wid = widget->window()->winId();
+        // If wid is 0, make a best effort attempt to discern it from our
+        // parent object.
+        QWidget* widget = topLevelWindow(parent);
+        if (widget) {
+            wid = widget->winId();
         }
     }
 

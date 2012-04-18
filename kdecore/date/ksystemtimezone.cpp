@@ -479,7 +479,10 @@ void KSystemTimeZonesPrivate::readZoneTab(bool update)
         // Clean it up.
         if (n > 3  && tokens[3] == QLatin1String("-"))
             tokens[3] = QString::fromLatin1("");
-        const KSystemTimeZone tz(m_source, tokens[2], tokens[0], latitude, longitude, (n > 3 ? tokens[3] : QString()));
+        // Note: KTzfileTimeZone is used in preference to KSystemTimeZone because of
+        //       the large overhead incurred by tzset() - see KSystemTimeZones class
+        //       description for details.
+        const KTzfileTimeZone tz(tzfileSource(), tokens[2], tokens[0], latitude, longitude, (n > 3 ? tokens[3] : QString()));
         if (update)
         {
             // Update the existing collection with the new zone definition
@@ -583,7 +586,7 @@ int KSystemTimeZoneBackend::offsetAtZoneTime(const KTimeZone *caller, const QDat
     tmtime.tm_year   = zoneDateTime.date().year() - 1900;
     tmtime.tm_isdst  = -1;
     const time_t t = mktime(&tmtime);
-    int offset1 = (t == (time_t)-1) ? 0 : gmtoff(t);
+    int offset1 = (t == (time_t)-1) ? KTimeZone::InvalidOffset : gmtoff(t);
     if (secondOffset)
     {
         int offset2 = offset1;

@@ -38,6 +38,8 @@ QPixmap KIconProvider::requestPixmap(const QString &id, QSize *size, const QSize
     QPixmap pixmap;
     if (requestedSize.isValid()) {
         pixmap = KIcon(source.at(0)).pixmap(requestedSize);
+    } else if (size->isValid()) {
+        pixmap = KIcon(source.at(0)).pixmap(*size);
     } else {
         pixmap = KIcon(source.at(0)).pixmap(IconSize(KIconLoader::Desktop));
     }

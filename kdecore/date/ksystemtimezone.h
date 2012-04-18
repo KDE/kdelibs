@@ -1,6 +1,6 @@
 /*
    This file is part of the KDE libraries
-   Copyright (c) 2005-2007,2009-2010 David Jarvie <djarvie@kde.org>
+   Copyright (c) 2005-2007,2009-2012 David Jarvie <djarvie@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -45,11 +45,12 @@ class KSystemTimeZoneDataPrivate;
 /**
  * The KSystemTimeZones class represents the system time zone database, consisting
  * of a collection of individual system time zone definitions, indexed by name.
- * Each individual time zone is defined in a KSystemTimeZone instance. Additional
- * time zones (of any class derived from KTimeZone) may be added if desired.
+ * Each individual time zone is defined in a KSystemTimeZone or KTzfileTimeZone
+ * instance. Additional time zones (of any class derived from KTimeZone) may be
+ * added if desired.
  *
  * At initialisation, KSystemTimeZones on UNIX systems reads the zone.tab file
- * to obtain the list of system time zones, and creates a KSystemTimeZone
+ * to obtain the list of system time zones, and creates a KTzfileTimeZone
  * instance for each one.
  *
  * @note KSystemTimeZones gets the system's time zone configuration, including
@@ -71,13 +72,12 @@ class KSystemTimeZoneDataPrivate;
  * QDateTime omaniTime = local.convert(oman, sampleTime);
  * \endcode
  *
- * @warning The time zones in the KSystemTimeZones collection are by default
- * instances of the KSystemTimeZone class, which uses the standard system
- * libraries to access time zone data, and whose functionality is limited to
- * what these libraries provide. For guaranteed accuracy for past time change
- * dates and time zone abbreviations, you should use KSystemTimeZones::readZone()
- * or the KTzfileTimeZone class instead, which provide accurate information from
- * the time zone definition files (but are likely to incur more overhead).
+ * @note KTzfileTimeZone is used in preference to KSystemTimeZone on UNIX
+ * systems since use of the standard system libraries by KSystemTimeZone
+ * requires the use of tzset() in several methods. That function reads and
+ * parses the local system time zone definition file every time it is called,
+ * and this has been observed to make applications hang for many seconds when
+ * a large number of KSystemTimeZone calls are made in succession.
  *
  * @note This class provides a facility to simulate the local system time
  * zone. This facility is provided for testing purposes only, and is only
