@@ -133,6 +133,7 @@ set(kiocore_STAT_SRCS
   kio/kurlcompletion.cpp
   kio/kurlpixmapprovider.cpp
   kio/metainfojob.cpp
+  kio/mkdirjob.cpp
   kio/netaccess.cpp
   kio/paste.cpp
   kio/pastedialog.cpp
@@ -387,6 +388,7 @@ install(  FILES
   kio/job.h
   kio/scheduler.h
   kio/jobclasses.h
+  kio/mkdirjob.h
   kio/copyjob.h
   kio/deletejob.h
   kio/jobuidelegate.h

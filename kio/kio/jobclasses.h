@@ -1040,4 +1040,7 @@ namespace KIO {
     };
 }
 
+// For source compatibility
+#include <kio/mkdirjob.h>
+
 #endif

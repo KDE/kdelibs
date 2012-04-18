@@ -23,8 +23,6 @@
 #include <QObject>
 #include <klocalsocket.h>
 
-class KUrl;
-
 namespace KIO {
     struct Task {
         int cmd;

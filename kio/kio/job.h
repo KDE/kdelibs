@@ -29,6 +29,7 @@ namespace KIO {
     enum LoadType { Reload, NoReload };
 
     class FileJob;
+    class MkdirJob;
 
     /**
      * Creates a single directory.
@@ -41,7 +42,7 @@ namespace KIO {
      *                    directory (unix-style), -1 for default permissions.
      * @return A pointer to the job handling the operation.
      */
-    KIO_EXPORT SimpleJob * mkdir( const KUrl& url, int permissions = -1 ); // TODO KDE5: return a MkdirJob and make that class public again
+    KIO_EXPORT MkdirJob * mkdir(const KUrl& url, int permissions = -1);
 
     /**
      * Removes a single directory.

@@ -23,6 +23,7 @@
 #include <errno.h>
 #include "kdirlister.h"
 #include "kfileitem.h"
+#include "mkdirjob.h"
 #include "deletejob.h"
 
 #include <klocalizedstring.h>

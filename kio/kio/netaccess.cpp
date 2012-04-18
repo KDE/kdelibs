@@ -41,6 +41,7 @@
 #include <kstandarddirs.h>
 
 #include "job.h"
+#include "mkdirjob.h"
 #include "copyjob.h"
 #include "deletejob.h"
 #include "jobuidelegate.h"

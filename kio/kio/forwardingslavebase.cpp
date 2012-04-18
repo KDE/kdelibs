@@ -20,6 +20,7 @@
 #include "forwardingslavebase.h"
 
 #include "deletejob.h"
+#include "mkdirjob.h"
 #include "job.h"
 
 #include <kdebug.h>
