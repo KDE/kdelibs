@@ -40,8 +40,8 @@ namespace KIO {
     /// (aboutToCreate, see also konq_operations.h/cpp
     struct CopyInfo
     {
-        KUrl uSource;
-        KUrl uDest;
+        QUrl uSource;
+        QUrl uDest;
         QString linkDest; // for symlinks only
         int permissions;
         time_t ctime;
