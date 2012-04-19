@@ -466,3 +466,6 @@ margin-bottom: 0.5em;
 margin-right: 0.2em;
 }
 
+.content .contents {
+	text-align: left;
+}

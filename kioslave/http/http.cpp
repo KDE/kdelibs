@@ -5198,21 +5198,22 @@ QString HTTPProtocol::authenticationHeader()
 void HTTPProtocol::proxyAuthenticationForSocket(const QNetworkProxy &proxy, QAuthenticator *authenticator)
 {
     Q_UNUSED(proxy);
-    kDebug(7113) << "Authenticator received -- realm:" << authenticator->realm() << "user:"
-                 << authenticator->user();
+    kDebug(7113) << "Authenticator received -- realm:" << authenticator->realm()
+                 << "user:" << authenticator->user();
 
     AuthInfo info;
     Q_ASSERT(proxy.hostName() == m_request.proxyUrl.host() && proxy.port() == m_request.proxyUrl.port());
     info.url = m_request.proxyUrl;
     info.realmValue = authenticator->realm();
-    info.verifyPath = true;    //### whatever
     info.username = authenticator->user();
+    info.verifyPath = true;    //### whatever
 
     const bool haveCachedCredentials = checkCachedAuthentication(info);
+    const bool retryAuth = (m_socketProxyAuth != 0);
 
     // if m_socketProxyAuth is a valid pointer then authentication has been attempted before,
     // and it was not successful. see below and saveProxyAuthenticationForSocket().
-    if (!haveCachedCredentials || m_socketProxyAuth) {
+    if (!haveCachedCredentials || retryAuth) {
         // Save authentication info if the connection succeeds. We need to disconnect
         // this after saving the auth data (or an error) so we won't save garbage afterwards!
         connect(socket(), SIGNAL(connected()),
@@ -5224,8 +5225,10 @@ void HTTPProtocol::proxyAuthenticationForSocket(const QNetworkProxy &proxy, QAut
         info.keepPassword = true;
         info.commentLabel = i18n("Proxy:");
         info.comment = i18n("<b>%1</b> at <b>%2</b>", htmlEscape(info.realmValue), m_request.proxyUrl.host());
-        const bool dataEntered = openPasswordDialog(info, i18n("Proxy Authentication Failed."));
-        if (!dataEntered) {
+
+        const QString errMsg ((retryAuth ? i18n("Proxy Authentication Failed.") : QString()));
+
+        if (!openPasswordDialog(info, errMsg)) {
             kDebug(7103) << "looks like the user canceled proxy authentication.";
             error(ERR_USER_CANCELED, m_request.proxyUrl.host());
             return;
@@ -5241,8 +5244,9 @@ void HTTPProtocol::proxyAuthenticationForSocket(const QNetworkProxy &proxy, QAut
         m_socketProxyAuth = new QAuthenticator(*authenticator);
     }
 
-    m_request.proxyUrl.setUser(info.username);
-    m_request.proxyUrl.setPassword(info.password);
+    if (!m_request.proxyUrl.user().isEmpty()) {
+        m_request.proxyUrl.setUser(info.username);
+    }
 }
 
 void HTTPProtocol::saveProxyAuthenticationForSocket()
@@ -5325,7 +5329,7 @@ bool HTTPProtocol::handleAuthenticationHeader(const HeaderTokenizer* tokenizer)
         authinfo.url = m_request.url;
         authinfo.username = m_server.url.user();
         authinfo.prompt = i18n("You need to supply a username and a "
-                                "password to access this site.");
+                               "password to access this site.");
         authinfo.commentLabel = i18n("Site:");
     } else {
         // make sure that the 407 header hasn't escaped a lower layer when it shouldn't.
@@ -5337,8 +5341,8 @@ bool HTTPProtocol::handleAuthenticationHeader(const HeaderTokenizer* tokenizer)
         authinfo.url = m_request.proxyUrl;
         authinfo.username = m_request.proxyUrl.user();
         authinfo.prompt = i18n("You need to supply a username and a password for "
-                                "the proxy server listed below before you are allowed "
-                                "to access any sites." );
+                               "the proxy server listed below before you are allowed "
+                               "to access any sites." );
         authinfo.commentLabel = i18n("Proxy:");
     }
 

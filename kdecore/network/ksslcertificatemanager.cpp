@@ -393,7 +393,7 @@ QList<KSslCaCertificate> KSslCertificateManagerPrivate::allCertificates() const
         ret += KSslCaCertificate(cert, KSslCaCertificate::SystemStore, false);
     }
 
-    foreach (const QSslCertificate &cert, QSslCertificate::fromPath(userCertDir + QLatin1String("/*"),
+    foreach (const QSslCertificate &cert, QSslCertificate::fromPath(userCertDir + QLatin1String("*"),
                                                                     QSsl::Pem, QRegExp::Wildcard)) {
         ret += KSslCaCertificate(cert, KSslCaCertificate::UserStore, false);
     }
