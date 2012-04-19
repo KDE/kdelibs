@@ -13,6 +13,11 @@ ecm_version(5 0 0)
 # --
 
 include(ECMQtFramework)
+# append our subdir so we don't clutter the default install path
+# these files could collide with a real Qt5 installation.
+file(APPEND "${CMAKE_BINARY_DIR}/QtMimeTypesConfig.cmake" "set(QtMimeTypes_INCLUDE_DIR    \"\${inqt5_INCLUDE_DIR}/inqt5\")\n")
+
+install(DIRECTORY include/QtMimeTypes DESTINATION ${INCLUDE_INSTALL_DIR}/inqt5)
 
 find_package(Qt5Transitional REQUIRED Core)
 
