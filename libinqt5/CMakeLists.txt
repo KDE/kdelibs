@@ -20,6 +20,13 @@ include(${QT_USE_FILE})
 
 include(FeatureSummary)
 
+# where to put the exports, in case we are not build as part as the whole kdelibs
+if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+  set(inqt5_EXPORT_NAME inqt5)
+else ()
+  set(inqt5_EXPORT_NAME kdelibs)
+endif ()
+
 add_subdirectory(src)
 add_subdirectory(autotests)
 
