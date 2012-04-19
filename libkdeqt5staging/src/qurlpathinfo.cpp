@@ -283,3 +283,17 @@ void QUrlPathInfo::addPath(const QString &relativePath)
 
     setPath(p + relativePath.mid(i));
 }
+
+/*!
+  Convenience method, for adding a relative path to a url.
+
+  \param url the initial URL
+  \param relativePath the relative path to add (often just a file name)
+  \return the modified URL
+*/
+QUrl QUrlPathInfo::addPathToUrl(const QUrl &url, const QString& relativePath)
+{
+    QUrlPathInfo info(url);
+    info.addPath(relativePath);
+    return info.url();
+}
