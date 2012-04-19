@@ -5,7 +5,7 @@ include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 
 if (NOT QT5_BUILD)
     include_directories(
-        ${CMAKE_SOURCE_DIR}/libqtmimetypes/include/QtMimeTypes
+        ${QtMimeTypes_SOURCE_DIR}/include/QtMimeTypes
     )
 endif()
 

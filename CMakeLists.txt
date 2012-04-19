@@ -235,7 +235,7 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
 
 if (NOT QT5_BUILD)
   list(APPEND KDE4_KDECORE_INCLUDES
-                          ${CMAKE_SOURCE_DIR}/libqtmimetypes/include/QtMimeTypes
+                          ${QtMimeTypes_SOURCE_DIR}/include/QtMimeTypes
   )
 endif()
 
