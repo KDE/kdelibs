@@ -42,7 +42,7 @@ class OpticalDisc: public StorageVolume, virtual public Solid::Ifaces::OpticalDi
     Q_INTERFACES(Solid::Ifaces::OpticalDisc)
 
 public:
-    OpticalDisc(Device *device);
+    OpticalDisc(Device *dev);
     virtual ~OpticalDisc();
 
     virtual qulonglong capacity() const;
