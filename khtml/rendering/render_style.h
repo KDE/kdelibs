@@ -38,7 +38,7 @@
 #include <QColor>
 #include <QFont>
 #include <QFontMetrics>
-#include <QColorGroup>
+#include <QPalette>
 #include <QApplication>
 
 #include "dom/dom_misc.h"

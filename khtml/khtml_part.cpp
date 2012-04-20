@@ -118,6 +118,7 @@ using namespace DOM;
 
 #include <QClipboard>
 #include <QToolTip>
+#include <QDrag>
 #include <QtCore/QFile>
 #include <QtCore/QMetaEnum>
 #include <QTextDocument>

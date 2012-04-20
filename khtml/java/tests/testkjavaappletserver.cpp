@@ -1,5 +1,6 @@
 #include <QtCore/QDebug>
 #include <kapplication.h>
+#include <klocalizedstring.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <QtCore/QString>

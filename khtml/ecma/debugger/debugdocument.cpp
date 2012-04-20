@@ -17,6 +17,7 @@
 #include <kiconloader.h>
 #include <kmessagebox.h>
 #include <kcodecs.h>
+#include <kmd5.h>
 
 using namespace KJS;
 using namespace KJSDebugger;

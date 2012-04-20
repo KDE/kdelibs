@@ -38,6 +38,7 @@
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kreplace.h>
+#include <kicon.h>
 #include <kreplacedialog.h>
 #include <dialog.h>
 #include <backgroundchecker.h>
