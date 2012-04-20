@@ -165,11 +165,13 @@ out:
 
 using namespace Solid::Backends::UDisks2;
 
-OpticalDisc::OpticalDisc(Device *device)
-    : StorageVolume(device), m_needsReprobe(true), m_cachedContent(Solid::OpticalDisc::NoContent)
+OpticalDisc::OpticalDisc(Device *dev)
+    : StorageVolume(dev), m_needsReprobe(true), m_cachedContent(Solid::OpticalDisc::NoContent)
 {
     UdevQt::Client client(this);
-    m_udevDevice = client.deviceByDeviceFile(QFile::decodeName(m_device->prop("Device").toByteArray()));
+    m_udevDevice = client.deviceByDeviceFile(device());
+    //qDebug() << "udev device:" << m_udevDevice.name() << "valid:" << m_udevDevice.isValid();
+    /*qDebug() << "\tProperties:" << */ m_udevDevice.deviceProperties(); // initialize the properties DB so that it doesn't crash further down, #298416
 
     m_drive = new Device(m_device->prop("Drive").value<QDBusObjectPath>().path());
     QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, m_drive->udi(), DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
@@ -202,6 +204,7 @@ bool OpticalDisc::isBlank() const
 
 bool OpticalDisc::isAppendable() const
 {
+    //qDebug() << "appendable prop" << m_udevDevice.deviceProperty("ID_CDROM_MEDIA_STATE");
     return m_udevDevice.deviceProperty("ID_CDROM_MEDIA_STATE").toString() == QLatin1String("appendable");
 }
 
