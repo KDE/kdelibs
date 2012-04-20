@@ -537,7 +537,7 @@ QString KCookieJar::stripDomain(const KHttpCookie& cookie)
     if (cookie.domain().isEmpty())
        stripDomain( cookie.host(), domain);
     else
-       stripDomain( cookie.domain(), domain);
+       domain = cookie.domain();
     return domain;
 }
 
