@@ -270,6 +270,10 @@ void Manager::slotInterfacesRemoved(const QDBusObjectPath &object_path, const QS
 void Manager::slotMediaChanged(const QDBusMessage & msg)
 {
     const QVariantMap properties = qdbus_cast<QVariantMap>(msg.arguments().at(1));
+
+    if (!properties.contains("Size"))  // react only on Size changes
+        return;
+
     const QString udi = msg.path();
     qulonglong size = properties.value("Size").toULongLong();
     qDebug() << "MEDIA CHANGED in" << udi << "; size is:" << size;
