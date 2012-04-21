@@ -31,18 +31,18 @@ ENDMACRO(KNEWSTUFF_EXECUTABLE_TESTS)
 
 if(NOT KDE_NO_DEPRECATED)
 
-  KNEWSTUFF_UNIT_TESTS(
-    knewstuffauthortest
-    knewstuffentrytest
-    testTranslatable
-  )
-
-  KNEWSTUFF_EXECUTABLE_TESTS(
-   knewstuff2_test
-   knewstuff2_download
-   knewstuff2_standard
-   knewstuff2_cache
-  )
+#   KNEWSTUFF_UNIT_TESTS(
+#     knewstuffauthortest
+#     knewstuffentrytest
+#     testTranslatable
+#   )
+#
+#   KNEWSTUFF_EXECUTABLE_TESTS(
+#    knewstuff2_test
+#    knewstuff2_download
+#    knewstuff2_standard
+#    knewstuff2_cache
+#   )
 
 ##########################
 
