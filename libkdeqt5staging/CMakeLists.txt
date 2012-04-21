@@ -20,17 +20,19 @@ include(${QT_USE_FILE})
 
 include(FeatureSummary)
 
-# in case we are not build as part of the whole kdelibs
-if (NOT TARGET inqt5)
-  find_package(inqt5)
-  # whatever works...
-  include_directories(
-      ${inqt5_SOURCE_DIR}/libinqt5/src/
-      ${inqt5_BINARY_DIR}/libinqt5/src/
-      ${inqt5_INCLUDE_DIR}
-  )
-  if (NOT INQT5_LIBRARY)
-    set(INQT5_LIBRARY "${inqt5_LIBRARY}")
+if (NOT QT5_BUILD)
+  # in case we are not built as part of the whole kdelibs
+  if (NOT TARGET inqt5)
+    find_package(inqt5)
+    # whatever works...
+    include_directories(
+        ${inqt5_SOURCE_DIR}/libinqt5/src/
+        ${inqt5_BINARY_DIR}/libinqt5/src/
+        ${inqt5_INCLUDE_DIR}
+    )
+    if (NOT INQT5_LIBRARY)
+      set(INQT5_LIBRARY "${inqt5_LIBRARY}")
+    endif ()
   endif ()
 endif ()
 
