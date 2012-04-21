@@ -31,8 +31,8 @@ class KJobUiDelegate;
 class KJobPrivate;
 /**
  * The base class for all jobs.
- * For all jobs created in an application, the code looks like
  *
+ * For all jobs created in an application, the code looks like
  * \code
  * void SomeClass::methodWithAsynchronousJobCall()
  * {
@@ -45,7 +45,6 @@ class KJobPrivate;
  *   (other connects, specific to the job)
  *
  * And handleResult is usually at least:
- *
  * \code
  * void SomeClass::handleResult( KJob *job )
  * {
@@ -55,7 +54,6 @@ class KJobPrivate;
  * \endcode
  *
  * With the synchronous interface the code looks like
- *
  * \code
  * void SomeClass::methodWithSynchronousJobCall()
  * {
@@ -71,10 +69,17 @@ class KJobPrivate;
  * }
  * \endcode
  *
- * @note: KJob and its subclasses is meant to be used
- * in a fire-and-forget way. It's deleting itself when
- * it has finished using deleteLater() so the job
- * instance disappears after the next event loop run.
+ * Subclasses must implement start(), which should trigger
+ * the execution of the job (although the work should be
+ * done asynchronously).  errorString() should also be
+ * reimplemented by any subclasses that introduce new
+ * error codes.
+ *
+ * @note: KJob and its subclasses are meant to be used
+ * in a fire-and-forget way. Jobs will delete themselves
+ * when they finish using deleteLater() (although this
+ * behaviour can be changed), so a job instance will
+ * disappear after the next event loop run.
  */
 class KDECORE_EXPORT KJob : public QObject
 {
@@ -138,8 +143,9 @@ public:
     bool isSuspended() const;
 
     /**
-     * Starts the job asynchronously. When the job is finished,
-     * result() is emitted.
+     * Starts the job asynchronously.
+     *
+     * When the job is finished, result() is emitted.
      *
      * Warning: Never implement any synchronous workload in this method. This method
      * should just trigger the job startup, not do any work itself. It is expected to
@@ -164,6 +170,7 @@ public:
 public Q_SLOTS:
     /**
      * Aborts this job.
+     *
      * This kills and deletes the job.
      *
      * @param verbosity if equals to EmitResult, Job will emit signal result
@@ -194,6 +201,7 @@ public Q_SLOTS:
 protected:
     /**
      * Aborts this job quietly.
+     *
      * This simply kills the job, no error reporting or job deletion should be involved.
      *
      * @return true if the operation is supported and succeeded, false otherwise
@@ -245,14 +253,18 @@ public:
 
     enum
     {
+        /*** Indicates there is no error */
         NoError = 0,
+        /*** Indicates the job was killed */
         KilledJobError = 1,
+        /*** Subclasses should define error codes starting at this value */
         UserDefinedError = 100
     };
 
 
     /**
      * Returns the error code, if there has been an error.
+     *
      * Only call this method from the slot connected to result().
      *
      * @return the error code for this job, 0 if no error.
@@ -261,29 +273,32 @@ public:
 
     /**
      * Returns the error text if there has been an error.
-     * Only call if error is not 0.
-     * This is really internal, better use errorString.
      *
-     * @return a string to help understand the error, usually the url
-     * related to the error. Only valid if error() is not 0.
+     * Only call if error is not 0.
+     *
+     * This is usually some extra data associated with the error,
+     * such as a URL.  Use errorString() to get a human-readable,
+     * translated message.
+     *
+     * @return a string to help understand the error
      */
     QString errorText() const;
 
     /**
-     * Converts an error code and a non-i18n error message into an
-     * error message in the current language. The low level (non-i18n)
-     * error message (usually a url) is put into the translated error
-     * message using %1.
+     * A human-readable error message.
      *
-     * Example for errid == ERR_CANNOT_OPEN_FOR_READING:
+     * This provides a translated, human-readable description of the
+     * error.  Only call if error is not 0.
+     *
+     * Subclasses should implement this to create a translated
+     * error message from the error code and error text.
+     * For example:
      * \code
-     *   i18n( "Could not read\n%1" , errorText() );
+     * if (error() == ReadFailed)
+     *   i18n( "Could not read \"%1\"", errorText() );
      * \endcode
-     * Only call if error is not 0.
      *
-     * @return the error message and if there is no error, a message
-     *         telling the user that the app is broken, so check with
-     *         error() whether there is an error
+     * @return a translated error message, providing error() is 0
      */
     virtual QString errorString() const;
 
@@ -513,8 +528,20 @@ private: // don't tell moc, doxygen or kdevelop, but those signals are in fact p
 
 protected:
     /**
-     * Sets the error code. It should be called when an error
+     * Sets the error code.
+     *
+     * It should be called when an error
      * is encountered in the job, just before calling emitResult().
+     *
+     * You should define an (anonymous) enum of error codes,
+     * with values starting at KJob::UserDefinedError, and use
+     * those.  For example,
+     * @code
+     * enum {
+     *   InvalidFoo = UserDefinedError,
+     *   BarNotFound
+     * };
+     * @endcode
      *
      * @param errorCode the error code
      * @see emitResult()
@@ -522,11 +549,17 @@ protected:
     void setError( int errorCode );
 
     /**
-     * Sets the error text. It should be called when an error
+     * Sets the error text.
+     *
+     * It should be called when an error
      * is encountered in the job, just before calling emitResult().
      *
+     * Provides extra information about the error that cannot be
+     * determined directly from the error code.  For example, a
+     * URL or filename.  This string is not normally translatable.
+     *
      * @param errorText the error text
-     * @see emitResult()
+     * @see emitResult(), errorString(), setError()
      */
     void setErrorText( const QString &errorText );
 
