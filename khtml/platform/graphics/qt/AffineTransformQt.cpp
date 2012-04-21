@@ -166,7 +166,7 @@ AffineTransform& AffineTransform::shear(double sx, double sy)
 
 double AffineTransform::det() const
 {
-    return m_transform.det();
+    return m_transform.determinant();
 }
 
 AffineTransform AffineTransform::inverse() const

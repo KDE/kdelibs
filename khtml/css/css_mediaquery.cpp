@@ -366,10 +366,10 @@ static bool color_indexMediaFeatureEval(CSSValueImpl* value, RenderStyle*, KHTML
     bool printing = pd ? (pd->devType() == QInternal::Printer) : false;
     unsigned int numColors = 0;
     if (printing) {
-        numColors = pd->numColors();
+        numColors = pd->colorCount();
     } else {
         int sn = QApplication::desktop()->screenNumber( rootPart->view() );
-        numColors = QApplication::desktop()->screen(sn)->numColors();
+        numColors = QApplication::desktop()->screen(sn)->colorCount();
     }
     if (numColors == INT_MAX)
         numColors = UINT_MAX;
@@ -391,7 +391,7 @@ static bool colorMediaFeatureEval(CSSValueImpl* value, RenderStyle*, KHTMLPart* 
     bool printing = pd ? (pd->devType() == QInternal::Printer) : false;
     int bitsPerComponent = 0;
     if (printing) {
-        if (pd->numColors() > 2)
+        if (pd->colorCount() > 2)
             bitsPerComponent = pd->depth()/3;
         // assume printer is either b&w or color.
     } else {
@@ -416,7 +416,7 @@ static bool monochromeMediaFeatureEval(CSSValueImpl* value, RenderStyle*, KHTMLP
     bool printing = pd ? (pd->devType() == QInternal::Printer) : false;
     int depth = 0;
     if (printing) {
-        if (pd->numColors() < 2)
+        if (pd->colorCount() < 2)
             depth = 1;
         // assume printer is either b&w or color.
     } else {
