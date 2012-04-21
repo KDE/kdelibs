@@ -328,6 +328,7 @@ install( FILES
   KRatingWidget
   KRecentDocument
   KRecentFilesAction
+  KRecursiveFilterProxyModel
   KRemoteEncoding
   KReplace
   KReplaceDialog
