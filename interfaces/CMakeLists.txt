@@ -4,7 +4,7 @@ project(interfaces)
 
 add_subdirectory( ktexteditor )
 add_subdirectory( kregexpeditor )
-if (NOT QT5_BUILD)
+if (NOT KDE_NO_PHONON)
   add_subdirectory( kmediaplayer )
 endif()
 add_subdirectory( kio )
