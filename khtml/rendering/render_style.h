@@ -50,6 +50,12 @@
 
 #include <assert.h>
 
+// Libjepeg-turbo defines INLINE in newer versions of jconfig.h
+// Let's hope we are always included afterwards.
+#ifdef INLINE
+#undef INLINE
+#endif
+
 #define SET_VAR(group,variable,value) \
     if (!(group->variable == value)) \
         group.access()->variable = value;
