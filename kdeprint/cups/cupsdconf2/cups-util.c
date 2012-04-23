@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <stdio.h>
 
 #define CUPS_SERVERROOT	"/etc/cups"
 static http_t		*cups_server;
