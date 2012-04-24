@@ -2,7 +2,7 @@
 Type=MimeType
 MimeType=application/vnd.oasis.opendocument.formula
 Patterns=*.odf;*.ODF
-Icon=formula
+Icon=kformula_kfo
 Comment=OASIS OpenDocument Formula
 Comment[af]=OASIS Oop Dokument formule
 Comment[be]=Формула OASIS OpenDocument

@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=MimeType
-MimeType=application/vnd.ms-word
-Patterns=*.doc;*.DOC
+MimeType=application/vnd.openxmlformats-officedocument.wordprocessingml.template
+Patterns=*.dotx;*.DOTX
 Icon=wordprocessing
-Comment=Microsoft Word Document
+Comment=Microsoft Word Document Template
 Comment[af]=Microsoft Woord Dokument
 Comment[ar]=مستند مايكروسوفت وورد
 Comment[az]=Microsoft Word Sənədi
@@ -88,4 +88,3 @@ Comment[zu]=Uhlu Lwamafayela lwe-Microsoft Word
 [Property::X-KDE-NativeExtension]
 Type=QString
 Value=.doc
-

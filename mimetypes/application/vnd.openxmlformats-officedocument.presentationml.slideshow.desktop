@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=MimeType
-MimeType=application/vnd.ms-powerpoint
-Patterns=*.ppt;*.PPT
+MimeType=application/vnd.openxmlformats-officedocument.presentationml.slideshow
+Patterns=*.ppsx;*.PPSX
 Icon=presentation
-Comment=Microsoft PowerPoint Presentation
+Comment=Microsoft PowerPoint Presentation SlideShow
 Comment[af]=Microsoft Powerpoint Voorlegging
 Comment[ar]=مستند مايكروسوفت باوربوينت
 Comment[az]=Microsoft PowerPoint Sənədi

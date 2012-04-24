@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=MimeType
-MimeType=application/vnd.ms-excel
-Patterns=*.xls;*.XLS
+MimeType=application/vnd.openxmlformats-officedocument.spreadsheetml.template
+Patterns=*.xltx;*.XLTX
 Icon=spreadsheet
-Comment=Microsoft Excel Spreadsheet
+Comment=Microsoft Excel Spreadsheet Template
 Comment[af]=Microsoft Excel Spreiblad
 Comment[ar]=ورقة عمل مايكروسوفت اكسل
 Comment[az]=Microsoft Excel Sənədi

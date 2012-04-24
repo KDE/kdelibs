@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=MimeType
-MimeType=application/vnd.ms-powerpoint
-Patterns=*.ppt;*.PPT
+MimeType=application/vnd.openxmlformats-officedocument.presentationml.presentation
+Patterns=*.pptx;*.PPTX
 Icon=presentation
 Comment=Microsoft PowerPoint Presentation
 Comment[af]=Microsoft Powerpoint Voorlegging

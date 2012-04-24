@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/vnd.oasis.opendocument.database
+Patterns=*.odb;*.ODB
+Icon=database
+Comment=OASIS OpenDocument Database
+[Property::X-KDE-NativeExtension]
+Type=QString
+Value=.odb

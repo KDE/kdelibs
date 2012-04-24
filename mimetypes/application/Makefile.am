@@ -67,7 +67,29 @@ mimetypeapplicationdata_DATA = x-dvi.desktop x-gzdvi.desktop x-bz2dvi.desktop \
 	x-java-jnlp-file.desktop xml-dtd.desktop fits.desktop \
 	x-rar-compressed.desktop \
 	x-sqlite2.desktop x-sqlite3.desktop chm.desktop \
-	x-mplayer2.desktop
+	x-mplayer2.desktop \
+	x-nzb.desktop \
+	vnd.openxmlformats-officedocument.wordprocessingml.document.desktop \
+	vnd.openxmlformats-officedocument.wordprocessingml.template.desktop \
+	vnd.ms-word.document.macroEnabled.12.desktop \
+	vnd.ms-word.template.macroEnabled.12.desktop \
+	vnd.openxmlformats-officedocument.spreadsheetml.sheet.desktop \
+	vnd.openxmlformats-officedocument.spreadsheetml.template.desktop \
+	vnd.ms-excel.sheet.macroEnabled.12.desktop \
+	vnd.ms-excel.template.macroEnabled.12.desktop \
+	vnd.ms-excel.addin.macroEnabled.12.desktop \
+	vnd.ms-excel.sheet.binary.macroEnabled.12.desktop \
+	vnd.openxmlformats-officedocument.presentationml.presentation.desktop \
+	vnd.openxmlformats-officedocument.presentationml.template.desktop \
+	vnd.openxmlformats-officedocument.presentationml.slideshow.desktop \
+	vnd.ms-powerpoint.addin.macroEnabled.12.desktop \
+	vnd.ms-powerpoint.presentation.macroEnabled.12.desktop \
+	vnd.ms-powerpoint.template.macroEnabled.12.desktop \
+	vnd.ms-powerpoint.slideshow.macroEnabled.12.desktop \
+	x-lzma.desktop \
+	x-tlz.desktop \
+	x-txz.desktop \
+	x-xz.desktop
 
 mimetypeapplicationdatadir = $(kde_mimedir)/application
 

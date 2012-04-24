@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=MimeType
-MimeType=application/vnd.ms-word
-Patterns=*.doc;*.DOC
+MimeType=application/vnd.ms-word.document.macroEnabled.12
+Patterns=*.docm;*.DOCM
 Icon=wordprocessing
-Comment=Microsoft Word Document
+Comment=Microsoft Word Document Macro Enabled
 Comment[af]=Microsoft Woord Dokument
 Comment[ar]=مستند مايكروسوفت وورد
 Comment[az]=Microsoft Word Sənədi

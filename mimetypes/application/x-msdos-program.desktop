@@ -85,5 +85,5 @@ MimeType=application/x-msdos-program
 X-KDE-IsAlso=application/x-executable
 [Property::X-KDE-NativeExtension]
 Type=QString
-Value=.exe
+Value=.exe;.EXE;.ExE;.EXe;.eXE;.exE
 

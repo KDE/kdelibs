@@ -1,9 +1,9 @@
 [Desktop Entry]
 Type=MimeType
-MimeType=application/vnd.ms-powerpoint
-Patterns=*.ppt;*.PPT
+MimeType=application/vnd.ms-powerpoint.presentation.macroEnabled.12
+Patterns=*.pptm;*.PPTM
 Icon=presentation
-Comment=Microsoft PowerPoint Presentation
+Comment=Microsoft PowerPoint Presentation Macro Enabled
 Comment[af]=Microsoft Powerpoint Voorlegging
 Comment[ar]=مستند مايكروسوفت باوربوينت
 Comment[az]=Microsoft PowerPoint Sənədi

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=NewzBin Usenet Index
+Hidden=false
+MimeType=application/x-nzb
+Icon=bt
+Type=MimeType
+Patterns=*.nzb
+X-KDE-AutoEmbed=false
+X-KDE-isAlso=text/xml
+

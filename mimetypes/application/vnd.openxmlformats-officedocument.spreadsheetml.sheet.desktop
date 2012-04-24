@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=MimeType
-MimeType=application/vnd.ms-excel
-Patterns=*.xls;*.XLS
+MimeType=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+Patterns=*.xlsx;*.XLSX
 Icon=spreadsheet
 Comment=Microsoft Excel Spreadsheet
 Comment[af]=Microsoft Excel Spreiblad

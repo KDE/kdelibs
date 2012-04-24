@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=MimeType
+MimeType=application/vnd.ms-access
+Icon=database
+Comment=Microsoft Access Database
+[Property::X-KDE-NativeExtension]
+Type=QString
+Value=.mdb
+
