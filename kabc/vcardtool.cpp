@@ -88,7 +88,7 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
   return VCardParser::createVCards( vCardList );
 }
 
-VCard::List VCardTool::createVCardsInternal( Addressee::List list, VCard::Version version )
+KABC::VCard::List VCardTool::createVCardsInternal( Addressee::List list, VCard::Version version )
 {
   VCard::List vCardList;
 
