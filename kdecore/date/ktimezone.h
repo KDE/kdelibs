@@ -429,6 +429,10 @@ public:
     class KDECORE_EXPORT Phase
     {
     public:
+        /**
+	 * Default constructor.
+	 * Creates a standard-time time zone phase with UTC offset 0.
+	 */
         Phase();
 
         /**
@@ -1495,13 +1499,15 @@ protected:
 
     /**
      * Initialise the daylight savings time phase list.
+     * This setPhases() variant should be used when the time zone abbreviation
+     * used before the start of the first phase is not known.
      *
      * @param phases list of phases
      * @param previousUtcOffset UTC offset to use before the start of the first
      *                          phase
      * @see phases()
      */
-    void KDE_DEPRECATED setPhases(const QList<KTimeZone::Phase> &phases, int previousUtcOffset);
+    void setPhases(const QList<KTimeZone::Phase> &phases, int previousUtcOffset);
 
     /**
      * Initialise the daylight savings time transition list.
