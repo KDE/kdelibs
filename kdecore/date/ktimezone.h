@@ -1485,12 +1485,23 @@ protected:
     /**
      * Initialise the daylight savings time phase list.
      *
+     * @param phases        list of phases
+     * @param previousPhase phase to use before the first daylight savings time
+     *                      transition
+     * @see phases()
+     * @since 4.8.3
+     */
+    void setPhases(const QList<KTimeZone::Phase> &phases, const KTimeZone::Phase& previousPhase);
+
+    /**
+     * Initialise the daylight savings time phase list.
+     *
      * @param phases list of phases
      * @param previousUtcOffset UTC offset to use before the start of the first
      *                          phase
      * @see phases()
      */
-    void setPhases(const QList<KTimeZone::Phase> &phases, int previousUtcOffset);
+    void KDE_DEPRECATED setPhases(const QList<KTimeZone::Phase> &phases, int previousUtcOffset);
 
     /**
      * Initialise the daylight savings time transition list.
