@@ -42,6 +42,7 @@ file(MAKE_DIRECTORY
    ${CMAKE_CURRENT_BINARY_DIR}/backends/hal
    ${CMAKE_CURRENT_BINARY_DIR}/backends/udev
    ${CMAKE_CURRENT_BINARY_DIR}/backends/wmi
+   ${CMAKE_CURRENT_BINARY_DIR}/backends/fuse
 )
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${KDE4_C_FLAGS}") # enable -fvisibility=hidden for C sources
@@ -261,6 +262,17 @@ if(NOT WIN32 AND NOT APPLE)
    backends/fstab/fstabstorageaccess.cpp
    backends/fstab/fstabhandling.cpp
    backends/fstab/fstabwatcher.cpp
+   )
+
+   message(STATUS "Building Solid Fuse backend." )
+   set(solid_LIB_SRCS ${solid_LIB_SRCS}
+   backends/fuse/fusemanager.cpp
+   backends/fuse/fusedevice.cpp
+   backends/fuse/fusestorageaccess.cpp
+   backends/fuse/fusestoragedrive.cpp
+   backends/fuse/fusestoragevolume.cpp
+   backends/fuse/fusehandling.cpp
+   backends/fuse/fusewatcher.cpp
    )
 
 endif(NOT WIN32 AND NOT APPLE)

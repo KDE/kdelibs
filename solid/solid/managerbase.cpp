@@ -33,6 +33,7 @@
 #include "backends/hal/halmanager.h"
 #include "backends/udisks/udisksmanager.h"
 #include "backends/upower/upowermanager.h"
+#include "backends/fuse/fusemanager.h"
 
 #if defined (HUPNP_FOUND)
 #include "backends/upnp/upnpdevicemanager.h"
@@ -87,6 +88,8 @@ void Solid::ManagerBasePrivate::loadBackends()
                            << new Solid::Backends::UPower::UPowerManager(0)
                            << new Solid::Backends::Fstab::FstabManager(0);
             }
+
+            m_backends << new Solid::Backends::Fuse::FuseManager(0);
 #        endif
 
 #        if defined (HUPNP_FOUND)
