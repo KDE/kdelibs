@@ -26,6 +26,9 @@
 #include "partmanager.h"
 #include "browserextension.h"
 
+// the activity manager feeder (kamd)
+#include "private/libkactivities/resourceinstance.h"
+
 #include <QtGui/QApplication>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
@@ -380,6 +383,7 @@ public:
         m_duringSaveAs = false;
         m_bTemp = false;
         m_bAutoDetectedMime = false;
+        m_resourceInstance = 0;
     }
 
     ~ReadOnlyPartPrivate()
@@ -389,6 +393,8 @@ public:
     void _k_slotJobFinished( KJob * job );
     void _k_slotStatJobFinished(KJob * job);
     void _k_slotGotMimeType(KIO::Job *job, const QString &mime);
+    void _k_slotOpeningCompleted();
+    void _k_slotWindowCaptionChanged(const QString & caption);
     bool openLocalFile();
     void openRemoteFile();
 
@@ -421,6 +427,13 @@ public:
     QString m_file;
 
     OpenUrlArguments m_arguments;
+
+    /**
+     * Class for talking to the activity manager (kamd)
+     */
+    KActivities::ResourceInstance * m_resourceInstance;
+    QString m_resourceCaption;
+
 };
 
 class ReadWritePartPrivate: public ReadOnlyPartPrivate
@@ -450,11 +463,23 @@ public:
 ReadOnlyPart::ReadOnlyPart( QObject *parent )
     : Part( *new ReadOnlyPartPrivate(this), parent )
 {
+    QObject::connect(
+            this, SIGNAL(completed()),
+            this, SLOT(_k_slotOpeningCompleted())
+        );
+    QObject::connect(
+            this, SIGNAL(setWindowCaption(QString)),
+            this, SLOT(_k_slotWindowCaptionChanged(QString))
+        );
 }
 
 ReadOnlyPart::ReadOnlyPart( ReadOnlyPartPrivate &dd, QObject *parent )
     : Part( dd, parent )
 {
+    QObject::connect(
+            this, SIGNAL(completed()),
+            this, SLOT(_k_slotOpeningCompleted())
+        );
 }
 
 ReadOnlyPart::~ReadOnlyPart()
@@ -472,6 +497,10 @@ KUrl ReadOnlyPart::url() const
 void ReadOnlyPart::setUrl(const KUrl &url)
 {
     Q_D(ReadOnlyPart);
+
+    if (d->m_resourceInstance) {
+        d->m_resourceInstance->setUri(url);
+    }
 
     d->m_url = url;
 }
@@ -658,6 +687,17 @@ bool ReadOnlyPart::closeUrl()
     // It always succeeds for a read-only part,
     // but the return value exists for reimplementations
     // (e.g. pressing cancel for a modified read-write part)
+
+    // Feeding the data to the activity manager (kamd)
+    kDebug(1000)
+        << "A component named"
+        << KGlobal::mainComponent().componentName()
+        << "has closed the"
+        << url();
+    delete d->m_resourceInstance;
+    d->m_resourceInstance = 0; // just in case
+    // Finished with the activity manager
+
     return true;
 }
 
@@ -697,9 +737,53 @@ void ReadOnlyPartPrivate::_k_slotJobFinished( KJob * job )
     }
 }
 
+void ReadOnlyPartPrivate::_k_slotOpeningCompleted()
+{
+    Q_Q(ReadOnlyPart);
+
+    // Feeding the data to the activity manager (kamd)
+    kDebug(1000)
+        << "A component named"
+        << KGlobal::mainComponent().componentName()
+        << "is opening the"
+        << q->url()
+        << ( q->widget() ? q->widget()->topLevelWidget()->winId() : 0 )
+        << "mime"
+        << m_arguments.mimeType()
+        << "title"
+        << m_resourceCaption;
+
+    // deleting the previous one
+    delete m_resourceInstance;
+
+    m_resourceInstance = new KActivities::ResourceInstance(
+            ( q->widget() ? q->widget()->topLevelWidget()->winId() : 0 ), // wid
+            q->url(),                                               // resourceUri
+            m_arguments.mimeType(),                                 // mimetype
+            m_resourceCaption,                                      // title
+            KActivities::ResourceInstance::User,                    // accessReason
+            KGlobal::mainComponent().componentName(),               // application
+            q                                                       // parent
+            );
+    // Finished with the activity manager
+}
+
+void ReadOnlyPartPrivate::_k_slotWindowCaptionChanged(const QString & caption)
+{
+    kDebug(1000) << "This is the new caption" << caption;
+
+    m_resourceCaption = caption;
+
+    if (m_resourceInstance) {
+        kDebug(1000) << "KAMD: resource caption" << caption;
+        m_resourceInstance->setTitle(caption);
+    }
+}
+
 void ReadOnlyPartPrivate::_k_slotGotMimeType(KIO::Job *job, const QString &mime)
 {
-    kDebug(1000) << mime;
+    kDebug(1000) << "This is the mime type we got" << mime;
+
     Q_ASSERT(job == m_job); Q_UNUSED(job)
     // set the mimetype only if it was not already set (for example, by the host application)
     if (m_arguments.mimeType().isEmpty()) {
@@ -731,6 +815,13 @@ bool ReadOnlyPart::openStream( const QString& mimeType, const KUrl& url )
         return false;
     d->m_arguments = args;
     d->m_url = url;
+
+    kDebug(1000)
+        << "A component named"
+        << KGlobal::mainComponent().componentName()
+        << "is opening the stream"
+        << url << mimeType;
+
     return doOpenStream( mimeType );
 }
 
@@ -796,6 +887,12 @@ void ReadWritePart::setModified( bool modified )
         kError(1000) << "Can't set a read-only document to 'modified' !" << endl;
         return;
     }
+
+    if ( modified && d->m_resourceInstance ) {
+        kDebug(1000) << "Notifying kamd of the change";
+        d->m_resourceInstance->notifyModified();
+    }
+
     d->m_bModified = modified;
 }
 

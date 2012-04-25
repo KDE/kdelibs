@@ -717,6 +717,9 @@ private:
     Q_PRIVATE_SLOT(d_func(), void _k_slotStatJobFinished(KJob*))
     Q_PRIVATE_SLOT(d_func(), void _k_slotGotMimeType(KIO::Job *job, const QString &mime))
 
+    Q_PRIVATE_SLOT(d_func(), void _k_slotOpeningCompleted())
+    Q_PRIVATE_SLOT(d_func(), void _k_slotWindowCaptionChanged(const QString & caption))
+
     Q_DISABLE_COPY(ReadOnlyPart)
 };
 class ReadWritePartPrivate;
