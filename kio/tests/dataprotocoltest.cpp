@@ -154,16 +154,17 @@ void DataProtocolTest::runAllTests_data()
     QTest::addColumn<QByteArray>( "url" );
 
     const QByteArray textplain = "text/plain";
+    const QString usascii = QLatin1String( "charset=us-ascii" );
 
     QTest::newRow( "escape resolving" ) <<
         textplain <<
-        QString(QLatin1String( "charset=us-ascii" )) <<
+        usascii <<
         QByteArray( "blah blah" ) <<
         QByteArray( "data:,blah%20blah" );
 
     QTest::newRow( "mime type, escape resolving" ) <<
         QByteArray( "text/html" ) <<
-        QString(QLatin1String( "charset=us-ascii" )) <<
+        usascii <<
         QByteArray( "<div style=\"border:thin orange solid;padding:1ex;background-color:yellow;color:black\">Rich <b>text</b></div>" ) <<
         QByteArray( "data:text/html,<div%20style=\"border:thin%20orange%20solid;"
                     "padding:1ex;background-color:yellow;color:black\">Rich%20<b>text</b>"
@@ -202,6 +203,29 @@ void DataProtocolTest::runAllTests_data()
         QByteArray( "data:;fortune-cookie=\"Master Leep say: \\\"Rabbit is humble, "
                     "Rabbit is gentle; follow the Rabbit\\\"\",(C) 1997 Shadow Warrior "
                     ";-)" );
+
+    // the "greenbytes" tests are taken from http://greenbytes.de/tech/tc/datauri/
+    QTest::newRow( "greenbytes-simplewfrag" ) <<
+        textplain <<
+        usascii <<
+        QByteArray( "test" ) <<
+        QByteArray( "data:,test#foo" );
+
+    QTest::newRow( "greenbytes-simplefrag" ) <<
+        QByteArray( "text/html" ) <<
+        usascii <<
+        QByteArray( "<p>foo</p>" ) <<
+        QByteArray( "data:text/html,%3Cp%3Efoo%3C%2Fp%3E#bar" );
+
+    QTest::newRow( "greenbytes-svg" ) <<
+        QByteArray( "image/svg+xml" ) <<
+        usascii <<
+        QByteArray( "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n"
+                    "  <circle cx=\"100\" cy=\"100\" r=\"25\" stroke=\"black\" stroke-width=\"1\" fill=\"green\"/>\n"
+                    "</svg>\n") <<
+        QByteArray( "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20version%3D%221.1"
+                    "%22%3E%0A%20%20%3Ccircle%20cx%3D%22100%22%20cy%3D%22100%22%20r%3D%2225%22%20stroke%3D%22black%22%20"
+                    "stroke-width%3D%221%22%20fill%3D%22green%22%2F%3E%0A%3C%2Fsvg%3E%0A#bar" );
 }
 
 #include "dataprotocoltest.moc"

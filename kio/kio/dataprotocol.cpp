@@ -178,15 +178,14 @@ static void parseDataHeader(const KUrl &url, DataHeader &header_info) {
   header_info.is_base64 = false;
 
   // decode url and save it
-  QString &raw_url = header_info.url = QUrl::fromPercentEncoding( url.url().toLatin1() );
+  QString &raw_url = header_info.url = url.path().toLatin1();
   int raw_url_len = raw_url.length();
 
-  // jump over scheme part (must be "data:", we don't even check that)
-  header_info.data_offset = raw_url.indexOf(QLatin1Char(':'));
-  header_info.data_offset++;	// jump over colon or to begin if scheme was missing
+  header_info.data_offset = 0;
 
   // read mime type
-  if (header_info.data_offset >= raw_url_len) return;
+  if (raw_url_len == 0)
+    return;
   QString mime_type = extract(raw_url, header_info.data_offset,
   			      QLatin1Char(';'), QLatin1Char(',')).trimmed();
   if (!mime_type.isEmpty()) header_info.mime_type = mime_type;
