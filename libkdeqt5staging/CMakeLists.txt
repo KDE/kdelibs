@@ -14,13 +14,13 @@ ecm_version(5 0 0)
 
 include(ECMQtFramework)
 
-find_package(Qt4 REQUIRED QtCore)
+find_package(Qt5Transitional REQUIRED Core)
 
-include(${QT_USE_FILE})
 
 include(FeatureSummary)
 
 if (NOT QT5_BUILD)
+  include(${QT_USE_FILE})
   # in case we are not built as part of the whole kdelibs
   if (NOT TARGET inqt5)
     find_package(inqt5)
