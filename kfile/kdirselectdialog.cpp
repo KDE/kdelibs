@@ -34,7 +34,6 @@
 #include <kfiletreeview.h>
 #include <kfileitemdelegate.h>
 #include <kglobalsettings.h>
-#include <kicon.h>
 #include <kinputdialog.h>
 #include <kio/job.h>
 #include <kio/deletejob.h>
@@ -323,21 +322,21 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
 
     KAction* newFolder = new KAction( i18nc("@action:inmenu","New Folder..."), this);
     d->m_actions->addAction( newFolder->objectName(), newFolder );
-    newFolder->setIcon( KIcon( "folder-new" ) );
+    newFolder->setIcon( KDE::icon( "folder-new" ) );
     newFolder->setShortcut( Qt::Key_F10);
     connect( newFolder, SIGNAL(triggered(bool)), this, SLOT(slotNewFolder()) );
     d->m_contextMenu->addAction( newFolder );
 
     d->moveToTrash = new KAction( i18nc( "@action:inmenu","Move to Trash" ), this );
     d->m_actions->addAction( d->moveToTrash->objectName(), d->moveToTrash );
-    d->moveToTrash->setIcon( KIcon( "user-trash" ) );
+    d->moveToTrash->setIcon( KDE::icon( "user-trash" ) );
     d->moveToTrash->setShortcut(KShortcut(Qt::Key_Delete));
     connect( d->moveToTrash, SIGNAL(triggered(bool)), this, SLOT(slotMoveToTrash()) );
     d->m_contextMenu->addAction( d->moveToTrash );
 
     d->deleteAction = new KAction( i18nc("@action:inmenu","Delete"), this );
     d->m_actions->addAction( d->deleteAction->objectName(), d->deleteAction );
-    d->deleteAction->setIcon( KIcon( "edit-delete" ) );
+    d->deleteAction->setIcon( KDE::icon( "edit-delete" ) );
     d->deleteAction->setShortcut( KShortcut( Qt::SHIFT + Qt::Key_Delete ) );
     connect( d->deleteAction, SIGNAL(triggered(bool)), this, SLOT(slotDelete()) );
     d->m_contextMenu->addAction( d->deleteAction );
@@ -353,7 +352,7 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
 
     KAction* propertiesAction = new KAction( i18nc("@action:inmenu","Properties"), this);
     d->m_actions->addAction(propertiesAction->objectName(), propertiesAction);
-    propertiesAction->setIcon(KIcon("document-properties"));
+    propertiesAction->setIcon(KDE::icon("document-properties"));
     propertiesAction->setShortcut(KShortcut(Qt::ALT + Qt::Key_Return));
     connect( propertiesAction, SIGNAL(triggered(bool)), this, SLOT(slotProperties()) );
     d->m_contextMenu->addAction( propertiesAction );

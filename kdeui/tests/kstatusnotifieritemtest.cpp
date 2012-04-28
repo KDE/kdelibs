@@ -31,7 +31,6 @@
 #include <kdebug.h>
 #include <kaboutdata.h>
 #include <kmenu.h>
-#include <kicon.h>
 
 KStatusNotifierItemTest::KStatusNotifierItemTest(QObject *parent, KStatusNotifierItem *tray)
   : QObject(parent)
@@ -93,7 +92,7 @@ int main(int argc, char **argv)
 
         tray->setTitle("DBus System tray test");
         tray->setIconByName(args->getOption("active-icon"));
-        //tray->setImage(KIcon("konqueror"));
+        //tray->setImage(KDE::icon("konqueror"));
         //tray->setAttentionIconByName("kmail");
         tray->setOverlayIconByName("emblem-important");
         tray->setAttentionMovieByName(KIconLoader::global()->moviePath( QLatin1String( "newmessage" ), KIconLoader::Panel ));

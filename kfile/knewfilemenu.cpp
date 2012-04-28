@@ -30,7 +30,6 @@
 #include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kdirwatch.h>
-#include <kicon.h>
 #include <kcomponentdata.h>
 #include <kinputdialog.h>
 #include <kdialog.h>
@@ -614,7 +613,7 @@ void KNewFileMenuPrivate::fillMenu()
                 if (templatePath.endsWith("emptydir")) {
                     QAction * act = new QAction(q);
                     m_newDirAction = act;
-                    act->setIcon(KIcon(entry.icon));
+                    act->setIcon(KDE::icon(entry.icon));
                     act->setText(i18nc("@item:inmenu Create New", "%1", entry.text));
                     act->setActionGroup(m_newMenuGroup);
                     menu->addAction(act);
@@ -659,7 +658,7 @@ void KNewFileMenuPrivate::fillMenu()
 
                     QAction * act = new QAction(q);
                     act->setData(i);
-                    act->setIcon(KIcon(entry.icon));
+                    act->setIcon(KDE::icon(entry.icon));
                     act->setText(i18nc("@item:inmenu Create New", "%1", entry.text));
                     act->setActionGroup(m_newMenuGroup);
 
@@ -962,7 +961,7 @@ void KNewFileMenuPrivate::_k_slotUrlDesktopFile()
 }
 
 KNewFileMenu::KNewFileMenu(KActionCollection* collection, const QString& name, QObject* parent)
-    : KActionMenu(KIcon("document-new"), i18n("Create New"), parent),
+    : KActionMenu(KDE::icon("document-new"), i18n("Create New"), parent),
       d(new KNewFileMenuPrivate(this))
 {
     // Don't fill the menu yet
@@ -975,7 +974,7 @@ KNewFileMenu::KNewFileMenu(KActionCollection* collection, const QString& name, Q
 
     d->m_actionCollection->addAction(name, this);
 
-    d->m_menuDev = new KActionMenu(KIcon("drive-removable-media"), i18n("Link to Device"), this);
+    d->m_menuDev = new KActionMenu(KDE::icon("drive-removable-media"), i18n("Link to Device"), this);
 }
 
 KNewFileMenu::~KNewFileMenu()

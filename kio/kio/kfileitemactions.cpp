@@ -30,7 +30,6 @@
 #include <kauthorized.h>
 #include <kconfiggroup.h>
 #include <kdesktopfile.h>
-#include <kicon.h>
 #include <kstandarddirs.h>
 #include <kservicetypetrader.h>
 #include <QFile>
@@ -153,7 +152,7 @@ int KFileItemActionsPrivate::insertServices(const ServiceList& list,
             text.replace('&',"&&");
             act->setText(text);
             if (!(*it).icon().isEmpty()) {
-                act->setIcon(KIcon((*it).icon()));
+                act->setIcon(KDE::icon((*it).icon()));
             }
             act->setData(QVariant::fromValue(*it));
             m_executeServiceActionGroup.addAction(act);
@@ -534,7 +533,7 @@ void KFileItemActions::addOpenWithActionsTo(QMenu* topMenu, const QString& trade
             if (serviceIdList.count() == 1) {
                 const KService::Ptr app = preferredService(d->m_mimeTypeList.first(), traderConstraint);
                 runActionName = i18n("&Open with %1", app->name());
-                runAct->setIcon(KIcon(app->icon()));
+                runAct->setIcon(KDE::icon(app->icon()));
 
                 // Remove that app from the offers list (#242731)
                 for (int i = 0; i < offers.count() ; ++i) {
@@ -700,7 +699,7 @@ KAction* KFileItemActionsPrivate::createAppAction(const KService::Ptr& service, 
 
     KAction *act = new KAction(m_parentWidget);
     m_ownActions.append(act);
-    act->setIcon(KIcon(service->icon()));
+    act->setIcon(KDE::icon(service->icon()));
     act->setText(actionName);
     act->setData(QVariant::fromValue(service));
     m_runApplicationActionGroup.addAction(act);

@@ -53,7 +53,7 @@ class KToggleFullScreenAction;
  * for regular actions.  For example, if you previously had:
  *
  * \code
- * KAction *newAct = new KAction(i18n("&New"), KIcon("document-new"),
+ * KAction *newAct = new KAction(i18n("&New"), KDE::icon("document-new"),
  *                               KStandardShortcut::shortcut(KStandardShortcut::New), this,
  *                               SLOT(fileNew()), actionCollection());
  * \endcode

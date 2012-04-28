@@ -29,7 +29,6 @@
 #include <QtCore/QFileInfo>
 #include <QtXml/QDomAttr>
 
-#include <kicon.h>
 #include <klocalizedstring.h>
 
 using namespace Kross;
@@ -90,7 +89,7 @@ void ActionCollection::setDescription(const QString& description) { d->descripti
 
 QString ActionCollection::iconName() const { return d->iconname; }
 void ActionCollection::setIconName(const QString& iconname) { d->iconname = iconname; emit dataChanged(this); }
-QIcon ActionCollection::icon() const { return KIcon(d->iconname); }
+QIcon ActionCollection::icon() const { return KDE::icon(d->iconname); }
 
 bool ActionCollection::isEnabled() const { return d->enabled; }
 void ActionCollection::setEnabled(bool enabled) { d->enabled = enabled; emit dataChanged(this); emitUpdated(); }

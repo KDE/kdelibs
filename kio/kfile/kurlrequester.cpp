@@ -27,7 +27,6 @@
 #include <khbox.h>
 #include <kstandardshortcut.h>
 #include <kdebug.h>
-#include <kicon.h>
 
 #include <QEvent>
 #include <QDrag>
@@ -241,7 +240,7 @@ void KUrlRequester::KUrlRequesterPrivate::init()
     QWidget *widget = combo ? (QWidget*) combo : (QWidget*) edit;
 
     myButton = new KUrlDragPushButton(m_parent);
-    myButton->setIcon(KIcon("document-open"));
+    myButton->setIcon(KDE::icon("document-open"));
     int buttonSize = widget->sizeHint().height();
     myButton->setFixedSize(buttonSize, buttonSize);
     myButton->setToolTip(i18n("Open file dialog"));

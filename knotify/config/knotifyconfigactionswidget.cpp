@@ -34,13 +34,13 @@ KNotifyConfigActionsWidget::KNotifyConfigActionsWidget( QWidget * parent )
 	if ( !soundDirs.isEmpty() )
             m_ui.Sound_select->setStartDir(QUrl::fromLocalFile(soundDirs.last()));
 
-	m_ui.Sound_play->setIcon(KIcon("media-playback-start"));
-	m_ui.Sound_check->setIcon(KIcon("media-playback-start"));
-	m_ui.Popup_check->setIcon(KIcon("dialog-information"));
-	m_ui.Logfile_check->setIcon(KIcon("text-x-generic"));
-	m_ui.Execute_check->setIcon(KIcon("system-run"));
-	m_ui.Taskbar_check->setIcon(KIcon("services"));
-	m_ui.KTTS_check->setIcon(KIcon("text-speak"));
+	m_ui.Sound_play->setIcon(KDE::icon("media-playback-start"));
+	m_ui.Sound_check->setIcon(KDE::icon("media-playback-start"));
+	m_ui.Popup_check->setIcon(KDE::icon("dialog-information"));
+	m_ui.Logfile_check->setIcon(KDE::icon("text-x-generic"));
+	m_ui.Execute_check->setIcon(KDE::icon("system-run"));
+	m_ui.Taskbar_check->setIcon(KDE::icon("services"));
+	m_ui.KTTS_check->setIcon(KDE::icon("text-speak"));
 
 	connect(m_ui.Execute_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));
 	connect(m_ui.Sound_check,SIGNAL(toggled(bool)), this, SIGNAL(changed()));

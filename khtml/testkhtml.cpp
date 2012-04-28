@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     e.setAttribute( "name", "print" );
     toolBar.insertBefore( e, toolBar.firstChild() );
 
-    KAction *action = new KAction(KIcon("view-refresh"),  "Reload", doc );
+    KAction *action = new KAction(KDE::icon("view-refresh"),  "Reload", doc );
     doc->actionCollection()->addAction( "reload", action );
     QObject::connect(action, SIGNAL(triggered(bool)), dummy, SLOT(reload()));
     action->setShortcut(Qt::Key_F5);
@@ -105,16 +105,16 @@ int main(int argc, char *argv[])
     doc->actionCollection()->addAction( "debugDoBenchmark", bench );
     QObject::connect(bench, SIGNAL(triggered(bool)), dummy, SLOT(doBenchmark()));
 
-    KAction *kprint = new KAction(KIcon("document-print"),  "Print", doc );
+    KAction *kprint = new KAction(KDE::icon("document-print"),  "Print", doc );
     doc->actionCollection()->addAction( "print", kprint );
     QObject::connect(kprint, SIGNAL(triggered(bool)), doc->browserExtension(), SLOT(print()));
     kprint->setEnabled(true);
-    KToggleAction *ta = new KToggleAction( KIcon("edit-rename"), "Navigable", doc );
+    KToggleAction *ta = new KToggleAction( KDE::icon("edit-rename"), "Navigable", doc );
     doc->actionCollection()->addAction( "navigable", ta );
     ta->setShortcuts( KShortcut() );
     ta->setChecked(doc->isCaretMode());
     QWidget::connect(ta, SIGNAL(toggled(bool)), dummy, SLOT(toggleNavigable(bool)));
-    ta = new KToggleAction( KIcon("document-properties"), "Editable", doc );
+    ta = new KToggleAction( KDE::icon("document-properties"), "Editable", doc );
     doc->actionCollection()->addAction( "editable", ta );
     ta->setShortcuts( KShortcut() );
     ta->setChecked(doc->isEditable());

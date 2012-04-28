@@ -27,7 +27,6 @@
 #include <QGroupBox>
 #include <QCloseEvent>
 
-#include <kicon.h>
 #include <kaboutdata.h>
 #include <kcombobox.h>
 #include <ktoolinvocation.h>
@@ -116,7 +115,7 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
 
   KTitleWidget *title = new KTitleWidget( this );
   title->setText(i18n( "Submit Bug Report" ) );
-  title->setPixmap( KIcon( "tools-report-bug" ).pixmap( 32 ) );
+  title->setPixmap( KDE::icon( "tools-report-bug" ).pixmap( 32 ) );
   lay->addWidget( title );
 
   QGridLayout *glay = new QGridLayout();
@@ -298,7 +297,7 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
     d->_k_updateUrl();
 
     setButtonText(Ok, i18n("&Launch Bug Report Wizard"));
-    setButtonIcon(Ok, KIcon("tools-report-bug"));
+    setButtonIcon(Ok, KDE::icon("tools-report-bug"));
   }
   parent->setMinimumHeight( parent->sizeHint().height() + 20 ); // WORKAROUND: prevent "cropped" kcombobox
   setMainWidget(parent);

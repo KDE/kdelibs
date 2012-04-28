@@ -35,7 +35,6 @@
 #include <klocalizedstring.h>
 #include <kstandardshortcut.h>
 #include <kmainwindow.h>
-#include <kicon.h>
 
 #include "kdualaction.h"
 #include "krecentfilesaction.h"
@@ -139,7 +138,7 @@ KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
      }
     }
 
-    QIcon icon = iconName.isEmpty() ? QIcon() : KIcon(iconName);
+    QIcon icon = iconName.isEmpty() ? QIcon() : KDE::icon(iconName);
 
     switch ( id ) {
      case OpenRecent:
@@ -470,7 +469,7 @@ static KAction *buildAutomaticAction( QObject* parent, StandardAction id, const 
     return 0;
 
   AutomaticAction *action = new AutomaticAction(
-      KIcon( p->psIconName ),
+      KDE::icon( p->psIconName ),
       i18n(p->psLabel),
       KStandardShortcut::shortcut( p->idAccel ),
       slot,
@@ -515,7 +514,7 @@ KToggleAction *showMenubar(const QObject *recvr, const char *slot, QObject *pare
 {
   KToggleAction *ret = new KToggleAction(i18n( "Show &Menubar" ), parent);
   ret->setObjectName(name(ShowMenubar));
-  ret->setIcon( KIcon( "show-menu" ) );
+  ret->setIcon( KDE::icon( "show-menu" ) );
 
   ret->setShortcut( KStandardShortcut::shortcut( KStandardShortcut::ShowMenubar ) );
 

@@ -34,7 +34,6 @@
 #include <QtCore/QVariant>
 #include <QTextCodec>
 
-#include <kicon.h>
 #include <kdebug.h>
 #include <kcomponentdata.h>
 #include <kglobal.h>
@@ -637,7 +636,7 @@ void KXMLGUIFactoryPrivate::configureAction( QAction *action, const QDomAttr &at
         return;
 
     if ( equals(attrName, "icon") ) {
-        action->setIcon( KIcon( attribute.value() ) );
+        action->setIcon( KDE::icon( attribute.value() ) );
         return;
     }
 

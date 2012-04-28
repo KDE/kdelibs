@@ -47,7 +47,6 @@
 #include <kedittoolbar.h>
 #include <kglobalsettings.h>
 #include <kguiitem.h>
-#include <kicon.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kxmlguiwindow.h>
@@ -388,7 +387,7 @@ KMenu *KToolBar::Private::contextMenu(const QPoint &globalPos)
       unlockedMovable = false;
 
     delete contextLockAction;
-    contextLockAction = new KToggleAction(KIcon("system-lock-screen"), i18n("Lock Toolbar Positions"), q);
+    contextLockAction = new KToggleAction(KDE::icon("system-lock-screen"), i18n("Lock Toolbar Positions"), q);
     contextLockAction->setChecked(q->toolBarsLocked());
     connect(contextLockAction, SIGNAL(toggled(bool)), q, SLOT(slotLockToolBars(bool)));
 

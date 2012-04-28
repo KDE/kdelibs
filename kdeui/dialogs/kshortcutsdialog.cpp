@@ -35,7 +35,6 @@
 #include <QApplication>
 #include <QDomDocument>
 
-#include <kicon.h>
 #include <kmessagebox.h>
 #include <kxmlguiclient.h>
 #include <kxmlguifactory.h>
@@ -123,7 +122,7 @@ KShortcutsDialog::KShortcutsDialog( KShortcutsEditor::ActionTypes types, KShortc
     setCaption(i18n("Configure Shortcuts"));
     setButtons(Details|Reset|Ok|Cancel|KDialog::User1);
     setButtonText(KDialog::User1, i18n("Print"));
-    setButtonIcon(KDialog::User1, KIcon("document-print"));
+    setButtonIcon(KDialog::User1, KDE::icon("document-print"));
     setModal(true);
     d->m_keyChooser = new KShortcutsEditor( this, types, allowLetterShortcuts );
     setMainWidget( d->m_keyChooser );

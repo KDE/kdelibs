@@ -38,8 +38,8 @@ KHTMLFindBar::KHTMLFindBar( QWidget *parent ) :
 {
     setupUi( centralWidget() );
 
-    m_next->setIcon( KIcon( "go-down-search" ) );
-    m_previous->setIcon( KIcon( "go-up-search" ) );
+    m_next->setIcon( KDE::icon( "go-down-search" ) );
+    m_previous->setIcon( KDE::icon( "go-up-search" ) );
     m_next->setDisabled( true );
     m_previous->setDisabled( true );
 

@@ -66,7 +66,7 @@ TestKHTML::TestKHTML()
     connect(m_goButton, SIGNAL(clicked()), this, SLOT(openUrl()));
 
     m_reloadButton = new QToolButton;
-    m_reloadButton->setIcon(KIcon("view-refresh"));
+    m_reloadButton->setIcon(KDE::icon("view-refresh"));
     connect(m_reloadButton, SIGNAL(clicked()), this, SLOT(reload()));
 
     QHBoxLayout *topLayout = new QHBoxLayout;
@@ -151,23 +151,23 @@ void TestKHTML::setupActions()
     element.setAttribute("name", "print");
     toolBar.insertBefore(element, toolBar.firstChild());
 
-    KAction *action = new KAction(KIcon("view-refresh"), "Reload", this );
+    KAction *action = new KAction(KDE::icon("view-refresh"), "Reload", this );
     m_part->actionCollection()->addAction( "reload", action );
     connect(action, SIGNAL(triggered(bool)), this, SLOT(reload()));
     action->setShortcut(Qt::Key_F5);
 
-    KAction *kprint = new KAction(KIcon("document-print"), "Print", this );
+    KAction *kprint = new KAction(KDE::icon("document-print"), "Print", this );
     m_part->actionCollection()->addAction( "print", kprint );
     connect(kprint, SIGNAL(triggered(bool)), m_part->browserExtension(), SLOT(print()));
     kprint->setEnabled(true);
 
-    KToggleAction *ta = new KToggleAction( KIcon("edit-rename"), "Navigable", this );
+    KToggleAction *ta = new KToggleAction( KDE::icon("edit-rename"), "Navigable", this );
     actionCollection()->addAction( "navigable", ta );
     ta->setShortcuts( KShortcut() );
     ta->setChecked(m_part->isCaretMode());
     connect(ta, SIGNAL(toggled(bool)), this, SLOT(toggleNavigable(bool)));
 
-    ta = new KToggleAction( KIcon("document-properties"), "Editable", this );
+    ta = new KToggleAction( KDE::icon("document-properties"), "Editable", this );
     actionCollection()->addAction( "editable", ta );
     ta->setShortcuts( KShortcut() );
     ta->setChecked(m_part->isEditable());

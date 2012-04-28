@@ -20,7 +20,6 @@
 #ifndef KDUALACTION_P_H
 #define KDUALACTION_P_H
 
-#include <kicon.h>
 
 class KDualActionPrivate
 {
@@ -51,7 +50,7 @@ public:
 
     void setIcon(bool active, const QIcon &icon)
     {
-        item(active).setIcon(KIcon(icon));
+        item(active).setIcon(icon);
         updatedItem(active);
     }
 

@@ -464,7 +464,7 @@ public Q_SLOTS:
      * Example (adding a help button to the first toolbar):
      *
      * \code
-     * toolBar(0)->addAction(KIcon("help-contents"), i18n("Help"),
+     * toolBar(0)->addAction(KDE::icon("help-contents"), i18n("Help"),
      *                       this, SLOT(appHelpActivated()));
      * \endcode
      *

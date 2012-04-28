@@ -20,7 +20,6 @@
 
 #include <kiconloader.h>
 #include <klocalizedstring.h>
-#include <kicon.h>
 #include "downloaddialog.h"
 
 namespace KNS3
@@ -56,7 +55,7 @@ Button::~Button()
 
 void Button::init()
 {
-    setIcon(KIcon("get-hot-new-stuff"));
+    setIcon(KDE::icon("get-hot-new-stuff"));
     connect(this, SIGNAL(clicked()), SLOT(showDialog()));
 }
 

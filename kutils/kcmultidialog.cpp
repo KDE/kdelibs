@@ -32,7 +32,6 @@
 #include <kauthorized.h>
 #include <kguiitem.h>
 #include <khbox.h>
-#include <kicon.h>
 #include <klocalizedstring.h>
 #include <kpagewidgetmodel.h>
 #include <kpushbutton.h>
@@ -182,10 +181,10 @@ void KCMultiDialogPrivate::_k_updateHeader(bool use, const QString &message)
     if (use) {
         item->setHeader( "<b>"+kcm->moduleInfo().comment() + "</b><br><i>" +
                          message + "</i>" );
-        item->setIcon( KIcon( kcm->moduleInfo().icon(), 0, QStringList() << "dialog-warning" ) );
+        item->setIcon( KDE::icon( kcm->moduleInfo().icon(), 0, QStringList() << "dialog-warning" ) );
     } else {
         item->setHeader( kcm->moduleInfo().comment() );
-        item->setIcon( KIcon( kcm->moduleInfo().icon() ) );
+        item->setIcon( KDE::icon( kcm->moduleInfo().icon() ) );
     }
 }
 
@@ -390,10 +389,10 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
 
     if (kcm->useRootOnlyMessage()) {
         item->setHeader( "<b>"+moduleInfo.comment() + "</b><br><i>" + kcm->rootOnlyMessage() + "</i>" );
-        item->setIcon( KIcon( moduleInfo.icon(), 0, QStringList() << "dialog-warning" ) );
+        item->setIcon( KDE::icon( moduleInfo.icon(), 0, QStringList() << "dialog-warning" ) );
     } else {
         item->setHeader( moduleInfo.comment() );
-        item->setIcon( KIcon( moduleInfo.icon() ) );
+        item->setIcon( KDE::icon( moduleInfo.icon() ) );
     }
     item->setProperty("_k_weight", moduleInfo.weight());
 

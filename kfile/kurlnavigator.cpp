@@ -31,7 +31,6 @@
 #include <kfileitem.h>
 #include <kfileplacesmodel.h>
 #include <kglobalsettings.h>
-#include <kicon.h>
 #include <klocalizedstring.h>
 #include <kmenu.h>
 #include <kprotocolinfo.h>
@@ -422,11 +421,11 @@ void KUrlNavigator::Private::openContextMenu()
 
     // provide 'Copy' action, which copies the current URL of
     // the URL navigator into the clipboard
-    QAction* copyAction = popup.addAction(KIcon("edit-copy"), i18n("Copy"));
+    QAction* copyAction = popup.addAction(KDE::icon("edit-copy"), i18n("Copy"));
 
     // provide 'Paste' action, which copies the current clipboard text
     // into the URL navigator
-    QAction* pasteAction = popup.addAction(KIcon("edit-paste"), i18n("Paste"));
+    QAction* pasteAction = popup.addAction(KDE::icon("edit-paste"), i18n("Paste"));
     QClipboard* clipboard = QApplication::clipboard();
     pasteAction->setEnabled(!clipboard->text().isEmpty());
 

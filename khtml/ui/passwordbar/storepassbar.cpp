@@ -32,10 +32,10 @@ StorePassBar::StorePassBar( QWidget *parent ) :
 {
   setupUi( centralWidget() );
 
-  m_store->setIcon( KIcon( "document-save" ) );
+  m_store->setIcon( KDE::icon( "document-save" ) );
   // Same as KStandardGuiItem::no()
-  m_neverForThisSite->setIcon( KIcon( "process-stop" ) ); 
-  m_doNotStore->setIcon( KIcon( "dialog-cancel" ) );
+  m_neverForThisSite->setIcon( KDE::icon( "process-stop" ) ); 
+  m_doNotStore->setIcon( KDE::icon( "dialog-cancel" ) );
   centralWidget()->setFocusProxy( m_store );
   
   QPalette pal = palette();

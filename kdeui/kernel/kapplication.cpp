@@ -29,6 +29,7 @@
 #include <QStyleFactory>
 #include <QtCore/QTimer>
 #include <QWidget>
+#include <QIcon>
 #include <QtCore/QList>
 #include <QtDBus/QtDBus>
 #include <QtCore/QMetaType>
@@ -43,7 +44,6 @@
 #include "kglobalsettings.h"
 #include "kdebug.h"
 #include "kglobal.h"
-#include "kicon.h"
 #include "klocale.h"
 #include "ksessionmanager.h"
 #include "kstandarddirs.h"
@@ -53,6 +53,7 @@
 #include "kurl.h"
 #include "kmessage.h"
 #include "kmessageboxmessagehandler.h"
+#include <kiconloader.h>
 
 #if defined Q_WS_X11
 #include <qx11info_x11.h>
@@ -841,10 +842,10 @@ void KApplicationPrivate::parseCommandLine( )
     if ( q->type() != KApplication::Tty ) {
         if (args && args->isSet("icon"))
         {
-            q->setWindowIcon(KIcon(args->getOption("icon")));
+            q->setWindowIcon(KDE::icon(args->getOption("icon")));
         }
         else {
-            q->setWindowIcon(KIcon(componentData.aboutData()->programIconName()));
+            q->setWindowIcon(KDE::icon(componentData.aboutData()->programIconName()));
         }
     }
 

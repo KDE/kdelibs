@@ -32,7 +32,6 @@ class KConfig;
 #include <krandom.h>
 #include <kcmdlineargs.h>
 #include <kiconloader.h>
-#include <kicontheme.h>
 #include <QPixmap>
 #include <QIcon>
 #endif

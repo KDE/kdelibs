@@ -32,7 +32,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QLabel>
 #include <QLayout>
 
-#include <kicon.h>
 #include <kaboutdata.h>
 #include <kconfig.h>
 #include <kdebug.h>
@@ -238,7 +237,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
 
   d->database = database;
 
-  setWindowIcon(KIcon("ktip"));
+  setWindowIcon(KDE::icon("ktip"));
 
   QWidget *widget = new QWidget( this );
   setMainWidget( widget );

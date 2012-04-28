@@ -39,7 +39,6 @@
 #include <kuser.h>
 #include <kstandarddirs.h>
 #include <kcomponentdata.h>
-#include <kicon.h>
 #include <kmimetype.h>
 #include <kdebug.h>
 #include <kurlmimedata.h>
@@ -209,9 +208,9 @@ bool KFilePlacesModel::setupNeeded(const QModelIndex &index) const
     return data(index, SetupNeededRole).toBool();
 }
 
-KIcon KFilePlacesModel::icon(const QModelIndex &index) const
+QIcon KFilePlacesModel::icon(const QModelIndex &index) const
 {
-    return KIcon(data(index, Qt::DecorationRole).value<QIcon>());
+    return data(index, Qt::DecorationRole).value<QIcon>();
 }
 
 QString KFilePlacesModel::text(const QModelIndex &index) const
@@ -771,7 +770,7 @@ QAction *KFilePlacesModel::teardownActionForIndex(const QModelIndex &index) cons
         }
 
         if (!iconName.isEmpty()) {
-            return new QAction(KIcon(iconName), text, 0);
+            return new QAction(KDE::icon(iconName), text, 0);
         } else {
             return new QAction(text, 0);
         }
@@ -789,7 +788,7 @@ QAction *KFilePlacesModel::ejectActionForIndex(const QModelIndex &index) const
         QString label = data(index, Qt::DisplayRole).toString().replace('&',"&&");
         QString text = i18n("&Eject '%1'", label);
 
-        return new QAction(KIcon("media-eject"), text, 0);
+        return new QAction(KDE::icon("media-eject"), text, 0);
     }
 
     return 0;

@@ -19,7 +19,6 @@
 
 #include <kmenu.h>
 #include <kdebug.h>
-#include <kicon.h>
 
 #include <knewstuff3/core/engine.h>
 #include <knewstuff3/ui/imageloader.h>
@@ -53,9 +52,9 @@ void EntryDetails::init()
     connect(ui->updateButton, SIGNAL(clicked()), this, SLOT(install()));
     connect(ui->becomeFanButton, SIGNAL(clicked()), this, SLOT(becomeFan()));
 
-    ui->installButton->setIcon(KIcon("dialog-ok"));
-    ui->updateButton->setIcon(KIcon("system-software-update"));
-    ui->uninstallButton->setIcon(KIcon("edit-delete"));
+    ui->installButton->setIcon(KDE::icon("dialog-ok"));
+    ui->updateButton->setIcon(KDE::icon("system-software-update"));
+    ui->uninstallButton->setIcon(KDE::icon("edit-delete"));
 
     connect(m_engine, SIGNAL(signalEntryDetailsLoaded(KNS3::EntryInternal)),
             this, SLOT(entryChanged(KNS3::EntryInternal)));
@@ -225,7 +224,7 @@ void EntryDetails::updateButtons()
             if (!info.distributionType.trimmed().isEmpty()) {
                 text + " (" + info.distributionType.trimmed() + ")";
             }
-            QAction* installAction = installMenu->addAction(KIcon("dialog-ok"), text);
+            QAction* installAction = installMenu->addAction(KDE::icon("dialog-ok"), text);
             installAction->setData(info.id);
         }
         kDebug() << "links: " << m_entry.downloadLinkInformationList().size();

@@ -34,7 +34,7 @@ static QScriptValue iconCtor(QScriptContext *ctx, QScriptEngine *eng)
     if (ctx->argumentCount() > 0) {
         QScriptValue v = ctx->argument(0);
         if (v.isString()) {
-            QIcon icon = KIcon(v.toString());
+            QIcon icon = KDE::icon(v.toString());
             return qScriptValueFromValue(eng, icon);
         } else if (v.isVariant()) {
             QVariant variant = v.toVariant();

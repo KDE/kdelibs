@@ -39,7 +39,6 @@
 #include <kdebug.h>
 #include <kdialog.h>
 #include <kglobal.h>
-#include <kicon.h>
 #include <kiconloader.h>
 #include <klineedit.h>
 #include <knotification.h>
@@ -273,7 +272,7 @@ void KDatePicker::initWidget( const QDate &date_ )
     d->selectWeek = new KComboBox( this );  // read only week selection
     d->selectWeek->setFocusPolicy( Qt::NoFocus );
     d->todayButton = new QToolButton( this );
-    d->todayButton->setIcon( KIcon( "go-jump-today" ) );
+    d->todayButton->setIcon( KDE::icon( "go-jump-today" ) );
 
     d->yearForward->setToolTip( i18n( "Next year" ) );
     d->yearBackward->setToolTip( i18n( "Previous year" ) );
@@ -289,15 +288,15 @@ void KDatePicker::initWidget( const QDate &date_ )
     d->line->setValidator( d->val );
     d->line->installEventFilter( this );
     if ( QApplication::isRightToLeft() ) {
-        d->yearForward->setIcon( KIcon( QLatin1String( "arrow-left-double" ) ) );
-        d->yearBackward->setIcon( KIcon( QLatin1String( "arrow-right-double" ) ) );
-        d->monthForward->setIcon( KIcon( QLatin1String( "arrow-left" ) ) );
-        d->monthBackward->setIcon( KIcon( QLatin1String( "arrow-right" ) ) );
+        d->yearForward->setIcon( KDE::icon( QLatin1String( "arrow-left-double" ) ) );
+        d->yearBackward->setIcon( KDE::icon( QLatin1String( "arrow-right-double" ) ) );
+        d->monthForward->setIcon( KDE::icon( QLatin1String( "arrow-left" ) ) );
+        d->monthBackward->setIcon( KDE::icon( QLatin1String( "arrow-right" ) ) );
     } else {
-        d->yearForward->setIcon( KIcon( QLatin1String( "arrow-right-double" ) ) );
-        d->yearBackward->setIcon( KIcon( QLatin1String( "arrow-left-double" ) ) );
-        d->monthForward->setIcon( KIcon( QLatin1String( "arrow-right" ) ) );
-        d->monthBackward->setIcon( KIcon( QLatin1String( "arrow-left" ) ) );
+        d->yearForward->setIcon( KDE::icon( QLatin1String( "arrow-right-double" ) ) );
+        d->yearBackward->setIcon( KDE::icon( QLatin1String( "arrow-left-double" ) ) );
+        d->monthForward->setIcon( KDE::icon( QLatin1String( "arrow-right" ) ) );
+        d->monthBackward->setIcon( KDE::icon( QLatin1String( "arrow-left" ) ) );
     }
 
     connect( d->table, SIGNAL(dateChanged(QDate)), SLOT(dateChangedSlot(QDate)) );

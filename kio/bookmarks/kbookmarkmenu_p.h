@@ -25,7 +25,6 @@
 #include <QtCore/QObject>
 
 #include <kdialog.h>
-#include <kicon.h>
 #include <klocalizedstring.h>
 #include <kaction.h>
 #include <kactionmenu.h>

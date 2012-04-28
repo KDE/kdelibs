@@ -21,7 +21,6 @@
 #include "kdirlister.h"
 #include "kfileitem.h"
 #include <kdatetime.h>
-#include <kicon.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kio/copyjob.h>
@@ -35,6 +34,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QDir>
+#include <QIcon>
 #include <sys/types.h>
 #include <dirent.h>
 
@@ -690,7 +690,7 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                 }
                 Q_ASSERT(!item.isNull());
                 //kDebug(7008) << item->url() << " overlays=" << item->overlays();
-                return KIcon(item.iconName(), 0, item.overlays());
+                return KDE::icon(item.iconName(), 0, item.overlays());
             }
             break;
         case Qt::TextAlignmentRole:

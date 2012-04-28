@@ -37,7 +37,6 @@
 #include <klocalizedstring.h>
 #include <kcmdlineargs.h>
 #include <kmenubar.h>
-#include <kicon.h>
 
 TestMainWindow::TestMainWindow()
     : KXmlGuiWindow()
@@ -77,7 +76,7 @@ TestMainWindow::TestMainWindow()
     KAction * paQuit = new KAction( "&Quit", this );
     coll->addAction( "shell_quit", paQuit );
     connect(paQuit, SIGNAL(triggered()), this, SLOT(close()));
-    paQuit->setIcon(KIcon("application-exit"));
+    paQuit->setIcon(KDE::icon("application-exit"));
     pFile->addAction(paQuit);
 
     setCentralWidget( m_splitter );

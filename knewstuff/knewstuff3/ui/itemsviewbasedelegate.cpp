@@ -22,7 +22,6 @@
 #include "entrydetailsdialog.h"
 
 #include <kdebug.h>
-#include <kicon.h>
 #include <kiconloader.h>
 #include <kstandarddirs.h>
 
@@ -32,10 +31,10 @@ ItemsViewBaseDelegate::ItemsViewBaseDelegate(QAbstractItemView *itemView, Engine
         : KWidgetItemDelegate(itemView, parent)
         , m_engine(engine)
         , m_itemView(itemView)
-        , m_iconInvalid(KIcon("dialog-error"))
-        , m_iconInstall(KIcon("dialog-ok"))
-        , m_iconUpdate(KIcon("system-software-update"))
-        , m_iconDelete(KIcon("edit-delete"))
+        , m_iconInvalid(KDE::icon("dialog-error"))
+        , m_iconInstall(KDE::icon("dialog-ok"))
+        , m_iconUpdate(KDE::icon("system-software-update"))
+        , m_iconDelete(KDE::icon("edit-delete"))
         , m_noImage(SmallIcon( "image-missing", KIconLoader::SizeLarge, KIconLoader::DisabledState ))
 {
     QString framefile = KStandardDirs::locate("data", "knewstuff/pics/thumb_frame.png");

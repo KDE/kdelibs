@@ -21,7 +21,6 @@
 #define PHONON_MEDIACONTROLS_P_H
 
 #include "mediacontrols.h"
-#include <kicon.h>
 #include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <phonon/volumeslider.h>
@@ -47,12 +46,12 @@ class MediaControlsPrivate
             int size = KIconLoader::global()->currentSize(KIconLoader::Toolbar);
             QSize iconSize(size, size);
             playButton.setIconSize(iconSize);
-            playButton.setIcon(KIcon("media-playback-start"));
+            playButton.setIcon(KDE::icon("media-playback-start"));
             playButton.setToolTip(i18n("start playback"));
             playButton.setAutoRaise(true);
 
             pauseButton.setIconSize(iconSize);
-            pauseButton.setIcon(KIcon("media-playback-pause"));
+            pauseButton.setIcon(KDE::icon("media-playback-pause"));
             pauseButton.setToolTip(i18n("pause playback"));
             pauseButton.hide();
             pauseButton.setAutoRaise(true);

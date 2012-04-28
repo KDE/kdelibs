@@ -211,30 +211,30 @@ KWebPage::KWebPage(QObject *parent, Integration flags)
         setWallet(new KWebWallet(0, (window ? window->winId() : 0) ));
     }
 
-    setActionIcon(action(Back), KIcon("go-previous"));
-    setActionIcon(action(Forward), KIcon("go-next"));
-    setActionIcon(action(Reload), KIcon("view-refresh"));
-    setActionIcon(action(Stop), KIcon("process-stop"));
-    setActionIcon(action(Cut), KIcon("edit-cut"));
-    setActionIcon(action(Copy), KIcon("edit-copy"));
-    setActionIcon(action(Paste), KIcon("edit-paste"));
-    setActionIcon(action(Undo), KIcon("edit-undo"));
-    setActionIcon(action(Redo), KIcon("edit-redo"));
-    setActionIcon(action(InspectElement), KIcon("view-process-all"));
-    setActionIcon(action(OpenLinkInNewWindow), KIcon("window-new"));
-    setActionIcon(action(OpenFrameInNewWindow), KIcon("window-new"));
-    setActionIcon(action(OpenImageInNewWindow), KIcon("window-new"));
-    setActionIcon(action(CopyLinkToClipboard), KIcon("edit-copy"));
-    setActionIcon(action(CopyImageToClipboard), KIcon("edit-copy"));
-    setActionIcon(action(ToggleBold), KIcon("format-text-bold"));
-    setActionIcon(action(ToggleItalic), KIcon("format-text-italic"));
-    setActionIcon(action(ToggleUnderline), KIcon("format-text-underline"));
-    setActionIcon(action(DownloadLinkToDisk), KIcon("document-save"));
-    setActionIcon(action(DownloadImageToDisk), KIcon("document-save"));
+    setActionIcon(action(Back), KDE::icon("go-previous"));
+    setActionIcon(action(Forward), KDE::icon("go-next"));
+    setActionIcon(action(Reload), KDE::icon("view-refresh"));
+    setActionIcon(action(Stop), KDE::icon("process-stop"));
+    setActionIcon(action(Cut), KDE::icon("edit-cut"));
+    setActionIcon(action(Copy), KDE::icon("edit-copy"));
+    setActionIcon(action(Paste), KDE::icon("edit-paste"));
+    setActionIcon(action(Undo), KDE::icon("edit-undo"));
+    setActionIcon(action(Redo), KDE::icon("edit-redo"));
+    setActionIcon(action(InspectElement), KDE::icon("view-process-all"));
+    setActionIcon(action(OpenLinkInNewWindow), KDE::icon("window-new"));
+    setActionIcon(action(OpenFrameInNewWindow), KDE::icon("window-new"));
+    setActionIcon(action(OpenImageInNewWindow), KDE::icon("window-new"));
+    setActionIcon(action(CopyLinkToClipboard), KDE::icon("edit-copy"));
+    setActionIcon(action(CopyImageToClipboard), KDE::icon("edit-copy"));
+    setActionIcon(action(ToggleBold), KDE::icon("format-text-bold"));
+    setActionIcon(action(ToggleItalic), KDE::icon("format-text-italic"));
+    setActionIcon(action(ToggleUnderline), KDE::icon("format-text-underline"));
+    setActionIcon(action(DownloadLinkToDisk), KDE::icon("document-save"));
+    setActionIcon(action(DownloadImageToDisk), KDE::icon("document-save"));
 
-    settings()->setWebGraphic(QWebSettings::MissingPluginGraphic, KIcon("preferences-plugin").pixmap(32, 32));
-    settings()->setWebGraphic(QWebSettings::MissingImageGraphic, KIcon("image-missing").pixmap(32, 32));
-    settings()->setWebGraphic(QWebSettings::DefaultFrameIconGraphic, KIcon("applications-internet").pixmap(32, 32));
+    settings()->setWebGraphic(QWebSettings::MissingPluginGraphic, KDE::icon("preferences-plugin").pixmap(32, 32));
+    settings()->setWebGraphic(QWebSettings::MissingImageGraphic, KDE::icon("image-missing").pixmap(32, 32));
+    settings()->setWebGraphic(QWebSettings::DefaultFrameIconGraphic, KDE::icon("applications-internet").pixmap(32, 32));
 
     setActionShortcut(action(Back), KStandardShortcut::back());
     setActionShortcut(action(Forward), KStandardShortcut::forward());

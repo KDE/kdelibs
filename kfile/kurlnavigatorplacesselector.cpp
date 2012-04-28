@@ -33,7 +33,6 @@
 #include <QDropEvent>
 #include <QPainter>
 #include <QPixmap>
-#include <kicon.h>
 
 namespace KDEPrivate
 {
@@ -125,7 +124,7 @@ void KUrlNavigatorPlacesSelector::updateSelection(const KUrl& url)
         m_selectedItem = -1;
         // No bookmark has been found which matches to the given Url. Show
         // a generic folder icon as pixmap for indication:
-        setIcon(KIcon("folder"));
+        setIcon(KDE::icon("folder"));
     }
     updateTeardownAction();
 }

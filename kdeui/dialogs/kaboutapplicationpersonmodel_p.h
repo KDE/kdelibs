@@ -18,7 +18,6 @@
 #ifndef KABOUT_APPLICATION_PERSON_MODEL_H
 #define KABOUT_APPLICATION_PERSON_MODEL_H
 
-#include "kicon.h"
 #include "dialogs/kaboutapplicationconfigattica_p.h"
 
 #ifdef HAVE_ATTICA
@@ -29,6 +28,7 @@
 #include <kaboutdata.h>
 #include <qurl.h>
 
+#include <QIcon>
 #include <QtCore/QAbstractListModel>
 #include <QPixmap>
 #include <QtNetwork/QNetworkReply>

@@ -151,7 +151,7 @@ class KRockerGesture;
  * \code
  * KAction *newAct = actionCollection()->addAction("quick-connect");
  * newAct->setText(i18n("Quick Connect"))
- * newAct->setIcon(KIcon("quick-connect"));
+ * newAct->setIcon(KDE::icon("quick-connect"));
  * newAct->setShortcut(Qt::Key_F6);
  * connect(newAct, SIGNAL(triggered()), this, SLOT(quickConnect()));
  * \endcode

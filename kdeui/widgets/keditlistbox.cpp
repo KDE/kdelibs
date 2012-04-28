@@ -26,7 +26,6 @@
 #include <QLayout>
 #include <QListView>
 
-#include <kicon.h>
 #include <kcombobox.h>
 #include <kdebug.h>
 #include <kdialog.h>
@@ -324,7 +323,7 @@ void KEditListBox::setButtons( Buttons buttons )
         return;
 
     if ( ( buttons & Add ) && !d->servNewButton ) {
-        d->servNewButton = new KPushButton(KIcon("list-add"), i18n("&Add"), this);
+        d->servNewButton = new KPushButton(KDE::icon("list-add"), i18n("&Add"), this);
         d->servNewButton->setEnabled(false);
         d->servNewButton->show();
         connect(d->servNewButton, SIGNAL(clicked()), SLOT(addItem()));
@@ -336,7 +335,7 @@ void KEditListBox::setButtons( Buttons buttons )
     }
 
     if ( ( buttons & Remove ) && !d->servRemoveButton ) {
-        d->servRemoveButton = new KPushButton(KIcon("list-remove"), i18n("&Remove"), this);
+        d->servRemoveButton = new KPushButton(KDE::icon("list-remove"), i18n("&Remove"), this);
         d->servRemoveButton->setEnabled(false);
         d->servRemoveButton->show();
         connect(d->servRemoveButton, SIGNAL(clicked()), SLOT(removeItem()));
@@ -348,12 +347,12 @@ void KEditListBox::setButtons( Buttons buttons )
     }
 
     if ( ( buttons & UpDown ) && !d->servUpButton ) {
-        d->servUpButton = new KPushButton(KIcon("arrow-up"), i18n("Move &Up"), this);
+        d->servUpButton = new KPushButton(KDE::icon("arrow-up"), i18n("Move &Up"), this);
         d->servUpButton->setEnabled(false);
         d->servUpButton->show();
         connect(d->servUpButton, SIGNAL(clicked()), SLOT(moveItemUp()));
 
-        d->servDownButton = new KPushButton(KIcon("arrow-down"), i18n("Move &Down"), this);
+        d->servDownButton = new KPushButton(KDE::icon("arrow-down"), i18n("Move &Down"), this);
         d->servDownButton->setEnabled(false);
         d->servDownButton->show();
         connect(d->servDownButton, SIGNAL(clicked()), SLOT(moveItemDown()));

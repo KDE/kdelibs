@@ -15,7 +15,6 @@
 
 #include <QtCore/QFileInfo>
 
-#include <kicon.h>
 #include <kiconloader.h>
 #include "kicondialog.h"
 
@@ -132,7 +131,7 @@ void KIconButton::setIconType(KIconLoader::Group group, KIconLoader::Context con
 void KIconButton::setIcon(const QString& icon)
 {
     d->mIcon = icon;
-    setIcon(KIcon(d->mIcon));
+    setIcon(KDE::icon(d->mIcon));
 
     if (!d->mpDialog) {
         d->mpDialog = new KIconDialog(d->mpLoader, this);
@@ -177,7 +176,7 @@ void KIconButton::KIconButtonPrivate::_k_newIconName(const QString& name)
     if (name.isEmpty())
         return;
 
-    q->setIcon(KIcon(name));
+    q->setIcon(KDE::icon(name));
     mIcon = name;
 
     if (mbUser) {

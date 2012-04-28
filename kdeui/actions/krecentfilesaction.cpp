@@ -38,7 +38,6 @@
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kdebug.h>
-#include <kicon.h>
 #include <klocalizedstring.h>
 #include <kstandarddirs.h>
 

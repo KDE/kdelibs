@@ -64,7 +64,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     setButtons(Yes|No|Details);
 #ifndef Q_WS_QWS //FIXME(E): Implement for Qt Embedded
     setCaption( i18n("Cookie Alert") );
-    setWindowIcon( KIcon("preferences-web-browser-cookies") );
+    setWindowIcon( KDE::icon("preferences-web-browser-cookies") );
     // all cookies in the list should have the same window at this time, so let's take the first
     if( cookieList.first().windowIds().count() > 0 )
     {
@@ -93,7 +93,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     // Cookie image and message to user
     KHBox* hBox = new KHBox( vBox1 );
     QLabel* icon = new QLabel( hBox );
-    icon->setPixmap(KIcon("dialog-warning").pixmap(IconSize(KIconLoader::Desktop)));
+    icon->setPixmap(KDE::icon("dialog-warning").pixmap(IconSize(KIconLoader::Desktop)));
     icon->setAlignment( Qt::AlignCenter );
     icon->setFixedSize( 2*icon->sizeHint() );
 

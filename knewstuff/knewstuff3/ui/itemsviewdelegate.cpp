@@ -27,7 +27,6 @@
 #include <QMenu>
 #include <kdebug.h>
 #include <kstandarddirs.h>
-#include <kicon.h>
 #include <klocalizedstring.h>
 #include <kmenu.h>
 #include <kratingwidget.h>
@@ -168,7 +167,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
     QToolButton* detailsButton = qobject_cast<QToolButton*>(widgets.at(DelegateDetailsButton));
     if (detailsButton) {
         detailsButton->setText(i18n("Details"));
-        detailsButton->setIcon(KIcon("documentinfo"));
+        detailsButton->setIcon(KDE::icon("documentinfo"));
     }
 
     if (installButton && detailsButton) {

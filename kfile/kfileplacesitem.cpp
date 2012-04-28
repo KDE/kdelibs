@@ -21,6 +21,7 @@
 #include "kfileplacesmodel.h"
 
 #include <QtCore/QDateTime>
+#include <QIcon>
 
 #include <kbookmarkmanager.h>
 #include <kiconloader.h>
@@ -143,7 +144,7 @@ QVariant KFilePlacesItem::bookmarkData(int role) const
     case Qt::DisplayRole:
         return m_text;
     case Qt::DecorationRole:
-        return KIcon(iconNameForBookmark(b));
+        return KDE::icon(iconNameForBookmark(b));
     case Qt::BackgroundRole:
         if (b.metaDataItem("IsHidden")=="true") {
             return Qt::lightGray;
@@ -171,7 +172,7 @@ QVariant KFilePlacesItem::deviceData(int role) const
         case Qt::DisplayRole:
             return d.description();
         case Qt::DecorationRole:
-            return KIcon(d.icon(), 0, d.emblems());
+            return KDE::icon(d.icon(), 0, d.emblems());
         case KFilePlacesModel::UrlRole:
             if (m_access) {
                 return QUrl(KUrl(m_access->filePath()));

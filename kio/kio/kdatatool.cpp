@@ -22,7 +22,6 @@
 
 #include <kstandarddirs.h>
 #include <kdebug.h>
-#include <kicon.h>
 #include <kcomponentdata.h>
 #include <kactioncollection.h>
 
@@ -256,7 +255,7 @@ KDataToolAction::KDataToolAction( const QString & text, const KDataToolInfo & in
     : KAction( text, parent ),
       d(new KDataToolActionPrivate)
 {
-    setIcon( KIcon( info.iconName() ) );
+    setIcon( KDE::icon( info.iconName() ) );
     d->command = command;
     d->info = info;
 }

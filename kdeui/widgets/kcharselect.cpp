@@ -31,7 +31,6 @@
 #include <QPushButton>
 #include <QToolButton>
 
-#include <kicon.h>
 #include <kcombobox.h>
 #include <kdebug.h>
 #include <kdialog.h>
@@ -359,14 +358,14 @@ void KCharSelect::initWidget(const Controls controls, KActionCollection *collect
     comboLayout->addWidget(d->backButton);
     d->backButton->setEnabled(false);
     d->backButton->setText(i18nc("Goes to previous character", "Previous in History"));
-    d->backButton->setIcon(KIcon("go-previous"));
+    d->backButton->setIcon(KDE::icon("go-previous"));
     d->backButton->setToolTip(i18n("Previous Character in History"));
 
     d->forwardButton = new QToolButton(this);
     comboLayout->addWidget(d->forwardButton);
     d->forwardButton->setEnabled(false);
     d->forwardButton->setText(i18nc("Goes to next character", "Next in History"));
-    d->forwardButton->setIcon(KIcon("go-next"));
+    d->forwardButton->setIcon(KDE::icon("go-next"));
     d->forwardButton->setToolTip(i18n("Next Character in History"));
 
     KStandardAction::back(d->backButton, SLOT(animateClick()), d->actions);

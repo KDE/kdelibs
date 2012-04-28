@@ -32,7 +32,6 @@
 #include <QApplication>
 
 #include <kglobalaccel.h>
-#include <kicon.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kshortcut.h>
@@ -272,7 +271,7 @@ void KKeySequenceWidgetPrivate::init()
 
     keyButton = new KKeySequenceButton(this, q);
     keyButton->setFocusPolicy(Qt::StrongFocus);
-    keyButton->setIcon(KIcon("configure"));
+    keyButton->setIcon(KDE::icon("configure"));
     keyButton->setToolTip(i18n("Click on the button, then enter the shortcut like you would in the program.\nExample for Ctrl+A: hold the Ctrl key and press A."));
     layout->addWidget(keyButton);
 
@@ -280,9 +279,9 @@ void KKeySequenceWidgetPrivate::init()
     layout->addWidget(clearButton);
 
     if (qApp->isLeftToRight())
-        clearButton->setIcon(KIcon("edit-clear-locationbar-rtl"));
+        clearButton->setIcon(KDE::icon("edit-clear-locationbar-rtl"));
     else
-        clearButton->setIcon(KIcon("edit-clear-locationbar-ltr"));
+        clearButton->setIcon(KDE::icon("edit-clear-locationbar-ltr"));
 }
 
 

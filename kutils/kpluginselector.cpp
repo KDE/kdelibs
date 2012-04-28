@@ -28,7 +28,6 @@
 #include <QCheckBox>
 #include <QStyleOptionViewItemV4>
 
-#include <kicon.h>
 #include <kdebug.h>
 #include <klineedit.h>
 #include <kdialog.h>
@@ -573,7 +572,7 @@ KPluginSelector::Private::PluginDelegate::PluginDelegate(KPluginSelector::Privat
     , pushButton(new KPushButton)
     , pluginSelector_d(pluginSelector_d)
 {
-    pushButton->setIcon(KIcon("configure")); // only for getting size matters
+    pushButton->setIcon(KDE::icon("configure")); // only for getting size matters
 }
 
 KPluginSelector::Private::PluginDelegate::~PluginDelegate()
@@ -673,11 +672,11 @@ QList<QWidget*> KPluginSelector::Private::PluginDelegate::createItemWidgets() co
     connect(enabledCheckBox, SIGNAL(clicked(bool)), this, SLOT(emitChanged()));
 
     KPushButton *aboutPushButton = new KPushButton;
-    aboutPushButton->setIcon(KIcon("dialog-information"));
+    aboutPushButton->setIcon(KDE::icon("dialog-information"));
     connect(aboutPushButton, SIGNAL(clicked(bool)), this, SLOT(slotAboutClicked()));
 
     KPushButton *configurePushButton = new KPushButton;
-    configurePushButton->setIcon(KIcon("configure"));
+    configurePushButton->setIcon(KDE::icon("configure"));
     connect(configurePushButton, SIGNAL(clicked(bool)), this, SLOT(slotConfigureClicked()));
 
     setBlockedEventTypes(enabledCheckBox, QList<QEvent::Type>() << QEvent::MouseButtonPress

@@ -40,7 +40,6 @@
 
 #include <kglobal.h>
 #include <klocale.h>
-#include <kicon.h>
 #include <kiconloader.h>
 #include <kiconeffect.h>
 #include <kdirmodel.h>
@@ -1107,7 +1106,7 @@ QRect KFileItemDelegate::iconRect(const QStyleOptionViewItem &option, const QMod
 
 void KFileItemDelegate::setJobTransfersVisible(bool jobTransfersVisible)
 {
-    d->downArrowIcon = KIcon("go-down");
+    d->downArrowIcon = KDE::icon("go-down");
     d->jobTransfersVisible = jobTransfersVisible;
 }
 

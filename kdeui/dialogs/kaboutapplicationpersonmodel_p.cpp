@@ -24,6 +24,7 @@
 #include <kdebug.h>
 #include <kaboutdata.h>
 #include <klocalizedstring.h>
+#include <kiconloader.h>
 
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>
@@ -59,9 +60,9 @@ KAboutApplicationPersonModel::KAboutApplicationPersonModel( const QList< KAboutP
         m_profileList.append( profile );
     }
 
-    m_ocsLinkIcons.insert( KAboutApplicationPersonProfileOcsLink::Other, KIcon( "applications-internet").pixmap( 16 ) );
-    m_ocsLinkIcons.insert( KAboutApplicationPersonProfileOcsLink::Blog, KIcon( "applications-internet" ).pixmap( 16 ) );
-    m_ocsLinkIcons.insert( KAboutApplicationPersonProfileOcsLink::Homepage, KIcon( "applications-internet" ).pixmap( 16 ) );
+    m_ocsLinkIcons.insert( KAboutApplicationPersonProfileOcsLink::Other, KDE::icon( "applications-internet").pixmap( 16 ) );
+    m_ocsLinkIcons.insert( KAboutApplicationPersonProfileOcsLink::Blog, KDE::icon( "applications-internet" ).pixmap( 16 ) );
+    m_ocsLinkIcons.insert( KAboutApplicationPersonProfileOcsLink::Homepage, KDE::icon( "applications-internet" ).pixmap( 16 ) );
 
 #ifdef HAVE_ATTICA
     connect( &m_providerManager, SIGNAL(defaultProvidersLoaded()),

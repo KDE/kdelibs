@@ -23,7 +23,6 @@
 #include "dispatcher.h"
 //#include "componentsdialog_p.h"
 
-#include <kicon.h>
 #include <klocalizedstring.h>
 #include <kservicegroup.h>
 #include <kdebug.h>
@@ -242,7 +241,7 @@ KPageWidgetItem *DialogPrivate::createPageItem(KPageWidgetItem *parentItem,
     page->setLayout(layout);
 
     KPageWidgetItem *item = new KPageWidgetItem(page, name);
-    item->setIcon(KIcon(iconName));
+    item->setIcon(KDE::icon(iconName));
     iconLabel->setPixmap(item->icon().pixmap(128, 128));
     item->setProperty("_k_weight", weight);
     checkBoxForItem.insert(item, checkBox);

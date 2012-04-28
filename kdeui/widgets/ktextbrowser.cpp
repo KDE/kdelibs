@@ -19,6 +19,7 @@
  */
 
 #include "ktextbrowser.h"
+#include <kicontheme.h>
 
 #include <QAction>
 #include <QMenu>
@@ -28,8 +29,6 @@
 
 #include <kcursor.h>
 #include <kglobalsettings.h>
-#include <kicon.h>
-#include <kicontheme.h>
 #include <kurl.h>
 #include <ktoolinvocation.h>
 

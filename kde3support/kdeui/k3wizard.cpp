@@ -42,9 +42,9 @@ K3Wizard::K3Wizard( QWidget *parent, const char *name, bool modal, Qt::WFlags f 
     backButton()->setIcon( back.icon() );
     nextButton()->setIcon( forward.icon() );
 
-    finishButton()->setIcon( KIcon( "dialog-ok-apply" ) );
-    cancelButton()->setIcon( KIcon( "dialog-cancel" ) );
-    helpButton()->setIcon( KIcon( "help-contents" ) );
+    finishButton()->setIcon( KDE::icon( "dialog-ok-apply" ) );
+    cancelButton()->setIcon( KDE::icon( "dialog-cancel" ) );
+    helpButton()->setIcon( KDE::icon( "help-contents" ) );
 
     backButton()->setText( i18n( "&Back" ) );
     nextButton()->setText( i18nc( "Opposite to Back","&Next" ) );

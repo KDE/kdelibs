@@ -431,7 +431,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
             }
             KAction *action = new KAction(i18n("Open '%1'", selectedTextURL), this);
             d->m_actionCollection->addAction( "openSelection", action );
-            action->setIcon( KIcon( "window-new" ) );
+            action->setIcon( KDE::icon( "window-new" ) );
             connect( action, SIGNAL(triggered(bool)), this, SLOT(openSelection()) );
             editActions.append(action);
         }
@@ -471,7 +471,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
             KActionMenu* menu = new KActionMenu( i18nc("@title:menu HTML frame/iframe", "Frame"), this);
             KAction *action = new KAction( i18n( "Open in New &Window" ), this );
             d->m_actionCollection->addAction( "frameinwindow", action );
-            action->setIcon( KIcon( "window-new" ) );
+            action->setIcon( KDE::icon( "window-new" ) );
             connect( action, SIGNAL(triggered(bool)), this, SLOT(slotFrameInWindow()) );
             menu->addAction(action);
 
@@ -482,7 +482,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
 
             action = new KAction( i18n( "Open in &New Tab" ), this );
             d->m_actionCollection->addAction( "frameintab", action );
-            action->setIcon( KIcon( "tab-new" ) );
+            action->setIcon( KDE::icon( "tab-new" ) );
             connect( action, SIGNAL(triggered(bool)), this, SLOT(slotFrameInTab()) );
             menu->addAction(action);
 
@@ -497,7 +497,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
 
             action = new KAction( i18n( "Print Frame..." ), this );
             d->m_actionCollection->addAction( "printFrame", action );
-            action->setIcon( KIcon( "document-print-frame" ) );
+            action->setIcon( KDE::icon( "document-print-frame" ) );
             connect( action, SIGNAL(triggered(bool)), d->m_khtml->browserExtension(), SLOT(print()) );
             menu->addAction(action);
 
@@ -640,7 +640,7 @@ void KHTMLPopupGUIClient::addSearchActions(QList<QAction *>& editActions)
         KAction *action = new KAction(i18n("Search for '%1' with %2",
                                            squeezedText, data.searchProvider()), this);
         action->setData(QUrl(data.uri()));
-        action->setIcon(KIcon(data.iconName()));
+        action->setIcon(KDE::icon(data.iconName()));
         connect(action, SIGNAL(triggered(bool)), d->m_khtml->browserExtension(), SLOT(searchProvider()));
         d->m_actionCollection->addAction("defaultSearchProvider", action);
         editActions.append(action);
@@ -654,7 +654,7 @@ void KHTMLPopupGUIClient::addSearchActions(QList<QAction *>& editActions)
                 KAction *action = new KAction(searchProvider, this);
                 action->setData(data.queryForPreferredSearchProvider(searchProvider));
                 d->m_actionCollection->addAction(searchProvider, action);
-                action->setIcon(KIcon(data.iconNameForPreferredSearchProvider(searchProvider)));
+                action->setIcon(KDE::icon(data.iconNameForPreferredSearchProvider(searchProvider)));
                 connect(action, SIGNAL(triggered(bool)), d->m_khtml->browserExtension(), SLOT(searchProvider()));
                 providerList->addAction(action);
             }
@@ -1006,7 +1006,7 @@ extern const int KDE_NO_EXPORT fastZoomSizeCount;
 KHTMLZoomFactorAction::KHTMLZoomFactorAction( KHTMLPart *part, bool direction, const QString &icon, const QString &text, QObject *parent )
     : KSelectAction( text, parent )
 {
-    setIcon( KIcon( icon ) );
+    setIcon( KDE::icon( icon ) );
 
     setToolBarMode(MenuMode);
     setToolButtonPopupMode(QToolButton::DelayedPopup);

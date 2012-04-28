@@ -24,7 +24,6 @@
 #include <QTextDocument>
 #include <QTimer>
 
-#include <kicon.h>
 #include <kcombobox.h>
 #include <kconfig.h>
 #include <kiconloader.h>
@@ -69,7 +68,7 @@ KPasswordDialog::KPasswordDialog( QWidget* parent ,
    : KDialog( parent ), d(new KPasswordDialogPrivate(this))
 {
     setCaption( i18n("Password") );
-    setWindowIcon(KIcon("dialog-password"));
+    setWindowIcon(KDE::icon("dialog-password"));
     setButtons( Ok | Cancel | otherButtons );
     setDefaultButton( Ok );
     d->m_flags = flags;
@@ -140,7 +139,7 @@ void KPasswordDialog::KPasswordDialogPrivate::init()
 
     QRect desktop = KGlobalSettings::desktopGeometry(q->topLevelWidget());
     q->setMinimumWidth(qMin(1000, qMax(q->sizeHint().width(), desktop.width() / 4)));
-    q->setPixmap(KIcon("dialog-password").pixmap(KIconLoader::SizeHuge));
+    q->setPixmap(KDE::icon("dialog-password").pixmap(KIconLoader::SizeHuge));
 }
 
 void KPasswordDialog::setPixmap(const QPixmap &pixmap)

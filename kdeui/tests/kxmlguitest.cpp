@@ -8,7 +8,6 @@
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <kdebug.h>
-#include <kicon.h>
 #include <kstandardaction.h>
 #include <kstandarddirs.h>
 #include <QLineEdit>
@@ -44,7 +43,7 @@ int main( int argc, char **argv )
     shell->setComponentData(KComponentData("konqueror"));
     shell->componentData().dirs()->addResourceDir( "data", QDir::currentPath() );
 
-    a = new KAction( KIcon( "view-split-left-right" ), "Split", shell );
+    a = new KAction( KDE::icon( "view-split-left-right" ), "Split", shell );
     shell->actionCollection()->addAction( "splitviewh", a );
 
     shell->setXMLFile( KDESRCDIR "/kxmlguitest_shell.rc" );
@@ -53,9 +52,9 @@ int main( int argc, char **argv )
 
     Client *part = new Client;
 
-    a = new KAction( KIcon( "zoom-out" ), "decfont", part );
+    a = new KAction( KDE::icon( "zoom-out" ), "decfont", part );
     part->actionCollection()->addAction( "decFontSizes", a );
-    a = new KAction( KIcon( "security-low" ), "sec", part );
+    a = new KAction( KDE::icon( "security-low" ), "sec", part );
     part->actionCollection()->addAction( "security", a );
     a->setShortcut( KShortcut(Qt::ALT + Qt::Key_1), KAction::DefaultShortcut );
     a->connect( a, SIGNAL(triggered(bool)), part, SLOT(slotSec()) );

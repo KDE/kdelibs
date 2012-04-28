@@ -27,7 +27,6 @@
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kicon.h>
 #include <kiconloader.h>
 #include <kactioncollection.h>
 
@@ -126,7 +125,7 @@ void KonqBookmarkMenu::fillDynamicBookmarks()
       }
 
       KActionMenu * actionMenu;
-      actionMenu = new KActionMenu( KIcon(info.type), info.name, this );
+      actionMenu = new KActionMenu( KDE::icon(info.type), info.name, this );
       m_actionCollection->addAction( "kbookmarkmenu", actionMenu );
 
       parentMenu()->addAction(actionMenu);

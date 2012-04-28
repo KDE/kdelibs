@@ -33,7 +33,6 @@
 
 #include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kicon.h>
 
 class KToolBarPopupAction::Private
 {

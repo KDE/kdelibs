@@ -311,7 +311,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   actionCollection()->addAction( "stopAnimations", d->m_paStopAnimations );
   connect( d->m_paStopAnimations, SIGNAL(triggered(bool)), this, SLOT(slotStopAnimations()) );
 
-  d->m_paSetEncoding = new KCodecAction( KIcon("character-set"), i18n( "Set &Encoding" ), this, true );
+  d->m_paSetEncoding = new KCodecAction( KDE::icon("character-set"), i18n( "Set &Encoding" ), this, true );
   actionCollection()->addAction( "setEncoding", d->m_paSetEncoding );
 //   d->m_paSetEncoding->setDelayed( false );
 
@@ -421,7 +421,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_paPrintFrame = new KAction( i18n( "Print Frame..." ), this );
   actionCollection()->addAction( "printFrame", d->m_paPrintFrame );
-  d->m_paPrintFrame->setIcon( KIcon( "document-print-frame" ) );
+  d->m_paPrintFrame->setIcon( KDE::icon( "document-print-frame" ) );
   connect( d->m_paPrintFrame, SIGNAL(triggered(bool)), this, SLOT(slotPrintFrame()) );
   d->m_paPrintFrame->setWhatsThis( i18n( "<qt>Print Frame<br /><br />"
                                          "Some pages have several frames. To print only a single frame, click "
@@ -1204,8 +1204,8 @@ KJSErrorDlg *KHTMLPart::jsErrorExtension() {
     d->m_jsedlg = new KJSErrorDlg;
     d->m_jsedlg->setURL(url().prettyUrl());
     if (KGlobalSettings::showIconsOnPushButtons()) {
-      d->m_jsedlg->_clear->setIcon(KIcon("edit-clear-locationbar-ltr"));
-      d->m_jsedlg->_close->setIcon(KIcon("window-close"));
+      d->m_jsedlg->_clear->setIcon(KDE::icon("edit-clear-locationbar-ltr"));
+      d->m_jsedlg->_close->setIcon(KDE::icon("window-close"));
     }
   }
   return d->m_jsedlg;
@@ -1449,7 +1449,7 @@ void KHTMLPart::setAutoloadImages( bool enable )
   else if ( !d->m_paLoadImages ) {
     d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), this );
     actionCollection()->addAction( "loadImages", d->m_paLoadImages );
-    d->m_paLoadImages->setIcon( KIcon( "image-loading" ) );
+    d->m_paLoadImages->setIcon( KDE::icon( "image-loading" ) );
     connect( d->m_paLoadImages, SIGNAL(triggered(bool)), this, SLOT(slotLoadImages()) );
   }
 

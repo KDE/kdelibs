@@ -30,7 +30,6 @@
 #include <QtCore/QEvent>
 
 #include <kdebug.h>
-#include <kicon.h>
 #include <klocalizedstring.h>
 
 class KToggleFullScreenAction::Private
@@ -45,14 +44,14 @@ public:
 };
 
 KToggleFullScreenAction::KToggleFullScreenAction( QObject *parent )
-  : KToggleAction( KIcon( "view-fullscreen" ), i18n( "F&ull Screen Mode" ), parent ),
+  : KToggleAction( KDE::icon( "view-fullscreen" ), i18n( "F&ull Screen Mode" ), parent ),
     d( new Private )
 {
     setIconText( i18n( "Full Screen" ) );
 }
 
 KToggleFullScreenAction::KToggleFullScreenAction( QWidget *window, QObject *parent )
-  : KToggleAction( KIcon( "view-fullscreen" ), i18n( "F&ull Screen Mode" ), parent ),
+  : KToggleAction( KDE::icon( "view-fullscreen" ), i18n( "F&ull Screen Mode" ), parent ),
     d( new Private )
 {
     setIconText( i18n( "Full Screen" ) );
@@ -80,11 +79,11 @@ void KToggleFullScreenAction::slotToggled( bool checked )
   if ( checked ) {
     setText( i18n( "Exit F&ull Screen Mode" ) );
     setIconText( i18n( "Exit Full Screen" ) );
-    setIcon( KIcon( "view-restore" ) );
+    setIcon( KDE::icon( "view-restore" ) );
   } else {
     setText( i18n( "F&ull Screen Mode" ) );
     setIconText( i18n( "Full Screen" ) );
-    setIcon( KIcon( "view-fullscreen" ) );
+    setIcon( KDE::icon( "view-fullscreen" ) );
   }
 
   KToggleAction::slotToggled( checked );

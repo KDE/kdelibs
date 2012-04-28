@@ -42,7 +42,6 @@
 #include <kmessagebox.h>
 #include <kshell.h>
 #include <krun.h>
-#include <kicon.h>
 #include <kstringhandler.h>
 #include <kurlcompletion.h>
 #include <kurlrequester.h>
@@ -228,7 +227,7 @@ QVariant KApplicationModel::data(const QModelIndex &index, int role) const
         break;
     case Qt::DecorationRole:
         if (!node->icon.isEmpty()) {
-            return KIcon(node->icon);
+            return KDE::icon(node->icon);
         }
         break;
     default:

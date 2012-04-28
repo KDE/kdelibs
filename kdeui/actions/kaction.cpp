@@ -39,7 +39,6 @@
 #include <kdebug.h>
 
 #include "kguiitem.h"
-#include "kicon.h"
 
 //---------------------------------------------------------------------
 // KActionPrivate
@@ -94,8 +93,8 @@ void KActionPrivate::authStatusChanged(KAuth::Action::AuthStatus status)
             break;
         case KAuth::Action::AuthRequiredStatus:
             q->setEnabled(true);
-            oldIcon = KIcon(q->icon());
-            q->setIcon(KIcon("dialog-password"));
+            oldIcon = q->icon();
+            q->setIcon(KDE::icon("dialog-password"));
             break;
         default:
             q->setEnabled(false);

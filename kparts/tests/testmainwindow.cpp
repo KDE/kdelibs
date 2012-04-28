@@ -35,7 +35,6 @@
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <klocalizedstring.h>
-#include <kicon.h>
 #include <kparts/partmanager.h>
 
 TestMainWindow::TestMainWindow()
@@ -80,7 +79,7 @@ TestMainWindow::TestMainWindow()
     KAction * paQuit = new KAction( "&Quit", this );
     coll->addAction( "shell_quit", paQuit );
     connect(paQuit, SIGNAL(triggered()), this, SLOT(close()));
-    paQuit->setIcon(KIcon("application-exit"));
+    paQuit->setIcon(KDE::icon("application-exit"));
 
 //  (void)new KAction( "Yet another menu item", coll, "shell_yami" );
 //  (void)new KAction( "Yet another submenu item", coll, "shell_yasmi" );

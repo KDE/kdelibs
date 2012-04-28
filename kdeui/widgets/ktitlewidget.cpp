@@ -25,8 +25,8 @@
 #include <QLabel>
 #include <QLayout>
 #include <QTextDocument>
+#include <QIcon>
 
-#include <kicon.h>
 #include <kiconloader.h>
 
 class KTitleWidget::Private
@@ -257,7 +257,7 @@ void KTitleWidget::setPixmap(const QPixmap &pixmap, ImageAlignment alignment)
 
 void KTitleWidget::setPixmap(const QString &icon, ImageAlignment alignment)
 {
-    setPixmap(KIcon(icon), alignment);
+    setPixmap(KDE::icon(icon), alignment);
 }
 
 void KTitleWidget::setPixmap(const QIcon& icon, ImageAlignment alignment)
@@ -267,7 +267,7 @@ void KTitleWidget::setPixmap(const QIcon& icon, ImageAlignment alignment)
 
 void KTitleWidget::setPixmap(MessageType type, ImageAlignment alignment)
 {
-    setPixmap(KIcon(d->iconTypeToIconName(type)), alignment);
+    setPixmap(KDE::icon(d->iconTypeToIconName(type)), alignment);
 }
 
 int KTitleWidget::autoHideTimeout() const

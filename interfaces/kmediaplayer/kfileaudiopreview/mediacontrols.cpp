@@ -27,7 +27,6 @@
 #include <QToolButton>
 #include <phonon/seekslider.h>
 #include <phonon/volumeslider.h>
-#include <kicon.h>
 
 namespace Phonon
 {

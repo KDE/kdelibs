@@ -32,7 +32,6 @@
 #include <QTextEdit>
 #include <QLineEdit>
 
-#include <kicon.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <kaction.h>
@@ -59,10 +58,10 @@ Part1::Part1( QObject *parent, QWidget * parentWidget )
     testAction->setShortcut(Qt::CTRL + Qt::Key_B);
     connect(testAction, SIGNAL(triggered()), this, SLOT(slotBlah()));
 
-    KActionMenu * menu = new KActionMenu(KIcon("mail_forward"), "Foo", this);
+    KActionMenu * menu = new KActionMenu(KDE::icon("mail_forward"), "Foo", this);
     actionCollection()->addAction("p1_foo", menu);
 
-    KAction* mailForward = new KAction(KIcon("mail_forward"), "Bar", this);
+    KAction* mailForward = new KAction(KDE::icon("mail_forward"), "Bar", this);
     mailForward->setShortcut(Qt::CTRL + Qt::Key_F);
     connect(mailForward, SIGNAL(triggered()), this, SLOT(slotFooBar()));
     actionCollection()->addAction("p1_foo_bar", mailForward);

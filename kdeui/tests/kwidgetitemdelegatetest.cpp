@@ -38,7 +38,6 @@
 
 #include <kpushbutton.h>
 #include <klineedit.h>
-#include <kicon.h>
 
 #include <kwidgetitemdelegate.h>
 
@@ -195,7 +194,7 @@ public:
     {
         QPushButton *button = static_cast<QPushButton*>(widgets[0]);
         button->setText("Test me");
-        button->setIcon(KIcon("kde"));
+        button->setIcon(KDE::icon("kde"));
         button->resize(button->sizeHint());
         button->move(HARDCODED_BORDER, sizeHint().height() / 2 - button->height() / 2);
 

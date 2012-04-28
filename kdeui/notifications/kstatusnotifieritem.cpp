@@ -34,7 +34,6 @@
 #include <kdebug.h>
 #include <ksystemtrayicon.h>
 #include <kaboutdata.h>
-#include <kicon.h>
 #include <kmenu.h>
 #include <kaction.h>
 #include <kwindowinfo.h>
@@ -66,7 +65,7 @@ public:
 protected:
     virtual QString iconNameForAction(QAction *action)
     {
-        KIcon icon(action->icon());
+        KDE::icon icon(action->icon());
 #if QT_VERSION >= 0x040701
         // QIcon::name() is in the 4.7 git branch, but it is not in 4.7 TP.
         // If you get a build error here, you need to update your pre-release
@@ -182,7 +181,7 @@ void KStatusNotifierItem::setIconByName(const QString &name)
     d->iconName = name;
     emit d->statusNotifierItemDBus->NewIcon();
     if (d->systemTrayIcon) {
-        d->systemTrayIcon->setIcon(KIcon(name));
+        d->systemTrayIcon->setIcon(KDE::icon(name));
     }
 }
 
@@ -221,9 +220,9 @@ void KStatusNotifierItem::setOverlayIconByName(const QString &name)
     d->overlayIconName = name;
     emit d->statusNotifierItemDBus->NewOverlayIcon();
     if (d->systemTrayIcon) {
-        QPixmap iconPixmap = KIcon(d->iconName).pixmap(KIconLoader::SizeSmallMedium, KIconLoader::SizeSmallMedium);
+        QPixmap iconPixmap = KDE::icon(d->iconName).pixmap(KIconLoader::SizeSmallMedium, KIconLoader::SizeSmallMedium);
         if (!name.isEmpty()) {
-            QPixmap overlayPixmap = KIcon(d->overlayIconName).pixmap(KIconLoader::SizeSmallMedium/2, KIconLoader::SizeSmallMedium/2);
+            QPixmap overlayPixmap = KDE::icon(d->overlayIconName).pixmap(KIconLoader::SizeSmallMedium/2, KIconLoader::SizeSmallMedium/2);
             QPainter p(&iconPixmap);
             p.drawPixmap(iconPixmap.width()-overlayPixmap.width(), iconPixmap.height()-overlayPixmap.height(), overlayPixmap);
             p.end();
@@ -887,13 +886,13 @@ void KStatusNotifierItemPrivate::syncLegacySystemTrayIcon()
             }
             systemTrayIcon->setMovie(movie);
         } else if (!attentionIconName.isNull()) {
-            systemTrayIcon->setIcon(KIcon(attentionIconName));
+            systemTrayIcon->setIcon(KDE::icon(attentionIconName));
         } else {
             systemTrayIcon->setIcon(attentionIcon);
         }
     } else {
         if (!iconName.isNull()) {
-            systemTrayIcon->setIcon(KIcon(iconName));
+            systemTrayIcon->setIcon(KDE::icon(iconName));
         } else {
             systemTrayIcon->setIcon(icon);
         }
@@ -1026,7 +1025,7 @@ KDbusImageVector KStatusNotifierItemPrivate::iconToVector(const QIcon &icon)
 
     QPixmap iconPixmap;
 
-    //availableSizes() won't work on KIcon
+    //availableSizes() won't work on KDE::icon
     QList<QSize> allSizes;
     allSizes << QSize(KIconLoader::SizeSmall, KIconLoader::SizeSmall)
              << QSize(KIconLoader::SizeSmallMedium, KIconLoader::SizeSmallMedium)

@@ -36,7 +36,6 @@
 
 #include "partviewer.h"
 #include <kmimetypetrader.h>
-#include <kicon.h>
 
 PartViewer::PartViewer()
 {
@@ -45,11 +44,11 @@ PartViewer::PartViewer()
     KGlobal::dirs()->addResourceDir( "data", KDESRCDIR );
     setXMLFile( "partviewer_shell.rc" );
 
-    KAction * paOpen = new KAction( KIcon("document-open"), "&Open file", this );
+    KAction * paOpen = new KAction( KDE::icon("document-open"), "&Open file", this );
     actionCollection()->addAction( "file_open", paOpen );
     connect( paOpen, SIGNAL(triggered()), this, SLOT(slotFileOpen()) );
 
-    KAction * paQuit = new KAction( KIcon("application-exit"), "&Quit", this );
+    KAction * paQuit = new KAction( KDE::icon("application-exit"), "&Quit", this );
     actionCollection()->addAction( "file_quit", paQuit );
     connect(paQuit, SIGNAL(triggered()), this, SLOT(close()));
 

@@ -26,7 +26,7 @@
 #include <kaboutdata.h>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
-#include <kicon.h>
+#include <kiconloader.h>
 
 #include "kpagewidgetmodel.h"
 
@@ -92,11 +92,11 @@ KPageWidgetTest::KPageWidgetTest( QWidget *parent )
   rowCount++;
 
   KPageWidgetItem *item = mWidget->addPage( new QPushButton( "folder" ), "folder" );
-  item->setIcon( KIcon( "folder" ) );
+  item->setIcon( KDE::icon( "folder" ) );
   item = mWidget->addSubPage( item, new QPushButton( "subfolder" ), "subfolder" );
-  item->setIcon( KIcon( "folder" ) );
+  item->setIcon( KDE::icon( "folder" ) );
   item = mWidget->addPage( new QLabel( "second folder" ), "second folder" );
-  item->setIcon( KIcon( "folder" ) );
+  item->setIcon( KDE::icon( "folder" ) );
 }
 
 KPageWidgetTest::~KPageWidgetTest()
@@ -134,7 +134,7 @@ void KPageWidgetTest::addPage()
 
   const QString title = QString( "dynamic folder %1" ).arg( QString::number( counter ) );
   KPageWidgetItem *item = mWidget->addPage( new QPushButton( title ) , title );
-  item->setIcon( KIcon( "folder" ) );
+  item->setIcon( KDE::icon( "folder" ) );
   item->setHeader( QString( "Header Test No. %1" ).arg( QString::number( counter ) ) );
   item->setCheckable( true );
 
@@ -151,7 +151,7 @@ void KPageWidgetTest::addSubPage()
 
   const QString title = QString( "subfolder %1" ).arg( QString::number( counter ) );
   item = mWidget->addSubPage( item, new QLabel( title ) , title );
-  item->setIcon( KIcon( "folder" ) );
+  item->setIcon( KDE::icon( "folder" ) );
 
   counter++;
 }
@@ -166,7 +166,7 @@ void KPageWidgetTest::insertPage()
 
   const QString title = QString( "before folder %1" ).arg( QString::number( counter ) );
   item = mWidget->insertPage( item, new QLabel( title ) , title );
-  item->setIcon( KIcon( "folder" ) );
+  item->setIcon( KDE::icon( "folder" ) );
 
   counter++;
 }

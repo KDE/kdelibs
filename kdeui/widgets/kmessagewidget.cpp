@@ -23,7 +23,6 @@
 #include <kcolorscheme.h>
 #include <kdebug.h>
 #include <kglobalsettings.h>
-#include <kicon.h>
 #include <kiconloader.h>
 #include <kstandardaction.h>
 
@@ -227,23 +226,23 @@ void KMessageWidget::setMessageType(KMessageWidget::MessageType type)
     KColorScheme::ColorSet colorSet = KColorScheme::Window;
     switch (type) {
     case Positive:
-        icon = KIcon("dialog-ok");
+        icon = KDE::icon("dialog-ok");
         bgRole = KColorScheme::PositiveBackground;
         fgRole = KColorScheme::PositiveText;
         break;
     case Information:
-        icon = KIcon("dialog-information");
+        icon = KDE::icon("dialog-information");
         bgRole = KColorScheme::NormalBackground;
         fgRole = KColorScheme::NormalText;
         colorSet = KColorScheme::Tooltip;
         break;
     case Warning:
-        icon = KIcon("dialog-warning");
+        icon = KDE::icon("dialog-warning");
         bgRole = KColorScheme::NeutralBackground;
         fgRole = KColorScheme::NeutralText;
         break;
     case Error:
-        icon = KIcon("dialog-error");
+        icon = KDE::icon("dialog-error");
         bgRole = KColorScheme::NegativeBackground;
         fgRole = KColorScheme::NegativeText;
         break;

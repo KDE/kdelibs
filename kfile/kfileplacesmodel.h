@@ -25,7 +25,6 @@
 #include <QtCore/QAbstractItemModel>
 #include <kurl.h>
 #include <kbookmark.h>
-#include <kicon.h>
 
 #include <solid/device.h>
 
@@ -54,7 +53,7 @@ public:
 
     KUrl url(const QModelIndex &index) const;
     bool setupNeeded(const QModelIndex &index) const;
-    KIcon icon(const QModelIndex &index) const;
+    QIcon icon(const QModelIndex &index) const;
     QString text(const QModelIndex &index) const;
     bool isHidden(const QModelIndex &index) const;
     bool isDevice(const QModelIndex &index) const;

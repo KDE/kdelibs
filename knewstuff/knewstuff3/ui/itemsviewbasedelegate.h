@@ -29,7 +29,6 @@
 #include "core/engine.h"
 #include "core/entryinternal.h"
 
-#include <kicon.h>
 #include <kwidgetitemdelegate.h>
 
 namespace KNS3

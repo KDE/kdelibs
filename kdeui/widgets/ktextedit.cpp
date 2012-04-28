@@ -42,7 +42,6 @@
 #include <kglobalsettings.h>
 #include <kstandardaction.h>
 #include <kstandardshortcut.h>
-#include <kicon.h>
 #include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <kdialog.h>
@@ -311,7 +310,7 @@ void KTextEdit::showSpellConfigDialog(const QString &configFileName,
     if (!d->spellCheckingLanguage.isEmpty())
         dialog.setLanguage(d->spellCheckingLanguage);
     if (!windowIcon.isEmpty())
-        dialog.setWindowIcon(KIcon(windowIcon));
+        dialog.setWindowIcon(KDE::icon(windowIcon));
     if(dialog.exec()) {
         setSpellCheckingLanguage( dialog.language() );
     }
@@ -489,7 +488,7 @@ QMenu *KTextEdit::mousePopupMenu()
   if( !isReadOnly() )
   {
       popup->addSeparator();
-      d->spellCheckAction = popup->addAction( KIcon( "tools-check-spelling" ),
+      d->spellCheckAction = popup->addAction( KDE::icon( "tools-check-spelling" ),
                                               i18n( "Check Spelling..." ) );
       if ( emptyDocument )
         d->spellCheckAction->setEnabled( false );
@@ -525,7 +524,7 @@ QMenu *KTextEdit::mousePopupMenu()
   }
   popup->addSeparator();
   QAction *speakAction = popup->addAction(i18n("Speak Text"));
-  speakAction->setIcon(KIcon("preferences-desktop-text-to-speech"));
+  speakAction->setIcon(KDE::icon("preferences-desktop-text-to-speech"));
   speakAction->setEnabled(!emptyDocument );
   connect( speakAction, SIGNAL(triggered(bool)), this, SLOT(slotSpeakText()) );
   return popup;

@@ -358,7 +358,7 @@ class K3UndoRedoAction::Private
 
 
 K3UndoRedoAction::K3UndoRedoAction( Type type, KActionCollection* actionCollection, K3CommandHistory* commandHistory )
-    : KToolBarPopupAction( KIcon( type == Undo ? "edit-undo" : "edit-redo" ),
+    : KToolBarPopupAction( KDE::icon( type == Undo ? "edit-undo" : "edit-redo" ),
                            QString(), // text is set in clear() on start
                            actionCollection),
       d( new Private( type, commandHistory ) )

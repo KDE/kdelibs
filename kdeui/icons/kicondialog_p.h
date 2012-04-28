@@ -144,7 +144,7 @@ class KIconDialog::KIconDialogPrivate
     KIconLoader *mpLoader;
     KIconCanvas *mpCanvas;
     int mNumContext;
-    KIconLoader::Context mContextMap[ 12 ]; // must match KIcon::Context size, code has assert
+    KIconLoader::Context mContextMap[ 12 ]; // must match KDE::icon::Context size, code has assert
 
     bool m_bStrictIconSize, m_bLockUser, m_bLockCustomDir;
     QString custom;

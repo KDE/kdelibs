@@ -32,7 +32,6 @@
 
 class KConfigGroup;
 class KRecentFilesActionPrivate;
-class KIcon;
 
 /**
  *  @short Recent files action

@@ -32,7 +32,6 @@
 
 #include <kapplication.h>
 #include <kdebug.h>
-#include <kicon.h>
 #include <klocalizedstring.h>
 
 #include "kmenu.h"

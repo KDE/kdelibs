@@ -89,7 +89,6 @@ extern "C" {
 #include <kiconbutton.h>
 #include <kurl.h>
 #include <kurlrequester.h>
-#include <kicon.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
@@ -961,7 +960,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
         QPushButton *button = new QPushButton(box);
         button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);  // Minimum still makes the button grow to the entire layout width
-        button->setIcon( KIcon(QString::fromLatin1("configure")) );
+        button->setIcon( KDE::icon(QString::fromLatin1("configure")) );
 
         if ( d->mimeType == KMimeType::defaultMimeType() )
             button->setText(i18n("Create New File Type"));

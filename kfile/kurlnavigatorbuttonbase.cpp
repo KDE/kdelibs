@@ -21,7 +21,6 @@
 #include "kurlnavigatorbuttonbase_p.h"
 
 #include <kcolorscheme.h>
-#include <kicon.h>
 #include <klocalizedstring.h>
 #include <kmenu.h>
 #include <kurl.h>

@@ -19,7 +19,6 @@
 #include <QTextEdit>
 #include <QTimer>
 
-#include <kicon.h>
 #include <kapplication.h>
 #include <kxmlguiwindow.h>
 #include <kaboutdata.h>
@@ -78,7 +77,7 @@ void MainWindow::setupActions()
 {
     KAction *testAction = new KAction(this);
     testAction->setText("Test");
-    testAction->setIcon(KIcon("kde"));
+    testAction->setIcon(KDE::icon("kde"));
     actionCollection()->addAction("test", testAction);
     connect(testAction, SIGNAL(triggered(bool)), this, SLOT(slotTest()));
 

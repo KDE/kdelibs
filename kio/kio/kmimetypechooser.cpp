@@ -18,7 +18,6 @@
 
 #include "kmimetypechooser.h"
 
-#include <kicon.h>
 #include <klocalizedstring.h>
 #include <kmimetype.h>
 #include <kshell.h>
@@ -162,7 +161,7 @@ void KMimeTypeChooserPrivate::loadMimeTypes( const QStringList &_selectedMimeTyp
 
     const QString min = mimetype.mid(index+1);
     QTreeWidgetItem *item = new QTreeWidgetItem( groupItem, QStringList(min) );
-    item->setIcon( 0, KIcon( mt->iconName() ) );
+    item->setIcon( 0, KDE::icon( mt->iconName() ) );
 
     int cl = 1;
 

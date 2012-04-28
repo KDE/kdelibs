@@ -27,7 +27,6 @@
 
 #include <kdebug.h>
 #include <kglobalsettings.h>
-#include <kicon.h>
 #include <klocalizedstring.h>
 #include <kmimetype.h>
 #include <kiconloader.h>
@@ -130,7 +129,7 @@ void KUrlComboBoxPrivate::init(KUrlComboBox::Mode mode)
         m_parent->completionObject()->setOrder( KCompletion::Sorted );
     }
 
-    opendirIcon = KIcon(QLatin1String("folder-open"));
+    opendirIcon = KDE::icon(QLatin1String("folder-open"));
 
     m_parent->connect( m_parent, SIGNAL(activated(int)), SLOT(_k_slotActivated(int)));
 }
@@ -428,7 +427,7 @@ QIcon KUrlComboBoxPrivate::getIcon( const QUrl& url ) const
     if (myMode == KUrlComboBox::Directories)
         return dirIcon;
     else
-        return KIcon(KMimeType::iconNameForUrl(url, 0));
+        return KDE::icon(KMimeType::iconNameForUrl(url, 0));
 }
 
 

@@ -25,7 +25,6 @@
 
 #include "kshortcutsdialog_p.h"
 
-#include <kicon.h>
 #include <kaction.h>
 #include <kdebug.h>
 #include <kstringhandler.h>

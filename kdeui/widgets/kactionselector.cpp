@@ -20,7 +20,7 @@
 #include "kactionselector.h"
 
 #include <klocalizedstring.h>
-#include <kicon.h>
+#include <kiconloader.h>
 #include <kdebug.h>
 #include <QApplication>
 #include <QToolButton>
@@ -32,7 +32,7 @@
 class KActionSelectorPrivate {
   public:
   KActionSelectorPrivate(KActionSelector *q): q(q) {}
-  
+
   KActionSelector *q;
   QListWidget *availableListWidget, *selectedListWidget;
   QToolButton *btnAdd, *btnRemove, *btnUp, *btnDown;
@@ -47,28 +47,28 @@ class KActionSelectorPrivate {
     Move item @p item to the other listbox
    */
   void moveItem( QListWidgetItem *item );
-  
+
   /**
     loads the icons for the move buttons.
    */
   void loadIcons();
-  
+
   /**
     @return the index to insert an item into listbox @p lb,
    given InsertionPolicy @p policy.
-   
+
    Note that if policy is Sorted, this will return -1.
    Sort the listbox after inserting the item in that case.
    */
   int insertionIndex( QListWidget *lb, KActionSelector::InsertionPolicy policy );
-  
+
   /**
    @return the index of the first selected item in listbox @p lb.
    If no item is selected, it will return -1.
    */
   int selectedRowIndex( QListWidget *lb );
 
-  void buttonAddClicked();    
+  void buttonAddClicked();
   void buttonRemoveClicked();
   void buttonUpClicked();
   void buttonDownClicked();
@@ -174,19 +174,19 @@ void KActionSelector::setButtonIcon( const QString &icon, MoveButton button )
   {
     case ButtonAdd:
     d->addIcon = icon;
-    d->btnAdd->setIcon( KIcon( icon ) );
+    d->btnAdd->setIcon( KDE::icon( icon ) );
     break;
     case ButtonRemove:
     d->removeIcon = icon;
-    d->btnRemove->setIcon( KIcon( icon ) );
+    d->btnRemove->setIcon( KDE::icon( icon ) );
     break;
     case ButtonUp:
     d->upIcon = icon;
-    d->btnUp->setIcon( KIcon( icon ) );
+    d->btnUp->setIcon( KDE::icon( icon ) );
     break;
     case ButtonDown:
     d->downIcon = icon;
-    d->btnDown->setIcon( KIcon( icon ) );
+    d->btnDown->setIcon( KDE::icon( icon ) );
     break;
     default:
     kDebug(13001)<<"KActionSelector::setButtonIcon: DAINBREAD!";
@@ -501,10 +501,10 @@ void KActionSelectorPrivate::itemDoubleClicked( QListWidgetItem *item )
 
 void KActionSelectorPrivate::loadIcons()
 {
-  btnAdd->setIcon( KIcon( addIcon ) );
-  btnRemove->setIcon( KIcon( removeIcon ) );
-  btnUp->setIcon( KIcon( upIcon ) );
-  btnDown->setIcon( KIcon( downIcon ) );
+  btnAdd->setIcon( KDE::icon( addIcon ) );
+  btnRemove->setIcon( KDE::icon( removeIcon ) );
+  btnUp->setIcon( KDE::icon( upIcon ) );
+  btnDown->setIcon( KDE::icon( downIcon ) );
 }
 
 void KActionSelectorPrivate::moveItem( QListWidgetItem *item )

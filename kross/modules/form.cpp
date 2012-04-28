@@ -45,7 +45,6 @@
 //#include <kurlcombobox.h>
 //#include <kdiroperator.h>
 //#include <kshell.h>
-#include <kicon.h>
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <kmessagebox.h>
@@ -233,7 +232,7 @@ FormProgressDialog::FormProgressDialog(const QString& caption, const QString& la
     QWidget* widget = new QWidget( mainWidget() );
     KPageWidgetItem* item = KPageDialog::addPage(widget, QString());
     item->setHeader(labelText);
-    //item->setIcon( KIcon(iconname) );
+    //item->setIcon( KDE::icon(iconname) );
     widget = item->widget();
     QVBoxLayout* layout = new QVBoxLayout(widget);
     layout->setMargin(0);
@@ -424,7 +423,7 @@ static KPageWidgetItem* formAddPage(KPageDialog* dialog, const QString& name, co
     KPageWidgetItem* item = dialog->addPage(widget, name);
     item->setHeader(header.isNull() ? name : header);
     if( ! iconname.isEmpty() )
-        item->setIcon( KIcon(iconname) );
+        item->setIcon( KDE::icon(iconname) );
     //d->items.insert(name, item);
 
     return item;

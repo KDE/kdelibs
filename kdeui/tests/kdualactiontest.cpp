@@ -21,7 +21,6 @@
 
 #include "qtest_kde.h"
 
-#include "kicon.h"
 
 Q_DECLARE_METATYPE(KAction*)
 
@@ -50,7 +49,7 @@ private Q_SLOTS:
 
     void testSetIconForStates()
     {
-        QIcon icon = KIcon("kde");
+        QIcon icon = KDE::icon("kde");
         KDualAction action(0);
         QVERIFY(action.inactiveIcon().isNull());
         QVERIFY(action.activeIcon().isNull());

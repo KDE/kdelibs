@@ -29,7 +29,6 @@
 
 #include <kdebug.h>
 #include <kguiitem.h>
-#include <kicon.h>
 #include <klocalizedstring.h>
 
 class KToggleAction::Private
@@ -103,7 +102,7 @@ void KToggleAction::slotToggled( bool )
 
     if ( d->checkedGuiItem->hasIcon() ) {
       QIcon icon = d->checkedGuiItem->icon();
-      d->checkedGuiItem->setIcon( KIcon(this->icon()) );
+      d->checkedGuiItem->setIcon(this->icon());
       QAction::setIcon( icon );
     }
   }

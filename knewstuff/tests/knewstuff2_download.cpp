@@ -25,7 +25,6 @@
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
-#include <kicon.h>
 
 #include <QPushButton>
 #include <QLayout>
@@ -123,15 +122,15 @@ KNewStuff2Download::KNewStuff2Download()
     frame->setMidLineWidth(0);
 
     recentButton = new KNSButton(frame);
-    recentButton->setIcon(KIcon("alarmclock"));
+    recentButton->setIcon(KDE::icon("alarmclock"));
     recentButton->setText("Most recent");
 
     estimatedButton = new KNSButton(frame);
-    estimatedButton->setIcon(KIcon("favorites"));
+    estimatedButton->setIcon(KDE::icon("favorites"));
     estimatedButton->setText("Most estimated");
 
     wantedButton = new KNSButton(frame);
-    wantedButton->setIcon(KIcon("kget"));
+    wantedButton->setIcon(KDE::icon("kget"));
     wantedButton->setText("Most wanted");
 
     connect(recentButton, SIGNAL(toggled(bool)), this, SLOT(buttonToggled(bool)));

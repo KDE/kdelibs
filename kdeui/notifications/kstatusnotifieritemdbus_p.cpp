@@ -32,7 +32,6 @@
 #include <kdebug.h>
 #include <ksystemtrayicon.h>
 #include <kaboutdata.h>
-#include <kicon.h>
 #include <kmenu.h>
 #include <kaction.h>
 #include <kwindowinfo.h>

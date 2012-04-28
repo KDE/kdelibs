@@ -37,7 +37,6 @@
 #include <QToolButton>
 #include <QToolBar>
 #include <QStandardItem>
-#include <kicon.h>
 #include <klocale.h>
 #include <kdebug.h>
 

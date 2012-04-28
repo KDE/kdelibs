@@ -31,7 +31,6 @@
 #include <klocalizedstring.h>
 #include <kaction.h>
 #include <kactionmenu.h>
-#include <kicon.h>
 #include <krun.h>
 #include <kmenu.h>
 

@@ -34,7 +34,6 @@
 #include <QEvent>
 #include <qurlpathinfo.h>
 
-#include <kicon.h>
 #include <kpushbutton.h>
 #include <ksqueezedtextlabel.h>
 #include <kguiitem.h>
@@ -489,7 +488,7 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
 
     arrowButton = new KPushButton(this);
     arrowButton->setMaximumSize(QSize(32,25));
-    arrowButton->setIcon(KIcon("arrow-down"));
+    arrowButton->setIcon(KDE::icon("arrow-down"));
     arrowButton->setToolTip(i18n("Click this to expand the dialog, to show details"));
     arrowState = Qt::DownArrow;
     connect(arrowButton, SIGNAL(clicked()), this, SLOT(_k_arrowToggled()));
@@ -659,14 +658,14 @@ void KWidgetJobTracker::Private::ProgressWidget::_k_arrowToggled()
         //The arrow is in the down position, dialog is collapsed, expand it and change icon.
         progressLabel->show();
         speedLabel->show();
-        arrowButton->setIcon(KIcon("arrow-up"));
+        arrowButton->setIcon(KDE::icon("arrow-up"));
         arrowButton->setToolTip(i18n("Click this to collapse the dialog, to hide details"));
         arrowState = Qt::UpArrow;
     } else {
         //Collapse the dialog
         progressLabel->hide();
         speedLabel->hide();
-        arrowButton->setIcon(KIcon("arrow-down"));
+        arrowButton->setIcon(KDE::icon("arrow-down"));
         arrowButton->setToolTip(i18n("Click this to expand the dialog, to show details"));
         arrowState = Qt::DownArrow;
     }

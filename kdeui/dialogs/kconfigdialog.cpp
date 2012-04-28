@@ -25,12 +25,12 @@
 #include <kconfigdialogmanager.h>
 #include <kcoreconfigskeleton.h>
 #include <kdebug.h>
-#include <kicon.h>
 #include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <kpagewidgetmodel.h>
 #include <kvbox.h>
 
+#include <QIcon>
 #include <QLayout>
 #include <QtCore/QMap>
 
@@ -164,7 +164,7 @@ KPageWidgetItem* KConfigDialog::KConfigDialogPrivate::addPageInternal(QWidget *p
   KPageWidgetItem *item = new KPageWidgetItem( frame, itemName );
   item->setHeader( header );
   if ( !pixmapName.isEmpty() )
-    item->setIcon( KIcon( pixmapName ) );
+    item->setIcon( KDE::icon( pixmapName ) );
 
   q->KPageDialog::addPage( item );
   return item;

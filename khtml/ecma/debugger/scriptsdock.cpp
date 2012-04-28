@@ -113,7 +113,7 @@ void ScriptsDock::addDocument(DebugDocument *document)
     {
         parent = new QTreeWidgetItem(QStringList() << domain);
         if (!favicon.isEmpty()) {
-            KIcon icon(favicon);
+            KDE::icon icon(favicon);
             parent->setIcon(0, icon);
         }
 

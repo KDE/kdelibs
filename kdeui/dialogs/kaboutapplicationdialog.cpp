@@ -99,7 +99,7 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
 
     QIcon windowIcon;
     if (!aboutData->programIconName().isEmpty()) {
-        windowIcon = KIcon(aboutData->programIconName());
+        windowIcon = KDE::icon(aboutData->programIconName());
     } else {
         windowIcon = qApp->windowIcon();
     }
