@@ -19,7 +19,6 @@
  */
 #include "khtmlviewbarwidget.h"
 
-#include <kicon.h>
 
 #include <QHBoxLayout>
 #include <QToolButton>

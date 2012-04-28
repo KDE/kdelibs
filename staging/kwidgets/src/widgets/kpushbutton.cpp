@@ -30,7 +30,6 @@
 #include <QApplication>
 
 #include <kguiitem.h>
-#include <kicon.h>
 
 #include "kauthaction.h"
 #include "kauthexecutejob.h"

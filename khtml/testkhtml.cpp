@@ -28,7 +28,6 @@
 #include <kcmdlineargs.h>
 #include <ktoggleaction.h>
 #include <kactioncollection.h>
-#include <kicon.h>
 #include "kxmlguifactory.h"
 #include <kfiledialog.h>
 

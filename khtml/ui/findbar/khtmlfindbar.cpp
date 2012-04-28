@@ -24,7 +24,6 @@
 #include "khtml_part.h"
 
 #include <kfind.h>
-#include <kicon.h>
 #include <kcolorscheme.h>
 
 #include <QMenu>

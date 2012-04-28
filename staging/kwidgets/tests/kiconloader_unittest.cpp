@@ -18,7 +18,6 @@
 */
 
 #include <kdebug.h>
-#include <kicon.h>
 #include "qtest_kde.h"
 #include <kiconloader.h>
 #include <kstandarddirs.h>

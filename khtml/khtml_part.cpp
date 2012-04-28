@@ -87,7 +87,6 @@ using namespace DOM;
 #include <kio/hostinfo_p.h>
 #include <kprotocolmanager.h>
 #include <kdebug.h>
-#include <kicon.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kmessagebox.h>

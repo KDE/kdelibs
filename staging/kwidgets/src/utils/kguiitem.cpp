@@ -21,7 +21,6 @@
 #include "kguiitem.h"
 
 #include <kdebug.h>
-#include <kicon.h>
 #include <QPushButton>
 
 #include "kstandardguiitem.h"

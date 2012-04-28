@@ -19,7 +19,6 @@
 
 #include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kicon.h>
 #include <kiconloader.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>

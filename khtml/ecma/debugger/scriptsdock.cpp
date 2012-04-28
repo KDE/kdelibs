@@ -33,7 +33,6 @@
 #include "debugdocument.h"
 
 #include <kmimetype.h>
-#include <kicon.h>
 
 using namespace KJS;
 using namespace KJSDebugger;

@@ -30,7 +30,6 @@
 #include <kstatusbar.h>
 #include <klocalizedstring.h>
 #include <kdebug.h>
-#include <kicon.h>
 #include <kiconloader.h>
 #include <kglobal.h>
 #include <kmessagebox.h>

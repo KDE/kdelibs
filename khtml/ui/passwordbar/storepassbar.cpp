@@ -24,7 +24,6 @@
 #include "khtml_part.h"
 #include "khtmlview.h"
 #include <kcolorscheme.h>
-#include <kicon.h>
 #include <QPalette>
 
 StorePassBar::StorePassBar( QWidget *parent ) :

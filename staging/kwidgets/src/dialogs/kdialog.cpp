@@ -38,7 +38,6 @@
 #include <QVBoxLayout>
 #include <QWhatsThis>
 
-#include <kicon.h>
 #include <kconfig.h>
 #include <klocalizedstring.h>
 #include <kpushbutton.h>

@@ -58,7 +58,6 @@
 #include <kstandarddirs.h>
 #include <krun.h>
 #include <kurifilter.h>
-#include <kicon.h>
 #include <kiconloader.h>
 #include <kdesktopfile.h>
 #include <kinputdialog.h>

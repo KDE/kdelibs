@@ -40,7 +40,6 @@
 #include <QtCore/QDir>
 
 #include <kdebug.h>
-#include <kicon.h>
 #include <kstandarddirs.h>
 #include <kglobal.h>
 #include <ksharedconfig.h>
