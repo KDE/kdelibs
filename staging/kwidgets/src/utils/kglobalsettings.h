@@ -399,8 +399,9 @@ public:
      *
      * @return the geometry to use for the desktop.  Note that it might not
      *         start at (0,0).
+     * @deprecated use QApplication::desktop()->screenGeometry(QCursor::pos())
      */
-    static QRect splashScreenDesktopGeometry();
+    static KWIDGETS_DEPRECATED QRect splashScreenDesktopGeometry();
 
     /**
      * This function returns the desktop geometry for an application that needs
@@ -416,8 +417,9 @@ public:
      *
      * @return the geometry to use for the desktop.  Note that it might not
      *         start at (0,0).
+     * @deprecated use QApplication::desktop()->screenGeometry(point)
      */
-    static QRect desktopGeometry(const QPoint& point);
+    static KWIDGETS_DEPRECATED QRect desktopGeometry(const QPoint& point);
 
     /**
      * This function returns the desktop geometry for an application that needs
@@ -430,8 +432,9 @@ public:
      *
      * @return the geometry to use for the desktop.  Note that it might not
      *         start at (0,0).
+     * @deprecated use QApplication::desktop()->screenGeometry(w)
      */
-    static QRect desktopGeometry(const QWidget* w);
+    static KWIDGETS_DEPRECATED QRect desktopGeometry(const QWidget* w);
 
     /**
      * This function determines if the user wishes to see icons on the

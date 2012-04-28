@@ -683,57 +683,17 @@ bool KGlobalSettings::wheelMouseZooms()
 
 QRect KGlobalSettings::splashScreenDesktopGeometry()
 {
-    QDesktopWidget *dw = QApplication::desktop();
-
-    if (dw->isVirtualDesktop()) {
-        KConfigGroup group(KSharedConfig::openConfig(), "Windows");
-        int scr = group.readEntry("Unmanaged", -3);
-        if (group.readEntry("XineramaEnabled", true) && scr != -2) {
-            if (scr == -3)
-                scr = dw->screenNumber(QCursor::pos());
-            return dw->screenGeometry(scr);
-        } else {
-            return dw->geometry();
-        }
-    } else {
-        return dw->geometry();
-    }
+    return QApplication::desktop()->screenGeometry(QCursor::pos());
 }
 
 QRect KGlobalSettings::desktopGeometry(const QPoint& point)
 {
-    QDesktopWidget *dw = QApplication::desktop();
-
-    if (dw->isVirtualDesktop()) {
-        KConfigGroup group(KSharedConfig::openConfig(), "Windows");
-        if (group.readEntry("XineramaEnabled", true) &&
-            group.readEntry("XineramaPlacementEnabled", true)) {
-            return dw->screenGeometry(dw->screenNumber(point));
-        } else {
-            return dw->geometry();
-        }
-    } else {
-        return dw->geometry();
-    }
+    return QApplication::desktop()->screenGeometry(point);
 }
 
 QRect KGlobalSettings::desktopGeometry(const QWidget* w)
 {
-    QDesktopWidget *dw = QApplication::desktop();
-
-    if (dw->isVirtualDesktop()) {
-        KConfigGroup group(KSharedConfig::openConfig(), "Windows");
-        if (group.readEntry("XineramaEnabled", true) &&
-            group.readEntry("XineramaPlacementEnabled", true)) {
-            if (w)
-                return dw->screenGeometry(dw->screenNumber(w));
-            else return dw->screenGeometry(-1);
-        } else {
-            return dw->geometry();
-        }
-    } else {
-        return dw->geometry();
-    }
+    return QApplication::desktop()->screenGeometry(w);
 }
 
 bool KGlobalSettings::showIconsOnPushButtons()
