@@ -207,7 +207,7 @@
          </item>
          <item row="14" column="1" colspan="3">
           <widget class="KLineEdit" name="m_searchEdit">
-           <property name="clickMessage">
+           <property name="placeholderText">
             <string>Enter search phrase here</string>
            </property>
            <property name="showClearButton" stdset="0">

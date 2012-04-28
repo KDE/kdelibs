@@ -108,7 +108,7 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
     m_labelEdit = new KLineEdit(wdg);
     layout->addRow(i18n("L&abel:"), m_labelEdit);
     m_labelEdit->setText(label);
-    m_labelEdit->setClickMessage(i18n("Enter descriptive label here"));
+    m_labelEdit->setPlaceholderText(i18n("Enter descriptive label here"));
     m_labelEdit->setWhatsThis(whatsThisText);
     layout->labelForField(m_labelEdit)->setWhatsThis(whatsThisText);
 
