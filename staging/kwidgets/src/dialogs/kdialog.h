@@ -669,6 +669,7 @@ class KWIDGETS_EXPORT KDialog : public QDialog //krazy:exclude=qclasses
      *
      * You can call this function from slots like closeClicked() and hidden().
      * You should not use the dialog any more after calling this function.
+     * @deprecated use hide()+deleteLater()
      */
     void delayedDestruct();
 
