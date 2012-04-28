@@ -20,7 +20,8 @@
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptContext>
 
-
+#include <kicon.h>
+#include <kiconloader.h>
 #include "backportglobal.h"
 
 Q_DECLARE_METATYPE(QIcon)

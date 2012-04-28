@@ -21,6 +21,7 @@
 
 #include <QPixmap>
 #include <QSize>
+#include <QIcon>
 #include <kiconloader.h>
 #include <kiconeffect.h>
 
