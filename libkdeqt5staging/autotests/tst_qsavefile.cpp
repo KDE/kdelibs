@@ -39,6 +39,7 @@
 **
 ****************************************************************************/
 
+#include <unistd.h>
 #include <../../kde_qt5_compat.h>
 #include <QtTest/QtTest>
 #include <qcoreapplication.h>
