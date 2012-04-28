@@ -204,7 +204,11 @@ fi
 
 TOPNAME=`grep '^/.*DOXYGEN_NAME' "$top_srcdir/Mainpage.dox" | sed -e 's+.*=++' | sed s+\"++g`
 if test -z "$TOPNAME" ; then
-    TOPNAME="API Reference"
+    if test -z "$module_name" ; then
+      TOPNAME="API Reference"
+    else
+      TOPNAME="$module_name API Reference"
+    fi
 fi
 
 COPYRIGHT=`grep '^/.*DOXYGEN_COPYRIGHT' "$top_srcdir/Mainpage.dox" | sed -e 's+[^=]*=++' | sed s+\"++g`
