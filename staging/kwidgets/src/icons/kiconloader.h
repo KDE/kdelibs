@@ -560,6 +560,18 @@ KWIDGETS_DEPRECATED_EXPORT QIcon UserIconSet(const QString& name);
  */
 KWIDGETS_EXPORT int IconSize(KIconLoader::Group group);
 
+namespace KDE {
+
+/**
+ * \relates KIconLoader
+ * Returns a QIcon with an appropriate
+ * KIconEngine to perform loading and rendering.  KIcons thus adhere to
+ * KDE style and effect standards.
+ */
+KWIDGETS_EXPORT QIcon icon(const QString& iconName, KIconLoader* iconLoader = 0, const QStringList& overlays = QStringList());
+
+}
+
 inline KIconLoader::Group& operator++(KIconLoader::Group& group) { group = static_cast<KIconLoader::Group>(group+1); return group; }
 inline KIconLoader::Group operator++(KIconLoader::Group& group,int) { KIconLoader::Group ret = group; ++group; return ret; }
 

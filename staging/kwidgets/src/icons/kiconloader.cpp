@@ -1718,4 +1718,8 @@ void KIconLoader::newIconLoader()
     emit iconLoaderSettingsChanged();
 }
 
-
+#include <kiconengine_p.h>
+QIcon KDE::icon(const QString& iconName, KIconLoader* iconLoader, const QStringList& overlays)
+{
+    return QIcon(new KIconEngine(iconName, iconLoader ? iconLoader : KIconLoader::global(), overlays));
+}
