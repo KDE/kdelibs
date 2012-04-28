@@ -153,12 +153,12 @@ QIcon KGuiItem::icon( ) const
 {
     if (d->m_hasIcon) {
         if (!d->m_iconName.isEmpty()) {
-            return KIcon(d->m_iconName);
+            return KDE::icon(d->m_iconName);
         } else {
             return d->m_icon;
         }
     }
-    return KIcon();
+    return QIcon();
 }
 
 // deprecated
@@ -217,7 +217,7 @@ void KGuiItem::setIcon( const QIcon &icon )
 void KGuiItem::setIconName( const QString &iconName )
 {
     d->m_iconName = iconName;
-    d->m_icon = KIcon();
+    d->m_icon = QIcon();
     d->m_hasIcon = !iconName.isEmpty();
 }
 

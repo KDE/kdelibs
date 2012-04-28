@@ -753,9 +753,9 @@ QIcon KDialog::buttonIcon( ButtonCode id ) const
 {
   KPushButton *button = this->button( id );
   if ( button )
-    return KIcon(button->icon());
+    return button->icon();
   else
-    return KIcon();
+    return QIcon();
 }
 
 void KDialog::setButtonToolTip( ButtonCode id, const QString &text )

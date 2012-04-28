@@ -106,19 +106,19 @@ void KPushButton::KPushButtonPrivate::authStatusChanged(KAuth::Action::AuthStatu
             parent->setEnabled(true);
             if(!oldIcon.isNull()) {
                 parent->setIcon(oldIcon);
-                oldIcon = KIcon();
+                oldIcon = QIcon();
             }
             break;
         case KAuth::Action::AuthRequiredStatus:
             parent->setEnabled(true);
-            oldIcon = KIcon(parent->icon());
-            parent->setIcon(KIcon("dialog-password"));
+            oldIcon = parent->icon();
+            parent->setIcon(KDE::icon("dialog-password"));
             break;
         default:
             parent->setEnabled(false);
             if(!oldIcon.isNull()) {
                 parent->setIcon(oldIcon);
-                oldIcon = KIcon();
+                oldIcon = QIcon();
             }
     }
 }
@@ -299,7 +299,7 @@ void KPushButton::setAuthAction(const KAuth::Action &action)
     if (d->authAction.isValid()) {
         if (!d->oldIcon.isNull()) {
             setIcon(d->oldIcon);
-            d->oldIcon = KIcon();
+            d->oldIcon = QIcon();
         }
     }
 

@@ -289,7 +289,7 @@ public:
      * @return the icon set. Can be null when not found, depending on
      *          @p canReturnNull.
      *
-     * @deprecated use KIcon instead, which uses the iconloader internally
+     * @deprecated use KDE::icon instead, which uses the iconloader internally
      */
 #ifndef KDE_NO_DEPRECATED
     KWIDGETS_DEPRECATED QIcon loadIconSet(const QString& name, KIconLoader::Group group, int size = 0,
@@ -485,7 +485,7 @@ KWIDGETS_EXPORT QPixmap DesktopIcon(const QString& name, int size=0,
 /**
  * \relates KIconLoader
  * Load a desktop icon, and apply the necessary effects to get an IconSet.
- * @deprecated use KIcon(name) or KIcon(name,componentData.iconLoader()) instead
+ * @deprecated use KDE::icon(name) or KDE::icon(name,componentData.iconLoader()) instead
  */
 #ifndef KDE_NO_DEPRECATED
 KWIDGETS_DEPRECATED_EXPORT QIcon DesktopIconSet(const QString& name, int size=0);
@@ -501,7 +501,7 @@ KWIDGETS_EXPORT QPixmap BarIcon(const QString& name, int size=0, int state=KIcon
 /**
  * \relates KIconLoader
  * Load a toolbar icon, and apply the necessary effects to get an IconSet.
- * @deprecated use KIcon(name) or KIcon(name,componentData.iconLoader()) instead
+ * @deprecated use KDE::icon(name) or KDE::icon(name,componentData.iconLoader()) instead
  */
 #ifndef KDE_NO_DEPRECATED
 KWIDGETS_DEPRECATED_EXPORT QIcon BarIconSet(const QString& name, int size=0);
@@ -517,7 +517,7 @@ KWIDGETS_EXPORT QPixmap SmallIcon(const QString& name, int size=0,
 /**
  * \relates KIconLoader
  * Load a small icon, and apply the necessary effects to get an IconSet.
- * @deprecated use KIcon(name) or KIcon(name,componentData.iconLoader()) instead
+ * @deprecated use KDE::icon(name) or KDE::icon(name,componentData.iconLoader()) instead
  */
 #ifndef KDE_NO_DEPRECATED
 KWIDGETS_DEPRECATED_EXPORT QIcon SmallIconSet(const QString& name, int size=0);
@@ -533,7 +533,7 @@ KWIDGETS_EXPORT QPixmap MainBarIcon(const QString& name, int size=0,
 /**
  * \relates KIconLoader
  * Load a main toolbar icon, and apply the effects to get an IconSet.
- * @deprecated use KIcon(name) or KIcon(name,componentData.iconLoader()) instead
+ * @deprecated use KDE::icon(name) or KDE::icon(name,componentData.iconLoader()) instead
  */
 #ifndef KDE_NO_DEPRECATED
 KWIDGETS_DEPRECATED_EXPORT QIcon MainBarIconSet(const QString& name, int size=0);
@@ -548,7 +548,7 @@ KWIDGETS_EXPORT QPixmap UserIcon(const QString& name, int state=KIconLoader::Def
 /**
  * \relates KIconLoader
  * Load a user icon, and apply the effects to get an IconSet.
- * @deprecated use KIcon(name) or KIcon(name,componentData.iconLoader()) instead
+ * @deprecated use KDE::icon(name) or KDE::icon(name,componentData.iconLoader()) instead
  */
 #ifndef KDE_NO_DEPRECATED
 KWIDGETS_DEPRECATED_EXPORT QIcon UserIconSet(const QString& name);

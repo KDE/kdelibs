@@ -611,14 +611,14 @@ void KIconTheme::assignIconsToContextMenu( ContextMenus type,
                 return;
             }
 
-            actions[UndoAct]->setIcon( KIcon("edit-undo") );
-            actions[RedoAct]->setIcon( KIcon("edit-redo") );
-            actions[CutAct]->setIcon( KIcon("edit-cut") );
-            actions[CopyAct]->setIcon( KIcon("edit-copy") );
-            actions[PasteAct]->setIcon( KIcon("edit-paste") );
-            actions[ClearAct]->setIcon( KIcon("edit-clear") );
-            actions[DeleteAct]->setIcon( KIcon("edit-delete") );
-            actions[SelectAllAct]->setIcon( KIcon("edit-select-all") );
+            actions[UndoAct]->setIcon( KDE::icon("edit-undo") );
+            actions[RedoAct]->setIcon( KDE::icon("edit-redo") );
+            actions[CutAct]->setIcon( KDE::icon("edit-cut") );
+            actions[CopyAct]->setIcon( KDE::icon("edit-copy") );
+            actions[PasteAct]->setIcon( KDE::icon("edit-paste") );
+            actions[ClearAct]->setIcon( KDE::icon("edit-clear") );
+            actions[DeleteAct]->setIcon( KDE::icon("edit-delete") );
+            actions[SelectAllAct]->setIcon( KDE::icon("edit-select-all") );
             break;
 
         case ReadOnlyText:
@@ -626,7 +626,7 @@ void KIconTheme::assignIconsToContextMenu( ContextMenus type,
                 return;
             }
 
-            actions[0]->setIcon( KIcon("edit-copy") );
+            actions[0]->setIcon( KDE::icon("edit-copy") );
             break;
     }
 }

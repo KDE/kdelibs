@@ -42,7 +42,7 @@ class KIconEffectPrivate;
  *
  * \image html kiconeffect-apply.png "Various Effects applied to an image"
  *
- * @see KIcon
+ * @see KDE::icon
  */
 class KWIDGETS_EXPORT KIconEffect
 {
