@@ -38,8 +38,13 @@ KARCHIVE_UNIT_TESTS(
 KARCHIVE_EXECUTABLE_TESTS(
   ktartest
   kziptest
-  k7ziptest
 )
+
+if(LIBLZMA_FOUND)
+        KARCHIVE_EXECUTABLE_TESTS(
+          k7ziptest
+        )
+endif()
 
 ########### klimitediodevicetest ###############
 
