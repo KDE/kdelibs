@@ -158,7 +158,9 @@ class KDEUI_EXPORT KLineEdit : public QLineEdit, public KCompletionBase //krazy:
     Q_PROPERTY( bool urlDropsEnabled READ urlDropsEnabled WRITE setUrlDropsEnabled )
     Q_PROPERTY( bool trapEnterKeyEvent READ trapReturnKey WRITE setTrapReturnKey )
     Q_PROPERTY( bool squeezedTextEnabled READ isSqueezedTextEnabled WRITE setSqueezedTextEnabled )
+#ifndef KDE_NO_DEPRECATED
     Q_PROPERTY( QString clickMessage READ clickMessage WRITE setClickMessage )
+#endif
     Q_PROPERTY( bool showClearButton READ isClearButtonShown WRITE setClearButtonShown )
     Q_PROPERTY( bool passwordMode READ passwordMode WRITE setPasswordMode )
 
@@ -336,13 +338,19 @@ public:
      * This makes the line edit display a grayed-out hinting text as long as
      * the user didn't enter any text. It is often used as indication about
      * the purpose of the line edit.
+     * @deprecated Use QLineEdit::setPlaceholderText instead.
      */
-    void setClickMessage( const QString &msg );
+#ifndef KDE_NO_DEPRECATED
+    void KDEUI_DEPRECATED setClickMessage( const QString &msg );
+#endif
 
     /**
+     * @deprecated Use QLineEdit::placeholderText instead.
      * @return the message set with setClickMessage
      */
-    QString clickMessage() const;
+#ifndef KDE_NO_DEPRECATED
+    QString KDEUI_DEPRECATED clickMessage() const;
+#endif
 
     /**
      * This makes the line edit display an icon on one side of the line edit
@@ -628,9 +636,15 @@ protected:
 
     virtual void paintEvent( QPaintEvent *ev );
 
+//Required only by clickMessage code
+#ifndef KDE_NO_DEPRECATED
     virtual void focusInEvent( QFocusEvent *ev );
+#endif
 
+//Required only by clickMessage code
+#ifndef KDE_NO_DEPRECATED
     virtual void focusOutEvent( QFocusEvent *ev );
+#endif
 
 private Q_SLOTS:
     void completionMenuActivated( QAction *act );

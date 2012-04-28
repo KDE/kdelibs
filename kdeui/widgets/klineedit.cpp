@@ -169,9 +169,11 @@ public:
     QString squeezedText;
     QString userText;
 
+#ifndef KDE_NO_DEPRECATED
     QString clickMessage;
     bool enableClickMsg:1;
     bool drawClickMsg:1;
+#endif
     bool threeStars:1;
 
     bool possibleTripleClick :1;  // set in mousePressEvent, deleted in tripleClickTimeout
@@ -277,10 +279,12 @@ void KLineEdit::initWidget()
     connect(this, SIGNAL(textChanged(QString)), this, SLOT(_k_textChanged(QString)));
 }
 
+#ifndef KDE_NO_DEPRECATED
 QString KLineEdit::clickMessage() const
 {
     return d->clickMessage;
 }
+#endif
 
 void KLineEdit::setClearButtonShown(bool show)
 {
@@ -569,11 +573,13 @@ bool KLineEdit::isSqueezedTextEnabled() const
 
 void KLineEdit::setText( const QString& text )
 {
+#ifndef KDE_NO_DEPRECATED
     if( d->enableClickMsg )
     {
           d->drawClickMsg = text.isEmpty();
           update();
     }
+#endif
     if( d->enableSqueezedText && isReadOnly() )
     {
         d->squeezedText = text;
@@ -1754,6 +1760,7 @@ void KLineEdit::paintEvent( QPaintEvent *ev )
         QLineEdit::paintEvent( ev );
     }
 
+#ifndef KDE_NO_DEPRECATED
     if (d->enableClickMsg && d->drawClickMsg && !hasFocus() && text().isEmpty()) {
         QPainter p(this);
         QFont f = font();
@@ -1801,8 +1808,10 @@ void KLineEdit::paintEvent( QPaintEvent *ev )
         p.drawText(lineRect, Qt::AlignLeft|Qt::AlignVCenter, d->clickMessage);
 
     }
+#endif
 }
 
+#ifndef KDE_NO_DEPRECATED
 void KLineEdit::focusInEvent( QFocusEvent *ev )
 {
     if ( d->enableClickMsg && d->drawClickMsg )
@@ -1812,7 +1821,9 @@ void KLineEdit::focusInEvent( QFocusEvent *ev )
     }
     QLineEdit::focusInEvent( ev );
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 void KLineEdit::focusOutEvent( QFocusEvent *ev )
 {
     if ( d->enableClickMsg && text().isEmpty() )
@@ -1822,7 +1833,9 @@ void KLineEdit::focusOutEvent( QFocusEvent *ev )
     }
     QLineEdit::focusOutEvent( ev );
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 void KLineEdit::setClickMessage( const QString &msg )
 {
     d->enableClickMsg = !msg.isEmpty();
@@ -1830,6 +1843,7 @@ void KLineEdit::setClickMessage( const QString &msg )
     d->drawClickMsg = text().isEmpty();
     update();
 }
+#endif
 
 #ifndef KDE_NO_DEPRECATED
 void KLineEdit::setContextMenuEnabled( bool showMenu )
