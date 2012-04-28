@@ -63,7 +63,10 @@ class KIO_EXPORT KUrlRequester : public KHBox
     Q_PROPERTY( QUrl url READ url WRITE setUrl NOTIFY textChanged USER true )
     Q_PROPERTY( QString filter READ filter WRITE setFilter )
     Q_PROPERTY( KFile::Modes mode READ mode WRITE setMode )
+    #ifndef KDE_NO_DEPRECATED
     Q_PROPERTY( QString clickMessage READ clickMessage WRITE setClickMessage )
+    #endif
+    Q_PROPERTY( QString placeholderText READ placeholderText WRITE setPlaceholderText )
     Q_PROPERTY(QString text READ text WRITE setText)
     Q_PROPERTY( Qt::WindowModality fileDialogModality READ fileDialogModality WRITE setFileDialogModality )
 
@@ -196,14 +199,34 @@ public:
     /**
      * @returns the message set with setClickMessage
      * @since 4.2
+     * @deprecated use KUrlRequester::placeholderText instead.
      */
-    QString clickMessage() const;
+#ifndef KDE_NO_DEPRECATED
+    QString KDEUI_DEPRECATED clickMessage() const;
+#endif
 
     /**
      * Set a click message @p msg
      * @since 4.2
+     * @deprecated use KUrlRequester::setPlaceholderText instead.
      */
-    void setClickMessage(const QString& msg);
+#ifndef KDE_NO_DEPRECATED
+    void KDEUI_DEPRECATED setClickMessage(const QString& msg);
+#endif
+
+    /**
+     * @return the message set with setPlaceholderText
+     * @since 5.0
+    */
+    QString placeholderText() const;
+
+    /**
+     * This makes the KUrlRequester line edit display a grayed-out hinting text as long as
+     * the user didn't enter any text. It is often used as indication about
+     * the purpose of the line edit.
+     * @since 5.0
+    */
+    void setPlaceholderText(const QString& msg);
 
     /**
      * @returns the window modality of the file dialog set with setFileDialogModality

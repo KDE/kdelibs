@@ -483,16 +483,30 @@ KUrlCompletion *KUrlRequester::completionObject() const
     return d->myCompletion;
 }
 
+#ifndef KDE_NO_DEPRECATED
 void KUrlRequester::setClickMessage(const QString& msg)
 {
-    if(d->edit)
-        d->edit->setClickMessage(msg);
+    setPlaceholderText(msg);
 }
+#endif
 
-QString KUrlRequester::clickMessage() const
+void KUrlRequester::setPlaceholderText(const QString& msg)
 {
     if(d->edit)
-        return d->edit->clickMessage();
+        d->edit->setPlaceholderText(msg);
+}
+
+#ifndef KDE_NO_DEPRECATED
+QString KUrlRequester::clickMessage() const
+{
+    return placeholderText();
+}
+#endif
+
+QString KUrlRequester::placeholderText() const
+{
+    if(d->edit)
+        return d->edit->placeholderText();
     else
         return QString();
 }
