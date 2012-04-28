@@ -89,7 +89,7 @@ void KActionPrivate::authStatusChanged(KAuth::Action::AuthStatus status)
             q->setEnabled(true);
             if(!oldIcon.isNull()) {
                 q->setIcon(oldIcon);
-                oldIcon = KIcon();
+                oldIcon = QIcon();
             }
             break;
         case KAuth::Action::AuthRequiredStatus:
@@ -101,7 +101,7 @@ void KActionPrivate::authStatusChanged(KAuth::Action::AuthStatus status)
             q->setEnabled(false);
             if(!oldIcon.isNull()) {
                 q->setIcon(oldIcon);
-                oldIcon = KIcon();
+                oldIcon = QIcon();
             }
     }
 }
@@ -399,7 +399,7 @@ void KAction::setAuthAction(const KAuth::Action &action)
     if (d->authAction.isValid()) {
         if (!d->oldIcon.isNull()) {
             setIcon(d->oldIcon);
-            d->oldIcon = KIcon();
+            d->oldIcon = QIcon();
         }
     }
 

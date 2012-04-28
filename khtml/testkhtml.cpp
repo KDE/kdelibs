@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
     QObject::connect(action, SIGNAL(triggered(bool)), dummy, SLOT(reload()));
     action->setShortcut(Qt::Key_F5);
 
-    KAction *bench = new KAction( KIcon(), "Benchmark...", doc );
+    KAction *bench = new KAction( QIcon(), "Benchmark...", doc );
     doc->actionCollection()->addAction( "debugDoBenchmark", bench );
     QObject::connect(bench, SIGNAL(triggered(bool)), dummy, SLOT(doBenchmark()));
 

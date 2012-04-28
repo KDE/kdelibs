@@ -92,7 +92,7 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
         if (column == Name)
             return m_action->icon();
         else
-            return KIcon();
+            return QIcon();
         break;
     case Qt::WhatsThisRole:
         return m_action->whatsThis();

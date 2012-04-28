@@ -64,13 +64,13 @@ void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 
 	QStringList optionsList = prstring.split ('|');
 	QList<QIcon> iconList;
-	iconList << ( optionsList.contains("Sound")   ? KIcon("media-playback-start") : KIcon() );
-	iconList << ( optionsList.contains("Popup")   ? KIcon("dialog-information")   : KIcon() );
-	iconList << ( optionsList.contains("Logfile") ? KIcon("text-x-generic")       : KIcon() );
-	iconList << ( optionsList.contains("Taskbar") ? KIcon("services")             : KIcon() );
-	iconList << ( optionsList.contains("Execute") ? KIcon("system-run")           : KIcon() );
+	iconList << ( optionsList.contains("Sound")   ? KIcon("media-playback-start") : QIcon() );
+	iconList << ( optionsList.contains("Popup")   ? KIcon("dialog-information")   : QIcon() );
+	iconList << ( optionsList.contains("Logfile") ? KIcon("text-x-generic")       : QIcon() );
+	iconList << ( optionsList.contains("Taskbar") ? KIcon("services")             : QIcon() );
+	iconList << ( optionsList.contains("Execute") ? KIcon("system-run")           : QIcon() );
 	if( KNotifyConfigElement::have_kttsd() )
-		iconList << ( optionsList.contains("KTTS") ? KIcon("text-speak") : KIcon() );
+		iconList << ( optionsList.contains("KTTS") ? KIcon("text-speak") : QIcon() );
 
 	int mc_x=0;
 	
