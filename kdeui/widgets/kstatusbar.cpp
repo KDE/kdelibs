@@ -26,8 +26,6 @@
 #include <QLabel>
 
 #include <kdebug.h>
-#include <ksharedconfig.h>
-#include <kconfiggroup.h>
 
 #include "ksqueezedtextlabel.h"
 
@@ -72,17 +70,6 @@ KStatusBar::KStatusBar( QWidget *parent )
   : QStatusBar( parent ),
     d(new KStatusBarPrivate)
 {
-    // make the size grip stuff configurable
-    // ...but off by default (sven)
-    // ...but on by default on OSX, else windows with a KStatusBar are not resizable at all (marijn)
-    KSharedConfig::Ptr config = KSharedConfig::openConfig();
-    KConfigGroup group( config, QLatin1String("StatusBar style") );
-#ifdef Q_WS_MAC
-    bool grip_enabled = group.readEntry(QLatin1String("SizeGripEnabled"), true);
-#else
-    bool grip_enabled = group.readEntry(QLatin1String("SizeGripEnabled"), false);
-#endif
-    setSizeGripEnabled(grip_enabled);
 }
 
 KStatusBar::~KStatusBar ()
