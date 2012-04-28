@@ -62,7 +62,7 @@ KRecentFilesAction::KRecentFilesAction(const QString &text, QObject *parent)
   setText(text);
 }
 
-KRecentFilesAction::KRecentFilesAction(const KIcon &icon, const QString &text, QObject *parent)
+KRecentFilesAction::KRecentFilesAction(const QIcon &icon, const QString &text, QObject *parent)
   : KSelectAction(*new KRecentFilesActionPrivate, parent)
 {
   Q_D(KRecentFilesAction);
