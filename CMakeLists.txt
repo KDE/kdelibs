@@ -347,8 +347,9 @@ check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 if (QT5_BUILD)
   add_definitions(-DKDE_NO_PHONON)
   set(KDE_NO_PHONON True)
-  set(kde4support_LIBRARY kde4support)
 endif()
+
+set(kde4support_LIBRARY kde4support)
 
 ################# list the subdirectories #################
 
