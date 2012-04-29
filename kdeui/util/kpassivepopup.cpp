@@ -27,6 +27,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPainterPath>
+#include <QDesktopWidget>
 #include <QPolygonF>
 #include <QTimer>
 #include <QToolTip>
@@ -388,7 +389,7 @@ QPoint KPassivePopup::calculateNearbyPoint( const QRect &target) {
     int w = minimumSizeHint().width();
     int h = minimumSizeHint().height();
 
-    QRect r = KGlobalSettings::desktopGeometry(QPoint(x+w/2,y+h/2));
+    QRect r = QApplication::desktop()->screenGeometry(QPoint(x+w/2,y+h/2));
 
     if( d->popupStyle == Balloon )
     {
@@ -449,7 +450,7 @@ void KPassivePopup::updateMask()
 {
     // get screen-geometry for screen our anchor is on
     // (geometry can differ from screen to screen!
-    QRect deskRect = KGlobalSettings::desktopGeometry(d->anchor);
+    QRect deskRect = QApplication::desktop()->screenGeometry(d->anchor);
 
     int xh = 70, xl = 40;
     if( width() < 80 )

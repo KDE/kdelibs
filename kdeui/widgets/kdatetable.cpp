@@ -40,6 +40,7 @@
 #include <QtCore/QDate>
 #include <QtCore/QCharRef>
 #include <QPen>
+#include <QDesktopWidget>
 #include <QPainter>
 #include <QStyle>
 #include <QStyleOptionViewItem>
@@ -915,7 +916,7 @@ void KPopupFrame::resizeEvent( QResizeEvent *e )
 void KPopupFrame::popup( const QPoint &pos )
 {
     // Make sure the whole popup is visible.
-    QRect desktopGeometry = KGlobalSettings::desktopGeometry( pos );
+    QRect desktopGeometry = QApplication::desktop()->screenGeometry( pos );
 
     int x = pos.x();
     int y = pos.y();

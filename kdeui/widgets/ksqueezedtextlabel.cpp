@@ -20,6 +20,7 @@
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <QContextMenuEvent>
+#include <QDesktopWidget>
 #include <kaction.h>
 #include <QMenu>
 #include <QClipboard>
@@ -76,7 +77,7 @@ QSize KSqueezedTextLabel::minimumSizeHint() const
 
 QSize KSqueezedTextLabel::sizeHint() const
 {
-  int maxWidth = KGlobalSettings::desktopGeometry(this).width() * 3 / 4;
+  int maxWidth = QApplication::desktop()->screenGeometry(this).width() * 3 / 4;
   QFontMetrics fm(fontMetrics());
   int textWidth = fm.width(d->fullText);
   if (textWidth > maxWidth) {

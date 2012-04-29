@@ -150,7 +150,7 @@ bool Screen::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
 JSValue *Screen::getValueProperty(ExecState *exec, int token) const
 {
   QWidget *thisWidget = Window::retrieveActive(exec)->part()->widget();
-  QRect sg = KGlobalSettings::desktopGeometry(thisWidget);
+  QRect sg = QApplication::desktop()->screenGeometry(thisWidget);
 
   switch( token ) {
   case Height:
@@ -1011,14 +1011,14 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
     case ScreenX: {
       if (!part->view())
         return jsUndefined();
-      QRect sg = KGlobalSettings::desktopGeometry(part->view());
+      QRect sg = QApplication::desktop()->screenGeometry(part->view());
       return jsNumber(part->view()->mapToGlobal(QPoint(0,0)).x() + sg.x());
     }
     case ScreenTop:
     case ScreenY: {
       if (!part->view())
         return jsUndefined();
-      QRect sg = KGlobalSettings::desktopGeometry(part->view());
+      QRect sg = QApplication::desktop()->screenGeometry(part->view());
       return jsNumber(part->view()->mapToGlobal(QPoint(0,0)).y() + sg.y());
     }
     case ScrollX: {
@@ -1571,7 +1571,7 @@ void KJS::Window::resizeTo(QWidget* tl, int width, int height)
     return;
   }
 
-  QRect sg = KGlobalSettings::desktopGeometry(tl);
+  QRect sg = QApplication::desktop()->screenGeometry(tl);
 
   if ( width > sg.width() || height > sg.height() ) {
     kDebug(6070) << "Window::resizeTo refused, window would be too big ("<<width<<","<<height<<")";
@@ -1713,7 +1713,7 @@ JSValue *Window::executeOpenWindow(ExecState *exec, const KUrl& url, const QStri
         if (pos >= 0) {
           key = s.left(pos).trimmed().toLower();
           val = s.mid(pos + 1).trimmed().toLower();
-          QRect screen = KGlobalSettings::desktopGeometry(widget->topLevelWidget());
+          QRect screen = QApplication::desktop()->screenGeometry(widget->topLevelWidget());
 
           if (key == "left" || key == "screenx") {
             winargs.setX((int)val.toFloat() + screen.x());
@@ -2093,7 +2093,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
       KParts::BrowserExtension *ext = part->browserExtension();
       if (ext) {
         QWidget * tl = widget->topLevelWidget();
-        QRect sg = KGlobalSettings::desktopGeometry(tl);
+        QRect sg = QApplication::desktop()->screenGeometry(tl);
 
         QPoint dest = tl->pos() + QPoint( args[0]->toInt32(exec), args[1]->toInt32(exec) );
         // Security check (the spec talks about UniversalBrowserWrite to disable this check...)
@@ -2113,7 +2113,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
       KParts::BrowserExtension *ext = part->browserExtension();
       if (ext) {
         QWidget * tl = widget->topLevelWidget();
-        QRect sg = KGlobalSettings::desktopGeometry(tl);
+        QRect sg = QApplication::desktop()->screenGeometry(tl);
 
         QPoint dest( args[0]->toInt32(exec)+sg.x(), args[1]->toInt32(exec)+sg.y() );
         // Security check (the spec talks about UniversalBrowserWrite to disable this check...)

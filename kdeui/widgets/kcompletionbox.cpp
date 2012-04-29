@@ -26,6 +26,7 @@
 
 #include <QtCore/QEvent>
 #include <QApplication>
+#include <QDesktopWidget>
 #include <QComboBox>
 #include <QStyle>
 #include <QScrollBar>
@@ -285,7 +286,7 @@ void KCompletionBox::sizeAndPosition()
     if ( d->m_parent ) {
       if ( !isVisible() ) {
         QPoint orig = globalPositionHint();
-        QRect screenSize = KGlobalSettings::desktopGeometry(orig);
+        QRect screenSize = QApplication::desktop()->screenGeometry(orig);
 
         x = orig.x() + geom.x();
         y = orig.y() + geom.y();

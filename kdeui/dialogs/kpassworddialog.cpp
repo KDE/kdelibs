@@ -21,6 +21,7 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QLayout>
+#include <QDesktopWidget>
 #include <QTextDocument>
 #include <QTimer>
 
@@ -137,7 +138,7 @@ void KPasswordDialog::KPasswordDialogPrivate::init()
 
     updateFields();
 
-    QRect desktop = KGlobalSettings::desktopGeometry(q->topLevelWidget());
+    QRect desktop = QApplication::desktop()->screenGeometry(q->topLevelWidget());
     q->setMinimumWidth(qMin(1000, qMax(q->sizeHint().width(), desktop.width() / 4)));
     q->setPixmap(KDE::icon("dialog-password").pixmap(KIconLoader::SizeHuge));
 }

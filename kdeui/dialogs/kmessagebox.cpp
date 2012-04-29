@@ -25,6 +25,7 @@
 #include <QLabel>
 #include <QLayout>
 #include <QListWidget>
+#include <QDesktopWidget>
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QTextDocumentFragment>
@@ -199,7 +200,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
     }
     messageLabel->setTextInteractionFlags(flags);
 
-    QRect desktop = KGlobalSettings::desktopGeometry(dialog);
+    QRect desktop = QApplication::desktop()->screenGeometry(dialog);
     bool usingSqueezedTextLabel = false;
     if (messageLabel->sizeHint().width() > desktop.width() * 0.5) {
         // enable automatic wrapping of messages which are longer than 50% of screen width
