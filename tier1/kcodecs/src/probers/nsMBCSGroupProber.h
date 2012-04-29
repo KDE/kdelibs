@@ -23,41 +23,42 @@
 *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef nsCharSetProber_h__
-#define nsCharSetProber_h__
+#ifndef nsMBCSGroupProber_h__
+#define nsMBCSGroupProber_h__
 
-#include "kencodingprober.h"
+#include "nsSJISProber.h"
+#include "UnicodeGroupProber.h"
+#include "nsEUCJPProber.h"
+#include "nsGB2312Prober.h"
+#include "nsEUCKRProber.h"
+#include "nsBig5Prober.h"
+#include "nsEUCTWProber.h"
 
+#define NUM_OF_PROBERS    7
 namespace kencodingprober {
-typedef enum {
-  eDetecting = 0,   //We are still detecting, no sure answer yet, but caller can ask for confidence.
-  eFoundIt = 1,     //That's a positive answer
-  eNotMe = 2        //Negative answer
-} nsProbingState;
-
-#define SHORTCUT_THRESHOLD      (float)0.95
-
-class KCOREADDONS_NO_EXPORT nsCharSetProber {
+class KCODECS_NO_EXPORT nsMBCSGroupProber: public nsCharSetProber {
 public:
-  virtual ~nsCharSetProber() {};
-  virtual const char* GetCharSetName() = 0;
-  virtual nsProbingState HandleData(const char* aBuf, unsigned int aLen) = 0;
-  virtual nsProbingState GetState(void) = 0;
-  virtual void      Reset(void)  = 0;
-  virtual float     GetConfidence(void) = 0;
-  virtual void      SetOpion() = 0;
+  nsMBCSGroupProber();
+  virtual ~nsMBCSGroupProber();
+  nsProbingState HandleData(const char* aBuf, unsigned int aLen);
+  const char* GetCharSetName();
+  nsProbingState GetState(void) {return mState;};
+  void      Reset(void);
+  float     GetConfidence(void);
+  void      SetOpion() {};
 
 #ifdef DEBUG_PROBE
-  virtual void  DumpStatus() {};
+  void  DumpStatus();
 #endif
 
-  // Helper functions used in the Latin1 and Group probers.
-  // both functions Allocate a new buffer for newBuf. This buffer should be 
-  // freed by the caller using PR_FREEIF.
-  // Both functions return false in case of memory allocation failure.
-  static bool FilterWithoutEnglishLetters(const char* aBuf, unsigned int aLen, char** newBuf, unsigned int& newLen);
-  static bool FilterWithEnglishLetters(const char* aBuf, unsigned int aLen, char** newBuf, unsigned int& newLen);
-
+protected:
+  nsProbingState mState;
+  nsCharSetProber* mProbers[NUM_OF_PROBERS];
+  bool          mIsActive[NUM_OF_PROBERS];
+  int mBestGuess;
+  unsigned int mActiveNum;
 };
 }
-#endif /* nsCharSetProber_h__ */
+
+#endif /* nsMBCSGroupProber_h__ */
+

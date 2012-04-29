@@ -23,20 +23,22 @@
 *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef nsEUCTWProber_h__
-#define nsEUCTWProber_h__
+#ifndef nsGB2312Prober_h__
+#define nsGB2312Prober_h__
 
 #include "nsCharSetProber.h"
 #include "nsCodingStateMachine.h"
 #include "CharDistribution.h"
+
+// We use gb18030 to replace gb2312, because 18030 is a superset. 
 namespace kencodingprober {
-class KCOREADDONS_NO_EXPORT nsEUCTWProber: public nsCharSetProber {
+class KCODECS_NO_EXPORT nsGB18030Prober: public nsCharSetProber {
 public:
-  nsEUCTWProber(void){mCodingSM = new nsCodingStateMachine(&EUCTWSMModel);
+  nsGB18030Prober(void){mCodingSM = new nsCodingStateMachine(&GB18030SMModel);
                       Reset();};
-  virtual ~nsEUCTWProber(void){delete mCodingSM;};
+  virtual ~nsGB18030Prober(void){delete mCodingSM;};
   nsProbingState HandleData(const char* aBuf, unsigned int aLen);
-  const char* GetCharSetName() {return "x-euc-tw";};
+  const char* GetCharSetName() {return "gb18030";};
   nsProbingState GetState(void) {return mState;};
   void      Reset(void);
   float     GetConfidence(void);
@@ -48,12 +50,12 @@ protected:
   nsCodingStateMachine* mCodingSM;
   nsProbingState mState;
 
-  //EUCTWContextAnalysis mContextAnalyser;
-  EUCTWDistributionAnalysis mDistributionAnalyser;
+  //GB2312ContextAnalysis mContextAnalyser;
+  GB2312DistributionAnalysis mDistributionAnalyser;
   char mLastChar[2];
 
 };
 }
 
-#endif /* nsEUCTWProber_h__ */
+#endif /* nsGB2312Prober_h__ */
 

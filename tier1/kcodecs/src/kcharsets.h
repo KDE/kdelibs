@@ -19,7 +19,7 @@
 #ifndef KCHARSETS_H
 #define KCHARSETS_H
 
-#include <kcoreaddons_export.h>
+#include <kcodecs_export.h>
 #include <QtCore/QList>
 
 class KCharsets;
@@ -38,7 +38,7 @@ class QTextCodec;
  * QTextCodec::codecForName matches only closely-related encoded names
  * but not alternate names, e.g. found in the reality of the Internet.
  */
-class KCOREADDONS_EXPORT KCharsets
+class KCODECS_EXPORT KCharsets
 {
 protected:
     /** Protected constructor. If you need the kcharsets object, use
@@ -144,7 +144,7 @@ public:
      * This function will be removed before KDE4 is released.
      */
 #ifndef KDE_NO_DEPRECATED
-    KCOREADDONS_DEPRECATED QString languageForEncoding( const QString &encoding ) const;
+    KCODECS_DEPRECATED QString languageForEncoding( const QString &encoding ) const;
 #endif
 
     /**

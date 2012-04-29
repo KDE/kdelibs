@@ -48,7 +48,7 @@ typedef struct
 } SequenceModel;
 
 
-class KCOREADDONS_NO_EXPORT nsSingleByteCharSetProber : public nsCharSetProber{
+class KCODECS_NO_EXPORT nsSingleByteCharSetProber : public nsCharSetProber{
 public:
   nsSingleByteCharSetProber(SequenceModel *model) 
     :mModel(model), mReversed(false), mNameProber(0) { Reset(); }

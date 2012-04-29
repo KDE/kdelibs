@@ -215,7 +215,7 @@ const char BulgarianLangModel[] =
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
 };
 
-SequenceModel KCOREADDONS_NO_EXPORT Latin5BulgarianModel = 
+SequenceModel KCODECS_NO_EXPORT Latin5BulgarianModel = 
 {
   Latin5_BulgarianCharToOrderMap,
   BulgarianLangModel,
@@ -224,7 +224,7 @@ SequenceModel KCOREADDONS_NO_EXPORT Latin5BulgarianModel =
   "ISO-8859-5"
 };
 
-SequenceModel KCOREADDONS_NO_EXPORT Win1251BulgarianModel = 
+SequenceModel KCODECS_NO_EXPORT Win1251BulgarianModel = 
 {
   win1251BulgarianCharToOrderMap,
   BulgarianLangModel,

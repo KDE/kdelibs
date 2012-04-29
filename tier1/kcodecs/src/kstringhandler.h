@@ -21,7 +21,7 @@
 #ifndef KSTRINGHANDLER_H
 #define KSTRINGHANDLER_H
 
-#include <kcoreaddons_export.h>
+#include <kcodecs_export.h>
 
 #include <QtCore/qnamespace.h>
 
@@ -64,14 +64,14 @@ namespace KStringHandler
       * @param text the text to capitalize
       * @return the resulting string
       */
-    KCOREADDONS_EXPORT QString capwords( const QString &text );
+    KCODECS_EXPORT QString capwords( const QString &text );
 
     /** Capitalizes each word in the list
       * [hello, there] becomes [Hello, There]    (list)
       * @param list the list to capitalize
       * @return the resulting list
       */
-    KCOREADDONS_EXPORT QStringList capwords( const QStringList &list );
+    KCODECS_EXPORT QStringList capwords( const QStringList &list );
 
     /** Substitute characters at the beginning of a string by "...".
      * @param str is the string to modify
@@ -79,7 +79,7 @@ namespace KStringHandler
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
      */
-    KCOREADDONS_EXPORT QString lsqueeze( const QString & str, int maxlen = 40 );
+    KCODECS_EXPORT QString lsqueeze( const QString & str, int maxlen = 40 );
 
     /** Substitute characters at the middle of a string by "...".
      * @param str is the string to modify
@@ -87,7 +87,7 @@ namespace KStringHandler
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
      */
-    KCOREADDONS_EXPORT QString csqueeze( const QString & str, int maxlen = 40 );
+    KCODECS_EXPORT QString csqueeze( const QString & str, int maxlen = 40 );
 
     /** Substitute characters at the end of a string by "...".
      * @param str is the string to modify
@@ -95,7 +95,7 @@ namespace KStringHandler
      * If the original string is shorter than "maxlen", it is returned verbatim
      * @return the modified string
      */
-    KCOREADDONS_EXPORT QString rsqueeze( const QString & str, int maxlen = 40 );
+    KCODECS_EXPORT QString rsqueeze( const QString & str, int maxlen = 40 );
 
     /**
      * Split a QString into a QStringList in a similar fashion to the static
@@ -114,7 +114,7 @@ namespace KStringHandler
      * @param max is the maximum number of extractions to perform, or 0.
      * @return A QStringList containing tokens extracted from s.
      */
-    KCOREADDONS_EXPORT QStringList perlSplit( const QString & sep,
+    KCODECS_EXPORT QStringList perlSplit( const QString & sep,
                                           const QString & s,
                                           int max = 0 );
 
@@ -135,7 +135,7 @@ namespace KStringHandler
      * @param max is the maximum number of extractions to perform, or 0.
      * @return A QStringList containing tokens extracted from s.
      */
-    KCOREADDONS_EXPORT QStringList perlSplit( const QChar & sep,
+    KCODECS_EXPORT QStringList perlSplit( const QChar & sep,
                                           const QString & s,
                                           int max = 0 );
 
@@ -156,7 +156,7 @@ namespace KStringHandler
      * @param max is the maximum number of extractions to perform, or 0.
      * @return A QStringList containing tokens extracted from s.
      */
-    KCOREADDONS_EXPORT QStringList perlSplit( const QRegExp & sep,
+    KCODECS_EXPORT QStringList perlSplit( const QRegExp & sep,
                                           const QString & s,
                                           int max = 0);
 
@@ -166,7 +166,7 @@ namespace KStringHandler
      * @param text the string which may contain URLs
      * @return the resulting text
      */
-    KCOREADDONS_EXPORT QString tagUrls( const QString& text );
+    KCODECS_EXPORT QString tagUrls( const QString& text );
 
     /**
       Obscure string by using a simple symmetric encryption. Applying the
@@ -180,7 +180,7 @@ namespace KStringHandler
       @param str string to be obscured
       @return obscured string
     */
-    KCOREADDONS_EXPORT QString obscure( const QString &str );
+    KCODECS_EXPORT QString obscure( const QString &str );
 
 
     /**
@@ -189,7 +189,7 @@ namespace KStringHandler
       @param str the string to check
       @return true if UTF8. If false, the string is probably in Local8Bit.
      */
-    KCOREADDONS_EXPORT bool isUtf8( const char *str );
+    KCODECS_EXPORT bool isUtf8( const char *str );
 
     /**
       Construct QString from a c string, guessing whether it is UTF8- or
@@ -200,7 +200,7 @@ namespace KStringHandler
       @see KEncodingDetector
 
      */
-    KCOREADDONS_EXPORT QString from8Bit( const char *str );
+    KCODECS_EXPORT QString from8Bit( const char *str );
 
     /**
       Does a natural comparing of the strings. A negative value is returned if \a a
@@ -213,7 +213,7 @@ namespace KStringHandler
 
       @since 4.1
      */
-    KCOREADDONS_EXPORT int naturalCompare( const QString& a, const QString& b, Qt::CaseSensitivity caseSensitivity = Qt::CaseSensitive );
+    KCODECS_EXPORT int naturalCompare( const QString& a, const QString& b, Qt::CaseSensitivity caseSensitivity = Qt::CaseSensitive );
 
     /**
       Preprocesses the given string in order to provide additional line breaking
@@ -228,6 +228,6 @@ namespace KStringHandler
 
       @since 4.4
     */
-    KCOREADDONS_EXPORT QString preProcessWrap( const QString& text );
+    KCODECS_EXPORT QString preProcessWrap( const QString& text );
 }
 #endif

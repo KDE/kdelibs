@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*  -*- C++ -*-
-*  Copyright (C) 1998 <developer@mozilla.org>
+*  Copyright (C) 2008 <wkai@gmail.com>
 *
 *
 *  Permission is hereby granted, free of charge, to any person obtaining
@@ -23,35 +23,36 @@
 *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef nsLatin1Prober_h__
-#define nsLatin1Prober_h__
+#ifndef UNICODEGROUPPROBER_H
+#define UNICODEGROUPPROBER_H
 
 #include "nsCharSetProber.h"
+#include "nsCodingStateMachine.h"
 
-#define FREQ_CAT_NUM    4
+#define NUM_OF_UNICODE_CHARSETS   3
 namespace kencodingprober {
-class KCOREADDONS_NO_EXPORT nsLatin1Prober: public nsCharSetProber {
+class KCODECS_NO_EXPORT UnicodeGroupProber: public nsCharSetProber {
 public:
-  nsLatin1Prober(void){Reset();};
-  virtual ~nsLatin1Prober(void){};
+  UnicodeGroupProber(void);
+  virtual ~UnicodeGroupProber(void);
   nsProbingState HandleData(const char* aBuf, unsigned int aLen);
-  const char* GetCharSetName() {return "windows-1252";};
+  const char* GetCharSetName() {return mDetectedCharset;};
   nsProbingState GetState(void) {return mState;};
   void      Reset(void);
-  float     GetConfidence(void);
+  float     GetConfidence();
   void      SetOpion() {};
-
 #ifdef DEBUG_PROBE
-  virtual void  DumpStatus();
+  void DumpStatus();
 #endif
 
 protected:
+  void      GetDistribution(unsigned int aCharLen, const char* aStr);
   
+  nsCodingStateMachine* mCodingSM[NUM_OF_UNICODE_CHARSETS] ;
+  unsigned int    mActiveSM;
   nsProbingState mState;
-  char mLastCharClass;
-  unsigned int mFreqCounter[FREQ_CAT_NUM];
+  const char *  mDetectedCharset;
 };
 }
-
-#endif /* nsLatin1Prober_h__ */
+#endif /* UNICODEGROUPPROBER_H */
 

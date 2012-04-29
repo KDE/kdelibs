@@ -30,7 +30,7 @@
 namespace kencodingprober {
 // This prober doesn't actually recognize a language or a charset.
 // It is a helper prober for the use of the Hebrew model probers
-class KCOREADDONS_NO_EXPORT nsHebrewProber: public nsCharSetProber
+class KCODECS_NO_EXPORT nsHebrewProber: public nsCharSetProber
 {
 public:
   nsHebrewProber(void) :mLogicalProb(0), mVisualProb(0) { Reset(); }

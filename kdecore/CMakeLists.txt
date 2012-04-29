@@ -30,10 +30,11 @@ IF(NOT QT5_BUILD)
 endif()
 include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/jobs )
 include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io )
-include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/text )
+include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcodecs/src )
 include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/kernel )
 include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/randomness )
 include_directories( ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src/ )
+include_directories( ${CMAKE_BINARY_DIR}/tier1/kcodecs/src/ )
 
 if (KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
    set(KDECORE_NO_KDE3SUPPORT TRUE)
@@ -237,7 +238,7 @@ generate_export_header(kdecore)
 
 target_link_libraries(kdecore
   LINK_PUBLIC
-    ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons kconfig
+    ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons kconfig kcodecs
   LINK_PRIVATE
     ${QtMimeTypes_LIBRARY} ${QT_QTXML_LIBRARY} ${kdecore_OPTIONAL_LIBS}
 )

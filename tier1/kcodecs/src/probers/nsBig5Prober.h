@@ -23,33 +23,37 @@
 *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef nsEscCharSetProber_h__
-#define nsEscCharSetProber_h__
+#ifndef nsBig5Prober_h__
+#define nsBig5Prober_h__
 
 #include "nsCharSetProber.h"
 #include "nsCodingStateMachine.h"
-
-#define NUM_OF_ESC_CHARSETS   4
+#include "CharDistribution.h"
 namespace kencodingprober {
-class KCOREADDONS_NO_EXPORT nsEscCharSetProber: public nsCharSetProber {
+class KCODECS_NO_EXPORT nsBig5Prober: public nsCharSetProber {
 public:
-  nsEscCharSetProber(void);
-  virtual ~nsEscCharSetProber(void);
+  nsBig5Prober(void){mCodingSM = new nsCodingStateMachine(&Big5SMModel);
+                      Reset();};
+  virtual ~nsBig5Prober(void){delete mCodingSM;};
   nsProbingState HandleData(const char* aBuf, unsigned int aLen);
-  const char* GetCharSetName() {return mDetectedCharset;};
+  const char* GetCharSetName() {return "Big5";};
   nsProbingState GetState(void) {return mState;};
   void      Reset(void);
-  float     GetConfidence(void){return (float)0.99;};
+  float     GetConfidence(void);
   void      SetOpion() {};
 
 protected:
   void      GetDistribution(unsigned int aCharLen, const char* aStr);
   
-  nsCodingStateMachine* mCodingSM[NUM_OF_ESC_CHARSETS] ;
-  unsigned int    mActiveSM;
+  nsCodingStateMachine* mCodingSM;
   nsProbingState mState;
-  const char *  mDetectedCharset;
+
+  //Big5ContextAnalysis mContextAnalyser;
+  Big5DistributionAnalysis mDistributionAnalyser;
+  char mLastChar[2];
+
 };
 }
-#endif /* nsEscCharSetProber_h__ */
+
+#endif /* nsBig5Prober_h__ */
 

@@ -24,7 +24,7 @@
 
 #define KBase64 KCodecs
 
-#include <kcoreaddons_export.h>
+#include <kcodecs_export.h>
 #include <QtCore/QString>
 
 class QByteArray;
@@ -71,7 +71,7 @@ namespace KCodecs
    *                breaks, too.
    * @return        quoted-printable encoded string.
    */
-  KCOREADDONS_EXPORT QByteArray quotedPrintableEncode(const QByteArray & in,
+  KCODECS_EXPORT QByteArray quotedPrintableEncode(const QByteArray & in,
                                         bool useCRLF = true);
 
   /**
@@ -92,7 +92,7 @@ namespace KCodecs
    *                CRLF line breaks and the output will have CRLF line
    *                breaks, too.
    */
-  KCOREADDONS_EXPORT void quotedPrintableEncode(const QByteArray & in, QByteArray& out,
+  KCODECS_EXPORT void quotedPrintableEncode(const QByteArray & in, QByteArray& out,
                                     bool useCRLF);
 
   /**
@@ -103,7 +103,7 @@ namespace KCodecs
    * @param in  data to be decoded.
    * @return    decoded string.
    */
-  KCOREADDONS_EXPORT QByteArray quotedPrintableDecode(const QByteArray & in);
+  KCODECS_EXPORT QByteArray quotedPrintableDecode(const QByteArray & in);
 
   /**
    * Decodes a quoted-printable encoded data.
@@ -122,7 +122,7 @@ namespace KCodecs
    * @param in   data to be decoded.
    * @param out  decoded data.
    */
-  KCOREADDONS_EXPORT void quotedPrintableDecode(const QByteArray & in, QByteArray& out);
+  KCODECS_EXPORT void quotedPrintableDecode(const QByteArray & in, QByteArray& out);
 
 
   /**
@@ -136,7 +136,7 @@ namespace KCodecs
    * @param in   data to be uuencoded
    * @return     uuencoded string.
    */
-  KCOREADDONS_EXPORT QByteArray uuencode( const QByteArray& in );
+  KCODECS_EXPORT QByteArray uuencode( const QByteArray& in );
 
   /**
    * Encodes the given data using the uuencode algorithm.
@@ -153,7 +153,7 @@ namespace KCodecs
    * @param in   data to be uuencoded.
    * @param out  uudecoded data.
    */
-  KCOREADDONS_EXPORT void uuencode( const QByteArray& in, QByteArray& out );
+  KCODECS_EXPORT void uuencode( const QByteArray& in, QByteArray& out );
 
   /**
    * Decodes the given data using the uudecode algorithm.
@@ -165,7 +165,7 @@ namespace KCodecs
    * @param in   data to be decoded.
    * @return     decoded string.
    */
-  KCOREADDONS_EXPORT QByteArray uudecode( const QByteArray& in );
+  KCODECS_EXPORT QByteArray uudecode( const QByteArray& in );
 
   /**
    * Decodes the given data using the uudecode algorithm.
@@ -186,7 +186,7 @@ namespace KCodecs
    * @param in   data to be decoded.
    * @param out  uudecoded data.
    */
-  KCOREADDONS_EXPORT void uudecode( const QByteArray& in, QByteArray& out );
+  KCODECS_EXPORT void uudecode( const QByteArray& in, QByteArray& out );
 
 
   /**
@@ -202,7 +202,7 @@ namespace KCodecs
    *
    * @return           base64 encoded string.
    */
-  KCOREADDONS_EXPORT QByteArray base64Encode( const QByteArray& in, bool insertLFs = false);
+  KCODECS_EXPORT QByteArray base64Encode( const QByteArray& in, bool insertLFs = false);
 
   /**
    * Encodes the given data using the base64 algorithm.
@@ -225,7 +225,7 @@ namespace KCodecs
    * @param out       encoded data.
    * @param insertLFs limit the number of characters per line.
    */
-  KCOREADDONS_EXPORT void base64Encode( const QByteArray& in, QByteArray& out,
+  KCODECS_EXPORT void base64Encode( const QByteArray& in, QByteArray& out,
                             bool insertLFs = false );
 
   /**
@@ -235,7 +235,7 @@ namespace KCodecs
    * @param in   data to be decoded.
    * @return     decoded string.
    */
-  KCOREADDONS_EXPORT QByteArray base64Decode( const QByteArray& in );
+  KCODECS_EXPORT QByteArray base64Decode( const QByteArray& in );
 
   /**
    * Decodes the given data that was encoded with the base64
@@ -254,7 +254,7 @@ namespace KCodecs
    * @param in   data to be decoded.
    * @param out  decoded data.
    */
-  KCOREADDONS_EXPORT void base64Decode( const QByteArray& in, QByteArray& out );
+  KCODECS_EXPORT void base64Decode( const QByteArray& in, QByteArray& out );
 
 
   /**
@@ -266,7 +266,7 @@ namespace KCodecs
    * @param text source string
    * @returns the decoded string
    */
-  KCOREADDONS_EXPORT QString decodeRFC2047String(const QString &text);
+  KCODECS_EXPORT QString decodeRFC2047String(const QString &text);
 
 
 }

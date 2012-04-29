@@ -23,41 +23,38 @@
 *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-// for S-JIS encoding, obeserve characteristic:
-// 1, kana character (or hankaku?) often have hight frequency of appereance
-// 2, kana character often exist in group
-// 3, certain combination of kana is never used in japanese language
-
-#ifndef nsEUCJPProber_h__
-#define nsEUCJPProber_h__
+#ifndef JAPANESEGROUPPROBER_H
+#define JAPANESEGROUPPROBER_H
 
 #include "nsCharSetProber.h"
-#include "nsCodingStateMachine.h"
-#include "JpCntx.h"
-#include "CharDistribution.h"
+#include "UnicodeGroupProber.h"
+#include "nsSJISProber.h"
+#include "nsEUCJPProber.h"
+
+#define JP_NUM_OF_PROBERS    3
 namespace kencodingprober {
-class KCOREADDONS_NO_EXPORT nsEUCJPProber: public nsCharSetProber {
+class KCODECS_NO_EXPORT JapaneseGroupProber: public nsCharSetProber {
 public:
-  nsEUCJPProber(void){mCodingSM = new nsCodingStateMachine(&EUCJPSMModel);
-                      Reset();};
-  virtual ~nsEUCJPProber(void){delete mCodingSM;};
+  JapaneseGroupProber();
+  virtual ~JapaneseGroupProber();
   nsProbingState HandleData(const char* aBuf, unsigned int aLen);
-  const char* GetCharSetName() {return "EUC-JP";};
+  const char* GetCharSetName();
   nsProbingState GetState(void) {return mState;};
   void      Reset(void);
   float     GetConfidence(void);
   void      SetOpion() {};
 
+#ifdef DEBUG_PROBE
+  void  DumpStatus();
+#endif
+
 protected:
-  nsCodingStateMachine* mCodingSM;
   nsProbingState mState;
-
-  EUCJPContextAnalysis mContextAnalyser;
-  EUCJPDistributionAnalysis mDistributionAnalyser;
-
-  char mLastChar[2];
+  nsCharSetProber* mProbers[JP_NUM_OF_PROBERS];
+  bool          mIsActive[JP_NUM_OF_PROBERS];
+  int mBestGuess;
+  unsigned int mActiveNum;
 };
 }
-
-#endif /* nsEUCJPProber_h__ */
+#endif /* JAPANESEGROUPPROBER_H */
 

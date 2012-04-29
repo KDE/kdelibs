@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*  -*- C++ -*-
-*  Copyright (C) 2008 <wkai@gmail.com>
+*  Copyright (C) 1998 <developer@mozilla.org>
 *
 *
 *  Permission is hereby granted, free of charge, to any person obtaining
@@ -23,36 +23,41 @@
 *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef UNICODEGROUPPROBER_H
-#define UNICODEGROUPPROBER_H
+// for S-JIS encoding, obeserve characteristic:
+// 1, kana character (or hankaku?) often have hight frequency of appereance
+// 2, kana character often exist in group
+// 3, certain combination of kana is never used in japanese language
+
+#ifndef nsEUCJPProber_h__
+#define nsEUCJPProber_h__
 
 #include "nsCharSetProber.h"
 #include "nsCodingStateMachine.h"
-
-#define NUM_OF_UNICODE_CHARSETS   3
+#include "JpCntx.h"
+#include "CharDistribution.h"
 namespace kencodingprober {
-class KCOREADDONS_NO_EXPORT UnicodeGroupProber: public nsCharSetProber {
+class KCODECS_NO_EXPORT nsEUCJPProber: public nsCharSetProber {
 public:
-  UnicodeGroupProber(void);
-  virtual ~UnicodeGroupProber(void);
+  nsEUCJPProber(void){mCodingSM = new nsCodingStateMachine(&EUCJPSMModel);
+                      Reset();};
+  virtual ~nsEUCJPProber(void){delete mCodingSM;};
   nsProbingState HandleData(const char* aBuf, unsigned int aLen);
-  const char* GetCharSetName() {return mDetectedCharset;};
+  const char* GetCharSetName() {return "EUC-JP";};
   nsProbingState GetState(void) {return mState;};
   void      Reset(void);
-  float     GetConfidence();
+  float     GetConfidence(void);
   void      SetOpion() {};
-#ifdef DEBUG_PROBE
-  void DumpStatus();
-#endif
 
 protected:
-  void      GetDistribution(unsigned int aCharLen, const char* aStr);
-  
-  nsCodingStateMachine* mCodingSM[NUM_OF_UNICODE_CHARSETS] ;
-  unsigned int    mActiveSM;
+  nsCodingStateMachine* mCodingSM;
   nsProbingState mState;
-  const char *  mDetectedCharset;
+
+  EUCJPContextAnalysis mContextAnalyser;
+  EUCJPDistributionAnalysis mDistributionAnalyser;
+
+  char mLastChar[2];
 };
 }
-#endif /* UNICODEGROUPPROBER_H */
+
+#endif /* nsEUCJPProber_h__ */
 

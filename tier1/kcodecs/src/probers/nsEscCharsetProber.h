@@ -23,36 +23,33 @@
 *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-
-#ifndef CHINESEGROUPPROBER_H
-#define CHINESEGROUPPROBER_H
+#ifndef nsEscCharSetProber_h__
+#define nsEscCharSetProber_h__
 
 #include "nsCharSetProber.h"
+#include "nsCodingStateMachine.h"
 
-#define CN_NUM_OF_PROBERS    3
+#define NUM_OF_ESC_CHARSETS   4
 namespace kencodingprober {
-class KCOREADDONS_NO_EXPORT ChineseGroupProber: public nsCharSetProber {
+class KCODECS_NO_EXPORT nsEscCharSetProber: public nsCharSetProber {
 public:
-  ChineseGroupProber();
-  virtual ~ChineseGroupProber();
+  nsEscCharSetProber(void);
+  virtual ~nsEscCharSetProber(void);
   nsProbingState HandleData(const char* aBuf, unsigned int aLen);
-  const char* GetCharSetName();
+  const char* GetCharSetName() {return mDetectedCharset;};
   nsProbingState GetState(void) {return mState;};
   void      Reset(void);
-  float     GetConfidence(void);
+  float     GetConfidence(void){return (float)0.99;};
   void      SetOpion() {};
 
-#ifdef DEBUG_PROBE
-  void  DumpStatus();
-#endif
-
 protected:
+  void      GetDistribution(unsigned int aCharLen, const char* aStr);
+  
+  nsCodingStateMachine* mCodingSM[NUM_OF_ESC_CHARSETS] ;
+  unsigned int    mActiveSM;
   nsProbingState mState;
-  nsCharSetProber* mProbers[CN_NUM_OF_PROBERS];
-  bool          mIsActive[CN_NUM_OF_PROBERS];
-  int mBestGuess;
-  unsigned int mActiveNum;
+  const char *  mDetectedCharset;
 };
 }
-#endif /* CHINESEGROUPPROBER_H */
+#endif /* nsEscCharSetProber_h__ */
 

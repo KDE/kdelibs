@@ -22,7 +22,6 @@ ENDMACRO(KCOREADDONS_UNIT_TESTS)
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/kernel
-    ${CMAKE_CURRENT_SOURCE_DIR}/../src/text
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/jobs
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/io
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/caching
@@ -32,15 +31,11 @@ include_directories(
 
 KCOREADDONS_UNIT_TESTS(
     kaboutdatatest
-    kcharsetstest
     kjobtest
     klockfiletest
     kautosavefiletest
     kurlmimedatatest
-    kencodingdetectortest
     kdirwatch_unittest
-    kmacroexpandertest
-    kstringhandlertest
     kshareddatacachetest
 )
 

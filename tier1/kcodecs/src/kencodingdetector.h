@@ -23,7 +23,7 @@
 #ifndef KENCODINGDETECTOR_H
 #define KENCODINGDETECTOR_H
 
-#include <kcoreaddons_export.h>
+#include <kcodecs_export.h>
 #include <QtCore/QString>
 
 class QTextCodec;
@@ -55,7 +55,7 @@ class KEncodingDetectorPrivate;
  * @short Guess encoding of char array
  *
  */
-class KCOREADDONS_EXPORT KEncodingDetector
+class KCODECS_EXPORT KEncodingDetector
 {
 public:
     enum EncodingChoiceSource

@@ -25,7 +25,7 @@
 // enable debug of private probers
 // #define DEBUG_PROBE
 
-#include <kcoreaddons_export.h>
+#include <kcodecs_export.h>
 #ifdef DEBUG_PROBE
 #include <kdebug.h>
 #endif
@@ -64,7 +64,7 @@ class KEncodingProberPrivate;
  * @short Guess encoding of char array
  *
  */
-class KCOREADDONS_EXPORT KEncodingProber
+class KCODECS_EXPORT KEncodingProber
 {
 public:
 
@@ -130,7 +130,7 @@ public:
      * @deprecated Use encoding() instead, which returns a QByteArray.
      */
 #ifndef KDE_NO_DEPRECATED
-    KCOREADDONS_DEPRECATED const char* encodingName() const;
+    KCODECS_DEPRECATED const char* encodingName() const;
 #endif
 
     /**

@@ -28,7 +28,7 @@
 
 #include "kencodingprober.h"
 
-#include "kcoreaddons_export.h"
+#include "kcodecs_export.h"
 
 #include "nsPkgInt.h"
 namespace kencodingprober {
@@ -50,21 +50,21 @@ typedef struct
   const char* name;
 } SMModel;
 
-class KCOREADDONS_NO_EXPORT nsCodingStateMachine {
+class KCODECS_NO_EXPORT nsCodingStateMachine {
 public:
   nsCodingStateMachine(SMModel* sm){
           mCurrentState = eStart;
           mModel = sm;
         };
   nsSMState NextState(char c){
-    //for each byte we get its class KCOREADDONS_NO_EXPORT , if it is first byte, we also get byte length
+    //for each byte we get its class KCODECS_NO_EXPORT , if it is first byte, we also get byte length
     unsigned int byteCls = GETCLASS(c);
     if (mCurrentState == eStart)
     { 
       mCurrentBytePos = 0; 
       mCurrentCharLen = mModel->charLenTable[byteCls];
     }
-    //from byte's class KCOREADDONS_NO_EXPORT and stateTable, we get its next state
+    //from byte's class KCODECS_NO_EXPORT and stateTable, we get its next state
     mCurrentState=(nsSMState)GETFROMPCK(mCurrentState*(mModel->classFactor)+byteCls,
                                        mModel->stateTable);
     mCurrentBytePos++;
@@ -96,21 +96,21 @@ protected:
   SMModel *mModel;
 };
 
-extern KCOREADDONS_NO_EXPORT SMModel UTF8SMModel;
-extern KCOREADDONS_NO_EXPORT SMModel Big5SMModel;
-extern KCOREADDONS_NO_EXPORT SMModel EUCJPSMModel;
-extern KCOREADDONS_NO_EXPORT SMModel EUCKRSMModel;
-extern KCOREADDONS_NO_EXPORT SMModel EUCTWSMModel;
-extern KCOREADDONS_NO_EXPORT SMModel GB18030SMModel;
-extern KCOREADDONS_NO_EXPORT SMModel SJISSMModel;
-extern KCOREADDONS_NO_EXPORT SMModel UCS2LESMModel;
-extern KCOREADDONS_NO_EXPORT SMModel UCS2BESMModel;
+extern KCODECS_NO_EXPORT SMModel UTF8SMModel;
+extern KCODECS_NO_EXPORT SMModel Big5SMModel;
+extern KCODECS_NO_EXPORT SMModel EUCJPSMModel;
+extern KCODECS_NO_EXPORT SMModel EUCKRSMModel;
+extern KCODECS_NO_EXPORT SMModel EUCTWSMModel;
+extern KCODECS_NO_EXPORT SMModel GB18030SMModel;
+extern KCODECS_NO_EXPORT SMModel SJISSMModel;
+extern KCODECS_NO_EXPORT SMModel UCS2LESMModel;
+extern KCODECS_NO_EXPORT SMModel UCS2BESMModel;
 
 
-extern KCOREADDONS_NO_EXPORT SMModel HZSMModel;
-extern KCOREADDONS_NO_EXPORT SMModel ISO2022CNSMModel;
-extern KCOREADDONS_NO_EXPORT SMModel ISO2022JPSMModel;
-extern KCOREADDONS_NO_EXPORT SMModel ISO2022KRSMModel;
+extern KCODECS_NO_EXPORT SMModel HZSMModel;
+extern KCODECS_NO_EXPORT SMModel ISO2022CNSMModel;
+extern KCODECS_NO_EXPORT SMModel ISO2022JPSMModel;
+extern KCODECS_NO_EXPORT SMModel ISO2022KRSMModel;
 }
 #endif /* nsCodingStateMachine_h__ */
 

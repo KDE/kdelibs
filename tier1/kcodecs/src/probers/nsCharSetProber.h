@@ -23,38 +23,41 @@
 *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef JAPANESEGROUPPROBER_H
-#define JAPANESEGROUPPROBER_H
+#ifndef nsCharSetProber_h__
+#define nsCharSetProber_h__
 
-#include "nsCharSetProber.h"
-#include "UnicodeGroupProber.h"
-#include "nsSJISProber.h"
-#include "nsEUCJPProber.h"
+#include "kencodingprober.h"
 
-#define JP_NUM_OF_PROBERS    3
 namespace kencodingprober {
-class KCOREADDONS_NO_EXPORT JapaneseGroupProber: public nsCharSetProber {
+typedef enum {
+  eDetecting = 0,   //We are still detecting, no sure answer yet, but caller can ask for confidence.
+  eFoundIt = 1,     //That's a positive answer
+  eNotMe = 2        //Negative answer
+} nsProbingState;
+
+#define SHORTCUT_THRESHOLD      (float)0.95
+
+class KCODECS_NO_EXPORT nsCharSetProber {
 public:
-  JapaneseGroupProber();
-  virtual ~JapaneseGroupProber();
-  nsProbingState HandleData(const char* aBuf, unsigned int aLen);
-  const char* GetCharSetName();
-  nsProbingState GetState(void) {return mState;};
-  void      Reset(void);
-  float     GetConfidence(void);
-  void      SetOpion() {};
+  virtual ~nsCharSetProber() {};
+  virtual const char* GetCharSetName() = 0;
+  virtual nsProbingState HandleData(const char* aBuf, unsigned int aLen) = 0;
+  virtual nsProbingState GetState(void) = 0;
+  virtual void      Reset(void)  = 0;
+  virtual float     GetConfidence(void) = 0;
+  virtual void      SetOpion() = 0;
 
 #ifdef DEBUG_PROBE
-  void  DumpStatus();
+  virtual void  DumpStatus() {};
 #endif
 
-protected:
-  nsProbingState mState;
-  nsCharSetProber* mProbers[JP_NUM_OF_PROBERS];
-  bool          mIsActive[JP_NUM_OF_PROBERS];
-  int mBestGuess;
-  unsigned int mActiveNum;
+  // Helper functions used in the Latin1 and Group probers.
+  // both functions Allocate a new buffer for newBuf. This buffer should be 
+  // freed by the caller using PR_FREEIF.
+  // Both functions return false in case of memory allocation failure.
+  static bool FilterWithoutEnglishLetters(const char* aBuf, unsigned int aLen, char** newBuf, unsigned int& newLen);
+  static bool FilterWithEnglishLetters(const char* aBuf, unsigned int aLen, char** newBuf, unsigned int& newLen);
+
 };
 }
-#endif /* JAPANESEGROUPPROBER_H */
-
+#endif /* nsCharSetProber_h__ */

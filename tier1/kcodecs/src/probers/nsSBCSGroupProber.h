@@ -12,14 +12,15 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is mozilla.org code.
+ * The Original Code is Mozilla Universal charset detector code.
  *
  * The Initial Developer of the Original Code is
  * Netscape Communications Corporation.
- * Portions created by the Initial Developer are Copyright (C) 1998
+ * Portions created by the Initial Developer are Copyright (C) 2001
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ *          Shy Shalom <shooshX@gmail.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -35,43 +36,37 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// for S-JIS encoding, obeserve characteristic:
-// 1, kana character (or hankaku?) often have hight frequency of appereance
-// 2, kana character often exist in group
-// 3, certain combination of kana is never used in japanese language
-
-#ifndef nsSJISProber_h__
-#define nsSJISProber_h__
+#ifndef nsSBCSGroupProber_h__
+#define nsSBCSGroupProber_h__
 
 #include "nsCharSetProber.h"
-#include "nsCodingStateMachine.h"
-#include "JpCntx.h"
-#include "CharDistribution.h"
+
+#define NUM_OF_SBCS_PROBERS    14
 
 namespace kencodingprober {
-class KCOREADDONS_NO_EXPORT nsSJISProber: public nsCharSetProber {
+class KCODECS_NO_EXPORT nsSBCSGroupProber: public nsCharSetProber {
 public:
-  nsSJISProber(void){mCodingSM = new nsCodingStateMachine(&SJISSMModel);
-                      Reset();};
-  virtual ~nsSJISProber(void){delete mCodingSM;};
+  nsSBCSGroupProber();
+  virtual ~nsSBCSGroupProber();
   nsProbingState HandleData(const char* aBuf, unsigned int aLen);
-  const char* GetCharSetName() {return "Shift_JIS";};
+  const char* GetCharSetName();
   nsProbingState GetState(void) {return mState;};
   void      Reset(void);
   float     GetConfidence(void);
   void      SetOpion() {};
 
+#ifdef DEBUG_PROBE
+  void  DumpStatus();
+#endif
+
 protected:
-  nsCodingStateMachine* mCodingSM;
   nsProbingState mState;
-
-  SJISContextAnalysis mContextAnalyser;
-  SJISDistributionAnalysis mDistributionAnalyser;
-
-  char mLastChar[2];
-
+  nsCharSetProber* mProbers[NUM_OF_SBCS_PROBERS];
+  bool          mIsActive[NUM_OF_SBCS_PROBERS];
+  int mBestGuess;
+  unsigned int mActiveNum;
 };
 }
 
-#endif /* nsSJISProber_h__ */
+#endif /* nsSBCSGroupProber_h__ */
 

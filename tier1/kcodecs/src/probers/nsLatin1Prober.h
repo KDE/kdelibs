@@ -1,7 +1,7 @@
-/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*  -*- C++ -*-
 *  Copyright (C) 1998 <developer@mozilla.org>
-*  Copyright (C) 2008 <zealot.kai@gmail.com>
+*
 *
 *  Permission is hereby granted, free of charge, to any person obtaining
 *  a copy of this software and associated documentation files (the
@@ -23,45 +23,35 @@
 *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef nsUniversalDetector_h__
-#define nsUniversalDetector_h__
+#ifndef nsLatin1Prober_h__
+#define nsLatin1Prober_h__
 
 #include "nsCharSetProber.h"
 
-#define NUM_OF_CHARSET_PROBERS  3
-
+#define FREQ_CAT_NUM    4
 namespace kencodingprober {
-typedef enum {
-  ePureAscii = 0,
-  eEscAscii  = 1,
-  eHighbyte  = 2
-} nsInputState;
-
-class KCOREADDONS_NO_EXPORT nsUniversalDetector: public nsCharSetProber {
+class KCODECS_NO_EXPORT nsLatin1Prober: public nsCharSetProber {
 public:
-    nsUniversalDetector();
-    virtual ~nsUniversalDetector();
-    nsProbingState HandleData(const char* aBuf, unsigned int aLen);
-    const char* GetCharSetName();
-    void      Reset(void);
-    float     GetConfidence(void);
-    nsProbingState GetState();
-    void      SetOpion() {};   
+  nsLatin1Prober(void){Reset();};
+  virtual ~nsLatin1Prober(void){};
+  nsProbingState HandleData(const char* aBuf, unsigned int aLen);
+  const char* GetCharSetName() {return "windows-1252";};
+  nsProbingState GetState(void) {return mState;};
+  void      Reset(void);
+  float     GetConfidence(void);
+  void      SetOpion() {};
+
+#ifdef DEBUG_PROBE
+  virtual void  DumpStatus();
+#endif
 
 protected:
-   nsInputState  mInputState;
-   bool  mDone;
-   bool  mInTag;
-   bool  mStart;
-   bool  mGotData;
-   char    mLastChar;
-   const char *  mDetectedCharset;
-   int mBestGuess;
-
-   nsCharSetProber  *mCharSetProbers[NUM_OF_CHARSET_PROBERS];
-   nsCharSetProber  *mEscCharSetProber;
+  
+  nsProbingState mState;
+  char mLastCharClass;
+  unsigned int mFreqCounter[FREQ_CAT_NUM];
 };
 }
 
-#endif
+#endif /* nsLatin1Prober_h__ */
 

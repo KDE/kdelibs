@@ -1,7 +1,7 @@
-/* -*- Mode: C; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*  -*- C++ -*-
 *  Copyright (C) 1998 <developer@mozilla.org>
-*
+*  Copyright (C) 2008 <zealot.kai@gmail.com>
 *
 *  Permission is hereby granted, free of charge, to any person obtaining
 *  a copy of this software and associated documentation files (the
@@ -23,42 +23,45 @@
 *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef nsMBCSGroupProber_h__
-#define nsMBCSGroupProber_h__
+#ifndef nsUniversalDetector_h__
+#define nsUniversalDetector_h__
 
-#include "nsSJISProber.h"
-#include "UnicodeGroupProber.h"
-#include "nsEUCJPProber.h"
-#include "nsGB2312Prober.h"
-#include "nsEUCKRProber.h"
-#include "nsBig5Prober.h"
-#include "nsEUCTWProber.h"
+#include "nsCharSetProber.h"
 
-#define NUM_OF_PROBERS    7
+#define NUM_OF_CHARSET_PROBERS  3
+
 namespace kencodingprober {
-class KCOREADDONS_NO_EXPORT nsMBCSGroupProber: public nsCharSetProber {
-public:
-  nsMBCSGroupProber();
-  virtual ~nsMBCSGroupProber();
-  nsProbingState HandleData(const char* aBuf, unsigned int aLen);
-  const char* GetCharSetName();
-  nsProbingState GetState(void) {return mState;};
-  void      Reset(void);
-  float     GetConfidence(void);
-  void      SetOpion() {};
+typedef enum {
+  ePureAscii = 0,
+  eEscAscii  = 1,
+  eHighbyte  = 2
+} nsInputState;
 
-#ifdef DEBUG_PROBE
-  void  DumpStatus();
-#endif
+class KCODECS_NO_EXPORT nsUniversalDetector: public nsCharSetProber {
+public:
+    nsUniversalDetector();
+    virtual ~nsUniversalDetector();
+    nsProbingState HandleData(const char* aBuf, unsigned int aLen);
+    const char* GetCharSetName();
+    void      Reset(void);
+    float     GetConfidence(void);
+    nsProbingState GetState();
+    void      SetOpion() {};   
 
 protected:
-  nsProbingState mState;
-  nsCharSetProber* mProbers[NUM_OF_PROBERS];
-  bool          mIsActive[NUM_OF_PROBERS];
-  int mBestGuess;
-  unsigned int mActiveNum;
+   nsInputState  mInputState;
+   bool  mDone;
+   bool  mInTag;
+   bool  mStart;
+   bool  mGotData;
+   char    mLastChar;
+   const char *  mDetectedCharset;
+   int mBestGuess;
+
+   nsCharSetProber  *mCharSetProbers[NUM_OF_CHARSET_PROBERS];
+   nsCharSetProber  *mEscCharSetProber;
 };
 }
 
-#endif /* nsMBCSGroupProber_h__ */
+#endif
 
