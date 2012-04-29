@@ -828,11 +828,7 @@ void KTextEdit::replace()
         return;
 
     if ( d->repDlg ) {
-#ifndef KDE_NO_WINDOWSYSTEM
       KWindowSystem::activateWindow( d->repDlg->winId() );
-#else
-#warning QT5 PORT TO QPA
-#endif
     } else {
       d->repDlg = new KReplaceDialog(this, 0,
                                     QStringList(), QStringList(), false);
@@ -983,11 +979,7 @@ void KTextEdit::slotFind()
         return;
 
     if ( d->findDlg ) {
-#ifndef KDE_NO_WINDOWSYSTEM
       KWindowSystem::activateWindow( d->findDlg->winId() );
-#else
-#warning QT5 PORT TO QPA
-#endif
     } else {
       d->findDlg = new KFindDialog(this);
       connect( d->findDlg, SIGNAL(okClicked()), this, SLOT(slotDoFind()) );
@@ -1002,11 +994,7 @@ void KTextEdit::slotReplace()
         return;
 
     if ( d->repDlg ) {
-#ifndef KDE_NO_WINDOWSYSTEM
       KWindowSystem::activateWindow( d->repDlg->winId() );
-#else
-#warning QT5 PORT TO QPA
-#endif
     } else {
       d->repDlg = new KReplaceDialog(this, 0,
                                     QStringList(), QStringList(), false);

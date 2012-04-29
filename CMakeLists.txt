@@ -58,7 +58,6 @@ if (NOT QT5_BUILD)
       ${CMAKE_SOURCE_DIR}/libinqt5/src/
       ${CMAKE_BINARY_DIR}/libinqt5/src/
   )
-  set(kwindowsystem_LIBRARY kwindowsystem)
   set(QtMimeTypes_LIBRARY QtMimeTypes)
 endif()
 add_subdirectory( libkdeqt5staging )
@@ -67,6 +66,8 @@ include_directories(
     ${CMAKE_BINARY_DIR}/libkdeqt5staging/src/
 )
 add_subdirectory( tier1 )
+
+set(kwindowsystem_LIBRARY kwindowsystem)
 
 set(CMAKE_AUTOMOC ON)
 
@@ -342,8 +343,6 @@ check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 
 # TODO: Port away from this:
 if (QT5_BUILD)
-  add_definitions(-DKDE_NO_WINDOWSYSTEM)
-  include_directories(kwindowsystem_dummy)
   add_definitions(-DKDE_NO_PHONON)
 endif()
 

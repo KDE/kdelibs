@@ -301,13 +301,9 @@ void KStatusNotifierItemDBus::ContextMenu(int x, int y)
     if (!m_statusNotifierItem->d->menu->isVisible()) {
         m_statusNotifierItem->d->menu->setWindowFlags(Qt::Window|Qt::FramelessWindowHint);
         m_statusNotifierItem->d->menu->popup(QPoint(x,y));
-#ifndef KDE_NO_WINDOWSYSTEM
         KWindowSystem::setState(m_statusNotifierItem->d->menu->winId(), NET::SkipTaskbar|NET::SkipPager|NET::KeepAbove);
         KWindowSystem::setType(m_statusNotifierItem->d->menu->winId(), NET::PopupMenu);
         KWindowSystem::forceActiveWindow(m_statusNotifierItem->d->menu->winId());
-#else
-#warning QT5 PORT TO QPA
-#endif
     } else {
         m_statusNotifierItem->d->menu->hide();
     }

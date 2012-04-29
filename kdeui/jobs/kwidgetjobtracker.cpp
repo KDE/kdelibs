@@ -443,13 +443,9 @@ void KWidgetJobTracker::Private::ProgressWidget::closeEvent(QCloseEvent *event)
 void KWidgetJobTracker::Private::ProgressWidget::init()
 {
     // Set a useful icon for this window!
-#ifndef KDE_NO_WINDOWSYSTEM
     KWindowSystem::setIcons( winId(),
                              KIconLoader::global()->loadIcon( "document-save", KIconLoader::NoGroup, 32 ),
                              KIconLoader::global()->loadIcon( "document-save", KIconLoader::NoGroup, 16 ) );
-#else
-#warning QT5 PORT TO QPA
-#endif
 
     QVBoxLayout *topLayout = new QVBoxLayout(this);
 

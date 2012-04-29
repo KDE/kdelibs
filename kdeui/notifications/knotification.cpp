@@ -273,11 +273,7 @@ void KNotification::Private::raiseWidget(QWidget *w)
 #if defined(Q_WS_WIN) || defined(Q_WS_MAC)
 		w->activateWindow();
 #else
-#ifndef KDE_NO_WINDOWSYSTEM
 		KWindowSystem::activateWindow( w->winId() );
-#else
-#warning QT5 PORT TO QPA
-#endif
 #endif
 	}
 	else

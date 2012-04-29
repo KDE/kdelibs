@@ -502,10 +502,8 @@ QString KFileDialog::getOpenFileNameWId(const QUrl& startDir,
     QWidget* parent = QWidget::find( parent_id );
     KFileDialogPrivate::Native::s_allowNative = false;
     KFileDialog dlg(startDir, filter, parent);
-#ifndef KDE_NO_WINDOWSYSTEM
     if( parent == NULL && parent_id != 0 )
         KWindowSystem::setMainWindow( &dlg, parent_id );
-#endif
 
     dlg.setOperationMode( KFileDialog::Opening );
     dlg.setMode( KFile::File | KFile::LocalOnly | KFile::ExistingOnly );
@@ -785,10 +783,8 @@ QString KFileDialog::getSaveFileNameWId(const QUrl& dir, const QString& filter,
 
     QWidget* parent = QWidget::find( parent_id );
     KFileDialog dlg(dir, filter, parent);
-#ifndef KDE_NO_WINDOWSYSTEM
     if( parent == NULL && parent_id != 0 )
         KWindowSystem::setMainWindow( &dlg, parent_id);
-#endif
 
     dlg.setOperationMode( KFileDialog::Saving );
     dlg.setMode( KFile::File | KFile::LocalOnly );

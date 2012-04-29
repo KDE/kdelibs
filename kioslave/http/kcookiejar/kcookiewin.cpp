@@ -67,14 +67,10 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     // all cookies in the list should have the same window at this time, so let's take the first
     if( cookieList.first().windowIds().count() > 0 )
     {
-#ifndef KDE_NO_WINDOWSYSTEM
 #ifdef Q_WS_WIN
         KWindowSystem::setMainWindow( this, reinterpret_cast<WId>( cookieList.first().windowIds().first() ) );
 #else
         KWindowSystem::setMainWindow( this, cookieList.first().windowIds().first());
-#endif
-#else
-#warning QT5 PORT TO QPA
 #endif
     }
     else

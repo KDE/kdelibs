@@ -252,11 +252,7 @@ void KColorButton::KColorButtonPrivate::_k_chooseColor()
     KColorDialog *dialog = dialogPtr.data();
     if (dialog) {
         dialog->show();
-#ifndef KDE_NO_WINDOWSYSTEM
         KWindowSystem::forceActiveWindow(dialog->winId());
-#else
-#warning QT5 PORT TO QPA
-#endif
         return;
     }
 
