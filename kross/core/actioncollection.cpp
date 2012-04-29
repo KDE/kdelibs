@@ -30,6 +30,7 @@
 #include <QtXml/QDomAttr>
 
 #include <klocalizedstring.h>
+#include <kiconloader.h>
 
 using namespace Kross;
 

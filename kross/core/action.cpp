@@ -29,6 +29,7 @@
 
 #include <klocalizedstring.h>
 #include <kmimetype.h>
+#include <kiconloader.h>
 
 using namespace Kross;
 
