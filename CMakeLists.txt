@@ -394,9 +394,6 @@ if(NOT WINCE)
   add_subdirectory( kimgio )
 endif(NOT WINCE)
 add_subdirectory( knewstuff  )
-if(Qt5WebKit_FOUND OR NOT QT5_BUILD)
-  add_subdirectory( kdewebkit )
-endif()
 add_subdirectory( includes )
 if(NOT QT5_BUILD)
   macro_optional_add_subdirectory( doc )
@@ -406,7 +403,10 @@ if (NOT QT5_BUILD OR Qt5Quick1_FOUND)
 endif()
 add_subdirectory( knotify )
 
-add_subdirectory( plasma )
+if(NOT QT5_BUILD OR Qt5WebKit_FOUND)
+  add_subdirectory( kdewebkit )
+  add_subdirectory( plasma )
+endif()
 
 
 ################# write dependency file which will be installed #################
