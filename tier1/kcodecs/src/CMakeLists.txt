@@ -1,24 +1,10 @@
 
-if (WIN32)
-    list(APPEND kcodecs_OPTIONAL_SRCS
-        kmacroexpander_win.cpp
-    )
-endif (WIN32)
-
-
-if (UNIX)
-    list(APPEND kcodecs_OPTIONAL_SRCS
-        kmacroexpander_unix.cpp
-    )
-endif (UNIX)
-
 set(kcodecs_SRCS
     guess_ja.cpp
     kcharsets.cpp
     kcodecs.cpp
     kencodingdetector.cpp
     kencodingprober.cpp
-    kmacroexpander.cpp
     probers/CharDistribution.cpp
     probers/ChineseGroupProber.cpp
     probers/JapaneseGroupProber.cpp
@@ -46,10 +32,9 @@ set(kcodecs_SRCS
     probers/nsSBCharSetProber.cpp
     probers/nsSJISProber.cpp
     probers/nsUniversalDetector.cpp
-    kstringhandler.cpp
 )
 
-add_library(kcodecs ${LIBRARY_TYPE} ${kcodecs_SRCS} ${kcodecs_OPTIONAL_SRCS})
+add_library(kcodecs ${LIBRARY_TYPE} ${kcodecs_SRCS})
 generate_export_header(kcodecs)
 
 target_link_libraries(kcodecs
@@ -67,8 +52,6 @@ install(FILES
     kcodecs.h
     kencodingdetector.h
     kencodingprober.h
-    kmacroexpander.h
-    kstringhandler.h
     ${CMAKE_CURRENT_BINARY_DIR}/kcodecs_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

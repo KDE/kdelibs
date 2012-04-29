@@ -228,6 +228,7 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/jobs
                           ${CMAKE_SOURCE_DIR}/tier1/kcodecs/src
                           ${CMAKE_BINARY_DIR}/tier1/kcodecs/src
+                          ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/text
                           ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src
                           ${CMAKE_BINARY_DIR}/staging/kconfig/src
                           ${CMAKE_SOURCE_DIR}/staging/kconfig/src

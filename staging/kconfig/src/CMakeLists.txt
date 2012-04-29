@@ -1,8 +1,7 @@
 include_directories(
   ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io   # klockfile.h
-  ${CMAKE_SOURCE_DIR}/tier1/kcodecs/src # kstringhandler.h
+  ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/text # kstringhandler.h
   ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src
-  ${CMAKE_BINARY_DIR}/tier1/kcodecs/src
 )
 
 set(libkconfig_SRCS
@@ -20,7 +19,7 @@ set(libkconfig_SRCS
 add_library(kconfig ${LIBRARY_TYPE} ${libkconfig_SRCS})
 generate_export_header(kconfig)
 
-target_link_libraries(kconfig ${QT_QTCORE_LIBRARY} kcoreaddons kcodecs ${INQT5_LIBRARY})
+target_link_libraries(kconfig ${QT_QTCORE_LIBRARY} kcoreaddons ${INQT5_LIBRARY})
 set_target_properties(kconfig PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                        SOVERSION ${ECM_SOVERSION}
 )

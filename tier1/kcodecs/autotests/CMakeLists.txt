@@ -19,6 +19,4 @@ endmacro()
 kcodecs_unit_tests(
     kcharsetstest
     kencodingdetectortest
-    kmacroexpandertest
-    kstringhandlertest
 )

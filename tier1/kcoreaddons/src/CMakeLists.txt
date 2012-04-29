@@ -25,6 +25,7 @@ if (WIN32)
     set(kcoreaddons_OPTIONAL_SRCS
         ${kcoreaddons_OPTIONAL_SRCS}
         io/klockfile_win.cpp
+        text/kmacroexpander_win.cpp
     )
 endif (WIN32)
 
@@ -32,6 +33,7 @@ if (UNIX)
     set(kcoreaddons_OPTIONAL_SRCS
         ${kcoreaddons_OPTIONAL_SRCS}
         io/klockfile_unix.cpp
+        text/kmacroexpander_unix.cpp
     )
 endif (UNIX)
 
@@ -48,6 +50,8 @@ set(libkcoreaddons_SRCS
     kernel/kaboutdata.cpp
     randomness/krandom.cpp
     randomness/krandomsequence.cpp
+    text/kmacroexpander.cpp
+    text/kstringhandler.cpp
     ${kcoreaddons_OPTIONAL_SRCS}
 )
 
@@ -58,6 +62,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/jobs/
     ${CMAKE_CURRENT_SOURCE_DIR}/randomness/
     ${CMAKE_CURRENT_SOURCE_DIR}/kernel/
+    ${CMAKE_CURRENT_SOURCE_DIR}/text/
 )
 
 include_directories(${QT_MKSPECS_DIR}/default) # for qplatformdefs.h
@@ -94,6 +99,8 @@ install(FILES
     kernel/qlocalizedstring_porting.h
     randomness/krandom.h
     randomness/krandomsequence.h
+    text/kmacroexpander.h
+    text/kstringhandler.h
     ${CMAKE_CURRENT_BINARY_DIR}/kcoreaddons_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

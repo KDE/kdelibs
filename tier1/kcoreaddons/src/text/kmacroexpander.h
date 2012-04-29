@@ -22,7 +22,7 @@
 #ifndef KMACROEXPANDER_H
 #define KMACROEXPANDER_H
 
-#include <kcodecs_export.h>
+#include <kcoreaddons_export.h>
 #include <QtCore/QChar>
 
 class QString;
@@ -38,7 +38,7 @@ class KMacroExpanderBasePrivate;
  *
  * @author Oswald Buddenhagen <ossi@kde.org>
  */
-class KCODECS_EXPORT KMacroExpanderBase {
+class KCOREADDONS_EXPORT KMacroExpanderBase {
 
 public:
     /**
@@ -214,7 +214,7 @@ private:
  *
  * @author Oswald Buddenhagen <ossi@kde.org>
  */
-class KCODECS_EXPORT KWordMacroExpander : public KMacroExpanderBase {
+class KCOREADDONS_EXPORT KWordMacroExpander : public KMacroExpanderBase {
 
 public:
     /**
@@ -250,7 +250,7 @@ protected:
  *
  * @author Oswald Buddenhagen <ossi@kde.org>
  */
-class KCODECS_EXPORT KCharMacroExpander : public KMacroExpanderBase {
+class KCOREADDONS_EXPORT KCharMacroExpander : public KMacroExpanderBase {
 
 public:
     /**
@@ -300,7 +300,7 @@ namespace KMacroExpander {
      * // s is now "% Title: /tmp/myfile.txt:My File";
      * \endcode
      */
-    KCODECS_EXPORT QString expandMacros( const QString &str, const QHash<QChar,QString> &map, QChar c = QLatin1Char('%') );
+    KCOREADDONS_EXPORT QString expandMacros( const QString &str, const QHash<QChar,QString> &map, QChar c = QLatin1Char('%') );
 
     /**
      * Perform safe macro expansion (substitution) on a string for use
@@ -325,7 +325,7 @@ namespace KMacroExpander {
      * system(QFile::encodeName(s));
      * \endcode
      */
-    KCODECS_EXPORT QString expandMacrosShellQuote( const QString &str, const QHash<QChar,QString> &map,
+    KCOREADDONS_EXPORT QString expandMacrosShellQuote( const QString &str, const QHash<QChar,QString> &map,
                                                    QChar c = QLatin1Char('%') );
 
     /**
@@ -351,7 +351,7 @@ namespace KMacroExpander {
      * // s is now "Title: /tmp/myfile.txt-My File";
      * \endcode
      */
-    KCODECS_EXPORT QString expandMacros( const QString &str, const QHash<QString,QString> &map,
+    KCOREADDONS_EXPORT QString expandMacros( const QString &str, const QHash<QString,QString> &map,
                                          QChar c = QLatin1Char('%') );
 
     /**
@@ -381,16 +381,16 @@ namespace KMacroExpander {
      * system(QFile::encodeName(s));
      * \endcode
      */
-    KCODECS_EXPORT QString expandMacrosShellQuote( const QString &str, const QHash<QString,QString> &map,
+    KCOREADDONS_EXPORT QString expandMacrosShellQuote( const QString &str, const QHash<QString,QString> &map,
                                                    QChar c = QLatin1Char('%') );
 
     /**
      * Same as above, except that the macros expand to string lists that
      * are simply join(" ")ed together.
      */
-    KCODECS_EXPORT QString expandMacros( const QString &str, const QHash<QChar,QStringList> &map,
+    KCOREADDONS_EXPORT QString expandMacros( const QString &str, const QHash<QChar,QStringList> &map,
                                          QChar c = QLatin1Char('%') );
-    KCODECS_EXPORT QString expandMacros( const QString &str, const QHash<QString,QStringList> &map,
+    KCOREADDONS_EXPORT QString expandMacros( const QString &str, const QHash<QString,QStringList> &map,
                                          QChar c = QLatin1Char('%') );
 
     /**
@@ -399,9 +399,9 @@ namespace KMacroExpander {
      * join(" ")ed together; otherwise every element expands to a separate
      * quoted string.
      */
-    KCODECS_EXPORT QString expandMacrosShellQuote( const QString &str, const QHash<QChar,QStringList> &map,
+    KCOREADDONS_EXPORT QString expandMacrosShellQuote( const QString &str, const QHash<QChar,QStringList> &map,
                                                    QChar c = QLatin1Char('%') );
-    KCODECS_EXPORT QString expandMacrosShellQuote( const QString &str, const QHash<QString,QStringList> &map, 
+    KCOREADDONS_EXPORT QString expandMacrosShellQuote( const QString &str, const QHash<QString,QStringList> &map, 
                                                    QChar c = QLatin1Char('%') );
 }
 

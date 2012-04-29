@@ -16,7 +16,7 @@ include(ECMQtFramework)
 
 find_package(Qt5Transitional REQUIRED Core Test)
 
-include_directories(${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/kernel/)
+include_directories(${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/kernel/) # qlocalizedstring
 
 add_subdirectory(src)
 
