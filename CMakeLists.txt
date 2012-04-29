@@ -344,6 +344,8 @@ check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
 # TODO: Port away from this:
 if (QT5_BUILD)
   add_definitions(-DKDE_NO_PHONON)
+  set(KDE_NO_PHONON True)
+  set(kde4support_LIBRARY kde4support)
 endif()
 
 ################# list the subdirectories #################
@@ -380,9 +382,9 @@ endif(NOT WINCE)
 add_subdirectory( kioslave   )
 add_subdirectory( kparts     )
 add_subdirectory( kunitconversion )
-if(NOT WINCE)
-# TO BE SPLITTED OUT add_subdirectory( khtml  )
-endif(NOT WINCE)
+if(NOT KDE_NO_PHONON)
+    add_subdirectory( khtml  )
+endif()
 add_subdirectory( interfaces  )
 add_subdirectory( kdewidgets  )
 if (NOT QT5_BUILD) # TODO: Qt5UiTools_FOUND
