@@ -38,6 +38,7 @@
 
 #include <QtCore/QTimer>
 #include <QApplication>
+#include <QDesktopWidget>
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <kinputdialog.h>
