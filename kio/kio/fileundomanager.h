@@ -94,7 +94,7 @@ public:
          * Called when we are about to remove those files.
          * Return true if we should proceed with deleting them.
          */
-        virtual bool confirmDeletion(const KUrl::List& files);
+        virtual bool confirmDeletion(const QList<QUrl>& files);
 
         /**
          * Called when dest was modified since it was copied from src.
@@ -185,7 +185,7 @@ Q_SIGNALS:
 
     /// Emitted when an undo job finishes. Used for unit testing.
     void undoJobFinished();
-    
+
     /**
      * Emitted when a job recording has been started by FileUndoManager::recordJob()
      * or FileUndoManager::recordCopyJob(). After the job recording has been finished,
@@ -193,7 +193,7 @@ Q_SIGNALS:
      * @since 4.2
      */
     void jobRecordingStarted(CommandType op);
-    
+
     /**
      * Emitted when a job that has been recorded by FileUndoManager::recordJob()
      * or FileUndoManager::recordCopyJob has been finished. The command

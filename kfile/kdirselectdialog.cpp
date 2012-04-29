@@ -241,7 +241,7 @@ void KDirSelectDialog::Private::slotMoveToTrash()
 {
     const QUrl url = m_treeView->selectedUrl();
     KIO::JobUiDelegate job;
-    if (job.askDeleteConfirmation(QList<KUrl>() << url, KIO::JobUiDelegate::Trash, KIO::JobUiDelegate::DefaultConfirmation)) {
+    if (job.askDeleteConfirmation(QList<QUrl>() << url, KIO::JobUiDelegate::Trash, KIO::JobUiDelegate::DefaultConfirmation)) {
         KIO::CopyJob* copyJob = KIO::trash(url);
         copyJob->ui()->setWindow(m_parent);
         copyJob->ui()->setAutoErrorHandlingEnabled(true);
@@ -252,7 +252,7 @@ void KDirSelectDialog::Private::slotDelete()
 {
     const QUrl url = m_treeView->selectedUrl();
     KIO::JobUiDelegate job;
-    if (job.askDeleteConfirmation(QList<KUrl>() << url, KIO::JobUiDelegate::Delete, KIO::JobUiDelegate::DefaultConfirmation)) {
+    if (job.askDeleteConfirmation(QList<QUrl>() << url, KIO::JobUiDelegate::Delete, KIO::JobUiDelegate::DefaultConfirmation)) {
         KIO::DeleteJob* deleteJob = KIO::del(url);
         deleteJob->ui()->setWindow(m_parent);
         deleteJob->ui()->setAutoErrorHandlingEnabled(true);

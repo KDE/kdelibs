@@ -41,7 +41,7 @@ namespace KIO {
    * @return the job that handles the operation
    * @see pasteData()
    */
-  KIO_EXPORT Job *pasteClipboard( const KUrl& destURL, QWidget* widget, bool move = false );
+  KIO_EXPORT Job *pasteClipboard( const QUrl& destURL, QWidget* widget, bool move = false );
 
   /**
    * Pastes the given @p data to the given destination URL.
@@ -57,7 +57,7 @@ namespace KIO {
    * This method is a candidate for disappearing in KDE5, email faure at kde.org if you
    * are using it in your application, then I'll reconsider.
    */
-  KIO_EXPORT void pasteData( const KUrl& destURL, const QByteArray& data, QWidget* widget );
+  KIO_EXPORT void pasteData( const QUrl& destURL, const QByteArray& data, QWidget* widget );
 
 
   /**
@@ -74,7 +74,7 @@ namespace KIO {
    * This method is a candidate for disappearing in KDE5, email faure at kde.org if you
    * are using it in your application, then I'll reconsider.
    */
-  KIO_EXPORT CopyJob *pasteDataAsync( const KUrl& destURL, const QByteArray& data, QWidget *widget, const QString& dialogText = QString() );
+  KIO_EXPORT CopyJob *pasteDataAsync( const QUrl& destURL, const QByteArray& data, QWidget *widget, const QString& dialogText = QString() );
 
 
   /**
@@ -93,7 +93,7 @@ namespace KIO {
    *
    * @see pasteClipboard()
    */
-  KIO_EXPORT Job* pasteMimeData(const QMimeData* data, const KUrl& destUrl,
+  KIO_EXPORT Job* pasteMimeData(const QMimeData* data, const QUrl& destUrl,
                                 const QString& dialogText, QWidget* widget);
 
   /**
@@ -102,7 +102,7 @@ namespace KIO {
    * Note that you'll have to tell the user in case of an error (no data to paste),
    * while pasteMimeSource did that.
    */
-  KIO_DEPRECATED_EXPORT CopyJob* pasteMimeSource( const QMimeData* data, const KUrl& destURL,
+  KIO_DEPRECATED_EXPORT CopyJob* pasteMimeSource( const QMimeData* data, const QUrl& destURL,
                                        const QString& dialogText, QWidget* widget,
                                        bool clipboard = false );
 

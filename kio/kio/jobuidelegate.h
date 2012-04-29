@@ -124,7 +124,7 @@ public:
      * Note: the window passed to setWindow is used as the parent for the message box.
      * @return true if confirmed
      */
-    bool askDeleteConfirmation(const KUrl::List& urls, DeletionType deletionType,
+    bool askDeleteConfirmation(const QList<QUrl>& urls, DeletionType deletionType,
                                ConfirmationType confirmationType);
 
 private:

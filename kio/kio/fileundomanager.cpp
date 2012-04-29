@@ -333,7 +333,7 @@ void FileUndoManager::undo()
     // Note that opStack is empty for simple operations like Mkdir.
 
     // Let's first ask for confirmation if we need to delete any file (#99898)
-    KUrl::List fileCleanupStack;
+    QList<QUrl> fileCleanupStack;
     BasicOperation::Stack::Iterator it = opStack.begin();
     for (; it != opStack.end() ; ++it) {
         BasicOperation::Type type = (*it).m_type;
@@ -779,7 +779,7 @@ bool FileUndoManager::UiInterface::copiedFileWasModified(const KUrl& src, const 
         KMessageBox::Notify | KMessageBox::Dangerous) == KMessageBox::Continue;
 }
 
-bool FileUndoManager::UiInterface::confirmDeletion(const KUrl::List& files)
+bool FileUndoManager::UiInterface::confirmDeletion(const QList<QUrl>& files)
 {
     KIO::JobUiDelegate uiDelegate;
     uiDelegate.setWindow(d->m_parentWidget);

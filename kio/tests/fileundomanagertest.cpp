@@ -138,14 +138,14 @@ public:
         Q_UNUSED( destTime );
         return true;
     }
-    virtual bool confirmDeletion(const KUrl::List &files) {
+    virtual bool confirmDeletion(const QList<QUrl> &files) {
         m_files = files;
         return m_nextReplyToConfirmDeletion;
     }
     void setNextReplyToConfirmDeletion( bool b ) {
         m_nextReplyToConfirmDeletion = b;
     }
-    QList<KUrl> files() const { return m_files; }
+    QList<QUrl> files() const { return m_files; }
     KUrl dest() const { return m_dest; }
     void clear() {
         m_dest = KUrl();
@@ -154,7 +154,7 @@ public:
 private:
     bool m_nextReplyToConfirmDeletion;
     KUrl m_dest;
-    QList<KUrl> m_files;
+    QList<QUrl> m_files;
 };
 
 void FileUndoManagerTest::initTestCase()
@@ -240,7 +240,7 @@ void FileUndoManagerTest::testCopyFiles()
     m_uiInterface->setNextReplyToConfirmDeletion( false ); // act like the user didn't confirm
     FileUndoManager::self()->undo();
     QCOMPARE( m_uiInterface->files().count(), 1 ); // confirmDeletion was called
-    QCOMPARE( m_uiInterface->files()[0].url(), KUrl(destFile()).url() );
+    QCOMPARE(m_uiInterface->files()[0].toString(), QUrl::fromLocalFile(destFile()).toString());
     QVERIFY( QFile::exists( destFile() ) ); // nothing happened yet
 
     // OK, now do it
@@ -252,7 +252,7 @@ void FileUndoManagerTest::testCopyFiles()
     QVERIFY( spyUndoAvailable.count() >= 2 ); // it's in fact 3, due to lock/unlock emitting it as well
     QCOMPARE( spyTextChanged.count(), 2 );
     QCOMPARE( m_uiInterface->files().count(), 1 ); // confirmDeletion was called
-    QCOMPARE( m_uiInterface->files()[0].url(), KUrl(destFile()).url() );
+    QCOMPARE(m_uiInterface->files()[0].toString(), QUrl::fromLocalFile(destFile()).toString());
 
     // Check that undo worked
     QVERIFY( !QFile::exists( destFile() ) );
@@ -397,7 +397,7 @@ void FileUndoManagerTest::testRenameDir()
 
 void FileUndoManagerTest::testCreateDir()
 {
-    const KUrl url( srcSubDir() + ".mkdir" );
+    const QUrl url = QUrl::fromLocalFile(srcSubDir() + ".mkdir");
     const QString path = url.path();
     QVERIFY( !QFile::exists(path) );
 
@@ -413,7 +413,7 @@ void FileUndoManagerTest::testCreateDir()
     m_uiInterface->setNextReplyToConfirmDeletion( false ); // act like the user didn't confirm
     FileUndoManager::self()->undo();
     QCOMPARE( m_uiInterface->files().count(), 1 ); // confirmDeletion was called
-    QCOMPARE( m_uiInterface->files()[0].url(), url.url() );
+    QCOMPARE(m_uiInterface->files()[0].toString(), url.toString());
     QVERIFY( QFile::exists(path) ); // nothing happened yet
 
     // OK, now do it

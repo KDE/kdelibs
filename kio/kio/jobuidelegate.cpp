@@ -101,7 +101,7 @@ KIO::SkipDialog_Result KIO::JobUiDelegate::askSkip(KJob *job,
     return static_cast<KIO::SkipDialog_Result>(dlg.exec());
 }
 
-bool KIO::JobUiDelegate::askDeleteConfirmation(const KUrl::List& urls,
+bool KIO::JobUiDelegate::askDeleteConfirmation(const QList<QUrl>& urls,
                                                DeletionType deletionType,
                                                ConfirmationType confirmationType)
 {
