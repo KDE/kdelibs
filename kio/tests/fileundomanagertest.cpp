@@ -148,7 +148,7 @@ public:
     QList<QUrl> files() const { return m_files; }
     KUrl dest() const { return m_dest; }
     void clear() {
-        m_dest = KUrl();
+        m_dest = QUrl();
         m_files.clear();
     }
 private:
@@ -403,7 +403,7 @@ void FileUndoManagerTest::testCreateDir()
 
     KIO::SimpleJob* job = KIO::mkdir(url);
     job->setUiDelegate( 0 );
-    FileUndoManager::self()->recordJob( FileUndoManager::Mkdir, KUrl(), url, job );
+    FileUndoManager::self()->recordJob( FileUndoManager::Mkdir, QUrl(), url, job );
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     QVERIFY( ok );
     QVERIFY( QFile::exists(path) );

@@ -1137,7 +1137,7 @@ void KRun::init()
         d->startTimer();
         return;
     }
-    if (!KAuthorized::authorizeUrlAction("open", KUrl(), d->m_strURL)) {
+    if (!KAuthorized::authorizeUrlAction("open", QUrl(), d->m_strURL)) {
         QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->m_strURL.prettyUrl());
         d->m_showingDialog = true;
         KMessageBoxWrapper::error(d->m_window, msg);
@@ -1487,7 +1487,7 @@ void KRun::foundMimeType(const QString& type)
         kWarning(7010) << "Unknown mimetype " << type;
     }
     if (mime && mime->is("application/x-desktop") && !d->m_localPath.isEmpty()) {
-        d->m_strURL = KUrl();
+        d->m_strURL = QUrl();
         d->m_strURL.setPath(d->m_localPath);
     }
 

@@ -361,7 +361,7 @@ void CopyJobPrivate::slotResultStating( KJob *job )
 
             const QString sLocalPath = entry.stringValue( KIO::UDSEntry::UDS_LOCAL_PATH );
             if ( !sLocalPath.isEmpty() && kio_resolve_local_urls && destinationState != DEST_DOESNT_EXIST ) {
-                m_dest = KUrl();
+                m_dest = QUrl();
                 m_dest.setPath(sLocalPath);
                 if ( isGlobalDest )
                     m_globalDest = m_dest;

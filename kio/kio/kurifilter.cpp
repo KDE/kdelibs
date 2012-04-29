@@ -262,7 +262,7 @@ public:
 };
 
 KUriFilterData::KUriFilterData()
-               :d( new KUriFilterDataPrivate( KUrl(), QString() ) )
+               :d( new KUriFilterDataPrivate( QUrl(), QString() ) )
 {
 }
 

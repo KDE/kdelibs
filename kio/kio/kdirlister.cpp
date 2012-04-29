@@ -1974,7 +1974,7 @@ void KDirListerCache::printDebug()
     const QHash<QString, DirItem *>::const_iterator ituend = itemsInUse.constEnd();
     for ( ; itu != ituend ; ++itu ) {
         kDebug(7004) << "   " << itu.key() << "URL:" << itu.value()->url
-                     << "rootItem:" << ( !itu.value()->rootItem.isNull() ? itu.value()->rootItem.url() : KUrl() )
+                     << "rootItem:" << ( !itu.value()->rootItem.isNull() ? itu.value()->rootItem.url() : QUrl() )
                      << "autoUpdates refcount:" << itu.value()->autoUpdates
                      << "complete:" << itu.value()->complete
                      << QString("with %1 items.").arg(itu.value()->lstItems.count());

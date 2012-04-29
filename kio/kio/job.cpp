@@ -1307,14 +1307,14 @@ namespace KIO {
     public:
 
         PostErrorJob(int _error, const QString& url, const QByteArray &packedArgs, const QByteArray &postData)
-            : StoredTransferJob(*new StoredTransferJobPrivate(KUrl(), CMD_SPECIAL, packedArgs, postData))
+            : StoredTransferJob(*new StoredTransferJobPrivate(QUrl(), CMD_SPECIAL, packedArgs, postData))
             {
                 setError( _error );
                 setErrorText( url );
             }
 
         PostErrorJob(int _error, const QString& url, const QByteArray &packedArgs, QIODevice* ioDevice)
-            : StoredTransferJob(*new StoredTransferJobPrivate(KUrl(), CMD_SPECIAL, packedArgs, ioDevice))
+            : StoredTransferJob(*new StoredTransferJobPrivate(QUrl(), CMD_SPECIAL, packedArgs, ioDevice))
             {
                 setError( _error );
                 setErrorText( url );
@@ -1423,7 +1423,7 @@ static int isUrlPortBad(const QUrl& url)
     if ((url.scheme() != "http") && (url.scheme() != "https" ))
         _error = KIO::ERR_POST_DENIED;
 
-    if (!_error && !KAuthorized::authorizeUrlAction("open", KUrl(), url))
+    if (!_error && !KAuthorized::authorizeUrlAction("open", QUrl(), url))
         _error = KIO::ERR_ACCESS_DENIED;
 
     return _error;
@@ -2636,7 +2636,7 @@ class KIO::MultiGetJobPrivate: public KIO::TransferJobPrivate
 public:
     MultiGetJobPrivate(const KUrl& url)
         : TransferJobPrivate(url, 0, QByteArray(), QByteArray()),
-          m_currentEntry( 0, KUrl(), MetaData() )
+          m_currentEntry( 0, QUrl(), MetaData() )
     {}
     struct GetRequest {
         GetRequest(long _id, const KUrl &_url, const MetaData &_metaData)
@@ -2804,7 +2804,7 @@ void MultiGetJob::slotFinished()
      // No redirection, tell the world that we are finished.
      emit result(d->m_currentEntry.id);
   }
-  d->m_redirectionURL = KUrl();
+  d->m_redirectionURL = QUrl();
   setError( 0 );
   d->m_incomingMetaData.clear();
   d->m_activeQueue.removeAll(d->m_currentEntry);

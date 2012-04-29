@@ -1499,10 +1499,10 @@ KUrl KFileItem::nepomukUri() const
         return targetUrl();
     }
     else {
-        return KUrl();
+        return QUrl();
     }
 #else
-    return KUrl();
+    return QUrl();
 #endif
 }
 

@@ -463,7 +463,7 @@ void KUrlCompletionPrivate::MyURL::init(const QString& _url, const QString& cwd)
         if (!QDir::isRelativePath(url_copy) ||
                 url_copy.startsWith(QLatin1Char('~')) ||
                 url_copy.startsWith(QLatin1Char('$'))) {
-            m_kurl = KUrl();
+            m_kurl = QUrl();
             m_kurl.setPath(url_copy);
         } else {
             if (cwd.isEmpty()) {
@@ -1077,7 +1077,7 @@ QString KUrlCompletionPrivate::listDirectories(
                 ++it) {
             KUrl url;
             url.setPath(*it);
-            if (KAuthorized::authorizeUrlAction(QLatin1String("list"), KUrl(), url))
+            if (KAuthorized::authorizeUrlAction(QLatin1String("list"), QUrl(), url))
                 dirs.append(*it);
         }
 
