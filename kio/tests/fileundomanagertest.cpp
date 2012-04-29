@@ -403,7 +403,7 @@ void FileUndoManagerTest::testCreateDir()
 
     KIO::SimpleJob* job = KIO::mkdir(url);
     job->setUiDelegate( 0 );
-    FileUndoManager::self()->recordJob( FileUndoManager::Mkdir, QUrl(), url, job );
+    FileUndoManager::self()->recordJob( FileUndoManager::Mkdir, QList<QUrl>(), url, job );
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     QVERIFY( ok );
     QVERIFY( QFile::exists(path) );
