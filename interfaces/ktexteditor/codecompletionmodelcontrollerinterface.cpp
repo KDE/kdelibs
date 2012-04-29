@@ -93,7 +93,7 @@ bool CodeCompletionModelControllerInterface::shouldAbortCompletion(View* view, c
       return true; //Always abort when the completion-range has been left
     //Do not abort completions when the text has been empty already before and a newline has been entered
 
-    static const QRegExp allowedText("^(\\w*)");
+    QRegExp allowedText("^(\\w*)");
     return !allowedText.exactMatch(currentCompletion);
 }
 
@@ -183,7 +183,7 @@ bool CodeCompletionModelControllerInterface3::shouldAbortCompletion(View* view, 
       return true; //Always abort when the completion-range has been left
     //Do not abort completions when the text has been empty already before and a newline has been entered
 
-    static const QRegExp allowedText("^(\\w*)");
+    QRegExp allowedText("^(\\w*)");
     return !allowedText.exactMatch(currentCompletion);
 }
 

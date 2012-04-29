@@ -484,8 +484,9 @@ int KFind::find(const QString &text, const QString &pattern, int index, long opt
 }
 
 // Core method for the regexp-based find
-static int doFind(const QString &text, const QRegExp &pattern, int index, long options, int *matchedLength)
+static int doFind(const QString &text, const QRegExp &pattern_, int index, long options, int *matchedLength)
 {
+    QRegExp pattern = pattern_;
     if (options & KFind::FindBackwards) {
         // Backward search, until the beginning of the line...
         while (index >= 0) {
