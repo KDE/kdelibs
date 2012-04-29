@@ -202,13 +202,10 @@ if test -n "$PREFIX" && test ! -d "$PREFIX" ; then
 	PREFIX=""
 fi
 
-TOPNAME=`grep '^/.*DOXYGEN_NAME' "$top_srcdir/Mainpage.dox" | sed -e 's+.*=++' | sed s+\"++g`
-if test -z "$TOPNAME" ; then
-    if test -z "$module_name" ; then
-      TOPNAME="API Reference"
-    else
-      TOPNAME="$module_name API Reference"
-    fi
+if test -z "$module_name" ; then
+  TOPNAME="API Reference"
+else
+  TOPNAME="$module_name API Reference"
 fi
 
 COPYRIGHT=`grep '^/.*DOXYGEN_COPYRIGHT' "$top_srcdir/Mainpage.dox" | sed -e 's+[^=]*=++' | sed s+\"++g`
