@@ -3529,13 +3529,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
 
   KFileItem item(u, QString(), KFileItem::Unknown);
   emit d->m_extension->mouseOverInfo(item);
-
-  QString com;
-
-  KMimeType::Ptr typ = KMimeType::findByUrl( u );
-
-  if ( typ )
-    com = typ->comment( u );
+  const QString com = item.mimeComment();
 
   if ( !u.isValid() ) {
     setStatusBarText(Qt::escape(u.prettyUrl()), BarHoverText);
@@ -3560,7 +3554,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     if (ok && S_ISLNK( lbuff.st_mode ) )
     {
       QString tmp;
-      if ( com.isNull() )
+      if ( com.isEmpty() )
         tmp = i18n( "Symbolic Link");
       else
         tmp = i18n("%1 (Link)", com);
