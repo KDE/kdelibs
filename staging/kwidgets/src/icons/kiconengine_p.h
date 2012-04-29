@@ -19,6 +19,7 @@
 #ifndef KICONENGINE_H
 #define KICONENGINE_H
 
+#include "kwidgets_export.h"
 #include <QIconEngineV2>
 
 class KIconLoader;
@@ -32,7 +33,7 @@ class KIconLoader;
  *
  * @author Hamish Rodda <rodda@kde.org>
  */
-class KIconEngine : public QIconEngineV2
+class KWIDGETS_EXPORT KIconEngine : public QIconEngineV2 // only exported for kde4support's KIcon
 {
   public:
     /**

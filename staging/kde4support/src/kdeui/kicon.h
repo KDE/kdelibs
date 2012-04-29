@@ -19,7 +19,7 @@
 #ifndef KICON_H
 #define KICON_H
 
-#include <kwidgets_export.h>
+#include <kde4support_export.h>
 
 #include <QIcon>
 
@@ -39,7 +39,7 @@ class QStringList;
  *
  * @deprecated use KDE::icon from kiconloader.h
  */
-class KWIDGETS_DEPRECATED_EXPORT KIcon : public QIcon
+class KDE4SUPPORT_DEPRECATED_EXPORT KIcon : public QIcon
 {
 public:
     /**

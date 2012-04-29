@@ -1,7 +1,6 @@
 
 set(kwidgets_LIB_SRCS
   utils/kglobalsettings.cpp
-  icons/kicon.cpp
   icons/kiconeffect.cpp
   icons/kiconengine.cpp
   icons/kiconloader.cpp
@@ -42,7 +41,6 @@ install(FILES
   utils/kguiitem.h
   icons/kicontheme.h
   icons/kiconloader.h
-  icons/kicon.h
   icons/kiconeffect.h
   widgets/khbox.h
   widgets/kvbox.h

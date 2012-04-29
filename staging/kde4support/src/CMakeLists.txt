@@ -19,6 +19,8 @@ set(libkde4support_SRCS
     kdecore/k3streamsocket.cpp
     kdecore/k3socketbuffer.cpp
     kdecore/netsupp.cpp
+
+    kdeui/kicon.cpp
 )
 
 include_directories(
@@ -33,6 +35,8 @@ include_directories(
     ${kcoreaddons_BINARY_DIR}/src
     ${kconfig_BINARY_DIR}/src # ksharedconfig.h
     ${kconfig_SOURCE_DIR}/src
+    ${kwidgets_BINARY_DIR}/src
+    ${kwidgets_SOURCE_DIR}/src/icons # kiconloader
 )
 
 # Configure checks for network/ but also for netsupp.*
@@ -42,7 +46,7 @@ configure_file(config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-network
 add_library(kde4support ${LIBRARY_TYPE} ${libkde4support_SRCS})
 generate_export_header(kde4support)
 
-target_link_libraries(kde4support ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} kdecore kcoreaddons)
+target_link_libraries(kde4support ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDBUS_LIBRARY} kdecore kcoreaddons kwidgets)
 set_target_properties(kde4support PROPERTIES VERSION ${ECM_VERSION_STRING} SOVERSION ${ECM_SOVERSION})
 
 install(TARGETS kde4support EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
@@ -63,6 +67,7 @@ install(FILES
     kdecore/k3socks.h
     kdecore/k3sockssocketdevice.h
     kdecore/k3streamsocket.h
+    kdeui/kicon.h
     ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
