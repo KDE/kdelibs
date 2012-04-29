@@ -301,6 +301,12 @@ void KMessageWidget::resizeEvent(QResizeEvent* event)
     }
 }
 
+int KMessageWidget::heightForWidth(int width) const
+{
+    ensurePolished();
+    return d->content->heightForWidth(width);
+}
+
 void KMessageWidget::paintEvent(QPaintEvent* event)
 {
     QFrame::paintEvent(event);
