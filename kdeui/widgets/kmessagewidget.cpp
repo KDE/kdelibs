@@ -293,7 +293,11 @@ void KMessageWidget::resizeEvent(QResizeEvent* event)
 {
     QFrame::resizeEvent(event);
     if (d->timeLine->state() == QTimeLine::NotRunning) {
-        d->content->resize(size());
+        int contentHeight = d->content->heightForWidth(width());
+        if (contentHeight == -1) {
+            contentHeight = d->content->sizeHint().height();
+        }
+        d->content->resize(width(), contentHeight);
     }
 }
 
@@ -304,16 +308,6 @@ void KMessageWidget::paintEvent(QPaintEvent* event)
         QPainter painter(this);
         painter.setOpacity(d->timeLine->currentValue() * d->timeLine->currentValue());
         painter.drawPixmap(0, 0, d->contentSnapShot);
-    }
-}
-
-void KMessageWidget::showEvent(QShowEvent* event)
-{
-    QFrame::showEvent(event);
-    if (!event->spontaneous()) {
-        int wantedHeight = d->content->sizeHint().height();
-        d->content->setGeometry(0, 0, width(), wantedHeight);
-        setFixedHeight(wantedHeight);
     }
 }
 
