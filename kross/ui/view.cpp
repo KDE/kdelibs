@@ -391,7 +391,7 @@ KPushButton* ActionCollectionView::createButton(QWidget* parentWidget, const QSt
     KPushButton* btn = new KPushButton(parentWidget);
     btn->setText( action->text() );
     btn->setToolTip( action->toolTip() );
-    btn->setIcon( KDE::icon(action->icon()) );
+    btn->setIcon(action->icon());
     btn->setEnabled( action->isEnabled() );
     if( parentWidget && parentWidget->layout() )
         parentWidget->layout()->addWidget(btn);
