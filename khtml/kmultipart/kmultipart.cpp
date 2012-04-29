@@ -26,7 +26,7 @@
 #include <kjobuidelegate.h>
 #include <kio/job.h>
 #include <QtCore/QFile>
-#include <ktemporaryfile.h>
+#include <qtemporaryfile.h>
 #include <kmessagebox.h>
 #include <kmimetypetrader.h>
 #include <kpluginfactory.h>
@@ -456,7 +456,7 @@ void KMultiPart::startOfData()
     else
     {
         // ###### TODO use a QByteArray and a data: URL instead
-        m_tempFile = new KTemporaryFile;
+        m_tempFile = new QTemporaryFile;
         m_tempFile->open();
     }
 }

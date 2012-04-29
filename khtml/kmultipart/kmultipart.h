@@ -27,7 +27,7 @@
 #include <kaboutdata.h>
 #include <QtCore/QDate>
 
-class KTemporaryFile;
+class QTemporaryFile;
 class KLineParser;
 
 /**
@@ -77,7 +77,7 @@ private:
     int m_boundaryLength;
     QString m_mimeType; // the one handled by m_part - store the kservice instead?
     QString m_nextMimeType; // while parsing headers
-    KTemporaryFile* m_tempFile;
+    QTemporaryFile* m_tempFile;
     KLineParser* m_lineParser;
     bool m_bParsingHeader;
     bool m_bGotAnyHeader;
