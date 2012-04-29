@@ -26,6 +26,8 @@
 #include <QRadioButton>
 #include <QGroupBox>
 #include <QCloseEvent>
+#include <QLabel>
+#include <QUrl>
 
 #include <kaboutdata.h>
 #include <kcombobox.h>
@@ -36,10 +38,8 @@
 #include <kmessagebox.h>
 #include <kstandarddirs.h>
 #include <kcomponentdata.h>
-#include <kurllabel.h>
 #include <ktextedit.h>
 #include <ktitlewidget.h>
-#include <kurl.h>
 
 #include <stdio.h>
 #include <pwd.h>

@@ -20,7 +20,6 @@
 #define KSHORTCUTSCHEMESHELPER_P_H
 
 #include <QString>
-#include <kurl.h>
 
 class KActionCollection;
 class KXMLGUIClient;

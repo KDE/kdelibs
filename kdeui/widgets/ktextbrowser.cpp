@@ -19,7 +19,6 @@
  */
 
 #include "ktextbrowser.h"
-#include <kicontheme.h>
 
 #include <QAction>
 #include <QMenu>
@@ -27,9 +26,8 @@
 #include <QTextBrowser>
 #include <QWhatsThis>
 
-#include <kcursor.h>
+#include <kicontheme.h>
 #include <kglobalsettings.h>
-#include <kurl.h>
 #include <ktoolinvocation.h>
 
 class KTextBrowser::Private
