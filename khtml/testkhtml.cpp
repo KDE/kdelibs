@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 
     QObject::connect( doc, SIGNAL(completed()), dummy, SLOT(handleDone()) );
 
-    if (args->url(0).url().right(4).toLower() == ".xml") {
+    if (args->url(0).toString().right(4).toLower() == ".xml") {
         KParts::OpenUrlArguments args(doc->arguments());
         args.setMimeType("text/xml");
         doc->setArguments(args);

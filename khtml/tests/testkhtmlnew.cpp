@@ -252,7 +252,7 @@ int main(int argc, char *argv[])
     }
 
     TestKHTML *test = new TestKHTML;
-    if (args->url(0).url().right(4).toLower() == ".xml")
+    if (args->url(0).toString().right(4).toLower() == ".xml")
     {
         KParts::OpenUrlArguments args(test->doc()->arguments());
         args.setMimeType("text/xml");
