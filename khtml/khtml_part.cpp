@@ -7437,9 +7437,9 @@ bool KHTMLPart::inProgress() const
 }
 
 using namespace KParts;
-#include "khtmlpart_p.moc"
+#include "moc_khtmlpart_p.cpp"
 #ifndef KHTML_NO_WALLET
-#include "khtml_wallet_p.moc"
+#include "moc_khtml_wallet_p.cpp"
 #endif
 
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;
