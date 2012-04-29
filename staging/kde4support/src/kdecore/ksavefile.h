@@ -96,7 +96,7 @@
  *
  * @deprecated since 5.0, port to QSaveFile.
  */
-class KDE4SUPPORT_EXPORT KSaveFile : public QFile
+class KDE4SUPPORT_DEPRECATED_EXPORT KSaveFile : public QFile
 {
 public:
     /**

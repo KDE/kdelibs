@@ -158,10 +158,10 @@ struct kde_addrinfo
   int origin;
 };
 
-extern KDECORE_EXPORT int kde_getaddrinfo(const char *name, const char *service,
+extern KDE4SUPPORT_DEPRECATED_EXPORT int kde_getaddrinfo(const char *name, const char *service,
 			   const struct addrinfo* hint,
 			   struct kde_addrinfo** result);
-extern KDECORE_EXPORT void kde_freeaddrinfo(struct kde_addrinfo *p);
+extern KDE4SUPPORT_DEPRECATED_EXPORT void kde_freeaddrinfo(struct kde_addrinfo *p);
 
 #if !defined(HAVE_GETADDRINFO) || defined(HAVE_BROKEN_GETADDRINFO)
 
@@ -283,13 +283,13 @@ struct addrinfo
 namespace KDE
 {
   /** \internal */
-  extern KDECORE_EXPORT int getaddrinfo(const char *name, const char *service,
+  extern KDE4SUPPORT_DEPRECATED_EXPORT int getaddrinfo(const char *name, const char *service,
 			 const struct addrinfo* hint,
 			 struct addrinfo** result);
   /** \internal */
-  extern KDECORE_EXPORT void freeaddrinfo(struct addrinfo* ai);
+  extern KDE4SUPPORT_DEPRECATED_EXPORT void freeaddrinfo(struct addrinfo* ai);
   /** \internal */
-  extern KDECORE_EXPORT int getnameinfo(const struct sockaddr *sa,
+  extern KDE4SUPPORT_DEPRECATED_EXPORT int getnameinfo(const struct sockaddr *sa,
 			 kde_socklen_t salen,
 			 char *host, size_t hostlen,
 			 char *serv, size_t servlen,
@@ -298,7 +298,7 @@ namespace KDE
 
 # ifndef HAVE_GAI_STRERROR_PROTO
 /** \internal */
-extern KDECORE_EXPORT char *gai_strerror(int errorcode);
+extern KDE4SUPPORT_DEPRECATED_EXPORT char *gai_strerror(int errorcode);
 # endif
   
 # define getaddrinfo	KDE::getaddrinfo
@@ -313,7 +313,7 @@ extern KDECORE_EXPORT char *gai_strerror(int errorcode);
 namespace KDE
 {
   /** \internal */
-  extern KDECORE_EXPORT int inet_pton(int af, const char *cp, void* buf);
+  extern KDE4SUPPORT_DEPRECATED_EXPORT int inet_pton(int af, const char *cp, void* buf);
 }
 
 # define inet_pton	KDE::inet_pton
@@ -324,7 +324,7 @@ namespace KDE
 namespace KDE
 {
   /** \internal */
-  extern KDECORE_EXPORT const char* inet_ntop(int af, const void *cp, char *buf, size_t len);
+  extern KDE4SUPPORT_DEPRECATED_EXPORT const char* inet_ntop(int af, const void *cp, char *buf, size_t len);
 }
 
 # define inet_ntop	KDE::inet_ntop
