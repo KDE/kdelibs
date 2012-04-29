@@ -211,7 +211,7 @@ bool UDevDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) 
         return property("ID_GPHOTO2").toInt() == 1;
 
     case Solid::DeviceInterface::PortableMediaPlayer:
-        return property("ID_MEDIA_PLAYER").toInt() == 1;
+        return !property("ID_MEDIA_PLAYER").toString().isEmpty();
 
     case Solid::DeviceInterface::DvbInterface:
         return m_device.subsystem() ==  QLatin1String("dvb");

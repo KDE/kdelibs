@@ -432,7 +432,6 @@ void KTimeZonesTest::tzfileDstShifts()
         QFile file(QString::fromLatin1(KDESRCDIR) + tz.name().remove(QRegExp("^.+/")) + QLatin1String(".zdump"));
         QVERIFY(file.open(QIODevice::ReadOnly));
         QTextStream in(&file);
-qWarning()<<"Temporarily suppress errors for first 3 times, pending API change"; int i = 0;
         QString line;
         while (!(line = in.readLine()).isNull())
         {
@@ -446,7 +445,6 @@ qWarning()<<"Temporarily suppress errors for first 3 times, pending API change";
             QDateTime local = QDateTime::fromString(static_cast<QStringList>(parts.mid(8, 5)).join(" "));
             local.setTimeSpec(Qt::LocalTime);
             QCOMPARE(tz.toZoneTime(utc), local);
-if (++i > 3) // Temporary - need API change to get correct abbreviation before the first defined transition
             QCOMPARE(parts[13], QString::fromLatin1(tz.abbreviation(utc)));
             bool dst = (parts[14].right(1) != "0");
             QCOMPARE(tz.isDstAtUtc(utc), dst);

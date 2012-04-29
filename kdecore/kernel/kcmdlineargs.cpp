@@ -295,6 +295,7 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
     qt_options.add("button <color>", qi18n("sets the default button color"));
     qt_options.add("name <name>", qi18n("sets the application name"));
     qt_options.add("title <title>", qi18n("sets the application title (caption)"));
+    qt_options.add("testability", qi18n("load the testability framework"));
 #ifdef Q_WS_X11
     qt_options.add("visual TrueColor", qi18n("forces the application to use a TrueColor visual on\nan 8-bit display"));
     qt_options.add("inputstyle <inputstyle>", qi18n("sets XIM (X Input Method) input style. Possible\nvalues are onthespot, overthespot, offthespot and\nroot"));

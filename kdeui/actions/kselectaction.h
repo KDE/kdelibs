@@ -55,7 +55,7 @@ class KDEUI_EXPORT KSelectAction : public KAction
     Q_PROPERTY( bool editable READ isEditable WRITE setEditable )
     Q_PROPERTY( int comboWidth READ comboWidth WRITE setComboWidth )
     Q_PROPERTY( QString currentText READ currentText )
-    Q_ENUMS( ToolbarMode )
+    Q_ENUMS( ToolBarMode )
     Q_PROPERTY( ToolBarMode toolBarMode READ toolBarMode WRITE setToolBarMode )
     Q_PROPERTY( QToolButton::ToolButtonPopupMode toolButtonPopupMode READ toolButtonPopupMode WRITE setToolButtonPopupMode )
     Q_PROPERTY( int currentItem READ currentItem WRITE setCurrentItem )

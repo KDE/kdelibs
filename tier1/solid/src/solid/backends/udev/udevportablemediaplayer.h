@@ -46,6 +46,14 @@ public:
     virtual QStringList supportedProtocols() const;
     virtual QStringList supportedDrivers(QString protocol = QString()) const;
     virtual QVariant driverHandle(const QString &driver) const;
+
+private:
+    /**
+     * Return full absolute path to media-player-info .mpi file, based on ID_MEDIA_PLAYER
+     * udev property. Does not check for existence. Returns empty string in case no reasonable
+     * file path could be determined.
+     */
+    QString mediaPlayerInfoFilePath() const;
 };
 }
 }

@@ -331,13 +331,13 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone &zone) const
     // Find the starting offset from UTC to use before the first transition time.
     // This is first non-daylight savings local time type, or if there is none,
     // the first local time type.
-    int firstoffset = (nLocalTimeTypes > 0) ? localTimeTypes[0].gmtoff : 0;
+    LocalTimeType* firstLtt = 0;
     ltt = localTimeTypes;
     for (i = 0;  i < nLocalTimeTypes;  ++ltt, ++i)
     {
         if (!ltt->isdst)
         {
-            firstoffset = ltt->gmtoff;
+            firstLtt = ltt;
             break;
         }
     }
@@ -375,7 +375,10 @@ KTimeZoneData* KTzfileTimeZoneSource::parse(const KTimeZone &zone) const
             phaseAbbrevs += abbrev;
         }
     }
-    data->setPhases(phases, firstoffset);
+    KTimeZone::Phase prePhase(firstLtt->gmtoff,
+                              (firstLtt->abbrIndex < abbreviations.count() ? abbreviations[firstLtt->abbrIndex] : ""),
+                              false);
+    data->setPhases(phases, prePhase);
 
     // Compile the transition list
     QList<KTimeZone::Transition> transitions;
