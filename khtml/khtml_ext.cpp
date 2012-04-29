@@ -61,7 +61,7 @@
 #include <kiconloader.h>
 #include <kdesktopfile.h>
 #include <kinputdialog.h>
-#include <ktemporaryfile.h>
+#include <qtemporaryfile.h>
 #include "khtml_global.h"
 #include <kstandardaction.h>
 #include <kactioncollection.h>
@@ -906,7 +906,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget* parent, const KUrl &url, const KUrl 
             else
             {
                 // save to temp file, then move to final destination.
-                KTemporaryFile destFile;
+                QTemporaryFile destFile;
                 if (destFile.open())
                 {
                     QDataStream stream ( &destFile );
