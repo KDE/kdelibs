@@ -51,7 +51,7 @@
 #include <kio/job.h>
 #include <kshell.h>
 #include <ktoolbar.h>
-#include <ksavefile.h>
+#include <qsavefile.h>
 #include <kstringhandler.h>
 #include <ktoolinvocation.h>
 #include <kmessagebox.h>
@@ -895,11 +895,11 @@ void KHTMLPopupGUIClient::saveURL( QWidget* parent, const KUrl &url, const KUrl 
         {
             if (destURL.isLocalFile())
             {
-                KSaveFile destFile(destURL.toLocalFile());
-                if (destFile.open())
-                {
-                    QDataStream stream ( &destFile );
+                QSaveFile destFile(destURL.toLocalFile());
+                if (destFile.open(QIODevice::WriteOnly)) {
+                    QDataStream stream(&destFile);
                     KHTMLPageCache::self()->saveData(cacheId, &stream);
+                    destFile.commit();
                     saved = true;
                 }
             }

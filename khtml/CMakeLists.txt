@@ -539,7 +539,7 @@ kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 
 kde4_add_library(khtml ${LIBRARY_TYPE} ${khtml_LIB_SRCS})
 
-target_link_libraries(khtml ${KDE4_KPARTS_LIBS} /home/stephen/dev/qtbase/kde/lib/libphonon.so ktexteditor kjs karchive sonnetcore ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES} ${kde4support_LIBRARY} kdeguiaddons)
+target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ${KDE4_PHONON_LIBS} ktexteditor kjs karchive sonnetcore ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES} ${kde4support_LIBRARY} kdeguiaddons ${kwindowsystem_LIBRARY})
 target_link_libraries(khtml LINK_INTERFACE_LIBRARIES kparts kjs kio kdeui kdecore ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${kde4support_LIBRARY})
 
 set_target_properties(khtml PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
