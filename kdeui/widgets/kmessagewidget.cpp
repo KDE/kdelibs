@@ -110,8 +110,9 @@ void KMessageWidgetPrivate::createLayout()
         buttons.append(button);
     }
 
-    // Only set autoRaise on if there are no buttons, otherwise the close
-    // button looks weird
+    // AutoRaise reduces visual clutter, but we don't want to turn it on if
+    // there are other buttons, otherwise the close button will look different
+    // from the others.
     closeButton->setAutoRaise(buttons.isEmpty());
 
     if (wordWrap) {
@@ -123,8 +124,9 @@ void KMessageWidgetPrivate::createLayout()
         QHBoxLayout* buttonLayout = new QHBoxLayout;
         buttonLayout->addStretch();
         Q_FOREACH(QToolButton* button, buttons) {
-            // For some reason, calling show() is necessary here, but not in
-            // wordwrap mode
+            // For some reason, calling show() is necessary if wordwrap is true,
+            // otherwise the buttons do not show up. It is not needed if
+            // wordwrap is false.
             button->show();
             buttonLayout->addWidget(button);
         }
