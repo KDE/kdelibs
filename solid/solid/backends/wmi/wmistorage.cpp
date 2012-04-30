@@ -1,4 +1,5 @@
 /*
+    Copyright 2012 Patrick von Reth <vonreth@kde.org>
     Copyright 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -35,89 +36,91 @@ Storage::~Storage()
 
 Solid::StorageDrive::Bus Storage::bus() const
 {
-    QString bus = m_device->property("storage.bus").toString();
-
-    if (bus=="ide")
-    {
-        return Solid::StorageDrive::Ide;
-    }
-    else if (bus=="usb")
-    {
-        return Solid::StorageDrive::Usb;
-    }
-    else if (bus=="ieee1394")
-    {
-        return Solid::StorageDrive::Ieee1394;
-    }
-    else if (bus=="scsi")
-    {
-        return Solid::StorageDrive::Scsi;
-    }
-    else if (bus=="sata")
-    {
-        return Solid::StorageDrive::Sata;
-    }
-    else
-    {
-        return Solid::StorageDrive::Platform;
-    }
+    //TODO:
+    return Solid::StorageDrive::Platform;
+//    QString bus = m_device->property("storage.bus").toString();
+//    if (bus=="ide")
+//    {
+//        return Solid::StorageDrive::Ide;
+//    }
+//    else if (bus=="usb")
+//    {
+//        return Solid::StorageDrive::Usb;
+//    }
+//    else if (bus=="ieee1394")
+//    {
+//        return Solid::StorageDrive::Ieee1394;
+//    }
+//    else if (bus=="scsi")
+//    {
+//        return Solid::StorageDrive::Scsi;
+//    }
+//    else if (bus=="sata")
+//    {
+//        return Solid::StorageDrive::Sata;
+//    }
+//    else
+//    {
+//        return Solid::StorageDrive::Platform;
+//    }
 }
 
 Solid::StorageDrive::DriveType Storage::driveType() const
 {
-    QString type = m_device->property("storage.drive_type").toString();
-
-    if (type=="disk")
-    {
+    uint type = m_device->property("drivetype").toUInt();
+    switch(type){
+      case 3:
         return Solid::StorageDrive::HardDisk;
-    }
-    else if (type=="cdrom")
-    {
+      case 5:
         return Solid::StorageDrive::CdromDrive;
-    }
-    else if (type=="floppy")
-    {
-        return Solid::StorageDrive::Floppy;
-    }
-    else if (type=="tape")
-    {
-        return Solid::StorageDrive::Tape;
-    }
-    else if (type=="compact_flash")
-    {
-        return Solid::StorageDrive::CompactFlash;
-    }
-    else if (type=="memory_stick")
-    {
+      case 2:
         return Solid::StorageDrive::MemoryStick;
-    }
-    else if (type=="smart_media")
-    {
-        return Solid::StorageDrive::SmartMedia;
-    }
-    else if (type=="sd_mmc")
-    {
-        return Solid::StorageDrive::SdMmc;
-    }
-    else
-    {
+      default:
         return Solid::StorageDrive::HardDisk;
+//     
+//     else if (type=="floppy")
+//     {
+//         return Solid::StorageDrive::Floppy;
+//     }
+//     else if (type=="tape")
+//     {
+//         return Solid::StorageDrive::Tape;
+//     }
+//     else if (type=="compact_flash")
+//     {
+//         return Solid::StorageDrive::CompactFlash;
+//     }
+//     else if (type=="smart_media")
+//     {
+//         return Solid::StorageDrive::SmartMedia;
+//     }
+//     else if (type=="sd_mmc")
+//     {
+//         return Solid::StorageDrive::SdMmc;
+//     }
+//     else
+//     {
+        
     }
 }
 
 bool Storage::isRemovable() const
 {
-    return m_device->property("storage.removable").toBool();
+    //TODO:
+    return false;
+//    return m_device->property("storage.removable").toBool();
 }
 
 bool Storage::isHotpluggable() const
 {
-    return m_device->property("storage.hotpluggable").toBool();
+    //TODO:
+    return false;
+//    return m_device->property("storage.hotpluggable").toBool();
 }
 
 qulonglong Storage::size() const
 {
-    return m_device->property("storage.size").toULongLong();
+    return m_device->property("Size").toULongLong();
 }
 
 #include "backends/wmi/wmistorage.moc"

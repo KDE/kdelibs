@@ -1,4 +1,5 @@
 /*
+    Copyright 2012 Patrick von Reth <vonreth@kde.org>
     Copyright 2008 Jeff Mitchell <mitchell@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -30,17 +31,11 @@
 #include <solid/solid_export.h>
 
 
-#ifdef INSIDE_WMIQUERY
 #include <windows.h>
 #include <rpc.h>
 #include <comdef.h>
 #include <Wbemidl.h>
-#else
-typedef void *IWbemClassObject;
-typedef void *IWbemLocator;
-typedef void *IWbemServices;
-typedef void *IEnumWbemClassObject;
-#endif
+#include <WTypes.h>
 
 namespace Solid
 {
@@ -59,10 +54,11 @@ public:
         Item& operator=(const Item& other);
         ~Item();
 
-        QString getProperty(const QString &property) const;
+        QVariant getProperty(const QString &property) const;
 
     private:
         Item() {}
+        static QVariant msVariantToQVariant(VARIANT msVariant, CIMTYPE variantType);
         // QSharedPointer alone doesn't help because we need to call Release()
         IWbemClassObject* m_p;
         QSharedPointer<QAtomicInt> m_int;

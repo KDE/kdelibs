@@ -1,4 +1,5 @@
 /*
+    Copyright 2012 Patrick von Reth <vonreth@kde.org>
     Copyright 2008 Jeff Mitchell <mitchell@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -41,33 +42,54 @@
 #include <QtCore/QList>
 #include <QtCore/QStringList>
 
-#ifdef __GNUC__
-//temporarily place this here, it should be moved to kdewin lib
-BSTR BSTRFromCStr(UINT codePage, LPCSTR s)
-{
-    int wideLen = MultiByteToWideChar(codePage, 0, s, -1, NULL, 0);
-    if( wideLen > 0 )
-    {
-        WCHAR* wideStr = (WCHAR*)CoTaskMemAlloc(wideLen*sizeof(WCHAR));
-        if( NULL != wideStr )
-        {
-            BSTR bstr;
+//needed for mingw
+inline OLECHAR* SysAllocString(const QString &s){
+  const OLECHAR *olename = reinterpret_cast<const OLECHAR *>(s.utf16());
+  return ::SysAllocString(olename);
+}
 
-            ZeroMemory(wideStr, wideLen*sizeof(WCHAR));
-            MultiByteToWideChar(codePage, 0, s, -1, wideStr, wideLen);
-            bstr = SysAllocStringLen(wideStr, wideLen-1);
-            CoTaskMemFree(wideStr);
-
-            return bstr;
-        }
-    }
-    return NULL;
-};
-
-#define _bstr_t(a) BSTRFromCStr(CP_UTF8, a)
-#define bstr_t _bstr_t
-#endif
 using namespace Solid::Backends::Wmi;
+
+//from http://qt.gitorious.org/qt-mobility/qt-mobility/blobs/master/src/systeminfo/windows/qwmihelper_win.cpp
+QVariant WmiQuery::Item::msVariantToQVariant(VARIANT msVariant, CIMTYPE variantType)
+{
+    QVariant returnVariant;
+    switch(variantType) {
+    case CIM_STRING:
+    case CIM_CHAR16:
+        {
+            QString str((QChar*)msVariant.bstrVal, wcslen(msVariant.bstrVal));
+            QVariant vs(str);
+            returnVariant = vs;
+        }
+        break;
+    case CIM_BOOLEAN:
+        {
+            QVariant vb(msVariant.boolVal);
+            returnVariant = vb;
+        }
+        break;
+            case CIM_UINT8:
+        {
+            QVariant vb(msVariant.uintVal);
+            returnVariant = vb;
+        }
+        break;
+            case CIM_UINT16:
+        {
+            QVariant vb(msVariant.uintVal);
+            returnVariant = vb;
+        }
+            case CIM_UINT32:
+        {
+            QVariant vb(msVariant.uintVal);
+            returnVariant = vb;
+        }
+        break;
+    };
+    VariantClear(&msVariant);
+    return returnVariant;
+}
 
 /**
  When a WmiQuery instance is created as a static global
@@ -78,7 +100,7 @@ using namespace Solid::Backends::Wmi;
  static WmiQuery instance;
 */
 
-QString WmiQuery::Item::getProperty(const QString &property) const
+QVariant WmiQuery::Item::getProperty(const QString &property) const
 {
 //    qDebug() << "start property:" << property;
     QString prop = property;
@@ -92,13 +114,17 @@ QString WmiQuery::Item::getProperty(const QString &property) const
         return "true";
     // todo check first if property is available
     VARIANT vtProp;
-    HRESULT hr = m_p->Get(bstr_t(qPrintable(prop)), 0, &vtProp, 0, 0);
-    QString result;
+    CIMTYPE variantType;
+    BSTR bstrProp;
+    bstrProp = ::SysAllocString(prop);
+    HRESULT hr = m_p->Get(bstrProp, 0, &vtProp, &variantType, 0);
+    QVariant result;
     if (SUCCEEDED(hr)) {
-        result = QString((QChar*)vtProp.bstrVal, wcslen(vtProp.bstrVal));
+        result = msVariantToQVariant(vtProp,variantType);
+    }else{
+        qWarning()<<"Querying "<<property<<"failed";
     }
-
-    VariantClear(&vtProp);
+    ::SysFreeString(bstrProp);
 //    qDebug() << "end result:" << result;
     return result;
 }
@@ -173,7 +199,7 @@ WmiQuery::WmiQuery()
     }
     if( !m_failed )
     {
-        hres = pLoc->ConnectServer( _bstr_t("ROOT\\CIMV2"), NULL, NULL, 0, NULL, 0, 0, &pSvc );
+        hres = pLoc->ConnectServer( L"ROOT\\CIMV2", NULL, NULL, 0, NULL, 0, 0, &pSvc );
         if( FAILED(hres) )
         {
             qCritical() << "Could not connect. Error code = " << hres << endl;
@@ -229,9 +255,12 @@ WmiQuery::ItemList WmiQuery::sendQuery( const QString &wql )
 
     HRESULT hres;
 
-    hres = pSvc->ExecQuery( bstr_t("WQL"), bstr_t( qPrintable( wql ) ),
+    BSTR bstrQuery;
+    bstrQuery = ::SysAllocString(wql);
+    hres = pSvc->ExecQuery( L"WQL",bstrQuery ,
                 WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, NULL, &pEnumerator);
-
+    ::SysFreeString(bstrQuery);
+    
     if( FAILED(hres) )
     {
         qDebug() << "Query with string \"" << wql << "\" failed. Error code = " << hres << endl;

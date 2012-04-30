@@ -88,22 +88,22 @@ Solid::StorageVolume::UsageType Volume::usage() const
 
 QString Volume::fsType() const
 {
-    return m_device->property("volume.fstype").toString();
+    return m_device->property("FileSystem").toString();
 }
 
 QString Volume::label() const
 {
-    return m_device->property("volume.label").toString();
+    return m_device->property("VolumeName").toString();
 }
 
 QString Volume::uuid() const
 {
-    return m_device->property("volume.uuid").toString();
+    return m_device->property("DeviceID").toString();
 }
 
 qulonglong Volume::size() const
 {
-    return m_device->property("volume.size").toULongLong();
+    return m_device->property("Size").toULongLong();
 }
 
 QString Solid::Backends::Wmi::Volume::encryptedContainerUdi() const

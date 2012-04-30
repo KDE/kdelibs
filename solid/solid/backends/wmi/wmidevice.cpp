@@ -77,7 +77,7 @@ public:
     WmiQuery::ItemList sendQuery()
     {
         QString query("SELECT * FROM " + m_wmiTable + " WHERE " + m_wmiProperty + "='" + m_wmiValue + '\'');
-		WmiQuery::ItemList list = WmiQuery::instance().sendQuery(query);
+        WmiQuery::ItemList list = WmiQuery::instance().sendQuery(query);
         return list;
     }
 
@@ -247,10 +247,10 @@ public:
     {
         QStringList result;
 
-		WmiQuery::ItemList list = WmiQuery::instance().sendQuery( "select * from " + getWMITable(type) );
+        WmiQuery::ItemList list = WmiQuery::instance().sendQuery( "select * from " + getWMITable(type) );
         foreach(const WmiQuery::Item& item, list) {
             QString propertyName = getPropertyNameForUDI(type);
-            QString property = item.getProperty(propertyName);
+            QString property = item.getProperty(propertyName).toString();
 
             result << generateUDI(getUDIKey(type),propertyName.toLower(),property.toLower());
         }
@@ -443,7 +443,7 @@ QVariant WmiDevice::property(const QString &key) const
     if (list.size() == 0)
         return QString();
 
-    QString result = list[0].getProperty( key );
+    QVariant result = list[0].getProperty( key );
     return result;
 }
 
@@ -467,7 +467,7 @@ bool WmiDevice::propertyExists(const QString &key) const
     WmiQuery::ItemList list = d->sendQuery();
     if (list.size() == 0)
         return false;
-    const bool isEmpty = list[0].getProperty( key ).isEmpty() ? false: true;
+    const bool isEmpty = list[0].getProperty( key ).isValid();
     return isEmpty;
 }
 
