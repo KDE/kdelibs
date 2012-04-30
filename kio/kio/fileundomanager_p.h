@@ -46,8 +46,8 @@ struct BasicOperation
     enum Type { File, Link, Directory };
     Type m_type:2;
 
-    KUrl m_src;
-    KUrl m_dst;
+    QUrl m_src;
+    QUrl m_dst;
     QString m_target;
     time_t m_mtime;
 };
@@ -69,8 +69,8 @@ public:
 
     FileUndoManager::CommandType m_type;
     BasicOperation::Stack m_opStack;
-    KUrl::List m_src;
-    KUrl m_dst;
+    QList<QUrl> m_src;
+    QUrl m_dst;
     quint64 m_serialNumber;
 };
 
@@ -81,7 +81,7 @@ class CommandRecorder : public QObject
 {
   Q_OBJECT
 public:
-  CommandRecorder( FileUndoManager::CommandType op, const KUrl::List &src, const KUrl &dst, KIO::Job *job );
+  CommandRecorder( FileUndoManager::CommandType op, const QList<QUrl> &src, const QUrl &dst, KIO::Job *job );
   virtual ~CommandRecorder();
 
 private Q_SLOTS:
@@ -116,7 +116,7 @@ public:
     void broadcastLock();
     void broadcastUnlock();
 
-    void addDirToUpdate( const KUrl& url );
+    void addDirToUpdate(const QUrl& url);
     bool initializeFromKDesky();
 
     void undoStep();
@@ -145,10 +145,10 @@ public:
     UndoCommand m_current;
     KIO::Job *m_currentJob;
     UndoState m_undoState;
-    QStack<KUrl> m_dirStack;
-    QStack<KUrl> m_dirCleanupStack;
-    QStack<KUrl> m_fileCleanupStack; // files and links
-    QList<KUrl> m_dirsToUpdate;
+    QStack<QUrl> m_dirStack;
+    QStack<QUrl> m_dirCleanupStack;
+    QStack<QUrl> m_fileCleanupStack; // files and links
+    QList<QUrl> m_dirsToUpdate;
     FileUndoManager::UiInterface* m_uiInterface;
 
     UndoJob *m_undoJob;

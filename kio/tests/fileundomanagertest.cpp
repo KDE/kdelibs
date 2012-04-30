@@ -131,7 +131,7 @@ public:
     virtual void jobError( KIO::Job* job ) {
         kFatal() << job->errorString() ;
     }
-    virtual bool copiedFileWasModified( const KUrl& src, const KUrl& dest, const KDateTime& srcTime, const KDateTime& destTime ) {
+    virtual bool copiedFileWasModified( const QUrl& src, const QUrl& dest, const KDateTime& srcTime, const KDateTime& destTime ) {
         Q_UNUSED( src );
         m_dest = dest;
         Q_UNUSED( srcTime );
@@ -146,14 +146,14 @@ public:
         m_nextReplyToConfirmDeletion = b;
     }
     QList<QUrl> files() const { return m_files; }
-    KUrl dest() const { return m_dest; }
+    QUrl dest() const { return m_dest; }
     void clear() {
         m_dest = QUrl();
         m_files.clear();
     }
 private:
     bool m_nextReplyToConfirmDeletion;
-    KUrl m_dest;
+    QUrl m_dest;
     QList<QUrl> m_files;
 };
 
@@ -190,7 +190,7 @@ void FileUndoManagerTest::initTestCase()
 
 void FileUndoManagerTest::cleanupTestCase()
 {
-    KIO::Job* job = KIO::del( KUrl::fromPath( homeTmpDir() ), KIO::HideProgressInfo );
+    KIO::Job* job = KIO::del(QUrl::fromLocalFile( homeTmpDir() ), KIO::HideProgressInfo);
     KIO::NetAccess::synchronousRun( job, 0 );
 }
 
@@ -350,9 +350,9 @@ void FileUndoManagerTest::testMoveDirectory()
 
 void FileUndoManagerTest::testRenameFile()
 {
-    const KUrl oldUrl( srcFile() );
-    const KUrl newUrl( srcFile() + ".new" );
-    QList<KUrl> lst;
+    const QUrl oldUrl = QUrl::fromLocalFile( srcFile() );
+    const QUrl newUrl = QUrl::fromLocalFile( srcFile() + ".new" );
+    QList<QUrl> lst;
     lst.append(oldUrl);
     QSignalSpy spyUndoAvailable( FileUndoManager::self(), SIGNAL(undoAvailable(bool)) );
     QVERIFY( spyUndoAvailable.isValid() );
@@ -375,9 +375,9 @@ void FileUndoManagerTest::testRenameFile()
 
 void FileUndoManagerTest::testRenameDir()
 {
-    const KUrl oldUrl( srcSubDir() );
-    const KUrl newUrl( srcSubDir() + ".new" );
-    QList<KUrl> lst;
+    const QUrl oldUrl = QUrl::fromLocalFile( srcSubDir() );
+    const QUrl newUrl = QUrl::fromLocalFile( srcSubDir() + ".new" );
+    QList<QUrl> lst;
     lst.append(oldUrl);
     KIO::Job* job = KIO::moveAs( oldUrl, newUrl, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );

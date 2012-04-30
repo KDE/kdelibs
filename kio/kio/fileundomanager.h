@@ -101,7 +101,7 @@ public:
          * Note that this is called after confirmDeletion.
          * Return true if we should proceed with deleting dest.
          */
-        virtual bool copiedFileWasModified(const KUrl& src, const KUrl& dest, const KDateTime& srcTime, const KDateTime& destTime);
+        virtual bool copiedFileWasModified(const QUrl& src, const QUrl& dest, const KDateTime& srcTime, const KDateTime& destTime);
 
         /**
          * \internal, for future extensions
@@ -142,7 +142,7 @@ public:
      * @param dst destination url
      * @param job the job to record
      */
-    void recordJob(CommandType op, const KUrl::List &src, const KUrl &dst, KIO::Job *job);
+    void recordJob(CommandType op, const QList<QUrl> &src, const QUrl &dst, KIO::Job *job);
 
     /**
      * Record this CopyJob while it's happening and add a command for it so that the user can undo it.

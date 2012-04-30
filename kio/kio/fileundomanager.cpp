@@ -33,6 +33,7 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kjobtrackerinterface.h>
+#include <qurlpathinfo.h>
 
 #include <QtDBus/QtDBus>
 
@@ -99,6 +100,14 @@ static QDataStream &operator>>(QDataStream &stream, UndoCommand &cmd)
  *
  */
 
+// Porting helpers. Qt 5: remove
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define pathOrUrl() toString()
+#define toDisplayString toString
+#else
+#define pathOrUrl() toDisplayString(QUrl::PreferLocalFile)
+#endif
+
 class KIO::UndoJob : public KIO::Job
 {
 public:
@@ -113,20 +122,20 @@ public:
         KIO::Job::doKill();
     }
 
-    void emitCreatingDir(const KUrl &dir)
+    void emitCreatingDir(const QUrl &dir)
     { emit description(this, i18n("Creating directory"),
-                       qMakePair(i18n("Directory"), dir.prettyUrl())); }
-    void emitMoving(const KUrl &src, const KUrl &dest)
+                       qMakePair(i18n("Directory"), dir.toDisplayString())); }
+    void emitMoving(const QUrl &src, const QUrl &dest)
     { emit description(this, i18n("Moving"),
-                       qMakePair(i18nc("The source of a file operation", "Source"), src.prettyUrl()),
-                       qMakePair(i18nc("The destination of a file operation", "Destination"), dest.prettyUrl())); }
-    void emitDeleting(const KUrl &url)
+                       qMakePair(i18nc("The source of a file operation", "Source"), src.toDisplayString()),
+                       qMakePair(i18nc("The destination of a file operation", "Destination"), dest.toDisplayString())); }
+    void emitDeleting(const QUrl &url)
     { emit description(this, i18n("Deleting"),
-                       qMakePair(i18n("File"), url.prettyUrl())); }
+                       qMakePair(i18n("File"), url.toDisplayString())); }
     void emitResult() { KIO::Job::emitResult(); }
 };
 
-CommandRecorder::CommandRecorder(FileUndoManager::CommandType op, const KUrl::List &src, const KUrl &dst, KIO::Job *job)
+CommandRecorder::CommandRecorder(FileUndoManager::CommandType op, const QList<QUrl> &src, const QUrl &dst, KIO::Job *job)
   : QObject(job)
 {
   m_cmd.m_type = op;
@@ -244,7 +253,7 @@ FileUndoManager::~FileUndoManager()
     delete d;
 }
 
-void FileUndoManager::recordJob(CommandType op, const KUrl::List &src, const KUrl &dst, KIO::Job *job)
+void FileUndoManager::recordJob(CommandType op, const QList<QUrl> &src, const QUrl &dst, KIO::Job *job)
 {
     // This records what the job does and calls addCommand when done
     (void) new CommandRecorder(op, src, dst, job);
@@ -447,7 +456,7 @@ void FileUndoManagerPrivate::slotResult(KJob *job)
 }
 
 
-void FileUndoManagerPrivate::addDirToUpdate(const KUrl& url)
+void FileUndoManagerPrivate::addDirToUpdate(const QUrl& url)
 {
     if (!m_dirsToUpdate.contains(url))
         m_dirsToUpdate.prepend(url);
@@ -480,7 +489,7 @@ void FileUndoManagerPrivate::undoStep()
 void FileUndoManagerPrivate::stepMakingDirectories()
 {
     if (!m_dirStack.isEmpty()) {
-        KUrl dir = m_dirStack.pop();
+        QUrl dir = m_dirStack.pop();
         kDebug(1203) << "creatingDir" << dir;
         m_currentJob = KIO::mkdir(dir);
         m_undoJob->emitCreatingDir(dir);
@@ -544,12 +553,12 @@ void FileUndoManagerPrivate::stepMovingFiles()
         m_current.m_opStack.removeLast();
         // The above KIO jobs are lowlevel, they don't trigger KDirNotify notification
         // So we need to do it ourselves (but schedule it to the end of the undo, to compress them)
-        KUrl url(op.m_dst);
-        url.setPath(url.directory());
+        QUrl url(op.m_dst);
+        url.setPath(QUrlPathInfo(url).directory());
         addDirToUpdate(url);
 
         url = op.m_src;
-        url.setPath(url.directory());
+        url.setPath(QUrlPathInfo(url).directory());
         addDirToUpdate(url);
     }
     else
@@ -561,13 +570,13 @@ void FileUndoManagerPrivate::stepRemovingLinks()
     kDebug(1203) << "REMOVINGLINKS";
     if (!m_fileCleanupStack.isEmpty())
     {
-        KUrl file = m_fileCleanupStack.pop();
+        QUrl file = m_fileCleanupStack.pop();
         kDebug(1203) << "file_delete" << file;
         m_currentJob = KIO::file_delete(file, KIO::HideProgressInfo);
         m_undoJob->emitDeleting(file);
 
-        KUrl url(file);
-        url.setPath(url.directory());
+        QUrl url(file);
+        url.setPath(QUrlPathInfo(url).directory());
         addDirToUpdate(url);
     }
     else
@@ -583,7 +592,7 @@ void FileUndoManagerPrivate::stepRemovingDirectories()
 {
     if (!m_dirCleanupStack.isEmpty())
     {
-        KUrl dir = m_dirCleanupStack.pop();
+        QUrl dir = m_dirCleanupStack.pop();
         kDebug(1203) << "rmdir" << dir;
         m_currentJob = KIO::rmdir(dir);
         m_undoJob->emitDeleting(dir);
@@ -599,10 +608,10 @@ void FileUndoManagerPrivate::stepRemovingDirectories()
             m_undoJob->emitResult();
             m_undoJob = 0;
         }
-        QList<KUrl>::ConstIterator it = m_dirsToUpdate.constBegin();
+        QList<QUrl>::ConstIterator it = m_dirsToUpdate.constBegin();
         for(; it != m_dirsToUpdate.constEnd(); ++it) {
             kDebug() << "Notifying FilesAdded for " << *it;
-            org::kde::KDirNotify::emitFilesAdded((*it).url());
+            org::kde::KDirNotify::emitFilesAdded((*it).toString());
         }
         emit q->undoJobFinished();
         broadcastUnlock();
@@ -762,7 +771,7 @@ void FileUndoManager::UiInterface::jobError(KIO::Job* job)
     job->ui()->showErrorMessage();
 }
 
-bool FileUndoManager::UiInterface::copiedFileWasModified(const KUrl& src, const KUrl& dest, const KDateTime& srcTime, const KDateTime& destTime)
+bool FileUndoManager::UiInterface::copiedFileWasModified(const QUrl& src, const QUrl& dest, const KDateTime& srcTime, const KDateTime& destTime)
 {
     Q_UNUSED(srcTime); // not sure it should appear in the msgbox
     // Possible improvement: only show the time if date is today

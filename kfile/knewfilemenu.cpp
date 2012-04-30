@@ -542,7 +542,7 @@ void KNewFileMenuPrivate::executeStrategy()
         KUrl dest(*it);
         dest.addPath(KIO::encodeFileName(chosenFileName));
 
-        QList<KUrl> lstSrc;
+        QList<QUrl> lstSrc;
         lstSrc.append(uSrc);
         KIO::Job* kjob;
         if (m_copyData.m_isSymlink) {
@@ -774,7 +774,7 @@ void KNewFileMenuPrivate::_k_slotCreateDirectory(bool writeHiddenDir)
       job->setProperty("isMkdirJob", true); // KDE5: cast to MkdirJob in slotResult instead
       job->ui()->setWindow(m_parentWidget);
       job->ui()->setAutoErrorHandlingEnabled(true);
-      KIO::FileUndoManager::self()->recordJob( KIO::FileUndoManager::Mkdir, KUrl(), url, job );
+      KIO::FileUndoManager::self()->recordJob( KIO::FileUndoManager::Mkdir, QList<QUrl>(), url, job );
 
       if (job) {
         // We want the error handling to be done by slotResult so that subclasses can reimplement it
