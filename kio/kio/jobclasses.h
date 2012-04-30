@@ -349,7 +349,7 @@ namespace KIO {
          * Returns the SimpleJob's URL
          * @return the url
          */
-        const KUrl& url() const;
+        const QUrl& url() const;
 
         /**
          * Abort job.
@@ -415,7 +415,7 @@ namespace KIO {
          * @param m_redirectionURL Reference to redirection URL,
          * used instead of m_url if not empty
          */
-        void storeSSLSessionFromJob(const KUrl &m_redirectionURL);
+        void storeSSLSessionFromJob(const QUrl &m_redirectionURL);
 
         /**
          * Creates a new simple job. You don't need to use this constructor,
@@ -504,14 +504,14 @@ namespace KIO {
          * if (job->error()) {
          *    [...] // doesn't exist
          * } else {
-         *    const KUrl localUrl = job->mostLocalUrl();
+         *    const QUrl localUrl = job->mostLocalUrl();
          *    // localUrl = file:///$HOME/Desktop/foo
          *    [...]
          * }
          *
          * \since 4.4
          */
-        KUrl mostLocalUrl() const;
+        QUrl mostLocalUrl() const;
 
     Q_SIGNALS:
         /**
@@ -788,7 +788,7 @@ namespace KIO {
          * @param url the url of the file to get
          * @param metaData the meta data for this request
          */
-        void get(long id, const KUrl &url, const MetaData &metaData);
+        void get(long id, const QUrl &url, const MetaData &metaData);
 
     Q_SIGNALS:
         /**
@@ -878,13 +878,13 @@ namespace KIO {
          * Returns the source URL.
          * @return the source URL
          */
-        KUrl srcUrl() const;
+        QUrl srcUrl() const;
 
         /**
          * Returns the destination URL.
          * @return the destination URL
          */
-        KUrl destUrl() const;
+        QUrl destUrl() const;
 
         bool doSuspend();
         bool doResume();
@@ -944,7 +944,7 @@ namespace KIO {
          * was no redirection.
          * @return the redirection url
          */
-        const KUrl& redirectionUrl() const;
+        const QUrl& redirectionUrl() const;
 
         /**
          * Do not apply any KIOSK restrictions to this job.
@@ -1018,7 +1018,7 @@ namespace KIO {
          * @param url the URL to be passed to the ioslave
          * @param data the data to be sent to the SlaveBase::special() function.
          */
-        explicit SpecialJob(const KUrl &url, const QByteArray &data = QByteArray());
+        explicit SpecialJob(const QUrl &url, const QByteArray &data = QByteArray());
 
         /**
          * Sets the QByteArray that is passed to SlaveBase::special() on

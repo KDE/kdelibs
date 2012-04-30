@@ -265,7 +265,7 @@ private:
     void stopListJob(const QString& url, bool silent);
 
     KIO::ListJob *jobForUrl( const QString& url, KIO::ListJob *not_job = 0 );
-    const KUrl& joburl( KIO::ListJob *job );
+    const QUrl& joburl( KIO::ListJob *job );
 
     void killJob( KIO::ListJob *job );
 

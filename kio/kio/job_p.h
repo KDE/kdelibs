@@ -84,7 +84,7 @@ namespace KIO {
          * @param command the command of the job
          * @param packedArgs the arguments
          */
-        SimpleJobPrivate(const KUrl& url, int command, const QByteArray &packedArgs)
+        SimpleJobPrivate(const QUrl& url, int command, const QByteArray &packedArgs)
             : m_slave(0), m_packedArgs(packedArgs), m_url(url), m_command(command),
               m_checkOnHold(false), m_schedSerial(0), m_redirectionHandlingEnabled(true)
         {
@@ -176,18 +176,18 @@ namespace KIO {
          * The m_redirectionURL data member can appear in several subclasses, so we have it
          * passed in. The regular URL will be set to the redirection URL which is then cleared.
          */
-        void restartAfterRedirection(KUrl *redirectionUrl);
+        void restartAfterRedirection(QUrl *redirectionUrl);
 
         Q_DECLARE_PUBLIC(SimpleJob)
 
         static inline SimpleJobPrivate *get(KIO::SimpleJob *job)
             { return job->d_func(); }
-        static inline SimpleJob *newJobNoUi(const KUrl& url, int command, const QByteArray &packedArgs)
+        static inline SimpleJob *newJobNoUi(const QUrl& url, int command, const QByteArray &packedArgs)
         {
             SimpleJob *job = new SimpleJob(*new SimpleJobPrivate(url, command, packedArgs));
             return job;
         }
-        static inline SimpleJob *newJob(const KUrl& url, int command, const QByteArray &packedArgs,
+        static inline SimpleJob *newJob(const QUrl& url, int command, const QByteArray &packedArgs,
                                         JobFlags flags = HideProgressInfo )
         {
             SimpleJob *job = new SimpleJob(*new SimpleJobPrivate(url, command, packedArgs));
@@ -201,14 +201,14 @@ namespace KIO {
     class TransferJobPrivate: public SimpleJobPrivate
     {
     public:
-        inline TransferJobPrivate(const KUrl& url, int command, const QByteArray &packedArgs,
+        inline TransferJobPrivate(const QUrl& url, int command, const QByteArray &packedArgs,
                                   const QByteArray &_staticData)
             : SimpleJobPrivate(url, command, packedArgs),
               m_internalSuspended(false), m_errorPage(false),
               staticData(_staticData), m_isMimetypeEmitted(false), m_subJob(0)
             { }
 
-        inline TransferJobPrivate(const KUrl& url, int command, const QByteArray &packedArgs,
+        inline TransferJobPrivate(const QUrl& url, int command, const QByteArray &packedArgs,
                                   QIODevice* ioDevice)
             : SimpleJobPrivate(url, command, packedArgs),
               m_internalSuspended(false), m_errorPage(false),
@@ -219,7 +219,7 @@ namespace KIO {
         bool m_internalSuspended;
         bool m_errorPage;
         QByteArray staticData;
-        KUrl m_redirectionURL;
+        QUrl m_redirectionURL;
         KUrl::List m_redirectionList;
         QString m_mimetype;
         bool m_isMimetypeEmitted;
@@ -256,7 +256,7 @@ namespace KIO {
         void slotSubUrlData(KIO::Job*, const QByteArray &);
 
         Q_DECLARE_PUBLIC(TransferJob)
-        static inline TransferJob *newJob(const KUrl& url, int command,
+        static inline TransferJob *newJob(const QUrl& url, int command,
                                           const QByteArray &packedArgs,
                                           const QByteArray &_staticData,
                                           JobFlags flags)
@@ -268,7 +268,7 @@ namespace KIO {
             return job;
         }
 
-        static inline TransferJob *newJob(const KUrl& url, int command,
+        static inline TransferJob *newJob(const QUrl& url, int command,
                                           const QByteArray &packedArgs,
                                           QIODevice* ioDevice,
                                           JobFlags flags)
@@ -291,7 +291,7 @@ namespace KIO {
         Q_OBJECT
 
     public:
-        DirectCopyJob(const KUrl &url, const QByteArray &packedArgs);
+        DirectCopyJob(const QUrl &url, const QByteArray &packedArgs);
         ~DirectCopyJob();
 
     public Q_SLOTS:

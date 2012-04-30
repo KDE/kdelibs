@@ -1822,14 +1822,14 @@ KIO::ListJob *KDirListerCache::jobForUrl( const QString& url, KIO::ListJob *not_
   while ( it != runningListJobs.constEnd() )
   {
     KIO::ListJob *job = it.key();
-    if ( joburl( job ).url(KUrl::RemoveTrailingSlash) == url && job != not_job )
+    if (joburl(job).toString(QUrl::StripTrailingSlash) == url && job != not_job)
        return job;
     ++it;
   }
   return 0;
 }
 
-const KUrl& KDirListerCache::joburl( KIO::ListJob *job )
+const QUrl& KDirListerCache::joburl( KIO::ListJob *job )
 {
   if ( job->redirectionUrl().isValid() )
      return job->redirectionUrl();
