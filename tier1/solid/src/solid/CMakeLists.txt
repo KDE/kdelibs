@@ -213,6 +213,7 @@ if(NOT WIN32 AND NOT APPLE)
          )
       endif(XDG_DATA_DIRS_ENV)
 
+      include (MacroLibrary)
       macro_log_feature(MEDIAPLAYERINFO_PATH
          "media-player-info"
          "Enables identification and querying of portable media players"
