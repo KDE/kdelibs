@@ -83,15 +83,17 @@ QString KUrlComboBoxPrivate::textForItem(const KUrlComboItem* item) const
     const QUrl& url = item->url;
     if (url.isLocalFile()) {
         return QUrlPathInfo(url).localPath(myMode == KUrlComboBox::Directories
-                                             ? QUrlPathInfo::AppendTrailingSlash
-                                             : QUrlPathInfo::StripTrailingSlash);
+                                           ? QUrlPathInfo::AppendTrailingSlash
+                                           : QUrlPathInfo::StripTrailingSlash);
     } else {
+        QUrlPathInfo urlInfo(url);
+        urlInfo.setPath(urlInfo.path(myMode == KUrlComboBox::Directories
+                                     ? QUrlPathInfo::AppendTrailingSlash
+                                     : QUrlPathInfo::StripTrailingSlash));
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-        return url.toString();
+        return urlInfo.url().toString();
 #else
-        return url.toDisplayString(myMode == KUrlComboBox::Directories
-                                   ? QUrl::None /* Qt5 TODO! QUrl::AppendTrailingSlash */
-                                   : QUrl::StripTrailingSlash);
+        return urlInfo.url().toDisplayString();
 #endif
     }
 }
