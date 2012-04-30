@@ -65,7 +65,7 @@ namespace KIO
     class DeleteJobPrivate: public KIO::JobPrivate
     {
     public:
-        DeleteJobPrivate(const KUrl::List& src)
+        DeleteJobPrivate(const QList<QUrl>& src)
             : state( DELETEJOB_STATE_STATING )
             , m_processedFiles( 0 )
             , m_processedDirs( 0 )
@@ -80,11 +80,11 @@ namespace KIO
         int m_processedDirs;
         int m_totalFilesDirs;
         KUrl m_currentURL;
-        KUrl::List files;
-        KUrl::List symlinks;
-        KUrl::List dirs;
-        KUrl::List m_srcList;
-        KUrl::List::iterator m_currentStat;
+        QList<QUrl> files;
+        QList<QUrl> symlinks;
+        QList<QUrl> dirs;
+        QList<QUrl> m_srcList;
+        QList<QUrl>::iterator m_currentStat;
 	QSet<QString> m_parentDirs;
         QTimer *m_reportTimer;
 
@@ -99,7 +99,7 @@ namespace KIO
 
         Q_DECLARE_PUBLIC(DeleteJob)
 
-        static inline DeleteJob *newJob(const KUrl::List &src, JobFlags flags)
+        static inline DeleteJob *newJob(const QList<QUrl> &src, JobFlags flags)
         {
             DeleteJob *job = new DeleteJob(*new DeleteJobPrivate(src));
             job->setUiDelegate(new JobUiDelegate);
@@ -128,7 +128,7 @@ DeleteJob::~DeleteJob()
 {
 }
 
-KUrl::List DeleteJob::urls() const
+QList<QUrl> DeleteJob::urls() const
 {
     return d_func()->m_srcList;
 }
@@ -277,7 +277,7 @@ void DeleteJobPrivate::deleteNextFile()
         SimpleJob *job;
         do {
             // Take first file to delete out of list
-            KUrl::List::iterator it = files.begin();
+            QList<QUrl>::iterator it = files.begin();
             bool isLink = false;
             if ( it == files.end() ) // No more files
             {
@@ -330,7 +330,7 @@ void DeleteJobPrivate::deleteNextDir()
     {
         do {
             // Take first dir to delete out of list - last ones first !
-            KUrl::List::iterator it = --dirs.end();
+            QList<QUrl>::iterator it = --dirs.end();
             // If local dir, try to rmdir it directly
 #ifdef Q_WS_WIN
             if ( (*it).isLocalFile() && RemoveDirectoryW( (LPCWSTR)(*it).toLocalFile().utf16() ) != 0 ) {
@@ -366,7 +366,7 @@ void DeleteJobPrivate::deleteNextDir()
     if ( !m_srcList.isEmpty() )
     {
         //kDebug(7007) << "KDirNotify'ing FilesRemoved " << m_srcList.toStringList();
-        org::kde::KDirNotify::emitFilesRemoved( m_srcList.toStringList() );
+        org::kde::KDirNotify::emitFilesRemoved(m_srcList);
     }
     if (m_reportTimer!=0)
        m_reportTimer->stop();
@@ -483,12 +483,12 @@ void DeleteJob::slotResult( KJob *job )
 
 DeleteJob *KIO::del( const KUrl& src, JobFlags flags )
 {
-    KUrl::List srcList;
+    QList<QUrl> srcList;
     srcList.append( src );
     return DeleteJobPrivate::newJob(srcList, flags);
 }
 
-DeleteJob *KIO::del( const KUrl::List& src, JobFlags flags )
+DeleteJob *KIO::del( const QList<QUrl>& src, JobFlags flags )
 {
     return DeleteJobPrivate::newJob(src, flags);
 }

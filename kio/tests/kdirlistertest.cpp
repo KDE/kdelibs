@@ -385,7 +385,7 @@ void KDirListerTest::testRefreshRootItem()
     connect(&m_dirLister, SIGNAL(refreshItems(QList<QPair<KFileItem,KFileItem> >)),
             this, SLOT(slotRefreshItems(QList<QPair<KFileItem,KFileItem> >)));
 
-    org::kde::KDirNotify::emitFilesChanged(QStringList() << KUrl(path).url());
+    org::kde::KDirNotify::emitFilesChanged(QList<QUrl>() << QUrl::fromLocalFile(path));
     waitForRefreshedItems();
 
     QCOMPARE(m_dirLister.spyStarted.count(), 0);
@@ -416,10 +416,10 @@ void KDirListerTest::testRefreshRootItem()
 
     org::kde::KDirNotify::emitFilesAdded(KUrl(path).url());
     QTest::qWait(200);
-    org::kde::KDirNotify::emitFilesChanged(QStringList() << KUrl(directoryFile).url());
+    org::kde::KDirNotify::emitFilesChanged(QList<QUrl>() << QUrl::fromLocalFile(directoryFile));
     QCOMPARE(m_refreshedItems.count(), 0);
 
-    org::kde::KDirNotify::emitFilesChanged(QStringList() << KUrl(path).url());
+    org::kde::KDirNotify::emitFilesChanged(QList<QUrl>() << QUrl::fromLocalFile(path));
     waitForRefreshedItems();
     QCOMPARE(m_refreshedItems.count(), 1);
     entry = m_refreshedItems.first();

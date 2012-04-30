@@ -81,7 +81,7 @@ namespace KIO {
     * @param flags: We support HideProgressInfo here
     * @return the new DavJob
     */
-   KIO_EXPORT DavJob* davPropFind( const KUrl& url, const QDomDocument& properties, const QString &depth, JobFlags flags = DefaultFlags );
+   KIO_EXPORT DavJob* davPropFind( const QUrl& url, const QDomDocument& properties, const QString &depth, JobFlags flags = DefaultFlags );
 
    /**
     * Creates a new DavJob that issues a PROPPATCH command. PROPPATCH sets
@@ -93,7 +93,7 @@ namespace KIO {
     * @param flags: We support HideProgressInfo here
     * @return the new DavJob
     */
-   KIO_EXPORT DavJob* davPropPatch( const KUrl& url, const QDomDocument& properties, JobFlags flags = DefaultFlags );
+   KIO_EXPORT DavJob* davPropPatch( const QUrl& url, const QDomDocument& properties, JobFlags flags = DefaultFlags );
 
    /**
     * Creates a new DavJob that issues a SEARCH command.
@@ -105,7 +105,7 @@ namespace KIO {
     * @param flags: We support HideProgressInfo here
     * @return the new DavJob
     */
-   KIO_EXPORT DavJob* davSearch( const KUrl &url, const QString& nsURI, const QString& qName, const QString& query, JobFlags flags = DefaultFlags );
+   KIO_EXPORT DavJob* davSearch( const QUrl &url, const QString& nsURI, const QString& qName, const QString& query, JobFlags flags = DefaultFlags );
 
    /**
     * Creates a new DavJob that issues a REPORT command.
@@ -117,7 +117,7 @@ namespace KIO {
     * @return the new DavJob
     * @since 4.4
     */
-   KIO_EXPORT DavJob* davReport( const KUrl& url, const QString& report, const QString &depth, JobFlags flags = DefaultFlags );
+   KIO_EXPORT DavJob* davReport( const QUrl& url, const QString& report, const QString &depth, JobFlags flags = DefaultFlags );
 
 }
 

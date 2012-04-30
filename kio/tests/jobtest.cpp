@@ -1226,11 +1226,11 @@ void JobTest::deleteManyDirs(bool using_fast_path)
     kio_resolve_local_urls = !using_fast_path;
 
     const int numDirs = 50;
-    QList<KUrl> dirs;
+    QList<QUrl> dirs;
     for (int i = 0; i < numDirs; ++i) {
         const QString dir = homeTmpDir() + "dir" + QString::number(i);
         createTestDirectory(dir);
-        dirs << KUrl(dir);
+        dirs << QUrl::fromLocalFile(dir);
     }
     QTime dt;
     dt.start();
@@ -1238,8 +1238,8 @@ void JobTest::deleteManyDirs(bool using_fast_path)
     job->setUiDelegate(0);
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY(ok);
-    Q_FOREACH(const KUrl& dir, dirs) {
-        QVERIFY(!QFile::exists(dir.path()));
+    Q_FOREACH(const QUrl& dir, dirs) {
+        QVERIFY(!QFile::exists(dir.toLocalFile()));
     }
 
     kDebug() << "Deleted" << numDirs << "dirs in" << dt.elapsed() << "milliseconds";
@@ -1292,11 +1292,11 @@ void JobTest::deleteManyFilesTogether(bool using_fast_path)
     const int numFiles = 100; // Use 1000 for performance testing
     const QString baseDir = homeTmpDir();
     createManyFiles(baseDir, numFiles);
-    QList<KUrl> urls;
+    QList<QUrl> urls;
     for (int i = 0; i < numFiles; ++i) {
         const QString file = baseDir + QString::number(i);
         QVERIFY(QFile::exists(file));
-        urls.append(KUrl(file));
+        urls.append(QUrl::fromLocalFile(file));
     }
 
     //kDebug() << file;

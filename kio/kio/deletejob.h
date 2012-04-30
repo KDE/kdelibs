@@ -50,7 +50,7 @@ namespace KIO {
 	 * Returns the list of URLs.
 	 * @return the list of URLs.
 	 */
-        KUrl::List urls() const;
+        QList<QUrl> urls() const;
 
     Q_SIGNALS:
 
@@ -117,7 +117,7 @@ namespace KIO {
      * @param flags: We support HideProgressInfo here
      * @return the job handling the operation
      */
-    KIO_EXPORT DeleteJob *del( const KUrl::List& src, JobFlags flags = DefaultFlags );
+    KIO_EXPORT DeleteJob *del( const QList<QUrl>& src, JobFlags flags = DefaultFlags );
 }
 
 #endif

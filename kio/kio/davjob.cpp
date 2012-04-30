@@ -47,7 +47,7 @@ using namespace KIO;
 class KIO::DavJobPrivate: public KIO::TransferJobPrivate
 {
 public:
-    DavJobPrivate(const KUrl& url)
+    DavJobPrivate(const QUrl& url)
         : TransferJobPrivate(url, KIO::CMD_SPECIAL, QByteArray(), QByteArray())
         {}
     QByteArray savedStaticData;
@@ -58,7 +58,7 @@ public:
 
     Q_DECLARE_PUBLIC(DavJob)
 
-    static inline DavJob *newJob(const KUrl &url, int method, const QString &request,
+    static inline DavJob *newJob(const QUrl &url, int method, const QString &request,
                                  JobFlags flags)
     {
         DavJob *job = new DavJob(*new DavJobPrivate(url), method, request);
@@ -141,7 +141,7 @@ void DavJob::slotFinished()
 
 /* Convenience methods */
 
-DavJob* KIO::davPropFind( const KUrl& url, const QDomDocument& properties, const QString &depth, JobFlags flags )
+DavJob* KIO::davPropFind( const QUrl& url, const QDomDocument& properties, const QString &depth, JobFlags flags )
 {
     DavJob *job = DavJobPrivate::newJob(url, (int) KIO::DAV_PROPFIND, properties.toString(), flags);
     job->addMetaData( "davDepth", depth );
@@ -149,13 +149,13 @@ DavJob* KIO::davPropFind( const KUrl& url, const QDomDocument& properties, const
 }
 
 
-DavJob* KIO::davPropPatch( const KUrl& url, const QDomDocument& properties, JobFlags flags )
+DavJob* KIO::davPropPatch( const QUrl& url, const QDomDocument& properties, JobFlags flags )
 {
     return DavJobPrivate::newJob(url, (int) KIO::DAV_PROPPATCH, properties.toString(),
                                  flags);
 }
 
-DavJob* KIO::davSearch( const KUrl& url, const QString& nsURI, const QString& qName, const QString& query, JobFlags flags )
+DavJob* KIO::davSearch( const QUrl& url, const QString& nsURI, const QString& qName, const QString& query, JobFlags flags )
 {
   QDomDocument doc;
   QDomElement searchrequest = doc.createElementNS( "DAV:", "searchrequest" );
@@ -167,7 +167,7 @@ DavJob* KIO::davSearch( const KUrl& url, const QString& nsURI, const QString& qN
   return DavJobPrivate::newJob(url, KIO::DAV_SEARCH, doc.toString(), flags);
 }
 
-DavJob* KIO::davReport( const KUrl& url, const QString& report, const QString &depth, JobFlags flags )
+DavJob* KIO::davReport( const QUrl& url, const QString& report, const QString &depth, JobFlags flags )
 {
     DavJob *job = DavJobPrivate::newJob(url, (int) KIO::DAV_REPORT, report, flags);
     job->addMetaData( "davDepth", depth );

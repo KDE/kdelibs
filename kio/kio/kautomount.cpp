@@ -84,9 +84,7 @@ void KAutoMountPrivate::slotResult( KJob * job )
 
         // Update the desktop file which is used for mount/unmount (icon change)
         kDebug(7015) << " mount finished : updating " << m_desktopFile;
-        KUrl dfURL;
-        dfURL.setPath( m_desktopFile );
-        org::kde::KDirNotify::emitFilesChanged( QStringList() << dfURL.url() );
+        org::kde::KDirNotify::emitFilesChanged(QList<QUrl>() << QUrl::fromLocalFile(m_desktopFile));
         //KDirWatch::self()->setFileDirty( m_desktopFile );
 
         emit q->finished();
@@ -124,9 +122,7 @@ void KAutoUnmountPrivate::slotResult( KJob * job )
     {
         // Update the desktop file which is used for mount/unmount (icon change)
         kDebug(7015) << "unmount finished : updating " << m_desktopFile;
-        KUrl dfURL;
-        dfURL.setPath( m_desktopFile );
-        org::kde::KDirNotify::emitFilesChanged( QStringList() << dfURL.url() );
+        org::kde::KDirNotify::emitFilesChanged(QList<QUrl>() << QUrl::fromLocalFile(m_desktopFile));
         //KDirWatch::self()->setFileDirty( m_desktopFile );
 
         // Notify about the new stuff in that dir, in case of opened windows showing it

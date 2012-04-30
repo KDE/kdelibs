@@ -649,7 +649,7 @@ void KDirModelTest::testChmodDirectory() // #53397
     QVERIFY(KIO::NetAccess::synchronousRun(job, 0));
     // ChmodJob doesn't talk to KDirNotify, kpropertiesdialog does.
     // [this allows to group notifications after all the changes one can make in the dialog]
-    org::kde::KDirNotify::emitFilesChanged( QStringList() << path );
+    org::kde::KDirNotify::emitFilesChanged(QList<QUrl>() << QUrl::fromLocalFile(path));
     // Wait for the DBUS signal from KDirNotify, it's the one the triggers rowsRemoved
     enterLoop();
 
@@ -1216,8 +1216,8 @@ void KDirModelTest::testDeleteFiles()
 {
     const int oldTopLevelRowCount = m_dirModel->rowCount();
     const QString file = m_tempDir->path() + "/toplevelfile_";
-    QList<KUrl> urls;
-    urls << KUrl(file + '1') << KUrl(file + '2') << KUrl(file + '3');
+    QList<QUrl> urls;
+    urls << QUrl::fromLocalFile(file + '1') << QUrl::fromLocalFile(file + '2') << QUrl::fromLocalFile(file + '3');
 
     QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
 

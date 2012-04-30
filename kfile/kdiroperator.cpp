@@ -787,7 +787,7 @@ KIO::DeleteJob * KDirOperator::del(const KFileItemList& items,
         parent = this;
     }
 
-    QList<KUrl> urls;
+    QList<QUrl> urls;
     QStringList files;
     foreach (const KFileItem &item, items) {
         const KUrl url = item.url();

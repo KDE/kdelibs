@@ -1744,7 +1744,7 @@ void CopyJob::emitResult()
 
         if (d->m_mode == CopyJob::Move && !d->m_successSrcList.isEmpty()) {
             kDebug(7007) << "KDirNotify'ing FilesRemoved" << d->m_successSrcList.toStringList();
-            org::kde::KDirNotify::emitFilesRemoved(d->m_successSrcList.toStringList());
+            org::kde::KDirNotify::emitFilesRemoved(d->m_successSrcList);
         }
 
         // Re-enable watching on the dirs that held the deleted files
