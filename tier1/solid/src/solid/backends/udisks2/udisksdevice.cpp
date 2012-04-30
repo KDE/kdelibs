@@ -696,7 +696,7 @@ QVariantMap Device::allProperties() const
         if (iface.startsWith("org.freedesktop.DBus"))
             continue;
         QDBusMessage call = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, m_udi, DBUS_INTERFACE_PROPS, "GetAll");
-        call.setArguments(QList<QVariant>() << iface);
+        call << iface;
         QDBusPendingReply<QVariantMap> reply = QDBusConnection::systemBus().asyncCall(call);
         reply.waitForFinished();
 
