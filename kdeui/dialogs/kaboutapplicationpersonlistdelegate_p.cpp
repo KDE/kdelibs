@@ -121,11 +121,13 @@ void KAboutApplicationPersonListDelegate::updateItemWidgets( const QList<QWidget
     mainLinks->setContentsMargins( 0, 0, 0, 0 );
     mainLinks->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed );
     KAction *action;
-    action = qobject_cast< KAction * >( mainLinks->actions().at( EmailAction ) );
-    action->setToolTip( i18nc( "Action to send an email to a contributor",
-                               "Email contributor\n%1", profile.email() ) );
-    action->setData( QString( QLatin1String( "mailto:") + profile.email() ) );
-    action->setVisible( true );
+    if( !profile.email().isEmpty() ) {
+        action = qobject_cast< KAction * >( mainLinks->actions().at( EmailAction ) );
+        action->setToolTip( i18nc( "Action to send an email to a contributor",
+                                   "Email contributor\n%1", profile.email() ) );
+        action->setData( QString( QLatin1String( "mailto:") + profile.email() ) );
+        action->setVisible( true );
+    }
     if( !profile.homepage().isEmpty() ) {
         action = qobject_cast< KAction * >( mainLinks->actions().at( HomepageAction ) );
         action->setToolTip( i18n( "Visit contributor's homepage\n%1", profile.homepage().url() ) );
