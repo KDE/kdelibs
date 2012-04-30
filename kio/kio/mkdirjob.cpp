@@ -123,7 +123,7 @@ void MkdirJob::slotFinished()
     SimpleJob::slotFinished();
 }
 
-KIO::MkdirJob *KIO::mkdir(const KUrl& url, int permissions)
+KIO::MkdirJob *KIO::mkdir(const QUrl& url, int permissions)
 {
     //kDebug(7007) << "mkdir " << url;
     KIO_ARGS << url << permissions;

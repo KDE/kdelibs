@@ -42,7 +42,7 @@ namespace KIO {
      *                    directory (unix-style), -1 for default permissions.
      * @return A pointer to the job handling the operation.
      */
-    KIO_EXPORT MkdirJob * mkdir(const KUrl& url, int permissions = -1);
+    KIO_EXPORT MkdirJob * mkdir(const QUrl& url, int permissions = -1);
 
     /**
      * Removes a single directory.
@@ -54,7 +54,7 @@ namespace KIO {
      * @param url The URL of the directory to remove.
      * @return A pointer to the job handling the operation.
      */
-    KIO_EXPORT SimpleJob * rmdir( const KUrl& url );
+    KIO_EXPORT SimpleJob * rmdir( const QUrl& url );
 
     /**
      * Changes permissions on a file or directory.
@@ -65,7 +65,7 @@ namespace KIO {
      * @param permissions The permissions to set.
      * @return the job handling the operation.
      */
-    KIO_EXPORT SimpleJob * chmod( const KUrl& url, int permissions );
+    KIO_EXPORT SimpleJob * chmod( const QUrl& url, int permissions );
 
     /**
      * Changes ownership and group of a file or directory.
@@ -75,7 +75,7 @@ namespace KIO {
      * @param group the new group
      * @return the job handling the operation.
      */
-    KIO_EXPORT SimpleJob * chown( const KUrl& url, const QString& owner, const QString& group );
+    KIO_EXPORT SimpleJob * chown( const QUrl& url, const QString& owner, const QString& group );
 
     /**
      * Changes the modification time on a file or directory.
@@ -84,7 +84,7 @@ namespace KIO {
      * @param permissions The permissions to set.
      * @return the job handling the operation.
      */
-    KIO_EXPORT SimpleJob *setModificationTime( const KUrl& url, const QDateTime& mtime );
+    KIO_EXPORT SimpleJob *setModificationTime( const QUrl& url, const QDateTime& mtime );
 
 
     /**
@@ -98,7 +98,7 @@ namespace KIO {
      * @param flags Can be Overwrite here
      * @return the job handling the operation.
      */
-    KIO_EXPORT SimpleJob * rename( const KUrl& src, const KUrl & dest, JobFlags flags = DefaultFlags );
+    KIO_EXPORT SimpleJob * rename( const QUrl& src, const QUrl & dest, JobFlags flags = DefaultFlags );
 
     /**
      * Create or move a symlink.
@@ -110,7 +110,7 @@ namespace KIO {
      * @param flags Can be Overwrite and HideProgressInfo
      * @return the job handling the operation.
      */
-    KIO_EXPORT SimpleJob * symlink( const QString & target, const KUrl& dest, JobFlags flags = DefaultFlags );
+    KIO_EXPORT SimpleJob * symlink( const QString & target, const QUrl& dest, JobFlags flags = DefaultFlags );
 
     /**
      * Execute any command that is specific to one slave (protocol).
@@ -124,7 +124,7 @@ namespace KIO {
      * @param flags Can be HideProgressInfo here
      * @return the job handling the operation.
      */
-    KIO_EXPORT SimpleJob * special( const KUrl& url, const QByteArray & data, JobFlags flags = DefaultFlags );
+    KIO_EXPORT SimpleJob * special( const QUrl& url, const QByteArray & data, JobFlags flags = DefaultFlags );
 
     /**
      * Mount filesystem.
@@ -160,7 +160,7 @@ namespace KIO {
      * supposed to expire.
      * @return the job handling the operation.
      */
-    KIO_EXPORT SimpleJob *http_update_cache( const KUrl& url, bool no_cache, time_t expireDate);
+    KIO_EXPORT SimpleJob *http_update_cache( const QUrl& url, bool no_cache, time_t expireDate);
 
     /**
      * Find all details for one file or directory.
@@ -169,7 +169,7 @@ namespace KIO {
      * @param flags Can be HideProgressInfo here
      * @return the job handling the operation.
      */
-    KIO_EXPORT StatJob * stat( const KUrl& url, JobFlags flags = DefaultFlags );
+    KIO_EXPORT StatJob * stat( const QUrl& url, JobFlags flags = DefaultFlags );
     /**
      * Find all details for one file or directory.
      * This version of the call includes two additional booleans, @p sideIsSource and @p details.
@@ -197,7 +197,7 @@ namespace KIO {
      * @param flags Can be HideProgressInfo here
      * @return the job handling the operation.
      */
-    KIO_EXPORT StatJob * stat( const KUrl& url, KIO::StatJob::StatSide side,
+    KIO_EXPORT StatJob * stat( const QUrl& url, KIO::StatJob::StatSide side,
                                short int details, JobFlags flags = DefaultFlags );
     /**
      * Find all details for one file or directory.
@@ -227,7 +227,7 @@ namespace KIO {
      * @return the job handling the operation.
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED_EXPORT StatJob * stat( const KUrl& url, bool sideIsSource,
+    KIO_DEPRECATED_EXPORT StatJob * stat( const QUrl& url, bool sideIsSource,
                                           short int details, JobFlags flags = DefaultFlags );
 #endif
 
@@ -253,7 +253,7 @@ namespace KIO {
      * @param flags Can be HideProgressInfo here
      * @return the job handling the operation.
      */
-    KIO_EXPORT TransferJob *get( const KUrl& url, LoadType reload = NoReload, JobFlags flags = DefaultFlags );
+    KIO_EXPORT TransferJob *get( const QUrl& url, LoadType reload = NoReload, JobFlags flags = DefaultFlags );
 
     /**
      * Open ( random access I/O )
@@ -265,7 +265,7 @@ namespace KIO {
      * @return The file-handling job. It will never return 0. Errors are handled asynchronously
      * (emitted as signals).
      */
-    KIO_EXPORT FileJob *open(const KUrl &url, QIODevice::OpenMode mode);
+    KIO_EXPORT FileJob *open(const QUrl &url, QIODevice::OpenMode mode);
 
     /**
      * Put (a.k.a. write)
@@ -277,7 +277,7 @@ namespace KIO {
      * @return the job handling the operation.
      * @see multi_get()
      */
-    KIO_EXPORT TransferJob *put( const KUrl& url, int permissions,
+    KIO_EXPORT TransferJob *put( const QUrl& url, int permissions,
                                  JobFlags flags = DefaultFlags );
 
     /**
@@ -308,7 +308,7 @@ namespace KIO {
      * @param flags Can be HideProgressInfo here
      * @return the job handling the operation.
      */
-    KIO_EXPORT TransferJob *http_post( const KUrl& url, const QByteArray &postData,
+    KIO_EXPORT TransferJob *http_post( const QUrl& url, const QByteArray &postData,
                                        JobFlags flags = DefaultFlags );
 
     /**
@@ -327,7 +327,7 @@ namespace KIO {
      *
      * @since 4.7
      */
-    KIO_EXPORT TransferJob *http_post( const KUrl& url, QIODevice* device,
+    KIO_EXPORT TransferJob *http_post( const QUrl& url, QIODevice* device,
                                        qint64 size = -1, JobFlags flags = DefaultFlags );
 
     /**
@@ -342,7 +342,7 @@ namespace KIO {
      *
      * @since 4.7.3
      */
-    KIO_EXPORT TransferJob *http_delete( const KUrl& url, JobFlags flags = DefaultFlags );
+    KIO_EXPORT TransferJob *http_delete( const QUrl& url, JobFlags flags = DefaultFlags );
 
     /**
      * Get (a.k.a. read), into a single QByteArray.
@@ -353,7 +353,7 @@ namespace KIO {
      * @param flags Can be HideProgressInfo here
      * @return the job handling the operation.
      */
-    KIO_EXPORT StoredTransferJob *storedGet( const KUrl& url, LoadType reload = NoReload, JobFlags flags = DefaultFlags );
+    KIO_EXPORT StoredTransferJob *storedGet( const QUrl& url, LoadType reload = NoReload, JobFlags flags = DefaultFlags );
 
     /**
      * Put (a.k.a. write) data from a single QByteArray.
@@ -366,7 +366,7 @@ namespace KIO {
      * Setting Resume means that the data will be appended to @p dest if @p dest exists.
      * @return the job handling the operation.
      */
-    KIO_EXPORT StoredTransferJob *storedPut( const QByteArray& arr, const KUrl& url, int permissions,
+    KIO_EXPORT StoredTransferJob *storedPut( const QByteArray& arr, const QUrl& url, int permissions,
                                              JobFlags flags = DefaultFlags );
 
     /**
@@ -379,7 +379,7 @@ namespace KIO {
      * @return the job handling the operation.
      * @since 4.2
      */
-    KIO_EXPORT StoredTransferJob *storedHttpPost( const QByteArray& arr, const KUrl& url,
+    KIO_EXPORT StoredTransferJob *storedHttpPost( const QByteArray& arr, const QUrl& url,
                                                   JobFlags flags = DefaultFlags );
     /**
      * HTTP POST (a.k.a. write) data from the given IO device.
@@ -393,7 +393,7 @@ namespace KIO {
      *
      * @since 4.7
      */
-    KIO_EXPORT StoredTransferJob *storedHttpPost( QIODevice* device, const KUrl& url,
+    KIO_EXPORT StoredTransferJob *storedHttpPost( QIODevice* device, const QUrl& url,
                                                   qint64 size = -1, JobFlags flags = DefaultFlags );
 
     /**
@@ -406,7 +406,7 @@ namespace KIO {
      * @return the job handling the operation.
      * @see get()
      */
-    KIO_EXPORT MultiGetJob *multi_get( long id, const KUrl &url, const MetaData &metaData);
+    KIO_EXPORT MultiGetJob *multi_get( long id, const QUrl &url, const MetaData &metaData);
 
     /**
      * Find mimetype for one file or directory.
@@ -419,7 +419,7 @@ namespace KIO {
      * @param flags Can be HideProgressInfo here
      * @return the job handling the operation.
      */
-    KIO_EXPORT MimetypeJob * mimetype( const KUrl& url,
+    KIO_EXPORT MimetypeJob * mimetype( const QUrl& url,
                                        JobFlags flags = DefaultFlags );
 
     /**
@@ -434,7 +434,7 @@ namespace KIO {
      * Setting Resume means that the data will be appended to @p dest if @p dest exists.
      * @return the job handling the operation.
      */
-    KIO_EXPORT FileCopyJob *file_copy( const KUrl& src, const KUrl& dest, int permissions=-1,
+    KIO_EXPORT FileCopyJob *file_copy( const QUrl& src, const QUrl& dest, int permissions=-1,
                                        JobFlags flags = DefaultFlags );
 
     /**
@@ -442,7 +442,7 @@ namespace KIO {
      * insert a value for permissions (-1 by default) before the JobFlags.
      * @since 4.5
      */
-    FileCopyJob *file_copy( const KUrl& src, const KUrl& dest, JobFlags flags ); // not implemented - on purpose.
+    FileCopyJob *file_copy( const QUrl& src, const QUrl& dest, JobFlags flags ); // not implemented - on purpose.
 
     /**
      * Move a single file.
@@ -456,7 +456,7 @@ namespace KIO {
      * Setting Resume means that the data will be appended to @p dest if @p dest exists.
      * @return the job handling the operation.
      */
-    KIO_EXPORT FileCopyJob *file_move( const KUrl& src, const KUrl& dest, int permissions=-1,
+    KIO_EXPORT FileCopyJob *file_move( const QUrl& src, const QUrl& dest, int permissions=-1,
                                        JobFlags flags = DefaultFlags );
 
     /**
@@ -464,7 +464,7 @@ namespace KIO {
      * insert a value for permissions (-1 by default) before the JobFlags.
      * @since 4.3
      */
-    FileCopyJob *file_move( const KUrl& src, const KUrl& dest, JobFlags flags ); // not implemented - on purpose.
+    FileCopyJob *file_move( const QUrl& src, const QUrl& dest, JobFlags flags ); // not implemented - on purpose.
 
 
     /**
@@ -474,7 +474,7 @@ namespace KIO {
      * @param flags Can be HideProgressInfo here
      * @return the job handling the operation.
      */
-    KIO_EXPORT SimpleJob *file_delete( const KUrl& src, JobFlags flags = DefaultFlags );
+    KIO_EXPORT SimpleJob *file_delete( const QUrl& src, JobFlags flags = DefaultFlags );
 
     /**
      * List the contents of @p url, which is assumed to be a directory.
@@ -488,7 +488,7 @@ namespace KIO {
      *                      files/dirs (whose names start with dot)
      * @return the job handling the operation.
      */
-    KIO_EXPORT ListJob *listDir( const KUrl& url, JobFlags flags = DefaultFlags,
+    KIO_EXPORT ListJob *listDir( const QUrl& url, JobFlags flags = DefaultFlags,
                                  bool includeHidden = true );
 
     /**
@@ -504,7 +504,7 @@ namespace KIO {
      *                      files/dirs (whose names start with dot)
      * @return the job handling the operation.
      */
-    KIO_EXPORT ListJob *listRecursive( const KUrl& url, JobFlags flags = DefaultFlags,
+    KIO_EXPORT ListJob *listRecursive( const QUrl& url, JobFlags flags = DefaultFlags,
                             bool includeHidden = true );
 
     /**
@@ -515,7 +515,7 @@ namespace KIO {
      * @param url The URL we are testing.
      * \since 4.4
      */
-    KIO_EXPORT StatJob* mostLocalUrl(const KUrl& url, JobFlags flags = DefaultFlags);
+    KIO_EXPORT StatJob* mostLocalUrl(const QUrl& url, JobFlags flags = DefaultFlags);
 
 }
 

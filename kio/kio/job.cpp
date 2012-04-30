@@ -583,48 +583,48 @@ void SimpleJob::storeSSLSessionFromJob(const KUrl &redirectionURL)
 
 
 //////////
-SimpleJob *KIO::rmdir( const KUrl& url )
+SimpleJob *KIO::rmdir( const QUrl& url )
 {
     //kDebug(7007) << "rmdir " << url;
     KIO_ARGS << url << qint8(false); // isFile is false
     return SimpleJobPrivate::newJob(url, CMD_DEL, packedArgs);
 }
 
-SimpleJob *KIO::chmod( const KUrl& url, int permissions )
+SimpleJob *KIO::chmod( const QUrl& url, int permissions )
 {
     //kDebug(7007) << "chmod " << url;
     KIO_ARGS << url << permissions;
     return SimpleJobPrivate::newJob(url, CMD_CHMOD, packedArgs);
 }
 
-SimpleJob *KIO::chown( const KUrl& url, const QString& owner, const QString& group )
+SimpleJob *KIO::chown( const QUrl& url, const QString& owner, const QString& group )
 {
     KIO_ARGS << url << owner << group;
     return SimpleJobPrivate::newJob(url, CMD_CHOWN, packedArgs);
 }
 
-SimpleJob *KIO::setModificationTime( const KUrl& url, const QDateTime& mtime )
+SimpleJob *KIO::setModificationTime( const QUrl& url, const QDateTime& mtime )
 {
     //kDebug(7007) << "setModificationTime " << url << " " << mtime;
     KIO_ARGS << url << mtime;
     return SimpleJobPrivate::newJobNoUi(url, CMD_SETMODIFICATIONTIME, packedArgs);
 }
 
-SimpleJob *KIO::rename( const KUrl& src, const KUrl & dest, JobFlags flags )
+SimpleJob *KIO::rename( const QUrl& src, const QUrl & dest, JobFlags flags )
 {
     //kDebug(7007) << "rename " << src << " " << dest;
     KIO_ARGS << src << dest << (qint8) (flags & Overwrite);
     return SimpleJobPrivate::newJob(src, CMD_RENAME, packedArgs);
 }
 
-SimpleJob *KIO::symlink( const QString& target, const KUrl & dest, JobFlags flags )
+SimpleJob *KIO::symlink( const QString& target, const QUrl & dest, JobFlags flags )
 {
     //kDebug(7007) << "symlink target=" << target << " " << dest;
     KIO_ARGS << target << dest << (qint8) (flags & Overwrite);
     return SimpleJobPrivate::newJob(dest, CMD_SYMLINK, packedArgs, flags);
 }
 
-SimpleJob *KIO::special(const KUrl& url, const QByteArray & data, JobFlags flags)
+SimpleJob *KIO::special(const QUrl& url, const QByteArray & data, JobFlags flags)
 {
     //kDebug(7007) << "special " << url;
     return SimpleJobPrivate::newJob(url, CMD_SPECIAL, data, flags);
@@ -807,13 +807,13 @@ void StatJob::slotMetaData( const KIO::MetaData &_metaData)
     storeSSLSessionFromJob(d->m_redirectionURL);
 }
 
-StatJob *KIO::stat(const KUrl& url, JobFlags flags)
+StatJob *KIO::stat(const QUrl& url, JobFlags flags)
 {
     // Assume sideIsSource. Gets are more common than puts.
     return stat( url, StatJob::SourceSide, 2, flags );
 }
 
-StatJob *KIO::mostLocalUrl(const KUrl& url, JobFlags flags)
+StatJob *KIO::mostLocalUrl(const QUrl& url, JobFlags flags)
 {
     StatJob* job = stat( url, StatJob::SourceSide, 2, flags );
     if (url.isLocalFile()) {
@@ -824,7 +824,7 @@ StatJob *KIO::mostLocalUrl(const KUrl& url, JobFlags flags)
 }
 
 #ifndef KDE_NO_DEPRECATED
-StatJob *KIO::stat(const KUrl& url, bool sideIsSource, short int details, JobFlags flags )
+StatJob *KIO::stat(const QUrl& url, bool sideIsSource, short int details, JobFlags flags )
 {
     //kDebug(7007) << "stat" << url;
     KIO_ARGS << url;
@@ -835,7 +835,7 @@ StatJob *KIO::stat(const KUrl& url, bool sideIsSource, short int details, JobFla
 }
 #endif
 
-StatJob *KIO::stat(const KUrl& url, KIO::StatJob::StatSide side, short int details, JobFlags flags )
+StatJob *KIO::stat(const QUrl& url, KIO::StatJob::StatSide side, short int details, JobFlags flags )
 {
     //kDebug(7007) << "stat" << url;
     KIO_ARGS << url;
@@ -845,7 +845,7 @@ StatJob *KIO::stat(const KUrl& url, KIO::StatJob::StatSide side, short int detai
     return job;
 }
 
-SimpleJob *KIO::http_update_cache( const KUrl& url, bool no_cache, time_t expireDate)
+SimpleJob *KIO::http_update_cache( const QUrl& url, bool no_cache, time_t expireDate)
 {
     Q_ASSERT(url.scheme() == "http" || url.scheme() == "https");
     // Send http update_cache command (2)
@@ -1241,7 +1241,7 @@ void TransferJob::setModificationTime( const QDateTime& mtime )
     addMetaData( "modified", mtime.toString( Qt::ISODate ) );
 }
 
-TransferJob *KIO::get( const KUrl& url, LoadType reload, JobFlags flags )
+TransferJob *KIO::get( const QUrl& url, LoadType reload, JobFlags flags )
 {
     // Send decoded path and encoded query
     KIO_ARGS << url;
@@ -1469,7 +1469,7 @@ static KIO::PostErrorJob* precheckHttpPost(const QUrl& url, const QByteArray& po
     return 0;
 }
 
-TransferJob *KIO::http_post( const KUrl& url, const QByteArray &postData, JobFlags flags )
+TransferJob *KIO::http_post( const QUrl& url, const QByteArray &postData, JobFlags flags )
 {
     bool redirection = false;
     KUrl _url(url);
@@ -1493,7 +1493,7 @@ TransferJob *KIO::http_post( const KUrl& url, const QByteArray &postData, JobFla
     return job;
 }
 
-TransferJob *KIO::http_post( const KUrl& url, QIODevice* ioDevice, qint64 size, JobFlags flags )
+TransferJob *KIO::http_post( const QUrl& url, QIODevice* ioDevice, qint64 size, JobFlags flags )
 {
     bool redirection = false;
     KUrl _url(url);
@@ -1523,7 +1523,7 @@ TransferJob *KIO::http_post( const KUrl& url, QIODevice* ioDevice, qint64 size, 
     return job;
 }
 
-TransferJob* KIO::http_delete(const KUrl& url, JobFlags flags)
+TransferJob* KIO::http_delete(const QUrl& url, JobFlags flags)
 {
     // Send decoded path and encoded query
     KIO_ARGS << url;
@@ -1532,7 +1532,7 @@ TransferJob* KIO::http_delete(const KUrl& url, JobFlags flags)
     return job;
 }
 
-StoredTransferJob *KIO::storedHttpPost( const QByteArray& postData, const KUrl& url, JobFlags flags )
+StoredTransferJob *KIO::storedHttpPost( const QByteArray& postData, const QUrl& url, JobFlags flags )
 {
     KUrl _url(url);
     if (_url.path().isEmpty())
@@ -1550,7 +1550,7 @@ StoredTransferJob *KIO::storedHttpPost( const QByteArray& postData, const KUrl& 
     return job;
 }
 
-StoredTransferJob *KIO::storedHttpPost( QIODevice* ioDevice, const KUrl& url, qint64 size, JobFlags flags )
+StoredTransferJob *KIO::storedHttpPost( QIODevice* ioDevice, const QUrl& url, qint64 size, JobFlags flags )
 {
     KUrl _url(url);
     if (_url.path().isEmpty())
@@ -1586,7 +1586,7 @@ void TransferJobPrivate::slotPostRedirection()
 }
 
 
-TransferJob *KIO::put( const KUrl& url, int permissions, JobFlags flags )
+TransferJob *KIO::put( const QUrl& url, int permissions, JobFlags flags )
 {
     KIO_ARGS << url << qint8( (flags & Overwrite) ? 1 : 0 ) << qint8( (flags & Resume) ? 1 : 0 ) << permissions;
     return TransferJobPrivate::newJob(url, CMD_PUT, packedArgs, QByteArray(), flags);
@@ -1652,7 +1652,7 @@ void StoredTransferJobPrivate::slotStoredDataReq( KIO::Job *, QByteArray &data )
   }
 }
 
-StoredTransferJob *KIO::storedGet( const KUrl& url, LoadType reload, JobFlags flags )
+StoredTransferJob *KIO::storedGet( const QUrl& url, LoadType reload, JobFlags flags )
 {
     // Send decoded path and encoded query
     KIO_ARGS << url;
@@ -1662,7 +1662,7 @@ StoredTransferJob *KIO::storedGet( const KUrl& url, LoadType reload, JobFlags fl
     return job;
 }
 
-StoredTransferJob *KIO::storedPut( const QByteArray& arr, const KUrl& url, int permissions,
+StoredTransferJob *KIO::storedPut( const QByteArray& arr, const QUrl& url, int permissions,
                                    JobFlags flags )
 {
     KIO_ARGS << url << qint8( (flags & Overwrite) ? 1 : 0 ) << qint8( (flags & Resume) ? 1 : 0 ) << permissions;
@@ -1742,7 +1742,7 @@ void MimetypeJob::slotFinished( )
     TransferJob::slotFinished();
 }
 
-MimetypeJob *KIO::mimetype(const KUrl& url, JobFlags flags)
+MimetypeJob *KIO::mimetype(const QUrl& url, JobFlags flags)
 {
     KIO_ARGS << url;
     return MimetypeJobPrivate::newJob(url, CMD_MIMETYPE, packedArgs, flags);
@@ -2353,19 +2353,19 @@ void FileCopyJob::slotResult( KJob *job)
        emitResult();
 }
 
-FileCopyJob *KIO::file_copy( const KUrl& src, const KUrl& dest, int permissions,
+FileCopyJob *KIO::file_copy( const QUrl& src, const QUrl& dest, int permissions,
                              JobFlags flags )
 {
     return FileCopyJobPrivate::newJob(src, dest, permissions, false, flags);
 }
 
-FileCopyJob *KIO::file_move( const KUrl& src, const KUrl& dest, int permissions,
+FileCopyJob *KIO::file_move( const QUrl& src, const QUrl& dest, int permissions,
                              JobFlags flags )
 {
     return FileCopyJobPrivate::newJob(src, dest, permissions, true, flags);
 }
 
-SimpleJob *KIO::file_delete( const KUrl& src, JobFlags flags )
+SimpleJob *KIO::file_delete( const QUrl& src, JobFlags flags )
 {
     KIO_ARGS << src << qint8(true); // isFile
     return SimpleJobPrivate::newJob(src, CMD_DEL, packedArgs, flags);
@@ -2584,12 +2584,12 @@ void ListJob::slotMetaData( const KIO::MetaData &_metaData)
     storeSSLSessionFromJob(d->m_redirectionURL);
 }
 
-ListJob *KIO::listDir( const KUrl& url, JobFlags flags, bool includeHidden )
+ListJob *KIO::listDir( const QUrl& url, JobFlags flags, bool includeHidden )
 {
     return ListJobPrivate::newJob(url, false, QString(), includeHidden, flags);
 }
 
-ListJob *KIO::listRecursive( const KUrl& url, JobFlags flags, bool includeHidden )
+ListJob *KIO::listRecursive( const QUrl& url, JobFlags flags, bool includeHidden )
 {
     return ListJobPrivate::newJob(url, true, QString(), includeHidden, flags);
 }
@@ -2854,7 +2854,7 @@ void MultiGetJob::slotMimetype( const QString &_mimetype )
   emit mimetype(d->m_currentEntry.id, _mimetype);
 }
 
-MultiGetJob *KIO::multi_get(long id, const KUrl &url, const MetaData &metaData)
+MultiGetJob *KIO::multi_get(long id, const QUrl &url, const MetaData &metaData)
 {
     MultiGetJob * job = MultiGetJobPrivate::newJob(url);
     job->get(id, url, metaData);

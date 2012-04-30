@@ -208,7 +208,7 @@ void FileJobPrivate::start(Slave *slave)
     SimpleJobPrivate::start(slave);
 }
 
-FileJob *KIO::open(const KUrl &url, QIODevice::OpenMode mode)
+FileJob *KIO::open(const QUrl &url, QIODevice::OpenMode mode)
 {
     // Send decoded path and encoded query
     KIO_ARGS << url << mode;
