@@ -87,8 +87,8 @@ public:
 private Q_SLOTS:
   void slotResult( KJob *job );
 
-  void slotCopyingDone( KIO::Job *, const KUrl &from, const KUrl &to, time_t, bool directory, bool renamed );
-  void slotCopyingLinkDone( KIO::Job *, const KUrl &from, const QString &target, const KUrl &to );
+  void slotCopyingDone( KIO::Job *, const QUrl &from, const QUrl &to, time_t, bool directory, bool renamed );
+  void slotCopyingLinkDone( KIO::Job *, const QUrl &from, const QString &target, const QUrl &to );
 
 private:
   UndoCommand m_cmd;

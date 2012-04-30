@@ -139,10 +139,10 @@ CommandRecorder::CommandRecorder(FileUndoManager::CommandType op, const KUrl::Li
 
   // TODO whitelist, instead
   if (op != FileUndoManager::Mkdir && op != FileUndoManager::Put) {
-      connect(job, SIGNAL(copyingDone(KIO::Job*,KUrl,KUrl,time_t,bool,bool)),
-              this, SLOT(slotCopyingDone(KIO::Job*,KUrl,KUrl,time_t,bool,bool)));
-      connect(job, SIGNAL(copyingLinkDone(KIO::Job*,KUrl,QString,KUrl)),
-              this, SLOT(slotCopyingLinkDone(KIO::Job*,KUrl,QString,KUrl)));
+      connect(job, SIGNAL(copyingDone(KIO::Job*,QUrl,QUrl,time_t,bool,bool)),
+              this, SLOT(slotCopyingDone(KIO::Job*,QUrl,QUrl,time_t,bool,bool)));
+      connect(job, SIGNAL(copyingLinkDone(KIO::Job*,QUrl,QString,QUrl)),
+              this, SLOT(slotCopyingLinkDone(KIO::Job*,QUrl,QString,QUrl)));
   }
 }
 
@@ -158,7 +158,7 @@ void CommandRecorder::slotResult(KJob *job)
     FileUndoManager::self()->d->addCommand(m_cmd);
 }
 
-void CommandRecorder::slotCopyingDone(KIO::Job *job, const KUrl &from, const KUrl &to, time_t mtime, bool directory, bool renamed)
+void CommandRecorder::slotCopyingDone(KIO::Job *job, const QUrl &from, const QUrl &to, time_t mtime, bool directory, bool renamed)
 {
   BasicOperation op;
   op.m_valid = true;
@@ -183,7 +183,7 @@ void CommandRecorder::slotCopyingDone(KIO::Job *job, const KUrl &from, const KUr
 }
 
 // TODO merge the signals?
-void CommandRecorder::slotCopyingLinkDone(KIO::Job *, const KUrl &from, const QString &target, const KUrl &to)
+void CommandRecorder::slotCopyingLinkDone(KIO::Job *, const QUrl &from, const QString &target, const QUrl &to)
 {
   BasicOperation op;
   op.m_valid = true;

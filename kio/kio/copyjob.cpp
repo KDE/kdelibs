@@ -100,7 +100,7 @@ enum CopyJobState {
 class KIO::CopyJobPrivate: public KIO::JobPrivate
 {
 public:
-    CopyJobPrivate(const KUrl::List& src, const KUrl& dest,
+    CopyJobPrivate(const QList<QUrl>& src, const KUrl& dest,
                    CopyJob::CopyMode mode, bool asMethod)
         : m_globalDest(dest)
         , m_globalDestinationState(DEST_NOT_STATED)
@@ -164,9 +164,9 @@ public:
     QList<CopyInfo> files;
     QList<CopyInfo> dirs;
     KUrl::List dirsToRemove;
-    KUrl::List m_srcList;
+    QList<QUrl> m_srcList;
     KUrl::List m_successSrcList; // Entries in m_srcList that have successfully been moved
-    KUrl::List::const_iterator m_currentStatSrc;
+    QList<QUrl>::const_iterator m_currentStatSrc;
     bool m_bCurrentSrcIsDir;
     bool m_bCurrentOperationIsLink;
     bool m_bSingleFileCopy;
@@ -238,7 +238,7 @@ public:
 
     Q_DECLARE_PUBLIC(CopyJob)
 
-    static inline CopyJob *newJob(const KUrl::List& src, const KUrl& dest,
+    static inline CopyJob *newJob(const QList<QUrl>& src, const KUrl& dest,
                                   CopyJob::CopyMode mode, bool asMethod, JobFlags flags)
     {
         CopyJob *job = new CopyJob(*new CopyJobPrivate(src,dest,mode,asMethod));
@@ -264,12 +264,12 @@ CopyJob::~CopyJob()
 {
 }
 
-KUrl::List CopyJob::srcUrls() const
+QList<QUrl> CopyJob::srcUrls() const
 {
     return d_func()->m_srcList;
 }
 
-KUrl CopyJob::destUrl() const
+QUrl CopyJob::destUrl() const
 {
     return d_func()->m_dest;
 }
@@ -2144,79 +2144,79 @@ void KIO::CopyJob::setWriteIntoExistingDirectories(bool overwriteAll) // #65926
     d_func()->m_bOverwriteAllDirs = overwriteAll;
 }
 
-CopyJob *KIO::copy(const KUrl& src, const KUrl& dest, JobFlags flags)
+CopyJob *KIO::copy(const QUrl& src, const QUrl& dest, JobFlags flags)
 {
     //kDebug(7007) << "src=" << src << "dest=" << dest;
-    KUrl::List srcList;
+    QList<QUrl> srcList;
     srcList.append( src );
     return CopyJobPrivate::newJob(srcList, dest, CopyJob::Copy, false, flags);
 }
 
-CopyJob *KIO::copyAs(const KUrl& src, const KUrl& dest, JobFlags flags)
+CopyJob *KIO::copyAs(const QUrl& src, const QUrl& dest, JobFlags flags)
 {
     //kDebug(7007) << "src=" << src << "dest=" << dest;
-    KUrl::List srcList;
+    QList<QUrl> srcList;
     srcList.append( src );
     return CopyJobPrivate::newJob(srcList, dest, CopyJob::Copy, true, flags);
 }
 
-CopyJob *KIO::copy( const KUrl::List& src, const KUrl& dest, JobFlags flags )
+CopyJob *KIO::copy( const QList<QUrl>& src, const QUrl& dest, JobFlags flags )
 {
     //kDebug(7007) << src << dest;
     return CopyJobPrivate::newJob(src, dest, CopyJob::Copy, false, flags);
 }
 
-CopyJob *KIO::move(const KUrl& src, const KUrl& dest, JobFlags flags)
+CopyJob *KIO::move(const QUrl& src, const QUrl& dest, JobFlags flags)
 {
     //kDebug(7007) << src << dest;
-    KUrl::List srcList;
+    QList<QUrl> srcList;
     srcList.append( src );
     return CopyJobPrivate::newJob(srcList, dest, CopyJob::Move, false, flags);
 }
 
-CopyJob *KIO::moveAs(const KUrl& src, const KUrl& dest, JobFlags flags)
+CopyJob *KIO::moveAs(const QUrl& src, const QUrl& dest, JobFlags flags)
 {
     //kDebug(7007) << src << dest;
-    KUrl::List srcList;
+    QList<QUrl> srcList;
     srcList.append( src );
     return CopyJobPrivate::newJob(srcList, dest, CopyJob::Move, true, flags);
 }
 
-CopyJob *KIO::move( const KUrl::List& src, const KUrl& dest, JobFlags flags)
+CopyJob *KIO::move( const QList<QUrl>& src, const QUrl& dest, JobFlags flags)
 {
     //kDebug(7007) << src << dest;
     return CopyJobPrivate::newJob(src, dest, CopyJob::Move, false, flags);
 }
 
-CopyJob *KIO::link(const KUrl& src, const KUrl& destDir, JobFlags flags)
+CopyJob *KIO::link(const QUrl& src, const QUrl& destDir, JobFlags flags)
 {
-    KUrl::List srcList;
+    QList<QUrl> srcList;
     srcList.append( src );
     return CopyJobPrivate::newJob(srcList, destDir, CopyJob::Link, false, flags);
 }
 
-CopyJob *KIO::link(const KUrl::List& srcList, const KUrl& destDir, JobFlags flags)
+CopyJob *KIO::link(const QList<QUrl>& srcList, const QUrl& destDir, JobFlags flags)
 {
     return CopyJobPrivate::newJob(srcList, destDir, CopyJob::Link, false, flags);
 }
 
-CopyJob *KIO::linkAs(const KUrl& src, const KUrl& destDir, JobFlags flags )
+CopyJob *KIO::linkAs(const QUrl& src, const QUrl& destDir, JobFlags flags )
 {
-    KUrl::List srcList;
+    QList<QUrl> srcList;
     srcList.append( src );
     return CopyJobPrivate::newJob(srcList, destDir, CopyJob::Link, false, flags);
 }
 
-CopyJob *KIO::trash(const KUrl& src, JobFlags flags)
+CopyJob *KIO::trash(const QUrl& src, JobFlags flags)
 {
-    KUrl::List srcList;
+    QList<QUrl> srcList;
     srcList.append( src );
-    return CopyJobPrivate::newJob(srcList, KUrl( "trash:/" ), CopyJob::Move, false, flags);
+    return CopyJobPrivate::newJob(srcList, QUrl("trash:/"), CopyJob::Move, false, flags);
 }
 
-CopyJob *KIO::trash(const KUrl::List& srcList, JobFlags flags)
+CopyJob *KIO::trash(const QList<QUrl>& srcList, JobFlags flags)
 {
-    return CopyJobPrivate::newJob(srcList, KUrl( "trash:/" ), CopyJob::Move, false, flags);
+    return CopyJobPrivate::newJob(srcList, QUrl("trash:/"), CopyJob::Move, false, flags);
 }
 
 #include "moc_copyjob.cpp"

@@ -77,7 +77,7 @@ public:
 protected Q_SLOTS:
   void slotEditFileType();
   void slotCopyFinished( KJob * );
-  void slotFileRenamed( KIO::Job *, const KUrl &, const KUrl & );
+  void slotFileRenamed(KIO::Job *, const QUrl &, const QUrl &);
   void slotDirSizeUpdate();
   void slotDirSizeFinished( KJob * );
   void slotFoundMountPoint( const QString& mp, quint64 kibSize,

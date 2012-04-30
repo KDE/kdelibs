@@ -58,12 +58,12 @@ static QString destLink() { return destDir() + "symlink"; }
 static QString srcSubDir() { return homeTmpDir() + "subdir"; }
 static QString destSubDir() { return destDir() + "subdir"; }
 
-static QList<KUrl> sourceList()
+static QList<QUrl> sourceList()
 {
-    QList<KUrl> lst;
-    lst << KUrl( srcFile() );
+    QList<QUrl> lst;
+    lst << QUrl::fromLocalFile(srcFile());
 #ifndef Q_WS_WIN
-    lst << KUrl( srcLink() );
+    lst << QUrl::fromLocalFile(srcLink());
 #endif
     return lst;
 }
@@ -210,8 +210,8 @@ void FileUndoManagerTest::testCopyFiles()
     kDebug() ;
     // Initially inspired from JobTest::copyFileToSamePartition()
     const QString destdir = destDir();
-    QList<KUrl> lst = sourceList();
-    const KUrl d( destdir );
+    QList<QUrl> lst = sourceList();
+    const QUrl d = QUrl::fromLocalFile(destdir);
     KIO::CopyJob* job = KIO::copy( lst, d, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
     FileUndoManager::self()->recordCopyJob(job);
@@ -266,8 +266,8 @@ void FileUndoManagerTest::testMoveFiles()
 {
     kDebug() ;
     const QString destdir = destDir();
-    QList<KUrl> lst = sourceList();
-    const KUrl d( destdir );
+    QList<QUrl> lst = sourceList();
+    const QUrl d = QUrl::fromLocalFile(destdir);
     KIO::CopyJob* job = KIO::move( lst, d, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
     FileUndoManager::self()->recordCopyJob(job);
@@ -309,8 +309,8 @@ void FileUndoManagerTest::testCopyFilesOverwrite()
 void FileUndoManagerTest::testCopyDirectory()
 {
     const QString destdir = destDir();
-    QList<KUrl> lst; lst << srcSubDir();
-    const KUrl d( destdir );
+    QList<QUrl> lst; lst << QUrl::fromLocalFile(srcSubDir());
+    const QUrl d = QUrl::fromLocalFile(destdir);
     KIO::CopyJob* job = KIO::copy( lst, d, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
     FileUndoManager::self()->recordCopyJob(job);
@@ -330,8 +330,8 @@ void FileUndoManagerTest::testCopyDirectory()
 void FileUndoManagerTest::testMoveDirectory()
 {
     const QString destdir = destDir();
-    QList<KUrl> lst; lst << srcSubDir();
-    const KUrl d( destdir );
+    QList<QUrl> lst; lst << QUrl::fromLocalFile(srcSubDir());
+    const QUrl d = QUrl::fromLocalFile(destdir);
     KIO::CopyJob* job = KIO::move( lst, d, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
     FileUndoManager::self()->recordCopyJob(job);
@@ -430,11 +430,11 @@ void FileUndoManagerTest::testTrashFiles()
         QSKIP_PORTING( "kio_trash not installed", SkipAll );
 
     // Trash it all at once: the file, the symlink, the subdir.
-    QList<KUrl> lst = sourceList();
-    lst.append( srcSubDir() );
+    QList<QUrl> lst = sourceList();
+    lst.append(QUrl::fromLocalFile(srcSubDir()));
     KIO::Job* job = KIO::trash( lst, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
-    FileUndoManager::self()->recordJob( FileUndoManager::Trash, lst, KUrl("trash:/"), job );
+    FileUndoManager::self()->recordJob( FileUndoManager::Trash, lst, QUrl("trash:/"), job );
 
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     QVERIFY( ok );
@@ -482,8 +482,8 @@ void FileUndoManagerTest::testModifyFileBeforeUndo()
 {
     // based on testCopyDirectory (so that we check that it works for files in subdirs too)
     const QString destdir = destDir();
-    QList<KUrl> lst; lst << srcSubDir();
-    const KUrl d( destdir );
+    QList<QUrl> lst; lst << QUrl::fromLocalFile(srcSubDir());
+    const QUrl d = QUrl::fromLocalFile(destdir);
     KIO::CopyJob* job = KIO::copy( lst, d, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
     FileUndoManager::self()->recordCopyJob(job);

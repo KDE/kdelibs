@@ -481,7 +481,7 @@ void DeleteJob::slotResult( KJob *job )
     }
 }
 
-DeleteJob *KIO::del( const KUrl& src, JobFlags flags )
+DeleteJob *KIO::del(const QUrl& src, JobFlags flags)
 {
     QList<QUrl> srcList;
     srcList.append( src );

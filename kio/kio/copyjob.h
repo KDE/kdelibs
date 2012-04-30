@@ -27,7 +27,7 @@
 
 #include <sys/types.h> // time_t
 
-#include <kurl.h>
+#include <QUrl>
 
 #include "jobclasses.h"
 
@@ -84,13 +84,13 @@ namespace KIO {
 	 * Returns the list of source URLs.
 	 * @return the list of source URLs.
 	 */
-        KUrl::List srcUrls() const;
+        QList<QUrl> srcUrls() const;
 
 	/**
 	 * Returns the destination URL.
 	 * @return the destination URL
 	 */
-        KUrl destUrl() const;
+        QUrl destUrl() const;
 
         /**
          * By default the permissions of the copied files will be those of the source files.
@@ -180,7 +180,7 @@ namespace KIO {
 	 *             being copied
 	 * @param dest the destination of the current operation
          */
-        void copying( KIO::Job *job, const KUrl& src, const KUrl& dest );
+        void copying(KIO::Job *job, const QUrl& src, const QUrl& dest);
         /**
          * The job is creating a symbolic link.
          *
@@ -192,7 +192,7 @@ namespace KIO {
 	 *             being linked
 	 * @param to the destination of the current operation
          */
-        void linking( KIO::Job *job, const QString& target, const KUrl& to );
+        void linking(KIO::Job *job, const QString& target, const QUrl& to);
         /**
          * The job is moving a file or directory.
          *
@@ -204,7 +204,7 @@ namespace KIO {
 	 *             being moved
 	 * @param to the destination of the current operation
          */
-        void moving( KIO::Job *job, const KUrl& from, const KUrl& to );
+        void moving(KIO::Job *job, const QUrl& from, const QUrl& to);
         /**
          * The job is creating the directory @p dir.
          *
@@ -213,7 +213,7 @@ namespace KIO {
 	 * @param job the job that emitted this signal
 	 * @param dir the directory that is currently being created
          */
-        void creatingDir( KIO::Job *job, const KUrl& dir );
+        void creatingDir(KIO::Job *job, const QUrl& dir);
         /**
          * The user chose to rename @p from to @p to.
          *
@@ -221,7 +221,7 @@ namespace KIO {
 	 * @param from the original name
 	 * @param to the new name
          */
-        void renamed( KIO::Job *job, const KUrl& from, const KUrl& to );
+        void renamed(KIO::Job *job, const QUrl& from, const QUrl& to);
 
         /**
          * The job emits this signal when copying or moving a file or directory successfully finished.
@@ -238,7 +238,7 @@ namespace KIO {
          * @param renamed indicates that the destination URL was created using a
          * rename operation (i.e. fast directory moving). true if is has been renamed
          */
-        void copyingDone( KIO::Job *job, const KUrl &from, const KUrl &to, time_t mtime, bool directory, bool renamed );
+        void copyingDone(KIO::Job *job, const QUrl &from, const QUrl &to, time_t mtime, bool directory, bool renamed);
         /**
          * The job is copying or moving a symbolic link, that points to target.
          * The new link is created in @p to. The existing one is/was in @p from.
@@ -248,7 +248,7 @@ namespace KIO {
 	 * @param target the target
          * @param to the destination URL
          */
-        void copyingLinkDone( KIO::Job *job, const KUrl &from, const QString& target, const KUrl& to );
+        void copyingLinkDone(KIO::Job *job, const QUrl &from, const QString& target, const QUrl& to);
     protected Q_SLOTS:
         virtual void slotResult( KJob *job );
 
@@ -283,7 +283,7 @@ namespace KIO {
      * @return the job handling the operation
      * @see copyAs()
      */
-    KIO_EXPORT CopyJob *copy( const KUrl& src, const KUrl& dest, JobFlags flags = DefaultFlags );
+    KIO_EXPORT CopyJob *copy(const QUrl& src, const QUrl& dest, JobFlags flags = DefaultFlags);
 
     /**
      * Copy a file or directory @p src into the destination @p dest,
@@ -302,7 +302,7 @@ namespace KIO {
      *
      * * @return the job handling the operation
      */
-    KIO_EXPORT CopyJob *copyAs( const KUrl& src, const KUrl& dest, JobFlags flags = DefaultFlags );
+    KIO_EXPORT CopyJob *copyAs(const QUrl& src, const QUrl& dest, JobFlags flags = DefaultFlags);
 
     /**
      * Copy a list of file/dirs @p src into a destination directory @p dest.
@@ -315,7 +315,7 @@ namespace KIO {
      * into a subdir of dest, just like "cp" does.
      * @return the job handling the operation
      */
-    KIO_EXPORT CopyJob *copy( const KUrl::List& src, const KUrl& dest, JobFlags flags = DefaultFlags );
+    KIO_EXPORT CopyJob *copy(const QList<QUrl>& src, const QUrl& dest, JobFlags flags = DefaultFlags);
 
     /**
      * Moves a file or directory @p src to the given destination @p dest.
@@ -330,7 +330,7 @@ namespace KIO {
      * @see copy()
      * @see moveAs()
      */
-    KIO_EXPORT CopyJob *move( const KUrl& src, const KUrl& dest, JobFlags flags = DefaultFlags );
+    KIO_EXPORT CopyJob *move(const QUrl& src, const QUrl& dest, JobFlags flags = DefaultFlags);
     /**
      * Moves a file or directory @p src to the given destination @p dest. Unlike move()
      * this operation will not move @p src into @p dest when @p dest exists: it will
@@ -344,7 +344,7 @@ namespace KIO {
      * @return the job handling the operation
      * @see copyAs()
      */
-    KIO_EXPORT CopyJob *moveAs( const KUrl& src, const KUrl& dest, JobFlags flags = DefaultFlags );
+    KIO_EXPORT CopyJob *moveAs(const QUrl& src, const QUrl& dest, JobFlags flags = DefaultFlags);
     /**
      * Moves a list of files or directories @p src to the given destination @p dest.
      *
@@ -357,7 +357,7 @@ namespace KIO {
      * @return the job handling the operation
      * @see copy()
      */
-    KIO_EXPORT CopyJob *move( const KUrl::List& src, const KUrl& dest, JobFlags flags = DefaultFlags );
+    KIO_EXPORT CopyJob *move(const QList<QUrl>& src, const QUrl& dest, JobFlags flags = DefaultFlags);
 
     /**
      * Create a link.
@@ -369,7 +369,7 @@ namespace KIO {
      * @param flags: link() supports HideProgressInfo only
      * @return the job handling the operation
      */
-    KIO_EXPORT CopyJob *link( const KUrl& src, const KUrl& destDir, JobFlags flags = DefaultFlags );
+    KIO_EXPORT CopyJob *link(const QUrl& src, const QUrl& destDir, JobFlags flags = DefaultFlags);
 
     /**
      * Create several links
@@ -382,7 +382,7 @@ namespace KIO {
      * @return the job handling the operation
      * @see link()
      */
-    KIO_EXPORT CopyJob *link( const KUrl::List& src, const KUrl& destDir, JobFlags flags = DefaultFlags );
+    KIO_EXPORT CopyJob *link(const QList<QUrl>& src, const QUrl& destDir, JobFlags flags = DefaultFlags);
 
     /**
      * Create a link. Unlike link() this operation will fail when the directory already
@@ -397,18 +397,18 @@ namespace KIO {
      * @see link ()
      * @see copyAs()
      */
-    KIO_EXPORT CopyJob *linkAs( const KUrl& src, const KUrl& dest, JobFlags flags = DefaultFlags );
+    KIO_EXPORT CopyJob *linkAs(const QUrl& src, const QUrl& dest, JobFlags flags = DefaultFlags);
 
     /**
      * Trash a file or directory.
      * This is currently only supported for local files and directories.
-     * Use "KUrl src; src.setPath( path );" to create a URL from a path.
+     * Use QUrl::fromLocalFile to create a URL from a local file path.
      *
      * @param src file to delete
      * @param flags: trash() supports HideProgressInfo only
      * @return the job handling the operation
      */
-    KIO_EXPORT CopyJob *trash( const KUrl& src, JobFlags flags = DefaultFlags );
+    KIO_EXPORT CopyJob *trash(const QUrl& src, JobFlags flags = DefaultFlags);
 
     /**
      * Trash a list of files or directories.
@@ -418,7 +418,7 @@ namespace KIO {
      * @param flags: trash() supports HideProgressInfo only
      * @return the job handling the operation
      */
-    KIO_EXPORT CopyJob *trash( const KUrl::List& src, JobFlags flags = DefaultFlags );
+    KIO_EXPORT CopyJob *trash(const QList<QUrl>& src, JobFlags flags = DefaultFlags);
 
 }
 

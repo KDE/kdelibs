@@ -845,7 +845,7 @@ KIO::CopyJob * KDirOperator::trash(const KFileItemList& items,
         return 0L;
     }
 
-    QList<KUrl> urls;
+    QList<QUrl> urls;
     QStringList files;
     foreach (const KFileItem &item, items) {
         const KUrl url = item.url();

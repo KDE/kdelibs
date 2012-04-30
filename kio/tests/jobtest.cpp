@@ -264,7 +264,7 @@ void JobTest::copyLocalFile( const QString& src, const QString& dest )
     // cleanup and retry with KIO::copy()
     QFile::remove( dest );
     job = KIO::copy(u, d, KIO::HideProgressInfo );
-    QSignalSpy spyCopyingDone(job, SIGNAL(copyingDone(KIO::Job*,KUrl,KUrl,time_t,bool,bool)));
+    QSignalSpy spyCopyingDone(job, SIGNAL(copyingDone(KIO::Job*,QUrl,QUrl,time_t,bool,bool)));
     job->setUiDelegate(0);
     ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( ok );
@@ -1409,7 +1409,7 @@ void JobTest::moveFileDestAlreadyExists() // #157601
     const QString existingDest = otherTmpDir() + "fileFromHome";
     createTestFile( existingDest );
 
-    QList<KUrl> urls; urls << KUrl(file1) << KUrl(file2);
+    QList<QUrl> urls; urls << QUrl::fromLocalFile(file1) << QUrl::fromLocalFile(file2);
     KIO::CopyJob* job = KIO::move(urls, otherTmpDir(), KIO::HideProgressInfo);
     job->setUiDelegate(0);
     job->setAutoSkip(true);
@@ -1468,7 +1468,7 @@ void JobTest::moveDestAlreadyExistsAutoRename(const QString& destDir, bool moveD
             createTestFile(source);
     }
 
-    QList<KUrl> urls; urls << KUrl(file1) << KUrl(file2);
+    QList<QUrl> urls; urls << QUrl::fromLocalFile(file1) << QUrl::fromLocalFile(file2);
     KIO::CopyJob* job = KIO::move(urls, destDir, KIO::HideProgressInfo);
     job->setUiDelegate(0);
     job->setAutoRename(true);

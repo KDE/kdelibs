@@ -108,7 +108,7 @@ namespace KIO {
      * @param flags: We support HideProgressInfo here
      * @return the job handling the operation
      */
-    KIO_EXPORT DeleteJob *del( const KUrl& src, JobFlags flags = DefaultFlags );
+    KIO_EXPORT DeleteJob *del( const QUrl& src, JobFlags flags = DefaultFlags );
 
     /**
      * Deletes a list of files or directories.

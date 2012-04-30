@@ -1346,8 +1346,8 @@ void KFilePropsPlugin::applyChanges()
 
             connect( job, SIGNAL(result(KJob*)),
                      SLOT(slotCopyFinished(KJob*)) );
-            connect( job, SIGNAL(renamed(KIO::Job*,KUrl,KUrl)),
-                     SLOT(slotFileRenamed(KIO::Job*,KUrl,KUrl)) );
+            connect( job, SIGNAL(renamed(KIO::Job*,QUrl,QUrl)),
+                     SLOT(slotFileRenamed(KIO::Job*,QUrl,QUrl)) );
             // wait for job
             QEventLoop eventLoop;
             connect(this, SIGNAL(leaveModality()),
@@ -1495,7 +1495,7 @@ void KFilePropsPlugin::applyIconChanges()
     }
 }
 
-void KFilePropsPlugin::slotFileRenamed( KIO::Job *, const KUrl &, const KUrl & newUrl )
+void KFilePropsPlugin::slotFileRenamed( KIO::Job *, const QUrl &, const QUrl & newUrl )
 {
     // This is called in case of an existing local file during the copy/move operation,
     // if the user chooses Rename.
