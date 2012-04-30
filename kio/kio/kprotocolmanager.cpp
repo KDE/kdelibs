@@ -123,7 +123,7 @@ class KProtocolManagerPrivate
 public:
    KProtocolManagerPrivate();
    ~KProtocolManagerPrivate();
-    bool shouldIgnoreProxyFor(const KUrl& url);
+    bool shouldIgnoreProxyFor(const QUrl& url);
 
    KSharedConfig::Ptr config;
    KSharedConfig::Ptr http_config;
@@ -153,7 +153,7 @@ KProtocolManagerPrivate::~KProtocolManagerPrivate()
 /*
  * Returns true if url is in the no proxy list.
  */
-bool KProtocolManagerPrivate::shouldIgnoreProxyFor(const KUrl& url)
+bool KProtocolManagerPrivate::shouldIgnoreProxyFor(const QUrl& url)
 {
   bool isMatch = false;
   const KProtocolManager::ProxyType type = KProtocolManager::proxyType();
@@ -391,7 +391,7 @@ QString KProtocolManager::proxyFor( const QString& protocol )
   return proxyStr;
 }
 
-QString KProtocolManager::proxyForUrl( const KUrl &url )
+QString KProtocolManager::proxyForUrl( const QUrl &url )
 {
   const QStringList proxies = proxiesForUrl(url);
 
@@ -401,7 +401,7 @@ QString KProtocolManager::proxyForUrl( const KUrl &url )
   return proxies.first();
 }
 
-static QStringList getSystemProxyFor( const KUrl& url )
+static QStringList getSystemProxyFor( const QUrl& url )
 {
   QStringList proxies;
 
@@ -410,7 +410,7 @@ static QStringList getSystemProxyFor( const KUrl& url )
   const QList<QNetworkProxy> proxyList = QNetworkProxyFactory::systemProxyForQuery(query);
   Q_FOREACH(const QNetworkProxy& proxy, proxyList)
   {
-    KUrl url;
+    QUrl url;
     const QNetworkProxy::ProxyType type = proxy.type();
     if (type == QNetworkProxy::NoProxy || type == QNetworkProxy::DefaultProxy)
     {
@@ -455,7 +455,7 @@ static QStringList getSystemProxyFor( const KUrl& url )
   return proxies;
 }
 
-QStringList KProtocolManager::proxiesForUrl( const KUrl &url )
+QStringList KProtocolManager::proxiesForUrl( const QUrl &url )
 {
   QStringList proxyList;
 
@@ -466,7 +466,7 @@ QStringList KProtocolManager::proxiesForUrl( const KUrl &url )
       case PACProxy:
       case WPADProxy:
       {
-        KUrl u (url);
+        QUrl u (url);
         const QString protocol = adjustProtocol(u.scheme());
         u.setScheme(protocol);
 
@@ -474,7 +474,7 @@ QStringList KProtocolManager::proxiesForUrl( const KUrl &url )
           QDBusReply<QStringList> reply = QDBusInterface(QL1S("org.kde.kded"),
                                                          QL1S("/modules/proxyscout"),
                                                          QL1S("org.kde.KPAC.ProxyScout"))
-                                          .call(QL1S("proxiesForUrl"), u.url());
+                                          .call(QL1S("proxiesForUrl"), u.toString());
           proxyList = reply;
         }
         break;
@@ -522,7 +522,7 @@ void KProtocolManager::badProxy( const QString &proxy )
   }
 }
 
-QString KProtocolManager::slaveProtocol(const KUrl &url, QString &proxy)
+QString KProtocolManager::slaveProtocol(const QUrl &url, QString &proxy)
 {
     QStringList proxyList;
     const QString protocol = KProtocolManager::slaveProtocol(url, proxyList);
@@ -533,7 +533,7 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QString &proxy)
 }
 
 // Generates proxy cache key from request given url.
-static void extractProxyCacheKeyFromUrl(const KUrl& u, QString* key)
+static void extractProxyCacheKeyFromUrl(const QUrl& u, QString* key)
 {
     if (!key)
         return;
@@ -545,19 +545,21 @@ static void extractProxyCacheKeyFromUrl(const KUrl& u, QString* key)
         *key += QString::number(u.port());
 }
 
-QString KProtocolManager::slaveProtocol(const KUrl &url, QStringList &proxyList)
+QString KProtocolManager::slaveProtocol(const QUrl &url, QStringList &proxyList)
 {
+#if 0
   if (url.hasSubUrl()) { // We don't want the suburl's protocol
-      const KUrl::List list = KUrl::split(url);
+      const QUrl::List list = QUrl::split(url);
       return slaveProtocol(list.last(), proxyList);
   }
+#endif
 
   proxyList.clear();
 
   // Do not perform a proxy lookup for any url classified as a ":local" url or
   // one that does not have a host component or if proxy is disabled.
   QString protocol (url.scheme());
-  if (!url.hasHost()
+  if (url.host().isEmpty()
       || KProtocolInfo::protocolClass(protocol) == QL1S(":local")
       || KProtocolManager::proxyType() == KProtocolManager::NoProxy) {
       return protocol;
@@ -582,7 +584,7 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QStringList &proxyList)
           if (proxy == QL1S("DIRECT")) {
               proxyList << proxy;
           } else {
-              KUrl u (proxy);
+              QUrl u (proxy);
               if (!u.isEmpty() && u.isValid() && !u.scheme().isEmpty()) {
                   proxyList << proxy;
               }
@@ -597,7 +599,7 @@ QString KProtocolManager::slaveProtocol(const KUrl &url, QStringList &proxyList)
       && !protocol.startsWith(QL1S("webdav"))
       && KProtocolInfo::isKnownProtocol(protocol)) {
       Q_FOREACH(const QString& proxy, proxyList) {
-          KUrl u (proxy);
+          QUrl u (proxy);
           if (u.isValid() && KProtocolInfo::isKnownProtocol(u.scheme())) {
               protocol = u.scheme();
               break;
@@ -990,7 +992,7 @@ QString KProtocolManager::proxyConfigScript()
 
 /* =========================== PROTOCOL CAPABILITIES ============== */
 
-static KProtocolInfo::Ptr findProtocol(const KUrl &url)
+static KProtocolInfo::Ptr findProtocol(const QUrl &url)
 {
    QString protocol = url.scheme();
 
@@ -1004,7 +1006,7 @@ static KProtocolInfo::Ptr findProtocol(const KUrl &url)
 }
 
 
-KProtocolInfo::Type KProtocolManager::inputType( const KUrl &url )
+KProtocolInfo::Type KProtocolManager::inputType( const QUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -1013,7 +1015,7 @@ KProtocolInfo::Type KProtocolManager::inputType( const KUrl &url )
   return prot->m_inputType;
 }
 
-KProtocolInfo::Type KProtocolManager::outputType( const KUrl &url )
+KProtocolInfo::Type KProtocolManager::outputType( const QUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -1023,7 +1025,7 @@ KProtocolInfo::Type KProtocolManager::outputType( const KUrl &url )
 }
 
 
-bool KProtocolManager::isSourceProtocol( const KUrl &url )
+bool KProtocolManager::isSourceProtocol( const QUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -1032,7 +1034,7 @@ bool KProtocolManager::isSourceProtocol( const KUrl &url )
   return prot->m_isSourceProtocol;
 }
 
-bool KProtocolManager::supportsListing( const KUrl &url )
+bool KProtocolManager::supportsListing( const QUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -1041,7 +1043,7 @@ bool KProtocolManager::supportsListing( const KUrl &url )
   return prot->m_supportsListing;
 }
 
-QStringList KProtocolManager::listing( const KUrl &url )
+QStringList KProtocolManager::listing( const QUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -1050,7 +1052,7 @@ QStringList KProtocolManager::listing( const KUrl &url )
   return prot->m_listing;
 }
 
-bool KProtocolManager::supportsReading( const KUrl &url )
+bool KProtocolManager::supportsReading( const QUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -1059,7 +1061,7 @@ bool KProtocolManager::supportsReading( const KUrl &url )
   return prot->m_supportsReading;
 }
 
-bool KProtocolManager::supportsWriting( const KUrl &url )
+bool KProtocolManager::supportsWriting( const QUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -1068,7 +1070,7 @@ bool KProtocolManager::supportsWriting( const KUrl &url )
   return prot->m_supportsWriting;
 }
 
-bool KProtocolManager::supportsMakeDir( const KUrl &url )
+bool KProtocolManager::supportsMakeDir( const QUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -1077,7 +1079,7 @@ bool KProtocolManager::supportsMakeDir( const KUrl &url )
   return prot->m_supportsMakeDir;
 }
 
-bool KProtocolManager::supportsDeleting( const KUrl &url )
+bool KProtocolManager::supportsDeleting( const QUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -1086,7 +1088,7 @@ bool KProtocolManager::supportsDeleting( const KUrl &url )
   return prot->m_supportsDeleting;
 }
 
-bool KProtocolManager::supportsLinking( const KUrl &url )
+bool KProtocolManager::supportsLinking( const QUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -1095,7 +1097,7 @@ bool KProtocolManager::supportsLinking( const KUrl &url )
   return prot->m_supportsLinking;
 }
 
-bool KProtocolManager::supportsMoving( const KUrl &url )
+bool KProtocolManager::supportsMoving( const QUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -1104,7 +1106,7 @@ bool KProtocolManager::supportsMoving( const KUrl &url )
   return prot->m_supportsMoving;
 }
 
-bool KProtocolManager::supportsOpening( const KUrl &url )
+bool KProtocolManager::supportsOpening( const QUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -1113,7 +1115,7 @@ bool KProtocolManager::supportsOpening( const KUrl &url )
   return prot->m_supportsOpening;
 }
 
-bool KProtocolManager::canCopyFromFile( const KUrl &url )
+bool KProtocolManager::canCopyFromFile( const QUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -1123,7 +1125,7 @@ bool KProtocolManager::canCopyFromFile( const KUrl &url )
 }
 
 
-bool KProtocolManager::canCopyToFile( const KUrl &url )
+bool KProtocolManager::canCopyToFile( const QUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -1132,7 +1134,7 @@ bool KProtocolManager::canCopyToFile( const KUrl &url )
   return prot->m_canCopyToFile;
 }
 
-bool KProtocolManager::canRenameFromFile( const KUrl &url )
+bool KProtocolManager::canRenameFromFile( const QUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -1142,7 +1144,7 @@ bool KProtocolManager::canRenameFromFile( const KUrl &url )
 }
 
 
-bool KProtocolManager::canRenameToFile( const KUrl &url )
+bool KProtocolManager::canRenameToFile( const QUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -1151,7 +1153,7 @@ bool KProtocolManager::canRenameToFile( const KUrl &url )
   return prot->canRenameToFile();
 }
 
-bool KProtocolManager::canDeleteRecursive( const KUrl &url )
+bool KProtocolManager::canDeleteRecursive( const QUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -1160,7 +1162,7 @@ bool KProtocolManager::canDeleteRecursive( const KUrl &url )
   return prot->canDeleteRecursive();
 }
 
-KProtocolInfo::FileNameUsedForCopying KProtocolManager::fileNameUsedForCopying( const KUrl &url )
+KProtocolInfo::FileNameUsedForCopying KProtocolManager::fileNameUsedForCopying( const QUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )
@@ -1169,7 +1171,7 @@ KProtocolInfo::FileNameUsedForCopying KProtocolManager::fileNameUsedForCopying( 
   return prot->fileNameUsedForCopying();
 }
 
-QString KProtocolManager::defaultMimetype( const KUrl &url )
+QString KProtocolManager::defaultMimetype( const QUrl &url )
 {
   KProtocolInfo::Ptr prot = findProtocol(url);
   if ( !prot )

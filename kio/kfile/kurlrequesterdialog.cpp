@@ -38,7 +38,7 @@ public:
 
     KUrlRequesterDialog *q;
 
-    void initDialog(const QString &text, const QString &url);
+    void initDialog(const QString &text, const QUrl &url);
 
     // slots
     void _k_slotClear();
@@ -48,7 +48,7 @@ public:
 };
 
 
-KUrlRequesterDialog::KUrlRequesterDialog( const QString& urlName, QWidget *parent)
+KUrlRequesterDialog::KUrlRequesterDialog( const QUrl& urlName, QWidget *parent)
     : KDialog(parent), d(new KUrlRequesterDialogPrivate(this))
 {
   setButtons( Ok | Cancel | User1 );
@@ -57,7 +57,7 @@ KUrlRequesterDialog::KUrlRequesterDialog( const QString& urlName, QWidget *paren
     d->initDialog(i18n("Location:"), urlName);
 }
 
-KUrlRequesterDialog::KUrlRequesterDialog( const QString& urlName, const QString& _text, QWidget *parent)
+KUrlRequesterDialog::KUrlRequesterDialog( const QUrl& urlName, const QString& _text, QWidget *parent)
     : KDialog(parent), d(new KUrlRequesterDialogPrivate(this))
 {
   setButtons( Ok | Cancel | User1 );
@@ -71,12 +71,12 @@ KUrlRequesterDialog::~KUrlRequesterDialog()
     delete d;
 }
 
-void KUrlRequesterDialogPrivate::initDialog(const QString &text,const QString &urlName)
+void KUrlRequesterDialogPrivate::initDialog(const QString &text,const QUrl &urlName)
 {
     q->setDefaultButton(KDialog::Ok);
     QWidget *plainPage = q->mainWidget();
-   QVBoxLayout * topLayout = new QVBoxLayout( plainPage );
-   topLayout->setMargin( 0 );
+    QVBoxLayout * topLayout = new QVBoxLayout( plainPage );
+    topLayout->setMargin( 0 );
 
     QLabel * label = new QLabel( text , plainPage );
     topLayout->addWidget( label );
@@ -119,7 +119,7 @@ QUrl KUrlRequesterDialog::selectedUrl() const
 }
 
 
-QUrl KUrlRequesterDialog::getUrl(const QString& dir, QWidget *parent,
+QUrl KUrlRequesterDialog::getUrl(const QUrl& dir, QWidget *parent,
                                  const QString& caption)
 {
     KUrlRequesterDialog dlg(dir, parent);

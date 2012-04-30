@@ -49,7 +49,7 @@ public:
      *               directory where a file has been selected.
      * @param parent The parent object of this widget.
      */
-    explicit KUrlRequesterDialog(const QString &url, QWidget *parent = 0);
+    explicit KUrlRequesterDialog(const QUrl &url, QWidget *parent = 0);
 
     /**
      * Constructs a KUrlRequesterDialog.
@@ -60,8 +60,8 @@ public:
      * @param text   Text of the label
      * @param parent The parent object of this widget.
      */
-    KUrlRequesterDialog( const QString& url, const QString& text,
-                      QWidget *parent);
+    KUrlRequesterDialog(const QUrl& url, const QString& text,
+                        QWidget *parent);
     /**
      * Destructs the dialog.
      */
@@ -79,7 +79,7 @@ public:
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The caption to use for the dialog.
      */
-    static QUrl getUrl(const QString& url = QString(),
+    static QUrl getUrl(const QUrl& url = QUrl(),
                        QWidget *parent= 0, const QString& caption = QString());
 
     /**

@@ -1182,7 +1182,7 @@ void KDirModelTest::testOverwriteFileWithDir() // #151851 c4
     connect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
              &m_eventLoop, SLOT(exitLoop()) );
 
-    KIO::Job* job = KIO::move(dir, file, KIO::HideProgressInfo);
+    KIO::Job* job = KIO::move(QUrl::fromLocalFile(dir), QUrl::fromLocalFile(file), KIO::HideProgressInfo);
     PredefinedAnswerJobUiDelegate* delegate = new PredefinedAnswerJobUiDelegate;
     delegate->m_renameResult = KIO::R_OVERWRITE;
     job->setUiDelegate(delegate);

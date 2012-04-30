@@ -326,7 +326,7 @@ void SlaveBase::dispatchLoop()
 
 void SlaveBase::connectSlave(const QString &address)
 {
-    d->appConnection.connectToRemote(address);
+    d->appConnection.connectToRemote(QUrl(address));
 
     if (!d->appConnection.inited())
     {

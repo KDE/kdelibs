@@ -339,9 +339,9 @@ void KUrlRequester::KUrlRequesterPrivate::_k_slotOpenDialog()
 
         QUrl newurl;
         if (fileDialogMode & KFile::LocalOnly)
-            newurl = KFileDialog::getExistingDirectory( openUrl, m_parent);
+            newurl = QUrl::fromLocalFile(KFileDialog::getExistingDirectory(openUrl, m_parent));
         else
-            newurl = KFileDialog::getExistingDirectoryUrl( openUrl, m_parent);
+            newurl = KFileDialog::getExistingDirectoryUrl(openUrl, m_parent);
 
         if ( newurl.isValid() )
         {
@@ -428,7 +428,7 @@ KFileDialog * KUrlRequester::fileDialog() const
 {
     if (!d->myFileDialog) {
         QWidget *p = parentWidget();
-        d->myFileDialog = new KFileDialog(QString(), d->fileDialogFilter, p);
+        d->myFileDialog = new KFileDialog(QUrl(), d->fileDialogFilter, p);
         d->myFileDialog->setMode(d->fileDialogMode);
         d->myFileDialog->setCaption(windowTitle());
         d->myFileDialog->setWindowModality(d->fileDialogModality);

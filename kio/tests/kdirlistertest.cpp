@@ -218,8 +218,8 @@ void KDirListerTest::testNewItemByCopy()
     QTest::qWait(1000); // We need a 1s timestamp difference on the dir, otherwise FAM won't notice anything.
 
     const QString fileName = "toplevelfile_copy";
-    const KUrl itemUrl(path + fileName);
-    KIO::CopyJob* job = KIO::copyAs(QString(path+"toplevelfile_3"), itemUrl, KIO::HideProgressInfo);
+    const QUrl itemUrl = QUrl::fromLocalFile(path + fileName);
+    KIO::CopyJob* job = KIO::copyAs(QUrl::fromLocalFile(path+"toplevelfile_3"), itemUrl, KIO::HideProgressInfo);
     job->exec();
 
     int numTries = 0;
@@ -244,7 +244,7 @@ void KDirListerTest::testNewItemByCopy()
 
     KFileItem itemForUrl = KDirLister::cachedItemForUrl(itemUrl);
     QVERIFY(!itemForUrl.isNull());
-    QCOMPARE(itemForUrl.url().url(), itemUrl.url());
+    QCOMPARE(itemForUrl.url().url(), itemUrl.toString());
     QCOMPARE(itemForUrl.entry().stringValue(KIO::UDSEntry::UDS_NAME), fileName);
 }
 
@@ -477,7 +477,7 @@ void KDirListerTest::testRenameItem()
     const QString path = dirPath+"toplevelfile_2";
     const QString newPath = dirPath+"toplevelfile_2.renamed.html";
 
-    KIO::SimpleJob* job = KIO::rename(path, newPath, KIO::HideProgressInfo);
+    KIO::SimpleJob* job = KIO::rename(QUrl::fromLocalFile(path), QUrl::fromLocalFile(newPath), KIO::HideProgressInfo);
     bool ok = job->exec();
     QVERIFY(ok);
 
@@ -523,7 +523,7 @@ void KDirListerTest::testRenameAndOverwrite() // has to be run after testRenameI
             this, SLOT(slotRefreshItems(QList<QPair<KFileItem,KFileItem> >)));
     const QString newPath = dirPath+"toplevelfile_2.renamed.html";
 
-    KIO::SimpleJob* job = KIO::rename(newPath, path, KIO::Overwrite | KIO::HideProgressInfo);
+    KIO::SimpleJob* job = KIO::rename(QUrl::fromLocalFile(newPath), QUrl::fromLocalFile(path), KIO::Overwrite | KIO::HideProgressInfo);
     bool ok = job->exec();
     QVERIFY(ok);
 
@@ -957,7 +957,7 @@ void KDirListerTest::testDeleteCurrentDir()
 
     m_dirLister.clearSpies();
     connect(&m_dirLister, SIGNAL(clear()), &m_eventLoop, SLOT(quit()));
-    KIO::DeleteJob* job = KIO::del(path(), KIO::HideProgressInfo);
+    KIO::DeleteJob* job = KIO::del(QUrl::fromLocalFile(path()), KIO::HideProgressInfo);
     bool ok = job->exec();
     QVERIFY(ok);
     enterLoop();

@@ -9,7 +9,7 @@ int main( int argc, char **argv )
     QApplication app(argc, argv);
     app.setQuitOnLastWindowClosed(false);
 
-    QUrl url = KUrlRequesterDialog::getUrl( "ftp://ftp.kde.org" );
+    QUrl url = KUrlRequesterDialog::getUrl(QUrl("ftp://ftp.kde.org"));
     qDebug() << "Selected url:" << url;
 
     KUrlRequester *req = new KUrlRequester();

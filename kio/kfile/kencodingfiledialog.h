@@ -78,7 +78,7 @@ public:
      *		@li Saving
      * @param parent The parent widget of this dialog
      */
-    KEncodingFileDialog (const QString& startDir = QString(),
+    KEncodingFileDialog (const QUrl& startDir = QUrl(),
                     const QString& encoding = QString(),
 		    const QString& filter = QString(),
 		    const QString& caption = QString(), KFileDialog::OperationMode type = KFileDialog::Opening,
@@ -123,7 +123,7 @@ public:
      * @param caption The name of the dialog widget.
      */
     static Result getOpenFileNameAndEncoding(const QString& encoding=QString(),
-   				   const QString& startDir= QString(),
+   				   const QUrl& startDir = QUrl(),
 				   const QString& filter= QString(),
 				   QWidget *parent= 0,
 				   const QString& caption = QString());
@@ -155,7 +155,7 @@ public:
      * @param caption The name of the dialog widget.
      */
     static Result getOpenFileNamesAndEncoding(const QString& encoding=QString(),
-					const QString& startDir= QString(),
+					const QUrl& startDir = QUrl(),
 					const QString& filter= QString(),
 					QWidget *parent = 0,
 					const QString& caption= QString());
@@ -187,7 +187,7 @@ public:
      * @param caption The name of the dialog widget.
      */
     static Result getOpenUrlAndEncoding(const QString& encoding=QString(),
-			   const QString& startDir = QString(),
+			   const QUrl& startDir = QUrl(),
 			   const QString& filter= QString(),
 			   QWidget *parent= 0,
 			   const QString& caption = QString());
@@ -222,7 +222,7 @@ public:
      * @param caption The name of the dialog widget.
      */
     static Result getOpenUrlsAndEncoding(const QString& encoding=QString(),
-				  const QString& startDir= QString(),
+				  const QUrl& startDir = QUrl(),
 				  const QString& filter= QString(),
 				  QWidget *parent = 0,
 				  const QString& caption= QString());
@@ -258,7 +258,7 @@ public:
      * @param caption The name of the dialog widget.
      */
     static Result getSaveFileNameAndEncoding(const QString& encoding=QString(),
-				   const QString& startDir=QString(),
+				   const QUrl& startDir = QUrl(),
 				   const QString& filter= QString(),
 				   QWidget *parent= 0,
 				   const QString& caption = QString());
@@ -293,7 +293,7 @@ public:
      * @param caption The name of the dialog widget.
      */
     static Result getSaveUrlAndEncoding(const QString& encoding=QString(),
-			   const QString& startDir= QString(),
+			   const QUrl& startDir= QUrl(),
 			   const QString& filter= QString(),
 			   QWidget *parent= 0,
 			   const QString& caption = QString());

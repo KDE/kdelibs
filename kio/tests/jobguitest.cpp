@@ -71,7 +71,7 @@ public Q_SLOTS:
         mimeData->setUrls(QList<QUrl>() << fileUrl);
         QApplication::clipboard()->setMimeData(mimeData);
 
-        KIO::Job* job = KIO::pasteClipboard(otherTmpDir(), static_cast<QWidget*>(0));
+        KIO::Job* job = KIO::pasteClipboard(QUrl::fromLocalFile(otherTmpDir()), static_cast<QWidget*>(0));
         job->setUiDelegate(0);
         bool ok = KIO::NetAccess::synchronousRun(job, 0);
         QVERIFY( ok );

@@ -250,7 +250,7 @@ const QDBusArgument &KIO::operator>>(const QDBusArgument &argument, AuthInfo &a)
              >> a.d->extraFields;
     argument.endStructure();
 
-    a.url = url;
+    a.url = QUrl(url);
     return argument;
 }
 

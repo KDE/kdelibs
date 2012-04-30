@@ -111,11 +111,11 @@ QString KNSBookmarkImporterImpl::findDefaultLocation(bool forSaving) const
     if (m_utf8)
     {
        if ( forSaving )
-           return KFileDialog::getSaveFileName( QString(QDir::homePath() + "/.mozilla"),
+           return KFileDialog::getSaveFileName( QUrl::fromLocalFile(QDir::homePath() + "/.mozilla"),
                                                 i18n("*.html|HTML Files (*.html)"),
                                                 QApplication::activeWindow() );
        else
-           return KFileDialog::getOpenFileName( QString(QDir::homePath() + "/.mozilla"),
+           return KFileDialog::getOpenFileName( QUrl::fromLocalFile(QDir::homePath() + "/.mozilla"),
                                                 i18n("*.html|HTML Files (*.html)"),
                                                 QApplication::activeWindow() );
     }
@@ -131,7 +131,7 @@ void KNSBookmarkExporterImpl::setUtf8(bool utf8) {
    m_utf8 = utf8;
 }
 
-void KNSBookmarkExporterImpl::write(const KBookmarkGroup &parent) 
+void KNSBookmarkExporterImpl::write(const KBookmarkGroup &parent)
 {
    if (!QFile::exists(m_fileName)) {
       QString errorMsg = QString("Could not find %1. Netscape is probably not installed. "

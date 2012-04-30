@@ -81,7 +81,7 @@ int main (int argc, char **argv)
     //     - Should NOT return a non existing filename. If a non existing filename was given to it,
     //       it should inform the user about it, so we always get an empty string or an existing
     //       filename.
-    QString getOpenFileName = KFileDialog::getOpenFileName(QString(),QString(),0,
+    QString getOpenFileName = KFileDialog::getOpenFileName(QUrl(),QString(),0,
                                                            QString("Test getOpenFileName"));
 
     if (!getOpenFileName.isEmpty()) {
@@ -96,7 +96,7 @@ int main (int argc, char **argv)
     //     - Should NOT return a non existing filename in the list. If a non existing filename was
     //       given to it, it should inform the user about it, so we always get an empty string or an
     //       existing list of filenames.
-    QStringList getOpenFileNames = KFileDialog::getOpenFileNames(QString(),QString(),0,
+    QStringList getOpenFileNames = KFileDialog::getOpenFileNames(QUrl(),QString(),0,
                                                                  QString("Test getOpenFileNames"));
     if (getOpenFileNames.count()) {
         QString str("The listed files below were asked to be opened:\n");
@@ -113,7 +113,7 @@ int main (int argc, char **argv)
     //       QString object.
     //     - From the previous point it is expectable that its behavior should be the same as
     //       getOpenFileName.
-    KUrl getOpenUrl = KFileDialog::getOpenUrl(QString(),QString(),0,
+    KUrl getOpenUrl = KFileDialog::getOpenUrl(QUrl(),QString(),0,
                                               QString("Test getOpenUrl"));
     if (getOpenUrl.isValid()) {
         KMessageBox::information(0, QString("\"%1\" file was opened").arg(getOpenUrl.url()), "Dialog for 'getOpenUrl' accepted");
@@ -126,7 +126,7 @@ int main (int argc, char **argv)
     //       of a QStringList object.
     //     - From the previous point it is expectable that its behavior should be the same as
     //       getOpenFileNames.
-    QList<QUrl> getOpenUrls = KFileDialog::getOpenUrls(QString(),QString(),0,
+    QList<QUrl> getOpenUrls = KFileDialog::getOpenUrls(QUrl(),QString(),0,
                                                       QString("Test getOpenUrls"));
     if (getOpenUrls.count()) {
         QString str("The listed files below were asked to be opened:\n");
@@ -142,7 +142,7 @@ int main (int argc, char **argv)
     //     - Should return the selected file (if any).
     //     - Should return an empty string if 'Cancel' was pressed.
     //     - Don't care about existing or non existing filenames.
-    QString getSaveFileName = KFileDialog::getSaveFileName(QString(),QString(),0,
+    QString getSaveFileName = KFileDialog::getSaveFileName(QUrl(),QString(),0,
                                                            QString("Test getSaveFileName"));
     if (!getSaveFileName.isEmpty()) {
         KMessageBox::information(0, QString("\"%1\" file was asked to be saved").arg(getSaveFileName), "Dialog for 'getSaveFileName' accepted");
@@ -175,7 +175,7 @@ int main (int argc, char **argv)
     //       QString object.
     //     - From the previous point it is expectable that its behavior should be the same as
     //       getSaveFileName.
-    KUrl getSaveUrl = KFileDialog::getSaveUrl(QString(),QString(),0,
+    KUrl getSaveUrl = KFileDialog::getSaveUrl(QUrl(),QString(),0,
                                               QString("Test getSaveUrl"));
     if (getSaveUrl.isValid()) {
         KMessageBox::information(0, QString("\"%1\" file was asked to be saved").arg(getSaveUrl.url()), "Dialog for 'getSaveUrl' accepted");
@@ -205,7 +205,7 @@ int main (int argc, char **argv)
 
     // Test for: getImageOpenUrl.
     //     - Is the same as getOpenUrl but showing inline previews.
-    KUrl getImageOpenUrl = KFileDialog::getImageOpenUrl(QString(),0,
+    KUrl getImageOpenUrl = KFileDialog::getImageOpenUrl(QUrl(),0,
                                                         QString("Test getImageOpenUrl"));
     if (getImageOpenUrl.isValid()) {
         KMessageBox::information(0, QString("\"%1\" file was asked to be saved").arg(getImageOpenUrl.url()), "Dialog for 'getImageOpenUrl' accepted");

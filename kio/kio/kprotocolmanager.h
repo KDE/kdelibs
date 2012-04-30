@@ -259,7 +259,7 @@ public:
    * @param url the URL whose proxy info is needed
    * @returns the proxy server address if one is available, otherwise a QString().
    */
-  static QString proxyForUrl( const KUrl& url );
+  static QString proxyForUrl( const QUrl& url );
 
   /**
    * Returns all the possible proxy server addresses for @p url.
@@ -277,7 +277,7 @@ public:
    * @param url the URL whose proxy info is needed
    * @returns the proxy server address if one is available, otherwise an empty list .
    */
-  static QStringList proxiesForUrl( const KUrl& url );
+  static QStringList proxiesForUrl( const QUrl& url );
 
   /**
    * Marks this proxy as bad (down). It will not be used for the
@@ -397,7 +397,7 @@ public:
    * @return true if the protocol support listing
    * @see listing()
    */
-  static bool supportsListing( const KUrl &url );
+  static bool supportsListing( const QUrl &url );
 
   /**
    * Returns whether the protocol can retrieve data from URLs.
@@ -408,7 +408,7 @@ public:
    * @param url the url to check
    * @return true if it is possible to read from the URL
    */
-  static bool supportsReading( const KUrl &url );
+  static bool supportsReading( const QUrl &url );
 
   /**
    * Returns whether the protocol can store data to URLs.
@@ -419,7 +419,7 @@ public:
    * @param url the url to check
    * @return true if the protocol supports writing
    */
-  static bool supportsWriting( const KUrl &url );
+  static bool supportsWriting( const QUrl &url );
 
   /**
    * Returns whether the protocol can create directories/folders.
@@ -430,7 +430,7 @@ public:
    * @param url the url to check
    * @return true if the protocol can create directories
    */
-  static bool supportsMakeDir( const KUrl &url );
+  static bool supportsMakeDir( const QUrl &url );
 
   /**
    * Returns whether the protocol can delete files/objects.
@@ -441,7 +441,7 @@ public:
    * @param url the url to check
    * @return true if the protocol supports deleting
    */
-  static bool supportsDeleting( const KUrl &url );
+  static bool supportsDeleting( const QUrl &url );
 
   /**
    * Returns whether the protocol can create links between files/objects.
@@ -452,7 +452,7 @@ public:
    * @param url the url to check
    * @return true if the protocol supports linking
    */
-  static bool supportsLinking( const KUrl &url );
+  static bool supportsLinking( const QUrl &url );
 
   /**
    * Returns whether the protocol can move files/objects between different
@@ -464,10 +464,10 @@ public:
    * @param url the url to check
    * @return true if the protocol supports moving
    */
-  static bool supportsMoving( const KUrl &url );
+  static bool supportsMoving( const QUrl &url );
 
   /**
-   * Returns whether the protocol can be opened using KIO::open(const KUrl&).
+   * Returns whether the protocol can be opened using KIO::open(const QUrl&).
    *
    * This corresponds to the "opening=" field in the protocol description file.
    * Valid values for this field are "true" or "false" (default).
@@ -475,7 +475,7 @@ public:
    * @param url the url to check
    * @return true if the protocol supports opening
    */
-  static bool supportsOpening( const KUrl &url );
+  static bool supportsOpening( const QUrl &url );
 
   /**
    * Returns whether the protocol can copy files/objects directly from the
@@ -489,7 +489,7 @@ public:
    * @param url the url to check
    * @return true if the protocol can copy files from the local file system
    */
-  static bool canCopyFromFile( const KUrl &url );
+  static bool canCopyFromFile( const QUrl &url );
 
   /**
    * Returns whether the protocol can copy files/objects directly to the
@@ -503,7 +503,7 @@ public:
    * @param url the url to check
    * @return true if the protocol can copy files to the local file system
    */
-  static bool canCopyToFile( const KUrl &url );
+  static bool canCopyToFile( const QUrl &url );
 
   /**
    * Returns whether the protocol can rename (i.e. move fast) files/objects
@@ -517,7 +517,7 @@ public:
    * @param url the url to check
    * @return true if the protocol can rename/move files from the local file system
    */
-  static bool canRenameFromFile( const KUrl &url );
+  static bool canRenameFromFile( const QUrl &url );
 
   /**
    * Returns whether the protocol can rename (i.e. move fast) files/objects
@@ -531,7 +531,7 @@ public:
    * @param url the url to check
    * @return true if the protocol can rename files to the local file system
    */
-  static bool canRenameToFile( const KUrl &url );
+  static bool canRenameToFile( const QUrl &url );
 
   /**
    * Returns whether the protocol can recursively delete directories by itself.
@@ -544,7 +544,7 @@ public:
    * @param url the url to check
    * @return true if the protocol can delete non-empty directories by itself.
    */
-  static bool canDeleteRecursive( const KUrl &url );
+  static bool canDeleteRecursive( const QUrl &url );
 
   /**
    * This setting defines the strategy to use for generating a filename, when
@@ -561,7 +561,7 @@ public:
    * @param url the url to check
    * @return how to generate the filename in the destination directory when copying/moving
    */
-  static KProtocolInfo::FileNameUsedForCopying fileNameUsedForCopying( const KUrl &url );
+  static KProtocolInfo::FileNameUsedForCopying fileNameUsedForCopying( const QUrl &url );
 
   /**
    * Returns default mimetype for this URL based on the protocol.
@@ -571,7 +571,7 @@ public:
    * @param url the url to check
    * @return the default mime type of the protocol, or null if unknown
    */
-  static QString defaultMimetype( const KUrl& url );
+  static QString defaultMimetype( const QUrl& url );
 
   /**
    * Returns whether the protocol should be treated as a filesystem
@@ -583,7 +583,7 @@ public:
    * @param url the url to check
    * @return the input type of the given @p url
    */
-  static KProtocolInfo::Type inputType( const KUrl &url );
+  static KProtocolInfo::Type inputType( const QUrl &url );
 
   /**
    * Returns whether the protocol should be treated as a filesystem
@@ -595,7 +595,7 @@ public:
    * @param url the url to check
    * @return the output type of the given @p url
    */
-  static KProtocolInfo::Type outputType( const KUrl &url );
+  static KProtocolInfo::Type outputType( const QUrl &url );
 
   /**
    * Returns the list of fields this protocol returns when listing
@@ -609,7 +609,7 @@ public:
    * @param url the url to check
    * @return a list of field names
    */
-  static QStringList listing( const KUrl &url );
+  static QStringList listing( const QUrl &url );
 
 
   /**
@@ -625,7 +625,7 @@ public:
    * @return true if the protocol is a source of data (e.g. http), false if the
    *         protocol is a filter (e.g. gzip)
    */
-  static bool isSourceProtocol( const KUrl &url );
+  static bool isSourceProtocol( const QUrl &url );
 
   /**
    * Returns which protocol handles this mimetype, if it's an archive mimetype.
@@ -659,14 +659,14 @@ public:
    * @param proxy the URL of the proxy to use
    * @return the slave protocol (e.g. 'http'), can be null if unknown
    */
-  static QString slaveProtocol(const KUrl &url, QString &proxy);
+  static QString slaveProtocol(const QUrl &url, QString &proxy);
 
   /**
    * Overloaded function that returns a list of all available proxy servers.
    *
    * @since 4.7
    */
-  static QString slaveProtocol(const KUrl &url, QStringList &proxy);
+  static QString slaveProtocol(const QUrl &url, QStringList &proxy);
 
   /**
    * Return Accept-Languages header built up according to user's desktop

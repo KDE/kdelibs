@@ -1320,7 +1320,7 @@ void JobTest::rmdirEmpty()
     const QString dir = homeTmpDir() + "dir";
     QDir().mkdir(dir);
     QVERIFY(QFile::exists(dir));
-    KIO::Job* job = KIO::rmdir(dir);
+    KIO::Job* job = KIO::rmdir(QUrl::fromLocalFile(dir));
     QVERIFY(job->exec());
     QVERIFY(!QFile::exists(dir));
 }
@@ -1330,7 +1330,7 @@ void JobTest::rmdirNotEmpty()
     const QString dir = homeTmpDir() + "dir";
     createTestDirectory(dir);
     createTestDirectory(dir + "/subdir");
-    KIO::Job* job = KIO::rmdir(dir);
+    KIO::Job* job = KIO::rmdir(QUrl::fromLocalFile(dir));
     QVERIFY(!job->exec());
     QVERIFY(QFile::exists(dir));
 }
@@ -1340,7 +1340,7 @@ void JobTest::stat()
 #if 1
     const QString filePath = homeTmpDir() + "fileFromHome";
     createTestFile( filePath );
-    KIO::StatJob* job = KIO::stat(filePath, KIO::HideProgressInfo);
+    KIO::StatJob* job = KIO::stat(QUrl::fromLocalFile(filePath), KIO::HideProgressInfo);
     QVERIFY(job);
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY(ok);
@@ -1367,7 +1367,7 @@ void JobTest::mostLocalUrl()
 {
     const QString filePath = homeTmpDir() + "fileFromHome";
     createTestFile( filePath );
-    KIO::StatJob* job = KIO::mostLocalUrl(filePath, KIO::HideProgressInfo);
+    KIO::StatJob* job = KIO::mostLocalUrl(QUrl::fromLocalFile(filePath), KIO::HideProgressInfo);
     QVERIFY(job);
     bool ok = job->exec();
     QVERIFY(ok);
@@ -1379,7 +1379,7 @@ void JobTest::mimeType()
 #if 1
     const QString filePath = homeTmpDir() + "fileFromHome";
     createTestFile( filePath );
-    KIO::MimetypeJob* job = KIO::mimetype(filePath, KIO::HideProgressInfo);
+    KIO::MimetypeJob* job = KIO::mimetype(QUrl::fromLocalFile(filePath), KIO::HideProgressInfo);
     QVERIFY(job);
     QSignalSpy spyMimeType(job, SIGNAL(mimetype(KIO::Job*,QString)));
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
@@ -1410,7 +1410,7 @@ void JobTest::moveFileDestAlreadyExists() // #157601
     createTestFile( existingDest );
 
     QList<QUrl> urls; urls << QUrl::fromLocalFile(file1) << QUrl::fromLocalFile(file2);
-    KIO::CopyJob* job = KIO::move(urls, otherTmpDir(), KIO::HideProgressInfo);
+    KIO::CopyJob* job = KIO::move(urls, QUrl::fromLocalFile(otherTmpDir()), KIO::HideProgressInfo);
     job->setUiDelegate(0);
     job->setAutoSkip(true);
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
@@ -1446,7 +1446,7 @@ void JobTest::moveDestAlreadyExistsAutoRename()
 
     if (samePartition) {
         // cleanup
-        KIO::Job* job = KIO::del(dir, KIO::HideProgressInfo);
+        KIO::Job* job = KIO::del(QUrl::fromLocalFile(dir), KIO::HideProgressInfo);
         QVERIFY(job->exec());
         QVERIFY(!QFile::exists(dir));
     }
@@ -1469,7 +1469,7 @@ void JobTest::moveDestAlreadyExistsAutoRename(const QString& destDir, bool moveD
     }
 
     QList<QUrl> urls; urls << QUrl::fromLocalFile(file1) << QUrl::fromLocalFile(file2);
-    KIO::CopyJob* job = KIO::move(urls, destDir, KIO::HideProgressInfo);
+    KIO::CopyJob* job = KIO::move(urls, QUrl::fromLocalFile(destDir), KIO::HideProgressInfo);
     job->setUiDelegate(0);
     job->setAutoRename(true);
 
