@@ -76,6 +76,7 @@ install(TARGETS kauth EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 install(FILES
     kauthaction.h
     kauthactionreply.h
+    kauthexecutejob.h
     kauthhelpersupport.h
     kauth.h
     ${CMAKE_CURRENT_BINARY_DIR}/kauth_export.h
