@@ -49,7 +49,7 @@ namespace KIO {
      *
      * Example:
      * \code
-     *    TransferJob *job = KIO::get(KUrl("http://www.kde.org"));
+     *    TransferJob *job = KIO::get(QUrl("http://www.kde.org"));
      * \endcode
      *
      *
@@ -62,7 +62,7 @@ namespace KIO {
      *
      * Example:
      * \code
-     *    TransferJob *job = KIO::get(KUrl("http://www.kde.org"));
+     *    TransferJob *job = KIO::get(QUrl("http://www.kde.org"));
      *    KIO::Scheduler::setJobPriority(job, 1);
      * \endcode
      *
@@ -79,15 +79,15 @@ namespace KIO {
      * Example:
      * \code
      *    Slave *slave = KIO::Scheduler::getConnectedSlave(
-     *            KUrl("pop3://bastian:password@mail.kde.org"));
+     *            QUrl("pop3://bastian:password@mail.kde.org"));
      *    TransferJob *job1 = KIO::get(
-     *            KUrl("pop3://bastian:password@mail.kde.org/msg1"));
+     *            QUrl("pop3://bastian:password@mail.kde.org/msg1"));
      *    KIO::Scheduler::assignJobToSlave(slave, job1);
      *    TransferJob *job2 = KIO::get(
-     *            KUrl("pop3://bastian:password@mail.kde.org/msg2"));
+     *            QUrl("pop3://bastian:password@mail.kde.org/msg2"));
      *    KIO::Scheduler::assignJobToSlave(slave, job2);
      *    TransferJob *job3 = KIO::get(
-     *            KUrl("pop3://bastian:password@mail.kde.org/msg3"));
+     *            QUrl("pop3://bastian:password@mail.kde.org/msg3"));
      *    KIO::Scheduler::assignJobToSlave(slave, job3);
      *
      *    // ... Wait for jobs to finish...
@@ -163,7 +163,7 @@ namespace KIO {
          * @param job the job that should be stopped
          * @param url the URL that is handled by the @p url
          */
-        static void putSlaveOnHold(KIO::SimpleJob *job, const KUrl &url);
+        static void putSlaveOnHold(KIO::SimpleJob *job, const QUrl &url);
 
         /**
          * Removes any slave that might have been put on hold. If a slave
@@ -189,7 +189,7 @@ namespace KIO {
          * @see assignJobToSlave()
          * @see disconnectSlave()
          */
-        static KIO::Slave *getConnectedSlave(const KUrl &url,
+        static KIO::Slave *getConnectedSlave(const QUrl &url,
                 const KIO::MetaData &config = MetaData() );
 
         /**
@@ -271,7 +271,7 @@ namespace KIO {
          *
          * @since 4.7
          */
-        static bool isSlaveOnHoldFor(const KUrl& url);
+        static bool isSlaveOnHoldFor(const QUrl& url);
 
         /**
          * Updates the internal metadata from job.

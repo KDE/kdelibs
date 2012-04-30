@@ -60,7 +60,7 @@ static inline void startJob(SimpleJob *job, Slave *slave)
 
 // here be uglies
 // forward declaration to break cross-dependency of SlaveKeeper and SchedulerPrivate
-static void setupSlave(KIO::Slave *slave, const KUrl &url, const QString &protocol,
+static void setupSlave(KIO::Slave *slave, const QUrl &url, const QString &protocol,
                        const QStringList &proxyList, bool newSlave, const KIO::MetaData *config = 0);
 // same reason as above
 static Scheduler *scheduler();
@@ -97,7 +97,7 @@ Slave *SlaveKeeper::takeSlaveForJob(SimpleJob *job)
         return slave;
     }
 
-    KUrl url = SimpleJobPrivate::get(job)->m_url;
+    QUrl url = SimpleJobPrivate::get(job)->m_url;
     // TODO take port, username and password into account
     QMultiHash<QString, Slave *>::Iterator it = m_idleSlaves.find(url.host());
     if (it == m_idleSlaves.end()) {
@@ -334,18 +334,18 @@ void ConnectedSlaveQueue::startRunnableJobs()
         Q_ASSERT(!jobs.runningJob);
         jobs.runningJob = job;
 
-        const KUrl url = job->url();
+        const QUrl url = job->url();
         // no port is -1 in QUrl, but in kde3 we used 0 and the kioslaves assume that.
         const int port = url.port() == -1 ? 0 : url.port();
 
         if (slave->host() == "<reset>") {
-            MetaData configData = SlaveConfig::self()->configData(url.protocol(), url.host());
+            MetaData configData = SlaveConfig::self()->configData(url.scheme(), url.host());
             slave->setConfig(configData);
-            slave->setProtocol(url.protocol());
-            slave->setHost(url.host(), port, url.user(), url.pass());
+            slave->setProtocol(url.scheme());
+            slave->setHost(url.host(), port, url.userName(), url.password());
         }
 
-        Q_ASSERT(slave->protocol() == url.protocol());
+        Q_ASSERT(slave->protocol() == url.scheme());
         Q_ASSERT(slave->host() == url.host());
         Q_ASSERT(slave->port() == port);
         startJob(job, slave);
@@ -528,7 +528,7 @@ void ProtoQueue::removeJob(SimpleJob *job)
     ensureNoDuplicates(&m_queuesBySerial);
 }
 
-Slave *ProtoQueue::createSlave(const QString &protocol, SimpleJob *job, const KUrl &url)
+Slave *ProtoQueue::createSlave(const QString &protocol, SimpleJob *job, const QUrl &url)
 {
     int error;
     QString errortext;
@@ -674,7 +674,7 @@ public:
     Scheduler *q;
 
     Slave *m_slaveOnHold;
-    KUrl m_urlOnHold;
+    QUrl m_urlOnHold;
     bool m_checkOnHold;
     bool m_ignoreConfigReparse;
 
@@ -688,20 +688,20 @@ public:
     void setJobPriority(SimpleJob *job, int priority);
     void cancelJob(SimpleJob *job);
     void jobFinished(KIO::SimpleJob *job, KIO::Slave *slave);
-    void putSlaveOnHold(KIO::SimpleJob *job, const KUrl &url);
+    void putSlaveOnHold(KIO::SimpleJob *job, const QUrl &url);
     void removeSlaveOnHold();
-    Slave *getConnectedSlave(const KUrl &url, const KIO::MetaData &metaData);
+    Slave *getConnectedSlave(const QUrl &url, const KIO::MetaData &metaData);
     bool assignJobToSlave(KIO::Slave *slave, KIO::SimpleJob *job);
     bool disconnectSlave(KIO::Slave *slave);
     void checkSlaveOnHold(bool b);
     void publishSlaveOnHold();
     Slave *heldSlaveForJob(KIO::SimpleJob *job);
-    bool isSlaveOnHoldFor(const KUrl& url);
+    bool isSlaveOnHoldFor(const QUrl& url);
     void registerWindow(QWidget *wid);
     void updateInternalMetaData(SimpleJob* job);
 
-    MetaData metaDataFor(const QString &protocol, const QStringList &proxyList, const KUrl &url);
-    void setupSlave(KIO::Slave *slave, const KUrl &url, const QString &protocol,
+    MetaData metaDataFor(const QString &protocol, const QStringList &proxyList, const QUrl &url);
+    void setupSlave(KIO::Slave *slave, const QUrl &url, const QString &protocol,
                     const QStringList &proxyList, bool newSlave, const KIO::MetaData *config = 0);
 
     void slotSlaveDied(KIO::Slave *slave);
@@ -815,7 +815,7 @@ void Scheduler::jobFinished(KIO::SimpleJob *job, KIO::Slave *slave)
     schedulerPrivate()->jobFinished(job, slave);
 }
 
-void Scheduler::putSlaveOnHold(KIO::SimpleJob *job, const KUrl &url)
+void Scheduler::putSlaveOnHold(KIO::SimpleJob *job, const QUrl &url)
 {
     schedulerPrivate()->putSlaveOnHold(job, url);
 }
@@ -830,7 +830,7 @@ void Scheduler::publishSlaveOnHold()
     schedulerPrivate()->publishSlaveOnHold();
 }
 
-bool Scheduler::isSlaveOnHoldFor(const KUrl& url)
+bool Scheduler::isSlaveOnHoldFor(const QUrl& url)
 {
     return schedulerPrivate()->isSlaveOnHoldFor(url);
 }
@@ -840,7 +840,7 @@ void Scheduler::updateInternalMetaData(SimpleJob* job)
     schedulerPrivate()->updateInternalMetaData(job);
 }
 
-KIO::Slave *Scheduler::getConnectedSlave(const KUrl &url,
+KIO::Slave *Scheduler::getConnectedSlave(const QUrl &url,
         const KIO::MetaData &config )
 {
     return schedulerPrivate()->getConnectedSlave(url, config);
@@ -1053,13 +1053,13 @@ void SchedulerPrivate::jobFinished(SimpleJob *job, Slave *slave)
 }
 
 // static
-void setupSlave(KIO::Slave *slave, const KUrl &url, const QString &protocol,
+void setupSlave(KIO::Slave *slave, const QUrl &url, const QString &protocol,
                 const QStringList &proxyList , bool newSlave, const KIO::MetaData *config)
 {
     schedulerPrivate()->setupSlave(slave, url, protocol, proxyList, newSlave, config);
 }
 
-MetaData SchedulerPrivate::metaDataFor(const QString &protocol, const QStringList &proxyList, const KUrl &url)
+MetaData SchedulerPrivate::metaDataFor(const QString &protocol, const QStringList &proxyList, const QUrl &url)
 {
     const QString host = url.host();
     MetaData configData = SlaveConfig::self()->configData(protocol, host);
@@ -1076,7 +1076,7 @@ MetaData SchedulerPrivate::metaDataFor(const QString &protocol, const QStringLis
          configData.value("EnableAutoLogin").compare("true", Qt::CaseInsensitive) == 0 )
     {
         NetRC::AutoLogin l;
-        l.login = url.user();
+        l.login = url.userName();
         bool usern = (protocol == "ftp");
         if ( NetRC::self()->lookup( url, l, usern) )
         {
@@ -1096,15 +1096,15 @@ MetaData SchedulerPrivate::metaDataFor(const QString &protocol, const QStringLis
     return configData;
 }
 
-void SchedulerPrivate::setupSlave(KIO::Slave *slave, const KUrl &url, const QString &protocol,
+void SchedulerPrivate::setupSlave(KIO::Slave *slave, const QUrl &url, const QString &protocol,
                                   const QStringList &proxyList, bool newSlave, const KIO::MetaData *config)
 {
     int port = url.port();
     if ( port == -1 ) // no port is -1 in QUrl, but in kde3 we used 0 and the kioslaves assume that.
         port = 0;
     const QString host = url.host();
-    const QString user = url.user();
-    const QString passwd = url.pass();
+    const QString user = url.userName();
+    const QString passwd = url.password();
 
     if (newSlave || slave->host() != host || slave->port() != port ||
         slave->user() != user || slave->passwd() != passwd) {
@@ -1114,7 +1114,7 @@ void SchedulerPrivate::setupSlave(KIO::Slave *slave, const KUrl &url, const QStr
            configData += *config;
 
         slave->setConfig(configData);
-        slave->setProtocol(url.protocol());
+        slave->setProtocol(url.scheme());
         slave->setHost(host, port, user, passwd);
     }
 }
@@ -1145,13 +1145,13 @@ void SchedulerPrivate::slotSlaveDied(KIO::Slave *slave)
     slave->deref(); // Delete slave
 }
 
-void SchedulerPrivate::putSlaveOnHold(KIO::SimpleJob *job, const KUrl &url)
+void SchedulerPrivate::putSlaveOnHold(KIO::SimpleJob *job, const QUrl &url)
 {
     Slave *slave = jobSlave(job);
     kDebug(7006) << job << url << slave;
     slave->disconnect(job);
     // prevent the fake death of the slave from trying to kill the job again;
-    // cf. Slave::hold(const KUrl &url) called in SchedulerPrivate::publishSlaveOnHold().
+    // cf. Slave::hold(const QUrl &url) called in SchedulerPrivate::publishSlaveOnHold().
     slave->setJob(0);
     SimpleJobPrivate::get(job)->m_slave = 0;
 
@@ -1173,7 +1173,7 @@ void SchedulerPrivate::publishSlaveOnHold()
     emit q->slaveOnHoldListChanged();
 }
 
-bool SchedulerPrivate::isSlaveOnHoldFor(const KUrl& url)
+bool SchedulerPrivate::isSlaveOnHoldFor(const QUrl& url)
 {
     if (url.isValid() && m_urlOnHold.isValid() && url == m_urlOnHold)
         return true;
@@ -1233,7 +1233,7 @@ void SchedulerPrivate::removeSlaveOnHold()
     m_urlOnHold.clear();
 }
 
-Slave *SchedulerPrivate::getConnectedSlave(const KUrl &url, const KIO::MetaData &config)
+Slave *SchedulerPrivate::getConnectedSlave(const QUrl &url, const KIO::MetaData &config)
 {
     QStringList proxyList;
     const QString protocol = KProtocolManager::slaveProtocol(url, proxyList);
@@ -1366,15 +1366,15 @@ void SchedulerPrivate::updateInternalMetaData(SimpleJob* job)
     KIO::SimpleJobPrivate *const jobPriv = SimpleJobPrivate::get(job);
     // Preserve all internal meta-data so they can be sent back to the
     // ioslaves as needed...
-    const KUrl jobUrl = job->url();
+    const QUrl jobUrl = job->url();
     kDebug(7006) << job << jobPriv->m_internalMetaData;
     QMapIterator<QString, QString> it (jobPriv->m_internalMetaData);
     while (it.hasNext()) {
         it.next();
         if (it.key().startsWith(QLatin1String("{internal~currenthost}"), Qt::CaseInsensitive)) {
-            SlaveConfig::self()->setConfigData(jobUrl.protocol(), jobUrl.host(), it.key().mid(22), it.value());
+            SlaveConfig::self()->setConfigData(jobUrl.scheme(), jobUrl.host(), it.key().mid(22), it.value());
         } else if (it.key().startsWith(QLatin1String("{internal~allhosts}"), Qt::CaseInsensitive)) {
-            SlaveConfig::self()->setConfigData(jobUrl.protocol(), QString(), it.key().mid(19), it.value());
+            SlaveConfig::self()->setConfigData(jobUrl.scheme(), QString(), it.key().mid(19), it.value());
         }
     }
 }

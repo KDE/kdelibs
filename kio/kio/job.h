@@ -256,18 +256,6 @@ namespace KIO {
     KIO_EXPORT TransferJob *get( const QUrl& url, LoadType reload = NoReload, JobFlags flags = DefaultFlags );
 
     /**
-     * Open ( random access I/O )
-     *
-     * The file-job emits open() when opened
-     * @param url the URL of the file
-     * @param mode the access privileges: see \ref OpenMode
-     *
-     * @return The file-handling job. It will never return 0. Errors are handled asynchronously
-     * (emitted as signals).
-     */
-    KIO_EXPORT FileJob *open(const QUrl &url, QIODevice::OpenMode mode);
-
-    /**
      * Put (a.k.a. write)
      *
      * @param url Where to write data.

@@ -119,39 +119,47 @@ bool Job::removeSubjob( KJob *jobBase )
     return KCompositeJob::removeSubjob( jobBase );
 }
 
-void JobPrivate::emitMoving(KIO::Job * job, const KUrl &src, const KUrl &dest)
+// Porting helpers. Qt 5: remove
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define pathOrUrl() toString()
+#define toDisplayString toString
+#else
+#define pathOrUrl() toDisplayString(QUrl::PreferLocalFile)
+#endif
+
+void JobPrivate::emitMoving(KIO::Job * job, const QUrl &src, const QUrl &dest)
 {
     emit job->description(job, i18nc("@title job","Moving"),
                           qMakePair(i18nc("The source of a file operation", "Source"), src.pathOrUrl()),
                           qMakePair(i18nc("The destination of a file operation", "Destination"), dest.pathOrUrl()));
 }
 
-void JobPrivate::emitCopying(KIO::Job * job, const KUrl &src, const KUrl &dest)
+void JobPrivate::emitCopying(KIO::Job * job, const QUrl &src, const QUrl &dest)
 {
     emit job->description(job, i18nc("@title job","Copying"),
                           qMakePair(i18nc("The source of a file operation", "Source"), src.pathOrUrl()),
                           qMakePair(i18nc("The destination of a file operation", "Destination"), dest.pathOrUrl()));
 }
 
-void JobPrivate::emitCreatingDir(KIO::Job * job, const KUrl &dir)
+void JobPrivate::emitCreatingDir(KIO::Job * job, const QUrl &dir)
 {
     emit job->description(job, i18nc("@title job","Creating directory"),
                           qMakePair(i18n("Directory"), dir.pathOrUrl()));
 }
 
-void JobPrivate::emitDeleting(KIO::Job *job, const KUrl &url)
+void JobPrivate::emitDeleting(KIO::Job *job, const QUrl &url)
 {
     emit job->description(job, i18nc("@title job","Deleting"),
                           qMakePair(i18n("File"), url.pathOrUrl()));
 }
 
-void JobPrivate::emitStating(KIO::Job *job, const KUrl &url)
+void JobPrivate::emitStating(KIO::Job *job, const QUrl &url)
 {
     emit job->description(job, i18nc("@title job","Examining"),
                           qMakePair(i18n("File"), url.pathOrUrl()));
 }
 
-void JobPrivate::emitTransferring(KIO::Job *job, const KUrl &url)
+void JobPrivate::emitTransferring(KIO::Job *job, const QUrl &url)
 {
     emit job->description(job, i18nc("@title job","Transferring"),
                           qMakePair(i18nc("The source of a file operation", "Source"), url.pathOrUrl()));
@@ -299,7 +307,7 @@ void SimpleJobPrivate::simpleJobInit()
     if (!m_url.isValid())
     {
         q->setError( ERR_MALFORMED_URL );
-        q->setErrorText( m_url.url() );
+        q->setErrorText(m_url.toString());
         QTimer::singleShot(0, q, SLOT(slotFinished()) );
         return;
     }
@@ -909,7 +917,7 @@ void TransferJob::slotRedirection(const QUrl &url)
     {
        kDebug(7007) << "CYCLIC REDIRECTION!";
        setError( ERR_CYCLIC_LINK );
-       setErrorText(d->m_url.prettyUrl());
+       setErrorText(d->m_url.toDisplayString());
     }
     else
     {
@@ -2610,7 +2618,7 @@ void ListJobPrivate::start(Slave *slave)
         !(m_extraFlags & EF_ListJobUnrestricted))
     {
         q->setError( ERR_ACCESS_DENIED );
-        q->setErrorText( m_url.url() );
+        q->setErrorText( m_url.toDisplayString() );
         QTimer::singleShot(0, q, SLOT(slotFinished()) );
         return;
     }
@@ -2705,7 +2713,7 @@ void MultiGetJobPrivate::flushQueue(RequestQueue &queue)
       if ((m_url.scheme() == entry.url.scheme()) &&
           (m_url.host() == entry.url.host()) &&
           (m_url.port() == entry.url.port()) &&
-          (m_url.user() == entry.url.user()))
+          (m_url.userName() == entry.url.userName()))
       {
          queue.append( entry );
          wqit = m_waitQueue.erase( wqit );

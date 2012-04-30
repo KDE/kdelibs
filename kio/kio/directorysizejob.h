@@ -77,7 +77,7 @@ private:
  *
  * This one lists a single directory.
  */
-KIO_EXPORT DirectorySizeJob * directorySize( const KUrl & directory );
+KIO_EXPORT DirectorySizeJob * directorySize(const QUrl & directory);
 
 /**
  * Computes a directory size (by doing a recursive listing).

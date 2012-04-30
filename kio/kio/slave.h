@@ -142,20 +142,20 @@ public:
    *
    * @return 0 on failure, or a pointer to a slave otherwise.
    */
-  static Slave* createSlave( const QString &protocol, const KUrl& url, int& error, QString& error_text );
+  static Slave* createSlave( const QString &protocol, const QUrl& url, int& error, QString& error_text );
 
   /**
    * Requests a slave on hold for ths url, from klauncher, if there is such a job.
    * See hold()
    */
-  static Slave* holdSlave( const QString &protocol, const KUrl& url );
+  static Slave* holdSlave( const QString &protocol, const QUrl& url );
 
   /**
    * Returns true if klauncher is holding a slave for @p url.
    *
    * @since 4.7
    */
-  static bool checkForHeldSlave(const KUrl& url);
+  static bool checkForHeldSlave(const QUrl& url);
 
   // == communication with connected kioslave ==
   // whenever possible prefer these methods over the respective
@@ -192,7 +192,7 @@ public:
    * this method, and the final application can continue the same download by requesting
    * the same URL.
    */
-  virtual void hold(const KUrl &url); // TODO KDE5: no reason to be virtual
+  void hold(const QUrl &url);
 
   /**
    * @return The time this slave has been idle.

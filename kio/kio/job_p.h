@@ -63,12 +63,12 @@ namespace KIO {
 
         void slotSpeed( KJob *job, unsigned long speed );
 
-        static void emitMoving(KIO::Job*, const KUrl &src, const KUrl &dest);
-        static void emitCopying(KIO::Job*, const KUrl &src, const KUrl &dest);
-        static void emitCreatingDir(KIO::Job*, const KUrl &dir);
-        static void emitDeleting(KIO::Job*, const KUrl &url);
-        static void emitStating(KIO::Job*, const KUrl &url);
-        static void emitTransferring(KIO::Job*, const KUrl &url);
+        static void emitMoving(KIO::Job*, const QUrl &src, const QUrl &dest);
+        static void emitCopying(KIO::Job*, const QUrl &src, const QUrl &dest);
+        static void emitCreatingDir(KIO::Job*, const QUrl &dir);
+        static void emitDeleting(KIO::Job*, const QUrl &url);
+        static void emitStating(KIO::Job*, const QUrl &url);
+        static void emitTransferring(KIO::Job*, const QUrl &url);
         static void emitMounting(KIO::Job*, const QString &dev, const QString &point);
         static void emitUnmounting(KIO::Job*, const QString &point);
 
@@ -88,6 +88,7 @@ namespace KIO {
             : m_slave(0), m_packedArgs(packedArgs), m_url(url), m_command(command),
               m_checkOnHold(false), m_schedSerial(0), m_redirectionHandlingEnabled(true)
         {
+#if 0
             if (m_url.hasSubUrl())
             {
                 KUrl::List list = KUrl::split(m_url);
@@ -96,12 +97,13 @@ namespace KIO {
                 //kDebug(7007) << "New URL = "  << m_url.url();
                 //kDebug(7007) << "Sub URL = "  << m_subUrl.url();
             }
+#endif
         }
 
         Slave * m_slave;
         QByteArray m_packedArgs;
-        KUrl m_url;
-        KUrl m_subUrl;
+        QUrl m_url;
+        QUrl m_subUrl;
         int m_command;
 
         // for use in KIO::Scheduler
@@ -220,7 +222,7 @@ namespace KIO {
         bool m_errorPage;
         QByteArray staticData;
         QUrl m_redirectionURL;
-        KUrl::List m_redirectionList;
+        QList<QUrl> m_redirectionList;
         QString m_mimetype;
         bool m_isMimetypeEmitted;
         TransferJob *m_subJob;

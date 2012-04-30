@@ -21,7 +21,6 @@
 #ifndef KIO_FILEJOB_H
 #define KIO_FILEJOB_H
 
-#include <kurl.h>
 #include <kio/jobclasses.h>
 
 namespace KIO {
@@ -31,7 +30,7 @@ class FileJobPrivate;
  *  The file-job is an asynchronious version of normal file handling.
  *  It allows block-wise reading and writing, and allows seeking. Results are returned through signals.
  *
- *  Should always be created using KIO::open(KUrl&)
+ *  Should always be created using KIO::open(QUrl)
  */
 
 class KIO_EXPORT FileJob : public SimpleJob
@@ -143,6 +142,18 @@ private:
 
     Q_DECLARE_PRIVATE(FileJob)
 };
+
+/**
+ * Open ( random access I/O )
+ *
+ * The file-job emits open() when opened
+ * @param url the URL of the file
+ * @param mode the access privileges: see \ref OpenMode
+ *
+ * @return The file-handling job. It will never return 0. Errors are handled asynchronously
+ * (emitted as signals).
+ */
+KIO_EXPORT FileJob *open(const QUrl &url, QIODevice::OpenMode mode);
 
 } // namespace
 

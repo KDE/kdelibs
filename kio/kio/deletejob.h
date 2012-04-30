@@ -86,7 +86,7 @@ namespace KIO {
 	 * @param file the URL of the file or directory that is being
 	 *        deleted
 	 */
-        void deleting( KIO::Job *job, const KUrl& file );
+        void deleting(KIO::Job *job, const QUrl& file);
 
     protected Q_SLOTS:
         virtual void slotResult( KJob *job );

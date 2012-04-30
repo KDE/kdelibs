@@ -33,7 +33,7 @@
 class KIO::FileJobPrivate: public KIO::SimpleJobPrivate
 {
 public:
-    FileJobPrivate(const KUrl& url, const QByteArray &packedArgs)
+    FileJobPrivate(const QUrl& url, const QByteArray &packedArgs)
         : SimpleJobPrivate(url, CMD_OPEN, packedArgs), m_open(false), m_size(0)
         {}
 
@@ -60,7 +60,7 @@ public:
 
     Q_DECLARE_PUBLIC(FileJob)
 
-    static inline FileJob *newJob(const KUrl &url, const QByteArray &packedArgs)
+    static inline FileJob *newJob(const QUrl &url, const QByteArray &packedArgs)
     {
         FileJob *job = new FileJob(*new FileJobPrivate(url, packedArgs));
         job->setUiDelegate(new JobUiDelegate);

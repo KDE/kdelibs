@@ -143,7 +143,7 @@ public:
     void queueJob(KIO::SimpleJob *job);
     void changeJobPriority(KIO::SimpleJob *job, int newPriority);
     void removeJob(KIO::SimpleJob *job);
-    KIO::Slave *createSlave(const QString &protocol, KIO::SimpleJob *job, const KUrl &url);
+    KIO::Slave *createSlave(const QString &protocol, KIO::SimpleJob *job, const QUrl &url);
     bool removeSlave (KIO::Slave *slave);
     QList<KIO::Slave *> allSlaves() const;
     ConnectedSlaveQueue m_connectedSlaveQueue;

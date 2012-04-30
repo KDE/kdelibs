@@ -51,13 +51,13 @@ namespace KIO
         int m_currentItem;
         QHash<long, QSet<long> > m_visitedInodes; // device -> set of inodes
 
-        void startNextJob( const KUrl & url );
+        void startNextJob(const QUrl & url);
         void slotEntries( KIO::Job * , const KIO::UDSEntryList &);
         void processNextItem();
 
         Q_DECLARE_PUBLIC(DirectorySizeJob)
 
-        static inline DirectorySizeJob *newJob( const KUrl & directory )
+        static inline DirectorySizeJob *newJob(const QUrl & directory)
         {
             DirectorySizeJobPrivate *d = new DirectorySizeJobPrivate;
             DirectorySizeJob *job = new DirectorySizeJob(*d);
@@ -116,8 +116,7 @@ void DirectorySizeJobPrivate::processNextItem()
             if ( item.isDir() )
             {
                 //kDebug(7007) << "dir -> listing";
-                KUrl url = item.url();
-                startNextJob( url );
+                startNextJob(item.url());
                 return; // we'll come back later, when this one's finished
             }
             else
@@ -134,7 +133,7 @@ void DirectorySizeJobPrivate::processNextItem()
     q->emitResult();
 }
 
-void DirectorySizeJobPrivate::startNextJob( const KUrl & url )
+void DirectorySizeJobPrivate::startNextJob(const QUrl & url)
 {
     Q_Q(DirectorySizeJob);
     //kDebug(7007) << url;
@@ -199,7 +198,7 @@ void DirectorySizeJob::slotResult( KJob * job )
 }
 
 //static
-DirectorySizeJob * KIO::directorySize( const KUrl & directory )
+DirectorySizeJob * KIO::directorySize(const QUrl & directory)
 {
     return DirectorySizeJobPrivate::newJob(directory); // useless - but consistent with other jobs
 }

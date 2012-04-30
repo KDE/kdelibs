@@ -291,7 +291,7 @@ bool Slave::isAlive()
     return !d->dead;
 }
 
-void Slave::hold(const KUrl &url)
+void Slave::hold(const QUrl &url)
 {
     Q_D(Slave);
     ref();
@@ -407,7 +407,7 @@ void Slave::setConfig(const MetaData &config)
     d->connection->send( CMD_CONFIG, data );
 }
 
-Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error, QString& error_text )
+Slave* Slave::createSlave( const QString &protocol, const QUrl& url, int& error, QString& error_text )
 {
     kDebug(7002) << "createSlave" << protocol << "for" << url;
     // Firstly take into account all special slaves
@@ -481,7 +481,7 @@ Slave* Slave::createSlave( const QString &protocol, const KUrl& url, int& error,
     return slave;
 }
 
-Slave* Slave::holdSlave( const QString &protocol, const KUrl& url )
+Slave* Slave::holdSlave(const QString &protocol, const QUrl& url)
 {
     //kDebug(7002) << "holdSlave" << protocol << "for" << url;
     // Firstly take into account all special slaves
@@ -489,7 +489,7 @@ Slave* Slave::holdSlave( const QString &protocol, const KUrl& url )
         return 0;
     Slave *slave = new Slave(protocol);
     QUrl slaveAddress = slave->d_func()->slaveconnserver->address();
-    QDBusReply<int> reply = KToolInvocation::klauncher()->requestHoldSlave(url.url(), slaveAddress.toString());
+    QDBusReply<int> reply = KToolInvocation::klauncher()->requestHoldSlave(url.toString(), slaveAddress.toString());
     if (!reply.isValid()) {
         delete slave;
         return 0;
@@ -505,8 +505,8 @@ Slave* Slave::holdSlave( const QString &protocol, const KUrl& url )
     return slave;
 }
 
-bool Slave::checkForHeldSlave(const KUrl &url)
+bool Slave::checkForHeldSlave(const QUrl &url)
 {
-    return KToolInvocation::klauncher()->checkForHeldSlave(url.url());
+    return KToolInvocation::klauncher()->checkForHeldSlave(url.toString());
 }
 
