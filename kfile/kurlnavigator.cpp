@@ -330,7 +330,7 @@ void KUrlNavigator::Private::slotProtocolChanged(const QString& protocol)
     Q_ASSERT(m_editable);
 
     KUrl url;
-    url.setProtocol(protocol);
+    url.setScheme(protocol);
     url.setPath((protocol == QLatin1String("file")) ? QLatin1String("/") : QLatin1String("//"));
 
     m_pathBox->setEditUrl(url);
@@ -1014,7 +1014,7 @@ void KUrlNavigator::setLocationUrl(const QUrl& newUrl)
         if (!insideCompressedPath) {
             // drop the tar: or zip: protocol since we are not
             // inside the compressed path
-            url.setProtocol("file");
+            url.setScheme("file");
         }
     }
 

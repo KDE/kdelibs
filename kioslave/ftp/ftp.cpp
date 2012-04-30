@@ -385,7 +385,7 @@ bool Ftp::ftpOpenConnection (LoginMode loginMode)
   if (userNameChanged && m_bLoggedOn)
   {
     KUrl realURL;
-    realURL.setProtocol( "ftp" );
+    realURL.setScheme( "ftp" );
     if (m_user != FTP_LOGIN)
       realURL.setUser( m_user );
     if (m_pass != FTP_PASSWD)
@@ -1516,7 +1516,7 @@ void Ftp::listDir( const KUrl &url )
   if ( path.isEmpty() )
   {
     KUrl realURL;
-    realURL.setProtocol( "ftp" );
+    realURL.setScheme( "ftp" );
     realURL.setUser( m_user );
     realURL.setPass( m_pass );
     realURL.setHost( m_host );

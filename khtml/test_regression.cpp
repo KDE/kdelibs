@@ -507,9 +507,7 @@ JSValue* KHTMLPartFunction::callAsFunction(ExecState *exec, JSObject*/*thisObj*/
 
             QString filename = args[0]->toString(exec).qstring();
             QString fullFilename = QFileInfo(RegressionTest::curr->m_currentBase+"/"+filename).absoluteFilePath();	//krazy:exclude=duoblequote_chars DOM demands chars
-            KUrl url;
-            url.setProtocol("file");
-            url.setPath(fullFilename);
+            QUrl url = QUrl::fromLocalFile(fullFilename);
             PartMonitor pm(m_part);
             m_part->openUrl(url);
             pm.waitForCompletion();
@@ -1062,7 +1060,7 @@ void RegressionTest::getPartDOMOutput( QTextStream &outputStream, KHTMLPart* par
 	// Make doctype's visually different from elements
 	if (node.nodeType() == DOM::Node::DOCUMENT_TYPE_NODE)
 		outputStream << "!doctype ";
-		
+
 	outputStream << node.nodeName().string();
 
 	switch (node.nodeType()) {
@@ -1496,9 +1494,7 @@ void RegressionTest::testStaticFile(const QString & filename)
     else if (filename.endsWith(".xml")) args.setMimeType("text/xml");
     m_part->setArguments(args);
     // load page
-    KUrl url;
-    url.setProtocol("file");
-    url.setPath(QFileInfo(m_baseDir + "/tests/"+filename).absoluteFilePath());
+    QUrl url = QUrl::fromLocalFile(QFileInfo(m_baseDir + "/tests/"+filename).absoluteFilePath());
     PartMonitor pm(m_part);
     m_part->openUrl(url);
     pm.waitForCompletion();

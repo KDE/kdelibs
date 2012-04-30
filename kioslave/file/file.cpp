@@ -285,7 +285,7 @@ void FileProtocol::get( const KUrl& url )
 {
     if (!url.isLocalFile()) {
         KUrl redir(url);
-	redir.setProtocol(config()->readEntry("DefaultRemoteProtocol", "smb"));
+	redir.setScheme(config()->readEntry("DefaultRemoteProtocol", "smb"));
 	redirection(redir);
 	finished();
 	return;

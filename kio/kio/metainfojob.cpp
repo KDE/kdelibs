@@ -129,7 +129,7 @@ void MetaInfoJob::getMetaInfo()
     Q_ASSERT(!item.isNull());
 
     KUrl URL;
-    URL.setProtocol("metainfo");
+    URL.setScheme("metainfo");
     URL.setPath(item.url().path());
 
     KIO::TransferJob* job = KIO::get(URL, NoReload, HideProgressInfo);

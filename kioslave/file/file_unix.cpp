@@ -321,7 +321,7 @@ void FileProtocol::listDir( const KUrl& url)
 {
     if (!url.isLocalFile()) {
         KUrl redir(url);
-	redir.setProtocol(config()->readEntry("DefaultRemoteProtocol", "smb"));
+	redir.setScheme(config()->readEntry("DefaultRemoteProtocol", "smb"));
 	redirection(redir);
 	kDebug(7101) << "redirecting to " << redir.url();
 	finished();
@@ -650,7 +650,7 @@ void FileProtocol::stat( const KUrl & url )
 {
     if (!url.isLocalFile()) {
         KUrl redir(url);
-	redir.setProtocol(config()->readEntry("DefaultRemoteProtocol", "smb"));
+	redir.setScheme(config()->readEntry("DefaultRemoteProtocol", "smb"));
 	redirection(redir);
 	kDebug(7101) << "redirecting to " << redir.url();
 	finished();

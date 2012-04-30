@@ -419,11 +419,11 @@ static QStringList getSystemProxyFor( const KUrl& url )
     }
 
     if (type == QNetworkProxy::HttpProxy || type == QNetworkProxy::HttpCachingProxy)
-      url.setProtocol(QL1S("http"));
+      url.setScheme(QL1S("http"));
     else if (type == QNetworkProxy::Socks5Proxy)
-      url.setProtocol(QL1S("socks"));
+      url.setScheme(QL1S("socks"));
     else if (type == QNetworkProxy::FtpCachingProxy)
-      url.setProtocol(QL1S("ftp"));
+      url.setScheme(QL1S("ftp"));
 
     url.setHost(proxy.hostName());
     url.setPort(proxy.port());
@@ -468,7 +468,7 @@ QStringList KProtocolManager::proxiesForUrl( const KUrl &url )
       {
         KUrl u (url);
         const QString protocol = adjustProtocol(u.scheme());
-        u.setProtocol(protocol);
+        u.setScheme(protocol);
 
         if (KProtocolInfo::protocolClass(protocol) != QL1S(":local")) {
           QDBusReply<QStringList> reply = QDBusInterface(QL1S("org.kde.kded"),

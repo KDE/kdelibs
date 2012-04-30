@@ -2557,7 +2557,7 @@ void ListJob::slotFinished()
             QString proto = ptr->property("X-KDE-LocalProtocol").toString();
             if ( !proto.isEmpty() && KProtocolInfo::isKnownProtocol( proto) ) {
                 d->m_redirectionURL = d->m_url;
-                d->m_redirectionURL.setProtocol( proto );
+                d->m_redirectionURL.setScheme(proto);
                 setError( 0 );
                 emit redirection(this,d->m_redirectionURL);
             }

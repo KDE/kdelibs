@@ -524,7 +524,7 @@ bool Window::isCrossFrameAccessible(int token) const
         case BToA:
         case ValueOf:
         case ToString:
-        case PostMessage:    
+        case PostMessage:
             return true;
         default:
             return false;
@@ -555,27 +555,27 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
         slot.setUndefined(this);
         return true;
     }
-    
+
     bool safe = isSafeScript(exec);
 
-    // Look for overrides first. 
+    // Look for overrides first.
     JSValue **val = getDirectLocation(propertyName);
     if (val) {
         if (safe) {
             fillDirectLocationSlot(slot, val);
         } else {
-            // We may need to permit access to the property map cross-frame in 
+            // We may need to permit access to the property map cross-frame in
             // order to pick up cross-frame accessible functions that got
-            // cached as direct properties. 
+            // cached as direct properties.
             const HashEntry* entry = Lookup::findEntry(&WindowTable, propertyName);
             if (entry && isCrossFrameAccessible(entry->value))
                 fillDirectLocationSlot(slot, val);
             else
-                slot.setUndefined(this); 
+                slot.setUndefined(this);
         }
-        return true;      
+        return true;
     }
-    
+
     // The only stuff we permit XSS (besides cached things above) are
     // a few of hashtable properties.
     const HashEntry* entry = Lookup::findEntry(&WindowTable, propertyName);
@@ -583,11 +583,11 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
         slot.setUndefined(this);
         return true;
     }
-    
+
     // invariant: accesses below this point are permitted by the XSS policy
-    
+
     KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part.data());
-  
+
     if (entry) {
         // Things that work on any ReadOnlyPart first
         switch(entry->value) {
@@ -600,26 +600,26 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
             default:
                 break;
         }
-        
+
         if (!part) {
             slot.setUndefined(this);
             return true;
         }
 
         // KHTMLPart-specific next.
-        
+
         // Disabled in NS-compat mode. Supported by default - can't hurt, unless someone uses
         // if (navigate) to test for IE (unlikely).
         if (entry->value == Navigate && exec->dynamicInterpreter()->compatMode() == Interpreter::NetscapeCompat ) {
             slot.setUndefined(this);
             return true;
         }
-        
-        
+
+
         getSlotFromEntry<WindowFunc, Window>(entry, this, slot);
         return true;
-    } 
-    
+    }
+
     if (!part) {
         // not a  KHTMLPart, so try to get plugin scripting stuff
         if (pluginRootGet(exec, m_frame->m_scriptable.data(), propertyName, slot))
@@ -789,7 +789,7 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
     case ElementCtor:
       return ElementPseudoCtor::self(exec);
     case DocumentFragmentCtor:
-      return DocumentFragmentPseudoCtor::self(exec);      
+      return DocumentFragmentPseudoCtor::self(exec);
     case HTMLElementCtor:
       return HTMLElementPseudoCtor::self(exec);
     case HTMLHtmlElementCtor:
@@ -1214,7 +1214,7 @@ void Window::put(ExecState* exec, const Identifier &propertyName, JSValue *value
     case Onmessage:
       if (isSafeScript(exec))
         setListener(exec,DOM::EventImpl::MESSAGE_EVENT,value);
-      return;    
+      return;
     case Onmousedown:
       if (isSafeScript(exec))
         setListener(exec,DOM::EventImpl::MOUSEDOWN_EVENT,value);
@@ -1455,7 +1455,7 @@ void Window::clear( ExecState *exec )
   delete winq;
   qDeleteAll(m_delayed);
   m_delayed.clear();
-  
+
   winq = 0L;
   // Get rid of everything, those user vars could hold references to DOM nodes
   clearProperties();
@@ -2047,7 +2047,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
             setDOMException(exec, DOM::DOMException::SECURITY_ERR);
             return jsUndefined();
         }
-        
+
         QString sourceOrigin = part->xmlDocImpl()->origin()->toString();
         QString targetOrigin = args[1]->toString(exec).qstring();
         KUrl    targetURL(targetOrigin);
@@ -2059,7 +2059,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
             setDOMException(exec, DOM::DOMException::SYNTAX_ERR);
             return jsUndefined();
         }
-  
+
         // Grab a snapshot of the data. Unfortunately it means we copy it
         // twice, but it's simpler than having separate code for swizzling
         // prototype pointers.
@@ -2367,7 +2367,7 @@ void WindowQObject::resumeTimers()
         // of a pause..
         timerEvent(0);
     }
-    
+
     --pauseLevel; // We do it afterwards so that timerEvent can know about us.
 }
 
@@ -2476,7 +2476,7 @@ void WindowQObject::timerEvent(QTimerEvent *)
 
   // Work out when next event is to occur
   setNextTimer();
-  
+
   // unless we're inside a nested context, do post-script processing
   if (!pauseLevel)
     parent->afterScriptExecution();
@@ -2751,7 +2751,7 @@ void Location::put(ExecState *exec, const Identifier &p, JSValue *v, int attr)
       url.setPort(str.toUInt());
       break;
     case Protocol:
-      url.setProtocol(str);
+      url.setScheme(str);
       break;
     case Search:
       url.setQuery(str);

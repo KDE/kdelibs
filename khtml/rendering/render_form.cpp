@@ -881,7 +881,7 @@ void LineEditWidget::slotCreateWebShortcut()
         url.setPath( baseUrl.path() );
     }
     if ( !url.hasHost() ) {
-        url.setProtocol( baseUrl.scheme() );
+        url.setScheme( baseUrl.scheme() );
         url.setHost( baseUrl.host() );
     }
     NodeImpl *node;

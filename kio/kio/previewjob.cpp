@@ -376,7 +376,7 @@ void PreviewJobPrivate::startPreview()
     determineNextFile();
 }
 
-void PreviewJob::removeItem( const KUrl& url )
+void PreviewJob::removeItem(const QUrl& url)
 {
     Q_D(PreviewJob);
     for (QLinkedList<PreviewItem>::Iterator it = d->items.begin(); it != d->items.end(); ++it)
@@ -583,7 +583,7 @@ void PreviewJobPrivate::getOrCreateThumbnail()
     if (!localPath.isEmpty()) {
         createThumbnail( localPath );
     } else {
-        const KUrl fileUrl = item.url();
+        const QUrl fileUrl = item.url();
         // heuristics for remote URL support
         bool supportsProtocol = false;
         if (m_remoteProtocolPlugins.value(fileUrl.scheme()).contains(item.mimetype())) {
@@ -596,7 +596,7 @@ void PreviewJobPrivate::getOrCreateThumbnail()
         }
 
         if (supportsProtocol) {
-            createThumbnail(fileUrl.url());
+            createThumbnail(fileUrl.toString());
             return;
         }
         // No plugin support access to this remote content, copy the file
@@ -605,10 +605,9 @@ void PreviewJobPrivate::getOrCreateThumbnail()
         QTemporaryFile localFile;
         localFile.setAutoRemove(false);
         localFile.open();
-        KUrl localURL;
-        localURL.setPath( tempName = localFile.fileName() );
-        const KUrl currentURL = item.mostLocalUrl();
-        KIO::Job * job = KIO::file_copy( currentURL, localURL, -1, KIO::Overwrite | KIO::HideProgressInfo /* No GUI */ );
+        tempName = localFile.fileName();
+        const QUrl currentURL = item.mostLocalUrl();
+        KIO::Job * job = KIO::file_copy( currentURL, QUrl::fromLocalFile(tempName), -1, KIO::Overwrite | KIO::HideProgressInfo /* No GUI */ );
         job->addMetaData("thumbnail","1");
         q->addSubjob(job);
     }
@@ -618,8 +617,8 @@ void PreviewJobPrivate::createThumbnail( const QString &pixPath )
 {
     Q_Q(PreviewJob);
     state = PreviewJobPrivate::STATE_CREATETHUMB;
-    KUrl thumbURL;
-    thumbURL.setProtocol("thumbnail");
+    QUrl thumbURL;
+    thumbURL.setScheme("thumbnail");
     thumbURL.setPath(pixPath);
     KIO::TransferJob *job = KIO::get(thumbURL, NoReload, HideProgressInfo);
     q->addSubjob(job);
@@ -757,12 +756,12 @@ PreviewJob *KIO::filePreview( const KFileItemList &items, int width, int height,
                           scale, save, enabledPlugins);
 }
 
-PreviewJob *KIO::filePreview( const KUrl::List &items, int width, int height,
+PreviewJob *KIO::filePreview( const QList<QUrl> &items, int width, int height,
     int iconSize, int iconAlpha, bool scale, bool save,
     const QStringList *enabledPlugins )
 {
     KFileItemList fileItems;
-    for (KUrl::List::ConstIterator it = items.begin(); it != items.end(); ++it) {
+    for (QList<QUrl>::const_iterator it = items.begin(); it != items.end(); ++it) {
         Q_ASSERT( (*it).isValid() ); // please call us with valid urls only
         fileItems.append(KFileItem(KFileItem::Unknown, KFileItem::Unknown, *it, true));
     }

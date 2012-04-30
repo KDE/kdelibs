@@ -488,7 +488,7 @@ void HTTPProtocol::resetSessionSettings()
         QString protocol = refUrl.scheme();
         if (protocol.startsWith(QLatin1String("webdav"))) {
            protocol.replace(0, 6, QLatin1String("http"));
-           refUrl.setProtocol(protocol);
+           refUrl.setScheme(protocol);
         }
 
         if (protocol.startsWith(QLatin1String("http"))) {
@@ -1377,9 +1377,9 @@ void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, KIO::JobFlags f
   // destination has to be "http(s)://..."
   KUrl newDest = dest;
   if (newDest.scheme() == QLatin1String("webdavs"))
-    newDest.setProtocol(QLatin1String("https"));
+    newDest.setScheme(QLatin1String("https"));
   else if (newDest.scheme() == QLatin1String("webdav"))
-    newDest.setProtocol(QLatin1String("http"));
+    newDest.setScheme(QLatin1String("http"));
 
   m_request.method = DAV_COPY;
   m_request.davData.desturl = newDest.url();
@@ -1407,9 +1407,9 @@ void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flag
   // destination has to be "http://..."
   KUrl newDest = dest;
   if (newDest.scheme() == QLatin1String("webdavs"))
-    newDest.setProtocol(QLatin1String("https"));
+    newDest.setScheme(QLatin1String("https"));
   else if (newDest.scheme() == QLatin1String("webdav"))
-    newDest.setProtocol(QLatin1String("http"));
+    newDest.setScheme(QLatin1String("http"));
 
   m_request.method = DAV_MOVE;
   m_request.davData.desturl = newDest.url();
@@ -2339,7 +2339,7 @@ QString HTTPProtocol::formatRequestUri() const
         if (protocol.startsWith(QLatin1String("webdav"))) {
             protocol.replace(0, qstrlen("webdav"), QLatin1String("http"));
         }
-        u.setProtocol(protocol);
+        u.setScheme(protocol);
 
         u.setHost(m_request.url.host());
         // if the URL contained the default port it should have been stripped earlier
@@ -3482,9 +3482,9 @@ endParsing:
             // If we're redirected to a http:// url, remember that we're doing webdav...
             if (m_protocol == "webdav" || m_protocol == "webdavs"){
                 if(u.scheme() == QLatin1String("http")){
-                    u.setProtocol(QLatin1String("webdav"));
+                    u.setScheme(QLatin1String("webdav"));
                 }else if(u.scheme() == QLatin1String("https")){
-                    u.setProtocol(QLatin1String("webdavs"));
+                    u.setScheme(QLatin1String("webdavs"));
                 }
 
                 m_request.redirectUrl = u;

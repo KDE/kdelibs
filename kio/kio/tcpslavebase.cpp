@@ -140,14 +140,14 @@ public:
         sslMetaData.insert("ssl_peer_chain", peerCertChain);
         sendSslMetaData();
     }
-    
+
     void clearSslMetaData()
     {
         sslMetaData.clear();
         sslMetaData.insert("ssl_in_use", "FALSE");
         sendSslMetaData();
     }
-    
+
     void sendSslMetaData()
     {
         MetaData::ConstIterator it = sslMetaData.constBegin();
@@ -173,7 +173,7 @@ public:
     bool sslNoUi; // If true, we just drop the connection silently
                   // if SSL certificate check fails in some way.
     QList<KSslError> sslErrors;
-    
+
     MetaData sslMetaData;
 };
 
@@ -746,7 +746,7 @@ void TCPSlaveBase::selectClientCertificate()
         do {
             ai.prompt = i18n("Enter the certificate password:");
             ai.caption = i18n("SSL Certificate Password");
-            ai.url.setProtocol("kssl");
+            ai.url.setScheme("kssl");
             ai.url.setHost(certname);
             ai.username = certname;
             ai.keepPassword = true;

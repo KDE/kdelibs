@@ -139,7 +139,7 @@ QString HelpProtocol::lookupFile(const QString &fname,
             if (!langLookup(documentationNotFound).isEmpty())
             {
                 KUrl red;
-                red.setProtocol("help");
+                red.setScheme("help");
                 red.setPath(documentationNotFound);
                 red.setQuery(query);
                 redirection(red);
@@ -164,11 +164,11 @@ void HelpProtocol::unicodeError( const QString &t )
    QString encoding = "UTF-8";
 #else
    QString encoding = QTextCodec::codecForLocale()->name();
-#endif   
+#endif
    data(fromUnicode( QString(
         "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\"></head>\n"
         "%2</html>" ).arg( encoding, Qt::escape(t) ) ) );
-     
+
 }
 
 HelpProtocol *slave = 0;
@@ -226,7 +226,7 @@ void HelpProtocol::get( const KUrl& url )
     kDebug( 7119 ) << "target " << target.url();
 
     QString file = target.scheme() == "file" ? target.toLocalFile() : target.path();
-    
+
     if ( mGhelp ) {
       if ( !file.endsWith( QLatin1String( ".xml" ) ) ) {
          get_file( target );

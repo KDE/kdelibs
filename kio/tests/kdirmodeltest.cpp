@@ -1027,10 +1027,10 @@ void KDirModelTest::testZipFile() // # 171721
     KUrl zipUrl(path);
     zipUrl.addPath("wronglocalsizes.zip"); // just a zip file lying here for other reasons
     QVERIFY(QFile::exists(zipUrl.path()));
-    zipUrl.setProtocol("zip");
+    zipUrl.setScheme("zip");
     QModelIndex index = m_dirModel->indexForUrl(zipUrl);
     QVERIFY(!index.isValid()); // protocol mismatch, can't find it!
-    zipUrl.setProtocol("file");
+    zipUrl.setScheme("file");
     index = m_dirModel->indexForUrl(zipUrl);
     QVERIFY(index.isValid());
 }

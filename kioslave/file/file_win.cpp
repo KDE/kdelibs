@@ -140,7 +140,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
 
         dwFlags = 0;
     }
-    
+
     if( !QFileInfo(_dest.dir().absolutePath()).exists() )
     {
         _dest.dir().mkdir(_dest.dir().absolutePath());
@@ -163,7 +163,7 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
             LPVOID lpMsgBuf;
 
             FormatMessage(
-                FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+                FORMAT_MESSAGE_ALLOCATE_BUFFER |
                 FORMAT_MESSAGE_FROM_SYSTEM |
                 FORMAT_MESSAGE_IGNORE_INSERTS,
                 NULL,
@@ -191,7 +191,7 @@ void FileProtocol::listDir( const KUrl& url )
 
     if (!url.isLocalFile()) {
         KUrl redir(url);
-        redir.setProtocol(config()->readEntry("DefaultRemoteProtocol", "smb"));
+        redir.setScheme(config()->readEntry("DefaultRemoteProtocol", "smb"));
         redirection(redir);
         kDebug(7101) << "redirecting to " << redir.url();
         finished();
@@ -265,7 +265,7 @@ void FileProtocol::rename( const KUrl &src, const KUrl &dest,
 #endif
     }
     // To avoid error 17 - The system cannot move the file to a different disk drive.
-#ifndef _WIN32_WCE   
+#ifndef _WIN32_WCE
     dwFlags |= MOVEFILE_COPY_ALLOWED;
 
 
@@ -356,7 +356,7 @@ void FileProtocol::stat( const KUrl & url )
 {
     if (!url.isLocalFile()) {
         KUrl redir(url);
-        redir.setProtocol(config()->readEntry("DefaultRemoteProtocol", "smb"));
+        redir.setScheme(config()->readEntry("DefaultRemoteProtocol", "smb"));
         redirection(redir);
         kDebug(7101) << "redirecting to " << redir.url();
         finished();

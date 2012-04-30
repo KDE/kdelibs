@@ -383,9 +383,7 @@ KDirOperator::KDirOperator(const QUrl& _url, QWidget *parent) :
     if (_url.isEmpty()) { // no dir specified -> current dir
         QString strPath = QDir::currentPath();
         strPath.append(QChar('/'));
-        d->currUrl = QUrl();
-        d->currUrl.setProtocol(QLatin1String("file"));
-        d->currUrl.setPath(strPath);
+        d->currUrl = QUrl::fromLocalFile(strPath);
     } else {
         d->currUrl = _url;
         if (d->currUrl.scheme().isEmpty())

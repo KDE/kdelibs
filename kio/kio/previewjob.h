@@ -157,7 +157,7 @@ namespace KIO {
          *
          * @param url the url of the item that should be removed from the preview queue
          */
-        void removeItem( const KUrl& url );
+        void removeItem( const QUrl& url );
 
         /**
          * If @p ignoreSize is true, then the preview is always
@@ -283,7 +283,7 @@ namespace KIO {
      *             with the setter-methods instead. Note that the semantics of
      *             \p enabledPlugins has been slightly changed.
      */
-    KIO_DEPRECATED_EXPORT PreviewJob *filePreview( const KUrl::List &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 );
+    KIO_DEPRECATED_EXPORT PreviewJob *filePreview( const QList<QUrl> &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 );
 #endif
 
     /**
