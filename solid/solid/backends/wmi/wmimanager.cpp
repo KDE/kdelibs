@@ -1,4 +1,5 @@
 /*
+    Copyright 2012 Patrick von Reth <vonreth@kde.org>
     Copyright 2005,2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -91,7 +92,9 @@ QStringList WmiManager::allDevices()
 {
     QStringList deviceUdiList;
 
-    QStringList aList = findDeviceByDeviceInterface(Solid::DeviceInterface::OpticalDrive);
+    QStringList aList;
+    foreach(const Solid::DeviceInterface::Type &dev, d->supportedInterfaces)
+      aList<<findDeviceByDeviceInterface(dev);
     foreach(const QString &udi, aList)
     {
         if (!deviceUdiList.contains(udi))
