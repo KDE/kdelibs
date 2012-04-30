@@ -116,7 +116,8 @@ void KMessageWidgetPrivate::createLayout()
 
     if (wordWrap) {
         QGridLayout* layout = new QGridLayout(content);
-        layout->addWidget(iconLabel, 0, 0);
+        // Set alignment to make sure icon does not move down if text wraps
+        layout->addWidget(iconLabel, 0, 0, 1, 1, Qt::AlignHCenter | Qt::AlignTop);
         layout->addWidget(textLabel, 0, 1);
 
         QHBoxLayout* buttonLayout = new QHBoxLayout;
