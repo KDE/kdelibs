@@ -109,7 +109,7 @@ namespace KJSEmbed
             * some aspects of casting.  If the cast fails a default value of T will be returned.
             */
             template<typename T>
-            T value() const { return qVariantValue<T>(m_value); }
+            T value() const { return m_value.value<T>(); }
             /**
             * Set the internal value of the QVariant.
             */
@@ -148,8 +148,8 @@ namespace KJSEmbed
             QVariant variant = extractVariant( exec, arg );
             if( !variant.isNull() )
             {
-                if( qVariantCanConvert<T>(variant) )
-                    return qVariantValue<T>(variant);
+                if( variant.canConvert<T>() )
+                    return variant.value<T>();
                 else
                 {
                     throwError(exec, KJS::TypeError, "Cast failed" );

@@ -737,7 +737,7 @@ QList<T> KConfigGroup::readListCheck(const char *key, const QList<T> &defaultVal
 
   QList<T> list;
   Q_FOREACH (const QVariant &value, readEntry<QVariantList>(key, data)) {
-    Q_ASSERT(qVariantCanConvert<T>(value));
+    Q_ASSERT(value.canConvert<T>());
     list.append(qvariant_cast<T>(value));
   }
 

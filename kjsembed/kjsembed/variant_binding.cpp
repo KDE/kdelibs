@@ -385,11 +385,11 @@ KJS::JSValue *KJSEmbed::convertToValue( KJS::ExecState *exec, const QVariant &va
         }
         default:
         {
-            if( qVariantCanConvert< QWidget* >(value) ) {
+            if( value.canConvert< QWidget* >() ) {
                 QWidget* widget = qvariant_cast< QWidget* >(value);
                 returnValue = widget ? createQObject(exec, widget, KJSEmbed::ObjectBinding::CPPOwned) : KJS::jsNull();
             }
-            else if( qVariantCanConvert< QObject* >(value) ) {
+            else if( value.canConvert< QObject* >() ) {
                 QObject* object = qvariant_cast< QObject* >(value);
                 returnValue = object ? createQObject(exec, object, KJSEmbed::ObjectBinding::CPPOwned) : KJS::jsNull();
             }

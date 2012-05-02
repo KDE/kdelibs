@@ -401,14 +401,14 @@ QVariant KjsScript::callFunction(const QString& name, const QVariantList& args)
 
     KJS::List kjsargs;
     foreach(const QVariant &variant, args) {
-        if( qVariantCanConvert< QWidget* >(variant) ) {
+        if( variant.canConvert< QWidget* >() ) {
             if( QWidget* widget = qvariant_cast< QWidget* >(variant) ) {
                 kjsargs.append( KJSEmbed::createQObject(exec, widget, KJSEmbed::ObjectBinding::QObjOwned) );
                 Q_ASSERT( ! exec->hadException() );
                 continue;
             }
         }
-        if( qVariantCanConvert< QObject* >(variant) ) {
+        if( variant.canConvert< QObject* >() ) {
             if( QObject* obj = qvariant_cast< QObject* >(variant) ) {
                 kjsargs.append( KJSEmbed::createQObject(exec, obj, KJSEmbed::ObjectBinding::QObjOwned) );
                 Q_ASSERT( ! exec->hadException() );
