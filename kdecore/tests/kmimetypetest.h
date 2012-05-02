@@ -56,6 +56,7 @@ private Q_SLOTS:
     void testExtractKnownExtension_data();
     void testExtractKnownExtension();
     void testHelperProtocols();
+    void testSortByComment();
     void testFromThread();
 
     void testThreads();

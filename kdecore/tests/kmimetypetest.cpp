@@ -870,6 +870,22 @@ void KMimeTypeTest::testHelperProtocols()
                 qPrintable(KProtocolInfo::exec("mailto")));
 }
 
+struct LessMimeType_ByComment
+{
+    bool operator()(const KMimeType::Ptr& lhs, const KMimeType::Ptr& rhs) const
+    {
+        return lhs->comment() < rhs->comment();
+    }
+};
+
+void KMimeTypeTest::testSortByComment()
+{
+    QBENCHMARK {
+        KMimeType::List sortedList = KMimeType::allMimeTypes();
+        qSort( sortedList.begin(), sortedList.end(), LessMimeType_ByComment() );
+    }
+}
+
 void KMimeTypeTest::testFromThread()
 {
     // Some simple tests to test more API from testThreads without using _data()

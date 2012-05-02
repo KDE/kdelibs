@@ -69,6 +69,7 @@ public:
     QString genericIconName;
     QString iconName;
     QStringList globPatterns;
+    bool loaded;
 };
 
 QT_END_NAMESPACE
