@@ -132,7 +132,7 @@ KHTMLImage::~KHTMLImage()
         delete static_cast<KHTMLPart *>( m_khtml );
 }
 
-bool KHTMLImage::openUrl( const KUrl &url )
+bool KHTMLImage::openUrl(const QUrl &url)
 {
     static const QString &html = KGlobal::staticQString( "<html><body><img src=\"%1\"></body></html>" );
 
@@ -148,7 +148,8 @@ bool KHTMLImage::openUrl( const KUrl &url )
     KParts::OpenUrlArguments args = arguments();
     m_mimeType = args.mimeType();
 
-    emit setWindowCaption( url.prettyUrl() );
+    KUrl kurl(url);
+    emit setWindowCaption(kurl.prettyUrl());
 
     // Need to keep a copy of the offsets since they are cleared when emitting completed
     m_xOffset = args.xOffset();

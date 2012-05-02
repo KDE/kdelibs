@@ -109,7 +109,7 @@ int main (int argc, char **argv)
 #endif
 
   if (args->count() == 0) {
-      dirmodel->dirLister()->openUrl(KUrl("/"));
+      dirmodel->dirLister()->openUrl(QUrl("/"));
 
       const KUrl url("/usr/share/applications/kde");
       dirmodel->expandToUrl(url);

@@ -71,7 +71,7 @@ public:
 
     virtual bool openFile() { return true; } // grmbl, should be non-pure in part.h, IMHO
 
-    virtual bool openUrl( const KUrl &url );
+    virtual bool openUrl(const QUrl &url);
 
     virtual bool closeUrl();
 

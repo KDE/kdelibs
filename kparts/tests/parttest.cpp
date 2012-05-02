@@ -105,7 +105,7 @@ void PartTest::testOpenUrlArguments()
     args.setReload(true);
     part->setArguments(args);
     QVERIFY(compareArgs(args, part->arguments()));
-    part->openUrl(KUrl(KDESRCDIR "/parttest.cpp"));
+    part->openUrl(QUrl::fromLocalFile(KDESRCDIR "/parttest.cpp"));
     QVERIFY(part->openFileCalled());
     QVERIFY(compareArgs(args, part->arguments()));
 
@@ -114,7 +114,7 @@ void PartTest::testOpenUrlArguments()
     QVERIFY(part->arguments().mimeType().isEmpty());
 
     // Calling openUrl with local file: mimetype is determined
-    part->openUrl(KUrl(KDESRCDIR "/parttest.cpp"));
+    part->openUrl(QUrl::fromLocalFile(KDESRCDIR "/parttest.cpp"));
     QCOMPARE(part->arguments().mimeType(), QString("text/x-c++src"));
     // (for a remote url it would be determined during downloading)
 
@@ -127,7 +127,7 @@ void PartTest::testAutomaticMimeType()
     QVERIFY(part->closeUrl()); // nothing to do, no error
     QVERIFY(part->arguments().mimeType().isEmpty());
     // open a file, and test the detected mimetype
-    part->openUrl(KUrl(KDESRCDIR "/notepad.desktop"));
+    part->openUrl(QUrl::fromLocalFile(KDESRCDIR "/notepad.desktop"));
     QCOMPARE(part->arguments().mimeType(), QString::fromLatin1("application/x-desktop"));
 
     // manually closing, no mimetype should be stored now
@@ -135,11 +135,11 @@ void PartTest::testAutomaticMimeType()
     QVERIFY(part->arguments().mimeType().isEmpty());
 
     // open a new file, and test again its (autdetected) mimetype
-    part->openUrl(KUrl(KDESRCDIR "/parttest.cpp"));
+    part->openUrl(QUrl::fromLocalFile(KDESRCDIR "/parttest.cpp"));
     QCOMPARE(part->arguments().mimeType(), QString("text/x-c++src"));
 
     // open a new file, but without explicitely close the first
-    part->openUrl(KUrl(KDESRCDIR "/notepad.desktop"));
+    part->openUrl(QUrl::fromLocalFile(KDESRCDIR "/notepad.desktop"));
     // test again its (autdetected) mimetype
     QCOMPARE(part->arguments().mimeType(), QString::fromLatin1("application/x-desktop"));
 
@@ -148,12 +148,12 @@ void PartTest::testAutomaticMimeType()
     args.setMimeType("application/xml");
     part->setArguments(args);
     QVERIFY(compareArgs(args, part->arguments()));
-    part->openUrl(KUrl(KDESRCDIR "/parttest.cpp"));
+    part->openUrl(QUrl::fromLocalFile(KDESRCDIR "/parttest.cpp"));
     QCOMPARE(part->arguments().mimeType(), QString::fromLatin1("application/xml"));
 
     // clear the args and open a new file, reactivating the automatic mimetype detection again
     part->setArguments(KParts::OpenUrlArguments());
-    part->openUrl(KUrl(KDESRCDIR "/notepad.desktop"));
+    part->openUrl(QUrl::fromLocalFile(KDESRCDIR "/notepad.desktop"));
     // test again its (autdetected) mimetype
     QCOMPARE(part->arguments().mimeType(), QString::fromLatin1("application/x-desktop"));
 

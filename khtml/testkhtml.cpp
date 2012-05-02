@@ -174,7 +174,7 @@ void Dummy::nextRun()
 
     if (!filesToBenchmark.isEmpty()) {
         loadTimer.start();
-        m_part->openUrl(filesToBenchmark[0]);
+        m_part->openUrl(QUrl::fromLocalFile(filesToBenchmark[0]));
     } else {
         //Generate HTML for report.
         m_part->begin();

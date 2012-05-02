@@ -641,8 +641,9 @@ void KHTMLPartPrivate::executeAnchorJump( const KUrl& url, bool lockHistory )
     emit m_extension->setLocationBarUrl( url.prettyUrl() );
 }
 
-bool KHTMLPart::openUrl( const KUrl &url )
+bool KHTMLPart::openUrl(const QUrl &_url)
 {
+  KUrl url(_url);
   kDebug( 6050 ) << this << "opening" << url;
 
   // Wallet forms are per page, so clear it when loading a different page if we
@@ -5032,7 +5033,7 @@ void KHTMLPart::slotChildDocCreated()
 void KHTMLPartPrivate::propagateInitialDomainAndBaseTo(KHTMLPart* kid)
 {
     // This method is used to propagate our domain and base information for
-    // child frames, to provide them for about: or JavaScript: URLs 
+    // child frames, to provide them for about: or JavaScript: URLs
     if ( m_doc && kid->d->m_doc ) {
         DocumentImpl* kidDoc = kid->d->m_doc;
         if ( kidDoc->origin()->isEmpty() ) {
@@ -5139,7 +5140,7 @@ bool KHTMLPart::checkFrameAccess(KHTMLPart *callingHtmlPart)
 #endif
     return false; // we are empty?
   }
-  
+
   // now compare the domains
   if (callingHtmlPart && callingHtmlPart->xmlDocImpl() && xmlDocImpl())  {
     khtml::SecurityOrigin* actDomain = callingHtmlPart->xmlDocImpl()->origin();
@@ -5163,7 +5164,7 @@ KHTMLPart::findFrameParent( KParts::ReadOnlyPart *callingPart, const QString &f,
     return d->findFrameParent(callingPart, f, childFrame, false);
 }
 
-KHTMLPart* KHTMLPartPrivate::findFrameParent(KParts::ReadOnlyPart* callingPart, 
+KHTMLPart* KHTMLPartPrivate::findFrameParent(KParts::ReadOnlyPart* callingPart,
                                              const QString& f, khtml::ChildFrame **childFrame, bool checkForNavigation)
 {
 #ifdef DEBUG_FINDFRAME
@@ -5221,26 +5222,26 @@ bool KHTMLPartPrivate::canNavigate(KParts::ReadOnlyPart* bCand)
     assert(b);
 
     // HTML5 gives conditions for this (a) being able to navigate b
-    
+
     // 1) Same domain
     if (q->checkFrameAccess(b))
         return true;
-        
+
     // 2) A is nested, with B its top
     if (q->parentPart() && top() == b)
         return true;
-        
-    // 3) B is 'auxilary' -- window.open with opener, 
+
+    // 3) B is 'auxilary' -- window.open with opener,
     // and A can navigate B's opener
     if (b->opener() && canNavigate(b->opener()))
         return true;
-        
+
     // 4) B is not top-level, but an ancestor of it has same origin as A
     for (KHTMLPart* anc = b->parentPart(); anc; anc = anc->parentPart()) {
         if (anc->checkFrameAccess(q))
             return true;
     }
-    
+
     return false;
 }
 
