@@ -113,7 +113,7 @@ bool KPrintPreviewPrivate::doPreview()
         return false;
     } else {
         q->setMainWidget(previewPart->widget());
-        return previewPart->openUrl(filename);
+        return previewPart->openUrl(QUrl::fromLocalFile(filename));
     }
 }
 

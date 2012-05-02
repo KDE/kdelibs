@@ -860,7 +860,7 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
       if (entry.stringValue(KIO::UDSEntry::UDS_MIME_TYPE).isEmpty() &&
           entry.numberValue(KIO::UDSEntry::UDS_FILE_TYPE) != S_IFDIR) {
         int accuracy = 0;
-        KMimeType::Ptr mime = KMimeType::findByUrl(thisURL.fileName(), 0, false, true, &accuracy);
+        KMimeType::Ptr mime = KMimeType::findByPath(thisURL.fileName(), 0, true, &accuracy);
         if (mime && !mime->isDefault() && accuracy == 100) {
           kDebug(7113) << "Setting" << mime->name() << "as guessed mime type for" << thisURL.fileName();
           entry.insert( KIO::UDSEntry::UDS_GUESSED_MIME_TYPE, mime->name());

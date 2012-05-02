@@ -45,7 +45,7 @@ static KMimeType::Ptr fixupMimeType (const QString& mimeType, const QString& fil
 {
     KMimeType::Ptr mime = KMimeType::mimeType(mimeType, KMimeType::ResolveAliases);
     if ((!mime || mime->isDefault()) && !fileName.isEmpty()) {
-        mime = KMimeType::findByUrl(fileName, 0, false, true);
+        mime = KMimeType::findByPath(fileName, 0, true); // name only
     }
     return mime;
 }

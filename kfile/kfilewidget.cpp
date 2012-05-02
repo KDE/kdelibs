@@ -636,7 +636,7 @@ KFileWidget::KFileWidget( const QUrl& _startDir, QWidget *parent )
         QLineEdit* lineEdit = d->locationEdit->lineEdit();
         kDebug(kfile_area) << "selecting filename" << filename;
         if (statRes) {
-            d->setLocationText(filename);
+            d->setLocationText(QUrl(filename));
         } else {
             lineEdit->setText(filename);
             // Preserve this filename when clicking on the view (cf _k_fileHighlighted)
@@ -864,7 +864,7 @@ void KFileWidget::slotOk()
 
             // now recalculate all paths for them being relative in base of the top most url
             for (int i = 0; i < locationEditCurrentTextList.count(); ++i) {
-                locationEditCurrentTextList[i] = KUrl::relativeUrl(topMostUrl, locationEditCurrentTextList[i]);
+                locationEditCurrentTextList[i] = QUrl(KUrl::relativeUrl(topMostUrl, locationEditCurrentTextList[i]));
             }
 
             d->ops->setUrl(topMostUrl, true);
@@ -1430,7 +1430,8 @@ void KFileWidgetPrivate::_k_urlEntered(const QUrl& url)
 
     bool blocked = locationEdit->blockSignals(true);
     if (keepLocation) {
-        locationEdit->changeUrl(0, KDE::icon(KMimeType::iconNameForUrl(filename)), filename);
+        QUrl currentUrl = QUrl::fromUserInput(filename);
+        locationEdit->changeUrl(0, KDE::icon(KMimeType::iconNameForUrl(currentUrl)), currentUrl);
         locationEdit->lineEdit()->setModified(true);
     }
 
@@ -1517,7 +1518,7 @@ void KFileWidget::setSelection(const QString& url)
     if (!u.isRelative() && !KProtocolManager::supportsListing(u))
         return;
 
-    d->setLocationText(url);
+    d->setLocationText(QUrl(url));
 }
 
 void KFileWidgetPrivate::_k_slotLoadingFinished()
@@ -1542,7 +1543,8 @@ void KFileWidgetPrivate::_k_fileCompletion( const QString& match )
         return;
     }
 
-    setDummyHistoryEntry(locationEdit->currentText(), KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( match ), KIconLoader::Small), !locationEdit->currentText().isEmpty());
+    const QPixmap pix = KIconLoader::global()->loadMimeTypeIcon(KMimeType::iconNameForUrl(QUrl(match)), KIconLoader::Small);
+    setDummyHistoryEntry(locationEdit->currentText(), pix, !locationEdit->currentText().isEmpty());
 }
 
 void KFileWidgetPrivate::_k_slotLocationChanged( const QString& text )

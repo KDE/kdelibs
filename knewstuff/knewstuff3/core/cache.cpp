@@ -150,7 +150,7 @@ void Cache::readKns2MetaFiles()
             if (e.payload().startsWith(QLatin1String("http://download.kde.org/khotnewstuff"))) {
                 // This is 99% sure a opendesktop file, make it a real one.
                 e.setProviderId(QLatin1String("https://api.opendesktop.org/v1/"));
-                e.setHomepage(QString(QLatin1String("http://opendesktop.org/content/show.php?content=") + e.uniqueId()));
+                e.setHomepage(QUrl(QString(QLatin1String("http://opendesktop.org/content/show.php?content=") + e.uniqueId())));
 
             } else if (e.payload().startsWith(QLatin1String("http://edu.kde.org/contrib/kvtml/"))) {
                 // kvmtl-1
@@ -221,7 +221,7 @@ void Cache::writeRegistry()
 
     QTextStream metastream(&f);
     metastream << doc.toByteArray();
-    
+
     f.close();
 }
 

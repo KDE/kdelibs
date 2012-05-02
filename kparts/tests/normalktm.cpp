@@ -93,13 +93,14 @@ TestMainWindow::~TestMainWindow()
 
 void TestMainWindow::slotFileOpen()
 {
-    if ( !m_part1->openUrl( KStandardDirs::locate("data", KGlobal::mainComponent().componentName()+"/kpartstest_shell.rc" ) ) )
+    const QString file = KStandardDirs::locate("data", KGlobal::mainComponent().componentName()+"/kpartstest_shell.rc" );
+    if (!m_part1->openUrl(QUrl::fromLocalFile(file)))
         KMessageBox::error(this, "Couldn't open file !");
 }
 
 void TestMainWindow::slotFileOpenRemote()
 {
-    KUrl u ( "http://www.kde.org/index.html" );
+    QUrl u("http://www.kde.org/index.html");
     if ( !m_part1->openUrl( u ) )
         KMessageBox::error(this, "Couldn't open file !");
 }

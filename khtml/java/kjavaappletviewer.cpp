@@ -334,7 +334,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
     if (!server->usingKIO ()) {
         /* if this page needs authentication */
         KIO::AuthInfo info;
-        info.url = baseurl;
+        info.url = QUrl(baseurl);
         info.verifyPath = true;
         QByteArray params;
         { QDataStream stream(&params, QIODevice::WriteOnly); stream << info; }
@@ -397,7 +397,7 @@ KJavaAppletViewer::~KJavaAppletViewer () {
     }
 }
 
-bool KJavaAppletViewer::openUrl (const KUrl & url) {
+bool KJavaAppletViewer::openUrl (const QUrl & url) {
     if (!m_view) return false;
     m_closed = false;
     KJavaAppletWidget* const w = m_view->appletWidget ();
@@ -407,10 +407,11 @@ bool KJavaAppletViewer::openUrl (const KUrl & url) {
     if (applet->appletClass ().isEmpty ()) {
         // preview without setting a class?
         if (applet->baseURL ().isEmpty ()) {
-            applet->setAppletClass (url.fileName ());
-            applet->setBaseURL (url.upUrl ().url ());
+            KUrl urlInfo(url);
+            applet->setAppletClass(urlInfo.fileName());
+            applet->setBaseURL(urlInfo.upUrl().url());
         } else
-            applet->setAppletClass (url.url ());
+            applet->setAppletClass(url.toString());
         AppletParameterDialog (w).exec ();
         applet->setSize (w->sizeHint());
     }

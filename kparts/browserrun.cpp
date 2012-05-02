@@ -419,8 +419,7 @@ void KParts::BrowserRun::saveUrl(const KUrl & url, const QString & suggestedFile
     }
 
     // no download manager available, let's do it ourself
-    KFileDialog *dlg = new KFileDialog( QString(), QString() /*all files*/,
-                                        window);
+    KFileDialog *dlg = new KFileDialog(QUrl(), QString() /*all files*/, window);
     dlg->setOperationMode( KFileDialog::Saving );
     dlg->setCaption(i18n("Save As"));
     dlg->setConfirmOverwrite(true);

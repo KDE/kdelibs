@@ -142,7 +142,8 @@ void Dummy::doBenchmark()
     KConfigGroup settings(KSharedConfig::openConfig(), "bench");
     results.clear();
 
-    QString directory = KFileDialog::getExistingDirectory(settings.readPathEntry("path", QString()), m_part->view(), 
+    const QString startDir = settings.readPathEntry("path", QString());
+    QString directory = KFileDialog::getExistingDirectory(QUrl::fromLocalFile(startDir), m_part->view(),
             QString::fromLatin1("Please select directory with tests"));
 
     if (!directory.isEmpty()) {
@@ -202,7 +203,7 @@ void Dummy::nextRun()
     }
 }
 
-void Dummy::handleDone() 
+void Dummy::handleDone()
 {
     if (filesToBenchmark.isEmpty()) return;
 

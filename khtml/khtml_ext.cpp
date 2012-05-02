@@ -678,7 +678,8 @@ void KHTMLPopupGUIClient::openSelection()
     KParts::BrowserArguments browserArgs;
     browserArgs.frameName = "_blank";
 
-    emit d->m_khtml->browserExtension()->openUrlRequest(selectedTextAsOneLine(d->m_khtml), KParts::OpenUrlArguments(), browserArgs);
+    QUrl url(selectedTextAsOneLine(d->m_khtml));
+    emit d->m_khtml->browserExtension()->openUrlRequest(url, KParts::OpenUrlArguments(), browserArgs);
 }
 
 KParts::BrowserExtension::ActionGroupMap KHTMLPopupGUIClient::actionGroups() const
@@ -1176,7 +1177,7 @@ QList<KParts::SelectorInterface::Element> KHTMLHtmlExtension::querySelectorAll(c
     switch (method) {
     case KParts::SelectorInterface::EntireContent: {
         int ec = 0; // exceptions are ignored
-        WTF::RefPtr<DOM::NodeListImpl> nodes = part()->document().handle()->querySelectorAll(query, ec);    
+        WTF::RefPtr<DOM::NodeListImpl> nodes = part()->document().handle()->querySelectorAll(query, ec);
         const unsigned long len = nodes->length();
         elements.reserve(len);
         for (unsigned long i = 0; i < len; ++i) {

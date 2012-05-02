@@ -261,14 +261,14 @@ void KToolInvocation::invokeHelp( const QString& anchor,
 
     KService::Ptr service(KService::serviceByDesktopName(appname));
     if (service) {
-        docPath = service->docPath();
+        docPath = service->docPath(); // Could be a path or a full URL, I think.
     }
 
     QUrl url;
     if (!docPath.isEmpty()) {
-        url = QUrl(QLatin1String("help:/")).resolved(docPath);
+        url = QUrl(QLatin1String("help:/")).resolved(QUrl::fromUserInput(docPath));
     } else {
-        url = QString::fromLatin1("help:/%1/index.html").arg(appname);
+        url = QUrl(QString::fromLatin1("help:/%1/index.html").arg(appname));
     }
 
     if (!anchor.isEmpty()) {

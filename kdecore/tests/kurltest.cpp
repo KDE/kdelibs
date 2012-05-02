@@ -990,8 +990,7 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   QVERIFY( KUrl::isRelativeUrl( relativeUrl ) );
 
   // Mimick what KUrl(2 urls) does:
-  QUrl qurl;
-  qurl = "http://www.foo.bar:80";
+  QUrl qurl("http://www.foo.bar:80");
   QCOMPARE( qurl.toEncoded(), QByteArray("http://www.foo.bar:80") );
 
   qurl.setHost( QString() );

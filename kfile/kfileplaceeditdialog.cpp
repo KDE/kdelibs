@@ -116,7 +116,7 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
                          "%1<br />http://www.kde.org<br />ftp://ftp.kde.org/pub/kde/stable<br /><br />"
                          "By clicking on the button next to the text edit box you can browse to an "
                          "appropriate URL.</qt>", QDir::homePath());
-    m_urlEdit = new KUrlRequester( url.prettyUrl(), wdg );
+    m_urlEdit = new KUrlRequester(url, wdg);
     m_urlEdit->setMode( KFile::Directory );
     layout->addRow( i18n("&Location:"), m_urlEdit );
     m_urlEdit->setWhatsThis( whatsThisText );

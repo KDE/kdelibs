@@ -56,7 +56,7 @@ KAboutApplicationPersonModel::KAboutApplicationPersonModel( const QList< KAboutP
                                                 person.task(),
                                                 person.emailAddress(),
                                                 person.ocsUsername() );
-        profile.setHomepage( person.webAddress() );
+        profile.setHomepage(QUrl(person.webAddress()));
         m_profileList.append( profile );
     }
 

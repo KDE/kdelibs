@@ -489,7 +489,7 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
             break;
         case QVariant::Url:
             if( args[idx]->type() == KJS::StringType )
-                return new Value<QUrl>( toQString(args[idx]->toString(exec) ));
+                return new Value<QUrl>( QUrl(toQString(args[idx]->toString(exec)) ));
             if( VariantBinding *valImp = KJSEmbed::extractBindingImp<VariantBinding>(exec,args[idx]) )
                 return new Value<QUrl>( valImp->variant().value<QUrl>() );
             break;
@@ -508,7 +508,7 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
             if( args[idx]->type() == KJS::StringType )
             {
                 if( strcmp(types[idx].constData(),"KUrl") == 0 ) //downcast to QUrl
-                    return new Value<QUrl>( toQString(args[idx]->toString(exec) ));
+                    return new Value<QUrl>(QUrl(toQString(args[idx]->toString(exec))));
             }
             if( args[idx]->type() == KJS::ObjectType )
             {
@@ -533,7 +533,7 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
                         ((var.type() == QVariant::UserType) &&
                          (types[idx].constData() == var.typeName())))
                         return new Value<void*>(valImp->variant().data());
-                    else if ((var.type() != QVariant::UserType) && 
+                    else if ((var.type() != QVariant::UserType) &&
                            var.canConvert(varianttype))
                     {
                         // is convertable type, so convert it, and return if successful
@@ -575,7 +575,7 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
         if (jsType.isEmpty())
             jsType = toQString(jsObj->className());
     }
-    
+
     if (jsType.isEmpty())
     {
         switch(args[idx]->type())

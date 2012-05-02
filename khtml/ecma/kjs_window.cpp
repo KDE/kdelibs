@@ -1513,7 +1513,7 @@ void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
   } else if (!part && m_frame->m_partContainerElement) {
     KParts::BrowserExtension *b = KParts::BrowserExtension::childObject(m_frame->m_part);
     if (b)
-      emit b->openUrlRequest(m_frame->m_partContainerElement.data()->document()->completeURL(url));
+      emit b->openUrlRequest(QUrl(m_frame->m_partContainerElement.data()->document()->completeURL(url)));
     kDebug() << "goURL for ROPart";
   }
 }
