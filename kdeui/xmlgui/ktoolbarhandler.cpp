@@ -54,7 +54,7 @@ namespace
                         QLinkedList<KToolBar*> &oldToolBarList )
         : m_actionCollection( actionCollection ), m_mainWindow( mainWindow ), m_needsRebuild( false )
       {
-        QList<KToolBar*> toolBars = qFindChildren<KToolBar*>( m_mainWindow );
+        QList<KToolBar*> toolBars = m_mainWindow->findChildren<KToolBar*>();
 
         foreach( KToolBar * toolBar, toolBars) {
           if ( toolBar->mainWindow() != m_mainWindow )

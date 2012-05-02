@@ -118,7 +118,7 @@ private Q_SLOTS:
         QWidget parent;
         BrowserOpenOrSaveQuestion questionEmbedZip(&parent, KUrl("http://www.example.com/"), mimetype);
         questionEmbedZip.setFeatures(BrowserOpenOrSaveQuestion::ServiceSelection);
-        KDialog* theDialog = qFindChild<KDialog *>(&parent);
+        KDialog* theDialog = parent.findChild<KDialog *>();
         QVERIFY(theDialog);
         //QMetaObject::invokeMethod(theDialog, "slotButtonClicked", Qt::QueuedConnection, Q_ARG(int, button));
         QMetaObject::invokeMethod(this, "clickButton", Qt::QueuedConnection, Q_ARG(KDialog*, theDialog),

@@ -333,7 +333,7 @@ public:
     }
     void scrollAccessKeys(int dx, int dy)
     {
-        QList<QLabel*> wl = qFindChildren<QLabel*>(view->widget(), "KHTMLAccessKey");
+        QList<QLabel*> wl = view->widget()->findChildren<QLabel*>("KHTMLAccessKey");
         foreach(QLabel* w, wl) {
             w->move( w->pos() + QPoint(dx, dy) );
         }
@@ -1362,7 +1362,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
         if (kw && kw->m_kwp->isRedirected())
             setCursor = false;
         else if (QLineEdit* le = qobject_cast<QLineEdit*>(rw->widget())) {
-            QList<QWidget*> wl = qFindChildren<QWidget *>( le, "KLineEditButton" );
+            QList<QWidget*> wl = le->findChildren<QWidget *>("KLineEditButton");
             // force arrow cursor above lineedit clear button
             foreach (QWidget*w, wl) {
                 if (w->underMouse()) {

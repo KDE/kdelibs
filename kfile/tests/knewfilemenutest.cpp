@@ -86,14 +86,14 @@ private Q_SLOTS:
             QSKIP_PORTING(qPrintable(err), SkipAll);
         }
         textAct->trigger();
-        QDialog* dialog = qFindChild<QDialog *>(&parentWidget);
+        QDialog* dialog = parentWidget.findChild<QDialog *>();
         QVERIFY(dialog);
         KNameAndUrlInputDialog* nauiDialog = qobject_cast<KNameAndUrlInputDialog *>(dialog);
         if (nauiDialog) {
             nauiDialog->setSuggestedName(typedFilename);
             nauiDialog->setSuggestedUrl(KUrl("file:///etc"));
         } else {
-            QLineEdit* lineEdit = qFindChild<QLineEdit *>(dialog);
+            QLineEdit* lineEdit = dialog->findChild<QLineEdit *>();
             QVERIFY(lineEdit);
             lineEdit->setText(typedFilename);
         }

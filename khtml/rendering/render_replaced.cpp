@@ -468,7 +468,7 @@ void RenderWidget::updateFromElement()
         if (qobject_cast<QComboBox*>(m_widget)) {
             m_widget->setPalette(pal);
             // mmh great, there's no accessor for the popup... 
-            QList<QWidget*>l = qFindChildren<QWidget *>(m_widget, QString());
+            QList<QWidget*>l = m_widget->findChildren<QWidget *>();
             foreach(QWidget* w, l) {
                 if (qobject_cast<QAbstractScrollArea*>(w)) {
                     // we have the listview, climb up to reach its container.
