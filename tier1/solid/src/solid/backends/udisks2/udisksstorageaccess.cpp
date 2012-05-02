@@ -58,7 +58,7 @@ void StorageAccess::connectDBusSignals()
 
 bool StorageAccess::isLuksDevice() const
 {
-    return m_device->isEncryptedContainer(); // encrypted (and unlocked) device
+    return m_device->isEncryptedContainer(); // encrypted device
 }
 
 bool StorageAccess::isAccessible() const
@@ -156,7 +156,7 @@ void StorageAccess::slotDBusReply( const QDBusMessage & reply )
     if (m_setupInProgress)
     {
         if (isLuksDevice() && !isAccessible()) { // unlocked device, now mount it
-            if (reply.type() == QDBusMessage::ReplyMessage)
+            if (reply.type() == QDBusMessage::ReplyMessage)  // we've got a response from Unlock
                 m_clearTextPath = reply.arguments().value(0).value<QDBusObjectPath>().path();
             mount();
         }
@@ -335,7 +335,7 @@ void StorageAccess::callCryptoSetup(const QString & passphrase)
     QDBusConnection c = QDBusConnection::systemBus();
     QDBusMessage msg = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, m_device->udi(), UD2_DBUS_INTERFACE_ENCRYPTED, "Unlock");
 
-    msg << passphrase.toUtf8();  // QByteArray
+    msg << passphrase;
     msg << QVariantMap();   // options, unused now
 
     c.callWithCallback(msg, this,
