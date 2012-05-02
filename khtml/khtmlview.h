@@ -464,7 +464,7 @@ private:
 
     void setIgnoreWheelEvents(bool e);
 
-    void init();
+    void initWidget();
 
     DOM::NodeImpl *nodeUnderMouse() const;
     DOM::NodeImpl *nonSharedNodeUnderMouse() const;

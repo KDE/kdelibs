@@ -557,7 +557,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent )
     QScrollArea::setVerticalScrollBarPolicy(d->vpolicy);
     QScrollArea::setHorizontalScrollBarPolicy(d->hpolicy);
 
-    init();
+    initWidget();
     widget()->setMouseTracking(true);
 }
 
@@ -579,7 +579,7 @@ void KHTMLView::setPart(KHTMLPart *part)
     m_part = part;
 }
 
-void KHTMLView::init()
+void KHTMLView::initWidget()
 {
     // Do not access the part here. It might not be fully constructed.
 
