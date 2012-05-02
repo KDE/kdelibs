@@ -236,12 +236,6 @@ bool KGlobalSettings::singleClick()
     return g.readEntry("SingleClick", KDE_DEFAULT_SINGLECLICK );
 }
 
-bool KGlobalSettings::smoothScroll()
-{
-    KConfigGroup g( KSharedConfig::openConfig(), "KDE" );
-    return g.readEntry("SmoothScroll", KDE_DEFAULT_SMOOTHSCROLL );
-}
-
 bool KGlobalSettings::changeCursorOverIcon()
 {
     KConfigGroup g( KSharedConfig::openConfig(), "KDE" );

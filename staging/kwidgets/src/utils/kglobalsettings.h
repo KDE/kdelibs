@@ -25,7 +25,6 @@
 #include <QPalette>
 
 #define KDE_DEFAULT_SINGLECLICK true
-#define KDE_DEFAULT_SMOOTHSCROLL true
 #define KDE_DEFAULT_INSERTTEAROFFHANDLES 0
 #define KDE_DEFAULT_AUTOSELECTDELAY -1
 #define KDE_DEFAULT_CHANGECURSOR true
@@ -119,13 +118,6 @@ public:
 #ifndef KDE_NO_DEPRECATED
     static KWIDGETS_DEPRECATED bool singleClick();
 #endif
-
-    /**
-     * Returns if item views should force smooth scrolling.
-     * @return true if smooth scrolling is enabled for item view, false otherwise.
-     * @since 4.2
-     */
-    static bool smoothScroll();
 
     /**
      * Checks whether the cursor changes over icons.
