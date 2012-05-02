@@ -144,7 +144,9 @@ public:
 
     void setFont(const QFont& font)
     {
-        m_font = font; reset();
+        beginResetModel();
+        m_font = font;
+        endResetModel();
     }
     Qt::ItemFlags flags(const QModelIndex &index) const
     {

@@ -99,8 +99,9 @@ void ItemsModel::slotEntryChanged(const EntryInternal& entry)
 
 void ItemsModel::clearEntries()
 {
+    beginResetModel();
     m_entries.clear();
-    reset();
+    endResetModel();
 }
 
 void ItemsModel::slotEntryPreviewLoaded(const EntryInternal& entry, EntryInternal::PreviewType type)
