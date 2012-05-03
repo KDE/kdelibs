@@ -690,12 +690,11 @@ bool KStandardDirs::exists(const QString &fullPath)
 }
 
 static void lookupDirectory(const QString& path, const QString &relPart,
-                            const QRegExp &regexp_,
+                            const QRegExp &regexp,
                             QStringList& list,
                             QStringList& relList,
                             bool recursive, bool unique)
 {
-    QRegExp regexp = regexp_;
     const QString pattern = regexp.pattern();
     if (recursive || pattern.contains(QLatin1Char('?')) || pattern.contains(QLatin1Char('*')))
     {

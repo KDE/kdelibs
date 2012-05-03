@@ -229,7 +229,7 @@ QList<KSambaShareData> KSambaSharePrivate::getSharesByPath(const QString &path) 
 bool KSambaSharePrivate::isShareNameValid(const QString &name) const
 {
     // Samba forbidden chars
-    QRegExp notToMatchRx(QLatin1String("[%<>*\?|/\\+=;:\",]"));
+    const QRegExp notToMatchRx(QLatin1String("[%<>*\?|/\\+=;:\",]"));
     return (notToMatchRx.indexIn(name) == -1);
 }
 
@@ -282,7 +282,7 @@ KSambaShareData::UserShareError KSambaSharePrivate::isPathValid(const QString &p
 
 KSambaShareData::UserShareError KSambaSharePrivate::isAclValid(const QString &acl) const
 {
-    QRegExp aclRx("(?:(?:(\\w+\\s*)\\\\|)(\\w+\\s*):([fFrRd]{1})(?:,|))*");
+    const QRegExp aclRx("(?:(?:(\\w+\\s*)\\\\|)(\\w+\\s*):([fFrRd]{1})(?:,|))*");
     // TODO: check if user is a valid smb user
     return aclRx.exactMatch(acl) ? KSambaShareData::UserShareAclOk
            : KSambaShareData::UserShareAclInvalid;
@@ -364,11 +364,11 @@ KSambaShareData::UserShareError KSambaSharePrivate::remove(const KSambaShareData
 
 bool KSambaSharePrivate::sync()
 {
-    QRegExp headerRx(QLatin1String("^\\s*\\["
+    const QRegExp headerRx(QLatin1String("^\\s*\\["
                                          "([^%<>*\?|/\\+=;:\",]+)"
                                          "\\]"));
 
-    QRegExp OptValRx(QLatin1String("^\\s*([\\w\\d\\s]+)"
+    const QRegExp OptValRx(QLatin1String("^\\s*([\\w\\d\\s]+)"
                                          "="
                                          "(.*)$"));
 

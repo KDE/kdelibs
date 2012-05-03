@@ -134,13 +134,11 @@ QStringList KStringHandler::perlSplit(const QChar & sep, const QString & s, int 
   return l;
 }
 
-QStringList KStringHandler::perlSplit(const QRegExp & sep_, const QString & s, int max)
+QStringList KStringHandler::perlSplit(const QRegExp & sep, const QString & s, int max)
 {
   bool ignoreMax = 0 == max;
 
   QStringList l;
-
-  QRegExp sep = sep_;
 
   int searchStart = 0;
   int tokenStart = sep.indexIn(s, searchStart);

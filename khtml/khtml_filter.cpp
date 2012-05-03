@@ -289,8 +289,7 @@ bool StringsMatcher::isMatched(const QString& str, QString *by) const
                         int remStart = k - 7 + flen;
                         QString remainder = QString::fromRawData(str.unicode() + remStart,
                                                                  str.length() - remStart);
-                        QRegExp re = reFilters[index];
-                        if (re.exactMatch(remainder)) {
+                        if (reFilters[index].exactMatch(remainder)) {
                             if (by != 0) *by = rePrefixes[index]+reFilters[index].pattern();
                             return true;
                         }
