@@ -37,7 +37,8 @@ FstabStorageAccess::FstabStorageAccess(Solid::Backends::Fstab::FstabDevice *devi
 {
     QStringList currentMountPoints = FstabHandling::currentMountPoints(device->device());
     if (currentMountPoints.isEmpty()) {
-        m_filePath = FstabHandling::mountPoints(device->device()).first();
+        QStringList mountPoints = FstabHandling::mountPoints(device->device());
+        m_filePath = mountPoints.isEmpty() ? QString() : mountPoints.first();
         m_isAccessible = false;
     } else {
         m_filePath = currentMountPoints.first();
