@@ -24,6 +24,7 @@
 
 #include <solid/ifaces/storagedrive.h>
 #include "wmiblock.h"
+#include "wmiquery.h"
 
 namespace Solid
 {

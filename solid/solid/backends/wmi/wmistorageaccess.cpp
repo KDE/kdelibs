@@ -1,4 +1,5 @@
 /*
+    Copyright 2012 Patrick von Reth <vonreth@kde.org>
     Copyright 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -44,6 +45,9 @@ StorageAccess::~StorageAccess()
 
 bool StorageAccess::isAccessible() const
 {
+    if (m_device->property("SerialNumber").isNull())
+        return false;
+    return true;
     // if (m_device->property("info.interfaces").toStringList().contains("org.freedesktop.Wmi.Device.Volume.Crypto")) {
 
         //Might be a bit slow, but I see no cleaner way to do this with WMI...
@@ -61,36 +65,40 @@ bool StorageAccess::isAccessible() const
         // return reply.isValid() && !list.isEmpty();
 
     // } else {
-        return m_device->property("volume.is_mounted").toBool();
+//        return m_device->property("volume.is_mounted").toBool();
     // }
 }
 
 QString StorageAccess::filePath() const
 {
-    return m_device->property("volume.mount_point").toString();
+    QString filePath = m_device->property("DriveLetter").toString();
+    if(!filePath.isNull())
+        filePath += "\\";
+    return filePath;
 }
 
 bool Solid::Backends::Wmi::StorageAccess::isIgnored() const
 {
-    if (m_device->property("volume.ignore").toBool()) {
-        return true;
-    }
+    return false;
+//    if (m_device->property("volume.ignore").toBool()) {
+//        return true;
+//    }
 
-    /* Now be a bit more aggressive on what we want to ignore,
-     * the user generally need to check only what's removable or in /media
-     * the volumes mounted to make the system (/, /boot, /var, etc.)
-     * are useless to him.
-     */
-    WmiDevice drive(m_device->property("block.storage_device").toString());
-    QString mount_point = m_device->property("volume.mount_point").toString();
-    bool mounted = m_device->property("volume.is_mounted").toBool();
-    bool removable = drive.property("storage.removable").toBool();
-    bool hotpluggable = drive.property("storage.hotpluggable").toBool();
+//    /* Now be a bit more aggressive on what we want to ignore,
+//     * the user generally need to check only what's removable or in /media
+//     * the volumes mounted to make the system (/, /boot, /var, etc.)
+//     * are useless to him.
+//     */
+//    WmiDevice drive(m_device->property("block.storage_device").toString());
+//    QString mount_point = m_device->property("volume.mount_point").toString();
+//    bool mounted = m_device->property("volume.is_mounted").toBool();
+//    bool removable = drive.property("storage.removable").toBool();
+//    bool hotpluggable = drive.property("storage.hotpluggable").toBool();
 
 
-    return !removable && !hotpluggable
-        && mounted && !mount_point.startsWith(QLatin1String("/media/"))
-        && !mount_point.startsWith(QLatin1String("/mnt/"));
+//    return !removable && !hotpluggable
+//        && mounted && !mount_point.startsWith(QLatin1String("/media/"))
+//        && !mount_point.startsWith(QLatin1String("/mnt/"));
 }
 
 bool StorageAccess::setup()

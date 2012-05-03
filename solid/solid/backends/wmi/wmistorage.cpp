@@ -20,6 +20,7 @@
 */
 
 #include "wmistorage.h"
+#include "wmiquery.h"
 
 using namespace Solid::Backends::Wmi;
 
@@ -36,52 +37,45 @@ Storage::~Storage()
 
 Solid::StorageDrive::Bus Storage::bus() const
 {
-    //TODO:
-    return Solid::StorageDrive::Platform;
-//    QString bus = m_device->property("storage.bus").toString();
-//    if (bus=="ide")
-//    {
-//        return Solid::StorageDrive::Ide;
-//    }
-//    else if (bus=="usb")
-//    {
-//        return Solid::StorageDrive::Usb;
-//    }
-//    else if (bus=="ieee1394")
-//    {
-//        return Solid::StorageDrive::Ieee1394;
-//    }
-//    else if (bus=="scsi")
-//    {
-//        return Solid::StorageDrive::Scsi;
-//    }
-//    else if (bus=="sata")
+    QString bus = m_device->property("InterfaceType").toString().toLower();
+
+    if (bus=="ide")
+    {
+        return Solid::StorageDrive::Ide;
+    }
+    else if (bus=="usb")
+    {
+        return Solid::StorageDrive::Usb;
+    }
+    else if (bus=="1394")
+    {
+        return Solid::StorageDrive::Ieee1394;
+    }
+    else if (bus=="scsi")
+    {
+        return Solid::StorageDrive::Scsi;
+    }
+//    else if (bus=="sata")//not availible http://msdn.microsoft.com/en-us/library/windows/desktop/aa394132(v=vs.85).aspx
 //    {
 //        return Solid::StorageDrive::Sata;
 //    }
-//    else
-//    {
-//        return Solid::StorageDrive::Platform;
-//    }
+    else
+    {
+        return Solid::StorageDrive::Platform;
+    }
 }
 
 Solid::StorageDrive::DriveType Storage::driveType() const
 {
-    uint type = m_device->property("drivetype").toUInt();
-    switch(type){
-      case 3:
-        return Solid::StorageDrive::HardDisk;
-      case 5:
-        return Solid::StorageDrive::CdromDrive;
-      case 2:
-        return Solid::StorageDrive::MemoryStick;
-      default:
-        return Solid::StorageDrive::HardDisk;
-//     
-//     else if (type=="floppy")
-//     {
-//         return Solid::StorageDrive::Floppy;
-//     }
+    QString type = m_device->property("MediaType").toString();//was availibele in Win32_LogicalDiskDrive
+     if (type=="Removable Media")
+     {
+         return Solid::StorageDrive::MemoryStick;
+     }
+     else{//if(type == "External hard disk media" || type == "Fixed hard disk media" || type == "Fixed hard disk"){
+         return Solid::StorageDrive::HardDisk;
+     }
+//      else
 //     else if (type=="tape")
 //     {
 //         return Solid::StorageDrive::Tape;
@@ -101,7 +95,7 @@ Solid::StorageDrive::DriveType Storage::driveType() const
 //     else
 //     {
         
-    }
+//    }
 }
 
 bool Storage::isRemovable() const

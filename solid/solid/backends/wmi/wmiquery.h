@@ -48,7 +48,7 @@ class WmiQuery
 {
 public:
     class Item {
-    public:
+    public:   
         Item(IWbemClassObject *p);
         Item(const Item& other);
         Item& operator=(const Item& other);

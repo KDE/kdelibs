@@ -1,4 +1,5 @@
 /*
+    Copyright 2012 Patrick von Reth <vonreth@kde.org>
     Copyright 2005-2007 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -64,12 +65,10 @@ public:
 
     void discoverType()
     {
-        if (!convertUDItoWMI(m_udi,m_wmiTable,m_wmiProperty,m_wmiValue))
+        if (!convertUDItoWMI(m_udi,m_wmiTable,m_wmiProperty,m_wmiValue,m_type))
             return;
+        interfaceList<<getInterfaces(m_type);
 
-        // todo: add nicer implementation to detect device type
-        if (m_wmiTable == getWMITable(Solid::DeviceInterface::OpticalDrive))
-            interfaceList << "Block" << "StorageDrive" << "OpticalDrive" << "StorageVolume";
     }
 
     const QString udi() const { return m_udi; }
@@ -81,18 +80,19 @@ public:
         return list;
     }
 
-    static bool convertUDItoWMI(const QString &udi, QString &wmiTable, QString &wmiProperty, QString &wmiValue)
+    static bool convertUDItoWMI(const QString &udi, QString &wmiTable, QString &wmiProperty, QString &wmiValue,Solid::DeviceInterface::Type &type)
     {
         QString _udi = udi;
         QStringList x = _udi.remove("/org/kde/solid/wmi/").split('/');
-        if (x.size() != 3) {
+        if (x.size() != 2) {
             qDebug() << "invalid udi detected" << _udi;
             return false;
         }
-        Solid::DeviceInterface::Type type = DeviceInterface::fromString(x[0]);
-        wmiTable = getWMITable(type);
-        wmiProperty = x[1];
-        wmiValue = x[2];
+        type = DeviceInterface::fromString(x[0]);
+        wmiTable = getWMITable(type);        
+        wmiProperty = getPropertyNameForUDI(type);
+        wmiValue = x[1];
+//        qDebug()<<"wmi"<<  type <<wmiTable <<wmiProperty <<wmiValue;
         return true;
     }
 
@@ -101,23 +101,26 @@ public:
         QString wmiTable;
         QString wmiProperty;
         QString wmiValue;
+        Solid::DeviceInterface::Type solidDevice;
 
-        if (!convertUDItoWMI(udi, wmiTable, wmiProperty, wmiValue))
+        if (!convertUDItoWMI(udi, wmiTable, wmiProperty, wmiValue,solidDevice))
             return false;
+
 
         QString query("SELECT * FROM " + wmiTable + " WHERE " + wmiProperty + "='" + wmiValue + '\'');
 		WmiQuery::ItemList list = WmiQuery::instance().sendQuery(query);
         return list.size() > 0;
     }
 
-    static QString generateUDI(const QString &key, const QString &property, const QString &value)
+    static QString generateUDI(const QString &key, const QString &value)
     {
-        return QString("/org/kde/solid/wmi/%1/%2/%3").arg(key).arg(property).arg(value);
+        return QString("/org/kde/solid/wmi/%1/%2").arg(key).arg(value);
     }
 
-    static QStringList getInterfaces(const Solid::DeviceInterface::Type &type)
+    static QList<Solid::DeviceInterface::Type> getInterfaces(const Solid::DeviceInterface::Type &type)
     {
-        QStringList interfaceList;
+        QList<Solid::DeviceInterface::Type> interfaceList;
+        interfaceList<<type;
 
         switch (type)
         {
@@ -130,16 +133,15 @@ public:
         case Solid::DeviceInterface::StorageAccess:
             break;
         case Solid::DeviceInterface::StorageDrive:
-            interfaceList << "Block" << "StorageDrive";
             break;
         case Solid::DeviceInterface::OpticalDrive:
-            interfaceList << "Block" << "StorageDrive" << "OpticalDrive";
+            interfaceList <<Solid::DeviceInterface::StorageDrive;
             break;
         case Solid::DeviceInterface::StorageVolume:
-            interfaceList << "Block" << "StorageVolume";
+            interfaceList <<Solid::DeviceInterface::StorageAccess;
             break;
         case Solid::DeviceInterface::OpticalDisc:
-            interfaceList << "Block" << "StorageDrive" << "OpticalDrive";
+            interfaceList <<Solid::DeviceInterface::StorageDrive<<Solid::DeviceInterface::OpticalDrive;
             break;
         case Solid::DeviceInterface::Camera:
             break;
@@ -156,7 +158,8 @@ public:
         case Solid::DeviceInterface::AudioInterface:
             break;
         case Solid::DeviceInterface::DvbInterface:
-            break;        case Solid::DeviceInterface::Video:
+            break;
+        case Solid::DeviceInterface::Video:
             break;
         case Solid::DeviceInterface::Unknown:
         case Solid::DeviceInterface::Last:
@@ -172,7 +175,6 @@ public:
     {
         QStringList list = DeviceInterface::toStringList(type);
         QString value = list.size() > 0 ? list[0] : QString();
-//         qDebug() << value;
         return value;
     }
 
@@ -192,12 +194,13 @@ public:
             wmiTable = "Win32_LogicalDisk";
             break;
         case Solid::DeviceInterface::StorageDrive:
+            wmiTable = "Win32_DiskDrive";
             break;
         case Solid::DeviceInterface::OpticalDrive:
             wmiTable = "Win32_LogicalDisk";
             break;
         case Solid::DeviceInterface::StorageVolume:
-            wmiTable = "Win32_LogicalDisk";
+            wmiTable = "Win32_Volume";
             break;
         case Solid::DeviceInterface::OpticalDisc:
             wmiTable = "Win32_CDROMDrive";
@@ -233,13 +236,82 @@ public:
     static QString getPropertyNameForUDI(const Solid::DeviceInterface::Type &type)
     {
         QString propertyName;
-        if (type == Solid::DeviceInterface::OpticalDrive)
+        switch(type){
+        case Solid::DeviceInterface::OpticalDrive:
             propertyName = "Drive";
-        else if (type == Solid::DeviceInterface::Battery)
+            break;
+        case Solid::DeviceInterface::Battery:
             propertyName = "Name";
-        else
+            break;
+        case Solid::DeviceInterface::StorageAccess:
+             propertyName = "DeviceID";
+             break;
+        case Solid::DeviceInterface::StorageVolume:
+            propertyName = "DriveLetter";
+            break;
+        case Solid::DeviceInterface::StorageDrive:
+            propertyName = "Index";
+            break;
+        default:
             propertyName = "DeviceID";
+        }
 
+        return propertyName;
+    }
+
+    static QString getPropertyNameForVendor(const Solid::DeviceInterface::Type &type)
+    {
+        QString propertyName;
+        switch(type){
+        case Solid::DeviceInterface::Processor:
+            propertyName = "Manufacturer";
+            break;
+        case Solid::DeviceInterface::OpticalDrive:
+            propertyName = "Drive";//TODO:
+            break;
+        case Solid::DeviceInterface::Battery:
+            propertyName = "Name";//TODO:
+            break;
+        case Solid::DeviceInterface::StorageAccess:
+             propertyName = "DeviceID";//TODO:
+             break;
+        case Solid::DeviceInterface::StorageVolume:
+            propertyName = "DriveLetter";//TODO:
+            break;
+        case Solid::DeviceInterface::StorageDrive:
+            propertyName = "Model";
+            break;
+        default:
+            propertyName = "DeviceID";//TODO:
+        }
+        return propertyName;
+    }
+
+    static QString getPropertyNameForProduct(const Solid::DeviceInterface::Type &type)
+    {
+        QString propertyName;
+        switch(type){
+        case Solid::DeviceInterface::Processor:
+            propertyName = "Name";
+            break;
+        case Solid::DeviceInterface::OpticalDrive:
+            propertyName = "Drive";//TODO:
+            break;
+        case Solid::DeviceInterface::Battery:
+            propertyName = "Name";//TODO:
+            break;
+        case Solid::DeviceInterface::StorageAccess:
+             propertyName = "DeviceID";//TODO:
+             break;
+        case Solid::DeviceInterface::StorageVolume:
+            propertyName = "Label";
+            break;
+        case Solid::DeviceInterface::StorageDrive:
+            propertyName = "Caption";
+            break;
+        default:
+            propertyName = "DeviceID";//TODO:
+        }
         return propertyName;
     }
 
@@ -251,8 +323,7 @@ public:
         foreach(const WmiQuery::Item& item, list) {
             QString propertyName = getPropertyNameForUDI(type);
             QString property = item.getProperty(propertyName).toString();
-
-            result << generateUDI(getUDIKey(type),propertyName.toLower(),property.toLower());
+            result << generateUDI(getUDIKey(type),property.toLower());
         }
         return result;
     }
@@ -263,7 +334,8 @@ public:
     QString m_wmiTable;
     QString m_wmiProperty;
     QString m_wmiValue;
-    QStringList interfaceList;
+    Solid::DeviceInterface::Type m_type;
+    QList<Solid::DeviceInterface::Type> interfaceList;
 };
 
 Q_DECLARE_METATYPE(ChangeDescription)
@@ -272,9 +344,8 @@ WmiDevice::WmiDevice(const QString &udi)
     : Device(), d(new WmiDevicePrivate(udi))
 {
     d->discoverType();
-    foreach (const QString &_interface, d->interfaceList)
+    foreach (Solid::DeviceInterface::Type type, d->interfaceList)
     {
-        Solid::DeviceInterface::Type type = Solid::DeviceInterface::stringToType(_interface);
         createDeviceInterface(type);
     }
 }
@@ -314,12 +385,12 @@ QString WmiDevice::parentUdi() const
 
 QString WmiDevice::vendor() const
 {
-    return property("Manufacturer").toString();
+    return property(WmiDevicePrivate::getPropertyNameForVendor(d->m_type)).toString();
 }
 
 QString WmiDevice::product() const
 {
-    return property("Name").toString();
+    return property(WmiDevicePrivate::getPropertyNameForProduct(d->m_type)).toString();
 }
 
 QString WmiDevice::icon() const
@@ -476,21 +547,13 @@ bool WmiDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) c
     // Special cases not matching with WMI capabilities
     if (type==Solid::DeviceInterface::GenericInterface) {
         return true;
-    } else if (type==Solid::DeviceInterface::StorageAccess) {
-#if 1
-//         qDebug() << " has to be implemented";
-        return true;
-#else
-        return property("info.interfaces").toStringList().contains("org.freedesktop.Wmi.Device.Volume")
-            || property("info.interfaces").toStringList().contains("org.freedesktop.Wmi.Device.Volume.Crypto");
-#endif
     }
     else if (type==Solid::DeviceInterface::Video) {
         if (!property("video4linux.device").toString().contains("video" ) )
           return false;
     }
 
-    return d->interfaceList.contains(Solid::DeviceInterface::typeToString(type));
+    return d->interfaceList.contains(type);
 }
 
 QObject *WmiDevice::createDeviceInterface(const Solid::DeviceInterface::Type &type)

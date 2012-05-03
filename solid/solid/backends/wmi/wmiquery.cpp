@@ -34,6 +34,7 @@
 
 #include <iostream>
 #include <Wbemidl.h>
+#include <Oaidl.h>
 
 # pragma comment(lib, "wbemuuid.lib")
 
@@ -50,42 +51,57 @@ inline OLECHAR* SysAllocString(const QString &s){
 
 using namespace Solid::Backends::Wmi;
 
-//from http://qt.gitorious.org/qt-mobility/qt-mobility/blobs/master/src/systeminfo/windows/qwmihelper_win.cpp
 QVariant WmiQuery::Item::msVariantToQVariant(VARIANT msVariant, CIMTYPE variantType)
 {
     QVariant returnVariant;
+    if(msVariant.vt == VT_NULL){
+        return QVariant(QVariant::String);
+    }
+
     switch(variantType) {
     case CIM_STRING:
     case CIM_CHAR16:
-        {
-            QString str((QChar*)msVariant.bstrVal, wcslen(msVariant.bstrVal));
-            QVariant vs(str);
-            returnVariant = vs;
-        }
+    case CIM_UINT64://bug I get a wrong value from ullVal
+    {
+        QString str((QChar*)msVariant.bstrVal,::SysStringLen(msVariant.bstrVal));
+        QVariant vs(str);
+        returnVariant = vs;
+
+    }
         break;
     case CIM_BOOLEAN:
-        {
-            QVariant vb(msVariant.boolVal);
-            returnVariant = vb;
-        }
+    {
+        QVariant vb(msVariant.boolVal);
+        returnVariant = vb;
+    }
         break;
-            case CIM_UINT8:
-        {
-            QVariant vb(msVariant.uintVal);
-            returnVariant = vb;
-        }
+    case CIM_UINT8:
+    {
+        QVariant vb(msVariant.uintVal);
+        returnVariant = vb;
+    }
         break;
-            case CIM_UINT16:
-        {
-            QVariant vb(msVariant.uintVal);
-            returnVariant = vb;
-        }
-            case CIM_UINT32:
-        {
-            QVariant vb(msVariant.uintVal);
-            returnVariant = vb;
-        }
+    case CIM_UINT16:
+    {
+        QVariant vb(msVariant.uintVal);
+        returnVariant = vb;
+    }
         break;
+    case CIM_UINT32:
+    {
+        QVariant vb(msVariant.uintVal);
+        returnVariant = vb;
+    }
+        break;
+//    case CIM_UINT64:
+//    {
+//        QVariant vb(msVariant.ullVal);
+////        wprintf(L"ulonglong %d %I64u\r\n",variantType, msVariant.ullVal); // 32-bit on x86, 64-bit on x64
+//        returnVariant = vb;
+//    }
+//        break;
+    default:
+        qDebug()<<"Unsupported variant"<<variantType;
     };
     VariantClear(&msVariant);
     return returnVariant;
@@ -108,8 +124,6 @@ QVariant WmiQuery::Item::getProperty(const QString &property) const
         return "false";
     else if(property == "block.storage_device")
         return "true";
-    else if (property == "volume.mount_point")
-        prop = "deviceid";
     else if (property == "volume.is_mounted")
         return "true";
     // todo check first if property is available
@@ -125,7 +139,7 @@ QVariant WmiQuery::Item::getProperty(const QString &property) const
         qWarning()<<"Querying "<<property<<"failed";
     }
     ::SysFreeString(bstrProp);
-//    qDebug() << "end result:" << result;
+//    qDebug() << "Querying "<<property<<"end result:" << result;
     return result;
 }
 
@@ -283,6 +297,10 @@ WmiQuery::ItemList WmiQuery::sendQuery( const QString &wql )
         if( pEnumerator ) pEnumerator->Release();
         else qDebug() << "failed to release enumerator!";
     }
+//    if(retList.size()== 0)
+//        qDebug()<<"querying"<<wql<<"returned empty list";
+//    else
+//        qDebug()<<"Feteched"<<retList.size()<<"items";
     return retList;
 }
 

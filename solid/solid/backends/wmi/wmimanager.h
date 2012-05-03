@@ -41,7 +41,7 @@ class WmiManager : public Solid::Ifaces::DeviceManager
     Q_OBJECT
 
 public:
-    WmiManager(QObject *parent);
+    WmiManager(QObject *parent=0);
     virtual ~WmiManager();
 
     virtual QString udiPrefix() const ;

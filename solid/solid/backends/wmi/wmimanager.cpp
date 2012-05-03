@@ -162,7 +162,6 @@ QStringList WmiManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type
 {
 //    qDebug() << type;
     QStringList result;
-    WmiQuery::ItemList list;
 
     switch (type)
     {
@@ -174,14 +173,16 @@ QStringList WmiManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type
     case Solid::DeviceInterface::Block:
         break;
     case Solid::DeviceInterface::StorageAccess:
-        result << WmiDevice::generateUDIList(type);
+//        result << WmiDevice::generateUDIList(type);
         break;
     case Solid::DeviceInterface::StorageDrive:
+        result << WmiDevice::generateUDIList(type);
         break;
     case Solid::DeviceInterface::OpticalDrive:
         result << WmiDevice::generateUDIList(type);
         break;
     case Solid::DeviceInterface::StorageVolume:
+        result << WmiDevice::generateUDIList(type);
         break;
     case Solid::DeviceInterface::OpticalDisc:
         result << WmiDevice::generateUDIList(type);
@@ -211,7 +212,6 @@ QStringList WmiManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type
         break;
     }
 
-//    qDebug() << result;
     return result;
 }
 
