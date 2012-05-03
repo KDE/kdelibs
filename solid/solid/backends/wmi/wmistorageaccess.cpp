@@ -35,6 +35,7 @@ StorageAccess::StorageAccess(WmiDevice *device)
 {
     connect(device, SIGNAL(propertyChanged(QMap<QString,int>)),
              this, SLOT(slotPropertyChanged(QMap<QString,int>)));
+//    qDebug()<<"StorageAccess"<<m_device->type();
 }
 
 StorageAccess::~StorageAccess()
@@ -45,7 +46,7 @@ StorageAccess::~StorageAccess()
 
 bool StorageAccess::isAccessible() const
 {
-    if (m_device->property("SerialNumber").isNull())
+    if (m_device->property("DriveLetter").isNull() || m_device->property("SerialNumber").isNull())
         return false;
     return true;
     // if (m_device->property("info.interfaces").toStringList().contains("org.freedesktop.Wmi.Device.Volume.Crypto")) {

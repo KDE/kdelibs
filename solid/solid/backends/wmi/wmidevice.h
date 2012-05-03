@@ -70,6 +70,7 @@ public:
 
     static QStringList generateUDIList(const Solid::DeviceInterface::Type &type);
     static bool exists(const QString &udi);
+    const Solid::DeviceInterface::Type type() const;
 
 Q_SIGNALS:
     void propertyChanged(const QMap<QString,int> &changes);

@@ -107,8 +107,7 @@ bool Storage::isRemovable() const
 
 bool Storage::isHotpluggable() const
 {
-    //TODO:
-    return false;
+    return bus() == Solid::StorageDrive::Usb;
 //    return m_device->property("storage.hotpluggable").toBool();
 }
 

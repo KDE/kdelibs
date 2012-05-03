@@ -536,6 +536,10 @@ QVariant WmiDevice::property(const QString &key) const
     return result;
 }
 
+const Solid::DeviceInterface::Type WmiDevice::type() const{
+    return d->m_type;
+}
+
 QMap<QString, QVariant> WmiDevice::allProperties() const
 {
     // QDBusReply<QVariantMap> reply = d->device.call("GetAllProperties");

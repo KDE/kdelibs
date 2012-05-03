@@ -112,28 +112,29 @@ bool WmiManager::deviceExists(const QString &udi)
 QStringList WmiManager::devicesFromQuery(const QString &parentUdi,
                                          Solid::DeviceInterface::Type type)
 {
-//    qDebug() << parentUdi << type;
-    if (!parentUdi.isEmpty())
-    {
-        QStringList result = findDeviceStringMatch("info.parent", parentUdi);
+//    qDebug() <<"WmiManager::devicesFromQuery"<< parentUdi << type;
+//    if (!parentUdi.isEmpty())
+//    {
+//        QStringList result = findDeviceStringMatch("info.parent", parentUdi);
 
-        if (type!=Solid::DeviceInterface::Unknown) {
-            QStringList::Iterator it = result.begin();
-            QStringList::ConstIterator end = result.end();
+//        if (type!=Solid::DeviceInterface::Unknown) {
+//            QStringList::Iterator it = result.begin();
+//            QStringList::ConstIterator end = result.end();
 
-            for (; it!=end; ++it)
-            {
-                WmiDevice device(*it);
+//            for (; it!=end; ++it)
+//            {
+//                WmiDevice device(*it);
 
-                if (!device.queryDeviceInterface(type)) {
-                    result.erase(it);
-                }
-            }
-        }
+//                if (!device.queryDeviceInterface(type)) {
+//                    result.erase(it);
+//                }
+//            }
+//        }
 
-        return result;
+//        return result;
 
-    } else if (type!=Solid::DeviceInterface::Unknown) {
+//    } else
+    if (type!=Solid::DeviceInterface::Unknown) {
         return findDeviceByDeviceInterface(type);
     } else {
         return allDevices();
@@ -160,20 +161,15 @@ QStringList WmiManager::findDeviceStringMatch(const QString &key, const QString 
 
 QStringList WmiManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type type)
 {
-//    qDebug() << type;
     QStringList result;
 
     switch (type)
     {
-    case Solid::DeviceInterface::GenericInterface:
-        break;
     case Solid::DeviceInterface::Processor:
         result << WmiDevice::generateUDIList(type);
         break;
-    case Solid::DeviceInterface::Block:
-        break;
     case Solid::DeviceInterface::StorageAccess:
-//        result << WmiDevice::generateUDIList(type);
+        result << WmiDevice::generateUDIList(type);
         break;
     case Solid::DeviceInterface::StorageDrive:
         result << WmiDevice::generateUDIList(type);
@@ -187,28 +183,8 @@ QStringList WmiManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type
     case Solid::DeviceInterface::OpticalDisc:
         result << WmiDevice::generateUDIList(type);
         break;
-    case Solid::DeviceInterface::Camera:
-        break;
-    case Solid::DeviceInterface::PortableMediaPlayer:
-        break;
-    case Solid::DeviceInterface::NetworkInterface:
-        break;
-    case Solid::DeviceInterface::AcAdapter:
-        break;
     case Solid::DeviceInterface::Battery:
         result << WmiDevice::generateUDIList(type);
-        break;
-    case Solid::DeviceInterface::Button:
-        break;
-    case Solid::DeviceInterface::AudioInterface:
-        break;
-    case Solid::DeviceInterface::DvbInterface:
-        break;
-    case Solid::DeviceInterface::Video:
-        break;
-    case Solid::DeviceInterface::NetworkShare:
-    case Solid::DeviceInterface::Unknown:
-    case Solid::DeviceInterface::Last:
         break;
     }
 
