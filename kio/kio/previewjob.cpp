@@ -592,7 +592,7 @@ void PreviewJobPrivate::getOrCreateThumbnail()
             supportsProtocol = true;
         } else if (m_remoteProtocolPlugins.value("KIO").contains(item.mimetype())) {
             // Assume KIO understands any URL, ThumbCreator slaves who have
-            // X-KDE-Protocols=KIO will get feed the remote URL directly.
+            // X-KDE-Protocols=KIO will get fed the remote URL directly.
             supportsProtocol = true;
         }
 
