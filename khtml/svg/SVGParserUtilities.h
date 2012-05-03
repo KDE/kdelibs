@@ -51,7 +51,7 @@ namespace WebCore {
         return ptr < end;
     }
 
-    inline bool skipOptionalSpacesOrDelimiter(const UChar*& ptr, const UChar* end, UChar delimiter = ',')
+    inline bool skipOptionalSpacesOrDelimiter(const UChar*& ptr, const UChar* end, UChar delimiter = UChar(','))
     {
         if (ptr < end && !isWhitespace(*ptr) && *ptr != delimiter)
             return false;
