@@ -11,7 +11,11 @@ macro_push_required_vars()
   if (QT_USE_FRAMEWORKS)
     set(CMAKE_REQUIRED_FLAGS "-F${QT_LIBRARY_DIR} ")
   endif (QT_USE_FRAMEWORKS)
-  # TODO set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -fPIC ")
+  set (CMAKE_CXX_FLAGS_SAVED "${CMAKE_CXX_FLAGS}")
+
+  # If Qt is built with reduce-relocations (The default) we need to add -fPIE here.
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Core_EXECUTABLE_COMPILE_FLAGS}")
+
   check_cxx_source_compiles(
 "#include <QtNetwork/QSslSocket>
 int main()
@@ -19,6 +23,9 @@ int main()
     QSslSocket *socket;
     return 0;
 }" HAVE_QSSLSOCKET)
+
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_SAVED}")
+
   if (NOT HAVE_QSSLSOCKET)
      message(FATAL_ERROR "KDE Requires Qt to be built with SSL support")
   endif (NOT HAVE_QSSLSOCKET)
