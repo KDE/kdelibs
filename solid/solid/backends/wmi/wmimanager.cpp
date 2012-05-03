@@ -175,13 +175,13 @@ QStringList WmiManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type
         result << WmiDevice::generateUDIList(type);
         break;
     case Solid::DeviceInterface::OpticalDrive:
-        result << WmiDevice::generateUDIList(type);
+//        result << WmiDevice::generateUDIList(type);
         break;
     case Solid::DeviceInterface::StorageVolume:
         result << WmiDevice::generateUDIList(type);
         break;
     case Solid::DeviceInterface::OpticalDisc:
-        result << WmiDevice::generateUDIList(type);
+//        result << WmiDevice::generateUDIList(type);
         break;
     case Solid::DeviceInterface::Battery:
         result << WmiDevice::generateUDIList(type);

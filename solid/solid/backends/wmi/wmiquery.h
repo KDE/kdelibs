@@ -55,13 +55,16 @@ public:
         ~Item();
 
         QVariant getProperty(const QString &property) const;
+        QVariantMap getAllProperties();
 
     private:
         Item() {}
         static QVariant msVariantToQVariant(VARIANT msVariant, CIMTYPE variantType);
+        QVariant getProperty(BSTR property) const;
         // QSharedPointer alone doesn't help because we need to call Release()
         IWbemClassObject* m_p;
         QSharedPointer<QAtomicInt> m_int;
+        QVariantMap m_properies;
     };
 
     typedef QList<Item> ItemList;
