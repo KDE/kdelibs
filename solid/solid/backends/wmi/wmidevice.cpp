@@ -24,6 +24,7 @@
 #include <solid/genericinterface.h>
 
 #include "wmiquery.h"
+#include "wmimanager.h"
 #include "wmideviceinterface.h"
 #include "wmigenericinterface.h"
 #include "wmiprocessor.h"
@@ -47,6 +48,7 @@
 
 using namespace Solid::Backends::Wmi;
 
+QMap<QString,QString> WmiDevice::driveLetterToUid;
 class Solid::Backends::Wmi::WmiDevicePrivate
 {
 public:
@@ -75,7 +77,7 @@ public:
 
     WmiQuery::ItemList sendQuery()
     {
-        QString query("SELECT * FROM " + m_wmiTable + " WHERE " + m_wmiProperty + "='" + m_wmiValue + '\'');
+        QString query("SELECT * FROM " + m_wmiTable + " WHERE " + m_wmiProperty + "='" + m_wmiValue + "'");
         WmiQuery::ItemList list = WmiQuery::instance().sendQuery(query);
         return list;
     }
@@ -92,6 +94,8 @@ public:
         wmiTable = getWMITable(type);        
         wmiProperty = getPropertyNameForUDI(type);
         wmiValue = x[1];
+        if(type == Solid::DeviceInterface::StorageVolume )
+            wmiValue = "\\\\\\\\?\\\\Volume{"+wmiValue+"}\\\\";
 //        qDebug()<<"wmi"<<  type <<wmiTable <<wmiProperty <<wmiValue;
         return true;
     }
@@ -107,9 +111,13 @@ public:
             return false;
 
 
-        QString query("SELECT * FROM " + wmiTable + " WHERE " + wmiProperty + "='" + wmiValue + '\'');
+        QString query("SELECT * FROM " + wmiTable + " WHERE " + wmiProperty + "='" + wmiValue + "'");
 		WmiQuery::ItemList list = WmiQuery::instance().sendQuery(query);
-        return list.size() > 0;
+        if(list.size() > 0)
+            return true;
+        qWarning()<<"Device UDI:"<<udi<<"doesnt exist";
+//        qDebug()<<query;
+        return false;
     }
 
     static QString generateUDI(const QString &key, const QString &property)
@@ -247,7 +255,7 @@ public:
              propertyName = "DeviceID";
              break;
         case Solid::DeviceInterface::StorageVolume:
-            propertyName = "DriveLetter";
+            propertyName = "DeviceID";
             break;
         case Solid::DeviceInterface::StorageDrive:
             propertyName = "Index";
@@ -323,6 +331,18 @@ public:
         foreach(const WmiQuery::Item& item, list) {
             QString propertyName = getPropertyNameForUDI(type);
             QString property = item.getProperty(propertyName).toString();
+            if(type == Solid::DeviceInterface::StorageVolume ){
+                static QRegExp uid("([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})");
+                uid.indexIn(property);
+                property =  uid.capturedTexts()[0];
+                QString driveLtter = item.getProperty("DriveLetter").toString().toLower();
+                if(!WmiDevice::driveLetterToUid.contains(driveLtter))
+                    WmiDevice::driveLetterToUid[driveLtter] = property;
+            }else if(type == Solid::DeviceInterface::StorageAccess ){
+                if(!WmiDevice::driveLetterToUid.contains(property))
+                    WmiManager().devicesFromQuery("",Solid::DeviceInterface::StorageVolume);
+                property = WmiDevice::driveLetterToUid[property];
+            }
             result << generateUDI(getUDIKey(type),property.toLower());
         }
         return result;
@@ -394,7 +414,7 @@ QString WmiDevice::parentUdi() const
             result = "/org/kde/solid/wmi/storage/"+list[0].getProperty("Index").toString();
         }
     }
-    if(result.isEmpty()){
+    if(result.isEmpty() && !value.isEmpty()){
         result = udi();
         result = result.remove("/"+value);
     }
