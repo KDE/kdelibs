@@ -112,9 +112,9 @@ public:
         return list.size() > 0;
     }
 
-    static QString generateUDI(const QString &key, const QString &value)
+    static QString generateUDI(const QString &key, const QString &property)
     {
-        return QString("/org/kde/solid/wmi/%1/%2").arg(key).arg(value);
+        return QString("/org/kde/solid/wmi/%1/%2").arg(key).arg(property);
     }
 
     static QList<Solid::DeviceInterface::Type> getInterfaces(const Solid::DeviceInterface::Type &type)
@@ -273,8 +273,8 @@ public:
             propertyName = "Name";//TODO:
             break;
         case Solid::DeviceInterface::StorageAccess:
-             propertyName = "DeviceID";//TODO:
-             break;
+            propertyName = "DeviceID";//TODO:
+            break;
         case Solid::DeviceInterface::StorageVolume:
             propertyName = "DriveLetter";//TODO:
             break;
@@ -380,7 +380,25 @@ QString WmiDevice::udi() const
 
 QString WmiDevice::parentUdi() const
 {
-    return QString();
+    QString result;
+    const QString value = udi().split("/").last();
+
+    if(d->m_type == Solid::DeviceInterface::StorageVolume){
+        QString id = value;
+        QString query = "ASSOCIATORS OF {Win32_LogicalDisk.DeviceID='"+id+"'} WHERE AssocClass = Win32_LogicalDiskToPartition";
+        WmiQuery::ItemList list = WmiQuery::instance().sendQuery(query);
+        if(list.length() == 1){
+            id = list[0].getProperty("Name").toString();
+            query = "ASSOCIATORS OF {Win32_DiskPartition.DeviceID='"+id+"'} WHERE AssocClass = Win32_DiskDriveToDiskPartition";
+            list = WmiQuery::instance().sendQuery(query);
+            result = "/org/kde/solid/wmi/storage/"+list[0].getProperty("Index").toString();
+        }
+    }
+    if(result.isEmpty()){
+        result = udi();
+        result = result.remove("/"+value);
+    }
+    return result;
 }
 
 QString WmiDevice::vendor() const
@@ -547,10 +565,6 @@ bool WmiDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) c
     // Special cases not matching with WMI capabilities
     if (type==Solid::DeviceInterface::GenericInterface) {
         return true;
-    }
-    else if (type==Solid::DeviceInterface::Video) {
-        if (!property("video4linux.device").toString().contains("video" ) )
-          return false;
     }
 
     return d->interfaceList.contains(type);
