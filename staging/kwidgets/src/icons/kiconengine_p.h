@@ -20,7 +20,7 @@
 #define KICONENGINE_H
 
 #include "kwidgets_export.h"
-#include <QIconEngine>
+#include <QIconEngineV2>
 
 class KIconLoader;
 
@@ -33,7 +33,7 @@ class KIconLoader;
  *
  * @author Hamish Rodda <rodda@kde.org>
  */
-class KWIDGETS_EXPORT KIconEngine : public QIconEngine // only exported for kde4support's KIcon
+class KWIDGETS_EXPORT KIconEngine : public QIconEngineV2 // only exported for kde4support's KIcon
 {
   public:
     /**
@@ -67,7 +67,7 @@ class KWIDGETS_EXPORT KIconEngine : public QIconEngine // only exported for kde4
     virtual void virtual_hook ( int id, void * data );
 
     virtual QString key() const;
-    virtual QIconEngine *clone() const;
+    virtual QIconEngineV2 *clone() const;
     virtual bool read(QDataStream &in);
     virtual bool write(QDataStream &out) const;
 
