@@ -81,7 +81,7 @@ private Q_SLOTS:
     void slotCondition(const QString &condition, const QString &reason);
 
 private:
-    static QMap<QString,QString> driveLetterToUid;
+    static QString &driveLetterToUid(const QString &letter);
     WmiDevicePrivate *d;
     friend class WmiDevicePrivate;
 };

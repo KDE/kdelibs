@@ -48,7 +48,20 @@
 
 using namespace Solid::Backends::Wmi;
 
-QMap<QString,QString> WmiDevice::driveLetterToUid;
+QString& WmiDevice::driveLetterToUid(const QString &letter){
+    static QMap<QString,QString> uids;
+    static QRegExp uidreg("([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})");
+    if(uids.isEmpty()){
+        QString query("SELECT * FROM Win32_Volume");
+        WmiQuery::ItemList list = WmiQuery::instance().sendQuery(query);
+        foreach(const WmiQuery::Item & item,list){
+            uidreg.indexIn(item.getProperty("DeviceID").toString());
+            uids[item.getProperty("DriveLetter").toString().toLower()] =  uidreg.capturedTexts()[0];
+        }
+    }
+    return uids[letter.toLower()];
+}
+
 class Solid::Backends::Wmi::WmiDevicePrivate
 {
 public:
@@ -335,13 +348,8 @@ public:
                 static QRegExp uid("([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})");
                 uid.indexIn(property);
                 property =  uid.capturedTexts()[0];
-                QString driveLtter = item.getProperty("DriveLetter").toString().toLower();
-                if(!WmiDevice::driveLetterToUid.contains(driveLtter))
-                    WmiDevice::driveLetterToUid[driveLtter] = property;
             }else if(type == Solid::DeviceInterface::StorageAccess ){
-                if(!WmiDevice::driveLetterToUid.contains(property))
-                    WmiManager().devicesFromQuery("",Solid::DeviceInterface::StorageVolume);
-                property = WmiDevice::driveLetterToUid[property];
+                property = WmiDevice::driveLetterToUid(property);
             }
             result << generateUDI(getUDIKey(type),property.toLower());
         }
@@ -404,7 +412,7 @@ QString WmiDevice::parentUdi() const
     const QString value = udi().split("/").last();
 
     if(d->m_type == Solid::DeviceInterface::StorageVolume){
-        QString id = value;
+        QString id = property("DriveLetter").toString();
         QString query = "ASSOCIATORS OF {Win32_LogicalDisk.DeviceID='"+id+"'} WHERE AssocClass = Win32_LogicalDiskToPartition";
         WmiQuery::ItemList list = WmiQuery::instance().sendQuery(query);
         if(list.length() == 1){
