@@ -82,14 +82,14 @@ private Q_SLOTS:
         // as the "data" resource. But if the file is installed, then it will be
         // preferred (because KStandardDirs::resourceDirs() looks at relative paths first)
         // So we have to expect that one -or- the other will be found.
-        const QString dataDir = KStandardDirs::realPath(KDESRCDIR "/../../");
+        const QString dataDir = KStandardDirs::realPath(KDESRCDIR "/../../..");
         KGlobal::dirs()->addResourceDir("data", dataDir);
 
         const QString appName = "kdewidgets";
         KIconLoader appIconLoader(appName);
         QString iconPath = appIconLoader.iconPath("kdialog", KIconLoader::User);
         //QCOMPARE(iconPath, dataDir + appName + "/pics/kdialog.png");
-        QVERIFY(iconPath.endsWith(appName + "/pics/kdialog.png"));
+        QVERIFY2(iconPath.endsWith(appName + "/pics/kdialog.png"), qPrintable(iconPath));
         QVERIFY(QFile::exists(iconPath));
 
         // Load it again, to use the "last loaded" cache
@@ -103,9 +103,9 @@ private Q_SLOTS:
         iconPath2 = appIconLoader.iconPath("kdialog", KIconLoader::User);
         QCOMPARE(iconPath, iconPath2);
 
-        appIconLoader.addAppDir( "khtml" );
-        QString iconPathFail = appIconLoader.iconPath("fail", KIconLoader::User);
-        QVERIFY( iconPathFail.endsWith( "khtml/pics/fail.xpm"));
+        appIconLoader.addAppDir("kdewidgets");
+        QString iconPathFail = appIconLoader.iconPath("kurllabel", KIconLoader::User);
+        QVERIFY( iconPathFail.endsWith( "kdewidgets/pics/kurllabel.png"));
     }
 
     void testAppPicsDir_KDE_icon()
