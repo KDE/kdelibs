@@ -288,9 +288,9 @@ JSObject* WrapScriptableObject::construct(ExecState* exec, const List& args)
     }
 }
 
-void WrapScriptableObject::getOwnPropertyNames(ExecState* exec, PropertyNameArray& a)
+void WrapScriptableObject::getOwnPropertyNames(ExecState* exec, PropertyNameArray& a, PropertyMap::PropertyMode mode)
 {
-    JSObject::getOwnPropertyNames(exec, a);
+    JSObject::getOwnPropertyNames(exec, a, mode);
 
     bool ok;
     ScriptableExtension::Object actualObj = resolveAnyReferences(exec, &ok);

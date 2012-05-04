@@ -41,18 +41,6 @@ namespace KJS {
   class InternalFunctionImp;
   class PropertyNameArray;
 
-  // ECMA 262-3 8.6.1
-  // Property attributes
-  enum Attribute { None         = 0,
-                   ReadOnly     = 1 << 1, // property can be only read, not written
-                   DontEnum     = 1 << 2, // property doesn't appear in (for .. in ..)
-                   DontDelete   = 1 << 3, // property can't be deleted
-                   Internal     = 1 << 4, // an internal property, set to bypass checks
-                   Function     = 1 << 5, // property is a function - only used by static hashtables
-                   GetterSetter = 1 << 6, // property is a getter or setter
-                   DontMark     = 1 << 7}; // used in locals arrays only --- indicates that the slot
-                                           // does not contain a value, and hence should not be marked.
-
   /**
    * Class Information
    */
@@ -427,8 +415,8 @@ namespace KJS {
      */
     virtual bool hasInstance(ExecState *exec, JSValue *value);
 
-    void getPropertyNames(ExecState*, PropertyNameArray&);
-    virtual void getOwnPropertyNames(ExecState*, PropertyNameArray&);
+    void getPropertyNames(ExecState*, PropertyNameArray&, PropertyMap::PropertyMode mode = PropertyMap::ExcludeDontEnumProperties);
+    virtual void getOwnPropertyNames(ExecState*, PropertyNameArray&, PropertyMap::PropertyMode mode);
 
     virtual JSValue *toPrimitive(ExecState *exec, JSType preferredType = UnspecifiedType) const;
     virtual bool getPrimitiveNumber(ExecState*, double& number, JSValue*& value);
@@ -610,10 +598,10 @@ inline bool JSObject::getPropertySlot(ExecState *exec, const Identifier& propert
     }
 }
 
-inline void JSObject::getPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
+inline void JSObject::getPropertyNames(ExecState* exec, PropertyNameArray& propertyNames, PropertyMap::PropertyMode mode)
 {
   for (JSObject* cur = this; cur; cur = cur->_proto->getObject())
-    cur->getOwnPropertyNames(exec, propertyNames);
+    cur->getOwnPropertyNames(exec, propertyNames, mode);
 }
 
 inline JSValue* JSObject::toPrimitive(ExecState* exec, JSType preferredType) const
