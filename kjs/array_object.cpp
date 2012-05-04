@@ -43,6 +43,24 @@ using std::memcpy;
 
 namespace KJS {
 
+/**
+ * @internal
+ *
+ * Class to implement all methods that are properties of the
+ * Object object
+ */
+class ArrayObjectFuncImp : public InternalFunctionImp {
+public:
+    ArrayObjectFuncImp(ExecState *, FunctionPrototype *, int i, int len, const Identifier& );
+
+    virtual JSValue *callAsFunction(ExecState *, JSObject *thisObj, const List &args);
+
+    enum { IsArray };
+
+private:
+    int id;
+};
+
 // ------------------------------ ArrayPrototype ----------------------------
 
 const ClassInfo ArrayPrototype::info = {"Array", &ArrayInstance::info, &arrayTable, 0};
@@ -665,8 +683,12 @@ ArrayObjectImp::ArrayObjectImp(ExecState *exec,
                                ArrayPrototype *arrayProto)
   : InternalFunctionImp(funcProto)
 {
+  static const Identifier* isArrayName = new Identifier("isArray");
+
   // ECMA 15.4.3.1 Array.prototype
   put(exec, exec->propertyNames().prototype, arrayProto, DontEnum|DontDelete|ReadOnly);
+
+  putDirectFunction(new ArrayObjectFuncImp(exec, funcProto, ArrayObjectFuncImp::IsArray, 1, *isArrayName), DontEnum);
 
   // no. of arguments for constructor
   put(exec, exec->propertyNames().length, jsNumber(1), ReadOnly|DontDelete|DontEnum);
@@ -697,6 +719,28 @@ JSValue *ArrayObjectImp::callAsFunction(ExecState *exec, JSObject * /*thisObj*/,
 {
   // equivalent to 'new Array(....)'
   return construct(exec,args);
+}
+
+// ------------------------------ ArrayObjectFuncImp ----------------------------
+
+ArrayObjectFuncImp::ArrayObjectFuncImp(ExecState* exec, FunctionPrototype* funcProto, int i, int len, const Identifier& name)
+    : InternalFunctionImp(funcProto, name), id(i)
+{
+    putDirect(exec->propertyNames().length, len, DontDelete|ReadOnly|DontEnum);
+}
+
+JSValue *ArrayObjectFuncImp::callAsFunction(ExecState* exec, JSObject*, const List& args)
+{
+    switch (id) {
+    case IsArray: {
+        JSObject* jso = args[0]->getObject();
+        if (!jso)
+            return jsBoolean(false);
+        return jsBoolean(jso->inherits(&ArrayInstance::info));
+    }
+    default:
+        return jsUndefined();
+    }
 }
 
 }
