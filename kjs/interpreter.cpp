@@ -443,9 +443,9 @@ void Interpreter::initGlobalObject()
     m_UriErrorPrototype->put(&m_globalExec, m_globalExec.propertyNames().constructor, m_UriError, DontEnum | DontDelete | ReadOnly);
 
     // built-in values
-    m_globalObject->put(&m_globalExec, "NaN",        jsNaN(), DontEnum|DontDelete);
-    m_globalObject->put(&m_globalExec, "Infinity",   jsNumber(Inf), DontEnum|DontDelete);
-    m_globalObject->put(&m_globalExec, "undefined",  jsUndefined(), DontEnum|DontDelete);
+    m_globalObject->put(&m_globalExec, "NaN",        jsNaN(), DontEnum|DontDelete|ReadOnly);
+    m_globalObject->put(&m_globalExec, "Infinity",   jsNumber(Inf), DontEnum|DontDelete|ReadOnly);
+    m_globalObject->put(&m_globalExec, "undefined",  jsUndefined(), DontEnum|DontDelete|ReadOnly);
 
     // built-in functions
     m_globalObject->putDirectFunction(new GlobalFuncImp(&m_globalExec, funcProto, GlobalFuncImp::Eval, 1, "eval"), DontEnum);
