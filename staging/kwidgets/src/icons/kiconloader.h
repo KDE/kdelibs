@@ -567,8 +567,16 @@ namespace KDE {
  * Returns a QIcon with an appropriate
  * KIconEngine to perform loading and rendering.  KIcons thus adhere to
  * KDE style and effect standards.
+ * @since 5.0
  */
-KWIDGETS_EXPORT QIcon icon(const QString& iconName, KIconLoader* iconLoader = 0, const QStringList& overlays = QStringList());
+KWIDGETS_EXPORT QIcon icon(const QString& iconName, KIconLoader* iconLoader = 0);
+
+/**
+ * \relates KIconLoader
+ * Returns a QIcon for the given icon, with additional overlays.
+ * @since 5.0
+ */
+KWIDGETS_EXPORT QIcon icon(const QString& iconName, const QStringList& overlays, KIconLoader* iconLoader = 0);
 
 }
 

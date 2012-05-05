@@ -172,7 +172,7 @@ QVariant KFilePlacesItem::deviceData(int role) const
         case Qt::DisplayRole:
             return d.description();
         case Qt::DecorationRole:
-            return KDE::icon(d.icon(), 0, d.emblems());
+            return KDE::icon(d.icon(), d.emblems());
         case KFilePlacesModel::UrlRole:
             if (m_access) {
                 return QUrl(KUrl(m_access->filePath()));

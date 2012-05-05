@@ -690,7 +690,7 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                 }
                 Q_ASSERT(!item.isNull());
                 //kDebug(7008) << item->url() << " overlays=" << item->overlays();
-                return KDE::icon(item.iconName(), 0, item.overlays());
+                return KDE::icon(item.iconName(), item.overlays());
             }
             break;
         case Qt::TextAlignmentRole:

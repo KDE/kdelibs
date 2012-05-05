@@ -1719,7 +1719,13 @@ void KIconLoader::newIconLoader()
 }
 
 #include <kiconengine_p.h>
-QIcon KDE::icon(const QString& iconName, KIconLoader* iconLoader, const QStringList& overlays)
+QIcon KDE::icon(const QString& iconName, KIconLoader* iconLoader)
+{
+    return QIcon(new KIconEngine(iconName, iconLoader ? iconLoader : KIconLoader::global()));
+}
+
+QIcon KDE::icon(const QString& iconName, const QStringList& overlays, KIconLoader* iconLoader)
 {
     return QIcon(new KIconEngine(iconName, iconLoader ? iconLoader : KIconLoader::global(), overlays));
 }
+
