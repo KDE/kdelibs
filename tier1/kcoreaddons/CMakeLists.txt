@@ -40,7 +40,7 @@ configure_file(src/io/config-klockfile.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/src/i
 
 add_subdirectory(src)
 add_subdirectory(autotests)
-add_subdirectory(examples)
+add_subdirectory(tests)
 
 include(FeatureSummary)
 
