@@ -19,8 +19,6 @@ macro(kguiaddons_unit_tests)
        endforeach()
 endmacro()
 
-if (NOT QT5_BUILD)
-    kguiaddons_unit_tests(
-      kwordwraptest
-    )
-endif()
+kguiaddons_unit_tests(
+  kwordwraptest
+)

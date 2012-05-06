@@ -18,7 +18,7 @@
  */
 
 #include <QFontMetrics>
-#include <QX11Info>
+
 #include <QtTest/QtTest>
 
 #include <QObject>
@@ -31,7 +31,9 @@ class KWordWrap_UnitTest : public QObject
 private Q_SLOTS:
     void initTestCase()
     {
-#ifdef Q_WS_X11
+        // Qt5 TODO: how to set the dpi?
+        // Only found readonly QScreen::logicalDotsPerInch...
+#if 0
         QX11Info::setAppDpiX(0, 96);
         QX11Info::setAppDpiY(0, 96);
 #endif
