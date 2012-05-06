@@ -19,8 +19,9 @@
 #ifndef kwordwrap_h
 #define kwordwrap_h
 
-#include <kdeui_export.h>
-#include <QtCore/Qt>
+#include <kdeguiaddons_export.h>
+#include <qglobal.h>
+#include <qnamespace.h>
 
 class QFontMetrics;
 class QRect;
@@ -46,7 +47,7 @@ class QPainter;
  *
  * @author David Faure <faure@kde.org>
  */
-class KDEUI_EXPORT KWordWrap
+class KDEGUIADDONS_EXPORT KWordWrap
 {
 public:
     /**

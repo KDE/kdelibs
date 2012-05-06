@@ -11,6 +11,7 @@ set(kdeguiaddons_LIB_SRCS
  colors/kcolorscheme.cpp
  colors/kcolorcollection.cpp
  colors/kcolormimedata.cpp
+ text/kwordwrap.cpp
 )
 
 add_library(kdeguiaddons ${LIBRARY_TYPE} ${kdeguiaddons_LIB_SRCS})
@@ -27,6 +28,7 @@ install( FILES
  colors/kcolorscheme.h
  colors/kcolorcollection.h
  colors/kcolormimedata.h
+ text/kwordwrap.h
 
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

@@ -19,9 +19,8 @@
 
 #include <QFontMetrics>
 #include <QX11Info>
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 
-#include <kdebug.h>
 #include <QObject>
 #include "kwordwrap.h"
 
@@ -45,7 +44,7 @@ private Q_SLOTS:
         QRect r( 0, 0, 100, -1 );
         QString str = "test wadabada [/foo/bar/waba]";
         KWordWrap* ww = KWordWrap::formatText( fm, r, 0, str );
-        kDebug() << str << " => " << ww->truncatedString();
+        //qDebug() << str << " => " << ww->truncatedString();
         QVERIFY(ww->truncatedString().endsWith("..."));
         delete ww;
 
@@ -53,7 +52,7 @@ private Q_SLOTS:
         for ( ; r.width() > 0 ; r.setWidth( r.width()-10 ) )
         {
             ww = KWordWrap::formatText( fm, r, 0, str );
-            kDebug() << str << " => " << ww->truncatedString();
+            //qDebug() << str << " => " << ww->truncatedString();
             QVERIFY(ww->truncatedString().endsWith("..."));
             delete ww;
         }
@@ -72,6 +71,6 @@ private Q_SLOTS:
     }
 };
 
-QTEST_KDEMAIN(KWordWrap_UnitTest, GUI)
+QTEST_MAIN(KWordWrap_UnitTest)
 
 #include "kwordwraptest.moc"

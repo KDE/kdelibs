@@ -58,12 +58,6 @@ KDEUI_UNIT_TESTS(
   kconfigdialog_unittest
 )
 
-if(NOT QT5_BUILD)
-  KDEUI_UNIT_TESTS(
-    kwordwraptest
-  )
-endif()
-
 KDEUI_EXECUTABLE_TESTS(
   kaccelgentest
   kactionselectortest

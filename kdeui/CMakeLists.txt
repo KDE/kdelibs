@@ -211,7 +211,6 @@ set(kdeui_LIB_SRCS
  util/kpassivepopupmessagehandler.cpp
  util/kpixmapcache.cpp
  util/kpixmapprovider.cpp
- util/kwordwrap.cpp
  util/kxerrorhandler.cpp
  util/kxmessages.cpp
  util/kundostack.cpp
@@ -573,7 +572,6 @@ install( FILES
  util/kpixmapprovider.h
  util/kimagecache.h
  util/kwallet.h
- util/kwordwrap.h
  util/kxerrorhandler.h
  util/kxmessages.h
  util/kundostack.h
