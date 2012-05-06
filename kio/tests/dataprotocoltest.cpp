@@ -156,6 +156,9 @@ void DataProtocolTest::runAllTests_data()
 
     const QByteArray textplain = "text/plain";
     const QString usascii = QLatin1String( "charset=us-ascii" );
+    const QString csutf8 = QLatin1String( "charset=utf-8" );
+    const QString cslatin1 = QLatin1String( "charset=iso-8859-1" );
+    const QString csiso7 = QLatin1String( "charset=iso-8859-7" );
 
     QTest::newRow( "escape resolving" ) <<
         textplain <<
@@ -212,11 +215,71 @@ void DataProtocolTest::runAllTests_data()
         QByteArray( "data:text/plain;charset=%22%5cis%5co%5c-%5c8%5c8%5c5%5c9%5c-%5c7%22,test" );
 
     // the "greenbytes" tests are taken from http://greenbytes.de/tech/tc/datauri/
+    QTest::newRow( "greenbytes-simple" ) <<
+        textplain <<
+        usascii <<
+        QByteArray( "test" ) <<
+        QByteArray( "data:,test" );
+
     QTest::newRow( "greenbytes-simplewfrag" ) <<
         textplain <<
         usascii <<
         QByteArray( "test" ) <<
         QByteArray( "data:,test#foo" );
+
+    QTest::newRow( "greenbytes-simple-utf8-dec" ) <<
+        textplain <<
+        csutf8 <<
+        QByteArray( "test \xc2\xa3 pound sign" ) <<
+        QByteArray( "data:text/plain;charset=utf-8,test%20%c2%a3%20pound%20sign" );
+
+    QTest::newRow( "greenbytes-simple-iso8859-1-dec" ) <<
+        textplain <<
+        cslatin1 <<
+        QByteArray( "test \xc2\xa3 pound sign" ) <<
+        QByteArray( "data:text/plain;charset=iso-8859-1,test%20%a3%20pound%20sign" );
+
+    QTest::newRow( "greenbytes-simple-iso8859-7-dec" ) <<
+        textplain <<
+        csiso7 <<
+        QByteArray( "test \xce\xa3 sigma" ) <<
+        QByteArray( "data:text/plain;charset=iso-8859-7,test%20%d3%20sigma" );
+
+    QTest::newRow( "greenbytes-simple-utf8-dec-dq" ) <<
+        textplain <<
+        csutf8 <<
+        QByteArray( "test \xc2\xa3 pound sign" ) <<
+        QByteArray( "data:text/plain;charset=%22utf-8%22,test%20%c2%a3%20pound%20sign" );
+
+    QTest::newRow( "greenbytes-simple-iso8859-1-dec-dq" ) <<
+        textplain <<
+        cslatin1 <<
+        QByteArray( "test \xc2\xa3 pound sign" ) <<
+        QByteArray( "data:text/plain;charset=%22iso-8859-1%22,test%20%a3%20pound%20sign" );
+
+    QTest::newRow( "greenbytes-simple-iso8859-7-dec-dq" ) <<
+        textplain <<
+        csiso7 <<
+        QByteArray( "test \xce\xa3 sigma" ) <<
+        QByteArray( "data:text/plain;charset=%22iso-8859-7%22,test%20%d3%20sigma" );
+
+    QTest::newRow( "greenbytes-simple-utf8-dec-dq-escaped" ) <<
+        textplain <<
+        csutf8 <<
+        QByteArray( "test \xc2\xa3 pound sign" ) <<
+        QByteArray( "data:text/plain;charset=%22%5cu%5ct%5cf%5c-%5c8%22,test%20%c2%a3%20pound%20sign" );
+
+    QTest::newRow( "greenbytes-simple-iso8859-1-dec-dq-escaped" ) <<
+        textplain <<
+        cslatin1 <<
+        QByteArray( "test \xc2\xa3 pound sign" ) <<
+        QByteArray( "data:text/plain;charset=%22%5ci%5cs%5co%5c-%5c8%5c8%5c5%5c9%5c-%5c1%22,test%20%a3%20pound%20sign" );
+
+    QTest::newRow( "greenbytes-simple-iso8859-7-dec-dq-escaped" ) <<
+        textplain <<
+        csiso7 <<
+        QByteArray( "test \xce\xa3 sigma" ) <<
+        QByteArray( "data:text/plain;charset=%22%5ci%5cs%5co%5c-%5c8%5c8%5c5%5c9%5c-%5c7%22,test%20%d3%20sigma" );
 
     QTest::newRow( "greenbytes-simplefrag" ) <<
         QByteArray( "text/html" ) <<

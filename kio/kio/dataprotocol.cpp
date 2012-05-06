@@ -68,7 +68,7 @@ struct DataHeader {
   MetaData attributes;		// attribute/value pairs (attribute lowercase,
   				// 	value unchanged)
   bool is_base64;		// true if data is base64 encoded
-  QString url;			// reference to decoded url
+  QByteArray url;		// reference to decoded url
   int data_offset;		// zero-indexed position within url
   				// where the real data begins. May point beyond
       				// the end to indicate that there is no data
@@ -80,17 +80,17 @@ struct DataHeader {
   *
   * @param buf buffer where to look for c
   * @param begin zero-indexed starting position
-  * @param c1 character to find or QChar() to ignore
+  * @param c1 character to find or '\0' to ignore
   */
-static int find(const QString &buf, int begin, const QChar c1)
+static int find(const QByteArray &buf, int begin, const char c1)
 {
-  static const QChar comma = QLatin1Char(',');
-  static const QChar semicolon = QLatin1Char(';');
+  static const char comma = ',';
+  static const char semicolon = ';';
   int pos = begin;
   int size = buf.length();
   while (pos < size) {
-    const QChar ch = buf[pos];
-    if (ch == comma || ch == semicolon || (!c1.isNull() && ch == c1))
+    const char ch = buf[pos];
+    if (ch == comma || ch == semicolon || (c1 != '\0' && ch == c1))
       break;
     pos++;
   }/*wend*/
@@ -103,10 +103,10 @@ static int find(const QString &buf, int begin, const QChar c1)
  * buffer if neither character occurred.
  * @param buf buffer where to look for
  * @param pos zero-indexed position within buffer
- * @param c1 character to find or QChar() to ignore
+ * @param c1 character to find or '\0' to ignore
  */
-static inline QString extract(const QString &buf, int &pos,
-                              const QChar c1 = QChar())
+static inline QString extract(const QByteArray &buf, int &pos,
+                              const char c1 = '\0')
 {
   int oldpos = pos;
   pos = find(buf, oldpos, c1);
@@ -178,7 +178,7 @@ static DataHeader parseDataHeader(const KUrl &url, const bool mimeOnly)
   header_info.is_base64 = false;
 
   // decode url and save it
-  const QString &raw_url = header_info.url = url.path().toLatin1();
+  const QByteArray &raw_url = header_info.url = QByteArray::fromPercentEncoding( url.encodedPath() );
   const int raw_url_len = raw_url.length();
 
   header_info.data_offset = 0;
@@ -201,8 +201,7 @@ static DataHeader parseDataHeader(const KUrl &url, const bool mimeOnly)
   bool data_begin_reached = false;
   while (!data_begin_reached && header_info.data_offset < raw_url_len) {
     // read attribute
-    const QString attribute = extract(raw_url, header_info.data_offset,
-                                QLatin1Char('=')).trimmed();
+    const QString attribute = extract(raw_url, header_info.data_offset, '=').trimmed();
     if (header_info.data_offset >= raw_url_len
     	|| raw_url[header_info.data_offset] != QLatin1Char('=')) {
       // no assigment, must be base64 option
@@ -262,23 +261,19 @@ void DataProtocol::get(const KUrl& url) {
   const int size = hdr.url.length();
   const int data_ofs = qMin(hdr.data_offset, size);
   // FIXME: string is copied, would be nice if we could have a reference only
-  const QString url_data = hdr.url.mid(data_ofs);
+  const QByteArray url_data = hdr.url.mid(data_ofs);
   QByteArray outData;
 
   if (hdr.is_base64) {
     // base64 stuff is expected to contain the correct charset, so we just
     // decode it and pass it to the receiver
-    outData = QByteArray::fromBase64(url_data.toUtf8());
+    outData = QByteArray::fromBase64(url_data);
   } else {
-    // FIXME: This is all flawed, must be reworked thoroughly
-    // non encoded data must be converted to the given charset
     QTextCodec *codec = QTextCodec::codecForName(hdr.attributes["charset"].toLatin1());
     if (codec != 0) {
-      outData = codec->fromUnicode(url_data);
+      outData = codec->toUnicode(url_data).toUtf8();
     } else {
-      // if there is no approprate codec, just use local encoding. This
-      // should work for >90% of all cases.
-      outData = url_data.toLocal8Bit();
+      outData = url_data;
     }/*end if*/
   }/*end if*/
 
