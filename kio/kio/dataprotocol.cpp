@@ -72,7 +72,6 @@ struct DataHeader {
   int data_offset;		// zero-indexed position within url
   				// where the real data begins. May point beyond
       				// the end to indicate that there is no data
-  QString charset;		// shortcut to charset (it always exists)
 };
 
 /** returns the position of the first occurrence of any of the given
@@ -174,7 +173,7 @@ static void parseDataHeader(const KUrl &url, DataHeader &header_info) {
 
   // initialize header info members
   header_info.mime_type = text_plain;
-  header_info.charset = header_info.attributes.insert(charset,us_ascii).value();
+  header_info.attributes.insert(charset, us_ascii);
   header_info.is_base64 = false;
 
   // decode url and save it
@@ -269,7 +268,7 @@ void DataProtocol::get(const KUrl& url) {
   } else {
     // FIXME: This is all flawed, must be reworked thoroughly
     // non encoded data must be converted to the given charset
-    QTextCodec *codec = QTextCodec::codecForName(hdr.charset.toLatin1());
+    QTextCodec *codec = QTextCodec::codecForName(hdr.attributes["charset"].toLatin1());
     if (codec != 0) {
       outData = codec->fromUnicode(url_data);
     } else {
