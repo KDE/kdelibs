@@ -123,7 +123,7 @@ DeviceList ClientPrivate::deviceListFromEnumerate(struct udev_enumerate *en)
 
     udev_enumerate_scan_devices(en);
     list = udev_enumerate_get_list_entry(en);
-    udev_list_entry_foreach(entry, list) {
+    udev_list_entry_Q_FOREACH(entry, list) {
         struct udev_device *ud = udev_device_new_from_syspath(udev_enumerate_get_udev(en),
                                         udev_list_entry_get_name(entry));
 

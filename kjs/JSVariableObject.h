@@ -61,7 +61,8 @@ namespace KJS {
     public:
         using KJS::JSObject::deleteProperty;
         virtual bool deleteProperty(ExecState*, const Identifier&);
-        virtual void getOwnPropertyNames(ExecState*, PropertyNameArray&);
+
+        virtual void getOwnPropertyNames(ExecState*, PropertyNameArray&, PropertyMap::PropertyMode mode);
 
         virtual void mark();
 

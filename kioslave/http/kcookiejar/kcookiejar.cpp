@@ -793,7 +793,7 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
                 // Based on the port selection rule of RFC 2965 section 3.3.4...
                 if (Name.isEmpty())
                 {
-                    // We intentionally append a -1 first in orer to distinguish
+                    // We intentionally append a -1 first in order to distinguish
                     // between only a 'Port' vs a 'Port="80 443"' in the sent cookie.
                     lastCookie.mPorts.append(-1);
                     const bool secureRequest = (_url.startsWith(QL1S("https://"), Qt::CaseInsensitive) ||

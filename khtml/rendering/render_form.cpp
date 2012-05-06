@@ -1758,8 +1758,10 @@ void RenderSelect::updateFromElement()
                 if (disabled)
                     clearItemFlags(listIndex, Qt::ItemIsSelectable | Qt::ItemIsEnabled);
             }
-            else
+            else {
                 KHTMLAssert(false);
+            }
+
             m_selectionChanged = true;
         }
 

@@ -1,6 +1,7 @@
-// testing the data kioslave
-// (C) 2002, 2003 Leo Savernik
-// (C) 2012 Rolf Eike Beer <kde@opensource.sf-tec.de>
+/*
+ * Copyright (C) 2002,2003 Leo Savernik <l.savernik@aon.at>
+ * Copyright (C) 2012 Rolf Eike Beer <kde@opensource.sf-tec.de>
+ */
 
 #ifdef DATAKIOSLAVE
 #  undef DATAKIOSLAVE
@@ -44,7 +45,7 @@ public:
     for (; it != end; ++it) {
       KIO::MetaData::Iterator eit = attributes_expected.find(it.key());
       QVERIFY(eit != attributes_expected.end());
-      QCOMPARE(eit.value(), it.value());
+      QCOMPARE(it.value(), eit.value());
       attributes_expected.erase(eit);
     }
   }
@@ -204,6 +205,12 @@ void DataProtocolTest::runAllTests_data()
                     "Rabbit is gentle; follow the Rabbit\\\"\",(C) 1997 Shadow Warrior "
                     ";-)" );
 
+    QTest::newRow( "escaped charset" ) <<
+        textplain <<
+        QString( QLatin1String( "charset=iso-8859-7" ) ) <<
+        QByteArray( "test" ) <<
+        QByteArray( "data:text/plain;charset=%22%5cis%5co%5c-%5c8%5c8%5c5%5c9%5c-%5c7%22,test" );
+
     // the "greenbytes" tests are taken from http://greenbytes.de/tech/tc/datauri/
     QTest::newRow( "greenbytes-simplewfrag" ) <<
         textplain <<
@@ -226,6 +233,28 @@ void DataProtocolTest::runAllTests_data()
         QByteArray( "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20version%3D%221.1"
                     "%22%3E%0A%20%20%3Ccircle%20cx%3D%22100%22%20cy%3D%22100%22%20r%3D%2225%22%20stroke%3D%22black%22%20"
                     "stroke-width%3D%221%22%20fill%3D%22green%22%2F%3E%0A%3C%2Fsvg%3E%0A#bar" );
+
+    QTest::newRow( "greenbytes-ext-simple" ) <<
+        QByteArray( "image/svg+xml" ) <<
+        QString(QLatin1String( "foo=bar\n"
+                               "charset=us-ascii" )) <<
+        QByteArray( "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n"
+                    "  <circle cx=\"100\" cy=\"100\" r=\"25\" stroke=\"black\" stroke-width=\"1\" fill=\"green\"/>\n"
+                    "</svg>\n") <<
+        QByteArray( "data:image/svg+xml;foo=bar,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20version%3D%221.1"
+                    "%22%3E%0A%20%20%3Ccircle%20cx%3D%22100%22%20cy%3D%22100%22%20r%3D%2225%22%20stroke%3D%22black%22%20"
+                    "stroke-width%3D%221%22%20fill%3D%22green%22%2F%3E%0A%3C%2Fsvg%3E%0A" );
+
+    QTest::newRow( "greenbytes-ext-simple-qs" ) <<
+        QByteArray( "image/svg+xml" ) <<
+        QString(QLatin1String( "foo=bar,bar\n"
+                               "charset=us-ascii" )) <<
+        QByteArray( "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n"
+                    "  <circle cx=\"100\" cy=\"100\" r=\"25\" stroke=\"black\" stroke-width=\"1\" fill=\"green\"/>\n"
+                    "</svg>\n") <<
+        QByteArray( "data:image/svg+xml;foo=%22bar,bar%22,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20"
+                    "version%3D%221.1%22%3E%0A%20%20%3Ccircle%20cx%3D%22100%22%20cy%3D%22100%22%20r%3D%2225%22%20stroke%3D%22black"
+                    "%22%20stroke-width%3D%221%22%20fill%3D%22green%22%2F%3E%0A%3C%2Fsvg%3E%0A" );
 }
 
 #include "dataprotocoltest.moc"

@@ -72,7 +72,6 @@ struct DataHeader {
   int data_offset;		// zero-indexed position within url
   				// where the real data begins. May point beyond
       				// the end to indicate that there is no data
-  QString charset;		// shortcut to charset (it always exists)
 };
 
 /** returns the position of the first occurrence of any of the given
@@ -163,18 +162,21 @@ static QString parseQuotedString(const QString &buf, int &pos) {
 
 /** parses the header of a data url
  * @param url the data url
- * @param header_info fills the given DataHeader structure with the header
- *		information
+ * @param mimeOnly if the only interesting information is the mime type
+ * @return DataHeader structure with the header information
  */
-static void parseDataHeader(const KUrl &url, DataHeader &header_info) {
+static DataHeader parseDataHeader(const KUrl &url, const bool mimeOnly)
+{
   static const QString& text_plain = KGlobal::staticQString("text/plain");
   static const QString& charset = KGlobal::staticQString("charset");
   static const QString& us_ascii = KGlobal::staticQString("us-ascii");
   static const QString& base64 = KGlobal::staticQString("base64");
 
+  DataHeader header_info;
+
   // initialize header info members
   header_info.mime_type = text_plain;
-  header_info.charset = header_info.attributes.insert(charset,us_ascii).value();
+  header_info.attributes.insert(charset, us_ascii);
   header_info.is_base64 = false;
 
   // decode url and save it
@@ -185,14 +187,18 @@ static void parseDataHeader(const KUrl &url, DataHeader &header_info) {
 
   // read mime type
   if (raw_url_len == 0)
-    return;
+    return header_info;
   QString mime_type = extract(raw_url, header_info.data_offset,
   			      QLatin1Char(';'), QLatin1Char(',')).trimmed();
   if (!mime_type.isEmpty()) header_info.mime_type = mime_type;
+  if (mimeOnly)
+      return header_info;
 
-  if (header_info.data_offset >= raw_url_len) return;
+  if (header_info.data_offset >= raw_url_len)
+      return header_info;
   // jump over delimiter token and return if data reached
-  if (raw_url[header_info.data_offset++] == QLatin1Char(',')) return;
+  if (raw_url[header_info.data_offset++] == QLatin1Char(','))
+      return header_info;
 
   // read all attributes and store them
   bool data_begin_reached = false;
@@ -211,7 +217,8 @@ static void parseDataHeader(const KUrl &url, DataHeader &header_info) {
 
       // read value
       ignoreWS(raw_url,header_info.data_offset);
-      if (header_info.data_offset >= raw_url_len) return;
+      if (header_info.data_offset >= raw_url_len)
+          return header_info;
 
       QString value;
       if (raw_url[header_info.data_offset] == QLatin1Char('"')) {
@@ -230,6 +237,8 @@ static void parseDataHeader(const KUrl &url, DataHeader &header_info) {
       data_begin_reached = true;
     header_info.data_offset++; // jump over separator token
   }/*wend*/
+
+  return header_info;
 }
 
 #ifdef DATAKIOSLAVE
@@ -253,8 +262,7 @@ void DataProtocol::get(const KUrl& url) {
   ref();
   kDebug() << "kio_data@"<<this<<"::get(const KUrl& url)";
 
-  DataHeader hdr;
-  parseDataHeader(url,hdr);
+  const DataHeader hdr = parseDataHeader(url, false);
 
   int size = hdr.url.length();
   int data_ofs = qMin(hdr.data_offset,size);
@@ -269,7 +277,7 @@ void DataProtocol::get(const KUrl& url) {
   } else {
     // FIXME: This is all flawed, must be reworked thoroughly
     // non encoded data must be converted to the given charset
-    QTextCodec *codec = QTextCodec::codecForName(hdr.charset.toLatin1());
+    QTextCodec *codec = QTextCodec::codecForName(hdr.attributes["charset"].toLatin1());
     if (codec != 0) {
       outData = codec->fromUnicode(url_data);
     } else {
@@ -311,9 +319,7 @@ void DataProtocol::get(const KUrl& url) {
 
 void DataProtocol::mimetype(const KUrl &url) {
   ref();
-  DataHeader hdr;
-  parseDataHeader(url,hdr);
-  mimeType(hdr.mime_type);
+  mimeType(parseDataHeader(url, true).mime_type);
   finished();
   deref();
 }

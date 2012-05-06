@@ -113,8 +113,8 @@ bool Cdrom::eject()
 
 bool Cdrom::callWmiDriveEject()
 {
-    QString udi = m_device->udi();
-    QString interface = "org.freedesktop.Wmi.Device.Storage";
+//    QString udi = m_device->udi();
+//    QString interface = "org.freedesktop.Wmi.Device.Storage";
 
     // HACK: Eject doesn't work on cdrom drives when there's a mounted disc,
     // let's try to workaround this by calling a child volume...
@@ -167,3 +167,4 @@ void Solid::Backends::Wmi::Cdrom::slotProcessFinished(int exitCode, QProcess::Ex
     delete m_process;
 }
 
+#include "backends/wmi/wmicdrom.moc"

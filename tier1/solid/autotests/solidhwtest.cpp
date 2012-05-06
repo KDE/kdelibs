@@ -60,7 +60,7 @@ void SolidHwTest::testAllDevices()
 
     expected_udis = QSet<QString>::fromList(fakeManager->allDevices());
 
-    foreach (const Solid::Device &dev , devices)
+    Q_FOREACH (const Solid::Device &dev , devices)
     {
         received_udis << dev.udi();
     }
@@ -311,7 +311,7 @@ static QSet<QString> to_string_set(const QList<Solid::Device> &list)
 {
     QSet<QString> res;
 
-    foreach (const Solid::Device &device, list) {
+    Q_FOREACH (const Solid::Device &device, list) {
         res << device.udi();
     }
 

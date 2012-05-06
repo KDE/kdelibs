@@ -233,7 +233,7 @@ namespace KJS {
     virtual bool isFunctionType() const { return false; }
     virtual bool masqueradeAsUndefined() const;
     virtual bool toBoolean(ExecState *) const;
-    virtual void getOwnPropertyNames(ExecState*, PropertyNameArray&);
+    virtual void getOwnPropertyNames(ExecState*, PropertyNameArray&, PropertyMap::PropertyMode mode);
     enum { Item, NamedItem, Tags };
     JSValue* getNamedItems(ExecState *exec, const Identifier &propertyName) const;
     virtual const ClassInfo* classInfo() const { return &info; }

@@ -61,7 +61,7 @@ QObject* KWebPluginFactory::create(const QString& _mimeType, const QUrl& url, co
     // If no mimetype is provided, we do our best to correctly determine it here...
     if (mimeType.isEmpty()) {
         kDebug(800) << "Looking up missing mimetype for plugin resource:" << url;
-        extractMimeType(url, &mimeType);
+        extractGuessedMimeType(url, &mimeType);
         kDebug(800) << "Updated mimetype to" << mimeType;
     }
 
@@ -109,11 +109,17 @@ QList<KWebPluginFactory::Plugin> KWebPluginFactory::plugins() const
     return plugins;
 }
 
-void KWebPluginFactory::extractMimeType (const QUrl& url, QString* mimeType) const
+static bool isHttpProtocol(const QUrl& url)
 {
-    // If no mimetype is provided, we do our best to correctly determine it here...
+    const QString scheme (url.scheme());
+    return (scheme.startsWith(QL1S("http"), Qt::CaseInsensitive)
+         || scheme.startsWith(QL1S("webdav"), Qt::CaseInsensitive));
+}
+
+void KWebPluginFactory::extractGuessedMimeType (const QUrl& url, QString* mimeType) const
+{
     if (mimeType) {
-        const KUrl reqUrl (url);
+        const KUrl reqUrl ((isHttpProtocol(url) ? url.path() : url));
         KMimeType::Ptr ptr = KMimeType::findByUrl(reqUrl, 0, reqUrl.isLocalFile(), true);
         if (!ptr->isDefault() && !ptr->name().startsWith(QL1S("inode/"), Qt::CaseInsensitive)) {
             *mimeType = ptr->name();

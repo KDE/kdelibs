@@ -219,57 +219,22 @@ static KPerDomainSettings &setup_per_domain_policy(
 
 KHTMLSettings::KJavaScriptAdvice KHTMLSettings::strToAdvice(const QString& _str)
 {
-  KJavaScriptAdvice ret = KJavaScriptDunno;
-
-  if (_str.isNull())
-        ret = KJavaScriptDunno;
-
-  if (_str.toLower() == QLatin1String("accept"))
-        ret = KJavaScriptAccept;
-  else if (_str.toLower() == QLatin1String("reject"))
-        ret = KJavaScriptReject;
-
-  return ret;
+    return static_cast<KJavaScriptAdvice>(KParts::HtmlSettingsInterface::textToJavascriptAdvice(_str));
 }
 
 const char* KHTMLSettings::adviceToStr(KJavaScriptAdvice _advice)
 {
-    switch( _advice ) {
-    case KJavaScriptAccept: return I18N_NOOP("Accept");
-    case KJavaScriptReject: return I18N_NOOP("Reject");
-    default: return 0;
-    }
-        return 0;
+    return KParts::HtmlSettingsInterface::javascriptAdviceToText(static_cast<KParts::HtmlSettingsInterface::JavaScriptAdvice>(_advice));
 }
 
 
 void KHTMLSettings::splitDomainAdvice(const QString& configStr, QString &domain,
                                       KJavaScriptAdvice &javaAdvice, KJavaScriptAdvice& javaScriptAdvice)
 {
-    QString tmp(configStr);
-    int splitIndex = tmp.indexOf(':');
-    if ( splitIndex == -1)
-    {
-        domain = configStr.toLower();
-        javaAdvice = KJavaScriptDunno;
-        javaScriptAdvice = KJavaScriptDunno;
-    }
-    else
-    {
-        domain = tmp.left(splitIndex).toLower();
-        QString adviceString = tmp.mid( splitIndex+1, tmp.length() );
-        int splitIndex2 = adviceString.indexOf( ':' );
-        if( splitIndex2 == -1 ) {
-            // Java advice only
-            javaAdvice = strToAdvice( adviceString );
-            javaScriptAdvice = KJavaScriptDunno;
-        } else {
-            // Java and JavaScript advice
-            javaAdvice = strToAdvice( adviceString.left( splitIndex2 ) );
-            javaScriptAdvice = strToAdvice( adviceString.mid( splitIndex2+1,
-                                                              adviceString.length() ) );
-        }
-    }
+    KParts::HtmlSettingsInterface::JavaScriptAdvice jAdvice, jsAdvice;
+    KParts::HtmlSettingsInterface::splitDomainAdvice(configStr, domain, jAdvice, jsAdvice);
+    javaAdvice = static_cast<KJavaScriptAdvice>(jAdvice);
+    javaScriptAdvice = static_cast<KJavaScriptAdvice>(jsAdvice);
 }
 
 void KHTMLSettings::readDomainSettings(const KConfigGroup &config, bool reset,

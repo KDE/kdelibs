@@ -75,7 +75,7 @@ static JSValue* cloneInternal(ExecState* exec, Interpreter* ctx, JSValue* in, QS
 
             // Copy over clones of properties
             PropertyNameArray props;
-            obj->getOwnPropertyNames(exec, props);
+            obj->getOwnPropertyNames(exec, props, PropertyMap::ExcludeDontEnumProperties);
             for (PropertyNameArrayIterator i = props.begin(); i != props.end(); ++i) {
                 JSValue* propVal = obj->get(exec, *i);
                 clone->put(exec, *i, cloneInternal(exec, ctx, propVal, path)); // ### flags?

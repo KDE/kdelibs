@@ -49,7 +49,7 @@ protected:
         Solid::Device dev("/org/freedesktop/Hal/devices/computer");
 
         QList<Solid::Device> driveList = Solid::Device::listFromType(Solid::DeviceInterface::StorageDrive);
-        foreach (const Solid::Device &solidDevice, driveList) {
+        Q_FOREACH (const Solid::Device &solidDevice, driveList) {
             const Solid::StorageDrive* solidDrive = solidDevice.as<Solid::StorageDrive>();
             Q_ASSERT(solidDrive);
             Q_UNUSED(solidDrive);
@@ -81,7 +81,7 @@ void SolidMtTest::testWorkerThread()
     wt->wait();
 
     const QList<Solid::Device> driveList = Solid::Device::listFromType(Solid::DeviceInterface::StorageDrive);
-    foreach (const Solid::Device &solidDevice, driveList) {
+    Q_FOREACH (const Solid::Device &solidDevice, driveList) {
         const Solid::GenericInterface* solidDrive = solidDevice.as<Solid::GenericInterface>();
         Q_ASSERT(solidDrive);
         Q_UNUSED(solidDrive);

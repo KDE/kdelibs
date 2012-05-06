@@ -77,8 +77,11 @@ QString FstabDevice::icon() const
 QStringList FstabDevice::emblems() const
 {
     QStringList res;
-    const FstabStorageAccess accessIface(const_cast<FstabDevice *>(this));
-    if (accessIface.isAccessible()) {
+    if (!m_storageAccess) {
+        FstabDevice* d = const_cast<FstabDevice *>(this);
+        d->m_storageAccess = new FstabStorageAccess(d);
+    }
+    if (m_storageAccess->isAccessible()) {
         res << "emblem-mounted";
     } else {
         res << "emblem-unmounted";
@@ -104,7 +107,9 @@ bool FstabDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type)
 QObject* FstabDevice::createDeviceInterface(const Solid::DeviceInterface::Type &type)
 {
     if (type == Solid::DeviceInterface::StorageAccess) {
-        return new FstabStorageAccess(this);
+        if (!m_storageAccess)
+            m_storageAccess = new FstabStorageAccess(this);
+        return m_storageAccess;
     } else if (type == Solid::DeviceInterface::NetworkShare) {
         return new FstabNetworkShare(this);
     }
@@ -119,5 +124,5 @@ QString FstabDevice::device() const
 void FstabDevice::onMtabChanged(const QString& device)
 {
     if (m_device == device)
-        emit mtabChanged(device);
+        Q_EMIT mtabChanged(device);
 }

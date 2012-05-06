@@ -40,7 +40,7 @@ namespace KJS {
     virtual ~DOMCSSStyleDeclaration();
     using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
-    virtual void getOwnPropertyNames(ExecState*, PropertyNameArray&);
+    virtual void getOwnPropertyNames(ExecState*, PropertyNameArray&, PropertyMap::PropertyMode mode);
     using KJS::JSObject::put;
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
     JSValue *getValueProperty(ExecState *exec, int token);

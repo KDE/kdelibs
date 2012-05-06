@@ -170,7 +170,7 @@ public:
     virtual bool implementsConstruct() const { return true; }
     virtual JSObject* construct(ExecState* exec, const List& args);
 
-    virtual void getOwnPropertyNames(ExecState*, PropertyNameArray&);
+    virtual void getOwnPropertyNames(ExecState*, PropertyNameArray&, PropertyMap::PropertyMode mode);
 
     virtual UString toString(ExecState *exec) const;
 
