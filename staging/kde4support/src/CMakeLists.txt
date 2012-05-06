@@ -21,6 +21,7 @@ set(libkde4support_SRCS
     kdecore/netsupp.cpp
 
     kdeui/kicon.cpp
+    kdeui/knumvalidator.cpp
 )
 
 include_directories(
@@ -68,6 +69,7 @@ install(FILES
     kdecore/k3sockssocketdevice.h
     kdecore/k3streamsocket.h
     kdeui/kicon.h
+    kdeui/knumvalidator.h
     ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

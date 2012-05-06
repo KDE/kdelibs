@@ -207,7 +207,6 @@ set(kdeui_LIB_SRCS
  util/kmanagerselection.cpp
  util/kmodifierkeyinfo.cpp
  util/kmodifierkeyinfoprovider.cpp
- util/knumvalidator.cpp
  util/kpassivepopup.cpp
  util/kpassivepopupmessagehandler.cpp
  util/kpixmapcache.cpp
@@ -568,7 +567,6 @@ install( FILES
  util/kkeyserver.h
  util/kmanagerselection.h
  util/kmodifierkeyinfo.h
- util/knumvalidator.h
  util/kpassivepopup.h
  util/kpassivepopupmessagehandler.h
  util/kpixmapcache.h

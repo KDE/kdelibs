@@ -22,7 +22,7 @@
 #ifndef KNUMVALIDATOR_H
 #define KNUMVALIDATOR_H
 
-#include <kdeui_export.h>
+#include <kde4support_export.h>
 
 #include <QValidator>
 
@@ -37,9 +37,9 @@ class QString;
   the proper entry of hexadecimal, octal, or any other base numeric data.
 
   @author Glen Parker <glenebob@nwlink.com>
-  @version 0.0.1
+  @deprecated use QIntValidator (or fix KIntValidator for non-decimal bases)
 */
-class KDEUI_EXPORT KIntValidator : public QValidator {
+class KDE4SUPPORT_DEPRECATED_EXPORT KIntValidator : public QValidator {
 
   public:
     /**
@@ -63,7 +63,7 @@ class KDEUI_EXPORT KIntValidator : public QValidator {
      */
     virtual void fixup ( QString & ) const;
     /**
-     * Sets the minimum and maximum values allowed. 
+     * Sets the minimum and maximum values allowed.
      * If @p top is greater than @p bottom, it is set to the value of @p bottom.
      */
     virtual void setRange ( int bottom, int top );
@@ -99,10 +99,10 @@ class KDEUI_EXPORT KIntValidator : public QValidator {
    are respected.
 
    @author Marc Mutz <mutz@kde.org>
-   @see KIntValidator
+   @deprecated use QDoubleValidator (and QLocale)
 **/
 
-class KDEUI_EXPORT KDoubleValidator : public QDoubleValidator {
+class KDE4SUPPORT_DEPRECATED_EXPORT KDoubleValidator : public QDoubleValidator {
   Q_OBJECT
   Q_PROPERTY( bool acceptLocalizedNumbers READ acceptLocalizedNumbers WRITE setAcceptLocalizedNumbers )
 public:

@@ -161,7 +161,10 @@ An easy case is KStandardDirs::findExe -&gt; QStandardPaths::findExecutable. Wel
 <h3><a name="kdeui">Changes in kdeui</a></h3>
 
 <ul>
-<li>KFloatValidator: Use KDoubleValidator instead (drop-in replacement)</li>
+<li>KIntValidator: Use QIntValidator instead, the only difference was that KIntValidator attempted to
+  support non-decimal bases (but it was broken with prefix and suffix texts, and therefore unused in KDE SC)</li>
+<li>KDoubleValidator: Use QDoubleValidator instead (as part of KLocale -&gt; QLocale)</li>
+<li>KFloatValidator: Use QDoubleValidator instead (drop-in replacement)</li>
 <li>KSvgRenderer: Use QSvgRenderer instead (drop-in replacement)</li>
 <li>KCursor: Use QCursor instead</li>
 <li>Proxy models: Moved to libitemmodels</li>
