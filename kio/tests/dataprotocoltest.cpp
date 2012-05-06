@@ -227,6 +227,28 @@ void DataProtocolTest::runAllTests_data()
         QByteArray( "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20version%3D%221.1"
                     "%22%3E%0A%20%20%3Ccircle%20cx%3D%22100%22%20cy%3D%22100%22%20r%3D%2225%22%20stroke%3D%22black%22%20"
                     "stroke-width%3D%221%22%20fill%3D%22green%22%2F%3E%0A%3C%2Fsvg%3E%0A#bar" );
+
+    QTest::newRow( "greenbytes-ext-simple" ) <<
+        QByteArray( "image/svg+xml" ) <<
+        QString(QLatin1String( "foo=bar\n"
+                               "charset=us-ascii" )) <<
+        QByteArray( "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n"
+                    "  <circle cx=\"100\" cy=\"100\" r=\"25\" stroke=\"black\" stroke-width=\"1\" fill=\"green\"/>\n"
+                    "</svg>\n") <<
+        QByteArray( "data:image/svg+xml;foo=bar,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20version%3D%221.1"
+                    "%22%3E%0A%20%20%3Ccircle%20cx%3D%22100%22%20cy%3D%22100%22%20r%3D%2225%22%20stroke%3D%22black%22%20"
+                    "stroke-width%3D%221%22%20fill%3D%22green%22%2F%3E%0A%3C%2Fsvg%3E%0A" );
+
+    QTest::newRow( "greenbytes-ext-simple-qs" ) <<
+        QByteArray( "image/svg+xml" ) <<
+        QString(QLatin1String( "foo=bar,bar\n"
+                               "charset=us-ascii" )) <<
+        QByteArray( "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n"
+                    "  <circle cx=\"100\" cy=\"100\" r=\"25\" stroke=\"black\" stroke-width=\"1\" fill=\"green\"/>\n"
+                    "</svg>\n") <<
+        QByteArray( "data:image/svg+xml;foo=%22bar,bar%22,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20"
+                    "version%3D%221.1%22%3E%0A%20%20%3Ccircle%20cx%3D%22100%22%20cy%3D%22100%22%20r%3D%2225%22%20stroke%3D%22black"
+                    "%22%20stroke-width%3D%221%22%20fill%3D%22green%22%2F%3E%0A%3C%2Fsvg%3E%0A" );
 }
 
 #include "dataprotocoltest.moc"
