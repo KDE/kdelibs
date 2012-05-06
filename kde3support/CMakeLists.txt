@@ -8,6 +8,7 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kdecore ${CMAKE_CURRENT_SOURCE_
                      ${kcoreaddons_BINARY_DIR}/src
                      ${kde4support_SOURCE_DIR}/src/kdeui
                      ${kde4support_BINARY_DIR}/src
+                     ${kdeguiaddons_SOURCE_DIR}/src/text
                      ${CMAKE_SOURCE_DIR}/solid
                      ${CMAKE_BINARY_DIR}/kpty)
 #${CMAKE_CURRENT_SOURCE_DIR}/kparts ${CMAKE_CURRENT_SOURCE_DIR}/kutils )
