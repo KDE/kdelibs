@@ -45,7 +45,7 @@ public:
     for (; it != end; ++it) {
       KIO::MetaData::Iterator eit = attributes_expected.find(it.key());
       QVERIFY(eit != attributes_expected.end());
-      QCOMPARE(eit.value(), it.value());
+      QCOMPARE(it.value(), eit.value());
       attributes_expected.erase(eit);
     }
   }
@@ -204,6 +204,12 @@ void DataProtocolTest::runAllTests_data()
         QByteArray( "data:;fortune-cookie=\"Master Leep say: \\\"Rabbit is humble, "
                     "Rabbit is gentle; follow the Rabbit\\\"\",(C) 1997 Shadow Warrior "
                     ";-)" );
+
+    QTest::newRow( "escaped charset" ) <<
+        textplain <<
+        QString( QLatin1String( "charset=iso-8859-7" ) ) <<
+        QByteArray( "test" ) <<
+        QByteArray( "data:text/plain;charset=%22%5cis%5co%5c-%5c8%5c8%5c5%5c9%5c-%5c7%22,test" );
 
     // the "greenbytes" tests are taken from http://greenbytes.de/tech/tc/datauri/
     QTest::newRow( "greenbytes-simplewfrag" ) <<
