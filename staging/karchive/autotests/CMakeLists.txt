@@ -21,30 +21,10 @@ MACRO(KARCHIVE_UNIT_TESTS)
                endif(WINCE)
        ENDFOREACH(_testname)
 ENDMACRO(KARCHIVE_UNIT_TESTS)
-MACRO(KARCHIVE_EXECUTABLE_TESTS) # TODO move to ../examples
-       FOREACH(_testname ${ARGN})
-               add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
-               target_link_libraries(${_testname} karchive ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} ${INQT5_LIBRARY})
-               if(WINCE)
-                target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
-               endif(WINCE)
-       ENDFOREACH(_testname)
-ENDMACRO(KARCHIVE_EXECUTABLE_TESTS)
 
 KARCHIVE_UNIT_TESTS(
   karchivetest
 )
-
-KARCHIVE_EXECUTABLE_TESTS(
-  ktartest
-  kziptest
-)
-
-if(LIBLZMA_FOUND)
-        KARCHIVE_EXECUTABLE_TESTS(
-          k7ziptest
-        )
-endif()
 
 ########### klimitediodevicetest ###############
 
