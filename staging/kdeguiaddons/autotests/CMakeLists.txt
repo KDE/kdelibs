@@ -11,14 +11,16 @@ include_directories(
    ${CMAKE_CURRENT_BINARY_DIR}/../src
 )
 
-MACRO(KGUIADDONS_UNIT_TESTS)
-       FOREACH(_testname ${ARGN})
+macro(kguiaddons_unit_tests)
+       foreach(_testname ${ARGN})
                add_executable(${_testname} ${_testname}.cpp)
                add_test(kconfig-${_testname} ${_testname})
                target_link_libraries(${_testname} kdeguiaddons ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${INQT5_LIBRARY})
-       ENDFOREACH(_testname)
-ENDMACRO(KGUIADDONS_UNIT_TESTS)
+       endforeach()
+endmacro()
 
-KGUIADDONS_UNIT_TESTS(
-  kwordwraptest
-)
+if (NOT QT5_BUILD)
+    kguiaddons_unit_tests(
+      kwordwraptest
+    )
+endif()
