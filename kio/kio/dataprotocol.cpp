@@ -75,23 +75,22 @@ struct DataHeader {
 };
 
 /** returns the position of the first occurrence of any of the given
-  * characters @p c1 to @p c3 or buf.length() if none is contained.
+  * characters @p c1 or comma (',') or semicolon (';') or buf.length()
+  * if none is contained.
   *
   * @param buf buffer where to look for c
   * @param begin zero-indexed starting position
-  * @param c1 character to find
-  * @param c2 alternative character to find or "\0" to ignore
-  * @param c3 alternative character to find or "\0" to ignore
+  * @param c1 character to find or QChar() to ignore
   */
-static int find(const QString &buf, int begin, QChar c1,
-		QChar c2 = QLatin1Char('\0'), QChar c3 = QLatin1Char('\0')) {
+static int find(const QString &buf, int begin, const QChar c1)
+{
+  static const QChar comma = QLatin1Char(',');
+  static const QChar semicolon = QLatin1Char(';');
   int pos = begin;
   int size = buf.length();
   while (pos < size) {
-    QChar ch = buf[pos];
-    if (ch == c1
-    	|| (c2 != QLatin1Char('\0') && ch == c2)
-	|| (c3 != QLatin1Char('\0') && ch == c3))
+    const QChar ch = buf[pos];
+    if (ch == comma || ch == semicolon || (!c1.isNull() && ch == c1))
       break;
     pos++;
   }/*wend*/
@@ -99,19 +98,18 @@ static int find(const QString &buf, int begin, QChar c1,
 }
 
 /** extracts the string between the current position @p pos and the first
- * occurrence of either @p c1 to @p c3 exclusively and updates @p pos
- * to point at the found delimiter or at the end of the buffer if
- * neither character occurred.
+ * occurrence of either @p c1 or comma (',') or semicolon (';') exclusively
+ * and updates @p pos to point at the found delimiter or at the end of the
+ * buffer if neither character occurred.
  * @param buf buffer where to look for
  * @param pos zero-indexed position within buffer
- * @param c1 character to find
- * @param c2 alternative character to find or 0 to ignore
- * @param c3 alternative character to find or 0 to ignore
+ * @param c1 character to find or QChar() to ignore
  */
-inline QString extract(const QString &buf, int &pos, QChar c1,
-		QChar c2 = QLatin1Char('\0'), QChar c3 = QLatin1Char('\0')) {
+static inline QString extract(const QString &buf, int &pos,
+                              const QChar c1 = QChar())
+{
   int oldpos = pos;
-  pos = find(buf,oldpos,c1,c2,c3);
+  pos = find(buf, oldpos, c1);
   return buf.mid(oldpos, pos-oldpos);
 }
 
@@ -121,11 +119,11 @@ inline QString extract(const QString &buf, int &pos, QChar c1,
  *	Upon return @p pos will either point to the first non-whitespace
  *	character or to the end of the buffer.
  */
-inline void ignoreWS(const QString &buf, int &pos) {
+static inline void ignoreWS(const QString &buf, int &pos)
+{
   int size = buf.length();
-  QChar ch = buf[pos];
-  while (pos < size && ch.isSpace())
-    ch = buf[++pos];
+  while (pos < size && buf[pos].isSpace())
+    ++pos;
 }
 
 /** parses a quoted string as per rfc 822.
@@ -144,7 +142,7 @@ static QString parseQuotedString(const QString &buf, int &pos) {
   bool escaped = false;	// if true means next character is literal
   bool parsing = true;	// true as long as end quote not found
   while (parsing && pos < size) {
-    QChar ch = buf[pos++];
+    const QChar ch = buf[pos++];
     if (escaped) {
       res += ch;
       escaped = false;
@@ -180,16 +178,15 @@ static DataHeader parseDataHeader(const KUrl &url, const bool mimeOnly)
   header_info.is_base64 = false;
 
   // decode url and save it
-  QString &raw_url = header_info.url = url.path().toLatin1();
-  int raw_url_len = raw_url.length();
+  const QString &raw_url = header_info.url = url.path().toLatin1();
+  const int raw_url_len = raw_url.length();
 
   header_info.data_offset = 0;
 
   // read mime type
   if (raw_url_len == 0)
     return header_info;
-  QString mime_type = extract(raw_url, header_info.data_offset,
-  			      QLatin1Char(';'), QLatin1Char(',')).trimmed();
+  const QString mime_type = extract(raw_url, header_info.data_offset).trimmed();
   if (!mime_type.isEmpty()) header_info.mime_type = mime_type;
   if (mimeOnly)
       return header_info;
@@ -204,9 +201,8 @@ static DataHeader parseDataHeader(const KUrl &url, const bool mimeOnly)
   bool data_begin_reached = false;
   while (!data_begin_reached && header_info.data_offset < raw_url_len) {
     // read attribute
-    QString attribute = extract(raw_url, header_info.data_offset,
-    				QLatin1Char('='), QLatin1Char(';'),
-				QLatin1Char(',')).trimmed();
+    const QString attribute = extract(raw_url, header_info.data_offset,
+                                QLatin1Char('=')).trimmed();
     if (header_info.data_offset >= raw_url_len
     	|| raw_url[header_info.data_offset] != QLatin1Char('=')) {
       // no assigment, must be base64 option
@@ -225,8 +221,7 @@ static DataHeader parseDataHeader(const KUrl &url, const bool mimeOnly)
         value = parseQuotedString(raw_url,header_info.data_offset);
         ignoreWS(raw_url,header_info.data_offset);
       } else
-        value = extract(raw_url, header_info.data_offset, QLatin1Char(';'),
-			QLatin1Char(',')).trimmed();
+        value = extract(raw_url, header_info.data_offset).trimmed();
 
       // add attribute to map
       header_info.attributes[attribute.toLower()] = value;
@@ -264,10 +259,10 @@ void DataProtocol::get(const KUrl& url) {
 
   const DataHeader hdr = parseDataHeader(url, false);
 
-  int size = hdr.url.length();
-  int data_ofs = qMin(hdr.data_offset,size);
+  const int size = hdr.url.length();
+  const int data_ofs = qMin(hdr.data_offset, size);
   // FIXME: string is copied, would be nice if we could have a reference only
-  QString url_data = hdr.url.mid(data_ofs);
+  const QString url_data = hdr.url.mid(data_ofs);
   QByteArray outData;
 
   if (hdr.is_base64) {
