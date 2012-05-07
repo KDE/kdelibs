@@ -119,7 +119,7 @@ static bool isHttpProtocol(const QUrl& url)
 void KWebPluginFactory::extractGuessedMimeType (const QUrl& url, QString* mimeType) const
 {
     if (mimeType) {
-        const KUrl reqUrl ((isHttpProtocol(url) ? url.path() : url));
+        const QUrl reqUrl ((isHttpProtocol(url) ? QUrl(url.path()) : url));
         KMimeType::Ptr ptr = KMimeType::findByUrl(reqUrl, 0, reqUrl.isLocalFile(), true);
         if (!ptr->isDefault() && !ptr->name().startsWith(QL1S("inode/"), Qt::CaseInsensitive)) {
             *mimeType = ptr->name();
