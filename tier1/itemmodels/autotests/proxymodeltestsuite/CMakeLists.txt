@@ -48,7 +48,7 @@ endif()
 
 # Grantlee is used for generating compilable code by the ModelEventLogger.
 # If Grantlee is not found, the logger does nothing.
-find_package(Grantlee ${GRANTLEE_FIND_ARG})
+find_package(Grantlee ${GRANTLEE_FIND_ARG} NO_MODULE)
 
 if(NOT proxymodeltestsuite_standalone)
   # TODO: Put this part in Grantlee
