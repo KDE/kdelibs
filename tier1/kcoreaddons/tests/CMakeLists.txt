@@ -11,17 +11,17 @@ include_directories(
 
 find_package(Qt5Transitional REQUIRED Gui)
 
-MACRO(KCOREADDONS_EXAMPLES)
-       FOREACH(_testname ${ARGN})
-               add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
-               target_link_libraries(${_testname} ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} kcoreaddons)
-               if(WINCE)
-                target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
-               endif(WINCE)
-       ENDFOREACH(_testname)
-ENDMACRO()
+macro(KCOREADDONS_EXAMPLES)
+    foreach(_testname ${ARGN})
+        add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
+        target_link_libraries(${_testname} ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} kcoreaddons)
+        if(WINCE)
+            target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
+        endif()
+    endforeach()
+endmacro()
 
-KCOREADDONS_EXAMPLES(
+kcoreaddons_examples(
   kdirwatchtest
   krandomsequencetest
 )

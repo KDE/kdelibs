@@ -9,7 +9,7 @@ set(kcoreaddons_OPTIONAL_LIBS )
 if (FAM_FOUND)
    include_directories(${FAM_INCLUDE_DIR})
    set(kcoreaddons_OPTIONAL_LIBS ${kcoreaddons_OPTIONAL_LIBS} ${FAM_LIBRARIES})
-endif (FAM_FOUND)
+endif ()
 
 if(NOT WIN32)
     set(kcoreaddons_OPTIONAL_SRCS caching/kshareddatacache.cpp)
@@ -27,7 +27,7 @@ if (WIN32)
         io/klockfile_win.cpp
         text/kmacroexpander_win.cpp
     )
-endif (WIN32)
+endif ()
 
 if (UNIX)
     set(kcoreaddons_OPTIONAL_SRCS
@@ -35,7 +35,7 @@ if (UNIX)
         io/klockfile_unix.cpp
         text/kmacroexpander_unix.cpp
     )
-endif (UNIX)
+endif ()
 
 set(libkcoreaddons_SRCS
     io/kautosavefile.cpp
