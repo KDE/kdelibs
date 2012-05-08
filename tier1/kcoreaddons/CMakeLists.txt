@@ -19,17 +19,14 @@ find_package(Qt5Transitional REQUIRED Core Test)
 
 # Configure checks for kdirwatch
 find_package(FAM)
+
+set_package_properties(FAM PROPERTIES
+     PURPOSE "Provides file alteration notification facilities using a separate service. FAM provides additional support for NFS.")
+
 set(HAVE_FAM ${FAM_FOUND})
 check_include_files(sys/inotify.h SYS_INOTIFY_H_FOUND)
 set(HAVE_SYS_INOTIFY_H ${SYS_INOTIFY_H_FOUND})
 
-if(SYS_INOTIFY_H_FOUND)
-  set_package_properties(FAM PROPERTIES
-     PURPOSE "You have file alteration notification support built into your kernel. FAM provides additional support for NFS.")
-else(SYS_INOTIFY_H_FOUND)
-  set_package_properties(FAM PROPERTIES
-    PURPOSE "Provides file alteration notification facilities using a separate service.")
-endif(SYS_INOTIFY_H_FOUND)
 
 # Generate io/config-kdirwatch.h
 configure_file(src/io/config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/src/io/config-kdirwatch.h)
