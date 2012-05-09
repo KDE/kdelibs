@@ -2,6 +2,7 @@
     Large image displaying library.
 
     Copyright (C) 2004,2005 Maks Orlovich (maksim@kde.org)
+    Copyright (C) 2012 Martin Sandsmark (martin.sandsmark@kde.org)
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -25,38 +26,62 @@
 #include "imagemanager.h"
 
 namespace khtmlImLoad {
-
+ScaledImagePlane::ScaledImagePlane(unsigned int _width, unsigned int _height, RawImagePlane* _parent):
+    ImagePlane(_width, _height), parent(_parent), tiles(tilesWidth, tilesHeight), m_width(_width), m_height(_height)
+{
+}
+    
 bool ScaledImagePlane::isUpToDate(unsigned int tileX, unsigned int tileY,
                             PixmapTile* tile)
 {
     Q_UNUSED(tileX);
     if (!tile->pixmap) return false;
 
-    for (unsigned int line = 0; line < tileHeight(tileY); ++line)
+    int yStep = (parent->image.height()<<8) / height;
+    for (unsigned int line = 0, srcLine=0; line < tileHeight(tileY); ++line, srcLine += yStep)
     {
-        if (tile->versions[line] < parent->versions[yScaleTable[line + tileY*Tile::TileSize]])
+        if (tile->versions[line] < parent->versions[(srcLine+yStep)>>8])
             return false;
     }
 
     return true;
 }
 
-template<typename T>
-static void scaleLoop(QImage* dst, unsigned int* xScaleTable,
-                      int line, const QImage& src, int srcLine, int tileX, int tileY)
+// Trick from here: http://www.compuphase.com/graphic/scale3.htm
+#define AVG(a,b)  ( ((((a)^(b)) & 0xfefefefeUL) >> 1) + ((a)&(b)) )
+static void scaleLoop32bit(QImage* dst, const QImage& src, int tileX, int tileY,
+        int height, int width, unsigned char *versions, unsigned char *parentVersions)
 {
-    Q_UNUSED(tileY);
-    const T* srcPix = reinterpret_cast<const T*>(src.scanLine (srcLine));
-    T*       dstPix = reinterpret_cast<T*>(dst->scanLine(line));
-    
-    xScaleTable += tileX * Tile::TileSize;
-    for (int x = 0; x < (int)dst->width(); ++x)
-    {
-        *dstPix = srcPix[xScaleTable[x]];
-        ++dstPix;
+    int yStep = (src.height()<<8) / height; // We bitshift for when we get large ratios
+    int xStep = (src.width()<<8) / width;
+    for (int yTarget=0, ySource=tileY * Tile::TileSize * yStep; yTarget<dst->height(); yTarget++, ySource+=yStep) {
+        const quint32 *srcBelow = reinterpret_cast<const quint32*>(src.scanLine(ySource>>8));
+        const quint32 *srcAbove = reinterpret_cast<const quint32*>(src.scanLine((ySource+yStep/2)>>8));
+        quint32 *destination = reinterpret_cast<quint32*>(dst->scanLine(yTarget));
+            
+        versions[yTarget] = parentVersions[(ySource+yStep)>>8];
+        for (int xTarget=0, xSource=tileX * Tile::TileSize * xStep; xTarget<dst->width(); xTarget++, xSource+=xStep) {
+            quint32 average1 = AVG(srcBelow[xSource>>8], srcAbove[(xSource+xStep/2)>>8]);
+            quint32 average2 = AVG(srcBelow[(xSource+xStep/2)>>8], srcAbove[xSource>>8]);
+            destination[xTarget] = AVG(average1, average2);
+        }
     }
 }
-//### is special version for TileSize worth it?
+
+static void scaleLoop8bit(QImage* dst, const QImage& src, int tileX, int tileY,
+        int height, int width, unsigned char *versions, unsigned char *parentVersions)
+{
+    int yStep = (src.height()<<8) / height; // We bitshift for when we get large ratios
+    int xStep = (src.width()<<8) / width;
+    for (int yTarget=0, ySource=tileY * Tile::TileSize * yStep; yTarget<dst->height(); yTarget++, ySource+=yStep) {
+        const quint8 *srcPix = reinterpret_cast<const quint8*>(src.scanLine(ySource>>8));
+        quint8 *destination = reinterpret_cast<quint8*>(dst->scanLine(yTarget));
+        versions[yTarget] = parentVersions[ySource>>8];
+        for (int xTarget=0, xSource=tileX * Tile::TileSize * xStep; xTarget<dst->width(); xTarget++, xSource+=xStep) {
+            destination[xTarget] = srcPix[xSource>>8];
+        }
+    }
+}
 
 void ScaledImagePlane::flushCache()
 {
@@ -84,21 +109,11 @@ void ScaledImagePlane::ensureUpToDate(unsigned int tileX, unsigned int tileY,
     }
     else ImageManager::imageCache()->touchEntry(&imageTile);
 
-    //Pull in updates to the image.
-    for (unsigned int line = 0; line < tileHeight(tileY); ++line)
-    {
-        int origLine = yScaleTable[line + tileY*Tile::TileSize];
-        if (imageTile.versions[line] < parent->versions[origLine])
-        {
-            imageTile.versions[line] = parent->versions[origLine];
-            if (parent->format.depth() == 1)
-                scaleLoop<quint8>(&imageTile.image, xScaleTable, line, 
-                                parent->image, origLine, tileX, tileY);
-            else
-                scaleLoop<quint32>(&imageTile.image, xScaleTable, line,
-                                parent->image, origLine, tileX, tileY);
-        }
-    }
+    // Do the actual scaling
+    if (parent->format.depth() == 1)
+        scaleLoop8bit(&imageTile.image, parent->image, tileX, tileY, m_height, m_width, imageTile.versions, parent->versions);
+    else
+        scaleLoop32bit(&imageTile.image, parent->image, tileX, tileY, m_height, m_width, imageTile.versions, parent->versions);
 
     //Now, push stuff into the pixmap.
     updatePixmap(tile, imageTile.image, tileX, tileY, 0, 0, imageTile.versions);
@@ -106,8 +121,6 @@ void ScaledImagePlane::ensureUpToDate(unsigned int tileX, unsigned int tileY,
 
 ScaledImagePlane::~ScaledImagePlane()
 {
-    delete[] xScaleTable;
-    delete[] yScaleTable;
 }
 
 

@@ -36,6 +36,19 @@ namespace KJS {
 
     struct PropertyMapHashTable;
 
+    // ECMA 262-3 8.6.1
+    // Property attributes
+    enum Attribute { None         = 0,
+                   ReadOnly     = 1 << 1, // property can be only read, not written
+                   DontEnum     = 1 << 2, // property doesn't appear in (for .. in ..)
+                   DontDelete   = 1 << 3, // property can't be deleted
+                   Internal     = 1 << 4, // an internal property, set to bypass checks
+                   Function     = 1 << 5, // property is a function - only used by static hashtables
+                   GetterSetter = 1 << 6, // property is a getter or setter
+                   DontMark     = 1 << 7}; // used in locals arrays only --- indicates that the slot
+                                           // does not contain a value, and hence should not be marked.
+
+
 /*
 * Saved Properties
 */
@@ -68,6 +81,11 @@ namespace KJS {
     class KJS_EXPORT PropertyMap {
         friend class JSObject;
     public:
+        enum PropertyMode {
+            ExcludeDontEnumProperties,
+            IncludeDontEnumProperties
+        };
+
         PropertyMap();
         ~PropertyMap();
 
@@ -85,7 +103,11 @@ namespace KJS {
         JSValue **getWriteLocation(const Identifier &name);
 
         void mark() const;
-        void getEnumerablePropertyNames(PropertyNameArray&) const;
+        static inline bool checkEnumerable(unsigned int attr, PropertyMode mode)
+        {
+            return (!(attr & DontEnum) || mode == PropertyMap::IncludeDontEnumProperties);
+        }
+        void getPropertyNames(PropertyNameArray&, PropertyMode mode = ExcludeDontEnumProperties) const;
 
         void save(SavedProperties &) const;
         void restore(const SavedProperties &p);

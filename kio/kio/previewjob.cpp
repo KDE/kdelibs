@@ -273,7 +273,11 @@ void PreviewJobPrivate::startPreview()
     QMap<QString, KService::Ptr> mimeMap;
     QHash<QString, QHash<QString, KService::Ptr> > protocolMap;
     for (KService::List::ConstIterator it = plugins.constBegin(); it != plugins.constEnd(); ++it) {
-        const QStringList protocols = (*it)->property("X-KDE-Protocol").toStringList();
+        QStringList protocols = (*it)->property("X-KDE-Protocols").toStringList();
+        const QString p = (*it)->property("X-KDE-Protocol").toString();
+        if (!p.isEmpty()) {
+            protocols.append(p);
+        }
         foreach (const QString &protocol, protocols) {
             QStringList mtypes = (*it)->serviceTypes();
             // Filter out non-mimetype servicetypes
@@ -588,7 +592,7 @@ void PreviewJobPrivate::getOrCreateThumbnail()
             supportsProtocol = true;
         } else if (m_remoteProtocolPlugins.value("KIO").contains(item.mimetype())) {
             // Assume KIO understands any URL, ThumbCreator slaves who have
-            // X-KDE-Protocol=KIO, will get feed the remote URL directly.
+            // X-KDE-Protocols=KIO will get fed the remote URL directly.
             supportsProtocol = true;
         }
 

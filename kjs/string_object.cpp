@@ -119,12 +119,16 @@ bool StringInstance::deleteProperty(ExecState *exec, const Identifier &propertyN
   return JSObject::deleteProperty(exec, propertyName);
 }
 
-void StringInstance::getOwnPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
+void StringInstance::getOwnPropertyNames(ExecState* exec, PropertyNameArray& propertyNames, PropertyMap::PropertyMode mode)
 {
   int size = internalValue()->getString().size();
   for (int i = 0; i < size; i++)
     propertyNames.add(Identifier(UString::from(i)));
-  return JSObject::getOwnPropertyNames(exec, propertyNames);
+
+  if (mode == PropertyMap::IncludeDontEnumProperties)
+    propertyNames.add(exec->propertyNames().length);
+
+  return JSObject::getOwnPropertyNames(exec, propertyNames, mode);
 }
 
 UString StringInstance::toString(ExecState *exec) const

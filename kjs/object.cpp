@@ -477,9 +477,9 @@ bool JSObject::getPropertyAttributes(const Identifier& propertyName, unsigned& a
   return false;
 }
 
-void JSObject::getOwnPropertyNames(ExecState* /*exec*/, PropertyNameArray& propertyNames)
+void JSObject::getOwnPropertyNames(ExecState* /*exec*/, PropertyNameArray& propertyNames, PropertyMap::PropertyMode mode)
 {
-   _prop.getEnumerablePropertyNames(propertyNames);
+  _prop.getPropertyNames(propertyNames, mode);
 
   // Add properties from the static hashtable of properties
   const ClassInfo *info = classInfo();
@@ -488,7 +488,7 @@ void JSObject::getOwnPropertyNames(ExecState* /*exec*/, PropertyNameArray& prope
       int size = info->propHashTable->size;
       const HashEntry *e = info->propHashTable->entries;
       for (int i = 0; i < size; ++i, ++e) {
-        if (e->s && !(e->attr & DontEnum))
+        if (e->s && PropertyMap::checkEnumerable(e->attr, mode))
           propertyNames.add(e->s);
       }
     }

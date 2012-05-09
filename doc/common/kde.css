@@ -169,9 +169,7 @@ th {
 #header_top {
     margin: 0 auto;
     padding: 0;
-    width: 60em;
-    min-width: 770px;
-    max-width: 45em;
+    width: 95%;
     vertical-align: middle;
     color: #ffffff;
     background: url(top.jpg) repeat-x bottom;
@@ -202,9 +200,7 @@ background-color: #0057ae;
 #header_bottom {
     margin: 0 auto;
     padding: 0.1em 0em 0.3em 0;
-    width: 60em;
-    min-width: 770px;
-    max-width: 45em;
+    width: 95%;
     vertical-align: middle;
     text-align: right;
     background: #eeeeee;
@@ -328,9 +324,7 @@ div.clearer+h2 {
 
 #body_wrapper {
     margin: 0 auto;
-    width: 60em;
-    min-width: 770px;
-    max-width: 45em;
+    width: 95%;
     border: #dddddd solid;
     border-width: 0 0 0 1px;
 }
@@ -340,9 +334,7 @@ div.clearer+h2 {
     margin: 0;
     padding: 0;
     min-height: 40em;
-    width: 60em;
-    min-width: 770px;
-    max-width: 45em;
+    width: 100%;
 }
 
 #right {

@@ -357,7 +357,7 @@ JSObject *FunctionImp::construct(ExecState *exec, const List &args)
 IndexToNameMap::IndexToNameMap(FunctionImp *func, const List &args)
 {
   _map = new Identifier[args.size()];
-  this->size = args.size();
+  this->_size = args.size();
 
   size_t i = 0;
   ListIterator iterator = args.begin();
@@ -377,7 +377,7 @@ bool IndexToNameMap::isMapped(const Identifier &index) const
   if (!indexIsNumber)
     return false;
 
-  if (indexAsNumber >= size)
+  if (indexAsNumber >= _size)
     return false;
 
   if (_map[indexAsNumber].isNull())
@@ -391,9 +391,14 @@ void IndexToNameMap::unMap(const Identifier &index)
   bool indexIsNumber;
   int indexAsNumber = index.toStrictUInt32(&indexIsNumber);
 
-  assert(indexIsNumber && indexAsNumber < size);
+  assert(indexIsNumber && indexAsNumber < _size);
 
   _map[indexAsNumber] = CommonIdentifiers::shared()->nullIdentifier;;
+}
+
+int IndexToNameMap::size() const
+{
+    return _size;
 }
 
 Identifier& IndexToNameMap::operator[](int index)
@@ -406,7 +411,7 @@ Identifier& IndexToNameMap::operator[](const Identifier &index)
   bool indexIsNumber;
   int indexAsNumber = index.toStrictUInt32(&indexIsNumber);
 
-  assert(indexIsNumber && indexAsNumber < size);
+  assert(indexIsNumber && indexAsNumber < _size);
 
   return (*this)[indexAsNumber];
 }
@@ -473,6 +478,25 @@ bool Arguments::deleteProperty(ExecState *exec, const Identifier &propertyName)
   } else {
     return JSObject::deleteProperty(exec, propertyName);
   }
+}
+
+void Arguments::getOwnPropertyNames(ExecState* exec, PropertyNameArray& propertyNames, PropertyMap::PropertyMode mode)
+{
+    unsigned int length = indexToNameMap.size();
+    unsigned attr;
+    for (unsigned int i = 0; i < length; ++i) {
+        attr = 0;
+        Identifier ident = Identifier::from(i);
+
+        if (indexToNameMap.isMapped(ident) &&
+            _activationObject->getPropertyAttributes(indexToNameMap[ident], attr)) {
+            if (PropertyMap::checkEnumerable(attr, mode)) {
+                propertyNames.add(ident);
+            }
+        }
+    }
+
+    JSObject::getOwnPropertyNames(exec, propertyNames, mode);
 }
 
 // ------------------------------ ActivationImp --------------------------------

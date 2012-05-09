@@ -292,7 +292,7 @@ h1, h2, h3, h4, h5, h6 {
   margin-right: 0.5in;
 }
 
-div.mediaobject { 
+div.mediaobject, div.mediaobjectco { 
   /* float: right; */ 
   /* might make it much nicer. although someone has to
      understand the rules ;-)  You also don't want it to be

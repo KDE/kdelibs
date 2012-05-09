@@ -62,6 +62,7 @@ case $1 in
 	echo "  --no-modulename  Build in apidocs/, not apidocs-module/"
 	echo "  --doxdatadir=dir Use dir as the source of global Doxygen files"
 	echo "  --installdir=dir Use dir as target to install to"
+        echo "  --title=title    String to use for the page titles"
 	echo "  --preprocess     Generate source code (KConfigXT, uic, etc.)"
         echo "  --manpages       Generate man pages in addition to html"
         echo "  --qhppages       Generate pages for Qt Assistant"
@@ -75,6 +76,9 @@ case $1 in
 --installdir=*)
 	PREFIX=`echo $1 | sed -e 's+--installdir=++'`
 	;;
+--title=*)
+        TITLE=`echo $1 | sed -e 's+--title=++'`
+        ;;
 --*)
 	echo "Unknown option: $1"
 	exit 1
@@ -124,6 +128,10 @@ if test -n "$DOXDATA"; then
     fi
 fi
 
+## Title
+if test -n "$TITLE"; then
+  TITLE="KDE API Reference"
+fi
 
 ### Sanity check and guess QTDOCDIR.
 if test -z "$QTDOCDIR" ; then
@@ -194,9 +202,10 @@ if test -n "$PREFIX" && test ! -d "$PREFIX" ; then
 	PREFIX=""
 fi
 
-TOPNAME=`grep '^/.*DOXYGEN_NAME' "$top_srcdir/Mainpage.dox" | sed -e 's+.*=++' | sed s+\"++g`
-if test -z "$TOPNAME" ; then
-    TOPNAME="API Reference"
+if test -z "$module_name" ; then
+  TOPNAME="API Reference"
+else
+  TOPNAME="$module_name API Reference"
 fi
 
 COPYRIGHT=`grep '^/.*DOXYGEN_COPYRIGHT' "$top_srcdir/Mainpage.dox" | sed -e 's+[^=]*=++' | sed s+\"++g`
@@ -214,12 +223,12 @@ preprocess_sources()
 		# execute global preprocessing modules
 		local preproc_base="`dirname $0`"
 		for proc in `find "$preproc_base" -name "doxygen-preprocess-*.sh"`; do
-			(cd $dir && $proc $1)
+			(cd $dir && sh $proc $1)
 		done
 		# execute local preprocessing modules
 		for proc in `find $dir -maxdepth 1 -name "doxygen-preprocess-*.sh"`; do
 			echo "* running $proc"
-			(cd $dir && $proc $1)
+			(cd $dir && sh $proc $1)
 		done
 	done
 }
@@ -354,7 +363,7 @@ apidox_qhppages()
                PROJECT_NAME="KDE"
         fi
         if test -z "$PROJECT_VERSION" ; then
-               PROJECT_VERSION="4.8"
+               PROJECT_VERSION="4.9"
         fi
         vf="$PROJECT_NAME"-"$PROJECT_VERSION"
         echo "QHP_VIRTUAL_FOLDER     = $vf" >> "$subdir/Doxyfile"
@@ -505,7 +514,12 @@ doxyndex()
 				-e "s+<!-- pmenu.*-->+$PMENU+" \
 				-e "s+<!-- cmenu.begin -->+$CMENUBEGIN+" \
 				-e "s+<!-- cmenu.end -->+$CMENUEND+" \
-				< "$i"  | sed -e "s+@topdir@+$htmltop+g" | sed -e "s+@topname@+$TOPNAME+g" | sed -e "s+@copyright@+$COPYRIGHT+g" > "$i.new" && mv "$i.new" "$i"
+                            < "$i" | \
+                            sed -e "s+@topdir@+$htmltop+g" | \
+                            sed -e "s+@topname@+$TOPNAME+g" | \
+                            sed -e "s+@copyright@+$COPYRIGHT+g" | \
+                            sed -e "s+@TITLE@+$TITLE+g" \
+                            > "$i.new" && mv "$i.new" "$i"
 			sed -e "s+<!-- cmenu -->+$CMENU+" < "$i" > "$i.new"
 
 		        # API_SEARCHBOX substitution.

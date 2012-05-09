@@ -238,9 +238,27 @@ public:
 #endif
     }
 
-    virtual AnimProvider* clone(PixmapPlane*)
+    virtual AnimProvider* clone(PixmapPlane *plane)
     {
-        return 0; //### FIXME
+        if (frame0->height == 0 || frame0->width == 0 ||
+            plane->height == 0 || plane->width == 0)
+            return 0;
+
+        float heightRatio = frame0->height / plane->height;
+        float widthRatio = frame0->width / plane->width;
+
+        QVector<GIFFrameInfo> newFrameInfo;
+        Q_FOREACH(const GIFFrameInfo &oldFrame, frameInfo) {
+            GIFFrameInfo newFrame(oldFrame);
+
+            newFrame.geom.setWidth(oldFrame.geom.width() * widthRatio);
+            newFrame.geom.setHeight(oldFrame.geom.height() * heightRatio);
+            newFrame.geom.setX(oldFrame.geom.x() * widthRatio);
+            newFrame.geom.setY(oldFrame.geom.y() * heightRatio);
+            newFrameInfo.append(newFrame);
+        }
+
+        return new GIFAnimProvider(plane, image, newFrameInfo, bgColor);
     }
 };
 

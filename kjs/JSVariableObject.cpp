@@ -60,13 +60,13 @@ bool JSVariableObject::deleteProperty(ExecState* exec, const Identifier& propert
     return JSObject::deleteProperty(exec, propertyName);
 }
 
-void JSVariableObject::getOwnPropertyNames(ExecState* exec, PropertyNameArray& propertyNames)
+void JSVariableObject::getOwnPropertyNames(ExecState* exec, PropertyNameArray& propertyNames, PropertyMap::PropertyMode mode)
 {
     SymbolTable::const_iterator::Keys end = symbolTable->end().keys();
     for (SymbolTable::const_iterator::Keys it = symbolTable->begin().keys(); it != end; ++it)
         propertyNames.add(Identifier(it->get()));
 
-    JSObject::getOwnPropertyNames(exec, propertyNames);
+    JSObject::getOwnPropertyNames(exec, propertyNames, mode);
 }
 
 void JSVariableObject::mark()

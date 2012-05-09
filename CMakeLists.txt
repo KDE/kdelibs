@@ -10,9 +10,9 @@ include(CPack)
 
 set (KDE_VERSION_MAJOR 4)
 set (KDE_VERSION_MINOR 8)
-set (KDE_VERSION_RELEASE 2)
+set (KDE_VERSION_RELEASE 3)
 set (KDE_VERSION "${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}.${KDE_VERSION_RELEASE}" )
-set (KDE_VERSION_STRING "${KDE_VERSION} (4.8.2)")
+set (KDE_VERSION_STRING "${KDE_VERSION} (4.8.3)")
 
 set (KDE_DISTRIBUTION_TEXT "compiled sources" CACHE STRING "Indicate the distribution in bug reports" )
 
@@ -79,11 +79,11 @@ else (WIN32)
     set (STRIGI_REQUIRED TRUE)
     set (STRIGI_EXTRA_TEXT "Required by some critical kioslaves")
 endif (WIN32)
-macro_log_feature(STRIGI_FOUND "Strigi" "Desktop indexing and search support" "http://strigi.sourceforge.net" ${STRIGI_REQUIRED} "${STRIGI_MIN_VERSION}" ${STRIGI_EXTRA_TEXT})
+macro_log_feature(STRIGI_FOUND "Strigi" "Desktop indexing and search support" "http://strigi.sourceforge.net" ${STRIGI_REQUIRED} "${STRIGI_MIN_VERSION}" "${STRIGI_EXTRA_TEXT}")
 
 set(LIBATTICA_MIN_VERSION "0.1.90")
 find_package(LibAttica)
-macro_log_feature(LIBATTICA_FOUND "libattica" "Support for Get Hot New Stuff" "git clone git://anongit.kde.org/attica" TRUE "${LIBATTICA_MIN_VERSION}" "")
+macro_log_feature(LIBATTICA_FOUND "libattica" "Support for Get Hot New Stuff" "git://anongit.kde.org/attica" TRUE "${LIBATTICA_MIN_VERSION}" "")
 
 #optional features
 if(X11_FOUND)

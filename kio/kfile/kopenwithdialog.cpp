@@ -579,6 +579,7 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
     KLineEdit *lineEdit = new KLineEdit(q);
     lineEdit->setClearButtonShown(true);
     combo->setLineEdit(lineEdit);
+    combo->setSizeAdjustPolicy(QComboBox::AdjustToMinimumContentsLengthWithIcon);
     combo->setDuplicatesEnabled( false );
     KConfigGroup cg( KGlobal::config(), QString::fromLatin1("Open-with settings") );
     int max = cg.readEntry( "Maximum history", 15 );

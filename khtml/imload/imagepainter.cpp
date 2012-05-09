@@ -108,14 +108,13 @@ void ImagePainter::paint(int dx, int dy, QPainter* p, int sx, int sy,
     if (plane->animProvider)
     {
         // Clip the request ourselves when animating..
-        QSize imageSize = image->size();
         
         if (width == -1)
-            width  = imageSize.width();
+            width  = size.width();
         if (height == -1)
-            height = imageSize.height();
+            height = size.height();
 
-        QRect clippedRect = QRect(0, 0, imageSize.width(), imageSize.height())
+        QRect clippedRect = QRect(0, 0, size.width(), size.height())
                             & QRect(sx, sy, width, height);
         plane->animProvider->paint(dx, dy, p, clippedRect.x(), clippedRect.y(),
                                           clippedRect.width(), clippedRect.height());

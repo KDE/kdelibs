@@ -41,7 +41,7 @@ namespace KJS {
     virtual void put(ExecState* exec, const Identifier& propertyName, JSValue*, int attr = None);
     using KJS::JSObject::deleteProperty;
     virtual bool deleteProperty(ExecState* exec, const Identifier& propertyName);
-    virtual void getOwnPropertyNames(ExecState*, PropertyNameArray&);
+    virtual void getOwnPropertyNames(ExecState*, PropertyNameArray&, PropertyMap::PropertyMode mode);
 
     virtual UString toString(ExecState *exec) const;
     virtual JSObject* valueClone(Interpreter* targetCtx) const;    

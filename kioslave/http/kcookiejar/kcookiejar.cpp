@@ -372,10 +372,10 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
 
           if( cookie.isSecure() && !secureRequest )
              continue;
-          
+
           if( cookie.isHttpOnly() && useDOMFormat )
              continue;
-          
+
           // Do not send expired cookies.
           if ( cookie.isExpired())
           {
@@ -395,7 +395,7 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
 
           allCookies.append(cookie);
        }
-       
+
        if (it == itEnd)
           break; // Finished.
     }
@@ -410,10 +410,10 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
     {
         if (!useDOMFormat)
             cookieStr = QL1S("Cookie: ");
-        
+
         if (protVersion > 0)
             cookieStr = cookieStr + QL1S("$Version=") + QString::number(protVersion) + QL1S("; ");
-          
+
         Q_FOREACH(const KHttpCookie& cookie, allCookies)
             cookieStr = cookieStr + cookie.cookieStr(useDOMFormat) + QL1S("; ");
 
@@ -537,7 +537,7 @@ QString KCookieJar::stripDomain(const KHttpCookie& cookie)
     if (cookie.domain().isEmpty())
        stripDomain( cookie.host(), domain);
     else
-       stripDomain( cookie.domain(), domain);
+       domain = cookie.domain();
     return domain;
 }
 
@@ -789,11 +789,11 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
             }
             else if (isRFC2965 && (Name.compare(QL1S("port"), Qt::CaseInsensitive) == 0 ||
                      (Name.isEmpty() && Value.compare(QL1S("port"), Qt::CaseInsensitive) == 0)))
-            {              
+            {
                 // Based on the port selection rule of RFC 2965 section 3.3.4...
                 if (Name.isEmpty())
                 {
-                    // We intentionally append a -1 first in orer to distinguish
+                    // We intentionally append a -1 first in order to distinguish
                     // between only a 'Port' vs a 'Port="80 443"' in the sent cookie.
                     lastCookie.mPorts.append(-1);
                     const bool secureRequest = (_url.startsWith(QL1S("https://"), Qt::CaseInsensitive) ||
@@ -1158,7 +1158,7 @@ void KCookieJar::eatSessionCookies( long windowId )
 {
     if (!windowId)
         return;
-    
+
     Q_FOREACH(const QString& domain, m_domainList)
         eatSessionCookies( domain, windowId, false );
 }
@@ -1252,7 +1252,7 @@ bool KCookieJar::saveCookies(const QString &_filename)
         KHttpCookieList *cookieList = m_cookieDomains.value(domain);
         if (!cookieList)
             continue;
-        
+
         QMutableListIterator<KHttpCookie> cookieIterator(*cookieList);
         while (cookieIterator.hasNext()) {
             const KHttpCookie& cookie = cookieIterator.next();
@@ -1513,7 +1513,7 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
         const int sepPos = value.lastIndexOf(QL1C(':'));
         if (sepPos <= 0)
           continue;
-        
+
         const QString domain(value.left(sepPos));
         KCookieAdvice advice = strToAdvice( value.mid(sepPos + 1) );
         setDomainAdvice(domain, advice);

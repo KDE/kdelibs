@@ -91,15 +91,12 @@ using namespace DOM;
         {
             noBorder = false;
             left = right = top = bottom = 0;
-            m_proxy = qobject_cast<KdeUiProxyStyle*>(parent->style());
             setParent(parent);
         }
 
-        QStyle* proxy() const { return m_proxy ? m_proxy : style(); }
-
         QRect subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const
         {
-            QRect r = proxy()->subElementRect(element, option, widget);
+            QRect r = style()->subElementRect(element, option, widget);
             switch (element) {
               case QStyle::SE_PushButtonContents:
               case QStyle::SE_LineEditContents:
@@ -117,12 +114,24 @@ using namespace DOM;
                const QStyleOptionButton *o = qstyleoption_cast<const QStyleOptionButton *>(option);
                if (o) {
                    QStyleOptionButton opt = *o;
-                   opt.rect = proxy()->subElementRect(SE_PushButtonFocusRect, &opt, widget);
-                   KdeUiProxyStyle::drawControl(CE_PushButtonLabel, &opt, painter, widget);
+                   opt.rect = style()->subElementRect(SE_PushButtonFocusRect, &opt, widget);
+                   style()->drawControl(CE_PushButtonLabel, &opt, painter, widget);
                }
                return;
             }
-            KdeUiProxyStyle::drawControl(element,option,painter,widget);
+
+            if (element == QStyle::CE_ComboBoxLabel) {
+                const QStyleOptionComboBox *o = qstyleoption_cast<const QStyleOptionComboBox*>(option);
+                if (o) {
+                    QStyleOptionComboBox comboOpt = *o;
+                    // by default combobox label is drawn left justified, vertical centered
+                    // translate it to reflect padding values
+                    comboOpt.rect = comboOpt.rect.translated(left, (top - bottom) / 2);
+                    return style()->drawControl(element, &comboOpt, painter, widget);
+                }
+            }
+
+            style()->drawControl(element, option, painter, widget);
         }
 
         QRect subControlRect(ComplexControl cc, const QStyleOptionComplex* opt, SubControl sc, const QWidget* widget) const
@@ -146,23 +155,22 @@ using namespace DOM;
                     }
 
                     // Now let sizeFromContent add in extra stuff.
-                    maxW = proxy()->sizeFromContents(QStyle::CT_ComboBox, opt, QSize(maxW, 1), widget).width();
+                    maxW = style()->sizeFromContents(QStyle::CT_ComboBox, opt, QSize(maxW, 1), widget).width();
 
                     // How much more room do we need for the text?
                     int extraW = maxW > cbOpt->rect.width() ? maxW - cbOpt->rect.width() : 0;
 
-                    QRect r = proxy()->subControlRect(cc, opt, sc, widget);
+                    QRect r = style()->subControlRect(cc, opt, sc, widget);
                     r.setWidth(r.width() + extraW);
                     return r;
                 }
             }
 
-            return proxy()->subControlRect(cc, opt, sc, widget);
+            return style()->subControlRect(cc, opt, sc, widget);
         }
 
         int left, right, top, bottom;
         bool noBorder;
-        KdeUiProxyStyle* m_proxy;
     };
 
 // ---------------------------------------------------------------------
@@ -1762,8 +1770,10 @@ void RenderSelect::updateFromElement()
                 if (disabled)
                     clearItemFlags(listIndex, Qt::ItemIsSelectable | Qt::ItemIsEnabled);
             }
-            else
+            else {
                 KHTMLAssert(false);
+            }
+
             m_selectionChanged = true;
         }
 
@@ -1993,8 +2003,7 @@ void RenderSelect::setOptionsChanged(bool _optionsChanged)
 
 void RenderSelect::setPadding()
 {
-    if (m_size > 1 || m_multiple)
-        RenderFormElement::setPadding();
+    RenderFormElement::setPadding();
 }
 
 ListBoxWidget* RenderSelect::createListBox()

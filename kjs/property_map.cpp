@@ -652,12 +652,12 @@ bool PropertyMap::containsGettersOrSetters() const
     return false;
 }
 
-void PropertyMap::getEnumerablePropertyNames(PropertyNameArray& propertyNames) const
+void PropertyMap::getPropertyNames(PropertyNameArray& propertyNames, PropertyMode mode) const
 {
     if (!m_usingTable) {
 #if USE_SINGLE_ENTRY
         UString::Rep *key = m_singleEntryKey;
-        if (key && !(m_singleEntryAttributes & DontEnum))
+        if (key && checkEnumerable(m_singleEntryAttributes, mode))
             propertyNames.add(Identifier(key));
 #endif
         return;
@@ -672,7 +672,7 @@ void PropertyMap::getEnumerablePropertyNames(PropertyNameArray& propertyNames) c
     Entry* entries = m_u.table->entries;
     for (int i = 0; i != size; ++i) {
         Entry* e = &entries[i];
-        if (e->key && !(e->attributes & DontEnum))
+        if (e->key && checkEnumerable(e->attributes, mode))
             *p++ = e;
     }
 
