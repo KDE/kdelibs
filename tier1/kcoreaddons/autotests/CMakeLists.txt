@@ -30,7 +30,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../../.. # kde_qt5_compat.h
 )
 
-KCOREADDONS_UNIT_TESTS(
+kcoreaddons_unit_tests(
     kaboutdatatest
     kjobtest
     klockfiletest
@@ -41,7 +41,7 @@ KCOREADDONS_UNIT_TESTS(
 )
 
 # Helper for klockfiletest
-KCOREADDONS_EXECUTABLE_TESTS(
+kcoreaddons_executable_tests(
     klockfile_testlock
 )
 
