@@ -25,8 +25,6 @@
 #include <kdebug.h>
 #include "kdialogqueue_p.h"
 
-#include <config.h>
-
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QDialogButtonBox>

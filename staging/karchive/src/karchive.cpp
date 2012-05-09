@@ -24,8 +24,6 @@
 
 #include <qplatformdefs.h> // QT_STATBUF, QT_LSTAT
 
-#include <config.h>
-
 #include <qsavefile.h>
 
 #include <QStack>

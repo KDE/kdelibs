@@ -18,7 +18,6 @@
 */
 
 #include "kglobalsettings.h"
-#include <config.h>
 
 #include <kconfig.h>
 
@@ -60,7 +59,7 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 #endif
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
-#ifdef HAVE_XCURSOR
+#ifdef HAVE_XCURSOR // TODO NOT DEFINED ANYMORE. Can we drop X cursor themes?
 #include <X11/Xcursor/Xcursor.h>
 #endif
 //#include "fixx11h.h"
