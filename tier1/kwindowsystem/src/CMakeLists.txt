@@ -3,15 +3,15 @@ find_package(X11)
 
 if (X11_Xfixes_FOUND)
    set (HAVE_XFIXES 1)
-else (X11_Xfixes_FOUND)
+else ()
    set (HAVE_XFIXES 0)
-endif (X11_Xfixes_FOUND)
+endif ()
 
 if (X11_Xrender_FOUND)
    set (HAVE_XRENDER 1)
-else (X11_Xrender_FOUND)
+else ()
    set (HAVE_XRENDER 0)
-endif (X11_Xrender_FOUND)
+endif ()
 
 configure_file(config-kwindowsystem.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kwindowsystem.h )
 
@@ -34,18 +34,21 @@ if (Q_WS_X11)
     set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_x11.cpp
                                          kwindowinfo_x11.cpp
                                          netwm.cpp )
-endif (Q_WS_X11)
+endif ()
+
 if (Q_WS_MAC)
     set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_mac.cpp
                                          kwindowinfo_mac.cpp)
-endif (Q_WS_MAC)
+endif ()
+
 if (Q_WS_WIN)
     set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_win.cpp
                                          kwindowinfo_win.cpp)
-endif (Q_WS_WIN)
+endif ()
+
 if (Q_WS_QWS)
     set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_qws.cpp)
-endif (Q_WS_QWS)
+endif ()
 
 add_library(kwindowsystem ${LIBRARY_TYPE} ${kwindowsystem_SRCS})
 generate_export_header(kwindowsystem)
