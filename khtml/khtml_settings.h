@@ -24,6 +24,7 @@ class KConfig;
 class KConfigGroup;
 
 #include <khtml_export.h>
+#include <kparts/htmlextension.h>
 
 #include <QtGui/QColor>
 #include <QtGui/QFont> // ### KDE 5: remove
@@ -44,7 +45,7 @@ public:
     /**
      * This enum specifies whether Java/JavaScript execution is allowed.
      */
-    enum KJavaScriptAdvice {
+    enum KJavaScriptAdvice {  // ### KDE 5: Remove. Use KParts::HtmlSettingsInterface::JavaScriptAdvice instead
 	KJavaScriptDunno=0,
 	KJavaScriptAccept,
 	KJavaScriptReject
@@ -71,43 +72,43 @@ public:
     /**
      * This enum specifies the policy for window.open
      */
-    enum KJSWindowOpenPolicy {
-    	KJSWindowOpenAllow=0,
-    	KJSWindowOpenAsk,
-    	KJSWindowOpenDeny,
-    	KJSWindowOpenSmart
+    enum KJSWindowOpenPolicy { // ### KDE 5: Remove. Use KParts::HtmlSettingsInterface::JSWindowOpenPolicy instead.
+        KJSWindowOpenAllow=0,
+        KJSWindowOpenAsk,
+        KJSWindowOpenDeny,
+        KJSWindowOpenSmart
     };
 
     /**
      * This enum specifies the policy for window.status and .defaultStatus
      */
-    enum KJSWindowStatusPolicy {
-    	KJSWindowStatusAllow=0,
-    	KJSWindowStatusIgnore
+    enum KJSWindowStatusPolicy { // ### KDE 5: Remove. Use KParts::HtmlSettingsInterface::JSWindowStatusPolicy instead.
+        KJSWindowStatusAllow=0,
+        KJSWindowStatusIgnore
     };
 
     /**
      * This enum specifies the policy for window.moveBy and .moveTo
      */
-    enum KJSWindowMovePolicy {
-    	KJSWindowMoveAllow=0,
-    	KJSWindowMoveIgnore
+    enum KJSWindowMovePolicy { // ### KDE 5: Remove. Use KParts::HtmlSettingsInterface::JSWindowMovePolicy instead.
+        KJSWindowMoveAllow=0,
+        KJSWindowMoveIgnore
     };
 
     /**
      * This enum specifies the policy for window.resizeBy and .resizeTo
      */
-    enum KJSWindowResizePolicy {
-    	KJSWindowResizeAllow=0,
-    	KJSWindowResizeIgnore
+    enum KJSWindowResizePolicy { // ### KDE 5: Remove. Use KParts::HtmlSettingsInterface::JSWindowStatusPolicy insead.
+        KJSWindowResizeAllow=0,
+        KJSWindowResizeIgnore
     };
 
     /**
      * This enum specifies the policy for window.focus
      */
-    enum KJSWindowFocusPolicy {
-    	KJSWindowFocusAllow=0,
-    	KJSWindowFocusIgnore
+    enum KJSWindowFocusPolicy { // ### KDE 5: Remove. Use KParts::HtmlSettingsInterface::JSWindowStatusPolicy instead.
+        KJSWindowFocusAllow=0,
+        KJSWindowFocusIgnore
     };
 
     /**
@@ -211,6 +212,7 @@ public:
     // Access Keys
     bool accessKeysEnabled() const;
 
+    // ### KDE 5: Replace KJSWindowOpenPolicy with KParts::HtmlSettingsInterface::JSWindowOpenPolicy
     KJSWindowOpenPolicy windowOpenPolicy( const QString& hostname = QString() ) const;
     KJSWindowMovePolicy windowMovePolicy( const QString& hostname = QString() ) const;
     KJSWindowResizePolicy windowResizePolicy( const QString& hostname = QString() ) const;
@@ -218,9 +220,12 @@ public:
     KJSWindowFocusPolicy windowFocusPolicy( const QString& hostname = QString() ) const;
 
     // helpers for parsing domain-specific configuration, used in KControl module as well
+    // ### KDE 5: Replace KJavaScriptAdvice with KParts::HtmlSettingsInterface::JavaScriptAdvice.
+    // ### KDE 5: Remove ? Equivalent functions now exist in KParts::HtmlSettingsInterface.
     static KJavaScriptAdvice strToAdvice(const QString& _str);
     static void splitDomainAdvice(const QString& configStr, QString &domain,
-				  KJavaScriptAdvice &javaAdvice, KJavaScriptAdvice& javaScriptAdvice);
+                                  KJavaScriptAdvice &javaAdvice,
+                                  KJavaScriptAdvice& javaScriptAdvice);
     static const char* adviceToStr(KJavaScriptAdvice _advice);
 
     /** reads from @p config's current group, forcing initialization

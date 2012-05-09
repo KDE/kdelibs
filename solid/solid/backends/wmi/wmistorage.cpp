@@ -1,4 +1,5 @@
 /*
+    Copyright 2012 Patrick von Reth <vonreth@kde.org>
     Copyright 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -19,6 +20,7 @@
 */
 
 #include "wmistorage.h"
+#include "wmiquery.h"
 
 using namespace Solid::Backends::Wmi;
 
@@ -35,7 +37,7 @@ Storage::~Storage()
 
 Solid::StorageDrive::Bus Storage::bus() const
 {
-    QString bus = m_device->property("storage.bus").toString();
+    QString bus = m_device->property("InterfaceType").toString().toLower();
 
     if (bus=="ide")
     {
@@ -45,7 +47,7 @@ Solid::StorageDrive::Bus Storage::bus() const
     {
         return Solid::StorageDrive::Usb;
     }
-    else if (bus=="ieee1394")
+    else if (bus=="1394")
     {
         return Solid::StorageDrive::Ieee1394;
     }
@@ -53,10 +55,10 @@ Solid::StorageDrive::Bus Storage::bus() const
     {
         return Solid::StorageDrive::Scsi;
     }
-    else if (bus=="sata")
-    {
-        return Solid::StorageDrive::Sata;
-    }
+//    else if (bus=="sata")//not availible http://msdn.microsoft.com/en-us/library/windows/desktop/aa394132(v=vs.85).aspx
+//    {
+//        return Solid::StorageDrive::Sata;
+//    }
     else
     {
         return Solid::StorageDrive::Platform;
@@ -65,59 +67,53 @@ Solid::StorageDrive::Bus Storage::bus() const
 
 Solid::StorageDrive::DriveType Storage::driveType() const
 {
-    QString type = m_device->property("storage.drive_type").toString();
-
-    if (type=="disk")
-    {
-        return Solid::StorageDrive::HardDisk;
-    }
-    else if (type=="cdrom")
-    {
-        return Solid::StorageDrive::CdromDrive;
-    }
-    else if (type=="floppy")
-    {
-        return Solid::StorageDrive::Floppy;
-    }
-    else if (type=="tape")
-    {
-        return Solid::StorageDrive::Tape;
-    }
-    else if (type=="compact_flash")
-    {
-        return Solid::StorageDrive::CompactFlash;
-    }
-    else if (type=="memory_stick")
-    {
-        return Solid::StorageDrive::MemoryStick;
-    }
-    else if (type=="smart_media")
-    {
-        return Solid::StorageDrive::SmartMedia;
-    }
-    else if (type=="sd_mmc")
-    {
-        return Solid::StorageDrive::SdMmc;
-    }
-    else
-    {
-        return Solid::StorageDrive::HardDisk;
-    }
+    QString type = m_device->property("MediaType").toString();//was availibele in Win32_LogicalDiskDrive
+     if (type=="Removable Media")
+     {
+         return Solid::StorageDrive::MemoryStick;
+     }
+     else{//if(type == "External hard disk media" || type == "Fixed hard disk media" || type == "Fixed hard disk"){
+         return Solid::StorageDrive::HardDisk;
+     }
+//      else
+//     else if (type=="tape")
+//     {
+//         return Solid::StorageDrive::Tape;
+//     }
+//     else if (type=="compact_flash")
+//     {
+//         return Solid::StorageDrive::CompactFlash;
+//     }
+//     else if (type=="smart_media")
+//     {
+//         return Solid::StorageDrive::SmartMedia;
+//     }
+//     else if (type=="sd_mmc")
+//     {
+//         return Solid::StorageDrive::SdMmc;
+//     }
+//     else
+//     {
+        
+//    }
 }
 
 bool Storage::isRemovable() const
 {
-    return m_device->property("storage.removable").toBool();
+    //TODO:
+    return false;
+//    return m_device->property("storage.removable").toBool();
 }
 
 bool Storage::isHotpluggable() const
 {
-    return m_device->property("storage.hotpluggable").toBool();
+    return bus() == Solid::StorageDrive::Usb;
+//    return m_device->property("storage.hotpluggable").toBool();
 }
 
 qulonglong Storage::size() const
 {
-    return m_device->property("storage.size").toULongLong();
+    return m_device->property("Size").toULongLong();
 }
 
 #include "backends/wmi/wmistorage.moc"

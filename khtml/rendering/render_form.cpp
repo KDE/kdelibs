@@ -119,7 +119,19 @@ using namespace DOM;
                }
                return;
             }
-            style()->drawControl(element,option,painter,widget);
+
+            if (element == QStyle::CE_ComboBoxLabel) {
+                const QStyleOptionComboBox *o = qstyleoption_cast<const QStyleOptionComboBox*>(option);
+                if (o) {
+                    QStyleOptionComboBox comboOpt = *o;
+                    // by default combobox label is drawn left justified, vertical centered
+                    // translate it to reflect padding values
+                    comboOpt.rect = comboOpt.rect.translated(left, (top - bottom) / 2);
+                    return style()->drawControl(element, &comboOpt, painter, widget);
+                }
+            }
+
+            style()->drawControl(element, option, painter, widget);
         }
 
         QRect subControlRect(ComplexControl cc, const QStyleOptionComplex* opt, SubControl sc, const QWidget* widget) const
@@ -1758,8 +1770,10 @@ void RenderSelect::updateFromElement()
                 if (disabled)
                     clearItemFlags(listIndex, Qt::ItemIsSelectable | Qt::ItemIsEnabled);
             }
-            else
+            else {
                 KHTMLAssert(false);
+            }
+
             m_selectionChanged = true;
         }
 
@@ -1989,8 +2003,7 @@ void RenderSelect::setOptionsChanged(bool _optionsChanged)
 
 void RenderSelect::setPadding()
 {
-    if (m_size > 1 || m_multiple)
-        RenderFormElement::setPadding();
+    RenderFormElement::setPadding();
 }
 
 ListBoxWidget* RenderSelect::createListBox()

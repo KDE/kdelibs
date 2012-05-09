@@ -26,12 +26,14 @@
 
 static const unsigned int max_nums = 8;
 
+class QWidget;
+
 class KIO::SlaveInterfacePrivate
 {
 public:
     SlaveInterfacePrivate()
         : connection(0), filesize(0), offset(0), last_time(0),
-          nums(0), slave_calcs_speed(false)
+          nums(0), slave_calcs_speed(false), parentWindow(0)
     {
         start_time.tv_sec = 0;
         start_time.tv_usec = 0;
@@ -55,6 +57,7 @@ public:
     struct timeval start_time;
     uint nums;
     bool slave_calcs_speed;
+    QWidget* parentWindow;
 
     int messageBox(int type, const QString &text, const QString &caption,
                  const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName);

@@ -23,6 +23,8 @@
 
 #include <solid/ifaces/device.h>
 #include <QtCore/QStringList>
+#include <QtCore/QPointer>
+#include "fstabstorageaccess.h"
 
 namespace Solid
 {
@@ -72,6 +74,7 @@ namespace Fstab
             QString m_product;
             QString m_vendor;
             QString m_description;
+            QPointer<FstabStorageAccess> m_storageAccess;
     };
 
 }

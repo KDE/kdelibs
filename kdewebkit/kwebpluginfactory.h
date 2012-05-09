@@ -81,22 +81,27 @@ public:
 
 protected:
     /**
-     * Attempts to determine the content type of @p url.
+     * Sets @p mimeType to the content type guessed from @p url.
+     *
+     * Note that attempting to guess mime-type will not always produce the
+     * correct content-type. This is especially true for the HTTP protocol
+     * since the URL present might be for a cgi script URL instead of a static
+     * URL that directly points to the content.
      *
      * If @p mimeType is not NULL, this function will set it to the content
      * type determined from @p url.
      *
      * @since 4.8.3
      */
-    void extractMimeType(const QUrl& url, QString* mimeType) const;
+    void extractGuessedMimeType(const QUrl& url, QString* mimeType) const;
 
     /**
      * Returns true if the given mime-type is excluded from being used to create
      * a web plugin using KDE's trader.
      *
-     * Currently this function only returns true when the mime-types are
-     * application/x-java, application/x-shockwave-flash, application/futuresplash,
-     * and any type that starts with "inode/",
+     * Currently this function only returns true for mimetypes 'x-java',
+     * 'x-shockwave-flash', and 'futuresplash' in the 'application' category
+     * and everything under the 'inode' category.
      *
      * @since 4.8.3
      */

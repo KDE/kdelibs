@@ -1,4 +1,5 @@
 /*
+    Copyright 2012 Patrick von Reth <vonreth@kde.org>
     Copyright 2005,2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -69,6 +70,7 @@ public:
 
     static QStringList generateUDIList(const Solid::DeviceInterface::Type &type);
     static bool exists(const QString &udi);
+    const Solid::DeviceInterface::Type type() const;
 
 Q_SIGNALS:
     void propertyChanged(const QMap<QString,int> &changes);
@@ -79,6 +81,7 @@ private Q_SLOTS:
     void slotCondition(const QString &condition, const QString &reason);
 
 private:
+    static QString &driveLetterToUid(const QString &letter);
     WmiDevicePrivate *d;
     friend class WmiDevicePrivate;
 };

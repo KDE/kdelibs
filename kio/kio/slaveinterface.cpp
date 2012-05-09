@@ -400,6 +400,18 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &c
     }
 }
 
+void SlaveInterface::setWindow (QWidget* window)
+{
+    Q_D(SlaveInterface);
+    d->parentWindow = window;
+}
+
+QWidget* SlaveInterface::window() const
+{
+    const Q_D(SlaveInterface);
+    return d->parentWindow;
+}
+
 int SlaveInterfacePrivate::messageBox(int type, const QString &text,
                                       const QString &caption, const QString &buttonYes,
                                       const QString &buttonNo, const QString &dontAskAgainName)
@@ -411,7 +423,7 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
 
     // SMELL: the braindead way to support button icons
     KGuiItem buttonYesGui, buttonNoGui;
-    
+
     if (buttonYes == i18n("&Details"))
         buttonYesGui = KGuiItem(buttonYes, "help-about");
     else if (buttonYes == i18n("&Forever"))
@@ -429,32 +441,32 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
     switch (type) {
     case KIO::SlaveBase::QuestionYesNo:
         result = KMessageBox::questionYesNo(
-                     0, text, caption, buttonYesGui,
+                     parentWindow, text, caption, buttonYesGui,
                      buttonNoGui, dontAskAgainName);
         break;
     case KIO::SlaveBase::WarningYesNo:
         result = KMessageBox::warningYesNo(
-                     0, text, caption, buttonYesGui,
+                     parentWindow, text, caption, buttonYesGui,
                      buttonNoGui, dontAskAgainName);
         break;
     case KIO::SlaveBase::WarningContinueCancel:
         result = KMessageBox::warningContinueCancel(
-                     0, text, caption, buttonYesGui,
+                     parentWindow, text, caption, buttonYesGui,
                      KStandardGuiItem::cancel(), dontAskAgainName);
         break;
     case KIO::SlaveBase::WarningYesNoCancel:
         result = KMessageBox::warningYesNoCancel(
-                     0, text, caption, buttonYesGui, buttonNoGui,
+                     parentWindow, text, caption, buttonYesGui, buttonNoGui,
                      KStandardGuiItem::cancel(), dontAskAgainName);
         break;
     case KIO::SlaveBase::Information:
-        KMessageBox::information(0, text, caption, dontAskAgainName);
+        KMessageBox::information(parentWindow, text, caption, dontAskAgainName);
         result = 1; // whatever
         break;
     case KIO::SlaveBase::SSLMessageBox:
     {
         KIO::MetaData meta = sslMetaData;
-        KSslInfoDialog *kid = new KSslInfoDialog(0);
+        QPointer<KSslInfoDialog> kid (new KSslInfoDialog(parentWindow));
         //### this is boilerplate code and appears in khtml_part.cpp almost unchanged!
         QStringList sl = meta["ssl_peer_chain"].split('\x01', QString::SkipEmptyParts);
         QList<QSslCertificate> certChain;
@@ -476,6 +488,7 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
                             meta["ssl_cipher_used_bits"].toInt(),
                             meta["ssl_cipher_bits"].toInt(),
                             KSslInfoDialog::errorsFromString(meta["ssl_cert_errors"]));
+
             kDebug(7024) << "Showing SSL Info dialog";
             kid->exec();
             kDebug(7024) << "SSL Info dialog closed";
@@ -486,10 +499,11 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
         }
         // KSslInfoDialog deletes itself (Qt::WA_DeleteOnClose).
         result = 1; // whatever
+        delete kid;
         break;
     }
     default:
-        kWarning() << "unknown type" << type;
+        kWarning(7024) << "Unknown type" << type;
         result = 0;
         break;
     }

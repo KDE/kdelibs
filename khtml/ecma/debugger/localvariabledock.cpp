@@ -104,7 +104,7 @@ void LocalVariablesDock::updateObjectProperties(KJS::ExecState* exec, KJS::JSVal
 
         // We use getOwnPropertyNames and not getPropertyNames here
         // to not include things from the prototype
-        obj->getOwnPropertyNames(exec, jsProps);
+        obj->getOwnPropertyNames(exec, jsProps, KJS::PropertyMap::ExcludeDontEnumProperties);
 
         for (int pos = 0; pos < jsProps.size(); ++pos) 
         {

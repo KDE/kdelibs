@@ -82,10 +82,11 @@ namespace KJS {
     Identifier& operator[](const Identifier &indexIdentifier);
     bool isMapped(const Identifier &index) const;
     void unMap(const Identifier &index);
+    int size() const;
 
   private:
     IndexToNameMap(); // prevent construction w/o parameters
-    int size;
+    int _size;
     Identifier * _map;
   };
 
@@ -99,6 +100,8 @@ namespace KJS {
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
     using KJS::JSObject::deleteProperty;
     virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
+    virtual void getOwnPropertyNames(ExecState*, PropertyNameArray&, PropertyMap::PropertyMode mode);
+
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
   private:

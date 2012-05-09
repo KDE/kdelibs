@@ -52,3 +52,17 @@ install(FILES ${kdeclarative_LIB_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR}/ CO
 install(TARGETS kdeclarative EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 
+install(
+   EXPORT kdelibsLibraryTargets
+   DESTINATION ${LIB_INSTALL_DIR}/cmake/KDeclarative
+   FILE KDeclarativeLibraryTargets.cmake
+   )
+
+configure_file(KDeclarativeConfig.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/KDeclarativeConfig.cmake" @ONLY)
+configure_file(KDeclarativeConfigVersion.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/KDeclarativeConfigVersion.cmake" @ONLY)
+
+install(
+   FILES ${CMAKE_CURRENT_BINARY_DIR}/KDeclarativeConfig.cmake
+         ${CMAKE_CURRENT_BINARY_DIR}/KDeclarativeConfigVersion.cmake
+         DESTINATION ${LIB_INSTALL_DIR}/cmake/KDeclarative
+)

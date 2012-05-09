@@ -99,7 +99,7 @@ bool UDevManager::Private::isOfInterest(const UdevQt::Device &device)
     return device.subsystem() == QLatin1String("dvb") ||
            device.subsystem() == QLatin1String("video4linux") ||
            device.subsystem() == QLatin1String("net") ||
-           device.deviceProperty("ID_MEDIA_PLAYER").toInt() == 1 || // MTP-like media devices
+           device.deviceProperty("ID_MEDIA_PLAYER").toString().isEmpty() == false || // media-player-info recognized devices
            device.deviceProperty("ID_GPHOTO2").toInt() == 1; // GPhoto2 cameras
 }
 

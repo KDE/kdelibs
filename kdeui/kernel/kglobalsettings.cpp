@@ -1136,13 +1136,16 @@ void KGlobalSettings::Private::applyCursorTheme()
 void KGlobalSettings::Private::propagateQtSettings()
 {
     KConfigGroup cg( KGlobal::config(), "KDE" );
-
+#ifndef Q_WS_WIN
     int num = cg.readEntry("CursorBlinkRate", QApplication::cursorFlashTime());
     if ((num != 0) && (num < 200))
         num = 200;
     if (num > 2000)
         num = 2000;
     QApplication::setCursorFlashTime(num);
+#else
+    int num;
+#endif
     num = cg.readEntry("DoubleClickInterval", QApplication::doubleClickInterval());
     QApplication::setDoubleClickInterval(num);
     num = cg.readEntry("StartDragTime", QApplication::startDragTime());

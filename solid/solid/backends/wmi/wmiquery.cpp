@@ -1,4 +1,5 @@
 /*
+    Copyright 2012 Patrick von Reth <vonreth@kde.org>
     Copyright 2008 Jeff Mitchell <mitchell@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -33,6 +34,7 @@
 
 #include <iostream>
 #include <Wbemidl.h>
+#include <Oaidl.h>
 
 # pragma comment(lib, "wbemuuid.lib")
 
@@ -41,33 +43,76 @@
 #include <QtCore/QList>
 #include <QtCore/QStringList>
 
-#ifdef __GNUC__
-//temporarily place this here, it should be moved to kdewin lib
-BSTR BSTRFromCStr(UINT codePage, LPCSTR s)
-{
-    int wideLen = MultiByteToWideChar(codePage, 0, s, -1, NULL, 0);
-    if( wideLen > 0 )
-    {
-        WCHAR* wideStr = (WCHAR*)CoTaskMemAlloc(wideLen*sizeof(WCHAR));
-        if( NULL != wideStr )
-        {
-            BSTR bstr;
+//needed for mingw
+inline OLECHAR* SysAllocString(const QString &s){
+    const OLECHAR *olename = reinterpret_cast<const OLECHAR *>(s.utf16());
+    return ::SysAllocString(olename);
+}
 
-            ZeroMemory(wideStr, wideLen*sizeof(WCHAR));
-            MultiByteToWideChar(codePage, 0, s, -1, wideStr, wideLen);
-            bstr = SysAllocStringLen(wideStr, wideLen-1);
-            CoTaskMemFree(wideStr);
-
-            return bstr;
-        }
-    }
-    return NULL;
-};
-
-#define _bstr_t(a) BSTRFromCStr(CP_UTF8, a)
-#define bstr_t _bstr_t
-#endif
 using namespace Solid::Backends::Wmi;
+
+QString bstrToQString(BSTR bstr)
+{
+    QString str((QChar*)bstr,::SysStringLen(bstr));
+    return str;
+
+}
+
+QVariant WmiQuery::Item::msVariantToQVariant(VARIANT msVariant, CIMTYPE variantType)
+{
+    QVariant returnVariant;
+    if(msVariant.vt == VT_NULL){
+        return QVariant(QVariant::String);
+    }
+
+    switch(variantType) {
+    case CIM_STRING:
+    case CIM_CHAR16:
+    case CIM_UINT64://bug I get a wrong value from ullVal
+    {
+        QString str = bstrToQString(msVariant.bstrVal);
+        QVariant vs(str);
+        returnVariant = vs;
+
+    }
+        break;
+    case CIM_BOOLEAN:
+    {
+        QVariant vb(msVariant.boolVal);
+        returnVariant = vb;
+    }
+        break;
+    case CIM_UINT8:
+    {
+        QVariant vb(msVariant.uintVal);
+        returnVariant = vb;
+    }
+        break;
+    case CIM_UINT16:
+    {
+        QVariant vb(msVariant.uintVal);
+        returnVariant = vb;
+    }
+        break;
+    case CIM_UINT32:
+    {
+        QVariant vb(msVariant.uintVal);
+        returnVariant = vb;
+    }
+        break;
+        //    case CIM_UINT64:
+        //    {
+        //        QVariant vb(msVariant.ullVal);
+        ////        wprintf(L"ulonglong %d %I64u\r\n",variantType, msVariant.ullVal); // 32-bit on x86, 64-bit on x64
+        //        returnVariant = vb;
+        //    }
+        //        break;
+        //    default:
+        //        qDebug()<<"Unsupported variant"<<variantType;
+    };
+    VariantClear(&msVariant);
+    return returnVariant;
+}
 
 /**
  When a WmiQuery instance is created as a static global
@@ -78,30 +123,65 @@ using namespace Solid::Backends::Wmi;
  static WmiQuery instance;
 */
 
-QString WmiQuery::Item::getProperty(const QString &property) const
+QVariant WmiQuery::Item::getProperty(BSTR bstrProp) const
 {
-//    qDebug() << "start property:" << property;
+    QVariant result;
+    VARIANT vtProp;
+    CIMTYPE variantType;
+    HRESULT hr = m_p->Get(bstrProp, 0, &vtProp, &variantType, 0);
+    if (SUCCEEDED(hr)) {
+        result = msVariantToQVariant(vtProp,variantType);
+    }/*else{
+        qWarning()<<"Querying "<<property<<"failed";
+    }*/
+    return result;
+}
+QVariant WmiQuery::Item::getProperty(const QString &property) const
+{
+    //    qDebug() << "start property:" << property;
+    QVariant result;
     QString prop = property;
     if (property == "voule.ignore")
         return "false";
     else if(property == "block.storage_device")
         return "true";
-    else if (property == "volume.mount_point")
-        prop = "deviceid";
     else if (property == "volume.is_mounted")
         return "true";
     // todo check first if property is available
-    VARIANT vtProp;
-    HRESULT hr = m_p->Get(bstr_t(qPrintable(prop)), 0, &vtProp, 0, 0);
-    QString result;
-    if (SUCCEEDED(hr)) {
-        result = QString((QChar*)vtProp.bstrVal, wcslen(vtProp.bstrVal));
-    }
 
-    VariantClear(&vtProp);
-    m_p->Release();
-//    qDebug() << "end result:" << result;
+    BSTR bstrProp;
+    bstrProp = ::SysAllocString(prop);
+    result = getProperty(bstrProp);
+    ::SysFreeString(bstrProp);
+    //    qDebug() << "Querying "<<property<<"end result:" << result;
     return result;
+}
+
+QVariantMap WmiQuery::Item::getAllProperties()
+{
+    if(m_properies.isEmpty()){
+        SAFEARRAY *psaNames;
+        HRESULT hr = m_p->GetNames(NULL,  WBEM_FLAG_ALWAYS | WBEM_FLAG_NONSYSTEM_ONLY,NULL,&psaNames);
+        if (SUCCEEDED(hr)) {
+            long lLower, lUpper;
+            SafeArrayGetLBound( psaNames, 1, &lLower );
+            SafeArrayGetUBound( psaNames, 1, &lUpper );
+            for(long i=lLower;i<lUpper;++i){
+                BSTR pName = { 0 };
+                hr = SafeArrayGetElement( psaNames, &i, &pName );
+                QVariant vr = getProperty(pName);
+                if(vr.isValid()){
+                    QString key = bstrToQString(pName);
+                    m_properies[key] = getProperty(pName);
+                }
+            }
+        }else{
+            qWarning()<<"Querying all failed";
+        }
+        SafeArrayDestroy( psaNames);
+        //        qDebug() << "Querying all: "<< m_properies;
+    }
+    return m_properies;
 }
 
 WmiQuery::Item::Item(IWbemClassObject *p) : m_p(p), m_int(new QAtomicInt)
@@ -135,7 +215,6 @@ WmiQuery::WmiQuery()
     , pSvc(0)
     , pEnumerator(NULL)
 {
-
     //does this all look hacky?  yes...but it came straight from the MSDN example...
 
     HRESULT hres;
@@ -150,14 +229,14 @@ WmiQuery::WmiQuery()
     if( !m_failed )
     {
         hres =  CoInitializeSecurity( NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT,
-                    RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL );
+                                      RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL );
 
         // RPC_E_TOO_LATE --> security already initialized
         if( FAILED(hres) && hres != RPC_E_TOO_LATE )
         {
             qCritical() << "Failed to initialize security. " << "Error code = " << hres << endl;
             if ( m_bNeedUninit )
-              CoUninitialize();
+                CoUninitialize();
             m_failed = true;
         }
     }
@@ -168,36 +247,36 @@ WmiQuery::WmiQuery()
         {
             qCritical() << "Failed to create IWbemLocator object. " << "Error code = " << hres << endl;
             if ( m_bNeedUninit )
-              CoUninitialize();
+                CoUninitialize();
             m_failed = true;
         }
     }
     if( !m_failed )
     {
-        hres = pLoc->ConnectServer( _bstr_t("ROOT\\CIMV2"), NULL, NULL, 0, NULL, 0, 0, &pSvc );
+        hres = pLoc->ConnectServer( L"ROOT\\CIMV2", NULL, NULL, 0, NULL, 0, 0, &pSvc );
         if( FAILED(hres) )
         {
             qCritical() << "Could not connect. Error code = " << hres << endl;
             pLoc->Release();
             if ( m_bNeedUninit )
-              CoUninitialize();
+                CoUninitialize();
             m_failed = true;
         }
-//        else
-//            qDebug() << "Connected to ROOT\\CIMV2 WMI namespace" << endl;
+        //        else
+        //            qDebug() << "Connected to ROOT\\CIMV2 WMI namespace" << endl;
     }
 
     if( !m_failed )
     {
         hres = CoSetProxyBlanket( pSvc, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, NULL,
-                    RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE );
+                                  RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE );
         if( FAILED(hres) )
         {
             qCritical() << "Could not set proxy blanket. Error code = " << hres << endl;
             pSvc->Release();
             pLoc->Release();
             if ( m_bNeedUninit )
-              CoUninitialize();
+                CoUninitialize();
             m_failed = true;
         }
     }
@@ -206,8 +285,8 @@ WmiQuery::WmiQuery()
 WmiQuery::~WmiQuery()
 {
     if( m_failed )
-      return; // already cleaned up properly
-/* This does crash because someone else already called
+        return; // already cleaned up properly
+    /* This does crash because someone else already called
    CoUninitialize()... :(
     if( pSvc )
       pSvc->Release();
@@ -220,6 +299,7 @@ WmiQuery::~WmiQuery()
 
 WmiQuery::ItemList WmiQuery::sendQuery( const QString &wql )
 {
+//    qDebug()<<"WmiQuery::ItemList WmiQuery::sendQuery"<<wql;
     ItemList retList;
 
     if (!pSvc)
@@ -230,9 +310,12 @@ WmiQuery::ItemList WmiQuery::sendQuery( const QString &wql )
 
     HRESULT hres;
 
-    hres = pSvc->ExecQuery( bstr_t("WQL"), bstr_t( qPrintable( wql ) ),
-                WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, NULL, &pEnumerator);
-
+    BSTR bstrQuery;
+    bstrQuery = ::SysAllocString(wql);
+    hres = pSvc->ExecQuery( L"WQL",bstrQuery ,
+                            WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, NULL, &pEnumerator);
+    ::SysFreeString(bstrQuery);
+    
     if( FAILED(hres) )
     {
         qDebug() << "Query with string \"" << wql << "\" failed. Error code = " << hres << endl;
@@ -249,12 +332,16 @@ WmiQuery::ItemList WmiQuery::sendQuery( const QString &wql )
             if( !uReturn )
                 break;
 
-         // pclsObj will be released on destruction of Item
+            // pclsObj will be released on destruction of Item
             retList.append( Item( pclsObj ) );
         }
         if( pEnumerator ) pEnumerator->Release();
         else qDebug() << "failed to release enumerator!";
     }
+    //    if(retList.size()== 0)
+    //        qDebug()<<"querying"<<wql<<"returned empty list";
+    //    else
+    //        qDebug()<<"Feteched"<<retList.size()<<"items";
     return retList;
 }
 
@@ -265,8 +352,8 @@ bool WmiQuery::isLegit() const
 
 WmiQuery &WmiQuery::instance()
 {
-	static WmiQuery *query = 0;
-	if (!query)
-		query = new WmiQuery;
-	return *query;
+    static WmiQuery *query = 0;
+    if (!query)
+        query = new WmiQuery;
+    return *query;
 }

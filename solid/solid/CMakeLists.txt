@@ -80,6 +80,7 @@ set(solid_LIB_SRCS
    video.cpp
    smartcardreader.cpp
    internetgateway.cpp
+   xdgbasedirs.cpp
 
    ifaces/acadapter.cpp
    ifaces/audiointerface.cpp
@@ -196,6 +197,31 @@ if(NOT WIN32 AND NOT APPLE)
       backends/udev/udevblock.cpp
       backends/shared/udevqtclient.cpp
       backends/shared/udevqtdevice.cpp
+      )
+
+      # check for media-player-info (runtime-only optional dependency)
+      set(XDG_DATA_DIRS_ENV $ENV{XDG_DATA_DIRS})  # if(ENV{..}) does not work for me
+      if(XDG_DATA_DIRS_ENV)
+         find_path(MEDIAPLAYERINFO_PATH sony_psp.mpi
+            PATHS ENV XDG_DATA_DIRS
+            PATH_SUFFIXES "media-player-info" NO_DEFAULT_PATH
+         )
+      else(XDG_DATA_DIRS_ENV)
+         set(XDG_DATA_DIRS "/usr/share")
+         message(STATUS "Warning: environment variable XDG_DATA_DIRS not set, falling back to ${XDG_DATA_DIRS}")
+         find_path(MEDIAPLAYERINFO_PATH sony_psp.mpi
+            PATHS "${XDG_DATA_DIRS}"
+            PATH_SUFFIXES "media-player-info" NO_DEFAULT_PATH
+         )
+      endif(XDG_DATA_DIRS_ENV)
+
+      macro_log_feature(MEDIAPLAYERINFO_PATH
+         "media-player-info"
+         "Enables identification and querying of portable media players"
+         "http://www.freedesktop.org/wiki/Software/media-player-info"
+         FALSE
+         ""
+         "Runtime-only dependency of the udev solid backend. Support for m-p-i is included even if not found during build"
       )
    endif( UDEV_FOUND )
 

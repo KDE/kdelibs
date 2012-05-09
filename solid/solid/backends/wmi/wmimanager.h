@@ -1,4 +1,5 @@
 /*
+    Copyright 2012 Patrick von Reth <vonreth@kde.org>
     Copyright 2005,2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -40,7 +41,7 @@ class WmiManager : public Solid::Ifaces::DeviceManager
     Q_OBJECT
 
 public:
-    WmiManager(QObject *parent);
+    WmiManager(QObject *parent=0);
     virtual ~WmiManager();
 
     virtual QString udiPrefix() const ;

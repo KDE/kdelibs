@@ -211,9 +211,9 @@ bool DOMCSSStyleDeclaration::getOwnPropertySlot(ExecState *exec, const Identifie
   return DOMObject::getOwnPropertySlot(exec, propertyName, slot);
 }
 
-void DOMCSSStyleDeclaration::getOwnPropertyNames(ExecState* exec, PropertyNameArray& arr)
+void DOMCSSStyleDeclaration::getOwnPropertyNames(ExecState* exec, PropertyNameArray& arr, PropertyMap::PropertyMode mode)
 {
-    DOMObject::getOwnPropertyNames(exec, arr);
+    DOMObject::getOwnPropertyNames(exec, arr, mode);
 
     // Add in all properties we support.
     for (int p = 1; p < CSS_PROP_TOTAL; ++p) {
@@ -233,7 +233,6 @@ void DOMCSSStyleDeclaration::getOwnPropertyNames(ExecState* exec, PropertyNameAr
         arr.add(KJS::Identifier(camelName));
     } // prop
 }
-
 
 void DOMCSSStyleDeclaration::put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr )
 {

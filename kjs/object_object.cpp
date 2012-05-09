@@ -27,7 +27,26 @@
 #include "function_object.h"
 #include <stdio.h>
 
-using namespace KJS;
+namespace KJS {
+
+
+/**
+ * @internal
+ *
+ * Class to implement all methods that are properties of the
+ * Object object
+ */
+class ObjectObjectFuncImp : public InternalFunctionImp {
+public:
+    ObjectObjectFuncImp(ExecState *, FunctionPrototype *, int i, int len, const Identifier& );
+
+    virtual JSValue *callAsFunction(ExecState *, JSObject *thisObj, const List &args);
+
+    enum { GetPrototypeOf, GetOwnPropertyNames, Keys };
+
+private:
+    int id;
+};
 
 // ------------------------------ ObjectPrototype --------------------------------
 
@@ -160,8 +179,16 @@ JSValue *ObjectProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
 ObjectObjectImp::ObjectObjectImp(ExecState* exec, ObjectPrototype* objProto, FunctionPrototype* funcProto)
   : InternalFunctionImp(funcProto)
 {
+  static const Identifier* getPrototypeOf = new Identifier("getPrototypeOf");
+  static const Identifier* getOwnPropertyNames = new Identifier("getOwnPropertyNames");
+  static const Identifier* keys = new Identifier("keys");
+
   // ECMA 15.2.3.1
   putDirect(exec->propertyNames().prototype, objProto, DontEnum|DontDelete|ReadOnly);
+
+  putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::GetPrototypeOf, 1, *getPrototypeOf), DontEnum);
+  putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::GetOwnPropertyNames, 1, *getOwnPropertyNames), DontEnum);
+  putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::Keys, 1, *keys), DontEnum);
 
   // no. of arguments for constructor
   putDirect(exec->propertyNames().length, jsNumber(1), ReadOnly|DontDelete|DontEnum);
@@ -197,3 +224,49 @@ JSValue* ObjectObjectImp::callAsFunction(ExecState* exec, JSObject* /*thisObj*/,
     return construct(exec, args);
 }
 
+// ------------------------------ ObjectObjectFuncImp ----------------------------
+
+ObjectObjectFuncImp::ObjectObjectFuncImp(ExecState* exec, FunctionPrototype* funcProto, int i, int len, const Identifier& name)
+    : InternalFunctionImp(funcProto, name), id(i)
+{
+    putDirect(exec->propertyNames().length, len, DontDelete|ReadOnly|DontEnum);
+}
+
+JSValue *ObjectObjectFuncImp::callAsFunction(ExecState* exec, JSObject*, const List& args)
+{
+    switch (id) {
+    case GetPrototypeOf: { //ECMA Edition 5.1r6 - 15.2.3.2
+        JSObject* jso = args[0]->getObject();
+        if (!jso)
+            return throwError(exec, TypeError, "\'" + args[0]->toString(exec) + "\' is not an Object");
+        return jso->prototype();
+    }
+    case GetOwnPropertyNames: //ECMA Edition 5.1r6 - 15.2.3.4
+    case Keys: { //ECMA Edition 5.1r6 - 15.2.3.14
+        JSObject* jso = args[0]->getObject();
+        if (!jso)
+            return throwError(exec, TypeError, "\'" + args[0]->toString(exec) + "\' is not an Object");
+
+        JSObject *ret = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinArray()->construct(exec, List::empty()));
+        PropertyNameArray propertyNames;
+
+        if (id == Keys)
+            jso->getOwnPropertyNames(exec, propertyNames, PropertyMap::ExcludeDontEnumProperties);
+        else // id == GetOwnPropertyNames
+            jso->getOwnPropertyNames(exec, propertyNames, PropertyMap::IncludeDontEnumProperties);
+        PropertyNameArrayIterator propEnd = propertyNames.end();
+        unsigned int n = 0;
+        for (PropertyNameArrayIterator propIter = propertyNames.begin(); propIter != propEnd; propIter++) {
+            Identifier name = *propIter;
+            ret->put(exec, n, jsString(name.ustring()), None);
+            ++n;
+        }
+        ret->put(exec, exec->propertyNames().length, jsNumber(n), DontEnum | DontDelete);
+        return ret;
+    }
+    default:
+        return jsUndefined();
+    }
+}
+
+}   // namespace KJS
