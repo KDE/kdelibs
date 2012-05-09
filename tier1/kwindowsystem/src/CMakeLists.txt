@@ -55,8 +55,8 @@ generate_export_header(kwindowsystem)
 
 target_link_libraries(kwindowsystem ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDBUS_LIBRARY} ${platformLinkLibraries})
 
-set_target_properties(kwindowsystem PROPERTIES VERSION  ${GENERIC_LIB_VERSION}
-                                    SOVERSION ${GENERIC_LIB_SOVERSION})
+set_target_properties(kwindowsystem PROPERTIES VERSION   ${ECM_VERSION_STRING}
+                                               SOVERSION ${ECM_SOVERSION})
 
 install(TARGETS kwindowsystem EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 

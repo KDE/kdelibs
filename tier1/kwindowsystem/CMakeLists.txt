@@ -17,3 +17,9 @@ include(ECMQtFramework)
 find_package(Qt5Transitional REQUIRED Core Test)
 
 add_subdirectory(src)
+
+include(FeatureSummary)
+
+if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+    feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
+endif()
