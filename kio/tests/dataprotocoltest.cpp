@@ -24,7 +24,7 @@ public:
   }
 
   void mimeType(const QString &type) {
-    QCOMPARE(mime_type_expected, type);
+    QCOMPARE(type, mime_type_expected);
   }
 
   void totalSize(KIO::filesize_t /*bytes*/) {
@@ -34,7 +34,7 @@ public:
   void setMetaData(const QString &key, const QString &value) {
     KIO::MetaData::Iterator it = attributes_expected.find(key);
     QVERIFY(it != attributes_expected.end());
-    QCOMPARE(it.value(), value);
+    QCOMPARE(value, it.value());
     attributes_expected.erase(it);
   }
 
@@ -65,7 +65,7 @@ public:
     if (a.isEmpty()) {
 //    qDebug() << "<no more data>";
     } else {
-      QCOMPARE(content_expected, a);
+      QCOMPARE(a, content_expected);
     }/*end if*/
   }
 
