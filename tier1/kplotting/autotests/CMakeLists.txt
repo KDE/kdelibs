@@ -8,18 +8,18 @@ include_directories(
 find_package(Qt5Transitional REQUIRED Test Gui)
 enable_testing()
 
-MACRO(KPLOTTING_UNIT_TESTS)
-    FOREACH(_testname ${ARGN})
+macro(KPLOTTING_UNIT_TESTS)
+    foreach(_testname ${ARGN})
         add_executable(${_testname} ${_testname}.cpp)
         add_test(${_testname} ${_testname})
         target_link_libraries(${_testname} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTTEST_LIBRARY} kplotting)
-    ENDFOREACH(_testname)
-ENDMACRO(KPLOTTING_UNIT_TESTS)
+    endforeach()
+endmacro()
 
 
 ########### next target ###############
 
-KPLOTTING_UNIT_TESTS(
+kplotting_unit_tests(
     kplotpointtest
     kplotaxistest
     kplotobjecttest
