@@ -58,11 +58,11 @@ bool KDesktopFileActions::run( const KUrl& u, bool _is_local )
     if ( !_is_local )
         return false;
 
-    KDesktopFile cfg( u.path() );
+    KDesktopFile cfg(u.toLocalFile());
     if ( !cfg.desktopGroup().hasKey("Type") )
     {
         QString tmp = i18n("The desktop entry file %1 "
-                           "has no Type=... entry.", u.path() );
+                           "has no Type=... entry.", u.toLocalFile() );
         KMessageBoxWrapper::error( 0, tmp);
         return false;
     }
@@ -91,7 +91,7 @@ static bool runFSDevice( const KUrl& _url, const KDesktopFile &cfg )
 
     if ( dev.isEmpty() )
     {
-        QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry.",  _url.path() );
+        QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry.",  _url.toLocalFile() );
         KMessageBoxWrapper::error( 0, tmp);
         return retval;
     }
@@ -110,7 +110,7 @@ static bool runFSDevice( const KUrl& _url, const KDesktopFile &cfg )
             fstype.clear();
         QString point = cg.readEntry( "MountPoint" );
 #ifndef Q_WS_WIN
-        (void) new KAutoMount( ro, fstype.toLatin1(), dev, point, _url.path() );
+        (void) new KAutoMount( ro, fstype.toLatin1(), dev, point, _url.toLocalFile() );
 #endif
         retval = false;
     }
@@ -364,7 +364,7 @@ void KDesktopFileActions::executeService( const KUrl::List& urls, const KService
         }
 #endif
     } else {
-        kDebug() << action.name() << "first url's path=" << urls.first().path() << "exec=" << action.exec();
+        kDebug() << action.name() << "first url's path=" << urls.first().toLocalFile() << "exec=" << action.exec();
         KRun::run( action.exec(), urls, 0, action.text(), action.icon());
         // The action may update the desktop file. Example: eject unmounts (#5129).
         org::kde::KDirNotify::emitFilesChanged( urls.toStringList() );

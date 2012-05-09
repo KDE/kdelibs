@@ -144,7 +144,7 @@ void KDirListerTest::test()
 
 void KDirListerTest::completed()
 {
-    if ( lister->url().path() == QDir::rootPath() )
+    if ( lister->url().toLocalFile() == QDir::rootPath() )
     {
         const KFileItem item = lister->findByUrl( KUrl( QDir::tempPath() ) );
         if ( !item.isNull() )

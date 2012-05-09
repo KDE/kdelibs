@@ -303,25 +303,25 @@ void KDirModelTest::testItemForIndex()
     QVERIFY(!fileItem.isNull());
     QCOMPARE(fileItem.name(), QString("toplevelfile_1"));
     QVERIFY(!fileItem.isDir());
-    QCOMPARE(fileItem.url().path(), QString(m_tempDir->name() + "toplevelfile_1"));
+    QCOMPARE(fileItem.url().toLocalFile(), QString(m_tempDir->name() + "toplevelfile_1"));
 
     KFileItem dirItem = m_dirModel->itemForIndex(m_dirIndex);
     QVERIFY(!dirItem.isNull());
     QCOMPARE(dirItem.name(), QString("subdir"));
     QVERIFY(dirItem.isDir());
-    QCOMPARE(dirItem.url().path(), QString(m_tempDir->name() + "subdir"));
+    QCOMPARE(dirItem.url().toLocalFile(), QString(m_tempDir->name() + "subdir"));
 
     KFileItem fileInDirItem = m_dirModel->itemForIndex(m_fileInDirIndex);
     QVERIFY(!fileInDirItem.isNull());
     QCOMPARE(fileInDirItem.name(), QString("testfile"));
     QVERIFY(!fileInDirItem.isDir());
-    QCOMPARE(fileInDirItem.url().path(), QString(m_tempDir->name() + "subdir/testfile"));
+    QCOMPARE(fileInDirItem.url().toLocalFile(), QString(m_tempDir->name() + "subdir/testfile"));
 
     KFileItem fileInSubdirItem = m_dirModel->itemForIndex(m_fileInSubdirIndex);
     QVERIFY(!fileInSubdirItem.isNull());
     QCOMPARE(fileInSubdirItem.name(), QString("testfile"));
     QVERIFY(!fileInSubdirItem.isDir());
-    QCOMPARE(fileInSubdirItem.url().path(), QString(m_tempDir->name() + "subdir/subsubdir/testfile"));
+    QCOMPARE(fileInSubdirItem.url().toLocalFile(), QString(m_tempDir->name() + "subdir/subsubdir/testfile"));
 }
 
 void KDirModelTest::testIndexForItem()
@@ -562,7 +562,7 @@ void KDirModelTest::testRenameDirectory() // #172945, #174703, (and #180156)
     QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir_renamed/subsubdir/testfile")).isValid());
 
     // Check the other kdirmodel got redirected
-    QCOMPARE(dirListerForExpand->url().path(), QString(path+"subdir_renamed"));
+    QCOMPARE(dirListerForExpand->url().toLocalFile(), QString(path+"subdir_renamed"));
 
     kDebug() << "calling testMoveDirectory(subdir_renamed)";
 
@@ -592,7 +592,7 @@ void KDirModelTest::testRenameDirectory() // #172945, #174703, (and #180156)
     QVERIFY(!m_dirModel->indexForUrl(KUrl(path + "subdir_renamed/subsubdir/testfile")).isValid());
 
     // TODO INVESTIGATE
-    // QCOMPARE(dirListerForExpand->url().path(), path+"subdir");
+    // QCOMPARE(dirListerForExpand->url().toLocalFile(), path+"subdir");
 
     delete m_dirModelForExpand;
     m_dirModelForExpand = 0;
@@ -613,7 +613,7 @@ void KDirModelTest::testRenameDirectoryInCache() // #188807
     const KUrl url(path);
     KUrl newUrl(path);
     newUrl.adjustPath(KUrl::RemoveTrailingSlash);
-    newUrl.setPath(newUrl.path() + "_renamed");
+    newUrl.setPath(newUrl.toLocalFile() + "_renamed");
     kDebug() << newUrl;
     KIO::SimpleJob* job = KIO::rename(url, newUrl, KIO::HideProgressInfo);
     QVERIFY(job->exec());
@@ -802,8 +802,8 @@ void KDirModelTest::slotExpand(const QModelIndex& index)
     const QString path = m_tempDir->name();
     KFileItem item = m_dirModelForExpand->itemForIndex(index);
     QVERIFY(!item.isNull());
-    kDebug() << item.url().path();
-    QCOMPARE(item.url().path(), QString(path + m_expectedExpandSignals[m_nextExpectedExpandSignals++]));
+    kDebug() << item.url().toLocalFile();
+    QCOMPARE(item.url().toLocalFile(), QString(path + m_expectedExpandSignals[m_nextExpectedExpandSignals++]));
 
     // if rowsInserted wasn't emitted yet, then any proxy model would be unable to do anything with index at this point
     if (item.url() == m_urlToExpandTo) {
@@ -1027,7 +1027,7 @@ void KDirModelTest::testZipFile() // # 171721
 
     KUrl zipUrl(path);
     zipUrl.addPath("wronglocalsizes.zip"); // just a zip file lying here for other reasons
-    QVERIFY(QFile::exists(zipUrl.path()));
+    QVERIFY(QFile::exists(zipUrl.toLocalFile()));
     zipUrl.setProtocol("zip");
     QModelIndex index = m_dirModel->indexForUrl(zipUrl);
     QVERIFY(!index.isValid()); // protocol mismatch, can't find it!
