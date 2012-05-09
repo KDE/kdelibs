@@ -24,6 +24,7 @@
 
 #define INSIDE_WMIQUERY
 #include "wmiquery.h"
+#include "wmimanager.h"
 
 #ifdef _DEBUG
 # pragma comment(lib, "comsuppwd.lib")
@@ -42,6 +43,7 @@
 #include <QtCore/QVariant>
 #include <QtCore/QList>
 #include <QtCore/QStringList>
+#include <QtCore/QCoreApplication>
 
 //needed for mingw
 inline OLECHAR* SysAllocString(const QString &s){
@@ -50,6 +52,7 @@ inline OLECHAR* SysAllocString(const QString &s){
 }
 
 using namespace Solid::Backends::Wmi;
+
 
 QString bstrToQString(BSTR bstr)
 {
@@ -179,47 +182,42 @@ QVariantMap WmiQuery::Item::getAllProperties()
             qWarning()<<"Querying all failed";
         }
         SafeArrayDestroy( psaNames);
-        //        qDebug() << "Querying all: "<< m_properies;
     }
     return m_properies;
 }
 
-WmiQuery::Item::Item(IWbemClassObject *p) : m_p(p), m_int(new QAtomicInt)
+WmiQuery::Item::Item(IWbemClassObject *p) : m_p(p)
 {
-    m_int->ref();
+    m_p->AddRef();
 }
 
-WmiQuery::Item::Item(const Item& other) : m_p(other.m_p), m_int(other.m_int)
+WmiQuery::Item::Item(const Item& other) : m_p(other.m_p)
 {
-    m_int->ref();
+    m_p->AddRef();
 }
 
 WmiQuery::Item& WmiQuery::Item::operator=(const Item& other)
 {
     m_p = other.m_p;
-    m_int = other.m_int;
-    m_int->ref();
+    m_p->AddRef();
     return *this;
 }
 
 WmiQuery::Item::~Item()
 {
-    if(!m_int->deref()) {
-        m_p->Release();
-    }
+    m_p->Release();
 }
 
 WmiQuery::WmiQuery()
     : m_failed(false)
     , pLoc(0)
     , pSvc(0)
-    , pEnumerator(NULL)
 {
     //does this all look hacky?  yes...but it came straight from the MSDN example...
 
     HRESULT hres;
 
-    hres =  CoInitialize(0);
+    hres =  CoInitializeEx(0,COINIT_MULTITHREADED);
     if( FAILED(hres) && hres != S_FALSE && hres != RPC_E_CHANGED_MODE )
     {
         qCritical() << "Failed to initialize COM library.  Error code = 0x" << hex << quint32(hres) << endl;
@@ -286,15 +284,21 @@ WmiQuery::~WmiQuery()
 {
     if( m_failed )
         return; // already cleaned up properly
-    /* This does crash because someone else already called
-   CoUninitialize()... :(
     if( pSvc )
       pSvc->Release();
     if( pLoc )
       pLoc->Release();
     if( m_bNeedUninit )
       CoUninitialize();
-*/
+}
+
+void WmiQuery::addDeviceListeners(const QString &wql,WmiManager::WmiEventSink *sink){
+    if(m_failed)
+        return;
+    BSTR bstrQuery;
+    bstrQuery = ::SysAllocString(wql);
+    pSvc->ExecNotificationQueryAsync(L"WQL",bstrQuery,0, NULL,sink);
+    ::SysFreeString(bstrQuery);
 }
 
 WmiQuery::ItemList WmiQuery::sendQuery( const QString &wql )
@@ -310,6 +314,7 @@ WmiQuery::ItemList WmiQuery::sendQuery( const QString &wql )
 
     HRESULT hres;
 
+    IEnumWbemClassObject* pEnumerator = NULL;
     BSTR bstrQuery;
     bstrQuery = ::SysAllocString(wql);
     hres = pSvc->ExecQuery( L"WQL",bstrQuery ,
@@ -334,9 +339,12 @@ WmiQuery::ItemList WmiQuery::sendQuery( const QString &wql )
 
             // pclsObj will be released on destruction of Item
             retList.append( Item( pclsObj ) );
+            pclsObj->Release();
         }
-        if( pEnumerator ) pEnumerator->Release();
-        else qDebug() << "failed to release enumerator!";
+        if( pEnumerator )
+            pEnumerator->Release();
+        else
+            qDebug() << "failed to release enumerator!";
     }
     //    if(retList.size()== 0)
     //        qDebug()<<"querying"<<wql<<"returned empty list";

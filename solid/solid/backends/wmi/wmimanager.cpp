@@ -34,6 +34,7 @@ class Solid::Backends::Wmi::WmiManagerPrivate
 public:
     WmiManagerPrivate()
     {
+
     }
 
     ~WmiManagerPrivate()
@@ -71,6 +72,8 @@ WmiManager::WmiManager(QObject *parent)
                            << Solid::DeviceInterface::Video
                            << Solid::DeviceInterface::SerialInterface
                            << Solid::DeviceInterface::SmartCardReader;
+
+    WmiQuery::instance().addDeviceListeners("SELECT * FROM Win32_VolumeChangeEvent",new WmiManager::WmiEventSink(this));
 }
 
 WmiManager::~WmiManager()
@@ -200,5 +203,70 @@ void WmiManager::slotDeviceRemoved(const QString &udi)
 {
     emit deviceRemoved(udi);
 }
+
+
+
+WmiManager::WmiEventSink::WmiEventSink(WmiManager* parent):
+    m_parent(parent),
+    m_count(0)
+{}
+
+WmiManager::WmiEventSink::~WmiEventSink()
+{}
+
+ulong STDMETHODCALLTYPE WmiManager::WmiEventSink::AddRef()
+{
+    return InterlockedIncrement(&m_count);
+}
+
+ulong STDMETHODCALLTYPE WmiManager::WmiEventSink::Release()
+{
+    long lRef = InterlockedDecrement(&m_count);
+    if(lRef == 0)
+        delete this;
+    return lRef;
+}
+
+HRESULT  STDMETHODCALLTYPE WmiManager::WmiEventSink::QueryInterface(REFIID riid, void** ppv)
+{
+    if (riid == IID_IUnknown || riid == IID_IWbemObjectSink)
+    {
+        *ppv = (IWbemObjectSink *) this;
+        AddRef();
+        return WBEM_S_NO_ERROR;
+    }
+    else return E_NOINTERFACE;
+}
+
+HRESULT STDMETHODCALLTYPE WmiManager::WmiEventSink::Indicate(long lObjectCount,IWbemClassObject **apObjArray){
+    for (long i = 0; i < lObjectCount; ++i)
+    {
+        WmiQuery::Item item( apObjArray[i]);
+        QString drive = item.getProperty("DriveName").toString();
+        QString udi = WmiDevice::driveLetterToUid(drive);
+        ushort event = item.getProperty("EventType").toUInt();
+        if(event == 2){
+            m_parent->slotDeviceAdded(udi);
+
+        }else if(event == 3){
+            m_parent->slotDeviceRemoved(udi);
+        }
+        else if(event == 4){
+            qDebug()<<"drive:"<<drive<<"docking";
+        }
+        else if(event == 1){
+            qDebug()<<"drive:"<<drive<<"config changed";
+        }
+
+    }
+
+    return WBEM_S_NO_ERROR;
+}
+
+HRESULT STDMETHODCALLTYPE WmiManager::WmiEventSink::SetStatus(long lFlags,HRESULT hResult,BSTR strParam,IWbemClassObject *pObjParam)
+{
+    return WBEM_S_NO_ERROR;
+}
+
 
 #include "backends/wmi/wmimanager.moc"

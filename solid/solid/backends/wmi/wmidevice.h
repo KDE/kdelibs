@@ -45,6 +45,7 @@ class WmiDevice : public Solid::Ifaces::Device
     Q_OBJECT
 
 public:
+    static QString &driveLetterToUid(const QString &letter);
     WmiDevice(const QString &udi);
     virtual ~WmiDevice();
 
@@ -80,8 +81,7 @@ private Q_SLOTS:
     void slotPropertyModified(int count, const QList<ChangeDescription> &changes);
     void slotCondition(const QString &condition, const QString &reason);
 
-private:
-    static QString &driveLetterToUid(const QString &letter);
+private:    
     WmiDevicePrivate *d;
     friend class WmiDevicePrivate;
 };

@@ -48,22 +48,6 @@
 
 using namespace Solid::Backends::Wmi;
 
-QString& WmiDevice::driveLetterToUid(const QString &letter){
-    static QMap<QString,QString> uids;
-    static QRegExp uidreg("([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})");
-    if(uids.isEmpty()){
-        QString query("SELECT * FROM Win32_Volume");
-        WmiQuery::ItemList list = WmiQuery::instance().sendQuery(query);
-        foreach(const WmiQuery::Item & item,list){
-            uidreg.indexIn(item.getProperty("DeviceID").toString());
-            QString key = item.getProperty("DriveLetter").toString().toLower();
-            QString value = uidreg.capturedTexts()[0];
-            uids[key] = value;
-        }
-    }
-    return uids[letter.toLower()];
-}
-
 class Solid::Backends::Wmi::WmiDevicePrivate
 {
 public:
@@ -381,9 +365,10 @@ public:
                 uid.indexIn(property);
                 property =  uid.capturedTexts()[0];
             }else if(type == Solid::DeviceInterface::StorageAccess ){
-                property = WmiDevice::driveLetterToUid(property);
-                if(property.isEmpty())//as far as I know this can only happen with subst drives
-                    continue;
+                QString tmp = WmiDevice::driveLetterToUid(property);
+                if(!tmp.isEmpty())
+                    result << tmp;
+                 continue;
             }
             result << generateUDI(getUDIKey(type),property.toLower());
         }
@@ -423,6 +408,23 @@ WmiDevice::~WmiDevice()
 QStringList WmiDevice::generateUDIList(const Solid::DeviceInterface::Type &type)
 {
     return WmiDevicePrivate::generateUDIList(type);
+}
+
+QString& WmiDevice::driveLetterToUid(const QString &letter){
+    static QMap<QString,QString> uids;
+    static QRegExp uidreg("([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})");
+    if(uids.isEmpty() || !uids.contains(letter.toLower())){
+        uids.clear();
+        QString query("SELECT * FROM Win32_Volume");
+        WmiQuery::ItemList list = WmiQuery::instance().sendQuery(query);
+        foreach(const WmiQuery::Item & item,list){
+            uidreg.indexIn(item.getProperty("DeviceID").toString());
+            QString key = item.getProperty("DriveLetter").toString().toLower();
+            QString value = uidreg.capturedTexts()[0];
+            uids[key] = WmiDevicePrivate::generateUDI(WmiDevicePrivate::getUDIKey(Solid::DeviceInterface::StorageVolume),value);
+        }
+    }
+    return uids[letter.toLower()];
 }
 
 bool WmiDevice::exists(const QString &udi)
