@@ -186,12 +186,15 @@ void RenderImage::updatePixmap( const QRect& r, CachedImage *o)
     }
     else
     {
-        //### FIXME!
-        //int cHeight = contentHeight();
-        //int scaledHeight = intrinsicHeight() ? ((o->valid_rect().height()*cHeight)/intrinsicHeight()) : 0;
+        if (intrinsicHeight() == 0 || intrinsicWidth() == 0)
+            return;
+        int scaledHeight = intrinsicHeight() ? ((r.height()*contentHeight())/intrinsicHeight()) : 0;
+        int scaledWidth= intrinsicWidth() ? ((r.width()*contentWidth())/intrinsicWidth()) : 0;
+        int scaledX = intrinsicWidth() ? ((r.x()*contentWidth())/intrinsicWidth()) : 0;
+        int scaledY = intrinsicHeight() ? ((r.y()*contentHeight())/intrinsicHeight()) : 0;
 
-        repaintRectangle(r.x() + borderLeft() + paddingLeft(), r.y() + borderTop() + paddingTop(),
-                            r.width(), r.height());
+        repaintRectangle(scaledX + borderLeft() + paddingLeft(), scaledY + borderTop() + paddingTop(),
+                            scaledWidth, scaledHeight);
     }
 }
 

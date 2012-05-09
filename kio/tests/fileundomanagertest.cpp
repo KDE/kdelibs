@@ -364,13 +364,13 @@ void FileUndoManagerTest::testRenameFile()
     QVERIFY( ok );
 
     QVERIFY( !QFile::exists( srcFile() ) );
-    QVERIFY( QFileInfo( newUrl.path() ).isFile() );
+    QVERIFY( QFileInfo( newUrl.toLocalFile() ).isFile() );
     QCOMPARE(spyUndoAvailable.count(), 1);
 
     doUndo();
 
     QVERIFY( QFile::exists( srcFile() ) );
-    QVERIFY( !QFileInfo( newUrl.path() ).isFile() );
+    QVERIFY( !QFileInfo( newUrl.toLocalFile() ).isFile() );
 }
 
 void FileUndoManagerTest::testRenameDir()
@@ -387,18 +387,18 @@ void FileUndoManagerTest::testRenameDir()
     QVERIFY( ok );
 
     QVERIFY( !QFile::exists( srcSubDir() ) );
-    QVERIFY( QFileInfo( newUrl.path() ).isDir() );
+    QVERIFY( QFileInfo( newUrl.toLocalFile() ).isDir() );
 
     doUndo();
 
     QVERIFY( QFile::exists( srcSubDir() ) );
-    QVERIFY( !QFileInfo( newUrl.path() ).isDir() );
+    QVERIFY( !QFileInfo( newUrl.toLocalFile() ).isDir() );
 }
 
 void FileUndoManagerTest::testCreateDir()
 {
     const QUrl url = QUrl::fromLocalFile(srcSubDir() + ".mkdir");
-    const QString path = url.path();
+    const QString path = url.toLocalFile();
     QVERIFY( !QFile::exists(path) );
 
     KIO::SimpleJob* job = KIO::mkdir(url);
@@ -499,7 +499,7 @@ void FileUndoManagerTest::testModifyFileBeforeUndo()
     doUndo();
 
     // Check that TestUiInterface::copiedFileWasModified got called
-    QCOMPARE( m_uiInterface->dest().path(), destFile );
+    QCOMPARE( m_uiInterface->dest().toLocalFile(), destFile );
 
     checkTestDirectory( srcSubDir() );
     QVERIFY( !QFile::exists( destSubDir() ) );

@@ -130,11 +130,11 @@ else (WIN32)
     set (STRIGI_REQUIRED TRUE)
     set (STRIGI_EXTRA_TEXT "Required by some critical kioslaves")
 endif (WIN32)
-macro_log_feature(STRIGI_FOUND "Strigi" "Desktop indexing and search support" "http://strigi.sourceforge.net" ${STRIGI_REQUIRED} "${STRIGI_MIN_VERSION}" ${STRIGI_EXTRA_TEXT})
+macro_log_feature(STRIGI_FOUND "Strigi" "Desktop indexing and search support" "http://strigi.sourceforge.net" ${STRIGI_REQUIRED} "${STRIGI_MIN_VERSION}" "${STRIGI_EXTRA_TEXT}")
 
 set(LIBATTICA_MIN_VERSION "0.1.90")
 find_package(LibAttica)
-macro_log_feature(LIBATTICA_FOUND "libattica" "Support for Get Hot New Stuff" "git clone git://anongit.kde.org/attica" TRUE "${LIBATTICA_MIN_VERSION}" "")
+macro_log_feature(LIBATTICA_FOUND "libattica" "Support for Get Hot New Stuff" "git://anongit.kde.org/attica" TRUE "${LIBATTICA_MIN_VERSION}" "")
 
 #optional features
 if(X11_FOUND)

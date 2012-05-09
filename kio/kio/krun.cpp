@@ -313,7 +313,7 @@ KRunMX2::subst(int option, const KUrl &url, QStringList &ret)
         break;
     case 'v':
         if (url.isLocalFile() && QFile::exists(url.toLocalFile())) {
-            ret << KDesktopFile(url.path()).desktopGroup().readEntry("Dev");
+            ret << KDesktopFile(url.toLocalFile()).desktopGroup().readEntry("Dev");
         }
         break;
     }
@@ -1159,7 +1159,7 @@ void KRun::init()
     } else if (d->m_bIsLocalFile) {
         if (d->m_mode == 0) {
             KDE_struct_stat buff;
-            if (KDE::stat(d->m_strURL.path(), &buff) == -1) {
+            if (KDE::stat(d->m_strURL.toLocalFile(), &buff) == -1) {
                 d->m_showingDialog = true;
                 KMessageBoxWrapper::error(d->m_window,
                                           i18n("<qt>Unable to run the command specified. "

@@ -81,13 +81,13 @@ int main(int argc, char **argv) {
 
     const KMountPoint::List mountPoints = KMountPoint::currentMountPoints();
 
-    KMountPoint::Ptr mp = mountPoints.findByDevice(url.path());
+    KMountPoint::Ptr mp = mountPoints.findByDevice(url.toLocalFile());
     if (!mp) {
         kDebug() << "no mount point for device " << url << " found\n";
     } else
         kDebug() << mp->mountPoint() << " is the mount point for device " << url;
 
-    mp = mountPoints.findByPath(url.path());
+    mp = mountPoints.findByPath(url.toLocalFile());
     if (!mp) {
         kDebug() << "no mount point for path " << url << " found\n";
     } else {
@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
 
     url.setPath(QDir::homePath());
 
-    mp = mountPoints.findByPath(url.path());
+    mp = mountPoints.findByPath(url.toLocalFile());
     if (!mp) {
         kDebug() << "no mount point for path " << url << " found\n";
     } else

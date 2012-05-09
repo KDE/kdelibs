@@ -5231,6 +5231,8 @@ void HTTPProtocol::proxyAuthenticationForSocket(const QNetworkProxy &proxy, QAut
         if (!openPasswordDialog(info, errMsg)) {
             kDebug(7103) << "looks like the user canceled proxy authentication.";
             error(ERR_USER_CANCELED, m_request.proxyUrl.host());
+            delete m_proxyAuth;
+            m_proxyAuth = 0;
             return;
         }
     }
@@ -5432,6 +5434,9 @@ try_next_auth_scheme:
                             if (!sendErrorPageNotification()) {
                                 error(ERR_ACCESS_DENIED, reqUrl.host());
                             }
+                            kDebug(7113) << "looks like the user canceled the authentication dialog";
+                            delete *auth;
+                            *auth = 0;
                         }
                     }
                     username = authinfo.username;
