@@ -21,7 +21,7 @@
 #ifndef KLOCALSOCKET_H
 #define KLOCALSOCKET_H
 
-#include <kdecore_export.h>
+#include <kio_export.h>
 #include <QtCore/QString>
 #include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QTcpServer>
@@ -48,7 +48,7 @@ class KLocalSocketPrivate;
  *
  * @author Thiago Macieira <thiago@kde.org>
  */
-class KDECORE_EXPORT KLocalSocket : public QTcpSocket
+class KIO_EXPORT KLocalSocket : public QTcpSocket
 {
     Q_OBJECT
 public:
@@ -156,7 +156,7 @@ class KLocalSocketServerPrivate;
  *
  * @author Thiago Macieira <thiago@kde.org>
  */
-class KDECORE_EXPORT KLocalSocketServer : public QObject
+class KIO_EXPORT KLocalSocketServer : public QObject
 {
     Q_OBJECT
 public:

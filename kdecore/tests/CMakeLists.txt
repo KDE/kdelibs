@@ -59,12 +59,6 @@ KDECORE_UNIT_TESTS(
  kaboutdatatest
 )
 
-if(UNIX)
- KDECORE_UNIT_TESTS(
-  klocalsockettest
-  klocalsocketservertest
- )
-endif(UNIX)
 
 KDECORE_EXECUTABLE_TESTS(
  kdebugtest

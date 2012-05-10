@@ -125,6 +125,7 @@ set(kiocore_STAT_SRCS
   kio/kfileshare.cpp
   kio/kfilewriteplugin.cpp
   kio/kimageio.cpp
+  kio/klocalsocket.cpp
   kio/kmimetypechooser.cpp
   kio/kprotocolmanager.cpp
   kio/kremoteencoding.cpp
@@ -190,12 +191,14 @@ if(UNIX)
        kio/knfsshare.cpp
        kio/ksambashare.cpp
        kio/ksambasharedata.cpp
+       kio/klocalsocket_unix.cpp
    )
 endif(UNIX)
 
 if(WIN32)
    set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS}
        kio/krun_win.cpp
+       kio/klocalsocket_win.cpp
    )
 endif(WIN32)
 

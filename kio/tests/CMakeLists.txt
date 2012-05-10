@@ -57,6 +57,13 @@ KIO_EXECUTABLE_TESTS(
   kfiledialogtest
 )
 
+if(UNIX)
+ KIO_UNIT_TESTS(
+    klocalsockettest
+    klocalsocketservertest
+ )
+endif(UNIX)
+
 if(NOT KDE_NO_DEPRECATED)
 KIO_EXECUTABLE_TESTS(
   kiopassdlgtest

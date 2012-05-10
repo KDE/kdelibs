@@ -10,7 +10,6 @@ configure_file(kdefakes.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h )
 configure_file(util/kdeversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h )
 
 check_struct_member("struct sockaddr" sa_len "sys/types.h;sys/socket.h" HAVE_STRUCT_SOCKADDR_SA_LEN)
-configure_file(network/config-klocalsocket.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/network/config-klocalsocket.h )
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/network )
 
 # Configure checks for date/
@@ -83,7 +82,6 @@ if (WIN32)
       kernel/kkernel_win.cpp
       kernel/ktoolinvocation_win.cpp
       localization/klocale_win.cpp
-      network/klocalsocket_win.cpp
       util/kde_file_win.cpp
       util/kshell_win.cpp
       date/ktimezone_win.cpp
@@ -104,7 +102,6 @@ if (UNIX)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
       kernel/ktoolinvocation_x11.cpp
       localization/klocale_unix.cpp
-      network/klocalsocket_unix.cpp
       util/kshell_unix.cpp
       util/kuser_unix.cpp
       fakes.c
@@ -190,7 +187,6 @@ set(kdecore_LIB_SRCS
 )
 
 set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
-   network/klocalsocket.cpp
    network/ksocketfactory.cpp
    network/ksslcertificatemanager.cpp
    network/ktcpsocket.cpp
@@ -335,7 +331,6 @@ install( FILES
 )
 
 install(FILES
-   network/klocalsocket.h
    network/ksocketfactory.h
    network/ktcpsocket.h
    services/kmimetype.h
