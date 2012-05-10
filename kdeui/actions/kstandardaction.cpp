@@ -189,6 +189,9 @@ KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
     }
 
     pAction->setText(sLabel);
+    if (pInfo->psToolTip) {
+        pAction->setToolTip(i18n(pInfo->psToolTip));
+    }
     pAction->setIcon(icon);
 
     KShortcut cut = KStandardShortcut::shortcut(pInfo->idAccel);
@@ -477,7 +480,9 @@ static KAction *buildAutomaticAction( QObject* parent, StandardAction id, const 
       parent);
 
   action->setObjectName(p->psName);
-  action->setWhatsThis( i18n(p->psWhatsThis) );
+  if (p->psToolTip) {
+      action->setToolTip(i18n(p->psToolTip));
+  }
 
   KActionCollection *collection = qobject_cast<KActionCollection *>(parent);
   if (collection)
