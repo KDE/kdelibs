@@ -72,24 +72,17 @@ Solid::OpticalDrive::MediumTypes Cdrom::supportedMedia() const
 
 int Cdrom::readSpeed() const
 {
-    return m_device->property("storage.cdrom.read_speed").toInt();
+    return 0;
 }
 
 int Cdrom::writeSpeed() const
 {
-    return m_device->property("storage.cdrom.write_speed").toInt();
+    return 0;
 }
 
 QList<int> Cdrom::writeSpeeds() const
 {
     QList<int> speeds;
-    QStringList speed_strlist = m_device->property("storage.cdrom.write_speeds").toStringList();
-
-    foreach (const QString &speed_str, speed_strlist)
-    {
-        speeds << speed_str.toInt();
-    }
-
     return speeds;
 }
 

@@ -23,6 +23,7 @@
 #define SOLID_BACKENDS_WMI_WMIDEVICE_H
 
 #include <solid/ifaces/device.h>
+#include "wmiquery.h"
 
 namespace Solid
 {
@@ -45,7 +46,6 @@ class WmiDevice : public Solid::Ifaces::Device
     Q_OBJECT
 
 public:
-    static QString &driveLetterToUid(const QString &letter);
     WmiDevice(const QString &udi);
     virtual ~WmiDevice();
 
@@ -72,6 +72,11 @@ public:
     static QStringList generateUDIList(const Solid::DeviceInterface::Type &type);
     static bool exists(const QString &udi);
     const Solid::DeviceInterface::Type type() const;
+
+    static WmiQuery::Item win32DiskPartitionToLogicalDisk(const QString &deviceID);
+    static WmiQuery::Item win32DiskDriveToDiskPartition(const QString &deviceID);
+    static WmiQuery::Item win32LogicalDiskToDiskPartition(const QString &driveLetter);
+
 
 Q_SIGNALS:
     void propertyChanged(const QMap<QString,int> &changes);

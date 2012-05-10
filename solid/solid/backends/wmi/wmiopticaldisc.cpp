@@ -136,7 +136,7 @@ Solid::OpticalDisc::DiscType OpticalDisc::discType() const
 
 bool OpticalDisc::isAppendable() const
 {
-    return m_device->property("volume.disc.is_appendable").toBool();
+    return false;
 }
 
 bool OpticalDisc::isBlank() const
@@ -146,12 +146,13 @@ bool OpticalDisc::isBlank() const
 
 bool OpticalDisc::isRewritable() const
 {
-    return m_device->property("volume.disc.is_rewritable").toBool();
+    ushort val = m_device->property("FileSystemFlagsEx").toUInt();
+    return !val & 0x80001;//read only
 }
 
 qulonglong OpticalDisc::capacity() const
 {
-    return m_device->property("volume.disc.capacity").toULongLong();
+    return m_device->property("Size").toULongLong();
 }
 
 #include "backends/wmi/wmiopticaldisc.moc"

@@ -47,6 +47,8 @@ public:
     virtual bool isRemovable() const;
     virtual bool isHotpluggable() const;
     virtual qulonglong size() const;
+private:
+    WmiQuery::Item m_logicalDisk;
 };
 }
 }

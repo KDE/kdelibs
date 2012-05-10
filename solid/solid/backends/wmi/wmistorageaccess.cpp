@@ -36,6 +36,8 @@ StorageAccess::StorageAccess(WmiDevice *device)
     connect(device, SIGNAL(propertyChanged(QMap<QString,int>)),
              this, SLOT(slotPropertyChanged(QMap<QString,int>)));
 //    qDebug()<<"StorageAccess"<<m_device->type();
+
+    m_logicalDisk = WmiDevice::win32DiskPartitionToLogicalDisk(m_device->property("DeviceID").toString());
 }
 
 StorageAccess::~StorageAccess()
@@ -46,36 +48,12 @@ StorageAccess::~StorageAccess()
 
 bool StorageAccess::isAccessible() const
 {
-    if (m_device->property("DriveLetter").isNull() || m_device->property("SerialNumber").isNull())
-        return false;
-    return true;
-    // if (m_device->property("info.interfaces").toStringList().contains("org.freedesktop.Wmi.Device.Volume.Crypto")) {
-
-        //Might be a bit slow, but I see no cleaner way to do this with WMI...
-        // QDBusInterface manager("org.freedesktop.Wmi",
-                               // "/org/freedesktop/Wmi/Manager",
-                               // "org.freedesktop.Wmi.Manager",
-                               // QDBusConnection::systemBus());
-
-        // QDBusReply<QStringList> reply = manager.call("FindDeviceStringMatch",
-                                                     // "volume.crypto_luks.clear.backing_volume",
-                                                     // m_device->udi());
-
-        // QStringList list = reply;
-
-        // return reply.isValid() && !list.isEmpty();
-
-    // } else {
-//        return m_device->property("volume.is_mounted").toBool();
-    // }
+    return !m_logicalDisk.isNull();
 }
 
 QString StorageAccess::filePath() const
 {
-    QString filePath = m_device->property("DriveLetter").toString();
-    if(!filePath.isNull())
-        filePath += "\\";
-    return filePath;
+    return m_logicalDisk.getProperty("DeviceID").toString();
 }
 
 bool Solid::Backends::Wmi::StorageAccess::isIgnored() const

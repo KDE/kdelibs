@@ -129,6 +129,8 @@ QVariant WmiQuery::Item::msVariantToQVariant(VARIANT msVariant, CIMTYPE variantT
 QVariant WmiQuery::Item::getProperty(BSTR bstrProp) const
 {
     QVariant result;
+    if(m_p == NULL)
+        return result;
     VARIANT vtProp;
     CIMTYPE variantType;
     HRESULT hr = m_p->Get(bstrProp, 0, &vtProp, &variantType, 0);
@@ -186,6 +188,11 @@ QVariantMap WmiQuery::Item::getAllProperties()
     return m_properies;
 }
 
+WmiQuery::Item::Item()
+    :m_p(NULL)
+{
+}
+
 WmiQuery::Item::Item(IWbemClassObject *p) : m_p(p)
 {
     m_p->AddRef();
@@ -198,15 +205,33 @@ WmiQuery::Item::Item(const Item& other) : m_p(other.m_p)
 
 WmiQuery::Item& WmiQuery::Item::operator=(const Item& other)
 {
-    m_p = other.m_p;
-    m_p->AddRef();
+    if(m_p != NULL){
+        m_p->Release();
+        m_p = NULL;
+    }
+    if(other.m_p != NULL){
+        m_p = other.m_p;
+        m_p->AddRef();
+    }
     return *this;
 }
 
 WmiQuery::Item::~Item()
 {
-    if(!qApp->closingDown() && !WmiQuery::instance().m_bNeedUninit)//this means we are in a QApplication, so qt already called CoUninitialize and all COM references are all ready freed
+    if(m_p != NULL &&
+            !(qApp->closingDown() || WmiQuery::instance().m_bNeedUninit))//this means we are in a QApplication, so qt already called CoUninitialize and all COM references are all ready freed
         m_p->Release();
+}
+
+IWbemClassObject* WmiQuery::Item::data() const
+{
+    m_p->AddRef();
+    return m_p;
+}
+
+bool WmiQuery::Item::isNull() const
+{
+    return m_p == NULL;
 }
 
 WmiQuery::WmiQuery()
@@ -345,10 +370,10 @@ WmiQuery::ItemList WmiQuery::sendQuery( const QString &wql )
         else
             qDebug() << "failed to release enumerator!";
     }
-    //    if(retList.size()== 0)
-    //        qDebug()<<"querying"<<wql<<"returned empty list";
-    //    else
-    //        qDebug()<<"Feteched"<<retList.size()<<"items";
+//        if(retList.size()== 0)
+//            qDebug()<<"querying"<<wql<<"returned empty list";
+//        else
+//            qDebug()<<"Feteched"<<retList.size()<<"items";
     return retList;
 }
 

@@ -68,7 +68,7 @@ public:
             list << "storage";
             break;
         case Solid::DeviceInterface::OpticalDrive:
-            list << "storage.cdrom";
+            list << "storage";
             break;
         case Solid::DeviceInterface::StorageVolume:
             list << "volume";

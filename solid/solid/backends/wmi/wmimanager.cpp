@@ -34,11 +34,21 @@ class Solid::Backends::Wmi::WmiManagerPrivate
 public:
     WmiManagerPrivate()
     {
-
+        init();
     }
 
     ~WmiManagerPrivate()
     {
+    }
+
+    void init(){
+        m_volumes.clear();
+        WmiQuery::ItemList items = WmiQuery::instance().sendQuery("SELECT * FROM Win32_LogicalDisk");
+        foreach(const WmiQuery::Item &i,items){
+            QString drive = i.getProperty("DeviceID").toString();
+            WmiQuery::Item item = WmiDevice::win32LogicalDiskToDiskPartition(drive);
+            m_volumes.insert(drive,item.getProperty("DeviceID").toString());
+        }
     }
 
     WmiQuery::ItemList sendQuery( const QString &wql )
@@ -47,6 +57,8 @@ public:
     }
 
     QSet<Solid::DeviceInterface::Type> supportedInterfaces;
+
+    QMap<QString,QString> m_volumes;
 };
 
 
@@ -73,7 +85,8 @@ WmiManager::WmiManager(QObject *parent)
                            << Solid::DeviceInterface::SerialInterface
                            << Solid::DeviceInterface::SmartCardReader;
 
-    WmiQuery::instance().addDeviceListeners("SELECT * FROM Win32_VolumeChangeEvent",new WmiManager::WmiEventSink(this));
+    WmiQuery::instance().addDeviceListeners("SELECT * FROM Win32_DeviceChangeEvent",new WmiManager::WmiEventSink(this));
+
 }
 
 WmiManager::~WmiManager()
@@ -112,9 +125,11 @@ bool WmiManager::deviceExists(const QString &udi)
     return WmiDevice::exists(udi);
 }
 
+
 QStringList WmiManager::devicesFromQuery(const QString &parentUdi,
                                          Solid::DeviceInterface::Type type)
 {
+
 //    qDebug() <<"WmiManager::devicesFromQuery"<< parentUdi << type;
 //    if (!parentUdi.isEmpty())
 //    {
@@ -178,13 +193,13 @@ QStringList WmiManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type
         result << WmiDevice::generateUDIList(type);
         break;
     case Solid::DeviceInterface::OpticalDrive:
-//        result << WmiDevice::generateUDIList(type);
+        result << WmiDevice::generateUDIList(type);
         break;
     case Solid::DeviceInterface::StorageVolume:
         result << WmiDevice::generateUDIList(type);
         break;
     case Solid::DeviceInterface::OpticalDisc:
-//        result << WmiDevice::generateUDIList(type);
+        result << WmiDevice::generateUDIList(type);
         break;
     case Solid::DeviceInterface::Battery:
         result << WmiDevice::generateUDIList(type);
@@ -243,19 +258,22 @@ HRESULT STDMETHODCALLTYPE WmiManager::WmiEventSink::Indicate(long lObjectCount,I
     {
         WmiQuery::Item item( apObjArray[i]);
         QString drive = item.getProperty("DriveName").toString();
-        QString udi = WmiDevice::driveLetterToUid(drive);
-        ushort event = item.getProperty("EventType").toUInt();
-        if(event == 2){
-            m_parent->slotDeviceAdded(udi);
+        if(!drive.isNull())
+        {
+            ushort event = item.getProperty("EventType").toUInt();
+            if(event == 2){
+                m_parent->d->init();
+                m_parent->slotDeviceAdded( "/org/kde/solid/wmi/volume/"+ m_parent->d->m_volumes[drive]);
 
-        }else if(event == 3){
-            m_parent->slotDeviceRemoved(udi);
-        }
-        else if(event == 4){
-            qDebug()<<"drive:"<<drive<<"docking";
-        }
-        else if(event == 1){
-            qDebug()<<"drive:"<<drive<<"config changed";
+            }else if(event == 3){
+               m_parent->slotDeviceAdded( "/org/kde/solid/wmi/volume/"+ m_parent->d->m_volumes[drive]);
+            }
+            else if(event == 4){
+                qDebug()<<"drive:"<<drive<<"docking";
+            }
+            else if(event == 1){
+                qDebug()<<"drive:"<<drive<<"config changed";
+            }
         }
 
     }

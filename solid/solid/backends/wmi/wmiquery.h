@@ -49,17 +49,20 @@ class WmiQuery
 {
 public:
     class Item {
-    public:   
+    public:
+        Item();
         Item(IWbemClassObject *p);
         Item(const Item& other);
         Item& operator=(const Item& other);
         ~Item();
 
+        IWbemClassObject* data() const;
+        bool isNull() const;
         QVariant getProperty(const QString &property) const;
         QVariantMap getAllProperties();
 
     private:
-        Item() {}
+
         static QVariant msVariantToQVariant(VARIANT msVariant, CIMTYPE variantType);
         QVariant getProperty(BSTR property) const;
         // QSharedPointer alone doesn't help because we need to call Release()

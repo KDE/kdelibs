@@ -26,6 +26,7 @@ using namespace Solid::Backends::Wmi;
 Volume::Volume(WmiDevice *device)
     : Block(device)
 {
+        m_logicalDisk = WmiDevice::win32DiskPartitionToLogicalDisk(m_device->property("DeviceID").toString());
 }
 
 Volume::~Volume()
@@ -91,22 +92,22 @@ Solid::StorageVolume::UsageType Volume::usage() const
 
 QString Volume::fsType() const
 {
-    return m_device->property("FileSystem").toString();
+    return m_logicalDisk.getProperty("FileSystem").toString();
 }
 
 QString Volume::label() const
 {
-    return m_device->property("Label").toString();
+    return m_logicalDisk.getProperty("VolumeName").toString();
 }
 
 QString Volume::uuid() const
 {
-    return m_device->property("SerialNumber").toString();
+    return m_logicalDisk.getProperty("VolumeSerialNumber").toString();
 }
 
 qulonglong Volume::size() const
 {
-    return m_device->property("Capacity").toULongLong();
+    return m_device->property("Size").toULongLong();
 }
 
 QString Solid::Backends::Wmi::Volume::encryptedContainerUdi() const
