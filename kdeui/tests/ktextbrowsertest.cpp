@@ -33,6 +33,7 @@ int main( int argc, char **argv )
     edit->setText("<html>This is a test program for KTextBrowser<br/>"
                   "<a href=\"whatsthis:This is a whatsthis\">What's this?</a><br/>"
                   "<a href=\"faure at kde.org\">faure at kde.org</a><br/>"
+                  "<a href=\"mailto:faure@kde.org\">mailto:faure@kde.org</a><br/>"
                   "<a href=\"http://www.kde.org\">http://www.kde.org</a><br/>"
                   "<a href=\"" KDESRCDIR "/ktextbrowsertest.cpp\">A local link</a><br/>"
                   "</html>");

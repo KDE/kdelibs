@@ -28,7 +28,7 @@
 
 #include <kicontheme.h>
 #include <kglobalsettings.h>
-#include <ktoolinvocation.h>
+#include <qdesktopservices.h>
 
 class KTextBrowser::Private
 {
@@ -80,13 +80,13 @@ void KTextBrowser::setSource( const QUrl& name )
      QWhatsThis::showText( QCursor::pos(), whatsthis.cap( 1 ) );
   } else if ( strName.indexOf( '@' ) > -1 ) {
     if ( !d->notifyClick ) {
-      KToolInvocation::invokeMailer(QUrl(strName));
+        QDesktopServices::openUrl(name);
     } else {
       emit mailClick( QString(), strName );
     }
   } else {
     if ( !d->notifyClick ) {
-      KToolInvocation::invokeBrowser( strName );
+        QDesktopServices::openUrl(name);
     } else {
       emit urlClick( strName );
     }

@@ -104,6 +104,9 @@ public Q_SLOTS:
    * @param subject Subject string. Can be QString().
    * @param startup_id for app startup notification, "0" for none,
    *           "" ( empty string ) is the default
+   *
+   * @deprecated since 5.0, use QDesktopServices::openUrl(mailtoURL),
+   * using QUrl::setPath(address) and a query item of "subject" for the subject.
    */
   static void invokeMailer( const QString &address, const QString &subject,
           const QByteArray& startup_id = QByteArray() );
@@ -115,7 +118,8 @@ public Q_SLOTS:
    * @param startup_id for app startup notification, "0" for none,
    *           "" ( empty string ) is the default
    * @param allowAttachments whether attachments specified in mailtoURL should be honoured.
-               The default is false; do not honor requests for attachments.
+   *           The default is false; do not honor requests for attachments.
+   * @deprecated since 5.0, use QDesktopServices::openUrl(mailtoURL)
    */
   static void invokeMailer(const QUrl &mailtoURL, const QByteArray& startup_id = QByteArray(),
                            bool allowAttachments = false);
@@ -154,6 +158,7 @@ public Q_SLOTS:
    * @param url The destination address
    * @param startup_id for app startup notification, "0" for none,
    *           "" ( empty string ) is the default
+   * @deprecated since 5.0, use QDesktopServices::openUrl(url)
    */
   static void invokeBrowser( const QString &url,
           const QByteArray& startup_id = QByteArray() );

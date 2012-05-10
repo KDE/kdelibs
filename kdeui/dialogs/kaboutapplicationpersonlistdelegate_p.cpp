@@ -25,7 +25,7 @@
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kstandarddirs.h>
-#include <ktoolinvocation.h>
+#include <qdesktopservices.h>
 
 #include <QApplication>
 #include <QPainter>
@@ -244,10 +244,7 @@ void KAboutApplicationPersonListDelegate::launchUrl( QAction *action ) const
 {
     QString url = action->data().toString();
     if (!url.isEmpty()) {
-        if (url.startsWith("mailto:"))
-            KToolInvocation::invokeMailer(QUrl(url));
-        else
-            KToolInvocation::invokeBrowser( url );
+        QDesktopServices::openUrl(QUrl(url));
     }
 }
 

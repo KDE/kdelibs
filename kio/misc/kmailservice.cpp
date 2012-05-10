@@ -17,10 +17,10 @@
 */
 
 #include <kapplication.h>
-#include <ktoolinvocation.h>
+#include <qdesktopservices.h>
 #include <klocalizedstring.h>
 #include <kcmdlineargs.h>
-#include <kurl.h>
+#include <qurl.h>
 
 int main( int argc, char **argv )
 {
@@ -37,7 +37,7 @@ int main( int argc, char **argv )
     if ( args->count() != 1 )
         return 1;
 
-    KToolInvocation::invokeMailer(KUrl(args->arg(0)), a.startupId(), true);
+    QDesktopServices::openUrl(QUrl(args->arg(0)));
 
     return 0;
 }

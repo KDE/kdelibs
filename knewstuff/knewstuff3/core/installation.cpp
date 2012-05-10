@@ -32,7 +32,7 @@
 #include "krandom.h"
 #include "kshell.h"
 #include "kmessagebox.h" // TODO get rid of message box
-#include "ktoolinvocation.h" // TODO remove, this was only for my playing round
+#include <qdesktopservices.h> // TODO remove, this was only for my playing round
 #include "klocalizedstring.h"
 #include "kdebug.h"
 
@@ -207,7 +207,7 @@ void Installation::slotPayloadResult(KJob *job)
                 if (mimeType->is("text/html") || mimeType->is("application/x-php")) {
                     if (KMessageBox::questionYesNo(0, i18n("The downloaded file is a html file. This indicates a link to a website instead of the actual download. Would you like to open the site with a browser instead?"), i18n("Possibly bad download link"))
                         == KMessageBox::Yes) {
-                        KToolInvocation::invokeBrowser(fcjob->srcUrl().toString());
+                        QDesktopServices::openUrl(fcjob->srcUrl());
                         emit signalInstallationFailed(i18n("Downloaded file was a HTML file. Opened in browser."));
                         entry.setStatus(Entry::Invalid);
                         emit signalEntryChanged(entry);

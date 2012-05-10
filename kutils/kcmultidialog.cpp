@@ -28,6 +28,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QProcess>
 #include <QtCore/QUrl>
+#include <QDesktopServices>
 
 #include <kauthorized.h>
 #include <kguiitem.h>
@@ -35,7 +36,6 @@
 #include <klocalizedstring.h>
 #include <kpagewidgetmodel.h>
 #include <kpushbutton.h>
-#include <ktoolinvocation.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
 
@@ -354,7 +354,7 @@ void KCMultiDialog::slotHelpClicked()
   if ( docUrl.scheme() == "help" || docUrl.scheme() == "man" || docUrl.scheme() == "info" ) {
     QProcess::startDetached("khelpcenter", QStringList() << docUrl.toString());
   } else {
-    KToolInvocation::invokeBrowser(docUrl.toString());
+      QDesktopServices::openUrl(docUrl);
   }
 }
 

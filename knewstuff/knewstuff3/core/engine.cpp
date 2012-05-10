@@ -39,7 +39,7 @@
 #include <kio/job.h>
 #include <kmimetype.h>
 #include <krandom.h>
-#include <ktoolinvocation.h>
+#include <QDesktopServices>
 
 #include <QtCore/QTimer>
 #include <QtCore/QDir>
@@ -224,7 +224,7 @@ void Engine::slotProviderFileLoaded(const QDomDocument& doc)
 void Engine::atticaProviderLoaded(const Attica::Provider& atticaProvider)
 {
     if (!atticaProvider.hasContentService()) {
-        kDebug() << "Found provider: " << atticaProvider.baseUrl() << " but it does not support content"; 
+        kDebug() << "Found provider: " << atticaProvider.baseUrl() << " but it does not support content";
         return;
     }
     QSharedPointer<KNS3::Provider> provider =
@@ -279,7 +279,7 @@ void Engine::slotEntriesLoaded(const KNS3::Provider::SearchRequest& request, KNS
         m_cache->insertRequest(request, entries);
         emit signalEntriesLoaded(entries);
     }
-    
+
     --m_numDataJobs;
     updateStatus();
 }
@@ -460,9 +460,13 @@ void Engine::contactAuthor(const EntryInternal &entry)
 {
     if (!entry.author().email().isEmpty()) {
         // invoke mail with the address of the author
-        KToolInvocation::invokeMailer(entry.author().email(), i18n("Re: %1", entry.name()));
+        QUrl mailUrl;
+        mailUrl.setScheme("mailto");
+        mailUrl.setPath(entry.author().email());
+        mailUrl.addQueryItem("subject", i18n("Re: %1", entry.name()));
+        QDesktopServices::openUrl(mailUrl);
     } else if (!entry.author().homepage().isEmpty()) {
-        KToolInvocation::invokeBrowser(entry.author().homepage());
+        QDesktopServices::openUrl(QUrl(entry.author().homepage()));
     }
 }
 

@@ -28,10 +28,10 @@
 #include <QCloseEvent>
 #include <QLabel>
 #include <QUrl>
+#include <QDesktopServices>
 
 #include <kaboutdata.h>
 #include <kcombobox.h>
-#include <ktoolinvocation.h>
 #include <kdebug.h>
 #include <klineedit.h>
 #include <klocale.h>
@@ -408,7 +408,7 @@ void KBugReportPrivate::_k_slotSetFrom()
 void KBugReport::accept()
 {
     if ( d->submitBugWeb ) {
-        KToolInvocation::invokeBrowser(d->url.toString());
+        QDesktopServices::openUrl(d->url);
         return;
     }
 
