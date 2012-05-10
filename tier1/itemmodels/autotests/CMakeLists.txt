@@ -35,6 +35,6 @@ itemmodels_proxymodel_tests(
   testmodelqueuedconnections
 )
 
-if (Qt5Script_FOUND)
+if (Qt5Script_FOUND OR NOT QT5_BUILD)
     add_subdirectory(proxymodeltestapp)
 endif()
