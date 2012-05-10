@@ -205,7 +205,8 @@ WmiQuery::Item& WmiQuery::Item::operator=(const Item& other)
 
 WmiQuery::Item::~Item()
 {
-    m_p->Release();
+    if(!qApp->closingDown() && !WmiQuery::instance().m_bNeedUninit)//this means we are in a QApplication, so qt already called CoUninitialize and all COM references are all ready freed
+        m_p->Release();
 }
 
 WmiQuery::WmiQuery()
@@ -213,8 +214,6 @@ WmiQuery::WmiQuery()
     , pLoc(0)
     , pSvc(0)
 {
-    //does this all look hacky?  yes...but it came straight from the MSDN example...
-
     HRESULT hres;
 
     hres =  CoInitializeEx(0,COINIT_MULTITHREADED);
