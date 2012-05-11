@@ -452,6 +452,7 @@ KIconLoader::KIconLoader(const KComponentData &componentData, QObject* parent)
 
 void KIconLoader::reconfigure( const QString& _appname, KStandardDirs *_dirs )
 {
+    d->mIconCache->clear();
     delete d;
     d = new KIconLoaderPrivate(this);
     d->init( _appname, _dirs );
