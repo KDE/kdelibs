@@ -32,7 +32,6 @@
 
 #include "kconfigbackend.h"
 #include "kconfiggroup.h"
-#include <kstringhandler.h>
 
 #include <qapplication.h>
 #include <qprocess.h>
@@ -219,10 +218,7 @@ QString KConfigPrivate::expandString(const QString& value)
                 {
                     QByteArray pEnv = qgetenv(aVarName.toAscii().constData());
                     if( !pEnv.isEmpty() )
-                    // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
-                    // An environment variable may contain values in 8bit
-                    // locale specified encoding or UTF8 encoding
-                        env = KStringHandler::from8Bit(pEnv.constData());
+                        env = QString::fromLocal8Bit(pEnv.constData());
                 }
                 aValue.replace(nDollarPos, nEndPos-nDollarPos, env);
                 nDollarPos += env.length();
