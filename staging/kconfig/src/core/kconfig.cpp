@@ -60,7 +60,7 @@ KConfigPrivate::KConfigPrivate(KConfig::OpenFlags flags,
     if (use_etc_kderc) {
 
         etc_kderc =
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
             QFile::decodeName( qgetenv("WINDIR") + "/kde4rc" );
 #else
             QLatin1String("/etc/kde4rc");

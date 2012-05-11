@@ -369,13 +369,13 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
     return QVariant();
 }
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 # include <QtCore/QDir>
 #endif
 
 static bool cleanHomeDirPath( QString &path, const QString &homeDir )
 {
-#ifdef Q_WS_WIN //safer
+#ifdef Q_OS_WIN //safer
    if (!QDir::convertSeparators(path).startsWith(QDir::convertSeparators(homeDir)))
         return false;
 #else
