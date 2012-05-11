@@ -31,7 +31,7 @@ set(kidletime_LIB_SRCS
     widgetbasedpoller.cpp
 )
 
-if (Q_WS_X11)
+if (X11_FOUND)
     if (HAVE_XSCREENSAVER)
       set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS}
           xscreensaverbasedpoller.cpp)
@@ -41,18 +41,18 @@ if (Q_WS_X11)
       set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS}
           xsyncbasedpoller.cpp )
     endif (HAVE_XSYNC)
-elseif (Q_WS_MAC)
+elseif (Q_OS_MAC)
     set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS} macpoller.cpp)
-elseif (Q_WS_WIN)
+elseif (Q_OS_WIN)
     set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS} windowspoller.cpp)
-endif (Q_WS_X11)
+endif (X11_FOUND)
 
 add_library(kidletime ${LIBRARY_TYPE} ${kidletime_LIB_SRCS})
 generate_export_header(kidletime)
 target_link_libraries(kidletime LINK_INTERFACE_LIBRARIES ${QT_QTGUI_LIBRARY})
 target_link_libraries(kidletime ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
 
-if (Q_WS_X11)
+if (X11_FOUND)
    if (HAVE_XSCREENSAVER)
      target_link_libraries(kidletime ${X11_Xscreensaver_LIB} ${QT_QTDBUS_LIBRARY})
    endif (HAVE_XSCREENSAVER)
@@ -60,7 +60,7 @@ if (Q_WS_X11)
      target_link_libraries(kidletime ${X11_Xext_LIB})
    endif (HAVE_XSYNC)
    target_link_libraries(kidletime ${X11_LIBRARIES})
-endif (Q_WS_X11)
+endif (X11_FOUND)
 
 set_target_properties(kidletime PROPERTIES
                       VERSION ${ECM_VERSION_STRING}

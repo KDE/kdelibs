@@ -20,19 +20,20 @@
 
 #include <config-kidletime.h>
 
-#ifdef Q_WS_X11
 #ifdef HAVE_XSCREENSAVER
 #include "xscreensaverbasedpoller.h"
 #endif
+
 #ifdef HAVE_XSYNC
 #include "xsyncbasedpoller.h"
 #endif
-#else
-#ifdef Q_WS_MAC
+
+#ifdef Q_OS_MAC
 #include "macpoller.h"
-#else
-#include "windowspoller.h"
 #endif
+
+#ifdef Q_OS_WIN
+#include "windowspoller.h"
 #endif
 
 #include <QWeakPointer>
@@ -179,7 +180,6 @@ void KIdleTimePrivate::loadSystem()
 
     // Priority order
 
-#ifdef Q_WS_X11
 #ifdef HAVE_XSYNC
 #ifdef HAVE_XSCREENSAVER
     if (XSyncBasedPoller::instance()->isAvailable()) {
@@ -195,16 +195,13 @@ void KIdleTimePrivate::loadSystem()
     poller = new XScreensaverBasedPoller();
 #endif
 #endif
-#else
-#ifdef Q_WS_MAC
+
+#ifdef Q_OS_MAC
     poller = new MacPoller();
-#else
-#ifdef Q_WS_WIN
+#endif
+
+#ifdef Q_OS_WIN
     poller = new WindowsPoller();
-#else
-#warning QT5 port to QPA
-#endif
-#endif
 #endif
 
     if (!poller.isNull()) {
@@ -216,11 +213,11 @@ void KIdleTimePrivate::unloadCurrentSystem()
 {
     if (!poller.isNull()) {
         poller.data()->unloadPoller();
-#ifdef Q_WS_X11
+#ifdef HAVE_XSYNC
         if (qobject_cast<XSyncBasedPoller*>(poller.data()) == 0) {
 #endif
             poller.data()->deleteLater();
-#ifdef Q_WS_X11
+#ifdef HAVE_XSYNC
         }
 #endif
     }
