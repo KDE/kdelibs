@@ -35,7 +35,6 @@ install( FILES
    kdesktopfile.h
    ksharedconfig.h
    kcoreconfigskeleton.h
-   kconfiggroup_kurl.h
    kcoreauthorized.h
    ksharedptr.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel

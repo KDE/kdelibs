@@ -68,6 +68,7 @@ install(FILES
     kdecore/k3socks.h
     kdecore/k3sockssocketdevice.h
     kdecore/k3streamsocket.h
+    kdecore/kconfiggroup_kurl.h
     kdeui/kicon.h
     kdeui/knumvalidator.h
     ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
