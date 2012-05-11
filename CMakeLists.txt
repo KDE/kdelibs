@@ -231,8 +231,8 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_BINARY_DIR}/tier1/kcodecs/src
                           ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/text
                           ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src
-                          ${CMAKE_BINARY_DIR}/staging/kconfig/src/core
-                          ${CMAKE_SOURCE_DIR}/staging/kconfig/src/core
+                          ${CMAKE_BINARY_DIR}/tier2/kconfig/src/core
+                          ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/core
                           ${QT_INCLUDES}
                           ${_KDE4_PLATFORM_INCLUDE_DIRS})
 
@@ -270,8 +270,8 @@ set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdeui
                         ${CMAKE_SOURCE_DIR}/tier1/kwindowsystem/src
                         ${CMAKE_BINARY_DIR}/tier2/kauth/src/
                         ${CMAKE_SOURCE_DIR}/tier2/kauth/src/
-                        ${CMAKE_BINARY_DIR}/staging/kconfig/src/gui
-                        ${CMAKE_SOURCE_DIR}/staging/kconfig/src/gui
+                        ${CMAKE_BINARY_DIR}/tier2/kconfig/src/gui
+                        ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/gui
                         ${CMAKE_BINARY_DIR}/staging/kdeguiaddons/src/
                         ${CMAKE_SOURCE_DIR}/staging/kdeguiaddons/src/colors
                         ${CMAKE_BINARY_DIR}/staging/kwidgets/src
