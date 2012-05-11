@@ -130,6 +130,16 @@ protected Q_SLOTS:
     void connectToHostImplementation(const QString &hostName, quint16 port, OpenMode mode);
     void disconnectFromHostImplementation();
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+public:
+    virtual void connectToHost(const QHostAddress &address, quint16 port, OpenMode mode = ReadWrite) {
+        connectToHostImplementation(address.toString(), port, mode);
+    }
+    virtual void connectToHost(const QString &hostName, quint16 port, OpenMode mode = ReadWrite, NetworkLayerProtocol protocol = AnyIPProtocol) {
+        connectToHostImplementation(hostName, port, mode);
+    }
+#endif
+
 private:
     Q_DISABLE_COPY(KLocalSocket)
     friend class KLocalSocketPrivate;
