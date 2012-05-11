@@ -20,6 +20,8 @@
 
 #include <config-kidletime.h>
 
+#include "abstractsystempoller.h"
+
 #ifdef HAVE_XSCREENSAVER
 #include "xscreensaverbasedpoller.h"
 #endif
