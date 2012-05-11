@@ -1,4 +1,4 @@
-/* This file is part of libkdbus
+/* This file is part of libkdbusaddons
 
    Copyright (c) 2011 David Faure <faure@kde.org>
    Copyright (c) 2011 Kevin Ottens <ervin@kde.org>
