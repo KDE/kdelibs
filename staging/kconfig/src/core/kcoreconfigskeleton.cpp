@@ -22,10 +22,22 @@
 #include "kcoreconfigskeleton.h"
 #include "kcoreconfigskeleton_p.h"
 
-#include "kstringhandler.h"
 #include <QUrl>
 
 Q_DECLARE_METATYPE(QList<QUrl>)
+
+static QString obscuredString(const QString &str)
+{
+    QString result;
+    const QChar *unicode = str.unicode();
+    for ( int i = 0; i < str.length(); ++i )
+        // yes, no typo. can't encode ' ' or '!' because
+        // they're the unicode BOM. stupid scrambling. stupid.
+        result += ( unicode[ i ].unicode() <= 0x21 ) ? unicode[ i ]
+                                                     : QChar( 0x1001F - unicode[ i ].unicode() );
+
+  return result;
+}
 
 KConfigSkeletonItem::KConfigSkeletonItem(const QString & _group,
                                          const QString & _key)
@@ -140,7 +152,7 @@ void KCoreConfigSkeleton::ItemString::writeConfig( KConfig *config )
     else if ( mType == Path )
       cg.writePathEntry( mKey, mReference );
     else if ( mType == Password )
-      cg.writeEntry( mKey, KStringHandler::obscure( mReference ) );
+      cg.writeEntry( mKey, obscuredString( mReference ) );
     else
       cg.writeEntry( mKey, mReference );
   }
@@ -157,8 +169,8 @@ void KCoreConfigSkeleton::ItemString::readConfig( KConfig *config )
   }
   else if ( mType == Password )
   {
-    QString val = cg.readEntry( mKey, KStringHandler::obscure( mDefault ) );
-    mReference = KStringHandler::obscure( val );
+    QString val = cg.readEntry( mKey, obscuredString( mDefault ) );
+    mReference = obscuredString( val );
   }
   else
   {
