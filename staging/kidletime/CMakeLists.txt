@@ -19,6 +19,7 @@ find_package(Qt5Transitional REQUIRED Core Gui)
 include(FeatureSummary)
 
 add_subdirectory(src)
+add_subdirectory(examples)
 
 install(FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kidletime_version.h
