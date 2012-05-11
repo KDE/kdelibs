@@ -1,6 +1,5 @@
 include_directories(
   ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io   # klockfile.h
-  ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/text # kstringhandler.h
   ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src
 )
 
