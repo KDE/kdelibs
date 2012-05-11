@@ -38,7 +38,7 @@
 #include <sys/types.h> // uid_t
 #include <fcntl.h> // open
 
-KCONFIG_EXPORT bool kde_kiosk_exception = false; // flag to disable kiosk restrictions
+KCONFIGCORE_EXPORT bool kde_kiosk_exception = false; // flag to disable kiosk restrictions
 
 QString KConfigIniBackend::warningProlog(const QFile &file, int line)
 {

@@ -23,7 +23,7 @@
 
 namespace KAuthorized {
 
-KCONFIG_EXPORT extern bool authorizeUrlActionInternal(const QString& action, const QUrl &_baseURL, const QUrl &_destURL, const QString& baseClass, const QString& destClass);
+KCONFIGCORE_EXPORT extern bool authorizeUrlActionInternal(const QString& action, const QUrl &_baseURL, const QUrl &_destURL, const QString& baseClass, const QString& destClass);
 
 bool authorizeUrlAction(const QString &action, const QUrl &baseURL, const QUrl &destURL)
 {
@@ -32,7 +32,7 @@ bool authorizeUrlAction(const QString &action, const QUrl &baseURL, const QUrl &
     return KAuthorized::authorizeUrlActionInternal(action, baseURL, destURL, baseClass, destClass);
 }
 
-KCONFIG_EXPORT extern void allowUrlActionInternal(const QString &action, const QUrl &_baseURL, const QUrl &_destURL);
+KCONFIGCORE_EXPORT extern void allowUrlActionInternal(const QString &action, const QUrl &_baseURL, const QUrl &_destURL);
 
 void allowUrlAction(const QString &action, const QUrl &_baseURL, const QUrl &_destURL)
 {

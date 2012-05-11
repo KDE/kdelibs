@@ -26,7 +26,7 @@
 
 #include "kconfigbase.h"
 
-#include <kconfig_export.h>
+#include <kconfigcore_export.h>
 
 #include <QtCore/QString>
 #include <QtCore/QVariant>
@@ -66,7 +66,7 @@ class KConfigPrivate;
  *
  * \sa KSharedConfig, KConfigGroup, <a href="http://techbase.kde.org/index.php?title=Development/Tutorials/KConfig">the techbase HOWTO on KConfig</a>.
  */
-class KCONFIG_EXPORT KConfig : public KConfigBase
+class KCONFIGCORE_EXPORT KConfig : public KConfigBase
 {
 public:
     /**
@@ -316,7 +316,7 @@ public:
      * @see forceGlobal
      */
 #ifndef KDE_NO_DEPRECATED
-    KCONFIG_DEPRECATED void setForceGlobal(bool force);
+    KCONFIGCORE_DEPRECATED void setForceGlobal(bool force);
 #endif
     /**
      * @deprecated
@@ -328,7 +328,7 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KCONFIG_DEPRECATED bool forceGlobal() const;
+    KCONFIGCORE_DEPRECATED bool forceGlobal() const;
 #endif
     /// @}
 

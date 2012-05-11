@@ -34,8 +34,8 @@ include_directories(
     ${kcoreaddons_SOURCE_DIR}/src/randomness # for KRandom
     ${kcoreaddons_SOURCE_DIR}/src/io # for KBackup
     ${kcoreaddons_BINARY_DIR}/src
-    ${kconfig_BINARY_DIR}/src # ksharedconfig.h
-    ${kconfig_SOURCE_DIR}/src
+    ${kconfig_BINARY_DIR}/src/core # ksharedconfig.h
+    ${kconfig_SOURCE_DIR}/src/core
     ${kwidgets_BINARY_DIR}/src
     ${kwidgets_SOURCE_DIR}/src/icons # kiconloader
 )

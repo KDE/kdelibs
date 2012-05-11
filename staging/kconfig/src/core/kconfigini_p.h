@@ -23,7 +23,7 @@
 #ifndef KCONFIGINI_P_H
 #define KCONFIGINI_P_H
 
-#include <kconfig_export.h>
+#include <kconfigcore_export.h>
 #include <kconfigbackend.h>
 #include <klockfile.h>
 

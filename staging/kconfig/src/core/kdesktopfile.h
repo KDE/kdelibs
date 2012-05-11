@@ -35,7 +35,7 @@ class KDesktopFilePrivate;
  * @see  KConfigBase  KConfig
  * @see <a href="http://standards.freedesktop.org/desktop-entry-spec/latest/">Desktop Entry Spec</a>
  */
-class KCONFIG_EXPORT KDesktopFile : public KConfig
+class KCONFIGCORE_EXPORT KDesktopFile : public KConfig
 {
 public:
   /**

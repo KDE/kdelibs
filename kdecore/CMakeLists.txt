@@ -235,7 +235,7 @@ generate_export_header(kdecore)
 
 target_link_libraries(kdecore
   LINK_PUBLIC
-    ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons kconfig kcodecs
+    ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons kconfigcore kcodecs
   LINK_PRIVATE
     ${QtMimeTypes_LIBRARY} ${QT_QTXML_LIBRARY} ${kdecore_OPTIONAL_LIBS}
 )

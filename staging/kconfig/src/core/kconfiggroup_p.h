@@ -37,6 +37,6 @@ struct KConfigGroupGui
     kWriteEntryGui writeEntryGui;
 };
 
-extern KCONFIG_EXPORT KConfigGroupGui _kde_internal_KConfigGroupGui;
+extern KCONFIGCORE_EXPORT KConfigGroupGui _kde_internal_KConfigGroupGui;
 
 #endif

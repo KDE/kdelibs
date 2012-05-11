@@ -21,7 +21,7 @@
 #ifndef KCOREAUTHORIZED_H
 #define KCOREAUTHORIZED_H
 
-#include <kconfig_export.h>
+#include <kconfigcore_export.h>
 
 class QUrl;
 class QString;
@@ -40,7 +40,7 @@ namespace KAuthorized
    * @return true if the action is authorized
    * @todo what are the generic actions?
    */
-  KCONFIG_EXPORT bool authorize(const QString& genericAction);
+  KCONFIGCORE_EXPORT bool authorize(const QString& genericAction);
 
   /**
    * Returns whether a certain KAction is authorized.
@@ -49,7 +49,7 @@ namespace KAuthorized
    * with "action/" before being passed to authorize()
    * @return true if the KAction is authorized
    */
-  KCONFIG_EXPORT bool authorizeKAction(const QString& action);
+  KCONFIGCORE_EXPORT bool authorizeKAction(const QString& action);
 
   /**
    * Returns whether access to a certain control module is authorized.
@@ -57,7 +57,7 @@ namespace KAuthorized
    * @param menuId identifying the control module, e.g. kde-mouse.desktop
    * @return true if access to the module is authorized, false otherwise.
    */
-  KCONFIG_EXPORT bool authorizeControlModule(const QString& menuId);
+  KCONFIGCORE_EXPORT bool authorizeControlModule(const QString& menuId);
 
   /**
    * Returns which control modules from a given list are authorized for access.
@@ -66,7 +66,7 @@ namespace KAuthorized
    * an example of a menu-id is kde-mouse.desktop.
    * @return Those control modules for which access has been authorized.
    */
-  KCONFIG_EXPORT QStringList authorizeControlModules(const QStringList& menuIds);
+  KCONFIGCORE_EXPORT QStringList authorizeControlModules(const QStringList& menuIds);
 
 }
 

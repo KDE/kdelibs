@@ -333,7 +333,7 @@ static void initUrlActionRestrictions()
 namespace KAuthorized
 {
 // Called by KAuthorized::allowUrlAction in KIO
-KCONFIG_EXPORT void allowUrlActionInternal(const QString &action, const QUrl &_baseURL, const QUrl &_destURL)
+KCONFIGCORE_EXPORT void allowUrlActionInternal(const QString &action, const QUrl &_baseURL, const QUrl &_destURL)
 {
   MY_D
   QMutexLocker locker((&d->mutex));
@@ -349,7 +349,7 @@ KCONFIG_EXPORT void allowUrlActionInternal(const QString &action, const QUrl &_b
 }
 
 // Called by KAuthorized::authorizeUrlAction in KIO
-KCONFIG_EXPORT bool authorizeUrlActionInternal(const QString& action, const QUrl &_baseURL, const QUrl &_destURL, const QString& baseClass, const QString& destClass)
+KCONFIGCORE_EXPORT bool authorizeUrlActionInternal(const QString& action, const QUrl &_baseURL, const QUrl &_destURL, const QString& baseClass, const QString& destClass)
 {
   MY_D
   QMutexLocker locker(&(d->mutex));
