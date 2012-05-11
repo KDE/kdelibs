@@ -175,10 +175,10 @@ int MacPoller::poll()
     int idle = m_secondsIdle * 1000;
 
     // Check if we reached a timeout..
-    foreach(int i, m_timeouts) {
+    Q_FOREACH(int i, m_timeouts) {
         if ((i - idle < 1000 && i > idle) || (idle - i < 1000 && idle > i)) {
             // Bingo!
-            emit timeoutReached(i);
+            Q_EMIT timeoutReached(i);
         }
     }
 
@@ -209,7 +209,7 @@ void MacPoller::stopCatchingIdleEvents()
 void MacPoller::triggerResume()
 {
     if (m_catch) {
-        emit resumingFromIdle();
+        Q_EMIT resumingFromIdle();
         stopCatchingIdleEvents();
     }
 }

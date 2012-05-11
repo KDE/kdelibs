@@ -16,33 +16,35 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef XSCREENSAVERBASEDPOLLER_H
-#define XSCREENSAVERBASEDPOLLER_H
+#ifndef WINDOWSPOLLER_H
+#define WINDOWSPOLLER_H
 
 #include "widgetbasedpoller.h"
 
-#include "screensaver_interface.h"
+class QTimer;
 
-class XScreensaverBasedPoller: public WidgetBasedPoller
+class WindowsPoller : public WidgetBasedPoller
 {
     Q_OBJECT
 
 public:
-    XScreensaverBasedPoller(QWidget *parent = 0);
-    virtual ~XScreensaverBasedPoller();
+    WindowsPoller(QWidget *parent = 0);
+    virtual ~WindowsPoller();
 
-public slots:
+public Q_SLOTS:
     void simulateUserActivity();
+    void catchIdleEvent();
+    void stopCatchingIdleEvents();
 
 private:
     bool additionalSetUp();
 
-private slots:
-    void screensaverActivated(bool activated);
+private Q_SLOTS:
     int getIdleTime();
+    void checkForIdle();
 
 private:
-    OrgFreedesktopScreenSaverInterface * m_screenSaverIface;
+    QTimer * m_idleTimer;
 };
 
-#endif /* XSCREENSAVERBASEDPOLLER_H_ */
+#endif /* WINDOWSPOLLER_H */

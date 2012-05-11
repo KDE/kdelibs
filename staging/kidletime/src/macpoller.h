@@ -16,35 +16,45 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef WINDOWSPOLLER_H
-#define WINDOWSPOLLER_H
+#ifndef MACPOLLER_H
+#define MACPOLLER_H
 
-#include "widgetbasedpoller.h"
+#include "abstractsystempoller.h"
 
-class QTimer;
+#include <Carbon/Carbon.h>
 
-class WindowsPoller : public WidgetBasedPoller
+class MacPoller: public AbstractSystemPoller
 {
     Q_OBJECT
 
 public:
-    WindowsPoller(QWidget *parent = 0);
-    virtual ~WindowsPoller();
+    MacPoller(QWidget *parent = 0);
+    virtual ~MacPoller();
 
-public slots:
-    void simulateUserActivity();
+    bool isAvailable();
+    bool setUpPoller();
+    void unloadPoller();
+
+    static pascal void IdleTimerAction(EventLoopTimerRef, EventLoopIdleTimerMessage inState, void* inUserData);
+
+public Q_SLOTS:
+    void addTimeout(int nextTimeout);
+    void removeTimeout(int nextTimeout);
+    QList<int> timeouts() const;
+    int forcePollRequest();
     void catchIdleEvent();
     void stopCatchingIdleEvents();
+    void simulateUserActivity();
+    void triggerResume();
+
+private Q_SLOTS:
+    int poll();
 
 private:
-    bool additionalSetUp();
-
-private slots:
-    int getIdleTime();
-    void checkForIdle();
-
-private:
-    QTimer * m_idleTimer;
+    QList<int> m_timeouts;
+    EventLoopTimerRef m_timerRef;
+    int m_secondsIdle;
+    bool m_catch;
 };
 
-#endif /* WINDOWSPOLLER_H */
+#endif /* MACPOLLER_H */

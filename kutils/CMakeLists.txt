@@ -40,57 +40,6 @@ install(FILES
 install(TARGETS kemoticons EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 
-######## kidletime ####################
-configure_file(kidletime/config-kidletime.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kidletime.h )
-
-set(kidletime_LIB_SRCS
-    kidletime/kidletime.cpp
-    kidletime/abstractsystempoller.cpp
-    kidletime/widgetbasedpoller.cpp
-)
-
-if (Q_WS_X11)
-    if (HAVE_XSCREENSAVER)
-      set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS}
-          kidletime/xscreensaverbasedpoller.cpp)
-      qt4_add_dbus_interface(kidletime_LIB_SRCS kidletime/org.freedesktop.ScreenSaver.xml screensaver_interface)
-    endif (HAVE_XSCREENSAVER)
-    if (HAVE_XSYNC)
-      set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS}
-          kidletime/xsyncbasedpoller.cpp )
-    endif (HAVE_XSYNC)
-elseif (Q_WS_MAC)
-    set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS} kidletime/macpoller.cpp)
-elseif (Q_WS_WIN)
-    set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS} kidletime/windowspoller.cpp)
-endif (Q_WS_X11)
-
-kde4_add_library(kidletime ${LIBRARY_TYPE} ${kidletime_LIB_SRCS})
-generate_export_header(kidletime)
-target_link_libraries(kidletime LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY})
-target_link_libraries(kidletime ${KDE4_KDEUI_LIBS})
-
-if (Q_WS_X11)
-   if (HAVE_XSCREENSAVER)
-     target_link_libraries(kidletime ${X11_Xss_LIB})
-   endif (HAVE_XSCREENSAVER)
-   if (HAVE_XSYNC)
-     target_link_libraries(kidletime ${X11_Xext_LIB})
-   endif (HAVE_XSYNC)
-   target_link_libraries(kidletime ${X11_LIBRARIES})
-endif (Q_WS_X11)
-
-set_target_properties(kidletime PROPERTIES
-                      VERSION ${GENERIC_LIB_VERSION}
-                      SOVERSION ${GENERIC_LIB_SOVERSION})
-install( FILES
- ${CMAKE_CURRENT_BINARY_DIR}/kidletime_export.h
- kidletime/kidletime.h
- DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
-
-install(TARGETS kidletime EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
-
-
 ########### kcmutils ###############
 set(kcmutils_LIB_SRCS
     kcmoduleinfo.cpp

@@ -34,7 +34,7 @@ public:
     virtual bool setUpPoller() = 0;
     virtual void unloadPoller() = 0;
 
-public slots:
+public Q_SLOTS:
     virtual void addTimeout(int nextTimeout) = 0;
     virtual void removeTimeout(int nextTimeout) = 0;
     virtual QList<int> timeouts() const = 0;
@@ -43,7 +43,7 @@ public slots:
     virtual void stopCatchingIdleEvents() = 0;
     virtual void simulateUserActivity() = 0;
 
-signals:
+Q_SIGNALS:
     void resumingFromIdle();
     void timeoutReached(int msec);
 

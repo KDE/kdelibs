@@ -46,7 +46,7 @@ protected:
     bool x11Event(XEvent *event);
     XSyncBasedPoller(QWidget *parent = 0);
 
-public slots:
+public Q_SLOTS:
     void addTimeout(int nextTimeout);
     void removeTimeout(int nextTimeout);
     QList<int> timeouts() const;
@@ -55,7 +55,7 @@ public slots:
     void stopCatchingIdleEvents();
     void simulateUserActivity();
 
-private slots:
+private Q_SLOTS:
     int poll();
     void reloadAlarms();
 

@@ -37,8 +37,9 @@ XScreensaverBasedPoller::~XScreensaverBasedPoller()
 
 bool XScreensaverBasedPoller::additionalSetUp()
 {
-    m_screenSaverIface = new OrgFreedesktopScreenSaverInterface("org.freedesktop.ScreenSaver", "/ScreenSaver",
-            QDBusConnection::sessionBus(), this);
+    m_screenSaverIface = new OrgFreedesktopScreenSaverInterface(QLatin1String("org.freedesktop.ScreenSaver"),
+                                                                QLatin1String("/ScreenSaver"),
+                                                                QDBusConnection::sessionBus(), this);
 
     connect(m_screenSaverIface, SIGNAL(ActiveChanged(bool)), SLOT(screensaverActivated(bool)));
 
@@ -51,7 +52,7 @@ void XScreensaverBasedPoller::screensaverActivated(bool activated)
 
     if (!activated) {
         m_screenSaverIface->SimulateUserActivity();
-        emit resumingFromIdle();
+        Q_EMIT resumingFromIdle();
     }
 }
 
@@ -69,6 +70,6 @@ void XScreensaverBasedPoller::simulateUserActivity()
 {
     stopCatchingIdleEvents();
     XResetScreenSaver(QX11Info::display());
-    emit resumingFromIdle();
+    Q_EMIT resumingFromIdle();
 }
 

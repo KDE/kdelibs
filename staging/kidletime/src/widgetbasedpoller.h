@@ -39,7 +39,7 @@ public:
 protected:
     bool eventFilter(QObject *object, QEvent *event);
 
-public slots:
+public Q_SLOTS:
     void addTimeout(int nextTimeout);
     void removeTimeout(int nextTimeout);
     QList<int> timeouts() const;
@@ -47,7 +47,7 @@ public slots:
     virtual void catchIdleEvent();
     virtual void stopCatchingIdleEvents();
 
-private slots:
+private Q_SLOTS:
     int poll();
     virtual int getIdleTime() = 0;
     void detectedActivity();

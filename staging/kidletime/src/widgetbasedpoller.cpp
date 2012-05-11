@@ -52,7 +52,7 @@ bool WidgetBasedPoller::setUpPoller()
     m_grabber->move(-1000, -1000);
     m_grabber->setMouseTracking(true);
     m_grabber->installEventFilter(this);
-    m_grabber->setObjectName("KIdleGrabberWidget");
+    m_grabber->setObjectName(QLatin1String("KIdleGrabberWidget"));
 
     return additionalSetUp();
 }
@@ -103,7 +103,7 @@ void WidgetBasedPoller::waitForActivity()
 void WidgetBasedPoller::detectedActivity()
 {
     stopCatchingIdleEvents();
-    emit resumingFromIdle();
+    Q_EMIT resumingFromIdle();
 }
 
 void WidgetBasedPoller::releaseInputLock()
@@ -118,17 +118,17 @@ int WidgetBasedPoller::poll()
     int idle = getIdleTime();
 
     // Check if we reached a timeout..
-    foreach(int i, m_timeouts) {
+    Q_FOREACH(int i, m_timeouts) {
         if ((i - idle < 300 && i > idle) || (idle - i < 300 && idle > i)) {
             // Bingo!
-            emit timeoutReached(i);
+            Q_EMIT timeoutReached(i);
         }
     }
 
     // Let's check the timer now!
     int mintime = 0;
 
-    foreach(int i, m_timeouts) {
+    Q_FOREACH(int i, m_timeouts) {
         if (i > idle && (i < mintime || mintime == 0)) {
             mintime = i;
         }

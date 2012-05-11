@@ -231,7 +231,7 @@ void KIdleTimePrivate::_k_resumingFromIdle()
     Q_Q(KIdleTime);
 
     if (catchResume) {
-        emit q->resumingFromIdle();
+        Q_EMIT q->resumingFromIdle();
         q->stopCatchingResumeEvent();
     }
 }
@@ -241,9 +241,9 @@ void KIdleTimePrivate::_k_timeoutReached(int msec)
     Q_Q(KIdleTime);
 
     if (associations.values().contains(msec)) {
-        foreach (int key, associations.keys(msec)) {
-            emit q->timeoutReached(key);
-            emit q->timeoutReached(key, msec);
+        Q_FOREACH (int key, associations.keys(msec)) {
+            Q_EMIT q->timeoutReached(key);
+            Q_EMIT q->timeoutReached(key, msec);
         }
     }
 }

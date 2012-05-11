@@ -16,45 +16,33 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef MACPOLLER_H
-#define MACPOLLER_H
+#ifndef XSCREENSAVERBASEDPOLLER_H
+#define XSCREENSAVERBASEDPOLLER_H
 
-#include "abstractsystempoller.h"
+#include "widgetbasedpoller.h"
 
-#include <Carbon/Carbon.h>
+#include "screensaver_interface.h"
 
-class MacPoller: public AbstractSystemPoller
+class XScreensaverBasedPoller: public WidgetBasedPoller
 {
     Q_OBJECT
 
 public:
-    MacPoller(QWidget *parent = 0);
-    virtual ~MacPoller();
+    XScreensaverBasedPoller(QWidget *parent = 0);
+    virtual ~XScreensaverBasedPoller();
 
-    bool isAvailable();
-    bool setUpPoller();
-    void unloadPoller();
-
-    static pascal void IdleTimerAction(EventLoopTimerRef, EventLoopIdleTimerMessage inState, void* inUserData);
-
-public slots:
-    void addTimeout(int nextTimeout);
-    void removeTimeout(int nextTimeout);
-    QList<int> timeouts() const;
-    int forcePollRequest();
-    void catchIdleEvent();
-    void stopCatchingIdleEvents();
+public Q_SLOTS:
     void simulateUserActivity();
-    void triggerResume();
-
-private slots:
-    int poll();
 
 private:
-    QList<int> m_timeouts;
-    EventLoopTimerRef m_timerRef;
-    int m_secondsIdle;
-    bool m_catch;
+    bool additionalSetUp();
+
+private Q_SLOTS:
+    void screensaverActivated(bool activated);
+    int getIdleTime();
+
+private:
+    OrgFreedesktopScreenSaverInterface * m_screenSaverIface;
 };
 
-#endif /* MACPOLLER_H */
+#endif /* XSCREENSAVERBASEDPOLLER_H_ */
