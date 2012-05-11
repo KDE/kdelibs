@@ -74,6 +74,7 @@ public:
     const Solid::DeviceInterface::Type type() const;
 
     static WmiQuery::Item win32DiskPartitionToLogicalDisk(const QString &deviceID);
+    static WmiQuery::Item win32DiskPartitionToDiskDrive(const QString &deviceID);
     static WmiQuery::Item win32DiskDriveToDiskPartition(const QString &deviceID);
     static WmiQuery::Item win32LogicalDiskToDiskPartition(const QString &driveLetter);
 

@@ -34,11 +34,17 @@ class Solid::Backends::Wmi::WmiManagerPrivate
 public:
     WmiManagerPrivate()
     {
-        init();
+        update();
     }
 
     ~WmiManagerPrivate()
     {
+
+    }
+
+    void update(){
+        init();
+        m_deviceCache.clear();
     }
 
     void init(){
@@ -51,6 +57,54 @@ public:
         }
     }
 
+    QStringList allDevices(){
+        if(m_deviceCache.isEmpty())
+        {
+            QStringList aList;
+            foreach(const Solid::DeviceInterface::Type &dev, supportedInterfaces)
+                aList<<findDeviceByDeviceInterface(dev);
+            foreach(const QString &udi, aList)
+            {
+                if (!m_deviceCache.contains(udi))
+                    m_deviceCache<< udi;
+            }
+        }
+        return m_deviceCache;
+    }
+
+
+    QStringList findDeviceByDeviceInterface(Solid::DeviceInterface::Type type)
+    {
+        QStringList result;
+
+        switch (type)
+        {
+        case Solid::DeviceInterface::Processor:
+            result << WmiDevice::generateUDIList(type);
+            break;
+        case Solid::DeviceInterface::StorageAccess:
+            result << WmiDevice::generateUDIList(type);
+            break;
+        case Solid::DeviceInterface::StorageDrive:
+            result << WmiDevice::generateUDIList(type);
+            break;
+        case Solid::DeviceInterface::OpticalDrive:
+            result << WmiDevice::generateUDIList(type);
+            break;
+        case Solid::DeviceInterface::StorageVolume:
+            result << WmiDevice::generateUDIList(type);
+            break;
+        case Solid::DeviceInterface::OpticalDisc:
+            result << WmiDevice::generateUDIList(type);
+            break;
+        case Solid::DeviceInterface::Battery:
+            result << WmiDevice::generateUDIList(type);
+            break;
+        }
+
+        return result;
+    }
+
     WmiQuery::ItemList sendQuery( const QString &wql )
     {
 		return WmiQuery::instance().sendQuery( wql );
@@ -59,6 +113,7 @@ public:
     QSet<Solid::DeviceInterface::Type> supportedInterfaces;
 
     QMap<QString,QString> m_volumes;
+    QStringList m_deviceCache;
 };
 
 
@@ -106,18 +161,8 @@ QSet<Solid::DeviceInterface::Type> WmiManager::supportedInterfaces() const
 
 QStringList WmiManager::allDevices()
 {
-    QStringList deviceUdiList;
 
-    QStringList aList;
-    foreach(const Solid::DeviceInterface::Type &dev, d->supportedInterfaces)
-      aList<<findDeviceByDeviceInterface(dev);
-    foreach(const QString &udi, aList)
-    {
-        if (!deviceUdiList.contains(udi))
-            deviceUdiList << udi;
-    }
-
-    return deviceUdiList;
+    return d->allDevices();
 }
 
 bool WmiManager::deviceExists(const QString &udi)
@@ -129,34 +174,22 @@ bool WmiManager::deviceExists(const QString &udi)
 QStringList WmiManager::devicesFromQuery(const QString &parentUdi,
                                          Solid::DeviceInterface::Type type)
 {
+    QStringList result;
+    if (!parentUdi.isEmpty())
+    {
+        foreach(const QString &udi,d->allDevices()){
+            WmiDevice device(udi);
+            if(device.type() == type && device.parentUdi() == parentUdi ){
+                result<<udi;
+            }
+        }
 
-//    qDebug() <<"WmiManager::devicesFromQuery"<< parentUdi << type;
-//    if (!parentUdi.isEmpty())
-//    {
-//        QStringList result = findDeviceStringMatch("info.parent", parentUdi);
-
-//        if (type!=Solid::DeviceInterface::Unknown) {
-//            QStringList::Iterator it = result.begin();
-//            QStringList::ConstIterator end = result.end();
-
-//            for (; it!=end; ++it)
-//            {
-//                WmiDevice device(*it);
-
-//                if (!device.queryDeviceInterface(type)) {
-//                    result.erase(it);
-//                }
-//            }
-//        }
-
-//        return result;
-
-//    } else
-    if (type!=Solid::DeviceInterface::Unknown) {
-        return findDeviceByDeviceInterface(type);
-    } else {
-        return allDevices();
-    }
+    } else if (type!=Solid::DeviceInterface::Unknown) {
+            result<<findDeviceByDeviceInterface(type);
+        } else {
+            result<<allDevices();
+        }
+    return result;
 }
 
 QObject *WmiManager::createDevice(const QString &udi)
@@ -179,34 +212,7 @@ QStringList WmiManager::findDeviceStringMatch(const QString &key, const QString 
 
 QStringList WmiManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type type)
 {
-    QStringList result;
-
-    switch (type)
-    {
-    case Solid::DeviceInterface::Processor:
-        result << WmiDevice::generateUDIList(type);
-        break;
-    case Solid::DeviceInterface::StorageAccess:
-        result << WmiDevice::generateUDIList(type);
-        break;
-    case Solid::DeviceInterface::StorageDrive:
-        result << WmiDevice::generateUDIList(type);
-        break;
-    case Solid::DeviceInterface::OpticalDrive:
-        result << WmiDevice::generateUDIList(type);
-        break;
-    case Solid::DeviceInterface::StorageVolume:
-        result << WmiDevice::generateUDIList(type);
-        break;
-    case Solid::DeviceInterface::OpticalDisc:
-        result << WmiDevice::generateUDIList(type);
-        break;
-    case Solid::DeviceInterface::Battery:
-        result << WmiDevice::generateUDIList(type);
-        break;
-    }
-
-    return result;
+    return d->findDeviceByDeviceInterface(type);
 }
 
 void WmiManager::slotDeviceAdded(const QString &udi)
@@ -267,14 +273,14 @@ HRESULT STDMETHODCALLTYPE WmiManager::WmiEventSink::Indicate(long lObjectCount,I
             switch(event){
             case 2:
             {
-                m_parent->d->init();
+                m_parent->d->update();
                 m_parent->slotDeviceAdded( "/org/kde/solid/wmi/volume/"+ m_parent->d->m_volumes[drive]);
             }
                 break;
                 case 3:
             {
                m_parent->slotDeviceRemoved("/org/kde/solid/wmi/volume/"+ m_parent->d->m_volumes[drive]);
-               m_parent->d->m_volumes.remove(drive);
+               m_parent->d->update();
             }
                 break;
             case  4:
