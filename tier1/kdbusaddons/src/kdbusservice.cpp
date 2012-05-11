@@ -90,7 +90,7 @@ KDBusService::KDBusService(StartupOptions options, QObject *parent)
             if (options & Unique) {
                 // Already running so it's ok!
                 QDBusInterface iface(d->serviceName, objectPath);
-                // TODO: Increase the timeout once David's patch is available in stable Qt
+                iface.setTimeout(5 * 60 * 1000); // Application can take time to answer
                 QDBusReply<int> reply = iface.call(QLatin1String("Activate"));
                 if (reply.isValid()) {
                     exit(reply);
