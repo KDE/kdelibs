@@ -32,12 +32,15 @@ include_directories(
  ${kcoreaddons_SOURCE_DIR}/src/randomness
  ${kauth_BINARY_DIR}/src
  ${kauth_SOURCE_DIR}/src
+ ${kconfig_BINARY_DIR}/src/core
+ ${kconfig_SOURCE_DIR}/src/core
+ ${kconfig_BINARY_DIR}/src/gui
+ ${kconfig_SOURCE_DIR}/src/gui
  ${CMAKE_SOURCE_DIR}/kdeui
  ${CMAKE_BINARY_DIR}/kdeui
  ${KDE4_KDECORE_INCLUDES}
  ${CMAKE_CURRENT_SOURCE_DIR}/actions
  ${CMAKE_CURRENT_SOURCE_DIR}/colors
- ${CMAKE_CURRENT_SOURCE_DIR}/config
  ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
  ${CMAKE_CURRENT_SOURCE_DIR}/findreplace
  ${CMAKE_CURRENT_SOURCE_DIR}/fonts
@@ -106,8 +109,6 @@ set(kdeui_LIB_SRCS
  colors/kcolordialog.cpp
  colors/kcolorvalueselector.cpp
  colors/khuesaturationselect.cpp
- config/kconfigskeleton.cpp
- config/kconfiggroupgui.cpp
  dialogs/kaboutkdedialog_p.cpp
  dialogs/kassistantdialog.cpp
  dialogs/kconfigdialog.cpp
@@ -428,7 +429,7 @@ if (X11_Xrender_FOUND)
    target_link_libraries(kdeui ${X11_Xrender_LIB})
 endif(X11_Xrender_FOUND)
 
-target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES kdecore ${QT_QTGUI_LIBRARY})
+target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES kdecore kconfiggui ${QT_QTGUI_LIBRARY})
 
 if(NOT WINCE)
 target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES ${QT_QTSVG_LIBRARY})
@@ -489,7 +490,6 @@ install( FILES
  colors/kcolordialog.h
  colors/kcolorvalueselector.h
  colors/khuesaturationselect.h
- config/kconfigskeleton.h
  dialogs/kaboutapplicationdialog.h
  dialogs/kassistantdialog.h
  dialogs/kbugreport.h

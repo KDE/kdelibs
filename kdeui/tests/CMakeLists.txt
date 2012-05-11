@@ -29,8 +29,6 @@ KDEUI_UNIT_TESTS(
   kactioncategorytest
   kbuttongrouptest
   kcompletioncoretest
-  kconfigguitest
-  kconfigskeletontest
   kdualactiontest
   kfadewidgeteffecttest
   kfindtest

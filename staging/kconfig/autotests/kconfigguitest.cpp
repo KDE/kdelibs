@@ -17,16 +17,15 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 #include "kconfigguitest.h"
 
 #include <kconfig.h>
-#include <kdebug.h>
 #include <QFont>
 #include <kconfiggroup.h>
-#include <kcursor.h>
+#include <kconfigskeleton.h>
 
-QTEST_KDEMAIN( KConfigTest, GUI )
+QTEST_MAIN( KConfigTest )
 
 #define COLORENTRY1 QColor("steelblue")
 #define COLORENTRY2 QColor(235, 235, 100, 125)
@@ -35,8 +34,9 @@ QTEST_KDEMAIN( KConfigTest, GUI )
 
 void KConfigTest::initTestCase()
 {
-  // cheat the linker on windows to link against kdeui
-  KCursor::hideCursorDelay();
+  // cheat the linker on windows to link against kconfiggui
+  KConfigSkeleton foo;
+  Q_UNUSED(foo);
 
   setenv("KDE_DEBUG_NOPROCESSINFO", "1", 1);
   setenv("KDE_DEBUG_TIMESTAMP", "0", 1);

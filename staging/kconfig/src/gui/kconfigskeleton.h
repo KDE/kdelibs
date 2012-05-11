@@ -23,7 +23,7 @@
 #ifndef KCONFIGSKELETON_H
 #define KCONFIGSKELETON_H
 
-#include <kdeui_export.h>
+#include <kconfiggui_export.h>
 
 #include <kcoreconfigskeleton.h>
 
@@ -37,14 +37,14 @@
  * This class extends KCoreConfigSkeleton by support for GUI types.
  *
  */
-class KDEUI_EXPORT KConfigSkeleton : public KCoreConfigSkeleton
+class KCONFIGGUI_EXPORT KConfigSkeleton : public KCoreConfigSkeleton
 {
   Q_OBJECT
 public:
   /**
    * Class for handling a color preferences item.
    */
-  class KDEUI_EXPORT ItemColor:public KConfigSkeletonGenericItem < QColor >
+  class KCONFIGGUI_EXPORT ItemColor:public KConfigSkeletonGenericItem < QColor >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */
@@ -69,7 +69,7 @@ public:
   /**
    * Class for handling a font preferences item.
    */
-  class KDEUI_EXPORT ItemFont:public KConfigSkeletonGenericItem < QFont >
+  class KCONFIGGUI_EXPORT ItemFont:public KConfigSkeletonGenericItem < QFont >
   {
   public:
     /** @copydoc KConfigSkeletonGenericItem::KConfigSkeletonGenericItem */

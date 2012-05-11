@@ -17,15 +17,14 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qtest_kde.h>
 #include "kconfigskeletontest.h"
 
 #include <kconfig.h>
-#include <kdebug.h>
 #include <QFont>
+#include <QtTest/QtTest>
 
 
-QTEST_KDEMAIN( KConfigSkeletonTest, NoGUI )
+QTEST_MAIN( KConfigSkeletonTest )
 
 
 #define DEFAULT_SETTING1 false

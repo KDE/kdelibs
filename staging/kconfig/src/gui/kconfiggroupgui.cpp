@@ -22,10 +22,10 @@
 
 #include <QtCore/QMutableStringListIterator>
 #include <QColor>
+#include <QDebug>
 #include <QFont>
 
 #include <kconfiggroup_p.h>
-#include <kdebug.h>
 
 /**
  * Try to read a GUI type from config group @p cg at key @p key.
@@ -39,9 +39,9 @@ static bool readEntryGui(const QByteArray& data, const char* key, const QVariant
                          QVariant &output)
 {
     const QString errString = QString::fromLatin1("\"%1\" - conversion from \"%3\" to %2 failed")
-                              .arg(key)
-                              .arg(QVariant::typeToName(input.type()))
-                              .arg(data.constData());
+                              .arg(QLatin1String(key))
+                              .arg(QLatin1String(QVariant::typeToName(input.type())))
+                              .arg(QLatin1String(data.constData()));
     const QString formatError = QString::fromLatin1(" (wrong format: expected '%1' items, read '%2')");
 
     // set in case of failure
@@ -61,7 +61,7 @@ static bool readEntryGui(const QByteArray& data, const char* key, const QVariant
             QColor col;
             col.setNamedColor(QString::fromUtf8(data.constData(), data.length()));
             if (!col.isValid())
-                kError() << qPrintable(errString);
+                qCritical() << qPrintable(errString);
             output = col;
             return true;
         } else {
@@ -69,7 +69,7 @@ static bool readEntryGui(const QByteArray& data, const char* key, const QVariant
             const int count = list.count();
 
             if (count != 3 && count != 4) {
-                kError() << qPrintable(errString) << qPrintable(formatError.arg("3' or '4").arg(count));
+                qCritical() << qPrintable(errString) << qPrintable(formatError.arg(QLatin1String("3' or '4")).arg(count));
                 return true;    // return default
             }
 
@@ -79,7 +79,7 @@ static bool readEntryGui(const QByteArray& data, const char* key, const QVariant
                 bool ok;
                 const int j = temp[i] = list.at(i).toInt(&ok);
                 if (!ok) { // failed to convert to int
-                    kError() << qPrintable(errString) << " (integer conversion failed)";
+                    qCritical() << qPrintable(errString) << " (integer conversion failed)";
                     return true; // return default
                 }
                 if (j < 0 || j > 255) {
@@ -87,8 +87,8 @@ static bool readEntryGui(const QByteArray& data, const char* key, const QVariant
                         "red", "green", "blue", "alpha"
                     };
                     const QString boundsError = QLatin1String(" (bounds error: %1 component %2)");
-                    kError() << qPrintable(errString)
-                             << qPrintable(boundsError.arg(components[i]).arg(j < 0? "< 0": "> 255"));
+                    qCritical() << qPrintable(errString)
+                             << qPrintable(boundsError.arg(QLatin1String(components[i])).arg(j < 0? QLatin1String("< 0"): QLatin1String("> 255")));
                     return true; // return default
                 }
             }
@@ -99,7 +99,7 @@ static bool readEntryGui(const QByteArray& data, const char* key, const QVariant
             if (aColor.isValid())
                 output = aColor;
             else
-                kError() << qPrintable(errString);
+                qCritical() << qPrintable(errString);
             return true;
         }
     }
@@ -109,7 +109,7 @@ static bool readEntryGui(const QByteArray& data, const char* key, const QVariant
         if (tmp.convert(QVariant::Font))
             output = tmp;
         else
-            kError() << qPrintable(errString);
+            qCritical() << qPrintable(errString);
         return true;
     }
     case QVariant::Pixmap:
