@@ -18,20 +18,21 @@
 
 #include "xsyncbasedpoller.h"
 
+#include <QAbstractEventDispatcher>
 #include <QX11Info>
-
-#include <klocalizedstring.h>
 
 #include <fixx11h.h>
 
 class XSyncBasedPollerHelper
 {
 public:
-    XSyncBasedPollerHelper() : q(0) {}
+    XSyncBasedPollerHelper() : q(0), origFilter(0), isActive(false) {}
     ~XSyncBasedPollerHelper() {
         delete q;
     }
     XSyncBasedPoller *q;
+    QAbstractEventDispatcher::EventFilter origFilter;
+    bool isActive;
 };
 
 Q_GLOBAL_STATIC(XSyncBasedPollerHelper, s_globalXSyncBasedPoller)
@@ -54,6 +55,7 @@ XSyncBasedPoller::XSyncBasedPoller(QWidget *parent)
 {
     Q_ASSERT(!s_globalXSyncBasedPoller()->q);
     s_globalXSyncBasedPoller()->q = this;
+    s_globalXSyncBasedPoller()->origFilter = QAbstractEventDispatcher::instance()->setEventFilter(XSyncBasedPoller::eventDispatcherFilter);
 
     int sync_major, sync_minor;
     int ncounters;
@@ -69,7 +71,7 @@ XSyncBasedPoller::XSyncBasedPoller(QWidget *parent)
         return;
     }
 
-    kDebug() << sync_major << sync_minor;
+    qDebug() << sync_major << sync_minor;
 
     counters = XSyncListSystemCounters(m_display, &ncounters);
 
@@ -90,9 +92,9 @@ XSyncBasedPoller::XSyncBasedPoller(QWidget *parent)
     }
 
     if (m_available) {
-        kDebug() << "XSync seems available and ready";
+        qDebug() << "XSync seems available and ready";
     } else {
-        kDebug() << "XSync seems not available";
+        qDebug() << "XSync seems not available";
     }
 }
 
@@ -111,17 +113,18 @@ bool XSyncBasedPoller::setUpPoller()
         return false;
     }
 
-    kDebug() << "XSync Inited";
+    qDebug() << "XSync Inited";
 
-    KApplication::kApplication()->installX11EventFilter(this);
+    s_globalXSyncBasedPoller()->isActive = true;
 
-    kDebug() << "Supported, init completed";
+    qDebug() << "Supported, init completed";
 
     return true;
 }
 
 void XSyncBasedPoller::unloadPoller()
 {
+    s_globalXSyncBasedPoller()->isActive = false;
 }
 
 void XSyncBasedPoller::addTimeout(int nextTimeout)
@@ -276,5 +279,18 @@ void XSyncBasedPoller::setAlarm(Display *dpy, XSyncAlarm *alarm, XSyncCounter co
 void XSyncBasedPoller::simulateUserActivity()
 {
     XResetScreenSaver(QX11Info::display());
+}
+
+bool XSyncBasedPoller::eventDispatcherFilter(void *message)
+{
+    if (s_globalXSyncBasedPoller()->origFilter)
+        s_globalXSyncBasedPoller()->origFilter(message);
+
+    if (s_globalXSyncBasedPoller()->isActive) {
+        XEvent *event = reinterpret_cast<XEvent*>(message);
+        return instance()->x11Event(event);
+    } else {
+        return false;
+    }
 }
 

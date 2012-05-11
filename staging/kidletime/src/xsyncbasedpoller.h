@@ -21,8 +21,7 @@
 
 #include "abstractsystempoller.h"
 
-#include <kdebug.h>
-#include <kapplication.h>
+#include <QDebug>
 
 #include <config-kidletime.h>
 
@@ -62,6 +61,8 @@ private Q_SLOTS:
 private:
     void setAlarm(Display *dpy, XSyncAlarm *alarm, XSyncCounter counter,
                   XSyncTestType test, XSyncValue value);
+
+    static bool eventDispatcherFilter(void *message);
 
 private:
     Display * m_display;

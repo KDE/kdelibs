@@ -1,5 +1,4 @@
-include_directories( ${KDE4_KDEUI_INCLUDES}
-                     ${CMAKE_CURRENT_SOURCE_DIR}
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}
                      ${CMAKE_CURRENT_BINARY_DIR}
 )
 
@@ -48,14 +47,14 @@ elseif (Q_WS_WIN)
     set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS} windowspoller.cpp)
 endif (Q_WS_X11)
 
-kde4_add_library(kidletime ${LIBRARY_TYPE} ${kidletime_LIB_SRCS})
+add_library(kidletime ${LIBRARY_TYPE} ${kidletime_LIB_SRCS})
 generate_export_header(kidletime)
-target_link_libraries(kidletime LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY})
-target_link_libraries(kidletime ${KDE4_KDEUI_LIBS})
+target_link_libraries(kidletime LINK_INTERFACE_LIBRARIES ${QT_QTGUI_LIBRARY})
+target_link_libraries(kidletime ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
 
 if (Q_WS_X11)
    if (HAVE_XSCREENSAVER)
-     target_link_libraries(kidletime ${X11_Xscreensaver_LIB})
+     target_link_libraries(kidletime ${X11_Xscreensaver_LIB} ${QT_QTDBUS_LIBRARY})
    endif (HAVE_XSCREENSAVER)
    if (HAVE_XSYNC)
      target_link_libraries(kidletime ${X11_Xext_LIB})
