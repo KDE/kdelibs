@@ -534,8 +534,11 @@ void KConfigPrivate::changeFileName(const QString& name)
             resourceType = QStandardPaths::ConfigLocation;
             fileName = QLatin1String("kdeglobals");
             file = sGlobalFileName;
-        } // else anonymous config.
-        // KDE5: remove these magic overloads
+        } else {
+            // anonymous config
+            openFlags = KConfig::SimpleConfig;
+            return;
+        }
     } else if (QDir::isAbsolutePath(fileName)) {
         fileName = QFileInfo(fileName).canonicalFilePath();
         if (fileName.isEmpty()) // file doesn't exist (yet)
@@ -545,11 +548,7 @@ void KConfigPrivate::changeFileName(const QString& name)
         file = QStandardPaths::writableLocation(resourceType) + QLatin1Char('/') + fileName;
     }
 
-    if (file.isEmpty()) {
-        qWarning("No filename!"); // how can this happen?
-        openFlags = KConfig::SimpleConfig;
-        return;
-    }
+    Q_ASSERT(!file.isEmpty());
 
     bSuppressGlobal = (file == sGlobalFileName);
 
