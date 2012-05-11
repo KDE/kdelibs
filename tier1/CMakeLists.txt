@@ -9,6 +9,7 @@ add_subdirectory(solid)
 add_subdirectory(threadweaver)
 add_subdirectory(kcoreaddons)
 add_subdirectory(kcodecs)
+add_subdirectory(kidletime)
 add_subdirectory(kwindowsystem)
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
