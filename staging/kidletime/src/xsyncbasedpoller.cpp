@@ -21,8 +21,6 @@
 #include <QAbstractEventDispatcher>
 #include <QX11Info>
 
-#include <fixx11h.h>
-
 class XSyncBasedPollerHelper
 {
 public:
@@ -49,8 +47,8 @@ XSyncBasedPoller *XSyncBasedPoller::instance()
 XSyncBasedPoller::XSyncBasedPoller(QWidget *parent)
         : AbstractSystemPoller(parent)
         , m_display(QX11Info::display())
-        , m_idleCounter(X::None)
-        , m_resetAlarm(X::None)
+        , m_idleCounter(None)
+        , m_resetAlarm(None)
         , m_available(true)
 {
     Q_ASSERT(!s_globalXSyncBasedPoller()->q);
@@ -139,7 +137,7 @@ void XSyncBasedPoller::addTimeout(int nextTimeout)
     }
 
     XSyncValue timeout;
-    XSyncAlarm newalarm = X::None;
+    XSyncAlarm newalarm = None;
 
     XSyncIntToValue(&timeout, nextTimeout);
 
@@ -178,9 +176,9 @@ QList<int> XSyncBasedPoller::timeouts() const
 
 void XSyncBasedPoller::stopCatchingIdleEvents()
 {
-    if (m_resetAlarm != X::None) {
+    if (m_resetAlarm != None) {
         XSyncDestroyAlarm(m_display, m_resetAlarm);
-        m_resetAlarm = X::None;
+        m_resetAlarm = None;
     }
 }
 
