@@ -108,7 +108,6 @@ if (UNIX)
    )
 endif (UNIX)
 
-add_subdirectory( kconfig_compiler )
 add_subdirectory( tests )
 if ( NOT WINCE )
     add_subdirectory( network/kssld )
