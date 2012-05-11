@@ -57,9 +57,11 @@ private Q_SLOTS:
         // The keycode falls into the unicode handling
         QString p = QChar(QChar::highSurrogate(Qt::Key_unknown)) + QChar(QChar::lowSurrogate(Qt::Key_unknown));
 
-        QCOMPARE(unknown_key.toString(), p); // What happens
-        QEXPECT_FAIL("", "Qt::Key_unknown not handled", Continue);
-        QCOMPARE(unknown_key.toString(), QString());     // What i would expect
+#if QT_VERSION < 0x050000
+        QCOMPARE(unknown_key.toString(), p); // What happens in Qt4
+#else
+        QCOMPARE(unknown_key.toString(), QString());     // What i would expect, and which happens in Qt5
+#endif
 
         // Check that the keycode -1 is handled gracefully.
         //
@@ -72,16 +74,22 @@ private Q_SLOTS:
         int k = int(-1) & ~(Qt::ShiftModifier | Qt::ControlModifier | Qt::AltModifier | Qt::MetaModifier);
         QString p1 = QChar(QChar::highSurrogate(k)) + QChar(QChar::lowSurrogate(k));
 
+#if QT_VERSION < 0x050000
         QCOMPARE(invalid_key.toString(), QString("Meta+Ctrl+Alt+Shift+"+p1)); // What happens
-        QEXPECT_FAIL("", "-1 not handled", Continue);
+#else
         QCOMPARE(invalid_key.toString(), QString());     // What i would expect
+#endif
 
         // The famous "KDE4 eats my E key" bug: Win+E isn't parsed anymore.
         QKeySequence seq("Win+E");
         QEXPECT_FAIL("", "Qt Bug 205255/134941 - QKeySequence silently discards unknown key modifiers", Continue);
         QVERIFY(seq.isEmpty());
         // And what really happens
+#if QT_VERSION < 0x050000
         QCOMPARE(seq.toString(), QLatin1String("E"));
+#else
+        QCOMPARE(seq.toString(), QString());
+#endif
 
         // KDE3 -> KDE4 migration. KDE3 used xKeycodeToKeysym or something and
         // stored the result
@@ -89,7 +97,11 @@ private Q_SLOTS:
         QEXPECT_FAIL("", "Qt Bug 205255/134941 - QKeySequence silently discards unknown key modifiers", Continue);
         QVERIFY(seq2.isEmpty());
         // And what really happens
+#if QT_VERSION < 0x050000
         QCOMPARE(seq2.toString(), QLatin1String("Meta+Alt+"));
+#else
+        QCOMPARE(seq2.toString(), QString());
+#endif
     }
 
     void parsing()
