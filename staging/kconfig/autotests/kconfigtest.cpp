@@ -979,7 +979,9 @@ void KConfigTest::testSubGroup()
     KConfigGroup srcg( &rcg, "ParentGroup" );
     QCOMPARE(srcg.readEntry( "parentgrpstring", ""), QString("somevalue") );
 
-    QCOMPARE(cg.groupList(), (QStringList() << "SubGroup/3" << "SubGroup1" << "SubGroup2"));
+    QStringList groupList = cg.groupList();
+    groupList.sort(); // comes from QSet, so order is undefined
+    QCOMPARE(groupList, (QStringList() << "SubGroup/3" << "SubGroup1" << "SubGroup2"));
 
     const QStringList expectedSubgroup3Keys = (QStringList() << "sub3string");
     QCOMPARE(subcg3.keyList(), expectedSubgroup3Keys);
