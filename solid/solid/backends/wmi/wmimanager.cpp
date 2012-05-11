@@ -211,11 +211,13 @@ QStringList WmiManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type
 
 void WmiManager::slotDeviceAdded(const QString &udi)
 {
+    qDebug()<<"Device added"<<udi;
     emit deviceAdded(udi);
 }
 
 void WmiManager::slotDeviceRemoved(const QString &udi)
 {
+    qDebug()<<"Device removed"<<udi;
     emit deviceRemoved(udi);
 }
 
@@ -260,19 +262,31 @@ HRESULT STDMETHODCALLTYPE WmiManager::WmiEventSink::Indicate(long lObjectCount,I
         QString drive = item.getProperty("DriveName").toString();
         if(!drive.isNull())
         {
+            //we need to use m_parent->d->m_volumes as a cache because if the device is removed I cant query it anymore
             ushort event = item.getProperty("EventType").toUInt();
-            if(event == 2){
+            switch(event){
+            case 2:
+            {
                 m_parent->d->init();
                 m_parent->slotDeviceAdded( "/org/kde/solid/wmi/volume/"+ m_parent->d->m_volumes[drive]);
-
-            }else if(event == 3){
-               m_parent->slotDeviceAdded( "/org/kde/solid/wmi/volume/"+ m_parent->d->m_volumes[drive]);
             }
-            else if(event == 4){
+                break;
+                case 3:
+            {
+               m_parent->slotDeviceRemoved("/org/kde/solid/wmi/volume/"+ m_parent->d->m_volumes[drive]);
+               m_parent->d->m_volumes.remove(drive);
+            }
+                break;
+            case  4:
+            {
                 qDebug()<<"drive:"<<drive<<"docking";
             }
-            else if(event == 1){
+                break;
+            case 1:
+            {
                 qDebug()<<"drive:"<<drive<<"config changed";
+            }
+                break;
             }
         }
 
