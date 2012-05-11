@@ -98,6 +98,15 @@ public:
      */
     QString errorMessage() const;
 
+public Q_SLOTS:
+    /**
+     * Unregister from DBus.
+     * This is called automatically when the application is about to quit,
+     * to make sure it doesn't keep receiving calls to Activate while it's
+     * doing final cleanups.
+     */
+    void unregister();
+
 private:
     KDBusServicePrivate * const d;
 };

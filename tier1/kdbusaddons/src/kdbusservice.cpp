@@ -81,6 +81,16 @@ KDBusService::KDBusService(StartupOptions options, QObject *parent)
             d->serviceName += QLatin1Char('-') + pid;
         }
 
+        // Register our objects first, so that we are ready as soon as we appear on the bus.
+        QDBusConnection::sessionBus().registerObject(QLatin1String("/MainApplication"), QCoreApplication::instance(),
+                                                     QDBusConnection::ExportScriptableSlots |
+                                                     QDBusConnection::ExportScriptableProperties |
+                                                     QDBusConnection::ExportAdaptors);
+        QDBusConnection::sessionBus().registerObject(objectPath, this,
+                                                     QDBusConnection::ExportScriptableSlots |
+                                                     QDBusConnection::ExportScriptableProperties |
+                                                     QDBusConnection::ExportAdaptors);
+
         d->registered = bus->registerService(d->serviceName) == QDBusConnectionInterface::ServiceRegistered;
 
 
@@ -103,15 +113,9 @@ KDBusService::KDBusService(StartupOptions options, QObject *parent)
             }
 
         } else {
-            //TODO: handle aboutToQuit() on the app
-            QDBusConnection::sessionBus().registerObject(QLatin1String("/MainApplication"), QCoreApplication::instance(),
-                                                         QDBusConnection::ExportScriptableSlots |
-                                                         QDBusConnection::ExportScriptableProperties |
-                                                         QDBusConnection::ExportAdaptors);
-            QDBusConnection::sessionBus().registerObject(objectPath, this,
-                                                         QDBusConnection::ExportScriptableSlots |
-                                                         QDBusConnection::ExportScriptableProperties |
-                                                         QDBusConnection::ExportAdaptors);
+            if (QCoreApplication* app = QCoreApplication::instance()) {
+                connect(app, SIGNAL(aboutToQuit()), this, SLOT(unregister()));
+            }
         }
     }
 
@@ -134,4 +138,13 @@ bool KDBusService::isRegistered() const
 QString KDBusService::errorMessage() const
 {
     return d->errorMessage;
+}
+
+void KDBusService::unregister()
+{
+    QDBusConnectionInterface *bus = 0;
+    if (!d->registered || !QDBusConnection::sessionBus().isConnected() || !(bus = QDBusConnection::sessionBus().interface())) {
+        return;
+    }
+    bus->unregisterService(d->serviceName);
 }
