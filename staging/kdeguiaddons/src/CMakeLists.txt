@@ -2,7 +2,6 @@ include_directories(
  ${KDE4_KDECORE_INCLUDES}
  ${CMAKE_CURRENT_SOURCE_DIR}
  ${CMAKE_BINARY_SOURCE_DIR}
- ${DBUSMENUQT_INCLUDE_DIR}
 )
 
 set(kdeguiaddons_LIB_SRCS
