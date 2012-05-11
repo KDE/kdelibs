@@ -27,6 +27,7 @@
 #include "wmideviceinterface.h"
 #include "wmiquery.h"
 
+
 using namespace Solid::Backends::Wmi;
 
 class Solid::Backends::Wmi::WmiManagerPrivate
@@ -140,7 +141,7 @@ WmiManager::WmiManager(QObject *parent)
                            << Solid::DeviceInterface::SerialInterface
                            << Solid::DeviceInterface::SmartCardReader;
 
-    WmiQuery::instance().addDeviceListeners("SELECT * FROM Win32_DeviceChangeEvent",new WmiManager::WmiEventSink(this));
+    WmiQuery::instance().addDeviceListeners("SELECT * FROM Win32_VolumeChangeEvent",new WmiManager::WmiEventSink(this));
 
 }
 
@@ -266,36 +267,32 @@ HRESULT STDMETHODCALLTYPE WmiManager::WmiEventSink::Indicate(long lObjectCount,I
     {
         WmiQuery::Item item( apObjArray[i]);
         QString drive = item.getProperty("DriveName").toString();
-        if(!drive.isNull())
+        //we need to use m_parent->d->m_volumes as a cache because if the device is removed I cant query it anymore
+        ushort event = item.getProperty("EventType").toUInt();
+        switch(event){
+        case 2:
         {
-            //we need to use m_parent->d->m_volumes as a cache because if the device is removed I cant query it anymore
-            ushort event = item.getProperty("EventType").toUInt();
-            switch(event){
-            case 2:
-            {
-                m_parent->d->update();
-                m_parent->slotDeviceAdded( "/org/kde/solid/wmi/volume/"+ m_parent->d->m_volumes[drive]);
-            }
-                break;
-                case 3:
-            {
-               m_parent->slotDeviceRemoved("/org/kde/solid/wmi/volume/"+ m_parent->d->m_volumes[drive]);
-               m_parent->d->update();
-            }
-                break;
-            case  4:
-            {
-                qDebug()<<"drive:"<<drive<<"docking";
-            }
-                break;
-            case 1:
-            {
-                qDebug()<<"drive:"<<drive<<"config changed";
-            }
-                break;
-            }
+            m_parent->d->update();
+            m_parent->slotDeviceAdded( "/org/kde/solid/wmi/volume/"+ m_parent->d->m_volumes[drive]);
         }
-
+            break;
+        case 3:
+        {
+            m_parent->slotDeviceRemoved("/org/kde/solid/wmi/volume/"+ m_parent->d->m_volumes[drive]);
+            m_parent->d->update();
+        }
+            break;
+        case  4:
+        {
+            qDebug()<<"drive:"<<drive<<"docking";
+        }
+            break;
+        case 1:
+        {
+            qDebug()<<"drive:"<<drive<<"config changed";
+        }
+            break;
+        }
     }
 
     return WBEM_S_NO_ERROR;
