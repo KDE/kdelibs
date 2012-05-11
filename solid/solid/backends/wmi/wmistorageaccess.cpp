@@ -53,7 +53,10 @@ bool StorageAccess::isAccessible() const
 
 QString StorageAccess::filePath() const
 {
-    return m_logicalDisk.getProperty("DeviceID").toString();
+    QString path = m_logicalDisk.getProperty("DeviceID").toString();
+    if(!path.isNull())
+        path.append("\\");
+    return path;
 }
 
 bool Solid::Backends::Wmi::StorageAccess::isIgnored() const
