@@ -361,8 +361,7 @@ void CopyJobPrivate::slotResultStating( KJob *job )
 
             const QString sLocalPath = entry.stringValue( KIO::UDSEntry::UDS_LOCAL_PATH );
             if ( !sLocalPath.isEmpty() && kio_resolve_local_urls && destinationState != DEST_DOESNT_EXIST ) {
-                m_dest = QUrl();
-                m_dest.setPath(sLocalPath);
+                m_dest = QUrl::fromLocalFile(sLocalPath);
                 if ( isGlobalDest )
                     m_globalDest = m_dest;
             }
@@ -406,7 +405,7 @@ void CopyJobPrivate::sourceStated(const UDSEntry& entry, const KUrl& sourceUrl)
         kDebug() << "Using sLocalPath. destinationState=" << destinationState;
         // Prefer the local path -- but only if we were able to stat() the dest.
         // Otherwise, renaming a desktop:/ url would copy from src=file to dest=desktop (#218719)
-        srcurl.setPath(sLocalPath);
+        srcurl = QUrl::fromLocalFile(sLocalPath);
     } else {
         srcurl = sourceUrl;
     }

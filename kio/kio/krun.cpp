@@ -1487,8 +1487,7 @@ void KRun::foundMimeType(const QString& type)
         kWarning(7010) << "Unknown mimetype " << type;
     }
     if (mime && mime->is("application/x-desktop") && !d->m_localPath.isEmpty()) {
-        d->m_strURL = QUrl();
-        d->m_strURL.setPath(d->m_localPath);
+        d->m_strURL = QUrl::fromLocalFile(d->m_localPath);
     }
 
     if (!KRun::runUrl(d->m_strURL, type, d->m_window, false /*tempfile*/, d->m_runExecutables, d->m_suggestedFileName, d->m_asn)) {

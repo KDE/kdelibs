@@ -296,8 +296,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& _
                 QTemporaryFile tempFile(QDir::tempPath() + QLatin1Char('/') + d->m_part->componentData().componentName() + QLatin1String("XXXXXX") + extension);
                 tempFile.setAutoRemove(false);
                 tempFile.open();
-                KUrl destURL;
-                destURL.setPath( tempFile.fileName() );
+                QUrl destURL = QUrl::fromLocalFile(tempFile.fileName());
                 KIO::Job *job = KIO::file_copy( KRun::url(), destURL, 0600, KIO::Overwrite );
                 job->ui()->setWindow(d->m_window);
                 connect( job, SIGNAL(result(KJob*)),

@@ -612,8 +612,7 @@ void ReadOnlyPartPrivate::openRemoteFile()
     tempFile.open();
     m_file = tempFile.fileName();
 
-    KUrl destURL;
-    destURL.setPath( m_file );
+    QUrl destURL = QUrl::fromLocalFile(m_file);
     KIO::JobFlags flags = m_showProgressInfo ? KIO::DefaultFlags : KIO::HideProgressInfo;
     flags |= KIO::Overwrite;
     m_job = KIO::file_copy(m_url, destURL, 0600, flags);
@@ -964,8 +963,7 @@ bool ReadWritePart::saveToUrl()
         tempFile->open();
         QString uploadFile = tempFile->fileName();
         delete tempFile;
-        KUrl uploadUrl;
-        uploadUrl.setPath( uploadFile );
+        QUrl uploadUrl = QUrl::fromLocalFile(uploadFile);
         // Create hardlink
         if (::link(QFile::encodeName(d->m_file), QFile::encodeName(uploadFile)) != 0)
         {
