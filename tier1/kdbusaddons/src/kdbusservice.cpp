@@ -36,7 +36,7 @@ public:
     KDBusServicePrivate()
         : registered(false) {}
 
-    QString generateServiceName(KDBusService::StartupOptions options)
+    QString generateServiceName()
     {
         const QCoreApplication *app = QCoreApplication::instance();
         const QString domain = app->organizationDomain();
@@ -52,14 +52,7 @@ public:
             }
         }
 
-        const QString baseName = reversedDomain + app->applicationName();
-
-        if (options & KDBusService::Multiple) {
-            const QString pid = QString::number(QCoreApplication::applicationPid());
-            return baseName + QLatin1Char('-') + pid;
-        } else {
-            return baseName;
-        }
+        return reversedDomain + app->applicationName();
     }
 
     bool registered;
@@ -79,9 +72,14 @@ KDBusService::KDBusService(StartupOptions options, QObject *parent)
     }
 
     if (bus) {
-        d->serviceName = d->generateServiceName(options);
+        d->serviceName = d->generateServiceName();
         QString objectPath = QLatin1Char('/') + d->serviceName;
         objectPath.replace(QLatin1Char('.'), QLatin1Char('/'));
+
+        if (options & Multiple) {
+            const QString pid = QString::number(QCoreApplication::applicationPid());
+            d->serviceName += QLatin1Char('-') + pid;
+        }
 
         d->registered = bus->registerService(d->serviceName) == QDBusConnectionInterface::ServiceRegistered;
 
