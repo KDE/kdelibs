@@ -431,7 +431,6 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, KIconLoader::MatchTyp
     QString path;
     int delta = -INT_MAX;  // current icon size delta of 'icon'
     int dw = INT_MAX;      // icon size delta of current directory
-    int dirSize = INT_MAX; // directory size of 'icon'
     KIconThemeDir *dir;
 
     const int dirCount = d->mDirs.size();
@@ -483,9 +482,9 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, KIconLoader::MatchTyp
             // not smaller than the delta (= 'delta') of the currently best
             // matching icon, this candidate can be skipped. But skipping
             // the candidate may only be done, if this does not imply
-            // in an upscaling of the icon.
-            if ((abs(dw) >= abs(delta)) &&
-                ((dw < 0) || ((dw > 0) && (dir->size() < dirSize)))) {
+            // in an upscaling of the icon (it is OK to use a directory with
+            // smaller icons that what we've already found, however).
+            if ((abs(dw) >= abs(delta)) && ((dw < 0) || (delta > 0))) {
                 continue;
             }
         }
@@ -515,7 +514,6 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, KIconLoader::MatchTyp
         if (delta == 0) {
             return icon; // We won't find a better match anyway
         }
-        dirSize = dir->size();
     }
     return icon;
 }
