@@ -12,16 +12,16 @@ remove_definitions(-DQT_USE_FAST_CONCATENATION)
 remove_definitions(-DQT_USE_FAST_OPERATOR_PLUS)
 
 
-MACRO(INQT5_UNIT_TESTS)
-       FOREACH(_testname ${ARGN})
-               add_executable(${_testname} ${_testname}.cpp)
-               add_test(inqt5-${_testname} ${_testname})
-               target_link_libraries(${_testname} inqt5 ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY})
-               set_target_properties(${_testname} PROPERTIES COMPILE_FLAGS -DKDESRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}/\\"")
-       ENDFOREACH(_testname)
-ENDMACRO(INQT5_UNIT_TESTS)
+macro(INQT5_UNIT_TESTS)
+    foreach(_testname ${ARGN})
+        add_executable(${_testname} ${_testname}.cpp)
+        add_test(inqt5-${_testname} ${_testname})
+        target_link_libraries(${_testname} inqt5 ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY})
+        set_target_properties(${_testname} PROPERTIES COMPILE_FLAGS -DKDESRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}/\\"")
+    endforeach()
+endmacro()
 
-INQT5_UNIT_TESTS(
+inqt5_unit_tests(
   tst_qstandardpaths
 )
 
