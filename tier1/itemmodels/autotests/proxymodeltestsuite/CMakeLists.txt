@@ -73,12 +73,8 @@ if (Grantlee_FOUND)
 
 endif()
 
-if (proxymodeltestsuite_standalone)
-  set(LIBRARY_TYPE SHARED)
-endif()
 
-
-add_library(proxymodeltestsuite ${LIBRARY_TYPE}
+add_library(proxymodeltestsuite SHARED
   ${proxymodeltestsuite_SRCS}
   ${eventlogger_RCS_SRCS}
 )

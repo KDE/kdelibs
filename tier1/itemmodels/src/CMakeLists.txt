@@ -12,7 +12,7 @@ set(itemmodels_SRCS
   kviewstatemaintainerbase.cpp
 )
 
-add_library(itemmodels ${LIBRARY_TYPE} ${itemmodels_SRCS})
+add_library(itemmodels ${itemmodels_SRCS})
 generate_export_header(itemmodels)
 
 target_link_libraries(itemmodels ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
