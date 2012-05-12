@@ -30,6 +30,12 @@ find_package(Qt5Transitional REQUIRED Xml Concurrent DBus Gui Test)
 
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src)
 
+include(FeatureSummary)
+
 add_subdirectory(src)
 add_subdirectory(autotests)
 add_subdirectory(tests)
+
+if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+  feature_summary(WHAT ALL   FATAL_ON_MISSING_REQUIRED_PACKAGES)
+endif()
