@@ -4,7 +4,7 @@
 #define TEST10_H
 
 #include <kconfigskeleton.h>
-#include <kdebug.h>
+#include <QDebug>
 
 class Test10 : public KConfigSkeleton
 {

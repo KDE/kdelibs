@@ -3,7 +3,7 @@
 
 #include "test10.h"
 
-#include <kglobal.h>
+#include <qglobal.h>
 #include <QtCore/QFile>
 
 class Test10Helper
@@ -13,22 +13,22 @@ class Test10Helper
     ~Test10Helper() { delete q; }
     Test10 *q;
 };
-K_GLOBAL_STATIC(Test10Helper, s_globalTest10)
+Q_GLOBAL_STATIC(Test10Helper, s_globalTest10)
 Test10 *Test10::self()
 {
-  if (!s_globalTest10->q) {
+  if (!s_globalTest10()->q) {
     new Test10;
-    s_globalTest10->q->readConfig();
+    s_globalTest10()->q->readConfig();
   }
 
-  return s_globalTest10->q;
+  return s_globalTest10()->q;
 }
 
 Test10::Test10(  )
   : KConfigSkeleton( QLatin1String( "test10rc" ) )
 {
-  Q_ASSERT(!s_globalTest10->q);
-  s_globalTest10->q = this;
+  Q_ASSERT(!s_globalTest10()->q);
+  s_globalTest10()->q = this;
   setCurrentGroup( QLatin1String( "Foo" ) );
 
   KConfigSkeleton::ItemUrl  *itemFooBar;
@@ -41,8 +41,6 @@ Test10::Test10(  )
 
 Test10::~Test10()
 {
-  if (!s_globalTest10.isDestroyed()) {
-    s_globalTest10->q = 0;
-  }
+  s_globalTest10()->q = 0;
 }
 

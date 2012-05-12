@@ -3,7 +3,7 @@
 
 #include "test8b.h"
 
-#include <kglobal.h>
+#include <qglobal.h>
 #include <QtCore/QFile>
 
 class Test8bHelper
@@ -13,22 +13,22 @@ class Test8bHelper
     ~Test8bHelper() { delete q; }
     Test8b *q;
 };
-K_GLOBAL_STATIC(Test8bHelper, s_globalTest8b)
+Q_GLOBAL_STATIC(Test8bHelper, s_globalTest8b)
 Test8b *Test8b::self()
 {
-  if (!s_globalTest8b->q) {
+  if (!s_globalTest8b()->q) {
     new Test8b;
-    s_globalTest8b->q->readConfig();
+    s_globalTest8b()->q->readConfig();
   }
 
-  return s_globalTest8b->q;
+  return s_globalTest8b()->q;
 }
 
 Test8b::Test8b(  )
   : Test8a()
 {
-  Q_ASSERT(!s_globalTest8b->q);
-  s_globalTest8b->q = this;
+  Q_ASSERT(!s_globalTest8b()->q);
+  s_globalTest8b()->q = this;
   setCurrentGroup( QLatin1String( "Group8b1" ) );
 
   Test8a::ItemUInt  *itemSomething;
@@ -47,8 +47,6 @@ Test8b::Test8b(  )
 
 Test8b::~Test8b()
 {
-  if (!s_globalTest8b.isDestroyed()) {
-    s_globalTest8b->q = 0;
-  }
+  s_globalTest8b()->q = 0;
 }
 

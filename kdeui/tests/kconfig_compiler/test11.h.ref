@@ -5,9 +5,9 @@
 
 #include <myprefs.h>
 
-#include <kglobal.h>
+#include <qglobal.h>
 #include <kconfigskeleton.h>
-#include <kdebug.h>
+#include <QDebug>
 
 #include "test11_types.h"
 class Test11 : public MyPrefs

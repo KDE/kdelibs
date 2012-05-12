@@ -3,9 +3,9 @@
 #ifndef TEST8A_H
 #define TEST8A_H
 
-#include <kglobal.h>
+#include <qglobal.h>
 #include <kconfigskeleton.h>
-#include <kdebug.h>
+#include <QDebug>
 
 class Test8a : public KConfigSkeleton
 {

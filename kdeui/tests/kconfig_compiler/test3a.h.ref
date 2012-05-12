@@ -3,9 +3,9 @@
 #ifndef TESTNAMESPACE_INNERNAMESPACE_TEST3A_H
 #define TESTNAMESPACE_INNERNAMESPACE_TEST3A_H
 
-#include <kglobal.h>
+#include <qglobal.h>
 #include <kconfigskeleton.h>
-#include <kdebug.h>
+#include <QDebug>
 
 namespace TestNameSpace {
 namespace InnerNameSpace {

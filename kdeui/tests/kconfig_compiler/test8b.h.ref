@@ -6,7 +6,7 @@
 #include <test8a.h>
 
 #include <kconfigskeleton.h>
-#include <kdebug.h>
+#include <QDebug>
 
 class Test8b : public Test8a
 {

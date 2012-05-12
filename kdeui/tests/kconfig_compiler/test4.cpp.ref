@@ -3,7 +3,7 @@
 
 #include "test4.h"
 
-#include <kglobal.h>
+#include <qglobal.h>
 #include <QtCore/QFile>
 
 class Test4Helper
@@ -13,15 +13,15 @@ class Test4Helper
     ~Test4Helper() { delete q; }
     Test4 *q;
 };
-K_GLOBAL_STATIC(Test4Helper, s_globalTest4)
+Q_GLOBAL_STATIC(Test4Helper, s_globalTest4)
 Test4 *Test4::self()
 {
-  if (!s_globalTest4->q) {
+  if (!s_globalTest4()->q) {
     new Test4;
-    s_globalTest4->q->readConfig();
+    s_globalTest4()->q->readConfig();
   }
 
-  return s_globalTest4->q;
+  return s_globalTest4()->q;
 }
 
 const char* const Test4::EnumButton::enumToString[] = { "right", "mid", "left" };
@@ -29,8 +29,8 @@ const char* const Test4::EnumButton::enumToString[] = { "right", "mid", "left" }
 Test4::Test4(  )
   : KConfigSkeleton( QLatin1String( "test4rc" ) )
 {
-  Q_ASSERT(!s_globalTest4->q);
-  s_globalTest4->q = this;
+  Q_ASSERT(!s_globalTest4()->q);
+  s_globalTest4()->q = this;
   setCurrentGroup( QLatin1String( "Foo" ) );
 
 QColor defaultColor[4] = { Qt::red, Qt::blue, Qt::green, Qt::black };
@@ -173,8 +173,6 @@ QColor defaultColor[4] = { Qt::red, Qt::blue, Qt::green, Qt::black };
 
 Test4::~Test4()
 {
-  if (!s_globalTest4.isDestroyed()) {
-    s_globalTest4->q = 0;
-  }
+  s_globalTest4()->q = 0;
 }
 

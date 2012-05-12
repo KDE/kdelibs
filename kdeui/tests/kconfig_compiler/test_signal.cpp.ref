@@ -3,7 +3,7 @@
 
 #include "test_signal.h"
 
-#include <kglobal.h>
+#include <qglobal.h>
 #include <QtCore/QFile>
 
 class TestSignalHelper
@@ -13,23 +13,23 @@ class TestSignalHelper
     ~TestSignalHelper() { delete q; }
     TestSignal *q;
 };
-K_GLOBAL_STATIC(TestSignalHelper, s_globalTestSignal)
+Q_GLOBAL_STATIC(TestSignalHelper, s_globalTestSignal)
 TestSignal *TestSignal::self()
 {
-  if (!s_globalTestSignal->q) {
+  if (!s_globalTestSignal()->q) {
     new TestSignal;
-    s_globalTestSignal->q->readConfig();
+    s_globalTestSignal()->q->readConfig();
   }
 
-  return s_globalTestSignal->q;
+  return s_globalTestSignal()->q;
 }
 
 TestSignal::TestSignal(  )
   : KConfigSkeleton( QLatin1String( "kconfig_compiler_test_rc" ) )
   , mSettingsChanged(0)
 {
-  Q_ASSERT(!s_globalTestSignal->q);
-  s_globalTestSignal->q = this;
+  Q_ASSERT(!s_globalTestSignal()->q);
+  s_globalTestSignal()->q = this;
   setCurrentGroup( QLatin1String( "Appearance" ) );
 
   KConfigSkeleton::ItemString  *itemEmoticonTheme;
@@ -51,9 +51,7 @@ TestSignal::TestSignal(  )
 
 TestSignal::~TestSignal()
 {
-  if (!s_globalTestSignal.isDestroyed()) {
-    s_globalTestSignal->q = 0;
-  }
+  s_globalTestSignal()->q = 0;
 }
 
 void TestSignal::usrWriteConfig()
