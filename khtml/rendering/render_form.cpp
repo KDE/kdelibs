@@ -124,6 +124,7 @@ using namespace DOM;
                 const QStyleOptionComboBox *o = qstyleoption_cast<const QStyleOptionComboBox*>(option);
                 if (o) {
                     QStyleOptionComboBox comboOpt = *o;
+                    comboOpt.currentText = comboOpt.currentText.trimmed();
                     // by default combobox label is drawn left justified, vertical centered
                     // translate it to reflect padding values
                     comboOpt.rect = comboOpt.rect.translated(left, (top - bottom) / 2);
@@ -1909,7 +1910,7 @@ void RenderSelect::layout( )
 
     bool foundOption = false;
     for (int i = 0; i < listItems.size() && !foundOption; i++)
-	foundOption = (listItems[i]->id() == ID_OPTION);
+         foundOption = (listItems[i]->id() == ID_OPTION);
 
     m_widget->setEnabled(foundOption && ! element()->disabled());
 }
