@@ -18,10 +18,10 @@
 #include <QtCore/QFile>
 #include <QtCore/QProcess>
 #include <QtCore/QString>
-#include <kdebug.h>
+#include <QtTest/QtTest>
 #include <qstandardpaths.h>
-#include <qtest_kde.h>
 #include "kconfigcompiler_test.h"
+#include "kde_qt5_compat.h"
 
 // QT5 TODO QTEST_GUILESS_MAIN(KConfigCompiler_Test)
 QTEST_MAIN(KConfigCompiler_Test)
@@ -129,7 +129,7 @@ void KConfigCompiler_Test::testRunning()
 void KConfigCompiler_Test::performCompare(const QString &fileName, bool fail)
 {
 	QFile file(fileName);
-	QFile fileRef(QString::fromLatin1(KDESRCDIR) + fileName + QString::fromLatin1(".ref"));
+	QFile fileRef(QString::fromLatin1(TESTSRCDIR) + fileName + QString::fromLatin1(".ref"));
 
 	if ( file.open(QIODevice::ReadOnly) && fileRef.open(QIODevice::ReadOnly) )
 	{

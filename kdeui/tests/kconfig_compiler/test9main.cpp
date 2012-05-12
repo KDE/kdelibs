@@ -19,25 +19,26 @@ AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 #include "test9.h"
-#include "kcomponentdata.h"
-#include <kdebug.h>
 #include <QtCore/QDir>
+#include <QApplication>
+#include <QDebug>
 
-int main( int, char** )
+int main( int argc, char **argv )
 {
-  KComponentData i("test");
+  QApplication app(argc, argv);
+  Q_UNUSED(app);
   Test9 *t = new Test9( QString(), QString() );
 
   QStringList myPathsList2 = t->myPathsList2();
-  kWarning() << myPathsList2;
+  qWarning() << myPathsList2;
 
   // add another path
   QStringList newlist;
   myPathsList2 << QDir::homePath() + QString::fromLatin1("/.kde");
-  kWarning() << myPathsList2;
+  qWarning() << myPathsList2;
 
   t->setMyPathsList2(myPathsList2);
-  kWarning() << t->myPathsList2();
+  qWarning() << t->myPathsList2();
 
   delete t;
   return 0;

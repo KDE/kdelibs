@@ -20,11 +20,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 #include "test_dpointer.h"
-#include "kcomponentdata.h"
+#include <QApplication>
 
-int main( int, char** )
+int main( int argc, char **argv )
 {
-  KComponentData i("test");
+  QApplication app(argc, argv);
+  Q_UNUSED(app);
   TestDPointer *t = TestDPointer::self();
   delete t;
   return 0;

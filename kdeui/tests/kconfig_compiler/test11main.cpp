@@ -20,11 +20,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 #include "test11.h"
 #include "test11a.h"
-#include "kcomponentdata.h"
+#include <QApplication>
 
-int main( int, char** )
+int main( int argc, char **argv )
 {
-  KComponentData i("test");
+  QApplication app(argc, argv);
+  Q_UNUSED(app);
   Test11 *t = new Test11();
   Test11a *t2 = new Test11a();
   delete t;
