@@ -406,9 +406,6 @@ set_target_properties(solid PROPERTIES
 
 install(TARGETS solid EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
-# TODO Should this be in ECM?
-set(DBUS_INTERFACES_INSTALL_DIR "share/dbus-1/interfaces")
-
 install(FILES org.kde.Solid.Networking.Client.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 install(FILES org.kde.Solid.PowerManagement.PolicyAgent.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 install(FILES org.freedesktop.PowerManagement.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
