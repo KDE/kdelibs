@@ -35,3 +35,6 @@ KCONFIGGUI_UNIT_TESTS(
   kconfigguitest
   kconfigskeletontest
 )
+
+add_subdirectory(kconfig_compiler)
+

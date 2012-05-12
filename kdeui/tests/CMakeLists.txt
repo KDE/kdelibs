@@ -1,5 +1,4 @@
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
-add_subdirectory(kconfig_compiler)
 
 include_directories( ${KDE4_KDEUI_INCLUDES} proxymodeltestsuite )
 
