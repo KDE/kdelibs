@@ -352,6 +352,11 @@ if (QT5_BUILD)
   set(KDE_NO_PHONON True)
 endif()
 
+# Needed for the calls to kconfig_add_kcfg_files in some modules
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/tier2/kconfig/cmake")
+set(KCONFIG_KCFGC_EXECUTABLE kconfig_compiler)
+include(KConfigMacros)
+
 set(kde4support_LIBRARY kde4support)
 
 ################# list the subdirectories #################
