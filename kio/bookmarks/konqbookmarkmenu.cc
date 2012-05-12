@@ -20,11 +20,11 @@
 
 #include "konqbookmarkmenu.h"
 
+#include <QtCore/QDebug>
 #include <QMenu>
 #include <QFile>
 
 #include <kmenu.h>
-#include <kdebug.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kiconloader.h>
@@ -153,7 +153,7 @@ QAction* KonqBookmarkMenu::actionForBookmark(const KBookmark &bm)
 {
   if ( bm.isGroup() )
   {
-    kDebug(7043) << "Creating Konq bookmark submenu named " << bm.text();
+    // qDebug() << "Creating Konq bookmark submenu named " << bm.text();
     KBookmarkActionMenu * actionMenu = new KBookmarkActionMenu( bm, this );
     m_actionCollection->addAction( "kbookmarkmenu", actionMenu );
     m_actions.append( actionMenu );
@@ -169,7 +169,7 @@ QAction* KonqBookmarkMenu::actionForBookmark(const KBookmark &bm)
   }
   else
   {
-    kDebug(7043) << "Creating Konq bookmark action named " << bm.text();
+    // qDebug() << "Creating Konq bookmark action named " << bm.text();
     KBookmarkAction * action = new KBookmarkAction( bm, owner(), this );
     m_actionCollection->addAction(action->objectName(), action);
     m_actions.append( action );

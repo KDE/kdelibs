@@ -24,7 +24,6 @@
 #include "kbookmarkdialog.h"
 
 #include <kcoreauthorized.h>
-#include <kdebug.h>
 #include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
@@ -38,7 +37,7 @@
 #include <qclipboard.h>
 #include <qmimedata.h>
 
-
+#include <QtCore/QDebug>
 #include <QtCore/QStack>
 #include <QHeaderView>
 #include <QApplication>
@@ -75,7 +74,7 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
 {
   m_parentMenu->setKeyboardShortcutsEnabled( true );
 
-  //kDebug(7043) << "KBookmarkMenu::KBookmarkMenu " << this << " address : " << m_parentAddress;
+  // qDebug() << "KBookmarkMenu::KBookmarkMenu " << this << " address : " << m_parentAddress;
 
   connect( _parentMenu, SIGNAL( aboutToShow() ),
             SLOT( slotAboutToShow() ) );
@@ -297,13 +296,13 @@ void KBookmarkContextMenu::addOpenFolderInTabs()
 
 void KBookmarkContextMenu::slotEditAt()
 {
-  //kDebug(7043) << "KBookmarkMenu::slotEditAt" << m_highlightedAddress;
+  // qDebug() << "KBookmarkMenu::slotEditAt" << m_highlightedAddress;
   m_pManager->slotEditBookmarksAtAddress( bm.address() );
 }
 
 void KBookmarkContextMenu::slotProperties()
 {
-  //kDebug(7043) << "KBookmarkMenu::slotProperties" << m_highlightedAddress;
+  // qDebug() << "KBookmarkMenu::slotProperties" << m_highlightedAddress;
 
     KBookmarkDialog *  dlg = m_pOwner->bookmarkDialog(m_pManager, QApplication::activeWindow());
     dlg->editBookmark(bm);
@@ -312,7 +311,7 @@ void KBookmarkContextMenu::slotProperties()
 
 void KBookmarkContextMenu::slotInsert()
 {
-  //kDebug(7043) << "KBookmarkMenu::slotInsert" << m_highlightedAddress;
+  // qDebug() << "KBookmarkMenu::slotInsert" << m_highlightedAddress;
 
   QString url = m_pOwner->currentUrl();
   if (url.isEmpty())
@@ -343,7 +342,7 @@ void KBookmarkContextMenu::slotInsert()
 
 void KBookmarkContextMenu::slotRemove()
 {
-  //kDebug(7043) << "KBookmarkMenu::slotRemove" << m_highlightedAddress;
+  // qDebug() << "KBookmarkMenu::slotRemove" << m_highlightedAddress;
 
   bool folder = bm.isGroup();
 
@@ -365,7 +364,7 @@ void KBookmarkContextMenu::slotRemove()
 
 void KBookmarkContextMenu::slotCopyLocation()
 {
-  //kDebug(7043) << "KBookmarkMenu::slotCopyLocation" << m_highlightedAddress;
+  // qDebug() << "KBookmarkMenu::slotCopyLocation" << m_highlightedAddress;
 
   if ( !bm.isGroup() )
   {
@@ -404,10 +403,10 @@ KBookmark KBookmarkContextMenu::bookmark() const
 
 void KBookmarkMenu::slotBookmarksChanged( const QString & groupAddress )
 {
-  kDebug(7043)<<"KBookmarkMenu::slotBookmarksChanged( "<<groupAddress;
+  qDebug()<<"KBookmarkMenu::slotBookmarksChanged( "<<groupAddress;
   if ( groupAddress == m_parentAddress )
   {
-    //kDebug(7043) << "KBookmarkMenu::slotBookmarksChanged -> setting m_bDirty on " << groupAddress;
+    //qDebug() << "KBookmarkMenu::slotBookmarksChanged -> setting m_bDirty on " << groupAddress;
     m_bDirty = true;
   }
   else
@@ -438,7 +437,7 @@ void KBookmarkMenu::clear()
 
 void KBookmarkMenu::refill()
 {
-  //kDebug(7043) << "KBookmarkMenu::refill()";
+  //qDebug() << "KBookmarkMenu::refill()";
   if(m_bIsRoot)
     addActions();
   fillBookmarks();
@@ -544,7 +543,7 @@ QAction* KBookmarkMenu::actionForBookmark(const KBookmark &bm)
 {
   if ( bm.isGroup() )
   {
-    //kDebug(7043) << "Creating bookmark submenu named " << bm.text();
+    //qDebug() << "Creating bookmark submenu named " << bm.text();
     KActionMenu * actionMenu = new KBookmarkActionMenu( bm, this );
     m_actions.append( actionMenu );
     KBookmarkMenu *subMenu = new KBookmarkMenu( m_pManager, m_pOwner, actionMenu->menu(), bm.address() );
@@ -560,7 +559,7 @@ QAction* KBookmarkMenu::actionForBookmark(const KBookmark &bm)
   }
   else
   {
-    //kDebug(7043) << "Creating bookmark menu item for " << bm.text();
+    //qDebug() << "Creating bookmark menu item for " << bm.text();
     KAction * action = new KBookmarkAction( bm, m_pOwner, this );
     m_actions.append( action );
     return action;
@@ -616,7 +615,7 @@ void KBookmarkMenu::slotNewFolder()
 
 void KImportedBookmarkMenu::slotNSLoad()
 {
-  kDebug(7043)<<"**** slotNSLoad  ****"<<m_type<<"  "<<m_location;
+  // qDebug()<<"**** slotNSLoad  ****"<<m_type<<"  "<<m_location;
   // only fill menu once
   parentMenu()->disconnect(SIGNAL(aboutToShow()));
 

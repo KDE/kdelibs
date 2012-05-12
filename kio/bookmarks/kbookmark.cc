@@ -22,8 +22,8 @@
 
 #include "kbookmark.h"
 #include <QStack>
-#include <kdebug.h>
 #include <qmimedatabase.h>
+#include <QtCore/QDebug>
 #include <kstringhandler.h>
 #include <klocalizedstring.h>
 #include <kurlmimedata.h>
@@ -541,7 +541,7 @@ QString KBookmark::commonParent(const QString &first, const QString &second)
 
 void KBookmark::updateAccessMetadata()
 {
-    kDebug(7043) << "KBookmark::updateAccessMetadata " << address() << " " << url();
+    // qDebug() << "KBookmark::updateAccessMetadata " << address() << " " << url();
 
     const uint timet = QDateTime::currentDateTime().toTime_t();
     setMetaDataItem( "time_added", QString::number( timet ), DontOverwriteMetaData );
@@ -707,7 +707,7 @@ QStringList KBookmark::List::mimeDataTypes()
 KBookmark::List KBookmark::List::fromMimeData( const QMimeData *mimeData )
 {
     QDomDocument doc;
-    kWarning(7043) << "Deprecated method called, with wrong lifetime of QDomDocument, will probably crash";
+    qWarning() << "Deprecated method called, with wrong lifetime of QDomDocument, will probably crash";
     return fromMimeData(mimeData, doc);
 }
 #endif

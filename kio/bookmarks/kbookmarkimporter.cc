@@ -23,7 +23,7 @@
 #include <kfiledialog.h>
 #include <kstringhandler.h>
 #include <klocalizedstring.h>
-#include <kdebug.h>
+#include <QtCore/QDebug>
 #include <kcharsets.h>
 #include <qtextcodec.h>
 
@@ -41,7 +41,7 @@
 
 void KXBELBookmarkImporterImpl::parse()
 {
-  //kDebug() << "KXBELBookmarkImporterImpl::parse()";
+  // qDebug() << "KXBELBookmarkImporterImpl::parse()";
   KBookmarkManager *manager = KBookmarkManager::managerForFile(m_fileName, QString());
   KBookmarkGroup root = manager->root();
   traverse(root);
@@ -51,7 +51,7 @@ void KXBELBookmarkImporterImpl::parse()
 
 void KXBELBookmarkImporterImpl::visit(const KBookmark &bk)
 {
-  //kDebug() << "KXBELBookmarkImporterImpl::visit";
+  // qDebug() << "KXBELBookmarkImporterImpl::visit";
   if (bk.isSeparator())
     emit newSeparator();
   else
@@ -60,13 +60,13 @@ void KXBELBookmarkImporterImpl::visit(const KBookmark &bk)
 
 void KXBELBookmarkImporterImpl::visitEnter(const KBookmarkGroup &grp)
 {
-  //kDebug() << "KXBELBookmarkImporterImpl::visitEnter";
+  // qDebug() << "KXBELBookmarkImporterImpl::visitEnter";
   emit newFolder(grp.fullText(), false, "");
 }
 
 void KXBELBookmarkImporterImpl::visitLeave(const KBookmarkGroup &)
 {
-  //kDebug() << "KXBELBookmarkImporterImpl::visitLeave";
+  // qDebug() << "KXBELBookmarkImporterImpl::visitLeave";
   emit endFolder();
 }
 

@@ -23,7 +23,7 @@
 #include <kfiledialog.h>
 #include <kstringhandler.h>
 #include <klocalizedstring.h>
-#include <kdebug.h>
+#include <QtCore/QDebug>
 #include <kstandarddirs.h>
 #include <qfile.h>
 #include <qdir.h>
@@ -61,7 +61,7 @@ ViewMap KCrashBookmarkImporterImpl::parseCrashLog_noemit( const QString & filena
     {
         if ( s[s.length()-1] != '\n' )
         {
-            kWarning() << "Crash bookmarks contain a line longer than " << g_lineLimit << ". Skipping.";
+            qWarning() << "Crash bookmarks contain a line longer than " << g_lineLimit << ". Skipping.";
             continue;
         }
         QString t = codec->toUnicode( s.trimmed() );

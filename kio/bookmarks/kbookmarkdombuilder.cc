@@ -21,7 +21,7 @@
 #include "kbookmarkdombuilder.h"
 
 #include <kbookmarkmanager.h>
-#include <kdebug.h>
+#include <QtCore/QDebug>
 
 KBookmarkDomBuilder::KBookmarkDomBuilder(
    const KBookmarkGroup &bkGroup, KBookmarkManager *manager
@@ -58,7 +58,7 @@ void KBookmarkDomBuilder::newBookmark(
       bk.internalElement().setAttribute("netscapeinfo", additionalInfo);
    }
    else
-      kWarning() << "m_stack is empty. This should not happen when importing a valid bookmarks file!";
+      qWarning() << "m_stack is empty. This should not happen when importing a valid bookmarks file!";
 }
 
 void KBookmarkDomBuilder::newFolder(
@@ -75,21 +75,21 @@ void KBookmarkDomBuilder::newFolder(
       element.setAttribute("folded", (open?"no":"yes"));
    }
    else
-      kWarning() << "m_stack is empty. This should not happen when importing a valid bookmarks file!";
+      qWarning() << "m_stack is empty. This should not happen when importing a valid bookmarks file!";
 }
 
 void KBookmarkDomBuilder::newSeparator() {
    if (!m_stack.isEmpty())
       m_stack.top().createNewSeparator();
    else
-      kWarning() << "m_stack is empty. This should not happen when importing a valid bookmarks file!";
+      qWarning() << "m_stack is empty. This should not happen when importing a valid bookmarks file!";
 }
 
 void KBookmarkDomBuilder::endFolder() {
    if (!m_stack.isEmpty())
       m_stack.pop();
    else
-      kWarning() << "m_stack is empty. This should not happen when importing a valid bookmarks file!";
+      qWarning() << "m_stack is empty. This should not happen when importing a valid bookmarks file!";
 }
 
 #include "moc_kbookmarkdombuilder.cpp"
