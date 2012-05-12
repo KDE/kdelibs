@@ -17,11 +17,11 @@ set_target_properties(fakehardwaretest PROPERTIES COMPILE_FLAGS -DTEST_DATA="\\"
 ########### halbasictest ###############
 
 if(NOT WIN32 AND NOT APPLE)
-set(halbasictest_SRCS halbasictest.cpp )
+   set(halbasictest_SRCS halbasictest.cpp )
 
-add_executable(halbasictest ${halbasictest_SRCS})
+   add_executable(halbasictest ${halbasictest_SRCS})
 
-target_link_libraries(halbasictest solid_static ${KDEWIN_LIBRARIES} ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} )
+   target_link_libraries(halbasictest solid_static ${KDEWIN_LIBRARIES} ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} )
 endif(NOT WIN32 AND NOT APPLE)
 
 ########### solidhwtest ###############

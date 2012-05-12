@@ -204,14 +204,14 @@ if(NOT WIN32 AND NOT APPLE)
             PATHS ENV XDG_DATA_DIRS
             PATH_SUFFIXES "media-player-info" NO_DEFAULT_PATH
          )
-      else(XDG_DATA_DIRS_ENV)
+      else()
          set(XDG_DATA_DIRS "/usr/share")
          message(STATUS "Warning: environment variable XDG_DATA_DIRS not set, falling back to ${XDG_DATA_DIRS}")
          find_path(MEDIAPLAYERINFO_PATH sony_psp.mpi
             PATHS "${XDG_DATA_DIRS}"
             PATH_SUFFIXES "media-player-info" NO_DEFAULT_PATH
          )
-      endif(XDG_DATA_DIRS_ENV)
+      endif()
 
       include (MacroLibrary)
       macro_log_feature(MEDIAPLAYERINFO_PATH
@@ -227,66 +227,66 @@ if(NOT WIN32 AND NOT APPLE)
 
    message(STATUS "Building Solid HAL backend." )
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
-   backends/hal/halacadapter.cpp
-   backends/hal/halaudiointerface.cpp
-   backends/hal/halbattery.cpp
-   backends/hal/halblock.cpp
-   backends/hal/halbutton.cpp
-   backends/hal/halcamera.cpp
-   backends/hal/halcdrom.cpp
-   backends/hal/haldeviceinterface.cpp
-   backends/hal/haldvbinterface.cpp
-   backends/hal/halfstabhandling.cpp
-   backends/hal/halgenericinterface.cpp
-   backends/hal/haldevice.cpp
-   backends/hal/halmanager.cpp
-   backends/hal/halnetworkinterface.cpp
-   backends/hal/halserialinterface.cpp
-   backends/hal/halopticaldisc.cpp
-   backends/hal/halportablemediaplayer.cpp
-   backends/hal/halprocessor.cpp
-   backends/hal/halstorageaccess.cpp
-   backends/hal/halstorage.cpp
-   backends/hal/halvideo.cpp
-   backends/hal/halvolume.cpp
-   backends/hal/halsmartcardreader.cpp
+      backends/hal/halacadapter.cpp
+      backends/hal/halaudiointerface.cpp
+      backends/hal/halbattery.cpp
+      backends/hal/halblock.cpp
+      backends/hal/halbutton.cpp
+      backends/hal/halcamera.cpp
+      backends/hal/halcdrom.cpp
+      backends/hal/haldeviceinterface.cpp
+      backends/hal/haldvbinterface.cpp
+      backends/hal/halfstabhandling.cpp
+      backends/hal/halgenericinterface.cpp
+      backends/hal/haldevice.cpp
+      backends/hal/halmanager.cpp
+      backends/hal/halnetworkinterface.cpp
+      backends/hal/halserialinterface.cpp
+      backends/hal/halopticaldisc.cpp
+      backends/hal/halportablemediaplayer.cpp
+      backends/hal/halprocessor.cpp
+      backends/hal/halstorageaccess.cpp
+      backends/hal/halstorage.cpp
+      backends/hal/halvideo.cpp
+      backends/hal/halvolume.cpp
+      backends/hal/halsmartcardreader.cpp
    )
 
    message(STATUS "Building Solid UPower backend." )
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
-   backends/upower/upowermanager.cpp
-   backends/upower/upowerdevice.cpp
-   backends/upower/upowerbattery.cpp
-   backends/upower/upoweracadapter.cpp
-   backends/upower/upowerdeviceinterface.cpp
-   backends/upower/upowergenericinterface.cpp
+      backends/upower/upowermanager.cpp
+      backends/upower/upowerdevice.cpp
+      backends/upower/upowerbattery.cpp
+      backends/upower/upoweracadapter.cpp
+      backends/upower/upowerdeviceinterface.cpp
+      backends/upower/upowergenericinterface.cpp
    )
 
    # FIXME: this should work on more Unix systems
    if (CMAKE_SYSTEM_NAME MATCHES Linux)
       message(STATUS "Building Solid UDisks backend." )
       set(solid_LIB_SRCS ${solid_LIB_SRCS}
-      backends/udisks/udisksmanager.cpp
-      backends/udisks/udisksdevice.cpp
-      backends/udisks/udisksblock.cpp
-      backends/udisks/udisksstoragevolume.cpp
-      backends/udisks/udisksdeviceinterface.cpp
-      backends/udisks/udisksopticaldisc.cpp
-      backends/udisks/udisksopticaldrive.cpp
-      backends/udisks/udisksstoragedrive.cpp
-      backends/udisks/udisksstorageaccess.cpp
-      backends/udisks/udisksgenericinterface.cpp
+         backends/udisks/udisksmanager.cpp
+         backends/udisks/udisksdevice.cpp
+         backends/udisks/udisksblock.cpp
+         backends/udisks/udisksstoragevolume.cpp
+         backends/udisks/udisksdeviceinterface.cpp
+         backends/udisks/udisksopticaldisc.cpp
+         backends/udisks/udisksopticaldrive.cpp
+         backends/udisks/udisksstoragedrive.cpp
+         backends/udisks/udisksstorageaccess.cpp
+         backends/udisks/udisksgenericinterface.cpp
       )
-   endif (CMAKE_SYSTEM_NAME MATCHES Linux)
+   endif ()
 
    message(STATUS "Building Solid fstab backend." )
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
-   backends/fstab/fstabmanager.cpp
-   backends/fstab/fstabdevice.cpp
-   backends/fstab/fstabnetworkshare.cpp
-   backends/fstab/fstabstorageaccess.cpp
-   backends/fstab/fstabhandling.cpp
-   backends/fstab/fstabwatcher.cpp
+      backends/fstab/fstabmanager.cpp
+      backends/fstab/fstabdevice.cpp
+      backends/fstab/fstabnetworkshare.cpp
+      backends/fstab/fstabstorageaccess.cpp
+      backends/fstab/fstabhandling.cpp
+      backends/fstab/fstabwatcher.cpp
    )
 
 endif(NOT WIN32 AND NOT APPLE)
@@ -322,57 +322,57 @@ if(APPLE)
 
    message(STATUS "-- Building Solid IOKit backend." )
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
-   backends/iokit/iokitmanager.cpp
-   backends/iokit/iokitdevice.cpp
-   backends/iokit/cfhelper.cpp
-   backends/iokit/iokitdeviceinterface.cpp
-   backends/iokit/iokitgenericinterface.cpp
-   backends/iokit/iokitprocessor.cpp
-   backends/iokit/iokitnetworkinterface.cpp
-   backends/iokit/iokitserialinterface.cpp
-   backends/iokit/iokitbattery.cpp
+      backends/iokit/iokitmanager.cpp
+      backends/iokit/iokitdevice.cpp
+      backends/iokit/cfhelper.cpp
+      backends/iokit/iokitdeviceinterface.cpp
+      backends/iokit/iokitgenericinterface.cpp
+      backends/iokit/iokitprocessor.cpp
+      backends/iokit/iokitnetworkinterface.cpp
+      backends/iokit/iokitserialinterface.cpp
+      backends/iokit/iokitbattery.cpp
    )
 endif(APPLE)
 
 if(WIN32)
    include(CheckIncludeFileCXX)
    check_include_file_cxx(wbemidl.h HAVE_WBEM)
-   FIND_LIBRARY(WBEM_LIBRARIES NAMES wbemuuid wbemuuidd)
+   find_library(WBEM_LIBRARIES NAMES wbemuuid wbemuuidd)
    if(HAVE_WBEM AND WBEM_LIBRARIES)
       set(HAVE_WBEM True)
       message(STATUS "Found wbemuuid library: ${WBEM_LIBRARIES}")
-   else(HAVE_WBEM AND WBEM_LIBRARIES)
+   else()
       set(HAVE_WBEM False)
-   endif(HAVE_WBEM AND WBEM_LIBRARIES)
+   endif()
+
    if(HAVE_WBEM AND NOT WINCE)
        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_WBEM")
        message(STATUS "-- Building Solid WMI backend." )
 
        set(solid_LIB_SRCS ${solid_LIB_SRCS}
-       backends/wmi/wmiacadapter.cpp
-       backends/wmi/wmiaudiointerface.cpp
-       backends/wmi/wmibattery.cpp
-       backends/wmi/wmiblock.cpp
-       backends/wmi/wmibutton.cpp
-       backends/wmi/wmicamera.cpp
-       backends/wmi/wmicdrom.cpp
-       backends/wmi/wmideviceinterface.cpp
-       backends/wmi/wmidvbinterface.cpp
-       backends/wmi/wmigenericinterface.cpp
-       backends/wmi/wmidevice.cpp
-       backends/wmi/wmimanager.cpp
-       backends/wmi/wminetworkinterface.cpp
-       backends/wmi/wmiopticaldisc.cpp
-       backends/wmi/wmiportablemediaplayer.cpp
-       backends/wmi/wmiprocessor.cpp
-       backends/wmi/wmiquery.cpp
-       backends/wmi/wmistorageaccess.cpp
-       backends/wmi/wmistorage.cpp
-       backends/wmi/wmivideo.cpp
-       backends/wmi/wmivolume.cpp
-
+          backends/wmi/wmiacadapter.cpp
+          backends/wmi/wmiaudiointerface.cpp
+          backends/wmi/wmibattery.cpp
+          backends/wmi/wmiblock.cpp
+          backends/wmi/wmibutton.cpp
+          backends/wmi/wmicamera.cpp
+          backends/wmi/wmicdrom.cpp
+          backends/wmi/wmideviceinterface.cpp
+          backends/wmi/wmidvbinterface.cpp
+          backends/wmi/wmigenericinterface.cpp
+          backends/wmi/wmidevice.cpp
+          backends/wmi/wmimanager.cpp
+          backends/wmi/wminetworkinterface.cpp
+          backends/wmi/wmiopticaldisc.cpp
+          backends/wmi/wmiportablemediaplayer.cpp
+          backends/wmi/wmiprocessor.cpp
+          backends/wmi/wmiquery.cpp
+          backends/wmi/wmistorageaccess.cpp
+          backends/wmi/wmistorage.cpp
+          backends/wmi/wmivideo.cpp
+          backends/wmi/wmivolume.cpp
        )
-    endif(HAVE_WBEM AND NOT WINCE)
+    endif()
 endif(WIN32)
 
 set_source_files_properties( org.freedesktop.PowerManagement.xml
@@ -393,12 +393,12 @@ if(WIN32)
    set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS})
    if(HAVE_WBEM)
       set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${WBEM_LIBRARIES})
-   endif(HAVE_WBEM)
-endif(WIN32)
+   endif()
+endif()
 
 if(APPLE)
    set(solid_OPTIONAL_LIBS ${IOKIT_LIBRARY})
-endif(APPLE)
+endif()
 
 include_directories (${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
@@ -407,11 +407,11 @@ generate_export_header(solid)
 
 if ( HUPNP_FOUND )
    set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${HUPNP_LIBS})
-endif( HUPNP_FOUND )
+endif()
 
 if ( UDEV_FOUND )
    set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${UDEV_LIBS})
-endif ( UDEV_FOUND )
+endif ()
 
 target_link_libraries(solid ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS} )
 target_link_libraries(solid LINK_INTERFACE_LIBRARIES ${QT_CORE_LIBRARY} )
@@ -478,8 +478,8 @@ if (FLEX_EXECUTABLE AND BISON_EXECUTABLE)
                      COMMAND ${CMAKE_COMMAND} -E remove ${parser_FILE}.tab.c ${parser_FILE}.tab.h
                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
-else (FLEX_EXECUTABLE AND BISON_EXECUTABLE)
+else ()
    add_custom_target(UpdateSolidPredicateParser
                      COMMAND echo "flex and/or bison not found, so target UpdateSolidPredicateParser inactive")
-endif (FLEX_EXECUTABLE AND BISON_EXECUTABLE)
+endif ()
 
