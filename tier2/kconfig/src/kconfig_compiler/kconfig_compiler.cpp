@@ -140,9 +140,24 @@ public:
     allDefaultGetters = (defaultGetters.count() == 1) && (defaultGetters.at(0).toLower() == "true");
     globalEnums = codegenConfig.value("GlobalEnums", false).toBool();
     useEnumTypes = codegenConfig.value("UseEnumTypes", false).toBool();
+
+    const QString trString = codegenConfig.value("TranslationSystem").toString().toLower();
+    if ( trString == "kde" ) {
+        translationSystem = KdeTranslation;
+    } else {
+        if ( !trString.isEmpty() && trString != "qt" ) {
+            cerr << "Unknown translation system, falling back to Qt tr()" << endl;
+        }
+        translationSystem = QtTranslation;
+    }
   }
 
 public:
+  enum TranslationSystem {
+      QtTranslation,
+      KdeTranslation
+  };
+
   // These are read from the .kcfgc configuration file
   QString nameSpace;     // The namespace for the class to be generated
   QString className;     // The class name to be generated
@@ -164,6 +179,7 @@ public:
   bool globalEnums;
   bool useEnumTypes;
   bool itemAccessors;
+  TranslationSystem translationSystem;
 };
 
 
@@ -1084,6 +1100,41 @@ QString paramString(const QString &group, const QList<Param> &parameters)
   return "QString( QLatin1String( \""+paramString+"\" ) )"+arguments;
 }
 
+QString translatedString(const CfgConfig &cfg, const QString &string, const QString &context = QString(), const QString &param = QString(), const QString &paramValue = QString())
+{
+    QString result;
+
+    switch (cfg.translationSystem) {
+    case CfgConfig::QtTranslation:
+        if (!context.isEmpty()) {
+            result+= "/*: " + context + " */ QObject::tr(";
+        } else {
+            result+= "QObject::tr(";
+        }
+        break;
+
+    case CfgConfig::KdeTranslation:
+        if (!context.isEmpty()) {
+            result+= "i18nc(" + quoteString(context) + ", ";
+        } else {
+            result+= "i18n(";
+        }
+        break;
+    }
+
+    if (!param.isEmpty()) {
+        QString resolvedString = string;
+        resolvedString.replace("$("+param+')', paramValue);
+        result+= quoteString(resolvedString);
+    } else {
+        result+= quoteString(string);
+    }
+
+    result+= ')';
+
+    return result;
+}
+
 /* int i is the value of the parameter */
 QString userTextsFunctions( CfgEntry *e, const CfgConfig &cfg, QString itemVarStr=QString(), QString i=QString() )
 {
@@ -1091,39 +1142,18 @@ QString userTextsFunctions( CfgEntry *e, const CfgConfig &cfg, QString itemVarSt
   if (itemVarStr.isNull()) itemVarStr=itemPath(e, cfg);
   if ( !e->label().isEmpty() ) {
     txt += "  " + itemVarStr + "->setLabel( ";
-    if ( !e->context().isEmpty() )
-      txt += "i18nc(" + quoteString(e->context()) + ", ";
-    else
-      txt += "i18n(";
-    if ( !e->param().isEmpty() )
-      txt += quoteString(e->label().replace("$("+e->param()+')', i));
-    else
-      txt+= quoteString(e->label());
-    txt+= ") );\n";
+    txt += translatedString(cfg, e->label(), e->context(), e->param(), i);
+    txt += " );\n";
   }
   if ( !e->toolTip().isEmpty() ) {
     txt += "  " + itemVarStr + "->setToolTip( ";
-    if ( !e->context().isEmpty() )
-      txt += "i18nc(" + quoteString(e->context()) + ", ";
-    else
-      txt += "i18n(";
-    if ( !e->param().isEmpty() )
-      txt += quoteString(e->toolTip().replace("$("+e->param()+')', i));
-    else
-      txt+= quoteString(e->toolTip());
-    txt+=") );\n";
+    txt += translatedString(cfg, e->toolTip(), e->context(), e->param(), i);
+    txt += " );\n";
   }
   if ( !e->whatsThis().isEmpty() ) {
     txt += "  " + itemVarStr + "->setWhatsThis( ";
-    if ( !e->context().isEmpty() )
-      txt += "i18nc(" + quoteString(e->context()) + ", ";
-    else
-      txt += "i18n(";
-    if ( !e->param().isEmpty() )
-      txt += quoteString(e->whatsThis().replace("$("+e->param()+')', i));
-    else
-      txt+= quoteString(e->whatsThis());
-    txt+=") );\n";
+    txt += translatedString(cfg, e->whatsThis(), e->context(), e->param(), i);
+    txt += " );\n";
   }
   return txt;
 }
@@ -2073,28 +2103,19 @@ int main( int argc, char **argv )
         cpp << "    choice.name = QLatin1String(\"" << (*it).name << "\");" << endl;
         if ( cfg.setUserTexts ) {
           if ( !(*it).label.isEmpty() ) {
-            cpp << "    choice.label = ";
-            if ( !(*it).context.isEmpty() )
-              cpp << "i18nc(" + quoteString((*it).context) + ", ";
-            else
-              cpp << "i18n(";
-            cpp << quoteString((*it).label) << ");" << endl;
+            cpp << "    choice.label = "
+                << translatedString(cfg, (*it).label, (*it).context)
+                << ";" << endl;
           }
           if ( !(*it).toolTip.isEmpty() ) {
-            cpp << "    choice.toolTip = ";
-            if ( !(*it).context.isEmpty() )
-              cpp << "i18nc(" + quoteString((*it).context) + ", ";
-            else
-              cpp << "i18n(";
-            cpp << quoteString((*it).toolTip) << ");" << endl;
+            cpp << "    choice.toolTip = "
+                << translatedString(cfg, (*it).toolTip, (*it).context)
+                << ";" << endl;
           }
           if ( !(*it).whatsThis.isEmpty() ) {
-            cpp << "    choice.whatsThis = ";
-            if ( !(*it).context.isEmpty() )
-              cpp << "i18nc(" + quoteString((*it).context) + ", ";
-            else
-              cpp << "i18n(";
-            cpp << quoteString((*it).whatsThis) << ");" << endl;
+            cpp << "    choice.whatsThis = "
+                << translatedString(cfg, (*it).whatsThis, (*it).context)
+                << ";" << endl;
           }
         }
         cpp << "    values" << (*itEntry)->name() << ".append( choice );" << endl;
