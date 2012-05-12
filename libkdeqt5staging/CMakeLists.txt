@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 2.8.8)
 
 project(kdeqt5staging)
 
-find_package(extra-cmake-modules 0.0.2 REQUIRED)
+find_package(ECM 0.0.4 REQUIRED NO_MODULE)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${EXTRA_CMAKE_MODULES_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 include(ECMVersion)
 
@@ -12,29 +12,17 @@ include(ECMVersion)
 ecm_version(5 0 0)
 # --
 
+# searching for KF5 in inqt5 would be strange, so simply include the files which contain the cmake settings etc.:
+include("${ECM_KDE_MODULE_DIR}/KDEInstallDirs.cmake")
+include("${ECM_KDE_MODULE_DIR}/KDECMakeSettings.cmake")
+include("${ECM_KDE_MODULE_DIR}/KDECompilerSettings.cmake")
+
 include(ECMQtFramework)
 
 find_package(Qt5Transitional REQUIRED Core)
 
 
 include(FeatureSummary)
-
-if (NOT QT5_BUILD)
-  include(${QT_USE_FILE})
-  # in case we are not built as part of the whole kdelibs
-  if (NOT TARGET inqt5)
-    find_package(inqt5)
-    # whatever works...
-    include_directories(
-        ${inqt5_SOURCE_DIR}/libinqt5/src/
-        ${inqt5_BINARY_DIR}/libinqt5/src/
-        ${inqt5_INCLUDE_DIR}
-    )
-    if (NOT INQT5_LIBRARY)
-      set(INQT5_LIBRARY "${inqt5_LIBRARY}")
-    endif ()
-  endif ()
-endif ()
 
 add_subdirectory(src)
 add_subdirectory(autotests)

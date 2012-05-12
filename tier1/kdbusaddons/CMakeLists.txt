@@ -13,7 +13,6 @@ ecm_version(5 0 0)
 # --
 
 include(ECMQtFramework)
-enable_testing()
 
 find_package(Qt5Transitional REQUIRED Core DBus)
 

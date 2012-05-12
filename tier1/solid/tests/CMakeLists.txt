@@ -19,8 +19,6 @@ include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR})
 
 set(networkingclient_SRCS networkingclient.cpp)
 
-set(CMAKE_AUTOMOC ON)
-
 qt4_wrap_ui(networkingclient_SRCS networkingclientview.ui)
 
 qt4_add_dbus_interface(networkingclient_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/org.kde.Solid.Networking.Client.xml clientinterface)

@@ -67,11 +67,11 @@ include_directories(
 
 include_directories(${QT_MKSPECS_DIR}/default) # for qplatformdefs.h
 
-add_library(kcoreaddons ${LIBRARY_TYPE} ${libkcoreaddons_SRCS})
+add_library(kcoreaddons ${libkcoreaddons_SRCS})
 generate_export_header(kcoreaddons)
 
 target_link_libraries(kcoreaddons
-  LINK_PUBLIC ${QT_QTCORE_LIBRARY} ${kcoreaddons_OPTIONAL_LIBS} ${INQT5_LIBRARY} kdeqt5staging
+  LINK_PUBLIC ${QT_QTCORE_LIBRARY} ${kcoreaddons_OPTIONAL_LIBS} ${inqt5_LIBRARY} ${kdeqt5staging_LIBRARY}
   LINK_PRIVATE pthread
 )
 

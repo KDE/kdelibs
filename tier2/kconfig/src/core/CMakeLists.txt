@@ -18,7 +18,7 @@ set(libkconfigcore_SRCS
 add_library(kconfigcore ${LIBRARY_TYPE} ${libkconfigcore_SRCS})
 generate_export_header(kconfigcore)
 
-target_link_libraries(kconfigcore ${QT_QTCORE_LIBRARY} kcoreaddons ${INQT5_LIBRARY})
+target_link_libraries(kconfigcore ${QT_QTCORE_LIBRARY} kcoreaddons ${inqt5_LIBRARY})
 set_target_properties(kconfigcore PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                        SOVERSION ${ECM_SOVERSION}
 )

@@ -53,19 +53,25 @@ find_package(Qt5Transitional)
 
 if (NOT QT5_BUILD)
   add_subdirectory( libinqt5 )
-  set(INQT5_LIBRARY inqt5)
-  include_directories(
+  set(inqt5_LIBRARY inqt5)
+  set(inqt5_INCLUDE_DIR
       ${CMAKE_SOURCE_DIR}/libinqt5/src/
       ${CMAKE_BINARY_DIR}/libinqt5/src/
   )
   set(QtMimeTypes_LIBRARY QtMimeTypes)
+  include_directories(${inqt5_INCLUDE_DIR})
 endif()
+
 add_subdirectory( libkdeqt5staging )
-include_directories(
+set(kdeqt5staging_LIBRARY kdeqt5staging)
+set(kdeqt5staging_INCLUDE_DIR
     ${CMAKE_SOURCE_DIR}/libkdeqt5staging/src/
     ${CMAKE_BINARY_DIR}/libkdeqt5staging/src/
-)
+   )
+
 add_subdirectory( tier1 )
+
+include_directories(${kdeqt5staging_INCLUDE_DIR})
 
 set(kwindowsystem_LIBRARY kwindowsystem)
 

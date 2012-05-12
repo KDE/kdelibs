@@ -12,7 +12,7 @@ include_directories(
 MACRO(KARCHIVE_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
                add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
-               target_link_libraries(${_testname} karchive ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} ${INQT5_LIBRARY})
+               target_link_libraries(${_testname} karchive ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} ${inqt5_LIBRARY})
                if(WINCE)
                 target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
                endif(WINCE)

@@ -15,7 +15,7 @@ MACRO(KCONFIGCORE_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
                add_test(kconfigcore-${_testname} ${_testname})
-               target_link_libraries(${_testname} kconfigcore ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} ${INQT5_LIBRARY})
+               target_link_libraries(${_testname} kconfigcore ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} ${inqt5_LIBRARY})
        ENDFOREACH(_testname)
 ENDMACRO(KCONFIGCORE_UNIT_TESTS)
 
@@ -23,7 +23,7 @@ MACRO(KCONFIGGUI_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
                add_test(kconfiggui-${_testname} ${_testname})
-               target_link_libraries(${_testname} kconfigcore kconfiggui ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${INQT5_LIBRARY})
+               target_link_libraries(${_testname} kconfigcore kconfiggui ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${inqt5_LIBRARY})
        ENDFOREACH(_testname)
 ENDMACRO(KCONFIGGUI_UNIT_TESTS)
 
