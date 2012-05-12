@@ -5,7 +5,7 @@ set(libkdbusaddons_SRCS
     kdbusservice.cpp
 )
 
-add_library(kdbusaddons ${LIBRARY_TYPE} ${libkdbusaddons_SRCS})
+add_library(kdbusaddons ${libkdbusaddons_SRCS})
 generate_export_header(kdbusaddons)
 
 target_link_libraries(kdbusaddons ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY})
