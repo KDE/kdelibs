@@ -1197,7 +1197,7 @@ QString memberMutatorBody( CfgEntry *e, const CfgConfig &cfg )
     if (e->minValue() != "0" || !isUnsigned(t)) { // skip writing "if uint<0" (#187579)
       out << "if (v < " << e->minValue() << ")" << endl;
       out << "{" << endl;
-      out << "  kDebug() << \"" << setFunction(n);
+      out << "  qDebug() << \"" << setFunction(n);
       out << ": value \" << v << \" is less than the minimum value of ";
       out << e->minValue()<< "\";" << endl;
       out << "  v = " << e->minValue() << ";" << endl;
@@ -1209,7 +1209,7 @@ QString memberMutatorBody( CfgEntry *e, const CfgConfig &cfg )
   {
     out << endl << "if (v > " << e->maxValue() << ")" << endl;
     out << "{" << endl;
-    out << "  kDebug() << \"" << setFunction(n);
+    out << "  qDebug() << \"" << setFunction(n);
     out << ": value \" << v << \" is greater than the maximum value of ";
     out << e->maxValue()<< "\";" << endl;
     out << "  v = " << e->maxValue() << ";" << endl;
@@ -1522,7 +1522,7 @@ int main( int argc, char **argv )
   if ( cfg.headerIncludes.count() > 0 ) h << endl;
 
   if ( !cfg.singleton && parameters.isEmpty() )
-    h << "#include <kglobal.h>" << endl;
+    h << "#include <qglobal.h>" << endl;
 
   if ( cfg.inherits=="KCoreConfigSkeleton" ) {
     h << "#include <kcoreconfigskeleton.h>" << endl;
@@ -1530,7 +1530,7 @@ int main( int argc, char **argv )
     h << "#include <kconfigskeleton.h>" << endl;
   }
 
-  h << "#include <kdebug.h>" << endl << endl;
+  h << "#include <QDebug>" << endl << endl;
 
   // Includes
   for( it = includes.constBegin(); it != includes.constEnd(); ++it ) {
@@ -1939,13 +1939,14 @@ int main( int argc, char **argv )
 
   if ( cfg.sourceIncludes.count() > 0 ) cpp << endl;
 
-  if ( cfg.setUserTexts ) cpp << "#include <klocalizedstring.h>" << endl << endl;
+  if ( cfg.setUserTexts && cfg.translationSystem==CfgConfig::KdeTranslation)
+    cpp << "#include <klocalizedstring.h>" << endl << endl;
 
   // Header required by singleton implementation
   if ( cfg.singleton )
-    cpp << "#include <kglobal.h>" << endl << "#include <QtCore/QFile>" << endl << endl;
+    cpp << "#include <qglobal.h>" << endl << "#include <QtCore/QFile>" << endl << endl;
   if ( cfg.singleton && cfgFileNameArg )
-    cpp << "#include <kdebug.h>" << endl << endl;
+    cpp << "#include <QDebug>" << endl << endl;
 
   if ( !cfg.nameSpace.isEmpty() )
     cpp << "using namespace " << cfg.nameSpace << ";" << endl << endl;
@@ -1997,31 +1998,31 @@ int main( int argc, char **argv )
     cpp << "    " << cfg.className << " *q;" << endl;
     cpp << "};" << endl;
     endNamespaces(cfg.nameSpace, cpp);
-    cpp << "K_GLOBAL_STATIC(" << cfg.className << "Helper, s_global" << cfg.className << ")" << endl;
+    cpp << "Q_GLOBAL_STATIC(" << cfg.className << "Helper, s_global" << cfg.className << ")" << endl;
 
     cpp << cfg.className << " *" << cfg.className << "::self()" << endl;
     cpp << "{" << endl;
     if ( cfgFileNameArg ) {
-      cpp << "  if (!s_global" << cfg.className << "->q)" << endl;
-      cpp << "     kFatal() << \"you need to call " << cfg.className << "::instance before using\";" << endl;
+      cpp << "  if (!s_global" << cfg.className << "()->q)" << endl;
+      cpp << "     qFatal() << \"you need to call " << cfg.className << "::instance before using\";" << endl;
     } else {
-      cpp << "  if (!s_global" << cfg.className << "->q) {" << endl;
+      cpp << "  if (!s_global" << cfg.className << "()->q) {" << endl;
       cpp << "    new " << cfg.className << ';' << endl;
-      cpp << "    s_global" << cfg.className << "->q->readConfig();" << endl;
+      cpp << "    s_global" << cfg.className << "()->q->readConfig();" << endl;
       cpp << "  }" << endl << endl;
     }
-    cpp << "  return s_global" << cfg.className << "->q;" << endl;
+    cpp << "  return s_global" << cfg.className << "()->q;" << endl;
     cpp << "}" << endl << endl;
 
     if ( cfgFileNameArg ) {
       cpp << "void " << cfg.className << "::instance(const QString& cfgfilename)" << endl;
       cpp << "{" << endl;
-      cpp << "  if (s_global" << cfg.className << "->q) {" << endl;
-      cpp << "     kDebug() << \"" << cfg.className << "::instance called after the first use - ignoring\";" << endl;
+      cpp << "  if (s_global" << cfg.className << "()->q) {" << endl;
+      cpp << "     qDebug() << \"" << cfg.className << "::instance called after the first use - ignoring\";" << endl;
       cpp << "     return;" << endl;
       cpp << "  }" << endl;
       cpp << "  new " << cfg.className << "(cfgfilename);" << endl;
-      cpp << "  s_global" << cfg.className << "->q->readConfig();" << endl;
+      cpp << "  s_global" << cfg.className << "()->q->readConfig();" << endl;
       cpp << "}" << endl << endl;
     }
   }
@@ -2075,8 +2076,8 @@ int main( int argc, char **argv )
   // Needed in case the singleton class is used as baseclass for
   // another singleton.
   if (cfg.singleton) {
-    cpp << "  Q_ASSERT(!s_global" << cfg.className << "->q);" << endl;
-    cpp << "  s_global" << cfg.className << "->q = this;" << endl;
+    cpp << "  Q_ASSERT(!s_global" << cfg.className << "()->q);" << endl;
+    cpp << "  s_global" << cfg.className << "()->q = this;" << endl;
   }
 
   group.clear();
@@ -2268,9 +2269,7 @@ int main( int argc, char **argv )
   if ( cfg.singleton ) {
     if ( cfg.dpointer )
       cpp << "  delete d;" << endl;
-    cpp << "  if (!s_global" << cfg.className << ".isDestroyed()) {" << endl;
-    cpp << "    s_global" << cfg.className << "->q = 0;" << endl;
-    cpp << "  }" << endl;
+    cpp << "  s_global" << cfg.className << "()->q = 0;" << endl;
   }
   cpp << "}" << endl << endl;
 
