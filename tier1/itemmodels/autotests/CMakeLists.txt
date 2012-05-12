@@ -9,7 +9,6 @@ remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 
 find_package(Qt5Transitional REQUIRED Test Gui)
-enable_testing()
 
 add_subdirectory(proxymodeltestsuite)
 
