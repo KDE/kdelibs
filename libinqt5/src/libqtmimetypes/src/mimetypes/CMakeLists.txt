@@ -19,11 +19,11 @@ set(SOURCES
 
 qt4_add_resources( SOURCES mimetypes.qrc )
 
-add_library( QtMimeTypes ${LIBRARY_TYPE} ${SOURCES} )
+add_library( QtMimeTypes ${SOURCES} )
 
 target_link_libraries( QtMimeTypes LINK_PUBLIC inqt5 ${QT_QTCORE_LIBRARY} )
 
 set_target_properties( QtMimeTypes PROPERTIES VERSION   ${ECM_VERSION_STRING}
-                                       SOVERSION ${ECM_SOVERSION})
+                                              SOVERSION ${ECM_SOVERSION})
 
 install(TARGETS QtMimeTypes EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
