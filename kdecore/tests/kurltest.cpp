@@ -163,20 +163,37 @@ void KUrlTest::testSetHTMLRef()
 void KUrlTest::testQUrl()
 {
   QUrl url1( "file:///home/dfaure/my#%2f" );
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+  QCOMPARE( url1.toString(), QString( "file:///home/dfaure/my#/" ) );
+#else
   QCOMPARE( url1.toString(), QString( "file:///home/dfaure/my#%2f" ) );
-#ifdef Q_WS_WIN
-  QUrl url2( "file:///c:/home/dfaure/my#%2f" );
-  QCOMPARE( url2.toString(), QString( "file:///c:/home/dfaure/my#%2f" ) );
 #endif
 
-  // Show how toString() is confusing
+#ifdef Q_WS_WIN
+  QUrl url2( "file:///c:/home/dfaure/my#%2f" );
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+  QCOMPARE( url2.toString(), QString( "file:///c:/home/dfaure/my#/" ) );
+#else
+  QCOMPARE( url2.toString(), QString( "file:///c:/home/dfaure/my#%2f" ) );
+#endif
+#endif
+
+  // Show how toString() was confusing in Qt4, and fixed in Qt5
   QUrl url3 = QUrl::fromLocalFile( "/home/dfaure/hash#file" );
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+  QCOMPARE( url3.toString(), QString( "file:///home/dfaure/hash%23file" ) );
+#else
   QCOMPARE( url3.toString(), QString( "file:///home/dfaure/hash#file" ) ); // ouch
+#endif
   QString url3Str = url3.toString();
   QUrl url4(url3Str);
   QCOMPARE( url4.toString(), url3Str );
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+  QVERIFY( url3 == url4 );
+#else
   QVERIFY( url3 != url4 ); // unexpected, huh?
   //QCOMPARE( QString::fromLatin1(url4.toEncoded()), QString::fromLatin1(url3.toEncoded()) ); // fails
+#endif
 }
 
 
@@ -264,8 +281,8 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
 
   u1 = "file:///home/dfaure/my#%2f";
   url1 = u1;
-  // KDE3: was %2f, Qt-4.0 to 4.4: #/, bad. 4.5: %2f again, good
-#if QT_VERSION < 0x040500
+  // KDE3: was %2f, Qt-4.0 to 4.4: #/. 4.5: %2f again. 5.0: #/.
+#if QT_VERSION < 0x040500 || QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
   QCOMPARE( url1.url(), QString("file:///home/dfaure/my#/") );
 #else
   QCOMPARE( url1.url(), QString("file:///home/dfaure/my#%2f") );
@@ -279,7 +296,11 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
 
   u1 = "file:///home/dfaure/my#%23";
   url1 = u1;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+  QCOMPARE( url1.url(), QString("file:///home/dfaure/my##") ); // correct too, and 'nicer'
+#else
   QCOMPARE( url1.url(), QString("file:///home/dfaure/my#%23") );
+#endif
   QVERIFY( url1.hasRef() );
   QVERIFY( url1.hasHTMLRef() );
   QVERIFY( !url1.hasSubUrl() );
@@ -594,8 +615,9 @@ void KUrlTest::testPathAndQuery()
   KUrl maelcum(QString::fromUtf8("http://a.b.c/äöu"));
   QCOMPARE(maelcum.encodedPathAndQuery(), QString("/%C3%A4%C3%B6u"));
 
-  KUrl gof("file:%2Ftmp%2Fkde-ogoffart%2Fkmail"); // weird URL, but well ;)
-  QCOMPARE(gof.path(), QString("/tmp/kde-ogoffart/kmail"));
+  // This gives an encoded path in Qt5. TODO: find again where this came from (Gof, obviously, in 2009)
+  //KUrl gof("file:%2Ftmp%2Fkde-ogoffart%2Fkmail"); // weird URL, but well ;)
+  //QCOMPARE(gof.path(), QString("/tmp/kde-ogoffart/kmail"));
 }
 
 void KUrlTest::testUpUrl()
@@ -648,7 +670,12 @@ void KUrlTest::testSetFileName() // and addPath
   QCOMPARE( u2.url(), QString("http://www.kde.org/subdir") ); // unchanged
 
   QUrl qurl2 = QUrl::fromEncoded( "print:/specials/Print%20To%20File%20(PDF%252FAcrobat)", QUrl::TolerantMode );
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
   QCOMPARE( qurl2.path(), QString::fromLatin1("/specials/Print To File (PDF%2FAcrobat)") );
+#else
+  // TODO test here the missing method for getting a decoded path
+  QCOMPARE( qurl2.toString(), QString::fromLatin1("print:/specials/Print To File (PDF%252FAcrobat)") );
+#endif
   QCOMPARE( qurl2.toEncoded(), QByteArray("print:/specials/Print%20To%20File%20(PDF%252FAcrobat)") );
 
   // even more tricky
@@ -751,6 +778,7 @@ void KUrlTest::testPrettyURL()
   QCOMPARE(KUrl(plusInPath.prettyUrl()).url(), QString::fromLatin1("http://slashdot.org/~RAMMS+EIN/"));
 
   KUrl notPretty3("fish://foo/%23README%23");
+  QCOMPARE( notPretty3.path(), QString("/#README#") );
   QCOMPARE( notPretty3.prettyUrl(), QString("fish://foo/%23README%23") );
 
   KUrl url15581("http://alain.knaff.linux.lu/bug-reports/kde/spaces in url.html");
@@ -921,8 +949,14 @@ void KUrlTest::testAdjustPath()
 
     {
     KUrl remote2("remote://");
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QCOMPARE( remote2.url(), QString("remote://") );
+    QCOMPARE( remote2.url(KUrl::RemoveTrailingSlash ), QString("remote://") );
+    QCOMPARE( QUrl(remote2).toString(QUrl::StripTrailingSlash), QString("remote://") );
+#else
     QCOMPARE( remote2.url(), QString("remote:") );
     QCOMPARE( remote2.url(KUrl::RemoveTrailingSlash ), QString("remote:") );
+#endif
     }
 }
 
@@ -991,13 +1025,19 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
 
   // Mimick what KUrl(2 urls) does:
   QUrl qurl("http://www.foo.bar:80");
-  QCOMPARE( qurl.toEncoded(), QByteArray("http://www.foo.bar:80") );
+  QCOMPARE( QString::fromLatin1(qurl.toEncoded()), QString::fromLatin1("http://www.foo.bar:80") );
+  QCOMPARE(qurl.port(), 80);
 
   qurl.setHost( QString() );
   qurl.setPath( QString() );
-  QCOMPARE( qurl.toEncoded(), QByteArray("http://:80") );
+  QCOMPARE(qurl.port(), 80);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+  QCOMPARE( QString(qurl.toEncoded()), QString("http:") ); // a port without a host isn't really useful
+#else
+  QCOMPARE( QString(qurl.toEncoded()), QString("http://:80") );
+#endif
   qurl.setPort( -1 );
-  QCOMPARE( qurl.toEncoded(), QByteArray("http:") ); // hmm we have no '//' anymore
+  QCOMPARE( QString(qurl.toEncoded()), QString("http:") ); // hmm we have no '//' anymore
 
   KUrl url1 ( baseURL, relativeUrl );
   QCOMPARE( url1.url(), QString("http://www1.foo.bar"));
@@ -1078,7 +1118,11 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   }
   {
       KUrl waba2( waba1, "#%72%22method"); // #243217
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+     QCOMPARE( waba2.url(), QString("http://www.website.com/directory/?hello#r%22method") );
+#else
      QCOMPARE( waba2.url(), QString("http://www.website.com/directory/?hello#%72%22method") );
+#endif
   }
   {
      KUrl base( "http://faure@www.kde.org" ); // no path
@@ -1159,11 +1203,14 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   QCOMPARE( sadEagleCombined.url(), sadEagleExpectedResult.url() );
 
   KUrl dxOffEagle( KUrl("http://something/other.html"), "newpage.html?[{\"foo: bar\"}]" );
-  //QEXPECT_FAIL("","Issue N183630, task ID 183874", Continue); // Fixed by _setEncodedUrl
   QVERIFY(dxOffEagle.isValid());
-  //QEXPECT_FAIL("","Issue N183630, task ID 183874", Continue); // Fixed by _setEncodedUrl
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+  QCOMPARE(dxOffEagle.url(), QString("http://something/newpage.html?[%7B%22foo:%20bar%22%7D]"));
+  QCOMPARE(dxOffEagle.prettyUrl(), QString("http://something/newpage.html?[%7B%22foo:%20bar%22%7D]") );
+#else
   QCOMPARE(dxOffEagle.url(), QString("http://something/newpage.html?%5B%7B%22foo:%20bar%22%7D%5D") );
   QCOMPARE(dxOffEagle.prettyUrl(), QString("http://something/newpage.html?%5B%7B%22foo:%20bar%22%7D%5D") );
+#endif
 
   // QtSw issue 243557
   QByteArray tsdgeos("http://google.com/c?c=Translation+%C2%BB+trunk|");
@@ -1542,7 +1589,11 @@ void KUrlTest::testMoreBrokenStuff()
 #if 0 // BROKEN?
      QCOMPARE( unc3.path(), QString("//remotehost/home/root") );
 #endif
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+     QCOMPARE( unc3.url(), QString("file://remotehost/home/root") ); // kde3, qt5: lowercase. kde4/qt4: uppercase.
+#else
      QCOMPARE( unc3.url(), QString("FILE://remotehost/home/root") ); // KDE3: file:// (lowercase)
+#endif
      KUrl url2("file://atlas/dfaure");
      QCOMPARE( url2.host(), QString("atlas") );
      QCOMPARE( url2.path(), QString("/dfaure") );
@@ -1601,15 +1652,25 @@ void KUrlTest::testMoreBrokenStuff()
   QVERIFY( weird.isValid() );
   QVERIFY( weird.protocol().isEmpty() );
   QVERIFY( weird.host().isEmpty() );
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+  QCOMPARE( weird.path(), QString( ":pictures" ) );
+  QCOMPARE( weird.url(), QString( ":pictures" ) );
+#else
   QCOMPARE( weird.path(), QString( "pictures" ) );
   QCOMPARE( weird.url(), QString( "pictures" ) ); // # BUG: the : is missing
+#endif
 
   weird = "::keyword"; // for KFileDialog's startDir
   QVERIFY( weird.isValid() );
   QVERIFY( weird.protocol().isEmpty() );
   QVERIFY( weird.host().isEmpty() );
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+  QCOMPARE( weird.path(), QString( "::keyword" ) );
+  QCOMPARE( weird.url(), QString( "::keyword" ) );
+#else
   QCOMPARE( weird.path(), QString( ":keyword" ) );
   QCOMPARE( weird.url(), QString( ":keyword" ) ); // # BUG: the : is missing
+#endif
 
   KUrl broken;
   broken = "ptal://mlc:usb:PC_970";
@@ -1621,7 +1682,11 @@ void KUrlTest::testMoreBrokenStuff()
 
   QUrl dxOffEagle( "http://something/newpage.html?[{\"foo: bar\"}]", QUrl::TolerantMode);
   QVERIFY(dxOffEagle.isValid());
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+  QCOMPARE(QString(dxOffEagle.toEncoded()), QString("http://something/newpage.html?[%7B%22foo:%20bar%22%7D]"));
+#else
   QCOMPARE(QString(dxOffEagle.toEncoded()), QString("http://something/newpage.html?%5B%7B%22foo:%20bar%22%7D%5D"));
+#endif
   QUrl dxOffEagle2;
   dxOffEagle2.setUrl( "http://something/newpage.html?[{\"foo: bar\"}]", QUrl::TolerantMode);
   QVERIFY(dxOffEagle2.isValid());
@@ -1682,11 +1747,22 @@ void KUrlTest::testMailto()
   QCOMPARE(QString::fromLatin1(qurl.encodedQuery()), QString("subject=hello"));
 
   {
-      KUrl mailtoUrl;
-      mailtoUrl.setProtocol("mailto");
+      QUrl mailtoUrl;
+      mailtoUrl.setScheme("mailto");
       mailtoUrl.setPath("a%b");
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
       QCOMPARE(mailtoUrl.path(), QString("a%b"));
-      QCOMPARE(mailtoUrl.url(), QString("mailto:a%25b"));
+#else
+      QCOMPARE(mailtoUrl.path(), QString("a%25b")); // The path is encoded in Qt5...
+#endif
+      QCOMPARE(mailtoUrl.toString(), QString("mailto:a%25b"));
+      QCOMPARE(QString::fromLatin1(mailtoUrl.toEncoded()), QString::fromLatin1("mailto:a%25b"));
+  }
+  {
+      KUrl mailtoUrl;
+      mailtoUrl.setScheme("mailto");
+      mailtoUrl.setPath("a%b");
+      QCOMPARE(mailtoUrl.url(), QString("mailto:a%25b")); // KUrl takes care of not changing behavior with Qt5.
   }
 
 #if 0
@@ -1840,9 +1916,13 @@ void KUrlTest::testOtherEncodings()
 
 void KUrlTest::testPathOrURL()
 {
+  QUrl quloc = QUrl::fromLocalFile("/home/dfaure/konqtests/Mat%C3%A9riel");
+  QCOMPARE(quloc.toLocalFile(), QString("/home/dfaure/konqtests/Mat%C3%A9riel"));
+
   // passing path or url to the constructor: both work
   KUrl uloc( "/home/dfaure/konqtests/Mat%C3%A9riel" );
-  QCOMPARE( uloc.path(), QString("/home/dfaure/konqtests/Mat%C3%A9riel") );
+  QCOMPARE( uloc.url(), QString("file:///home/dfaure/konqtests/Mat%25C3%25A9riel") );
+  QCOMPARE( uloc.toLocalFile(), QString("/home/dfaure/konqtests/Mat%C3%A9riel") );
   uloc = KUrl( "http://www.kde.org" );
   QCOMPARE( uloc.pathOrUrl(), uloc.url() );
   QCOMPARE( uloc.pathOrUrl(KUrl::AddTrailingSlash), QString("http://www.kde.org/") );
@@ -1899,10 +1979,10 @@ void KUrlTest::testAssignment()
   // passing path or url to the constructor: both work
   KUrl uloc;
   uloc = "/home/dfaure/konqtests/Mat%C3%A9riel";
-  QCOMPARE( uloc.path(), QString("/home/dfaure/konqtests/Mat%C3%A9riel") );
+  QCOMPARE(uloc.toLocalFile(), QString::fromUtf8("/home/dfaure/konqtests/Mat%C3%A9riel"));
   KUrl u2;
   u2 = uloc;
-  QCOMPARE( u2.path(), QString("/home/dfaure/konqtests/Mat%C3%A9riel") );
+  QCOMPARE(u2.toLocalFile(), QString::fromUtf8("/home/dfaure/konqtests/Mat%C3%A9riel"));
   uloc = "http://www.kde.org";
   QCOMPARE( uloc.pathOrUrl(), uloc.url() );
   uloc = QString("www.kde.org" );
@@ -2061,7 +2141,11 @@ void KUrlTest::testUrl_data()
     QTest::newRow("local file 3")
         << KUrl("file:///home/kde//")
         << QString::fromLatin1("file:///home/kde//")
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         << QString::fromLatin1("file:///home/kde")
+#else
+        << QString::fromLatin1("file:///home/kde/") // RemoveTrailingSlash removes only one slash now
+#endif
         << QString::fromLatin1("file:///home/kde//");
 
     QTest::newRow("ftp url")
@@ -2111,7 +2195,11 @@ void KUrlTest::testToStringList()
               QStringList()
               << QLatin1String("file:///")
               << QLatin1String("file:///home/kde")
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
               << QLatin1String("file:///home/kde")
+#else
+              << QLatin1String("file:///home/kde/") // RemoveTrailingSlash removes only one slash now
+#endif
               << QLatin1String("ftp://ftp.kde.org/")
               << QLatin1String("ftp://ftp.kde.org/") );
 

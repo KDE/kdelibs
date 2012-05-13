@@ -752,21 +752,6 @@ QString KUrl::encodedPathAndQuery( AdjustPathOption trailing , const EncodedPath
     }
 }
 
-#if 0
-void KUrl::setEncodedPath( const QString& _txt, int encoding_hint )
-{
-  m_strPath_encoded = _txt;
-
-  decode( m_strPath_encoded, m_strPath, m_strPath_encoded, encoding_hint );
-  // Throw away encoding for local files, makes file-operations faster.
-  if (m_strProtocol == "file")
-     m_strPath_encoded.clear();
-
-  if ( m_iUriMode == Auto )
-    m_iUriMode = URL;
-}
-#endif
-
 void KUrl::setEncodedPathAndQuery( const QString& _txt )
 {
   const int pos = _txt.indexOf(QLatin1Char('?'));
@@ -784,13 +769,20 @@ void KUrl::setEncodedPathAndQuery( const QString& _txt )
 
 QString KUrl::path( AdjustPathOption trailing ) const
 {
+  QString decodedPath = QUrl::path();
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+  // In Qt5, the path is encoded. Decode it, to preserve behavior compat.
+  decodedPath = QString::fromUtf8(QByteArray::fromPercentEncoding(decodedPath.toUtf8()));
+#endif
+
 #ifdef Q_WS_WIN
 #ifdef DEBUG_KURL
   kWarning() << (isLocalFile() ? "converted to local file - the related call should be converted to toLocalFile()" : "") << QUrl::path();
 #endif
-  return trailingSlash( trailing, isLocalFile() ? QUrl::toLocalFile() : QUrl::path() );
+  return trailingSlash(trailing, isLocalFile() ? QUrl::toLocalFile() : decodedPath);
 #else
-  return trailingSlash( trailing, QUrl::path() );
+  return trailingSlash(trailing, decodedPath);
 #endif
 }
 
@@ -802,11 +794,12 @@ QString KUrl::toLocalFile( AdjustPathOption trailing ) const
         return trailingSlash(trailing, urlWithoutHost.toLocalFile());
     }
 
-#pragma message("FIXME: Remove #ifdef below once upstream bug, QTBUG-20322, is fixed. Also see BR# 194746.")
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0) // QTBUG-20322 is fixed in Qt5, skip the workaround
 #ifndef Q_WS_WIN
     if (isLocalFile()) {
         return trailingSlash(trailing, QUrl::path());
     }
+#endif
 #endif
     return trailingSlash(trailing, QUrl::toLocalFile());
 }
@@ -1694,7 +1687,11 @@ void KUrl::setPath( const QString& _path )
     if( len > 0 && path[0] != QLatin1Char('/') && scheme() == QLatin1String( "file" ) )
         path = QLatin1Char('/') + path;
 #endif
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     QUrl::setPath( path );
+#else
+    QUrl::setPath(QString::fromLatin1(path.toUtf8().toPercentEncoding("!$&'()*+,;=:@/")));
+#endif
 }
 
 #if 0 // this would be if we didn't decode '+' into ' '
