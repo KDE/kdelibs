@@ -23,7 +23,7 @@ set(ThreadWeaver_LIB_SRCS
     ResourceRestrictionPolicy.cpp
 )
 
-add_library(threadweaver ${LIBRARY_TYPE} ${ThreadWeaver_LIB_SRCS})
+add_library(threadweaver ${ThreadWeaver_LIB_SRCS})
 generate_export_header(threadweaver)
 target_link_libraries(threadweaver ${QT_QTCORE_LIBRARY})
 
