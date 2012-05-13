@@ -301,7 +301,7 @@ QString KMimeType::favIconForUrl( const QUrl& _url )
         || !KMimeTypeRepository::self()->useFavIcons())
         return QString();
 
-    QDBusInterface kded( QString::fromLatin1("org.kde.kded"),
+    QDBusInterface kded( QString::fromLatin1("org.kde.kded5"),
                          QString::fromLatin1("/modules/favicons"),
                          QString::fromLatin1("org.kde.FavIcon") );
     QDBusReply<QString> result = kded.call( QString::fromLatin1("iconForUrl"), url.url() );

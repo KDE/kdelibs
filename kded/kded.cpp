@@ -62,7 +62,7 @@
 #include <fixx11h.h>
 #endif
 
-#define KDED_EXENAME "kded4"
+#define KDED_EXENAME "kded5"
 
 #define MODULES_PATH "/modules/"
 
@@ -855,7 +855,7 @@ public:
 
 extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 {
-     KAboutData aboutData( "kded" /*don't change this one to kded4! dbus registration should be org.kde.kded etc.*/,
+     KAboutData aboutData( "kded5",
         "kdelibs4", qi18n("KDE Daemon"),
         "$Id$",
         qi18n("KDE Daemon - triggers Sycoca database updates when needed"));

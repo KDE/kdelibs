@@ -335,7 +335,7 @@ bool StorageAccess::requestPassphrase()
 
     QString appId = QCoreApplication::applicationName();
 
-    QDBusInterface soliduiserver("org.kde.kded", "/modules/soliduiserver", "org.kde.SolidUiServer");
+    QDBusInterface soliduiserver("org.kde.kded5", "/modules/soliduiserver", "org.kde.SolidUiServer");
     QDBusReply<void> reply = soliduiserver.call("showPassphraseDialog", udi,
                                                 returnService, m_lastReturnObject,
                                                 wId, appId);

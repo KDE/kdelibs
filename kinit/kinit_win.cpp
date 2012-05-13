@@ -51,7 +51,7 @@
 //#define ENABLE_SUICIDE 
 //#define ENABLE_EXIT
 
-#define KDED_EXENAME "kded4"
+#define KDED_EXENAME "kded5"
 
 static KComponentData *s_instance = 0;
 
@@ -387,11 +387,11 @@ int launch(const QString &cmd)
     }
     if (pid) {
        if (verbose)
-           fprintf(stderr, "kdeinit4: Launched %s, pid = %ld\n", qPrintable(cmd),(long) pid);
+           fprintf(stderr, "kdeinit5: Launched %s, pid = %ld\n", qPrintable(cmd),(long) pid);
     }
     else {
        if (verbose)
-           fprintf(stderr, "kdeinit4: could not launch %s, exiting\n",qPrintable(cmd));
+           fprintf(stderr, "kdeinit5: could not launch %s, exiting\n",qPrintable(cmd));
     }
     return pid;
 }
@@ -520,7 +520,7 @@ int main(int argc, char **argv, char **envp)
         } 
         if (strcmp(safe_argv[i], "--help") == 0)
         {
-           printf("Usage: kdeinit4 [options]\n");
+           printf("Usage: kdeinit5 [options]\n");
 #ifdef ENABLE_EXIT
            printf("   --exit                     Terminate when kded has run\n");
 #endif
@@ -582,7 +582,7 @@ int main(int argc, char **argv, char **envp)
     }
     
     /** Create our instance **/
-    s_instance = new KComponentData("kdeinit4", QByteArray(), KComponentData::SkipMainComponentRegistration);
+    s_instance = new KComponentData("kdeinit5", QByteArray(), KComponentData::SkipMainComponentRegistration);
 
 #ifdef _DEBUG
     // first try to launch dbus-daemond in debug mode
@@ -609,7 +609,7 @@ int main(int argc, char **argv, char **envp)
     if (launch_klauncher && !processList.find("klauncher"))
     {
           pid = launch("klauncher");
-          if (!pid || !checkIfRegisteredInDBus("org.kde.klauncher",10))
+          if (!pid || !checkIfRegisteredInDBus("org.kde.klauncher5",10))
               exit(1);
     }
 
@@ -617,7 +617,7 @@ int main(int argc, char **argv, char **envp)
     if (launch_kded && !processList.find(KDED_EXENAME))
     {
         pid = launch(KDED_EXENAME);
-        if (!pid || !checkIfRegisteredInDBus("org.kde.kded",10))
+        if (!pid || !checkIfRegisteredInDBus("org.kde.kded5",10))
             exit(1);
     }
 

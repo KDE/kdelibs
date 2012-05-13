@@ -367,7 +367,7 @@ int main()
 
     if (strcmp(params[P_XWIN_ONLY].value, "no"))
     {
-	system("kdeinit4 --suicide");
+	system("kdeinit5 --suicide");
     }
 
     /* Execute the command */

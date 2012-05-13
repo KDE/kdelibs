@@ -418,7 +418,7 @@ bool KSycocaPrivate::checkDatabase(BehaviorsIfNotFound ifNotFound)
 
     // We can only use the installed ksycoca file if kdeinit+klauncher+kded are running,
     // since kded is what keeps the file uptodate.
-    const bool kdeinitRunning = QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1("org.kde.klauncher"));
+    const bool kdeinitRunning = QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1("org.kde.klauncher5"));
 
     // Check if new database already available
     if (kdeinitRunning && openDatabase(ifNotFound & IfNotFoundOpenDummy)) {
@@ -434,7 +434,7 @@ bool KSycocaPrivate::checkDatabase(BehaviorsIfNotFound ifNotFound)
         if (!kdeinitRunning) {
             kDebug(7011) << "We have no database.... launching kdeinit";
             KToolInvocation::klauncher(); // this calls startKdeinit, and blocks until it returns
-            // and since kdeinit4 only returns after kbuildsycoca4 is done, we can proceed.
+            // and since kdeinit5 only returns after kbuildsycoca4 is done, we can proceed.
         } else {
             kDebug(7011) << QThread::currentThread() << "We have no database.... launching" << KBUILDSYCOCA_EXENAME;
             if (QProcess::execute(QStandardPaths::findExecutable(QString::fromLatin1(KBUILDSYCOCA_EXENAME))) != 0)

@@ -20,7 +20,7 @@
 #ifndef _KLAUNCHER_CMDS_H_
 #define _KLAUNCHER_CMDS_H_
 
-#define KDED_EXENAME "kded4"
+#define KDED_EXENAME "kded5"
 
 typedef struct
 {

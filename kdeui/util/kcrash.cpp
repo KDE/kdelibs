@@ -778,13 +778,13 @@ static int openSocket()
      return -1;
   }
 
-  if (strlen(sock_file)+strlen(display)+strlen("/kdeinit4_")+2 > MAX_SOCK_FILE)
+  if (strlen(sock_file)+strlen(display)+strlen("/kdeinit5_")+2 > MAX_SOCK_FILE)
   {
      fprintf(stderr, "Warning: Socket name will be too long.\n");
      free(display);
      return -1;
   }
-  strcat(sock_file, "/kdeinit4_");
+  strcat(sock_file, "/kdeinit5_");
   strcat(sock_file, display);
   free(display);
 

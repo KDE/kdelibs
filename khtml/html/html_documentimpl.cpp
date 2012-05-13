@@ -101,7 +101,7 @@ DOMString HTMLDocumentImpl::cookie() const
     if ( v && v->topLevelWidget() )
       windowId = v->topLevelWidget()->winId();
 
-    org::kde::KCookieServer kcookiejar("org.kde.kded", "/modules/kcookiejar", QDBusConnection::sessionBus());
+    org::kde::KCookieServer kcookiejar("org.kde.kded5", "/modules/kcookiejar", QDBusConnection::sessionBus());
     QDBusReply<QString> reply = kcookiejar.findDOMCookies(URL().url(), qlonglong(windowId));
 
     if ( !reply.isValid() )
@@ -125,7 +125,7 @@ void HTMLDocumentImpl::setCookie( const DOMString & value )
     fake_header.append(value.string().toLatin1().constData());
     fake_header.append("\n");
     // Note that kded modules are autoloaded so we don't need to call loadModule ourselves.
-    org::kde::KCookieServer kcookiejar("org.kde.kded", "/modules/kcookiejar", QDBusConnection::sessionBus());
+    org::kde::KCookieServer kcookiejar("org.kde.kded5", "/modules/kcookiejar", QDBusConnection::sessionBus());
     // Can't use kcookiejar.addCookies because then we can't pass NoBlock...
     kcookiejar.call(QDBus::NoBlock, "addCookies",
                      URL().url(), fake_header, qlonglong(windowId));

@@ -189,13 +189,13 @@ static int openSocket()
   }
 #endif
 
-  if (strlen(sock_file)+strlen(display)+strlen("/kdeinit4_")+2 > MAX_SOCK_FILE)
+  if (strlen(sock_file)+strlen(display)+strlen("/kdeinit5_")+2 > MAX_SOCK_FILE)
   {
      fprintf(stderr, "Warning: Socket name will be too long.\n");
      free (display);
      return -1;
   }
-  strcat(sock_file, "/kdeinit4_");
+  strcat(sock_file, "/kdeinit5_");
 #if !defined (NO_DISPLAY)
   strcat(sock_file, display);
   free(display);
@@ -222,7 +222,7 @@ static int openSocket()
   socklen = sizeof(server);
   if(connect(s, (struct sockaddr *)&server, socklen) == -1) 
   {
-     fprintf(stderr, "kdeinit4_wrapper: Warning: connect(%s) failed:", sock_file);
+     fprintf(stderr, "kdeinit5_wrapper: Warning: connect(%s) failed:", sock_file);
      perror(" ");
      close(s);
      return -1;
@@ -358,24 +358,24 @@ int main(int argc, char **argv)
       p++;
    start = p;
 
-   if (strcmp(start, "kdeinit4_wrapper") == 0)
+   if (strcmp(start, "kdeinit5_wrapper") == 0)
       wrapper = 1;
    else if (strcmp(start, "kshell4") == 0)
       ext_wrapper = 1;
    else if (strcmp(start, "kwrapper4") == 0)
       kwrapper = 1;
-   else if (strcmp(start, "kdeinit4_shutdown") == 0)
+   else if (strcmp(start, "kdeinit5_shutdown") == 0)
    {
       if( argc > 1)
       {
          fprintf(stderr, "Usage: %s\n\n", start);
-         fprintf(stderr, "Shuts down kdeinit4 master process and terminates all processes spawned from it.\n");
+         fprintf(stderr, "Shuts down kdeinit5 master process and terminates all processes spawned from it.\n");
          exit( 255 );
       }
       sock = openSocket();
       if( sock < 0 )
       {
-          fprintf( stderr, "Error: Can not contact kdeinit4!\n" );
+          fprintf( stderr, "Error: Can not contact kdeinit5!\n" );
           exit( 255 );
       }
       header.cmd = LAUNCHER_TERMINATE_KDE;
@@ -398,7 +398,7 @@ int main(int argc, char **argv)
    }
 
    sock = openSocket();
-   if( sock < 0 ) /* couldn't contact kdeinit4, start argv[ 0 ] directly */
+   if( sock < 0 ) /* couldn't contact kdeinit5, start argv[ 0 ] directly */
    {
       execvp( argv[ 0 ], argv );
       fprintf( stderr, "Error: Can not run %s !\n", argv[ 0 ] );

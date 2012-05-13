@@ -260,12 +260,12 @@ void KStandarddirsTest::testFindExe()
         QSKIP_PORTING( "kdelibs not installed", SkipAll );
 
     // findExe with a result in bin
-    const QString kdeinit = KGlobal::dirs()->findExe( "kdeinit4" );
+    const QString kdeinit = KGlobal::dirs()->findExe( "kdeinit5" );
     QVERIFY( !kdeinit.isEmpty() );
 #ifdef Q_OS_MAC
-    QVERIFY( kdeinit.endsWith( "kdeinit4", PATH_SENSITIVITY ) );
+    QVERIFY( kdeinit.endsWith( "kdeinit5", PATH_SENSITIVITY ) );
 #else
-    QVERIFY( kdeinit.endsWith( "bin/kdeinit4" EXT, PATH_SENSITIVITY ) );
+    QVERIFY( kdeinit.endsWith( "bin/kdeinit5" EXT, PATH_SENSITIVITY ) );
 #endif
 
 
@@ -276,10 +276,10 @@ void KStandarddirsTest::testFindExe()
     QVERIFY( lnusertemp.endsWith( "lib" KDELIBSUFF "/kde5/libexec/lnusertemp" EXT, PATH_SENSITIVITY ) );
 #endif
 
-#ifndef Q_OS_MAC // kdeinit4 is a bundle on Mac, so the below doesn't work
+#ifndef Q_OS_MAC // kdeinit5 is a bundle on Mac, so the below doesn't work
     // Check the "exe" resource too
     QString kdeinitPath1 = KGlobal::dirs()->realFilePath(kdeinit);
-    QString kdeinitPath2 = KGlobal::dirs()->locate( "exe", "kdeinit4" );
+    QString kdeinitPath2 = KGlobal::dirs()->locate( "exe", "kdeinit5" );
     QCOMPARE_PATHS( kdeinitPath1, kdeinitPath2 );
 #endif
 

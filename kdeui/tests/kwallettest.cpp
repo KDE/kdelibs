@@ -39,7 +39,7 @@ void KWalletTest::testWallet()
   QByteArray testValues[] = { "test", "@(!§\"%&", "", ".test", "\\" };
   int numTests = 5;
 
-  // Start kdeinit4, so that the wallet damon is started in the background
+  // Start kdeinit5, so that the wallet damon is started in the background
   OrgKdeKLauncherInterface *launcher = KToolInvocation::klauncher();
   launcher->autoStart();
 

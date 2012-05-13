@@ -26,7 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kcomponentdata.h>
 #include <klocalizedstring.h>
 #include "kcookieserverinterface.h"
-#include "kdedinterface.h"
+#include "kded5interface.h"
 
 int main(int argc, char *argv[])
 {
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 
    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-   org::kde::KCookieServer *kcookiejar = new org::kde::KCookieServer("org.kde.kded", "/modules/kcookiejar", QDBusConnection::sessionBus());
+   org::kde::KCookieServer *kcookiejar = new org::kde::KCookieServer("org.kde.kded5", "/modules/kcookiejar", QDBusConnection::sessionBus());
    if (args->isSet("remove-all"))
    {
       kcookiejar->deleteAllCookies();
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
    }
    if (args->isSet("shutdown"))
    {
-      org::kde::kded kded("org.kde.kded", "/kded", QDBusConnection::sessionBus());
+      org::kde::kded5 kded("org.kde.kded5", "/kded", QDBusConnection::sessionBus());
       kded.unloadModule("kcookiejar");
    }
    else if(args->isSet("reload-config"))
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
    }
    else
    {
-      org::kde::kded kded("org.kde.kded", "/kded", QDBusConnection::sessionBus());
+      org::kde::kded5 kded("org.kde.kded5", "/kded", QDBusConnection::sessionBus());
       kded.loadModule("kcookiejar");
    }
    delete kcookiejar;

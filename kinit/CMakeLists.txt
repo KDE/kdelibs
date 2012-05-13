@@ -24,7 +24,7 @@ else(HAVE_SOCKET_LIBRARY)
 endif(HAVE_SOCKET_LIBRARY)
 
 
-########### kdeinit4 ###############
+########### kdeinit5 ###############
 if (WIN32)
   set(kdeinit_SRCS kinit_win.cpp klauncher_cmds.cpp )
   if(NOT WINCE)
@@ -37,24 +37,24 @@ else (WIN32)
   set(kdeinit_LIBS "")
 endif (WIN32)
 
-# on win32 kdeinit4 has to be a console application 
+# on win32 kdeinit5 has to be a console application 
 # to be able to catch stderr based --verbose output
 if (Q_WS_MAC)
   # this has to be GUI on OSX because it launches GUI apps and need a quartz context
-  kde4_add_executable(kdeinit4 ${kdeinit_SRCS})
-  set_target_properties(kdeinit4 PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.template)
-  set_target_properties(kdeinit4 PROPERTIES MACOSX_BUNDLE_GUI_IDENTIFIER "org.kde.kdeinit4")
-  set_target_properties(kdeinit4 PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "KDE Init")
+  kde4_add_executable(kdeinit5 ${kdeinit_SRCS})
+  set_target_properties(kdeinit5 PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.template)
+  set_target_properties(kdeinit5 PROPERTIES MACOSX_BUNDLE_GUI_IDENTIFIER "org.kde.kdeinit5")
+  set_target_properties(kdeinit5 PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "KDE Init")
 else (Q_WS_MAC)
-  kde4_add_executable(kdeinit4 NOGUI ${kdeinit_SRCS})
+  kde4_add_executable(kdeinit5 NOGUI ${kdeinit_SRCS})
 endif (Q_WS_MAC)
 
-target_link_libraries(kdeinit4 ${KDE4_KDEUI_LIBS} ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY} kcoreaddons )
+target_link_libraries(kdeinit5 ${KDE4_KDEUI_LIBS} ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY} kcoreaddons )
 if (Q_WS_X11)
-  target_link_libraries(kdeinit4 ${X11_X11_LIB})
+  target_link_libraries(kdeinit5 ${X11_X11_LIB})
 endif(Q_WS_X11)
 
-install(TARGETS kdeinit4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
+install(TARGETS kdeinit5 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 ########### kwrapper4 ###############
 if (WIN32)
@@ -75,17 +75,17 @@ install(TARGETS kwrapper4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 if (NOT WIN32)
 
-  ########### kdeinit4_wrapper ###############
+  ########### kdeinit5_wrapper ###############
 
-  kde4_add_executable(kdeinit4_wrapper NOGUI wrapper.c)
+  kde4_add_executable(kdeinit5_wrapper NOGUI wrapper.c)
 
-  target_link_libraries(kdeinit4_wrapper  ${KINIT_SOCKET_LIBRARY})
+  target_link_libraries(kdeinit5_wrapper  ${KINIT_SOCKET_LIBRARY})
 
   if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
     add_definitions(-DNO_DISPLAY)
   endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 
-  install(TARGETS kdeinit4_wrapper ${INSTALL_TARGETS_DEFAULT_ARGS} )
+  install(TARGETS kdeinit5_wrapper ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
   ########### kshell4 ###############
 
@@ -95,13 +95,13 @@ if (NOT WIN32)
 
   install(TARGETS kshell4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
-  ########### kdeinit4_shutdown ###############
+  ########### kdeinit5_shutdown ###############
 
-  kde4_add_executable(kdeinit4_shutdown NOGUI wrapper.c)
+  kde4_add_executable(kdeinit5_shutdown NOGUI wrapper.c)
 
-  target_link_libraries(kdeinit4_shutdown  ${KINIT_SOCKET_LIBRARY})
+  target_link_libraries(kdeinit5_shutdown  ${KINIT_SOCKET_LIBRARY})
 
-  install(TARGETS kdeinit4_shutdown ${INSTALL_TARGETS_DEFAULT_ARGS} )
+  install(TARGETS kdeinit5_shutdown ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
   ########### lnusertemp ###############
 

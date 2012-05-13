@@ -301,7 +301,7 @@ read_socket(int sock, char *buffer, int len)
         FD_SET( sock, &in );
         select( sock + 1, &in, 0, 0, &tm );
         if( !FD_ISSET( sock, &in )) {
-            kDebug(7016) << "read_socket" << sock << "nothing to read, kdeinit4 must be dead";
+            kDebug(7016) << "read_socket" << sock << "nothing to read, kdeinit5 must be dead";
             return -1;
         }
 

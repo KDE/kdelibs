@@ -816,7 +816,7 @@ KLocaleTest::formatDateTime()
 	QCOMPARE(locale.formatDateTime(qdt, KLocale::FancyLongDate), qdt.toString(full));
 
 	// The use of KSystemTimeZones requires kded to be running
-	if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded")) {
+	if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded5")) {
 	    QSKIP_PORTING( "kded not running", SkipAll );
 	}
 

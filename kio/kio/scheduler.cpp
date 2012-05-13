@@ -1350,7 +1350,7 @@ void SchedulerPrivate::registerWindow(QWidget *wid)
       m_windowList.insert(obj, windowId);
       q->connect(window, SIGNAL(destroyed(QObject*)),
                  SLOT(slotUnregisterWindow(QObject*)));
-      QDBusInterface("org.kde.kded", "/kded", "org.kde.kded").
+      QDBusInterface("org.kde.kded5", "/kded", "org.kde.kded5").
           call(QDBus::NoBlock, "registerWindowId", qlonglong(windowId));
    }
 }
@@ -1367,7 +1367,7 @@ void SchedulerPrivate::slotUnregisterWindow(QObject *obj)
    q->disconnect(it.key(), SIGNAL(destroyed(QObject*)),
                  q, SLOT(slotUnregisterWindow(QObject*)));
    m_windowList.erase( it );
-   QDBusInterface("org.kde.kded", "/kded", "org.kde.kded").
+   QDBusInterface("org.kde.kded5", "/kded", "org.kde.kded5").
        call(QDBus::NoBlock, "unregisterWindowId", qlonglong(windowId));
 }
 

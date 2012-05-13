@@ -60,7 +60,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
    if (argc != 2 || memcmp(argv[1], "--fd=", 5) || !(launcherFd = atoi(argv[1] + 5)))
    {
       fprintf(stderr, "%s", i18n("klauncher: This program is not supposed to be started manually.\n"
-                                 "klauncher: It is started automatically by kdeinit4.\n").toLocal8Bit().data());
+                                 "klauncher: It is started automatically by kdeinit5.\n").toLocal8Bit().data());
       return 1;
    }
 #endif
@@ -82,7 +82,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
    int maxTry = 3;
    while(true)
    {
-      QString service(QLatin1String("org.kde.klauncher")); // same as ktoolinvocation.cpp
+      QString service(QLatin1String("org.kde.klauncher5")); // same as ktoolinvocation.cpp
       if (!QDBusConnection::sessionBus().isConnected()) {
          kWarning() << "No DBUS session-bus found. Check if you have started the DBUS server.";
          return 1;

@@ -8,8 +8,8 @@ dynamic library which should contain a 'main(...)'
 function.  This both increases the startup speed and
 reduces the memory consumption of KDE applications.
 
-kdeinit4_wrapper, kshell4 and kwrapper4 provide methods
-of starting programs via kdeinit4.
+kdeinit5_wrapper, kshell4 and kwrapper4 provide methods
+of starting programs via kdeinit5.
 
 @authors
 Waldo Bastian \<bastian@kde.org\><br>

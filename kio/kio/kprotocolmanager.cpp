@@ -471,7 +471,7 @@ QStringList KProtocolManager::proxiesForUrl( const QUrl &url )
         u.setScheme(protocol);
 
         if (KProtocolInfo::protocolClass(protocol) != QL1S(":local")) {
-          QDBusReply<QStringList> reply = QDBusInterface(QL1S("org.kde.kded"),
+          QDBusReply<QStringList> reply = QDBusInterface(QL1S("org.kde.kded5"),
                                                          QL1S("/modules/proxyscout"),
                                                          QL1S("org.kde.KPAC.ProxyScout"))
                                           .call(QL1S("proxiesForUrl"), u.toString());
@@ -512,7 +512,7 @@ QStringList KProtocolManager::proxiesForUrl( const QUrl &url )
 
 void KProtocolManager::badProxy( const QString &proxy )
 {
-  QDBusInterface( QL1S("org.kde.kded"), QL1S("/modules/proxyscout"))
+  QDBusInterface( QL1S("org.kde.kded5"), QL1S("/modules/proxyscout"))
       .asyncCall(QL1S("blackListProxy"), proxy);
 
   PRIVATE_DATA;

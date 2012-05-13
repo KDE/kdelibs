@@ -14,28 +14,28 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-kded.h.cmake ${CMAKE_CURRENT_B
 ########### next target ###############
 
 set(kded_KDEINIT_SRCS kded.cpp kdedadaptor.cpp
-    ${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded.xml # just so that it gets generated
+    ${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded5.xml # just so that it gets generated
 )
 
 
-kde4_add_kdeinit_executable(kded4  ${kded_KDEINIT_SRCS})
+kde4_add_kdeinit_executable(kded5  ${kded_KDEINIT_SRCS})
 
 if (Q_WS_MAC)
-    set_target_properties(kded4 PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.template)
-    set_target_properties(kded4 PROPERTIES MACOSX_BUNDLE_GUI_IDENTIFIER "org.kded.kded4")
-    set_target_properties(kded4 PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "KDE Daemon")
+    set_target_properties(kded5 PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.template)
+    set_target_properties(kded5 PROPERTIES MACOSX_BUNDLE_GUI_IDENTIFIER "org.kded.kded5")
+    set_target_properties(kded5 PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "KDE Daemon")
 endif (Q_WS_MAC)
 
-target_link_libraries(kdeinit_kded4  ${KDE4_KIO_LIBS} ${X11_LIBRARIES} kcoreaddons)
+target_link_libraries(kdeinit_kded5  ${KDE4_KIO_LIBS} ${X11_LIBRARIES} kcoreaddons)
 
-install(TARGETS kdeinit_kded4 ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kdeinit_kded5 ${INSTALL_TARGETS_DEFAULT_ARGS})
 
-target_link_libraries( kded4 kdeinit_kded4)
-install(TARGETS kded4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
+target_link_libraries( kded5 kdeinit_kded5)
+install(TARGETS kded5 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 
-qt4_generate_dbus_interface( kdedadaptor.h org.kde.kded.xml )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
+qt4_generate_dbus_interface( kdedadaptor.h org.kde.kded5.xml )
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded5.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 
 

@@ -44,7 +44,7 @@ void KBuildSycocaProgressDialog::rebuildKSycoca(QWidget *parent)
                                  i18n("Updating System Configuration"),
                                  i18n("Updating system configuration."));
 
-  QDBusInterface kbuildsycoca("org.kde.kded", "/kbuildsycoca",
+  QDBusInterface kbuildsycoca("org.kde.kded5", "/kbuildsycoca",
                               "org.kde.kbuildsycoca");
   if (kbuildsycoca.isValid()) {
      kbuildsycoca.callWithCallback("recreate", QVariantList(), &dlg, SLOT(_k_slotFinished()));

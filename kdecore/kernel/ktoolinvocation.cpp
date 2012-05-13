@@ -51,11 +51,11 @@ KToolInvocation::~KToolInvocation()
 }
 
 Q_GLOBAL_STATIC_WITH_ARGS(org::kde::KLauncher, klauncherIface,
-                          (QString::fromLatin1("org.kde.klauncher"), QString::fromLatin1("/KLauncher"), QDBusConnection::sessionBus()))
+                          (QString::fromLatin1("org.kde.klauncher5"), QString::fromLatin1("/KLauncher"), QDBusConnection::sessionBus()))
 
 org::kde::KLauncher *KToolInvocation::klauncher()
 {
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1("org.kde.klauncher"))) {
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1("org.kde.klauncher5"))) {
         kDebug(180) << "klauncher not running... launching kdeinit";
         KToolInvocation::startKdeinit();
     }
@@ -365,11 +365,11 @@ void KToolInvocation::startKdeinit()
   KLockFile lock(QDir::tempPath() + QLatin1Char('/') + QLatin1String("startkdeinitlock"));
   if( lock.lock( KLockFile::NoBlockFlag ) != KLockFile::LockOK ) {
      lock.lock();
-     if( QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1("org.kde.klauncher")))
+     if( QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1("org.kde.klauncher5")))
          return; // whoever held the lock has already started it
   }
   // Try to launch kdeinit.
-  QString srv = QStandardPaths::findExecutable(QLatin1String("kdeinit4"));
+  QString srv = QStandardPaths::findExecutable(QLatin1String("kdeinit5"));
   if (srv.isEmpty())
      return;
 //   this is disabled because we are in kdecore

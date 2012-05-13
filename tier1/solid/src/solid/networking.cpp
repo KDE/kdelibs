@@ -35,7 +35,7 @@ Solid::NetworkingPrivate::NetworkingPrivate()
       disconnectPolicy(Solid::Networking::Managed),
       iface(0)
 {
-    QDBusServiceWatcher *watcher = new QDBusServiceWatcher("org.kde.kded", QDBusConnection::sessionBus(),
+    QDBusServiceWatcher *watcher = new QDBusServiceWatcher("org.kde.kded5", QDBusConnection::sessionBus(),
                                                            QDBusServiceWatcher::WatchForOwnerChange, this);
     connect(watcher, SIGNAL(serviceOwnerChanged(QString,QString,QString)),
             this, SLOT(serviceOwnerChanged(QString,QString,QString)));
@@ -54,7 +54,7 @@ Solid::Networking::Notifier::Notifier()
 void Solid::NetworkingPrivate::initialize()
 {
     delete iface;
-    iface  = new OrgKdeSolidNetworkingClientInterface( "org.kde.kded",
+    iface  = new OrgKdeSolidNetworkingClientInterface( "org.kde.kded5",
             "/modules/networkstatus",
             QDBusConnection::sessionBus(),
             this);

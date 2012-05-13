@@ -30,7 +30,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#define EXECUTE BIN_INSTALL_DIR "/kdeinit4"
+#define EXECUTE BIN_INSTALL_DIR "/kdeinit5"
 
 #ifdef KDEINIT_OOM_PROTECT
 

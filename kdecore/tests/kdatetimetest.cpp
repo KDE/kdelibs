@@ -1343,14 +1343,14 @@ void KDateTimeTest::toZone()
     QSignalSpy timeoutSpy(&timer, SIGNAL(timeout()));
 
     // This test relies on kded running, and on kdebase/runtime being installed
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded")) {
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded5")) {
         QSKIP_PORTING("kded not running", SkipSingle);
     }
-    QDBusInterface ktimezoned("org.kde.kded", "/modules/ktimezoned", "org.kde.kded.KTimeZoned");
+    QDBusInterface ktimezoned("org.kde.kded5", "/modules/ktimezoned", "org.kde.kded5.KTimeZoned");
     if (!ktimezoned.isValid())
     {
         // Need to load the KDED time zones module
-        QDBusInterface kded("org.kde.kded", "/kded", "org.kde.kded");
+        QDBusInterface kded("org.kde.kded5", "/kded", "org.kde.kded5");
         QDBusReply<bool> reply = kded.call("loadModule", "ktimezoned");
         if (!reply.isValid() || !reply)
             QSKIP_PORTING("Could not load ktimezoned kded module", SkipSingle);

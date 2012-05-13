@@ -86,7 +86,7 @@ QString findLibraryInternal(const QString &name, const KComponentData &cData)
     QString libname = makeLibName(name);
     QFileInfo fileinfo(name);
     bool hasPrefix = fileinfo.fileName().startsWith(QLatin1String("lib"));
-    bool kdeinit = fileinfo.fileName().startsWith(QLatin1String("libkdeinit4_"));
+    bool kdeinit = fileinfo.fileName().startsWith(QLatin1String("libkdeinit5_"));
 
     if (hasPrefix && !kdeinit)
         kDebug(kLibraryDebugArea()) << "plugins should not have a 'lib' prefix:" << libname;

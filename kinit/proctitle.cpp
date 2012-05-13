@@ -131,7 +131,7 @@ void proctitle_init(int argc, char *argv[], char *envp[]) {
     /* Set the __progname variable so glibc and company
      * don't go nuts.
      */
-    __progname = strdup("kdeinit4");
+    __progname = strdup("kdeinit5");
 # endif /* HAVE___PROGNAME */
 # ifdef HAVE___PROGNAME_FULL
     /* __progname_full too */
@@ -166,7 +166,7 @@ void proctitle_set(const char *fmt, ...) {
 
 # else /* FREEBSD4 */
     /* Manually append the process name for non-FreeBSD platforms. */
-    snprintf(statbuf, sizeof(statbuf), "%s", "kdeinit4: ");
+    snprintf(statbuf, sizeof(statbuf), "%s", "kdeinit5: ");
     vsnprintf(statbuf + strlen(statbuf),
               sizeof(statbuf) - strlen(statbuf),
               fmt,
@@ -177,7 +177,7 @@ void proctitle_set(const char *fmt, ...) {
 
 #else /* HAVE_SETPROCTITLE */
     /* Manually append the process name for non-setproctitle() platforms. */
-    snprintf(statbuf, sizeof(statbuf), "%s", "kdeinit4: ");
+    snprintf(statbuf, sizeof(statbuf), "%s", "kdeinit5: ");
     vsnprintf(statbuf + strlen(statbuf),
               sizeof(statbuf) - strlen(statbuf),
               fmt,
