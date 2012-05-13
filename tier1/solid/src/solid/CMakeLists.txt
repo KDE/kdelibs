@@ -1,6 +1,3 @@
-set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
-add_subdirectory( ifaces )
-
 include (CheckCXXSourceCompiles)
 
 check_cxx_source_compiles("	#ifdef __SUNPRO_CC
@@ -383,11 +380,6 @@ if(APPLE)
    set(solid_OPTIONAL_LIBS ${IOKIT_LIBRARY})
 endif()
 
-include_directories (${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-
-add_library(solid ${LIBRARY_TYPE} ${solid_LIB_SRCS})
-generate_export_header(solid)
-
 if ( HUPNP_FOUND )
    set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${HUPNP_LIBS})
 endif()
@@ -396,20 +388,24 @@ if ( UDEV_FOUND )
    set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${UDEV_LIBS})
 endif ()
 
-target_link_libraries(solid ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS} )
-target_link_libraries(solid LINK_INTERFACE_LIBRARIES ${QT_CORE_LIBRARY} )
+include_directories (${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
-set_target_properties(solid PROPERTIES
-   VERSION ${ECM_VERSION_STRING}
-   SOVERSION ${ECM_SOVERSION}
-)
+add_library(solid  ${solid_LIB_SRCS})
+generate_export_header(solid)
+
+target_link_libraries(solid LINK_PUBLIC ${QT_QTCORE_LIBRARY}
+                            LINK_PRIVATE ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS} )
+
+set_target_properties(solid PROPERTIES  VERSION ${ECM_VERSION_STRING}
+                                        SOVERSION ${ECM_SOVERSION} )
 
 install(TARGETS solid EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
-install(FILES org.kde.Solid.Networking.Client.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
-install(FILES org.kde.Solid.PowerManagement.PolicyAgent.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
-install(FILES org.freedesktop.PowerManagement.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
-install(FILES org.freedesktop.PowerManagement.Inhibit.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
+install(FILES org.kde.Solid.Networking.Client.xml
+              org.kde.Solid.PowerManagement.PolicyAgent.xml
+              org.freedesktop.PowerManagement.xml
+              org.freedesktop.PowerManagement.Inhibit.xml
+        DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 ########### static lib for tests  ###############
 
@@ -425,7 +421,8 @@ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h solidnamespace.h devic
                camera.h portablemediaplayer.h networkinterface.h acadapter.h battery.h
                button.h audiointerface.h dvbinterface.h predicate.h powermanagement.h
                networking.h video.h serialinterface.h smartcardreader.h internetgateway.h
-               networkshare.h DESTINATION ${INCLUDE_INSTALL_DIR}/solid COMPONENT Devel)
+               networkshare.h
+         DESTINATION ${INCLUDE_INSTALL_DIR}/solid COMPONENT Devel)
 
 ########### parser build ###############
 
