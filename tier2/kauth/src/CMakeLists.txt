@@ -18,7 +18,7 @@ set(libkauth_SRCS
     backends/fakehelper/FakeHelperProxy.cpp
 )
 
-add_library(kauth ${LIBRARY_TYPE} ${libkauth_SRCS})
+add_library(kauth ${libkauth_SRCS})
 generate_export_header(kauth)
 
 target_link_libraries(kauth ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons)
