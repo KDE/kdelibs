@@ -20,11 +20,12 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <QtGui/QFileDialog>
+
 #include "kbookmarkimporter_ns.h"
 #include "kbookmarkimporter.h"
 #include "kbookmarkexporter.h"
 #include "kbookmarkmanager.h"
-#include <kfiledialog.h>
 #include <kstringhandler.h>
 #include <klocalizedstring.h>
 #include <QtCore/QDebug>
@@ -110,13 +111,13 @@ QString KNSBookmarkImporterImpl::findDefaultLocation(bool forSaving) const
     if (m_utf8)
     {
        if ( forSaving )
-           return KFileDialog::getSaveFileName( QUrl::fromLocalFile(QDir::homePath() + "/.mozilla"),
-                                                i18n("*.html|HTML Files (*.html)"),
-                                                QApplication::activeWindow() );
+           return QFileDialog::getSaveFileName( QApplication::activeWindow(), QString(),
+                                                QDir::homePath() + "/.mozilla",
+                                                i18n("HTML Files (*.html)"));
        else
-           return KFileDialog::getOpenFileName( QUrl::fromLocalFile(QDir::homePath() + "/.mozilla"),
-                                                i18n("*.html|HTML Files (*.html)"),
-                                                QApplication::activeWindow() );
+           return QFileDialog::getOpenFileName( QApplication::activeWindow(), QString(),
+                                                QDir::homePath() + "/.mozilla",
+                                                i18n("*.html|HTML Files (*.html)"));
     }
     else
     {

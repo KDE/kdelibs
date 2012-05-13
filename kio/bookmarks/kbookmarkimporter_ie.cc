@@ -20,7 +20,8 @@
 
 #include "kbookmarkimporter_ie.h"
 
-#include <kfiledialog.h>
+#include <QtGui/QFileDialog>
+
 #include <kstringhandler.h>
 #include <klocalizedstring.h>
 #include <QtCore/QDebug>
@@ -151,7 +152,7 @@ QString KIEBookmarkImporterImpl::findDefaultLocation(bool) const
     // stuff in the exporter is ugly so that exclues
     // the possibility of just writing to Favourites
     // and checking if overwriting...
-    return KFileDialog::getExistingDirectory(QUrl(), QApplication::activeWindow());
+    return QFileDialog::getExistingDirectory(QApplication::activeWindow());
 }
 
 /////////////////////////////////////////////////

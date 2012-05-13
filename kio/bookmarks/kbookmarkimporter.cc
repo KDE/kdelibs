@@ -20,7 +20,6 @@
 
 #include "kbookmarkimporter.h"
 
-#include <kfiledialog.h>
 #include <kstringhandler.h>
 #include <klocalizedstring.h>
 #include <QtCore/QDebug>
