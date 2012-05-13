@@ -1,4 +1,3 @@
-enable_testing()
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
@@ -11,29 +10,29 @@ include_directories(
    ${CMAKE_CURRENT_BINARY_DIR}/../src/gui
 )
 
-MACRO(KCONFIGCORE_UNIT_TESTS)
-       FOREACH(_testname ${ARGN})
-               add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
-               add_test(kconfigcore-${_testname} ${_testname})
-               target_link_libraries(${_testname} kconfigcore ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} ${inqt5_LIBRARY})
-       ENDFOREACH(_testname)
-ENDMACRO(KCONFIGCORE_UNIT_TESTS)
+macro(KCONFIGCORE_UNIT_TESTS)
+   foreach(_testname ${ARGN})
+      add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
+      add_test(kconfigcore-${_testname} ${_testname})
+      target_link_libraries(${_testname} kconfigcore ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} ${inqt5_LIBRARY})
+   endforeach()
+endmacro()
 
-MACRO(KCONFIGGUI_UNIT_TESTS)
-       FOREACH(_testname ${ARGN})
-               add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
-               add_test(kconfiggui-${_testname} ${_testname})
-               target_link_libraries(${_testname} kconfigcore kconfiggui ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${inqt5_LIBRARY})
-       ENDFOREACH(_testname)
-ENDMACRO(KCONFIGGUI_UNIT_TESTS)
+macro(KCONFIGGUI_UNIT_TESTS)
+   foreach(_testname ${ARGN})
+      add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
+      add_test(kconfiggui-${_testname} ${_testname})
+      target_link_libraries(${_testname} kconfigcore kconfiggui ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${inqt5_LIBRARY})
+   endforeach()
+endmacro()
 
-KCONFIGCORE_UNIT_TESTS(
-  kconfigtest
+kconfigcore_unit_tests(
+   kconfigtest
 )
 
-KCONFIGGUI_UNIT_TESTS(
-  kconfigguitest
-  kconfigskeletontest
+kconfiggui_unit_tests(
+   kconfigguitest
+   kconfigskeletontest
 )
 
 add_subdirectory(kconfig_compiler)

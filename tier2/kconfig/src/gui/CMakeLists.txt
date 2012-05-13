@@ -8,7 +8,7 @@ set(libkconfiggui_SRCS
    kconfigskeleton.cpp
 )
 
-add_library(kconfiggui ${LIBRARY_TYPE} ${libkconfiggui_SRCS})
+add_library(kconfiggui ${libkconfiggui_SRCS})
 generate_export_header(kconfiggui)
 
 target_link_libraries(kconfiggui ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} kconfigcore)

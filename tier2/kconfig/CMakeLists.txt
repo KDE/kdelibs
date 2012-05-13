@@ -2,15 +2,18 @@ cmake_minimum_required(VERSION 2.8.8)
 
 project(kconfig)
 
-find_package(extra-cmake-modules 0.0.2 REQUIRED)
+find_package(ECM 0.0.4 REQUIRED NO_MODULE)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${EXTRA_CMAKE_MODULES_MODULE_PATH} cmake/)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} cmake/)
 
 include(ECMVersion)
 
 # -- Maintained by scripty
 ecm_version(5 0 0)
 # --
+
+# once we can build tier2 libs standalone, add "kcoreaddons" component
+find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 include(ECMQtFramework)
 
@@ -26,15 +29,15 @@ add_subdirectory(src)
 add_subdirectory(autotests)
 
 install(FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/kconfig_version.h
-  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
+   ${CMAKE_CURRENT_BINARY_DIR}/kconfig_version.h
+   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 
-if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
-  feature_summary(WHAT ALL   FATAL_ON_MISSING_REQUIRED_PACKAGES)
-endif()
-
 install( FILES
-    cmake/KConfigMacros.cmake
-    DESTINATION ${DATA_INSTALL_DIR}/cmake/modules COMPONENT Devel )
+   cmake/KConfigMacros.cmake
+   DESTINATION ${DATA_INSTALL_DIR}/cmake/modules COMPONENT Devel )
 
+
+if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+   feature_summary(WHAT ALL   FATAL_ON_MISSING_REQUIRED_PACKAGES)
+endif()

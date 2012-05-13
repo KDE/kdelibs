@@ -26,8 +26,3 @@
 #
 #    export(TARGETS kconfig_compiler FILE ${CMAKE_BINARY_DIR}/ImportKConfigCompilerExecutable.cmake)
 # endif (CMAKE_CROSSCOMPILING)
-
-
-
-
-

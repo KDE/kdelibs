@@ -15,12 +15,12 @@ set(libkconfigcore_SRCS
    kcoreauthorized.cpp
 )
 
-add_library(kconfigcore ${LIBRARY_TYPE} ${libkconfigcore_SRCS})
+add_library(kconfigcore ${libkconfigcore_SRCS})
 generate_export_header(kconfigcore)
 
 target_link_libraries(kconfigcore ${QT_QTCORE_LIBRARY} kcoreaddons ${inqt5_LIBRARY})
 set_target_properties(kconfigcore PROPERTIES VERSION   ${ECM_VERSION_STRING}
-                                       SOVERSION ${ECM_SOVERSION}
+                                             SOVERSION ${ECM_SOVERSION}
 )
 
 install(TARGETS kconfigcore EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
