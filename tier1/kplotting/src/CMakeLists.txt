@@ -7,7 +7,7 @@ set(kplotting_SRCS
  kplotwidget.cpp
 )
 
-add_library(kplotting ${LIBRARY_TYPE} ${kplotting_SRCS})
+add_library(kplotting ${kplotting_SRCS})
 generate_export_header(kplotting)
 
 target_link_libraries(kplotting ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
