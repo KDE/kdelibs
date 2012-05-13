@@ -81,7 +81,7 @@ private:
 
     /**
      * Creates a bookmark manager for an external file
-     * (Using KDirWatch for change monitoring)
+     * (Using QFileSystemWatcher for change monitoring)
      * @since 4.1
      */
     KBookmarkManager( const QString & bookmarksFile );
@@ -246,7 +246,7 @@ public:
                                              const QString& dbusObjectName );
 
     /**
-     * Returns a KBookmarkManager, which will use KDirWatch for change detection
+     * Returns a KBookmarkManager, which will use QFileSystemWatcher for change detection
      * This is important when sharing bookmarks with other Desktops.
      * @param bookmarksFile full path to the bookmarks file
      * @since 4.1

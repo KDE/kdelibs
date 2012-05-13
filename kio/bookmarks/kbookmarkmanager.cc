@@ -25,6 +25,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
+#include <QtCore/QFileSystemWatcher>
 #include <QtCore/QProcess>
 #include <QtCore/QRegExp>
 #include <QtCore/QTextStream>
@@ -33,7 +34,6 @@
 
 #include <kbackup.h>
 #include <kconfiggroup.h>
-#include <kdirwatch.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <qsavefile.h>
@@ -110,11 +110,11 @@ public:
       , m_dialogParent(0)
       , m_browserEditor(false)
       , m_typeExternal(false)
-      , m_kDirWatch(0)
+      , m_fsWatch(0)
     {}
 
     ~Private() {
-        delete m_kDirWatch;
+        delete m_fsWatch;
     }
 
     mutable QDomDocument m_doc;
@@ -130,7 +130,7 @@ public:
     QString m_editorCaption;
 
     bool m_typeExternal;
-    KDirWatch * m_kDirWatch;  // for external bookmark files
+    QFileSystemWatcher * m_fsWatch;  // for external bookmark files
 
     KBookmarkMap m_map;
 };
@@ -240,7 +240,7 @@ KBookmarkManager::KBookmarkManager( const QString & bookmarksFile, const QString
 KBookmarkManager::KBookmarkManager(const QString & bookmarksFile)
     : d(new Private(false))
 {
-    // use KDirWatch to monitor this bookmarks file
+    // use QFileSystemWatcher to monitor this bookmarks file
     d->m_typeExternal = true;
     d->m_update = true;
 
@@ -257,16 +257,12 @@ KBookmarkManager::KBookmarkManager(const QString & bookmarksFile)
     }
     d->m_docIsLoaded = true;
 
-    // start KDirWatch
-    d->m_kDirWatch = new KDirWatch;
-    d->m_kDirWatch->addFile(d->m_bookmarksFile);
-    QObject::connect( d->m_kDirWatch, SIGNAL(dirty(const QString&)),
+    // start QFileSystemWatcher
+    d->m_fsWatch = new QFileSystemWatcher;
+    d->m_fsWatch->addPath(d->m_bookmarksFile);
+    QObject::connect( d->m_fsWatch, SIGNAL(fileChanged(QString)),
             this, SLOT(slotFileChanged(const QString&)));
-    QObject::connect( d->m_kDirWatch, SIGNAL(created(const QString&)),
-            this, SLOT(slotFileChanged(const QString&)));
-    QObject::connect( d->m_kDirWatch, SIGNAL(deleted(const QString&)),
-            this, SLOT(slotFileChanged(const QString&)));
-    // qDebug() << "starting KDirWatch for " << d->m_bookmarksFile;
+    // qDebug() << "starting QFileSystemWatcher for " << d->m_bookmarksFile;
 }
 
 KBookmarkManager::KBookmarkManager( )
@@ -298,7 +294,7 @@ void KBookmarkManager::slotFileChanged(const QString& path)
 {
     if (path == d->m_bookmarksFile)
     {
-        // qDebug() << "file changed (KDirWatch) " << path ;
+        // qDebug() << "file changed (QFileSystemWatcher) " << path ;
         // Reparse
         parse();
         // Tell our GUI
