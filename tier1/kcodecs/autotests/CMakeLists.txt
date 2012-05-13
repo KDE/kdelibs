@@ -17,6 +17,11 @@ macro(KCODECS_UNIT_TESTS)
     endforeach()
 endmacro()
 
+include_directories(
+   ${CMAKE_CURRENT_SOURCE_DIR}/../src
+   ${CMAKE_CURRENT_BINARY_DIR}/../src
+)
+
 kcodecs_unit_tests(
     kcharsetstest
     kencodingdetectortest

@@ -34,12 +34,10 @@ set(kcodecs_SRCS
     probers/nsUniversalDetector.cpp
 )
 
-add_library(kcodecs ${LIBRARY_TYPE} ${kcodecs_SRCS})
+add_library(kcodecs ${kcodecs_SRCS})
 generate_export_header(kcodecs)
 
-target_link_libraries(kcodecs
-  LINK_PUBLIC ${QT_QTCORE_LIBRARY}
-)
+target_link_libraries(kcodecs LINK_PUBLIC ${QT_QTCORE_LIBRARY} )
 
 set_target_properties(kcodecs PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                          SOVERSION ${ECM_SOVERSION}
