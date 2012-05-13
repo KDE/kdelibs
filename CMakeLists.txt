@@ -69,9 +69,11 @@ set(kdeqt5staging_INCLUDE_DIR
     ${CMAKE_BINARY_DIR}/libkdeqt5staging/src/
    )
 
-add_subdirectory( tier1 )
-
+include_directories(${CMAKE_SOURCE_DIR}) # for kde_qt5_compat.h only -- TEMPORARY HACK
 include_directories(${kdeqt5staging_INCLUDE_DIR})
+
+add_subdirectory( tier1 )
+add_subdirectory( tier2 )
 
 set(kwindowsystem_LIBRARY kwindowsystem)
 
@@ -370,7 +372,6 @@ set(kde4support_LIBRARY kde4support)
 add_subdirectory( cmake )
 add_subdirectory( kdecore )
 add_subdirectory( staging )
-add_subdirectory( tier2 )
 if (UNIX)
    add_subdirectory( kpty )
    add_subdirectory( kdesu )

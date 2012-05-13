@@ -28,7 +28,6 @@
 #define KSHAREDPTR_H
 
 #include <QtCore/QSharedData>
-#include <kdemacros.h>
 
 /**
  * @deprecated
