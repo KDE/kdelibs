@@ -13,7 +13,7 @@ generate_export_header(kplotting)
 target_link_libraries(kplotting ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
 
 set_target_properties(kplotting PROPERTIES VERSION   ${ECM_VERSION_STRING}
-                                            SOVERSION ${ECM_SOVERSION}
+                                           SOVERSION ${ECM_SOVERSION}
 )
 
 install(TARGETS kplotting EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
