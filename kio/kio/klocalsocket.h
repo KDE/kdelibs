@@ -138,6 +138,9 @@ public:
     virtual void connectToHost(const QString &hostName, quint16 port, OpenMode mode = ReadWrite, NetworkLayerProtocol protocol = AnyIPProtocol) {
         connectToHostImplementation(hostName, port, mode);
     }
+    virtual void disconnectFromHost() {
+        disconnectFromHostImplementation();
+    }
 #endif
 
 private:
