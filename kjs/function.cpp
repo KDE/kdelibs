@@ -843,6 +843,7 @@ static double parseInt(const UString &s, int radix)
         radix = 16;
         p += 2;
     } else if (radix == 0) {
+        // ECMAscript test262 S15.1.2.2_A5.1_T1 says we should no longer accept octal. To fix remove next 3 lines.
         if (p < length && s[p] == '0')
             radix = 8;
         else
