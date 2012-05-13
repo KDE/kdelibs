@@ -6,7 +6,6 @@ include_directories(
 )
 
 find_package(Qt5Transitional REQUIRED Test Gui)
-enable_testing()
 
 macro(KPLOTTING_UNIT_TESTS)
     foreach(_testname ${ARGN})
