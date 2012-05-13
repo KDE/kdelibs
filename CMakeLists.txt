@@ -69,10 +69,12 @@ set(kdeqt5staging_INCLUDE_DIR
     ${CMAKE_BINARY_DIR}/libkdeqt5staging/src/
    )
 
+add_subdirectory( tier1 )
+
+# tier1/ already builds standalone, so it should not get any include dirs from here.
 include_directories(${CMAKE_SOURCE_DIR}) # for kde_qt5_compat.h only -- TEMPORARY HACK
 include_directories(${kdeqt5staging_INCLUDE_DIR})
 
-add_subdirectory( tier1 )
 add_subdirectory( tier2 )
 
 set(kwindowsystem_LIBRARY kwindowsystem)
