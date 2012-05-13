@@ -48,7 +48,7 @@ elseif (Q_OS_WIN)
    set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS} windowspoller.cpp)
 endif (X11_FOUND)
 
-add_library(kidletime ${LIBRARY_TYPE} ${kidletime_LIB_SRCS})
+add_library(kidletime ${kidletime_LIB_SRCS})
 generate_export_header(kidletime)
 target_link_libraries(kidletime LINK_INTERFACE_LIBRARIES ${QT_QTGUI_LIBRARY})
 target_link_libraries(kidletime ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
