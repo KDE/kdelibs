@@ -25,32 +25,32 @@ set(kwindowsystem_SRCS
 set(platformLinkLibraries)
 
 if (QT5_BUILD)
-    message(WARNING "KWindowSystem not implemented")
-    set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_qpa.cpp)
+   message(WARNING "KWindowSystem not implemented")
+   set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_qpa.cpp)
 endif()
 
 if (Q_WS_X11)
-    set(platformLinkLibraries ${X11_LIBRARIES} ${X11_Xfixes_LIB} ${X11_Xrender_LIB})
-    set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_x11.cpp
-                                         kwindowinfo_x11.cpp
-                                         netwm.cpp )
+   set(platformLinkLibraries ${X11_LIBRARIES} ${X11_Xfixes_LIB} ${X11_Xrender_LIB})
+   set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_x11.cpp
+                                                kwindowinfo_x11.cpp
+                                                netwm.cpp )
 endif ()
 
 if (Q_WS_MAC)
-    set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_mac.cpp
-                                         kwindowinfo_mac.cpp)
+   set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_mac.cpp
+                                                kwindowinfo_mac.cpp)
 endif ()
 
 if (Q_WS_WIN)
-    set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_win.cpp
-                                         kwindowinfo_win.cpp)
+   set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_win.cpp
+                                                kwindowinfo_win.cpp)
 endif ()
 
 if (Q_WS_QWS)
-    set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_qws.cpp)
+   set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_qws.cpp)
 endif ()
 
-add_library(kwindowsystem ${LIBRARY_TYPE} ${kwindowsystem_SRCS})
+add_library(kwindowsystem ${kwindowsystem_SRCS})
 generate_export_header(kwindowsystem)
 
 target_link_libraries(kwindowsystem ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDBUS_LIBRARY} ${platformLinkLibraries})
