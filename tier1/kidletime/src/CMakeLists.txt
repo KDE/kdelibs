@@ -33,19 +33,19 @@ set(kidletime_LIB_SRCS
 )
 
 if (X11_FOUND)
-    if (HAVE_XSCREENSAVER)
+   if (HAVE_XSCREENSAVER)
       set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS}
           xscreensaverbasedpoller.cpp)
       qt4_add_dbus_interface(kidletime_LIB_SRCS org.freedesktop.ScreenSaver.xml screensaver_interface)
-    endif (HAVE_XSCREENSAVER)
-    if (HAVE_XSYNC)
+   endif ()
+   if (HAVE_XSYNC)
       set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS}
           xsyncbasedpoller.cpp )
-    endif (HAVE_XSYNC)
+   endif ()
 elseif (Q_OS_MAC)
-    set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS} macpoller.cpp)
+   set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS} macpoller.cpp)
 elseif (Q_OS_WIN)
-    set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS} windowspoller.cpp)
+   set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS} windowspoller.cpp)
 endif (X11_FOUND)
 
 add_library(kidletime ${LIBRARY_TYPE} ${kidletime_LIB_SRCS})
@@ -55,21 +55,18 @@ target_link_libraries(kidletime ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
 
 if (X11_FOUND)
    if (HAVE_XSCREENSAVER)
-     target_link_libraries(kidletime ${X11_Xscreensaver_LIB} ${QT_QTDBUS_LIBRARY})
-   endif (HAVE_XSCREENSAVER)
+      target_link_libraries(kidletime ${X11_Xscreensaver_LIB} ${QT_QTDBUS_LIBRARY})
+   endif ()
    if (HAVE_XSYNC)
-     target_link_libraries(kidletime ${X11_Xext_LIB})
-   endif (HAVE_XSYNC)
+      target_link_libraries(kidletime ${X11_Xext_LIB})
+   endif ()
    target_link_libraries(kidletime ${X11_LIBRARIES})
-endif (X11_FOUND)
+endif ()
 
-set_target_properties(kidletime PROPERTIES
-                      VERSION ${ECM_VERSION_STRING}
-                      SOVERSION ${ECM_SOVERSION})
-install( FILES
- ${CMAKE_CURRENT_BINARY_DIR}/kidletime_export.h
- kidletime.h
- DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
+set_target_properties(kidletime PROPERTIES  VERSION ${ECM_VERSION_STRING}
+                                            SOVERSION ${ECM_SOVERSION})
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kidletime_export.h
+               kidletime.h
+         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
-install(TARGETS kidletime EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
-
+install(TARGETS kidletime EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
