@@ -95,7 +95,7 @@ public:
 	 * multiple times.
 	 */
 #ifndef KDE_NO_DEPRECATED
-	KDE_DEPRECATED bool isRunning() const;
+	KDNSSD_DEPRECATED bool isRunning() const;
 #endif
 
 Q_SIGNALS:
