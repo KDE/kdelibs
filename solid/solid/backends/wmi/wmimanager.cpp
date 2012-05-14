@@ -75,7 +75,7 @@ public:
         WmiQuery::ItemList items = WmiQuery::instance().sendQuery("SELECT * FROM Win32_LogicalDisk");
         foreach(const WmiQuery::Item &i,items){
             QString drive = i.getProperty("DeviceID").toString();
-            WmiQuery::Item item = WmiDevice::win32LogicalDiskToDiskPartition(drive);
+            WmiQuery::Item item = WmiDevice::win32DiskPartitionByDriveLetter(drive);
             m_volumes.insert(drive,item.getProperty("DeviceID").toString());
         }
 

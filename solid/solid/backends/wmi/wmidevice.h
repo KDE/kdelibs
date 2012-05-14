@@ -75,10 +75,10 @@ public:
 
 
     //TODO:rename the folowing methodes...
-    static WmiQuery::Item win32DiskPartitionToLogicalDisk(const QString &deviceID);
-    static WmiQuery::Item win32DiskPartitionToDiskDrive(const QString &deviceID);
-    static WmiQuery::Item win32DiskDriveToDiskPartition(const QString &deviceID);
-    static WmiQuery::Item win32LogicalDiskToDiskPartition(const QString &driveLetter);
+    static WmiQuery::Item win32LogicalDiskByDiskPartitionID(const QString &deviceID);
+    static WmiQuery::Item win32DiskDriveByDiskPartitionID(const QString &deviceID);
+    static WmiQuery::Item win32DiskPartitionByDeviceIndex(const QString &deviceID);
+    static WmiQuery::Item win32DiskPartitionByDriveLetter(const QString &driveLetter);
     static WmiQuery::Item win32LogicalDiskByDriveLetter(const QString &driveLetter);
 
 

@@ -423,7 +423,7 @@ QString WmiDevice::product() const
     case Solid::DeviceInterface::StorageAccess:
     case Solid::DeviceInterface::StorageVolume:
     {
-        WmiQuery::Item item = win32DiskPartitionToLogicalDisk(property("DeviceID").toString());
+        WmiQuery::Item item = win32LogicalDiskByDiskPartitionID(property("DeviceID").toString());
         return item.getProperty("VolumeName").toString();
     }
         break;
@@ -569,7 +569,12 @@ const Solid::DeviceInterface::Type WmiDevice::type() const{
     return d->m_type;
 }
 
-WmiQuery::Item WmiDevice::win32DiskDriveToDiskPartition(const QString &deviceID){
+/**
+ * @brief WmiDevice::win32DiskPartitionByDeviceIndex
+ * @param deviceID something like "\\.\PHYSICALDRIVE0"
+ * @return
+ */
+WmiQuery::Item WmiDevice::win32DiskPartitionByDeviceIndex(const QString &deviceID){
     WmiQuery::Item result;
     QString id = deviceID;
     QString query("ASSOCIATORS OF {Win32_DiskDrive.DeviceID='"+ id +"'} WHERE AssocClass = Win32_DiskDriveToDiskPartition");
@@ -580,7 +585,13 @@ WmiQuery::Item WmiDevice::win32DiskDriveToDiskPartition(const QString &deviceID)
     return result;
 }
 
-WmiQuery::Item WmiDevice::win32DiskPartitionToDiskDrive(const QString &deviceID){
+/**
+ * @brief WmiDevice::win32DiskDriveByDiskPartitionID
+ * @param deviceID something like "disk #1, partition #0"
+ * @return
+ */
+
+WmiQuery::Item WmiDevice::win32DiskDriveByDiskPartitionID(const QString &deviceID){
     WmiQuery::Item result;
     QString id = deviceID;
     QString query("ASSOCIATORS OF {Win32_DiskPartition.DeviceID='"+ id +"'} WHERE AssocClass = Win32_DiskDriveToDiskPartition");
@@ -591,7 +602,13 @@ WmiQuery::Item WmiDevice::win32DiskPartitionToDiskDrive(const QString &deviceID)
     return result;
 }
 
-WmiQuery::Item WmiDevice::win32DiskPartitionToLogicalDisk(const QString &deviceID){
+/**
+ * @brief WmiDevice::win32LogicalDiskByDiskPartitionID
+ * @param deviceID something like "disk #1, partition #0"
+ * @return
+ */
+
+WmiQuery::Item WmiDevice::win32LogicalDiskByDiskPartitionID(const QString &deviceID){
     WmiQuery::Item result;
     QString id = deviceID;
     QString query("ASSOCIATORS OF {Win32_DiskPartition.DeviceID='" + id + "'} WHERE AssocClass = Win32_LogicalDiskToPartition");
@@ -602,7 +619,13 @@ WmiQuery::Item WmiDevice::win32DiskPartitionToLogicalDisk(const QString &deviceI
     return result;
 }
 
-WmiQuery::Item WmiDevice::win32LogicalDiskToDiskPartition(const QString &driveLetter){
+/**
+ * @brief WmiDevice::win32DiskPartitionByDriveLetter
+ * @param driveLetter something lik "D:"
+ * @return
+ */
+
+WmiQuery::Item WmiDevice::win32DiskPartitionByDriveLetter(const QString &driveLetter){
     WmiQuery::Item result;
     QString id = driveLetter;
     QString query("ASSOCIATORS OF {Win32_LogicalDisk.DeviceID='" + id + "'} WHERE AssocClass = Win32_LogicalDiskToPartition");
@@ -612,6 +635,12 @@ WmiQuery::Item WmiDevice::win32LogicalDiskToDiskPartition(const QString &driveLe
         }
     return result;
 }
+
+/**
+ * @brief WmiDevice::win32LogicalDiskByDriveLetter
+ * @param driveLetter something lik "D:"
+ * @return
+ */
 
 WmiQuery::Item WmiDevice::win32LogicalDiskByDriveLetter(const QString &driveLetter){
     WmiQuery::Item result;

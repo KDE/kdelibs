@@ -27,8 +27,17 @@ using namespace Solid::Backends::Wmi;
 Storage::Storage(WmiDevice *device)
     : Block(device)
 {
-    WmiQuery::Item item = WmiDevice::win32DiskDriveToDiskPartition(m_device->property("DeviceID").toString());
-    m_logicalDisk = WmiDevice::win32DiskPartitionToLogicalDisk(item.getProperty("DeviceID").toString());
+
+    if(m_device->type() == Solid::DeviceInterface::StorageDrive)
+    {
+        WmiQuery::Item item =  WmiDevice::win32DiskPartitionByDeviceIndex(m_device->property("DeviceID").toString());
+        QString id = item.getProperty("DeviceID").toString();
+        m_logicalDisk = WmiDevice::win32LogicalDiskByDiskPartitionID(id);
+    }else if(m_device->type() == Solid::DeviceInterface::OpticalDrive)
+    {
+        QString id = m_device->property("Drive").toString();
+        m_logicalDisk = WmiDevice::win32LogicalDiskByDriveLetter(id);
+    }
 }
 
 Storage::~Storage()
@@ -68,10 +77,6 @@ Solid::StorageDrive::Bus Storage::bus() const
 
 Solid::StorageDrive::DriveType Storage::driveType() const
 {
-
-    if(m_logicalDisk.isNull())
-        return Solid::StorageDrive::HardDisk;
-
     ushort type = m_logicalDisk.getProperty("DriveType").toUInt();
     switch(type){
     case 2:

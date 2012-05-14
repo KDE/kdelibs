@@ -37,7 +37,7 @@ StorageAccess::StorageAccess(WmiDevice *device)
              this, SLOT(slotPropertyChanged(QMap<QString,int>)));
 //    qDebug()<<"StorageAccess"<<m_device->type();
 
-    m_logicalDisk = WmiDevice::win32DiskPartitionToLogicalDisk(m_device->property("DeviceID").toString());
+    m_logicalDisk = WmiDevice::win32LogicalDiskByDiskPartitionID(m_device->property("DeviceID").toString());
 }
 
 StorageAccess::~StorageAccess()
