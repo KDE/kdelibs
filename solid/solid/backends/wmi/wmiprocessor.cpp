@@ -53,8 +53,6 @@ bool Processor::canChangeFrequency() const
     return false;
 }
 
-static Solid::Processor::InstructionSets cpuFeatures();
-
 Solid::Processor::InstructionSets Processor::instructionSets() const
 {
     static Solid::Processor::InstructionSets cpuextensions = Solid::Backends::Shared::cpuFeatures();
