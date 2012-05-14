@@ -17,10 +17,11 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <QtTest/QtTest>
+#include <QtTest/QtTestGui>
 #include "kconfigguitest.h"
 
 #include <kconfig.h>
+#include <QDir>
 #include <QFont>
 #include <kconfiggroup.h>
 #include <kconfigskeleton.h>

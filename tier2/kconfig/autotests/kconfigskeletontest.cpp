@@ -21,7 +21,7 @@
 
 #include <kconfig.h>
 #include <QFont>
-#include <QtTest/QtTest>
+#include <QtTest/QtTestGui>
 
 
 QTEST_MAIN( KConfigSkeletonTest )
