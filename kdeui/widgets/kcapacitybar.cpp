@@ -19,7 +19,6 @@
  */
 
 #include "kcapacitybar.h"
-#include <kstyle.h>
 
 #include <math.h>
 
@@ -33,10 +32,12 @@
 #include <QLinearGradient>
 #include <QStyleOptionFrame>
 
-#include <kcolorscheme.h>
-
 #define ROUND_MARGIN     6
 #define VERTICAL_SPACING 1
+
+static const int LightShade = 100;
+static const int MidShade = 200;
+static const int DarkShade = 300;
 
 class KCapacityBar::Private
 {
@@ -66,7 +67,6 @@ KCapacityBar::KCapacityBar(KCapacityBar::DrawTextMode drawTextMode, QWidget *par
     : QWidget(parent)
     , d(new Private(drawTextMode))
 {
-    d->ce_capacityBar = KStyle::customControlElement("CE_CapacityBar", this);
 }
 
 KCapacityBar::~KCapacityBar()
@@ -201,11 +201,11 @@ void KCapacityBar::drawCapacityBar(QPainter *p, const QRect &rect) const
     outline.quadTo(rect.left() + drawRect.width() + ROUND_MARGIN / 2, drawRect.height() / 2 + rect.top(), rect.left() + drawRect.width() - ROUND_MARGIN / 4 - 1, drawRect.height() + rect.top());
     outline.lineTo(rect.left() + ROUND_MARGIN / 4 + 1, drawRect.height() + rect.top());
     outline.quadTo(-ROUND_MARGIN / 2 + rect.left(), drawRect.height() / 2 + rect.top(), rect.left() + ROUND_MARGIN / 4 + 1, rect.top());
-    const QColor fillColor = KColorScheme::shade(palette().window().color(), KColorScheme::DarkShade);
+    const QColor fillColor = palette().window().color().darker(DarkShade);
     p->fillPath(outline, QColor(fillColor.red(), fillColor.green(), fillColor.blue(), 50));
 
     QRadialGradient bottomGradient(QPointF(rect.width() / 2, drawRect.bottom() + 1), rect.width() / 2);
-    bottomGradient.setColorAt(0, KColorScheme::shade(palette().window().color(), KColorScheme::LightShade));
+    bottomGradient.setColorAt(0, palette().window().color().darker(LightShade));
     bottomGradient.setColorAt(1, Qt::transparent);
     p->fillRect(QRect(rect.left(), drawRect.bottom() + rect.top(), rect.width(), 1), bottomGradient);
 
@@ -222,8 +222,8 @@ void KCapacityBar::drawCapacityBar(QPainter *p, const QRect &rect) const
     path.quadTo(-ROUND_MARGIN / 2, drawRect.height() / 2, ROUND_MARGIN / 4, 0);
 
     QLinearGradient linearGradient(0, 0, 0, drawRect.height());
-    linearGradient.setColorAt(0.5, KColorScheme::shade(palette().window().color(), KColorScheme::MidShade));
-    linearGradient.setColorAt(1, KColorScheme::shade(palette().window().color(), KColorScheme::LightShade));
+    linearGradient.setColorAt(0.5, palette().window().color().darker(MidShade));
+    linearGradient.setColorAt(1, palette().window().color().darker(LightShade));
     p->fillPath(path, linearGradient);
 
     p->setBrush(Qt::NoBrush);
@@ -258,9 +258,9 @@ void KCapacityBar::drawCapacityBar(QPainter *p, const QRect &rect) const
     internalBar.quadTo(left - roundMargin / 2, drawRect.height() / 2, left + roundMargin / 4, 0);
 
     QLinearGradient fillInternalBar(left, 0, right, 0);
-    fillInternalBar.setColorAt(0, KColorScheme::shade(palette().highlight().color(), KColorScheme::MidShade));
-    fillInternalBar.setColorAt(0.5, KColorScheme::shade(palette().highlight().color(), KColorScheme::LightShade));
-    fillInternalBar.setColorAt(1, KColorScheme::shade(palette().highlight().color(), KColorScheme::MidShade));
+    fillInternalBar.setColorAt(0, palette().window().color().darker(MidShade));
+    fillInternalBar.setColorAt(0.5, palette().window().color().darker(LightShade));
+    fillInternalBar.setColorAt(1, palette().window().color().darker(MidShade));
 
     if (d->drawTextMode == KCapacityBar::DrawTextInline) {
         p->save();
@@ -315,7 +315,7 @@ void KCapacityBar::drawCapacityBar(QPainter *p, const QRect &rect) const
     p->save();
     p->setClipping(false);
     QRadialGradient topGradient(QPointF(rect.width() / 2, drawRect.top()), rect.width() / 2);
-    const QColor fillTopColor = KColorScheme::shade(palette().window().color(), KColorScheme::LightShade);
+    const QColor fillTopColor = palette().window().color().darker(LightShade);
     topGradient.setColorAt(0, QColor(fillTopColor.red(), fillTopColor.green(), fillTopColor.blue(), 127));
     topGradient.setColorAt(1, Qt::transparent);
     p->fillRect(QRect(rect.left(), rect.top() + drawRect.top(), rect.width(), 2), topGradient);
@@ -339,15 +339,6 @@ void KCapacityBar::drawCapacityBar(QPainter *p, const QRect &rect) const
     } else {
         p->drawText(rect, Qt::AlignBottom | d->horizontalTextAlignment, fontMetrics().elidedText(d->text, Qt::ElideRight, drawRect.width()));
     }
-}
-
-void KCapacityBar::changeEvent(QEvent *event)
-{
-    if (event->type() == QEvent::StyleChange) {
-        d->ce_capacityBar = KStyle::customControlElement("CE_CapacityBar", this);
-    }
-
-    QWidget::changeEvent(event);
 }
 
 QSize KCapacityBar::minimumSizeHint() const
