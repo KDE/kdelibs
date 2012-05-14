@@ -20,7 +20,8 @@ endmacro()
 
 macro(KCONFIGGUI_UNIT_TESTS)
    foreach(_testname ${ARGN})
-      add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
+      add_executable(${_testname} ${_testname}.cpp)
+      set_target_properties(${_testname} PROPERTIES COMPILE_DEFINITIONS "QT_GUI_LIB")
       add_test(kconfiggui-${_testname} ${_testname})
       target_link_libraries(${_testname} kconfigcore kconfiggui ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${inqt5_LIBRARY})
    endforeach()
