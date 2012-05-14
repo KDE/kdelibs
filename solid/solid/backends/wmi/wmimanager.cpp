@@ -33,8 +33,30 @@ using namespace Solid::Backends::Wmi;
 class Solid::Backends::Wmi::WmiManagerPrivate
 {
 public:
-    WmiManagerPrivate()
+    WmiManagerPrivate(WmiManager *parent)
+        :m_parent(parent)
     {
+        supportedInterfaces << Solid::DeviceInterface::GenericInterface
+                            << Solid::DeviceInterface::Processor
+                               //                           << Solid::DeviceInterface::Block
+                            << Solid::DeviceInterface::StorageAccess
+                            << Solid::DeviceInterface::StorageDrive
+                            << Solid::DeviceInterface::OpticalDrive
+                            << Solid::DeviceInterface::StorageVolume
+                            << Solid::DeviceInterface::OpticalDisc
+                               //                           << Solid::DeviceInterface::Camera
+                               //                           << Solid::DeviceInterface::PortableMediaPlayer
+                               //                           << Solid::DeviceInterface::NetworkInterface
+                               //                           << Solid::DeviceInterface::AcAdapter
+                            << Solid::DeviceInterface::Battery
+                               //                           << Solid::DeviceInterface::Button
+                               //                           << Solid::DeviceInterface::AudioInterface
+                               //                           << Solid::DeviceInterface::DvbInterface
+                               //                           << Solid::DeviceInterface::Video
+                               //                           << Solid::DeviceInterface::SerialInterface
+                               //                           << Solid::DeviceInterface::SmartCardReader
+                               ;
+
         update();
     }
 
@@ -45,7 +67,7 @@ public:
 
     void update(){
         init();
-        m_deviceCache.clear();
+
     }
 
     void init(){
@@ -56,92 +78,59 @@ public:
             WmiQuery::Item item = WmiDevice::win32LogicalDiskToDiskPartition(drive);
             m_volumes.insert(drive,item.getProperty("DeviceID").toString());
         }
-    }
 
-    QStringList allDevices(){
         if(m_deviceCache.isEmpty())
         {
-            QStringList aList;
-            foreach(const Solid::DeviceInterface::Type &dev, supportedInterfaces)
-                aList<<findDeviceByDeviceInterface(dev);
-            foreach(const QString &udi, aList)
-            {
-                if (!m_deviceCache.contains(udi))
-                    m_deviceCache<< udi;
+            foreach(const Solid::DeviceInterface::Type &dev, supportedInterfaces){
+                updateDeviceCache(dev);
             }
         }
-        return m_deviceCache;
     }
 
 
-    QStringList findDeviceByDeviceInterface(Solid::DeviceInterface::Type type)
-    {
-        QStringList result;
 
-        switch (type)
-        {
-        case Solid::DeviceInterface::Processor:
-            result << WmiDevice::generateUDIList(type);
-            break;
-        case Solid::DeviceInterface::StorageAccess:
-            result << WmiDevice::generateUDIList(type);
-            break;
-        case Solid::DeviceInterface::StorageDrive:
-            result << WmiDevice::generateUDIList(type);
-            break;
-        case Solid::DeviceInterface::OpticalDrive:
-            result << WmiDevice::generateUDIList(type);
-            break;
-        case Solid::DeviceInterface::StorageVolume:
-            result << WmiDevice::generateUDIList(type);
-            break;
-        case Solid::DeviceInterface::OpticalDisc:
-            result << WmiDevice::generateUDIList(type);
-            break;
-        case Solid::DeviceInterface::Battery:
-            result << WmiDevice::generateUDIList(type);
-            break;
+    void updateDeviceCache(const Solid::DeviceInterface::Type & type){
+        QSet<QString> devSet = m_parent->findDeviceByDeviceInterface(type).toSet();
+        if(m_deviceCache.contains(type)){
+            QSet<QString> added = devSet - m_deviceCache[type];
+            foreach(const QString & s,added){
+                m_parent->slotDeviceAdded(s);
+            }
+            QSet<QString> removed = m_deviceCache[type] - devSet;
+            foreach(const QString & s,removed){
+                m_parent->slotDeviceRemoved(s);
+            }
         }
-
-        return result;
+        m_deviceCache[type] = devSet;
     }
+
 
     WmiQuery::ItemList sendQuery( const QString &wql )
     {
-		return WmiQuery::instance().sendQuery( wql );
+        return WmiQuery::instance().sendQuery( wql );
     }
 
+    WmiManager *m_parent;
     QSet<Solid::DeviceInterface::Type> supportedInterfaces;
 
     QMap<QString,QString> m_volumes;
-    QStringList m_deviceCache;
+    QMap<Solid::DeviceInterface::Type,QSet<QString> > m_deviceCache;
 };
 
 
 WmiManager::WmiManager(QObject *parent)
-    : DeviceManager(parent),  d(new WmiManagerPrivate())
+    : DeviceManager(parent)
 {
-    d->supportedInterfaces << Solid::DeviceInterface::GenericInterface
-                           << Solid::DeviceInterface::Processor
-                           << Solid::DeviceInterface::Block
-                           << Solid::DeviceInterface::StorageAccess
-                           << Solid::DeviceInterface::StorageDrive
-                           << Solid::DeviceInterface::OpticalDrive
-                           << Solid::DeviceInterface::StorageVolume
-                           << Solid::DeviceInterface::OpticalDisc
-                           << Solid::DeviceInterface::Camera
-                           << Solid::DeviceInterface::PortableMediaPlayer
-                           << Solid::DeviceInterface::NetworkInterface
-                           << Solid::DeviceInterface::AcAdapter
-                           << Solid::DeviceInterface::Battery
-                           << Solid::DeviceInterface::Button
-                           << Solid::DeviceInterface::AudioInterface
-                           << Solid::DeviceInterface::DvbInterface
-                           << Solid::DeviceInterface::Video
-                           << Solid::DeviceInterface::SerialInterface
-                           << Solid::DeviceInterface::SmartCardReader;
+    d = new WmiManagerPrivate(this);
 
-    WmiQuery::instance().addDeviceListeners("SELECT * FROM Win32_VolumeChangeEvent",new WmiManager::WmiEventSink(this));
+
+    QList<Solid::DeviceInterface::Type> types;
+    types<<Solid::DeviceInterface::StorageDrive<<Solid::DeviceInterface::StorageVolume;
+    WmiQuery::instance().addDeviceListeners(new WmiManager::WmiEventSink(this,"SELECT * FROM Win32_VolumeChangeEvent",types));
+
+    types.clear();
+    types<<Solid::DeviceInterface::OpticalDisc;
+    WmiQuery::instance().addDeviceListeners(new WmiManager::WmiEventSink(this,"select * from __InstanceModificationEvent within 10 where TargetInstance ISA 'Win32_CDromDrive'",types));
 
 }
 
@@ -162,8 +151,11 @@ QSet<Solid::DeviceInterface::Type> WmiManager::supportedInterfaces() const
 
 QStringList WmiManager::allDevices()
 {
-
-    return d->allDevices();
+    QStringList list;
+    foreach(const Solid::DeviceInterface::Type &type,d->supportedInterfaces){
+        list<<d->m_deviceCache[type].toList();
+    }
+    return list;
 }
 
 bool WmiManager::deviceExists(const QString &udi)
@@ -178,7 +170,7 @@ QStringList WmiManager::devicesFromQuery(const QString &parentUdi,
     QStringList result;
     if (!parentUdi.isEmpty())
     {
-        foreach(const QString &udi,d->allDevices()){
+        foreach(const QString &udi,allDevices()){
             WmiDevice device(udi);
             if(device.type() == type && device.parentUdi() == parentUdi ){
                 result<<udi;
@@ -213,7 +205,7 @@ QStringList WmiManager::findDeviceStringMatch(const QString &key, const QString 
 
 QStringList WmiManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type type)
 {
-    return d->findDeviceByDeviceInterface(type);
+    return  WmiDevice::generateUDIList(type);
 }
 
 void WmiManager::slotDeviceAdded(const QString &udi)
@@ -230,8 +222,10 @@ void WmiManager::slotDeviceRemoved(const QString &udi)
 
 
 
-WmiManager::WmiEventSink::WmiEventSink(WmiManager* parent):
+WmiManager::WmiEventSink::WmiEventSink(WmiManager* parent, const QString &query, const QList<Solid::DeviceInterface::Type> &types):
     m_parent(parent),
+    m_query(query),
+    m_types(types),
     m_count(0)
 {}
 
@@ -262,45 +256,21 @@ HRESULT  STDMETHODCALLTYPE WmiManager::WmiEventSink::QueryInterface(REFIID riid,
     else return E_NOINTERFACE;
 }
 
-HRESULT STDMETHODCALLTYPE WmiManager::WmiEventSink::Indicate(long lObjectCount,IWbemClassObject **apObjArray){
-    for (long i = 0; i < lObjectCount; ++i)
-    {
-        WmiQuery::Item item( apObjArray[i]);
-        QString drive = item.getProperty("DriveName").toString();
-        //we need to use m_parent->d->m_volumes as a cache because if the device is removed I cant query it anymore
-        ushort event = item.getProperty("EventType").toUInt();
-        switch(event){
-        case 2:
-        {
-            m_parent->d->update();
-            m_parent->slotDeviceAdded( "/org/kde/solid/wmi/volume/"+ m_parent->d->m_volumes[drive]);
-        }
-            break;
-        case 3:
-        {
-            m_parent->slotDeviceRemoved("/org/kde/solid/wmi/volume/"+ m_parent->d->m_volumes[drive]);
-            m_parent->d->update();
-        }
-            break;
-        case  4:
-        {
-            qDebug()<<"drive:"<<drive<<"docking";
-        }
-            break;
-        case 1:
-        {
-            qDebug()<<"drive:"<<drive<<"config changed";
-        }
-            break;
-        }
+HRESULT STDMETHODCALLTYPE WmiManager::WmiEventSink::Indicate(long lObjectCount,IWbemClassObject **apObjArray)
+{
+    foreach(const Solid::DeviceInterface::Type &type,m_types){
+        m_parent->d->updateDeviceCache(type);
     }
-
     return WBEM_S_NO_ERROR;
 }
 
 HRESULT STDMETHODCALLTYPE WmiManager::WmiEventSink::SetStatus(long lFlags,HRESULT hResult,BSTR strParam,IWbemClassObject *pObjParam)
 {
     return WBEM_S_NO_ERROR;
+}
+
+const QString&  WmiManager::WmiEventSink::query() const {
+    return m_query;
 }
 
 

@@ -75,7 +75,7 @@ public:
     WmiQuery();
     ~WmiQuery();
     ItemList sendQuery( const QString &wql );
-    void addDeviceListeners(const QString &wql, WmiManager::WmiEventSink *sink);
+    void addDeviceListeners(WmiManager::WmiEventSink *sink);
     bool isLegit() const;
 	static WmiQuery &instance();
 

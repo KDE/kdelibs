@@ -316,13 +316,16 @@ WmiQuery::~WmiQuery()
       CoUninitialize();
 }
 
-void WmiQuery::addDeviceListeners(const QString &wql,WmiManager::WmiEventSink *sink){
+void WmiQuery::addDeviceListeners(WmiManager::WmiEventSink *sink){
     if(m_failed)
         return;
     BSTR bstrQuery;
-    bstrQuery = ::SysAllocString(wql);
-    pSvc->ExecNotificationQueryAsync(L"WQL",bstrQuery,0, NULL,sink);
+    bstrQuery = ::SysAllocString(sink->query());
+    HRESULT hr = pSvc->ExecNotificationQueryAsync(L"WQL",bstrQuery,0, NULL,sink);
     ::SysFreeString(bstrQuery);
+    if(FAILED(hr)){
+        qWarning()<<"WmiQuery::addDeviceListeners "<<sink->query()<<" failed!";
+    }
 }
 
 WmiQuery::ItemList WmiQuery::sendQuery( const QString &wql )
