@@ -63,13 +63,14 @@ void tst_QUrlPathInfo::directoryAndFileName_data()
     QTest::addColumn<QString>("urlStr");
     QTest::addColumn<QString>("expectedDirectory");
     QTest::addColumn<QString>("expectedFileName");
+    QTest::addColumn<QString>("expectedDirectoryUrl");
 
-    QTest::newRow("absoluteFile") << "file:///temp/tmp.txt" << "/temp" << "tmp.txt";
-    QTest::newRow("absoluteDir") << "file:///temp/" << "/temp" << QString();
-    QTest::newRow("absoluteInRoot") << "file:///temp" << "/" << "temp";
-    QTest::newRow("relative") << "temp/tmp.txt" << "temp" << "tmp.txt";
-    QTest::newRow("relativeNoSlash") << "tmp.txt" << QString() << "tmp.txt";
-    QTest::newRow("encoded") << "print:/specials/Print%20To%20File%20(PDF%252FAcrobat)" << "/specials" << "Print To File (PDF%2FAcrobat)";
+    QTest::newRow("absoluteFile") << "file:///temp/tmp.txt" << "/temp" << "tmp.txt" << "file:///temp";
+    QTest::newRow("absoluteDir") << "file:///temp/" << "/temp" << QString() << "file:///temp";
+    QTest::newRow("absoluteInRoot") << "file:///temp" << "/" << "temp" << "file:///";
+    QTest::newRow("relative") << "temp/tmp.txt" << "temp" << "tmp.txt" << "temp";
+    QTest::newRow("relativeNoSlash") << "tmp.txt" << QString() << "tmp.txt" << QString();
+    QTest::newRow("encoded") << "print:/specials/Print%20To%20File%20(PDF%252FAcrobat)" << "/specials" << "Print To File (PDF%2FAcrobat)" << "print:/specials";
 }
 
 void tst_QUrlPathInfo::directoryAndFileName()
@@ -77,6 +78,7 @@ void tst_QUrlPathInfo::directoryAndFileName()
     QFETCH(QString, urlStr);
     QFETCH(QString, expectedDirectory);
     QFETCH(QString, expectedFileName);
+    QFETCH(QString, expectedDirectoryUrl);
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     const QUrl url(urlStr);
@@ -87,6 +89,7 @@ void tst_QUrlPathInfo::directoryAndFileName()
     const QUrlPathInfo info(url);
     QCOMPARE(info.directory(), expectedDirectory);
     QCOMPARE(info.fileName(), expectedFileName);
+    QCOMPARE(info.directoryUrl().toString(), expectedDirectoryUrl);
 }
 
 void tst_QUrlPathInfo::setFileName_data()
