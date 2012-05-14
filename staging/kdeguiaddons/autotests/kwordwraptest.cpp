@@ -19,7 +19,7 @@
 
 #include <QFontMetrics>
 
-#include <QtTest/QtTest>
+#include <QtTest/QtTestGui>
 
 #include <QObject>
 #include "kwordwrap.h"
