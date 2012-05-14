@@ -23,6 +23,7 @@
 
 #include <QtCore/QStringList>
 
+
 using namespace Solid::Backends::Wmi;
 
 Cdrom::Cdrom(WmiDevice *device)

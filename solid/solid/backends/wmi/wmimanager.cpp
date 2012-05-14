@@ -71,14 +71,6 @@ public:
     }
 
     void init(){
-        m_volumes.clear();
-        WmiQuery::ItemList items = WmiQuery::instance().sendQuery("SELECT * FROM Win32_LogicalDisk");
-        foreach(const WmiQuery::Item &i,items){
-            QString drive = i.getProperty("DeviceID").toString();
-            WmiQuery::Item item = WmiDevice::win32DiskPartitionByDriveLetter(drive);
-            m_volumes.insert(drive,item.getProperty("DeviceID").toString());
-        }
-
         if(m_deviceCache.isEmpty())
         {
             foreach(const Solid::DeviceInterface::Type &dev, supportedInterfaces){
@@ -112,8 +104,6 @@ public:
 
     WmiManager *m_parent;
     QSet<Solid::DeviceInterface::Type> supportedInterfaces;
-
-    QMap<QString,QString> m_volumes;
     QMap<Solid::DeviceInterface::Type,QSet<QString> > m_deviceCache;
 };
 
