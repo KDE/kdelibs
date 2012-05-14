@@ -453,7 +453,15 @@ Slave* Slave::createSlave( const QString &protocol, const QUrl& url, int& error,
        const QStringList args = QStringList() << lib_path << protocol << "" << slaveAddress.toString();
        kDebug() << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString() << ", " << slaveAddress;
 
-       QProcess::startDetached( KStandardDirs::locate("exe", "kioslave"), args );
+       const QString kioslave = KStandardDirs::locate("exe", "kioslave");
+       if (kioslave.isEmpty()) {
+          error_text = i18n("Can not find 'kioslave' executable");
+          error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
+          delete slave;
+          return 0;
+
+       }
+       QProcess::startDetached(kioslave, args);
 
        return slave;
     }
