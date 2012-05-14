@@ -56,6 +56,7 @@ extern "C" {
 #include "kprotocolinfo.h"
 #include "kprotocolmanager.h"
 #include "filejob.h"
+#include <qurlpathinfo.h>
 
 #include <kdirnotify.h>
 
@@ -483,9 +484,8 @@ void SimpleJob::slotFinished( )
         {
             if ( d->m_command == CMD_MKDIR )
             {
-                KUrl urlDir( url() );
-                urlDir.setPath( urlDir.directory() );
-                org::kde::KDirNotify::emitFilesAdded( urlDir.url() );
+                const QUrl urlDir = QUrlPathInfo(url()).directoryUrl();
+                org::kde::KDirNotify::emitFilesAdded(urlDir.toString());
             }
             else /*if ( m_command == CMD_RENAME )*/
             {

@@ -553,12 +553,10 @@ void FileUndoManagerPrivate::stepMovingFiles()
         m_current.m_opStack.removeLast();
         // The above KIO jobs are lowlevel, they don't trigger KDirNotify notification
         // So we need to do it ourselves (but schedule it to the end of the undo, to compress them)
-        QUrl url(op.m_dst);
-        url.setPath(QUrlPathInfo(url).directory());
+        QUrl url = QUrlPathInfo(op.m_dst).directoryUrl();
         addDirToUpdate(url);
 
-        url = op.m_src;
-        url.setPath(QUrlPathInfo(url).directory());
+        url = QUrlPathInfo(op.m_src).directoryUrl();
         addDirToUpdate(url);
     }
     else
@@ -575,8 +573,7 @@ void FileUndoManagerPrivate::stepRemovingLinks()
         m_currentJob = KIO::file_delete(file, KIO::HideProgressInfo);
         m_undoJob->emitDeleting(file);
 
-        QUrl url(file);
-        url.setPath(QUrlPathInfo(url).directory());
+        QUrl url = QUrlPathInfo(file).directoryUrl();
         addDirToUpdate(url);
     }
     else

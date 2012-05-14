@@ -35,6 +35,7 @@
 #include <QDesktopWidget>
 #include <QtCore/QDir>
 #include <qmimedatabase.h>
+#include <qurlpathinfo.h>
 
 #include <klineedit.h>
 #include <kmessagebox.h>
@@ -383,9 +384,7 @@ KUrl RenameDialog::newDestUrl()
 KUrl RenameDialog::autoDestUrl() const
 {
     KUrl newDest(d->dest);
-    KUrl destDirectory(d->dest);
-
-    destDirectory.setPath(destDirectory.directory());
+    const QUrl destDirectory = QUrlPathInfo(d->dest).directoryUrl();
     newDest.setFileName(suggestName(destDirectory, d->dest.fileName()));
 
     return newDest;
@@ -473,9 +472,7 @@ void RenameDialog::suggestNewNamePressed()
     if (d->m_pLineEdit->text().isEmpty())
         return;
 
-    KUrl destDirectory(d->dest);
-
-    destDirectory.setPath(destDirectory.directory());
+    QUrl destDirectory = QUrlPathInfo(d->dest).directoryUrl();
     d->setRenameBoxText(suggestName(destDirectory, d->m_pLineEdit->text()));
 
     return;

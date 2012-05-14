@@ -925,8 +925,7 @@ void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
                         QUrlPathInfo destInfo((*it).uDest);
                         QString oldPath = destInfo.path(QUrlPathInfo::AppendTrailingSlash);
 
-                        KUrl destDirectory((*it).uDest);
-                        destDirectory.setPath(destDirectory.directory());
+                        QUrl destDirectory = QUrlPathInfo((*it).uDest).directoryUrl();
                         QString newName = KIO::RenameDialog::suggestName(destDirectory, destInfo.fileName());
 
                         KUrl newUrl((*it).uDest);
@@ -1228,10 +1227,9 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
                  || ( m_conflictError == ERR_IDENTICAL_FILES ) )
             {
                 if (m_bAutoRenameFiles) {
-                    QUrlPathInfo destDirectory((*it).uDest);
-                    destDirectory.setPath(destDirectory.directory());
+                    QUrl destDirectory = QUrlPathInfo((*it).uDest).directoryUrl();
                     QUrlPathInfo destInfo((*it).uDest);
-                    const QString newName = KIO::RenameDialog::suggestName(destDirectory.url(), destInfo.fileName());
+                    const QString newName = KIO::RenameDialog::suggestName(destDirectory, destInfo.fileName());
 
                     destInfo.setFileName(newName);
 
@@ -1737,7 +1735,7 @@ void CopyJob::emitResult()
     if (!d->m_bOnlyRenames) {
         KUrl url(d->m_globalDest);
         if (d->m_globalDestinationState != DEST_IS_DIR || d->m_asMethod)
-            url.setPath(url.directory());
+            url = QUrlPathInfo(url).directoryUrl();
         //kDebug(7007) << "KDirNotify'ing FilesAdded" << url;
         org::kde::KDirNotify::emitFilesAdded( url.url() );
 
@@ -1902,8 +1900,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
             } else if ((isDir && m_bOverwriteAllDirs) || (!isDir && m_bOverwriteAllFiles)) {
                 ; // nothing to do, stat+copy+del will overwrite
             } else if ((isDir && m_bAutoRenameDirs) || (!isDir && m_bAutoRenameFiles)) {
-                KUrl destDirectory(m_currentDestURL); // dest including filename
-                destDirectory.setPath(destDirectory.directory());
+                QUrl destDirectory = QUrlPathInfo(m_currentDestURL).directoryUrl(); // m_currendDestURL includes filename
                 const QString newName = KIO::RenameDialog::suggestName(destDirectory, m_currentDestURL.fileName());
 
                 m_dest.setPath(m_currentDestURL.path());

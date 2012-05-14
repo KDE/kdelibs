@@ -36,6 +36,7 @@
 
 #include <QFile>
 #include <qmimedatabase.h>
+#include <qurlpathinfo.h>
 
 // Enable this to get printDebug() called often, to see the contents of the cache
 //#define DEBUG_CACHE
@@ -807,9 +808,7 @@ KFileItem *KDirListerCache::findByUrl( const KDirLister *lister, const KUrl& _u 
     KUrl url(_u);
     url.adjustPath(KUrl::RemoveTrailingSlash);
 
-    KUrl parentDir(url);
-    parentDir.setPath( parentDir.directory() );
-
+    const QUrl parentDir = QUrlPathInfo(url).directoryUrl();
     DirItem* dirItem = dirItemForUrl(parentDir);
     if (dirItem) {
         // If lister is set, check that it contains this dir
@@ -875,8 +874,7 @@ void KDirListerCache::slotFilesRemoved(const KUrl::List& fileList)
             }
         }
 
-        KUrl parentDir(url);
-        parentDir.setPath(parentDir.directory());
+        const QUrl parentDir = QUrlPathInfo(url).directoryUrl();
         dirItem = dirItemForUrl(parentDir);
         if (!dirItem)
             continue;
@@ -929,8 +927,7 @@ void KDirListerCache::slotFilesChanged( const QStringList &fileList ) // from KD
             pendingRemoteUpdates.insert(fileitem);
             // For remote files, we won't be able to figure out the new information,
             // we have to do a update (directory listing)
-            KUrl dir(url);
-            dir.setPath(dir.directory());
+            KUrl dir = QUrlPathInfo(url).directoryUrl();
             if (!dirsToUpdate.contains(dir))
                 dirsToUpdate.prepend(dir);
         }
@@ -1017,8 +1014,7 @@ QSet<KDirLister*> KDirListerCache::emitRefreshItem(const KFileItem& oldItem, con
     //kDebug(7004) << "old:" << oldItem.name() << oldItem.url()
     //             << "new:" << fileitem.name() << fileitem.url();
     // Look whether this item was shown in any view, i.e. held by any dirlister
-    KUrl parentDir( oldItem.url() );
-    parentDir.setPath( parentDir.directory() );
+    const KUrl parentDir = QUrlPathInfo(oldItem.url()).directoryUrl();
     const QString parentDirURL = parentDir.url();
     DirectoryDataHash::iterator dit = directoryData.find(parentDirURL);
     QList<KDirLister *> listers;
@@ -1040,7 +1036,7 @@ QSet<KDirLister*> KDirListerCache::emitRefreshItem(const KFileItem& oldItem, con
             kdl->d->rootFileItem = fileitem;
             kdl->d->addRefreshItem(directoryUrl, oldRootItem, fileitem);
         } else {
-            directoryUrl.setPath(directoryUrl.directory());
+            directoryUrl = QUrlPathInfo(directoryUrl).directoryUrl();
             kdl->d->addRefreshItem(directoryUrl, oldItem, fileitem);
         }
         listersToRefresh.insert(kdl);
@@ -1115,16 +1111,14 @@ void KDirListerCache::handleFileDirty(const KUrl& url)
     KFileItem* existingItem = findByUrl(0, url);
     if (!existingItem) {
         // No - update the parent dir then
-        KUrl dir(url);
-        dir.setPath(url.directory());
+        const QUrl dir = QUrlPathInfo(url).directoryUrl();
         updateDirectory(dir);
     } else {
         // A known file: delay updating it, FAM is flooding us with events
         const QString filePath = url.toLocalFile();
         if (!pendingUpdates.contains(filePath)) {
-            KUrl dir(url);
-            dir.setPath(dir.directory());
-            if (checkUpdate(dir.url())) {
+            const QUrl dir = QUrlPathInfo(url).directoryUrl();
+            if (checkUpdate(dir.toString())) {
                 pendingUpdates.insert(filePath);
                 if (!pendingUpdateTimer.isActive())
                     pendingUpdateTimer.start(500);
