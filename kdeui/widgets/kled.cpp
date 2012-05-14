@@ -20,8 +20,6 @@
 
 #include "kled.h"
 
-#include <kcolorutils.h>
-
 #include <QPainter>
 #include <QImage>
 #include <QStyle>
@@ -299,7 +297,19 @@ void KLed::paintLed(Shape shape, Look look)
     if (d->state == On) {
         QColor glowOverlay = fillColor;
         glowOverlay.setAlpha(80);
-        borderColor = KColorUtils::overlayColors(borderColor, glowOverlay);
+
+        // This isn't the fastest way, but should be "fast enough".
+        // It's also the only safe way to use QPainter::CompositionMode
+        QImage img(1, 1, QImage::Format_ARGB32_Premultiplied);
+        QPainter p(&img);
+        QColor start = borderColor;
+        start.setAlpha(255); // opaque
+        p.fillRect(0, 0, 1, 1, start);
+        p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+        p.fillRect(0, 0, 1, 1, glowOverlay);
+        p.end();
+
+        borderColor = img.pixel(0, 0);
     }
     borderGradient.setColorAt(0.2, borderColor);
     borderGradient.setColorAt(0.5, palette().color(QPalette::Light));
