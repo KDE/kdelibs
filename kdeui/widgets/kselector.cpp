@@ -26,10 +26,6 @@
 #include <QStyle>
 #include <QStyleOption>
 
-#include "kcolorhelpers_p.h"
-
-using KDEPrivate::fillOpaqueRect;
-
 //-----------------------------------------------------------------------------
 /*
  * 1D value selector with contents drawn by derived class.
@@ -335,7 +331,17 @@ void KGradientSelector::drawContents( QPainter *painter )
   }
   QBrush gradientBrush(d->gradient);
 
-  fillOpaqueRect(painter, contentsRect(), gradientBrush);
+  if (!gradientBrush.isOpaque()) {
+      QPixmap chessboardPattern(16, 16);
+      QPainter patternPainter(&chessboardPattern);
+      patternPainter.fillRect(0, 0, 8, 8, Qt::black);
+      patternPainter.fillRect(8, 8, 8, 8, Qt::black);
+      patternPainter.fillRect(0, 8, 8, 8, Qt::white);
+      patternPainter.fillRect(8, 0, 8, 8, Qt::white);
+      patternPainter.end();
+      painter->fillRect(contentsRect(), QBrush(chessboardPattern));
+  }
+  painter->fillRect(contentsRect(), gradientBrush);
 
   if ( orientation() == Qt::Vertical )
   {
