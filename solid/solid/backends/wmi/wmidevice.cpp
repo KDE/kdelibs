@@ -76,15 +76,15 @@ public:
 
     WmiQuery::Item sendQuery()
     {
-        if(m_list.isEmpty()){
+        if(m_item.isNull()){
             QString query("SELECT * FROM " + m_wmiTable + " WHERE " + m_wmiProperty + "='" + m_wmiValue + "'");
             WmiQuery::ItemList items = WmiQuery::instance().sendQuery(query);
             Q_ASSERT(items.length() != 1);
             if(items.length() != 1)
                 qDebug()<<"WmiDevicePrivate::sendQuery() failed";
-            m_list = items;
+            m_item = items[0];
         }
-        return m_list[0];
+        return m_item;
     }
 
     static bool convertUDItoWMI(const QString &udi, QString &wmiTable, QString &wmiProperty, QString &wmiValue,Solid::DeviceInterface::Type &type)
@@ -303,7 +303,7 @@ public:
     QString m_wmiProperty;
     QString m_wmiValue;
     Solid::DeviceInterface::Type m_type;
-    WmiQuery::ItemList m_list;
+    WmiQuery::Item m_item;
     QList<Solid::DeviceInterface::Type> interfaceList;
 
 };
@@ -560,7 +560,7 @@ QVariant WmiDevice::property(const QString &key) const
 {
     WmiQuery::Item item = d->sendQuery();
 
-    QVariant result = item.getAllProperties()[key];
+    QVariant result = item.getProperty(key);
 //    qDebug()<<"property"<<key<<result;
     return result;
 }
