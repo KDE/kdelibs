@@ -41,30 +41,22 @@ Solid::OpticalDrive::MediumTypes Cdrom::supportedMedia() const
 {
     Solid::OpticalDrive::MediumTypes supported;
 
-    QMap<Solid::OpticalDrive::MediumType, QString> map;
-    map[Solid::OpticalDrive::Cdr] = "storage.cdrom.cdr";
-    map[Solid::OpticalDrive::Cdrw] = "storage.cdrom.cdrw";
-    map[Solid::OpticalDrive::Dvd] = "storage.cdrom.dvd";
-    map[Solid::OpticalDrive::Dvdr] = "storage.cdrom.dvdr";
-    map[Solid::OpticalDrive::Dvdrw] ="storage.cdrom.dvdrw";
-    map[Solid::OpticalDrive::Dvdram] ="storage.cdrom.dvdram";
-    map[Solid::OpticalDrive::Dvdplusr] ="storage.cdrom.dvdplusr";
-    map[Solid::OpticalDrive::Dvdplusrw] ="storage.cdrom.dvdplusrw";
-    map[Solid::OpticalDrive::Dvdplusdl] ="storage.cdrom.dvdplusrdl";
-    map[Solid::OpticalDrive::Dvdplusdlrw] ="storage.cdrom.dvdplusrwdl";
-    map[Solid::OpticalDrive::Bd] ="storage.cdrom.bd";
-    map[Solid::OpticalDrive::Bdr] ="storage.cdrom.bdr";
-    map[Solid::OpticalDrive::Bdre] ="storage.cdrom.bdre";
-    map[Solid::OpticalDrive::HdDvd] ="storage.cdrom.hddvd";
-    map[Solid::OpticalDrive::HdDvdr] ="storage.cdrom.hddvdr";
-    map[Solid::OpticalDrive::HdDvdrw] ="storage.cdrom.hddvdrw";
-
-    foreach (const Solid::OpticalDrive::MediumType type, map.keys())
+    QString type = m_device->property("MediaType").toString();
+    if (type == "CdRomOnly" || type == "CD-ROM")
     {
-        if (m_device->property(map[type]).toBool())
-        {
-            supported|= type;
-        }
+        supported |= Solid::OpticalDrive::Cdr;
+    }
+    else if (type == "CdRomWrite")
+    {
+        supported |= Solid::OpticalDrive::Cdr|Solid::OpticalDrive::Cdrw;
+    }
+    else if (type == "DVDRomOnly")
+    {
+        supported |= Solid::OpticalDrive::Dvd;
+    }
+    else if (type == "DVDRomWrite" || type == "DVD Writer")
+    {
+        supported |= Solid::OpticalDrive::Dvd|Solid::OpticalDrive::Dvdr|Solid::OpticalDrive::Dvdrw;
     }
 
     return supported;
@@ -72,12 +64,12 @@ Solid::OpticalDrive::MediumTypes Cdrom::supportedMedia() const
 
 int Cdrom::readSpeed() const
 {
-    return 0;
+    return m_device->property("TransferRate").toInt();
 }
 
 int Cdrom::writeSpeed() const
 {
-    return 0;
+    return m_device->property("TransferRate").toInt();
 }
 
 QList<int> Cdrom::writeSpeeds() const

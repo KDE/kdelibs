@@ -45,6 +45,9 @@ public:
     virtual bool isBlank() const;
     virtual bool isRewritable() const;
     virtual qulonglong capacity() const;
+private:
+    bool isWriteable() const;
+    WmiQuery::Item m_logicalDisk;
 };
 }
 }

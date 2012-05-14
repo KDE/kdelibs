@@ -208,7 +208,7 @@ public:
             wmiTable = "Win32_DiskDrive";
             break;
         case Solid::DeviceInterface::OpticalDrive:
-            wmiTable = "Win32_LogicalDisk";
+            wmiTable = "Win32_CDROMDrive";
             break;
         case Solid::DeviceInterface::StorageVolume:
             wmiTable = "Win32_DiskPartition";
@@ -244,6 +244,17 @@ public:
         return wmiTable;
     }
 
+    static QString getIgnorePattern(const Solid::DeviceInterface::Type &type)
+    {
+        QString propertyName;
+        switch(type){
+        case Solid::DeviceInterface::OpticalDisc:
+            propertyName = " WHERE MediaLoaded=TRUE";
+            break;
+        }
+        return propertyName;
+    }
+
     static QString getPropertyNameForUDI(const Solid::DeviceInterface::Type &type)
     {
         QString propertyName;
@@ -275,7 +286,7 @@ public:
     {
         QStringList result;
 
-        WmiQuery::ItemList list = WmiQuery::instance().sendQuery( "select * from " + getWMITable(type));
+        WmiQuery::ItemList list = WmiQuery::instance().sendQuery( "SELECT * FROM " + getWMITable(type) + getIgnorePattern(type));
         foreach(const WmiQuery::Item& item, list) {
             QString propertyName = getPropertyNameForUDI(type);
             QString property = item.getProperty(propertyName).toString();
@@ -350,6 +361,9 @@ QString WmiDevice::parentUdi() const
     case Solid::DeviceInterface::StorageAccess:
             result = "/org/kde/solid/wmi/storage/"+property("DiskIndex").toString();
             break;
+    case Solid::DeviceInterface::OpticalDisc:
+        result = "/org/kde/solid/wmi/storage.cdrom/"+property("Drive").toString().toLower();
+        break;
     }
 
     if(result.isEmpty() && !value.isEmpty()){
@@ -368,8 +382,6 @@ QString WmiDevice::vendor() const
         propertyName = "Manufacturer";
         break;
     case Solid::DeviceInterface::OpticalDrive:
-        propertyName = "Caption";
-        break;
     case Solid::DeviceInterface::OpticalDisc:
         propertyName = "Caption";
         break;
@@ -536,6 +548,11 @@ QStringList WmiDevice::emblems() const
 
 QString WmiDevice::description() const
 {
+    switch(type()){
+        case Solid::DeviceInterface::OpticalDisc:
+        return property("VolumeName").toString();
+    }
+
     return product(); // TODO
 }
 
@@ -589,6 +606,17 @@ WmiQuery::Item WmiDevice::win32LogicalDiskToDiskPartition(const QString &driveLe
     WmiQuery::Item result;
     QString id = driveLetter;
     QString query("ASSOCIATORS OF {Win32_LogicalDisk.DeviceID='" + id + "'} WHERE AssocClass = Win32_LogicalDiskToPartition");
+    WmiQuery::ItemList items = WmiQuery::instance().sendQuery(query);
+        if(items.length()>0){
+            result = items[0];
+        }
+    return result;
+}
+
+WmiQuery::Item WmiDevice::win32LogicalDiskByDriveLetter(const QString &driveLetter){
+    WmiQuery::Item result;
+    QString id = driveLetter;
+    QString query("SELECT * FROM Win32_LogicalDisk WHERE DeviceID='"+id+"'");
     WmiQuery::ItemList items = WmiQuery::instance().sendQuery(query);
         if(items.length()>0){
             result = items[0];
