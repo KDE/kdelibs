@@ -18,6 +18,8 @@ include_directories(
  ${CMAKE_BINARY_DIR}/tier1/kwindowsystem/src
  ${CMAKE_BINARY_DIR}/staging/kdeguiaddons/src
  ${CMAKE_SOURCE_DIR}/staging/kdeguiaddons/src/colors
+ ${CMAKE_BINARY_DIR}/tier1/kwidgetsaddons/src
+ ${CMAKE_SOURCE_DIR}/tier1/kwidgetsaddons/src
  ${CMAKE_BINARY_DIR}/staging/kwidgets/src
  ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/utils
  ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/icons
@@ -222,7 +224,6 @@ set(kdeui_LIB_SRCS
  widgets/kanimatedbutton.cpp
  widgets/kdialogbuttonbox.cpp
  widgets/kbuttongroup.cpp
- widgets/kcapacitybar.cpp
  widgets/kcharselect.cpp
  widgets/kcharselectdata.cpp
  widgets/kcmodule.cpp
@@ -240,7 +241,6 @@ set(kdeui_LIB_SRCS
  widgets/khistorycombobox.cpp
  widgets/kkeysequencewidget.cpp
  widgets/klanguagebutton.cpp
- widgets/kled.cpp
  widgets/klineedit.cpp
  widgets/kmainwindow.cpp
  widgets/kmenu.cpp
@@ -254,8 +254,6 @@ set(kdeui_LIB_SRCS
  widgets/krestrictedline.cpp
  widgets/krichtextedit.cpp
  widgets/krichtextwidget.cpp
- widgets/kruler.cpp
- widgets/kselector.cpp
  widgets/kshortcutwidget.cpp
  widgets/ksqueezedtextlabel.cpp
  widgets/kstatusbar.cpp
@@ -268,7 +266,6 @@ set(kdeui_LIB_SRCS
  widgets/ktimezonewidget.cpp
  widgets/ktitlewidget.cpp
  widgets/ktoolbar.cpp
- widgets/kxyselector.cpp
  widgets/kdeuiwidgetsproxystyle.cpp
  widgets/nestedlisthelper.cpp
  xmlgui/kxmlguibuilder.cpp
@@ -285,7 +282,6 @@ set(kdeui_LIB_SRCS
 if(NOT KDE_NO_DEPRECATED)
 set(kdeui_LIB_SRCS
  ${kdeui_LIB_SRCS}
- widgets/karrowbutton.cpp
  widgets/keditlistbox.cpp
 )
 endif(NOT KDE_NO_DEPRECATED)
@@ -391,7 +387,7 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 generate_export_header(kdeui)
 
-target_link_libraries(kdeui itemmodels sonnetcore kauth kdeguiaddons kwidgets ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
+target_link_libraries(kdeui itemmodels sonnetcore kauth kdeguiaddons kwidgets kwidgetsaddons ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
                             ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} kcoreaddons ${kwindowsystem_LIBRARY})
 
 if(NOT WINCE)
@@ -582,7 +578,6 @@ install( FILES
  widgets/kanimatedbutton.h
  widgets/kdatecombobox.h
  widgets/kdatepicker.h
- widgets/kcapacitybar.h
  widgets/kcmodule.h
  widgets/kcombobox.h
  widgets/kcompletionbox.h
@@ -599,7 +594,6 @@ install( FILES
  widgets/khistorycombobox.h
  widgets/kkeysequencewidget.h
  widgets/klanguagebutton.h
- widgets/kled.h
  widgets/klineedit.h
  widgets/kmainwindow.h
  widgets/kmenu.h
@@ -622,12 +616,9 @@ install( FILES
  widgets/ktitlewidget.h
  widgets/ktabbar.h
  widgets/ktabwidget.h
- widgets/kruler.h
- widgets/kselector.h
  widgets/kshortcutwidget.h
  widgets/kstatusbar.h
  widgets/ktoolbar.h
- widgets/kxyselector.h
  xmlgui/kxmlguiwindow.h
  xmlgui/kxmlguiclient.h
  xmlgui/kxmlguibuilder.h
@@ -636,7 +627,6 @@ install( FILES
 
 if(NOT KDE_NO_DEPRECATED)
 install(FILES
- widgets/karrowbutton.h
  widgets/keditlistbox.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 endif(NOT KDE_NO_DEPRECATED)

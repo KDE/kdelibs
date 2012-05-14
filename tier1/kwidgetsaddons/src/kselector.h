@@ -23,7 +23,7 @@
 #ifndef KSELECTOR_H
 #define KSELECTOR_H
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 
 #include <QAbstractSlider>
 #include <QGradient>
@@ -38,7 +38,7 @@
  * A custom drawing routine for the widget surface has
  * to be provided by the subclass.
  */
-class KDEUI_EXPORT KSelector : public QAbstractSlider
+class KWIDGETSADDONS_EXPORT KSelector : public QAbstractSlider
 {
   Q_OBJECT
   Q_PROPERTY( int value READ value WRITE setValue )
@@ -129,7 +129,7 @@ private:
  * \image html kgradientselector.png "KDE Gradient Selector Widget"
  *
  **/
-class KDEUI_EXPORT KGradientSelector : public KSelector
+class KWIDGETSADDONS_EXPORT KGradientSelector : public KSelector
 {
   Q_OBJECT
 

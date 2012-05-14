@@ -28,6 +28,7 @@
 #define KTOGGLEFULLSCREENACTION_H
 
 #include <ktoggleaction.h>
+#include <kdeui_export.h>
 
 /**
  * An action for switching between to/from full screen mode. Note that

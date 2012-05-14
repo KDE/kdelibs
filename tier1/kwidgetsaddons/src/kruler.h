@@ -21,7 +21,7 @@
 #ifndef KRULER_H
 #define KRULER_H
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 
 #include <QAbstractSlider>
 
@@ -70,7 +70,7 @@
  * @short A ruler widget.
  * @author Jörg Habenicht
  */
-class KDEUI_EXPORT KRuler : public QAbstractSlider
+class KWIDGETSADDONS_EXPORT KRuler : public QAbstractSlider
 {
   Q_OBJECT
   Q_PROPERTY( bool showTinyMarks READ showTinyMarks WRITE setShowTinyMarks )
@@ -160,14 +160,14 @@ public:
    *
    **/
 #ifndef KDE_NO_DEPRECATED
-  KDEUI_DEPRECATED void setMinValue(int);
+  KWIDGETSADDONS_DEPRECATED void setMinValue(int);
 #endif
 
   /**
    * Returns the minimal value of the ruler pointer.
    **/
 #ifndef KDE_NO_DEPRECATED
-  KDEUI_DEPRECATED int minValue() const;
+  KWIDGETSADDONS_DEPRECATED int minValue() const;
 #endif
 
   /**
@@ -177,14 +177,14 @@ public:
    * to the main event loop.
    */
 #ifndef KDE_NO_DEPRECATED
-  KDEUI_DEPRECATED void setMaxValue(int);
+  KWIDGETSADDONS_DEPRECATED void setMaxValue(int);
 #endif
 
   /**
    * Returns the maximal value of the ruler pointer.
    */
 #ifndef KDE_NO_DEPRECATED
-  KDEUI_DEPRECATED int maxValue() const;
+  KWIDGETSADDONS_DEPRECATED int maxValue() const;
 #endif
 
 

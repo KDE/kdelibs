@@ -12,13 +12,13 @@ add_definitions(-DQT_WIDGETS_LIB)
 MACRO(KDEUI_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_unit_test(${_testname} TESTNAME kdeui-${_testname} ${_testname}.cpp)
-               target_link_libraries(${_testname} ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY} ${QT_QTXML_LIBRARY} ${KDEWIN_LIBRARIES} kcoreaddons)
+               target_link_libraries(${_testname} ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY} ${QT_QTXML_LIBRARY} ${KDEWIN_LIBRARIES} kcoreaddons kwidgetsaddons)
        ENDFOREACH(_testname)
 ENDMACRO(KDEUI_UNIT_TESTS)
 MACRO(KDEUI_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_executable(${_testname} TEST ${_testname}.cpp)
-               target_link_libraries(${_testname} ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY} ${QT_QTXML_LIBRARY} ${KDEWIN_LIBRARIES} kcoreaddons)
+               target_link_libraries(${_testname} ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY} ${QT_QTXML_LIBRARY} ${KDEWIN_LIBRARIES} kcoreaddons kwidgetsaddons)
        ENDFOREACH(_testname)
 ENDMACRO(KDEUI_EXECUTABLE_TESTS)
 
@@ -81,7 +81,6 @@ KDEUI_EXECUTABLE_TESTS(
   kicondialogtest
   kinputdialogtest
   kjobtrackerstest
-  kledtest
   klineedittest
   kmainwindowtest
   kmainwindowrestoretest

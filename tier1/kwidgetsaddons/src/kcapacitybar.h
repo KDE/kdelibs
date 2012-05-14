@@ -23,7 +23,7 @@
 
 #include <QWidget>
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 
 class QPaintEvent;
 
@@ -41,7 +41,7 @@ class QPaintEvent;
   *
   * @author Rafael Fernández López <ereslibre@kde.org>
   */
-class KDEUI_EXPORT KCapacityBar
+class KWIDGETSADDONS_EXPORT KCapacityBar
     : public QWidget
 {
     Q_OBJECT

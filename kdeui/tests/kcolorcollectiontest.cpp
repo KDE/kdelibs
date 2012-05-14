@@ -6,7 +6,6 @@
 #include <QtCore/QTimer>
 #include <stdlib.h>
 #include "kcolorcollection.h"
-#include "kledtest.h"
 #include <stdio.h>
 
 #include <QtCore/QStringList>

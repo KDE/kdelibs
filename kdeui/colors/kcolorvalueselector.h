@@ -23,6 +23,7 @@
 
 #include "kselector.h"
 #include "kcolorchoosermode.h"
+#include <kdeui_export.h>
 #include <QPixmap>
 
 class KDEUI_EXPORT KColorValueSelector : public KSelector

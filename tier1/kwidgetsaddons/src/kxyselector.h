@@ -20,7 +20,7 @@
 #ifndef KXYSELECTOR_H
 #define KXYSELECTOR_H
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 
 #include <QWidget>
 #include <QPixmap>
@@ -36,7 +36,7 @@
  * A custom drawing routine for the widget surface has
  * to be provided by the subclass.
  */
-class KDEUI_EXPORT KXYSelector : public QWidget
+class KWIDGETSADDONS_EXPORT KXYSelector : public QWidget
 {
   Q_OBJECT
   Q_PROPERTY( int xValue READ xValue WRITE setXValue )

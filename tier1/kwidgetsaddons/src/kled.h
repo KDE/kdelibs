@@ -20,7 +20,7 @@
 #ifndef KLED_H
 #define KLED_H
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 
 #include <QWidget>
 
@@ -41,7 +41,7 @@ class QColor;
  *
  * @author Joerg Habenicht, Richard J. Moore (rich@kde.org) 1998, 1999
  */
-class KDEUI_EXPORT KLed : public QWidget
+class KWIDGETSADDONS_EXPORT KLed : public QWidget
 {
     Q_OBJECT
     Q_ENUMS( State Shape Look )

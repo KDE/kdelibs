@@ -4,6 +4,8 @@ include_directories(
   ${KDE4_KIO_INCLUDES}
   ${CMAKE_SOURCE_DIR}/tier1/solid/src
   ${CMAKE_BINARY_DIR}/tier1/solid/src
+  ${CMAKE_SOURCE_DIR}/tier1/kwidgetsaddons/src
+  ${CMAKE_BINARY_DIR}/tier1/kwidgetsaddons/src
 )
 if(Soprano_FOUND)
 include_directories(${SOPRANO_INCLUDE_DIR})
@@ -52,6 +54,7 @@ target_link_libraries(kfile
    ${QtMimeTypes_LIBRARY}
    kcoreaddons
    kwidgets
+   kwidgetsaddons
 )
 
 if(X11_Xrender_FOUND)
@@ -60,8 +63,8 @@ endif(X11_Xrender_FOUND)
 
 target_link_libraries(kfile LINK_INTERFACE_LIBRARIES kio kdeui kdecore ${QT_QTGUI_LIBRARY} kcoreaddons)
 
-set_target_properties(kfile PROPERTIES VERSION ${GENERIC_LIB_VERSION} 
-                                       SOVERSION ${GENERIC_LIB_SOVERSION} 
+set_target_properties(kfile PROPERTIES VERSION ${GENERIC_LIB_VERSION}
+                                       SOVERSION ${GENERIC_LIB_SOVERSION}
                      )
 
 install(TARGETS kfile EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})

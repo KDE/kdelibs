@@ -29,7 +29,7 @@ if(NOT KIO_NO_NEPOMUK)
        ${SOPRANO_INCLUDE_DIR}
        ${CMAKE_SOURCE_DIR}/nepomuk/
        ${CMAKE_SOURCE_DIR}/nepomuk/core/
-       ${CMAKE_SOURCE_DIR}/nepomuk/types/    
+       ${CMAKE_SOURCE_DIR}/nepomuk/types/
        ${CMAKE_SOURCE_DIR}/nepomuk/ui/
        ${CMAKE_SOURCE_DIR}/nepomuk/query/
     )
@@ -48,6 +48,8 @@ include_directories(
    ${KDE4_KDEUI_INCLUDES}
    ${KDE4_KDECORE_INCLUDES}
    ${ZLIB_INCLUDE_DIR}
+   ${CMAKE_SOURCE_DIR}/tier1/kwidgetsaddons/src
+   ${CMAKE_BINARY_DIR}/tier1/kwidgetsaddons/src
 
    )
 if (NOT KIO_NO_STRIGI)
@@ -339,7 +341,7 @@ if(NOT KIO_NO_NEPOMUK)
   target_link_libraries(kfilemetadatareader ${KDE4_KIO_LIBS} ${KDE4_NEPOMUK_LIBRARY} nepomukutils kcoreaddons kde4support)
   target_link_libraries(kio ${KDE4_NEPOMUK_LIBRARY} nepomukquery nepomukutils)
 endif(NOT KIO_NO_NEPOMUK)
-target_link_libraries(kio kdeqt5staging ${QtMimeTypes_LIBRARY} kcoreaddons kde4support ${kwindowsystem_LIBRARY} ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTSVG_LIBRARY} ${X11_LIBRARIES} ${KIO_EXTRA_LIBS})
+target_link_libraries(kio kdeqt5staging ${QtMimeTypes_LIBRARY} kcoreaddons kwidgetsaddons kde4support ${kwindowsystem_LIBRARY} ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTSVG_LIBRARY} ${X11_LIBRARIES} ${KIO_EXTRA_LIBS})
 target_link_libraries(kio LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} )
 
 if(ACL_FOUND)
