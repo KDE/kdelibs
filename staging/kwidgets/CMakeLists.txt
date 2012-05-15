@@ -45,6 +45,7 @@ remove_definitions(-DQT_USE_FAST_OPERATOR_PLUS)
 
 add_subdirectory(src)
 add_subdirectory(tests)
+add_subdirectory(autotests)
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_version.h
