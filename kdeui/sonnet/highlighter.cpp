@@ -41,6 +41,7 @@
 #include <QEvent>
 #include <QKeyEvent>
 #include <QApplication>
+#include <QMetaMethod>
 
 namespace Sonnet {
 
@@ -140,6 +141,7 @@ bool Highlighter::spellCheckerFound() const
     return d->spellCheckerFound;
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 // Since figuring out spell correction suggestions is extremely costly,
 // we keep track of whether the user actually wants some, and only offer them
 // in that case
@@ -156,6 +158,25 @@ void Highlighter::disconnectNotify(const char* signal)
         --d->suggestionListeners;
     QSyntaxHighlighter::disconnectNotify(signal);
 }
+#else
+// Since figuring out spell correction suggestions is extremely costly,
+// we keep track of whether the user actually wants some, and only offer them
+// in that case
+// With Qt5, we could use QObject::isSignalConnected(), but this is faster.
+void Highlighter::connectNotify(const QMetaMethod& signal)
+{
+    if (signal.methodSignature() == "newSuggestions(QString,QStringList)")
+        ++d->suggestionListeners;
+    QSyntaxHighlighter::connectNotify(signal);
+}
+
+void Highlighter::disconnectNotify(const QMetaMethod& signal)
+{
+    if (signal.methodSignature() == "newSuggestions(QString,QStringList)")
+        --d->suggestionListeners;
+    QSyntaxHighlighter::disconnectNotify(signal);
+}
+#endif
 
 void Highlighter::slotRehighlight()
 {
