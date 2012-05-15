@@ -881,7 +881,7 @@ void KDirListerCache::slotFilesRemoved(const KUrl::List& fileList)
         for (KFileItemList::iterator fit = dirItem->lstItems.begin(), fend = dirItem->lstItems.end(); fit != fend ; ++fit) {
             if ((*fit).url() == url) {
                 const KFileItem fileitem = *fit;
-                removedItemsByDir[parentDir.url()].append(fileitem);
+                removedItemsByDir[parentDir.toString()].append(fileitem);
                 // If we found a fileitem, we can test if it's a dir. If not, we'll go to deleteDir just in case.
                 if (fileitem.isNull() || fileitem.isDir()) {
                     deletedSubdirs.append(url);
