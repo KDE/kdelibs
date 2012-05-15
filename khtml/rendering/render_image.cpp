@@ -227,21 +227,23 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
     if (!canvas()->printImages())
         return;
 
-    // paint frame around image as long as it is not completely loaded from web.
+    // paint frame around image and loading icon as long as it is not completely loaded from web.
     if (bUnfinishedImageFrame && paintInfo.phase == PaintActionForeground && cWidth > 2 && cHeight > 2 && !complete()) {
         static QPixmap *loadingIcon;
         QColor bg = khtml::retrieveBackgroundColor(this);
         QColor fg = khtml::hasSufficientContrast(Qt::gray, bg) ? Qt::gray :
                     (hasSufficientContrast(Qt::white, bg) ? Qt::white : Qt::black);
-	paintInfo.p->setPen(QPen(fg, 1));
-	paintInfo.p->setBrush( Qt::NoBrush );
-	paintInfo.p->drawRect(_tx, _ty, m_width - 1, m_height - 1);
+        paintInfo.p->setPen(QPen(fg, 1));
+        paintInfo.p->setBrush( Qt::NoBrush );
+        const int offsetX = _tx + borderLeft() + paddingLeft();
+        const int offsetY = _ty + borderTop() + paddingTop();
+        paintInfo.p->drawRect(offsetX, offsetY, contentWidth() - 1, contentHeight() - 1);
         if (!(m_width <= 5 || m_height <= 5)) {
             if (!loadingIcon) {
                 loadingIcon = new QPixmap();
                 loadingIcon->loadFromData(loading_icon_data, loading_icon_len);
             }
-            paintInfo.p->drawPixmap(_tx + 4, _ty + 4, *loadingIcon, 0, 0, m_width - 5, m_height - 5);
+            paintInfo.p->drawPixmap(offsetX + 4, offsetY + 4, *loadingIcon, 0, 0, contentWidth() - 5, contentHeight() - 5);
         }
 
     }
