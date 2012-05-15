@@ -679,8 +679,6 @@ void KActionCollection::connectNotify(const QMetaMethod& signal)
   if (d->connectHovered && d->connectTriggered)
     return;
 
-  kDebug() << signal.methodSignature();
-
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
   if (QMetaObject::normalizedSignature(SIGNAL(actionHighlighted(QAction*))) == signal ||
       QMetaObject::normalizedSignature(SIGNAL(actionHovered(QAction*))) == signal) {
