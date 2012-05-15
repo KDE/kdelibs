@@ -1752,10 +1752,11 @@ void KUrlTest::testMailto()
       mailtoUrl.setPath("a%b");
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
       QCOMPARE(mailtoUrl.path(), QString("a%b"));
+      QCOMPARE(mailtoUrl.toString(), QString("mailto:a%b"));
 #else
       QCOMPARE(mailtoUrl.path(), QString("a%25b")); // The path is encoded in Qt5...
-#endif
       QCOMPARE(mailtoUrl.toString(), QString("mailto:a%25b"));
+#endif
       QCOMPARE(QString::fromLatin1(mailtoUrl.toEncoded()), QString::fromLatin1("mailto:a%25b"));
   }
   {
