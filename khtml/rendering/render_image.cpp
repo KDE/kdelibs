@@ -235,15 +235,15 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
                     (hasSufficientContrast(Qt::white, bg) ? Qt::white : Qt::black);
         paintInfo.p->setPen(QPen(fg, 1));
         paintInfo.p->setBrush( Qt::NoBrush );
-        const int offsetX = _tx + borderLeft() + paddingLeft();
-        const int offsetY = _ty + borderTop() + paddingTop();
-        paintInfo.p->drawRect(offsetX, offsetY, contentWidth() - 1, contentHeight() - 1);
+        const int offsetX = _tx + leftBorder + leftPad;
+        const int offsetY = _ty + topBorder + topPad;
+        paintInfo.p->drawRect(offsetX, offsetY, cWidth - 1, cHeight - 1);
         if (!(m_width <= 5 || m_height <= 5)) {
             if (!loadingIcon) {
                 loadingIcon = new QPixmap();
                 loadingIcon->loadFromData(loading_icon_data, loading_icon_len);
             }
-            paintInfo.p->drawPixmap(offsetX + 4, offsetY + 4, *loadingIcon, 0, 0, contentWidth() - 5, contentHeight() - 5);
+            paintInfo.p->drawPixmap(offsetX + 4, offsetY + 4, *loadingIcon, 0, 0, cWidth - 5, cHeight - 5);
         }
 
     }
