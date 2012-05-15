@@ -101,7 +101,7 @@ struct BlockList {
     size_t m_used;
     size_t m_capacity;
 
-    CollectorBlock* operator[](int pos) {
+    CollectorBlock* operator[](size_t pos) {
         return m_data[pos];
     }
 
