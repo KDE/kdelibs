@@ -15,9 +15,7 @@ macro(GEN_KCFG_TEST_SOURCE _testName _srcs)
    set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/${_testName}.cpp PROPERTIES SKIP_AUTOMOC TRUE)
    set( ${_srcs} ${${_srcs}} ${CMAKE_CURRENT_BINARY_DIR}/${_testName}.cpp ${CMAKE_CURRENT_BINARY_DIR}/${_testName}.h )
 
-  if(QT5_BUILD)
-    macro_add_file_dependencies(${CMAKE_CURRENT_BINARY_DIR}/${_testName}.cpp ${CMAKE_CURRENT_BINARY_DIR}/${_testName}.moc )
-  endif()
+   macro_add_file_dependencies(${CMAKE_CURRENT_BINARY_DIR}/${_testName}.cpp ${CMAKE_CURRENT_BINARY_DIR}/${_testName}.moc )
 endmacro(GEN_KCFG_TEST_SOURCE)
 
 ########### next target ###############
@@ -181,19 +179,13 @@ target_link_libraries(test_dpointer ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} kco
 ########### next target ###############
 
 set(test_signal_SRCS test_signal_main.cpp )
-
-
 gen_kcfg_test_source(test_signal test_signal_SRCS)
-
 add_executable(test_signal ${test_signal_SRCS})
-
 target_link_libraries(test_signal ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} kconfigcore kconfiggui)
-
 
 ########### next target ###############
 
 set(kconfigcompiler_test_SRCS kconfigcompiler_test.cpp )
-
 
 add_definitions(-DTESTSRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}\\"")
 add_executable(kconfigcompiler_test ${kconfigcompiler_test_SRCS})
