@@ -758,7 +758,7 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   type		KJS::HTMLElement::StyleType	DontDelete
   sheet		KJS::HTMLElement::StyleSheet	DontDelete|ReadOnly
 @end
-@begin HTMLBodyElementTable 8
+@begin HTMLBodyElementTable 12
   aLink		KJS::HTMLElement::BodyALink	DontDelete
   background	KJS::HTMLElement::BodyBackground	DontDelete
   bgColor	KJS::HTMLElement::BodyBgColor	DontDelete
@@ -766,11 +766,12 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
   text		KJS::HTMLElement::BodyText	DontDelete
   vLink		KJS::HTMLElement::BodyVLink	DontDelete
 # HTML5 specifies these as shadowing normal ones and forwarding to window
-  onload        KJS::HTMLElement::BodyOnLoad     DontDelete
-  onerror       KJS::HTMLElement::BodyOnError    DontDelete
-  onfocus       KJS::HTMLElement::BodyOnFocus    DontDelete
-  onblur        KJS::HTMLElement::BodyOnBlur     DontDelete
-  onmessage     KJS::HTMLElement::BodyOnMessage  DontDelete
+  onload        KJS::HTMLElement::BodyOnLoad        DontDelete
+  onerror       KJS::HTMLElement::BodyOnError       DontDelete
+  onfocus       KJS::HTMLElement::BodyOnFocus       DontDelete
+  onblur        KJS::HTMLElement::BodyOnBlur        DontDelete
+  onmessage     KJS::HTMLElement::BodyOnMessage     DontDelete
+  onhashchange  KJS::HTMLElement::BodyOnHashChange  DontDelete
 @end
 @begin HTMLBodyElementProtoTable 2
 # Even though we do blur/focus everywhere, we still handle body.focus()
@@ -1719,6 +1720,9 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
         return getWindowListener(exec, DOM::EventImpl::FOCUS_EVENT);
     case BodyOnMessage:
         return getWindowListener(exec, DOM::EventImpl::MESSAGE_EVENT);
+    case BodyOnHashChange:
+        return getWindowListener(exec, DOM::EventImpl::HASHCHANGE_EVENT);
+
     }
   }
   break;
@@ -2504,6 +2508,9 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, JSValue *val
             break;
         case BodyOnMessage:
             setWindowListener(exec, DOM::EventImpl::MESSAGE_EVENT, value);
+            break;            
+        case BodyOnHashChange:
+            setWindowListener(exec, DOM::EventImpl::HASHCHANGE_EVENT, value);
             break;            
       }
     }

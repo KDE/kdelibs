@@ -308,6 +308,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   onselect	Window::Onselect	DontDelete
   onsubmit	Window::Onsubmit	DontDelete
   onunload	Window::Onunload	DontDelete
+  onhashchange	Window::Onhashchange	DontDelete
 
 # Constructors/constant tables
   Node		Window::Node		DontEnum|DontDelete
@@ -1098,6 +1099,8 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
       return getListener(exec,DOM::EventImpl::SUBMIT_EVENT);
     case Onunload:
       return getListener(exec,DOM::EventImpl::UNLOAD_EVENT);
+    case Onhashchange:
+      return getListener(exec,DOM::EventImpl::HASHCHANGE_EVENT);
   }
 
   return jsUndefined();
@@ -1261,6 +1264,10 @@ void Window::put(ExecState* exec, const Identifier &propertyName, JSValue *value
     case Onunload:
       if (isSafeScript(exec))
         setListener(exec,DOM::EventImpl::UNLOAD_EVENT,value);
+      return;
+    case Onhashchange:
+      if (isSafeScript(exec))
+        setListener(exec,DOM::EventImpl::HASHCHANGE_EVENT,value);
       return;
     case Name:
       if (isSafeScript(exec))

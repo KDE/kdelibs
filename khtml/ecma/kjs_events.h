@@ -275,6 +275,21 @@ namespace KJS {
 
   DEFINE_PSEUDO_CONSTRUCTOR(MessageEventPseudoCtor)
 
+  class DOMHashChangeEvent : public DOMEvent {
+  public:
+    DOMHashChangeEvent(ExecState* exec, DOM::HashChangeEventImpl* me);
+
+    using KJS::JSObject::getOwnPropertySlot;
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    JSValue* getValueProperty(ExecState *, int token) const;
+    // no put - all read-only
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
+    enum { NewUrl, OldUrl, InitHashChangeEvent };
+    DOM::HashChangeEventImpl* impl() const { return static_cast<DOM::HashChangeEventImpl*>(m_impl.get()); }
+  };
+  DEFINE_PSEUDO_CONSTRUCTOR(HashChangeEventPseudoCtor)
+
 } // namespace
 
 #endif
