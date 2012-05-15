@@ -467,7 +467,7 @@ void Collector::markStackObjectsConservatively(void *start, void *end)
       uintptr_t offset = reinterpret_cast<uintptr_t>(x) & BLOCK_OFFSET_MASK;
       CollectorBlock* blockAddr = reinterpret_cast<CollectorBlock*>(x - offset);
       for (size_t block = 0; block < usedBlocks; block++) {
-        if ((blocks[block] == blockAddr) & (offset <= lastCellOffset)) {
+        if ((blocks[block] == blockAddr) && (offset <= lastCellOffset)) {
           if (((CollectorCell *)x)->u.freeCell.zeroIfFree != 0) {
             JSCell *imp = reinterpret_cast<JSCell *>(x);
             if (!imp->marked())
