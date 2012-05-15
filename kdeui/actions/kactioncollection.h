@@ -279,14 +279,15 @@ Q_SIGNALS:
    */
   void actionTriggered(QAction* action);
 
-protected Q_SLOTS:
+protected:
   /// Overridden to perform connections when someone wants to know whether an action was highlighted or triggered
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-  virtual void connectNotify ( const char * signal );
+  virtual void connectNotify( const char * signal );
 #else
-  virtual void connectNotify (const QMetaMethod& signal);
+  virtual void connectNotify(const QMetaMethod& signal);
 #endif
 
+protected Q_SLOTS:
   virtual void slotActionTriggered();
 
   /**
