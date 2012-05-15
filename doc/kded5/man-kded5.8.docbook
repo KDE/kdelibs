@@ -29,12 +29,12 @@
 </refentryinfo>
 
 <refmeta>
-<refentrytitle><command>kded4</command></refentrytitle>
+<refentrytitle><command>kded5</command></refentrytitle>
 <manvolnum>8</manvolnum>
 </refmeta>
 
 <refnamediv>
-<refname><command>kded4</command></refname>
+<refname><command>kded5</command></refname>
 <refpurpose>&kde; daemon - triggers Sycoca database updates when needed.</refpurpose>
 </refnamediv>
 
@@ -42,7 +42,7 @@
 <title>Synopsis</title>
 
 <cmdsynopsis>
-<command>kded4</command>
+<command>kded5</command>
 
 <arg choice="opt">--help</arg>
 <arg choice="opt">Generic options</arg>
@@ -55,7 +55,7 @@
 <refsect1>
 <title>Description</title>
 
-<para><command>kded4</command> is responsible for creating the sycoca file, i.e. the binary cache of servicetypes, mimetypes, and services for a particular user.
+<para><command>kded5</command> is responsible for creating the sycoca file, i.e. the binary cache of servicetypes, mimetypes, and services for a particular user.
 </para>
 <para>It monitors the directories containing .desktop files. When a file is added/removed, it waits 5 seconds (in case of a series of updates), and then launches <command>kbuildsycoca4</command> to update the sycoca.
 </para>
@@ -63,9 +63,9 @@
 </para>
 <para>When the hostname changes, it will make the necessary changes to the KDE environment and X-server to allow continued proper operation, launching <command>kdontchangethehostname</command> to do the changes.
 </para>
-<para>Those tasks are also performed always at kded4 start to ensure that the user configuration is up to date.
+<para>Those tasks are also performed always at kded5 start to ensure that the user configuration is up to date.
 </para>
-<para>It is also responsible for launching the on-demand kded4 modules and init enabled kded4 modules like:
+<para>It is also responsible for launching the on-demand kded5 modules and init enabled kded5 modules like:
 <variablelist>
 <varlistentry>
 <term><option>Konqueror Browser Preloader</option></term>
@@ -307,11 +307,11 @@ These passwords are forgotten when exiting KDE (unlike <command>KWallet</command
 
 <refsect1>
 <title>Usage</title>
-<para>If <command>kded4</command> is called without parameters and is already running, it shows the message:
+<para>If <command>kded5</command> is called without parameters and is already running, it shows the message:
 <screen>KDE Daemon (kded) already running.</screen>
 </para>
 <para>
-If <command>kded4</command> is called with <command>kded4 --check</command>, then
+If <command>kded5</command> is called with <command>kded5 --check</command>, then
 it updates the &kde; sycoca using <command>kbuildsycoca4</command>.
 </para>
 </refsect1>
