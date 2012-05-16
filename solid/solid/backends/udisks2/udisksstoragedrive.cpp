@@ -28,11 +28,12 @@
 
 using namespace Solid::Backends::UDisks2;
 
-StorageDrive::StorageDrive(Device *device)
-    : Block(device)
+StorageDrive::StorageDrive(Device *dev)
+    : Block(dev)
 {
     UdevQt::Client client(this);
-    m_udevDevice = client.deviceByDeviceFile(QFile::decodeName(m_device->prop("Device").toByteArray()));
+    m_udevDevice = client.deviceByDeviceFile(device());
+    m_udevDevice.deviceProperties();
 }
 
 StorageDrive::~StorageDrive()
@@ -109,6 +110,8 @@ Solid::StorageDrive::Bus StorageDrive::bus() const
 {
     const QString bus = m_device->prop("ConnectionBus").toString();
     const QString udevBus = m_udevDevice.deviceProperty("ID_BUS").toString();
+
+    //qDebug() << "bus:" << bus << "udev bus:" << udevBus;
 
     if (udevBus == "ata")
     {

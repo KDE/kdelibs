@@ -41,7 +41,7 @@ class StorageDrive: public Block, virtual public Solid::Ifaces::StorageDrive
     Q_INTERFACES(Solid::Ifaces::StorageDrive)
 
 public:
-    StorageDrive(Device *device);
+    StorageDrive(Device *dev);
     virtual ~StorageDrive();
 
     virtual qulonglong size() const;

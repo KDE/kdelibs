@@ -21,15 +21,47 @@
 #include <linux/kdev_t.h>
 
 #include <QFile>
+#include <QtDBus/QDBusConnection>
+#include <QtDBus/QDBusPendingReply>
 
 #include "udisksblock.h"
+#include "dbus/manager.h"
 
 using namespace Solid::Backends::UDisks2;
 
-Block::Block(Device *device)
-    : DeviceInterface(device)
+Block::Block(Device *dev)
+    : DeviceInterface(dev)
 {
     m_devNum = m_device->prop("DeviceNumber").toULongLong();
+    m_devFile = QFile::decodeName(m_device->prop("Device").toByteArray());
+
+    // we have a drive (non-block device for udisks), so let's find the corresponding (real) block device
+    if (m_devNum == 0 || m_devFile.isEmpty()) {
+        org::freedesktop::DBus::ObjectManager manager(UD2_DBUS_SERVICE, UD2_DBUS_PATH, QDBusConnection::systemBus());
+        QDBusPendingReply<DBUSManagerStruct> reply = manager.GetManagedObjects();
+        reply.waitForFinished();
+        if (!reply.isError()) {  // enum devices
+            Q_FOREACH(const QDBusObjectPath &path, reply.value().keys()) {
+                const QString udi = path.path();
+
+                if (udi == UD2_DBUS_PATH_MANAGER || udi == UD2_UDI_DISKS_PREFIX || udi.startsWith(UD2_DBUS_PATH_JOBS))
+                    continue;
+
+                Device device(udi);
+                if (device.drivePath() == dev->udi()) {
+                    m_devNum = device.prop("DeviceNumber").toULongLong();
+                    m_devFile = QFile::decodeName(device.prop("Device").toByteArray());
+                    break;
+                }
+            }
+        }
+        else  // show error
+        {
+            qWarning() << "Failed enumerating UDisks2 objects:" << reply.error().name() << "\n" << reply.error().message();
+        }
+    }
+
+    qDebug() << "devnum:" << m_devNum << "dev file:" << m_devFile;
 }
 
 Block::~Block()
@@ -38,7 +70,7 @@ Block::~Block()
 
 QString Block::device() const
 {
-    return QFile::decodeName(m_device->prop("Device").toByteArray());
+    return m_devFile;
 }
 
 int Block::deviceMinor() const

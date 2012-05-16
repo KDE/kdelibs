@@ -38,7 +38,7 @@ class Block: public DeviceInterface, virtual public Solid::Ifaces::Block
     Q_INTERFACES(Solid::Ifaces::Block)
 
 public:
-    Block(Device *device);
+    Block(Device *dev);
     virtual ~Block();
 
     virtual QString device() const;
@@ -46,6 +46,7 @@ public:
     virtual int deviceMajor() const;
 private:
     dev_t m_devNum;
+    QString m_devFile;
 };
 
 }
