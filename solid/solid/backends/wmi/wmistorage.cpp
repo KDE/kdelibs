@@ -47,6 +47,10 @@ Storage::~Storage()
 
 Solid::StorageDrive::Bus Storage::bus() const
 {
+     if(m_device->type() == Solid::DeviceInterface::OpticalDrive)
+         return Solid::StorageDrive::Platform;
+
+
     QString bus =  m_device->property("InterfaceType").toString().toLower();
 
     if (bus=="ide")

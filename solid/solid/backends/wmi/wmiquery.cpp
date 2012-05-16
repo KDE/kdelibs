@@ -63,7 +63,7 @@ QString bstrToQString(BSTR bstr)
 
 QVariant WmiQuery::Item::msVariantToQVariant(VARIANT msVariant, CIMTYPE variantType)
 {
-    QVariant returnVariant;
+    QVariant returnVariant(QVariant::Invalid);
     if(msVariant.vt == VT_NULL){
         return QVariant(QVariant::String);
     }
@@ -136,29 +136,22 @@ QVariant WmiQuery::Item::getProperty(BSTR bstrProp) const
     HRESULT hr = m_p->Get(bstrProp, 0, &vtProp, &variantType, 0);
     if (SUCCEEDED(hr)) {
         result = msVariantToQVariant(vtProp,variantType);
-    }/*else{
-        qWarning()<<"Querying "<<property<<"failed";
-    }*/
+    }else{
+        QString className = getProperty(L"__CLASS").toString();
+        QString qprop = bstrToQString(bstrProp);
+        qFatal("\r\n--------------------------------------------------------------\r\n"
+               "Error: Property: %s not found in %s\r\n"
+               "--------------------------------------------------------------\r\n",qPrintable(qprop),qPrintable(className));
+    }
     return result;
 }
 QVariant WmiQuery::Item::getProperty(const QString &property) const
 {
-    //    qDebug() << "start property:" << property;
     QVariant result;
-    QString prop = property;
-    if (property == "voule.ignore")
-        return "false";
-    else if(property == "block.storage_device")
-        return "true";
-    else if (property == "volume.is_mounted")
-        return "true";
-    // todo check first if property is available
-
     BSTR bstrProp;
-    bstrProp = ::SysAllocString(prop);
+    bstrProp = ::SysAllocString(property);
     result = getProperty(bstrProp);
     ::SysFreeString(bstrProp);
-    //    qDebug() << "Querying "<<property<<"end result:" << result;
     return result;
 }
 

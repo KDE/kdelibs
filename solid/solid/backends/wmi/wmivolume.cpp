@@ -43,11 +43,7 @@ Volume::~Volume()
 
 bool Volume::isIgnored() const
 {
-
-    if (m_device->property("SystemVolume").toBool()) {
-        return true;
-    }
-    return false;
+    return m_logicalDisk.isNull();
 }
 
 Solid::StorageVolume::UsageType Volume::usage() const
