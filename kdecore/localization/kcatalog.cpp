@@ -32,6 +32,7 @@
 #include "gettext.h"
 
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 static bool s_localeSet = false;
 
 // Initialize the locale very early during application startup
@@ -48,6 +49,7 @@ int kInitializeLocale()
     return 1;
 }
 Q_CONSTRUCTOR_FUNCTION(kInitializeLocale)
+#endif
 
 // not defined on win32 :(
 #ifdef _WIN32
@@ -100,10 +102,12 @@ QByteArray KCatalogPrivate::currentLanguage;
 KCatalog::KCatalog(const QString & name, const QString & language )
   : d( new KCatalogPrivate )
 {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     // Set locales if the static initializer didn't work
     if (!s_localeSet) {
         kInitializeLocale();
     }
+#endif
 
   // Find locale directory for this catalog.
   QString localeDir = catalogLocaleDir( name, language );
