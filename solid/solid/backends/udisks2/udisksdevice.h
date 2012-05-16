@@ -80,6 +80,8 @@ public:
     bool isEncryptedCleartext() const;
     bool isSwap() const;
 
+    QString drivePath() const;
+
 Q_SIGNALS:
     void changed();
     void propertyChanged(const QMap<QString,int> &changes);
