@@ -22,6 +22,7 @@ set(libkde4support_SRCS
 
     kdeui/kicon.cpp
     kdeui/knumvalidator.cpp
+    kdeui/karrowbutton.cpp
 )
 
 include_directories(
@@ -71,6 +72,7 @@ install(FILES
     kdecore/kconfiggroup_kurl.h
     kdeui/kicon.h
     kdeui/knumvalidator.h
+    kdeui/karrowbutton.h
     ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
