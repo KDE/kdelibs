@@ -95,7 +95,7 @@ AccessManagerReply::AccessManagerReply (const QNetworkAccessManager::Operation o
         setSslConfiguration(request.sslConfiguration());
 
     setError(NoError, QString());
-    setFinished(true);
+    emitFinished(true, Qt::QueuedConnection);
 }
 
 AccessManagerReply::AccessManagerReply (const QNetworkAccessManager::Operation op,
@@ -110,12 +110,11 @@ AccessManagerReply::AccessManagerReply (const QNetworkAccessManager::Operation o
     setUrl(request.url());
     setOperation(op);
     setError(static_cast<QNetworkReply::NetworkError>(errorCode), errorMessage);
-    setFinished(true);
-
     if (error() != QNetworkReply::NoError) {
         QMetaObject::invokeMethod(this, "error", Qt::QueuedConnection, Q_ARG(QNetworkReply::NetworkError, error()));
     }
-    QMetaObject::invokeMethod(this, "finished", Qt::QueuedConnection);
+
+    emitFinished(true, Qt::QueuedConnection);
 }
 
 AccessManagerReply::~AccessManagerReply()
@@ -425,16 +424,14 @@ void AccessManagerReply::slotResult(KJob *kJob)
         readHttpResponseHeaders(qobject_cast<KIO::Job*>(kJob));
     }
 
-    setFinished(true);
-    emit finished();
+    emitFinished(true);
 }
 
 void AccessManagerReply::slotStatResult(KJob* kJob)
 {
     if (jobError(kJob)) {
         emit error (error());
-        setFinished(true);
-        emit finished();
+        emitFinished(true);
         return;
     }
 
@@ -449,8 +446,7 @@ void AccessManagerReply::slotStatResult(KJob* kJob)
     if (!mimeType.isEmpty())
         setHeader(QNetworkRequest::ContentTypeHeader, mimeType.toUtf8());
 
-    setFinished(true);
-    emit finished();
+    emitFinished(true);
 }
 
 void AccessManagerReply::slotRedirection(KIO::Job* job, const KUrl& u)
@@ -477,6 +473,17 @@ void AccessManagerReply::slotPercent(KJob *job, unsigned long percent)
     }
     emit downloadProgress(bytesProcessed, bytesTotal);
 }
+
+void AccessManagerReply::emitFinished (bool state, Qt::ConnectionType type)
+{
+#if QT_VERSION >= 0x040800
+    setFinished(state);
+#else
+    Q_UNUSED(state);
+#endif
+    emit QMetaObject::invokeMethod(this, "finished", type);
+}
+
 }
 
 #include "accessmanagerreply_p.moc"

@@ -83,6 +83,7 @@ protected:
     void setHeaderFromMetaData(const KIO::MetaData&);
     void readHttpResponseHeaders(KIO::Job *);
     int jobError(KJob *kJob);
+    void emitFinished(bool state, Qt::ConnectionType type = Qt::AutoConnection);
 
 private Q_SLOTS:
     void slotData(KIO::Job *kioJob, const QByteArray &data);
