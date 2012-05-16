@@ -25,7 +25,6 @@
 #include <QtCore/QMap>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <kurl.h>
 #include <ksycocafactory.h>
 
 

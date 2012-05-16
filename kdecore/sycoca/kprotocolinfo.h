@@ -20,7 +20,6 @@
 #define KPROTOCOLINFO_H
 
 
-#include <kurl.h>
 #include <ksycocaentry.h>
 #include <ksycocatype.h>
 #include <QtCore/QVariant>

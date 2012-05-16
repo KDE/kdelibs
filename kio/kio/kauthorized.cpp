@@ -20,6 +20,7 @@
 
 #include "kauthorized.h"
 #include <kprotocolinfo.h>
+#include <QUrl>
 
 namespace KAuthorized {
 

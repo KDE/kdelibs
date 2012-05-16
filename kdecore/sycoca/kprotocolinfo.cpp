@@ -24,6 +24,7 @@
 #include <kmimetypetrader.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
+#include <QUrl>
 
 //
 // Internal functions:

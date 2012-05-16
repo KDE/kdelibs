@@ -20,6 +20,7 @@
 #include <kstandarddirs.h>
 #include <QApplication>
 #include <QFile>
+#include <QUrl>
 #include <kprotocolmanager.h>
 #include <kglobalsettings.h>
 #include <kcmdlineargs.h>
@@ -34,8 +35,8 @@ int main(int argc, char **argv) {
     KComponentData componentData(&aboutData);
     QCoreApplication app(argc,argv); // needed by QEventLoop in ksycoca.cpp
 
-    KUrl url("/tmp");
-    assert( KProtocolManager::supportsListing( KUrl( "ftp://10.1.1.10") ) );
+    QUrl url = QUrl::fromLocalFile("/tmp");
+    assert( KProtocolManager::supportsListing( QUrl( "ftp://10.1.1.10") ) );
     assert( KProtocolManager::inputType(url) == KProtocolInfo::T_NONE );
     assert( KProtocolManager::outputType(url) == KProtocolInfo::T_FILESYSTEM );
     assert( KProtocolManager::supportsReading(url) == true );
@@ -46,10 +47,10 @@ int main(int argc, char **argv) {
 
     assert( KProtocolInfo::showFilePreview( "file" ) == true );
     assert( KProtocolInfo::showFilePreview( "audiocd" ) == false );
-    assert( KGlobalSettings::showFilePreview( KUrl( "audiocd:/" ) ) == false );
+    assert( KGlobalSettings::showFilePreview( QUrl( "audiocd:/" ) ) == false );
 
     QString proxy;
-    QString protocol = KProtocolManager::slaveProtocol( KUrl( "http://bugs.kde.org" ), proxy );
+    QString protocol = KProtocolManager::slaveProtocol( QUrl( "http://bugs.kde.org" ), proxy );
     assert( protocol == "http" );
 
     QStringList capabilities = KProtocolInfo::capabilities( "imap" );
