@@ -146,13 +146,13 @@ public:
         case Solid::DeviceInterface::StorageDrive:
             break;
         case Solid::DeviceInterface::OpticalDrive:
-            interfaceList <<Solid::DeviceInterface::StorageDrive;
+            interfaceList <<Solid::DeviceInterface::Block<<Solid::DeviceInterface::StorageDrive;
             break;
         case Solid::DeviceInterface::StorageVolume:
-            interfaceList <<Solid::DeviceInterface::StorageAccess;
+            interfaceList <<Solid::DeviceInterface::Block<<Solid::DeviceInterface::StorageAccess;
             break;
         case Solid::DeviceInterface::OpticalDisc:
-            interfaceList <<Solid::DeviceInterface::StorageVolume;
+            interfaceList <<Solid::DeviceInterface::Block<<Solid::DeviceInterface::StorageVolume;
             break;
         case Solid::DeviceInterface::Camera:
             break;

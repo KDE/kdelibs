@@ -116,11 +116,14 @@ WmiManager::WmiManager(QObject *parent)
 
     QList<Solid::DeviceInterface::Type> types;
     types<<Solid::DeviceInterface::StorageDrive<<Solid::DeviceInterface::StorageVolume;
+    //partition added
     WmiQuery::instance().addDeviceListeners(new WmiManager::WmiEventSink(this,"SELECT * FROM __InstanceCreationEvent WITHIN 10 WHERE TargetInstance ISA 'Win32_DiskPartition'",types));
+    //partition removed
     WmiQuery::instance().addDeviceListeners(new WmiManager::WmiEventSink(this,"SELECT * FROM __InstanceDeletionEvent WITHIN 10 WHERE TargetInstance ISA 'Win32_DiskPartition'",types));
 
     types.clear();
     types<<Solid::DeviceInterface::OpticalDisc;
+    //MediaLoaded=True/False change
     WmiQuery::instance().addDeviceListeners(new WmiManager::WmiEventSink(this,"SELECT * from __InstanceModificationEvent WITHIN 10 WHERE TargetInstance ISA 'Win32_CDromDrive'",types));
 
 }
