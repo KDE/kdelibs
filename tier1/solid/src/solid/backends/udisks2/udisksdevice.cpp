@@ -356,8 +356,7 @@ QString Device::volumeDescription() const
     if (!volume_label.isEmpty())
         return volume_label;
 
-    const QString drivePath = prop("Drive").value<QDBusObjectPath>().path();
-    UDisks2::Device storageDevice(drivePath);
+    UDisks2::Device storageDevice(drivePath());
     const UDisks2::StorageDrive storageDrive(&storageDevice);
     Solid::StorageDrive::DriveType drive_type = storageDrive.driveType();
 
@@ -544,8 +543,7 @@ QString Device::icon() const
         }
     }
     else if (isBlock()) {
-        const QString drivePath = prop("Drive").value<QDBusObjectPath>().path();
-        Device drive(drivePath);
+        Device drive(drivePath());
 
         // handle media
         const QString media = drive.prop("Media").toString();
@@ -864,21 +862,21 @@ bool Device::isOpticalDrive() const
 
 bool Device::isOpticalDisc() const
 {
-    const QString drivePath = prop("Drive").value<QDBusObjectPath>().path();
-    if (drivePath.isEmpty() || drivePath == "/")
+    const QString drv = drivePath();
+    if (drv.isEmpty() || drv == "/")
         return false;
 
-    Device drive(drivePath);
+    Device drive(drv);
     return drive.prop("Optical").toBool();
 }
 
 bool Device::mightBeOpticalDisc() const
 {
-    const QString drivePath = prop("Drive").value<QDBusObjectPath>().path();
-    if (drivePath.isEmpty() || drivePath == "/")
+    const QString drv = drivePath();
+    if (drv.isEmpty() || drv == "/")
         return false;
 
-    Device drive(drivePath);
+    Device drive(drv);
     return drive.isOpticalDrive();
 }
 
@@ -904,4 +902,9 @@ bool Device::isEncryptedCleartext() const
 bool Device::isSwap() const
 {
     return hasInterface(UD2_DBUS_INTERFACE_SWAP);
+}
+
+QString Device::drivePath() const
+{
+    return prop("Drive").value<QDBusObjectPath>().path();
 }
