@@ -7,7 +7,7 @@ add_library(kdeqt5staging ${LIBRARY_TYPE} ${libkdeqt5staging_SRCS})
 
 generate_export_header(kdeqt5staging)
 
-target_link_libraries(kdeqt5staging ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
+target_link_libraries(kdeqt5staging ${QT_QTCORE_LIBRARY})
 
 set_target_properties(kdeqt5staging PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                                SOVERSION ${ECM_SOVERSION}
