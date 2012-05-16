@@ -1,6 +1,12 @@
 /*
- * Copyright (C) 2002,2003 Leo Savernik <l.savernik@aon.at>
- * Copyright (C) 2012 Rolf Eike Beer <kde@opensource.sf-tec.de>
+ *  This file is part of the KDE libraries
+ *
+ *  Copyright (C) 2012 Rolf Eike Beer <kde@opensource.sf-tec.de>
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
  */
 
 #include "ecmatest.h"
