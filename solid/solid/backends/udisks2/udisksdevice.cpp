@@ -752,9 +752,10 @@ void Device::slotPropertiesChanged(const QString &ifaceName, const QVariantMap &
     QMapIterator<QString, QVariant> i(changedProps);
     while (i.hasNext()) {
         i.next();
-        m_cache.insert(i.key(), i.value());  // replace the value
-        changeMap.insert(i.key(), Solid::GenericInterface::PropertyModified);
-        qDebug() << "\t modified:" << i.key() << ":" << m_cache.value(i.key());
+        const QString key = i.key();
+        m_cache.insert(key, i.value());  // replace the value
+        changeMap.insert(key, Solid::GenericInterface::PropertyModified);
+        qDebug() << "\t modified:" << key << ":" << m_cache.value(key);
     }
 
     Q_EMIT propertyChanged(changeMap);
@@ -863,7 +864,7 @@ bool Device::isOpticalDrive() const
 
 bool Device::isOpticalDisc() const
 {
-    QString drivePath = prop("Drive").value<QDBusObjectPath>().path();
+    const QString drivePath = prop("Drive").value<QDBusObjectPath>().path();
     if (drivePath.isEmpty() || drivePath == "/")
         return false;
 
@@ -873,7 +874,7 @@ bool Device::isOpticalDisc() const
 
 bool Device::mightBeOpticalDisc() const
 {
-    QString drivePath = prop("Drive").value<QDBusObjectPath>().path();
+    const QString drivePath = prop("Drive").value<QDBusObjectPath>().path();
     if (drivePath.isEmpty() || drivePath == "/")
         return false;
 
