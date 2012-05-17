@@ -5,10 +5,7 @@ set(kwidgets_LIB_SRCS
   icons/kiconengine.cpp
   icons/kiconloader.cpp
   icons/kicontheme.cpp
-  widgets/khbox.cpp
-  widgets/kvbox.cpp
-  widgets/kseparator.cpp
-  widgets/kurllabel.cpp
+  widgets/kurllabel.cpp # Not good enough quality. Needs to use QUrl instead of QString and should not inherit QLabel, but hold it as a member instead.
   widgets/kpushbutton.cpp
   utils/kstandardguiitem.cpp
   utils/kguiitem.cpp
@@ -25,6 +22,7 @@ target_link_libraries(kwidgets
   ${QT_QTSVG_LIBRARY}
   ${KDE4_KDECORE_LIBS}
   kdeguiaddons
+  kwidgetsaddons
   kauth
   ${kwindowsystem_LIBRARY}
 )
@@ -42,9 +40,6 @@ install(FILES
   icons/kicontheme.h
   icons/kiconloader.h
   icons/kiconeffect.h
-  widgets/khbox.h
-  widgets/kvbox.h
-  widgets/kseparator.h
   widgets/kpushbutton.h
   widgets/kurllabel.h
   dialogs/kdialog.h

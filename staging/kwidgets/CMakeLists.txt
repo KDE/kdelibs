@@ -25,6 +25,8 @@ include_directories(
   ${kcoreaddons_SOURCE_DIR}/src/caching
   ${CMAKE_BINARY_DIR}/tier2/kauth/src
   ${CMAKE_SOURCE_DIR}/tier2/kauth/src
+  ${CMAKE_BINARY_DIR}/tier1/kwidgetsaddons/src
+  ${CMAKE_SOURCE_DIR}/tier1/kwidgetsaddons/src
   ${kwindowsystem_BINARY_DIR}/src
   ${kwindowsystem_SOURCE_DIR}/src
   ${CMAKE_BINARY_DIR}/staging/kdeguiaddons/src

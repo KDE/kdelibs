@@ -23,6 +23,7 @@
 #include "kdialog.h"
 #include "kdialog_p.h"
 #include <kdebug.h>
+#include <kglobal.h>
 #include "kdialogqueue_p.h"
 
 #include <QApplication>

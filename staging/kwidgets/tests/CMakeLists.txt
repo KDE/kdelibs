@@ -12,8 +12,6 @@ endmacro()
 kwidgets_executable_tests(
     kiconloadertest
     kiconeffecttest
-    khboxtest
-    kseparatortest
     kdialogtest
 )
 
