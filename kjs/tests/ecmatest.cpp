@@ -189,7 +189,6 @@ void ECMAscriptTest::runAllTests()
     static const QByteArray include = "$INCLUDE(\"";
 
     QFETCH(QString, filename);
-    bool isNegative = false;
     QByteArray expectedError;
 
     QFile input( filename );
@@ -209,21 +208,14 @@ void ECMAscriptTest::runAllTests()
 
     KJS::Interpreter::setShouldPrintExceptions(true);
 
-    QByteArray testscript = "\n\nvar testDescrip = {};\n"
-                            "testDescrip.id = \"";
-    testscript += QTest::currentDataTag();
-    testscript += "\";\n";
+    QByteArray testscript;
 
     // test is expected to fail
-    QByteArray prop = getTextProperty( "@negative", testdata );
-    if ( !prop.isEmpty() || (testdata.indexOf( "@negative" ) >= 0 ) ) {
-        isNegative = true;
-        expectedError = prop;
-
-        testscript += "testDescrip.negative = \"" + prop + "\";\n";
+    if ( testdata.indexOf( "@negative" ) >= 0 ) {
+        expectedError = getTextProperty( "@negative", testdata );
+        if ( expectedError.isEmpty() )
+            expectedError = ".";
     }
-    testscript += "testDescrip.description = \"" + getTextProperty( "@description", testdata ) + "\";\n";
-    testscript += "testDescrip.path = \"" + getTextProperty( "@path", testdata ) + "\";\n";
 
     int from = 0;
     while ( ( from = testdata.indexOf( include, from ) ) >= 0 ) {
@@ -248,7 +240,7 @@ void ECMAscriptTest::runAllTests()
     const QString scriptutf = QString::fromUtf8( testscript.constData() );
 
     KJS::Completion completion = interp->evaluate(info.fileName().toAscii().constData(), 0, scriptutf);
-    if ( !isNegative ) {
+    if ( expectedError.isEmpty() ) {
         if ( expectedBroken.contains( QString::fromAscii( QTest::currentDataTag() ) ) ) {
             QWARN( "It is known that KJS doesn't pass this test" );
             QVERIFY2( completion.complType() == KJS::Throw, "test expected to be broken now works!" );
@@ -268,7 +260,7 @@ void ECMAscriptTest::runAllTests()
 
             if ( expectedError == "^((?!NotEarlyError).)*$" ) {
                 QVERIFY( eMsg.indexOf( "NotEarlyError" ) == -1 );
-            } else if ( expectedError.isEmpty() || expectedError == "." ) {
+            } else if ( expectedError == "." ) {
                 // means "every exception passes
             } else {
                 QVERIFY( eMsg.indexOf( expectedError ) >= 0 );
