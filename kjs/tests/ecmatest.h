@@ -24,6 +24,7 @@ private Q_SLOTS:
   void initTestCase();
   void runAllTests();
   void runAllTests_data();
+  void cleanup();
 };
 
 #endif /* ECMATEST_H */
