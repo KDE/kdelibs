@@ -12,6 +12,8 @@ find_package(Qt5Transitional REQUIRED Test Gui)
 
 add_subdirectory(proxymodeltestsuite)
 
+include(ECMMarkAsTest)
+
 include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}/../src
    ${CMAKE_CURRENT_BINARY_DIR}/../src
@@ -23,6 +25,7 @@ macro(ITEMMODELS_PROXYMODEL_TESTS)
     foreach(_testname ${ARGN})
         add_executable(${_testname} ${_testname}.cpp ${proxyModelTestSources} )
         add_test(itemmodels-${_testname} ${_testname})
+        ecm_mark_as_test(${_testname})
         target_link_libraries(${_testname} itemmodels ${QT_QTTEST_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTXML_LIBRARY} proxymodeltestsuite )
     endforeach(_testname)
 endmacro()

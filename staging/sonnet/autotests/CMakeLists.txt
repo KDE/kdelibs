@@ -13,6 +13,8 @@ include_directories(
   ${CMAKE_CURRENT_BINARY_DIR}/../../../tier1/kcoreaddons/src
 )
 
+include(ECMMarkAsTest)
+
 ########### unittests ###############
 
 MACRO(SONNET_UNIT_TESTS)
@@ -20,6 +22,7 @@ MACRO(SONNET_UNIT_TESTS)
                add_executable(${_testname} ${_testname}.cpp)
                add_test(sonnet-${_testname} ${_testname})
                target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} sonnetcore ${QT_QTTEST_LIBRARY} ${QT_QTXML_LIBRARY} ${KDEWIN_LIBRARIES})
+               ecm_mark_as_test(${_testname})
        ENDFOREACH(_testname)
 ENDMACRO(SONNET_UNIT_TESTS)
 

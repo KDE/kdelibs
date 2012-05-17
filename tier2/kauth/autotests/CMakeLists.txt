@@ -27,12 +27,15 @@ add_library(kauth_tests_static STATIC ${libkauth_tests_static_SRCS})
 
 target_link_libraries(kauth_tests_static ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons)
 
+include(ECMMarkAsTest)
+
 ########### next target ###############
 
 set(SetupActionTest_SRCS SetupActionTest.cpp)
 
 add_executable(KAuthSetupActionTest ${SetupActionTest_SRCS})
 add_test(KAuthSetupActionTest KAuthSetupActionTest)
+ecm_mark_as_test(KAuthSetupActionTest)
 
 target_link_libraries(KAuthSetupActionTest ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} kauth_tests_static)
 
@@ -42,5 +45,6 @@ set(HelperTest_SRCS HelperTest.cpp TestHelper.cpp)
 
 add_executable(KAuthHelperTest ${HelperTest_SRCS})
 add_test(KAuthHelperTest KAuthHelperTest)
+ecm_mark_as_test(KAuthHelperTest)
 
 target_link_libraries(KAuthHelperTest ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} kauth_tests_static)

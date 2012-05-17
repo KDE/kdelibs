@@ -9,6 +9,8 @@ include_directories(
    ${CMAKE_SOURCE_DIR}/kio/httpfilter
 )
 
+include(ECMMarkAsTest)
+
 MACRO(KARCHIVE_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
@@ -19,6 +21,7 @@ MACRO(KARCHIVE_UNIT_TESTS)
                if(WINCE)
                 target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
                endif(WINCE)
+               ecm_mark_as_test(${_testname})
        ENDFOREACH(_testname)
 ENDMACRO(KARCHIVE_UNIT_TESTS)
 

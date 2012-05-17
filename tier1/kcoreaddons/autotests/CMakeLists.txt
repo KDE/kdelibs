@@ -2,6 +2,8 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
+include(ECMMarkAsTest)
+
 macro(KCOREADDONS_EXECUTABLE_TESTS)
     foreach(_testname ${ARGN})
         add_executable(${_testname} ${_testname}.cpp)
@@ -10,6 +12,7 @@ macro(KCOREADDONS_EXECUTABLE_TESTS)
         if(WINCE)
             target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
         endif()
+        ecm_mark_as_test(${_testname})
     endforeach()
 endmacro()
 
@@ -18,6 +21,7 @@ macro(KCOREADDONS_UNIT_TESTS)
         kcoreaddons_executable_tests(${_testname})
         target_link_libraries(${_testname} ${QT_QTTEST_LIBRARY})
         add_test(kcoreaddons-${_testname} ${_testname})
+        ecm_mark_as_test(${_testname})
     endforeach()
 endmacro()
 

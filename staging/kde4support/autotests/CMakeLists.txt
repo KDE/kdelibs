@@ -7,6 +7,8 @@ include_directories(
    ${KDE4_KDECORE_INCLUDES}
 )
 
+include(ECMMarkAsTest)
+
 MACRO(KDE4SUPPORT_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
@@ -15,6 +17,7 @@ MACRO(KDE4SUPPORT_UNIT_TESTS)
                if(WINCE)
                 target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
                endif(WINCE)
+               ecm_mark_as_test(${_testname})
        ENDFOREACH(_testname)
 ENDMACRO(KDE4SUPPORT_UNIT_TESTS)
 

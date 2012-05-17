@@ -1,5 +1,7 @@
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
+include(ECMMarkAsTest)
+
 ########### solidnettestdbusservice ###############
 
 #set(solidnettestdbusservice_SRCS
@@ -24,5 +26,6 @@ qt4_add_dbus_interface(networkingclient_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/../src/
 add_executable(networkingclient ${networkingclient_SRCS})
 
 target_link_libraries(networkingclient solid_static)
+ecm_mark_as_test(networkingclient)
 ########### install files ###############
 

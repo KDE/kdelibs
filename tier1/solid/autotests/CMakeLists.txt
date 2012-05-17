@@ -1,5 +1,6 @@
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
+include(ECMMarkAsTest)
 
 ########### fakehardwaretest ###############
 
@@ -8,6 +9,7 @@ set(fakehardwaretest_SRCS fakehardwaretest.cpp )
 
 add_executable(fakehardwaretest ${fakehardwaretest_SRCS})
 add_test(fakehardwaretest fakehardwaretest)
+ecm_mark_as_test(fakehardwaretest)
 
 target_link_libraries(fakehardwaretest solid_static ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} )
 # QT5 TODO Port solid to QFINDTESTDATA
@@ -22,6 +24,8 @@ if(NOT WIN32 AND NOT APPLE)
    add_executable(halbasictest ${halbasictest_SRCS})
 
    target_link_libraries(halbasictest solid_static ${KDEWIN_LIBRARIES} ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} )
+
+   ecm_mark_as_test(halbasictest)
 endif(NOT WIN32 AND NOT APPLE)
 
 ########### solidhwtest ###############
@@ -32,6 +36,7 @@ set(solidhwtest_SRCS
 
 add_executable(solidhwtest ${solidhwtest_SRCS})
 add_test(solidhwtest solidhwtest)
+ecm_mark_as_test(solidhwtest)
 set_target_properties(solidhwtest PROPERTIES COMPILE_FLAGS -DFAKE_COMPUTER_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw/fakecomputer.xml\\"")
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw )
@@ -46,6 +51,7 @@ set(solidmttest_SRCS
 
 add_executable(solidmttest ${solidmttest_SRCS})
 add_test(solidmttest solidmttest)
+ecm_mark_as_test(solidmttest)
 set_target_properties(solidmttest PROPERTIES COMPILE_FLAGS -DFAKE_COMPUTER_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw/fakecomputer.xml\\"")
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw )

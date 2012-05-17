@@ -7,11 +7,14 @@ remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 find_package(Qt5Transitional REQUIRED Test)
 
+include(ECMMarkAsTest)
+
 macro(KDBUSADDONS_UNIT_TESTS)
     foreach(_testname ${ARGN})
         add_executable(${_testname} ${_testname}.cpp)
         add_test(${_testname} ${_testname})
         target_link_libraries(${_testname} ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTTEST_LIBRARY} kdbusaddons)
+        ecm_mark_as_test(${_testname})
     endforeach()
 endmacro()
 
