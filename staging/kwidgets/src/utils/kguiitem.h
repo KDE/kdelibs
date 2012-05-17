@@ -24,7 +24,7 @@
 
 #include <QtCore/QString>
 
-#include <kicontheme.h>
+#include <QIcon>
 
 #include <kwidgets_export.h>
 
@@ -62,11 +62,6 @@ public:
     QString text() const;
     QString plainText() const;
 
-    /// @deprecated use icon() instead
-#ifndef KDE_NO_DEPRECATED
-    KWIDGETS_DEPRECATED QIcon iconSet( KIconLoader::Group=KIconLoader::Small, int size = 0) const;
-#endif
-
     QIcon icon( ) const;
 
     QString iconName() const;
@@ -74,9 +69,6 @@ public:
     QString whatsThis() const;
     bool isEnabled() const;
     bool hasIcon() const;
-#if !defined(KDE_NO_COMPAT) && !defined(KDE_NO_DEPRECATED)
-    KWIDGETS_DEPRECATED bool hasIconSet() const { return hasIcon(); }
-#endif
 
     void setText( const QString &text );
     void setIcon( const QIcon &iconset );

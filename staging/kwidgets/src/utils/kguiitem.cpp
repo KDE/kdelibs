@@ -20,13 +20,10 @@
 
 #include "kguiitem.h"
 
-#include <kdebug.h>
 #include <QPushButton>
 
 #include "kstandardguiitem.h"
 #include "kiconloader.h"
-
-#include <assert.h>
 
 class KGuiItem::KGuiItemPrivate
 {
@@ -102,7 +99,7 @@ KGuiItem &KGuiItem::operator=( const KGuiItem &rhs )
     if ( d == rhs.d )
         return *this;
 
-    assert( rhs.d );
+    Q_ASSERT( rhs.d );
 
     delete d;
     d = new KGuiItemPrivate( *rhs.d );
@@ -160,22 +157,6 @@ QIcon KGuiItem::icon( ) const
     }
     return QIcon();
 }
-
-// deprecated
-#ifndef KDE_NO_DEPRECATED
-QIcon KGuiItem::iconSet( KIconLoader::Group group, int size ) const
-{
-    if (d->m_hasIcon) {
-        if( !d->m_iconName.isEmpty()) {
-            KIconLoader* iconLoader = KIconLoader::global();
-            return iconLoader->loadIconSet( d->m_iconName, group, size );
-        } else {
-            return d->m_icon;
-        }
-    } else
-        return QIcon();
-}
-#endif
 
 QString KGuiItem::iconName() const
 {
