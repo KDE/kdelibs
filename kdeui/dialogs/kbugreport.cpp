@@ -35,6 +35,7 @@
 #include <kdebug.h>
 #include <klineedit.h>
 #include <klocale.h>
+#include <kiconloader.h>
 #include <kmessagebox.h>
 #include <kstandarddirs.h>
 #include <kcomponentdata.h>

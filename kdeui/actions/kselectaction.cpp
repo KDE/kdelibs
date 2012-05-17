@@ -39,6 +39,7 @@
 #include <QStandardItem>
 #include <klocale.h>
 #include <kdebug.h>
+#include <kglobal.h>
 
 #include "kcombobox.h"
 #include "kmenu.h"

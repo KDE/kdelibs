@@ -34,6 +34,7 @@
 #include <klocalizedstring.h>
 #include <kmenu.h>
 #include <kaction.h>
+#include <kiconloader.h>
 #include <stdlib.h>
 #include <QCursor>
 #include <QApplication>

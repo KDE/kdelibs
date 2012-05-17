@@ -21,6 +21,8 @@
 
 #include "qtest_kde.h"
 
+#include "kiconloader.h"
+
 
 Q_DECLARE_METATYPE(KAction*)
 

@@ -29,6 +29,7 @@
 #include <QtCore/QString>
 
 #include <kapplication.h>
+#include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <klineedit.h>

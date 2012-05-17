@@ -21,6 +21,7 @@
 #include "kaboutapplicationpersonlistview_p.h"
 #include "ktoolbar.h"
 #include "kaction.h"
+#include "kiconloader.h"
 
 #include <kdebug.h>
 #include <klocalizedstring.h>

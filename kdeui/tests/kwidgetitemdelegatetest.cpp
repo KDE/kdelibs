@@ -38,6 +38,7 @@
 
 #include <kpushbutton.h>
 #include <klineedit.h>
+#include <kiconloader.h>
 
 #include <kwidgetitemdelegate.h>
 

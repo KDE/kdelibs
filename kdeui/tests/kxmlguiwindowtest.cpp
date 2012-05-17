@@ -29,6 +29,7 @@
 #include <kaction.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>
+#include <kiconloader.h>
 
 // BUG: if this symbol is defined the problem consists on:
 //      - main window is created.

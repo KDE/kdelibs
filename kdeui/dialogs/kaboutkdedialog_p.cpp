@@ -31,6 +31,7 @@
 #include <klocalizedstring.h>
 #include <kstandarddirs.h>
 #include <ktitlewidget.h>
+#include <kiconloader.h>
 
 namespace KDEPrivate {
 

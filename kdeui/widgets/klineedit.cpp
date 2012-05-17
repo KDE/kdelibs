@@ -35,6 +35,8 @@
 #include <kcursor.h>
 #include <kdebug.h>
 #include <kcompletionbox.h>
+#include <kiconloader.h>
+#include <kicontheme.h>
 #include <klocalizedstring.h>
 #include <kmenu.h>
 #include <kstandardaction.h>

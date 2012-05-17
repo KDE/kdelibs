@@ -20,6 +20,7 @@
 
 #include <kaction.h>
 #include <klocalizedstring.h>
+#include <kiconloader.h>
 #include <kactioncollection.h>
 
 using namespace KNS3;

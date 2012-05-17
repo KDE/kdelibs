@@ -24,6 +24,7 @@
 #include "parts.h"
 #include <kactionmenu.h>
 #include <kactioncollection.h>
+#include <kiconloader.h>
 
 #include <QCheckBox>
 #include <QtCore/QFile>

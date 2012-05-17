@@ -44,6 +44,7 @@
 #include <kcoreauthorized.h>
 #include <kconfig.h>
 #include <kdebug.h>
+#include <kicontheme.h>
 #include <kedittoolbar.h>
 #include <kglobalsettings.h>
 #include <kguiitem.h>

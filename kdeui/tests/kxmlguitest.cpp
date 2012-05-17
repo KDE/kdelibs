@@ -8,6 +8,7 @@
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <kdebug.h>
+#include <kiconloader.h>
 #include <kstandardaction.h>
 #include <kstandarddirs.h>
 #include <QLineEdit>

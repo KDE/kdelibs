@@ -41,6 +41,7 @@
 #include <kcursor.h>
 #include <kglobalsettings.h>
 #include <kstandardaction.h>
+#include <kicontheme.h>
 #include <kstandardshortcut.h>
 #include <kiconloader.h>
 #include <klocalizedstring.h>

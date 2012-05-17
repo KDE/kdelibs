@@ -22,6 +22,7 @@
 #include <klocalizedstring.h>
 #include <kdebug.h>
 #include <QIcon>
+#include <kiconloader.h>
 
 #include <QHash>
 

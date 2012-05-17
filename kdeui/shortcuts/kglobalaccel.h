@@ -25,6 +25,7 @@
 #include "kdeui_export.h"
 #include "kaction.h"
 #include "kglobalshortcutinfo.h"
+#include "kglobal.h"
 
 #include <QtCore/QObject>
 

@@ -24,6 +24,7 @@
 #include <QPushButton>
 
 #include "kstandardguiitem.h"
+#include "kiconloader.h"
 
 #include <assert.h>
 

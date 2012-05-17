@@ -33,6 +33,7 @@
 
 #include <kglobalaccel.h>
 #include <klocale.h>
+#include <kiconloader.h>
 #include <kmessagebox.h>
 #include <kshortcut.h>
 #include <kaction.h>

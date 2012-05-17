@@ -24,6 +24,7 @@
 #include <kdebug.h>
 #include <kcomponentdata.h>
 #include <kactioncollection.h>
+#include <kiconloader.h>
 
 #include <kservicetypetrader.h>
 
