@@ -415,6 +415,7 @@ void RenderWidget::updateFromElement()
                     pal.setColor( (QPalette::ColorGroup)i, QPalette::Base, trans ? QColor(0,0,0,0):backgroundColor );
                 }
             }
+
             if ( color.isValid() ) {
                 struct ColorSet {
                     QPalette::ColorGroup cg;
@@ -482,10 +483,8 @@ void RenderWidget::updateFromElement()
                     }
                 }
             }
-        }
-
-        // Border:
-        if (QFrame* frame = qobject_cast<QFrame*>(m_widget)) {
+        } // Border:
+        else if (QFrame* frame = qobject_cast<QFrame*>(m_widget)) {
             if (shouldDisableNativeBorders()) {
                 if (frame->frameShape() != QFrame::NoFrame) {
                     m_nativeFrameShape = frame->frameShape();
