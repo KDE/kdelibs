@@ -80,6 +80,10 @@ StorePass::~StorePass()
 void StorePass::saveLoginInformation(const QString& host, const QString& key,
   const QMap<QString, QString>& walletMap)
 {
+  KConfigGroup config( KGlobal::config(), "HTML Settings" );
+  if (!config.readEntry("OfferToSaveWebsitePassword", true))
+    return;
+
   m_host = host;
   m_key = key;
   m_walletMap = walletMap;
