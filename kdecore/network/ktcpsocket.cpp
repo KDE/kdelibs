@@ -807,6 +807,16 @@ void KTcpSocket::setSocketOption(QAbstractSocket::SocketOption options, const QV
     d->sock.setSocketOption(options, value);
 }
 
+QSslConfiguration KTcpSocket::sslConfiguration() const
+{
+    return d->sock.sslConfiguration();
+}
+
+void KTcpSocket::setSslConfiguration (const QSslConfiguration& configuration)
+{
+    d->sock.setSslConfiguration(configuration);
+}
+
 //slot
 void KTcpSocket::ignoreSslErrors()
 {
