@@ -262,6 +262,21 @@ T intCeil(T a, T b)
     return (a + b - 1) / b;
 }
 
+/**
+ * @return number of set bits in @p value (see also "Hamming weight")
+ */
+static unsigned countSetBits(unsigned value)
+{
+    // K&R / Wegner's algorithm used. GCC supports __builtin_popcount but we
+    // expect there to always be only 1 bit set so this should be perhaps a bit
+    // faster 99.9% of the time.
+    unsigned count = 0;
+    for (count = 0; value != 0; count++) {
+        value &= (value - 1); // Clears least-significant set bit.
+    }
+    return count;
+}
+
 typedef qint32 pageID;
 
 // =========================================================================
@@ -378,6 +393,7 @@ struct SharedMemory
         }
 
         // Bound page size between 512 bytes and 256 KiB.
+        // If this is adjusted, also alter validSizeMask in cachePageSize
         log2OfSize = qBound(9, log2OfSize, 18);
 
         return (1 << log2OfSize);
@@ -386,7 +402,16 @@ struct SharedMemory
     // Returns pageSize in unsigned format.
     unsigned cachePageSize() const
     {
-        return static_cast<unsigned>(pageSize);
+        unsigned _pageSize = static_cast<unsigned>(pageSize);
+        // bits 9-18 may be set.
+        static const unsigned validSizeMask = 0x2F200u;
+
+        // Check for page sizes that are not a power-of-2, or are too low/high.
+        if (KDE_ISUNLIKELY(countSetBits(_pageSize) != 1 || (_pageSize & ~validSizeMask))) {
+            throw KSDCCorrupted();
+        }
+
+        return _pageSize;
     }
 
     /**
