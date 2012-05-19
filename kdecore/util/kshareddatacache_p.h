@@ -261,6 +261,7 @@ public:
 // cache and used by multiple processes, therefore you should consider this
 // a versioned field, do not re-arrange.
 enum SharedLockId {
+    LOCKTYPE_INVALID   = 0,
     LOCKTYPE_MUTEX     = 1,  // pthread_mutex
     LOCKTYPE_SEMAPHORE = 2   // sem_t
 };

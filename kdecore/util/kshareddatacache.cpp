@@ -398,7 +398,7 @@ struct SharedMemory
         }
 
         shmLock.type = findBestSharedLock();
-        if (static_cast<int>(shmLock.type) == 0) {
+        if (shmLock.type == LOCKTYPE_INVALID) {
             kError(ksdcArea()) << "Unable to find an appropriate lock to guard the shared cache. "
                         << "This *should* be essentially impossible. :(";
             return false;
@@ -928,7 +928,7 @@ class KSharedDataCache::Private
         , m_mapSize(0)
         , m_defaultCacheSize(defaultCacheSize)
         , m_expectedItemSize(expectedItemSize)
-        , m_expectedType(static_cast<SharedLockId>(0))
+        , m_expectedType(LOCKTYPE_INVALID)
     {
         mapSharedMemory();
     }
