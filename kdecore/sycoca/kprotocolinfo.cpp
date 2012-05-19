@@ -65,7 +65,7 @@ KProtocolInfoPrivate::KProtocolInfoPrivate(const QString &path)
   m_supportsListing = (m_listing.count() > 0);
   m_defaultMimetype = config.readEntry("defaultMimetype");
   m_determineMimetypeFromExtension = config.readEntry("determineMimetypeFromExtension", true);
-  m_archiveMimeTypes = config.readEntry("m_archiveMimetype", QStringList());
+  m_archiveMimeTypes = config.readEntry("archiveMimetype", QStringList());
   m_icon = config.readEntry("Icon");
   m_config = config.readEntry("config", m_name);
   m_maxSlaves = config.readEntry("maxInstances", 1);

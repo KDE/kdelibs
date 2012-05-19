@@ -21,7 +21,7 @@
 #include "kprotocolinfofactory.h"
 #include "kprotocolinfo_p.h"
 #include <QDirIterator>
-#include <QStandardPaths>
+#include <qstandardpaths.h>
 
 #include <kstandarddirs.h>
 #include <kdebug.h>
