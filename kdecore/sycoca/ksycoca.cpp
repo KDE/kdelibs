@@ -434,7 +434,7 @@ bool KSycocaPrivate::checkDatabase(BehaviorsIfNotFound ifNotFound)
         if (!kdeinitRunning) {
             kDebug(7011) << "We have no database.... launching kdeinit";
             KToolInvocation::klauncher(); // this calls startKdeinit, and blocks until it returns
-            // and since kdeinit5 only returns after kbuildsycoca4 is done, we can proceed.
+            // and since kdeinit5 only returns after kbuildsycoca5 is done, we can proceed.
         } else {
             kDebug(7011) << QThread::currentThread() << "We have no database.... launching" << KBUILDSYCOCA_EXENAME;
             if (QProcess::execute(QStandardPaths::findExecutable(QString::fromLatin1(KBUILDSYCOCA_EXENAME))) != 0)

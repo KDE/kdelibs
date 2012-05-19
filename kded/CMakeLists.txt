@@ -60,14 +60,14 @@ endif(KBUILDSYCOCA_NO_KCRASH)
 
 
 # We need to add a '4' so that kde3 apps running kbuildsycoca don't run the kde4 one.
-kde4_add_kdeinit_executable( kbuildsycoca4 NOGUI ${kbuildsycoca_KDEINIT_SRCS})
+kde4_add_kdeinit_executable( kbuildsycoca5 NOGUI ${kbuildsycoca_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kbuildsycoca4 ${KBUILDSYCOCA_MAIN_LIBS} kcoreaddons ${QT_QTXML_LIBRARY} ${QtMimeTypes_LIBRARY})
+target_link_libraries(kdeinit_kbuildsycoca5 ${KBUILDSYCOCA_MAIN_LIBS} kcoreaddons ${QT_QTXML_LIBRARY} ${QtMimeTypes_LIBRARY})
 
-install(TARGETS kdeinit_kbuildsycoca4 ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kdeinit_kbuildsycoca5 ${INSTALL_TARGETS_DEFAULT_ARGS})
 
-target_link_libraries( kbuildsycoca4 kdeinit_kbuildsycoca4 )
-install(TARGETS kbuildsycoca4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
+target_link_libraries( kbuildsycoca5 kdeinit_kbuildsycoca5 )
+install(TARGETS kbuildsycoca5 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 ########### install files ###############
 if (WIN32)

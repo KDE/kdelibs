@@ -21,12 +21,12 @@
 </refentryinfo>
 
 <refmeta>
-<refentrytitle><command>kbuildsycoca4</command></refentrytitle>
+<refentrytitle><command>kbuildsycoca5</command></refentrytitle>
 <manvolnum>8</manvolnum>
 </refmeta>
 
 <refnamediv>
-<refname><command>kbuildsycoca4</command></refname>
+<refname><command>kbuildsycoca5</command></refname>
 <refpurpose>Rebuilds the system configuration cache.</refpurpose>
 </refnamediv>
 
@@ -34,7 +34,7 @@
 <title>Synopsis</title>
 
 <cmdsynopsis>
-<command>kbuildsycoca4</command>
+<command>kbuildsycoca5</command>
 
 <group>
 <arg choice="opt">--nosignal</arg>
@@ -60,7 +60,7 @@
 <title>Description</title>
 
 <para>
-<command>kbuildsycoca4</command>, as part of the &kde; command line
+<command>kbuildsycoca5</command>, as part of the &kde; command line
 tools ensures the proper operation of &kde; by reading in all the
 <literal role="extension">.desktop</literal>, <literal
 role="extension">.xml</literal>, and <literal
@@ -207,7 +207,7 @@ Show license information
 <para>
 A standard way to run this program is by simply specifying the following
 command at the prompt
-<userinput><command>kbuildsycoca4</command></userinput>
+<userinput><command>kbuildsycoca5</command></userinput>
 </para>
 
 </refsect1>
@@ -217,7 +217,7 @@ command at the prompt
 
 <variablelist>
 <varlistentry>
-<term><filename>/var/tmp/kde-$USER/ksycoca4</filename></term>
+<term><filename>/var/tmp/kde-$USER/ksycoca5</filename></term>
 <listitem>
 <para>The default directory where the cache files are stored.</para>
 </listitem>

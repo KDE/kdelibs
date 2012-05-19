@@ -66,7 +66,7 @@ KSycocaFactory::KSycocaFactory(KSycocaFactoryId factory_id)
         d->m_sycocaDict = new KSycocaDict(str, d->m_sycocaDictOffset);
         saveOffset = str->device()->seek(saveOffset);
     } else {
-        // We are in kbuildsycoca4 -- build new database!
+        // We are in kbuildsycoca -- build new database!
         m_entryDict = new KSycocaEntryDict;
         d->m_sycocaDict = new KSycocaDict;
         d->m_beginEntryOffset = 0;

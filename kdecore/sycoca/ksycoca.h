@@ -34,7 +34,7 @@ class KSycocaPrivate;
 /**
  * Executable name of the kbuildsycoca program
  */
-#define KBUILDSYCOCA_EXENAME "kbuildsycoca4"
+#define KBUILDSYCOCA_EXENAME "kbuildsycoca5"
 
 /**
  * @internal
@@ -186,7 +186,7 @@ Q_SIGNALS:
      * Example: when mimetype definitions have changed, applications showing
      * files as icons refresh icons to take into account the new mimetypes.
      * Another example: after creating a .desktop file in KOpenWithDialog,
-     * it must wait until kbuildsycoca4 finishes until the KService::Ptr is available.
+     * it must wait until kbuildsycoca5 finishes until the KService::Ptr is available.
      *
      * @param changedResources List of resources where changes were detected.
      * This can include the following resources (as defined in KStandardDirs) :

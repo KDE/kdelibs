@@ -407,7 +407,7 @@ bool KBuildSycoca::recreate()
   }
   if (!openedOK)
   {
-    fprintf(stderr, "kbuildsycoca4: ERROR creating database '%s'! %s\n",
+    fprintf(stderr, KBUILDSYCOCA_EXENAME ": ERROR creating database '%s'! %s\n",
       path.toLocal8Bit().data(), database.errorString().toLocal8Bit().data());
     return false;
   }
@@ -433,8 +433,8 @@ bool KBuildSycoca::recreate()
     str = 0;
     if (!database.commit())
     {
-      fprintf(stderr, "kbuildsycoca4: ERROR writing database '%s'!\n", database.fileName().toLocal8Bit().data());
-      fprintf(stderr, "kbuildsycoca4: Disk full?\n");
+      fprintf(stderr, KBUILDSYCOCA_EXENAME ": ERROR writing database '%s'!\n", database.fileName().toLocal8Bit().data());
+      fprintf(stderr, KBUILDSYCOCA_EXENAME ": Disk full?\n");
       return false;
     }
   }
@@ -617,12 +617,11 @@ QStringList KBuildSycoca::existingResourceDirs()
 }
 
 static const char appFullName[] = "org.kde.kbuildsycoca";
-static const char appName[] = "kbuildsycoca4";
 static const char appVersion[] = "1.1";
 
 extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 {
-   KAboutData d(appName, "kdelibs4", qi18n("KBuildSycoca"), appVersion,
+   KAboutData d(KBUILDSYCOCA_EXENAME, "kdelibs4", qi18n("KBuildSycoca"), appVersion,
                 qi18n("Rebuilds the system configuration cache."),
                 KAboutData::License_GPL, qi18n("(c) 1999-2002 KDE Developers"));
    d.addAuthor(qi18n("David Faure"), qi18n("Author"), "faure@kde.org");
@@ -655,7 +654,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
 #ifndef KBUILDSYCOCA_NO_KCRASH
    KCrash::setCrashHandler(KCrash::defaultCrashHandler);
    KCrash::setEmergencySaveFunction(crashHandler);
-   KCrash::setApplicationName(QString(appName));
+   KCrash::setApplicationName(QString::fromLatin1(KBUILDSYCOCA_EXENAME));
 #endif
 
    // force generating of KLocale object. if not, the database will get
@@ -672,14 +671,14 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
      {
        break; // Go
      }
-     fprintf(stderr, "Waiting for already running %s to finish.\n", appName);
+     fprintf(stderr, "Waiting for already running %s to finish.\n", KBUILDSYCOCA_EXENAME);
 
      QEventLoop eventLoop;
      QObject::connect(QDBusConnection::sessionBus().interface(), SIGNAL(serviceRegistered(QString)),
                       &eventLoop, SLOT(quit()));
      eventLoop.exec( QEventLoop::ExcludeUserInputEvents );
    }
-   fprintf(stderr, "%s running...\n", appName);
+   fprintf(stderr, "%s running...\n", KBUILDSYCOCA_EXENAME);
 
    bool checkfiles = bGlobalDatabase || args->isSet("checkfiles");
 

@@ -996,7 +996,7 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
    request->envs = envs;
    request->cwd = workdir;
 #ifdef Q_WS_X11
-   if (!app.endsWith(QLatin1String("kbuildsycoca4"))) { // avoid stupid loop
+   if (!app.endsWith(QLatin1String("kbuildsycoca5"))) { // avoid stupid loop
        // Find service, if any - strip path if needed
        const QString desktopName = app.mid(app.lastIndexOf(QLatin1Char('/')) + 1);
        KService::Ptr service = KService::serviceByDesktopName(desktopName);

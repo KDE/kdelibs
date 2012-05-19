@@ -260,7 +260,7 @@ uint KSycocaDict::Private::hashKey( const QString &key) const
 //  the 2nd character from the right, then the 1st from the left, then the 3rd from the left.
 
 // Calculate the diversity of the strings at position 'pos'
-// NOTE: this code is slow, it takes 12% of the _overall_ `kbuildsycoca4 --noincremental` running time
+// NOTE: this code is slow, it takes 12% of the _overall_ `kbuildsycoca5 --noincremental` running time
 static int
 calcDiversity(KSycocaDictStringList *stringlist, int inPos, uint sz)
 {
@@ -367,18 +367,18 @@ KSycocaDict::save(QDataStream &str)
    d->hashList.clear();
 
    // Times (with warm caches, i.e. after multiple runs)
-   // kbuildsycoca4 --noincremental  2.83s user 0.20s system 95% cpu 3.187 total
-   // kbuildsycoca4 --noincremental  2.74s user 0.25s system 93% cpu 3.205 total
+   // kbuildsycoca5 --noincremental  2.83s user 0.20s system 95% cpu 3.187 total
+   // kbuildsycoca5 --noincremental  2.74s user 0.25s system 93% cpu 3.205 total
    // unittest: 0.50-60 msec per iteration / 0.40-50 msec per iteration
 
    // Now that MimeTypes are not parsed anymore:
-   // kbuildsycoca4 --noincremental  2.18s user 0.30s system 91% cpu 2.719 total
-   // kbuildsycoca4 --noincremental  2.07s user 0.34s system 89% cpu 2.681 total
+   // kbuildsycoca5 --noincremental  2.18s user 0.30s system 91% cpu 2.719 total
+   // kbuildsycoca5 --noincremental  2.07s user 0.34s system 89% cpu 2.681 total
 
    // If I enabled s_maxItems = 50, it goes down to
    // but I don't know if that's a good idea.
-   // kbuildsycoca4 --noincremental  1.73s user 0.31s system 85% cpu 2.397 total
-   // kbuildsycoca4 --noincremental  1.84s user 0.29s system 95% cpu 2.230 total
+   // kbuildsycoca5 --noincremental  1.73s user 0.31s system 85% cpu 2.397 total
+   // kbuildsycoca5 --noincremental  1.84s user 0.29s system 95% cpu 2.230 total
 
    // try to limit diversity scan by "predicting" positions
    // with high diversity
