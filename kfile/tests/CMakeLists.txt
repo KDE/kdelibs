@@ -1,4 +1,7 @@
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
+
+include(ECMMarkAsTest)
+
 MACRO(KFILE_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_unit_test(${_testname} TESTNAME kfile-${_testname} ${_testname}.cpp)
@@ -8,7 +11,8 @@ MACRO(KFILE_UNIT_TESTS)
 ENDMACRO(KFILE_UNIT_TESTS)
 MACRO(KFILE_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
-               kde4_add_executable(${_testname} TEST ${_testname}.cpp)
+               add_executable(${_testname} ${_testname}.cpp)
+               ecm_mark_as_test(${_testname})
                target_link_libraries(${_testname} ${KDE4_KFILE_LIBS} ${QT_QTTEST_LIBRARY})
        ENDFOREACH(_testname)
 ENDMACRO(KFILE_EXECUTABLE_TESTS)

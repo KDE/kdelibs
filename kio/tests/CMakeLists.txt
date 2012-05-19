@@ -2,6 +2,8 @@ set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 # for <kio/global.h>
 include_directories( ${KDE4_KIO_INCLUDES} )
 
+include(ECMMarkAsTest)
+
 MACRO(KIO_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_unit_test(${_testname} TESTNAME kio-${_testname} ${_testname}.cpp)
@@ -73,6 +75,7 @@ endif(NOT KDE_NO_DEPRECATED)
 ########### kfstest ###############
 
 set(kfstest_SRCS kfstest.cpp kfdtest.cpp)
-kde4_add_executable(kfstest TEST ${kfstest_SRCS})
+add_executable(kfstest ${kfstest_SRCS})
+ecm_mark_as_test(kfstest)
 target_link_libraries(kfstest  ${KDE4_KIO_LIBS} kcoreaddons)
 

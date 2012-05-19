@@ -1,6 +1,8 @@
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories( ${CMAKE_SOURCE_DIR}/kde3support ${CMAKE_SOURCE_DIR}/kde3support/kdeui )
 
+include(ECMMarkAsTest)
+
 MACRO(KDE3SUPPORT_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_unit_test(${_testname} TESTNAME kde3support-${_testname} ${_testname}.cpp)
@@ -9,7 +11,8 @@ MACRO(KDE3SUPPORT_UNIT_TESTS)
 ENDMACRO(KDE3SUPPORT_UNIT_TESTS)
 MACRO(KDE3SUPPORT_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
-               kde4_add_executable(${_testname} TEST ${_testname}.cpp)
+               add_executable(${_testname} ${_testname}.cpp)
+               ecm_mark_as_test(${_testname})
                target_link_libraries(${_testname} ${KDE4_KDE3SUPPORT_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons kwidgets)
        ENDFOREACH(_testname)
 ENDMACRO(KDE3SUPPORT_EXECUTABLE_TESTS)

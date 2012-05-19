@@ -1,5 +1,7 @@
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
+include(ECMMarkAsTest)
+
 include_directories(${KDE4_KPARTS_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/..)
 include_directories(
   ${CMAKE_SOURCE_DIR}/khtml/misc
@@ -36,7 +38,8 @@ if(NOT MSVC)
     )
 
     qt4_add_resources( khtmltest_SRCS testkhtml.qrc )
-    kde4_add_executable(khtmltest TEST ${khtmltest_SRCS} )
+    add_executable(khtmltest ${khtmltest_SRCS} )
+    ecm_mark_as_test(khtmltest)
     target_link_libraries( khtmltest ${KDE4_KDECORE_LIBS} khtml )
 
     ########### next target ###############

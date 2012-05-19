@@ -6,12 +6,15 @@ include_directories(${KDE4_KIO_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR}/..
 ${CMAKE_CURRENT_SOURCE_DIR}/.. ${CMAKE_CURRENT_BINARY_DIR}/../knewstuff2/
 ${CMAKE_CURRENT_SOURCE_DIR}/../knewstuff2/)
 
+include(ECMMarkAsTest)
+
 set(CMAKE_SKIP_RPATH TRUE)
 
 MACRO(KNEWSTUFF_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                add_executable(${_testname} ${_testname}.cpp)
                add_test("knewstuff2-${_testname}" ${_testname})
+               ecm_mark_as_test(${_testname})
                target_link_libraries(${_testname} knewstuff2 ${QT_QTXML_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} kcoreaddons)
                set_target_properties(${_testname} PROPERTIES COMPILE_FLAGS -DKNSSRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}/\\""\ -DKNSBUILDDIR="\\"${CMAKE_CURRENT_BINARY_DIR}\\"")
        ENDFOREACH(_testname)
@@ -20,6 +23,7 @@ ENDMACRO(KNEWSTUFF_UNIT_TESTS)
 MACRO(KNEWSTUFF_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
                add_executable(${_testname} ${_testname}.cpp)
+               ecm_mark_as_test(${_testname})
                target_link_libraries(${_testname} knewstuff2 ${QT_QTXML_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} kcoreaddons)
                set_target_properties(${_testname} PROPERTIES COMPILE_FLAGS -DKNSSRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}/\\""\ -DKNSBUILDDIR="\\"${CMAKE_CURRENT_BINARY_DIR}\\"")
        ENDFOREACH(_testname)

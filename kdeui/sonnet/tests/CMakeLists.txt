@@ -1,24 +1,30 @@
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
+include(ECMMarkAsTest)
+
 ########### backgroundtest ###############
 
 set(backgroundtest_SRCS backgroundtest.cpp)
-kde4_add_executable(backgroundtest TEST  ${backgroundtest_SRCS})
+add_executable(backgroundtest ${backgroundtest_SRCS})
+ecm_mark_as_test(backgroundtest)
 target_link_libraries(backgroundtest ${KDE4_KDEUI_LIBS} kcoreaddons)
 
 ########### test_highlighter ###############
 
 set(test_highlighter_SRCS test_highlighter.cpp)
-kde4_add_executable(test_highlighter TEST  ${test_highlighter_SRCS})
+add_executable(test_highlighter ${test_highlighter_SRCS})
+ecm_mark_as_test(test_highlighter)
 target_link_libraries(test_highlighter ${KDE4_KDEUI_LIBS} kcoreaddons)
 
 ########### test_configdialog ###############
 
 set(test_configdialog_SRCS test_configdialog.cpp)
-kde4_add_executable(test_configdialog TEST  ${test_configdialog_SRCS})
+add_executable(test_configdialog ${test_configdialog_SRCS})
+ecm_mark_as_test(test_configdialog)
 target_link_libraries(test_configdialog ${KDE4_KDEUI_LIBS} kcoreaddons)
 
 ########### test_dictionarycombobox ###############
 
-kde4_add_executable(test_dictionarycombobox TEST test_dictionarycombobox.cpp)
+add_executable(test_dictionarycombobox test_dictionarycombobox.cpp)
+ecm_mark_as_test(test_dictionarycombobox)
 target_link_libraries(test_dictionarycombobox ${KDE4_KDEUI_LIBS} kcoreaddons)

@@ -1,5 +1,7 @@
 include_directories(${CMAKE_SOURCE_DIR} ${KDE4_KDECORE_INCLUDES} ${KDE4_KDEUI_INCLUDES})
 
+include(ECMMarkAsTest)
+
 ########### next target ###############
 set(krossqtsplugin_LIB_SRCS plugin.cpp)
 kde4_add_library(krossqtsplugin ${LIBRARY_TYPE} ${krossqtsplugin_LIB_SRCS})
@@ -15,7 +17,8 @@ install(TARGETS krossqtsplugin DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/script)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/kross ${KDE4_KDECORE_INCLUDES} kcoreaddons  ${KDE4_KDEUI_INCLUDES} ${KDE4_KIO_INCLUDES})
 set(krossqtstest_SRCS main.cpp)
-kde4_add_executable(krossqtstest TEST ${krossqtstest_SRCS})
+add_executable(krossqtstest ${krossqtstest_SRCS})
+ecm_mark_as_test(krossqtstest)
 target_link_libraries(krossqtstest ${KDE4_KDEUI_LIBS} krossqtsplugin ${QT_QTSCRIPT_LIBRARY} kcoreaddons)
 # set(krossqtsplugintest_SRCS main.cpp)
 # target_link_libraries(krossqtsplugintest ${KDE4_KDECORE_LIBS} )
