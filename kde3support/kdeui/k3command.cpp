@@ -24,7 +24,7 @@
 #include <kstandardshortcut.h>
 #include <kstandardaction.h>
 #include <kdebug.h>
-#include <kicon.h>
+#include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <kmenu.h>
 
