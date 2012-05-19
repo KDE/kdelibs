@@ -515,6 +515,7 @@ static inline void* currentThreadStackBase()
         size_t stackSize;
         pthread_attr_getstack(&sattr, &stackBase, &stackSize);
         stackBase = (char *)stackBase + stackSize;      // a matter of interpretation, apparently...
+        pthread_attr_destroy(&sattr);
         assert(stackBase);
         stackThread = thread;
     }
