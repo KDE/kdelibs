@@ -61,7 +61,7 @@
 /**
  * Sycoca file name, used internally (by kbuildsycoca)
  */
-#define KSYCOCA_FILENAME "ksycoca4"
+#define KSYCOCA_FILENAME "ksycoca5"
 
 #if HAVE_MADVISE
 #include <sys/mman.h> // This #include was checked when looking for posix_madvise

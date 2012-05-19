@@ -541,7 +541,7 @@ qint32 KSycocaDict::Private::offsetForKey(const QString& key) const
 {
    if ( !stream || !offset )
    {
-      kError() << "No ksycoca4 database available!" << endl;
+      kError() << "No ksycoca database available! Tried running" << KBUILDSYCOCA_EXENAME << "?";
       return 0;
    }
 
