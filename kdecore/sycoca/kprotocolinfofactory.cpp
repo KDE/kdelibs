@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1999 Torben Weis <weis@kde.org>
    Copyright (C) 2003 Waldo Bastian <bastian@kde.org>
+   Copyright     2012 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -18,105 +19,83 @@
 */
 
 #include "kprotocolinfofactory.h"
+#include "kprotocolinfo_p.h"
+#include <QDirIterator>
+#include <QStandardPaths>
 
 #include <kstandarddirs.h>
 #include <kdebug.h>
 #include <ksycoca.h>
 #include <ksycocadict_p.h>
 
-K_GLOBAL_STATIC(KSycocaFactorySingleton<KProtocolInfoFactory>, kProtocolInfoFactoryInstance)
+Q_GLOBAL_STATIC(KProtocolInfoFactory, kProtocolInfoFactoryInstance)
 
-KProtocolInfoFactory::KProtocolInfoFactory() : KSycocaFactory( KST_KProtocolInfoFactory )
+KProtocolInfoFactory* KProtocolInfoFactory::self()
 {
-    kProtocolInfoFactoryInstance->instanceCreated(this);
+    return kProtocolInfoFactoryInstance();
 }
 
-KProtocolInfoFactory::~KProtocolInfoFactory()
+KProtocolInfoFactory::KProtocolInfoFactory()
+    : m_allProtocolsLoaded(false)
 {
-    if (kProtocolInfoFactoryInstance.exists())
-        kProtocolInfoFactoryInstance->instanceDestroyed(this);
 }
 
-KProtocolInfo*
-KProtocolInfoFactory::createEntry(int offset) const
-{
-   KProtocolInfo *info = 0;
-   KSycocaType type;
-   QDataStream *str = KSycoca::self()->findEntry(offset, type);
-   switch (type)
-   {
-     case KST_KProtocolInfo:
-       info = new KProtocolInfo(*str, offset);
-       break;
-     default:
-       return 0;
-   }
-   if (!info->isValid())
-   {
-      delete info;
-      info = 0;
-   }
-   return info;
+static QStringList servicesDirs() {
+    return QStandardPaths::locateAll(QStandardPaths::GenericDataLocation,
+                                     QLatin1String("kde5/services"),
+                                     QStandardPaths::LocateDirectory);
 }
-
 
 QStringList KProtocolInfoFactory::protocols() const
 {
-    QStringList res;
-    const KSycocaEntry::List list = allEntries();
-    for( KSycocaEntry::List::const_iterator it = list.begin();
-         it != list.end();
-         ++it) {
-        const KSycocaEntry *entry = (*it).data();
-        const KProtocolInfo *info = static_cast<const KProtocolInfo *>(entry);
-        res.append( info->name() );
-    }
-    return res;
-}
+    if (m_allProtocolsLoaded)
+        return m_cache.keys();
 
-KProtocolInfo::List KProtocolInfoFactory::allProtocols() const
-{
-    KProtocolInfo::List result;
-    const KSycocaEntry::List list = allEntries();
-    for( KSycocaEntry::List::ConstIterator it = list.begin();
-         it != list.end();
-         ++it) {
-        if ((*it)->isType(KST_KProtocolInfo)) {
-            result.append(KProtocolInfo::Ptr::staticCast(*it));
+    QStringList result;
+    Q_FOREACH(const QString& serviceDir, servicesDirs()) {
+        QDirIterator it(serviceDir);
+        while (it.hasNext()) {
+            const QString file = it.next();
+            if (file.endsWith(QLatin1String(".protocol"))) {
+                result.append(it.fileInfo().baseName());
+            }
         }
     }
     return result;
 }
 
-KProtocolInfo::Ptr KProtocolInfoFactory::findProtocol(const QString &protocol)
+
+QList<KProtocolInfoPrivate *> KProtocolInfoFactory::allProtocols()
 {
-  if (!sycocaDict()) return KProtocolInfo::Ptr(); // Error!
+    if (m_allProtocolsLoaded)
+        return m_cache.values();
 
-  QMap<QString,KProtocolInfo::Ptr>::iterator it = m_cache.find(protocol);
-  if (it != m_cache.end())
-     return *it;
-
-  int offset;
-
-  offset = sycocaDict()->find_string( protocol );
-
-  if (!offset) return KProtocolInfo::Ptr(); // Not found;
-
-  KProtocolInfo::Ptr info(createEntry(offset));
-
-  if (info && (info->name() != protocol))
-  {
-     // No it wasn't...
-     return KProtocolInfo::Ptr(); // Not found
-  }
-  m_cache.insert(protocol,info);
-  return info;
+    QStringList result;
+    Q_FOREACH(const QString& serviceDir, servicesDirs()) {
+        QDirIterator it(serviceDir);
+        while (it.hasNext()) {
+            const QString file = it.next();
+            if (file.endsWith(QLatin1String(".protocol"))) {
+                const QString prot = it.fileInfo().baseName();
+                m_cache.insert(prot, new KProtocolInfoPrivate(file));
+            }
+        }
+    }
+    m_allProtocolsLoaded = true;
+    return m_cache.values();
 }
 
-void KProtocolInfoFactory::virtual_hook( int id, void* data )
-{ KSycocaFactory::virtual_hook( id, data ); }
-
-KProtocolInfoFactory* KProtocolInfoFactory::self()
+KProtocolInfoPrivate* KProtocolInfoFactory::findProtocol(const QString &protocol)
 {
-    return kProtocolInfoFactoryInstance->self();
+    ProtocolCache::const_iterator it = m_cache.constFind(protocol);
+    if (it != m_cache.constEnd())
+        return *it;
+
+    const QString file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("kde5/services/") + protocol + QLatin1String(".protocol"));
+    if (file.isEmpty())
+        return 0;
+
+    KProtocolInfoPrivate* info = new KProtocolInfoPrivate(file);
+    m_cache.insert(protocol, info);
+    return info;
 }

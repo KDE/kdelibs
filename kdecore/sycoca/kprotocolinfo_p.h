@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1999 Torben Weis <weis@kde.org>
    Copyright (C) 2000-2001 Waldo Bastian <bastian@kde.org>
+   Copyright     2012 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -21,44 +22,51 @@
 
 #include "kprotocolinfo.h"
 
-#include <ksycocaentry_p.h>
-
-class KProtocolInfoPrivate : public KSycocaEntryPrivate
+/**
+ * @internal
+ * Exported for KProtocolManager
+ */
+class KDECORE_EXPORT KProtocolInfoPrivate
 {
 public:
-    K_SYCOCATYPE( KST_KProtocolInfo, KSycocaEntryPrivate )
+    KProtocolInfoPrivate(const QString& path);
 
-    KProtocolInfoPrivate(const QString &path, KProtocolInfo *q_)
-        : KSycocaEntryPrivate(path), q(q_)
-    {
-    }
-    KProtocolInfoPrivate(QDataStream& _str, int offset, KProtocolInfo *q_)
-        : KSycocaEntryPrivate(_str, offset), q(q_)
-    {
-    }
+    QString m_name;
+    QString m_exec;
+    KProtocolInfo::Type m_inputType;
+    KProtocolInfo::Type m_outputType;
+    QStringList m_listing;
+    bool m_isSourceProtocol : 1;
+    bool m_isHelperProtocol : 1;
+    bool m_supportsListing : 1;
+    bool m_supportsReading : 1;
+    bool m_supportsWriting : 1;
+    bool m_supportsMakeDir : 1;
+    bool m_supportsDeleting : 1;
+    bool m_supportsLinking : 1;
+    bool m_supportsMoving : 1;
+    bool m_supportsOpening : 1;
+    bool m_determineMimetypeFromExtension : 1;
+    bool m_canCopyFromFile : 1;
+    bool m_canCopyToFile : 1;
+    bool m_showPreviews : 1;
+    bool m_canRenameFromFile : 1;
+    bool m_canRenameToFile : 1;
+    bool m_canDeleteRecursive : 1;
+    QString m_defaultMimetype;
+    QString m_icon;
+    QString m_config;
+    int m_maxSlaves;
 
-    virtual void save(QDataStream &s);
 
-    virtual QString name() const
-    {
-        return q->m_name;
-    }
-
-
-  KProtocolInfo *q;
-  QString docPath;
-  QString protClass;
-  QStringList archiveMimetype;
-  KProtocolInfo::ExtraFieldList extraFields;
-  bool showPreviews : 1;
-  bool canRenameFromFile : 1;
-  bool canRenameToFile : 1;
-  bool canDeleteRecursive : 1;
-  KProtocolInfo::FileNameUsedForCopying fileNameUsedForCopying;
-  //KUrl::URIMode uriMode;
-  QStringList capabilities;
-  QString proxyProtocol;
-  int maxSlavesPerHost;
+    QString m_docPath;
+    QString m_protClass;
+    QStringList m_archiveMimeTypes;
+    KProtocolInfo::ExtraFieldList m_extraFields;
+    KProtocolInfo::FileNameUsedForCopying m_fileNameUsedForCopying;
+    QStringList m_capabilities;
+    QString m_proxyProtocol;
+    int m_maxSlavesPerHost;
 };
 
 

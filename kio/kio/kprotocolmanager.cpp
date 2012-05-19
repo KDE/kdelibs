@@ -20,6 +20,7 @@
 */
 
 #include "kprotocolmanager.h"
+#include "kprotocolinfo_p.h"
 
 #include "hostinfo_p.h"
 
@@ -992,10 +993,9 @@ QString KProtocolManager::proxyConfigScript()
 
 /* =========================== PROTOCOL CAPABILITIES ============== */
 
-static KProtocolInfo::Ptr findProtocol(const QUrl &url)
+static KProtocolInfoPrivate* findProtocol(const QUrl &url)
 {
    QString protocol = url.scheme();
-
    if ( !KProtocolInfo::proxiedBy( protocol ).isEmpty() )
    {
       QString dummy;
@@ -1008,7 +1008,7 @@ static KProtocolInfo::Ptr findProtocol(const QUrl &url)
 
 KProtocolInfo::Type KProtocolManager::inputType( const QUrl &url )
 {
-  KProtocolInfo::Ptr prot = findProtocol(url);
+  KProtocolInfoPrivate * prot = findProtocol(url);
   if ( !prot )
     return KProtocolInfo::T_NONE;
 
@@ -1017,7 +1017,7 @@ KProtocolInfo::Type KProtocolManager::inputType( const QUrl &url )
 
 KProtocolInfo::Type KProtocolManager::outputType( const QUrl &url )
 {
-  KProtocolInfo::Ptr prot = findProtocol(url);
+  KProtocolInfoPrivate * prot = findProtocol(url);
   if ( !prot )
     return KProtocolInfo::T_NONE;
 
@@ -1027,7 +1027,7 @@ KProtocolInfo::Type KProtocolManager::outputType( const QUrl &url )
 
 bool KProtocolManager::isSourceProtocol( const QUrl &url )
 {
-  KProtocolInfo::Ptr prot = findProtocol(url);
+  KProtocolInfoPrivate * prot = findProtocol(url);
   if ( !prot )
     return false;
 
@@ -1036,7 +1036,7 @@ bool KProtocolManager::isSourceProtocol( const QUrl &url )
 
 bool KProtocolManager::supportsListing( const QUrl &url )
 {
-  KProtocolInfo::Ptr prot = findProtocol(url);
+  KProtocolInfoPrivate * prot = findProtocol(url);
   if ( !prot )
     return false;
 
@@ -1045,7 +1045,7 @@ bool KProtocolManager::supportsListing( const QUrl &url )
 
 QStringList KProtocolManager::listing( const QUrl &url )
 {
-  KProtocolInfo::Ptr prot = findProtocol(url);
+  KProtocolInfoPrivate * prot = findProtocol(url);
   if ( !prot )
     return QStringList();
 
@@ -1054,7 +1054,7 @@ QStringList KProtocolManager::listing( const QUrl &url )
 
 bool KProtocolManager::supportsReading( const QUrl &url )
 {
-  KProtocolInfo::Ptr prot = findProtocol(url);
+  KProtocolInfoPrivate * prot = findProtocol(url);
   if ( !prot )
     return false;
 
@@ -1063,7 +1063,7 @@ bool KProtocolManager::supportsReading( const QUrl &url )
 
 bool KProtocolManager::supportsWriting( const QUrl &url )
 {
-  KProtocolInfo::Ptr prot = findProtocol(url);
+  KProtocolInfoPrivate * prot = findProtocol(url);
   if ( !prot )
     return false;
 
@@ -1072,7 +1072,7 @@ bool KProtocolManager::supportsWriting( const QUrl &url )
 
 bool KProtocolManager::supportsMakeDir( const QUrl &url )
 {
-  KProtocolInfo::Ptr prot = findProtocol(url);
+  KProtocolInfoPrivate * prot = findProtocol(url);
   if ( !prot )
     return false;
 
@@ -1081,7 +1081,7 @@ bool KProtocolManager::supportsMakeDir( const QUrl &url )
 
 bool KProtocolManager::supportsDeleting( const QUrl &url )
 {
-  KProtocolInfo::Ptr prot = findProtocol(url);
+  KProtocolInfoPrivate * prot = findProtocol(url);
   if ( !prot )
     return false;
 
@@ -1090,7 +1090,7 @@ bool KProtocolManager::supportsDeleting( const QUrl &url )
 
 bool KProtocolManager::supportsLinking( const QUrl &url )
 {
-  KProtocolInfo::Ptr prot = findProtocol(url);
+  KProtocolInfoPrivate * prot = findProtocol(url);
   if ( !prot )
     return false;
 
@@ -1099,7 +1099,7 @@ bool KProtocolManager::supportsLinking( const QUrl &url )
 
 bool KProtocolManager::supportsMoving( const QUrl &url )
 {
-  KProtocolInfo::Ptr prot = findProtocol(url);
+  KProtocolInfoPrivate * prot = findProtocol(url);
   if ( !prot )
     return false;
 
@@ -1108,7 +1108,7 @@ bool KProtocolManager::supportsMoving( const QUrl &url )
 
 bool KProtocolManager::supportsOpening( const QUrl &url )
 {
-  KProtocolInfo::Ptr prot = findProtocol(url);
+  KProtocolInfoPrivate * prot = findProtocol(url);
   if ( !prot )
     return false;
 
@@ -1117,7 +1117,7 @@ bool KProtocolManager::supportsOpening( const QUrl &url )
 
 bool KProtocolManager::canCopyFromFile( const QUrl &url )
 {
-  KProtocolInfo::Ptr prot = findProtocol(url);
+  KProtocolInfoPrivate * prot = findProtocol(url);
   if ( !prot )
     return false;
 
@@ -1127,7 +1127,7 @@ bool KProtocolManager::canCopyFromFile( const QUrl &url )
 
 bool KProtocolManager::canCopyToFile( const QUrl &url )
 {
-  KProtocolInfo::Ptr prot = findProtocol(url);
+  KProtocolInfoPrivate * prot = findProtocol(url);
   if ( !prot )
     return false;
 
@@ -1136,44 +1136,44 @@ bool KProtocolManager::canCopyToFile( const QUrl &url )
 
 bool KProtocolManager::canRenameFromFile( const QUrl &url )
 {
-  KProtocolInfo::Ptr prot = findProtocol(url);
+  KProtocolInfoPrivate * prot = findProtocol(url);
   if ( !prot )
     return false;
 
-  return prot->canRenameFromFile();
+  return prot->m_canRenameFromFile;
 }
 
 
 bool KProtocolManager::canRenameToFile( const QUrl &url )
 {
-  KProtocolInfo::Ptr prot = findProtocol(url);
+  KProtocolInfoPrivate * prot = findProtocol(url);
   if ( !prot )
     return false;
 
-  return prot->canRenameToFile();
+  return prot->m_canRenameToFile;
 }
 
 bool KProtocolManager::canDeleteRecursive( const QUrl &url )
 {
-  KProtocolInfo::Ptr prot = findProtocol(url);
+  KProtocolInfoPrivate * prot = findProtocol(url);
   if ( !prot )
     return false;
 
-  return prot->canDeleteRecursive();
+  return prot->m_canDeleteRecursive;
 }
 
 KProtocolInfo::FileNameUsedForCopying KProtocolManager::fileNameUsedForCopying( const QUrl &url )
 {
-  KProtocolInfo::Ptr prot = findProtocol(url);
+  KProtocolInfoPrivate * prot = findProtocol(url);
   if ( !prot )
     return KProtocolInfo::FromUrl;
 
-  return prot->fileNameUsedForCopying();
+  return prot->m_fileNameUsedForCopying;
 }
 
 QString KProtocolManager::defaultMimetype( const QUrl &url )
 {
-  KProtocolInfo::Ptr prot = findProtocol(url);
+  KProtocolInfoPrivate * prot = findProtocol(url);
   if ( !prot )
     return QString();
 
@@ -1184,12 +1184,12 @@ QString KProtocolManager::protocolForArchiveMimetype( const QString& mimeType )
 {
     PRIVATE_DATA;
     if (d->protocolForArchiveMimetypes.isEmpty()) {
-        const KProtocolInfo::List allProtocols = KProtocolInfoFactory::self()->allProtocols();
-        for (KProtocolInfo::List::const_iterator it = allProtocols.begin();
+        const QList<KProtocolInfoPrivate *> allProtocols = KProtocolInfoFactory::self()->allProtocols();
+        for (QList<KProtocolInfoPrivate *>::const_iterator it = allProtocols.begin();
              it != allProtocols.end(); ++it) {
-            const QStringList archiveMimetypes = (*it)->archiveMimeTypes();
+            const QStringList archiveMimetypes = (*it)->m_archiveMimeTypes;
             Q_FOREACH(const QString& mime, archiveMimetypes) {
-                d->protocolForArchiveMimetypes.insert(mime, (*it)->name());
+                d->protocolForArchiveMimetypes.insert(mime, (*it)->m_name);
             }
         }
     }

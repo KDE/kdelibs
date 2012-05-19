@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1999 Torben Weis <weis@kde.org>
    Copyright (C) 2000-2001 Waldo Bastian <bastian@kde.org>
+   Copyright     2012 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -19,42 +20,27 @@
 #ifndef KPROTOCOLINFO_H
 #define KPROTOCOLINFO_H
 
-
-#include <ksycocaentry.h>
-#include <ksycocatype.h>
+#include <kdecore_export.h>
 #include <QtCore/QVariant>
 #include <QtCore/QStringList>
-
-class QDataStream;
-class KProtocolInfoPrivate;
 
 /**
  * \class KProtocolInfo kprotocolinfo.h <KProtocolInfo>
  *
  * Information about I/O (Internet, etc.) protocols supported by KDE.
 
- * This class is useful if you want to know which protocols
+ * KProtocolInfo is useful if you want to know which protocols
  * KDE supports. In addition you can find out lots of information
- * about a certain protocol. A KProtocolInfo instance represents a
- * single protocol. Most of the functionality is provided by the static
- * methods that scan the *.protocol files of all installed kioslaves to get
- * this information.
+ * about a certain protocol. All of the functionality is provided by the static
+ * methods.
+ * The implementation scans the *.protocol files of all installed kioslaves to get
+ * this information and stores the result into an internal cache.
  *
  * *.protocol files are installed in the "services" resource.
- *
- * @author Torben Weis <weis@kde.org>
  */
-class KDECORE_EXPORT KProtocolInfo : public KSycocaEntry
+class KDECORE_EXPORT KProtocolInfo
 {
-  friend class KProtocolInfoFactory;
-  friend class KBuildProtocolInfoFactory;
-  friend class KProtocolManager;
 public:
-  typedef KSharedPtr<KProtocolInfo> Ptr;
-    typedef QList<Ptr> List;
-
-public:
-
   //
   // Static functions:
   //
@@ -311,66 +297,10 @@ public:
    */
   static QString proxiedBy( const QString& protocol );
 
-public:
-  // Internal functions:
-  /**
-   * @internal construct a KProtocolInfo from a stream
-   */
-  KProtocolInfo( QDataStream& _str, int offset);
-
-  virtual ~KProtocolInfo();
-
   typedef enum { Name, FromUrl, DisplayName } FileNameUsedForCopying;
 
-  /// @internal. Use KProtocolManager instead.
-  bool supportsListing() const;
-  /// @internal. Use KProtocolManager instead.
-  QString defaultMimeType() const;
-  /// @internal. Use KProtocolManager instead.
-  QStringList archiveMimeTypes() const;
-
-protected:
-  QString m_name;
-  QString m_exec;
-  Type m_inputType;
-  Type m_outputType;
-  QStringList m_listing;
-  bool m_isSourceProtocol;
-  bool m_isHelperProtocol;
-  bool m_supportsListing;
-  bool m_supportsReading;
-  bool m_supportsWriting;
-  bool m_supportsMakeDir;
-  bool m_supportsDeleting;
-  bool m_supportsLinking;
-  bool m_supportsMoving;
-  bool m_supportsOpening;
-  QString m_defaultMimetype;
-  bool m_determineMimetypeFromExtension;
-  QString m_icon;
-  bool m_canCopyFromFile;
-  bool m_canCopyToFile;
-  QString m_config;
-  int m_maxSlaves;
-
-  bool canRenameFromFile() const;
-  bool canRenameToFile() const;
-  bool canDeleteRecursive() const;
-  FileNameUsedForCopying fileNameUsedForCopying() const;
-
 private:
-  /**
-   * Read a protocol description file
-   * @param path the path of the description file
-   */
-  KProtocolInfo( const QString & path);
-
-    Q_DECLARE_PRIVATE(KProtocolInfo)
-
-    void load(QDataStream &s);
+    Q_DISABLE_COPY(KProtocolInfo);
 };
-
-KDECORE_EXPORT QDataStream& operator>>( QDataStream& s, KProtocolInfo::ExtraField& field );
-KDECORE_EXPORT QDataStream& operator<<( QDataStream& s, const KProtocolInfo::ExtraField& field );
 
 #endif

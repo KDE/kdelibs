@@ -861,16 +861,19 @@ void KMimeTypeTest::testHelperProtocols()
         QVERIFY(KProtocolInfo::isHelperProtocol("tel"));
     }
 
-    KService::Ptr kmail2 = KService::serviceByStorageId("KMail2.desktop");
-    if (!kmail2) {
-        QSKIP_PORTING( "kmail2 not installed", SkipSingle );
-    }
-
     QVERIFY(KProtocolInfo::isKnownProtocol("mailto"));
     QVERIFY(KProtocolInfo::isHelperProtocol("mailto"));
     QVERIFY(KProtocolInfo::isHelperProtocol(KUrl("mailto:faure@kde.org")));
-    QVERIFY2(KProtocolInfo::exec("mailto").contains(QLatin1String("kmail -caption \"%c\"")), // comes from KMail2.desktop
-                qPrintable(KProtocolInfo::exec("mailto")));
+
+    // "mailto" is associated with kmail2 when present, and with kmailservice otherwise.
+    KService::Ptr kmail2 = KService::serviceByStorageId("KMail2.desktop");
+    if (kmail2) {
+        //qDebug() << kmail2->entryPath();
+        QVERIFY2(KProtocolInfo::exec("mailto").contains(QLatin1String("kmail -caption \"%c\"")), // comes from KMail2.desktop
+                 qPrintable(KProtocolInfo::exec("mailto")));
+    } else {
+        QCOMPARE(KProtocolInfo::exec("mailto"), QLatin1String("kmailservice %u"));
+    }
 }
 
 struct LessMimeType_ByComment

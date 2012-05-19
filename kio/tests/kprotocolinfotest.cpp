@@ -23,47 +23,68 @@
 #include <QUrl>
 #include <kprotocolmanager.h>
 #include <kglobalsettings.h>
-#include <kcmdlineargs.h>
-#include <kaboutdata.h>
-#include <kcomponentdata.h>
 #include <kdebug.h>
-#include <assert.h>
+#include <QtTest>
+#include <kde_qt5_compat.h>
 
-int main(int argc, char **argv) {
-    KAboutData aboutData(QByteArray("kprotocolinfotest"), QByteArray(), qi18n("KProtocolinfo Test"), QByteArray("1.0"));
+// Tests both KProtocolInfo and KProtocolManager
 
-    KComponentData componentData(&aboutData);
-    QCoreApplication app(argc,argv); // needed by QEventLoop in ksycoca.cpp
+class KProtocolInfoTest : public QObject
+{
+    Q_OBJECT
+private Q_SLOTS:
 
-    QUrl url = QUrl::fromLocalFile("/tmp");
-    assert( KProtocolManager::supportsListing( QUrl( "ftp://10.1.1.10") ) );
-    assert( KProtocolManager::inputType(url) == KProtocolInfo::T_NONE );
-    assert( KProtocolManager::outputType(url) == KProtocolInfo::T_FILESYSTEM );
-    assert( KProtocolManager::supportsReading(url) == true );
-    KProtocolInfo::ExtraFieldList extraFields = KProtocolInfo::extraFields(url);
-    KProtocolInfo::ExtraFieldList::Iterator extraFieldsIt = extraFields.begin();
-    for ( ; extraFieldsIt != extraFields.end() ; ++extraFieldsIt )
-        kDebug() << (*extraFieldsIt).name << " " << (*extraFieldsIt).type;
-
-    assert( KProtocolInfo::showFilePreview( "file" ) == true );
-    assert( KProtocolInfo::showFilePreview( "audiocd" ) == false );
-    assert( KGlobalSettings::showFilePreview( QUrl( "audiocd:/" ) ) == false );
-
-    QString proxy;
-    QString protocol = KProtocolManager::slaveProtocol( QUrl( "http://bugs.kde.org" ), proxy );
-    assert( protocol == "http" );
-
-    QStringList capabilities = KProtocolInfo::capabilities( "imap" );
-    kDebug() << "kio_imap capabilities: " << capabilities;
-    //assert(capabilities.contains("ACL"));
-
-    if (!QFile::exists(KStandardDirs::locate("services", "zip.protocol"))) {
-        //QSKIP_PORTING("kdebase not installed", SkipAll);
-    } else {
-        QString zip = KProtocolManager::protocolForArchiveMimetype("application/zip");
-        assert( zip == "zip");
+    void testBasic()
+    {
+        QUrl url = QUrl::fromLocalFile("/tmp");
+        QVERIFY( KProtocolManager::supportsListing( QUrl( "ftp://10.1.1.10") ) );
+        QCOMPARE( KProtocolManager::inputType(url), KProtocolInfo::T_NONE );
+        QCOMPARE( KProtocolManager::outputType(url), KProtocolInfo::T_FILESYSTEM );
+        QVERIFY(KProtocolManager::supportsReading(url));
     }
 
+    void testExtraFields()
+    {
+        KProtocolInfo::ExtraFieldList extraFields = KProtocolInfo::extraFields(QUrl("trash:/"));
+        KProtocolInfo::ExtraFieldList::Iterator extraFieldsIt = extraFields.begin();
+        for ( ; extraFieldsIt != extraFields.end() ; ++extraFieldsIt )
+            qDebug() << (*extraFieldsIt).name << " " << (*extraFieldsIt).type;
+        // TODO
+    }
 
-    return 0;
-}
+    void testShowFilePreview()
+    {
+        QVERIFY(KProtocolInfo::showFilePreview("file"));
+        QVERIFY(!KProtocolInfo::showFilePreview("audiocd"));
+        QVERIFY(!KGlobalSettings::showFilePreview(QUrl("audiocd:/")));
+    }
+
+    void testSlaveProtocol()
+    {
+        QString proxy;
+        QString protocol = KProtocolManager::slaveProtocol(QUrl("http://bugs.kde.org"), proxy);
+        QCOMPARE(protocol, QString::fromLatin1("http"));
+    }
+
+    void testCapabilities()
+    {
+        QStringList capabilities = KProtocolInfo::capabilities( "imap" );
+        qDebug() << "kio_imap capabilities: " << capabilities;
+        //QVERIFY(capabilities.contains("ACL"));
+    }
+
+    void testProtocolForArchiveMimetype()
+    {
+        if (!QFile::exists(KStandardDirs::locate("services", "zip.protocol"))) {
+            QSKIP_PORTING("kdebase not installed", SkipAll);
+        } else {
+            const QString zip = KProtocolManager::protocolForArchiveMimetype("application/zip");
+            QCOMPARE(zip, QString("zip"));
+        }
+    }
+
+};
+
+QTEST_MAIN(KProtocolInfoTest)
+
+#include "kprotocolinfotest.moc"

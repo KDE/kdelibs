@@ -31,7 +31,6 @@
 #include "kbuildmimetypefactory.h"
 #include "kbuildservicefactory.h"
 #include "kbuildservicegroupfactory.h"
-#include "kbuildprotocolinfofactory.h"
 #include "kctimefactory.h"
 #include <QtCore/QDataStream>
 #include <QtCore/QDir>
@@ -424,7 +423,6 @@ bool KBuildSycoca::recreate()
   KBuildMimeTypeFactory* mimeTypeFactory = new KBuildMimeTypeFactory;
   g_buildServiceGroupFactory = new KBuildServiceGroupFactory();
   g_serviceFactory = new KBuildServiceFactory(stf, mimeTypeFactory, g_buildServiceGroupFactory);
-  (void) new KBuildProtocolInfoFactory();
 
   if (build()) // Parse dirs
   {
@@ -603,7 +601,6 @@ QStringList KBuildSycoca::existingResourceDirs()
    *dirs += KBuildMimeTypeFactory::resourceDirs();
    *dirs += KBuildServiceGroupFactory::resourceDirs();
    *dirs += KBuildServiceFactory::resourceDirs();
-   *dirs += KBuildProtocolInfoFactory::resourceDirs();
 
    *g_allResourceDirs = *dirs;
 
@@ -773,7 +770,6 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
          factories->append( new KMimeTypeFactory );
          factories->append( new KServiceGroupFactory );
          factories->append( new KServiceFactory );
-         factories->append( new KProtocolInfoFactory );
 
          // For each factory
 	 for (KSycocaFactoryList::Iterator factory = factories->begin();

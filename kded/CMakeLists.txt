@@ -48,7 +48,6 @@ set(kbuildsycoca_KDEINIT_SRCS
    kbuildservicetypefactory.cpp
    kbuildservicefactory.cpp
    kbuildservicegroupfactory.cpp
-   kbuildprotocolinfofactory.cpp
    kctimefactory.cpp
    vfolder_menu.cpp
    )

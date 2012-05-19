@@ -1,7 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1999 Torben Weis <weis@kde.org>
    Copyright (C) 2000,2003 Waldo Bastian <bastian@kde.org>
-
+   Copyright     2012 David Faure <faure@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -20,13 +20,12 @@
 #ifndef kprotocolinfofactory_h
 #define kprotocolinfofactory_h
 
-#include "kprotocolinfo.h"
-
-#include <QtCore/QMap>
+#include <kdecore_export.h>
+#include <QtCore/QHash>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <ksycocafactory.h>
 
+class KProtocolInfoPrivate;
 
 /**
  * @internal
@@ -35,64 +34,42 @@
  * KProtocolInfo. The factory is a singleton
  * (only one instance can exist).
  *
- * @short Factory for KProtocolInfo
- *
- * Exported for kbuildsycoca, but not installed.
+ * Exported for KProtocolManager
  */
-class KDECORE_EXPORT KProtocolInfoFactory : public KSycocaFactory
+class KDECORE_EXPORT KProtocolInfoFactory
 {
-  K_SYCOCAFACTORY( KST_KProtocolInfoFactory )
 public:
-  /**
-   * The instance of the KProtocolInfoFactory.
-   * @return the factory instance
-   */
-  static KProtocolInfoFactory* self();
+    /**
+     * @return the instance of KProtocolInfoFactory (singleton).
+     */
+    static KProtocolInfoFactory* self();
 
-  /** \internal */
-  KProtocolInfoFactory();
-  virtual ~KProtocolInfoFactory();
+    KProtocolInfoFactory();
 
-  /*
-   * Returns protocol info for @p protocol.
-   *
-   * Does not take proxy settings into account.
-   * @param protocol the protocol to search for
-   * @return the pointer to the KProtocolInfo, or 0 if not found
-   */
-  KProtocolInfo::Ptr findProtocol(const QString &protocol);
+    /*
+     * Returns protocol info for @p protocol.
+     *
+     * Does not take proxy settings into account.
+     * @param protocol the protocol to search for
+     * @return the pointer to the KProtocolInfo, or 0 if not found
+     */
+    KProtocolInfoPrivate* findProtocol(const QString &protocol);
 
-  /**
-   * @return all protocols
-   */
-  KProtocolInfo::List allProtocols() const;
+    /**
+     * Loads all protocols. Slow, obviously, but fills the cache once and for all.
+     */
+    QList<KProtocolInfoPrivate *> allProtocols();
 
-  /**
-   * Returns list of all known protocols.
-   * @return a list of all protocols
-   */
-  QStringList protocols() const;
+    /**
+     * Returns list of all known protocols.
+     * @return a list of all protocols
+     */
+    QStringList protocols() const;
 
-protected:
-  /**
-   * @internal Not used.
-   */
-   virtual KSycocaEntry *createEntry(const QString &) const
-    { return 0; }
-
-  /**
-   * @internal
-   */
-  virtual KProtocolInfo *createEntry(int offset) const;
-
-protected:
-  /** Virtual hook, used to add new "virtual" functions while maintaining
-      binary compatibility. Unused in this class.
-  */
-  virtual void virtual_hook( int id, void* data );
 private:
-  QMap<QString,KProtocolInfo::Ptr> m_cache;
-  class KProtocolInfoFactoryPrivate* d;
+    typedef QHash<QString, KProtocolInfoPrivate *> ProtocolCache;
+    ProtocolCache m_cache;
+    bool m_allProtocolsLoaded;
 };
 
 #endif
