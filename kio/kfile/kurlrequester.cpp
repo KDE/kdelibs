@@ -24,7 +24,6 @@
 #include <klocalizedstring.h>
 #include <kurlcompletion.h>
 #include <kprotocolmanager.h>
-#include <khbox.h>
 #include <kstandardshortcut.h>
 #include <kdebug.h>
 
@@ -33,6 +32,7 @@
 #include <QMimeData>
 #include <QAction>
 #include <QApplication>
+#include <QHBoxLayout>
 
 class KUrlDragPushButton : public KPushButton
 {
@@ -171,7 +171,7 @@ public:
     void _k_slotFileDialogFinished();
 
     QUrl m_startDir;
-    KUrlRequester *m_parent;
+    KUrlRequester *m_parent; // TODO: rename to 'q'
     KLineEdit *edit;
     KComboBox *combo;
     KFile::Modes fileDialogMode;
@@ -189,8 +189,8 @@ public:
 
 
 
-KUrlRequester::KUrlRequester( QWidget *editWidget, QWidget *parent)
-  : KHBox( parent),d(new KUrlRequesterPrivate(this))
+KUrlRequester::KUrlRequester(QWidget *editWidget, QWidget *parent)
+  : QWidget(parent), d(new KUrlRequesterPrivate(this))
 {
     // must have this as parent
     editWidget->setParent( this );
@@ -205,14 +205,14 @@ KUrlRequester::KUrlRequester( QWidget *editWidget, QWidget *parent)
 
 
 KUrlRequester::KUrlRequester( QWidget *parent)
-  : KHBox( parent),d(new KUrlRequesterPrivate(this))
+  : QWidget(parent), d(new KUrlRequesterPrivate(this))
 {
     d->init();
 }
 
 
 KUrlRequester::KUrlRequester( const QUrl& url, QWidget *parent)
-  : KHBox( parent),d(new KUrlRequesterPrivate(this))
+  : QWidget(parent), d(new KUrlRequesterPrivate(this))
 {
     d->init();
     setUrl( url );
@@ -226,9 +226,6 @@ KUrlRequester::~KUrlRequester()
 
 void KUrlRequester::KUrlRequesterPrivate::init()
 {
-    m_parent->setMargin(0);
-    m_parent->setSpacing(-1); // use default spacing
-
     myFileDialog = 0L;
     fileDialogModality = Qt::ApplicationModal;
 
@@ -238,6 +235,11 @@ void KUrlRequester::KUrlRequesterPrivate::init()
     }
 
     QWidget *widget = combo ? (QWidget*) combo : (QWidget*) edit;
+
+    QHBoxLayout* topLayout = new QHBoxLayout(m_parent);
+    topLayout->setMargin(0);
+    topLayout->setSpacing(-1); // use default spacing
+    topLayout->addWidget(widget);
 
     myButton = new KUrlDragPushButton(m_parent);
     myButton->setIcon(KDE::icon("document-open"));
@@ -250,6 +252,7 @@ void KUrlRequester::KUrlRequesterPrivate::init()
     widget->installEventFilter( m_parent );
     m_parent->setFocusProxy( widget );
     m_parent->setFocusPolicy(Qt::StrongFocus);
+    topLayout->addWidget(myButton);
 
     connectSignals( m_parent );
     m_parent->connect(myButton, SIGNAL(clicked()), m_parent, SLOT(_k_slotOpenDialog()));
@@ -267,8 +270,7 @@ void KUrlRequester::setUrl(const QUrl& url)
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     d->setText(url.toString());
 #else
-#pragma message("Uncomment when this is merged: http://codereview.qt-project.org/#change,18638")
-//     d->setText(url.toDisplayString(QUrl::PreferLocalFile));
+    d->setText(url.toDisplayString(QUrl::PreferLocalFile));
 #endif
 }
 
@@ -298,7 +300,7 @@ void KUrlRequester::changeEvent(QEvent *e)
         d->myFileDialog->setCaption(windowTitle());
      }
    }
-   KHBox::changeEvent(e);
+   QWidget::changeEvent(e);
 }
 
 QUrl KUrlRequester::url() const

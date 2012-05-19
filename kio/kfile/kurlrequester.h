@@ -22,7 +22,6 @@
 #include <kfile.h>
 #include <kpushbutton.h>
 #include <QUrl>
-#include <khbox.h>
 
 #ifndef KDE_NO_DEPRECATED
 #include <keditlistbox.h>
@@ -57,7 +56,7 @@ class QEvent;
  * @short A widget to request a filename/url from the user
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KIO_EXPORT KUrlRequester : public KHBox
+class KIO_EXPORT KUrlRequester : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY( QUrl url READ url WRITE setUrl NOTIFY textChanged USER true )
