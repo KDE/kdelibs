@@ -47,7 +47,7 @@ ErrorInstance::ErrorInstance(JSObject *proto)
 ErrorPrototype::ErrorPrototype(ExecState* exec,
                                      ObjectPrototype* objectProto,
                                      FunctionPrototype* funcProto)
-  : JSObject(objectProto)
+  : ErrorInstance(objectProto)
 {
   // Interpreter::initGlobalObject sets the constructor property
   // on the prototypes for this and the native error types
