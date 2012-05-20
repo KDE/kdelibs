@@ -1442,8 +1442,8 @@ bool KSharedDataCache::insert(const QString &key, const QByteArray &data)
         // reduce the use count of long-lived items when there is high load on
         // the cache. We do this randomly, with a weighting that makes the event
         // impossible if load < 0.5, and guaranteed if load >= 0.96.
-        static double startCullPoint = 0.5l;
-        static double mustCullPoint = 0.96l;
+        const static double startCullPoint = 0.5l;
+        const static double mustCullPoint = 0.96l;
 
         // cacheAvail is in pages, cacheSize is in bytes.
         double loadFactor = 1.0 - (1.0l * d->shm->cacheAvail * d->shm->cachePageSize()
@@ -1464,7 +1464,7 @@ bool KSharedDataCache::insert(const QString &key, const QByteArray &data)
         // quadratic chaining to attempt to find an empty slot. The equation we use
         // is:
         // position = (hash + (i + i*i) / 2) % size, where i is the probe number.
-        int probeNumber = 1;
+        uint probeNumber = 1;
         while (indices[position].useCount > 0 && probeNumber < MAX_PROBE_COUNT) {
             // If we actually stumbled upon an old version of the key we are
             // overwriting, then use that position, do not skip over it.
