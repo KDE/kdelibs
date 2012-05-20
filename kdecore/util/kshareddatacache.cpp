@@ -582,6 +582,10 @@ struct SharedMemory
      */
     pageID findEmptyPages(uint pagesNeeded) const
     {
+        if (KDE_ISUNLIKELY(pagesNeeded > pageTableSize())) {
+            return pageTableSize();
+        }
+
         // Loop through the page table, find the first empty page, and just
         // makes sure that there are enough free pages.
         const PageTableEntry *table = pageTable();
@@ -669,6 +673,10 @@ struct SharedMemory
         pageID idLimit = static_cast<pageID>(pageTableSize());
         PageTableEntry *pages = pageTable();
 
+        if (KDE_ISUNLIKELY(!pages || idLimit <= 0)) {
+            throw KSDCCorrupted();
+        }
+
         // Skip used pages
         while (currentPage < idLimit && pages[currentPage].index >= 0) {
             ++currentPage;
@@ -690,8 +698,12 @@ struct SharedMemory
 
             // Found an entry, move it.
             qint32 affectedIndex = pages[currentPage].index;
-            Q_ASSERT(affectedIndex >= 0);
-            Q_ASSERT(indexTable()[affectedIndex].firstPage == currentPage);
+            if (KDE_ISUNLIKELY(affectedIndex < 0 ||
+                        affectedIndex >= idLimit ||
+                        indexTable()[affectedIndex].firstPage != currentPage))
+            {
+                throw KSDCCorrupted();
+            }
 
             indexTable()[affectedIndex].firstPage = freeSpot;
 
@@ -754,9 +766,13 @@ struct SharedMemory
             if (firstPage < 0 || static_cast<uint>(firstPage) >= pageTableSize()) {
                 return -1;
             }
-            const void *resultPage = page(firstPage);
-            const char *utf8FileName = reinterpret_cast<const char *>(resultPage);
 
+            const void *resultPage = page(firstPage);
+            if (KDE_ISUNLIKELY(!resultPage)) {
+                throw KSDCCorrupted();
+            }
+
+            const char *utf8FileName = reinterpret_cast<const char *>(resultPage);
             if (qstrncmp(utf8FileName, key.constData(), cachePageSize()) == 0) {
                 return position;
             }
@@ -784,13 +800,13 @@ struct SharedMemory
     {
         if (numberNeeded == 0) {
             kError(ksdcArea()) << "Internal error: Asked to remove exactly 0 pages for some reason.";
-            return pageTableSize();
+            throw KSDCCorrupted();
         }
 
         if (numberNeeded > pageTableSize()) {
             kError(ksdcArea()) << "Internal error: Requested more space than exists in the cache.";
             kError(ksdcArea()) << numberNeeded << "requested, " << pageTableSize() << "is the total possible.";
-            return pageTableSize();
+            throw KSDCCorrupted();
         }
 
         // If the cache free space is large enough we will defragment first
@@ -823,7 +839,7 @@ struct SharedMemory
         if (!tablePtr) {
             kError(ksdcArea()) << "Unable to allocate temporary memory for sorting the cache!";
             clearInternalTables();
-            return pageTableSize();
+            throw KSDCCorrupted();
         }
 
         // We use tablePtr to ensure the data is destroyed, but do the access
@@ -875,13 +891,11 @@ struct SharedMemory
         while (i < indexTableSize() && numberNeeded > cacheAvail) {
             int curIndex = table[i++].firstPage; // Really an index, not a page
 
-            // Removed everything, still no luck. At *this* point,
-            // pagesRemoved < numberNeeded or in other words we can't fulfill
-            // the request even if we defragment. This is really a logic error.
-            if (curIndex < 0) {
-                kError(ksdcArea()) << "Unable to remove enough used pages to allocate"
-                              << numberNeeded << "pages. In theory the cache is empty, weird.";
-                return pageTableSize();
+            // Removed everything, still no luck (or curIndex is set but too high).
+            if (curIndex < 0 || static_cast<uint>(curIndex) >= indexTableSize()) {
+                kError(ksdcArea()) << "Trying to remove index" << curIndex
+                    << "out-of-bounds for index table of size" << indexTableSize();
+                throw KSDCCorrupted();
             }
 
             kDebug(ksdcArea()) << "Removing entry of" << indexTable()[curIndex].totalItemSize
@@ -903,6 +917,10 @@ struct SharedMemory
                 // One last shot.
                 defragment();
                 return findEmptyPages(numberNeeded);
+            }
+
+            if (KDE_ISUNLIKELY(static_cast<uint>(curIndex) >= indexTableSize())) {
+                throw KSDCCorrupted();
             }
 
             removeEntry(curIndex);
@@ -1174,7 +1192,8 @@ class KSharedDataCache::Private
             return m_lock->lock();
         }
 
-        return false;
+        // No shm or wrong type --> corrupt!
+        throw KSDCCorrupted();
     }
 
     void unlock() const
@@ -1301,36 +1320,25 @@ class KSharedDataCache::Private
 // Must be called while the lock is already held!
 void SharedMemory::removeEntry(uint index)
 {
-    Q_ASSERT(index < indexTableSize());
-    Q_ASSERT(cacheAvail <= pageTableSize());
+    if (index >= indexTableSize() || cacheAvail > pageTableSize()) {
+        throw KSDCCorrupted();
+    }
 
     PageTableEntry *pageTableEntries = pageTable();
     IndexTableEntry *entriesIndex = indexTable();
 
-    if (entriesIndex[index].firstPage < 0) {
-        kDebug(ksdcArea()) << "Trying to remove an entry which is already invalid. This "
-                    << "cache is likely corrupt.";
-
-        clearInternalTables(); // The nuclear option...
-        return;
-    }
-
     // Update page table first
     pageID firstPage = entriesIndex[index].firstPage;
     if (firstPage < 0 || static_cast<quint32>(firstPage) >= pageTableSize()) {
-        kError(ksdcArea()) << "Removing" << index << "which is already marked as empty!";
-
-        clearInternalTables();
-        return;
+        kDebug(ksdcArea()) << "Trying to remove an entry which is already invalid. This "
+                    << "cache is likely corrupt.";
+        throw KSDCCorrupted();
     }
 
     if (index != static_cast<uint>(pageTableEntries[firstPage].index)) {
-        kError(ksdcArea()) << "Removing" << index << "will not work as it is assigned"
-                    << "to page" << firstPage << "which is itself assigned to"
-                    << "entry" << pageTableEntries[firstPage].index << "instead!";
-
-        clearInternalTables();
-        return;
+        kError(ksdcArea()) << "Removing entry" << index << "but the matching data"
+                    << "doesn't link back -- cache is corrupt, clearing.";
+        throw KSDCCorrupted();
     }
 
     uint entriesToRemove = intCeil(entriesIndex[index].totalItemSize, cachePageSize());
@@ -1346,6 +1354,7 @@ void SharedMemory::removeEntry(uint index)
         kError(ksdcArea()) << "We somehow did not remove" << entriesToRemove
                     << "when removing entry" << index << ", instead we removed"
                     << (cacheAvail - savedCacheSize);
+        throw KSDCCorrupted();
     }
 
     // For debugging
@@ -1552,6 +1561,9 @@ bool KSharedDataCache::insert(const QString &key, const QByteArray &data)
 
         // Actually move the data in place
         void *dataPage = d->shm->page(firstPage);
+        if (KDE_ISUNLIKELY(!dataPage)) {
+            throw KSDCCorrupted();
+        }
 
         // Cast for byte-sized pointer arithmetic
         uchar *startOfPageData = reinterpret_cast<uchar *>(dataPage);
@@ -1581,6 +1593,9 @@ bool KSharedDataCache::find(const QString &key, QByteArray *destination) const
         if (entry >= 0) {
             const IndexTableEntry *header = &d->shm->indexTable()[entry];
             const void *resultPage = d->shm->page(header->firstPage);
+            if (KDE_ISUNLIKELY(!resultPage)) {
+                throw KSDCCorrupted();
+            }
 
             header->useCount++;
             header->lastUsedTime = ::time(0);
