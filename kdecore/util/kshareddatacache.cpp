@@ -44,7 +44,7 @@
 
 /// The maximum number of probes to make while searching for a bucket in
 /// the presence of collisions in the cache index table.
-static const int MAX_PROBE_COUNT = 6;
+static const uint MAX_PROBE_COUNT = 6;
 
 int ksdcArea()
 {
@@ -525,7 +525,7 @@ struct SharedMemory
 
     const void *page(pageID at) const
     {
-        if (static_cast<int>(at) >= static_cast<int>(pageTableSize())) {
+        if (static_cast<uint>(at) >= pageTableSize()) {
             return 0;
         }
 
@@ -735,7 +735,7 @@ struct SharedMemory
     {
         uint keyHash = generateHash(key);
         uint position = keyHash % indexTableSize();
-        int probeNumber = 1; // See insert() for description
+        uint probeNumber = 1; // See insert() for description
 
         // Imagine 3 entries A, B, C in this logical probing chain. If B is
         // later removed then we can't find C either. So, we must keep
@@ -895,7 +895,7 @@ struct SharedMemory
 
         pageID result = pageTableSize();
         while (i < indexTableSize() &&
-              (result = findEmptyPages(numberNeeded)) >= static_cast<int>(pageTableSize()))
+              (static_cast<uint>(result = findEmptyPages(numberNeeded))) >= pageTableSize())
         {
             int curIndex = table[i++].firstPage;
 
@@ -1118,7 +1118,7 @@ class KSharedDataCache::Private
         //         2 means "ready"
         uint usecSleepTime = 8; // Start by sleeping for 8 microseconds
         while (shm->ready != 2) {
-            if (usecSleepTime >= (1 << 21)) {
+            if (KDE_ISUNLIKELY(usecSleepTime >= (1 << 21))) {
                 // Didn't acquire within ~8 seconds?  Assume an issue exists
                 kError(ksdcArea()) << "Unable to acquire shared lock, is the cache corrupt?";
 
