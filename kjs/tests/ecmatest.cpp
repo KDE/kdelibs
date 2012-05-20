@@ -251,7 +251,6 @@ void ECMAscriptTest::runAllTests()
         } else {
             QVERIFY( completion.complType() == KJS::Throw );
             QVERIFY( completion.value() != NULL );
-            QVERIFY( completion.value()->isObject() );
 
             const QString eMsg = exceptionToString( interp->execState(), completion.value() );
 
