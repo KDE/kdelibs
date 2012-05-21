@@ -28,7 +28,7 @@
 
 #include "kstandarddirs.h"
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #include <windows.h>
 #include <QDir>
 #endif
@@ -201,7 +201,7 @@ void KMountPoint::Private::finalizeCurrentMountPoint(DetailsNeededFlags infoNeed
 
 KMountPoint::List KMountPoint::possibleMountPoints(DetailsNeededFlags infoNeeded)
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     return KMountPoint::currentMountPoints(infoNeeded);
 #endif
 
@@ -394,7 +394,7 @@ KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
     }
 
     free( mntctl_buffer );
-#elif defined(Q_WS_WIN) && !defined(_WIN32_WCE)
+#elif defined(Q_OS_WIN) && !defined(_WIN32_WCE)
 	//nothing fancy with infoNeeded but it gets the job done
     DWORD bits = GetLogicalDrives();
     if(!bits)
@@ -477,7 +477,7 @@ KMountPoint::List::List()
 
 KMountPoint::Ptr KMountPoint::List::findByPath(const QString& path) const
 {
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     /* If the path contains symlinks, get the real name */
     const QString realname = KStandardDirs::realFilePath(path);
 #else

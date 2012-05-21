@@ -105,7 +105,7 @@ static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool dec
     orig_pos = pos;
   }
 
-#ifdef Q_WS_WIN // prepend drive letter if exists (js)
+#ifdef Q_OS_WIN // prepend drive letter if exists (js)
   if (orig_pos >= 2 && path[0].isLetter() && path[1] == QLatin1Char(':') ) {
     result.prepend(QString(path[0]) + QLatin1Char(':') );
   }
@@ -119,7 +119,7 @@ static QString cleanpath( const QString &_path, bool cleanDirSeparator, bool dec
   return result;
 }
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 
 // returns true if provided arguments desinate letter+colon or double slash
 #define IS_DRIVE_OR_DOUBLESLASH(isletter, char1, char2, colon, slash) \
@@ -314,7 +314,7 @@ KUrl::KUrl( const QString &str )
   : QUrl(), d(0)
 {
   if ( !str.isEmpty() ) {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #ifdef DEBUG_KURL
     qDebug() << "KUrl::KUrl ( const QString &str = " << str.toAscii().data() << " )";
 #endif
@@ -347,7 +347,7 @@ KUrl::KUrl( const QString &str )
 KUrl::KUrl( const char * str )
   : QUrl(), d(0)
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
   // true if @a c is letter
   #define IS_LETTER(c) \
     ((c >= QLatin1Char('A') && c <= QLatin1Char('Z')) || (c >= QLatin1Char('a') && c <= QLatin1Char('z')))
@@ -382,7 +382,7 @@ KUrl::KUrl( const QByteArray& str )
    : QUrl(), d(0)
 {
   if ( !str.isEmpty() ) {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #ifdef DEBUG_KURL
     qDebug() << "KUrl::KUrl " << " " << str.data();
 #endif
@@ -402,7 +402,7 @@ KUrl::KUrl( const QByteArray& str )
 KUrl::KUrl( const KUrl& _u )
     : QUrl( _u ), d(0)
 {
-#if defined(Q_WS_WIN) && defined(DEBUG_KURL)
+#if defined(Q_OS_WIN) && defined(DEBUG_KURL)
     qDebug() << "KUrl::KUrl(KUrl) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile();
 #endif
 }
@@ -410,7 +410,7 @@ KUrl::KUrl( const KUrl& _u )
 KUrl::KUrl( const QUrl &u )
     : QUrl( u ), d(0)
 {
-#if defined(Q_WS_WIN) && defined(DEBUG_KURL)
+#if defined(Q_OS_WIN) && defined(DEBUG_KURL)
     qDebug() << "KUrl::KUrl(Qurl) " << " path " << u.path() << " toLocalFile " << u.toLocalFile();
 #endif
 }
@@ -418,7 +418,7 @@ KUrl::KUrl( const QUrl &u )
 KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
    : QUrl(), d(0)
 {
-#if defined(Q_WS_WIN) && defined(DEBUG_KURL)
+#if defined(Q_OS_WIN) && defined(DEBUG_KURL)
     qDebug() << "KUrl::KUrl(KUrl,QString rel_url) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile();
 #endif
 #if 0
@@ -557,7 +557,7 @@ bool KUrl::equals( const KUrl &_u, const EqualsOptions& options ) const
             path2.clear();
     }
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     const bool bLocal1 = isLocalFile();
     const bool bLocal2 = _u.isLocalFile();
     if ( !bLocal1 && bLocal2 || bLocal1 && !bLocal2 )
@@ -776,7 +776,7 @@ QString KUrl::path( AdjustPathOption trailing ) const
   decodedPath = QString::fromUtf8(QByteArray::fromPercentEncoding(decodedPath.toUtf8()));
 #endif
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #ifdef DEBUG_KURL
   kWarning() << (isLocalFile() ? "converted to local file - the related call should be converted to toLocalFile()" : "") << QUrl::path();
 #endif
@@ -795,7 +795,7 @@ QString KUrl::toLocalFile( AdjustPathOption trailing ) const
     }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0) // QTBUG-20322 is fixed in Qt5, skip the workaround
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     if (isLocalFile()) {
         return trailingSlash(trailing, QUrl::path());
     }
@@ -1026,7 +1026,7 @@ QString KUrl::prettyUrl( AdjustPathOption trailing ) const
   }
 
   tmp = path();
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
   if (isLocalFile())
     tmp.prepend(QLatin1Char('/')); // KUrl::path() returns toLocalFile() on windows so we need to add the / back to create a proper url
 #endif
@@ -1057,7 +1057,7 @@ QString KUrl::prettyUrl( int _trailing, AdjustementFlags _flags) const
   QString u = prettyUrl(_trailing);
   if (_flags & StripFileProtocol && u.startsWith("file://")) {
     u.remove(0, 7);
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     return QDir::convertSeparators(u);
 #endif
   }
@@ -1293,7 +1293,7 @@ QString KUrl::directory( const DirectoryOptions& options ) const
     return QString(QLatin1Char('/'));
   }
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
   if ( i == 2 && result[1] == QLatin1Char(':') )
   {
     return result.left(3);
@@ -1665,7 +1665,7 @@ QString KUrl::relativeUrl(const KUrl &base_url, const KUrl &url)
 
 void KUrl::setPath( const QString& _path )
 {
-#if defined(Q_WS_WIN) && defined(DEBUG_KURL)
+#if defined(Q_OS_WIN) && defined(DEBUG_KURL)
     qDebug() << "KUrl::setPath " << " " << _path.toAscii().data();
 #endif
     if ( scheme().isEmpty() )
@@ -1676,7 +1676,7 @@ void KUrl::setPath( const QString& _path )
     if (path.isEmpty())
 #endif
         QString path = _path;
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     const int len = path.length();
     if( len == 2 && IS_LETTER(path[0]) && path[1] == QLatin1Char(':') )
         path += QLatin1Char('/');

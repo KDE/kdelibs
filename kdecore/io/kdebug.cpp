@@ -34,7 +34,7 @@
 #include "kdebug.h"
 #include <QThreadStorage>
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #include <fcntl.h>
 #include <windows.h>
 #ifndef _WIN32_WCE

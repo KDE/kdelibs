@@ -113,7 +113,7 @@ void KStandarddirsTest::testFindResource()
     if ( !isKdelibsInstalled() )
         QSKIP_PORTING( "kdelibs not installed", SkipAll );
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #define EXT ".exe"
 #define KIOSLAVE "bin/kioslave.exe"
 #else

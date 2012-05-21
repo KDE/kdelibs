@@ -96,7 +96,7 @@ int KToolInvocation::startServiceInternal(const char *_function,
     msg << _name << URLs;
     if (function == QLatin1String("kdeinit_exec_with_workdir"))
         msg << workdir;
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     // make sure there is id, so that user timestamp exists
     QStringList envs;
     QByteArray s = startup_id;
@@ -289,7 +289,7 @@ void KToolInvocation::invokeHelp( const QString& anchor,
     if ( !iface->isValid() )
     {
         QString error;
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
         // startServiceByDesktopName() does not work yet; KRun:processDesktopExec returned 'KRun: syntax error in command "khelpcenter %u" , service "KHelpCenter" '
         if (kdeinitExec(QLatin1String("khelpcenter"), QStringList() << url.toString(), &error, 0, startup_id))
 #else
@@ -377,7 +377,7 @@ void KToolInvocation::startKdeinit()
 //  if ( gui )
 //    qApp->setOverrideCursor( Qt::WaitCursor );
   QStringList args;
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
   args += QString::fromLatin1("--suicide");
 #endif
   QProcess::execute(srv, args);

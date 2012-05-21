@@ -169,7 +169,7 @@ void KUrlTest::testQUrl()
   QCOMPARE( url1.toString(), QString( "file:///home/dfaure/my#%2f" ) );
 #endif
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
   QUrl url2( "file:///c:/home/dfaure/my#%2f" );
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
   QCOMPARE( url2.toString(), QString( "file:///c:/home/dfaure/my#/" ) );
@@ -221,7 +221,7 @@ void KUrlTest::testIsLocalFile()
   KUrl local_file_4("file:///my/file");
   QVERIFY( local_file_4.isLocalFile() );
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
   KUrl local_file_4a("file:///c:/my/file");
   QVERIFY( local_file_4a.isLocalFile() );
 #endif
@@ -230,7 +230,7 @@ void KUrlTest::testIsLocalFile()
   local_file_5.setPath("/foo?bar");
   QCOMPARE( local_file_5.url(), QString("file:///foo%3Fbar") );
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
   KUrl local_file_5a;
   local_file_5a.setPath("c:/foo?bar");
   QCOMPARE( local_file_5a.url(), QString("file:///c:/foo%3Fbar") );
@@ -382,7 +382,7 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   KUrl percentEncodedQuery( "http://mail.yandex.ru/message_part/%D0%9A%D1%80%D0%B8%D1%82%D0%B5%D1%80%D0%B8%D0%B8%20%D0%BE%D1%86%D0%B5%D0%BD%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F%20%D0%BE%D1%80%D0%BB%D0%BE%D0%B2%D0%BE%D0%B9.rar?hid=1.1&mid=391.56424458.99241672611486679803334485488&name=%D0%9A%D1%80%D0%B8%D1%82%D0%B5%D1%80%D0%B8%D0%B8%20%D0%BE%D1%86%D0%B5%D0%BD%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F%20%D0%BE%D1%80%D0%BB%D0%BE%D0%B2%D0%BE%D0%B9.rar" );
   QCOMPARE( percentEncodedQuery.prettyUrl(), QString::fromUtf8("http://mail.yandex.ru/message_part/Критерии оценивания орловой.rar?hid=1.1&mid=391.56424458.99241672611486679803334485488&name=%D0%9A%D1%80%D0%B8%D1%82%D0%B5%D1%80%D0%B8%D0%B8%20%D0%BE%D1%86%D0%B5%D0%BD%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F%20%D0%BE%D1%80%D0%BB%D0%BE%D0%B2%D0%BE%D0%B9.rar"));
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #ifdef Q_CC_MSVC
 #pragma message ("port KUser")
 #else
@@ -1933,7 +1933,7 @@ void KUrlTest::testPathOrURL()
   QVERIFY( uloc.isValid() ); // KDE3: was invalid; same as above
   uloc = KUrl( "" );
   QVERIFY( !uloc.isValid() );
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #ifdef Q_CC_MSVC
 #pragma message ("port KUser")
 #else
@@ -1992,7 +1992,7 @@ void KUrlTest::testAssignment()
   QVERIFY( uloc.isValid() );
   uloc = KUrl( "" );
   QVERIFY( !uloc.isValid() );
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #ifdef Q_CC_MSVC
 #pragma message ("port KUser")
 #else

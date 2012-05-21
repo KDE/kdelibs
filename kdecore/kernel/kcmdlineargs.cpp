@@ -68,9 +68,9 @@
 // bytes (instead of QString::to/fromLocal8Bit(), QFile::decodeName, etc.)
 // -----------------------------------------------------------------------------
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
 #define DISPLAY "DISPLAY"
-#elif defined(Q_WS_QWS)
+#elif defined(QWS)
 #define DISPLAY "QWS_DISPLAY"
 #else
 #define DISPLAY "NODISPLAY"
@@ -273,9 +273,9 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
 
     // Qt options
     //FIXME: Check if other options are specific to Qt/X11
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     qt_options.add("display <displayname>", qi18n("Use the X-server display 'displayname'"));
-#elif defined(Q_WS_QWS)
+#elif defined(QWS)
     qt_options.add("display <displayname>", qi18n("Use the QWS display 'displayname'"));
 #else
 #endif
@@ -296,13 +296,13 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
     qt_options.add("name <name>", qi18n("sets the application name"));
     qt_options.add("title <title>", qi18n("sets the application title (caption)"));
     qt_options.add("testability", qi18n("load the testability framework"));
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     qt_options.add("visual TrueColor", qi18n("forces the application to use a TrueColor visual on\nan 8-bit display"));
     qt_options.add("inputstyle <inputstyle>", qi18n("sets XIM (X Input Method) input style. Possible\nvalues are onthespot, overthespot, offthespot and\nroot"));
     qt_options.add("im <XIM server>", qi18n("set XIM server"));
     qt_options.add("noxim", qi18n("disable XIM"));
 #endif
-#ifdef Q_WS_QWS
+#ifdef QWS
     qt_options.add("qws", qi18n("forces the application to run as QWS Server"));
 #endif
     qt_options.add("reverse", qi18n("mirrors the whole layout of widgets"));
@@ -313,12 +313,12 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
     kde_options.add("icon <icon>",         qi18n("Use 'icon' as the application icon"));
     kde_options.add("config <filename>",   qi18n("Use alternative configuration file"));
     kde_options.add("nocrashhandler",      qi18n("Disable crash handler, to get core dumps"));
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     kde_options.add("waitforwm",           qi18n("Waits for a WM_NET compatible windowmanager"));
 #endif
     kde_options.add("style <style>",       qi18n("sets the application GUI style"));
     kde_options.add("geometry <geometry>", qi18n("sets the client geometry of the main widget - see man X for the argument format (usually WidthxHeight+XPos+YPos)"));
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     kde_options.add("smkey <sessionKey>"); // this option is obsolete and exists only to allow smooth upgrades from sessions
 #endif
 }
@@ -903,7 +903,7 @@ KCmdLineArgsStatic::parseAllArgs()
          {
             KCmdLineArgs::usage(option.mid(5));
          }
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
          // skip the finder -psn_* hint
          else if (option.startsWith("psn_")) // krazy:exclude=strings
          {
@@ -1432,7 +1432,7 @@ KCmdLineArgsPrivate::setOption(const QByteArray &opt, const QByteArray &value)
       addArgument(argString);
       addArgument(value);
 
-#if defined(Q_WS_X11) || defined(Q_WS_QWS)
+#if defined(HAVE_X11) || defined(QWS)
       // Hack coming up!
       if (argString == "-display")
       {
