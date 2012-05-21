@@ -34,7 +34,6 @@
 #include <kcomponentdata.h>
 #include <kmimetype.h>
 #include <klocalizedstring.h>
-#include <kvbox.h>
 #include <kactioncollection.h>
 
 KComponentData *KHTMLImageFactory::s_componentData = 0;
@@ -71,7 +70,7 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget,
     KHTMLPart* parentPart = qobject_cast<KHTMLPart*>( parent );
     setComponentData( KHTMLImageFactory::componentData(), prof == KHTMLPart::BrowserViewGUI && !parentPart );
 
-    KVBox *box = new KVBox( parentWidget );
+    QWidget *box = new QWidget( parentWidget );
     box->setAcceptDrops( true );
 
     m_khtml = new KHTMLPart( box, this, prof );

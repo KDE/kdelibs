@@ -34,7 +34,6 @@
 #include <unistd.h>
 #include <kxmlguifactory.h>
 #include <QtCore/QTimer>
-#include <kvbox.h>
 
 static KAboutData kmultipartAboutData()
 {
@@ -113,7 +112,7 @@ KMultiPart::KMultiPart( QWidget *parentWidget,
 
     setComponentData( KMultiPartFactory::componentData() );
 
-    KVBox *box = new KVBox( parentWidget );
+    QWidget *box = new QWidget( parentWidget );
     setWidget( box );
 
     m_extension = new KParts::BrowserExtension( this );
