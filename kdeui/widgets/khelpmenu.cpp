@@ -61,8 +61,8 @@ class KHelpMenuPrivate
 public:
     KHelpMenuPrivate()
       : mSwitchApplicationLanguage(0),
-        mSwitchApplicationLanguageAction(0),
-        mActionsCreated(false)
+        mActionsCreated(false),
+        mSwitchApplicationLanguageAction(0)
     {
         mMenu = 0;
         mAboutApp = 0;
