@@ -713,7 +713,14 @@ struct SharedMemory
             // Moving one page at a time guarantees we can use memcpy safely
             // (in other words, the source and destination will not overlap).
             while (currentPage < idLimit && pages[currentPage].index >= 0) {
-                ::memcpy(page(freeSpot), page(currentPage), cachePageSize());
+                const void *const sourcePage = page(currentPage);
+                void *const destinationPage = page(freeSpot);
+
+                if(KDE_ISUNLIKELY(!sourcePage || !destinationPage)) {
+                    throw KSDCCorrupted();
+                }
+
+                ::memcpy(destinationPage, sourcePage, cachePageSize());
                 pages[freeSpot].index = affectedIndex;
                 pages[currentPage].index = -1;
                 ++currentPage;
@@ -1189,6 +1196,36 @@ class KSharedDataCache::Private
         mapSharedMemory();
     }
 
+    // This should be called for any memory access to shared memory. This
+    // function will verify that the bytes [base, base+accessLength) are
+    // actually mapped to d->shm. The cache itself may have incorrect cache
+    // page sizes, incorrect cache size, etc. so this function should be called
+    // despite the cache data indicating it should be safe.
+    //
+    // If the access is /not/ safe then a KSDCCorrupted exception will be
+    // thrown, so be ready to catch that.
+    void verifyProposedMemoryAccess(const void *base, unsigned accessLength) const
+    {
+        quintptr startOfAccess = reinterpret_cast<quintptr>(base);
+        quintptr startOfShm = reinterpret_cast<quintptr>(shm);
+
+        if (KDE_ISUNLIKELY(startOfAccess < startOfShm)) {
+            throw KSDCCorrupted();
+        }
+
+        quintptr endOfShm = startOfShm + m_mapSize;
+        quintptr endOfAccess = startOfAccess + accessLength;
+
+        // Check for unsigned integer wraparound, and then
+        // bounds access
+        if (KDE_ISUNLIKELY((endOfShm < startOfShm) ||
+                    (endOfAccess < startOfAccess) ||
+                    (endOfAccess > endOfShm)))
+        {
+            throw KSDCCorrupted();
+        }
+    }
+
     bool lock() const
     {
         if (KDE_ISLIKELY(shm && shm->shmLock.type == m_expectedType)) {
@@ -1362,12 +1399,15 @@ void SharedMemory::removeEntry(uint index)
 
     // For debugging
 #ifdef NDEBUG
-    QByteArray str((const char *)page(firstPage));
-    str.prepend(" REMOVED: ");
-    str.prepend(QByteArray::number(index));
-    str.prepend("ENTRY ");
+    void *const startOfData = page(firstPage);
+    if (startOfData) {
+        QByteArray str((const char *) startOfData);
+        str.prepend(" REMOVED: ");
+        str.prepend(QByteArray::number(index));
+        str.prepend("ENTRY ");
 
-    ::memcpy(page(firstPage), str.constData(), str.size() + 1);
+        ::memcpy(startOfData, str.constData(), str.size() + 1);
+    }
 #endif
 
     // Update the index
@@ -1568,6 +1608,9 @@ bool KSharedDataCache::insert(const QString &key, const QByteArray &data)
             throw KSDCCorrupted();
         }
 
+        // Verify it will all fit
+        d->verifyProposedMemoryAccess(dataPage, requiredSize);
+
         // Cast for byte-sized pointer arithmetic
         uchar *startOfPageData = reinterpret_cast<uchar *>(dataPage);
         ::memcpy(startOfPageData, encodedKey.constData(), fileNameLength);
@@ -1599,6 +1642,8 @@ bool KSharedDataCache::find(const QString &key, QByteArray *destination) const
             if (KDE_ISUNLIKELY(!resultPage)) {
                 throw KSDCCorrupted();
             }
+
+            d->verifyProposedMemoryAccess(resultPage, header->totalItemSize);
 
             header->useCount++;
             header->lastUsedTime = ::time(0);
