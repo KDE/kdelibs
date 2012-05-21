@@ -35,6 +35,7 @@
 #include "operations.h"
 #include "debugger.h"
 #include "PropertyNameArray.h"
+#include "commonunicode.h"
 
 #include <stdio.h>
 #include <errno.h>
@@ -746,41 +747,6 @@ static JSValue *decode(ExecState *exec, const List &args, const char *do_not_une
   return jsString(s);
 }
 
-static bool isStrWhiteSpace(unsigned short c)
-{
-    switch (c) {
-        case 0x0009:
-        case 0x000A:
-        case 0x000B:
-        case 0x000C:
-        case 0x000D:
-        case 0x2028:
-        case 0x2029:
-        // Unicode category Zs
-        case 0x0020:  // SPACE
-        case 0x00A0:  // NO-BREAK SPACE
-        case 0x1680:  // OGHAM SPACE MARK
-        case 0x180E:  // MONGOLIAN VOWEL SEPARATOR
-        case 0x2000:  // EN QUAD
-        case 0x2001:  // EM QUAD
-        case 0x2002:  // EN SPACE
-        case 0x2003:  // EM SPACE
-        case 0x2004:  // THREE-PER-EM SPACE
-        case 0x2005:  // FOUR-PER-EM SPACE
-        case 0x2006:  // SIX-PER-EM SPACE
-        case 0x2007:  // FIGURE SPACE
-        case 0x2008:  // PUNCTUATION SPACE
-        case 0x2009:  // THIN SPACE
-        case 0x200A:  // HAIR SPACE
-        case 0x202F:  // NARROW NO-BREAK SPACE
-        case 0x205F:  // MEDIUM MATHEMATICAL SPACE
-        case 0x3000:  // IDEOGRAPHIC SPACE
-            return true;
-        default:
-            return false;
-    }
-}
-
 static int parseDigit(unsigned short c, int radix)
 {
     int digit = -1;
@@ -825,7 +791,7 @@ static double parseInt(const UString &s, int radix)
     int length = s.size();
     int p = 0;
 
-    while (p < length && isStrWhiteSpace(s[p].uc)) {
+    while (p < length && CommonUnicode::isStrWhiteSpace(s[p].uc)) {
         ++p;
     }
 
@@ -885,7 +851,7 @@ static double parseFloat(const UString &s)
     // Need to skip any whitespace and then one + or - sign.
     int length = s.size();
     int p = 0;
-    while (p < length && isStrWhiteSpace(s[p].uc)) {
+    while (p < length && CommonUnicode::isStrWhiteSpace(s[p].uc)) {
         ++p;
     }
     if (p < length && (s[p] == '+' || s[p] == '-')) {
