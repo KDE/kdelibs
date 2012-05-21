@@ -148,6 +148,7 @@ macro_log_feature(LIBATTICA_FOUND "libattica" "Support for Get Hot New Stuff" "g
 
 #optional features
 if(X11_FOUND)
+  macro_bool_to_01(X11_FOUND HAVE_X11)
   #X11_Xrender discovery is done by FindX11
   macro_log_feature(X11_Xrender_FOUND "X Rendering Extension (libXrender)" "Support for compositing, rendering operations, and alpha-blending" "http://www.x.org" FALSE "" "STRONGLY RECOMMENDED")
   macro_bool_to_01(X11_Xscreensaver_FOUND HAVE_XSCREENSAVER)
