@@ -256,9 +256,12 @@ T *offsetAs(void *const base, qint32 offset)
  * @param a Numerator, should be ≥ 0.
  * @param b Denominator, should be > 0.
  */
-template<class T>
-T intCeil(T a, T b)
+unsigned intCeil(unsigned a, unsigned b)
 {
+    if (KDE_ISUNLIKELY(b == 0)) {
+        throw KSDCCorrupted();
+    }
+
     return (a + b - 1) / b;
 }
 
