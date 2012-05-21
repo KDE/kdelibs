@@ -92,10 +92,10 @@ namespace KJS {
     enum { ToString, ValueOf, CharAt, CharCodeAt, Concat, IndexOf, LastIndexOf,
            Match, Replace, Search, Slice, Split,
            Substr, Substring, FromCharCode, ToLowerCase, ToUpperCase,
-           ToLocaleLowerCase, ToLocaleUpperCase, LocaleCompare
+           ToLocaleLowerCase, ToLocaleUpperCase, Trim, LocaleCompare
 #ifndef KJS_PURE_ECMA
            , Big, Small, Blink, Bold, Fixed, Italics, Strike, Sub, Sup,
-           Fontcolor, Fontsize, Anchor, Link
+           Fontcolor, Fontsize, Anchor, Link, TrimLeft, TrimRight
 #endif
     };
 

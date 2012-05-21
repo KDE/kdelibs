@@ -29,6 +29,7 @@
 #include "operations.h"
 #include "PropertyNameArray.h"
 #include "regexp_object.h"
+#include "commonunicode.h"
 #include <wtf/unicode/libc/UnicodeLibC.h>
 
 #if PLATFORM(WIN_OS)
@@ -167,6 +168,7 @@ const ClassInfo StringPrototype::info = {"String", &StringInstance::info, &strin
   toUpperCase           StringProtoFunc::ToUpperCase    DontEnum|Function       0
   toLocaleLowerCase     StringProtoFunc::ToLocaleLowerCase DontEnum|Function    0
   toLocaleUpperCase     StringProtoFunc::ToLocaleUpperCase DontEnum|Function    0
+  trim                  StringProtoFunc::Trim           DontEnum|Function       0
   localeCompare         StringProtoFunc::LocaleCompare  DontEnum|Function       1
 #
 # Under here: html extension, should only exist if KJS_PURE_ECMA is not defined
@@ -185,6 +187,8 @@ const ClassInfo StringPrototype::info = {"String", &StringInstance::info, &strin
   fontsize              StringProtoFunc::Fontsize       DontEnum|Function       1
   anchor                StringProtoFunc::Anchor         DontEnum|Function       1
   link                  StringProtoFunc::Link           DontEnum|Function       1
+  trimLeft              StringProtoFunc::TrimLeft       DontEnum|Function       0
+  trimRight             StringProtoFunc::TrimRight      DontEnum|Function       0
 @end
 */
 // ECMA 15.5.4
@@ -464,7 +468,6 @@ void StringProtoFunc::setToUpperFunction(UnicodeSupport::StringConversionFunctio
 {
   toUpperF = f;
 }
-
 
 // ECMA 15.5.4.2 - 15.5.4.20
 JSValue *StringProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, const List& args)
@@ -784,6 +787,25 @@ JSValue *StringProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, con
     if (args.size() < 1)
       return jsNumber(0);
     return jsNumber(localeCompare(s, a0->toString(exec)));
+  case Trim:
+  case TrimRight:
+  case TrimLeft: {
+    const uint16_t* dataPtr = reinterpret_cast<uint16_t*>(s.rep()->data());
+
+    const int size = s.size();
+    int left = 0;
+    if (id != TrimRight)
+        while (left < size && CommonUnicode::isStrWhiteSpace(dataPtr[left]))
+            left++;
+
+    int right = size;
+    if (id != TrimLeft)
+        while (right > left && CommonUnicode::isStrWhiteSpace(dataPtr[right-1]))
+            right--;
+
+    result = jsString(s.substr(left, right-left));
+    break;
+  }
 #ifndef KJS_PURE_ECMA
   case Big:
     result = jsString("<big>" + s + "</big>");
