@@ -283,7 +283,7 @@ void AtticaProvider::accountBalanceLoaded(Attica::BaseJob* baseJob)
                     << content.downloadUrlDescription(pair.second).priceAmount() << " balance: " << item.balance();
         if (KMessageBox::questionYesNo(0,
                 i18nc("the price of a download item, parameter 1 is the currency, 2 is the price",
-                      "This items costs %1 %2.\nDo you want to buy it?",
+                      "This item costs %1 %2.\nDo you want to buy it?",
                       item.currency(), content.downloadUrlDescription(pair.second).priceAmount()
                 )) == KMessageBox::Yes) {
             ItemJob<DownloadItem>* job = m_provider.downloadLink(entry.uniqueId(), QString::number(pair.second));
