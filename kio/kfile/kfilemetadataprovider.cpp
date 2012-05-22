@@ -177,7 +177,7 @@ KFileMetaDataProvider::Private::Private(KFileMetaDataProvider* parent) :
     q(parent)
 {
 #ifndef KIO_NO_NEPOMUK
-    m_nepomukActivated = (Nepomuk::ResourceManager::instance()->init() == 0);
+    m_nepomukActivated = Nepomuk::ResourceManager::instance()->initialized();
 #endif
 }
 
