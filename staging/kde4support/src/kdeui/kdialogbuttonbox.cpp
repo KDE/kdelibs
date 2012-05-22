@@ -20,7 +20,6 @@
 
 #include "kdialogbuttonbox.h"
 
-#include <kglobalsettings.h>
 #include <kguiitem.h>
 #include <kpushbutton.h>
 #include <QList>
@@ -43,11 +42,11 @@ QPushButton *KDialogButtonBox::addButton(const QString & text, ButtonRole role, 
   return pb;
 }
 
-KPushButton *KDialogButtonBox::addButton(  const KGuiItem& guiitem, ButtonRole role, QObject *receiver,  const char *slot)
+KPushButton *KDialogButtonBox::addButton(const KGuiItem& guiitem, ButtonRole role, QObject *receiver,  const char *slot)
 {
   KPushButton *pb=new KPushButton(this);
   KGuiItem::assign(pb, guiitem);
-  QDialogButtonBox::addButton(static_cast<QAbstractButton*>(pb),role);
+  QDialogButtonBox::addButton(pb, role);
 
   if (receiver && slot)
     QObject::connect(pb, SIGNAL(clicked()), receiver, slot);

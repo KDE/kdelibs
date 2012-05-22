@@ -75,7 +75,6 @@ KDEUI_EXECUTABLE_TESTS(
   kdatetimewidgettest
   kdatewidgettest
   kdebugtest_gui
-  kdialogbuttonboxtest
   keditlistwidgettest
   kfontdialogtest
   kicondialogtest

@@ -13,3 +13,10 @@ ConstructorArgs=(parent,Qt::UpArrow)
 ToolTip=Fullfeatured edit box with buttons (KDE)
 Group=Views (KDE)
 
+[KDialogButtonBox]
+ToolTip=Button Box (KDE)
+WhatsThis=KDE's button box.
+IncludeFile=kdialogbuttonbox.h
+Group=Buttons (KDE)
+DomXML=<ui><widget class="KDialogButtonBox"><property name="standardButtons"><set>QDialogButtonBox::Ok|QDialogButtonBox::Cancel</set></property></widget></ui>
+

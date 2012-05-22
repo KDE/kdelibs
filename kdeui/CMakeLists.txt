@@ -221,7 +221,6 @@ set(kdeui_LIB_SRCS
  util/kpixmapsequencewidget.cpp
  widgets/kactionselector.cpp
  widgets/kanimatedbutton.cpp
- widgets/kdialogbuttonbox.cpp
  widgets/kbuttongroup.cpp
  widgets/kcharselect.cpp
  widgets/kcharselectdata.cpp
@@ -585,7 +584,6 @@ install( FILES
  widgets/kdatetimeedit.h
  widgets/kdatetimewidget.h
  widgets/kdatewidget.h
- widgets/kdialogbuttonbox.h
  widgets/keditlistwidget.h
  widgets/kfadewidgeteffect.h
  widgets/khelpmenu.h

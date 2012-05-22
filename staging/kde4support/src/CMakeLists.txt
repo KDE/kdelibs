@@ -24,6 +24,7 @@ set(libkde4support_SRCS
     kdeui/knumvalidator.cpp
     kdeui/karrowbutton.cpp
     kdeui/ksplashscreen.cpp
+    kdeui/kdialogbuttonbox.cpp
 )
 
 include_directories(
@@ -41,6 +42,9 @@ include_directories(
     ${kwidgets_BINARY_DIR}/src
     ${kwidgets_SOURCE_DIR}/src/icons # kiconloader
     ${kwidgets_SOURCE_DIR}/src/utils # kglobalsettings
+    ${kwidgets_SOURCE_DIR}/src/widgets # kpushbutton
+    ${kauth_BINARY_DIR}/src
+    ${kauth_SOURCE_DIR}/src # kpushbutton -> kauthaction
 )
 
 # Configure checks for network/ but also for netsupp.*
@@ -50,7 +54,7 @@ configure_file(config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-network
 add_library(kde4support ${LIBRARY_TYPE} ${libkde4support_SRCS})
 generate_export_header(kde4support)
 
-target_link_libraries(kde4support ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDBUS_LIBRARY} kdecore kcoreaddons kwidgets)
+target_link_libraries(kde4support ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDBUS_LIBRARY} kdecore kcoreaddons kwidgets kauth)
 set_target_properties(kde4support PROPERTIES VERSION ${ECM_VERSION_STRING} SOVERSION ${ECM_SOVERSION})
 
 install(TARGETS kde4support EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
@@ -76,6 +80,7 @@ install(FILES
     kdeui/knumvalidator.h
     kdeui/karrowbutton.h
     kdeui/ksplashscreen.h
+    kdeui/kdialogbuttonbox.h
     ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
