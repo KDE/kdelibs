@@ -23,6 +23,7 @@ set(libkde4support_SRCS
     kdeui/kicon.cpp
     kdeui/knumvalidator.cpp
     kdeui/karrowbutton.cpp
+    kdeui/ksplashscreen.cpp
 )
 
 include_directories(
@@ -39,6 +40,7 @@ include_directories(
     ${kconfig_SOURCE_DIR}/src/core
     ${kwidgets_BINARY_DIR}/src
     ${kwidgets_SOURCE_DIR}/src/icons # kiconloader
+    ${kwidgets_SOURCE_DIR}/src/utils # kglobalsettings
 )
 
 # Configure checks for network/ but also for netsupp.*
@@ -73,6 +75,7 @@ install(FILES
     kdeui/kicon.h
     kdeui/knumvalidator.h
     kdeui/karrowbutton.h
+    kdeui/ksplashscreen.h
     ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

@@ -135,7 +135,6 @@ set(kdeui_LIB_SRCS
  dialogs/kshortcutseditor.cpp
  dialogs/kshortcutschemeseditor.cpp
  dialogs/kshortcutsdialog.cpp
- dialogs/ksplashscreen.cpp
  dialogs/kswitchlanguagedialog_p.cpp
  dialogs/ktip.cpp
  findreplace/kfind.cpp
@@ -500,7 +499,6 @@ install( FILES
  dialogs/kpassworddialog.h
  dialogs/kpixmapregionselectordialog.h
  dialogs/kprogressdialog.h
- dialogs/ksplashscreen.h
  dialogs/kshortcutsdialog.h
  dialogs/kshortcutseditor.h
  dialogs/ktip.h
