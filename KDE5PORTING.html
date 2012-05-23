@@ -80,7 +80,7 @@ KDE 4.x when you want to port them to KDE Frameworks 5.<br>
 <li>kdecore has been split up into a number of independent libraries: libkarchive, libkauth, libkdbus, etc.</li>
 <li>KUrl has been deprecated in favour of QUrl. Warning, look at the KUrl documentation for proper porting.
 Do not just do a global search and replace, KUrl(QString) means "absolute local file or absolute url" while
-QUrl(QString) means "relative url or absolute url".
+QUrl(QString) means "relative url or absolute url". And KUrl::path() is not exactly the same as QUrl::path(), etc.
 <li>For the reason above, many signals with a KUrl have been replaced with a QUrl:
 <pre>
     KUrlRequester: urlSelected(const KUrl&amp;) &gt; urlSelected(const QUrl&amp;)

@@ -453,7 +453,14 @@ public:
    * @return The current decoded path. This does not include the query. Can
    *         be QString() if no path is set.
    *
-   * @deprecated Use QUrl::path() or QUrlPathInfo::path(flags)
+   * @deprecated Use QUrl::path() or QUrlPathInfo::path(flags). Warning,
+   * this returns an encoded path. To get a completely decoded path like in
+   * KDE4/Qt4, use QUrl::path(QUrl::FullyDecoded). This decodes %25 into %.
+   *
+   * If you only need path comparisons, or a path to adjust and give back
+   * to setPath() again, then QUrl::path() is fine.
+   * FullyDecoded is however necessary when decoding mailto: urls, or in
+   * the implementation of most kioslaves, which need the decoded path.
    */
   QString path( AdjustPathOption trailing = LeaveTrailingSlash ) const;
 
