@@ -383,6 +383,9 @@ endif(NOT KDE_NO_DEPRECATED)
 if(NOT WIN32)
     set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} util/kshareddatacache.cpp)
     set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+
+    set_source_files_properties(util/kshareddatacache.cpp
+        PROPERTIES COMPILE_FLAGS ${KDE4_ENABLE_EXCEPTIONS})
 else(NOT WIN32)
     set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} util/kshareddatacache_win.cpp)
     set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} io/kdirwatch_win.cpp)
@@ -394,8 +397,6 @@ endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 
 kde4_add_library(kdecore ${LIBRARY_TYPE} ${kdecore_LIB_SRCS})
 
-set_source_files_properties(util/kshareddatacache.cpp
-    PROPERTIES COMPILE_FLAGS ${KDE4_ENABLE_EXCEPTIONS})
 target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
 
 if(WINCE)
