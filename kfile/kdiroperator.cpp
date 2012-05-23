@@ -443,7 +443,7 @@ QDir::SortFlags KDirOperator::sorting() const
 
 bool KDirOperator::isRoot() const
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     if (url().isLocalFile()) {
         const QString path = url().toLocalFile();
         if (path.length() == 3)
@@ -1035,7 +1035,7 @@ void KDirOperator::setUrl(const QUrl& _newurl, bool clearforward)
         newurl = _newurl;
 
     newurl.adjustPath( KUrl::AddTrailingSlash );
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     QString pathstr = QDir::fromNativeSeparators(newurl.toLocalFile());
 #else
     QString pathstr = newurl.path();

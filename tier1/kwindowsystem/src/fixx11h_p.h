@@ -27,8 +27,9 @@ DEALINGS IN THE SOFTWARE.
 //#define   multiple times
 
 #include <QtCore/QtGlobal>
+#include <config-kwindowsystem.h>
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
 
 /* Usage:
 

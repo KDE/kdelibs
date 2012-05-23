@@ -29,7 +29,8 @@
 
 #include <kwindowsystem_export.h>
 #include <QWidget>
-#ifdef Q_WS_X11
+#include <config-kwindowsystem.h>
+#ifdef HAVE_X11
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>

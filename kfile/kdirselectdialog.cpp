@@ -270,7 +270,7 @@ void KDirSelectDialog::Private::slotProperties()
 
 KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
                                    QWidget *parent)
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     : KDialog( parent , Qt::WindowMinMaxButtonsHint),
 #else
     : KDialog( parent ),

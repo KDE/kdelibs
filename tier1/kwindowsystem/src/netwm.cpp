@@ -29,7 +29,8 @@
 #include "netwm_p.h"
 
 #include <QWidget>
-#ifdef Q_WS_X11 //FIXME
+#include <config-kwindowsystem.h>
+#ifdef HAVE_X11 //FIXME
 
 #include <qx11info_x11.h>
 

@@ -35,7 +35,7 @@ ASpellDict::ASpellDict( const QString& lang )
     /* For reference, please look at BR#87250         */
     aspell_config_replace( m_config, "encoding", "utf-8" );
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     QString aspell_data_dir();
     aspell_config_replace( m_config, "data-dir", aspell_data_dir().toLocal8Bit().data());
     aspell_config_replace( m_config, "dict-dir", aspell_data_dir().toLocal8Bit().data());

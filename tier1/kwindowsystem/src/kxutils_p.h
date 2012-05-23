@@ -23,8 +23,9 @@
 
 #include <QWidget>
 #include <QPixmap>
+#include <config-kwindowsystem.h>
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
 
 #include <kwindowsystem_export.h>
 
@@ -57,6 +58,6 @@ int timestampDiff( unsigned long time1, unsigned long time2 );
 
 } // namespace
 
-#endif // Q_WS_X11
+#endif // HAVE_X11
 
 #endif

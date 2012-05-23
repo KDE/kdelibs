@@ -56,7 +56,7 @@ public:
 KDEsuClient::KDEsuClient()
     :d(new KDEsuClientPrivate)
 {
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     QString display = QString::fromAscii(qgetenv("DISPLAY"));
     if (display.isEmpty())
     {
@@ -66,7 +66,7 @@ KDEsuClient::KDEsuClient()
 
     // strip the screen number from the display
     display.remove(QRegExp("\\.[0-9]+$"));
-#elif defined(Q_WS_QWS)
+#elif defined(QWS)
     QByteArray display("QWS");
 #else
     QByteArray display("NODISPLAY");

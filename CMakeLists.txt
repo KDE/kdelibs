@@ -115,14 +115,6 @@ if (APPLE)
    find_package(Carbon REQUIRED)
 endif (APPLE)
 
-if(UNIX AND Q_WS_X11)
-  #X11 Session Management (SM) is required
-  #X11_SM_FOUND is set in FindX11, which is required by KDE4Internal
-  if(NOT X11_SM_FOUND)
-    message(FATAL_ERROR "\nThe X11 Session Management (SM) development package could not be found.\nPlease install libSM.\n")
-  endif(NOT X11_SM_FOUND)
-endif(UNIX AND Q_WS_X11)
-
 #required features:
 # Perl is used e.g. in khtml, kjs, kjsembed and others
 find_package(Perl)
@@ -159,6 +151,12 @@ if(X11_FOUND)
   if(NOT HAVE_XSYNC AND NOT HAVE_XSCREENSAVER)
     message(FATAL_ERROR "\nNeither the XSync (libXext) nor XScreensaver (libXss) development package was found.\nPlease install one of them (XSync is recommended)\n")
   endif(NOT HAVE_XSYNC AND NOT HAVE_XSCREENSAVER)
+
+  #X11 Session Management (SM) is required
+  #X11_SM_FOUND is set in FindX11, which is required by KDE4Internal
+  if(UNIX AND NOT X11_SM_FOUND)
+    message(FATAL_ERROR "\nThe X11 Session Management (SM) development package could not be found.\nPlease install libSM.\n")
+  endif(UNIX AND NOT X11_SM_FOUND)
 endif(X11_FOUND)
 
 

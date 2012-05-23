@@ -31,7 +31,7 @@
 
 #include "k3socketdevice.h"
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #include <winsock2.h>
 
 void KNetwork_initSocket()
@@ -72,7 +72,7 @@ KSocketBase::KSocketBase()
   d->socketError = 0;
   d->device = 0L;
   d->capabilities = 0;
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
   KNetwork_initSocket();
 #endif 
 }

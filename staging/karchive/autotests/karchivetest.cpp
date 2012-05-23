@@ -376,7 +376,7 @@ void KArchiveTest::testReadTar() // testCreateTarGz must have been run first.
 
     QFileInfo localFileData("test3");
 
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     QCOMPARE( listing.count(), 15 );
 #else
     QCOMPARE( listing.count(), 14 );
@@ -714,7 +714,7 @@ void KArchiveTest::testReadZip()
     // ZIP has no support for per-file user/group, so omit them from the listing
     const QStringList listing = recursiveListEntries( dir, "", 0 );
 
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     QCOMPARE( listing.count(), 16 );
 #else
     QCOMPARE( listing.count(), 15 );
@@ -940,7 +940,7 @@ void KArchiveTest::testRead7Zip() // testCreate7Zip must have been run first.
 
     QFileInfo localFileData("test3");
 
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     QCOMPARE( listing.count(), 15 );
 #else
     QCOMPARE( listing.count(), 14 );

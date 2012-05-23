@@ -13,6 +13,6 @@ void _k__get_dummy_used()
     foobar();
 }
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 __declspec(dllexport) int __dummy_function() { return 5; }
 #endif

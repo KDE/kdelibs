@@ -27,6 +27,7 @@
 #include <QAbstractEventDispatcher>
 
 #include "globalstaticdef_p.h"
+#include <config-kwindowsystem.h>
 
 // Our global event-filter which will pass events to all registered
 // widget filters.
@@ -38,17 +39,17 @@ bool _k_eventFilter(void *message);
 class KEventHackWidget : public QWidget
 {
 public:
-#if defined(Q_WS_X11)
+#if defined(HAVE_X11)
     bool publicX11Event(XEvent *e)
     {
         return x11Event(e);
     }
-#elif defined(Q_WS_MAC)
+#elif defined(Q_OS_MAC)
     bool publicMacEvent(EventHandlerCallRef caller, EventRef event)
     {
         return macEvent(caller, event);
     }
-#elif defined(Q_WS_WIN)
+#elif defined(Q_OS_WIN)
     bool publicWinEvent(MSG *message, long *result)
     {
         return winEvent(message, result);
@@ -95,7 +96,7 @@ bool _k_eventFilter(void *message)
 bool KSystemEventFilterPrivate::filterEvent(void *message)
 {
     if (!m_filters.isEmpty()) {
-#if defined(Q_WS_X11)
+#if defined(HAVE_X11)
         XEvent *xevt = static_cast<XEvent*>(message);
         // pass the event as long as it's not consumed
         Q_FOREACH (const QWeakPointer<QWidget> &wp, m_filters) {
@@ -105,7 +106,7 @@ bool KSystemEventFilterPrivate::filterEvent(void *message)
                 }
             }
         }
-#elif defined(Q_WS_MAC)
+#elif defined(Q_OS_MAC)
         // FIXME: untested
 
 /*        NSEvent *nsevt = static_cast<NSEvent*>(message);
@@ -117,7 +118,7 @@ bool KSystemEventFilterPrivate::filterEvent(void *message)
                 }
             }
         }*/
-#elif defined(Q_WS_WIN)
+#elif defined(Q_OS_WIN)
         // FIXME: untested
         
 /*        MSG *msg = static_cast<MSG*>(message);

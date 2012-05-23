@@ -55,8 +55,9 @@
 #include <ktoolinvocation.h>
 #include <kde_file.h>
 #include "klauncher_iface.h"
+#include "config.h"
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
 #include <qx11info_x11.h>
 #include <X11/Xlib.h>
 #include <fixx11h.h>
@@ -817,7 +818,7 @@ public:
           if (bCheckUpdates)
             (void) new KUpdateD; // Watch for updates
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
           XEvent e;
           e.xclient.type = ClientMessage;
           e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
@@ -830,7 +831,7 @@ public:
 
           runKonfUpdate(); // Run it once.
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
           e.xclient.type = ClientMessage;
           e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
           e.xclient.display = QX11Info::display();

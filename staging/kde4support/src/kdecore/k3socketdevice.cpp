@@ -53,7 +53,7 @@
 # endif
 #endif
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #include <windows.h>
 #endif
 
@@ -141,7 +141,7 @@ bool KSocketDevice::setSocketOptions(int opts)
   if (m_sockfd == -1)
     return true;		// flags are stored
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
   u_long iMode = ((opts & Blocking) == Blocking) ? 0 : 1;
   // disable non blocking
   if (ioctlsocket(m_sockfd, FIONBIO, &iMode) == SOCKET_ERROR)
@@ -237,7 +237,7 @@ void KSocketDevice::close()
       delete d->exception;
 
       d->input = d->output = d->exception = 0L;
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
       ::closesocket(m_sockfd);
 #else
       d->local.setFamily(AF_UNSPEC);
@@ -307,7 +307,7 @@ bool KSocketDevice::bind(const KResolverEntry& address)
 	setError(AlreadyBound);
       else 
        {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
          qDebug(" bind failed: %s ",address.address().toString().toLatin1().constData());
 #endif
          // assume the address is the cause
@@ -471,7 +471,7 @@ static int do_read_common(int sockfd, char *data, qint64 maxlen, KSocketAddress*
 
   if (retval == -1)
     {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
      if (WSAGetLastError() == WSAEWOULDBLOCK )
 	return KSocketDevice::WouldBlock;
 	   else 
@@ -544,7 +544,7 @@ qint64 KSocketDevice::writeData(const char *data, qint64 len, const KSocketAddre
   if (to != 0L)
     retval = ::sendto(m_sockfd, data, len, 0, to->address(), to->length());
   else
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     retval = ::send(m_sockfd, data, len, 0);
 #else
     retval = ::write(m_sockfd, data, len);

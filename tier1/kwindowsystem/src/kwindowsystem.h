@@ -29,6 +29,7 @@
 #include <QWidgetList> //For WId
 #include <netwm_def.h>
 #include <kwindowinfo.h>
+#include <config-kwindowsystem.h>
 
 class KWindowSystemPrivate;
 
@@ -224,7 +225,7 @@ public:
      * that belongs to another application.
      */
     static void setMainWindow( QWidget* subwindow, WId mainwindow );
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     /**
      * Returns the WM_TRANSIENT_FOR property for the given window, i.e. the mainwindow
      * for this window.
@@ -502,7 +503,7 @@ public:
      */
     static void setBlockingCompositing( WId window, bool active );
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     /**
      * @internal
      * Returns true if viewports are mapped to virtual desktops.

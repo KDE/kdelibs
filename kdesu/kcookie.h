@@ -12,6 +12,7 @@
 #define __KCookie_h_Included__
 
 #include <QtCore/QByteRef>
+#include <config.h>
 
 
 namespace KDESu {
@@ -35,7 +36,7 @@ public:
      */
     QByteArray display() const;
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     /**
      * Returns the X11 magic cookie, if available.
      */

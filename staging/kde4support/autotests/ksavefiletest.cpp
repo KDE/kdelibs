@@ -137,7 +137,7 @@ void KSaveFileTest::test_ksavefile()
         QVERIFY( QFile::exists(targetFile) );
         QFileInfo fi ( targetFile );
 
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
         // Windows: qt_ntfs_permission_lookup is not set by default in
         // qfsfileengine_win.cpp, could change in future Qt versions.
         QVERIFY( fi.permission( QFile::ExeUser ) );
@@ -154,7 +154,7 @@ void KSaveFileTest::test_ksavefile()
 
         fi.refresh();
         QVERIFY( fi.size() != 0 );
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
         QVERIFY( fi.permission( QFile::ExeUser ) );
 #endif
 

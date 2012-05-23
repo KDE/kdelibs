@@ -359,7 +359,7 @@ KFileWidget::KFileWidget( const QUrl& _startDir, QWidget *parent )
 
     KUrl u;
     KUrlComboBox *pathCombo = d->urlNavigator->editor();
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #if 0
     foreach( const QFileInfo &drive,QFSFileEngine::drives() )
     {

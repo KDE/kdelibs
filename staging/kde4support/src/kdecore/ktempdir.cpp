@@ -48,7 +48,7 @@
 #include <QCoreApplication>
 #include <QFileInfo>
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #include <QtCore/QVarLengthArray>
 #include <windows.h>
 #include <shellapi.h>
@@ -96,7 +96,7 @@ bool KTempDir::create(const QString &directoryPrefix, int mode)
 {
    (void) KRandom::random();
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
    const QString nme = directoryPrefix + QLatin1String("XXXXXX");
    const QString realName = mkdtemp_QString(nme);
    if(realName.isEmpty())
@@ -201,7 +201,7 @@ void KTempDir::unlink()
     d->exists=false;
 }
 
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
 // Auxiliary recursive function for removeDirs
 static bool rmtree(const QString& name)
 {
@@ -221,7 +221,7 @@ bool KTempDir::removeDir( const QString& path )
     if ( !QFile::exists( path ) )
         return true; // The goal is that there is no directory
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     QVarLengthArray<WCHAR, MAX_PATH> name;
     name.resize( path.length() + 2 ); // double null terminated!
     memcpy( name.data(), path.utf16(), path.length() * sizeof(WCHAR) );

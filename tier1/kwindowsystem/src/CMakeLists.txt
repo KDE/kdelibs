@@ -1,6 +1,12 @@
 
 find_package(X11)
 
+if (X11_FOUND)
+   set (HAVE_X11 1)
+else ()
+   set (HAVE_X11 0)
+endif ()
+
 if (X11_Xfixes_FOUND)
    set (HAVE_XFIXES 1)
 else ()
@@ -29,24 +35,24 @@ if (QT5_BUILD)
    set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_qpa.cpp)
 endif()
 
-if (Q_WS_X11)
+if (HAVE_X11)
    set(platformLinkLibraries ${X11_LIBRARIES} ${X11_Xfixes_LIB} ${X11_Xrender_LIB})
    set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_x11.cpp
                                                 kwindowinfo_x11.cpp
                                                 netwm.cpp )
 endif ()
 
-if (Q_WS_MAC)
+if (Q_OS_MAC)
    set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_mac.cpp
                                                 kwindowinfo_mac.cpp)
 endif ()
 
-if (Q_WS_WIN)
+if (Q_OS_WIN)
    set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_win.cpp
                                                 kwindowinfo_win.cpp)
 endif ()
 
-if (Q_WS_QWS)
+if (QWS)
    set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_qws.cpp)
 endif ()
 
