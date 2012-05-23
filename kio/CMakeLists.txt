@@ -420,6 +420,7 @@ install(  FILES
   kio/skipdialog.h
   kio/udsentry.h
   kssl/sslui.h
+  ${CMAKE_CURRENT_BINARY_DIR}/kio_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
 
 if( NOT WIN32 )
@@ -493,7 +494,6 @@ install( FILES
   bookmarks/kbookmarkdombuilder.h
   bookmarks/konqbookmarkmenu.h
   bookmarks/kbookmarkdialog.h
-  ${CMAKE_CURRENT_BINARY_DIR}/kio_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
 if(NOT KDE_NO_DEPRECATED)
