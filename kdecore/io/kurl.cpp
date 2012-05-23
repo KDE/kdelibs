@@ -769,11 +769,10 @@ void KUrl::setEncodedPathAndQuery( const QString& _txt )
 
 QString KUrl::path( AdjustPathOption trailing ) const
 {
-  QString decodedPath = QUrl::path();
-
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-  // In Qt5, the path is encoded. Decode it, to preserve behavior compat.
-  decodedPath = QString::fromUtf8(QByteArray::fromPercentEncoding(decodedPath.toUtf8()));
+  const QString decodedPath = QUrl::path(QUrl::FullyDecoded);
+#else
+  const QString decodedPath = QUrl::path();
 #endif
 
 #ifdef Q_OS_WIN
@@ -1690,7 +1689,7 @@ void KUrl::setPath( const QString& _path )
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     QUrl::setPath( path );
 #else
-    QUrl::setPath(QString::fromLatin1(path.toUtf8().toPercentEncoding("!$&'()*+,;=:@/")));
+    QUrl::setPath(path, QUrl::DecodedMode);
 #endif
 }
 

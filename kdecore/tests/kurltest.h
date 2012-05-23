@@ -57,6 +57,7 @@ private Q_SLOTS:
     void testSetEncodedFragment();
     void testSubURL();
     void testComparisons();
+    void testStreaming_data();
     void testStreaming();
     void testBrokenStuff();
     void testMoreBrokenStuff();

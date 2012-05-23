@@ -32,6 +32,7 @@ QTEST_MAIN( KUrlTest )
 #include <QTextCodec>
 #include <QDataStream>
 #include <QMap>
+#include <QDebug>
 
 //QCOMPARE cannot be used to strictly check for empty or null QString as it treats QString("") == QString()
 #define QSTREMPTY(_str) QVERIFY(!_str.isNull() && _str.isEmpty())
@@ -673,8 +674,10 @@ void KUrlTest::testSetFileName() // and addPath
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
   QCOMPARE( qurl2.path(), QString::fromLatin1("/specials/Print To File (PDF%2FAcrobat)") );
 #else
-  // TODO test here the missing method for getting a decoded path
-  QCOMPARE( qurl2.toString(), QString::fromLatin1("print:/specials/Print To File (PDF%252FAcrobat)") );
+  // Note the behavior change: Qt4's path() is now path(QUrl::FullyDecoded)
+  QCOMPARE(qurl2.path(), QString::fromLatin1("/specials/Print To File (PDF%252FAcrobat)"));
+  QCOMPARE(qurl2.path(QUrl::FullyDecoded), QString::fromLatin1("/specials/Print To File (PDF%2FAcrobat)"));
+  QCOMPARE(qurl2.toString(), QString::fromLatin1("print:/specials/Print To File (PDF%252FAcrobat)"));
 #endif
   QCOMPARE( qurl2.toEncoded(), QByteArray("print:/specials/Print%20To%20File%20(PDF%252FAcrobat)") );
 
@@ -949,7 +952,7 @@ void KUrlTest::testAdjustPath()
 
     {
     KUrl remote2("remote://");
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) // bug fixed in 5.0: empty hostname stays
     QCOMPARE( remote2.url(), QString("remote://") );
     QCOMPARE( remote2.url(KUrl::RemoveTrailingSlash ), QString("remote://") );
     QCOMPARE( QUrl(remote2).toString(QUrl::StripTrailingSlash), QString("remote://") );
@@ -1459,46 +1462,35 @@ void KUrlTest::testComparisons()
   QVERIFY( ftpUrl.isParentOf( KUrl("ftp://ftp/host/subdir/subsub") ) );
 }
 
+void KUrlTest::testStreaming_data()
+{
+    QTest::addColumn<QString>("urlStr");
+
+    QTest::newRow("origURL") << "http://www.website.com/directory/?#ref";
+    QTest::newRow("urlWithPassAndNoUser") << "ftp://:password@ftp.kde.org/path";
+    QTest::newRow("accentuated") << QString::fromUtf8("trash:/été");
+    QTest::newRow("empty") << "";
+    QVERIFY(!KUrl("ptal://mlc:usb").isValid());
+    QTest::newRow("invalid") << "ptal://mlc:usb";
+    QTest::newRow("ipv6") << "http://[::ffff:129.144.52.38]:81?query";
+}
+
 void KUrlTest::testStreaming()
 {
-  // Streaming operators
-  KUrl origURL( "http://www.website.com/directory/?#ref" );
-  KUrl urlWithPassAndNoUser("ftp://:password@ftp.kde.org/path");
-  KUrl accentuated(QString::fromUtf8("trash:/été"));
-  KUrl empty( "" );
-  KUrl invalid( "ptal://mlc:usb" );
-  QVERIFY( !invalid.isValid() );
-  KUrl waba1( "http://[::ffff:129.144.52.38]:81?query" );
-  QByteArray buffer;
-  {
-      QDataStream stream( &buffer, QIODevice::WriteOnly );
-      stream << origURL
-             << urlWithPassAndNoUser
-             << accentuated
-             << empty
-             << invalid
-             << waba1; // the IPv6 one
-  }
-  {
-      QDataStream stream( buffer );
-      KUrl restoredURL;
-      stream >> restoredURL; // streaming valid url
-      QCOMPARE( restoredURL.url(), origURL.url() );
-      stream >> restoredURL; // streaming url with pass an no user
-      QCOMPARE( restoredURL.url(), urlWithPassAndNoUser.url() );
-      stream >> restoredURL; // streaming valid url with accents
-      QCOMPARE( restoredURL.url(), accentuated.url() );
-      stream >> restoredURL; // streaming empty url
-      QVERIFY( !restoredURL.isValid() );
-      QVERIFY( restoredURL.isEmpty() );
-      QCOMPARE( restoredURL.url(), QString("") );
-      stream >> restoredURL; // streaming invalid url
-      QVERIFY( !restoredURL.isValid() );
-      // note that this doesn't say what url() returns, that's for testBrokenStuff
-      QCOMPARE( restoredURL.url(), invalid.url() );
-      stream >> restoredURL; // streaming ipv6 url with query
-      QCOMPARE( restoredURL.url(), waba1.url() );
-  }
+    QFETCH(QString, urlStr);
+    KUrl url(urlStr);
+
+    QByteArray buffer;
+    QDataStream writeStream( &buffer, QIODevice::WriteOnly );
+    writeStream << url;
+
+    QDataStream stream( buffer );
+    KUrl restored;
+    stream >> restored; // streaming valid url
+    QCOMPARE(restored.isValid(), url.isValid());
+    if (url.isValid()) {
+        QCOMPARE(restored.url(), url.url());
+    }
 }
 
 void KUrlTest::testBrokenStuff()
@@ -1755,6 +1747,7 @@ void KUrlTest::testMailto()
       QCOMPARE(mailtoUrl.toString(), QString("mailto:a%b"));
 #else
       QCOMPARE(mailtoUrl.path(), QString("a%25b")); // The path is encoded in Qt5...
+      QCOMPARE(mailtoUrl.path(QUrl::FullyDecoded), QString("a%b"));
       QCOMPARE(mailtoUrl.toString(), QString("mailto:a%25b"));
 #endif
       QCOMPARE(QString::fromLatin1(mailtoUrl.toEncoded()), QString::fromLatin1("mailto:a%25b"));
