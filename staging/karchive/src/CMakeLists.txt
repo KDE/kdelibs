@@ -42,11 +42,11 @@ generate_export_header(karchive)
 
 target_link_libraries(karchive ${QT_QTCORE_LIBRARY} ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY} ${QtMimeTypes_LIBRARY} kdeqt5staging)
 
-set_target_properties(karchive PROPERTIES VERSION  ${GENERIC_LIB_VERSION}
-                                          SOVERSION ${GENERIC_LIB_SOVERSION}
+set_target_properties(karchive PROPERTIES VERSION   ${ECM_VERSION_STRING}
+                                          SOVERSION ${ECM_SOVERSION}
 )
 
-install(TARGETS karchive EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS karchive EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install( FILES
   karchive.h
