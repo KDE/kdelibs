@@ -641,13 +641,15 @@ void HTMLFrameSetElementImpl::attach()
         node = static_cast<HTMLElementImpl*>(node->parentNode());
     }
 
+    RenderStyle* _style = document()->styleSelector()->styleForElement(this);
+    _style->ref();
     // ignore display: none
     if ( parentNode()->renderer() && parentNode()->renderer()->childAllowed() ) {
-        RenderStyle* _style = document()->styleSelector()->styleForElement(this);
         m_render = new (document()->renderArena()) RenderFrameSet(this);
         m_render->setStyle(_style);
         parentNode()->renderer()->addChild(m_render, nextRenderer());
     }
+    _style->deref();
 
     NodeBaseImpl::attach();
 }
