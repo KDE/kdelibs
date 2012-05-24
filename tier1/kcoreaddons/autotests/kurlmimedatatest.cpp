@@ -117,7 +117,8 @@ void KUrlMimeDataTest::testMostLocalUrlList()
     QVERIFY(mimeData->hasUrls());
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     QVERIFY(mimeData->hasText());
-    QVERIFY(mimeData->hasFormat(QLatin1String("text/plain")));
+    // The support for urls is done in hasText, a direct call to hasFormat will say false.
+    //QVERIFY(mimeData->hasFormat(QLatin1String("text/plain")));
 #endif
 
     // urlsFromMimeData decodes the real "kde" urls by default

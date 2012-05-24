@@ -317,7 +317,7 @@ void KHTMLPartBrowserExtension::updateEditActions()
     // ### duplicated from KonqMainWindow::slotClipboardDataChanged
 #ifndef QT_NO_MIMECLIPBOARD // Handle minimalized versions of Qt Embedded
     const QMimeData *data = QApplication::clipboard()->mimeData();
-    enableAction( "paste", data->hasFormat( "text/plain" ) );
+    enableAction("paste", data->hasText());
 #else
     QString data=QApplication::clipboard()->text();
     enableAction( "paste", data.contains("://"));
