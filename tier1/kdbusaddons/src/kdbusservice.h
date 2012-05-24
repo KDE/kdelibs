@@ -52,6 +52,18 @@ class KDBusServicePrivate;
  * via DBus, which could be a problem for other apps or scripts which start the
  * application in order to talk DBus to it immediately.
  *
+ * Example usage:
+ *
+ * <code>
+     QApplication app(argc, argv);
+     app.setApplicationName("kuiserver");
+     app.setOrganizationDomain("kde.org");
+     // Create your dbus objects here
+     // ...
+     KDBusService service(KDBusService::Unique);
+     return app.exec();
+ * </code>
+ *
  * @since 5.0
  */
 class KDBUSADDONS_EXPORT KDBusService : public QObject
@@ -71,6 +83,11 @@ public:
 
     /**
      * Constructor. Registers the current process to DBus, using the given options.
+     * The DBus service name is determined from the organization domain (reversed)
+     * and the application name of the QApplication instance. For instance:
+     * app.setApplicationName("kuiserver");
+     * app.setOrganizationDomain("kde.org");
+     * will make KDBusService register as org.kde.kuiserver.
      */
     explicit KDBusService(StartupOptions options = Multiple, QObject *parent = 0);
 
