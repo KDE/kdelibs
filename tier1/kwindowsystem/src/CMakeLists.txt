@@ -1,7 +1,7 @@
 
 find_package(X11)
 
-if (X11_FOUND)
+if (X11_FOUND AND NOT QT5_BUILD) # Disabled for now with Qt5, re-enable once QX11Info exists again
    set (HAVE_X11 1)
 else ()
    set (HAVE_X11 0)
