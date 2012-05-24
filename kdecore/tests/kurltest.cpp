@@ -1373,16 +1373,36 @@ void KUrlTest::testSetUser()
   KUrl emptyUserTest1( "http://www.foobar.com/");
   QVERIFY( emptyUserTest1.user().isEmpty() );
   QVERIFY( emptyUserTest1.user().isNull() ); // Expected result. This was fixed in Qt-4.4
+
   KUrl emptyUserTest2( "http://www.foobar.com/");
   emptyUserTest2.setUser( "" );
   //QVERIFY( emptyUserTest2.user().isNull() );
-  QCOMPARE( emptyUserTest1==emptyUserTest2?"TRUE":"FALSE","TRUE" );
-  emptyUserTest2.setPass( "" );
-  QCOMPARE( emptyUserTest1==emptyUserTest2?"TRUE":"FALSE","TRUE" );
-  emptyUserTest2.setUser( "foo" );
-  QCOMPARE( emptyUserTest2.user(), QString::fromLatin1( "foo" ) );
-  emptyUserTest2.setUser( QString() );
-  QCOMPARE( emptyUserTest1==emptyUserTest2, true );
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+  QVERIFY(emptyUserTest1 == emptyUserTest2);
+#else
+  // Qt 5 allows a "set but empty" username, as per the RFC.
+  QCOMPARE(emptyUserTest2.url(), QString("http://@www.foobar.com/"));
+  QVERIFY(emptyUserTest1 != emptyUserTest2);
+
+  // Parsing back:
+  QUrl u("http://@kde.org/");
+  QVERIFY(u.userName().isEmpty());
+  QVERIFY(!u.userName().isNull());
+  QVERIFY(u.password().isNull());
+#endif
+  emptyUserTest2.setUser("foo");
+  QCOMPARE(emptyUserTest2.user(), QString::fromLatin1("foo"));
+  emptyUserTest2.setUser(QString());
+  QVERIFY(emptyUserTest1 == emptyUserTest2);
+
+  KUrl emptyUserTest3( "http://www.foobar.com/");
+  emptyUserTest3.setPass( "" );
+  QCOMPARE(emptyUserTest3.url(), QString("http://@www.foobar.com/"));
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+  QVERIFY(emptyUserTest1 == emptyUserTest3);
+#else
+  QVERIFY(emptyUserTest1 != emptyUserTest3);
+#endif
 
   KUrl uga("ftp://ftp.kde.org");
   uga.setUser("foo@bar");
