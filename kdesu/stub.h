@@ -17,7 +17,6 @@
 #include "process.h"
 
 #include <kdesu/kdesu_export.h>
-#include <config.h>
 
 namespace KDESu {
     
@@ -81,7 +80,7 @@ protected:
      * desired. By default, it returns the value returned by KCookie.
      */
     virtual QByteArray display();
-#ifdef HAVE_X11
+#ifdef Q_WS_X11
     /**
      * See display.
      */
