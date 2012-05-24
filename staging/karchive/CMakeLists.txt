@@ -2,15 +2,25 @@ cmake_minimum_required(VERSION 2.8.8)
 
 project(karchive)
 
-find_package(extra-cmake-modules 0.0.2 REQUIRED)
+find_package(ECM 0.0.4 REQUIRED NO_MODULE)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${EXTRA_CMAKE_MODULES_MODULE_PATH})
+# hack: find_package(KF5) needs the FPHSA.cmake from cmake 2.8.8, but there is an older
+#       one still in kdelibs/cmake/modules/.
+#       OTOH some parts of karchive still use stuff from kdelibs/cmake/modules/, so we need
+#       this dir too.
+#       So remove it for find_package(KF5), and restore it afterwards again.
+set(_CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 include(ECMVersion)
 
 # -- Maintained by scripty
 ecm_version(5 0 0)
 # --
+
+find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${_CMAKE_MODULE_PATH})
 
 include(ECMQtFramework)
 
@@ -32,4 +42,3 @@ include_directories(
 add_subdirectory(src)
 add_subdirectory(autotests)
 add_subdirectory(tests)
-
