@@ -1,6 +1,3 @@
-
-set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
-
 include_directories( ${KDE4_KDEUI_INCLUDES} )
 
 # QtTest needs this in order to include the gui stuff.
