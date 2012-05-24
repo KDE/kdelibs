@@ -4,9 +4,9 @@ configure_file(config-compression.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-com
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 
 if (NOT QT5_BUILD)
-    include_directories(
-        ${QtMimeTypes_SOURCE_DIR}/include/QtMimeTypes
-    )
+   include_directories(
+      ${QtMimeTypes_SOURCE_DIR}/include/QtMimeTypes
+   )
 endif()
 
 add_definitions(-DQT_NO_CAST_FROM_ASCII)
@@ -15,26 +15,26 @@ if(BZIP2_FOUND)
    include_directories(${BZIP2_INCLUDE_DIR})
    set(karchive_OPTIONAL_SRCS ${karchive_OPTIONAL_SRCS} kbzip2filter.cpp )
    set(karchive_OPTIONAL_LIBS ${karchive_OPTIONAL_LIBS} ${BZIP2_LIBRARIES})
-endif(BZIP2_FOUND)
+endif()
 
 if(LIBLZMA_FOUND)
    include_directories(${LIBLZMA_INCLUDE_DIRS})
    set(karchive_OPTIONAL_SRCS ${karchive_OPTIONAL_SRCS} kxzfilter.cpp k7zip.cpp )
    set(karchive_OPTIONAL_LIBS ${karchive_OPTIONAL_LIBS} ${LIBLZMA_LIBRARIES})
-endif(LIBLZMA_FOUND)
+endif()
 
 
 set(karchive_SRCS
-  karchive.cpp
-  kar.cpp
-  kcompressiondevice.cpp
-  kfilterbase.cpp
-  kfilterdev.cpp
-  kgzipfilter.cpp
-  klimitediodevice.cpp
-  knonefilter.cpp
-  ktar.cpp
-  kzip.cpp
+   karchive.cpp
+   kar.cpp
+   kcompressiondevice.cpp
+   kfilterbase.cpp
+   kfilterdev.cpp
+   kgzipfilter.cpp
+   klimitediodevice.cpp
+   knonefilter.cpp
+   ktar.cpp
+   kzip.cpp
 )
 
 add_library(karchive ${LIBRARY_TYPE} ${karchive_SRCS} ${karchive_OPTIONAL_SRCS})
@@ -63,9 +63,7 @@ install( FILES
 
 
 if(LIBLZMA_FOUND)
-   install( FILES
-   k7zip.h
-
-   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
-)
-endif(LIBLZMA_FOUND)
+   install( FILES k7zip.h
+            DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
+   )
+endif()

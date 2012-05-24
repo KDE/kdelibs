@@ -1,6 +1,3 @@
-enable_testing()
-set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
-
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 include_directories(
@@ -11,24 +8,24 @@ include_directories(
 
 include(ECMMarkAsTest)
 
-MACRO(KARCHIVE_EXECUTABLE_TESTS)
-       FOREACH(_testname ${ARGN})
-               add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
-               target_link_libraries(${_testname} karchive ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} ${inqt5_LIBRARY})
-               if(WINCE)
-                target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
-               endif(WINCE)
-               ecm_mark_as_test(${_testname})
-       ENDFOREACH(_testname)
-ENDMACRO(KARCHIVE_EXECUTABLE_TESTS)
+macro(KARCHIVE_EXECUTABLE_TESTS)
+   foreach(_testname ${ARGN})
+      add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
+      target_link_libraries(${_testname} karchive ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY} ${inqt5_LIBRARY})
+      if(WINCE)
+         target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
+      endif()
+      ecm_mark_as_test(${_testname})
+   endforeach(_testname)
+endmacro(KARCHIVE_EXECUTABLE_TESTS)
 
-KARCHIVE_EXECUTABLE_TESTS(
+karchive_executable_tests(
   ktartest
   kziptest
 )
 
-if(LIBLZMA_FOUND)
-        KARCHIVE_EXECUTABLE_TESTS(
-          k7ziptest
-        )
+if(liblzma_found)
+   karchive_executable_tests(
+      k7ziptest
+   )
 endif()

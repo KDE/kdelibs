@@ -1,6 +1,3 @@
-enable_testing()
-set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
-
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 include_directories(
@@ -11,21 +8,21 @@ include_directories(
 
 include(ECMMarkAsTest)
 
-MACRO(KARCHIVE_UNIT_TESTS)
-       FOREACH(_testname ${ARGN})
-               add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
-               add_test(karchive-${_testname} ${_testname})
-               # TODO: QT5 Port to QFINDTESTDATA
-               set_target_properties(${_testname} PROPERTIES COMPILE_FLAGS -DKDESRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}/\\"")
-               target_link_libraries(${_testname} karchive ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} ${inqt5_LIBRARY})
-               if(WINCE)
-                target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
-               endif(WINCE)
-               ecm_mark_as_test(${_testname})
-       ENDFOREACH(_testname)
-ENDMACRO(KARCHIVE_UNIT_TESTS)
+macro(KARCHIVE_UNIT_TESTS)
+   foreach(_testname ${ARGN})
+      add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
+      add_test(karchive-${_testname} ${_testname})
+      # TODO: QT5 Port to QFINDTESTDATA
+      set_target_properties(${_testname} PROPERTIES COMPILE_FLAGS -DKDESRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}/\\"")
+      target_link_libraries(${_testname} karchive ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} ${inqt5_LIBRARY})
+      if(WINCE)
+         target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
+      endif()
+      ecm_mark_as_test(${_testname})
+   endforeach(_testname)
+endmacro(KARCHIVE_UNIT_TESTS)
 
-KARCHIVE_UNIT_TESTS(
+karchive_unit_tests(
   karchivetest
 )
 
@@ -41,7 +38,8 @@ target_link_libraries(klimitediodevicetest ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBR
 # (only par of kio_http and kmultipart)
 set(kfiltertest_SRCS kfiltertest.cpp ${CMAKE_SOURCE_DIR}/kio/httpfilter/httpfilter.cc)
 include_directories( ${CMAKE_SOURCE_DIR}/kio/httpfilter )
+
 add_executable(kfiltertest ${kfiltertest_SRCS})
+target_link_libraries(kfiltertest ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} karchive ${inqt5_LIBRARY} ${ZLIB_LIBRARIES})
+
 add_test(karchive-kfiltertest kfiltertest)
-target_link_libraries(kfiltertest ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} karchive ${inqt5_LIBRARY})
-target_link_libraries(kfiltertest ${ZLIB_LIBRARIES})
