@@ -33,7 +33,6 @@
 #include <ksslsettings.h>
 #include <kmessagebox.h>
 #include <klocalizedstring.h>
-#include <ktoolinvocation.h>
 #include <network/ktcpsocket.h>
 
 #include <QtCore/QDataStream>
@@ -711,9 +710,9 @@ void TCPSlaveBase::selectClientCertificate()
 
         if (certs.isEmpty()) return;  // we had nothing else, and prompt failed
 
-        if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kio.uiserver")) {
-            KToolInvocation::startServiceByDesktopPath("kuiserver.desktop",
-                    QStringList());
+        QDBusConnectionInterface* bus = QDBusConnection::sessionBus().interface();
+        if (!bus->isServiceRegistered("org.kde.kio.uiserver")) {
+            bus->startService("org.kde.kuiserver");
         }
 
         QDBusInterface uis("org.kde.kio.uiserver", "/UIServer", "org.kde.KIO.UIServer");

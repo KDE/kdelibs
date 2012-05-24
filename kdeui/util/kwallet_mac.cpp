@@ -27,7 +27,6 @@
 #include <QApplication>
 #include <QtCore/QPointer>
 #include <QWidget>
-#include <ktoolinvocation.h>
 
 #include <kglobal.h>
 #include <kcomponentdata.h>
@@ -642,10 +641,10 @@ void Wallet::walletAsyncOpened(int tId, int handle) {
     if (d->transactionId != tId || d->handle != -1) {
         return;
     }
-    
+
     // disconnect the async signal
     disconnect(this, SLOT(walletAsyncOpened(int,int)));
-    
+
     d->handle = handle;
     emit walletOpened(handle > 0);
 #endif

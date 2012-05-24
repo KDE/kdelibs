@@ -19,8 +19,6 @@
 */
 
 #include "ktextedit.h"
-#include <ktoolinvocation.h>
-#include <kdebug.h>
 
 #include <QApplication>
 #include <QClipboard>
@@ -534,12 +532,12 @@ QMenu *KTextEdit::mousePopupMenu()
 void KTextEdit::slotSpeakText()
 {
     // If KTTSD not running, start it.
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kttsd"))
+    QDBusConnectionInterface* bus = QDBusConnection::sessionBus().interface();
+    if (!bus->isServiceRegistered("org.kde.kttsd"))
     {
-        QString error;
-        if (KToolInvocation::startServiceByDesktopName("kttsd", QStringList(), &error))
-        {
-            KMessageBox::error(this, i18n( "Starting Jovie Text-to-Speech Service Failed"), error );
+        QDBusReply<void> reply = bus->startService("org.kde.kttsd");
+        if (!reply.isValid()) {
+            KMessageBox::error(this, i18n("Starting Jovie Text-to-Speech Service Failed"), reply.error().message());
             return;
         }
     }

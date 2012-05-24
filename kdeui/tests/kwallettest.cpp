@@ -25,8 +25,6 @@
 
 #include <kwallet.h>
 #include <kdebug.h>
-#include <klauncher_iface.h>
-#include <ktoolinvocation.h>
 
 using namespace KWallet;
 
@@ -38,10 +36,6 @@ void KWalletTest::testWallet()
                          "a@b.c" };
   QByteArray testValues[] = { "test", "@(!§\"%&", "", ".test", "\\" };
   int numTests = 5;
-
-  // Start kdeinit5, so that the wallet damon is started in the background
-  OrgKdeKLauncherInterface *launcher = KToolInvocation::klauncher();
-  launcher->autoStart();
 
   // Create a widget to serve as the wallet's parent widget, to get rid of a
   // warning

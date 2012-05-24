@@ -60,7 +60,6 @@
 #include <kdatetime.h>
 #include <kcomponentdata.h>
 #include <kmimetype.h>
-#include <ktoolinvocation.h>
 #include <kstandarddirs.h>
 #include <kremoteencoding.h>
 #include <ktcpsocket.h>
@@ -5009,7 +5008,12 @@ void HTTPProtocol::sendCacheCleanerCommand(const QByteArray &command)
     int attempts = 0;
     while (m_cacheCleanerConnection.state() != QLocalSocket::ConnectedState && attempts < 6) {
         if (attempts == 2) {
-            KToolInvocation::startServiceByDesktopPath(QLatin1String("http_cache_cleaner.desktop"));
+            QString exe = KGlobal::dirs()->findExe(QLatin1String("kio_http_cache_cleaner")); // it's in libexec, careful with porting to QStandardPaths
+            if (!exe.isEmpty()) {
+                QProcess::startDetached(exe);
+            } else {
+                qWarning() << "kio_http_cache_cleaner not found!";
+            }
         }
         QString socketFileName = KStandardDirs::locateLocal("socket", QLatin1String("kio_http_cache_cleaner"));
         m_cacheCleanerConnection.connectToServer(socketFileName, QIODevice::WriteOnly);

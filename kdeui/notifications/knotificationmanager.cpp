@@ -17,7 +17,6 @@
 */
 
 #include "knotificationmanager_p.h"
-#include <ktoolinvocation.h>
 #include "knotification.h"
 
 #include <QHash>
@@ -51,12 +50,11 @@ KNotificationManager * KNotificationManager::self()
 KNotificationManager::KNotificationManager()
     : d(new Private)
 {
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.knotify")) {
-        QString error;
-        int ret = KToolInvocation::startServiceByDesktopPath("knotify4.desktop",
-                                                             QStringList(), &error);
-        if (ret > 0) {
-            kError() << "Couldn't start knotify from knotify4.desktop: " << error << endl;
+    QDBusConnectionInterface* bus = QDBusConnection::sessionBus().interface();
+    if (!bus->isServiceRegistered("org.kde.knotify")) {
+        QDBusReply<void> reply = bus->startService("org.kde.knotify");
+        if (!reply.isValid()) {
+            kError() << "Couldn't start knotify from org.kde.knotify.service:" << reply.error();
         }
     }
     d->knotify =
@@ -135,7 +133,7 @@ bool KNotificationManager::notify( KNotification* n, const QPixmap &pix,
 
     QList<QVariant>  args;
     args << n->eventId() << (appname.isEmpty() ? KGlobal::mainComponent().componentName() : appname);
-    args.append(QVariant(contextList)); 
+    args.append(QVariant(contextList));
     args << n->title() << n->text() <<  pixmapData << QVariant(actions) << timeout << qlonglong(winId) ;
     return d->knotify->callWithCallback( "event", args, n, SLOT(slotReceivedId(int)), SLOT(slotReceivedIdError(QDBusError)));
 }

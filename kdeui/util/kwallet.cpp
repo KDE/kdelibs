@@ -27,7 +27,6 @@
 #include <QtCore/QPointer>
 #include <QWidget>
 #include <QtDBus/QtDBus>
-#include <ktoolinvocation.h>
 
 #include <assert.h>
 #include <kcomponentdata.h>
@@ -41,7 +40,7 @@
 
 #ifdef HAVE_KSECRETSSERVICE
 #include "ksecretsservice/ksecretsservicecollection.h"
-#endif 
+#endif
 
 #include "kwallet_interface.h"
 
@@ -64,7 +63,7 @@ public:
 
     // this static variable is used below to switch between old KWallet
     // infrastructure and the new one which is built on top of the new
-    // KSecretsService infrastructure. It's value can be changed via the 
+    // KSecretsService infrastructure. It's value can be changed via the
     // the Wallet configuration module in System Settings
     bool m_useKSecretsService;
     org::kde::KWallet *m_wallet;
@@ -156,7 +155,7 @@ public:
     void walletServiceUnregistered();
 
 #ifdef HAVE_KSECRETSSERVICE
-    template <typename T> 
+    template <typename T>
     int writeEntry( const QString& key, const T &value, Wallet::EntryType entryType ) {
         int rc = -1;
         KSecretsService::Secret secret;
@@ -177,7 +176,7 @@ public:
     QExplicitlySharedDataPointer<KSecretsService::SecretItem> findItem( const QString& key ) const;
     template <typename T> int readEntry( const QString& key, T& value ) const;
     bool readSecret( const QString& key, KSecretsService::Secret& value ) const;
-    
+
     template <typename V>
     int forEachItemThatMatches( const QString &key, V verb ) {
         int rc = -1;
@@ -233,7 +232,7 @@ void Wallet::WalletPrivate::createDefaultFolders()
     QString strDummy("");
     folder = PasswordFolder();
     writeEntry( PasswordFolder(), strDummy, KWallet::Wallet::Unknown );
-    
+
     folder = FormDataFolder();
     writeEntry( FormDataFolder(), strDummy, KWallet::Wallet::Unknown );
 }
@@ -733,11 +732,11 @@ QStringList Wallet::folderList() {
 #ifdef HAVE_KSECRETSSERVICE
     if (walletLauncher->m_useKSecretsService) {
         QStringList result;
-        
+
         KSecretsService::StringStringMap attrs;
         attrs[KSS_ATTR_ENTRYFOLDER] = ""; // search for items having this attribute no matter what value it has
         KSecretsService::SearchCollectionItemsJob *searchJob = d->secretsCollection->searchItems(attrs);
-        
+
         if (searchJob->exec()) {
             KSecretsService::ReadCollectionItemsJob::ItemList itemList = searchJob->items();
             foreach( const KSecretsService::ReadCollectionItemsJob::Item &item, itemList ) {
@@ -760,7 +759,7 @@ QStringList Wallet::folderList() {
         return result;
     }
     else {
-#endif        
+#endif
         if (d->handle == -1) {
             return QStringList();
         }
@@ -1091,7 +1090,7 @@ int Wallet::readEntryList(const QString& key, QMap<QString, QByteArray>& value) 
     else {
 #endif
         registerTypes();
-        
+
         if (d->handle == -1) {
             return rc;
         }
@@ -1305,7 +1304,7 @@ int Wallet::readPasswordList(const QString& key, QMap<QString, QString>& value) 
 #ifdef HAVE_KSECRETSSERVICE
     }
 #endif
-    
+
     return rc;
 }
 
@@ -1697,21 +1696,19 @@ org::kde::KWallet &KWalletDLauncher::getInterface()
     Q_ASSERT(m_wallet != 0);
 
     // check if kwalletd is already running
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1(s_kwalletdServiceName)))
+    QDBusConnectionInterface* bus = QDBusConnection::sessionBus().interface();
+    if (!bus->isServiceRegistered(QString::fromLatin1(s_kwalletdServiceName)))
     {
         // not running! check if it is enabled.
         bool walletEnabled = m_cgroup.readEntry("Enabled", true);
         if (walletEnabled) {
             // wallet is enabled! try launching it
-            QString error;
-            int ret = KToolInvocation::startServiceByDesktopPath("kwalletd.desktop", QStringList(), &error);
-            if (ret > 0)
-            {
-                kError(285) << "Couldn't start kwalletd: " << error << endl;
+            QDBusReply<void> reply = bus->startService(s_kwalletdServiceName);
+            if (!reply.isValid()) {
+                kError(285) << "Couldn't start kwalletd: " << reply.error();
             }
 
-            if
-                (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1(s_kwalletdServiceName))) {
+            if (!bus->isServiceRegistered(QString::fromLatin1(s_kwalletdServiceName))) {
                 kDebug(285) << "The kwalletd service is still not registered";
             } else {
                 kDebug(285) << "The kwalletd service has been registered";

@@ -34,7 +34,6 @@
 #endif
 
 #include <kdebug.h>
-#include <ktoolinvocation.h>
 #include <kaboutdata.h>
 #include <kcomponentdata.h>
 #include "kaction.h"
@@ -109,18 +108,12 @@ KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel *q)
         iface("org.kde.kglobalaccel", "/kglobalaccel", QDBusConnection::sessionBus()),
         q(q)
 {
-    // Make sure kded is running. The iface declaration above somehow
-    // works anyway.
+    // Make sure kglobalaccel is running. The iface declaration above somehow works anyway.
     QDBusConnectionInterface* bus = QDBusConnection::sessionBus().interface();
     if (!bus->isServiceRegistered("org.kde.kglobalaccel")) {
-        QString error;
-        int ret = KToolInvocation::startServiceByDesktopPath(
-                "kglobalaccel.desktop",
-                QStringList(),
-                &error);
-
-        if (ret > 0) {
-            kError() << "Couldn't start kglobalaccel from kglobalaccel.desktop: " << error << endl;
+        QDBusReply<void> reply = bus->startService("org.kde.kglobalaccel");
+        if (!reply.isValid()) {
+            kError() << "Couldn't start kglobalaccel from org.kde.kglobalaccel.service:" << reply.error();
         }
     }
     QDBusServiceWatcher *watcher = new QDBusServiceWatcher(iface.service(),
