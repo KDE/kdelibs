@@ -28,13 +28,13 @@
 
 
 #include <QtCore/QTimer>
+#include <QVBoxLayout>
 
 #include <kjobuidelegate.h>
 #include <kio/job.h>
 #include <kcomponentdata.h>
 #include <kmimetype.h>
 #include <klocalizedstring.h>
-#include <kvbox.h>
 #include <kactioncollection.h>
 
 KComponentData *KHTMLImageFactory::s_componentData = 0;
@@ -71,10 +71,12 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget,
     KHTMLPart* parentPart = qobject_cast<KHTMLPart*>( parent );
     setComponentData( KHTMLImageFactory::componentData(), prof == KHTMLPart::BrowserViewGUI && !parentPart );
 
-    KVBox *box = new KVBox( parentWidget );
+    QWidget *box = new QWidget( parentWidget );
+    box->setLayout( new QVBoxLayout( box ) );
     box->setAcceptDrops( true );
 
     m_khtml = new KHTMLPart( box, this, prof );
+    box->layout()->addWidget( m_khtml->widget() );
     m_khtml->setAutoloadImages( true );
 
     // We do not want our subpart to be destroyed when its widget is,

@@ -34,7 +34,7 @@
 #include <unistd.h>
 #include <kxmlguifactory.h>
 #include <QtCore/QTimer>
-#include <kvbox.h>
+#include <QVBoxLayout>
 
 static KAboutData kmultipartAboutData()
 {
@@ -113,7 +113,8 @@ KMultiPart::KMultiPart( QWidget *parentWidget,
 
     setComponentData( KMultiPartFactory::componentData() );
 
-    KVBox *box = new KVBox( parentWidget );
+    QWidget *box = new QWidget( parentWidget );
+    box->setLayout( new QVBoxLayout( box ) );
     setWidget( box );
 
     m_extension = new KParts::BrowserExtension( this );
@@ -333,6 +334,7 @@ void KMultiPart::setPart( const QString& mimeType )
     // Try to find an appropriate viewer component
     m_part = KMimeTypeTrader::createPartInstanceFromQuery<KParts::ReadOnlyPart>
              ( m_mimeType, widget(), this );
+    widget()->layout()->addWidget( m_part->widget() );
     if ( !m_part ) {
         // TODO launch external app
         KMessageBox::error( widget(), i18n("No handler found for %1.", m_mimeType) );
