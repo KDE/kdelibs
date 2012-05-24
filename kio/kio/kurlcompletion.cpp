@@ -61,7 +61,7 @@
 #include <sys/param.h>
 #include <kconfiggroup.h>
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #include <kkernel_win.h>
 #endif
 
@@ -1272,7 +1272,7 @@ void KUrlCompletion::postProcessMatch(QString* pMatch) const
 
             expandTilde(copy);
             expandEnv(copy);
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
             DWORD dwAttr = GetFileAttributesW((LPCWSTR) copy.utf16());
             if (dwAttr == INVALID_FILE_ATTRIBUTES) {
                 kDebug() << "Could not get file attribs ( "

@@ -25,6 +25,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QPointer>
 
+#include "config.h"
 #include "kprocess.h"
 #include "kstartupinfo.h"
 
@@ -40,7 +41,7 @@ class KProcessRunner : public QObject
 
   public:
 
-#ifndef Q_WS_X11
+#ifndef HAVE_X11
     static int run(KProcess *, const QString & executable);
 #else
     static int run(KProcess *, const QString & executable, const KStartupInfoId& id);
@@ -55,7 +56,7 @@ class KProcessRunner : public QObject
     void slotProcessExited(int, QProcess::ExitStatus);
 
   private:
-#ifndef Q_WS_X11
+#ifndef HAVE_X11
     KProcessRunner(KProcess *, const QString & binName);
 #else
     KProcessRunner(KProcess *, const QString & binName, const KStartupInfoId& id);
@@ -88,7 +89,7 @@ public:
     // starting is the only valid use of the timer in subclasses (BrowserRun, KHTMLRun and KonqRun)
     void startTimer();
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     static bool displayNativeOpenWithDialog( const KUrl::List& lst, QWidget* window, bool tempFiles,
                                        const QString& suggestedFileName, const QByteArray& asn );
 #endif

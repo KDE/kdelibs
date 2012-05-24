@@ -40,6 +40,7 @@
 #include <QtNetwork/QNetworkProxyQuery>
 #endif
 
+#include <config.h>
 #include <kdeversion.h>
 #include <kdebug.h>
 #include <kglobal.h>
@@ -652,13 +653,13 @@ static QString defaultUserAgentFromPreferredService()
 
 static QString platform()
 {
-#if defined(Q_WS_X11)
+#if defined(HAVE_X11)
     return QL1S("X11");
-#elif defined(Q_WS_MAC)
+#elif defined(Q_OS_MAC)
     return QL1S("Macintosh");
-#elif defined(Q_WS_WIN)
+#elif defined(Q_OS_WIN)
      return QL1S("Windows");
-#elif defined(Q_WS_S60)
+#elif defined(Q_OS_SYMBIAN)
      return QL1S("Symbian");
 #else
 #warning QT5 PORT TO QPA
@@ -869,7 +870,7 @@ bool KProtocolManager::getSystemNameVersionAndMachine(
   struct utsname unameBuf;
   if ( 0 != uname( &unameBuf ) )
     return false;
-#if defined(Q_WS_WIN) && !defined(_WIN32_WCE)
+#if defined(Q_OS_WIN) && !defined(_WIN32_WCE)
   // we do not use unameBuf.sysname information constructed in kdewin32
   // because we want to get separate name and version
   systemName = QL1S( "Windows" );

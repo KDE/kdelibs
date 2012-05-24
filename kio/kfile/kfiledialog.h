@@ -749,7 +749,7 @@ public:
      */
     static void setStartDir(const QUrl& directory);
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 public Q_SLOTS:
     int exec();
 #endif

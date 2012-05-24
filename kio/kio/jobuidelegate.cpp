@@ -33,11 +33,6 @@
 
 #include "kio/scheduler.h"
 
-#if defined Q_WS_X11
-#include <QX11Info>
-#include <netwm.h>
-#endif
-
 class KIO::JobUiDelegate::Private
 {
 public:

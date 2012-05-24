@@ -286,7 +286,7 @@ void DeleteJobPrivate::deleteNextFile()
             }
             // Normal deletion
             // If local file, try do it directly
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
             if ( (*it).isLocalFile() && DeleteFileW( (LPCWSTR)(*it).toLocalFile().utf16() ) != 0 ) {
 #else
             if ( (*it).isLocalFile() && unlink( QFile::encodeName((*it).toLocalFile()) ) == 0 ) {
@@ -332,7 +332,7 @@ void DeleteJobPrivate::deleteNextDir()
             // Take first dir to delete out of list - last ones first !
             QList<QUrl>::iterator it = --dirs.end();
             // If local dir, try to rmdir it directly
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
             if ( (*it).isLocalFile() && RemoveDirectoryW( (LPCWSTR)(*it).toLocalFile().utf16() ) != 0 ) {
 #else
             if ( (*it).isLocalFile() && ::rmdir( QFile::encodeName((*it).toLocalFile()) ) == 0 ) {

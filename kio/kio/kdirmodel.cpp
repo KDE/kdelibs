@@ -38,7 +38,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #include <windows.h>
 #endif
 
@@ -716,7 +716,7 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
 //                        slow
 //                        QDir dir(path);
 //                        count = dir.entryList(QDir::AllEntries|QDir::NoDotAndDotDot|QDir::System).count();
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
                         QString s = path + QLatin1String( "\\*.*" );
                         s.replace('/', '\\');
                         count = 0;

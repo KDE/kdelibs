@@ -1157,7 +1157,7 @@ void KFilePropsPlugin::slotEditFileType()
     }
     QString keditfiletype = QString::fromLatin1("keditfiletype");
     KRun::runCommand( keditfiletype
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
                       + " --parent " + QString::number( (ulong)properties->window()->winId())
 #endif
                       + ' ' + KShell::quoteArg(mime),

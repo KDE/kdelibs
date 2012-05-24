@@ -78,7 +78,7 @@ QString lookForCache( const QString &filename )
     QString output;
     if ( readCache( filename, cache + "cache.bz2", output) )
         return output;
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     QFileInfo fi(filename);
     // make sure filenames do not contain the base path, otherwise
     // accessing user data from another location invalids cached files.

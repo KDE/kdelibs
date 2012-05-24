@@ -79,7 +79,7 @@
 #include <kguiitem.h>
 #include <qsavefile.h>
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
 #include <kwindowsystem.h>
 #endif
 
@@ -105,7 +105,7 @@ bool KRun::isExecutableFile(const KUrl& url, const QString &mimetype)
     if (file.isExecutable()) {    // Got a prospective file to run
         KMimeType::Ptr mimeType = KMimeType::mimeType(mimetype, KMimeType::ResolveAliases);
         if (mimeType && (mimeType->is(QLatin1String("application/x-executable")) ||
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
                          mimeType->is(QLatin1String("application/x-ms-dos-executable")) ||
 #endif
                          mimeType->is(QLatin1String("application/x-executable-script")))
@@ -192,7 +192,7 @@ bool KRun::displayOpenWithDialog(const KUrl::List& lst, QWidget* window, bool te
         return false;
     }
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     KConfigGroup cfgGroup(KSharedConfig::openConfig(), "KOpenWithDialog Settings");
     if (cfgGroup.readEntry("Native", true)) {
         return KRun::KRunPrivate::displayNativeOpenWithDialog(lst, window, tempFiles,
@@ -584,7 +584,7 @@ static bool runCommandInternal(KProcess* proc, const KService* service, const QS
     }
 
     QString bin = KRun::binaryName(executable, true);
-#ifdef Q_WS_X11 // Startup notification doesn't work with QT/E, service isn't needed without Startup notification
+#ifdef HAVE_X11 // Startup notification doesn't work with QT/E, service isn't needed without Startup notification
     bool silent;
     QByteArray wmclass;
     KStartupInfoId id;
@@ -1695,7 +1695,7 @@ mode_t KRun::mode() const
 
 /****************/
 
-#ifndef Q_WS_X11
+#ifndef HAVE_X11
 int KProcessRunner::run(KProcess * p, const QString & executable)
 {
     return (new KProcessRunner(p, executable))->pid();
@@ -1707,7 +1707,7 @@ int KProcessRunner::run(KProcess * p, const QString & executable, const KStartup
 }
 #endif
 
-#ifndef Q_WS_X11
+#ifndef HAVE_X11
 KProcessRunner::KProcessRunner(KProcess * p, const QString & executable)
 #else
 KProcessRunner::KProcessRunner(KProcess * p, const QString & executable, const KStartupInfoId& _id) :
@@ -1728,7 +1728,7 @@ KProcessRunner::KProcessRunner(KProcess * p, const QString & executable, const K
         slotProcessExited(255, process->exitStatus());
     }
     else {
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
         m_pid = process->pid();
 #endif
     }
@@ -1746,7 +1746,7 @@ int KProcessRunner::pid() const
 
 void KProcessRunner::terminateStartupNotification()
 {
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     if (!id.none()) {
         KStartupInfoData data;
         data.addPid(m_pid); // announce this pid for the startup notification has finished

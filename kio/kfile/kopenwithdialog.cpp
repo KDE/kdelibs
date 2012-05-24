@@ -905,7 +905,7 @@ bool KOpenWithDialogPrivate::checkAccept()
             // If we got here, we can't seem to find a service for what they wanted. Create one.
 
             QString menuId;
-#ifdef Q_WS_WIN32
+#ifdef Q_OS_WIN32
             // on windows, do not use the complete path, but only the default name.
             serviceName = QFileInfo(serviceName).fileName();
 #endif

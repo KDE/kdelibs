@@ -161,7 +161,7 @@ int main(int argc, char **argv) {
     xmlLoadExtDtdDefaultValue = 1;
 
     QVector<const char *> params;
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     // libxslt parses the path given to outputFile as XPath expression which fails
     // see libxslt/xsltEvalUserParams
     // this parameter is used only by share/apps/ksgmltools2/docbook/xsl/html/math.xsl

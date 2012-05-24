@@ -50,7 +50,7 @@ static QString destDir() { return homeTmpDir() + "destdir/"; }
 static QString srcFile() { return homeTmpDir() + "testfile"; }
 static QString destFile() { return destDir() + "testfile"; }
 
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
 static QString srcLink() { return homeTmpDir() + "symlink"; }
 static QString destLink() { return destDir() + "symlink"; }
 #endif
@@ -62,7 +62,7 @@ static QList<QUrl> sourceList()
 {
     QList<QUrl> lst;
     lst << QUrl::fromLocalFile(srcFile());
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     lst << QUrl::fromLocalFile(srcLink());
 #endif
     return lst;
@@ -98,7 +98,7 @@ static void checkTestDirectory( const QString& path )
 {
     QVERIFY( QFileInfo( path ).isDir() );
     QVERIFY( QFileInfo( path + "/fileindir" ).isFile() );
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     QVERIFY( QFileInfo( path + "/testlink" ).isSymLink() );
 #endif
     QVERIFY( QFileInfo( path + "/dirindir" ).isDir() );
@@ -112,7 +112,7 @@ static void createTestDirectory( const QString& path )
     if ( !ok )
         kFatal() << "couldn't create " << path ;
     createTestFile( path + "/fileindir", "File in dir" );
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     createTestSymlink( path + "/testlink" );
 #endif
     ok = dir.mkdir( path + "/dirindir" );
@@ -175,7 +175,7 @@ void FileUndoManagerTest::initTestCase()
     }
 
     createTestFile( srcFile(), "Hello world" );
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     createTestSymlink( srcLink() );
 #endif
     createTestDirectory( srcSubDir() );
@@ -225,7 +225,7 @@ void FileUndoManagerTest::testCopyFiles()
     QVERIFY( ok );
 
     QVERIFY( QFile::exists( destFile() ) );
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     // Don't use QFile::exists, it's a broken symlink...
     QVERIFY( QFileInfo( destLink() ).isSymLink() );
 #endif
@@ -256,7 +256,7 @@ void FileUndoManagerTest::testCopyFiles()
 
     // Check that undo worked
     QVERIFY( !QFile::exists( destFile() ) );
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     QVERIFY( !QFile::exists( destLink() ) );
     QVERIFY( !QFileInfo( destLink() ).isSymLink() );
 #endif
@@ -277,7 +277,7 @@ void FileUndoManagerTest::testMoveFiles()
 
     QVERIFY( !QFile::exists( srcFile() ) ); // the source moved
     QVERIFY( QFile::exists( destFile() ) );
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     QVERIFY( !QFileInfo( srcLink() ).isSymLink() );
     // Don't use QFile::exists, it's a broken symlink...
     QVERIFY( QFileInfo( destLink() ).isSymLink() );
@@ -287,7 +287,7 @@ void FileUndoManagerTest::testMoveFiles()
 
     QVERIFY( QFile::exists( srcFile() ) ); // the source is back
     QVERIFY( !QFile::exists( destFile() ) );
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     QVERIFY( QFileInfo( srcLink() ).isSymLink() );
     QVERIFY( !QFileInfo( destLink() ).isSymLink() );
 #endif
@@ -441,7 +441,7 @@ void FileUndoManagerTest::testTrashFiles()
 
     // Check that things got removed
     QVERIFY( !QFile::exists( srcFile() ) );
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     QVERIFY( !QFileInfo( srcLink() ).isSymLink() );
 #endif
     QVERIFY( !QFile::exists( srcSubDir() ) );
@@ -455,7 +455,7 @@ void FileUndoManagerTest::testTrashFiles()
     doUndo();
 
     QVERIFY( QFile::exists( srcFile() ) );
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     QVERIFY( QFileInfo( srcLink() ).isSymLink() );
 #endif
     QVERIFY( QFile::exists( srcSubDir() ) );

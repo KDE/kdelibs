@@ -160,7 +160,7 @@ QString HelpProtocol::lookupFile(const QString &fname,
 
 void HelpProtocol::unicodeError( const QString &t )
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
    QString encoding = "UTF-8";
 #else
    QString encoding = QTextCodec::codecForLocale()->name();
@@ -282,7 +282,7 @@ void HelpProtocol::get( const KUrl& url )
             mParsed = transform(file, KStandardDirs::locate("dtd", "customization/kde-chunk.xsl"));
             if ( !mParsed.isEmpty() ) {
                 infoMessage( i18n( "Saving to cache" ) );
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
                 QFileInfo fi(file);
                 // make sure filenames do not contain the base path, otherwise
                 // accessing user data from another location invalids cached files
@@ -394,7 +394,7 @@ void HelpProtocol::get_file( const KUrl& url )
 {
     kDebug( 7119 ) << "get_file " << url.url();
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     QFile f( url.toLocalFile() );
     if ( !f.exists() ) {
         error( KIO::ERR_DOES_NOT_EXIST, url.url() );

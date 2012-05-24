@@ -22,7 +22,7 @@
 #include <kio/netaccess.h>
 #include <kio/job.h>
 #include <QtCore/QFile>
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #include <QDir>
 #endif
 #include <kcmdlineargs.h>
@@ -32,7 +32,7 @@ int main(int argc, char **argv)
   KCmdLineArgs::init(argc,argv, "netaccesstest", 0, qi18n("netaccesstest"), 0);
   KApplication app;
   KUrl srcURL( "ftp://ftp.kde.org/pub/kde/README" );
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
   KUrl tmpURL( "file://" + QDir::tempPath() + "/netaccesstest_README" );
 #else
   KUrl tmpURL( "file:/tmp/netaccesstest_README" );

@@ -47,7 +47,7 @@
 #include <QLabel>
 
 // Required includes for subDirectoriesCount():
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     #include <QDir>
 #else
     #include <dirent.h>
@@ -525,7 +525,7 @@ QWidget* KFileMetaDataProvider::createValueWidget(const KUrl& metaDataUri,
 
 int KFileMetaDataProvider::Private::subDirectoriesCount(const QString& path)
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     QDir dir(path);
     return dir.entryList(QDir::AllEntries|QDir::NoDotAndDotDot|QDir::System).count();
 #else

@@ -42,7 +42,7 @@ int closeQString(void * context) {
     return 0;
 }
 
-#if defined (SIMPLE_XSLT) && defined(Q_WS_WIN)
+#if defined (SIMPLE_XSLT) && defined(Q_OS_WIN)
 
 #define MAX_PATHS 64 
 xmlExternalEntityLoader defaultEntityLoader = NULL;
@@ -133,7 +133,7 @@ QString transform( const QString &pat, const QString& tss,
     QString parsed;
 
     INFO(i18n("Parsing stylesheet"));
-#if defined (SIMPLE_XSLT) && defined(Q_WS_WIN)
+#if defined (SIMPLE_XSLT) && defined(Q_OS_WIN)
 	// prepare use of local available dtd versions instead of fetching everytime from the internet
 	// this approach is url based
     if (!defaultEntityLoader) {
@@ -270,7 +270,7 @@ QString splitOut(const QString &parsed, int index)
 
 QByteArray fromUnicode( const QString &data )
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     return data.toUtf8();
 #else
     QTextCodec *locale = QTextCodec::codecForLocale();
@@ -321,7 +321,7 @@ QByteArray fromUnicode( const QString &data )
 void replaceCharsetHeader( QString &output )
 {
     QString name;
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     name = "utf-8"; 
     // may be required for all xml output 
     if (output.contains("<table-of-contents>"))

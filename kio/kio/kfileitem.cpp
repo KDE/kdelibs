@@ -649,7 +649,7 @@ QString KFileItemPrivate::user() const
 {
     QString userName = m_entry.stringValue(KIO::UDSEntry::UDS_USER);
     if (userName.isEmpty() && m_bIsLocalUrl) {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
         QFileInfo a(m_url.toLocalFile( KUrl::RemoveTrailingSlash ));
         userName = a.owner();
         m_entry.insert( KIO::UDSEntry::UDS_USER, userName );
@@ -678,7 +678,7 @@ QString KFileItemPrivate::group() const
     QString groupName = m_entry.stringValue( KIO::UDSEntry::UDS_GROUP );
     if (groupName.isEmpty() && m_bIsLocalUrl )
     {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
         QFileInfo a(m_url.toLocalFile( KUrl::RemoveTrailingSlash ));
         groupName = a.group();
         m_entry.insert( KIO::UDSEntry::UDS_GROUP, groupName );
@@ -1216,7 +1216,7 @@ QString KFileItem::getToolTipText(int maxcount) const
 
     tip += start + i18n("Modified:") + mid +
            timeString( KFileItem::ModificationTime ) + end
-#ifndef Q_WS_WIN //TODO: show win32-specific permissions
+#ifndef Q_OS_WIN //TODO: show win32-specific permissions
            +start + i18n("Owner:") + mid + user() + " - " + group() + end +
            start + i18n("Permissions:") + mid +
            permissionsString() + end

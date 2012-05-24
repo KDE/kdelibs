@@ -123,7 +123,7 @@ void KDirListerTest::test()
 {
   KUrl home( QDir::homePath() );
   KUrl root( QDir::rootPath() );
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
   lister->openUrl( home, KDirLister::Keep );
   lister->openUrl( root, KDirLister::Keep | KDirLister::Reload );
 #else

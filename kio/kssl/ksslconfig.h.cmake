@@ -21,7 +21,7 @@
 #ifndef KSSLCONFIG_H
 #define KSSLCONFIG_H
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #include <winsock2.h>
 #endif
 

@@ -46,7 +46,7 @@ QTEST_KDEMAIN( KDirModelTest, NoGUI )
 
 #define connect(a,b,c,d) QVERIFY(QObject::connect(a,b,c,d))
 
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
 #define SPECIALCHARS "specialchars%:.pdf"
 #else
 #define SPECIALCHARS "specialchars%.pdf"
@@ -699,7 +699,7 @@ void KDirModelTest::testExpandToUrl_data()
     QTest::newRow("subdir/subsubdir/testfile sync")
         << int(NoFlag) << subsubdirfile << (QStringList()<<"subdir"<<subsubdir<<subsubdirfile);
 
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     // Expand a symlink to a directory (#219547)
     const QString dirlink = m_tempDir->path() + "/dirlink";
     createTestSymlink(dirlink, "/");

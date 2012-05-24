@@ -553,7 +553,7 @@ ConnectionServer::~ConnectionServer()
 
 void ConnectionServer::listenForRemote()
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     d->backend = new SocketConnectionBackend(SocketConnectionBackend::TcpSocketMode, this);
 #else
     d->backend = new SocketConnectionBackend(SocketConnectionBackend::LocalSocketMode, this);

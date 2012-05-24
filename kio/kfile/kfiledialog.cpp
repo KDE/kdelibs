@@ -45,7 +45,7 @@
 #include "kservice.h"
 
 /** File dialogs are native by default on Windows. */
-#if defined(Q_WS_WIN) || defined(Q_WS_MAEMO_5)
+#if defined(Q_OS_WIN) || defined(Q_WS_MAEMO_5)
 const bool NATIVE_FILEDIALOGS_BY_DEFAULT = true;
 #else
 const bool NATIVE_FILEDIALOGS_BY_DEFAULT = false;
@@ -251,7 +251,7 @@ bool KFileDialogPrivate::Native::s_allowNative = true;
 
 KFileDialog::KFileDialog(const QUrl& startDir, const QString& filter,
                          QWidget *parent, QWidget* customWidget)
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     : KDialog( parent , Qt::WindowMinMaxButtonsHint),
 #else
     : KDialog( parent ),
@@ -961,7 +961,7 @@ KAbstractFileWidget* KFileDialog::fileWidget()
     return d->w;
 }
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 int KFileDialog::exec()
 {
     if (!d->native || !KFileDialogPrivate::Native::s_allowNative) {
@@ -1051,9 +1051,9 @@ int KFileDialog::exec()
 
     return res;
 }
-#endif // Q_WS_WIN
+#endif // Q_OS_WIN
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #define KF_EXTERN extern __declspec(dllimport)
 #else
 #define KF_EXTERN extern

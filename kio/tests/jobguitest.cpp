@@ -28,7 +28,7 @@
 
 static QString otherTmpDir()
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     return QDir::tempPath() + "/jobtest/";
 #else
     // This one needs to be on another partition
