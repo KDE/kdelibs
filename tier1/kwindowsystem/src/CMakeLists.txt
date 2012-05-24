@@ -73,6 +73,8 @@ install( FILES
    netwm_def.h
    netwm.h
 
+   # FIXME: It seems odd to install this.
+   ${CMAKE_CURRENT_BINARY_DIR}/config-kwindowsystem.h
    ${CMAKE_CURRENT_BINARY_DIR}/kwindowsystem_export.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
