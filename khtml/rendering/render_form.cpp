@@ -132,6 +132,7 @@ using namespace DOM;
                         // Need to expand a bit for some styles
                         comboOpt.rect.adjust(-1, -2, 1, 2);
                         comboOpt.rect.translate(-1, 0);
+                        comboOpt.state &= ~State_On;
                     }
                     return style()->drawControl(element, &comboOpt, painter, widget);
                 }
@@ -154,6 +155,8 @@ using namespace DOM;
                     // Drop down indicator
                     painter->setBrush(enabled ? QBrush(color, Qt::SolidPattern) : Qt::NoBrush);
                     QRect arrowRect = style()->subControlRect(cc, opt, SC_ComboBoxArrow, widget);
+                    if (enabled && (cbOpt->state & State_On))
+                        arrowRect.translate(1, 1); // push effect
                     const int arrowDown[] = { 5,-2, 0,3, -5,-2, -4,-3, -3,-3, 0,0, 3,-3, 4,-3 };
                     QPolygon a(8);
                     a.setPoints(8, arrowDown);
