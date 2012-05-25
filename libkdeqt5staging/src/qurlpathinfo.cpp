@@ -62,6 +62,12 @@
     The most common way to use QUrlPathInfo is to initialize it via the
     constructor by passing a QUrl. Otherwise, setUrl() can also be used.
 
+    QUrl defaults to encoded paths, so a '%' in a filename becomes a %25
+    in the url, and therefore in QUrl::path(). However for file management
+    on local or remote filesystems, decoded paths are wanted, to display
+    '%' to the user when the filename contains '%'. For this reason,
+    QUrlPathInfo works with decoded paths.
+
     \sa QUrl
 */
 
@@ -130,6 +136,8 @@ void QUrlPathInfo::setUrl(const QUrl &u)
 /*!
     Returns the path of the URL, formatted using \a options
 
+    Unlike QUrl, QUrlPathInfo works with decoded paths.
+
     Do not use this as a local path, this is not portable.
     Use toLocalPath(options) or url().toLocalFile() instead.
 
@@ -137,7 +145,11 @@ void QUrlPathInfo::setUrl(const QUrl &u)
 */
 QString QUrlPathInfo::path(PathFormattingOptions options) const
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QString path = d->url.path(QUrl::FullyDecoded);
+#else
     QString path = d->url.path();
+#endif
     while ((options & StripTrailingSlash) && path.endsWith(QLatin1Char('/')) && path.length() > 1)
         path.chop(1);
     if ((options & AppendTrailingSlash) && !path.endsWith(QLatin1Char('/')))
@@ -148,13 +160,19 @@ QString QUrlPathInfo::path(PathFormattingOptions options) const
 /*!
     Sets the path of the URL.
 
+    Unlike QUrl, QUrlPathInfo works with decoded paths.
+
     The other components of the URL (scheme, host, query, fragment...) remain unchanged.
 
     \sa path(), addPath()
 */
 void QUrlPathInfo::setPath(const QString &path)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    d->url.setPath(path, QUrl::DecodedMode);
+#else
     d->url.setPath(path);
+#endif
 }
 
 /*!
@@ -206,7 +224,7 @@ void QUrlPathInfo::clear()
 */
 QString QUrlPathInfo::fileName() const
 {
-    const QString ourPath = d->url.path();
+    const QString ourPath = path();
     const int slash = ourPath.lastIndexOf(QLatin1Char('/'));
     if (slash == -1)
         return ourPath;
@@ -220,7 +238,7 @@ QString QUrlPathInfo::fileName() const
 */
 void QUrlPathInfo::setFileName(const QString &fileName)
 {
-    const QString ourPath = d->url.path();
+    const QString ourPath = path();
     const int slash = ourPath.lastIndexOf(QLatin1Char('/'));
     if (slash == -1)
         setPath(fileName);
@@ -243,7 +261,7 @@ void QUrlPathInfo::setFileName(const QString &fileName)
 */
 QString QUrlPathInfo::directory() const
 {
-    const QString ourPath = d->url.path();
+    const QString ourPath = path();
     const int slash = ourPath.lastIndexOf(QLatin1Char('/'));
     if (slash == -1)
         return QString();
@@ -260,7 +278,11 @@ QString QUrlPathInfo::directory() const
 QUrl QUrlPathInfo::directoryUrl() const
 {
     QUrl url = d->url;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    url.setPath(directory(), QUrl::DecodedMode);
+#else
     url.setPath(directory());
+#endif
     return url;
 }
 
