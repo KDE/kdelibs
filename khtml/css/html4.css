@@ -444,6 +444,7 @@ select {
         background-color: window;
         -khtml-background-clip: padding;
         box-sizing: border-box;
+        border: 2px -khtml-native;
 }
 
 select[multiple],
