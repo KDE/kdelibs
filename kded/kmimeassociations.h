@@ -25,7 +25,6 @@
 #include <QStringList>
 #include <QHash>
 #include <kserviceoffer.h>
-class KMimeTypeFactory;
 class KConfigGroup;
 
 struct ServiceTypeOffersData {
