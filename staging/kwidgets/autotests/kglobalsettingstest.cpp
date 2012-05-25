@@ -17,13 +17,13 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "qtest.h"
 #include "qtest_kde.h"
 #include "kglobalsettingstest.h"
 
-QTEST_KDEMAIN( KGlobalSettingsTest, GUI )
+QTEST_MAIN( KGlobalSettingsTest )
 
 #include <kglobalsettings.h>
-#include <kdebug.h>
 #include <QtCore/QProcess>
 #include <QtCore/QEventLoop>
 #include <QtDBus/QtDBus>

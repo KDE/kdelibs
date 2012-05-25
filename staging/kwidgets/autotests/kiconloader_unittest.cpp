@@ -18,7 +18,7 @@
 */
 
 #include <kdebug.h>
-#include "qtest_kde.h"
+#include "qtest_gui.h"
 #include <kiconloader.h>
 #include <kstandarddirs.h>
 #include <kdeversion.h>
@@ -203,6 +203,6 @@ private Q_SLOTS:
     }
 };
 
-QTEST_KDEMAIN(KIconLoader_UnitTest, GUI)
+QTEST_MAIN(KIconLoader_UnitTest)
 
 #include "kiconloader_unittest.moc"

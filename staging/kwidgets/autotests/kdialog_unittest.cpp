@@ -249,5 +249,5 @@ private Q_SLOTS:
     }
 };
 
-QTEST_KDEMAIN(KDialog_UnitTest, GUI)
+QTEST_MAIN(KDialog_UnitTest)
 #include "kdialog_unittest.moc"
