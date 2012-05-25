@@ -80,12 +80,12 @@ protected:
      * desired. By default, it returns the value returned by KCookie.
      */
     virtual QByteArray display();
-#ifdef Q_WS_X11
+
     /**
      * See display.
      */
     virtual QByteArray displayAuth();
-#endif
+
     bool m_bXOnly;
     int m_Priority;
     int  m_Scheduler;

@@ -222,12 +222,14 @@ QByteArray StubProcess::display()
 }
 
 
-#ifdef HAVE_X11
 QByteArray StubProcess::displayAuth()
 {
+#ifdef HAVE_X11
     return m_pCookie->displayAuth();
-}
+#else
+    return QByteArray();
 #endif
+}
 
 
 void StubProcess::virtual_hook( int id, void* data )
