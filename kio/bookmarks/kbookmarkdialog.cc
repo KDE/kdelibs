@@ -18,6 +18,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <QtGui/QInputDialog>
+
 #include "kbookmarkdialog.h"
 #include "kbookmarkmanager.h"
 #include "kbookmarkmenu.h"
@@ -29,7 +31,6 @@
 #include <klineedit.h>
 #include <klocalizedstring.h>
 #include <kiconloader.h>
-#include <kinputdialog.h>
 #include <kstandardguiitem.h>
 
 
@@ -332,7 +333,8 @@ void KBookmarkDialog::newFolderButton()
                       i18nc("@title:window","Create New Bookmark Folder in %1" ,
                         parentBookmark().text() );
     bool ok;
-    QString text = KInputDialog::getText( caption, i18nc("@label:textbox", "New folder:" ), QString(), &ok );
+    QString text = QInputDialog::getText( this, caption, i18nc("@label:textbox", "New folder:" ), 
+                                          QLineEdit::Normal, QString(), &ok );
     if ( !ok )
         return;
 
