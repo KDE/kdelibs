@@ -21,7 +21,6 @@
 #include "kbookmarkimporter_crash.h"
 
 #include <kstringhandler.h>
-#include <klocalizedstring.h>
 #include <QtCore/QDebug>
 #include <kstandarddirs.h>
 #include <qfile.h>

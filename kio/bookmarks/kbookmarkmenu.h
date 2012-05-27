@@ -28,7 +28,6 @@
 #include <QtCore/QObject>
 #include <QtCore/QStack>
 
-#include <klocalizedstring.h>
 #include <kaction.h>
 #include <kactionmenu.h>
 #include <krun.h>

@@ -18,6 +18,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <QtCore/QObject>
 #include <QtGui/QInputDialog>
 #include <QtGui/QLineEdit>
 
@@ -29,7 +30,6 @@
 #include <QLabel>
 #include <QTreeWidget>
 #include <QHeaderView>
-#include <klocalizedstring.h>
 #include <kiconloader.h>
 #include <kstandardguiitem.h>
 
@@ -39,8 +39,8 @@ KBookmark KBookmarkDialog::editBookmark(const KBookmark & bm)
     if(!m_layout)
         initLayoutPrivate();
     setButtons( Ok | Cancel );
-    setButtonGuiItem( KDialog::Ok, KGuiItem(i18nc("@action:button", "Update" )) );
-    setCaption( i18nc("@title:window","Bookmark Properties") );
+    setButtonGuiItem( KDialog::Ok, KGuiItem(QObject::tr("Update", "@action:button")) );
+    setCaption( QObject::tr("Bookmark Properties", "@title:window") );
     m_url->setVisible(!bm.isGroup());
     m_urlLabel->setVisible(!bm.isGroup());
     m_bm = bm;
@@ -68,9 +68,9 @@ KBookmark KBookmarkDialog::addBookmark(const QString & title, const QUrl & url, 
     if(parent.isNull())
         parent = m_mgr->root();
     setButtons( User1 | Ok | Cancel );
-    setButtonGuiItem( KDialog::Ok,  KGuiItem( i18nc("@action:button", "Add" ), "bookmark-new") );
-    setCaption( i18nc("@title:window","Add Bookmark") );
-    setButtonGuiItem( User1, KGuiItem( i18nc("@action:button", "&New Folder..." ), "folder-new") );
+    setButtonGuiItem( KDialog::Ok,  KGuiItem( QObject::tr("Add", "@action:button"), "bookmark-new") );
+    setCaption( QObject::tr("Add Bookmark", "@title:window") );
+    setButtonGuiItem( User1, KGuiItem( QObject::tr("&New Folder...", "@action:button"), "folder-new") );
     m_url->setVisible(true);
     m_urlLabel->setVisible(true);
     m_title->setText(title);
@@ -100,9 +100,9 @@ KBookmarkGroup KBookmarkDialog::addBookmarks(const QList<QPair<QString, QString>
     m_list = list;
 
     setButtons( User1 | Ok | Cancel);
-    setButtonGuiItem( KDialog::Ok,  KGuiItem( i18nc("@action:button", "Add" ), "bookmark-new") );
-    setCaption( i18nc("@title:window","Add Bookmarks") );
-    setButtonGuiItem( User1, KGuiItem( i18nc("@action:button", "&New Folder..." ), "folder-new") );
+    setButtonGuiItem( KDialog::Ok,  KGuiItem( QObject::tr("Add", "@action:button"), "bookmark-new") );
+    setCaption( QObject::tr("Add Bookmarks", "@title:window") );
+    setButtonGuiItem( User1, KGuiItem( QObject::tr("&New Folder...", "@action:button"), "folder-new") );
     m_url->setVisible(false);
     m_urlLabel->setVisible(false);
     m_title->setText(name);
@@ -129,8 +129,8 @@ KBookmarkGroup KBookmarkDialog::selectFolder(KBookmark parent)
         parent = m_mgr->root();
     setButtons( User1 | Ok | Cancel );
     setButtonGuiItem( KDialog::Ok, KStandardGuiItem::ok() );
-    setButtonGuiItem( User1, KGuiItem( i18nc("@action:button", "&New Folder..." ), "folder-new") );
-    setCaption( i18nc("@title:window","Select Folder"));
+    setButtonGuiItem( User1, KGuiItem( QObject::tr("&New Folder...", "@action:button"), "folder-new") );
+    setCaption( QObject::tr("Select Folder", "@title:window"));
     m_url->setVisible(false);
     m_urlLabel->setVisible(false);
     m_title->setVisible(false);
@@ -157,7 +157,7 @@ KBookmarkGroup KBookmarkDialog::createNewFolder(const QString & name, KBookmark 
         parent = m_mgr->root();
     setButtons( Ok | Cancel );
     setButtonGuiItem( KDialog::Ok, KStandardGuiItem::ok() );
-    setCaption( i18nc("@title:window","New Folder"));
+    setCaption( QObject::tr("New Folder", "@title:window"));
     m_url->setVisible(false);
     m_urlLabel->setVisible(false);
     m_comment->setVisible(true);
@@ -290,17 +290,17 @@ void KBookmarkDialog::initLayoutPrivate()
 
     m_title = new QLineEdit( m_main );
     m_title->setMinimumWidth(300);
-    m_titleLabel = new QLabel( i18nc("@label:textbox", "Name:" ), m_main );
+    m_titleLabel = new QLabel( QObject::tr("Name:", "@label:textbox"), m_main );
     m_titleLabel->setBuddy( m_title );
 
     m_url = new QLineEdit( m_main );
     m_url->setMinimumWidth(300);
-    m_urlLabel = new QLabel( i18nc("@label:textbox", "Location:" ), m_main );
+    m_urlLabel = new QLabel( QObject::tr("Location:", "@label:textbox"), m_main );
     m_urlLabel->setBuddy( m_url );
 
     m_comment = new QLineEdit( m_main );
     m_comment->setMinimumWidth(300);
-    m_commentLabel = new QLabel( i18nc("@label:textbox", "Comment:" ), m_main );
+    m_commentLabel = new QLabel( QObject::tr("Comment:", "@label:textbox"), m_main );
     m_commentLabel->setBuddy( m_comment );
 
     m_folderTree = new QTreeWidget(m_main);
@@ -329,11 +329,10 @@ void KBookmarkDialog::newFolderButton()
 {
 
     QString caption = parentBookmark().fullText().isEmpty() ?
-                      i18nc("@title:window","Create New Bookmark Folder" ) :
-                      i18nc("@title:window","Create New Bookmark Folder in %1" ,
-                        parentBookmark().text() );
+                      QObject::tr("Create New Bookmark Folder", "@title:window") :
+                      QObject::tr("Create New Bookmark Folder in %1", "@title:window").arg(parentBookmark().text() );
     bool ok;
-    QString text = QInputDialog::getText( this, caption, i18nc("@label:textbox", "New folder:" ), 
+    QString text = QInputDialog::getText( this, caption, QObject::tr("New folder:", "@label:textbox"), 
                                           QLineEdit::Normal, QString(), &ok );
     if ( !ok )
         return;
@@ -366,7 +365,7 @@ void KBookmarkDialog::fillGroup( QTreeWidgetItem * parentItem, const KBookmarkGr
 KBookmarkTreeItem::KBookmarkTreeItem(QTreeWidget * tree)
     : QTreeWidgetItem(tree), m_address("")
 {
-    setText(0, i18nc("name of the container of all browser bookmarks","Bookmarks"));
+    setText(0, QObject::tr("Bookmarks", "name of the container of all browser bookmarks"));
     setIcon(0, SmallIcon("bookmarks"));
     tree->expandItem(this);
     tree->setCurrentItem( this );

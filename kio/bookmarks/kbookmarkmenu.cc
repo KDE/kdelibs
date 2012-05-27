@@ -25,7 +25,6 @@
 
 #include <kcoreauthorized.h>
 #include <kiconloader.h>
-#include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kmenu.h>
 #include <kstandardshortcut.h>
@@ -37,6 +36,7 @@
 #include <qclipboard.h>
 #include <qmimedata.h>
 
+#include <QtCore/QObject>
 #include <QtCore/QDebug>
 #include <QtCore/QStack>
 #include <QHeaderView>
@@ -263,35 +263,35 @@ KBookmarkContextMenu::~KBookmarkContextMenu()
 void KBookmarkContextMenu::addBookmark()
 {
   if( m_pOwner && m_pOwner->enableOption(KBookmarkOwner::ShowAddBookmark)  )
-      addAction( KDE::icon("bookmark-new"), i18n( "Add Bookmark Here" ), this, SLOT(slotInsert()) );
+      addAction( KDE::icon("bookmark-new"), QObject::tr("Add Bookmark Here"), this, SLOT(slotInsert()) );
 }
 
 void KBookmarkContextMenu::addFolderActions()
 {
-  addAction( i18n( "Open Folder in Bookmark Editor" ), this, SLOT(slotEditAt()) );
+  addAction( QObject::tr("Open Folder in Bookmark Editor" ), this, SLOT(slotEditAt()) );
   addProperties();
   addSeparator();
-  addAction( KDE::icon("edit-delete"), i18n( "Delete Folder" ), this, SLOT(slotRemove()) );
+  addAction( KDE::icon("edit-delete"), QObject::tr( "Delete Folder" ), this, SLOT(slotRemove()) );
 }
 
 
 void KBookmarkContextMenu::addProperties()
 {
-  addAction( i18n( "Properties" ), this, SLOT(slotProperties()) );
+  addAction( QObject::tr( "Properties" ), this, SLOT(slotProperties()) );
 }
 
 void KBookmarkContextMenu::addBookmarkActions()
 {
-  addAction( i18n( "Copy Link Address" ), this, SLOT(slotCopyLocation()) );
+  addAction( QObject::tr( "Copy Link Address" ), this, SLOT(slotCopyLocation()) );
   addProperties();
   addSeparator();
-  addAction( KDE::icon("edit-delete"), i18n( "Delete Bookmark" ), this, SLOT(slotRemove()) );
+  addAction( KDE::icon("edit-delete"), QObject::tr( "Delete Bookmark" ), this, SLOT(slotRemove()) );
 }
 
 void KBookmarkContextMenu::addOpenFolderInTabs()
 {
    if(m_pOwner->supportsTabs())
-      addAction(KDE::icon("tab-new"), i18n( "Open Folder in Tabs" ), this, SLOT( slotOpenFolderInTabs() ) );
+      addAction(KDE::icon("tab-new"), QObject::tr( "Open Folder in Tabs" ), this, SLOT( slotOpenFolderInTabs() ) );
 }
 
 void KBookmarkContextMenu::slotEditAt()
@@ -316,7 +316,7 @@ void KBookmarkContextMenu::slotInsert()
   QString url = m_pOwner->currentUrl();
   if (url.isEmpty())
   {
-    KMessageBox::error( QApplication::activeWindow(), i18n("Cannot add bookmark with empty URL."));
+    KMessageBox::error( QApplication::activeWindow(), QObject::tr("Cannot add bookmark with empty URL."));
     return;
   }
   QString title = m_pOwner->currentTitle();
@@ -348,10 +348,10 @@ void KBookmarkContextMenu::slotRemove()
 
   if (KMessageBox::warningContinueCancel(
           QApplication::activeWindow(),
-          folder ? i18n("Are you sure you wish to remove the bookmark folder\n\"%1\"?", bm.text())
-                 : i18n("Are you sure you wish to remove the bookmark\n\"%1\"?", bm.text()),
-          folder ? i18n("Bookmark Folder Deletion")
-                 : i18n("Bookmark Deletion"),
+          folder ? QObject::tr("Are you sure you wish to remove the bookmark folder\n\"%1\"?").arg(bm.text())
+                 : QObject::tr("Are you sure you wish to remove the bookmark\n\"%1\"?").arg(bm.text()),
+          folder ? QObject::tr("Bookmark Folder Deletion")
+                 : QObject::tr("Bookmark Deletion"),
           KStandardGuiItem::del())
         != KMessageBox::Continue
      )
@@ -450,11 +450,11 @@ void KBookmarkMenu::addOpenInTabs()
     if( !m_pOwner || !m_pOwner->supportsTabs() || !KAuthorized::authorizeKAction("bookmarks") )
         return;
 
-    QString title = i18n( "Open Folder in Tabs" );
+    QString title = QObject::tr( "Open Folder in Tabs" );
 
     KAction * paOpenFolderInTabs = new KAction( title, this );
     paOpenFolderInTabs->setIcon( KDE::icon("tab-new") );
-    paOpenFolderInTabs->setHelpText( i18n( "Open all bookmarks in this folder as a new tab." ) );
+    paOpenFolderInTabs->setHelpText( QObject::tr( "Open all bookmarks in this folder as a new tab." ) );
     connect( paOpenFolderInTabs, SIGNAL( triggered( bool ) ), this, SLOT( slotOpenFolderInTabs() ) );
 
     m_parentMenu->addAction(paOpenFolderInTabs);
@@ -467,11 +467,11 @@ void KBookmarkMenu::addAddBookmarksList()
         return;
 
     if (d->bookmarksToFolder == 0) {
-        QString title = i18n( "Bookmark Tabs as Folder..." );
+        QString title = QObject::tr( "Bookmark Tabs as Folder..." );
         d->bookmarksToFolder = new KAction( title, this );
         m_actionCollection->addAction( m_bIsRoot ? "add_bookmarks_list" : 0, d->bookmarksToFolder);
         d->bookmarksToFolder->setIcon( KDE::icon( "bookmark-new-list" ) );
-        d->bookmarksToFolder->setHelpText( i18n( "Add a folder of bookmarks for all open tabs." ) );
+        d->bookmarksToFolder->setHelpText( QObject::tr( "Add a folder of bookmarks for all open tabs." ) );
         connect( d->bookmarksToFolder, SIGNAL( triggered( bool ) ), this, SLOT( slotAddBookmarksList() ) );
     }
 
@@ -504,7 +504,7 @@ void KBookmarkMenu::addEditBookmarks()
   KAction * m_paEditBookmarks = m_actionCollection->addAction(KStandardAction::EditBookmarks, "edit_bookmarks",
                                                               m_pManager, SLOT(slotEditBookmarks()));
   m_parentMenu->addAction(m_paEditBookmarks);
-  m_paEditBookmarks->setHelpText( i18n( "Edit your bookmark collection in a separate window" ) );
+  m_paEditBookmarks->setHelpText( QObject::tr( "Edit your bookmark collection in a separate window" ) );
 }
 
 void KBookmarkMenu::addNewFolder()
@@ -513,9 +513,9 @@ void KBookmarkMenu::addNewFolder()
         return;
 
     if (d->newBookmarkFolder == 0) {
-        d->newBookmarkFolder = new KAction( i18n( "New Bookmark Folder..." ), this );
+        d->newBookmarkFolder = new KAction( QObject::tr( "New Bookmark Folder..." ), this );
         d->newBookmarkFolder->setIcon( KDE::icon( "folder-new" ) );
-        d->newBookmarkFolder->setHelpText( i18n( "Create a new bookmark folder in this menu" ) );
+        d->newBookmarkFolder->setHelpText( QObject::tr( "Create a new bookmark folder in this menu" ) );
         connect( d->newBookmarkFolder, SIGNAL( triggered( bool ) ), this, SLOT( slotNewFolder() ) );
     }
 
