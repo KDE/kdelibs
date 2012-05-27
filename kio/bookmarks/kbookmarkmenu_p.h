@@ -33,6 +33,7 @@
 #include "kbookmarkmanager.h"
 
 class QString;
+class QMenu;
 class KBookmark;
 class KBookmarkGroup;
 class KAction;
@@ -46,10 +47,10 @@ class KImportedBookmarkMenu : public KBookmarkMenu
 public:
   //TODO simplfy
   KImportedBookmarkMenu( KBookmarkManager* mgr,
-                 KBookmarkOwner * owner, KMenu * parentMenu,
+                 KBookmarkOwner * owner, QMenu * parentMenu,
                  const QString & type, const QString & location );
   KImportedBookmarkMenu( KBookmarkManager* mgr,
-                 KBookmarkOwner * owner, KMenu * parentMenu);
+                 KBookmarkOwner * owner, QMenu * parentMenu);
   ~KImportedBookmarkMenu();
   virtual void clear();
   virtual void refill();

@@ -62,7 +62,7 @@ public:
 
 
 KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
-                              KBookmarkOwner * _owner, KMenu * _parentMenu,
+                              KBookmarkOwner * _owner, QMenu * _parentMenu,
                               KActionCollection * actionCollection)
   : QObject(),
     m_actionCollection( actionCollection ),
@@ -72,7 +72,8 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
     m_parentMenu( _parentMenu ),
     m_parentAddress( QString("") ) //TODO KBookmarkAdress::root
 {
-  m_parentMenu->setKeyboardShortcutsEnabled( true );
+  // TODO KDE5 find a QMenu equvalnet for this one
+  //m_parentMenu->setKeyboardShortcutsEnabled( true );
 
   // qDebug() << "KBookmarkMenu::KBookmarkMenu " << this << " address : " << m_parentAddress;
 
@@ -114,7 +115,7 @@ void KBookmarkMenu::addActions()
 }
 
 KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
-                              KBookmarkOwner * _owner, KMenu * _parentMenu,
+                              KBookmarkOwner * _owner, QMenu * _parentMenu,
                               const QString & parentAddress)
   : QObject(),
     m_actionCollection( new KActionCollection(this) ),
@@ -124,7 +125,8 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
     m_parentMenu( _parentMenu ),
     m_parentAddress( parentAddress )
 {
-  m_parentMenu->setKeyboardShortcutsEnabled( true );
+  // TODO KDE5 find a QMenu equvalnet for this one
+  //m_parentMenu->setKeyboardShortcutsEnabled( true );
   connect( _parentMenu, SIGNAL( aboutToShow() ), SLOT( slotAboutToShow() ) );
   if ( KBookmarkSettings::self()->m_contextmenu )
   {
@@ -161,14 +163,14 @@ void KBookmarkMenu::slotAboutToShow()
 void KBookmarkMenu::slotCustomContextMenu( const QPoint & pos)
 {
     QAction * action = m_parentMenu->actionAt(pos);
-    KMenu * menu = contextMenu(action);
+    QMenu * menu = contextMenu(action);
     if(!menu)
         return;
     menu->setAttribute(Qt::WA_DeleteOnClose);
     menu->popup(m_parentMenu->mapToGlobal(pos));
 }
 
-KMenu * KBookmarkMenu::contextMenu( QAction * action )
+QMenu * KBookmarkMenu::contextMenu( QAction * action )
 {
     KBookmarkActionInterface* act = dynamic_cast<KBookmarkActionInterface *>(action);
     if (!act)
@@ -201,7 +203,7 @@ KBookmarkOwner * KBookmarkMenu::owner() const
     return m_pOwner;
 }
 
-KMenu * KBookmarkMenu::parentMenu() const
+QMenu* KBookmarkMenu::parentMenu() const
 {
     return m_parentMenu;
 }
@@ -229,7 +231,7 @@ const KBookmark KBookmarkActionInterface::bookmark() const
 
 
 KBookmarkContextMenu::KBookmarkContextMenu(const KBookmark & bk, KBookmarkManager * manager, KBookmarkOwner *owner, QWidget * parent)
-    : KMenu(parent), bm(bk), m_pManager(manager), m_pOwner(owner)
+    : QMenu(parent), bm(bk), m_pManager(manager), m_pOwner(owner)
 {
     connect(this, SIGNAL(aboutToShow()), SLOT(slotAboutToShow()));
 }
@@ -625,7 +627,7 @@ void KImportedBookmarkMenu::slotNSLoad()
 }
 
 KImportedBookmarkMenu::KImportedBookmarkMenu( KBookmarkManager* mgr,
-                 KBookmarkOwner * owner, KMenu * parentMenu,
+                 KBookmarkOwner * owner, QMenu * parentMenu,
                  const QString & type, const QString & location )
     :KBookmarkMenu(mgr, owner, parentMenu, QString()), m_type(type), m_location(location)
 {
@@ -633,7 +635,7 @@ KImportedBookmarkMenu::KImportedBookmarkMenu( KBookmarkManager* mgr,
 }
 
 KImportedBookmarkMenu::KImportedBookmarkMenu( KBookmarkManager* mgr,
-                 KBookmarkOwner * owner, KMenu * parentMenu)
+                 KBookmarkOwner * owner, QMenu * parentMenu)
     :KBookmarkMenu(mgr, owner, parentMenu, QString()), m_type(QString()), m_location(QString())
 {
 

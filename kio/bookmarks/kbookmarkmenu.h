@@ -45,7 +45,6 @@ class KActionMenu;
 class KActionCollection;
 class KBookmarkOwner;
 class KBookmarkMenu;
-class KMenu;
 class KBookmarkActionInterface;
 
 class KBookmarkMenuPrivate; // Not implemented
@@ -90,7 +89,7 @@ public:
    * @todo KDE 5: give ownership of the bookmarkmenu to another qobject, e.g. parentMenu.
    * Currently this is a QObject without a parent, use setParent to benefit from automatic deletion.
    */
-  KBookmarkMenu( KBookmarkManager* mgr, KBookmarkOwner * owner, KMenu * parentMenu, KActionCollection *collec);
+  KBookmarkMenu( KBookmarkManager* mgr, KBookmarkOwner * owner, QMenu * parentMenu, KActionCollection *collec);
 
   /**
    * Creates a bookmark submenu
@@ -99,7 +98,7 @@ public:
    * Currently this is a QObject without a parent, use setParent to benefit from automatic deletion.
    */
   KBookmarkMenu( KBookmarkManager* mgr, KBookmarkOwner * owner,
-                 KMenu * parentMenu, const QString & parentAddress);
+                 QMenu * parentMenu, const QString & parentAddress);
 
   ~KBookmarkMenu();
 
@@ -124,7 +123,7 @@ protected:
   virtual void clear();
   virtual void refill();
   virtual QAction* actionForBookmark(const KBookmark &bm);
-  virtual KMenu * contextMenu(QAction * action );
+  virtual QMenu * contextMenu(QAction * action );
 
   void addActions();
   void fillBookmarks();
@@ -149,7 +148,7 @@ protected:
    * The menu in which we insert our actions
    * Supplied in the constructor.
    */
-  KMenu * parentMenu() const;
+  QMenu * parentMenu() const;
 
   /**
    * List of our sub menus
@@ -177,13 +176,13 @@ private:
   KBookmarkManager * m_pManager;
   KBookmarkOwner * m_pOwner;
 
-  KMenu * m_parentMenu;
+  QMenu * m_parentMenu;
 
 private:
   QString m_parentAddress;
 };
 
-class KIO_EXPORT KBookmarkContextMenu : public KMenu
+class KIO_EXPORT KBookmarkContextMenu : public QMenu
 {
     Q_OBJECT
     

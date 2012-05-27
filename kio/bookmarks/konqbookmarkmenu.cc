@@ -239,7 +239,7 @@ KonqBookmarkOwner::~KonqBookmarkOwner()
 {
 }
 
-KMenu * KonqBookmarkMenu::contextMenu(QAction * action)
+QMenu * KonqBookmarkMenu::contextMenu(QAction * action)
 {
     KBookmarkActionInterface* act = dynamic_cast<KBookmarkActionInterface *>(action);
     if (!act)

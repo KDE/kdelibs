@@ -97,7 +97,7 @@ protected:
 
   virtual void refill();
   virtual QAction* actionForBookmark(const KBookmark &bm);
-  virtual KMenu * contextMenu(QAction * act);
+  QMenu* contextMenu(QAction* action);
   void fillDynamicBookmarks();
 private:
   KonqBookmarkOwner * owner()
