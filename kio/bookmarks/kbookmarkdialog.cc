@@ -19,6 +19,7 @@
 */
 
 #include <QtGui/QInputDialog>
+#include <QtGui/QLineEdit>
 
 #include "kbookmarkdialog.h"
 #include "kbookmarkmanager.h"
@@ -28,7 +29,6 @@
 #include <QLabel>
 #include <QTreeWidget>
 #include <QHeaderView>
-#include <klineedit.h>
 #include <klocalizedstring.h>
 #include <kiconloader.h>
 #include <kstandardguiitem.h>
