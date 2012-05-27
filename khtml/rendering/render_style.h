@@ -608,9 +608,9 @@ public:
     BorderRadiusData() : Shared<BorderRadiusData>() {};
     BorderRadiusData(const BorderRadiusData &other) : Shared<BorderRadiusData>(),
         topRight(other.topRight),
-        topLeft(other.topLeft),
         bottomRight(other.bottomRight),
-        bottomLeft(other.bottomLeft)
+        bottomLeft(other.bottomLeft),
+        topLeft(other.topLeft)
     {}
 
     bool operator==(const BorderRadiusData& o) const;
