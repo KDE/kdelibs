@@ -25,33 +25,7 @@ Boston, MA 02110-1301, USA.
 
 #include "kfontdialog.h"
 
-#include <config.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-
-
-#include <QComboBox>
-#include <QCheckBox>
-#include <QtCore/QFile>
-#include <QFont>
-#include <QLabel>
-#include <QLayout>
-#include <QScrollBar>
-#include <QtCore/QMutableStringListIterator>
-#include <QFontDatabase>
-#include <QList>
-#include <QGroupBox>
-#include <kcharsets.h>
-#include <kconfig.h>
-#include <kdialog.h>
-#include <kglobalsettings.h>
-#include <klistwidget.h>
 #include <klocalizedstring.h>
-#include <kstandarddirs.h>
-#include <kdebug.h>
-#include <knuminput.h>
-#include <kconfiggroup.h>
 
 class KFontDialog::Private
 {

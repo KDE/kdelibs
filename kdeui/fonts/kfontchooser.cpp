@@ -38,8 +38,6 @@ Boston, MA 02110-1301, USA.
 #include <klineedit.h>
 #include <klistwidget.h>
 #include <klocale.h>
-#include <kstandarddirs.h>
-#include <kdebug.h>
 #include <knuminput.h>
 #include <kconfiggroup.h>
 

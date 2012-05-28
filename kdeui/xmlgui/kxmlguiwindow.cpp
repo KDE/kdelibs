@@ -31,22 +31,15 @@
 #include "kxmlguifactory.h"
 #include "kcmdlineargs.h"
 #include "ktoggleaction.h"
-#include "ksessionmanager.h"
 #include "kstandardaction.h"
 
-#include <config.h>
-
 #include <QCloseEvent>
-#include <QDesktopWidget>
-#include <QDockWidget>
 #include <QtXml/QDomDocument>
 #include <QLayout>
-#include <QtCore/QObject>
-#include <QSessionManager>
+#include <QObject>
 #include <QStyle>
-#include <QtCore/QTimer>
 #include <QWidget>
-#include <QtCore/QList>
+#include <QList>
 #include <kaction.h>
 #include <kconfig.h>
 #include <kdebug.h>
@@ -54,7 +47,6 @@
 #include <khelpmenu.h>
 #include <klocalizedstring.h>
 #include <kmenubar.h>
-#include <kstandarddirs.h>
 #include <kstatusbar.h>
 #include <ktoolbar.h>
 #include <kwindowsystem.h>
@@ -62,7 +54,6 @@
 
 #include <stdlib.h>
 #include <ctype.h>
-#include <assert.h>
 
 class KXmlGuiWindowPrivate : public KMainWindowPrivate {
 public:
