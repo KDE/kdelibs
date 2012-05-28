@@ -1062,7 +1062,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
             }
             m_underMouse = target;
         }
-
+#if 0
         if (target && ev.id() == EventImpl::MOUSEMOVE_EVENT) {
             // ### is this one still necessary? it doubles every mouse event...
             // I'd reckon it's no longer needed since Harri made the event propagation bubble
@@ -1070,7 +1070,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
                             QApplication::mouseButtons(), QApplication::keyboardModifiers());
             QApplication::sendEvent(target, &evt);
         }
-
+#endif
         if (ev.id() == EventImpl::MOUSEDOWN_EVENT) {
             if (!target || (!::qobject_cast<QScrollBar*>(target) && 
                             !::qobject_cast<KUrlRequester*>(m_widget) &&
