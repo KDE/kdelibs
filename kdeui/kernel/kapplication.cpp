@@ -455,6 +455,10 @@ void KApplication::iceIOErrorHandler( _IceConn *conn )
     exit( 1 );
 }
 
+// TODO remove this KDEUI_EXPORT completely once this is in kde4support
+// (only called by KUniqueApplication, no need to export)
+KDEUI_EXPORT bool s_kuniqueapplication_startCalled = false;
+
 void KApplicationPrivate::init(bool GUIenabled)
 {
   if ((getuid() != geteuid()) ||
@@ -521,7 +525,6 @@ void KApplicationPrivate::init(bool GUIenabled)
       ::exit(125);
   }
 
-  extern bool s_kuniqueapplication_startCalled;
   if ( bus && !s_kuniqueapplication_startCalled ) // don't register again if KUniqueApplication did so already
   {
       QStringList parts = q->organizationDomain().split(QLatin1Char('.'), QString::SkipEmptyParts);

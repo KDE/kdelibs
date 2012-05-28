@@ -25,6 +25,7 @@ set(libkde4support_SRCS
     kdeui/karrowbutton.cpp
     kdeui/ksplashscreen.cpp
     kdeui/kdialogbuttonbox.cpp
+    kdeui/kuniqueapplication.cpp
 )
 
 include_directories(
@@ -34,6 +35,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/kdecore/io/
     ${CMAKE_SOURCE_DIR}/kdecore/util/
     ${CMAKE_SOURCE_DIR}/kdecore/localization/
+    ${KDE4_KDEUI_INCLUDES}
     ${kcoreaddons_SOURCE_DIR}/src/randomness # for KRandom
     ${kcoreaddons_SOURCE_DIR}/src/io # for KBackup
     ${kcoreaddons_BINARY_DIR}/src
@@ -54,7 +56,7 @@ configure_file(config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-network
 add_library(kde4support ${LIBRARY_TYPE} ${libkde4support_SRCS})
 generate_export_header(kde4support)
 
-target_link_libraries(kde4support ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDBUS_LIBRARY} kdecore kcoreaddons kwidgets kauth)
+target_link_libraries(kde4support ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDBUS_LIBRARY} kdecore kcoreaddons kwidgets kauth kdeui ${X11_LIBRARIES})
 set_target_properties(kde4support PROPERTIES VERSION ${ECM_VERSION_STRING} SOVERSION ${ECM_SOVERSION})
 
 install(TARGETS kde4support EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
@@ -81,6 +83,7 @@ install(FILES
     kdeui/karrowbutton.h
     kdeui/ksplashscreen.h
     kdeui/kdialogbuttonbox.h
+    kdeui/kuniqueapplication.h
     ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

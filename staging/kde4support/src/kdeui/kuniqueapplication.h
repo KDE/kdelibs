@@ -21,12 +21,13 @@
 #ifndef KUNIQUEAPP_H
 #define KUNIQUEAPP_H
 
+#include <kde4support_export.h>
 #include <kapplication.h>
 
 /**
  * KUniqueApplication is a KApplication which only uses a single process.  When
- * a KUniqueApplication is started, it attempts to contact an existing copy 
- * of the application.  If successful, the program asks the 
+ * a KUniqueApplication is started, it attempts to contact an existing copy
+ * of the application.  If successful, the program asks the
  * existing process to create a new instance by calling its newInstance() method
  * and then exits.  If there is no existing process then the program forks and
  * calls the newInstance() method.  When newInstance() is called, the application
@@ -52,7 +53,7 @@
  * @see KApplication
  * @author Preston Brown <pbrown@kde.org>
  */
-class KDEUI_EXPORT KUniqueApplication : public KApplication
+class KDE4SUPPORT_EXPORT KUniqueApplication : public KApplication
 {
   Q_OBJECT
 public:
@@ -99,17 +100,17 @@ public:
    */
   static void addCmdLineOptions();
 
-  /** 
-   * These flags can be used to specify how new instances of 
+  /**
+   * These flags can be used to specify how new instances of
    * unique applications are created.
    */
   enum StartFlag
   {
-	  /** 
-	   * Create a new instance of the application in a new process and 
+	  /**
+	   * Create a new instance of the application in a new process and
 	   * do not attempt to re-use an existing process.
-	   * 
-	   * With this flag set, the new instance of the application will 
+	   *
+	   * With this flag set, the new instance of the application will
 	   * behave as if it were a plain KApplication rather than a KUniqueApplication.
 	   *
 	   * This is useful if you have an application where all instances are typically run
@@ -149,13 +150,13 @@ public:
    * Also note that you MUST call KUniqueApplication::addCmdLineOptions(),
    * if you use command line options before start() is called.
    *
-   * @param flags 	Optional flags which control how a new instance 
+   * @param flags 	Optional flags which control how a new instance
    * 				of the application is started.
    * @return true if registration is successful.
    *         false if another process was already running.
    */
   static bool start(StartFlags flags);
-  // BIC: merge with start(StartFlags flags = StartFlags()) 
+  // BIC: merge with start(StartFlags flags = StartFlags())
   static bool start();
 
   /**

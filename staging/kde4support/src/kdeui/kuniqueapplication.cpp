@@ -73,7 +73,6 @@
 
 bool KUniqueApplication::Private::s_nofork = false;
 bool KUniqueApplication::Private::s_multipleInstances = false;
-bool s_kuniqueapplication_startCalled = false;
 bool KUniqueApplication::Private::s_handleAutoStarted = false;
 #ifdef Q_WS_WIN
 /* private helpers from kapplication_win.cpp */
@@ -114,6 +113,7 @@ bool KUniqueApplication::start()
 bool
 KUniqueApplication::start(StartFlags flags)
 {
+  extern KDEUI_EXPORT bool s_kuniqueapplication_startCalled;
   if( s_kuniqueapplication_startCalled )
     return true;
   s_kuniqueapplication_startCalled = true;
