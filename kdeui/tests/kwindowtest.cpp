@@ -13,7 +13,6 @@
 #include "kwindowtest.h"
 #include <klineedit.h>
 #include <kstandardaction.h>
-#include <kstandarddirs.h>
 #include <kxmlguifactory.h>
 #include <kactionmenu.h>
 #include <kactioncollection.h>
@@ -173,7 +172,7 @@ TestWindow::TestWindow (QWidget *parent)
 
     // KXMLGUIClient looks in the "data" resource for the .rc files
     // This line is for test programs only!
-    KGlobal::dirs()->addResourceDir( "data", KDESRCDIR );
+    qputenv("XDG_DATA_HOME", KDESRCDIR);
     setupGUI( QSize(400, 500), Default, "kwindowtest.rc" );
 
     tb=toolBar();
