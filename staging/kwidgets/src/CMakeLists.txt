@@ -20,7 +20,11 @@ target_link_libraries(kwidgets
   ${QT_QTCORE_LIBRARY}
   ${QT_QTGUI_LIBRARY}
   ${QT_QTSVG_LIBRARY}
-  ${KDE4_KDECORE_LIBS}
+  ${QT_QTDBUS_LIBRARY}
+  ${KDE4_KDECORE_LIBS} # KGlobal, KLocale, KLocalizedString
+  ${inqt5_LIBRARY}
+  kconfigcore
+  kcoreaddons
   kdeguiaddons
   kwidgetsaddons
   kauth
