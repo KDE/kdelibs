@@ -35,7 +35,7 @@
 
 #include <QtDBus/QtDBus>
 
-#include <kuniqueapplication.h>
+#include <kdbusservice.h>
 #include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
@@ -793,67 +793,6 @@ void KBuildsycocaAdaptor::recreate(const QDBusMessage &msg)
    Kded::self()->recreate(msg);
 }
 
-class KDEDApplication : public KUniqueApplication
-{
-public:
-  KDEDApplication() : KUniqueApplication( )
-    {
-       startup = true;
-    }
-
-  int newInstance()
-    {
-       if (startup) {
-          startup = false;
-
-          // This long initialization has to be here, not in kdemain.
-          // If it was in main, it would cause a dbus timeout when
-          // our parent from KUniqueApplication tries to call our
-          // newInstance method.
-
-          Kded *kded = Kded::self();
-
-          kded->recreate(true); // initial
-
-          if (bCheckUpdates)
-            (void) new KUpdateD; // Watch for updates
-
-#ifdef HAVE_X11
-          XEvent e;
-          e.xclient.type = ClientMessage;
-          e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
-          e.xclient.display = QX11Info::display();
-          e.xclient.window = QX11Info::appRootWindow();
-          e.xclient.format = 8;
-          strcpy( e.xclient.data.b, "kded" );
-          XSendEvent( QX11Info::display(), QX11Info::appRootWindow(), False, SubstructureNotifyMask, &e );
-#endif
-
-          runKonfUpdate(); // Run it once.
-
-#ifdef HAVE_X11
-          e.xclient.type = ClientMessage;
-          e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
-          e.xclient.display = QX11Info::display();
-          e.xclient.window = QX11Info::appRootWindow();
-          e.xclient.format = 8;
-          strcpy( e.xclient.data.b, "confupdate" );
-          XSendEvent( QX11Info::display(), QX11Info::appRootWindow(), False, SubstructureNotifyMask, &e );
-#endif
-
-          if (bCheckHostname)
-            (void) new KHostnameD(HostnamePollInterval); // Watch for hostname changes
-
-          kded->initModules();
-       } else
-          runBuildSycoca();
-
-       return 0;
-    }
-
-  bool startup;
-};
-
 extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 {
      KAboutData aboutData( "kded5",
@@ -866,14 +805,12 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 
      KCmdLineArgs::init(argc, argv, &aboutData);
 
-     KUniqueApplication::addCmdLineOptions();
-
      KCmdLineArgs::addCmdLineOptions( options );
 
      // WABA: Make sure not to enable session management.
      putenv(qstrdup("SESSION_MANAGER="));
 
-     // Parse command line before checking DCOP
+     // Parse command line before checking D-Bus
      KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
      KComponentData componentData(&aboutData);
@@ -882,22 +819,20 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      KConfigGroup cg(config, "General");
      if (args->isSet("check"))
      {
-        // KUniqueApplication not wanted here.
-        KApplication app;
+        // KDBusService not wanted here.
+        QCoreApplication app(argc, argv);
         checkStamps = cg.readEntry("CheckFileStamps", true);
         runBuildSycoca();
         runKonfUpdate();
         return 0;
      }
 
-     if (!KUniqueApplication::start())
-     {
-        fprintf(stderr, "KDE Daemon (kded) already running.\n");
-        return 0;
-     }
+     QApplication app(argc, argv);
+     app.setQuitOnLastWindowClosed(false);
+     app.setApplicationName("kded5");
+     app.setOrganizationDomain("kde.org");
 
-     // Thiago: reenable if such a thing exists in QtDBus in the future
-     //KUniqueApplication::dcopClient()->setQtBridgeEnabled(false);
+     KDBusService service(KDBusService::Unique);
 
      HostnamePollInterval = cg.readEntry("HostnamePollInterval", 5000);
      bCheckSycoca = cg.readEntry("CheckSycoca", true);
@@ -906,23 +841,49 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
      checkStamps = cg.readEntry("CheckFileStamps", true);
      delayedCheck = cg.readEntry("DelayedCheck", false);
 
-     Kded *kded = new Kded(); // Build data base
-
 #ifndef _WIN32_WCE
      KDE_signal(SIGTERM, sighandler);
 #endif
      KDE_signal(SIGHUP, sighandler);
-     KDEDApplication k;
-     k.setQuitOnLastWindowClosed(false);
 
      KCrash::setFlags(KCrash::AutoRestart);
 
-     // Not sure why kded is created before KDEDApplication
-     // but if it has to be, then it needs to be moved to the main thread
-     // before it can use timers (DF)
-     kded->moveToThread( k.thread() );
+     Kded *kded = new Kded();
 
-     int result = k.exec(); // keep running
+     kded->recreate(true); // initial
+
+     if (bCheckUpdates)
+         (void) new KUpdateD; // Watch for updates
+
+#ifdef HAVE_X11
+     XEvent e;
+     e.xclient.type = ClientMessage;
+     e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
+     e.xclient.display = QX11Info::display();
+     e.xclient.window = QX11Info::appRootWindow();
+     e.xclient.format = 8;
+     strcpy( e.xclient.data.b, "kded" );
+     XSendEvent( QX11Info::display(), QX11Info::appRootWindow(), False, SubstructureNotifyMask, &e );
+#endif
+
+     runKonfUpdate(); // Run it once.
+
+#ifdef HAVE_X11
+     e.xclient.type = ClientMessage;
+     e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
+     e.xclient.display = QX11Info::display();
+     e.xclient.window = QX11Info::appRootWindow();
+     e.xclient.format = 8;
+     strcpy( e.xclient.data.b, "confupdate" );
+     XSendEvent( QX11Info::display(), QX11Info::appRootWindow(), False, SubstructureNotifyMask, &e );
+#endif
+
+     if (bCheckHostname)
+         (void) new KHostnameD(HostnamePollInterval); // Watch for hostname changes
+
+     kded->initModules();
+
+     int result = app.exec(); // keep running
 
      delete kded;
 

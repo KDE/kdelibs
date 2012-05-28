@@ -1,6 +1,11 @@
 project(kded)
 
-include_directories( ${KDE4_KIO_INCLUDES} ${KDE4_KCONFIG_INCLUDES})
+include_directories(
+  ${KDE4_KIO_INCLUDES}
+  ${KDE4_KCONFIG_INCLUDES}
+  ${kdbusaddons_SOURCE_DIR}/src
+  ${kdbusaddons_BINARY_DIR}/src
+)
 
 add_subdirectory( tests )
 
@@ -26,7 +31,7 @@ if (Q_OS_MAC)
     set_target_properties(kded5 PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "KDE Daemon")
 endif (Q_OS_MAC)
 
-target_link_libraries(kdeinit_kded5  ${KDE4_KIO_LIBS} ${X11_LIBRARIES} kcoreaddons)
+target_link_libraries(kdeinit_kded5  ${KDE4_KIO_LIBS} ${X11_LIBRARIES} kcoreaddons kdbusaddons)
 
 install(TARGETS kdeinit_kded5 ${INSTALL_TARGETS_DEFAULT_ARGS})
 
