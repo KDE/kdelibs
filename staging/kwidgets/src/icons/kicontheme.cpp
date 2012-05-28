@@ -129,8 +129,6 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 
     d->mInternalName = name;
 
-    QStringList icnlibs;
-    QStringList::ConstIterator it, itDir;
     QStringList themeDirs;
     QSet<QString> addedDirs; // Used for avoiding duplicates.
 
@@ -140,9 +138,9 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 
     if (!appName.isEmpty() &&
        ( name == defaultThemeName() || name== "hicolor" || name == "locolor" ) ) {
-        icnlibs = KGlobal::dirs()->resourceDirs("data");
-        for (it=icnlibs.constBegin(); it!=icnlibs.constEnd(); ++it) {
-            const QString cDir = *it + appName + "/icons/" + name;
+        const QStringList icnlibs = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
+        for (QStringList::ConstIterator it=icnlibs.constBegin(); it!=icnlibs.constEnd(); ++it) {
+            const QString cDir = *it + '/' + appName + "/icons/" + name;
             if (QFile::exists( cDir )) {
                 themeDirs += cDir + '/';
             }
@@ -150,24 +148,21 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     }
     // Find the theme description file. These are always global.
 
-    icnlibs = KGlobal::dirs()->resourceDirs("icon")
-        << KGlobal::dirs()->resourceDirs("xdgdata-icon")
-        << "/usr/share/pixmaps/"
-        // These are not in the icon spec, but e.g. GNOME puts some icons there anyway.
-        << KGlobal::dirs()->resourceDirs("xdgdata-pixmap");
-    icnlibs.removeDuplicates();
+    QStringList icnlibs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "icons/", QStandardPaths::LocateDirectory);
+    // These are not in the icon spec, but e.g. GNOME puts some icons there anyway.
+    icnlibs += QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "pixmaps/", QStandardPaths::LocateDirectory);
 
     QString fileName, mainSection;
-    for (it=icnlibs.constBegin(); it!=icnlibs.constEnd(); ++it) {
+    for (QStringList::ConstIterator it=icnlibs.constBegin(); it!=icnlibs.constEnd(); ++it) {
         const QString cDir = *it + name + '/';
-        if (KStandardDirs::exists(cDir)) {
+        if (QDir(cDir).exists()) {
             themeDirs += cDir;
             if (d->mDir.isEmpty()) {
-                if (KStandardDirs::exists(cDir + "index.theme")) {
+                if (QFile::exists(cDir + "index.theme")) {
                     d->mDir = cDir;
                     fileName = d->mDir + "index.theme";
                     mainSection = "Icon Theme";
-                } else if (KStandardDirs::exists(cDir + "index.desktop")) {
+                } else if (QFile::exists(cDir + "index.desktop")) {
                     d->mDir = cDir;
                     fileName = d->mDir + "index.desktop";
                     mainSection = "KDE Icon Theme";
@@ -203,11 +198,11 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     d->screenshot = cfg.readPathEntry("ScreenShot", QString());
 
     const QStringList dirs = cfg.readPathEntry("Directories", QStringList());
-    for (it=dirs.begin(); it!=dirs.end(); ++it) {
+    for (QStringList::ConstIterator it=dirs.begin(); it!=dirs.end(); ++it) {
         KConfigGroup cg(d->sharedConfig, *it);
-        for (itDir=themeDirs.constBegin(); itDir!=themeDirs.constEnd(); ++itDir) {
+        for (QStringList::ConstIterator itDir=themeDirs.constBegin(); itDir!=themeDirs.constEnd(); ++itDir) {
             const QString currentDir(*itDir + *it + '/');
-            if (!addedDirs.contains(currentDir) && KStandardDirs::exists(currentDir)) {
+            if (!addedDirs.contains(currentDir) && QDir(currentDir).exists()) {
                 addedDirs.insert(currentDir);
                 KIconThemeDir *dir = new KIconThemeDir(*itDir, *it, cg);
                 if (!dir->isValid()) {
@@ -221,7 +216,6 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     }
 
     // Expand available sizes for scalable icons to their full range
-    int i;
     QMap<int,QList<int> > scIcons;
     foreach(KIconThemeDir *dir, d->mDirs) {
         if (!dir) {
@@ -229,7 +223,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
         }
         if ((dir->type() == KIconLoader::Scalable) && !scIcons.contains(dir->size())) {
             QList<int> lst;
-            for (i=dir->minSize(); i<=dir->maxSize(); ++i) {
+            for (int i=dir->minSize(); i<=dir->maxSize(); ++i) {
                 lst += i;
             }
             scIcons[dir->size()] = lst;
@@ -245,9 +239,10 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     groups += "Dialog";
     const int defDefSizes[] = { 32, 22, 22, 16, 32, 32 };
     KConfigGroup cg(d->sharedConfig, mainSection);
-    for (it=groups.constBegin(), i=0; it!=groups.constEnd(); ++it, i++) {
-        d->mDefSize[i] = cg.readEntry(*it + "Default", defDefSizes[i]);
-        const QList<int> lst = cg.readEntry(*it + "Sizes", QList<int>());
+    for (int i = 0; i < groups.size(); ++i) {
+        const QString group = groups.at(i);
+        d->mDefSize[i] = cg.readEntry(group + "Default", defDefSizes[i]);
+        const QList<int> lst = cg.readEntry(group + "Sizes", QList<int>());
         QList<int> exp;
         QList<int>::ConstIterator it2;
         for (it2=lst.begin(); it2!=lst.end(); ++it2) {
@@ -550,25 +545,19 @@ QStringList KIconTheme::list()
         return *_theme_list();
     }
 
-    const QStringList icnlibs = KGlobal::dirs()->resourceDirs("icon")
-     << KGlobal::dirs()->resourceDirs("xdgdata-icon")
-     << "/usr/share/pixmaps"
-     // These are not in the icon spec, but e.g. GNOME puts some icons there anyway.
-     << KGlobal::dirs()->resourceDirs("xdgdata-pixmap");
+    QStringList icnlibs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "icons/", QStandardPaths::LocateDirectory);
+    // These are not in the icon spec, but e.g. GNOME puts some icons there anyway.
+    icnlibs += QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "pixmaps/", QStandardPaths::LocateDirectory);
 
-    QStringList::ConstIterator it;
-    for (it=icnlibs.begin(); it!=icnlibs.end(); ++it) {
-        QDir dir(*it);
-        if (!dir.exists()) {
-            continue;
-        }
+    Q_FOREACH(const QString& it, icnlibs) {
+        QDir dir(it);
         const QStringList lst = dir.entryList(QDir::Dirs);
         QStringList::ConstIterator it2;
         for (it2=lst.begin(); it2!=lst.end(); ++it2) {
             if ((*it2 == ".") || (*it2 == "..") || (*it2).startsWith(QLatin1String("default.")) ) {
                 continue;
             }
-            if (!KStandardDirs::exists(*it + *it2 + "/index.desktop") && !KStandardDirs::exists(*it + *it2 + "/index.theme")) {
+            if (!KStandardDirs::exists(it + *it2 + "/index.desktop") && !KStandardDirs::exists(it + *it2 + "/index.theme")) {
                 continue;
             }
             KIconTheme oink(*it2);

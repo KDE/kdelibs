@@ -24,6 +24,7 @@
 #include <kdeversion.h>
 #include <qprocess.h>
 #include <qregexp.h>
+#include <qstandardpaths.h>
 
 class KIconLoader_UnitTest : public QObject
 {
@@ -33,7 +34,7 @@ private Q_SLOTS:
     void initTestCase()
     {
         // Remove icon cache (from ~/.kde-unit-test)
-        const QString cacheFile = KGlobal::dirs()->locateLocal("cache", "icon-cache.kcache");
+        const QString cacheFile = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/icon-cache.kcache";
         QFile::remove(cacheFile);
     }
 
@@ -83,10 +84,9 @@ private Q_SLOTS:
         // preferred (because KStandardDirs::resourceDirs() looks at relative paths first)
         // So we have to expect that one -or- the other will be found.
         const QString dataDir = KStandardDirs::realPath(KDESRCDIR "/../../..");
-        KGlobal::dirs()->addResourceDir("data", dataDir);
 
         const QString appName = "kdewidgets";
-        KIconLoader appIconLoader(appName);
+        KIconLoader appIconLoader(appName, QStringList() << dataDir);
         QString iconPath = appIconLoader.iconPath("kdialog", KIconLoader::User);
         //QCOMPARE(iconPath, dataDir + appName + "/pics/kdialog.png");
         QVERIFY2(iconPath.endsWith(appName + "/pics/kdialog.png"), qPrintable(iconPath));
@@ -111,11 +111,10 @@ private Q_SLOTS:
     void testAppPicsDir_KDE_icon()
     {
         const QString dataDir = KStandardDirs::realPath(KDESRCDIR "/../../");
-        KGlobal::dirs()->addResourceDir("data", dataDir);
         // #### This test is broken; it passes even if appName is set to foobar, because
         // QIcon::pixmap returns an unknown icon if it can't find the real icon...
         const QString appName = "kdewidgets";
-        KIconLoader appIconLoader(appName);
+        KIconLoader appIconLoader(appName, QStringList() << dataDir);
         // Now using KDE::icon. Separate test so that KIconLoader isn't fully inited.
         QIcon icon = KDE::icon("kdialog", &appIconLoader);
         {

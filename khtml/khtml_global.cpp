@@ -228,7 +228,7 @@ KIconLoader *KHTMLGlobal::iconLoader()
 {
   if ( !s_iconLoader )
   {
-    s_iconLoader = new KIconLoader(componentData().componentName(), componentData().dirs());
+    s_iconLoader = new KIconLoader(componentData().componentName());
   }
 
   return s_iconLoader;

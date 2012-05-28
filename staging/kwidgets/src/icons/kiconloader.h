@@ -35,7 +35,6 @@ class QPixmap;
 
 class KComponentData;
 class KIconLoaderPrivate;
-class KStandardDirs;
 class KIconEffect;
 class KIconTheme;
 
@@ -180,14 +179,14 @@ public:
      * @param appname Add the data directories of this application to the
      * icon search path for the "User" group. The default argument adds the
      * directories of the current application.
-     * @param dirs the KStandardDirs object to use. If null the global one is used
+     * @param extraSearchPaths additional search paths, either absolute or relative to GenericDataLocation
      *
      * Usually, you use the default iconloader, which can be accessed via
      * KIconLoader::global(), so you hardly ever have to create an
      * iconloader object yourself. That one is the current KComponentData's
      * (typically KApplication's) iconloader.
      */
-    explicit KIconLoader(const QString& appname=QString(), KStandardDirs *dirs = 0, QObject* parent = 0);
+    explicit KIconLoader(const QString& appname=QString(), const QStringList& extraSearchPaths = QStringList(), QObject* parent = 0);
 
     /**
      * Constructs an iconloader.
@@ -388,6 +387,14 @@ public:
     QStringList queryIconsByDir( const QString& iconsDir ) const;
 
     /**
+     * Returns all the search paths for this icon loader, either absolute or
+     * relative to GenericDataLocation.
+     * Mostly internal (for KIconDialog).
+     * \since 5.0
+     */
+    QStringList searchPaths() const;
+
+    /**
      * Returns the current size of the icon group.
      * Using e.g. KIconLoader::SmallIcon will retrieve the icon size
      * that is currently set from System Settings->Appearance->Icon
@@ -416,10 +423,9 @@ public:
     /**
      * Called by KComponentData::newIconLoader to reconfigure the icon loader.
      * @param _appname the new application name
-     * @param _dirs the new standard directories. If 0, the directories
-     *              from KGlobal will be taken.
+     * @param extraSearchPaths additional search paths, either absolute or relative to GenericDataLocation
      */
-    void reconfigure( const QString& _appname, KStandardDirs *_dirs );
+    void reconfigure(const QString& _appname, const QStringList& extraSearchPaths = QStringList());
 
     /**
      * Returns the unknown icon. An icon that is used when no other icon

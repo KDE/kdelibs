@@ -51,7 +51,7 @@ KIconLoader *KJavaAppletViewerFactory::s_iconLoader = 0;
 
 KJavaAppletViewerFactory::KJavaAppletViewerFactory () {
     s_componentData = new KComponentData("kjava");
-    s_iconLoader = new KIconLoader(s_componentData->componentName(), s_componentData->dirs());
+    s_iconLoader = new KIconLoader("kjava");
 }
 
 KJavaAppletViewerFactory::~KJavaAppletViewerFactory () {

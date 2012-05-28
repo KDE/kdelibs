@@ -37,6 +37,7 @@
 #include <QtCore/QDataStream>
 #include <QtCore/QByteArray>
 #include <QtCore/QStringBuilder> // % operator for QString
+#include <QCoreApplication>
 #include <QIcon>
 #include <QImage>
 #include <QMovie>
@@ -51,7 +52,6 @@
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kdebug.h>
-#include <kstandarddirs.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kcomponentdata.h>
@@ -183,7 +183,7 @@ public:
     /**
      * @internal
      */
-    void init( const QString& _appname, KStandardDirs *_dirs );
+    void init(const QString& _appname, const QStringList& extraSearchPaths = QStringList());
 
     /**
      * @internal
@@ -282,12 +282,17 @@ public:
      */
     bool findCachedPixmapWithPath(const QString &key, QPixmap &data, QString &path);
 
+    /**
+     * Find the given file in the search paths.
+     */
+    QString locate(const QString& fileName);
+
     KIconLoader *const q;
 
     QStringList mThemesInTree;
     KIconGroup *mpGroups;
     KIconThemeNode *mpThemeRoot;
-    KStandardDirs *mpDirs;
+    QStringList searchPaths;
     KIconEffect mpEffect;
     QList<KIconThemeNode *> links;
 
@@ -310,7 +315,7 @@ class KIconLoaderGlobalData
 {
 public:
     KIconLoaderGlobalData() {
-        const QStringList genericIconsFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", "generic-icons");
+        const QStringList genericIconsFiles = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "mime/generic-icons");
         //kDebug() << genericIconsFiles;
         Q_FOREACH(const QString& file, genericIconsFiles) {
             parseGenericIconsFiles(file);
@@ -428,7 +433,7 @@ void KIconLoaderPrivate::drawOverlays(const KIconLoader *iconLoader, KIconLoader
     }
 }
 
-KIconLoader::KIconLoader(const QString& _appname, KStandardDirs *_dirs, QObject* parent)
+KIconLoader::KIconLoader(const QString& _appname, const QStringList& extraSearchPaths, QObject* parent)
     : QObject(parent)
 {
     setObjectName(_appname);
@@ -436,7 +441,7 @@ KIconLoader::KIconLoader(const QString& _appname, KStandardDirs *_dirs, QObject*
 
     connect(KGlobalSettings::self(), SIGNAL(iconChanged(int)),
             this, SLOT(newIconLoader()));
-    d->init( _appname, _dirs );
+    d->init(_appname, extraSearchPaths);
 }
 
 KIconLoader::KIconLoader(const KComponentData &componentData, QObject* parent)
@@ -447,30 +452,27 @@ KIconLoader::KIconLoader(const KComponentData &componentData, QObject* parent)
 
     connect(KGlobalSettings::self(), SIGNAL(iconChanged(int)),
             this, SLOT(newIconLoader()));
-    d->init(componentData.componentName(), componentData.dirs());
+    d->init(componentData.componentName());
 }
 
-void KIconLoader::reconfigure( const QString& _appname, KStandardDirs *_dirs )
+void KIconLoader::reconfigure(const QString& _appname, const QStringList& extraSearchPaths)
 {
     delete d;
     d = new KIconLoaderPrivate(this);
-    d->init( _appname, _dirs );
+    d->init(_appname, extraSearchPaths);
 }
 
-void KIconLoaderPrivate::init( const QString& _appname, KStandardDirs *_dirs )
+void KIconLoaderPrivate::init(const QString& _appname, const QStringList& extraSearchPaths)
 {
     extraDesktopIconsLoaded=false;
     mIconThemeInited = false;
     mpThemeRoot = 0;
 
-    if (_dirs)
-        mpDirs = _dirs;
-    else
-        mpDirs = KGlobal::dirs();
+    searchPaths = extraSearchPaths;
 
     appname = _appname;
     if (appname.isEmpty())
-        appname = KGlobal::mainComponent().componentName();
+        appname = QCoreApplication::applicationName();
 
     // Initialize icon cache
     mIconCache = new KSharedDataCache("icon-cache", 10 * 1024 * 1024);
@@ -535,20 +537,12 @@ bool KIconLoaderPrivate::initIconThemes()
     addBaseThemes(mpThemeRoot, appname);
 
     // Insert application specific themes at the top.
-    mpDirs->addResourceType("appicon", "data", appname + "/pics/");
-    // ################## KDE5: consider removing the toolbar directory
-    mpDirs->addResourceType("appicon", "data", appname + "/toolbar/");
+    searchPaths.append(appname + "/pics/");
 
     // Add legacy icon dirs.
-    QStringList dirs;
-    dirs += mpDirs->resourceDirs("icon");
-    dirs += mpDirs->resourceDirs("pixmap");
-    dirs += mpDirs->resourceDirs("xdgdata-icon");
-    dirs += "/usr/share/pixmaps";
+    searchPaths.append("icons/"); // was xdgdata-icon in KStandardDirs
     // These are not in the icon spec, but e.g. GNOME puts some icons there anyway.
-    dirs += mpDirs->resourceDirs("xdgdata-pixmap");
-    for (QStringList::ConstIterator it = dirs.constBegin(); it != dirs.constEnd(); ++it)
-        mpDirs->addResourceDir("appicon", *it);
+    searchPaths.append("pixmaps/"); // was xdgdata-pixmaps in KStandardDirs
 
 #ifndef NDEBUG
     QString dbgString = "Theme tree: ";
@@ -564,13 +558,16 @@ KIconLoader::~KIconLoader()
     delete d;
 }
 
+QStringList KIconLoader::searchPaths() const
+{
+    return d->searchPaths;
+}
+
 void KIconLoader::addAppDir(const QString& appname)
 {
     d->initIconThemes();
 
-    d->mpDirs->addResourceType("appicon", "data", appname + "/pics/");
-    // ################## KDE5: consider removing the toolbar directory
-    d->mpDirs->addResourceType("appicon", "data", appname + "/toolbar/");
+    d->searchPaths.append(appname + "/pics/");
     d->addAppThemes(appname);
 }
 
@@ -654,10 +651,9 @@ void KIconLoader::addExtraDesktopThemes()
     d->initIconThemes();
 
     QStringList list;
-    const QStringList icnlibs = KGlobal::dirs()->resourceDirs("icon");
+    const QStringList icnlibs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "icons", QStandardPaths::LocateDirectory);
     QStringList::ConstIterator it;
     char buf[1000];
-    int r;
     for (it=icnlibs.begin(); it!=icnlibs.end(); ++it)
     {
         QDir dir(*it);
@@ -667,10 +663,10 @@ void KIconLoader::addExtraDesktopThemes()
         QStringList::ConstIterator it2;
         for (it2=lst.begin(); it2!=lst.end(); ++it2)
         {
-            if (!KStandardDirs::exists(*it + *it2 + "/index.desktop")
-                && !KStandardDirs::exists(*it + *it2 + "/index.theme"))
+            if (!QFile::exists(*it + *it2 + "/index.desktop")
+                && !QFile::exists(*it + *it2 + "/index.theme"))
                 continue;
-            r=readlink( QFile::encodeName(*it + *it2) , buf, sizeof(buf)-1);
+            const int r = readlink(QFile::encodeName(*it + *it2) , buf, sizeof(buf)-1);
             if ( r>0 )
             {
                 buf[r]=0;
@@ -1079,6 +1075,23 @@ inline QString KIconLoaderPrivate::unknownIconPath( int size ) const
     return icon.path;
 }
 
+QString KIconLoaderPrivate::locate(const QString& fileName)
+{
+    Q_FOREACH(const QString& dir, searchPaths) {
+        Q_ASSERT(dir.endsWith(QLatin1Char('/')));
+        if (QDir(dir).isAbsolute()) {
+            const QString path = dir + fileName;
+            if (QFile::exists(path))
+                return path;
+        } else {
+            const QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation, dir + fileName);
+            if (!path.isEmpty())
+                return path;
+        }
+    }
+    return QString();
+}
+
 // Finds the absolute path to an icon.
 
 QString KIconLoader::iconPath(const QString& _name, int group_or_size,
@@ -1101,16 +1114,16 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     {
         static const QString &png_ext = KGlobal::staticQString(".png");
         static const QString &xpm_ext = KGlobal::staticQString(".xpm");
-        path = d->mpDirs->findResource("appicon", name + png_ext);
+        path = d->locate(name + png_ext);
 
         static const QString &svgz_ext = KGlobal::staticQString(".svgz");
         static const QString &svg_ext = KGlobal::staticQString(".svg");
         if (path.isEmpty())
-            path = d->mpDirs->findResource("appicon", name + svgz_ext);
+            path = d->locate(name + svgz_ext);
         if (path.isEmpty())
-            path = d->mpDirs->findResource("appicon", name + svg_ext);
+            path = d->locate(name + svg_ext);
         if (path.isEmpty())
-            path = d->mpDirs->findResource("appicon", name + xpm_ext);
+            path = d->locate(name + xpm_ext);
         return path;
     }
 
@@ -1196,7 +1209,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     if (name.startsWith(QLatin1String("favicons/")))
     {
        favIconOverlay = true;
-       name = KStandardDirs::locateLocal("cache", name+".png");
+       name = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + '/' + name + ".png";
     }
 
     bool absolutePath = !pathIsRelative(name);
@@ -1354,7 +1367,7 @@ QString KIconLoader::moviePath(const QString& name, KIconLoader::Group group, in
     QString file = name + ".mng";
     if (group == KIconLoader::User)
     {
-        file = d->mpDirs->findResource("appicon", file);
+        file = d->locate(file);
     }
     else
     {
@@ -1408,7 +1421,7 @@ QStringList KIconLoader::loadAnimated(const QString& name, KIconLoader::Group gr
     QString file = name + "/0001";
     if (group == KIconLoader::User)
     {
-        file = d->mpDirs->findResource("appicon", file + ".png");
+        file = d->locate(file + ".png");
     } else
     {
         if (size == 0)
@@ -1714,7 +1727,7 @@ void KIconLoader::newIconLoader()
         KIconTheme::reconfigure();
     }
 
-    reconfigure( objectName(), d->mpDirs );
+    reconfigure(objectName());
     emit iconLoaderSettingsChanged();
 }
 
@@ -1728,4 +1741,5 @@ QIcon KDE::icon(const QString& iconName, const QStringList& overlays, KIconLoade
 {
     return QIcon(new KIconEngine(iconName, iconLoader ? iconLoader : KIconLoader::global(), overlays));
 }
+
 
