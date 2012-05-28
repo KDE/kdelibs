@@ -80,7 +80,7 @@
 #ifdef IMAGE_TITLES
 #include <qfile.h>
 #include <kfilemetainfo.h>
-#include <ktemporaryfile.h>
+#include <qtemporaryfile.h>
 #endif
 
 #include "html/html_documentimpl.h"
@@ -1272,7 +1272,7 @@ void Loader::slotFinished( KJob* job )
           static_cast<CachedImage*>( r->object )->setSuggestedFilename(fn);
 #ifdef IMAGE_TITLES
           static_cast<CachedImage*>( r->object )->setSuggestedTitle(fn);
-          KTemporaryFile tf;
+          QTemporaryFile tf;
           tf.open();
           tf.write((const char*)r->m_buffer.buffer().data(), r->m_buffer.size());
           tf.flush();
