@@ -39,8 +39,6 @@
 #include <kguiitem.h>
 #include <kiconloader.h>
 #include <kdialog.h>
-#include <kstandarddirs.h>
-#include <kdebug.h>
 #include <klocale.h>
 #include <kwindowsystem.h>
 #include <kseparator.h>
@@ -592,11 +590,8 @@ void KWidgetJobTracker::Private::ProgressWidget::checkDestination(const QUrl &de
 
     if (dest.isLocalFile()) {
         const QString path = dest.toLocalFile();
-        QStringList tmpDirs = KGlobal::dirs()->resourceDirs("tmp");
-        tmpDirs += QDir::tempPath();
-        for (QStringList::const_iterator it = tmpDirs.constBegin() ; ok && it != tmpDirs.constEnd() ; ++it)
-            if (path.contains(*it))
-                ok = false; // it's in the tmp resource
+        if (path.contains(QDir::tempPath()))
+            ok = false; // it's in the tmp directory
     }
 
     if (ok) {
