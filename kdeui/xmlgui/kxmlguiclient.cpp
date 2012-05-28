@@ -22,17 +22,18 @@
 #include "kxmlguifactory.h"
 #include "kxmlguibuilder.h"
 
-#include <QtCore/QDir>
-#include <QtCore/QFile>
-#include <QtXml/QDomDocument>
-#include <QtCore/QTextStream>
-#include <QtCore/QRegExp>
-#include <QtCore/QPointer>
+#include <QDir>
+#include <QFile>
+#include <QDomDocument>
+#include <QTextStream>
+#include <QRegExp>
+#include <QPointer>
+#include <qstandardpaths.h>
 
 #include <kcomponentdata.h>
-#include <kstandarddirs.h>
-#include <kdebug.h>
 #include <kcoreauthorized.h>
+#include <kdebug.h>
+#include <kglobal.h>
 
 #include "kaction.h"
 #include "kactioncollection.h"
@@ -167,7 +168,7 @@ QString KXMLGUIClient::localXMLFile() const
     if (d->m_xmlFile.isEmpty()) // setXMLFile not called at all, can't save. Use case: ToolBarHandler
         return QString();
 
-  return KStandardDirs::locateLocal( "data", componentData().componentName() + '/' + d->m_xmlFile );
+    return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + '/' + componentData().componentName() + '/' + d->m_xmlFile;
 }
 
 
@@ -191,9 +192,9 @@ void KXMLGUIClient::setComponentData(const KComponentData &componentData)
 
 void KXMLGUIClient::loadStandardsXmlFile()
 {
-    const QString file = KStandardDirs::locate("config", "ui/ui_standards.rc", componentData());
+    const QString file = QStandardPaths::locate(QStandardPaths::ConfigLocation, "ui/ui_standards.rc");
     if (file.isEmpty()) {
-        kWarning() << "ui/ui_standards.rc not found in" << componentData().dirs()->resourceDirs("config");
+        kWarning() << "ui/ui_standards.rc not found in" << QStandardPaths::standardLocations(QStandardPaths::ConfigLocation);
     } else {
         const QString doc = KXMLGUIFactory::readConfigFile( file );
         setXML( doc );
@@ -215,8 +216,8 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc
     allFiles.append( file );
   } else {
     const QString filter = componentData().componentName() + '/' + _file;
-    allFiles = componentData().dirs()->findAllResources("data", filter) +
-                 componentData().dirs()->findAllResources("data", _file);
+    allFiles = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, filter) +
+               QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, _file);
   }
   if ( allFiles.isEmpty() && !_file.isEmpty() ) {
     // if a non-empty file gets passed and we can't find it,

@@ -280,10 +280,9 @@ public:
    *
    * @param xmlfile The xml file to use. Contrary to setXMLFile(), this
    *                must be an absolute file path.
-   * @param localxmfile The local xml file to set. This should be the full path
-   *                    to a writeable file, usually inside
-   *                    KStandardDirs::localkdedir(). You can set this to
-   *                    QString(), but no user changes to shortcuts / toolbars
+   * @param localxmlfile The local xml file to set. This should be the full path
+   *                    to a writeable file, usually using QStandardPaths::writableLocation.
+   *                    You can set this to QString(), but no user changes to shortcuts / toolbars
    *                    will be possible in this case. @see setLocalXMLFile()
    * @param merge Whether to merge with the global document
    *

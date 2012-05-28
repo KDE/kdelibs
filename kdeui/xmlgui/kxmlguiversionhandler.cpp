@@ -25,7 +25,7 @@
 #include <QDomDocument>
 #include "kxmlguifactory.h"
 #include <kglobal.h>
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 #include <QtXml/QDomElement>
 
 struct DocStruct
@@ -138,7 +138,7 @@ static void storeActionProperties( QDomDocument &doc,
 //in the properties argument. In real life this means that local ActionProperties
 //takes precedence over global ones, if they exists (think local override of shortcuts).
   QDomNode actionNode = actionPropElement.firstChild();
-  while (!actionNode.isNull()) 
+  while (!actionNode.isNull())
   {
     if (properties.contains(actionNode.toElement().attribute("name")))
     {
@@ -148,7 +148,7 @@ static void storeActionProperties( QDomDocument &doc,
     } else
       actionNode = actionNode.nextSibling();
   }
-  
+
   ActionPropertiesMap::ConstIterator it = properties.begin();
   const ActionPropertiesMap::ConstIterator end = properties.end();
   for (; it != end; ++it )
@@ -285,8 +285,7 @@ KXmlGuiVersionHandler::KXmlGuiVersionHandler(const QStringList& files)
         if ( best != allDocuments.begin() ) {
             QList<DocStruct>::iterator local = allDocuments.begin();
 
-            if ( (*local).file.startsWith(KGlobal::dirs()->localkdedir()) ||
-                 (*local).file.startsWith(KGlobal::dirs()->saveLocation("appdata")) ) {
+            if ( (*local).file.startsWith(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)) ) {
                 // load the local document and extract the action properties
                 QDomDocument localDocument;
                 localDocument.setContent( (*local).data );

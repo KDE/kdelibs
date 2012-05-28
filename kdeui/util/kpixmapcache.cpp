@@ -34,9 +34,9 @@
 #include <QtCore/QMutex>
 #include <QtCore/QMutexLocker>
 #include <QtCore/QList>
+#include <qdir.h>
+#include <qstandardpaths.h>
 
-#include <kglobal.h>
-#include <kstandarddirs.h>
 #include <kdebug.h>
 #include <klockfile.h>
 #include <qsavefile.h>
@@ -1009,14 +1009,15 @@ void KPixmapCache::Private::init()
     mValid = false;
 
     // Find locations of the files
-    mIndexFile = KGlobal::dirs()->locateLocal("cache", "kpc/" + mName + ".index");
-    mDataFile  = KGlobal::dirs()->locateLocal("cache", "kpc/" + mName + ".data");
-    mLockFileName = KGlobal::dirs()->locateLocal("cache", "kpc/" + mName + ".lock");
+    const QString cacheDir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    mEnabled = QDir().mkpath(cacheDir);
+    mIndexFile = cacheDir + "/kpc/" + mName + ".index";
+    mDataFile  = cacheDir + "/kpc/" + mName + ".data";
+    mLockFileName = cacheDir + "/kpc/" + mName + ".lock";
 
-    mEnabled = true;
-    mEnabled &= checkLockFile();
-    mEnabled &= checkFileVersion(mDataFile);
-    mEnabled &= checkFileVersion(mIndexFile);
+    mEnabled = mEnabled && checkLockFile();
+    mEnabled = mEnabled && checkFileVersion(mDataFile);
+    mEnabled = mEnabled && checkFileVersion(mIndexFile);
     if (!mEnabled) {
         kDebug(264) << "Pixmap cache" << mName << "is disabled";
     } else {
@@ -1215,8 +1216,9 @@ bool KPixmapCache::recreateCacheFiles()
 
 void KPixmapCache::deleteCache(const QString& name)
 {
-    QString indexFile = KGlobal::dirs()->locateLocal("cache", "kpc/" + name + ".index");
-    QString dataFile  = KGlobal::dirs()->locateLocal("cache", "kpc/" + name + ".data");
+    const QString cacheDir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    const QString indexFile = cacheDir + "/kpc/" + name + ".index";
+    const QString dataFile = cacheDir + "/kpc/" + name + ".data";
 
     QFile::remove(indexFile);
     QFile::remove(dataFile);

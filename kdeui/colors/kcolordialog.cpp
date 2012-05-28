@@ -61,15 +61,13 @@
 #include <kcombobox.h>
 #include <kconfig.h>
 #include <kglobal.h>
-#include <kglobalsettings.h>
-#include <khbox.h>
 #include <kiconloader.h>
 #include <klineedit.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <knuminput.h>
 #include <kseparator.h>
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 #include <kcolorcollection.h>
 #include <kcolorutils.h>
 
@@ -616,27 +614,21 @@ static const char * const *namedColorFilePath(void)
     //
     // 2009-06-16 Pino Toscano
     //
-    // You can specify either absolute paths or relative locations
-    // wrt KStandardDirs resources. In either way, there should be two
-    // "strings" for each path.
-    // - absolute path: specify it directly, then add 0 as second item
-    //   * example: "/usr/share/X11/rgb.txt", 0,
-    // - KStandardDirs location: specify the filename as first item,
-    //   then add the resource as second
-    //   * example: "kdeui/rgb.txt", "data",
+    // You can specify either absolute paths or relative locations.
+    // Relative locations are relative to GenericDataLocation (XDG_DATA_DIRS).
     //
     static const char * const path[] = {
 #ifdef Q_WS_X11
 #ifdef X11_RGBFILE
-        X11_RGBFILE, 0,
+        X11_RGBFILE,
 #endif
-        "/usr/share/X11/rgb.txt", 0,
-        "/usr/X11R6/lib/X11/rgb.txt", 0,
-        "/usr/openwin/lib/X11/rgb.txt", 0, // for Solaris.
+        "/usr/share/X11/rgb.txt",
+        "/usr/X11R6/lib/X11/rgb.txt",
+        "/usr/openwin/lib/X11/rgb.txt", // for Solaris.
 #else /* systems without X11 */
-        "kdeui/rgb.txt", "data",
+        "kdeui/rgb.txt",
 #endif
-        0, 0
+        0
     };
     return path;
 }
@@ -658,14 +650,14 @@ KColorTable::readNamedColor(void)
     //
 
     const char * const *path = namedColorFilePath();
-    for (int i = 0; path[i]; i += 2) {
+    for (int i = 0; path[i]; ++i) {
         QString file;
-        if (path[i + 1]) {
-            file = KStandardDirs::locate(path[i + 1], QString::fromLatin1(path[i]));
+        if (path[i][0] != '/') { // relative path
+            file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QString::fromLatin1(path[i]));
             if (file.isEmpty()) {
                 continue;
             }
-        } else {
+        } else { // absolute path
             file = QString::fromLatin1(path[i]);
         }
 

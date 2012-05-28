@@ -33,12 +33,12 @@
 #include <QtCore/QDate>
 #include <QtCore/QVariant>
 #include <QTextCodec>
+#include <qstandardpaths.h>
 
 #include <kdebug.h>
 #include <kcomponentdata.h>
 #include <kglobal.h>
 #include <kshortcut.h>
-#include <kstandarddirs.h>
 
 #include "kaction.h"
 #include "kshortcutsdialog.h"
@@ -123,9 +123,9 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, const KComponen
     else
     {
         KComponentData componentData = _componentData.isValid() ? _componentData : KGlobal::mainComponent();
-        xml_file = KStandardDirs::locate("data", componentData.componentName() + '/' + filename);
+        xml_file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, componentData.componentName() + '/' + filename);
         if ( !QFile::exists( xml_file ) )
-          xml_file = KStandardDirs::locate( "data", filename );
+          xml_file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, filename);
     }
 
     QFile file( xml_file );
@@ -146,7 +146,7 @@ bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
     QString xml_file(filename);
 
     if (QDir::isRelativePath(xml_file))
-        xml_file = KStandardDirs::locateLocal("data", componentData.componentName() + '/' + filename);
+        xml_file = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + '/' + componentData.componentName() + '/' + filename;
 
     QFile file( xml_file );
     if ( xml_file.isEmpty() || !file.open( QIODevice::WriteOnly ) )
@@ -680,9 +680,9 @@ QDomDocument KXMLGUIFactoryPrivate::shortcutSchemeDoc(KXMLGUIClient *client)
     {
         // Find the document for the shortcut scheme using both current application path
         // and current xmlguiclient path but making a preference to app path
-        QString schemeFileName = KStandardDirs::locateLocal("data",
+        QString schemeFileName = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + '/' +
             client->componentData().componentName() + '/' +
-            client->componentData().componentName() + schemeName.toLower() + "shortcuts.rc" );
+            client->componentData().componentName() + schemeName.toLower() + "shortcuts.rc";
 
         QFile schemeFile(schemeFileName);
         if (schemeFile.open(QIODevice::ReadOnly))

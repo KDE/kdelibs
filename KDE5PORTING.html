@@ -106,6 +106,7 @@ The porting depends on the resource type:
     KStandardDirs "appdata" -&gt; QStandardPaths::DataLocation
     KStandardDirs "config" -&gt; QStandardPaths::ConfigLocation
     KStandardDirs "xdgdata-apps" -&gt; QStandardPaths::ApplicationsLocation
+    KStandardDirs "cache" -&gt; QStandardPaths::CacheLocation
 </pre>
 If the resource is available in QStandardPaths (i.e. for all of the above), then the porting is simple:
 <pre>
