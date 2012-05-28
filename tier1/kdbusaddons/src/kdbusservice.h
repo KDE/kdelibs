@@ -41,8 +41,8 @@ class KDBusServicePrivate;
  *   <li>Unique: only one instance of this application can ever run. The application
  *   registers to DBus without PID, and any attempt to run the application again will
  *   call a DBus method called "Activate" in the running instance, and then quit.
- *   To implement this method, inherit from KDBusService and declare a slot
- *       Q_SCRIPTABLE int Activate()
+ *   To implement this method, inherit from KDBusService and reimplement
+ *       virtual int Activate();
  *   This slot usually raises the main window of the application.
  * </ul>
  *
@@ -123,6 +123,14 @@ public Q_SLOTS:
      * doing final cleanups.
      */
     void unregister();
+
+    /**
+     * This method is called when a Unique application is launched while it is
+     * already running. In single-windows applications, this method would typically
+     * raise the window.
+     * The default implementation does nothing.
+     */
+    Q_SCRIPTABLE virtual int Activate();
 
 private:
     KDBusServicePrivate * const d;

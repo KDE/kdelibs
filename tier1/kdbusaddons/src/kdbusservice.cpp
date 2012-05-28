@@ -148,3 +148,8 @@ void KDBusService::unregister()
     }
     bus->unregisterService(d->serviceName);
 }
+
+int KDBusService::Activate()
+{
+    return 0;
+}
