@@ -29,7 +29,7 @@
 #include <QApplication>
 #include <QMovie>
 #include <QPainter>
-
+#include <qstandardpaths.h>
 
 #include <kdebug.h>
 #include <ksystemtrayicon.h>
@@ -41,7 +41,6 @@
 #include <kwindowsystem.h>
 #include <kmessagebox.h>
 #include <kactioncollection.h>
-#include <kstandarddirs.h>
 #include <kglobal.h>
 
 #include <netinet/in.h>
@@ -763,10 +762,7 @@ void KStatusNotifierItemPrivate::init(const QString &extraId)
     }
 
     // Init iconThemePath to the app folder for now
-    QStringList dirs = KGlobal::dirs()->findDirs("appdata", "icons");
-    if (!dirs.isEmpty()) {
-        iconThemePath = dirs.first();
-    }
+    iconThemePath = QStandardPaths::locate(QStandardPaths::DataLocation, "icons", QStandardPaths::LocateDirectory);
 
     registerToDaemon();
 }
