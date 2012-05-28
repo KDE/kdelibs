@@ -38,6 +38,7 @@
 #include <QtCore/QByteArray>
 #include <QtCore/QStringBuilder> // % operator for QString
 #include <QCoreApplication>
+#include <QDebug>
 #include <QIcon>
 #include <QImage>
 #include <QMovie>
@@ -51,7 +52,6 @@
 // kdecore
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kdebug.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kcomponentdata.h>
@@ -444,17 +444,6 @@ KIconLoader::KIconLoader(const QString& _appname, const QStringList& extraSearch
     d->init(_appname, extraSearchPaths);
 }
 
-KIconLoader::KIconLoader(const KComponentData &componentData, QObject* parent)
-    : QObject(parent)
-{
-    setObjectName(componentData.componentName());
-    d = new KIconLoaderPrivate(this);
-
-    connect(KGlobalSettings::self(), SIGNAL(iconChanged(int)),
-            this, SLOT(newIconLoader()));
-    d->init(componentData.componentName());
-}
-
 void KIconLoader::reconfigure(const QString& _appname, const QStringList& extraSearchPaths)
 {
     delete d;
@@ -522,11 +511,11 @@ bool KIconLoaderPrivate::initIconThemes()
     {
         delete def;
         // warn, as this is actually a small penalty hit
-        kDebug(264) << "Couldn't find current icon theme, falling back to default.";
+        qDebug() << "Couldn't find current icon theme, falling back to default.";
         def = new KIconTheme(KIconTheme::defaultThemeName(), appname);
         if (!def->isValid())
         {
-            kError(264) << "Error: standard icon theme" << KIconTheme::defaultThemeName() << "not found!" << endl;
+            qWarning() << "Error: standard icon theme" << KIconTheme::defaultThemeName() << "not found!";
             delete def;
             return false;
         }
@@ -547,7 +536,7 @@ bool KIconLoaderPrivate::initIconThemes()
 #ifndef NDEBUG
     QString dbgString = "Theme tree: ";
     mpThemeRoot->printTree(dbgString);
-    kDebug(264) << dbgString;
+    qDebug() << dbgString;
 #endif
 
     return true;
@@ -720,7 +709,7 @@ void KIconLoaderPrivate::normalizeIconMetadata(KIconLoader::Group &group, int &s
 {
     if ((state < 0) || (state >= KIconLoader::LastState))
     {
-        kWarning(264) << "Illegal icon state: " << state;
+        qWarning() << "Illegal icon state:" << state;
         state = KIconLoader::DefaultState;
     }
 
@@ -736,7 +725,7 @@ void KIconLoaderPrivate::normalizeIconMetadata(KIconLoader::Group &group, int &s
 
     if ((group < -1) || (group >= KIconLoader::LastGroup))
     {
-        kWarning(264) << "Illegal icon group: " << group;
+        qWarning() << "Illegal icon group:" << group;
         group = KIconLoader::Desktop;
     }
 
@@ -745,7 +734,7 @@ void KIconLoaderPrivate::normalizeIconMetadata(KIconLoader::Group &group, int &s
     {
         if (group < 0)
         {
-            kWarning(264) << "Neither size nor group specified!";
+            qWarning() << "Neither size nor group specified!";
             group = KIconLoader::Desktop;
         }
         size = mpGroups[group].size;
@@ -1063,13 +1052,10 @@ K3Icon KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) const
 
 inline QString KIconLoaderPrivate::unknownIconPath( int size ) const
 {
-    static const QString &str_unknown = KGlobal::staticQString("unknown");
-
-    K3Icon icon = findMatchingIcon(str_unknown, size);
+    K3Icon icon = findMatchingIcon(QLatin1String("unknown"), size);
     if (!icon.isValid())
     {
-        kDebug(264) << "Warning: could not find \"Unknown\" icon for size = "
-                     << size << endl;
+        qDebug() << "Warning: could not find \"unknown\" icon for size" << size;
         return QString();
     }
     return icon.path;
@@ -1112,24 +1098,19 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
     QString path;
     if (group_or_size == KIconLoader::User)
     {
-        static const QString &png_ext = KGlobal::staticQString(".png");
-        static const QString &xpm_ext = KGlobal::staticQString(".xpm");
-        path = d->locate(name + png_ext);
-
-        static const QString &svgz_ext = KGlobal::staticQString(".svgz");
-        static const QString &svg_ext = KGlobal::staticQString(".svg");
+        path = d->locate(name + QLatin1String(".png"));
         if (path.isEmpty())
-            path = d->locate(name + svgz_ext);
+            path = d->locate(name + QLatin1String(".svgz"));
         if (path.isEmpty())
-            path = d->locate(name + svg_ext);
+            path = d->locate(name + QLatin1String(".svg"));
         if (path.isEmpty())
-            path = d->locate(name + xpm_ext);
+            path = d->locate(name + QLatin1String(".xpm"));
         return path;
     }
 
     if (group_or_size >= KIconLoader::LastGroup)
     {
-        kDebug(264) << "Illegal icon group: " << group_or_size;
+        qDebug() << "Illegal icon group:" << group_or_size;
         return path;
     }
 
@@ -1355,12 +1336,12 @@ QString KIconLoader::moviePath(const QString& name, KIconLoader::Group group, in
 
     if ( (group < -1 || group >= KIconLoader::LastGroup) && group != KIconLoader::User )
     {
-        kDebug(264) << "Illegal icon group: " << group;
+        qDebug() << "Illegal icon group:" << group;
         group = KIconLoader::Desktop;
     }
     if (size == 0 && group < 0)
     {
-        kDebug(264) << "Neither size nor group specified!";
+        qDebug() << "Neither size nor group specified!";
         group = KIconLoader::Desktop;
     }
 
@@ -1409,12 +1390,12 @@ QStringList KIconLoader::loadAnimated(const QString& name, KIconLoader::Group gr
 
     if ((group < -1) || (group >= KIconLoader::LastGroup))
     {
-        kDebug(264) << "Illegal icon group: " << group;
+        qDebug() << "Illegal icon group: " << group;
         group = KIconLoader::Desktop;
     }
     if ((size == 0) && (group < 0))
     {
-        kDebug(264) << "Neither size nor group specified!";
+        qDebug() << "Neither size nor group specified!";
         group = KIconLoader::Desktop;
     }
 
@@ -1465,7 +1446,7 @@ int KIconLoader::currentSize(KIconLoader::Group group) const
 
     if (group < 0 || group >= KIconLoader::LastGroup)
     {
-        kDebug(264) << "Illegal icon group: " << group;
+        qDebug() << "Illegal icon group:" << group;
         return -1;
     }
     return d->mpGroups[group].size;
@@ -1491,7 +1472,7 @@ QStringList KIconLoader::queryIconsByContext(int group_or_size,
     QStringList result;
     if (group_or_size >= KIconLoader::LastGroup)
     {
-        kDebug(264) << "Illegal icon group: " << group_or_size;
+        qDebug() << "Illegal icon group:" << group_or_size;
         return result;
     }
     int size;
@@ -1532,7 +1513,7 @@ QStringList KIconLoader::queryIcons(int group_or_size, KIconLoader::Context cont
     QStringList result;
     if (group_or_size >= KIconLoader::LastGroup)
     {
-        kDebug(264) << "Illegal icon group: " << group_or_size;
+        qDebug() << "Illegal icon group:" << group_or_size;
         return result;
     }
     int size;
@@ -1587,7 +1568,7 @@ bool KIconLoader::alphaBlending(KIconLoader::Group group) const
 
     if (group < 0 || group >= KIconLoader::LastGroup)
     {
-        kDebug(264) << "Illegal icon group: " << group;
+        qDebug() << "Illegal icon group:" << group;
         return false;
     }
     return d->mpGroups[group].alphaBlending;
@@ -1702,7 +1683,7 @@ QPixmap KIconLoader::unknown()
     QString path = global()->iconPath("unknown", KIconLoader::Small, true); //krazy:exclude=iconnames
     if (path.isEmpty())
     {
-        kDebug(264) << "Warning: Cannot find \"unknown\" icon.";
+        qDebug() << "Warning: Cannot find \"unknown\" icon.";
         pix = QPixmap(32,32);
     } else
     {
@@ -1714,7 +1695,7 @@ QPixmap KIconLoader::unknown()
 }
 
 /*** the global icon loader ***/
-Q_GLOBAL_STATIC_WITH_ARGS(KIconLoader, globalIconLoader, (KGlobal::mainComponent(), (KIconLoader*)0))
+Q_GLOBAL_STATIC(KIconLoader, globalIconLoader)
 
 KIconLoader *KIconLoader::global()
 {

@@ -186,18 +186,7 @@ public:
      * iconloader object yourself. That one is the current KComponentData's
      * (typically KApplication's) iconloader.
      */
-    explicit KIconLoader(const QString& appname=QString(), const QStringList& extraSearchPaths = QStringList(), QObject* parent = 0);
-
-    /**
-     * Constructs an iconloader.
-     * @param componentData the KComponentData to use to create this icon loader.
-     *
-     * Usually, you use the default iconloader, which can be accessed via
-     * KIconLoader::global(), so you hardly ever have to create an
-     * iconloader object yourself. That one is the current KComponentData's
-     * (typically KApplication's) iconloader.
-     */
-    explicit KIconLoader(const KComponentData &componentData, QObject* parent = 0);
+    explicit KIconLoader(const QString& appname = QString(), const QStringList& extraSearchPaths = QStringList(), QObject* parent = 0);
 
     /**
      * Cleanup

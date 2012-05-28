@@ -248,7 +248,7 @@ KIconLoader* Part::iconLoader()
 
     if (!d->m_iconLoader) {
         Q_ASSERT(componentData().isValid());
-        d->m_iconLoader = new KIconLoader( componentData() );
+        d->m_iconLoader = new KIconLoader(componentData().componentName());
     }
     return d->m_iconLoader;
 }
