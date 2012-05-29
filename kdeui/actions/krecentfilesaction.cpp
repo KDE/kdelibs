@@ -30,16 +30,12 @@
 
 #include <QtCore/QFile>
 #include <QDesktopWidget>
-#ifdef Q_OS_WIN
-#include <QtCore/QDir>
-#endif
+#include <QDir>
 #include <qurlpathinfo.h>
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kstandarddirs.h>
 
 #include "kmenu.h"
 
@@ -157,7 +153,7 @@ void KRecentFilesAction::addUrl(const QUrl& _url, const QString& name)
      */
     const QUrl url(_url);
 
-    if ( url.isLocalFile() && KGlobal::dirs()->relativeLocation("tmp", url.toLocalFile()) != url.toLocalFile() )
+    if (url.isLocalFile() && url.toLocalFile().startsWith(QDir::tempPath()))
        return;
     QUrlPathInfo urlPathInfo(url);
     const QString tmpName = name.isEmpty() ? urlPathInfo.fileName() : name;

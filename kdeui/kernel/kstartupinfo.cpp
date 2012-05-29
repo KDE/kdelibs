@@ -54,7 +54,7 @@ DEALINGS IN THE SOFTWARE.
 #include <kdebug.h>
 #include <kapplication.h>
 #include <signal.h>
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 #ifdef Q_WS_X11
 #include <kwindowsystem.h>
 #include <kxmessages.h>
@@ -190,7 +190,7 @@ class KStartupInfo::Private
                 QObject::connect( KWindowSystem::self(), SIGNAL(windowAdded(WId)), q, SLOT(slot_window_added(WId)));
 #ifdef __GNUC__
 #warning "systemTrayWindowAdded signal was remove from KWindowSystem class"
-#endif		
+#endif
                 //QObject::connect( KWindowSystem::self(), SIGNAL(systemTrayWindowAdded(WId)), q, SLOT(slot_window_added(WId)));
             }
             QObject::connect( &msgs, SIGNAL(gotMessage(QString)), q, SLOT(got_message(QString)));
@@ -1522,10 +1522,10 @@ void KStartupInfoData::setApplicationId( const QString& desktop )
         return;
         }
     // the spec requires this is always a full path, in order for everyone to be able to find it
-    QString desk = KStandardDirs::locate( "apps", desktop );
-    if( desk.isEmpty())
-        desk = KStandardDirs::locate( "services", desktop );
-    if( desk.isEmpty())
+    QString desk = QStandardPaths::locate(QStandardPaths::ApplicationsLocation, desktop);
+    if (desk.isEmpty())
+        desk = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kde5/services/" + desktop);
+    if (desk.isEmpty())
         return;
     d->application_id = desk;
     }

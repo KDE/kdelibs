@@ -46,7 +46,6 @@
 #include "kglobal.h"
 #include "klocale.h"
 #include "ksessionmanager.h"
-#include "kstandarddirs.h"
 #include "kstandardshortcut.h"
 #include "ktoolinvocation.h"
 #include "kgesturemap.h"
@@ -1006,7 +1005,7 @@ QString KApplication::tempSaveName( const QString& pFilename )
       if( !aAutosaveDir.mkdir( aAutosaveDir.absolutePath() ) )
         {
           // Last chance: use temp dir
-          aAutosaveDir.setPath( KGlobal::dirs()->saveLocation("tmp") );
+            aAutosaveDir.setPath(QDir::tempPath());
         }
     }
 

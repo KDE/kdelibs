@@ -52,7 +52,6 @@
 #include <khelpmenu.h>
 #include <klocalizedstring.h>
 #include <kmenubar.h>
-#include <kstandarddirs.h>
 #include <kstatusbar.h>
 #include <ktoolbar.h>
 #include <kwindowsystem.h>

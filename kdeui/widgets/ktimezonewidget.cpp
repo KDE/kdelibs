@@ -25,7 +25,7 @@
 
 #include <kdebug.h>
 #include <klocale.h>
-#include <kstandarddirs.h>
+#include <kglobal.h>
 #include <ksystemtimezone.h>
 #include <ktimezone.h>
 
@@ -119,7 +119,7 @@ KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
     listItem->setData( Private::CityColumn, Private::ZoneRole, tzName ); // store complete path in custom role
 
     // Locate the flag from /l10n/%1/flag.png.
-    QString flag = KStandardDirs::locate( "locale", QString( "l10n/%1/flag.png" ).arg( zone.countryCode().toLower() ) );
+    QString flag = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QString("locale/l10n/%1/flag.png").arg(zone.countryCode().toLower()));
     if ( QFile::exists( flag ) )
       listItem->setIcon( Private::RegionColumn, QPixmap( flag ) );
   }

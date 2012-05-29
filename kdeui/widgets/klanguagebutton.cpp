@@ -22,11 +22,13 @@
 #include <QMenu>
 #include <QLayout>
 #include <QPushButton>
+#include <QDir>
+#include <QFile>
 
 #include "klanguagebutton.h"
 
+#include <kglobal.h>
 #include <klocale.h>
-#include <kstandarddirs.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>
 
@@ -165,9 +167,18 @@ void KLanguageButton::insertSeparator( int index )
 
 void KLanguageButton::loadAllLanguages()
 {
-  QStringList langlist = KGlobal::dirs()->findAllResources("locale",
-                                  QString::fromLatin1("*/entry.desktop"));
-  langlist.sort();
+    QStringList langlist;
+    const QStringList localeDirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QString("locale"), QStandardPaths::LocateDirectory);
+    Q_FOREACH(const QString& localeDir, localeDirs) {
+        const QStringList entries = QDir(localeDir).entryList(QDir::Dirs);
+        Q_FOREACH(const QString& d, entries) {
+            const QString entryFile = localeDir + '/' + d + "/entry.desktop";
+            if (QFile::exists(entryFile)) {
+                langlist.append(entryFile);
+            }
+        }
+    }
+    langlist.sort();
   for (int i = 0, count = langlist.count(); i < count; ++i)
   {
     QString fpath = langlist[i].left(langlist[i].length() - 14);

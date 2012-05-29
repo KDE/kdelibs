@@ -26,22 +26,23 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "ktip.h"
 
-#include <QtCore/QFile>
+#include <QApplication>
+#include <QFile>
 #include <QCheckBox>
 #include <QKeyEvent>
 #include <QLabel>
 #include <QLayout>
+#include <QDesktopWidget>
+#include <qstandardpaths.h>
 
 #include <kaboutdata.h>
 #include <kconfig.h>
 #include <kdebug.h>
-#include <kglobalsettings.h>
 #include <kcomponentdata.h>
 #include <klocalizedstring.h>
 #include <kpushbutton.h>
 #include <krandom.h>
 #include <kseparator.h>
-#include <kstandarddirs.h>
 #include <ktextbrowser.h>
 
 class KTipDatabase::Private
@@ -67,7 +68,7 @@ void KTipDatabase::Private::loadTips( const QString &tipFile )
  */
 void KTipDatabase::Private::addTips( const QString &tipFile )
 {
-  QString fileName = KStandardDirs::locate( "data", tipFile );
+    const QString fileName = QStandardPaths::locate(QStandardPaths::GenericDataLocation, tipFile);
 
   if ( fileName.isEmpty() ) {
     kDebug() << "KTipDatabase::addTips: can't find '" << tipFile << "' in standard dirs";
@@ -247,7 +248,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   if ( isTipDialog ) {
     QLabel *titleLabel = new QLabel( this );
     titleLabel->setText( i18n( "Did you know...?\n" ) );
-    titleLabel->setFont( QFont( KGlobalSettings::generalFont().family(), 20, QFont::Bold ) );
+    titleLabel->setFont(QFont(qApp->font().family(), 20, QFont::Bold));
     titleLabel->setAlignment( Qt::AlignCenter );
     mainLayout->addWidget( titleLabel );
   }
@@ -262,8 +263,10 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   d->tipText->setWordWrapMode( QTextOption::WrapAtWordBoundaryOrAnywhere );
 
   QStringList paths;
-  paths << KGlobal::dirs()->resourceDirs( "icon" )
-        << KGlobal::dirs()->findResourceDir( "data", "kdewizard/pics" ) + "kdewizard/pics/";
+  paths << QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "icons", QStandardPaths::LocateDirectory);
+  // Since kde3, there was this line here:
+  //       << KGlobal::dirs()->findResourceDir( "data", "kdewizard/pics" ) + "kdewizard/pics/";
+  // But adding "kdewizard/pics" twice makes no sense, so let's remove this for KDE5.
 
   d->tipText->setSearchPaths( paths );
 
@@ -277,7 +280,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   browserLayout->addWidget( d->tipText );
 
   QLabel *label = new QLabel( this );
-  label->setPixmap( KStandardDirs::locate( "data", "kdeui/pics/ktip-bulb.png" ) );
+  label->setPixmap(QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kdeui/pics/ktip-bulb.png"));
   label->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
   browserLayout->addWidget( label );
 
@@ -285,7 +288,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
     resize( 520, 280 );
     QSize sh = size();
 
-    QRect rect = KGlobalSettings::splashScreenDesktopGeometry();
+    QRect rect = QApplication::desktop()->screenGeometry(QCursor::pos());
 
     move( rect.x() + ( rect.width() - sh.width() ) / 2,
           rect.y() + ( rect.height() - sh.height() ) / 2 );

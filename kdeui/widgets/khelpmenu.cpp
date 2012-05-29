@@ -28,6 +28,8 @@
 #include <QLabel>
 #include <QWidget>
 #include <QWhatsThis>
+#include <QFile>
+#include <QDir>
 
 #include <kaboutapplicationdialog.h>
 #include <kaboutdata.h>
@@ -47,7 +49,6 @@
 #include <kstandardguiitem.h>
 #include <kswitchlanguagedialog_p.h>
 #include <ktoolinvocation.h>
-#include <kstandarddirs.h>
 
 #include <config.h>
 #ifdef Q_WS_X11
@@ -163,7 +164,20 @@ void KHelpMenuPrivate::createActions(KHelpMenu* q)
     }
 
     if (KAuthorized::authorizeKAction("switch_application_language")) {
-        if((KGlobal::dirs()->findAllResources("locale", QString::fromLatin1("*/entry.desktop"))).count() > 1) {
+        // Is more than one language installed?
+        const QStringList localeDirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QString("locale"), QStandardPaths::LocateDirectory);
+        int numFiles = 0;
+        Q_FOREACH(const QString& localeDir, localeDirs) {
+            const QStringList entries = QDir(localeDir).entryList(QDir::Dirs);
+            Q_FOREACH(const QString& d, entries) {
+                if (QFile::exists(localeDir + '/' + d + "/entry.desktop")) {
+                    ++numFiles;
+                    if (numFiles > 1)
+                        break;
+                }
+            }
+        }
+        if (numFiles > 1) {
             mSwitchApplicationLanguageAction = KStandardAction::create(KStandardAction::SwitchApplicationLanguage, q, SLOT(switchApplicationLanguage()), q);
         }
     }

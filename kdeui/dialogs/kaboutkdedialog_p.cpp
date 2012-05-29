@@ -29,7 +29,6 @@
 #include <kdeversion.h>
 #include <kglobalsettings.h>
 #include <klocalizedstring.h>
-#include <kstandarddirs.h>
 #include <ktitlewidget.h>
 #include <kiconloader.h>
 
@@ -138,7 +137,7 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
     tabWidget->addTab(support, i18n("&Support KDE"));
 
     QLabel *image = new QLabel;
-    image->setPixmap(KStandardDirs::locate("data", "kdeui/pics/aboutkde.png"));
+    image->setPixmap(QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kdeui/pics/aboutkde.png"));
 
     QHBoxLayout *midLayout = new QHBoxLayout;
     midLayout->addWidget(image);

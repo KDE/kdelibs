@@ -25,9 +25,9 @@
 
 #include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kstandarddirs.h>
-#include <qdesktopservices.h>
 
+#include <qdesktopservices.h>
+#include <qstandardpaths.h>
 #include <QApplication>
 #include <QPainter>
 
@@ -235,7 +235,7 @@ void KAboutApplicationPersonListDelegate::paint( QPainter *painter,
             painter->drawPixmap( point, pixmap );
 
             QPoint framePoint( point.x() - 5, point.y() - 5 );
-            QPixmap framePixmap = QPixmap( KStandardDirs::locate( "data", "kdeui/pics/thumb_frame.png" ) );
+            QPixmap framePixmap(QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kdeui/pics/thumb_frame.png"));
             painter->drawPixmap( framePoint, framePixmap.scaled( pixmap.width() + 10, pixmap.height() + 10 ) );
         }
     }

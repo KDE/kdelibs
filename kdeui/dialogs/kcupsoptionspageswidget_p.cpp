@@ -27,12 +27,12 @@
 #include <QTimer>
 #include <QPrinter>
 #include <QPrintEngine>
+#include <qstandardpaths.h>
 
 #include <kcombobox.h>
 #include <kdebug.h>
 #include <klineedit.h>
 #include <klocalizedstring.h>
-#include <kstandarddirs.h>
 
 /** @internal */
 KCupsOptionsPagesWidget::KCupsOptionsPagesWidget( QPrintDialog *parent ) : KCupsOptionsWidget( parent )
@@ -129,12 +129,12 @@ void KCupsOptionsPagesWidget::setupCupsOptions( QStringList &cupsOptions )
 void KCupsOptionsPagesWidget::initPagesPerSheet()
 {
     setPagesPerSheet( OnePagePerSheet );
-    ui.oneUpRadioButton->setIcon( QIcon( KStandardDirs::locate( "data", "kdeui/pics/kdeprint_nup1.png" ) ) );
-    ui.twoUpRadioButton->setIcon( QIcon( KStandardDirs::locate( "data", "kdeui/pics/kdeprint_nup2.png" ) ) );
-    ui.fourUpRadioButton->setIcon( QIcon( KStandardDirs::locate( "data", "kdeui/pics/kdeprint_nup4.png" ) ) );
-    ui.sixUpRadioButton->setIcon( QIcon( KStandardDirs::locate( "data", "kdeui/pics/kdeprint_nupother.png" ) ) );
-    ui.nineUpRadioButton->setIcon( QIcon( KStandardDirs::locate( "data", "kdeui/pics/kdeprint_nupother.png" ) ) );
-    ui.sixteenUpRadioButton->setIcon( QIcon( KStandardDirs::locate( "data", "kdeui/pics/kdeprint_nupother.png" ) ) );
+    ui.oneUpRadioButton->setIcon(QIcon(QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kdeui/pics/kdeprint_nup1.png")));
+    ui.twoUpRadioButton->setIcon(QIcon(QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kdeui/pics/kdeprint_nup2.png")));
+    ui.fourUpRadioButton->setIcon(QIcon(QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kdeui/pics/kdeprint_nup4.png")));
+    ui.sixUpRadioButton->setIcon(QIcon(QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kdeui/pics/kdeprint_nupother.png")));
+    ui.nineUpRadioButton->setIcon(QIcon(QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kdeui/pics/kdeprint_nupother.png")));
+    ui.sixteenUpRadioButton->setIcon(QIcon(QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kdeui/pics/kdeprint_nupother.png")));
 }
 
 void KCupsOptionsPagesWidget::setPagesPerSheet( KCupsOptionsPagesWidget::PagesPerSheet pagesPerSheet  )

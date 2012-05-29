@@ -18,13 +18,13 @@
 */
 #include "kshortcutschemeshelper_p.h"
 
+#include <QCoreApplication>
 #include <QFile>
 #include <QTextStream>
 #include <QDomDocument>
 
 #include <kconfiggroup.h>
 #include <kaction.h>
-#include <kstandarddirs.h>
 #include <kactioncollection.h>
 #include <kxmlguiclient.h>
 #include <kdebug.h>
@@ -86,13 +86,13 @@ QString KShortcutSchemesHelper::currentShortcutSchemeName()
 
 QString KShortcutSchemesHelper::shortcutSchemeFileName(const KXMLGUIClient *client, const QString &schemeName)
 {
-    return KStandardDirs::locateLocal("data",
+    return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + '/' +
         client->componentData().componentName() + '/' +
-        client->componentData().componentName() + schemeName + "shortcuts.rc" );
+        client->componentData().componentName() + schemeName + "shortcuts.rc";
 }
 
 QString KShortcutSchemesHelper::applicationShortcutSchemeFileName(const QString &schemeName)
 {
-    return KGlobal::dirs()->locateLocal("appdata",
-        KGlobal::mainComponent().componentName() + schemeName + "shortcuts.rc");
+    return QStandardPaths::writableLocation(QStandardPaths::DataLocation) + '/' +
+        QCoreApplication::applicationName() + schemeName + "shortcuts.rc";
 }

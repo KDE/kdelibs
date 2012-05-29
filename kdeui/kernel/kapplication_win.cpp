@@ -18,7 +18,6 @@
 */
 
 #include <QApplication>
-#include <kstandarddirs.h>
 #include <klocale.h>
 #include <kwindowsystem.h>
 
