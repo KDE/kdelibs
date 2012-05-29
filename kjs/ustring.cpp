@@ -44,6 +44,7 @@
 #include <math.h>
 #include "dtoa.h"
 #include "collector.h"
+#include "commonunicode.h"
 
 #include <wtf/Vector.h>
 
@@ -998,16 +999,21 @@ double UString::toDouble(bool tolerateTrailingJunk, bool tolerateEmptyString) co
 {
   double d;
 
-  // FIXME: If tolerateTrailingJunk is true, then we want to tolerate non-8-bit junk
-  // after the number, so is8Bit is too strict a check.
-  if (!is8Bit())
-    return NaN;
-
-  const char *c = ascii();
+  const int length = size();
+  int leadingSpaces = 0;
 
   // skip leading white space
-  while (isASCIISpace(*c))
-    c++;
+  while (leadingSpaces < length && CommonUnicode::isStrWhiteSpace(data()[leadingSpaces].uc))
+    ++leadingSpaces;
+
+  UString whitespaceSkipped = substr(leadingSpaces, length - leadingSpaces);
+
+  // FIXME: If tolerateTrailingJunk is true, then we want to tolerate non-8-bit junk
+  // after the number, so is8Bit is too strict a check.
+  if (!whitespaceSkipped.is8Bit())
+    return NaN;
+
+  const char *c = whitespaceSkipped.ascii();
 
   // empty string ?
   if (*c == '\0')
