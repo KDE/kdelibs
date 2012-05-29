@@ -360,11 +360,11 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
 
         // Create the reply...
         reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadyReadOnMetaDataChange, this);
-        kDebug(7044) << reply << reqUrl;
+        //kDebug(7044) << reply << reqUrl;
     }
 
     if (ignoreContentDisposition && reply) {
-        kDebug(7044) << "Content-Disposition WILL BE IGNORED!";
+        //kDebug(7044) << "Content-Disposition WILL BE IGNORED!";
         reply->setIgnoreContentDisposition(ignoreContentDisposition);
     }
 
