@@ -63,7 +63,7 @@ class DownloadDialogPrivate;
  *   <ol><li>StandardResource: standard ressouce dir, such as <em>.kde/share/wallpapers</em>.
  *           This is what KStandardDirs::locateLocal(name) will return.</li>
  *       <li>TargetDir: a directory in the share/apps section, such as <em>.kde/share/apps/wallpapers</em>.
- *           This is what KStandardDirs::locateLocal("data", name) will return.</li>
+ *           This is what QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + name will return.</li>
  *       <li>XdgTargetDir: a directory in the $XDG_DATA_HOME directory such as <em>.local/share/wallpapers</em> (since 4.5).
  *   </ol>
  *

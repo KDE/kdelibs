@@ -334,7 +334,7 @@ QString Installation::targetInstallationPath(const QString& payloadfile)
         }
         if (!targetDirectory.isEmpty()) {
             if (scope == ScopeUser) {
-                installdir = KStandardDirs::locateLocal("data", targetDirectory + '/');
+                installdir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + targetDirectory + '/';
             } else { // system scope
                 installdir = KStandardDirs::installPath("data") + targetDirectory + '/';
             }

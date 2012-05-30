@@ -532,7 +532,7 @@ QString KSycoca::absoluteFilePath(DatabaseType type)
     if (type == GlobalDatabase) {
         QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QString::fromLatin1("kde5/services/" KSYCOCA_FILENAME));
         if (path.isEmpty())
-            return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QString::fromLatin1("kde5/services/" KSYCOCA_FILENAME);
+            return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QString::fromLatin1("/kde5/services/" KSYCOCA_FILENAME);
         return path;
     }
 

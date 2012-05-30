@@ -37,7 +37,7 @@ ItemsViewBaseDelegate::ItemsViewBaseDelegate(QAbstractItemView *itemView, Engine
         , m_iconDelete(KDE::icon("edit-delete"))
         , m_noImage(SmallIcon( "image-missing", KIconLoader::SizeLarge, KIconLoader::DisabledState ))
 {
-    QString framefile = KStandardDirs::locate("data", "knewstuff/pics/thumb_frame.png");
+    QString framefile = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "knewstuff/pics/thumb_frame.png");
     m_frameImage = QPixmap(framefile);   
 }
 

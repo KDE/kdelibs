@@ -122,7 +122,7 @@ void tst_KToolBar::init()
 // This will be called after every test function.
 void tst_KToolBar::cleanup()
 {
-    QFile::remove(KStandardDirs::locateLocal("config", "tst_KToolBar"));
+    QFile::remove(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + "tst_KToolBar");
     deleteGlobalIconSizeSetting();
     deleteGlobalToolButtonStyleSetting();
 }

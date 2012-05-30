@@ -21,7 +21,7 @@
 #define KTIMEZONESTEST_P_H
 
 #include <kconfiggroup.h>
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 #include <QDebug>
 #include <QtCore/QDir>
 #include "qtest_kde.h"
@@ -38,7 +38,7 @@ public:
         removeDir(QLatin1String("ktimezonestest/Asia"));
         removeDir(QLatin1String("ktimezonestest/Europe"));
         removeDir(QLatin1String("ktimezonestest"));
-        QFile::remove(KStandardDirs::locateLocal("config", "ktimezonedrc", false, KGlobal::mainComponent()));
+        QFile::remove(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + "ktimezonedrc");
     }
 
     void setupTimeZoneTest()

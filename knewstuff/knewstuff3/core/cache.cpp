@@ -22,6 +22,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QXmlStreamReader>
+#include <qstandardpaths.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
 
@@ -34,7 +35,7 @@ Cache::Cache(const QString &appName): QObject(0)
 {
     m_kns2ComponentName = appName;
 
-    registryFile = KStandardDirs::locateLocal("data", "knewstuff3/" + appName + ".knsregistry");
+    registryFile = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + "knewstuff3/" + appName + ".knsregistry";
     kDebug() << "Using registry file: " << registryFile;
 }
 

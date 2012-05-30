@@ -37,7 +37,7 @@ void KDebugTest::initTestCase()
     // The source files (kdebugrc and kdebug.areas) are in the "global" config dir:
     qputenv("XDG_CONFIG_DIRS", QByteArray(KDESRCDIR) + "/..");
 
-    QString kdebugrc = KStandardDirs::locateLocal("config", "kdebugrc");
+    QString kdebugrc = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + "kdebugrc";
     if (!kdebugrc.isEmpty())
         QFile::remove(kdebugrc);
     QFile::remove("kdebug.dbg");
@@ -69,7 +69,7 @@ void KDebugTest::initTestCase()
 
 void KDebugTest::cleanupTestCase()
 {
-    QString kdebugrc = KStandardDirs::locateLocal("config", "kdebugrc");
+    QString kdebugrc = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + "kdebugrc";
     if (!kdebugrc.isEmpty())
         QFile::remove(kdebugrc);
     // TODO QFile::remove("kdebug.dbg");

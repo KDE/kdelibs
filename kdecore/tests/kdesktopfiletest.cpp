@@ -104,14 +104,14 @@ void KDesktopFileTest::testIsAuthorizedDesktopFile()
     QVERIFY(QFile::exists(fileName));
     QVERIFY(!KDesktopFile::isAuthorizedDesktopFile(fileName));
 
-    const QString installedFile = KGlobal::dirs()->locate("services", "http_cache_cleaner.desktop");
+    const QString installedFile = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("/kde5/services/") + "http_cache_cleaner.desktop");
     if (!installedFile.isEmpty()) {
         QVERIFY(KDesktopFile::isAuthorizedDesktopFile(installedFile));
     } else {
         qWarning("Skipping test for http_cache_cleaner.desktop, not found. kdelibs not installed?");
     }
 
-    const QString autostartFile = KStandardDirs::locate("autostart", "plasma-desktop.desktop");
+    const QString autostartFile = QStandardPaths::locate(QStandardPaths::ConfigLocation, QLatin1String("autostart/") + "plasma-desktop.desktop");
     if (!autostartFile.isEmpty()) {
         QVERIFY(KDesktopFile::isAuthorizedDesktopFile(autostartFile));
     } else {

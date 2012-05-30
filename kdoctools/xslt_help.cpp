@@ -16,15 +16,8 @@
 #include <kcomponentdata.h>
 #include <klocalizedstring.h>
 #include <assert.h>
-#include <kfilterbase.h>
 #include <kfilterdev.h>
-#include <QtCore/QTextCodec>
 #include <stdlib.h>
-#include <config.h>
-#include <stdarg.h>
-#include <kcharsets.h>
-#include <kurl.h>
-
 
 static bool readCache( const QString &filename,
                        const QString &cache, QString &output)
@@ -87,9 +80,7 @@ QString lookForCache( const QString &filename )
     cache = '/' + fi.absolutePath().remove(KStandardDirs::installPath("html"),Qt::CaseInsensitive).replace('/','_') + '_' + fi.baseName() + '.';
 #endif
     if ( readCache( filename,
-                    KStandardDirs::locateLocal( "cache",
-                                 "kio_help" + cache +
-                                 "cache.bz2" ), output ) )
+                    QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QLatin1Char('/') + "kio_help" + cache + "cache.bz2", output ) )
         return output;
 
     return QString();

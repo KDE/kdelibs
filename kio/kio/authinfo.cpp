@@ -34,7 +34,7 @@
 #include <kde_file.h>
 
 #include <kdebug.h>
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 
 #define NETRC_READ_BUF_SIZE 4096
 
@@ -303,7 +303,7 @@ bool NetRC::lookup( const QUrl& url, AutoLogin& login, bool userealnetrc,
   {
     d->loginMap.clear();
 
-    QString filename = KStandardDirs::locateLocal("config", QLatin1String("kionetrc"));
+    QString filename = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + QLatin1String("kionetrc");
     bool status = parse (openf (filename));
 
     if ( userealnetrc )

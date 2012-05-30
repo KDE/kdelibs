@@ -87,10 +87,10 @@ KCookieServer::KCookieServer(QObject* parent, const QList<QVariant>&)
    mConfig = new KConfig("kcookiejarrc");
    mCookieJar->loadConfig( mConfig );
 
-   const QString filename = KStandardDirs::locateLocal("data", "kcookiejar/cookies");
+   const QString filename = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + "kcookiejar/cookies";
 
    // Stay backwards compatible!
-   const QString filenameOld = KStandardDirs::locate("data", "kfm/cookies");
+   const QString filenameOld = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kfm/cookies");
    if (!filenameOld.isEmpty())
    {
       mCookieJar->loadCookies( filenameOld );
@@ -279,7 +279,7 @@ void KCookieServer::slotSave()
 {
    if (mCookieJar->changed())
    {
-      QString filename = KStandardDirs::locateLocal("data", "kcookiejar/cookies");
+      QString filename = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + "kcookiejar/cookies";
       mCookieJar->saveCookies(filename);
    }
 }

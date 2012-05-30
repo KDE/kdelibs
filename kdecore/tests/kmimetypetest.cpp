@@ -73,7 +73,7 @@ void KMimeTypeTest::initTestCase()
     bool mustUpdateKSycoca = false;
 
     // Create fake text/x-patch part.
-    const QString fakePatchPart = KStandardDirs::locateLocal("services", "fakepatchpart.desktop");
+    const QString fakePatchPart = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1String("/kde5/services/") + "fakepatchpart.desktop";
     const bool mustCreatePatchPart = !QFile::exists(fakePatchPart);
     if (mustCreatePatchPart) {
         mustUpdateKSycoca = true;
@@ -88,7 +88,7 @@ void KMimeTypeTest::initTestCase()
     }
 
     // Create fake text/plain part with a higher initial preference than the patch part.
-    const QString fakePart = KStandardDirs::locateLocal("services", "faketextpart.desktop");
+    const QString fakePart = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1String("/kde5/services/") + "faketextpart.desktop";
     const bool mustCreate = !QFile::exists(fakePart);
     if (mustCreate) {
         mustUpdateKSycoca = true;
@@ -103,7 +103,7 @@ void KMimeTypeTest::initTestCase()
     }
 
     // Create fake text/plain ktexteditor plugin.
-    const QString fakePlugin = KStandardDirs::locateLocal("services", "faketextplugin.desktop");
+    const QString fakePlugin = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1String("/kde5/services/") + "faketextplugin.desktop";
     const bool mustCreatePlugin = !QFile::exists(fakePlugin);
     if (mustCreatePlugin) {
         mustUpdateKSycoca = true;
@@ -117,7 +117,7 @@ void KMimeTypeTest::initTestCase()
     }
 
     // Create fake "NotShowIn=KDE" service
-    m_nonKdeApp = KStandardDirs::locateLocal("xdgdata-apps", "fake_nonkde_application.desktop");
+    m_nonKdeApp = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation) + QLatin1Char('/') + "fake_nonkde_application.desktop";
     const bool mustCreateNonKdeApp = !QFile::exists(m_nonKdeApp);
     if (mustCreateNonKdeApp) {
         mustUpdateKSycoca = true;
@@ -133,7 +133,7 @@ void KMimeTypeTest::initTestCase()
     }
 
     // Create fake text/plain app
-    m_textPlainApp = KStandardDirs::locateLocal("xdgdata-apps", "fake_textplain_application.desktop");
+    m_textPlainApp = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation) + QLatin1Char('/') + "fake_textplain_application.desktop";
     const bool mustCreateTextPlainApp = !QFile::exists(m_textPlainApp);
     if (mustCreateTextPlainApp) {
         mustUpdateKSycoca = true;
@@ -163,11 +163,11 @@ void KMimeTypeTest::cleanupTestCase()
 {
     // If I want the konqueror unit tests to work, then I better not have a non-working part
     // as the preferred part for text/plain...
-    const QString fakePatchPart = KStandardDirs::locateLocal("services", "fakepatchpart.desktop");
+    const QString fakePatchPart = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1String("/kde5/services/") + "fakepatchpart.desktop";
     QFile::remove(fakePatchPart);
-    const QString fakePart = KStandardDirs::locateLocal("services", "faketextpart.desktop");
+    const QString fakePart = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1String("/kde5/services/") + "faketextpart.desktop";
     QFile::remove(fakePart);
-    const QString fakePlugin = KStandardDirs::locateLocal("services", "faketextplugin.desktop");
+    const QString fakePlugin = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1String("/kde5/services/") + "faketextplugin.desktop";
     QFile::remove(fakePlugin);
     //QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME) );
     QProcess proc;
@@ -271,10 +271,10 @@ void KMimeTypeTest::testFindByPathUsingFileName_data()
     QTest::newRow("doesn't exist but has known extension") << "IDontExist.txt" << "text/plain";
 
     // Can't use KIconLoader since this is a "without GUI" test.
-    if (KStandardDirs::locate("icon", "oxygen/").isEmpty()) {
+    if (QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("icons/") + "oxygen", QStandardPaths::LocateDirectory).isEmpty()) {
         kWarning() << "oxygen not found";
     } else {
-        QString fh = KStandardDirs::locate( "icon", "oxygen/22x22/places/folder.png" );
+        QString fh = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("icons/") + "oxygen/22x22/places/folder.png" );
         QVERIFY( !fh.isEmpty() ); // if the file doesn't exist, please fix the above to point to an existing icon
         QTest::newRow("png image") << fh << "image/png";
     }
@@ -749,7 +749,7 @@ void KMimeTypeTest::testMimeTypeTraderForAlias()
 
 void KMimeTypeTest::testHasServiceType1() // with services constructed with a full path (rare)
 {
-    QString faketextpartPath = KStandardDirs::locate( "services", "faketextpart.desktop" );
+    QString faketextpartPath = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("/kde5/services/") + "faketextpart.desktop" );
     QVERIFY( !faketextpartPath.isEmpty() );
     KService faketextpart( faketextpartPath );
     QVERIFY( faketextpart.hasMimeType( "text/plain" ) );
@@ -759,7 +759,7 @@ void KMimeTypeTest::testHasServiceType1() // with services constructed with a fu
     QVERIFY( !faketextpart.hasServiceType( "KParts/ReadWritePart" ) );
     QVERIFY( !faketextpart.hasServiceType( "KTextEditor/Plugin" ) );
 
-    QString textPluginPath = KStandardDirs::locate( "services", "faketextplugin.desktop" );
+    QString textPluginPath = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("/kde5/services/") + "faketextplugin.desktop" );
     QVERIFY( !textPluginPath.isEmpty() );
     KService textPlugin( textPluginPath );
     QVERIFY( textPlugin.hasServiceType( "KTextEditor/Plugin" ) );

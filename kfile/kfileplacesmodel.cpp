@@ -91,7 +91,7 @@ public:
 KFilePlacesModel::KFilePlacesModel(QObject *parent)
     : QAbstractItemModel(parent), d(new Private(this))
 {
-    const QString file = KStandardDirs::locateLocal("data", "kfileplaces/bookmarks.xml");
+    const QString file = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + "kfileplaces/bookmarks.xml";
     d->bookmarkManager = KBookmarkManager::managerForFile(file, "kfilePlaces");
 
     // Let's put some places in there if it's empty. We have a corner case here:

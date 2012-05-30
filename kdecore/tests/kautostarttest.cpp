@@ -65,7 +65,7 @@ void KAutostartTest::testStartInEnvDetection()
 
     KAutostart autostart("plasma-desktop");
     // Let's see if plasma.desktop actually exists
-    if ( KStandardDirs::locate("xdgconf-autostart", "plasma-desktop.desktop").isEmpty() )
+    if ( QStandardPaths::locate(QStandardPaths::ConfigLocation, QLatin1String("autostart/") + "plasma-desktop.desktop").isEmpty() )
         QSKIP_PORTING( "plasma-desktop.desktop not found, kdebase not installed", SkipSingle );
     else
         QCOMPARE(autostart.autostarts(env), doesAutostart);
@@ -107,14 +107,14 @@ void KAutostartTest::testServiceRegistered()
     KAutostart autostart;
     QCOMPARE(KAutostart::isServiceRegistered("doesnotexist"), false);
 
-    if ( KStandardDirs::locate("xdgconf-autostart", "plasma-desktop.desktop").isEmpty() )
+    if ( QStandardPaths::locate(QStandardPaths::ConfigLocation, QLatin1String("autostart/") + "plasma-desktop.desktop").isEmpty() )
         QSKIP_PORTING( "plasma-desktop.desktop not found, kdebase not installed", SkipSingle );
     QCOMPARE(KAutostart::isServiceRegistered("plasma-desktop"), true);
 }
 
 void KAutostartTest::testRegisteringAndManipulatingANewService()
 {
-    QFile::remove(KStandardDirs::locateLocal("xdgconf-autostart", "doesnotexist.desktop"));
+    QFile::remove(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1String("/autostart/") + "doesnotexist.desktop");
     {
         // need to clean up the KAutostart object before QFile can remove it
         KAutostart autostart("doesnotexist");
@@ -132,6 +132,8 @@ void KAutostartTest::testRegisteringAndManipulatingANewService()
         autostart.addToExcludedEnvironments("KDE");
         autostart.removeFromExcludedEnvironments("KDE");
     }
+
+    QVERIFY(QFile::exists(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1String("/autostart/") + "doesnotexist.desktop"));
 
     {
         QStringList allowedEnvs;
@@ -164,5 +166,6 @@ void KAutostartTest::testRegisteringAndManipulatingANewService()
 
 void KAutostartTest::testRemovalOfNewServiceFile()
 {
-    QCOMPARE(QFile::remove(KStandardDirs::locateLocal("xdgconf-autostart", "doesnotexist.desktop")), true);
+    QVERIFY(QFile::remove(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1String("/autostart/") + "doesnotexist.desktop"));
 }
+

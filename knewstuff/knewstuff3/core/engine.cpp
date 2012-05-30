@@ -109,7 +109,7 @@ bool Engine::init(const QString &configfile)
     // - bug in kdecore?
     // - this needs to be looked at again until KConfig backend changes for KDE 4
     // the check below is a workaround
-    if (KStandardDirs::locate("config", configfile).isEmpty()) {
+    if (QStandardPaths::locate(QStandardPaths::ConfigLocation, configfile).isEmpty()) {
         emit signalError(i18n("Configuration file not found: \"%1\"", configfile));
         kError() << "No knsrc file named '" << configfile << "' was found." << endl;
         return false;
@@ -132,7 +132,7 @@ bool Engine::init(const QString &configfile)
 
     kDebug() << "Categories: " << m_categories;
     m_providerFileUrl = group.readEntry("ProvidersUrl", QString());
-    m_applicationName = QFileInfo(KStandardDirs::locate("config", configfile)).baseName() + ':';
+    m_applicationName = QFileInfo(QStandardPaths::locate(QStandardPaths::ConfigLocation, configfile)).baseName() + ':';
 
     // let installation read install specific config
     if (!m_installation->readConfig(group)) {

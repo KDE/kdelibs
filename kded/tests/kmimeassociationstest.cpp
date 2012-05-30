@@ -29,7 +29,6 @@
 #include <qtest.h>
 #include "kmimeassociations.h"
 #include <ksycoca.h>
-#include <kstandarddirs.h>
 
 // We need a factory that returns the same KService::Ptr every time it's asked for a given service.
 // Otherwise the changes to the service's serviceTypes by KMimeAssociationsTest have no effect
@@ -110,7 +109,7 @@ private Q_SLOTS:
         setenv("KDEHOME", QFile::encodeName(kdehome), 1);
         setenv("XDG_DATA_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/local") ), 1);
 
-        m_localApps = KStandardDirs::locateLocal("xdgdata-apps", "");
+        m_localApps = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation) + QLatin1Char('/');
         QVERIFY(m_localApps.startsWith(kdehome));
 
         // Create factory on the heap and don't delete it.
@@ -402,7 +401,7 @@ private:
         QEventLoop loop;
         QObject::connect(KSycoca::self(), SIGNAL(databaseChanged(QStringList)), &loop, SLOT(quit()));
         QProcess proc;
-        const QString kbuildsycoca = KStandardDirs::findExe(KBUILDSYCOCA_EXENAME);
+        const QString kbuildsycoca = QStandardPaths::findExecutable(KBUILDSYCOCA_EXENAME);
         QVERIFY(!kbuildsycoca.isEmpty());
         proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output
         proc.start(kbuildsycoca);

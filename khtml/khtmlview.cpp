@@ -3402,7 +3402,7 @@ QStringList KHTMLView::formCompletionItems(const QString &name) const
     if (!m_part->settings()->isFormCompletionEnabled())
         return QStringList();
     if (!d->formCompletions)
-        d->formCompletions = new KConfig(KStandardDirs::locateLocal("data", "khtml/formcompletions"));
+        d->formCompletions = new KConfig(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + "khtml/formcompletions");
     return d->formCompletions->group("").readEntry(name, QStringList());
 }
 
@@ -3410,7 +3410,7 @@ void KHTMLView::clearCompletionHistory(const QString& name)
 {
     if (!d->formCompletions)
     {
-        d->formCompletions = new KConfig(KStandardDirs::locateLocal("data", "khtml/formcompletions"));
+        d->formCompletions = new KConfig(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + "khtml/formcompletions");
     }
     d->formCompletions->group("").writeEntry(name, "");
     d->formCompletions->sync();
@@ -3446,7 +3446,7 @@ void KHTMLView::addFormCompletionItem(const QString &name, const QString &value)
 void KHTMLView::addNonPasswordStorableSite(const QString& host)
 {
     if (!d->formCompletions) {
-        d->formCompletions = new KConfig(KStandardDirs::locateLocal("data", "khtml/formcompletions"));
+        d->formCompletions = new KConfig(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + "khtml/formcompletions");
     }
 
     KConfigGroup cg( d->formCompletions, "NonPasswordStorableSites");
@@ -3460,7 +3460,7 @@ void KHTMLView::addNonPasswordStorableSite(const QString& host)
 void KHTMLView::delNonPasswordStorableSite(const QString& host)
 {
     if (!d->formCompletions) {
-        d->formCompletions = new KConfig(KStandardDirs::locateLocal("data", "khtml/formcompletions"));
+        d->formCompletions = new KConfig(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + "khtml/formcompletions");
     }
 
     KConfigGroup cg( d->formCompletions, "NonPasswordStorableSites");
@@ -3473,7 +3473,7 @@ void KHTMLView::delNonPasswordStorableSite(const QString& host)
 bool KHTMLView::nonPasswordStorableSite(const QString& host) const
 {
     if (!d->formCompletions) {
-        d->formCompletions = new KConfig(KStandardDirs::locateLocal("data", "khtml/formcompletions"));
+        d->formCompletions = new KConfig(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + "khtml/formcompletions");
     }
     QStringList sites =  d->formCompletions->group( "NonPasswordStorableSites" ).readEntry("Sites", QStringList());
     return (sites.indexOf(host) != -1);

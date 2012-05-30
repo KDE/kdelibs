@@ -521,7 +521,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
 
     setMostCommonUnits(QList<int>() << Eur << Usd << Jpy << Gbp << Cad);
 
-    m_cache = KStandardDirs::locateLocal("data", "libkunitconversion/currency.xml");
+    m_cache = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + "libkunitconversion/currency.xml";
     m_update = true;
 }
 

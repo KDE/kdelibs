@@ -75,7 +75,7 @@ private Q_SLOTS:
 
     void testProtocolForArchiveMimetype()
     {
-        if (!QFile::exists(KStandardDirs::locate("services", "zip.protocol"))) {
+        if (!QFile::exists(QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("kde5/services/") + "zip.protocol"))) {
             QSKIP_PORTING("kdebase not installed", SkipAll);
         } else {
             const QString zip = KProtocolManager::protocolForArchiveMimetype("application/zip");

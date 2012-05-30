@@ -122,6 +122,7 @@ Otherwise, you need to use GenericDataLocation and add the subdirectory name man
     dirs()-&gt;resourceDirs("xdgdata-icon") -&gt; QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "icons", QStandardPaths::LocateDirectory) // xdgata-icon is the "icons" subdir under the xdg data locations
     dirs()-&gt;findAllResources("xdgdata-mime", file) -&gt; QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "mime/" + file)
     dirs()-&gt;findAllResources("xdgdata-mime", "foo/*.txt") -&gt; QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation) + foreach + entryList, prepending the absolute path.
+    Similarly, xdgconf-menu is QStandardPaths::ConfigLocation + "menus", and xdgconf-autostart is QStandardPaths::ConfigLocation + "autostart";
 </pre>
 When the code uses wildcard filters or the Recursive flag in findAllResources, you cannot port it to one line of QStandardPaths.
 Either keep using KStandardDirs, or write your own filtering (QDir::entryList) or recursive listing (use QDirIterator).

@@ -23,10 +23,11 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
+#include <qsavefile.h>
+#include <qstandardpaths.h>
+
 #include <kstandarddirs.h>
 #include <kglobal.h>
-#include <qsavefile.h>
-#include <kstringhandler.h>
 
 //BEGIN KColorCollectionPrivate
 class KColorCollectionPrivate
@@ -54,7 +55,7 @@ KColorCollectionPrivate::KColorCollectionPrivate(const QString &_name)
 {
     if (name.isEmpty()) return;
 
-    QString filename = KStandardDirs::locate("config", "colors/"+name);
+    QString filename = QStandardPaths::locate(QStandardPaths::ConfigLocation, "colors/"+name);
   if (filename.isEmpty()) return;
 
   QFile paletteFile(filename);
@@ -140,7 +141,7 @@ KColorCollection::~KColorCollection()
 bool
 KColorCollection::save()
 {
-   QString filename = KStandardDirs::locateLocal("config", "colors/" + d->name);
+   QString filename = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + "colors/" + d->name;
    QSaveFile sf(filename);
    if (!sf.open(QIODevice::WriteOnly)) return false;
 

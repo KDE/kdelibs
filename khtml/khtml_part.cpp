@@ -1816,7 +1816,7 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KUrl& reqUr
   datetime = KGlobal::locale()->formatDateTime( QDateTime::currentDateTime(),
                                                 KLocale::LongDate );
 
-  QString filename( KStandardDirs::locate( "data", "khtml/error.html" ) );
+  QString filename( QStandardPaths::locate(QStandardPaths::GenericDataLocation, "khtml/error.html" ) );
   QFile file( filename );
   bool isOpened = file.open( QIODevice::ReadOnly );
   if ( !isOpened )

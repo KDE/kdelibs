@@ -249,7 +249,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
     p->setJVMPath( jvm_path );
 
     // Prepare classpath variable
-    QString kjava_class = KStandardDirs::locate("data", "kjava/kjava.jar");
+    QString kjava_class = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kjava/kjava.jar");
     kDebug(6100) << "kjava_class = " << kjava_class;
     if( kjava_class.isNull() ) // Should not happen
         return;
@@ -280,7 +280,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
 
     if( config.readEntry( "UseSecurityManager", true ) )
     {
-        QString class_file = KStandardDirs::locate( "data", "kjava/kjava.policy" );
+        QString class_file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kjava/kjava.policy" );
         p->setSystemProperty( "java.security.policy", class_file );
 
         p->setSystemProperty( "java.security.manager",

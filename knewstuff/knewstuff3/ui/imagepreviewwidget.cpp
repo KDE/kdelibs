@@ -20,7 +20,7 @@
 #include <QPaintEvent>
 #include <QPainter>
 
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 
 #include <core/entryinternal.h>
 
@@ -30,9 +30,9 @@ ImagePreviewWidget::ImagePreviewWidget(QWidget *parent) :
     QWidget(parent)
 {
     //installEventFilter(this);
-    
-    QString framefile = KStandardDirs::locate("data", "knewstuff/pics/thumb_frame.png");
-    m_frameImage = QPixmap(framefile);  
+
+    QString framefile = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "knewstuff/pics/thumb_frame.png");
+    m_frameImage = QPixmap(framefile);
 }
 
 void ImagePreviewWidget::setImage(const QImage &preview)
@@ -61,24 +61,24 @@ void ImagePreviewWidget::paintEvent(QPaintEvent * /*event*/)
     if (m_image.isNull()) {
         return;
     }
-    
+
     QPainter painter(this);
     int margin = painter.fontMetrics().height() / 2;
     //painter.drawImage(contentsRect(), m_image);
-    
+
     int width = contentsRect().width();
     int height = contentsRect().height();
-    
+
     if (m_scaledImage.isNull()) {
         QSize scaled = QSize(qMin(width - 2*margin, m_image.width()*2), qMin(height - 2*margin, m_image.height()*2));
         m_scaledImage = m_image.scaled(scaled, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
-    
+
     QPoint point;
 
     point.setX(contentsRect().left() + ((width - m_scaledImage.width()) / 2));
     point.setY(contentsRect().top() + ((height - m_scaledImage.height()) / 2));
-    
+
     QPoint framePoint(point.x() - 5, point.y() - 5);
     painter.drawPixmap(framePoint, m_frameImage.scaled(m_scaledImage.width() + 10, m_scaledImage.height() + 10));
     painter.drawImage(point, m_scaledImage);

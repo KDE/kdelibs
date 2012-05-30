@@ -59,7 +59,7 @@ static void popArg(QString &command, QString & line)
 static void clearConfig()
 {
    delete config;
-   QString file = KStandardDirs::locateLocal("config", "kcookiejar-testconfig");
+   QString file = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + "kcookiejar-testconfig";
    QFile::remove(file);
    config = new KConfig(file);
    KConfigGroup cg(config, "Cookie Policy");
@@ -77,7 +77,7 @@ static void clearCookies()
 
 static void saveCookies()
 {
-   QString file = KStandardDirs::locateLocal("config", "kcookiejar-testcookies");
+   QString file = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + "kcookiejar-testcookies";
    QFile::remove(file);
    jar->saveCookies(file);
 

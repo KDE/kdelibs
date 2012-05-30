@@ -104,7 +104,7 @@ TestMainWindow::~TestMainWindow()
 
 void TestMainWindow::slotFileOpen()
 {
-    const QString file = KStandardDirs::locate("data", KGlobal::mainComponent().componentName()+"/kpartstest_shell.rc" );
+    const QString file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, KGlobal::mainComponent().componentName()+"/kpartstest_shell.rc" );
     if (!m_part1->openUrl(QUrl::fromLocalFile(file)))
         KMessageBox::error(this,"Couldn't open file !");
 }

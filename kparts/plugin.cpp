@@ -64,7 +64,7 @@ QString Plugin::xmlFile() const
     if ( !d->m_parentInstance.isValid() || ( path.length() > 0 && path[ 0 ] == '/' ) )
         return path;
 
-    QString absPath = KStandardDirs::locate( "data", d->m_parentInstance.componentName() + '/' + path );
+    QString absPath = QStandardPaths::locate(QStandardPaths::GenericDataLocation, d->m_parentInstance.componentName() + '/' + path );
     assert( !absPath.isEmpty() );
     return absPath;
 }
@@ -76,7 +76,7 @@ QString Plugin::localXMLFile() const
     if ( !d->m_parentInstance.isValid() || ( path.length() > 0 && path[ 0 ] == '/' ) )
         return path;
 
-    QString absPath = KStandardDirs::locateLocal( "data", d->m_parentInstance.componentName() + '/' + path );
+    QString absPath = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + d->m_parentInstance.componentName() + '/' + path ;
     assert( !absPath.isEmpty() );
     return absPath;
 }

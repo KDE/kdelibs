@@ -37,9 +37,9 @@ KFileBookmarkHandler::KFileBookmarkHandler( KFileWidget *widget )
     m_menu = new KMenu( widget );
     m_menu->setObjectName( "bookmark menu" );
 
-    QString file = KStandardDirs::locate( "data", "kfile/bookmarks.xml" );
+    QString file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kfile/bookmarks.xml" );
     if ( file.isEmpty() )
-        file = KStandardDirs::locateLocal( "data", "kfile/bookmarks.xml" );
+        file = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + "kfile/bookmarks.xml" ;
 
     KBookmarkManager *manager = KBookmarkManager::managerForFile( file, "kfile" );
     manager->setUpdate( true );

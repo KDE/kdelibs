@@ -325,7 +325,7 @@ PluginBase::PluginBase(ExecState *exec, bool loadPluginInfo)
                     continue;
             }
             // read configuration
-            QString fn = KStandardDirs::locate("data", pluginsinfo.toString());
+            QString fn = QStandardPaths::locate(QStandardPaths::GenericDataLocation, pluginsinfo.toString());
             const KSharedConfig::Ptr sc = KSharedConfig::openConfig(fn);
             const int num = sc->group("").readEntry("number", 0);
             for ( int n = 0; n < num; n++ ) {

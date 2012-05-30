@@ -407,7 +407,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
                   if (filterEnabled && url.isValid()) {
                       /** determine where to cache HTMLFilterList file */
                       QString localFile = cgFilter.readEntry(QString("HTMLFilterListLocalFilename-").append(QString::number(id)));
-                      localFile = KStandardDirs::locateLocal("data", "khtml/" + localFile);
+                      localFile = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + "khtml/" + localFile;
 
                       /** determine existence and age of cache file */
                       QFileInfo fileInfo(localFile);

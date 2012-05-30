@@ -399,7 +399,7 @@ bool UploadDialog::init(const QString &configfile)
     // - bug in kdecore?
     // - this needs to be looked at again until KConfig backend changes for KDE 4
     // the check below is a workaround
-    if (KStandardDirs::locate("config", configfile).isEmpty()) {
+    if (QStandardPaths::locate(QStandardPaths::ConfigLocation, configfile).isEmpty()) {
         kError() << "No knsrc file named '" << configfile << "' was found." << endl;
         return false;
     }
