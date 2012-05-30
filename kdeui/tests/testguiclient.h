@@ -21,7 +21,7 @@
 #ifndef TESTGUICLIENT_H
 #define TESTGUICLIENT_H
 
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 #include <kcomponentdata.h>
 #include <kxmlguiclient.h>
 
@@ -42,7 +42,7 @@ public:
     void createGUI(const QByteArray& xml, bool withUiStandards = false)
     {
         if (withUiStandards) {
-            QString uis = KStandardDirs::locate("config", "ui/ui_standards.rc", componentData());
+            QString uis = QStandardPaths::locate(QStandardPaths::ConfigLocation, "ui/ui_standards.rc");
             QVERIFY(!uis.isEmpty());
             setXMLFile(uis);
         }

@@ -38,7 +38,6 @@
 
 #include <kcmdlineargs.h>
 #include <klocalizedstring.h>
-#include <kstandarddirs.h>
 #include <kaboutdata.h>
 #include <kconfiggroup.h>
 #include <kwindowsystem.h>

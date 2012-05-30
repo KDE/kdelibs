@@ -30,7 +30,6 @@
 #include "ksharedconfig.h"
 
 #include "kdebug.h"
-#include "kstandarddirs.h"
 
 #include <qstandardpaths.h>
 #include <QtCore/QDataStream>
@@ -531,9 +530,9 @@ quint32 KSycoca::updateSignature()
 QString KSycoca::absoluteFilePath(DatabaseType type)
 {
     if (type == GlobalDatabase) {
-        QString path = KGlobal::dirs()->findResource("services", QString::fromLatin1(KSYCOCA_FILENAME));
+        QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QString::fromLatin1("kde5/services/" KSYCOCA_FILENAME));
         if (path.isEmpty())
-            return KGlobal::dirs()->saveLocation("services") + QString::fromLatin1(KSYCOCA_FILENAME);
+            return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QString::fromLatin1("kde5/services/" KSYCOCA_FILENAME);
         return path;
     }
 

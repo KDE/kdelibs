@@ -28,7 +28,7 @@
 #include <QtCore/QDateTime>
 
 #include <kglobal.h>
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 #include <kdebug.h>
 
 #include <sys/file.h>
@@ -103,7 +103,7 @@ public:
 KIconCache::KIconCache()
     : KPixmapCache(KDE_ICONCACHE_NAME), d(new Private(this))
 {
-    d->mUpdatesFile  = KGlobal::dirs()->locateLocal("cache", "kpc/"KDE_ICONCACHE_NAME".updated");
+    d->mUpdatesFile  = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/kpc/"KDE_ICONCACHE_NAME".updated";
     // Set limit to 10 MB
     setCacheLimit(10 * 1024);
 }
@@ -190,12 +190,9 @@ QSet<QString> KIconCache::existingIconThemeDirs(const QStringList& themeNames) c
 {
     // Find all possible icontheme dirs
     // This has been taken from kicontheme.cpp
-    QStringList icondirs = KGlobal::dirs()->resourceDirs("icon")
-            << KGlobal::dirs()->resourceDirs("xdgdata-icon")
-            << "/usr/share/pixmaps/"
-            // These are not in the icon spec, but e.g. GNOME puts some icons there anyway.
-            << KGlobal::dirs()->resourceDirs("xdgdata-pixmap");
-    icondirs.removeDuplicates();
+    QStringList icondirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "icons/", QStandardPaths::LocateDirectory);
+    // These are not in the icon spec, but e.g. GNOME puts some icons there anyway.
+    icondirs += QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "pixmaps/", QStandardPaths::LocateDirectory);
 
     // Check which of theme actually contain existing dir of one of the
     //  given themes
@@ -204,7 +201,7 @@ QSet<QString> KIconCache::existingIconThemeDirs(const QStringList& themeNames) c
         QStringList::ConstIterator themeIt;
         for (themeIt = themeNames.begin(); themeIt != themeNames.end(); ++themeIt) {
             QString dirName = *it + *themeIt + '/';
-            if (KStandardDirs::exists(dirName)) {
+            if (QFile::exists(dirName)) {
                 dirs.insert(dirName);
             }
         }

@@ -111,6 +111,7 @@ The porting depends on the resource type:
 If the resource is available in QStandardPaths (i.e. for all of the above), then the porting is simple:
 <pre>
     KStandardDirs::locate("data", "kmyapp/my-data") -&gt; QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kmyapp/my-data")
+    KStandardDirs::locate("services", "foo.desktop") -&gt; QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kde5/services/foo.desktop")
     dirs.findResource("data", relPath -&gt; QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kmyapp/my-data")
     saveLocation -&gt; writableLocation (note that you might have to mkpath it if it doesn't exist)
     locateLocal(type, file) -&gt; writableLocation(type) + '/' + file (you might have to mkpath the directory)

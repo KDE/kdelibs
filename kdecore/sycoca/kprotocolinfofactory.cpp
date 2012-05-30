@@ -23,7 +23,6 @@
 #include <QDirIterator>
 #include <qstandardpaths.h>
 
-#include <kstandarddirs.h>
 #include <kdebug.h>
 #include <ksycoca.h>
 #include <ksycocadict_p.h>
