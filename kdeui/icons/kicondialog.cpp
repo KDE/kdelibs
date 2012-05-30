@@ -79,33 +79,6 @@ QSize KIconCanvasDelegate::sizeHint ( const QStyleOptionViewItem & option, const
     return size;
 }
 
-/**
- * Helper class for sorting icon paths by icon name
- */
-class IconPath : public QString
-{
-protected:
- QString m_iconName;
-
-public:
- IconPath(const QString &ip) : QString (ip)
- {
-   int n = lastIndexOf('/');
-   m_iconName = (n==-1) ? static_cast<QString>(*this) : mid(n+1);
- }
-
-
- IconPath() : QString ()
- { }
-
- bool operator== (const IconPath &ip) const
- { return m_iconName == ip.m_iconName; }
-
- bool operator< (const IconPath &ip) const
- { return m_iconName < ip.m_iconName; }
-
-};
-
 /*
  * KIconCanvas: Iconview for the iconloader dialog.
  */
@@ -428,6 +401,13 @@ void KIconDialog::KIconDialogPrivate::_k_slotAcceptIcons()
     q->slotOk();
 }
 
+static bool sortByFileName(const QString& path1, const QString& path2)
+{
+    const QString fileName1 = path1.mid(path1.lastIndexOf('/') + 1);
+    const QString fileName2 = path2.mid(path1.lastIndexOf('/') + 1);
+    return QString::compare(fileName1, fileName2, Qt::CaseInsensitive) < 0;
+}
+
 void KIconDialog::KIconDialogPrivate::showIcons()
 {
     mpCanvas->clear();
@@ -451,18 +431,7 @@ void KIconDialog::KIconDialogPrivate::showIcons()
         }
     }
 
-    QList<IconPath> iconlist;
-    foreach (const QString &it, filelist) {
-       iconlist.append(IconPath(it));
-    }
-
-    // TODO custom sorting function instead of all this copying
-    qSort(iconlist);
-    filelist.clear();
-
-    foreach (const IconPath &ip, iconlist) {
-       filelist.append(ip);
-    }
+    qSort(filelist.begin(), filelist.end(), sortByFileName);
 
     searchLine->clear();
 
