@@ -20,6 +20,7 @@
 
 #include "kxmlguifactory.h"
 #include "kxmlguifactory_p.h"
+#include <kshortcutschemeshelper_p.h>
 #include "kxmlguiclient.h"
 #include "kxmlguibuilder.h"
 
@@ -680,16 +681,12 @@ QDomDocument KXMLGUIFactoryPrivate::shortcutSchemeDoc(KXMLGUIClient *client)
     {
         // Find the document for the shortcut scheme using both current application path
         // and current xmlguiclient path but making a preference to app path
-        QString schemeFileName = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + '/' +
-            client->componentData().componentName() + '/' +
-            client->componentData().componentName() + schemeName.toLower() + "shortcuts.rc";
-
+        QString schemeFileName = KShortcutSchemesHelper::shortcutSchemeFileName(client, schemeName);
         QFile schemeFile(schemeFileName);
         if (schemeFile.open(QIODevice::ReadOnly))
         {
 //             kDebug(260) << "Found shortcut scheme" << schemeFileName;
             doc.setContent(&schemeFile);
-            schemeFile.close();
         }
     }
     return doc;

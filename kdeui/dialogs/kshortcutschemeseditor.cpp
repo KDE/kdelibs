@@ -25,10 +25,10 @@
 #include <QTextStream>
 #include <QtXml/QDomDocument>
 #include <QFileDialog>
+#include <qstandardpaths.h>
 
 #include <kcombobox.h>
 #include <kpushbutton.h>
-#include <kstandarddirs.h>
 #include <kactioncollection.h>
 #include <kmessagebox.h>
 #include <kxmlguiclient.h>
@@ -42,16 +42,17 @@ KShortcutSchemesEditor::KShortcutSchemesEditor(KShortcutsDialog *parent)
 {
     KConfigGroup group( KSharedConfig::openConfig(), "Shortcut Schemes" );
 
-    const QStringList schemeFiles = KGlobal::dirs()->findAllResources("appdata", "*shortcuts.rc");
     QStringList schemes;
     schemes << "Default";
-    foreach (QString schemeFile, schemeFiles)
-    {
-        schemes << schemeFile.remove(QRegExp("^.*/"+KGlobal::mainComponent().componentName())).
-            remove("shortcuts.rc");
+    // List files in the shortcuts subdir, each one is a theme. See KShortcutSchemesHelper::{shortcutSchemeFileName,exportActionCollection}
+    const QStringList shortcutsDir = QStandardPaths::locateAll(QStandardPaths::DataLocation, "shortcuts", QStandardPaths::LocateDirectory);
+    Q_FOREACH(const QString& dir, shortcutsDir) {
+        Q_FOREACH(const QString& file, QDir(dir).entryList(QDir::NoDotAndDotDot)) {
+            schemes << file;
+        }
     }
 
-    QString currentScheme = group.readEntry("Current Scheme", "Default");
+    const QString currentScheme = group.readEntry("Current Scheme", "Default");
 
     QHBoxLayout *l = new QHBoxLayout(this);
     l->setMargin(0);

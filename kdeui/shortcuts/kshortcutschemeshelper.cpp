@@ -30,7 +30,7 @@
 #include <kdebug.h>
 
 bool KShortcutSchemesHelper::exportActionCollection(KActionCollection *collection,
-    const QString &schemeName, const QString dir)
+    const QString &schemeName, const QString& dir)
 {
     const KXMLGUIClient *client = collection->parentGUIClient();
     if (!client)
@@ -38,7 +38,7 @@ bool KShortcutSchemesHelper::exportActionCollection(KActionCollection *collectio
 
     QString schemeFileName;
     if (!dir.isEmpty())
-        schemeFileName = dir + client->componentData().componentName() + schemeName + "shortcuts.rc";
+        schemeFileName = dir + "shortcuts/" + client->componentData().componentName() + schemeName;
     else
         schemeFileName = shortcutSchemeFileName(client, schemeName);
 
@@ -87,12 +87,12 @@ QString KShortcutSchemesHelper::currentShortcutSchemeName()
 QString KShortcutSchemesHelper::shortcutSchemeFileName(const KXMLGUIClient *client, const QString &schemeName)
 {
     return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + '/' +
-        client->componentData().componentName() + '/' +
-        client->componentData().componentName() + schemeName + "shortcuts.rc";
+        client->componentData().componentName() + "/shortcuts/" +
+        client->componentData().componentName() + schemeName;
 }
 
 QString KShortcutSchemesHelper::applicationShortcutSchemeFileName(const QString &schemeName)
 {
     return QStandardPaths::writableLocation(QStandardPaths::DataLocation) + '/' +
-        QCoreApplication::applicationName() + schemeName + "shortcuts.rc";
+        QCoreApplication::applicationName() + schemeName;
 }

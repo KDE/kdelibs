@@ -33,12 +33,12 @@ public:
      *
      * This doesn't save anything if there's no parent xmlgui client for action collection.
      *
-     * The name of the resulting file is: <xmlgui client component name><scheme name>shortcuts.rc .
+     * The name of the resulting file is: shortcuts/<scheme name>.rc .
      *
      *  @return true if the action collection was exported
     */
     static bool exportActionCollection(KActionCollection *collection, const QString &schemeName,
-        const QString dir = QString());
+        const QString& dir = QString());
 
     /**
      * @return the current shortcut scheme name for the application.
