@@ -32,43 +32,34 @@
 #include <QtCore/QScopedPointer>
 #include <QtWebKit/QWebPage>
 #include <QtWebKit/QWebFrame>
-#include <QtWebKit/QWebElement>
-#include <QtWebKit/QWebElementCollection>
 #include <qwindowdefs.h>
 
 #define QL1S(x)   QLatin1String(x)
 #define QL1C(x)   QLatin1Char(x)
 
-// The following form parsing JS code was adapted from Arora project.
-// See https://github.com/Arora/arora/blob/master/src/data/parseForms.js
-#define FORM_PARSING_JS "(function (){ \
+// Javascript used to extract/set data from <form> elements.
+#define FILLABLE_FORM_ELEMENT_EXTRACTOR_JS "(function (){ \
     var forms; \
-    var doc = (this.contentDocument ? this.contentDocument : document); \
-    var numForms = doc.forms.length; \
-    if (numForms > 0 ) { \
+    var formList = document.querySelectorAll('form'); \
+    if (formList.length > 0) { \
         forms = new Array; \
-        for (var i = 0; i < numForms; ++i) { \
-            var form = document.forms[i]; \
-            if (form.method.toLowerCase() != 'post') \
+        for (var i = 0; i < formList.length; ++i) { \
+            var inputList = formList[i].querySelectorAll('input[type=text]:not([disabled]):not([autocomplete=off]),input[type=password]:not([disabled]):not([autocomplete=off]),input:not([type]):not([disabled]):not([autocomplete=off])'); \
+            if (inputList.length < 1) { \
                 continue; \
-            var formObject = new Object; \
-            formObject.name = form.name; \
-            formObject.index = i; \
-            var elements = new Array; \
-            var numElements = form.elements.length; \
-            for (var j = 0; j < numElements; ++j) { \
-                var e = form.elements[j]; \
-                var element = new Object; \
-                element.name = e.name; \
-                element.value = e.value; \
-                element.type = e.type; \
-                element.readonly = e.hasAttribute('readonly'); \
-                element.disabled = e.hasAttribute('disabled'); \
-                if (element.autocomplete != null)  \
-                    element.autocomplete = element.autocomplete.value; \
-                elements.push(element); \
             } \
-            formObject.elements = elements; \
+            var formObject = new Object; \
+            formObject.name = formList[i].name; \
+            formObject.index = i; \
+            formObject.elements = new Array; \
+            for (var j = 0; j < inputList.length; ++j) { \
+                var element = new Object; \
+                element.name = inputList[j].name; \
+                element.value = inputList[j].value; \
+                element.type = inputList[j].type; \
+                element.readonly = inputList[j].hasAttribute('readonly'); \
+                formObject.elements.push(element); \
+            } \
             forms.push(formObject); \
         } \
     } \
@@ -158,9 +149,9 @@ KWebWallet::WebFormList KWebWallet::KWebWalletPrivate::parseFormData(QWebFrame *
     Q_ASSERT(frame);
 
     KWebWallet::WebFormList list;
+    const QVariant result (frame->evaluateJavaScript(QL1S(FILLABLE_FORM_ELEMENT_EXTRACTOR_JS)));
+    const QVariantList results (result.toList());
 
-    // Execute the javscript to obtain the necessary fields...
-    QVariantList results = frame->evaluateJavaScript(QL1S(FORM_PARSING_JS)).toList();
     Q_FOREACH (const QVariant &formVariant, results) {
         QVariantMap map = formVariant.toMap();
         KWebWallet::WebForm form;
@@ -171,38 +162,33 @@ KWebWallet::WebFormList KWebWallet::KWebWalletPrivate::parseFormData(QWebFrame *
         const QVariantList elements = map[QL1S("elements")].toList();
         QList<KWebWallet::WebForm::WebField> inputFields;
         Q_FOREACH (const QVariant &element, elements) {
-            QVariantMap elementMap = element.toMap();
-            const QString name = elementMap[QL1S("name")].toString();
-            const QString value = (ignorepasswd ? QString() : elementMap[QL1S("value")].toString());
-            const QString type = elementMap[QL1S("type")].toString();
-            const bool isPasswdInput = (type.compare(QL1S("password"), Qt::CaseInsensitive) == 0);
-            const bool isTextInput = (type.compare(QL1S("text"), Qt::CaseInsensitive) == 0);
-            const bool autoCompleteOff = (elementMap[QL1S("autocomplete")].toString().compare(QL1S("off"), Qt::CaseInsensitive) == 0);
-            if (name.isEmpty())
+            QVariantMap elementMap (element.toMap());
+            const QString name (elementMap[QL1S("name")].toString());
+            const QString value (ignorepasswd ? QString() : elementMap[QL1S("value")].toString());
+            if (name.isEmpty()) {
                 continue;
-            if (!isPasswdInput && !isTextInput)
+            }
+            if (fillform && elementMap[QL1S("readonly")].toBool()) {
                 continue;
-            if (autoCompleteOff)
-                continue;
-            if (elementMap[QL1S("disabled")].toBool())
-                continue;
-            if (fillform && elementMap[QL1S("readonly")].toBool())
-                continue;
-            if (isPasswdInput && !fillform && value.isEmpty())
-                continue;
-            if (isPasswdInput)
+            }
+            if (elementMap[QL1S("type")].toString().compare(QL1S("password"), Qt::CaseInsensitive) == 0) {
+                if (!fillform && value.isEmpty())
+                    continue;
                 formHasPasswords = true;
+            }
             inputFields.append(qMakePair(name, value));
         }
 
         // Only add the input fields on form save requests...
-        if (formHasPasswords && !fillform)
+        if (formHasPasswords || fillform) {
             form.fields = inputFields;
+        }
 
         // Add the form to the list if we are saving it or it has cached data.
         if ((fillform && q->hasCachedFormData(form)) || (!fillform  && !form.fields.isEmpty()))
             list << form;
     }
+
     return list;
 }
 
@@ -213,23 +199,22 @@ void KWebWallet::KWebWalletPrivate::fillDataFromCache(KWebWallet::WebFormList &f
         return;
     }
 
+    QString lastKey;
     QMap<QString, QString> cachedValues;
     QMutableListIterator <WebForm> formIt (formList);
 
     while (formIt.hasNext()) {
         KWebWallet::WebForm &form = formIt.next();
         const QString key (walletKey(form));
-        if (wallet->readMap(key, cachedValues) != 0) {
+        if (key != lastKey && wallet->readMap(key, cachedValues) != 0) {
             kWarning(800) << "Unable to read form data for key:" << key;
             continue;
         }
 
-        QMapIterator<QString, QString> valuesIt (cachedValues);
-        while (valuesIt.hasNext()) {
-            valuesIt.next();
-            //kDebug(800) << "wallet key:" << key << valuesIt.key() << valuesIt.value();
-            form.fields << qMakePair(valuesIt.key(), valuesIt.value());
+        for (int i = 0, count = form.fields.count(); i < count; ++i) {
+            form.fields[i].second = cachedValues.value(form.fields[i].first);
         }
+        lastKey = key;
     }
 }
 
