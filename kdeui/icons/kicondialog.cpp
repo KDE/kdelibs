@@ -17,13 +17,13 @@
 #include <kcombobox.h>
 #include <klistwidgetsearchline.h>
 #include <klocalizedstring.h>
-#include <kstandarddirs.h>
 #include <kiconloader.h>
 #ifndef _WIN32_WCE
 #include <QtSvg/QSvgRenderer>
 #endif
 
 #include <QApplication>
+#include <QDebug>
 #include <QGroupBox>
 #include <QLayout>
 #include <QLabel>
@@ -45,7 +45,7 @@ class KIconCanvasDelegate : public QAbstractItemDelegate
 public:
     KIconCanvasDelegate(KIconCanvas *parent, QAbstractItemDelegate *defaultDelegate);
     ~KIconCanvasDelegate() {};
-    void paint ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const; 
+    void paint ( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const;
     QSize sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const;
 private:
     KIconCanvas *m_iconCanvas;
@@ -122,7 +122,7 @@ KIconCanvas::KIconCanvas(QWidget *parent)
     setIconSize(QSize(60, 60));
     connect(m_timer, SIGNAL(timeout()), this, SLOT(loadFiles()));
     connect(this, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
-            this, SLOT(_k_slotCurrentChanged(QListWidgetItem*)));
+            this, SLOT(currentListItemChanged(QListWidgetItem*)));
     setGridSize(QSize(100,80));
 
     setItemDelegate(m_delegate);
@@ -211,7 +211,7 @@ void KIconCanvas::loadFiles()
 		img = img.scaled(width, canvasIconHeight, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 	    }
 	}
-	
+
 	if (uniformIconSize && (img.width() != canvasIconWidth || img.height() != canvasIconHeight))
 	{
 	   // Image is smaller than desired.  Draw onto a transparent QImage of the required dimensions.
@@ -222,7 +222,7 @@ void KIconCanvas::loadFiles()
 	   painter.drawImage( (canvasIconWidth - img.width()) / 2, (canvasIconHeight - img.height()) / 2, img);
 	   img = paddedImage;
 	}
-	
+
 	QPixmap pm = QPixmap::fromImage(img);
 	QFileInfo fi(*it);
         QListWidgetItem *item = new QListWidgetItem(pm, fi.completeBaseName(), this);
@@ -291,7 +291,6 @@ void KIconDialog::KIconDialogPrivate::init()
 {
     mGroupOrSize = KIconLoader::Desktop;
     mContext = KIconLoader::Any;
-    mFileList = KGlobal::dirs()->findAllResources("appicon", QLatin1String("*.png"));
 
     QWidget *main = new QWidget(q);
     q->setMainWidget(main);
@@ -433,23 +432,31 @@ void KIconDialog::KIconDialogPrivate::showIcons()
 {
     mpCanvas->clear();
     QStringList filelist;
-    if (mpSystemIcons->isChecked())
+    if (mpSystemIcons->isChecked()) {
         if (m_bStrictIconSize)
             filelist=mpLoader->queryIcons(mGroupOrSize, mContext);
         else
             filelist=mpLoader->queryIconsByContext(mGroupOrSize, mContext);
-    else if (!customLocation.isNull()) {
+    } else if (!customLocation.isNull()) {
         filelist = mpLoader->queryIconsByDir(customLocation);
+    } else {
+        // List PNG files found directly in the kiconload search paths.
+        Q_FOREACH(const QString& relDir, KIconLoader::global()->searchPaths()) {
+            const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, relDir, QStandardPaths::LocateDirectory);
+            Q_FOREACH(const QString& dir, dirs) {
+                Q_FOREACH(const QString& fileName, QDir(dir).entryList(QStringList() << "*.png")) {
+                    filelist << dir + '/' + fileName;
+                }
+            }
+        }
     }
-    else
-	filelist=mFileList;
 
     QList<IconPath> iconlist;
-    QStringList::const_iterator it;
     foreach (const QString &it, filelist) {
        iconlist.append(IconPath(it));
     }
 
+    // TODO custom sorting function instead of all this copying
     qSort(iconlist);
     filelist.clear();
 
@@ -529,7 +536,7 @@ void KIconDialog::setup(KIconLoader::Group group, KIconLoader::Context context,
     {
         d->mGroupOrSize = -iconSize;
     }
-    
+
     d->mpSystemIcons->setChecked(!user);
     d->mpSystemIcons->setEnabled(!lockUser || !user);
     d->mpOtherIcons->setChecked(user);

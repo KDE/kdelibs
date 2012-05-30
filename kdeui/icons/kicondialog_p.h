@@ -135,7 +135,6 @@ class KIconDialog::KIconDialogPrivate
     int mGroupOrSize;
     KIconLoader::Context mContext;
 
-    QStringList mFileList;
     KComboBox *mpCombo;
     QPushButton *mpBrowseBut;
     QRadioButton *mpSystemIcons, *mpOtherIcons;
