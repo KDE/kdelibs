@@ -39,30 +39,36 @@
 #define QL1S(x)   QLatin1String(x)
 #define QL1C(x)   QLatin1Char(x)
 
-// Javascript for parsing forms to fill or save information from...
+// The following form parsing JS code was adapted from Arora project.
+// See https://github.com/Arora/arora/blob/master/src/data/parseForms.js
 #define FORM_PARSING_JS "(function (){ \
     var forms; \
-    var formList = document.querySelectorAll('form[method=post]'); \
-    var numForms = formList.length; \
-    if (numForms > 0) { \
+    var doc = (this.contentDocument ? this.contentDocument : document); \
+    var numForms = doc.forms.length; \
+    if (numForms > 0 ) { \
         forms = new Array; \
         for (var i = 0; i < numForms; ++i) { \
+            var form = document.forms[i]; \
+            if (form.method.toLowerCase() != 'post') \
+                continue; \
             var formObject = new Object; \
-            formObject.name = formList[i].name; \
+            formObject.name = form.name; \
             formObject.index = i; \
-            var inputs = formList[i].querySelectorAll('input[type=text]:not([disabled]):not([autocomplete=off]),input[type=password]:not([disabled]):not([autocomplete=off])'); \
-            var numInputs = inputs.length; \
-            if (numInputs > 0) { \
-                formObject.elements = new Array; \
-                for (var j = 0; j < numInputs; ++j) { \
-                    var element = new Object; \
-                    element.name = inputs[i].name; \
-                    element.value = inputs[i].value; \
-                    element.type = inputs[i].type; \
-                    element.readonly = inputs[i].hasAttribute('readonly'); \
-                    formObject.elements.push(element); \
-                } \
+            var elements = new Array; \
+            var numElements = form.elements.length; \
+            for (var j = 0; j < numElements; ++j) { \
+                var e = form.elements[j]; \
+                var element = new Object; \
+                element.name = e.name; \
+                element.value = e.value; \
+                element.type = e.type; \
+                element.readonly = e.hasAttribute('readonly'); \
+                element.disabled = e.hasAttribute('disabled'); \
+                if (element.autocomplete != null)  \
+                    element.autocomplete = element.autocomplete.value; \
+                elements.push(element); \
             } \
+            formObject.elements = elements; \
             forms.push(formObject); \
         } \
     } \
@@ -165,15 +171,20 @@ KWebWallet::WebFormList KWebWallet::KWebWalletPrivate::parseFormData(QWebFrame *
         const QVariantList elements = map[QL1S("elements")].toList();
         QList<KWebWallet::WebForm::WebField> inputFields;
         Q_FOREACH (const QVariant &element, elements) {
-            QVariantMap elementMap (element.toMap());
-            const QString name (elementMap[QL1S("name")].toString());
-            const QString value (ignorepasswd ? QString() : elementMap[QL1S("value")].toString());
-            const QString type (elementMap[QL1S("type")].toString());
+            QVariantMap elementMap = element.toMap();
+            const QString name = elementMap[QL1S("name")].toString();
+            const QString value = (ignorepasswd ? QString() : elementMap[QL1S("value")].toString());
+            const QString type = elementMap[QL1S("type")].toString();
             const bool isPasswdInput = (type.compare(QL1S("password"), Qt::CaseInsensitive) == 0);
             const bool isTextInput = (type.compare(QL1S("text"), Qt::CaseInsensitive) == 0);
+            const bool autoCompleteOff = (elementMap[QL1S("autocomplete")].toString().compare(QL1S("off"), Qt::CaseInsensitive) == 0);
             if (name.isEmpty())
                 continue;
             if (!isPasswdInput && !isTextInput)
+                continue;
+            if (autoCompleteOff)
+                continue;
+            if (elementMap[QL1S("disabled")].toBool())
                 continue;
             if (fillform && elementMap[QL1S("readonly")].toBool())
                 continue;
