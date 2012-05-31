@@ -172,7 +172,7 @@ if (CMAKE_SYSTEM_NAME MATCHES Linux)
     MESSAGE(STATUS "Using setuid root kdeinit wrapper in order to protect it from bad Linux OOM-killer")
     set(KDEINIT_OOM_PROTECT 1)
     install(CODE "
-        set(START_KDEINIT_PATH \"\$ENV{DESTDIR}${LIBEXEC_INSTALL_DIR}/start_kdeinit\")
+      set(START_KDEINIT_PATH \"\$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/${LIBEXEC_INSTALL_DIR}/start_kdeinit\")
         EXECUTE_PROCESS(COMMAND sh -c \"chown 0 '\${START_KDEINIT_PATH}' && chmod u+s '\${START_KDEINIT_PATH}'\")
     ")
 endif (CMAKE_SYSTEM_NAME MATCHES Linux)
