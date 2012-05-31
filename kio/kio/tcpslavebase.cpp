@@ -457,6 +457,12 @@ int TCPSlaveBase::connectToHost(const QString& host, quint16 port, QString* erro
         return 0;
     }
     Q_ASSERT(false);
+    // Code flow never gets here but let's make the compiler happy.
+    // More: the stack allocation of QSslSettings seems to be confusing the compiler;
+    //       in fact, any non-POD allocation does. 
+    //       even a 'return 0;' directly after the allocation (so before the while(true))
+    //       is ignored. definitely seems to be a compiler bug? - aseigo
+    return 0;
 }
 
 void TCPSlaveBase::disconnectFromHost()
