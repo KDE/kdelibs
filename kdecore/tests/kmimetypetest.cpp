@@ -27,7 +27,6 @@
 #include <ksycoca.h>
 #include <kglobal.h>
 #include <kuser.h>
-#include <kstandarddirs.h>
 #include <qtemporarydir.h>
 #include <kconfiggroup.h>
 #include <kdebug.h>
@@ -149,7 +148,7 @@ void KMimeTypeTest::initTestCase()
 
     if ( mustUpdateKSycoca ) {
         // Update ksycoca in ~/.kde-unit-test after creating the above
-        QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME) );
+        QProcess::execute(QStandardPaths::findExecutable(KBUILDSYCOCA_EXENAME));
     }
 
     KService::Ptr fakeApp = KService::serviceByStorageId("fake_nonkde_application.desktop");
@@ -169,7 +168,6 @@ void KMimeTypeTest::cleanupTestCase()
     QFile::remove(fakePart);
     const QString fakePlugin = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1String("/kde5/services/") + "faketextplugin.desktop";
     QFile::remove(fakePlugin);
-    //QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME) );
     QProcess proc;
     proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output
     proc.start(QStandardPaths::findExecutable(KBUILDSYCOCA_EXENAME));
@@ -279,17 +277,14 @@ void KMimeTypeTest::testFindByPathUsingFileName_data()
         QTest::newRow("png image") << fh << "image/png";
     }
 
-    QString exePath = KStandardDirs::findExe( "kioexec" ); // typically installed in libexec
-    if ( exePath.isEmpty() )
-        kWarning() << "kioexec not found";
-    else {
+    const QString exePath = QStandardPaths::findExecutable("update-mime-database");
+    QVERIFY2(!exePath.isEmpty(), "update-mime-database not found. Isn't shared-mime-info installed, and in your $PATH?");
 #ifdef Q_OS_WIN
-        const QString executableType = QString::fromLatin1( "application/x-ms-dos-executable" );
+    const QString executableType = QString::fromLatin1("application/x-ms-dos-executable");
 #else
-        const QString executableType = QString::fromLatin1( "application/x-executable" );
+    const QString executableType = QString::fromLatin1("application/x-executable");
 #endif
-        QTest::newRow("executable") << exePath << executableType;
-    }
+    QTest::newRow("executable") << exePath << executableType;
 }
 
 void KMimeTypeTest::testFindByPathUsingFileName()
