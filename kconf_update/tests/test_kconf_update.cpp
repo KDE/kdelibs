@@ -27,14 +27,9 @@
 #include <QtCore/QProcess>
 #include <qtemporaryfile.h>
 #include <qstandardpaths.h>
-
-// KDE
-#include <kdebug.h>
-#include <kstandarddirs.h>
+#include "config-prefix.h"
 
 #include <qtest.h>
-
-// Local
 
 // QT5 TODO QTEST_GUILESS_MAIN(TestKConfUpdate)
 QTEST_MAIN(TestKConfUpdate)
@@ -67,7 +62,8 @@ static QTemporaryFile* writeUpdFile(const QString &content)
 
 static void runKConfUpdate(const QString &updPath)
 {
-    QString exePath = KStandardDirs::findExe("kconf_update"); // ## in libexec currently
+    QString exePath = CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kconf_update";
+    QVERIFY(QFile::exists(exePath));
     QProcess::execute(exePath, QStringList() << "--debug" << updPath);
 }
 
