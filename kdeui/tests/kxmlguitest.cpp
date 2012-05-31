@@ -10,7 +10,6 @@
 #include <kdebug.h>
 #include <kiconloader.h>
 #include <kstandardaction.h>
-#include <kstandarddirs.h>
 #include <QLineEdit>
 #include <QtCore/QDir>
 
@@ -25,10 +24,6 @@ int main( int argc, char **argv )
     KApplication app;
     KAction *a;
 
-    // KXMLGUIClient looks in the "data" resource for the .rc files
-    // Let's add the source dir to it
-    KGlobal::dirs()->addResourceDir( "data", KDESRCDIR );
-
     KMainWindow *mainwindow = new KMainWindow;
 
     QLineEdit* line = new QLineEdit( mainwindow );
@@ -42,7 +37,6 @@ int main( int argc, char **argv )
 
     Client *shell = new Client;
     shell->setComponentData(KComponentData("konqueror"));
-    shell->componentData().dirs()->addResourceDir( "data", QDir::currentPath() );
 
     a = new KAction( KDE::icon( "view-split-left-right" ), "Split", shell );
     shell->actionCollection()->addAction( "splitviewh", a );

@@ -27,7 +27,6 @@
 #include <kmenubar.h>
 #include <kxmlguibuilder.h>
 #include <kxmlguiclient.h>
-#include <kstandarddirs.h>
 #include "testxmlguiwindow.h"
 #include "testguiclient.h"
 #include <kxmlguiversionhandler_p.h>

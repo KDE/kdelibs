@@ -20,7 +20,6 @@
 #include <kapplication.h>
 #include <kxmlguiwindow.h>
 #include <klineedit.h>
-#include <kstandarddirs.h>
 #include <ktoolbarlabelaction.h>
 #include <ksqueezedtextlabel.h>
 #include <kvbox.h>
@@ -34,11 +33,6 @@ class MainWindow : public KXmlGuiWindow
 
     MainWindow()
     {
-
-      // KXMLGUIClient looks in the "data" resource for the .rc files
-      // This line is for test programs only!
-      KGlobal::dirs()->addResourceDir( "data", KDESRCDIR );
-
       KVBox* main = new KVBox( this );
       setCentralWidget( main );
 
@@ -70,7 +64,7 @@ class MainWindow : public KXmlGuiWindow
       // another widget so lineEdit can loose focus and check budyness works
       new KLineEdit( main );
 
-      setupGUI( Default, "ktoolbarlabelactiontestui.rc" );
+      setupGUI( Default, KDESRCDIR "ktoolbarlabelactiontestui.rc" );
     }
 
     bool eventFilter(QObject * watched, QEvent * event )
@@ -90,8 +84,6 @@ int main( int argc, char **argv )
 {
   KCmdLineArgs::init( argc, argv, "test", 0, qi18n("Test"), "1.0", qi18n("test app"));
   KApplication app;
-
-  KGlobal::mainComponent().dirs()->addResourceDir( "data", "." );
 
   MainWindow* mw = new MainWindow;
   mw->show();

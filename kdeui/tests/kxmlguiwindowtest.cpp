@@ -24,7 +24,6 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kactioncollection.h>
-#include <kstandarddirs.h>
 #include <kmessagebox.h>
 #include <kaction.h>
 #include <kdebug.h>
@@ -118,8 +117,6 @@ int main(int argc, char **argv)
                          qi18n("Copyright (c) 2008 Rafael Fernandez Lopez"));
     KCmdLineArgs::init(argc, argv, &aboutData);
     KApplication app;
-
-    KGlobal::dirs()->addResourceDir("data", KDESRCDIR);
 
     MainWindow *mainWindow = new MainWindow;
     mainWindow->show();

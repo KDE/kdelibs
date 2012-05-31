@@ -19,7 +19,6 @@
 */
 
 #include <kglobalsettings.h>
-#include <kstandarddirs.h>
 #include <QtTest/QtTest>
 #include <qtest_kde.h>
 #include <ktoolbar.h>
