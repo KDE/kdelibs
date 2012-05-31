@@ -247,7 +247,7 @@ static BasePrefix basePrefixForResource(const char* type)
 QString getKde4Prefix();
 #endif
 
-QString KStandardDirs::installPath(const char *type)
+static QString relativeInstallPath(const char *type)
 {
     Q_ASSERT(type != NULL);
 
@@ -260,11 +260,7 @@ QString KStandardDirs::installPath(const char *type)
             if (strcmp("kcfg", type) == 0)
                 return QFile::decodeName(KCFG_INSTALL_DIR "/");
             if (strcmp("kdedir", type) == 0)
-#ifdef Q_OS_WIN
-                return getKde4Prefix();
-#else
-                return QFile::decodeName(KDEDIR "/");
-#endif
+                return QString::fromLatin1(""); // not null!
             break;
         case 'd':
             if (strcmp("data", type) == 0)
@@ -288,7 +284,7 @@ QString KStandardDirs::installPath(const char *type)
             if (strcmp("lib", type) == 0)
                 return QFile::decodeName(LIB_INSTALL_DIR "/");
             if (strcmp("libexec", type) == 0)
-                return QFile::decodeName(KDEDIR "/lib" KDELIBSUFF "/kde5/libexec/");
+                return QFile::decodeName("lib" KDELIBSUFF "/kde5/libexec/");
             if (strcmp("locale", type) == 0)
                 return QFile::decodeName(LOCALE_INSTALL_DIR "/");
             break;
@@ -326,6 +322,22 @@ QString KStandardDirs::installPath(const char *type)
             break;
     }
     return QString();
+}
+
+QString KStandardDirs::installPath(const char *type)
+{
+    const QString relPath = relativeInstallPath(type);
+    if (relPath.isNull()) {
+        return QString();
+    } else if (QDir::isAbsolutePath(relPath)) {
+        return relPath;
+    } else {
+#ifdef Q_OS_WIN
+        return getKde4Prefix() + relPath;
+#else
+        return QFile::decodeName(KDEDIR "/") + relPath;
+#endif
+    }
 }
 
 KStandardDirs::KStandardDirs()
@@ -1197,9 +1209,7 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
 #else
         const QString installprefix = installPath("kdedir");
 #endif
-        QString typeInstallPath = installPath(type); // returns a relative path, in KF5
-        if (!typeInstallPath.isEmpty())
-            typeInstallPath.prepend(installprefix); // make absolute
+        QString typeInstallPath = installPath(type);
 #ifdef Q_OS_WIN
         const QString installdir = typeInstallPath.isEmpty() ? QString() : realPath(typeInstallPath).toLower();
 #else
