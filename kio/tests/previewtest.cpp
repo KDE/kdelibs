@@ -2,14 +2,12 @@
 #include "previewtest.h"
 
 #include <QLabel>
+#include <QApplication>
 #include <QLayout>
 #include <QPushButton>
 
-#include <config-prefix.h>
-#include <kapplication.h>
 #include <kdebug.h>
 #include <klineedit.h>
-#include <kcmdlineargs.h>
 #include <kio/previewjob.h>
 
 #include "previewtest.moc"
@@ -19,7 +17,13 @@ PreviewTest::PreviewTest()
 {
     QGridLayout *layout = new QGridLayout(this);
     m_url = new KLineEdit(this);
-    m_url->setText(KDEDIR"/share/doc/HTML/en/common/top-kde.jpg");
+
+    QString path;
+    KIconLoader().loadMimeTypeIcon("video-x-generic", KIconLoader::Desktop, 256,
+                                   KIconLoader::DefaultState, QStringList(),
+                                   &path);
+
+    m_url->setText(path);
     layout->addWidget(m_url, 0, 0);
     QPushButton *btn = new QPushButton("Generate", this);
     connect(btn, SIGNAL(clicked()), SLOT(slotGenerate()));
@@ -59,8 +63,7 @@ void PreviewTest::slotFailed()
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc,argv, "previewtest", 0, qi18n("previewtest"), 0);
-    KApplication app;
+    QApplication app(argc, argv);
     PreviewTest *w = new PreviewTest;
     w->show();
     return app.exec();
