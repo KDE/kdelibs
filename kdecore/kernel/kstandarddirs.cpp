@@ -335,7 +335,7 @@ QString KStandardDirs::installPath(const char *type)
 #ifdef Q_OS_WIN
         return getKde4Prefix() + relPath;
 #else
-        return QFile::decodeName(KDEDIR "/") + relPath;
+        return QFile::decodeName(CMAKE_INSTALL_PREFIX "/") + relPath;
 #endif
     }
 }

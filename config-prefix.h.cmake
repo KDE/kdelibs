@@ -1,6 +1,6 @@
 /* This file contains all the paths that change when changing the installation prefix */
 
-#define KDEDIR "${CMAKE_INSTALL_PREFIX}"
+#define CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
 
 /* The compiled in system configuration prefix */
 #define KDESYSCONFDIR "${SYSCONF_INSTALL_DIR}"

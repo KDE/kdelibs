@@ -24,8 +24,8 @@
 
 #include "kcrash.h"
 #include <kcmdlineargs.h>
-#include <kstandarddirs.h>
 #include <config-kstandarddirs.h>
+#include <config-prefix.h>
 
 #include <config.h>
 
@@ -205,9 +205,9 @@ void KCrash::setDrKonqiEnabled(bool enabled)
 {
     s_launchDrKonqi = enabled;
     if (s_launchDrKonqi && !s_drkonqiPath) {
-        s_drkonqiPath = qstrdup(QFile::encodeName(KStandardDirs::findExe("drkonqi")).constData()); // ### typically installed into libexec
-        if (!s_drkonqiPath) {
-            kError() << "Could not find drkonqi";
+        s_drkonqiPath = qstrdup(CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/drkonqi");
+        if (!QFile::exists(s_drkonqiPath)) {
+            kError() << "Could not find drkonqi at" << s_drkonqiPath;
             s_launchDrKonqi = false;
         }
     }

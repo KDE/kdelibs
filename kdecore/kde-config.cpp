@@ -96,7 +96,7 @@ int main(int argc, char **argv)
 
     if (args->isSet("prefix"))
     {
-        printResult(QFile::decodeName(KDEDIR));
+        printResult(QFile::decodeName(CMAKE_INSTALL_PREFIX));
         return 0;
     }
 
