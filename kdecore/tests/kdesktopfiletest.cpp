@@ -18,13 +18,12 @@
 #include "kdesktopfiletest.h"
 #include <kconfiggroup.h>
 #include <qtemporaryfile.h>
-#include <kstandarddirs.h>
 
 #include "kdesktopfile.h"
 
-#include <qtest_kde.h>
+#include <QtTest>
 
-QTEST_KDEMAIN_CORE( KDesktopFileTest )
+QTEST_MAIN( KDesktopFileTest )
 
 void KDesktopFileTest::testRead()
 {
@@ -38,7 +37,7 @@ void KDesktopFileTest::testRead()
     QCOMPARE(df.hasLinkType(), false);
     QCOMPARE(df.hasMimeTypeType(), false);
     QCOMPARE(df.hasApplicationType(), false);
-    QCOMPARE(df.fileName(), KStandardDirs::realFilePath(fileName));
+    QCOMPARE(df.fileName(), QFileInfo(fileName).canonicalFilePath());
 }
 
 void KDesktopFileTest::testSuccessfulTryExec()

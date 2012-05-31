@@ -32,7 +32,6 @@
 #include "klocale.h"
 #include "kglobal.h"
 #include "kdebug.h"
-#include "kstandarddirs.h"
 #include "kconfiggroup.h"
 
 #include "kdatetimeformattertest.moc"

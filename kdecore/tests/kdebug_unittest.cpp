@@ -25,7 +25,6 @@
 #include <qtest_kde.h>
 #include <kdebug.h>
 #include <QtCore/QProcess>
-#include <kstandarddirs.h>
 
 QTEST_KDEMAIN_CORE( KDebugTest )
 

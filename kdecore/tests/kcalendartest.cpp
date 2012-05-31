@@ -31,7 +31,6 @@
 #include "klocalizeddate.h"
 #include "kglobal.h"
 #include "kdebug.h"
-#include "kstandarddirs.h"
 #include "kconfiggroup.h"
 
 

@@ -18,11 +18,9 @@
 
 #include "kautostarttest.h"
 
-#include "kstandarddirs.h"
 #include <kdebug.h>
 
 #include <qtest_kde.h>
-
 
 #include <QtCore/QFile>
 
