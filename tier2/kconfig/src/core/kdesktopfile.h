@@ -190,12 +190,6 @@ public:
   bool hasApplicationType() const;
 
   /**
-   * Checks whether there is an entry "Type=MimeType".
-   * @return true if there is a "Type=MimeType" entry
-   */
-  bool hasMimeTypeType() const; // funny name :)
-
-  /**
    * Checks whether there is an entry "Type=FSDevice".
    * @return true if there is a "Type=FSDevice" entry
    */

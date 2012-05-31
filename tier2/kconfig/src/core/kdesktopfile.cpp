@@ -248,11 +248,6 @@ bool KDesktopFile::hasApplicationType() const
   return readType() == QLatin1String("Application");
 }
 
-bool KDesktopFile::hasMimeTypeType() const
-{
-  return readType() == QLatin1String("MimeType");
-}
-
 bool KDesktopFile::hasDeviceType() const
 {
   return readType() == QLatin1String("FSDevice");

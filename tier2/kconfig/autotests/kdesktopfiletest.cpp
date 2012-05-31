@@ -27,16 +27,25 @@ QTEST_MAIN( KDesktopFileTest )
 
 void KDesktopFileTest::testRead()
 {
-    const QString fileName = QFile::decodeName(KDESRCDIR "/../services/kplugininfo.desktop");
+    QTemporaryFile file("testReadXXXXXX.desktop");
+    QVERIFY( file.open() );
+    const QString fileName = file.fileName();
+    QTextStream ts( &file );
+    ts <<
+        "[Desktop Entry]\n"
+        "Type=Application\n"
+        "Name=My Application\n"
+        "Icon=foo\n"
+        "\n";
+    file.close();
     QVERIFY(QFile::exists(fileName));
     QVERIFY(KDesktopFile::isDesktopFile(fileName));
     KDesktopFile df(fileName);
-    QCOMPARE(df.readType(), QString::fromLatin1("ServiceType"));
-    QCOMPARE(df.readIcon(), QString());
-    QCOMPARE(df.readName(), QString::fromLatin1("KDE Plugin Information"));
-    QCOMPARE(df.hasLinkType(), false);
-    QCOMPARE(df.hasMimeTypeType(), false);
-    QCOMPARE(df.hasApplicationType(), false);
+    QCOMPARE(df.readType(), QString::fromLatin1("Application"));
+    QVERIFY(df.hasApplicationType());
+    QCOMPARE(df.readName(), QString::fromLatin1("My Application"));
+    QCOMPARE(df.readIcon(), QString::fromLatin1("foo"));
+    QVERIFY(!df.hasLinkType());
     QCOMPARE(df.fileName(), QFileInfo(fileName).canonicalFilePath());
 }
 
@@ -99,7 +108,17 @@ void KDesktopFileTest::testActionGroup()
 
 void KDesktopFileTest::testIsAuthorizedDesktopFile()
 {
-    const QString fileName = QFile::decodeName(KDESRCDIR "../../kioslave/http/http_cache_cleaner.desktop");
+    QTemporaryFile file("testAuthXXXXXX.desktop");
+    QVERIFY( file.open() );
+    const QString fileName = file.fileName();
+    QTextStream ts( &file );
+    ts <<
+        "[Desktop Entry]\n"
+        "Type=Application\n"
+        "Name=My Application\n"
+        "Exec=kfoo\n"
+        "\n";
+    file.close();
     QVERIFY(QFile::exists(fileName));
     QVERIFY(!KDesktopFile::isAuthorizedDesktopFile(fileName));
 
@@ -107,14 +126,13 @@ void KDesktopFileTest::testIsAuthorizedDesktopFile()
     if (!installedFile.isEmpty()) {
         QVERIFY(KDesktopFile::isAuthorizedDesktopFile(installedFile));
     } else {
-        qWarning("Skipping test for http_cache_cleaner.desktop, not found. kdelibs not installed?");
+        qWarning("Skipping test for http_cache_cleaner.desktop, not found. kio not installed?");
     }
 
     const QString autostartFile = QStandardPaths::locate(QStandardPaths::ConfigLocation, QLatin1String("autostart/") + "plasma-desktop.desktop");
     if (!autostartFile.isEmpty()) {
         QVERIFY(KDesktopFile::isAuthorizedDesktopFile(autostartFile));
     } else {
-        qWarning("Skipping test for plasma-desktop.desktop, not found. kdebase not installed?");
+        qWarning("Skipping test for plasma-desktop.desktop, not found. kde-workspace not installed?");
     }
-
 }
