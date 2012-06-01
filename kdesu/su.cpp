@@ -38,7 +38,7 @@
 #include <kdebug.h>
 #include <ksharedconfig.h>
 #include <klocalizedstring.h>
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 #include <kuser.h>
 
 int kdesuDebugArea()
@@ -157,7 +157,7 @@ int SuProcess::exec(const char *password, int check)
 
     if (::access(command, X_OK) != 0)
     {
-        command = QFile::encodeName( KGlobal::dirs()->findExe(d->m_superUserCommand.toLatin1()) );
+        command = QFile::encodeName(QStandardPaths::findExecutable(d->m_superUserCommand.toLatin1()));
         if (command.isEmpty())
             return check ? SuNotFound : -1;
     }

@@ -415,8 +415,7 @@ QByteArray execpath_avoid_loops( const QByteArray& exec, int envc, const char* e
      } else {
          paths = QString::fromLocal8Bit(qgetenv("PATH")).split(pathSepRegExp, QString::KeepEmptyParts);
      }
-     QString execpath =
-         s_instance->dirs()->findExe(QFile::decodeName(exec), paths.join(QLatin1String(":")));
+     QString execpath = QStandardPaths::findExecutable(QFile::decodeName(exec), paths);
      if (avoid_loops && !execpath.isEmpty()) {
          const int pos = execpath.lastIndexOf(QLatin1Char('/'));
          const QString bin_path = execpath.left(pos);
@@ -428,7 +427,7 @@ QByteArray execpath_avoid_loops( const QByteArray& exec, int envc, const char* e
                  break; // -->
              }
          }
-         execpath = s_instance->dirs()->findExe(QFile::decodeName(exec), paths.join(QLatin1String(":")));
+         execpath = QStandardPaths::findExecutable(QFile::decodeName(exec), paths);
      }
      return QFile::encodeName(execpath);
 }
@@ -541,8 +540,8 @@ static pid_t launch(int argc, const char *_name, const char *args,
   // find out these paths before forking, doing it afterwards
   // crashes on some platforms, notably OSX
   const QByteArray docPath = QFile::encodeName(KGlobalSettings::documentPath());
-#ifdef Q_WS_MAC
-  const QString bundlepath = s_instance->dirs()->findExe(QFile::decodeName(execpath));
+#ifdef Q_OS_MAC
+  const QString bundlepath = QStandardPaths::findExecutable(QFile::decodeName(execpath));
 #endif
 
   d.errorMsg = 0;
@@ -611,8 +610,8 @@ static pid_t launch(int argc, const char *_name, const char *args,
        QByteArray procTitle;
        d.argv = (char **) malloc(sizeof(char *) * (argc+1));
        d.argv[0] = (char *) _name;
-#ifdef Q_WS_MAC
-       QString argvexe = s_instance->dirs()->findExe(QString::fromLatin1(d.argv[0]));
+#ifdef Q_OS_MAC
+       QString argvexe = QStandardPaths::findExecutable(QString::fromLatin1(d.argv[0]));
        if (!argvexe.isEmpty()) {
           QByteArray cstr = argvexe.toLocal8Bit();
           kDebug(7016) << "kdeinit5: launch() setting argv: " << cstr.data();
@@ -687,7 +686,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
         setup_tty( tty );
 
         QByteArray executable = execpath;
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
         if (!bundlepath.isEmpty())
            executable = QFile::encodeName(bundlepath);
 #endif

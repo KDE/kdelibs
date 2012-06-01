@@ -23,6 +23,7 @@
 #include "krun_p.h"
 
 #include <config.h>
+#include <config-prefix.h>
 
 #include <assert.h>
 #include <stdlib.h>
@@ -418,8 +419,8 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
     // Check if we need "tempexec" (kioexec in fact)
     appHasTempFileOption = tempFiles && _service.property("X-KDE-HasTempFileOption").toBool();
     if (tempFiles && !appHasTempFileOption && _urls.size()) {
-        const QString kioexec = KStandardDirs::findExe("kioexec");
-        Q_ASSERT(!kioexec.isEmpty());
+        const QString kioexec = QFile::decodeName(CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kioexec");
+        Q_ASSERT(QFile::exists(kioexec));
         result << kioexec << "--tempfiles" << exec;
         if (!suggestedFileName.isEmpty()) {
             result << "--suggestedfilename";
@@ -449,8 +450,8 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
     }
     if (useKioexec) {
         // We need to run the app through kioexec
-        const QString kioexec = KStandardDirs::findExe("kioexec");
-        Q_ASSERT(!kioexec.isEmpty());
+        const QString kioexec = CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kioexec";
+        Q_ASSERT(QFile::exists(kioexec));
         result << kioexec;
         if (tempFiles) {
             result << "--tempfiles";
@@ -520,7 +521,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
     if (err == KShell::NoError && !execlist.isEmpty()) { // mx1 checked for syntax errors already
         // Resolve the executable to ensure that helpers in libexec are found.
         // Too bad for commands that need a shell - they must reside in $PATH.
-        const QString exePath = KStandardDirs::findExe(execlist[0]);
+        const QString exePath = QStandardPaths::findExecutable(execlist[0]);
         if (!exePath.isEmpty()) {
             execlist[0] = exePath;
         }
@@ -530,7 +531,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
             result << "su";
         }
         else {
-            result << KStandardDirs::findExe("kdesu") << "-u";
+            result << QStandardPaths::findExecutable("kdesu") << "-u";
         }
 
         result << _service.username() << "-c";
@@ -1771,7 +1772,7 @@ KProcessRunner::slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus)
         //
         // We'll try to find the executable relatively to current directory,
         // (or with a full path, if m_executable is absolute), and then in the PATH.
-        if (!QFile(m_executable).exists() && KStandardDirs::findExe(m_executable).isEmpty()) {
+        if (!QFile(m_executable).exists() && QStandardPaths::findExecutable(m_executable).isEmpty()) {
             KGlobal::ref();
             KMessageBox::sorry(0L, i18n("Could not find the program '%1'", m_executable));
             KGlobal::deref();

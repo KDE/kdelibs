@@ -129,6 +129,8 @@ Either keep using KStandardDirs, or write your own filtering (QDir::entryList) o
 Also, check for absolute paths first, findAllResources(res, "/absolute/path") returned the path, QStandardPaths doesn't.
 
 An easy case is KStandardDirs::findExe -&gt; QStandardPaths::findExecutable. Well, not so easy: it doesn't support looking into "libexec" at this point. To be resolved.
+
+A script is available in kdesdk/scripts/kf5/convert-kstandarddirs.pl to port some of this.
 </li>
 <li>KConfig has been ported to QStandardPaths. This changes the "const char* resourceType" in the API into QStandardPaths::StandardLocation, and means that modifying the "config" resource before using KConfig has no effect on KConfig anymore.
 </li>

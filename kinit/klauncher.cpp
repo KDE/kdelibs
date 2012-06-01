@@ -24,6 +24,7 @@
 #include "klauncher_adaptor.h"
 
 #include <config.h>
+#include <config-prefix.h>
 
 #include <stdio.h>
 #include <unistd.h>
@@ -47,7 +48,6 @@
 #include <kprotocolmanager.h>
 #include <kprotocolinfo.h>
 #include <krun.h>
-#include <kstandarddirs.h>
 #include <kdesktopfile.h>
 #include <kurl.h>
 
@@ -637,8 +637,8 @@ KLauncher::requestStart(KLaunchRequest *request)
       args << arg;
 
    QString executable = request->name;
-#ifdef Q_WS_MAC
-   const QString bundlepath = KStandardDirs::findExe(executable);
+#ifdef Q_OS_MAC
+   const QString bundlepath = QStandardPaths::findExecutable(executable);
    if (!bundlepath.isEmpty())
       executable = bundlepath;
 #endif
@@ -1139,7 +1139,7 @@ KLauncher::requestSlave(const QString &protocol,
     arg_list << protocol;
     arg_list << mConnectionServer.address().toString();
     arg_list << app_socket;
-    name = KStandardDirs::findExe(QLatin1String("kioslave"));
+    name = QFile::decodeName(CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kioslave");
 #else
     QString arg1 = protocol;
     QString arg2 = mConnectionServer.address().toString();
@@ -1168,7 +1168,7 @@ KLauncher::requestSlave(const QString &protocol,
 #ifndef USE_KPROCESS_FOR_KIOSLAVES // otherwise we've already done this
        KLibrary lib(name, KGlobal::mainComponent());
        arg_list.prepend(lib.fileName());
-       arg_list.prepend(KStandardDirs::locate("exe", QString::fromLatin1("kioslave")));
+       arg_list.prepend(QFile::decodeName(CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kioslave"));
 #endif
        name = QString::fromLatin1("valgrind");
 

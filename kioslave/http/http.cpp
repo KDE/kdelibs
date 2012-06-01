@@ -31,6 +31,7 @@
 #include "http.h"
 
 #include <config.h>
+#include <config-prefix.h>
 
 #include <fcntl.h>
 #include <utime.h>
@@ -5008,11 +5009,11 @@ void HTTPProtocol::sendCacheCleanerCommand(const QByteArray &command)
     int attempts = 0;
     while (m_cacheCleanerConnection.state() != QLocalSocket::ConnectedState && attempts < 6) {
         if (attempts == 2) {
-            QString exe = KGlobal::dirs()->findExe(QLatin1String("kio_http_cache_cleaner")); // it's in libexec, careful with porting to QStandardPaths
-            if (!exe.isEmpty()) {
+            QString exe = QFile::decodeName(CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kio_http_cache_cleaner");
+            if (QFile::exists(exe)) {
                 QProcess::startDetached(exe);
             } else {
-                qWarning() << "kio_http_cache_cleaner not found!";
+                qWarning() << exe << "not found!";
             }
         }
         QString socketFileName = KStandardDirs::locateLocal("socket", QLatin1String("kio_http_cache_cleaner"));

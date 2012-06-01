@@ -37,7 +37,7 @@
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 #include <kcomponentdata.h>
 #include <ktextedit.h>
 #include <ktitlewidget.h>
@@ -51,6 +51,7 @@
 #include "kdeversion.h"
 
 #include <config-compiler.h>
+#include <config-prefix.h>
 
 class KBugReportPrivate {
 public:
@@ -529,10 +530,9 @@ bool KBugReport::sendBugReport()
     d->m_aboutData->bugAddress() :
     QString::fromLatin1("submit@bugs.kde.org") );
 
-  QString command;
-  command = KStandardDirs::locate("exe", "ksendbugmail");
+  QString command = QStandardPaths::findExecutable("ksendbugmail");
   if (command.isEmpty())
-      command = KStandardDirs::findExe( QString::fromLatin1("ksendbugmail") ); // ### typically installed into libexec
+      command = CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/ksendbugmail";
 
   QProcess proc;
   QStringList args;

@@ -11,6 +11,7 @@
 #include <QtCore/QTextCodec>
 #include <QtCore/QFileInfo>
 #include <QtCore/QList>
+#include <qstandardpaths.h>
 
 #include <kaboutdata.h>
 #include <kcomponentdata.h>
@@ -144,9 +145,7 @@ int main(int argc, char **argv) {
         exe = XMLLINT;
 #endif
         if ( !QFileInfo( exe ).isExecutable() ) {
-            exe = KStandardDirs::findExe( "xmllint" );
-            if (exe.isEmpty())
-                exe = KStandardDirs::locate( "exe", "xmllint" );
+            exe = QStandardPaths::findExecutable("xmllint");
         }
 
         CheckResult cr = check( checkFilename, exe, catalogs );
