@@ -82,7 +82,6 @@
 #include <limits.h>
 #include <kshell.h>
 #include <kmountpoint.h>
-#include <kstandarddirs.h>
 
 #ifdef HAVE_VOLMGT
 #include <volmgt.h>
@@ -903,6 +902,10 @@ void FileProtocol::special( const QByteArray &data)
     }
 }
 
+static QStringList fallbackSystemPath() {
+    return QStringList() << QLatin1String("/sbin") << QLatin1String("/bin");
+}
+
 void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, const QString& _point )
 {
     kDebug(7101) << "fstype=" << _fstype;
@@ -959,11 +962,10 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
     bool fstype_empty = !_fstype || !*_fstype;
     QByteArray fstype = KShell::quoteArg(QString::fromLatin1(_fstype)).toLatin1(); // good guess
     QByteArray readonly = _ro ? "-r" : "";
-    QString epath = QString::fromLocal8Bit(qgetenv("PATH"));
-    QString path = QLatin1String("/sbin:/bin");
-    if(!epath.isEmpty())
-        path += QLatin1String(":") + epath;
-    QByteArray mountProg = KGlobal::dirs()->findExe(QLatin1String("mount"), path).toLocal8Bit();
+    QByteArray mountProg = QStandardPaths::findExecutable(QLatin1String("mount")).toLocal8Bit();
+    if (mountProg.isEmpty()) {
+      mountProg = QStandardPaths::findExecutable(QLatin1String("mount"), fallbackSystemPath()).toLocal8Bit();
+    }
     if (mountProg.isEmpty()){
       error( KIO::ERR_COULD_NOT_MOUNT, i18n("Could not find program \"mount\""));
       return;
@@ -1145,12 +1147,10 @@ void FileProtocol::unmount( const QString& _point )
 		return;
 	}
 #else
-    QString epath = QString::fromLocal8Bit(qgetenv("PATH"));
-    QString path = QLatin1String("/sbin:/bin");
-    if (!epath.isEmpty())
-       path += QLatin1Char(':') + epath;
-    QByteArray umountProg = KGlobal::dirs()->findExe(QLatin1String("umount"), path).toLocal8Bit();
-
+    QByteArray umountProg = QStandardPaths::findExecutable(QLatin1String("umount")).toLocal8Bit();
+    if (umountProg.isEmpty()) {
+        umountProg = QStandardPaths::findExecutable(QLatin1String("umount"), fallbackSystemPath()).toLocal8Bit();
+    }
     if (umountProg.isEmpty()) {
         error( KIO::ERR_COULD_NOT_UNMOUNT, i18n("Could not find program \"umount\""));
         return;
@@ -1180,12 +1180,9 @@ void FileProtocol::unmount( const QString& _point )
 bool FileProtocol::pmount(const QString &dev)
 {
 #ifndef _WIN32_WCE
-    QString epath = QString::fromLocal8Bit(qgetenv("PATH"));
-    QString path = QLatin1String("/sbin:/bin");
-    if (!epath.isEmpty())
-        path += QLatin1Char(':') + epath;
-    QString pmountProg = KGlobal::dirs()->findExe(QLatin1String("pmount"), path);
-
+    QString pmountProg = QStandardPaths::findExecutable(QLatin1String("pmount"));
+    if (pmountProg.isEmpty())
+        pmountProg = QStandardPaths::findExecutable(QLatin1String("pmount"), fallbackSystemPath());
     if (pmountProg.isEmpty())
         return false;
 
@@ -1209,12 +1206,9 @@ bool FileProtocol::pumount(const QString &point)
     QString dev = mp->realDeviceName();
     if (dev.isEmpty()) return false;
 
-    QString epath = QString::fromLocal8Bit(qgetenv("PATH"));
-    QString path = QLatin1String("/sbin:/bin");
-    if (!epath.isEmpty())
-        path += QLatin1Char(':') + epath;
-    QString pumountProg = KGlobal::dirs()->findExe(QLatin1String("pumount"), path);
-
+    QString pumountProg = QStandardPaths::findExecutable(QLatin1String("pumount"));
+    if (pumountProg.isEmpty())
+        pumountProg = QStandardPaths::findExecutable(QLatin1String("pumount"), fallbackSystemPath());
     if (pumountProg.isEmpty())
         return false;
 
