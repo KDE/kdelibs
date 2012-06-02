@@ -35,7 +35,7 @@ FstabDevice::FstabDevice(QString uid) :
     m_device.remove(parentUdi() + "/");
 
     if (m_device.startsWith("//")) {
-        m_product = m_device.left(m_device.indexOf("/", 2));
+        m_product = m_device.mid(2, m_device.indexOf("/", 2) - 2);
         m_vendor = m_device.mid(m_device.indexOf("/", 2) + 1);
     } else {
         m_product = m_device.left(m_device.indexOf(":/"));
