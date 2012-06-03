@@ -217,15 +217,15 @@ void RenderImage::paint(PaintInfo& paintInfo, int _tx, int _ty)
     if(shouldPaintBackgroundOrBorder())
         paintBoxDecorations(paintInfo, _tx, _ty);
 
+    if (!canvas()->printImages())
+        return;
+
     int cWidth = contentWidth();
     int cHeight = contentHeight();
     int leftBorder = borderLeft();
     int topBorder = borderTop();
     int leftPad = paddingLeft();
     int topPad = paddingTop();
-
-    if (!canvas()->printImages())
-        return;
 
     // paint frame around image and loading icon as long as it is not completely loaded from web.
     if (bUnfinishedImageFrame && paintInfo.phase == PaintActionForeground && cWidth > 2 && cHeight > 2 && !complete()) {
@@ -368,7 +368,6 @@ void RenderImage::layout()
     KHTMLAssert( minMaxKnown() );
 
     //short m_width = 0;
-    int m_height;
 
     // minimum height
     m_height = m_cachedImage && m_cachedImage->isErrorImage() ? intrinsicHeight() : 0;
