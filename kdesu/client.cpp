@@ -14,6 +14,7 @@
 
 #include <config.h>
 #include <config-kdesu.h>
+#include <config-prefix.h>
 
 #include <stdio.h>
 #include <unistd.h>
@@ -30,6 +31,7 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QRegExp>
+#include <qstandardpaths.h>
 
 #include <kdebug.h>
 #include <kstandarddirs.h>
@@ -399,11 +401,11 @@ int KDEsuClient::stopServer()
 
 static QString findDaemon()
 {
-    QString daemon = KStandardDirs::locate("bin", "kdesud");
-    if (daemon.isEmpty()) // if not in KDEDIRS, rely on PATH
-	daemon = KStandardDirs::findExe("kdesud");
+    QString daemon = CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kdesud";
+    if (daemon.isEmpty()) // if not in libexec, find it in PATH
+        daemon = QStandardPaths::findExecutable("kdesud");
 
-    if (daemon.isEmpty())
+    if (!QFile::exists(daemon))
     {
 	kWarning(kdesuDebugArea()) << k_lineinfo << "daemon not found.";
     }
