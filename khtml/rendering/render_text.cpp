@@ -1432,7 +1432,7 @@ void RenderText::setTextInternal(DOMStringImpl *text)
 		
         case UPPERCASE: str = str->upper();       break;
         case LOWERCASE: str = str->lower();       break;
-        case NONE:
+        case TTNONE:
         default:;
     }
         str->ref();
