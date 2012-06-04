@@ -441,7 +441,7 @@ include_directories( ${KDE4_PHONON_INCLUDES} ${KDE4_KPARTS_INCLUDES} )
 include_directories( ${CMAKE_BINARY_DIR}/kio/kssl )
 include_directories( ${KDE4_KJS_INCLUDES} ${CMAKE_SOURCE_DIR}/kimgio ${CMAKE_SOURCE_DIR}/kio/kssl ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor)
 include_directories( ${CMAKE_SOURCE_DIR}/staging/sonnet ${CMAKE_SOURCE_DIR}/staging/sonnet/src/core ${CMAKE_BINARY_DIR}/staging/sonnet/src/core )
-include_directories( ${CMAKE_SOURCE_DIR}/staging/karchive/src ${CMAKE_BINARY_DIR}/staging/karchive/src )
+include_directories( ${CMAKE_SOURCE_DIR}/tier1/karchive/src ${CMAKE_BINARY_DIR}/tier1/karchive/src )
 include_directories( ${CMAKE_BINARY_DIR}/interfaces/ktexteditor ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/randomness/ ${CMAKE_SOURCE_DIR}/staging/sonnet/src/core/ )
 
 include_directories(

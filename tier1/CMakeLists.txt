@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.8.8)
 project(tier1)
 
 add_subdirectory(itemmodels)
+add_subdirectory(karchive)
 add_subdirectory(kdbusaddons)
 add_subdirectory(kplotting)
 add_subdirectory(solid)
