@@ -36,7 +36,7 @@
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kglobal.h>
-#include <kstandarddirs.h>
+
 #include <ktoolinvocation.h>
 #include <klauncher_iface.h>
 #include <klibrary.h>
@@ -46,6 +46,7 @@
 #include <kio/global.h>
 #include "kio/connection.h"
 #include <kprotocolinfo.h>
+#include <config-prefix.h>
 
 #include "slaveinterface_p.h"
 
@@ -453,7 +454,7 @@ Slave* Slave::createSlave( const QString &protocol, const QUrl& url, int& error,
        const QStringList args = QStringList() << lib_path << protocol << "" << slaveAddress.toString();
        kDebug() << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString() << ", " << slaveAddress;
 
-       const QString kioslave = KStandardDirs::locate("exe", "kioslave");
+       const QString kioslave = CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kioslave";
        if (kioslave.isEmpty()) {
           error_text = i18n("Can not find 'kioslave' executable");
           error = KIO::ERR_CANNOT_LAUNCH_PROCESS;

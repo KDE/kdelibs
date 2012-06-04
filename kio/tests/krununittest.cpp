@@ -22,13 +22,16 @@
 #undef QT_USE_FAST_CONCATENATION
 
 #include "krununittest.h"
+#include <config-prefix.h>
+
 #include <qtest_kde.h>
 QTEST_KDEMAIN( KRunUnitTest, NoGUI )
+
+#include <qstandardpaths.h>
 
 #include "krun.h"
 #include <kshell.h>
 #include <kservice.h>
-#include <kstandarddirs.h>
 #include <kconfiggroup.h>
 #include <kprocess.h>
 #include "kiotesthelper.h" // createTestFile etc.
@@ -40,8 +43,8 @@ void KRunUnitTest::initTestCase()
     cg.writeEntry("TerminalApplication", "x-term");
 
     // Determine the full path of sh - this is needed to make testProcessDesktopExecNoFile()
-    // pass on systems where KStandardDirs::findExe("sh") is not "/bin/sh".
-    m_sh = KStandardDirs::findExe("sh");
+    // pass on systems where QStandardPaths::findExecutable("sh") is not "/bin/sh".
+    m_sh = QStandardPaths::findExecutable("sh");
     if (m_sh.isEmpty()) m_sh = "/bin/sh";
 }
 
@@ -127,7 +130,7 @@ void KRunUnitTest::testProcessDesktopExec()
                 int pt = ex+te*2+su*4;
                 QString exe;
                 if (pt == 4 || pt == 5)
-                    exe = KStandardDirs::findExe("kdesu");
+                    exe = QStandardPaths::findExecutable("kdesu");
                 const QString result = QString::fromLatin1(rslts[pt]).replace("/bin/sh", shellPath);
                 checkPDE( execs[ex], terms[te], sus[su], l0, false, exe + result);
             }
@@ -148,14 +151,14 @@ void KRunUnitTest::testProcessDesktopExecNoFile_data()
 
     // A real-world use case would be kate.
     // But I picked kdeinit5 since it's installed by kdelibs
-    QString kdeinit = KStandardDirs::findExe("kdeinit5");
+    QString kdeinit = QStandardPaths::findExecutable("kdeinit5");
     if (kdeinit.isEmpty()) kdeinit = "kdeinit5";
 
-    QString kioexec = KStandardDirs::findExe("kioexec");
+    QString kioexec = CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kioexec";
     if (kioexec.isEmpty())
         QSKIP_PORTING("kioexec not found, kdebase needed", SkipAll);
 
-    QString kmailservice = KStandardDirs::findExe("kmailservice");
+    QString kmailservice = CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kmailservice";
     if (kmailservice.isEmpty()) kmailservice = "kmailservice";
     if (!kdeinit.isEmpty()) {
         QVERIFY(!kmailservice.isEmpty());

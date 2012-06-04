@@ -84,7 +84,7 @@ extern QDBUS_EXPORT void qDBusAddSpyHook(void (*)(const QDBusMessage&));
 
 static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
 {
-   const QString exe = KStandardDirs::findExe(KBUILDSYCOCA_EXENAME);
+   const QString exe = QStandardPaths::findExecutable(KBUILDSYCOCA_EXENAME);
    Q_ASSERT(!exe.isEmpty());
    QStringList args;
    args.append("--incremental");

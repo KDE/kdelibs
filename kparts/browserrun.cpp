@@ -32,7 +32,6 @@
 #include <qtemporaryfile.h>
 #include <kdebug.h>
 #include <kde_file.h>
-#include <kstandarddirs.h>
 #include <kdatetime.h>
 #include "browseropenorsavequestion.h"
 #include <kprotocolmanager.h>
@@ -389,7 +388,7 @@ void KParts::BrowserRun::saveUrl(const KUrl & url, const QString & suggestedFile
         {
             // then find the download manager location
             kDebug(1000) << "Using: "<<downloadManger <<" as Download Manager";
-            QString cmd=KStandardDirs::findExe(downloadManger);
+            QString cmd = QStandardPaths::findExecutable(downloadManger);
             if (cmd.isEmpty())
             {
                 QString errMsg=i18n("The Download Manager (%1) could not be found in your $PATH ", downloadManger);

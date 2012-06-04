@@ -44,6 +44,7 @@
 #include <QPushButton>
 #include <QRadioButton>
 #include <QRegExp>
+#include <qstandardpaths.h>
 
 #include <kaboutdata.h>
 #include <kcombobox.h>
@@ -63,7 +64,6 @@
 #include <kpushbutton.h>
 #include <k3resolver.h>
 #include <kseparator.h>
-#include <kstandarddirs.h>
 #include <ktabwidget.h>
 #include <ktextbrowser.h>
 #include <kurllabel.h>
@@ -1178,7 +1178,7 @@ void KCryptoConfig::save()
   authcfg->sync();
 
   // insure proper permissions -- contains sensitive data
-  QString cfgName(KGlobal::dirs()->findResource("config", "cryptodefaults"));
+  QString cfgName(QStandardPaths::locate(QStandardPaths::ConfigLocation, "cryptodefaults"));
   if (!cfgName.isEmpty())
     ::chmod(QFile::encodeName(cfgName), 0600);
 
@@ -1988,7 +1988,7 @@ void KCryptoConfig::slotCAImport() {
 
 void KCryptoConfig::offerImportToKMail( const QString& certFile )
 {
-    QString kleopatraPath = KStandardDirs::findExe("kleopatra");
+    QString kleopatraPath = QStandardPaths::findExecutable("kleopatra");
     if (kleopatraPath.isEmpty())
         return;
     if ( KMessageBox::questionYesNo( this, i18n( "Do you want to make this certificate available to KMail as well?" ), QString(), KGuiItem(i18n("Make Available")), KGuiItem(i18n("Do Not Make Available")) ) == KMessageBox::Yes ) {
@@ -2019,7 +2019,7 @@ void KCryptoConfig::slotCARestore() {
 
 // For now, we just rm the existing file and rebuild
 
-   QString path = KGlobal::dirs()->saveLocation("config");
+   QString path = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
 
    path += "/ksslcalist";
 

@@ -29,10 +29,11 @@
 #include <klocalizedstring.h>
 #include <kprotocolmanager.h>
 #include <ksharedconfig.h>
-#include <kstandarddirs.h>
+
 
 #include <kio/slaveconfig.h>
 #include <kio/http_slave_defaults.h>
+#include <qstandardpaths.h>
 
 namespace KIO {
 
@@ -110,7 +111,7 @@ void SessionData::configDataFor( MetaData &configData, const QString &proto,
     if ( configData["Charsets"].isEmpty() )
         configData["Charsets"] = d->charsets;
     if ( configData["CacheDir"].isEmpty() )
-        configData["CacheDir"] = KGlobal::dirs()->saveLocation("cache", "http");
+        configData["CacheDir"] = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + '/' + "http";
     if ( configData["UserAgent"].isEmpty() )
         configData["UserAgent"] = KProtocolManager::defaultUserAgent();
   }

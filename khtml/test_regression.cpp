@@ -665,7 +665,7 @@ int main(int argc, char *argv[])
 
     if (args->isSet("xvfb"))
     {
-        QString xvfbPath = KStandardDirs::findExe("Xvfb");
+        QString xvfbPath = QStandardPaths::findExecutable("Xvfb");
         if ( xvfbPath.isEmpty() ) {
             fprintf( stderr, "ERROR: We need Xvfb to be installed for reliable results\n" );
             exit( 1 );

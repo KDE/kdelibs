@@ -47,7 +47,7 @@
 #include <klocale.h>
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
-#include <kstandarddirs.h>
+
 #include <kurl.h>
 #include <kmimetypetrader.h>
 #include <kprotocolinfofactory.h>
@@ -55,6 +55,7 @@
 #include <kio/slaveconfig.h>
 #include <kio/ioslave_defaults.h>
 #include <kio/http_slave_defaults.h>
+#include <qstandardpaths.h>
 
 #define QL1S(x)   QLatin1String(x)
 #define QL1C(x)   QLatin1Char(x)
@@ -340,7 +341,7 @@ KIO::CacheControl KProtocolManager::cacheControl()
 
 QString KProtocolManager::cacheDir()
 {
-  return http_config().readPathEntry("CacheDir", KGlobal::dirs()->saveLocation("cache","http"));
+  return http_config().readPathEntry("CacheDir", QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + '/' + "http");
 }
 
 int KProtocolManager::maxCacheAge()

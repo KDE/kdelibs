@@ -25,6 +25,7 @@
 #include "kpty_p.h"
 
 #include <config.h>
+#include <config-prefix.h>
 
 #ifdef __sgi
 #define __svr4__
@@ -130,7 +131,6 @@ extern "C" {
 #endif
 
 #include <kdebug.h>
-#include <kstandarddirs.h>	// findExe
 #include <kde_file.h>
 
 #include <QtCore/Q_PID>
@@ -165,7 +165,7 @@ KPtyPrivate::~KPtyPrivate()
 #ifndef HAVE_OPENPTY
 bool KPtyPrivate::chownpty(bool grant)
 {
-    return !QProcess::execute(KStandardDirs::findExe("kgrantpty"),
+    return !QProcess::execute(QFile::decodeName(CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kgrantpty"),
         QStringList() << (grant?"--grant":"--revoke") << QString::number(masterFd));
 }
 #endif

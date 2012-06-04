@@ -28,6 +28,7 @@
 #include <QtCore/QTextStream>
 #include <QtCore/QTimer>
 #include <QtCore/QStringList>
+#include <qstandardpaths.h>
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QCryptographicHash>
@@ -43,15 +44,14 @@ typedef QCryptographicHash Q5CryptographicHash;
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kpassworddialog.h>
-#include <kstandarddirs.h>
 
 using namespace KNS3;
 
 static QString gpgExecutable()
 {
-  QString gpgExe = KStandardDirs::findExe( "gpg" );
+  QString gpgExe = QStandardPaths::findExecutable( "gpg" );
   if ( gpgExe.isEmpty() )
-    gpgExe = KStandardDirs::findExe( "gpg2" );
+    gpgExe = QStandardPaths::findExecutable( "gpg2" );
   if ( gpgExe.isEmpty() )
     return QLatin1String( "gpg" );
   return gpgExe;

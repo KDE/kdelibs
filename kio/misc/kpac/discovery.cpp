@@ -20,6 +20,7 @@
 
 #include <config.h>
 #include <config-kpac.h>
+#include <config-prefix.h>
 #include <netdb.h>
 #include <unistd.h>
 
@@ -48,10 +49,10 @@
 #include <QtCore/QTimer>
 #include <QtCore/QProcess>
 #include <QtNetwork/QHostInfo>
+#include <qstandardpaths.h>
+#include <qurl.h>
 
 #include <klocalizedstring.h>
-#include <kurl.h>
-#include <kstandarddirs.h>
 #include "moc_discovery.cpp"
 
 namespace KPAC
@@ -62,7 +63,7 @@ namespace KPAC
     {
         connect( m_helper, SIGNAL(readyReadStandardOutput()), SLOT(helperOutput()) );
         connect( m_helper, SIGNAL(finished(int,QProcess::ExitStatus)), SLOT(failed()) );
-        m_helper->start(KStandardDirs::findExe("kpac_dhcp_helper"));
+        m_helper->start(CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kpac_dhcp_helper");
         if ( !m_helper->waitForStarted() )
             QTimer::singleShot( 0, this, SLOT(failed()) );
     }
@@ -123,7 +124,7 @@ namespace KPAC
         const int dot = m_domainName.indexOf( '.' );
         if ( dot >= 0 )
         {
-            KUrl url( QLatin1String("http://wpad.") + m_domainName + QLatin1String("/wpad.dat") );
+            QUrl url( QLatin1String("http://wpad.") + m_domainName + QLatin1String("/wpad.dat") );
             m_domainName.remove( 0, dot + 1 ); // remove one domain level
             download( url );
             return;
@@ -136,7 +137,7 @@ namespace KPAC
     {
         m_helper->disconnect( this );
         const QByteArray line = m_helper->readLine();
-        const KUrl url( QString::fromLocal8Bit(line.constData(), line.length()).trimmed() );
+        const QUrl url( QString::fromLocal8Bit(line.constData(), line.length()).trimmed() );
         download( url );
     }
 }

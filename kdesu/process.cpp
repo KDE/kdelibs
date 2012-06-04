@@ -44,7 +44,7 @@
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>
 #include <kdebug.h>
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 #include <kde_file.h>
 
 extern int kdesuDebugArea();
@@ -339,7 +339,7 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
         path = command;
     else
     {
-        QString file = KStandardDirs::findExe(command);
+        QString file = QStandardPaths::findExecutable(command);
         if (file.isEmpty())
         {
             kError(kdesuDebugArea()) << k_lineinfo << command << "not found.";

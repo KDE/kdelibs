@@ -42,6 +42,7 @@
 #include <QMenu>
 #include <QtCore/QUrl>
 #include <QtCore/QMetaEnum>
+#include <qstandardpaths.h>
 #include <assert.h>
 
 #include <kdebug.h>
@@ -55,7 +56,6 @@
 #include <kstringhandler.h>
 #include <ktoolinvocation.h>
 #include <kmessagebox.h>
-#include <kstandarddirs.h>
 #include <krun.h>
 #include <kurifilter.h>
 #include <kiconloader.h>
@@ -934,7 +934,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget* parent, const KUrl &url, const KUrl 
             {
                 // then find the download manager location
                 kDebug(1000) << "Using: "<<downloadManger <<" as Download Manager";
-                QString cmd = KStandardDirs::findExe(downloadManger);
+                QString cmd = QStandardPaths::findExecutable(downloadManger);
                 if (cmd.isEmpty())
                 {
                     QString errMsg=i18n("The Download Manager (%1) could not be found in your $PATH ", downloadManger);

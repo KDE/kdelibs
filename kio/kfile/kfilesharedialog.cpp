@@ -26,7 +26,7 @@
 #include <QButtonGroup>
 #include <QLayout>
 #include <klocalizedstring.h>
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 #include <kdebug.h>
 #include <kio/kfileshare.h>
 #include <kseparator.h>
@@ -202,7 +202,7 @@ void KFileSharePropsPlugin::slotConfigureFileSharing()
 
     d->m_configProc = new KfsProcess(this);
     // ########## libexec!
-    (*d->m_configProc) << KStandardDirs::findExe("kdesu") << "kcmshell4" << "fileshare";
+    (*d->m_configProc) << QStandardPaths::findExecutable("kdesu") << "kcmshell4" << "fileshare";
     if (!d->m_configProc->start())
     {
        delete d->m_configProc;
