@@ -116,17 +116,19 @@ void FstabManager::_k_updateDeviceList()
     QSet<QString> newlist = deviceList.toSet();
     QSet<QString> oldlist = m_deviceList.toSet();
 
-    foreach(const QString &device, newlist) {
-        if ( !oldlist.contains(device) )
-            emit deviceAdded(udiPrefix() + "/" + device);
-    }
-
     foreach(const QString &device, oldlist) {
-        if ( !newlist.contains(device) )
+        if ( !newlist.contains(device) ) {
             emit deviceRemoved(udiPrefix() + "/" + device);
+        }
     }
 
     m_deviceList = deviceList;
+
+    foreach(const QString &device, newlist) {
+        if ( !oldlist.contains(device) ) {
+            emit deviceAdded(udiPrefix() + "/" + device);
+        }
+    }
 }
 
 void FstabManager::onMtabChanged()
