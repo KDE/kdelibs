@@ -1,7 +1,4 @@
 find_package(Qt5Transitional REQUIRED Test Gui)
-enable_testing()
-
-set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 

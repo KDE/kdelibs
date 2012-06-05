@@ -13,7 +13,7 @@ set(kdeguiaddons_LIB_SRCS
  text/kwordwrap.cpp
 )
 
-add_library(kdeguiaddons ${LIBRARY_TYPE} ${kdeguiaddons_LIB_SRCS})
+add_library(kdeguiaddons ${kdeguiaddons_LIB_SRCS})
 
 generate_export_header(kdeguiaddons)
 
