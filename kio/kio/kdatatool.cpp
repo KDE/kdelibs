@@ -109,38 +109,6 @@ bool KDataToolInfo::isReadOnly() const
     return d->service->property( "ReadOnly" ).toBool();
 }
 
-#ifndef KDE_NO_DEPRECATED
-QPixmap KDataToolInfo::icon() const
-{
-    if ( !d->service )
-        return QPixmap();
-
-    QPixmap pix;
-    const QStringList lst = KGlobal::dirs()->resourceDirs("icon");
-    QStringList::ConstIterator it = lst.begin();
-    while (!pix.load( *it + '/' + d->service->icon() ) && it != lst.end() )
-        it++;
-
-    return pix;
-}
-#endif
-
-#ifndef KDE_NO_DEPRECATED
-QPixmap KDataToolInfo::miniIcon() const
-{
-    if ( !d->service )
-        return QPixmap();
-
-    QPixmap pix;
-    const QStringList lst = KGlobal::dirs()->resourceDirs("mini");
-    QStringList::ConstIterator it = lst.begin();
-    while (!pix.load( *it + '/' + d->service->icon() ) && it != lst.end() )
-        it++;
-
-    return pix;
-}
-#endif
-
 QString KDataToolInfo::iconName() const
 {
     if ( !d->service )
