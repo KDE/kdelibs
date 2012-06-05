@@ -11,19 +11,19 @@ include_directories(
 
 include(ECMMarkAsTest)
 
-MACRO(KDE4SUPPORT_UNIT_TESTS)
-       FOREACH(_testname ${ARGN})
-               add_executable(${_testname} ${_testname}.cpp)
-               add_test(kde4support-${_testname} ${_testname})
-               target_link_libraries(${_testname} kde4support ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} kdecore kcoreaddons kdeui)
-               if(WINCE)
-                target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
-               endif(WINCE)
-               ecm_mark_as_test(${_testname})
-       ENDFOREACH(_testname)
-ENDMACRO(KDE4SUPPORT_UNIT_TESTS)
+macro(KDE4SUPPORT_UNIT_TESTS)
+  foreach(_testname ${ARGN})
+    add_executable(${_testname} ${_testname}.cpp)
+    add_test(kde4support-${_testname} ${_testname})
+    target_link_libraries(${_testname} kde4support ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} kdecore kcoreaddons kdeui)
+    if(WINCE)
+      target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
+    endif(WINCE)
+    ecm_mark_as_test(${_testname})
+  endforeach(_testname)
+endmacro(KDE4SUPPORT_UNIT_TESTS)
 
-KDE4SUPPORT_UNIT_TESTS(
+kde4support_unit_tests(
   kmd5benchmark
   ktempdirtest
   ktemporaryfiletest
@@ -37,28 +37,28 @@ KDE4SUPPORT_UNIT_TESTS(
 ########### module for klibloadertest ###############
 
 if(NOT KDE_NO_DEPRECATED)
-set(klibloadertestmodule_PART_SRCS klibloadertest_module.cpp )
+  set(klibloadertestmodule_PART_SRCS klibloadertest_module.cpp )
 
-add_library(klibloadertestmodule MODULE ${klibloadertestmodule_PART_SRCS})
-set_target_properties(klibloadertestmodule PROPERTIES PREFIX "") # remove lib prefix - missing from cmake
+  add_library(klibloadertestmodule MODULE ${klibloadertestmodule_PART_SRCS})
+  set_target_properties(klibloadertestmodule PROPERTIES PREFIX "") # remove lib prefix - missing from cmake
 
-target_link_libraries(klibloadertestmodule kde4support kdecore ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY})
+  target_link_libraries(klibloadertestmodule kde4support kdecore ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY})
 
-set_target_properties(klibloadertestmodule PROPERTIES SKIP_BUILD_RPATH FALSE BUILD_WITH_INSTALL_RPATH FALSE)
+  set_target_properties(klibloadertestmodule PROPERTIES SKIP_BUILD_RPATH FALSE BUILD_WITH_INSTALL_RPATH FALSE)
 endif(NOT KDE_NO_DEPRECATED)
 
 ########### module for klibloadertest4 ###############
 
 if (NOT WIN32) # TODO: reenable for win32
 
-set(klibloadertestmodule4_PART_SRCS klibloadertest4_module.cpp )
+  set(klibloadertestmodule4_PART_SRCS klibloadertest4_module.cpp )
 
-add_library(klibloadertestmodule4 MODULE ${klibloadertestmodule4_PART_SRCS})
-set_target_properties(klibloadertestmodule4 PROPERTIES PREFIX "") # remove lib prefix - missing from cmake
+  add_library(klibloadertestmodule4 MODULE ${klibloadertestmodule4_PART_SRCS})
+  set_target_properties(klibloadertestmodule4 PROPERTIES PREFIX "") # remove lib prefix - missing from cmake
 
-target_link_libraries(klibloadertestmodule4 kde4support kdecore ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY})
+  target_link_libraries(klibloadertestmodule4 kde4support kdecore ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY})
 
-set_target_properties(klibloadertestmodule4 PROPERTIES SKIP_BUILD_RPATH FALSE BUILD_WITH_INSTALL_RPATH FALSE)
+  set_target_properties(klibloadertestmodule4 PROPERTIES SKIP_BUILD_RPATH FALSE BUILD_WITH_INSTALL_RPATH FALSE)
 
 endif (NOT WIN32)
 
