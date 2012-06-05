@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2009-2010 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2009-2012 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -39,7 +39,7 @@ bool Nepomuk::Query::ResourceTermPrivate::equals( const TermPrivate* other ) con
 }
 
 
-QString Nepomuk::Query::ResourceTermPrivate::toSparqlGraphPattern( const QString& varName, const TermPrivate* parentTerm, QueryBuilderData* qbd ) const
+QString Nepomuk::Query::ResourceTermPrivate::toSparqlGraphPattern( const QString& varName, const TermPrivate* parentTerm, const QString& additionalFilters, QueryBuilderData* qbd ) const
 {
     //
     // A negation is expressed via a filter. Since filters can only work on a "real" graph pattern
@@ -69,6 +69,8 @@ QString Nepomuk::Query::ResourceTermPrivate::toSparqlGraphPattern( const QString
     term += QString::fromLatin1("FILTER(%1=%2) . ")
             .arg( varName,
                   Soprano::Node::resourceToN3( m_resource.resourceUri() ) );
+
+    term += additionalFilters;
 
     return term;
 }
