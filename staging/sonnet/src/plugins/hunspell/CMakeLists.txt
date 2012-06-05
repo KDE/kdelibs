@@ -2,7 +2,6 @@
 ########### next target ###############
 
 include_directories( ${HUNSPELL_INCLUDE_DIR} )
-MESSAGE(status "dd ${HUNSPELL_INCLUDE_DIR}")
 set(kspell_hunspell_PART_SRCS kspell_hunspellclient.cpp kspell_hunspelldict.cpp )
 
 

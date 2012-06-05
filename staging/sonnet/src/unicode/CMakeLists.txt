@@ -1,17 +1,18 @@
-PROJECT( parseucd )
+project( parseucd )
 
-SET( SOURCE_FILES
-    ./parseucd/parseucd.cpp
+set( SOURCE_FILES
+    parseucd/parseucd.cpp
 )
-FIND_PACKAGE( Qt5Transitional REQUIRED )
 
-INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR}
+find_package( Qt5Transitional REQUIRED )
+
+include_directories( ${CMAKE_BINARY_DIR}
                      ${X11_INCLUDE_DIR}
                    )
 
-ADD_EXECUTABLE( parseucd ${SOURCE_FILES} )
+add_executable( parseucd ${SOURCE_FILES} )
 
-        TARGET_LINK_LIBRARIES( parseucd
+target_link_libraries( parseucd
                        ${QT_QTCORE_LIBRARIES}
                        ${QT_QTGUI_LIBRARIES}
                        ${X11_LIBRARIES}

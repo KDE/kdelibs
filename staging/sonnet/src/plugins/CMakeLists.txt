@@ -17,7 +17,7 @@ set_package_properties(ASPELL PROPERTIES
 )
 if (ASPELL_FOUND)
    add_subdirectory( aspell )
-endif (ASPELL_FOUND)
+endif ()
 
 
 find_package(HSPELL)
@@ -29,7 +29,7 @@ set_package_properties(HSPELL PROPERTIES
 )
 if (HSPELL_FOUND)
    add_subdirectory( hspell )
-endif (HSPELL_FOUND)
+endif ()
 
 
 find_package(ENCHANT)
@@ -41,7 +41,7 @@ set_package_properties(ENCHANT PROPERTIES
 )
 if (ENCHANT_FOUND)
    add_subdirectory( enchant )
-endif (ENCHANT_FOUND)
+endif ()
 
 #find_package(HUNSPELL)
 #set_package_properties(HUNSPELL PROPERTIES
