@@ -53,7 +53,7 @@ include_directories(
 include(ConfigureChecks.cmake)
 configure_file(config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-network.h )
 
-add_library(kde4support ${LIBRARY_TYPE} ${libkde4support_SRCS})
+add_library(kde4support ${libkde4support_SRCS})
 generate_export_header(kde4support)
 
 target_link_libraries(kde4support ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDBUS_LIBRARY} kdecore kcoreaddons kwidgets kauth kdeui ${X11_LIBRARIES})

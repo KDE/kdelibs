@@ -1,10 +1,11 @@
 ####### checks for kdecore/network (and netsupp.cpp) ###############
 include(CheckIncludeFiles)
 include(CheckFunctionExists)
-include(CheckPrototypeExists)
+# TODO: check whether CheckPrototypeExists.cmake is actually necessary or whether something else can be used. Alex
+include(${CMAKE_SOURCE_DIR}/cmake/modules/CheckPrototypeExists.cmake)
 include(CheckSymbolExists)
 include(CheckTypeSize)
-include(CheckStructMember)
+include(CheckStructHasMember)
 
 macro_push_required_vars()
   set(CMAKE_REQUIRED_INCLUDES "${CMAKE_REQUIRED_INCLUDES};${QT_INCLUDES}")
@@ -56,7 +57,7 @@ check_symbol_exists(getaddrinfo     "sys/types.h;sys/socket.h;netdb.h"     HAVE_
 check_symbol_exists(res_init        "sys/types.h;netinet/in.h;arpa/nameser.h;resolv.h" HAVE_RES_INIT)
 # redundant? check_function_exists(res_init        HAVE_RES_INIT)
 
-check_struct_member("struct sockaddr" sa_len "sys/types.h;sys/socket.h" HAVE_STRUCT_SOCKADDR_SA_LEN)
+check_struct_has_member("struct sockaddr" sa_len "sys/types.h;sys/socket.h" HAVE_STRUCT_SOCKADDR_SA_LEN)
 
 # check if gai_strerror exists even if EAI_ADDRFAMILY is not defined
 set(CMAKE_EXTRA_INCLUDE_FILES "sys/socket.h;netdb.h")
