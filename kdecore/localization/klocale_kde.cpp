@@ -47,6 +47,7 @@
 #include <QtCore/QHash>
 #include <QtCore/QMutexLocker>
 #include <QtCore/QStringList>
+#include <qstandardpaths.h>
 
 #include "kcatalog_p.h"
 #include "kglobal.h"
@@ -452,7 +453,7 @@ void KLocalePrivate::initFormat()
 {
     KConfigGroup cg(config(), "Locale");
 
-    KConfig entryFile(KStandardDirs::locate("locale", QString::fromLatin1("l10n/%1/entry.desktop").arg(m_country)));
+    KConfig entryFile(QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("locale/") + QString::fromLatin1("l10n/%1/entry.desktop").arg(m_country)));
     entryFile.setLocale(m_language);
     KConfigGroup entry(&entryFile, "KCM Locale");
 
@@ -551,7 +552,7 @@ void KLocalePrivate::initFormat()
 
     //Grammatical
     //Precedence here is l10n / i18n / config file
-    KConfig langCfg(KStandardDirs::locate("locale", QString::fromLatin1("%1/entry.desktop").arg(m_language)));
+    KConfig langCfg(QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("locale/") + QString::fromLatin1("%1/entry.desktop").arg(m_language)));
     KConfigGroup lang(&langCfg, "KCM Locale");
 #define read3ConfigBoolEntry(key, default, save) \
         save = entry.readEntry(key, default); \
@@ -2948,7 +2949,7 @@ QStringList KLocalePrivate::allCountriesList() const
 QString KLocalePrivate::countryCodeToName(const QString &country) const
 {
     QString countryName;
-    QString entryFile = KStandardDirs::locate("locale", QString::fromLatin1("l10n/") + country.toLower() + QLatin1String("/entry.desktop"));
+    QString entryFile = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("locale/") + QString::fromLatin1("l10n/") + country.toLower() + QLatin1String("/entry.desktop"));
     if (!entryFile.isEmpty()) {
         KConfig cfg(entryFile);
         KConfigGroup cg(&cfg, "KCM Locale");

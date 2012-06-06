@@ -21,11 +21,12 @@
 #include <kservicetypetrader.h>
 #include <kdebug.h>
 #include <kglobal.h>
-#include <kstandarddirs.h>
 #include <kdesktopfile.h>
 #include <kservice.h>
 #include <QList>
+#include <QDirIterator>
 #include <kconfiggroup.h>
+#include <qstandardpaths.h>
 
 //#ifndef NDEBUG
 #define KPLUGININFO_ISVALID_ASSERTION \
@@ -219,9 +220,14 @@ QList<KPluginInfo> KPluginInfo::fromFiles(const QStringList &files, const KConfi
 
 QList<KPluginInfo> KPluginInfo::fromKPartsInstanceName(const QString &name, const KConfigGroup &config)
 {
-    const QStringList files = KGlobal::dirs()->findAllResources(
-        "data", name + QString::fromLatin1("/kpartplugins/*.desktop"),
-        KStandardDirs::Recursive );
+    QStringList files;
+    const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, name + QLatin1String("/kpartplugins"), QStandardPaths::LocateDirectory);
+    Q_FOREACH(const QString& dir, dirs) {
+        QDirIterator it(dir, QStringList() << QLatin1String("*.desktop"));
+        while (it.hasNext()) {
+            files.append(it.next());
+        }
+    }
     return fromFiles(files, config);
 }
 

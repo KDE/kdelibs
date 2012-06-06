@@ -24,6 +24,7 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QFileInfo>
+#include <qstandardpaths.h>
 
 #include "kconfig.h"
 #include "kconfiggroup.h"
@@ -66,7 +67,7 @@ public:
 
 KCurrencyCodePrivate::KCurrencyCodePrivate( const QString &isoCurrencyCode, const QString &language )
 {
-    QFileInfo file( KStandardDirs::locate( "locale", QString::fromLatin1( "currency/%1.desktop" ).arg( isoCurrencyCode.toLower() ) ) );
+    QFileInfo file( QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("locale/") + QString::fromLatin1( "currency/%1.desktop" ).arg( isoCurrencyCode.toLower() ) ) );
 
     loadCurrency( file, language );
 }

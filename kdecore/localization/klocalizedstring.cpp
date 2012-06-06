@@ -26,7 +26,7 @@
 #include <klocale.h>
 #include <klocale_p.h>
 #include <klibrary.h>
-#include <kstandarddirs.h>
+
 #include <ktranscript_p.h>
 #include <kuitsemantics_p.h>
 #include "kcatalogname_p.h"
@@ -38,6 +38,7 @@
 #include <QHash>
 #include <QList>
 #include <QVector>
+#include <qstandardpaths.h>
 
 // Truncates string, for output of long messages.
 static QString shortenMessage (const QString &str)
@@ -998,7 +999,7 @@ void KLocalizedStringPrivate::notifyCatalogsUpdated (const QStringList &language
                             + cat.name + QLatin1Char('/') + cat.name + QLatin1String(".js");
 
             // Try to find this module.
-            QString modapath = KStandardDirs::locate("locale", modrpath);
+            QString modapath = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("locale/") + modrpath);
 
             // If the module exists and hasn't been already included.
             if (   !modapath.isEmpty()

@@ -28,10 +28,10 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocalizedstring.h>
-#include <kstandarddirs.h>
 #include <ktoolinvocation.h>
 
 #include <QtDBus/QtDBus>
+#include <qstandardpaths.h>
 
 #include "kssld/kssld_interface.h"
 
@@ -210,7 +210,7 @@ KSslCertificateManagerPrivate::KSslCertificateManagerPrivate()
                                       QString::fromLatin1("/modules/kssld"),
                                       QDBusConnection::sessionBus())),
    isCertListLoaded(false),
-   userCertDir(KGlobal::dirs()->saveLocation("data", QString::fromLatin1("kssl/userCaCertificates/")))
+   userCertDir(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QString::fromLatin1("/kssl/userCaCertificates/"))
 {
     // set Qt's set to empty; this is protected by the lock in K_GLOBAL_STATIC.
     QSslSocket::setDefaultCaCertificates(QList<QSslCertificate>());
@@ -225,11 +225,6 @@ KSslCertificateManagerPrivate::~KSslCertificateManagerPrivate()
 void KSslCertificateManagerPrivate::loadDefaultCaCertificates()
 {
     defaultCaCertificates.clear();
-
-    if (!KGlobal::hasMainComponent()) {
-        Q_ASSERT(false);
-        return;                 // we need KGlobal::dirs() available
-    }
 
     QList<QSslCertificate> certs = deduplicate(QSslSocket::systemCaCertificates());
 

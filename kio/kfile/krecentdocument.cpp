@@ -29,8 +29,8 @@
 #include "krecentdocument.h"
 
 #include <kcomponentdata.h>
-#include <kstandarddirs.h>
 #include <kdebug.h>
+#include <kglobal.h>
 #include <kmimetype.h>
 #include <kdesktopfile.h>
 #include <kde_file.h>
@@ -93,7 +93,7 @@ void KRecentDocument::add(const QUrl& url)
 
 void KRecentDocument::add(const QUrl& url, const QString& desktopEntryName)
 {
-    if ( url.isLocalFile() && KGlobal::dirs()->relativeLocation( "tmp", url.toLocalFile() ) != url.toLocalFile() )
+    if (url.isLocalFile() && url.toLocalFile().startsWith(QDir::tempPath()))
       return; // inside tmp resource, do not save
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
