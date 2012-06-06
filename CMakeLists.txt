@@ -3,9 +3,6 @@ cmake_minimum_required(VERSION 2.8.8)
 
 project(kdelibs)
 
-# where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
-
 # Make CPack available to easy generate binary packages
 include(CPack)
 
@@ -46,8 +43,11 @@ endif (KHTML_BUILD_TESTREGRESSION)
 
 option(STATIC_LIBRARY "Build kdelibs as static libraries." FALSE)
 
-find_package(ECM 0.0.4 REQUIRED)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH})
+find_package(ECM 0.0.4 REQUIRED NO_MODULE)
+
+# where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${ECM_MODULE_PATH})
+
 
 find_package(Qt5Transitional)
 
