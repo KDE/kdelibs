@@ -44,18 +44,15 @@ Solid::Battery::BatteryType Battery::type() const
 {
     Solid::Battery::BatteryType result = Solid::Battery::UnknownBattery;
     const uint t = m_device->prop("Type").toUInt();
-    bool powerSupply = m_device->prop("PowerSupply").toBool();
     switch (t)
     {
         case 1: // TODO "Line Power"
             break;
         case 2:
-            if (powerSupply)
-                result = Solid::Battery::PrimaryBattery;
+            result = Solid::Battery::PrimaryBattery;
             break;
         case 3:
-            if (powerSupply)
-                result = Solid::Battery::UpsBattery;
+            result = Solid::Battery::UpsBattery;
             break;
         case 4:
             result = Solid::Battery::MonitorBattery;
