@@ -363,11 +363,14 @@ int TCPSlaveBase::connectToHost(const QString& host, quint16 port, QString* erro
       the SSL handshake, then that combination will be cached using KIO's internal
       meta-data mechanism in order to speed up future connections to the same host.
     */
+
     QSslConfiguration sslConfig = d->socket.sslConfiguration();
+#if QT_VERSION >= 0x040800
     const bool isSslCompressionDisabled = sslConfig.testSslOption(QSsl::SslOptionDisableCompression);
     const bool shouldSslCompressBeDisabled = config()->readEntry("LastUsedSslDisableCompressionFlag", isSslCompressionDisabled);
     sslConfig.setSslOption(QSsl::SslOptionDisableCompression, shouldSslCompressBeDisabled);
-
+#endif
+    
     const int lastSslVerson = config()->readEntry("LastUsedSslVersion", static_cast<int>(KTcpSocket::SecureProtocols));
     KTcpSocket::SslVersion trySslVersion = static_cast<KTcpSocket::SslVersion>(lastSslVerson);
     KTcpSocket::SslVersions alreadyTriedSslVersions = trySslVersion;
@@ -409,29 +412,37 @@ int TCPSlaveBase::connectToHost(const QString& host, quint16 port, QString* erro
         if (d->autoSSL) {
             SslResult res = d->startTLSInternal(trySslVersion, sslConfig, 30000 /*30 secs timeout*/);
             if ((res & ResultFailed) && (res & ResultFailedEarly)) {
+#if QT_VERSION >= 0x040800
                 if (!sslConfig.testSslOption(QSsl::SslOptionDisableCompression)) {
                     sslConfig.setSslOption(QSsl::SslOptionDisableCompression, true);
                     continue;
                 }
+#endif
 
                 if (!(alreadyTriedSslVersions & KTcpSocket::SecureProtocols)) {
                     trySslVersion = KTcpSocket::SecureProtocols;
                     alreadyTriedSslVersions |= trySslVersion;
+#if QT_VERSION >= 0x040800
                     sslConfig.setSslOption(QSsl::SslOptionDisableCompression, false);
+#endif
                     continue;
                 }
 
                 if (!(alreadyTriedSslVersions & KTcpSocket::TlsV1)) {
                     trySslVersion = KTcpSocket::TlsV1;
                     alreadyTriedSslVersions |= trySslVersion;
+#if QT_VERSION >= 0x040800
                     sslConfig.setSslOption(QSsl::SslOptionDisableCompression, false);
+#endif
                     continue;
                 }
 
                 if (!(alreadyTriedSslVersions & KTcpSocket::SslV3)) {
                     trySslVersion = KTcpSocket::SslV3;
                     alreadyTriedSslVersions |= trySslVersion;
+#if QT_VERSION >= 0x040800
                     sslConfig.setSslOption(QSsl::SslOptionDisableCompression, false);
+#endif
                     continue;
                 }
             }
@@ -449,11 +460,12 @@ int TCPSlaveBase::connectToHost(const QString& host, quint16 port, QString* erro
             setMetaData(QLatin1String("{internal~currenthost}LastUsedSslVersion"),
                         QString::number(trySslVersion));
         }
-
+#if QT_VERSION >= 0x040800
         if (sslConfig.testSslOption(QSsl::SslOptionDisableCompression) && !shouldSslCompressBeDisabled) {
             setMetaData(QLatin1String("{internal~currenthost}LastUsedSslDisableCompressionFlag"),
                         QString::number(true));
         }
+#endif
         return 0;
     }
     Q_ASSERT(false);
@@ -568,10 +580,10 @@ TCPSlaveBase::SslResult TCPSlaveBase::TcpSlaveBasePrivate::startTLSInternal (KTc
     //setMetaData("ssl_session_id", d->kssl->session()->toString());
     //### we don't support session reuse for now...
     usingSSL = true;
-
+#if QT_VERSION >= 0x040800
     kDebug(7027) << "Trying SSL handshake with protocol:" << version
                  << ", SSL compression ON:" << sslConfig.testSslOption(QSsl::SslOptionDisableCompression);
-
+#endif
     // Set the SSL version to use...
     socket.setAdvertisedSslVersion(version);
 
