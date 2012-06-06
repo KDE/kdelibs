@@ -26,15 +26,11 @@ target_link_libraries(testkjs ${KJSLIBNAME} ${KDEWIN_LIBRARIES} ${QT_QTCORE_LIBR
 
 ########### ecmatest ##############
 
-set(KHTMLDIR "${CMAKE_CURRENT_SOURCE_DIR}/../../khtml")
-
-include_directories(${KHTMLDIR}/ecma/debugger ${QT_QTCORE_INCLUDE_DIR} ${KDE4_KIO_INCLUDES})
+include_directories(${QT_QTCORE_INCLUDE_DIR} ${KDE4_KIO_INCLUDES})
 
 kde4_add_executable(ecmatest TEST
   ecmatest.cpp
   ecmatest.h
-  ${KHTMLDIR}/ecma/debugger/value2string.cpp
-  ${KHTMLDIR}/ecma/debugger/value2string.h
 )
 target_link_libraries(ecmatest ${KDE4_KDECORE_LIBS} kjs ${KDEWIN_LIBRARIES} ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} ${QT_QTGUI_LIBRARY})
 

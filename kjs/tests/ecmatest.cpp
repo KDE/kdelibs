@@ -17,7 +17,6 @@
 #include "object.h"
 #include "JSVariableObject.h"
 #include "Parser.h"
-#include "value2string.h"
 
 #include <QtCore/QMap>
 #include <QtCore/QDebug>
@@ -36,10 +35,42 @@ QString KJS::UString::qstring() const
   return QString((QChar*) data(), size());
 }
 
+// from khtml/ecma/debugger/value2string.cpp
+QString valueToString(KJS::JSValue* value)
+{
+    switch(value->type())
+    {
+        case KJS::NumberType:
+        {
+            double v = 0.0;
+            value->getNumber(v);
+            return QString::number(v);
+        }
+        case KJS::BooleanType:
+            return value->getBoolean() ? "true" : "false";
+        case KJS::StringType:
+        {
+            KJS::UString s;
+            value->getString(s);
+            return '"' + s.qstring() + '"';
+        }
+        case KJS::UndefinedType:
+            return "undefined";
+        case KJS::NullType:
+            return "null";
+        case KJS::ObjectType:
+            return "[object " + static_cast<KJS::JSObject*>(value)->className().qstring() +"]";
+        case KJS::GetterSetterType:
+        case KJS::UnspecifiedType:
+        default:
+            return QString();
+    }
+}
+
 // from khtml/ecma/debugger/debugwindow.cpp
 static QString exceptionToString(KJS::ExecState* exec, KJS::JSValue* exceptionObj)
 {
-    QString exceptionMsg = KJSDebugger::valueToString(exceptionObj);
+    QString exceptionMsg = valueToString(exceptionObj);
 
     // Since we purposefully bypass toString, we need to figure out
     // string serialization ourselves.
