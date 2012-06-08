@@ -1925,24 +1925,6 @@ public:
     static void setMainCatalog(const char *catalog);
 
     /**
-     * @deprecated
-     *
-     * Finds localized resource in resourceDir( rtype ) + \<lang> + fname.
-     *
-     * Since KDE 4.1, this service is provided in a slightly different form,
-     * automatically by e.g. KStandardDirs::locate() and other KDE core classes
-     * dealing with paths. For manual use, it is replaced by localizedFilePath().
-     *
-     * @param fname relative path to find
-     * @param rtype resource type to use
-     *
-     * @return path to localized resource
-     *
-     * @see localizedFilePath
-     */
-    static QString langLookup(const QString &fname, const char *rtype = "html");
-
-    /**
      * Returns the name of the internal language.
      *
      * @return Name of the default language

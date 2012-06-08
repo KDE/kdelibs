@@ -463,10 +463,6 @@ QString KLocale::formatDateTime(const KDateTime &dateTime, KLocale::DateFormat f
     return d->formatDateTime(dateTime, format, options);
 }
 
-QString KLocale::langLookup(const QString &fname, const char *rtype)
-{
-    return KLocalePrivate::langLookup(fname, rtype);
-}
 void KLocale::setDateFormat(const QString &format)
 {
     d->setDateFormat(format);

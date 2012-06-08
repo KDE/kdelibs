@@ -244,13 +244,6 @@ public:
     virtual bool nounDeclension() const;
 
     /**
-     * @deprecated
-     * @internal Finds localized resource in resourceDir( rtype ) + \<lang> + fname.
-     * The worker of the same-name KLocale API function.
-     */
-    static QString langLookup(const QString &fname, const char *rtype = "html");
-
-    /**
      * @internal Returns whether evaluation of translation scripts is enabled.
      * The worker of the same-name KLocale API function.
      */

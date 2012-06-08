@@ -2586,35 +2586,6 @@ QString KLocalePrivate::formatDateTime(const KDateTime &dateTime, KLocale::DateF
     return dt;
 }
 
-QString KLocalePrivate::langLookup(const QString &fname, const char *rtype)
-{
-    QStringList search;
-
-    // assemble the local search paths
-    const QStringList localDoc = KGlobal::dirs()->resourceDirs(rtype);
-
-    // look up the different languages
-    for (int id = localDoc.count() - 1; id >= 0; --id) {
-        QStringList langs = KGlobal::locale()->languageList();
-        // FIXME: KDE 4.5, change such that English is not assumed.
-        langs.replaceInStrings(QLatin1String("en_US"), QLatin1String("en"));
-        langs.append(QLatin1String("en"));
-        Q_FOREACH(const QString &lang, langs)
-            search.append(QString::fromLatin1("%1%2/%3").arg(localDoc[id]).arg(lang).arg(fname));
-    }
-
-    // try to locate the file
-    Q_FOREACH(const QString &file, search) {
-        kDebug(173) << "Looking for help in: " << file;
-
-        QFileInfo info(file);
-        if (info.exists() && info.isFile() && info.isReadable())
-            return file;
-    }
-
-    return QString();
-}
-
 bool KLocalePrivate::useDefaultLanguage() const
 {
     return language() == KLocale::defaultLanguage();
