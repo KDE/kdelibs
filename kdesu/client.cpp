@@ -34,7 +34,7 @@
 #include <qstandardpaths.h>
 
 #include <kdebug.h>
-#include <kstandarddirs.h>
+
 #include <ktoolinvocation.h>
 #include <kde_file.h>
 
@@ -74,8 +74,7 @@ KDEsuClient::KDEsuClient()
     QByteArray display("NODISPLAY");
 #endif
 
-    d->sock = QFile::encodeName( KStandardDirs::locateLocal("socket",
-                                    QString("kdesud_").append(display)));
+    d->sock = QFile::encodeName( QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation) + QLatin1Char('/') + QString("kdesud_").append(display));
     connect();
 }
 
