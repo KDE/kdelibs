@@ -332,7 +332,7 @@ public:
      */
     ~KLocalizedString ();
 
-    KDECORE_DEPRECATED_EXPORT operator QLocalizedString() { return QLocalizedString(toString().toLatin1().constData()); }
+    KDECORE_DEPRECATED_EXPORT operator QLocalizedString() const { return QLocalizedString(toString().toLatin1().constData()); }
 
     /**
      * Finalizes the translation, creates QString with placeholders
