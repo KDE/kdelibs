@@ -150,6 +150,18 @@ Example using QDirIterator:
         }
     }
 </pre>
+On the other hand, findAllResources("locale", "*/entry.desktop") requires
+<pre>
+    const QStringList localeDirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QLatin1String("locale"), QStandardPaths::LocateDirectory);
+    Q_FOREACH(const QString&amp; localeDir, localeDirs) {
+        const QStringList entries = QDir(localeDir).entryList(QDir::Dirs);
+        Q_FOREACH(const QString&amp; d, entries) {
+            if (QFile::exists(localeDir + '/' + d + "/entry.desktop")) {
+                // ...
+            }
+        }
+    }
+</pre>
 
 KStandardDirs::findExe can be ported to QStandardPaths::findExecutable, except when the executable comes from libexec, in which case the path should just be hardcoded using CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR.
 

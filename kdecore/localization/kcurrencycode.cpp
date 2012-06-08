@@ -24,13 +24,13 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QFileInfo>
+#include <QDir>
 #include <qstandardpaths.h>
 
 #include "kconfig.h"
 #include "kconfiggroup.h"
 #include "kglobal.h"
 #include "klocalizedstring.h"
-#include "kstandarddirs.h"
 #include "kdebug.h"
 
 class KCurrencyCodePrivate : public QSharedData
@@ -279,14 +279,13 @@ QStringList KCurrencyCode::allCurrencyCodesList( CurrencyStatusFlags currencySta
 {
     QStringList currencyCodes;
 
-    const QStringList paths = KGlobal::dirs()->findAllResources( "locale", QLatin1String("currency/*.desktop") );
-
-    foreach( const QString &path, paths )
-    {
-        QString code = path.mid( path.length()-11, 3 ).toUpper();
-
-        if ( KCurrencyCode::isValid( code, currencyStatus ) ) {
-            currencyCodes.append( code );
+    const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QLatin1String("locale/currency"), QStandardPaths::LocateDirectory);
+    Q_FOREACH(const QString& dir, dirs) {
+        Q_FOREACH(const QString &path, QDir(dir).entryList(QStringList() << QLatin1String("*.desktop"))) {
+            const QString code = path.mid(path.length()-11, 3 ).toUpper();
+            if (KCurrencyCode::isValid(code, currencyStatus)) {
+                currencyCodes.append(code);
+            }
         }
     }
 

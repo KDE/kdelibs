@@ -18,11 +18,12 @@
 */
 
 #include "kcatalog_p.h"
-#include "kstandarddirs.h"
 
 #include <config.h>
 
-#include <QtCore/QFile>
+#include <qstandardpaths.h>
+#include <QFile>
+#include <QFileInfo>
 #include <QMutexLocker>
 
 #include <kdebug.h>
@@ -153,9 +154,14 @@ KCatalog::~KCatalog()
 QString KCatalog::catalogLocaleDir( const QString &name,
                                     const QString &language )
 {
-  QString relpath =  QString::fromLatin1( "%1/LC_MESSAGES/%2.mo" )
+  const QString relpath = QString::fromLatin1("locale/%1/LC_MESSAGES/%2.mo")
                     .arg( language ).arg( name );
-  return KGlobal::dirs()->findResourceDir( "locale", relpath );
+  const QString file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, relpath);
+  if (file.isEmpty()) {
+      return QString();
+  } else {
+      return QFileInfo(file).absolutePath(); // parent directory
+  }
 }
 
 QString KCatalog::name() const

@@ -47,11 +47,11 @@
 #include <QtCore/QHash>
 #include <QtCore/QMutexLocker>
 #include <QtCore/QStringList>
+#include <QDir>
 #include <qstandardpaths.h>
 
 #include "kcatalog_p.h"
 #include "kglobal.h"
-#include "kstandarddirs.h"
 #include "kconfig.h"
 #include "kcomponentdata.h"
 #include "kdebug.h"
@@ -2885,11 +2885,16 @@ QStringList KLocalePrivate::allLanguagesList()
 QStringList KLocalePrivate::installedLanguages()
 {
     QStringList languages;
-    QStringList paths = KGlobal::dirs()->findAllResources("locale", QLatin1String("*/entry.desktop"));
-    foreach (const QString &path, paths) {
-        QString part = path.left(path.length() - 14);
-        languages.append(part.mid(part.lastIndexOf(QLatin1Char('/')) + 1));
+    const QStringList localeDirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QLatin1String("locale"), QStandardPaths::LocateDirectory);
+    Q_FOREACH(const QString& localeDir, localeDirs) {
+        const QStringList entries = QDir(localeDir).entryList(QDir::Dirs);
+        Q_FOREACH(const QString& d, entries) {
+            if (QFile::exists(localeDir + QLatin1Char('/') + d + QLatin1String("/entry.desktop"))) {
+                languages.append(d);
+            }
+        }
     }
+
     languages.sort();
     return languages;
 }
@@ -2907,11 +2912,13 @@ QString KLocalePrivate::languageCodeToName(const QString &language)
 QStringList KLocalePrivate::allCountriesList() const
 {
     QStringList countries;
-    const QStringList paths = KGlobal::dirs()->findAllResources("locale", QLatin1String("l10n/*/entry.desktop"));
-    for (QStringList::ConstIterator it = paths.begin(); it != paths.end(); ++it) {
-        QString code = (*it).mid((*it).length() - 16, 2);
-        if (code != QLatin1String("/C")) {
-            countries.append(code);
+    const QStringList localeDirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QLatin1String("locale/l10n"), QStandardPaths::LocateDirectory);
+    Q_FOREACH(const QString& localeDir, localeDirs) {
+        const QStringList entries = QDir(localeDir).entryList(QDir::Dirs);
+        Q_FOREACH(const QString& d, entries) {
+            if (QFile::exists(localeDir + QLatin1Char('/') + d + QLatin1String("/entry.desktop"))) {
+                countries.append(d);
+            }
         }
     }
     return countries;
