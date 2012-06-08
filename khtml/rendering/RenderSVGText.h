@@ -48,7 +48,7 @@ public:
     virtual void paint(PaintInfo&, int tx, int ty);
     /*virtual bool nodeAtPoint(const HitTestRequest&, HitTestResult&, int x, int y, int tx, int ty, HitTestAction);*/
     
-    virtual bool requiresLayer();
+    virtual bool requiresLayer() const;
     virtual void layout();
     
     virtual void absoluteRects(Vector<IntRect>&, int tx, int ty, bool topLevel = true);

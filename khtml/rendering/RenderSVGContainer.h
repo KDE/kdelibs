@@ -52,17 +52,17 @@ public:
 
     // uncomment if you know how line 64' ambiguoty should be solved in that case.
     // using khtml::RenderObject::removeChildNode;
-    virtual RenderObject* removeChildNode(RenderObject*, bool fullRemove = true);
+    virtual RenderObject* removeChildNode(RenderObject*);
     // uncomment if you know how line 64' ambiguoty should be solved in that case.
     // using khtml::RenderObject::appendChildNode;
-    virtual void appendChildNode(RenderObject*, bool fullAppend = true);
+    virtual void appendChildNode(RenderObject*);
     // uncomment if you know how line 62' of the implementation ambiguoty should be solved in that case.
     // using khtml::RenderObject::insertChildNode;
-    virtual void insertChildNode(RenderObject* child, RenderObject* before, bool fullInsert = true);
+    virtual void insertChildNode(RenderObject* child, RenderObject* before);
 
     // Designed for speed.  Don't waste time doing a bunch of work like layer updating and repainting when we know that our
     // change in parentage is not going to affect anything.
-    virtual void moveChildNode(RenderObject* child) { appendChildNode(child->parent()->removeChildNode(child/*, false*/)/*, false*/); }
+    virtual void moveChildNode(RenderObject* child) { appendChildNode(child->parent()->removeChildNode(child)); }
 
     virtual void calcMinMaxWidth() { setMinMaxKnown(); }
 
@@ -75,9 +75,9 @@ public:
     virtual bool isSVGContainer() const { return true; }
     virtual const char* renderName() const { return "RenderSVGContainer"; }
 
-    virtual bool requiresLayer();
-    virtual short lineHeight(bool b, bool isRootLineBox = false) const;
-    virtual short baselinePosition(bool b, bool isRootLineBox = false) const;
+    virtual bool requiresLayer() const;
+    virtual short lineHeight(bool b) const;
+    virtual short baselinePosition(bool b) const;
 
     virtual void layout();
     virtual void paint(PaintInfo&, int parentX, int parentY);

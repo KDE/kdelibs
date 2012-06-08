@@ -29,6 +29,7 @@ public:
     XPathResult(ExecState* exec, khtml::XPathResultImpl* impl);
 
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
+    using JSObject::getOwnPropertySlot;
     JSValue *getValueProperty(ExecState *exec, int token) const;
 
     virtual const ClassInfo* classInfo() const { return &info; }

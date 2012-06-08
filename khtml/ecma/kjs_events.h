@@ -265,6 +265,7 @@ namespace KJS {
     
     using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    using JSObject::getOwnPropertySlot;
     JSValue* getValueProperty(ExecState *, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
