@@ -101,10 +101,6 @@ static int cssPropertyId( const QString& p ) {
   return DOM::getPropertyID(p.toLatin1().constData(), p.length());
 }
 
-static int cssPropertyId( const DOM::DOMString& name ) {
-  return cssPropertyId(name.string());
-}
-
 static bool isCSSPropertyName(const Identifier &JSPropertyName)
 {
     bool dummy;
