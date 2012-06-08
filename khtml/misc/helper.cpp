@@ -135,10 +135,10 @@ static const uiColors uimap[] = {
     { CSS_VAL_INFOBACKGROUND, QPalette::Normal, QPalette::ToolTipBase },
     { CSS_VAL_INFOTEXT, QPalette::Normal, QPalette::ToolTipText },
     // Menu colors
-    { CSS_VAL_MENU, QPalette::Normal, QPalette::Background },
+    { CSS_VAL_MENU, QPalette::Normal, QPalette::Window },
     { CSS_VAL_MENUTEXT, QPalette::Normal, QPalette::Text },
     // Scroll bar color
-    { CSS_VAL_SCROLLBAR, QPalette::Normal, QPalette::Background },
+    { CSS_VAL_SCROLLBAR, QPalette::Normal, QPalette::Window },
     // 3D elements 
     { CSS_VAL_THREEDDARKSHADOW, QPalette::Normal, QPalette::Dark },
     { CSS_VAL_THREEDFACE, QPalette::Normal, QPalette::Button },
@@ -148,7 +148,7 @@ static const uiColors uimap[] = {
     // Window background
     { CSS_VAL_WINDOW, QPalette::Normal, QPalette::Base },
     // Window frame
-    { CSS_VAL_WINDOWFRAME, QPalette::Normal, QPalette::Background },
+    { CSS_VAL_WINDOWFRAME, QPalette::Normal, QPalette::Window },
     // WindowText
     { CSS_VAL_WINDOWTEXT, QPalette::Normal, QPalette::Text },
     { CSS_VAL_TEXT, QPalette::Normal, QPalette::Text },
@@ -173,13 +173,13 @@ QColor khtml::colorForCSSValue( int css_value )
     if ( !uicol->css_value ) {
         switch ( css_value ) {
             case CSS_VAL_ACTIVEBORDER:
-                return qApp->palette().color(QPalette::Normal, QPalette::Background);
+                return qApp->palette().color(QPalette::Normal, QPalette::Window);
             case CSS_VAL_ACTIVECAPTION:
                 return KGlobalSettings::activeTitleColor();
             case CSS_VAL_CAPTIONTEXT:
                 return KGlobalSettings::activeTextColor();
             case CSS_VAL_INACTIVEBORDER:
-                return qApp->palette().color(QPalette::Inactive, QPalette::Background);
+                return qApp->palette().color(QPalette::Inactive, QPalette::Window);
             case CSS_VAL_INACTIVECAPTION:
                 return KGlobalSettings::inactiveTitleColor();
             case CSS_VAL_INACTIVECAPTIONTEXT:

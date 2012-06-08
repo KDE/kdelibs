@@ -422,10 +422,10 @@ void RenderWidget::updateFromElement()
                     QPalette::ColorRole cr;
                 };
                 const struct ColorSet toSet [] = {
-                    { QPalette::Active, QPalette::Foreground },
+                    { QPalette::Active, QPalette::WindowText },
                     { QPalette::Active, QPalette::ButtonText },
                     { QPalette::Active, QPalette::Text },
-                    { QPalette::Inactive, QPalette::Foreground },
+                    { QPalette::Inactive, QPalette::WindowText },
                     { QPalette::Inactive, QPalette::ButtonText },
                     { QPalette::Inactive, QPalette::Text },
                     { QPalette::NColorGroups, QPalette::NColorRoles },
@@ -450,10 +450,10 @@ void RenderWidget::updateFromElement()
 		    // for really dark fg - use darkgray disabled fg,
 		    // as ::light is pretty useless in this range
 		    disfg = Qt::darkGray;
-		pal.setColor(QPalette::Disabled,QPalette::Foreground,disfg);
+		pal.setColor(QPalette::Disabled,QPalette::WindowText,disfg);
 		pal.setColor(QPalette::Disabled,QPalette::Text,disfg);
 		pal.setColor(QPalette::Disabled,QPalette::ButtonText,disfg);
-                non_trans_pal.setColor(QPalette::Disabled,QPalette::Foreground,disfg);
+                non_trans_pal.setColor(QPalette::Disabled,QPalette::WindowText,disfg);
                 non_trans_pal.setColor(QPalette::Disabled,QPalette::Text,disfg);
                 non_trans_pal.setColor(QPalette::Disabled,QPalette::ButtonText,disfg);
             }

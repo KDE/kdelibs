@@ -3051,8 +3051,8 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         case CSS_PROP_SCROLLBAR_TRACK_COLOR:
             style->setPaletteColor(QPalette::Active, QPalette::Mid, col);
             style->setPaletteColor(QPalette::Inactive, QPalette::Mid, col);
-            style->setPaletteColor(QPalette::Active, QPalette::Background, col);
-            style->setPaletteColor(QPalette::Inactive, QPalette::Background, col);
+            style->setPaletteColor(QPalette::Active, QPalette::Window, col);
+            style->setPaletteColor(QPalette::Inactive, QPalette::Window, col);
             // fall through
         case CSS_PROP_SCROLLBAR_BASE_COLOR:
             style->setPaletteColor(QPalette::Active, QPalette::Base, col);
