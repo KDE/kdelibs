@@ -23,6 +23,7 @@
 
 #include <config.h>
 #include <config-kdeinit.h>
+#include <config-prefix.h>
 
 #include <sys/types.h>
 #include <sys/time.h>
@@ -414,6 +415,7 @@ QByteArray execpath_avoid_loops( const QByteArray& exec, int envc, const char* e
              paths = QFile::decodeName(path).split(pathSepRegExp);
      } else {
          paths = QString::fromLocal8Bit(qgetenv("PATH")).split(pathSepRegExp, QString::KeepEmptyParts);
+         paths.append(QFile::decodeName(CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR));
      }
      QString execpath = QStandardPaths::findExecutable(QFile::decodeName(exec), paths);
      if (avoid_loops && !execpath.isEmpty()) {
