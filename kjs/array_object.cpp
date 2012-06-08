@@ -439,7 +439,7 @@ JSValue* ArrayProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, cons
       }
       else
       {
-        for ( unsigned int k = length - deleteCount; (int)k > begin; --k )
+        for ( unsigned int k = length - deleteCount; k > begin; --k )
         {
           if (JSValue *obj = getProperty(exec, thisObj, k + deleteCount - 1))
             thisObj->put(exec, k + additionalArgs - 1, obj);
