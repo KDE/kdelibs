@@ -46,8 +46,8 @@ endif (KHTML_BUILD_TESTREGRESSION)
 
 option(STATIC_LIBRARY "Build kdelibs as static libraries." FALSE)
 
-find_package(extra-cmake-modules 0.0.3 REQUIRED)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${EXTRA_CMAKE_MODULES_MODULE_PATH})
+find_package(ECM 0.0.4 REQUIRED)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH})
 
 find_package(Qt5Transitional)
 
