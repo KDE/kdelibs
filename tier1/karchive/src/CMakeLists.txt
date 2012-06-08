@@ -3,8 +3,9 @@ include(ConfigureChecks.cmake)
 configure_file(config-compression.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compression.h)
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 
+include_directories(${kdeqt5staging_INCLUDE_DIR})
+
 if (NOT QT5_BUILD)
-   include_directories(${kdeqt5staging_INCLUDE_DIR})
    include_directories(
       ${QtMimeTypes_SOURCE_DIR}/include/QtMimeTypes
    )
