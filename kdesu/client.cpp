@@ -402,12 +402,11 @@ int KDEsuClient::stopServer()
 static QString findDaemon()
 {
     QString daemon = CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kdesud";
-    if (daemon.isEmpty()) // if not in libexec, find it in PATH
+    if (!QFile::exists(daemon)) { // if not in libexec, find it in PATH
         daemon = QStandardPaths::findExecutable("kdesud");
-
-    if (!QFile::exists(daemon))
-    {
-	kWarning(kdesuDebugArea()) << k_lineinfo << "daemon not found.";
+        if (daemon.isEmpty()) {
+            kWarning(kdesuDebugArea()) << "kdesud daemon not found.";
+        }
     }
     return daemon;
 }
