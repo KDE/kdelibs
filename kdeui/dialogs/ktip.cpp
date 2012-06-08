@@ -263,10 +263,8 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   d->tipText->setWordWrapMode( QTextOption::WrapAtWordBoundaryOrAnywhere );
 
   QStringList paths;
-  paths << QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "icons", QStandardPaths::LocateDirectory);
-  // Since kde3, there was this line here:
-  //       << KGlobal::dirs()->findResourceDir( "data", "kdewizard/pics" ) + "kdewizard/pics/";
-  // But adding "kdewizard/pics" twice makes no sense, so let's remove this for KDE5.
+  paths << QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "icons", QStandardPaths::LocateDirectory)
+        << QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "kdewizard/pics", QStandardPaths::LocateDirectory);
 
   d->tipText->setSearchPaths( paths );
 
