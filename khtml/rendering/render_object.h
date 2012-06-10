@@ -207,17 +207,17 @@ public:
     RenderObject *objectAbove() const;
 
     // Returns if an object has counter-increment or counter-reset
-    bool hasCounter(const QString& counter) const;
+    bool hasCounter(const DOMString& counter) const;
     // Calculates the value of the counter
-    CounterNode* getCounter(const QString& counter, bool view = false, bool counters = false);
+    CounterNode* getCounter(const DOMString& counter, bool view = false, bool counters = false);
     // Detaches all counterNodes
     void detachCounters();
 
 
 protected:
     // Helper functions for counter-cache
-    void insertCounter(const QString& counter, CounterNode* value);
-    CounterNode* lookupCounter(const QString& counter) const;
+    void insertCounter(const DOMString& counter, CounterNode* value);
+    CounterNode* lookupCounter(const DOMString& counter) const;
 
 public:
     //////////////////////////////////////////
