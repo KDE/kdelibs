@@ -438,107 +438,38 @@ QString WmiDevice::product() const
 
 QString WmiDevice::icon() const
 {
-    QString category = property("info.category").toString();
-
-    if(parentUdi().isEmpty()) {
-
-        QString formfactor = property("system.formfactor").toString();
-        if (formfactor=="laptop") {
-            return "computer-laptop";
-        } else {
-            return "computer";
-        }
-
-    } else if (category=="storage") {
-
-        if (property("storage.drive_type").toString()=="floppy") {
-            return "media-floppy";
-        } else if (property("storage.drive_type").toString()=="cdrom") {
-            return "drive-optical";
-        } else if (property("storage.hotpluggable").toBool()) {
-            if (property("storage.bus").toString()=="usb") {
-                if (property("storage.no_partitions_hint").toBool()
-                 || property("storage.removable.media_size").toLongLong()<4000000000LL) {
-                    return "drive-removable-media-usb-pendrive";
-                } else {
-                    return "drive-removable-media-usb";
-                }
-            }
-
-            return "drive-removable-media";
-        }
-
-        return "drive-harddisk";
-
-    } else if (category=="volume") {
-
-        QStringList capabilities = property("info.capabilities").toStringList();
-
-        if (capabilities.contains("volume.disc")) {
-            bool has_video = property("volume.disc.is_vcd").toBool()
-                          || property("volume.disc.is_svcd").toBool()
-                          || property("volume.disc.is_videodvd").toBool();
-            bool has_audio = property("volume.disc.has_audio").toBool();
-            bool recordable = property("volume.disc.is_blank").toBool()
-                          || property("volume.disc.is_appendable").toBool()
-                          || property("volume.disc.is_rewritable").toBool();
-
-            if (has_video) {
-                return "media-optical-video";
-            } else if (has_audio) {
-                return "media-optical-audio";
-            } else if (recordable) {
-                return "media-optical-recordable";
-            } else {
-                return "media-optical";
-            }
-
-        } else {
-            if (!d->parent) {
-                d->parent = new WmiDevice(parentUdi());
-            }
-            QString iconName = d->parent->icon();
-
-            if (!iconName.isEmpty()) {
-                return iconName;
-            }
-
-            return "drive-harddisk";
-        }
-
-    } else if (category=="camera") {
-        return "camera-photo";
-
-    } else if (category=="input") {
-        QStringList capabilities = property("info.capabilities").toStringList();
-
-        if (capabilities.contains("input.mouse")) {
-            return "input-mouse";
-        } else if (capabilities.contains("input.keyboard")) {
-            return "input-keyboard";
-        } else if (capabilities.contains("input.joystick")) {
-            return "input-gaming";
-        } else if (capabilities.contains("input.tablet")) {
-            return "input-tablet";
-        }
-
-    } else if (category=="portable_audio_player") {
-        QStringList protocols = property("portable_audio_player.access_method.protocols").toStringList();
-
-        if (protocols.contains("ipod")) {
-            return "multimedia-player-apple-ipod";
-        } else {
-            return "multimedia-player";
-        }
-    } else if (category=="battery") {
-        return "battery";
-    } else if (category=="processor") {
-        return "cpu"; // FIXME: Doesn't follow icon spec
-    } else if (category=="video4linux") {
-        return "camera-web";
+    QString propertyName;
+    switch(type()){
+    case Solid::DeviceInterface::Processor:
+        propertyName = "cpu";
+        break;
+    case Solid::DeviceInterface::OpticalDisc:
+    {
+        WmiDevice dev(udi());
+        OpticalDisc disk(&dev);
+        if(disk.availableContent() | Solid::OpticalDisc::Audio)//no other are recognized yet
+            propertyName = "media-optical-audio";
+        else
+            propertyName = "drive-optical";
+        
+        break;
     }
-
-    return QString();
+    case Solid::DeviceInterface::Battery:
+        propertyName = "battery";
+        break;
+    case Solid::DeviceInterface::StorageAccess:
+    case Solid::DeviceInterface::StorageVolume:
+    {
+        WmiDevice parent(parentUdi());
+        Storage storage(&parent);
+        if(storage.bus() == Solid::StorageDrive::Usb)
+            propertyName = "drive-removable-media-usb-pendrive";
+        else
+            propertyName = "drive-harddisk";
+    }
+        break;
+    }
+    return propertyName;
 }
 
 QStringList WmiDevice::emblems() const
