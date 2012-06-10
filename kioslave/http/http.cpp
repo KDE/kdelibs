@@ -2252,7 +2252,7 @@ bool HTTPProtocol::httpOpenConnection()
                 QNetworkProxy::setApplicationProxy(proxy);
                 connectError = connectToHost(m_request.url.host(), m_request.url.port(defaultPort()), &errorString);
                 if (connectError == 0) {
-                    kDebug(7113) << "Connected to proxy: host=" << url.host() << "port=" << url.port();
+                    kDebug(7113) << "Tunneling thru proxy: host=" << url.host() << "port=" << url.port();
                     break;
                 } else {
                     if (connectError == ERR_UNKNOWN_HOST)
@@ -5194,19 +5194,40 @@ QString HTTPProtocol::authenticationHeader()
     return toQString(ret); // ## encoding ok?
 }
 
+static QString protocolForProxyType(QNetworkProxy::ProxyType type)
+{
+    switch (type) {
+      case QNetworkProxy::DefaultProxy:
+          break;
+      case QNetworkProxy::Socks5Proxy:
+          return QLatin1String("socks");
+      case QNetworkProxy::NoProxy:
+          break;
+      case QNetworkProxy::HttpProxy:
+      case QNetworkProxy::HttpCachingProxy:
+      case QNetworkProxy::FtpCachingProxy:
+      default:
+          break;
+    }
+
+    return QLatin1String("http");
+}
 
 void HTTPProtocol::proxyAuthenticationForSocket(const QNetworkProxy &proxy, QAuthenticator *authenticator)
 {
-    Q_UNUSED(proxy);
-    kDebug(7113) << "Authenticator received -- realm:" << authenticator->realm()
-                 << "user:" << authenticator->user();
+    kDebug(7113) << "realm:" << authenticator->realm() << "user:" << authenticator->user();
+
+    // Set the proxy URL...
+    m_request.proxyUrl.setProtocol(protocolForProxyType(proxy.type()));
+    m_request.proxyUrl.setUser(proxy.user());
+    m_request.proxyUrl.setHost(proxy.hostName());
+    m_request.proxyUrl.setPort(proxy.port());
 
     AuthInfo info;
-    Q_ASSERT(proxy.hostName() == m_request.proxyUrl.host() && proxy.port() == m_request.proxyUrl.port());
     info.url = m_request.proxyUrl;
     info.realmValue = authenticator->realm();
     info.username = authenticator->user();
-    info.verifyPath = true;    //### whatever
+    info.verifyPath = info.realmValue.isEmpty();
 
     const bool haveCachedCredentials = checkCachedAuthentication(info);
     const bool retryAuth = (m_socketProxyAuth != 0);
@@ -5229,7 +5250,7 @@ void HTTPProtocol::proxyAuthenticationForSocket(const QNetworkProxy &proxy, QAut
         const QString errMsg ((retryAuth ? i18n("Proxy Authentication Failed.") : QString()));
 
         if (!openPasswordDialog(info, errMsg)) {
-            kDebug(7103) << "looks like the user canceled proxy authentication.";
+            kDebug(7113) << "looks like the user canceled proxy authentication.";
             error(ERR_USER_CANCELED, m_request.proxyUrl.host());
             delete m_proxyAuth;
             m_proxyAuth = 0;
@@ -5258,8 +5279,7 @@ void HTTPProtocol::saveProxyAuthenticationForSocket()
                this, SLOT(saveProxyAuthenticationForSocket()));
     Q_ASSERT(m_socketProxyAuth);
     if (m_socketProxyAuth) {
-        kDebug(7113) << "-- realm:" << m_socketProxyAuth->realm() << "user:"
-                     << m_socketProxyAuth->user();
+        kDebug(7113) << "realm:" << m_socketProxyAuth->realm() << "user:" << m_socketProxyAuth->user();
         KIO::AuthInfo a;
         a.verifyPath = true;
         a.url = m_request.proxyUrl;

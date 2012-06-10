@@ -124,14 +124,68 @@ using namespace DOM;
                 const QStyleOptionComboBox *o = qstyleoption_cast<const QStyleOptionComboBox*>(option);
                 if (o) {
                     QStyleOptionComboBox comboOpt = *o;
+                    comboOpt.currentText = comboOpt.currentText.trimmed();
                     // by default combobox label is drawn left justified, vertical centered
                     // translate it to reflect padding values
-                    comboOpt.rect = comboOpt.rect.translated(left, (top - bottom) / 2);
+                    comboOpt.rect.translate(left, (top - bottom) / 2);
+                    if (noBorder) {
+                        // Need to expand a bit for some styles
+                        comboOpt.rect.adjust(-1, -2, 1, 2);
+                        comboOpt.rect.translate(-1, 0);
+                        comboOpt.state &= ~State_On;
+                    }
                     return style()->drawControl(element, &comboOpt, painter, widget);
                 }
             }
 
             style()->drawControl(element, option, painter, widget);
+        }
+
+        void drawComplexControl(ComplexControl cc, const QStyleOptionComplex *opt, QPainter *painter, const QWidget *widget) const
+        {
+            if ((cc == QStyle::CC_ComboBox) && noBorder) {
+                if (const QStyleOptionComboBox *cbOpt = qstyleoption_cast<const QStyleOptionComboBox*>(opt)) {
+                    bool enabled = (cbOpt->state & State_Enabled);
+                    QColor color = cbOpt->palette.color(QPalette::ButtonText);
+                    if (color.value() < 128)
+                        color = color.lighter();
+                    painter->save();
+                    painter->setBackgroundMode(Qt::TransparentMode);
+                    painter->setPen(color);
+                    // Drop down indicator
+                    painter->setBrush(enabled ? QBrush(color, Qt::SolidPattern) : Qt::NoBrush);
+                    QRect arrowRect = style()->subControlRect(cc, opt, SC_ComboBoxArrow, widget);
+                    if (enabled && (cbOpt->state & State_On))
+                        arrowRect.translate(1, 1); // push effect
+                    const int arrowDown[] = { 5,-2, 0,3, -5,-2, -4,-3, -3,-3, 0,0, 3,-3, 4,-3 };
+                    QPolygon a(8);
+                    a.setPoints(8, arrowDown);
+                    a.translate((arrowRect.x() + (arrowRect.width() >> 1)), (arrowRect.y() + (arrowRect.height() >> 1)));
+                    painter->drawPolygon(a);
+                    // Focus rect
+                    if (enabled && (cbOpt->state & State_HasFocus)) {
+                        QRect focusRect = style()->subElementRect(SE_ComboBoxFocusRect, cbOpt, widget);
+                        focusRect.adjust(0, -2, 0, 2);
+                        // Begin drawing focus rect (from qcleanlooksstyle)
+                        painter->setBrush(QBrush(color, Qt::Dense4Pattern));
+                        painter->setBrushOrigin(focusRect.topLeft());
+                        painter->setPen(Qt::NoPen);
+                        const QRect rects[4] = {
+                            QRect(focusRect.left(), focusRect.top(), focusRect.width(), 1),    // Top
+                            QRect(focusRect.left(), focusRect.bottom(), focusRect.width(), 1), // Bottom
+                            QRect(focusRect.left(), focusRect.top(), 1, focusRect.height()),   // Left
+                            QRect(focusRect.right(), focusRect.top(), 1, focusRect.height())   // Right
+                        };
+                        painter->drawRects(rects, 4);
+                        // End drawing focus rect
+                    }
+                    painter->restore();
+
+                    return;
+                }
+            }
+
+            style()->drawComplexControl(cc, opt, painter, widget);
         }
 
         QRect subControlRect(ComplexControl cc, const QStyleOptionComplex* opt, SubControl sc, const QWidget* widget) const
@@ -1673,6 +1727,15 @@ void RenderSelect::clearItemFlags(int index, Qt::ItemFlags flags)
     }
 }
 
+void RenderSelect::setStyle(RenderStyle *_style)
+{
+    RenderFormElement::setStyle(_style);
+    if (!m_useListBox && shouldDisableNativeBorders()) {
+        KHTMLProxyStyle* proxyStyle = static_cast<KHTMLProxyStyle*>(getProxyStyle());
+        proxyStyle->noBorder = true;
+    }
+}
+
 void RenderSelect::updateFromElement()
 {
     m_ignoreSelectEvents = true;
@@ -1801,9 +1864,8 @@ short RenderSelect::baselinePosition( bool f ) const
     if (m_useListBox)
         return RenderFormElement::baselinePosition(f);
 
-    bool hasFrame = static_cast<KComboBox*>(widget())->hasFrame();
-    int bTop = hasFrame ? 0 : borderTop();
-    int bBottom = hasFrame ? 0 : borderBottom();
+    int bTop = shouldDisableNativeBorders() ? borderTop() : 0;
+    int bBottom = shouldDisableNativeBorders() ? borderBottom() : 0;
     int ret = (height()-RenderWidget::paddingTop()-RenderWidget::paddingBottom()-bTop-bBottom+1)/2;
     ret += marginTop() + RenderWidget::paddingTop() + bTop;
     ret += ((fontMetrics( f ).ascent())/2)-2;
@@ -1896,8 +1958,17 @@ void RenderSelect::layout( )
     }
     else {
         QSize s(m_widget->sizeHint());
-        setIntrinsicWidth( s.width() );
-        setIntrinsicHeight( s.height() );
+        int w = s.width();
+        int h = s.height();
+
+        if (shouldDisableNativeBorders()) {
+            const int dfw = 2 * m_widget->style()->pixelMetric(QStyle::PM_DefaultFrameWidth, 0, m_widget);
+            w -= dfw;
+            h -= dfw;
+        }
+
+        setIntrinsicWidth(w);
+        setIntrinsicHeight(h);
     }
 
     /// uuh, ignore the following line..
@@ -1909,7 +1980,7 @@ void RenderSelect::layout( )
 
     bool foundOption = false;
     for (int i = 0; i < listItems.size() && !foundOption; i++)
-	foundOption = (listItems[i]->id() == ID_OPTION);
+         foundOption = (listItems[i]->id() == ID_OPTION);
 
     m_widget->setEnabled(foundOption && ! element()->disabled());
 }

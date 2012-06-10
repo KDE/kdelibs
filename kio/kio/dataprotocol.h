@@ -26,6 +26,19 @@
 // Both defines are mutually exclusive. Defining none of them compiles
 // DataProtocol for internal usage within libkiocore.
 
+/* Wondering what this is all about? Leo explained it to me:
+ *
+ * That's simple, you can compile it into a standalone executable that is
+ * registered like any other kioslave.
+ *
+ * However, given that data-urls don't depend on any external data it seemed
+ * overkill, therefore I added a special hack that the kio-dataslave is invoked
+ * in-process on the client side.
+ *
+ * Hence, by defining DATAKIOSLAVE you can disable this special hack and compile
+ * dataprotocol.* into a standalone kioslave.
+ */
+
 class QByteArray;
 
 class KUrl;

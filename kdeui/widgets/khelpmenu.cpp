@@ -163,7 +163,7 @@ void KHelpMenuPrivate::createActions(KHelpMenu* q)
     }
 
     if (KAuthorized::authorizeKAction("switch_application_language")) {
-        if((KGlobal::dirs()->findAllResources("locale", QString::fromLatin1("*/entry.desktop"))).count() > 1) {
+        if((KGlobal::dirs()->findAllResources("locale", QString::fromLatin1("*/entry.desktop"))).count() > 0) {
             mSwitchApplicationLanguageAction = KStandardAction::create(KStandardAction::SwitchApplicationLanguage, q, SLOT(switchApplicationLanguage()), q);
         }
     }

@@ -769,7 +769,6 @@ class DocumentFragmentImpl : public NodeBaseImpl
 {
 public:
     DocumentFragmentImpl(DocumentImpl *doc);
-    DocumentFragmentImpl(const DocumentFragmentImpl &other);
 
     // DOM methods overridden from  parent classes
     virtual DOMString nodeName() const;

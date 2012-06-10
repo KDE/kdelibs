@@ -638,7 +638,7 @@ QString KFileDialog::getExistingDirectory(const KUrl& startDir,
     }
     KUrl url = fileModule()->selectDirectory(startDir, true, parent, caption);
     if ( url.isValid() )
-        return url.path();
+        return url.toLocalFile();
     return QString();
 }
 

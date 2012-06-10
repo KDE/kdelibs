@@ -2,7 +2,7 @@
  * This file is part of the KDE project.
  *
  * Copyright (C) 2008 - 2009 Urs Wolfer <uwolfer @ kde.org>
- * Copyright (C) 2009 - 2010 Dawit Alemayehu <adawit @ kde.org>
+ * Copyright (C) 2009 - 2012 Dawit Alemayehu <adawit @ kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -31,6 +31,7 @@ namespace KIO
 {
     class Job;
     class SimpleJob;
+    class MetaData;
 }
 class KJob;
 class KUrl;
@@ -48,27 +49,41 @@ class AccessManagerReply : public QNetworkReply
 {
     Q_OBJECT
 public:
-    AccessManagerReply(const QNetworkAccessManager::Operation &op,
-                       const QNetworkRequest &request,
-                       KIO::SimpleJob *kioJob,
-                       bool emitReadyReadOnMetaDataChange = false,
-                       QObject *parent = 0);
+    explicit AccessManagerReply(const QNetworkAccessManager::Operation op,
+                                const QNetworkRequest &request,
+                                KIO::SimpleJob *kioJob,
+                                bool emitReadyReadOnMetaDataChange = false,
+                                QObject *parent = 0);
+
+    explicit AccessManagerReply(const QNetworkAccessManager::Operation op,
+                                const QNetworkRequest &request,
+                                const QByteArray& data,
+                                const QUrl& url,
+                                const KIO::MetaData& metaData,
+                                QObject *parent = 0);
+
+    explicit AccessManagerReply(const QNetworkAccessManager::Operation op,
+                                const QNetworkRequest &request,
+                                QNetworkReply::NetworkError errorCode,
+                                const QString& errorMessage,
+                                QObject *parent = 0);
 
     virtual ~AccessManagerReply();
     virtual qint64 bytesAvailable() const;
     virtual void abort();
 
     void setIgnoreContentDisposition(bool on);
-    void setStatus(const QString& message, QNetworkReply::NetworkError);
     void putOnHold();
 
     static bool isLocalRequest(const KUrl& url);
 
 protected:
     virtual qint64 readData(char *data, qint64 maxSize);
+    bool ignoreContentDisposition(const KIO::MetaData&);
+    void setHeaderFromMetaData(const KIO::MetaData&);
     void readHttpResponseHeaders(KIO::Job *);
     int jobError(KJob *kJob);
-    bool ignoreContentDisposition(KIO::Job* job);
+    void emitFinished(bool state, Qt::ConnectionType type = Qt::AutoConnection);
 
 private Q_SLOTS:
     void slotData(KIO::Job *kioJob, const QByteArray &data);

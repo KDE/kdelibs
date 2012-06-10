@@ -157,15 +157,18 @@ DebugWindow::DebugWindow(QWidget *parent)
 
 void DebugWindow::syncFromConfig()
 {
-    m_reindentSources = false;
-    m_catchExceptions = true;
+    KConfigGroup config(KGlobal::config(), "Javascript Debugger");
+    m_reindentSources = config.readEntry<bool>("ReindentSources", true);
+    m_catchExceptions = config.readEntry<bool>("CatchExceptions", true);
     // m_catchExceptions = khtmlpart->settings()->isJavaScriptErrorReportingEnabled();
     // m_reindentSources = 
 }
 
 void DebugWindow::syncToConfig()
 {
-    // ### FIXME
+    KConfigGroup config(KGlobal::config(), "Javascript Debugger");
+    config.writeEntry("ReindentSources", m_reindentSources);
+    config.writeEntry("CatchExceptions", m_catchExceptions);
 }
 
 bool DebugWindow::shouldReindentSources() const

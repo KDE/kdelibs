@@ -10,9 +10,9 @@ include(CPack)
 
 set (KDE_VERSION_MAJOR 4)
 set (KDE_VERSION_MINOR 8)
-set (KDE_VERSION_RELEASE 3)
+set (KDE_VERSION_RELEASE 4)
 set (KDE_VERSION "${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}.${KDE_VERSION_RELEASE}" )
-set (KDE_VERSION_STRING "${KDE_VERSION} (4.8.3)")
+set (KDE_VERSION_STRING "${KDE_VERSION} (4.8.4)")
 
 set (KDE_DISTRIBUTION_TEXT "compiled sources" CACHE STRING "Indicate the distribution in bug reports" )
 
@@ -106,7 +106,7 @@ macro_log_feature(OPENSSL_FOUND "OpenSSL" "Support for secure network communicat
 macro_optional_find_package(Libintl)
 macro_log_feature(LIBINTL_FOUND "Libintl" "Support for multiple languages" "http://www.gnu.org/software/gettext" FALSE "" "STRONGLY RECOMMENDED: Enables KDE to be available in many different languages")
 
-set(SOPRANO_MIN_VERSION "2.5.60")
+set(SOPRANO_MIN_VERSION "2.7.56")
 macro_optional_find_package(Soprano ${SOPRANO_MIN_VERSION} COMPONENTS PLUGIN_RAPTORPARSER PLUGIN_REDLANDBACKEND)
 macro_log_feature(SOPRANO_FOUND "Soprano" "Support for the Nepomuk semantic desktop system" "http://soprano.sourceforge.net" FALSE "${SOPRANO_MIN_VERSION}" "")
 macro_log_feature(SOPRANO_PLUGIN_RAPTORPARSER_FOUND "Soprano Raptor Parser" "Support for the Nepomuk semantic desktop system" "http://soprano.sourceforge.net" FALSE "" "")

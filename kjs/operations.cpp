@@ -192,17 +192,27 @@ bool strictEqual(ExecState *exec, JSValue *v1, JSValue *v2)
     return false;
 }
 
-int relation(ExecState *exec, JSValue *v1, JSValue *v2)
+int relation(ExecState *exec, JSValue *v1, JSValue *v2, bool leftFirst)
 {
     double n1;
     double n2;
     JSValue* p1;
     JSValue* p2;
-    bool wasNotString1 = v1->getPrimitiveNumber(exec, n1, p1);
-    if (exec->hadException())
-        return -1;
 
-    bool wasNotString2 = v2->getPrimitiveNumber(exec, n2, p2);
+    bool wasNotString1;
+    bool wasNotString2;
+
+    if (leftFirst) {
+        wasNotString1 = v1->getPrimitiveNumber(exec, n1, p1);
+        if (exec->hadException())
+            return -1;
+        wasNotString2 = v2->getPrimitiveNumber(exec, n2, p2);
+    } else {
+        wasNotString1 = v2->getPrimitiveNumber(exec, n2, p2);
+        if (exec->hadException())
+            return -1;
+        wasNotString2 = v1->getPrimitiveNumber(exec, n1, p1);
+    }
 
     if (wasNotString1 || wasNotString2) {
         if (n1 < n2)

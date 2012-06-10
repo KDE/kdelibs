@@ -388,6 +388,9 @@ endif(NOT KDE_NO_DEPRECATED)
 if(NOT WIN32)
     set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} util/kshareddatacache.cpp)
     set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+
+    set_source_files_properties(util/kshareddatacache.cpp
+        PROPERTIES COMPILE_FLAGS ${KDE4_ENABLE_EXCEPTIONS})
 else(NOT WIN32)
     set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} util/kshareddatacache_win.cpp)
     set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} io/kdirwatch_win.cpp)

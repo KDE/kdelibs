@@ -352,6 +352,9 @@ void KMimeTypeTest::testFindByUrl()
 
     QCOMPARE( mime->name(), QString::fromLatin1( "application/octet-stream" ) ); // HTTP can't know before downloading
 
+    mime = KMimeType::findByUrl(KUrl("http://foo/s0/"));
+    QCOMPARE( mime->name(), QString::fromLatin1( "application/octet-stream" ) ); // HTTP can't know before downloading
+
     if ( !KProtocolInfo::isKnownProtocol(KUrl("man:/")) )
         QSKIP( "man protocol not installed", SkipSingle );
 

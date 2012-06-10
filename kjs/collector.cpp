@@ -101,7 +101,7 @@ struct BlockList {
     size_t m_used;
     size_t m_capacity;
 
-    CollectorBlock* operator[](int pos) {
+    CollectorBlock* operator[](size_t pos) {
         return m_data[pos];
     }
 
@@ -467,7 +467,7 @@ void Collector::markStackObjectsConservatively(void *start, void *end)
       uintptr_t offset = reinterpret_cast<uintptr_t>(x) & BLOCK_OFFSET_MASK;
       CollectorBlock* blockAddr = reinterpret_cast<CollectorBlock*>(x - offset);
       for (size_t block = 0; block < usedBlocks; block++) {
-        if ((blocks[block] == blockAddr) & (offset <= lastCellOffset)) {
+        if ((blocks[block] == blockAddr) && (offset <= lastCellOffset)) {
           if (((CollectorCell *)x)->u.freeCell.zeroIfFree != 0) {
             JSCell *imp = reinterpret_cast<JSCell *>(x);
             if (!imp->marked())
@@ -515,6 +515,7 @@ static inline void* currentThreadStackBase()
         size_t stackSize;
         pthread_attr_getstack(&sattr, &stackBase, &stackSize);
         stackBase = (char *)stackBase + stackSize;      // a matter of interpretation, apparently...
+        pthread_attr_destroy(&sattr);
         assert(stackBase);
         stackThread = thread;
     }

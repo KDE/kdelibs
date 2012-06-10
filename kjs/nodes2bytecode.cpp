@@ -204,7 +204,7 @@ OpValue VarAccessNode::generateEvalCode(CompileState* comp)
     Classification classify;
     size_t index = classifyVariable(comp, classify);
 
-    OpValue out, outReg;
+    OpValue out;
     OpValue varName = OpValue::immIdent(&ident);
     switch (classify) {
     case Local: {
