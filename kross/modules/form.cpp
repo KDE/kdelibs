@@ -54,7 +54,7 @@
 //#include <kio/netaccess.h>
 //#include <klocalizedstring.h>
 //#include <kmimetype.h>
-//#include <kstandarddirs.h>
+//
 #include <kfilewidget.h>
 #include <kurlcombobox.h>
 #include <kshell.h>

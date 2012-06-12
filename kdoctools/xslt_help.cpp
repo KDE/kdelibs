@@ -18,6 +18,7 @@
 #include <assert.h>
 #include <kfilterdev.h>
 #include <stdlib.h>
+#include <qstandardpaths.h>
 
 static bool readCache( const QString &filename,
                        const QString &cache, QString &output)

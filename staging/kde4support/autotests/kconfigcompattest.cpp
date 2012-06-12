@@ -20,12 +20,13 @@
 #include <QObject>
 
 #include <qtest_kde.h>
-#include <kstandarddirs.h>
+
 #include <ksharedconfig.h>
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kconfiggroup_kurl.h>
+#include <qstandardpaths.h>
 
 class KConfigCompatTest : public QObject
 {

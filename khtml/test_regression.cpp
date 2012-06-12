@@ -245,6 +245,7 @@ const char* imageMissingIcon =
 #include "khtml_part.h"
 #include "khtmlpart_p.h"
 #include <kparts/browserextension.h>
+#include <qstandardpaths.h>
 
 #include "khtmlview.h"
 #include "rendering/render_replaced.h"

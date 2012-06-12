@@ -24,7 +24,8 @@
 #include <kbookmarkimporter.h>
 #include <kbookmarkdombuilder.h>
 #include <kmenu.h>
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
+
 
 #include "kfilewidget.h"
 

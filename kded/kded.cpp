@@ -63,6 +63,8 @@
 #include <fixx11h.h>
 #endif
 
+#include <qstandardpaths.h>
+
 #define KDED_EXENAME "kded5"
 
 #define MODULES_PATH "/modules/"

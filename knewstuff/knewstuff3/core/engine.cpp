@@ -32,7 +32,7 @@
 #include <kcomponentdata.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kstandarddirs.h>
+
 #include <kcodecs.h>
 #include <kshell.h>
 
@@ -54,6 +54,7 @@
 
 // libattica
 #include <attica/providermanager.h>
+#include <qstandardpaths.h>
 
 // own
 #include "attica/atticaprovider.h"

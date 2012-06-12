@@ -71,7 +71,7 @@
 #include <knotification.h>
 #include <kdeprintdialog.h>
 #include <kconfig.h>
-#include <kstandarddirs.h>
+
 #include <kstandardshortcut.h>
 #include <kstringhandler.h>
 #include <kconfiggroup.h>
@@ -90,6 +90,7 @@
 #include <QAbstractScrollArea>
 #include <QPrinter>
 #include <QPrintDialog>
+#include <qstandardpaths.h>
 
 //#define DEBUG_FLICKER
 

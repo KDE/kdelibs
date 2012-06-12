@@ -19,7 +19,7 @@
 
 #include "knfotranslator_p.h"
 #include <klocalizedstring.h>
-#include <kstandarddirs.h>
+
 
 #include <QUrl>
 

@@ -39,7 +39,7 @@
 #endif
 
 #include <kdebug.h>
-#include <kstandarddirs.h>
+
 
 #include <kopenssl.h>
 #include <ksslx509v3.h>

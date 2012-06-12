@@ -23,7 +23,7 @@
 #include <kfilemetadatareader_p.h>
 #include "knfotranslator_p.h"
 #include <klocale.h>
-#include <kstandarddirs.h>
+
 #include <kurl.h>
 
 #ifndef KIO_NO_NEPOMUK

@@ -20,7 +20,7 @@
 #include "kfilemetadatareader_p.h"
 
 #include <kprocess.h>
-#include <kstandarddirs.h>
+
 
 #include <qstandardpaths.h>
 

@@ -37,7 +37,7 @@
 #include <kglobal.h>
 #include <klocalizedstring.h>
 #include <kuser.h>
-#include <kstandarddirs.h>
+
 #include <kcomponentdata.h>
 #include <kmimetype.h>
 #include <kdebug.h>
@@ -55,6 +55,7 @@
 #include <solid/opticaldrive.h>
 #include <solid/opticaldisc.h>
 #include <solid/predicate.h>
+#include <qstandardpaths.h>
 
 class KFilePlacesModel::Private
 {

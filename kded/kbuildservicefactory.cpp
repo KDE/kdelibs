@@ -32,6 +32,7 @@
 #include <kdebug.h>
 #include <assert.h>
 #include <kmimetypefactory.h>
+#include <qstandardpaths.h>
 
 KBuildServiceFactory::KBuildServiceFactory( KSycocaFactory *serviceTypeFactory,
                                             KBuildMimeTypeFactory *mimeTypeFactory,

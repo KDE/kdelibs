@@ -42,7 +42,7 @@
 #include <kdialog.h>
 #include <klocalizedstring.h>
 #include <kservice.h>
-#include <kstandarddirs.h>
+
 #include <kuser.h>
 
 #include <kvbox.h>

@@ -33,6 +33,7 @@
 #include <QProgressBar>
 #include <QPainter>
 #include <QScrollBar>
+#include <qstandardpaths.h>
 
 
 /**

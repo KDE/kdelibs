@@ -2,7 +2,7 @@
 #include <kservice.h>
 #include <kmimetype.h>
 #include <assert.h>
-#include <kstandarddirs.h>
+
 #include <kservicegroup.h>
 #include <kprotocolinfo.h>
 #include <QtCore/QTimer>

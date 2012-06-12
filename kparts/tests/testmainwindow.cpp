@@ -36,6 +36,7 @@
 #include <kactioncollection.h>
 #include <klocalizedstring.h>
 #include <kparts/partmanager.h>
+#include <qstandardpaths.h>
 
 TestMainWindow::TestMainWindow()
     : KParts::MainWindow()

@@ -9,7 +9,7 @@ extern "C" int xmlLoadExtDtdDefaultValue;
 #include "xslt.h"
 
 #include <kdebug.h>
-#include <kstandarddirs.h>
+
 #include <kcomponentdata.h>
 
 #include <QtCore/QString>

@@ -43,6 +43,7 @@
 #include <kstandarddirs.h>
 #include <kaboutdata.h>
 #include <kcomponentdata.h>
+#include <qstandardpaths.h>
 
 #include "kconfigutils.h"
 

@@ -71,6 +71,7 @@
 #include <kshell.h>
 #include <kmessagebox.h>
 #include <kauthorized.h>
+#include <qstandardpaths.h>
 
 class KFileWidgetPrivate
 {

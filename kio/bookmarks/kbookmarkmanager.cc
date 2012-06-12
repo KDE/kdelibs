@@ -37,7 +37,8 @@
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <qsavefile.h>
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
+
 
 #include "kbookmarkmenu.h"
 #include "kbookmarkmenu_p.h"

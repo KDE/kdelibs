@@ -24,7 +24,7 @@
 #include <kprotocolinfo.h>
 #include <kservice.h>
 #include <kservicegroup.h>
-#include <kstandarddirs.h>
+
 #include <kmimetypetrader.h>
 #include <kservicetypeprofile.h>
 

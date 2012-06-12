@@ -36,7 +36,7 @@
 #include <kprotocolmanager.h>
 #include <kjobuidelegate.h>
 #include <krun.h>
-#include <kstandarddirs.h>
+
 #include <kstandardshortcut.h>
 #include <kurl.h>
 #include <kdebug.h>

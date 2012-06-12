@@ -46,6 +46,7 @@
 #include <qhash.h>
 #include <qobject.h>
 #include <qcoreapplication.h>
+#include <qstandardpaths.h>
 
 #ifndef QT_NO_STANDARDPATHS
 

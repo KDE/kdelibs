@@ -28,7 +28,7 @@
 #include "qtest_kde.h"
 
 #include "kglobal.h"
-#include <kstandarddirs.h>
+
 #include "klocale.h"
 #include "klocalizedstring.h"
 #include "kconfiggroup.h"
@@ -38,7 +38,7 @@
 
 void KLocalizedStringTest::initTestCase ()
 {
-    m_hasFrench = !KStandardDirs::locate("locale", "fr/LC_MESSAGES/kdelibs4.mo").isEmpty();
+    m_hasFrench = !QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("locale/") + "fr/LC_MESSAGES/kdelibs4.mo").isEmpty();
     if (m_hasFrench) {
         setlocale(LC_ALL, "fr_FR.utf8");
         if (setlocale(LC_ALL, NULL) != QByteArray("fr_FR.utf8")) {
@@ -243,6 +243,7 @@ void KLocalizedStringTest::translateQt()
 
 #include <QThreadPool>
 #include <qtconcurrentrun.h>
+#include <qstandardpaths.h>
 
 void KLocalizedStringTest::testThreads()
 {

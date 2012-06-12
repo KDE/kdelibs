@@ -35,6 +35,7 @@
 #include <kdatetime.h>
 #include "browseropenorsavequestion.h"
 #include <kprotocolmanager.h>
+#include <qstandardpaths.h>
 
 using namespace KParts;
 

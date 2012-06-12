@@ -47,6 +47,7 @@
 #include <qcoreapplication.h>
 
 #include <ApplicationServices/ApplicationServices.h>
+#include <qstandardpaths.h>
 
 QT_BEGIN_NAMESPACE
 

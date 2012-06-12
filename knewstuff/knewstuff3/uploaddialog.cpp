@@ -31,12 +31,13 @@
 #include <kcomponentdata.h>
 #include <kfiledialog.h>
 #include <kmessagebox.h>
-#include <kstandarddirs.h>
+
 #include <kpixmapsequence.h>
 #include <kpixmapsequencewidget.h>
 
 #include <kdebug.h>
 #include <kconfiggroup.h>
+#include <qstandardpaths.h>
 
 using namespace KNS3;
 

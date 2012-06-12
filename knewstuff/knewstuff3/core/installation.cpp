@@ -40,6 +40,7 @@
 #ifdef Q_OS_WIN
 #include <windows.h>
 #include <shlobj.h>
+#include <qstandardpaths.h>
 #endif
 
 using namespace KNS3;

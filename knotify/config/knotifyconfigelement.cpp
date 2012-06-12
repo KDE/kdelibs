@@ -23,7 +23,7 @@
 #include <kconfiggroup.h>
 #include <kconfig.h>
 #include <kdebug.h>
-#include <kstandarddirs.h>
+
 #include <kservice.h>
 
 KNotifyConfigElement::KNotifyConfigElement(const QString &eventid, KConfig *config)

@@ -47,6 +47,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kstandarddirs.h>
 
 #include <unistd.h>
+#include <qstandardpaths.h>
 
 time_t g_currentDate;
 int g_maxCacheAge;
@@ -207,7 +208,7 @@ static QString filenameFromUrl(const QByteArray &url)
 
 static QString filePath(const QString &baseName)
 {
-    QString cacheDirName = KGlobal::dirs()->saveLocation("cache", "http");
+    QString cacheDirName = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + '/' + "http";
     if (!cacheDirName.endsWith('/')) {
         cacheDirName.append('/');
     }
@@ -776,7 +777,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
     g_maxCacheAge = KProtocolManager::maxCacheAge();
     g_maxCacheSize = mode == DeleteCache ? -1 : KProtocolManager::maxCacheSize() * 1024;
 
-    QString cacheDirName = KGlobal::dirs()->saveLocation("cache", "http");
+    QString cacheDirName = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + '/' + "http";
     QDir cacheDir(cacheDirName);
     if (!cacheDir.exists()) {
         fprintf(stderr, "%s: '%s' does not exist.\n", appName, qPrintable(cacheDirName));
@@ -796,7 +797,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
     }
 
     QLocalServer lServer;
-    QString socketFileName = KStandardDirs::locateLocal("socket", "kio_http_cache_cleaner");
+    QString socketFileName = QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation) + QLatin1Char('/') + "kio_http_cache_cleaner";
     // we need to create the file by opening the socket, otherwise it won't work
     QFile::remove(socketFileName);
     lServer.listen(socketFileName);

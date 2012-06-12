@@ -17,7 +17,7 @@
  */
 
 
-#include <kstandarddirs.h>
+
 #include <QApplication>
 #include <QFile>
 #include <QUrl>
@@ -26,6 +26,7 @@
 #include <kdebug.h>
 #include <QtTest>
 #include <kde_qt5_compat.h>
+#include <qstandardpaths.h>
 
 // Tests both KProtocolInfo and KProtocolManager
 

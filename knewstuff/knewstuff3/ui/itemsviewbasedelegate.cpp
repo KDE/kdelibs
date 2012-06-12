@@ -23,7 +23,8 @@
 
 #include <kdebug.h>
 #include <kiconloader.h>
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
+
 
 namespace KNS3
 {

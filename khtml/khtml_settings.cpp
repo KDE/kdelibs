@@ -28,7 +28,7 @@
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <khtml_filter_p.h>
-#include <kstandarddirs.h>
+
 #include <kjob.h>
 #include <kio/job.h>
 
@@ -36,6 +36,7 @@
 #include <QFileInfo>
 #include <QFontDatabase>
 #include <QByteArray>
+#include <qstandardpaths.h>
 
 /**
  * @internal

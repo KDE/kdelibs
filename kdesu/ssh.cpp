@@ -32,7 +32,7 @@
 
 #include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kstandarddirs.h>
+
 
 extern int kdesuDebugArea();
 

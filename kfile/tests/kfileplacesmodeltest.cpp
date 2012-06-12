@@ -31,6 +31,7 @@
 #include <qtest_kde.h>
 
 #include <stdlib.h>
+#include <qstandardpaths.h>
 
 #ifndef TEST_DATA
     #error "TEST_DATA not set. An XML file describing a computer is required for this test"

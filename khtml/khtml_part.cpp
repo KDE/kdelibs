@@ -78,7 +78,7 @@ using namespace DOM;
 
 #include <config.h>
 
-#include <kstandarddirs.h>
+
 #include <kstringhandler.h>
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
@@ -136,6 +136,7 @@ using namespace DOM;
 
 // SVG
 #include <svg/SVGDocument.h>
+#include <qstandardpaths.h>
 
 bool KHTMLPartPrivate::s_dnsInitialised = false;
 

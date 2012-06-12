@@ -50,6 +50,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <unistd.h> // geteuid
+#include <qstandardpaths.h>
 
 #ifndef QT_NO_STANDARDPATHS
 

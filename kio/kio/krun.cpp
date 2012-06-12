@@ -82,6 +82,7 @@
 
 #ifdef HAVE_X11
 #include <kwindowsystem.h>
+#include <qstandardpaths.h>
 #endif
 
 KRun::KRunPrivate::KRunPrivate(KRun *parent)

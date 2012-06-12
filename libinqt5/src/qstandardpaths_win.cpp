@@ -52,6 +52,7 @@
 
 #include <qt_windows.h>
 #include <shlobj.h>
+#include <qstandardpaths.h>
 #if !defined(Q_OS_WINCE)
 #  include <intshcut.h>
 #else

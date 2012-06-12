@@ -7,7 +7,7 @@ extern "C" int xmlLoadExtDtdDefaultValue;
 #include "kio_help.h"
 #include "xslt.h"
 
-#include <kstandarddirs.h>
+
 #include <kcomponentdata.h>
 #include <kdebug.h>
 

@@ -61,7 +61,7 @@
 #include <kdatetime.h>
 #include <kcomponentdata.h>
 #include <kmimetype.h>
-#include <kstandarddirs.h>
+
 #include <kremoteencoding.h>
 #include <ktcpsocket.h>
 #include <kmessagebox.h>
@@ -78,6 +78,7 @@
 #include <kcmdlineargs.h>
 #include <kde_file.h>
 #include <qtemporaryfile.h>
+#include <qstandardpaths.h>
 
 #include "httpauthentication.h"
 
@@ -5016,7 +5017,7 @@ void HTTPProtocol::sendCacheCleanerCommand(const QByteArray &command)
                 qWarning() << exe << "not found!";
             }
         }
-        QString socketFileName = KStandardDirs::locateLocal("socket", QLatin1String("kio_http_cache_cleaner"));
+        QString socketFileName = QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation) + QLatin1Char('/') + QLatin1String("kio_http_cache_cleaner");
         m_cacheCleanerConnection.connectToServer(socketFileName, QIODevice::WriteOnly);
         m_cacheCleanerConnection.waitForConnected(1500);
         attempts++;

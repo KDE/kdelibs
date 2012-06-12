@@ -135,6 +135,7 @@ extern "C" {
 
 #include <kbuildsycocaprogressdialog.h>
 #include <kmimetypechooser.h>
+#include <qstandardpaths.h>
 
 #ifdef Q_OS_WIN
 # include <kkernel_win.h>

@@ -28,7 +28,7 @@
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <QtCore/QFile>
-#include <kstandarddirs.h>
+
 #include <kdebug.h>
 #include <QtCore/QDate>
 #include <kpluginfactory.h>

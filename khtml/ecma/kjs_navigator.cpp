@@ -26,7 +26,7 @@
 
 #include <klocale.h>
 
-#include <kstandarddirs.h>
+
 #include <kconfig.h>
 #include <kdebug.h>
 
@@ -38,6 +38,7 @@
 #include <kjs_binding.h>
 #include <khtml_part.h>
 #include <sys/utsname.h>
+#include <qstandardpaths.h>
 
 using namespace KJS;
 

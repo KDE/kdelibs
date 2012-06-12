@@ -98,7 +98,7 @@ KEmoticonsTheme KEmoticonsPrivate::loadTheme(const QString &name)
     const int numberOfTheme = m_loaded.size();
     for (int i = 0; i < numberOfTheme; ++i) {
         const QString fName = m_loaded.at(i)->property("X-KDE-EmoticonsFileName").toString();
-        const QString path = KGlobal::dirs()->findResource("emoticons", name + '/' + fName);
+        const QString path = KStandardDirs::locate("emoticons", name + '/' + fName);
 
         if (QFile::exists(path)) {
             KEmoticonsProvider *provider = loadProvider(m_loaded.at(i));

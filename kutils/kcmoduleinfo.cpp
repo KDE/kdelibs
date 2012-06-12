@@ -27,7 +27,7 @@
 
 #include <kdesktopfile.h>
 #include <kdebug.h>
-#include <kstandarddirs.h>
+
 #include <klocalizedstring.h>
 
 class KCModuleInfo::Private

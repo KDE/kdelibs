@@ -28,8 +28,9 @@
 #include <QtCore/QProcess>
 #include <QtXml/QDomDocument>
 #include <kdebug.h>
+#include <kglobal.h>
 #include <klocale.h>
-#include <kstandarddirs.h>
+
 
 #ifndef KUNITCONVERSION_NO_SOLID
 #include <solid/networking.h>
@@ -42,6 +43,7 @@
 #endif
 
 #include <kcurrencycode.h>
+#include <qstandardpaths.h>
 
 using namespace KUnitConversion;
 

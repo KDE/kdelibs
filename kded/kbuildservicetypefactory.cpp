@@ -28,6 +28,7 @@
 #include <kdesktopfile.h>
 #include <kconfiggroup.h>
 #include <QtCore/QHash>
+#include <qstandardpaths.h>
 
 KBuildServiceTypeFactory::KBuildServiceTypeFactory() :
     KServiceTypeFactory()

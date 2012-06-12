@@ -23,7 +23,7 @@
 #include <QtCore/QPointer>
 
 #include <kcomponentdata.h>
-#include <kstandarddirs.h>
+
 #include <kpluginfactory.h>
 #include <kdebug.h>
 

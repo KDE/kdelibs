@@ -35,10 +35,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kcmdlineargs.h>
-#include <kstandarddirs.h>
+
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
 #include <kwindowsystem.h>
+#include <qstandardpaths.h>
 
 #include "kcookiejar.h"
 #include "kcookiewin.h"

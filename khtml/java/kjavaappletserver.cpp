@@ -32,7 +32,7 @@
 #include <kconfiggroup.h>
 #include <klocalizedstring.h>
 #include <kparts/browserextension.h>
-#include <kstandarddirs.h>
+
 
 #include <kio/job.h>
 #include <kio/kprotocolmanager.h>
@@ -54,6 +54,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <QtCore/QAbstractEventDispatcher>
+#include <qstandardpaths.h>
 
 #define KJAS_CREATE_CONTEXT    (char)1
 #define KJAS_DESTROY_CONTEXT   (char)2

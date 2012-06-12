@@ -36,7 +36,7 @@
 #include <kapplication.h>
 //#include <kdeversion.h>
 #include <kconfig.h>
-#include <kstandarddirs.h>
+
 #include <kmessagebox.h>
 #include <kpushbutton.h>
 #include <kfiledialog.h>

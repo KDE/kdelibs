@@ -57,7 +57,7 @@ using namespace DOM;
 #include "khtmlview.h"
 #include "khtml_part.h"
 
-#include <kstandarddirs.h>
+
 #include <kglobal.h>
 #include <kconfig.h>
 #include <QtCore/QFile>
@@ -68,6 +68,7 @@ using namespace DOM;
 #include <kurl.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <qstandardpaths.h>
 
 // keep in sync with html4.css'
 #define KHTML_STYLE_VERSION 1

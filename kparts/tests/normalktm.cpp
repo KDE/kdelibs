@@ -29,7 +29,7 @@
 #include <QMenu>
 
 #include <kiconloader.h>
-#include <kstandarddirs.h>
+
 #include <kapplication.h>
 #include <kmessagebox.h>
 #include <kaction.h>
@@ -37,6 +37,7 @@
 #include <klocalizedstring.h>
 #include <kcmdlineargs.h>
 #include <kmenubar.h>
+#include <qstandardpaths.h>
 
 TestMainWindow::TestMainWindow()
     : KXmlGuiWindow()

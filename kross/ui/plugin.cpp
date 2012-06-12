@@ -30,6 +30,7 @@
 #include <kio/netaccess.h>
 
 #include <QPointer>
+#include <qstandardpaths.h>
 
 using namespace Kross;
 
@@ -67,7 +68,7 @@ ScriptingPlugin::ScriptingPlugin(QObject* parent)
     : KParts::Plugin(parent)
     , d(new ScriptingPluginPrivate())
 {
-    d->userActionsFile = KGlobal::dirs()->locateLocal("appdata", "scripts/scriptactions.rc");
+    d->userActionsFile = QStandardPaths::writableLocation(QStandardPaths::DataLocation) + QLatin1Char('/') + "scripts/scriptactions.rc";
     d->collectionName="scripting-plugin";
 }
 

@@ -36,6 +36,7 @@
 #include <klocale.h>
 #include <kdesktopfile.h>
 #include <kconfiggroup.h>
+#include <qstandardpaths.h>
 
 using namespace KParts;
 

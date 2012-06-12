@@ -46,6 +46,7 @@
 #endif
 
 #include <kopenssl.h>
+#include <qstandardpaths.h>
 
 #ifdef KSSL_HAVE_SSL
 #define sk_new d->kossl->sk_new
@@ -200,7 +201,7 @@ void KSSLSettings::save() {
 #endif
 
 	// insure proper permissions -- contains sensitive data
-	QString cfgName(KGlobal::dirs()->findResource("config", "cryptodefaults"));
+	QString cfgName(QStandardPaths::locate(QStandardPaths::ConfigLocation, "cryptodefaults"));
 	if (!cfgName.isEmpty())
 		KDE::chmod(cfgName, 0600);
 #endif

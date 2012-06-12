@@ -26,7 +26,7 @@
 #include <QToolButton>
 #include <QMenu>
 #include <kdebug.h>
-#include <kstandarddirs.h>
+
 #include <klocalizedstring.h>
 #include <kmenu.h>
 #include <kratingwidget.h>
