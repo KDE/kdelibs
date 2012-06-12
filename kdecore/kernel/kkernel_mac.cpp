@@ -38,7 +38,7 @@
 #include <QtCore/QProcess>
 #include <QtCore/QStringList>
 #include <QtCore/qvarlengtharray.h>
-#include <kstandarddirs.h>
+
 #include <ksharedconfig.h>
 #include <kconfig.h>
 #include <kdebug.h>

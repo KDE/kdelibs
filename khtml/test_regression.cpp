@@ -34,7 +34,7 @@
 
 #include <kapplication.h>
 #include <kacceleratormanager.h>
-#include <kstandarddirs.h>
+
 #include <QImage>
 #include <QtCore/QFile>
 #include <QtCore/QEventLoop>

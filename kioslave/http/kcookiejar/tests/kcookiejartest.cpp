@@ -24,7 +24,8 @@
 #include <QtCore/QString>
 
 #include <qtest_kde.h>
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
+
 
 #include "../kcookiejar.cpp"
 

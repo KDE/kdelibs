@@ -29,7 +29,7 @@
 #include <kglobalsettings.h>
 #include <kfileitem.h>
 #include <kmimetype.h>
-#include <kstandarddirs.h>
+
 #include <stdlib.h>
 #include <assert.h>
 #include <kio/job.h>

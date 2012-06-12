@@ -44,7 +44,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kglobal.h>
 #include <klocalizedstring.h>
 #include <kprotocolmanager.h>
-#include <kstandarddirs.h>
+
 
 #include <unistd.h>
 #include <qstandardpaths.h>
