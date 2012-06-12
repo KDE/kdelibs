@@ -259,6 +259,7 @@ bool UDisksStorageAccess::mount()
         path.chop(6);
     }
     QString fstype;
+    QStringList options;
 
     if (isLuksDevice()) { // mount options for the cleartext volume
         path = m_device->prop("LuksHolder").value<QDBusObjectPath>().path();
@@ -272,8 +273,12 @@ bool UDisksStorageAccess::mount()
     if (m_device->prop("IdUsage").toString() == "filesystem")
         fstype = m_device->prop("IdType").toString();
 
+    if (fstype == "vfat") {
+        options << "flush";
+    }
+
     msg << fstype;
-    msg << QStringList();   // options, unused now
+    msg << options;
 
     return c.callWithCallback(msg, this,
                               SLOT(slotDBusReply(QDBusMessage)),
