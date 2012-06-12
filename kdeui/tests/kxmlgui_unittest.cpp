@@ -169,8 +169,9 @@ void KXmlGui_UnitTest::testVersionHandlerNewVersionNothingKept()
 
     QMap<QString, int> fileToVersionMap; // makes QCOMPARE failures more readable than just temp filenames
 
+    QDir().mkpath(QStandardPaths::writableLocation(QStandardPaths::DataLocation));
     QFile fileV2(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + QLatin1Char('/') + "testui.rc");
-    QVERIFY(fileV2.open(QIODevice::WriteOnly));
+    QVERIFY2(fileV2.open(QIODevice::WriteOnly), qPrintable(fileV2.fileName()));
     createXmlFile(fileV2, 2, NoFlags);
     fileToVersionMap.insert(fileV2.fileName(), 2);
 
