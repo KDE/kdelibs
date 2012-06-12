@@ -44,7 +44,6 @@
 #include <kfileitem.h>
 #include <kde_file.h>
 #include <kservicetypetrader.h>
-#include <kstandarddirs.h>
 #include <kservice.h>
 #include <QtCore/QLinkedList>
 #include <kconfiggroup.h>
@@ -371,7 +370,12 @@ void PreviewJobPrivate::startPreview()
         if (width <= 128 && height <= 128) cacheWidth = cacheHeight = 128;
         else cacheWidth = cacheHeight = 256;
         thumbPath = thumbRoot + (cacheWidth == 128 ? "normal/" : "large/");
-        KStandardDirs::makeDir(thumbPath, 0700);
+        if (!QDir(thumbPath).exists()) {
+            if (QDir().mkpath(thumbPath)) { // Qt5 TODO: mkpath(dirPath, permissions)
+                QFile f(thumbPath);
+                f.setPermissions(QFile::ReadUser | QFile::WriteUser | QFile::ExeUser); // 0700
+            }
+        }
     }
     else
         bSave = false;

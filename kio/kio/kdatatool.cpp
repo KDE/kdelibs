@@ -20,7 +20,6 @@
 
 #include "kdatatool.h"
 
-#include <kstandarddirs.h>
 #include <kdebug.h>
 #include <kcomponentdata.h>
 #include <kactioncollection.h>
