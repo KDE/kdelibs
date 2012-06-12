@@ -109,17 +109,23 @@ void JobTest::initTestCase()
     qRegisterMetaType<time_t>("time_t");
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 static void delDir(const QString& pathOrUrl) {
     KIO::Job* job = KIO::del(KUrl(pathOrUrl), KIO::HideProgressInfo);
     job->setUiDelegate(0);
     KIO::NetAccess::synchronousRun(job, 0);
 }
-
+#endif
 
 void JobTest::cleanupTestCase()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QDir(homeTmpDir()).removeRecursively();
+    QDir(otherTmpDir()).removeRecursively();
+#else
     delDir( homeTmpDir() );
     delDir( otherTmpDir() );
+#endif
 #if 0
     if ( KProtocolInfo::isKnownProtocol( "system" ) ) {
         delDir(systemTmpDir());
