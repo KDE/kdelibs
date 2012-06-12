@@ -35,7 +35,6 @@
 #include <kactioncollection.h>
 #include <klocalizedstring.h>
 #include <kstatusbar.h>
-#include <kstandarddirs.h>
 #include <kpluginfactory.h>
 
 K_PLUGIN_FACTORY(NotepadFactory, registerPlugin<NotepadPart>();)
@@ -56,10 +55,7 @@ NotepadPart::NotepadPart( QWidget* parentWidget,
   actionCollection()->addAction( "searchreplace", searchReplace );
   connect(searchReplace, SIGNAL(triggered()), this, SLOT(slotSearchReplace()));
 
-  // KXMLGUIClient looks in the "data" resource for the .rc files
-  // This line is for test programs only!
-  componentData().dirs()->addResourceDir( "data", KDESRCDIR );
-  setXMLFile( "notepadpart.rc" );
+  setXMLFile( KDESRCDIR "/notepadpart.rc" );
 
   setReadWrite( true );
 

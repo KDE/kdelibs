@@ -37,7 +37,6 @@
 #include <kmessagebox.h>
 #include <kaction.h>
 #include <klocalizedstring.h>
-#include <kstandarddirs.h>
 
 Part1::Part1( QObject *parent, QWidget * parentWidget )
     : KParts::ReadOnlyPart(parent),
@@ -47,10 +46,7 @@ Part1::Part1( QObject *parent, QWidget * parentWidget )
     m_edit = new QTextEdit( parentWidget );
     setWidget( m_edit );
 
-    // KXMLGUIClient looks in the "data" resource for the .rc files
-    // This line is for test programs only!
-    m_componentData.dirs()->addResourceDir( "data", KDESRCDIR );
-    setXMLFile( "kpartstest_part1.rc" );
+    setXMLFile(KDESRCDIR "/kpartstest_part1.rc");
 
     // An action and an action menu (test code for #70459)
 
@@ -115,8 +111,7 @@ Part2::Part2( QObject *parent, QWidget * parentWidget )
     w->setObjectName( "Part2Widget" );
     setWidget( w );
 
-    m_componentData.dirs()->addResourceDir( "data", KDESRCDIR );
-    setXMLFile( "kpartstest_part2.rc" );
+    setXMLFile(KDESRCDIR "/kpartstest_part2.rc");
 
     /*QCheckBox * cb =*/ new QCheckBox( "something", w );
 

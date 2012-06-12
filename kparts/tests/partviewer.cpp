@@ -20,7 +20,6 @@
 */
 
 #include <kiconloader.h>
-#include <kstandarddirs.h>
 #include <kapplication.h>
 #include <kaction.h>
 #include <kactioncollection.h>
@@ -39,10 +38,7 @@
 
 PartViewer::PartViewer()
 {
-    // KXMLGUIClient looks in the "data" resource for the .rc files
-    // This line is for test programs only!
-    KGlobal::dirs()->addResourceDir( "data", KDESRCDIR );
-    setXMLFile( "partviewer_shell.rc" );
+    setXMLFile(KDESRCDIR "/partviewer_shell.rc");
 
     KAction * paOpen = new KAction( KDE::icon("document-open"), "&Open file", this );
     actionCollection()->addAction( "file_open", paOpen );

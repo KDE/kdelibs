@@ -39,7 +39,6 @@
 #include <kio/jobuidelegate.h>
 #include <klocale.h>
 #include <kmessagebox.h>
-#include <kstandarddirs.h>
 #include <kxmlguifactory.h>
 
 #include <stdio.h>
@@ -144,9 +143,6 @@ void PartBase::setComponentData(const KComponentData &componentData, bool bLoadP
 
     KXMLGUIClient::setComponentData(componentData);
     KGlobal::locale()->insertCatalog(componentData.catalogName());
-    // install 'instancename'data resource type
-    KGlobal::dirs()->addResourceType(QString(componentData.componentName() + "data").toUtf8(),
-                                     "data", componentData.componentName());
     if (bLoadPlugins) {
         loadPlugins(d->m_obj, this, componentData);
     }

@@ -26,7 +26,7 @@
 #include <kcomponentdata.h>
 #include <kstatusbar.h>
 #include <khelpmenu.h>
-#include <kstandarddirs.h>
+
 #include <QApplication>
 #include <kxmlguifactory.h>
 #include <kconfiggroup.h>
@@ -34,6 +34,7 @@
 #include <kdebug.h>
 
 #include <assert.h>
+#include <qstandardpaths.h>
 
 using namespace KParts;
 
@@ -147,7 +148,7 @@ void MainWindow::createShellGUI( bool create )
             d->m_helpMenu = new KHelpMenu( this, componentData().aboutData(), true, actionCollection() );
 
         QString f = xmlFile();
-        setXMLFile( KStandardDirs::locate( "config", "ui/ui_standards.rc", componentData() ) );
+        setXMLFile(QStandardPaths::locate(QStandardPaths::ConfigLocation, "ui/ui_standards.rc"));
         if ( !f.isEmpty() )
             setXMLFile( f, true );
         else

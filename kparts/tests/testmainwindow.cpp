@@ -28,7 +28,6 @@
 #include <QtCore/QDir>
 #include <kcmdlineargs.h>
 #include <kiconloader.h>
-#include <kstandarddirs.h>
 #include <kapplication.h>
 #include <kxmlguifactory.h>
 #include <kmessagebox.h>
@@ -41,11 +40,7 @@
 TestMainWindow::TestMainWindow()
     : KParts::MainWindow()
 {
-    // KXMLGUIClient looks in the "data" resource for the .rc files
-    // This line is for test programs only!
-    KGlobal::dirs()->addResourceDir( "data", KDESRCDIR );
-
-    setXMLFile( "kpartstest_shell.rc" );
+    setXMLFile(KDESRCDIR "/kpartstest_shell.rc");
 
     m_manager = new KParts::PartManager( this );
 
