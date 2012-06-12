@@ -28,9 +28,9 @@
 #include <QtCore/QFile>
 #include <QtCore/QObject>
 #include <QtCore/QFileInfo>
+#include <QDir>
 
 #include <kcomponentdata.h>
-#include <kstandarddirs.h>
 #include <kdebug.h>
 #include <kxmlguifactory.h>
 #include <klocale.h>
@@ -77,8 +77,7 @@ QString Plugin::localXMLFile() const
     if ( !d->m_parentInstance.isValid() || ( path.length() > 0 && path[ 0 ] == '/' ) )
         return path;
 
-    QString absPath = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + d->m_parentInstance.componentName() + '/' + path ;
-    assert( !absPath.isEmpty() );
+    QString absPath = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + d->m_parentInstance.componentName() + '/' + path;
     return absPath;
 }
 
@@ -90,26 +89,18 @@ QList<Plugin::PluginInfo> Plugin::pluginInfos(const KComponentData &componentDat
 
   QList<PluginInfo> plugins;
 
-  // TODO KDE5: change * into *.rc and remove test for .desktop from the for loop below.
-  const QStringList pluginDocs = componentData.dirs()->findAllResources(
-    "data", componentData.componentName()+"/kpartplugins/*", KStandardDirs::Recursive );
+    QMap<QString,QStringList> sortedPlugins;
 
-  QMap<QString,QStringList> sortedPlugins;
-
-  QStringList::ConstIterator pIt = pluginDocs.begin();
-  QStringList::ConstIterator pEnd = pluginDocs.end();
-  for (; pIt != pEnd; ++pIt )
-  {
-      QFileInfo fInfo( *pIt );
-      if ( fInfo.completeSuffix() == QLatin1String( "desktop" ) )
-          continue;
-
-      QMap<QString,QStringList>::Iterator mapIt = sortedPlugins.find( fInfo.fileName() );
-      if ( mapIt == sortedPlugins.end() )
-          mapIt = sortedPlugins.insert( fInfo.fileName(), QStringList() );
-
-      mapIt.value().append( *pIt );
-  }
+    const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, componentData.componentName() + "/kpartplugins", QStandardPaths::LocateDirectory);
+    Q_FOREACH(const QString& dir, dirs) {
+        Q_FOREACH(const QString& file, QDir(dir).entryList(QStringList() << QLatin1String("*.rc"))) {
+            const QFileInfo fInfo(dir + '/' + file);
+            QMap<QString,QStringList>::Iterator mapIt = sortedPlugins.find(fInfo.fileName());
+            if (mapIt == sortedPlugins.end())
+                mapIt = sortedPlugins.insert(fInfo.fileName(), QStringList());
+            mapIt.value().append(fInfo.absoluteFilePath());
+        }
+    }
 
   QMap<QString,QStringList>::ConstIterator mapIt = sortedPlugins.constBegin();
   QMap<QString,QStringList>::ConstIterator mapEnd = sortedPlugins.constEnd();
@@ -260,7 +251,7 @@ void Plugin::loadPlugins(QObject *parent, KXMLGUIClient* parentGUIClient,
             relPath.truncate( relPath.lastIndexOf( '.' ) ); // remove extension
             relPath += ".desktop";
             //kDebug(1000) << "looking for " << relPath;
-            const QString desktopfile = componentData.dirs()->findResource( "data", relPath );
+            const QString desktopfile = QStandardPaths::locate(QStandardPaths::GenericDataLocation, relPath);
             if( !desktopfile.isEmpty() )
             {
                 //kDebug(1000) << "loadPlugins found desktop file for " << name << ": " << desktopfile;
