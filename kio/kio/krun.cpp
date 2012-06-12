@@ -522,8 +522,11 @@ QStringList KRun::processDesktopExec(const KService &_service, const KUrl::List&
     if (err == KShell::NoError && !execlist.isEmpty()) { // mx1 checked for syntax errors already
         // Resolve the executable to ensure that helpers in libexec are found.
         // Too bad for commands that need a shell - they must reside in $PATH.
-        const QString exePath = QStandardPaths::findExecutable(execlist[0]);
-        if (!exePath.isEmpty()) {
+        QString exePath = QStandardPaths::findExecutable(execlist.first());
+        if (exePath.isEmpty()) {
+            exePath = QFile::decodeName(CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/") + execlist.first();
+        }
+        if (QFile::exists(exePath)) {
             execlist[0] = exePath;
         }
     }
