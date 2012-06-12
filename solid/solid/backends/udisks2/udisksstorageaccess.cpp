@@ -255,8 +255,12 @@ bool StorageAccess::mount()
 
     QDBusConnection c = QDBusConnection::systemBus();
     QDBusMessage msg = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, path, UD2_DBUS_INTERFACE_FILESYSTEM, "Mount");
+    QVariantMap options;
 
-    msg << QVariantMap();   // options, unused now
+    if (m_device->prop("IdType").toString() == "vfat")
+        options.insert("options", "flush");
+
+    msg << options;
 
     return c.callWithCallback(msg, this,
                               SLOT(slotDBusReply(const QDBusMessage &)),
