@@ -28,6 +28,7 @@
 #include <klocalizedstring.h>
 #include <assert.h>
 #include <QtCore/QHash>
+#include <qstandardpaths.h>
 
 KBuildMimeTypeFactory::KBuildMimeTypeFactory() :
     KMimeTypeFactory()

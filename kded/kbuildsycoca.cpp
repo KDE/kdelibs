@@ -59,6 +59,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <memory> // auto_ptr
+#include <qstandardpaths.h>
 
 typedef QHash<QString, KSycocaEntry::Ptr> KBSEntryDict;
 typedef QList<KSycocaEntry::List> KSycocaEntryListList;
@@ -795,7 +796,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
       {
         // These directories may have been created with 0700 permission
         // better delete them if they are empty
-        QString appsDir = KGlobal::dirs()->saveLocation("xdgdata-apps", QString(), false);
+        QString appsDir = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
         ::rmdir(QFile::encodeName(appsDir));
         QString servicetypesDir = KGlobal::dirs()->saveLocation("servicetypes", QString(), false);
         ::rmdir(QFile::encodeName(servicetypesDir));

@@ -37,6 +37,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QRegExp>
 #include <QtCore/QDirIterator>
+#include <qstandardpaths.h>
 
 static void foldNode(QDomElement &docElem, QDomElement &e, QMap<QString,QDomElement> &dupeList, QString s=QString()) //krazy:exclude=passbyvalue
 {
@@ -434,7 +435,7 @@ VFolderMenu::absoluteDir(const QString &_dir, const QString &baseDir, bool keepR
    bool relative = QDir::isRelativePath(dir);
    if (relative && !keepRelativeToCfg) {
       relative = false;
-      dir = KGlobal::dirs()->findResource("xdgconf-menu", dir);
+      dir = QStandardPaths::locate(QStandardPaths::ConfigLocation, QLatin1String("menus/") + dir);
    }
 
    if (!relative)
@@ -1585,7 +1586,7 @@ VFolderMenu::parseMenu(const QString &file, bool forceLegacyLoad)
    m_legacyLoaded = false;
    m_appsInfo = 0;
 
-   const QStringList dirs = KGlobal::dirs()->resourceDirs("xdgconf-menu");
+   const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::ConfigLocation, QLatin1String("menus"), QStandardPaths::LocateDirectory);
    for(QStringList::ConstIterator it=dirs.begin();
        it != dirs.end(); ++it)
    {
