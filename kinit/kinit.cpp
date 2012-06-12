@@ -1673,6 +1673,9 @@ int main(int argc, char **argv, char **envp)
    pid_t pid;
    bool do_fork = true;
    int launch_klauncher = 1;
+   // KDE5 TODO: make this 0 by default, so that a random kde app doesn't start kded5 upfront,
+   // but on demand when a service needs it. In startkde, however, use +kded5 or --kded.
+   // (+kded5 might not work because it doesn't fork on startup anymore)
    int launch_kded = 1;
    int keep_running = 1;
    d.suicide = false;
