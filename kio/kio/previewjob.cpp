@@ -65,11 +65,34 @@ struct KIO::PreviewItem
 class KIO::PreviewJobPrivate: public KIO::JobPrivate
 {
 public:
+    PreviewJobPrivate(const KFileItemList &items, const QSize &size)
+        : initialItems(items),
+          tOrig(0),
+          width(size.width()),
+          height(size.height()),
+          cacheWidth(width),
+          cacheHeight(height),
+          bScale(true),
+          bSave(true),
+          ignoreMaximumSize(false),
+          sequenceIndex(0),
+          succeeded(false),
+          maximumLocalSize(0),
+          maximumRemoteSize(0),
+          iconSize(0),
+          iconAlpha(70),
+          shmid(-1),
+          shmaddr(0)
+    {
+        // http://specifications.freedesktop.org/thumbnail-spec/thumbnail-spec-latest.html#DIRECTORY
+        thumbRoot = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QLatin1String("/thumbnails/");
+    }
+
+
     enum { STATE_STATORIG, // if the thumbnail exists
            STATE_GETORIG, // if we create it
            STATE_CREATETHUMB // thumbnail:/ slave
     } state;
-    PreviewJob *q;
 
     KFileItemList initialItems;
     QStringList enabledPlugins;
@@ -134,28 +157,14 @@ public:
 PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
     int iconSize, int iconAlpha, bool scale, bool save,
     const QStringList *enabledPlugins )
-    : KIO::Job(*new PreviewJobPrivate)
+    : KIO::Job(*new PreviewJobPrivate(items, QSize(width, height ? height : width)))
 {
     Q_D(PreviewJob);
-    d->tOrig = 0;
-    d->shmid = -1;
-    d->shmaddr = 0;
-    d->initialItems = items;
     d->enabledPlugins = enabledPlugins ? *enabledPlugins : availablePlugins();
-    d->width = width;
-    d->height = height ? height : width;
-    d->cacheWidth = d->width;
-    d->cacheHeight = d->height;
     d->iconSize = iconSize;
     d->iconAlpha = iconAlpha;
     d->bScale = scale;
     d->bSave = save && scale;
-    d->succeeded = false;
-    d->thumbRoot = QDir::homePath() + QLatin1String("/.thumbnails/");
-    d->ignoreMaximumSize = false;
-    d->sequenceIndex = 0;
-    d->maximumLocalSize = 0;
-    d->maximumRemoteSize = 0;
 
     // Return to event loop first, determineNextFile() might delete this;
     QTimer::singleShot(0, this, SLOT(startPreview()));
@@ -165,36 +174,19 @@ PreviewJob::PreviewJob( const KFileItemList &items, int width, int height,
 PreviewJob::PreviewJob(const KFileItemList &items,
                        const QSize &size,
                        const QStringList *enabledPlugins) :
-    KIO::Job(*new PreviewJobPrivate)
+    KIO::Job(*new PreviewJobPrivate(items, size))
 {
     Q_D(PreviewJob);
-    d->tOrig = 0;
-    d->shmid = -1;
-    d->shmaddr = 0;
-    d->initialItems = items;
+
     if (enabledPlugins) {
         d->enabledPlugins = *enabledPlugins;
     } else {
         const KConfigGroup globalConfig(KSharedConfig::openConfig(), "PreviewSettings");
         d->enabledPlugins = globalConfig.readEntry("Plugins", QStringList()
-                                                              << "directorythumbnail"
-                                                              << "imagethumbnail"
-                                                              << "jpegthumbnail");
+                                                << "directorythumbnail"
+                                                << "imagethumbnail"
+                                                << "jpegthumbnail");
     }
-    d->width = size.width();
-    d->height = size.height();
-    d->cacheWidth = d->width;
-    d->cacheHeight = d->height;
-    d->iconSize = 0;
-    d->iconAlpha = 70;
-    d->bScale = true;
-    d->bSave = true;
-    d->succeeded = false;
-    d->thumbRoot = QDir::homePath() + QLatin1String("/.thumbnails/");
-    d->ignoreMaximumSize = false;
-    d->sequenceIndex = 0;
-    d->maximumLocalSize = 0;
-    d->maximumRemoteSize = 0;
 
     // Return to event loop first, determineNextFile() might delete this;
     QTimer::singleShot(0, this, SLOT(startPreview()));
