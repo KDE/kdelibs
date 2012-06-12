@@ -190,9 +190,9 @@ QSet<QString> KIconCache::existingIconThemeDirs(const QStringList& themeNames) c
 {
     // Find all possible icontheme dirs
     // This has been taken from kicontheme.cpp
-    QStringList icondirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "icons/", QStandardPaths::LocateDirectory);
+    QStringList icondirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "icons", QStandardPaths::LocateDirectory);
     // These are not in the icon spec, but e.g. GNOME puts some icons there anyway.
-    icondirs += QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "pixmaps/", QStandardPaths::LocateDirectory);
+    icondirs += QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "pixmaps", QStandardPaths::LocateDirectory);
 
     // Check which of theme actually contain existing dir of one of the
     //  given themes
