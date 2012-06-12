@@ -88,6 +88,7 @@
 #include <fixx11h.h>
 #include <kstartupinfo.h>
 #endif
+#include <qstandardpaths.h>
 
 #ifdef Q_WS_X11
 static const char *extra_libs[] = {
@@ -1505,7 +1506,7 @@ static void kdeinit_library_path()
 #endif
    // WARNING, if you change the socket name, adjust kwrapper too
    const QString socketFileName = QString::fromLatin1("kdeinit5_%1").arg(QLatin1String(display));
-   QByteArray socketName = QFile::encodeName(KStandardDirs::locateLocal("socket", socketFileName, *s_instance));
+   QByteArray socketName = QFile::encodeName(QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation) + QLatin1Char('/') + socketFileName);
    if (socketName.length() >= MAX_SOCK_FILE)
    {
      fprintf(stderr, "kdeinit5: Aborting. Socket name will be too long:\n");

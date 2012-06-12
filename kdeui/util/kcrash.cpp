@@ -85,6 +85,7 @@ static char *s_appPath = 0;
 static int s_autoRestartArgc = 0;
 static char **s_autoRestartCommandLine = 0;
 static char *s_drkonqiPath = 0;
+static char *s_kdeinit_socket_file = 0;
 static KCrash::CrashFlags s_flags = 0;
 static bool s_launchDrKonqi = false;
 
@@ -223,9 +224,20 @@ bool KCrash::isDrKonqiEnabled()
     return s_launchDrKonqi;
 }
 
+static char *getDisplay();
+
 void
 KCrash::setCrashHandler (HandlerType handler)
 {
+    if (!s_kdeinit_socket_file) {
+        // Prepare this now to avoid mallocs in the crash handler.
+        char* display = getDisplay();
+        const QString socketFileName = QString::fromLatin1("kdeinit5_%1").arg(QLatin1String(display));
+        QByteArray socketName = QFile::encodeName(QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation) +
+                                                  QLatin1Char('/') + socketFileName);
+        s_kdeinit_socket_file = qstrdup(socketName.constData());
+    }
+
 #if defined(Q_OS_WIN)
   static LPTOP_LEVEL_EXCEPTION_FILTER s_previousExceptionFilter = NULL;
 
@@ -630,7 +642,7 @@ static pid_t startDirectly(const char *argv[])
   }
 }
 
-// From now on this code is copy&pasted from kinit/wrapper.c :
+// From now on this code is copy&pasted from kinit/wrapper.cpp :
 
 static char *getDisplay()
 {
@@ -725,79 +737,12 @@ static int read_socket(int sock, char *buffer, int len)
 
 static int openSocket()
 {
-  kde_socklen_t socklen;
-  int s;
   struct sockaddr_un server;
-#define MAX_SOCK_FILE 255
-  char sock_file[MAX_SOCK_FILE + 1];
-  const char *home_dir = getenv("HOME");
-  const char *kde_home = getenv("KDEHOME");
-  char *display;
-
-  sock_file[0] = sock_file[MAX_SOCK_FILE] = 0;
-
-  if (!kde_home || !kde_home[0])
-  {
-     kde_home = "~/" KDE_DEFAULT_HOME "/";
-  }
-
-  if (kde_home[0] == '~')
-  {
-     if (!home_dir || !home_dir[0])
-     {
-        fprintf(stderr, "Warning: $HOME not set!\n");
-        return -1;
-     }
-     if (strlen(home_dir) > (MAX_SOCK_FILE-100))
-     {
-        fprintf(stderr, "Warning: Home directory path too long!\n");
-        return -1;
-     }
-     kde_home++;
-     strlcpy(sock_file, home_dir, MAX_SOCK_FILE);
-  }
-  strlcat(sock_file, kde_home, MAX_SOCK_FILE);
-
-  /** Strip trailing '/' **/
-  if ( sock_file[strlen(sock_file)-1] == '/')
-     sock_file[strlen(sock_file)-1] = 0;
-
-  strlcat(sock_file, "/socket-", MAX_SOCK_FILE);
-  if (gethostname(sock_file+strlen(sock_file), MAX_SOCK_FILE - strlen(sock_file) - 1) != 0)
-  {
-     perror("Warning: Could not determine hostname: ");
-     return -1;
-  }
-  sock_file[sizeof(sock_file)-1] = '\0';
-
-  /* append $DISPLAY */
-  display = getDisplay();
-  if (display == NULL)
-  {
-     fprintf(stderr, "Error: Could not determine display.\n");
-     return -1;
-  }
-
-  if (strlen(sock_file)+strlen(display)+strlen("/kdeinit5_")+2 > MAX_SOCK_FILE)
-  {
-     fprintf(stderr, "Warning: Socket name will be too long.\n");
-     free(display);
-     return -1;
-  }
-  strcat(sock_file, "/kdeinit5_");
-  strcat(sock_file, display);
-  free(display);
-
-  if (strlen(sock_file) >= sizeof(server.sun_path))
-  {
-     fprintf(stderr, "Warning: Path of socketfile exceeds UNIX_PATH_MAX.\n");
-     return -1;
-  }
 
   /*
    * create the socket stream
    */
-  s = socket(PF_UNIX, SOCK_STREAM, 0);
+  int s = socket(PF_UNIX, SOCK_STREAM, 0);
   if (s < 0)
   {
      perror("Warning: socket() failed: ");
@@ -805,9 +750,9 @@ static int openSocket()
   }
 
   server.sun_family = AF_UNIX;
-  strcpy(server.sun_path, sock_file);
-  printf("sock_file=%s\n", sock_file);
-  socklen = sizeof(server);
+  strcpy(server.sun_path, s_kdeinit_socket_file);
+  printf("sock_file=%s\n", s_kdeinit_socket_file);
+  kde_socklen_t socklen = sizeof(server);
   if(connect(s, (struct sockaddr *)&server, socklen) == -1)
   {
      perror("Warning: connect() failed: ");

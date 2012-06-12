@@ -20,9 +20,11 @@
 */
 
 #include <config.h>
-#include <config-kstandarddirs.h>
 
 #include "klauncher_cmds.h"
+
+#include <qstandardpaths.h>
+#include <qfile.h>
 
 #include <sys/types.h>
 #include <sys/param.h>
@@ -134,53 +136,7 @@ static int read_socket(int sock, char *buffer, int len)
 
 static int openSocket()
 {
-  kde_socklen_t socklen;
-  int s;
-  struct sockaddr_un server;
-#define MAX_SOCK_FILE 255
-  char sock_file[MAX_SOCK_FILE + 1];
-  const char *home_dir = getenv("HOME");
-  const char *kde_home = getenv("KDEHOME");
-  char *display;
-
-  sock_file[0] = sock_file[MAX_SOCK_FILE] = 0;
-
-  if (!kde_home || !kde_home[0])
-  {
-     kde_home = "~/" KDE_DEFAULT_HOME "/";
-  }
-
-  if (kde_home[0] == '~')
-  {
-     if (!home_dir || !home_dir[0])
-     {
-        fprintf(stderr, "Warning: $HOME not set!\n");
-        return -1;
-     }
-     if (strlen(home_dir) > (MAX_SOCK_FILE-100))
-     {
-        fprintf(stderr, "Warning: Home directory path too long!\n");
-        return -1;
-     }
-     kde_home++;
-     strncpy(sock_file, home_dir, MAX_SOCK_FILE);
-  }
-  strncat(sock_file, kde_home, MAX_SOCK_FILE - strlen(sock_file));
-
-  /** Strip trailing '/' **/
-  if ( sock_file[strlen(sock_file)-1] == '/')
-     sock_file[strlen(sock_file)-1] = 0;
-  
-  strncat(sock_file, "/socket-", MAX_SOCK_FILE - strlen(sock_file));
-  if (gethostname(sock_file+strlen(sock_file), MAX_SOCK_FILE - strlen(sock_file) - 1) != 0)
-  {
-     perror("Warning: Could not determine hostname: ");
-     return -1;
-  }
-  sock_file[sizeof(sock_file)-1] = '\0';
-
-  /* append $DISPLAY */
-  display = getDisplay();
+  char* display = getDisplay();
 #if !defined (NO_DISPLAY)
   if (display == NULL)
   {
@@ -189,18 +145,16 @@ static int openSocket()
   }
 #endif
 
-  if (strlen(sock_file)+strlen(display)+strlen("/kdeinit5_")+2 > MAX_SOCK_FILE)
-  {
-     fprintf(stderr, "Warning: Socket name will be too long.\n");
-     free (display);
-     return -1;
-  }
-  strcat(sock_file, "/kdeinit5_");
+  const QString socketFileName = QString::fromLatin1("kdeinit5_%1").arg(QLatin1String(display));
+  QByteArray socketName = QFile::encodeName(QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation) +
+                           QLatin1Char('/') + socketFileName);
+  const char* sock_file = socketName.constData();
+
 #if !defined (NO_DISPLAY)
-  strcat(sock_file, display);
   free(display);
 #endif
 
+  struct sockaddr_un server;
   if (strlen(sock_file) >= sizeof(server.sun_path))
   {
      fprintf(stderr, "Warning: Path of socketfile exceeds UNIX_PATH_MAX.\n");
@@ -210,17 +164,16 @@ static int openSocket()
   /*
    * create the socket stream
    */
-  s = socket(PF_UNIX, SOCK_STREAM, 0);
-  if (s < 0) 
-  {
+  int s = socket(PF_UNIX, SOCK_STREAM, 0);
+  if (s < 0) {
      perror("Warning: socket() failed: ");
      return -1;
   }
 
   server.sun_family = AF_UNIX;
   strcpy(server.sun_path, sock_file);
-  socklen = sizeof(server);
-  if(connect(s, (struct sockaddr *)&server, socklen) == -1) 
+  kde_socklen_t socklen = sizeof(server);
+  if(connect(s, (struct sockaddr *)&server, socklen) == -1)
   {
      fprintf(stderr, "kdeinit5_wrapper: Warning: connect(%s) failed:", sock_file);
      perror(" ");
@@ -236,7 +189,7 @@ static void sig_pass_handler( int signo );
 static void setup_signals( void );
 
 static void setup_signal_handler( int signo, int clean )
-{    
+{
     struct sigaction sa;
     if( clean )
         sa.sa_handler = SIG_DFL;
@@ -265,7 +218,7 @@ static void sig_pass_handler( int signo )
         setup_signal_handler( signo, 1 );
         raise( signo ); /* handle the signal again */
     }
-        
+
     errno = save_errno;
 }
 
@@ -404,7 +357,7 @@ int main(int argc, char **argv)
       fprintf( stderr, "Error: Can not run %s !\n", argv[ 0 ] );
       exit( 255 );
    }
-   
+
    if( !wrapper && !ext_wrapper && !kwrapper )
        { /* was called as a symlink */
        avoid_loops = 1;
@@ -454,9 +407,9 @@ int main(int argc, char **argv)
           size += strlen(tty)+1;
       }
    }
-   
+
    size += sizeof( avoid_loops );
-   
+
    if( !wrapper )
    {
        startup_id = getenv( "DESKTOP_STARTUP_ID" );
@@ -481,7 +434,7 @@ int main(int argc, char **argv)
         exit(255);
    }
    p = buffer;
-      
+
    memcpy(p, &arg_count, sizeof(arg_count));
    p += sizeof(arg_count);
 
@@ -521,7 +474,7 @@ int main(int argc, char **argv)
           p+=strlen(tty)+1;
       }
    }
-   
+
    memcpy( p, &avoid_loops, sizeof( avoid_loops ));
    p += sizeof( avoid_loops );
 
@@ -530,7 +483,7 @@ int main(int argc, char **argv)
        memcpy(p, startup_id, strlen(startup_id)+1);
        p+= strlen(startup_id)+1;
    }
-   
+
    if( p - buffer != size ) /* should fail only if you change this source and do */
                                  /* a stupid mistake, it should be assert() actually */
    {
@@ -568,7 +521,7 @@ int main(int argc, char **argv)
       fprintf(stderr, "KInit could not launch '%s'.\n", start);
       exit(255);
    }
-   else 
+   else
    {
       fprintf(stderr, "Unexpected response from KInit (response = %ld).\n", header.cmd);
       exit(255);
