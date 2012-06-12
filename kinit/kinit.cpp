@@ -1857,7 +1857,8 @@ int main(int argc, char **argv, char **envp)
       fprintf(stderr, "kdeinit5: Launched KDED, pid = %ld result = %d\n", (long) pid, d.result);
 #endif
       d.kded_pid = pid;
-      handle_requests(pid);
+      // kded5 doesn't fork on startup anymore, so just move on.
+      //handle_requests(pid);
    }
 
    for(int i = 1; i < argc; i++)
