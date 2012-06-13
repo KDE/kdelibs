@@ -30,7 +30,6 @@
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
 #include <kglobal.h>
-#include <kglobalsettings.h>
 
 #define MAX_DIR_HISTORY 3
 
@@ -52,7 +51,7 @@ static KConfigGroup recentdirs_readList(QString &key, QStringList &result)
    result=cg.readPathEntry(key, QStringList());
    if (result.isEmpty())
    {
-      result.append(KGlobalSettings::documentPath());
+      result.append(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
    }
    return cg;
 }

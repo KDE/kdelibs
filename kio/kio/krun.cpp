@@ -56,7 +56,6 @@
 #include <kmessageboxwrapper.h>
 #include <kurl.h>
 #include <kglobal.h>
-#include <kglobalsettings.h>
 #include <ktoolinvocation.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
@@ -1079,7 +1078,7 @@ bool KRun::runCommand(const QString& cmd, const QString &execName, const QString
     if (workingDirectory.isEmpty()) {
         // see bug 108510, and we need "alt+f2 editor" (which starts a desktop file via klauncher)
         // and "alt+f2 editor -someoption" (which calls runCommand) to be consistent.
-        proc->setWorkingDirectory(KGlobalSettings::documentPath());
+        proc->setWorkingDirectory(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
     } else {
         proc->setWorkingDirectory(workingDirectory);
     }

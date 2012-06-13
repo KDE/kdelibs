@@ -58,7 +58,6 @@
 #include <klibrary.h>
 #include <kdemacros.h>
 #include <kstandarddirs.h>
-#include <kglobalsettings.h>
 #include <kglobal.h>
 #include <kconfig.h>
 #include <kapplication.h>
@@ -542,7 +541,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
 #endif
   // find out these paths before forking, doing it afterwards
   // crashes on some platforms, notably OSX
-  const QByteArray docPath = QFile::encodeName(KGlobalSettings::documentPath());
+  const QByteArray docPath = QFile::encodeName(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
 #ifdef Q_OS_MAC
   const QString bundlepath = QStandardPaths::findExecutable(QFile::decodeName(execpath));
 #endif

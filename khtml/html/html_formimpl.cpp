@@ -377,8 +377,8 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                         QString val = static_cast<HTMLInputElementImpl*>(current)->value().string().trimmed();
                         if (!val.isEmpty() &&
                             QDir::isRelativePath(val) &&
-                            QFile::exists(KGlobalSettings::documentPath() + val)) {
-                            path.setPath(KGlobalSettings::documentPath() + val);
+                            QFile::exists(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + val)) {
+                            path.setPath(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + val);
                         } else {
                             path = KUrl(val);
                         }
@@ -1719,8 +1719,8 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
             QString val = value().string();
             if (!val.isEmpty() &&
                 QDir::isRelativePath(val) &&
-                QFile::exists(KGlobalSettings::documentPath() + val)) {
-                fileurl.setPath(KGlobalSettings::documentPath() + val);
+                QFile::exists(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + val)) {
+                fileurl.setPath(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + val);
             } else {
                 fileurl = KUrl(val);
             }

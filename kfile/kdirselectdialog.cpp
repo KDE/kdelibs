@@ -33,7 +33,6 @@
 #include <kfiledialog.h>
 #include <kfiletreeview.h>
 #include <kfileitemdelegate.h>
-#include <kglobalsettings.h>
 #include <kinputdialog.h>
 #include <kio/job.h>
 #include <kio/deletejob.h>
@@ -361,7 +360,7 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     if ( localOnly && !d->m_startURL.isLocalFile() )
     {
         d->m_startURL = KUrl();
-        QString docPath = KGlobalSettings::documentPath();
+        QString docPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
         if (QDir(docPath).exists())
             d->m_startURL.setPath( docPath );
         else
