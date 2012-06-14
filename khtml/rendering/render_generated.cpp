@@ -205,7 +205,7 @@ void RenderCounter::generateContent()
     counters = !m_counter->separator().isNull();
 
     if (!m_counterNode)
-        m_counterNode = getCounter(m_counter->identifier().string(), true, counters);
+        m_counterNode = getCounter(m_counter->identifier(), true, counters);
 
     int value = m_counterNode->count();
     if (m_counterNode->isReset()) value = m_counterNode->value();

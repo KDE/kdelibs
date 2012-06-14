@@ -1,24 +1,21 @@
-/* A Bison parser, made by GNU Bison 2.3.  */
+/* A Bison parser, made by GNU Bison 2.5.  */
 
-/* Skeleton interface for Bison's Yacc-like parsers in C
-
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify
+/* Bison interface for Yacc-like parsers in C
+   
+      Copyright (C) 1984, 1989-1990, 2000-2011 Free Software Foundation, Inc.
+   
+   This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
-
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+   
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-
+   
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -29,9 +26,10 @@
    special exception, which will cause the skeleton and the resulting
    Bison output files to be licensed under the GNU General Public
    License without this special exception.
-
+   
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
+
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -103,77 +101,16 @@
      AUTOMINUSMINUS = 319
    };
 #endif
-/* Tokens.  */
-#define NULLTOKEN 258
-#define TRUETOKEN 259
-#define FALSETOKEN 260
-#define BREAK 261
-#define CASE 262
-#define DEFAULT 263
-#define FOR 264
-#define NEW 265
-#define VAR 266
-#define CONSTTOKEN 267
-#define CONTINUE 268
-#define FUNCTION 269
-#define RETURN 270
-#define VOIDTOKEN 271
-#define DELETETOKEN 272
-#define IF 273
-#define THISTOKEN 274
-#define DO 275
-#define WHILE 276
-#define INTOKEN 277
-#define INSTANCEOF 278
-#define TYPEOF 279
-#define SWITCH 280
-#define WITH 281
-#define RESERVED 282
-#define THROW 283
-#define TRY 284
-#define CATCH 285
-#define FINALLY 286
-#define DEBUGGER 287
-#define IMPORT 288
-#define IF_WITHOUT_ELSE 289
-#define ELSE 290
-#define EQEQ 291
-#define NE 292
-#define STREQ 293
-#define STRNEQ 294
-#define LE 295
-#define GE 296
-#define OR 297
-#define AND 298
-#define PLUSPLUS 299
-#define MINUSMINUS 300
-#define LSHIFT 301
-#define RSHIFT 302
-#define URSHIFT 303
-#define PLUSEQUAL 304
-#define MINUSEQUAL 305
-#define MULTEQUAL 306
-#define DIVEQUAL 307
-#define LSHIFTEQUAL 308
-#define RSHIFTEQUAL 309
-#define URSHIFTEQUAL 310
-#define ANDEQUAL 311
-#define MODEQUAL 312
-#define XOREQUAL 313
-#define OREQUAL 314
-#define NUMBER 315
-#define STRING 316
-#define IDENT 317
-#define AUTOPLUSPLUS 318
-#define AUTOMINUSMINUS 319
-
 
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-#line 59 "grammar.y"
 {
+
+/* Line 2068 of yacc.c  */
+#line 59 "grammar.y"
+
   int                 ival;
   double              dval;
   UString             *ustr;
@@ -200,13 +137,15 @@ typedef union YYSTYPE
   PropertyNode       *pnode;
   PropertyNameNode   *pname;
   PackageNameNode     *pkgn;
-}
-/* Line 1489 of yacc.c.  */
-#line 206 "grammar.tab.h"
-	YYSTYPE;
+
+
+
+/* Line 2068 of yacc.c  */
+#line 145 "grammar.tab.h"
+} YYSTYPE;
+# define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
-# define YYSTYPE_IS_TRIVIAL 1
 #endif
 
 extern YYSTYPE kjsyylval;
@@ -225,3 +164,4 @@ typedef struct YYLTYPE
 #endif
 
 extern YYLTYPE kjsyylloc;
+

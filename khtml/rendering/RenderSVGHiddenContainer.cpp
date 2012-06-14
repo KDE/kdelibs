@@ -40,22 +40,20 @@ RenderSVGHiddenContainer::~RenderSVGHiddenContainer()
 {
 }
 
-bool RenderSVGHiddenContainer::requiresLayer()
+bool RenderSVGHiddenContainer::requiresLayer() const
 {
     return false;
 }
 
-short RenderSVGHiddenContainer::lineHeight(bool b, bool isRootLineBox) const
+short RenderSVGHiddenContainer::lineHeight(bool b) const
 {
     Q_UNUSED(b);
-    Q_UNUSED(isRootLineBox);
     return 0;
 }
 
-short RenderSVGHiddenContainer::baselinePosition(bool b, bool isRootLineBox) const
+short RenderSVGHiddenContainer::baselinePosition(bool b) const
 {
     Q_UNUSED(b);
-    Q_UNUSED(isRootLineBox);
     return 0;
 }
 

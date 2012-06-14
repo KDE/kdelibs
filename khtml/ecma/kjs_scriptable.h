@@ -159,8 +159,11 @@ public:
     static const ClassInfo info;
 
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
+    using JSObject::getOwnPropertySlot;
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int);
+    using JSObject::put;
     virtual bool deleteProperty(ExecState* exec, const Identifier& i);
+    using JSObject::deleteProperty;
 
     virtual bool isFunctionType() const { return false; }
     virtual bool implementsCall() const { return true; }
@@ -169,6 +172,7 @@ public:
     // We claim true, since may be calleable
     virtual bool implementsConstruct() const { return true; }
     virtual JSObject* construct(ExecState* exec, const List& args);
+    using JSObject::construct;
 
     virtual void getOwnPropertyNames(ExecState*, PropertyNameArray&, PropertyMap::PropertyMode mode);
 
