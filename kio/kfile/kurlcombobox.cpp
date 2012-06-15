@@ -26,7 +26,6 @@
 #include <qurlpathinfo.h>
 
 #include <kdebug.h>
-#include <kglobalsettings.h>
 #include <klocalizedstring.h>
 #include <kmimetype.h>
 #include <kiconloader.h>
@@ -140,7 +139,7 @@ void KUrlComboBoxPrivate::init(KUrlComboBox::Mode mode)
 QStringList KUrlComboBox::urls() const
 {
     kDebug(250) << "::urls()";
-    //static const QString &fileProt = KGlobal::staticQString("file:");
+    //const QLatin1Sting fileProt("file:");
     QStringList list;
     QString url;
     for ( int i = d->defaultList.count(); i < count(); i++ ) {

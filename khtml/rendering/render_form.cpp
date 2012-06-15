@@ -497,7 +497,7 @@ bool RenderRadioButton::handleEvent(const DOM::EventImpl& ev)
 
 // -------------------------------------------------------------------------------
 
-static const QString &sBorderNoneSheet = KGlobal::staticQString("QPushButton{border:none}");
+const QLatin1String sBorderNoneSheet("QPushButton{border:none}");
 
 RenderSubmitButton::RenderSubmitButton(HTMLInputElementImpl *element)
     : RenderButton(element)

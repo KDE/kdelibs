@@ -24,7 +24,6 @@
 #include "qmimedatabase.h"
 
 #include <kdebug.h>
-#include <kglobal.h>
 #include <kde_file.h> // KDE::stat
 #include <kdeversion.h> // KDE_MAKE_VERSION
 #include <klocalizedstring.h>
@@ -272,7 +271,7 @@ QString KMimeType::iconNameForUrl( const QUrl & url, mode_t mode )
     Q_UNUSED(mode); // see findByUrl
     QMimeDatabase db;
     const QMimeType mt = db.mimeTypeForUrl(url);
-    static const QString& unknown = KGlobal::staticQString("unknown");
+    const QLatin1String unknown("unknown");
     const QString mimeTypeIcon = mt.iconName();
     QString i = mimeTypeIcon;
 
@@ -340,9 +339,7 @@ QStringList KMimeType::allParentMimeTypes() const
 
 QString KMimeType::defaultMimeType()
 {
-    static const QString & s_strDefaultMimeType =
-        KGlobal::staticQString( "application/octet-stream" );
-    return s_strDefaultMimeType;
+    return QLatin1String( "application/octet-stream" );
 }
 
 QString KMimeType::iconName() const

@@ -25,7 +25,6 @@
 #include <kdebug.h>
 #include <kmimetype.h>
 #include <kstringhandler.h>
-#include <kglobal.h>
 #include <klocalizedstring.h>
 #include <kurlmimedata.h>
 #include <kbookmarkmanager.h>
@@ -137,14 +136,11 @@ int KBookmarkGroup::indexOf(const KBookmark& child) const
 
 QDomElement KBookmarkGroup::nextKnownTag( const QDomElement &start, bool goNext ) const
 {
-    static const QString & bookmark = KGlobal::staticQString("bookmark");
-    static const QString & folder = KGlobal::staticQString("folder");
-    static const QString & separator = KGlobal::staticQString("separator");
-
     for( QDomElement elem = start; !elem.isNull(); )
     {
         QString tag = elem.tagName();
-        if (tag == folder || tag == bookmark || tag == separator)
+        if (tag == QLatin1String("folder") || tag == QLatin1String("bookmark")
+           || tag == QLatin1String("separator"))
             return elem;
         if (goNext)
             elem = elem.nextSiblingElement();

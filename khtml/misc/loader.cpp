@@ -68,7 +68,6 @@
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
 #include <kio/jobclasses.h>
-#include <kglobal.h>
 #include <kcharsets.h>
 #include <kiconloader.h>
 #include <scheduler.h>
@@ -416,8 +415,6 @@ static QString buildAcceptHeader()
 CachedImage::CachedImage(DocLoader* dl, const DOMString &url, KIO::CacheControl _cachePolicy, const char*)
     : QObject(), CachedObject(url, Image, _cachePolicy, 0)
 {
-    static const QString &acceptHeader = KGlobal::staticQString( buildAcceptHeader() );
-
     i = new khtmlImLoad::Image(this);
     //p = 0;
     //pixPart = 0;
@@ -425,7 +422,7 @@ CachedImage::CachedImage(DocLoader* dl, const DOMString &url, KIO::CacheControl 
     scaled = 0;
     bgColor = qRgba( 0, 0, 0, 0 );
     m_status = Unknown;
-    setAccept( acceptHeader );
+    setAccept( buildAcceptHeader() );
     i->setShowAnimations(dl->showAnimations());
     m_loading = true;
 

@@ -24,7 +24,6 @@
 #include <kconfiggroup.h>
 #include <kdebug.h>
 #include <klocale.h>
-#include <kglobal.h>
 #include <kiconloader.h>
 #include <kprotocolmanager.h>
 #include <qmimedatabase.h>
@@ -1282,7 +1281,7 @@ QString KIO::iconNameForUrl(const QUrl& url)
 {
     QMimeDatabase db;
     const QMimeType mt = db.mimeTypeForUrl(url);
-    static const QString& unknown = KGlobal::staticQString("unknown");
+    const QLatin1String unknown("unknown");
     const QString mimeTypeIcon = mt.iconName();
     QString i = mimeTypeIcon;
 

@@ -38,7 +38,6 @@
 
 #include <kdebug.h>
 #include <kcomponentdata.h>
-#include <kglobal.h>
 #include <kshortcut.h>
 
 #include "kaction.h"
@@ -54,14 +53,10 @@ public:
 
     KXMLGUIFactoryPrivate()
     {
-        static const QString &defaultMergingName = KGlobal::staticQString( "<default>" );
-        static const QString &actionList = KGlobal::staticQString( "actionlist" );
-        static const QString &name = KGlobal::staticQString( "name" );
-
         m_rootNode = new ContainerNode( 0L, QString(), 0L );
-        m_defaultMergingName = defaultMergingName;
-        tagActionList = actionList;
-        attrName = name;
+        m_defaultMergingName = QLatin1String("<default>");
+        tagActionList = QLatin1String("actionlist");
+        attrName = QLatin1String("name");
     }
     ~KXMLGUIFactoryPrivate()
     {
@@ -625,12 +620,10 @@ void KXMLGUIFactoryPrivate::configureAction( QAction *action, const QDomNamedNod
 void KXMLGUIFactoryPrivate::configureAction( QAction *action, const QDomAttr &attribute,
         ShortcutOption shortcutOption )
 {
-    static const QString &attrShortcut = KGlobal::staticQString( "shortcut" );
-
     QString attrName = attribute.name();
     // If the attribute is a deprecated "accel", change to "shortcut".
     if ( equals(attrName, "accel") )
-        attrName = attrShortcut;
+        attrName = QLatin1String("shortcut");
 
     // No need to re-set name, particularly since it's "objectName" in Qt4
     if ( equals(attrName, "name") )
@@ -694,8 +687,6 @@ QDomDocument KXMLGUIFactoryPrivate::shortcutSchemeDoc(KXMLGUIClient *client)
 
 void KXMLGUIFactoryPrivate::applyShortcutScheme(KXMLGUIClient *client, const QList<QAction*> &actions, const QDomDocument& scheme)
 {
-    static const QString &actionPropElementName = KGlobal::staticQString( "ActionProperties" );
-
     KConfigGroup cg = KSharedConfig::openConfig()->group( "Shortcut Schemes" );
     QString schemeName = cg.readEntry("Current Scheme", "Default");
 
@@ -735,7 +726,7 @@ void KXMLGUIFactoryPrivate::applyShortcutScheme(KXMLGUIClient *client, const QLi
         return;
 
     QDomElement docElement = scheme.documentElement();
-    QDomElement actionPropElement = docElement.namedItem( actionPropElementName ).toElement();
+    QDomElement actionPropElement = docElement.namedItem( QLatin1String("ActionProperties") ).toElement();
 
     //Check if we really have the shortcut configuration here
     if (!actionPropElement.isNull()) {
@@ -778,8 +769,7 @@ QDomElement KXMLGUIFactory::actionPropertiesElement( QDomDocument& doc )
 
 QDomElement KXMLGUIFactory::findActionByName( QDomElement& elem, const QString& sName, bool create )
 {
-        static const QString& attrName = KGlobal::staticQString( "name" );
-	static const QString& tagAction = KGlobal::staticQString( "Action" );
+  const QLatin1String attrName( "name" );
 	for( QDomNode it = elem.firstChild(); !it.isNull(); it = it.nextSibling() ) {
 		QDomElement e = it.toElement();
 		if( e.attribute( attrName ) == sName )
@@ -787,7 +777,7 @@ QDomElement KXMLGUIFactory::findActionByName( QDomElement& elem, const QString& 
 	}
 
 	if( create ) {
-		QDomElement act_elem = elem.ownerDocument().createElement( tagAction );
+		QDomElement act_elem = elem.ownerDocument().createElement( QLatin1String("Action") );
 		act_elem.setAttribute( attrName, sName );
                 elem.appendChild( act_elem );
                 return act_elem;

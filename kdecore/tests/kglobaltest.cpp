@@ -16,7 +16,6 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include <kglobal.h>
 #include <klocale.h>
 
 #include <QtCore/QObject>
@@ -28,9 +27,7 @@
 
 static QString testMethod()
 {
-    static const QString & s_strDefaultMimeType =
-        KGlobal::staticQString( "application/octet-stream" );
-    return s_strDefaultMimeType;
+    return QLatin1String( "application/octet-stream" );
 }
 
 class KGlobalTest : public QObject

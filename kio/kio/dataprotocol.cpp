@@ -21,7 +21,6 @@
 #include <kdebug.h>
 #include <kurl.h>
 #include "global.h"
-#include <kglobal.h>
 
 #include <QtCore/QByteArray>
 #include <QtCore/QCharRef>
@@ -167,16 +166,11 @@ static QString parseQuotedString(const QString &buf, int &pos) {
  */
 static DataHeader parseDataHeader(const KUrl &url, const bool mimeOnly)
 {
-  static const QString& text_plain = KGlobal::staticQString("text/plain");
-  static const QString& charset = KGlobal::staticQString("charset");
-  static const QString& us_ascii = KGlobal::staticQString("us-ascii");
-  static const QString& base64 = KGlobal::staticQString("base64");
-
   DataHeader header_info;
 
   // initialize header info members
-  header_info.mime_type = text_plain;
-  header_info.attributes.insert(charset, us_ascii);
+  header_info.mime_type = QLatin1String("text/plain");
+  header_info.attributes.insert(QLatin1String("charset"), QLatin1String("us-ascii"));
   header_info.is_base64 = false;
 
   // decode url and save it
@@ -210,7 +204,7 @@ static DataHeader parseDataHeader(const KUrl &url, const bool mimeOnly)
     if (header_info.data_offset >= raw_url_len
     	|| raw_url[header_info.data_offset] != QLatin1Char('=')) {
       // no assigment, must be base64 option
-      if (attribute == base64)
+      if (attribute == QLatin1String("base64"))
         header_info.is_base64 = true;
     } else {
       header_info.data_offset++; // jump over '=' token
