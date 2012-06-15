@@ -328,14 +328,14 @@ void KBookmarkContextMenu::slotInsert()
   {
     KBookmarkGroup parentBookmark = bm.toGroup();
     Q_ASSERT(!parentBookmark.isNull());
-    parentBookmark.addBookmark( title, KUrl(url) );
+    parentBookmark.addBookmark(title, QUrl(url));
     m_pManager->emitChanged( parentBookmark );
   }
   else
   {
     KBookmarkGroup parentBookmark = bm.parentGroup();
     Q_ASSERT(!parentBookmark.isNull());
-    KBookmark newBookmark = parentBookmark.addBookmark( title, KUrl(m_pOwner->currentUrl()) );
+    KBookmark newBookmark = parentBookmark.addBookmark(title, QUrl(m_pOwner->currentUrl()));
     parentBookmark.moveBookmark( newBookmark, parentBookmark.previous(bm) );
     m_pManager->emitChanged( parentBookmark );
   }
@@ -588,12 +588,12 @@ void KBookmarkMenu::slotAddBookmark()
   if(KBookmarkSettings::self()->m_advancedaddbookmark)
   {
       KBookmarkDialog * dlg = m_pOwner->bookmarkDialog(m_pManager, QApplication::activeWindow() );
-      dlg->addBookmark(m_pOwner->currentTitle(), KUrl(m_pOwner->currentUrl()), parentBookmark );
+      dlg->addBookmark(m_pOwner->currentTitle(), QUrl(m_pOwner->currentUrl()), parentBookmark);
       delete dlg;
   }
   else
   {
-      parentBookmark.addBookmark(m_pOwner->currentTitle(), KUrl(m_pOwner->currentUrl()));
+      parentBookmark.addBookmark(m_pOwner->currentTitle(), QUrl(m_pOwner->currentUrl()));
       m_pManager->emitChanged( parentBookmark );
   }
 
@@ -686,7 +686,7 @@ void KBookmarkMenuImporter::connectToImporter(const QObject &importer)
 
 void KBookmarkMenuImporter::newBookmark( const QString & text, const QString & url, const QString & )
 {
-  KBookmark bm = KBookmark::standaloneBookmark(text, url, QString("html"));
+  KBookmark bm = KBookmark::standaloneBookmark(text, QUrl(url), QString("html"));
   KAction * action = new KBookmarkAction(bm, mstack.top()->owner(), this);
   mstack.top()->parentMenu()->addAction(action);
   mstack.top()->m_actions.append( action );
@@ -726,7 +726,11 @@ KBookmarkAction::KBookmarkAction(const KBookmark &bk, KBookmarkOwner* owner, QOb
 {
   setIcon(KDE::icon(bookmark().icon()));
   setIconText(text());
-  setHelpText( bookmark().url().pathOrUrl() );
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+  setHelpText(bookmark().url().toString());
+#else
+  setHelpText(bookmark().url().toDisplayString(QUrl::PreferLocalFile));
+#endif
   const QString description = bk.description();
   if (!description.isEmpty())
     setToolTip( description );

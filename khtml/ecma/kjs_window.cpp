@@ -2891,7 +2891,7 @@ JSValue *ExternalFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const 
     {
       KBookmarkManager *mgr = KBookmarkManager::userBookmarksManager();
       KBookmarkDialog dlg(mgr, 0);
-      dlg.addBookmark(title, url);
+      dlg.addBookmark(title, QUrl(url));
     }
 #else
     return jsUndefined();

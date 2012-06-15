@@ -193,7 +193,7 @@ QString KNSBookmarkExporterImpl::folderAsString(const KBookmarkGroup &parent) co
 
       } else {
          // note - netscape seems to use local8bit for url...
-         fstream << "<DT><A HREF=\"" << bk.url().url() << "\""
+         fstream << "<DT><A HREF=\"" << bk.url().toString() << "\""
                     << bk.internalElement().attribute("netscapeinfo") << ">"
                  << text << "</A>" << endl;
          continue;

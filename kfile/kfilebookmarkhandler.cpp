@@ -56,7 +56,7 @@ KFileBookmarkHandler::~KFileBookmarkHandler()
 
 void KFileBookmarkHandler::openBookmark( const KBookmark & bm, Qt::MouseButtons, Qt::KeyboardModifiers)
 {
-  emit openUrl( bm.url().url() );
+    emit openUrl(bm.url().toString());
 }
 
 QString KFileBookmarkHandler::currentUrl() const

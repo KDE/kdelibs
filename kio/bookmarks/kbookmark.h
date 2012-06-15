@@ -41,7 +41,7 @@ public:
     };
 
     /**
-     * KUrl::Bookmark is a QList that contains bookmarks with a few
+     * KBookmark::List is a QList that contains bookmarks with a few
      * convenience methods.
      * @see KBookmark
      * @see QList
@@ -112,7 +112,7 @@ public:
     /**
      * Creates a stand alone bookmark. This is fairly expensive since a new QDom Tree is build.
      */
-    static KBookmark standaloneBookmark( const QString & text, const KUrl & url, const QString & icon = QString() );
+    static KBookmark standaloneBookmark( const QString & text, const QUrl & url, const QString & icon = QString() );
 
     /**
      * Whether the bookmark is a group or a normal bookmark
@@ -158,13 +158,13 @@ public:
     /**
      * URL contained by the bookmark
      */
-    KUrl url() const;
+    QUrl url() const;
     /**
      * Set the URL of the bookmark
      *
      * @param url the new bookmark URL
      */
-    void setUrl(const KUrl &url);
+    void setUrl(const QUrl &url);
 
     /**
      * @return the pixmap file for this bookmark
@@ -413,7 +413,7 @@ public:
      * @param icon the name of the icon to associate with the bookmark. A suitable default
      * will be determined from the URL if not specified.
      */
-    KBookmark addBookmark( const QString & text, const KUrl & url, const QString & icon = QString() );
+    KBookmark addBookmark( const QString & text, const QUrl & url, const QString & icon = QString() );
 
     /**
      * Moves @p bookmark after @p after (which should be a child of ours).
@@ -444,7 +444,7 @@ public:
     /**
      * @return the list of urls of bookmarks at top level of the group
      */
-    QList<KUrl> groupUrlList() const;
+    QList<QUrl> groupUrlList() const;
 
 protected:
     QDomElement nextKnownTag( const QDomElement &start, bool goNext ) const;

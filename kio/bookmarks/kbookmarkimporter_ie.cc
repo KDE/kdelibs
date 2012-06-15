@@ -151,7 +151,7 @@ QString KIEBookmarkImporterImpl::findDefaultLocation(bool) const
     // stuff in the exporter is ugly so that exclues
     // the possibility of just writing to Favourites
     // and checking if overwriting...
-    return KFileDialog::getExistingDirectory(KUrl(), QApplication::activeWindow());
+    return KFileDialog::getExistingDirectory(QUrl(), QApplication::activeWindow());
 }
 
 /////////////////////////////////////////////////
@@ -185,7 +185,7 @@ void IEExporter::visit( const KBookmark &bk ) {
     file.open( QIODevice::WriteOnly );
     QTextStream ts( &file );
     ts << "[InternetShortcut]\r\n";
-    ts << "URL=" << bk.url().url().toUtf8() << "\r\n";
+    ts << "URL=" << bk.url().toString().toUtf8() << "\r\n";
 }
 
 void IEExporter::visitEnter( const KBookmarkGroup &grp ) {
