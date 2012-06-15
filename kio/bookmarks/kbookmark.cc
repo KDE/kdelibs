@@ -23,6 +23,7 @@
 #include "kbookmark.h"
 #include <QStack>
 #include <kdebug.h>
+#include <qmimedatabase.h>
 #include <kmimetype.h>
 #include <kstringhandler.h>
 #include <klocalizedstring.h>
@@ -380,9 +381,10 @@ QString KBookmark::icon() const
                 // get icon from mimeType
                 QString _mimeType = mimeType();
                 if (!_mimeType.isEmpty()) {
-                    KMimeType::Ptr mime = KMimeType::mimeType(_mimeType, KMimeType::ResolveAliases);
-                    if (mime) {
-                        return mime->iconName();
+                    QMimeDatabase db;
+                    QMimeType mime = db.mimeTypeForName(_mimeType);
+                    if (mime.isValid()) {
+                        return mime.iconName();
                     }
                 }
                 // get icon from URL

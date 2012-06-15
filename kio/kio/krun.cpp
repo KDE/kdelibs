@@ -39,9 +39,9 @@
 #include <QPlainTextEdit>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <qmimedatabase.h>
 
 #include <kmimetypetrader.h>
-#include <kmimetype.h>
 #include "kio/jobclasses.h" // for KIO::JobFlags
 #include "kio/job.h"
 #include "kio/jobuidelegate.h"
@@ -104,14 +104,14 @@ bool KRun::isExecutableFile(const KUrl& url, const QString &mimetype)
     }
     QFileInfo file(url.toLocalFile());
     if (file.isExecutable()) {    // Got a prospective file to run
-        KMimeType::Ptr mimeType = KMimeType::mimeType(mimetype, KMimeType::ResolveAliases);
-        if (mimeType && (mimeType->is(QLatin1String("application/x-executable")) ||
+        QMimeDatabase db;
+        QMimeType mimeType = db.mimeTypeForName(mimetype);
+        if (mimeType.inherits(QLatin1String("application/x-executable")) ||
 #ifdef Q_OS_WIN
-                         mimeType->is(QLatin1String("application/x-ms-dos-executable")) ||
+            mimeType.inherits(QLatin1String("application/x-ms-dos-executable")) ||
 #endif
-                         mimeType->is(QLatin1String("application/x-executable-script")))
-           )
-        {
+            mimeType.inherits(QLatin1String("application/x-executable-script"))
+           ) {
             return true;
         }
     }
@@ -1178,17 +1178,17 @@ void KRun::init()
             d->m_mode = buff.st_mode;
         }
 
-        KMimeType::Ptr mime = KMimeType::findByUrl(d->m_strURL, d->m_mode, d->m_bIsLocalFile);
-        assert(mime);
-        kDebug(7010) << "MIME TYPE is " << mime->name();
+        QMimeDatabase db;
+        QMimeType mime = db.mimeTypeForUrl(d->m_strURL); // doesn't use d->m_mode anymore...
+        kDebug(7010) << "MIME TYPE is " << mime.name();
         if (!d->m_externalBrowser.isEmpty() && (
-               mime->is(QLatin1String("text/html")) ||
-               mime->is(QLatin1String("application/xml")))) {
+               mime.inherits(QLatin1String("text/html")) ||
+               mime.inherits(QLatin1String("application/xml")))) {
             if (d->runExecutable(d->m_externalBrowser)) {
                 return;
             }
         } else {
-            mimeTypeDetermined(mime->name());
+            mimeTypeDetermined(mime.name());
             return;
         }
     }
@@ -1274,11 +1274,11 @@ void KRun::scanFile()
     // First, let's check for well-known extensions
     // Not when there is a query in the URL, in any case.
     if (d->m_strURL.query().isEmpty()) {
-        KMimeType::Ptr mime = KMimeType::findByUrl(d->m_strURL);
-        assert(mime);
-        if (!mime->isDefault() || d->m_bIsLocalFile) {
-            kDebug(7010) << "Scanfile: MIME TYPE is " << mime->name();
-            mimeTypeDetermined(mime->name());
+        QMimeDatabase db;
+        QMimeType mime = db.mimeTypeForUrl(d->m_strURL);
+        if (!mime.isDefault() || d->m_bIsLocalFile) {
+            kDebug(7010) << "Scanfile: MIME TYPE is " << mime.name();
+            mimeTypeDetermined(mime.name());
             return;
         }
     }
@@ -1455,6 +1455,8 @@ void KRun::foundMimeType(const QString& type)
 {
     kDebug(7010) << "Resulting mime type is " << type;
 
+    QMimeDatabase db;
+
     KIO::TransferJob *job = qobject_cast<KIO::TransferJob *>(d->m_job);
     if (job) {
         // Update our URL in case of a redirection
@@ -1486,11 +1488,10 @@ void KRun::foundMimeType(const QString& type)
     }
 
     // Resolve .desktop files from media:/, remote:/, applications:/ etc.
-    KMimeType::Ptr mime = KMimeType::mimeType(type, KMimeType::ResolveAliases);
-    if (!mime) {
+    QMimeType mime = db.mimeTypeForName(type);
+    if (!mime.isValid()) {
         kWarning(7010) << "Unknown mimetype " << type;
-    }
-    if (mime && mime->is("application/x-desktop") && !d->m_localPath.isEmpty()) {
+    } else if (mime.inherits("application/x-desktop") && !d->m_localPath.isEmpty()) {
         d->m_strURL = QUrl::fromLocalFile(d->m_localPath);
     }
 

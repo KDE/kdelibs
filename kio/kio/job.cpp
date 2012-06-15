@@ -49,7 +49,6 @@ extern "C" {
 #include <errno.h>
 
 #include "jobuidelegate.h"
-#include "kmimetype.h"
 #include "slave.h"
 #include "scheduler.h"
 #include "kdirwatch.h"

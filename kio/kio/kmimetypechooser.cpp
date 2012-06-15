@@ -19,7 +19,7 @@
 #include "kmimetypechooser.h"
 
 #include <klocalizedstring.h>
-#include <kmimetype.h>
+#include <qmimedatabase.h>
 #include <kshell.h>
 #include <ksharedconfig.h>
 #include <krun.h>
@@ -132,15 +132,16 @@ void KMimeTypeChooserPrivate::loadMimeTypes( const QStringList &_selectedMimeTyp
   mimeTypeTree->clear();
 
   QMap<QString, QTreeWidgetItem*> groupItems;
-  const KMimeType::List mimetypes = KMimeType::allMimeTypes();
+  QMimeDatabase db;
+  const QList<QMimeType> mimetypes = db.allMimeTypes();
 
   bool agroupisopen = false;
   QTreeWidgetItem *idefault = 0; //open this, if all other fails
   QTreeWidgetItem *firstChecked = 0; // make this one visible after the loop
 
-  foreach (const KMimeType::Ptr& mt, mimetypes)
+  foreach (const QMimeType& mt, mimetypes)
   {
-    const QString mimetype = mt->name();
+    const QString mimetype = mt.name();
     const int index = mimetype.indexOf('/');
     const QString maj = mimetype.left(index);
 
@@ -161,18 +162,18 @@ void KMimeTypeChooserPrivate::loadMimeTypes( const QStringList &_selectedMimeTyp
 
     const QString min = mimetype.mid(index+1);
     QTreeWidgetItem *item = new QTreeWidgetItem( groupItem, QStringList(min) );
-    item->setIcon( 0, KDE::icon( mt->iconName() ) );
+    item->setIcon(0, KDE::icon(mt.iconName()));
 
     int cl = 1;
 
     if ( visuals & KMimeTypeChooser::Comments )
     {
-      item->setText( cl, mt->comment() );
+      item->setText(cl, mt.comment());
       cl++;
     }
 
     if ( visuals & KMimeTypeChooser::Patterns )
-      item->setText( cl, mt->patterns().join("; ") );
+      item->setText(cl, mt.globPatterns().join("; "));
 
     if ( selMimeTypes.contains(mimetype) ) {
       item->setCheckState( 0, Qt::Checked );
@@ -262,10 +263,11 @@ QStringList KMimeTypeChooser::patterns() const
     QStringList patternList;
     QList<QTreeWidgetItem *> checkedItems;
     getCheckedItems(checkedItems, d->mimeTypeTree);
+    QMimeDatabase db;
     foreach(QTreeWidgetItem* item, checkedItems) {
-        KMimeType::Ptr p = KMimeType::mimeType( item->parent()->text(0) + '/' + item->text(0) );
-        Q_ASSERT(p);
-        patternList += p->patterns();
+        QMimeType mime = db.mimeTypeForName(item->parent()->text(0) + '/' + item->text(0));
+        Q_ASSERT(mime.isValid());
+        patternList += mime.globPatterns();
     }
     return patternList;
 }

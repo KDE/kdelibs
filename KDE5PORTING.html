@@ -195,6 +195,8 @@ A script is available in kdesdk/scripts/kf5/convert-kstandarddirs.pl to port som
    KMimeType::iconNameForUrl(url) has additional logic on top of db.mimeTypeForUrl(url).iconName(), to
       fallback to the protocol-specific icon (e.g. trash icon for trash:/, etc.). This logic has now
      moved to KIO::iconNameForUrl.
+   KMimeType::patterns() -&gt; QMimeType::globPatterns()
+   KMimeType::allMimeTypes() -&gt; db.allMimeTypes()
 </ul>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
