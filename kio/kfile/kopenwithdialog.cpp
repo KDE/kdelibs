@@ -34,7 +34,7 @@
 #include <qstandardpaths.h>
 #include <qurlpathinfo.h>
 
-#include <kauthorized.h>
+#include <kcoreauthorized.h>
 #include <khistorycombobox.h>
 #include <kdesktopfile.h>
 #include <klineedit.h>

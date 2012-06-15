@@ -30,7 +30,7 @@
 #include <QtCore/QUrl>
 #include <QDesktopServices>
 
-#include <kauthorized.h>
+#include <kcoreauthorized.h>
 #include <kguiitem.h>
 #include <khbox.h>
 #include <klocalizedstring.h>
