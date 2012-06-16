@@ -43,7 +43,7 @@ void ScopeChain::print()
         PropertyNameArrayIterator propEnd = propertyNames.end();
 
         fprintf(stderr, "----- [scope %p] -----\n", (void*)o);
-        for (PropertyNameArrayIterator propIter = propertyNames.begin(); propIter != propEnd; propIter++) {
+        for (PropertyNameArrayIterator propIter = propertyNames.begin(); propIter != propEnd; ++propIter) {
             Identifier name = *propIter;
             fprintf(stderr, "%s, ", name.ascii());
         }
