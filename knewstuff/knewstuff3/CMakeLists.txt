@@ -61,6 +61,8 @@ target_link_libraries(knewstuff3
 target_link_libraries(knewstuff3 ${LIBATTICA_LIBRARIES} karchive)
 target_link_libraries(knewstuff3 LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTGUI_LIBRARY})
 
+generate_export_header(knewstuff3)
+
 set_target_properties(knewstuff3 PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}
    SOVERSION ${GENERIC_LIB_SOVERSION}

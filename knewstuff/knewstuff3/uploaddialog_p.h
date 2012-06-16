@@ -29,6 +29,7 @@
 #include <attica/license.h>
 #include <attica/postjob.h>
 
+#include <kurl.h>
 
 #define FinishButton KDialog::User1
 #define NextButton KDialog::User2
