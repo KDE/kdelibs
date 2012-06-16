@@ -51,6 +51,7 @@
 #include <QtNetwork/QAuthenticator>
 #include <QtNetwork/QNetworkProxy>
 #include <QtNetwork/QTcpSocket>
+#include <qmimedatabase.h>
 
 #include <kurl.h>
 #include <kdebug.h>
@@ -60,7 +61,6 @@
 #include <kservice.h>
 #include <kdatetime.h>
 #include <kcomponentdata.h>
-#include <kmimetype.h>
 
 #include <kremoteencoding.h>
 #include <ktcpsocket.h>
@@ -752,6 +752,8 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
   if ( !davHostOk() )
     return;
 
+  QMimeDatabase db;
+
   // Maybe it's a disguised SEARCH...
   QString query = metaData(QLatin1String("davSearchQuery"));
   if ( !query.isEmpty() )
@@ -860,12 +862,11 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
       // the resource name so long as the resource is not a directory.
       if (entry.stringValue(KIO::UDSEntry::UDS_MIME_TYPE).isEmpty() &&
           entry.numberValue(KIO::UDSEntry::UDS_FILE_TYPE) != S_IFDIR) {
-        int accuracy = 0;
-        KMimeType::Ptr mime = KMimeType::findByPath(thisURL.fileName(), 0, true, &accuracy);
-        if (mime && !mime->isDefault() && accuracy == 100) {
-          kDebug(7113) << "Setting" << mime->name() << "as guessed mime type for" << thisURL.fileName();
-          entry.insert( KIO::UDSEntry::UDS_GUESSED_MIME_TYPE, mime->name());
-        }
+          QMimeType mime = db.mimeTypeForFile(thisURL.fileName(), QMimeDatabase::MatchExtension);
+          if (mime.isValid() && !mime.isDefault()) {
+              kDebug(7113) << "Setting" << mime.name() << "as guessed mime type for" << thisURL.fileName();
+              entry.insert(KIO::UDSEntry::UDS_GUESSED_MIME_TYPE, mime.name());
+          }
       }
 
       if ( stat ) {
@@ -4258,10 +4259,11 @@ void HTTPProtocol::slotData(const QByteArray &_d)
 
         kDebug(7113) << "Mimetype buffer size:" << m_mimeTypeBuffer.size();
 
-        KMimeType::Ptr mime = KMimeType::findByNameAndContent(m_request.url.fileName(), m_mimeTypeBuffer);
-        if( mime && !mime->isDefault() )
+        QMimeDatabase db;
+        QMimeType mime = db.mimeTypeForNameAndData(m_request.url.fileName(), m_mimeTypeBuffer);
+        if (mime.isValid() && !mime.isDefault())
         {
-          m_mimeType = mime->name();
+          m_mimeType = mime.name();
           kDebug(7113) << "Mimetype from content:" << m_mimeType;
         }
 

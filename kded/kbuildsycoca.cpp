@@ -26,7 +26,6 @@
 #include <config-kded.h>
 
 #include <kservice.h>
-#include <kmimetype.h>
 #include "kbuildservicetypefactory.h"
 #include "kbuildmimetypefactory.h"
 #include "kbuildservicefactory.h"

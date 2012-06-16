@@ -19,7 +19,6 @@
  */
 
 #include "kmimeassociations.h"
-#include <kmimetype.h>
 #include <kmimetyperepository_p.h>
 #include <kservice.h>
 #include <kconfiggroup.h>

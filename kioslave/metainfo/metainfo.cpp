@@ -22,7 +22,6 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kapplication.h>
-#include <kmimetype.h>
 #include <kdebug.h>
 #include <kfilemetainfo.h>
 #include <klocalizedstring.h>

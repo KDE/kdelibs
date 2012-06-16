@@ -28,7 +28,6 @@
 #include <kdeversion.h> // KDE_MAKE_VERSION
 #include <klocalizedstring.h>
 #include <kprotocolinfo.h>
-#include <kprotocolinfofactory.h>
 #include <qstandardpaths.h>
 #include <kurl.h>
 
@@ -292,9 +291,8 @@ QString KMimeType::iconNameForUrl( const QUrl & url, mode_t mode )
     return !i.isEmpty() ? i : unknown;
 }
 
-QString KMimeType::favIconForUrl( const QUrl& _url )
+QString KMimeType::favIconForUrl(const QUrl& url)
 {
-    KUrl url(_url);
     if (url.isLocalFile()
         || !url.scheme().startsWith(QLatin1String("http"))
         || !KMimeTypeRepository::self()->useFavIcons())
@@ -303,7 +301,7 @@ QString KMimeType::favIconForUrl( const QUrl& _url )
     QDBusInterface kded( QString::fromLatin1("org.kde.kded5"),
                          QString::fromLatin1("/modules/favicons"),
                          QString::fromLatin1("org.kde.FavIcon") );
-    QDBusReply<QString> result = kded.call( QString::fromLatin1("iconForUrl"), url.url() );
+    QDBusReply<QString> result = kded.call(QString::fromLatin1("iconForUrl"), url.toString());
     return result;              // default is QString()
 }
 

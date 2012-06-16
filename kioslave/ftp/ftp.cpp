@@ -51,12 +51,12 @@
 #include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QAuthenticator>
+#include <qmimedatabase.h>
 
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kcomponentdata.h>
-#include <kmimetype.h>
 #include <kio/ioslave_defaults.h>
 #include <kio/slaveconfig.h>
 #include <kremoteencoding.h>
@@ -1311,13 +1311,13 @@ void Ftp::ftpCreateUDSEntry( const QString & filename, FtpEntry& ftpEnt, UDSEntr
   {
     entry.insert( KIO::UDSEntry::UDS_LINK_DEST, ftpEnt.link );
 
-    KMimeType::Ptr mime = KMimeType::findByUrl( KUrl("ftp://host/" + filename ) );
+    QMimeDatabase db;
+    QMimeType mime = db.mimeTypeForUrl(QUrl("ftp://host/" + filename));
     // Links on ftp sites are often links to dirs, and we have no way to check
     // that. Let's do like Netscape : assume dirs generally.
     // But we do this only when the mimetype can't be known from the filename.
     // --> we do better than Netscape :-)
-    if ( mime->name() == KMimeType::defaultMimeType() )
-    {
+    if (mime.isDefault()) {
       kDebug(7102) << "Setting guessed mime type to inode/directory for " << filename;
       entry.insert( KIO::UDSEntry::UDS_GUESSED_MIME_TYPE, QString::fromLatin1( "inode/directory" ) );
       isDir = true;
@@ -2532,9 +2532,10 @@ Ftp::StatusCode Ftp::ftpSendMimeType(int& iError, const KUrl& url)
   }
 
   if (!buffer.isEmpty()) {
-      KMimeType::Ptr mime = KMimeType::findByNameAndContent(url.fileName(), buffer);
-      kDebug(7102) << "Emitting mimetype" << mime->name();
-      mimeType( mime->name() ); // emit the mime type...
+      QMimeDatabase db;
+      QMimeType mime = db.mimeTypeForNameAndData(url.fileName(), buffer);
+      kDebug(7102) << "Emitting mimetype" << mime.name();
+      mimeType(mime.name()); // emit the mime type...
   }
 
   return statusSuccess;

@@ -51,7 +51,7 @@ set(kio_http_cache_cleaner_KDEINIT_SRCS
 
 kde4_add_kdeinit_executable( kio_http_cache_cleaner NOGUI ${kio_http_cache_cleaner_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kio_http_cache_cleaner ${KDE4_KIO_LIBS} ${ZLIB_LIBRARY} kcoreaddons)
+target_link_libraries(kdeinit_kio_http_cache_cleaner ${KDE4_KIO_LIBS} ${ZLIB_LIBRARY} kcoreaddons ${QtMimeTypes_LIBRARY})
 
 install(TARGETS kdeinit_kio_http_cache_cleaner ${INSTALL_TARGETS_DEFAULT_ARGS})
 
