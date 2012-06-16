@@ -28,9 +28,7 @@
 #include <QtCore/QObjectCleanupHandler>
 #include <QtCore/QDebug>
 
-
 #include <kjs/function.h>
-#include <kdemacros.h>
 
 #include "binding_support.h"
 #include "object_binding.h"
@@ -170,7 +168,7 @@ class KJSEMBED_EXPORT QObjectBinding : public ObjectBinding
         void watchObject( QObject *object );
 
         /**
-         * \return the internal object as a pointer to type T to the 
+         * \return the internal object as a pointer to type T to the
          * internal object that is derived from QObject.
          */
         template <typename T>

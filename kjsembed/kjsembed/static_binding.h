@@ -24,7 +24,6 @@
 #define STATIC_BINDING_H
 #include <QtCore/QHash>
 
-#include <kdemacros.h>
 #include <kjs/function.h>
 
 #include "binding_support.h"

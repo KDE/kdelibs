@@ -2,6 +2,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/kross
     ${KDE4_KJS_INCLUDES}
     ${CMAKE_SOURCE_DIR}/kjsembed
+    ${CMAKE_BINARY_DIR}/kjsembed/kjsembed
     ${KDE4_KDECORE_INCLUDES}
     ${KDE4_KDEUI_INCLUDES}
     ${KDE4_KIO_INCLUDES}

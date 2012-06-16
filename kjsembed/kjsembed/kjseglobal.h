@@ -23,17 +23,8 @@
 #ifndef KJSEGLOBAL_H
 #define KJSEGLOBAL_H
 
-#include <kdemacros.h>
-
-#if defined(Q_OS_WIN)
-# if (defined(KJSEMBED_DLL) && defined(KJSEMBED_MAKE_DLL)) || defined(MAKE_KJSEMBED_LIB)
-#  define KJSEMBED_EXPORT KDE_EXPORT
-# else
-#  define KJSEMBED_EXPORT KDE_IMPORT
-# endif
-#else
-# define KJSEMBED_EXPORT KDE_EXPORT
-#endif
+#include <kjsembed_export.h>
+#include <qglobal.h>
 
 #if !defined(Q_OS_WIN)
 #include <stdlib.h>
@@ -72,7 +63,7 @@ namespace KJSEmbed {
 namespace KJS {
 	inline KJS::JSCell* jsString(const QString& s)
 	{
-		return jsString(KJSEmbed::toUString(s)); 
+		return jsString(KJSEmbed::toUString(s));
 	}
 }
 
@@ -100,8 +91,8 @@ KJSEMBED_EXPORT QString i18n( const char *string );
 #define i18n(x) QString(x)
 #endif // NO_I18N
 
-inline KJSEMBED_EXPORT QString i18n( const QString& string, const QString& comment ) 
-{ 
+inline KJSEMBED_EXPORT QString i18n( const QString& string, const QString& comment )
+{
     return i18n(string.toUtf8().data(), comment.toUtf8().data());
 }
 template <typename A1>

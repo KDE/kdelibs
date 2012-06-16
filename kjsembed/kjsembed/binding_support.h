@@ -29,7 +29,6 @@
 #include <kjsembed/kjseglobal.h>
 #include <kjsembed/pointer.h>
 #include <kjs/object.h>
-#include <kdemacros.h>
 
 #define KJS_BINDING( NAME ) \
 class NAME \
@@ -105,7 +104,7 @@ class KJSEMBED_EXPORT NAME : public BASENAME \
     NAME::NAME(KJS::ExecState *exec, TYPE * obj) \
         : BASENAME( exec, obj ) \
     { \
-      StaticBinding::publish( exec, this, NAME::methods() ); 
+      StaticBinding::publish( exec, this, NAME::methods() );
 
 #define KJSO_END_BINDING_CTOR \
     }
@@ -429,7 +428,7 @@ namespace KJSEmbed
 	else
 	    return defaultValue;
     }
-    
+
 
    /**
      * Extract a number from a value. If the value cannot convert to an integer or is not present defaultValue is returned
