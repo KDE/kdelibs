@@ -36,26 +36,43 @@
 class KToggleFullScreenAction::Private
 {
 public:
-    Private()
-        : window( 0 )
+    Private( KToggleFullScreenAction* action )
+        : q( action )
+        , window( 0 )
     {
     }
 
+    void updateTextsAndIcon()
+    {
+        if ( q->isChecked() ) {
+            q->setText( i18nc( "@action:inmenu", "Exit F&ull Screen Mode" ) );
+            q->setIconText( i18nc( "@action:intoolbar", "Exit Full Screen" ) );
+            q->setToolTip( i18nc( "@info:tooltip", "Exit full screen mode" ) );
+            q->setIcon( KDE::icon( "view-restore" ) );
+        } else {
+            q->setText( i18nc( "@action:inmenu", "F&ull Screen Mode" ) );
+            q->setIconText( i18nc( "@action:intoolbar", "Full Screen" ) );
+            q->setToolTip( i18nc( "@info:tooltip", "Display the window in full screen" ) );
+            q->setIcon( KDE::icon( "view-fullscreen" ) );
+        }
+    }
+
+    KToggleFullScreenAction* q;
     QWidget* window;
 };
 
 KToggleFullScreenAction::KToggleFullScreenAction( QObject *parent )
-  : KToggleAction( KDE::icon( "view-fullscreen" ), i18n( "F&ull Screen Mode" ), parent ),
-    d( new Private )
+  : KToggleAction( parent ),
+    d( new Private( this ) )
 {
-    setIconText( i18n( "Full Screen" ) );
+    d->updateTextsAndIcon();
 }
 
 KToggleFullScreenAction::KToggleFullScreenAction( QWidget *window, QObject *parent )
-  : KToggleAction( KDE::icon( "view-fullscreen" ), i18n( "F&ull Screen Mode" ), parent ),
-    d( new Private )
+  : KToggleAction( parent ),
+    d( new Private( this ) )
 {
-    setIconText( i18n( "Full Screen" ) );
+    d->updateTextsAndIcon();
     setWindow( window );
 }
 
@@ -77,17 +94,8 @@ void KToggleFullScreenAction::setWindow( QWidget* window )
 
 void KToggleFullScreenAction::slotToggled( bool checked )
 {
-  if ( checked ) {
-    setText( i18n( "Exit F&ull Screen Mode" ) );
-    setIconText( i18n( "Exit Full Screen" ) );
-    setIcon( KDE::icon( "view-restore" ) );
-  } else {
-    setText( i18n( "F&ull Screen Mode" ) );
-    setIconText( i18n( "Full Screen" ) );
-    setIcon( KDE::icon( "view-fullscreen" ) );
-  }
-
   KToggleAction::slotToggled( checked );
+  d->updateTextsAndIcon();
 }
 
 bool KToggleFullScreenAction::eventFilter( QObject* object, QEvent* event )

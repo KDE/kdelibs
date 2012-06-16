@@ -72,6 +72,7 @@ private:
     bool m_passphraseRequested;
     QString m_lastReturnObject;
     QProcess *m_process;
+    WmiQuery::Item m_logicalDisk;
 };
 }
 }

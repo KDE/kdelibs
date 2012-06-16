@@ -362,6 +362,7 @@ inline KJS::JSObject *cacheGlobalObject(KJS::ExecState *exec, const KJS::Identif
     virtual const KJS::ClassInfo *classInfo() const { return &info; } \
     static const KJS::ClassInfo info; \
     bool getOwnPropertySlot(KJS::ExecState *, const KJS::Identifier&, KJS::PropertySlot&); \
+    using JSObject::getOwnPropertySlot; \
   protected: \
     ClassProto(KJS::ExecState *exec);\
     static KJS::Identifier* s_name;           \

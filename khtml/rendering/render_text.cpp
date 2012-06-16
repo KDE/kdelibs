@@ -1381,60 +1381,61 @@ const QFont &RenderText::font()
 
 void RenderText::setText(DOMStringImpl *text, bool force)
 {
-    if( !force && str == text ) return;
+    if (!force && str == text)
+        return;
+
     setTextInternal(text);
 }
 
 void RenderText::setTextInternal(DOMStringImpl *text)
 {
     DOMStringImpl *oldstr = str;
-    if(text && style())
+    if (text && style())
         str = text->collapseWhiteSpace(style()->preserveLF(), style()->preserveWS());
     else
         str = text;
-    if(str) str->ref();
-    if(oldstr) oldstr->deref();
 
-    if ( str && style() ) {
+    if (str)
+        str->ref();
+    if (oldstr)
+        oldstr->deref();
+
+    if (str && style()) {
         oldstr = str;
-        switch(style()->textTransform()) {
-        case CAPITALIZE:
-        {
-            RenderObject *o;
-            bool runOnString = false;
-
-            // find previous non-empty text renderer if one exists
-            for (o = previousRenderer(); o; o = o->previousRenderer()) {
-                if (!o->isInlineFlow()) {
-                    if (!o->isText())
+        switch (style()->textTransform()) {
+            case CAPITALIZE: {
+                RenderObject *o;
+                bool runOnString = false;
+                // find previous non-empty text renderer if one exists
+                for (o = previousRenderer(); o; o = o->previousRenderer()) {
+                    if (!o->isInlineFlow()) {
+                        if (!o->isText())
+                            break;
+                        DOMStringImpl *prevStr = static_cast<RenderText*>(o)->string();
+                        // !prevStr can happen with css like "content:open-quote;"
+                        if (!prevStr)
+                            break;
+                        if (prevStr->length() == 0)
+                            continue;
+                        QChar c = (*prevStr)[prevStr->length() - 1];
+                        if (!c.isSpace())
+                            runOnString = true;
                         break;
-
-                    DOMStringImpl *prevStr = static_cast<RenderText*>(o)->string();
-                    // !prevStr can happen with css like "content:open-quote;"
-                    if (!prevStr)
-                        break;
-
-                    if (prevStr->length() == 0)
-                        continue;
-                    QChar c = (*prevStr)[prevStr->length() - 1];
-                    if (!c.isSpace())
-                        runOnString = true;
-
-                    break;
+                    }
                 }
+                str = str->capitalize(runOnString);
+                break;
             }
-
-            str = str->capitalize(runOnString);
+            case UPPERCASE:
+                str = str->upper();
+                break;
+            case LOWERCASE:
+                str = str->lower();
+                break;
+            case TTNONE:
+            default:
+                break;
         }
-        break;
-
-		
-		
-        case UPPERCASE: str = str->upper();       break;
-        case LOWERCASE: str = str->lower();       break;
-        case NONE:
-        default:;
-    }
         str->ref();
         oldstr->deref();
     }

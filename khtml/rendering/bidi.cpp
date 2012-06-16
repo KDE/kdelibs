@@ -2246,8 +2246,10 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                     goto end;
                 }
             }
-        } else
+        }
+        else {
             KHTMLAssert( false );
+        }
 
         InlineMinMaxIterator savedIt = lastIt;
         lastIt = it;

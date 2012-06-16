@@ -47,13 +47,15 @@ ErrorInstance::ErrorInstance(JSObject *proto)
 ErrorPrototype::ErrorPrototype(ExecState* exec,
                                      ObjectPrototype* objectProto,
                                      FunctionPrototype* funcProto)
-  : JSObject(objectProto)
+  : ErrorInstance(objectProto)
 {
   // Interpreter::initGlobalObject sets the constructor property
   // on the prototypes for this and the native error types
 
   put(exec, exec->propertyNames().name,     jsString("Error"), DontEnum);
-  put(exec, exec->propertyNames().message,  jsString("Unknown error"), DontEnum);
+  // ECMA Edition 5.1r6 - 15.11.4.3
+  // The initial value of Error.prototype.message is the empty String.
+  put(exec, exec->propertyNames().message,  jsString(""), DontEnum);
   putDirectFunction(new ErrorProtoFunc(exec, funcProto, exec->propertyNames().toString), DontEnum);
 }
 
@@ -68,19 +70,24 @@ ErrorProtoFunc::ErrorProtoFunc(ExecState* exec, FunctionPrototype* funcProto, co
 JSValue* ErrorProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, const List &/*args*/)
 {
   // toString()
-  UString s = "Error";
-
+  UString name;
   JSValue* v = thisObj->get(exec, exec->propertyNames().name);
-  if (!v->isUndefined()) {
-    s = v->toString(exec);
-  }
+  if (!v->isUndefined())
+    name = v->toString(exec);
+  else
+    name = "Error";
 
+  UString message;
   v = thisObj->get(exec, exec->propertyNames().message);
-  if (!v->isUndefined()) {
-    s += ": " + v->toString(exec); // Mozilla compatible format
-  }
+  if (!v->isUndefined())
+    message = v->toString(exec);
 
-  return jsString(s);
+  if (name.isEmpty())
+    return jsString(message);
+  if (message.isEmpty())
+    return jsString(name);
+
+  return jsString(name + ": " + message);
 }
 
 // ------------------------------ ErrorObjectImp -------------------------------

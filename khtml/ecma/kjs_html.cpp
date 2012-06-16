@@ -2450,9 +2450,10 @@ bool KJS::HTMLElement::handleBoundWrite(ExecState* exec, int token, JSValue* val
       return true;
     case T_Res: //ignored
       return true;
+    default:
+      assert(0);
+      return false;
   }
-  assert(0);
-  return false;
 }
 
 

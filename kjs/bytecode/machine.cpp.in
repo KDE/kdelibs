@@ -42,7 +42,7 @@
 // If we improve our stack usage, we can bump this number.
 #define KJS_MAX_STACK 100
 #else
-#define KJS_MAX_STACK 700 // ### set system specific
+#define KJS_MAX_STACK 1000 // ### set system specific
 #endif
 
 namespace KJS {

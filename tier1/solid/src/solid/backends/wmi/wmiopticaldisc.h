@@ -1,4 +1,5 @@
 /*
+    Copyright 2012 Patrick von Reth <vonreth@kde.org>
     Copyright 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -45,6 +46,9 @@ public:
     virtual bool isBlank() const;
     virtual bool isRewritable() const;
     virtual qulonglong capacity() const;
+private:
+    bool isWriteable() const;
+    WmiQuery::Item m_logicalDisk;
 };
 }
 }

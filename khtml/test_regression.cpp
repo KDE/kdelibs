@@ -82,7 +82,7 @@ struct PalInfo
 
 PalInfo palInfo[] =
 {
-    {QPalette::Foreground, 0xff000000},
+    {QPalette::WindowText, 0xff000000},
     {QPalette::Button, 0xffc0c0c0},
     {QPalette::Light, 0xffffffff},
     {QPalette::Midlight, 0xffdfdfdf},
@@ -92,7 +92,7 @@ PalInfo palInfo[] =
     {QPalette::BrightText, 0xffffffff},
     {QPalette::ButtonText, 0xff000000},
     {QPalette::Base, 0xffffffff},
-    {QPalette::Background, 0xffc0c0c0},
+    {QPalette::Window, 0xffc0c0c0},
     {QPalette::Shadow, 0xff000000},
     {QPalette::Highlight, 0xff000080},
     {QPalette::HighlightedText, 0xffffffff},
@@ -103,7 +103,7 @@ PalInfo palInfo[] =
 
 PalInfo disPalInfo[] =
 {
-    {QPalette::Foreground, 0xff808080},
+    {QPalette::WindowText, 0xff808080},
     {QPalette::Button, 0xffc0c0c0},
     {QPalette::Light, 0xffffffff},
     {QPalette::Midlight, 0xffdfdfdf},
@@ -113,7 +113,7 @@ PalInfo disPalInfo[] =
     {QPalette::BrightText, 0xffffffff},
     {QPalette::ButtonText, 0xff808080},
     {QPalette::Base, 0xffc0c0c0},
-    {QPalette::Background, 0xffc0c0c0},
+    {QPalette::Window, 0xffc0c0c0},
     {QPalette::Shadow, 0xff000000},
     {QPalette::Highlight, 0xff000080},
     {QPalette::HighlightedText, 0xffffffff},

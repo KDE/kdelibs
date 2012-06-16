@@ -14,6 +14,13 @@ endif ()
 if(NOT WIN32)
     set(kcoreaddons_OPTIONAL_SRCS caching/kshareddatacache.cpp)
     set(kcoreaddons_OPTIONAL_LIBS ${kcoreaddons_OPTIONAL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+
+    set_source_files_properties(caching/kshareddatacache.cpp
+        PROPERTIES COMPILE_FLAGS -fexceptions)
+
+    # QT5_BUILD Qt 5 Porting: Find out what to do about this:
+#     set_source_files_properties(util/kshareddatacache.cpp
+#         PROPERTIES COMPILE_FLAGS ${KDE4_ENABLE_EXCEPTIONS})
 else(NOT WIN32)
     set(kcoreaddons_OPTIONAL_SRCS
         caching/kshareddatacache_win.cpp

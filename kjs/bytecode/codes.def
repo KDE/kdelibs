@@ -1036,7 +1036,7 @@ operation Greater {
         // -1: NaN, undefined => false
         //  0: v2 >= v1       => false
         //  1: v2 <  v1       => true
-        $$ = (relation(exec, v2, v1) == 1);
+        $$ = (relation(exec, v2, v1, false) == 1);
     ]]
 }
 
@@ -1046,7 +1046,7 @@ operation LessEq {
         // -1: NaN, undefined => false
         //  0: v2 >= v1       => true
         //  1: v2 <  v1       => false
-        $$ = (relation(exec, v2, v1) == 0);
+        $$ = (relation(exec, v2, v1, false) == 0);
     ]]
 }
 

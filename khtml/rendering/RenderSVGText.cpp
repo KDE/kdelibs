@@ -65,7 +65,7 @@ IntRect RenderSVGText::absoluteClippedOverflowRect()
     return enclosingIntRect(repaintRect);
 }
 
-bool RenderSVGText::requiresLayer()
+bool RenderSVGText::requiresLayer() const
 {
     return false;
 }

@@ -208,6 +208,14 @@ struct CollapsedBorderValue
 class BorderData : public Shared<BorderData>
 {
 public:
+    BorderData() : Shared< khtml::BorderData >() {};
+    BorderData(const khtml::BorderData& other) : Shared<khtml::BorderData>() {
+        this->left = other.left;
+        this->right = other.right;
+        this->top = other.top;
+        this->bottom = other.bottom;
+    }
+
     BorderValue left;
     BorderValue right;
     BorderValue top;
@@ -597,7 +605,13 @@ struct BorderRadii
 class BorderRadiusData : public Shared<BorderRadiusData>
 {
 public:
-    // default default & copy ctors are fine here.
+    BorderRadiusData() : Shared<BorderRadiusData>() {};
+    BorderRadiusData(const BorderRadiusData &other) : Shared<BorderRadiusData>(),
+        topRight(other.topRight),
+        bottomRight(other.bottomRight),
+        bottomLeft(other.bottomLeft),
+        topLeft(other.topLeft)
+    {}
 
     bool operator==(const BorderRadiusData& o) const;
     bool operator!=(const BorderRadiusData& o) const {

@@ -177,11 +177,8 @@ void KShortcutSchemesEditor::exportShortcutsScheme()
     {
         const KXMLGUIClient *client = collection->parentGUIClient();
         if (!client) continue;
-        QString fileDir = QLatin1String("shortcuts/share/apps/")
-                        + client->componentData().componentName() + '/';
-        schemeRoot.mkpath(fileDir);
         KShortcutSchemesHelper::exportActionCollection(collection,
-            currentScheme(), exportTo + '/' + fileDir);
+            currentScheme(), exportTo + '/');
     }
 }
 

@@ -168,22 +168,20 @@ IntRect RenderPath::absoluteClippedOverflowRect()
     return enclosingIntRect(repaintRect);*/
 }
 
-bool RenderPath::requiresLayer()
+bool RenderPath::requiresLayer() const
 {
     return false;
 }
 
-short RenderPath::lineHeight(bool b, bool isRootLineBox) const
+short RenderPath::lineHeight(bool b) const
 {
     Q_UNUSED(b);
-    Q_UNUSED(isRootLineBox);
     return static_cast<short>(relativeBBox(true).height());
 }
 
-short RenderPath::baselinePosition(bool b, bool isRootLineBox) const
+short RenderPath::baselinePosition(bool b) const
 {
     Q_UNUSED(b);
-    Q_UNUSED(isRootLineBox);
     return static_cast<short>(relativeBBox(true).height());
 }
 

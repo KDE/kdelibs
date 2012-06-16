@@ -2816,7 +2816,7 @@ InlineBox *RenderObject::inlineBox(long /*offset*/)
     return 0;
 }
 
-bool RenderObject::hasCounter(const QString& counter) const
+bool RenderObject::hasCounter(const DOMString& counter) const
 {
     if (style() && (!isText() || isCounter())) {
         if (lookupCounter(counter)) return true;
@@ -2842,7 +2842,7 @@ bool RenderObject::hasCounter(const QString& counter) const
     return false;
 }
 
-CounterNode* RenderObject::getCounter(const QString& counter, bool view, bool counters)
+CounterNode* RenderObject::getCounter(const DOMString& counter, bool view, bool counters)
 {
 //     kDebug( 6040 ) << renderName() << " getCounter(" << counter << ")";
 
@@ -2978,18 +2978,18 @@ CounterNode* RenderObject::getCounter(const QString& counter, bool view, bool co
     return i;
 }
 
-CounterNode* RenderObject::lookupCounter(const QString& counter) const
+CounterNode* RenderObject::lookupCounter(const DOMString& counter) const
 {
-    QHash<QString,khtml::CounterNode*>* counters = document()->counters(this);
+    QHash<DOMString,khtml::CounterNode*>* counters = document()->counters(this);
     return counters ? counters->value(counter) : 0;
 }
 
 void RenderObject::detachCounters()
 {
-    QHash<QString,khtml::CounterNode*>* counters = document()->counters(this);
+    QHash<DOMString,khtml::CounterNode*>* counters = document()->counters(this);
     if (!counters) return;
 
-    QHashIterator<QString,khtml::CounterNode*> i(*counters);
+    QHashIterator<DOMString,khtml::CounterNode*> i(*counters);
 
     while (i.hasNext()) {
         i.next();
@@ -2999,12 +2999,12 @@ void RenderObject::detachCounters()
     document()->removeCounters(this);
 }
 
-void RenderObject::insertCounter(const QString& counter, CounterNode* val)
+void RenderObject::insertCounter(const DOMString& counter, CounterNode* val)
 {
-    QHash<QString,khtml::CounterNode*>* counters = document()->counters(this);
+    QHash<DOMString,khtml::CounterNode*>* counters = document()->counters(this);
 
     if (!counters) {
-        counters = new QHash<QString,khtml::CounterNode*>();
+        counters = new QHash<DOMString,khtml::CounterNode*>();
         document()->setCounters(this, counters);
     }
 

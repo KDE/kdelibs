@@ -39,12 +39,12 @@ void Enum::printDeclaration(ostream& hStream)
     }
     hStream << "    " << prefix << "NumValues\n";
     hStream << "};\n";
-    hStream << "extern char* const " << name << "Vals[];\n\n";
+    hStream << "extern const char* const " << name << "Vals[];\n\n";
 }
 
 void Enum::printDefinition(ostream& cppStream)
 {
-    Array vals(cppStream, "char* const", name + "Vals");
+    Array vals(cppStream, "const char* const", name + "Vals");
     for (unsigned p = 0; p < values.size(); ++p)
         vals.item("\"" + prefix + values[p] + "\"");
     vals.endArray();

@@ -224,7 +224,6 @@ if(NOT KDE_NO_DEPRECATED)
     )
 endif(NOT KDE_NO_DEPRECATED)
 
-
 if (NOT HAVE_X11 AND NOT QWS)
    add_definitions(-DNO_DISPLAY)
 endif (NOT HAVE_X11 AND NOT QWS)

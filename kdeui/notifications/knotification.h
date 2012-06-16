@@ -524,7 +524,7 @@ public:
 	 *
 	 * A popup may be displayed or a sound may be played, depending the config.
 	 *
-	 * return a KNotification .  You may use that pointer to connect some signals or slot.
+	 * @return a KNotification .  You may use that pointer to connect some signals or slot.
 	 * the pointer is automatically deleted when the event is closed.
 	 *
 	 * Make sure you use one of the CloseOnTimeOut or CloseWhenWidgetActivated, if not,

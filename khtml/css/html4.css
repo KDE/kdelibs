@@ -441,20 +441,19 @@ select {
         font-family: sans-serif;
         font-size: small;
         color: buttontext;
-        background-color: buttonface;
+        background-color: window;
         -khtml-background-clip: padding;
         box-sizing: border-box;
+        border: 2px -khtml-native;
 }
 
 select[multiple],
 select[size] {
-        background-color: window;
         color: windowtext;
 }
 
 select[size="0"]:not([multiple]),
 select[size="1"]:not([multiple]) {
-        background-color: buttonface;
         color: buttontext;
 }
 

@@ -36,9 +36,9 @@ public:
 
     void ref() { _ref++;  }
     void deref() {
-	if(_ref) _ref--;
-	if(!_ref)
-	    delete static_cast<type *>(this);
+        if(_ref) _ref--;
+        if(!_ref)
+            delete static_cast<type *>(this);
     }
     bool hasOneRef() { //kDebug(6000) << "ref=" << _ref;
     	return _ref==1; }
@@ -47,6 +47,11 @@ public:
 //    static int counter;
 protected:
     unsigned int _ref;
+
+private:
+    //Avoid the automatic copy constructor
+    Shared(const Shared&);
+    Shared &operator= (const Shared&);
 };
 
 template<class type> class TreeShared
@@ -82,6 +87,10 @@ public:
     void setParent(type *parent) { m_parent = parent; }
     type *parent() const { return m_parent; }
 private:
+    //Avoid the automatic copy constructor
+    TreeShared(const TreeShared&);
+    TreeShared &operator= (const TreeShared&);
+
     unsigned int _ref;
 protected:
     type *m_parent;

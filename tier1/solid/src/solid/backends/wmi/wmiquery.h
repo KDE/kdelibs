@@ -37,33 +37,36 @@
 #include <Wbemidl.h>
 #include <WTypes.h>
 
+#include "wmimanager.h"
+
 namespace Solid
 {
 namespace Backends
 {
 namespace Wmi
 {
-
 class WmiQuery
 {
 public:
     class Item {
-    public:   
+    public:
+        Item();
         Item(IWbemClassObject *p);
         Item(const Item& other);
         Item& operator=(const Item& other);
         ~Item();
 
+        IWbemClassObject* data() const;
+        bool isNull() const;
         QVariant getProperty(const QString &property) const;
         QVariantMap getAllProperties();
 
     private:
-        Item() {}
+
         static QVariant msVariantToQVariant(VARIANT msVariant, CIMTYPE variantType);
         QVariant getProperty(BSTR property) const;
         // QSharedPointer alone doesn't help because we need to call Release()
         IWbemClassObject* m_p;
-        QSharedPointer<QAtomicInt> m_int;
         QVariantMap m_properies;
     };
 
@@ -72,6 +75,7 @@ public:
     WmiQuery();
     ~WmiQuery();
     ItemList sendQuery( const QString &wql );
+    void addDeviceListeners(WmiManager::WmiEventSink *sink);
     bool isLegit() const;
 	static WmiQuery &instance();
 
@@ -80,7 +84,6 @@ private:
     bool m_bNeedUninit;
     IWbemLocator *pLoc;
     IWbemServices *pSvc;
-    IEnumWbemClassObject* pEnumerator;
 };
 }
 }

@@ -19,7 +19,7 @@
 #include <qtest_kde.h>
 #include "kbookmarktest.h"
 
-QTEST_KDEMAIN( KBookmarkTest, false )
+QTEST_KDEMAIN( KBookmarkTest, NoGUI )
 
 #include <kbookmark.h>
 #include <kdebug.h>

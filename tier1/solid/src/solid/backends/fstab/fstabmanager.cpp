@@ -127,6 +127,12 @@ void FstabManager::_k_updateDeviceList()
     }
 
     m_deviceList = deviceList;
+
+    foreach(const QString &device, newlist) {
+        if ( !oldlist.contains(device) ) {
+            emit deviceAdded(udiPrefix() + "/" + device);
+        }
+    }
 }
 
 void FstabManager::onMtabChanged()

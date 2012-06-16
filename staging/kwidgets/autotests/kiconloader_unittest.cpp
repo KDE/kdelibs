@@ -22,9 +22,13 @@
 #include <kiconloader.h>
 #include <kstandarddirs.h>
 #include <kdeversion.h>
+#include <kurl.h>
 #include <qprocess.h>
 #include <qregexp.h>
 #include <qstandardpaths.h>
+#include <QFile>
+#include <QFileInfo>
+#include <QDir>
 
 class KIconLoader_UnitTest : public QObject
 {
@@ -36,6 +40,63 @@ private Q_SLOTS:
         // Remove icon cache (from ~/.kde-unit-test)
         const QString cacheFile = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/icon-cache.kcache";
         QFile::remove(cacheFile);
+    }
+
+    void testUnknownIconNotCached()
+    {
+        // This is a test to ensure that "unknown" icons do not pin themselves
+        // in the icon loader. Or in other words, if an "unknown" icon is
+        // returned, but the appropriate icon is subsequently installed
+        // properly, the next request for that icon should return the new icon
+        // instead of the unknown icon.
+
+        // Since we'll need to create an icon we'll need a temporary directory,
+        // and we want that established before creating the icon loader.
+        QString tempRoot = QDir::tempPath() + QLatin1String("/kiconloader_unittest");
+        QString temporaryDir = tempRoot + QLatin1String("/hicolor/22x22/actions");
+        QVERIFY(QDir::root().mkpath(temporaryDir));
+        QVERIFY(KGlobal::dirs()->addResourceDir("icon", tempRoot, false));
+
+        KIconLoader iconLoader;
+
+        // First find an existing icon. The only ones installed for sure by
+        // kdelibs are the kimproxy ones.
+        QString loadedIconPath = iconLoader.iconPath(
+                QLatin1String("presence_online"),
+                KIconLoader::DefaultState,
+                false /* Ensure "unknown" icon can't be returned */
+            );
+        QVERIFY(!loadedIconPath.isEmpty());
+
+        QString nonExistingIconName = QLatin1String("fhqwhgads_homsar");
+
+        // Find a non-existent icon, allowing unknown icon to be returned
+        QPixmap nonExistingIcon = iconLoader.loadIcon(
+                nonExistingIconName, KIconLoader::Toolbar);
+        QCOMPARE(nonExistingIcon.isNull(), false);
+
+        // Install the existing icon by copying.
+        QFileInfo existingIconInfo(loadedIconPath);
+        QString newIconPath = temporaryDir + QLatin1String("/")
+                              + nonExistingIconName + QLatin1String(".png");
+        QVERIFY(QFile::copy(loadedIconPath, newIconPath));
+
+        // Verify the icon can now be found.
+        QPixmap nowExistingIcon = iconLoader.loadIcon(
+                nonExistingIconName, KIconLoader::Toolbar);
+        QVERIFY(nowExistingIcon.cacheKey() != nonExistingIcon.cacheKey());
+        QCOMPARE(iconLoader.iconPath(nonExistingIconName, KIconLoader::Toolbar),
+                newIconPath);
+
+        // Cleanup
+        QFile::remove(newIconPath);
+        QStringList entries(QDir(tempRoot).entryList(
+                QDir::Dirs | QDir::NoDotAndDotDot,
+                QDir::Name | QDir::Reversed));
+
+        Q_FOREACH(const QString &dirName, entries) {
+            QDir::root().rmdir(dirName);
+        }
     }
 
     void testLoadIconCanReturnNull()

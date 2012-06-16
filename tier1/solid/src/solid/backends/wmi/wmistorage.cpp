@@ -28,6 +28,16 @@ Storage::Storage(WmiDevice *device)
     : Block(device)
 {
 
+    if(m_device->type() == Solid::DeviceInterface::StorageDrive)
+    {
+        WmiQuery::Item item =  WmiDevice::win32DiskPartitionByDeviceIndex(m_device->property("DeviceID").toString());
+        QString id = item.getProperty("DeviceID").toString();
+        m_logicalDisk = WmiDevice::win32LogicalDiskByDiskPartitionID(id);
+    }else if(m_device->type() == Solid::DeviceInterface::OpticalDrive)
+    {
+        QString id = m_device->property("Drive").toString();
+        m_logicalDisk = WmiDevice::win32LogicalDiskByDriveLetter(id);
+    }
 }
 
 Storage::~Storage()
@@ -37,7 +47,11 @@ Storage::~Storage()
 
 Solid::StorageDrive::Bus Storage::bus() const
 {
-    QString bus = m_device->property("InterfaceType").toString().toLower();
+     if(m_device->type() == Solid::DeviceInterface::OpticalDrive)
+         return Solid::StorageDrive::Platform;
+
+
+    QString bus =  m_device->property("InterfaceType").toString().toLower();
 
     if (bus=="ide")
     {
@@ -67,48 +81,27 @@ Solid::StorageDrive::Bus Storage::bus() const
 
 Solid::StorageDrive::DriveType Storage::driveType() const
 {
-    QString type = m_device->property("MediaType").toString();//was availibele in Win32_LogicalDiskDrive
-     if (type=="Removable Media")
-     {
-         return Solid::StorageDrive::MemoryStick;
-     }
-     else{//if(type == "External hard disk media" || type == "Fixed hard disk media" || type == "Fixed hard disk"){
-         return Solid::StorageDrive::HardDisk;
-     }
-//      else
-//     else if (type=="tape")
-//     {
-//         return Solid::StorageDrive::Tape;
-//     }
-//     else if (type=="compact_flash")
-//     {
-//         return Solid::StorageDrive::CompactFlash;
-//     }
-//     else if (type=="smart_media")
-//     {
-//         return Solid::StorageDrive::SmartMedia;
-//     }
-//     else if (type=="sd_mmc")
-//     {
-//         return Solid::StorageDrive::SdMmc;
-//     }
-//     else
-//     {
-        
-//    }
+    ushort type = m_logicalDisk.getProperty("DriveType").toUInt();
+    switch(type){
+    case 2:
+        return Solid::StorageDrive::MemoryStick;
+    case 3:
+        return Solid::StorageDrive::HardDisk;
+    case 5:
+        return Solid::StorageDrive::CdromDrive;
+    default:
+        return Solid::StorageDrive::HardDisk;
+    }
 }
 
 bool Storage::isRemovable() const
 {
-    //TODO:
-    return false;
-//    return m_device->property("storage.removable").toBool();
+    return driveType() != Solid::StorageDrive::HardDisk;
 }
 
 bool Storage::isHotpluggable() const
 {
     return bus() == Solid::StorageDrive::Usb;
-//    return m_device->property("storage.hotpluggable").toBool();
 }
 
 qulonglong Storage::size() const

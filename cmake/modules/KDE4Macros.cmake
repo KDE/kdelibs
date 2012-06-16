@@ -64,12 +64,21 @@ macro (KDE4_HANDLE_RPATH_FOR_EXECUTABLE _target_NAME)
       get_target_property(_executable ${_target_NAME} LOCATION )
 
       # use add_custom_target() to have the sh-wrapper generated during build time instead of cmake time
-      add_custom_command(TARGET ${_target_NAME} POST_BUILD
-         COMMAND ${CMAKE_COMMAND}
-         -D_filename=${_executable}.shell -D_library_path_variable=${_library_path_variable}
-         -D_ld_library_path="${_ld_library_path}" -D_executable=${_executable}
-         -P ${KDE4_MODULE_DIR}/kde4_exec_via_sh.cmake
-         )
+      if (CMAKE_VERSION VERSION_GREATER 2.8.3)
+         add_custom_command(TARGET ${_target_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND}
+            -D_filename=${_executable}.shell -D_library_path_variable=${_library_path_variable}
+            -D_ld_library_path="${_ld_library_path}" -D_executable=$<TARGET_FILE:${_target_NAME}>
+            -P ${KDE4_MODULE_DIR}/kde4_exec_via_sh.cmake
+            )
+      else ()
+         add_custom_command(TARGET ${_target_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND}
+            -D_filename=${_executable}.shell -D_library_path_variable=${_library_path_variable}
+            -D_ld_library_path="${_ld_library_path}" -D_executable=${_executable}
+            -P ${KDE4_MODULE_DIR}/kde4_exec_via_sh.cmake
+            )
+      endif ()
 
       macro_additional_clean_files(${_executable}.shell)
 
