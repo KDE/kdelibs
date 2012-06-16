@@ -21,8 +21,10 @@ set_target_properties(krosscore PROPERTIES VERSION ${GENERIC_LIB_VERSION}
 
 install(TARGETS krosscore EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
+generate_export_header(krosscore)
+
 install(FILES
-    kross_export.h
+    ${CMAKE_CURRENT_BINARY_DIR}/krosscore_export.h
     krossconfig.h
     errorinterface.h
     childreninterface.h
