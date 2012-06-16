@@ -14,7 +14,7 @@
 #include <qimage.h>
 #include <qfile.h>
 
-KDE_EXPORT void kimgio_g3_read( QImageIO *io )
+Q_DECL_EXPORT void kimgio_g3_read( QImageIO *io )
 {
     // This won't work if io is not a QFile !
   TIFF *tiff = TIFFOpen(QFile::encodeName(io->fileName()), "r");
@@ -47,7 +47,7 @@ KDE_EXPORT void kimgio_g3_read( QImageIO *io )
 }
 
 
-KDE_EXPORT void kimgio_g3_write(QImageIO *)
+Q_DECL_EXPORT void kimgio_g3_write(QImageIO *)
 {
 	// TODO: stub
 }

@@ -35,8 +35,7 @@
 #define KMD5_H
 
 #include <kde4support_export.h>
-#include <kdemacros.h>
-
+#include <qglobal.h>
 
 class QByteArray;
 class QIODevice;

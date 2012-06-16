@@ -34,7 +34,7 @@ extern "C" int xmlLoadExtDtdDefaultValue;
 
 extern "C"
 {
-    KDE_EXPORT int kdemain( int argc, char **argv )
+    Q_DECL_EXPORT int kdemain( int argc, char **argv )
     {
         KComponentData componentData( "kio_ghelp" );
         fillInstance(componentData);

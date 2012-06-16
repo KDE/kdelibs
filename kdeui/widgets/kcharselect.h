@@ -25,7 +25,6 @@
 #include <QtCore/QStringList>
 #include <QWidget>
 #include <kdeui_export.h>
-#include <kdemacros.h>
 
 class KActionCollection;
 
@@ -108,7 +107,7 @@ public:
 
     /** @deprecated */
 #ifndef KDE_NO_DEPRECATED
-    KDE_CONSTRUCTOR_DEPRECATED explicit KCharSelect(
+    KDEUI_DEPRECATED explicit KCharSelect(
             QWidget *parent,
             const Controls controls = AllGuiElements);
 #endif

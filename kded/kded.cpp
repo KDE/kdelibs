@@ -795,7 +795,7 @@ void KBuildsycocaAdaptor::recreate(const QDBusMessage &msg)
    Kded::self()->recreate(msg);
 }
 
-extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
+extern "C" Q_DECL_EXPORT int kdemain(int argc, char *argv[])
 {
      KAboutData aboutData( "kded5",
         "kdelibs4", qi18n("KDE Daemon"),

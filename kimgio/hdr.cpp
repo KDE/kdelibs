@@ -75,15 +75,15 @@ namespace {	// Private.
 			// v = ldexp(1.0, int(image[3]) - 128);
 			float v;
 			int e = int(image[3]) - 128;
-			if( e > 0 ) 
+			if( e > 0 )
 			{
 				v = float(1 << e);
 			}
-			else 
+			else
 			{
 				v = 1.0f / float(1 << -e);
 			}
-			
+
 			scanline[j] = qRgb( ClipToByte(float(image[0]) * v),
 								ClipToByte(float(image[1]) * v),
 								ClipToByte(float(image[2]) * v) );
@@ -104,7 +104,7 @@ namespace {	// Private.
 		}
 
   		QMemArray<uchar> image( width * 4 );
-	
+
 		for (int cline = 0; cline < height; cline++)
 		{
 			QRgb * scanline = (QRgb *) img.scanLine( cline );
@@ -119,7 +119,7 @@ namespace {	// Private.
 
 			s >> val;
 
-			if (s.atEnd()) 
+			if (s.atEnd())
 			{
 				return true;
 			}
@@ -136,7 +136,7 @@ namespace {	// Private.
 			s >> image[2];
 			s >> image[3];
 
-			if (s.atEnd()) 
+			if (s.atEnd())
 			{
 				return true;
 			}
@@ -194,21 +194,21 @@ namespace {	// Private.
 
 		return true;
 	}
-		
+
 } // namespace
 
 
-KDE_EXPORT void kimgio_hdr_read( QImageIO * io )
+Q_DECL_EXPORT void kimgio_hdr_read( QImageIO * io )
 {
 	int len;
 	char line[MAXLINE];
 	//bool validHeader = false;
 	bool validFormat = false;
-	
-	// Parse header	
+
+	// Parse header
 	do {
 		len = io->ioDevice()->readLine(line, MAXLINE);
-	
+
 		/*if (strcmp(line, "#?RADIANCE\n") == 0 || strcmp(line, "#?RGBE\n") == 0)
 		{
 			validHeader = true;
@@ -217,9 +217,9 @@ KDE_EXPORT void kimgio_hdr_read( QImageIO * io )
 		{
 			validFormat = true;
 		}
-		
+
 	} while((len > 0) && (line[0] != '\n'));
-	
+
 	if( /*!validHeader ||*/ !validFormat )
 	{
 		kDebug(399) << "Unknown HDR format.";
@@ -227,9 +227,9 @@ KDE_EXPORT void kimgio_hdr_read( QImageIO * io )
 		io->setStatus( -1 );
 		return;
 	}
-	
-	io->ioDevice()->readLine(line, MAXLINE);	
-	
+
+	io->ioDevice()->readLine(line, MAXLINE);
+
 	char s1[3], s2[3];
 	int width, height;
 	if (sscanf(line, "%2[+-XY] %d %2[+-XY] %d\n", s1, &height, s2, &width) != 4)
@@ -240,11 +240,11 @@ KDE_EXPORT void kimgio_hdr_read( QImageIO * io )
 		io->setStatus( -1 );
 		return;
 	}
-	
+
 	QDataStream s( io->ioDevice() );
 
 	QImage img;
-	if( !LoadHDR(s, width, height, img) ) 
+	if( !LoadHDR(s, width, height, img) )
 	{
 		kDebug(399) << "Error loading HDR file.";
 		io->setImage( 0 );
@@ -257,8 +257,8 @@ KDE_EXPORT void kimgio_hdr_read( QImageIO * io )
 }
 
 
-KDE_EXPORT void kimgio_hdr_write( QImageIO * )
+Q_DECL_EXPORT void kimgio_hdr_write( QImageIO * )
 {
 	// intentionally not implemented (since writing low dynamic range data to a HDR file is nonsense.)
 }
- 
+

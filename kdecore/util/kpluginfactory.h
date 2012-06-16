@@ -260,14 +260,14 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_CONSTRUCTOR_DEPRECATED explicit KPluginFactory(const KAboutData *aboutData, QObject *parent = 0);
+    KDECORE_DEPRECATED explicit KPluginFactory(const KAboutData *aboutData, QObject *parent = 0);
 #endif
 
     /**
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    explicit KDE_CONSTRUCTOR_DEPRECATED KPluginFactory(QObject *parent);
+    explicit KDECORE_DEPRECATED KPluginFactory(QObject *parent);
 #endif
 
     /**

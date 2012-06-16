@@ -56,7 +56,6 @@
 #include <QFont>
 #include <kcomponentdata.h>
 #include <klibrary.h>
-#include <kdemacros.h>
 #include <kstandarddirs.h>
 #include <kglobal.h>
 #include <kconfig.h>
@@ -89,13 +88,13 @@
 #endif
 #include <qstandardpaths.h>
 
-#ifdef Q_WS_X11
+#ifdef Q_OS_UNIX
 static const char *extra_libs[] = {
     "libkio.so.5",
     "libkparts.so.4",
-#ifdef __KDE_HAVE_GCC_VISIBILITY
+//#ifdef __KDE_HAVE_GCC_VISIBILITY // Removed for KF5, we'll see.
     "libplasma.so.3"
-#endif
+//#endif
 };
 #endif
 
@@ -1807,7 +1806,7 @@ int main(int argc, char **argv, char **envp)
        */
       init_kdeinit_socket();
    }
-#ifdef Q_WS_X11
+#ifdef Q_OS_UNIX
     if (!d.suicide && qgetenv("KDE_IS_PRELINKED").isEmpty()) {
         const int extrasCount = sizeof(extra_libs)/sizeof(extra_libs[0]);
         for (int i=0; i<extrasCount; i++) {

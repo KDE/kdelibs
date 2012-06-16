@@ -22,7 +22,7 @@
 #define KSHELL_H
 
 #include <kdecore_export.h>
-#include <kdemacros.h>
+#include <qglobal.h>
 
 class QStringList;
 class QString;

@@ -24,7 +24,6 @@
 #include <QtCore/QStringList>
 #include <QtCore/QMap>
 #include <kconfig.h>
-#include <kdemacros.h>
 
 #include "kbookmarkimporter.h"
 

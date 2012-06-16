@@ -168,7 +168,7 @@ KIO::filesize_t Ftp::UnknownSize = (KIO::filesize_t)-1;
 
 using namespace KIO;
 
-extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
+extern "C" Q_DECL_EXPORT int kdemain( int argc, char **argv )
 {
   QCoreApplication app(argc, argv);
   KComponentData componentData( "kio_ftp", "kdelibs4" );

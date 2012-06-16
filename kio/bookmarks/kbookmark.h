@@ -21,14 +21,14 @@
 #define __kbookmark_h
 
 #include "kio_export.h"
-#include "kdemacros.h"
 
 #include <QtCore/QString>
+#include <QtCore/QUrl>
 #include <QtCore/QList>
 #include <QtCore/QMetaType>
 #include <QtXml/QDomElement>
-#include <kurl.h>
 
+class QMimeData;
 class KBookmarkManager;
 class KBookmarkGroup;
 
@@ -339,7 +339,8 @@ protected:
 };
 
 #ifdef MAKE_KIO_LIB
-KDE_DUMMY_QHASH_FUNCTION(KBookmark)
+// Was for MSVC only. TODO: still needed? does this exist in Qt now?
+//KDE_DUMMY_QHASH_FUNCTION(KBookmark)
 #endif
 
 /**

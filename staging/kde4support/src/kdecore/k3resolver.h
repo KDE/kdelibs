@@ -32,9 +32,6 @@
 #include <QtCore/QSharedDataPointer>
 #include "k3socketaddress.h"
 
-#include <kdemacros.h>
-
-
 ////////////////////////
 // Forward declarations
 struct sockaddr;
@@ -180,7 +177,7 @@ public:
    * Dummy operator== for compilers which need a complete
    * instantiated class when exporting to a shared lib
    */
-  KDE_DUMMY_COMPARISON_OPERATOR(KResolverEntry)
+  //KDE_DUMMY_COMPARISON_OPERATOR(KResolverEntry)
 #endif
 
 private:
@@ -188,7 +185,7 @@ private:
 };
 
 #ifdef MAKE_KDECORE_LIB
-KDE_DUMMY_QHASH_FUNCTION(KResolverEntry)
+//KDE_DUMMY_QHASH_FUNCTION(KResolverEntry)
 #endif
 
 class KResolverResultsPrivate;

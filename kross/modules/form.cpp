@@ -62,7 +62,7 @@
 
 extern "C"
 {
-    KDE_EXPORT QObject* krossmodule()
+    Q_DECL_EXPORT QObject* krossmodule()
     {
         return new Kross::FormModule();
     }

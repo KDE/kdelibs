@@ -54,7 +54,7 @@ class KPARTS_EXPORT MainWindow : public KXmlGuiWindow, virtual public PartBase
   explicit MainWindow( QWidget* parent = 0, Qt::WindowFlags f = KDE_DEFAULT_WINDOWFLAGS );
   /// @deprecated, remove the name argument and use setObjectName instead
 #ifndef KDE_NO_DEPRECATED
-  KDE_CONSTRUCTOR_DEPRECATED explicit MainWindow( QWidget* parent, const char *name = 0, Qt::WindowFlags f = KDE_DEFAULT_WINDOWFLAGS );
+  KPARTS_DEPRECATED explicit MainWindow( QWidget* parent, const char *name = 0, Qt::WindowFlags f = KDE_DEFAULT_WINDOWFLAGS );
 #endif
   /**
    * Destructor.

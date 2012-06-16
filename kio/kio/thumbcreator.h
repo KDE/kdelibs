@@ -41,7 +41,7 @@ class QWidget;
  * \code
  * extern "C"
  * {
- *   KDE_EXPORT ThumbCreator *new_creator()
+ *   Q_DECL_EXPORT ThumbCreator *new_creator()
  *   {
  *     return new YourThumbCreator();
  *   }
@@ -100,7 +100,7 @@ class QWidget;
  * \endcode
  * where N is some nonnegative integer. If a cached thumbnail has been created with a
  * previous version of the thumbnailer, then the cached thumbnail will be discarded and
- * a new one will be regenerated. Increase (or define) the version number if and only if 
+ * a new one will be regenerated. Increase (or define) the version number if and only if
  * old thumbnails need to be regenerated.
  * If no version number is provided, then the version is assumed to be <0.
  *

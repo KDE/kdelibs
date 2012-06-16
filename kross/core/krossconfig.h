@@ -63,7 +63,7 @@ namespace Kross {
     // The export macro for interpreter plugins.
     #define KROSS_EXPORT_INTERPRETER( InterpreterImpl ) \
         extern "C" { \
-            KDE_EXPORT void* krossinterpreter(int version, Kross::InterpreterInfo* info) { \
+            Q_DECL_EXPORT void* krossinterpreter(int version, Kross::InterpreterInfo* info) { \
                 if(version != KROSS_VERSION) { \
                     Kross::krosswarning(QString("Interpreter skipped cause provided version %1 does not match expected version %2.").arg(version).arg(KROSS_VERSION)); \
                     return 0; \
