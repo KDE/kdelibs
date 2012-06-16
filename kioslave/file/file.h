@@ -23,7 +23,6 @@
 #ifndef __file_h__
 #define __file_h__
 
-#include "kioslave_file_export.h"
 #include <kio/global.h>
 #include <kio/slavebase.h>
 
@@ -37,7 +36,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-class KIOSLAVE_FILE_EXPORT FileProtocol : public QObject, public KIO::SlaveBase
+class FileProtocol : public QObject, public KIO::SlaveBase
 {
   Q_OBJECT
 public:
