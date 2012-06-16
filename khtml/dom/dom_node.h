@@ -929,14 +929,14 @@ public:
      */
     unsigned long index() const;
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED QString toHTML();
+    KHTML_DEPRECATED QString toHTML();
 #endif
     void applyChanges();
     /**
      * @deprecated without substitution since 3.2
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void getCursor(int offset, int &_x, int &_y, int &height);
+    KHTML_DEPRECATED void getCursor(int offset, int &_x, int &_y, int &height);
 #endif
     /**
      * not part of the DOM.

@@ -53,8 +53,8 @@ public:
     // Despite QPointer's shortcomings, we actually want it and not QPointer
     // here, since Window::getOwnPropertySlot needs to access it, and
     // QPointer's access path is cheaper
-    QPointer<KParts::ReadOnlyPart> m_part;    
-    
+    QPointer<KParts::ReadOnlyPart> m_part;
+
     QString m_serviceName;
     QString m_serviceType;
     KJSProxy *m_jscript;
@@ -80,7 +80,7 @@ public:
 
 struct KHTMLFrameList : public QList<khtml::ChildFrame*>
 {
-    Iterator find( const QString &name ) KDE_NO_EXPORT;
+    Iterator find( const QString &name ) KHTML_NO_EXPORT;
 };
 
 typedef KHTMLFrameList::ConstIterator ConstFrameIt;

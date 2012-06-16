@@ -408,7 +408,7 @@ static NodeImpl *prevLeafNode(NodeImpl *r, NodeImpl *baseElem)
  *	\c r, or false for the inside.
  * @param outsideEnd return true when the caret position is at the outside end.
  */
-void /*KDE_NO_EXPORT*/ mapDOMPosToRenderPos(NodeImpl *node, long offset,
+void /*KHTML_NO_EXPORT*/ mapDOMPosToRenderPos(NodeImpl *node, long offset,
 		RenderObject *&r, long &r_ofs, bool &outside, bool &outsideEnd)
 {
   if (node->nodeType() == Node::TEXT_NODE) {
@@ -480,7 +480,7 @@ void /*KDE_NO_EXPORT*/ mapDOMPosToRenderPos(NodeImpl *node, long offset,
  * @param node returns DOM node
  * @param offset returns zero-based offset within node
  */
-void /*KDE_NO_EXPORT*/ mapRenderPosToDOMPos(RenderObject *r, long r_ofs,
+void /*KHTML_NO_EXPORT*/ mapRenderPosToDOMPos(RenderObject *r, long r_ofs,
 		bool outside, bool outsideEnd, NodeImpl *&node, long &offset)
 {
   node = r->element();
@@ -661,7 +661,7 @@ void CaretBox::dump(QTextStream &ts, const QString &ind) const
 #else
 #  define DEBUG_ACIB DEBUG_CARETMODE
 #endif
-void CaretBoxLine::addConvertedInlineBox(InlineBox *box, SeekBoxParams &sbp) /*KDE_NO_EXPORT*/
+void CaretBoxLine::addConvertedInlineBox(InlineBox *box, SeekBoxParams &sbp) /*KHTML_NO_EXPORT*/
 {
   // Generate only one outside caret box between two elements. If
   // coalesceOutsideBoxes is true, generating left outside boxes is inhibited.
@@ -768,7 +768,7 @@ kDebug(6200) << "some replaced or what " << box;
 }
 #undef DEBUG_ACIB
 
-void CaretBoxLine::addCreatedFlowBoxInside(InlineFlowBox *flowBox, const QFontMetrics &fm) /*KDE_NO_EXPORT*/
+void CaretBoxLine::addCreatedFlowBoxInside(InlineFlowBox *flowBox, const QFontMetrics &fm) /*KHTML_NO_EXPORT*/
 {
 
   CaretBox *caretBox = new CaretBox(flowBox, false, false);
@@ -782,7 +782,7 @@ void CaretBoxLine::addCreatedFlowBoxInside(InlineFlowBox *flowBox, const QFontMe
   caretBox->_h = fm.height();
 }
 
-void CaretBoxLine::addCreatedFlowBoxEdge(InlineFlowBox *flowBox, const QFontMetrics &fm, bool left, bool rtl) /*KDE_NO_EXPORT*/
+void CaretBoxLine::addCreatedFlowBoxEdge(InlineFlowBox *flowBox, const QFontMetrics &fm, bool left, bool rtl) /*KHTML_NO_EXPORT*/
 {
   CaretBox *caretBox = new CaretBox(flowBox, true, !left);
   caret_boxes.append(caretBox);
@@ -795,7 +795,7 @@ void CaretBoxLine::addCreatedFlowBoxEdge(InlineFlowBox *flowBox, const QFontMetr
   caretBox->_w = 1;
 }
 
-void CaretBoxLine::addCreatedInlineBoxEdge(InlineBox *box, const QFontMetrics &fm, bool left, bool rtl) /*KDE_NO_EXPORT*/
+void CaretBoxLine::addCreatedInlineBoxEdge(InlineBox *box, const QFontMetrics &fm, bool left, bool rtl) /*KHTML_NO_EXPORT*/
 {
   CaretBox *caretBox = new CaretBox(box, true, !left);
   caret_boxes.append(caretBox);
@@ -811,7 +811,7 @@ void CaretBoxLine::addCreatedInlineBoxEdge(InlineBox *box, const QFontMetrics &f
 CaretBoxLine *CaretBoxLine::constructCaretBoxLine(CaretBoxLineDeleter *deleter,
 	InlineFlowBox *basicFlowBox, InlineBox *seekBox, bool seekOutside,
         bool seekOutsideEnd, CaretBoxIterator &iter, RenderObject *seekObject)
-// 	KDE_NO_EXPORT
+// 	KHTML_NO_EXPORT
 {
   // Iterate all inline boxes within this inline flow box.
   // Caret boxes will be created for each
@@ -837,7 +837,7 @@ CaretBoxLine *CaretBoxLine::constructCaretBoxLine(CaretBoxLineDeleter *deleter,
 }
 
 CaretBoxLine *CaretBoxLine::constructCaretBoxLine(CaretBoxLineDeleter *deleter,
-	RenderBox *cb, bool outside, bool outsideEnd, CaretBoxIterator &iter) /*KDE_NO_EXPORT*/
+	RenderBox *cb, bool outside, bool outsideEnd, CaretBoxIterator &iter) /*KHTML_NO_EXPORT*/
 {
   int _x = cb->xPos();
   int _y = cb->yPos();
@@ -1313,8 +1313,8 @@ void LinearDocument::initEndIterator()
 
 // == class LineIterator implementation
 
-CaretBoxIterator LineIterator::currentBox /*KDE_NO_EXPORT*/;
-long LineIterator::currentOffset /*KDE_NO_EXPORT*/;
+CaretBoxIterator LineIterator::currentBox /*KHTML_NO_EXPORT*/;
+long LineIterator::currentOffset /*KHTML_NO_EXPORT*/;
 
 LineIterator::LineIterator(LinearDocument *l, DOM::NodeImpl *node, long offset)
 		: lines(l)

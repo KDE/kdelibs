@@ -33,8 +33,6 @@
 #include <dom/html_element.h>
 #include <dom/html_misc.h>
 
-#include <kdemacros.h>
-
 namespace DOM {
 
 class HTMLButtonElementImpl;
@@ -535,14 +533,14 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED DOMString size() const;
+    KHTML_DEPRECATED DOMString size() const;
 #endif
 
     /**
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setSize( const DOMString & );
+    KHTML_DEPRECATED void setSize( const DOMString & );
 #endif
 
     /**

@@ -4,7 +4,7 @@
 #ifndef CSSPROPERTIES_H
 #define CSSPROPERTIES_H
 
-DOM::DOMString getPropertyName(unsigned short id) KDE_NO_EXPORT;
+DOM::DOMString getPropertyName(unsigned short id) KHTML_NO_EXPORT;
 
 #define CSS_PROP_INVALID 0
 #define CSS_PROP_MIN 1

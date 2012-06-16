@@ -5689,8 +5689,8 @@ static const int minZoom = 20;
 static const int maxZoom = 300;
 
 // My idea of useful stepping ;-) (LS)
-extern const int KDE_NO_EXPORT fastZoomSizes[] = { 20, 50, 75, 90, 100, 120, 150, 200, 300 };
-extern const int KDE_NO_EXPORT fastZoomSizeCount = sizeof fastZoomSizes / sizeof fastZoomSizes[0];
+extern const int KHTML_NO_EXPORT fastZoomSizes[] = { 20, 50, 75, 90, 100, 120, 150, 200, 300 };
+extern const int KHTML_NO_EXPORT fastZoomSizeCount = sizeof fastZoomSizes / sizeof fastZoomSizes[0];
 
 void KHTMLPart::slotIncZoom()
 {

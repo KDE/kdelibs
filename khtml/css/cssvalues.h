@@ -4,7 +4,7 @@
 #ifndef CSSVALUES_H
 #define CSSVALUES_H
 
-DOM::DOMString getValueName(unsigned short id) KDE_NO_EXPORT;
+DOM::DOMString getValueName(unsigned short id) KHTML_NO_EXPORT;
 
 #define CSS_VAL_INVALID 0
 #define CSS_VAL_MIN 1

@@ -29,7 +29,8 @@
 #include "dom/dom_misc.h"
 #include "xml/dom_nodeimpl.h"
 #include "misc/shared.h"
-#include <kdemacros.h>
+#include "misc/enum.h"
+
 #include <QtCore/QDate>
 
 namespace DOM {
@@ -249,8 +250,8 @@ namespace DOM {
 	QList<StyleBaseImpl*> *m_lstChildren;
     };
 
-    KDE_NO_EXPORT int getPropertyID(const char *tagStr, int len);
-    KDE_NO_EXPORT int getValueID(const char *tagStr, int len);
+    KHTML_NO_EXPORT int getPropertyID(const char *tagStr, int len);
+    KHTML_NO_EXPORT int getValueID(const char *tagStr, int len);
 
     struct SelectorHash
     {

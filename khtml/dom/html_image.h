@@ -31,8 +31,6 @@
 
 #include <dom/html_element.h>
 
-#include <kdemacros.h>
-
 namespace DOM {
 
 class HTMLAreaElementImpl;
@@ -257,14 +255,14 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED long border() const;
+    KHTML_DEPRECATED long border() const;
 #endif
 
     /**
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setBorder( long );
+    KHTML_DEPRECATED void setBorder( long );
 #endif
 
     /**
