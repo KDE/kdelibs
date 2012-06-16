@@ -76,7 +76,7 @@ install(FILES
   downloadmanager.h
   uploaddialog.h
   entry.h
-  knewstuff_export.h
+  ${CMAKE_CURRENT_BINARY_DIR}/knewstuff3_export.h
   knewstuffaction.h
   knewstuffbutton.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff3 COMPONENT Devel

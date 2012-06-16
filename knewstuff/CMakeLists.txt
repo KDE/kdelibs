@@ -1,5 +1,3 @@
 add_subdirectory(data)
-if(NOT KDE_NO_DEPRECATED)
-endif(NOT KDE_NO_DEPRECATED)
 add_subdirectory(knewstuff3)
 add_subdirectory(tests)
