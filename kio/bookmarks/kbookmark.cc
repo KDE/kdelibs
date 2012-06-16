@@ -24,11 +24,11 @@
 #include <QStack>
 #include <kdebug.h>
 #include <qmimedatabase.h>
-#include <kmimetype.h>
 #include <kstringhandler.h>
 #include <klocalizedstring.h>
 #include <kurlmimedata.h>
 #include <kbookmarkmanager.h>
+#include <kio/global.h>
 
 #include <qdatetime.h>
 #include <qmimedata.h>
@@ -227,7 +227,7 @@ KBookmark KBookmarkGroup::addBookmark( const QString & text, const QUrl & url, c
     KBookmark newBookmark =  addBookmark( KBookmark( elem ) );
 
     // as icons are moved to metadata, we have to use the KBookmark API for this
-    newBookmark.setIcon(icon.isEmpty() ? KMimeType::iconNameForUrl( url ) : icon );
+    newBookmark.setIcon(icon.isEmpty() ? KIO::iconNameForUrl( url ) : icon );
     return newBookmark;
 }
 
@@ -388,7 +388,7 @@ QString KBookmark::icon() const
                     }
                 }
                 // get icon from URL
-                icon = KMimeType::iconNameForUrl(url());
+                icon = KIO::iconNameForUrl(url());
             }
         }
     }

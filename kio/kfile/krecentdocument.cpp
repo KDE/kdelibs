@@ -31,7 +31,7 @@
 #include <kcomponentdata.h>
 #include <kdebug.h>
 #include <kglobal.h>
-#include <kmimetype.h>
+#include <kio/global.h>
 #include <kdesktopfile.h>
 #include <kde_file.h>
 #include <QtCore/QDir>
@@ -154,7 +154,7 @@ void KRecentDocument::add(const QUrl& url, const QString& desktopEntryName)
     // If you change the line below, change the test in the above loop
     conf.writeEntry( "X-KDE-LastOpenedWith", desktopEntryName );
     conf.writeEntry( "Name", QUrlPathInfo(url).fileName() );
-    conf.writeEntry( "Icon", KMimeType::iconNameForUrl( url ) );
+    conf.writeEntry( "Icon", KIO::iconNameForUrl( url ) );
 }
 
 void KRecentDocument::add(const QString &openStr, bool isUrl)

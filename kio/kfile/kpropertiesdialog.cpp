@@ -94,6 +94,7 @@ extern "C" {
 #include <kglobalsettings.h>
 #include <kstandarddirs.h>
 #include <kjobuidelegate.h>
+#include <kio/global.h>
 #include <kio/job.h>
 #include <kio/copyjob.h>
 #include <kio/chmodjob.h>
@@ -102,7 +103,6 @@ extern "C" {
 #include <kio/netaccess.h>
 #include <kio/jobuidelegate.h>
 #include <kfiledialog.h>
-#include <kmimetype.h>
 #include <kmountpoint.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
@@ -841,7 +841,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
                 bDesktopFile = false; // not all desktop files
             if ( (*kit).mode() != mode )
                 mode = (mode_t)0;
-            if ( KMimeType::iconNameForUrl(url, mode) != iconStr )
+            if ( KIO::iconNameForUrl(url) != iconStr )
                 iconStr = "document-multiple";
             if ( url.directory() != directory )
                 directory.clear();

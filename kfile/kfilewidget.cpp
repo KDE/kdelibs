@@ -40,13 +40,13 @@
 #include <kfilefiltercombo.h>
 #include <kimagefilepreview.h>
 #include <kmenu.h>
-#include <kmimetype.h>
 #include <kpushbutton.h>
 #include <krecentdocument.h>
 #include <ktoolbar.h>
 #include <kurlcompletion.h>
 #include <kuser.h>
 #include <kprotocolmanager.h>
+#include <kio/global.h>
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
 #include <kio/netaccess.h>
@@ -1219,7 +1219,7 @@ void KFileWidgetPrivate::removeDummyHistoryEntry()
 void KFileWidgetPrivate::setLocationText(const QUrl& url)
 {
     if (!url.isEmpty()) {
-        QPixmap mimeTypeIcon = KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( url ), KIconLoader::Small );
+        QPixmap mimeTypeIcon = KIconLoader::global()->loadMimeTypeIcon( KIO::iconNameForUrl( url ), KIconLoader::Small );
         QUrlPathInfo urlPathInfo(url);
         const QString path = url.path();
         if (!path.isEmpty()) {
@@ -1255,7 +1255,7 @@ void KFileWidgetPrivate::setLocationText( const QList<QUrl>& urlList )
 
         setDummyHistoryEntry( urls, QPixmap(), false );
     } else if ( urlList.count() ) {
-        const QPixmap mimeTypeIcon = KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( urlList[0] ),  KIconLoader::Small );
+        const QPixmap mimeTypeIcon = KIconLoader::global()->loadMimeTypeIcon( KIO::iconNameForUrl( urlList[0] ),  KIconLoader::Small );
         setDummyHistoryEntry( KUrl::relativeUrl(currUrl, urlList[0]), mimeTypeIcon );
     } else {
         removeDummyHistoryEntry();
@@ -1432,7 +1432,7 @@ void KFileWidgetPrivate::_k_urlEntered(const QUrl& url)
     bool blocked = locationEdit->blockSignals(true);
     if (keepLocation) {
         QUrl currentUrl = QUrl::fromUserInput(filename);
-        locationEdit->changeUrl(0, KDE::icon(KMimeType::iconNameForUrl(currentUrl)), currentUrl);
+        locationEdit->changeUrl(0, KDE::icon(KIO::iconNameForUrl(currentUrl)), currentUrl);
         locationEdit->lineEdit()->setModified(true);
     }
 
@@ -1544,7 +1544,7 @@ void KFileWidgetPrivate::_k_fileCompletion( const QString& match )
         return;
     }
 
-    const QPixmap pix = KIconLoader::global()->loadMimeTypeIcon(KMimeType::iconNameForUrl(QUrl(match)), KIconLoader::Small);
+    const QPixmap pix = KIconLoader::global()->loadMimeTypeIcon(KIO::iconNameForUrl(QUrl(match)), KIconLoader::Small);
     setDummyHistoryEntry(locationEdit->currentText(), pix, !locationEdit->currentText().isEmpty());
 }
 

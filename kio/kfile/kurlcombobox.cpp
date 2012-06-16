@@ -26,8 +26,8 @@
 #include <qurlpathinfo.h>
 
 #include <kdebug.h>
+#include <kio/global.h>
 #include <klocalizedstring.h>
-#include <kmimetype.h>
 #include <kiconloader.h>
 
 class KUrlComboBoxPrivate
@@ -428,7 +428,7 @@ QIcon KUrlComboBoxPrivate::getIcon( const QUrl& url ) const
     if (myMode == KUrlComboBox::Directories)
         return dirIcon;
     else
-        return KDE::icon(KMimeType::iconNameForUrl(url, 0));
+        return KDE::icon(KIO::iconNameForUrl(url));
 }
 
 
