@@ -117,10 +117,8 @@ FormFileWidget::FormFileWidget(QWidget* parent, const QString& startDirOrVariabl
     //KFileDialog::setMode( KFile::File | KFile::LocalOnly );
 
     // slotOk() emits accepted, accept() emits fileSelected()
-    QObject::connect(d->filewidget, SIGNAL(fileSelected(QString)), this, SLOT(slotFileSelected(QString)));
-
-    QObject::connect(d->filewidget, SIGNAL(fileSelected(QString)), this, SIGNAL(fileSelected(QString)));
-    QObject::connect(d->filewidget, SIGNAL(fileHighlighted(QString)), this, SIGNAL(fileHighlighted(QString)));
+    QObject::connect(d->filewidget, SIGNAL(fileSelected(QUrl)), this, SLOT(slotFileSelected(QUrl)));
+    QObject::connect(d->filewidget, SIGNAL(fileHighlighted(QUrl)), this, SIGNAL(slotFileHighlighted(QUrl)));
     QObject::connect(d->filewidget, SIGNAL(selectionChanged()), this, SIGNAL(selectionChanged()));
     QObject::connect(d->filewidget, SIGNAL(filterChanged(QString)), this, SIGNAL(filterChanged(QString)));
 
@@ -169,10 +167,16 @@ void FormFileWidget::setMimeFilter(const QStringList& filter)
     d->filewidget->setMimeFilter(filter);
 }
 
-void FormFileWidget::slotFileSelected( const QString & fn )
+void FormFileWidget::slotFileSelected(const QUrl & fn)
 {
     //kDebug()<<fn;
-    d->filename = fn;
+    d->filename = fn.toString();
+    emit fileSelected(fn.toString());
+}
+
+void FormFileWidget::slotFileHighlighted(const QUrl& fn)
+{
+    emit fileHighlighted(fn.toString());
 }
 
 QString FormFileWidget::selectedFile() const

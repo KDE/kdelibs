@@ -299,10 +299,6 @@ KFileDialog::KFileDialog(const QUrl& startDir, const QString& filter,
                          SIGNAL(fileSelected(QUrl)));
     connect(fileQWidget, SIGNAL(fileHighlighted(QUrl)),
                          SIGNAL(fileHighlighted(QUrl)));
-    connect(fileQWidget, SIGNAL(fileSelected(QString)),
-                         SIGNAL(fileSelected(QString)));
-    connect(fileQWidget, SIGNAL(fileHighlighted(QString)),
-                         SIGNAL(fileHighlighted(QString)));
     connect(fileQWidget, SIGNAL(selectionChanged()),
                          SIGNAL(selectionChanged()));
     connect(fileQWidget, SIGNAL(filterChanged(QString)),
