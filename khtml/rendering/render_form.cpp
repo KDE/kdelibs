@@ -1752,10 +1752,14 @@ void RenderSelect::updateFromElement()
     if (oldMultiple != m_multiple || oldSize != m_size) {
         if (m_useListBox != oldListbox) {
             // type of select has changed
-            if(m_useListBox)
+            if (m_useListBox)
                 setQWidget(createListBox());
             else
                 setQWidget(createComboBox());
+
+            // Call setStyle() to fix unwanted font size change (#142722)
+            // and to update our proxy style properties
+            setStyle(style());
         }
 
         if (m_useListBox && oldMultiple != m_multiple) {
