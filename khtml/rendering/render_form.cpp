@@ -1730,9 +1730,9 @@ void RenderSelect::clearItemFlags(int index, Qt::ItemFlags flags)
 void RenderSelect::setStyle(RenderStyle *_style)
 {
     RenderFormElement::setStyle(_style);
-    if (!m_useListBox && shouldDisableNativeBorders()) {
+    if (!m_useListBox) {
         KHTMLProxyStyle* proxyStyle = static_cast<KHTMLProxyStyle*>(getProxyStyle());
-        proxyStyle->noBorder = true;
+        proxyStyle->noBorder = shouldDisableNativeBorders();
     }
 }
 
