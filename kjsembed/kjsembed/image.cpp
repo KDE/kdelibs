@@ -136,7 +136,7 @@ START_VARIANT_METHOD( callmirrored, QImage )
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callnumBytes, QImage )
-    int cppValue = value.numBytes();
+    int cppValue = value.byteCount();
     result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 

@@ -1417,7 +1417,7 @@ int KPixmapCache::Private::writeData(const QString& key, const QPixmap& pix)
     stream << key;
     // Write image info and compressed data
     QImage img = pix.toImage();
-    QByteArray imgdatacompressed = qCompress(img.bits(), img.numBytes());
+    QByteArray imgdatacompressed = qCompress(img.bits(), img.byteCount());
     stream << (qint32)img.format() << (qint32)img.width() << (qint32)img.height() << (qint32)img.bytesPerLine();
     stream << imgdatacompressed;
 

@@ -994,10 +994,10 @@ KDbusImageStruct KStatusNotifierItemPrivate::imageToStruct(const QImage &image)
     icon.width = image.size().width();
     icon.height = image.size().height();
     if (image.format() == QImage::Format_ARGB32) {
-        icon.data = QByteArray((char*)image.bits(), image.numBytes());
+        icon.data = QByteArray((char*)image.bits(), image.byteCount());
     } else {
         QImage image32 = image.convertToFormat(QImage::Format_ARGB32);
-        icon.data = QByteArray((char*)image32.bits(), image32.numBytes());
+        icon.data = QByteArray((char*)image32.bits(), image32.byteCount());
     }
 
     //swap to network byte order if we are little endian
