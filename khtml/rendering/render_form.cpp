@@ -335,7 +335,6 @@ void RenderFormElement::updateFromElement()
         document()->quietResetFocus();
 
     RenderWidget::updateFromElement();
-    setPadding();
 }
 
 void RenderFormElement::layout()
