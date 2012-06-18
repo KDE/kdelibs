@@ -589,12 +589,12 @@ KRuler::slotNewValue(int _value)
   if (d->dir == Qt::Horizontal) {
     QRect oldrec(-5+oldvalue,10, 11,6);
     QRect newrec(-5+_value,10, 11,6);
-    repaint( oldrec.unite(newrec) );
+    repaint( oldrec.united(newrec) );
   }
   else {
     QRect oldrec(10,-5+oldvalue, 6,11);
     QRect newrec(10,-5+_value, 6,11);
-    repaint( oldrec.unite(newrec) );
+    repaint( oldrec.united(newrec) );
   }
 }
 

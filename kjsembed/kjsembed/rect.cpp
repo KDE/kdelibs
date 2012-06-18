@@ -342,7 +342,7 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callunite, QRect )
     QRect arg0 = KJSEmbed::extractVariant<QRect>(exec,args, 0);
-    QRect cppValue = value.unite(arg0);
+    QRect cppValue = value.united(arg0);
     result = KJSEmbed::createVariant(exec, "QRect", cppValue );
 END_VARIANT_METHOD
 
