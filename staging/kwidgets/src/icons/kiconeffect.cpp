@@ -756,7 +756,7 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 
 	// Merge color tables
 	int nc = src.colorCount();
-	src.setNumColors(nc + overlay.colorCount());
+	src.setColorCount(nc + overlay.colorCount());
 	for (i=0; i<overlay.colorCount(); ++i)
 	{
 	    src.setColor(nc+i, overlay.color(i));

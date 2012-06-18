@@ -244,7 +244,7 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsetNumColors, QImage )
     int arg0 = KJSEmbed::extractInt(exec, args, 0);
-    value.setNumColors(arg0);
+    value.setColorCount(arg0);
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callsetOffset, QImage )
