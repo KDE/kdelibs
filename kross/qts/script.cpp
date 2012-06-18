@@ -138,7 +138,11 @@ namespace Kross {
                         const int count = mo->methodCount();
                         for(int i = 0; i < count; ++i) {
                             QMetaMethod mm = mo->method(i);
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
                             const QString signature = mm.signature();
+#else
+                            const QString signature = mm.methodSignature();
+#endif
                             const QString name = signature.left(signature.indexOf('('));
                             if( mm.methodType() == QMetaMethod::Signal ) {
                                 QScriptValue func = global.property(name);

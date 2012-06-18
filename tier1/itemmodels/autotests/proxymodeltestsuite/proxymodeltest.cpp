@@ -59,7 +59,11 @@ static bool hasMetaMethodStartingWith(QObject *object, const QString &checkedSig
   bool found = false;
   for (int methodIndex = 0; methodIndex < mo->methodCount(); ++methodIndex) {
     QMetaMethod mm = mo->method(methodIndex);
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     QString signature = QString::fromLatin1( mm.signature() );
+#else
+    QString signature = QString::fromLatin1( mm.methodSignature() );
+#endif
 
     if (signature.startsWith(checkedSignature)) {
       found = true;
@@ -652,10 +656,22 @@ void ProxyModelTest::connectTestSignals(QObject *reciever)
   for (int methodIndex = 0; methodIndex < metaObject()->methodCount(); ++methodIndex) {
     QMetaMethod mm = metaObject()->method(methodIndex);
     if (mm.methodType() == QMetaMethod::Signal
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
       && QString(mm.signature()).startsWith("test")
+#else
+      && QString(mm.methodSignature()).startsWith("test")
+#endif
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
       && QString(mm.signature()).endsWith("Data()"))
+#else
+      && QString(mm.methodSignature()).endsWith("Data()"))
+#endif
       {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         int slotIndex = reciever->metaObject()->indexOfSlot(mm.signature());
+#else
+        int slotIndex = reciever->metaObject()->indexOfSlot(mm.methodSignature());
+#endif
         Q_ASSERT(slotIndex >= 0);
         metaObject()->connect(this, methodIndex, reciever, slotIndex);
       }
@@ -669,10 +685,22 @@ void ProxyModelTest::disconnectTestSignals(QObject *reciever)
   for (int methodIndex = 0; methodIndex < metaObject()->methodCount(); ++methodIndex) {
     QMetaMethod mm = metaObject()->method(methodIndex);
     if (mm.methodType() == QMetaMethod::Signal
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
       && QString(mm.signature()).startsWith("test")
+#else
+      && QString(mm.methodSignature()).startsWith("test")
+#endif
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
       && QString(mm.signature()).endsWith("Data()"))
+#else
+      && QString(mm.methodSignature()).endsWith("Data()"))
+#endif
     {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
       int slotIndex = reciever->metaObject()->indexOfSlot(mm.signature());
+#else
+      int slotIndex = reciever->metaObject()->indexOfSlot(mm.methodSignature());
+#endif
       Q_ASSERT(slotIndex >= 0);
       metaObject()->disconnect(this, methodIndex, reciever, slotIndex);
     }

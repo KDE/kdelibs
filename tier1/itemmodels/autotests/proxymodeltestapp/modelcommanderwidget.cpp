@@ -53,7 +53,11 @@ void ModelCommanderWidget::init()
   for(int i = 0; i < mo->methodCount(); ++i)
   {
     mm = mo->method(i);
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     QString signature = mm.signature();
+#else
+    QString signature = mm.methodSignature();
+#endif
     if (signature.startsWith("init_") && signature.endsWith("(QString)"))
     {
       QTreeWidgetItem *testFunctionItem = new QTreeWidgetItem(m_treeWidget, QStringList() << signature.mid(5, signature.length() - 14));

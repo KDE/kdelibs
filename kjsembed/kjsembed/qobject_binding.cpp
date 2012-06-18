@@ -167,7 +167,11 @@ KJS::JSValue *callConnect( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
 
 QByteArray extractMemberName( const QMetaMethod &member )
 {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     QString sig = member.signature();
+#else
+    QString sig = member.methodSignature();
+#endif
     return sig.left( sig.indexOf('(') ).toLatin1();
 }
 
