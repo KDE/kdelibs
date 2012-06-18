@@ -96,7 +96,7 @@ public:
 protected:
     virtual bool isRenderButton() const { return false; }
     virtual bool isEditable() const { return false; }
-	Qt::AlignmentFlag textAlignment() const;
+    Qt::Alignment textAlignment() const;
 
     virtual void setPadding();
     KdeUiProxyStyle* getProxyStyle();
@@ -529,7 +529,7 @@ public:
     { return static_cast<DOM::HTMLTextAreaElementImpl*>(RenderObject::element()); }
 
     QString text();
-    void    setText(const QString& text);
+    void setText(const QString& text);
 
     void highLightWord( unsigned int length, unsigned int pos );
 
@@ -550,6 +550,7 @@ protected:
     virtual bool canHaveBorder() const { return true; }
 
     bool scrollbarsStyled;
+    Qt::Alignment m_textAlignment;
 };
 
 // -------------------------------------------------------------------------
