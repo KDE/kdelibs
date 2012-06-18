@@ -55,7 +55,7 @@ public:
     *  \p \<directoryPrefix\>\<six letters\>
     *
     * The default \p directoryPrefix is "$KDEHOME/tmp-$HOST/appname", i.e.
-    * as returned by KStandardDirs::locateLocal("tmp", KGlobal::mainComponent().componentName())
+    * as returned by KStandardDirs::locateLocal("tmp", QCoreApplication::instance()->applicationName())
     *
     * @param directoryPrefix the prefix of the file name, or
     *        QString() for the default value

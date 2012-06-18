@@ -132,7 +132,7 @@ bool KNotificationManager::notify( KNotification* n, const QPixmap &pix,
     int timeout = (n->flags() & KNotification::Persistent) ? 0 : -1;
 
     QList<QVariant>  args;
-    args << n->eventId() << (appname.isEmpty() ? KGlobal::mainComponent().componentName() : appname);
+    args << n->eventId() << (appname.isEmpty() ? QCoreApplication::instance()->applicationName() : appname);
     args.append(QVariant(contextList));
     args << n->title() << n->text() <<  pixmapData << QVariant(actions) << timeout << qlonglong(winId) ;
     return d->knotify->callWithCallback( "event", args, n, SLOT(slotReceivedId(int)), SLOT(slotReceivedIdError(QDBusError)));

@@ -26,6 +26,7 @@
 #include <QSplitter>
 #include <QCheckBox>
 #include <QtCore/QDir>
+#include <QCoreApplication>
 #include <kcmdlineargs.h>
 #include <kiconloader.h>
 #include <kapplication.h>
@@ -100,7 +101,7 @@ TestMainWindow::~TestMainWindow()
 
 void TestMainWindow::slotFileOpen()
 {
-    const QString file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, KGlobal::mainComponent().componentName()+"/kpartstest_shell.rc" );
+    const QString file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QCoreApplication::instance()->applicationName()+"/kpartstest_shell.rc" );
     if (!m_part1->openUrl(QUrl::fromLocalFile(file)))
         KMessageBox::error(this,"Couldn't open file !");
 }

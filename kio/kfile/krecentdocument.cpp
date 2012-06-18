@@ -30,7 +30,6 @@
 
 #include <kcomponentdata.h>
 #include <kdebug.h>
-#include <kglobal.h>
 #include <kio/global.h>
 #include <kdesktopfile.h>
 #include <kde_file.h>
@@ -38,6 +37,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QTextStream>
 #include <QtCore/QMutableStringListIterator>
+#include <QCoreApplication>
 #include <QtCore/QRegExp>
 #include <qurlpathinfo.h>
 
@@ -87,7 +87,7 @@ QStringList KRecentDocument::recentDocuments()
 
 void KRecentDocument::add(const QUrl& url)
 {
-    KRecentDocument::add(url, KGlobal::mainComponent().componentName());
+    KRecentDocument::add(url, QCoreApplication::instance()->applicationName());
     // ### componentName might not match the service filename...
 }
 

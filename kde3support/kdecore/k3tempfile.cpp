@@ -45,8 +45,8 @@
 #include <QtCore/QFile>
 #include <QtCore/QDataStream>
 #include <QtCore/QTextStream>
+#include <QCoreApplication>
 
-#include "kglobal.h"
 #include "krandom.h"
 #include "kcomponentdata.h"
 #include "kstandarddirs.h"
@@ -94,7 +94,7 @@ K3TempFile::K3TempFile(const QString& filePrefix,
       extension = QLatin1String(".tmp");
    if (prefix.isEmpty())
    {
-      prefix = KStandardDirs::locateLocal("tmp", KGlobal::mainComponent().componentName());
+      prefix = KStandardDirs::locateLocal("tmp", QCoreApplication::instance()->applicationName());
    }
    (void) create(prefix, extension, mode);
 }

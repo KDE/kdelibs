@@ -624,7 +624,7 @@ void KEditToolBarPrivate::_k_slotDefault()
         int slash = m_file.lastIndexOf('/')+1;
         if (slash)
             m_file = m_file.mid(slash);
-        const QString xml_file = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + '/' + KGlobal::mainComponent().componentName() + '/' + m_file;
+        const QString xml_file = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + '/' + QCoreApplication::instance()->applicationName() + '/' + m_file;
 
         if ( QFile::exists( xml_file ) )
             if ( !QFile::remove( xml_file ) )

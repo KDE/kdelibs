@@ -27,6 +27,7 @@
 #include <QtCore/QDir>
 #endif
 
+#include <QCoreApplication>
 #include <QtCore/QMimeData>
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
@@ -34,7 +35,6 @@
 #include <QAction>
 
 #include <kfileitem.h>
-#include <kglobal.h>
 #include <klocalizedstring.h>
 #include <kuser.h>
 
@@ -461,7 +461,7 @@ QList<KFilePlacesItem *> KFilePlacesModel::Private::loadBookmarkList()
         QString appName = bookmark.metaDataItem("OnlyInApp");
         bool deviceAvailable = devices.remove(udi);
 
-        bool allowedHere = appName.isEmpty() || (appName==KGlobal::mainComponent().componentName());
+        bool allowedHere = appName.isEmpty() || (appName==QCoreApplication::instance()->applicationName());
 
         if ((udi.isEmpty() && allowedHere) || deviceAvailable) {
             KFilePlacesItem *item;

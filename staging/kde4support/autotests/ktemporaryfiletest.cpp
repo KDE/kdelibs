@@ -11,6 +11,7 @@ This file has been placed in the Public Domain.
 #include "qtest_kde.h"
 
 #include <QtCore/QDir>
+#include <QCoreApplication>
 
 #include "ktemporaryfile.h"
 
@@ -28,7 +29,7 @@ those things work. These should only test KDE specific functionality.
 void KTemporaryFileTest::initTestCase()
 {
     kdeTempDir = QDir::tempPath() + '/';
-    componentName = KGlobal::mainComponent().componentName();
+    componentName = QCoreApplication::instance()->applicationName();
 
     QDir qdir ( kdeTempDir );
     qdir.mkdir("ktempfiletest");

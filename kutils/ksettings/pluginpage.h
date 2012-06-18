@@ -45,8 +45,8 @@ namespace KSettings
  * MyAppPluginConfig(QWidget * parent, const QVariantList & args)
  *     : PluginPage(MyAppPluginConfigFactory::componentData(), parent, args)
  * {
- *     pluginSelector()->addPlugins( KGlobal::mainComponent().componentName(), i18n( "General Plugins" ), "General" );
- *     pluginSelector()->addPlugins( KGlobal::mainComponent().componentName(), i18n( "Effects" ), "Effects" );
+ *     pluginSelector()->addPlugins( QCoreApplication::instance()->applicationName(), i18n( "General Plugins" ), "General" );
+ *     pluginSelector()->addPlugins( QCoreApplication::instance()->applicationName(), i18n( "Effects" ), "Effects" );
  * }
  * \endcode
  *
