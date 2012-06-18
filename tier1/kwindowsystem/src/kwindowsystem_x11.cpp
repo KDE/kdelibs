@@ -879,7 +879,7 @@ QRect KWindowSystem::workArea( const QList<WId>& exclude, int desktop )
         if ( strut.bottom > 0  )
             r.setBottom( r.bottom() - (int) strut.bottom );
 
-        a = a.intersect(r);
+        a = a.intersected(r);
     }
     return a;
 }

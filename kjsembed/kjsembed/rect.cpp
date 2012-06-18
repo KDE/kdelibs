@@ -110,7 +110,7 @@ END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callintersect, QRect )
     QRect arg0 = KJSEmbed::extractVariant<QRect>(exec,args, 0);
-    QRect cppValue = value.intersect(arg0);
+    QRect cppValue = value.intersected(arg0);
     result = KJSEmbed::createVariant(exec, "QRect", cppValue );
 END_VARIANT_METHOD
 
