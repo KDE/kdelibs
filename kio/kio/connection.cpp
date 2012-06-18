@@ -29,10 +29,10 @@
 #include <QTime>
 #include <qtemporaryfile.h>
 #include <qstandardpaths.h>
+#include <QCoreApplication>
 
 #include <kdebug.h>
 #include <kcomponentdata.h>
-#include <kglobal.h>
 #include <klocalizedstring.h>
 
 using namespace KIO;
@@ -204,7 +204,7 @@ bool SocketConnectionBackend::listenForRemote()
 
     if (mode == LocalSocketMode) {
         const QString prefix = QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation);
-        QTemporaryFile socketfile(prefix + QLatin1Char('/') + KGlobal::mainComponent().componentName() + QLatin1String("XXXXXX.slave-socket"));
+        QTemporaryFile socketfile(prefix + QLatin1Char('/') + QCoreApplication::instance()->applicationName() + QLatin1String("XXXXXX.slave-socket"));
         if (!socketfile.open())
         {
             errorString = i18n("Unable to create io-slave: %1", strerror(errno));

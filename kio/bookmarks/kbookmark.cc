@@ -23,12 +23,12 @@
 #include "kbookmark.h"
 #include <QStack>
 #include <kdebug.h>
-#include <kmimetype.h>
+#include <qmimedatabase.h>
 #include <kstringhandler.h>
-#include <kglobal.h>
 #include <klocalizedstring.h>
 #include <kurlmimedata.h>
 #include <kbookmarkmanager.h>
+#include <kio/global.h>
 
 #include <qdatetime.h>
 #include <qmimedata.h>
@@ -137,14 +137,11 @@ int KBookmarkGroup::indexOf(const KBookmark& child) const
 
 QDomElement KBookmarkGroup::nextKnownTag( const QDomElement &start, bool goNext ) const
 {
-    static const QString & bookmark = KGlobal::staticQString("bookmark");
-    static const QString & folder = KGlobal::staticQString("folder");
-    static const QString & separator = KGlobal::staticQString("separator");
-
     for( QDomElement elem = start; !elem.isNull(); )
     {
         QString tag = elem.tagName();
-        if (tag == folder || tag == bookmark || tag == separator)
+        if (tag == QLatin1String("folder") || tag == QLatin1String("bookmark")
+           || tag == QLatin1String("separator"))
             return elem;
         if (goNext)
             elem = elem.nextSiblingElement();
@@ -215,13 +212,13 @@ KBookmark KBookmarkGroup::addBookmark( const KBookmark &bm )
     return bm;
 }
 
-KBookmark KBookmarkGroup::addBookmark( const QString & text, const KUrl & url, const QString & icon )
+KBookmark KBookmarkGroup::addBookmark( const QString & text, const QUrl & url, const QString & icon )
 {
     if (isNull())
         return KBookmark();
     QDomDocument doc = element.ownerDocument();
     QDomElement elem = doc.createElement( "bookmark" );
-    elem.setAttribute( "href", url.url() ); // gives us utf8
+    elem.setAttribute("href", url.toString());
 
     QDomElement textElem = doc.createElement( "title" );
     elem.appendChild( textElem );
@@ -230,7 +227,7 @@ KBookmark KBookmarkGroup::addBookmark( const QString & text, const KUrl & url, c
     KBookmark newBookmark =  addBookmark( KBookmark( elem ) );
 
     // as icons are moved to metadata, we have to use the KBookmark API for this
-    newBookmark.setIcon(icon.isEmpty() ? KMimeType::iconNameForUrl( url ) : icon );
+    newBookmark.setIcon(icon.isEmpty() ? KIO::iconNameForUrl( url ) : icon );
     return newBookmark;
 }
 
@@ -267,9 +264,9 @@ QDomElement KBookmarkGroup::findToolbar() const
     return QDomElement();
 }
 
-QList<KUrl> KBookmarkGroup::groupUrlList() const
+QList<QUrl> KBookmarkGroup::groupUrlList() const
 {
-    QList<KUrl> urlList;
+    QList<QUrl> urlList;
     for ( KBookmark bm = first(); !bm.isNull(); bm = next(bm) )
     {
         if ( bm.isSeparator() || bm.isGroup() )
@@ -344,14 +341,14 @@ void KBookmark::setFullText(const QString &fullText)
     domtext.setData(fullText);
 }
 
-KUrl KBookmark::url() const
+QUrl KBookmark::url() const
 {
-    return KUrl(element.attribute("href").toAscii()); // Decodes it from utf8
+    return QUrl(element.attribute("href").toLatin1());
 }
 
-void KBookmark::setUrl(const KUrl &url)
+void KBookmark::setUrl(const QUrl &url)
 {
-    element.setAttribute("href", url.url());
+    element.setAttribute("href", url.toString());
 }
 
 QString KBookmark::icon() const
@@ -384,13 +381,14 @@ QString KBookmark::icon() const
                 // get icon from mimeType
                 QString _mimeType = mimeType();
                 if (!_mimeType.isEmpty()) {
-                    KMimeType::Ptr mime = KMimeType::mimeType(_mimeType, KMimeType::ResolveAliases);
-                    if (mime) {
-                        return mime->iconName();
+                    QMimeDatabase db;
+                    QMimeType mime = db.mimeTypeForName(_mimeType);
+                    if (mime.isValid()) {
+                        return mime.iconName();
                     }
                 }
                 // get icon from URL
-                icon = KMimeType::iconNameForUrl(url());
+                icon = KIO::iconNameForUrl(url());
             }
         }
     }
@@ -507,7 +505,7 @@ QDomElement KBookmark::internalElement() const
     return element;
 }
 
-KBookmark KBookmark::standaloneBookmark( const QString & text, const KUrl & url, const QString & icon )
+KBookmark KBookmark::standaloneBookmark( const QString & text, const QUrl & url, const QString & icon )
 {
     QDomDocument doc("xbel");
     QDomElement elem = doc.createElement("xbel");
@@ -543,7 +541,7 @@ QString KBookmark::commonParent(const QString &first, const QString &second)
 
 void KBookmark::updateAccessMetadata()
 {
-    kDebug(7043) << "KBookmark::updateAccessMetadata " << address() << " " << url().prettyUrl();
+    kDebug(7043) << "KBookmark::updateAccessMetadata " << address() << " " << url();
 
     const uint timet = QDateTime::currentDateTime().toTime_t();
     setMetaDataItem( "time_added", QString::number( timet ), DontOverwriteMetaData );
@@ -678,14 +676,14 @@ KBookmark::List::List() : QList<KBookmark>()
 
 void KBookmark::List::populateMimeData( QMimeData* mimeData ) const
 {
-    KUrl::List urls;
+    QList<QUrl> urls;
 
     QDomDocument doc( "xbel" );
     QDomElement elem = doc.createElement( "xbel" );
     doc.appendChild( elem );
 
     for ( const_iterator it = begin(), end = this->end() ; it != end ; ++it ) {
-        urls.append( (*it).url() );
+        urls.append((*it).url());
         elem.appendChild( (*it).internalElement().cloneNode( true /* deep */ ) );
     }
 

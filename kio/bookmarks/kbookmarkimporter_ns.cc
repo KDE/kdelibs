@@ -28,7 +28,6 @@
 #include <kstringhandler.h>
 #include <klocalizedstring.h>
 #include <kdebug.h>
-#include <kde_file.h>
 #include <kcharsets.h>
 #include <kmessagebox.h>
 
@@ -140,9 +139,7 @@ void KNSBookmarkExporterImpl::write(const KBookmarkGroup &parent)
       return;
    }
    if (QFile::exists(m_fileName)) {
-      KDE_rename(
-         QFile::encodeName(m_fileName),
-         QFile::encodeName(m_fileName + ".beforekde"));
+       QFile::rename(m_fileName, m_fileName + ".beforekde");
    }
 
    QFile file(m_fileName);
@@ -193,7 +190,7 @@ QString KNSBookmarkExporterImpl::folderAsString(const KBookmarkGroup &parent) co
 
       } else {
          // note - netscape seems to use local8bit for url...
-         fstream << "<DT><A HREF=\"" << bk.url().url() << "\""
+         fstream << "<DT><A HREF=\"" << bk.url().toString() << "\""
                     << bk.internalElement().attribute("netscapeinfo") << ">"
                  << text << "</A>" << endl;
          continue;

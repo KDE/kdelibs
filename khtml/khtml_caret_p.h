@@ -373,7 +373,7 @@ public:
   static CaretBoxLine *constructCaretBoxLine(MassDeleter<CaretBoxLine> *deleter,
   	InlineFlowBox *baseFlowBox, InlineBox *seekBox, bool seekOutside,
         bool seekOutsideEnd, CaretBoxIterator &iter,
-	RenderObject *seekObject = 0) /*KDE_NO_EXPORT*/;
+	RenderObject *seekObject = 0) /*KHTML_NO_EXPORT*/;
 
   /** constructs a new caret box line for the given render block.
    * @param deleter deleter which handles alloc+dealloc of the object
@@ -384,7 +384,7 @@ public:
    *	position for \c cb
    */
   static CaretBoxLine *constructCaretBoxLine(MassDeleter<CaretBoxLine> *deleter,
-  	RenderBox *cb, bool outside, bool outsideEnd, CaretBoxIterator &iter) /*KDE_NO_EXPORT*/;
+  	RenderBox *cb, bool outside, bool outsideEnd, CaretBoxIterator &iter) /*KHTML_NO_EXPORT*/;
 
 #if DEBUG_CARETMODE > 0
   void dump(QTextStream &ts, const QString &ind) const;
@@ -445,7 +445,7 @@ protected:
    *
    * It will additionally look for the caret box specified in SeekBoxParams.
    */
-  void addConvertedInlineBox(InlineBox *, SeekBoxParams &) /*KDE_NO_EXPORT*/;
+  void addConvertedInlineBox(InlineBox *, SeekBoxParams &) /*KHTML_NO_EXPORT*/;
 
   /** creates and adds the edge of a generic inline box
    * @param box inline box
@@ -454,7 +454,7 @@ protected:
    * @param rtl true if direction is rtl
    */
   void addCreatedInlineBoxEdge(InlineBox *box, const QFontMetrics &fm,
-  	bool left, bool rtl) /*KDE_NO_EXPORT*/;
+  	bool left, bool rtl) /*KHTML_NO_EXPORT*/;
   /** creates and adds the edge of an inline flow box
    * @param flowBox inline flow box
    * @param fm font metrics of inline flow box
@@ -462,12 +462,12 @@ protected:
    * @param rtl true if direction is rtl
    */
   void addCreatedFlowBoxEdge(InlineFlowBox *flowBox, const QFontMetrics &fm,
-  	bool left, bool rtl) /*KDE_NO_EXPORT*/;
+  	bool left, bool rtl) /*KHTML_NO_EXPORT*/;
   /** creates and adds the inside of an inline flow box
    * @param flowBox inline flow box
    * @param fm font metrics of inline flow box
    */
-  void addCreatedFlowBoxInside(InlineFlowBox *flowBox, const QFontMetrics &fm) /*KDE_NO_EXPORT*/;
+  void addCreatedFlowBoxInside(InlineFlowBox *flowBox, const QFontMetrics &fm) /*KHTML_NO_EXPORT*/;
 
   friend class CaretBoxIterator;
 };

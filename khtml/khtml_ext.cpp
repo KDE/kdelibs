@@ -1000,8 +1000,8 @@ KParts::BrowserHostExtension* KHTMLPartBrowserHostExtension::findFrameParent( KP
 
 
 // defined in khtml_part.cpp
-extern const int KDE_NO_EXPORT fastZoomSizes[];
-extern const int KDE_NO_EXPORT fastZoomSizeCount;
+extern const int KHTML_NO_EXPORT fastZoomSizes[];
+extern const int KHTML_NO_EXPORT fastZoomSizeCount;
 
 KHTMLZoomFactorAction::KHTMLZoomFactorAction( KHTMLPart *part, bool direction, const QString &icon, const QString &text, QObject *parent )
     : KSelectAction( text, parent )

@@ -30,14 +30,14 @@
 
 #include <kcomponentdata.h>
 #include <kdebug.h>
-#include <kglobal.h>
-#include <kmimetype.h>
+#include <kio/global.h>
 #include <kdesktopfile.h>
 #include <kde_file.h>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QTextStream>
 #include <QtCore/QMutableStringListIterator>
+#include <QCoreApplication>
 #include <QtCore/QRegExp>
 #include <qurlpathinfo.h>
 
@@ -87,7 +87,7 @@ QStringList KRecentDocument::recentDocuments()
 
 void KRecentDocument::add(const QUrl& url)
 {
-    KRecentDocument::add(url, KGlobal::mainComponent().componentName());
+    KRecentDocument::add(url, QCoreApplication::instance()->applicationName());
     // ### componentName might not match the service filename...
 }
 
@@ -154,7 +154,7 @@ void KRecentDocument::add(const QUrl& url, const QString& desktopEntryName)
     // If you change the line below, change the test in the above loop
     conf.writeEntry( "X-KDE-LastOpenedWith", desktopEntryName );
     conf.writeEntry( "Name", QUrlPathInfo(url).fileName() );
-    conf.writeEntry( "Icon", KMimeType::iconNameForUrl( url ) );
+    conf.writeEntry( "Icon", KIO::iconNameForUrl( url ) );
 }
 
 void KRecentDocument::add(const QString &openStr, bool isUrl)

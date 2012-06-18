@@ -43,7 +43,6 @@
 #include <config.h>
 #include <kdeversion.h>
 #include <kdebug.h>
-#include <kglobal.h>
 #include <klocale.h>
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
@@ -899,7 +898,7 @@ bool KProtocolManager::getSystemNameVersionAndMachine(
 
 QString KProtocolManager::acceptLanguagesHeader()
 {
-  static const QString &english = KGlobal::staticQString("en");
+  const QLatin1String english("en");
 
   // User's desktop language preference.
   QStringList languageList = KGlobal::locale()->languageList();

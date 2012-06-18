@@ -78,7 +78,7 @@ DOMString CSSStyleDeclaration::getPropertyValue( const DOMString &propertyName )
     return static_cast<CSSStyleDeclarationImpl *>(impl)->getPropertyValue(propertyName);
 }
 
-CSSValue CSSStyleDeclaration::getPropertyCSSValue( const DOMString &propertyName ) const 
+CSSValue CSSStyleDeclaration::getPropertyCSSValue( const DOMString &propertyName ) const
 {
     if(!impl) return 0;
     return static_cast<CSSStyleDeclarationImpl *>(impl)->getPropertyCSSValue(propertyName);
@@ -106,11 +106,6 @@ unsigned long CSSStyleDeclaration::length() const
 {
     if(!impl) return 0;
     return static_cast<CSSStyleDeclarationImpl *>(impl)->length();
-}
-
-DOMString CSSStyleDeclaration::item( unsigned long index )
-{
-    return const_cast<const CSSStyleDeclaration*>( this )->item( index );
 }
 
 DOMString CSSStyleDeclaration::item( unsigned long index ) const

@@ -52,7 +52,7 @@ static void sig_handler(int sig_num)
 #include <kkernel_mac.h>
 #endif
 
-extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
+extern "C" Q_DECL_EXPORT int kdemain( int argc, char**argv )
 {
 #ifndef Q_WS_WIN
    // Started via kdeinit.

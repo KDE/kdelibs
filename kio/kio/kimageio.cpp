@@ -7,7 +7,7 @@
 
 #include "kimageio.h"
 
-#include "kmimetype.h"
+#include "qmimedatabase.h"
 #include <kservicetypetrader.h>
 #include <klocalizedstring.h>
 #include <kdebug.h>
@@ -18,6 +18,7 @@ KImageIO::pattern(Mode mode)
     QStringList patterns;
     QString allPatterns;
     QString separator("|");
+    QMimeDatabase db;
 
     const KService::List services = KServiceTypeTrader::self()->query("QImageIOPlugins");
     foreach(const KService::Ptr &service, services)
@@ -27,12 +28,12 @@ KImageIO::pattern(Mode mode)
 
             QString mimeType = service->property("X-KDE-MimeType").toString();
             if ( mimeType.isEmpty() ) continue;
-            KMimeType::Ptr mime = KMimeType::mimeType( mimeType );
-            if (!mime) {
+            QMimeType mime = db.mimeTypeForName(mimeType);
+            if (!mime.isValid()) {
                 kWarning() << service->entryPath() << " specifies unknown mimetype " << mimeType;
             } else {
-                QString pattern = mime->patterns().join(" ");
-                patterns.append( pattern + separator + mime->comment() );
+                QString pattern = mime.globPatterns().join(" ");
+                patterns.append( pattern + separator + mime.comment() );
                 if (!allPatterns.isEmpty() )
                     allPatterns += ' ';
                 allPatterns += pattern;

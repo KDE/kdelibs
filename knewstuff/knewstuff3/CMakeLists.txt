@@ -61,6 +61,8 @@ target_link_libraries(knewstuff3
 target_link_libraries(knewstuff3 ${LIBATTICA_LIBRARIES} karchive)
 target_link_libraries(knewstuff3 LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTGUI_LIBRARY})
 
+generate_export_header(knewstuff3)
+
 set_target_properties(knewstuff3 PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}
    SOVERSION ${GENERIC_LIB_SOVERSION}
@@ -74,7 +76,7 @@ install(FILES
   downloadmanager.h
   uploaddialog.h
   entry.h
-  knewstuff_export.h
+  ${CMAKE_CURRENT_BINARY_DIR}/knewstuff3_export.h
   knewstuffaction.h
   knewstuffbutton.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff3 COMPONENT Devel

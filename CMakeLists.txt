@@ -177,10 +177,10 @@ macro_log_feature(DBUSMENUQT_FOUND "DBusMenuQt" "Support for notification area m
 macro_ensure_out_of_source_build("kdelibs requires an out of source build. Please create a separate build directory and run 'cmake path_to_kdelibs [options]' there.")
 
 # ... and warn in case of an earlier in-source build
-set(generatedFileInSourceDir EXISTS ${kdelibs_SOURCE_DIR}/kdemacros.h OR EXISTS ${kdelibs_SOURCE_DIR}/config.h)
+set(generatedFileInSourceDir EXISTS ${kdelibs_SOURCE_DIR}/config.h OR EXISTS ${kdelibs_SOURCE_DIR}/config-prefix.h)
 if(${generatedFileInSourceDir})
-   message(STATUS "kdemacros.h or config.h exists in your source directory.")
-   message(FATAL_ERROR "Please run svn-clean, it would seem that your source directory has generated files in it.")
+   message(STATUS "config.h or config-prefix.h exists in your source directory.")
+   message(FATAL_ERROR "Please run git clean, it would seem that your source directory has generated files in it.")
 endif(${generatedFileInSourceDir})
 #########################################################################
 
@@ -349,7 +349,6 @@ configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 configure_file(config-prefix.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-prefix.h )
 configure_file(config-compiler.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compiler.h )
 configure_file(config-pty.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-pty.h )
-configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 
 # these two calls here should go somewhere else, Alex
 check_library_exists(nsl gethostbyname "" HAVE_NSL_LIBRARY)
@@ -438,7 +437,6 @@ include(CreateKDELibsDependenciesFile.cmake)
 
 ################# install files #################
 
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h  DESTINATION  ${INCLUDE_INSTALL_DIR} )
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake DESTINATION ${DATA_INSTALL_DIR}/cmake/modules)
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDEPlatformProfile.cmake  DESTINATION ${DATA_INSTALL_DIR}/cmake/modules)
 

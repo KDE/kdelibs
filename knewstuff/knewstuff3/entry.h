@@ -23,9 +23,8 @@
 
 #include <QtCore/QStringList>
 #include <QtCore/QSharedDataPointer>
-#include <kurl.h>
 
-#include <knewstuff3/knewstuff_export.h>
+#include "knewstuff3_export.h"
 
 
 namespace KNS3
@@ -41,7 +40,7 @@ namespace KNS3
  *
  * @since 4.4
  */
-class KNEWSTUFF_EXPORT Entry
+class KNEWSTUFF3_EXPORT Entry
 {
 public:
     typedef QList<Entry> List;

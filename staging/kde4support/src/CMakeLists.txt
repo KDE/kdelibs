@@ -53,6 +53,8 @@ include_directories(
 include(ConfigureChecks.cmake)
 configure_file(config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-network.h )
 
+configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
+
 add_library(kde4support ${libkde4support_SRCS})
 generate_export_header(kde4support)
 
@@ -85,6 +87,7 @@ install(FILES
     kdeui/kdialogbuttonbox.h
     kdeui/kuniqueapplication.h
     ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
+    ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 

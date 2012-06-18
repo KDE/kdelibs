@@ -270,7 +270,7 @@ struct KDebugPrivate
         areaData.clear();
 
         if (KGlobal::hasMainComponent()) {
-            areaData.name = KGlobal::mainComponent().componentName().toUtf8();
+            areaData.name = QCoreApplication::instance()->applicationName().toUtf8();
             m_seenMainComponent = true;
         } else {
             areaData.name = qApp ? qAppName().toUtf8() : QByteArray("unnamed app");
@@ -414,7 +414,7 @@ struct KDebugPrivate
             Q_ASSERT(cache.contains(0));
         } else if (!m_seenMainComponent && KGlobal::hasMainComponent()) {
             // Update the name for area 0 once a main component exists
-            cache[0].name = KGlobal::mainComponent().componentName().toUtf8();
+            cache[0].name = QCoreApplication::instance()->applicationName().toUtf8();
             m_seenMainComponent = true;
         }
 

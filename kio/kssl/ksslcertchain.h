@@ -22,7 +22,6 @@
 #define _KSSLCERTCHAIN_H
 
 #include <QtCore/QList>
-#include <kdemacros.h>
 
 class QString;
 class KSSL;

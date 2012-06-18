@@ -34,7 +34,6 @@
 #include <kmenu.h>
 #include <kcomponentdata.h>
 #include <kdirnotify.h>
-#include <kglobalsettings.h>
 #include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
@@ -660,7 +659,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
                                                  iconName, false, appLocal, 64, this))
         {
             QString appName;
-            if (appLocal) appName = KGlobal::mainComponent().componentName();
+            if (appLocal) appName = QCoreApplication::instance()->applicationName();
 
             placesModel->editPlace(index, label, url, iconName, appName);
         }
@@ -694,7 +693,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
                                                  iconName, true, appLocal, 64, this))
         {
             QString appName;
-            if (appLocal) appName = KGlobal::mainComponent().componentName();
+            if (appLocal) appName = QCoreApplication::instance()->applicationName();
 
             placesModel->addPlace(label, url, iconName, appName, index);
         }

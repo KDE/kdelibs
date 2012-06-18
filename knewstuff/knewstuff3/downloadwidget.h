@@ -25,7 +25,7 @@
 
 #include <QWidget>
 
-#include "knewstuff_export.h"
+#include "knewstuff3_export.h"
 #include "entry.h"
 
 namespace KNS3
@@ -69,7 +69,7 @@ class DownloadWidgetPrivate;
  *
  * @since 4.5
  */
-class KNEWSTUFF_EXPORT DownloadWidget :public QWidget
+class KNEWSTUFF3_EXPORT DownloadWidget :public QWidget
 {
     Q_OBJECT
 
@@ -92,7 +92,7 @@ public:
      * @param parent the parent of the dialog
      */
     explicit DownloadWidget(const QString& configFile, QWidget * parent = 0);
-    
+
     /**
      * destructor
      */

@@ -208,11 +208,11 @@ public:
         if (ahem) {
             return QFontEngine::Freetype;
         } else
-            return QFontEngine::XLFD; 
+            return QFontEngine::XLFD;
     }
 
 
-    QtFontDim ascent() const 
+    QtFontDim ascent() const
     {
       if (haveMetrics)
         return m_ascent;
@@ -220,7 +220,7 @@ public:
         return QFontEngineXLFD::ascent();
     }
 
-    QtFontDim descent() const 
+    QtFontDim descent() const
     {
       if (haveMetrics)
         return m_descent;
@@ -243,7 +243,7 @@ public:
 
 //OK. This is evil. Since we don't use Xft, we hijack the FreeType painting hook in the X11 engine
 //for ahem, as unfortunately the drawing is in the paint engine, and not the font engine in Qt4
-class KDE_EXPORT QX11PaintEngine: public QPaintEngine
+class Q_DECL_EXPORT QX11PaintEngine: public QPaintEngine
 {
     void drawFreetype(const QPointF &p, const QTextItemInt &si);
 };
@@ -263,7 +263,7 @@ void QX11PaintEngine::drawFreetype(const QPointF &p, const QTextItemInt &si)
     int advance = pixS;
     int ascent  = dimToInt(eng->ascent());
     int descent = dimToInt(eng->descent());
-    
+
     if (si.flags & QTextItem::RightToLeft)
     {
         x       = x + advance * (cnt - 1);
@@ -410,25 +410,25 @@ static QFontEngine* loadFont(const QFontDef& request)
     return fe;
 }
 
-KDE_EXPORT
-QFontEngine *QFontDatabase::loadXlfd(int /* screen */, int /* script */, 
+Q_DECL_EXPORT
+QFontEngine *QFontDatabase::loadXlfd(int /* screen */, int /* script */,
             const QFontDef &request, int /* force_encoding_id */)
 {
     return loadFont(request);
 }
 
-extern "C" KDE_EXPORT int FcInit() {
+extern "C" Q_DECL_EXPORT int FcInit() {
     /* Make sure Qt uses the Xlfd path, which we intercept */
     return 0;
 }
 
-KDE_EXPORT bool QFontDatabase::isBitmapScalable( const QString &,
+Q_DECL_EXPORT bool QFontDatabase::isBitmapScalable( const QString &,
 				      const QString &) const
 {
     return true;
 }
 
-KDE_EXPORT bool  QFontDatabase::isSmoothlyScalable( const QString &,
+Q_DECL_EXPORT bool  QFontDatabase::isSmoothlyScalable( const QString &,
                                          const QString &) const
 {
     return true;
@@ -450,22 +450,22 @@ bool KHTMLSettings::unfinishedImageFrame() const
   return false;
 }
 
-KDE_EXPORT int QX11Info::appDpiY( int )
+Q_DECL_EXPORT int QX11Info::appDpiY( int )
 {
     return 100;
 }
 
-KDE_EXPORT int QX11Info::appDpiX( int )
+Q_DECL_EXPORT int QX11Info::appDpiX( int )
 {
     return 100;
 }
 
-KDE_EXPORT void QFont::insertSubstitution(const QString &,
+Q_DECL_EXPORT void QFont::insertSubstitution(const QString &,
                                const QString &)
 {
 }
 
-KDE_EXPORT void QFont::insertSubstitutions(const QString &,
+Q_DECL_EXPORT void QFont::insertSubstitutions(const QString &,
                                 const QStringList &)
 {
 }
@@ -510,7 +510,7 @@ void DCOPClient::processSocketData( int )
 #include <QPalette>
 
 #if 0
-KDE_EXPORT void QApplication::setPalette( const QPalette &, bool ,
+Q_DECL_EXPORT void QApplication::setPalette( const QPalette &, bool ,
                                const char*  )
 {
     static bool done = false;

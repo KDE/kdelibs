@@ -20,7 +20,7 @@
 #ifndef KROSS_MODEL_H
 #define KROSS_MODEL_H
 
-#include <kross/core/krossconfig.h>
+#include <kross/ui/krossui_export.h>
 
 #include <QtCore/QModelIndex>
 #include <QSortFilterProxyModel>
@@ -122,7 +122,7 @@ namespace Kross {
     };
 
     /**
-     * The ActionCollectionProxyModel class implements a QSortFilterProxyModel 
+     * The ActionCollectionProxyModel class implements a QSortFilterProxyModel
      * for a \a ActionCollectionModel instance.
      */
     class KROSSUI_EXPORT ActionCollectionProxyModel : public QSortFilterProxyModel

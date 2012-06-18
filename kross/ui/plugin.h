@@ -22,7 +22,7 @@
 
 #include <kparts/plugin.h>
 
-#include <kross/core/krossconfig.h>
+#include <kross/ui/krossui_export.h>
 #include <kross/core/childreninterface.h>
 
 namespace Kross {
@@ -34,10 +34,10 @@ class QWidget;
 namespace Kross
 {
 
-/** 
- * The ScriptingPlugin class loads additional actions stored in rc files with the 
+/**
+ * The ScriptingPlugin class loads additional actions stored in rc files with the
  * KrossScripting format:
- * 
+ *
  * \code
  * <KrossScripting>
  *     <collection name="file" text="File">
@@ -46,11 +46,11 @@ namespace Kross
  *     </collection>
  * </KrossScripting>
  * \endcode
- * 
+ *
  * The 'name' attribute in collection element will be used to match the menu object name.
- * If no menu already exists with this name, a new one is created. In this example, the user will 
+ * If no menu already exists with this name, a new one is created. In this example, the user will
  * see a menu item with the text "Dummy Script" in "File" menu, which will execute the dummy_script.py script.
- * 
+ *
  * By default it tries to find kross rc files in %APPDATA%/scripts directory.
  * Clients of this class can use slotEditScriptActions() as a way to override and/or extend the
  * default script actions (if they exist at all).
@@ -94,7 +94,7 @@ public:
      * QObject's objectName is used.
      */
     void addObject(QObject* object, const QString& name/* = QString()*/, ChildrenInterface::Options options/* = ChildrenInterface::NoOption*/);
-    
+
     ///\deprecated use another addObject overload
     void addObject(QObject* object, const QString& name = QString()); //BIC
 

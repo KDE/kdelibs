@@ -27,7 +27,6 @@
 
 #include <QtCore/QVariant>
 
-#include <kdemacros.h>
 #include <kjs/object.h>
 #include <kjs/interpreter.h>
 

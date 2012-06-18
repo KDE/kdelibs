@@ -34,7 +34,6 @@
 
 #include <dom/html_element.h>
 #include <dom/html_form.h>
-#include <kdemacros.h>
 
 namespace DOM {
 
@@ -168,14 +167,14 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED DOMString hspace() const;
+    KHTML_DEPRECATED DOMString hspace() const;
 #endif
 
     /**
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setHspace( const DOMString &value );
+    KHTML_DEPRECATED void setHspace( const DOMString &value );
 #endif
 
     /**
@@ -225,14 +224,14 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED DOMString vspace() const;
+    KHTML_DEPRECATED DOMString vspace() const;
 #endif
 
     /**
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setVspace( const DOMString & );
+    KHTML_DEPRECATED void setVspace( const DOMString & );
 #endif
 
     /**
@@ -428,14 +427,14 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED DOMString hspace() const;
+    KHTML_DEPRECATED DOMString hspace() const;
 #endif
 
     /**
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setHspace( const DOMString & );
+    KHTML_DEPRECATED void setHspace( const DOMString & );
 #endif
 
     /**
@@ -525,14 +524,14 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED DOMString vspace() const;
+    KHTML_DEPRECATED DOMString vspace() const;
 #endif
 
     /**
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDE_DEPRECATED void setVspace( const DOMString & );
+    KHTML_DEPRECATED void setVspace( const DOMString & );
 #endif
 
     /**

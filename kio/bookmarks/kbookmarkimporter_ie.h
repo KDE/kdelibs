@@ -21,10 +21,6 @@
 #ifndef __kbookmarkimporter_ie_h
 #define __kbookmarkimporter_ie_h
 
-#include <QtCore/QStringList>
-#include <kconfig.h>
-#include <kdemacros.h>
-
 #include <kbookmarkimporter.h>
 #include <kbookmarkexporter.h>
 

@@ -23,7 +23,6 @@
 #define _KDEBUG_H_
 
 #include <kdecore_export.h>
-#include <kdemacros.h>
 
 #include <QtCore/QDebug>
 #include <QtCore/QElapsedTimer>
@@ -311,7 +310,7 @@ private:
 /* __VA_ARGS__ should work with any supported GCC version and MSVC > 2005 */
 # if defined(Q_CC_GNU) || (defined(Q_CC_MSVC) && _MSC_VER >= 1500)
 #  define kDebug(...) for (bool _k_kDebugDoOutput_ = !KDebug::hasNullOutputQtDebugMsg(__VA_ARGS__); \
-                           KDE_ISUNLIKELY(_k_kDebugDoOutput_); _k_kDebugDoOutput_ = false) \
+                           Q_UNLIKELY(_k_kDebugDoOutput_); _k_kDebugDoOutput_ = false) \
                            KDebug(QtDebugMsg, __FILE__, __LINE__, Q_FUNC_INFO)(__VA_ARGS__)
 # else
 #  define kDebug     KDebug(QtDebugMsg, __FILE__, __LINE__, Q_FUNC_INFO)

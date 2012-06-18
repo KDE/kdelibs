@@ -31,8 +31,6 @@
 
 #include <QColor>
 
-#include <kdemacros.h>
-
 namespace DOM {
 
 class CSSStyleDeclarationImpl;
@@ -216,7 +214,6 @@ public:
      *
      */
     DOM::DOMString item ( unsigned long index ) const;
-    DOM::DOMString item ( unsigned long index ); // ### KDE5: remove
 
     /**
      * @internal
@@ -261,7 +258,7 @@ public:
         CSS_VALUE_LIST = 2,
         CSS_CUSTOM = 3,
         CSS_INITIAL = 4,
-        
+
         CSS_SVG_VALUE = 1001 ///< Not part of DOM
     };
 
@@ -415,7 +412,7 @@ public:
         CSS_RGBCOLOR = 25,
         CSS_DPI = 26,
         CSS_DPCM = 27,
-        CSS_PAIR = 100, // We envision this being exposed as a means of getting computed style values for pairs 
+        CSS_PAIR = 100, // We envision this being exposed as a means of getting computed style values for pairs
         CSS_HTML_RELATIVE = 255
     };
 

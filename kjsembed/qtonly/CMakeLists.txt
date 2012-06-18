@@ -109,7 +109,6 @@ include(${CMAKE_SOURCE_DIR}/../../ConfigureChecks.cmake)
 configure_file(${CMAKE_SOURCE_DIR}/../../config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 configure_file(${CMAKE_SOURCE_DIR}/../../config-prefix.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-prefix.h )
 configure_file(${CMAKE_SOURCE_DIR}/../../config-compiler.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compiler.h )
-configure_file(${CMAKE_SOURCE_DIR}/../../kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 
 include(KDE4Macros)
 

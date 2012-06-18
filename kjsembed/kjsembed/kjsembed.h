@@ -28,7 +28,6 @@ class QObject;
 
 #include <kjsembed/kjseglobal.h>
 #include <kjs/object.h>
-#include <kdemacros.h>
 
 namespace KJS {
     class Interpreter;
@@ -64,7 +63,7 @@ public:
      */
     enum ExitStatus { Success = 0, Failure = 1 };
 
-    /** 
+    /**
      * Constructs an embedded JS engine.
      *
      * @param enableBindings If true then the bindings will be added to the interpreter

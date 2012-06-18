@@ -24,8 +24,6 @@
 #ifndef OBJECT_BINDING_H
 #define OBJECT_BINDING_H
 
-#include <kdemacros.h>
-
 #include "static_binding.h"
 #include "variant_binding.h"
 #include "pointer.h"
@@ -251,7 +249,7 @@ namespace KJSEmbed
                 case KJS::GetterSetterType:
                 case KJS::StringType:
                     return defaultValue;
-                    break; 
+                    break;
             }
 
             KJS::JSObject* object = arg->toObject(exec);

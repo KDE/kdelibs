@@ -18,7 +18,7 @@
 #ifndef KNEWSTUFF3_UI_DownloadManager_H
 #define KNEWSTUFF3_UI_DownloadManager_H
 
-#include "knewstuff_export.h"
+#include "knewstuff3_export.h"
 #include "entry.h"
 
 namespace KNS3
@@ -31,7 +31,7 @@ namespace KNS3
  * already installed items without showing the dialog.
  * @since 4.5
  */
-class KNEWSTUFF_EXPORT DownloadManager :public QObject
+class KNEWSTUFF3_EXPORT DownloadManager :public QObject
 {
     Q_OBJECT
 
@@ -66,10 +66,10 @@ public:
     ~DownloadManager();
 
     /**
-      Search for a list of entries. searchResult will be emitted with the requested list.    
+      Search for a list of entries. searchResult will be emitted with the requested list.
     */
     void search(int page = 0, int pageSize = 100);
-    
+
     /**
       Check for available updates.
       Use searchResult to get notified as soon as an update has been found.
@@ -95,7 +95,7 @@ public:
       @param searchTerm
       */
     void setSearchTerm(const QString& searchTerm);
-    
+
     /**
       Set the sort order of the results. This depends on the server.
       Note that this function does not trigger a search. Use search after setting this.
@@ -103,7 +103,7 @@ public:
       @param order
       */
     void setSearchOrder(SortOrder order);
-    
+
 Q_SIGNALS:
     /**
       Returns the search result.
@@ -111,7 +111,7 @@ Q_SIGNALS:
       @param entries the list of results. entries is empty when nothing was found.
      */
     void searchResult(const KNS3::Entry::List& entries);
-    
+
     /**
       The entry status has changed: emitted when the entry has been installed, updated or removed.
       Use KNS3::Entry::status() to check the current status.

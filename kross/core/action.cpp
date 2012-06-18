@@ -28,8 +28,8 @@
 #include <QtCore/QFileInfo>
 
 #include <klocalizedstring.h>
-#include <kmimetype.h>
 #include <kiconloader.h>
+#include <qmimedatabase.h>
 
 using namespace Kross;
 
@@ -132,7 +132,8 @@ Action::Action(QObject* parent, const QUrl& url)
     init(this,url.path(),Enable);
     QFileInfo fi( url.toLocalFile() );
     setText( fi.fileName() );
-    setIconName( KMimeType::iconNameForUrl(url) );
+    QMimeDatabase db;
+    setIconName( db.mimeTypeForUrl(url).iconName() );
     setFile( url.toLocalFile() );
 }
 
@@ -185,8 +186,10 @@ void Action::fromDomElement(const QDomElement& element, const QStringList& searc
     setEnabled( QVariant(element.attribute("enabled","true")).toBool() && isEnabled() );
 
     QString icon = element.attribute("icon");
-    if( icon.isEmpty() && ! d->scriptfile.isNull() )
-        icon = KMimeType::iconNameForUrl( QUrl::fromLocalFile(d->scriptfile) );
+    if( icon.isEmpty() && ! d->scriptfile.isNull() ) {
+        QMimeDatabase db;
+        icon = db.mimeTypeForUrl(QUrl::fromLocalFile(d->scriptfile)).iconName();
+    }
     setIconName( icon );
 
     const QString code = element.attribute("code");

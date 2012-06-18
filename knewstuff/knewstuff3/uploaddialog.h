@@ -22,9 +22,9 @@
 #define KNEWSTUFF3_UI_UPLOADDIALOG_H
 
 #include <kdialog.h>
-#include <kurl.h>
+#include <QtCore/QUrl>
 
-#include <knewstuff3/knewstuff_export.h>
+#include "knewstuff3_export.h"
 
 namespace Attica {
     class BaseJob;
@@ -45,7 +45,7 @@ namespace KNS3
  *
  * @since 4.4
  */
-class KNEWSTUFF_EXPORT UploadDialog : public KDialog
+class KNEWSTUFF3_EXPORT UploadDialog : public KDialog
 {
     Q_OBJECT
 public:
@@ -120,7 +120,7 @@ public:
       @param number The number of the preview image to set, either 1, 2, or 3.
       @param file A URL to the file to be used as preview image
       @since 4.6
-      */ 
+      */
     void setPreviewImageFile(uint number, const QUrl & file);
 
     /**

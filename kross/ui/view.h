@@ -21,7 +21,7 @@
 #ifndef KROSS_VIEW_H
 #define KROSS_VIEW_H
 
-#include <kross/core/krossconfig.h>
+#include <kross/ui/krossui_export.h>
 
 #include <QtCore/QObject>
 #include <QWidget>

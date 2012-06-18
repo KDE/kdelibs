@@ -27,7 +27,7 @@
 #include <kdesktopfileactions.h>
 #include <kmenu.h>
 #include <klocalizedstring.h>
-#include <kauthorized.h>
+#include <kcoreauthorized.h>
 #include <kconfiggroup.h>
 #include <kdesktopfile.h>
 #include <kservicetypetrader.h>

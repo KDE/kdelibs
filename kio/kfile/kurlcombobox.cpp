@@ -26,9 +26,8 @@
 #include <qurlpathinfo.h>
 
 #include <kdebug.h>
-#include <kglobalsettings.h>
+#include <kio/global.h>
 #include <klocalizedstring.h>
-#include <kmimetype.h>
 #include <kiconloader.h>
 
 class KUrlComboBoxPrivate
@@ -140,7 +139,7 @@ void KUrlComboBoxPrivate::init(KUrlComboBox::Mode mode)
 QStringList KUrlComboBox::urls() const
 {
     kDebug(250) << "::urls()";
-    //static const QString &fileProt = KGlobal::staticQString("file:");
+    //const QLatin1Sting fileProt("file:");
     QStringList list;
     QString url;
     for ( int i = d->defaultList.count(); i < count(); i++ ) {
@@ -429,7 +428,7 @@ QIcon KUrlComboBoxPrivate::getIcon( const QUrl& url ) const
     if (myMode == KUrlComboBox::Directories)
         return dirIcon;
     else
-        return KDE::icon(KMimeType::iconNameForUrl(url, 0));
+        return KDE::icon(KIO::iconNameForUrl(url));
 }
 
 

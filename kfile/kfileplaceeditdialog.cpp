@@ -28,7 +28,6 @@
 #include <kcomponentdata.h>
 #include <klineedit.h>
 #include <klocalizedstring.h>
-#include <kmimetype.h>
 #include <kio/global.h>
 #include <kprotocolinfo.h>
 #include <kstringhandler.h>
@@ -132,7 +131,7 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
     m_iconButton->setIconSize( iconSize );
     m_iconButton->setIconType( KIconLoader::NoGroup, KIconLoader::Place );
     if ( icon.isEmpty() )
-        m_iconButton->setIcon( KMimeType::iconNameForUrl( url ) );
+        m_iconButton->setIcon( KIO::iconNameForUrl( url ) );
     else
         m_iconButton->setIcon( icon );
     m_iconButton->setWhatsThis( whatsThisText );

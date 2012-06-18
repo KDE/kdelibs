@@ -526,7 +526,6 @@ set(khtml_LIB_SRCS
    ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KHTMLPart.xml # just so that it gets generated
    )
 
-
 qt4_generate_dbus_interface(khtml_iface.h org.kde.KHTMLPart.xml)
 
 set(kcookiejar_XML ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KCookieServer.xml)
@@ -544,6 +543,8 @@ target_link_libraries(khtml LINK_INTERFACE_LIBRARIES kparts kjs kio kdeui kdecor
 set_target_properties(khtml PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
                                        SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
                      )
+
+generate_export_header(khtml)
 
 
 set(CREATE_HASH_TABLE ${CMAKE_SOURCE_DIR}/kjs/create_hash_table )
@@ -746,7 +747,7 @@ if (KHTML_BUILD_TESTREGRESSION)
 endif (KHTML_BUILD_TESTREGRESSION)
 
 ########### install files ###############
-install( FILES khtml_export.h khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtmldefaults.h
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/khtml_export.h khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtmldefaults.h
          DESTINATION  ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 install( FILES dom/dom_exception.h dom/html_base.h dom/html_inline.h dom/css_rule.h dom/dom_html.h
                dom/html_block.h dom/html_list.h dom/css_stylesheet.h dom/dom_misc.h dom/html_document.h

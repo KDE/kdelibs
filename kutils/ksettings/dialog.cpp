@@ -34,6 +34,7 @@
 #include <QtCore/QFile>
 #include <QCheckBox>
 #include <QtCore/QStack>
+#include <QCoreApplication>
 
 uint qHash(const KCModuleInfo &info)
 {
@@ -139,7 +140,7 @@ DialogPrivate::DialogPrivate()
 QSet<KCModuleInfo> DialogPrivate::instanceServices()
 {
     //kDebug(700) ;
-	QString componentName = KGlobal::mainComponent().componentName();
+	QString componentName = QCoreApplication::instance()->applicationName();
     registeredComponents.append(componentName);
     //kDebug(700) << "calling KServiceGroup::childGroup( " << componentName << " )";
 	KServiceGroup::Ptr service = KServiceGroup::childGroup( componentName );
@@ -308,7 +309,7 @@ void DialogPrivate::createDialogFromServices()
     Q_Q(Dialog);
 	// read .setdlg files
 	QString setdlgpath = KStandardDirs::locate( "appdata",
-                                                    KGlobal::mainComponent().componentName() + ".setdlg" );
+                                                QCoreApplication::instance()->applicationName() + ".setdlg" );
 	const QStringList setdlgaddon = KGlobal::dirs()->findAllResources( "appdata",
 			"ksettingsdialog/*.setdlg" );
     if (!setdlgpath.isNull()) {

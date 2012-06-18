@@ -136,7 +136,7 @@ KHTMLImage::~KHTMLImage()
 
 bool KHTMLImage::openUrl(const QUrl &url)
 {
-    static const QString &html = KGlobal::staticQString( "<html><body><img src=\"%1\"></body></html>" );
+    static const QString& html = QString::fromLatin1( "<html><body><img src=\"%1\"></body></html>" );
 
     // Propagate statusbar to our kid part.
     KParts::StatusBarExtension::childObject( m_khtml )->setStatusBar( m_sbExt->statusBar() );

@@ -100,7 +100,7 @@ namespace KCModuleLoader
      * message box like this function did.
      */
 #ifndef KDE_NO_DEPRECATED
-    KCMUTILS_EXPORT KDE_DEPRECATED void showLastLoaderError(QWidget *parent);
+    KCMUTILS_EXPORT KCMUTILS_DEPRECATED void showLastLoaderError(QWidget *parent);
 #endif
 
     /**

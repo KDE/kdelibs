@@ -961,7 +961,7 @@ void KonfUpdate::resetOptions()
 }
 
 
-extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
+extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
 {
     KCmdLineOptions options;
     options.add("debug", qi18n("Keep output results from scripts"));

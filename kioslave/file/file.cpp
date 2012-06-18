@@ -31,6 +31,7 @@
 #include <config-acl.h>
 #include <config-kioslave-file.h>
 
+#include <qmimedatabase.h>
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -92,7 +93,6 @@
 #include <kio/ioslave_defaults.h>
 #include <kde_file.h>
 #include <kglobal.h>
-#include <kmimetype.h>
 
 using namespace KIO;
 
@@ -105,7 +105,7 @@ static void appendACLAtoms( const QByteArray & path, UDSEntry& entry,
                             mode_t type, bool withACL );
 #endif
 
-extern "C" int KDE_EXPORT kdemain( int argc, char **argv )
+extern "C" Q_DECL_EXPORT int kdemain( int argc, char **argv )
 {
   QCoreApplication app( argc, argv ); // needed for QSocketNotifier
   KComponentData componentData( "kio_file", "kdelibs4" );
@@ -321,11 +321,12 @@ void FileProtocol::get( const KUrl& url )
 
     // Determine the mimetype of the file to be retrieved, and emit it.
     // This is mandatory in all slaves (for KRun/BrowserRun to work)
-    // In real "remote" slaves, this is usually done using findByNameAndContent
+    // In real "remote" slaves, this is usually done using mimeTypeForNameAndData
     // after receiving some data. But we don't know how much data the mimemagic rules
-    // need, so for local files, better use findByUrl with localUrl=true.
-    KMimeType::Ptr mt = KMimeType::findByUrl( url, buff.st_mode, true /* local URL */ );
-    emit mimeType( mt->name() );
+    // need, so for local files, better use mimeTypeForFile.
+    QMimeDatabase db;
+    QMimeType mt = db.mimeTypeForFile(url.toLocalFile());
+    emit mimeType(mt.name());
     // Emit total size AFTER mimetype
     totalSize( buff.st_size );
 
@@ -453,8 +454,9 @@ void FileProtocol::open(const KUrl &url, QIODevice::OpenMode mode)
     // If we're not opening the file ReadOnly or ReadWrite, don't attempt to
     // read the file and send the mimetype.
     if (mode & QIODevice::ReadOnly){
-        KMimeType::Ptr mt = KMimeType::findByUrl( url, buff.st_mode, true /* local URL */ );
-        emit mimeType( mt->name() );
+        QMimeDatabase db;
+        QMimeType mt = db.mimeTypeForFile(url.toLocalFile());
+        emit mimeType(mt.name());
    }
 
     totalSize( buff.st_size );

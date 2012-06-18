@@ -682,6 +682,6 @@ private:
    * @internal
    * (Shared with SlaveConfig)
    */
-  KDE_NO_EXPORT static KSharedConfigPtr config();
+  KIO_NO_EXPORT static KSharedConfigPtr config();
 };
 #endif

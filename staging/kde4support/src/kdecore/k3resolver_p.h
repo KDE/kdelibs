@@ -205,7 +205,7 @@ namespace KNetwork
       KResolverManager();
 
     public:
-      static KResolverManager* manager() KDE_NO_EXPORT;	// creates and returns the global manager
+      static KResolverManager* manager();  // creates and returns the global manager
 
       // destructor
       ~KResolverManager();

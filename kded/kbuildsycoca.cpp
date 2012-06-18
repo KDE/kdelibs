@@ -26,7 +26,6 @@
 #include <config-kded.h>
 
 #include <kservice.h>
-#include <kmimetype.h>
 #include "kbuildservicetypefactory.h"
 #include "kbuildmimetypefactory.h"
 #include "kbuildservicefactory.h"
@@ -620,7 +619,7 @@ QStringList KBuildSycoca::existingResourceDirs()
 static const char appFullName[] = "org.kde.kbuildsycoca";
 static const char appVersion[] = "1.1";
 
-extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
+extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
 {
    KAboutData d(KBUILDSYCOCA_EXENAME, "kdelibs4", qi18n("KBuildSycoca"), appVersion,
                 qi18n("Rebuilds the system configuration cache."),

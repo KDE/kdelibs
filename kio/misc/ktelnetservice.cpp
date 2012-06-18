@@ -22,7 +22,7 @@
 
 #include <kapplication.h>
 #include <ktoolinvocation.h>
-#include <kauthorized.h>
+#include <kcoreauthorized.h>
 #include <kmessagebox.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>

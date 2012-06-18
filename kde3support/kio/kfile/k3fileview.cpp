@@ -26,9 +26,7 @@
 #include <kactioncollection.h>
 #include <kapplication.h>
 #include <kdebug.h>
-#include <kglobal.h>
 #include <klocalizedstring.h>
-
 
 #include <QtCore/QPointer>
 
@@ -237,7 +235,7 @@ uint K3FileView::numDirs() const
 #if 0
 int K3FileView::compareItems(const KFileItem *fi1, const KFileItem *fi2) const
 {
-    static const QString &dirup = KGlobal::staticQString("..");
+    const QLatin1String dirup("..");
     bool bigger = true;
     bool keepFirst = false;
     bool dirsFirst = ((m_sorting & QDir::DirsFirst) == QDir::DirsFirst);

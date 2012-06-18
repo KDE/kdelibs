@@ -29,6 +29,7 @@
 #include "dom/dom2_events.h"
 #include "xml/dom2_viewsimpl.h"
 #include "misc/idstring.h"
+#include "misc/enum.h"
 #include <QDateTime>
 #include <QWeakPointer>
 
@@ -122,7 +123,7 @@ public:
     /**
      * Perform the default action for an event e.g. submitting a form
      */
-    virtual void defaultEventHandler(EventImpl *evt);    
+    virtual void defaultEventHandler(EventImpl *evt);
 
     /*
      * This method fires all the registered handlers for this event
@@ -598,7 +599,7 @@ public:
     DOMString  lastEventId() const { return m_lastEventId; }
 
     MessageEventImpl();
-    
+
     void initMessageEvent(const DOMString &eventTypeArg,
                           bool  canBubbleArg,
                           bool  cancelableArg,

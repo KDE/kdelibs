@@ -24,7 +24,6 @@
 #include <QtCore/QStringList>
 
 #include "kmimeassociations.h"
-#include <kmimetype.h>
 #include <kservicefactory.h>
 // We export the services to the service group factory!
 class KBuildServiceGroupFactory;

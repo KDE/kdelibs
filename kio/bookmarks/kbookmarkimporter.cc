@@ -55,7 +55,7 @@ void KXBELBookmarkImporterImpl::visit(const KBookmark &bk)
   if (bk.isSeparator())
     emit newSeparator();
   else
-    emit newBookmark(bk.fullText(), bk.url().url(), "");
+    emit newBookmark(bk.fullText(), bk.url().toString(), "");
 }
 
 void KXBELBookmarkImporterImpl::visitEnter(const KBookmarkGroup &grp)

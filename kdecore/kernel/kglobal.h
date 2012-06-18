@@ -26,7 +26,7 @@
 // To simplify Qt5 porting in KDE code not yet ported to frameworks.
 #include <QMimeData>
 
-#include <kdemacros.h>
+// TODO: Re-add for source compat: #include <kdemacros.h>
 
 //
 // WARNING!!

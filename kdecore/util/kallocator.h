@@ -27,7 +27,7 @@
 #define KALLOCATOR_H
 
 #include <kdecore_export.h>
-#include <kdemacros.h>
+#include <cstddef> // size_t
 
 template <typename T> class QList;
 

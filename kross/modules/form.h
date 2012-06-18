@@ -127,7 +127,8 @@ namespace Kross {
             void filterChanged(const QString& filter);
 
         private Q_SLOTS:
-            void slotFileSelected(const QString&);
+            void slotFileSelected(const QUrl&);
+            void slotFileHighlighted(const QUrl&);
 
         private:
             /// \internal d-pointer class.

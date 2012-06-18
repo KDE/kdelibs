@@ -44,7 +44,6 @@
 
 #include <kdebug.h>
 #include <kfilemetainfo.h>
-#include <kglobal.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <krun.h>
@@ -286,9 +285,7 @@ void KFileItemPrivate::readUDSEntry( bool _urlIsDirectory )
     const int hiddenVal = m_entry.numberValue( KIO::UDSEntry::UDS_HIDDEN, -1 );
     m_hidden = hiddenVal == 1 ? Hidden : ( hiddenVal == 0 ? Shown : Auto );
 
-    // avoid creating these QStrings again and again
-    static const QString& dot = KGlobal::staticQString(".");
-    if ( _urlIsDirectory && !UDS_URL_seen && !m_strName.isEmpty() && m_strName != dot )
+    if ( _urlIsDirectory && !UDS_URL_seen && !m_strName.isEmpty() && m_strName != QLatin1String(".") )
         m_url.addPath( m_strName );
 
     m_iconName.clear();
@@ -1013,17 +1010,17 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
     if (!d->m_useIconNameCache && !d->m_mimeType.isValid()) {
         // No mimetype determined yet, go for a fast default icon
         if (S_ISDIR(d->m_fileMode)) {
-            static const QString * defaultFolderIcon = 0;
-            if ( !defaultFolderIcon ) {
+            static QString defaultFolderIcon;
+            if ( defaultFolderIcon.isEmpty() ) {
                 const QMimeType mimeType = db.mimeTypeForName("inode/directory");
                 if (mimeType.isValid())
-                    defaultFolderIcon = &KGlobal::staticQString(mimeType.iconName());
-               else
+                    defaultFolderIcon = mimeType.iconName();
+                else {
                     kWarning(7000) << "No mimetype for inode/directory could be found. Check your installation.";
+                    defaultFolderIcon = "unknown";
+                }
             }
-            if ( defaultFolderIcon )
-                return DesktopIcon( *defaultFolderIcon, _size, _state );
-
+            return DesktopIcon( defaultFolderIcon, _size, _state );
         }
         return DesktopIcon( "unknown", _size, _state );
     }

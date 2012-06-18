@@ -33,7 +33,7 @@ extern "C" int xmlLoadExtDtdDefaultValue;
 
 extern "C"
 {
-    KDE_EXPORT int kdemain( int argc, char **argv )
+    Q_DECL_EXPORT int kdemain( int argc, char **argv )
     {
         Q_ASSERT(!KGlobal::hasMainComponent()); // kdeinit is messed up if this is the case.
         KComponentData componentData( "kio_help", "kio_help4" );

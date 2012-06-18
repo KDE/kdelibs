@@ -22,7 +22,6 @@
 
 #include <kmimetypefactory.h>
 #include <QtCore/QStringList>
-#include <kmimetype.h>
 
 /**
  * Mime-type factory for building ksycoca

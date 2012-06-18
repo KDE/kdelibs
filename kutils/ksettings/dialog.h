@@ -78,7 +78,7 @@ class KCMUTILS_EXPORT Dialog : public KCMultiDialog
     public:
         /**
          * Construct a new Preferences Dialog for the application. It uses all
-         * KCMs with X-KDE-ParentApp set to KGlobal::mainComponent().componentName().
+         * KCMs with X-KDE-ParentApp set to QCoreApplication::instance()->applicationName().
          *
          * @param content      Select whether you want a static or configurable
          *                     config dialog.

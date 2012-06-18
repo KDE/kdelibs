@@ -33,6 +33,7 @@
 #include <QIcon>
 #include <QLayout>
 #include <QtCore/QMap>
+#include <QCoreApplication>
 
 class KConfigDialog::KConfigDialogPrivate
 {
@@ -43,7 +44,7 @@ public:
     q->setCaption( i18n("Configure") );
     q->setFaceType( List );
     q->setButtons( Default|Ok|Apply|Cancel|Help );
-    q->setHelp( QString(), KGlobal::mainComponent().componentName() );
+    q->setHelp( QString(), QCoreApplication::instance()->applicationName() );
     q->setDefaultButton( Ok );
     q->setObjectName( name );
 

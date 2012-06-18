@@ -765,10 +765,6 @@ Q_SIGNALS:
       * \since 4.4
       */
     void fileSelected(const QUrl&);
-    /**
-     * @deprecated, connect to fileSelected(const QUrl&) instead
-     */
-    QT_MOC_COMPAT void fileSelected(const QString&); // TODO KDE5: remove
 
     /**
       * Emitted when the user highlights a file.
@@ -776,10 +772,6 @@ Q_SIGNALS:
       * \since 4.4
       */
     void fileHighlighted(const QUrl&);
-    /**
-     * @deprecated, connect to fileSelected(const QUrl&) instead
-     */
-    QT_MOC_COMPAT void fileHighlighted(const QString&); // TODO KDE5: remove
 
     /**
      * Emitted when the user hilights one or more files in multiselection mode.

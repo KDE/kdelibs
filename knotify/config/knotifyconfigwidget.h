@@ -52,7 +52,7 @@ public:
 	/**
 	 * Change the application and the context
 	 * 
-	 * @param appname name of the application.   if null KGlobal::mainComponent().componentName() is used
+	 * @param appname name of the application.   if null QCoreApplication::instance()->applicationName() is used
 	 * @param context_name the name of the context, if null , avery context are considered
 	 * @param context_value the context value
 	 */

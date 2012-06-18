@@ -29,6 +29,7 @@
 #include "css/css_base.h"
 #include "misc/loader_client.h"
 #include "misc/shared.h"
+#include "misc/enum.h"
 
 namespace khtml {
     class RenderStyle;

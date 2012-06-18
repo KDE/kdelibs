@@ -240,6 +240,7 @@ void KBuildServiceFactory::postProcessServices()
 
 void KBuildServiceFactory::populateServiceTypes()
 {
+    QMimeDatabase db;
     // For every service...
     KSycocaEntryDict::Iterator itserv = m_entryDict->begin();
     const KSycocaEntryDict::Iterator endserv = m_entryDict->end();
@@ -265,8 +266,8 @@ void KBuildServiceFactory::populateServiceTypes()
                 m_offerHash.addServiceOffer(stName, KServiceOffer(service, preference, 0, service->allowAsDefault()) );
             } else {
                 KServiceOffer offer(service, serviceTypeList[i].preference, 0, service->allowAsDefault());
-                KMimeType::Ptr mime = KMimeType::mimeType(stName);
-                if (!mime) {
+                QMimeType mime = db.mimeTypeForName(stName);
+                if (!mime.isValid()) {
                     if (stName.startsWith(QLatin1String("x-scheme-handler/"))) {
                         // Create those on demand
                         m_mimeTypeFactory->createFakeMimeType(stName);
@@ -280,7 +281,7 @@ void KBuildServiceFactory::populateServiceTypes()
                     }
                 } else {
                     //kDebug(7021) << "Adding service" << service->entryPath() << "to mime" << mime->name();
-                    m_offerHash.addServiceOffer(mime->name(), offer); // mime->name so that we resolve aliases
+                    m_offerHash.addServiceOffer(mime.name(), offer); // mime->name so that we resolve aliases
                 }
             }
         }

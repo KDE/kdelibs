@@ -22,7 +22,6 @@
 
 #include "kbookmark.h"
 #include <kdialog.h>
-#include <kurl.h>
 
 class KBookmarkManager;
 class QWidget;
@@ -59,7 +58,7 @@ public:
    * shows a add Bookmark dialog
    * Note: That this  updates the bookmark and calls KBookmarkManager::emitChanged   
    */
-  KBookmark addBookmark(const QString & title, const KUrl & url, KBookmark parent = KBookmark());
+  KBookmark addBookmark(const QString & title, const QUrl & url, KBookmark parent = KBookmark());
   /**
    * Creates a folder from a list of bookmarks
    * Note: That this  updates the bookmark and calls KBookmarkManager::emitChanged
