@@ -11,7 +11,6 @@
 
 #include "ecmatest.h"
 
-#include <kio/global.h>
 #include <wtf/HashTraits.h>
 #include "JSLock.h"
 #include "object.h"
@@ -117,8 +116,7 @@ static QString exceptionToString(KJS::ExecState* exec, KJS::JSValue* exceptionOb
 
         int      line = lineValue->toNumber(exec);
         QString  url  = urlValue->toString(exec).qstring();
-        exceptionMsg = i18n("Parse error at %1 line %2",
-                            url, line + 1);
+        exceptionMsg = QString::fromLatin1("Parse error at %1 line %2").arg(url).arg(line + 1);
     }
     else
     {
