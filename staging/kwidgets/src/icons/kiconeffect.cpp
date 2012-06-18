@@ -325,7 +325,7 @@ struct KIEImgEdit
 	}
 	else
 	{
-	    pixels = img.numColors();
+	    pixels = img.colorCount();
 	    colors = img.colorTable();
 	    data   = (unsigned int*)colors.data();
 	}
@@ -567,7 +567,7 @@ void KIconEffect::semiTransparent(QImage &img)
         int transColor = -1;
 
         // search for a color that is already transparent
-        for(x=0; x<img.numColors(); ++x){
+        for(x=0; x<img.colorCount(); ++x){
             // try to find already transparent pixel
             if(qAlpha(img.color(x)) < 127){
                 transColor = x;
@@ -576,7 +576,7 @@ void KIconEffect::semiTransparent(QImage &img)
         }
 
         // FIXME: image must have transparency
-        if(transColor < 0 || transColor >= img.numColors())
+        if(transColor < 0 || transColor >= img.colorCount())
             return;
 
 	img.setColor(transColor, 0);
@@ -675,7 +675,7 @@ QImage KIconEffect::doublePixels(const QImage &src) const
 	}
     } else
     {
-	for (x=0; x<src.numColors(); ++x)
+	for (x=0; x<src.colorCount(); ++x)
 	    dst.setColor(x, src.color(x));
 
 	const unsigned char *l1;
@@ -732,7 +732,7 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 
     if (src.depth() == 8)
     {
-	if (src.numColors() + overlay.numColors() > 255)
+	if (src.colorCount() + overlay.colorCount() > 255)
 	{
 	    kDebug(265) << "Too many colors in src + overlay!\n";
 	    return;
@@ -740,7 +740,7 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 
 	// Find transparent pixel in overlay
 	int trans;
-	for (trans=0; trans<overlay.numColors(); trans++)
+	for (trans=0; trans<overlay.colorCount(); trans++)
 	{
 	    if (qAlpha(overlay.color(trans)) == 0)
 	    {
@@ -748,16 +748,16 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 		break;
 	    }
 	}
-	if (trans == overlay.numColors())
+	if (trans == overlay.colorCount())
 	{
 	    kDebug(265) << "transparent pixel not found!\n";
 	    return;
 	}
 
 	// Merge color tables
-	int nc = src.numColors();
-	src.setNumColors(nc + overlay.numColors());
-	for (i=0; i<overlay.numColors(); ++i)
+	int nc = src.colorCount();
+	src.setNumColors(nc + overlay.colorCount());
+	for (i=0; i<overlay.colorCount(); ++i)
 	{
 	    src.setColor(nc+i, overlay.color(i));
 	}

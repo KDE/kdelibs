@@ -141,7 +141,7 @@ START_VARIANT_METHOD( callnumBytes, QImage )
 END_VARIANT_METHOD
 
 START_VARIANT_METHOD( callnumColors, QImage )
-    int cppValue = value.numColors();
+    int cppValue = value.colorCount();
     result = KJS::jsNumber(cppValue);
 END_VARIANT_METHOD
 
