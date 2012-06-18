@@ -3068,7 +3068,7 @@ QDate checkDate(int year, int month, int day, Status &status)
     if (year < MIN_YEAR)
     {
         bool leap = (year % 4 == 0) && (year % 100 || year % 400 == 0);
-        qdate.setYMD((leap ? 2000 : 2001), month, day);
+        qdate.setDate((leap ? 2000 : 2001), month, day);
         if (qdate.isValid())
             status = stTooEarly;
     }

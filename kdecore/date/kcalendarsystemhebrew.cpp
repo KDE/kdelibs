@@ -197,10 +197,10 @@ static int long_cheshvan(int year)
     class h_date *gd;
 
     gd = hebrewToGregorian(year, 1, 1);
-    first.setYMD(gd->hd_year, gd->hd_mon + 1, gd->hd_day + 1);
+    first.setDate(gd->hd_year, gd->hd_mon + 1, gd->hd_day + 1);
 
     gd = hebrewToGregorian(year + 1, 1, 1);
-    last.setYMD(gd->hd_year, gd->hd_mon + 1, gd->hd_day + 1);
+    last.setDate(gd->hd_year, gd->hd_mon + 1, gd->hd_day + 1);
 
     return (first.daysTo(last) % 10 == 5);
 }
@@ -215,10 +215,10 @@ static int short_kislev(int year)
     class h_date * gd;
 
     gd = hebrewToGregorian(year, 1, 1);
-    first.setYMD(gd->hd_year, gd->hd_mon + 1, gd->hd_day + 1);
+    first.setDate(gd->hd_year, gd->hd_mon + 1, gd->hd_day + 1);
 
     gd = hebrewToGregorian(year + 1, 1, 1);
-    last.setYMD(gd->hd_year, gd->hd_mon + 1, gd->hd_day + 1);
+    last.setDate(gd->hd_year, gd->hd_mon + 1, gd->hd_day + 1);
 
     return (first.daysTo(last) % 10 == 3);
 }

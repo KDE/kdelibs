@@ -686,7 +686,7 @@ KLocaleTest::formatDate()
         // shouldn't happen though, since qtest_kde.h sets KDEHOME.
         QCOMPARE(locale.dateFormat(), QString("%A %d %B %Y"));
 
-	date.setYMD(2002, 5, 3);
+	date.setDate(2002, 5, 3);
 	QCOMPARE(locale.formatDate(date), date.toString(full));
 	QCOMPARE(locale.formatDate(date, KLocale::ShortDate), date.toString(small));
 
@@ -720,7 +720,7 @@ KLocaleTest::readDate()
 	QString full("dddd dd MMMM yyyy");
 	bool ok=false;
 	QDate date;
-	date.setYMD( 2002, 5, 3 );
+	date.setDate( 2002, 5, 3 );
 	QCOMPARE(locale.readDate(date.toString(small)), date);
 	QCOMPARE(locale.readDate(date.toString(full)), date);
 	locale.readDate(date.toString(small), KLocale::NormalFormat, &ok);

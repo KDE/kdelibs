@@ -59,7 +59,7 @@ QTime qtime;
           s = (v[10]-'0')*10+(v[11]-'0');
  
   // localize the date and display it.
-  qdate.setYMD(y+1900, M, d);
+  qdate.setDate(y+1900, M, d);
   qtime.setHMS(h,m,s);
   qdt.setDate(qdate); qdt.setTime(qtime);
   auq_err:
