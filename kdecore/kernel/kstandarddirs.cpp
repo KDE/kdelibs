@@ -405,7 +405,7 @@ static void priorityAdd(QStringList &prefixes, const QString& dir, bool priority
     {
         // Add in front but behind $KDEHOME
         QStringList::iterator it = prefixes.begin();
-        it++;
+        ++it;
         prefixes.insert(it, dir);
     }
     else

@@ -1372,6 +1372,10 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
                 }
             }
         }
+        else if (QTextEdit* te = qobject_cast<QTextEdit*>(rw->widget())) {
+            if (te->verticalScrollBar()->underMouse() || te->horizontalScrollBar()->underMouse())
+                forceDefault = true;
+        }
     }
     khtml::RenderStyle* style = (r && r->style()) ? r->style() : 0;
     QCursor c;

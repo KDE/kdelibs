@@ -497,9 +497,6 @@ void RenderWidget::updateFromElement()
         } else if (QLineEdit* lineEdit = qobject_cast<QLineEdit*>(m_widget)) {
             lineEdit->setFrame(!shouldDisableNativeBorders()); 
         }
-
-        // Font:
-        setStyle(style());
     }
 
     RenderReplaced::updateFromElement();
@@ -512,7 +509,6 @@ void RenderWidget::paintOneBackground(QPainter *p, const QColor& c, const Backgr
                                 fudge ? 1 : borderLeft() , fudge ? 1 : borderRight(), paddingLeft(), paddingRight(),
                                 fudge ? 1 : borderTop(), fudge ? 1 : borderBottom(), paddingTop(), paddingBottom());
 }
-                             
 
 void RenderWidget::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
 {

@@ -593,7 +593,7 @@ struct SharedMemory
         const PageTableEntry *table = pageTable();
         uint contiguousPagesFound = 0;
         pageID base = 0;
-        for (pageID i = 0; i < static_cast<int>(pageTableSize() - pagesNeeded + 1); ++i) {
+        for (pageID i = 0; i < static_cast<int>(pageTableSize()); ++i) {
             if (table[i].index < 0) {
                 if (contiguousPagesFound == 0) {
                     base = i;

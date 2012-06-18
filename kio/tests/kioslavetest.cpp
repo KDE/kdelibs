@@ -353,7 +353,7 @@ void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )
 
     const QList<uint> keys = entry.listFields();
     QList<uint>::const_iterator it = keys.begin();
-    for( ; it != keys.end(); it++ ) {
+    for( ; it != keys.end(); ++it ) {
         switch ( *it ) {
             case KIO::UDSEntry::UDS_FILE_TYPE:
                 {
