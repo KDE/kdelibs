@@ -287,17 +287,17 @@ void KBookmarkDialog::initLayoutPrivate()
     setMainWidget( m_main );
     connect( this, SIGNAL( user1Clicked() ), SLOT( newFolderButton() ) );
 
-    m_title = new KLineEdit( m_main );
+    m_title = new QLineEdit( m_main );
     m_title->setMinimumWidth(300);
     m_titleLabel = new QLabel( i18nc("@label:textbox", "Name:" ), m_main );
     m_titleLabel->setBuddy( m_title );
 
-    m_url = new KLineEdit( m_main );
+    m_url = new QLineEdit( m_main );
     m_url->setMinimumWidth(300);
     m_urlLabel = new QLabel( i18nc("@label:textbox", "Location:" ), m_main );
     m_urlLabel->setBuddy( m_url );
 
-    m_comment = new KLineEdit( m_main );
+    m_comment = new QLineEdit( m_main );
     m_comment->setMinimumWidth(300);
     m_commentLabel = new QLabel( i18nc("@label:textbox", "Comment:" ), m_main );
     m_commentLabel->setBuddy( m_comment );

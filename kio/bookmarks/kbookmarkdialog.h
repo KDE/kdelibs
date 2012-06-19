@@ -27,7 +27,7 @@ class KBookmarkManager;
 class QWidget;
 class QLabel;
 class QTreeWidget;
-class KLineEdit;
+class QLineEdit;
 class QTreeWidgetItem;
 class QGridLayout;
 
@@ -112,9 +112,9 @@ protected:
   BookmarkDialogMode m_mode;
   void fillGroup( QTreeWidgetItem * parentItem, const KBookmarkGroup &group);
   QWidget * m_main;
-  KLineEdit * m_url;
-  KLineEdit * m_title;
-  KLineEdit * m_comment;
+  QLineEdit * m_url;
+  QLineEdit * m_title;
+  QLineEdit * m_comment;
   QLabel * m_titleLabel;
   QLabel * m_urlLabel;
   QLabel * m_commentLabel;

@@ -24,26 +24,18 @@
 
 #include <QtCore/QObject>
 
-#include <kdialog.h>
-#include <klocalizedstring.h>
 #include <kaction.h>
 #include <kactionmenu.h>
-#include <QBoxLayout>
 #include <QTreeWidget>
-#include <QLabel>
 
 #include "kbookmark.h"
 #include "kbookmarkimporter.h"
 #include "kbookmarkmanager.h"
 
 class QString;
-class QPushButton;
-class KLineEdit;
 class KBookmark;
 class KBookmarkGroup;
 class KAction;
-class KActionMenu;
-class KActionCollection;
 class KBookmarkOwner;
 class KBookmarkMenu;
 

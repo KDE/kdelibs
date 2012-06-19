@@ -21,7 +21,6 @@
 #define __kbookmarkmanager_h
 
 #include <QtCore/QString>
-#include <QtCore/QStringList>
 #include <QtCore/QObject>
 #include <QtCore/QPair>
 #include <QtXml/QDomDocument>
@@ -33,11 +32,6 @@
 class KBookmarkGroup;
 class QDBusMessage;
 
-class QTreeWidgetItem;
-class QLabel;
-class QTreeWidget;
-class KLineEdit;
-class KMenu;
 class KBookmarkDialog;
 
 /**
