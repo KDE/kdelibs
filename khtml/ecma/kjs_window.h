@@ -158,7 +158,7 @@ namespace KJS {
            Onkeydown, Onkeypress, Onkeyup, Onload,  Onmessage, Onmousedown, Onmousemove,
            Onmouseout, Onmouseover, Onmouseup, Onmove, Onreset, Onresize,
            Onscroll, Onselect, Onsubmit, Onunload, Onhashchange,
-           MutationEventCtor, MessageEventCtor, KeyboardEventCtor, EventExceptionCtor,
+           MutationEventCtor, MessageEventCtor, KeyboardEventCtor, EventExceptionCtor, HashChangeEventCtor,
            ElementCtor, DocumentCtor, DocumentFragmentCtor, HTMLDocumentCtor,
            HTMLElementCtor, HTMLHtmlElementCtor, HTMLHeadElementCtor, HTMLLinkElementCtor,
            HTMLTitleElementCtor, HTMLMetaElementCtor, HTMLBaseElementCtor, HTMLIsIndexElementCtor,

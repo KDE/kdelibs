@@ -323,6 +323,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   MessageEvent Window::MessageEventCtor   DontEnum|DontDelete
   KeyboardEvent Window::KeyboardEventCtor   DontEnum|DontDelete
   EventException Window::EventExceptionCtor DontEnum|DontDelete
+  HashChangeEvent Window::HashChangeEventCtor DontEnum|DontDelete
   Audio		Window::Audio		DontEnum|DontDelete
   Image		Window::Image		DontEnum|DontDelete
   Option	Window::Option		DontEnum|DontDelete
@@ -926,6 +927,8 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
         return EventConstructor::self(exec);
     case MessageEventCtor:
         return MessageEventPseudoCtor::self(exec);
+    case HashChangeEventCtor:
+        return HashChangeEventPseudoCtor::self(exec);
     case MutationEventCtor:
       return getMutationEventConstructor(exec);
     case KeyboardEventCtor:

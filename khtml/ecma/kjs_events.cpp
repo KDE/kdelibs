@@ -1116,7 +1116,7 @@ const ClassInfo DOMHashChangeEvent::info = { "HashChangeEvent", &DOMEvent::info,
   origin   DOMHashChangeEvent::NewUrl DontDelete|ReadOnly
 @end
 @begin DOMHashChangeEventProtoTable 1
-  initMessageEvent     DOMHashChangeEvent::InitHashChangeEvent     DontDelete|Function 7
+  initMessageEvent     DOMHashChangeEvent::InitHashChangeEvent     DontDelete|Function 5
 @end
 */
 KJS_DEFINE_PROTOTYPE(DOMHashChangeEventProto)
