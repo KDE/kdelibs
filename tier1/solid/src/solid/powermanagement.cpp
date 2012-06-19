@@ -73,7 +73,7 @@ Solid::PowerManagement::Notifier::Notifier()
 
 bool Solid::PowerManagement::appShouldConserveResources()
 {
-    return globalPowerManager->powerSaveStatus;
+    return globalPowerManager->managerIface.GetPowerSaveStatus();
 }
 
 QSet<Solid::PowerManagement::SleepState> Solid::PowerManagement::supportedSleepStates()
