@@ -48,7 +48,6 @@ KMimeTypeRepository::~KMimeTypeRepository()
 {
 }
 
-// TODO export QMimeGlobPattern::matchFileName in the public API
 bool KMimeTypeRepository::matchFileName( const QString &filename, const QString &pattern )
 {
     const int pattern_len = pattern.length();

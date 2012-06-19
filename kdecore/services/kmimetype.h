@@ -82,6 +82,7 @@ public:
      *              icon. Use 0 for default
      * @return the name of the icon. The name of a default icon if there is no icon
      *         for the mime type
+     * @deprecated use KIO::iconNameForUrl
      */
     static QString iconNameForUrl( const QUrl & url, mode_t mode = 0 );
 
@@ -93,6 +94,7 @@ public:
      * If unavailable, returns QString().
      * @param url the URL of the favicon
      * @return the name of the favicon, or QString()
+     * @deprecated use KIO::favIconForUrl
      */
     static QString favIconForUrl( const QUrl& url );
 
@@ -398,6 +400,7 @@ public:
      * then mainExtension() returns an empty string.
      *
      * @since 4.3
+     * @deprecated use QMimeType::suffixes(), but note that it doesn't return the leading dot.
      */
     QString mainExtension() const;
 
@@ -413,6 +416,12 @@ public:
     /**
      * Returns true if the given filename matches the given pattern.
      * @since 4.6.1
+     * @deprecated use QRegExp:
+     * @code
+     *  QRegExp rx(pattern);
+     *  rx.setPatternSyntax(QRegExp::Wildcard);
+     *  return rx.exactMatch(filename);
+     * @endcode
      */
     static bool matchFileName( const QString &filename, const QString &pattern );
 

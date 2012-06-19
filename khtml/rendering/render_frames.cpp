@@ -35,11 +35,7 @@
 #include "khtmlview.h"
 #include "khtml_part.h"
 
-#include <kmessagebox.h>
-#include <kmimetype.h>
-#include <klocalizedstring.h>
 #include <kdebug.h>
-#include <QtCore/QTimer>
 #include <QPainter>
 #include <QCursor>
 #include <QApplication>

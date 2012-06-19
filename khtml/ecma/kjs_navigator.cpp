@@ -31,7 +31,6 @@
 #include <kdebug.h>
 
 #include <kio/kprotocolmanager.h>
-#include <kmimetype.h>
 #include <kservice.h>
 #include <kservicetypetrader.h>
 #include <kjs/lookup.h>

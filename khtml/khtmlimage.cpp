@@ -33,7 +33,7 @@
 #include <kjobuidelegate.h>
 #include <kio/job.h>
 #include <kcomponentdata.h>
-#include <kmimetype.h>
+#include <qmimedatabase.h>
 #include <klocalizedstring.h>
 #include <kactioncollection.h>
 
@@ -196,15 +196,16 @@ void KHTMLImage::notifyFinished( khtml::CachedObject *o )
     //const QPixmap &pix = m_image->pixmap();
     QString caption;
 
-    KMimeType::Ptr mimeType;
+    QMimeDatabase db;
+    QMimeType mimeType;
     if ( !m_mimeType.isEmpty() )
-        mimeType = KMimeType::mimeType(m_mimeType, KMimeType::ResolveAliases);
+        mimeType = db.mimeTypeForName( m_mimeType );
 
-    if ( mimeType ) {
+    if ( mimeType.isValid() ) {
         if ( !m_image->suggestedTitle().isEmpty() ) {
-            caption = i18n( "%1 (%2 - %3x%4 Pixels)", m_image->suggestedTitle(), mimeType->comment(), m_image->pixmap_size().width(), m_image->pixmap_size().height() );
+            caption = i18n( "%1 (%2 - %3x%4 Pixels)", m_image->suggestedTitle(), mimeType.comment(), m_image->pixmap_size().width(), m_image->pixmap_size().height() );
         } else {
-            caption = i18n( "%1 - %2x%3 Pixels" ,  mimeType->comment() ,
+            caption = i18n( "%1 - %2x%3 Pixels" ,  mimeType.comment() ,
                   m_image->pixmap_size().width() ,  m_image->pixmap_size().height() );
         }
     } else {
@@ -282,7 +283,7 @@ void KHTMLImage::updateWindowCaption()
         mimeType = KMimeType::mimeType( m_mimeType, KMimeType::ResolveAliases );
 
     if ( mimeType )
-        caption = i18n( "%1 - %2x%3 Pixels" ).arg( mimeType->comment() )
+        caption = i18n( "%1 - %2x%3 Pixels" ).arg( mimeType.comment() )
                   .arg( pix.width() ).arg( pix.height() );
     else
         caption = i18n( "Image - %1x%2 Pixels" ).arg( pix.width() ).arg( pix.height() );

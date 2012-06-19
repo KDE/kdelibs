@@ -984,7 +984,7 @@ const QList<KParts::ReadOnlyPart*> KHTMLPartBrowserHostExtension::frames() const
   return m_part->frames();
 }
 
-bool KHTMLPartBrowserHostExtension::openUrlInFrame(const KUrl &url, const KParts::OpenUrlArguments& arguments, const KParts::BrowserArguments &browserArguments)
+bool KHTMLPartBrowserHostExtension::openUrlInFrame(const QUrl &url, const KParts::OpenUrlArguments& arguments, const KParts::BrowserArguments &browserArguments)
 {
   return m_part->openUrlInFrame( url, arguments, browserArguments );
 }

@@ -28,7 +28,6 @@
 
 #include <kmimetypetrader.h>
 #include <kservicetypetrader.h>
-#include <kmimetype.h>
 #include <kdebug.h>
 
 #include <kio/job.h>
@@ -37,6 +36,7 @@
 #include <QtCore/QListIterator>
 #include <QtCore/QStringList>
 #include <QtCore/QList>
+#include <qmimedatabase.h>
 
 #include <QtWebKit/QWebPluginFactory>
 #include <QtWebKit/QWebFrame>
@@ -120,9 +120,10 @@ void KWebPluginFactory::extractGuessedMimeType (const QUrl& url, QString* mimeTy
 {
     if (mimeType) {
         const QUrl reqUrl ((isHttpProtocol(url) ? QUrl(url.path()) : url));
-        KMimeType::Ptr ptr = KMimeType::findByUrl(reqUrl, 0, reqUrl.isLocalFile(), true);
-        if (!ptr->isDefault() && !ptr->name().startsWith(QL1S("inode/"), Qt::CaseInsensitive)) {
-            *mimeType = ptr->name();
+        QMimeDatabase db;
+        QMimeType mime = db.mimeTypeForFile(reqUrl.path(), QMimeDatabase::MatchExtension);
+        if (!mime.isDefault() && !mime.name().startsWith(QL1S("inode/"))) {
+            *mimeType = mime.name();
         }
     }
 }

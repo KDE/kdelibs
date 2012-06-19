@@ -48,7 +48,6 @@
 #include <kcharsets.h>
 #include <kglobal.h>
 #include <kdebug.h>
-#include <kmimetype.h>
 #include <kmessagebox.h>
 #include <krandom.h>
 #include <klocalizedstring.h>
@@ -57,12 +56,12 @@
 #endif
 #include <netaccess.h>
 #include <kfileitem.h>
+#include <qmimedatabase.h>
 #include <QtCore/QFile>
 #include <QtCore/QDir>
 #include <QtCore/QTextCodec>
 
 // for keygen
-#include <QtCore/QCharRef>
 #include <ksslkeygen.h>
 
 #include <assert.h>
@@ -250,7 +249,7 @@ Vector<HTMLGenericFormElementImpl*> HTMLFormElementImpl::gatherInTreeOrder(NodeI
 {
     Vector<HTMLGenericFormElementImpl*> out;
     out.reserveCapacity(toGather.size());
-    
+
     for (NodeImpl* cur = root; cur; cur = cur->traverseNextNode(root)) {
         if (toGather.contains(cur))
             out.append(static_cast<HTMLGenericFormElementImpl*>(cur));
@@ -311,21 +310,21 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
         m_encCharset[i] = m_encCharset[i].toLatin1() == ' ' ? QChar('-') : m_encCharset[i].toLower();
 
     QStringList fileUploads, fileNotUploads;
-    
+
     /**
-     Frameworks such as mootools Sortables expect form element values to be submitted in 
-     tree order (and HTML5 specifies this behavior); however formElements need not be 
-     ordered thus. Hence we walk through the tree and the formElements as we go --- 
+     Frameworks such as mootools Sortables expect form element values to be submitted in
+     tree order (and HTML5 specifies this behavior); however formElements need not be
+     ordered thus. Hence we walk through the tree and the formElements as we go ---
      first in our kids, then if needed in the parent
     */
     HashSet<NodeImpl*> formElementsSet;
     foreach (HTMLGenericFormElementImpl* fe, formElements)
         formElementsSet.add(fe);
-        
+
     Vector<HTMLGenericFormElementImpl*> ordered = gatherInTreeOrder(this, formElementsSet);
-    
+
     if (ordered.size() < (unsigned)formElements.size()) {
-        // Some of our elements not contained within us due to parsing hijinks -- scan 
+        // Some of our elements not contained within us due to parsing hijinks -- scan
         // the entire document.
         ordered = gatherInTreeOrder(document()->documentElement(), formElementsSet);
     }
@@ -386,10 +385,11 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                         hstr += fixUpfromUnicode(codec, "; filename=\"" + path.fileName() + "\"");
                         if (path.isValid()) {
                             fileUploads << path.pathOrUrl();
-                            const KMimeType::Ptr ptr = KMimeType::findByUrl(path);
-                            if (!ptr->name().isEmpty()) {
+                            QMimeDatabase db;
+                            const QMimeType mime = db.mimeTypeForUrl(path);
+                            if (!mime.name().isEmpty()) {
                                 hstr += "\r\nContent-Type: ";
-                                hstr += ptr->name().toAscii().constData();
+                                hstr += mime.name().toLatin1().constData();
                             }
                         } else if (!val.isEmpty()) {
                             fileNotUploads << path.pathOrUrl();
@@ -824,7 +824,7 @@ void HTMLFormElementImpl::removeFormElement(HTMLGenericFormElementImpl *e)
     int i = formElements.indexOf(e);
     if (i != -1)
         formElements.removeAt(i);
-        
+
     if (e->hasPastNames()) {
         QMutableHashIterator<DOMString, HTMLGenericFormElementImpl*> it(m_pastNamesMap);
         while (it.hasNext()) {
@@ -857,7 +857,7 @@ void HTMLFormElementImpl::bindPastName(HTMLGenericFormElementImpl* e)
     DOMString id = e->getAttribute(ATTR_ID);
     if (!id.isEmpty())
         m_pastNamesMap.insert(id, e);
-        
+
     DOMString nm = e->getAttribute(ATTR_NAME);
     if (!nm.isEmpty())
         m_pastNamesMap.insert(nm, e);
@@ -1923,7 +1923,7 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 		// Did we change? Always yes for checkboxes, and for radio buttons
 		// only if we're not already checked.
 		bool changed = m_type == CHECKBOX || !checked();
-		
+
 		// click will follow
 		setChecked(m_type == RADIO ? true : !checked());
 
@@ -2387,7 +2387,7 @@ void HTMLSelectElementImpl::restoreState(const QString &_state)
         // leave this be.
         return;
     }
-    
+
     if(!state.isEmpty() && !state.contains('X') && !m_multiple && m_size <= 1) {
         qWarning("should not happen in restoreState!");
         state[0] = 'X';

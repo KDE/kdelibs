@@ -1,5 +1,5 @@
 #include <kservice.h>
-#include <kmimetype.h>
+#include <qmimedatabase.h>
 #include <kservicetype.h>
 
 #include <kcmdlineargs.h>
@@ -21,10 +21,11 @@ int main(int argc, char *argv[])
 //}
 
    kDebug() << "All mimeTypes";
-   KMimeType::List mimeTypes = KMimeType::allMimeTypes();
+   QMimeDatabase db;
+   QList<QMimeType> mimeTypes = db.allMimeTypes();
    kDebug() << "got " << mimeTypes.count() << " mimeTypes";
-   Q_FOREACH(const KMimeType::Ptr m, mimeTypes) {
-     kDebug() << m->name();
+   Q_FOREACH(const QMimeType& m, mimeTypes) {
+     kDebug() << m.name();
    }
 
    kDebug() << "All service types";

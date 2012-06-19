@@ -33,13 +33,13 @@
 #include <QtCore/QFile>
 #include <QColor>
 #include <QAction>
+#include <qmimedatabase.h>
 
 #include <kfileitem.h>
 #include <klocalizedstring.h>
 #include <kuser.h>
 
 #include <kcomponentdata.h>
-#include <kmimetype.h>
 #include <kdebug.h>
 #include <kurlmimedata.h>
 
@@ -546,6 +546,7 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
     }
 
 
+    QMimeDatabase db;
     KBookmark afterBookmark;
 
     if (row==-1) {
@@ -584,19 +585,19 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
 
         foreach (const KUrl &url, urls) {
             // TODO: use KIO::stat in order to get the UDS_DISPLAY_NAME too
-            KMimeType::Ptr mimetype = KMimeType::mimeType(KIO::NetAccess::mimetype(url, 0));
+            QMimeType mimetype = db.mimeTypeForName(KIO::NetAccess::mimetype(url, 0));
 
-            if (!mimetype) {
+            if (!mimetype.isValid()) {
                 kWarning() << "URL not added to Places as mimetype could not be determined!";
                 continue;
             }
 
-            if (!mimetype->is("inode/directory")) {
+            if (!mimetype.inherits("inode/directory")) {
                 // Only directories are allowed
                 continue;
             }
 
-            KFileItem item(url, mimetype->name(), S_IFDIR);
+            KFileItem item(url, mimetype.name(), S_IFDIR);
 
             KBookmark bookmark = KFilePlacesItem::createBookmark(d->bookmarkManager,
                                                                  url.fileName(), url,

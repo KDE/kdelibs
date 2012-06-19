@@ -50,7 +50,7 @@ public:
   //KHTMLPart *htmlPart() const;
 
 protected:
-  virtual void save( const KUrl & url, const QString & suggestedFilename );
+  virtual void save(const QUrl & url, const QString & suggestedFilename);
 
 private:
   khtml::ChildFrame *m_child;

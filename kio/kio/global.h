@@ -350,6 +350,19 @@ namespace KIO
   KIO_EXPORT QString getCacheControlString(KIO::CacheControl cacheControl);
 
   /**
+   * Return the "favicon" (see http://www.favicon.com) for the given @p url,
+   * if available. Does NOT attempt to download the favicon, it only returns
+   * one that is already available.
+   *
+   * If unavailable, returns QString().
+   * @param url the URL of the favicon
+   * @return the name of the favicon, or QString()
+   *
+   * @since 5.0
+   */
+  KIO_EXPORT QString favIconForUrl(const QUrl& url);
+
+  /**
    * Return the icon name for a URL.
    * Most of the time this returns the mimetype icon,
    * but also has fallback to favicon and protocol-specific icon.

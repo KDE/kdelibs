@@ -33,8 +33,6 @@
 #include "debugwindow.h"
 #include "debugdocument.h"
 
-#include <kmimetype.h>
-
 using namespace KJS;
 using namespace KJSDebugger;
 
@@ -60,25 +58,25 @@ void ScriptsDock::documentDestroyed(DebugDocument *document)
     // We may be asked to remove a document held for reload repeatedly;
     // ignore later attempts
     if (!m_documents.contains(document))
-        return; 
+        return;
 
     QTreeWidgetItem* fragment = m_documents[document];
-    m_documents.remove(document);    
-        
+    m_documents.remove(document);
+
     QTreeWidgetItem* file      = fragment->parent();
     QTreeWidgetItem* domain    = file->parent();
 
     delete file->takeChild(file->indexOfChild(fragment));
-    
+
     if (file->childCount())
         return;
-      
+
     // Need to clean up the file as well.
     delete domain->takeChild(domain->indexOfChild(file));
-    
+
     if (domain->childCount())
       return;
-      
+
     // ... and domain
     m_headers.remove(domain->text(0));
     delete m_widget->takeTopLevelItem(m_widget->indexOfTopLevelItem(domain));
@@ -103,7 +101,7 @@ void ScriptsDock::addDocument(DebugDocument *document)
         else
             domain = "localhost";
 
-        favicon = KMimeType::favIconForUrl(kurl);
+        favicon = KIO::favIconForUrl(kurl);
     }
 
     QTreeWidgetItem *parent = 0;
@@ -118,9 +116,9 @@ void ScriptsDock::addDocument(DebugDocument *document)
         }
 
         m_headers[domain] = parent;
-        m_widget->invisibleRootItem()->addChild(parent);        
+        m_widget->invisibleRootItem()->addChild(parent);
     }
-    
+
     // Now try to find a kid for the name
     QTreeWidgetItem* file = 0;
     for (int c = 0; c < parent->childCount(); ++c) {
@@ -128,14 +126,14 @@ void ScriptsDock::addDocument(DebugDocument *document)
         if (cand->text(0) == name)
             file = cand;
     }
-    
+
     if (!file)
         file = new QTreeWidgetItem(parent, QStringList() << name);
-    
+
     // Now add the fragment
-    QString lines = QString::number(1 + document->baseLine()) + "-" + 
+    QString lines = QString::number(1 + document->baseLine()) + "-" +
                     QString::number(1 + document->baseLine() + document->length() - 1);
-    
+
     QTreeWidgetItem *child = new QTreeWidgetItem(file, QStringList() << lines);
     m_documents[document] = child;
 }

@@ -37,14 +37,11 @@
 #include <kshell.h>
 
 #include <kio/job.h>
-#include <kmimetype.h>
-#include <krandom.h>
 #include <QDesktopServices>
 
 #include <QtCore/QTimer>
 #include <QtCore/QDir>
 #include <QtXml/qdom.h>
-#include <QtCore/Q_PID>
 
 #if defined(Q_OS_WIN)
 #include <windows.h>

@@ -20,13 +20,9 @@
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <kiconloader.h>
-#include <kmimetype.h>
 #include <kprotocolinfo.h>
 #include <kservice.h>
 #include <kservicegroup.h>
-
-#include <kmimetypetrader.h>
-#include <kservicetypeprofile.h>
 
 #include <assert.h>
 #include <stdio.h>

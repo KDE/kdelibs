@@ -31,6 +31,7 @@
 #include <QtCore/QFileInfo>
 #include <qtemporaryfile.h>
 #include <QtCore/QPoint>
+#include <qmimedatabase.h>
 
 #include <kdirnotify.h>
 #include <kfiledialog.h>
@@ -576,9 +577,10 @@ bool ReadOnlyPartPrivate::openLocalFile()
     if (m_arguments.mimeType().isEmpty()) {
         // get the mimetype of the file
         // using findByUrl() to avoid another string -> url conversion
-        KMimeType::Ptr mime = KMimeType::findByUrl(m_url, 0, true /* local file*/);
-        if (mime) {
-            m_arguments.setMimeType(mime->name());
+        QMimeDatabase db;
+        QMimeType mime = db.mimeTypeForUrl(m_url);
+        if (!mime.isDefault()) {
+            m_arguments.setMimeType(mime.name());
             m_bAutoDetectedMime = true;
         }
     }

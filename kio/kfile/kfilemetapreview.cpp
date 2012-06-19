@@ -9,6 +9,7 @@
 #include "kfilemetapreview.h"
 
 #include <QLayout>
+#include <qmimedatabase.h>
 
 #include <kdebug.h>
 #include <kio/previewjob.h>
@@ -57,15 +58,15 @@ void KFileMetaPreview::initPreviewProviders()
     }
 }
 
-KPreviewWidgetBase* KFileMetaPreview::findExistingProvider(const QString& mimeType, const KMimeType::Ptr& mimeInfo) const
+KPreviewWidgetBase* KFileMetaPreview::findExistingProvider(const QString& mimeType, const QMimeType& mimeInfo) const
 {
     KPreviewWidgetBase* provider = m_previewProviders.value(mimeType);
     if ( provider )
         return provider;
 
-    if ( mimeInfo ) {
+    if (mimeInfo.isValid()) {
         // check mime type inheritance
-        const QStringList parentMimeTypes = mimeInfo->allParentMimeTypes();
+        const QStringList parentMimeTypes = mimeInfo.allAncestors();
         Q_FOREACH(const QString& parentMimeType, parentMimeTypes) {
             provider = m_previewProviders.value(parentMimeType);
             if (provider)
@@ -87,12 +88,13 @@ KPreviewWidgetBase* KFileMetaPreview::findExistingProvider(const QString& mimeTy
 
 KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeType )
 {
-    KMimeType::Ptr mimeInfo = KMimeType::mimeType( mimeType );
+    QMimeDatabase db;
+    QMimeType mimeInfo = db.mimeTypeForName(mimeType);
 
     //     qDebug("### looking for: %s", mimeType.toLatin1().constData());
     // often the first highlighted item, where we can be sure, there is no plugin
     // (this "folders reflect icons" is a konq-specific thing, right?)
-    if ( mimeInfo && mimeInfo->is("inode/directory") )
+    if (mimeInfo.inherits("inode/directory"))
         return 0L;
 
     KPreviewWidgetBase *provider = findExistingProvider(mimeType, mimeInfo);
@@ -137,8 +139,9 @@ KPreviewWidgetBase * KFileMetaPreview::previewProviderFor( const QString& mimeTy
 
 void KFileMetaPreview::showPreview(const QUrl &url)
 {
-    KMimeType::Ptr mt = KMimeType::findByUrl( url );
-    KPreviewWidgetBase *provider = previewProviderFor( mt->name() );
+    QMimeDatabase db;
+    QMimeType mt = db.mimeTypeForUrl(url);
+    KPreviewWidgetBase *provider = previewProviderFor(mt.name());
     if ( provider )
     {
         if ( provider != m_stack->currentWidget() ) // stop the previous preview

@@ -33,6 +33,7 @@
 #include <QStyleOptionButton>
 #include <qstandardpaths.h>
 #include <qurlpathinfo.h>
+#include <qmimedatabase.h>
 
 #include <kcoreauthorized.h>
 #include <khistorycombobox.h>
@@ -45,7 +46,6 @@
 #include <kstringhandler.h>
 #include <kurlcompletion.h>
 #include <kurlrequester.h>
-#include <kmimetype.h>
 #include <kservicegroup.h>
 #include <kserviceoffer.h>
 #include <kdebug.h>
@@ -549,13 +549,15 @@ KOpenWithDialog::KOpenWithDialog( QWidget *parent)
 
 void KOpenWithDialogPrivate::setMimeType(const QList<QUrl> &_urls)
 {
-  if (_urls.count() == 1) {
-    qMimeType = KMimeType::findByUrl( _urls.first())->name();
-    if (qMimeType == QLatin1String("application/octet-stream"))
-      qMimeType.clear();
-  }
-  else
-      qMimeType.clear();
+    if (_urls.count() == 1) {
+        QMimeDatabase db;
+        QMimeType mime = db.mimeTypeForUrl(_urls.first());
+        qMimeType = mime.name();
+        if (mime.isDefault())
+            qMimeType.clear();
+    } else {
+        qMimeType.clear();
+    }
 }
 
 void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)

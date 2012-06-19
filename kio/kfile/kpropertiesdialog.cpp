@@ -72,7 +72,8 @@ extern "C" {
 #include <QProgressBar>
 #include <QVector>
 #include <QFileInfo>
-#include "qurlpathinfo.h"
+#include <qurlpathinfo.h>
+#include <qmimedatabase.h>
 
 #ifdef HAVE_POSIX_ACL
 extern "C" {
@@ -740,10 +741,11 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     d->mimeType = item.mimetype();
     KIO::filesize_t totalSize = item.size();
     QString magicMimeComment;
+    QMimeDatabase db;
     if ( isLocal ) {
-        KMimeType::Ptr magicMimeType = KMimeType::findByFileContent(url.toLocalFile());
-        if ( magicMimeType->name() != KMimeType::defaultMimeType() )
-            magicMimeComment = magicMimeType->comment();
+        QMimeType magicMimeType = db.mimeTypeForFile(url.toLocalFile(), QMimeDatabase::MatchContent);
+        if (magicMimeType.isValid() && !magicMimeType.isDefault())
+            magicMimeComment = magicMimeType.comment();
     }
 #ifdef Q_OS_WIN
     if ( isReallyLocal ) {
@@ -850,8 +852,8 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
             if ( !mimeComment.isNull() && (*kit).mimeComment() != mimeComment )
                 mimeComment.clear();
             if ( isLocal && !magicMimeComment.isNull() ) {
-                KMimeType::Ptr magicMimeType = KMimeType::findByFileContent(url.toLocalFile());
-                if ( magicMimeType->comment() != magicMimeComment )
+                QMimeType magicMimeType = db.mimeTypeForFile(url.toLocalFile(), QMimeDatabase::MatchContent);
+                if (magicMimeType.isValid() && magicMimeType.comment() != magicMimeComment)
                     magicMimeComment.clear();
             }
 
@@ -929,7 +931,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         setFileNameReadOnly(!itemList.supportsMoving());
 
         // Enhanced rename: Don't highlight the file extension.
-        QString extension = KMimeType::extractKnownExtension( filename );
+        QString extension = db.suffixForFileName(filename);
         if ( !extension.isEmpty() )
             d->m_lined->setSelection( 0, filename.length() - extension.length() - 1 );
         else
@@ -963,7 +965,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);  // Minimum still makes the button grow to the entire layout width
         button->setIcon( KDE::icon(QString::fromLatin1("configure")) );
 
-        if ( d->mimeType == KMimeType::defaultMimeType() )
+        if (d->mimeType == QLatin1String("application/octet-stream"))
             button->setText(i18n("Create New File Type"));
         else
             button->setText(i18n("File Type Options"));
@@ -1147,7 +1149,7 @@ void KFilePropsPlugin::setFileNameReadOnly( bool ro )
 void KFilePropsPlugin::slotEditFileType()
 {
     QString mime;
-    if (d->mimeType == KMimeType::defaultMimeType()) {
+    if (d->mimeType == QLatin1String("application/octet-stream")) {
         const int pos = d->oldFileName.lastIndexOf('.');
         if (pos != -1)
             mime = '*' + d->oldFileName.mid(pos);
@@ -1467,9 +1469,8 @@ void KFilePropsPlugin::applyIconChanges()
             path = url.toLocalFile();
 
         // Get the default image
-        QString str = KMimeType::findByUrl( url,
-                                            properties->item().mode(),
-                                            true )->iconName();
+        QMimeDatabase db;
+        QString str = db.mimeTypeForFile(url.toLocalFile(), QMimeDatabase::MatchExtension).iconName();
         // Is it another one than the default ?
         QString sIcon;
         if ( str != iconButton->icon() )
@@ -3010,6 +3011,8 @@ public:
 KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
     : KPropertiesDialogPlugin( _props ), d( new KDesktopPropsPluginPrivate )
 {
+    QMimeDatabase db;
+
     d->w->setupUi(d->m_frame);
 
     properties->addPage(d->m_frame, i18n("&Application"));
@@ -3099,11 +3102,10 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
     // was: d->w->filetypeList->setFullWidth(true);
     //  d->w->filetypeList->header()->setStretchEnabled(true, d->w->filetypeList->columns()-1);
 
-    KMimeType::Ptr defaultMimetype = KMimeType::defaultMimeTypePtr();
     for(QStringList::ConstIterator it = mimeTypes.begin();
-    it != mimeTypes.end(); )
+        it != mimeTypes.end(); )
     {
-        KMimeType::Ptr p = KMimeType::mimeType(*it, KMimeType::ResolveAliases);
+        QMimeType p = db.mimeTypeForName(*it);
         ++it;
         QString preference;
         if (it != mimeTypes.end())
@@ -3116,11 +3118,11 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
                 ++it;
             }
         }
-        if (p)
+        if (p.isValid())
         {
             QTreeWidgetItem *item = new QTreeWidgetItem();
-            item->setText(0, p->name());
-            item->setText(1, p->comment());
+            item->setText(0, p.name());
+            item->setText(1, p.comment());
             item->setText(2, preference);
             d->w->filetypeList->addTopLevelItem(item);
         }
@@ -3136,6 +3138,7 @@ KDesktopPropsPlugin::~KDesktopPropsPlugin()
 
 void KDesktopPropsPlugin::slotAddFiletype()
 {
+    QMimeDatabase db;
     const QUrlPathInfo pathInfo(properties->url());
     KMimeTypeChooserDialog dlg(i18n("Add File Type for %1", pathInfo.fileName()),
                                i18n("Select one or more file types to add:"),
@@ -3149,8 +3152,8 @@ void KDesktopPropsPlugin::slotAddFiletype()
     {
         foreach(const QString &mimetype, dlg.chooser()->mimeTypes())
         {
-            KMimeType::Ptr p = KMimeType::mimeType(mimetype);
-            if (!p)
+            QMimeType p = db.mimeTypeForName(mimetype);
+            if (!p.isValid())
                 continue;
 
             bool found = false;
@@ -3162,8 +3165,8 @@ void KDesktopPropsPlugin::slotAddFiletype()
             }
             if (!found) {
                 QTreeWidgetItem *item = new QTreeWidgetItem();
-                item->setText(0, p->name());
-                item->setText(1, p->comment());
+                item->setText(0, p.name());
+                item->setText(1, p.comment());
                 d->w->filetypeList->addTopLevelItem(item);
             }
             d->w->filetypeList->resizeColumnToContents(0);

@@ -24,10 +24,10 @@
 #include <kglobalsettings.h>
 #include <kfileplacesmodel.h>
 #include <kmenu.h>
-#include <kmimetype.h>
 #include <kdebug.h>
 #include <kurlmimedata.h>
 
+#include <qmimedatabase.h>
 #include <QDragEnterEvent>
 #include <QDragLeaveEvent>
 #include <QDropEvent>
@@ -183,10 +183,11 @@ void KUrlNavigatorPlacesSelector::dropEvent(QDropEvent* event)
     setDisplayHintEnabled(DraggedHint, false);
     update();
 
+    QMimeDatabase db;
     const QList<QUrl> urlList = KUrlMimeData::urlsFromMimeData(event->mimeData());
     foreach(const KUrl &url, urlList) {
-        KMimeType::Ptr mimetype = KMimeType::findByUrl(url);
-        if (mimetype->is("inode/directory")) {
+        QMimeType mimetype = db.mimeTypeForUrl(url);
+        if (mimetype.inherits("inode/directory")) {
             m_placesModel->addPlace(url.fileName(), url);
         }
     }

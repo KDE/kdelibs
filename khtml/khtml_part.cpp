@@ -123,6 +123,7 @@ using namespace DOM;
 #include <QTextDocument>
 #include <QtCore/QDate>
 #include <QtNetwork/QSslCertificate>
+#include <qmimedatabase.h>
 
 #include "khtmlpart_p.h"
 #include "khtml_iface.h"
@@ -1955,11 +1956,12 @@ MimeType KHTMLPartPrivate::classifyMimeType(const QString& mimeStr)
   if (mimeStr == "text/html" || mimeStr.isEmpty())
       return MimeHTML;
 
-  KMimeType::Ptr mime = KMimeType::mimeType(mimeStr, KMimeType::ResolveAliases);
-  if ((mime && mime->is("text/xml")) || mimeStr.endsWith("+xml"))
+  QMimeDatabase db;
+  QMimeType mime = db.mimeTypeForName(mimeStr);
+  if (mime.inherits("text/xml") || mimeStr.endsWith("+xml"))
       return MimeXML;
 
-  if (mime && mime->is("text/plain"))
+  if (mime.inherits("text/plain"))
       return MimeText;
 
   if (khtmlImLoad::ImageManager::loaderDatabase()->supportedMimeTypes().contains(mimeStr))
@@ -2157,8 +2159,9 @@ void KHTMLPart::onFirstData()
 
 bool KHTMLPart::doOpenStream( const QString& mimeType )
 {
-    KMimeType::Ptr mime = KMimeType::mimeType(mimeType, KMimeType::ResolveAliases);
-    if ( mime && ( mime->is( "text/html" ) || mime->is( "text/xml" ) ) )
+    QMimeDatabase db;
+    QMimeType mime = db.mimeTypeForName(mimeType);
+    if ( mime.inherits( "text/html" ) || mime.inherits( "text/xml" ) )
     {
         begin( url() );
         return true;
@@ -4310,6 +4313,8 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
             emit d->m_extension->openUrlNotify();
     }
 
+    QMimeDatabase db;
+
     // Now, depending on mimetype and current state of the world, we may have
     // to create a new part or ask the user to save things, etc.
     //
@@ -4369,13 +4374,13 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
         // doing it in advance when registering the frame. So we want the
         // actual creation only for objects here.
         if ( child->m_type == khtml::ChildFrame::Object ) {
-            KMimeType::Ptr mime = KMimeType::mimeType(mimetype);
-            if (mime) {
+            QMimeType mime = db.mimeTypeForName(mimetype);
+            if (mime.isValid()) {
                 // Even for objects, however, we want to force a KHTMLPart for
                 // html & xml, even  if the normally preferred part is another one,
                 // so that we can script the target natively via contentDocument method.
-                if (mime->is("text/html")
-                    || mime->is("application/xml")) { // this includes xhtml and svg
+                if (mime.inherits("text/html")
+                    || mime.inherits("application/xml")) { // this includes xhtml and svg
                     child->m_serviceName = "khtml";
                 }
             }
@@ -4912,6 +4917,8 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
     }
   }
 
+  QMimeDatabase db;
+
   // Danger, Will Robinson. The Popup might stay around for a much
   // longer time than KHTMLPart. Deal with it.
   KHTMLPopupGUIClient* client = new KHTMLPopupGUIClient( this, linkKUrl );
@@ -4924,27 +4931,27 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
   {
     if (popupURL.isLocalFile())                                // safe to do this
     {
-      mimetype = KMimeType::findByUrl(popupURL,0,true,false)->name();
+      mimetype = db.mimeTypeForUrl(popupURL).name();
     }
     else                                                // look at "extension" of link
     {
       const QString fname(popupURL.fileName(KUrl::ObeyTrailingSlash));
       if (!fname.isEmpty() && !popupURL.hasRef() && popupURL.query().isEmpty())
       {
-        KMimeType::Ptr pmt = KMimeType::findByPath(fname,0,true);
+        QMimeType pmt = db.mimeTypeForFile(fname, QMimeDatabase::MatchExtension);
 
         // Further check for mime types guessed from the extension which,
         // on a web page, are more likely to be a script delivering content
         // of undecidable type. If the mime type from the extension is one
         // of these, don't use it.  Retain the original type 'text/html'.
-        if (pmt->name() != KMimeType::defaultMimeType() &&
-            !pmt->is("application/x-perl") &&
-            !pmt->is("application/x-perl-module") &&
-            !pmt->is("application/x-php") &&
-            !pmt->is("application/x-python-bytecode") &&
-            !pmt->is("application/x-python") &&
-            !pmt->is("application/x-shellscript"))
-          mimetype = pmt->name();
+        if (!pmt.isDefault() &&
+            !pmt.inherits("application/x-perl") &&
+            !pmt.inherits("application/x-perl-module") &&
+            !pmt.inherits("application/x-php") &&
+            !pmt.inherits("application/x-python-bytecode") &&
+            !pmt.inherits("application/x-python") &&
+            !pmt.inherits("application/x-shellscript"))
+          mimetype = pmt.name();
       }
     }
   }

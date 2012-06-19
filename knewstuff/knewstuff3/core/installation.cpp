@@ -23,7 +23,7 @@
 #include <QFile>
 
 #include "kstandarddirs.h"
-#include "kmimetype.h"
+#include "qmimedatabase.h"
 #include "karchive.h"
 #include "kzip.h"
 #include "ktar.h"
@@ -33,6 +33,7 @@
 #include "kshell.h"
 #include "kmessagebox.h" // TODO get rid of message box
 #include <qdesktopservices.h> // TODO remove, this was only for my playing round
+#include <qstandardpaths.h>
 #include "klocalizedstring.h"
 #include "kdebug.h"
 
@@ -204,8 +205,9 @@ void Installation::slotPayloadResult(KJob *job)
 
             // check if the app likes html files - disabled by default as too many bad links have been submitted to opendesktop.org
             if (!acceptHtml) {
-                KMimeType::Ptr mimeType = KMimeType::findByPath(fcjob->destUrl().toLocalFile());
-                if (mimeType->is("text/html") || mimeType->is("application/x-php")) {
+                QMimeDatabase db;
+                QMimeType mimeType = db.mimeTypeForFile(fcjob->destUrl().toLocalFile());
+                if (mimeType.inherits("text/html") || mimeType.inherits("application/x-php")) {
                     if (KMessageBox::questionYesNo(0, i18n("The downloaded file is a html file. This indicates a link to a website instead of the actual download. Would you like to open the site with a browser instead?"), i18n("Possibly bad download link"))
                         == KMessageBox::Yes) {
                         QDesktopServices::openUrl(fcjob->srcUrl());
@@ -391,7 +393,8 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
         if (uncompression == "always" || uncompression == "archive") {
             // this is weird but a decompression is not a single name, so take the path instead
             installpath = installdir;
-            KMimeType::Ptr mimeType = KMimeType::findByPath(payloadfile);
+            QMimeDatabase db;
+            QMimeType mimeType = db.mimeTypeForFile(payloadfile);
             //kDebug() << "Postinstallation: uncompress the file";
 
             // FIXME: check for overwriting, malicious archive entries (../foo) etc.
@@ -399,15 +402,15 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
             KArchive *archive = 0;
 
 
-            if (mimeType->is("application/zip")) {
+            if (mimeType.inherits("application/zip")) {
                 archive = new KZip(payloadfile);
-            } else if (mimeType->is("application/tar")
-                       || mimeType->is("application/x-gzip")
-                       || mimeType->is("application/x-bzip")
-                       || mimeType->is("application/x-lzma")
-                       || mimeType->is("application/x-xz")
-                       || mimeType->is("application/x-bzip-compressed-tar")
-                       || mimeType->is("application/x-compressed-tar") ) {
+            } else if (mimeType.inherits("application/tar")
+                       || mimeType.inherits("application/x-gzip")
+                       || mimeType.inherits("application/x-bzip")
+                       || mimeType.inherits("application/x-lzma")
+                       || mimeType.inherits("application/x-xz")
+                       || mimeType.inherits("application/x-bzip-compressed-tar")
+                       || mimeType.inherits("application/x-compressed-tar") ) {
                 archive = new KTar(payloadfile);
             } else {
                 delete archive;

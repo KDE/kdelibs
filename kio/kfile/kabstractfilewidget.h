@@ -28,8 +28,9 @@
 class KPreviewWidgetBase;
 
 #include "kfile.h"
-#include <kmimetype.h>
+#include <qmimetype.h>
 
+class QUrl;
 class KPushButton;
 class KActionCollection;
 class KToolBar;
@@ -213,7 +214,7 @@ public:
      *
      * @see setFilterMimeType()
      */
-    virtual KMimeType::Ptr currentFilterMimeType() = 0;
+    virtual QMimeType currentFilterMimeType() = 0;
 
     /**
      * Sets the filter up to specify the output type.

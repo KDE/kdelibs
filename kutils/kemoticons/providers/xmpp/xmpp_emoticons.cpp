@@ -25,7 +25,7 @@
 #include <kpluginfactory.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
-#include <kmimetype.h>
+#include <qmimedatabase.h>
 
 K_PLUGIN_FACTORY(XmppEmoticonsFactory, registerPlugin<XmppEmoticons>();)
 K_EXPORT_PLUGIN(XmppEmoticonsFactory("XmppEmoticons"))
@@ -90,8 +90,9 @@ bool XmppEmoticons::addEmoticon(const QString &emo, const QString &text, AddEmot
     }
 
     QDomElement emoElement = m_themeXml.createElement("object");
-    KMimeType::Ptr mimePtr = KMimeType::findByPath(emo, 0, true);
-    emoElement.setAttribute("mime", mimePtr->name());
+    QMimeDatabase db;
+    QMimeType mime = db.mimeTypeForFile(emo, QMimeDatabase::MatchExtension);
+    emoElement.setAttribute("mime", mime.name());
     QDomText txt = m_themeXml.createTextNode(QFileInfo(emo).fileName());
 
     emoElement.appendChild(txt);

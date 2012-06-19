@@ -35,7 +35,7 @@
 
 #include <kdebug.h>
 #include <kmessagebox.h>
-#include <kmimetype.h>
+#include <qmimedatabase.h>
 
 
 #include "xml/dom_docimpl.h"
@@ -592,9 +592,10 @@ void HTMLObjectBaseElementImpl::slotPartLoadingErrorNotify()
     if(!embed->pluginPage.isEmpty() && ext) {
         // Prepare the mimetype to show in the question (comment if available, name as fallback)
         QString mimeName = serviceType;
-        KMimeType::Ptr mime = KMimeType::mimeType(serviceType, KMimeType::ResolveAliases);
-        if ( mime && mime->name() != KMimeType::defaultMimeType() )
-            mimeName = mime->comment();
+        QMimeDatabase db;
+        QMimeType mime = db.mimeTypeForName(serviceType);
+        if (mime.isValid())
+            mimeName = mime.comment();
 
         // Check if we already asked the user, for this page
         if (!mimeName.isEmpty() && !part->pluginPageQuestionAsked(serviceType))

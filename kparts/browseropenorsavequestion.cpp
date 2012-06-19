@@ -31,7 +31,7 @@
 #include <kstandardguiitem.h>
 #include <kguiitem.h>
 #include <kmessagebox.h>
-#include <kmimetype.h>
+#include <qmimedatabase.h>
 #include <QStyle>
 #include <QStyleOption>
 #include <QVBoxLayout>
@@ -41,11 +41,12 @@
 using namespace KParts;
 Q_DECLARE_METATYPE(KService::Ptr)
 
-static KMimeType::Ptr fixupMimeType (const QString& mimeType, const QString& fileName)
+static QMimeType fixupMimeType (const QString& mimeType, const QString& fileName)
 {
-    KMimeType::Ptr mime = KMimeType::mimeType(mimeType, KMimeType::ResolveAliases);
-    if ((!mime || mime->isDefault()) && !fileName.isEmpty()) {
-        mime = KMimeType::findByPath(fileName, 0, true); // name only
+    QMimeDatabase db;
+    QMimeType mime = db.mimeTypeForName(mimeType);
+    if ((!mime.isValid() || mime.isDefault()) && !fileName.isEmpty()) {
+        mime = db.mimeTypeForFile(fileName, QMimeDatabase::MatchExtension);
     }
     return mime;
 }
@@ -102,9 +103,9 @@ public:
 
         mime = fixupMimeType(mimeType, url.fileName());
         QString mimeDescription (mimeType);
-        if (mime) {
+        if (mime.isValid()) {
             // Always prefer the mime-type comment over the raw type for display
-            mimeDescription = (mime->comment().isEmpty() ? mime->name() : mime->comment());
+            mimeDescription = (mime.comment().isEmpty() ? mime.name() : mime.comment());
         }
         mimeTypeLabel = new QLabel(mainWidget());
         mimeTypeLabel->setText(i18nc("@label Type of file", "Type: %1", mimeDescription));
@@ -152,7 +153,7 @@ public:
 
     KUrl url;
     QString mimeType;
-    KMimeType::Ptr mime;
+    QMimeType mime;
     KService::Ptr selectedService;
     KSqueezedTextLabel* questionLabel;
     BrowserOpenOrSaveQuestion::Features features;
@@ -281,13 +282,13 @@ bool BrowserOpenOrSaveQuestionPrivate::autoEmbedMimeType(int flags)
     // it's more likely that the user might want to save it.
     // - multipart/* ("server push", see kmultipart)
     // KEEP IN SYNC!!!
-    if (flags != (int)BrowserRun::AttachmentDisposition && mime && (
-            mime->is("text/html") ||
-            mime->is("application/xml") ||
-            mime->is("inode/directory") ||
+    if (flags != (int)BrowserRun::AttachmentDisposition && mime.isValid() && (
+            mime.inherits("text/html") ||
+            mime.inherits("application/xml") ||
+            mime.inherits("inode/directory") ||
             mimeType.startsWith(QLatin1String("image")) ||
-            mime->is("multipart/x-mixed-replace") ||
-            mime->is("multipart/replace")))
+            mime.inherits("multipart/x-mixed-replace") ||
+            mime.inherits("multipart/replace")))
         return true;
     return false;
 }
@@ -330,12 +331,12 @@ void BrowserOpenOrSaveQuestion::setSuggestedFileName(const QString& suggestedFil
 
     // If the current mime-type is the default mime-type, then attempt to
     // determine the "real" mimetype from the file name.
-    KMimeType::Ptr mimePtr = fixupMimeType(d->mimeType, suggestedFileName);
-    if (mimePtr && mimePtr->name() != d->mimeType) {
+    QMimeType mimePtr = fixupMimeType(d->mimeType, suggestedFileName);
+    if (mimePtr.isValid() && mimePtr.name() != d->mimeType) {
         d->mime = mimePtr;
-        d->mimeType = mimePtr->name();
+        d->mimeType = mimePtr.name();
         // Always prefer the mime-type comment over the raw type for display
-        const QString mimeDescription (mimePtr->comment().isEmpty() ? mimePtr->name() : mimePtr->comment());
+        const QString mimeDescription (mimePtr.comment().isEmpty() ? mimePtr.name() : mimePtr.comment());
         d->mimeTypeLabel->setText(i18nc("@label Type of file", "Type: %1", mimeDescription));
     }
 }

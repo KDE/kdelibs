@@ -30,7 +30,7 @@
 #include <kdialog.h>
 #include <kfile.h>
 #include <kurl.h>
-#include <kmimetype.h>
+#include <qmimetype.h>
 
 class KAbstractFileWidget;
 class KFileWidget;
@@ -282,7 +282,7 @@ public:
      *
      * @see setFilterMimeType()
      */
-    KMimeType::Ptr currentFilterMimeType();
+    QMimeType currentFilterMimeType();
 
     /**
      * Sets the filter up to specify the output type.

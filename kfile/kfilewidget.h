@@ -32,6 +32,7 @@
 #include "kabstractfilewidget.h"
 #include <QWidget>
 
+class KConfigGroup;
 class KJob;
 class KFileItem;
 class KDirOperator;
@@ -220,7 +221,7 @@ public:
      *
      * @see setFilterMimeType()
      */
-    virtual KMimeType::Ptr currentFilterMimeType();
+    virtual QMimeType currentFilterMimeType();
 
     /**
      * Sets the filter up to specify the output type.

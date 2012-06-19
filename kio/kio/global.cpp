@@ -1263,7 +1263,7 @@ static bool useFavIcons()
     return s_useFavIcons;
 }
 
-static QString favIconForUrl(const QUrl& url)
+QString KIO::favIconForUrl(const QUrl& url)
 {
     if (url.isLocalFile()
         || !url.scheme().startsWith(QLatin1String("http"))

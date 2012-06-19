@@ -22,10 +22,9 @@
 #include "kservicetypeprofile.h"
 #include "kservicetype.h"
 #include "kservicetypetrader.h"
-#include "kmimetype.h"
 #include "kservicefactory.h"
 #include "kmimetypefactory.h"
-#include "kmimetyperepository_p.h"
+#include <qmimedatabase.h>
 
 #include <kdebug.h>
 

@@ -30,6 +30,7 @@
 #include <kstringhandler.h>
 #include <kmimetypetrader.h>
 #include <qtemporaryfile.h>
+#include <qmimedatabase.h>
 #include <kdebug.h>
 #include <kde_file.h>
 #include <kdatetime.h>
@@ -127,17 +128,15 @@ void BrowserRun::scanFile()
     protocol = KProtocolManager::slaveProtocol(KRun::url(), dummy);
   }
 
-  if ( KRun::url().query().isEmpty() && !protocol.startsWith(QLatin1String("http")))
-  {
-    KMimeType::Ptr mime = KMimeType::findByUrl( KRun::url() );
-    Q_ASSERT( mime );
-    if ( !mime->isDefault() || isLocalFile() )
-    {
-      kDebug(1000) << "MIME TYPE is" << mime->name();
-      mimeTypeDetermined( mime->name() );
-      return;
+    if (KRun::url().query().isEmpty() && !protocol.startsWith(QLatin1String("http"))) {
+        QMimeDatabase db;
+        QMimeType mime = db.mimeTypeForUrl(KRun::url());
+        if (!mime.isDefault() || isLocalFile()) {
+            kDebug(1000) << "MIME TYPE is" << mime.name();
+            mimeTypeDetermined(mime.name());
+            return;
+        }
     }
-  }
 
     QMap<QString, QString>& metaData = d->m_args.metaData();
     if ( d->m_part ) {

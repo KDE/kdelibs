@@ -181,6 +181,7 @@ A script is available in kdesdk/scripts/kf5/convert-kstandarddirs.pl to port som
    KMimeType::mimeType(name) -&gt; db.mimeTypeForName(name)
    KMimeType::mimeType(name, DontResolveAlias) -&gt; db.mimeTypeForName(name) // there is no separate mime object for the alias
    KMimeType::findByUrl(url) -&gt; db.mimeTypeForUrl(url)
+   KMimeType::findByUrl(url, 0, is_local, true) -&gt; db.mimeTypeForFile(url.path(), QMimeDatabase::MatchExtension)
    KMimeType::findByPath(path) -&gt; db.mimeTypeForFile(path)
    KMimeType::findByPath(path, 0, true) -&gt; db.mimeTypeForFile(path, QMimeDatabase::MatchExtension)
        (this is slightly different in case of conflicting globs though, findByPath used to return empty,

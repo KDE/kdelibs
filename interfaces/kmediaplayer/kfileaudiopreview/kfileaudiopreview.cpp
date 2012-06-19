@@ -26,7 +26,6 @@
 #include <kglobal.h>
 #include <kconfig.h>
 #include <klocale.h>
-#include <kmimetype.h>
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
 

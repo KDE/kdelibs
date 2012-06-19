@@ -29,7 +29,7 @@
 #include <kconfiggroup.h>
 #include <ktar.h>
 #include <kzip.h>
-#include <kmimetype.h>
+#include <qmimedatabase.h>
 #include <kdirwatch.h>
 
 class KEmoticonsPrivate
@@ -200,7 +200,8 @@ QStringList KEmoticons::installTheme(const QString &archiveName)
         return QStringList();
     }
 
-    const QString currentBundleMimeType = KMimeType::findByPath(archiveName, 0, false)->name();
+    QMimeDatabase db;
+    const QString currentBundleMimeType = db.mimeTypeForFile(archiveName).name();
 
     if (currentBundleMimeType == "application/zip" ||
             currentBundleMimeType == "application/x-zip" ||

@@ -56,9 +56,11 @@ target_link_libraries(knewstuff3
     ${KDE4_KDECORE_LIBS}
     kcoreaddons
     kwidgets
+    ${LIBATTICA_LIBRARIES}
+    karchive
+    ${QtMimeTypes_LIBRARY}
 )
 
-target_link_libraries(knewstuff3 ${LIBATTICA_LIBRARIES} karchive)
 target_link_libraries(knewstuff3 LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTGUI_LIBRARY})
 
 generate_export_header(knewstuff3)

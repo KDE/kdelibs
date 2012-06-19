@@ -31,6 +31,7 @@
 #include <QFileDialog>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <qmimedatabase.h>
 
 #include <kimageio.h>
 #include <klocalizedstring.h>
@@ -53,15 +54,16 @@ const bool NATIVE_FILEDIALOGS_BY_DEFAULT = false;
 
 static QStringList mime2KdeFilter( const QStringList &mimeTypes, QString *allExtensions = 0 )
 {
+    QMimeDatabase db;
   QStringList kdeFilter;
   QStringList allExt;
   foreach( const QString& mimeType, mimeTypes ) {
-    KMimeType::Ptr mime( KMimeType::mimeType(mimeType) );
-    if (mime) {
-      allExt += mime->patterns();
-      kdeFilter.append(mime->patterns().join(QLatin1String(" ")) +
+    QMimeType mime(db.mimeTypeForName(mimeType));
+    if (mime.isValid()) {
+      allExt += mime.globPatterns();
+      kdeFilter.append(mime.globPatterns().join(QLatin1String(" ")) +
                        QLatin1Char('|') +
-                       mime->comment());
+                       mime.comment());
     }
   }
   if (allExtensions) {
@@ -370,15 +372,17 @@ QString KFileDialog::currentMimeFilter() const
         // adapted from qt2KdeFilter
         QString filter = d->native->selectedFilter.split(";;").replaceInStrings("/", "\\/")[0];
         filter = filter.mid(filter.indexOf('(') + 1, filter.indexOf(')') - filter.indexOf('(') - 1);
-        QString mimetype = KMimeType::findByPath("test" + filter.mid(1).split(' ')[0])->name();
+        QMimeDatabase db;
+        QString mimetype = db.mimeTypeForFile("test" + filter.mid(1).split(' ')[0], QMimeDatabase::MatchExtension).name();
         return mimetype;
     }
     return d->w->currentMimeFilter();
 }
 
-KMimeType::Ptr KFileDialog::currentFilterMimeType()
+QMimeType KFileDialog::currentFilterMimeType()
 {
-    return KMimeType::mimeType( currentMimeFilter() );
+    QMimeDatabase db;
+    return db.mimeTypeForName(currentMimeFilter());
 }
 
 void KFileDialog::setPreviewWidget(KPreviewWidgetBase *w)

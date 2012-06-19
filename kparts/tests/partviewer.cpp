@@ -28,6 +28,7 @@
 #include <kmessagebox.h>
 #include <kcmdlineargs.h>
 #include <kpluginloader.h>
+#include <qmimedatabase.h>
 
 #include <QWidget>
 #include <QtCore/QDir>
@@ -64,7 +65,8 @@ PartViewer::~PartViewer()
 void PartViewer::openUrl( const QUrl & url )
 {
     delete m_part;
-    const QString mimeType = KMimeType::findByUrl(url)->name();
+    QMimeDatabase db;
+    const QString mimeType = db.mimeTypeForUrl(url).name();
     m_part = KMimeTypeTrader::self()->createPartInstanceFromQuery<KParts::ReadOnlyPart>(mimeType,
                                                                                         this,
                                                                                         this);

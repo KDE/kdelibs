@@ -67,6 +67,7 @@
 #include <QHelpEvent>
 #include <QApplication>
 #include <qurlpathinfo.h>
+#include <qmimedatabase.h>
 
 #include <kshell.h>
 #include <kmessagebox.h>
@@ -732,9 +733,10 @@ QString KFileWidget::currentMimeFilter() const
     return d->filterWidget->filters()[i];
 }
 
-KMimeType::Ptr KFileWidget::currentFilterMimeType()
+QMimeType KFileWidget::currentFilterMimeType()
 {
-    return KMimeType::mimeType( currentMimeFilter() );
+    QMimeDatabase db;
+    return db.mimeTypeForName(currentMimeFilter());
 }
 
 void KFileWidget::setPreviewWidget(KPreviewWidgetBase *w) {
@@ -2131,6 +2133,7 @@ void KFileWidgetPrivate::updateAutoSelectExtension()
 {
     if (!autoSelectExtCheckBox) return;
 
+    QMimeDatabase db;
     //
     // Figure out an extension for the Automatically Select Extension thing
     // (some Windows users apparently don't know what to do when confronted
@@ -2155,7 +2158,7 @@ void KFileWidgetPrivate::updateAutoSelectExtension()
             // if the currently selected filename already has an extension which
             // is also included in the currently allowed extensions, keep it
             // otherwise use the default extension
-            QString currentExtension = KMimeType::extractKnownExtension(locationEditCurrentText());
+            QString currentExtension = db.suffixForFileName(locationEditCurrentText());
             if ( currentExtension.isEmpty() )
                 currentExtension = locationEditCurrentText().section(QLatin1Char('.'), -1, -1);
             kDebug (kfile_area) << "filter:" << filter << "locationEdit:" << locationEditCurrentText()
@@ -2173,11 +2176,12 @@ void KFileWidgetPrivate::updateAutoSelectExtension()
             // e.g. "text/html"
             else
             {
-                KMimeType::Ptr mime = KMimeType::mimeType (filter);
-                if (mime)
-                {
-                    extensionList = mime->patterns();
-                    defaultExtension = mime->mainExtension();
+                QMimeType mime = db.mimeTypeForName(filter);
+                if (mime.isValid()) {
+                    extensionList = mime.globPatterns();
+                    defaultExtension = mime.preferredSuffix();
+                    if (!defaultExtension.isEmpty())
+                        defaultExtension.prepend(QLatin1Char('.'));
                 }
             }
 
@@ -2339,18 +2343,21 @@ void KFileWidgetPrivate::updateFilter()
             return;
 
         if( filterWidget->isMimeFilter()) {
-            KMimeType::Ptr mime = KMimeType::findByPath(urlStr, 0, true);
-            if (mime && mime->name() != KMimeType::defaultMimeType()) {
-                if (filterWidget->currentFilter() != mime->name() &&
-                    filterWidget->filters().indexOf(mime->name()) != -1)
-                    filterWidget->setCurrentFilter(mime->name());
+            QMimeDatabase db;
+            QMimeType mime = db.mimeTypeForFile(urlStr, QMimeDatabase::MatchExtension);
+            if (mime.isValid() && !mime.isDefault()) {
+                if (filterWidget->currentFilter() != mime.name() &&
+                    filterWidget->filters().indexOf(mime.name()) != -1)
+                    filterWidget->setCurrentFilter(mime.name());
             }
         } else {
             QString filename = urlStr.mid( urlStr.lastIndexOf( '/' ) + 1 ); // only filename
             foreach( const QString& filter, filterWidget->filters()) {
                 QStringList patterns = filter.left( filter.indexOf( '|' )).split ( ' ', QString::SkipEmptyParts ); // '*.foo *.bar|Foo type' -> '*.foo', '*.bar'
                 foreach ( const QString& p, patterns ) {
-                    if( KMimeType::matchFileName( filename, p )) {
+                    QRegExp rx(p);
+                    rx.setPatternSyntax(QRegExp::Wildcard);
+                    if (rx.exactMatch(filename)) {
                         if ( p != "*" ) { // never match the catch-all filter
                             filterWidget->setCurrentFilter( filter );
                         }
@@ -2650,7 +2657,8 @@ void KFileWidgetPrivate::setNonExtSelection()
 {
     // Enhanced rename: Don't highlight the file extension.
     QString filename = locationEditCurrentText();
-    QString extension = KMimeType::extractKnownExtension( filename );
+    QMimeDatabase db;
+    QString extension = db.suffixForFileName( filename );
 
     if ( !extension.isEmpty() )
        locationEdit->lineEdit()->setSelection( 0, filename.length() - extension.length() - 1 );

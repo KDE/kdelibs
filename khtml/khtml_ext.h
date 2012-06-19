@@ -103,7 +103,7 @@ public:
 
   virtual BrowserHostExtension* findFrameParent( KParts::ReadOnlyPart *callingPart, const QString &frame );
 
-    virtual bool openUrlInFrame(const KUrl &url, const KParts::OpenUrlArguments& arguments, const KParts::BrowserArguments &browserArguments);
+    virtual bool openUrlInFrame(const QUrl &url, const KParts::OpenUrlArguments& arguments, const KParts::BrowserArguments &browserArguments);
 
 private:
   KHTMLPart *m_part;
