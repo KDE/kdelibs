@@ -27,7 +27,6 @@
 #include <ksycoca.h>
 #include <kglobal.h>
 
-#include <kprotocolinfo.h>
 #include <kdebug.h>
 #include <kservicegroup.h>
 #include <kservicetypetrader.h>

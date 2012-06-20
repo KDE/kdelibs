@@ -16,8 +16,6 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-
-
 #include <QApplication>
 #include <QFile>
 #include <QUrl>
@@ -27,6 +25,7 @@
 #include <QtTest>
 #include <kde_qt5_compat.h>
 #include <qstandardpaths.h>
+#include <kservice.h>
 
 // Tests both KProtocolInfo and KProtocolManager
 
@@ -35,56 +34,95 @@ class KProtocolInfoTest : public QObject
     Q_OBJECT
 private Q_SLOTS:
 
-    void testBasic()
-    {
-        QUrl url = QUrl::fromLocalFile("/tmp");
-        QVERIFY( KProtocolManager::supportsListing( QUrl( "ftp://10.1.1.10") ) );
-        QCOMPARE( KProtocolManager::inputType(url), KProtocolInfo::T_NONE );
-        QCOMPARE( KProtocolManager::outputType(url), KProtocolInfo::T_FILESYSTEM );
-        QVERIFY(KProtocolManager::supportsReading(url));
-    }
-
-    void testExtraFields()
-    {
-        KProtocolInfo::ExtraFieldList extraFields = KProtocolInfo::extraFields(QUrl("trash:/"));
-        KProtocolInfo::ExtraFieldList::Iterator extraFieldsIt = extraFields.begin();
-        for ( ; extraFieldsIt != extraFields.end() ; ++extraFieldsIt )
-            qDebug() << (*extraFieldsIt).name << " " << (*extraFieldsIt).type;
-        // TODO
-    }
-
-    void testShowFilePreview()
-    {
-        QVERIFY(KProtocolInfo::showFilePreview("file"));
-        QVERIFY(!KProtocolInfo::showFilePreview("audiocd"));
-        QVERIFY(!KGlobalSettings::showFilePreview(QUrl("audiocd:/")));
-    }
-
-    void testSlaveProtocol()
-    {
-        QString proxy;
-        QString protocol = KProtocolManager::slaveProtocol(QUrl("http://bugs.kde.org"), proxy);
-        QCOMPARE(protocol, QString::fromLatin1("http"));
-    }
-
-    void testCapabilities()
-    {
-        QStringList capabilities = KProtocolInfo::capabilities( "imap" );
-        qDebug() << "kio_imap capabilities: " << capabilities;
-        //QVERIFY(capabilities.contains("ACL"));
-    }
-
-    void testProtocolForArchiveMimetype()
-    {
-        if (!QFile::exists(QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("kde5/services/") + "zip.protocol"))) {
-            QSKIP_PORTING("kdebase not installed", SkipAll);
-        } else {
-            const QString zip = KProtocolManager::protocolForArchiveMimetype("application/zip");
-            QCOMPARE(zip, QString("zip"));
-        }
-    }
-
+    void testBasic();
+    void testExtraFields();
+    void testShowFilePreview();
+    void testSlaveProtocol();
+    void testCapabilities();
+    void testProtocolForArchiveMimetype();
+    void testHelperProtocols();
 };
+
+void KProtocolInfoTest::testBasic()
+{
+    QVERIFY( KProtocolInfo::isKnownProtocol(QUrl("http:/")) );
+    QVERIFY( KProtocolInfo::isKnownProtocol(QUrl("file:/")) );
+
+    QUrl url = QUrl::fromLocalFile("/tmp");
+    QVERIFY( KProtocolManager::supportsListing( QUrl( "ftp://10.1.1.10") ) );
+    QCOMPARE( KProtocolManager::inputType(url), KProtocolInfo::T_NONE );
+    QCOMPARE( KProtocolManager::outputType(url), KProtocolInfo::T_FILESYSTEM );
+    QVERIFY(KProtocolManager::supportsReading(url));
+}
+
+void KProtocolInfoTest::testExtraFields()
+{
+    KProtocolInfo::ExtraFieldList extraFields = KProtocolInfo::extraFields(QUrl("trash:/"));
+    KProtocolInfo::ExtraFieldList::Iterator extraFieldsIt = extraFields.begin();
+    for ( ; extraFieldsIt != extraFields.end() ; ++extraFieldsIt )
+        qDebug() << (*extraFieldsIt).name << " " << (*extraFieldsIt).type;
+    // TODO
+}
+
+void KProtocolInfoTest::testShowFilePreview()
+{
+    QVERIFY(KProtocolInfo::showFilePreview("file"));
+    QVERIFY(!KProtocolInfo::showFilePreview("audiocd"));
+    QVERIFY(!KGlobalSettings::showFilePreview(QUrl("audiocd:/")));
+}
+
+void KProtocolInfoTest::testSlaveProtocol()
+{
+    QString proxy;
+    QString protocol = KProtocolManager::slaveProtocol(QUrl("http://bugs.kde.org"), proxy);
+    QCOMPARE(protocol, QString::fromLatin1("http"));
+}
+
+void KProtocolInfoTest::testCapabilities()
+{
+    QStringList capabilities = KProtocolInfo::capabilities( "imap" );
+    qDebug() << "kio_imap capabilities: " << capabilities;
+    //QVERIFY(capabilities.contains("ACL"));
+}
+
+void KProtocolInfoTest::testProtocolForArchiveMimetype()
+{
+    if (!QFile::exists(QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("kde5/services/") + "zip.protocol"))) {
+        QSKIP_PORTING("kdebase not installed", SkipAll);
+    } else {
+        const QString zip = KProtocolManager::protocolForArchiveMimetype("application/zip");
+        QCOMPARE(zip, QString("zip"));
+    }
+}
+
+void KProtocolInfoTest::testHelperProtocols()
+{
+    QVERIFY(!KProtocolInfo::isHelperProtocol("http"));
+    QVERIFY(!KProtocolInfo::isHelperProtocol("ftp"));
+    QVERIFY(!KProtocolInfo::isHelperProtocol("file"));
+    QVERIFY(!KProtocolInfo::isHelperProtocol("unknown"));
+    // Comes from ktelnetservice.desktop:MimeType=x-scheme-handler/telnet;x-scheme-handler/rlogin;x-scheme-handler/ssh;
+    QVERIFY(KProtocolInfo::isHelperProtocol("telnet"));
+
+    // To test that compat still works
+    if (KProtocolInfo::isKnownProtocol("tel")) {
+        QVERIFY(KProtocolInfo::isHelperProtocol("tel"));
+    }
+
+    QVERIFY(KProtocolInfo::isKnownProtocol("mailto"));
+    QVERIFY(KProtocolInfo::isHelperProtocol("mailto"));
+    QVERIFY(KProtocolInfo::isHelperProtocol(QUrl("mailto:faure@kde.org")));
+
+    // "mailto" is associated with kmail2 when present, and with kmailservice otherwise.
+    KService::Ptr kmail2 = KService::serviceByStorageId("KMail2.desktop");
+    if (kmail2) {
+        //qDebug() << kmail2->entryPath();
+        QVERIFY2(KProtocolInfo::exec("mailto").contains(QLatin1String("kmail -caption \"%c\"")), // comes from KMail2.desktop
+                 qPrintable(KProtocolInfo::exec("mailto")));
+    } else {
+        QCOMPARE(KProtocolInfo::exec("mailto"), QLatin1String("kmailservice %u"));
+    }
+}
 
 QTEST_MAIN(KProtocolInfoTest)
 

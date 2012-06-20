@@ -34,7 +34,6 @@
 #include <qtest_kde.h> // WARNING: do not port to qtest.h without adding a putenv for XDG_DATA_HOME! User data loss will occur otherwise.
 #include <qstandardpaths.h>
 #include <qprocess.h>
-#include <kprotocolinfo.h>
 #include <kmimetypetrader.h>
 #include <kservicetypetrader.h>
 #include <kmimetyperepository_p.h>
@@ -377,8 +376,6 @@ void KMimeTypeTest::testFindByUrl()
     // Tests with local files are already done in testFindByPath,
     // here we test for remote urls only.
     KMimeType::Ptr mime;
-    QVERIFY( KProtocolInfo::isKnownProtocol(KUrl("http:/")) );
-    QVERIFY( KProtocolInfo::isKnownProtocol(KUrl("file:/")) );
     mime = KMimeType::findByUrl( KUrl("http://foo/bar.png") );
     QVERIFY( mime );
 
@@ -387,10 +384,10 @@ void KMimeTypeTest::testFindByUrl()
     mime = KMimeType::findByUrl(KUrl("http://foo/s0/"));
     QCOMPARE( mime->name(), QString::fromLatin1( "application/octet-stream" ) ); // HTTP can't know before downloading
 
+#if 0 // no such logic in QMimeType, we get default mimetype, KRun will figure it out
     if ( !KProtocolInfo::isKnownProtocol(KUrl("man:/")) )
         QSKIP_PORTING( "man protocol not installed", SkipSingle );
 
-#if 0 // no such logic in QMimeType, we get default mimetype, KRun will figure it out
     mime = KMimeType::findByUrl( KUrl("man:/ls") );
     QVERIFY( mime );
     QCOMPARE( mime->name(), QString::fromLatin1("text/html") );
@@ -842,35 +839,6 @@ void KMimeTypeTest::testExtractKnownExtension()
     QCOMPARE(KMimeType::extractKnownExtension(fileName), extension);
 }
 
-void KMimeTypeTest::testHelperProtocols()
-{
-    QVERIFY(!KProtocolInfo::isHelperProtocol("http"));
-    QVERIFY(!KProtocolInfo::isHelperProtocol("ftp"));
-    QVERIFY(!KProtocolInfo::isHelperProtocol("file"));
-    QVERIFY(!KProtocolInfo::isHelperProtocol("unknown"));
-    // Comes from ktelnetservice.desktop:MimeType=x-scheme-handler/telnet;x-scheme-handler/rlogin;x-scheme-handler/ssh;
-    QVERIFY(KProtocolInfo::isHelperProtocol("telnet"));
-
-    // To test that compat still works
-    if (KProtocolInfo::isKnownProtocol("tel")) {
-        QVERIFY(KProtocolInfo::isHelperProtocol("tel"));
-    }
-
-    QVERIFY(KProtocolInfo::isKnownProtocol("mailto"));
-    QVERIFY(KProtocolInfo::isHelperProtocol("mailto"));
-    QVERIFY(KProtocolInfo::isHelperProtocol(KUrl("mailto:faure@kde.org")));
-
-    // "mailto" is associated with kmail2 when present, and with kmailservice otherwise.
-    KService::Ptr kmail2 = KService::serviceByStorageId("KMail2.desktop");
-    if (kmail2) {
-        //qDebug() << kmail2->entryPath();
-        QVERIFY2(KProtocolInfo::exec("mailto").contains(QLatin1String("kmail -caption \"%c\"")), // comes from KMail2.desktop
-                 qPrintable(KProtocolInfo::exec("mailto")));
-    } else {
-        QCOMPARE(KProtocolInfo::exec("mailto"), QLatin1String("kmailservice %u"));
-    }
-}
-
 struct LessMimeType_ByComment
 {
     bool operator()(const KMimeType::Ptr& lhs, const KMimeType::Ptr& rhs) const
@@ -909,7 +877,6 @@ void KMimeTypeTest::testThreads()
     futures << QtConcurrent::run(this, &KMimeTypeTest::testMimeTypeParent);
     futures << QtConcurrent::run(this, &KMimeTypeTest::testPreferredService);
     futures << QtConcurrent::run(this, &KMimeTypeTest::testFromThread);
-    futures << QtConcurrent::run(this, &KMimeTypeTest::testHelperProtocols);
     kDebug() << "Joining all threads";
     Q_FOREACH(QFuture<void> f, futures) // krazy:exclude=foreach
         f.waitForFinished();
