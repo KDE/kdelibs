@@ -10,6 +10,7 @@
  */
 
 #include "ecmatest.h"
+#include "../../kde_qt5_compat.h" // QSKIP_PORTING
 
 #include <wtf/HashTraits.h>
 #include "JSLock.h"
@@ -219,7 +220,7 @@ void ECMAscriptTest::runAllTests()
 
     foreach ( const QByteArray &skip, skips.keys() ) {
         if ( skip == QTest::currentDataTag() )
-            QSKIP( skips[ skip ], SkipSingle );
+            QSKIP_PORTING( skips[ skip ], SkipSingle );
     }
 
     QVERIFY( input.open( QIODevice::ReadOnly ) );
