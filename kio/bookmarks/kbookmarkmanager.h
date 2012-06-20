@@ -26,7 +26,6 @@
 #include <QtXml/QDomDocument>
 #include <QtXml/QDomElement>
 
-#include <kurl.h>
 #include "kbookmark.h"
 
 class KBookmarkGroup;
