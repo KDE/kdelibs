@@ -21,7 +21,7 @@
 
 #include <kcomponentdata.h>
 #include <kservicegroup.h>
-#include <kmimetype.h>
+#include <qmimedatabase.h>
 #include <qtest_kde.h>
 
 #include <kconfig.h>
@@ -67,7 +67,8 @@ public slots:
         const KServiceType::List allServiceTypes = KServiceType::allServiceTypes();
         Q_ASSERT(!allServiceTypes.isEmpty());
 
-        const KMimeType::List allMimeTypes = KMimeType::allMimeTypes();
+        QMimeDatabase db;
+        const QList<QMimeType> allMimeTypes = db.allMimeTypes();
         Q_ASSERT(!allMimeTypes.isEmpty());
 
         const KService::List lst = KService::allServices();

@@ -226,7 +226,7 @@ endif(NOT KDE_NO_DEPRECATED)
 
 if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
    add_definitions(-DNO_DISPLAY)
-endif (NOT HAVE_X11 AND NOT QWS)
+endif()
 
 kde4_add_library(kdecore ${LIBRARY_TYPE} ${kdecore_LIB_SRCS})
 generate_export_header(kdecore)
