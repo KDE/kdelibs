@@ -91,7 +91,7 @@ protected:
 	int maxWidth;
 	short effMinWidth;
 	int effMaxWidth;
-	short calcWidth;
+	int calcWidth;
 	bool emptyCellsOnly;
     };
 
