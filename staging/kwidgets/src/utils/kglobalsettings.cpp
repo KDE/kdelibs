@@ -24,7 +24,6 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <kprotocolinfo.h>
 #include <kcolorscheme.h>
 
 //#include <kstyle.h>
@@ -726,13 +725,14 @@ KGlobalSettings::GraphicEffects KGlobalSettings::graphicEffectsLevelDefault()
     return ComplexAnimationEffects;
 }
 
+#ifndef KDE_NO_DEPRECATED
 bool KGlobalSettings::showFilePreview(const QUrl &url)
 {
     KConfigGroup g(KSharedConfig::openConfig(), "PreviewSettings");
-    QString protocol = url.scheme();
-    bool defaultSetting = KProtocolInfo::showFilePreview( protocol );
-    return g.readEntry(protocol, defaultSetting );
+    bool defaultSetting = url.isLocalFile(); // ## incorrect, use KProtocolInfo::showFilePreview instead
+    return g.readEntry(url.scheme(), defaultSetting );
 }
+#endif
 
 bool KGlobalSettings::opaqueResize()
 {

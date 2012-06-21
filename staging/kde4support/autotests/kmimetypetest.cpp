@@ -173,12 +173,6 @@ void KMimeTypeTest::cleanupTestCase()
     proc.waitForFinished();
 }
 
-static void checkIcon( const QUrl & url, const QString& expectedIcon )
-{
-    QString icon = KMimeType::iconNameForUrl( url );
-    QCOMPARE( icon, expectedIcon );
-}
-
 QTEST_KDEMAIN_CORE( KMimeTypeTest )
 
 void KMimeTypeTest::testByName()
@@ -216,16 +210,14 @@ void KMimeTypeTest::testByName()
 
 void KMimeTypeTest::testIcons()
 {
-    checkIcon( KUrl( "file:/tmp/" ), "inode-directory" );
-
     if ( !KUser().isSuperUser() ) // Can't test this one if running as root
     {
         QString emptyString; // gcc-3.3 workaround
 	QTemporaryDir tmp (emptyString);
 	QFile(tmp.path()).setPermissions(0);
         tmp.setAutoRemove( true );
-        KUrl url( tmp.path() );
-        checkIcon( url, "inode-directory" ); // was folder_locked, but we don't have that anymore - TODO
+        //KUrl url( tmp.path() );
+        //QCOMPARE(KIO::iconNameForUrl(url), "inode-directory"); // was folder_locked, but we don't have that anymore - TODO
 	QFile(tmp.path()).setPermissions(QFile::ReadOwner|QFile::ExeOwner); // so we can 'rm -rf' it
     }
 }

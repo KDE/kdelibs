@@ -24,9 +24,8 @@
 
 /**
  * @internal
- * Exported for KProtocolManager
  */
-class KDECORE_EXPORT KProtocolInfoPrivate
+class KProtocolInfoPrivate
 {
 public:
     KProtocolInfoPrivate(const QString& path);

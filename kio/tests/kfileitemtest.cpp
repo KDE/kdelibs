@@ -395,3 +395,22 @@ void KFileItemTest::testListProperties()
     QCOMPARE(props.mimeType(), expectedMimeType);
     QCOMPARE(props.mimeGroup(), expectedMimeGroup);
 }
+
+void KFileItemTest::testIconNameForUrl_data()
+{
+    QTest::addColumn<QString>("url");
+    QTest::addColumn<QString>("expectedIcon");
+
+    QTest::newRow("root") << "file:/" << "inode-directory";
+    if (QFile::exists("/tmp"))
+        QTest::newRow("subdir") << "file:/tmp" << "inode-directory";
+    // TODO more tests
+}
+
+void KFileItemTest::testIconNameForUrl()
+{
+    QFETCH(QString, url);
+    QFETCH(QString, expectedIcon);
+
+    QCOMPARE(KIO::iconNameForUrl(QUrl(url)), expectedIcon);
+}

@@ -49,7 +49,7 @@
 
 #include <kurl.h>
 #include <kmimetypetrader.h>
-#include <kprotocolinfofactory.h>
+#include <kprotocolinfofactory_p.h>
 
 #include <kio/slaveconfig.h>
 #include <kio/ioslave_defaults.h>

@@ -20,7 +20,7 @@
 
 #include "kprotocolinfo.h"
 #include "kprotocolinfo_p.h"
-#include "kprotocolinfofactory.h"
+#include "kprotocolinfofactory_p.h"
 
 #include <kmimetypetrader.h>
 #include <kconfig.h>
@@ -221,10 +221,10 @@ QString KProtocolInfo::protocolClass(const QString& _protocol)
 bool KProtocolInfo::showFilePreview(const QString& _protocol)
 {
   KProtocolInfoPrivate * prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  if (!prot)
-    return false;
+  const bool defaultSetting = prot ? prot->m_showPreviews : false;
 
-  return prot->m_showPreviews;
+  KConfigGroup group(KSharedConfig::openConfig(), "PreviewSettings");
+  return group.readEntry(_protocol, defaultSetting);
 }
 
 QStringList KProtocolInfo::capabilities(const QString& _protocol)

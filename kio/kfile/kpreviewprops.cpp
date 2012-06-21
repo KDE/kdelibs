@@ -19,6 +19,7 @@
 
 #include "kpreviewprops.h"
 #include <kio/previewjob.h>
+#include <kprotocolinfo.h>
 
 #include <QLayout>
 
@@ -68,7 +69,7 @@ bool KPreviewPropsPlugin::supports( const KFileItemList &_items )
 {
     if ( _items.count() != 1 )
         return false;
-    bool metaDataEnabled = KGlobalSettings::showFilePreview(_items.first().url());
+    bool metaDataEnabled = KProtocolInfo::showFilePreview(_items.first().url().scheme());
     if (!metaDataEnabled)
         return false;
     const QMimeType mime = _items.first().determineMimeType();

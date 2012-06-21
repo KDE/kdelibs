@@ -27,7 +27,6 @@
 #include <kde_file.h> // KDE::stat
 #include <kdeversion.h> // KDE_MAKE_VERSION
 #include <klocalizedstring.h>
-#include <kprotocolinfo.h>
 #include <qstandardpaths.h>
 #include <kurl.h>
 
@@ -263,32 +262,6 @@ KMimeType::KMimeType(const QMimeType& mime)
 KMimeType::~KMimeType()
 {
     delete d_ptr;
-}
-
-QString KMimeType::iconNameForUrl( const QUrl & url, mode_t mode )
-{
-    Q_UNUSED(mode); // see findByUrl
-    QMimeDatabase db;
-    const QMimeType mt = db.mimeTypeForUrl(url);
-    const QLatin1String unknown("unknown");
-    const QString mimeTypeIcon = mt.iconName();
-    QString i = mimeTypeIcon;
-
-    // if we don't find an icon, maybe we can use the one for the protocol
-    if (i == unknown || i.isEmpty() || mt.isDefault()
-        // and for the root of the protocol (e.g. trash:/) the protocol icon has priority over the mimetype icon
-        || url.path().length() <= 1)
-    {
-        i = favIconForUrl(url); // maybe there is a favicon?
-
-        if (i.isEmpty())
-            i = KProtocolInfo::icon(url.scheme());
-
-        // root of protocol: if we found nothing, revert to mimeTypeIcon (which is usually "folder")
-        if (url.path().length() <= 1 && (i == unknown || i.isEmpty()))
-            i = mimeTypeIcon;
-    }
-    return !i.isEmpty() ? i : unknown;
 }
 
 QString KMimeType::favIconForUrl(const QUrl& url)

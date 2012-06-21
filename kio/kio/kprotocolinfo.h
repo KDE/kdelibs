@@ -20,7 +20,7 @@
 #ifndef KPROTOCOLINFO_H
 #define KPROTOCOLINFO_H
 
-#include <kdecore_export.h>
+#include <kio_export.h>
 #include <QtCore/QVariant>
 #include <QtCore/QStringList>
 
@@ -38,7 +38,7 @@
  *
  * *.protocol files are installed in the "services" resource.
  */
-class KDECORE_EXPORT KProtocolInfo
+class KIO_EXPORT KProtocolInfo
 {
 public:
   //

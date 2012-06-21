@@ -199,8 +199,6 @@ set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    sycoca/ksycocadict.cpp
    sycoca/ksycocaentry.cpp
    sycoca/ksycocafactory.cpp
-   sycoca/kprotocolinfo.cpp
-   sycoca/kprotocolinfofactory.cpp
    sycoca/kmemfile.cpp
    text/kascii.cpp
    util/kallocator.cpp
@@ -343,7 +341,6 @@ install(FILES
    localization/kcurrencycode.h
    localization/klocale.h
    localization/klocalizedstring.h
-   sycoca/kprotocolinfo.h
    sycoca/ksycoca.h
    sycoca/ksycocaentry.h
    sycoca/ksycocatype.h

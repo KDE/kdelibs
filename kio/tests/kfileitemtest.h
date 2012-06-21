@@ -46,6 +46,10 @@ private Q_SLOTS:
     // KFileItemListProperties tests
     void testListProperties_data();
     void testListProperties();
+
+    // KIO global tests
+    void testIconNameForUrl_data();
+    void testIconNameForUrl();
 };
 
 

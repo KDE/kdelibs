@@ -18,7 +18,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kprotocolinfofactory.h"
+#include "kprotocolinfofactory_p.h"
 #include "kprotocolinfo_p.h"
 #include <QDirIterator>
 #include <qstandardpaths.h>

@@ -483,8 +483,11 @@ public:
      * for the selected url
      *
      * @return Returns true if user wants to show previews.
+     * @deprecated since 5.0, use KProtocolInfo::showFilePreview
      */
-    static bool showFilePreview(const QUrl &);
+#ifndef KDE_NO_DEPRECATED
+    static KWIDGETS_DEPRECATED bool showFilePreview(const QUrl &);
+#endif
 
     /**
      * Whether the user wishes to use opaque resizing. Primarily

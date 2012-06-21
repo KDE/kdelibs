@@ -20,7 +20,6 @@
 #ifndef kprotocolinfofactory_h
 #define kprotocolinfofactory_h
 
-#include <kdecore_export.h>
 #include <QtCore/QHash>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
@@ -33,10 +32,8 @@ class KProtocolInfoPrivate;
  * KProtocolInfoFactory is a factory for getting
  * KProtocolInfo. The factory is a singleton
  * (only one instance can exist).
- *
- * Exported for KProtocolManager
  */
-class KDECORE_EXPORT KProtocolInfoFactory
+class KProtocolInfoFactory
 {
 public:
     /**
