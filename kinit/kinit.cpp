@@ -1503,7 +1503,7 @@ static void kdeinit_library_path()
    if (display.isEmpty())
    {
 #if defined(Q_WS_X11) // qt5: see displayEnvVarName()
-     fprintf(stderr, "kdeinit5: Aborting. $"displayEnvVarName()" is not set.\n");
+     fprintf(stderr, "kdeinit5: Aborting. $%s is not set. \n", displayEnvVarName().constData());
      exit(255);
 #endif
    }
