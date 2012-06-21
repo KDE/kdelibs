@@ -234,6 +234,12 @@ public:
     void addThemeByName(const QString &themename, const QString &appname);
 
     /**
+     * Adds all the default themes from other desktops at the end of
+     * the list of icon themes.
+     */
+    void addExtraDesktopThemes();
+
+    /**
      * @internal
      * return the path for the unknown icon in that size
      */
@@ -634,11 +640,11 @@ void KIconLoaderPrivate::addThemeByName(const QString &themename, const QString 
     addInheritedThemes(n, appname);
 }
 
-void KIconLoader::addExtraDesktopThemes()
+void KIconLoaderPrivate::addExtraDesktopThemes()
 {
-    if ( d->extraDesktopIconsLoaded ) return;
+    if ( extraDesktopIconsLoaded ) return;
 
-    d->initIconThemes();
+    initIconThemes();
 
     QStringList list;
     const QStringList icnlibs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "icons", QStandardPaths::LocateDirectory);
@@ -676,16 +682,11 @@ void KIconLoader::addExtraDesktopThemes()
             || *it == QLatin1String("default.kde4")) {
             continue;
         }
-        d->addThemeByName(*it, "");
+        addThemeByName(*it, "");
     }
 
-    d->extraDesktopIconsLoaded=true;
+    extraDesktopIconsLoaded=true;
 
-}
-
-bool KIconLoader::extraDesktopThemesAdded() const
-{
-    return d->extraDesktopIconsLoaded;
 }
 
 void KIconLoader::drawOverlays(const QStringList &overlays, QPixmap &pixmap, KIconLoader::Group group, int state) const
@@ -1157,7 +1158,7 @@ QPixmap KIconLoader::loadMimeTypeIcon( const QString& _iconName, KIconLoader::Gr
         if (!pixmap.isNull() ) {
             return pixmap;
         }
-        const_cast<KIconLoader *>(this)->addExtraDesktopThemes();
+        d->addExtraDesktopThemes();
     }
     const QPixmap pixmap = loadIcon(iconName, group, size, state, overlays, path_store, true);
     if (pixmap.isNull()) {

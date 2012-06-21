@@ -433,18 +433,6 @@ public:
     bool alphaBlending( KIconLoader::Group group ) const;
 
     /**
-     * Adds all the default themes from other desktops at the end of
-     * the list of icon themes.
-     */
-    void addExtraDesktopThemes();
-
-    /**
-     * Returns if the default icon themes of other desktops have been added
-     * to the list of icon themes where icons are searched.
-     */
-    bool extraDesktopThemesAdded() const;
-
-    /**
      * Draws overlays on the specified pixmap, it takes the width and height
      * of the pixmap into consideration
      * @param overlays to draw
