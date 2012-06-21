@@ -27,7 +27,7 @@
    second one, there is a high chance, that actually no memory is freed.
  */
 
-#include "kallocator.h"
+#include "kzoneallocator_p.h"
 #include "kdebug.h"
 #include <QList>
 

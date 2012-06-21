@@ -218,6 +218,7 @@ set(kdeui_LIB_SRCS
  util/kpixmapsequence.cpp
  util/kpixmapsequenceoverlaypainter.cpp
  util/kpixmapsequencewidget.cpp
+ util/kzoneallocator.cpp
  widgets/kactionselector.cpp
  widgets/kanimatedbutton.cpp
  widgets/kbuttongroup.cpp

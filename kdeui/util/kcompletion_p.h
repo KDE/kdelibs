@@ -26,7 +26,7 @@
 
 class KCompTreeNode;
 
-#include <kallocator.h>
+#include <kzoneallocator_p.h>
 
 /**
  * @internal

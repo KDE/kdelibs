@@ -23,10 +23,9 @@
 //
 // KDE Memory Allocator
 
-#ifndef KALLOCATOR_H
-#define KALLOCATOR_H
+#ifndef KZONEALLOCATOR_P_H
+#define KZONEALLOCATOR_P_H
 
-#include <kdecore_export.h>
 #include <cstddef> // size_t
 
 template <typename T> class QList;
@@ -45,7 +44,7 @@ template <typename T> class QList;
  * memory though.
  * @author Waldo Bastian <bastian@kde.org>, Michael Matz <matz@kde.org>
  */
-class KDECORE_EXPORT KZoneAllocator
+class KZoneAllocator
 {
 public:
     /**
