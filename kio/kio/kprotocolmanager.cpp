@@ -29,7 +29,9 @@
 #include <sys/utsname.h>
 
 #include <QtCore/QCoreApplication>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QGuiApplication>
+#endif
 #include <QtNetwork/QSslSocket>
 #include <QtNetwork/QHostAddress>
 #include <QtNetwork/QHostInfo>
