@@ -244,7 +244,6 @@ install( FILES
   KKeySequenceWidget
   KLanguageButton
   KLed
-  KLibFactory
   KLibLoader
   KLibrary
   KLineEdit

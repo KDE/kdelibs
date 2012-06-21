@@ -213,12 +213,6 @@ set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    ${kdecore_OPTIONAL_SRCS}
 )
 
-if(NOT KDE_NO_DEPRECATED)
-    set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
-       util/klibloader.cpp
-    )
-endif(NOT KDE_NO_DEPRECATED)
-
 if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
    add_definitions(-DNO_DISPLAY)
 endif()
@@ -349,7 +343,6 @@ install(FILES
    util/kdedmodule.h
    util/klauncher_iface.h
    util/klibrary.h
-   util/klibloader.h
    util/kexportplugin.h
    util/kpluginfactory.h
    util/kpluginloader.h

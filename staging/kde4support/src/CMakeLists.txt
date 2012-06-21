@@ -1,4 +1,5 @@
 set(libkde4support_SRCS
+    kdecore/klibloader.cpp
     kdecore/ktemporaryfile.cpp
     kdecore/ktempdir.cpp
     kdecore/kmd5.cpp
@@ -66,6 +67,7 @@ set_target_properties(kde4support PROPERTIES VERSION ${ECM_VERSION_STRING} SOVER
 install(TARGETS kde4support EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install(FILES
+    kdecore/klibloader.h
     kdecore/ktemporaryfile.h
     kdecore/ktempdir.h
     kdecore/kmd5.h

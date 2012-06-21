@@ -24,7 +24,6 @@
 #include <QWidget>
 
 #include <kpluginloader.h>
-#include <klibrary.h>
 #include <klocalizedstring.h>
 #include <kcomponentdata.h>
 #include <assert.h>
@@ -32,7 +31,7 @@
 using namespace KParts;
 
 Factory::Factory( QObject *parent )
-: KLibFactory( 0, 0, parent )
+: KPluginFactory( 0, 0, parent )
 {
 }
 
@@ -57,7 +56,7 @@ KComponentData Factory::partComponentDataFromLibrary( const QString &libraryName
 {
     KPluginLoader loader( libraryName );
 
-    KLibFactory *factory = loader.factory();
+    KPluginFactory *factory = loader.factory();
     if ( !factory )
         return KComponentData();
     KParts::Factory *pfactory = dynamic_cast<KParts::Factory *>( factory );

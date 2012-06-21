@@ -36,7 +36,7 @@ int kLibraryDebugArea() {
 }
 
 //static
-QString findLibrary(const QString &name, const KComponentData &cData)
+KDECORE_EXPORT QString findLibrary(const QString &name, const KComponentData &cData)
 {
     QString libname = findLibraryInternal(name, cData);
 #ifdef Q_OS_WIN

@@ -18,6 +18,8 @@
 #ifndef KLIBLOADER_H
 #define KLIBLOADER_H
 
+#include "kde4support_export.h"
+
 #include <kglobal.h>
 
 #include <QtCore/QObject>
@@ -33,7 +35,7 @@
 #ifndef KDE_NO_DEPRECATED
 
 # define K_EXPORT_COMPONENT_FACTORY( libname, factory ) \
-    extern "C" { KDECORE_EXPORT KPluginFactory *init_##libname() { return new factory; } }
+    extern "C" { Q_DECL_EXPORT KPluginFactory *init_##libname() { return new factory; } }
 
 /**
  * \class KLibLoader klibloader.h <KLibLoader>
@@ -52,7 +54,7 @@
  * @see KPluginLoader
  * @author Torben Weis <weis@kde.org>
  */
-class KDECORE_EXPORT KLibLoader : public QObject //krazy:exclude=dpointer (private class is kept as a global static)
+class KDE4SUPPORT_DEPRECATED_EXPORT KLibLoader : public QObject //krazy:exclude=dpointer (private class is kept as a global static)
 {
     friend class KLibrary;
     friend class KLibraryPrivate;
@@ -141,7 +143,7 @@ public:
      *
      * @deprecated use KPluginLoader instead
      */
-    static KDECORE_DEPRECATED KLibLoader* self();
+    static KDE4SUPPORT_DEPRECATED KLibLoader* self();
 
     /**
      * Helper method which looks for a library in the standard paths
@@ -199,7 +201,7 @@ public:
      * @deprecated Use KService::createInstance() or KPluginLoader instead
      */
     template <typename T>
-    static KDECORE_DEPRECATED T *createInstance(const QString &keyword, const QString &libname, QObject *parent = 0,
+    static KDE4SUPPORT_DEPRECATED T *createInstance(const QString &keyword, const QString &libname, QObject *parent = 0,
                               const QVariantList &args = QVariantList(),
                               int *error = 0 )
     {
@@ -245,7 +247,7 @@ public:
      * @deprecated Use KService::createInstance() or KPluginLoader instead
      */
     template <typename T>
-    static KDECORE_DEPRECATED T *createInstance( const QString &libname, QObject *parent = 0,
+    static KDE4SUPPORT_DEPRECATED T *createInstance( const QString &libname, QObject *parent = 0,
                               const QVariantList &args = QVariantList(),
                               int *error = 0 )
     {
@@ -257,7 +259,7 @@ public:
      *             KPluginLoader or KService::createInstance instead
      */
     template <typename T>
-    static KDECORE_DEPRECATED T *createInstance( const QString &libname, QObject *parent,
+    static KDE4SUPPORT_DEPRECATED T *createInstance( const QString &libname, QObject *parent,
                               const QStringList &args,
                               int *error = 0 )
     {
