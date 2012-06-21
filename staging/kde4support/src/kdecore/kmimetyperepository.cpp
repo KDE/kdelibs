@@ -182,7 +182,7 @@ static int mimeDataBaseVersion()
     // that block signals. See https://bugs.kde.org/show_bug.cgi?id=260719.
     const QString umd = QStandardPaths::findExecutable(QString::fromLatin1("update-mime-database"));
     if (umd.isEmpty()) {
-        kWarning(servicesDebugArea()) << "update-mime-database not found!";
+        kWarning() << "update-mime-database not found!";
         return -1;
     }
 
@@ -196,7 +196,7 @@ static int mimeDataBaseVersion()
         return KDE_MAKE_VERSION(versionRe.cap(1).toInt(), versionRe.cap(2).toInt(), versionRe.cap(4).toInt());
     }
 
-    kWarning(servicesDebugArea()) << "Unexpected version scheme from update-mime-database -v: got" << out;
+    kWarning() << "Unexpected version scheme from update-mime-database -v: got" << out;
     return -1;
 }
 

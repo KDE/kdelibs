@@ -18,7 +18,6 @@
  */
 
 #include "kbuildmimetypefactory.h"
-#include "kmimetyperepository_p.h"
 #include "ksycoca.h"
 #include "ksycocadict_p.h"
 #include "ksycocaresourcelist.h"

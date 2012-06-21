@@ -166,8 +166,6 @@ set(kdecore_LIB_SRCS
    kernel/ktoolinvocation.cpp
    services/kmimetypefactory.cpp
    services/kmimetypetrader.cpp
-   services/kmimetype.cpp
-   services/kmimetyperepository.cpp
    services/kservice.cpp
    services/kserviceaction.cpp
    services/kservicefactory.cpp
@@ -331,7 +329,6 @@ install( FILES
 install(FILES
    network/ksocketfactory.h
    network/ktcpsocket.h
-   services/kmimetype.h
    services/kmimetypetrader.h
    services/kservice.h
    services/kserviceaction.h

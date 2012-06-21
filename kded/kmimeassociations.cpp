@@ -19,13 +19,13 @@
  */
 
 #include "kmimeassociations.h"
-#include <kmimetyperepository_p.h>
 #include <kservice.h>
 #include <kconfiggroup.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
+#include <qmimedatabase.h>
 
 KMimeAssociations::KMimeAssociations(KOfferHash& offerHash)
     : m_offerHash(offerHash)

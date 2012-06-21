@@ -20,7 +20,6 @@
 #include "kservice.h"
 #include "kservice_p.h"
 #include "kmimetypefactory.h"
-#include "kmimetyperepository_p.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -33,6 +32,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QDir>
 #include <QtCore/QMap>
+#include <qmimedatabase.h>
 
 #include <kcoreauthorized.h>
 #include <kdebug.h>
@@ -946,10 +946,11 @@ QStringList KService::mimeTypes() const
 {
     Q_D(const KService);
     QStringList ret;
+    QMimeDatabase db;
     QVector<KService::ServiceTypeAndPreference>::const_iterator it = d->m_serviceTypes.begin();
     for ( ; it < d->m_serviceTypes.end(); ++it ) {
         const QString sv = (*it).serviceType;
-        if (KMimeType::mimeType(sv)) // keep only mimetypes, filter out servicetypes
+        if (db.mimeTypeForFile(sv).isValid()) // keep only mimetypes, filter out servicetypes
             ret.append(sv);
     }
     return ret;

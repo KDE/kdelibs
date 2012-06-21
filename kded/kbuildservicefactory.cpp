@@ -20,13 +20,14 @@
 #include "kbuildservicefactory.h"
 #include "kbuildservicegroupfactory.h"
 #include "kbuildmimetypefactory.h"
-#include "kmimetyperepository_p.h"
 #include "ksycoca.h"
 #include "ksycocadict_p.h"
 #include "ksycocaresourcelist.h"
 #include "kdesktopfile.h"
+#include <kservicetype.h>
 
 #include <QDir>
+#include <qmimedatabase.h>
 
 #include <klocalizedstring.h>
 #include <kdebug.h>

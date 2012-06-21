@@ -2,6 +2,8 @@ set(libkde4support_SRCS
     kdecore/ktemporaryfile.cpp
     kdecore/ktempdir.cpp
     kdecore/kmd5.cpp
+    kdecore/kmimetype.cpp
+    kdecore/kmimetyperepository.cpp
     kdecore/ksavefile.cpp
     kdecore/k3socks.cpp
     kdecore/k3sockssocketdevice.cpp
@@ -58,7 +60,7 @@ configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 add_library(kde4support ${libkde4support_SRCS})
 generate_export_header(kde4support)
 
-target_link_libraries(kde4support ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDBUS_LIBRARY} kdecore kcoreaddons kwidgets kauth kdeui ${X11_LIBRARIES})
+target_link_libraries(kde4support ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDBUS_LIBRARY} kdecore kcoreaddons kwidgets kauth kdeui ${X11_LIBRARIES} ${QtMimeTypes_LIBRARY})
 set_target_properties(kde4support PROPERTIES VERSION ${ECM_VERSION_STRING} SOVERSION ${ECM_SOVERSION})
 
 install(TARGETS kde4support EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
@@ -80,6 +82,7 @@ install(FILES
     kdecore/k3sockssocketdevice.h
     kdecore/k3streamsocket.h
     kdecore/kconfiggroup_kurl.h
+    kdecore/kmimetype.h
     kdeui/kicon.h
     kdeui/knumvalidator.h
     kdeui/karrowbutton.h
