@@ -114,6 +114,7 @@ using namespace DOM;
 #include <kurifilter.h>
 #include <kstatusbar.h>
 #include <kurllabel.h>
+#include <kurlmimedata.h>
 
 #include <QClipboard>
 #include <QToolTip>
@@ -6414,7 +6415,8 @@ bool KHTMLPart::handleMouseMoveEventDrag(khtml::MouseMoveEvent *event)
     if ( !d->m_referrer.isEmpty() )
       metaDataMap.insert( "referrer", d->m_referrer );
     QMimeData* mimeData = new QMimeData();
-    u.populateMimeData( mimeData, metaDataMap );
+    mimeData->setUrls( QList<QUrl>() << u );
+    KUrlMimeData::setMetaData( metaDataMap, mimeData );
     drag->setMimeData( mimeData );
 
     if( img && img->complete() )
