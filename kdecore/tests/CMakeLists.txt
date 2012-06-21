@@ -52,7 +52,6 @@ KDECORE_UNIT_TESTS(
  kdebug_unittest
  qcoreapptest
  kdebug_qcoreapptest
- kmimetype_nomimetypes
  kcalendartest
  kservicetest
  kglobaltest
@@ -82,10 +81,4 @@ target_link_libraries(klocaletest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kcor
 set(kdatetimeformattertest_SRCS kdatetimeformattertest.cpp ../date/kdatetimeformatter.cpp ../date/kdayperiod.cpp)
 kde4_add_unit_test(kdatetimeformattertest ${kdatetimeformattertest_SRCS})
 target_link_libraries(kdatetimeformattertest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
-
-########### kmimetypetest ###############
-
-set(kmimetypetest_SRCS kmimetypetest.cpp)
-kde4_add_unit_test(kmimetypetest TESTNAME kdecore-kmimetypetest ${kmimetypetest_SRCS})
-target_link_libraries(kmimetypetest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
 

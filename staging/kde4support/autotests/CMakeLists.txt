@@ -29,6 +29,8 @@ kde4support_unit_tests(
   klibloadertest
   ksavefiletest
   kconfigcompattest
+  kmimetypetest
+  kmimetype_nomimetypes
 )
 
 ########### module for klibloadertest ###############
