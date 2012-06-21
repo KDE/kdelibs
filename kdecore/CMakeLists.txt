@@ -349,8 +349,6 @@ install(FILES
    util/kautostart.h
    util/kde_file.h
    util/kdedmodule.h
-   util/kgenericfactory.h
-   util/kgenericfactory.tcc
    util/klauncher_iface.h
    util/klibrary.h
    util/klibloader.h

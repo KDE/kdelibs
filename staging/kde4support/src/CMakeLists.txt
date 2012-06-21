@@ -83,6 +83,9 @@ install(FILES
     kdecore/k3streamsocket.h
     kdecore/kconfiggroup_kurl.h
     kdecore/kmimetype.h
+    kdecore/kgenericfactory.h
+    kdecore/kgenericfactory.tcc
+
     kdeui/kicon.h
     kdeui/knumvalidator.h
     kdeui/karrowbutton.h
