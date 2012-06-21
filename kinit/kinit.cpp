@@ -112,19 +112,32 @@ static KComponentData *s_instance = 0;
 #define MAX_SOCK_FILE 255
 static char sock_file[MAX_SOCK_FILE];
 
-#ifdef Q_WS_X11
-#define DISPLAY "DISPLAY"
-#elif defined(Q_WS_QWS)
-#define DISPLAY "QWS_DISPLAY"
-#elif defined(Q_WS_MACX)
-#define DISPLAY "MAC_DISPLAY"
-#elif defined(Q_WS_WIN)
-#define DISPLAY "WIN_DISPLAY"
+static QByteArray displayEnvVarName()
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+
+    const QString platform = QGuiApplication::platformName();
+    if (platform == QLatin1String("xcb"))
+        return "DISPLAY";
+    else if (platform == QLatin1String("Cocoa"))
+        return "MAC_DISPLAY";
+    else if (platform == QLatin1String("windows"))
+        return "WIN_DISPLAY";
+    else
+        return platform.toLatin1();
+
 #else
-#warning QT 5 Port to QPA
-#define DISPLAY ""
-// #error Use QT/X11 or QT/Embedded
+#ifdef Q_WS_X11
+    return "DISPLAY";
+#elif defined(Q_WS_QWS)
+    return "QWS_DISPLAY";
+#elif defined(Q_WS_MACX)
+    return "MAC_DISPLAY";
+#elif defined(Q_WS_WIN)
+    return "WIN_DISPLAY";
 #endif
+#endif
+}
 
 /* Group data */
 static struct {
@@ -369,7 +382,7 @@ const char* get_env_var( const char* var, int envc, const char* envs )
 static void init_startup_info( KStartupInfoId& id, const char* bin,
     int envc, const char* envs )
 {
-    const char* dpy = get_env_var( DISPLAY"=", envc, envs );
+    const char* dpy = get_env_var( displayEnvVarName() + "=", envc, envs );
     // this may be called in a child, so it can't use display open using X11display
     // also needed for multihead
     X11_startup_notify_display = XOpenDisplay( dpy );
@@ -1216,14 +1229,14 @@ static bool handle_launcher_request(int sock, const char *who)
      }
 
       // support for the old a bit broken way of setting DISPLAY for multihead
-      QByteArray olddisplay = qgetenv(DISPLAY);
+      QByteArray olddisplay = qgetenv(displayEnvVarName());
       QByteArray kdedisplay = qgetenv("KDE_DISPLAY");
       bool reset_display = (! olddisplay.isEmpty() &&
                             ! kdedisplay.isEmpty() &&
                             olddisplay != kdedisplay);
 
       if (reset_display)
-          setenv(DISPLAY, kdedisplay, true);
+          setenv(displayEnvVarName(), kdedisplay, true);
 
       pid = launch( argc, name, args, cwd, envc, envs,
           request_header.cmd == LAUNCHER_SHELL || request_header.cmd == LAUNCHER_KWRAPPER,
@@ -1231,7 +1244,7 @@ static bool handle_launcher_request(int sock, const char *who)
 
       if (reset_display) {
           unsetenv("KDE_DISPLAY");
-          setenv(DISPLAY, olddisplay, true);
+          setenv(displayEnvVarName(), olddisplay, true);
       }
 
       if (pid && (d.result == 0))
@@ -1486,11 +1499,11 @@ static void kdeinit_library_path()
 //   if (!extra_path.isEmpty())
 //      lt_dlsetsearchpath(extra_path.data());
 
-   QByteArray display = qgetenv(DISPLAY);
+   QByteArray display = qgetenv(displayEnvVarName());
    if (display.isEmpty())
    {
-#if defined(Q_WS_X11) || defined(Q_WS_QWS)
-     fprintf(stderr, "kdeinit5: Aborting. $"DISPLAY" is not set.\n");
+#if defined(Q_WS_X11) // qt5: see displayEnvVarName()
+     fprintf(stderr, "kdeinit5: Aborting. $"displayEnvVarName()" is not set.\n");
      exit(255);
 #endif
    }
@@ -1607,7 +1620,7 @@ static void setupX()
     tmp cleanup).
 */
     if( !qgetenv( "XAUTHORITY" ).isEmpty()) {
-        QByteArray display = qgetenv( DISPLAY );
+        QByteArray display = qgetenv(displayEnvVarName());
         int i;
         if((i = display.lastIndexOf('.')) > display.lastIndexOf(':') && i >= 0)
             display.truncate(i);
