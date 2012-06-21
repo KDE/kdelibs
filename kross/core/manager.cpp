@@ -320,32 +320,6 @@ QObject* Manager::module(const QString& modulename)
 
     QByteArray libraryname = QString("krossmodule%1").arg(modulename).toLower().toLatin1();
 
-#if 0
-    KLibLoader* loader = KLibLoader::self();
-    KLibrary* lib = loader->library( libraryname, QLibrary::ExportExternalSymbolsHint );
-    if( ! lib ) { //FIXME this fallback-code should be in KLibLoader imho.
-        lib = loader->library( QString("lib%1").arg(libraryname), QLibrary::ExportExternalSymbolsHint );
-        if( ! lib ) {
-            krosswarning( QString("Failed to load module '%1': %2").arg(modulename).arg(loader->lastErrorMessage()) );
-            return 0;
-        }
-    }
-
-    def_module_func func;
-    func = (def_module_func) lib->resolveFunction("krossmodule");
-    if( ! func ) {
-        krosswarning( QString("Failed to determinate init function in module '%1'").arg(modulename) );
-        return 0;
-    }
-
-    QObject* module = (QObject*) (func)(); // call the function
-    lib->unload(); // unload the library
-
-    if( ! module ) {
-        krosswarning( QString("Failed to load module object '%1'").arg(modulename) );
-        return 0;
-    }
-#else
     if( void* funcPtr = loadLibrary(libraryname, "krossmodule") ) {
         def_module_func func = (def_module_func) funcPtr;
         Q_ASSERT( func );
@@ -358,7 +332,6 @@ QObject* Manager::module(const QString& modulename)
     else {
         krosswarning( QString("Failed to load module '%1'").arg(modulename) );
     }
-#endif
     return 0;
 }
 

@@ -133,21 +133,6 @@ void KCModuleLoader::unloadModule(const KCModuleInfo &mod)
   loader.unload();
 }
 
-#ifndef KDE_NO_DEPRECATED
-void KCModuleLoader::showLastLoaderError(QWidget *parent)
-{
-  KMessageBox::detailedError(parent,
-      i18n("There was an error loading the module."),i18n("<qt>The diagnosis is:<br />%1"
-        "<p>Possible reasons:</p><ul><li>An error occurred during your last "
-        "KDE upgrade leaving an orphaned control module</li><li>You have old third party "
-        "modules lying around.</li></ul><p>Check these points carefully and try to remove "
-        "the module mentioned in the error message. If this fails, consider contacting "
-        "your distributor or packager.</p></qt>",
-       KLibLoader::self()->lastErrorMessage()));
-
-}
-#endif
-
 KCModule* KCModuleLoader::reportError( ErrorReporting report, const QString & text,
         const QString &details, QWidget * parent )
 {

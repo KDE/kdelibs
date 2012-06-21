@@ -58,7 +58,8 @@ class Editor;
  * \section factory_example Creating an Editor Part
  * To get a kate part the following code snippet can be used:
  * \code
- * KLibFactory* factory = KLibLoader::self()->factory("katepart");
+ * KPluginLoader loader("katepart");
+ * KPluginFactory* factory = loader.factory();
  * KTextEditor::Factory* kte_factory =
  *     qobject_cast<KTextEditor::Factory*>(factory);
  *

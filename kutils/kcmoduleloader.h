@@ -93,17 +93,6 @@ namespace KCModuleLoader
     KCMUTILS_EXPORT void unloadModule(const KCModuleInfo &mod);
 
     /**
-     * Display a message box explaining an error occurred and possible
-     * reasons to why.
-     *
-     * @deprecated Use a constructor with ErrorReporting set to Dialog to show a
-     * message box like this function did.
-     */
-#ifndef KDE_NO_DEPRECATED
-    KCMUTILS_EXPORT KCMUTILS_DEPRECATED void showLastLoaderError(QWidget *parent);
-#endif
-
-    /**
      * Returns a KCModule containing the messages @p report and @p text.
      *
      * @param report the type of error reporting, see ErrorReporting

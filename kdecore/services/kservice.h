@@ -24,9 +24,6 @@
 #include "kserviceaction.h"
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
-#ifndef KDE_NO_DEPRECATED
-#include <klibloader.h>
-#endif
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
 #include <ksycocaentry.h>
@@ -582,90 +579,7 @@ public:
     }
 #endif
 
-    /**
-     * @deprecated Use the non-static service->createInstance<T>(parent, args, &error)
-     * where args is a QVariantList rather than a QStringList
-     */
-#ifndef KDE_NO_DEPRECATED
-    template <class T>
-    static KDECORE_DEPRECATED T *createInstance( const KService::Ptr &service,
-                              QObject *parent,
-                              const QStringList &args,
-                              int *error = 0 )
-    {
-        const QString library = service->library();
-        if ( library.isEmpty() ) {
-            if ( error )
-                *error = KLibLoader::ErrServiceProvidesNoLibrary;
-            return 0;
-        }
-
-        return KLibLoader::createInstance<T>( library, parent, args, error );
-    }
-#endif
-
-    /**
-     * This template allows to create a component from a list of services,
-     * usually coming from a trader query. You probably want to use KServiceTypeTrader instead.
-     *
-     * @deprecated Use KServiceTypeTrader::createInstanceFromQuery instead
-     *
-     * @param begin The start iterator to the service describing the library to open
-     * @param end The end iterator to the service describing the library to open
-     * @param parent The parent object (see QObject constructor)
-     * @param args A list of string arguments, passed to the factory and possibly
-     *             to the component (see KLibFactory)
-     * @param error see KLibLoader
-     * @return A pointer to the newly created object or a null pointer if the
-     *         factory was unable to create an object of the given type.
-     */
-#ifndef KDE_NO_DEPRECATED
-    template <class T, class ServiceIterator>
-    static KDECORE_DEPRECATED T *createInstance(ServiceIterator begin, ServiceIterator end, QObject *parent = 0,
-            const QVariantList &args = QVariantList(), QString *error = 0)
-    {
-        for (; begin != end; ++begin) {
-            KService::Ptr service = *begin;
-            if (error) {
-                error->clear();
-            }
-
-            T *component = createInstance<T>(service, parent, args, error);
-            if (component) {
-                return component;
-            }
-        }
-        if (error) {
-            *error = KLibLoader::errorString(KLibLoader::ErrNoServiceFound);
-        }
-        return 0;
-    }
-#endif
-
-#ifndef KDE_NO_DEPRECATED
-    template <class T, class ServiceIterator>
-    static KDECORE_DEPRECATED T *createInstance( ServiceIterator begin, ServiceIterator end,
-                              QObject *parent,
-                              const QStringList &args,
-                              int *error = 0 )
-    {
-        for (; begin != end; ++begin ) {
-            KService::Ptr service = *begin;
-            if ( error )
-                *error = 0;
-
-            T *component = createInstance<T>( service, parent, args, error );
-            if ( component )
-                return component;
-        }
-        if ( error )
-            *error = KLibLoader::ErrNoServiceFound;
-        return 0;
-    }
-#endif
-
 protected:
-    friend class KMimeAssociations;
     friend class KBuildServiceFactory;
 
     /// @internal for KBuildSycoca only
