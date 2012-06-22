@@ -4,6 +4,8 @@
 // about particular widgets or pixmaps.
 //
 
+#include "qx11info_x11.h"
+
 #include <qpa/qplatformnativeinterface.h>
 #include <qpa/qplatformwindow.h>
 #include <qscreen.h>
@@ -12,7 +14,7 @@
 #include <qapplication.h>
 #include <xcb/xcb.h>
 
-#include "qx11info.h"
+#include <X11/Xlib.h>
 
 QX11Info::QX11Info()
 {
@@ -60,7 +62,7 @@ void QX11Info::setAppDpiY(int screen, int ydpi)
     Q_UNUSED(ydpi);
 }
 
-WId QX11Info::appRootWindow(int screen)
+unsigned long QX11Info::appRootWindow(int screen)
 {
 #if 0
     // This looks like it should work, but gives the wrong value.
