@@ -38,10 +38,12 @@ bool _k_eventFilter(void *message);
 class KEventHackWidget : public QWidget
 {
 public:
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     bool publicNativeEvent(const QByteArray &eventType, void *message, long *result)
     {
         return nativeEvent(eventType, message, result);
     }
+#endif
 };
 
 class KSystemEventFilterPrivate : public QObject
@@ -86,9 +88,11 @@ bool KSystemEventFilterPrivate::filterEvent(void *message)
         // pass the event as long as it's not consumed
         Q_FOREACH (const QWeakPointer<QWidget> &wp, m_filters) {
             if (QWidget *w = wp.data()) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
                 if (static_cast<KEventHackWidget*>(w)->publicNativeEvent("", message, 0)) {
                     return true;
                 }
+#endif
             }
         }
     }

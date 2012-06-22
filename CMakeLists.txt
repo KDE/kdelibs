@@ -68,6 +68,9 @@ set(kdeqt5staging_INCLUDE_DIR
     ${CMAKE_SOURCE_DIR}/libkdeqt5staging/src/
     ${CMAKE_BINARY_DIR}/libkdeqt5staging/src/
    )
+if (QT5_BUILD)
+set(kdeqt5staging_INCLUDE_DIR ${kdeqt5staging_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/libkdeqt5staging/src/qt5only)
+endif()
 
 include_directories(${kdeqt5staging_INCLUDE_DIR})
 
