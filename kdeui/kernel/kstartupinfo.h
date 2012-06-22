@@ -34,9 +34,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <sys/types.h>
 
-#if !defined(Q_WS_X11)
-typedef void Display;
-#endif
+typedef struct _XDisplay Display;
 
 class KStartupInfoId;
 class KStartupInfoData;
@@ -309,7 +307,7 @@ class KDEUI_EXPORT KStartupInfo
 	 * @internal
 	 */
         class Data;
-        
+
 	/**
           * @internal
 	 */
@@ -606,13 +604,13 @@ class KDEUI_EXPORT KStartupInfoData
          * This is usually not necessary to set, as it's set by default to QX11Info::screen().
          */
         void setScreen( int screen );
-        
+
         /**
          * The Xinerama screen for the startup notification, -1 if unknown.
          */
         int xinerama() const;
 
-        /**        
+        /**
 	 * Sets the Xinerama screen for the startup notification ( i.e. the screeen on which
 	 * the starting application should appear ).
 	 * @param xinerama the Xinerama screen for the startup notification
@@ -624,7 +622,7 @@ class KDEUI_EXPORT KStartupInfoData
          * 0 if unknown.
          */
         WId launchedBy() const;
-        
+
         /**
 	 * Sets the toplevel window of the application that caused this startup notification.
 	 * @param window window ID of the toplevel window that is responsible for this startup

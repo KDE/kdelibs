@@ -26,12 +26,14 @@
 #include <unistd.h>
 #include <time.h>
 
-#ifdef Q_WS_X11
+#include <config.h> // HAVE_X11
+
+#ifdef HAVE_X11
 #include <X11/Xlib.h>
 #include <fixx11h.h>
 #endif
 
-#if defined(Q_WS_WIN) || defined(Q_WS_MAC)
+#if defined(Q_OS_WIN) || defined(Q_OS_MAC)
 #define USE_KPROCESS_FOR_KIOSLAVES
 #endif
 
@@ -99,7 +101,7 @@ public:
    KService::DBusStartupType dbus_startup_type;
    bool autoStart;
    QString errorMsg;
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
    QByteArray startup_id; // "" is the default, "0" for none
    QByteArray startup_dpy; // Display to send startup notification to.
 #endif
@@ -287,7 +289,7 @@ protected:
    QString mSlaveValgrind;
    QString mSlaveValgrindSkin;
    bool dontBlockReading;
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
    Display *mCached_dpy;
 #endif
    void processRequestReturn(int status, const QByteArray &requestData);

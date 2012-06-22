@@ -181,6 +181,17 @@ const int Always = XAlways;
 #endif
 
 // Affects: Should be without side effects.
+#ifdef Expose
+#ifndef FIXX11H_Expose
+#define FIXX11H_Expose
+const int XExpose = Expose;
+#undef Expose
+const int Expose = XExpose;
+#endif
+#undef Expose
+#endif
+
+// Affects: Should be without side effects.
 #ifdef Success
 #ifndef FIXX11H_Success
 #define FIXX11H_Success

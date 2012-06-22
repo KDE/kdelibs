@@ -50,9 +50,9 @@ else (Q_WS_MAC)
 endif (Q_WS_MAC)
 
 target_link_libraries(kdeinit5 ${KDE4_KDEUI_LIBS} ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY} kcoreaddons )
-if (Q_WS_X11)
+if (X11_FOUND)
   target_link_libraries(kdeinit5 ${X11_X11_LIB})
-endif(Q_WS_X11)
+endif()
 
 install(TARGETS kdeinit5 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 

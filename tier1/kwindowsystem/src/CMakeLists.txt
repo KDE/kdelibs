@@ -1,7 +1,7 @@
 
 find_package(X11)
 
-if (X11_FOUND AND NOT QT5_BUILD) # Disabled for now with Qt5, re-enable once QX11Info exists again
+if (X11_FOUND)
    set (HAVE_X11 1)
 else ()
    set (HAVE_X11 0)
@@ -30,13 +30,8 @@ set(kwindowsystem_SRCS
 
 set(platformLinkLibraries)
 
-if (QT5_BUILD)
-   message(WARNING "KWindowSystem not implemented")
-   set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_qpa.cpp)
-endif()
-
 if (HAVE_X11)
-   set(platformLinkLibraries ${X11_LIBRARIES} ${X11_Xfixes_LIB} ${X11_Xrender_LIB})
+   set(platformLinkLibraries ${X11_LIBRARIES} ${X11_Xfixes_LIB} ${X11_Xrender_LIB} ${kdeqt5staging_LIBRARY})
    set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_x11.cpp
                                                 kwindowinfo_x11.cpp
                                                 netwm.cpp )

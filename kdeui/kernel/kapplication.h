@@ -38,17 +38,10 @@ class KConfig;
 
 typedef unsigned long Atom;
 #include <qplatformdefs.h>
-#if !defined(Q_WS_X11)
-typedef void Display;
-#endif
 
 #include <QApplication>
 #include <kcomponentdata.h>
 #include <kglobal.h>
-
-#ifdef Q_WS_X11
-#include <QX11Info>
-#endif
 
 struct _IceConn;
 class QPixmap;
@@ -98,45 +91,6 @@ public:
    * </ul>
    */
   explicit KApplication(bool GUIenabled = true);
-
-#ifdef Q_WS_X11
-  /**
-   * Constructor. Parses command-line arguments. Use this constructor when you
-   * you need to use a non-default visual or colormap.
-   *
-   * @param display Will be passed to Qt as the X display. The display must be
-   * valid and already opened.
-   *
-   * @param visual A pointer to the X11 visual that should be used by the
-   * application. Note that only TrueColor visuals are supported on depths
-   * greater than 8 bpp. If this parameter is NULL, the default visual will
-   * be used instead.
-   *
-   * @param colormap The colormap that should be used by the application. If
-   * this parameter is 0, the default colormap will be used instead.
-   */
-  explicit KApplication(Display *display, Qt::HANDLE visual = 0, Qt::HANDLE colormap = 0);
-
-  /**
-   * Constructor. Parses command-line arguments. Use this constructor to use KApplication
-   * in a Motif or Xt program.
-   *
-   * @param display Will be passed to Qt as the X display. The display must be valid and already
-   * opened.
-   *
-   * @param argc command line argument count
-   *
-   * @param argv command line argument value(s)
-   *
-   * @param rAppName application name. Will be used for finding the
-   * associated message files and icon files, and as the default
-   * registration name for DCOP. This is a mandatory parameter.
-   *
-   * @param GUIenabled Set to false to disable all GUI stuff.
-   */
-  KApplication(Display *display, int& argc, char** argv, const QByteArray& rAppName,
-               bool GUIenabled=true);
-#endif
 
   virtual ~KApplication();
 
@@ -271,17 +225,6 @@ public:
    */
   static QString checkRecoverFile( const QString& pFilename, bool& bRecover );
 
-#ifdef KDE3_SUPPORT
-#ifdef Q_WS_X11
-  /**
-   * Get the X11 display
-   * @return the X11 Display
-   * @deprecated use QX11Info::display()
-   */
-  static inline KDEUI_DEPRECATED Display *getDisplay() { return QX11Info::display(); }
-#endif
-#endif
-
   /**
    *  Installs widget filter as global X11 event filter.
    *
@@ -384,21 +327,6 @@ public:
   bool notify( QObject* receiver, QEvent* event );
 
   /**
-      @internal
-    */
-  int xErrhandler( Display*, void* );
-
-  /**
-      @internal
-    */
-  int xioErrhandler( Display* );
-
-  /**
-   * @internal
-   */
-  void iceIOErrorHandler( _IceConn *conn );
-
-  /**
    * @internal
    */
   static bool loadedByKdeinit;
@@ -451,13 +379,7 @@ protected:
    */
   KApplication(bool GUIenabled, const KComponentData &cData);
 
-#ifdef Q_WS_X11
-  /**
-   * @internal Used by KUniqueApplication
-   */
-  KApplication(Display *display, Qt::HANDLE visual, Qt::HANDLE colormap,
-          const KComponentData &cData);
-
+#if 0
   /**
    * Used to catch X11 events
    */

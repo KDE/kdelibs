@@ -51,6 +51,8 @@ QPixmap createPixmapFromHandle( WId pixmap, WId pixmap_mask )
         QPixmap pm( w, h );
         // Always detach before doing something behind QPixmap's back.
         pm.detach();
+#warning delete this whole code and find another solution (QPixmap::x11PictureHandle() does not exist anymore)
+#if 0
 #ifdef HAVE_XRENDER
         if( int( depth ) != pm.depth() && depth != 1 && pm.x11PictureHandle() != None )
         {
@@ -88,6 +90,7 @@ QPixmap createPixmapFromHandle( WId pixmap, WId pixmap_mask )
         }
         if( !handler.error( true )) // sync, check for error
             return pm;
+#endif
     }
     return QPixmap();
 }

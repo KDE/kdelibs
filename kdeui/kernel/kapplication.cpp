@@ -54,7 +54,7 @@
 #include "kmessageboxmessagehandler.h"
 #include <kiconloader.h>
 
-#if defined Q_WS_X11
+#if defined HAVE_X11
 #include <qx11info_x11.h>
 #include <kstartupinfo.h>
 #endif
@@ -65,15 +65,14 @@
 #endif
 #include <sys/wait.h>
 
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
 #include "kwindowsystem.h"
 #endif
 
 #include <fcntl.h>
 #include <stdlib.h> // srand(), rand()
 #include <unistd.h>
-#if defined Q_WS_X11
-//#ifndef Q_WS_QWS //FIXME(embedded): NetWM should talk to QWS...
+#if defined HAVE_X11
 #include <netwm.h>
 #endif
 
@@ -81,7 +80,7 @@
 #include <paths.h>
 #endif
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
@@ -91,7 +90,7 @@
 #include <QX11Info>
 #endif
 
-#ifdef Q_WS_MACX
+#ifdef Q_OS_MAC
 // ick
 #undef Status
 #include <Carbon/Carbon.h>
@@ -111,7 +110,7 @@
 KApplication* KApplication::KApp = 0L;
 bool KApplication::loadedByKdeinit = false;
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
 static Atom atom_DesktopWindow;
 static Atom atom_NetSupported;
 static Atom kde_xdnd_drop;
@@ -120,24 +119,11 @@ static QByteArray* startup_id_tmp;
 
 template class QList<KSessionManager*>;
 
-#ifdef Q_WS_X11
-extern "C" {
-static int kde_xio_errhandler( Display * dpy )
-{
-  return kapp->xioErrhandler( dpy );
-}
-
-static int kde_x_errhandler( Display *dpy, XErrorEvent *err )
-{
-  return kapp->xErrhandler( dpy, err );
-}
-
-}
-#endif
-
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 void KApplication_init_windows();
 #endif
+
+static KApplicationPrivate* kapp_priv = 0;
 
 /*
   Private data to make keeping binary compatibility easier
@@ -151,7 +137,7 @@ public:
       , startup_id("0")
       , app_started_timer(0)
       , session_save(false)
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
       , oldIceIOErrorHandler(0)
       , oldXErrorHandler(0)
       , oldXIOErrorHandler(0)
@@ -159,6 +145,7 @@ public:
       , pSessionConfig( 0 )
       , bSessionManagement( true )
   {
+      kapp_priv = this;
   }
 
   KApplicationPrivate(KApplication* q, const KComponentData &cData)
@@ -167,7 +154,7 @@ public:
       , startup_id("0")
       , app_started_timer(0)
       , session_save(false)
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
       , oldIceIOErrorHandler(0)
       , oldXErrorHandler(0)
       , oldXIOErrorHandler(0)
@@ -175,6 +162,7 @@ public:
       , pSessionConfig( 0 )
       , bSessionManagement( true )
   {
+      kapp_priv = this;
   }
 
   KApplicationPrivate(KApplication *q)
@@ -183,7 +171,7 @@ public:
       , startup_id( "0" )
       , app_started_timer( 0 )
       , session_save( false )
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
       , oldIceIOErrorHandler( 0 )
       , oldXErrorHandler( 0 )
       , oldXIOErrorHandler( 0 )
@@ -191,6 +179,7 @@ public:
       , pSessionConfig( 0 )
       , bSessionManagement( true )
   {
+      kapp_priv = this;
   }
 
   ~KApplicationPrivate()
@@ -199,6 +188,12 @@ public:
 
 #ifndef KDE3_SUPPORT
   KConfig *config() { return KSharedConfig::openConfig().data(); }
+#endif
+
+#ifdef HAVE_X11
+  int xErrhandler( Display*, void* );
+  int xioErrhandler( Display* );
+  void iceIOErrorHandler( _IceConn *conn );
 #endif
 
   void _k_x11FilterDestroyed();
@@ -218,7 +213,7 @@ public:
   QTimer* app_started_timer;
   bool session_save;
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
   IceIOErrorHandler oldIceIOErrorHandler;
   int (*oldXErrorHandler)(Display*,XErrorEvent*);
   int (*oldXIOErrorHandler)(Display*);
@@ -231,6 +226,20 @@ public:
   bool bSessionManagement;
 };
 
+#ifdef HAVE_X11
+
+extern "C" {
+static int kde_xio_errhandler( Display * dpy )
+{
+  return kapp_priv->xioErrhandler( dpy );
+}
+
+static int kde_x_errhandler( Display *dpy, XErrorEvent *err )
+{
+  return kapp_priv->xErrhandler( dpy, err );
+}
+}
+#endif
 
 static QList< QWeakPointer< QWidget > > *x11Filter = 0;
 
@@ -292,7 +301,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
     if( t == QEvent::Show && receiver->isWidgetType())
     {
         QWidget* w = static_cast< QWidget* >( receiver );
-#if defined Q_WS_X11
+#if defined HAVE_X11
         if( w->isTopLevel() && !startupId().isEmpty()) // TODO better done using window group leader?
             KStartupInfo::setWindowStartupId( w->winId(), startupId());
 #endif
@@ -314,7 +323,7 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
 
 void KApplicationPrivate::_k_checkAppStartedSlot()
 {
-#if defined Q_WS_X11
+#if defined HAVE_X11
     KStartupInfo::handleAutoAppStartedSending();
 #endif
 }
@@ -335,7 +344,7 @@ QString KApplicationPrivate::sessionConfigName() const
     return QString(QLatin1String("session/%1_%2_%3")).arg(q->applicationName()).arg(q->sessionId()).arg(sessKey);
 }
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
 static SmcConn mySmcConnection = 0;
 #else
 // FIXME(E): Implement for Qt Embedded
@@ -353,30 +362,6 @@ KApplication::KApplication(bool GUIenabled)
     d->init(GUIenabled);
 }
 
-#ifdef Q_WS_X11
-KApplication::KApplication(Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap)
-    : QApplication((KApplicationPrivate::preqapplicationhack(),dpy), KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), visual, colormap),
-    d(new KApplicationPrivate(this))
-{
-    d->read_app_startup_id();
-    setApplicationName(d->componentData.componentName());
-    setOrganizationDomain(d->componentData.aboutData()->organizationDomain());
-    installSigpipeHandler();
-    d->init();
-}
-
-KApplication::KApplication(Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap, const KComponentData &cData)
-    : QApplication((KApplicationPrivate::preqapplicationhack(),dpy), KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), visual, colormap),
-    d (new KApplicationPrivate(this, cData))
-{
-    d->read_app_startup_id();
-    setApplicationName(d->componentData.componentName());
-    setOrganizationDomain(d->componentData.aboutData()->organizationDomain());
-    installSigpipeHandler();
-    d->init();
-}
-#endif
-
 KApplication::KApplication(bool GUIenabled, const KComponentData &cData)
     : QApplication((KApplicationPrivate::preqapplicationhack(),KCmdLineArgs::qtArgc()), KCmdLineArgs::qtArgv(), GUIenabled),
     d (new KApplicationPrivate(this, cData))
@@ -388,21 +373,6 @@ KApplication::KApplication(bool GUIenabled, const KComponentData &cData)
     d->init(GUIenabled);
 }
 
-#ifdef Q_WS_X11
-KApplication::KApplication(Display *display, int& argc, char** argv, const QByteArray& rAppName,
-        bool GUIenabled)
-    : QApplication((KApplicationPrivate::preqapplicationhack(),display)),
-    d(new KApplicationPrivate(this, rAppName))
-{
-    Q_UNUSED(GUIenabled);
-    d->read_app_startup_id();
-    setApplicationName(QLatin1String(rAppName));
-    installSigpipeHandler();
-    KCmdLineArgs::initIgnore(argc, argv, rAppName.data());
-    d->init();
-}
-#endif
-
 // this function is called in KApplication ctors while evaluating arguments to QApplication ctor,
 // i.e. before QApplication ctor is called
 void KApplicationPrivate::preqapplicationhack()
@@ -412,47 +382,38 @@ void KApplicationPrivate::preqapplicationhack()
     KGlobal::config(); // initialize qt plugin path (see KComponentDataPrivate::lazyInit)
 }
 
-int KApplication::xioErrhandler( Display* dpy )
+#ifdef HAVE_X11
+int KApplicationPrivate::xioErrhandler( Display* dpy )
 {
-    if(kapp)
-    {
-#ifdef Q_WS_X11
-        d->oldXIOErrorHandler( dpy );
-#else
-        Q_UNUSED(dpy);
-#endif
-    }
+    oldXIOErrorHandler( dpy );
     exit( 1 );
     return 0;
 }
 
-int KApplication::xErrhandler( Display* dpy, void* err_ )
-{ // no idea how to make forward decl. for XErrorEvent
-#ifdef Q_WS_X11
+int KApplicationPrivate::xErrhandler( Display* dpy, void* err_ )
+{
     XErrorEvent* err = static_cast< XErrorEvent* >( err_ );
     if(kapp)
     {
         // add KDE specific stuff here
-        d->oldXErrorHandler( dpy, err );
+        oldXErrorHandler( dpy, err );
     }
     const QByteArray fatalXError = qgetenv("KDE_FATAL_X_ERROR");
     if (!fatalXError.isEmpty()) {
         abort();
     }
-#endif
     return 0;
 }
 
-void KApplication::iceIOErrorHandler( _IceConn *conn )
+void KApplicationPrivate::iceIOErrorHandler( _IceConn *conn )
 {
-    emit aboutToQuit();
+    emit kapp->aboutToQuit();
 
-#ifdef Q_WS_X11
-    if ( d->oldIceIOErrorHandler != NULL )
-      (*d->oldIceIOErrorHandler)( conn );
-#endif
+    if ( oldIceIOErrorHandler != NULL )
+      (*oldIceIOErrorHandler)( conn );
     exit( 1 );
 }
+#endif
 
 // TODO remove this KDEUI_EXPORT completely once this is in kde4support
 // (only called by KUniqueApplication, no need to export)
@@ -467,7 +428,7 @@ void KApplicationPrivate::init(bool GUIenabled)
      ::exit(127);
   }
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
   mac_initialize_dbus();
 #endif
 
@@ -487,7 +448,7 @@ void KApplicationPrivate::init(bool GUIenabled)
 
   QApplication::setDesktopSettingsAware( false );
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
   // create all required atoms in _one_ roundtrip to the X server
   if ( q->type() == KApplication::GuiClient ) {
       const int max = 20;
@@ -561,7 +522,7 @@ void KApplicationPrivate::init(bool GUIenabled)
 
   if (q->type() == KApplication::GuiClient)
   {
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     // this is important since we fork() to launch the help (Matthias)
     fcntl(ConnectionNumber(QX11Info::display()), F_SETFD, FD_CLOEXEC);
     // set up the fancy (=robust and error ignoring ) KDE xio error handlers (Matthias)
@@ -581,7 +542,7 @@ void KApplicationPrivate::init(bool GUIenabled)
                q, SLOT(_k_slot_KToolInvocation_hook(QStringList&,QByteArray&)));
   }
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
   if (q->type() == KApplication::GuiClient) {
       // This is a QSystemTrayIcon instead of K* because we can't be sure q is a QWidget
       QSystemTrayIcon *trayIcon; //krazy:exclude=qclasses
@@ -600,7 +561,7 @@ void KApplicationPrivate::init(bool GUIenabled)
   qRegisterMetaType<QList<KUrl> >();
   qRegisterMetaType<QList<QUrl> >();
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
   KApplication_init_windows();
 #endif
 }
@@ -633,7 +594,7 @@ void KApplication::disableSessionManagement() {
 
 void KApplication::enableSessionManagement() {
   d->bSessionManagement = true;
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
   // Session management support in Qt/KDE is awfully broken.
   // If konqueror disables session management right after its startup,
   // and enables it later (preloading stuff), it won't be properly
@@ -703,7 +664,7 @@ commitDataRestart:
     d->session_save = false;
 }
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
 static void checkRestartVersion( QSessionManager& sm )
 {
     Display* dpy = QX11Info::display();
@@ -735,11 +696,12 @@ static void checkRestartVersion( QSessionManager& sm )
         sm.setRestartCommand( restartCommand );
     }
 }
-#endif // Q_WS_X11
+#endif // HAVE_X11
 
 void KApplication::saveState( QSessionManager& sm )
 {
     d->session_save = true;
+#warning TODO: QSessionManager::handle() is gone in Qt5!
 #ifdef Q_WS_X11
     static bool firstTime = true;
     mySmcConnection = (SmcConn) sm.handle();
@@ -788,9 +750,7 @@ void KApplication::saveState( QSessionManager& sm )
         sm.setRestartCommand( restartCommand );
     }
 
-#ifdef Q_WS_X11
     checkRestartVersion( sm );
-#endif
 
     // finally: do session management
     emit saveYourself(); // for compatibility
@@ -866,7 +826,7 @@ void KApplicationPrivate::parseCommandLine( )
         KCrash::setApplicationPath(QCoreApplication::applicationDirPath());
     }
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     if ( args->isSet( "waitforwm" ) ) {
         Atom type;
         (void) q->desktop(); // trigger desktop creation, we need PropertyNotify events for the root window
@@ -886,7 +846,7 @@ void KApplicationPrivate::parseCommandLine( )
     }
 #endif
 
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     if (args->isSet("smkey"))
     {
         sessionKey = args->getOption("smkey");
@@ -898,7 +858,7 @@ extern void kDebugCleanup();
 
 KApplication::~KApplication()
 {
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
   if ( d->oldXErrorHandler != NULL )
       XSetErrorHandler( d->oldXErrorHandler );
   if ( d->oldXIOErrorHandler != NULL )
@@ -910,23 +870,18 @@ KApplication::~KApplication()
   delete d;
   KApp = 0;
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
   mySmcConnection = 0;
 #endif
 }
 
-
-#ifdef Q_WS_X11
+#warning TODO kapp->installX11EventFilter needs to be ported to nativeEvent filters.
+#if 0 // replaced with QWidget::nativeEvent in Qt5
 class KAppX11HackWidget: public QWidget
 {
 public:
-    bool publicx11Event( XEvent * e) { return x11Event( e ); }
+    bool publicx11Event( XEvent * e) { return x11Event( e ); } // no such method anymore!
 };
-#endif
-
-
-
-#ifdef Q_WS_X11
 bool KApplication::x11EventFilter( XEvent *_event )
 {
     if (x11Filter) {
@@ -939,11 +894,11 @@ bool KApplication::x11EventFilter( XEvent *_event )
 
     return false;
 }
-#endif // Q_WS_X11
+#endif
 
 void KApplication::updateUserTimestamp( int time )
 {
-#if defined Q_WS_X11
+#if defined HAVE_X11
     if( time == 0 )
     { // get current X timestamp
         Window w = XCreateSimpleWindow( QX11Info::display(), QX11Info::appRootWindow(), 0, 0, 1, 1, 0, 0, 0 );
@@ -966,7 +921,7 @@ void KApplication::updateUserTimestamp( int time )
 
 unsigned long KApplication::userTimestamp() const
 {
-#if defined Q_WS_X11
+#if defined HAVE_X11
     return QX11Info::appUserTime();
 #else
     return 0;
@@ -975,7 +930,7 @@ unsigned long KApplication::userTimestamp() const
 
 void KApplication::updateRemoteUserTimestamp( const QString& service, int time )
 {
-#if defined Q_WS_X11
+#if defined HAVE_X11
     Q_ASSERT(service.contains('.'));
     if( time == 0 )
         time = QX11Info::appUserTime();
@@ -1071,7 +1026,7 @@ void KApplication::setTopWidget( QWidget *topWidget )
         topWidget->setWindowTitle(KGlobal::caption());
     }
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     // set the app startup notification window property
     KStartupInfo::setWindowStartupId(topWidget->winId(), startupId());
 #endif
@@ -1086,7 +1041,7 @@ void KApplication::setStartupId( const QByteArray& startup_id )
 {
     if( startup_id == d->startup_id )
         return;
-#if defined Q_WS_X11
+#if defined HAVE_X11
     KStartupInfo::handleAutoAppStartedSending(); // finish old startup notification if needed
 #endif
     if( startup_id.isEmpty())
@@ -1094,7 +1049,7 @@ void KApplication::setStartupId( const QByteArray& startup_id )
     else
         {
         d->startup_id = startup_id;
-#if defined Q_WS_X11
+#if defined HAVE_X11
         KStartupInfoId id;
         id.initId( startup_id );
         long timestamp = id.timestamp();
@@ -1114,7 +1069,7 @@ void KApplication::clearStartupId()
 // the startup id from it, this can be dumped.
 void KApplicationPrivate::preread_app_startup_id()
 {
-#if defined Q_WS_X11
+#if defined HAVE_X11
     KStartupInfoId id = KStartupInfo::currentStartupIdEnv();
     KStartupInfo::resetStartupEnv();
     startup_id_tmp = new QByteArray( id.id());
@@ -1125,7 +1080,7 @@ void KApplicationPrivate::preread_app_startup_id()
 // not to propagate it to processes started from this app
 void KApplicationPrivate::read_app_startup_id()
 {
-#if defined Q_WS_X11
+#if defined HAVE_X11
     startup_id = *startup_id_tmp;
     delete startup_id_tmp;
     startup_id_tmp = NULL;
@@ -1135,7 +1090,7 @@ void KApplicationPrivate::read_app_startup_id()
 // Hook called by KToolInvocation
 void KApplicationPrivate::_k_slot_KToolInvocation_hook(QStringList& envs,QByteArray& startup_id)
 {
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     if (QX11Info::display()) {
         QByteArray dpystring(XDisplayString(QX11Info::display()));
         envs << QLatin1String("DISPLAY=") + dpystring;

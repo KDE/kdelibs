@@ -646,7 +646,8 @@ QPixmap KFileItemDelegate::Private::transition(const QPixmap &from, const QPixma
 
         return under;
     }
-#if defined(HAVE_X11) && defined(HAVE_XRENDER)
+// Cannot use XRender with QPixmap anymore.
+#if 0 // defined(HAVE_X11) && defined(HAVE_XRENDER)
     else if (from.paintEngine()->hasFeature(QPaintEngine::PorterDuff)) // We have Xrender support
     {
         // QX11PaintEngine doesn't implement CompositionMode_Plus in Qt 4.3,

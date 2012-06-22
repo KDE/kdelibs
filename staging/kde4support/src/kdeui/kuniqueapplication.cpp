@@ -42,8 +42,10 @@
 #include <kconfiggroup.h>
 #include <kwindowsystem.h>
 
-#if defined Q_WS_X11
+#if defined HAVE_X11
 #include <kstartupinfo.h>
+#include <netwm.h>
+#include <X11/Xlib.h>
 #endif
 
 /* I don't know why, but I end up with complaints about
@@ -53,18 +55,6 @@
 
 #include <kconfig.h>
 #include "kdebug.h"
-
-#if defined Q_WS_X11
-#include <netwm.h>
-#include <X11/Xlib.h>
-#define DISPLAY "DISPLAY"
-#else
-#  ifdef Q_WS_QWS
-#    define DISPLAY "QWS_DISPLAY"
-#  else
-#    define DISPLAY "DISPLAY"
-#  endif
-#endif
 
 #if defined(Q_OS_DARWIN) || defined (Q_OS_MAC)
 #include <kkernel_mac.h>
@@ -215,7 +205,7 @@ KUniqueApplication::start(StartFlags flags)
            return false;
         }
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
          KStartupInfoId id;
          if( kapp != NULL ) // KApplication constructor unsets the env. variable
              id.initId( kapp->startupId());
@@ -232,7 +222,6 @@ KUniqueApplication::start(StartFlags flags)
                XCloseDisplay( disp );
             }
          }
-#else //FIXME(E): Implement
 #endif
      }
      result = 0;
@@ -278,7 +267,7 @@ KUniqueApplication::start(StartFlags flags)
      KCmdLineArgs::saveAppArgs(ds);
 
      QByteArray new_asn_id;
-#if defined Q_WS_X11
+#if defined HAVE_X11
      KStartupInfoId id;
      if( kapp != NULL ) // KApplication constructor unsets the env. variable
          id.initId( kapp->startupId());
@@ -324,26 +313,6 @@ KUniqueApplication::KUniqueApplication(bool GUIenabled, bool configUnique)
     QTimer::singleShot( 0, this, SLOT(_k_newInstanceNoFork()) );
 }
 
-
-#ifdef Q_WS_X11
-KUniqueApplication::KUniqueApplication(Display *display, Qt::HANDLE visual,
-		Qt::HANDLE colormap, bool configUnique)
-  : KApplication( display, visual, colormap, Private::initHack( configUnique )),
-    d(new Private(this))
-{
-  d->processingRequest = false;
-  d->firstInstance = true;
-
-  // the sanity checking happened in initHack
-  new KUniqueApplicationAdaptor(this);
-
-  if (Private::s_nofork)
-    // Can't call newInstance directly from the constructor since it's virtual...
-    QTimer::singleShot( 0, this, SLOT(_k_newInstanceNoFork()) );
-}
-#endif
-
-
 KUniqueApplication::~KUniqueApplication()
 {
   delete d;
@@ -369,7 +338,7 @@ void KUniqueApplication::Private::_k_newInstanceNoFork()
   s_handleAutoStarted = false;
   q->newInstance();
   firstInstance = false;
-#if defined Q_WS_X11
+#if defined HAVE_X11
   // KDE4 remove
   // A hack to make startup notification stop for apps which override newInstance()
   // and reuse an already existing window there, but use KWindowSystem::activateWindow()
@@ -397,7 +366,7 @@ int KUniqueApplication::newInstance()
             KMainWindow* mainWindow = allWindows.first();
             if (mainWindow) {
                 mainWindow->show();
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
                 // This is the line that handles window activation if necessary,
                 // and what's important, it does it properly. If you reimplement newInstance(),
                 // and don't call the inherited one, use this (but NOT when newInstance()

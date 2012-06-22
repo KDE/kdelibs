@@ -26,6 +26,7 @@
 #include <kxerrorhandler_p.h>
 #include <kxutils_p.h>
 #include <netwm.h>
+#include <fixx11h_p.h>
 
 #include <QApplication>
 #include <QBitmap>
@@ -35,8 +36,6 @@
 #include <QX11Info>
 
 #include <X11/Xatom.h>
-
-#include "globalstaticdef_p.h"
 
 #include <config-kwindowsystem.h>
 
@@ -52,7 +51,7 @@ public:
 };
 
 
-KWINDOWSYSTEM_GLOBAL_STATIC(KWindowSystemStaticContainer, g_kwmInstanceContainer)
+Q_GLOBAL_STATIC(KWindowSystemStaticContainer, g_kwmInstanceContainer)
 
 static Atom net_wm_cm;
 static void create_atoms( Display* dpy = QX11Info::display() );
@@ -361,34 +360,43 @@ static void sendClientMessageToRoot(Window w, Atom a, long x, long y = 0, long z
 
 KWindowSystem* KWindowSystem::self()
 {
-    return &(g_kwmInstanceContainer->kwm);
+    return &(g_kwmInstanceContainer()->kwm);
 }
 
 
 KWindowSystemPrivate* KWindowSystem::s_d_func()
 {
-    return g_kwmInstanceContainer->d;
+    return g_kwmInstanceContainer()->d;
 }
 
 
 // optimalization - create KWindowSystemPrivate only when needed and only for what is needed
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 void KWindowSystem::connectNotify( const char* signal )
+#else
+void KWindowSystem::connectNotify(const QMetaMethod& signal)
+#endif
 {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    QByteArray methodSig = signal;
+#else
+    QByteArray methodSig = signal.methodSignature();
+#endif
     int what = INFO_BASIC;
-    if( QLatin1String( signal ) == SIGNAL(workAreaChanged()))
+    if( methodSig == SIGNAL(workAreaChanged()))
         what = INFO_WINDOWS;
-    else if( QLatin1String( signal ) == SIGNAL(strutChanged()))
+    else if( methodSig == SIGNAL(strutChanged()))
         what = INFO_WINDOWS;
-    else if( QLatin1String( signal ) == QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId,const ulong*))).constData())
+    else if( methodSig == QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId,const ulong*))).constData())
         what = INFO_WINDOWS;
-    else if( QLatin1String( signal ) ==  QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId,uint))).constData())
+    else if( methodSig == QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId,uint))).constData())
         what = INFO_WINDOWS;
-    else if( QLatin1String( signal ) ==  QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId))).constData())
+    else if( methodSig == QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId))).constData())
         what = INFO_WINDOWS;
 
     init( what );
     KWindowSystemPrivate* const s_d = s_d_func();
-    if( !s_d->strutSignalConnected && qstrcmp( signal, SIGNAL(strutChanged())) == 0 )
+    if (!s_d->strutSignalConnected && methodSig == SIGNAL(strutChanged()))
         s_d->strutSignalConnected = true;
 
     QObject::connectNotify( signal );
@@ -407,14 +415,14 @@ void KWindowSystem::init(int what)
 
     if ( !s_d )
     {
-        g_kwmInstanceContainer->d = new KWindowSystemPrivate(what); // invalidates s_d
-        g_kwmInstanceContainer->d->activate();
+        g_kwmInstanceContainer()->d = new KWindowSystemPrivate(what); // invalidates s_d
+        g_kwmInstanceContainer()->d->activate();
     }
     else if (s_d->what < what)
     {
         delete s_d;
-        g_kwmInstanceContainer->d = new KWindowSystemPrivate(what); // invalidates s_d
-        g_kwmInstanceContainer->d->activate();
+        g_kwmInstanceContainer()->d = new KWindowSystemPrivate(what); // invalidates s_d
+        g_kwmInstanceContainer()->d->activate();
     }
 }
 
@@ -761,8 +769,7 @@ void KWindowSystem::minimizeWindow( WId win, bool animation)
         create_atoms();
 	sendClientMessageToRoot( win, kde_wm_change_state, IconicState, 1 );
     }
-	QX11Info inf;
-    XIconifyWindow( QX11Info::display(), win, inf.screen() );
+    XIconifyWindow( QX11Info::display(), win, QX11Info::appScreen() );
 }
 
 void KWindowSystem::unminimizeWindow( WId win, bool animation )

@@ -82,7 +82,8 @@ QPixmap KFadeWidgetEffectPrivate::transition(const QPixmap &from, const QPixmap 
 
         return under;
     }
-#if defined(Q_WS_X11) && defined(HAVE_XRENDER)
+// Cannot use XRender with QPixmap anymore.
+#if 0 // defined(Q_WS_X11) && defined(HAVE_XRENDER)
     else if (from.paintEngine()->hasFeature(QPaintEngine::PorterDuff)) // We have Xrender support
     {
         // QX11PaintEngine doesn't implement CompositionMode_Plus in Qt 4.3,

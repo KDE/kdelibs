@@ -27,8 +27,9 @@ DEALINGS IN THE SOFTWARE.
 //#define   multiple times
 
 #include <QtCore/QtGlobal>
+#include <config.h>
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
 
 /* Usage:
 
@@ -177,6 +178,17 @@ const int XAlways = Always;
 const int Always = XAlways;
 #endif
 #undef Always
+#endif
+
+// Affects: Should be without side effects.
+#ifdef Expose
+#ifndef FIXX11H_Expose
+#define FIXX11H_Expose
+const int XExpose = Expose;
+#undef Expose
+const int Expose = XExpose;
+#endif
+#undef Expose
 #endif
 
 // Affects: Should be without side effects.

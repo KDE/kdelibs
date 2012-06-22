@@ -32,7 +32,6 @@
 #include <windows.h>
 #include <windowsx.h>
 
-#include "globalstaticdef_p.h"
 
 #ifdef __WIN64
 #define GCL_HICON GCLP_HICON
@@ -55,10 +54,7 @@ public:
     KWindowSystemPrivate* d;
 };
 
-KWINDOWSYSTEM_GLOBAL_STATIC(KWindowSystemStaticContainer, g_kwmInstanceContainer)
-
-KWINDOWSYSTEM_GLOBAL_STATIC(QDesktopWidget, s_deskWidget)
-
+Q_GLOBAL_STATIC(KWindowSystemStaticContainer, g_kwmInstanceContainer)
 
 struct InternalWindowInfo
 {
@@ -92,7 +88,7 @@ class KWindowSystemPrivate : public QWidget
         bool winEvent ( MSG * message, long * result );
 
     private:
-	    bool activated; 
+	    bool activated;
         int what;
         WId fakeHwnd;
         QList<WId> stackingOrder;
@@ -130,7 +126,7 @@ void KWindowSystemPrivate::activate ( )
 	if(activated)
 		return;
 	activated = true;
-	
+
     //resolve winapi stuff
     if(!pRegisterShellHook) pRegisterShellHook = (PtrRegisterShellHook)QLibrary::resolve("shell32",(LPCSTR)0xb5);
 
@@ -143,7 +139,7 @@ void KWindowSystemPrivate::activate ( )
     bool shellHookRegistered = false;
     if(pRegisterShellHook)
         shellHookRegistered = pRegisterShellHook(winId(),RSH_TASKMGR);
- 
+
     if(!shellHookRegistered)
         //use a timer and poll the windows ?
           qDebug() << "Could not create shellhook to receive WindowManager Events";
@@ -155,7 +151,7 @@ void KWindowSystemPrivate::activate ( )
 KWindowSystemPrivate::~KWindowSystemPrivate()
 {
     if(pRegisterShellHook)
-        pRegisterShellHook(winId(),RSH_UNREGISTER);		
+        pRegisterShellHook(winId(),RSH_UNREGISTER);
 }
 
 /**
@@ -163,7 +159,7 @@ KWindowSystemPrivate::~KWindowSystemPrivate()
  */
 bool KWindowSystemPrivate::winEvent ( MSG * message, long * result )
 {
-    /* 
+    /*
         check winuser.h for the following codes
         HSHELL_WINDOWCREATED        1
         HSHELL_WINDOWDESTROYED      2
@@ -324,12 +320,12 @@ void KWindowSystemPrivate::reloadStackList ()
 
 KWindowSystem* KWindowSystem::self()
 {
-    return &(g_kwmInstanceContainer->kwm);
+    return &(g_kwmInstanceContainer()->kwm);
 }
 
 KWindowSystemPrivate* KWindowSystem::s_d_func()
 {
-    return g_kwmInstanceContainer->d;
+    return g_kwmInstanceContainer()->d;
 }
 
 void KWindowSystem::init(int what)
@@ -343,14 +339,14 @@ void KWindowSystem::init(int what)
 
     if ( !s_d )
     {
-        g_kwmInstanceContainer->d = new KWindowSystemPrivate(what); // invalidates s_d
-        g_kwmInstanceContainer->d->activate();
+        g_kwmInstanceContainer()->d = new KWindowSystemPrivate(what); // invalidates s_d
+        g_kwmInstanceContainer()->d->activate();
     }
     else if (s_d->what < what)
     {
         delete s_d;
-        g_kwmInstanceContainer->d = new KWindowSystemPrivate(what); // invalidates s_d
-        g_kwmInstanceContainer->d->activate();
+        g_kwmInstanceContainer()->d = new KWindowSystemPrivate(what); // invalidates s_d
+        g_kwmInstanceContainer()->d->activate();
     }
 
 }
@@ -424,10 +420,10 @@ void KWindowSystem::forceActiveWindow( WId win, long time )
     if ( AttachThreadInput(GetCurrentThreadId(), idActive, TRUE) )
     {
         SetForegroundWindow( win );
-        SetFocus( win ); 
+        SetFocus( win );
         AttachThreadInput(GetCurrentThreadId(), idActive, FALSE);
     }
-    
+
 }
 
 void KWindowSystem::demandAttention( WId win, bool set )
@@ -583,7 +579,7 @@ bool KWindowSystem::compositingActive()
 
 QRect KWindowSystem::workArea( int desktop )
 {
-    return s_deskWidget->availableGeometry( desktop );
+    return qApp->desktop()->availableGeometry( desktop );
 }
 
 QRect KWindowSystem::workArea( const QList<WId>& exclude, int desktop )

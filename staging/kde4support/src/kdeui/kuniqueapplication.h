@@ -69,29 +69,6 @@ public:
   explicit KUniqueApplication( bool GUIenabled=true,
                                bool configUnique=false);
 
-#ifdef Q_WS_X11
-  /**
-   * Constructor. Takes command line arguments from KCmdLineArgs
-   *
-   * @param display Will be passed to Qt as the X display. The display
-   * must be valid and already opened.
-   *
-   * @param visual Pointer to the X11 visual that should be used by the
-   * application. If NULL, the default visual will be used instead.
-   *
-   * @param colormap The colormap that should be used by the application.
-   * If 0, the default colormap will be used instead.
-   *
-   * @param configUnique If true, the uniqueness of the application will
-   *                 depend on the value of the "MultipleInstances"
-   *                 key in the "KDE" group of the application config file.
-   */
-  explicit KUniqueApplication( Display *display,
-                               Qt::HANDLE visual=0,
-                               Qt::HANDLE colormap=0,
-                               bool configUnique=false);
-#endif
-
   /**
    * Adds command line options specific for KUniqueApplication.
    *

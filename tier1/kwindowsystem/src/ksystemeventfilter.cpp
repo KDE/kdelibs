@@ -26,7 +26,6 @@
 #include <QSet>
 #include <QAbstractEventDispatcher>
 
-#include "globalstaticdef_p.h"
 #include <config-kwindowsystem.h>
 
 // Our global event-filter which will pass events to all registered
@@ -39,22 +38,10 @@ bool _k_eventFilter(void *message);
 class KEventHackWidget : public QWidget
 {
 public:
-#if defined(HAVE_X11)
-    bool publicX11Event(XEvent *e)
+    bool publicNativeEvent(const QByteArray &eventType, void *message, long *result)
     {
-        return x11Event(e);
+        return nativeEvent(eventType, message, result);
     }
-#elif defined(Q_OS_MAC)
-    bool publicMacEvent(EventHandlerCallRef caller, EventRef event)
-    {
-        return macEvent(caller, event);
-    }
-#elif defined(Q_OS_WIN)
-    bool publicWinEvent(MSG *message, long *result)
-    {
-        return winEvent(message, result);
-    }
-#endif
 };
 
 class KSystemEventFilterPrivate : public QObject
@@ -77,7 +64,7 @@ public:
     }
 
     bool filterEvent(void *message);
-    
+
     // the installed event filters
     QList< QWeakPointer<QWidget> > m_filters;
     // if an event filter had already been previously installed, it is
@@ -86,52 +73,24 @@ public:
     QAbstractEventDispatcher::EventFilter m_nextFilter;
 };
 
-KWINDOWSYSTEM_GLOBAL_STATIC(KSystemEventFilterPrivate, kSystemEventFilter)
+Q_GLOBAL_STATIC(KSystemEventFilterPrivate, kSystemEventFilter)
 
 bool _k_eventFilter(void *message)
 {
-    return kSystemEventFilter->filterEvent(message);
+    return kSystemEventFilter()->filterEvent(message);
 }
 
 bool KSystemEventFilterPrivate::filterEvent(void *message)
 {
     if (!m_filters.isEmpty()) {
-#if defined(HAVE_X11)
-        XEvent *xevt = static_cast<XEvent*>(message);
         // pass the event as long as it's not consumed
         Q_FOREACH (const QWeakPointer<QWidget> &wp, m_filters) {
             if (QWidget *w = wp.data()) {
-                if (static_cast<KEventHackWidget*>(w)->publicX11Event(xevt)) {
+                if (static_cast<KEventHackWidget*>(w)->publicNativeEvent("", message, 0)) {
                     return true;
                 }
             }
         }
-#elif defined(Q_OS_MAC)
-        // FIXME: untested
-
-/*        NSEvent *nsevt = static_cast<NSEvent*>(message);
-        // pass the event as long as it's not consumed
-        Q_FOREACH (const QWeakPointer<QWidget> &wp, m_filters) {
-            if (QWidget *w = wp.data()) {
-                if (static_cast<KEventHackWidget*>(w)->publicMacEvent(0, nsevt->eventRef)) {
-                    return true;
-                }
-            }
-        }*/
-#elif defined(Q_OS_WIN)
-        // FIXME: untested
-        
-/*        MSG *msg = static_cast<MSG*>(message);
-        long ret; // widget filter returns are discarded!
-        // pass the event as long as it's not consumed
-        Q_FOREACH (const QWeakPointer<QWidget> &wp, m_filters) {
-            if (QWidget *w = wp.data()) {
-                if (static_cast<KEventHackWidget*>(w)->publicWinEvent(msg, &ret)) {
-                    return true;
-                }
-            }
-        }*/
-#endif
     }
 
     // call next filter if we have one
@@ -147,14 +106,14 @@ namespace KSystemEventFilter
 
 void installEventFilter(QWidget *filter)
 {
-    kSystemEventFilter->m_filters.append(filter);
-    kSystemEventFilter->connect(filter, SIGNAL(destroyed(QObject*)),
+    kSystemEventFilter()->m_filters.append(filter);
+    kSystemEventFilter()->connect(filter, SIGNAL(destroyed(QObject*)),
                                 SLOT(filterWidgetDestroyed(QObject*)));
 }
 
 void removeEventFilter(const QWidget *filter)
 {
-    QMutableListIterator< QWeakPointer<QWidget> > it(kSystemEventFilter->m_filters);
+    QMutableListIterator< QWeakPointer<QWidget> > it(kSystemEventFilter()->m_filters);
     while (it.hasNext()) {
         QWidget *w = it.next().data();
         if (w == filter || w == 0) {
