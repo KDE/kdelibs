@@ -1,13 +1,17 @@
 set(libkdeqt5staging_SRCS
     qurlpathinfo.cpp
     qsavefile.cpp
+    qx11info.cpp
 )
+
+# TODO ask Steve for this in Qt (but lib/cmake/Qt5Gui/Qt5GuiConfig.cmake is generated)
+include_directories(${_qt5Gui_install_prefix}/include/QtGui/5.0.0/QtGui)
 
 add_library(kdeqt5staging ${LIBRARY_TYPE} ${libkdeqt5staging_SRCS})
 
 generate_export_header(kdeqt5staging)
 
-target_link_libraries(kdeqt5staging ${QT_QTCORE_LIBRARY})
+target_link_libraries(kdeqt5staging ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
 
 set_target_properties(kdeqt5staging PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                                SOVERSION ${ECM_SOVERSION}
