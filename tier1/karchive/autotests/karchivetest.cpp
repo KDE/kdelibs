@@ -33,6 +33,10 @@
 #include <errno.h>
 #endif
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define QFINDTESTDATA(a) KDESRCDIR + a
+#endif
+
 QTEST_MAIN( KArchiveTest )
 
 static const int SIZE1 = 100;
@@ -557,7 +561,7 @@ void KArchiveTest::testTarMaxLength()
 
 void KArchiveTest::testTarGlobalHeader()
 {
-    KTar tar( QString::fromLatin1(KDESRCDIR) + QLatin1String( "global_header_test.tar.bz2" ) );
+    KTar tar(QFINDTESTDATA(QLatin1String("global_header_test.tar.bz2")));
     QVERIFY2(tar.open( QIODevice::ReadOnly ), "global_header_test.tar.bz2");
 
     const KArchiveDirectory* dir = tar.directory();
@@ -576,8 +580,8 @@ void KArchiveTest::testTarGlobalHeader()
 
 void KArchiveTest::testTarPrefix()
 {
-    KTar tar( QString::fromLatin1(KDESRCDIR) + QLatin1String( "tar_prefix_test.tar.bz2" ) );
-    QVERIFY( tar.open( QIODevice::ReadOnly ) );
+    KTar tar(QFINDTESTDATA(QLatin1String("tar_prefix_test.tar.bz2")));
+    QVERIFY2(tar.open(QIODevice::ReadOnly), "tar_prefix_test.tar.bz2");
 
     const KArchiveDirectory* dir = tar.directory();
     QVERIFY( dir != 0 );
@@ -602,8 +606,8 @@ void KArchiveTest::testTarPrefix()
 
 void KArchiveTest::testTarDirectoryForgotten()
 {
-    KTar tar( QString::fromLatin1(KDESRCDIR) + QLatin1String( "tar_directory_forgotten.tar.bz2" ) );
-    QVERIFY( tar.open( QIODevice::ReadOnly ) );
+    KTar tar(QFINDTESTDATA(QLatin1String("tar_directory_forgotten.tar.bz2")));
+    QVERIFY2(tar.open(QIODevice::ReadOnly), "tar_directory_forgotten.tar.bz2");
 
     const KArchiveDirectory* dir = tar.directory();
     QVERIFY( dir != 0 );
