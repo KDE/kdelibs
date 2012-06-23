@@ -22,6 +22,7 @@
 
 #include <QtCore/QObject>
 #include <QtGui/QFileDialog>
+#include <QtGui/QMessageBox>
 
 #include "kbookmarkimporter_ns.h"
 #include "kbookmarkimporter.h"
@@ -30,7 +31,6 @@
 #include <kstringhandler.h>
 #include <QtCore/QDebug>
 #include <kcharsets.h>
-#include <kmessagebox.h>
 
 #include <qtextcodec.h>
 #include <qtextdocument.h> // Qt::escape
@@ -134,9 +134,9 @@ void KNSBookmarkExporterImpl::setUtf8(bool utf8) {
 void KNSBookmarkExporterImpl::write(const KBookmarkGroup &parent)
 {
    if (!QFile::exists(m_fileName)) {
-      QString errorMsg = QString("Could not find %1. Netscape is probably not installed. "
+      QString errorMsg = QObject::tr("Could not find %1. Netscape is probably not installed. "
                        "Aborting the export.").arg(m_fileName);
-      KMessageBox::error(0,errorMsg , "Netscape not found");
+      QMessageBox::critical(0, QObject::tr("Netscape not found"), errorMsg);
       return;
    }
    if (QFile::exists(m_fileName)) {

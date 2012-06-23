@@ -30,11 +30,11 @@
 #include <QtCore/QRegExp>
 #include <QtCore/QTextStream>
 #include <QtDBus/QtDBus>
+#include <QtGui/QMessageBox>
 #include <QApplication>
 
 #include <kbackup.h>
 #include <kconfiggroup.h>
-#include <kmessagebox.h>
 #include <qsavefile.h>
 #include <qstandardpaths.h>
 
@@ -443,7 +443,7 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
                                   "which is most likely a full hard drive.").arg(filename).arg(file.errorString());
 
         if (d->m_dialogAllowed && qApp->type() != QApplication::Tty && QThread::currentThread() == qApp->thread())
-            KMessageBox::error( QApplication::activeWindow(), err );
+            QMessageBox::critical( QApplication::activeWindow(), QApplication::applicationName(), err );
 
         qCritical() << QString("Unable to save bookmarks in %1. File reported the following error-code: %2.").arg(filename).arg(file.error());
         emit const_cast<KBookmarkManager*>(this)->error(err);

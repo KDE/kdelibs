@@ -25,7 +25,6 @@
 
 #include <kcoreauthorized.h>
 #include <kiconloader.h>
-#include <kmessagebox.h>
 #include <kmenu.h>
 #include <kstandardshortcut.h>
 #include <kstandardaction.h>
@@ -39,6 +38,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QDebug>
 #include <QtCore/QStack>
+#include <QtGui/QMessageBox>
 #include <QHeaderView>
 #include <QApplication>
 
@@ -318,7 +318,8 @@ void KBookmarkContextMenu::slotInsert()
   QString url = m_pOwner->currentUrl();
   if (url.isEmpty())
   {
-    KMessageBox::error( QApplication::activeWindow(), QObject::tr("Cannot add bookmark with empty URL."));
+    QMessageBox::critical( QApplication::activeWindow(), QApplication::applicationName(), 
+                           QObject::tr("Cannot add bookmark with empty URL."));
     return;
   }
   QString title = m_pOwner->currentTitle();
@@ -348,14 +349,14 @@ void KBookmarkContextMenu::slotRemove()
 
   bool folder = bm.isGroup();
 
-  if (KMessageBox::warningContinueCancel(
+  if (QMessageBox::warning(
           QApplication::activeWindow(),
-          folder ? QObject::tr("Are you sure you wish to remove the bookmark folder\n\"%1\"?").arg(bm.text())
-                 : QObject::tr("Are you sure you wish to remove the bookmark\n\"%1\"?").arg(bm.text()),
           folder ? QObject::tr("Bookmark Folder Deletion")
                  : QObject::tr("Bookmark Deletion"),
-          KStandardGuiItem::del())
-        != KMessageBox::Continue
+          folder ? QObject::tr("Are you sure you wish to remove the bookmark folder\n\"%1\"?").arg(bm.text())
+                 : QObject::tr("Are you sure you wish to remove the bookmark\n\"%1\"?").arg(bm.text()),
+          QMessageBox::Yes | QMessageBox::Cancel)
+        != QMessageBox::Yes
      )
     return;
 
