@@ -405,7 +405,7 @@ void KAction::setAuthAction(KAuth::Action *action)
     if (d->authAction) {
         disconnect(d->authAction->watcher(), SIGNAL(statusChanged(int)),
                 this, SLOT(authStatusChanged(int)));
-        //delete d->authAction;
+        delete d->authAction;
         d->authAction = 0;
         if (!d->oldIcon.isNull()) {
             setIcon(d->oldIcon);
