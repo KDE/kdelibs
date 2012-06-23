@@ -22,9 +22,9 @@
 
 #include "kbookmark.h"
 #include <QStack>
+#include <QCoreApplication>
 #include <qmimedatabase.h>
 #include <QtCore/QDebug>
-#include <QtCore/QObject>
 #include <kstringhandler.h>
 #include <kurlmimedata.h>
 #include <kbookmarkmanager.h>
@@ -317,7 +317,7 @@ QString KBookmark::text() const
 QString KBookmark::fullText() const
 {
     if (isSeparator())
-        return QObject::tr("--- separator ---");
+        return QCoreApplication::translate("Bookmark separator", "--- separator ---");
 
     QString text = element.namedItem("title").toElement().text();
     text.replace('\n', ' '); // #140673

@@ -437,10 +437,10 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
 
     static int hadSaveError = false;
     if ( !hadSaveError ) {
-        QString err = QObject::tr("Unable to save bookmarks in %1. Reported error was: %2. "
-                                  "This error message will only be shown once. The cause "
-                                  "of the error needs to be fixed as quickly as possible, "
-                                  "which is most likely a full hard drive.").arg(filename).arg(file.errorString());
+        QString err = tr("Unable to save bookmarks in %1. Reported error was: %2. "
+                         "This error message will only be shown once. The cause "
+                         "of the error needs to be fixed as quickly as possible, "
+                         "which is most likely a full hard drive.").arg(filename).arg(file.errorString());
 
         if (d->m_dialogAllowed && qApp->type() != QApplication::Tty && QThread::currentThread() == qApp->thread())
             QMessageBox::critical( QApplication::activeWindow(), QApplication::applicationName(), err );

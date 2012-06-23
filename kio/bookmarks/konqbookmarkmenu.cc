@@ -20,7 +20,6 @@
 
 #include "konqbookmarkmenu.h"
 
-#include <QtCore/QObject>
 #include <QtCore/QDebug>
 #include <QMenu>
 #include <QFile>
@@ -58,7 +57,7 @@ void KonqBookmarkContextMenu::addActions()
 
     if(filteredToolbar)
     {
-        QString text = bookmark().showInToolbar() ? QObject::tr("Hide in toolbar") : QObject::tr("Show in toolbar");
+        QString text = bookmark().showInToolbar() ? tr("Hide in toolbar") : tr("Show in toolbar");
         addAction( SmallIcon(""), text, this, SLOT( toggleShowInToolbar()));
     }
 
@@ -68,14 +67,14 @@ void KonqBookmarkContextMenu::addActions()
   {
     if(owner())
     {
-      addAction( SmallIcon("window-new"), QObject::tr( "Open in New Window" ), this, SLOT( openInNewWindow() ) );
-      addAction( SmallIcon("tab-new"), QObject::tr( "Open in New Tab" ), this, SLOT( openInNewTab() ) );
+      addAction( SmallIcon("window-new"), tr( "Open in New Window" ), this, SLOT( openInNewWindow() ) );
+      addAction( SmallIcon("tab-new"), tr( "Open in New Tab" ), this, SLOT( openInNewTab() ) );
     }
     addBookmark();
 
     if(filteredToolbar)
     {
-        QString text = bookmark().showInToolbar() ? QObject::tr("Hide in toolbar") : QObject::tr("Show in toolbar");
+        QString text = bookmark().showInToolbar() ? tr("Hide in toolbar") : tr("Show in toolbar");
         addAction( SmallIcon(""), text, this, SLOT( toggleShowInToolbar()));
     }
 

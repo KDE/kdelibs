@@ -21,7 +21,6 @@
 #include "kbookmarkimporter_opera.h"
 #include "kbookmarkimporter_opera_p.h"
 
-#include <QtCore/QObject>
 #include <QFileDialog>
 #include <kstringhandler.h>
 #include <QtCore/QDebug>
@@ -118,10 +117,10 @@ QString KOperaBookmarkImporterImpl::findDefaultLocation(bool saving) const
 {
    return saving ? QFileDialog::getSaveFileName(QApplication::activeWindow(), QString(),
                        QDir::homePath() + "/.opera",
-                       QObject::tr("Opera Bookmark Files (*.adr)"))
+                       tr("Opera Bookmark Files (*.adr)"))
                  : QFileDialog::getOpenFileName(QApplication::activeWindow(), QString(),
                        QDir::homePath() + "/.opera",
-                       QObject::tr("*.adr|Opera Bookmark Files (*.adr)"));
+                       tr("*.adr|Opera Bookmark Files (*.adr)"));
 }
 
 /////////////////////////////////////////////////
