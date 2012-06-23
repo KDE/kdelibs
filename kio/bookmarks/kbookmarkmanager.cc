@@ -30,7 +30,7 @@
 #include <QtCore/QRegExp>
 #include <QtCore/QTextStream>
 #include <QtDBus/QtDBus>
-#include <QtGui/QMessageBox>
+#include <QMessageBox>
 #include <QApplication>
 
 #include <kbackup.h>

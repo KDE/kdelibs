@@ -38,7 +38,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QDebug>
 #include <QtCore/QStack>
-#include <QtGui/QMessageBox>
+#include <QMessageBox>
 #include <QHeaderView>
 #include <QApplication>
 

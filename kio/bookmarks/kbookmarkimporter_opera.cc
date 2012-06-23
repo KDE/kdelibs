@@ -22,7 +22,7 @@
 #include "kbookmarkimporter_opera_p.h"
 
 #include <QtCore/QObject>
-#include <QtGui/QFileDialog>
+#include <QFileDialog>
 #include <kstringhandler.h>
 #include <QtCore/QDebug>
 #include <qtextcodec.h>

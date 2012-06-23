@@ -21,8 +21,8 @@
 */
 
 #include <QtCore/QObject>
-#include <QtGui/QFileDialog>
-#include <QtGui/QMessageBox>
+#include <QFileDialog>
+#include <QMessageBox>
 
 #include "kbookmarkimporter_ns.h"
 #include "kbookmarkimporter.h"

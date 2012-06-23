@@ -20,7 +20,7 @@
 
 #include "kbookmarkimporter_ie.h"
 
-#include <QtGui/QFileDialog>
+#include <QFileDialog>
 
 #include <kstringhandler.h>
 #include <QtCore/QDebug>

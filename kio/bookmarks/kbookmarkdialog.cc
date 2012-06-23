@@ -19,8 +19,8 @@
 */
 
 #include <QtCore/QObject>
-#include <QtGui/QInputDialog>
-#include <QtGui/QLineEdit>
+#include <QInputDialog>
+#include <QLineEdit>
 
 #include "kbookmarkdialog.h"
 #include "kbookmarkmanager.h"
