@@ -979,29 +979,7 @@ public:
     QCheckBox *cbDefaultColor;
     QColor defaultColor;
     QColor selColor;
-#ifdef Q_WS_X11
-    KCDPickerFilter* filter;
-#endif
 };
-
-#ifdef Q_WS_X11
-class KCDPickerFilter: public QWidget
-{
-public:
-    KCDPickerFilter(QWidget* parent): QWidget(parent) {}
-
-    virtual bool x11Event(XEvent* event) {
-        if (event->type == ButtonRelease) {
-            QMouseEvent e(QEvent::MouseButtonRelease, QPoint(),
-                          QPoint(event->xmotion.x_root, event->xmotion.y_root) , Qt::NoButton, Qt::NoButton, Qt::NoModifier);
-            QApplication::sendEvent(parentWidget(), &e);
-            return true;
-        } else return false;
-    }
-};
-
-#endif
-
 
 KColorDialog::KColorDialog(QWidget *parent, bool modal)
         : KDialog(parent), d(new KColorDialogPrivate(this))
@@ -1012,9 +990,6 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
     d->bRecursion = true;
     d->bColorPicking = false;
     d->bAlphaEnabled = false;
-#ifdef Q_WS_X11
-    d->filter = 0;
-#endif
     d->cbDefaultColor = 0L;
     d->_mode = ChooserClassic;
     connect(this, SIGNAL(okClicked()), this, SLOT(slotWriteSettings()));
@@ -1308,10 +1283,6 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
 
 KColorDialog::~KColorDialog()
 {
-#ifdef Q_WS_X11
-    if (d->bColorPicking && kapp)
-        kapp->removeX11EventFilter(d->filter);
-#endif
     delete d;
 }
 
@@ -1713,10 +1684,6 @@ void
 KColorDialog::KColorDialogPrivate::slotColorPicker()
 {
     bColorPicking = true;
-#ifdef Q_WS_X11
-    filter = new KCDPickerFilter(q);
-    kapp->installX11EventFilter(filter);
-#endif
     q->grabMouse(Qt::CrossCursor);
     q->grabKeyboard();
 }
@@ -1737,10 +1704,6 @@ KColorDialog::mouseReleaseEvent(QMouseEvent *e)
 {
     if (d->bColorPicking) {
         d->bColorPicking = false;
-#ifdef Q_WS_X11
-        kapp->removeX11EventFilter(d->filter);
-        delete d->filter; d->filter = 0;
-#endif
         releaseMouse();
         releaseKeyboard();
         d->_setColor(grabColor(e->globalPos()));
@@ -1783,10 +1746,6 @@ KColorDialog::keyPressEvent(QKeyEvent *e)
     if (d->bColorPicking) {
         if (e->key() == Qt::Key_Escape) {
             d->bColorPicking = false;
-#ifdef Q_WS_X11
-            kapp->removeX11EventFilter(d->filter);
-            delete d->filter; d->filter = 0;
-#endif
             releaseMouse();
             releaseKeyboard();
         }
