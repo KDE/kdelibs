@@ -30,7 +30,6 @@
 #include <QMimeData>
 #include <QDrag>
 #include <QStyle>
-#include <kglobalsettings.h>
 #include <kstandardshortcut.h>
 #include <QMouseEvent>
 #include <QStyleOptionButton>

@@ -56,8 +56,8 @@
 #include <QScrollBar>
 #include <QtCore/QTimer>
 #include <QListWidget>
+#include <QApplication>
 
-#include <kapplication.h>
 #include <kcombobox.h>
 #include <kconfig.h>
 #include <kglobal.h>
