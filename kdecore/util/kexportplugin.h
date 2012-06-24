@@ -67,9 +67,18 @@ Q_EXTERN_C KDECORE_EXPORT const quint32 kde_plugin_version = version;
  * or derived class, but any QObject derived class can be used.
  * Take a look at the documentation of Q_EXPORT_PLUGIN2 for some details.
  */
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+
 #define K_EXPORT_PLUGIN(factory) \
 Q_EXPORT_PLUGIN(factory) \
 K_PLUGIN_VERIFICATION_DATA
+
+#else
+
+#pragma message(Plugins are broken. Need to port to new plugin system.)
+#define K_EXPORT_PLUGIN(factory)
+
+#endif
 
 #endif // KDECORE_KEXPORTPLUGIN_H
 
