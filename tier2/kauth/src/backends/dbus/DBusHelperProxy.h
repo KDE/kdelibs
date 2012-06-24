@@ -27,12 +27,17 @@
 #include <QDBusConnection>
 #include <QVariant>
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define Q_PLUGIN_METADATA(x)
+#endif
+
 namespace KAuth
 {
 
 class DBusHelperProxy : public HelperProxy
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.kde.DBusHelperProxy")
     Q_INTERFACES(KAuth::HelperProxy)
 
     QObject *responder;

@@ -134,4 +134,6 @@ bool AuthServicesBackend::actionExists(const QString& action)
 
 }; // namespace KAuth
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_EXPORT_PLUGIN2(kauth_backend, KAuth::AuthServicesBackend)
+#endif

@@ -22,12 +22,17 @@
 
 #include "AuthBackend.h"
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define Q_PLUGIN_METADATA(x)
+#endif
+
 namespace KAuth
 {
 
 class AuthServicesBackend : public AuthBackend
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.kde.AuthServicesBackend")
     Q_INTERFACES(KAuth::AuthBackend)
 
 public:

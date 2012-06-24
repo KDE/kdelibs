@@ -30,6 +30,10 @@
 
 #include <PolkitQt1/Authority>
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define Q_PLUGIN_METADATA(x)
+#endif
+
 class QByteArray;
 
 namespace KAuth
@@ -38,6 +42,7 @@ namespace KAuth
 class Polkit1Backend : public AuthBackend
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.kde.Polkit1Backend")
     Q_INTERFACES(KAuth::AuthBackend)
 
 public:

@@ -24,6 +24,10 @@
 #include "AuthBackend.h"
 #include <QHash>
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define Q_PLUGIN_METADATA(x)
+#endif
+
 class QByteArray;
 
 namespace KAuth
@@ -32,8 +36,8 @@ namespace KAuth
 class PolicyKitBackend : public AuthBackend
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.kde.PolicyKitBackend")
     Q_INTERFACES(KAuth::AuthBackend)
-
 public:
     PolicyKitBackend();
     virtual void setupAction(const QString&);
