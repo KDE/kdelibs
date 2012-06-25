@@ -619,8 +619,8 @@ private:
 
 class HashChangeEventImpl : public EventImpl {
 public:
-    const DOMString &oldUrl() const { return m_oldUrl; }
-    const DOMString &newUrl() const { return m_newUrl; }
+    const DOMString &oldURL() const { return m_oldURL; }
+    const DOMString &newURL() const { return m_newURL; }
 
     HashChangeEventImpl();
 
@@ -632,8 +632,8 @@ public:
                          );
     virtual bool isHashChangeEvent() const;
 private:
-    DOMString    m_oldUrl;
-    DOMString    m_newUrl;
+    DOMString    m_oldURL;
+    DOMString    m_newURL;
 };
 
 } //namespace

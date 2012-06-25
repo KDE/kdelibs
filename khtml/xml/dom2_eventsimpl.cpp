@@ -1118,6 +1118,6 @@ bool HashChangeEventImpl::isHashChangeEvent() const
 void HashChangeEventImpl::initHashChangeEvent(const DOMString& eventTypeArg, bool canBubbleArg, bool cancelableArg, const DOMString& oldURL, const DOMString& newURL)
 {
     EventImpl::initEvent(eventTypeArg, canBubbleArg, cancelableArg);
-    m_oldUrl = oldURL;
-    m_newUrl = newURL;
+    m_oldURL = oldURL;
+    m_newURL = newURL;
 }

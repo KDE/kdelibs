@@ -2508,10 +2508,10 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, JSValue *val
             break;
         case BodyOnMessage:
             setWindowListener(exec, DOM::EventImpl::MESSAGE_EVENT, value);
-            break;            
+            break;
         case BodyOnHashChange:
             setWindowListener(exec, DOM::EventImpl::HASHCHANGE_EVENT, value);
-            break;            
+            break;
       }
     }
     case ID_FRAMESET: {

@@ -635,15 +635,15 @@ void KHTMLPartPrivate::executeAnchorJump( const KUrl& url, bool lockHistory )
     if (!lockHistory)
         emit m_extension->openUrlNotify();
 
-    const QString &oldRef = m_workingURL.ref();
+    const QString &oldRef = q->url().ref();
     const QString &newRef = url.ref();
     if (oldRef != newRef) {
         DOM::HashChangeEventImpl *evImpl = new DOM::HashChangeEventImpl();
         evImpl->initHashChangeEvent("hashchange",
                                     true, //bubble
                                     false, //cancelable
-                                    oldRef,
-                                    newRef
+                                    q->url().url(), //oldURL
+                                    url.url() //newURL
                                     );
         m_doc->dispatchWindowEvent(evImpl);
     }

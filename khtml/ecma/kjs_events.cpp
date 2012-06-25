@@ -1112,11 +1112,11 @@ JSValue *DOMMessageEventProtoFunc::callAsFunction(ExecState *exec, JSObject *thi
 const ClassInfo DOMHashChangeEvent::info = { "HashChangeEvent", &DOMEvent::info, &DOMHashChangeEventTable, 0 };
 /*
 @begin DOMHashChangeEventTable 2
-  data     DOMHashChangeEvent::OldUrl DontDelete|ReadOnly
-  origin   DOMHashChangeEvent::NewUrl DontDelete|ReadOnly
+  oldURL   DOMHashChangeEvent::OldURL DontDelete|ReadOnly
+  newURL   DOMHashChangeEvent::NewURL DontDelete|ReadOnly
 @end
 @begin DOMHashChangeEventProtoTable 1
-  initMessageEvent     DOMHashChangeEvent::InitHashChangeEvent     DontDelete|Function 5
+  initHashChangeEvent     DOMHashChangeEvent::InitHashChangeEvent     DontDelete|Function 5
 @end
 */
 KJS_DEFINE_PROTOTYPE(DOMHashChangeEventProto)
@@ -1137,10 +1137,10 @@ JSValue *DOMHashChangeEvent::getValueProperty(ExecState *exec, int token) const
 {
   DOM::HashChangeEventImpl& event = *impl();
   switch (token) {
-  case NewUrl:
-    return jsString(event.newUrl());
-  case OldUrl:
-    return jsString(event.oldUrl());
+  case NewURL:
+    return jsString(event.newURL());
+  case OldURL:
+    return jsString(event.oldURL());
   default:
     kDebug(6070) << "WARNING: Unhandled token in DOMHashChangeEvent::getValueProperty : " << token;
     return jsUndefined();
