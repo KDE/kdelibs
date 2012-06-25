@@ -619,21 +619,21 @@ private:
 
 class HashChangeEventImpl : public EventImpl {
 public:
-    const DOMString &oldURL() const { return m_oldURL; }
-    const DOMString &newURL() const { return m_newURL; }
+    const DOMString &oldUrl() const { return m_oldUrl; }
+    const DOMString &newUrl() const { return m_newUrl; }
 
     HashChangeEventImpl();
 
     void initHashChangeEvent(const DOMString &eventTypeArg,
                           bool  canBubbleArg,
                           bool  cancelableArg,
-                          const DOMString &oldURL,
-                          const DOMString &newURL
+                          const DOMString &oldUrl,
+                          const DOMString &newUrl
                          );
     virtual bool isHashChangeEvent() const;
 private:
-    DOMString    m_oldURL;
-    DOMString    m_newURL;
+    DOMString    m_oldUrl;
+    DOMString    m_newUrl;
 };
 
 } //namespace
