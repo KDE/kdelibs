@@ -285,7 +285,7 @@ namespace KJS {
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    enum { NewURL, OldURL, InitHashChangeEvent };
+    enum { NewUrl, OldUrl, InitHashChangeEvent };
     DOM::HashChangeEventImpl* impl() const { return static_cast<DOM::HashChangeEventImpl*>(m_impl.get()); }
   };
   DEFINE_PSEUDO_CONSTRUCTOR(HashChangeEventPseudoCtor)
