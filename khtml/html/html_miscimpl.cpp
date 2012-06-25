@@ -53,7 +53,7 @@ struct CollectionCache: public DynamicNodeListImpl::Cache
 {
     static Cache* make() { return new CollectionCache; }
 
-    QHash<QString,QList<NodeImpl*>* > nameCache;
+    QHash<DOMString,QList<NodeImpl*>* > nameCache;
 
     CollectionCache(): Cache(DocumentImpl::TV_IDNameHref) {}
 
@@ -291,13 +291,12 @@ QList<NodeImpl*> HTMLCollectionImpl::namedItems( const DOMString &name ) const
 {
     if (name.isEmpty())
         return QList<NodeImpl*>();
-    QString key = name.string();
 
     //We use a work-conserving design for the name cache presently -- only
     //remember stuff about elements we were asked for.
     m_cache->updateNodeListInfo(m_refNode->document());
     CollectionCache* cache = static_cast<CollectionCache*>(m_cache);
-    if (QList<NodeImpl*>* info = cache->nameCache.value(key)) {
+    if (QList<NodeImpl*>* info = cache->nameCache.value(name)) {
         return *info;
     }
     else {
@@ -309,7 +308,7 @@ QList<NodeImpl*> HTMLCollectionImpl::namedItems( const DOMString &name ) const
             match = nextNamedItem(name);
         }
 
-        cache->nameCache.insertMulti(key, newInfo);
+        cache->nameCache.insertMulti(name, newInfo);
         return *newInfo;
     }
 }
