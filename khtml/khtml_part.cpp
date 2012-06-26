@@ -96,7 +96,6 @@ using namespace DOM;
 #include <kfiledialog.h>
 #include <kmimetypetrader.h>
 #include <qtemporaryfile.h>
-#include <kglobalsettings.h>
 #include <ktoolinvocation.h>
 #include <kauthorized.h>
 #include <kparts/browserinterface.h>
@@ -124,6 +123,7 @@ using namespace DOM;
 #include <QTextDocument>
 #include <QtCore/QDate>
 #include <QtNetwork/QSslCertificate>
+#include <QStyle>
 #include <qmimedatabase.h>
 
 #include "khtmlpart_p.h"
@@ -1206,7 +1206,7 @@ KJSErrorDlg *KHTMLPart::jsErrorExtension() {
   if (!d->m_jsedlg) {
     d->m_jsedlg = new KJSErrorDlg;
     d->m_jsedlg->setURL(url().prettyUrl());
-    if (KGlobalSettings::showIconsOnPushButtons()) {
+    if (widget()->style()->styleHint(QStyle::SH_DialogButtonBox_ButtonsHaveIcons, 0, widget())) {
       d->m_jsedlg->_clear->setIcon(KDE::icon("edit-clear-locationbar-ltr"));
       d->m_jsedlg->_close->setIcon(KDE::icon("window-close"));
     }
