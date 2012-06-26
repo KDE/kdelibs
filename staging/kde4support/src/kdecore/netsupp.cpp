@@ -442,6 +442,7 @@ static int inet_lookup(const char *name, int portnum, int protonum,
 # endif
   else
     {
+      free(q);
       // We don't know what to do with these addresses
       // Or gethostbyname returned information we don't want
       if (p != NULL)
@@ -738,6 +739,7 @@ static int make_inet(const char *name, int portnum, int protonum, struct addrinf
 	  q = (addrinfo*)malloc(sizeof(*q));
 	  if (q == NULL || sin6 == NULL)
 	    {
+              free(sin);
 	      free(sin6);
 	      free(q);
 	      freeaddrinfo(p);
@@ -771,6 +773,7 @@ static int make_inet(const char *name, int portnum, int protonum, struct addrinf
 # endif // AF_INET6
 
       *result = p;
+      free(sin);
       return 0;			// success!
     }
 

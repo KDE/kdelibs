@@ -64,7 +64,7 @@ macro (KDE4_HANDLE_RPATH_FOR_EXECUTABLE _target_NAME)
       get_target_property(_executable ${_target_NAME} LOCATION )
 
       # use add_custom_target() to have the sh-wrapper generated during build time instead of cmake time
-      if (CMAKE_VERSION VERSION_GREATER 2.8.3)
+      if (CMAKE_VERSION VERSION_GREATER 2.8.4)
          add_custom_command(TARGET ${_target_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND}
             -D_filename=${_executable}.shell -D_library_path_variable=${_library_path_variable}

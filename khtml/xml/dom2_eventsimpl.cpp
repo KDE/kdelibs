@@ -363,6 +363,7 @@ khtml::IDTable<EventImpl>* EventImpl::initIdTable()
     s_idTable->addStaticMapping(KEYUP_EVENT, "keyup");
     s_idTable->addStaticMapping(KEYPRESS_EVENT, "keypress");
         //DOM3 ev. suggests textInput, but it's better for compat this way
+    s_idTable->addStaticMapping(HASHCHANGE_EVENT, "hashchange");
 
     //khtml extensions
     s_idTable->addStaticMapping(KHTML_ECMA_DBLCLICK_EVENT, "dblclick");
@@ -406,6 +407,11 @@ bool EventImpl::isKeyboardEvent() const
 }
 
 bool EventImpl::isMessageEvent() const
+{
+    return false;
+}
+
+bool EventImpl::isHashChangeEvent() const
 {
     return false;
 }
@@ -1096,4 +1102,22 @@ void MessageEventImpl::initMessageEvent(const DOMString& typeArg,
     m_origin = originArg;
     m_lastEventId = lastEventIdArg;
     m_source      = sourceArg;
+}
+
+// -----------------------------------------------------------------------------
+
+HashChangeEventImpl::HashChangeEventImpl()
+{
+}
+
+bool HashChangeEventImpl::isHashChangeEvent() const
+{
+  return true;
+}
+
+void HashChangeEventImpl::initHashChangeEvent(const DOMString& eventTypeArg, bool canBubbleArg, bool cancelableArg, const DOMString& oldUrl, const DOMString& newUrl)
+{
+    EventImpl::initEvent(eventTypeArg, canBubbleArg, cancelableArg);
+    m_oldUrl = oldUrl;
+    m_newUrl = newUrl;
 }

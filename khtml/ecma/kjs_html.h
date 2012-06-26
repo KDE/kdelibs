@@ -95,7 +95,7 @@ namespace KJS {
            BaseHref, BaseTarget, IsIndexForm, IsIndexPrompt, StyleDisabled,
            StyleSheet, StyleType, StyleMedia, BodyBackground, BodyVLink, BodyText,
            BodyLink, BodyALink, BodyBgColor, BodyOnLoad, BodyOnBlur, BodyOnFocus,
-           BodyOnError, BodyOnMessage, BodyFocus,
+           BodyOnError, BodyOnMessage, BodyFocus, BodyOnHashChange,
            FormAction, FormEncType, FormElements, FormLength, FormAcceptCharset,
            FormReset, FormTarget, FormName, FormMethod, FormSubmit, SelectAdd,
            SelectValue, SelectSelectedIndex, SelectLength,

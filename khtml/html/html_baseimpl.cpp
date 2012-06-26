@@ -177,6 +177,10 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
         document()->setHTMLWindowEventListener(EventImpl::MESSAGE_EVENT,
             document()->createHTMLEventListener(attr->value().string(), "onmessage", NULL));
         break;        
+    case ATTR_ONHASHCHANGE:
+        document()->setHTMLWindowEventListener(EventImpl::HASHCHANGE_EVENT,
+            document()->createHTMLEventListener(attr->value().string(), "onhashchange", NULL));
+        break;
     case ATTR_NOSAVE:
 	break;
     default:

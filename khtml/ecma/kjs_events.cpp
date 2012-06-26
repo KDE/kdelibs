@@ -383,6 +383,8 @@ JSValue *KJS::getDOMEvent(ExecState *exec, DOM::EventImpl* ei)
       ret = new DOMMutationEvent(exec, static_cast<DOM::MutationEventImpl*>(ei));
     else if (ei->isMessageEvent())
       ret = new DOMMessageEvent(exec, static_cast<DOM::MessageEventImpl*>(ei));
+    else if (ei->isHashChangeEvent())
+      ret = new DOMHashChangeEvent(exec, static_cast<DOM::HashChangeEventImpl*>(ei));
     else
       ret = new DOMEvent(exec, ei);
 
@@ -1099,6 +1101,63 @@ JSValue *DOMMessageEventProtoFunc::callAsFunction(ExecState *exec, JSObject *thi
                                           args[4]->toString(exec).domString(), // originArg
                                           args[5]->toString(exec).domString(), // lastEventIdArg
                                           part); // sourceArg
+            return jsUndefined();
+        }
+    }
+    return jsUndefined();
+}
+
+// -------------------------------------------------------------------------
+
+const ClassInfo DOMHashChangeEvent::info = { "HashChangeEvent", &DOMEvent::info, &DOMHashChangeEventTable, 0 };
+/*
+@begin DOMHashChangeEventTable 2
+  oldURL   DOMHashChangeEvent::OldUrl DontDelete|ReadOnly
+  newURL   DOMHashChangeEvent::NewUrl DontDelete|ReadOnly
+@end
+@begin DOMHashChangeEventProtoTable 1
+  initHashChangeEvent     DOMHashChangeEvent::InitHashChangeEvent     DontDelete|Function 5
+@end
+*/
+KJS_DEFINE_PROTOTYPE(DOMHashChangeEventProto)
+KJS_IMPLEMENT_PROTOFUNC(DOMHashChangeEventProtoFunc)
+KJS_IMPLEMENT_PROTOTYPE("DOMHashChangeEvent", DOMHashChangeEventProto, DOMHashChangeEventProtoFunc, DOMEventProto)
+IMPLEMENT_PSEUDO_CONSTRUCTOR(HashChangeEventPseudoCtor, "DOMHashChangeEvent", DOMHashChangeEventProto)
+
+DOMHashChangeEvent::DOMHashChangeEvent(ExecState* exec, HashChangeEventImpl* me) :
+  DOMEvent(DOMHashChangeEventProto::self(exec), me)
+{}
+
+bool DOMHashChangeEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
+{
+  return getStaticValueSlot<DOMHashChangeEvent, DOMEvent>(exec,&DOMHashChangeEventTable,this,propertyName,slot);
+}
+
+JSValue *DOMHashChangeEvent::getValueProperty(ExecState *exec, int token) const
+{
+  DOM::HashChangeEventImpl& event = *impl();
+  switch (token) {
+  case NewUrl:
+    return jsString(event.newUrl());
+  case OldUrl:
+    return jsString(event.oldUrl());
+  default:
+    kDebug(6070) << "WARNING: Unhandled token in DOMHashChangeEvent::getValueProperty : " << token;
+    return jsUndefined();
+  }
+}
+
+JSValue *DOMHashChangeEventProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
+{
+    KJS_CHECK_THIS( KJS::DOMHashChangeEvent, thisObj );
+    DOM::HashChangeEventImpl& hashChangeEvent = *static_cast<DOMHashChangeEvent *>(thisObj)->impl();
+    switch (id) {
+        case DOMHashChangeEvent::InitHashChangeEvent: {
+            hashChangeEvent.initHashChangeEvent(args[0]->toString(exec).domString(), // typeArg,
+                                          args[1]->toBoolean(exec), // canBubbleArg
+                                          args[2]->toBoolean(exec), // cancelableArg
+                                          args[3]->toString(exec).domString(), // oldURL
+                                          args[4]->toString(exec).domString()); // newURL
             return jsUndefined();
         }
     }
