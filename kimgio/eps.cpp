@@ -5,6 +5,7 @@
 * This library is distributed under the conditions of the GNU LGPL.
 */
 #include "eps.h"
+#include <kdeversion.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <QImage>

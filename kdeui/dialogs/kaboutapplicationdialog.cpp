@@ -26,6 +26,7 @@
 #include "kaboutapplicationpersonmodel_p.h"
 #include "kaboutapplicationpersonlistview_p.h"
 #include "kaboutapplicationpersonlistdelegate_p.h"
+#include "kdeversion.h"
 #include "kiconloader.h"
 #include "kapplication.h"
 #include "kglobalsettings.h"

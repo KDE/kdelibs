@@ -22,8 +22,6 @@
 #define KAPP_H
 
 // Version macros. Never put this further down.
-// TODO: KDE5 -#include "kdeversion.h"
-#include "kdeversion.h"
 #include <kdeui_export.h>
 
 class KConfig;
