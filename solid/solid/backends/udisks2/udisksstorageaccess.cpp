@@ -32,9 +32,8 @@ using namespace Solid::Backends::UDisks2;
 StorageAccess::StorageAccess(Device *device)
     : DeviceInterface(device), m_setupInProgress(false), m_teardownInProgress(false), m_passphraseRequested(false)
 {
+    connect(device, SIGNAL(changed()), this, SLOT(checkAccessibility()));
     updateCache();
-    QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, m_device->udi(), DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
-                                         SLOT(slotPropertiesChanged(QString,QVariantMap,QStringList)));
 
     // Delay connecting to DBus signals to avoid the related time penalty
     // in hot paths such as predicate matching
@@ -127,15 +126,6 @@ bool StorageAccess::teardown()
     return unmount();
 }
 
-void StorageAccess::slotPropertiesChanged(const QString &ifaceName, const QVariantMap &changedProps, const QStringList &invalidatedProps)
-{
-    Q_UNUSED(ifaceName);
-
-    if (changedProps.keys().contains("MountPoints") || invalidatedProps.contains("MountPoints")) {
-        Q_EMIT accessibilityChanged(isAccessible(), isLuksDevice() ? m_clearTextPath : m_device->udi());
-    }
-}
-
 void StorageAccess::updateCache()
 {
     m_isAccessible = isAccessible();
@@ -179,11 +169,12 @@ void StorageAccess::slotDBusReply( const QDBusMessage & reply )
         }
         else
         {
-            if (m_device->prop("Ejectable").toBool() && !m_device->isOpticalDisc()) // optical drives have their Eject method
+            // try to "eject" (aka safely remove) from the (parent) drive, e.g. SD card from a reader
+            QString drivePath = m_device->prop("Drive").value<QDBusObjectPath>().path();
+            if (!drivePath.isEmpty() || drivePath != "/")
             {
-                // try to "eject" (aka safely remove) from the (parent) drive, e.g. SD card from a reader
-                QString drivePath = m_device->prop("Drive").value<QDBusObjectPath>().path();
-                if (!drivePath.isEmpty() || drivePath != "/")
+                Device drive(drivePath);
+                if (drive.prop("Ejectable").toBool() && !m_device->isOpticalDisc()) // optical drives have their Eject method
                 {
                     QDBusConnection c = QDBusConnection::systemBus();
                     QDBusMessage msg = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, drivePath, UD2_DBUS_INTERFACE_DRIVE, "Eject");
@@ -223,13 +214,17 @@ void StorageAccess::slotDBusError( const QDBusError & error )
 void StorageAccess::slotSetupRequested()
 {
     m_setupInProgress = true;
+    //qDebug() << "SETUP REQUESTED:" << m_device->udi();
     Q_EMIT setupRequested(m_device->udi());
 }
 
 void StorageAccess::slotSetupDone(int error, const QString &errorString)
 {
     m_setupInProgress = false;
+    //qDebug() << "SETUP DONE:" << m_device->udi();
     Q_EMIT setupDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
+
+    checkAccessibility();
 }
 
 void StorageAccess::slotTeardownRequested()
@@ -243,6 +238,8 @@ void StorageAccess::slotTeardownDone(int error, const QString &errorString)
     m_teardownInProgress = false;
     m_clearTextPath.clear();
     Q_EMIT teardownDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
+
+    checkAccessibility();
 }
 
 bool StorageAccess::mount()

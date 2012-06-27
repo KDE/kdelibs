@@ -60,7 +60,6 @@ public Q_SLOTS:
     Q_SCRIPTABLE Q_NOREPLY void passphraseReply(const QString & passphrase);
 
 private Q_SLOTS:
-    void slotPropertiesChanged(const QString & ifaceName, const QVariantMap & changedProps, const QStringList & invalidatedProps);
     void slotDBusReply(const QDBusMessage & reply);
     void slotDBusError(const QDBusError & error);
 
@@ -71,12 +70,13 @@ private Q_SLOTS:
     void slotTeardownRequested();
     void slotTeardownDone(int error, const QString &errorString);
 
+    void checkAccessibility();
+
 private:
     /// @return true if this device is luks and unlocked
     bool isLuksDevice() const;
 
     void updateCache();
-    void checkAccessibility();
 
     bool mount();
     bool unmount();
