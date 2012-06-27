@@ -13,6 +13,8 @@
 <!ENTITY dpi	'<acronym>dpi</acronym>'>
 <!ENTITY eg     "<abbrev>např.</abbrev>">
 <!ENTITY Esc	"<keycap>Esc</keycap>">
+<!ENTITY Enter	"<keycap>Enter</keycap>">
+<!ENTITY Tab	"<keycap>Tab</keycap>">
 <!ENTITY etc    "<abbrev>atd.</abbrev>">
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
 <!ENTITY ie     "<abbrev>tj.</abbrev>">
@@ -23,3 +25,5 @@
 <!ENTITY OS	"operační systém">
 <!ENTITY RMB    "<mousebutton>pravé</mousebutton> tlačítko myši">
 <!ENTITY Shift	"<keycap>Shift</keycap>">
+<!ENTITY kmenu  "<guimenu>K</guimenu> menu">
+<!ENTITY systemsettings	"<application>Nastavení systému</application>">
