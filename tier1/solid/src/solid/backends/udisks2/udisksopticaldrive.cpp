@@ -33,6 +33,7 @@
 #include "udisksopticaldrive.h"
 #include "udisks2.h"
 #include "udisksdevice.h"
+#include "dbus/manager.h"
 
 using namespace Solid::Backends::UDisks2;
 
@@ -57,9 +58,42 @@ bool OpticalDrive::eject()
     m_ejectInProgress = true;
     m_device->broadcastActionRequested("eject");
 
+    const QString path = m_device->udi();
     QDBusConnection c = QDBusConnection::systemBus();
 
-    QString path = m_device->udi();
+    // if the device is mounted, unmount first
+    QString blockPath;
+    org::freedesktop::DBus::ObjectManager manager(UD2_DBUS_SERVICE, UD2_DBUS_PATH, c);
+    QDBusPendingReply<DBUSManagerStruct> reply = manager.GetManagedObjects();
+    reply.waitForFinished();
+    if (!reply.isError()) {  // enum devices
+        Q_FOREACH(const QDBusObjectPath &objPath, reply.value().keys()) {
+            const QString udi = objPath.path();
+
+            //qDebug() << "Inspecting" << udi;
+
+            if (udi == UD2_DBUS_PATH_MANAGER || udi == UD2_UDI_DISKS_PREFIX || udi.startsWith(UD2_DBUS_PATH_JOBS))
+                continue;
+
+            Device device(udi);
+            if (device.drivePath() == path && device.isMounted()) {
+                //qDebug() << "Got mounted block device:" << udi;
+                blockPath = udi;
+                break;
+            }
+        }
+    }
+    else  // show error
+    {
+        qWarning() << "Failed enumerating UDisks2 objects:" << reply.error().name() << "\n" << reply.error().message();
+    }
+
+    if (!blockPath.isEmpty()) {
+        //qDebug() << "Calling unmount on" << blockPath;
+        QDBusMessage msg = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, blockPath, UD2_DBUS_INTERFACE_FILESYSTEM, "Unmount");
+        msg << QVariantMap();   // options, unused now
+        c.call(msg, QDBus::BlockWithGui);
+    }
 
     QDBusMessage msg = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, path, UD2_DBUS_INTERFACE_DRIVE, "Eject");
     msg << QVariantMap();
