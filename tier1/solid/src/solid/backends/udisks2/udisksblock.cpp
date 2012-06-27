@@ -61,7 +61,7 @@ Block::Block(Device *dev)
         }
     }
 
-    qDebug() << "devnum:" << m_devNum << "dev file:" << m_devFile;
+    //qDebug() << "devnum:" << m_devNum << "dev file:" << m_devFile;
 }
 
 Block::~Block()
