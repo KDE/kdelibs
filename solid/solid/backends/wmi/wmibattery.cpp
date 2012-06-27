@@ -60,7 +60,7 @@ bool Battery::isRechargeable() const
 Solid::Battery::ChargeState Battery::chargeState() const
 {
     short status =  m_device->property("BatteryStatus").toInt();
-    bool charging = status >= 6 && status <=8;
+    bool charging = status == 2 || status >= 6 && status <=8;//2 = The system has access to AC so no battery is being discharged. However, the battery is not necessarily charging , but windows mostlikly wont tell anything else then 2 or 1
     bool discharging = status == 1 || status >=3 && status <=5 || status == 11;
 
     if (!charging && !discharging)
