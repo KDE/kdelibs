@@ -23,6 +23,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QStringList>
 #include <QLayout>
+#include <qinputdialog.h>
 
 #include <kactioncollection.h>
 #include <kapplication.h>
@@ -33,7 +34,6 @@
 #include <kfiledialog.h>
 #include <kfiletreeview.h>
 #include <kfileitemdelegate.h>
-#include <kinputdialog.h>
 #include <kio/job.h>
 #include <kio/deletejob.h>
 #include <kio/copyjob.h>
@@ -130,9 +130,9 @@ void KDirSelectDialog::Private::slotMkdir()
     if ( m_parent->url().isLocalFile() && QFileInfo( m_parent->url().path(KUrl::AddTrailingSlash) + name ).exists() )
         name = KIO::RenameDialog::suggestName( m_parent->url(), name );
 
-    QString directory = KIO::encodeFileName( KInputDialog::getText( i18nc("@title:window", "New Folder" ),
-                                         i18nc("@label:textbox", "Create new folder in:\n%1" ,  where ),
-                                         name, &ok, m_parent));
+    QString directory = KIO::encodeFileName( QInputDialog::getText(m_parent, i18nc("@title:window", "New Folder" ),
+                                             i18nc("@label:textbox", "Create new folder in:\n%1" ,  where ),
+                                             QLineEdit::Normal, name, &ok));
     if (!ok)
       return;
 

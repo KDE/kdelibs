@@ -26,13 +26,13 @@
 #include <QtXml/QDomDocument>
 #include <QFileDialog>
 #include <qstandardpaths.h>
+#include <qinputdialog.h>
 
 #include <kcombobox.h>
 #include <kpushbutton.h>
 #include <kactioncollection.h>
 #include <kmessagebox.h>
 #include <kxmlguiclient.h>
-#include <kinputdialog.h>
 
 #include "kshortcutsdialog.h"
 #include "kshortcutschemeshelper_p.h"
@@ -96,8 +96,8 @@ KShortcutSchemesEditor::KShortcutSchemesEditor(KShortcutsDialog *parent)
 void KShortcutSchemesEditor::newScheme()
 {
     bool ok;
-    const QString newName = KInputDialog::getText(i18n("Name for New Scheme"),
-        i18n("Name for new scheme:"), i18n("New Scheme"), &ok,this);
+    const QString newName = QInputDialog::getText(this, i18n("Name for New Scheme"),
+        i18n("Name for new scheme:"), QLineEdit::Normal, i18n("New Scheme"), &ok);
     if (!ok )
         return;
 

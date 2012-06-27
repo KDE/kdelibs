@@ -43,6 +43,7 @@
 #include <QtCore/QUrl>
 #include <QtCore/QMetaEnum>
 #include <qstandardpaths.h>
+#include <qinputdialog.h>
 #include <assert.h>
 
 #include <kdebug.h>
@@ -60,7 +61,6 @@
 #include <kurifilter.h>
 #include <kiconloader.h>
 #include <kdesktopfile.h>
-#include <kinputdialog.h>
 #include <qtemporaryfile.h>
 #include "khtml_global.h"
 #include <kstandardaction.h>
@@ -725,10 +725,9 @@ void KHTMLPopupGUIClient::slotBlockImage()
 {
     bool ok = false;
 
-    QString url = KInputDialog::getText( i18n("Add URL to Filter"),
-                                         i18n("Enter the URL:"),
-                                         d->m_imageURL.url(),
-                                         &ok);
+    QString url = QInputDialog::getText( d->m_khtml->widget(), i18n("Add URL to Filter"),
+                                         i18n("Enter the URL:"), QLineEdit::Normal,
+                                         d->m_imageURL.url(), &ok);
     if ( ok ) {
         KHTMLGlobal::defaultHTMLSettings()->addAdFilter( url );
         d->m_khtml->reparseConfiguration();
@@ -738,10 +737,9 @@ void KHTMLPopupGUIClient::slotBlockImage()
 void KHTMLPopupGUIClient::slotBlockIFrame()
 {
     bool ok = false;
-    QString url = KInputDialog::getText( i18n( "Add URL to Filter"),
-                                               i18n("Enter the URL:"),
-                                               d->m_khtml->url().url(),
-                                               &ok );
+    QString url = QInputDialog::getText( d->m_khtml->widget(), i18n( "Add URL to Filter"),
+                                         i18n("Enter the URL:"), QLineEdit::Normal,
+                                         d->m_khtml->url().url(), &ok );
     if ( ok ) {
         KHTMLGlobal::defaultHTMLSettings()->addAdFilter( url );
         d->m_khtml->reparseConfiguration();

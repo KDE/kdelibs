@@ -3,10 +3,10 @@
 #include <QMenu>
 #include <QtCore/QMimeData>
 #include <QDrag>
+#include <qinputdialog.h>
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>
-#include <kinputdialog.h>
 #include <kdebug.h>
 
 #include "ktabwidgettest.h"
@@ -340,9 +340,8 @@ void Test::mouseDoubleClick(QWidget *w)
 {
   int index = mWidget->indexOf( w );
   bool ok;
-  QString text = KInputDialog::getText(
-            "Rename Tab", "Enter new name:",
-            mWidget->tabText( index ), &ok, this );
+  QString text = QInputDialog::getText( this, "Rename Tab", "Enter new name:",
+                                        QLineEdit::Normal, mWidget->tabText( index ), &ok);
   if ( ok && !text.isEmpty() ) {
      mWidget->setTabText( index, text );
      mWidget->setTabTextColor( index, Qt::green );

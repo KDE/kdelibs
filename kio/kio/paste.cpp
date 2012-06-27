@@ -31,7 +31,6 @@
 #include <kurl.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kinputdialog.h>
 #include <kmessagebox.h>
 #include <kurlmimedata.h>
 
@@ -41,6 +40,7 @@
 #include <QMimeData>
 #include <qtemporaryfile.h>
 #include <qmimedatabase.h>
+#include <qinputdialog.h>
 
 static bool decodeIsCutSelection(const QMimeData *mimeData)
 {
@@ -98,7 +98,7 @@ static KUrl getNewFileName(const QUrl &u, const QString& text, const QString& su
   QString dialogText( text );
   if ( dialogText.isEmpty() )
     dialogText = i18n( "Filename for clipboard content:" );
-  QString file = KInputDialog::getText( QString(), dialogText, suggestedFileName, &ok, widget );
+  QString file = QInputDialog::getText( widget, QString(), dialogText, QLineEdit::Normal, suggestedFileName, &ok );
   if ( !ok )
      return QUrl();
 

@@ -39,21 +39,18 @@
 #include <QtCore/QTimer>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <qinputdialog.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
-#include <kinputdialog.h>
 #include <klocalizedstring.h>
 #include <kcodecs.h>
 #include <kparts/browserinterface.h>
 #include <kwindowsystem.h>
 
-#include <QRegExpValidator>
-
 #ifndef KONQ_EMBEDDED
 #include <kbookmarkmanager.h>
 #include <kbookmarkdialog.h>
 #endif
-#include <kglobalsettings.h>
 #include <assert.h>
 #include <QStyle>
 #include <QtCore/QObject>
@@ -1923,15 +1920,14 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
     if ( part )
       emit part->browserExtension()->requestFocus(part);
     bool ok;
-    QRegExpValidator validator(0);
     if (args.size() >= 2)
-      str2 = KInputDialog::getText(caption,
-                                   Qt::convertFromPlainText(str),
-                                   args[1]->toString(exec).qstring(), &ok, widget, &validator);
+      str2 = QInputDialog::getText(widget, caption,
+                                   Qt::convertFromPlainText(str), QLineEdit::Normal,
+                                   args[1]->toString(exec).qstring(), &ok);
     else
-      str2 = KInputDialog::getText(caption,
+      str2 = QInputDialog::getText(widget, caption,
                                    Qt::convertFromPlainText(str),
-                                   QString(), &ok, widget, &validator);
+                                   QLineEdit::Normal, QString(), &ok);
     if ( ok )
         return jsString(UString(str2));
     else
