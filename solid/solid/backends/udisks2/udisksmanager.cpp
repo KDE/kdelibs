@@ -134,7 +134,7 @@ QStringList Manager::allDevices()
 
         Q_FOREACH(const QDBusObjectPath &path, reply.value().keys()) {
             const QString udi = path.path();
-            qDebug() << "Adding device" << udi;
+            //qDebug() << "Adding device" << udi;
 
             if (udi == UD2_DBUS_PATH_MANAGER || udi == UD2_UDI_DISKS_PREFIX || udi.startsWith(UD2_DBUS_PATH_JOBS))
                 continue;
