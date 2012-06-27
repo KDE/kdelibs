@@ -461,12 +461,19 @@ QString WmiDevice::description() const
     switch(type()){
         case Solid::DeviceInterface::OpticalDisc:
             return property("VolumeName").toString();
+        case Solid::DeviceInterface::AcAdapter:
+        return QObject::tr("A/C Adapter");
         case Solid::DeviceInterface::Battery:
-            return property("Description").toString();
+        {
+            WmiDevice dev(udi());
+            Battery bat(&dev);
+            return QObject::tr("%1 Battery", "%1 is battery technology").arg(bat.batteryTechnology());
+        }
+        default:
+            return product();
     }
-
-    return product(); // TODO
 }
+
 
 QVariant WmiDevice::property(const QString &key) const
 {

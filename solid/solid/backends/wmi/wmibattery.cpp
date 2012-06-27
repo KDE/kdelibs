@@ -59,7 +59,7 @@ bool Battery::isRechargeable() const
 
 Solid::Battery::ChargeState Battery::chargeState() const
 {
-    short status =  m_device->property("BatteryStatus").toInt();
+    ushort status =  m_device->property("BatteryStatus").toInt();
     bool charging = status == 2 || status >= 6 && status <=8;//2 = The system has access to AC so no battery is being discharged. However, the battery is not necessarily charging , but windows mostlikly wont tell anything else then 2 or 1
     bool discharging = status == 1 || status >=3 && status <=5 || status == 11;
 
@@ -74,6 +74,26 @@ Solid::Battery::ChargeState Battery::chargeState() const
     else
     {
         return Solid::Battery::Discharging;
+    }
+}
+
+QString Battery::batteryTechnology() const
+{
+    const ushort tech = m_device->property("Chemistry").toUInt();
+    switch (tech)
+    {
+    case 3:
+        return QObject::tr("Lead Acid", "battery technology");
+    case 4:
+        return QObject::tr("Nickel Cadmium", "battery technology");
+    case 5:
+        return QObject::tr("Nickel Metal Hydride", "battery technology");
+    case 6:
+        return QObject::tr("Lithium Ion", "battery technology");
+    case 8:
+        return QObject::tr("Lithium Polymer", "battery technology");
+    default:
+        return QObject::tr("Unknown", "battery technology");
     }
 }
 
