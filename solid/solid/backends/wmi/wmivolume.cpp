@@ -73,7 +73,7 @@ qulonglong Volume::size() const
 
 QString Solid::Backends::Wmi::Volume::encryptedContainerUdi() const
 {
-    return m_device->property("volume.crypto_luks.clear.backing_volume").toString();
+    return this->uuid();
 }
 
 #include "backends/wmi/wmivolume.moc"

@@ -263,15 +263,6 @@ public:
         case Solid::DeviceInterface::OpticalDisc:
             propertyName = "Drive";
             break;
-        case Solid::DeviceInterface::Battery:
-            propertyName = "Name";
-            break;
-        case Solid::DeviceInterface::StorageAccess:
-             propertyName = "DeviceID";
-             break;
-        case Solid::DeviceInterface::StorageVolume:
-            propertyName = "DeviceID";
-            break;
         case Solid::DeviceInterface::StorageDrive:
             propertyName = "Index";
             break;
@@ -386,7 +377,7 @@ QString WmiDevice::vendor() const
         propertyName = "Caption";
         break;
     case Solid::DeviceInterface::Battery:
-        propertyName = "Name";//TODO:
+        propertyName = "DeviceID";
         break;
     case Solid::DeviceInterface::StorageAccess:
     case Solid::DeviceInterface::StorageVolume:
@@ -411,15 +402,6 @@ QString WmiDevice::product() const
     case Solid::DeviceInterface::Processor:
         propertyName = "Name";
         break;
-    case Solid::DeviceInterface::OpticalDrive:
-        propertyName = "Caption";
-        break;
-    case Solid::DeviceInterface::OpticalDisc:
-        propertyName = "Caption";
-        break;
-    case Solid::DeviceInterface::Battery:
-        propertyName = "Name";//TODO:
-        break;
     case Solid::DeviceInterface::StorageAccess:
     case Solid::DeviceInterface::StorageVolume:
     {
@@ -427,11 +409,8 @@ QString WmiDevice::product() const
         return item.getProperty("VolumeName").toString();
     }
         break;
-    case Solid::DeviceInterface::StorageDrive:
-        propertyName = "Caption";
-        break;
     default:
-        propertyName = "DeviceID";//TODO:
+        propertyName = "Caption";
     }
     return property(propertyName).toString();
 }
@@ -481,7 +460,9 @@ QString WmiDevice::description() const
 {
     switch(type()){
         case Solid::DeviceInterface::OpticalDisc:
-        return property("VolumeName").toString();
+            return property("VolumeName").toString();
+        case Solid::DeviceInterface::Battery:
+            return property("Description").toString();
     }
 
     return product(); // TODO

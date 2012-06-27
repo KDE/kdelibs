@@ -1,4 +1,5 @@
 /*
+    Copyright 2012 Patrick von Reth <vonreth@kde.org>
     Copyright 2006 Kevin Ottens <ervin@kde.org>
 
     This library is free software; you can redistribute it and/or
@@ -25,8 +26,8 @@ using namespace Solid::Backends::Wmi;
 Battery::Battery(WmiDevice *device)
     : DeviceInterface(device)
 {
-    connect(device, SIGNAL(propertyChanged(QMap<QString,int>)),
-             this, SLOT(slotPropertyChanged(QMap<QString,int>)));
+//     connect(device, SIGNAL(propertyChanged(QMap<QString,int>)),
+//              this, SLOT(slotPropertyChanged(QMap<QString,int>)));
 }
 
 Battery::~Battery()
@@ -37,61 +38,30 @@ Battery::~Battery()
 
 bool Battery::isPlugged() const
 {
-    return m_device->property("battery.present").toBool();
+    return true;
 }
 
 Solid::Battery::BatteryType Battery::type() const
 {
-    QString name = m_device->property("battery.type").toString();
-
-    if (name == "pda")
-    {
-        return Solid::Battery::PdaBattery;
-    }
-    else if (name == "ups")
-    {
-        return Solid::Battery::UpsBattery;
-    }
-    else if (name == "primary")
-    {
+    //as far as i know peripheral bateries are not listed
         return Solid::Battery::PrimaryBattery;
-    }
-    else if (name == "mouse")
-    {
-        return Solid::Battery::MouseBattery;
-    }
-    else if (name == "keyboard")
-    {
-        return Solid::Battery::KeyboardBattery;
-    }
-    else if (name == "keyboard_mouse")
-    {
-        return Solid::Battery::KeyboardMouseBattery;
-    }
-    else if (name == "camera")
-    {
-        return Solid::Battery::CameraBattery;
-    }
-    else
-    {
-        return Solid::Battery::UnknownBattery;
-    }
 }
 
 int Battery::chargePercent() const
 {
-    return m_device->property("battery.charge_level.percentage").toInt();
+    return m_device->property("EstimatedChargeRemaining").toInt();
 }
 
 bool Battery::isRechargeable() const
 {
-    return m_device->property("battery.is_rechargeable").toBool();
+    return true;
 }
 
 Solid::Battery::ChargeState Battery::chargeState() const
 {
-    bool charging = m_device->property("battery.rechargeable.is_charging").toBool();
-    bool discharging = m_device->property("battery.rechargeable.is_discharging").toBool();
+    short status =  m_device->property("BatteryStatus").toInt();
+    bool charging = status >= 6 && status <=8;
+    bool discharging = status == 1 || status >=3 && status <=5 || status == 11;
 
     if (!charging && !discharging)
     {
@@ -109,19 +79,19 @@ Solid::Battery::ChargeState Battery::chargeState() const
 
 void Battery::slotPropertyChanged(const QMap<QString,int> &changes)
 {
-    if (changes.contains("battery.charge_level.percentage"))
-    {
-        emit chargePercentChanged(chargePercent(), m_device->udi());
-    }
-    else if (changes.contains("battery.rechargeable.is_charging")
-           || changes.contains("battery.rechargeable.is_discharging"))
-    {
-        emit chargeStateChanged(chargeState(), m_device->udi());
-    }
-    else if ( changes.contains( "battery.present" ) )
-    {
-        emit plugStateChanged(isPlugged(), m_device->udi());
-    }
+//     if (changes.contains("battery.charge_level.percentage"))
+//     {
+//         emit chargePercentChanged(chargePercent(), m_device->udi());
+//     }
+//     else if (changes.contains("battery.rechargeable.is_charging")
+//            || changes.contains("battery.rechargeable.is_discharging"))
+//     {
+//         emit chargeStateChanged(chargeState(), m_device->udi());
+//     }
+//     else if ( changes.contains( "battery.present" ) )
+//     {
+//         emit plugStateChanged(isPlugged(), m_device->udi());
+//     }
 
 }
 
