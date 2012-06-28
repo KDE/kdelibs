@@ -19,7 +19,6 @@
 
 #include "TestBackend.h"
 
-#include <QCoreApplication>
 #include <QDebug>
 
 namespace KAuth
