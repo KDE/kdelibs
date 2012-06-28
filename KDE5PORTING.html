@@ -206,6 +206,14 @@ A script is available in kdesdk/scripts/kf5/convert-kstandarddirs.pl to port som
 <h3><a name="kdeui">Changes in kdeui</a></h3>
 
 <ul>
+<li>KApplication/KUniqueApplication: use QApplication instead, but make sure to:
+   <ul>
+   <li>Call QCoreApplication::setApplicationName("...")</li>
+   <li>Call QCoreApplication::setOrganizationDomain("kde.org")</li>
+   <li>Call QApplication::setApplicationDisplayName(i18n("...")) for GUI programs</li>
+   <li>Use KDBusService for DBus registration, and optional "unique" behavior</li>
+   </ul>
+</li>
 <li>KIntValidator: Use QIntValidator instead, the only difference was that KIntValidator attempted to
   support non-decimal bases (but it was broken with prefix and suffix texts, and therefore unused in KDE SC)</li>
 <li>KDoubleValidator: Use QDoubleValidator instead (as part of KLocale -&gt; QLocale)</li>
