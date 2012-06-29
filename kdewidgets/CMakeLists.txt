@@ -44,6 +44,7 @@ if(QT_QTDESIGNER_FOUND)
   set(kdewidgets_PART_SRCS
      classpreviews.cpp
      ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp
+     ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.moc
   )
 
   qt4_generate_moc(${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.moc)
@@ -74,6 +75,7 @@ if(QT_QTDESIGNER_FOUND)
     set(kdedeprecated_PART_SRCS
        classpreviews.cpp
        ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.cpp
+       ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.moc
     )
 
     qt4_generate_moc(${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.cpp ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.moc)
@@ -109,6 +111,7 @@ if(QT_QTDESIGNER_FOUND)
   set(kdewebkitwidgets_PART_SRCS
      classpreviews.cpp
      ${CMAKE_CURRENT_BINARY_DIR}/kdewebkitwidgets.cpp
+     ${CMAKE_CURRENT_BINARY_DIR}/kdewebkitwidgets.moc
   )
 
   qt4_generate_moc(${CMAKE_CURRENT_BINARY_DIR}/kdewebkitwidgets.cpp ${CMAKE_CURRENT_BINARY_DIR}/kdewebkitwidgets.moc)
@@ -145,6 +148,7 @@ if(QT_QTDESIGNER_FOUND)
      set(kde3supportwidgets_PART_SRCS
         classpreviews.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/kde3supportwidgets.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/kde3supportwidgets.moc
      )
 
      qt4_generate_moc(${CMAKE_CURRENT_BINARY_DIR}/kde3supportwidgets.cpp ${CMAKE_CURRENT_BINARY_DIR}/kde3supportwidgets.moc)
