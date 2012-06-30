@@ -2363,8 +2363,9 @@ void RenderTextArea::setText(const QString& newText)
         int cx = w->horizontalScrollBar()->value();
         int cy = w->verticalScrollBar()->value();
         // Not using setPlaintext as it resets text alignment property
+        int minLen = (newTextLen < oldTextLen) ? newTextLen : oldTextLen;
         int ex = 0;
-        while (ex < oldTextLen && newText[ex] == oldText[ex])
+        while (ex < minLen && (newText.at(ex) == oldText.at(ex)))
                ++ex;
         QTextCursor tc = w->textCursor();
         tc.setPosition(ex, QTextCursor::MoveAnchor);
