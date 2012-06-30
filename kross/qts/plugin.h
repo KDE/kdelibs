@@ -43,6 +43,8 @@ namespace Kross {
     */
     class KROSSQTSPLUGIN_EXPORT EcmaPlugin : public QScriptExtensionPlugin
     {
+        Q_OBJECT
+        Q_PLUGIN_METADATA(IID "org.kde.EcmaPlugin")
         public:
 
             /**
