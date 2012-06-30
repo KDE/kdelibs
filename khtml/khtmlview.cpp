@@ -1474,6 +1474,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
     for (KHTMLPart* p = m_part; p; p = p->parentPart())
         if (!p->parentPart())
             vp = p->view()->viewport();
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     if ( setCursor && vp->cursor().handle() != c.handle() ) {
         if( c.shape() == Qt::ArrowCursor) {
             for (KHTMLPart* p = m_part; p; p = p->parentPart())
@@ -1483,6 +1484,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
             vp->setCursor( c );
         }
     }
+#endif
 
     if ( linkCursor!=LINK_NORMAL && isVisible() && hasFocus() ) {
 #ifdef Q_WS_X11
@@ -2100,6 +2102,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 		    x += ap.x();
 		    y += ap.y();
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 		    QRect pr = isUpdate ? static_cast<QUpdateLaterEvent*>(e)->region().boundingRect() : static_cast<QPaintEvent*>(e)->rect();
                     bool asap = !d->contentsMoving && qobject_cast<QAbstractScrollArea*>(c);
 
@@ -2122,6 +2125,7 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
  		        scheduleRepaint(x + pr.x(), y + pr.y(),
  				    pr.width(), pr.height()+1, asap);
                     }
+#endif
 		}
 		break;
 	    case QEvent::MouseMove:
