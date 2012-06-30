@@ -37,7 +37,7 @@
 #include <klocalizedstring.h>
 
 #include <QtCore/QUrl>
-#include <QtCore/QWeakPointer>
+#include <QtCore/QPointer>
 #include <QtGui/QWidget>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusConnection>
@@ -87,7 +87,7 @@ public:
     bool emitReadyReadOnMetaDataChange;
     KIO::MetaData requestMetaData;
     KIO::MetaData sessionMetaData;
-    QWidget* window;
+    QPointer<QWidget> window;
 };
 
 namespace Integration {
