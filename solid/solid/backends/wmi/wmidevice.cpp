@@ -223,7 +223,6 @@ public:
         case Solid::DeviceInterface::NetworkInterface:
             break;
         case Solid::DeviceInterface::AcAdapter:
-            break;
         case Solid::DeviceInterface::Battery:
             wmiTable = "Win32_Battery";
             break;
@@ -409,6 +408,8 @@ QString WmiDevice::product() const
         return item.getProperty("VolumeName").toString();
     }
         break;
+    case Solid::DeviceInterface::AcAdapter:
+        return description();
     default:
         propertyName = "Caption";
     }
