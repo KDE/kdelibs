@@ -60,7 +60,6 @@
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kprotocolmanager.h>
-#include <kstandarddirs.h>
 #include <kprocess.h>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
@@ -920,7 +919,9 @@ static bool makeServiceExecutable(const KService& service, QWidget* window)
 
     // We can use KStandardDirs::findExe to resolve relative pathnames
     // but that gets rid of the command line arguments.
-    QString program = KStandardDirs::realFilePath(service.exec());
+    QString program = QFileInfo(service.exec()).canonicalFilePath();
+    if (program.isEmpty()) // e.g. due to command line arguments
+        program = service.exec();
 
     QPlainTextEdit *textEdit = new QPlainTextEdit(baseWidget);
     textEdit->setPlainText(program);

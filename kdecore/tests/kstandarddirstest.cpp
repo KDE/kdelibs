@@ -278,9 +278,16 @@ void KStandarddirsTest::testFindExe()
 
 #ifndef Q_OS_MAC // kdeinit5 is a bundle on Mac, so the below doesn't work
     // Check the "exe" resource too
-    QString kdeinitPath1 = KGlobal::dirs()->realFilePath(kdeinit);
+    QString kdeinitPath1 = KStandardDirs::realFilePath(kdeinit);
     QString kdeinitPath2 = KGlobal::dirs()->locate( "exe", "kdeinit5" );
     QCOMPARE_PATHS( kdeinitPath1, kdeinitPath2 );
+
+    // Check realFilePath behavior with complete command lines, like KRun does
+    const QString cmd = kdeinit + " -c foo -x bar";
+    const QString fromKStdDirs = KStandardDirs::realFilePath(cmd);
+    QCOMPARE(fromKStdDirs, cmd);
+    const QString fromQFileInfo = QFileInfo(cmd).canonicalFilePath();
+    QVERIFY(fromQFileInfo.isEmpty()); // !! different result, since this doesn't exist as a file
 #endif
 
 #ifdef Q_OS_UNIX

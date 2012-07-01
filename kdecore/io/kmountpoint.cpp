@@ -25,8 +25,7 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
-
-#include "kstandarddirs.h"
+#include <QFileInfo>
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -186,7 +185,7 @@ void KMountPoint::Private::finalizePossibleMountPoint(DetailsNeededFlags infoNee
 
     if (infoNeeded & NeedRealDeviceName) {
         if (mountedFrom.startsWith(QLatin1Char('/')))
-            device = KStandardDirs::realFilePath(mountedFrom);
+            device = QFileInfo(mountedFrom).canonicalFilePath();
     }
     // TODO: Strip trailing '/' ?
 }
@@ -195,7 +194,7 @@ void KMountPoint::Private::finalizeCurrentMountPoint(DetailsNeededFlags infoNeed
 {
     if (infoNeeded & NeedRealDeviceName) {
         if (mountedFrom.startsWith(QLatin1Char('/')))
-            device = KStandardDirs::realFilePath(mountedFrom);
+            device = QFileInfo(mountedFrom).canonicalFilePath();
     }
 }
 
@@ -479,7 +478,7 @@ KMountPoint::Ptr KMountPoint::List::findByPath(const QString& path) const
 {
 #ifndef Q_OS_WIN
     /* If the path contains symlinks, get the real name */
-    const QString realname = KStandardDirs::realFilePath(path);
+    const QString realname = QFileInfo(path).canonicalFilePath();
 #else
     const QString realname = QDir::fromNativeSeparators(QDir(path).absolutePath());
 #endif
@@ -500,7 +499,7 @@ KMountPoint::Ptr KMountPoint::List::findByPath(const QString& path) const
 
 KMountPoint::Ptr KMountPoint::List::findByDevice(const QString& device) const
 {
-    const QString realDevice = KStandardDirs::realFilePath(device);
+    const QString realDevice = QFileInfo(device).canonicalFilePath();
     if (realDevice.isEmpty()) // d->device can be empty in the loop below, don't match empty with it
         return Ptr();
     for (const_iterator it = begin(); it != end(); ++it) {
