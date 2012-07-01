@@ -533,12 +533,12 @@ bool KIconLoaderPrivate::initIconThemes()
     addBaseThemes(mpThemeRoot, appname);
 
     // Insert application specific themes at the top.
-    searchPaths.append(appname + "/pics/");
+    searchPaths.append(appname + "/pics");
 
     // Add legacy icon dirs.
-    searchPaths.append("icons/"); // was xdgdata-icon in KStandardDirs
+    searchPaths.append("icons"); // was xdgdata-icon in KStandardDirs
     // These are not in the icon spec, but e.g. GNOME puts some icons there anyway.
-    searchPaths.append("pixmaps/"); // was xdgdata-pixmaps in KStandardDirs
+    searchPaths.append("pixmaps"); // was xdgdata-pixmaps in KStandardDirs
 
 #ifndef NDEBUG
     QString dbgString = "Theme tree: ";
@@ -563,7 +563,7 @@ void KIconLoader::addAppDir(const QString& appname)
 {
     d->initIconThemes();
 
-    d->searchPaths.append(appname + "/pics/");
+    d->searchPaths.append(appname + "/pics");
     d->addAppThemes(appname);
 }
 
@@ -1066,15 +1066,14 @@ inline QString KIconLoaderPrivate::unknownIconPath( int size ) const
 QString KIconLoaderPrivate::locate(const QString& fileName)
 {
     Q_FOREACH(const QString& dir, searchPaths) {
-        Q_ASSERT(dir.endsWith(QLatin1Char('/')));
+        const QString path = dir + '/' + fileName;
         if (QDir(dir).isAbsolute()) {
-            const QString path = dir + fileName;
             if (QFile::exists(path))
                 return path;
         } else {
-            const QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation, dir + fileName);
-            if (!path.isEmpty())
-                return path;
+            const QString fullPath = QStandardPaths::locate(QStandardPaths::GenericDataLocation, path);
+            if (!fullPath.isEmpty())
+                return fullPath;
         }
     }
     return QString();

@@ -153,7 +153,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 
     QString fileName, mainSection;
     for (QStringList::ConstIterator it=icnlibs.constBegin(); it!=icnlibs.constEnd(); ++it) {
-        const QString cDir = *it + name + '/';
+        const QString cDir = *it + '/' + name + '/';
         if (QDir(cDir).exists()) {
             themeDirs += cDir;
             if (d->mDir.isEmpty()) {

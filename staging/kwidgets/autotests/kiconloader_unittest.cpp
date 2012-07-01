@@ -20,15 +20,13 @@
 #include <kdebug.h>
 #include "qtest_gui.h"
 #include <kiconloader.h>
-#include <kstandarddirs.h>
-#include <kdeversion.h>
-#include <kurl.h>
 #include <qprocess.h>
 #include <qregexp.h>
 #include <qstandardpaths.h>
 #include <QFile>
 #include <QFileInfo>
 #include <QDir>
+#include <qtemporarydir.h>
 
 class KIconLoader_UnitTest : public QObject
 {
@@ -40,6 +38,10 @@ private Q_SLOTS:
         // Remove icon cache (from ~/.kde-unit-test)
         const QString cacheFile = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/icon-cache.kcache";
         QFile::remove(cacheFile);
+
+        // Clear SHM cache
+        KIconLoader iconLoader;
+        iconLoader.newIconLoader();
     }
 
     void testUnknownIconNotCached()
@@ -52,10 +54,16 @@ private Q_SLOTS:
 
         // Since we'll need to create an icon we'll need a temporary directory,
         // and we want that established before creating the icon loader.
-        QString tempRoot = QDir::tempPath() + QLatin1String("/kiconloader_unittest");
-        QString temporaryDir = tempRoot + QLatin1String("/hicolor/22x22/actions");
+        QTemporaryDir tempRoot;
+        QVERIFY(tempRoot.isValid());
+        QString temporaryDir = tempRoot.path() + QLatin1String("/icons/hicolor/22x22/actions");
         QVERIFY(QDir::root().mkpath(temporaryDir));
-        QVERIFY(KGlobal::dirs()->addResourceDir("icon", tempRoot, false));
+
+        // KDE4:
+        //QVERIFY(KGlobal::dirs()->addResourceDir("icon", tempRoot.path(), false));
+        // KF5-with-qt4-on-unix: (no solution on other platforms)
+        ::setenv("XDG_DATA_DIRS", qgetenv("XDG_DATA_DIRS") + ":" + QFile::encodeName(tempRoot.path()), 1);
+        // KF5-with-qt5: port to QStandardPaths::enableTestMode
 
         KIconLoader iconLoader;
 
@@ -87,16 +95,6 @@ private Q_SLOTS:
         QVERIFY(nowExistingIcon.cacheKey() != nonExistingIcon.cacheKey());
         QCOMPARE(iconLoader.iconPath(nonExistingIconName, KIconLoader::Toolbar),
                 newIconPath);
-
-        // Cleanup
-        QFile::remove(newIconPath);
-        QStringList entries(QDir(tempRoot).entryList(
-                QDir::Dirs | QDir::NoDotAndDotDot,
-                QDir::Name | QDir::Reversed));
-
-        Q_FOREACH(const QString &dirName, entries) {
-            QDir::root().rmdir(dirName);
-        }
     }
 
     void testLoadIconCanReturnNull()
@@ -144,7 +142,7 @@ private Q_SLOTS:
         // as the "data" resource. But if the file is installed, then it will be
         // preferred (because KStandardDirs::resourceDirs() looks at relative paths first)
         // So we have to expect that one -or- the other will be found.
-        const QString dataDir = KStandardDirs::realPath(KDESRCDIR "/../../..");
+        const QString dataDir = QDir(KDESRCDIR "/../../..").canonicalPath();
 
         const QString appName = "kdewidgets";
         KIconLoader appIconLoader(appName, QStringList() << dataDir);
@@ -171,7 +169,7 @@ private Q_SLOTS:
 
     void testAppPicsDir_KDE_icon()
     {
-        const QString dataDir = KStandardDirs::realPath(KDESRCDIR "/../../");
+        const QString dataDir = QDir(KDESRCDIR "/../../").canonicalPath();
         // #### This test is broken; it passes even if appName is set to foobar, because
         // QIcon::pixmap returns an unknown icon if it can't find the real icon...
         const QString appName = "kdewidgets";
