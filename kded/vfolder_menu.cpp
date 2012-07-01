@@ -438,8 +438,11 @@ VFolderMenu::absoluteDir(const QString &_dir, const QString &baseDir, bool keepR
       dir = QStandardPaths::locate(QStandardPaths::ConfigLocation, QLatin1String("menus/") + dir);
    }
 
-   if (!relative)
-      dir = KGlobal::dirs()->realPath(dir);
+    if (!relative) {
+        QString resolved = QDir(dir).canonicalPath();
+        if (!resolved.isEmpty())
+            dir = resolved;
+    }
 
    return dir;
 }
