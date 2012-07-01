@@ -2,8 +2,7 @@
 #include <QSlider>
 #include <QGridLayout>
 
-#include <kapplication.h>
-#include <kcmdlineargs.h>
+#include <qapplication.h>
 #include <kiconloader.h>
 #include <kiconeffect.h>
 #include <kcolorbutton.h>
@@ -143,8 +142,7 @@ void KIconEffectTestWidget::slotColorizeValue(int value)
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init( argc, argv, "kiconeffecttest", 0, qi18n("KIconEffectTest"), "1.0", qi18n("KDE icon effect test"));
-    KApplication app;
+    QApplication app(argc, argv);
     KIconEffectTestWidget *w = new KIconEffectTestWidget;
     w->show();
     return app.exec();

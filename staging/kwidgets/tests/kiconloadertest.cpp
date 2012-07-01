@@ -1,9 +1,7 @@
 #include <kiconloader.h>
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kapplication.h>
-#include <kdebug.h>
+#include <qapplication.h>
 
+#include <QDebug>
 #include <QtCore/QDate>
 #include <QPixmap>
 
@@ -12,10 +10,7 @@
 
 int main(int argc, char *argv[])
 {
-  KAboutData about("kiconloadertest", 0, qi18n("kiconloadertest"), "version");
-  KCmdLineArgs::init(argc, argv, &about);
-
-  KApplication app;
+  QApplication app(argc, argv);
 
   KIconLoader * mpLoader = KIconLoader::global();
   KIconLoader::Context mContext = KIconLoader::Application;
@@ -24,19 +19,19 @@ int main(int argc, char *argv[])
   int count = 0;
   for ( int mGroup = 0; mGroup < KIconLoader::LastGroup ; ++mGroup )
   {
-      kDebug() << "queryIcons " << mGroup << "," << mContext;
+      qDebug() << "queryIcons " << mGroup << "," << mContext;
       const QStringList filelist = mpLoader->queryIcons(mGroup, mContext);
-      kDebug() << " -> found " << filelist.count() << " icons.";
+      qDebug() << " -> found " << filelist.count() << " icons.";
       int i=0;
       for(QStringList::ConstIterator it = filelist.begin();
           it != filelist.end() /*&& i<10*/;
           ++it, ++i )
       {
-          //kDebug() << ( i==9 ? "..." : (*it) );
+          //qDebug() << ( i==9 ? "..." : (*it) );
           mpLoader->loadIcon( (*it), (KIconLoader::Group)mGroup );
           ++count;
       }
   }
-  kDebug() << "Loading " << count << " icons took " << (float)(dt.elapsed()) / 1000 << " seconds";
+  qDebug() << "Loading " << count << " icons took " << (float)(dt.elapsed()) / 1000 << " seconds";
 }
 

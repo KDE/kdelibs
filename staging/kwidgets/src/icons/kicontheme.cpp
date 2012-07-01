@@ -38,14 +38,14 @@
 #include <QImage>
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
+#include <QDebug>
 
-#include <kdebug.h>
-#include <kglobal.h>
+#include <kglobal.h> // KLocale::localizedFilePath. Need such functionality in, hmm, QLocale? QStandardPaths?
+#include <klocale.h>
+
 #include <ksharedconfig.h>
 #include <kconfig.h>
 #include <kcomponentdata.h>
-#include <klocale.h>
-#include <kde_file.h>
 
 #include <kconfiggroup.h>
 
@@ -171,7 +171,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     }
 
     if (d->mDir.isEmpty()) {
-        kDebug(264) << "Icon theme" << name << "not found.";
+        qWarning() << "Icon theme" << name << "not found.";
         return;
     }
 
@@ -314,7 +314,7 @@ int KIconTheme::depth() const
 int KIconTheme::defaultSize(KIconLoader::Group group) const
 {
     if ((group < 0) || (group >= KIconLoader::LastGroup)) {
-        kDebug(264) << "Illegal icon group: " << group << "\n";
+        qWarning() << "Illegal icon group: " << group;
         return -1;
     }
     return d->mDefSize[group];
@@ -324,7 +324,7 @@ QList<int> KIconTheme::querySizes(KIconLoader::Group group) const
 {
     QList<int> empty;
     if ((group < 0) || (group >= KIconLoader::LastGroup)) {
-        kDebug(264) << "Illegal icon group: " << group << "\n";
+        qWarning() << "Illegal icon group: " << group;
         return empty;
     }
     return d->mSizes[group];
@@ -660,7 +660,7 @@ KIconThemeDir::KIconThemeDir(const QString& basedir, const QString &themedir, co
     else if (tmp == "Stock") // invalid, but often present context, skip warning
         return;
     else {
-        kDebug(264) << "Invalid Context=" << tmp << "line for icon theme: " << dir() << "\n";
+        qWarning() << "Invalid Context=" << tmp << "line for icon theme: " << dir();
         return;
     }
     tmp = config.readEntry("Type");
@@ -671,7 +671,7 @@ KIconThemeDir::KIconThemeDir(const QString& basedir, const QString &themedir, co
     else if (tmp == "Threshold")
         mType = KIconLoader::Threshold;
     else {
-        kDebug(264) << "Invalid Type=" << tmp << "line for icon theme: " << dir() << "\n";
+        qWarning() << "Invalid Type=" << tmp << "line for icon theme: " << dir();
         return;
     }
     if (mType == KIconLoader::Scalable) {
@@ -691,7 +691,7 @@ QString KIconThemeDir::iconPath(const QString& name) const
 
     QString file = dir() + '/' + name;
 
-    if (KDE::access(file, R_OK) == 0) {
+    if (QFile::exists(file)) {
         return KGlobal::hasLocale() ? KGlobal::locale()->localizedFilePath(file) : file;
     }
 

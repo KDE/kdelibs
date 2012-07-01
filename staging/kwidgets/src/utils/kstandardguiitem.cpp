@@ -21,7 +21,9 @@
 #include <QApplication>
 
 #include <kguiitem.h>
-#include <klocalizedstring.h>
+
+static const QString i18n(const char* a) { return QApplication::translate("KStandardGuiItem", a); }
+static const QString i18nc(const char* comment, const char* a) { return QApplication::translate("KStandardGuiItem", a, comment); }
 
 namespace KStandardGuiItem
 {

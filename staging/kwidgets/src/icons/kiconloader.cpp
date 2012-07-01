@@ -52,10 +52,8 @@
 // kdecore
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kglobal.h>
 #include <kglobalsettings.h>
-#include <kcomponentdata.h>
-#include <kde_file.h>
+#include <kde_file.h> // TODO: port away from KDE_struct_dirent, add unit test for that method
 #include <kshareddatacache.h>
 
 // kdeui

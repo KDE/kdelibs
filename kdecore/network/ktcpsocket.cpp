@@ -21,11 +21,10 @@
 #include "ktcpsocket_p.h"
 
 #include <kdebug.h>
-#include <kurl.h>
 #include <ksslcertificatemanager.h>
-#include <kstandarddirs.h>
 #include <klocalizedstring.h>
 
+#include <QUrl>
 #include <QtCore/QStringList>
 #include <QtNetwork/QSslKey>
 #include <QtNetwork/QSslCipher>

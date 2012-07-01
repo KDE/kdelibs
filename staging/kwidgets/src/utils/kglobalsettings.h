@@ -673,6 +673,7 @@ Q_SIGNALS:
 
 private:
     friend class KApplication;
+    friend class KGlobalSettingsSingleton;
 
     KGlobalSettings();
 

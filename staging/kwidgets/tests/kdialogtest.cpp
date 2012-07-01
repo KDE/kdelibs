@@ -1,6 +1,4 @@
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kapplication.h>
+#include <qapplication.h>
 #include <kdialog.h>
 #include <kguiitem.h>
 
@@ -9,10 +7,7 @@
 
 int main(int argc, char** argv)
 {
-  KAboutData about("DialogTest", 0, qi18n("DialogTest"), "version");
-  KCmdLineArgs::init(argc, argv, &about);
-
-  KApplication app;
+  QApplication app(argc, argv);
 
   // -----
   QString text= // the explanation shown by the example dialog

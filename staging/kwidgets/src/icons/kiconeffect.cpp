@@ -28,6 +28,7 @@
 
 #include <QtCore/QSysInfo>
 #include <QApplication>
+#include <QDebug>
 #include <QPaintEngine>
 #include <QDesktopWidget>
 #include <QtCore/QCharRef>
@@ -40,7 +41,6 @@
 #include <QPainter>
 #include <QPen>
 
-#include <kdebug.h>
 #include <ksharedconfig.h>
 #include <kcolorscheme.h>
 #include <kicontheme.h>
@@ -194,12 +194,12 @@ QImage KIconEffect::apply(const QImage &image, int group, int state) const
 {
     if (state >= KIconLoader::LastState)
     {
-	kDebug(265) << "Illegal icon state: " << state << "\n";
+	qWarning() << "Illegal icon state: " << state;
 	return image;
     }
     if (group >= KIconLoader::LastGroup)
     {
-	kDebug(265) << "Illegal icon group: " << group << "\n";
+	qWarning() << "Illegal icon group: " << group;
 	return image;
     }
     return apply(image, d->effect[group][state], d->value[group][state],
@@ -219,7 +219,7 @@ QImage KIconEffect::apply(const QImage &img, int effect, float value,
     QImage image = img;
     if (effect >= LastEffect )
     {
-	kDebug(265) << "Illegal icon effect: " << effect << "\n";
+	qWarning() << "Illegal icon effect: " << effect;
 	return image;
     }
     if (value > 1.0)
@@ -255,12 +255,12 @@ QPixmap KIconEffect::apply(const QPixmap &pixmap, int group, int state) const
 {
     if (state >= KIconLoader::LastState)
     {
-	kDebug(265) << "Illegal icon state: " << state << "\n";
+	qWarning() << "Illegal icon state: " << state;
 	return pixmap;
     }
     if (group >= KIconLoader::LastGroup)
     {
-	kDebug(265) << "Illegal icon group: " << group << "\n";
+	qWarning() << "Illegal icon group: " << group;
 	return pixmap;
     }
     return apply(pixmap, d->effect[group][state], d->value[group][state],
@@ -281,7 +281,7 @@ QPixmap KIconEffect::apply(const QPixmap &pixmap, int effect, float value,
 
     if (effect >= LastEffect )
     {
-	kDebug(265) << "Illegal icon effect: " << effect << "\n";
+	qWarning() << "Illegal icon effect: " << effect;
 	return result;
     }
 
@@ -466,7 +466,7 @@ void KIconEffect::toMonochrome(QImage &img, const QColor &black,
     }
     else{
         while(data != end){
-            if(qGray(*data) <= medium) 
+            if(qGray(*data) <= medium)
                 *data = qRgba((val*rb+(0xFF-val)*qRed(*data)) >> 8,
                               (val*gb+(0xFF-val)*qGreen(*data)) >> 8,
                               (val*bb+(0xFF-val)*qBlue(*data)) >> 8,
@@ -655,7 +655,7 @@ QImage KIconEffect::doublePixels(const QImage &src) const
 
     if (src.depth() == 1)
     {
-	kDebug(265) << "image depth 1 not supported\n";
+	qWarning() << "image depth 1 not supported";
 	return QImage();
     }
 
@@ -699,12 +699,12 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 {
     if (src.depth() != overlay.depth())
     {
-	kDebug(265) << "Image depth src (" << src.depth() << ") != overlay " << "(" << overlay.depth() << ")!\n";
+	qWarning() << "Image depth src (" << src.depth() << ") != overlay " << "(" << overlay.depth() << ")!";
 	return;
     }
     if (src.size() != overlay.size())
     {
-	kDebug(265) << "Image size src != overlay\n";
+	qWarning() << "Image size src != overlay";
 	return;
     }
     if (src.format() == QImage::Format_ARGB32_Premultiplied)
@@ -712,7 +712,7 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 
     if (overlay.format() == QImage::Format_RGB32)
     {
-	kDebug(265) << "Overlay doesn't have alpha buffer!\n";
+	qWarning() << "Overlay doesn't have alpha buffer!";
 	return;
     }
     else if (overlay.format() == QImage::Format_ARGB32_Premultiplied)
@@ -724,7 +724,7 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 
     if (src.depth() == 1)
     {
-	kDebug(265) << "1bpp not supported!\n";
+	qWarning() << "1bpp not supported!";
 	return;
     }
 
@@ -734,7 +734,7 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
     {
 	if (src.colorCount() + overlay.colorCount() > 255)
 	{
-	    kDebug(265) << "Too many colors in src + overlay!\n";
+	    qWarning() << "Too many colors in src + overlay!";
 	    return;
 	}
 
@@ -744,13 +744,13 @@ void KIconEffect::overlay(QImage &src, QImage &overlay)
 	{
 	    if (qAlpha(overlay.color(trans)) == 0)
 	    {
-		kDebug(265) << "transparent pixel found at " << trans << "\n";
+		qWarning() << "transparent pixel found at " << trans;
 		break;
 	    }
 	}
 	if (trans == overlay.colorCount())
 	{
-	    kDebug(265) << "transparent pixel not found!\n";
+	    qWarning() << "transparent pixel not found!";
 	    return;
 	}
 

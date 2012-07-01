@@ -21,7 +21,7 @@
 #include <kcmdlineargs.h>
 #include <QApplication>
 #include <kglobalsettings.h>
-#include <kdebug.h>
+#include <qdebug.h>
 #include <kcomponentdata.h>
 
 int main(int argc, char **argv)
@@ -41,15 +41,15 @@ int main(int argc, char **argv)
     QApplication app( KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), false );
 
     if (args->isSet("p")) {
-        kDebug() << "emitChange(PaletteChanged)";
+        qDebug() << "emitChange(PaletteChanged)";
         KGlobalSettings::self()->emitChange(KGlobalSettings::PaletteChanged);
 	return 0;
     } else if (args->isSet("f")) {
-        kDebug() << "emitChange(FontChanged)";
+        qDebug() << "emitChange(FontChanged)";
         KGlobalSettings::self()->emitChange(KGlobalSettings::FontChanged);
         return 0;
     } else if (args->isSet("ps")) {
-        kDebug() << "emitChange(SettingsChanged)";
+        qDebug() << "emitChange(SettingsChanged)";
         KGlobalSettings::self()->emitChange(KGlobalSettings::SettingsChanged, KGlobalSettings::SETTINGS_PATHS);
         return 0;
     }

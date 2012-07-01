@@ -22,8 +22,7 @@
 
 #include "kdialog.h"
 #include "kdialog_p.h"
-#include <kdebug.h>
-#include <kglobal.h>
+#include <kglobal.h> // remove KGlobal::caption once done by QPA
 #include "kdialogqueue_p.h"
 
 #include <QApplication>
@@ -36,6 +35,7 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QWhatsThis>
+#include <QDebug>
 
 #include <kconfig.h>
 #include <klocalizedstring.h>
@@ -75,7 +75,7 @@ void KDialogPrivate::queuedLayoutUpdate()
     QPointer<QWidget> focusWidget = mMainWidget ? mMainWidget->focusWidget() : 0;
 
   if (q->layout() && q->layout() != mTopLayout) {
-      kWarning(240) << q->metaObject()->className() << "created with a layout; don't do that, KDialog takes care of it, use mainWidget or setMainWidget instead";
+      qWarning() << q->metaObject()->className() << "created with a layout; don't do that, KDialog takes care of it, use mainWidget or setMainWidget instead";
       delete q->layout();
   }
 
@@ -477,6 +477,7 @@ void KDialog::setCaption( const QString &caption, bool modified )
 {
     CaptionFlags flags = HIGCompliantCaption;
 
+    // ### Qt5 TODO: port to [*], see QWidget::setWindowFilePath
     if ( modified )
     {
         flags |= ModifiedCaption;

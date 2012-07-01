@@ -22,15 +22,23 @@ include(FeatureSummary)
 
 include_directories(
   ${QT_INCLUDES}
-  ${KDE4_KDECORE_INCLUDES}
   ${kcoreaddons_BINARY_DIR}
   ${kcoreaddons_SOURCE_DIR}/src/caching
   ${CMAKE_BINARY_DIR}/tier2/kauth/src
   ${CMAKE_SOURCE_DIR}/tier2/kauth/src
+  ${CMAKE_BINARY_DIR}/kdecore
+  ${CMAKE_SOURCE_DIR}/kdecore/localization # KLocale::localizedFilePath
+  ${CMAKE_SOURCE_DIR}/kdecore/config # KDebug (TODO)
+  ${CMAKE_SOURCE_DIR}/kdecore/kernel # KGlobal (TODO)
+  ${CMAKE_SOURCE_DIR}/kdecore/util # kde_file.h (TODO)
+  ${CMAKE_BINARY_DIR}/tier2/kconfig/src/core
+  ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/core
   ${CMAKE_BINARY_DIR}/tier1/kwidgetsaddons/src
   ${CMAKE_SOURCE_DIR}/tier1/kwidgetsaddons/src
   ${kwindowsystem_BINARY_DIR}/src
   ${kwindowsystem_SOURCE_DIR}/src
+  ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src
+  ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/jobs # kjob (dependency of kauth)
   ${CMAKE_BINARY_DIR}/staging/kdeguiaddons/src
   ${CMAKE_SOURCE_DIR}/staging/kdeguiaddons/src/colors
   ${CMAKE_CURRENT_SOURCE_DIR}/src/utils

@@ -21,9 +21,6 @@
 
 #include <kconfig.h>
 
-#include <kdebug.h>
-#include <kglobal.h>
-#include <klocale.h>
 #include <kcolorscheme.h>
 
 //#include <kstyle.h>
@@ -181,10 +178,18 @@ class KGlobalSettings::Private
         QPalette applicationPalette;
 };
 
+// class for access to KGlobalSettings constructor
+class KGlobalSettingsSingleton
+{
+public:
+    KGlobalSettings object;
+};
+
+Q_GLOBAL_STATIC(KGlobalSettingsSingleton, s_self)
+
 KGlobalSettings* KGlobalSettings::self()
 {
-    K_GLOBAL_STATIC(KGlobalSettings, s_self)
-    return s_self;
+    return &s_self()->object;
 }
 
 KGlobalSettings::KGlobalSettings()
@@ -810,7 +815,7 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
                     KGlobalSettingsData::self()->dropMouseSettingsCache();
                     break;
                 case SETTINGS_LOCALE:
-                    KGlobal::locale()->reparseConfiguration();
+                    // QT5 TODO REPLACEMENT ? KGlobal::locale()->reparseConfiguration();
                     break;
                 default:
                     break;
@@ -840,7 +845,7 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
         break;
 
     default:
-        kWarning(240) << "Unknown type of change in KGlobalSettings::slotNotifyChange: " << changeType;
+        qWarning() << "Unknown type of change in KGlobalSettings::slotNotifyChange: " << changeType;
     }
 }
 
