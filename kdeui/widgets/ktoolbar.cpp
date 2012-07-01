@@ -864,6 +864,11 @@ void KToolBar::addXMLGUIClient( KXMLGUIClient *client )
     d->xmlguiClients << client;
 }
 
+void KToolBar::removeXMLGUIClient( KXMLGUIClient *client )
+{
+    d->xmlguiClients.remove(client);
+}
+
 void KToolBar::contextMenuEvent(QContextMenuEvent* event)
 {
 #ifndef KDE_NO_DEPRECATED
