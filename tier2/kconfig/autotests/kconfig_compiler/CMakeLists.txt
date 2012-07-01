@@ -1,4 +1,3 @@
-set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
 #test5.cpp test5.h: $(srcdir)/test5.kcfg ../kconfig_compiler $(srcdir)/test5.kcfgc
 #	../kconfig_compiler $(srcdir)/test5.kcfg $(srcdir)/test5.kcfgc
