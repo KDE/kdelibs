@@ -38,7 +38,7 @@
 
 #include <QtCore/QUrl>
 #include <QNetworkCookie>
-#include <QtCore/QWeakPointer>
+#include <QPointer>
 #include <QWidget>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusConnection>
@@ -88,7 +88,7 @@ public:
     bool emitReadyReadOnMetaDataChange;
     KIO::MetaData requestMetaData;
     KIO::MetaData sessionMetaData;
-    QWidget* window;
+    QPointer<QWidget> window;
 };
 
 namespace Integration {

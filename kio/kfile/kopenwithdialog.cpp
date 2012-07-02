@@ -834,7 +834,7 @@ bool KOpenWithDialogPrivate::checkAccept()
             KService::Ptr serv = KService::serviceByDesktopName( serviceName );
             ok = !serv; // ok if no such service yet
             // also ok if we find the exact same service (well, "kwrite" == "kwrite %U")
-            if (serv) {
+            if (serv && !serv->noDisplay() /* #297720 */) {
                 if (serv->isApplication()) {
                     /*kDebug(250) << "typedExec=" << typedExec
                       << "serv->exec=" << serv->exec()

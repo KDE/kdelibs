@@ -6,3 +6,34 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 
+<!ENTITY Alt			"<keycap>Alt</keycap>">
+<!ENTITY Backspace		"<keycap>Backspace</keycap>">
+<!ENTITY cataloguemanager	"<application>Katalog Yöneticisi</application>">
+<!ENTITY cdrom			'<hardware>CD-ROM sürücüsü</hardware>'>
+<!ENTITY Ctrl			"<keycap>Ctrl</keycap>">
+<!ENTITY dpi			'<acronym>dpi</acronym>'>
+<!ENTITY eg			"örneğin">
+<!ENTITY Enter			"<keycap>Enter</keycap>">
+<!ENTITY Esc			"<keycap>Esc</keycap>">
+<!ENTITY etc			"vb.">
+<!ENTITY FAQ			'<acronym>SSS</acronym>'>
+<!ENTITY ie			"başka bir deyişle">
+<!ENTITY kcontrolcenter		"<application>&kde; Denetim Merkezi</application>">
+<!ENTITY khelpcenter		"<application>KDE Yardım Merkezi</application>">
+<!ENTITY kicon			"
+<guiicon>
+<inlinemediaobject>
+ <objectinfo><title>&kde;'nin K-simgesi</title></objectinfo>
+ <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
+ <textobject><phrase>K</phrase></textobject>
+</inlinemediaobject>
+</guiicon> icon"><!-- if image is localised, then entityref should be used instead of fileref -->
+<!ENTITY kmenu			"<guimenu>K</guimenu> menü">
+<!ENTITY LMB			"farenin <mousebutton>sol</mousebutton> tuşu">
+<!ENTITY MMB			"farenin <mousebutton>orta</mousebutton> tuşu">
+<!ENTITY OS			"İşletim Sistemi"><!-- <acronym>OS</acronym>-->
+<!ENTITY RMB			"farenin <mousebutton>sağ</mousebutton> tuşu">
+<!ENTITY Shift			"<keycap>Shift</keycap>">
+<!ENTITY systemsettings	"<application>Sistem Ayarları</application>">
+<!ENTITY systemtray		"<application>Sistem Çekmecesi</application>">
+<!ENTITY Tab			"<keycap>Tab</keycap>">
