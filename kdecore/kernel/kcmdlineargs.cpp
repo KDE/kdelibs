@@ -68,7 +68,7 @@
 // bytes (instead of QString::to/fromLocal8Bit(), QFile::decodeName, etc.)
 // -----------------------------------------------------------------------------
 
-#ifdef HAVE_X11
+#if HAVE_X11
 #define DISPLAY "DISPLAY"
 #elif defined(QWS)
 #define DISPLAY "QWS_DISPLAY"
@@ -273,7 +273,7 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
 
     // Qt options
     //FIXME: Check if other options are specific to Qt/X11
-#ifdef HAVE_X11
+#if HAVE_X11
     qt_options.add("display <displayname>", qi18n("Use the X-server display 'displayname'"));
 #elif defined(QWS)
     qt_options.add("display <displayname>", qi18n("Use the QWS display 'displayname'"));
@@ -296,7 +296,7 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
     qt_options.add("name <name>", qi18n("sets the application name"));
     qt_options.add("title <title>", qi18n("sets the application title (caption)"));
     qt_options.add("testability", qi18n("load the testability framework"));
-#ifdef HAVE_X11
+#if HAVE_X11
     qt_options.add("visual TrueColor", qi18n("forces the application to use a TrueColor visual on\nan 8-bit display"));
     qt_options.add("inputstyle <inputstyle>", qi18n("sets XIM (X Input Method) input style. Possible\nvalues are onthespot, overthespot, offthespot and\nroot"));
     qt_options.add("im <XIM server>", qi18n("set XIM server"));
@@ -313,7 +313,7 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
     kde_options.add("icon <icon>",         qi18n("Use 'icon' as the application icon"));
     kde_options.add("config <filename>",   qi18n("Use alternative configuration file"));
     kde_options.add("nocrashhandler",      qi18n("Disable crash handler, to get core dumps"));
-#ifdef HAVE_X11
+#if HAVE_X11
     kde_options.add("waitforwm",           qi18n("Waits for a WM_NET compatible windowmanager"));
 #endif
     kde_options.add("style <style>",       qi18n("sets the application GUI style"));
@@ -1432,7 +1432,7 @@ KCmdLineArgsPrivate::setOption(const QByteArray &opt, const QByteArray &value)
       addArgument(argString);
       addArgument(value);
 
-#if defined(HAVE_X11) || defined(QWS)
+#if HAVE_X11 || defined(QWS)
       // Hack coming up!
       if (argString == "-display")
       {

@@ -96,7 +96,7 @@ int KToolInvocation::startServiceInternal(const char *_function,
     msg << _name << URLs;
     if (function == QLatin1String("kdeinit_exec_with_workdir"))
         msg << workdir;
-#ifdef HAVE_X11
+#if HAVE_X11
     // make sure there is id, so that user timestamp exists
     QStringList envs;
     QByteArray s = startup_id;

@@ -80,7 +80,7 @@
 
 #include "klauncher_cmds.h"
 
-#ifdef HAVE_X11
+#if HAVE_X11
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <fixx11h.h>
@@ -102,7 +102,7 @@ static const char *extra_libs[] = {
 
 extern char **environ;
 
-#ifdef HAVE_X11
+#if HAVE_X11
 static int X11fd = -1;
 static Display *X11display = 0;
 static int X11_startup_notify_fd = -1;
@@ -127,7 +127,7 @@ static QByteArray displayEnvVarName()
         return platform.toLatin1();
 
 #else
-#ifdef HAVE_X11
+#if HAVE_X11
     return "DISPLAY";
 #elif defined(Q_WS_QWS)
     return "QWS_DISPLAY";
@@ -172,7 +172,7 @@ struct child
 
 static struct child *children;
 
-#ifdef HAVE_X11
+#if HAVE_X11
 extern "C" {
 int kdeinit_xio_errhandler( Display * );
 int kdeinit_x_errhandler( Display *, XErrorEvent *err );
@@ -256,7 +256,7 @@ static void close_fds()
       close(d.accepted_fd);
       d.accepted_fd = -1;
    }
-#ifdef HAVE_X11
+#if HAVE_X11
    if (X11fd >= 0)
    {
       close(X11fd);
@@ -337,7 +337,7 @@ static void setup_tty( const char* tty )
     close( fd );
 }
 
-#ifdef HAVE_X11 // Only X11 supports multiple desktops
+#if HAVE_X11 // Only X11 supports multiple desktops
 // from kdecore/netwm.cpp
 static int get_current_desktop( Display* disp )
 {
@@ -378,7 +378,7 @@ const char* get_env_var( const char* var, int envc, const char* envs )
     return NULL;
 }
 
-#ifdef HAVE_X11
+#if HAVE_X11
 static void init_startup_info( KStartupInfoId& id, const char* bin,
     int envc, const char* envs )
 {
@@ -545,7 +545,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
      return d.fork;
   }
 
-#ifdef HAVE_X11
+#if HAVE_X11
   KStartupInfoId startup_id;
   startup_id.initId( startup_id_str );
   if( !startup_id.none())
@@ -613,7 +613,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
         envs++;
      }
 
-#ifdef HAVE_X11
+#if HAVE_X11
       if( startup_id.none())
           KStartupInfo::resetStartupEnv();
       else
@@ -812,7 +812,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
      }
      close(d.fd[0]);
   }
-#ifdef HAVE_X11
+#if HAVE_X11
   if( !startup_id.none())
   {
      if( d.fork && d.result == 0 ) // launched successfully
@@ -1301,7 +1301,7 @@ static bool handle_launcher_request(int sock, const char *who)
 #ifndef NDEBUG
        fprintf(stderr,"kdeinit5: terminate KDE.\n");
 #endif
-#ifdef HAVE_X11
+#if HAVE_X11
        kdeinit_xio_errhandler( 0L );
 #endif
    }
@@ -1346,7 +1346,7 @@ static void handle_requests(pid_t waitForPid)
       max_sock = d.wrapper;
    if (d.launcher[0] > max_sock)
       max_sock = d.launcher[0];
-#ifdef HAVE_X11
+#if HAVE_X11
    if (X11fd > max_sock)
       max_sock = X11fd;
 #endif
@@ -1403,7 +1403,7 @@ static void handle_requests(pid_t waitForPid)
       if (d.wrapper >= 0)
          FD_SET(d.wrapper, &rd_set);
       FD_SET(d.deadpipe[0], &rd_set);
-#ifdef HAVE_X11
+#if HAVE_X11
       if(X11fd >= 0) FD_SET(X11fd, &rd_set);
 #endif
 
@@ -1439,7 +1439,7 @@ static void handle_requests(pid_t waitForPid)
             return;
       }
 
-#ifdef HAVE_X11
+#if HAVE_X11
       /* Look for incoming X11 events */
       if(X11fd >= 0 && FD_ISSET(X11fd,&rd_set)) {
           if (X11display != 0) {
@@ -1502,7 +1502,7 @@ static void kdeinit_library_path()
    QByteArray display = qgetenv(displayEnvVarName());
    if (display.isEmpty())
    {
-#if defined(HAVE_X11) // qt5: see displayEnvVarName()
+#if HAVE_X11 // qt5: see displayEnvVarName()
      fprintf(stderr, "kdeinit5: Aborting. $%s is not set. \n", displayEnvVarName().constData());
      exit(255);
 #endif
@@ -1527,7 +1527,7 @@ static void kdeinit_library_path()
    strcpy(sock_file, socketName.data());
 }
 
-#ifdef HAVE_X11
+#if HAVE_X11
 int kdeinit_xio_errhandler( Display *disp )
 {
     // disp is 0L when KDE shuts down. We don't want those warnings then.
@@ -1596,7 +1596,7 @@ int kdeinit_x_errhandler( Display *dpy, XErrorEvent *err )
 }
 #endif
 
-#ifdef HAVE_X11
+#if HAVE_X11
 // needs to be done sooner than initXconnection() because of also opening
 // another X connection for startup notification purposes
 static void setupX()
@@ -1806,7 +1806,7 @@ int main(int argc, char **argv, char **envp)
    d.launcher_ok = false;
    children = NULL;
    init_signals();
-#ifdef HAVE_X11
+#if HAVE_X11
    setupX();
 #endif
 
@@ -1846,13 +1846,13 @@ int main(int argc, char **argv, char **envp)
       handle_requests(d.launcher_pid); // Wait for klauncher to be ready
    }
 
-#ifdef HAVE_X11
+#if HAVE_X11
    X11fd = initXconnection();
 #endif
 
    {
       QFont::initialize();
-#ifdef HAVE_X11
+#if HAVE_X11
       if (XSupportsLocale ())
       {
          // Similar to QApplication::create_xim()

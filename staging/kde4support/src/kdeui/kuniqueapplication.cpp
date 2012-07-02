@@ -42,7 +42,7 @@
 #include <kconfiggroup.h>
 #include <kwindowsystem.h>
 
-#if defined HAVE_X11
+#if HAVE_X11
 #include <kstartupinfo.h>
 #include <netwm.h>
 #include <X11/Xlib.h>
@@ -205,7 +205,7 @@ KUniqueApplication::start(StartFlags flags)
            return false;
         }
 
-#ifdef HAVE_X11
+#if HAVE_X11
          KStartupInfoId id;
          if( kapp != NULL ) // KApplication constructor unsets the env. variable
              id.initId( kapp->startupId());
@@ -267,7 +267,7 @@ KUniqueApplication::start(StartFlags flags)
      KCmdLineArgs::saveAppArgs(ds);
 
      QByteArray new_asn_id;
-#if defined HAVE_X11
+#if HAVE_X11
      KStartupInfoId id;
      if( kapp != NULL ) // KApplication constructor unsets the env. variable
          id.initId( kapp->startupId());
@@ -338,7 +338,7 @@ void KUniqueApplication::Private::_k_newInstanceNoFork()
   s_handleAutoStarted = false;
   q->newInstance();
   firstInstance = false;
-#if defined HAVE_X11
+#if HAVE_X11
   // KDE4 remove
   // A hack to make startup notification stop for apps which override newInstance()
   // and reuse an already existing window there, but use KWindowSystem::activateWindow()
@@ -366,7 +366,7 @@ int KUniqueApplication::newInstance()
             KMainWindow* mainWindow = allWindows.first();
             if (mainWindow) {
                 mainWindow->show();
-#ifdef HAVE_X11
+#if HAVE_X11
                 // This is the line that handles window activation if necessary,
                 // and what's important, it does it properly. If you reimplement newInstance(),
                 // and don't call the inherited one, use this (but NOT when newInstance()

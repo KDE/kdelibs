@@ -28,7 +28,7 @@
 
 #include <config.h> // HAVE_X11
 
-#ifdef HAVE_X11
+#if HAVE_X11
 #include <X11/Xlib.h>
 #include <fixx11h.h>
 #endif
@@ -101,7 +101,7 @@ public:
    KService::DBusStartupType dbus_startup_type;
    bool autoStart;
    QString errorMsg;
-#ifdef HAVE_X11
+#if HAVE_X11
    QByteArray startup_id; // "" is the default, "0" for none
    QByteArray startup_dpy; // Display to send startup notification to.
 #endif
@@ -289,7 +289,7 @@ protected:
    QString mSlaveValgrind;
    QString mSlaveValgrindSkin;
    bool dontBlockReading;
-#ifdef HAVE_X11
+#if HAVE_X11
    Display *mCached_dpy;
 #endif
    void processRequestReturn(int status, const QByteArray &requestData);

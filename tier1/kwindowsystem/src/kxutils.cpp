@@ -22,7 +22,7 @@
 
 #include <config-kwindowsystem.h>
 
-#ifdef HAVE_X11
+#if HAVE_X11
 
 #include <kxerrorhandler_p.h>
 #include <qbitmap.h>

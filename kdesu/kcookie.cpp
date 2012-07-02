@@ -30,7 +30,7 @@ class KCookie::KCookiePrivate
 {
 public:
     QByteArray m_Display;
-#ifdef HAVE_X11
+#if HAVE_X11
     QByteArray m_DisplayAuth;
 #endif
 };
@@ -40,7 +40,7 @@ public:
 KCookie::KCookie()
     : d( new KCookiePrivate )
 {
-#ifdef HAVE_X11
+#if HAVE_X11
     getXCookie();
 #endif
 }
@@ -55,7 +55,7 @@ QByteArray KCookie::display() const
     return d->m_Display;
 }
 
-#ifdef HAVE_X11
+#if HAVE_X11
 QByteArray KCookie::displayAuth() const
 {
     return d->m_DisplayAuth;
@@ -64,7 +64,7 @@ QByteArray KCookie::displayAuth() const
 
 void KCookie::getXCookie()
 {
-#ifdef HAVE_X11
+#if HAVE_X11
     d->m_Display = qgetenv("DISPLAY");
 #else
     d->m_Display = qgetenv("QWS_DISPLAY");
@@ -74,7 +74,7 @@ void KCookie::getXCookie()
 	kError(kdesuDebugArea()) << k_lineinfo << "$DISPLAY is not set.";
 	return;
     }
-#ifdef HAVE_X11 // No need to mess with X Auth stuff
+#if HAVE_X11 // No need to mess with X Auth stuff
     QByteArray disp = d->m_Display;
     if (disp.startsWith("localhost:")) // krazy:exclude=strings
        disp.remove(0, 9);

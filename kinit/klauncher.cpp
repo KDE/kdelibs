@@ -33,7 +33,7 @@
 #include <signal.h>
 #include <sys/time.h>
 
-#ifdef HAVE_X11
+#if HAVE_X11
 #include <kstartupinfo.h>
 #include <X11/Xlib.h>
 #endif
@@ -179,7 +179,7 @@ KLauncher::KLauncher()
   : QObject(0)
 #endif
 {
-#ifdef HAVE_X11
+#if HAVE_X11
    mCached_dpy = NULL;
 #endif
    Q_ASSERT( g_klauncher_self == NULL );
@@ -243,7 +243,7 @@ KLauncher::~KLauncher()
 
 void KLauncher::close()
 {
-#ifdef HAVE_X11
+#if HAVE_X11
    if( mCached_dpy != NULL )
    {
        XCloseDisplay( mCached_dpy );
@@ -565,7 +565,7 @@ KLauncher::requestDone(KLaunchRequest *request)
           requestResult.error += QString::fromLatin1(":\n") + request->errorMsg;
       requestResult.pid = 0;
 
-#ifdef HAVE_X11
+#if HAVE_X11
       if (!request->startup_dpy.isEmpty())
       {
          Display* dpy = NULL;
@@ -672,7 +672,7 @@ KLauncher::requestStart(KLaunchRequest *request)
    foreach (const QString &env, request->envs)
        requestData.append(env.toLocal8Bit()).append('\0');
    appendLong(requestData, 0); // avoid_loops, always false here
-#ifdef HAVE_X11
+#if HAVE_X11
    bool startup_notify = !request->startup_id.isNull() && request->startup_id != "0";
    if( startup_notify )
        requestData.append(request->startup_id).append('\0');
@@ -680,7 +680,7 @@ KLauncher::requestStart(KLaunchRequest *request)
    if (!request->cwd.isEmpty())
        requestData.append(QFile::encodeName(request->cwd)).append('\0');
 
-#ifdef HAVE_X11
+#if HAVE_X11
    request_header.cmd = startup_notify ? LAUNCHER_EXT_EXEC : LAUNCHER_EXEC_NEW;
 #else
    request_header.cmd = LAUNCHER_EXEC_NEW;
@@ -896,7 +896,7 @@ void
 KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr service, const QByteArray& startup_id,
     const QStringList &envs )
 {
-#ifdef HAVE_X11
+#if HAVE_X11
     request->startup_id = "0";// krazy:exclude=doublequote_chars
     if (startup_id == "0")
         return;
@@ -948,7 +948,7 @@ void
 KLauncher::cancel_service_startup_info( KLaunchRequest* request, const QByteArray& startup_id,
     const QStringList &envs )
 {
-#ifdef HAVE_X11
+#if HAVE_X11
     if( request != NULL )
         request->startup_id = "0"; // krazy:exclude=doublequote_chars
     if( !startup_id.isEmpty() && startup_id != "0" )
@@ -990,12 +990,12 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
    else
       request->dbus_startup_type = KService::DBusNone;
    request->pid = 0;
-#ifdef HAVE_X11
+#if HAVE_X11
    request->startup_id = startup_id.toLocal8Bit();
 #endif
    request->envs = envs;
    request->cwd = workdir;
-#ifdef HAVE_X11
+#if HAVE_X11
    if (!app.endsWith(QLatin1String("kbuildsycoca5"))) { // avoid stupid loop
        // Find service, if any - strip path if needed
        const QString desktopName = app.mid(app.lastIndexOf(QLatin1Char('/')) + 1);
@@ -1184,7 +1184,7 @@ KLauncher::requestSlave(const QString &protocol,
     request->arg_list =  arg_list;
     request->dbus_startup_type = KService::DBusNone;
     request->pid = 0;
-#ifdef HAVE_X11
+#if HAVE_X11
     request->startup_id = "0"; // krazy:exclude=doublequote_chars
 #endif
     request->status = KLaunchRequest::Launching;

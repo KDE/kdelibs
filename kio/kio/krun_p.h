@@ -41,7 +41,7 @@ class KProcessRunner : public QObject
 
   public:
 
-#ifndef HAVE_X11
+#if !HAVE_X11
     static int run(KProcess *, const QString & executable);
 #else
     static int run(KProcess *, const QString & executable, const KStartupInfoId& id);
@@ -56,7 +56,7 @@ class KProcessRunner : public QObject
     void slotProcessExited(int, QProcess::ExitStatus);
 
   private:
-#ifndef HAVE_X11
+#if !HAVE_X11
     KProcessRunner(KProcess *, const QString & binName);
 #else
     KProcessRunner(KProcess *, const QString & binName, const KStartupInfoId& id);

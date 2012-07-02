@@ -670,7 +670,7 @@ static QString platform()
     else
         return platform; // directfb, qnx, etc.
 #else
-#if defined(HAVE_X11)
+#if HAVE_X11
     return QL1S("X11");
 #elif defined(Q_OS_MAC)
     return QL1S("Macintosh");

@@ -36,7 +36,7 @@ public:
      */
     QByteArray display() const;
 
-#ifdef HAVE_X11
+#if HAVE_X11
     /**
      * Returns the X11 magic cookie, if available.
      */

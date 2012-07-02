@@ -52,7 +52,7 @@
 #include "klauncher_iface.h"
 #include "config.h"
 
-#ifdef HAVE_X11
+#if HAVE_X11
 #include <qx11info_x11.h>
 #include <X11/Xlib.h>
 #include <fixx11h.h>
@@ -836,7 +836,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char *argv[])
      if (bCheckUpdates)
          (void) new KUpdateD; // Watch for updates
 
-#ifdef HAVE_X11
+#if HAVE_X11
      XEvent e;
      e.xclient.type = ClientMessage;
      e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
@@ -849,7 +849,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char *argv[])
 
      runKonfUpdate(); // Run it once.
 
-#ifdef HAVE_X11
+#if HAVE_X11
      e.xclient.type = ClientMessage;
      e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
      e.xclient.display = QX11Info::display();

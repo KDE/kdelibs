@@ -53,7 +53,7 @@
 #cmakedefine HAVE_PATHS_H 1
 #cmakedefine HAVE_UNISTD_H 1
 
-#cmakedefine HAVE_X11 1
+#cmakedefine01 HAVE_X11
 #cmakedefine HAVE_XTEST 1
 
 /* Define to 1 if you have the Xcursor library */

@@ -29,7 +29,7 @@ DEALINGS IN THE SOFTWARE.
 #include <QtCore/QtGlobal>
 #include <config.h>
 
-#ifdef HAVE_X11
+#if HAVE_X11
 
 /* Usage:
 

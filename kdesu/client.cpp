@@ -58,7 +58,7 @@ public:
 KDEsuClient::KDEsuClient()
     :d(new KDEsuClientPrivate)
 {
-#ifdef HAVE_X11
+#if HAVE_X11
     QString display = QString::fromAscii(qgetenv("DISPLAY"));
     if (display.isEmpty())
     {

@@ -151,7 +151,7 @@ int StubProcess::ConverseStub(int check)
         if (line == "display") {
 	    writeLine(display());
 	} else if (line == "display_auth") {
-#ifdef HAVE_X11
+#if HAVE_X11
 	    writeLine(displayAuth());
 #else
 	    writeLine("");
@@ -224,7 +224,7 @@ QByteArray StubProcess::display()
 
 QByteArray StubProcess::displayAuth()
 {
-#ifdef HAVE_X11
+#if HAVE_X11
     return m_pCookie->displayAuth();
 #else
     return QByteArray();

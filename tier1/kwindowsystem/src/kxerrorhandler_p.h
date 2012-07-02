@@ -29,7 +29,7 @@
 #include <QWidgetList>
 #include <config-kwindowsystem.h>
 
-#ifdef HAVE_X11
+#if HAVE_X11
 
 #include <QX11Info>
 #include <X11/Xlib.h>

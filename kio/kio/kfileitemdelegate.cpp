@@ -51,7 +51,7 @@
 
 #include "delegateanimationhandler_p.h"
 
-#if defined(HAVE_X11) && defined(HAVE_XRENDER)
+#if HAVE_X11 && defined(HAVE_XRENDER)
 #  include <X11/Xlib.h>
 #  include <X11/extensions/Xrender.h>
 #  include <QX11Info>
@@ -647,7 +647,7 @@ QPixmap KFileItemDelegate::Private::transition(const QPixmap &from, const QPixma
         return under;
     }
 // Cannot use XRender with QPixmap anymore.
-#if 0 // defined(HAVE_X11) && defined(HAVE_XRENDER)
+#if 0 // HAVE_X11 && defined(HAVE_XRENDER)
     else if (from.paintEngine()->hasFeature(QPaintEngine::PorterDuff)) // We have Xrender support
     {
         // QX11PaintEngine doesn't implement CompositionMode_Plus in Qt 4.3,
