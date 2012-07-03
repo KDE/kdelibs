@@ -137,7 +137,6 @@ Nepomuk::MainModel::MainModel( QObject* parent )
       d( new Private(this) )
 {
     setParent( parent );
-    init();
 }
 
 
