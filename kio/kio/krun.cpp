@@ -1174,7 +1174,7 @@ void KRun::init()
             d->m_mode = buff.st_mode;
         }
 
-        KMimeType::Ptr mime = KMimeType::findByUrl(d->m_strURL, d->m_mode, d->m_bIsLocalFile);
+        KMimeType::Ptr mime = KMimeType::findByUrl(d->m_strURL, d->m_mode, true /*local*/);
         assert(mime);
         kDebug(7010) << "MIME TYPE is " << mime->name();
         if (!d->m_externalBrowser.isEmpty() && (
@@ -1183,6 +1183,16 @@ void KRun::init()
             if (d->runExecutable(d->m_externalBrowser)) {
                 return;
             }
+        } else if (mime->isDefault() && !QFileInfo(d->m_strURL.toLocalFile()).isReadable()) {
+            // Unknown mimetype because the file is unreadable, no point in showing an open-with dialog (#261002)
+            const QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->m_strURL.prettyUrl());
+            d->m_showingDialog = true;
+            KMessageBoxWrapper::error(d->m_window, msg);
+            d->m_showingDialog = false;
+            d->m_bFault = true;
+            d->m_bFinished = true;
+            d->startTimer();
+            return;
         } else {
             mimeTypeDetermined(mime->name());
             return;
