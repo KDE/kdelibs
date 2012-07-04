@@ -34,7 +34,6 @@ include_directories(${QT_QTCORE_INCLUDE_DIR} ${KDE4_KIO_INCLUDES})
 
 kde4_add_executable(ecmatest TEST
   ecmatest.cpp
-  ecmatest.h
 )
 target_link_libraries(ecmatest ${KDE4_KDECORE_LIBS} kjs ${KDEWIN_LIBRARIES} ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} ${QT_QTGUI_LIBRARY})
 
