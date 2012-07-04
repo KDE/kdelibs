@@ -48,16 +48,12 @@ endif(NOT KDE_NO_DEPRECATED)
 
 ########### module for klibloadertest4 ###############
 
-if (NOT WIN32) # TODO: reenable for win32
+set(klibloadertestmodule4_PART_SRCS klibloadertest4_module.cpp )
 
-  set(klibloadertestmodule4_PART_SRCS klibloadertest4_module.cpp )
+add_library(klibloadertestmodule4 MODULE ${klibloadertestmodule4_PART_SRCS})
+set_target_properties(klibloadertestmodule4 PROPERTIES PREFIX "") # remove lib prefix - missing from cmake
 
-  add_library(klibloadertestmodule4 MODULE ${klibloadertestmodule4_PART_SRCS})
-  set_target_properties(klibloadertestmodule4 PROPERTIES PREFIX "") # remove lib prefix - missing from cmake
+target_link_libraries(klibloadertestmodule4 kde4support kdecore ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY})
 
-  target_link_libraries(klibloadertestmodule4 kde4support kdecore ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY})
-
-  set_target_properties(klibloadertestmodule4 PROPERTIES SKIP_BUILD_RPATH FALSE BUILD_WITH_INSTALL_RPATH FALSE)
-
-endif (NOT WIN32)
+set_target_properties(klibloadertestmodule4 PROPERTIES SKIP_BUILD_RPATH FALSE BUILD_WITH_INSTALL_RPATH FALSE)
 
