@@ -18,6 +18,10 @@ find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 include(ECMQtFramework)
 
 find_package(Qt5Transitional REQUIRED Core Test)
+if(WIN32)
+    find_package(KDEWin REQUIRED)
+    include_directories(${KDEWIN_INCLUDES})
+endif(WIN32)
 
 include(FeatureSummary)
 

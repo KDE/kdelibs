@@ -19,6 +19,9 @@ add_library(kconfigcore ${libkconfigcore_SRCS})
 generate_export_header(kconfigcore)
 
 target_link_libraries(kconfigcore ${QT_QTCORE_LIBRARY} kcoreaddons ${inqt5_LIBRARY})
+if(WIN32)
+    target_link_libraries(kconfigcore ${KDEWIN_LIBRARIES})
+endif(WIN32)
 set_target_properties(kconfigcore PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                              SOVERSION ${ECM_SOVERSION}
 )
