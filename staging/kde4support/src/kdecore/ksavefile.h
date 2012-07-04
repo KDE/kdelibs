@@ -178,7 +178,7 @@ public:
     bool finalize();
 
     // TODO KF5 Should be deprecated since KF 5.0
-    KDE4SUPPORT_DEPRECATED_EXPORT static bool backupFile( const QString& filename) {
+    KDE4SUPPORT_DEPRECATED static bool backupFile( const QString& filename) {
       return KBackup::backupFile(filename);
     }
 

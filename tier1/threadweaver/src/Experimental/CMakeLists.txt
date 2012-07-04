@@ -10,6 +10,7 @@ set(ThreadWeaverExperimental_LIB_SRCS FileLoaderJob.cpp )
 
 
 add_library(ThreadWeaverExperimental ${ThreadWeaverExperimental_LIB_SRCS})
+generate_export_header(ThreadWeaverExperimental)
 target_link_libraries(ThreadWeaverExperimental threadweaver ${QT_QTCORE_LIBRARY})
 set_target_properties(ThreadWeaverExperimental PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                                           SOVERSION ${ECM_SOVERSION})

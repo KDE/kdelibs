@@ -79,8 +79,10 @@ generate_export_header(kcoreaddons)
 
 target_link_libraries(kcoreaddons
   LINK_PUBLIC ${QT_QTCORE_LIBRARY} ${kcoreaddons_OPTIONAL_LIBS} ${inqt5_LIBRARY} ${kdeqt5staging_LIBRARY}
-  LINK_PRIVATE pthread
 )
+if(NOT WIN32)
+    target_link_libraries(kcoreaddons LINK_PRIVATE pthread)
+endif(NOT WIN32)
 
 set_target_properties(kcoreaddons PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                        SOVERSION ${ECM_SOVERSION}

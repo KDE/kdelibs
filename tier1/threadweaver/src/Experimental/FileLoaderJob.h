@@ -22,6 +22,7 @@
 
 #include <WeaverImpl.h>
 #include <Job.h>
+#include <threadweaverexperimental_export.h>
 
 namespace ThreadWeaver {
 
@@ -36,7 +37,7 @@ namespace ThreadWeaver {
     The allocated memory gets freed on destruction of the object, or when
     freeMemory() is called.
 */
-class THREADWEAVER_EXPORT FileLoaderJob : public Job
+class THREADWEAVEREXPERIMENTAL_EXPORT FileLoaderJob : public Job
 {
     Q_OBJECT
 public:

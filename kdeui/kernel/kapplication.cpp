@@ -701,7 +701,9 @@ static void checkRestartVersion( QSessionManager& sm )
 void KApplication::saveState( QSessionManager& sm )
 {
     d->session_save = true;
+#ifdef __GNUC__
 #warning TODO: QSessionManager::handle() is gone in Qt5!
+#endif
 #ifdef Q_WS_X11
     static bool firstTime = true;
     mySmcConnection = (SmcConn) sm.handle();
@@ -875,7 +877,9 @@ KApplication::~KApplication()
 #endif
 }
 
+#ifdef __GNUC__
 #warning TODO kapp->installX11EventFilter needs to be ported to nativeEvent filters.
+#endif
 #if 0 // replaced with QWidget::nativeEvent in Qt5
 class KAppX11HackWidget: public QWidget
 {

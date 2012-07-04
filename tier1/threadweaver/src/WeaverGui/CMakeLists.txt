@@ -9,6 +9,8 @@ include_directories(${QT_INCLUDES}
                     ../Weaver ${CMAKE_CURRENT_BINARY_DIR}/../Weaver)
 
 add_library(ThreadWeaverGui ${ThreadWeaverGui_LIB_SRCS})
+generate_export_header(ThreadWeaverGui)
+
 target_link_libraries(ThreadWeaverGui threadweaver ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY})
 set_target_properties(ThreadWeaverGui PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                                  SOVERSION ${ECM_SOVERSION})

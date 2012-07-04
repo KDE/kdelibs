@@ -19,7 +19,7 @@
 #ifndef KCMDLINEARGS_H
 #define KCMDLINEARGS_H
 
-#include <kcoreaddons_export.h>
+#include <kdecore_export.h>
 
 
 #include "qlocalizedstring_porting.h"
@@ -45,7 +45,7 @@ class KCmdLineOptionsPrivate;
  *
  * @see KCmdLineArgs for additional usage information
  */
-class KCOREADDONS_EXPORT KCmdLineOptions
+class KDECORE_EXPORT KCmdLineOptions
 {
     friend class KCmdLineArgs;
     friend class KCmdLineArgsStatic;
@@ -278,7 +278,7 @@ class KAboutData;
  *  @author Waldo Bastian
  *  @version 0.0.4
  */
-class KCOREADDONS_EXPORT KCmdLineArgs
+class KDECORE_EXPORT KCmdLineArgs
 {
   friend class KApplication;
   friend class KCmdLineArgsList;
