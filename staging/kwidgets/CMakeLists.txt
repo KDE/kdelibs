@@ -33,6 +33,8 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/kdecore/util # kde_file.h (TODO)
   ${CMAKE_BINARY_DIR}/tier2/kconfig/src/core
   ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/core
+  ${CMAKE_BINARY_DIR}/tier2/kconfig/src/gui
+  ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/gui
   ${CMAKE_BINARY_DIR}/tier1/kwidgetsaddons/src
   ${CMAKE_SOURCE_DIR}/tier1/kwidgetsaddons/src
   ${kwindowsystem_BINARY_DIR}/src

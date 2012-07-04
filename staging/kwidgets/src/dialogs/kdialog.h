@@ -355,8 +355,11 @@ class KWIDGETS_EXPORT KDialog : public QDialog //krazy:exclude=qclasses
      * @note the group must be set before calling
      *
      * @param config The config group to read from.
+     * @deprecated use KWindowConfig::restoreDialogSize() instead
      */
-    void restoreDialogSize( const KConfigGroup& config ) ;
+#ifndef KDE_NO_DEPRECATED
+    KWIDGETS_DEPRECATED void restoreDialogSize( const KConfigGroup& config ) ;
+#endif
 
     /**
      * Saves the dialog's size dependent on the screen dimension either to the
@@ -366,8 +369,11 @@ class KWIDGETS_EXPORT KDialog : public QDialog //krazy:exclude=qclasses
      *
      * @param config The config group to read from.
      * @param options passed to KConfigGroup::writeEntry()
+     * @deprecated use KWindowConfig::saveDialogSize() instead
      */
-    void saveDialogSize( KConfigGroup& config, KConfigGroup::WriteConfigFlags options = KConfigGroup::Normal ) const;
+#ifndef KDE_NO_DEPRECATED
+    KWIDGETS_DEPRECATED void saveDialogSize( KConfigGroup& config, KConfigGroup::WriteConfigFlags options = KConfigGroup::Normal ) const;
+#endif
 
     /**
      * Returns the help link text.

@@ -22,6 +22,7 @@
 
 #include <kdialog.h>
 #include <klocalizedstring.h>
+#include <kwindowconfig.h>
 
 #include <QEvent>
 #include <QLabel>
@@ -128,7 +129,7 @@ void KCommentWidget::slotLinkActivated(const QString& link)
     dialog->setDefaultButton(KDialog::Ok);
 
     KConfigGroup dialogConfig(KSharedConfig::openConfig(), "Nepomuk KEditCommentDialog");
-    dialog->restoreDialogSize(dialogConfig);
+    KWindowConfig::restoreWindowSize(dialog, dialogConfig);
 
     if (dialog->exec() == QDialog::Accepted) {
         const QString oldText = m_comment;
@@ -141,7 +142,7 @@ void KCommentWidget::slotLinkActivated(const QString& link)
     }
 
     if (dialog != 0) {
-        dialog->saveDialogSize(dialogConfig);
+        KWindowConfig::saveWindowSize(dialog, dialogConfig);
         delete dialog;
         dialog = 0;
     }

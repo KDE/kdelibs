@@ -23,6 +23,7 @@
 
 #include <klocalizedstring.h>
 #include <klineedit.h>
+#include <kwindowconfig.h>
 
 #include <QLabel>
 #include <QGridLayout>
@@ -70,7 +71,7 @@ KLinkDialog::KLinkDialog(QWidget *parent)
     setMainWidget(entries);
 
     KConfigGroup group(KSharedConfig::openConfig(), "KLinkDialog");
-    restoreDialogSize(group);
+    KWindowConfig::restoreWindowSize(this, group);
 
     d->textLineEdit->setFocus();
     enableButtonOk( false );
@@ -80,7 +81,7 @@ KLinkDialog::KLinkDialog(QWidget *parent)
 KLinkDialog::~KLinkDialog()
 {
     KConfigGroup group(KSharedConfig::openConfig(), "KLinkDialog");
-    saveDialogSize(group);
+    KWindowConfig::saveWindowSize(this, group);
     delete d;
 }
 

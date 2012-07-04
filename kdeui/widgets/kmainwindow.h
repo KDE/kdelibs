@@ -402,7 +402,7 @@ public:
      *
      * @param config Config group to save the settings to.
      */
-    void saveMainWindowSettings(const KConfigGroup &config);
+    void saveMainWindowSettings(KConfigGroup &config);
 
     /**
      * @return true if a -geometry argument was given on the command line,
@@ -626,13 +626,20 @@ protected:
     bool settingsDirty() const;
     /**
      * For inherited classes
+     * @deprecated use KWindowConfig::saveWindowSize
      */
-    void saveWindowSize( const KConfigGroup &config ) const;
+#ifndef KDE_NO_DEPRECATED
+    KDEUI_DEPRECATED void saveWindowSize( KConfigGroup &config ) const;
+#endif
+
     /**
      * For inherited classes
      * Note that a -geometry on the command line has priority.
+     * @deprecated use KWindowConfig::restoreWindowSize
      */
-    void restoreWindowSize( const KConfigGroup & config );
+#ifndef KDE_NO_DEPRECATED
+    KDEUI_DEPRECATED void restoreWindowSize( const KConfigGroup & config );
+#endif
 
     /// parse the geometry from the geometry command line argument
     void parseGeometry(bool parsewidth);

@@ -44,6 +44,7 @@
 #include <kstandardguiitem.h>
 #include <ktoolinvocation.h>
 #include <kurllabel.h>
+#include <kwindowconfig.h>
 
 #ifdef Q_WS_X11
 #include <qx11info_x11.h>
@@ -1017,31 +1018,19 @@ void KDialog::closeEvent( QCloseEvent *event )
     }
 }
 
+#ifndef KDE_NO_DEPRECATED
 void KDialog::restoreDialogSize( const KConfigGroup& cfg )
 {
-  int width, height;
-  int scnum = QApplication::desktop()->screenNumber( parentWidget() );
-  QRect desk = QApplication::desktop()->screenGeometry( scnum );
-
-  width = sizeHint().width();
-  height = sizeHint().height();
-
-  width = cfg.readEntry( QString::fromLatin1( "Width %1" ).arg( desk.width() ), width );
-  height = cfg.readEntry( QString::fromLatin1( "Height %1" ).arg( desk.height() ), height );
-
-  resize( width, height );
+    KWindowConfig::restoreWindowSize(this, cfg);
 }
+#endif
 
+#ifndef KDE_NO_DEPRECATED
 void KDialog::saveDialogSize( KConfigGroup& config, KConfigGroup::WriteConfigFlags options ) const
 {
-   int scnum = QApplication::desktop()->screenNumber( parentWidget() );
-   QRect desk = QApplication::desktop()->screenGeometry( scnum );
-
-   const QSize sizeToSave = size();
-
-   config.writeEntry( QString::fromLatin1("Width %1").arg( desk.width() ), sizeToSave.width(), options );
-   config.writeEntry( QString::fromLatin1("Height %1").arg( desk.height() ), sizeToSave.height(), options );
+   KWindowConfig::saveWindowSize(this, config, options);
 }
+#endif
 
 void KDialog::setAllowEmbeddingInGraphicsView( bool allowEmbedding )
 {

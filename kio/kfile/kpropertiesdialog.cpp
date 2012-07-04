@@ -123,6 +123,7 @@ extern "C" {
 #include <kshell.h>
 #include <kcapacitybar.h>
 #include <kfileitemlistproperties.h>
+#include <kwindowconfig.h>
 
 #ifndef Q_OS_WIN
 #include "kfilesharedialog.h"
@@ -351,7 +352,7 @@ void KPropertiesDialog::KPropertiesDialogPrivate::init()
     insertPages();
 
     KConfigGroup group(KSharedConfig::openConfig(), "KPropertiesDialog");
-    q->restoreDialogSize(group);
+    KWindowConfig::restoreWindowSize(q, group);
 }
 
 void KPropertiesDialog::showFileSharingPage()
@@ -384,7 +385,7 @@ KPropertiesDialog::~KPropertiesDialog()
     delete d;
 
     KConfigGroup group(KSharedConfig::openConfig(), "KPropertiesDialog");
-    saveDialogSize(group, KConfigBase::Persistent);
+    KWindowConfig::saveWindowSize(this, group, KConfigBase::Persistent);
 }
 
 void KPropertiesDialog::insertPlugin (KPropertiesDialogPlugin* plugin)

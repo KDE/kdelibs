@@ -57,6 +57,7 @@
 #include <kwindowsystem.h>
 #include <kconfiggroup.h>
 #include <kglobalsettings.h>
+#include <kwindowconfig.h>
 
 #if defined Q_WS_X11
 #include <qx11info_x11.h>
@@ -654,16 +655,14 @@ void KMainWindow::savePropertiesInternal( KConfig *config, int number )
     d->autoSaveWindowSize = oldASWS;
 }
 
-void KMainWindow::saveMainWindowSettings(const KConfigGroup &_cg)
+void KMainWindow::saveMainWindowSettings(KConfigGroup &cg)
 {
     K_D(KMainWindow);
-    //kDebug(200) << "KMainWindow::saveMainWindowSettings " << _cg.name();
+    //kDebug(200) << "KMainWindow::saveMainWindowSettings " << cg.name();
 
     // Called by session management - or if we want to save the window size anyway
     if ( d->autoSaveWindowSize )
-        saveWindowSize( _cg );
-
-    KConfigGroup cg(_cg); // for saving
+        KWindowConfig::saveWindowSize( this, cg );
 
     // One day will need to save the version number, but for now, assume 0
     // Utilise the QMainWindow::saveState() functionality.
@@ -752,7 +751,7 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
     d->letDirtySettings = false;
 
     if (!d->sizeApplied) {
-        restoreWindowSize(cg);
+        KWindowConfig::restoreWindowSize(this, cg);
         d->sizeApplied = true;
     }
 
@@ -810,125 +809,17 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
     d->letDirtySettings = oldLetDirtySettings;
 }
 
-#ifdef Q_WS_WIN
-
-/*
- The win32 implementation for restoring/savin windows size differs
- from the unix/max implementation in three topics:
-
-1. storing and restoring the position, which may not work on x11
-    see http://doc.trolltech.com/4.3/geometry.html#x11-peculiarities
-2. using QWidget::saveGeometry() and QWidget::restoreGeometry()
-    this would probably be usable on x11 and/or on mac, but I'm unable to
-    check this on unix/mac, so I leave this fix to the x11/mac experts.
-3. store geometry separately for each resolution -> on unix/max the size
-    and with of the window are already saved separately on non windows
-    system although not using ...Geometry functions -> could also be
-    fixed by x11/mac experts.
-*/
-void KMainWindow::restoreWindowSize( const KConfigGroup & _cg )
+#ifndef KDE_NO_DEPRECATED
+void KMainWindow::restoreWindowSize( const KConfigGroup & cg )
 {
-    K_D(KMainWindow);
-
-    int scnum = QApplication::desktop()->screenNumber(window());
-    QRect desk = QApplication::desktop()->screenGeometry(scnum);
-
-    QString geometryKey = QString::fromLatin1("geometry-%1-%2").arg(desk.width()).arg(desk.height());
-    QByteArray geometry = _cg.readEntry( geometryKey, QByteArray() );
-    // if first time run, center window
-    if (!restoreGeometry( QByteArray::fromBase64(geometry) ))
-        move( (desk.width()-width())/2, (desk.height()-height())/2 );
+    KWindowConfig::restoreWindowSize(this, cg);
 }
-
-void KMainWindow::saveWindowSize( const KConfigGroup & _cg ) const
-{
-    K_D(const KMainWindow);
-    int scnum = QApplication::desktop()->screenNumber(window());
-    QRect desk = QApplication::desktop()->screenGeometry(scnum);
-
-    // geometry is saved separately for each resolution
-    QString geometryKey = QString::fromLatin1("geometry-%1-%2").arg(desk.width()).arg(desk.height());
-    QByteArray geometry = saveGeometry();
-    KConfigGroup cg(_cg);
-    cg.writeEntry( geometryKey, geometry.toBase64() );
-}
-#else
-void KMainWindow::saveWindowSize( const KConfigGroup & _cg ) const
-{
-    K_D(const KMainWindow);
-    int scnum = QApplication::desktop()->screenNumber(window());
-    QRect desk = QApplication::desktop()->screenGeometry(scnum);
-
-    int w, h;
-#if defined Q_WS_X11
-    // save maximalization as desktop size + 1 in that direction
-    KWindowInfo info = KWindowSystem::windowInfo( winId(), NET::WMState );
-    w = info.state() & NET::MaxHoriz ? desk.width() + 1 : width();
-    h = info.state() & NET::MaxVert ? desk.height() + 1 : height();
-#else
-    if (isMaximized()) {
-        w = desk.width() + 1;
-        h = desk.height() + 1;
-    } else {
-        w = width();
-        h = height();
-    }
-    //TODO: add "Maximized" property instead "+1" hack
 #endif
-    KConfigGroup cg(_cg);
 
-    QRect size( desk.width(), w, desk.height(), h );
-    bool defaultSize = (size == d->defaultWindowSize);
-    QString widthString = QString::fromLatin1("Width %1").arg(desk.width());
-    QString heightString = QString::fromLatin1("Height %1").arg(desk.height());
-    if (!cg.hasDefault(widthString) && defaultSize)
-        cg.revertToDefault(widthString);
-    else
-        cg.writeEntry(widthString, w );
-
-    if (!cg.hasDefault(heightString) && defaultSize)
-        cg.revertToDefault(heightString);
-    else
-        cg.writeEntry(heightString, h );
-}
-
-void KMainWindow::restoreWindowSize( const KConfigGroup & config )
+#ifndef KDE_NO_DEPRECATED
+void KMainWindow::saveWindowSize( KConfigGroup & cg ) const
 {
-    K_D(KMainWindow);
-    if (d->care_about_geometry) {
-        parseGeometry(true);
-    } else {
-        // restore the size
-        const int scnum = QApplication::desktop()->screenNumber(window());
-        QRect desk = QApplication::desktop()->screenGeometry(scnum);
-
-        if ( d->defaultWindowSize.isNull() ) // only once
-          d->defaultWindowSize = QRect(desk.width(), width(), desk.height(), height()); // store default values
-        const QSize size( config.readEntry( QString::fromLatin1("Width %1").arg(desk.width()), 0 ),
-                    config.readEntry( QString::fromLatin1("Height %1").arg(desk.height()), 0 ) );
-        if ( !size.isEmpty() ) {
-#ifdef Q_WS_X11
-            int state = ( size.width() > desk.width() ? NET::MaxHoriz : 0 )
-                        | ( size.height() > desk.height() ? NET::MaxVert : 0 );
-            if(( state & NET::Max ) == NET::Max )
-                resize( desk.width(), desk.height() ); // WORKAROUND: this should not be needed. KWindowSystem::setState
-                                                       //             should be enough for maximizing. (ereslibre)
-            else if(( state & NET::MaxHoriz ) == NET::MaxHoriz )
-                resize( desk.width(), size.height() );
-            else if(( state & NET::MaxVert ) == NET::MaxVert )
-                resize( size.width(), desk.height() );
-            else
-                resize( size );
-            // QWidget::showMaximized() is both insufficient and broken
-            KWindowSystem::setState( winId(), state );
-#else
-            if (size.width() > desk.width() || size.height() > desk.height())
-              setWindowState( Qt::WindowMaximized );
-            else
-              resize( size );
-#endif
-        }
-    }
+    KWindowConfig::saveWindowSize(this, cg);
 }
 #endif
 
@@ -1142,7 +1033,7 @@ void KMainWindowPrivate::_k_slotSettingsChanged(int category)
 void KMainWindowPrivate::_k_slotSaveAutoSaveSize()
 {
     if (autoSaveGroup.isValid()) {
-        q->saveWindowSize(autoSaveGroup);
+        KWindowConfig::saveWindowSize(q, autoSaveGroup);
     }
 }
 

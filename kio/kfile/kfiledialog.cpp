@@ -44,6 +44,7 @@
 #include "kabstractfilemodule.h"
 #include "krecentdirs.h"
 #include "kservice.h"
+#include <kwindowconfig.h>
 
 /** File dialogs are native by default on Windows. */
 #if defined(Q_OS_WIN) || defined(Q_WS_MAEMO_5)
@@ -279,8 +280,8 @@ KFileDialog::KFileDialog(const QUrl& startDir, const QString& filter,
     }
 
     setButtons( KDialog::None );
-    restoreDialogSize(d->cfgGroup); // call this before the fileQWidget is set as the main widget.
-                                   // otherwise the sizes for the components are not obeyed (ereslibre)
+    KWindowConfig::restoreWindowSize(this, d->cfgGroup); // call this before the fileQWidget is set as the main widget.
+                                                           // otherwise the sizes for the components are not obeyed (ereslibre)
 
     d->w->setFilter(filter);
     setMainWidget(fileQWidget);
@@ -932,7 +933,7 @@ void KFileDialog::hideEvent( QHideEvent *e )
     if (d->native)
         return;
 
-    saveDialogSize(d->cfgGroup, KConfigBase::Persistent);
+    KWindowConfig::saveWindowSize(this, d->cfgGroup, KConfigBase::Persistent);
 
     KDialog::hideEvent( e );
 }

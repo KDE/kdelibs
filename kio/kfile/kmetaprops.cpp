@@ -25,6 +25,7 @@
 #include <kfilemetadataconfigurationwidget.h>
 #include <klocalizedstring.h>
 #include <ksharedconfig.h>
+#include <kwindowconfig.h>
 
 #include <QtCore/QPointer>
 #include <QLabel>
@@ -75,7 +76,7 @@ void KFileMetaPropsPlugin::KFileMetaPropsPluginPrivate::configureShownMetaData()
     dialog->setMainWidget(mainWidget);
 
     KConfigGroup dialogConfig(KSharedConfig::openConfig(), "KFileMetaPropsPlugin");
-    dialog->restoreDialogSize(dialogConfig);
+    KWindowConfig::restoreWindowSize(dialog, dialogConfig);
 
     if ((dialog->exec() == QDialog::Accepted) && (dialog != 0)) {
         configWidget->save();
@@ -88,7 +89,7 @@ void KFileMetaPropsPlugin::KFileMetaPropsPluginPrivate::configureShownMetaData()
     }
 
     if (dialog != 0) {
-        dialog->saveDialogSize(dialogConfig);
+        KWindowConfig::saveWindowSize(dialog, dialogConfig);
         delete dialog;
         dialog = 0;
     }

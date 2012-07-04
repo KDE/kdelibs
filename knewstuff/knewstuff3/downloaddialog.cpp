@@ -33,6 +33,7 @@
 #include <kpushbutton.h>
 #include <ktitlewidget.h>
 #include <kdebug.h>
+#include <kwindowconfig.h>
 
 #include "downloadwidget.h"
 #include "downloadwidget_p.h"
@@ -75,7 +76,7 @@ void DownloadDialog::init(const QString& configFile)
 {
     // load the last size from config
     KConfigGroup group(KSharedConfig::openConfig(), ConfigGroup);
-    restoreDialogSize(group);
+    KWindowConfig::restoreWindowSize(this, group);
     setMinimumSize(700, 400);
 
     setCaption(i18n("Get Hot New Stuff"));
@@ -98,7 +99,7 @@ void DownloadDialog::init(const QString& configFile)
 DownloadDialog::~DownloadDialog()
 {
     KConfigGroup group(KSharedConfig::openConfig(), ConfigGroup);
-    saveDialogSize(group, KConfigBase::Persistent);
+    KWindowConfig::saveWindowSize(this, group, KConfigBase::Persistent);
     delete d;
 }
 
