@@ -47,13 +47,18 @@ public:
 
     virtual bool isRechargeable() const;
     virtual Solid::Battery::ChargeState chargeState() const;
-    
+
+    virtual int capacity() const;
+    virtual Solid::Battery::Technology technology() const;
+
     QString batteryTechnology() const;
 
 Q_SIGNALS:
     void chargePercentChanged(int value, const QString &udi);
     void chargeStateChanged(int newState, const QString &udi);
     void plugStateChanged(bool newState, const QString &udi);
+    void energyChanged(double energy, const QString &udi);
+    void energyRateChanged(double energyRate, const QString &udi);
 
 private Q_SLOTS:
     void slotPropertyChanged(const QMap<QString,int> &changes);

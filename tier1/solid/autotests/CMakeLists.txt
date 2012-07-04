@@ -35,7 +35,7 @@ set(solidhwtest_SRCS
 add_executable(solidhwtest ${solidhwtest_SRCS})
 add_test(solidhwtest solidhwtest)
 ecm_mark_as_test(solidhwtest)
-set_target_properties(solidhwtest PROPERTIES COMPILE_FLAGS -DFAKE_COMPUTER_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw/fakecomputer.xml\\"")
+set_target_properties(solidhwtest PROPERTIES COMPILE_FLAGS -DSOLID_STATIC_DEFINE=1\ -DFAKE_COMPUTER_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw/fakecomputer.xml\\"")
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw )
 
@@ -50,7 +50,7 @@ set(solidmttest_SRCS
 add_executable(solidmttest ${solidmttest_SRCS})
 add_test(solidmttest solidmttest)
 ecm_mark_as_test(solidmttest)
-set_target_properties(solidmttest PROPERTIES COMPILE_FLAGS -DFAKE_COMPUTER_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw/fakecomputer.xml\\"")
+set_target_properties(solidmttest PROPERTIES COMPILE_FLAGS -DSOLID_STATIC_DEFINE=1\ -DFAKE_COMPUTER_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw/fakecomputer.xml\\"")
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw )
 

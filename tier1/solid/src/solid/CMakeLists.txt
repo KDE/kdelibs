@@ -34,6 +34,10 @@ file(MAKE_DIRECTORY
    ${CMAKE_CURRENT_BINARY_DIR}/backends/wmi
 )
 
+if(WIN32)
+    add_definitions(-DYY_NO_UNISTD_H)
+endif(WIN32)
+
 set(solid_LIB_SRCS
    solidnamespace.cpp
    managerbase.cpp
@@ -410,6 +414,7 @@ install(FILES org.kde.Solid.Networking.Client.xml
 ########### static lib for tests  ###############
 
 add_library(solid_static STATIC ${solid_LIB_SRCS})
+set_target_properties(solid_static PROPERTIES COMPILE_FLAGS -DSOLID_STATIC_DEFINE=1)
 
 target_link_libraries(solid_static ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS})
 

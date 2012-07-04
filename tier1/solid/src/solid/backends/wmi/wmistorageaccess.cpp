@@ -25,8 +25,6 @@
 #include <QtGui/QApplication>
 #include <QtGui/QWidget>
 
-#include <unistd.h>
-
 using namespace Solid::Backends::Wmi;
 
 StorageAccess::StorageAccess(WmiDevice *device)

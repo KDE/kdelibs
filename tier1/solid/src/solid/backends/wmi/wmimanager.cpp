@@ -155,7 +155,7 @@ QStringList WmiManager::allDevices()
         if (!deviceUdiList.contains(udi))
             deviceUdiList << udi;
     }
-    return list;
+    return aList;
 }
 
 bool WmiManager::deviceExists(const QString &udi)

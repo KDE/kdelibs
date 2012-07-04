@@ -25,6 +25,10 @@
 #include <QtCore/QSharedData>
 #include <QtCore/QWeakPointer>
 
+#if defined(Q_CC_MSVC)
+#undef interface
+#endif
+
 namespace Solid
 {
     namespace Ifaces

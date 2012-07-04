@@ -77,6 +77,16 @@ Solid::Battery::ChargeState Battery::chargeState() const
     }
 }
 
+Solid::Battery::Technology Battery::technology() const
+{
+    return Solid::Battery::UnknownTechnology;
+}
+
+int Battery::capacity() const
+{
+    return m_device->property("").toInt();
+}
+
 QString Battery::batteryTechnology() const
 {
     const ushort tech = m_device->property("Chemistry").toUInt();
@@ -95,6 +105,21 @@ QString Battery::batteryTechnology() const
     default:
         return QObject::tr("Unknown", "battery technology");
     }
+}
+
+double Battery::energy() const
+{
+    return 0.0;
+}
+
+double Battery::energyRate() const
+{
+    return 0.0;
+}
+
+double Battery::voltage() const
+{
+    return 0.0;
 }
 
 void Battery::slotPropertyChanged(const QMap<QString,int> &changes)
