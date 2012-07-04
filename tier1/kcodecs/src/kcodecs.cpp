@@ -41,6 +41,10 @@
 #include <QtCore/QIODevice>
 #include <QtCore/QTextCodec>
 
+#if defined(Q_OS_WIN)
+#define strncasecmp _strnicmp
+#endif
+
 namespace KCodecs
 {
 
