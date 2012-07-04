@@ -15,7 +15,7 @@
 
    add_executable(kconfig_compiler ${kconfig_compiler_SRCS})
 
-   target_link_libraries(kconfig_compiler  ${QT_QTCORE_LIBRARY} ${QT_QTXML_LIBRARY} )
+   target_link_libraries(kconfig_compiler  ${QT_QTCORE_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTMAIN_LIBRARY} )
 
    # "export" this target too so we can use the LOCATION property of the imported target in
    # FindKDE4Internal.cmake to get the full path to the installed executable instead of using FIND_PROGRAM(), Alex

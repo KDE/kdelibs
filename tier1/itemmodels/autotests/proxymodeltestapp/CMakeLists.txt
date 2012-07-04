@@ -37,6 +37,7 @@ target_link_libraries(proxymodeltestapp
    ${QT_QTSCRIPT_LIBRARY}
    ${QT_QTGUI_LIBRARY}
    ${QT_QTCORE_LIBRARY}
+   ${QT_QTMAIN_LIBRARY}
 )
 
 

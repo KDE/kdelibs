@@ -13,7 +13,7 @@ macro(KARCHIVE_UNIT_TESTS)
       add_test(karchive-${_testname} ${_testname})
       # TODO: QT5 remove KDESRCDIR, QFINDTESTDATA doesn't need it
       set_target_properties(${_testname} PROPERTIES COMPILE_FLAGS -DKDESRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}/\\"")
-      target_link_libraries(${_testname} karchive ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} ${inqt5_LIBRARY})
+      target_link_libraries(${_testname} karchive ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} ${inqt5_LIBRARY} ${QT_QTMAIN_LIBRARY})
       if(WINCE)
          target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
       endif()
@@ -29,7 +29,7 @@ karchive_unit_tests(
 
 add_executable(klimitediodevicetest klimitediodevicetest.cpp ../src/klimitediodevice.cpp)
 add_test(karchive-klimitediodevicetest klimitediodevicetest)
-target_link_libraries(klimitediodevicetest ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} )
+target_link_libraries(klimitediodevicetest ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} ${QT_QTMAIN_LIBRARY} )
 
 ########### kfiltertest ###############
 
@@ -38,6 +38,6 @@ target_link_libraries(klimitediodevicetest ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBR
 set(kfiltertest_SRCS kfiltertest.cpp httpfilter.cpp)
 
 add_executable(kfiltertest ${kfiltertest_SRCS})
-target_link_libraries(kfiltertest ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} karchive ${inqt5_LIBRARY} ${ZLIB_LIBRARIES})
+target_link_libraries(kfiltertest ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} ${QT_QTMAIN_LIBRARY} karchive ${inqt5_LIBRARY} ${ZLIB_LIBRARIES})
 
 add_test(karchive-kfiltertest kfiltertest)

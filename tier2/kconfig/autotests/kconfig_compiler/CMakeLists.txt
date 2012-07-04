@@ -26,7 +26,7 @@ gen_kcfg_test_source(test1 test1_SRCS)
 
 add_executable(test1 ${test1_SRCS})
 
-target_link_libraries(test1 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} kconfigcore kconfiggui)
+target_link_libraries(test1 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY} kconfigcore kconfiggui)
 
 
 ########### next target ###############
@@ -38,7 +38,7 @@ gen_kcfg_test_source(test2 test2_SRCS)
 
 add_executable(test2 ${test2_SRCS})
 
-target_link_libraries(test2 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} kconfigcore kconfiggui)
+target_link_libraries(test2 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY} kconfigcore kconfiggui)
 
 
 ########### next target ###############
@@ -50,7 +50,7 @@ gen_kcfg_test_source(test3 test3_SRCS)
 
 add_executable(test3 ${test3_SRCS})
 
-target_link_libraries(test3 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} kconfigcore kconfiggui)
+target_link_libraries(test3 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY} kconfigcore kconfiggui)
 
 
 ########### next target ###############
@@ -62,7 +62,7 @@ gen_kcfg_test_source(test3a test3a_SRCS)
 
 add_executable(test3a ${test3a_SRCS})
 
-target_link_libraries(test3a ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} kconfigcore kconfiggui)
+target_link_libraries(test3a ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY} kconfigcore kconfiggui)
 
 
 ########### next target ###############
@@ -74,7 +74,7 @@ gen_kcfg_test_source(test4 test4_SRCS)
 
 add_executable(test4 ${test4_SRCS})
 
-target_link_libraries(test4 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} kconfigcore kconfiggui)
+target_link_libraries(test4 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY} kconfigcore kconfiggui)
 
 
 ########### next target ###############
@@ -86,7 +86,7 @@ gen_kcfg_test_source(test5 test5_SRCS)
 
 add_executable(test5 ${test5_SRCS})
 
-target_link_libraries(test5 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} kconfigcore kconfiggui)
+target_link_libraries(test5 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY} kconfigcore kconfiggui)
 
 
 ########### next target ###############
@@ -98,7 +98,7 @@ gen_kcfg_test_source(test6 test6_SRCS)
 
 add_executable(test6 ${test6_SRCS})
 
-target_link_libraries(test6 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} kconfigcore kconfiggui)
+target_link_libraries(test6 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY} kconfigcore kconfiggui)
 
 
 ########### next target ###############
@@ -110,7 +110,7 @@ gen_kcfg_test_source(test7 test7_SRCS)
 
 add_executable(test7 ${test7_SRCS})
 
-target_link_libraries(test7 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} kconfigcore kconfiggui)
+target_link_libraries(test7 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY} kconfigcore kconfiggui)
 
 
 ########### next target ###############
@@ -123,7 +123,7 @@ gen_kcfg_test_source(test8b test8_SRCS)
 
 add_executable(test8 ${test8_SRCS})
 
-target_link_libraries(test8 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} kconfigcore kconfiggui)
+target_link_libraries(test8 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY} kconfigcore kconfiggui)
 
 
 ########### next target ###############
@@ -135,7 +135,7 @@ gen_kcfg_test_source(test9 test9_SRCS)
 
 add_executable(test9 ${test9_SRCS})
 
-target_link_libraries(test9 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} kconfigcore kconfiggui)
+target_link_libraries(test9 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY} kconfigcore kconfiggui)
 
 
 ########### next target ###############
@@ -147,7 +147,7 @@ gen_kcfg_test_source(test10 test10_SRCS)
 
 add_executable(test10 ${test10_SRCS})
 
-target_link_libraries(test10 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} kconfigcore kconfiggui kcoreaddons)
+target_link_libraries(test10 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY} kconfigcore kconfiggui kcoreaddons)
 
 
 ########### next target ###############
@@ -160,7 +160,7 @@ gen_kcfg_test_source(test11a test11_SRCS)
 
 add_executable(test11 ${test11_SRCS})
 
-target_link_libraries(test11 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} kconfigcore kconfiggui)
+target_link_libraries(test11 ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY} kconfigcore kconfiggui)
 
 
 ########### next target ###############
@@ -172,7 +172,7 @@ gen_kcfg_test_source(test_dpointer test_dpointer_SRCS)
 
 add_executable(test_dpointer ${test_dpointer_SRCS})
 
-target_link_libraries(test_dpointer ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} kconfigcore kconfiggui)
+target_link_libraries(test_dpointer ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY} kconfigcore kconfiggui)
 
 
 ########### next target ###############
@@ -180,7 +180,7 @@ target_link_libraries(test_dpointer ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} kco
 set(test_signal_SRCS test_signal_main.cpp )
 gen_kcfg_test_source(test_signal test_signal_SRCS)
 add_executable(test_signal ${test_signal_SRCS})
-target_link_libraries(test_signal ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} kconfigcore kconfiggui)
+target_link_libraries(test_signal ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY} kconfigcore kconfiggui)
 
 ########### next target ###############
 
@@ -190,7 +190,7 @@ add_definitions(-DTESTSRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}\\"")
 add_executable(kconfigcompiler_test ${kconfigcompiler_test_SRCS})
 add_test(kconfig-kconfigcompiler kconfigcompiler_test)
 
-target_link_libraries(kconfigcompiler_test ${QT_QTCORE_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
+target_link_libraries(kconfigcompiler_test ${QT_QTCORE_LIBS} ${QT_QTTEST_LIBRARY} ${QT_QTMAIN_LIBRARY} kcoreaddons)
 
 ########### install files ###############
 
