@@ -123,7 +123,7 @@ public:
         QColor bgColor;
         BackgroundMode bgMode;
     };
-    QHash <int, DatePaintingMode*> m_customPaintingModes;
+    QHash <int, DatePaintingMode> m_customPaintingModes;
 
     int m_hoveredPos;
 };
@@ -492,12 +492,12 @@ void KDateTable::paintCell( QPainter *painter, int row, int col, const KColorSch
 
             //If custom colors or shape are required for this date
             if ( customDay ) {
-                KDateTablePrivate::DatePaintingMode * mode = d->m_customPaintingModes[cellDate.toJulianDay()];
-                if ( mode->bgMode != NoBgMode ) {
-                        cellBackgroundMode = mode->bgMode;
-                        if (!selectedDay) cellBackgroundColor = mode->bgColor;
+                KDateTablePrivate::DatePaintingMode mode = d->m_customPaintingModes[cellDate.toJulianDay()];
+                if ( mode.bgMode != NoBgMode ) {
+                        cellBackgroundMode = mode.bgMode;
+                        if (!selectedDay) cellBackgroundColor = mode.bgColor;
                 }
-                cellTextColor = mode->fgColor;
+                cellTextColor = mode.fgColor;
             }
 
             //If the cell day is the day of religious observance, then always color text red unless Custom overrides
@@ -846,10 +846,10 @@ void KDateTable::setCustomDatePainting( const QDate &date, const QColor &fgColor
         return;
     }
 
-    KDateTablePrivate::DatePaintingMode *mode = new KDateTablePrivate::DatePaintingMode;
-    mode->bgMode = bgMode;
-    mode->fgColor = fgColor;
-    mode->bgColor = bgColor;
+    KDateTablePrivate::DatePaintingMode mode;
+    mode.bgMode = bgMode;
+    mode.fgColor = fgColor;
+    mode.bgColor = bgColor;
 
     d->m_customPaintingModes.insert( date.toJulianDay(), mode );
     d->m_useCustomColors = true;
