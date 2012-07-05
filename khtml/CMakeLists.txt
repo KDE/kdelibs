@@ -299,19 +299,23 @@ set(kjs_html_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_xpath.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_scriptable.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_data.cpp
-
-# TODO: add_definitions(-DKJS_DEBUGGER) and reenable this, once it can depend on the ktexteditor interfaces
-  #${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugwindow.cpp
-  #${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugdocument.cpp
-  #${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/consoledock.cpp
-  #${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/breakpointsdock.cpp
-  #${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/callstackdock.cpp
-  #${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/localvariabledock.cpp
-  #${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/scriptsdock.cpp
-  #${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/value2string.cpp
-  #${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/errordlg.cpp
-  #${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/interpreter_ctx.cpp
 )
+
+# TODO: set(KJS_DEBUGGER) once we can depend on the ktexteditor interfaces
+if (KJS_DEBUGGER)
+  set (kjs_html_STAT_SRCS ${kjs_html_STAT_SRCS}
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugwindow.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugdocument.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/consoledock.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/breakpointsdock.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/callstackdock.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/localvariabledock.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/scriptsdock.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/value2string.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/errordlg.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/interpreter_ctx.cpp
+  )
+endif()
 
 #qt4_add_resources( kjs_html_STAT_SRCS ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugger.qrc )
 
@@ -538,7 +542,10 @@ kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 
 kde4_add_library(khtml ${LIBRARY_TYPE} ${khtml_LIB_SRCS})
 
-target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ${KDE4_PHONON_LIBS} ktexteditor kjs karchive sonnetcore ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES} kdeguiaddons kwidgetsaddons ${kwindowsystem_LIBRARY} ${QtMimeTypes_LIBRARY})
+target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ${KDE4_PHONON_LIBS} kjs karchive sonnetcore ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES} kdeguiaddons kwidgetsaddons ${kwindowsystem_LIBRARY} ${QtMimeTypes_LIBRARY})
+if (KJS_DEBUGGER)
+  target_link_libraries(khtml ktexteditor)
+endif()
 target_link_libraries(khtml LINK_INTERFACE_LIBRARIES kparts kjs kio kdeui kdecore ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
 
 set_target_properties(khtml PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}

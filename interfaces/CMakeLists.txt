@@ -2,7 +2,6 @@
 
 project(interfaces)
 
-add_subdirectory( ktexteditor )
 add_subdirectory( kregexpeditor )
 if (NOT KDE_NO_PHONON)
   add_subdirectory( kmediaplayer )
