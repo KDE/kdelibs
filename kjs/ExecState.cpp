@@ -93,7 +93,7 @@ ExecState::ExecState(Interpreter* intp, ExecState* save) :
   m_interpreter(intp),
   m_propertyNames(CommonIdentifiers::shared()),
   m_callingExec(0),
-  m_savedExec(save),  
+  m_savedExec(save),
   m_currentBody(0),
   m_function(0),
   m_localStore(0),
@@ -108,7 +108,7 @@ ExecState::ExecState(Interpreter* intp, ExecState* save) :
      Also, it is possible for the client to call Interpreter::evaluate again; and we still
      need to mark things from the outside when that happens
    */
-     
+
     if (m_callingExec && m_savedExec && m_callingExec != m_savedExec)
         assert(m_callingExec == intp->globalExec());
     m_interpreter->setExecState(this);
@@ -146,7 +146,7 @@ JSValue* ExecState::reactivateCompletion(bool insideTryFinally)
         // We just straight fell into 'finally'. Nothing fancy to do.
         return 0;
     }
-    
+
     if (comp.complType() == Throw || insideTryFinally) {
         setAbruptCompletion(comp);
     } else {
@@ -189,7 +189,7 @@ void ExecState::setAbruptCompletion(Completion comp)
     Debugger* dbg = dynamicInterpreter()->debugger();
     if (dbg && comp.complType() == Throw)
         dbg->reportException(this, comp.value());
-    
+
     m_completion = comp;
 
     while (!m_exceptionHandlers.isEmpty()) {

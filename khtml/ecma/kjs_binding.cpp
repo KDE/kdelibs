@@ -44,6 +44,7 @@
 #include <kdebug.h>
 #include <kparts/browserextension.h>
 #include <kmessagebox.h>
+#include <QTextDocument> // Qt::escape
 
 #include "debugger/debugwindow.h"
 
@@ -340,6 +341,100 @@ void setDOMException(ExecState *exec, int internalCode)
   errorObject->put(exec, exec->propertyNames().name, jsString(UString(type) + " Exception"));
   errorObject->put(exec, exec->propertyNames().message, jsString(name));
   errorObject->put(exec, "code", jsNumber(code));
+}
+
+QString valueToString(KJS::JSValue* value)
+{
+    switch(value->type())
+    {
+        case KJS::NumberType:
+        {
+            double v = 0.0;
+            value->getNumber(v);
+            return QString::number(v);
+        }
+        case KJS::BooleanType:
+            return value->getBoolean() ? "true" : "false";
+        case KJS::StringType:
+        {
+            KJS::UString s;
+            value->getString(s);
+            return '"' + s.qstring() + '"';
+        }
+        case KJS::UndefinedType:
+            return "undefined";
+        case KJS::NullType:
+            return "null";
+        case KJS::ObjectType:
+            return "[object " + static_cast<KJS::JSObject*>(value)->className().qstring() +"]";
+        case KJS::GetterSetterType:
+        case KJS::UnspecifiedType:
+        default:
+            return QString();
+    }
+}
+
+QString exceptionToString(ExecState* exec, JSValue* exceptionObj)
+{
+  QString exceptionMsg = valueToString(exceptionObj);
+
+    // Since we purposefully bypass toString, we need to figure out
+    // string serialization ourselves.
+    //### might be easier to export class info for ErrorInstance ---
+
+    JSObject* valueObj = exceptionObj->getObject();
+    JSValue*  protoObj = valueObj ? valueObj->prototype() : 0;
+
+    bool exception   = false;
+    bool syntaxError = false;
+    if (protoObj == exec->lexicalInterpreter()->builtinSyntaxErrorPrototype())
+    {
+        exception   = true;
+        syntaxError = true;
+    }
+
+    if (protoObj == exec->lexicalInterpreter()->builtinErrorPrototype()          ||
+        protoObj == exec->lexicalInterpreter()->builtinEvalErrorPrototype()      ||
+        protoObj == exec->lexicalInterpreter()->builtinReferenceErrorPrototype() ||
+        protoObj == exec->lexicalInterpreter()->builtinRangeErrorPrototype()     ||
+        protoObj == exec->lexicalInterpreter()->builtinTypeErrorPrototype()      ||
+        protoObj == exec->lexicalInterpreter()->builtinURIErrorPrototype())
+    {
+        exception = true;
+    }
+
+    if (!exception)
+        return exceptionMsg;
+
+    // Clear exceptions temporarily so we can get/call a few things.
+    // We memorize the old exception first, of course. Note that
+    // This is not always the same as exceptionObj since we may be
+    //  asked to translate a non-active exception
+    JSValue* oldExceptionObj = exec->exception();
+    exec->clearException();
+
+    // We want to serialize the syntax errors ourselves, to provide the line number.
+    // The URL is in "sourceURL" and the line is in "line"
+    // ### TODO: Perhaps we want to use 'sourceId' in case of eval contexts.
+    if (syntaxError)
+    {
+        JSValue* lineValue = valueObj->get(exec, "line");
+        JSValue* urlValue  = valueObj->get(exec, "sourceURL");
+
+        int      line = lineValue->toNumber(exec);
+        QString  url  = urlValue->toString(exec).qstring();
+        exceptionMsg = i18n("Parse error at %1 line %2",
+                            Qt::escape(url), line + 1);
+    }
+    else
+    {
+        // ### it's still not 100% safe to call toString here, even on
+        // native exception objects, since someone might have changed the toString property
+        // of the exception prototype, but I'll punt on this case for now.
+        exceptionMsg = exceptionObj->toString(exec).qstring();
+    }
+    exec->setException(oldExceptionObj);
+    return exceptionMsg;
 }
 
 } //namespace KJS

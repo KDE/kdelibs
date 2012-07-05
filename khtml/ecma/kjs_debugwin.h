@@ -21,10 +21,6 @@
 #ifndef _KJS_DEBUGGER_H_
 #define _KJS_DEBUGGER_H_
 
-
-
-#define KJS_DEBUGGER
-
 #ifdef KJS_DEBUGGER
 
 #include <qwidget.h>

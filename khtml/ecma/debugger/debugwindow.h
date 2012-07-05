@@ -20,8 +20,6 @@
 #ifndef DEBUGWINDOW_H
 #define DEBUGWINDOW_H
 
-#define KJS_DEBUGGER
-
 #include <kcomponentdata.h>
 #include <kxmlguiwindow.h>
 
@@ -89,13 +87,11 @@ public:
     // ### seems like some of what we (mis-)use inSession() for should use this
     static bool isBlocked();
 
-    // Returns if we blocked execution; KHTML will attempt to use it 
-    // to prevent some kinds of accidental recursion. Should go 
+    // Returns if we blocked execution; KHTML will attempt to use it
+    // to prevent some kinds of accidental recursion. Should go
     // if proper modal dialog manager shows up
     bool inSession() const { return !m_activeSessionCtxs.isEmpty(); }
 
-    // Serializes an exception for human consumption.
-    static QString exceptionToString(KJS::ExecState* exec, KJS::JSValue* exception);
 public:
 
     // All of the below are overridden from KJS::Debugger
@@ -107,7 +103,7 @@ public:
     bool exitContext(KJS::ExecState *exec, int sourceId, int lineno, KJS::JSObject *function);
     void attach(KJS::Interpreter *interp);
     void detach(KJS::Interpreter *interp);
-    
+
     bool shouldReindentSources() const;
 
     // Called by KJSProxy when we navigate away from a page
@@ -128,7 +124,7 @@ public Q_SLOTS:
 
 protected:
     virtual void closeEvent(QCloseEvent* event);
-    
+
     bool eventFilter(QObject *object, QEvent *event);
     void disableOtherWindows();
     void enableOtherWindows();
@@ -166,7 +162,7 @@ private:
 private:
     void cleanupDocument(DebugDocument::Ptr document);
 
-    // Checks to see whether we should stop at the given location, based on the current 
+    // Checks to see whether we should stop at the given location, based on the current
     // mode and breakpoints. Returns false if we should abort
     bool checkSourceLocation(KJS::ExecState* exec, int sourceId, int firstLine, int lastLine);
 
@@ -179,7 +175,7 @@ private:
     KAction *m_stepIntoAct;
     KAction *m_stepOutAct;
     KAction *m_stepOverAct;
-    
+
     KToggleAction *m_catchExceptionsAction;
     KToggleAction *m_reindentAction;
 
@@ -203,7 +199,7 @@ private:
     QStack<QEventLoop*> m_activeEventLoops;
 
     void resetTimeoutsIfNeeded();
-    
+
     bool m_reindentSources;
     bool m_catchExceptions;
     void syncFromConfig();
@@ -211,8 +207,8 @@ private:
 
     // The handling of debugger modes is a bit funny.
     // essentially, we want normal step/stepOver/stepOut
-    // to work per (dynamic) interpreter, but "break at next" 
-    // should work globally. 
+    // to work per (dynamic) interpreter, but "break at next"
+    // should work globally.
     bool m_breakAtNext;
 
     InterpreterContext* ctx() { return m_activeSessionCtxs.isEmpty() ? 0 : m_activeSessionCtxs.top(); }

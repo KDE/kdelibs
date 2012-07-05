@@ -72,7 +72,6 @@
 #include <QSplitter>
 #include <QTabWidget>
 #include <QToolButton>
-#include <QTextDocument>
 
 #include "breakpointsdock.h"
 #include "consoledock.h"
@@ -133,7 +132,7 @@ DebugWindow::DebugWindow(QWidget *parent)
 
     setCentralWidget(splitter);
     resize(800, 500);
-    
+
     syncFromConfig(); // need to do it before creating actions to know their state
     createActions();
     createMenus();
@@ -159,7 +158,7 @@ void DebugWindow::syncFromConfig()
     m_reindentSources = config.readEntry<bool>("ReindentSources", true);
     m_catchExceptions = config.readEntry<bool>("CatchExceptions", true);
     // m_catchExceptions = khtmlpart->settings()->isJavaScriptErrorReportingEnabled();
-    // m_reindentSources = 
+    // m_reindentSources =
 }
 
 void DebugWindow::syncToConfig()
@@ -194,7 +193,7 @@ void DebugWindow::createActions()
     actionCollection()->addAction( "continue", m_continueAct );
     m_continueAct->setShortcut(Qt::Key_F9);
     m_continueAct->setEnabled(false);
-    connect(m_continueAct, SIGNAL(triggered(bool)), this, SLOT(continueExecution()));    
+    connect(m_continueAct, SIGNAL(triggered(bool)), this, SLOT(continueExecution()));
 
 
     m_stepOverAct = new KAction(KDE::icon(":/images/step-over.png"), i18n("Step Over"), this );
@@ -202,7 +201,7 @@ void DebugWindow::createActions()
     m_stepOverAct->setShortcut(Qt::Key_F10);
     m_stepOverAct->setEnabled(false);
     connect(m_stepOverAct, SIGNAL(triggered(bool)), this, SLOT(stepOver()) );
-    
+
 
     m_stepIntoAct = new KAction(KDE::icon(":/images/step-into.png"), i18n("Step Into"), this );
     actionCollection()->addAction( "stepInto", m_stepIntoAct );
@@ -216,12 +215,12 @@ void DebugWindow::createActions()
     m_stepOutAct->setShortcut(Qt::Key_F12);
     m_stepOutAct->setEnabled(false);
     connect(m_stepOutAct, SIGNAL(triggered(bool)), this, SLOT(stepOut()) );
-    
+
     m_reindentAction = new KToggleAction(i18n("Reindent Sources"), this);
     actionCollection()->addAction( "reindent", m_reindentAction );
     m_reindentAction->setChecked( m_reindentSources );
     connect(m_reindentAction, SIGNAL(toggled(bool)), this, SLOT(settingsChanged()));
-    
+
     m_catchExceptionsAction = new KToggleAction(i18n("Report Exceptions"), this);
     actionCollection()->addAction( "except", m_catchExceptionsAction );
     m_catchExceptionsAction->setChecked( m_catchExceptions );
@@ -237,7 +236,7 @@ void DebugWindow::createMenus()
     debugMenu->addAction(m_stepIntoAct);
     debugMenu->addAction(m_stepOutAct);
     menuBar()->addMenu(debugMenu);
-    
+
     KMenu *settingsMenu = new KMenu(i18n("&Settings"), menuBar());
     settingsMenu->addAction(m_catchExceptionsAction);
     settingsMenu->addAction(m_reindentAction);
@@ -249,7 +248,7 @@ void DebugWindow::createToolBars()
     toolBar()->addAction(m_stopAct);
     toolBar()->addSeparator();
     toolBar()->addAction(m_continueAct);
-    toolBar()->addAction(m_stepOverAct);    
+    toolBar()->addAction(m_stepOverAct);
     toolBar()->addAction(m_stepIntoAct);
     toolBar()->addAction(m_stepOutAct);
 }
@@ -483,7 +482,7 @@ void DebugWindow::clearInterpreter(KJS::Interpreter* interp)
 
     fatalAssert(!m_activeSessionCtxs.contains(ctx), "Interpreter clear on active session");
 
-    // Cleanup all documents; but we keep the open windows open so 
+    // Cleanup all documents; but we keep the open windows open so
     // they can be reused.
     QMutableListIterator<DebugDocument::Ptr> i(m_docsForIntrp[interp]);
     while (i.hasNext())
@@ -493,7 +492,7 @@ void DebugWindow::clearInterpreter(KJS::Interpreter* interp)
             doc->markReload();
         else
             i.remove();
-            
+
         cleanupDocument(doc);
     }
 }
@@ -504,24 +503,24 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString& jsS
     Q_UNUSED(exec);
 
     kDebug() << "sourceId: " << sourceId
-             << "sourceURL: " << jsSourceURL.qstring() 
+             << "sourceURL: " << jsSourceURL.qstring()
              << "startingLineNumber: " << startingLineNumber
              << "errorLine: " << errorLine;
 
     QString sourceURL = jsSourceURL.qstring();
     // Tell it about this portion..
     QString qsource =  source.qstring();
-    
+
 
     DebugDocument::Ptr document;
-    
-    // See if there is an open document window we can reuse... 
-    foreach (DebugDocument::Ptr cand, m_openDocuments) 
+
+    // See if there is an open document window we can reuse...
+    foreach (DebugDocument::Ptr cand, m_openDocuments)
     {
         if (cand->isMarkedReload() && cand->url() == sourceURL && cand->baseLine() == startingLineNumber)
             document = cand;
     }
-    
+
     // If we don't have a document, make a new one.
     if (!document)
     {
@@ -543,7 +542,7 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString& jsS
 
         }
 
-        document = new DebugDocument(exec->dynamicInterpreter(), uiURL, 
+        document = new DebugDocument(exec->dynamicInterpreter(), uiURL,
                                      sourceId, startingLineNumber, qsource);
 
         connect(document.get(), SIGNAL(documentDestroyed(KJSDebugger::DebugDocument*)),
@@ -554,83 +553,20 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString& jsS
         // Otherwise, update.
         document->reloaded(sourceId, qsource);
     }
-    
+
     m_docsForIntrp[exec->dynamicInterpreter()].append(document);
-    
+
     // Show it in the script list view
     m_scripts->addDocument(document.get());
-    
+
 
     // Memorize the document..
     m_docForSid[sourceId] = document;
 
     if (qsource.contains("function")) // Approximate knowledge of whether code has functions. Ewwww...
         document->setHasFunctions();
-        
+
     return shouldContinue(m_contexts[exec->dynamicInterpreter()]);
-}
-
-QString DebugWindow::exceptionToString(ExecState* exec, JSValue* exceptionObj)
-{
-    QString exceptionMsg = valueToString(exceptionObj);
-
-    // Since we purposefully bypass toString, we need to figure out
-    // string serialization ourselves.
-    //### might be easier to export class info for ErrorInstance ---
-
-    JSObject* valueObj = exceptionObj->getObject();
-    JSValue*  protoObj = valueObj ? valueObj->prototype() : 0;
-
-    bool exception   = false;
-    bool syntaxError = false;
-    if (protoObj == exec->lexicalInterpreter()->builtinSyntaxErrorPrototype())
-    {
-        exception   = true;
-        syntaxError = true;
-    }
-
-    if (protoObj == exec->lexicalInterpreter()->builtinErrorPrototype()          ||
-        protoObj == exec->lexicalInterpreter()->builtinEvalErrorPrototype()      ||
-        protoObj == exec->lexicalInterpreter()->builtinReferenceErrorPrototype() ||
-        protoObj == exec->lexicalInterpreter()->builtinRangeErrorPrototype()     ||
-        protoObj == exec->lexicalInterpreter()->builtinTypeErrorPrototype()      ||
-        protoObj == exec->lexicalInterpreter()->builtinURIErrorPrototype())
-    {
-        exception = true;
-    }
-
-    if (!exception)
-        return exceptionMsg;
-
-    // Clear exceptions temporarily so we can get/call a few things.
-    // We memorize the old exception first, of course. Note that
-    // This is not always the same as exceptionObj since we may be
-    //  asked to translate a non-active exception
-    JSValue* oldExceptionObj = exec->exception();
-    exec->clearException();
-
-    // We want to serialize the syntax errors ourselves, to provide the line number.
-    // The URL is in "sourceURL" and the line is in "line"
-    // ### TODO: Perhaps we want to use 'sourceId' in case of eval contexts.
-    if (syntaxError)
-    {
-        JSValue* lineValue = valueObj->get(exec, "line");
-        JSValue* urlValue  = valueObj->get(exec, "sourceURL");
-
-        int      line = lineValue->toNumber(exec);
-        QString  url  = urlValue->toString(exec).qstring();
-        exceptionMsg = i18n("Parse error at %1 line %2",
-                            Qt::escape(url), line + 1);
-    }
-    else
-    {
-        // ### it's still not 100% safe to call toString here, even on
-        // native exception objects, since someone might have changed the toString property
-        // of the exception prototype, but I'll punt on this case for now.
-        exceptionMsg = exceptionObj->toString(exec).qstring();
-    }
-    exec->setException(oldExceptionObj);
-    return exceptionMsg;
 }
 
 bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *exceptionObj)
@@ -640,7 +576,7 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *
     // Don't report it if error reporting is not on
     KParts::ReadOnlyPart *part = static_cast<ScriptInterpreter*>(exec->dynamicInterpreter())->part();
     KHTMLPart *khtmlpart = qobject_cast<KHTMLPart*>(part);
-    
+
     if ((khtmlpart && !khtmlpart->settings()->isJavaScriptErrorReportingEnabled()) || !m_catchExceptions)
         return shouldContinue(ic);
 
@@ -665,12 +601,12 @@ bool DebugWindow::exception(ExecState *exec, int sourceId, int lineNo, JSValue *
     dlg.exec();
     --m_modalLevel;
     resetTimeoutsIfNeeded();
-    
+
     if (dlg.dontShowAgain()) {
         m_catchExceptions = false;
         m_catchExceptionsAction->setChecked(false);
     }
-    
+
     if (dlg.debugSelected()) {
         // We generally want to stop at the current line, to see what's going on... There is one exception, though:
         // in case we've got a parse error, we can't actually stop, but we want to still display stuff.

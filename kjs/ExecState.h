@@ -95,13 +95,13 @@ namespace KJS {
     /**
      The below methods deal with deferring of completions inside finally clauses.
      Essentially, we clear any set exceptions and memorize any non-normal completion
-     (including the target addresses for the continue/break statements) on 
+     (including the target addresses for the continue/break statements) on
      the m_deferredCompletions stack. If the 'finally' finishes normally,
      we will resume the previous completion. If not, finally's abnormal
      termination is handled as usually; a RemoveDeferred cleanup stack
      entry is added to unwind m_deferredCompletions if that happens.
     */
-    
+
     void deferCompletion() {
         pushExceptionHandler(RemoveDeferred);
         m_deferredCompletions.append(abruptCompletion());

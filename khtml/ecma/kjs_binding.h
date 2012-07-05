@@ -63,6 +63,14 @@ namespace khtml {
 
 namespace KJS {
 
+  // For the ecma debugger we provide our own conversion rather than the
+  // use the native one, since using the toString
+  // method on object can invoke code
+  QString valueToString(KJS::JSValue* value);
+
+  // Serializes an exception for human consumption.
+  QString exceptionToString(ExecState* exec, JSValue* exception);
+
   /**
    * Base class for all objects in this binding. Doesn't manage exceptions any more
    */
@@ -99,14 +107,14 @@ namespace KJS {
           m_domObjects.set(objectHandle, existing );
       return existing;
     }
-    
+
     void putDOMObject( void* objectHandle, DOMObject* obj ) {
       allDomObjects()->set( objectHandle, obj );
       m_domObjects.set( objectHandle, obj );
     }
 
     static void forgetDOMObject( void* objectHandle );
-    
+
     void clear() {
       m_domObjects.clear(); // Global set will be cleared at GC time.
     }
@@ -151,7 +159,7 @@ namespace KJS {
             s_allDomObjects = new HashMap<void*, DOMObject*>();
         return s_allDomObjects;
     }
-    
+
     DOM::Event *m_evt;
     bool m_inlineCode;
     bool m_timerCallback;
@@ -263,7 +271,7 @@ namespace KJS {
     JSTypeImp *thisObj = static_cast<JSTypeImp*>(slot.slotBase());
     return thisObj->indexGetter(exec, slot.index());
   }
-  
+
   /**
    Handler for index properties. Will call "length" method on the listObj
    to determine whether it's in range, and arrange to have indexGetter called
@@ -318,12 +326,12 @@ namespace KJS {
     }
     return false;
   }
-  
+
   /* Helper for below */
   JSValue* valueGetterAdapter(ExecState* exec, JSObject*, const Identifier& , const PropertySlot& slot);
 
   /**
-   This sets up the slot to return a particular JSValue*; unlike 
+   This sets up the slot to return a particular JSValue*; unlike
    setValueSlot, it does not require there to be a location to point at
   */
   inline bool getImmediateValueSlot(JSObject* thisObj, JSValue* value, PropertySlot& slot) {

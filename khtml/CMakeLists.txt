@@ -299,19 +299,21 @@ set(kjs_html_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_xpath.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_scriptable.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_data.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugwindow.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugdocument.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/consoledock.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/breakpointsdock.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/callstackdock.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/localvariabledock.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/scriptsdock.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/value2string.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/errordlg.cpp
-  ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/interpreter_ctx.cpp
+
+# TODO: add_definitions(-DKJS_DEBUGGER) and reenable this, once it can depend on the ktexteditor interfaces
+  #${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugwindow.cpp
+  #${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugdocument.cpp
+  #${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/consoledock.cpp
+  #${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/breakpointsdock.cpp
+  #${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/callstackdock.cpp
+  #${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/localvariabledock.cpp
+  #${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/scriptsdock.cpp
+  #${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/value2string.cpp
+  #${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/errordlg.cpp
+  #${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/interpreter_ctx.cpp
 )
 
-qt4_add_resources( kjs_html_STAT_SRCS ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugger.qrc )
+#qt4_add_resources( kjs_html_STAT_SRCS ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugger.qrc )
 
 # khtml/rendering/Makefile.am: khtmlrender
 
@@ -435,7 +437,6 @@ set(xpath_STAT_SRCS
 
 add_subdirectory( css )
 add_subdirectory( pics )
-add_subdirectory( ecma )
 
 include_directories( ${KDE4_PHONON_INCLUDES} ${KDE4_KPARTS_INCLUDES} )
 include_directories( ${CMAKE_BINARY_DIR}/kio/kssl )
