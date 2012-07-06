@@ -11,10 +11,10 @@
 #include <klineedit.h>
 #include <kglobalsettings.h>
 #include <kcompletionbox.h>
-#include <khbox.h>
 
 #include "klineedittest.h"
 #include <QLabel>
+#include <QHBoxLayout>
 #include <krestrictedline.h>
 
 KLineEditTest::KLineEditTest ( QWidget* widget )
@@ -50,35 +50,44 @@ KLineEditTest::KLineEditTest ( QWidget* widget )
     restrictedHBox->addWidget(m_invalidCharLabel);
 
 
-    KHBox *hbox = new KHBox (this);
-    m_btnExit = new QPushButton( "E&xit", hbox );
+    // horizontal button layout
+    m_btnExit = new QPushButton( "E&xit", this );
     connect( m_btnExit, SIGNAL(clicked()), SLOT(quitApp()) );
 
-    m_btnReadOnly = new QPushButton( "&Read Only", hbox );
+    m_btnReadOnly = new QPushButton( "&Read Only", this );
     m_btnReadOnly->setCheckable (true);
     connect( m_btnReadOnly, SIGNAL(toggled(bool)), SLOT(slotReadOnly(bool)) );
 
-    m_btnPassword = new QPushButton( "&Password", hbox );
+    m_btnPassword = new QPushButton( "&Password", this );
     m_btnPassword->setCheckable (true);
     connect( m_btnPassword, SIGNAL(toggled(bool)), SLOT(slotPassword(bool)) );
 
-    m_btnEnable = new QPushButton( "Dis&able", hbox );
+    m_btnEnable = new QPushButton( "Dis&able", this );
     m_btnEnable->setCheckable (true);
     connect( m_btnEnable, SIGNAL(toggled(bool)), SLOT(slotEnable(bool)) );
 
-    m_btnHide = new QPushButton( "Hi&de", hbox );
+    m_btnHide = new QPushButton( "Hi&de", this );
     connect( m_btnHide, SIGNAL(clicked()), SLOT(slotHide()) );
 
-    m_btnClickMessage = new QPushButton( "Clicked Message", hbox);
+    m_btnClickMessage = new QPushButton( "Clicked Message", this);
     m_btnClickMessage->setCheckable (true);
     connect( m_btnClickMessage, SIGNAL(toggled(bool)), SLOT(slotClickMessage(bool)) );
 
-    QPushButton *button = new QPushButton( "Stylesheet", hbox);
-    connect( button, SIGNAL(clicked()), SLOT(slotSetStyleSheet()));
+    QPushButton *btnStyle = new QPushButton( "Stylesheet", this);
+    connect( btnStyle, SIGNAL(clicked()), SLOT(slotSetStyleSheet()));
+
+    QHBoxLayout *buttonLayout = new QHBoxLayout(this);
+    buttonLayout->addWidget( m_btnExit );
+    buttonLayout->addWidget( m_btnReadOnly );
+    buttonLayout->addWidget( m_btnPassword );
+    buttonLayout->addWidget( m_btnEnable );
+    buttonLayout->addWidget( m_btnHide );
+    buttonLayout->addWidget( m_btnClickMessage );
+    buttonLayout->addWidget( btnStyle );
 
     layout->addWidget( m_lineedit );
     layout->addLayout( restrictedHBox );
-    layout->addWidget( hbox );
+    layout->addLayout( buttonLayout );
     setWindowTitle( "KLineEdit Unit Test" );
 }
 
