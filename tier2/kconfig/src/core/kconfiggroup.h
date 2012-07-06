@@ -587,16 +587,16 @@ public:
      * If an application computes a default value at runtime for
      * a certain entry, e.g. like:
      * \code
-     * QColor computedDefault = qApp->palette().color(QPalette::Active, QPalette::Text)
-     * QColor color = config->readEntry(key, computedDefault);
+     * QColor computedDefault = qApp->palette().color(QPalette::Active, QPalette::Text);
+     * QColor color = group.readEntry(key, computedDefault);
      * \endcode
      * then it may wish to make the following check before
      * writing back changes:
      * \code
-     * if ( (value == computedDefault) && !config->hasDefault(key) )
-     *    config->revertToDefault(key)
+     * if ( (value == computedDefault) && !group.hasDefault(key) )
+     *    group.revertToDefault(key);
      * else
-     *    config->writeEntry(key, value)
+     *    group.writeEntry(key, value);
      * \endcode
      *
      * This ensures that as long as the entry is not modified to differ from
