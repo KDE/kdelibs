@@ -529,7 +529,8 @@ void KNewFileMenuPrivate::executeStrategy()
                 QMimeType mime = db.mimeTypeForNameAndData(m_copyData.m_chosenFileName, srcFile.read(1024));
                 //kDebug() << "mime=" << mime->name() << "wantedMime=" << wantedMime->name();
                 if (!mime.inherits(wantedMime.name()))
-                    chosenFileName += wantedMime.preferredSuffix();
+                    if (!wantedMime.preferredSuffix().isEmpty())
+                        chosenFileName += QLatin1Char('.') + wantedMime.preferredSuffix();
             }
         }
     }
