@@ -31,7 +31,6 @@
 #include <QPushButton>
 #include <QLayout>
 #include <QLabel>
-#include <khbox.h>
 #include <QBoxLayout>
 
 #include <kcolorcombo.h>
@@ -40,37 +39,45 @@ KColorComboTest::KColorComboTest(QWidget* widget)
     : QWidget(widget)
 {
     QVBoxLayout *vbox = new QVBoxLayout(this);
+    QHBoxLayout *hboxLayout = new QHBoxLayout(this);
 
     // Standard color list
-    KHBox *hbox = new KHBox(this);
-    hbox->setSpacing(-1);
-    QLabel *lbl = new QLabel("&Standard colors:", hbox);
+    QLabel *lbl = new QLabel("&Standard colors:", this);
     lbl->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
-    mStandard = new KColorCombo(hbox);
+    mStandard = new KColorCombo(this);
     mStandard->setObjectName("StandardColors");
     lbl->setBuddy(mStandard);
-    new QLabel("Preset to green (0,255,0)", hbox);
-    vbox->addWidget(hbox);
+    QLabel *lblPreset = new QLabel("Preset to green (0,255,0)", this);
+
+    // add to box layout
+    hboxLayout->addWidget(lbl);
+    hboxLayout->addWidget(mStandard);
+    hboxLayout->addWidget(lblPreset);
+    vbox->addLayout(hboxLayout);
+
+    hboxLayout = new QHBoxLayout(this);
 
     // Custom color list
-    hbox = new KHBox(this);
-    hbox->setSpacing(-1);
-    lbl = new QLabel("&Reds, greens, blues:", hbox);
+    lbl = new QLabel("&Reds, greens, blues:", this);
     lbl->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
 
-    mCustom = new KColorCombo(hbox);
+    mCustom = new KColorCombo(this);
     mCustom->setObjectName("CustomColors");
     lbl->setBuddy(mCustom);
-    new QLabel("Preset to green (0,192,0)", hbox);
-    vbox->addWidget(hbox);
+    lblPreset = new QLabel("Preset to green (0,192,0)", this);
+
+    // add to box layout
+    hboxLayout->addWidget(lbl);
+    hboxLayout->addWidget(mCustom);
+    hboxLayout->addWidget(lblPreset);
+    vbox->addLayout(hboxLayout);
 
     // Create an exit button
-    hbox = new KHBox(this);
-    mExit = new QPushButton("E&xit", hbox);
+    mExit = new QPushButton("E&xit", this);
     QObject::connect(mExit, SIGNAL(clicked()), SLOT(quitApp()));
 
-    vbox->addWidget(hbox);
+    vbox->addWidget(mExit);
 
     // Populate the custom list
     QList<QColor> standardList;
