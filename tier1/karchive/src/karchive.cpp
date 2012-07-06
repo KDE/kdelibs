@@ -179,14 +179,13 @@ bool KArchive::close()
         d->dev->close();
     }
 
-    if (d->deviceOwned) {
-        delete d->dev; // we created it ourselves in open()
-    }
-
+    // if d->saveFile is not null then it is equal to d->dev.
     if (d->saveFile) {
         closeSucceeded = d->saveFile->commit();
         delete d->saveFile;
         d->saveFile = 0;
+    } if (d->deviceOwned) {
+        delete d->dev; // we created it ourselves in open()
     }
 
     delete d->rootDir;
