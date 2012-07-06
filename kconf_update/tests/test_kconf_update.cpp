@@ -504,7 +504,9 @@ void TestKConfUpdate::testScript()
 
     QSharedPointer<QTemporaryFile> updFile(writeUpdFile(updContent));
 
-    QString scriptPath = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + "kconf_update/test.sh";
+    const QString scriptDir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/kconf_update";
+    QVERIFY(QDir().mkpath(scriptDir));
+    QString scriptPath = scriptDir + "/test.sh";
     writeFile(scriptPath, updScript);
 
     QString confPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + "testrc";
