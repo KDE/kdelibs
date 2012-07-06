@@ -416,6 +416,8 @@ bool KService::hasServiceType( const QString& serviceType ) const
 
     if (!d->m_bValid) return false; // (useless) safety test
     const KServiceType::Ptr ptr = KServiceType::serviceType( serviceType );
+    if (!ptr)
+        return false;
     const int serviceOffset = offset();
     // doesn't seem to work:
     //if ( serviceOffset == 0 )
