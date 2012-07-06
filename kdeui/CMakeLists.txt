@@ -116,6 +116,7 @@ set(kdeui_LIB_SRCS
  dialogs/kconfigdialog.cpp
  dialogs/kconfigdialogmanager.cpp
  dialogs/kbugreport.cpp
+ dialogs/kdialogqueue.cpp
  dialogs/kedittoolbar.cpp
  dialogs/kinputdialog.cpp
  dialogs/klinkdialog.cpp

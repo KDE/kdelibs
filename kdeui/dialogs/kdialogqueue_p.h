@@ -24,7 +24,8 @@
 #ifndef KDIALOGQUEUE_H
 #define KDIALOGQUEUE_H
 
-#include <kwidgets_export.h>
+#include <kdeui_export.h>
+#include <QDialog>
 
 /**
  * \brief Queue for showing modal dialogs one after the other.
@@ -40,7 +41,7 @@
  *
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KWIDGETS_EXPORT KDialogQueue : public QObject
+class KDialogQueue : public QObject
 {
   Q_OBJECT
 
@@ -52,6 +53,7 @@ class KWIDGETS_EXPORT KDialogQueue : public QObject
   protected:
     KDialogQueue();
     static KDialogQueue *self();
+    friend class KDialogQueueSingleton;
 
   private:
     Q_PRIVATE_SLOT(d, void slotShowQueuedDialog())
