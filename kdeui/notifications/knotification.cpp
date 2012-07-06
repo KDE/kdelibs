@@ -37,7 +37,6 @@
 #include <kmacroexpander.h>
 #include <kwindowsystem.h>
 #include <kdebug.h>
-#include <kvbox.h>
 #include <kapplication.h>
 
 #include <QMap>

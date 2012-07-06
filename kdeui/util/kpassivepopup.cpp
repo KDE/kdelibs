@@ -24,6 +24,7 @@
 #include <QBitmap>
 #include <QLabel>
 #include <QLayout>
+#include <QBoxLayout>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPainterPath>
@@ -33,7 +34,6 @@
 #include <QToolTip>
 #include <QSystemTrayIcon>
 
-#include <kvbox.h>
 #include <kdebug.h>
 #include <kdialog.h>
 #include <kglobalsettings.h>
@@ -183,43 +183,51 @@ void KPassivePopup::setView( const QString &caption, const QString &text,
 }
 
 
-KVBox * KPassivePopup::standardView( const QString& caption,
+QWidget * KPassivePopup::standardView( const QString& caption,
                                      const QString& text,
                                      const QPixmap& icon,
                                      QWidget *parent )
 {
-    KVBox *vb = new KVBox( parent ? parent : this );
-    vb->setSpacing( -1 );
+    QWidget *top = new QWidget(parent ? parent : this);
+    QVBoxLayout *vb = new QVBoxLayout(top);
+    vb->setMargin(0);
+    top->setLayout(vb);
 
-    KHBox *hb=0;
+    QHBoxLayout *hb = 0;
     if ( !icon.isNull() ) {
-	hb = new KHBox( vb );
+	hb = new QHBoxLayout( top );
 	hb->setMargin( 0 );
-	hb->setSpacing( -1 );
-	d->ttlIcon = new QLabel( hb );
+        vb->addLayout( hb );
+	d->ttlIcon = new QLabel( top );
 	d->ttlIcon->setPixmap( icon );
         d->ttlIcon->setAlignment( Qt::AlignLeft );
+        hb->addWidget( d->ttlIcon );
     }
 
     if ( !caption.isEmpty() ) {
-	d->ttl = new QLabel( caption, hb ? hb : vb );
+	d->ttl = new QLabel( caption, top );
 	QFont fnt = d->ttl->font();
 	fnt.setBold( true );
 	d->ttl->setFont( fnt );
 	d->ttl->setAlignment( Qt::AlignHCenter );
 
-        if ( hb )
+        if ( hb ) {
+            hb->addWidget(d->ttl);
             hb->setStretchFactor( d->ttl, 10 ); // enforce centering
+        } else {
+            vb->addWidget(d->ttl);
+        }
     }
 
     if ( !text.isEmpty() ) {
-        d->msg = new QLabel( text, vb );
+        d->msg = new QLabel( text, top );
         d->msg->setAlignment( Qt::AlignLeft );
         d->msg->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
         d->msg->setOpenExternalLinks(true);
+        vb->addWidget(d->msg);
     }
 
-    return vb;
+    return top;
 }
 
 void KPassivePopup::setView( const QString &caption, const QString &text )

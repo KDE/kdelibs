@@ -26,7 +26,6 @@
 
 #include <QFrame>
 
-class KVBox;
 class QSystemTrayIcon;
 
 /**
@@ -62,14 +61,21 @@ class QSystemTrayIcon;
  * \code
  *    KPassivePopup *pop = new KPassivePopup( parent );
  *
- *    KVBox *vb = new KVBox( pop );
- *    (void) new QLabel( "<b>Isn't this great?</b>", vb);
+ *    QWidget* content = new QWidget( pop );
+ *    QVBoxLayout* vBox = new QVBoxLayout( content );
+ *    QLabel* label = new QLabel( "<b>Isn't this great?</b>", content );
+ *    vBox->addWidget( label );
  *
- *    KHBox *box = new KHBox( vb );
- *    (void) new QPushButton( "Yes", box );
- *    (void) new QPushButton( "No", box );
+ *    QPushButton* btnYes = new QPushButton( "Yes", content );
+ *    QPushButton* btnNo = new QPushButton( "No", content );
  *
- *    pop->setView( vb );
+ *    QHBoxLayout* hBox = new QHBoxLayout( content );
+ *    hBox->addWidget( btnYes );
+ *    hBox->addWidget( btnNo );
+ *
+ *    vBox->addLayout( vBox );
+ *
+ *    pop->setView( content );
  *    pop->show();
  * \endcode
  *
@@ -152,13 +158,14 @@ public:
      * @param parent The parent widget used for the returned KVBox. If left 0L,
      * then "this", i.e. the passive popup object will be used.
      *
-     * @return a KVBox containing the given arguments, looking like the
-     * standard passivepopups.
+     * @return a QWidget containing the given arguments, looking like the
+     * standard passivepopups. The returned widget contains a QVBoxLayout,
+     * which is accessible through layout().
      * @see setView( QWidget * )
      * @see setView( const QString&, const QString& )
      * @see setView( const QString&, const QString&, const QPixmap& )
      */
-    KVBox * standardView( const QString& caption, const QString& text,
+    QWidget * standardView( const QString& caption, const QString& text,
                           const QPixmap& icon, QWidget *parent = 0L );
 
     /**
