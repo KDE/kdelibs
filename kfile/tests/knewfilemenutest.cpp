@@ -82,7 +82,7 @@ private Q_SLOTS:
                 textAct = act;
         }
         if (!textAct && m_first) {
-            const QString err = "action with text" + actionText + "not found. kde-baseapps not installed?";
+            const QString err = "action with text \"" + actionText + "\" not found. kde-baseapps not installed?";
             QSKIP_PORTING(qPrintable(err), SkipAll);
         }
         textAct->trigger();
