@@ -30,6 +30,7 @@
 #include <QWhatsThis>
 #include <QFile>
 #include <QDir>
+#include <QBoxLayout>
 
 #include <kaboutapplicationdialog.h>
 #include <kaboutdata.h>
@@ -40,7 +41,6 @@
 #include <kbugreport.h>
 #include <kdialog.h>
 #include <kguiitem.h>
-#include <khbox.h>
 #include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <kmenu.h>
@@ -309,17 +309,20 @@ void KHelpMenu::aboutApplication()
       d->mAboutApp->setEscapeButton( KDialog::Yes );
       connect( d->mAboutApp, SIGNAL(finished()), this, SLOT(dialogFinished()) );
 
-      KHBox *hbox = new KHBox( d->mAboutApp );
-      d->mAboutApp->setMainWidget( hbox );
+      QWidget *content = new QWidget( d->mAboutApp );
+      QHBoxLayout *hbox = new QHBoxLayout( d->mAboutApp );
       hbox->setSpacing(KDialog::spacingHint()*3);
       hbox->setMargin(KDialog::marginHint()*1);
 
-      QLabel *label1 = new QLabel(hbox);
-
-      int size = IconSize(KIconLoader::Dialog);
+      const int size = IconSize(KIconLoader::Dialog);
+      QLabel *label1 = new QLabel( content );
       label1->setPixmap( qApp->windowIcon().pixmap(size,size) );
-      QLabel *label2 = new QLabel(hbox);
+      QLabel *label2 = new QLabel( content );
       label2->setText( d->mAboutAppText );
+
+      hbox->addWidget( label1 );
+      hbox->addWidget( label2 );
+      d->mAboutApp->setMainWidget( content );
     }
     d->mAboutApp->show();
   }
