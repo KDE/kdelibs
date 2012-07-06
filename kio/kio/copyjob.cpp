@@ -340,6 +340,12 @@ void CopyJobPrivate::slotResultStating( KJob *job )
     if ( destinationState == DEST_NOT_STATED ) {
         if ( m_dest.isLocalFile() ) { //works for dirs as well
             QString path = m_dest.toLocalFile();
+            if (m_asMethod) {
+                // In copy-as mode, we want to check the directory to which we're
+                // copying. The target file or directory does not exist yet, which
+                // might confuse KDiskFreeSpaceInfo.
+                path = QFileInfo(path).absolutePath();
+            }
             KFileSystemType::Type fsType = KFileSystemType::fileSystemType( path );
             if ( fsType != KFileSystemType::Nfs && fsType != KFileSystemType::Smb ) {
                 m_freeSpace = KDiskFreeSpaceInfo::freeSpaceInfo( path ).available();
