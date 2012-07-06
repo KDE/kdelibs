@@ -65,20 +65,22 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
                               const QStringList &groupsToShow,
                               int visuals,
                               QWidget *parent )
-    : KVBox( parent ),
+    : QWidget( parent ),
       d(new KMimeTypeChooserPrivate(this))
 {
   d->defaultgroup = defaultGroup;
   d->groups = groupsToShow;
   d->visuals = visuals;
-  setSpacing(-1);
 
+  QVBoxLayout* vboxLayout = new QVBoxLayout(this);
+  vboxLayout->setMargin(0);
   if ( !text.isEmpty() )
   {
-    new QLabel( text, this );
+    vboxLayout->addWidget(new QLabel( text, this ));
   }
 
   d->mimeTypeTree = new QTreeWidget( this );
+  vboxLayout->addWidget(d->mimeTypeTree);
   QStringList headerLabels;
   headerLabels.append( i18n("Mime Type") );
 //   d->mimeTypeTree->setColumnWidthMode( 0, QListView::Manual );
@@ -99,9 +101,10 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
 
   if (visuals & EditButton)
   {
-    KHBox *btns = new KHBox( this );
-    ((QBoxLayout*)btns->layout())->addStretch(1);
-    d->btnEditMimeType = new QPushButton( i18n("&Edit..."), btns );
+    QHBoxLayout *buttonLayout = new QHBoxLayout( this );
+    buttonLayout->addStretch(1);
+    d->btnEditMimeType = new QPushButton( i18n("&Edit..."), this );
+    buttonLayout->addWidget(d->btnEditMimeType);
 
     connect( d->btnEditMimeType, SIGNAL(clicked()), this, SLOT(_k_editMimeType()) );
     d->btnEditMimeType->setEnabled( false );
@@ -112,7 +115,10 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
 
     d->btnEditMimeType->setWhatsThis(i18n(
         "Click this button to display the familiar KDE mime type editor.") );
+
+    vboxLayout->addLayout(buttonLayout);
   }
+  setLayout(vboxLayout);
 }
 
 KMimeTypeChooser::~KMimeTypeChooser()

@@ -21,7 +21,7 @@
 
 #include <kio/kio_export.h>
 #include <kdialog.h>
-#include <kvbox.h>
+#include <QtGui/QWidget>
 
 class QTreeWidgetItem;
 
@@ -33,7 +33,7 @@ class QTreeWidgetItem;
  *
  * @author Anders Lund (anders at alweb dk), jan 23, 2002
  */
-class KIO_EXPORT KMimeTypeChooser : public KVBox
+class KIO_EXPORT KMimeTypeChooser : public QWidget
 {
   Q_OBJECT
 
