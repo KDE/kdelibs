@@ -41,8 +41,6 @@
 #include <kfileitem.h>
 #include <kdebug.h>
 #include <kdialog.h>
-#include <kvbox.h>
-#include <khbox.h>
 
 #ifdef HAVE_ACL_LIBACL_H
 # include <acl/libacl.h>
@@ -490,11 +488,11 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
     m_widgetStack = new QStackedWidget( page );
     mainLayout->addWidget( m_widgetStack );
 
-    KHBox *usersBox = new KHBox( m_widgetStack );
+    // users box
+    QWidget *usersBox = new QWidget( m_widgetStack );
+    QHBoxLayout *usersLayout = new QHBoxLayout( usersBox );
+    usersBox->setLayout( usersLayout );
     m_widgetStack->addWidget( usersBox );
-
-    KHBox *groupsBox = new KHBox( m_widgetStack );
-    m_widgetStack->addWidget( groupsBox );
 
     QLabel *usersLabel = new QLabel( i18n( "User: " ), usersBox );
     m_usersCombo = new KComboBox( usersBox );
@@ -502,11 +500,23 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
     m_usersCombo->setObjectName( QLatin1String( "users" ) );
     usersLabel->setBuddy( m_usersCombo );
 
+    usersLayout->addWidget( usersLabel );
+    usersLayout->addWidget( m_usersCombo );
+
+    // groups box
+    QWidget *groupsBox = new QWidget( m_widgetStack );
+    QHBoxLayout *groupsLayout = new QHBoxLayout( usersBox );
+    groupsBox->setLayout( groupsLayout );
+    m_widgetStack->addWidget( groupsBox );
+
     QLabel *groupsLabel = new QLabel( i18n( "Group: " ), groupsBox );
     m_groupsCombo = new KComboBox( groupsBox );
     m_groupsCombo->setEditable( false );
     m_groupsCombo->setObjectName( QLatin1String( "groups" ) );
     groupsLabel->setBuddy( m_groupsCombo );
+
+    groupsLayout->addWidget( groupsLabel );
+    groupsLayout->addWidget( m_groupsCombo );
 
     if ( m_item ) {
         m_buttonIds.key( m_item->type )->setChecked( true );
