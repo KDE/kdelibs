@@ -29,83 +29,92 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   QVBoxLayout *vbox = new QVBoxLayout (this);
 
   // Qt combobox
-  KHBox* hbox = new KHBox(this);
-  hbox->setSpacing (-1);
-  QLabel* lbl = new QLabel("&QCombobox:", hbox);
+  QHBoxLayout* hbox = new QHBoxLayout(this);
+  QLabel* lbl = new QLabel("&QCombobox:", this);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
+  hbox->addWidget(lbl);
 
-  m_qc = new QComboBox(hbox);
+  m_qc = new QComboBox(this);
   m_qc->setObjectName( QLatin1String( "QtReadOnlyCombo" ) );
   lbl->setBuddy (m_qc);
   connectComboSignals(m_qc);
-  vbox->addWidget (hbox);
+  hbox->addWidget(m_qc);
+
+  vbox->addLayout (hbox);
 
   // Read-only combobox
-  hbox = new KHBox(this);
-  hbox->setSpacing (-1);
-  lbl = new QLabel("&Read-Only Combo:", hbox);
+  hbox = new QHBoxLayout(this);
+  lbl = new QLabel("&Read-Only Combo:", this);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
+  hbox->addWidget(lbl);
 
-  m_ro = new KComboBox(hbox );
+  m_ro = new KComboBox(this);
   m_ro->setObjectName( "ReadOnlyCombo" );
   lbl->setBuddy (m_ro);
   m_ro->setCompletionMode( KGlobalSettings::CompletionAuto );
   connectComboSignals(m_ro);
-  vbox->addWidget (hbox);
+  hbox->addWidget(m_ro);
+
+  vbox->addLayout(hbox);
 
   // Read-write combobox
-  hbox = new KHBox(this);
-  hbox->setSpacing (-1);
-  lbl = new QLabel("&Editable Combo:", hbox);
+  hbox = new QHBoxLayout(this);
+  lbl = new QLabel("&Editable Combo:", this);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
+  hbox->addWidget(lbl);
 
-  m_rw = new KComboBox( true, hbox );
+  m_rw = new KComboBox( true, this );
   m_rw->setObjectName( "ReadWriteCombo" );
   lbl->setBuddy (m_rw);
   m_rw->setDuplicatesEnabled( true );
   m_rw->setInsertPolicy( QComboBox::NoInsert );
   m_rw->setTrapReturnKey( true );
   connectComboSignals(m_rw);
-  vbox->addWidget (hbox);
+  hbox->addWidget(m_rw);
+  vbox->addLayout(hbox);
 
   // History combobox...
-  hbox = new KHBox(this);
-  hbox->setSpacing (-1);
-  lbl = new QLabel("&History Combo:", hbox);
+  hbox = new QHBoxLayout(this);
+  lbl = new QLabel("&History Combo:", this);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
+  hbox->addWidget(lbl);
 
-  m_hc = new KHistoryComboBox( hbox );
+  m_hc = new KHistoryComboBox( this );
   m_hc->setObjectName( "HistoryCombo" );
   lbl->setBuddy (m_hc);
   m_hc->setDuplicatesEnabled( true );
   m_hc->setInsertPolicy( QComboBox::NoInsert );
   connectComboSignals(m_hc);
-  vbox->addWidget (hbox);
   m_hc->setTrapReturnKey(true);
+  hbox->addWidget(m_hc);
+  vbox->addLayout(hbox);
 
   // Read-write combobox that is a replica of code in konqueror...
-  hbox = new KHBox(this);
-  hbox->setSpacing (-1);
-  lbl = new QLabel( "&Konq's Combo:", hbox);
+  hbox = new QHBoxLayout(this);
+  lbl = new QLabel( "&Konq's Combo:", this);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
+  hbox->addWidget(lbl);
 
-  m_konqc = new KComboBox( true, hbox );
+  m_konqc = new KComboBox( true, this );
   m_konqc->setObjectName( "KonqyCombo" );
   lbl->setBuddy (m_konqc);
   m_konqc->setMaxCount( 10 );
   connectComboSignals(m_konqc);
-  vbox->addWidget (hbox);
+  hbox->addWidget(m_konqc);
+  vbox->addLayout(hbox);
 
   // Create an exit button
-  hbox = new KHBox (this);
-  m_btnExit = new QPushButton( "E&xit", hbox );
+  hbox = new QHBoxLayout(this);
+  m_btnExit = new QPushButton( "E&xit", this );
   QObject::connect( m_btnExit, SIGNAL(clicked()), SLOT(quitApp()) );
+  hbox->addWidget(m_btnExit);
 
   // Create a disable button...
-  m_btnEnable = new QPushButton( "Disa&ble", hbox );
+  m_btnEnable = new QPushButton( "Disa&ble", this );
   QObject::connect (m_btnEnable, SIGNAL(clicked()), SLOT(slotDisable()));
+  hbox->addWidget(m_btnEnable);
 
-  vbox->addWidget (hbox);
+  vbox->addLayout(hbox);
 
   // Popuplate the select-only list box
   QStringList list;
