@@ -916,7 +916,7 @@ void KEditToolBarWidgetPrivate::setupLayout()
                    m_widget,       SLOT(slotDropped(ToolBarListWidget*,int,ToolBarItem*,bool)));
 
   KListWidgetSearchLine *inactiveListSearchLine = new KListWidgetSearchLine(m_widget, m_inactiveList);
-  inactiveListSearchLine->setClickMessage(i18n("Filter"));
+  inactiveListSearchLine->setPlaceholderText(i18n("Filter"));
 
   // our list of active actions
   QLabel *active_label = new QLabel(i18n("Curr&ent actions:"), m_widget);
@@ -935,7 +935,7 @@ void KEditToolBarWidgetPrivate::setupLayout()
                    m_widget,     SLOT(slotDropped(ToolBarListWidget*,int,ToolBarItem*,bool)));
 
   KListWidgetSearchLine *activeListSearchLine = new KListWidgetSearchLine(m_widget, m_activeList);
-  activeListSearchLine->setClickMessage(i18n("Filter"));
+  activeListSearchLine->setPlaceholderText(i18n("Filter"));
 
   // "change icon" button
   m_changeIcon = new KPushButton(i18n( "Change &Icon..." ), m_widget);

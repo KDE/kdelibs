@@ -337,7 +337,7 @@ void KCharSelect::initWidget(const Controls controls, KActionCollection *collect
         mainLayout->addLayout(searchLayout);
         d->searchLine = new KLineEdit(this);
         searchLayout->addWidget(d->searchLine);
-        d->searchLine->setClickMessage(i18n("Enter a search term or character here"));
+        d->searchLine->setPlaceholderText(i18n("Enter a search term or character here"));
         d->searchLine->setClearButtonShown(true);
         d->searchLine->setToolTip(i18n("Enter a search term or character here"));
         KStandardAction::find(this, SLOT(_k_activateSearchLine()), d->actions);

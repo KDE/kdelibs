@@ -341,15 +341,15 @@ public:
      * @deprecated Use QLineEdit::setPlaceholderText instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    void KDEUI_DEPRECATED setClickMessage( const QString &msg );
+    KDEUI_DEPRECATED void setClickMessage( const QString &msg );
 #endif
 
     /**
-     * @deprecated Use QLineEdit::placeholderText instead.
      * @return the message set with setClickMessage
+     * @deprecated Use QLineEdit::placeholderText instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    QString KDEUI_DEPRECATED clickMessage() const;
+    KDEUI_DEPRECATED QString clickMessage() const;
 #endif
 
     /**

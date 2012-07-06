@@ -284,7 +284,7 @@ void KLineEdit::initWidget()
 #ifndef KDE_NO_DEPRECATED
 QString KLineEdit::clickMessage() const
 {
-    return d->clickMessage;
+    return placeholderText();
 }
 #endif
 
@@ -1840,10 +1840,7 @@ void KLineEdit::focusOutEvent( QFocusEvent *ev )
 #ifndef KDE_NO_DEPRECATED
 void KLineEdit::setClickMessage( const QString &msg )
 {
-    d->enableClickMsg = !msg.isEmpty();
-    d->clickMessage = msg;
-    d->drawClickMsg = text().isEmpty();
-    update();
+    setPlaceholderText(msg);
 }
 #endif
 

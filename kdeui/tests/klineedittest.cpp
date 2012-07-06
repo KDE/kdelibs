@@ -69,7 +69,11 @@ KLineEditTest::KLineEditTest ( QWidget* widget )
     m_btnHide = new QPushButton( "Hi&de", this );
     connect( m_btnHide, SIGNAL(clicked()), SLOT(slotHide()) );
 
-    m_btnClickMessage = new QPushButton( "Clicked Message", this);
+    m_btnPlaceholderText = new QPushButton( "Place Holder Text", this);
+    m_btnPlaceholderText->setCheckable (true);
+    connect( m_btnPlaceholderText, SIGNAL(toggled(bool)), SLOT(slotPlaceholderText(bool)) );
+
+    m_btnClickMessage = new QPushButton( "Clicked Message - DEPRECATED", this);
     m_btnClickMessage->setCheckable (true);
     connect( m_btnClickMessage, SIGNAL(toggled(bool)), SLOT(slotClickMessage(bool)) );
 
@@ -149,6 +153,15 @@ void KLineEditTest::slotEnable (bool enable)
     m_lineedit->setEnabled (!enable);
     QString text = (enable) ? "En&able":"Dis&able";
     m_btnEnable->setText (text);
+}
+
+void KLineEditTest::slotPlaceholderText(bool click)
+{
+    if( click )
+    {
+        m_lineedit->setText(""); // Clear before to add message
+        m_lineedit->setPlaceholderText("Click in this lineedit");
+    }
 }
 
 void KLineEditTest::slotClickMessage(bool click)

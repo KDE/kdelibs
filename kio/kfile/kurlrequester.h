@@ -201,7 +201,7 @@ public:
      * @deprecated use KUrlRequester::placeholderText instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    QString KDEUI_DEPRECATED clickMessage() const;
+    KDEUI_DEPRECATED QString clickMessage() const;
 #endif
 
     /**
@@ -210,7 +210,7 @@ public:
      * @deprecated use KUrlRequester::setPlaceholderText instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    void KDEUI_DEPRECATED setClickMessage(const QString& msg);
+    KDEUI_DEPRECATED void setClickMessage(const QString& msg);
 #endif
 
     /**

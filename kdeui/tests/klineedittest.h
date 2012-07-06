@@ -32,6 +32,7 @@ private Q_SLOTS:
    void slotReturnPressed();
    void resultOutput( const QString& );
    void slotReturnPressed( const QString& );
+   void slotPlaceholderText(bool click);
    void slotClickMessage(bool click);
    void slotInvalidChar(int);
    void slotSetStyleSheet();
@@ -45,6 +46,7 @@ protected:
    QPushButton* m_btnPassword;
    QPushButton* m_btnEnable;
    QPushButton* m_btnHide;
+   QPushButton* m_btnPlaceholderText;
    QPushButton* m_btnClickMessage;
 };
 
