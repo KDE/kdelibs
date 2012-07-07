@@ -1177,9 +1177,9 @@ void KRun::init()
         KMimeType::Ptr mime = KMimeType::findByUrl(d->m_strURL, d->m_mode, true /*local*/);
         assert(mime);
         kDebug(7010) << "MIME TYPE is " << mime->name();
-        if (!d->m_externalBrowser.isEmpty() && (
-               mime->is(QLatin1String("text/html")) ||
-               mime->is(QLatin1String("application/xml")))) {
+        if (!d->m_externalBrowser.isEmpty() &&
+            (mime->is(QLatin1String("text/html")) ||
+             mime->is(QLatin1String("application/xhtml+xml")))) {
             if (d->runExecutable(d->m_externalBrowser)) {
                 return;
             }
