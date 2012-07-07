@@ -67,7 +67,6 @@ class KDEUI_EXPORT KXmlGuiWindow : public KMainWindow, public KXMLGUIBuilder, vi
     Q_PROPERTY( QString autoSaveGroup READ autoSaveGroup )
     Q_PROPERTY( bool standardToolBarMenuEnabled READ isStandardToolBarMenuEnabled WRITE setStandardToolBarMenuEnabled )
     Q_FLAGS( StandardWindowOption )
-    Q_PROPERTY( bool initialGeometrySet READ initialGeometrySet )
 
 public:
     /**

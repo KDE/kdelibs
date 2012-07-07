@@ -28,7 +28,6 @@
 #include "kmainwindow_p.h"
 #include "kmainwindowiface_p.h"
 #include "ktoolbarhandler_p.h"
-#include "kcmdlineargs.h"
 #include "ktoggleaction.h"
 #include "ksessionmanager.h"
 #include "kstandardaction.h"
@@ -211,7 +210,6 @@ public:
 
 Q_GLOBAL_STATIC(KMWSessionManager, ksm)
 Q_GLOBAL_STATIC(QList<KMainWindow*>, sMemberList)
-static bool being_first = true;
 
 KMainWindow::KMainWindow( QWidget* parent, Qt::WFlags f )
     : QMainWindow(parent, f), k_ptr(new KMainWindowPrivate)
@@ -268,19 +266,6 @@ void KMainWindowPrivate::init(KMainWindow *_q)
     settingsTimer = 0;
     sizeTimer = 0;
     shuttingDown = false;
-    if ((care_about_geometry = being_first)) {
-        being_first = false;
-
-        QString geometry;
-        KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
-        if (args && args->isSet("geometry"))
-            geometry = args->getOption("geometry");
-
-        if ( geometry.isNull() ) // if there is no geometry, it doesn't matter
-            care_about_geometry = false;
-        else
-            q->parseGeometry(false);
-    }
 
     q->setWindowTitle( KGlobal::caption() );
 
@@ -418,49 +403,6 @@ void KMainWindowPrivate::setSizeDirty()
         }
         sizeTimer->start();
     }
-}
-
-void KMainWindow::parseGeometry(bool parsewidth)
-{
-    K_D(KMainWindow);
-    QString cmdlineGeometry;
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
-    if (args->isSet("geometry"))
-        cmdlineGeometry = args->getOption("geometry");
-
-    assert ( !cmdlineGeometry.isNull() );
-    assert ( d->care_about_geometry );
-    Q_UNUSED(d); // fix compiler warning in release mode
-
-#if defined Q_WS_X11
-    int x, y;
-    int w, h;
-    int m = XParseGeometry( cmdlineGeometry.toLatin1(), &x, &y, (unsigned int*)&w, (unsigned int*)&h);
-    if (parsewidth) {
-        const QSize minSize = minimumSize();
-        const QSize maxSize = maximumSize();
-        if ( !(m & WidthValue) )
-            w = width();
-        if ( !(m & HeightValue) )
-            h = height();
-         w = qMin(w,maxSize.width());
-         h = qMin(h,maxSize.height());
-         w = qMax(w,minSize.width());
-         h = qMax(h,minSize.height());
-         resize(w, h);
-    } else {
-        if ( (m & XNegative) )
-            x = QApplication::desktop()->width()  + x - w;
-        else if ( (m & XValue) )
-            x = geometry().x();
-        if ( (m & YNegative) )
-            y = QApplication::desktop()->height() + y - h;
-        else if ( (m & YValue) )
-            y = geometry().y();
-
-        move(x, y);
-    }
-#endif
 }
 
 KMainWindow::~KMainWindow()
@@ -822,18 +764,6 @@ void KMainWindow::saveWindowSize( KConfigGroup & cg ) const
     KWindowConfig::saveWindowSize(this, cg);
 }
 #endif
-
-bool KMainWindow::initialGeometrySet() const
-{
-    K_D(const KMainWindow);
-    return d->care_about_geometry;
-}
-
-void KMainWindow::ignoreInitialGeometry()
-{
-    K_D(KMainWindow);
-    d->care_about_geometry = false;
-}
 
 void KMainWindow::setSettingsDirty()
 {

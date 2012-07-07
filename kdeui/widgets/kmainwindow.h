@@ -112,7 +112,6 @@ class KDEUI_EXPORT KMainWindow : public QMainWindow
     Q_PROPERTY( bool hasMenuBar READ hasMenuBar )
     Q_PROPERTY( bool autoSaveSettings READ autoSaveSettings )
     Q_PROPERTY( QString autoSaveGroup READ autoSaveGroup )
-    Q_PROPERTY( bool initialGeometrySet READ initialGeometrySet )
 
 public:
     /**
@@ -405,18 +404,6 @@ public:
     void saveMainWindowSettings(KConfigGroup &config);
 
     /**
-     * @return true if a -geometry argument was given on the command line,
-     * and this is the first window created (the one on which this option applies)
-     */
-    bool initialGeometrySet() const;
-
-    /**
-     * @internal
-     * Used from Konqueror when reusing the main window.
-     */
-    void ignoreInitialGeometry();
-
-    /**
      * Returns the path under which this window's D-Bus object is exported.
      * @since 4.0.1
      */
@@ -634,15 +621,11 @@ protected:
 
     /**
      * For inherited classes
-     * Note that a -geometry on the command line has priority.
      * @deprecated use KWindowConfig::restoreWindowSize
      */
 #ifndef KDE_NO_DEPRECATED
     KDEUI_DEPRECATED void restoreWindowSize( const KConfigGroup & config );
 #endif
-
-    /// parse the geometry from the geometry command line argument
-    void parseGeometry(bool parsewidth);
 
 protected Q_SLOTS:
     /**

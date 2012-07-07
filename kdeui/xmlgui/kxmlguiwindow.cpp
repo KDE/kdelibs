@@ -199,10 +199,7 @@ void KXmlGuiWindow::setupGUI( const QSize & defaultSize, StandardWindowOptions o
         createGUI(xmlfile);
     }
 
-    if (initialGeometrySet()) {
-        // Do nothing...
-    }
-    else if (d->defaultSize.isValid()) {
+    if (d->defaultSize.isValid()) {
         resize(d->defaultSize);
     }
     else if (isHidden()) {
