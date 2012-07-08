@@ -25,9 +25,11 @@
 /**
  * Locale-independent qstricmp. Use this for comparing ascii keywords
  * in a case-insensitive way.
- * qstricmp fails with e.g. the Turkish locale where 'I'.toLower() != 'i'
+ * qstricmp failed in Qt3 with e.g. the Turkish locale where 'I'.toLower() != 'i'
+ * This is fixed in Qt4/Qt5.
+ * @deprecated use qstricmp
  */
-KDECORE_EXPORT int kasciistricmp( const char *str1, const char *str2 );
+KDECORE_DEPRECATED_EXPORT int kasciistricmp( const char *str1, const char *str2 );
 
 /**
   Locale-independent function to convert ASCII strings to lower case ASCII
@@ -35,8 +37,9 @@ KDECORE_EXPORT int kasciistricmp( const char *str1, const char *str2 );
 
   @param str  pointer to the string which should be converted to lower case
   @return     pointer to the converted string (same as @a str)
+  @deprecated use QChar::toLower or QByteArray::toLower
 */
-KDECORE_EXPORT char * kAsciiToLower( char *str );
+KDECORE_DEPRECATED_EXPORT char * kAsciiToLower( char *str );
 
 /**
   Locale-independent function to convert ASCII strings to upper case ASCII
@@ -44,7 +47,8 @@ KDECORE_EXPORT char * kAsciiToLower( char *str );
 
   @param str  pointer to the string which should be converted to upper case
   @return     pointer to the converted string (same as @a str)
+  @deprecated use QChar::toUpper or QByteArray::toUpper
 */
-KDECORE_EXPORT char * kAsciiToUpper( char *str );
+KDECORE_DEPRECATED_EXPORT char * kAsciiToUpper( char *str );
 
 #endif
