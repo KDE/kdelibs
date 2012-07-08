@@ -141,7 +141,7 @@ class KLineEditPrivate;
  * edit->useGlobalKeyBindings();
  * \endcode
  *
- * \image html klineedit.png "KDE Line Edit Widgets with clear-button and clickMessage"
+ * \image html klineedit.png "KDE Line Edit Widgets with clear-button"
  *
  * @author Dawit Alemayehu <adawit@kde.org>
  */
@@ -635,16 +635,6 @@ protected:
     bool autoSuggest() const;
 
     virtual void paintEvent( QPaintEvent *ev );
-
-//Required only by clickMessage code
-#ifndef KDE_NO_DEPRECATED
-    virtual void focusInEvent( QFocusEvent *ev );
-#endif
-
-//Required only by clickMessage code
-#ifndef KDE_NO_DEPRECATED
-    virtual void focusOutEvent( QFocusEvent *ev );
-#endif
 
 private Q_SLOTS:
     void completionMenuActivated( QAction *act );

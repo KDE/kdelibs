@@ -66,8 +66,6 @@ public:
         disableRestoreSelection = false;
         enableSqueezedText = false;
 
-        drawClickMsg = false;
-        enableClickMsg = false;
         threeStars = false;
         completionRunning = false;
         if (!s_initialized) {
@@ -171,11 +169,6 @@ public:
     QString squeezedText;
     QString userText;
 
-#ifndef KDE_NO_DEPRECATED
-    QString clickMessage;
-    bool enableClickMsg:1;
-    bool drawClickMsg:1;
-#endif
     bool threeStars:1;
 
     bool possibleTripleClick :1;  // set in mousePressEvent, deleted in tripleClickTimeout
@@ -575,13 +568,6 @@ bool KLineEdit::isSqueezedTextEnabled() const
 
 void KLineEdit::setText( const QString& text )
 {
-#ifndef KDE_NO_DEPRECATED
-    if( d->enableClickMsg )
-    {
-          d->drawClickMsg = text.isEmpty();
-          update();
-    }
-#endif
     if( d->enableSqueezedText && isReadOnly() )
     {
         d->squeezedText = text;
@@ -1761,81 +1747,7 @@ void KLineEdit::paintEvent( QPaintEvent *ev )
     } else {
         QLineEdit::paintEvent( ev );
     }
-
-#ifndef KDE_NO_DEPRECATED
-    if (d->enableClickMsg && d->drawClickMsg && !hasFocus() && text().isEmpty()) {
-        QPainter p(this);
-        QFont f = font();
-        f.setItalic(d->italicizePlaceholder);
-        p.setFont(f);
-
-        QColor color(palette().color(foregroundRole()));
-        color.setAlphaF(0.5);
-        p.setPen(color);
-
-        QStyleOptionFrame opt;
-        initStyleOption(&opt);
-        QRect cr = style()->subElementRect(QStyle::SE_LineEditContents, &opt, this);
-
-        // this is copied/adapted from QLineEdit::paintEvent
-        const int verticalMargin(1);
-        const int horizontalMargin(2);
-
-        int left, top, right, bottom;
-        getTextMargins( &left, &top, &right, &bottom );
-        cr.adjust( left, top, -right, -bottom );
-
-        p.setClipRect(cr);
-
-        QFontMetrics fm = fontMetrics();
-        Qt::Alignment va = alignment() & Qt::AlignVertical_Mask;
-        int vscroll;
-        switch (va & Qt::AlignVertical_Mask)
-        {
-            case Qt::AlignBottom:
-            vscroll = cr.y() + cr.height() - fm.height() - verticalMargin;
-            break;
-
-            case Qt::AlignTop:
-            vscroll = cr.y() + verticalMargin;
-            break;
-
-            default:
-            vscroll = cr.y() + (cr.height() - fm.height() + 1) / 2;
-            break;
-
-        }
-
-        QRect lineRect(cr.x() + horizontalMargin, vscroll, cr.width() - 2*horizontalMargin, fm.height());
-        p.drawText(lineRect, Qt::AlignLeft|Qt::AlignVCenter, d->clickMessage);
-
-    }
-#endif
 }
-
-#ifndef KDE_NO_DEPRECATED
-void KLineEdit::focusInEvent( QFocusEvent *ev )
-{
-    if ( d->enableClickMsg && d->drawClickMsg )
-    {
-        d->drawClickMsg = false;
-        update();
-    }
-    QLineEdit::focusInEvent( ev );
-}
-#endif
-
-#ifndef KDE_NO_DEPRECATED
-void KLineEdit::focusOutEvent( QFocusEvent *ev )
-{
-    if ( d->enableClickMsg && text().isEmpty() )
-    {
-        d->drawClickMsg = true;
-        update();
-    }
-    QLineEdit::focusOutEvent( ev );
-}
-#endif
 
 #ifndef KDE_NO_DEPRECATED
 void KLineEdit::setClickMessage( const QString &msg )
