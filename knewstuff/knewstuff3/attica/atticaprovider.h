@@ -18,6 +18,7 @@
 #define KNEWSTUFF3_ATTICA_PROVIDER_H
 
 #include <QtCore/QSet>
+#include <QtCore/QPointer>
 
 #include <attica/providermanager.h>
 #include <attica/provider.h>
@@ -104,7 +105,7 @@ namespace KNS3
         QHash<Attica::BaseJob*, QPair<EntryInternal, int> > mDownloadLinkJobs;
         
         // keep track of the current request
-        Attica::BaseJob* mEntryJob;
+        QPointer<Attica::BaseJob> mEntryJob;
         Provider::SearchRequest mCurrentRequest;
         
         QSet<Attica::BaseJob*> m_updateJobs;
