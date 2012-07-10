@@ -155,7 +155,7 @@ public:
      * @param caption The window caption (title) on the popup
      * @param text The text for the popup
      * @param icon The icon to use for the popup
-     * @param parent The parent widget used for the returned KVBox. If left 0L,
+     * @param parent The parent widget used for the returned widget. If left 0,
      * then "this", i.e. the passive popup object will be used.
      *
      * @return a QWidget containing the given arguments, looking like the

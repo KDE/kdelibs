@@ -104,7 +104,7 @@ public:
      * KParts::ReadOnlyPart* part = KMimeTypeTrader::createInstanceFromQuery<KParts::ReadOnlyPart>("text/plain", parentWidget, parentObject);
      * if (part) {
      *     part->openUrl(url);
-     *     part->widget()->show();  // also insert the widget into a layout, or simply use a KVBox as parentWidget
+     *     part->widget()->show();  // also insert the widget into a layout
      * }
      * \endcode
      *

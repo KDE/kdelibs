@@ -22,10 +22,11 @@
 #include <klineedit.h>
 #include <ktoolbarlabelaction.h>
 #include <ksqueezedtextlabel.h>
-#include <kvbox.h>
 #include <kactioncollection.h>
 
 #include <assert.h>
+
+#include <QVBoxLayout>
 
 class MainWindow : public KXmlGuiWindow
 {
@@ -33,13 +34,20 @@ class MainWindow : public KXmlGuiWindow
 
     MainWindow()
     {
-      KVBox* main = new KVBox( this );
+      QWidget* main = new QWidget( this );
       setCentralWidget( main );
+
+      QVBoxLayout* boxLayout = new QVBoxLayout( main );
+      boxLayout->setMargin(0);
+      boxLayout->setSpacing(0);
 
       KSqueezedTextLabel* accel = new KSqueezedTextLabel( "&Really long, long, long and boring text goes here", main );
 
       mainLabel = new KSqueezedTextLabel( "Click me to change Label 1 text", main );
       mainLabel->installEventFilter(this);
+
+      boxLayout->addWidget(accel);
+      boxLayout->addWidget(mainLabel);
 
       // first constructor
       label1 = new KToolBarLabelAction( "&Label 1", this );
@@ -62,7 +70,7 @@ class MainWindow : public KXmlGuiWindow
       accel->setBuddy( lineEdit );
 
       // another widget so lineEdit can loose focus and check budyness works
-      new KLineEdit( main );
+      boxLayout->addWidget(new KLineEdit( main ));
 
       setupGUI( Default, KDESRCDIR "ktoolbarlabelactiontestui.rc" );
     }
