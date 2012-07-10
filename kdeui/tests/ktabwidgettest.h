@@ -7,12 +7,11 @@
 #include <QLabel>
 #include <QPushButton>
 #include <stdlib.h>
-#include <kvbox.h>
 #include <time.h>
 #include <QCheckBox>
 #include <QToolButton>
 
-class Test : public KVBox
+class Test : public QWidget
 {
   Q_OBJECT
 public:

@@ -4,6 +4,7 @@
 #include <QtCore/QMimeData>
 #include <QDrag>
 #include <qinputdialog.h>
+#include <QBoxLayout>
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>
@@ -12,11 +13,15 @@
 #include "ktabwidgettest.h"
 
 Test::Test( QWidget* parent )
-  :KVBox( parent ), mChange(0), mLeftWidget(0), mRightWidget(0),
+  : QWidget( parent ), mChange(0), mLeftWidget(0), mRightWidget(0),
   mLeftPopup(0), mRightPopup(0), mTabbarContextPopup(0), mContextPopup(0)
 
 {
   resize( 600,300 );
+
+  QVBoxLayout *topLayout = new QVBoxLayout(this);
+  topLayout->setMargin(0);
+  topLayout->setSpacing(0);
 
   mWidget = new KTabWidget( this );
   mWidget->addTab( new QLabel( "Testlabel 1", 0 ), "&One" );
@@ -41,7 +46,10 @@ Test::Test( QWidget* parent )
   connect( mWidget, SIGNAL(movedTab(int,int)), SLOT(movedTab(int,int)));
   mWidget->setMovable( true );
 
+  topLayout->addWidget(mWidget);
+
   QWidget * grid = new QWidget(this);
+  topLayout->addWidget(grid);
   QGridLayout * gridlayout = new QGridLayout( grid );
 
   QPushButton * addTab = new QPushButton( "Add Tab", grid );
