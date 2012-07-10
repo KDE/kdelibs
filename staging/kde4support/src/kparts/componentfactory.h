@@ -181,7 +181,7 @@ namespace KParts
          * KParts::ReadOnlyPart* part = KParts::ComponentFactory::createPartInstanceFromQuery<KParts::ReadOnlyPart>( mimetype, QString(), parentWidget, parentObject );
          * if ( part ) {
          *     part->openUrl( url );
-         *     part->widget()->show();  // also insert the widget into a layout, or simply use a KVBox as parentWidget
+         *     part->widget()->show();  // also insert the widget into a layout
          * }
          * \endcode
          *
