@@ -23,11 +23,11 @@
 #include <QDesktopWidget>
 #include <QImage>
 #include <QLabel>
+#include <QVBoxLayout>
 
 #include <klocalizedstring.h>
 #include <kdialog.h>
 #include <kpixmapregionselectorwidget.h>
-#include <kvbox.h>
 
 class KPixmapRegionSelectorDialog::Private
 {
@@ -64,13 +64,17 @@ KPixmapRegionSelectorDialog::KPixmapRegionSelectorDialog( QWidget *parent )
   setCaption( i18n("Select Region of Image") );
   setButtons( Help|Ok|Cancel );
 
-  KVBox *vbox=new KVBox(this);
-  new QLabel(i18n("Please click and drag on the image to select the region of interest:"), vbox);
-  d->pixmapSelectorWidget= new KPixmapRegionSelectorWidget(vbox);
+  QWidget *content = new QWidget(this);
+  QVBoxLayout * boxLayout = new QVBoxLayout(content);
+  boxLayout->setMargin(0);
 
-  vbox->setSpacing( -1 );
+  QLabel *label = new QLabel(i18n("Please click and drag on the image to select the region of interest:"), content);
+  d->pixmapSelectorWidget = new KPixmapRegionSelectorWidget(content);
 
-  setMainWidget(vbox);
+  boxLayout->addWidget(label);
+  boxLayout->addWidget(d->pixmapSelectorWidget);
+
+  setMainWidget(content);
 
   d->init();
 }

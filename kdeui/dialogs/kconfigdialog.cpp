@@ -28,7 +28,6 @@
 #include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <kpagewidgetmodel.h>
-#include <kvbox.h>
 
 #include <QIcon>
 #include <QLayout>
@@ -158,10 +157,11 @@ KPageWidgetItem* KConfigDialog::KConfigDialogPrivate::addPageInternal(QWidget *p
                                         const QString &pixmapName,
                                         const QString &header)
 {
-  KVBox *frame = new KVBox(q);
-  frame->setSpacing(-1);
-  page->setParent(frame);
+  QWidget *frame = new QWidget(q);
+  QVBoxLayout *boxLayout = new QVBoxLayout(frame);
+  boxLayout->setMargin(0);
 
+  boxLayout->addWidget(page);
   KPageWidgetItem *item = new KPageWidgetItem( frame, itemName );
   item->setHeader( header );
   if ( !pixmapName.isEmpty() )
