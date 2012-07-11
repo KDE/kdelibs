@@ -200,6 +200,33 @@ A script is available in kdesdk/scripts/kf5/convert-kstandarddirs.pl to port som
      moved to KIO::iconNameForUrl.
    KMimeType::patterns() -&gt; QMimeType::globPatterns()
    KMimeType::allMimeTypes() -&gt; db.allMimeTypes()
+</pre>
+</li>
+<li>KEncodingDetector is removed, port to KEncodingProber. Porting guide:
+<pre>
+    KEncodingDetector detector -&gt; KEncodingProber prober
+    enum KEncodingDetector::AutoDetectScript -&gt; enum KEncodingProber::ProberType
+    detector.encoding() -&gt; prober.encoding()
+    detector.visuallyOrdered() -&gt; check prober.encoding() hebrew
+    detector.autoDetectLanguage() -&gt; prober.proberType()
+    detector.setAutoDetectLanguage(script) -&gt; prober.setProberType(proberType)
+    detector.decode(data) -&gt; prober.feed(data) + QTextCodec::codecForName(prober.encoding())->toUnicode(data)
+    detector.decodeWithBuffering(data, len) -&gt; prober.feed(data1), feed(data2), feed(data3) + check prober.state() + QTextCodec::codecForName(prober.encoding())-&gt;makeDecoder()
+    detector.decodedInvalidCharacters() -&gt; QTextCodec::codecForName(prober.encoding())-&gt;makeDecoder() + hasFailure()
+    detector.resetDecoder() -&gt; prober.reset()
+    detector.flush() -&gt; prober.feed(data1), feed(data2), feed(data3) + QTextCodec::codecForName(prober.encoding())->toUnicode
+    KEncodingDetector::scriptForName(lang) -&gt; KEncodingProber::proberTypeForName(lang)
+    KEncodingDetector::nameForScript(script) -&gt; KEncodingProber::nameForProberType(proberType)
+    KEncodingDetector::hasAutoDetectionForScript(script) -&gt; if (proberType == KEncodingProber::None) ... else ...
+    KEncodingProber::encodingName() is removed, use KEncodingProber::encoding() instead.
+</pre>
+    The following functions have been moved into khtml with the orignal KEncodingDetector class. khtml is the only user of them.
+<pre>
+    enum KEncodingDetector::EncodingChoiceSource -&gt; removed
+    KEncodingDetector::setEncoding(encoding, choice) -&gt; removed, implement it in khtml code
+    KEncodingDetector::encodingChoiceSource() -&gt; removed
+</pre>
+</li>
 </ul>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
@@ -224,6 +251,7 @@ A script is available in kdesdk/scripts/kf5/convert-kstandarddirs.pl to port som
 <li>KCursor: Use QCursor instead</li>
 <li>Proxy models: Moved to libitemmodels</li>
 <li>KPassivePopup: standardView() now returns a QWidget* instead of a KVBox*. The QWidget has a QVBoxLayout, i.e., additional widgets can be appended by calling widget-&gt;layout()-&gt;addWidget().</li>
+<li>KCodecAction: use enum KEncodingProber::ProberType instead of enum KEncodingDetector::AutoDetectScript</li>
 </ul>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
