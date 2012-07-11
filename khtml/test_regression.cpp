@@ -237,7 +237,6 @@ const char* imageMissingIcon =
 #include <QtCore/QTimer>
 #include <kstatusbar.h>
 
-#include "localization/kencodingdetector.h"
 #include "dom/dom2_range.h"
 #include "dom/dom_exception.h"
 #include "dom/html_document.h"

@@ -51,6 +51,7 @@
 #include "khtml_childframe_p.h"
 
 #include <kencodingdetector.h>
+#include <kencodingprober.h>
 #include "ecma/kjs_proxy.h"
 #include "xml/dom_nodeimpl.h"
 #include "editing/editing_p.h"
@@ -160,7 +161,7 @@ public:
     m_bStrictModeQuirk = true;
     m_submitForm = 0;
     m_delayRedirect = 0;
-    m_autoDetectLanguage = KEncodingDetector::SemiautomaticDetection;
+    m_autoDetectLanguage = KEncodingProber::Universal;
 
     // inherit settings from parent
     if(parent && parent->inherits("KHTMLPart"))
@@ -240,7 +241,7 @@ public:
                                                             // is a child part.
   int m_openableSuppressedPopups;
   DOM::DocumentImpl *m_doc;
-  KEncodingDetector::AutoDetectScript m_autoDetectLanguage;
+  KEncodingProber::ProberType m_autoDetectLanguage;
   KEncodingDetector *m_decoder;
   QString m_encoding;
   QString m_sheetUsed;

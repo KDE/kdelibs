@@ -25,5 +25,5 @@ include_directories(
 
 kcodecs_unit_tests(
     kcharsetstest
-    kencodingdetectortest
+    kencodingprobertest
 )

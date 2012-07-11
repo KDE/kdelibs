@@ -35,6 +35,7 @@
 #include <kfinddialog.h>
 #include <klocalizedstring.h>
 #include <kencodingdetector.h>
+#include <kencodingprober.h>
 #include <QtCore/QRegExp>
 
 class KHTMLPartPrivate;
@@ -1612,7 +1613,7 @@ private Q_SLOTS:
   /**
    * @internal
    */
-  void slotAutomaticDetectionLanguage(KEncodingDetector::AutoDetectScript scri);
+  void slotAutomaticDetectionLanguage(KEncodingProber::ProberType scri);
 
   /**
    * @internal

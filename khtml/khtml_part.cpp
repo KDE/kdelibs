@@ -319,38 +319,44 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 //   d->m_paSetEncoding->setDelayed( false );
 
   connect( d->m_paSetEncoding, SIGNAL(triggered(QString)), this, SLOT(slotSetEncoding(QString)));
-  connect( d->m_paSetEncoding, SIGNAL(triggered(KEncodingDetector::AutoDetectScript)), this, SLOT(slotAutomaticDetectionLanguage(KEncodingDetector::AutoDetectScript)));
+  connect( d->m_paSetEncoding, SIGNAL(triggered(KEncodingProber::ProberType)), this, SLOT(slotAutomaticDetectionLanguage(KEncodingProber::ProberType)));
 
   if ( KSharedConfig::openConfig()->hasGroup( "HTML Settings" ) ) {
     KConfigGroup config( KSharedConfig::openConfig(), "HTML Settings" );
 
-    d->m_autoDetectLanguage = static_cast<KEncodingDetector::AutoDetectScript>(config.readEntry( "AutomaticDetectionLanguage", /*static_cast<int>(language) */0));
-    if (d->m_autoDetectLanguage==KEncodingDetector::None) {
+    d->m_autoDetectLanguage = static_cast<KEncodingProber::ProberType>(config.readEntry( "AutomaticDetectionLanguage", /*static_cast<int>(language) */0));
+    if (d->m_autoDetectLanguage==KEncodingProber::None) {
       const QByteArray name = KGlobal::locale()->encoding().toLower();
 //       kWarning() << "00000000 ";
       if (name.endsWith("1251")||name.startsWith("koi")||name=="iso-8859-5")
-        d->m_autoDetectLanguage=KEncodingDetector::Cyrillic;
+        d->m_autoDetectLanguage=KEncodingProber::Cyrillic;
       else if (name.endsWith("1256")||name=="iso-8859-6")
-        d->m_autoDetectLanguage=KEncodingDetector::Arabic;
+        d->m_autoDetectLanguage=KEncodingProber::Arabic;
       else if (name.endsWith("1257")||name=="iso-8859-13"||name=="iso-8859-4")
-        d->m_autoDetectLanguage=KEncodingDetector::Baltic;
+        d->m_autoDetectLanguage=KEncodingProber::Baltic;
       else if (name.endsWith("1250")|| name=="ibm852" || name=="iso-8859-2" || name=="iso-8859-3" )
-        d->m_autoDetectLanguage=KEncodingDetector::CentralEuropean;
+        d->m_autoDetectLanguage=KEncodingProber::CentralEuropean;
       else if (name.endsWith("1253")|| name=="iso-8859-7" )
-        d->m_autoDetectLanguage=KEncodingDetector::Greek;
+        d->m_autoDetectLanguage=KEncodingProber::Greek;
       else if (name.endsWith("1255")|| name=="iso-8859-8" || name=="iso-8859-8-i" )
-        d->m_autoDetectLanguage=KEncodingDetector::Hebrew;
+        d->m_autoDetectLanguage=KEncodingProber::Hebrew;
       else if (name=="jis7" || name=="eucjp" || name=="sjis"  )
-        d->m_autoDetectLanguage=KEncodingDetector::Japanese;
+        d->m_autoDetectLanguage=KEncodingProber::Japanese;
+      else if (name=="gb2312" || name=="gbk" || name=="gb18030"  )
+        d->m_autoDetectLanguage=KEncodingProber::ChineseSimplified;
+      else if (name=="big5"  )
+        d->m_autoDetectLanguage=KEncodingProber::ChineseTraditional;
+      else if (name=="euc-kr"  )
+        d->m_autoDetectLanguage=KEncodingProber::Korean;
       else if (name.endsWith("1254")|| name=="iso-8859-9" )
-        d->m_autoDetectLanguage=KEncodingDetector::Turkish;
+        d->m_autoDetectLanguage=KEncodingProber::Turkish;
       else if (name.endsWith("1252")|| name=="iso-8859-1" || name=="iso-8859-15" )
-        d->m_autoDetectLanguage=KEncodingDetector::WesternEuropean;
+        d->m_autoDetectLanguage=KEncodingProber::WesternEuropean;
       else
-        d->m_autoDetectLanguage=KEncodingDetector::SemiautomaticDetection;
+        d->m_autoDetectLanguage=KEncodingProber::Universal;
 //         kWarning() << "0000000end " << d->m_autoDetectLanguage << " " << KGlobal::locale()->encodingMib();
     }
-    d->m_paSetEncoding->setCurrentAutoDetectScript(d->m_autoDetectLanguage);
+    d->m_paSetEncoding->setCurrentProberType(d->m_autoDetectLanguage);
   }
 
   d->m_paUseStylesheet = new KSelectAction( i18n( "Use S&tylesheet"), this );
@@ -4055,11 +4061,11 @@ void KHTMLPart::slotSaveFrame()
 
 void KHTMLPart::slotSetEncoding(const QString &enc)
 {
-    d->m_autoDetectLanguage=KEncodingDetector::None;
+    d->m_autoDetectLanguage=KEncodingProber::None;
     setEncoding( enc, true);
 }
 
-void KHTMLPart::slotAutomaticDetectionLanguage(KEncodingDetector::AutoDetectScript scri)
+void KHTMLPart::slotAutomaticDetectionLanguage(KEncodingProber::ProberType scri)
 {
   d->m_autoDetectLanguage=scri;
   setEncoding( QString(), false );
@@ -7008,7 +7014,32 @@ KEncodingDetector *KHTMLPart::createDecoder()
 
     if (d->m_doc)
         d->m_doc->setDecoder(dec);
-    dec->setAutoDetectLanguage( d->m_autoDetectLanguage );
+
+    // convert from KEncodingProber::ProberType to KEncodingDetector::AutoDetectScript
+    KEncodingDetector::AutoDetectScript scri;
+    switch (d->m_autoDetectLanguage) {
+        case KEncodingProber::None: scri = KEncodingDetector::None; break;
+        case KEncodingProber::Universal: scri = KEncodingDetector::SemiautomaticDetection; break;
+        case KEncodingProber::Arabic: scri = KEncodingDetector::Arabic; break;
+        case KEncodingProber::Baltic: scri = KEncodingDetector::Baltic; break;
+        case KEncodingProber::CentralEuropean: scri = KEncodingDetector::CentralEuropean; break;
+        case KEncodingProber::ChineseSimplified: scri = KEncodingDetector::ChineseSimplified; break;
+        case KEncodingProber::ChineseTraditional: scri = KEncodingDetector::ChineseTraditional; break;
+        case KEncodingProber::Cyrillic: scri = KEncodingDetector::Cyrillic; break;
+        case KEncodingProber::Greek: scri = KEncodingDetector::Greek; break;
+        case KEncodingProber::Hebrew: scri = KEncodingDetector::Hebrew; break;
+        case KEncodingProber::Japanese: scri = KEncodingDetector::Japanese; break;
+        case KEncodingProber::Korean: scri = KEncodingDetector::Korean; break;
+        case KEncodingProber::NorthernSaami: scri = KEncodingDetector::NorthernSaami; break;
+        case KEncodingProber::Other: scri = KEncodingDetector::SemiautomaticDetection; break;
+        case KEncodingProber::SouthEasternEurope: scri = KEncodingDetector::SouthEasternEurope; break;
+        case KEncodingProber::Thai: scri = KEncodingDetector::Thai; break;
+        case KEncodingProber::Turkish: scri = KEncodingDetector::Turkish; break;
+        case KEncodingProber::Unicode: scri = KEncodingDetector::Unicode; break;
+        case KEncodingProber::WesternEuropean: scri = KEncodingDetector::WesternEuropean; break;
+        default: scri = KEncodingDetector::SemiautomaticDetection; break;
+    }
+    dec->setAutoDetectLanguage( scri );
     return dec;
 }
 

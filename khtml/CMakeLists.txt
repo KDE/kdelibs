@@ -211,6 +211,8 @@ set(khtmlmisc_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/misc/htmlnames.cpp
   ${CMAKE_SOURCE_DIR}/khtml/misc/AtomicString.cpp
   ${CMAKE_SOURCE_DIR}/khtml/misc/woff.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/misc/guess_ja.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/misc/kencodingdetector.cpp
 )
 
 set(khtmlediting_STAT_SRCS

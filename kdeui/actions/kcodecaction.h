@@ -27,7 +27,7 @@
 #ifndef KCODECACTION_H
 #define KCODECACTION_H
 
-#include <kencodingdetector.h>
+#include <kencodingprober.h>
 #include <kselectaction.h>
 
 /**
@@ -36,80 +36,80 @@
  *  This action shows up a submenu with a list of the available codecs on the system.
  */
 class KDEUI_EXPORT KCodecAction
-	: public KSelectAction
+    : public KSelectAction
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	Q_PROPERTY(QString codecName READ currentCodecName WRITE setCurrentCodec)
-	Q_PROPERTY(int codecMib READ currentCodecMib)
-
-public:
-	explicit KCodecAction(QObject *parent,bool showAutoOptions=false);
-
-	KCodecAction(const QString &text, QObject *parent,bool showAutoOptions=false);
-
-	KCodecAction(const QIcon &icon, const QString &text, QObject *parent,bool showAutoOptions=false);
-
-	virtual ~KCodecAction();
+    Q_PROPERTY(QString codecName READ currentCodecName WRITE setCurrentCodec)
+    Q_PROPERTY(int codecMib READ currentCodecMib)
 
 public:
-        int mibForName(const QString &codecName, bool *ok = 0) const;
-        QTextCodec *codecForMib(int mib) const;
+    explicit KCodecAction(QObject *parent,bool showAutoOptions=false);
 
-	QTextCodec *currentCodec() const;
-	bool setCurrentCodec(QTextCodec *codec);
+    KCodecAction(const QString &text, QObject *parent,bool showAutoOptions=false);
 
-	QString currentCodecName() const;
-	bool setCurrentCodec(const QString &codecName);
+    KCodecAction(const QIcon &icon, const QString &text, QObject *parent,bool showAutoOptions=false);
 
-	int currentCodecMib() const;
-	bool setCurrentCodec(int mib);
+    virtual ~KCodecAction();
 
-        /**
-         * Applicable only if showAutoOptions in c'tor was true
-         *
-         * @returns KEncodingDetector::None if specific encoding is selected, not autodetection, otherwise... you know it!
-         */
-	KEncodingDetector::AutoDetectScript currentAutoDetectScript() const;
-        /**
-         * Applicable only if showAutoOptions in c'tor was true
-         *
-         * KEncodingDetector::SemiautomaticDetection means 'Default' item
-         */
-	bool setCurrentAutoDetectScript(KEncodingDetector::AutoDetectScript);
+public:
+    int mibForName(const QString &codecName, bool *ok = 0) const;
+    QTextCodec *codecForMib(int mib) const;
+
+    QTextCodec *currentCodec() const;
+    bool setCurrentCodec(QTextCodec *codec);
+
+    QString currentCodecName() const;
+    bool setCurrentCodec(const QString &codecName);
+
+    int currentCodecMib() const;
+    bool setCurrentCodec(int mib);
+
+    /**
+     * Applicable only if showAutoOptions in c'tor was true
+     *
+     * @returns KEncodingProber::None if specific encoding is selected, not autodetection, otherwise... you know it!
+     */
+    KEncodingProber::ProberType currentProberType() const;
+    /**
+     * Applicable only if showAutoOptions in c'tor was true
+     *
+     * KEncodingProber::Universal means 'Default' item
+     */
+    bool setCurrentProberType(KEncodingProber::ProberType);
 
 
 Q_SIGNALS:
-        /**
-         * Specific (proper) codec was selected
-         *
-         * Note that triggered(const QString&) is emitted too (as defined in KSelectAction)
-         */
-        void triggered(QTextCodec *codec);
+    /**
+     * Specific (proper) codec was selected
+     *
+     * Note that triggered(const QString&) is emitted too (as defined in KSelectAction)
+     */
+    void triggered(QTextCodec *codec);
 
-        /**
-         * Autodetection has been selected.
-         * emits KEncodingDetector::SemiautomaticDetection if Default was selected.
-         *
-         * Applicable only if showAutoOptions in c'tor was true
-         */
-        void triggered(KEncodingDetector::AutoDetectScript);
+    /**
+     * Autodetection has been selected.
+     * emits KEncodingProber::Universal if Default was selected.
+     *
+     * Applicable only if showAutoOptions in c'tor was true
+     */
+    void triggered(KEncodingProber::ProberType);
 
-        /**
-         * If showAutoOptions==true, then better handle triggered(KEncodingDetector::AutoDetectScript) signal
-         */
-        void defaultItemTriggered();
+    /**
+     * If showAutoOptions==true, then better handle triggered(KEncodingProber::ProberType) signal
+     */
+    void defaultItemTriggered();
 
 
 protected Q_SLOTS:
-	virtual void actionTriggered(QAction*);
+    virtual void actionTriggered(QAction*);
 
 protected:
-        using KSelectAction::triggered;
+    using KSelectAction::triggered;
 
 private:
-	class Private;
-	Private* const d;
+    class Private;
+    Private* const d;
 
     Q_PRIVATE_SLOT( d, void _k_subActionTriggered(QAction*) )
 };

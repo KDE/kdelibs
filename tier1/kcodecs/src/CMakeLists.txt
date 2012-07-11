@@ -1,9 +1,7 @@
 
 set(kcodecs_SRCS
-    guess_ja.cpp
     kcharsets.cpp
     kcodecs.cpp
-    kencodingdetector.cpp
     kencodingprober.cpp
     probers/CharDistribution.cpp
     probers/ChineseGroupProber.cpp
@@ -48,7 +46,6 @@ install(TARGETS kcodecs EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 install(FILES
     kcharsets.h
     kcodecs.h
-    kencodingdetector.h
     kencodingprober.h
     ${CMAKE_CURRENT_BINARY_DIR}/kcodecs_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel

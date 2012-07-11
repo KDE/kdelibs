@@ -125,15 +125,6 @@ public:
     ProberState state() const;
 
     /**
-     * @returns the name of the best encoding it has guessed so far
-     * @warning The returned string is allocated with strdup, so some memory is leaked with every call.
-     * @deprecated Use encoding() instead, which returns a QByteArray.
-     */
-#ifndef KDE_NO_DEPRECATED
-    KCODECS_DEPRECATED const char* encodingName() const;
-#endif
-
-    /**
      * @returns a QByteArray with the name of the best encoding it has guessed so far
      * @since 4.2.2
      */

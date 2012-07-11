@@ -47,3 +47,10 @@ if(NOT MSVC)
 
     ########### next target ###############
 endif(NOT MSVC)
+
+set(kencodingdetector_SRCS
+    ${CMAKE_SOURCE_DIR}/khtml/misc/kencodingdetector.cpp
+    ${CMAKE_SOURCE_DIR}/khtml/misc/guess_ja.cpp
+)
+kde4_add_unit_test(kencodingdetectortest kencodingdetectortest.cpp ${kencodingdetector_SRCS})
+target_link_libraries(kencodingdetectortest ${QT_QTTEST_LIBRARY} ${KDE4_KDECORE_LIBS})

@@ -23,11 +23,11 @@
 
 class KEncodingDetectorTest : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 private Q_SLOTS:
-	void initTestCase();
-        void testSetEncoding();
-        void testDecode();
+    void initTestCase();
+    void testSetEncoding();
+    void testDecode();
 };
 
 #endif // KENCODINGDETECTORTEST_H

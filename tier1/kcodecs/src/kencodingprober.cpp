@@ -194,14 +194,6 @@ KEncodingProber::ProberState KEncodingProber::state() const
     return d->proberState;
 }
 
-//DEPRECATED, do *not* use
-#ifndef KDE_NO_DEPRECATED
-const char* KEncodingProber::encodingName() const
-{
-    return qstrdup(encoding().constData());
-}
-#endif
-
 QByteArray KEncodingProber::encoding() const
 {
     if (!d->prober)
@@ -262,6 +254,10 @@ KEncodingProber::ProberType KEncodingProber::proberTypeForName(const QString& la
         return KEncodingProber::ChineseTraditional;
     else if (lang==i18nc("@item Text character set", "Chinese Simplified"))
         return KEncodingProber::ChineseSimplified;
+    else if (lang==i18nc("@item Text character set", "Korean"))
+        return KEncodingProber::Korean;
+    else if (lang==i18nc("@item Text character set", "Thai"))
+        return KEncodingProber::Thai;
     else if (lang==i18nc("@item Text character set", "Arabic"))
         return KEncodingProber::Arabic;
 
