@@ -599,26 +599,25 @@ void KServiceTest::createFakeService()
 void KServiceTest::testReaderThreads()
 {
     QThreadPool::globalInstance()->setMaxThreadCount(10);
-    QList<QFuture<void> > futures;
-    futures << QtConcurrent::run(this, &KServiceTest::testAllServices);
-    futures << QtConcurrent::run(this, &KServiceTest::testAllServices);
-    futures << QtConcurrent::run(this, &KServiceTest::testAllServices);
-    futures << QtConcurrent::run(this, &KServiceTest::testHasServiceType1);
-    futures << QtConcurrent::run(this, &KServiceTest::testAllServices);
-    futures << QtConcurrent::run(this, &KServiceTest::testAllServices);
-    Q_FOREACH(QFuture<void> f, futures) // krazy:exclude=foreach
-        f.waitForFinished();
+    QFutureSynchronizer<void> sync;
+    sync.addFuture(QtConcurrent::run(this, &KServiceTest::testAllServices));
+    sync.addFuture(QtConcurrent::run(this, &KServiceTest::testAllServices));
+    sync.addFuture(QtConcurrent::run(this, &KServiceTest::testAllServices));
+    sync.addFuture(QtConcurrent::run(this, &KServiceTest::testHasServiceType1));
+    sync.addFuture(QtConcurrent::run(this, &KServiceTest::testAllServices));
+    sync.addFuture(QtConcurrent::run(this, &KServiceTest::testAllServices));
+    sync.waitForFinished();
     QThreadPool::globalInstance()->setMaxThreadCount(1); // delete those threads
 }
 
 void KServiceTest::testThreads()
 {
     QThreadPool::globalInstance()->setMaxThreadCount(10);
-    QList<QFuture<void> > futures;
-    futures << QtConcurrent::run(this, &KServiceTest::testAllServices);
-    futures << QtConcurrent::run(this, &KServiceTest::testHasServiceType1);
-    futures << QtConcurrent::run(this, &KServiceTest::testKSycocaUpdate);
-    futures << QtConcurrent::run(this, &KServiceTest::testTraderConstraints);
+    QFutureSynchronizer<void> sync;
+    sync.addFuture(QtConcurrent::run(this, &KServiceTest::testAllServices));
+    sync.addFuture(QtConcurrent::run(this, &KServiceTest::testHasServiceType1));
+    sync.addFuture(QtConcurrent::run(this, &KServiceTest::testKSycocaUpdate));
+    sync.addFuture(QtConcurrent::run(this, &KServiceTest::testTraderConstraints));
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     while (m_sycocaUpdateDone == 0) // not using a bool, just to silence helgrind
 #else
@@ -626,6 +625,5 @@ void KServiceTest::testThreads()
 #endif
         QTest::qWait(100); // process D-Bus events!
     kDebug() << "Joining all threads";
-    Q_FOREACH(QFuture<void> f, futures) // krazy:exclude=foreach
-        f.waitForFinished();
+    sync.waitForFinished();
 }

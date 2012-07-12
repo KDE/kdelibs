@@ -38,7 +38,8 @@
 
 void KLocalizedStringTest::initTestCase ()
 {
-    m_hasFrench = !QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("locale/") + "fr/LC_MESSAGES/kdelibs4.mo").isEmpty();
+    const QString kdelibs_fr = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("locale/") + "fr/LC_MESSAGES/kdelibs4.mo");
+    m_hasFrench = !kdelibs_fr.isEmpty();
     if (m_hasFrench) {
         setlocale(LC_ALL, "fr_FR.utf8");
         if (setlocale(LC_ALL, NULL) != QByteArray("fr_FR.utf8")) {
@@ -248,16 +249,15 @@ void KLocalizedStringTest::translateQt()
 void KLocalizedStringTest::testThreads()
 {
     QThreadPool::globalInstance()->setMaxThreadCount(10);
-    QList<QFuture<void> > futures;
-    futures << QtConcurrent::run(this, &KLocalizedStringTest::correctSubs);
-    futures << QtConcurrent::run(this, &KLocalizedStringTest::correctSubs);
-    futures << QtConcurrent::run(this, &KLocalizedStringTest::correctSubs);
-    futures << QtConcurrent::run(this, &KLocalizedStringTest::translateQt);
-    futures << QtConcurrent::run(this, &KLocalizedStringTest::translateQt);
-    futures << QtConcurrent::run(this, &KLocalizedStringTest::translateToFrench);
+    QFutureSynchronizer<void> sync;
+    sync.addFuture(QtConcurrent::run(this, &KLocalizedStringTest::correctSubs));
+    sync.addFuture(QtConcurrent::run(this, &KLocalizedStringTest::correctSubs));
+    sync.addFuture(QtConcurrent::run(this, &KLocalizedStringTest::correctSubs));
+    sync.addFuture(QtConcurrent::run(this, &KLocalizedStringTest::translateQt));
+    sync.addFuture(QtConcurrent::run(this, &KLocalizedStringTest::translateQt));
+    sync.addFuture(QtConcurrent::run(this, &KLocalizedStringTest::translateToFrench));
     KGlobal::locale()->removeCatalog("kdelibs4");
-    Q_FOREACH(QFuture<void> f, futures) // krazy:exclude=foreach
-        f.waitForFinished();
+    sync.waitForFinished();
     QThreadPool::globalInstance()->setMaxThreadCount(1); // delete those threads
 }
 

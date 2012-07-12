@@ -519,14 +519,13 @@ void KStandarddirsTest::testSymlinkResolution()
 void KStandarddirsTest::testThreads()
 {
     QThreadPool::globalInstance()->setMaxThreadCount(6);
-    QList<QFuture<void> > futures;
-    futures << QtConcurrent::run(this, &KStandarddirsTest::testLocateLocal);
-    futures << QtConcurrent::run(this, &KStandarddirsTest::testSaveLocation);
-    futures << QtConcurrent::run(this, &KStandarddirsTest::testAppData);
-    futures << QtConcurrent::run(this, &KStandarddirsTest::testFindResource);
-    futures << QtConcurrent::run(this, &KStandarddirsTest::testFindAllResources);
-    futures << QtConcurrent::run(this, &KStandarddirsTest::testLocate);
-    futures << QtConcurrent::run(this, &KStandarddirsTest::testRelativeLocation);
-    Q_FOREACH(QFuture<void> f, futures) // krazy:exclude=foreach
-        f.waitForFinished();
+    QFutureSynchronizer<void> sync;
+    sync.addFuture(QtConcurrent::run(this, &KStandarddirsTest::testLocateLocal));
+    sync.addFuture(QtConcurrent::run(this, &KStandarddirsTest::testSaveLocation));
+    sync.addFuture(QtConcurrent::run(this, &KStandarddirsTest::testAppData));
+    sync.addFuture(QtConcurrent::run(this, &KStandarddirsTest::testFindResource));
+    sync.addFuture(QtConcurrent::run(this, &KStandarddirsTest::testFindAllResources));
+    sync.addFuture(QtConcurrent::run(this, &KStandarddirsTest::testLocate));
+    sync.addFuture(QtConcurrent::run(this, &KStandarddirsTest::testRelativeLocation));
+    sync.waitForFinished();
 }

@@ -327,11 +327,10 @@ void KDebugTest::testMultipleThreads()
 
     KDebugThreadTester tester;
     QThreadPool::globalInstance()->setMaxThreadCount(10);
-    QList<QFuture<void> > futures;
+    QFutureSynchronizer<void> sync;
     for (int threadNum = 0; threadNum < 10; ++threadNum)
-        futures << QtConcurrent::run(&tester, &KDebugThreadTester::doDebugs);
-    Q_FOREACH(QFuture<void> f, futures) // krazy:exclude=foreach
-        f.waitForFinished();
+        sync.addFuture(QtConcurrent::run(&tester, &KDebugThreadTester::doDebugs));
+    sync.waitForFinished();
 
     QVERIFY(QFile::exists("kdebug.dbg"));
 

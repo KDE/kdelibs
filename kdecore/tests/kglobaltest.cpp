@@ -74,11 +74,10 @@ private Q_SLOTS:
     void testThreads()
     {
         QThreadPool::globalInstance()->setMaxThreadCount(10);
-        QList<QFuture<void> > futures;
-        futures << QtConcurrent::run(this, &KGlobalTest::testLocale);
-        futures << QtConcurrent::run(this, &KGlobalTest::testLocale);
-        Q_FOREACH(QFuture<void> f, futures) // krazy:exclude=foreach
-            f.waitForFinished();
+        QFutureSynchronizer<void> sync;
+        sync.addFuture(QtConcurrent::run(this, &KGlobalTest::testLocale));
+        sync.addFuture(QtConcurrent::run(this, &KGlobalTest::testLocale));
+        // sync dtor blocks waiting for finished
     }
 
 protected Q_SLOTS:
