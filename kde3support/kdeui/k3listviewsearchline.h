@@ -22,7 +22,6 @@
 
 #include <kde3support_export.h>
 #include <klineedit.h>
-#include <khbox.h>
 
 class K3ListView;
 class Q3ListViewItem;
@@ -287,7 +286,7 @@ private:
  * Creates a widget featuring a K3ListViewSearchLine, a label with the text
  * "Search" and a button to clear the search.
  */
-class KDE3SUPPORT_EXPORT K3ListViewSearchLineWidget : public KHBox
+class KDE3SUPPORT_EXPORT K3ListViewSearchLineWidget : public QFrame
 {
     Q_OBJECT
 

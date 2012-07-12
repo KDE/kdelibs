@@ -32,7 +32,6 @@
 
 #include <kcoreauthorized.h>
 #include <kguiitem.h>
-#include <khbox.h>
 #include <klocalizedstring.h>
 #include <kpagewidgetmodel.h>
 #include <kpushbutton.h>

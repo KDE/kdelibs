@@ -16,7 +16,6 @@
 #include <QLayout>
 #include <QPixmap>
 #include <QLabel>
-#include <khbox.h>
 #include <QtCore/QTimer>
 #include <QBoxLayout>
 

@@ -19,7 +19,6 @@
 */
 
 #include "kmenu.h"
-#include "khbox.h"
 
 #include <QtCore/QMetaMethod>
 #include <QtCore/QObject>

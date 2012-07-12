@@ -30,7 +30,6 @@
 #include <kiconloader.h>
 #include <klineedit.h>
 #include <klocalizedstring.h>
-#include <khbox.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>
 #include <ktitlewidget.h>

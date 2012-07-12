@@ -39,7 +39,6 @@
 
 #include <kconfig.h>
 #include <kglobal.h>
-#include <khbox.h>
 #include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <ksharedconfig.h>
@@ -401,8 +400,11 @@ void K3PasswordDialog::init()
         // Row 6: Password strength meter
         m_pGrid->setRowStretch(10, 12);
 
-        KHBox* const strengthBox = new KHBox(m_pMain);
-        strengthBox->setSpacing(10);
+        QFrame* const strengthBox = new QFrame(m_pMain);
+        QHBoxLayout* const strengthBoxLayout = new QHBoxLayout(strengthBox);
+        strengthBoxLayout->setSpacing(10);
+        strengthBoxLayout->setMargin(0);
+
         m_pGrid->addWidget(strengthBox, 11, 0, 1, 3);
         QLabel* const passStrengthLabel = new QLabel(strengthBox);
         passStrengthLabel->setAlignment(Qt::AlignLeft|Qt::AlignVCenter);
@@ -411,6 +413,8 @@ void K3PasswordDialog::init()
         d->m_strengthBar->setObjectName("PasswordStrengthMeter");
         d->m_strengthBar->setRange(0, 100);
         d->m_strengthBar->setTextVisible(false);
+        strengthBoxLayout->addWidget(passStrengthLabel);
+        strengthBoxLayout->addWidget(d->m_strengthBar);
 
         const QString strengthBarWhatsThis(i18n("The password strength meter gives an indication of the security "
                                                 "of the password you have entered.  To improve the strength of "

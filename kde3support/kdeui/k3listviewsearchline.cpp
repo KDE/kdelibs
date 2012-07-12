@@ -30,6 +30,7 @@
 #include <QMenu>
 #include <QLabel>
 #include <QContextMenuEvent>
+#include <QHBoxLayout>
 #include <QList>
 #include <Q3Header>
 #include <QToolButton>
@@ -530,12 +531,14 @@ public:
 
 K3ListViewSearchLineWidget::K3ListViewSearchLineWidget(K3ListView *listView,
                                                      QWidget *parent) :
-    KHBox(parent)
+    QFrame(parent)
 {
+    QHBoxLayout* layout = new QHBoxLayout( this );
+    layout->setSpacing(5);
+    layout->setMargin(0);
+    
     d = new K3ListViewSearchLineWidgetPrivate;
     d->listView = listView;
-
-    setSpacing(5);
 
     QTimer::singleShot(0, this, SLOT(createWidgets()));
 }
@@ -562,6 +565,9 @@ void K3ListViewSearchLineWidget::createWidgets()
 
     label->setBuddy(d->searchLine);
     label->show();
+
+    layout()->addWidget(label);
+    layout()->addWidget(d->searchLine);
 }
 
 K3ListViewSearchLine *K3ListViewSearchLineWidget::searchLine() const

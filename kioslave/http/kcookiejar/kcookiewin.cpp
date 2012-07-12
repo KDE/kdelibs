@@ -86,8 +86,12 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     vBox1->setSpacing( -1 );
     setMainWidget(vBox1);
     // Cookie image and message to user
-    KHBox* hBox = new KHBox( vBox1 );
+    QFrame* hBox = new QFrame( vBox1 );
+    QHBoxLayout* hBoxLayout = new QHBoxLayout( hBox );
+    hBoxLayout->setSpacing( 0 );
+    hBoxLayout->setMargin( 0 );
     QLabel* icon = new QLabel( hBox );
+    hBoxLayout->addWidget( icon );
     icon->setPixmap(KDE::icon("dialog-warning").pixmap(IconSize(KIconLoader::Desktop)));
     icon->setAlignment( Qt::AlignCenter );
     icon->setFixedSize( 2*icon->sizeHint() );
@@ -95,6 +99,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     int count = cookieList.count();
 
     KVBox* vBox = new KVBox( hBox );
+    hBoxLayout->addWidget( vBox );
     QString txt = i18np("You received a cookie from",
                        "You received %1 cookies from", count);
     QLabel* lbl = new QLabel( txt, vBox );
