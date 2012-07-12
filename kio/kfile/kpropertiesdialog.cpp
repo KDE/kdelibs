@@ -117,7 +117,6 @@ extern "C" {
 #include <kmetaprops.h>
 #include <kpreviewprops.h>
 #include <krun.h>
-#include <kvbox.h>
 #include <kacl.h>
 #include <kconfiggroup.h>
 #include <kshell.h>
@@ -957,14 +956,20 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         l = new QLabel(i18n("Type:"), d->m_frame );
         grid->addWidget(l, curRow, 0, Qt::AlignRight | Qt::AlignTop);
 
-        KVBox *box = new KVBox(d->m_frame);
-        box->setSpacing(2); // without that spacing the button literally “sticks” to the label ;)
+        QFrame *box = new QFrame(d->m_frame);
+        QVBoxLayout* boxLayout = new QVBoxLayout(box);
+        boxLayout->setSpacing(2); // without that spacing the button literally “sticks” to the label ;)
+        boxLayout->setMargin(0);
+
         l = new QLabel(mimeComment, box );
         grid->addWidget(box, curRow++, 2);
 
         QPushButton *button = new QPushButton(box);
         button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);  // Minimum still makes the button grow to the entire layout width
         button->setIcon( KDE::icon(QString::fromLatin1("configure")) );
+
+        boxLayout->addWidget(l);
+        boxLayout->addWidget(button);
 
         if (d->mimeType == QLatin1String("application/octet-stream"))
             button->setText(i18n("Create New File Type"));

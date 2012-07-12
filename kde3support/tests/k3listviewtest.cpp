@@ -3,7 +3,6 @@
 #include <kconfig.h>
 #include <kdialog.h>
 #include <kglobal.h>
-#include <kvbox.h>
 
 #include "k3listview.h"
 

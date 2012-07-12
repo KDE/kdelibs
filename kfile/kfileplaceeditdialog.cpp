@@ -46,7 +46,6 @@
 #include <QStyle>
 
 #include <unistd.h>
-#include <kvbox.h>
 #include <kconfiggroup.h>
 
 

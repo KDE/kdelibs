@@ -68,7 +68,6 @@
 #include <ktextbrowser.h>
 #include <kurllabel.h>
 #include <kurlrequester.h>
-#include <kvbox.h>
 
 #include <ksslconfig.h>
 #ifdef KSSL_HAVE_SSL

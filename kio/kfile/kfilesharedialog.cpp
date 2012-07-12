@@ -19,7 +19,6 @@
 
 #include "kfilesharedialog.h"
 #include "kfsprocess.h"
-#include <kvbox.h>
 #include <QLabel>
 #include <QtCore/QDir>
 #include <QRadioButton>
@@ -36,7 +35,7 @@
 class KFileSharePropsPlugin::Private
 {
 public:
-    KVBox *m_vBox;
+    QFrame *m_vBox;
     KfsProcess *m_configProc;
     bool m_bAllShared;
     bool m_bAllUnshared;
@@ -49,7 +48,11 @@ public:
 KFileSharePropsPlugin::KFileSharePropsPlugin( KPropertiesDialog *_props )
     : KPropertiesDialogPlugin( _props ),d(new Private)
 {
-    d->m_vBox = new KVBox();
+    d->m_vBox = new QFrame();
+    QVBoxLayout* layout = new QVBoxLayout( d->m_vBox );
+    layout->setSpacing( 0 );
+    layout->setMargin( 0 );
+
     _props->addPage( d->m_vBox, i18n("&Share") );
 
     d->m_configProc = 0;
@@ -95,6 +98,7 @@ void KFileSharePropsPlugin::init()
     d->m_rbShare = 0L;
     d->m_rbUnShare = 0L;
     d->m_widget = new QWidget( d->m_vBox );
+    d->m_vBox->layout()->addWidget( d->m_widget );
     QVBoxLayout * vbox = new QVBoxLayout( d->m_widget );
 
     switch ( KFileShare::authorization() ) {

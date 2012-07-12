@@ -34,7 +34,6 @@
 #include <kpagewidgetmodel.h>
 #include <kservice.h>
 #include <kplugininfo.h>
-#include <kvbox.h>
 
 class QCheckBox;
 

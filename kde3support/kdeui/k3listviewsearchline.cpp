@@ -468,8 +468,6 @@ void K3ListViewSearchLine::checkItemParentsNotVisible(K3ListView *listView)
     }
 }
 
-#include <kvbox.h>
-
 /** Check whether \p item, its siblings and their descendents should be shown. Show or hide the items as necessary.
  *
  *  \p item  The list view item to start showing / hiding items at. Typically, this is the first child of another item, or the

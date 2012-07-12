@@ -51,7 +51,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <klineedit.h>
 #include <kiconloader.h>
 #include <kapplication.h>
-#include <kvbox.h>
 #include <kdatetime.h>
 
 KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
@@ -82,11 +81,15 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
         kapp->updateUserTimestamp();
     }
 #endif
-    KVBox* vBox1 = new KVBox( this );
-    vBox1->setSpacing( -1 );
+    QFrame* vBox1 = new QFrame( this );
+    QVBoxLayout* vBox1Layout = new QVBoxLayout( vBox1 );
+    vBox1Layout->setSpacing( -1 );
+    vBox1Layout->setMargin( 0 );
+
     setMainWidget(vBox1);
     // Cookie image and message to user
     QFrame* hBox = new QFrame( vBox1 );
+    vBox1Layout->addWidget( hBox );
     QHBoxLayout* hBoxLayout = new QHBoxLayout( hBox );
     hBoxLayout->setSpacing( 0 );
     hBoxLayout->setMargin( 0 );
@@ -98,11 +101,15 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
 
     int count = cookieList.count();
 
-    KVBox* vBox = new KVBox( hBox );
+    QFrame* vBox = new QFrame( hBox );
+    QVBoxLayout* vBoxLayout = new QVBoxLayout( vBox );
+    vBoxLayout->setSpacing( 0 );
+    vBoxLayout->setMargin( 0 );
     hBoxLayout->addWidget( vBox );
     QString txt = i18np("You received a cookie from",
                        "You received %1 cookies from", count);
     QLabel* lbl = new QLabel( txt, vBox );
+    vBoxLayout->addWidget( lbl );
     lbl->setAlignment( Qt::AlignCenter );
     const KHttpCookie& cookie = cookieList.first();
 
@@ -120,16 +127,20 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     if (cookie.isCrossDomain())
        txt += i18n(" <b>[Cross Domain]</b>");
     lbl = new QLabel( txt, vBox );
+    vBoxLayout->addWidget( lbl );
     lbl->setAlignment( Qt::AlignCenter );
     lbl = new QLabel( i18n("Do you want to accept or reject?"), vBox );
+    vBoxLayout->addWidget( lbl );
     lbl->setAlignment( Qt::AlignCenter );
 
     // Cookie Details dialog...
     m_detailView = new KCookieDetail( cookieList, count, vBox1 );
+    vBox1Layout->addWidget(m_detailView);
     setDetailsWidget(m_detailView);
 
     // Cookie policy choice...
     QGroupBox *m_btnGrp = new QGroupBox(i18n("Apply Choice To"),vBox1);
+    vBox1Layout->addWidget(m_btnGrp);
     QVBoxLayout *vbox = new QVBoxLayout;
     txt = (count == 1)? i18n("&Only this cookie") : i18n("&Only these cookies");
     m_onlyCookies = new QRadioButton( txt, m_btnGrp );

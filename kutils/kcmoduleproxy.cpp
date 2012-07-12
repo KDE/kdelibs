@@ -45,8 +45,6 @@
 
 #include <kuser.h>
 
-#include <kvbox.h>
-
 #include <kcmoduleloader.h>
 
 #include "kcolorscheme.h"
