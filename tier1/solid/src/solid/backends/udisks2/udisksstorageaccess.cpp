@@ -174,7 +174,9 @@ void StorageAccess::slotDBusReply( const QDBusMessage & reply )
             if (!drivePath.isEmpty() || drivePath != "/")
             {
                 Device drive(drivePath);
-                if (drive.prop("Ejectable").toBool() && !m_device->isOpticalDisc()) // optical drives have their Eject method
+                if (drive.prop("Ejectable").toBool() &&
+                        drive.prop("MediaAvailable").toBool() &&
+                        !m_device->isOpticalDisc()) // optical drives have their Eject method
                 {
                     QDBusConnection c = QDBusConnection::systemBus();
                     QDBusMessage msg = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, drivePath, UD2_DBUS_INTERFACE_DRIVE, "Eject");
