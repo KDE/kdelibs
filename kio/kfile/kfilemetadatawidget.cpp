@@ -112,7 +112,7 @@ KFileMetaDataWidget::Private::Private(KFileMetaDataWidget* parent) :
     // the following code should be moved into KFileMetaDataWidget::setModel():
     m_provider = new KFileMetaDataProvider(q);
     connect(m_provider, SIGNAL(loadingFinished()), q, SLOT(slotLoadingFinished()));
-    connect(m_provider, SIGNAL(urlActivated(KUrl)), q, SIGNAL(urlActivated(KUrl)));
+    connect(m_provider, SIGNAL(urlActivated(QUrl)), q, SIGNAL(urlActivated(QUrl)));
 #endif
 }
 
@@ -263,7 +263,7 @@ void KFileMetaDataWidget::Private::slotLoadingFinished()
 
 void KFileMetaDataWidget::Private::slotLinkActivated(const QString& link)
 {
-    const KUrl url(link);
+    const QUrl url(link);
     if (url.isValid()) {
         emit q->urlActivated(url);
     }

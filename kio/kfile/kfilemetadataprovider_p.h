@@ -122,7 +122,7 @@ Q_SIGNALS:
      */
     void loadingFinished();
 
-    void urlActivated(const KUrl& url);
+    void urlActivated(const QUrl& url);
 
     void dataChangeStarted();
     void dataChangeFinished();

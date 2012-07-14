@@ -31,6 +31,7 @@ class KConfigGroup;
 #include "kde3support_export.h"
 #include "kfileitem.h"
 #include "kfile.h"
+#include <kurl.h>
 
 /**
  * internal class to make easier to use signals possible

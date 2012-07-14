@@ -142,11 +142,11 @@ void KFileItemTest::testBasic()
 void KFileItemTest::testRootDirectory()
 {
     const QString rootPath = QDir::rootPath();
-    KUrl url(rootPath);
+    QUrl url = QUrl::fromLocalFile(rootPath);
     KIO::UDSEntry entry;
     entry.insert(KIO::UDSEntry::UDS_NAME, ".");
     entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
-    KFileItem fileItem(entry, rootPath);
+    KFileItem fileItem(entry, url);
     QCOMPARE(fileItem.text(), QString("."));
     QVERIFY(fileItem.isLocalFile());
     QCOMPARE(fileItem.localPath(), url.path());

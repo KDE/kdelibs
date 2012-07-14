@@ -325,7 +325,7 @@ bool KFileTreeBranch::showExtensions( ) const
 void KFileTreeBranch::slotDeleteItem( const KFileItem &it )
 {
     if( it.isNull() ) return;
-    kDebug(250) << "Slot Delete Item hitted for " << it.url().prettyUrl();
+    kDebug(250) << "Slot Delete Item hitted for " << it.url();
 
     K3FileTreeViewItem *kfti = treeItemForFileItem(it);
 

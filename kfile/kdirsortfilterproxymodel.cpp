@@ -64,7 +64,7 @@ int KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate::compare(const QSt
             return result;
         }
     }
-    
+
     return m_naturalSorting ? KStringHandler::naturalCompare(a, b, Qt::CaseSensitive)
                             : QString::compare(a, b, Qt::CaseSensitive);
 }
@@ -177,7 +177,7 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
             if (result == 0) {
                 // If KFileItem::text() is also not unique most probably a search protocol is used
                 // that allows showing the same file names from different directories
-                result = d->compare(leftFileItem.url().url(), rightFileItem.url().url(), sortCaseSensitivity());
+                result = d->compare(leftFileItem.url().toString(), rightFileItem.url().toString(), sortCaseSensitivity());
             }
         }
 
@@ -240,18 +240,14 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
     }
 
     case KDirModel::Permissions: {
-        // ### You can't use QFileInfo on urls!! Use the KFileItem instead.
-        QFileInfo leftFileInfo(leftFileItem.url().pathOrUrl());
-        QFileInfo rightFileInfo(rightFileItem.url().pathOrUrl());
+        const int leftPermissions = leftFileItem.permissions();
+        const int rightPermissions = rightFileItem.permissions();
 
-        int leftPermissionsPoints = pointsForPermissions(leftFileInfo);
-        int rightPermissionsPoints = pointsForPermissions(rightFileInfo);
-
-        if (leftPermissionsPoints == rightPermissionsPoints) {
+        if (leftPermissions == rightPermissions) {
             return d->compare(leftFileItem.text(), rightFileItem.text(), sortCaseSensitivity()) < 0;
         }
 
-        return leftPermissionsPoints > rightPermissionsPoints;
+        return leftPermissions > rightPermissions;
     }
 
     case KDirModel::Owner: {

@@ -234,10 +234,9 @@ public:
 
     /**
      * Clears the current selection and attempts to set @p url
-     * the current url file. Note that urls can be relative or
-     * absolute.
+     * the current url file.
      */
-    void setCurrentItem(const QString& url);
+    void setCurrentItem(const QUrl& url);
 
     /**
      * Clears the current selection and attempts to set @p item
@@ -247,11 +246,10 @@ public:
 
     /**
      * Clears the current selection and attempts to set @p urls
-     * the current url files. Note that urls can be relative or
-     * absolute.
+     * the current url files.
      * @since 4.2
      */
-    void setCurrentItems(const QStringList& urls);
+    void setCurrentItems(const QList<QUrl>& urls);
 
     /**
      * Clears the current selection and attempts to set @p items

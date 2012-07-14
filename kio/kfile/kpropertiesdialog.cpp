@@ -212,7 +212,7 @@ KPropertiesDialog::KPropertiesDialog (const KFileItem& item,
                                       QWidget* parent)
     : KPageDialog(parent), d(new KPropertiesDialogPrivate(this))
 {
-    setCaption( i18n( "Properties for %1" , KIO::decodeFileName(item.url().fileName())) );
+    setCaption(i18n("Properties for %1" , KIO::decodeFileName(item.name())));
 
     Q_ASSERT( !item.isNull() );
     d->m_items.append(item);
@@ -239,7 +239,7 @@ KPropertiesDialog::KPropertiesDialog(const KFileItemList& _items,
     if ( _items.count() > 1 )
         setCaption( i18np( "Properties for 1 item", "Properties for %1 Selected Items", _items.count() ) );
     else
-        setCaption( i18n( "Properties for %1" , KIO::decodeFileName(_items.first().url().fileName())) );
+        setCaption(i18n("Properties for %1", KIO::decodeFileName(_items.first().name())));
 
     Q_ASSERT( !_items.isEmpty() );
     d->m_singleUrl = _items.first().url();
@@ -1249,8 +1249,7 @@ void KFilePropsPlugin::slotDirSizeFinished( KJob * job )
 void KFilePropsPlugin::slotSizeDetermine()
 {
     d->m_sizeLabel->setText( i18n("Calculating...") );
-    kDebug(250) << " KFilePropsPlugin::slotSizeDetermine() properties->item()=" <<  properties->item();
-    kDebug(250) << " URL=" << properties->item().url().url();
+    kDebug(250) << "properties->item()=" << properties->item() << "URL=" << properties->item().url();
 
     d->dirSizeJob = KIO::directorySize( properties->items() );
     d->dirSizeUpdateTimer = new QTimer(this);
@@ -1516,7 +1515,7 @@ void KFilePropsPlugin::postApplyChanges()
     applyIconChanges();
 
     const KFileItemList items = properties->items();
-    const QList<KUrl> lst = items.urlList();
+    const QList<QUrl> lst = items.urlList();
     org::kde::KDirNotify::emitFilesChanged(KUrl::List(lst));
 }
 

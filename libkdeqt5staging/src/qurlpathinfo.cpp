@@ -178,6 +178,8 @@ void QUrlPathInfo::setPath(const QString &path)
 /*!
     Returns the path for this URL, formatted as a local file path, using \a options
 
+    This method only makes sense for local urls.
+
     The path returned will use forward slashes, even if it was originally created
     from one with backslashes.
 
@@ -330,4 +332,16 @@ QUrl QUrlPathInfo::addPathToUrl(const QUrl &url, const QString& relativePath)
     QUrlPathInfo info(url);
     info.addPath(relativePath);
     return info.url();
+}
+
+/*!
+    Adjust the trailing slash in the path of the URL.
+
+    The other components of the URL (scheme, host, query, fragment...) remain unchanged.
+
+    \sa path(), addPath()
+*/
+void QUrlPathInfo::adjustPath(PathFormattingOptions options)
+{
+    setPath(path(options));
 }

@@ -41,6 +41,7 @@
 #include <QPalette>
 #include <QTextDocument>
 #include <QMimeDatabase>
+#include <qurlpathinfo.h>
 
 #include <kdebug.h>
 #include <kfilemetainfo.h>
@@ -62,7 +63,7 @@ class KFileItemPrivate : public QSharedData
 public:
     KFileItemPrivate(const KIO::UDSEntry& entry,
                      mode_t mode, mode_t permissions,
-                     const KUrl& itemOrDirUrl,
+                     const QUrl& itemOrDirUrl,
                      bool urlIsDirectory,
                      bool delayedMimeTypes)
         : m_entry( entry ),
@@ -87,7 +88,7 @@ public:
             readUDSEntry( urlIsDirectory );
         } else {
             Q_ASSERT(!urlIsDirectory);
-            m_strName = itemOrDirUrl.fileName();
+            m_strName = QUrlPathInfo(itemOrDirUrl).fileName();
             m_strText = KIO::decodeFileName( m_strName );
         }
         init();
@@ -132,7 +133,7 @@ public:
     /**
      * The url of the file
      */
-    KUrl m_url;
+    QUrl m_url;
 
     /**
      * The text for this item, i.e. the file name without path,
@@ -226,7 +227,7 @@ void KFileItemPrivate::init()
              * This is the reason for the -1
              */
             KDE_struct_stat buf;
-            const QString path = m_url.toLocalFile( KUrl::RemoveTrailingSlash );
+            const QString path = QUrlPathInfo(m_url).localPath(QUrlPathInfo::StripTrailingSlash);
             if ( KDE::lstat( path, &buf ) == 0 )
             {
                 mode = buf.st_mode;
@@ -269,7 +270,7 @@ void KFileItemPrivate::readUDSEntry( bool _urlIsDirectory )
     const QString urlStr = m_entry.stringValue( KIO::UDSEntry::UDS_URL );
     const bool UDS_URL_seen = !urlStr.isEmpty();
     if ( UDS_URL_seen ) {
-        m_url = KUrl( urlStr );
+        m_url = QUrl(urlStr);
         if ( m_url.isLocalFile() )
             m_bIsLocalUrl = true;
     }
@@ -285,8 +286,9 @@ void KFileItemPrivate::readUDSEntry( bool _urlIsDirectory )
     const int hiddenVal = m_entry.numberValue( KIO::UDSEntry::UDS_HIDDEN, -1 );
     m_hidden = hiddenVal == 1 ? Hidden : ( hiddenVal == 0 ? Shown : Auto );
 
-    if ( _urlIsDirectory && !UDS_URL_seen && !m_strName.isEmpty() && m_strName != QLatin1String(".") )
-        m_url.addPath( m_strName );
+    if (_urlIsDirectory && !UDS_URL_seen && !m_strName.isEmpty() && m_strName != QLatin1String(".")) {
+        m_url = QUrlPathInfo::addPathToUrl(m_url, m_strName);
+    }
 
     m_iconName.clear();
 }
@@ -303,7 +305,7 @@ KIO::filesize_t KFileItemPrivate::size() const
     // If not in the KIO::UDSEntry, or if UDSEntry empty, use stat() [if local URL]
     if ( m_bIsLocalUrl ) {
         KDE_struct_stat buf;
-        if ( KDE::stat( m_url.toLocalFile(KUrl::RemoveTrailingSlash), &buf ) == 0 )
+        if (KDE::stat(QUrlPathInfo(m_url).localPath(QUrlPathInfo::StripTrailingSlash), &buf) == 0)
             return buf.st_size;
     }
     return 0;
@@ -342,8 +344,7 @@ KDateTime KFileItemPrivate::time( KFileItem::FileTimes mappedWhich ) const
     if ( m_bIsLocalUrl )
     {
         KDE_struct_stat buf;
-        if ( KDE::stat( m_url.toLocalFile(KUrl::RemoveTrailingSlash), &buf ) == 0 )
-        {
+        if (KDE::stat(QUrlPathInfo(m_url).localPath(QUrlPathInfo::StripTrailingSlash), &buf) == 0) {
             setTime(KFileItem::ModificationTime, buf.st_mtime);
             setTime(KFileItem::AccessTime, buf.st_atime);
             m_time[KFileItem::CreationTime] = KDateTime();
@@ -476,20 +477,20 @@ KFileItem::KFileItem()
 {
 }
 
-KFileItem::KFileItem( const KIO::UDSEntry& entry, const KUrl& itemOrDirUrl,
+KFileItem::KFileItem( const KIO::UDSEntry& entry, const QUrl& itemOrDirUrl,
                       bool delayedMimeTypes, bool urlIsDirectory )
     : d(new KFileItemPrivate(entry, KFileItem::Unknown, KFileItem::Unknown,
                              itemOrDirUrl, urlIsDirectory, delayedMimeTypes))
 {
 }
 
-KFileItem::KFileItem( mode_t mode, mode_t permissions, const KUrl& url, bool delayedMimeTypes )
+KFileItem::KFileItem( mode_t mode, mode_t permissions, const QUrl& url, bool delayedMimeTypes )
     : d(new KFileItemPrivate(KIO::UDSEntry(), mode, permissions,
                              url, false, delayedMimeTypes))
 {
 }
 
-KFileItem::KFileItem( const KUrl &url, const QString &mimeType, mode_t mode )
+KFileItem::KFileItem( const QUrl &url, const QString &mimeType, mode_t mode )
     : d(new KFileItemPrivate(KIO::UDSEntry(), mode, KFileItem::Unknown,
                              url, false, false))
 {
@@ -533,10 +534,10 @@ void KFileItem::refreshMimeType()
     d->m_iconName.clear();
 }
 
-void KFileItem::setUrl( const KUrl &url )
+void KFileItem::setUrl( const QUrl &url )
 {
     d->m_url = url;
-    setName( url.fileName() );
+    setName(QUrlPathInfo(url).fileName());
 }
 
 void KFileItem::setName( const QString& name )
@@ -559,7 +560,7 @@ QString KFileItem::linkDest() const
     if ( d->m_bIsLocalUrl )
     {
         char buf[1000];
-        int n = readlink( QFile::encodeName(d->m_url.toLocalFile( KUrl::RemoveTrailingSlash )), buf, sizeof(buf)-1 );
+        const int n = readlink(QFile::encodeName(QUrlPathInfo(d->m_url).localPath(QUrlPathInfo::StripTrailingSlash)), buf, sizeof(buf)-1);
         if ( n != -1 )
         {
             buf[ n ] = 0;
@@ -646,21 +647,9 @@ QString KFileItemPrivate::user() const
 {
     QString userName = m_entry.stringValue(KIO::UDSEntry::UDS_USER);
     if (userName.isEmpty() && m_bIsLocalUrl) {
-#ifdef Q_OS_WIN
-        QFileInfo a(m_url.toLocalFile( KUrl::RemoveTrailingSlash ));
-        userName = a.owner();
-        m_entry.insert( KIO::UDSEntry::UDS_USER, userName );
-#else
-        KDE_struct_stat buff;
-        if ( KDE::lstat( m_url.toLocalFile( KUrl::RemoveTrailingSlash ), &buff ) == 0) // get uid/gid of the link, if it's a link
-        {
-            struct passwd *pwuser = getpwuid( buff.st_uid );
-            if ( pwuser != 0 ) {
-                userName = QString::fromLocal8Bit(pwuser->pw_name);
-                m_entry.insert( KIO::UDSEntry::UDS_USER, userName );
-            }
-        }
-#endif
+        QFileInfo a(QUrlPathInfo(m_url).localPath(QUrlPathInfo::StripTrailingSlash));
+        userName = QFileInfo(a.canonicalFilePath()).owner(); // get user of the link, if it's a link
+        m_entry.insert(KIO::UDSEntry::UDS_USER, userName);
     }
     return userName;
 }
@@ -673,27 +662,10 @@ QString KFileItem::group() const
 QString KFileItemPrivate::group() const
 {
     QString groupName = m_entry.stringValue( KIO::UDSEntry::UDS_GROUP );
-    if (groupName.isEmpty() && m_bIsLocalUrl )
-    {
-#ifdef Q_OS_WIN
-        QFileInfo a(m_url.toLocalFile( KUrl::RemoveTrailingSlash ));
-        groupName = a.group();
+    if (groupName.isEmpty() && m_bIsLocalUrl ) {
+        QFileInfo a(QUrlPathInfo(m_url).localPath(QUrlPathInfo::StripTrailingSlash));
+        groupName = QFileInfo(a.canonicalFilePath()).group(); // get group of the link, if it's a link
         m_entry.insert( KIO::UDSEntry::UDS_GROUP, groupName );
-#else
-        KDE_struct_stat buff;
-        if ( KDE::lstat( m_url.toLocalFile( KUrl::RemoveTrailingSlash ), &buff ) == 0) // get uid/gid of the link, if it's a link
-        {
-            struct group *ge = getgrgid( buff.st_gid );
-            if ( ge != 0 ) {
-                groupName = QString::fromLocal8Bit(ge->gr_name);
-                if (groupName.isEmpty())
-                    groupName.sprintf("%d",ge->gr_gid);
-            }
-            else
-                groupName.sprintf("%d",buff.st_gid);
-            m_entry.insert( KIO::UDSEntry::UDS_GROUP, groupName );
-        }
-#endif
     }
     return groupName;
 }
@@ -728,7 +700,7 @@ QMimeType KFileItem::determineMimeType() const
     if (!d->m_mimeType.isValid() || !d->m_bMimeTypeKnown) {
         QMimeDatabase db;
         bool isLocalUrl;
-        KUrl url = mostLocalUrl(isLocalUrl);
+        const QUrl url = mostLocalUrl(isLocalUrl);
         d->m_mimeType = db.mimeTypeForUrl(url);
         // was:  d->m_mimeType = KMimeType::findByUrl( url, d->m_fileMode, isLocalUrl );
         // => we are no longer using d->m_fileMode for remote URLs.
@@ -748,7 +720,7 @@ bool KFileItem::isMimeTypeKnown() const
     return d->m_bMimeTypeKnown && d->m_guessedMimeType.isEmpty();
 }
 
-static bool isDirectoryMounted(const KUrl& url)
+static bool isDirectoryMounted(const QUrl& url)
 {
     // Stating .directory files can cause long freezes when e.g. /home
     // uses autofs for every user's home directory, i.e. opening /home
@@ -775,7 +747,7 @@ QString KFileItem::mimeComment() const
         return displayType;
 
     bool isLocalUrl;
-    KUrl url = mostLocalUrl(isLocalUrl);
+    QUrl url = mostLocalUrl(isLocalUrl);
 
     QMimeType mime = currentMimeType();
     // This cannot move to kio_file (with UDS_DISPLAY_TYPE) because it needs
@@ -789,9 +761,9 @@ QString KFileItem::mimeComment() const
 
     // Support for .directory file in directories
     if (isLocalUrl && isDir() && isDirectoryMounted(url)) {
-        KUrl u(url);
+        QUrlPathInfo u(url);
         u.addPath(QString::fromLatin1(".directory"));
-        const KDesktopFile cfg(u.toLocalFile());
+        const KDesktopFile cfg(u.localPath());
         const QString comment = cfg.readComment();
         if (!comment.isEmpty())
             return comment;
@@ -807,9 +779,9 @@ QString KFileItem::mimeComment() const
 
 static QString iconFromDirectoryFile(const QString& path)
 {
-    KUrl u(path);
+    QUrlPathInfo u(QUrl::fromLocalFile(path));
     u.addPath(QString::fromLatin1(".directory"));
-    const QString filePath = u.toLocalFile();
+    const QString filePath = u.localPath();
     if (!QFileInfo(filePath).isFile()) // exists -and- is a file
         return QString();
 
@@ -836,9 +808,9 @@ static QString iconFromDirectoryFile(const QString& path)
     if (icon.startsWith(QLatin1String("./"))) {
         // path is relative with respect to the location
         // of the .directory file (#73463)
-        KUrl iconUrl(path);
+        QUrlPathInfo iconUrl(QUrl::fromLocalFile(path));
         iconUrl.addPath(icon.mid(2));
-        return iconUrl.toLocalFile();
+        return iconUrl.localPath();
     }
     return icon;
 }
@@ -853,8 +825,8 @@ static QString iconFromDesktopFile(const QString& path)
         const QString type = cfg.readPath();
         if ( !emptyIcon.isEmpty() ) {
             const QString u = cfg.readUrl();
-            const KUrl url( u );
-            if ( url.scheme() == "trash" ) {
+            const QUrl url(u);
+            if (url.scheme() == QLatin1String("trash")) {
                 // We need to find if the trash is empty, preferably without using a KIO job.
                 // So instead kio_trash leaves an entry in its config file for us.
                 KConfig trashConfig( "trashrc", KConfig::SimpleConfig );
@@ -880,7 +852,7 @@ QString KFileItem::iconName() const
     }
 
     bool isLocalUrl;
-    KUrl url = mostLocalUrl(isLocalUrl);
+    QUrl url = mostLocalUrl(isLocalUrl);
 
     QMimeDatabase db;
     QMimeType mime;
@@ -920,7 +892,7 @@ static bool checkDesktopFile(const KFileItem& item, bool _determineMimeType)
 {
     // only local files
     bool isLocal;
-    const KUrl url = item.mostLocalUrl(isLocal);
+    const QUrl url = item.mostLocalUrl(isLocal);
     if (!isLocal)
         return false;
 
@@ -985,7 +957,7 @@ QStringList KFileItem::overlays() const
     }
 #endif  // Q_OS_WIN
 
-    if (d->m_url.fileName().endsWith(QLatin1String(".gz")) &&
+    if (d->m_url.path().endsWith(QLatin1String(".gz")) &&
         d->m_mimeType.inherits("application/x-gzip")) {
         names.append("application-zip");
     }
@@ -1036,8 +1008,8 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
 
     // Support for gzipped files: extract mimetype of contained file
     // See also the relevant code in overlays, which adds the zip overlay.
-    if (mime.name() == "application/x-gzip" && d->m_url.fileName().endsWith(QLatin1String(".gz"))) {
-        KUrl sf(d->m_url);
+    if (mime.name() == "application/x-gzip" && d->m_url.path().endsWith(QLatin1String(".gz"))) {
+        QUrl sf(d->m_url);
         sf.setPath(sf.path().left(sf.path().length() - 3));
         //kDebug() << "subFileName=" << subFileName;
         mime = db.mimeTypeForUrl(sf);
@@ -1109,7 +1081,7 @@ bool KFileItem::isHidden() const
         return d->m_hidden == KFileItemPrivate::Hidden;
 
     // Prefer the filename that is part of the URL, in case the display name is different.
-    QString fileName = d->m_url.fileName();
+    QString fileName = QUrlPathInfo(d->m_url).fileName();
     if (fileName.isEmpty()) // e.g. "trash:/"
         fileName = d->m_strName;
     return fileName.length() > 1 && fileName[0] == '.';  // Just "." is current directory, not hidden.
@@ -1168,7 +1140,11 @@ QString KFileItem::getStatusBarInfo() const
     }
     else if ( targetUrl() != url() )
     {
-        text += i18n ( " (Points to %1)", targetUrl().pathOrUrl());
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+        text += i18n(" (Points to %1)", targetUrl().toString());
+#else
+        text += i18n(" (Points to %1)", targetUrl().toDisplayString());
+#endif
     }
     else if ( S_ISREG( d->m_fileMode ) )
     {
@@ -1280,34 +1256,6 @@ bool KFileItem::operator!=(const KFileItem& other) const
     return d != other.d;
 }
 
-#ifndef KDE_NO_DEPRECATED
-void KFileItem::setUDSEntry( const KIO::UDSEntry& _entry, const KUrl& _url,
-                             bool _delayedMimeTypes, bool _urlIsDirectory )
-{
-    d->m_entry = _entry;
-    d->m_url = _url;
-    d->m_strName.clear();
-    d->m_strText.clear();
-    d->m_iconName.clear();
-    d->m_strLowerCaseName.clear();
-    d->m_mimeType = QMimeType();
-    d->m_fileMode = KFileItem::Unknown;
-    d->m_permissions = KFileItem::Unknown;
-    d->m_bMarked = false;
-    d->m_bLink = false;
-    d->m_bIsLocalUrl = _url.isLocalFile();
-    d->m_bMimeTypeKnown = false;
-    d->m_hidden = KFileItemPrivate::Auto;
-    d->m_guessedMimeType.clear();
-    d->m_metaInfo = KFileMetaInfo();
-    d->m_delayedMimeTypes = _delayedMimeTypes;
-    d->m_useIconNameCache = false;
-
-    d->readUDSEntry( _urlIsDirectory );
-    d->init();
-}
-#endif
-
 KFileItem::operator QVariant() const
 {
     return qVariantFromValue(*this);
@@ -1376,7 +1324,7 @@ KFileMetaInfo KFileItem::metaInfo(bool autoget, int what) const
     if ((isRegularFile() || isDir()) && autoget && !d->m_metaInfo.isValid())
     {
         bool isLocalUrl;
-        KUrl url(mostLocalUrl(isLocalUrl));
+        QUrl url(mostLocalUrl(isLocalUrl));
         if (isLocalUrl) {
             d->m_metaInfo = KFileMetaInfo(url.toLocalFile(), mimetype(), (KFileMetaInfo::What)what);
         }
@@ -1391,25 +1339,19 @@ void KFileItem::assign( const KFileItem & item )
 }
 #endif
 
-KUrl KFileItem::mostLocalUrl(bool &local) const
+QUrl KFileItem::mostLocalUrl(bool &local) const
 {
-    QString local_path = localPath();
-
-    if ( !local_path.isEmpty() )
-    {
+    const QString local_path = localPath();
+    if ( !local_path.isEmpty() ) {
         local = true;
-        KUrl url;
-        url.setPath(local_path);
-        return url;
-    }
-    else
-    {
+        return QUrl::fromLocalFile(local_path);
+    } else {
         local = d->m_bIsLocalUrl;
         return d->m_url;
     }
 }
 
-KUrl KFileItem::mostLocalUrl() const
+QUrl KFileItem::mostLocalUrl() const
 {
     bool local = false;
     return mostLocalUrl(local);
@@ -1436,7 +1378,7 @@ QDataStream & operator>> ( QDataStream & s, KFileItem & a )
     return s;
 }
 
-KUrl KFileItem::url() const
+QUrl KFileItem::url() const
 {
     return d->m_url;
 }
@@ -1476,21 +1418,21 @@ QString KFileItem::name( bool lowerCase ) const
     return d->m_strLowerCaseName;
 }
 
-KUrl KFileItem::targetUrl() const
+QUrl KFileItem::targetUrl() const
 {
     const QString targetUrlStr = d->m_entry.stringValue( KIO::UDSEntry::UDS_TARGET_URL );
     if (!targetUrlStr.isEmpty())
-      return KUrl(targetUrlStr);
+        return QUrl(targetUrlStr);
     else
-      return url();
+        return url();
 }
 
-KUrl KFileItem::nepomukUri() const
+QUrl KFileItem::nepomukUri() const
 {
 #ifndef KIO_NO_NEPOMUK
     const QString nepomukUriStr = d->m_entry.stringValue( KIO::UDSEntry::UDS_NEPOMUK_URI );
     if(!nepomukUriStr.isEmpty()) {
-        return KUrl(nepomukUriStr);
+        return QUrl(nepomukUriStr);
     }
     else if(targetUrl().isLocalFile()) {
         return targetUrl();
@@ -1521,7 +1463,7 @@ QMimeType KFileItem::currentMimeType() const
         // On-demand fast (but not always accurate) mimetype determination
         Q_ASSERT(!d->m_url.isEmpty());
         QMimeDatabase db;
-        const KUrl url = mostLocalUrl();
+        const QUrl url = mostLocalUrl();
         if (d->m_delayedMimeTypes) {
             const QList<QMimeType> mimeTypes = db.mimeTypesForFileName(url.path());
             if (mimeTypes.isEmpty()) {
@@ -1593,7 +1535,8 @@ KFileItem KFileItemList::findByName( const QString& fileName ) const
     return KFileItem();
 }
 
-KFileItem KFileItemList::findByUrl( const KUrl& url ) const {
+KFileItem KFileItemList::findByUrl(const QUrl& url) const
+{
     const_iterator it = begin();
     const const_iterator itend = end();
     for ( ; it != itend ; ++it ) {
@@ -1604,8 +1547,8 @@ KFileItem KFileItemList::findByUrl( const KUrl& url ) const {
     return KFileItem();
 }
 
-KUrl::List KFileItemList::urlList() const {
-    KUrl::List lst;
+QList<QUrl> KFileItemList::urlList() const {
+    QList<QUrl> lst;
     const_iterator it = begin();
     const const_iterator itend = end();
     for ( ; it != itend ; ++it ) {
@@ -1614,8 +1557,8 @@ KUrl::List KFileItemList::urlList() const {
     return lst;
 }
 
-KUrl::List KFileItemList::targetUrlList() const {
-    KUrl::List lst;
+QList<QUrl> KFileItemList::targetUrlList() const {
+    QList<QUrl> lst;
     const_iterator it = begin();
     const const_iterator itend = end();
     for ( ; it != itend ; ++it ) {

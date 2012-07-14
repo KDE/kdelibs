@@ -88,7 +88,7 @@ public:
     /**
      * Return the index for a given url. This can be slow.
      */
-    QModelIndex indexForUrl(const KUrl& url) const;
+    QModelIndex indexForUrl(const QUrl& url) const;
 
     /**
      * @short Lists subdirectories using fetchMore() as needed until the given @p url exists in the model.
@@ -103,7 +103,7 @@ public:
      * to the treeview in order to let it open that index.
      * @param url the url of a subdirectory of the directory model (or a file in a subdirectory)
      */
-    void expandToUrl(const KUrl& url);
+    void expandToUrl(const QUrl& url);
 
     /**
      * Notify the model that the item at this index has changed.
@@ -194,7 +194,7 @@ public:
      * @return the list @p urls without parented urls inside.
      * @since 4.2
      */
-    static KUrl::List simplifiedUrlList( const KUrl::List & urls );
+    static QList<QUrl> simplifiedUrlList( const QList<QUrl> & urls );
 
     /**
      * This emits the needSequenceIcon signal, requesting another sequence icon

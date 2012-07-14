@@ -37,6 +37,7 @@
 #include <kio/netaccess.h>
 #include <kdirwatch.h>
 #include "kiotesthelper.h"
+#include <qurlpathinfo.h>
 
 QTEST_KDEMAIN( KDirModelTest, NoGUI )
 
@@ -163,13 +164,14 @@ void KDirModelTest::collectKnownIndexes()
         QVERIFY(idx.isValid());
         KFileItem item = m_dirModel->itemForIndex(idx);
         kDebug() << item.url() << "isDir=" << item.isDir();
+        QUrlPathInfo urlInfo(item.url());
         if (item.isDir())
             m_dirIndex = idx;
-        else if (item.url().fileName() == "toplevelfile_1")
+        else if (urlInfo.fileName() == "toplevelfile_1")
             m_fileIndex = idx;
-        else if (item.url().fileName() == "toplevelfile_2")
+        else if (urlInfo.fileName() == "toplevelfile_2")
             m_secondFileIndex = idx;
-        else if (item.url().fileName().startsWith("special"))
+        else if (urlInfo.fileName().startsWith("special"))
             m_specialFileIndex = idx;
     }
     QVERIFY(m_dirIndex.isValid());
@@ -451,7 +453,7 @@ void KDirModelTest::testRenameFile()
     QCOMPARE(receivedIndex.row(), m_secondFileIndex.row()); // only compare row; column is count-1
 
     // check renaming happened
-    QCOMPARE( m_dirModel->itemForIndex( m_secondFileIndex ).url().url(), newUrl.url() );
+    QCOMPARE(m_dirModel->itemForIndex( m_secondFileIndex ).url().toString(), newUrl.toString());
 
     // check that KDirLister::cachedItemForUrl won't give a bad name if copying that item (#195385)
     KFileItem cachedItem = KDirLister::cachedItemForUrl(newUrl);
@@ -464,7 +466,7 @@ void KDirModelTest::testRenameFile()
     QVERIFY(job->exec());
     // Wait for the DBUS signal from KDirNotify, it's the one the triggers dataChanged
     enterLoop();
-    QCOMPARE( m_dirModel->itemForIndex( m_secondFileIndex ).url().url(), url.url() );
+    QCOMPARE(m_dirModel->itemForIndex( m_secondFileIndex ).url().toString(), url.toString());
 
     disconnect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
                 &m_eventLoop, SLOT(exitLoop()) );
@@ -553,7 +555,7 @@ void KDirModelTest::testRenameDirectory() // #172945, #174703, (and #180156)
     //QCOMPARE(receivedIndex.row(), m_dirIndex.row()); // only compare row; column is count-1
 
     // check renaming happened
-    QCOMPARE(m_dirModel->itemForIndex(m_dirIndex).url().url(), newUrl.url());
+    QCOMPARE(m_dirModel->itemForIndex(m_dirIndex).url().toString(), newUrl.toString());
     QCOMPARE(m_dirModel->indexForUrl(newUrl), m_dirIndex);
     QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir_renamed")).isValid());
     QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir_renamed/testfile")).isValid());
@@ -574,12 +576,12 @@ void KDirModelTest::testRenameDirectory() // #172945, #174703, (and #180156)
     QVERIFY(job->exec());
     // Wait for the DBUS signal from KDirNotify, it's the one the triggers dataChanged
     enterLoop();
-    QCOMPARE(m_dirModel->itemForIndex(m_dirIndex).url().url(), url.url());
+    QCOMPARE(m_dirModel->itemForIndex(m_dirIndex).url().toString(), url.toString());
 
     disconnect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
                 &m_eventLoop, SLOT(exitLoop()) );
 
-    QCOMPARE(m_dirModel->itemForIndex(m_dirIndex).url().url(), url.url());
+    QCOMPARE(m_dirModel->itemForIndex(m_dirIndex).url().toString(), url.toString());
     QCOMPARE(m_dirModel->indexForUrl(url), m_dirIndex);
     QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir")).isValid());
     QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir/testfile")).isValid());
@@ -761,7 +763,7 @@ void KDirModelTest::testExpandToUrl()
     m_expectedExpandSignals = expectedExpandSignals;
     m_nextExpectedExpandSignals = 0;
     QSignalSpy spyExpand(m_dirModelForExpand, SIGNAL(expand(QModelIndex)));
-    m_urlToExpandTo = KUrl(path + expandToPath);
+    m_urlToExpandTo = QUrl::fromLocalFile(path + expandToPath);
     // If KDirModel doesn't know this URL yet, then we want to see rowsInserted signals
     // being emitted, so that the slots can get the index to that url then.
     m_expectRowsInserted = !expandToPath.isEmpty() && !m_dirModelForExpand->indexForUrl(m_urlToExpandTo).isValid();
@@ -982,7 +984,7 @@ void KDirModelTest::testUrlWithRef() // #171117
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
     enterLoop();
 
-    QCOMPARE(dirLister->url().url(), url.url(KUrl::RemoveTrailingSlash));
+    QCOMPARE(dirLister->url().toString(), url.url(KUrl::RemoveTrailingSlash));
     collectKnownIndexes();
     disconnect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
 }
@@ -998,7 +1000,7 @@ void KDirModelTest::testFontUrlWithHost() // #160057
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
     enterLoop();
 
-    QCOMPARE(dirLister->url().url(), QString("fonts:/System"));
+    QCOMPARE(dirLister->url().toString(), QString("fonts:/System"));
 }
 
 void KDirModelTest::testRemoteUrlWithHost() // #178416
@@ -1012,7 +1014,7 @@ void KDirModelTest::testRemoteUrlWithHost() // #178416
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
     enterLoop();
 
-    QCOMPARE(dirLister->url().url(), QString("remote:"));
+    QCOMPARE(dirLister->url().toString(), QString("remote:"));
 }
 
 void KDirModelTest::testZipFile() // # 171721
@@ -1200,7 +1202,7 @@ void KDirModelTest::testOverwriteFileWithDir() // #151851 c4
     const int topLevelRowCount = m_dirModel->rowCount();
     QCOMPARE(topLevelRowCount, oldTopLevelRowCount - 1); // one less than before
 
-    QVERIFY(!m_dirModel->indexForUrl(dir).isValid());
+    QVERIFY(!m_dirModel->indexForUrl(QUrl::fromLocalFile(dir)).isValid());
     QModelIndex newIndex = m_dirModel->indexForUrl(KUrl(path + "toplevelfile_1"));
     QVERIFY(newIndex.isValid());
     KFileItem newItem = m_dirModel->itemForIndex(newIndex);
@@ -1287,7 +1289,7 @@ void KDirModelTest::testRenameFileToHidden() // #174721
     int newRow = spyRowsInserted[0][1].toInt();
     m_secondFileIndex = m_dirModel->index(newRow, 0);
     QVERIFY(m_secondFileIndex.isValid());
-    QCOMPARE(m_dirModel->itemForIndex( m_secondFileIndex ).url().url(), url.url());
+    QCOMPARE(m_dirModel->itemForIndex( m_secondFileIndex ).url().toString(), url.toString());
 }
 
 void KDirModelTest::testDeleteDirectory()

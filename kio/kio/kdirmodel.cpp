@@ -35,6 +35,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QIcon>
+#include <qurlpathinfo.h>
 #include <sys/types.h>
 #include <dirent.h>
 
@@ -45,7 +46,7 @@
 class KDirModelNode;
 class KDirModelDirNode;
 
-static KUrl cleanupUrl(const KUrl& url) {
+static QUrl cleanupUrl(const QUrl& url) {
     KUrl u = url;
     u.cleanPath(); // remove double slashes in the path, simplify "foo/." to "foo/", etc.
     u.adjustPath(KUrl::RemoveTrailingSlash); // KDirLister does this too, so we remove the slash before comparing with the root node url.
@@ -104,7 +105,7 @@ public:
     bool isSlow() const { return item().isSlow(); }
 
     // For removing all child urls from the global hash.
-    void collectAllChildUrls(KUrl::List &urls) const {
+    void collectAllChildUrls(QList<QUrl> &urls) const {
         Q_FOREACH(KDirModelNode* node, m_childNodes) {
             const KFileItem& item = node->item();
             urls.append(cleanupUrl(item.url()));
@@ -152,7 +153,7 @@ public:
     }
     // Emit expand for each parent and then return the
     // last known parent if there is no node for this url
-    KDirModelNode* expandAllParentsUntil(const KUrl& url) const;
+    KDirModelNode* expandAllParentsUntil(const QUrl& url) const;
 
     // Return the node for a given url, using the hash.
     KDirModelNode* nodeForUrl(const KUrl& url) const;
@@ -188,7 +189,7 @@ public:
     bool m_jobTransfersVisible;
     // key = current known parent node (always a KDirModelDirNode but KDirModelNode is more convenient),
     // value = final url[s] being fetched
-    QMap<KDirModelNode*, KUrl::List> m_urlsBeingFetched;
+    QMap<KDirModelNode*, QList<QUrl> > m_urlsBeingFetched;
     QHash<KUrl, KDirModelNode *> m_nodeHash; // global node hash: url -> node
     QStringList m_allCurrentDestUrls; //list of all dest urls that have jobs on them (e.g. copy, download)
 };
@@ -204,21 +205,21 @@ KDirModelNode* KDirModelPrivate::nodeForUrl(const KUrl& _url) const // O(1), wel
 void KDirModelPrivate::removeFromNodeHash(KDirModelNode* node, const KUrl& url)
 {
     if (node->item().isDir()) {
-        KUrl::List urls;
+        QList<QUrl> urls;
         static_cast<KDirModelDirNode *>(node)->collectAllChildUrls(urls);
-        Q_FOREACH(const KUrl& u, urls) {
+        Q_FOREACH(const QUrl& u, urls) {
             m_nodeHash.remove(u);
         }
     }
     m_nodeHash.remove(cleanupUrl(url));
 }
 
-KDirModelNode* KDirModelPrivate::expandAllParentsUntil(const KUrl& _url) const // O(depth)
+KDirModelNode* KDirModelPrivate::expandAllParentsUntil(const QUrl& _url) const // O(depth)
 {
-    KUrl url = cleanupUrl(_url);
+    QUrl url = cleanupUrl(_url);
 
     //kDebug(7008) << url;
-    KUrl nodeUrl = urlForNode(m_rootNode);
+    QUrl nodeUrl = urlForNode(m_rootNode);
     if (url == nodeUrl)
         return m_rootNode;
 
@@ -234,7 +235,8 @@ KDirModelNode* KDirModelPrivate::expandAllParentsUntil(const KUrl& _url) const /
     }
 
     for (;;) {
-        const QString nodePath = nodeUrl.path(KUrl::AddTrailingSlash);
+        QUrlPathInfo pathInfo(nodeUrl);
+        const QString nodePath = pathInfo.path(QUrlPathInfo::AppendTrailingSlash);
         if(!pathStr.startsWith(nodePath)) {
             kError(7008) << "The kioslave for" << url.scheme() << "violates the hierarchy structure:"
                          << "I arrived at node" << nodePath << ", but" << pathStr << "does not start with that path.";
@@ -244,8 +246,9 @@ KDirModelNode* KDirModelPrivate::expandAllParentsUntil(const KUrl& _url) const /
         // E.g. pathStr is /a/b/c and nodePath is /a/. We want to find the node with url /a/b
         const int nextSlash = pathStr.indexOf('/', nodePath.length());
         const QString newPath = pathStr.left(nextSlash); // works even if nextSlash==-1
-        nodeUrl.setPath(newPath);
-        nodeUrl.adjustPath(KUrl::RemoveTrailingSlash); // #172508
+        pathInfo.setPath(newPath);
+        pathInfo.adjustPath(QUrlPathInfo::StripTrailingSlash); // #172508
+        nodeUrl = pathInfo.url();
         KDirModelNode* node = nodeForUrl(nodeUrl);
         if (!node) {
             //kDebug(7008) << "child equal or starting with" << url << "not found";
@@ -315,7 +318,7 @@ static QString debugIndex(const QModelIndex& index)
         str = "[invalid index, i.e. root]";
     else {
         KDirModelNode* node = static_cast<KDirModelNode*>(index.internalPointer());
-        str = "[index for " + node->item().url().pathOrUrl();
+        str = "[index for " + node->item().url().toString();
         if (index.column() > 0)
             str += ", column " + QString::number(index.column());
         str += ']';
@@ -395,7 +398,7 @@ void KDirModelPrivate::_k_slotNewItems(const KUrl& directoryUrl, const KFileItem
 
     q->beginInsertRows( index, newRowCount - newItemsCount, newRowCount - 1 ); // parent, first, last
 
-    const KUrl::List urlsBeingFetched = m_urlsBeingFetched.value(dirNode);
+    const QList<QUrl> urlsBeingFetched = m_urlsBeingFetched.value(dirNode);
     //kDebug(7008) << "urlsBeingFetched for dir" << dirNode << directoryUrl << ":" << urlsBeingFetched;
 
     QList<QModelIndex> emitExpandFor;
@@ -422,7 +425,7 @@ void KDirModelPrivate::_k_slotNewItems(const KUrl& directoryUrl, const KFileItem
 
         if (!urlsBeingFetched.isEmpty()) {
             const KUrl dirUrl = url;
-            foreach(const KUrl& urlFetched, urlsBeingFetched) {
+            foreach(const QUrl& urlFetched, urlsBeingFetched) {
                 if (dirUrl.isParentOf(urlFetched)) {
                     kDebug(7008) << "Listing found" << dirUrl << "which is a parent of fetched url" << urlFetched;
                     const QModelIndex parentIndex = indexForNode(node, dirNode->m_childNodes.count()-1);
@@ -456,7 +459,7 @@ void KDirModelPrivate::_k_slotDeleteItems(const KFileItemList& items)
     // From KDirLister's code, this should be the case, except maybe emitChanges?
     const KFileItem item = items.first();
     Q_ASSERT(!item.isNull());
-    KUrl url = item.url();
+    QUrl url = item.url();
     KDirModelNode* node = nodeForUrl(url); // O(depth)
     if (!node) {
         kWarning(7008) << "No node found for item that was just removed:" << url;
@@ -759,7 +762,7 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
         case HasJobRole:
             if (d->m_jobTransfersVisible && d->m_allCurrentDestUrls.isEmpty() == false) {
                 KDirModelNode* node = d->nodeForIndex(index);
-                const QString url = node->item().url().url();
+                const QString url = node->item().url().toString();
                 //return whether or not there are job dest urls visible in the view, so the delegate knows which ones to paint.
                 return QVariant(d->m_allCurrentDestUrls.contains(url));
             }
@@ -876,16 +879,16 @@ bool KDirModel::jobTransfersVisible() const
     return d->m_jobTransfersVisible;
 }
 
-KUrl::List KDirModel::simplifiedUrlList(const KUrl::List &urls)
+QList<QUrl> KDirModel::simplifiedUrlList(const QList<QUrl> &urls)
 {
     if (!urls.count()) {
         return urls;
     }
 
-    KUrl::List ret(urls);
+    QList<QUrl> ret(urls);
     qSort(ret.begin(), ret.end(), lessThan);
 
-    KUrl::List::iterator it = ret.begin();
+    QList<QUrl>::iterator it = ret.begin();
     KUrl url = *it;
     ++it;
     while (it != ret.end()) {
@@ -967,7 +970,7 @@ QModelIndex KDirModel::indexForItem( const KFileItem& item ) const
 }
 
 // url -> index. O(n)
-QModelIndex KDirModel::indexForUrl(const KUrl& url) const
+QModelIndex KDirModel::indexForUrl(const QUrl& url) const
 {
     KDirModelNode* node = d->nodeForUrl(url); // O(depth)
     if (!node) {
@@ -1118,7 +1121,7 @@ void KDirModel::setDropsAllowed(DropsAllowed dropsAllowed)
     d->m_dropsAllowed = dropsAllowed;
 }
 
-void KDirModel::expandToUrl(const KUrl& url)
+void KDirModel::expandToUrl(const QUrl& url)
 {
     // emit expand for each parent and return last parent
     KDirModelNode* result = d->expandAllParentsUntil(url); // O(depth)

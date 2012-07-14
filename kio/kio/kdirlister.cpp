@@ -1023,7 +1023,7 @@ QSet<KDirLister*> KDirListerCache::emitRefreshItem(const KFileItem& oldItem, con
         listers += (*dit).listersCurrentlyHolding + (*dit).listersCurrentlyListing;
     if (oldItem.isDir()) {
         // For a directory, look for dirlisters where it's the root item.
-        dit = directoryData.find(oldItem.url().url());
+        dit = directoryData.find(oldItem.url().toString());
         if (dit != directoryData.end())
             listers += (*dit).listersCurrentlyHolding + (*dit).listersCurrentlyListing;
     }
@@ -2015,7 +2015,7 @@ void KDirListerCache::printDebug()
     foreach(const QString& cachedDir, cachedDirs) {
         DirItem* dirItem = itemsCached.object(cachedDir);
         kDebug(7004) << "   " << cachedDir << "rootItem:"
-                     << (!dirItem->rootItem.isNull() ? dirItem->rootItem.url().prettyUrl() : QString("NULL") )
+                     << (!dirItem->rootItem.isNull() ? dirItem->rootItem.url().toString() : QString("NULL") )
                      << "with" << dirItem->lstItems.count() << "items.";
     }
 

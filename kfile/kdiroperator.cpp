@@ -49,6 +49,7 @@
 #include <QScrollBar>
 #include <QSplitter>
 #include <QWheelEvent>
+#include <qurlpathinfo.h>
 
 #include <kaction.h>
 #include <kapplication.h>
@@ -1713,7 +1714,7 @@ void KDirOperator::highlightFile(const KFileItem &item)
     emit fileHighlighted(item);
 }
 
-void KDirOperator::setCurrentItem(const QString& url)
+void KDirOperator::setCurrentItem(const QUrl& url)
 {
     kDebug(kfile_area);
 
@@ -1746,7 +1747,7 @@ void KDirOperator::setCurrentItem(const KFileItem& item)
     }
 }
 
-void KDirOperator::setCurrentItems(const QStringList& urls)
+void KDirOperator::setCurrentItems(const QList<QUrl>& urls)
 {
     kDebug(kfile_area);
 
@@ -1755,7 +1756,7 @@ void KDirOperator::setCurrentItems(const QStringList& urls)
     }
 
     KFileItemList itemList;
-    foreach (const QString &url, urls) {
+    foreach (const QUrl &url, urls) {
         KFileItem item = d->dirLister->findByUrl(url);
         if (d->shouldFetchForItems && item.isNull()) {
             d->itemsToBeSetAsCurrent << url;
@@ -1835,7 +1836,11 @@ void KDirOperator::prepareCompletionObjects()
 
 void KDirOperator::slotCompletionMatch(const QString& match)
 {
-    setCurrentItem(match);
+    QUrl url(match);
+    if (url.isRelative()) {
+        url = d->currUrl.resolved(url);
+    }
+    setCurrentItem(url);
     emit completion(match);
 }
 
@@ -2527,7 +2532,7 @@ void KDirOperator::Private::_k_slotExpandToUrl(const QModelIndex &index)
                     treeView->expand(_proxyIndex);
 
                     // if we have expanded the last parent of this item, select it
-                    if (item.url().directory() == url.path(KUrl::RemoveTrailingSlash)) {
+                    if (QUrlPathInfo(item.url()).directory() == url.path(KUrl::RemoveTrailingSlash)) {
                         treeView->selectionModel()->select(proxyIndex, QItemSelectionModel::Select);
                     }
                 }

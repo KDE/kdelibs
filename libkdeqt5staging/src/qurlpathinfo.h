@@ -80,6 +80,7 @@ public:
     QString path(PathFormattingOptions options = None) const;
     void setPath(const QString &path);
     void addPath(const QString &relativePath);
+    void adjustPath(PathFormattingOptions options);
     static QUrl addPathToUrl(const QUrl &url, const QString& relativePath) Q_REQUIRED_RESULT;
 
     QString localPath(PathFormattingOptions options = None) const;

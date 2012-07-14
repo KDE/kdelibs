@@ -49,7 +49,7 @@ public:
 
     void init();
     void loadMetaData();
-    void addItem(const KUrl& uri);
+    void addItem(const QUrl& uri);
 
     /**
      * Is invoked after the meta data model has finished the loading of
@@ -103,7 +103,7 @@ void KFileMetaDataConfigurationWidget::Private::loadMetaData()
 #endif
 }
 
-void KFileMetaDataConfigurationWidget::Private::addItem(const KUrl& uri)
+void KFileMetaDataConfigurationWidget::Private::addItem(const QUrl& uri)
 {
     // Meta information provided by Nepomuk that is already
     // available from KFileItem as "fixed item" (see above)
@@ -120,7 +120,7 @@ void KFileMetaDataConfigurationWidget::Private::addItem(const KUrl& uri)
     };
 
     int i = 0;
-    const QString key = uri.url();
+    const QString key = uri.toString();
     while (hiddenProperties[i] != 0) {
         if (key == QLatin1String(hiddenProperties[i])) {
             // the item is hidden

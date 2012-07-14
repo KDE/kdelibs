@@ -49,6 +49,7 @@
 #include <kconfiggroup.h>
 #include <kprotocolinfo.h>
 #include <qmimedatabase.h>
+#include <qurlpathinfo.h>
 
 #include "jobuidelegate.h"
 #include "job_p.h"
@@ -307,7 +308,7 @@ void PreviewJobPrivate::startPreview()
         KService::Ptr plugin(0);
 
         // look for protocol-specific thumbnail plugins first
-        QHash<QString, QHash<QString, KService::Ptr> >::const_iterator it = protocolMap.constFind(item.item.url().protocol());
+        QHash<QString, QHash<QString, KService::Ptr> >::const_iterator it = protocolMap.constFind(item.item.url().scheme());
         if (it != protocolMap.constEnd()) {
             plugin = it.value().value(mimeType);
         }
@@ -342,11 +343,12 @@ void PreviewJobPrivate::startPreview()
         if (plugin) {
             item.plugin = plugin;
             items.append(item);
-            if (!bNeedCache && bSave &&
-                ((*kit).url().scheme() != "file" ||
-                 !(*kit).url().directory( KUrl::AppendTrailingSlash ).startsWith(thumbRoot)) &&
-                plugin->property("CacheThumbnail").toBool()) {
-                bNeedCache = true;
+            if (!bNeedCache && bSave && plugin->property("CacheThumbnail").toBool()) {
+                const QUrl url = (*kit).url();
+                if (!url.isLocalFile() ||
+                    !QString(QUrlPathInfo(url).directory() + '/').startsWith(thumbRoot)) {
+                    bNeedCache = true;
+                }
             }
         } else {
             emit q->failed( *kit );
@@ -663,8 +665,9 @@ void PreviewJobPrivate::slotThumbData(KIO::Job *, const QByteArray &data)
 {
     bool save = bSave &&
                 currentItem.plugin->property("CacheThumbnail").toBool() &&
-                (currentItem.item.url().scheme() != "file" ||
-                 !currentItem.item.url().directory( KUrl::AppendTrailingSlash ).startsWith(thumbRoot)) && !sequenceIndex;
+                (!currentItem.item.url().isLocalFile() ||
+                 !QString(QUrlPathInfo(currentItem.item.url()).directory() + '/').startsWith(thumbRoot))
+                && !sequenceIndex;
     QImage thumb;
 #ifdef Q_OS_UNIX
     if (shmaddr)

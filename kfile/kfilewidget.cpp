@@ -1532,7 +1532,7 @@ void KFileWidgetPrivate::_k_slotLoadingFinished()
     KUrl url = ops->url();
     url.adjustPath(KUrl::AddTrailingSlash);
     url.setFileName(locationEdit->currentText());
-    ops->setCurrentItem(url.url());
+    ops->setCurrentItem(url);
     ops->blockSignals(false);
 }
 
@@ -1566,11 +1566,7 @@ void KFileWidgetPrivate::_k_slotLocationChanged( const QString& text )
 
     if (!locationEdit->lineEdit()->text().isEmpty()) {
         const QList<QUrl> urlList(tokenize(text));
-        QStringList stringList;
-        foreach (const QUrl &url, urlList) {
-            stringList << url.toString();
-        }
-        ops->setCurrentItems(stringList);
+        ops->setCurrentItems(urlList);
     }
 
     updateFilter();

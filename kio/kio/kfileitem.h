@@ -24,7 +24,7 @@
 
 #include <kio/global.h>
 #include <kio/udsentry.h>
-#include <kurl.h>
+#include <QUrl>
 
 #include <kacl.h>
 #include <qmimetype.h>
@@ -84,7 +84,7 @@ public:
      * When creating KFileItems out of the UDSEntry emitted by a KIO list job,
      * use KFileItem(entry, listjob->url(), delayedMimeTypes, true);
      */
-    KFileItem( const KIO::UDSEntry& entry, const KUrl& itemOrDirUrl,
+    KFileItem( const KIO::UDSEntry& entry, const QUrl& itemOrDirUrl,
                bool delayedMimeTypes = false,
                bool urlIsDirectory = false );
 
@@ -101,7 +101,7 @@ public:
      * @param delayedMimeTypes specify if the mimetype of the given URL
      *       should be determined immediately or on demand
      */
-    KFileItem( mode_t mode, mode_t permissions, const KUrl& url,
+    KFileItem( mode_t mode, mode_t permissions, const QUrl& url,
                bool delayedMimeTypes = false );
 
     /**
@@ -110,7 +110,7 @@ public:
      * @param mimeType the name of the file's mimetype
      * @param mode the mode (S_IFDIR...)
      */
-    KFileItem( const KUrl &url, const QString &mimeType, mode_t mode );
+    KFileItem( const QUrl &url, const QString &mimeType, mode_t mode );
 
     /**
      * Copy constructor
@@ -143,14 +143,14 @@ public:
      * Returns the url of the file.
      * @return the url of the file
      */
-    KUrl url() const;
+    QUrl url() const;
 
     /**
      * Sets the item's URL. Do not call unless you know what you are doing!
      * (used for example when an item got renamed).
      * @param url the item's URL
      */
-    void setUrl( const KUrl &url );
+    void setUrl( const QUrl &url );
 
     /**
      * Sets the item's name (i.e. the filename).
@@ -276,7 +276,7 @@ public:
      * @return the target url.
      * @since 4.1
      */
-    KUrl targetUrl() const;
+    QUrl targetUrl() const;
 
     /**
      * Returns the resource URI to be used for Nepomuk annotations. In case
@@ -286,7 +286,7 @@ public:
      * @return The Nepomuk resource URI.
      * @since 4.4
      */
-    KUrl nepomukUri() const;
+    QUrl nepomukUri() const;
 
     /**
      * Returns the local path if isLocalFile() == true or the KIO item has
@@ -598,42 +598,17 @@ public:
 #endif
 
     /**
-     * Reinitialize KFileItem with a new UDSEntry.
-     *
-     * Note: extra-data set with setExtraData() is not changed or deleted, so
-     * be careful what you do!
-     *
-     * KDirListerCache uses it to save new/delete calls by updating existing
-     * items that are otherwise not needed anymore.
-     *
-     * @param entry the UDSEntry to assign to this KFileItem
-     * @param url the file url
-     * @param delayedMimeTypes specifies if the mimetype of the given
-     *        URL should be determined immediately or on demand
-     * @param urlIsDirectory specifies if the url is just the directory of the
-     *        fileitem and the filename from the UDSEntry should be used.
-     *
-     * @deprecated why not just create another KFileItem and use operator=,
-     * now that it's a value class?
-     */
-#ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED void setUDSEntry( const KIO::UDSEntry& entry, const KUrl& url,
-                                     bool delayedMimeTypes = false,
-                                     bool urlIsDirectory = false );
-#endif
-
-    /**
      * Tries to give a local URL for this file item if possible.
      * The given boolean indicates if the returned url is local or not.
      */
-    KUrl mostLocalUrl(bool &local) const; // KDE5 TODO: bool* local = 0
+    QUrl mostLocalUrl(bool &local) const; // KDE5 TODO: bool* local = 0
 
     /**
      * Tries to give a local URL for this file item if possible.
      *
      * \since 4.6
      */
-    KUrl mostLocalUrl() const; // KDE5: merge with above version
+    QUrl mostLocalUrl() const; // KDE5: merge with above version
 
     /**
      * Return true if default-constructed
@@ -650,7 +625,7 @@ private:
 
 Q_DECLARE_METATYPE(KFileItem)
 
-inline uint qHash(const KFileItem& item){ return qHash(item.url().url()); }
+inline uint qHash(const KFileItem& item) { return qHash(item.url()); }
 
 /**
  * List of KFileItems, which adds a few helper
@@ -677,14 +652,14 @@ public:
    * @return the item with the given URL, or a null-item if none was found
    *         (see KFileItem::isNull())
    */
-  KFileItem findByUrl( const KUrl& url ) const;
+  KFileItem findByUrl( const QUrl& url ) const;
 
   /// @return the list of URLs that those items represent
-  KUrl::List urlList() const;
+  QList<QUrl> urlList() const;
 
   /// @return the list of target URLs that those items represent
   /// @since 4.2
-  KUrl::List targetUrlList() const;
+  QList<QUrl> targetUrlList() const;
 
   // TODO KDE-5 add d pointer here so that we can merge KFileItemListProperties into KFileItemList
 };

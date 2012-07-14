@@ -110,15 +110,15 @@ void KDirListerTest::testOpenUrl()
     const KUrl itemUrl(path + fileName);
     KFileItem byName = m_dirLister.findByName(fileName);
     QVERIFY(!byName.isNull());
-    QCOMPARE(byName.url().url(), itemUrl.url());
+    QCOMPARE(byName.url().toString(), itemUrl.toString());
     QCOMPARE(byName.entry().stringValue(KIO::UDSEntry::UDS_NAME), fileName);
     KFileItem byUrl = m_dirLister.findByUrl(itemUrl);
     QVERIFY(!byUrl.isNull());
-    QCOMPARE(byUrl.url().url(), itemUrl.url());
+    QCOMPARE(byUrl.url().toString(), itemUrl.toString());
     QCOMPARE(byUrl.entry().stringValue(KIO::UDSEntry::UDS_NAME), fileName);
     KFileItem itemForUrl = KDirLister::cachedItemForUrl(itemUrl);
     QVERIFY(!itemForUrl.isNull());
-    QCOMPARE(itemForUrl.url().url(), itemUrl.url());
+    QCOMPARE(itemForUrl.url().toString(), itemUrl.toString());
     QCOMPARE(itemForUrl.entry().stringValue(KIO::UDSEntry::UDS_NAME), fileName);
 
     KFileItem rootByUrl = m_dirLister.findByUrl(path);
@@ -202,7 +202,7 @@ void KDirListerTest::testNewItems()
     const KUrl itemUrl(path + fileName);
     KFileItem itemForUrl = KDirLister::cachedItemForUrl(itemUrl);
     QVERIFY(!itemForUrl.isNull());
-    QCOMPARE(itemForUrl.url().url(), itemUrl.url());
+    QCOMPARE(itemForUrl.url().toString(), itemUrl.toString());
     QCOMPARE(itemForUrl.entry().stringValue(KIO::UDSEntry::UDS_NAME), fileName);
 }
 
@@ -244,7 +244,7 @@ void KDirListerTest::testNewItemByCopy()
 
     KFileItem itemForUrl = KDirLister::cachedItemForUrl(itemUrl);
     QVERIFY(!itemForUrl.isNull());
-    QCOMPARE(itemForUrl.url().url(), itemUrl.toString());
+    QCOMPARE(itemForUrl.url().toString(), itemUrl.toString());
     QCOMPARE(itemForUrl.entry().stringValue(KIO::UDSEntry::UDS_NAME), fileName);
 }
 
@@ -414,7 +414,7 @@ void KDirListerTest::testRefreshRootItem()
     const QString directoryFile = path + "/.directory";
     createSimpleFile(directoryFile);
 
-    org::kde::KDirNotify::emitFilesAdded(KUrl(path).url());
+    org::kde::KDirNotify::emitFilesAdded(KUrl(path).toString());
     QTest::qWait(200);
     org::kde::KDirNotify::emitFilesChanged(QList<QUrl>() << QUrl::fromLocalFile(directoryFile));
     QCOMPARE(m_refreshedItems.count(), 0);

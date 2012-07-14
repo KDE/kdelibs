@@ -131,7 +131,7 @@ public:
     void startChangeDataJob(KJob* job);
 
 #ifndef KIO_NO_NEPOMUK
-    QList<Nepomuk::Resource> resourceList() const;   
+    QList<Nepomuk::Resource> resourceList() const;
     QWidget* createRatingWidget(int rating, QWidget* parent);
     QWidget* createTagWidget(const QList<Nepomuk::Tag>& tags, QWidget* parent);
     QWidget* createCommentWidget(const QString& comment, QWidget* parent);
@@ -290,7 +290,7 @@ void KFileMetaDataProvider::Private::slotTagClicked(const Nepomuk::Tag& tag)
 
 void KFileMetaDataProvider::Private::slotLinkActivated(const QString& link)
 {
-    emit q->urlActivated(KUrl(link));
+    emit q->urlActivated(QUrl(link));
 }
 
 void KFileMetaDataProvider::Private::startChangeDataJob(KJob* job)
