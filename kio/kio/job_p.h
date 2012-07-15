@@ -91,7 +91,7 @@ namespace KIO {
 #if 0
             if (m_url.hasSubUrl())
             {
-                KUrl::List list = KUrl::split(m_url);
+                QList<QUrl> list = KUrl::split(m_url);
                 list.removeLast();
                 m_subUrl = KUrl::join(list);
                 //kDebug(7007) << "New URL = "  << m_url.url();

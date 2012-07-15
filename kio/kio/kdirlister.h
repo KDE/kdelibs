@@ -238,7 +238,7 @@ public:
    *
    * @return the list of all listed URLs
    */
-  KUrl::List directories() const;
+  QList<QUrl> directories() const;
 
   /**
    * Actually emit the changes made with setShowingDotFiles, setDirOnlyMode,

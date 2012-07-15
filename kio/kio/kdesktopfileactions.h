@@ -55,7 +55,7 @@ namespace KDesktopFileActions
      * This allows for the menu to be changed depending on the exact files via
      * the X-KDE-GetActionMenu extension.
      */
-    KIO_EXPORT QList<KServiceAction> userDefinedServices( const QString& path, const KDesktopFile& desktopFile, bool bLocalFiles, const KUrl::List & file_list = KUrl::List());
+    KIO_EXPORT QList<KServiceAction> userDefinedServices( const QString& path, const KDesktopFile& desktopFile, bool bLocalFiles, const QList<QUrl> & file_list = KUrl::List());
 
     /**
      * Returns a list of services defined by the user as possible actions
@@ -71,14 +71,14 @@ namespace KDesktopFileActions
      *
      * @return the list of user defined actions
      */
-    KIO_EXPORT QList<KServiceAction> userDefinedServices( const KService& service, bool bLocalFiles, const KUrl::List & file_list = KUrl::List() );
+    KIO_EXPORT QList<KServiceAction> userDefinedServices( const KService& service, bool bLocalFiles, const QList<QUrl> & file_list = KUrl::List() );
 
    /**
      * Execute @p service on the list of @p urls.
      * @param urls the list of urls
      * @param service the service to execute
      */
-    KIO_EXPORT void executeService( const KUrl::List& urls, const KServiceAction& service );
+    KIO_EXPORT void executeService( const QList<QUrl>& urls, const KServiceAction& service );
 
     /**
      * Invokes the default action for the desktop entry. If the desktop

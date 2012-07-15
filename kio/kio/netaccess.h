@@ -221,7 +221,7 @@ public:
     /**
      * Overloaded method, which takes a list of source URLs
      */
-    static bool dircopy( const KUrl::List& src, const KUrl& target, QWidget* window = 0L ); // TODO deprecate in favor of KIO::copy + synchronousRun (or job->exec())
+    static bool dircopy( const QList<QUrl>& src, const KUrl& target, QWidget* window = 0L ); // TODO deprecate in favor of KIO::copy + synchronousRun (or job->exec())
 
     /**
      * Full-fledged equivalent of KIO::move.
@@ -238,7 +238,7 @@ public:
      * @deprecated use KIO::move and then KIO::NetAccess::synchronousRun (or job->exec())
      */
 #ifndef KDE_NO_DEPRECATED
-    static KIO_DEPRECATED bool move( const KUrl::List& src, const KUrl& target, QWidget* window = 0L );
+    static KIO_DEPRECATED bool move( const QList<QUrl>& src, const KUrl& target, QWidget* window = 0L );
 #endif
 
     /**
@@ -454,7 +454,7 @@ private:
      */
     bool filecopyInternal(const KUrl& src, const KUrl& target, int permissions,
                           KIO::JobFlags flags, QWidget* window, bool move);
-    bool dircopyInternal(const KUrl::List& src, const KUrl& target,
+    bool dircopyInternal(const QList<QUrl>& src, const KUrl& target,
                          QWidget* window, bool move);
     bool statInternal(const KUrl & url, int details, StatSide side, QWidget* window = 0);
 

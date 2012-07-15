@@ -69,8 +69,8 @@ private Q_SLOTS:
         KNewFileMenu menu(&coll, "the_action", this);
         menu.setModal(false);
         menu.setParentWidget(&parentWidget);
-        KUrl u(m_tmpDir.path());
-        KUrl::List lst(u);
+        QList<QUrl> lst;
+        lst << QUrl::fromLocalFile(m_tmpDir.path());;
         menu.setPopupFiles(lst);
         menu.checkUpToDate();
         QAction* action = coll.action("the_action");

@@ -43,7 +43,7 @@ public:
     void determineMimeTypeAndGroup() const;
 
     KFileItemList m_items;
-    KUrl::List m_urlList;
+    QList<QUrl> m_urlList;
     mutable QString m_mimeType;
     mutable QString m_mimeGroup;
     bool m_isDirectory : 1;
@@ -157,7 +157,7 @@ KFileItemList KFileItemListProperties::items() const
     return d->m_items;
 }
 
-KUrl::List KFileItemListProperties::urlList() const
+QList<QUrl> KFileItemListProperties::urlList() const
 {
     return d->m_urlList;
 }

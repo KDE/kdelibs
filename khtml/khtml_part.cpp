@@ -692,7 +692,7 @@ bool KHTMLPart::openUrl(const QUrl &_url)
      * error = int kio error code, errText = QString error text from kio
      * and the URL where the error happened is passed as a sub URL.
      */
-    KUrl::List urls = KUrl::split( url );
+    QList<QUrl> urls = KUrl::split( url );
     //kDebug(6050) << "Handling error URL. URL count:" << urls.count();
 
     if ( !urls.isEmpty() ) {
@@ -5438,7 +5438,7 @@ void KHTMLPart::saveState( QDataStream &stream )
 
 
   QStringList frameNameLst, frameServiceTypeLst, frameServiceNameLst;
-  KUrl::List frameURLLst;
+  QList<QUrl> frameURLLst;
   QList<QByteArray> frameStateBufferLst;
   QList<int> frameTypeLst;
 
@@ -5480,7 +5480,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
   quint32 frameCount;
   QStringList frameNames, frameServiceTypes, docState, frameServiceNames;
   QList<int> frameTypes;
-  KUrl::List frameURLs;
+  QList<QUrl> frameURLs;
   QList<QByteArray> frameStateBuffers;
   QList<int> fSizes;
   QString encoding, sheetUsed;
@@ -5555,7 +5555,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     QStringList::ConstIterator fNameIt = frameNames.constBegin();
     QStringList::ConstIterator fServiceTypeIt = frameServiceTypes.constBegin();
     QStringList::ConstIterator fServiceNameIt = frameServiceNames.constBegin();
-    KUrl::List::ConstIterator fURLIt = frameURLs.constBegin();
+    QList<QUrl>::ConstIterator fURLIt = frameURLs.constBegin();
     QList<QByteArray>::ConstIterator fBufferIt = frameStateBuffers.constBegin();
     QList<int>::ConstIterator fFrameTypeIt = frameTypes.constBegin();
 
@@ -5616,7 +5616,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
     QStringList::ConstIterator fServiceTypeIt = frameServiceTypes.constBegin();
     QStringList::ConstIterator fServiceNameIt = frameServiceNames.constBegin();
-    KUrl::List::ConstIterator fURLIt = frameURLs.constBegin();
+    QList<QUrl>::ConstIterator fURLIt = frameURLs.constBegin();
     QList<QByteArray>::ConstIterator fBufferIt = frameStateBuffers.constBegin();
     QList<int>::ConstIterator fFrameTypeIt = frameTypes.constBegin();
 

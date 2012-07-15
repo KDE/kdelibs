@@ -695,8 +695,8 @@ void KFilePreviewGenerator::Private::updateCutItems()
 
     KFileItemList items;
     KDirLister* dirLister = dirModel->dirLister();
-    const QList<KUrl> dirs = dirLister->directories();
-    foreach (const KUrl& url, dirs) {
+    const QList<QUrl> dirs = dirLister->directories();
+    foreach (const QUrl& url, dirs) {
         items << dirLister->itemsForDir(url);
     }
     applyCutItemEffect(items);

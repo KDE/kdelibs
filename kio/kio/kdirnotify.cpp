@@ -39,19 +39,19 @@ static void emitSignal(const QString &signalName, const QVariantList &args)
     QDBusConnection::sessionBus().send(message);
 }
 
-void OrgKdeKDirNotifyInterface::emitFileRenamed(const QString &src, const QString &dst)
+void OrgKdeKDirNotifyInterface::emitFileRenamed(const QUrl &src, const QUrl &dst)
 {
-    emitSignal(QLatin1String("FileRenamed"), QVariantList() << src << dst);
+    emitSignal(QLatin1String("FileRenamed"), QVariantList() << src.toString() << dst.toString());
 }
 
-void OrgKdeKDirNotifyInterface::emitFileMoved(const QString &src, const QString &dst)
+void OrgKdeKDirNotifyInterface::emitFileMoved(const QUrl &src, const QUrl &dst)
 {
-    emitSignal(QLatin1String("FileMoved"), QVariantList() << src << dst);
+    emitSignal(QLatin1String("FileMoved"), QVariantList() << src.toString() << dst.toString());
 }
 
-void OrgKdeKDirNotifyInterface::emitFilesAdded(const QString &directory)
+void OrgKdeKDirNotifyInterface::emitFilesAdded(const QUrl &directory)
 {
-    emitSignal(QLatin1String("FilesAdded"), QVariantList() << directory);
+    emitSignal(QLatin1String("FilesAdded"), QVariantList() << directory.toString());
 }
 
 static QStringList urlListToStringList(const QList<QUrl> &urls)
@@ -74,13 +74,13 @@ void OrgKdeKDirNotifyInterface::emitFilesRemoved(const QList<QUrl> &fileList)
     emitSignal(QLatin1String("FilesRemoved"), QVariantList() << QVariant(urlListToStringList(fileList)));
 }
 
-void OrgKdeKDirNotifyInterface::emitEnteredDirectory(const QString &url)
+void OrgKdeKDirNotifyInterface::emitEnteredDirectory(const QUrl &url)
 {
-    emitSignal(QLatin1String("enteredDirectory"), QVariantList() << url);
+    emitSignal(QLatin1String("enteredDirectory"), QVariantList() << url.toString());
 }
 
-void OrgKdeKDirNotifyInterface::emitLeftDirectory(const QString &url)
+void OrgKdeKDirNotifyInterface::emitLeftDirectory(const QUrl &url)
 {
-    emitSignal(QLatin1String("leftDirectory"), QVariantList() << url);
+    emitSignal(QLatin1String("leftDirectory"), QVariantList() << url.toString());
 }
 

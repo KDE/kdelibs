@@ -715,7 +715,7 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
             error(KIO::ERR_CANNOT_RENAME_PARTIAL, dest_orig);
             return;
         }
-        org::kde::KDirNotify::emitFileRenamed(dest, dest_orig);
+        org::kde::KDirNotify::emitFileRenamed(QUrl::fromLocalFile(dest), QUrl::fromLocalFile(dest_orig));
     }
 
     // set final permissions

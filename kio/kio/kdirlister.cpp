@@ -414,7 +414,7 @@ void KDirListerCache::stop( KDirLister *lister, bool silent )
 #endif
     //kDebug(7004) << "lister:" << lister << "silent=" << silent;
 
-    const KUrl::List urls = lister->d->lstDirs;
+    const QList<QUrl> urls = lister->d->lstDirs;
     Q_FOREACH(const KUrl& url, urls) {
         stopListingUrl(lister, url, silent);
     }
@@ -495,9 +495,9 @@ void KDirListerCache::setAutoUpdate( KDirLister *lister, bool enable )
 {
     // IMPORTANT: this method does not check for the current autoUpdate state!
 
-    for ( KUrl::List::const_iterator it = lister->d->lstDirs.constBegin();
+    for ( QList<QUrl>::const_iterator it = lister->d->lstDirs.constBegin();
           it != lister->d->lstDirs.constEnd(); ++it ) {
-        DirItem* dirItem = itemsInUse.value((*it).url());
+        DirItem* dirItem = itemsInUse.value((*it).toString());
         Q_ASSERT(dirItem);
         if ( enable )
             dirItem->incAutoUpdate();
@@ -515,11 +515,11 @@ void KDirListerCache::forgetDirs( KDirLister *lister )
     // it doesn't contain things that itemsInUse doesn't. When emitting
     // the canceled signals, lstDirs must not contain anything that
     // itemsInUse does not contain. (otherwise it might crash in findByName()).
-    const KUrl::List lstDirsCopy = lister->d->lstDirs;
+    const QList<QUrl> lstDirsCopy = lister->d->lstDirs;
     lister->d->lstDirs.clear();
 
     //kDebug() << "Iterating over dirs" << lstDirsCopy;
-    for ( KUrl::List::const_iterator it = lstDirsCopy.begin();
+    for ( QList<QUrl>::const_iterator it = lstDirsCopy.begin();
           it != lstDirsCopy.end(); ++it ) {
         forgetDirs( lister, *it, false );
     }
@@ -791,9 +791,9 @@ KFileItem KDirListerCache::findByName( const KDirLister *lister, const QString& 
 {
     Q_ASSERT(lister);
 
-    for (KUrl::List::const_iterator it = lister->d->lstDirs.constBegin();
+    for (QList<QUrl>::const_iterator it = lister->d->lstDirs.constBegin();
          it != lister->d->lstDirs.constEnd(); ++it) {
-        DirItem* dirItem = itemsInUse.value((*it).url());
+        DirItem* dirItem = itemsInUse.value((*it).toString());
         Q_ASSERT(dirItem);
         const KFileItem item = dirItem->lstItems.findByName(_name);
         if (!item.isNull())
@@ -854,17 +854,22 @@ void KDirListerCache::slotFilesRemoved( const QStringList &fileList ) // from KD
 {
     // TODO: handling of symlinks-to-directories isn't done here,
     // because I'm not sure how to do it and keep the performance ok...
-    slotFilesRemoved(KUrl::List(fileList));
+
+    // Qt5 TODO: use QUrl::fromStringList
+    QList<QUrl> urls;
+    Q_FOREACH(const QString& file, fileList)
+        urls.append(QUrl(file));
+    slotFilesRemoved(urls);
 }
 
-void KDirListerCache::slotFilesRemoved(const KUrl::List& fileList)
+void KDirListerCache::slotFilesRemoved(const QList<QUrl>& fileList)
 {
     //kDebug(7004) << fileList.count();
     // Group notifications by parent dirs (usually there would be only one parent dir)
     QMap<QString, KFileItemList> removedItemsByDir;
-    KUrl::List deletedSubdirs;
+    QList<QUrl> deletedSubdirs;
 
-    for (KUrl::List::const_iterator it = fileList.begin(); it != fileList.end() ; ++it) {
+    for (QList<QUrl>::const_iterator it = fileList.begin(); it != fileList.end() ; ++it) {
         const KUrl url(*it);
         DirItem* dirItem = dirItemForUrl(url); // is it a listed directory?
         if (dirItem) {
@@ -912,7 +917,7 @@ void KDirListerCache::slotFilesRemoved(const KUrl::List& fileList)
 void KDirListerCache::slotFilesChanged( const QStringList &fileList ) // from KDirNotify signals
 {
     //kDebug(7004) << fileList;
-    KUrl::List dirsToUpdate;
+    QList<QUrl> dirsToUpdate;
     QStringList::const_iterator it = fileList.begin();
     for (; it != fileList.end() ; ++it) {
         KUrl url( *it );
@@ -933,7 +938,7 @@ void KDirListerCache::slotFilesChanged( const QStringList &fileList ) // from KD
         }
     }
 
-    KUrl::List::const_iterator itdir = dirsToUpdate.constBegin();
+    QList<QUrl>::const_iterator itdir = dirsToUpdate.constBegin();
     for (; itdir != dirsToUpdate.constEnd() ; ++itdir)
         updateDirectory( *itdir );
     // ## TODO problems with current jobs listing/updating that dir
@@ -944,18 +949,18 @@ void KDirListerCache::slotFilesChanged( const QStringList &fileList ) // from KD
 
 void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst ) // from KDirNotify signals
 {
-  KUrl src( _src );
-  KUrl dst( _dst );
-  kDebug(7004) << src << "->" << dst;
+    QUrl src(_src);
+    QUrl dst(_dst);
+    kDebug(7004) << src << "->" << dst;
 #ifdef DEBUG_CACHE
   printDebug();
 #endif
 
-    KUrl oldurl(src);
-    oldurl.adjustPath( KUrl::RemoveTrailingSlash );
-    KFileItem *fileitem = findByUrl(0, oldurl);
+    QUrlPathInfo oldurl(src);
+    oldurl.adjustPath(QUrlPathInfo::StripTrailingSlash);
+    KFileItem *fileitem = findByUrl(0, oldurl.url());
     if (!fileitem) {
-        kDebug(7004) << "Item not found:" << oldurl;
+        kDebug(7004) << "Item not found:" << oldurl.url();
         return;
     }
 
@@ -968,7 +973,7 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
     KFileItem* existingDestItem = findByUrl(0, dst);
     if (existingDestItem) {
         //kDebug() << dst << "already existed, let's delete it";
-        slotFilesRemoved(dst);
+        slotFilesRemoved(QList<QUrl>() << dst);
     }
 
     // If the item had a UDS_URL as well as UDS_NAME set, the user probably wants
@@ -976,24 +981,23 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
     // Check to see if a URL exists, and if so, if only the file part has changed,
     // only update the name and not the underlying URL.
     bool nameOnly = !fileitem->entry().stringValue( KIO::UDSEntry::UDS_URL ).isEmpty();
-    nameOnly &= src.directory( KUrl::IgnoreTrailingSlash | KUrl::AppendTrailingSlash ) ==
-                dst.directory( KUrl::IgnoreTrailingSlash | KUrl::AppendTrailingSlash );
+    nameOnly &= QUrlPathInfo(src).directory() == QUrlPathInfo(dst).directory();
 
     if (!nameOnly && fileitem->isDir()) {
         renameDir( src, dst );
         // #172945 - if the fileitem was the root item of a DirItem that was just removed from the cache,
         // then it's a dangling pointer now...
-        fileitem = findByUrl(0, oldurl);
+        fileitem = findByUrl(0, oldurl.url());
         if (!fileitem) //deleted from cache altogether, #188807
             return;
     }
 
     // Now update the KFileItem representing that file or dir (not exclusive with the above!)
     if (!oldItem.isLocalFile() && !oldItem.localPath().isEmpty()) { // it uses UDS_LOCAL_PATH? ouch, needs an update then
-        slotFilesChanged( QStringList() << src.url() );
+        slotFilesChanged(QStringList() << src.toString());
     } else {
         if( nameOnly )
-            fileitem->setName( dst.fileName() );
+            fileitem->setName(QUrlPathInfo(dst).fileName());
         else
             fileitem->setUrl( dst );
         fileitem->refreshMimeType();
@@ -1881,7 +1885,7 @@ void KDirListerCache::deleteDir( const KUrl& dirUrl )
     //       and then remove it from the cache.
 
     // Separate itemsInUse iteration and calls to forgetDirs (which modify itemsInUse)
-    KUrl::List affectedItems;
+    QList<QUrl> affectedItems;
 
     QHash<QString, DirItem *>::iterator itu = itemsInUse.begin();
     const QHash<QString, DirItem *>::iterator ituend = itemsInUse.end();
@@ -2133,7 +2137,7 @@ KUrl KDirLister::url() const
   return d->url;
 }
 
-KUrl::List KDirLister::directories() const
+QList<QUrl> KDirLister::directories() const
 {
   return d->lstDirs;
 }

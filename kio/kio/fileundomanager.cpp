@@ -608,7 +608,7 @@ void FileUndoManagerPrivate::stepRemovingDirectories()
         QList<QUrl>::ConstIterator it = m_dirsToUpdate.constBegin();
         for(; it != m_dirsToUpdate.constEnd(); ++it) {
             kDebug() << "Notifying FilesAdded for " << *it;
-            org::kde::KDirNotify::emitFilesAdded((*it).toString());
+            org::kde::KDirNotify::emitFilesAdded((*it));
         }
         emit q->undoJobFinished();
         broadcastUnlock();

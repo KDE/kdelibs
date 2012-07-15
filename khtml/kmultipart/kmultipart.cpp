@@ -394,8 +394,8 @@ void KMultiPart::setPart( const QString& mimeType )
                  m_extension, SIGNAL(selectionInfo(KFileItemList)) );
         connect( childExtension, SIGNAL(selectionInfo(QString)),
                  m_extension, SIGNAL(selectionInfo(QString)) );
-        connect( childExtension, SIGNAL(selectionInfo(KUrl::List)),
-                 m_extension, SIGNAL(selectionInfo(KUrl::List)) );
+        connect( childExtension, SIGNAL(selectionInfo(QList<QUrl>)),
+                 m_extension, SIGNAL(selectionInfo(QList<QUrl>)) );
         connect( childExtension, SIGNAL(mouseOverInfo(KFileItem)),
                  m_extension, SIGNAL(mouseOverInfo(KFileItem)) );
         connect( childExtension, SIGNAL(moveTopLevelWidget(int,int)),

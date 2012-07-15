@@ -735,7 +735,7 @@ void KDirOperator::Private::_k_slotToggleIgnoreCase()
 
 void KDirOperator::mkdir()
 {
-    d->newFileMenu->setPopupFiles(KUrl::List() << url());
+    d->newFileMenu->setPopupFiles(QList<QUrl>() << url());
     d->newFileMenu->setViewShowsHiddenFiles(showHiddenFiles());
     d->newFileMenu->createDirectory();
 }
@@ -1315,7 +1315,7 @@ void KDirOperator::activatedMenu(const KFileItem &item, const QPoint &pos)
     Q_UNUSED(item);
     updateSelectionDependentActions();
 
-    d->newFileMenu->setPopupFiles(KUrl::List() << url());
+    d->newFileMenu->setPopupFiles(QList<QUrl>() << url());
     d->newFileMenu->setViewShowsHiddenFiles(showHiddenFiles());
     d->newFileMenu->checkUpToDate();
 

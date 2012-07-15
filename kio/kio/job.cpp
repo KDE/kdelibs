@@ -484,7 +484,7 @@ void SimpleJob::slotFinished( )
             if ( d->m_command == CMD_MKDIR )
             {
                 const QUrl urlDir = QUrlPathInfo(url()).directoryUrl();
-                org::kde::KDirNotify::emitFilesAdded(urlDir.toString());
+                org::kde::KDirNotify::emitFilesAdded(urlDir);
             }
             else /*if ( m_command == CMD_RENAME )*/
             {
@@ -492,9 +492,9 @@ void SimpleJob::slotFinished( )
                 QDataStream str( d->m_packedArgs );
                 str >> src >> dst;
                 if( src.directory() == dst.directory() ) // For the user, moving isn't renaming. Only renaming is.
-                    org::kde::KDirNotify::emitFileRenamed( src.url(), dst.url() );
+                    org::kde::KDirNotify::emitFileRenamed(src, dst);
 
-                org::kde::KDirNotify::emitFileMoved( src.url(), dst.url() );
+                org::kde::KDirNotify::emitFileMoved(src, dst);
             }
         }
         emitResult();

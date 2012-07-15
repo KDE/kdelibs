@@ -115,7 +115,7 @@ public:
    * List of dirs handled by this dirlister. The first entry is the base URL.
    * For a tree view, it contains all the dirs shown.
    */
-  KUrl::List lstDirs;
+  QList<QUrl> lstDirs;
 
   // toplevel URL
   KUrl url;
@@ -284,7 +284,7 @@ private:
   void deleteUnmarkedItems( const QList<KDirLister *>&, KFileItemList & );
     // Helper method called when we know that a list of items was deleted
     void itemsDeleted(const QList<KDirLister *>& listers, const KFileItemList& deletedItems);
-    void slotFilesRemoved(const KUrl::List& urls);
+    void slotFilesRemoved(const QList<QUrl>& urls);
     // common for slotRedirection and slotFileRenamed
   void renameDir( const KUrl &oldUrl, const KUrl &url );
   // common for deleteUnmarkedItems and slotFilesRemoved
@@ -337,9 +337,9 @@ private:
         // Note that "entering" means "start watching", and "leaving" means "stop watching"
         // (i.e. it's not when the user leaves the directory, it's when the directory is removed from the cache)
         if (entering)
-            org::kde::KDirNotify::emitEnteredDirectory( url.url() );
+            org::kde::KDirNotify::emitEnteredDirectory(url);
         else
-            org::kde::KDirNotify::emitLeftDirectory( url.url() );
+            org::kde::KDirNotify::emitLeftDirectory(url);
     }
 
     void redirect( const KUrl& newUrl )

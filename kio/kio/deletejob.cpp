@@ -365,7 +365,7 @@ void DeleteJobPrivate::deleteNextDir()
     // Finished - tell the world
     if ( !m_srcList.isEmpty() )
     {
-        //kDebug(7007) << "KDirNotify'ing FilesRemoved " << m_srcList.toStringList();
+        //kDebug(7007) << "KDirNotify'ing FilesRemoved" << m_srcList;
         org::kde::KDirNotify::emitFilesRemoved(m_srcList);
     }
     if (m_reportTimer!=0)

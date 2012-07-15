@@ -73,7 +73,7 @@ void KHTMLRun::foundMimeType( const QString &_type )
             if (selectedService) {
                 KRun::setPreferredService(selectedService->desktopEntryName());
             } else {
-                KRun::displayOpenWithDialog(url(), part()->widget(), false /*tempfile*/, suggestedFileName());
+                KRun::displayOpenWithDialog(QList<QUrl>() << url(), part()->widget(), false /*tempfile*/, suggestedFileName());
                 setFinished(true);
             }
         }

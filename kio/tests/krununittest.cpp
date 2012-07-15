@@ -73,7 +73,7 @@ void KRunUnitTest::testBinaryName()
 
 //static const char *bt(bool tr) { return tr?"true":"false"; }
 static void checkPDE(const char* exec, const char* term, const char* sus,
-                     const QList<KUrl> &urls, bool tf, const QString& b)
+                     const QList<QUrl> &urls, bool tf, const QString& b)
 {
     QFile out( "kruntest.desktop" );
     if ( !out.open( QIODevice::WriteOnly ) )
@@ -103,7 +103,7 @@ static void checkPDE(const char* exec, const char* term, const char* sus,
 
 void KRunUnitTest::testProcessDesktopExec()
 {
-    QList<KUrl> l0;
+    QList<QUrl> l0;
     static const char
         * const execs[] = { "Exec=date -u", "Exec=echo $PWD" },
         * const terms[] = { "Terminal=false", "Terminal=true\nTerminalOptions=-T \"%f - %c\"" },
@@ -139,15 +139,15 @@ void KRunUnitTest::testProcessDesktopExec()
 void KRunUnitTest::testProcessDesktopExecNoFile_data()
 {
     QTest::addColumn<QString>("execLine");
-    QTest::addColumn<QList<KUrl> >("urls");
+    QTest::addColumn<QList<QUrl> >("urls");
     QTest::addColumn<bool>("tempfiles");
     QTest::addColumn<QString>("expected");
 
-    QList<KUrl> l0;
-    QList<KUrl> l1; l1 << KUrl( "file:/tmp" );
-    QList<KUrl> l2; l2 << KUrl( "http://localhost/foo" );
-    QList<KUrl> l3; l3 << KUrl( "file:/local/file" ) << KUrl( "http://remotehost.org/bar" );
-    QList<KUrl> l4; l4 << KUrl( "http://login:password@www.kde.org" );
+    QList<QUrl> l0;
+    QList<QUrl> l1; l1 << QUrl( "file:/tmp" );
+    QList<QUrl> l2; l2 << QUrl( "http://localhost/foo" );
+    QList<QUrl> l3; l3 << QUrl( "file:/local/file" ) << QUrl( "http://remotehost.org/bar" );
+    QList<QUrl> l4; l4 << QUrl( "http://login:password@www.kde.org" );
 
     // A real-world use case would be kate.
     // But I picked kdeinit5 since it's installed by kdelibs
@@ -193,7 +193,7 @@ void KRunUnitTest::testProcessDesktopExecNoFile()
 {
     QFETCH(QString, execLine);
     KService service("dummy", execLine, "app");
-    QFETCH(QList<KUrl>, urls);
+    QFETCH(QList<QUrl>, urls);
     QFETCH(bool, tempfiles);
     QFETCH(QString, expected);
     QCOMPARE(KShell::joinArgs(KRun::processDesktopExec(service,urls,tempfiles)), expected);
@@ -202,7 +202,7 @@ void KRunUnitTest::testProcessDesktopExecNoFile()
 class KRunImpl : public KRun
 {
 public:
-    KRunImpl(const KUrl& url, bool isLocalFile = false)
+    KRunImpl(const QUrl& url, bool isLocalFile = false)
         : KRun(url, 0, 0, isLocalFile, false) {}
 
     virtual void foundMimeType(const QString& type) {
@@ -221,7 +221,7 @@ void KRunUnitTest::testMimeTypeFile()
 {
     const QString filePath = homeTmpDir() + "file";
     createTestFile(filePath, true);
-    KRunImpl* krun = new KRunImpl(filePath, true);
+    KRunImpl* krun = new KRunImpl(QUrl::fromLocalFile(filePath), true);
     QTest::kWaitForSignal(krun, SIGNAL(finished()), 1000);
     QCOMPARE(krun->mimeTypeFound(), QString::fromLatin1("text/plain"));
 }
@@ -230,7 +230,7 @@ void KRunUnitTest::testMimeTypeDirectory()
 {
     const QString dir = homeTmpDir() + "dir";
     createTestDirectory(dir);
-    KRunImpl* krun = new KRunImpl(dir, true);
+    KRunImpl* krun = new KRunImpl(QUrl::fromLocalFile(dir), true);
     QTest::kWaitForSignal(krun, SIGNAL(finished()), 1000);
     QCOMPARE(krun->mimeTypeFound(), QString::fromLatin1("inode/directory"));
 }
@@ -239,7 +239,7 @@ void KRunUnitTest::testMimeTypeBrokenLink()
 {
     const QString dir = homeTmpDir() + "dir";
     createTestDirectory(dir);
-    KRunImpl* krun = new KRunImpl(KUrl(dir + "/testlink"), true);
+    KRunImpl* krun = new KRunImpl(QUrl::fromLocalFile(dir + "/testlink"), true);
     QSignalSpy spyError(krun, SIGNAL(error()));
     QTest::kWaitForSignal(krun, SIGNAL(finished()), 1000);
     QVERIFY(krun->mimeTypeFound().isEmpty());
@@ -248,7 +248,7 @@ void KRunUnitTest::testMimeTypeBrokenLink()
 
 void KRunUnitTest::testMimeTypeDoesNotExist()
 {
-    KRunImpl* krun = new KRunImpl(KUrl("/does/not/exist"));
+    KRunImpl* krun = new KRunImpl(QUrl::fromLocalFile("/does/not/exist"));
     QSignalSpy spyError(krun, SIGNAL(error()));
     QTest::kWaitForSignal(krun, SIGNAL(finished()), 1000);
     QVERIFY(krun->mimeTypeFound().isEmpty());

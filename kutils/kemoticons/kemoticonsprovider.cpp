@@ -70,7 +70,7 @@ bool KEmoticonsProvider::removeEmoticon(const QString &emo)
 bool KEmoticonsProvider::addEmoticon(const QString &emo, const QString &text, AddEmoticonOption option)
 {
     if (option == Copy) {
-        KIO::NetAccess::dircopy(KUrl(emo), KUrl(d->m_themePath));
+        KIO::NetAccess::dircopy(QUrl::fromLocalFile(emo), QUrl::fromLocalFile(d->m_themePath), 0);
     }
 
     Q_UNUSED(text);

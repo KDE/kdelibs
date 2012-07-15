@@ -88,13 +88,13 @@ Q_SIGNALS: // SIGNALS
     void leftDirectory(const QString &url);
 
 public:
-    static void emitFileRenamed(const QString &src, const QString &dst);
-    static void emitFileMoved(const QString &src, const QString &dst);
-    static void emitFilesAdded(const QString &directory);
+    static void emitFileRenamed(const QUrl &src, const QUrl &dst);
+    static void emitFileMoved(const QUrl &src, const QUrl &dst);
+    static void emitFilesAdded(const QUrl &directory);
     static void emitFilesChanged(const QList<QUrl> &fileList);
     static void emitFilesRemoved(const QList<QUrl> &fileList);
-    static void emitEnteredDirectory(const QString &url);
-    static void emitLeftDirectory(const QString &url);
+    static void emitEnteredDirectory(const QUrl &url);
+    static void emitLeftDirectory(const QUrl &url);
 };
 
 namespace org {

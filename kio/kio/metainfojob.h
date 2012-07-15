@@ -121,7 +121,7 @@ namespace KIO {
      * @return the MetaInfoJob to retrieve the items
      * @deprecated use strigi or KFileMetaInfo
      */
-    KIO_DEPRECATED_EXPORT MetaInfoJob* fileMetaInfo(const KUrl::List& items);
+    KIO_DEPRECATED_EXPORT MetaInfoJob* fileMetaInfo(const QList<QUrl>& items);
 }
 
 #endif

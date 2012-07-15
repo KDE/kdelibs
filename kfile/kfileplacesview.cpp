@@ -1153,7 +1153,7 @@ void KFilePlacesView::Private::_k_trashUpdated(KJob *job)
     if (job->error()) {
         static_cast<KIO::Job*>(job)->ui()->showErrorMessage();
     }
-    org::kde::KDirNotify::emitFilesAdded("trash:/");
+    org::kde::KDirNotify::emitFilesAdded(QUrl("trash:/"));
 }
 
 void KFilePlacesView::Private::_k_capacityBarFadeValueChanged()

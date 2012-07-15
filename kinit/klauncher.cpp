@@ -835,7 +835,12 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
       urls.clear();
       urls.append(firstURL);
    }
-   createArgs(request, service, urls);
+   // Qt5 TODO: use QUrl::fromStringList
+   QList<QUrl> qurls;
+   Q_FOREACH(const QString& u, urls)
+       qurls.append(QUrl(u));
+
+   createArgs(request, service, qurls);
 
    // We must have one argument at least!
    if (!request->arg_list.count())
@@ -1047,7 +1052,7 @@ KLauncher::slotDequeue()
 
 void
 KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
-                       const QStringList &urls)
+                       const QList<QUrl> &urls)
 {
   const QStringList params = KRun::processDesktopExec(*service, urls);
 

@@ -31,6 +31,7 @@
 #include <kconfiggroup.h>
 #include <klocalizedstring.h>
 #include <kservice.h>
+#include <kio_dbushelper.h>
 
 #ifndef KIO_NO_SOLID
 //Solid
@@ -125,7 +126,7 @@ static bool runApplication( const KUrl& , const QString & _serviceFile )
         // ### KDE4: is this still the case?
         return false;
 
-    KUrl::List lst;
+    QList<QUrl> lst;
     return KRun::run( s, lst, 0 /*TODO - window*/ );
 }
 
@@ -232,14 +233,14 @@ QList<KServiceAction> KDesktopFileActions::userDefinedServices( const QString& p
     return userDefinedServices( path, cfg, bLocalFiles );
 }
 
-QList<KServiceAction> KDesktopFileActions::userDefinedServices( const QString& path, const KDesktopFile& cfg, bool bLocalFiles, const KUrl::List & file_list )
+QList<KServiceAction> KDesktopFileActions::userDefinedServices( const QString& path, const KDesktopFile& cfg, bool bLocalFiles, const QList<QUrl> & file_list )
 {
     Q_UNUSED(path); // this was just for debugging; we use service.entryPath() now.
     KService service(&cfg);
     return userDefinedServices(service, bLocalFiles, file_list);
 }
 
-QList<KServiceAction> KDesktopFileActions::userDefinedServices( const KService& service, bool bLocalFiles, const KUrl::List & file_list )
+QList<KServiceAction> KDesktopFileActions::userDefinedServices( const KService& service, bool bLocalFiles, const QList<QUrl> & file_list )
 {
     QList<KServiceAction> result;
 
@@ -259,7 +260,7 @@ QList<KServiceAction> KDesktopFileActions::userDefinedServices( const KService& 
             QDBusInterface remote( app, object, interface );
             // Do NOT use QDBus::BlockWithGui here. It runs a nested event loop,
             // in which timers can fire, leading to crashes like #149736.
-            QDBusReply<QStringList> reply = remote.call(function, file_list.toStringList());
+            QDBusReply<QStringList> reply = remote.call(function, KIO::DBus::convertUriList(file_list));
             keys = reply;               // ensures that the reply was a QStringList
             if (keys.isEmpty())
                 return result;
@@ -284,7 +285,7 @@ QList<KServiceAction> KDesktopFileActions::userDefinedServices( const KService& 
     return result;
 }
 
-void KDesktopFileActions::executeService( const KUrl::List& urls, const KServiceAction& action )
+void KDesktopFileActions::executeService( const QList<QUrl>& urls, const KServiceAction& action )
 {
     //kDebug(7000) << "EXECUTING Service " << action.name();
 

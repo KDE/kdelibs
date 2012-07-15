@@ -105,12 +105,12 @@ void Receiver::slotLaunchTest()
     QPushButton* button = qobject_cast<QPushButton *>(sender());
     Q_ASSERT(button);
     const int testNumber = button->property("testNumber").toInt();
-    QList<KUrl> urls;
+    QList<QUrl> urls;
     if (QByteArray(s_tests[testNumber].text).startsWith("runCommand")) {
         KRun::runCommand(s_tests[testNumber].exec, this);
     } else {
         if (s_tests[testNumber].url)
-            urls << KUrl(s_tests[testNumber].url);
+            urls << QUrl::fromUserInput(s_tests[testNumber].url);
         KRun::run(s_tests[testNumber].exec, urls, this);
     }
 }

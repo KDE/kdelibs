@@ -163,9 +163,9 @@ public:
     int m_processedDirs;
     QList<CopyInfo> files;
     QList<CopyInfo> dirs;
-    KUrl::List dirsToRemove;
+    QList<QUrl> dirsToRemove;
     QList<QUrl> m_srcList;
-    KUrl::List m_successSrcList; // Entries in m_srcList that have successfully been moved
+    QList<QUrl> m_successSrcList; // Entries in m_srcList that have successfully been moved
     QList<QUrl>::const_iterator m_currentStatSrc;
     bool m_bCurrentSrcIsDir;
     bool m_bCurrentOperationIsLink;
@@ -1311,7 +1311,7 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
             emit q->copyingDone( q, (*it).uSource, (*it).uDest, (*it).mtime, false, false );
             if (m_mode == CopyJob::Move)
             {
-                org::kde::KDirNotify::emitFileMoved((*it).uSource.toString(), (*it).uDest.toString());
+                org::kde::KDirNotify::emitFileMoved((*it).uSource, (*it).uDest);
             }
             m_successSrcList.append((*it).uSource);
             if (m_freeSpace != (KIO::filesize_t)-1 && (*it).size != (KIO::filesize_t)-1) {
@@ -1668,7 +1668,7 @@ void CopyJobPrivate::deleteNextDir()
         state = STATE_DELETING_DIRS;
         m_bURLDirty = true;
         // Take first dir to delete out of list - last ones first !
-        KUrl::List::Iterator it = --dirsToRemove.end();
+        QList<QUrl>::Iterator it = --dirsToRemove.end();
         SimpleJob *job = KIO::rmdir( *it );
         Scheduler::setJobPriority(job, 1);
         dirsToRemove.erase(it);
@@ -1743,10 +1743,10 @@ void CopyJob::emitResult()
         if (d->m_globalDestinationState != DEST_IS_DIR || d->m_asMethod)
             url = QUrlPathInfo(url).directoryUrl();
         //kDebug(7007) << "KDirNotify'ing FilesAdded" << url;
-        org::kde::KDirNotify::emitFilesAdded( url.url() );
+        org::kde::KDirNotify::emitFilesAdded(url);
 
         if (d->m_mode == CopyJob::Move && !d->m_successSrcList.isEmpty()) {
-            kDebug(7007) << "KDirNotify'ing FilesRemoved" << d->m_successSrcList.toStringList();
+            kDebug(7007) << "KDirNotify'ing FilesRemoved" << d->m_successSrcList;
             org::kde::KDirNotify::emitFilesRemoved(d->m_successSrcList);
         }
 
@@ -1866,7 +1866,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                     //kDebug(7007) << "Renaming" << _src << "to" << _tmp << "succeeded";
                     if (!QFile::exists( _dest ) && KDE::rename(_tmp, _dest) == 0) {
                         err = 0;
-                        org::kde::KDirNotify::emitFileRenamed(m_currentSrcURL.url(), dest.url());
+                        org::kde::KDirNotify::emitFileRenamed(m_currentSrcURL, dest);
                     } else {
                         kDebug(7007) << "Didn't manage to rename" << _tmp << "to" << _dest << ", reverting";
                         // Revert back to original name!

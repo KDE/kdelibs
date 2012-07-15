@@ -59,7 +59,7 @@ namespace KIO {
      * Creates a job that changes permissions/ownership on several files or directories,
      * optionally recursively.
      * This version of chmod uses a KFileItemList so that it directly knows
-     * what to do with the items. TODO: a version that takes a KUrl::List,
+     * what to do with the items. TODO: a version that takes a QList<QUrl>,
      * and a general job that stats each url and returns a KFileItemList.
      *
      * Note that change of ownership is only supported for local files.

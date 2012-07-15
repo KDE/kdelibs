@@ -1516,7 +1516,7 @@ void KFilePropsPlugin::postApplyChanges()
 
     const KFileItemList items = properties->items();
     const QList<QUrl> lst = items.urlList();
-    org::kde::KDirNotify::emitFilesChanged(KUrl::List(lst));
+    org::kde::KDirNotify::emitFilesChanged(QList<QUrl>(lst));
 }
 
 class KFilePermissionsPropsPlugin::KFilePermissionsPropsPluginPrivate

@@ -79,7 +79,7 @@ void KAutoMountPrivate::slotResult( KJob * job )
                 KRun::runUrl( url, "inode/directory", 0 /*TODO - window*/ );
             }
             // Notify about the new stuff in that dir, in case of opened windows showing it
-            org::kde::KDirNotify::emitFilesAdded( url.url() );
+            org::kde::KDirNotify::emitFilesAdded(url);
         }
 
         // Update the desktop file which is used for mount/unmount (icon change)
@@ -130,7 +130,7 @@ void KAutoUnmountPrivate::slotResult( KJob * job )
         // (if the mountpoint wasn't empty). The only possible behavior on FilesAdded
         // is to relist the directory anyway.
         KUrl mp( m_mountpoint );
-        org::kde::KDirNotify::emitFilesAdded( mp.url() );
+        org::kde::KDirNotify::emitFilesAdded(mp);
 
         emit q->finished();
     }

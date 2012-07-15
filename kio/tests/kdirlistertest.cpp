@@ -414,7 +414,7 @@ void KDirListerTest::testRefreshRootItem()
     const QString directoryFile = path + "/.directory";
     createSimpleFile(directoryFile);
 
-    org::kde::KDirNotify::emitFilesAdded(KUrl(path).toString());
+    org::kde::KDirNotify::emitFilesAdded(QUrl::fromLocalFile(path));
     QTest::qWait(200);
     org::kde::KDirNotify::emitFilesChanged(QList<QUrl>() << QUrl::fromLocalFile(directoryFile));
     QCOMPARE(m_refreshedItems.count(), 0);

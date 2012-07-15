@@ -150,8 +150,8 @@ protected:
        const QStringList &envs, const QByteArray &startup_id,
        bool blind, bool autoStart, const QDBusMessage &msg );
 
-   void createArgs( KLaunchRequest *request, const KService::Ptr service,
-                    const QStringList &url);
+   void createArgs(KLaunchRequest *request, const KService::Ptr service,
+                   const QList<QUrl> &url);
 
    void queueRequest(KLaunchRequest *);
 

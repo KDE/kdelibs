@@ -592,7 +592,10 @@ QList<QUrl> KFileDialogPrivate::getOpenUrls(const QUrl& startDir,
     if (KFileDialogPrivate::isNative() && (!startDir.isValid() || startDir.isLocalFile())) {
         const QStringList fileNames( KFileDialogPrivate::getOpenFileNames(
             startDir, filter, parent, caption, selectedFilter) );
-        return KUrl::List(fileNames);
+        QList<QUrl> urls;
+        Q_FOREACH(const QString &file, fileNames)
+            urls.append(QUrl::fromLocalFile(file));
+        return urls;
     }
     KFileDialogPrivate::Native::s_allowNative = false;
 
@@ -686,8 +689,14 @@ QString KFileDialog::selectedFile() const
 
 QStringList KFileDialog::selectedFiles() const
 {
-    if (d->native)
-        return KUrl::List(selectedUrls()).toStringList();
+    if (d->native) {
+        QStringList lst;
+        Q_FOREACH(const QUrl &u, selectedUrls()) {
+            if (u.isLocalFile())
+                lst.append(u.toLocalFile());
+        }
+        return lst;
+    }
     return d->w->selectedFiles();
 }
 

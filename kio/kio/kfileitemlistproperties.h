@@ -113,7 +113,7 @@ public:
     /**
      * List of urls, gathered from the fileitems
      */
-    KUrl::List urlList() const;
+    QList<QUrl> urlList() const;
 
     /**
      * @return true if all items are directories

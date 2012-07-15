@@ -910,7 +910,7 @@ QStringList KDirModel::mimeTypes( ) const
 
 QMimeData * KDirModel::mimeData( const QModelIndexList & indexes ) const
 {
-    KUrl::List urls, mostLocalUrls;
+    QList<QUrl> urls, mostLocalUrls;
     bool canUseMostLocalUrls = true;
     foreach (const QModelIndex &index, indexes) {
         const KFileItem& item = d->nodeForIndex(index)->item();

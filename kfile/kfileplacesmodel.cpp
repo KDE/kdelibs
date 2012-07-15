@@ -507,7 +507,7 @@ QStringList KFilePlacesModel::mimeTypes() const
 
 QMimeData *KFilePlacesModel::mimeData(const QModelIndexList &indexes) const
 {
-    KUrl::List urls;
+    QList<QUrl> urls;
     QByteArray itemData;
 
     QDataStream stream(&itemData, QIODevice::WriteOnly);

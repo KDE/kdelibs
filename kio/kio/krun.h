@@ -192,7 +192,7 @@ public:
      * @param asn Application startup notification id, if any (otherwise "").
      * @return @c true on success, @c false on error
      */
-    static bool run(const KService& service, const KUrl::List& urls, QWidget* window,
+    static bool run(const KService& service, const QList<QUrl>& urls, QWidget* window,
                     bool tempFiles = false, const QString& suggestedFileName = QString(),
                     const QByteArray& asn = QByteArray());
 
@@ -212,7 +212,7 @@ public:
      * @param asn Application startup notification id, if any (otherwise "").
      * @return @c true on success, @c false on error
      */
-    static bool run(const QString& exec, const KUrl::List& urls, QWidget* window,
+    static bool run(const QString& exec, const QList<QUrl>& urls, QWidget* window,
                     const QString& name = QString(),
                     const QString& icon = QString(),
                     const QByteArray& asn = QByteArray());
@@ -300,7 +300,7 @@ public:
      * @param asn Application startup notification id, if any (otherwise "").
      * @return false if the dialog was canceled
      */
-    static bool displayOpenWithDialog(const KUrl::List& lst, QWidget* window,
+    static bool displayOpenWithDialog(const QList<QUrl>& lst, QWidget* window,
                                       bool tempFiles = false, const QString& suggestedFileName = QString(),
                                       const QByteArray& asn = QByteArray());
 
@@ -328,7 +328,7 @@ public:
      *
      * @return a list of arguments suitable for KProcess::setProgram().
      */
-    static QStringList processDesktopExec(const KService &_service, const KUrl::List &_urls,
+    static QStringList processDesktopExec(const KService &_service, const QList<QUrl> &_urls,
                                           bool tempFiles = false,
                                           const QString& suggestedFileName = QString());
 

@@ -34,6 +34,7 @@
 #include <QFile>
 #include <qmimedatabase.h>
 #include <QtAlgorithms>
+#include <kio_dbushelper.h>
 
 #include <QtDBus/QtDBus>
 
@@ -206,7 +207,7 @@ int KFileItemActions::addServiceActionsTo(QMenu* mainMenu)
     const QString protocol = firstItem.url().scheme(); // assumed to be the same for all items
     const bool isLocal = !firstItem.localPath().isEmpty();
     const bool isSingleLocal = items.count() == 1 && isLocal;
-    const KUrl::List urlList = d->m_props.urlList();
+    const QList<QUrl> urlList = d->m_props.urlList();
 
     KIO::PopupServices s;
 
@@ -290,7 +291,7 @@ int KFileItemActions::addServiceActionsTo(QMenu* mainMenu)
             //    continue; //app does not exist so cannot send call
 
             QDBusMessage reply = QDBusInterface(app, obj, interface).
-                                 call(method, urlList.toStringList());
+                                 call(method, KIO::DBus::convertUriList(urlList));
             if (reply.arguments().count() < 1 || reply.arguments().at(0).type() != QVariant::Bool || !reply.arguments().at(0).toBool()) {
                 continue;
             }

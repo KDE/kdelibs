@@ -90,7 +90,7 @@ public:
     void startTimer();
 
 #ifdef Q_OS_WIN
-    static bool displayNativeOpenWithDialog( const KUrl::List& lst, QWidget* window, bool tempFiles,
+    static bool displayNativeOpenWithDialog( const QList<QUrl>& lst, QWidget* window, bool tempFiles,
                                        const QString& suggestedFileName, const QByteArray& asn );
 #endif
     bool runExecutable(const QString& _exec);

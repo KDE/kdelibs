@@ -994,7 +994,7 @@ void ReadWritePartPrivate::_k_slotUploadFinished( KJob * )
     {
         KUrl dirUrl( m_url );
         dirUrl.setPath( dirUrl.directory() );
-        ::org::kde::KDirNotify::emitFilesAdded( dirUrl.url() );
+        ::org::kde::KDirNotify::emitFilesAdded(dirUrl);
 
         m_uploadJob = 0;
         q->setModified( false );

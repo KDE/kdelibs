@@ -161,7 +161,7 @@ KIO_EXPORT MetaInfoJob *KIO::fileMetaInfo( const KFileItemList& items)
     return new MetaInfoJob(items);
 }
 
-KIO_EXPORT MetaInfoJob *KIO::fileMetaInfo( const KUrl::List &items)
+KIO_EXPORT MetaInfoJob *KIO::fileMetaInfo( const QList<QUrl> &items)
 {
     KFileItemList fileItems;
     foreach (const KUrl& url, items) {

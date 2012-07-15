@@ -174,12 +174,12 @@ bool NetAccess::copy( const KUrl& src, const KUrl& target, QWidget* window )
 
 bool NetAccess::dircopy( const KUrl & src, const KUrl & target, QWidget* window )
 {
-  KUrl::List srcList;
+  QList<QUrl> srcList;
   srcList.append( src );
   return NetAccess::dircopy( srcList, target, window );
 }
 
-bool NetAccess::dircopy( const KUrl::List & srcList, const KUrl & target, QWidget* window )
+bool NetAccess::dircopy( const QList<QUrl> & srcList, const KUrl & target, QWidget* window )
 {
   NetAccess kioNet;
   return kioNet.dircopyInternal( srcList, target, window, false /*copy*/ );
@@ -188,7 +188,7 @@ bool NetAccess::dircopy( const KUrl::List & srcList, const KUrl & target, QWidge
 #ifndef KDE_NO_DEPRECATED
 bool NetAccess::move( const KUrl& src, const KUrl& target, QWidget* window )
 {
-  KUrl::List srcList;
+  QList<QUrl> srcList;
   srcList.append( src );
   NetAccess kioNet;
   return kioNet.dircopyInternal( srcList, target, window, true /*move*/ );
@@ -196,7 +196,7 @@ bool NetAccess::move( const KUrl& src, const KUrl& target, QWidget* window )
 #endif
 
 #ifndef KDE_NO_DEPRECATED
-bool NetAccess::move( const KUrl::List& srcList, const KUrl& target, QWidget* window )
+bool NetAccess::move( const QList<QUrl>& srcList, const KUrl& target, QWidget* window )
 {
   NetAccess kioNet;
   return kioNet.dircopyInternal( srcList, target, window, true /*move*/ );
@@ -332,7 +332,7 @@ bool NetAccess::filecopyInternal(const KUrl& src, const KUrl& target, int permis
   return d->bJobOK;
 }
 
-bool NetAccess::dircopyInternal(const KUrl::List& src, const KUrl& target,
+bool NetAccess::dircopyInternal(const QList<QUrl>& src, const KUrl& target,
                                 QWidget* window, bool move)
 {
   d->bJobOK = true; // success unless further error occurs

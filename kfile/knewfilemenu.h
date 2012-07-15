@@ -77,34 +77,34 @@ public:
      * Returns the modality of dialogs
      */
     bool isModal() const;
-    
+
     /**
      * Returns the files that the popup is shown for
      */
-    QList<KUrl> popupFiles() const;
+    QList<QUrl> popupFiles() const;
 
     /**
      * Sets the modality of dialogs created by KNewFile. Set to false if you do not want to block
      * your application window when entering a new directory name i.e.
      */
     void setModal(bool modality);
-    
+
     /**
      * Sets a parent widget for the dialogs shown by KNewFileMenu.
      * This is strongly recommended, for apps with a main window.
      */
     void setParentWidget(QWidget* parentWidget);
-    
+
     /**
      * Set the files the popup is shown for
      * Call this before showing up the menu
      */
-    void setPopupFiles(const QList<KUrl>& files);
-    
+    void setPopupFiles(const QList<QUrl>& files);
+
 #ifndef KDE_NO_DEPRECATED
-    void setPopupFiles(const KUrl& file)
+    void setPopupFiles(const QUrl& file)
     {
-        setPopupFiles(QList<KUrl>() << file);
+        setPopupFiles(QList<QUrl>() << file);
     }
 #endif
 
@@ -114,12 +114,12 @@ public:
      * the other hand, want to show all mimetypes).
      */
     void setSupportedMimeTypes(const QStringList& mime);
-    
+
     /**
      * Set if the directory view currently shows dot files.
      */
     void setViewShowsHiddenFiles(bool b);
-    
+
     /**
      * Returns the mimetypes set in supportedMimeTypes()
      */
@@ -175,9 +175,9 @@ private:
     Q_PRIVATE_SLOT(d, void _k_slotTextChanged(const QString))
     Q_PRIVATE_SLOT(d, void _k_slotSymLink())
     Q_PRIVATE_SLOT(d, void _k_slotUrlDesktopFile())
-    
+
     KNewFileMenuPrivate* const d;
-    
+
 };
 
 #endif
