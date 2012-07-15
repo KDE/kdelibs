@@ -138,6 +138,7 @@ QSaveFile::~QSaveFile()
         delete d->tempFile;
     }
     QIODevice::close();
+    delete d;
 }
 
 /*!
