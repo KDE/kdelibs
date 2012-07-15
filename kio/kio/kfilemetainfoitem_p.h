@@ -2,7 +2,7 @@
 
    Copyright (c) 2007 Jos van den Oever <jos@vandenoever.info>
                  2010 Sebastian Trueg <trueg@kde.org>
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License (LGPL) as published by the Free Software Foundation; either
@@ -47,7 +47,6 @@ public:
     Nepomuk::Types::Property pp;
 #endif
 #endif
-    KUrl propertyUri;
     QVariant value;
     KFileWritePlugin* writer;
     bool embedded;

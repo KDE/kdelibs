@@ -47,11 +47,11 @@
 
 enum BuiltinServiceType { ST_MOUNT = 0x0E1B05B0, ST_UNMOUNT = 0x0E1B05B1 }; // random numbers
 
-static bool runFSDevice( const KUrl& _url, const KDesktopFile &cfg );
-static bool runApplication( const KUrl& _url, const QString & _serviceFile );
-static bool runLink( const KUrl& _url, const KDesktopFile &cfg );
+static bool runFSDevice( const QUrl& _url, const KDesktopFile &cfg );
+static bool runApplication( const QUrl& _url, const QString & _serviceFile );
+static bool runLink( const QUrl& _url, const KDesktopFile &cfg );
 
-bool KDesktopFileActions::run( const KUrl& u, bool _is_local )
+bool KDesktopFileActions::run( const QUrl& u, bool _is_local )
 {
     // It might be a security problem to run external untrusted desktop
     // entry files
@@ -83,7 +83,7 @@ bool KDesktopFileActions::run( const KUrl& u, bool _is_local )
     return false;
 }
 
-static bool runFSDevice( const KUrl& _url, const KDesktopFile &cfg )
+static bool runFSDevice( const QUrl& _url, const KDesktopFile &cfg )
 {
     bool retval = false;
 
@@ -99,7 +99,7 @@ static bool runFSDevice( const KUrl& _url, const KDesktopFile &cfg )
     KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByDevice( dev );
     // Is the device already mounted ?
     if (mp) {
-        KUrl mpURL(mp->mountPoint());
+        const QUrl mpURL = QUrl::fromLocalFile(mp->mountPoint());
         // Open a new window
         retval = KRun::runUrl( mpURL, QLatin1String("inode/directory"), 0 /*TODO - window*/ );
     } else {
@@ -118,7 +118,7 @@ static bool runFSDevice( const KUrl& _url, const KDesktopFile &cfg )
     return retval;
 }
 
-static bool runApplication( const KUrl& , const QString & _serviceFile )
+static bool runApplication( const QUrl& , const QString & _serviceFile )
 {
     KService s( _serviceFile );
     if ( !s.isValid() )
@@ -130,17 +130,17 @@ static bool runApplication( const KUrl& , const QString & _serviceFile )
     return KRun::run( s, lst, 0 /*TODO - window*/ );
 }
 
-static bool runLink( const KUrl& _url, const KDesktopFile &cfg )
+static bool runLink(const QUrl& _url, const KDesktopFile &cfg)
 {
     QString u = cfg.readUrl();
     if ( u.isEmpty() )
     {
-        QString tmp = i18n("The desktop entry file\n%1\nis of type Link but has no URL=... entry.",  _url.prettyUrl() );
+        QString tmp = i18n("The desktop entry file\n%1\nis of type Link but has no URL=... entry.",  _url.toString() );
         KMessageBoxWrapper::error( 0, tmp );
         return false;
     }
 
-    KUrl url ( u );
+    QUrl url = QUrl::fromUserInput(u);
     KRun* run = new KRun(url,(QWidget*)0);
 
     // X-KDE-LastOpenedWith holds the service desktop entry name that
@@ -153,7 +153,7 @@ static bool runLink( const KUrl& _url, const KDesktopFile &cfg )
     return false;
 }
 
-QList<KServiceAction> KDesktopFileActions::builtinServices( const KUrl& _url )
+QList<KServiceAction> KDesktopFileActions::builtinServices( const QUrl& _url )
 {
     QList<KServiceAction> result;
 

@@ -34,7 +34,6 @@
 #include <strigi/fieldtypes.h>
 #endif
 
-#include <kurl.h>
 #include <kdebug.h>
 
 #include <QFileInfo>
@@ -213,10 +212,10 @@ class KFileMetaInfoPrivate : public QSharedData
 {
 public:
     QHash<QString, KFileMetaInfoItem> items;
-    KUrl m_url;
+    QUrl m_url;
 
-    void init ( QIODevice& stream, const KUrl& url, time_t mtime, KFileMetaInfo::WhatFlags w = KFileMetaInfo::Everything );
-    void initWriters ( const KUrl& /*file*/ );
+    void init ( QIODevice& stream, const QUrl& url, time_t mtime, KFileMetaInfo::WhatFlags w = KFileMetaInfo::Everything );
+    void initWriters ( const QUrl& /*file*/ );
     void operator= ( const KFileMetaInfoPrivate& k ) {
         items = k.items;
     }
@@ -243,7 +242,7 @@ private:
     KFileMetaInfo::WhatFlags m_indexDetail;
 };
 
-void KFileMetaInfoPrivate::init ( QIODevice& stream, const KUrl& url, time_t mtime, KFileMetaInfo::WhatFlags w )
+void KFileMetaInfoPrivate::init ( QIODevice& stream, const QUrl& url, time_t mtime, KFileMetaInfo::WhatFlags w )
 {
     m_url = url;
 
@@ -261,7 +260,7 @@ void KFileMetaInfoPrivate::init ( QIODevice& stream, const KUrl& url, time_t mti
     // TODO: get data from Nepomuk
 }
 
-void KFileMetaInfoPrivate::initWriters ( const KUrl& file )
+void KFileMetaInfoPrivate::initWriters ( const QUrl& file )
 {
     QStringList mimetypes;
     QHash<QString, KFileMetaInfoItem>::iterator i;
@@ -284,7 +283,7 @@ KFileMetaInfo::KFileMetaInfo ( const QString& path, const QString& /*mimetype*/,
     // if e.g. the path points to a pipe, it is not opened
     if ( ( fileinfo.isFile() || fileinfo.isDir() || fileinfo.isSymLink() )
             && file.open ( QIODevice::ReadOnly ) ) {
-        KUrl u ( path );
+        const QUrl u = QUrl::fromLocalFile(path);
         d->init ( file, u, fileinfo.lastModified().toTime_t(), w );
         if ( fileinfo.isWritable() ) {
             d->initWriters ( u );
@@ -292,12 +291,12 @@ KFileMetaInfo::KFileMetaInfo ( const QString& path, const QString& /*mimetype*/,
     }
 }
 
-KFileMetaInfo::KFileMetaInfo ( const KUrl& url )
+KFileMetaInfo::KFileMetaInfo(const QUrl& url)
         : d ( new KFileMetaInfoPrivate() )
 {
-    QFileInfo fileinfo ( url.toLocalFile() );
-    QFile file ( url.toLocalFile() );
+    QFile file(url.toLocalFile());
     if ( file.open ( QIODevice::ReadOnly ) ) {
+        QFileInfo fileinfo(url.toLocalFile());
         d->init ( file, url, fileinfo.lastModified().toTime_t() );
         if ( fileinfo.isWritable() ) {
             d->initWriters ( url );
@@ -343,7 +342,7 @@ bool KFileMetaInfo::applyChanges()
     return ok;
 }
 
-const KUrl& KFileMetaInfo::url() const
+const QUrl& KFileMetaInfo::url() const
 {
     return d->m_url;
 }
@@ -409,7 +408,7 @@ KFileMetaInfo::KFileMetaInfo ( const QString& path, const QString& /*mimetype*/,
 {
 }
 
-KFileMetaInfo::KFileMetaInfo ( const KUrl& url )
+KFileMetaInfo::KFileMetaInfo(const QUrl& url)
 {
 }
 
@@ -435,10 +434,9 @@ bool KFileMetaInfo::applyChanges()
     return false;
 }
 
-const KUrl& KFileMetaInfo::url() const
+QUrl KFileMetaInfo::url() const
 {
-    static const KUrl item;
-    return item;
+    return QUrl();
 }
 
 const QHash<QString, KFileMetaInfoItem>& KFileMetaInfo::items() const
@@ -478,7 +476,7 @@ QStringList KFileMetaInfo::supportedKeys() const
 {
     return QStringList();
 }
-#endif
+#endif //KIO_NO_STRIGI
 
 KFileMetaInfoItemList KFileMetaInfoGroup::items() const
 {

@@ -216,7 +216,7 @@ int KFileItemActions::addServiceActionsTo(QMenu* mainMenu)
         d->m_props.mimeType() == "inode/blockdevice")) { // dev file
         // get builtin services, like mount/unmount
         const QString path = firstItem.localPath();
-        s.builtin = KDesktopFileActions::builtinServices(path);
+        s.builtin = KDesktopFileActions::builtinServices(QUrl::fromLocalFile(path));
         KDesktopFile desktopFile(path);
         KConfigGroup cfg = desktopFile.desktopGroup();
         const QString priority = cfg.readEntry("X-KDE-Priority");

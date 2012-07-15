@@ -25,7 +25,7 @@
 #include "kfilemetainfoitem.h"
 #include <QtCore/QList>
 #include <QtCore/QStringList>
-class KUrl;
+class QUrl;
 
 typedef QList<KFileMetaInfoItem> KFileMetaInfoItemList;
 
@@ -101,7 +101,7 @@ public:
      * the resource pointed to by @p url.
      * @note that c'tor is not thread-safe
      **/
-    KFileMetaInfo(const KUrl& url);
+    KFileMetaInfo(const QUrl& url);
     /**
      * @brief Construct an empty, invalid KFileMetaInfo instance.
      **/
@@ -154,7 +154,7 @@ public:
 #endif
     KFileMetaInfoGroupList groups() const;
     QStringList keys() const;
-    const KUrl& url() const;
+    const QUrl& url() const;
 
 private:
     QSharedDataPointer<KFileMetaInfoPrivate> d;
