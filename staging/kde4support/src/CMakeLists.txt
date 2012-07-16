@@ -29,6 +29,8 @@ set(libkde4support_SRCS
     kdeui/ksplashscreen.cpp
     kdeui/kdialogbuttonbox.cpp
     kdeui/kuniqueapplication.cpp
+    kdeui/khbox.cpp
+    kdeui/kvbox.cpp
 )
 
 include_directories(
@@ -94,6 +96,8 @@ install(FILES
     kdeui/ksplashscreen.h
     kdeui/kdialogbuttonbox.h
     kdeui/kuniqueapplication.h
+    kdeui/khbox.h
+    kdeui/kvbox.h
     ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
     ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel

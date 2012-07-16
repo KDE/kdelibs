@@ -17,6 +17,5 @@ include_directories(
 
 kwidgetsaddons_executable_tests(
   kledtest
-  khboxtest
   kseparatortest
 )

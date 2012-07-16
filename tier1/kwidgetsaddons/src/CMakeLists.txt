@@ -6,8 +6,6 @@ set(kwidgetsaddons_SRCS
   kselector.cpp
   kxyselector.cpp
   kseparator.cpp
-  khbox.cpp
-  kvbox.cpp
 )
 
 add_library(kwidgetsaddons SHARED ${kwidgetsaddons_SRCS})
@@ -28,8 +26,6 @@ install(FILES
   kselector.h
   kxyselector.h
   kseparator.h
-  khbox.h
-  kvbox.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddons_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

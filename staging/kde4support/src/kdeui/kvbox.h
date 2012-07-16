@@ -33,7 +33,7 @@
  *
  * @see KHBox
  */
-class KWIDGETSADDONS_EXPORT KVBox : public KHBox
+class KDE4SUPPORT_DEPRECATED_EXPORT KVBox : public KHBox
 {
   Q_OBJECT
   
