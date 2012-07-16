@@ -364,9 +364,11 @@ khtml_value:
 khtml_selectors:
 	KHTML_SELECTORS_SYM '{' maybe_space selector_list '}' {
 		CSSParser *p = static_cast<CSSParser *>(parser);
-		if ($4)
+		if ($4) {
 			p->selectors = *$4;
-		else
+			delete $4;
+			$4 = 0;
+		} else
 			p->selectors.clear(); // parse error
 	}
 ;
