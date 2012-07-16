@@ -45,13 +45,12 @@ void KWindowConfig::saveWindowSize(const QWidget *window, KConfigGroup &config, 
     if (!isMaximized) {
         const QSize defaultSize(window->property(s_initialSizePropertyName).toSize());
         const QSize defaultScreenSize(window->property(s_initialScreenSizePropertyName).toSize());
-        if (defaultSize.isValid() && defaultScreenSize.isValid()) {
-            if (defaultSize != window->size() || defaultScreenSize != desk.size()) {
-                const QString wString(QString::fromLatin1("Width %1").arg(desk.width()));
-                const QString hString(QString::fromLatin1("Height %1").arg(desk.height()));
-                config.writeEntry(wString, sizeToSave.width(), options);
-                config.writeEntry(hString, sizeToSave.height(), options);
-            }
+	const bool sizeValid = defaultSize.isValid() && defaultScreenSize.isValid();
+	if (!sizeValid || (sizeValid && (defaultSize != sizeToSave || defaultScreenSize != desk.size()))) {
+	    const QString wString(QString::fromLatin1("Width %1").arg(desk.width()));
+	    const QString hString(QString::fromLatin1("Height %1").arg(desk.height()));
+	    config.writeEntry(wString, sizeToSave.width(), options);
+	    config.writeEntry(hString, sizeToSave.height(), options);
         }
     }
     if ( (isMaximized == false) && !config.hasDefault(screenMaximizedString) )
