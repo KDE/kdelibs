@@ -202,11 +202,11 @@ public:
     virtual short minWidth() const { return m_minWidth; }
     virtual int maxWidth() const { return m_maxWidth; }
 
-    void trimmedMinMaxWidth(short& beginMinW, bool& beginWS,
-                            short& endMinW, bool& endWS,
+    void trimmedMinMaxWidth(int& beginMinW, bool& beginWS,
+                            int& endMinW, bool& endWS,
                             bool& hasBreakableChar, bool& hasBreak,
-                            short& beginMaxW, short& endMaxW,
-                            short& minW, short& maxW, bool& stripFrontSpaces);
+                            int& beginMaxW, int& endMaxW,
+                            int& minW, int& maxW, bool& stripFrontSpaces);
 
     bool containsOnlyWhitespace(unsigned int from, unsigned int len) const;
 

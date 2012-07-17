@@ -3080,8 +3080,8 @@ void RenderBlock::calcInlineMinMaxWidth()
             // the width of the last non-breakable run and use that to start a new line
             // (unless we end in whitespace).
             RenderStyle* cstyle = child->style();
-            short childMin = 0;
-            short childMax = 0;
+            int childMin = 0;
+            int childMax = 0;
 
             if (!child->isText()) {
                 // Case (1) and (2).  Inline replaced and inline flow elements.
@@ -3161,7 +3161,7 @@ void RenderBlock::calcInlineMinMaxWidth()
                     inlineMin += childMin;
                 } else {
                     // Now check our line.
-                    m_minWidth = qMax(childMin, m_minWidth);
+                    m_minWidth = qMax(childMin, (int)m_minWidth);
 
                     // Now start a new line.
                     inlineMin = 0;
@@ -3185,9 +3185,9 @@ void RenderBlock::calcInlineMinMaxWidth()
                 // then they shouldn't be considered in the breakable char
                 // check.
                 bool hasBreakableChar, hasBreak;
-                short beginMin, endMin;
+                int beginMin, endMin;
                 bool beginWS, endWS;
-                short beginMax, endMax;
+                int beginMax, endMax;
                 t->trimmedMinMaxWidth(beginMin, beginWS, endMin, endWS, hasBreakableChar,
                                       hasBreak, beginMax, endMax,
                                       childMin, childMax, stripFrontSpaces);
