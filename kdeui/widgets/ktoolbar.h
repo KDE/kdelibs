@@ -177,7 +177,7 @@ public:
 
     /**
      * Removes an XML gui client that uses this toolbar
-     * @since 4.9.0
+     * @since 4.8.5
      */
     void removeXMLGUIClient( KXMLGUIClient *client );
 
