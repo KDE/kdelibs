@@ -715,6 +715,7 @@ QMap<QString, QVariant> UDisksDevice::allProperties() const
 {
     QDBusMessage call = QDBusMessage::createMethodCall(m_device->service(), m_device->path(),
                                                        "org.freedesktop.DBus.Properties", "GetAll");
+    call << m_device->interface();
     QDBusPendingReply< QVariantMap > reply = QDBusConnection::systemBus().asyncCall(call);
     reply.waitForFinished();
 
