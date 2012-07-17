@@ -1599,11 +1599,11 @@ bool RenderText::containsOnlyWhitespace(unsigned int from, unsigned int len) con
     return currPos >= (from+len);
 }
 
-void RenderText::trimmedMinMaxWidth(short& beginMinW, bool& beginWS,
-                                    short& endMinW, bool& endWS,
+void RenderText::trimmedMinMaxWidth(int& beginMinW, bool& beginWS,
+                                    int& endMinW, bool& endWS,
                                     bool& hasBreakableChar, bool& hasBreak,
-                                    short& beginMaxW, short& endMaxW,
-                                    short& minW, short& maxW, bool& stripFrontSpaces)
+                                    int& beginMaxW, int& endMaxW,
+                                    int& minW, int& maxW, bool& stripFrontSpaces)
 {
     bool preserveWS = style()->preserveWS();
     bool preserveLF = style()->preserveLF();
