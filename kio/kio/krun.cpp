@@ -373,7 +373,9 @@ static QStringList supportedProtocols(const KService& _service)
         if (supportedProtocols.isEmpty()) {
             // compat mode: assume KIO if not set and it's a KDE app (or a KDE service)
             const QStringList categories = _service.property("Categories").toStringList();
-            if (categories.contains("KDE") || !_service.isApplication()) {
+            if (categories.contains("KDE")
+                    || !_service.isApplication()
+                    || _service.entryPath().isEmpty() /*temp service*/) {
                 supportedProtocols.append("KIO");
             }
             else { // if no KDE app, be a bit over-generic
