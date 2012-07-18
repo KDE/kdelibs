@@ -2127,8 +2127,8 @@ void FileCopyJobPrivate::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
                 // Ask confirmation about resuming previous transfer
                 res = ui()->askFileRename(
                       job, i18n("File Already Exists"),
-                      m_src.url(),
-                      m_dest.url(),
+                      m_src,
+                      m_dest,
                       (RenameDialog_Mode) (M_OVERWRITE | M_RESUME | M_NORENAME), newPath,
                       m_sourceSize, offset );
             }

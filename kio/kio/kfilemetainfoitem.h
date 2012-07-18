@@ -28,7 +28,6 @@
 class KFileWritePlugin;
 class QVariant;
 class PredicateProperties;
-class KUrl;
 
 class KFileMetaInfoItemPrivate;
 class KIO_EXPORT KFileMetaInfoItem {

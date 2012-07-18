@@ -116,8 +116,8 @@ static KUrl getNewFileName(const QUrl &u, const QString& text, const QString& su
 
       KIO::RenameDialog dlg( widget,
                           i18n("File Already Exists"),
-                          KUrl(u).pathOrUrl(),
-                          myurl.pathOrUrl(),
+                          KUrl(u),
+                          myurl,
                           (KIO::RenameDialog_Mode) (KIO::M_OVERWRITE | KIO::M_SINGLE) );
       res = static_cast<KIO::RenameDialog_Result>(dlg.exec());
 

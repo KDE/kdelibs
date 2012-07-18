@@ -80,8 +80,8 @@ public:
      */
     virtual RenameDialog_Result askFileRename(KJob * job,
                                               const QString & caption,
-                                              const QString& src,
-                                              const QString & dest,
+                                              const QUrl & src,
+                                              const QUrl & dest,
                                               KIO::RenameDialog_Mode mode,
                                               QString& newDest,
                                               KIO::filesize_t sizeSrc = KIO::filesize_t(-1),

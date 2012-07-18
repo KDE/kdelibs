@@ -23,7 +23,7 @@
 #include <kio/kio_export.h>
 #include <QtCore/QVariant>
 
-class KUrl;
+class QUrl;
 
 class KIO_EXPORT KFileWritePlugin : public QObject {
     Q_OBJECT
@@ -41,11 +41,11 @@ public:
      * @brief determine if this plugin can write a value into a particular
      * resource.
      **/
-    virtual bool canWrite(const KUrl& file, const QString& key) = 0;
+    virtual bool canWrite(const QUrl& file, const QString& key) = 0;
     /**
      * @brief Write a set of values into a resource pointed to by @p file.
      **/
-    virtual bool write(const KUrl& file, const QVariantMap& data) = 0;
+    virtual bool write(const QUrl& file, const QVariantMap& data) = 0;
 
 private:
     class Private;

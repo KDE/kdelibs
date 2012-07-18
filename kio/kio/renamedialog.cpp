@@ -55,6 +55,14 @@
 #include <kfilemetadatawidget.h>
 #include <previewjob.h>
 
+// Porting helpers. Qt 5: remove
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define pathOrUrl() toString()
+#define toDisplayString toString
+#else
+#define pathOrUrl() toDisplayString(QUrl::PreferLocalFile)
+#endif
+
 using namespace KIO;
 
 /** @internal */
@@ -95,8 +103,8 @@ public:
     QPushButton *bSuggestNewName;
     QCheckBox *bApplyAll;
     KLineEdit* m_pLineEdit;
-    KUrl src;
-    KUrl dest;
+    QUrl src;
+    QUrl dest;
     bool m_srcPendingPreview;
     bool m_destPendingPreview;
     QLabel* m_srcPreview;
@@ -108,7 +116,7 @@ public:
 };
 
 RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
-                           const KUrl &_src, const KUrl &_dest,
+                           const QUrl &_src, const QUrl &_dest,
                            RenameDialog_Mode _mode,
                            KIO::filesize_t sizeSrc,
                            KIO::filesize_t sizeDest,
@@ -180,7 +188,7 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         } else {
             UDSEntry srcUds;
 
-            srcUds.insert(UDSEntry::UDS_NAME, d->src.fileName());
+            srcUds.insert(UDSEntry::UDS_NAME, QUrlPathInfo(d->src).fileName());
             srcUds.insert(UDSEntry::UDS_MODIFICATION_TIME, mtimeSrc);
             srcUds.insert(UDSEntry::UDS_CREATION_TIME, ctimeSrc);
             srcUds.insert(UDSEntry::UDS_SIZE, sizeSrc);
@@ -193,7 +201,7 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         } else {
             UDSEntry destUds;
 
-            destUds.insert(UDSEntry::UDS_NAME, d->dest.fileName());
+            destUds.insert(UDSEntry::UDS_NAME, QUrlPathInfo(d->dest).fileName());
             destUds.insert(UDSEntry::UDS_MODIFICATION_TIME, mtimeDest);
             destUds.insert(UDSEntry::UDS_CREATION_TIME, ctimeDest);
             destUds.insert(UDSEntry::UDS_SIZE, sizeDest);
@@ -292,7 +300,7 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
     layout2->addWidget(d->m_pLineEdit);
 
     if (d->bRename) {
-        const QString fileName = d->dest.fileName();
+        const QString fileName = QUrlPathInfo(d->dest).fileName();
         d->setRenameBoxText(KIO::decodeFileName(fileName));
 
         connect(d->m_pLineEdit, SIGNAL(textChanged(QString)),
@@ -355,7 +363,7 @@ RenameDialog::~RenameDialog()
 
 void RenameDialog::enableRenameButton(const QString &newDest)
 {
-    if (newDest != KIO::decodeFileName(d->dest.fileName()) && !newDest.isEmpty()) {
+    if (newDest != KIO::decodeFileName(QUrlPathInfo(d->dest).fileName()) && !newDest.isEmpty()) {
         d->bRename->setEnabled(true);
         d->bRename->setDefault(true);
 
@@ -371,23 +379,22 @@ void RenameDialog::enableRenameButton(const QString &newDest)
     }
 }
 
-KUrl RenameDialog::newDestUrl()
+QUrl RenameDialog::newDestUrl()
 {
-    KUrl newDest(d->dest);
-    QString fileName = d->m_pLineEdit->text();
+    QUrlPathInfo newDest(d->dest);
+    const QString fileName = d->m_pLineEdit->text();
 
     newDest.setFileName(KIO::encodeFileName(fileName));
 
-    return newDest;
+    return newDest.url();
 }
 
-KUrl RenameDialog::autoDestUrl() const
+QUrl RenameDialog::autoDestUrl() const
 {
-    KUrl newDest(d->dest);
-    const QUrl destDirectory = QUrlPathInfo(d->dest).directoryUrl();
-    newDest.setFileName(suggestName(destDirectory, d->dest.fileName()));
-
-    return newDest;
+    QUrlPathInfo newDest(d->dest);
+    const QUrl destDirectory = newDest.directoryUrl();
+    newDest.setFileName(suggestName(destDirectory, newDest.fileName()));
+    return newDest.url();
 }
 
 void RenameDialog::cancelPressed()
@@ -405,10 +412,9 @@ void RenameDialog::renamePressed()
     if (d->bApplyAll  && d->bApplyAll->isChecked()) {
         done(R_AUTO_RENAME);
     } else {
-        KUrl u = newDestUrl();
-
+        const QUrl u = newDestUrl();
         if (!u.isValid()) {
-            KMessageBox::error(this, i18n("Malformed URL\n%1" ,  u.url()));
+            KMessageBox::error(this, i18n("Malformed URL\n%1", u.toString())); // probably won't work...
             return;
         }
 
@@ -416,7 +422,7 @@ void RenameDialog::renamePressed()
     }
 }
 
-QString RenameDialog::suggestName(const KUrl& baseURL, const QString& oldName)
+QString RenameDialog::suggestName(const QUrl& baseURL, const QString& oldName)
 {
     QString dotSuffix, suggestedName;
     QString basename = oldName;
@@ -457,7 +463,7 @@ QString RenameDialog::suggestName(const KUrl& baseURL, const QString& oldName)
     // TODO: network transparency. However, using NetAccess from a modal dialog
     // could be a problem, no? (given that it uses a modal widget itself....)
     if (baseURL.isLocalFile())
-        exists = QFileInfo(baseURL.toLocalFile(KUrl::AddTrailingSlash) + suggestedName).exists();
+        exists = QFileInfo(baseURL.toLocalFile() + '/' + suggestedName).exists();
 
     if (!exists)
         return suggestedName;
@@ -523,7 +529,7 @@ void RenameDialog::resumeAllPressed()
 void RenameDialog::applyAllPressed()
 {
     if (d->bApplyAll  && d->bApplyAll->isChecked()) {
-        d->m_pLineEdit->setText(KIO::decodeFileName(d->dest.fileName()));
+        d->m_pLineEdit->setText(KIO::decodeFileName(QUrlPathInfo(d->dest).fileName()));
         d->m_pLineEdit->setEnabled(false);
 
         if (d->bRename) {

@@ -88,7 +88,7 @@ public:
      * @see RenameDialog_Mode
      */
     RenameDialog(QWidget *parent, const QString & caption,
-                 const KUrl & src, const KUrl & dest,
+                 const QUrl & src, const QUrl & dest,
                  RenameDialog_Mode mode,
                  KIO::filesize_t sizeSrc = KIO::filesize_t(-1),
                  KIO::filesize_t sizeDest = KIO::filesize_t(-1),
@@ -102,7 +102,7 @@ public:
      * @return the new destination
      * valid only if RENAME was chosen
      */
-    KUrl newDestUrl();
+    QUrl newDestUrl();
 
 
     /**
@@ -110,7 +110,7 @@ public:
      * @since 4.5
      * valid always
      */
-    KUrl autoDestUrl() const;
+    QUrl autoDestUrl() const;
 
     /**
      * Given a directory path and a filename (which usually exists already),
@@ -118,7 +118,7 @@ public:
      * in that directory. The existence is only checked for local urls though.
      * The suggested file name is of the form "foo 1", "foo 2" etc.
      */
-    static QString suggestName(const KUrl& baseURL, const QString& oldName);
+    static QString suggestName(const QUrl& baseURL, const QString& oldName);
 
 public Q_SLOTS:
     void cancelPressed();

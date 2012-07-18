@@ -1063,8 +1063,8 @@ void CopyJobPrivate::slotResultConflictCreatingDirs( KJob * job )
     if (m_reportTimer)
         m_reportTimer->stop();
     RenameDialog_Result r = q->ui()->askFileRename( q, i18n("Folder Already Exists"),
-                                         (*it).uSource.toString(),
-                                         (*it).uDest.toString(),
+                                         (*it).uSource,
+                                         (*it).uDest,
                                          mode, newPath,
                                          (*it).size, destsize,
                                          (*it).ctime, destctime,
@@ -1387,8 +1387,8 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
 
         res = q->ui()->askFileRename( q, !isDir ?
                                    i18n("File Already Exists") : i18n("Already Exists as Folder"),
-                                   (*it).uSource.toString(),
-                                   (*it).uDest.toString(),
+                                   (*it).uSource,
+                                   (*it).uDest,
                                    mode, newPath,
                                    (*it).size, destsize,
                                    (*it).ctime, destctime,
@@ -1967,8 +1967,8 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                 RenameDialog_Result r = q->ui()->askFileRename(
                     q,
                     err != ERR_DIR_ALREADY_EXIST ? i18n("File Already Exists") : i18n("Already Exists as Folder"),
-                    m_currentSrcURL.url(),
-                    dest.url(),
+                    m_currentSrcURL,
+                    dest,
                     mode, newPath,
                     sizeSrc, sizeDest,
                     ctimeSrc, ctimeDest,

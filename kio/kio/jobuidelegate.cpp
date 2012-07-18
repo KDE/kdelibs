@@ -56,8 +56,8 @@ void KIO::JobUiDelegate::setWindow(QWidget *window)
 
 KIO::RenameDialog_Result KIO::JobUiDelegate::askFileRename(KJob * job,
                                                            const QString & caption,
-                                                           const QString& src,
-                                                           const QString & dest,
+                                                           const QUrl & src,
+                                                           const QUrl & dest,
                                                            KIO::RenameDialog_Mode mode,
                                                            QString& newDest,
                                                            KIO::filesize_t sizeSrc,
@@ -72,9 +72,9 @@ KIO::RenameDialog_Result KIO::JobUiDelegate::askFileRename(KJob * job,
     // We now do it in process, so that opening the rename dialog
     // doesn't start uiserver for nothing if progressId=0 (e.g. F2 in konq)
     KIO::RenameDialog dlg( window(), caption, src, dest, mode,
-                                                     sizeSrc, sizeDest,
-                                                     ctimeSrc, ctimeDest, mtimeSrc,
-                                                     mtimeDest);
+                           sizeSrc, sizeDest,
+                           ctimeSrc, ctimeDest, mtimeSrc,
+                           mtimeDest);
     connect(job, SIGNAL(finished(KJob*)), &dlg, SLOT(reject())); // #192976
     KIO::RenameDialog_Result res = static_cast<RenameDialog_Result>(dlg.exec());
     if (res == R_AUTO_RENAME) {
