@@ -412,10 +412,10 @@ void KTimeZonePrivate::cleanup()
 
 /******************************************************************************/
 
-K_GLOBAL_STATIC(KTimeZonePrivate, s_emptyTimeZonePrivate)
+Q_GLOBAL_STATIC(KTimeZonePrivate, s_emptyTimeZonePrivate)
 
 KTimeZoneBackend::KTimeZoneBackend()
-  : d(&*s_emptyTimeZonePrivate)
+  : d(s_emptyTimeZonePrivate())
 {
     ++d->refCount;
 }
@@ -618,7 +618,7 @@ KTimeZone::KTimeZone(KTimeZoneBackend *impl)
   : d(impl)
 {
     // 'impl' should be a newly constructed object, with refCount = 1
-    Q_ASSERT(d->d->refCount == 1 || d->d == &*s_emptyTimeZonePrivate);
+    Q_ASSERT(d->d->refCount == 1 || d->d == s_emptyTimeZonePrivate());
 }
 
 KTimeZone &KTimeZone::operator=(const KTimeZone &tz)

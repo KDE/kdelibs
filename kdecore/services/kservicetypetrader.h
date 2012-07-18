@@ -211,6 +211,8 @@ private:
 
     class Private;
     Private * const d;
+
+    friend class KServiceTypeTraderSingleton;
 };
 
 #endif

@@ -175,7 +175,7 @@ private:
     QThreadStorage<KSycoca*> m_threadSycocas;
 };
 
-K_GLOBAL_STATIC(KSycocaSingleton, ksycocaInstance)
+Q_GLOBAL_STATIC(KSycocaSingleton, ksycocaInstance)
 
 // Read-only constructor
 KSycoca::KSycoca()
@@ -288,12 +288,12 @@ KSycoca::KSycoca( bool /* dummy */ )
   : d(new KSycocaPrivate)
 {
     // This instance was not created by the singleton, but by a direct call to new!
-    ksycocaInstance->setSycoca(this);
+    ksycocaInstance()->setSycoca(this);
 }
 
 KSycoca * KSycoca::self()
 {
-    KSycoca* s = ksycocaInstance->sycoca();
+    KSycoca* s = ksycocaInstance()->sycoca();
     Q_ASSERT(s);
     return s;
 }
@@ -561,7 +561,7 @@ QStringList KSycoca::allResourceDirs()
 void KSycoca::flagError()
 {
     kWarning(7011) << "ERROR: KSycoca database corruption!";
-    KSycocaPrivate* d = ksycocaInstance->sycoca()->d;
+    KSycocaPrivate* d = ksycocaInstance()->sycoca()->d;
     if (d->readError)
         return;
     d->readError = true;
@@ -599,8 +599,12 @@ QDataStream*& KSycoca::stream()
 
 void KSycoca::clearCaches()
 {
-    if (ksycocaInstance.exists() && ksycocaInstance->hasSycoca())
-        ksycocaInstance->sycoca()->d->closeDatabase();
+#if QT_VERSION >= QT_VERSION_CHECK(5,1,0)
+    if (ksycocaInstance.exists() && ksycocaInstance()->hasSycoca())
+#else
+    if (ksycocaInstance() && ksycocaInstance()->hasSycoca())
+#endif
+        ksycocaInstance()->sycoca()->d->closeDatabase();
 }
 
 #include "ksycoca.moc"

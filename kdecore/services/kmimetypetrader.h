@@ -189,6 +189,8 @@ private:
 private:
     class Private;
     Private * const d;
+
+    friend class KMimeTypeTraderSingleton;
 };
 
 #endif /* KMIMETYPETRADER_H */

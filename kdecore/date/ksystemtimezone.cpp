@@ -173,7 +173,7 @@ KTzfileTimeZoneSource *KSystemTimeZonesPrivate::tzfileSource()
 
 
 #ifndef NDEBUG
-K_GLOBAL_STATIC(KTimeZone, simulatedLocalZone)
+Q_GLOBAL_STATIC(KTimeZone, simulatedLocalZone)
 #endif
 
 
@@ -195,8 +195,8 @@ KSystemTimeZones::~KSystemTimeZones()
 KTimeZone KSystemTimeZones::local()
 {
 #ifndef NDEBUG
-    if (simulatedLocalZone->isValid())
-        return *simulatedLocalZone;
+    if (simulatedLocalZone()->isValid())
+        return *simulatedLocalZone();
 #endif
     KSystemTimeZonesPrivate::instance();
     return KSystemTimeZonesPrivate::m_localZone;
@@ -212,14 +212,14 @@ void KSystemTimeZones::setLocalZone(const KTimeZone& tz)
 {
     Q_UNUSED(tz);
 #ifndef NDEBUG
-    *simulatedLocalZone = tz;
+    *simulatedLocalZone() = tz;
 #endif
 }
 
 bool KSystemTimeZones::isSimulated()
 {
 #ifndef NDEBUG
-    return simulatedLocalZone->isValid();
+    return simulatedLocalZone()->isValid();
 #else
     return false;
 #endif

@@ -144,6 +144,7 @@ class KLocalizedStringPrivateStatics
         qDeleteAll(formatters);
     }
 };
+//TODO wait for Qt 5.1, uses isDestroyed()
 K_GLOBAL_STATIC(KLocalizedStringPrivateStatics, staticsKLSP)
 
 KLocalizedString::KLocalizedString ()
