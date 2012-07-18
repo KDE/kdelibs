@@ -157,7 +157,7 @@ bool Device::queryDeviceInterface(const Solid::DeviceInterface::Type& type) cons
     case Solid::DeviceInterface::GenericInterface:
         return true;
     case Solid::DeviceInterface::Block:
-        return isBlock();
+        return isBlock() || isDrive();
     case Solid::DeviceInterface::StorageVolume:
         return isStorageVolume();
     case Solid::DeviceInterface::StorageAccess:
