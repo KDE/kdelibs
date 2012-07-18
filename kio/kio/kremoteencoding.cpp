@@ -22,7 +22,7 @@
 
 #include <kdebug.h>
 #include <kstringhandler.h>
-
+#include <qurlpathinfo.h>
 
 class KRemoteEncodingPrivate
 {
@@ -70,21 +70,23 @@ QByteArray KRemoteEncoding::encode(const QString& name) const
   return result;
 }
 
-QByteArray KRemoteEncoding::encode(const KUrl& url) const
+QByteArray KRemoteEncoding::encode(const QUrl& url) const
 {
-  return encode(url.path());
+    return encode(QUrlPathInfo(url).path());
 }
 
-QByteArray KRemoteEncoding::directory(const KUrl& url, bool ignore_trailing_slash) const
+QByteArray KRemoteEncoding::directory(const QUrl& url, bool ignore_trailing_slash) const
 {
-  QString dir = url.directory(ignore_trailing_slash ? KUrl::DirectoryOptions(KUrl::IgnoreTrailingSlash) : KUrl::ObeyTrailingSlash);
-
-  return encode(dir);
+    QUrlPathInfo urlInfo(url);
+    if (ignore_trailing_slash && urlInfo.path().endsWith(QLatin1Char('/')))
+        urlInfo.adjustPath(QUrlPathInfo::StripTrailingSlash);
+    const QString dir = urlInfo.directory();
+    return encode(dir);
 }
 
-QByteArray KRemoteEncoding::fileName(const KUrl& url) const
+QByteArray KRemoteEncoding::fileName(const QUrl& url) const
 {
-  return encode(url.fileName());
+  return encode(QUrlPathInfo(url).fileName());
 }
 
 const char *KRemoteEncoding::encoding() const

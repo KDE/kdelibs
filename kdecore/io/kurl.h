@@ -793,7 +793,8 @@ public:
    * @param options a set of DirectoryOption flags.  (StripTrailingSlashFromResult has no effect)
    * @return The filename of the current path. The returned string is decoded. Null
    *         if there is no file (and thus no path).
-   * @deprecated since 5.0, use QUrlPathInfo(url).fileName()
+   * @deprecated since 5.0, use QUrlPathInfo(url).fileName(), which behaves like ObeyTrailingSlash though.
+   * To get rid of the trailing slash if there could be one, use adjustPath first.
    */
   QString fileName( const DirectoryOptions& options = IgnoreTrailingSlash ) const;
 
@@ -804,7 +805,8 @@ public:
    *         is returned. For example <tt>file:///hallo/torben/</tt> would return "/hallo/torben/" while
    *         <tt>file:///hallo/torben</tt> would return "hallo/". The returned string is decoded.
    *         QString() is returned when there is no path.
-   * @deprecated since 5.0, use QUrlPathInfo(url).directory()
+   * @deprecated since 5.0, use QUrlPathInfo(url).directory(), which behaves like ObeyTrailingSlash though.
+   * To get rid of the trailing slash if there could be one, use adjustPath first.
    */
   QString directory( const DirectoryOptions& options = IgnoreTrailingSlash ) const;
 

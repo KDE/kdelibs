@@ -74,7 +74,7 @@ public:
   /**
    * Converts the given URL into its 8-bit components
    */
-  QByteArray encode(const KUrl& url) const;
+  QByteArray encode(const QUrl& url) const;
 
   /**
    * Converts the given URL into 8-bit form and separate the
@@ -83,12 +83,12 @@ public:
    *
    * The dirname is returned with the final slash always stripped
    */
-  QByteArray directory(const KUrl& url, bool ignore_trailing_slash = true) const;
+  QByteArray directory(const QUrl& url, bool ignore_trailing_slash = true) const;
 
   /**
    * Converts the given URL into 8-bit form and retrieve the filename.
    */
-  QByteArray fileName(const KUrl& url) const;
+  QByteArray fileName(const QUrl& url) const;
 
   /**
    * Returns the encoding being used.
