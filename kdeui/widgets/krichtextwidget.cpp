@@ -411,9 +411,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
         << i18nc("@item:inmenu square list style", "Square")
         << i18nc("@item:inmenu numbered lists", "123")
         << i18nc("@item:inmenu lowercase abc lists", "abc")
-        << i18nc("@item:inmenu uppercase abc lists", "ABC")
-        << i18nc("@item:inmenu lower case roman numerals", "i ii iii")
-        << i18nc("@item:inmenu upper case roman numerals", "I II III");
+        << i18nc("@item:inmenu uppercase abc lists", "ABC");
         d->action_list_style->setItems(listStyles);
         d->action_list_style->setCurrentItem(0);
         d->richTextActionList.append((d->action_list_style));
