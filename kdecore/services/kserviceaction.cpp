@@ -18,6 +18,7 @@
 */
 #include "kserviceaction.h"
 #include <QVariant>
+#include <QDataStream>
 
 class KServiceActionPrivate : public QSharedData
 {

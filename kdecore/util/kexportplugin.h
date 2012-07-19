@@ -75,7 +75,7 @@ K_PLUGIN_VERIFICATION_DATA
 
 #else
 
-#pragma message(Plugins are broken. Need to port to new plugin system.)
+#pragma message("Plugins are broken. Need to port to new plugin system.")
 #define K_EXPORT_PLUGIN(factory)
 
 #endif
