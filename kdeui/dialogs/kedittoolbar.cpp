@@ -514,7 +514,7 @@ public:
     KEditToolBarWidget *m_widget;
 };
 
-K_GLOBAL_STATIC(QString, s_defaultToolBarName)
+Q_GLOBAL_STATIC(QString, s_defaultToolBarName)
 
 KEditToolBar::KEditToolBar( KActionCollection *collection,
                             QWidget* parent )
@@ -572,13 +572,13 @@ void KEditToolBar::setResourceFile( const QString& file, bool global )
 KEditToolBar::~KEditToolBar()
 {
     delete d;
-    s_defaultToolBarName->clear();
+    s_defaultToolBarName()->clear();
 }
 
 void KEditToolBar::setDefaultToolBar( const QString& toolBarName )
 {
     if ( toolBarName.isEmpty() ) {
-        d->m_defaultToolBar = *s_defaultToolBarName;
+        d->m_defaultToolBar = *s_defaultToolBarName();
     } else {
         d->m_defaultToolBar = toolBarName;
     }
@@ -681,7 +681,7 @@ void KEditToolBarPrivate::_k_slotApply()
 
 void KEditToolBar::setGlobalDefaultToolBar(const char *toolbarName)
 {
-    *s_defaultToolBarName = QString::fromLatin1(toolbarName);
+    *s_defaultToolBarName() = QString::fromLatin1(toolbarName);
 }
 
 KEditToolBarWidget::KEditToolBarWidget( KActionCollection *collection,

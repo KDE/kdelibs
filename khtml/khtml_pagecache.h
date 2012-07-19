@@ -107,6 +107,8 @@ private:
   KHTMLPageCache();
 
   KHTMLPageCachePrivate* const d;
+
+  friend class KHTMLPageCacheSingleton;
 };
 
 class QIODevice;

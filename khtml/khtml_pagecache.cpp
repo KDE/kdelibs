@@ -126,11 +126,18 @@ KHTMLPageCacheEntry::fetchData(QObject *recvObj, const char *recvSlot)
   return delivery;
 }
 
+class KHTMLPageCacheSingleton
+{
+public:
+  KHTMLPageCache instance;
+};
+
+Q_GLOBAL_STATIC(KHTMLPageCacheSingleton, _self)
+
 KHTMLPageCache *
 KHTMLPageCache::self()
 {
-  K_GLOBAL_STATIC(KHTMLPageCache, _self)
-  return _self;
+  return &_self()->instance;
 }
 
 KHTMLPageCache::KHTMLPageCache()

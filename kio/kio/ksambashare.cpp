@@ -33,7 +33,6 @@
 
 #include <kdirwatch.h>
 #include <kdebug.h>
-#include <kglobal.h>
 #include <kuser.h>
 
 // Default smb.conf locations
@@ -494,10 +493,17 @@ QList<KSambaShareData> KSambaShare::getSharesByPath(const QString &path) const
     return d->getSharesByPath(path);
 }
 
+class KSambaShareSingleton
+{
+public:
+    KSambaShare instance;
+};
+
+Q_GLOBAL_STATIC(KSambaShareSingleton, _instance)
+
 KSambaShare *KSambaShare::instance()
 {
-    K_GLOBAL_STATIC(KSambaShare, _instance)
-    return _instance;
+    return &_instance()->instance;
 }
 
 #include "moc_ksambashare.cpp"

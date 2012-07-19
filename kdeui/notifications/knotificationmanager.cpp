@@ -40,10 +40,17 @@ struct KNotificationManager::Private
     org::kde::KNotify *knotify;
 };
 
+class KNotificationManagerSingleton
+{
+public:
+    KNotificationManager instance;
+};
+
+Q_GLOBAL_STATIC(KNotificationManagerSingleton, s_self)
+
 KNotificationManager * KNotificationManager::self()
 {
-    K_GLOBAL_STATIC(KNotificationManager, s_self)
-    return s_self;
+    return &s_self()->instance;
 }
 
 

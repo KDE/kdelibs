@@ -23,7 +23,6 @@
 #include <QtCore/QFile>
 #include <QProcess>
 #include <klocalizedstring.h>
-#include <kglobal.h>
 #include <qstandardpaths.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
@@ -35,7 +34,7 @@
 #include <kuser.h>
 
 static KFileShare::Authorization s_authorization = KFileShare::NotInitialized;
-K_GLOBAL_STATIC(QStringList, s_shareList)
+Q_GLOBAL_STATIC(QStringList, s_shareList)
 static KFileShare::ShareMode s_shareMode;
 static bool s_sambaEnabled;
 static bool s_nfsEnabled;
@@ -73,10 +72,11 @@ KFileSharePrivate::~KFileSharePrivate()
   KDirWatch::self()->removeFile(FILESHARECONF);
 }
 
+Q_GLOBAL_STATIC(KFileSharePrivate, _self)
+
 KFileSharePrivate* KFileSharePrivate::self()
 {
-   K_GLOBAL_STATIC(KFileSharePrivate, _self)
-   return _self;
+   return _self();
 }
 
 void KFileSharePrivate::slotFileChange(const QString &file)
@@ -182,7 +182,7 @@ bool KFileShare::nfsEnabled() {
 void KFileShare::readShareList()
 {
     KFileSharePrivate::self();
-    s_shareList->clear();
+    s_shareList()->clear();
 
     QString exe = ::findExe( "filesharelist" );
     if (exe.isEmpty()) {
@@ -205,7 +205,7 @@ void KFileShare::readShareList()
 	{
             if ( line[length-1] != '/' )
                 line += '/';
-            s_shareList->append(line);
+            s_shareList()->append(line);
             kDebug(7000) << "Shared dir:" << line;
         }
     }
@@ -214,13 +214,17 @@ void KFileShare::readShareList()
 
 bool KFileShare::isDirectoryShared( const QString& _path )
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5,1,0)
     if ( ! s_shareList.exists() )
+#else
+    if ( s_shareList()->isEmpty() )
+#endif
         readShareList();
 
     QString path( _path );
     if ( path[path.length()-1] != '/' )
         path += '/';
-    return s_shareList->contains( path );
+    return s_shareList()->contains( path );
 }
 
 KFileShare::Authorization KFileShare::authorization()

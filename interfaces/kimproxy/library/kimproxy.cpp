@@ -172,10 +172,17 @@ OrgKdeKIMInterface * findInterface( const QString & app )
         return new OrgKdeKIMInterface( app, "/KIMIface", QDBusConnection::sessionBus() );
 }
 
+class KIMProxySingleton
+{
+public:
+	KIMProxy instance;
+};
+
+Q_GLOBAL_STATIC(KIMProxySingleton, s_instance)
+
 KIMProxy * KIMProxy::instance()
 {
-	K_GLOBAL_STATIC(KIMProxy, s_instance)
-	return s_instance;
+	return &s_instance()->instance;
 }
 
 KIMProxy::KIMProxy() : QObject(), d( new Private )

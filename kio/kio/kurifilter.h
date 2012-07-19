@@ -1012,6 +1012,7 @@ protected:
 
 private:
     KUriFilterPrivate * const d;
+    friend class KUriFilterSingleton;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KUriFilterData::SearchFilterOptions)

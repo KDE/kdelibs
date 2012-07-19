@@ -50,6 +50,7 @@ public:
     QStringList languagesNameCache;
 };
 
+// TODO wait for Qt 5.1, uses isDestroyed()
 K_GLOBAL_STATIC(Loader, s_loader)
 
 Loader *Loader::openLoader()

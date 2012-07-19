@@ -134,10 +134,17 @@ void SlaveConfigPrivate::readConfigProtocolHost(const QString &, SlaveConfigProt
    while (pos > 0);
 }
 
+class SlaveConfigSingleton
+{
+public:
+  SlaveConfig instance;
+};
+
+Q_GLOBAL_STATIC(SlaveConfigSingleton, _self)
+
 SlaveConfig *SlaveConfig::self()
 {
-   K_GLOBAL_STATIC(SlaveConfig, _self)
-   return _self;
+   return &_self()->instance;
 }
 
 SlaveConfig::SlaveConfig()

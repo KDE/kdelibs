@@ -46,6 +46,7 @@
 #undef DEBUG_CACHE
 #endif
 
+// TODO Qt 5.1 uses .destroy
 K_GLOBAL_STATIC(KDirListerCache, kDirListerCache)
 
 KDirListerCache::KDirListerCache()

@@ -72,6 +72,8 @@ private:
     KMimeType::Ptr m_defaultMimeType;
 
     QReadWriteLock m_mutex;
+
+    friend class KMimeTypeRepositorySingleton;
 };
 
 #endif /* KMIMETYPEREPOSITORY_H */

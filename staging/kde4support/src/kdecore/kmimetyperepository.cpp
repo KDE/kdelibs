@@ -22,7 +22,6 @@
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>
 #include "kmimetype.h"
-#include "kglobal.h"
 #include <kdeversion.h> // KDE_MAKE_VERSION
 #include <qstandardpaths.h>
 #include <QFile>
@@ -30,10 +29,17 @@
 
 extern int servicesDebugArea();
 
+class KMimeTypeRepositorySingleton
+{
+public:
+    KMimeTypeRepository instance;
+};
+
+Q_GLOBAL_STATIC(KMimeTypeRepositorySingleton, s_self)
+
 KMimeTypeRepository * KMimeTypeRepository::self()
 {
-    K_GLOBAL_STATIC(KMimeTypeRepository, s_self)
-    return s_self;
+    return &s_self()->instance;
 }
 
 KMimeTypeRepository::KMimeTypeRepository()

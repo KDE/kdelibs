@@ -69,7 +69,7 @@ public:
     QStringList mInherits;
     QList<KIconThemeDir *> mDirs;
 };
-K_GLOBAL_STATIC(QString, _theme)
+Q_GLOBAL_STATIC(QString, _theme)
 Q_GLOBAL_STATIC(QStringList, _theme_list)
 
 /**
@@ -515,14 +515,14 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, KIconLoader::MatchTyp
 QString KIconTheme::current()
 {
     // Static pointer because of unloading problems wrt DSO's.
-    if (!_theme->isEmpty()) {
-        return *_theme;
+    if (!_theme()->isEmpty()) {
+        return *_theme();
     }
 
     KConfigGroup cg(KSharedConfig::openConfig(), "Icons");
-    *_theme = cg.readEntry("Theme", defaultThemeName());
-    if ( *_theme == QLatin1String("hicolor") ) {
-        *_theme = defaultThemeName();
+    *_theme() = cg.readEntry("Theme", defaultThemeName());
+    if ( *_theme() == QLatin1String("hicolor") ) {
+        *_theme() = defaultThemeName();
     }
 /*    if (_theme->isEmpty())
     {
@@ -531,7 +531,7 @@ QString KIconTheme::current()
         else
             *_theme = QLatin1String("locolor");
     }*/
-    return *_theme;
+    return *_theme();
 }
 
 // static
@@ -573,7 +573,7 @@ QStringList KIconTheme::list()
 // static
 void KIconTheme::reconfigure()
 {
-    _theme->clear();
+    _theme()->clear();
     _theme_list()->clear();
 }
 

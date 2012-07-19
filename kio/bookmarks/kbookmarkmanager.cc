@@ -57,6 +57,7 @@ public:
     QReadWriteLock lock;
 };
 
+// TODO Qt 5.1 uses isDestroyed
 K_GLOBAL_STATIC(KBookmarkManagerList, s_pSelf)
 
 class KBookmarkMap : private KBookmarkGroupTraverser {
