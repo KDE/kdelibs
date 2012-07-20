@@ -80,7 +80,7 @@ class KRun::KRunPrivate
 public:
     KRunPrivate(KRun *parent);
 
-    void init (const KUrl& url, QWidget* window, mode_t mode,
+    void init (const QUrl& url, QWidget* window, mode_t mode,
                bool isLocalFile, bool showProgressInfo, const QByteArray& asn);
 
     // This helper method makes debugging easier: a single breakpoint for all
@@ -105,7 +105,7 @@ public:
     QString m_suggestedFileName;
     QPointer <QWidget> m_window;
     QByteArray m_asn;
-    KUrl m_strURL;
+    QUrl m_strURL;
     bool m_bFault;
     bool m_bAutoDelete;
     bool m_bProgressInfo;

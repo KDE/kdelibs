@@ -75,7 +75,7 @@ public:
      *        If this parameter is set to @p false then @p url is
      *        examined to find out whether it is a local URL or
      *        not. This flag is just used to improve speed, since the
-     *        function KUrl::isLocalFile is a bit slow.
+     *        function KUrl::isLocalFile was a bit slow (this is historical now).
      *
      * @param showProgressInfo
      *        Whether to show progress information when determining the
@@ -86,7 +86,7 @@ public:
      * @param asn
      *        Application startup notification id, if available (otherwise "").
      */
-    KRun(const KUrl& url, QWidget* window, mode_t mode = 0,
+    KRun(const QUrl& url, QWidget* window, mode_t mode = 0,
          bool isLocalFile = false, bool showProgressInfo = true,
          const QByteArray& asn = QByteArray());
 
@@ -235,7 +235,7 @@ public:
      * @param asn Application startup notification id, if any (otherwise "").
      * @return @c true on success, @c false on error
      */
-    static bool runUrl(const KUrl& url, const QString& mimetype, QWidget* window,
+    static bool runUrl(const QUrl& url, const QString& mimetype, QWidget* window,
                        bool tempFile = false , bool runExecutables = true,
                        const QString& suggestedFileName = QString(), const QByteArray& asn = QByteArray());
 
@@ -359,7 +359,7 @@ public:
      * @endcode
      * to the mimetype's desktop file.
      */
-    static bool isExecutableFile(const KUrl& url, const QString &mimetype);
+    static bool isExecutableFile(const QUrl& url, const QString &mimetype);
 
     /**
      * @internal
@@ -450,12 +450,12 @@ protected:
     /**
      * Sets the url.
      */
-    void setUrl(const KUrl &url);
+    void setUrl(const QUrl &url);
 
     /**
      * Returns the url.
      */
-    KUrl url() const;
+    QUrl url() const;
 
     /**
      * Sets whether an error has occurred.

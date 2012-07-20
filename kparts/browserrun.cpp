@@ -37,6 +37,7 @@
 #include "browseropenorsavequestion.h"
 #include <kprotocolmanager.h>
 #include <qstandardpaths.h>
+#include <qurlpathinfo.h>
 
 using namespace KParts;
 
@@ -288,7 +289,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& _
                 kDebug(1000) << "request comes from a POST, can't pass a URL to another app, need to save";
                 d->m_mimeType = mimeType;
                 QString extension;
-                QString fileName = suggestedFileName().isEmpty() ? KRun::url().fileName() : suggestedFileName();
+                QString fileName = suggestedFileName().isEmpty() ? QUrlPathInfo(KRun::url()).fileName() : suggestedFileName();
                 int extensionPos = fileName.lastIndexOf( '.' );
                 if ( extensionPos != -1 )
                     extension = fileName.mid( extensionPos ); // keep the '.'

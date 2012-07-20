@@ -40,6 +40,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <qmimedatabase.h>
+#include <qurlpathinfo.h>
 
 #include <kmimetypetrader.h>
 #include "kio/jobclasses.h" // for KIO::JobFlags
@@ -81,7 +82,12 @@
 
 #if HAVE_X11
 #include <kwindowsystem.h>
+#endif
 #include <qstandardpaths.h>
+
+// Porting helpers. Qt 5: remove
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define toDisplayString toString
 #endif
 
 KRun::KRunPrivate::KRunPrivate(KRun *parent)
@@ -97,7 +103,7 @@ void KRun::KRunPrivate::startTimer()
 
 // ---------------------------------------------------------------------------
 
-bool KRun::isExecutableFile(const KUrl& url, const QString &mimetype)
+bool KRun::isExecutableFile(const QUrl& url, const QString &mimetype)
 {
     if (!url.isLocalFile()) {
         return false;
@@ -119,13 +125,13 @@ bool KRun::isExecutableFile(const KUrl& url, const QString &mimetype)
 }
 
 // This is called by foundMimeType, since it knows the mimetype of the URL
-bool KRun::runUrl(const KUrl& u, const QString& _mimetype, QWidget* window, bool tempFile, bool runExecutables, const QString& suggestedFileName, const QByteArray& asn)
+bool KRun::runUrl(const QUrl& u, const QString& _mimetype, QWidget* window, bool tempFile, bool runExecutables, const QString& suggestedFileName, const QByteArray& asn)
 {
     bool noRun = false;
     bool noAuth = false;
     if (_mimetype == QLatin1String("inode/directory-locked")) {
         KMessageBoxWrapper::error(window,
-                                  i18n("<qt>Unable to enter <b>%1</b>.\nYou do not have access rights to this location.</qt>", Qt::escape(u.prettyUrl())));
+                                  i18n("<qt>Unable to enter <b>%1</b>.\nYou do not have access rights to this location.</qt>", Qt::escape(u.toDisplayString())));
         return false;
     }
     else if (_mimetype == QLatin1String("application/x-desktop")) {
@@ -136,7 +142,7 @@ bool KRun::runUrl(const KUrl& u, const QString& _mimetype, QWidget* window, bool
     else if (isExecutableFile(u, _mimetype)) {
         if (u.isLocalFile() && runExecutables) {
             if (KAuthorized::authorize("shell_access")) {
-                return (KRun::runCommand(KShell::quoteArg(u.toLocalFile()), QString(), QString(), window, asn, u.directory())); // just execute the url as a command
+                return (KRun::runCommand(KShell::quoteArg(u.toLocalFile()), QString(), QString(), window, asn, QUrlPathInfo(u).directory())); // just execute the url as a command
                 // ## TODO implement deleting the file if tempFile==true
             }
             else {
@@ -160,12 +166,12 @@ bool KRun::runUrl(const KUrl& u, const QString& _mimetype, QWidget* window, bool
     if (noRun) {
         KMessageBox::sorry(window,
                            i18n("<qt>The file <b>%1</b> is an executable program. "
-                                "For safety it will not be started.</qt>", Qt::escape(u.prettyUrl())));
+                                "For safety it will not be started.</qt>", Qt::escape(u.toDisplayString())));
         return false;
     }
     if (noAuth) {
         KMessageBoxWrapper::error(window,
-                                  i18n("<qt>You do not have permission to run <b>%1</b>.</qt>", Qt::escape(u.prettyUrl())));
+                                  i18n("<qt>You do not have permission to run <b>%1</b>.</qt>", Qt::escape(u.toDisplayString())));
         return false;
     }
 
@@ -290,13 +296,13 @@ protected:
     virtual int expandEscapedMacro(const QString &str, int pos, QStringList &ret);
 
 private:
-    void subst(int option, const KUrl &url, QStringList &ret);
+    void subst(int option, const QUrl &url, QStringList &ret);
 
     const QList<QUrl> &urls;
 };
 
 void
-KRunMX2::subst(int option, const KUrl &url, QStringList &ret)
+KRunMX2::subst(int option, const QUrl &url, QStringList &ret)
 {
     switch (option) {
     case 'u':
@@ -304,13 +310,13 @@ KRunMX2::subst(int option, const KUrl &url, QStringList &ret)
                 QDir::toNativeSeparators(url.toLocalFile())  : url.url());
         break;
     case 'd':
-        ret << url.directory();
+        ret << QUrlPathInfo(url).directory();
         break;
     case 'f':
         ret << QDir::toNativeSeparators(url.toLocalFile());
         break;
     case 'n':
-        ret << url.fileName();
+        ret << QUrlPathInfo(url).fileName();
         break;
     case 'v':
         if (url.isLocalFile() && QFile::exists(url.toLocalFile())) {
@@ -390,7 +396,7 @@ static QStringList supportedProtocols(const KService& _service)
     return supportedProtocols;
 }
 
-static bool isProtocolInSupportedList(const KUrl& url, const QStringList& supportedProtocols)
+static bool isProtocolInSupportedList(const QUrl& url, const QStringList& supportedProtocols)
 {
     if (supportedProtocols.contains("KIO"))
         return true;
@@ -732,7 +738,7 @@ static bool runTempService(const KService& _service, const QList<QUrl>& _urls, Q
 }
 
 // WARNING: don't call this from processDesktopExec, since klauncher uses that too...
-static QList<QUrl> resolveURLs(const KUrl::List& _urls, const KService& _service)
+static QList<QUrl> resolveURLs(const QList<QUrl>& _urls, const KService& _service)
 {
     // Check which protocols the application supports.
     // This can be a list of actual protocol names, or just KIO for KDE apps.
@@ -740,12 +746,12 @@ static QList<QUrl> resolveURLs(const KUrl::List& _urls, const KService& _service
     QList<QUrl> urls(_urls);
     if (!appSupportedProtocols.contains("KIO")) {
         for (QList<QUrl>::Iterator it = urls.begin(); it != urls.end(); ++it) {
-            const KUrl url = *it;
+            const QUrl url = *it;
             bool supported = isProtocolInSupportedList(url, appSupportedProtocols);
             kDebug(7010) << "Looking at url=" << url << " supported=" << supported;
             if (!supported && KProtocolInfo::protocolClass(url.scheme()) == ":local") {
                 // Maybe we can resolve to a local URL?
-                KUrl localURL = KIO::NetAccess::mostLocalUrl(url, 0);
+                QUrl localURL = KIO::NetAccess::mostLocalUrl(url, 0);
                 if (localURL != url) {
                     *it = localURL;
                     kDebug(7010) << "Changed to " << localURL;
@@ -1094,7 +1100,7 @@ bool KRun::runCommand(const QString& cmd, const QString &execName, const QString
                               iconName, window, asn);
 }
 
-KRun::KRun(const KUrl& url, QWidget* window, mode_t mode, bool isLocalFile,
+KRun::KRun(const QUrl& url, QWidget* window, mode_t mode, bool isLocalFile,
            bool showProgressInfo, const QByteArray& asn)
         : d(new KRunPrivate(this))
 {
@@ -1103,7 +1109,7 @@ KRun::KRun(const KUrl& url, QWidget* window, mode_t mode, bool isLocalFile,
     d->init(url, window, mode, isLocalFile, showProgressInfo, asn);
 }
 
-void KRun::KRunPrivate::init(const KUrl& url, QWidget* window, mode_t mode, bool isLocalFile,
+void KRun::KRunPrivate::init(const QUrl& url, QWidget* window, mode_t mode, bool isLocalFile,
                              bool showProgressInfo, const QByteArray& asn)
 {
     m_bFault = false;
@@ -1146,7 +1152,7 @@ void KRun::init()
         return;
     }
     if (!KAuthorized::authorizeUrlAction("open", QUrl(), d->m_strURL)) {
-        QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->m_strURL.prettyUrl());
+        QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->m_strURL.toDisplayString());
         d->m_showingDialog = true;
         KMessageBoxWrapper::error(d->m_window, msg);
         d->m_showingDialog = false;
@@ -1172,7 +1178,7 @@ void KRun::init()
                 KMessageBoxWrapper::error(d->m_window,
                                           i18n("<qt>Unable to run the command specified. "
                                           "The file or folder <b>%1</b> does not exist.</qt>" ,
-                                          Qt::escape(d->m_strURL.prettyUrl())));
+                                          Qt::escape(d->m_strURL.toDisplayString())));
                 d->m_showingDialog = false;
                 d->m_bFault = true;
                 d->m_bFinished = true;
@@ -1193,7 +1199,7 @@ void KRun::init()
             }
         } else if (mime.isDefault() && !QFileInfo(d->m_strURL.toLocalFile()).isReadable()) {
             // Unknown mimetype because the file is unreadable, no point in showing an open-with dialog (#261002)
-            const QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->m_strURL.prettyUrl());
+            const QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->m_strURL.toDisplayString());
             d->m_showingDialog = true;
             KMessageBoxWrapper::error(d->m_window, msg);
             d->m_showingDialog = false;
@@ -1603,12 +1609,12 @@ bool KRun::isExecutable(const QString& serviceType)
             serviceType == "application/x-shellscript");
 }
 
-void KRun::setUrl(const KUrl &url)
+void KRun::setUrl(const QUrl &url)
 {
     d->m_strURL = url;
 }
 
-KUrl KRun::url() const
+QUrl KRun::url() const
 {
     return d->m_strURL;
 }
