@@ -267,7 +267,7 @@ void DBusHelperProxy::performActions(QByteArray blob, const QByteArray &callerID
 
         performAction(i->first, callerID, blob);
 
-        i++;
+        ++i;
     }
 }
 

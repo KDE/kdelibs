@@ -66,6 +66,7 @@ using namespace DOM;
 #include <kacceleratormanager.h>
 #include "ecma/kjs_proxy.h"
 #include "ecma/kjs_window.h"
+#include "ecma/kjs_events.h"
 #include "khtml_settings.h"
 #include "kjserrordlg.h"
 
@@ -633,6 +634,19 @@ void KHTMLPartPrivate::executeAnchorJump( const KUrl& url, bool lockHistory )
     // Note: we want to emit openUrlNotify first thing, to make the history capture the old state.
     if (!lockHistory)
         emit m_extension->openUrlNotify();
+
+    const QString &oldRef = q->url().ref();
+    const QString &newRef = url.ref();
+    if ((oldRef != newRef) || (oldRef.isNull() && newRef.isEmpty())) {
+        DOM::HashChangeEventImpl *evImpl = new DOM::HashChangeEventImpl();
+        evImpl->initHashChangeEvent("hashchange",
+                                    true, //bubble
+                                    false, //cancelable
+                                    q->url().url(), //oldURL
+                                    url.url() //newURL
+                                    );
+        m_doc->dispatchWindowEvent(evImpl);
+    }
 
     if ( !q->gotoAnchor( url.encodedHtmlRef()) )
         q->gotoAnchor( url.htmlRef() );

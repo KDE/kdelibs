@@ -223,7 +223,6 @@ public:
         case Solid::DeviceInterface::NetworkInterface:
             break;
         case Solid::DeviceInterface::AcAdapter:
-            break;
         case Solid::DeviceInterface::Battery:
             wmiTable = "Win32_Battery";
             break;
@@ -262,15 +261,6 @@ public:
         case Solid::DeviceInterface::OpticalDrive:
         case Solid::DeviceInterface::OpticalDisc:
             propertyName = "Drive";
-            break;
-        case Solid::DeviceInterface::Battery:
-            propertyName = "Name";
-            break;
-        case Solid::DeviceInterface::StorageAccess:
-             propertyName = "DeviceID";
-             break;
-        case Solid::DeviceInterface::StorageVolume:
-            propertyName = "DeviceID";
             break;
         case Solid::DeviceInterface::StorageDrive:
             propertyName = "Index";
@@ -386,7 +376,7 @@ QString WmiDevice::vendor() const
         propertyName = "Caption";
         break;
     case Solid::DeviceInterface::Battery:
-        propertyName = "Name";//TODO:
+        propertyName = "DeviceID";
         break;
     case Solid::DeviceInterface::StorageAccess:
     case Solid::DeviceInterface::StorageVolume:
@@ -411,15 +401,6 @@ QString WmiDevice::product() const
     case Solid::DeviceInterface::Processor:
         propertyName = "Name";
         break;
-    case Solid::DeviceInterface::OpticalDrive:
-        propertyName = "Caption";
-        break;
-    case Solid::DeviceInterface::OpticalDisc:
-        propertyName = "Caption";
-        break;
-    case Solid::DeviceInterface::Battery:
-        propertyName = "Name";//TODO:
-        break;
     case Solid::DeviceInterface::StorageAccess:
     case Solid::DeviceInterface::StorageVolume:
     {
@@ -427,11 +408,10 @@ QString WmiDevice::product() const
         return item.getProperty("VolumeName").toString();
     }
         break;
-    case Solid::DeviceInterface::StorageDrive:
-        propertyName = "Caption";
-        break;
+    case Solid::DeviceInterface::AcAdapter:
+        return description();
     default:
-        propertyName = "DeviceID";//TODO:
+        propertyName = "Caption";
     }
     return property(propertyName).toString();
 }
@@ -481,11 +461,20 @@ QString WmiDevice::description() const
 {
     switch(type()){
         case Solid::DeviceInterface::OpticalDisc:
-        return property("VolumeName").toString();
+            return property("VolumeName").toString();
+        case Solid::DeviceInterface::AcAdapter:
+        return QObject::tr("A/C Adapter");
+        case Solid::DeviceInterface::Battery:
+        {
+            WmiDevice dev(udi());
+            Battery bat(&dev);
+            return QObject::tr("%1 Battery", "%1 is battery technology").arg(bat.batteryTechnology());
+        }
+        default:
+            return product();
     }
-
-    return product(); // TODO
 }
+
 
 QVariant WmiDevice::property(const QString &key) const
 {

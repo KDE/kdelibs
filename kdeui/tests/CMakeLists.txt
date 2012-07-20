@@ -59,6 +59,7 @@ KDEUI_UNIT_TESTS(
   kuniqueapptest
   kwordwraptest
   kapplication_unittest
+  kstartupinfo_unittest
   kcolorutilstest
   kxmlgui_unittest
   ktimezonewidget_unittest

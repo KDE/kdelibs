@@ -34,7 +34,7 @@ Among other things, the KDE libraries provide:
 - an application scripting framework
   (<a href="kross/html/index.html">Kross</a>)
 - semantic information and tagging
-  (<a href="nepomuk/html/index.html">Nepomuk</a>)
+  (<a href="nepomuk-core/html/index.html">Nepomuk</a>)
 
 Visit the <a href="http://techbase.kde.org/Development">development section of KDE
 Techbase</a> for tutorials, architectural overviews and other useful information.

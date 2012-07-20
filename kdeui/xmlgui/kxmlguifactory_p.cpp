@@ -438,6 +438,11 @@ void ContainerNode::unplugClient( ContainerClient *client )
     for (; custIt != custEnd; ++custIt )
         builder->removeCustomElement( container, *custIt );
 
+    KToolBar *bar = qobject_cast<KToolBar*>(container);
+    if (bar) {
+        bar->removeXMLGUIClient(client->client);
+    }
+
     client->actions.unplug( container );
 
     // now adjust all merging indices

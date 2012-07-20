@@ -20,6 +20,8 @@
   "entities/underArtisticLicense.docbook"           ><!-- level: para -->
 <!ENTITY underX11License    PUBLIC "-//KDE//DOCUMENT X11 Licence Declaration//CS"
   "entities/underX11License.docbook"                ><!-- level: para -->
+<!ENTITY underLGPL          PUBLIC "-//KDE//DOCUMENT LGPL Licence Declaration//UK"
+ "entities/underLGPL.docbook"                       ><!-- level: para -->
 
 <!ENTITY reporting.bugs     PUBLIC "-//KDE//DOCUMENT Report Bugs//CS"
   "entities/report-bugs.docbook"                       ><!-- level: ? -->
@@ -29,7 +31,7 @@
   "entities/help-menu.docbook"                      ><!-- level: variablelist -->
 <!ENTITY install.intro.documentation PUBLIC "-//KDE//DOCUMENT Installation General Information//CS"
   "entities/install-intro.docbook"                     ><!-- level: para -->
-<!ENTITY install.intro.documentation PUBLIC "-//KDE//DOCUMENT Compilation Instructions//CS"
+<!ENTITY install.compile.documentation PUBLIC "-//KDE//DOCUMENT Compilation Instructions//CS"
   "entities/install-compile.docbook"                     ><!-- level: para -->
 
 

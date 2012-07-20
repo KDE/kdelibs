@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 2.5.  */
+/* A Bison parser, made by GNU Bison 2.5.1.  */
 
 /* Bison implementation for Yacc-like parsers in C
    
-      Copyright (C) 1984, 1989-1990, 2000-2011 Free Software Foundation, Inc.
+      Copyright (C) 1984, 1989-1990, 2000-2012 Free Software Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "2.5"
+#define YYBISON_VERSION "2.5.1"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -183,6 +183,14 @@ int DOM::getValueID(const char *tagStr, int len)
 #define YYLTYPE_IS_TRIVIAL 1
 
 
+
+# ifndef YY_NULL
+#  if defined __cplusplus && 201103L <= __cplusplus
+#   define YY_NULL nullptr
+#  else
+#   define YY_NULL 0
+#  endif
+# endif
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -433,6 +441,7 @@ YYID (yyi)
 #    if ! defined _ALLOCA_H && ! defined EXIT_SUCCESS && (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 #     include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
+      /* Use EXIT_SUCCESS as a witness for stdlib.h.  */
 #     ifndef EXIT_SUCCESS
 #      define EXIT_SUCCESS 0
 #     endif
@@ -524,20 +533,20 @@ union yyalloc
 #endif
 
 #if defined YYCOPY_NEEDED && YYCOPY_NEEDED
-/* Copy COUNT objects from FROM to TO.  The source and destination do
+/* Copy COUNT objects from SRC to DST.  The source and destination do
    not overlap.  */
 # ifndef YYCOPY
 #  if defined __GNUC__ && 1 < __GNUC__
-#   define YYCOPY(To, From, Count) \
-      __builtin_memcpy (To, From, (Count) * sizeof (*(From)))
+#   define YYCOPY(Dst, Src, Count) \
+      __builtin_memcpy (Dst, Src, (Count) * sizeof (*(Src)))
 #  else
-#   define YYCOPY(To, From, Count)		\
-      do					\
-	{					\
-	  YYSIZE_T yyi;				\
-	  for (yyi = 0; yyi < (Count); yyi++)	\
-	    (To)[yyi] = (From)[yyi];		\
-	}					\
+#   define YYCOPY(Dst, Src, Count)              \
+      do                                        \
+        {                                       \
+          YYSIZE_T yyi;                         \
+          for (yyi = 0; yyi < (Count); yyi++)   \
+            (Dst)[yyi] = (Src)[yyi];            \
+        }                                       \
       while (YYID (0))
 #  endif
 # endif
@@ -703,25 +712,25 @@ static const yytype_int16 yyrhs[] =
 static const yytype_uint16 yyrline[] =
 {
        0,   312,   312,   313,   314,   315,   316,   317,   321,   322,
-     323,   327,   334,   340,   365,   375,   381,   383,   387,   388,
-     391,   393,   394,   397,   399,   402,   411,   413,   417,   419,
-     430,   440,   443,   449,   450,   454,   464,   472,   473,   477,
-     478,   481,   483,   494,   495,   496,   497,   498,   499,   500,
-     504,   505,   506,   507,   511,   512,   516,   522,   525,   531,
-     537,   541,   548,   551,   557,   560,   563,   569,   572,   578,
-     581,   586,   590,   595,   602,   613,   625,   626,   636,   654,
-     657,   663,   670,   673,   679,   680,   681,   685,   686,   690,
-     712,   725,   743,   753,   756,   759,   773,   787,   794,   795,
-     796,   800,   805,   812,   819,   827,   837,   850,   855,   862,
-     870,   883,   887,   893,   896,   906,   913,   927,   928,   929,
-     933,   950,   957,   963,   970,   979,   992,   995,   998,  1001,
-    1004,  1007,  1013,  1014,  1018,  1024,  1030,  1037,  1044,  1051,
-    1058,  1067,  1070,  1073,  1076,  1081,  1087,  1091,  1094,  1099,
-    1105,  1127,  1133,  1155,  1156,  1160,  1164,  1180,  1183,  1186,
-    1192,  1193,  1195,  1196,  1197,  1203,  1204,  1205,  1207,  1213,
-    1214,  1215,  1216,  1217,  1218,  1219,  1220,  1221,  1222,  1223,
-    1224,  1225,  1226,  1227,  1228,  1229,  1230,  1231,  1232,  1233,
-    1238,  1246,  1262,  1269,  1275,  1284,  1310,  1311,  1315,  1316
+     323,   327,   334,   340,   365,   377,   383,   385,   389,   390,
+     393,   395,   396,   399,   401,   404,   413,   415,   419,   421,
+     432,   442,   445,   451,   452,   456,   466,   474,   475,   479,
+     480,   483,   485,   496,   497,   498,   499,   500,   501,   502,
+     506,   507,   508,   509,   513,   514,   518,   524,   527,   533,
+     539,   543,   550,   553,   559,   562,   565,   571,   574,   580,
+     583,   588,   592,   597,   604,   615,   627,   628,   638,   656,
+     659,   665,   672,   675,   681,   682,   683,   687,   688,   692,
+     714,   727,   745,   755,   758,   761,   775,   789,   796,   797,
+     798,   802,   807,   814,   821,   829,   839,   852,   857,   864,
+     872,   885,   889,   895,   898,   908,   915,   929,   930,   931,
+     935,   952,   959,   965,   972,   981,   994,   997,  1000,  1003,
+    1006,  1009,  1015,  1016,  1020,  1026,  1032,  1039,  1046,  1053,
+    1060,  1069,  1072,  1075,  1078,  1083,  1089,  1093,  1096,  1101,
+    1107,  1129,  1135,  1157,  1158,  1162,  1166,  1182,  1185,  1188,
+    1194,  1195,  1197,  1198,  1199,  1205,  1206,  1207,  1209,  1215,
+    1216,  1217,  1218,  1219,  1220,  1221,  1222,  1223,  1224,  1225,
+    1226,  1227,  1228,  1229,  1230,  1231,  1232,  1233,  1234,  1235,
+    1240,  1248,  1264,  1271,  1277,  1286,  1312,  1313,  1317,  1318
 };
 #endif
 
@@ -757,7 +766,7 @@ static const char *const yytname[] =
   "attrib", "match", "ident_or_string", "pseudo", "declaration_block",
   "declaration_list", "declaration", "property", "prio", "expr",
   "operator", "term", "unary_term", "function", "hexcolor", "invalid_at",
-  "invalid_rule", "invalid_block", "invalid_block_list", 0
+  "invalid_rule", "invalid_block", "invalid_block_list", YY_NULL
 };
 #endif
 
@@ -1154,17 +1163,18 @@ static const yytype_uint8 yystos[] =
 
 #define YYRECOVERING()  (!!yyerrstatus)
 
-#define YYBACKUP(Token, Value)					\
-do								\
-  if (yychar == YYEMPTY && yylen == 1)				\
-    {								\
-      yychar = (Token);						\
-      yylval = (Value);						\
-      YYPOPSTACK (1);						\
-      goto yybackup;						\
-    }								\
-  else								\
-    {								\
+#define YYBACKUP(Token, Value)                                  \
+do                                                              \
+  if (yychar == YYEMPTY)                                        \
+    {                                                           \
+      yychar = (Token);                                         \
+      yylval = (Value);                                         \
+      YYPOPSTACK (yylen);                                       \
+      yystate = *yyssp;                                         \
+      goto yybackup;                                            \
+    }                                                           \
+  else                                                          \
+    {                                                           \
       yyerror (YY_("syntax error: cannot back up")); \
       YYERROR;							\
     }								\
@@ -1259,6 +1269,8 @@ yy_symbol_value_print (yyoutput, yytype, yyvaluep)
     YYSTYPE const * const yyvaluep;
 #endif
 {
+  FILE *yyo = yyoutput;
+  YYUSE (yyo);
   if (!yyvaluep)
     return;
 # ifdef YYPRINT
@@ -1510,12 +1522,12 @@ static int
 yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
                 yytype_int16 *yyssp, int yytoken)
 {
-  YYSIZE_T yysize0 = yytnamerr (0, yytname[yytoken]);
+  YYSIZE_T yysize0 = yytnamerr (YY_NULL, yytname[yytoken]);
   YYSIZE_T yysize = yysize0;
   YYSIZE_T yysize1;
   enum { YYERROR_VERBOSE_ARGS_MAXIMUM = 5 };
   /* Internationalized format string. */
-  const char *yyformat = 0;
+  const char *yyformat = YY_NULL;
   /* Arguments of yyformat. */
   char const *yyarg[YYERROR_VERBOSE_ARGS_MAXIMUM];
   /* Number of reported tokens (one for the "unexpected", one per
@@ -1575,7 +1587,7 @@ yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
                     break;
                   }
                 yyarg[yycount++] = yytname[yyx];
-                yysize1 = yysize + yytnamerr (0, yytname[yyx]);
+                yysize1 = yysize + yytnamerr (YY_NULL, yytname[yyx]);
                 if (! (yysize <= yysize1
                        && yysize1 <= YYSTACK_ALLOC_MAXIMUM))
                   return 2;
@@ -1811,7 +1823,7 @@ YYSTYPE yylval;
        `yyss': related to states.
        `yyvs': related to semantic values.
 
-       Refer to the stacks thru separate pointers, to allow yyoverflow
+       Refer to the stacks through separate pointers, to allow yyoverflow
        to reallocate them elsewhere.  */
 
     /* The state stack.  */
@@ -2087,9 +2099,11 @@ yyreduce:
 
     {
 		CSSParser *p = static_cast<CSSParser *>(parser);
-		if ((yyvsp[(4) - (5)].selectorList))
+		if ((yyvsp[(4) - (5)].selectorList)) {
 			p->selectors = *(yyvsp[(4) - (5)].selectorList);
-		else
+			delete (yyvsp[(4) - (5)].selectorList);
+			(yyvsp[(4) - (5)].selectorList) = 0;
+		} else
 			p->selectors.clear(); // parse error
 	}
     break;
@@ -3553,7 +3567,7 @@ yyabortlab:
   yyresult = 1;
   goto yyreturn;
 
-#if !defined(yyoverflow) || YYERROR_VERBOSE
+#if !defined yyoverflow || YYERROR_VERBOSE
 /*-------------------------------------------------.
 | yyexhaustedlab -- memory exhaustion comes here.  |
 `-------------------------------------------------*/

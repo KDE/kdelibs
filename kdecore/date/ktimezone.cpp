@@ -819,7 +819,7 @@ QDateTime KTimeZone::toZoneTime(const QDateTime &utcDateTime, bool *secondOccurr
 
         const KTimeZoneData *data = d->d->data;
         const int index = data->transitionIndex(utcDateTime);
-        const int secs = (index >= 0) ? data->transitions()[index].phase().utcOffset() : data->previousUtcOffset();
+        const int secs = (index >= 0) ? data->transitions().at(index).phase().utcOffset() : data->previousUtcOffset();
         QDateTime dt = utcDateTime.addSecs(secs);
         if (secondOccurrence)
         {

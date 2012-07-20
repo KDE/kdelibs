@@ -10,9 +10,9 @@ include(CPack)
 
 set (KDE_VERSION_MAJOR 4)
 set (KDE_VERSION_MINOR 8)
-set (KDE_VERSION_RELEASE 4)
+set (KDE_VERSION_RELEASE 97)
 set (KDE_VERSION "${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}.${KDE_VERSION_RELEASE}" )
-set (KDE_VERSION_STRING "${KDE_VERSION} (4.8.4)")
+set (KDE_VERSION_STRING "${KDE_VERSION}")
 
 set (KDE_DISTRIBUTION_TEXT "compiled sources" CACHE STRING "Indicate the distribution in bug reports" )
 
@@ -112,7 +112,7 @@ macro_log_feature(SOPRANO_FOUND "Soprano" "Support for the Nepomuk semantic desk
 macro_log_feature(SOPRANO_PLUGIN_RAPTORPARSER_FOUND "Soprano Raptor Parser" "Support for the Nepomuk semantic desktop system" "http://soprano.sourceforge.net" FALSE "" "")
 macro_log_feature(SOPRANO_PLUGIN_REDLANDBACKEND_FOUND "Soprano Redland Backend" "Support for the Nepomuk semantic desktop system" "http://soprano.sourceforge.net" FALSE "" "")
 
-set(SHAREDDESKTOPONTOLOGIES_MIN_VERSION 0.6.50)
+set(SHAREDDESKTOPONTOLOGIES_MIN_VERSION 0.10)
 macro_optional_find_package(SharedDesktopOntologies ${SHAREDDESKTOPONTOLOGIES_MIN_VERSION})
 macro_log_feature(SHAREDDESKTOPONTOLOGIES_FOUND "Shared desktop ontologies" "Support for the Nepomuk semantic desktop system" "http://oscaf.sourceforge.net" FALSE "${SHAREDDESKTOPONTOLOGIES_MIN_VERSION}" "")
 

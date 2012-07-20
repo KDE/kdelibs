@@ -390,7 +390,7 @@ void AutoTableLayout::recalcColumn( int effCol )
 	if ( child->isTableSection() ) {
 	    RenderTableSection *section = static_cast<RenderTableSection *>(child);
 	    int numRows = section->numRows();
-	    RenderTableCell *last = 0;
+	    //RenderTableCell *last = 0;
 	    for ( int i = 0; i < numRows; i++ ) {
 		RenderTableCell *cell = section->cellAt( i,  effCol );
 		if ( cell == (RenderTableCell *)-1 )
@@ -455,7 +455,7 @@ void AutoTableLayout::recalcColumn( int effCol )
                         l.maxWidth = qMax(int( l.maxWidth ), 1);
 			insertSpanCell( cell );
 		    }
-		    last = cell;
+		    //last = cell;
 		}
 	    }
 	}
@@ -889,7 +889,7 @@ void AutoTableLayout::layout()
     int available = tableWidth;
     int nEffCols = table->numEffCols();
 
-    if ( nEffCols != (int)layoutStruct.size() ) {
+    if ( nEffCols != layoutStruct.size() ) {
 	qWarning("WARNING: nEffCols is not equal to layoutstruct!" );
 	fullRecalc();
 	nEffCols = table->numEffCols();
@@ -989,7 +989,7 @@ void AutoTableLayout::layout()
 #endif
 
     // then allocate width to fixed cols
-    if ( available > 0 ) {
+    if ( available > 0 && numFixed) {
 	for ( int i = 0; i < nEffCols; ++i ) {
 	    const Length &width = layoutStruct[i].effWidth;
 	    if ( width.isFixed() && width.value() > layoutStruct[i].calcWidth ) {
@@ -1003,7 +1003,7 @@ void AutoTableLayout::layout()
 #endif
 
     // now satisfy relative
-    if ( available > 0 ) {
+    if ( available > 0 && haveRelative) {
 	for ( int i = 0; i < nEffCols; i++ ) {
 	    const Length &width = layoutStruct[i].effWidth;
 	    if ( width.isRelative() && width.value() ) {
@@ -1121,7 +1121,7 @@ void AutoTableLayout::layout()
             }
         }
 
-        if (available < 0) {
+        if (available < 0 && haveRelative) {
             int mw = 0;
             for ( int i = nEffCols-1; i >= 0; i-- ) {
                 Length &width = layoutStruct[i].effWidth;
@@ -1143,7 +1143,7 @@ void AutoTableLayout::layout()
             }
         }
 
-        if (available < 0) {
+        if (available < 0 && numFixed) {
             int mw = 0;
             for ( int i = nEffCols-1; i >= 0; i-- ) {
                 Length &width = layoutStruct[i].effWidth;
@@ -1165,7 +1165,7 @@ void AutoTableLayout::layout()
             }
         }
 
-        if (available < 0) {
+        if (available < 0 && havePercent) {
             int mw = 0;
             for ( int i = nEffCols-1; i >= 0; i-- ) {
                 Length &width = layoutStruct[i].effWidth;

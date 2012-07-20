@@ -202,7 +202,7 @@ void KConfigDialog::onPageRemoved( KPageWidgetItem *item )
 			d->_k_updateButtons();
 			break;
 		}
-		j++;
+		++j;
 	}
 }
 

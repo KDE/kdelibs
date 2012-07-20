@@ -335,7 +335,6 @@ void RenderFormElement::updateFromElement()
         document()->quietResetFocus();
 
     RenderWidget::updateFromElement();
-    setPadding();
 }
 
 void RenderFormElement::layout()
@@ -357,8 +356,7 @@ void RenderFormElement::layout()
     setNeedsLayout(false);
 }
 
-
-Qt::AlignmentFlag RenderFormElement::textAlignment() const
+Qt::Alignment RenderFormElement::textAlignment() const
 {
     switch (style()->textAlign()) {
         case LEFT:
@@ -1104,7 +1102,8 @@ void RenderLineEdit::setStyle(RenderStyle* _style)
 {
     RenderFormElement::setStyle( _style );
 
-    widget()->setAlignment(textAlignment());
+    if (widget()->alignment() != textAlignment())
+        widget()->setAlignment(textAlignment());
 
     bool showClearButton = (!shouldDisableNativeBorders() && !_style->hasBackgroundImage());
 
@@ -1730,9 +1729,9 @@ void RenderSelect::clearItemFlags(int index, Qt::ItemFlags flags)
 void RenderSelect::setStyle(RenderStyle *_style)
 {
     RenderFormElement::setStyle(_style);
-    if (!m_useListBox && shouldDisableNativeBorders()) {
+    if (!m_useListBox) {
         KHTMLProxyStyle* proxyStyle = static_cast<KHTMLProxyStyle*>(getProxyStyle());
-        proxyStyle->noBorder = true;
+        proxyStyle->noBorder = shouldDisableNativeBorders();
     }
 }
 
@@ -1752,10 +1751,14 @@ void RenderSelect::updateFromElement()
     if (oldMultiple != m_multiple || oldSize != m_size) {
         if (m_useListBox != oldListbox) {
             // type of select has changed
-            if(m_useListBox)
+            if (m_useListBox)
                 setQWidget(createListBox());
             else
                 setQWidget(createComboBox());
+
+            // Call setStyle() to fix unwanted font size change (#142722)
+            // and to update our proxy style properties
+            setStyle(style());
         }
 
         if (m_useListBox && oldMultiple != m_multiple) {
@@ -2149,21 +2152,17 @@ TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
     KCursor::setAutoHideCursor(viewport(), true);
     setAcceptRichText (false);
     setMouseTracking(true);
-
-}
-
-void TextAreaWidget::scrollContentsBy( int dx, int dy )
-{
-    KTextEdit::scrollContentsBy(dx, dy);
-    update();
-
 }
 
 TextAreaWidget::~TextAreaWidget()
 {
 }
 
-
+void TextAreaWidget::scrollContentsBy( int dx, int dy )
+{
+    KTextEdit::scrollContentsBy(dx, dy);
+    update();
+}
 
 bool TextAreaWidget::event( QEvent *e )
 {
@@ -2224,6 +2223,7 @@ RenderTextArea::RenderTextArea(HTMLTextAreaElementImpl *element)
     connect(edit,SIGNAL(textChanged()),this,SLOT(slotTextChanged()));
 
     setText(element->value().string());
+    m_textAlignment = edit->alignment();
 }
 
 RenderTextArea::~RenderTextArea()
@@ -2284,18 +2284,29 @@ void RenderTextArea::calcMinMaxWidth()
 
 void RenderTextArea::setStyle(RenderStyle* _style)
 {
-    bool unsubmittedFormChange = element()->m_unsubmittedFormChange;
-
     RenderFormElement::setStyle(_style);
 
-    bool blocked = widget()->blockSignals(true);
-    widget()->setAlignment(textAlignment());
-    widget()->blockSignals(blocked);
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+
+    if (m_textAlignment != textAlignment()) {
+        m_textAlignment = textAlignment();
+        bool unsubmittedFormChange = element()->m_unsubmittedFormChange;
+        bool blocked = w->blockSignals(true);
+        int cx = w->horizontalScrollBar()->value();
+        int cy = w->verticalScrollBar()->value();
+        QTextCursor tc = w->textCursor();
+        // Set alignment on all textarea's paragraphs
+        w->selectAll();
+        w->setAlignment(m_textAlignment);
+        w->setTextCursor(tc);
+        w->horizontalScrollBar()->setValue(cx);
+        w->verticalScrollBar()->setValue(cy);
+        w->blockSignals(blocked);
+        element()->m_unsubmittedFormChange = unsubmittedFormChange;
+    }
 
     scrollbarsStyled = false;
 
-    element()->m_unsubmittedFormChange = unsubmittedFormChange;
-    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     if (style()->overflowX() == OSCROLL)
         w->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
     else if (style()->overflowX() == OHIDDEN)
@@ -2343,33 +2354,31 @@ void RenderTextArea::setText(const QString& newText)
 
     // When this is called, m_value in the element must have just
     // been set to new value --- see if we have any work to do
-    if ( newText != text() ) {
+
+    QString oldText = text();
+    int oldTextLen = oldText.length();
+    int newTextLen = newText.length();
+    if (newTextLen != oldTextLen || newText != oldText) {
         bool blocked = w->blockSignals(true);
-        QTextCursor tc = w->textCursor();
-        bool atEnd = tc.atEnd();
-        bool atStart = tc.atStart();
         int cx = w->horizontalScrollBar()->value();
         int cy = w->verticalScrollBar()->value();
-        QString oldText = w->toPlainText();
+        // Not using setPlaintext as it resets text alignment property
+        int minLen = (newTextLen < oldTextLen) ? newTextLen : oldTextLen;
         int ex = 0;
-        int otl = oldText.length();
-        if (otl && newText.length() > otl) {
-            while (ex < otl && newText[ex] == oldText[ex])
-                ++ex;
-            QTextCursor tc(w->document());
-            tc.setPosition( ex, QTextCursor::MoveAnchor );
-            tc.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
-            tc.insertText(newText.right( newText.length()-ex ));
-        } else {
-            w->setPlainText( newText );
-        }
+        while (ex < minLen && (newText.at(ex) == oldText.at(ex)))
+               ++ex;
+        QTextCursor tc = w->textCursor();
+        tc.setPosition(ex, QTextCursor::MoveAnchor);
+        tc.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
+        tc.insertText(newText.right(newTextLen - ex));
+
+        if (oldTextLen == 0)
+            tc.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+        else
+            tc.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
         w->setTextCursor(tc);
-        if (atEnd)
-           tc.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
-        else if (atStart)
-           tc.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-        w->horizontalScrollBar()->setValue( cx );
-        w->verticalScrollBar()->setValue( cy );
+        w->horizontalScrollBar()->setValue(cx);
+        w->verticalScrollBar()->setValue(cy);
         w->blockSignals(blocked);
     }
 }

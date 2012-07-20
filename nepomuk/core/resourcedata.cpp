@@ -74,9 +74,6 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QUrl& kickOffUri, co
 
     m_types << m_mainType;
 
-    if( m_rm->dataCacheFull() )
-        m_rm->cleanupCache();
-
     m_rm->dataCnt.ref();
 
     if( !uri.isEmpty() ) {

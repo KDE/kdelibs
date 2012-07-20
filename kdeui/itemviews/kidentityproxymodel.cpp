@@ -23,13 +23,14 @@
 
 #include <QtGui/QItemSelection>
 #include <QtCore/QStringList>
+#include <kdebug.h>
 
 class KIdentityProxyModelPrivate
 {
   KIdentityProxyModelPrivate(KIdentityProxyModel *qq)
-    : q_ptr(qq),
-      ignoreNextLayoutAboutToBeChanged(false),
-      ignoreNextLayoutChanged(false)
+    : q_ptr(qq)
+//      ignoreNextLayoutAboutToBeChanged(false),
+//      ignoreNextLayoutChanged(false)
   {
 
   }
@@ -37,8 +38,8 @@ class KIdentityProxyModelPrivate
   Q_DECLARE_PUBLIC(KIdentityProxyModel)
   KIdentityProxyModel * const q_ptr;
 
-  bool ignoreNextLayoutAboutToBeChanged;
-  bool ignoreNextLayoutChanged;
+//  bool ignoreNextLayoutAboutToBeChanged;
+//  bool ignoreNextLayoutChanged;
   QList<QPersistentModelIndex> layoutChangePersistentIndexes;
   QModelIndexList proxyIndexes;
 
@@ -61,8 +62,8 @@ class KIdentityProxyModelPrivate
 
   void _k_sourceLayoutAboutToBeChanged();
   void _k_sourceLayoutChanged();
-  void _k_sourceChildrenLayoutsAboutToBeChanged(const QModelIndex &parent1, const QModelIndex &parent2);
-  void _k_sourceChildrenLayoutsChanged(const QModelIndex &parent1, const QModelIndex &parent2);
+//  void _k_sourceChildrenLayoutsAboutToBeChanged(const QModelIndex &parent1, const QModelIndex &parent2);
+//  void _k_sourceChildrenLayoutsChanged(const QModelIndex &parent1, const QModelIndex &parent2);
   void _k_sourceModelAboutToBeReset();
   void _k_sourceModelReset();
   void _k_sourceModelDestroyed();
@@ -580,38 +581,35 @@ void KIdentityProxyModelPrivate::_k_sourceHeaderDataChanged(Qt::Orientation orie
 
 void KIdentityProxyModelPrivate::_k_sourceLayoutAboutToBeChanged()
 {
-    if (ignoreNextLayoutAboutToBeChanged)
-        return;
+    //if (ignoreNextLayoutAboutToBeChanged)
+    //    return;
 
     Q_Q(KIdentityProxyModel);
 
     q->layoutAboutToBeChanged();
 
-    Q_FOREACH(const QPersistentModelIndex &proxyPersistentIndex, q->persistentIndexList()) {
-        proxyIndexes << proxyPersistentIndex;
+    Q_FOREACH(const QModelIndex &proxyPersistentIndex, q->persistentIndexList()) {
         Q_ASSERT(proxyPersistentIndex.isValid());
         const QPersistentModelIndex srcPersistentIndex = q->mapToSource(proxyPersistentIndex);
-        Q_ASSERT(srcPersistentIndex.isValid());
+        if (!srcPersistentIndex.isValid()) // can happen with extra columns, e.g. KPIM::StatisticsProxyModel
+            continue;
+        proxyIndexes << proxyPersistentIndex;
         layoutChangePersistentIndexes << srcPersistentIndex;
     }
 }
 
 void KIdentityProxyModelPrivate::_k_sourceLayoutChanged()
 {
-    if (ignoreNextLayoutChanged)
-        return;
+    //if (ignoreNextLayoutChanged)
+    //    return;
 
     Q_Q(KIdentityProxyModel);
 
-    // We need to ensure that we don't modify persistent model indexes whose
-    // column lies outside the source model. For example, KPIM::StatisticsProxyModel
-    // adds additional columns and manages their persistent indexes.
-    // We need to avoid calling changePersistentIndex with those.
-    const int columnCount = q->sourceModel()->columnCount();
     for (int i = 0; i < proxyIndexes.size(); ++i) {
         const QModelIndex oldProxyIndex = proxyIndexes.at(i);
-        if (oldProxyIndex.column() < columnCount)
-            q->changePersistentIndex(oldProxyIndex, q->mapFromSource(layoutChangePersistentIndexes.at(i)));
+        const QModelIndex newProxyIndex = q->mapFromSource(layoutChangePersistentIndexes.at(i));
+        if (oldProxyIndex != newProxyIndex)
+            q->changePersistentIndex(oldProxyIndex, newProxyIndex);
     }
 
     layoutChangePersistentIndexes.clear();
@@ -620,7 +618,7 @@ void KIdentityProxyModelPrivate::_k_sourceLayoutChanged()
     q->layoutChanged();
 }
 
-
+#if 0 // this code was for the stuff that never went into Qt-4.8. We are keeping it for the Qt5 QIPM sourceLayoutChanged(QModelIndex) future code.
 void KIdentityProxyModelPrivate::_k_sourceChildrenLayoutsAboutToBeChanged(const QModelIndex &parent1, const QModelIndex &parent2)
 {
     Q_Q(KIdentityProxyModel);
@@ -638,7 +636,7 @@ void KIdentityProxyModelPrivate::_k_sourceChildrenLayoutsAboutToBeChanged(const 
     if (q->persistentIndexList().isEmpty())
         return;
 
-    Q_FOREACH(const QPersistentModelIndex &proxyPersistentIndex, q->persistentIndexList()) {
+    Q_FOREACH(const QModelIndex &proxyPersistentIndex, q->persistentIndexList()) {
         const QPersistentModelIndex srcPersistentIndex = q->mapToSource(proxyPersistentIndex);
         Q_ASSERT(proxyPersistentIndex.isValid());
         Q_ASSERT(srcPersistentIndex.isValid());
@@ -674,6 +672,7 @@ void KIdentityProxyModelPrivate::_k_sourceChildrenLayoutsChanged(const QModelInd
 //     emit q->childrenLayoutsChanged(proxyParent1, proxyParent2);
     emit q->layoutChanged();
 }
+#endif
 
 void KIdentityProxyModelPrivate::_k_sourceModelAboutToBeReset()
 {
@@ -749,7 +748,7 @@ void KIdentityProxyModelPrivate::_k_sourceRowsRemoved(const QModelIndex &parent,
 }
 
 /*!
-  This slot is automatically invoked when the model is reset. It can be used to clear any data internal to the proxy at the approporiate time.
+  This slot is automatically invoked when the model is reset. It can be used to clear any data internal to the proxy at the appropriate time.
 
   \sa QAbstractItemModel::internalDataReset()
  */

@@ -616,7 +616,7 @@ static bool offerListHasService( const KService::List& offers,
 {
     bool found = false;
     KService::List::const_iterator it = offers.begin();
-    for ( ; it != offers.end() ; it++ )
+    for ( ; it != offers.end() ; ++it )
     {
         if ( (*it)->entryPath() == entryPath ) {
             if( found ) { // should be there only once
@@ -919,13 +919,22 @@ void KMimeTypeTest::testHelperProtocols()
     QVERIFY(KProtocolInfo::isKnownProtocol("mailto"));
     QVERIFY(KProtocolInfo::isHelperProtocol("mailto"));
     QVERIFY(KProtocolInfo::isHelperProtocol(KUrl("mailto:faure@kde.org")));
-    QVERIFY2(KProtocolInfo::exec("mailto").contains(QLatin1String("kmail -caption \"%c\"")), // comes from KMail2.desktop
-                qPrintable(KProtocolInfo::exec("mailto")));
     QVERIFY(!KProtocolInfo::isHelperProtocol("http"));
     QVERIFY(!KProtocolInfo::isHelperProtocol("ftp"));
     QVERIFY(!KProtocolInfo::isHelperProtocol("file"));
     QVERIFY(!KProtocolInfo::isHelperProtocol("unknown"));
     QVERIFY(KProtocolInfo::isHelperProtocol("telnet"));
+
+    // "mailto" is associated with kmail2 when present, and with kmailservice otherwise.
+    KService::Ptr kmail2 = KService::serviceByStorageId("KMail2.desktop");
+    if (kmail2) {
+        //qDebug() << kmail2->entryPath();
+        QVERIFY2(KProtocolInfo::exec("mailto").contains(QLatin1String("kmail -caption \"%c\"")), // comes from KMail2.desktop
+                 qPrintable(KProtocolInfo::exec("mailto")));
+    } else {
+        QCOMPARE(KProtocolInfo::exec("mailto"), QLatin1String("kmailservice %u"));
+    }
+
 
     // To test that compat still works
     if (KProtocolInfo::isKnownProtocol("tel")) {

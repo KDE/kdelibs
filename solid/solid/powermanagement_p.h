@@ -50,6 +50,7 @@ namespace Solid
         void slotCanHibernateChanged(bool newState);
         void slotPowerSaveStatusChanged(bool newState);
         void slotServiceRegistered(const QString &serviceName);
+        void slotServiceUnregistered(const QString &serviceName);
 
     public:
         OrgFreedesktopPowerManagementInterface managerIface;

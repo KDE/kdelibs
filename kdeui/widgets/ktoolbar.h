@@ -176,6 +176,12 @@ public:
     void addXMLGUIClient( KXMLGUIClient *client );
 
     /**
+     * Removes an XML gui client that uses this toolbar
+     * @since 4.8.5
+     */
+    void removeXMLGUIClient( KXMLGUIClient *client );
+
+    /**
      * Load state from an XML @param element, called by KXMLGUIBuilder.
      */
     void loadState( const QDomElement &element );

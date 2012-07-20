@@ -36,7 +36,7 @@ int main()
     sout.open(stdout, QIODevice::WriteOnly);
     QDataStream out(&sout);
 
-    bool ok,ok2;
+    bool ok = true, ok2;
     QHash<quint32,quint8> data;
     QHash<qint8,QString> catalog;
 

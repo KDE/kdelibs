@@ -89,8 +89,8 @@ private:
 
   Q_PRIVATE_SLOT(d_func(), void _k_sourceLayoutAboutToBeChanged())
   Q_PRIVATE_SLOT(d_func(), void _k_sourceLayoutChanged())
-  Q_PRIVATE_SLOT(d_func(), void _k_sourceChildrenLayoutsAboutToBeChanged(const QModelIndex &parent1, const QModelIndex &parent2))
-  Q_PRIVATE_SLOT(d_func(), void _k_sourceChildrenLayoutsChanged(const QModelIndex &parent1, const QModelIndex &parent2))
+  //  Q_PRIVATE_SLOT(d_func(), void _k_sourceChildrenLayoutsAboutToBeChanged(const QModelIndex &parent1, const QModelIndex &parent2))
+  //  Q_PRIVATE_SLOT(d_func(), void _k_sourceChildrenLayoutsChanged(const QModelIndex &parent1, const QModelIndex &parent2))
   Q_PRIVATE_SLOT(d_func(), void _k_sourceModelAboutToBeReset())
   Q_PRIVATE_SLOT(d_func(), void _k_sourceModelReset())
   Q_PRIVATE_SLOT(d_func(), void _k_sourceModelDestroyed())

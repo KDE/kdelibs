@@ -256,7 +256,7 @@ JSValue *ObjectObjectFuncImp::callAsFunction(ExecState* exec, JSObject*, const L
             jso->getOwnPropertyNames(exec, propertyNames, PropertyMap::IncludeDontEnumProperties);
         PropertyNameArrayIterator propEnd = propertyNames.end();
         unsigned int n = 0;
-        for (PropertyNameArrayIterator propIter = propertyNames.begin(); propIter != propEnd; propIter++) {
+        for (PropertyNameArrayIterator propIter = propertyNames.begin(); propIter != propEnd; ++propIter) {
             Identifier name = *propIter;
             ret->put(exec, n, jsString(name.ustring()), None);
             ++n;

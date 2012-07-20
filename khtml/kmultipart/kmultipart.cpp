@@ -356,8 +356,8 @@ void KMultiPart::setPart( const QString& mimeType )
         // Forward signals from the part's browser extension
         // this is very related (but not exactly like) KHTMLPart::processObjectRequest
 
-        connect( childExtension, SIGNAL(openURLNotify()),
-                 m_extension, SIGNAL(openURLNotify()) );
+        connect( childExtension, SIGNAL(openUrlNotify()),
+                 m_extension, SIGNAL(openUrlNotify()) );
 
         connect( childExtension, SIGNAL(openUrlRequestDelayed(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)),
                  m_extension, SIGNAL(openUrlRequest(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)) );
@@ -380,8 +380,8 @@ void KMultiPart::setPart( const QString& mimeType )
 
         connect( childExtension, SIGNAL(enableAction(const char*,bool)),
                  m_extension, SIGNAL(enableAction(const char*,bool)) );
-        connect( childExtension, SIGNAL(setLocationBarURL(QString)),
-                 m_extension, SIGNAL(setLocationBarURL(QString)) );
+        connect( childExtension, SIGNAL(setLocationBarUrl(QString)),
+                 m_extension, SIGNAL(setLocationBarUrl(QString)) );
         connect( childExtension, SIGNAL(setIconUrl(KUrl)),
                  m_extension, SIGNAL(setIconUrl(KUrl)) );
         connect( childExtension, SIGNAL(loadingProgress(int)),

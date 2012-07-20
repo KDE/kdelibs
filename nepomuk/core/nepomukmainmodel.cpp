@@ -78,10 +78,9 @@ public:
 
         // we may get disconnected from the server but we don't want to try
         // to connect every time the model is requested
-        if ( forced || (!m_socketConnectFailed && !localSocketClient.isConnected()) ) {
+        if ( !m_socketConnectFailed && !localSocketClient.isConnected() ) {
             delete localSocketModel;
             localSocketModel = 0;
-            localSocketClient.disconnect();
             QString socketName = KGlobal::dirs()->locateLocal( "socket", "nepomuk-socket" );
             kDebug() << "Connecting to local socket" << socketName;
             if ( localSocketClient.connect( socketName ) ) {
@@ -137,7 +136,6 @@ Nepomuk::MainModel::MainModel( QObject* parent )
       d( new Private(this) )
 {
     setParent( parent );
-    init();
 }
 
 

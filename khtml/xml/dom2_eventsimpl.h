@@ -179,6 +179,7 @@ public:
         BLUR_EVENT,
         RESIZE_EVENT,
         SCROLL_EVENT,
+        HASHCHANGE_EVENT,
             // keyboard events
         KEYDOWN_EVENT,
         KEYUP_EVENT,
@@ -224,6 +225,7 @@ public:
     virtual bool isTextInputEvent() const;
     virtual bool isKeyboardEvent() const;
     virtual bool isMessageEvent() const;
+    virtual bool isHashChangeEvent() const;
     bool isKeyRelatedEvent() const { return isTextInputEvent() || isKeyboardEvent(); }
 
     bool propagationStopped() const { return m_propagationStopped; }
@@ -612,6 +614,26 @@ private:
     DOMString    m_origin;
     DOMString    m_lastEventId;
     QWeakPointer<KHTMLPart>  m_source;
+};
+
+
+class HashChangeEventImpl : public EventImpl {
+public:
+    const DOMString &oldUrl() const { return m_oldUrl; }
+    const DOMString &newUrl() const { return m_newUrl; }
+
+    HashChangeEventImpl();
+
+    void initHashChangeEvent(const DOMString &eventTypeArg,
+                          bool  canBubbleArg,
+                          bool  cancelableArg,
+                          const DOMString &oldUrl,
+                          const DOMString &newUrl
+                         );
+    virtual bool isHashChangeEvent() const;
+private:
+    DOMString    m_oldUrl;
+    DOMString    m_newUrl;
 };
 
 } //namespace
