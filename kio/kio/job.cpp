@@ -2230,7 +2230,7 @@ void FileCopyJobPrivate::slotDataReq( KIO::Job * , QByteArray &data)
    if (!m_resumeAnswerSent && !m_getJob) {
        // This can't happen
        q->setError( ERR_INTERNAL );
-       q->setErrorText( i18n( "'Put' job did not send canResume or 'Get' job did not send data!" ) );
+       q->setErrorText( "'Put' job did not send canResume or 'Get' job did not send data!" );
        m_putJob->kill( FileCopyJob::Quietly );
        q->removeSubjob(m_putJob);
        m_putJob = 0;

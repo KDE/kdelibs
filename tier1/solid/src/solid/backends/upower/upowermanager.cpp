@@ -103,6 +103,9 @@ QStringList UPowerManager::devicesFromQuery(const QString& parentUdi, Solid::Dev
     {
         Q_FOREACH (const QString & udi, allDev)
         {
+            if (udi==udiPrefix())
+                continue;
+
             UPowerDevice device(udi);
             if (device.queryDeviceInterface(type) && device.parentUdi() == parentUdi)
                 result << udi;
@@ -114,6 +117,9 @@ QStringList UPowerManager::devicesFromQuery(const QString& parentUdi, Solid::Dev
     {
         Q_FOREACH (const QString & udi, allDev)
         {
+            if (udi==udiPrefix())
+                continue;
+
             UPowerDevice device(udi);
             if (device.queryDeviceInterface(type))
                 result << udi;

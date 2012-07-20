@@ -807,6 +807,7 @@ void KUrlTest::testPrettyURL()
   QCOMPARE( urlWithPassAndNoUser.prettyUrl(), QString::fromLatin1( "ftp://ftp.kde.org/path" ) );
 
   KUrl xmppUri("xmpp:ogoffart@kde.org");
+  QCOMPARE(xmppUri.path(), QString::fromLatin1("ogoffart@kde.org"));
   QCOMPARE( xmppUri.prettyUrl(), QString::fromLatin1( "xmpp:ogoffart@kde.org" ) );
 
   QUrl offEagleqUrl;
@@ -957,8 +958,9 @@ void KUrlTest::testAdjustPath()
     QCOMPARE( remote2.url(KUrl::RemoveTrailingSlash ), QString("remote://") );
     QCOMPARE( QUrl(remote2).toString(QUrl::StripTrailingSlash), QString("remote://") );
 #else
-    QCOMPARE( remote2.url(), QString("remote:") );
-    QCOMPARE( remote2.url(KUrl::RemoveTrailingSlash ), QString("remote:") );
+    QCOMPARE( remote2.url(), QString("remote:") ); // QUrl bug, fixed in Qt5
+    QCOMPARE( remote2.prettyUrl(), QString("remote://") );
+    QCOMPARE( remote2.url(KUrl::RemoveTrailingSlash ), QString("remote:") ); // QUrl bug, fixed in Qt5
 #endif
     }
 }
@@ -1802,12 +1804,20 @@ void KUrlTest::testSmb()
   QCOMPARE( smb.user(), QString("domain;username") );
   smb = "smb:/";
   QVERIFY( smb.isValid() );
+  QCOMPARE(smb.url(), QString::fromLatin1("smb:/"));
+  QCOMPARE(smb.prettyUrl(), QString::fromLatin1("smb:/"));
   smb = "smb://"; // KDE3: kurl.cpp rev 1.106 made it invalid. Valid again with QUrl.
   QVERIFY( smb.isValid() );
+  QCOMPARE(smb.url(), QString::fromLatin1("smb:")); // QUrl bug, fixed in Qt5
+  QCOMPARE(smb.prettyUrl(), QString::fromLatin1("smb://"));
   smb = "smb://host";
   QVERIFY( smb.isValid() );
+  QCOMPARE(smb.url(), QString::fromLatin1("smb://host"));
+  QCOMPARE(smb.prettyUrl(), QString::fromLatin1("smb://host"));
   smb = "smb:///";
   QVERIFY( smb.isValid() );
+  QCOMPARE(smb.url(), QString::fromLatin1("smb:/")); // QUrl bug, fixed in Qt5
+  QCOMPARE(smb.prettyUrl(), QString::fromLatin1("smb:/"));
 
   KUrl implicitSmb("file://host/path");
   QVERIFY(!implicitSmb.isLocalFile()); // -> kio_file will redirect to smb (by default)

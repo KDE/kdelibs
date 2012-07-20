@@ -350,8 +350,8 @@ QPair<int, int> KViewStateSerializer::scrollState() const
 void KViewStateSerializer::restoreState()
 {
   Q_D(KViewStateSerializer);
-  // Delete myself if not finished after ten seconds.
-  QTimer::singleShot(10000, this, SLOT(deleteLater()));
+  // Delete myself if not finished after 60 seconds
+  QTimer::singleShot(60000, this, SLOT(deleteLater()));
 
   d->processPendingChanges();
   if (d->hasPendingChanges())

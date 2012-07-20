@@ -646,7 +646,7 @@ void KHTMLPartPrivate::executeAnchorJump( const KUrl& url, bool lockHistory )
 
     const QString &oldRef = q->url().ref();
     const QString &newRef = url.ref();
-    if (oldRef != newRef) {
+    if ((oldRef != newRef) || (oldRef.isNull() && newRef.isEmpty())) {
         DOM::HashChangeEventImpl *evImpl = new DOM::HashChangeEventImpl();
         evImpl->initHashChangeEvent("hashchange",
                                     true, //bubble
