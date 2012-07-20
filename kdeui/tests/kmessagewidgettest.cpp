@@ -23,17 +23,21 @@ int main(int argc, char* argv[])
     frame->setFrameStyle(QFrame::Panel);
     frame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    QCheckBox* cb = new QCheckBox("wordWrap", mainWindow);
-    cb->setChecked(true);
+    QCheckBox* wordWrapCb = new QCheckBox("wordWrap", mainWindow);
+    wordWrapCb->setChecked(true);
+    QObject::connect(wordWrapCb, SIGNAL(toggled(bool)), mw, SLOT(setWordWrap(bool)));
 
-    l->addWidget(cb);
+    QCheckBox* closeButtonCb = new QCheckBox("closeButton", mainWindow);
+    closeButtonCb->setChecked(true);
+    QObject::connect(closeButtonCb, SIGNAL(toggled(bool)), mw, SLOT(setCloseButtonVisible(bool)));
+
+    l->addWidget(wordWrapCb);
+    l->addWidget(closeButtonCb);
     l->addWidget(mw);
     l->addWidget(frame);
 
     mainWindow->resize(400, 300);
     mainWindow->show();
-
-    QObject::connect(cb, SIGNAL(toggled(bool)), mw, SLOT(setWordWrap(bool)));
 
     return app.exec();
     delete mainWindow;

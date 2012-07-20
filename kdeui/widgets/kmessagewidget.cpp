@@ -367,6 +367,7 @@ bool KMessageWidget::isCloseButtonVisible() const
 void KMessageWidget::setCloseButtonVisible(bool show)
 {
     d->closeButton->setVisible(show);
+    updateGeometry();
 }
 
 void KMessageWidget::addAction(QAction* action)
