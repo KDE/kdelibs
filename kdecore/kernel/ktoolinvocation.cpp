@@ -35,11 +35,17 @@
 
 #include <errno.h>
 
+class KToolInvocationSingleton
+{
+public:
+    KToolInvocation instance;
+};
+
+Q_GLOBAL_STATIC(KToolInvocationSingleton, s_self)
 
 KToolInvocation *KToolInvocation::self()
 {
-    K_GLOBAL_STATIC(KToolInvocation, s_self)
-    return s_self;
+    return &s_self()->instance;
 }
 
 KToolInvocation::KToolInvocation() : QObject(0), d(0)

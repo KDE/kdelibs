@@ -310,7 +310,7 @@ QDataStream & operator>>(QDataStream &s, KDateTime::Spec &spec)
 
 /*----------------------------------------------------------------------------*/
 
-K_GLOBAL_STATIC_WITH_ARGS(KDateTime::Spec, s_fromStringDefault, (KDateTime::ClockTime))
+Q_GLOBAL_STATIC_WITH_ARGS(KDateTime::Spec, s_fromStringDefault, (KDateTime::ClockTime))
 
 class KDateTimePrivate : public QSharedData
 {
@@ -426,7 +426,7 @@ class KDateTimePrivate : public QSharedData
     // Default time spec used by fromString()
     static KDateTime::Spec& fromStringDefault()
     {
-        return *s_fromStringDefault;
+        return *s_fromStringDefault();
     }
 
 
@@ -770,10 +770,10 @@ void KDateTimePrivate::newToZone(KDateTimePrivate *newd, const KTimeZone &zone, 
 
 
 /*----------------------------------------------------------------------------*/
-K_GLOBAL_STATIC_WITH_ARGS(QSharedDataPointer<KDateTimePrivate>, emptyDateTimePrivate, (new KDateTimePrivate))
+Q_GLOBAL_STATIC_WITH_ARGS(QSharedDataPointer<KDateTimePrivate>, emptyDateTimePrivate, (new KDateTimePrivate))
 
 KDateTime::KDateTime()
-  : d(*emptyDateTimePrivate)
+  : d(*emptyDateTimePrivate())
 {
 }
 

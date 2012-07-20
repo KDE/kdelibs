@@ -34,10 +34,17 @@ namespace KServiceTypeProfile {
     KServiceOfferList sortServiceTypeOffers( const KServiceOfferList& list, const QString& servicetype );
 }
 
+class KServiceTypeTraderSingleton
+{
+public:
+    KServiceTypeTrader instance;
+};
+
+Q_GLOBAL_STATIC(KServiceTypeTraderSingleton, s_globalServiceTypeTrader)
+
 KServiceTypeTrader* KServiceTypeTrader::self()
 {
-    K_GLOBAL_STATIC(KServiceTypeTrader, s_globalServiceTypeTrader)
-    return s_globalServiceTypeTrader;
+    return &s_globalServiceTypeTrader()->instance;
 }
 
 KServiceTypeTrader::KServiceTypeTrader()

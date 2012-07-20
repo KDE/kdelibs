@@ -370,7 +370,7 @@ ElementMappingCache::ItemInfo* ElementMappingCache::get(const DOMString& id)
 }
 
 typedef QList<DocumentImpl*> ChangedDocuments ;
-K_GLOBAL_STATIC(ChangedDocuments, s_changedDocuments)
+Q_GLOBAL_STATIC(ChangedDocuments, s_changedDocuments)
 
 // KHTMLView might be 0
 DocumentImpl::DocumentImpl(KHTMLView *v)
@@ -510,8 +510,8 @@ DocumentImpl::~DocumentImpl()
 
     if (m_loadingXMLDoc)
 	m_loadingXMLDoc->deref(this);
-    if (s_changedDocuments && m_docChanged)
-        s_changedDocuments->removeAll(this);
+    if (s_changedDocuments() && m_docChanged)
+        s_changedDocuments()->removeAll(this);
     delete m_tokenizer;
     m_document.resetSkippingRef(0);
     delete m_styleSelector;
@@ -1377,9 +1377,9 @@ TreeWalkerImpl *DocumentImpl::createTreeWalker(NodeImpl *root, unsigned long wha
 void DocumentImpl::setDocumentChanged(bool b)
 {
     if (b && !m_docChanged)
-        s_changedDocuments->append(this);
+        s_changedDocuments()->append(this);
     else if (!b && m_docChanged)
-        s_changedDocuments->removeAll(this);
+        s_changedDocuments()->removeAll(this);
     m_docChanged = b;
 }
 
@@ -1472,11 +1472,11 @@ void DocumentImpl::updateRendering()
 
 void DocumentImpl::updateDocumentsRendering()
 {
-    if (!s_changedDocuments)
+    if (!s_changedDocuments())
         return;
 
-    while ( !s_changedDocuments->isEmpty() ) {
-        DocumentImpl* it = s_changedDocuments->takeFirst();
+    while ( !s_changedDocuments()->isEmpty() ) {
+        DocumentImpl* it = s_changedDocuments()->takeFirst();
         if (it->isDocumentChanged())
             it->updateRendering();
     }

@@ -85,7 +85,7 @@ private:
             ContextMap;
     ContextMap m_contextmap;
 };
-K_GLOBAL_STATIC(KJavaServerMaintainer, serverMaintainer)
+Q_GLOBAL_STATIC(KJavaServerMaintainer, serverMaintainer)
 
 KJavaServerMaintainer::~KJavaServerMaintainer () {
     delete server;
@@ -220,7 +220,7 @@ public:
     }
 protected:
     void mousePressEvent (QMouseEvent *) {
-        serverMaintainer->server->showConsole ();
+        serverMaintainer()->server->showConsole ();
     }
 };
 
@@ -324,12 +324,12 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
     if (KAuthorized::authorizeUrlAction("redirect", KUrl(baseurl), newURL))
         applet->setCodeBase (newURL.url());
     applet->setAppletClass (classname);
-    KJavaAppletContext* const cxt = serverMaintainer->getContext (parent, baseurl);
+    KJavaAppletContext* const cxt = serverMaintainer()->getContext (parent, baseurl);
     applet->setAppletContext (cxt);
 
     KJavaAppletServer* const server = cxt->getServer ();
 
-    serverMaintainer->setServer (server);
+    serverMaintainer()->setServer (server);
 
     if (!server->usingKIO ()) {
         /* if this page needs authentication */
@@ -390,7 +390,7 @@ bool KJavaAppletViewer::eventFilter (QObject *o, QEvent *e) {
 
 KJavaAppletViewer::~KJavaAppletViewer () {
     m_view = 0L;
-    serverMaintainer->releaseContext (parent(), baseurl);
+    serverMaintainer()->releaseContext (parent(), baseurl);
     if (m_statusbar_icon) {
         m_statusbar->removeStatusBarItem (m_statusbar_icon);
         delete m_statusbar_icon;

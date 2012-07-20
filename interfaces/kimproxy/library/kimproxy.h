@@ -290,6 +290,8 @@ class KIMPROXY_EXPORT KIMProxy : public QObject
 		 * Construct an instance of the proxy library.
 		 */
 		KIMProxy();
+
+		friend class KIMProxySingleton;
 };
 
 #endif

@@ -410,6 +410,7 @@ private:
   static bool isMainThreadActive(QString* error = 0);
 
   KToolInvocationPrivate * const d;
+  friend class KToolInvocationSingleton;
 };
 
 #endif

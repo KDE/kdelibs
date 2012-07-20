@@ -710,6 +710,7 @@ struct KDebugPrivate
     KLineEndStrippingDebugStream lineendstrippingwriter;
 };
 
+// TODO wait for Qt 5.1, uses isDestroyed()
 K_GLOBAL_STATIC(KDebugPrivate, kDebug_data)
 
 #ifdef HAVE_BACKTRACE

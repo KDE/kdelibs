@@ -126,6 +126,7 @@ private:
     KSambaSharePrivate * const d_ptr;
     Q_DECLARE_PRIVATE(KSambaShare)
     friend class KSambaShareData;
+    friend class KSambaShareSingleton;
 
     Q_PRIVATE_SLOT(d_func(), void _k_slotFileChange(const QString &))
 };

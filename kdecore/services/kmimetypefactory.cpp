@@ -25,23 +25,23 @@
 
 extern int servicesDebugArea();
 
-K_GLOBAL_STATIC(KSycocaFactorySingleton<KMimeTypeFactory>, kMimeTypeFactoryInstance)
+Q_GLOBAL_STATIC(KSycocaFactorySingleton<KMimeTypeFactory>, kMimeTypeFactoryInstance)
 
 KMimeTypeFactory::KMimeTypeFactory()
     : KSycocaFactory( KST_KMimeTypeFactory )
 {
-    kMimeTypeFactoryInstance->instanceCreated(this);
+    kMimeTypeFactoryInstance()->instanceCreated(this);
 }
 
 KMimeTypeFactory::~KMimeTypeFactory()
 {
-    if (kMimeTypeFactoryInstance.exists())
-        kMimeTypeFactoryInstance->instanceDestroyed(this);
+    if (kMimeTypeFactoryInstance())
+        kMimeTypeFactoryInstance()->instanceDestroyed(this);
 }
 
 KMimeTypeFactory * KMimeTypeFactory::self()
 {
-    return kMimeTypeFactoryInstance->self();
+    return kMimeTypeFactoryInstance()->self();
 }
 
 int KMimeTypeFactory::entryOffset(const QString& mimeTypeName)

@@ -581,10 +581,17 @@ public:
     QStringList pluginNames; 
 };
 
+class KUriFilterSingleton
+{
+public:
+    KUriFilter instance;
+};
+
+Q_GLOBAL_STATIC(KUriFilterSingleton, m_self)
+
 KUriFilter *KUriFilter::self()
 {
-    K_GLOBAL_STATIC(KUriFilter, m_self)
-    return m_self;
+    return &m_self()->instance;
 }
 
 KUriFilter::KUriFilter()

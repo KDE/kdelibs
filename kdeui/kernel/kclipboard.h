@@ -97,6 +97,8 @@ private:
     Q_PRIVATE_SLOT(d, void _k_slotSelectionChanged())
     Q_PRIVATE_SLOT(d, void _k_slotClipboardChanged())
     Q_PRIVATE_SLOT(d, void _k_slotNotifyChange(int, int))
+
+    friend class KClipboardSynchronizerSingleton;
 };
 
 #endif // KCLIPBOARD_H

@@ -42,6 +42,7 @@ public:
     HistoryProvider *q;
 };
 
+// TODO wait for Qt 5.1, uses isDestroyed()
 K_GLOBAL_STATIC(HistoryProviderPrivate, historyProviderPrivate)
 
 HistoryProvider * HistoryProvider::self()

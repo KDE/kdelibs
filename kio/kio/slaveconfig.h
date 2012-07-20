@@ -100,6 +100,7 @@ namespace KIO {
         SlaveConfig();
     private:
         SlaveConfigPrivate* const d;
+        friend class SlaveConfigSingleton;
     };
 }
 

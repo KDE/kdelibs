@@ -513,6 +513,7 @@ void KStandarddirsTest::testSymlinkResolution()
 }
 
 #include <QThreadPool>
+#include <QFutureSynchronizer>
 #include <qtconcurrentrun.h>
 
 // To find multithreading bugs: valgrind --tool=helgrind ./kstandarddirstest testThreads

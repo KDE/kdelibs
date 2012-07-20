@@ -141,6 +141,7 @@ public:
    QMap<QString /*mimetype*/, QString /*protocol*/> protocolForArchiveMimetypes;
 };
 
+// TODO Qt 5.1 uses .destroy
 K_GLOBAL_STATIC(KProtocolManagerPrivate, kProtocolManagerPrivate)
 
 KProtocolManagerPrivate::KProtocolManagerPrivate()

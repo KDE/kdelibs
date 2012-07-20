@@ -78,6 +78,8 @@ private:
   KNFSSharePrivate * const d;
   
   Q_PRIVATE_SLOT( d, void _k_slotFileChange(const QString&) )
+
+  friend class KNFSShareSingleton;
 };
 
 #endif

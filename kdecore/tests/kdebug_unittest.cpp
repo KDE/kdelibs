@@ -306,6 +306,7 @@ void KDebugTest::testNoMainComponentData()
 }
 
 #include <QThreadPool>
+#include <QFutureSynchronizer>
 #include <qtconcurrentrun.h>
 
 class KDebugThreadTester

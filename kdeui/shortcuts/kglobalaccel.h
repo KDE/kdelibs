@@ -255,6 +255,8 @@ private:
     Q_PRIVATE_SLOT(d, void _k_invokeAction(const QString &, const QString &, qlonglong))
     Q_PRIVATE_SLOT(d, void _k_shortcutGotChanged(const QStringList&, const QList<int>&))
     Q_PRIVATE_SLOT(d, void _k_serviceOwnerChanged(const QString&, const QString&, const QString&))
+
+    friend class KGlobalAccelSingleton;
 };
 
 #endif // _KGLOBALACCEL_H_

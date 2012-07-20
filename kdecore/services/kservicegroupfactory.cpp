@@ -27,12 +27,12 @@
 #include <klocalizedstring.h>
 #include <kdebug.h>
 
-K_GLOBAL_STATIC(KSycocaFactorySingleton<KServiceGroupFactory>, kServiceGroupFactoryInstance)
+Q_GLOBAL_STATIC(KSycocaFactorySingleton<KServiceGroupFactory>, kServiceGroupFactoryInstance)
 
 KServiceGroupFactory::KServiceGroupFactory()
     : KSycocaFactory( KST_KServiceGroupFactory )
 {
-    kServiceGroupFactoryInstance->instanceCreated(this);
+    kServiceGroupFactoryInstance()->instanceCreated(this);
     m_baseGroupDictOffset = 0;
     if (!KSycoca::self()->isBuilding()) {
         QDataStream* str = stream();
@@ -51,13 +51,13 @@ KServiceGroupFactory::KServiceGroupFactory()
 KServiceGroupFactory::~KServiceGroupFactory()
 {
     delete m_baseGroupDict;
-    if (kServiceGroupFactoryInstance.exists())
-        kServiceGroupFactoryInstance->instanceDestroyed(this);
+    if (kServiceGroupFactoryInstance())
+        kServiceGroupFactoryInstance()->instanceDestroyed(this);
 }
 
 KServiceGroupFactory * KServiceGroupFactory::self()
 {
-    return kServiceGroupFactoryInstance->self();
+    return kServiceGroupFactoryInstance()->self();
 }
 
 KServiceGroup::Ptr KServiceGroupFactory::findGroupByDesktopPath(const QString &_name, bool deep)

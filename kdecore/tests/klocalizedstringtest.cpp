@@ -245,6 +245,7 @@ void KLocalizedStringTest::translateQt()
 #include <QThreadPool>
 #include <qtconcurrentrun.h>
 #include <qstandardpaths.h>
+#include <QFutureSynchronizer>
 
 void KLocalizedStringTest::testThreads()
 {

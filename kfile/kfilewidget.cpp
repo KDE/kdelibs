@@ -285,7 +285,7 @@ public:
     QSlider *iconSizeSlider;
 };
 
-K_GLOBAL_STATIC(KUrl, lastDirectory) // to set the start path
+Q_GLOBAL_STATIC(KUrl, lastDirectory) // to set the start path
 
 static const char autocompletionWhatsThisText[] = I18N_NOOP("<qt>While typing in the text area, you may be presented "
                                                   "with possible matches. "
@@ -1017,7 +1017,7 @@ void KFileWidget::accept()
 {
     d->inAccept = true; // parseSelectedUrls() checks that
 
-    *lastDirectory = d->ops->url();
+    *lastDirectory() = d->ops->url();
     if (!d->fileClass.isEmpty())
        KRecentDirs::add(d->fileClass, d->ops->url().toString());
 
@@ -2624,19 +2624,19 @@ QUrl KFileWidget::getStartUrl(const QUrl& startDir,
 
     if ( useDefaultStartDir )
     {
-        if (lastDirectory->isEmpty()) {
-            lastDirectory->setPath(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
+        if (lastDirectory()->isEmpty()) {
+            lastDirectory()->setPath(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
             KUrl home = QUrl::fromLocalFile(QDir::homePath());
             // if there is no docpath set (== home dir), we prefer the current
             // directory over it. We also prefer the homedir when our CWD is
             // different from our homedirectory or when the document dir
             // does not exist
-            if ( lastDirectory->path(KUrl::AddTrailingSlash) == home.path(KUrl::AddTrailingSlash) ||
+            if ( lastDirectory()->path(KUrl::AddTrailingSlash) == home.path(KUrl::AddTrailingSlash) ||
                  QDir::currentPath() != QDir::homePath() ||
-                 !QDir(lastDirectory->path(KUrl::AddTrailingSlash)).exists() )
-                lastDirectory->setPath(QDir::currentPath());
+                 !QDir(lastDirectory()->path(KUrl::AddTrailingSlash)).exists() )
+                lastDirectory()->setPath(QDir::currentPath());
         }
-        ret = *lastDirectory;
+        ret = *lastDirectory();
     }
 
     kDebug(kfile_area) << "for" << startDir << "->" << ret << "recentDirClass" << recentDirClass << "fileName" << fileName;
@@ -2646,7 +2646,7 @@ QUrl KFileWidget::getStartUrl(const QUrl& startDir,
 void KFileWidget::setStartDir(const QUrl& directory)
 {
     if ( directory.isValid() )
-        *lastDirectory = directory;
+        *lastDirectory() = directory;
 }
 
 void KFileWidgetPrivate::setNonExtSelection()

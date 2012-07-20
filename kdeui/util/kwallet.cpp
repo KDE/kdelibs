@@ -70,6 +70,7 @@ public:
     KConfigGroup m_cgroup;
 };
 
+// TODO wait for Qt 5.1, uses isDestroyed()
 K_GLOBAL_STATIC(KWalletDLauncher, walletLauncher)
 
 static QString appid()

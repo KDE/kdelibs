@@ -34,10 +34,17 @@ public:
     Private() {}
 };
 
+class KMimeTypeTraderSingleton
+{
+public:
+    KMimeTypeTrader instance;
+};
+
+Q_GLOBAL_STATIC(KMimeTypeTraderSingleton, s_self)
+
 KMimeTypeTrader* KMimeTypeTrader::self()
 {
-    K_GLOBAL_STATIC(KMimeTypeTrader, s_self)
-    return s_self;
+    return &s_self()->instance;
 }
 
 KMimeTypeTrader::KMimeTypeTrader()

@@ -18,7 +18,6 @@
 
 #include "kclipboard.h"
 #include "ksharedconfig.h"
-#include "kglobal.h"
 #include "kglobalsettings.h"
 
 #include <QtCore/QMimeData>
@@ -68,10 +67,17 @@ bool KClipboardSynchronizer::Private::s_sync = false;
 bool KClipboardSynchronizer::Private::s_reverse_sync = false;
 bool KClipboardSynchronizer::Private::s_blocked = false;
 
+class KClipboardSynchronizerSingleton
+{
+public:
+    KClipboardSynchronizer instance;
+};
+
+Q_GLOBAL_STATIC(KClipboardSynchronizerSingleton, s_self)
+
 KClipboardSynchronizer * KClipboardSynchronizer::self()
 {
-    K_GLOBAL_STATIC(KClipboardSynchronizer, s_self)
-    return s_self;
+    return &s_self()->instance;
 }
 
 KClipboardSynchronizer::KClipboardSynchronizer( QObject *parent )

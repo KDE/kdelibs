@@ -589,6 +589,7 @@ void KServiceTest::createFakeService()
 }
 
 #include <QThreadPool>
+#include <QFutureSynchronizer>
 #include <qtconcurrentrun.h>
 
 // Testing for concurrent access to ksycoca from multiple threads

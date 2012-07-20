@@ -27,7 +27,6 @@
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kglobal.h>
 
 class KNFSShare::KNFSSharePrivate
 {
@@ -213,11 +212,17 @@ void KNFSShare::KNFSSharePrivate::_k_slotFileChange( const QString & path )
   emit q->changed();
 }
 
+class KNFSShareSingleton
+{
+public:
+  KNFSShare instance;
+};
+
+Q_GLOBAL_STATIC(KNFSShareSingleton, _instance)
+
 KNFSShare* KNFSShare::instance()
 {
-  K_GLOBAL_STATIC(KNFSShare, _instance)
-
-  return _instance;
+  return &_instance()->instance;
 }
 
 #include "moc_knfsshare.cpp"

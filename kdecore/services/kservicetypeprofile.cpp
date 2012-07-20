@@ -56,7 +56,7 @@ private:
 };
 
 
-K_GLOBAL_STATIC(KServiceTypeProfiles, s_serviceTypeProfiles)
+Q_GLOBAL_STATIC(KServiceTypeProfiles, s_serviceTypeProfiles)
 
 static bool s_configurationMode = false;
 
@@ -101,8 +101,12 @@ void KServiceTypeProfiles::ensureParsed()
 //static
 void KServiceTypeProfile::clearCache()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5,1,0)
     if (s_serviceTypeProfiles.exists())
-        s_serviceTypeProfiles->clear();
+#else
+    if (s_serviceTypeProfiles())
+#endif
+        s_serviceTypeProfiles()->clear();
 }
 
 /**
@@ -118,9 +122,9 @@ namespace KServiceTypeProfile {
 
 KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const KServiceOfferList& list, const QString& serviceType )
 {
-    QMutexLocker lock(&s_serviceTypeProfiles->m_mutex);
-    s_serviceTypeProfiles->ensureParsed();
-    KServiceTypeProfileEntry* profile = s_serviceTypeProfiles->value(serviceType, 0);
+    QMutexLocker lock(&s_serviceTypeProfiles()->m_mutex);
+    s_serviceTypeProfiles()->ensureParsed();
+    KServiceTypeProfileEntry* profile = s_serviceTypeProfiles()->value(serviceType, 0);
 
     KServiceOfferList offers;
 
@@ -169,7 +173,7 @@ KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const KServiceOffe
 
 bool KServiceTypeProfile::hasProfile( const QString& serviceType )
 {
-    return s_serviceTypeProfiles->hasProfile(serviceType);
+    return s_serviceTypeProfiles()->hasProfile(serviceType);
 }
 
 void KServiceTypeProfile::writeServiceTypeProfile( const QString& serviceType,
@@ -224,8 +228,12 @@ void KServiceTypeProfile::deleteServiceTypeProfile( const QString& serviceType)
 
     // Not threadsafe, but well the whole idea of using this method isn't
     // threadsafe in the first place.
+#if QT_VERSION >= QT_VERSION_CHECK(5,1,0)
     if (s_serviceTypeProfiles.exists()) {
-        delete s_serviceTypeProfiles->take( serviceType );
+#else
+    if (s_serviceTypeProfiles()) {
+#endif
+        delete s_serviceTypeProfiles()->take( serviceType );
     }
 }
 

@@ -221,11 +221,17 @@ void KGlobalAccel::overrideMainComponentData(const KComponentData &kcd)
 }
 #endif
 
+class KGlobalAccelSingleton
+{
+public:
+    KGlobalAccel instance;
+};
+
+Q_GLOBAL_STATIC(KGlobalAccelSingleton, s_instance)
 
 KGlobalAccel *KGlobalAccel::self()
 {
-    K_GLOBAL_STATIC(KGlobalAccel, s_instance)
-    return s_instance;
+    return &s_instance()->instance;
 }
 
 
