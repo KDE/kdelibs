@@ -47,15 +47,15 @@ class KIO_EXPORT RenameDialogPlugin : public QWidget {
 public:
 
     /**
-     * File Representation consisting of the KUrl, MimeType and filesize and
+     * File Representation consisting of the QUrl, MimeType and filesize and
      * the times of the last changes.
      */
     class KIO_EXPORT FileItem {
     public:
-        FileItem( const KUrl& url, const QString& mimeSrc, KIO::filesize_t, time_t ctime, time_t mtime);
+        FileItem( const QUrl& url, const QString& mimeSrc, KIO::filesize_t, time_t ctime, time_t mtime);
         ~FileItem();
 
-        KUrl url() const;
+        QUrl url() const;
         QString mimeType() const;
         KIO::filesize_t fileSize() const;
         time_t cTime() const;

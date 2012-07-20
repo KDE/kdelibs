@@ -138,7 +138,7 @@ public:
      *
      * @see lastErrorString()
      */
-    static bool download(const KUrl& src, QString & target, QWidget* window);
+    static bool download(const QUrl& src, QString & target, QWidget* window);
 
     /**
      * Removes the specified file if and only if it was created
@@ -171,7 +171,7 @@ public:
      *
      * @return true if successful, false for failure
      */
-    static bool upload(const QString& src, const KUrl& target, QWidget* window);
+    static bool upload(const QString& src, const QUrl& target, QWidget* window);
 
     /**
      * Alternative to upload for copying over the network.
@@ -189,10 +189,10 @@ public:
      *
      * @return true if successful, false for failure
      */
-    static bool file_copy( const KUrl& src, const KUrl& target, QWidget* window = 0 );
+    static bool file_copy( const QUrl& src, const QUrl& target, QWidget* window = 0 );
     /// @deprecated, use file_copy instead
 #ifndef KDE_NO_DEPRECATED
-    static KIO_DEPRECATED bool copy( const KUrl& src, const KUrl& target,
+    static KIO_DEPRECATED bool copy( const QUrl& src, const QUrl& target,
                                      QWidget* window = 0 );
 #endif
 
@@ -216,12 +216,12 @@ public:
      *               prompted for passwords as needed.
      * @return true if successful, false for failure
      */
-    static bool dircopy( const KUrl& src, const KUrl& target, QWidget* window ); // TODO deprecate in favor of KIO::copy + synchronousRun (or job->exec())
+    static bool dircopy( const QUrl& src, const QUrl& target, QWidget* window ); // TODO deprecate in favor of KIO::copy + synchronousRun (or job->exec())
 
     /**
      * Overloaded method, which takes a list of source URLs
      */
-    static bool dircopy( const QList<QUrl>& src, const KUrl& target, QWidget* window = 0L ); // TODO deprecate in favor of KIO::copy + synchronousRun (or job->exec())
+    static bool dircopy( const QList<QUrl>& src, const QUrl& target, QWidget* window = 0L ); // TODO deprecate in favor of KIO::copy + synchronousRun (or job->exec())
 
     /**
      * Full-fledged equivalent of KIO::move.
@@ -229,7 +229,7 @@ public:
      * @deprecated use KIO::move and then KIO::NetAccess::synchronousRun (or job->exec())
      */
 #ifndef KDE_NO_DEPRECATED
-    static KIO_DEPRECATED bool move( const KUrl& src, const KUrl& target, QWidget* window = 0L );
+    static KIO_DEPRECATED bool move( const QUrl& src, const QUrl& target, QWidget* window = 0L );
 #endif
 
     /**
@@ -238,7 +238,7 @@ public:
      * @deprecated use KIO::move and then KIO::NetAccess::synchronousRun (or job->exec())
      */
 #ifndef KDE_NO_DEPRECATED
-    static KIO_DEPRECATED bool move( const QList<QUrl>& src, const KUrl& target, QWidget* window = 0L );
+    static KIO_DEPRECATED bool move( const QList<QUrl>& src, const QUrl& target, QWidget* window = 0L );
 #endif
 
     /**
@@ -259,7 +259,7 @@ public:
      * @deprecated use the StatSide enum instead of the bool source
      */
 #ifndef KDE_NO_DEPRECATED
-    static KIO_DEPRECATED bool exists(const KUrl& url, bool source, QWidget* window);
+    static KIO_DEPRECATED bool exists(const QUrl& url, bool source, QWidget* window);
 #endif
 
     /**
@@ -276,7 +276,7 @@ public:
      * @return true if the URL exists and we can do the operation specified by
      *              @p source, false otherwise
      */
-    static bool exists(const KUrl& url, StatSide statSide, QWidget* window);
+    static bool exists(const QUrl& url, StatSide statSide, QWidget* window);
 
     /**
      * Tests whether a URL exists and return information on it.
@@ -294,7 +294,7 @@ public:
      *               again be prompted for passwords as needed.
      * @return true if successful, false for failure
      */
-    static bool stat(const KUrl& url, KIO::UDSEntry & entry, QWidget* window);
+    static bool stat(const QUrl& url, KIO::UDSEntry & entry, QWidget* window);
 
 
     /**
@@ -312,7 +312,7 @@ public:
      * @return a local URL corresponding to the same resource than the
      *         original URL, or the original URL if no local URL can be mapped
      */
-    static KUrl mostLocalUrl(const KUrl& url, QWidget* window);
+    static QUrl mostLocalUrl(const QUrl& url, QWidget* window);
 
     /**
      * Deletes a file or a directory in a synchronous way.
@@ -328,7 +328,7 @@ public:
      *               again be prompted for passwords as needed.
      * @return true on success, false on failure.
      */
-    static bool del( const KUrl & url, QWidget* window );
+    static bool del( const QUrl & url, QWidget* window );
 
     /**
      * Creates a directory in a synchronous way.
@@ -345,7 +345,7 @@ public:
      * @param permissions directory permissions.
      * @return true on success, false on failure.
      */
-    static bool mkdir( const KUrl & url, QWidget* window, int permissions = -1 );
+    static bool mkdir( const QUrl & url, QWidget* window, int permissions = -1 );
 
     /**
      * Executes a remote process via the fish ioslave in a synchronous way.
@@ -365,7 +365,7 @@ public:
      *               again be prompted for passwords as needed.
      * @return The resulting output of the @p command that is executed.
      */
-    static QString fish_execute( const KUrl & url, const QString &command, QWidget* window );
+    static QString fish_execute( const QUrl & url, const QString &command, QWidget* window );
 
     /**
      * This function executes a job in a synchronous way.
@@ -400,7 +400,7 @@ public:
      * @return true on success, false on failure.
      */
     static bool synchronousRun( Job* job, QWidget* window, QByteArray* data=0,
-                                KUrl* finalURL=0, QMap<QString,QString>* metaData=0 );
+                                QUrl* finalURL=0, QMap<QString,QString>* metaData=0 );
 
     /**
      * Determines the mimetype of a given URL.
@@ -420,7 +420,7 @@ public:
      *               again be prompted for passwords as needed.
      * @return The mimetype name.
      */
-    static QString mimetype( const KUrl & url, QWidget* window );
+    static QString mimetype( const QUrl & url, QWidget* window );
 
 
     /**
@@ -452,19 +452,19 @@ private:
     /**
      * Internal methods
      */
-    bool filecopyInternal(const KUrl& src, const KUrl& target, int permissions,
+    bool filecopyInternal(const QUrl& src, const QUrl& target, int permissions,
                           KIO::JobFlags flags, QWidget* window, bool move);
-    bool dircopyInternal(const QList<QUrl>& src, const KUrl& target,
+    bool dircopyInternal(const QList<QUrl>& src, const QUrl& target,
                          QWidget* window, bool move);
-    bool statInternal(const KUrl & url, int details, StatSide side, QWidget* window = 0);
+    bool statInternal(const QUrl & url, int details, StatSide side, QWidget* window = 0);
 
-    bool delInternal(const KUrl & url, QWidget* window = 0);
-    bool mkdirInternal(const KUrl & url, int permissions, QWidget* window = 0);
-    QString fish_executeInternal(const KUrl & url, const QString &command, QWidget* window = 0);
+    bool delInternal(const QUrl & url, QWidget* window = 0);
+    bool mkdirInternal(const QUrl & url, int permissions, QWidget* window = 0);
+    QString fish_executeInternal(const QUrl & url, const QString &command, QWidget* window = 0);
     bool synchronousRunInternal( Job* job, QWidget* window, QByteArray* data,
-                                 KUrl* finalURL, QMap<QString,QString>* metaData );
+                                 QUrl* finalURL, QMap<QString,QString>* metaData );
 
-    QString mimetypeInternal(const KUrl & url, QWidget* window = 0);
+    QString mimetypeInternal(const QUrl & url, QWidget* window = 0);
     void enter_loop();
 
     friend class I_like_this_class;

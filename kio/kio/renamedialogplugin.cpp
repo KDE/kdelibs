@@ -31,7 +31,7 @@ using namespace KIO;
 class RenameDialogPlugin::FileItem::FileItemPrivate
 {
 public:
-    FileItemPrivate( const KUrl& url, const QString& mimeType,
+    FileItemPrivate( const QUrl& url, const QString& mimeType,
                      const KIO::filesize_t size, time_t ctime,
                      time_t mtime )
         : m_url( url )
@@ -40,7 +40,7 @@ public:
         , m_ctime( ctime )
         , m_mtime( mtime )
     {}
-    KUrl m_url;
+    QUrl m_url;
     QString m_mimeType;
     KIO::filesize_t m_fileSize;
     time_t m_ctime;
@@ -54,7 +54,7 @@ public:
  * @param ctime   The changed time as of stat(2)
  * @param mtime   The modified time as of stat(2)
  */
-RenameDialogPlugin::FileItem::FileItem( const KUrl& url, const QString& mimeType,
+RenameDialogPlugin::FileItem::FileItem( const QUrl& url, const QString& mimeType,
                                      KIO::filesize_t size, time_t ctime,
                                      time_t mtime )
     : d( new FileItemPrivate(url, mimeType, size, ctime, mtime) )
@@ -65,7 +65,7 @@ RenameDialogPlugin::FileItem::~FileItem()
     delete d;
 }
 
-KUrl RenameDialogPlugin::FileItem::url() const {
+QUrl RenameDialogPlugin::FileItem::url() const {
     return d->m_url;
 }
 
