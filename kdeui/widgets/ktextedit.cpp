@@ -1109,7 +1109,7 @@ void KTextEdit::paintEvent(QPaintEvent *ev)
         f.setItalic(d->italicizePlaceholder);
         p.setFont(f);
 
-        QColor color(palette().color(foregroundRole()));
+        QColor color(palette().color(viewport()->foregroundRole()));
         color.setAlphaF(0.5);
         p.setPen(color);
 
