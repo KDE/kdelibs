@@ -1924,7 +1924,7 @@ void KUrlTest::testOtherEncodings()
 {
   QTextCodec::setCodecForLocale( QTextCodec::codecForName( "koi8-r" ) );
   KUrl baseURL( "file:/home/coolo" );
-  KUrl russian = KUrl::fromPath( baseURL.directory(KUrl::AppendTrailingSlash) + QString::fromUtf8( "фгн7" ) );
+  KUrl russian = QUrl::fromLocalFile( baseURL.directory(KUrl::AppendTrailingSlash) + QString::fromUtf8( "фгн7" ) );
   //QCOMPARE( russian.url(), QString("file:///home/%C6%C7%CE7" ) ); // KDE3: was not using utf8
   QCOMPARE( russian.url(), QString("file:///home/%D1%84%D0%B3%D0%BD7") ); // QUrl uses utf8
 

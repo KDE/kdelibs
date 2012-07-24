@@ -1029,15 +1029,19 @@ public:
   static KUrl join( const List& _list );
 
   /**
-   * Creates a KUrl object from a QString representing an absolute path.
+   * Creates a KUrl object from a QString representing an absolute local path.
    * KUrl url( somePath ) is almost the same, but this method is more explicit,
    * avoids the path-or-url detection in the KUrl constructor, and parses
    * "abc:def" as a filename, not as URL.
    *
-   * @param text the path
+   * @param text the local path
    * @return the new KUrl
+   *
+   * @deprecated use QUrl::fromLocalFile
    */
-  static KUrl fromPath( const QString& text );
+#ifndef KDE_NO_DEPRECATED
+  static KDECORE_DEPRECATED KUrl fromPath(const QString& text) { return fromLocalFile(text); }
+#endif
 
   /**
    * \deprecated

@@ -631,13 +631,6 @@ bool KUrl::hasPath() const
     return !path().isEmpty();
 }
 
-KUrl KUrl::fromPath( const QString& text )
-{
-    KUrl u;
-    u.setPath( text );
-    return u;
-}
-
 void KUrl::setFileName( const QString& _txt )
 {
   setFragment( QString() );
