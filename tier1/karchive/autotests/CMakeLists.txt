@@ -33,11 +33,6 @@ target_link_libraries(klimitediodevicetest ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBR
 
 ########### kfiltertest ###############
 
-# compile httpfilter.cpp into the test since it's not part of kdelibs
-# (only par of kio_http and kmultipart)
-set(kfiltertest_SRCS kfiltertest.cpp httpfilter.cpp)
-
-add_executable(kfiltertest ${kfiltertest_SRCS})
-target_link_libraries(kfiltertest ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} ${QT_QTMAIN_LIBRARY} karchive ${inqt5_LIBRARY} ${ZLIB_LIBRARIES})
-
+add_executable(kfiltertest kfiltertest.cpp)
 add_test(karchive-kfiltertest kfiltertest)
+target_link_libraries(kfiltertest ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY} ${QT_QTMAIN_LIBRARY} karchive ${inqt5_LIBRARY} ${ZLIB_LIBRARIES})

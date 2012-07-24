@@ -31,7 +31,6 @@
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <zlib.h>
-#include <httpfilter.h>
 
 QTEST_MAIN(KFilterTest)
 
@@ -341,30 +340,7 @@ void KFilterTest::test_deflateWithZlibHeader()
     QCOMPARE(QString::fromLatin1(read.constData()), QString::fromLatin1(data.constData())); // more readable output than the line below
     QCOMPARE(read, data);
 
-    {
-        // Now the same with HTTPFilter
-        HTTPFilterDeflate filter;
-        QSignalSpy spyOutput(&filter, SIGNAL(output(QByteArray)));
-        QSignalSpy spyError(&filter, SIGNAL(error(QString)));
-        filter.slotInput(deflatedData);
-        QCOMPARE(spyOutput.count(), 2);
-        QCOMPARE(spyOutput[0][0].toByteArray(), data);
-        QCOMPARE(spyOutput[1][0].toByteArray(), QByteArray());
-        QCOMPARE(spyError.count(), 0);
-    }
-    {
-        // Now a test for giving raw deflate data to HTTPFilter
-        HTTPFilterDeflate filter;
-        QSignalSpy spyOutput(&filter, SIGNAL(output(QByteArray)));
-        QSignalSpy spyError(&filter, SIGNAL(error(QString)));
-        QByteArray rawDeflate = deflatedData.mid(2); // remove CMF+FLG
-        rawDeflate.truncate(rawDeflate.size() - 4); // remove trailing Adler32.
-        filter.slotInput(rawDeflate);
-        QCOMPARE(spyOutput.count(), 2);
-        QCOMPARE(spyOutput[0][0].toByteArray(), data);
-        QCOMPARE(spyOutput[1][0].toByteArray(), QByteArray());
-        QCOMPARE(spyError.count(), 0);
-    }
+    // For the same test with HTTPFilter: see httpfiltertest.cpp
 }
 
 void KFilterTest::test_pushData() // ### UNFINISHED
@@ -392,43 +368,4 @@ void KFilterTest::test_pushData() // ### UNFINISHED
     // ### indeed, doesn't work currently. So we use HTTPFilter instead, for now.
 }
 
-void KFilterTest::test_httpFilterGzip()
-{
-    QFile file(pathgz);
-    QVERIFY(file.open(QIODevice::ReadOnly));
-    const QByteArray compressed = file.readAll();
-
-    // Test sending the whole data in one go
-    {
-        HTTPFilterGZip filter;
-        QSignalSpy spyOutput(&filter, SIGNAL(output(QByteArray)));
-        QSignalSpy spyError(&filter, SIGNAL(error(QString)));
-        filter.slotInput(compressed);
-        QCOMPARE(spyOutput.count(), 2);
-        QCOMPARE(spyOutput[0][0].toByteArray(), testData);
-        QCOMPARE(spyOutput[1][0].toByteArray(), QByteArray());
-        QCOMPARE(spyError.count(), 0);
-    }
-
-    // Test sending the data byte by byte
-    {
-        m_filterOutput.clear();
-        HTTPFilterGZip filter;
-        QSignalSpy spyOutput(&filter, SIGNAL(output(QByteArray)));
-        connect(&filter, SIGNAL(output(QByteArray)), this, SLOT(slotFilterOutput(QByteArray)));
-        QSignalSpy spyError(&filter, SIGNAL(error(QString)));
-        for (int i = 0; i < compressed.size(); ++i) {
-            //qDebug() << "sending byte number" << i << ":" << (uchar)compressed[i];
-            filter.slotInput(QByteArray(compressed.constData() + i, 1));
-            QCOMPARE(spyError.count(), 0);
-        }
-        QCOMPARE(m_filterOutput, testData);
-        QCOMPARE(spyOutput[spyOutput.count()-1][0].toByteArray(), QByteArray()); // last one was empty
-    }
-}
-
-void KFilterTest::slotFilterOutput(const QByteArray& data)
-{
-    m_filterOutput += data;
-}
 
