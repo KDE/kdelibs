@@ -873,16 +873,11 @@ public:
    * both paths and urls.
    *
    * @return the new KUrl
-   * @deprecated since 5.0, use QUrl::toDisplayString(QUrl::PreferLocalFile) instead.
-   */
-  QString pathOrUrl() const;
-  /**
-   * Overload with @p trailing parameter
    * @param trailing use to add or remove a trailing slash to/from the path. see adjustPath.
    * @since 4.2
    * @deprecated since 5.0, use QUrl::toDisplayString(QUrl::PreferLocalFile | ...) instead.
    */
-  QString pathOrUrl(AdjustPathOption trailing) const;
+  QString pathOrUrl(AdjustPathOption trailing = LeaveTrailingSlash) const;
 
   /**
    * Returns the URL as a string, using the standard conventions for mime data
