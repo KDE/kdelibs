@@ -27,6 +27,7 @@
 
 #include <X11/Xlib.h>
 #include <X11/extensions/sync.h>
+#include <xcb/xcb.h>
 
 class XSyncBasedPoller : public AbstractSystemPoller
 {
@@ -41,8 +42,8 @@ public:
     bool setUpPoller();
     void unloadPoller();
 
+    bool xcbEvent(xcb_generic_event_t *event);
 protected:
-    bool x11Event(XEvent *event);
     XSyncBasedPoller(QWidget *parent = 0);
 
 public Q_SLOTS:
@@ -62,11 +63,11 @@ private:
     void setAlarm(Display *dpy, XSyncAlarm *alarm, XSyncCounter counter,
                   XSyncTestType test, XSyncValue value);
 
-    static bool eventDispatcherFilter(void *message);
-
 private:
     Display * m_display;
-    int                 m_sync_event, m_sync_error;
+    xcb_connection_t *m_xcb_connection;
+
+    int                 m_sync_event;
     XSyncCounter        m_idleCounter;
     QHash<int, XSyncAlarm>   m_timeoutAlarm;
     XSyncAlarm          m_resetAlarm;

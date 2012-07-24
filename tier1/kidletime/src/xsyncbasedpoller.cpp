@@ -16,20 +16,31 @@
    Boston, MA 02110-1301, USA.
 */
 
+// Exceptionnally, include QCoreApplication before our own header, because that one includes X11 headers (#define None...)
+#include <QCoreApplication>
+
 #include "xsyncbasedpoller.h"
 
-#include <QAbstractEventDispatcher>
+#include <QAbstractNativeEventFilter>
 #include <QX11Info>
+#include <X11/Xlib-xcb.h> // XGetXCBConnection
+#include <xcb/sync.h>
 
-class XSyncBasedPollerHelper
+class XSyncBasedPollerHelper : public QAbstractNativeEventFilter
 {
 public:
-    XSyncBasedPollerHelper() : q(0), origFilter(0), isActive(false) {}
+    XSyncBasedPollerHelper() : q(0), isActive(false) {}
     ~XSyncBasedPollerHelper() {
         delete q;
     }
+    bool nativeEventFilter(const QByteArray& eventType, void *message, long *result) {
+        Q_UNUSED(result);
+        if (isActive && eventType == "xcb_generic_event_t") {
+            q->xcbEvent(reinterpret_cast<xcb_generic_event_t *>(message));
+        }
+        return false;
+    }
     XSyncBasedPoller *q;
-    QAbstractEventDispatcher::EventFilter origFilter;
     bool isActive;
 };
 
@@ -47,19 +58,41 @@ XSyncBasedPoller *XSyncBasedPoller::instance()
 XSyncBasedPoller::XSyncBasedPoller(QWidget *parent)
         : AbstractSystemPoller(parent)
         , m_display(QX11Info::display())
+        , m_xcb_connection(XGetXCBConnection(m_display))
         , m_idleCounter(None)
         , m_resetAlarm(None)
         , m_available(true)
 {
     Q_ASSERT(!s_globalXSyncBasedPoller()->q);
     s_globalXSyncBasedPoller()->q = this;
-    s_globalXSyncBasedPoller()->origFilter = QAbstractEventDispatcher::instance()->setEventFilter(XSyncBasedPoller::eventDispatcherFilter);
+    QCoreApplication::instance()->installNativeEventFilter(s_globalXSyncBasedPoller());
+
+    const xcb_query_extension_reply_t *sync_reply = xcb_get_extension_data(m_xcb_connection, &xcb_sync_id);
+    if (!sync_reply || !sync_reply->present) {
+        qDebug() << "xcb sync extension not found";
+        m_available = false;
+        return;
+    }
+    m_sync_event = sync_reply->first_event;
+
+#if 0
+    xcb_sync_list_system_counters_cookie_t cookie = xcb_sync_list_system_counters(m_xcb_connection);
+    xcb_sync_list_system_counters_reply_t* reply = xcb_sync_list_system_counters_reply(m_xcb_connection, cookie, NULL);
+    int xcbcounters = xcb_sync_list_system_counters_counters_length(reply);
+    xcb_sync_systemcounter_iterator_t it = xcb_sync_list_system_counters_counters_iterator(reply);
+    for (int i = 0; i < xcbcounters; ++i) {
+        qDebug() << it.data->counter << it.rem << it.index;
+        qDebug() << "name length" << xcb_sync_systemcounter_name_length(it.data);
+        QByteArray name(xcb_sync_systemcounter_name(it.data), xcb_sync_systemcounter_name_length(it.data));
+        qDebug() << name;
+        xcb_sync_systemcounter_next(&it);
+    }
+    delete reply;
+#endif
 
     int sync_major, sync_minor;
-    int ncounters;
-    XSyncSystemCounter *counters;
-
-    if (!XSyncQueryExtension(m_display, &m_sync_event, &m_sync_error)) {
+    int old_sync_event, old_sync_error;
+    if (!XSyncQueryExtension(m_display, &old_sync_event, &old_sync_error)) {
         m_available = false;
         return;
     }
@@ -69,13 +102,14 @@ XSyncBasedPoller::XSyncBasedPoller(QWidget *parent)
         return;
     }
 
-    qDebug() << sync_major << sync_minor;
-
-    counters = XSyncListSystemCounters(m_display, &ncounters);
+    int ncounters;
+    XSyncSystemCounter *counters = XSyncListSystemCounters(m_display, &ncounters);
 
     bool idleFound = false;
 
+    qDebug() << ncounters << "counters";
     for (int i = 0; i < ncounters; ++i) {
+        qDebug() << counters[i].name << counters[i].counter;
         if (!strcmp(counters[i].name, "IDLETIME")) {
             m_idleCounter = counters[i].counter;
             idleFound = true;
@@ -215,21 +249,22 @@ void XSyncBasedPoller::reloadAlarms()
     }
 }
 
-bool XSyncBasedPoller::x11Event(XEvent *event)
+bool XSyncBasedPoller::xcbEvent(xcb_generic_event_t *event)
 {
-    XSyncAlarmNotifyEvent *alarmEvent;
-
-    if (event->type != m_sync_event + XSyncAlarmNotify) {
+    //qDebug() << event->response_type << "waiting for" << m_sync_event+XCB_SYNC_ALARM_NOTIFY;
+    if (event->response_type != m_sync_event + XCB_SYNC_ALARM_NOTIFY) {
         return false;
     }
 
-    alarmEvent = (XSyncAlarmNotifyEvent *)event;
+    xcb_sync_alarm_notify_event_t* alarmEvent = reinterpret_cast<xcb_sync_alarm_notify_event_t *>(event);
 
-    if (alarmEvent->state == XSyncAlarmDestroyed) {
+    if (alarmEvent->state == XCB_SYNC_ALARMSTATE_DESTROYED) {
         return false;
     }
+    qDebug() << "alarm=" << alarmEvent->alarm;
 
     for (QHash<int, XSyncAlarm>::const_iterator i = m_timeoutAlarm.constBegin(); i != m_timeoutAlarm.constEnd(); ++i) {
+        qDebug() << "   looking at" << i.value();
         if (alarmEvent->alarm == i.value()) {
             /* Bling! Caught! */
             Q_EMIT timeoutReached(i.key());
@@ -268,27 +303,16 @@ void XSyncBasedPoller::setAlarm(Display *dpy, XSyncAlarm *alarm, XSyncCounter co
             XSyncCAValue | XSyncCADelta;
 
     if (*alarm) {
+        //xcb_sync_change_alarm_checked(m_xcb_connection, alarmId,  ...
         XSyncChangeAlarm(dpy, *alarm, flags, &attr);
     } else {
         *alarm = XSyncCreateAlarm(dpy, flags, &attr);
+        qDebug() << "Created alarm" << *alarm;
     }
 }
 
 void XSyncBasedPoller::simulateUserActivity()
 {
     XResetScreenSaver(QX11Info::display());
-}
-
-bool XSyncBasedPoller::eventDispatcherFilter(void *message)
-{
-    if (s_globalXSyncBasedPoller()->origFilter)
-        s_globalXSyncBasedPoller()->origFilter(message);
-
-    if (s_globalXSyncBasedPoller()->isActive) {
-        XEvent *event = reinterpret_cast<XEvent*>(message);
-        return instance()->x11Event(event);
-    } else {
-        return false;
-    }
 }
 
