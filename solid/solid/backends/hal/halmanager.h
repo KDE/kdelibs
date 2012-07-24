@@ -59,9 +59,6 @@ private Q_SLOTS:
     void slotDeviceRemoved(const QString &udi);
 
 private:
-    QStringList findDeviceStringMatch(const QString &key, const QString &value);
-    QStringList findDeviceByDeviceInterface(Solid::DeviceInterface::Type type);
-
     HalManagerPrivate *d;
 };
 }

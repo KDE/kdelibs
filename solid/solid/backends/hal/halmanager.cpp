@@ -147,30 +147,27 @@ bool HalManager::deviceExists(const QString &udi)
 QStringList HalManager::devicesFromQuery(const QString &parentUdi,
                                          Solid::DeviceInterface::Type type)
 {
-    if (!parentUdi.isEmpty())
-    {
-        QStringList result = findDeviceStringMatch("info.parent", parentUdi);
-
-        if (type!=Solid::DeviceInterface::Unknown) {
-            const QStringList matches = result;
-            result.clear();
-
-            foreach (const QString &match, matches) {
-                HalDevice device(match);
-
-                if (device.queryDeviceInterface(type)) {
-                    result << match;
-                }
-            }
-        }
-
-        return result;
-
-    } else if (type!=Solid::DeviceInterface::Unknown) {
-        return findDeviceByDeviceInterface(type);
-    } else {
+    if ((parentUdi.isEmpty()) && (type == Solid::DeviceInterface::Unknown)) {
         return allDevices();
     }
+
+    QStringList result;
+
+    foreach (const QString &udi, allDevices()) {
+        HalDevice device(udi);
+
+        if ((!parentUdi.isEmpty()) && (parentUdi != device.parentUdi())) {
+            continue;
+        }
+
+        if ((type != Solid::DeviceInterface::Unknown) && (!device.queryDeviceInterface(type))) {
+            continue;
+        }
+
+        result << udi;
+    }
+
+    return result;
 }
 
 QObject *HalManager::createDevice(const QString &udi)
@@ -180,63 +177,6 @@ QObject *HalManager::createDevice(const QString &udi)
     } else {
         return 0;
     }
-}
-
-QStringList HalManager::findDeviceStringMatch(const QString &key, const QString &value)
-{
-    QDBusReply<QStringList> reply = d->manager.call("FindDeviceStringMatch", key, value);
-
-    if (!reply.isValid())
-    {
-        qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
-        return QStringList();
-    }
-
-    return reply;
-}
-
-QStringList HalManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type type)
-{
-    QStringList cap_list = DeviceInterface::toStringList(type);
-    QStringList result;
-
-    foreach (const QString &cap, cap_list)
-    {
-        QDBusReply<QStringList> reply = d->manager.call("FindDeviceByCapability", cap);
-
-        if (!reply.isValid())
-        {
-            qWarning() << Q_FUNC_INFO << " error: " << reply.error().name() << endl;
-            return QStringList();
-        }
-        if ( cap == QLatin1String( "video4linux" ) )
-        {
-            QStringList foundDevices ( reply );
-            QStringList filtered;
-            foreach ( const QString &udi, foundDevices )
-            {
-                QDBusInterface device( "org.freedesktop.Hal", udi, "org.freedesktop.Hal.Device", QDBusConnection::systemBus() );
-                QDBusReply<QString> reply = device.call( "GetProperty", "video4linux.device" );
-                if (!reply.isValid())
-                {
-                    qWarning() << Q_FUNC_INFO << " error getting video4linux.device: " << reply.error().name() << endl;
-                    continue;
-                }
-                if ( !reply.value().contains( "video" ) )
-                {
-                    continue;
-                }
-                filtered.append( udi );
-            }
-            result += filtered;
-        }
-        else
-        {
-            result << reply;
-        }
-    }
-
-    return result;
 }
 
 void HalManager::slotDeviceAdded(const QString &udi)
