@@ -24,7 +24,12 @@
 #include <QWidget>
 #include <QWeakPointer>
 #include <QSet>
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QAbstractEventDispatcher>
+#else
+#include <QAbstractNativeEventFilter>
+#include <QCoreApplication>
+#endif
 
 #include <config-kwindowsystem.h>
 
@@ -47,6 +52,9 @@ public:
 };
 
 class KSystemEventFilterPrivate : public QObject
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+                                                ,  public QAbstractNativeEventFilter
+#endif
 {
     Q_OBJECT
 
@@ -62,34 +70,40 @@ public:
         // install our event-filter. note that this will only happen when this
         // object is constructed (which is when the global static is first
         // accessed.
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+        QCoreApplication::instance()->installNativeEventFilter(this);
+#else
         m_nextFilter = QAbstractEventDispatcher::instance()->setEventFilter(_k_eventFilter);
+#endif
     }
 
-    bool filterEvent(void *message);
+    bool nativeEventFilter(const QByteArray&, void *message, long *);
 
     // the installed event filters
     QList< QWeakPointer<QWidget> > m_filters;
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     // if an event filter had already been previously installed, it is
     // stored here so we can call it if none of our event filters consumes
     // the event
     QAbstractEventDispatcher::EventFilter m_nextFilter;
+#endif
 };
 
 Q_GLOBAL_STATIC(KSystemEventFilterPrivate, kSystemEventFilter)
 
 bool _k_eventFilter(void *message)
 {
-    return kSystemEventFilter()->filterEvent(message);
+    return kSystemEventFilter()->nativeEventFilter("", message, 0);
 }
 
-bool KSystemEventFilterPrivate::filterEvent(void *message)
+bool KSystemEventFilterPrivate::nativeEventFilter(const QByteArray& eventType, void *message, long *result)
 {
     if (!m_filters.isEmpty()) {
         // pass the event as long as it's not consumed
         Q_FOREACH (const QWeakPointer<QWidget> &wp, m_filters) {
             if (QWidget *w = wp.data()) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-                if (static_cast<KEventHackWidget*>(w)->publicNativeEvent("", message, 0)) {
+                if (static_cast<KEventHackWidget*>(w)->publicNativeEvent(eventType, message, result)) {
                     return true;
                 }
 #endif
@@ -97,12 +111,13 @@ bool KSystemEventFilterPrivate::filterEvent(void *message)
         }
     }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     // call next filter if we have one
-    if (m_nextFilter) {
+    if (m_nextFilter)
         return m_nextFilter(message);
-    } else {
-        return false;
-    }
+#endif
+
+    return false;
 }
 
 namespace KSystemEventFilter

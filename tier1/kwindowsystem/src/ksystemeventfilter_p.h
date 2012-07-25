@@ -30,9 +30,9 @@ class QWidget;
  * that will catch all window system events the application receives.
  *
  * Qt5 porting note: you must port your x11Event()/winEvent()/macEvent() reimplementations to nativeEvent!
- * Note that the eventType string will always be empty, and the result variable ignored.
  *
  * @author Michael Leupold <lemma@confuego.org>
+ * @deprecated use QCoreApplication::instance()->installNativeEventFilter directly.
  */
 namespace KSystemEventFilter
 {
@@ -54,7 +54,7 @@ namespace KSystemEventFilter
      * @warning Only do this when absolutely necessary. An installed event filter
      *          can slow things down.
      */
-    void installEventFilter(QWidget *filter);
+    void KWINDOWSYSTEM_DEPRECATED installEventFilter(QWidget *filter);
 
     /**
      * Removes a global widget filter.
