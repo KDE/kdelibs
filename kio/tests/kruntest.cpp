@@ -37,8 +37,7 @@ testKRun * myArray[MAXKRUNS];
 
 void testKRun::foundMimeType( const QString& _type )
 {
-  kDebug() << "testKRun::foundMimeType " << _type;
-  kDebug() << "testKRun::foundMimeType URL=" << url().url();
+  kDebug() << "found mime type" << _type << "for URL=" << url();
   setFinished( true );
   return;
 }

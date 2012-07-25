@@ -307,7 +307,7 @@ KRunMX2::subst(int option, const QUrl &url, QStringList &ret)
     switch (option) {
     case 'u':
         ret << ((url.isLocalFile() && url.fragment().isNull() && url.encodedQuery().isNull()) ?
-                QDir::toNativeSeparators(url.toLocalFile())  : url.url());
+                QDir::toNativeSeparators(url.toLocalFile())  : url.toString());
         break;
     case 'd':
         ret << QUrlPathInfo(url).directory();
@@ -1144,7 +1144,7 @@ void KRun::init()
     if (!d->m_strURL.isValid()) {
         // TODO KDE5: call virtual method on error (see BrowserRun::init)
         d->m_showingDialog = true;
-        KMessageBoxWrapper::error(d->m_window, i18n("Malformed URL\n%1", d->m_strURL.url()));
+        KMessageBoxWrapper::error(d->m_window, i18n("Malformed URL\n%1", d->m_strURL.toString()));
         d->m_showingDialog = false;
         d->m_bFault = true;
         d->m_bFinished = true;
@@ -1251,7 +1251,7 @@ void KRun::init()
     connect(job, SIGNAL(result(KJob*)),
             this, SLOT(slotStatResult(KJob*)));
     d->m_job = job;
-    kDebug(7010) << " Job " << job << " is about stating " << d->m_strURL.url();
+    kDebug(7010) << "Job" << job << "is about stating" << d->m_strURL;
 }
 
 KRun::~KRun()
@@ -1293,7 +1293,7 @@ void KRun::scanFile()
     kDebug(7010) << d->m_strURL;
     // First, let's check for well-known extensions
     // Not when there is a query in the URL, in any case.
-    if (d->m_strURL.query().isEmpty()) {
+    if (!d->m_strURL.hasQuery()) {
         QMimeDatabase db;
         QMimeType mime = db.mimeTypeForUrl(d->m_strURL);
         if (!mime.isDefault() || d->m_bIsLocalFile) {
@@ -1314,7 +1314,7 @@ void KRun::scanFile()
         d->startTimer();
         return;
     }
-    kDebug(7010) << this << " Scanning file " << d->m_strURL.url();
+    kDebug(7010) << this << "Scanning file" << d->m_strURL;
 
     KIO::JobFlags flags = d->m_bProgressInfo ? KIO::DefaultFlags : KIO::HideProgressInfo;
     KIO::TransferJob *job = KIO::get(d->m_strURL, KIO::NoReload /*reload*/, flags);
@@ -1324,7 +1324,7 @@ void KRun::scanFile()
     connect(job, SIGNAL(mimetype(KIO::Job*,QString)),
             this, SLOT(slotScanMimeType(KIO::Job*,QString)));
     d->m_job = job;
-    kDebug(7010) << " Job " << job << " is about getting from " << d->m_strURL.url();
+    kDebug(7010) << "Job" << job << "is about getting from" << d->m_strURL;
 }
 
 // When arriving in that method there are 5 possible states:

@@ -95,7 +95,7 @@ void BrowserRun::init()
     // is either malformed, or points to a non-existing local file...
     // So we need to reimplement some of the checks, to handle d->m_bHideErrorDialog
     if ( !KRun::url().isValid() ) {
-        redirectToError( KIO::ERR_MALFORMED_URL, KRun::url().url() );
+        redirectToError(KIO::ERR_MALFORMED_URL, KRun::url().toString());
         return;
     }
     if ( !isLocalFile() && !hasError() && KRun::url().isLocalFile() )
@@ -129,7 +129,7 @@ void BrowserRun::scanFile()
     protocol = KProtocolManager::slaveProtocol(KRun::url(), dummy);
   }
 
-    if (KRun::url().query().isEmpty() && !protocol.startsWith(QLatin1String("http"))) {
+    if (!KRun::url().hasQuery() && !protocol.startsWith(QLatin1String("http"))) {
         QMimeDatabase db;
         QMimeType mime = db.mimeTypeForUrl(KRun::url());
         if (!mime.isDefault() || isLocalFile()) {
