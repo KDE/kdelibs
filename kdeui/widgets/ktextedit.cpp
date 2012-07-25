@@ -788,11 +788,12 @@ void KTextEdit::checkSpelling()
       KMessageBox::information(this, i18n("Nothing to spell check."));
       return;
   }
-  Sonnet::BackgroundChecker *backgroundSpellCheck = new Sonnet::BackgroundChecker(this);
+  Sonnet::BackgroundChecker *backgroundSpellCheck = new Sonnet::BackgroundChecker;
   if(!d->spellCheckingLanguage.isEmpty())
      backgroundSpellCheck->changeLanguage(d->spellCheckingLanguage);
   Sonnet::Dialog *spellDialog = new Sonnet::Dialog(
       backgroundSpellCheck, 0);
+  backgroundSpellCheck->setParent(spellDialog);
   spellDialog->setAttribute(Qt::WA_DeleteOnClose, true);
   connect(spellDialog, SIGNAL(replace(QString,int,QString)),
           this, SLOT(spellCheckerCorrected(QString,int,QString)));
