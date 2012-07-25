@@ -51,10 +51,7 @@ public:
 #endif
 };
 
-class KSystemEventFilterPrivate : public QObject
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-                                                ,  public QAbstractNativeEventFilter
-#endif
+class KSystemEventFilterPrivate : public QObject,  public QAbstractNativeEventFilter
 {
     Q_OBJECT
 

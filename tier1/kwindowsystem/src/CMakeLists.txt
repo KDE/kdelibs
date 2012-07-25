@@ -23,10 +23,15 @@ configure_file(config-kwindowsystem.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-k
 
 set(kwindowsystem_SRCS
     kwindoweffects.cpp
-    ksystemeventfilter.cpp
     kxerrorhandler.cpp
     kxutils.cpp
     )
+
+if (QT5_BUILD)
+  set(kwindowsystem_SRCS ${kwindowsystem_SRCS}
+    ksystemeventfilter.cpp
+  )
+endif()
 
 set(platformLinkLibraries)
 

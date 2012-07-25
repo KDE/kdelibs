@@ -125,7 +125,9 @@ KWindowSystemPrivate::KWindowSystemPrivate(int _what)
       haveXfixes( false ),
       what( _what )
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     KSystemEventFilter::installEventFilter(this);
+#endif
     (void ) qApp->desktop(); //trigger desktop widget creation to select root window events
 
 #ifdef HAVE_XFIXES
@@ -148,6 +150,7 @@ void KWindowSystemPrivate::activate()
     updateStackingOrder();
 }
 
+// Qt5 TODO: port to nativeEvent or better, to QAbstractNativeEventFilter::nativeEventFilter()
 bool KWindowSystemPrivate::x11Event( XEvent * ev )
 {
     KWindowSystem* s_q = KWindowSystem::self();
