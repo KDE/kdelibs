@@ -392,10 +392,10 @@ void ScriptableLiveConnectExtension::liveConnectEvent(const unsigned long, const
         return;
     }
 
-    Object enclosureObj = enclosure.value<Object>();    
+    Object enclosureObj = enclosure.value<Object>();
 
     if (!host()->isScriptLanguageSupported(ECMAScript)) {
-        releaseValue(enclosure);    
+        releaseValue(enclosure);
         kDebug(1000) << "Host can't evaluate ECMAScript";
     }
 
@@ -433,10 +433,17 @@ void ScriptableLiveConnectExtension::liveConnectEvent(const unsigned long, const
 // hash functions
 // ----------------------------------------------------------------------------
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 unsigned int qHash(const KParts::ScriptableExtension::Object& o)
 {
     return qHash(qMakePair(o.owner, o.objId));
 }
+#else
+unsigned int qHash(const KParts::ScriptableExtension::Object& o, uint seed)
+{
+    return qHash(qMakePair(o.owner, o.objId), seed);
+}
+#endif
 
 unsigned int qHash(const KParts::ScriptableExtension::FunctionRef& f)
 {

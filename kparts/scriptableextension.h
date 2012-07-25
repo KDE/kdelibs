@@ -248,7 +248,7 @@ public:
         ECMAScript, /// < also known as JavaScript
         EnumLimit = 0xFFFF
     };
-    
+
     /**
      Tries to evaluate a script @p code with the given object as its context.
      The parameter @p language specifies the language to execute it as.
@@ -301,7 +301,11 @@ private:
     ScriptableExtensionPrivate* const d;
 };
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 KPARTS_EXPORT unsigned int qHash(const KParts::ScriptableExtension::Object& o);
+#else
+KPARTS_EXPORT unsigned int qHash(const KParts::ScriptableExtension::Object& o, uint seed = 0);
+#endif
 
 KPARTS_EXPORT unsigned int qHash(const KParts::ScriptableExtension::FunctionRef& f);
 
