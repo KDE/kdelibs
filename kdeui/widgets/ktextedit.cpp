@@ -793,6 +793,7 @@ void KTextEdit::checkSpelling()
      backgroundSpellCheck->changeLanguage(d->spellCheckingLanguage);
   Sonnet::Dialog *spellDialog = new Sonnet::Dialog(
       backgroundSpellCheck, 0);
+  spellDialog->setAttribute(Qt::WA_DeleteOnClose, true);
   connect(spellDialog, SIGNAL(replace(QString,int,QString)),
           this, SLOT(spellCheckerCorrected(QString,int,QString)));
   connect(spellDialog, SIGNAL(misspelling(QString,int)),
