@@ -36,7 +36,7 @@ typedef QList<KUriFilterPlugin *> KUriFilterPluginList;
 typedef QMap<QString, KUriFilterSearchProvider*> SearchProviderMap;
 
 
-static QString lookupIconNameFor(const KUrl &url, KUriFilterData::UriTypes type)
+static QString lookupIconNameFor(const QUrl &url, KUriFilterData::UriTypes type)
 {
     QString iconName;
 
@@ -177,7 +177,7 @@ void KUriFilterSearchProvider::setKeys(const QStringList& keys)
 class KUriFilterDataPrivate
 {
 public:
-    explicit KUriFilterDataPrivate( const KUrl& u, const QString& typedUrl )
+    explicit KUriFilterDataPrivate( const QUrl& u, const QString& typedUrl )
       : checkForExecs(true),
         wasModified(true),
         uriType(KUriFilterData::Unknown),
@@ -192,7 +192,7 @@ public:
         qDeleteAll(searchProviderMap.begin(), searchProviderMap.end());
     }
 
-    void setData( const KUrl& u, const QString& typedUrl )
+    void setData( const QUrl& u, const QString& typedUrl )
     {
         checkForExecs = true;
         wasModified = true;
@@ -243,7 +243,7 @@ public:
     KUriFilterData::UriTypes uriType;
     KUriFilterData::SearchFilterOptions searchFilterOptions;
 
-    KUrl url;
+    QUrl url;
     QString typedString;
     QString errMsg;
     QString iconName;
@@ -261,23 +261,23 @@ public:
 };
 
 KUriFilterData::KUriFilterData()
-               :d( new KUriFilterDataPrivate( QUrl(), QString() ) )
+               :d(new KUriFilterDataPrivate(QUrl(), QString()))
 {
 }
 
-KUriFilterData::KUriFilterData( const KUrl& url )
-               :d( new KUriFilterDataPrivate( url, url.url() ) )
+KUriFilterData::KUriFilterData(const QUrl& url )
+               :d(new KUriFilterDataPrivate(url, url.toString()))
 {
 }
 
-KUriFilterData::KUriFilterData( const QString& url )
-               :d( new KUriFilterDataPrivate( KUrl(url), url ) )
+KUriFilterData::KUriFilterData(const QString& url )
+               :d(new KUriFilterDataPrivate(QUrl(url), url))
 {
 }
 
 
-KUriFilterData::KUriFilterData( const KUriFilterData& other )
-               :d( new KUriFilterDataPrivate( other.d ) )
+KUriFilterData::KUriFilterData(const KUriFilterData& other)
+               :d(new KUriFilterDataPrivate(other.d))
 {
 }
 
@@ -286,7 +286,7 @@ KUriFilterData::~KUriFilterData()
     delete d;
 }
 
-KUrl KUriFilterData::uri() const
+QUrl KUriFilterData::uri() const
 {
     return d->url;
 }
@@ -415,14 +415,14 @@ QString KUriFilterData::iconName()
     return d->iconName;
 }
 
-void KUriFilterData::setData( const KUrl& url )
+void KUriFilterData::setData(const QUrl& url)
 {
-    d->setData(url, url.url());
+    d->setData(url, url.toString());
 }
 
 void KUriFilterData::setData( const QString& url )
 {
-    d->setData(KUrl(url), url);
+    d->setData(QUrl(url), url);
 }
 
 bool KUriFilterData::setAbsolutePath( const QString& absPath )
@@ -462,15 +462,15 @@ void KUriFilterData::setSearchFilteringOptions(SearchFilterOptions options)
     d->searchFilterOptions = options;
 }
 
-KUriFilterData& KUriFilterData::operator=( const KUrl& url )
+KUriFilterData& KUriFilterData::operator=(const QUrl& url)
 {
-    d->setData(url, url.url());
+    d->setData(url, url.toString());
     return *this;
 }
 
 KUriFilterData& KUriFilterData::operator=( const QString& url )
 {
-    d->setData(KUrl(url), url);
+    d->setData(QUrl(url), url);
     return *this;
 }
 
@@ -492,7 +492,7 @@ QString KUriFilterPlugin::configName() const
     return objectName();
 }
 
-void KUriFilterPlugin::setFilteredUri( KUriFilterData& data, const KUrl& uri ) const
+void KUriFilterPlugin::setFilteredUri( KUriFilterData& data, const QUrl& uri ) const
 {
     data.d->url = uri;
     data.d->wasModified = true;
@@ -553,7 +553,7 @@ void KUriFilterPlugin::setSearchProviders(KUriFilterData &data, const QList<KUri
     }
 }
 
-QString KUriFilterPlugin::iconNameFor(const KUrl& url, KUriFilterData::UriTypes type) const
+QString KUriFilterPlugin::iconNameFor(const QUrl& url, KUriFilterData::UriTypes type) const
 {
     return lookupIconNameFor(url, type);
 }
@@ -578,7 +578,7 @@ public:
     QHash<QString, KUriFilterPlugin *> plugins;
     // NOTE: DO NOT REMOVE this variable! Read the
     // comments in KUriFilter::loadPlugins to understand why...
-    QStringList pluginNames; 
+    QStringList pluginNames;
 };
 
 class KUriFilterSingleton
@@ -611,7 +611,7 @@ bool KUriFilter::filterUri( KUriFilterData& data, const QStringList& filters )
 
     // If no specific filters were requested, iterate through all the plugins.
     // Otherwise, only use available filters.
-    if( filters.isEmpty() ) {        
+    if( filters.isEmpty() ) {
         QStringListIterator it (d->pluginNames);
         while (it.hasNext()) {
             KUriFilterPlugin* plugin = d->plugins.value(it.next());
@@ -630,7 +630,7 @@ bool KUriFilter::filterUri( KUriFilterData& data, const QStringList& filters )
     return filtered;
 }
 
-bool KUriFilter::filterUri( KUrl& uri, const QStringList& filters )
+bool KUriFilter::filterUri( QUrl& uri, const QStringList& filters )
 {
     KUriFilterData data(uri);
     bool filtered = filterUri( data, filters );
@@ -642,11 +642,12 @@ bool KUriFilter::filterUri( QString& uri, const QStringList& filters )
 {
     KUriFilterData data(uri);
     bool filtered = filterUri( data, filters );
-    if( filtered )  uri = data.uri().url();
+    if (filtered)
+        uri = data.uri().toString();
     return filtered;
 }
 
-KUrl KUriFilter::filteredUri( const KUrl &uri, const QStringList& filters )
+QUrl KUriFilter::filteredUri( const QUrl &uri, const QStringList& filters )
 {
     KUriFilterData data(uri);
     filterUri( data, filters );
@@ -657,7 +658,7 @@ QString KUriFilter::filteredUri( const QString &uri, const QStringList& filters 
 {
     KUriFilterData data(uri);
     filterUri( data, filters );
-    return data.uri().url();
+    return data.uri().toString();
 }
 
 #ifndef KDE_NO_DEPRECATED
@@ -692,7 +693,7 @@ void KUriFilter::loadPlugins()
 
     // NOTE: Plugin priority is determined by the InitialPreference entry in
     // the .desktop files, so the trader result is already sorted and should
-    // not be manually sorted.    
+    // not be manually sorted.
     Q_FOREACH (const KService::Ptr &ptr, offers) {
         KUriFilterPlugin *plugin = ptr->createInstance<KUriFilterPlugin>();
         if (plugin) {

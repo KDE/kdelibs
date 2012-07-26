@@ -231,7 +231,7 @@ public:
      *
      * @param url is the URL to be filtered.
      */
-    explicit KUriFilterData( const KUrl& url );
+    explicit KUriFilterData( const QUrl& url );
 
     /**
      * Creates a KUriFilterData object from the given string.
@@ -262,7 +262,7 @@ public:
      *
      * @return the filtered or original url.
      */
-    KUrl uri() const;
+    QUrl uri() const;
 
     /**
      * Returns an error message.
@@ -513,7 +513,7 @@ public:
      *
      * @param url the URL to be filtered.
      */
-    void setData( const KUrl& url );
+    void setData( const QUrl& url );
 
     /**
      * Sets the URL to be filtered.
@@ -533,7 +533,7 @@ public:
      * NOTE: This function should only be used for local resources, i.e. the
      * "file:/" protocol. It is useful for specifying the absolute path in
      * cases where the actual URL might be relative. If deriving the path from
-     * a KUrl, make sure you set the argument for this function to the result
+     * a QUrl, make sure you set the argument for this function to the result
      * of calling path () instead of url ().
      *
      * @param abs_path  the abolute path to the local resource.
@@ -607,12 +607,12 @@ public:
     /**
      * Overloaded assigenment operator.
      *
-     * This function allows you to easily assign a KUrl
+     * This function allows you to easily assign a QUrl
      * to a KUriFilterData object.
      *
      * @return an instance of a KUriFilterData object.
      */
-    KUriFilterData& operator=( const KUrl& url );
+    KUriFilterData& operator=( const QUrl& url );
 
     /**
      * Overloaded assigenment operator.
@@ -695,7 +695,7 @@ protected:
     /**
      * Sets the URL in @p data to @p uri.
      */
-    void setFilteredUri ( KUriFilterData& data, const KUrl& uri ) const;
+    void setFilteredUri ( KUriFilterData& data, const QUrl& uri ) const;
 
     /**
      * Sets the error message in @p data to @p errormsg.
@@ -744,7 +744,7 @@ protected:
      *
      * @since 4.5
      */
-    QString iconNameFor(const KUrl& url, KUriFilterData::UriTypes type) const;
+    QString iconNameFor(const QUrl& url, KUriFilterData::UriTypes type) const;
 
     /**
      * Performs a DNS lookup for @p hostname and returns the result.
@@ -788,10 +788,10 @@ private:
  * bool filtered = KUriFilter::self()->filteredUri( url );
  * \endcode
  *
- * You can alternatively use a KUrl:
+ * You can alternatively use a QUrl:
  *
  * \code
- * KUrl url("kde.org");
+ * QUrl url("kde.org");
  * bool filtered = KUriFilter::self()->filterUri( url );
  * \endcode
  *
@@ -917,7 +917,7 @@ public:
      *
      * @return a boolean indicating whether the URI has been changed
      */
-    bool filterUri( KUrl &uri, const QStringList& filters = QStringList() );
+    bool filterUri( QUrl &uri, const QStringList& filters = QStringList() );
 
     /**
      * Filters a string representing a URI.
@@ -943,7 +943,7 @@ public:
      *
      * @return the filtered URI or null if it cannot be filtered
      */
-    KUrl filteredUri( const KUrl &uri, const QStringList& filters = QStringList() );
+    QUrl filteredUri( const QUrl &uri, const QStringList& filters = QStringList() );
 
     /**
      * Return a filtered string representation of a URI.
