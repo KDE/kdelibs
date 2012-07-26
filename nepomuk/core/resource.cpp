@@ -462,28 +462,48 @@ QString Nepomuk::Resource::genericDescription() const
 
 QString Nepomuk::Resource::genericIcon() const
 {
-    // FIXME: support resource symbols
-    Variant symbol = property( Soprano::Vocabulary::NAO::hasSymbol() );
-    if ( symbol.isString() ) {
-        return symbol.toString();
-    } else if ( symbol.isStringList() ) {
-        const QStringList l = symbol.toStringList();
-        if ( l.isEmpty() )
-            return QString();
-        return l.first();
+    if( hasType(NAO::FreeDesktopIcon()) ) {
+        QString label = property(NAO::iconName()).toString();
+        if( !label.isEmpty() )
+            return label;
+        
+        label = property(NAO::prefLabel()).toString();
+        if( !label.isEmpty() )
+            return label;
     }
 
-    // strigi mimetypes are sadly not very reliable, I keep the code here for future use
-//     QString mimeType = property( Soprano::Vocabulary::Xesam::mimeType() ).toString();
-//     if ( !mimeType.isEmpty() ) {
-//         if ( KMimeType::Ptr m = KMimeType::mimeType( mimeType ) ) {
-//             return m->iconName();
-//         }
-//     }
+    // Symbol Resources
+    Variant symbol = property( NAO::hasSymbol() );
+    if( symbol.isResource() ) {
+        QString icon = symbol.toResource().genericIcon();
+        if(!icon.isEmpty())
+            return icon;
+    }
+    else if( symbol.isString() ) {
+        // Backward compatibiltiy
+        QString icon = symbol.toString();
+        if( !icon.isEmpty() )
+            return icon;
+    }
+        
+    // FIXME: NAO::prefSymbol is a sub-property of nao:hasSymbol, it should be auto detected
+    symbol = property( NAO::prefSymbol() );
+    if( symbol.isResource() ) {
+        QString icon = symbol.toResource().genericIcon();
+        if(!icon.isEmpty())
+            return icon;
+    }
+    else if( symbol.isString() ) {
+        // Backward compatibiltiy
+        QString icon = symbol.toString();
+        if( !icon.isEmpty() )
+            return icon;
+    }
 
-    if ( hasType( Soprano::Vocabulary::Xesam::File() ) ||
-         resourceUri().scheme() == "file" ) {
-        return KMimeType::iconNameForUrl( resourceUri() );
+    QString mimeType = property( NIE::mimeType() ).toString();
+    if( !mimeType.isEmpty() ) {
+        if( KMimeType::Ptr m = KMimeType::mimeType( mimeType ) )
+            return m->iconName();
     }
 
     return QString();
