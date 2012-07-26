@@ -114,28 +114,13 @@ static char sock_file[MAX_SOCK_FILE];
 
 static QByteArray displayEnvVarName()
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-
-    const QString platform = QGuiApplication::platformName();
-    if (platform == QLatin1String("xcb"))
-        return "DISPLAY";
-    else if (platform == QLatin1String("Cocoa"))
-        return "MAC_DISPLAY";
-    else if (platform == QLatin1String("windows"))
-        return "WIN_DISPLAY";
-    else
-        return platform.toLatin1();
-
-#else
+    // Can't use QGuiApplication::platformName() here, there is no app instance.
 #if HAVE_X11
     return "DISPLAY";
-#elif defined(Q_WS_QWS)
-    return "QWS_DISPLAY";
-#elif defined(Q_WS_MACX)
+#elif defined(Q_OS_MACX)
     return "MAC_DISPLAY";
-#elif defined(Q_WS_WIN)
+#elif defined(Q_OS_WIN)
     return "WIN_DISPLAY";
-#endif
 #endif
 }
 
