@@ -118,6 +118,22 @@ public:
     qint64 readData(char *, qint64) { return 0; /* eof */ }
     qint64 readLineData(char *, qint64) { return 0; /* eof */ }
     qint64 writeData(const char *, qint64 len) { return len; }
+
+    void setContext(const char *debugFile, int line,
+                    const char *funcinfo, const QByteArray& areaName) {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+        context.file = debugFile;
+        context.line = line;
+        context.function = funcinfo;
+        category = areaName; // for storage
+        context.category = category.constData();
+#endif
+    }
+protected:
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    QMessageLogContext context;
+    QByteArray category;
+#endif
 };
 
 class KSyslogDebugStream: public KNoDebugStream
@@ -148,6 +164,15 @@ public:
                 QFile aOutputFile(m_fileName);
                 aOutputFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Unbuffered);
                 QByteArray buf = QByteArray::fromRawData(data, len);
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+                // Apply QT_MESSAGE_PATTERN
+                extern Q_CORE_EXPORT QString qMessageFormatString(QtMsgType type, const QMessageLogContext &context,
+                                                                  const QString &str);
+                const QString formatted = qMessageFormatString(QtDebugMsg /*hack*/, context, QString::fromUtf8(buf));
+                buf = formatted.toUtf8();
+#endif
+
                 aOutputFile.write(buf.trimmed());
                 aOutputFile.putChar('\n');
                 aOutputFile.close();
@@ -179,9 +204,6 @@ private:
 
 class KLineEndStrippingDebugStream: public KNoDebugStream
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    QMessageLogContext context;
-#endif
     // Q_OBJECT
 public:
     qint64 writeData(const char *data, qint64 len)
@@ -465,22 +487,25 @@ struct KDebugPrivate
 
         switch (type) {
         case QtDebugMsg:
-            header = "Info (";
+            header = "Info";
             break;
         case QtWarningMsg:
-            header = "Warning (";
+            header = "Warning";
             break;
         case QtFatalMsg:
-            header = "Fatal Error (";
+            header = "Fatal Error";
             break;
         case QtCriticalMsg:
         default:
-            header = "Error (";
+            header = "Error";
             break;
         }
 
-        header += areaName;
-        header += ')';
+        if (!areaName.isEmpty()) {
+            header += " (";
+            header += areaName;
+            header += ')';
+        }
         messageboxwriter.localData()->setCaption(QString::fromAscii(header));
         return result;
     }
@@ -513,29 +538,23 @@ struct KDebugPrivate
 
     QDebug setupQtWriter(QtMsgType type)
     {
+        if (type == QtWarningMsg) {
+            // KDE warnings are not the same thing as Qt warnings
+            // in Qt, warnings indicate bad code, which must be corrected before the release
+            // in KDE, it's just something that everyone sees (including users)
+            type = QtDebugMsg;
+        }
         if (type != QtDebugMsg) {
-            if (type == QtWarningMsg) {
-                // KDE warnings are not the same thing as Qt warnings
-                // in Qt, warnings indicate bad code, which must be corrected before the release
-                // in KDE, it's just something that everyone sees (including users)
-                type = QtDebugMsg;
-            }
             return QDebug(type);
         }
         return QDebug(&lineendstrippingwriter);
     }
 
-    QDebug printHeader(QDebug s, const QByteArray &areaName, const char * file, int line, const char *funcinfo, QtMsgType type, bool colored)
+    QDebug printHeader(QDebug s, bool colored)
     {
 #ifdef KDE_EXTENDED_DEBUG_OUTPUT
-        static bool printProcessInfo = (qgetenv("KDE_DEBUG_NOPROCESSINFO").isEmpty());
-        static bool printAreaName = (qgetenv("KDE_DEBUG_NOAREANAME").isEmpty());
-        static bool printMethodName = (qgetenv("KDE_DEBUG_NOMETHODNAME").isEmpty());
-        static bool printFileLine = (!qgetenv("KDE_DEBUG_FILELINE").isEmpty());
-
         static int printTimeStamp = qgetenv("KDE_DEBUG_TIMESTAMP").toInt();
-        QByteArray programName;
-        s = s.nospace();
+        //s = s.nospace();
         if (printTimeStamp > 0) {
             if (printTimeStamp >= 2) {
                 // the extended print: 17:03:24.123
@@ -545,33 +564,24 @@ struct KDebugPrivate
                 // the default print: 17:03:24
                 s << qPrintable(QDateTime::currentDateTime().time().toString());
             }
-            s << ' ';
-        }
-
-        if (printProcessInfo) {
-            programName = cache.value(0).name;
-            if (programName.isEmpty()) {
-                if (QCoreApplication::instance())
-                    programName = QCoreApplication::instance()->applicationName().toLocal8Bit();
-                else
-                    programName = "<unknown program name>";
-            }
-            s << programName.constData() << "(" << unsigned(getpid()) << ")";
-        }
-        if (printAreaName && (!printProcessInfo || areaName != programName)) {
-            if (printProcessInfo)
-                s << "/";
-            s << areaName.constData();
+            //s << ' ';
         }
 
         if (m_indentString.hasLocalData()) {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+            s.setAutoInsertSpaces(false);
+#else
+            s.nospace();
+#endif
             s << m_indentString.localData()->toLatin1().constData();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+            s.setAutoInsertSpaces(true);
+#else
+            s.space();
+#endif
         }
 
-        if (printFileLine) {
-            s << ' ' << file << ':' << line << ' ';
-        }
-
+#if 0 // This is in Qt now, see %{function} in QT_MESSAGE_PATTERN (qlogging.cpp). Only the coloring is missing (TODO Qt-5.1)
         if (funcinfo && printMethodName) {
             if (colored) {
                 if (type <= QtDebugMsg)
@@ -627,12 +637,17 @@ struct KDebugPrivate
         }
 
         s << ":";
-#else
-        Q_UNUSED(funcinfo);
-        if (!areaName.isEmpty())
-            s << areaName.constData() << ':';
+        s.space();
 #endif
-        return s.space();
+#else // KDE_EXTENDED_DEBUG_OUTPUT
+        Q_UNUSED(funcinfo);
+        if (!areaName.isEmpty()) {
+            s.nospace();
+            s << areaName.constData() << ':';
+            s.space();
+        }
+#endif
+        return s;
     }
 
     QDebug stream(QtMsgType type, unsigned int area, const char *debugFile, int line,
@@ -644,10 +659,10 @@ struct KDebugPrivate
         OutputMode mode = it->mode[level(type)];
         Q_ASSERT(mode != Unknown);
         QString file = it->logFileName[level(type)];
-        QByteArray areaName = it->name;
 
-        if (areaName.isEmpty())
-            areaName = cache.value(0).name;
+        QByteArray areaName = it->name;
+        //if (areaName.isEmpty())
+        //    areaName = cache.value(0).name;
 
         bool colored=false;
 
@@ -655,6 +670,7 @@ struct KDebugPrivate
         switch (mode) {
         case FileOutput:
             s = setupFileWriter(file);
+            filewriter.localData()->setContext(debugFile, line, funcinfo, areaName);
             break;
         case MessageBoxOutput:
             s = setupMessageBoxWriter(type, areaName);
@@ -668,6 +684,7 @@ struct KDebugPrivate
             break;
         case Unknown: // should not happen
         default:                // QtOutput
+            lineendstrippingwriter.setContext(debugFile, line, funcinfo, areaName);
             s = setupQtWriter(type);
 #ifndef Q_OS_WIN
             //only color if the debug goes to a tty, unless env_colors_on_any_fd is set too.
@@ -676,7 +693,7 @@ struct KDebugPrivate
             break;
         }
 
-        return printHeader(s, areaName, debugFile, line, funcinfo, type, colored);
+        return printHeader(s, colored);
     }
 
     void writeGroupForNamedArea(const QByteArray& areaName, bool enabled)

@@ -39,9 +39,6 @@ void KConfigTest::initTestCase()
   KConfigSkeleton foo;
   Q_UNUSED(foo);
 
-  setenv("KDE_DEBUG_NOPROCESSINFO", "1", 1);
-  setenv("KDE_DEBUG_TIMESTAMP", "0", 1);
-
   KConfig sc( "kconfigtest" );
 
   KConfigGroup cg(&sc, "ComplexTypes");
@@ -103,9 +100,6 @@ void KConfigTest::testInvalid()
   sc3.writeEntry( QString("badList"), list);
   sc.sync();
 
-#if QT_VERSION < 0x040800
-  QTest::ignoreMessage(QtWarningMsg, "QColor::setNamedColor: Unknown color name '1'");
-#endif
   QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() );
 
   // 2 element list

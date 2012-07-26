@@ -36,9 +36,8 @@
  * messages are not printed by default but can still be enabled by runtime
  * configuration, e.g. via kdebugdialog or by editing kdebugrc.
  *
- * You can also control what you see: process name, area name, method name,
- * file and line number, timestamp, etc. using environment variables.
- * See http://techbase.kde.org/SysAdmin/Environment_Variables#KDE_DEBUG_NOPROCESSINFO
+ * You can also control what you see: see QT_MESSAGE_PATTERN in the QDebug documentation.
+ * This is new in Qt 5.0 and replaces the KDE_DEBUG_* variables from KDE 4.x.
  */
 
 #if !defined(KDE_NO_DEBUG_OUTPUT)

@@ -348,10 +348,10 @@ static void startThreads()
 
 int main(int argc, char** argv)
 {
+    QCoreApplication app(argc, argv);
     KComponentData mainData("kdebugtest");
     testKDebug();
 #ifdef THREAD_TEST
-    QCoreApplication app(argc, argv);
     startThreads();
 #else
     Q_UNUSED(argc);
