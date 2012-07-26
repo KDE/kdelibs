@@ -22,9 +22,13 @@
 #ifndef KSSLD_DBUSMETATYPES_H
 #define KSSLD_DBUSMETATYPES_H
 
+#include <qglobal.h>
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_DECLARE_METATYPE(QSslCertificate)
-Q_DECLARE_METATYPE(KSslCertificateRule)
 Q_DECLARE_METATYPE(QList<QSslCertificate>)
+#endif
+Q_DECLARE_METATYPE(KSslCertificateRule)
 Q_DECLARE_METATYPE(KSslError::Error)
 Q_DECLARE_METATYPE(QList<KSslError::Error>)
 
