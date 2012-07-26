@@ -44,6 +44,8 @@
 #include <Soprano/Model>
 #include <Soprano/QueryResultIterator>
 
+using namespace Soprano::Vocabulary;
+using namespace Nepomuk::Vocabulary;
 
 Nepomuk::Resource::Resource()
 {
@@ -855,7 +857,7 @@ namespace {
         // of a string
         QString query = QString::fromLatin1("select ?r where { ?r a %1 . ?r %2 \"%3\" . } LIMIT 1")
                         .arg( Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::FreeDesktopIcon()),
-                              Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::prefLabel()),
+                              Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::iconName()),
                               symbolName );
 
         Soprano::Model* model = Nepomuk::ResourceManager::instance()->mainModel();
@@ -865,7 +867,7 @@ namespace {
         }
         else {
             Nepomuk::Resource res(QUrl(), Soprano::Vocabulary::NAO::FreeDesktopIcon());
-            res.setLabel( symbolName );
+            res.setProperty( NAO::iconName(), symbolName );
 
             return res.resourceUri();
         }
