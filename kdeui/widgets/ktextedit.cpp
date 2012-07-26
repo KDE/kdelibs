@@ -299,8 +299,6 @@ void KTextEdit::setSpellCheckingLanguage(const QString &_language)
         d->spellCheckingLanguage = _language;
         emit languageChanged(_language);
     }
-    else
-        d->spellCheckingLanguage = _language;
 }
 
 void KTextEdit::showSpellConfigDialog(const QString &configFileName,
