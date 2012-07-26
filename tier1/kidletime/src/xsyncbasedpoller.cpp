@@ -76,8 +76,25 @@ XSyncBasedPoller::XSyncBasedPoller(QWidget *parent)
     m_sync_event = sync_reply->first_event;
 
 #if 0
+
+    // Workaround for https://bugs.freedesktop.org/show_bug.cgi?id=23403
+#define xcb_sync_systemcounter_name(sc) (((char *) &(sc)->name_len) + 2)
+
     xcb_sync_list_system_counters_cookie_t cookie = xcb_sync_list_system_counters(m_xcb_connection);
     xcb_sync_list_system_counters_reply_t* reply = xcb_sync_list_system_counters_reply(m_xcb_connection, cookie, NULL);
+
+    xcb_sync_systemcounter_iterator_t iter;
+    for (iter = xcb_sync_list_system_counters_counters_iterator(reply) ;
+         iter.rem ; xcb_sync_systemcounter_next(&iter)) {
+        printf("%d: %.*s\n", iter.data->counter,
+               iter.data->name_len, xcb_sync_systemcounter_name(iter.data));
+/* Extra info for debugging: */
+        printf("  Actual name: %.*s\n", iter.data->name_len,
+               ( (char *) &iter.data->name_len) + 2);
+    }
+
+
+
     int xcbcounters = xcb_sync_list_system_counters_counters_length(reply);
     xcb_sync_systemcounter_iterator_t it = xcb_sync_list_system_counters_counters_iterator(reply);
     for (int i = 0; i < xcbcounters; ++i) {
@@ -107,9 +124,9 @@ XSyncBasedPoller::XSyncBasedPoller(QWidget *parent)
 
     bool idleFound = false;
 
-    qDebug() << ncounters << "counters";
+    //qDebug() << ncounters << "counters";
     for (int i = 0; i < ncounters; ++i) {
-        qDebug() << counters[i].name << counters[i].counter;
+        //qDebug() << counters[i].name << counters[i].counter;
         if (!strcmp(counters[i].name, "IDLETIME")) {
             m_idleCounter = counters[i].counter;
             idleFound = true;
@@ -261,10 +278,8 @@ bool XSyncBasedPoller::xcbEvent(xcb_generic_event_t *event)
     if (alarmEvent->state == XCB_SYNC_ALARMSTATE_DESTROYED) {
         return false;
     }
-    qDebug() << "alarm=" << alarmEvent->alarm;
 
     for (QHash<int, XSyncAlarm>::const_iterator i = m_timeoutAlarm.constBegin(); i != m_timeoutAlarm.constEnd(); ++i) {
-        qDebug() << "   looking at" << i.value();
         if (alarmEvent->alarm == i.value()) {
             /* Bling! Caught! */
             Q_EMIT timeoutReached(i.key());
@@ -309,10 +324,12 @@ void XSyncBasedPoller::setAlarm(Display *dpy, XSyncAlarm *alarm, XSyncCounter co
         *alarm = XSyncCreateAlarm(dpy, flags, &attr);
         qDebug() << "Created alarm" << *alarm;
     }
+
+    XFlush(m_display);
 }
 
 void XSyncBasedPoller::simulateUserActivity()
 {
-    XResetScreenSaver(QX11Info::display());
+    XResetScreenSaver(m_display);
 }
 
