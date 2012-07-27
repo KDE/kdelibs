@@ -32,12 +32,15 @@
 #include <QtCore/QHash>
 #include <QtAlgorithms>
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 1, 0)
+static bool s_serviceTypeProfilesExists = false;
+#endif
 // servicetype -> profile
 class KServiceTypeProfiles : public QHash<QString, KServiceTypeProfileEntry *>
 {
 public:
-    KServiceTypeProfiles() { m_parsed = false; ensureParsed(); }
-    ~KServiceTypeProfiles() { clear(); }
+    KServiceTypeProfiles() { s_serviceTypeProfilesExists = true; m_parsed = false; ensureParsed(); }
+    ~KServiceTypeProfiles() { s_serviceTypeProfilesExists = false; clear(); }
     void clear() {
         QMutexLocker lock(&m_mutex);
         qDeleteAll( *this );
@@ -104,7 +107,7 @@ void KServiceTypeProfile::clearCache()
 #if QT_VERSION >= QT_VERSION_CHECK(5,1,0)
     if (s_serviceTypeProfiles.exists())
 #else
-    if (s_serviceTypeProfiles())
+    if (s_serviceTypeProfilesExists)
 #endif
         s_serviceTypeProfiles()->clear();
 }
