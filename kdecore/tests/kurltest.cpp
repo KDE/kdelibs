@@ -1399,11 +1399,11 @@ void KUrlTest::testSetUser()
 
   KUrl emptyUserTest3( "http://www.foobar.com/");
   emptyUserTest3.setPass( "" );
-  QEXPECT_FAIL("","empty password should mean empty user; on thiago's todo list", Continue);
-  QCOMPARE(emptyUserTest3.url(), QString("http://@www.foobar.com/"));
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
   QVERIFY(emptyUserTest1 == emptyUserTest3);
 #else
+  // empty password means empty user, fixed in Qt5
+  QCOMPARE(emptyUserTest3.url(), QString("http://@www.foobar.com/"));
   QVERIFY(emptyUserTest1 != emptyUserTest3);
 #endif
 
@@ -1808,7 +1808,11 @@ void KUrlTest::testSmb()
   QCOMPARE(smb.prettyUrl(), QString::fromLatin1("smb:/"));
   smb = "smb://"; // KDE3: kurl.cpp rev 1.106 made it invalid. Valid again with QUrl.
   QVERIFY( smb.isValid() );
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
   QCOMPARE(smb.url(), QString::fromLatin1("smb:")); // QUrl bug, fixed in Qt5
+#else
+  QCOMPARE(smb.url(), QString::fromLatin1("smb://"));
+#endif
   QCOMPARE(smb.prettyUrl(), QString::fromLatin1("smb://"));
   smb = "smb://host";
   QVERIFY( smb.isValid() );
@@ -1816,7 +1820,11 @@ void KUrlTest::testSmb()
   QCOMPARE(smb.prettyUrl(), QString::fromLatin1("smb://host"));
   smb = "smb:///";
   QVERIFY( smb.isValid() );
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
   QCOMPARE(smb.url(), QString::fromLatin1("smb:/")); // QUrl bug, fixed in Qt5
+#else
+  QCOMPARE(smb.url(), QString::fromLatin1("smb:///"));
+#endif
   QCOMPARE(smb.prettyUrl(), QString::fromLatin1("smb:/"));
 
   KUrl implicitSmb("file://host/path");
@@ -2078,14 +2086,18 @@ void KUrlTest::testEncodeString()
   // Needed for #49616
   QCOMPARE( QUrl::toPercentEncoding( "C++" ), QByteArray("C%2B%2B") );
   QCOMPARE( QUrl::fromPercentEncoding( "C%2B%2B" ), QString("C++") );
-  QString output = QUrl::fromPercentEncoding( "C%00%0A" );
-  QString expected = QString::fromLatin1("C\0\n", 3); // no reason to stop at %00, in fact
-  QCOMPARE( output.size(), expected.size() );
-  QCOMPARE( output, expected );
-  QCOMPARE( QUrl::fromPercentEncoding( "C%A" ), QString("C%A") ); // % A is not percent-encoding  (pct-encoded = "%" HEXDIG HEXDIG)
-
   QCOMPARE( QUrl::toPercentEncoding( "%" ), QByteArray("%25") );
   QCOMPARE( QUrl::toPercentEncoding( ":" ), QByteArray("%3A") );
+  QCOMPARE( QUrl::fromPercentEncoding( "C%A" ), QString("C%A") ); // % A is not percent-encoding  (pct-encoded = "%" HEXDIG HEXDIG)
+
+  QString output = QUrl::fromPercentEncoding( "C%00%0A" );
+  QString expected = QString::fromLatin1("C\0\n", 3); // no reason to stop at %00, in fact
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+  // Reported to Thiago
+  QEXPECT_FAIL("", "Qt5 TODO (regression): handling of null byte in QUrl::fromPercentEncoding", Abort);
+#endif
+  QCOMPARE( output.size(), expected.size() );
+  QCOMPARE( output, expected );
 }
 
 void KUrlTest::testIdn()
