@@ -188,12 +188,14 @@ WmiQuery::Item::Item()
 
 WmiQuery::Item::Item(IWbemClassObject *p) : m_p(p)
 {
-    m_p->AddRef();
+    if(m_p != NULL)
+        m_p->AddRef();
 }
 
 WmiQuery::Item::Item(const Item& other) : m_p(other.m_p)
 {
-    m_p->AddRef();
+    if(m_p != NULL)
+        m_p->AddRef();
 }
 
 WmiQuery::Item& WmiQuery::Item::operator=(const Item& other)
@@ -218,7 +220,8 @@ WmiQuery::Item::~Item()
 
 IWbemClassObject* WmiQuery::Item::data() const
 {
-    m_p->AddRef();
+    if(m_p != NULL)
+        m_p->AddRef();
     return m_p;
 }
 
