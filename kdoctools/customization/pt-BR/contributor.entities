@@ -5,3 +5,6 @@
 
 <!ENTITY Andre.Marcelo.Alvarenga '<personname><firstname>André</firstname><othername>Marcelo</othername><surname>Alvarenga</surname></personname>'>
 <!ENTITY Andre.Marcelo.Alvarenga.mail '<email>alvarenga@kde.org</email>'>
+
+<!ENTITY Marcus.Gama '<personname><firstname>Marcus</firstname><surname>Gama</surname></personname>'>
+<!ENTITY Marcus.Gama.mail '<email>marcus.gama@kde.org</email>'>
