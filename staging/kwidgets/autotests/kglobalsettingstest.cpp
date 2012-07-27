@@ -18,7 +18,7 @@
 */
 
 #include "qtest.h"
-#include "qtest_kde.h"
+#include <QSignalSpy>
 #include "kglobalsettingstest.h"
 
 QTEST_MAIN( KGlobalSettingsTest )
@@ -78,7 +78,10 @@ static void callClient( const QString& opt, const char* signalToWaitFor ) {
     bool ok = proc.waitForFinished();
     QVERIFY(ok);
 
-    QVERIFY(QTest::kWaitForSignal(KGlobalSettings::self(), signalToWaitFor, 5000));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QSignalSpy spy(KGlobalSettings::self(), signalToWaitFor);
+    QVERIFY(spy.wait(5000));
+#endif
 }
 
 void KGlobalSettingsTest::testPaletteChange()

@@ -19,7 +19,7 @@
 */
 
 #include <QCheckBox>
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 #include <kdialog.h>
 #include <kpushbutton.h>
 #include <QWeakPointer>
@@ -237,14 +237,16 @@ private Q_SLOTS:
         QSignalSpy qRejectedSpy(dialog, SIGNAL(rejected()));
         dialog->show(); // KDialog::closeEvent tests for isHidden
         dialog->close();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) // for QSignalSpy::wait
         if (qRejectedSpy.isEmpty() && emitRejected)
-            QVERIFY(QTest::kWaitForSignal(dialog, SIGNAL(rejected()), 5000));
+            QVERIFY(qRejectedSpy.wait(5000));
         if (qCancelOrCloseClickedSpy.isEmpty())
-            QVERIFY(QTest::kWaitForSignal(dialog, signal.toLatin1().constData(), 5000));
+            QVERIFY(qCancelOrCloseClickedSpy.wait(5000));
         QCOMPARE(qRejectedSpy.count(), emitRejected); // and then rejected is emitted as well
         QCOMPARE(qCancelOrCloseClickedSpy.count(), 1); // KDialog emulated cancel or close being clicked
         qApp->sendPostedEvents(); // DeferredDelete
         QVERIFY(dialogPointer.isNull()); // deletion happened
+#endif
     }
 };
 
