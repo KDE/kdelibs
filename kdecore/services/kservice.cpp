@@ -952,7 +952,7 @@ QStringList KService::mimeTypes() const
     QVector<KService::ServiceTypeAndPreference>::const_iterator it = d->m_serviceTypes.begin();
     for ( ; it < d->m_serviceTypes.end(); ++it ) {
         const QString sv = (*it).serviceType;
-        if (db.mimeTypeForFile(sv).isValid()) // keep only mimetypes, filter out servicetypes
+        if (db.mimeTypeForName(sv).isValid()) // keep only mimetypes, filter out servicetypes
             ret.append(sv);
     }
     return ret;
