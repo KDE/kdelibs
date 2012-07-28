@@ -146,7 +146,7 @@ void UnicodeGroupProber::DumpStatus()
     GetConfidence();
     for (uint i = 0; i < mActiveSM; i++)
     {
-        kDebug(180) << "Unicode group" << mCodingSM[i]->DumpCurrentState() << mCodingSM[i]->GetCodingStateMachine() ;
+        qDebug() << "Unicode group" << mCodingSM[i]->DumpCurrentState() << mCodingSM[i]->GetCodingStateMachine() ;
     }
 }
 #endif

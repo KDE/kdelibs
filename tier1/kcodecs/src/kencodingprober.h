@@ -27,7 +27,7 @@
 
 #include <kcodecs_export.h>
 #ifdef DEBUG_PROBE
-#include <kdebug.h>
+#include <QtCore/QDebug>
 #endif
 #include <QtCore/QString>
 
