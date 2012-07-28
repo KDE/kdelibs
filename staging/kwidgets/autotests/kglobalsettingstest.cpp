@@ -73,7 +73,7 @@ static void callClient( const QString& opt, const char* signalToWaitFor ) {
         processName = "./kglobalsettingsclient";
     }
 #endif
-//     kDebug() << proc.args();
+//     qDebug() << proc.args();
     proc.start(processName, QStringList() << opt);
     bool ok = proc.waitForFinished();
     QVERIFY(ok);

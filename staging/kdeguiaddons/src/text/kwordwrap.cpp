@@ -42,7 +42,7 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
     // The wordwrap algorithm
     // The variable names and the global shape of the algorithm are inspired
     // from QTextFormatterBreakWords::format().
-    //kDebug() << "KWordWrap::formatText " << str << " r=" << r.x() << "," << r.y() << " " << r.width() << "x" << r.height();
+    //qDebug() << "KWordWrap::formatText " << str << " r=" << r.x() << "," << r.y() << " " << r.width() << "x" << r.height();
     int height = fm.height();
     if ( len == -1 )
         kw->d->m_text = str;
@@ -85,7 +85,7 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
         if ( c == QLatin1Char('/') && (wasBreakable || wasParens) )
             isBreakable = false;
 
-        /*kDebug() << "c='" << QString(c) << "' i=" << i << "/" << len
+        /*qDebug() << "c='" << QString(c) << "' i=" << i << "/" << len
                   << " x=" << x << " ww=" << ww << " w=" << w
                   << " lastBreak=" << lastBreak << " isBreakable=" << isBreakable << endl;*/
         int breakAt = -1;
@@ -109,7 +109,7 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
         }
         if ( breakAt != -1 )
         {
-            //kDebug() << "KWordWrap::formatText breaking after " << breakAt;
+            //qDebug() << "KWordWrap::formatText breaking after " << breakAt;
             kw->d->m_breakPositions.append( breakAt );
             int thisLineWidth = lastBreak == -1 ? x + ww : lineWidth;
             kw->d->m_lineWidths.append( thisLineWidth );
@@ -137,7 +137,7 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
     textwidth = qMax( textwidth, x );
     kw->d->m_lineWidths.append( x );
     y += height;
-    //kDebug() << "KWordWrap::formatText boundingRect:" << r.x() << "," << r.y() << " " << textwidth << "x" << y;
+    //qDebug() << "KWordWrap::formatText boundingRect:" << r.x() << "," << r.y() << " " << textwidth << "x" << y;
     if ( r.height() >= 0 && y > r.height() )
         textwidth = r.width();
     int realY = y;
@@ -242,7 +242,7 @@ void KWordWrap::drawTruncateText(QPainter *p, int x, int y, int maxW,
 
 void KWordWrap::drawText( QPainter *painter, int textX, int textY, int flags ) const
 {
-    //kDebug() << "KWordWrap::drawText text=" << wrappedString() << " x=" << textX << " y=" << textY;
+    //qDebug() << "KWordWrap::drawText text=" << wrappedString() << " x=" << textX << " y=" << textY;
     // We use the calculated break positions to draw the text line by line using QPainter
     int start = 0;
     int y = 0;

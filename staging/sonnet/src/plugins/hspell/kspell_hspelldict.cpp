@@ -21,7 +21,7 @@
  */
 
 #include "kspell_hspelldict.h"
-#include <kdebug.h>
+#include <QDebug>
 
 #include <QtCore/QTextCodec>
 
@@ -32,7 +32,7 @@ HSpellDict::HSpellDict( const QString& lang )
 {
    int int_error = hspell_init( &m_speller, HSPELL_OPT_DEFAULT );
    if ( int_error == -1 ) {
-      kDebug() << "HSpellDict::HSpellDict: Init failed";
+      qDebug() << "HSpellDict::HSpellDict: Init failed";
     /* hspell understans only iso8859-8-i            */
     codec = QTextCodec::codecForName( "iso8859-8-i" );
     initialized = false;
@@ -50,7 +50,7 @@ HSpellDict::~HSpellDict()
 
 bool HSpellDict::isCorrect( const QString& word ) const
 {
-    kDebug() << "HSpellDict::check word = " << word;
+    qDebug() << "HSpellDict::check word = " << word;
     int preflen;
     QByteArray wordISO = codec->fromUnicode( word );
     /* returns 1 if the word is correct, 0 otherwise */
@@ -84,20 +84,20 @@ bool HSpellDict::storeReplacement( const QString& bad,
                                    const QString& good )
 {
     // hspell-0.9 cannot do this
-    kDebug() << "HSpellDict::storeReplacement: Sorry, cannot.";
+    qDebug() << "HSpellDict::storeReplacement: Sorry, cannot.";
     return false;
 }
 
 bool HSpellDict::addToPersonal( const QString& word )
 {
     // hspell-0.9 cannot do this
-    kDebug() << "HSpellDict::addToPersonal: Sorry, cannot.";
+    qDebug() << "HSpellDict::addToPersonal: Sorry, cannot.";
     return false;
 }
 
 bool HSpellDict::addToSession( const QString& word )
 {
     // hspell-0.9 cannot do this
-    kDebug() << "HSpellDict::addToSession: Sorry, cannot.";
+    qDebug() << "HSpellDict::addToSession: Sorry, cannot.";
     return false;
 }

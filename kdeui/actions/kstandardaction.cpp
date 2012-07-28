@@ -83,7 +83,7 @@ KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
   KAction *pAction = 0;
   const KStandardActionInfo* pInfo = infoPtr(id);
 
-  // qDebug(125) << "KStandardAction::create( " << id << "=" << (pInfo ? pInfo->psName : (const char*)0) << ", " << parent << " )"; // ellis
+  // qDebug() << "KStandardAction::create( " << id << "=" << (pInfo ? pInfo->psName : (const char*)0) << ", " << parent << " )"; // ellis
 
   if ( pInfo ) {
     QString sLabel, iconName = pInfo->psIconName;

@@ -320,7 +320,7 @@ class KIconLoaderGlobalData
 public:
     KIconLoaderGlobalData() {
         const QStringList genericIconsFiles = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "mime/generic-icons");
-        //kDebug() << genericIconsFiles;
+        //qDebug() << genericIconsFiles;
         Q_FOREACH(const QString& file, genericIconsFiles) {
             parseGenericIconsFiles(file);
         }
@@ -356,7 +356,7 @@ void KIconLoaderGlobalData::parseGenericIconsFiles(const QString& fileName)
 
             const QString genericIcon = line.mid(pos+1);
             m_genericIcons.insert(mimeIcon, genericIcon);
-            //kDebug(264) << mimeIcon << "->" << genericIcon;
+            //qDebug() << mimeIcon << "->" << genericIcon;
         }
     }
 }
@@ -507,7 +507,7 @@ bool KIconLoaderPrivate::initIconThemes()
         // If mpThemeRoot isn't 0 then initing has succeeded
         return (mpThemeRoot != 0);
     }
-    //kDebug(264);
+    //qDebug();
     mIconThemeInited = true;
 
     // Add the default theme and its base themes to the theme tree
@@ -987,7 +987,7 @@ K3Icon KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) const
         while (!currentName.isEmpty())
         {
 
-            //kDebug(264) << "Looking up" << currentName;
+            //qDebug() << "Looking up" << currentName;
 
 // The following code has been commented out because the Qt SVG renderer needs
 // to be improved. If you are going to change/remove some code from this part,

@@ -624,7 +624,7 @@ void KAccelString::calculateWeights(int initialWeight)
     // try to preserve the wanted accelarators
     if ((int)pos == accel()) {
         weight += KAccelManagerAlgorithm::WANTED_ACCEL_EXTRA_WEIGHT;
-        // qDebug(240) << "wanted " << m_pureText << " " << KAcceleratorManagerPrivate::standardName(m_origText);
+        // qDebug() << "wanted " << m_pureText << " " << KAcceleratorManagerPrivate::standardName(m_origText);
         if (KAcceleratorManagerPrivate::standardName(m_origText))  {
             weight += KAccelManagerAlgorithm::STANDARD_ACCEL;
         }

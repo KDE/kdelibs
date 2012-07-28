@@ -25,8 +25,6 @@
 #include "filter_p.h"
 #include "settings_p.h"
 
-#include <kdebug.h>
-
 using namespace Sonnet;
 
 class BackgroundChecker::Private
@@ -83,7 +81,7 @@ void BackgroundChecker::start()
 {
     d->currentText = fetchMoreText();
     // ## what if d->currentText.isEmpty()?
-    //kDebug()<<"Sonnet BackgroundChecker: starting with : \"" << d->currentText << "\"";
+    //qDebug()<<"Sonnet BackgroundChecker: starting with : \"" << d->currentText << "\"";
     d->engine->setText(d->currentText);
     d->engine->start();
 }

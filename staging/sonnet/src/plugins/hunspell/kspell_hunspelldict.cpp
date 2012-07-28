@@ -21,7 +21,7 @@
 #include "kspell_hunspelldict.h"
 #include <QFileInfo>
 
-#include <kdebug.h>
+#include <QDebug>
 
 #include <QtCore/QTextCodec>
 
@@ -30,13 +30,13 @@ using namespace Sonnet;
 HunspellDict::HunspellDict( const QString& lang )
     : SpellerPlugin(lang), m_speller(0)
 {
-    kDebug()<<" HunspellDict::HunspellDict( const QString& lang ):"<<lang;
+    qDebug()<<" HunspellDict::HunspellDict( const QString& lang ):"<<lang;
         QString dic=QString("/usr/share/myspell/dicts/%1.dic").arg(lang);
     if (QFileInfo(dic).exists())
         m_speller = new Hunspell(QString("/usr/share/myspell/dicts/%1.aff").arg(lang).toUtf8().constData(),dic.toUtf8().constData());
     else
         m_speller = 0;
-    kDebug()<<" dddddd "<<m_speller;
+    qDebug()<<" dddddd "<<m_speller;
 
 }
 
@@ -47,11 +47,11 @@ HunspellDict::~HunspellDict()
 
 bool HunspellDict::isCorrect(const QString &word) const
 {
-    kDebug()<<" isCorrect :"<<word;
+    qDebug()<<" isCorrect :"<<word;
     if(!m_speller)
         return false;
     int result = m_speller->spell(word.toUtf8());
-    kDebug()<<" result :"<<result;
+    qDebug()<<" result :"<<result;
     return (result != 0) ;
 }
 
@@ -76,7 +76,7 @@ bool HunspellDict::storeReplacement( const QString& bad,
 {
     if (!m_speller)
         return false;
-    kDebug()<<"HunspellDict::storeReplacement not implemented";
+    qDebug()<<"HunspellDict::storeReplacement not implemented";
     return false;
 }
 
@@ -92,6 +92,6 @@ bool HunspellDict::addToSession( const QString& word )
 {
     if (!m_speller)
         return false;
-    kDebug()<<" bool HunspellDict::addToSession not implemented";
+    qDebug()<<" bool HunspellDict::addToSession not implemented";
     return false;
 }

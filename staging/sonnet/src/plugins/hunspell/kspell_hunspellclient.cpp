@@ -25,7 +25,7 @@
 
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
-#include <kdebug.h>
+#include <QDebug>
 
 K_PLUGIN_FACTORY( HunspellClientFactory, registerPlugin<HunspellClient>(); )
 K_EXPORT_PLUGIN( HunspellClientFactory( "kspell_hunspell" ) )
@@ -35,7 +35,7 @@ using namespace Sonnet;
 HunspellClient::HunspellClient( QObject *parent, const QVariantList& /* args */  )
     : Client( parent )
 {
-    kDebug()<<" HunspellClient::HunspellClient";
+    qDebug()<<" HunspellClient::HunspellClient";
 }
 
 HunspellClient::~HunspellClient()
@@ -44,7 +44,7 @@ HunspellClient::~HunspellClient()
 
 SpellerPlugin *HunspellClient::createSpeller(const QString &language)
 {
-    kDebug()<<" SpellerPlugin *HunspellClient::createSpeller(const QString &language) ;"<<language;
+    qDebug()<<" SpellerPlugin *HunspellClient::createSpeller(const QString &language) ;"<<language;
     HunspellDict *ad = new HunspellDict( language );
     return ad;
 }
@@ -61,7 +61,7 @@ QStringList HunspellClient::languages() const
             lst<< tmp.remove(".dic");
         }
     }
-    kDebug()<<" lst !!!!!!!!!!!!!!!!!!!!!!!! :"<<lst;
+    qDebug()<<" lst !!!!!!!!!!!!!!!!!!!!!!!! :"<<lst;
     return lst;
 }
 

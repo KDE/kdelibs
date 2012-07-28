@@ -25,7 +25,7 @@
 
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
-#include <kdebug.h>
+#include <QDebug>
 
 K_PLUGIN_FACTORY( HSpellClientFactory, registerPlugin<HSpellClient>(); )
 K_EXPORT_PLUGIN( HSpellClientFactory( "kspell_hspell" ) )

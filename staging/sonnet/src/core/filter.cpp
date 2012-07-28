@@ -25,7 +25,7 @@
 
 #include "settings_p.h"
 
-#include <kdebug.h>
+#include <QDebug>
 
 namespace Sonnet
 {
@@ -126,8 +126,8 @@ finderNextWord(QTextBoundaryFinder &finder, QString &word, int &bufferStart)
                 word = str;
                 bufferStart = start;
 #if 0
-                kDebug() << "Word at " << start << " word = '"
-                         <<  str << "', len = " << str.length();
+                qDebug().nospace() << "Word at " << start << " word="
+                         <<  str << ", len=" << str.length();
 #endif
                 return true;
             }

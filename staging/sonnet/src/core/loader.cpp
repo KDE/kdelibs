@@ -27,10 +27,10 @@
 #include <kservicetypetrader.h>
 
 #include <kconfig.h>
-#include <kdebug.h>
 
 #include <QtCore/QHash>
 #include <QtCore/QMap>
+#include <QDebug>
 
 #define DEFAULT_CONFIG_FILE   "sonnetrc"
 
@@ -73,7 +73,7 @@ Loader::Loader()
 
 Loader::~Loader()
 {
-    //kDebug()<<"Removing loader : "<< this;
+    //qDebug()<<"Removing loader : "<< this;
     d->plugins.clear();
     delete d->settings; d->settings = 0;
     delete d;
@@ -97,8 +97,7 @@ SpellerPlugin *Loader::createSpeller(const QString& language,
     const QList<Client*> lClients = d->languageClients[plang];
 
     if (lClients.isEmpty()) {
-        kError()<<"No language dictionaries for the language : "
-                << plang <<endl;
+        qWarning() << "No language dictionaries for the language:" << plang;
         return 0;
     }
 
@@ -288,9 +287,9 @@ void Loader::loadPlugin(const KSharedPtr<KService> &service)
                 d->languageClients[*itr].prepend(client);
         }
 
-        //kDebug() << "Successfully loaded plugin:" << service->entryPath();
+        //qDebug() << "Successfully loaded plugin:" << service->entryPath();
     } else {
-        kDebug() << error;
+        qDebug() << error;
     }
 }
 

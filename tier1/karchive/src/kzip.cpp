@@ -1058,7 +1058,7 @@ bool KZip::doPrepareWriting(const QString &name, const QString &user,
     // write out zip header
     QByteArray encodedName = QFile::encodeName(name);
     int bufferSize = extra_field_len + encodedName.length() + 30;
-    //qDebug(7040) << "bufferSize=" << bufferSize;
+    //qDebug() << "bufferSize=" << bufferSize;
     char* buffer = new char[ bufferSize ];
 
     buffer[ 0 ] = 'P'; //local file header signature

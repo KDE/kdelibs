@@ -24,7 +24,7 @@
 
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
-#include <kdebug.h>
+#include <QDebug>
 
 K_PLUGIN_FACTORY( ASpellClientFactory, registerPlugin<ASpellClient>(); )
 K_EXPORT_PLUGIN( ASpellClientFactory( "kspell_aspell" ) )

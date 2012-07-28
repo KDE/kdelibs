@@ -23,8 +23,8 @@
 #include "filter_p.h"
 
 #include <qtest.h>
-#include <kdebug.h>
 #include <QTextBoundaryFinder>
+#include <QDebug>
 
 // QT5 TODO QTEST_GUILESS_MAIN(SonnetFilterTest)
 QTEST_MAIN(SonnetFilterTest)
@@ -59,9 +59,9 @@ void SonnetFilterTest::testFilter()
     Word w;
     int hitNumber = 0;
     while ( ! (w=filter.nextWord()).end ) {
+        //qDebug()<< "Found word \""<< w.word << "\" which starts at position " << w.start;
         QCOMPARE( w.word, hits[hitNumber].word );
         QCOMPARE( w.start, hits[hitNumber].start );
-        //kDebug()<< "Found word \""<< w.word << "\" which starts at position " << w.start;
         ++hitNumber;
     }
     QCOMPARE( hitNumber, hits.count() );
