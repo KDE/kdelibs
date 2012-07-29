@@ -419,6 +419,9 @@ void KMimeTypeTest::testFindByNameAndContent()
     QByteArray mswordData = "\320\317\021\340\241\261\032\341";
     mime = KMimeType::findByNameAndContent("mswordfile.doc", mswordData);
     QVERIFY( mime );
+    if (mime->name() == "application/vnd.ms-word") { // this comes from /usr/share/mime/packages/libreoffice.xml....
+        QEXPECT_FAIL("", "libreoffice.xml is messing with us", Continue);
+    }
     // If you get powerpoint instead, then you're hit by https://bugs.freedesktop.org/show_bug.cgi?id=435 - upgrade to shared-mime-info >= 0.22
     QCOMPARE( mime->name(), QString::fromLatin1("application/msword") );
 
@@ -518,6 +521,11 @@ void KMimeTypeTest::testAllMimeTypes()
 
         const KMimeType::Ptr lookedupMime = KMimeType::mimeType( name );
         QVERIFY( lookedupMime ); // not null
+        if (name == "application/vnd.ms-word") { // this comes from /usr/share/mime/packages/libreoffice.xml....
+            QEXPECT_FAIL("", "libreoffice.xml is messing with us", Continue);
+        } else if (name == "application/x-pkcs7-certificates" || name == "application/x-x509-ca-cert") {
+            QEXPECT_FAIL("", "gcr-crypto-types.xml is buggy", Continue);
+        }
         QCOMPARE( lookedupMime->name(), name ); // if this fails, you have an alias defined as a real mimetype too!
         // Note: this happens with x-win-lnk when your kde.xml defines it as an alias, while
         // /usr/share/mime/packages/kde.xml defines it as a real mimetype. This is a false positive,
