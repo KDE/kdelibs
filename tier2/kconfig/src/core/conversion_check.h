@@ -23,13 +23,14 @@
 #define CONVERSION_CHECK_H
 
 #include <QtCore/QString>
-#include <QColor>
-#include <QFont>
 #include <QtCore/QDate>
 #include <QtCore/QPoint>
 #include <QtCore/QSize>
 #include <QtCore/QRect>
 #include <QtCore/QVariant>
+
+class QColor;
+class QFont;
 
 namespace ConversionCheck {
 

@@ -33,7 +33,7 @@
 #include "kconfigbackend.h"
 #include "kconfiggroup.h"
 
-#include <qapplication.h>
+#include <qcoreapplication.h>
 #include <qprocess.h>
 #include <qstandardpaths.h>
 #include <qbytearray.h>

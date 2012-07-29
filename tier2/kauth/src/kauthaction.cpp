@@ -21,7 +21,8 @@
 
 #include <QtGlobal>
 #include <QRegExp>
-#include <QWidget>
+
+class QWidget;
 
 #include "kauthexecutejob.h"
 
