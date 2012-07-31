@@ -106,7 +106,7 @@ Nepomuk::Query::ComparisonTerm::Comparator Nepomuk::Query::stringToComparator( c
         return Nepomuk::Query::ComparisonTerm::Contains;
 }
 
-QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, const TermPrivate* parentTerm, const QString &additionalFilters, QueryBuilderData *qbd ) const
+QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, const TermPrivate* parentTerm, QueryBuilderData* qbd ) const
 {
     Q_UNUSED(parentTerm);
 
@@ -140,73 +140,69 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
     //
 
     if ( !m_subTerm.isValid() ) {
-        QString finalPattern;
         QString prop = propertyToString( qbd );
         bool firstUse = false;
         QString ov = getMainVariableName( qbd, &firstUse );
         if( m_inverted )
-            finalPattern = QString::fromLatin1( "%1 %2 %3 . " )
-                           .arg( ov, prop, resourceVarName );
+            return QString::fromLatin1( "%1 %2 %3 . " )
+                .arg( ov, prop, resourceVarName );
         else if( firstUse )
-            finalPattern = QString::fromLatin1( "%1 %2 %3 . " )
-                           .arg( resourceVarName, prop, ov );
+            return QString::fromLatin1( "%1 %2 %3 . " )
+                .arg( resourceVarName, prop, ov );
         else
             return QString();
-
-        return finalPattern + additionalFilters;
     }
 
     // when using Regexp comparator with a resource range property we match the resource URI to the regular expression
     else if ( m_property.literalRangeType().isValid() || m_comparator == ComparisonTerm::Regexp ) {
-        QString finalPattern;
-
         if( !m_subTerm.isLiteralTerm() )
             kDebug() << "Incompatible subterm type:" << m_subTerm.type();
         if ( m_comparator == ComparisonTerm::Equal ) {
-            finalPattern = QString::fromLatin1( "%1 %2 %3 . " )
-                           .arg( resourceVarName,
-                                 propertyToString( qbd ),
-                                 Soprano::Node::literalToN3( m_subTerm.toLiteralTerm().value() ) );
+            return QString::fromLatin1( "%1 %2 %3 . " )
+                .arg( resourceVarName,
+                      propertyToString( qbd ),
+                      Soprano::Node::literalToN3( m_subTerm.toLiteralTerm().value() ) );
         }
         else if ( m_comparator == ComparisonTerm::Contains ) {
             bool firstUse = false;
             const QString v = getMainVariableName(qbd, &firstUse);
-            finalPattern = LiteralTermPrivate::createContainsPattern( v, m_subTerm.toLiteralTerm().value().toString(), qbd );
+            QString pattern = LiteralTermPrivate::createContainsPattern( v, m_subTerm.toLiteralTerm().value().toString(), qbd );
             if(firstUse) {
-                finalPattern.prepend(QString::fromLatin1( "%1 %2 %3 . " )
-                                     .arg( resourceVarName,
-                                           propertyToString( qbd ),
-                                           v ));
+                pattern.prepend(QString::fromLatin1( "%1 %2 %3 . " )
+                                .arg( resourceVarName,
+                                      propertyToString( qbd ),
+                                      v ));
             }
+            return pattern;
         }
         else if ( m_comparator == ComparisonTerm::Regexp ) {
             bool firstUse = false;
             const QString v = getMainVariableName(qbd, &firstUse);
-            finalPattern = QString::fromLatin1( "FILTER(REGEX(STR(%1), '%2', 'i')) . " )
-                           .arg( v, m_subTerm.toLiteralTerm().value().toString() );
+            QString pattern = QString::fromLatin1( "FILTER(REGEX(STR(%1), '%2', 'i')) . " )
+                    .arg( v, m_subTerm.toLiteralTerm().value().toString() );
             if( firstUse ) {
-                finalPattern.prepend(QString::fromLatin1( "%1 %2 %3 . " )
-                                     .arg( resourceVarName,
-                                           propertyToString( qbd ),
-                                           v ));
+                pattern.prepend(QString::fromLatin1( "%1 %2 %3 . " )
+                                .arg( resourceVarName,
+                                      propertyToString( qbd ),
+                                      v ));
             }
+            return pattern;
         }
         else {
             bool firstUse = false;
             const QString v = getMainVariableName(qbd, &firstUse);
-            finalPattern = QString::fromLatin1( "FILTER(%1%2%3) . " )
-                           .arg( v,
-                                 comparatorToString( m_comparator ),
-                                 Soprano::Node::literalToN3(m_subTerm.toLiteralTerm().value()) );
+            QString pattern = QString::fromLatin1( "FILTER(%1%2%3) . " )
+                    .arg( v,
+                          comparatorToString( m_comparator ),
+                          Soprano::Node::literalToN3(m_subTerm.toLiteralTerm().value()) );
             if( firstUse ) {
-                finalPattern.prepend( QString::fromLatin1( "%1 %2 %3 . " )
-                                      .arg( resourceVarName,
-                                            propertyToString( qbd ),
-                                            v ) );
+                pattern.prepend( QString::fromLatin1( "%1 %2 %3 . " )
+                                 .arg( resourceVarName,
+                                       propertyToString( qbd ),
+                                       v ) );
             }
+            return pattern;
         }
-
-        return finalPattern + additionalFilters;
     }
 
     else { // resource range
@@ -233,19 +229,17 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
         }
         if( qbd->flags() & Query::HandleInverseProperties &&
             m_property.inverseProperty().isValid() ) {
-            corePattern = QString::fromLatin1("{ %1 %2 %3 . %5} UNION { %3 %4 %1 . %5} . ")
+            corePattern = QString::fromLatin1("{ %1 %2 %3 . } UNION { %3 %4 %1 . } . ")
                               .arg( subject,
                                     propertyToString( qbd ),
                                     object,
-                                    Soprano::Node::resourceToN3( m_property.inverseProperty().uri() ),
-                                    additionalFilters );
+                                    Soprano::Node::resourceToN3( m_property.inverseProperty().uri() ) );
         }
         else {
-            corePattern = QString::fromLatin1("%1 %2 %3 . %4")
+            corePattern = QString::fromLatin1("%1 %2 %3 . ")
                               .arg( subject,
                                     propertyToString( qbd ),
-                                    object,
-                                    additionalFilters );
+                                    object );
         }
 
         if ( m_subTerm.isLiteralTerm() ) {
@@ -293,7 +287,7 @@ QString Nepomuk::Query::ComparisonTermPrivate::toSparqlGraphPattern( const QStri
             bool firstUse = true;
             QString v = getMainVariableName(qbd, &firstUse);
             qbd->increaseDepth();
-            QString subTermSparql = m_subTerm.d_ptr->toSparqlGraphPattern( v, this, QString(), qbd );
+            QString subTermSparql = m_subTerm.d_ptr->toSparqlGraphPattern( v, this, qbd );
             qbd->decreaseDepth();
             if( firstUse )
                 return corePattern.arg(v) + subTermSparql;

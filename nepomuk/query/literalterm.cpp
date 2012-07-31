@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2009-2012 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2009-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -50,7 +50,7 @@ bool Nepomuk::Query::LiteralTermPrivate::equals( const TermPrivate* other ) cons
 // But since many relations like nao:hasTag or nmm:performer or similar are considered as plain text fields we extend the pattern by adding
 // relations to resources that have labels containing the query text.
 //
-QString Nepomuk::Query::LiteralTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, const TermPrivate* parentTerm, const QString &additionalFilters, QueryBuilderData *qbd ) const
+QString Nepomuk::Query::LiteralTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, const TermPrivate* parentTerm, QueryBuilderData* qbd ) const
 {
     Q_UNUSED(parentTerm);
 
@@ -71,7 +71,7 @@ QString Nepomuk::Query::LiteralTermPrivate::toSparqlGraphPattern( const QString&
         .arg( resourceVarName,
               p1,
               v1,
-              containsPattern + additionalFilters,
+              containsPattern,
               r2,
               Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()) );
 }

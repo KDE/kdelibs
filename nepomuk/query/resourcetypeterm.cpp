@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2009-2012 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2009-2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -39,17 +39,16 @@ bool Nepomuk::Query::ResourceTypeTermPrivate::equals( const TermPrivate* other )
 }
 
 
-QString Nepomuk::Query::ResourceTypeTermPrivate::toSparqlGraphPattern( const QString& resName, const TermPrivate* parentTerm, const QString &additionalFilters, QueryBuilderData *qbd ) const
+QString Nepomuk::Query::ResourceTypeTermPrivate::toSparqlGraphPattern( const QString& resName, const TermPrivate* parentTerm, QueryBuilderData* qbd ) const
 {
     Q_UNUSED(parentTerm);
 
     // we are using the crappy inferencing provided by the nepomuk ontology service where
     // each class is also a subclass of itself.
     if(m_types.count() == 1) {
-        return QString::fromLatin1("%1 a %2 . %3")
+        return QString::fromLatin1("%1 a %2 . ")
                 .arg( resName,
-                      Soprano::Node::resourceToN3( m_types.begin()->uri() ),
-                      additionalFilters );
+                      Soprano::Node::resourceToN3( m_types.begin()->uri() ) );
     }
     else {
         QStringList typeN3s;
@@ -57,11 +56,10 @@ QString Nepomuk::Query::ResourceTypeTermPrivate::toSparqlGraphPattern( const QSt
             typeN3s.append(Soprano::Node::resourceToN3(type.uri()));
         }
 
-        return QString::fromLatin1("%1 a %2 . FILTER(%2 in (%3)) . %4")
+        return QString::fromLatin1("%1 a %2 . FILTER(%2 in (%3)) . ")
                 .arg( resName,
                       qbd->uniqueVarName(),
-                      typeN3s.join(QLatin1String(",")),
-                      additionalFilters);
+                      typeN3s.join(QLatin1String(",")));
     }
 }
 
