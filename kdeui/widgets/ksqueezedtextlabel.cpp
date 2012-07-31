@@ -25,6 +25,7 @@
 #include <QClipboard>
 #include <QApplication>
 #include <QMimeData>
+#include <QTextDocument>
 #include <kglobalsettings.h>
 
 class KSqueezedTextLabelPrivate
@@ -162,7 +163,7 @@ void KSqueezedTextLabel::contextMenuEvent(QContextMenuEvent* ev)
     if (showCustomPopup) {
         QMenu menu(this);
 
-        KAction* act = new KAction(i18n("&Copy Full Text"), this);
+        KAction* act = new KAction(i18n("&Copy Full Text"), &menu);
         connect(act, SIGNAL(triggered()), this, SLOT(_k_copyFullText()));
         menu.addAction(act);
 
@@ -191,8 +192,16 @@ void KSqueezedTextLabel::mouseReleaseEvent(QMouseEvent* ev)
             // charsAfterSelection = 1 (z)
             // final selection length= 26 - 2 - 1 = 23
             const int start = selectionStart();
-            const int charsAfterSelection = text().length() - start - selectedText().length();
-            txt = d->fullText.mid(selectionStart(), d->fullText.length() - start - charsAfterSelection);
+            int charsAfterSelection = text().length() - start - selectedText().length();
+            txt = d->fullText;
+            // Strip markup tags
+            if (textFormat() == Qt::RichText
+                || (textFormat() == Qt::AutoText && Qt::mightBeRichText(txt))) {
+                txt.replace(QRegExp("<[^>]*>"), "");
+                // account for stripped characters
+                charsAfterSelection -= d->fullText.length() - txt.length();
+            }
+            txt = txt.mid(selectionStart(), txt.length() - start - charsAfterSelection);
         }
         QApplication::clipboard()->setText(txt, QClipboard::Selection);
     } else

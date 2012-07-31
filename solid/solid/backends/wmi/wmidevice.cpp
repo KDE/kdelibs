@@ -79,7 +79,7 @@ public:
         if(m_item.isNull()){
             QString query("SELECT * FROM " + m_wmiTable + " WHERE " + m_wmiProperty + "='" + m_wmiValue + "'");
             WmiQuery::ItemList items = WmiQuery::instance().sendQuery(query);
-            Q_ASSERT(items.length() != 1);
+            Q_ASSERT(items.length() == 1);
             if(items.length() != 1)
                 qDebug()<<"WmiDevicePrivate::sendQuery() failed";
             m_item = items[0];
