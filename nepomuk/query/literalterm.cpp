@@ -58,21 +58,24 @@ QString Nepomuk::Query::LiteralTermPrivate::toSparqlGraphPattern( const QString&
         return QString();
 
     const QString p1 = qbd->uniqueVarName();
+    const QString p2 = qbd->uniqueVarName();
     const QString v1 = qbd->uniqueVarName();
     const QString r2 = qbd->uniqueVarName();
     const QString containsPattern = createContainsPattern( v1, m_value.toString(), qbd );
 
     // { ?r ?p1 ?v1 . containsPattern(v1) }
     // UNION
-    // { ?r ?p1 ?r2 . ?r2 rdfs:label ?v1 . containsPattern(v1) } .
+    // { ?r ?p1 ?r2 . ?r2 ?p2 ?v1 . ?v1 rdfs:subPropertyOf rdfs:label . containsPattern(v1) } .
     return QString::fromLatin1( "{ %1 %2 %3 . %4 } "
                                 "UNION "
-                                "{ %1 %2 %5 . %5 %6 %3 . %4 } . " )
+                                "{ %1 %2 %5 . %5 %6 %3 . %6 %7 %8 . %4 } . " )
         .arg( resourceVarName,
               p1,
               v1,
               containsPattern,
               r2,
+              p2,
+              Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::subPropertyOf()),
               Soprano::Node::resourceToN3(Soprano::Vocabulary::RDFS::label()) );
 }
 
