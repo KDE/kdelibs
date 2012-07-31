@@ -2131,9 +2131,9 @@ bool HTTPProtocol::readDelimitedText(char *buf, int *idx, int end, int numNewlin
             if (buf[pos] == '\n') {
                 bool found = numNewlines == 1;
                 if (!found) {   // looking for two newlines
+                    // Detect \n\n and \n\r\n. The other cases (\r\n\n, \r\n\r\n) are covered by the first two.
                     found = ((pos >= 1 && buf[pos - 1] == '\n') ||
-                             (pos >= 3 && buf[pos - 3] == '\r' && buf[pos - 2] == '\n' &&
-                                          buf[pos - 1] == '\r'));
+                             (pos >= 2 && buf[pos - 2] == '\n' && buf[pos - 1] == '\r'));
                 }
                 if (found) {
                     i++;    // unread bytes *after* CRLF
@@ -3148,6 +3148,8 @@ endParsing:
 
         foundDelimiter = readDelimitedText(buffer, &bufPos, maxHeaderSize, 2);
         kDebug(7113) << " -- full response:" << endl << QByteArray(buffer, bufPos).trimmed();
+        // Use this to see newlines:
+        //kDebug(7113) << " -- full response:" << endl << QByteArray(buffer, bufPos).replace("\r", "\\r").replace("\n", "\\n\n");
         Q_ASSERT(foundDelimiter);
 
         //NOTE because tokenizer will overwrite newlines in case of line continuations in the header
