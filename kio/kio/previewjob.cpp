@@ -346,7 +346,7 @@ void PreviewJobPrivate::startPreview()
             if (!bNeedCache && bSave && plugin->property("CacheThumbnail").toBool()) {
                 const QUrl url = (*kit).url();
                 if (!url.isLocalFile() ||
-                    !QString(QUrlPathInfo(url).directory() + '/').startsWith(thumbRoot)) {
+                    !QString(QUrlPathInfo(url).directory(QUrlPathInfo::AppendTrailingSlash)).startsWith(thumbRoot)) {
                     bNeedCache = true;
                 }
             }
@@ -666,7 +666,7 @@ void PreviewJobPrivate::slotThumbData(KIO::Job *, const QByteArray &data)
     bool save = bSave &&
                 currentItem.plugin->property("CacheThumbnail").toBool() &&
                 (!currentItem.item.url().isLocalFile() ||
-                 !QString(QUrlPathInfo(currentItem.item.url()).directory() + '/').startsWith(thumbRoot))
+                 !QString(QUrlPathInfo(currentItem.item.url()).directory(QUrlPathInfo::AppendTrailingSlash)).startsWith(thumbRoot))
                 && !sequenceIndex;
     QImage thumb;
 #ifdef Q_OS_UNIX
