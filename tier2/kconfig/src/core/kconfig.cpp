@@ -518,6 +518,7 @@ void KConfigPrivate::changeFileName(const QString& name)
     QString file;
     if (name.isEmpty()) {
         if (wantDefaults()) { // accessing default app-specific config "appnamerc"
+            // Note: any change in this block must be sync'ed with KSharedConfig::openConfig
             QString appName = QCoreApplication::applicationName();
             if (appName.isEmpty()) {
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)

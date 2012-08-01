@@ -32,6 +32,7 @@ endmacro()
 kconfigcore_unit_tests(
    kconfigtest
    kdesktopfiletest
+   ksharedconfigtest
 )
 
 kconfiggui_unit_tests(

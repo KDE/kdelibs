@@ -23,6 +23,7 @@
 #include "kconfigbackend.h"
 #include "kconfiggroup.h"
 #include "kconfig_p.h"
+#include <QCoreApplication>
 
 class GlobalSharedConfigList : public QList<KSharedConfig*>
 {
@@ -42,8 +43,19 @@ KSharedConfigPtr KSharedConfig::openConfig(const QString& _fileName,
 {
     QString fileName(_fileName);
     GlobalSharedConfigList *list = globalSharedConfigList();
-    if (_fileName.isEmpty())
+    if (fileName.isEmpty())
         fileName = list->mainConfigName;
+    if (fileName.isEmpty()) {
+        // Determine the config file name that KConfig will make up (see KConfigPrivate::changeFileName)
+        QString appName = QCoreApplication::applicationName();
+        if (appName.isEmpty()) {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+            appName = qAppName();
+#endif
+        }
+        fileName = appName + QLatin1String("rc");
+    }
+
     if (list) {
         for(QList<KSharedConfig*>::ConstIterator it = list->constBegin(); it != list->constEnd(); ++it) {
             if ( (*it)->name() == fileName &&
