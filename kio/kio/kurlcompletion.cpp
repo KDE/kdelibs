@@ -399,7 +399,7 @@ public:
     }
     // The directory with a trailing '/'
     QString dir() const {
-        return QUrlPathInfo(m_kurl).directory() + '/';
+        return QUrlPathInfo(m_kurl).directory(QUrlPathInfo::AppendTrailingSlash);
     }
     QString file() const {
         return QUrlPathInfo(m_kurl).fileName();

@@ -55,6 +55,7 @@ KIO_EXECUTABLE_TESTS(
   ksslkeygentest
   kdbusservicestartertest
   kurlrequestertest
+  kurlrequestertest_gui
   kopenwithtest
   kfiledialogtest
 )

@@ -1,30 +1,47 @@
-#include <qapplication.h>
-#include <keditlistbox.h>
+/* This file is part of the KDE libraries
+    Copyright (c) 2008 David Faure <faure@kde.org>
+
+    This library is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 2 of the License or ( at
+    your option ) version 3 or, at the discretion of KDE e.V. ( which shall
+    act as a proxy as in section 14 of the GPLv3 ), any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+    Boston, MA 02110-1301, USA.
+*/
+
 #include <kurlrequester.h>
-#include <kurlrequesterdialog.h>
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#include <QtTest/QtTestWidgets>
+#else
+#include <QtTest/QtTestGui>
+#endif
+
 #include <QDebug>
 
-int main( int argc, char **argv )
+class KUrlRequesterTest : public QObject
 {
-    QApplication app(argc, argv);
-    app.setQuitOnLastWindowClosed(false);
+    Q_OBJECT
+private Q_SLOTS:
+    void testGetSet();
 
-    QUrl url = KUrlRequesterDialog::getUrl(QUrl("ftp://ftp.kde.org"));
-    qDebug() << "Selected url:" << url;
+};
 
-    KUrlRequester *req = new KUrlRequester();
-#ifndef KDE_NO_DEPRECATED
-    KEditListBox *el = new KEditListBox( QLatin1String("Test"), req->customEditor() );
-#else
-    KEditListWidget *el = new KEditListWidget( req->customEditor() );
-    el->setWindowTitle( QLatin1String("Test") );
-#endif
-    el->show();
-
-    KUrlRequester *req1 = new KUrlRequester();
-    req1->fileDialog();
-    req1->setWindowTitle("AAAAAAAAAAAA");
-    req1->show();
-
-    return app.exec();
+void KUrlRequesterTest::testGetSet()
+{
+    KUrlRequester req;
+    req.setUrl(QUrl("file:///etc"));
+    QCOMPARE(req.url().toString(), QString("file:///etc"));
 }
+
+QTEST_MAIN(KUrlRequesterTest)
+#include "kurlrequestertest.moc"
