@@ -1403,7 +1403,7 @@ void KUrlTest::testSetUser()
   QVERIFY(emptyUserTest1 == emptyUserTest3);
 #else
   // empty password means empty user, fixed in Qt5
-  QCOMPARE(emptyUserTest3.url(), QString("http://@www.foobar.com/"));
+  QCOMPARE(emptyUserTest3.url(), QString("http://:@www.foobar.com/"));
   QVERIFY(emptyUserTest1 != emptyUserTest3);
 #endif
 
@@ -2092,10 +2092,6 @@ void KUrlTest::testEncodeString()
 
   QString output = QUrl::fromPercentEncoding( "C%00%0A" );
   QString expected = QString::fromLatin1("C\0\n", 3); // no reason to stop at %00, in fact
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-  // Reported to Thiago
-  QEXPECT_FAIL("", "Qt5 TODO (regression): handling of null byte in QUrl::fromPercentEncoding", Abort);
-#endif
   QCOMPARE( output.size(), expected.size() );
   QCOMPARE( output, expected );
 }
