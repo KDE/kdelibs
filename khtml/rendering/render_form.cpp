@@ -1458,7 +1458,7 @@ RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
 
     w->setMode(KFile::File | KFile::ExistingOnly);
     w->lineEdit()->setCompletionBox( new CompletionWidget(w) );
-    w->completionObject()->setDir(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
+    w->completionObject()->setDir(QUrl::fromLocalFile(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)));
 
     connect(w->lineEdit(), SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(w->lineEdit(), SIGNAL(textChanged(QString)),this,SLOT(slotTextChanged(QString)));

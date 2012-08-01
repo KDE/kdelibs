@@ -31,7 +31,7 @@ class KUrlCompletionTest
 public:
     KUrlCompletionTest() {}
     ~KUrlCompletionTest() { teardown(); }
-    void setup( bool setDirAsURL );
+    void setup();
     void teardown();
     void testLocalRelativePath();
     void testLocalAbsolutePath();
@@ -47,7 +47,7 @@ private:
     KUrlCompletion* m_completionEmptyCwd;
 };
 
-void KUrlCompletionTest::setup( bool setDirAsURL )
+void KUrlCompletionTest::setup()
 {
     kDebug() ;
     m_completion = new KUrlCompletion;
@@ -56,11 +56,7 @@ void KUrlCompletionTest::setup( bool setDirAsURL )
     m_dir += "/Dir With#Spaces/";
     QDir().mkdir(m_dir);
     kDebug() << "m_dir=" << m_dir;
-    if ( setDirAsURL ) {
-        m_completion->setDir( KUrl(m_dir).url() );
-    } else {
-        m_completion->setDir( m_dir );
-    }
+    m_completion->setDir(QUrl::fromLocalFile(m_dir));
     m_dirURL.setPath( m_dir );
 
     QFile f1( m_dir + "/file1" );
@@ -76,7 +72,7 @@ void KUrlCompletionTest::setup( bool setDirAsURL )
     QDir().mkdir( m_dir + "/file_subdir" );
 
     m_completionEmptyCwd = new KUrlCompletion;
-    m_completionEmptyCwd->setDir( "" );
+    m_completionEmptyCwd->setDir(QUrl());
 }
 
 void KUrlCompletionTest::teardown()
@@ -200,7 +196,7 @@ int main( int argc, char **argv )
 
     {
         KUrlCompletionTest test;
-        test.setup( false );
+        test.setup();
         test.testLocalRelativePath();
         test.testLocalAbsolutePath();
         test.testLocalURL();
@@ -208,7 +204,7 @@ int main( int argc, char **argv )
         test.teardown();
 
         // Try again, with another QTemporaryDir (to check that the caching doesn't give us wrong results)
-        test.setup( true );
+        test.setup();
         test.testLocalRelativePath();
         test.testLocalAbsolutePath();
         test.testLocalURL();

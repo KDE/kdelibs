@@ -1,5 +1,4 @@
-/* -*- indent-tabs-mode: t; tab-width: 4; c-basic-offset:4 -*-
-
+/*
    This file is part of the KDE libraries
    Copyright (C) 2000 David Smith <dsmith@algonet.se>
    Copyright (C) 2004 Scott Wheeler <wheeler@kde.org>
@@ -41,6 +40,7 @@
 #include <QtCore/QTextStream>
 #include <QtCore/QThread>
 #include <QActionEvent>
+#include <qurlpathinfo.h>
 
 #include <kauthorized.h>
 #include <kdebug.h>
@@ -115,7 +115,7 @@ public:
                              bool no_hidden = false,
                              bool stat_files = true);
 
-    void listUrls(const QList<KUrl> &urls,
+    void listUrls(const QList<QUrl> &urls,
                    const QString& filter = QString(),
                    bool only_exe = false,
                    bool no_hidden = false);
@@ -136,7 +136,7 @@ public:
                       bool no_hidden = false);
 
     KUrlCompletion* q;
-    QList<KUrl> list_urls;
+    QList<QUrl> list_urls;
 
     bool onlyLocalProto;
 
@@ -154,7 +154,7 @@ public:
     int last_compl_type;
     int last_no_hidden;
 
-    QString cwd; // "current directory" = base dir for completion
+    QUrl cwd; // "current directory" = base dir for completion
 
     KUrlCompletion::Mode mode; // ExeCompletion, FileCompletion, DirCompletion
     bool replace_env;
@@ -377,29 +377,32 @@ KUrlCompletionPrivate::~KUrlCompletionPrivate()
 
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
-// MyURL - wrapper for KUrl with some different functionality
+// MyURL - wrapper for QUrl with some different functionality
 //
 
 class KUrlCompletionPrivate::MyURL
 {
 public:
-    MyURL(const QString& url, const QString& cwd);
+    MyURL(const QString& url, const QUrl& cwd);
     MyURL(const MyURL& url);
     ~MyURL();
 
-    KUrl kurl() const {
+    QUrl kurl() const {
         return m_kurl;
     }
 
+    bool isLocalFile() const {
+        return m_kurl.isLocalFile();
+    }
     QString scheme() const {
         return m_kurl.scheme();
     }
     // The directory with a trailing '/'
     QString dir() const {
-        return m_kurl.directory(KUrl::AppendTrailingSlash | KUrl::ObeyTrailingSlash);
+        return QUrlPathInfo(m_kurl).directory() + '/';
     }
     QString file() const {
-        return m_kurl.fileName(KUrl::ObeyTrailingSlash);
+        return QUrlPathInfo(m_kurl).fileName();
     }
 
     // The initial, unparsed, url, as a string.
@@ -415,14 +418,14 @@ public:
     void filter(bool replace_user_dir, bool replace_env);
 
 private:
-    void init(const QString& url, const QString& cwd);
+    void init(const QString& url, const QUrl& cwd);
 
-    KUrl m_kurl;
+    QUrl m_kurl;
     QString m_url;
     bool m_isURL;
 };
 
-KUrlCompletionPrivate::MyURL::MyURL(const QString& _url, const QString& cwd)
+KUrlCompletionPrivate::MyURL::MyURL(const QString& _url, const QUrl& cwd)
 {
     init(_url, cwd);
 }
@@ -434,7 +437,7 @@ KUrlCompletionPrivate::MyURL::MyURL(const MyURL& _url)
     m_isURL = _url.m_isURL;
 }
 
-void KUrlCompletionPrivate::MyURL::init(const QString& _url, const QString& cwd)
+void KUrlCompletionPrivate::MyURL::init(const QString& _url, const QUrl& cwd)
 {
     // Save the original text
     m_url = _url;
@@ -454,23 +457,22 @@ void KUrlCompletionPrivate::MyURL::init(const QString& _url, const QString& cwd)
     QRegExp protocol_regex = QRegExp("^(?![A-Za-z]:)[^/\\s\\\\]*:");
 
     // Assume "file:" or whatever is given by 'cwd' if there is
-    // no protocol.  (KUrl does this only for absolute paths)
+    // no protocol.  (QUrl does this only for absolute paths)
     if (protocol_regex.indexIn(url_copy) == 0) {
-        m_kurl = KUrl(url_copy);
+        m_kurl = QUrl(url_copy);
         m_isURL = true;
     } else { // relative path or ~ or $something
         m_isURL = false;
         if (!QDir::isRelativePath(url_copy) ||
                 url_copy.startsWith(QLatin1Char('~')) ||
                 url_copy.startsWith(QLatin1Char('$'))) {
-            m_kurl = QUrl();
-            m_kurl.setPath(url_copy);
+            m_kurl = QUrl::fromLocalFile(url_copy);
         } else {
+            // Relative path
             if (cwd.isEmpty()) {
-                m_kurl = KUrl(url_copy);
+                m_kurl = QUrl(url_copy);
             } else {
-                m_kurl = KUrl(cwd);
-                m_kurl.addPath(url_copy);
+                m_kurl = cwd.resolved(QUrl(url_copy));
             }
         }
     }
@@ -516,7 +518,7 @@ KUrlCompletion::~KUrlCompletion()
 
 void KUrlCompletionPrivate::init()
 {
-    cwd = QDir::homePath();
+    cwd = QUrl::fromLocalFile(QDir::homePath());
 
     replace_home = true;
     replace_env = true;
@@ -535,12 +537,12 @@ void KUrlCompletionPrivate::init()
     q->setIgnoreCase(true);
 }
 
-void KUrlCompletion::setDir(const QString& _dir)
+void KUrlCompletion::setDir(const QUrl& dir)
 {
-    d->cwd = _dir;
+    d->cwd = dir;
 }
 
-QString KUrlCompletion::dir() const
+QUrl KUrlCompletion::dir() const
 {
     return d->cwd;
 }
@@ -590,9 +592,9 @@ QString KUrlCompletion::makeCompletion(const QString& text)
 
     // Set d->prepend to the original URL, with the filename [and ref/query] stripped.
     // This is what gets prepended to the directory-listing matches.
-    int toRemove = url.file().length() - url.kurl().query().length();
-    if (url.kurl().hasRef())
-        toRemove += url.kurl().ref().length() + 1;
+    int toRemove = url.file().length() - url.kurl().encodedQuery().length();
+    if (url.kurl().hasFragment())
+        toRemove += url.kurl().fragment().length() + 1;
     d->prepend = text.left(text.length() - toRemove);
     d->complete_url = url.isURL();
 
@@ -815,7 +817,7 @@ bool KUrlCompletionPrivate::envCompletion(const KUrlCompletionPrivate::MyURL& ur
 
 bool KUrlCompletionPrivate::exeCompletion(const KUrlCompletionPrivate::MyURL& url, QString* pMatch)
 {
-    if (url.scheme() != QLatin1String("file"))
+    if (!url.isLocalFile())
         return false;
 
     QString directory = unescape(url.dir());  // remove escapes
@@ -843,7 +845,7 @@ bool KUrlCompletionPrivate::exeCompletion(const KUrlCompletionPrivate::MyURL& ur
         dirList.append(directory);
     } else if (!directory.isEmpty() && !cwd.isEmpty()) {
         // current directory
-        dirList.append(cwd + QLatin1Char('/') + directory);
+        dirList.append(cwd.toLocalFile() + QLatin1Char('/') + directory);
     }
 
     // No hidden files unless the user types "."
@@ -876,7 +878,7 @@ bool KUrlCompletionPrivate::exeCompletion(const KUrlCompletionPrivate::MyURL& ur
 
 bool KUrlCompletionPrivate::fileCompletion(const KUrlCompletionPrivate::MyURL& url, QString* pMatch)
 {
-    if (url.scheme() != QLatin1String("file"))
+    if (!url.isLocalFile())
         return false;
 
     QString directory = unescape(url.dir());
@@ -908,9 +910,9 @@ bool KUrlCompletionPrivate::fileCompletion(const KUrlCompletionPrivate::MyURL& u
         dirList.append(directory);
     } else if (!cwd.isEmpty()) {
         // current directory
-        QString dirToAdd = cwd;
+        QString dirToAdd = cwd.toLocalFile();
         if (!directory.isEmpty()) {
-            if (!cwd.endsWith('/'))
+            if (!dirToAdd.endsWith('/'))
                 dirToAdd.append(QLatin1Char('/'));
             dirToAdd.append(directory);
         }
@@ -963,11 +965,10 @@ bool KUrlCompletionPrivate::urlCompletion(const KUrlCompletionPrivate::MyURL& ur
         return false;
 
     // Use d->cwd as base url in case url is not absolute
-    KUrl url_dir = url.kurl();
+    QUrl url_dir = url.kurl();
     if (url_dir.isRelative() && !cwd.isEmpty()) {
-        const KUrl url_cwd (cwd);
         // Create an URL with the directory to be listed
-        url_dir = KUrl(url_cwd,  url_dir.url());
+        url_dir = cwd.resolved(url_dir);
     }
 
     // url is malformed
@@ -981,7 +982,7 @@ bool KUrlCompletionPrivate::urlCompletion(const KUrlCompletionPrivate::MyURL& ur
             return false;
 
         // url does not specify a valid directory
-        if (url_dir.directory(KUrl::AppendTrailingSlash | KUrl::ObeyTrailingSlash).isEmpty())
+        if (QUrlPathInfo(url_dir).directory().isEmpty())
             return false;
 
         // automatic completion is disabled
@@ -993,22 +994,21 @@ bool KUrlCompletionPrivate::urlCompletion(const KUrlCompletionPrivate::MyURL& ur
     if (!KProtocolManager::supportsListing(url_dir))
         return false;
 
-    url_dir.setFileName(QString()); // not really nesseccary, but clear the filename anyway...
-
     // Remove escapes
-    QString directory = unescape(url_dir.directory(KUrl::AppendTrailingSlash | KUrl::ObeyTrailingSlash));
-
-    url_dir.setPath(directory);
+    QUrlPathInfo info(url_dir);
+    const QString directory = unescape(info.directory());
+    info.setPath(directory);
+    url_dir = info.url();
 
     // List files if needed
     //
-    if (!isListedUrl(CTUrl, url_dir.prettyUrl(), url.file())) {
+    if (!isListedUrl(CTUrl, directory, url.file())) {
         q->stop();
         q->clear();
 
-        setListedUrl(CTUrl, url_dir.prettyUrl(), QString());
+        setListedUrl(CTUrl, directory, QString());
 
-        QList<KUrl> url_list;
+        QList<QUrl> url_list;
         url_list.append(url_dir);
 
         listUrls(url_list, QString(), false);
@@ -1075,8 +1075,7 @@ QString KUrlCompletionPrivate::listDirectories(
         for (QStringList::ConstIterator it = dirList.constBegin();
                 it != end;
                 ++it) {
-            KUrl url;
-            url.setPath(*it);
+            QUrl url = QUrl::fromLocalFile(*it);
             if (KAuthorized::authorizeUrlAction(QLatin1String("list"), QUrl(), url))
                 dirs.append(*it);
         }
@@ -1093,13 +1092,13 @@ QString KUrlCompletionPrivate::listDirectories(
     // Use KIO
     //kDebug() << "Listing (listDirectories):" << dirList << "with KIO";
 
-    QList<KUrl> url_list;
+    QList<QUrl> url_list;
 
     QStringList::ConstIterator it = dirList.constBegin();
     QStringList::ConstIterator end = dirList.constEnd();
 
     for (; it != end; ++it) {
-        url_list.append(KUrl(*it));
+        url_list.append(QUrl(*it));
     }
 
     listUrls(url_list, filter, only_exe, no_hidden);
@@ -1117,7 +1116,7 @@ QString KUrlCompletionPrivate::listDirectories(
  * finished() is called when the listing is done
  */
 void KUrlCompletionPrivate::listUrls(
-    const QList<KUrl> &urls,
+    const QList<QUrl> &urls,
     const QString& filter,
     bool only_exe,
     bool no_hidden)
@@ -1165,7 +1164,7 @@ void KUrlCompletionPrivate::_k_slotEntries(KIO::Job*, const KIO::UDSEntryList& e
         QString entry_name;
         if (!url.isEmpty()) {
             // kDebug() << "url:" << url;
-            entry_name = KUrl(url).fileName();
+            entry_name = QUrlPathInfo(QUrl(url)).fileName();
         } else {
             entry_name = entry.stringValue(KIO::UDSEntry::UDS_NAME);
         }
@@ -1221,7 +1220,7 @@ void KUrlCompletionPrivate::_k_slotIOFinished(KJob* job)
 
     } else {
 
-        KUrl kurl(list_urls.takeFirst());
+        QUrl kurl(list_urls.takeFirst());
 
 //      list_urls.removeAll( kurl );
 
@@ -1257,19 +1256,13 @@ void KUrlCompletion::postProcessMatch(QString* pMatch) const
 {
 //  kDebug() << *pMatch;
 
-    if (!pMatch->isEmpty()) {
+    if (!pMatch->isEmpty() && pMatch->startsWith(QLatin1String("file:"))) {
 
         // Add '/' to directories in file completion mode
         // unless it has already been done
         if (d->last_compl_type == CTFile
                 && pMatch->at(pMatch->length() - 1) != QLatin1Char('/')) {
-            QString copy;
-
-            if (pMatch->startsWith(QLatin1String("file:")))
-                copy = KUrl(*pMatch).toLocalFile();
-            else
-                copy = *pMatch;
-
+            QString copy = QUrl(*pMatch).toLocalFile();
             expandTilde(copy);
             expandEnv(copy);
 #ifdef Q_OS_WIN
@@ -1283,7 +1276,7 @@ void KUrlCompletion::postProcessMatch(QString* pMatch) const
                 pMatch->append(QLatin1Char('/'));
 #else
             if (QDir::isRelativePath(copy))
-                copy.prepend(d->cwd + QLatin1Char('/'));
+                copy.prepend(d->cwd.toLocalFile() + QLatin1Char('/'));
 
 //          kDebug() << "stat'ing" << copy;
 
@@ -1348,7 +1341,7 @@ QString KUrlCompletion::replacedPath(const QString& text, bool replaceHome, bool
     if (text.isEmpty())
         return text;
 
-    KUrlCompletionPrivate::MyURL url(text, QString());  // no need to replace something of our current cwd
+    KUrlCompletionPrivate::MyURL url(text, QUrl());  // no need to replace something of our current cwd
     if (!url.kurl().isLocalFile())
         return text;
 

@@ -28,7 +28,6 @@
 #include <QtCore/QString>
 
 class QStringList;
-class KUrl;
 class KUrlCompletionPrivate;
 
 /**
@@ -84,15 +83,15 @@ public:
     /**
      * Sets the current directory (used as base for completion).
      * Default = $HOME.
-     * @param dir the current directory, either as a path or URL
+     * @param dir the current directory, as a URL (use QUrl::fromLocalFile for local paths)
      */
-    virtual void setDir(const QString& dir);
+    virtual void setDir(const QUrl& dir);
 
     /**
      * Returns the current directory, as it was given in setDir
-     * @return the current directory (path or URL)
+     * @return the current directory, as a URL (use QUrl::toLocalFile for local paths)
      */
-    virtual QString dir() const;
+    virtual QUrl dir() const;
 
     /**
      * Check whether asynchronous completion is in progress.
@@ -155,7 +154,7 @@ public:
      * urls.
      * @param text the text to process
      * @return the path or URL resulting from this operation. If you
-         * want to convert it to a KUrl, use KUrl::fromPathOrUrl.
+     * want to convert it to a QUrl, use QUrl::fromUserInput.
      */
     QString replacedPath(const QString& text) const;
 

@@ -1443,7 +1443,7 @@ void KFileWidgetPrivate::_k_urlEntered(const QUrl& url)
     // is trigged in ctor before completion object is set
     KUrlCompletion *completion = dynamic_cast<KUrlCompletion*>(locationEdit->completionObject());
     if (completion) {
-        completion->setDir( url.path() );
+        completion->setDir(url);
     }
 
     if (placesView) {
@@ -1851,7 +1851,7 @@ void KFileWidgetPrivate::readConfig(KConfigGroup &configGroup)
     // our current directory (that was very probably set on the constructor)
     KUrlCompletion *completion = dynamic_cast<KUrlCompletion*>(locationEdit->completionObject());
     if (completion) {
-        completion->setDir(ops->url().toString());
+        completion->setDir(ops->url());
     }
 
     // show or don't show the speedbar
