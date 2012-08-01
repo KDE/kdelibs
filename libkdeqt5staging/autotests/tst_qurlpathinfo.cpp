@@ -62,21 +62,23 @@ void tst_QUrlPathInfo::directoryAndFileName_data()
 {
     QTest::addColumn<QString>("urlStr");
     QTest::addColumn<QString>("expectedDirectory");
+    QTest::addColumn<QString>("expectedDirectoryTrailingSlash");
     QTest::addColumn<QString>("expectedFileName");
     QTest::addColumn<QString>("expectedDirectoryUrl");
 
-    QTest::newRow("absoluteFile") << "file:///temp/tmp.txt" << "/temp" << "tmp.txt" << "file:///temp";
-    QTest::newRow("absoluteDir") << "file:///temp/" << "/temp" << QString() << "file:///temp";
-    QTest::newRow("absoluteInRoot") << "file:///temp" << "/" << "temp" << "file:///";
-    QTest::newRow("relative") << "temp/tmp.txt" << "temp" << "tmp.txt" << "temp";
-    QTest::newRow("relativeNoSlash") << "tmp.txt" << QString() << "tmp.txt" << QString();
-    QTest::newRow("encoded") << "print:/specials/Print%20To%20File%20(PDF%252FAcrobat)" << "/specials" << "Print To File (PDF%2FAcrobat)" << "print:/specials";
+    QTest::newRow("absoluteFile") << "file:///temp/tmp.txt" << "/temp" << "/temp/" << "tmp.txt" << "file:///temp";
+    QTest::newRow("absoluteDir") << "file:///temp/" << "/temp" << "/temp/" << QString() << "file:///temp";
+    QTest::newRow("absoluteInRoot") << "file:///temp" << "/" << "/" << "temp" << "file:///";
+    QTest::newRow("relative") << "temp/tmp.txt" << "temp" << "temp/" << "tmp.txt" << "temp";
+    QTest::newRow("relativeNoSlash") << "tmp.txt" << QString() << QString() << "tmp.txt" << QString();
+    QTest::newRow("encoded") << "print:/specials/Print%20To%20File%20(PDF%252FAcrobat)" << "/specials" << "/specials/" << "Print To File (PDF%2FAcrobat)" << "print:/specials";
 }
 
 void tst_QUrlPathInfo::directoryAndFileName()
 {
     QFETCH(QString, urlStr);
     QFETCH(QString, expectedDirectory);
+    QFETCH(QString, expectedDirectoryTrailingSlash);
     QFETCH(QString, expectedFileName);
     QFETCH(QString, expectedDirectoryUrl);
 
@@ -88,6 +90,7 @@ void tst_QUrlPathInfo::directoryAndFileName()
     QVERIFY(url.isValid());
     const QUrlPathInfo info(url);
     QCOMPARE(info.directory(), expectedDirectory);
+    QCOMPARE(info.directory(QUrlPathInfo::AppendTrailingSlash), expectedDirectoryTrailingSlash);
     QCOMPARE(info.fileName(), expectedFileName);
     QCOMPARE(info.directoryUrl().toString(), expectedDirectoryUrl);
 }

@@ -257,11 +257,15 @@ void QUrlPathInfo::setFileName(const QString &fileName)
 
    \snippet doc/src/snippets/code/src_corelib_io_qurl.cpp 7
 
+   If \a options is None (the default) or StripTrailingSlash, the directory is returned
+   without a trailing slash. Otherwise, if \a options if AppendTrailingSlash, a slash
+   is appended. The root directory ("/") is always returned as "/".
+
    If the path doesn't contain any slash, it is fully returned as part of fileName, and directoryPath will be empty.
 
    \sa path(), fileName(), setFileName(), directoryUrl()
 */
-QString QUrlPathInfo::directory() const
+QString QUrlPathInfo::directory(QUrlPathInfo::PathFormattingOptions options) const
 {
     const QString ourPath = path();
     const int slash = ourPath.lastIndexOf(QLatin1Char('/'));
@@ -269,7 +273,7 @@ QString QUrlPathInfo::directory() const
         return QString();
     else if (slash == 0)
         return QString(QLatin1Char('/'));
-    return ourPath.left(slash);
+    return options == AppendTrailingSlash ? ourPath.left(slash+1) : ourPath.left(slash);
 }
 
 /*!

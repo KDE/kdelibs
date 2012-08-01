@@ -92,7 +92,7 @@ public:
     QString fileName() const;
     void setFileName(const QString &name);
 
-    QString directory() const;
+    QString directory(PathFormattingOptions options = None) const;
     QUrl directoryUrl() const;
 
 private:
