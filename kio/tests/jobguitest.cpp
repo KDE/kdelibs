@@ -17,12 +17,14 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "qtest_kde.h"
+#include <QApplication>
+#include <qtest.h>
 #include <kio/copyjob.h>
 #include <kio/netaccess.h>
 #include <kio/paste.h>
 #include <kio/deletejob.h>
 #include "kiotesthelper.h" // createTestFile etc.
+#include <kde_qt5_compat.h>
 
 #include <QClipboard>
 
@@ -90,6 +92,6 @@ private:
 
 };
 
-QTEST_KDEMAIN( JobGuiTest, GUI )
+QTEST_MAIN(JobGuiTest)
 
 #include "jobguitest.moc"

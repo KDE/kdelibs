@@ -16,10 +16,10 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qtest_kde.h>
+#include <qtest.h>
 #include "kbookmarktest.h"
 
-QTEST_KDEMAIN( KBookmarkTest, NoGUI )
+QTEST_MAIN(KBookmarkTest)
 
 #include <kbookmark.h>
 #include <kdebug.h>
@@ -46,7 +46,7 @@ void KBookmarkTest::testMimeDataOneBookmark()
 {
     QMimeData* mimeData = new QMimeData;
 
-    KBookmark bookmark = KBookmark::standaloneBookmark( "KDE", KUrl( "http://www.kde.org" ), "icon" );
+    KBookmark bookmark = KBookmark::standaloneBookmark( "KDE", QUrl( "http://www.kde.org" ), "icon" );
     bookmark.setDescription( "Comment" );
     QVERIFY( !bookmark.isNull() );
     bookmark.populateMimeData( mimeData );
@@ -71,10 +71,10 @@ void KBookmarkTest::testMimeDataBookmarkList()
 {
     QMimeData* mimeData = new QMimeData;
 
-    KBookmark bookmark1 = KBookmark::standaloneBookmark( "KDE", KUrl( "http://www.kde.org" ), "icon" );
+    KBookmark bookmark1 = KBookmark::standaloneBookmark( "KDE", QUrl( "http://www.kde.org" ), "icon" );
     bookmark1.setDescription( "KDE comment" );
     QVERIFY( !bookmark1.isNull() );
-    KBookmark bookmark2 = KBookmark::standaloneBookmark( "KOffice", KUrl( "http://www.koffice.org" ), "koicon" );
+    KBookmark bookmark2 = KBookmark::standaloneBookmark( "KOffice", QUrl( "http://www.koffice.org" ), "koicon" );
     bookmark2.setDescription( "KOffice comment" );
     QVERIFY( !bookmark2.isNull() );
     bookmark2.setMetaDataItem( "key", "value" );

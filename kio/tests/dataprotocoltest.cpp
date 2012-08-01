@@ -10,11 +10,13 @@
 #  define TESTKIO
 #endif
 
+#include <qtest.h>
 #include "dataprotocoltest.h"
+#include <QDebug>
 
 #include <kio/global.h>
 
-QTEST_KDEMAIN(DataProtocolTest, NoGUI)
+QTEST_MAIN(DataProtocolTest)
 
 class TestSlave {
 public:

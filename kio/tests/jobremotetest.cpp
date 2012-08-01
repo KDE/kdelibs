@@ -18,7 +18,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "qtest_kde.h"
+#include <qtest.h>
 
 #include "jobremotetest.h"
 
@@ -47,9 +47,10 @@
 #include <kio/copyjob.h>
 #include <kio/deletejob.h>
 #include <kio/filejob.h>
+#include <qstandardpaths.h>
 //#include "kiotesthelper.h" // createTestFile etc.
 
-QTEST_KDEMAIN( JobRemoteTest, NoGUI )
+QTEST_MAIN(JobRemoteTest)
 
 QDateTime s_referenceTimeStamp;
 
@@ -59,9 +60,9 @@ static QString remoteTmpDir()
 {
     QString customDir(qgetenv("KIO_JOBREMOTETEST_REMOTETMP"));
     if (customDir.isEmpty()) {
-        return QFile::decodeName(qgetenv("KDEHOME")) + "/jobremotetest/";
+        return QStandardPaths::writableLocation(QStandardPaths::DataLocation) + '/';
     } else {
-        return customDir;
+        return customDir + '/';
     }
 }
 
@@ -91,6 +92,10 @@ static bool myMkdir(const QString& pathOrUrl) {
 
 void JobRemoteTest::initTestCase()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QStandardPaths::enableTestMode(true);
+#endif
+
     s_referenceTimeStamp = QDateTime::currentDateTime().addSecs( -30 ); // 30 seconds ago
 
     // Start with a clean base dir

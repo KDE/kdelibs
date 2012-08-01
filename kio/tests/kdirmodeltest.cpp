@@ -26,7 +26,8 @@
 #include <kdirlister.h>
 //TODO #include "../../kdeui/tests/proxymodeltestsuite/modelspy.h"
 
-#include <qtest_kde.h>
+#include <qtest.h>
+#include <qtest_kde.h> // kWaitForSignal
 
 #ifdef Q_OS_UNIX
 #include <utime.h>
@@ -39,7 +40,7 @@
 #include "kiotesthelper.h"
 #include <qurlpathinfo.h>
 
-QTEST_KDEMAIN( KDirModelTest, NoGUI )
+QTEST_MAIN(KDirModelTest)
 
 #ifndef USE_QTESTEVENTLOOP
 #define exitLoop quit

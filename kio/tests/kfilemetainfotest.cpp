@@ -21,7 +21,7 @@
 
 #include <kdirlister.h>
 #include <kfilemetainfo.h>
-#include <qtest_kde.h>
+#include <qtest.h>
 
 #include "kiotesthelper.h"
 
@@ -56,7 +56,7 @@ void KFileMetaInfoThread::run()
 
 
 
-QTEST_KDEMAIN(KFileMetaInfoTest, NoGUI)
+QTEST_MAIN(KFileMetaInfoTest)
 
 void KFileMetaInfoTest::initTestCase()
 {

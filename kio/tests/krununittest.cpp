@@ -24,8 +24,10 @@
 #include "krununittest.h"
 #include <config-prefix.h>
 
-#include <qtest_kde.h>
-QTEST_KDEMAIN( KRunUnitTest, NoGUI )
+#include <qtest.h>
+#include <qtest_kde.h> // kWaitForSignal
+
+QTEST_MAIN(KRunUnitTest)
 
 #include <qstandardpaths.h>
 
@@ -38,6 +40,9 @@ QTEST_KDEMAIN( KRunUnitTest, NoGUI )
 
 void KRunUnitTest::initTestCase()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QStandardPaths::enableTestMode(true);
+#endif
     // testProcessDesktopExec works only if your terminal application is set to "x-term"
     KConfigGroup cg(KSharedConfig::openConfig(), "General");
     cg.writeEntry("TerminalApplication", "x-term");

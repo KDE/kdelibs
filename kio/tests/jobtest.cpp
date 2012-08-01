@@ -17,9 +17,11 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "qtest_kde.h"
+#include <qtest.h>
 
 #include "jobtest.h"
+#include <QPointer>
+#include <QSignalSpy>
 
 #include <config.h>
 
@@ -49,7 +51,7 @@
 #include <kio/deletejob.h>
 #include "kiotesthelper.h" // createTestFile etc.
 
-QTEST_KDEMAIN( JobTest, NoGUI )
+QTEST_MAIN(JobTest)
 
 // The code comes partly from kdebase/kioslave/trash/testtrash.cpp
 
@@ -75,7 +77,7 @@ static KUrl systemTmpDir()
 
 static QString realSystemPath()
 {
-    return QFile::decodeName( getenv( "KDEHOME" ) ) + "/jobtest-system/";
+    return QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/jobtest-system/";
 }
 #endif
 
@@ -83,6 +85,10 @@ Q_DECLARE_METATYPE(KIO::Job*)
 
 void JobTest::initTestCase()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QStandardPaths::enableTestMode(true);
+#endif
+
     s_referenceTimeStamp = QDateTime::currentDateTime().addSecs( -30 ); // 30 seconds ago
 
     // Start with a clean base dir

@@ -20,7 +20,7 @@
 
 #include "klocalsockettest.h"
 
-#include "qtest_kde.h"
+#include <QtTest/QtTest>
 
 #include <QtCore/QFile>
 #include <QtCore/QDebug>

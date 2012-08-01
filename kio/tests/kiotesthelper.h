@@ -21,6 +21,8 @@
 
 #include <kdebug.h>
 #include <QtCore/qglobal.h>
+#include <qstandardpaths.h>
+#include <QDir>
 #include <kde_file.h>
 #ifdef Q_OS_UNIX
 #include <utime.h>
@@ -31,9 +33,9 @@
 
 QString homeTmpDir()
 {
-    const QString dir(QFile::decodeName(getenv("KDEHOME")) + "/kiotests/");
+    const QString dir(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/kiotests/");
     if (!QFile::exists(dir)) {
-        const bool ok = QDir().mkdir(dir);
+        const bool ok = QDir().mkpath(dir);
         if ( !ok )
             kFatal() << "Couldn't create " << dir;
     }

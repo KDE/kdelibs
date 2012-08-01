@@ -17,9 +17,13 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qtest_kde.h>
+#include <qtest.h>
+#include <kde_qt5_compat.h> // QSKIP_PORTING
 
 #include "fileundomanagertest.h"
+#include <QSignalSpy>
+#include <QDir>
+#include <QFileInfo>
 #include <kio/fileundomanager.h>
 
 #include <kio/copyjob.h>
@@ -40,11 +44,11 @@
 #include <sys/time.h>
 
 
-QTEST_KDEMAIN( FileUndoManagerTest, NoGUI )
+QTEST_MAIN(FileUndoManagerTest)
 
 using namespace KIO;
 
-static QString homeTmpDir() { return QFile::decodeName( getenv( "KDEHOME" ) ) + "/jobtest/"; }
+static QString homeTmpDir() { return QStandardPaths::writableLocation(QStandardPaths::DataLocation) + '/'; }
 static QString destDir() { return homeTmpDir() + "destdir/"; }
 
 static QString srcFile() { return homeTmpDir() + "testfile"; }
@@ -160,6 +164,11 @@ private:
 void FileUndoManagerTest::initTestCase()
 {
     qDebug( "initTestCase" );
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    // TODO: needs QStandardPaths::isTestModeEnabled() in ksycoca.cpp when launching kbuildsycoca
+    //QStandardPaths::enableTestMode(true);
+#endif
 
     // Get kio_trash to share our environment so that it writes trashrc to the right kdehome
     setenv( "KDE_FORK_SLAVES", "yes", true );

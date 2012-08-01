@@ -19,8 +19,10 @@
  */
 
 #include "klocalsocketservertest.h"
+#include <QSignalSpy>
+#include <QFile>
 
-#include "qtest_kde.h"
+#include <qtest.h>
 #include <QtCore/QThread>
 #include "klocalsocket.h"
 

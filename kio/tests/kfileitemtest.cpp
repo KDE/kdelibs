@@ -19,14 +19,14 @@
 
 #include "kfileitemtest.h"
 #include <kfileitemlistproperties.h>
-#include <qtest_kde.h>
+#include <qtest.h>
 #include <kfileitem.h>
 
 #include <qtemporarydir.h>
 #include <qtemporaryfile.h>
 #include <kuser.h>
 
-QTEST_KDEMAIN( KFileItemTest, NoGUI )
+QTEST_MAIN(KFileItemTest)
 
 void KFileItemTest::initTestCase()
 {

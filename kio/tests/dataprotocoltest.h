@@ -6,7 +6,6 @@
 #define DATAPROTOCOLTEST_H
 
 #include <kio/global.h>
-#include <qtest_kde.h>
 
 #include <QtCore/QObject>
 #include <QtCore/QString>

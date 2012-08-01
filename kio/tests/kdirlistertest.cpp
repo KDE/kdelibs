@@ -20,9 +20,10 @@
 #include "kdirlistertest.h"
 #include <qtemporaryfile.h>
 #include <kdirlister.h>
-#include <qtest_kde.h>
+#include <qtest.h>
+#include <qtest_kde.h> // kWaitForSignal
 
-QTEST_KDEMAIN( KDirListerTest, NoGUI )
+QTEST_MAIN(KDirListerTest)
 
 #include <kdebug.h>
 #include "kiotesthelper.h"
