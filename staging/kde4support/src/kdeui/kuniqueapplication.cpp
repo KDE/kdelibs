@@ -63,7 +63,7 @@
 bool KUniqueApplication::Private::s_nofork = false;
 bool KUniqueApplication::Private::s_multipleInstances = false;
 bool KUniqueApplication::Private::s_handleAutoStarted = false;
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 /* private helpers from kapplication_win.cpp */
 #ifndef _WIN32_WCE
 void KApplication_activateWindowForProcess( const QString& executableName );
@@ -75,7 +75,7 @@ KUniqueApplication::addCmdLineOptions()
 {
   KCmdLineOptions kunique_options;
   kunique_options.add("nofork", qi18n("Do not run in the background."));
-#ifdef Q_WS_MACX
+#ifdef Q_OS_MAC
   kunique_options.add("psn", qi18n("Internally added if launched from Finder"));
 #endif
   KCmdLineArgs::addCmdLineOptions(kunique_options, QLocalizedString(), "kuniqueapp", "kde");
@@ -108,7 +108,7 @@ KUniqueApplication::start(StartFlags flags)
   s_kuniqueapplication_startCalled = true;
 
   addCmdLineOptions(); // Make sure to add cmd line options
-#if defined(Q_WS_WIN) || defined(Q_WS_MACX)
+#if defined(Q_OS_WIN) || defined(Q_OS_MACX)
   Private::s_nofork = true;
 #else
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kuniqueapp");
@@ -148,7 +148,7 @@ KUniqueApplication::start(StartFlags flags)
      {
         kError() << "KUniqueApplication: Can't setup D-Bus service. Probably already running."
                  << endl;
-#if defined(Q_WS_WIN) && !defined(_WIN32_WCE)
+#if defined(Q_OS_WIN) && !defined(_WIN32_WCE)
         KApplication_activateWindowForProcess(KCmdLineArgs::aboutData()->appName());
 #endif
         ::exit(255);
@@ -164,7 +164,7 @@ KUniqueApplication::start(StartFlags flags)
 
   }
 
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
   int fd[2];
   signed char result;
   if (0 > pipe(fd))
@@ -289,7 +289,7 @@ KUniqueApplication::start(StartFlags flags)
                  << "Error message was: " << err.name() << ": \"" << err.message() << "\"" << endl;
         ::exit(255);
      }
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
      ::exit(reply);
      break;
   }
@@ -373,7 +373,7 @@ int KUniqueApplication::newInstance()
                 // is called for the first time, like here).
                 KStartupInfo::setNewStartupId(mainWindow, startupId());
 #endif
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
                 KWindowSystem::forceActiveWindow( mainWindow->winId() );
 #endif
 
