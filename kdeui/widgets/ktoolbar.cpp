@@ -55,7 +55,7 @@
 #include <kstandardaction.h>
 #include <ktoggleaction.h>
 #include <kxmlguifactory.h>
-
+#include <kglobal.h>
 #include <kconfiggroup.h>
 
 /*

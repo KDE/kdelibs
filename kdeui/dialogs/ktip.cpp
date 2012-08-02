@@ -44,6 +44,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <krandom.h>
 #include <kseparator.h>
 #include <ktextbrowser.h>
+#include <kglobal.h>
 
 class KTipDatabase::Private
 {

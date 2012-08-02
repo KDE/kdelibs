@@ -26,7 +26,6 @@
 #include <QtCore/QStringList>
 #include <QtCore/QObject>
 
-#include <kglobal.h>
 #include <kwidgets_export.h>
 
 class QIcon;

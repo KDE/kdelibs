@@ -33,6 +33,7 @@
 #include <kmessagebox.h>
 #include <kdebug.h>
 #include <kpushbutton.h>
+#include <kglobal.h>
 
 namespace KDEPrivate {
 

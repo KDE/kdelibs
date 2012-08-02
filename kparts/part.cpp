@@ -41,6 +41,7 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kxmlguifactory.h>
+#include <kglobal.h>
 
 #include <stdio.h>
 #include <unistd.h>

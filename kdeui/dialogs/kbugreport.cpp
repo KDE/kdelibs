@@ -41,6 +41,7 @@
 #include <kcomponentdata.h>
 #include <ktextedit.h>
 #include <ktitlewidget.h>
+#include <kglobal.h>
 
 #include <stdio.h>
 #include <pwd.h>

@@ -34,6 +34,7 @@
 #include <ktitlewidget.h>
 #include <kdebug.h>
 #include <kwindowconfig.h>
+#include <kglobal.h>
 
 #include "downloadwidget.h"
 #include "downloadwidget_p.h"

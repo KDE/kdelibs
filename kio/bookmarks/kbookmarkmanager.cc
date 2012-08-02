@@ -37,6 +37,7 @@
 #include <kconfiggroup.h>
 #include <qsavefile.h>
 #include <qstandardpaths.h>
+#include <kglobal.h>
 
 
 #include "kbookmarkmenu.h"

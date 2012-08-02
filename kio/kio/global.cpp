@@ -27,6 +27,7 @@
 #include <kiconloader.h>
 #include <kprotocolmanager.h>
 #include <qmimedatabase.h>
+#include <kglobal.h>
 #include <kdynamicjobtracker_p.h>
 #include <QtDBus/QtDBus>
 

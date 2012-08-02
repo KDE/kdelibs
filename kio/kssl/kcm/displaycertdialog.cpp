@@ -20,6 +20,7 @@
 #include "displaycertdialog_p.h"
 #include <kpushbutton.h>
 #include <kstandardguiitem.h>
+#include <kglobal.h>
 
 
 DisplayCertDialog::DisplayCertDialog(QWidget *parent)

@@ -37,6 +37,7 @@
 #include <QFile>
 #include <qmimedatabase.h>
 #include <qurlpathinfo.h>
+#include <kglobal.h>
 
 // Enable this to get printDebug() called often, to see the contents of the cache
 //#define DEBUG_CACHE

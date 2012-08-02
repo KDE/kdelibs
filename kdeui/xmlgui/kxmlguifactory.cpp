@@ -39,6 +39,7 @@
 #include <kdebug.h>
 #include <kcomponentdata.h>
 #include <kshortcut.h>
+#include <kglobal.h>
 
 #include "kaction.h"
 #include "kshortcutsdialog.h"

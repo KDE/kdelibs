@@ -32,6 +32,7 @@
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <kdebug.h>
+#include <kglobal.h>
 
 #include "ui/itemsmodel.h"
 #include "ui/itemsviewdelegate.h"

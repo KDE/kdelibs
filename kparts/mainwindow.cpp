@@ -26,6 +26,7 @@
 #include <kcomponentdata.h>
 #include <kstatusbar.h>
 #include <khelpmenu.h>
+#include <kglobal.h>
 
 #include <QApplication>
 #include <kxmlguifactory.h>

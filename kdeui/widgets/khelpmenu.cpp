@@ -49,6 +49,7 @@
 #include <kstandardguiitem.h>
 #include <kswitchlanguagedialog_p.h>
 #include <ktoolinvocation.h>
+#include <kglobal.h>
 
 #include <config.h>
 #ifdef Q_WS_X11
