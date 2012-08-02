@@ -80,6 +80,10 @@ void KStartupInfo_UnitTest::testStart()
     KStartupInfo::sendStartup(id, data);
     KStartupInfo::sendFinish(id, data);
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    QSKIP_PORTING("KXMessages needs Qt5 native event filtering", SkipAll);
+#endif
+
     QTest::kWaitForSignal(this, SIGNAL(ready()), 5000);
 
     QCOMPARE(m_receivedCount, 1);
@@ -92,33 +96,6 @@ void KStartupInfo_UnitTest::testStart()
     //qDebug() << m_receivedData.bin() << m_receivedData.name() << m_receivedData.description() << m_receivedData.icon() << m_receivedData.pids() << m_receivedData.hostname() << m_receivedData.applicationId();
 }
 
-#include <kapplication.h>
-
-// the tested classes need KApplication - this is from qtest_kde.h, with QApp -> KApp
-#define QTEST_KDEMAIN_WITH_COMPONENTNAME_KAPP(TestObject, componentName) \
-int main(int argc, char *argv[]) \
-{ \
-    setenv("LC_ALL", "C", 1); \
-    assert( !QDir::homePath().isEmpty() ); \
-    setenv("KDEHOME", QFile::encodeName( QDir::homePath() + QLatin1String("/.kde-unit-test") ), 1); \
-    setenv("XDG_DATA_HOME", QFile::encodeName( QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/local") ), 1); \
-    setenv("XDG_CONFIG_HOME", QFile::encodeName( QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/config") ), 1); \
-    setenv("KDE_SKIP_KDERC", "1", 1); \
-    unsetenv("KDE_COLOR_DEBUG"); \
-    QFile::remove(QDir::homePath() + QLatin1String("/.kde-unit-test/share/config/qttestrc"));  \
-    KAboutData aboutData( QByteArray(componentName), QByteArray(), ki18n("KDE Test Program"), QByteArray("version") );  \
-    KCmdLineArgs::init( argc, argv, &aboutData); \
-    KApplication app; \
-    app.setApplicationName( QLatin1String("qttest") ); \
-    qRegisterMetaType<KUrl>(); /*as done by kapplication*/ \
-    qRegisterMetaType<KUrl::List>(); \
-    TestObject tc; \
-    KGlobal::ref(); /* don't quit qeventloop after closing a mainwindow */ \
-    return QTest::qExec( &tc, argc, argv ); \
-}
-
-#define QTEST_KDEMAIN_KAPP(TestObject) QTEST_KDEMAIN_WITH_COMPONENTNAME_KAPP(TestObject, "qttest")
-
-QTEST_KDEMAIN_KAPP(KStartupInfo_UnitTest)
+QTEST_MAIN(KStartupInfo_UnitTest)
 
 #include "kstartupinfo_unittest.moc"

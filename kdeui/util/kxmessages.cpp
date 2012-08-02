@@ -24,20 +24,63 @@ DEALINGS IN THE SOFTWARE.
 
 #include "kxmessages.h"
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
 
 #include <qx11info_x11.h>
 #include <X11/Xlib.h>
 #include <fixx11h.h>
-#include <kapplication.h>
+#include <qapplication.h>
+#include <xcb/xcb.h>
+#include <QDebug>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#include <QAbstractNativeEventFilter>
+#endif
 
 class KXMessagesPrivate
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    : public QAbstractNativeEventFilter
+#endif
 {
 public:
     QWidget* handle;
     Atom accept_atom2;
     Atom accept_atom1;
     QMap< WId, QByteArray > incoming_messages;
+    KXMessages* q;
+
+    bool nativeEventFilter(const QByteArray& eventType, void *message, long *result) {
+        Q_UNUSED(result);
+        if (eventType != "xcb_generic_event_t")
+            return false;
+        xcb_generic_event_t* event = reinterpret_cast<xcb_generic_event_t *>(message);
+        uint response_type = event->response_type & ~0x80;
+        if (response_type != XCB_CLIENT_MESSAGE)
+            return false;
+        xcb_client_message_event_t * cm_event = reinterpret_cast<xcb_client_message_event_t *>(event);
+        if (cm_event->format != 8)
+            return false;
+        if (cm_event->type != accept_atom1 && cm_event->type != accept_atom2)
+            return false;
+        char buf[ 21 ]; // can't be longer
+        qstrncpy(buf, reinterpret_cast<char *>(cm_event->data.data8), 21);
+        //qDebug() << cm_event->window << "buf=\"" << buf << "\" atom=" << (cm_event->type == accept_atom1 ? "atom1" : "atom2");
+        if (incoming_messages.contains(cm_event->window)) {
+            if (cm_event->type == accept_atom1)
+                // two different messages on the same window at the same time shouldn't happen anyway
+                incoming_messages[cm_event->window] = QByteArray();
+            incoming_messages[cm_event->window] += buf;
+        } else {
+            if (cm_event->type == accept_atom2) {
+                return false; // middle of message, but we don't have the beginning
+            }
+            incoming_messages[cm_event->window] = buf;
+        }
+        if (strlen(buf) < 20) { // last message fragment   ### what if the last one has a size of 20?
+            emit q->gotMessage(QString::fromUtf8(incoming_messages[cm_event->window]));
+            incoming_messages.remove(cm_event->window);
+        }
+        return false; // lets other KXMessages instances get the event too
+    }
 };
 
 static void send_message_internal(WId w_P, const QString& msg_P, long mask_P,
@@ -52,11 +95,14 @@ KXMessages::KXMessages( const char* accept_broadcast_P, QObject* parent_P )
     : QObject( parent_P )
     , d( new KXMessagesPrivate )
 {
+    d->q = this;
     if( accept_broadcast_P != NULL ) {
         ( void ) qApp->desktop(); //trigger desktop widget creation to select root window events
-        // TODO kapp->installX11EventFilter( this ); // i.e. PropertyChangeMask
-        d->accept_atom1 = XInternAtom(QX11Info::display(), accept_broadcast_P, false);
-        d->accept_atom2 = XInternAtom(QX11Info::display(), QByteArray(QByteArray( accept_broadcast_P ) + "_BEGIN").constData(), false);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+        QCoreApplication::instance()->installNativeEventFilter(d);
+#endif
+        d->accept_atom1 = XInternAtom(QX11Info::display(), QByteArray(QByteArray( accept_broadcast_P ) + "_BEGIN").constData(), false);
+        d->accept_atom2 = XInternAtom(QX11Info::display(), accept_broadcast_P, false);
     } else {
         d->accept_atom1 = d->accept_atom2 = None;
     }
@@ -122,6 +168,7 @@ bool KXMessages::sendMessageX(Display* disp, WId w_P, const char* msg_type_P,
 static void send_message_internal(WId w_P, const QString& msg_P, long mask_P,
                                   Display* disp, Atom atom1_P, Atom atom2_P, Window handle_P)
 {
+    //qDebug() << "send_message_internal" << w_P << msg_P << mask_P << atom1_P << atom2_P << handle_P;
     unsigned int pos = 0;
     QByteArray msg = msg_P.toUtf8();
     unsigned int len = strlen( msg );
@@ -143,40 +190,6 @@ static void send_message_internal(WId w_P, const QString& msg_P, long mask_P,
         pos += i;
     } while( pos <= len );
     XFlush( disp );
-}
-
-bool KXMessages::x11Event(XEvent* ev_P)
-{
-    if( ev_P->type != ClientMessage || ev_P->xclient.format != 8 )
-        return false;
-    if( ev_P->xclient.message_type != d->accept_atom1 && ev_P->xclient.message_type != d->accept_atom2 )
-        return false;
-    char buf[ 21 ]; // can't be longer
-    int i;
-    for( i = 0;
-         i < 20 && ev_P->xclient.data.b[ i ] != '\0';
-         ++i )
-        buf[ i ] = ev_P->xclient.data.b[ i ];
-    buf[ i ] = '\0';
-    if( d->incoming_messages.contains( ev_P->xclient.window ))
-    {
-        if( ev_P->xclient.message_type == d->accept_atom1 && d->accept_atom1 != d->accept_atom2 )
-            // two different messages on the same window at the same time shouldn't happen anyway
-            d->incoming_messages[ ev_P->xclient.window ] = QByteArray();
-        d->incoming_messages[ ev_P->xclient.window ] += buf;
-    }
-    else
-    {
-        if( ev_P->xclient.message_type == d->accept_atom2 && d->accept_atom1 != d->accept_atom2 )
-            return false; // middle of message, but we don't have the beginning
-        d->incoming_messages[ ev_P->xclient.window ] = buf;
-    }
-    if( i < 20 ) // last message fragment
-    {
-        emit gotMessage( QString::fromUtf8( d->incoming_messages[ ev_P->xclient.window ] ));
-        d->incoming_messages.remove( ev_P->xclient.window );
-    }
-    return false; // lets other KXMessages instances get the event too
 }
 
 #endif

@@ -28,8 +28,10 @@ DEALINGS IN THE SOFTWARE.
 #include <kdeui_export.h>
 #include <QWidget>
 #include <QtCore/QMap>
-#ifdef Q_WS_X11
-#include <X11/X.h>
+
+#include <config.h> // HAVE_X11
+#ifdef HAVE_X11
+typedef struct _XDisplay Display;
 
 class QString;
 
@@ -110,15 +112,10 @@ public:
 	 * @param message the message that has been received
 	 */
         void gotMessage(const QString& message);
-    protected:
-	/**
-	 * @internal
-	 */
-        virtual bool x11Event( XEvent* ev );
     private:
+        friend class KXMessagesPrivate;
         KXMessagesPrivate * const d;
 };
 
 #endif
 #endif
-
