@@ -37,7 +37,6 @@ KDECORE_UNIT_TESTS(
  kshelltest
  kasciitest
  ktimezonestest
- kentrymaptest
  ksharedptrtest
  kdatetimetest
  kautostarttest

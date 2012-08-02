@@ -33,6 +33,7 @@ kconfigcore_unit_tests(
    kconfigtest
    kdesktopfiletest
    ksharedconfigtest
+   kentrymaptest
 )
 
 kconfiggui_unit_tests(
