@@ -30,7 +30,7 @@
 #include <kwindowsystem_export.h>
 #include <QWidget>
 #include <config-kwindowsystem.h>
-#ifdef HAVE_X11
+#if HAVE_X11
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
