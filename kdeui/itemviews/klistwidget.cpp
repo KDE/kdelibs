@@ -96,7 +96,7 @@ void KListWidget::KListWidgetPrivate::_k_slotSettingsChanged(int category)
 {
     if (category != KGlobalSettings::SETTINGS_MOUSE)
         return;
-    m_bUseSingle = KGlobalSettings::singleClick();
+    m_bUseSingle = q->style()->styleHint(QStyle::SH_ItemView_ActivateItemOnSingleClick);
 
     q->disconnect(q, SIGNAL(itemClicked(QListWidgetItem*)));
     q->disconnect(q, SIGNAL(itemDoubleClicked(QListWidgetItem*)));
