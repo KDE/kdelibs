@@ -1,6 +1,7 @@
 /****************************************************************************
 
  Copyright (C) 2001-2003 Lubos Lunak        <l.lunak@kde.org>
+ Copyright 2012 David Faure <faure@kde.org>
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
@@ -29,7 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #include <qx11info_x11.h>
 #include <X11/Xlib.h>
 #include <fixx11h.h>
-#include <qapplication.h>
+#include <qcoreapplication.h>
 #include <xcb/xcb.h>
 #include <QDebug>
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
@@ -97,7 +98,6 @@ KXMessages::KXMessages( const char* accept_broadcast_P, QObject* parent_P )
 {
     d->q = this;
     if( accept_broadcast_P != NULL ) {
-        ( void ) qApp->desktop(); //trigger desktop widget creation to select root window events
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         QCoreApplication::instance()->installNativeEventFilter(d);
 #endif
