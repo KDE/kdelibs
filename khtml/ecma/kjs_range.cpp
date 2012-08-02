@@ -203,8 +203,9 @@ const ClassInfo RangeConstructor::info = { "RangeConstructor", 0, &RangeConstruc
 */
 
 RangeConstructor::RangeConstructor(ExecState *exec)
+  : DOMObject(exec->lexicalInterpreter()->builtinObjectPrototype())
 {
- setPrototype(exec->lexicalInterpreter()->builtinObjectPrototype());
+  putDirect(exec->propertyNames().prototype, DOMRangeProto::self(exec), DontEnum|DontDelete|ReadOnly);
 }
 
 bool RangeConstructor::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
