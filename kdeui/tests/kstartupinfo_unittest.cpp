@@ -80,7 +80,7 @@ void KStartupInfo_UnitTest::testStart()
     KStartupInfo::sendStartup(id, data);
     KStartupInfo::sendFinish(id, data);
 
-    QTest::kWaitForSignal(this, SIGNAL(ready()));
+    QTest::kWaitForSignal(this, SIGNAL(ready()), 5000);
 
     QCOMPARE(m_receivedCount, 1);
     // qDebug() << m_receivedId.id(); // something like "$HOSTNAME;1342544979;490718;8602_TIME0"
