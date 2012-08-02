@@ -19,11 +19,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <QClipboard>
 #include <qtest_kde.h>
-#include <qtestevent.h>
 #include <kstartupinfo.h>
-#include <klocalizedstring.h> // ki18n
 
 class KStartupInfo_UnitTest : public QObject
 {

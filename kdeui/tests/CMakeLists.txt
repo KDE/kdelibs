@@ -38,6 +38,7 @@ KDEUI_UNIT_TESTS(
   klineedit_unittest
   ktextedit_unittest
   kcombobox_unittest
+  kxmessages_unittest
   kreplacetest
   kshortcuttest
   kstandardactiontest

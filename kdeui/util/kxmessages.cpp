@@ -63,6 +63,7 @@ public:
         if (cm_event->type != accept_atom1 && cm_event->type != accept_atom2)
             return false;
         char buf[ 21 ]; // can't be longer
+        // Copy the data in order to null-terminate it
         qstrncpy(buf, reinterpret_cast<char *>(cm_event->data.data8), 21);
         //qDebug() << cm_event->window << "buf=\"" << buf << "\" atom=" << (cm_event->type == accept_atom1 ? "atom1" : "atom2");
         if (incoming_messages.contains(cm_event->window)) {
@@ -76,7 +77,7 @@ public:
             }
             incoming_messages[cm_event->window] = buf;
         }
-        if (strlen(buf) < 20) { // last message fragment   ### what if the last one has a size of 20?
+        if (strlen(buf) < 20) { // last message fragment
             emit q->gotMessage(QString::fromUtf8(incoming_messages[cm_event->window]));
             incoming_messages.remove(cm_event->window);
         }
