@@ -78,13 +78,6 @@ void KXMessages::broadcastMessage(const char* msg_type_P, const QString& message
                           a1, a2, d->handle->winId());
 }
 
-void KXMessages::sendMessage(WId w_P, const char* msg_type_P, const QString& message_P)
-{
-    Atom a2 = XInternAtom( QX11Info::display(), msg_type_P, false );
-    Atom a1 = XInternAtom( QX11Info::display(), QByteArray(QByteArray( msg_type_P ) + "_BEGIN").constData(), false );
-    send_message_internal( w_P, message_P, 0, QX11Info::display(), a1, a2, d->handle->winId());
-}
-
 bool KXMessages::broadcastMessageX(Display* disp, const char* msg_type_P,
                                    const QString& message_P, int screen_P)
 {
@@ -102,6 +95,14 @@ bool KXMessages::broadcastMessageX(Display* disp, const char* msg_type_P,
     return true;
 }
 
+#if 0 // currently unused
+void KXMessages::sendMessage(WId w_P, const char* msg_type_P, const QString& message_P)
+{
+    Atom a2 = XInternAtom( QX11Info::display(), msg_type_P, false );
+    Atom a1 = XInternAtom( QX11Info::display(), QByteArray(QByteArray( msg_type_P ) + "_BEGIN").constData(), false );
+    send_message_internal( w_P, message_P, 0, QX11Info::display(), a1, a2, d->handle->winId());
+}
+
 bool KXMessages::sendMessageX(Display* disp, WId w_P, const char* msg_type_P,
                               const QString& message_P)
 {
@@ -116,6 +117,7 @@ bool KXMessages::sendMessageX(Display* disp, WId w_P, const char* msg_type_P,
     XDestroyWindow( disp, win );
     return true;
 }
+#endif
 
 static void send_message_internal(WId w_P, const QString& msg_P, long mask_P,
                                   Display* disp, Atom atom1_P, Atom atom2_P, Window handle_P)

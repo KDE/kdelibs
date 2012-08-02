@@ -60,6 +60,27 @@ public:
 
         virtual ~KXMessages();
 	/**
+	 * Broadcasts the given message with the given message type.
+	 * @param msg_type the type of the message
+	 * @param message the message itself
+         * @param screen X11 screen to use, -1 for the default
+	 */
+        void broadcastMessage(const char* msg_type, const QString& message, int screen = -1);
+	/**
+	 * Broadcasts the given message with the given message type.
+	 *
+	 * @param disp X11 connection which will be used instead of
+	 *             QX11Info::display()
+	 * @param msg_type the type of the message
+	 * @param message the message itself
+         * @param screen X11 screen to use, -1 for the default
+	 * @return false when an error occurred, true otherwise
+	 */
+        static bool broadcastMessageX(Display* disp, const char* msg_type,
+                                      const QString& message, int screen = -1);
+
+#if 0 // currently unused
+	/**
 	 * Sends the given message with the given message type only to given
          * window.
          *
@@ -69,19 +90,11 @@ public:
 	 */
         void sendMessage( WId w, const char* msg_type, const QString& message );
 	/**
-	 * Broadcasts the given message with the given message type.
-	 * @param msg_type the type of the message
-	 * @param message the message itself
-         * @param screen X11 screen to use, -1 for the default
-	 */
-        void broadcastMessage(const char* msg_type, const QString& message, int screen = -1);
-
-	/**
 	 * Sends the given message with the given message type only to given
          * window.
          *
 	 * @param disp X11 connection which will be used instead of
-	 *             qt_x11display()
+	 *             QX11Info::display()
          * @param w X11 handle for the destination window
 	 * @param msg_type the type of the message
 	 * @param message the message itself
@@ -89,19 +102,8 @@ public:
 	 */
         static bool sendMessageX(Display* disp, WId w, const char* msg_type,
                                  const QString& message);
+#endif
 
-	/**
-	 * Broadcasts the given message with the given message type.
-	 *
-	 * @param disp X11 connection which will be used instead of
-	 *             qt_x11display()
-	 * @param msg_type the type of the message
-	 * @param message the message itself
-         * @param screen X11 screen to use, -1 for the default
-	 * @return false when an error occurred, true otherwise
-	 */
-        static bool broadcastMessageX(Display* disp, const char* msg_type,
-                                      const QString& message, int screen = -1);
     Q_SIGNALS:
 	/**
 	 * Emitted when a message was received.
