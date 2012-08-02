@@ -717,7 +717,9 @@ void ProspectiveTokenizer::processAttribute()
         if (attribute == localNamePart(ATTR_HREF) && m_urlToLoad.isEmpty())
             m_urlToLoad = parseURL(DOMString(m_attributeValue.data(), m_attributeValue.size()));
         else if (attribute == localNamePart(ATTR_REL)) {
-            QString val = DOMStringImpl(DOMStringImpl::ShallowCopy, m_attributeValue.data(), m_attributeValue.size()).lower()->string();
+            DOMStringImpl* lowerAttribute = DOMStringImpl(DOMStringImpl::ShallowCopy, m_attributeValue.data(), m_attributeValue.size()).lower();
+            QString val = lowerAttribute->string();
+            delete lowerAttribute;
             m_linkIsStyleSheet = val.contains("stylesheet") && !val.contains("alternate") && !val.contains("icon");
         }
     }
