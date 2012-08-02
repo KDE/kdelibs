@@ -22,6 +22,7 @@ set(libkde4support_SRCS
     kdecore/k3streamsocket.cpp
     kdecore/k3socketbuffer.cpp
     kdecore/netsupp.cpp
+    kdecore/kascii.cpp
 
     kdeui/kicon.cpp
     kdeui/knumvalidator.cpp
@@ -90,6 +91,7 @@ install(FILES
     kdecore/kgenericfactory.h
     kdecore/kgenericfactory.tcc
     kdecore/ktypelist.h
+    kdecore/kascii.h
 
     kdeui/kicon.h
     kdeui/knumvalidator.h

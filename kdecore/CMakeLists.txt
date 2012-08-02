@@ -200,7 +200,6 @@ set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    sycoca/ksycocaentry.cpp
    sycoca/ksycocafactory.cpp
    sycoca/kmemfile.cpp
-   text/kascii.cpp
    util/kautostart.cpp
    util/kdedmodule.cpp
    util/kdeversion.cpp
@@ -337,7 +336,6 @@ install(FILES
    sycoca/ksycoca.h
    sycoca/ksycocaentry.h
    sycoca/ksycocatype.h
-   text/kascii.h
    util/kautostart.h
    util/kde_file.h
    util/kdedmodule.h
