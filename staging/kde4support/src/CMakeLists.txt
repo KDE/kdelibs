@@ -89,6 +89,7 @@ install(FILES
     kdecore/kmimetype.h
     kdecore/kgenericfactory.h
     kdecore/kgenericfactory.tcc
+    kdecore/ktypelist.h
 
     kdeui/kicon.h
     kdeui/knumvalidator.h

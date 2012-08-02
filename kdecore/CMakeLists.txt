@@ -348,7 +348,6 @@ install(FILES
    util/kpluginloader.h
    util/kshell.h
    util/ksortablelist.h
-   util/ktypelist.h
    util/kuser.h
    util/qtest_kde.h
    ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h
