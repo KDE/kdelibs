@@ -42,6 +42,7 @@ public:
     static KProtocolInfoFactory* self();
 
     KProtocolInfoFactory();
+    ~KProtocolInfoFactory();
 
     /*
      * Returns protocol info for @p protocol.

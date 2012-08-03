@@ -39,6 +39,12 @@ KProtocolInfoFactory::KProtocolInfoFactory()
 {
 }
 
+KProtocolInfoFactory::~KProtocolInfoFactory()
+{
+    qDeleteAll(m_cache);
+    m_cache.clear();
+}
+
 static QStringList servicesDirs() {
     return QStandardPaths::locateAll(QStandardPaths::GenericDataLocation,
                                      QLatin1String("kde5/services"),

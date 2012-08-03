@@ -249,6 +249,7 @@ void KRunUnitTest::testMimeTypeBrokenLink()
     QTest::kWaitForSignal(krun, SIGNAL(finished()), 1000);
     QVERIFY(krun->mimeTypeFound().isEmpty());
     QCOMPARE(spyError.count(), 1);
+    QTest::qWait(100); // let auto-deletion proceed.
 }
 
 void KRunUnitTest::testMimeTypeDoesNotExist()
@@ -258,4 +259,5 @@ void KRunUnitTest::testMimeTypeDoesNotExist()
     QTest::kWaitForSignal(krun, SIGNAL(finished()), 1000);
     QVERIFY(krun->mimeTypeFound().isEmpty());
     QCOMPARE(spyError.count(), 1);
+    QTest::qWait(100); // let auto-deletion proceed.
 }
