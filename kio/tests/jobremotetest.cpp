@@ -48,6 +48,7 @@
 #include <kio/deletejob.h>
 #include <kio/filejob.h>
 #include <qstandardpaths.h>
+#include <qurlpathinfo.h>
 //#include "kiotesthelper.h" // createTestFile etc.
 
 QTEST_MAIN(JobRemoteTest)
@@ -56,13 +57,14 @@ QDateTime s_referenceTimeStamp;
 
 // The code comes partly from jobtest.cpp
 
-static QString remoteTmpDir()
+static QUrl remoteTmpUrl()
 {
     QString customDir(qgetenv("KIO_JOBREMOTETEST_REMOTETMP"));
     if (customDir.isEmpty()) {
-        return QStandardPaths::writableLocation(QStandardPaths::DataLocation) + '/';
+        return QUrl::fromLocalFile(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + '/');
     } else {
-        return customDir + '/';
+        // Could be a path or a URL
+        return QUrl::fromUserInput(customDir + '/');
     }
 }
 
@@ -76,15 +78,13 @@ static QString localTmpDir()
 #endif
 }
 
-static bool myExists(const QString& pathOrUrl) {
-    KUrl url(pathOrUrl);
+static bool myExists(const QUrl& url) {
     KIO::Job* job = KIO::stat(url, KIO::StatJob::DestinationSide, 0, KIO::HideProgressInfo);
     job->setUiDelegate(0);
     return KIO::NetAccess::synchronousRun(job, 0);
 }
 
-static bool myMkdir(const QString& pathOrUrl) {
-    KUrl url(pathOrUrl);
+static bool myMkdir(const QUrl& url) {
     KIO::Job* job = KIO::mkdir(url, -1);
     job->setUiDelegate(0);
     return KIO::NetAccess::synchronousRun(job, 0);
@@ -100,20 +100,19 @@ void JobRemoteTest::initTestCase()
 
     // Start with a clean base dir
     cleanupTestCase();
-    if ( !myExists( remoteTmpDir() ) ) {
-        bool ok = myMkdir( remoteTmpDir() );
+    QUrl url = remoteTmpUrl();
+    if (!myExists(url)) {
+        const bool ok = url.isLocalFile() ? QDir().mkpath(url.toLocalFile()) : myMkdir(url);
         if ( !ok )
-            kFatal() << "Couldn't create " << remoteTmpDir();
+            kFatal() << "Couldn't create" << url;
     }
-    if ( !myExists( localTmpDir() ) ) {
-        bool ok = myMkdir( localTmpDir() );
-        if ( !ok )
-            kFatal() << "Couldn't create " << localTmpDir();
-    }
+    const bool ok = QDir().mkpath(localTmpDir());
+    if ( !ok )
+        kFatal() << "Couldn't create" << localTmpDir();
 }
 
-static void delDir(const QString& pathOrUrl) {
-    KIO::Job* job = KIO::del(KUrl(pathOrUrl), KIO::HideProgressInfo);
+static void delDir(const QUrl& pathOrUrl) {
+    KIO::Job* job = KIO::del(pathOrUrl, KIO::HideProgressInfo);
     job->setUiDelegate(0);
     KIO::NetAccess::synchronousRun(job, 0);
 }
@@ -121,8 +120,8 @@ static void delDir(const QString& pathOrUrl) {
 
 void JobRemoteTest::cleanupTestCase()
 {
-    delDir( remoteTmpDir() );
-    delDir( localTmpDir() );
+    delDir(remoteTmpUrl());
+    delDir(QUrl::fromLocalFile(localTmpDir()));
 }
 
 void JobRemoteTest::enterLoop()
@@ -137,9 +136,9 @@ void JobRemoteTest::enterLoop()
 
 void JobRemoteTest::putAndGet()
 {
-    const QString filePath = remoteTmpDir() + "putAndGetFile";
-    KUrl u(filePath);
-    KIO::TransferJob* job = KIO::put( u, 0600, KIO::Overwrite | KIO::HideProgressInfo );
+    QUrlPathInfo u(remoteTmpUrl());
+    u.addPath("putAndGetFile");
+    KIO::TransferJob* job = KIO::put(u.url(), 0600, KIO::Overwrite | KIO::HideProgressInfo);
     QDateTime mtime = QDateTime::currentDateTime().addSecs( -30 ); // 30 seconds ago
     mtime.setTime_t(mtime.toTime_t()); // hack for losing the milliseconds
     job->setModificationTime(mtime);
@@ -155,7 +154,7 @@ void JobRemoteTest::putAndGet()
 
     m_result = -1;
 
-    KIO::StoredTransferJob* getJob = KIO::storedGet( u, KIO::NoReload, KIO::HideProgressInfo );
+    KIO::StoredTransferJob* getJob = KIO::storedGet(u.url(), KIO::NoReload, KIO::HideProgressInfo);
     getJob->setUiDelegate( 0 );
     connect( getJob, SIGNAL(result(KJob*)),
             this, SLOT(slotGetResult(KJob*)) );
@@ -201,9 +200,9 @@ void JobRemoteTest::openFileWriting()
 {
     m_rwCount = 0;
 
-    const QString filePath = remoteTmpDir() + "openFileWriting";
-    KUrl u(filePath);
-    fileJob = KIO::open(u, QIODevice::WriteOnly);
+    QUrlPathInfo u(remoteTmpUrl());
+    u.addPath("openFileWriting");
+    fileJob = KIO::open(u.url(), QIODevice::WriteOnly);
 
     fileJob->setUiDelegate( 0 );
     connect( fileJob, SIGNAL(result(KJob*)),
@@ -224,7 +223,7 @@ void JobRemoteTest::openFileWriting()
     QEXPECT_FAIL("", "Needs fixing in kio_file", Abort);
     QVERIFY( m_result == 0 ); // no error
 
-    KIO::StoredTransferJob* getJob = KIO::storedGet( u, KIO::NoReload, KIO::HideProgressInfo );
+    KIO::StoredTransferJob* getJob = KIO::storedGet(u.url(), KIO::NoReload, KIO::HideProgressInfo);
     getJob->setUiDelegate( 0 );
     connect( getJob, SIGNAL(result(KJob*)),
              this, SLOT(slotGetResult(KJob*)) );
@@ -291,14 +290,13 @@ void JobRemoteTest::slotFileJobClose (KIO::Job *job)
 
 void JobRemoteTest::openFileReading()
 {
-
-    const QString filePath = remoteTmpDir() + "openFileReading";
-    KUrl u(filePath);
+    QUrlPathInfo u(remoteTmpUrl());
+    u.addPath("openFileReading");
 
     const QByteArray putData("test1test2test3test4test5");
 
     KIO::StoredTransferJob * putJob = KIO::storedPut( putData,
-            u,
+            u.url(),
             0600, KIO::Overwrite | KIO::HideProgressInfo
         );
 
@@ -316,7 +314,7 @@ void JobRemoteTest::openFileReading()
     m_rwCount = 4;
     m_data = QByteArray();
 
-    fileJob = KIO::open(u, QIODevice::ReadOnly);
+    fileJob = KIO::open(u.url(), QIODevice::ReadOnly);
 
     fileJob->setUiDelegate( 0 );
     connect( fileJob, SIGNAL(result(KJob*)),
