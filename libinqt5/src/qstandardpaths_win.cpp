@@ -105,7 +105,7 @@ QString QStandardPaths::writableLocation(StandardLocation type)
     case ConfigLocation: // same as DataLocation, on Windows
     case DataLocation:
     case GenericDataLocation:
-#if defined Q_WS_WINCE
+#if defined Q_OS_WINCE
         if (SHGetSpecialFolderPath(0, path, CSIDL_APPDATA, FALSE))
 #else
         if (SHGetSpecialFolderPath(0, path, CSIDL_LOCAL_APPDATA, FALSE))
@@ -182,7 +182,7 @@ QStringList QStandardPaths::standardLocations(StandardLocation type)
 
     // type-specific handling goes here
 
-#ifndef Q_WS_WINCE
+#ifndef Q_OS_WINCE
     static GetSpecialFolderPath SHGetSpecialFolderPath = resolveGetSpecialFolderPath();
     if (SHGetSpecialFolderPath) {
         wchar_t path[MAX_PATH];

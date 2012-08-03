@@ -340,7 +340,7 @@ struct KIEImgEdit
 
 static bool painterSupportsAntialiasing()
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
    // apparently QApplication::desktop()->paintEngine() is null on windows
    // but we can assume the paint engine supports antialiasing there, right?
    return true;

@@ -127,7 +127,7 @@ KDEUI_EXECUTABLE_TESTS(
 )
 endif (NOT KDE_NO_DEPRECATED)
 
-if (Q_WS_X11)
+if (X11_FOUND)
 
 KDEUI_EXECUTABLE_TESTS(
  fixx11h_test
@@ -137,7 +137,7 @@ KDEUI_EXECUTABLE_TESTS(
 )
 target_link_libraries(kmanagerselectiontest ${X11_X11_LIB})
 target_link_libraries(kxerrorhandlertest ${X11_X11_LIB})
-endif (Q_WS_X11)
+endif (X11_FOUND)
 
 ## kcolorutilsdemo
 

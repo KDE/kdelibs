@@ -24,8 +24,6 @@
 
 #include "kxerrorhandler.h"
 
-#ifdef Q_WS_X11 //FIXME
-
 #include "netwm_def.h"
 
 #include <stdio.h>
@@ -256,5 +254,3 @@ QByteArray KXErrorHandler::errorMessage( const XErrorEvent& event, Display* dpy 
 #endif
     return ret;
     }
-
-#endif

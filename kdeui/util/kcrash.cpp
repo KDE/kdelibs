@@ -58,7 +58,8 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
 
-#if defined Q_WS_X11
+#include <config.h>
+#if defined HAVE_X11
 #include <qx11info_x11.h>
 #include <X11/Xlib.h>
 #endif
@@ -328,7 +329,7 @@ KCrash::defaultCrashHandler (int sig)
 #if !defined(Q_OS_WIN)
     if (!(s_flags & KeepFDs))
         closeAllFDs();
-# if defined(Q_WS_X11)
+# if defined(HAVE_X11)
     else if (QX11Info::display())
         close(ConnectionNumber(QX11Info::display()));
 # endif
@@ -366,17 +367,13 @@ KCrash::defaultCrashHandler (int sig)
         // argument 0 has to be drkonqi
         argv[i++] = s_drkonqiPath;
 
-#if defined Q_WS_X11
+#if defined HAVE_X11
         // start up on the correct display
         argv[i++] = "-display";
         if ( QX11Info::display() )
             argv[i++] = XDisplayString(QX11Info::display());
         else
             argv[i++] = getenv("DISPLAY");
-#elif defined(Q_WS_QWS)
-        // start up on the correct display
-        argv[i++] = "-display";
-        argv[i++] = getenv("QWS_DISPLAY");
 #endif
 
         argv[i++] = "--appname";
@@ -651,19 +648,10 @@ static char *getDisplay()
    char *screen;
    char *colon;
    char *i;
-/*
- don't test for a value from qglobal.h but instead distinguish
- Qt/X11 from Qt/Embedded by the fact that Qt/E apps have -DQWS
- on the commandline (which in qglobal.h however triggers Q_WS_QWS,
- but we don't want to include that here) (Simon)
-#ifdef Q_WS_X11
- */
 #ifdef NO_DISPLAY
    display = "NODISPLAY";
-#elif !defined(QWS)
-   display = getenv("DISPLAY");
 #else
-   display = getenv("QWS_DISPLAY");
+   display = getenv("DISPLAY");
 #endif
    if (!display || !*display)
    {

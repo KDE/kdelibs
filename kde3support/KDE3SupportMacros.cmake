@@ -20,9 +20,9 @@ macro (_KDE4_GET_MOC_FLAGS _moc_flags)
       set(${_moc_flags} ${${_moc_flags}} "-D${_current}")
    endforeach(_current ${_defines})
 
-   if(Q_WS_WIN)
+   if(Q_OS_WIN)
       set(${_moc_flags} ${${_moc_flags}} -DWIN32)
-   endif(Q_WS_WIN)
+   endif(Q_OS_WIN)
 
    # if Qt is installed only as framework, add -F /library/Frameworks to the moc arguments
    # otherwise moc can't find the headers in the framework include dirs

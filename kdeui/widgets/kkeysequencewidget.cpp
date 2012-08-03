@@ -41,6 +41,8 @@
 
 #include "kdebug.h"
 
+#include <config.h>
+
 class KKeySequenceWidgetPrivate
 {
 public:
@@ -472,7 +474,7 @@ void KKeySequenceWidgetPrivate::doneRecording(bool validate)
 
 bool KKeySequenceWidgetPrivate::conflictWithGlobalShortcuts(const QKeySequence &keySequence)
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     //on windows F12 is reserved by the debugger at all times, so we can't use it for a global shortcut
     if (KKeySequenceWidget::GlobalShortcuts && keySequence.toString().contains("F12")) {
         QString title = i18n("Reserved Shortcut");
@@ -639,10 +641,10 @@ void KKeySequenceWidgetPrivate::updateShortcutDisplay()
         if (modifierKeys) {
             if (!s.isEmpty()) s.append(",");
             if (modifierKeys & Qt::META)  s += KKeyServer::modToStringUser(Qt::META) + '+';
-#if defined(Q_WS_MAC)
+#if defined(Q_OS_MAC)
             if (modifierKeys & Qt::ALT)   s += KKeyServer::modToStringUser(Qt::ALT) + '+';
             if (modifierKeys & Qt::CTRL)  s += KKeyServer::modToStringUser(Qt::CTRL) + '+';
-#elif defined(Q_WS_X11)
+#elif defined(HAVE_X11)
             if (modifierKeys & Qt::CTRL)  s += KKeyServer::modToStringUser(Qt::CTRL) + '+';
             if (modifierKeys & Qt::ALT)   s += KKeyServer::modToStringUser(Qt::ALT) + '+';
 #endif

@@ -704,7 +704,7 @@ void KApplication::saveState( QSessionManager& sm )
 #ifdef __GNUC__
 #warning TODO: QSessionManager::handle() is gone in Qt5!
 #endif
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     static bool firstTime = true;
     mySmcConnection = (SmcConn) sm.handle();
 

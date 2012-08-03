@@ -29,6 +29,8 @@
 
 #include <kdebug.h>
 
+#include <config.h>
+
 /** @internal */
 KCupsOptionsWidget::KCupsOptionsWidget( QPrintDialog *parent ) : QWidget( parent )
 {
@@ -44,7 +46,7 @@ KCupsOptionsWidget::~KCupsOptionsWidget()
 
 bool KCupsOptionsWidget::cupsAvailable()
 {
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     // Ideally we would have access to the private Qt method
     // QCUPSSupport::cupsAvailable() to do this as it is very complex routine.
     // However, if CUPS is available then QPrinter::numCopies() will always return 1

@@ -45,6 +45,8 @@
 
 #include <netinet/in.h>
 
+#include <config.h>
+
 static const QString s_statusNotifierWatcherServiceName("org.kde.StatusNotifierWatcher");
 
 #if HAVE_DBUSMENUQT
@@ -495,7 +497,7 @@ void KStatusNotifierItem::setAssociatedWidget(QWidget *associatedWidget)
             connect(action, SIGNAL(triggered(bool)), this, SLOT(minimizeRestore()));
         }
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
         KWindowInfo info = KWindowSystem::windowInfo(d->associatedWidget->winId(), NET::WMDesktop);
         d->onAllDesktops = info.onAllDesktops();
 #else
@@ -598,7 +600,7 @@ void KStatusNotifierItem::activate(const QPoint &pos)
 
 bool KStatusNotifierItemPrivate::checkVisibility(QPoint pos, bool perform)
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #if 0
     // the problem is that we lose focus when the systray icon is activated
     // and we don't know the former active window
@@ -612,7 +614,7 @@ bool KStatusNotifierItemPrivate::checkVisibility(QPoint pos, bool perform)
         emit activateRequested(true, pos);
     }
 #endif
-#elif defined(Q_WS_X11)
+#elif defined(HAVE_X11)
     KWindowInfo info1 = KWindowSystem::windowInfo(associatedWidget->winId(), NET::XAWMState | NET::WMState | NET::WMDesktop);
     // mapped = visible (but possibly obscured)
     bool mapped = (info1.mappingState() == NET::Visible) && !info1.isMinimized();
@@ -959,7 +961,7 @@ void KStatusNotifierItemPrivate::hideMenu()
 
 void KStatusNotifierItemPrivate::minimizeRestore(bool show)
 {
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     KWindowInfo info = KWindowSystem::windowInfo(associatedWidget->winId(), NET::WMDesktop | NET::WMFrameExtents);
     if (show) {
         if (onAllDesktops) {

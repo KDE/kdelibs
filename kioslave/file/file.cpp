@@ -69,7 +69,7 @@
 #include <QtCore/QRegExp>
 #include <QtCore/QFile>
 #include <qtemporaryfile.h>
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #endif

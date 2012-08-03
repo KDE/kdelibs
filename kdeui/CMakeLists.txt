@@ -206,15 +206,12 @@ set(kdeui_LIB_SRCS
  util/kcursor.cpp
  util/kimagecache.cpp
  util/kkeyserver.cpp
- util/kmanagerselection.cpp
  util/kmodifierkeyinfo.cpp
  util/kmodifierkeyinfoprovider.cpp
  util/kpassivepopup.cpp
  util/kpassivepopupmessagehandler.cpp
  util/kpixmapcache.cpp
  util/kpixmapprovider.cpp
- util/kxerrorhandler.cpp
- util/kxmessages.cpp
  util/kundostack.cpp
  util/kpixmapsequence.cpp
  util/kpixmapsequenceoverlaypainter.cpp
@@ -287,14 +284,14 @@ endif(NOT KDE_NO_DEPRECATED)
 
 option(MAC_USE_OSXKEYCHAIN "On OS X, use the keychain as backend for kwallet, instead of kwalletd.")
 
-if (Q_WS_MAC AND MAC_USE_OSXKEYCHAIN)
+if (Q_OS_MAC AND MAC_USE_OSXKEYCHAIN)
     FIND_LIBRARY(SECURITY_LIBRARY Security)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwallet_mac.cpp)
-else(Q_WS_MAC AND MAC_USE_OSXKEYCHAIN)
+else(Q_OS_MAC AND MAC_USE_OSXKEYCHAIN)
      set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwallet.cpp)
-else(Q_WS_MAC AND MAC_USE_OSXKEYCHAIN)
+else(Q_OS_MAC AND MAC_USE_OSXKEYCHAIN)
   set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwallet.cpp)
-endif(Q_WS_MAC AND MAC_USE_OSXKEYCHAIN)
+endif(Q_OS_MAC AND MAC_USE_OSXKEYCHAIN)
 
 if(NOT WINCE)
 set(kdeui_LIB_SRCS
@@ -308,29 +305,33 @@ endif(NOT WINCE)
 
 
 
-if (Q_WS_X11)
+if (X11_FOUND)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kkeyserver_x11.cpp
+                                         util/kmanagerselection.cpp
+                                         util/kxerrorhandler.cpp
+                                         util/kxmessages.cpp
                                          dialogs/kcupsoptionswidget_p.cpp
                                          dialogs/kcupsoptionsjobwidget_p.cpp
                                          dialogs/kcupsoptionspageswidget_p.cpp
                                          dialogs/kcupsoptionssettingswidget_p.cpp )
-endif (Q_WS_X11)
-if (Q_WS_MAC)
+endif (X11_FOUND)
+if (Q_OS_MAC)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kkeyserver_mac.cpp )
-endif (Q_WS_MAC)
-if (Q_WS_WIN)
+endif (Q_OS_MAC)
+if (Q_OS_WIN)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kernel/kapplication_win.cpp util/kkeyserver_win.cpp )
-endif (Q_WS_WIN)
+endif (Q_OS_WIN)
 
-if (Q_WS_X11 AND X11_Xkb_FOUND)
-    include_directories (
-        ${X11_Xkb_INCLUDE_PATH}
-        ${X11_Xlib_INCLUDE_PATH}
-    )
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kmodifierkeyinfoprovider_x11.cpp)
-else (Q_WS_X11 AND X11_Xkb_FOUND)
+message("Port to Qt5 native filter")
+#if (X11_FOUND AND X11_Xkb_FOUND)
+#    include_directories (
+#        ${X11_Xkb_INCLUDE_PATH}
+#        ${X11_Xlib_INCLUDE_PATH}
+#    )
+#    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kmodifierkeyinfoprovider_x11.cpp)
+#else (X11_FOUND AND X11_Xkb_FOUND)
     set (kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kmodifierkeyinfoprovider_dummy.cpp)
-endif (Q_WS_X11 AND X11_Xkb_FOUND)
+#endif (X11_FOUND AND X11_Xkb_FOUND)
 
 set( kdeui_UI
    dialogs/kpassworddialog.ui
@@ -342,11 +343,11 @@ set( kdeui_UI
    sonnet/configui.ui
    )
 
-if (Q_WS_X11)
+if (X11_FOUND)
     set( kdeui_UI ${kdeui_UI} dialogs/kcupsoptionspageswidget.ui
                               dialogs/kcupsoptionsjobwidget.ui
     )
-endif (Q_WS_X11)
+endif (X11_FOUND)
 
 kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )
 
@@ -401,12 +402,12 @@ if(MINGW)
    target_link_libraries(kdeui gdi32 oleaut32)
 endif(MINGW)
 
-if(Q_WS_MAC)
+if(Q_OS_MAC)
    target_link_libraries(kdeui ${CARBON_LIBRARY})
    if (MAC_USE_OSXKEYCHAIN)
      target_link_libraries(kdeui ${SECURITY_LIBRARY})
    endif (MAC_USE_OSXKEYCHAIN)
-endif(Q_WS_MAC)
+endif(Q_OS_MAC)
 
 if(X11_XTest_FOUND)
    target_link_libraries(kdeui ${X11_XTest_LIB})
@@ -437,13 +438,13 @@ set_target_properties(kdeui PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
 install(TARGETS kdeui EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 ########### install files ###############
 
-if (Q_WS_MAC)
+if (Q_OS_MAC)
    install( FILES util/kkeyserver_mac.h DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
-elseif (Q_WS_WIN)
+elseif (Q_OS_WIN)
     install( FILES util/kkeyserver_win.h DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
-else(Q_WS_WIN)
+else(Q_OS_WIN)
    install( FILES util/fixx11h.h util/kkeyserver_x11.h DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
-endif (Q_WS_MAC)
+endif (Q_OS_MAC)
 
 install( FILES
  dialogs/aboutkde.png
@@ -637,9 +638,9 @@ install( FILES
 
 install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
 
-if (Q_WS_MAC)
+if (Q_OS_MAC)
   install(PROGRAMS kernel/start-session-bus.sh DESTINATION ${BIN_INSTALL_DIR} )
-endif (Q_WS_MAC)
+endif (Q_OS_MAC)
 
 install( FILES colors/40.colors colors/Oxygen.colors colors/Web.colors colors/Royal.colors colors/Rainbow.colors
          DESTINATION ${CONFIG_INSTALL_DIR}/colors)
@@ -655,10 +656,10 @@ install(FILES
     notifications/org.kde.StatusNotifierWatcher.xml
     DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
-if (NOT Q_WS_X11)
+if (NOT X11_FOUND)
     # install our copy of the rgb.txt named colors list on systems without X11
     install(FILES colors/rgb.txt DESTINATION ${DATA_INSTALL_DIR}/kdeui)
-endif (NOT Q_WS_X11)
+endif (NOT X11_FOUND)
 
 install( FILES
     KDEUIMacros.cmake

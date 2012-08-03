@@ -119,23 +119,6 @@ static QStringList splitEmailAddressList( const QString & aStr )
     return list;
 }
 
-#ifdef Q_WS_MAEMO_5
-// taken from QDesktopServices, which we cannot use here due to it being in QtGui
-inline static bool maemo5Launch(const QUrl &url)
-{
-    typedef bool (*Ptr_hildon_uri_open)(const char *, void *, void **);
-    static Ptr_hildon_uri_open hildon_uri_open = 0;
-
-    if (!hildon_uri_open) {
-        QLibrary lib(QLatin1String("libhildonmime"), 0, 0);
-        hildon_uri_open = (Ptr_hildon_uri_open)lib.resolve("hildon_uri_open");
-    }
-    if (hildon_uri_open)
-        return hildon_uri_open(url.toEncoded().constData(), 0, 0);
-    return false;
-}
-#endif
-
 void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const QString &_bcc,
                                    const QString &subject, const QString &body,
                                    const QString & /*messageFile TODO*/, const QStringList &attachURLs,
@@ -279,10 +262,6 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
     if (!isMainThreadActive())
         return;
 
-#ifdef Q_WS_MAEMO_5
-    if (maemo5Launch(url))
-      return;
-#endif
     QStringList args;
     args << url;
     QString error;

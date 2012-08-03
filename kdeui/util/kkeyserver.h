@@ -27,11 +27,12 @@
 
 #include <qglobal.h>
 
-#if defined Q_WS_X11 /*or defined Q_WS_WIN*/
+#include <config.h>
+#if defined HAVE_X11 /*or defined Q_OS_WIN*/
 #include "kkeyserver_x11.h"
-#elif defined Q_WS_MACX
+#elif defined Q_OS_MAC
 #include "kkeyserver_mac.h"
-#elif defined Q_WS_WIN
+#elif defined Q_OS_WIN
 #include "kkeyserver_win.h"
 #endif
 

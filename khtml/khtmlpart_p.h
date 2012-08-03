@@ -214,9 +214,6 @@ public:
 #ifndef KHTML_NO_WALLET
     delete m_wallet;
 #endif
-#ifndef Q_WS_QWS
-    //delete m_javaContext;
-#endif
   }
 
   KHTMLPart* q;

@@ -32,10 +32,11 @@
 #include "kstandardaction.h"
 #include <kwindowsystem.h>
 
-#ifdef Q_WS_X11
+#include <config.h>
+#ifdef HAVE_X11
 #include <QX11Info>
 #endif
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #include <windows.h>
 #endif
 
@@ -48,7 +49,7 @@
 #include <QMovie>
 #include <QPointer>
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 class KSystemTrayIconPrivate : public QObject
 #else
 class KSystemTrayIconPrivate
@@ -63,7 +64,7 @@ public:
         onAllDesktops = false;
         window = parent;
         movie = 0;
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 		if ( window ) {
             window->installEventFilter( this );
 		}
@@ -72,7 +73,7 @@ public:
 
     ~KSystemTrayIconPrivate()
     {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 		if ( window ) {
             window->removeEventFilter( this );
 		}
@@ -87,7 +88,7 @@ public:
         q->setIcon(QIcon(movie->currentPixmap()));
     }
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     bool eventFilter(QObject *obj, QEvent *ev)
     {
       if(ev->type() == QEvent::ActivationChange) {
@@ -156,7 +157,7 @@ void KSystemTrayIcon::init( QWidget* parent )
         action->setText(i18n("Minimize"));
         connect( action, SIGNAL(triggered(bool)), this, SLOT(minimizeRestoreAction()) );
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
         KWindowInfo info = KWindowSystem::windowInfo( parent->winId(), NET::WMDesktop );
         d->onAllDesktops = info.onAllDesktops();
 #else
@@ -267,7 +268,7 @@ void KSystemTrayIcon::activateOrHide( QSystemTrayIcon::ActivationReason reasonCa
     {
         return;
     }
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     // the problem is that we lose focus when the systray icon is activated
     // and we don't know the former active window
     // therefore we watch for activation event and use our stopwatch :)
@@ -277,7 +278,7 @@ void KSystemTrayIcon::activateOrHide( QSystemTrayIcon::ActivationReason reasonCa
     } else {
         minimizeRestore( true );
     }
-#elif defined(Q_WS_X11)
+#elif defined(HAVE_X11)
     KWindowInfo info1 = KWindowSystem::windowInfo( pw->winId(), NET::XAWMState | NET::WMState );
     // mapped = visible (but possibly obscured)
     bool mapped = (info1.mappingState() == NET::Visible) && !info1.isMinimized();
@@ -323,7 +324,7 @@ void KSystemTrayIcon::minimizeRestore( bool restore )
     QWidget* pw = d->window;
     if (!pw)
         return;
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     KWindowInfo info = KWindowSystem::windowInfo(pw->winId(), NET::WMGeometry | NET::WMDesktop);
     if (restore) {
         if (d->onAllDesktops) {

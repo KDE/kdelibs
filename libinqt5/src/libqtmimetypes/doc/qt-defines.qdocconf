@@ -5,7 +5,6 @@ defines                 = Q_QDOC \
                           QT_KEYPAD_NAVIGATION \
                           QT_NO_EGL \
                           QT3_SUPPORT \
-                          Q_WS_.* \
                           Q_OS_.* \
                           Q_BYTE_ORDER \
                           QT_DEPRECATED \

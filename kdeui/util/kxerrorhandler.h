@@ -28,8 +28,6 @@
 #include <QWidget>
 #include <QWidgetList>
 
-#ifdef Q_WS_X11
-
 #include <kdeui_export.h>
 #include <QX11Info>
 #include <X11/Xlib.h>
@@ -118,7 +116,5 @@ class KDEUI_EXPORT KXErrorHandler
         Q_DISABLE_COPY( KXErrorHandler )
         KXErrorHandlerPrivate * const d;
     };
-
-#endif // Q_WS_X11
 
 #endif

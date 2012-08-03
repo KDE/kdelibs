@@ -25,7 +25,8 @@
 #include <QWidget>
 #include <QSet>
 
-#if defined Q_WS_X11
+#pragma message ("Port to Qt5 native filter")
+#if 0
     #include <X11/Xlib.h>
     #include <X11/XKBlib.h>
     #include <fixx11h.h>
@@ -120,7 +121,8 @@ Q_SIGNALS:
     void keyRemoved(Qt::Key key);
     
 protected:
-#if defined Q_WS_X11
+#pragma message ("Port to Qt5 native filter")
+#if 0
     // Interfacing with QAbstractEventDispatcher
     friend bool kmodifierKeyInfoEventFilter(void *message);
     static QAbstractEventDispatcher::EventFilter s_nextFilter;
@@ -140,7 +142,8 @@ private:
     // the state of each known mouse button
     QHash<Qt::MouseButton, bool> m_buttonStates;
 
-#if defined Q_WS_X11
+#pragma message ("Port to Qt5 native filter")
+#if 0
     int m_xkbEv;
     bool m_xkbAvailable;
 

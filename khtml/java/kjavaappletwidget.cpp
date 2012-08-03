@@ -28,7 +28,8 @@
 
 #include <QLabel>
 
-#ifndef Q_WS_X11
+#include <config.h>
+#ifndef HAVE_X11
 #define QXEmbed QWidget
 #endif
 
@@ -69,7 +70,7 @@ KJavaAppletWidget::~KJavaAppletWidget()
 
 void KJavaAppletWidget::showApplet()
 {
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     connect( KWindowSystem::self(), SIGNAL(windowAdded(WId)),
 	         this,  SLOT(setWindow(WId)) );
 
@@ -83,7 +84,8 @@ void KJavaAppletWidget::showApplet()
 
 void KJavaAppletWidget::setWindow( WId w )
 {
-#ifdef Q_WS_X11
+#pragma message ("Revive QX11EmbedContainer")
+#if 0
     //make sure that this window has the right name, if so, embed it...
     KWindowInfo w_info = KWindowSystem::windowInfo( w, NET::WMVisibleName | NET::WMName );
     if ( m_swallowTitle == w_info.name() ||

@@ -28,8 +28,6 @@ DEALINGS IN THE SOFTWARE.
 #include <kdeui_export.h>
 #include <QtCore/QObject>
 
-#ifdef Q_WS_X11 // FIXME(E)
-
 #include <X11/Xlib.h>
 #include <fixx11h.h>
 
@@ -208,5 +206,4 @@ class KDEUI_EXPORT KSelectionWatcher
         Private* const d;
     };
 
-#endif
 #endif

@@ -39,7 +39,6 @@ DEALINGS IN THE SOFTWARE.
 #endif
 
 #include <QtCore/QObject>
-#ifdef Q_WS_X11 // FIXME(E)
 
 #include <qx11info_x11.h>
 #include <qwidget.h>
@@ -485,4 +484,3 @@ void KSelectionWatcher::filterEvent( XEvent* ev_P )
 
 Atom KSelectionWatcher::Private::manager_atom = None;
 
-#endif

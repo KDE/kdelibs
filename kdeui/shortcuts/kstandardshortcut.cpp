@@ -29,7 +29,8 @@
 #include <kconfiggroup.h>
 
 #include <QKeySequence>
-#ifdef Q_WS_X11
+#include <config.h>
+#ifdef HAVE_X11
 #include <qx11info_x11.h>
 #endif
 
@@ -215,7 +216,7 @@ static void initialize(StandardShortcut id)
 
     KConfigGroup cg(KSharedConfig::openConfig(), "Shortcuts");
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     // Code within this block breaks if we aren't running in GUI mode.
     if(QX11Info::display() && cg.hasKey(info->name))
 #else

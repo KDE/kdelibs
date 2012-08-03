@@ -25,7 +25,8 @@
 #define QT_NO_FONTCONFIG 1
 #define QT_NO_FREETYPE   1
 #include <private/qfontengine_p.h>
-#ifdef Q_WS_X11
+#pragma message ("Port to Qt5")
+#if 0
 #  include <private/qfontengine_x11_p.h>
 #endif
 #include <QFontDatabase>

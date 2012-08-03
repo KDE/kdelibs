@@ -54,7 +54,7 @@ static void sig_handler(int sig_num)
 
 extern "C" Q_DECL_EXPORT int kdemain( int argc, char**argv )
 {
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
    // Started via kdeinit.
    int launcherFd;
    if (argc != 2 || memcmp(argv[1], "--fd=", 5) || !(launcherFd = atoi(argv[1] + 5)))

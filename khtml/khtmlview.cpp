@@ -31,7 +31,8 @@
 
 #include "khtml_part.h"
 #include "khtml_events.h"
-#ifdef Q_WS_X11
+#include <config.h>
+#ifdef HAVE_X11
 #include <qx11info_x11.h>
 #endif
 
@@ -95,10 +96,10 @@
 //#define DEBUG_FLICKER
 
 #include <limits.h>
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
 #include <X11/Xlib.h>
 #include <fixx11h.h>
-#elif defined(Q_WS_WIN)
+#elif defined(Q_OS_WIN)
 #include <windows.h>
 #endif
 
@@ -1487,10 +1488,10 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
 #endif
 
     if ( linkCursor!=LINK_NORMAL && isVisible() && hasFocus() ) {
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
 
         if( !d->cursorIconWidget ) {
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
             d->cursorIconWidget = new QLabel( 0, Qt::X11BypassWindowManagerHint );
             XSetWindowAttributes attr;
             attr.save_under = True;
@@ -1522,10 +1523,10 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
 
         QPoint c_pos = QCursor::pos();
         d->cursorIconWidget->move( c_pos.x() + 15, c_pos.y() + 15 );
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
         XRaiseWindow( QX11Info::display(), d->cursorIconWidget->winId());
         QApplication::flush();
-#elif defined(Q_WS_WIN)
+#elif defined(Q_OS_WIN)
         SetWindowPos( d->cursorIconWidget->winId(), HWND_TOP, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE );
 #else
         //TODO?

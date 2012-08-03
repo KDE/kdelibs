@@ -30,10 +30,6 @@
 #include <QtCore/QVariant>
 #include <QWidget>
 
-#ifdef Q_WS_X11
-#include <fixx11h.h>
-#endif
-
 class QStringList;
 class KAboutData;
 class KConfigDialogManager;

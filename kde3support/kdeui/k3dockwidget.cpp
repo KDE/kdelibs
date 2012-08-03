@@ -46,7 +46,7 @@
 #include <kglobalsettings.h>
 
 #include <config.h>
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <qx11info_x11.h>
@@ -892,7 +892,7 @@ void K3DockWidget::applyToWidget( QWidget* s, const QPoint& p )
     move(p);
 
 #ifndef NO_KDE2
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     if (d->transient && d->_parent)
       XSetTransientForHint( QX11Info::display(), winId(), d->_parent->winId() );
 
@@ -902,7 +902,7 @@ void K3DockWidget::applyToWidget( QWidget* s, const QPoint& p )
 #else
     KWindowSystem::setType( winId(), d->windowType );
 #endif // BORDERLESS_WINDOW
-#endif // Q_WS_X11
+#endif // HAVE_X11
 #endif
 
   }

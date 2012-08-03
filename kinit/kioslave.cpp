@@ -31,7 +31,7 @@
 #include <QtCore/QLibrary>
 #include <QtCore/QFile>
 
-#if defined(Q_WS_WIN) || defined(Q_WS_MAC)
+#if defined(Q_OS_WIN) || defined(Q_OS_MAC)
 #define USE_KPROCESS_FOR_KIOSLAVES
 #endif
 
@@ -39,14 +39,14 @@
 #include <QtCore/QDir>
 #include <QtCore/QProcess>
 #include <QtCore/QStringList>
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #include <windows.h>
 #include <process.h>
 #endif
 #include "kstandarddirs.h"
 #endif
 
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
 /* These are to link libkio even if 'smart' linker is used */
 #include <kio/authinfo.h>
 extern "C" KIO::AuthInfo* _kioslave_init_kio() { return new KIO::AuthInfo(); }
@@ -118,7 +118,7 @@ int main(int argc, char **argv)
         exit(1);
      }
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
      // enter debugger in case debugging is actived
      QString slaveDebugWait( QString::fromLocal8Bit( qgetenv("KDE_SLAVE_DEBUG_WAIT") ) );
      if (slaveDebugWait == QLatin1String("all") || slaveDebugWait == argv[2])
@@ -149,7 +149,7 @@ int main(int argc, char **argv)
         }
      }
 # endif
-#endif // Q_WS_WIN
+#endif // Q_OS_WIN
 
      int (*func)(int, char *[]) = (int (*)(int, char *[])) sym;
 

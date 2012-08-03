@@ -212,7 +212,7 @@ set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    ${kdecore_OPTIONAL_SRCS}
 )
 
-if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
+if (NOT Q_OS_X11)
    add_definitions(-DNO_DISPLAY)
 endif()
 

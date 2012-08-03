@@ -143,7 +143,7 @@ K3TempFile::create(const QString &filePrefix, const QString &fileExtension,
    // Set uid/gid (necessary for SUID programs)
    fchown(mFd, getuid(), getgid());
 
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
    // Set close on exec
    fcntl(mFd, F_SETFD, FD_CLOEXEC);
 #endif

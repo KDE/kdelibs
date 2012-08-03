@@ -1378,13 +1378,9 @@ bool KHTMLPart::javaEnabled() const
 {
   if (onlyLocalReferences()) return false;
 
-#ifndef Q_WS_QWS
   if( d->m_bJavaOverride )
       return d->m_bJavaForce;
   return d->m_bJavaEnabled;
-#else
-  return false;
-#endif
 }
 
 void KHTMLPart::setPluginsEnabled( bool enable )

@@ -40,12 +40,11 @@
 
 #include <kconfig.h>
 
-#ifdef Q_WS_X11
+#include <config.h>
+#ifdef HAVE_X11
 #include <qx11info_x11.h>
 #include <netwm.h>
 #endif
-
-#include <config.h>
 
 static const int DEFAULT_POPUP_TYPE = KPassivePopup::Boxed;
 static const int DEFAULT_POPUP_TIME = 6*1000;
@@ -328,7 +327,7 @@ void KPassivePopup::hideEvent( QHideEvent * )
 
 QRect KPassivePopup::defaultArea() const
 {
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     NETRootInfo info( QX11Info::display(),
                       NET::NumberOfDesktops |
                       NET::CurrentDesktop |
@@ -350,7 +349,7 @@ void KPassivePopup::positionSelf()
 {
     QRect target;
 
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     if ( !d->window ) {
         target = defaultArea();
     }

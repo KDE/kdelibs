@@ -44,7 +44,7 @@
 #include <QToolTip>
 #include <QWhatsThis>
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #include <windows.h>
 #include <kkernel_win.h>
 
@@ -53,7 +53,8 @@ static QRgb qt_colorref2qrgb(COLORREF col)
     return qRgb(GetRValue(col),GetGValue(col),GetBValue(col));
 }
 #endif
-#ifdef Q_WS_X11
+#include <config.h>
+#ifdef HAVE_X11
 #include <X11/Xlib.h>
 #ifdef HAVE_XCURSOR // TODO NOT DEFINED ANYMORE. Can we drop X cursor themes?
 #include <X11/Xcursor/Xcursor.h>
@@ -303,7 +304,7 @@ int KGlobalSettings::contextMenuKey ()
 // NOTE: keep this in sync with kdebase/workspace/kcontrol/colors/colorscm.cpp
 QColor KGlobalSettings::inactiveTitleColor()
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     return qt_colorref2qrgb(GetSysColor(COLOR_INACTIVECAPTION));
 #else
     KConfigGroup g( KSharedConfig::openConfig(), "WM" );
@@ -314,7 +315,7 @@ QColor KGlobalSettings::inactiveTitleColor()
 // NOTE: keep this in sync with kdebase/workspace/kcontrol/colors/colorscm.cpp
 QColor KGlobalSettings::inactiveTextColor()
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     return qt_colorref2qrgb(GetSysColor(COLOR_INACTIVECAPTIONTEXT));
 #else
     KConfigGroup g( KSharedConfig::openConfig(), "WM" );
@@ -325,7 +326,7 @@ QColor KGlobalSettings::inactiveTextColor()
 // NOTE: keep this in sync with kdebase/workspace/kcontrol/colors/colorscm.cpp
 QColor KGlobalSettings::activeTitleColor()
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     return qt_colorref2qrgb(GetSysColor(COLOR_ACTIVECAPTION));
 #else
     KConfigGroup g( KSharedConfig::openConfig(), "WM" );
@@ -336,7 +337,7 @@ QColor KGlobalSettings::activeTitleColor()
 // NOTE: keep this in sync with kdebase/workspace/kcontrol/colors/colorscm.cpp
 QColor KGlobalSettings::activeTextColor()
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     return qt_colorref2qrgb(GetSysColor(COLOR_CAPTIONTEXT));
 #else
     KConfigGroup g( KSharedConfig::openConfig(), "WM" );
@@ -379,22 +380,17 @@ struct KFontData
 // NOTE: keep in sync with kdebase/workspace/kcontrol/fonts/fonts.cpp
 static const char GeneralId[] =      "General";
 static const char DefaultFont[] =    "Sans Serif";
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
 static const char DefaultMacFont[] = "Lucida Grande";
 #endif
 
 static const KFontData DefaultFontData[KGlobalSettingsData::FontTypesCount] =
 {
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     { GeneralId, "font",        DefaultMacFont, 13, -1, QFont::SansSerif },
     { GeneralId, "fixed",       "Monaco",       10, -1, QFont::TypeWriter },
     { GeneralId, "toolBarFont", DefaultMacFont, 11, -1, QFont::SansSerif },
     { GeneralId, "menuFont",    DefaultMacFont, 13, -1, QFont::SansSerif },
-#elif defined(Q_WS_MAEMO_5) || defined(MEEGO_EDITION_HARMATTAN)
-    { GeneralId, "font",        DefaultFont, 16, -1, QFont::SansSerif },
-    { GeneralId, "fixed",       "Monospace", 16, -1, QFont::TypeWriter },
-    { GeneralId, "toolBarFont", DefaultFont, 16, -1, QFont::SansSerif },
-    { GeneralId, "menuFont",    DefaultFont, 16, -1, QFont::SansSerif },
 #else
     { GeneralId, "font",        DefaultFont, 9, -1, QFont::SansSerif },
     { GeneralId, "fixed",       "Monospace", 9, -1, QFont::TypeWriter },
@@ -542,7 +538,7 @@ KGlobalSettings::KMouseSettings& KGlobalSettingsData::mouseSettings()
         mMouseSettings = new KGlobalSettings::KMouseSettings;
         KGlobalSettings::KMouseSettings& s = *mMouseSettings; // for convenience
 
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
         KConfigGroup g( KSharedConfig::openConfig(), "Mouse" );
         QString setting = g.readEntry("MouseButtonMapping");
         if (setting == "RightHanded")
@@ -551,7 +547,7 @@ KGlobalSettings::KMouseSettings& KGlobalSettingsData::mouseSettings()
             s.handed = KGlobalSettings::KMouseSettings::LeftHanded;
         else
         {
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
             // get settings from X server
             // This is a simplified version of the code in input/mouse.cpp
             // Keep in sync !
@@ -576,9 +572,9 @@ KGlobalSettings::KMouseSettings& KGlobalSettingsData::mouseSettings()
         // FIXME: Implement on other platforms
 #endif
         }
-#endif //Q_WS_WIN
+#endif //Q_OS_WIN
     }
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     //not cached
 #ifndef _WIN32_WCE
     mMouseSettings->handed = (GetSystemMetrics(SM_SWAPBUTTON) ?
@@ -599,7 +595,7 @@ KGlobalSettings::KMouseSettings & KGlobalSettings::mouseSettings()
 
 void KGlobalSettingsData::dropMouseSettingsCache()
 {
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
     delete mMouseSettings;
     mMouseSettings = 0;
 #endif
@@ -661,7 +657,7 @@ QString KGlobalSettings::musicPath()
 
 bool KGlobalSettings::isMultiHead()
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     return GetSystemMetrics(SM_CMONITORS) > 1;
 #else
     QByteArray multiHead = qgetenv("KDE_MULTIHEAD");
@@ -759,7 +755,7 @@ void KGlobalSettings::emitChange(ChangeType changeType, int arg)
     args.append(arg);
     message.setArguments(args);
     QDBusConnection::sessionBus().send(message);
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     if (qApp && qApp->type() != QApplication::Tty) {
         //notify non-kde qt applications of the change
         extern void qt_x11_apply_settings_in_all_apps();
@@ -857,7 +853,7 @@ void KGlobalSettings::Private::applyGUIStyle()
 {
 #if 0 // Disabled for KF5. TODO Qt5: check that the KDE style is correctly applied.
   //Platform plugin only loaded on X11 systems
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     if (!kde_overrideStyle.isEmpty()) {
         const QLatin1String currentStyleName(qApp->style()->metaObject()->className());
         if (0 != kde_overrideStyle.compare(currentStyleName, Qt::CaseInsensitive) &&
@@ -900,7 +896,7 @@ void KGlobalSettings::Private::applyGUIStyle()
         qApp->setStyle(kde_overrideStyle);
     }
     emit q->kdisplayStyleChanged();
-#endif //Q_WS_X11
+#endif //HAVE_X11
 #endif
 }
 
@@ -973,7 +969,7 @@ QPalette KGlobalSettings::Private::createNewApplicationPalette(const KSharedConf
 
 void KGlobalSettings::Private::kdisplaySetPalette()
 {
-#if !defined(Q_WS_MAEMO_5) && !defined(Q_OS_WINCE) && !defined(MEEGO_EDITION_HARMATTAN)
+#if !defined(Q_OS_WINCE)
     if (!kdeFullSession) {
         return;
     }
@@ -989,7 +985,7 @@ void KGlobalSettings::Private::kdisplaySetPalette()
 
 void KGlobalSettings::Private::kdisplaySetFont()
 {
-#if !defined(Q_WS_MAEMO_5) && !defined(Q_OS_WINCE) && !defined(MEEGO_EDITION_HARMATTAN)
+#if !defined(Q_OS_WINCE)
     if (!kdeFullSession) {
         return;
     }
@@ -1040,7 +1036,7 @@ void KGlobalSettings::Private::reloadStyleSettings()
 
 void KGlobalSettings::Private::applyCursorTheme()
 {
-#if defined(Q_WS_X11) && defined(HAVE_XCURSOR)
+#if defined(HAVE_X11) && defined(HAVE_XCURSOR)
     KConfig config("kcminputrc");
     KConfigGroup g(&config, "Mouse");
 

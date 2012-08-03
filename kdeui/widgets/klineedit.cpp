@@ -49,6 +49,8 @@
 #include <QStyleOption>
 #include <QToolTip>
 
+#include <config.h>
+
 class KLineEditStyle;
 
 class KLineEditPrivate
@@ -1539,7 +1541,7 @@ bool KLineEditPrivate::overrideShortcut(const QKeyEvent* e)
     else if (e->matches(QKeySequence::SelectAll)) {
         return true;
     }
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
     else if (key == Qt::CTRL + Qt::Key_E || key == Qt::CTRL + Qt::Key_U)
         return true;
 #endif

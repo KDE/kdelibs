@@ -159,7 +159,7 @@ JSValue *Screen::getValueProperty(ExecState *exec, int token) const
   case PixelDepth:
     return jsNumber(thisWidget->depth());
   case AvailLeft: {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined HAVE_X11 && ! defined K_WS_QTONLY
     QRect clipped = KWindowSystem::workArea().intersect(sg);
     return jsNumber(clipped.x()-sg.x());
 #else
@@ -167,7 +167,7 @@ JSValue *Screen::getValueProperty(ExecState *exec, int token) const
 #endif
   }
   case AvailTop: {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined HAVE_X11 && ! defined K_WS_QTONLY
     QRect clipped = KWindowSystem::workArea().intersect(sg);
     return jsNumber(clipped.y()-sg.y());
 #else
@@ -175,7 +175,7 @@ JSValue *Screen::getValueProperty(ExecState *exec, int token) const
 #endif
   }
   case AvailHeight: {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined HAVE_X11 && ! defined K_WS_QTONLY
     QRect clipped = KWindowSystem::workArea().intersect(sg);
     return jsNumber(clipped.height());
 #else
@@ -183,7 +183,7 @@ JSValue *Screen::getValueProperty(ExecState *exec, int token) const
 #endif
   }
   case AvailWidth: {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined HAVE_X11 && ! defined K_WS_QTONLY
     QRect clipped = KWindowSystem::workArea().intersect(sg);
     return jsNumber(clipped.width());
 #else
@@ -992,7 +992,7 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
     case OuterHeight:
     case OuterWidth:
     {
-#if defined Q_WS_X11 && ! defined K_WS_QTONLY
+#if defined HAVE_X11 && ! defined K_WS_QTONLY
       if (!part->widget())
         return jsNumber(0);
       KWindowInfo inf = KWindowSystem::windowInfo(part->widget()->topLevelWidget()->winId(), NET::WMGeometry);
@@ -2017,7 +2017,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
 		part->settings()->windowFocusPolicy(part->url().host());
     if(policy == KHTMLSettings::KJSWindowFocusAllow && widget) {
       widget->topLevelWidget()->raise();
-#ifdef Q_WS_X11
+#ifdef HAVE_X11
       KWindowSystem::unminimizeWindow( widget->topLevelWidget()->winId() );
 #else
       //TODO

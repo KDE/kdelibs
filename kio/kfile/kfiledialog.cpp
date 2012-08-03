@@ -47,7 +47,7 @@
 #include <kwindowconfig.h>
 
 /** File dialogs are native by default on Windows. */
-#if defined(Q_OS_WIN) || defined(Q_WS_MAEMO_5)
+#if defined(Q_OS_WIN)
 const bool NATIVE_FILEDIALOGS_BY_DEFAULT = true;
 #else
 const bool NATIVE_FILEDIALOGS_BY_DEFAULT = false;

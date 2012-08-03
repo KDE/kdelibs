@@ -348,7 +348,7 @@ QString Installation::targetInstallationPath(const QString& payloadfile)
             pathcounter++;
         }
         if (!installPath.isEmpty()) {
-#if defined(Q_WS_WIN)
+#if defined(Q_OS_WIN)
 #ifndef _WIN32_WCE
             WCHAR wPath[MAX_PATH+1];
             if ( SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, wPath) == S_OK) {

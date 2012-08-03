@@ -23,7 +23,7 @@
 
 #include <QtCore/QCOORD>
 
-#ifdef Q_WS_MACX // Only compile this module if we're compiling for Mac OS X
+#ifdef Q_OS_MAC // Only compile this module if we're compiling for Mac OS X
 
 #include "kshortcut.h"
 #include <kdebug.h>
@@ -245,5 +245,5 @@ namespace KKeyServer {
     }
 } // end of namespace KKeyServer
 
-#endif // Q_WS_MACX
+#endif // Q_OS_MAC
 

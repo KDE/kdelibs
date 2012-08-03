@@ -52,7 +52,8 @@
 #include <kglobal.h>
 
 #include <config.h>
-#ifdef Q_WS_X11
+#pragma message("Revive QX11EmbedWidget in Qt5")
+#if 0
 #include <QX11EmbedWidget>
 #endif
 
@@ -403,7 +404,8 @@ void KHelpMenu::contextHelpActivated()
 {
   QWhatsThis::enterWhatsThisMode();
   QWidget* w = QApplication::widgetAt( QCursor::pos() );
-#ifdef Q_WS_X11
+#pragma message("Revive QX11EmbedWidget in Qt5")
+#if 0
   while ( w && !w->isTopLevel() && !qobject_cast<QX11EmbedWidget*>(w)  )
       w = w->parentWidget();
 #ifdef __GNUC__

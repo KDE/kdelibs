@@ -86,7 +86,8 @@ protected Q_SLOTS:
 protected:
     virtual void resizeEvent( QResizeEvent* );
     virtual bool eventFilter(QObject *, QEvent *);
-#ifdef Q_WS_X11
+#pragma message("Port to Qt5 native filter")
+#if 0
     virtual bool x11Event( XEvent* );
 #endif
     virtual void closeEvent( QCloseEvent* );

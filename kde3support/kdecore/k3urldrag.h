@@ -131,15 +131,6 @@ public:
    */
   static KUrl stringToUrl(const QByteArray &s);
 
-#ifdef Q_WS_QWS
-  /**
-   * Convenience method that decodes the contents of @p e
-   * into a list of KUrls for Qt versions without a MIME clipboard.
-   * Decoding will fail if at least one value in the list is not a valid KUrl.
-   */
-  static bool decode( QStringList const &e, KUrl::List &uris );
-#endif
-
   /// @reimp
   virtual const char * format( int i ) const;
   /// @reimp

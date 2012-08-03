@@ -39,15 +39,15 @@ endif (WIN32)
 
 # on win32 kdeinit5 has to be a console application 
 # to be able to catch stderr based --verbose output
-if (Q_WS_MAC)
+if (Q_OS_MAC)
   # this has to be GUI on OSX because it launches GUI apps and need a quartz context
   kde4_add_executable(kdeinit5 ${kdeinit_SRCS})
   set_target_properties(kdeinit5 PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.template)
   set_target_properties(kdeinit5 PROPERTIES MACOSX_BUNDLE_GUI_IDENTIFIER "org.kde.kdeinit5")
   set_target_properties(kdeinit5 PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "KDE Init")
-else (Q_WS_MAC)
+else (Q_OS_MAC)
   kde4_add_executable(kdeinit5 NOGUI ${kdeinit_SRCS})
-endif (Q_WS_MAC)
+endif (Q_OS_MAC)
 
 target_link_libraries(kdeinit5 ${KDE4_KDEUI_LIBS} ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY} kcoreaddons )
 if (X11_FOUND)
@@ -79,9 +79,9 @@ if (NOT WIN32)
 
   target_link_libraries(kdeinit5_wrapper  ${KINIT_SOCKET_LIBRARY} ${QT_QTCORE_LIBRARY} ${inqt5_LIBRARY})
 
-  if (NOT Q_WS_X11 AND NOT Q_WS_QWS)
+  if (NOT X11_FOUND)
     add_definitions(-DNO_DISPLAY)
-  endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
+ endif (NOT X11_FOUND)
 
   install(TARGETS kdeinit5_wrapper ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
