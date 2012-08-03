@@ -56,6 +56,7 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 #include <config.h>
 #if HAVE_X11
 #include <X11/Xlib.h>
+#include <xcb/xcb.h>
 #ifdef HAVE_XCURSOR // TODO NOT DEFINED ANYMORE. Can we drop X cursor themes?
 #include <X11/Xcursor/Xcursor.h>
 #endif
@@ -747,6 +748,35 @@ int KGlobalSettings::buttonLayout()
     return g.readEntry("ButtonLayout", KDE_DEFAULT_BUTTON_LAYOUT);
 }
 
+#if 0 // HAVE_X11 && QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+// Taken from Qt-4.x qt_x11_apply_settings_in_all_apps since Qt5 doesn't have it anymore.
+// TODO: evaluate if this is still needed
+// TODO: if yes, this code should be an invokable method of the qxcb platform plugin?
+// TODO: it looks like the handling code for this in QPA is missing, too...
+static void x11_apply_settings_in_all_apps()
+{
+    QByteArray stamp;
+    QDataStream s(&stamp, QIODevice::WriteOnly);
+    s << QDateTime::currentDateTime();
+
+    QByteArray settings_atom_name("_QT_SETTINGS_TIMESTAMP_");
+    settings_atom_name += XDisplayString(QX11Info::display());
+
+    xcb_connection_t *xcb_conn = QX11Info::connection();
+    xcb_intern_atom_cookie_t cookie = xcb_intern_atom(xcb_conn, false, settings_atom_name.size(), settings_atom_name.constData());
+    xcb_intern_atom_reply_t *reply = xcb_intern_atom_reply(xcb_conn, cookie, 0);
+    xcb_atom_t atom = reply->atom;
+    free(reply);
+
+    xcb_change_property(xcb_conn, XCB_PROP_MODE_REPLACE, QX11Info::appRootWindow(), atom, XCB_ATOM_ATOM,
+                        8, stamp.size(), (const void *)stamp.constData());
+
+    //XChangeProperty(QX11Info::display(), QX11Info::appRootWindow(0),
+                    //ATOM(_QT_SETTINGS_TIMESTAMP), ATOM(_QT_SETTINGS_TIMESTAMP), 8,
+                    //PropModeReplace, (unsigned char *)stamp.data(), stamp.size());
+}
+#endif
+
 void KGlobalSettings::emitChange(ChangeType changeType, int arg)
 {
     QDBusMessage message = QDBusMessage::createSignal("/KGlobalSettings", "org.kde.KGlobalSettings", "notifyChange" );
@@ -758,8 +788,12 @@ void KGlobalSettings::emitChange(ChangeType changeType, int arg)
 #if HAVE_X11
     if (qApp && qApp->type() != QApplication::Tty) {
         //notify non-kde qt applications of the change
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+        //x11_apply_settings_in_all_apps();
+#else
         extern void qt_x11_apply_settings_in_all_apps();
         qt_x11_apply_settings_in_all_apps();
+#endif
     }
 #endif
 }
