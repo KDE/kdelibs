@@ -278,6 +278,7 @@ KLockFile::LockResult KLockFile::Private::lockFileOExcl(QT_STATBUF &st_buf)
     if (fd < 0) {
         if (errno == EEXIST) {
             // File already exists
+            QT_LSTAT(lockFileName.constData(), &st_buf); // caller wants stat buf details
             return LockFail;
         } else {
             return LockError;
