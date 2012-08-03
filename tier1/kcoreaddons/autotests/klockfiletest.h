@@ -33,6 +33,7 @@ private Q_SLOTS:
 	void testStale();
 	void testUnlock();
         void testStaleNoBlockFlag();
+        void cleanupTestCase();
 };
 
 #endif
