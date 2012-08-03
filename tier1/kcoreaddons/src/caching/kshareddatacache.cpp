@@ -1546,7 +1546,7 @@ bool KSharedDataCache::insert(const QString &key, const QByteArray &data)
         }
 
         if (indices[position].useCount > 0 && indices[position].firstPage >= 0) {
-            qDebug() << "Overwriting existing cached entry due to collision.";
+            //qDebug() << "Overwriting existing cached entry due to collision.";
             d->shm->removeEntry(position); // Remove it first
         }
 
