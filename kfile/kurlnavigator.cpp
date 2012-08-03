@@ -50,6 +50,7 @@
 #include <QPainter>
 #include <QStyleOption>
 #include <qmimedatabase.h>
+#include <QMimeData>
 
 #include <fixx11h.h>
 

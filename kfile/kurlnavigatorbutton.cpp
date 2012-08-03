@@ -34,6 +34,7 @@
 #include <QPainter>
 #include <QKeyEvent>
 #include <QStyleOption>
+#include <QMimeData>
 
 namespace KDEPrivate
 {

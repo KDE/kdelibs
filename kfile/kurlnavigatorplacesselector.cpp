@@ -33,6 +33,7 @@
 #include <QDropEvent>
 #include <QPainter>
 #include <QPixmap>
+#include <QMimeData>
 
 namespace KDEPrivate
 {

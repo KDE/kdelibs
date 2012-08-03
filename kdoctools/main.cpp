@@ -8,6 +8,7 @@ extern "C" int xmlLoadExtDtdDefaultValue;
 #include "xslt.h"
 
 
+#include <kglobal.h>
 #include <kcomponentdata.h>
 #include <kdebug.h>
 
