@@ -59,7 +59,7 @@
 #include <QtCore/QDir>
 
 #include <config.h>
-#if defined HAVE_X11
+#if HAVE_X11
 #include <qx11info_x11.h>
 #include <X11/Xlib.h>
 #endif
@@ -329,7 +329,7 @@ KCrash::defaultCrashHandler (int sig)
 #if !defined(Q_OS_WIN)
     if (!(s_flags & KeepFDs))
         closeAllFDs();
-# if defined(HAVE_X11)
+# if HAVE_X11
     else if (QX11Info::display())
         close(ConnectionNumber(QX11Info::display()));
 # endif
@@ -367,7 +367,7 @@ KCrash::defaultCrashHandler (int sig)
         // argument 0 has to be drkonqi
         argv[i++] = s_drkonqiPath;
 
-#if defined HAVE_X11
+#if HAVE_X11
         // start up on the correct display
         argv[i++] = "-display";
         if ( QX11Info::display() )

@@ -614,7 +614,7 @@ bool KStatusNotifierItemPrivate::checkVisibility(QPoint pos, bool perform)
         emit activateRequested(true, pos);
     }
 #endif
-#elif defined(HAVE_X11)
+#elif HAVE_X11
     KWindowInfo info1 = KWindowSystem::windowInfo(associatedWidget->winId(), NET::XAWMState | NET::WMState | NET::WMDesktop);
     // mapped = visible (but possibly obscured)
     bool mapped = (info1.mappingState() == NET::Visible) && !info1.isMinimized();

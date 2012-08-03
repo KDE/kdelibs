@@ -27,7 +27,7 @@
 #include <QWidget>
 
 #include <config.h>
-#if defined HAVE_X11
+#if HAVE_X11
 #include <QX11Info>
 #include <netwm.h>
 #endif
@@ -45,7 +45,7 @@ KDialogJobUiDelegate::KDialogJobUiDelegate()
     : d(new Private())
 {
     d->errorParentWidget = 0L;
-#if defined HAVE_X11
+#if HAVE_X11
     d->userTimestamp = QX11Info::appUserTime();
 #endif
 }
@@ -67,7 +67,7 @@ QWidget *KDialogJobUiDelegate::window() const
 
 void KDialogJobUiDelegate::updateUserTimestamp( unsigned long time )
 {
-#if defined HAVE_X11
+#if HAVE_X11
   if( d->userTimestamp == 0 || NET::timestampCompare( time, d->userTimestamp ) > 0 )
       d->userTimestamp = time;
 #endif

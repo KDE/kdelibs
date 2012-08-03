@@ -28,7 +28,7 @@
 #include <qglobal.h>
 
 #include <config.h>
-#if defined HAVE_X11 /*or defined Q_OS_WIN*/
+#if HAVE_X11 /*or defined Q_OS_WIN*/
 #include "kkeyserver_x11.h"
 #elif defined Q_OS_MAC
 #include "kkeyserver_mac.h"

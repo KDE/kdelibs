@@ -1036,7 +1036,7 @@ void KGlobalSettings::Private::reloadStyleSettings()
 
 void KGlobalSettings::Private::applyCursorTheme()
 {
-#if defined(HAVE_X11) && defined(HAVE_XCURSOR)
+#if HAVE_X11 && defined(HAVE_XCURSOR)
     KConfig config("kcminputrc");
     KConfigGroup g(&config, "Mouse");
 

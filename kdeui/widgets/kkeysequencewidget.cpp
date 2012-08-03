@@ -644,7 +644,7 @@ void KKeySequenceWidgetPrivate::updateShortcutDisplay()
 #if defined(Q_OS_MAC)
             if (modifierKeys & Qt::ALT)   s += KKeyServer::modToStringUser(Qt::ALT) + '+';
             if (modifierKeys & Qt::CTRL)  s += KKeyServer::modToStringUser(Qt::CTRL) + '+';
-#elif defined(HAVE_X11)
+#elif HAVE_X11
             if (modifierKeys & Qt::CTRL)  s += KKeyServer::modToStringUser(Qt::CTRL) + '+';
             if (modifierKeys & Qt::ALT)   s += KKeyServer::modToStringUser(Qt::ALT) + '+';
 #endif

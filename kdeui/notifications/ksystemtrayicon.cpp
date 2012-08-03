@@ -278,7 +278,7 @@ void KSystemTrayIcon::activateOrHide( QSystemTrayIcon::ActivationReason reasonCa
     } else {
         minimizeRestore( true );
     }
-#elif defined(HAVE_X11)
+#elif HAVE_X11
     KWindowInfo info1 = KWindowSystem::windowInfo( pw->winId(), NET::XAWMState | NET::WMState );
     // mapped = visible (but possibly obscured)
     bool mapped = (info1.mappingState() == NET::Visible) && !info1.isMinimized();
