@@ -135,7 +135,9 @@ using namespace DOM;
 #include <kwindowsystem.h>
 #include <kconfiggroup.h>
 
+#ifdef KJS_DEBUGGER
 #include "ecma/debugger/debugwindow.h"
+#endif
 
 // SVG
 #include <svg/SVGDocument.h>

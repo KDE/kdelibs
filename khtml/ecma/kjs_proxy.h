@@ -89,7 +89,9 @@ private:
   int m_handlerLineno;
 
   KJS::ScriptInterpreter* m_script;
+#ifdef KJS_DEBUGGER
   WTF::RefPtr<KJSDebugger::DebugWindow> m_debugWindow;
+#endif
   bool m_debugEnabled;
   int m_running;
 #ifndef NDEBUG

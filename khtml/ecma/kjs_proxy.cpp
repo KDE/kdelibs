@@ -26,8 +26,9 @@
 
 #include "kjs_window.h"
 #include "kjs_events.h"
-//#include "kjs_debugwin.h"
+#ifdef KJS_DEBUGGER
 #include "debugger/debugwindow.h"
+#endif
 #include <xml/dom_nodeimpl.h>
 #include <khtmlpart_p.h>
 #include <khtml_part.h>

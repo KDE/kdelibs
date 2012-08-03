@@ -35,8 +35,9 @@
 #include <khtml_part.h>
 #include <kjs/scriptfunction.h> // private API
 #include <kjs/function_object.h> // even more private API. or not. I dunno.
+#ifdef KJS_DEBUGGER
 #include "debugger/debugwindow.h"
-
+#endif
 #include <kdebug.h>
 
 using namespace KJS;

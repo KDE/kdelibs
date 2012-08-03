@@ -46,7 +46,9 @@
 #include <kmessagebox.h>
 #include <QTextDocument> // Qt::escape
 
+#ifdef KJS_DEBUGGER
 #include "debugger/debugwindow.h"
+#endif
 
 #include <QtCore/QList>
 
