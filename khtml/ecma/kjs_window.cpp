@@ -2017,7 +2017,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
 		part->settings()->windowFocusPolicy(part->url().host());
     if(policy == KHTMLSettings::KJSWindowFocusAllow && widget) {
       widget->topLevelWidget()->raise();
-#ifdef HAVE_X11
+#if HAVE_X11
       KWindowSystem::unminimizeWindow( widget->topLevelWidget()->winId() );
 #else
       //TODO

@@ -25,7 +25,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include "kxmessages.h"
 
-#ifdef HAVE_X11
+#if HAVE_X11
 
 #include <qx11info_x11.h>
 #include <X11/Xlib.h>

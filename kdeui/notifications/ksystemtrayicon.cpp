@@ -33,7 +33,7 @@
 #include <kwindowsystem.h>
 
 #include <config.h>
-#ifdef HAVE_X11
+#if HAVE_X11
 #include <QX11Info>
 #endif
 #ifdef Q_OS_WIN
@@ -157,7 +157,7 @@ void KSystemTrayIcon::init( QWidget* parent )
         action->setText(i18n("Minimize"));
         connect( action, SIGNAL(triggered(bool)), this, SLOT(minimizeRestoreAction()) );
 
-#ifdef HAVE_X11
+#if HAVE_X11
         KWindowInfo info = KWindowSystem::windowInfo( parent->winId(), NET::WMDesktop );
         d->onAllDesktops = info.onAllDesktops();
 #else
@@ -324,7 +324,7 @@ void KSystemTrayIcon::minimizeRestore( bool restore )
     QWidget* pw = d->window;
     if (!pw)
         return;
-#ifdef HAVE_X11
+#if HAVE_X11
     KWindowInfo info = KWindowSystem::windowInfo(pw->winId(), NET::WMGeometry | NET::WMDesktop);
     if (restore) {
         if (d->onAllDesktops) {

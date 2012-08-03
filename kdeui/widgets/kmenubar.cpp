@@ -43,7 +43,7 @@
 #include <kconfiggroup.h>
 #include <kwindowsystem.h>
 
-#ifdef HAVE_X11
+#if HAVE_X11
 #include <qx11info_x11.h>
 
 #include <X11/Xlib.h>
@@ -73,7 +73,7 @@ public:
 	:   forcedTopLevel( false ),
 	    topLevel( false ),
 	    wasTopLevel( false ),
-#ifdef HAVE_X11
+#if HAVE_X11
 	    selection( NULL ),
 #endif
             min_size( 0, 0 )
@@ -81,7 +81,7 @@ public:
 	}
     ~KMenuBarPrivate()
         {
-#ifdef HAVE_X11
+#if HAVE_X11
         delete selection;
 #endif
         }
@@ -94,7 +94,7 @@ public:
     bool topLevel : 1;
     bool wasTopLevel : 1; // when TLW is fullscreen, remember state
 
-#ifdef HAVE_X11
+#if HAVE_X11
     KSelectionWatcher* selection;
 #endif
     QTimer selection_timer;
@@ -102,7 +102,7 @@ public:
     static Atom makeSelectionAtom();
 };
 
-#ifdef HAVE_X11
+#if HAVE_X11
 static Atom selection_atom = None;
 static Atom msg_type_atom = None;
 
@@ -122,7 +122,7 @@ void initAtoms()
 
 Atom KMenuBar::KMenuBarPrivate::makeSelectionAtom()
 {
-#ifdef HAVE_X11
+#if HAVE_X11
     if( selection_atom == None )
 	initAtoms();
     return selection_atom;
@@ -172,7 +172,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
   d->topLevel = top_level;
   if ( isTopLevelMenu() )
   {
-#ifdef HAVE_X11
+#if HAVE_X11
       d->selection = new KSelectionWatcher( KMenuBarPrivate::makeSelectionAtom(),
           DefaultScreen( QX11Info::display()));
       connect( d->selection, SIGNAL(newOwner(Window)),
@@ -187,7 +187,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
       bool wasShown = !isHidden();
       setParent(parentWidget(), Qt::Window | Qt::Tool | Qt::FramelessWindowHint);
       setGeometry(0,0,width(),height());
-#ifdef HAVE_X11
+#if HAVE_X11
       KWindowSystem::setType( winId(), NET::TopMenu );
 #endif
 
@@ -204,7 +204,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
           show();
   } else
   {
-#ifdef HAVE_X11
+#if HAVE_X11
       delete d->selection;
       d->selection = NULL;
 #endif
@@ -287,7 +287,7 @@ void KMenuBar::updateFallbackSize()
 {
     if( !d->topLevel )
 	return;
-#ifdef HAVE_X11
+#if HAVE_X11
     if( d->selection->owner() != None )
 #endif
     { // somebody is managing us, don't mess anything, undo changes
@@ -322,7 +322,7 @@ void KMenuBar::selectionTimeout()
         int margin = 0;
 	move(area.left() - margin, area.top() - margin);
         setFixedSize(area.width() + 2* margin , heightForWidth( area.width() + 2 * margin ) );
-#ifdef HAVE_X11
+#if HAVE_X11
         int strut_height = height() - margin;
         if( strut_height < 0 )
             strut_height = 0;

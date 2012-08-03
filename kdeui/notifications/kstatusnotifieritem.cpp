@@ -497,7 +497,7 @@ void KStatusNotifierItem::setAssociatedWidget(QWidget *associatedWidget)
             connect(action, SIGNAL(triggered(bool)), this, SLOT(minimizeRestore()));
         }
 
-#ifdef HAVE_X11
+#if HAVE_X11
         KWindowInfo info = KWindowSystem::windowInfo(d->associatedWidget->winId(), NET::WMDesktop);
         d->onAllDesktops = info.onAllDesktops();
 #else
@@ -961,7 +961,7 @@ void KStatusNotifierItemPrivate::hideMenu()
 
 void KStatusNotifierItemPrivate::minimizeRestore(bool show)
 {
-#ifdef HAVE_X11
+#if HAVE_X11
     KWindowInfo info = KWindowSystem::windowInfo(associatedWidget->winId(), NET::WMDesktop | NET::WMFrameExtents);
     if (show) {
         if (onAllDesktops) {

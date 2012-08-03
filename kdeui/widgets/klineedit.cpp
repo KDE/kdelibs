@@ -1541,7 +1541,7 @@ bool KLineEditPrivate::overrideShortcut(const QKeyEvent* e)
     else if (e->matches(QKeySequence::SelectAll)) {
         return true;
     }
-#ifdef HAVE_X11
+#if HAVE_X11
     else if (key == Qt::CTRL + Qt::Key_E || key == Qt::CTRL + Qt::Key_U)
         return true;
 #endif

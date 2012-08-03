@@ -83,7 +83,7 @@
 #include "kxyselector.h"
 #include <kconfiggroup.h>
 
-#ifdef HAVE_X11
+#if HAVE_X11
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <QX11Info>
@@ -618,7 +618,7 @@ static const char * const *namedColorFilePath(void)
     // Relative locations are relative to GenericDataLocation (XDG_DATA_DIRS).
     //
     static const char * const path[] = {
-#ifdef HAVE_X11
+#if HAVE_X11
 #ifdef X11_RGBFILE
         X11_RGBFILE,
 #endif
@@ -1715,7 +1715,7 @@ KColorDialog::mouseReleaseEvent(QMouseEvent *e)
 QColor
 KColorDialog::grabColor(const QPoint &p)
 {
-#ifdef HAVE_X11
+#if HAVE_X11
     // we use the X11 API directly in this case as we are not getting back a valid
     // return from QPixmap::grabWindow in the case where the application is using
     // an argb visual

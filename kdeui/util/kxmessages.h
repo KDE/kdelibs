@@ -30,7 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #include <QtCore/QMap>
 
 #include <config.h> // HAVE_X11
-#ifdef HAVE_X11
+#if HAVE_X11
 typedef struct _XDisplay Display;
 
 class QString;

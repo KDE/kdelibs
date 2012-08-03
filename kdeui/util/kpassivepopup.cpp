@@ -41,7 +41,7 @@
 #include <kconfig.h>
 
 #include <config.h>
-#ifdef HAVE_X11
+#if HAVE_X11
 #include <qx11info_x11.h>
 #include <netwm.h>
 #endif
@@ -327,7 +327,7 @@ void KPassivePopup::hideEvent( QHideEvent * )
 
 QRect KPassivePopup::defaultArea() const
 {
-#ifdef HAVE_X11
+#if HAVE_X11
     NETRootInfo info( QX11Info::display(),
                       NET::NumberOfDesktops |
                       NET::CurrentDesktop |
@@ -349,7 +349,7 @@ void KPassivePopup::positionSelf()
 {
     QRect target;
 
-#ifdef HAVE_X11
+#if HAVE_X11
     if ( !d->window ) {
         target = defaultArea();
     }

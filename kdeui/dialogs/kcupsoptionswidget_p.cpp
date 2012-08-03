@@ -46,7 +46,7 @@ KCupsOptionsWidget::~KCupsOptionsWidget()
 
 bool KCupsOptionsWidget::cupsAvailable()
 {
-#ifdef HAVE_X11
+#if HAVE_X11
     // Ideally we would have access to the private Qt method
     // QCUPSSupport::cupsAvailable() to do this as it is very complex routine.
     // However, if CUPS is available then QPrinter::numCopies() will always return 1

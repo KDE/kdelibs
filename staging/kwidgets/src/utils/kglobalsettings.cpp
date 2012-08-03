@@ -54,7 +54,7 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 }
 #endif
 #include <config.h>
-#ifdef HAVE_X11
+#if HAVE_X11
 #include <X11/Xlib.h>
 #ifdef HAVE_XCURSOR // TODO NOT DEFINED ANYMORE. Can we drop X cursor themes?
 #include <X11/Xcursor/Xcursor.h>
@@ -547,7 +547,7 @@ KGlobalSettings::KMouseSettings& KGlobalSettingsData::mouseSettings()
             s.handed = KGlobalSettings::KMouseSettings::LeftHanded;
         else
         {
-#ifdef HAVE_X11
+#if HAVE_X11
             // get settings from X server
             // This is a simplified version of the code in input/mouse.cpp
             // Keep in sync !
@@ -755,7 +755,7 @@ void KGlobalSettings::emitChange(ChangeType changeType, int arg)
     args.append(arg);
     message.setArguments(args);
     QDBusConnection::sessionBus().send(message);
-#ifdef HAVE_X11
+#if HAVE_X11
     if (qApp && qApp->type() != QApplication::Tty) {
         //notify non-kde qt applications of the change
         extern void qt_x11_apply_settings_in_all_apps();
@@ -853,7 +853,7 @@ void KGlobalSettings::Private::applyGUIStyle()
 {
 #if 0 // Disabled for KF5. TODO Qt5: check that the KDE style is correctly applied.
   //Platform plugin only loaded on X11 systems
-#ifdef HAVE_X11
+#if HAVE_X11
     if (!kde_overrideStyle.isEmpty()) {
         const QLatin1String currentStyleName(qApp->style()->metaObject()->className());
         if (0 != kde_overrideStyle.compare(currentStyleName, Qt::CaseInsensitive) &&

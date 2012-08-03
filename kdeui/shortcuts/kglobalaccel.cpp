@@ -29,7 +29,7 @@
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusMetaType>
 #include <config.h>
-#ifdef HAVE_X11
+#if HAVE_X11
 #include <QX11Info>
 #include <netwm_def.h>
 #endif
@@ -434,7 +434,7 @@ void KGlobalAccelPrivate::_k_invokeAction(
         return;
     }
 
-#ifdef HAVE_X11
+#if HAVE_X11
     // Update this application's X timestamp if needed.
     // TODO The 100%-correct solution should probably be handling this action
     // in the proper place in relation to the X events queue in order to avoid

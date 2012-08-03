@@ -70,7 +70,7 @@ KJavaAppletWidget::~KJavaAppletWidget()
 
 void KJavaAppletWidget::showApplet()
 {
-#ifdef HAVE_X11
+#if HAVE_X11
     connect( KWindowSystem::self(), SIGNAL(windowAdded(WId)),
 	         this,  SLOT(setWindow(WId)) );
 
