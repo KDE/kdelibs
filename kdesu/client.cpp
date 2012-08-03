@@ -68,8 +68,6 @@ KDEsuClient::KDEsuClient()
 
     // strip the screen number from the display
     display.remove(QRegExp("\\.[0-9]+$"));
-#elif defined(QWS)
-    QByteArray display("QWS");
 #else
     QByteArray display("NODISPLAY");
 #endif

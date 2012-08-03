@@ -426,9 +426,7 @@ Window *Window::retrieveWindow(KParts::ReadOnlyPart *p)
   if ( part && part->jScriptEnabled() )
   {
     assert( obj );
-#ifndef QWS
     assert( dynamic_cast<KJS::Window*>(obj) ); // type checking
-#endif
   }
 #endif
   if ( !obj ) // JS disabled
@@ -440,9 +438,7 @@ Window *Window::retrieveActive(ExecState *exec)
 {
   JSValue *imp = exec->dynamicInterpreter()->globalObject();
   assert( imp );
-#ifndef QWS
   assert( dynamic_cast<KJS::Window*>(imp) );
-#endif
   return static_cast<KJS::Window*>(imp);
 }
 

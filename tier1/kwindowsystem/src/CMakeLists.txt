@@ -52,10 +52,6 @@ if (Q_OS_WIN)
                                                 kwindowinfo_win.cpp)
 endif ()
 
-if (QWS)
-   set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_qws.cpp)
-endif ()
-
 add_library(kwindowsystem ${kwindowsystem_SRCS})
 generate_export_header(kwindowsystem)
 

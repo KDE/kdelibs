@@ -70,8 +70,6 @@
 
 #if HAVE_X11
 #define DISPLAY "DISPLAY"
-#elif defined(QWS)
-#define DISPLAY "QWS_DISPLAY"
 #else
 #define DISPLAY "NODISPLAY"
 #endif
@@ -275,8 +273,6 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
     //FIXME: Check if other options are specific to Qt/X11
 #if HAVE_X11
     qt_options.add("display <displayname>", qi18n("Use the X-server display 'displayname'"));
-#elif defined(QWS)
-    qt_options.add("display <displayname>", qi18n("Use the QWS display 'displayname'"));
 #else
 #endif
     qt_options.add("session <sessionId>", qi18n("Restore the application for the given 'sessionId'"));
@@ -301,9 +297,6 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
     qt_options.add("inputstyle <inputstyle>", qi18n("sets XIM (X Input Method) input style. Possible\nvalues are onthespot, overthespot, offthespot and\nroot"));
     qt_options.add("im <XIM server>", qi18n("set XIM server"));
     qt_options.add("noxim", qi18n("disable XIM"));
-#endif
-#ifdef QWS
-    qt_options.add("qws", qi18n("forces the application to run as QWS Server"));
 #endif
     qt_options.add("reverse", qi18n("mirrors the whole layout of widgets"));
     qt_options.add("stylesheet <file.qss>", qi18n("applies the Qt stylesheet to the application widgets"));
@@ -1432,7 +1425,7 @@ KCmdLineArgsPrivate::setOption(const QByteArray &opt, const QByteArray &value)
       addArgument(argString);
       addArgument(value);
 
-#if HAVE_X11 || defined(QWS)
+#if HAVE_X11
       // Hack coming up!
       if (argString == "-display")
       {
