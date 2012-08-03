@@ -58,11 +58,6 @@
 #include <kglobalsettings.h>
 #include <kwindowconfig.h>
 
-#if defined Q_WS_X11
-#include <qx11info_x11.h>
-#include <netwm.h>
-#endif
-
 #include <stdlib.h>
 #include <ctype.h>
 #include <assert.h>
@@ -839,7 +834,7 @@ bool KMainWindow::event( QEvent* ev )
 {
     K_D(KMainWindow);
     switch( ev->type() ) {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     case QEvent::Move:
 #endif
     case QEvent::Resize:

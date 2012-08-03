@@ -53,6 +53,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kapplication.h>
 #include <kdatetime.h>
 
+#include <config.h>
+
 KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
                         int defaultButton, bool showDetails )
            :KDialog( parent )
@@ -60,13 +62,12 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     setModal(true);
     setObjectName("cookiealert");
     setButtons(Yes|No|Details);
-#ifndef Q_WS_QWS //FIXME(E): Implement for Qt Embedded
     setCaption( i18n("Cookie Alert") );
     setWindowIcon( KDE::icon("preferences-web-browser-cookies") );
     // all cookies in the list should have the same window at this time, so let's take the first
     if( cookieList.first().windowIds().count() > 0 )
     {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
         KWindowSystem::setMainWindow( this, reinterpret_cast<WId>( cookieList.first().windowIds().first() ) );
 #else
         KWindowSystem::setMainWindow( this, cookieList.first().windowIds().first());
@@ -75,12 +76,11 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     else
     {
         // No window associated... make sure the user notices our dialog.
-#ifdef Q_WS_X11
+#if HAVE_X11
         KWindowSystem::setState( winId(), NET::KeepAbove );
 #endif
         kapp->updateUserTimestamp();
     }
-#endif
     QFrame* vBox1 = new QFrame( this );
     QVBoxLayout* vBox1Layout = new QVBoxLayout( vBox1 );
     vBox1Layout->setSpacing( -1 );
