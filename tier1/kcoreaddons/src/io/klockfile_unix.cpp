@@ -176,13 +176,12 @@ void KLockFile::Private::writeIntoLockFile(QFile& file)
   if (m_componentName.isEmpty() && QCoreApplication::instance()) // TODO Qt5: should be fixed by new Q_GLOBAL_STATIC: qcoreappdata() was dangling, in kconfigtest testSyncOnExit.
       m_componentName = QCoreApplication::applicationName();
 
-  QTextStream stream(&file);
   m_pid = getpid();
 
-  stream << QString::number(m_pid) << endl
-      << m_componentName << endl
-      << m_hostname << endl;
-  stream.flush();
+  file.write(QByteArray::number(m_pid) + '\n');
+  file.write(m_componentName.toUtf8() + '\n');
+  file.write(hostname);
+  file.flush();
 }
 
 void KLockFile::Private::readLockFile()
@@ -425,7 +424,7 @@ KLockFile::LockResult KLockFile::lock(LockFlags options)
            gethostname(hostname, 255);
            hostname[255] = 0;
 
-           if (d->m_hostname == QLatin1String(hostname))
+           if (d->m_hostname == QString::fromLocal8Bit(hostname))
            {
               // Check if pid still exists
               int res = ::kill(d->m_pid, 0);
