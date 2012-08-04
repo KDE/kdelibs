@@ -53,6 +53,10 @@ public:
 
     QString batteryTechnology() const;
 
+    double energy() const;
+    double energyRate() const;
+    double voltage() const;
+
 Q_SIGNALS:
     void chargePercentChanged(int value, const QString &udi);
     void chargeStateChanged(int newState, const QString &udi);
