@@ -22,8 +22,7 @@
 
 #include "kentities.c"
 
-#include "qlocalizedstring_porting.h"
-
+#include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
 #include <QtCore/QRegExp>
 #include <QtCore/QCharRef>
@@ -33,13 +32,11 @@
 #include <assert.h>
 #include <QHash>
 
-// PORTING HACK (KDE5 TODO: clean up)
-#define i18nc(a,b) QObject::tr(b, a)
-
 /*
  * ### FIXME KDE4: the name of the encodings should mostly be uppercase
  * The names of this list are user-visible
- * Generate with generate_string_table.pl, input data:
+ * Generate with generate_string_table.pl (located in kdesdk/scripts),
+ * input data:
 ISO 8859-1
 i18n:Western European
 ISO 8859-15
@@ -149,68 +146,83 @@ i18n:Cyrillic              // ### TODO "PT 154" seems to have been removed from 
  * - IBM874: TODO
  * - TSCII: TODO
  */
+
+/*
+ * THE FOLLOWING CODE IS GENERATED. PLEASE DO NOT EDIT BY HAND.
+ * The script used was generate_string_table.pl which can be found in kdesdk/scripts.
+ */
+
+/*
+ * This redefines the QT_TRANSLATE_NOOP3 macro provided by Qt to indicate that
+ * statically initialised text should be translated so that it expands to just
+ * the string that should be translated, making it possible to use it in the
+ * single string construct below.
+ */
+#undef QT_TRANSLATE_NOOP3
+#define QT_TRANSLATE_NOOP3(a, b, c) b
+
 static const char language_for_encoding_string[] =
     "ISO 8859-1\0"
-    I18N_NOOP2("@item Text character set", "Western European")"\0"
+    QT_TRANSLATE_NOOP3("", "Western European", "@item Text character set")"\0"
     "ISO 8859-15\0"
     "ISO 8859-14\0"
     "cp 1252\0"
     "IBM850\0"
     "ISO 8859-2\0"
-    I18N_NOOP2("@item Text character set", "Central European")"\0"
+    QT_TRANSLATE_NOOP3("", "Central European", "@item Text character set")"\0"
     "ISO 8859-3\0"
     "ISO 8859-4\0"
-    I18N_NOOP2("@item Text character set", "Baltic")"\0"
+    QT_TRANSLATE_NOOP3("", "Baltic", "@item Text character set")"\0"
     "ISO 8859-13\0"
     "ISO 8859-16\0"
-    I18N_NOOP2("@item Text character set", "South-Eastern Europe")"\0"
+    QT_TRANSLATE_NOOP3("", "South-Eastern Europe", "@item Text character set")"\0"
     "cp 1250\0"
     "cp 1254\0"
-    I18N_NOOP2("@item Text character set", "Turkish")"\0"
+    QT_TRANSLATE_NOOP3("", "Turkish", "@item Text character set")"\0"
     "cp 1257\0"
     "KOI8-R\0"
-    I18N_NOOP2("@item Text character set", "Cyrillic")"\0"
+    QT_TRANSLATE_NOOP3("", "Cyrillic", "@item Text character set")"\0"
     "ISO 8859-5\0"
     "cp 1251\0"
     "KOI8-U\0"
     "IBM866\0"
     "Big5\0"
-    I18N_NOOP2("@item Text character set", "Chinese Traditional")"\0"
+    QT_TRANSLATE_NOOP3("", "Chinese Traditional", "@item Text character set")"\0"
     "Big5-HKSCS\0"
     "GB18030\0"
-    I18N_NOOP2("@item Text character set", "Chinese Simplified")"\0"
+    QT_TRANSLATE_NOOP3("", "Chinese Simplified", "@item Text character set")"\0"
     "GBK\0"
     "GB2312\0"
     "EUC-KR\0"
-    I18N_NOOP2("@item Text character set", "Korean")"\0"
+    QT_TRANSLATE_NOOP3("", "Korean", "@item Text character set")"\0"
     "sjis\0"
-    I18N_NOOP2("@item Text character set", "Japanese")"\0"
+    QT_TRANSLATE_NOOP3("", "Japanese", "@item Text character set")"\0"
     "jis7\0"
     "EUC-JP\0"
     "ISO 8859-7\0"
-    I18N_NOOP2("@item Text character set", "Greek")"\0"
+    QT_TRANSLATE_NOOP3("", "Greek", "@item Text character set")"\0"
     "cp 1253\0"
     "ISO 8859-6\0"
-    I18N_NOOP2("@item Text character set", "Arabic")"\0"
+    QT_TRANSLATE_NOOP3("", "Arabic", "@item Text character set")"\0"
     "cp 1256\0"
     "ISO 8859-8\0"
-    I18N_NOOP2("@item Text character set", "Hebrew")"\0"
+    QT_TRANSLATE_NOOP3("", "Hebrew", "@item Text character set")"\0"
     "ISO 8859-8-I\0"
     "cp 1255\0"
     "ISO 8859-9\0"
     "TIS620\0"
-    I18N_NOOP2("@item Text character set", "Thai")"\0"
+    QT_TRANSLATE_NOOP3("", "Thai", "@item Text character set")"\0"
     "ISO 8859-11\0"
     "UTF-8\0"
-    I18N_NOOP2("@item Text character set", "Unicode")"\0"
+    QT_TRANSLATE_NOOP3("", "Unicode", "@item Text character set")"\0"
     "UTF-16\0"
     "utf7\0"
     "ucs2\0"
     "ISO 10646-UCS-2\0"
     "winsami2\0"
-    I18N_NOOP2("@item Text character set", "Northern Saami")"\0"
+    QT_TRANSLATE_NOOP3("", "Northern Saami", "@item Text character set")"\0"
     "windows-1258\0"
-    I18N_NOOP2("@item Text character set", "Other")"\0"
+    QT_TRANSLATE_NOOP3("", "Other", "@item Text character set")"\0"
     "IBM874\0"
     "TSCII\0"
     "\0";
@@ -229,6 +241,10 @@ static const int language_for_encoding_indices[] = {
      515,  495,  520,  495,  536,  545,  560,  573,
      579,  573,  586,  573,   -1
 };
+
+/*
+ * GENERATED CODE ENDS HERE
+ */
 
 /*
  * defines some different names for codecs that are built into Qt.
@@ -330,6 +346,12 @@ iso-2022-jp
  * - mac-roman: appears on the table for x-mac-roman
  * - csiso2022jp: See bug #77243
  */
+
+/*
+ * THE FOLLOWING CODE IS GENERATED. PLEASE DO NOT EDIT BY HAND.
+ * The script used was generate_string_table.pl which can be found in kdesdk/scripts.
+ */
+
 static const char builtin_string[] =
     "iso-ir-111\0"
     "koi8-r\0"
@@ -405,6 +427,10 @@ static const int builtin_indices[] = {
 };
 
 /*
+ * GENERATED CODE ENDS HERE
+ */
+
+/*
  * some last resort hints in case the charmap file couldn't be found.
  * This gives at least a partial conversion and helps making things readable.
  *
@@ -428,6 +454,12 @@ windows-1251
 /* Notes:
  * - KDE had always "CP 1251" as best fallback to PT 154. As Qt does not offer this encoding anymore, the codepage 1251 is used as fallback.
  */
+
+/*
+ * THE FOLLOWING CODE IS GENERATED. PLEASE DO NOT EDIT BY HAND.
+ * The script used was generate_string_table.pl which can be found in kdesdk/scripts.
+ */
+
 static const char conversion_hints_string[] =
     "cp1250\0"
     "iso-8859-2\0"
@@ -444,6 +476,10 @@ static const int conversion_hints_indices[] = {
        0,    7,   18,   25,   36,   18,   43,   50,
       63,   50,   76,   50,   -1
 };
+
+/*
+ * GENERATED CODE ENDS HERE
+ */
 
 struct KCharsetsSingletonPrivate
 {
@@ -620,9 +656,9 @@ QString KCharsets::languageForEncoding( const QString &encoding ) const
                                                language_for_encoding_indices,
                                                encoding.toUtf8().constData() );
     if ( lang )
-        return i18nc( "@item Text character set", lang );
+        return QCoreApplication::translate( "", lang, "@item Text character set" );
     else
-        return i18nc( "@item Text character set", "Other" );
+        return QCoreApplication::translate( "", "Other", "@item Text character set" );
 }
 #endif
 
@@ -632,10 +668,10 @@ QString KCharsets::descriptionForEncoding( const QString& encoding ) const
                                                language_for_encoding_indices,
                                                encoding.toUtf8().data() );
     if ( lang )
-        return i18nc("@item %1 character set, %2 encoding", "%1 ( %2 )")
-            .arg(i18nc( "@item Text character set", lang), encoding);
+        return QCoreApplication::translate("", "%1 ( %2 )", "@item %1 character set, %2 encoding")
+            .arg(QCoreApplication::translate("", lang, "@item Text character set"), encoding);
     else
-        return i18nc("@item", "Other encoding (%1)").arg(encoding);
+        return QCoreApplication::translate("", "Other encoding (%1)", "@item").arg(encoding);
 }
 
 QString KCharsets::encodingForName( const QString &descriptiveName ) const
@@ -660,8 +696,8 @@ QStringList KCharsets::descriptiveEncodingNames() const
     QStringList encodings;
     for ( const int *p = language_for_encoding_indices; *p != -1; p += 2) {
         const QString name = QString::fromUtf8( language_for_encoding_string + p[0] );
-        const QString description = i18nc( "@item Text character set", language_for_encoding_string + p[1] );
-        encodings.append(i18nc("@item Text encoding: %1 character set, %2 encoding", "%1 ( %2 )").arg(description, name));
+        const QString description = QCoreApplication::translate( "", language_for_encoding_string + p[1], "@item Text character set"  );
+    encodings.append(QCoreApplication::translate("", "%1 ( %2 )", "@item Text encoding: %1 character set, %2 encoding").arg(description, name));
     }
     encodings.sort();
     return encodings;
@@ -674,7 +710,7 @@ QList<QStringList> KCharsets::encodingsByScript() const
     int i;
     for ( const int *p = language_for_encoding_indices; *p != -1; p += 2) {
         const QString name = QString::fromUtf8( language_for_encoding_string + p[0] );
-        const QString description = i18nc("@item Text character set", language_for_encoding_string + p[1] );
+        const QString description = QCoreApplication::translate("", language_for_encoding_string + p[1], "@item Text character set");
 
         for (i=0; i<d->encodingsByScript.size(); ++i) {
             if (d->encodingsByScript.at(i).at(0) == description) {

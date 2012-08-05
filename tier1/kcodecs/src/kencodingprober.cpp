@@ -22,8 +22,6 @@
 
 #include "kencodingprober.h"
 
-#include "qlocalizedstring_porting.h"
-
 #include "probers/nsCharSetProber.h"
 #include "probers/nsUniversalDetector.h"
 #include "probers/ChineseGroupProber.h"
@@ -31,6 +29,8 @@
 #include "probers/UnicodeGroupProber.h"
 #include "probers/nsSBCSGroupProber.h"
 #include "probers/nsMBCSGroupProber.h"
+
+#include <QtCore/QCoreApplication>
 
 #include <string.h>
 
@@ -221,44 +221,41 @@ void KEncodingProber::setProberType(KEncodingProber::ProberType proberType)
     reset();
 }
 
-// PORTING HACK (KDE5 TODO: clean up)
-#define i18nc(a,b) QObject::tr(b, a)
-
 KEncodingProber::ProberType KEncodingProber::proberTypeForName(const QString& lang)
 {
     if (lang.isEmpty())
         return KEncodingProber::Universal;
-    else if (lang==i18nc("@item Text character set", "Disabled"))
+    else if (lang==QCoreApplication::translate("", "Disabled", "@item Text character set"))
         return KEncodingProber::None;
-    else if (lang==i18nc("@item Text character set", "Universal"))
+    else if (lang==QCoreApplication::translate("", "Universal", "@item Text character set"))
         return KEncodingProber::Universal;
-    else if (lang==i18nc("@item Text character set", "Unicode"))
+    else if (lang==QCoreApplication::translate("", "Unicode", "@item Text character set"))
         return KEncodingProber::Unicode;
-    else if (lang==i18nc("@item Text character set", "Cyrillic"))
+    else if (lang==QCoreApplication::translate("", "Cyrillic", "@item Text character set"))
         return KEncodingProber::Cyrillic;
-    else if (lang==i18nc("@item Text character set", "Western European"))
+    else if (lang==QCoreApplication::translate("", "Western European", "@item Text character set"))
         return KEncodingProber::WesternEuropean;
-    else if (lang==i18nc("@item Text character set", "Central European"))
+    else if (lang==QCoreApplication::translate("", "Central European", "@item Text character set"))
         return KEncodingProber::CentralEuropean;
-    else if (lang==i18nc("@item Text character set", "Greek"))
+    else if (lang==QCoreApplication::translate("", "Greek", "@item Text character set"))
         return KEncodingProber::Greek;
-    else if (lang==i18nc("@item Text character set", "Hebrew"))
+    else if (lang==QCoreApplication::translate("", "Hebrew", "@item Text character set"))
         return KEncodingProber::Hebrew;
-    else if (lang==i18nc("@item Text character set", "Turkish"))
+    else if (lang==QCoreApplication::translate("", "Turkish", "@item Text character set"))
         return KEncodingProber::Turkish;
-    else if (lang==i18nc("@item Text character set", "Japanese"))
+    else if (lang==QCoreApplication::translate("", "Japanese", "@item Text character set"))
         return KEncodingProber::Japanese;
-    else if (lang==i18nc("@item Text character set", "Baltic"))
+    else if (lang==QCoreApplication::translate("", "Baltic", "@item Text character set"))
         return KEncodingProber::Baltic;
-    else if (lang==i18nc("@item Text character set", "Chinese Traditional"))
+    else if (lang==QCoreApplication::translate("", "Chinese Traditional", "@item Text character set"))
         return KEncodingProber::ChineseTraditional;
-    else if (lang==i18nc("@item Text character set", "Chinese Simplified"))
+    else if (lang==QCoreApplication::translate("", "Chinese Simplified", "@item Text character set"))
         return KEncodingProber::ChineseSimplified;
-    else if (lang==i18nc("@item Text character set", "Korean"))
+    else if (lang==QCoreApplication::translate("", "Korean", "@item Text character set"))
         return KEncodingProber::Korean;
-    else if (lang==i18nc("@item Text character set", "Thai"))
+    else if (lang==QCoreApplication::translate("", "Thai", "@item Text character set"))
         return KEncodingProber::Thai;
-    else if (lang==i18nc("@item Text character set", "Arabic"))
+    else if (lang==QCoreApplication::translate("", "Arabic", "@item Text character set"))
         return KEncodingProber::Arabic;
 
     return KEncodingProber::Universal;
@@ -269,52 +266,52 @@ QString KEncodingProber::nameForProberType(KEncodingProber::ProberType proberTyp
     switch (proberType)
     {
         case KEncodingProber::None:
-            return i18nc("@item Text character set", "Disabled");
+            return QCoreApplication::translate("", "Disabled", "@item Text character set");
             break;
         case KEncodingProber::Universal:
-            return i18nc("@item Text character set", "Universal");
+            return QCoreApplication::translate("", "Universal", "@item Text character set");
             break;
         case KEncodingProber::Arabic:
-            return i18nc("@item Text character set", "Arabic");
+            return QCoreApplication::translate("", "Arabic", "@item Text character set");
             break;
         case KEncodingProber::Baltic:
-            return i18nc("@item Text character set", "Baltic");
+            return QCoreApplication::translate("", "Baltic", "@item Text character set");
             break;
         case KEncodingProber::CentralEuropean:
-            return i18nc("@item Text character set", "Central European");
+            return QCoreApplication::translate("", "Central European", "@item Text character set");
             break;
         case KEncodingProber::Cyrillic:
-            return i18nc("@item Text character set", "Cyrillic");
+            return QCoreApplication::translate("", "Cyrillic", "@item Text character set");
             break;
         case KEncodingProber::Greek:
-            return i18nc("@item Text character set", "Greek");
+            return QCoreApplication::translate("", "Greek", "@item Text character set");
             break;
         case KEncodingProber::Hebrew:
-            return i18nc("@item Text character set", "Hebrew");
+            return QCoreApplication::translate("", "Hebrew", "@item Text character set");
             break;
         case KEncodingProber::Japanese:
-            return i18nc("@item Text character set", "Japanese");
+            return QCoreApplication::translate("", "Japanese", "@item Text character set");
             break;
         case KEncodingProber::Turkish:
-            return i18nc("@item Text character set", "Turkish");
+            return QCoreApplication::translate("", "Turkish", "@item Text character set");
             break;
         case KEncodingProber::WesternEuropean:
-            return i18nc("@item Text character set", "Western European");
+            return QCoreApplication::translate("", "Western European", "@item Text character set");
             break;
         case KEncodingProber::ChineseTraditional:
-            return i18nc("@item Text character set", "Chinese Traditional");
+            return QCoreApplication::translate("", "Chinese Traditional", "@item Text character set");
             break;
         case KEncodingProber::ChineseSimplified:
-            return i18nc("@item Text character set", "Chinese Simplified");
+            return QCoreApplication::translate("", "Chinese Simplified", "@item Text character set");
             break;
         case KEncodingProber::Korean:
-            return i18nc("@item Text character set", "Korean");
+            return QCoreApplication::translate("", "Korean", "@item Text character set");
             break;
         case KEncodingProber::Thai:
-            return i18nc("@item Text character set", "Thai");
+            return QCoreApplication::translate("", "Thai", "@item Text character set");
             break;
         case KEncodingProber::Unicode:
-            return i18nc("@item Text character set", "Unicode");
+            return QCoreApplication::translate("", "Unicode", "@item Text character set");
             break;
         default:
             return QString();
