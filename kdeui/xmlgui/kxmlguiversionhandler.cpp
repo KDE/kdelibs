@@ -24,7 +24,6 @@
 #include <QFile>
 #include <QDomDocument>
 #include "kxmlguifactory.h"
-#include <kglobal.h>
 #include <qstandardpaths.h>
 #include <QtXml/QDomElement>
 

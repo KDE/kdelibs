@@ -48,7 +48,6 @@
 #include <QtDBus/QDBusConnectionInterface>
 #include <QtDBus/QDBusReply>
 
-#include <kglobal.h>
 #include <kconfig.h>
 #include <klocalizedstring.h>
 #include <kcodecs.h>

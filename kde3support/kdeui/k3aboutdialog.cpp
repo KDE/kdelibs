@@ -38,7 +38,6 @@
 #include <QTextBrowser>
 #include <QStyle>
 
-#include <kglobal.h>
 #include <kglobalsettings.h>
 #include <klocalizedstring.h>
 #include <kiconloader.h>

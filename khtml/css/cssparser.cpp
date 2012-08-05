@@ -29,7 +29,6 @@
 #include "cssparser.h"
 
 #include <kdebug.h>
-#include <kglobal.h>
 #include <kurl.h>
 
 #include "css_valueimpl.h"

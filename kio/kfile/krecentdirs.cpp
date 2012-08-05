@@ -29,7 +29,6 @@
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
-#include <kglobal.h>
 
 #define MAX_DIR_HISTORY 3
 

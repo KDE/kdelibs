@@ -46,7 +46,6 @@
 #include "rendering/render_form.h"
 
 #include <kcharsets.h>
-#include <kglobal.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <krandom.h>

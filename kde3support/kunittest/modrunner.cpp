@@ -24,7 +24,6 @@
  */
 
 #include <kdebug.h>
-#include <kglobal.h>
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>

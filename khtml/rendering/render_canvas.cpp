@@ -31,7 +31,6 @@
 #include "khtmlview.h"
 #include "khtml_part.h"
 #include <kdebug.h>
-#include <kglobal.h>
 #include <QScrollBar>
 
 using namespace khtml;

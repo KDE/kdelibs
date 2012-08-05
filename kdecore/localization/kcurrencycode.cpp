@@ -29,7 +29,6 @@
 
 #include "kconfig.h"
 #include "kconfiggroup.h"
-#include "kglobal.h"
 #include "klocalizedstring.h"
 #include "kdebug.h"
 

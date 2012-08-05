@@ -38,7 +38,6 @@
 #include "dom_restyler.h"
 #include "html/html_objectimpl.h"
 
-#include <kglobal.h>
 #include <kdebug.h>
 
 #include <rendering/render_text.h>

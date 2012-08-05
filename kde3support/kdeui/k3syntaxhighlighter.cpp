@@ -29,7 +29,6 @@
 #include <klocalizedstring.h>
 #include <kconfig.h>
 #include <kdebug.h>
-#include <kglobal.h>
 #include <k3sconfig.h>
 #include <k3spell.h>
 #include <Qt3Support/Q3Dict>

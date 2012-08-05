@@ -27,7 +27,6 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QDateTime>
 
-#include <kglobal.h>
 #include <qstandardpaths.h>
 #include <kdebug.h>
 

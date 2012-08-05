@@ -25,7 +25,6 @@
 #include "xml/dom_docimpl.h"
 #include "khtmlview.h"
 
-#include <kglobal.h>
 #include <kdebug.h>
 
 #include <QScrollBar>

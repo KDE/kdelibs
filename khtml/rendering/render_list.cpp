@@ -35,7 +35,6 @@
 #include "xml/dom_docimpl.h"
 
 #include <kdebug.h>
-#include <kglobal.h>
 
 //#define BOX_DEBUG
 

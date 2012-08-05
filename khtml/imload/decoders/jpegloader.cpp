@@ -29,7 +29,6 @@
 #include <stdio.h>
 #include <setjmp.h>
 #include <QtCore/QDate>
-#include <kglobal.h>
 #include <QImage>
 
 #include "imageloader.h"

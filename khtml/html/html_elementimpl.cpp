@@ -49,7 +49,6 @@
 #include <dom/dom_doc.h>
 
 #include <kdebug.h>
-#include <kglobal.h>
 
 using namespace DOM;
 using namespace khtml;

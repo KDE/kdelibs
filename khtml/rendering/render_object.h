@@ -32,7 +32,6 @@
 #include <QList>
 
 #include <kdebug.h>
-#include <kglobal.h>
 
 #include "xml/dom_docimpl.h"
 #include "misc/khtmllayout.h"

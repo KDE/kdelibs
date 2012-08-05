@@ -22,7 +22,6 @@
 
 #include "kconfig.h"
 #include "kdebug.h"
-#include "kglobal.h"
 #include "klocalizedstring.h"
 #include "ksharedconfig.h"
 #include "kshortcut.h"

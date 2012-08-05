@@ -31,8 +31,6 @@
 
 #include <xml/dom_docimpl.h>
 
-#include <kglobal.h>
-
 using namespace khtml;
 
 void RenderInline::setStyle(RenderStyle* _style)

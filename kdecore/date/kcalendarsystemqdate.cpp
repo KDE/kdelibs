@@ -27,7 +27,6 @@
 
 #include "kdebug.h"
 #include "klocale.h"
-#include "kglobal.h"
 #include "kconfiggroup.h"
 
 #include <QtCore/QDate>

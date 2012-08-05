@@ -23,7 +23,6 @@
 #include "ksycocatype.h"
 #include "ksycocafactory.h"
 #include "ktoolinvocation.h"
-#include "kglobal.h"
 #include "kmemfile.h"
 #include "kde_file.h"
 #include "kconfiggroup.h"

@@ -40,8 +40,6 @@
 #include "rendering/render_line.h"
 #include "xml/dom_docimpl.h"
 
-#include <kglobal.h>
-
 #include <QApplication>
 #include <QStyle>
 

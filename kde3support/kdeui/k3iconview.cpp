@@ -28,7 +28,6 @@
 #include "kwordwrap.h"
 #include <kconfig.h>
 #include <kdebug.h>
-#include <kglobal.h>
 #include <kiconeffect.h>
 #include <kglobalsettings.h>
 

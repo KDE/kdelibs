@@ -28,7 +28,6 @@
 
 #ifdef Q_OS_WIN
 
-#include "kglobal.h"
 #include <klocalizedstring.h>
 
 #include <QtCore/QDir>

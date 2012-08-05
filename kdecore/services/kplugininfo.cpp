@@ -20,7 +20,6 @@
 #include "kplugininfo.h"
 #include <kservicetypetrader.h>
 #include <kdebug.h>
-#include <kglobal.h>
 #include <kdesktopfile.h>
 #include <kservice.h>
 #include <QList>

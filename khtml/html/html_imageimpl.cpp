@@ -28,7 +28,6 @@
 #include "khtml_part.h"
 
 #include <kstringhandler.h>
-#include <kglobal.h>
 #include <kdebug.h>
 
 #include "rendering/render_image.h"

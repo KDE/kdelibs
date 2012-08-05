@@ -2,7 +2,6 @@
 #include <kcmdlineargs.h>
 #include <kconfig.h>
 #include <kdialog.h>
-#include <kglobal.h>
 
 #include "k3listview.h"
 

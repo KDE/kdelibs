@@ -47,7 +47,6 @@
 #include <config.h>
 #include <stdlib.h>
 #include <string.h>
-#include <kglobal.h>
 
 #ifdef HAVE_GETPAGESIZE
 #include <unistd.h>

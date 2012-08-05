@@ -35,7 +35,6 @@
 #include <QtCore/QTextCodec>
 
 #include "kcatalog_p.h"
-#include "kglobal.h"
 #include "kconfig.h"
 #include "kdebug.h"
 #include "kdatetime.h"

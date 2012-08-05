@@ -47,7 +47,6 @@
 #include "misc/borderarcstroker.h"
 
 #include <kdebug.h>
-#include <kglobal.h>
 #include <QPainter>
 #include "khtmlview.h"
 #include <khtml_part.h>

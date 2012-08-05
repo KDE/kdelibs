@@ -42,7 +42,6 @@
 #include <QImage>
 #include <QPainter>
 #include <kdebug.h>
-#include <kglobal.h>
 #include <assert.h>
 #include <limits.h>
 #include <math.h>

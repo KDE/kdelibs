@@ -38,7 +38,6 @@
 #include <kcombobox.h>
 #include <kdebug.h>
 #include <kdialog.h>
-#include <kglobal.h>
 #include <kiconloader.h>
 #include <klineedit.h>
 #include <knotification.h>

@@ -23,8 +23,6 @@
 #include "table_layout.h"
 #include "render_table.h"
 
-#include <kglobal.h>
-
 using namespace khtml;
 
 // #define DEBUG_LAYOUT

@@ -15,7 +15,6 @@
 
 #include <kapplication.h>
 #include <kcmdlineargs.h>
-#include <kglobal.h>
 #include <kconfig.h>
 #include <k3iconview.h>
 #include <k3listview.h>

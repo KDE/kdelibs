@@ -48,7 +48,6 @@
 #include <kio/job.h>
 #include <kprotocolmanager.h>
 #include <kconfig.h>
-#include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kde_file.h>
 

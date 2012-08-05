@@ -37,7 +37,6 @@
 #include <kconfig.h>
 #include <kglobalsettings.h>
 #include <kapplication.h>
-#include <kglobal.h>
 #include <kdebug.h>
 #include <kmanagerselection.h>
 #include <kconfiggroup.h>

@@ -45,7 +45,6 @@
 #include <css/csshelper.h>
 #include <ecma/kjs_proxy.h>
 #include <kcharsets.h>
-#include <kglobal.h>
 #include <ctype.h>
 #include <assert.h>
 #include <QtCore/QVariant>

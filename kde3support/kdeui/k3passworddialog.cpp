@@ -38,7 +38,6 @@
 #include <Q3PtrDict>
 
 #include <kconfig.h>
-#include <kglobal.h>
 #include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <ksharedconfig.h>

@@ -41,7 +41,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kcomponentdata.h>
 #include <kdatetime.h>
 #include <kdebug.h>
-#include <kglobal.h>
 #include <klocalizedstring.h>
 #include <kprotocolmanager.h>
 

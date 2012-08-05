@@ -29,7 +29,6 @@
 #include "kcalendarsystem.h"
 #include "klocalizeddate.h"
 #include "kdialog.h"
-#include "kglobal.h"
 
 
 class KDateWidgetSpinBox : public QSpinBox

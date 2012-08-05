@@ -40,7 +40,6 @@
 #include <khtml_settings.h>
 
 #include <kdebug.h>
-#include <kglobal.h>
 
 #include <QtCore/QHash>
 #include <QPainter>

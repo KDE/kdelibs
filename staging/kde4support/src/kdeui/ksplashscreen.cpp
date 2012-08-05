@@ -20,7 +20,6 @@
 #include "ksplashscreen.h"
 
 #include <kconfig.h>
-#include <kglobal.h>
 #include <kglobalsettings.h>
 
 #include <QPixmap>

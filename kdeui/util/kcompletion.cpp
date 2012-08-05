@@ -24,7 +24,6 @@
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <knotification.h>
-#include <kglobal.h>
 #include <kstringhandler.h>
 #include <QtCore/QMutableVectorIterator>
 

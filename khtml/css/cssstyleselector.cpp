@@ -58,7 +58,6 @@ using namespace DOM;
 #include "khtml_part.h"
 
 
-#include <kglobal.h>
 #include <kconfig.h>
 #include <QtCore/QFile>
 #include <QtCore/QString>

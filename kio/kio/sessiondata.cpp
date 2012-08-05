@@ -25,7 +25,6 @@
 
 #include <kdebug.h>
 #include <kconfiggroup.h>
-#include <kglobal.h>
 #include <klocalizedstring.h>
 #include <kprotocolmanager.h>
 #include <ksharedconfig.h>

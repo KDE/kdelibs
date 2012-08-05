@@ -26,7 +26,6 @@
 using namespace DOM;
 
 #include <kdebug.h>
-#include <kglobal.h>
 
 // priority of tags. Closing tags of higher priority close tags of lower
 // priority.

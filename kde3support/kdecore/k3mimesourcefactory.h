@@ -23,7 +23,6 @@
 #define KMIMESOURCEFACTORY_H
 
 #include <kde3support_export.h>
-#include <kglobal.h>
 
 #include <QMacMime>
 #include <Qt3Support/Q3MimeSourceFactory>
