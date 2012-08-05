@@ -325,7 +325,6 @@ private:
 
 // NEEDED FOR KShortcutsEditorPrivate
 #include "ui_kshortcutsdialog.h"
-#include "kstandardshortcut.h"
 
 // Hack to make two protected methods public.
 // Used by both KShortcutsEditorPrivate and KShortcutsEditorDelegate

@@ -73,7 +73,6 @@
 #include <kdeprintdialog.h>
 #include <kconfig.h>
 
-#include <kstandardshortcut.h>
 #include <kstringhandler.h>
 #include <kconfiggroup.h>
 

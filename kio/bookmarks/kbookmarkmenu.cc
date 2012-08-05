@@ -26,7 +26,6 @@
 #include <kcoreauthorized.h>
 #include <kiconloader.h>
 #include <kmenu.h>
-#include <kstandardshortcut.h>
 #include <kstandardaction.h>
 #include <kstringhandler.h>
 #include <krun.h>

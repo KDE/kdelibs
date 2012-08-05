@@ -44,7 +44,6 @@
 #include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <kmenu.h>
-#include <kstandardshortcut.h>
 #include <kstandardaction.h>
 #include <kstandardguiitem.h>
 #include <kswitchlanguagedialog_p.h>

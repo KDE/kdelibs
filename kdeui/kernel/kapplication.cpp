@@ -46,7 +46,6 @@
 #include "kglobal.h"
 #include "klocale.h"
 #include "ksessionmanager.h"
-#include "kstandardshortcut.h"
 #include "ktoolinvocation.h"
 #include "kgesturemap.h"
 #include "kurl.h"

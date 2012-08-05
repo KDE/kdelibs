@@ -12,7 +12,6 @@
 #include <kstandardaction.h>
 #include <kaction.h>
 #include <kactioncollection.h>
-#include <kstandardshortcut.h>
 #include <kxmlguifactory.h>
 #include <kdialog.h>
 #include <kstandarddirs.h>
