@@ -31,7 +31,6 @@
 #include <kdesktopfile.h>
 #include <kdirwatch.h>
 #include <kcomponentdata.h>
-#include <kinputdialog.h>
 #include <kdialog.h>
 #include <klocalizedstring.h>
 #include <klineedit.h>

@@ -57,7 +57,6 @@
 #include <kdialog.h>
 #include <kdirlister.h>
 #include <kfileitemdelegate.h>
-#include <kinputdialog.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kmenu.h>
