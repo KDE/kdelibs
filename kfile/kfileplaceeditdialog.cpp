@@ -30,7 +30,6 @@
 #include <klocalizedstring.h>
 #include <kio/global.h>
 #include <kprotocolinfo.h>
-#include <kstringhandler.h>
 #include <kurlrequester.h>
 
 #include <QtCore/QMimeData>

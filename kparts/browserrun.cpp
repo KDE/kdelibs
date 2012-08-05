@@ -27,7 +27,6 @@
 #include <kio/copyjob.h>
 #include <klocalizedstring.h>
 #include <kshell.h>
-#include <kstringhandler.h>
 #include <kmimetypetrader.h>
 #include <qtemporaryfile.h>
 #include <qmimedatabase.h>

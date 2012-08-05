@@ -22,7 +22,6 @@
 
 #include <QFileDialog>
 
-#include <kstringhandler.h>
 #include <QtCore/QDebug>
 #include <qtextcodec.h>
 #include <QApplication>

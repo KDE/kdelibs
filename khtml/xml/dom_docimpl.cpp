@@ -65,7 +65,6 @@
 #include <khtml_part.h>
 #include <kauthorized.h>
 #include <kglobalsettings.h>
-#include <kstringhandler.h>
 #include <kdatetime.h>
 #include <khtml_settings.h>
 #include <khtmlpart_p.h>

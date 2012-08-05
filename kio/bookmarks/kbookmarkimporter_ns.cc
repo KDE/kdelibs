@@ -27,7 +27,6 @@
 #include "kbookmarkimporter.h"
 #include "kbookmarkexporter.h"
 #include "kbookmarkmanager.h"
-#include <kstringhandler.h>
 #include <QtCore/QDebug>
 #include <kcharsets.h>
 
