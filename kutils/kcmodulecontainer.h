@@ -24,7 +24,7 @@
 #include <QtCore/QStringList>
 
 #include <kcmodule.h>
-#include <kcmoduleloader.h>
+#include <kcmutils_export.h>
 #include <QtCore/QList>
 
 class QWidget;

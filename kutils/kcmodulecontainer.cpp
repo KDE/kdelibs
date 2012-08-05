@@ -25,7 +25,6 @@
 
 #include <kcmodule.h>
 #include <kcmoduleinfo.h>
-#include <kcmoduleloader.h>
 #include <kcmoduleproxy.h>
 #include <kdebug.h>
 #include <kdialog.h>

@@ -42,7 +42,6 @@
 
 #include "kcolorscheme.h"
 
-#include "kcmoduleloader.h"
 #include "kcmoduleproxy.h"
 
 bool KCMultiDialogPrivate::resolveChanges(KCModuleProxy *currentProxy)
