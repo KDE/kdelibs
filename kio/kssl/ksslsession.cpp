@@ -24,7 +24,6 @@
 #include <ksslconfig.h>
 
 #include <kopenssl.h>
-#include <kcodecs.h>
 
 KSSLSession::KSSLSession() : _session(0L) {
 }

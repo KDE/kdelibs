@@ -16,7 +16,6 @@
 #include <ktexteditor/markinterface.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
-#include <kcodecs.h>
 #include <qcryptographichash.h>
 
 using namespace KJS;

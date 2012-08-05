@@ -33,8 +33,6 @@
 #include <kdebug.h>
 #include <klocalizedstring.h>
 
-#include <kcodecs.h>
-
 #include <kio/job.h>
 #include <QDesktopServices>
 

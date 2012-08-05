@@ -50,7 +50,6 @@
 
 #include <kconfig.h>
 #include <klocalizedstring.h>
-#include <kcodecs.h>
 #include <kstringhandler.h>
 #include <ktoolinvocation.h>
 #include <kdebug.h>

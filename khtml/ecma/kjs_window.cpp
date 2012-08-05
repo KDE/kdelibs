@@ -43,7 +43,6 @@
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <klocalizedstring.h>
-#include <kcodecs.h>
 #include <kparts/browserinterface.h>
 #include <kwindowsystem.h>
 

@@ -31,7 +31,6 @@
 
 #include "kcmdlineargs.h"
 #include "kconfig.h"
-#include "kcodecs.h"
 #include "kdebug.h"
 #include "kshell.h"
 #include "kmacroexpander.h"
