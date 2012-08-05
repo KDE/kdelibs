@@ -32,7 +32,6 @@
 #include <kdatepicker.h>
 #include <kpushbutton.h>
 #include <knuminput.h>
-#include <kstandardguiitem.h>
 
 KDateTimeDlg::KDateTimeDlg(QWidget *parent)
  : KDialog(parent)

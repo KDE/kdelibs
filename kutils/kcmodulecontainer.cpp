@@ -34,7 +34,6 @@
 #include <kiconloader.h>
 #include <kpushbutton.h>
 #include <kservice.h>
-#include <kstandardguiitem.h>
 #include <ktabwidget.h>
 
 /***********************************************************************/
