@@ -34,7 +34,6 @@
 #include <kconfig.h>
 #include <kpassivepopup.h>
 #include <kdialog.h>
-#include <kmacroexpander.h>
 #include <kwindowsystem.h>
 #include <kdebug.h>
 #include <kapplication.h>
