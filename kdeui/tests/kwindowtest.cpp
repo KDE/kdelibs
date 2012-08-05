@@ -12,7 +12,6 @@
 #include <kmenu.h>
 #include "kwindowtest.h"
 #include <klineedit.h>
-#include <kstandardaction.h>
 #include <kxmlguifactory.h>
 #include <kactionmenu.h>
 #include <kactioncollection.h>

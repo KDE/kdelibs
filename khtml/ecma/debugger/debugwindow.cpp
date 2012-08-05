@@ -43,7 +43,6 @@
 #include <kshortcut.h>
 #include <kconfig.h>
 #include <kstringhandler.h>
-#include <kstandardaction.h>
 #include <kxmlguifactory.h>
 
 #include <ktexteditor/configinterface.h>

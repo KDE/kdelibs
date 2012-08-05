@@ -9,7 +9,6 @@
 #include <kactioncollection.h>
 #include <kdebug.h>
 #include <kiconloader.h>
-#include <kstandardaction.h>
 #include <QLineEdit>
 #include <QtCore/QDir>
 

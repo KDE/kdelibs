@@ -30,7 +30,6 @@
 #include "ktoolbarhandler_p.h"
 #include "ktoggleaction.h"
 #include "ksessionmanager.h"
-#include "kstandardaction.h"
 
 #include <QtCore/QList>
 #include <QtCore/QObject>
