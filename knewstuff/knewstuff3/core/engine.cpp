@@ -34,7 +34,6 @@
 #include <klocalizedstring.h>
 
 #include <kcodecs.h>
-#include <kshell.h>
 
 #include <kio/job.h>
 #include <QDesktopServices>

@@ -44,7 +44,6 @@
 #include <kpushbutton.h>
 //#include <kurlcombobox.h>
 //#include <kdiroperator.h>
-//#include <kshell.h>
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <kmessagebox.h>
@@ -57,7 +56,6 @@
 //
 #include <kfilewidget.h>
 #include <kurlcombobox.h>
-#include <kshell.h>
 #include <widgets/ksqueezedtextlabel.h>
 
 extern "C"

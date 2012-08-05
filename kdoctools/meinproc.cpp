@@ -19,7 +19,6 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
-#include <kshell.h>
 #include <qurl.h>
 
 #include <libxml/xmlversion.h>
