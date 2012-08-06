@@ -272,36 +272,6 @@ bool KGlobalSettings::showContextMenusOnPress ()
     return g.readEntry("ShowOnPress", true);
 }
 
-#ifndef KDE_NO_DEPRECATED
-int KGlobalSettings::contextMenuKey ()
-{
-    KConfigGroup g(KSharedConfig::openConfig(), "Shortcuts");
-    QString s = g.readEntry ("PopupMenuContext", "Menu");
-
-    // this is a bit of a code duplication with KShortcut,
-    // but seeing as that is all in kdeui these days there's little choice.
-    // this is faster for what we're really after here anyways
-    // (less allocations, only processing the first item always, etc)
-    if (s == QLatin1String("none")) {
-        return QKeySequence()[0];
-    }
-
-    const QStringList shortCuts = s.split(';');
-
-    if (shortCuts.count() < 1) {
-        return QKeySequence()[0];
-    }
-
-    s = shortCuts.at(0);
-
-    if ( s.startsWith( QLatin1String("default(") ) ) {
-        s = s.mid( 8, s.length() - 9 );
-    }
-
-    return QKeySequence::fromString(s)[0];
-}
-#endif
-
 // NOTE: keep this in sync with kdebase/workspace/kcontrol/colors/colorscm.cpp
 QColor KGlobalSettings::inactiveTitleColor()
 {
