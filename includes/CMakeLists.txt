@@ -107,6 +107,7 @@ install( FILES
   KCheckableProxyModel
   KCmdLineArgs
   KCmdLineOptions
+  KCodecAction
   KCodecs
   KColor
   KColorButton
