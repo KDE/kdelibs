@@ -43,6 +43,7 @@ file(MAKE_DIRECTORY
    ${CMAKE_CURRENT_BINARY_DIR}/backends/hal
    ${CMAKE_CURRENT_BINARY_DIR}/backends/udev
    ${CMAKE_CURRENT_BINARY_DIR}/backends/wmi
+   ${CMAKE_CURRENT_BINARY_DIR}/backends/win
 )
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${KDE4_C_FLAGS}") # enable -fvisibility=hidden for C sources
@@ -347,7 +348,7 @@ if(WIN32)
    else(HAVE_WBEM AND WBEM_LIBRARIES)
       set(HAVE_WBEM False)
    endif(HAVE_WBEM AND WBEM_LIBRARIES)
-   if(HAVE_WBEM AND NOT WINCE)
+   if(False)#HAVE_WBEM AND NOT WINCE)
        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_WBEM")
        message(STATUS "-- Building Solid WMI backend." )
 
@@ -375,7 +376,21 @@ if(WIN32)
        backends/wmi/wmivolume.cpp
 
        )
-    endif(HAVE_WBEM AND NOT WINCE)
+    endif(False)#HAVE_WBEM AND NOT WINCE)
+
+       set(solid_LIB_SRCS ${solid_LIB_SRCS}
+       backends/win/winblock.cpp
+       #backends/win/wmicdrom.cpp
+       backends/win/wininterface.cpp
+       backends/win/wingenericinterface.cpp
+       backends/win/windevice.cpp
+       backends/win/windevicemanager.cpp
+       #backends/win/wmiopticaldisc.cpp
+       #backends/win/wmiportablemediaplayer.cpp
+       #backends/win/wmistorageaccess.cpp
+       backends/win/winstoragevolume.cpp
+
+       )
 endif(WIN32)
 
 set_source_files_properties( org.freedesktop.PowerManagement.xml
