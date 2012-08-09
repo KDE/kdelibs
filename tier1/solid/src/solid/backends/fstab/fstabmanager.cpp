@@ -25,6 +25,8 @@
 #include "fstabservice.h"
 #include "fstabwatcher.h"
 
+#include <QtCore/QCoreApplication>
+
 using namespace Solid::Backends::Fstab;
 using namespace Solid::Backends::Shared;
 
@@ -85,8 +87,8 @@ QObject *FstabManager::createDevice(const QString &udi)
     if (udi == udiPrefix()) {
         RootDevice *root = new RootDevice(FSTAB_UDI_PREFIX);
 
-        root->setProduct(tr("Network Shares"));
-        root->setDescription(tr("NFS and SMB shares declared in your system"));
+        root->setProduct(QCoreApplication::translate("", "Network Shares"));
+        root->setDescription(QCoreApplication::translate("", "NFS and SMB shares declared in your system"));
         root->setIcon("folder-remote");
 
         return root;

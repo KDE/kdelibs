@@ -20,6 +20,7 @@
 
 #include "haldevice.h"
 
+#include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusInterface>
@@ -70,31 +71,31 @@ static QString formatByteSize(double size)
     {
         size /= 1073741824.0;
         if ( size > 1024 ) // Tebi-byte
-            s = QObject::tr("%1 TiB").arg(QLocale().toString(size / 1024.0, 'f', 1));
+            s = QCoreApplication::translate("", "%1 TiB").arg(QLocale().toString(size / 1024.0, 'f', 1));
         else
-            s = QObject::tr("%1 GiB").arg(QLocale().toString(size, 'f', 1));
+            s = QCoreApplication::translate("", "%1 GiB").arg(QLocale().toString(size, 'f', 1));
     }
     // Mebi-byte
     else if ( size >= 1048576.0 )
     {
         size /= 1048576.0;
-        s = QObject::tr("%1 MiB").arg(QLocale().toString(size, 'f', 1));
+        s = QCoreApplication::translate("", "%1 MiB").arg(QLocale().toString(size, 'f', 1));
     }
     // Kibi-byte
     else if ( size >= 1024.0 )
     {
         size /= 1024.0;
-        s = QObject::tr("%1 KiB").arg(QLocale().toString(size, 'f', 1));
+        s = QCoreApplication::translate("", "%1 KiB").arg(QLocale().toString(size, 'f', 1));
     }
     // Just byte
     else if ( size > 0 )
     {
-        s = QObject::tr("%1 B").arg(QLocale().toString(size, 'f', 1));
+        s = QCoreApplication::translate("", "%1 B").arg(QLocale().toString(size, 'f', 1));
     }
     // Nothing
     else
     {
-        s = QObject::tr("0 B");
+        s = QCoreApplication::translate("", "0 B");
     }
     return s;
 }
@@ -355,9 +356,9 @@ QString HalDevice::description() const
     } else if (category=="volume" || category=="volume.disc") {
         return volumeDescription();
     } else if (category=="net.80211") {
-        return QObject::tr("WLAN Interface");
+        return QCoreApplication::translate("", "WLAN Interface");
     } else if (category=="net.80203") {
-        return QObject::tr("Networking Interface");
+        return QCoreApplication::translate("", "Networking Interface");
     } else {
         return product();
     }
@@ -573,53 +574,53 @@ QString HalDevice::storageDescription() const
         QString first;
         QString second;
 
-        first = QObject::tr("CD-ROM", "First item of %1%2 Drive sentence");
+        first = QCoreApplication::translate("", "CD-ROM", "First item of %1%2 Drive sentence");
         if (mediumTypes & Solid::OpticalDrive::Cdr)
-            first = QObject::tr("CD-R", "First item of %1%2 Drive sentence");
+            first = QCoreApplication::translate("", "CD-R", "First item of %1%2 Drive sentence");
         if (mediumTypes & Solid::OpticalDrive::Cdrw)
-            first = QObject::tr("CD-RW", "First item of %1%2 Drive sentence");
+            first = QCoreApplication::translate("", "CD-RW", "First item of %1%2 Drive sentence");
 
         if (mediumTypes & Solid::OpticalDrive::Dvd)
-            second = QObject::tr("/DVD-ROM", "Second item of %1%2 Drive sentence");
+            second = QCoreApplication::translate("", "/DVD-ROM", "Second item of %1%2 Drive sentence");
         if (mediumTypes & Solid::OpticalDrive::Dvdplusr)
-            second = QObject::tr("/DVD+R", "Second item of %1%2 Drive sentence");
+            second = QCoreApplication::translate("", "/DVD+R", "Second item of %1%2 Drive sentence");
         if (mediumTypes & Solid::OpticalDrive::Dvdplusrw)
-            second = QObject::tr("/DVD+RW", "Second item of %1%2 Drive sentence");
+            second = QCoreApplication::translate("", "/DVD+RW", "Second item of %1%2 Drive sentence");
         if (mediumTypes & Solid::OpticalDrive::Dvdr)
-            second = QObject::tr("/DVD-R", "Second item of %1%2 Drive sentence");
+            second = QCoreApplication::translate("", "/DVD-R", "Second item of %1%2 Drive sentence");
         if (mediumTypes & Solid::OpticalDrive::Dvdrw)
-            second = QObject::tr("/DVD-RW", "Second item of %1%2 Drive sentence");
+            second = QCoreApplication::translate("", "/DVD-RW", "Second item of %1%2 Drive sentence");
         if (mediumTypes & Solid::OpticalDrive::Dvdram)
-            second = QObject::tr("/DVD-RAM", "Second item of %1%2 Drive sentence");
+            second = QCoreApplication::translate("", "/DVD-RAM", "Second item of %1%2 Drive sentence");
         if ((mediumTypes & Solid::OpticalDrive::Dvdr) && (mediumTypes & Solid::OpticalDrive::Dvdplusr)) {
             if(mediumTypes & Solid::OpticalDrive::Dvdplusdl)
-                second = QObject::tr("/DVD±R DL", "Second item of %1%2 Drive sentence");
+                second = QCoreApplication::translate("", "/DVD±R DL", "Second item of %1%2 Drive sentence");
             else
-                second = QObject::tr("/DVD±R", "Second item of %1%2 Drive sentence");
+                second = QCoreApplication::translate("", "/DVD±R", "Second item of %1%2 Drive sentence");
         }
         if ((mediumTypes & Solid::OpticalDrive::Dvdrw) && (mediumTypes & Solid::OpticalDrive::Dvdplusrw)) {
             if((mediumTypes & Solid::OpticalDrive::Dvdplusdl) || (mediumTypes & Solid::OpticalDrive::Dvdplusdlrw))
-                second = QObject::tr("/DVD±RW DL", "Second item of %1%2 Drive sentence");
+                second = QCoreApplication::translate("", "/DVD±RW DL", "Second item of %1%2 Drive sentence");
             else
-                second = QObject::tr("/DVD±RW", "Second item of %1%2 Drive sentence");
+                second = QCoreApplication::translate("", "/DVD±RW", "Second item of %1%2 Drive sentence");
         }
         if (mediumTypes & Solid::OpticalDrive::Bd)
-            second = QObject::tr("/BD-ROM", "Second item of %1%2 Drive sentence");
+            second = QCoreApplication::translate("", "/BD-ROM", "Second item of %1%2 Drive sentence");
         if (mediumTypes & Solid::OpticalDrive::Bdr)
-            second = QObject::tr("/BD-R", "Second item of %1%2 Drive sentence");
+            second = QCoreApplication::translate("", "/BD-R", "Second item of %1%2 Drive sentence");
         if (mediumTypes & Solid::OpticalDrive::Bdre)
-            second = QObject::tr("/BD-RE", "Second item of %1%2 Drive sentence");
+            second = QCoreApplication::translate("", "/BD-RE", "Second item of %1%2 Drive sentence");
         if (mediumTypes & Solid::OpticalDrive::HdDvd)
-            second = QObject::tr("/HD DVD-ROM", "Second item of %1%2 Drive sentence");
+            second = QCoreApplication::translate("", "/HD DVD-ROM", "Second item of %1%2 Drive sentence");
         if (mediumTypes & Solid::OpticalDrive::HdDvdr)
-            second = QObject::tr("/HD DVD-R", "Second item of %1%2 Drive sentence");
+            second = QCoreApplication::translate("", "/HD DVD-R", "Second item of %1%2 Drive sentence");
         if (mediumTypes & Solid::OpticalDrive::HdDvdrw)
-            second = QObject::tr("/HD DVD-RW", "Second item of %1%2 Drive sentence");
+            second = QCoreApplication::translate("", "/HD DVD-RW", "Second item of %1%2 Drive sentence");
 
         if (drive_is_hotpluggable) {
-            description = QObject::tr("External %1%2 Drive", "%1 is CD-ROM/CD-R/etc; %2 is '/DVD-ROM'/'/DVD-R'/etc (with leading slash)").arg(first).arg(second);
+            description = QCoreApplication::translate("", "External %1%2 Drive", "%1 is CD-ROM/CD-R/etc; %2 is '/DVD-ROM'/'/DVD-R'/etc (with leading slash)").arg(first).arg(second);
         } else {
-            description = QObject::tr("%1%2 Drive", "%1 is CD-ROM/CD-R/etc; %2 is '/DVD-ROM'/'/DVD-R'/etc (with leading slash)").arg(first).arg(second);
+            description = QCoreApplication::translate("", "%1%2 Drive", "%1 is CD-ROM/CD-R/etc; %2 is '/DVD-ROM'/'/DVD-R'/etc (with leading slash)").arg(first).arg(second);
         }
 
         return description;
@@ -627,9 +628,9 @@ QString HalDevice::storageDescription() const
 
     if (drive_type == Solid::StorageDrive::Floppy) {
         if (drive_is_hotpluggable)
-            description = QObject::tr("External Floppy Drive");
+            description = QCoreApplication::translate("", "External Floppy Drive");
         else
-            description = QObject::tr("Floppy Drive");
+            description = QCoreApplication::translate("", "Floppy Drive");
 
         return description;
     }
@@ -640,15 +641,15 @@ QString HalDevice::storageDescription() const
         QString size_str = formatByteSize(prop("storage.size").toInt());
         if (!size_str.isEmpty()) {
             if (drive_is_hotpluggable) {
-                description = QObject::tr("%1 External Hard Drive", "%1 is the size").arg(size_str);
+                description = QCoreApplication::translate("", "%1 External Hard Drive", "%1 is the size").arg(size_str);
             } else {
-                description = QObject::tr("%1 Hard Drive", "%1 is the size").arg(size_str);
+                description = QCoreApplication::translate("", "%1 Hard Drive", "%1 is the size").arg(size_str);
             }
         } else {
             if (drive_is_hotpluggable)
-                description = QObject::tr("External Hard Drive");
+                description = QCoreApplication::translate("", "External Hard Drive");
             else
-                description = QObject::tr("Hard Drive");
+                description = QCoreApplication::translate("", "Hard Drive");
         }
 
         return description;
@@ -665,11 +666,11 @@ QString HalDevice::storageDescription() const
         if (model.isEmpty())
             vendormodel_str = vendor;
         else
-            vendormodel_str = QObject::tr("%1 %2", "%1 is the vendor, %2 is the model of the device").arg(vendor).arg(model);
+            vendormodel_str = QCoreApplication::translate("", "%1 %2", "%1 is the vendor, %2 is the model of the device").arg(vendor).arg(model);
     }
 
     if (vendormodel_str.isEmpty())
-        description = QObject::tr("Drive");
+        description = QCoreApplication::translate("", "Drive");
     else
         description = vendormodel_str;
 
@@ -697,116 +698,116 @@ QString HalDevice::volumeDescription() const
         switch (disc.discType()) {
             case Solid::OpticalDisc::UnknownDiscType:
             case Solid::OpticalDisc::CdRom:
-                description = QObject::tr("CD-ROM");
+                description = QCoreApplication::translate("", "CD-ROM");
                 break;
 
             case Solid::OpticalDisc::CdRecordable:
                 if (disc.isBlank())
-                    description = QObject::tr("Blank CD-R");
+                    description = QCoreApplication::translate("", "Blank CD-R");
                 else
-                    description = QObject::tr("CD-R");
+                    description = QCoreApplication::translate("", "CD-R");
                 break;
 
             case Solid::OpticalDisc::CdRewritable:
                 if (disc.isBlank())
-                    description = QObject::tr("Blank CD-RW");
+                    description = QCoreApplication::translate("", "Blank CD-RW");
                 else
-                    description = QObject::tr("CD-RW");
+                    description = QCoreApplication::translate("", "CD-RW");
                 break;
 
             case Solid::OpticalDisc::DvdRom:
-                description = QObject::tr("DVD-ROM");
+                description = QCoreApplication::translate("", "DVD-ROM");
                 break;
 
             case Solid::OpticalDisc::DvdRam:
                 if (disc.isBlank())
-                    description = QObject::tr("Blank DVD-RAM");
+                    description = QCoreApplication::translate("", "Blank DVD-RAM");
                 else
-                    description = QObject::tr("DVD-RAM");
+                    description = QCoreApplication::translate("", "DVD-RAM");
                 break;
 
             case Solid::OpticalDisc::DvdRecordable:
                 if (disc.isBlank())
-                    description = QObject::tr("Blank DVD-R");
+                    description = QCoreApplication::translate("", "Blank DVD-R");
                 else
-                    description = QObject::tr("DVD-R");
+                    description = QCoreApplication::translate("", "DVD-R");
                 break;
 
             case Solid::OpticalDisc::DvdPlusRecordableDuallayer:
                 if (disc.isBlank())
-                    description = QObject::tr("Blank DVD+R Dual-Layer");
+                    description = QCoreApplication::translate("", "Blank DVD+R Dual-Layer");
                 else
-                    description = QObject::tr("DVD+R Dual-Layer");
+                    description = QCoreApplication::translate("", "DVD+R Dual-Layer");
                 break;
 
             case Solid::OpticalDisc::DvdRewritable:
                 if (disc.isBlank())
-                    description = QObject::tr("Blank DVD-RW");
+                    description = QCoreApplication::translate("", "Blank DVD-RW");
                 else
-                    description = QObject::tr("DVD-RW");
+                    description = QCoreApplication::translate("", "DVD-RW");
                 break;
 
             case Solid::OpticalDisc::DvdPlusRecordable:
                 if (disc.isBlank())
-                    description = QObject::tr("Blank DVD+R");
+                    description = QCoreApplication::translate("", "Blank DVD+R");
                 else
-                    description = QObject::tr("DVD+R");
+                    description = QCoreApplication::translate("", "DVD+R");
                 break;
 
             case Solid::OpticalDisc::DvdPlusRewritable:
                 if (disc.isBlank())
-                    description = QObject::tr("Blank DVD+RW");
+                    description = QCoreApplication::translate("", "Blank DVD+RW");
                 else
-                    description = QObject::tr("DVD+RW");
+                    description = QCoreApplication::translate("", "DVD+RW");
                 break;
 
             case Solid::OpticalDisc::DvdPlusRewritableDuallayer:
                 if (disc.isBlank())
-                    description = QObject::tr("Blank DVD+RW Dual-Layer");
+                    description = QCoreApplication::translate("", "Blank DVD+RW Dual-Layer");
                 else
-                    description = QObject::tr("DVD+RW Dual-Layer");
+                    description = QCoreApplication::translate("", "DVD+RW Dual-Layer");
                 break;
 
             case Solid::OpticalDisc::BluRayRom:
-                description = QObject::tr("BD-ROM");
+                description = QCoreApplication::translate("", "BD-ROM");
                 break;
 
             case Solid::OpticalDisc::BluRayRecordable:
                 if (disc.isBlank())
-                    description = QObject::tr("Blank BD-R");
+                    description = QCoreApplication::translate("", "Blank BD-R");
                 else
-                    description = QObject::tr("BD-R");
+                    description = QCoreApplication::translate("", "BD-R");
                 break;
 
             case Solid::OpticalDisc::BluRayRewritable:
                 if (disc.isBlank())
-                    description = QObject::tr("Blank BD-RE");
+                    description = QCoreApplication::translate("", "Blank BD-RE");
                 else
-                    description = QObject::tr("BD-RE");
+                    description = QCoreApplication::translate("", "BD-RE");
                 break;
 
             case Solid::OpticalDisc::HdDvdRom:
-                description = QObject::tr("HD DVD-ROM");
+                description = QCoreApplication::translate("", "HD DVD-ROM");
                 break;
 
             case Solid::OpticalDisc::HdDvdRecordable:
                 if (disc.isBlank())
-                    description = QObject::tr("Blank HD DVD-R");
+                    description = QCoreApplication::translate("", "Blank HD DVD-R");
                 else
-                    description = QObject::tr("HD DVD-R");
+                    description = QCoreApplication::translate("", "HD DVD-R");
                 break;
 
             case Solid::OpticalDisc::HdDvdRewritable:
                 if (disc.isBlank())
-                    description = QObject::tr("Blank HD DVD-RW");
+                    description = QCoreApplication::translate("", "Blank HD DVD-RW");
                 else
-                    description = QObject::tr("HD DVD-RW");
+                    description = QCoreApplication::translate("", "HD DVD-RW");
                 break;
             }
 
         /* Special case for pure audio disc */
         if (disc.availableContent() == Solid::OpticalDisc::Audio) {
-            description = QObject::tr("Audio CD");
+            description = QCoreApplication::translate("", "Audio CD");
         }
 
         return description;
@@ -819,28 +820,28 @@ QString HalDevice::volumeDescription() const
     QString size_str = formatByteSize(prop("volume.size").toULongLong());
     if (drive_is_encrypted_container) {
         if (!size_str.isEmpty()) {
-            description = QObject::tr("%1 Encrypted Container", "%1 is the size").arg(size_str);
+            description = QCoreApplication::translate("", "%1 Encrypted Container", "%1 is the size").arg(size_str);
         } else {
-            description = QObject::tr("Encrypted Container");
+            description = QCoreApplication::translate("", "Encrypted Container");
         }
     } else if (drive_type == Solid::StorageDrive::HardDisk && !drive_is_removable) {
         if (!size_str.isEmpty()) {
             if (drive_is_hotpluggable) {
-                description = QObject::tr("%1 External Hard Drive", "%1 is the size").arg(size_str);
+                description = QCoreApplication::translate("", "%1 External Hard Drive", "%1 is the size").arg(size_str);
             } else {
-                description = QObject::tr("%1 Hard Drive", "%1 is the size").arg(size_str);
+                description = QCoreApplication::translate("", "%1 Hard Drive", "%1 is the size").arg(size_str);
             }
         } else {
             if (drive_is_hotpluggable)
-                description = QObject::tr("External Hard Drive");
+                description = QCoreApplication::translate("", "External Hard Drive");
             else
-                description = QObject::tr("Hard Drive");
+                description = QCoreApplication::translate("", "Hard Drive");
         }
     } else {
         if (drive_is_removable) {
-            description = QObject::tr("%1 Removable Media", "%1 is the size").arg(size_str);
+            description = QCoreApplication::translate("", "%1 Removable Media", "%1 is the size").arg(size_str);
         } else {
-            description = QObject::tr("%1 Media", "%1 is the size").arg(size_str);
+            description = QCoreApplication::translate("", "%1 Media", "%1 is the size").arg(size_str);
         }
     }
 

@@ -20,6 +20,7 @@
 
 #include "udisksmanager.h"
 
+#include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
 #include <QtDBus>
 
@@ -81,8 +82,8 @@ QObject* Manager::createDevice(const QString& udi)
     if (udi==udiPrefix()) {
         RootDevice *root = new RootDevice(udi);
 
-        root->setProduct(tr("Storage"));
-        root->setDescription(tr("Storage devices"));
+        root->setProduct(QCoreApplication::translate("", "Storage"));
+        root->setDescription(QCoreApplication::translate("", "Storage devices"));
         root->setIcon("server-database"); // Obviously wasn't meant for that, but maps nicely in oxygen icon set :-p
 
         return root;

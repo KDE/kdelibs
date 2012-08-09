@@ -26,8 +26,6 @@
 #include <QtCore/QStringList>
 #include <QtCore/QDebug>
 
-#define QI18N(x) x
-
 namespace Solid
 {
 namespace Backends
@@ -45,27 +43,27 @@ struct DeviceData
 static const
 DeviceData deviceData[] =
 {
-    {"BasicDevice1", "network-server", QI18N("UPnP Basic Device") },
-    {"WLANAccessPointDevice1", "network-wireless", QI18N("UPnP WLAN Access Point Device") },
-    {"PrinterBasic1", "printer", QI18N("UPnP Printer (Basic)") },
-    {"PrinterEnhanced1", "printer", QI18N("UPnP Printer (Enhanced)") },
-    {"Scanner1", "scanner", QI18N("UPnP Scanner") },
-    {"MediaRenderer1", "video-television", QI18N("UPnP Media Renderer") },
-    {"MediaRenderer2", "video-television", QI18N("UPnP Media Renderer") },
-    {"SolarProtectionBlind1", "device", QI18N("UPnP Solar Protection Blind") },
-    {"DigitalSecurityCamera1", "camera", QI18N("UPnP Digital Security Camera") },
-    {"HVAC1", "device", QI18N("UPnP HVAC") },
-    {"LightingControls1", "light", QI18N("UPnP Lighting Controls") },
-    {"RemoteUIClientDevice1", "device", QI18N("UPnP Remote UI Client") },
-    {"RemoteUIServerDevice1", "device", QI18N("UPnP Remote UI Server") },
-    {"RAClient1", "device", QI18N("UPnP Remote Access Client") },
-    {"RAServer1", "device", QI18N("UPnP Remote Access Server") },
-    {"RADiscoveryAgent1", "device", QI18N("UPnP Remote Access Discovery Agent") },
-    {"Unknown", "device", QI18N("Unknown UPnP Device") },
-    {"LANDevice1", "network-wired", QI18N("UPnP LAN Device") },
-    {"WANDevice1", "network-wired", QI18N("UPnP WAN Device") },
-    {"WANConnectionDevice1", "network-wired", QI18N("UPnP WAN Connection Device") },
-    {"WFADevice1", "network-wireless", QI18N("UPnP Wi-Fi Alliance Device") }
+    {"BasicDevice1", "network-server", Q_TRANSLATE_NOOP("", "UPnP Basic Device") },
+    {"WLANAccessPointDevice1", "network-wireless", Q_TRANSLATE_NOOP("", "UPnP WLAN Access Point Device") },
+    {"PrinterBasic1", "printer", Q_TRANSLATE_NOOP("", "UPnP Printer (Basic)") },
+    {"PrinterEnhanced1", "printer", Q_TRANSLATE_NOOP("", "UPnP Printer (Enhanced)") },
+    {"Scanner1", "scanner", Q_TRANSLATE_NOOP("", "UPnP Scanner") },
+    {"MediaRenderer1", "video-television", Q_TRANSLATE_NOOP("", "UPnP Media Renderer") },
+    {"MediaRenderer2", "video-television", Q_TRANSLATE_NOOP("", "UPnP Media Renderer") },
+    {"SolarProtectionBlind1", "device", Q_TRANSLATE_NOOP("", "UPnP Solar Protection Blind") },
+    {"DigitalSecurityCamera1", "camera", Q_TRANSLATE_NOOP("", "UPnP Digital Security Camera") },
+    {"HVAC1", "device", Q_TRANSLATE_NOOP("", "UPnP HVAC") },
+    {"LightingControls1", "light", Q_TRANSLATE_NOOP("", "UPnP Lighting Controls") },
+    {"RemoteUIClientDevice1", "device", Q_TRANSLATE_NOOP("", "UPnP Remote UI Client") },
+    {"RemoteUIServerDevice1", "device", Q_TRANSLATE_NOOP("", "UPnP Remote UI Server") },
+    {"RAClient1", "device", Q_TRANSLATE_NOOP("", "UPnP Remote Access Client") },
+    {"RAServer1", "device", Q_TRANSLATE_NOOP("", "UPnP Remote Access Server") },
+    {"RADiscoveryAgent1", "device", Q_TRANSLATE_NOOP("", "UPnP Remote Access Discovery Agent") },
+    {"Unknown", "device", Q_TRANSLATE_NOOP("", "Unknown UPnP Device") },
+    {"LANDevice1", "network-wired", Q_TRANSLATE_NOOP("", "UPnP LAN Device") },
+   {"WANDevice1", "network-wired", Q_TRANSLATE_NOOP("", "UPnP WAN Device") },
+    {"WANConnectionDevice1", "network-wired", Q_TRANSLATE_NOOP("", "UPnP WAN Connection Device") },
+    {"WFADevice1", "network-wireless", Q_TRANSLATE_NOOP("", "UPnP Wi-Fi Alliance Device") }
 };
 
 

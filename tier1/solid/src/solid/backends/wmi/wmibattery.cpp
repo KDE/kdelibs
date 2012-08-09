@@ -93,17 +93,17 @@ QString Battery::batteryTechnology() const
     switch (tech)
     {
     case 3:
-        return QObject::tr("Lead Acid", "battery technology");
+        return QCoreApplication::translate("", "Lead Acid", "battery technology");
     case 4:
-        return QObject::tr("Nickel Cadmium", "battery technology");
+        return QCoreApplication::translate("", "Nickel Cadmium", "battery technology");
     case 5:
-        return QObject::tr("Nickel Metal Hydride", "battery technology");
+        return QCoreApplication::translate("", "Nickel Metal Hydride", "battery technology");
     case 6:
-        return QObject::tr("Lithium Ion", "battery technology");
+        return QCoreApplication::translate("", "Lithium Ion", "battery technology");
     case 8:
-        return QObject::tr("Lithium Polymer", "battery technology");
+        return QCoreApplication::translate("", "Lithium Polymer", "battery technology");
     default:
-        return QObject::tr("Unknown", "battery technology");
+        return QCoreApplication::translate("", "Unknown", "battery technology");
     }
 }
 

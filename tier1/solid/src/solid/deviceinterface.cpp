@@ -23,6 +23,7 @@
 
 #include <solid/ifaces/deviceinterface.h>
 
+#include <QtCore/QCoreApplication>
 #include <QtCore/QMetaEnum>
 
 
@@ -66,49 +67,49 @@ QString Solid::DeviceInterface::typeDescription(Type type)
     switch (type)
     {
     case Unknown:
-        return QObject::tr("Unknown", "Unknown device type");
+        return QCoreApplication::translate("", "Unknown", "Unknown device type");
     case GenericInterface:
-        return QObject::tr("Generic Interface", "Generic Interface device type");
+        return QCoreApplication::translate("", "Generic Interface", "Generic Interface device type");
     case Processor:
-        return QObject::tr("Processor", "Processor device type");
+        return QCoreApplication::translate("", "Processor", "Processor device type");
     case Block:
-        return QObject::tr("Block", "Block device type");
+        return QCoreApplication::translate("", "Block", "Block device type");
     case StorageAccess:
-        return QObject::tr("Storage Access", "Storage Access device type");
+        return QCoreApplication::translate("", "Storage Access", "Storage Access device type");
     case StorageDrive:
-        return QObject::tr("Storage Drive", "Storage Drive device type");
+        return QCoreApplication::translate("", "Storage Drive", "Storage Drive device type");
     case OpticalDrive:
-        return QObject::tr("Optical Drive", "Optical Drive device type");
+        return QCoreApplication::translate("", "Optical Drive", "Optical Drive device type");
     case StorageVolume:
-        return QObject::tr("Storage Volume", "Storage Volume device type");
+        return QCoreApplication::translate("", "Storage Volume", "Storage Volume device type");
     case OpticalDisc:
-        return QObject::tr("Optical Disc", "Optical Disc device type");
+        return QCoreApplication::translate("", "Optical Disc", "Optical Disc device type");
     case Camera:
-        return QObject::tr("Camera", "Camera device type");
+        return QCoreApplication::translate("", "Camera", "Camera device type");
     case PortableMediaPlayer:
-        return QObject::tr("Portable Media Player", "Portable Media Player device type");
+        return QCoreApplication::translate("", "Portable Media Player", "Portable Media Player device type");
     case NetworkInterface:
-        return QObject::tr("Network Interface", "Network Interface device type");
+        return QCoreApplication::translate("", "Network Interface", "Network Interface device type");
     case AcAdapter:
-        return QObject::tr("Ac Adapter", "Ac Adapter device type");
+        return QCoreApplication::translate("", "Ac Adapter", "Ac Adapter device type");
     case Battery:
-        return QObject::tr("Battery", "Battery device type");
+        return QCoreApplication::translate("", "Battery", "Battery device type");
     case Button:
-        return QObject::tr("Button", "Button device type");
+        return QCoreApplication::translate("", "Button", "Button device type");
     case AudioInterface:
-        return QObject::tr("Audio Interface", "Audio Interface device type");
+        return QCoreApplication::translate("", "Audio Interface", "Audio Interface device type");
     case DvbInterface:
-        return QObject::tr("Dvb Interface", "Dvb Interface device type");
+        return QCoreApplication::translate("", "Dvb Interface", "Dvb Interface device type");
     case Video:
-        return QObject::tr("Video", "Video device type");
+        return QCoreApplication::translate("", "Video", "Video device type");
     case SerialInterface:
-        return QObject::tr("Serial Interface", "Serial Interface device type");
+        return QCoreApplication::translate("", "Serial Interface", "Serial Interface device type");
     case SmartCardReader:
-        return QObject::tr("Smart Card Reader", "Smart Card Reader device type");
+        return QCoreApplication::translate("", "Smart Card Reader", "Smart Card Reader device type");
     case InternetGateway:
-        return QObject::tr("Internet Gateway Device", "Internet Gateway device type");
+        return QCoreApplication::translate("", "Internet Gateway Device", "Internet Gateway device type");
     case NetworkShare:
-        return QObject::tr("Network Share", "Network Share device type");
+        return QCoreApplication::translate("", "Network Share", "Network Share device type");
     case Last:
         return QString();
     }

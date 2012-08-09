@@ -29,6 +29,7 @@
 #include <solid/genericinterface.h>
 #include <solid/device.h>
 
+#include <QtCore/QCoreApplication>
 #include <QtCore/QStringList>
 #include <QtCore/QDebug>
 #include <QtDBus/QDBusPendingReply>
@@ -99,9 +100,9 @@ QStringList UPowerDevice::emblems() const
 QString UPowerDevice::description() const
 {
     if (queryDeviceInterface(Solid::DeviceInterface::AcAdapter))
-        return QObject::tr("A/C Adapter");
+        return QCoreApplication::translate("", "A/C Adapter");
     else if (queryDeviceInterface(Solid::DeviceInterface::Battery))
-        return QObject::tr("%1 Battery", "%1 is battery technology").arg(batteryTechnology());
+        return QCoreApplication::translate("", "%1 Battery", "%1 is battery technology").arg(batteryTechnology());
     else
         return product();
 }
@@ -112,19 +113,19 @@ QString UPowerDevice::batteryTechnology() const
     switch (tech)
     {
     case 1:
-        return QObject::tr("Lithium Ion", "battery technology");
+        return QCoreApplication::translate("", "Lithium Ion", "battery technology");
     case 2:
-        return QObject::tr("Lithium Polymer", "battery technology");
+        return QCoreApplication::translate("", "Lithium Polymer", "battery technology");
     case 3:
-        return QObject::tr("Lithium Iron Phosphate", "battery technology");
+        return QCoreApplication::translate("", "Lithium Iron Phosphate", "battery technology");
     case 4:
-        return QObject::tr("Lead Acid", "battery technology");
+        return QCoreApplication::translate("", "Lead Acid", "battery technology");
     case 5:
-        return QObject::tr("Nickel Cadmium", "battery technology");
+        return QCoreApplication::translate("", "Nickel Cadmium", "battery technology");
     case 6:
-        return QObject::tr("Nickel Metal Hydride", "battery technology");
+        return QCoreApplication::translate("", "Nickel Metal Hydride", "battery technology");
     default:
-        return QObject::tr("Unknown", "battery technology");
+        return QCoreApplication::translate("", "Unknown", "battery technology");
     }
 }
 

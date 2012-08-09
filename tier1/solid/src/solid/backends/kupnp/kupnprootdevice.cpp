@@ -24,8 +24,6 @@
 #include <QtCore/QStringList>
 #include <QtCore/QDebug>
 
-#define QI18N(x) x
-
 namespace Solid
 {
 namespace Backends
@@ -52,7 +50,7 @@ QString KUPnPRootDevice::vendor() const { return QString(); }
 
 QString KUPnPRootDevice::product() const
 {
-    return QObject::tr("UPnP devices");
+    return QCoreApplication::translate("", "UPnP devices");
 }
 
 QString KUPnPRootDevice::icon() const

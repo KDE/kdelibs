@@ -173,16 +173,16 @@ QStringList UDevDevice::emblems() const
 QString UDevDevice::description() const
 {
     if (parentUdi().isEmpty()) {
-        return QObject::tr("Computer");
+        return QCoreApplication::translate("", "Computer");
     }
 
     if (queryDeviceInterface(Solid::DeviceInterface::Processor)) {
-        return QObject::tr("Processor");
+        return QCoreApplication::translate("", "Processor");
     } else if (queryDeviceInterface(Solid::DeviceInterface::PortableMediaPlayer)) {
         // TODO: check out special cases like iPod
-        return QObject::tr("Portable Media Player");
+        return QCoreApplication::translate("", "Portable Media Player");
     } else if (queryDeviceInterface(Solid::DeviceInterface::Camera)) {
-        return QObject::tr("Camera");
+        return QCoreApplication::translate("", "Camera");
     } else if (queryDeviceInterface(Solid::DeviceInterface::Video)) {
         return product();
     } else if (queryDeviceInterface(Solid::DeviceInterface::AudioInterface)) {
@@ -190,9 +190,9 @@ QString UDevDevice::description() const
     } else if (queryDeviceInterface(Solid::DeviceInterface::NetworkInterface)) {
         const NetworkInterface networkIface(const_cast<UDevDevice *>(this));
         if (networkIface.isWireless()) {
-            return QObject::tr("WLAN Interface");
+            return QCoreApplication::translate("", "WLAN Interface");
         }
-        return QObject::tr("Networking Interface");
+        return QCoreApplication::translate("", "Networking Interface");
     }
 
     return QString();
