@@ -154,13 +154,14 @@ KCatalog::~KCatalog()
 QString KCatalog::catalogLocaleDir( const QString &name,
                                     const QString &language )
 {
-  const QString relpath = QString::fromLatin1("locale/%1/LC_MESSAGES/%2.mo")
-                    .arg( language ).arg( name );
-  const QString file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, relpath);
+  const QString relpath = QString::fromLatin1("%1/LC_MESSAGES/%2.mo").arg(language).arg(name);
+  const QString file = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
+                                              QString::fromLatin1("locale/") + relpath);
   if (file.isEmpty()) {
       return QString();
   } else {
-      return QFileInfo(file).absolutePath(); // parent directory
+      // Path of the locale/ directory must be returned.
+      return QFileInfo(file.left(file.size() - relpath.size())).absolutePath();
   }
 }
 
