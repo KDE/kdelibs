@@ -110,7 +110,7 @@ void KMimeTypeTest::initTestCase()
         group.writeEntry("Name", "FakePlugin");
         group.writeEntry("Type", "Service");
         group.writeEntry("X-KDE-Library", "faketextplugin");
-        group.writeEntry("ServiceTypes", "KTextEditor/Plugin");
+        group.writeEntry("ServiceTypes", "KPluginInfo");
         group.writeEntry("MimeType", "text/plain;");
     }
 
@@ -674,7 +674,7 @@ void KMimeTypeTest::testMimeTypeTraderForTextPlain()
     QVERIFY(!offerListHasService(offers, "fakepatchpart.desktop"));
     QVERIFY(offerListHasService(offers, "faketextpart.desktop"));
 
-    offers = KMimeTypeTrader::self()->query("text/plain", "KTextEditor/Plugin");
+    offers = KMimeTypeTrader::self()->query("text/plain", "KPluginInfo");
     QVERIFY( offers.count() > 0 );
 
     // We should have at least the fake text plugin that we created for this.
@@ -697,7 +697,7 @@ void KMimeTypeTest::testMimeTypeTraderForDerivedMimeType()
     QVERIFY( offerListHasService( offers, "faketextpart.desktop" ) );
     QVERIFY( (*offers.begin())->entryPath() != "faketextpart.desktop" ); // in the list, but not preferred
 
-    offers = KMimeTypeTrader::self()->query("text/x-patch", "KTextEditor/Plugin");
+    offers = KMimeTypeTrader::self()->query("text/x-patch", "KPluginInfo");
     QVERIFY( offers.count() > 0 );
 
     // We should have at least the fake text plugin that we created for this.
@@ -749,12 +749,12 @@ void KMimeTypeTest::testHasServiceType1() // with services constructed with a fu
     QVERIFY( !faketextpart.hasMimeType( "image/png" ) );
     QVERIFY( faketextpart.hasServiceType( "KParts/ReadOnlyPart" ) );
     QVERIFY( !faketextpart.hasServiceType( "KParts/ReadWritePart" ) );
-    QVERIFY( !faketextpart.hasServiceType( "KTextEditor/Plugin" ) );
+    QVERIFY( !faketextpart.hasServiceType( "KPluginInfo" ) );
 
     QString textPluginPath = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("/kde5/services/") + "faketextplugin.desktop" );
     QVERIFY( !textPluginPath.isEmpty() );
     KService textPlugin( textPluginPath );
-    QVERIFY( textPlugin.hasServiceType( "KTextEditor/Plugin" ) );
+    QVERIFY( textPlugin.hasServiceType( "KPluginInfo" ) );
     QVERIFY( !textPlugin.hasServiceType( "KParts/ReadOnlyPart" ) );
 }
 
@@ -767,11 +767,11 @@ void KMimeTypeTest::testHasServiceType2() // with services coming from ksycoca
     QVERIFY( !faketextpart->hasMimeType( "image/png" ) );
     QVERIFY( faketextpart->hasServiceType( "KParts/ReadOnlyPart" ) );
     QVERIFY( !faketextpart->hasServiceType( "KParts/ReadWritePart" ) );
-    QVERIFY( !faketextpart->hasServiceType( "KTextEditor/Plugin" ) );
+    QVERIFY( !faketextpart->hasServiceType( "KPluginInfo" ) );
 
     KService::Ptr textPlugin= KService::serviceByDesktopPath( "faketextplugin.desktop" );
     QVERIFY( !textPlugin.isNull() );
-    QVERIFY( textPlugin->hasServiceType( "KTextEditor/Plugin" ) );
+    QVERIFY( textPlugin->hasServiceType( "KPluginInfo" ) );
     QVERIFY( !textPlugin->hasServiceType( "KParts/ReadOnlyPart" ) );
 }
 
