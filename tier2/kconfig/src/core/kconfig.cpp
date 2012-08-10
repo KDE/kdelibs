@@ -520,11 +520,11 @@ void KConfigPrivate::changeFileName(const QString& name)
         if (wantDefaults()) { // accessing default app-specific config "appnamerc"
             // Note: any change in this block must be sync'ed with KSharedConfig::openConfig
             QString appName = QCoreApplication::applicationName();
-            if (appName.isEmpty()) {
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+            if (appName.isEmpty()) {
                 appName = qAppName();
-#endif
             }
+#endif
             fileName = appName + QLatin1String("rc");
             file = QStandardPaths::writableLocation(resourceType) + QLatin1Char('/') + fileName;
         } else if (wantGlobals()) { // accessing "kdeglobals" - XXX used anywhere?

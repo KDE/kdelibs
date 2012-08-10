@@ -1,7 +1,7 @@
 include_directories( ${KDE4_KDEUI_INCLUDES} )
 
 # QtTest needs this in order to include the gui stuff.
-# The alternative (which requires Qt>=4.6) is #include <QTestGui>
+# The alternative (which requires Qt>=4.6) is #include <qtest_gui.h>
 # TODO: include <QTestWidgets> if https://codereview.qt-project.org/26239 goes in
 add_definitions(-DQT_GUI_LIB)
 

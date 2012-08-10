@@ -20,7 +20,7 @@
 
 #include <kmimetypetrader.h>
 #include <kparts/browseropenorsavequestion.h>
-#include <qtest_kde.h>
+#include <qtest_gui.h>
 
 #include <kdialog.h>
 #include <kpushbutton.h>
@@ -143,6 +143,6 @@ protected Q_SLOTS: // our own slots, not tests
     }
 };
 
-QTEST_KDEMAIN( OpenOrSaveTest, GUI )
+QTEST_MAIN(OpenOrSaveTest)
 
 #include "openorsavequestion_unittest.moc"

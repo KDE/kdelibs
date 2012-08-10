@@ -17,12 +17,13 @@
     Boston, MA 02110-1301, USA.
 */
 #include "parttest.h"
-#include "qtest_kde.h"
+#include <qtest_gui.h>
 
+#include <ksharedconfig.h>
 #include <kparts/part.h>
 #include <QWidget>
 
-QTEST_KDEMAIN( PartTest, GUI )
+QTEST_MAIN(PartTest)
 
 class TestPart : public KParts::ReadOnlyPart
 {
