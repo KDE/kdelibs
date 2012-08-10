@@ -37,6 +37,7 @@
 
 #include <QFile>
 #include <QDebug>
+#include <QCoreApplication>
 
 using namespace Solid::Backends::UDev;
 
