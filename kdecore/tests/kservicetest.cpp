@@ -19,7 +19,7 @@
 #include <locale.h>
 
 #include "kservicetest.h"
-#include <qtest_kde.h>
+#include <qtest.h>
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -32,10 +32,15 @@
 #include <kservicetype.h>
 #include <kservicetypeprofile.h>
 
+#include <qfile.h>
 #include <qprocess.h>
 #include <qstandardpaths.h>
+#include <qthread.h>
+#include <qsignalspy.h>
+#include <kde_qt5_compat.h>
+#include <qtest_kde.h> // kWaitForSignal
 
-QTEST_KDEMAIN_CORE(KServiceTest)
+QTEST_MAIN(KServiceTest)
 
 static void eraseProfiles()
 {
@@ -50,6 +55,10 @@ static void eraseProfiles()
 
 void KServiceTest::initTestCase()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QStandardPaths::enableTestMode(true);
+#endif
+
     // A non-C locale is necessary for some tests.
     // This locale must have the following properties:
     //   - some character other than dot as decimal separator
@@ -138,14 +147,30 @@ void KServiceTest::initTestCase()
         group.writeEntry("Name", "FakeTextPlugin");
         group.writeEntry("Type", "Service");
         group.writeEntry("X-KDE-Library", "faketextplugin");
-        group.writeEntry("X-KDE-ServiceTypes", "KTextEditor/Plugin");
+        group.writeEntry("X-KDE-ServiceTypes", "FakePluginType");
         group.writeEntry("MimeType", "text/plain;");
+    }
+
+    // fakeplugintype: a servicetype
+    if (!KServiceType::serviceType("FakePluginType")) {
+        mustUpdateKSycoca = true;
+    }
+    const QString fakePluginType = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1String("/kde5/servicetypes/") + "fakeplugintype.desktop";
+    if (!QFile::exists(fakePluginType)) {
+        mustUpdateKSycoca = true;
+        KDesktopFile file(fakePluginType);
+        KConfigGroup group = file.desktopGroup();
+        group.writeEntry("Comment", "Fake Text Plugin");
+        group.writeEntry("Type", "ServiceType");
+        group.writeEntry("X-KDE-ServiceType", "FakePluginType");
+        file.group("PropertyDef::X-KDE-Version").writeEntry("Type", "double"); // like in ktexteditorplugin.desktop
     }
 
     if ( mustUpdateKSycoca ) {
         // Update ksycoca in ~/.kde-unit-test after creating the above
         runKBuildSycoca(true);
     }
+    QVERIFY(KServiceType::serviceType("FakePluginType"));
 }
 
 void KServiceTest::runKBuildSycoca(bool noincremental)
@@ -156,7 +181,7 @@ void KServiceTest::runKBuildSycoca(bool noincremental)
     QStringList args;
     if (noincremental)
         args << "--noincremental";
-    proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output
+    //proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output
     proc.start(kbuildsycoca, args);
     proc.waitForFinished();
     kDebug() << "waiting for signal";
@@ -172,6 +197,11 @@ void KServiceTest::cleanupTestCase()
     Q_FOREACH(const QString& service, services) {
         const QString fakeService = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1String("/kde5/services/") + service;
         QFile::remove(fakeService);
+    }
+    QStringList serviceTypes; serviceTypes << "fakeplugintype.desktop";
+    Q_FOREACH(const QString& serviceType, serviceTypes) {
+        const QString fakeServiceType = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1String("/kde5/servicetypes/") + serviceType;
+        //QFile::remove(fakeServiceType);
     }
     QProcess proc;
     proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output
@@ -365,8 +395,8 @@ void KServiceTest::testServiceTypeTraderForReadOnlyPart()
         lastPreference = preference;
     }
 
-    // Now look for any KTextEditor/Plugin
-    offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin");
+    // Now look for any FakePluginType
+    offers = KServiceTypeTrader::self()->query("FakePluginType");
     QVERIFY( offerListHasService( offers, "fakeservice.desktop" ) );
     QVERIFY( offerListHasService( offers, "faketextplugin.desktop" ) );
 }
@@ -376,19 +406,29 @@ void KServiceTest::testTraderConstraints()
     if ( !KSycoca::isAvailable() )
         QSKIP_PORTING( "ksycoca not available", SkipAll );
 
-    KService::List offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin", "Library == 'faketextplugin'");
+    KService::List offers;
+
+    // Baseline: no constraints
+    offers = KServiceTypeTrader::self()->query("FakePluginType");
+    QCOMPARE(offers.count(), 2);
+    QVERIFY(offerListHasService( offers, "faketextplugin.desktop"));
+    QVERIFY(offerListHasService( offers, "fakeservice.desktop"));
+
+    // String-based constraint
+    offers = KServiceTypeTrader::self()->query("FakePluginType", "Library == 'faketextplugin'");
     QCOMPARE(offers.count(), 1);
     QVERIFY( offerListHasService( offers, "faketextplugin.desktop" ) );
 
     if (m_hasNonCLocale) {
+
         // Test float parsing, must use dot as decimal separator independent of locale.
-        offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin", "([X-KDE-Version] > 4.559) and ([X-KDE-Version] < 4.561)");
+        offers = KServiceTypeTrader::self()->query("FakePluginType", "([X-KDE-Version] > 4.559) and ([X-KDE-Version] < 4.561)");
         QCOMPARE(offers.count(), 1);
         QVERIFY(offerListHasService( offers, "fakeservice.desktop"));
     }
 
     // A test with an invalid query, to test for memleaks
-    offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin", "A == B OR C == D AND OR Foo == 'Parse Error'");
+    offers = KServiceTypeTrader::self()->query("FakePluginType", "A == B OR C == D AND OR Foo == 'Parse Error'");
     QVERIFY(offers.isEmpty());
 }
 
@@ -404,7 +444,7 @@ void KServiceTest::testHasServiceType1() // with services constructed with a ful
     QString faketextPluginPath = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("kde5/services/") + "faketextplugin.desktop" );
     QVERIFY( !faketextPluginPath.isEmpty() );
     KService faketextPlugin( faketextPluginPath );
-    QVERIFY( faketextPlugin.hasServiceType( "KTextEditor/Plugin" ) );
+    QVERIFY( faketextPlugin.hasServiceType( "FakePluginType" ) );
     QVERIFY( !faketextPlugin.hasServiceType( "KParts/ReadOnlyPart" ) );
 }
 
@@ -418,7 +458,7 @@ void KServiceTest::testHasServiceType2() // with services coming from ksycoca
 
     KService::Ptr faketextPlugin = KService::serviceByDesktopPath( "faketextplugin.desktop" );
     QVERIFY( !faketextPlugin.isNull() );
-    QVERIFY( faketextPlugin->hasServiceType( "KTextEditor/Plugin" ) );
+    QVERIFY( faketextPlugin->hasServiceType( "FakePluginType" ) );
     QVERIFY( !faketextPlugin->hasServiceType( "KParts/ReadOnlyPart" ) );
 }
 
@@ -583,7 +623,7 @@ void KServiceTest::createFakeService()
     group.writeEntry("Type", "Service");
     group.writeEntry("X-KDE-Library", "fakeservice");
     group.writeEntry("X-KDE-Version", "4.56");
-    group.writeEntry("ServiceTypes", "KTextEditor/Plugin");
+    group.writeEntry("ServiceTypes", "FakePluginType");
     group.writeEntry("MimeType", "text/plain;");
 }
 

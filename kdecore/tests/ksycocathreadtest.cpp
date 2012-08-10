@@ -99,10 +99,10 @@ public slots:
             }
         }
 
-        KService::List offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin");
+        KService::List offers = KServiceTypeTrader::self()->query("KPluginInfo");
         Q_ASSERT( offerListHasService( offers, "faketextplugin.desktop" ) );
 
-        offers = KServiceTypeTrader::self()->query("KTextEditor/Plugin", "Library == 'faketextplugin'");
+        offers = KServiceTypeTrader::self()->query("KPluginInfo", "Library == 'faketextplugin'");
         Q_ASSERT(offers.count() == 1);
         QVERIFY( offerListHasService( offers, "faketextplugin.desktop" ) );
 
@@ -212,7 +212,7 @@ void KSycocaThreadTest::launch()
         group.writeEntry("Type", "Service");
         group.writeEntry("X-KDE-Library", "faketextplugin");
         group.writeEntry("X-KDE-Protocols", "http,ftp");
-        group.writeEntry("ServiceTypes", "KTextEditor/Plugin");
+        group.writeEntry("ServiceTypes", "KPluginInfo");
         group.writeEntry("MimeType", "text/plain;");
         file.sync();
         qDebug() << "Created" << fakeTextPlugin << ", running kbuilsycoca";
@@ -286,7 +286,7 @@ void KSycocaThreadTest::createFakeService()
     group.writeEntry("Type", "Service");
     group.writeEntry("X-KDE-Library", "fakeservice");
     group.writeEntry("X-KDE-Protocols", "http,ftp");
-    group.writeEntry("ServiceTypes", "KTextEditor/Plugin");
+    group.writeEntry("ServiceTypes", "KPluginInfo");
     group.writeEntry("MimeType", "text/plain;");
 }
 
