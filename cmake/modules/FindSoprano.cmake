@@ -190,7 +190,7 @@ if(SOPRANO_INCLUDE_DIR)
   endif(EXISTS ${SOPRANO_PLUGIN_DIR}/virtuosobackend.desktop)
 
   # make sure the Soprano cmake macros are found
-  # We also include it directly for convinience
+  # We also include it directly for convenience
   find_file(_SOPRANO_MACRO_FILE NAMES SopranoAddOntology.cmake HINTS ${_SOPRANO_PREFIX}/share/soprano/cmake )
   if(_SOPRANO_MACRO_FILE)
     # new Soprano > 2.3.0 location
