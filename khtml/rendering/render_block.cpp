@@ -669,7 +669,7 @@ void RenderBlock::removeChild(RenderObject *oldChild)
         anonBlock->detach();
     }
     if (checkContinuationMerge && ((!prev && !next) || m_childrenInline)) {
-        // |oldChild| was a block that splitted an inline into continuations.
+        // |oldChild| was a block that split an inline into continuations.
         // Now that we only have inline content left, we may merge back those continuations
         // into a single inline.
         assert(lc->isRenderInline());

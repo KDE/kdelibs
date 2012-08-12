@@ -70,7 +70,7 @@ private:
 
     KFilePlacesModel *m_places;
     KFilePlacesModel *m_places2; // To check that they always stay in sync
-                                 // actually supposed to work accross processes,
+                                 // actually supposed to work across processes,
                                  // but much harder to test
 
     QMap<QString, QDBusInterface*> m_interfacesMap;

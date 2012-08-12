@@ -280,7 +280,7 @@ void ModelSpy::doPersist()
     // We store the changed ranges so that we know which ranges should not be changed
     changedRanges << QItemSelectionRange(topLeft, bottomRight);
 
-    // Store the inital state of the indexes in the model which we expect to change.
+    // Store the initial state of the indexes in the model which we expect to change.
     for (int row = change.startRow; row <= change.endRow; ++row )
     {
       for (int column = 0; column < columnCount; ++column)

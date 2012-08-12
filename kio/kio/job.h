@@ -322,7 +322,7 @@ namespace KIO {
      * HTTP DELETE.
      *
      * Though this function servers the same purpose as KIO::file_delete, unlike
-     * file_delete it accomodates HTTP sepecific actions such as redirections.
+     * file_delete it accommodates HTTP sepecific actions such as redirections.
      *
      * @param src url resource to delete.
      * @param flags Can be HideProgressInfo here

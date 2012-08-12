@@ -346,7 +346,7 @@ public:
      * keyword.
      *
      * If @ref typedString was not filtered by a search filter plugin, this
-     * function returns a null charater.
+     * function returns a null character.
      *
      * @see typedString
      * @since 4.5

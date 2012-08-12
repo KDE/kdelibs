@@ -675,7 +675,7 @@ void UploadDialog::Private::_k_contentAdded(Attica::BaseJob* baseJob)
         doUpload(QString(), ui.uploadFileRequester->url());
     }
 
-    // FIXME: status labels need to accomodate 3 previews
+    // FIXME: status labels need to accommodate 3 previews
     if (!previewFile1.isEmpty()) {
         doUpload("1", previewFile1);
     }

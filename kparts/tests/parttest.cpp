@@ -139,7 +139,7 @@ void PartTest::testAutomaticMimeType()
     part->openUrl(QUrl::fromLocalFile(KDESRCDIR "/parttest.cpp"));
     QCOMPARE(part->arguments().mimeType(), QString("text/x-c++src"));
 
-    // open a new file, but without explicitely close the first
+    // open a new file, but without explicitly close the first
     part->openUrl(QUrl::fromLocalFile(KDESRCDIR "/notepad.desktop"));
     // test again its (autdetected) mimetype
     QCOMPARE(part->arguments().mimeType(), QString::fromLatin1("application/x-desktop"));

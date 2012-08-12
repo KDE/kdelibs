@@ -22,9 +22,9 @@
 // Maintainability note:
 // This class invokes some Q_PRIVATE_SLOTs in QSortFilterProxyModel which are
 // private API and could be renamed or removed at any time.
-// If they are renamed, the invokations can be updated with an #if (QT_VERSION(...))
+// If they are renamed, the invocations can be updated with an #if (QT_VERSION(...))
 // If they are removed, then layout{AboutToBe}Changed Q_SIGNALS should be used when the source model
-// gets new rows or has rowsremoved or moved. The Q_PRIVATE_SLOT invokation is an optimization
+// gets new rows or has rowsremoved or moved. The Q_PRIVATE_SLOT invocation is an optimization
 // because layout{AboutToBe}Changed is expensive and causes the entire mapping of the tree in QSFPM
 // to be cleared, even if only a part of it is dirty.
 // Stephen Kelly, 30 April 2010.

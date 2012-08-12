@@ -73,7 +73,7 @@ namespace KParts {
         QString contentDisposition() const;
 
         /**
-         * @return Wheter the returned disposition suggests saving or opening inline
+         * @return Whether the returned disposition suggests saving or opening inline
          */
         bool serverSuggestsSave() const;
 

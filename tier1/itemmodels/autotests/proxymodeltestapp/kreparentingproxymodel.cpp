@@ -50,7 +50,7 @@ class KReparentingProxyModelPrivate
 
   /**
     Merges all indexes from @p mappings which are descendants of @p parent into the model.
-    Returns the remaing mappings.
+    Returns the remaining mappings.
 
     Note that this changes the internal model structure and must only be called between begin/end insert/remove/move/reset calls.
   */

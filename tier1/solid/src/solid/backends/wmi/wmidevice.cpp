@@ -118,7 +118,7 @@ public:
 		WmiQuery::ItemList list = WmiQuery::instance().sendQuery(query);
         if(list.size() > 0)
             return true;
-        qWarning()<<"Device UDI:"<<udi<<"doesnt exist";
+        qWarning()<<"Device UDI:"<<udi<<"doesn't exist";
 //        qDebug()<<query;
         return false;
     }

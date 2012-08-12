@@ -70,7 +70,7 @@ void KMessage_Test::showFatal()
 
 void KMessage_Test::showInformation()
 {
-    KMessage::message( KMessage::Information, QLatin1String("Info: This is a demonstration of the new KMessage API for kdelibs. It abstract the display of message and you can develop custom mesage handle for your application"), QLatin1String("KMessage_Test") );
+    KMessage::message( KMessage::Information, QLatin1String("Info: This is a demonstration of the new KMessage API for kdelibs. It abstract the display of message and you can develop custom message handle for your application"), QLatin1String("KMessage_Test") );
 }
 
 void KMessage_Test::showSorry()

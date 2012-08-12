@@ -106,7 +106,7 @@ namespace KNS3 {
         void _k_providersLoaded(const QStringList& providerNames);
         void _k_providerChanged(const QString& providerName);
 
-        // validation of login is done, go to next page if successfull, otherwise ask again
+        // validation of login is done, go to next page if successful, otherwise ask again
         void _k_checkCredentialsFinished(bool);
         void _k_categoriesLoaded(const Attica::Category::List& loadedCategories);
         void _k_licensesLoaded(const Attica::License::List& licenses);

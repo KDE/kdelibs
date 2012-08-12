@@ -3094,7 +3094,7 @@ try_again:
         // However, because almost all client implementations treat a 301/302
         // response as a 303 response in violation of the spec, many servers
         // have simply adapted to this way of doing things! Thus, we are
-        // forced to do the same thing. Otherwise, we loose compatability and
+        // forced to do the same thing. Otherwise, we loose compatibility and
         // might not be able to correctly retrieve sites that redirect.
         if (m_request.method != HTTP_HEAD) {
             m_request.method = HTTP_GET; // Force a GET

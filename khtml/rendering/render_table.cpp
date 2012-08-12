@@ -2284,7 +2284,7 @@ void RenderTableRow::layout()
                 int oldHeight = child->height();
                 cell->layout();
                 if (oldHeight > 0 && child->containsPageBreak() && child->height() != oldHeight) {
-		    // child has grown to accomodate a page-page, grow the same amount ourselves, 
+            // child has grown to accommodate a page-page, grow the same amount ourselves,
 		    // and shift following rows down without relayouting the entire table
 		    int adjust = child->height() - oldHeight;
 		    setHeight(height()+adjust);

@@ -192,7 +192,7 @@ public:
                     QString label = readLabelJob->propertyValue().toString();
                     if ( re.exactMatch( label ) ) {
                         if ( verb( this, label, item.data() ) ) {
-                            rc = 0; // one successfull iteration already produced results, so success return
+                            rc = 0; // one successful iteration already produced results, so success return
                         }
                     }
                 }

@@ -186,7 +186,7 @@ void DescendantsProxyModelTest::testData()
   signalList.clear();
   persistentList.clear();
 
-  // When this proxy recieves a rowsAboutToBeInserted signal, it can't know
+  // When this proxy receives a rowsAboutToBeInserted signal, it can't know
   // how many rows need to be inserted (total descendants).
   // So, it first inserts only the rows signaled by the source model (and not
   // the descendants). When the source model Q_SIGNALS rowsInserted, we can

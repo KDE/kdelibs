@@ -74,7 +74,7 @@ public:
     const Solid::DeviceInterface::Type type() const;
 
 
-    //TODO:rename the folowing methodes...
+    //TODO:rename the following methodes...
     static WmiQuery::Item win32LogicalDiskByDiskPartitionID(const QString &deviceID);
     static WmiQuery::Item win32DiskDriveByDiskPartitionID(const QString &deviceID);
     static WmiQuery::Item win32DiskPartitionByDeviceIndex(const QString &deviceID);

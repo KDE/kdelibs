@@ -144,7 +144,7 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   // statusbar progress widget
   statusTracker = new KStatusBarJobTracker( statusBar() );
 
-  // run & stop butons
+  // run & stop buttons
   hbLayout = new QHBoxLayout();
   topLayout->addLayout( hbLayout );
   hbLayout->setParent( topLayout );

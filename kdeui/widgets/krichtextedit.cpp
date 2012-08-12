@@ -553,14 +553,14 @@ QString KRichTextEdit::toCleanHtml() const
   QRegExp emptyLineFinder( EMPTYLINEREGEX );
   emptyLineFinder.setMinimal( true );
   
-  // find the first occurance
+  // find the first occurrence
   int offset = emptyLineFinder.indexIn( result, 0 );
   while (offset != -1) {
     // replace all the matching text with the new line text
     result.replace( offset, emptyLineFinder.matchedLength(), EMPTYLINEHTML );
     // advance the search offset to just beyond the last replace
     offset += EMPTYLINEHTML.length();
-    // find the next occurance
+    // find the next occurrence
     offset = emptyLineFinder.indexIn( result, offset );
   }
   

@@ -701,7 +701,7 @@ void KUriFilter::loadPlugins()
             Q_ASSERT( !pluginName.isEmpty() );
             d->plugins.insert(pluginName, plugin );
             // Needed to ensure the order of filtering is honored since
-            // items are ordered arbitarily in a QHash and QMap always
+            // items are ordered arbitrarily in a QHash and QMap always
             // sorts by keys. Both undesired behavior.
             d->pluginNames << pluginName;
         }

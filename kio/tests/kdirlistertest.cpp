@@ -532,7 +532,7 @@ void KDirListerTest::testRenameAndOverwrite() // has to be run after testRenameI
         waitForRefreshedItems(); // refreshItems could come from KDirWatch or KDirNotify.
     }
 
-    // Check that itemsDeleted was emitted -- preferrably BEFORE refreshItems,
+    // Check that itemsDeleted was emitted -- preferably BEFORE refreshItems,
     // but we can't easily check that with QSignalSpy...
     QCOMPARE(m_dirLister.spyItemsDeleted.count(), 1);
 

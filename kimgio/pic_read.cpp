@@ -19,7 +19,7 @@
  */
 
 /* This code is based on the GIMP-PIC plugin by Halfdan Ingvarsson,
- * and relicensed from GPL to LGPL to accomodate the KDE licensing policy
+ * and relicensed from GPL to LGPL to accommodate the KDE licensing policy
  * with his permission.
  * These is the original copyright:
  * Copyright (C) 1998 Halfdan Ingvarsson
@@ -142,7 +142,7 @@ inline static unsigned getNumChannels(PICChannel *channels) {
 }
 
 /**
- * Decodes a Run-lenght encoded chunk
+ * Decodes a Run-length encoded chunk
  * @param dev The device to read from
  * @param row The row pointer to write to
  * @param max The maximum length to write

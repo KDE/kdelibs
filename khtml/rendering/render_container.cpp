@@ -201,7 +201,7 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
         // it's possible that we're modifying the line box tree too.
         // In order to properly recalculate it later we need
         // to delete all the boxes from the current flow of the removed child. (vtokarev)
-        // In particular that's relevant when we're merging splitted inline flow. (continuations)
+        // In particular that's relevant when we're merging split inline flow. (continuations)
         // We're taking the render objects from one block and insert into another
         // so we have to force line box tree recalculation
         if (oldChild->isInline()) {

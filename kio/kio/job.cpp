@@ -1064,7 +1064,7 @@ void TransferJob::slotDataReq()
     static const int max_size = 14 * 1024 * 1024;
     if (dataForSlave.size() > max_size)
     {
-       kDebug(7007) << "send " << dataForSlave.size() / 1024 / 1024 << "MB of data in TransferJob::dataReq. This needs to be splitted, which requires a copy. Fix the application.\n";
+       kDebug(7007) << "send " << dataForSlave.size() / 1024 / 1024 << "MB of data in TransferJob::dataReq. This needs to be split, which requires a copy. Fix the application.\n";
        d->staticData = QByteArray(dataForSlave.data() + max_size ,  dataForSlave.size() - max_size);
        dataForSlave.truncate(max_size);
     }

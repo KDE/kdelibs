@@ -198,7 +198,7 @@ QString buildWidgetClass( const QString &name, KConfig &_input, const QString &g
 
     // FIXME: ### make this more useful, i.e. outsource to separate file
     QString domXml = input.readEntry("DomXML", QString());
-    // If domXml is empty then we shoud call base class function
+    // If domXml is empty then we should call base class function
     if ( domXml.isEmpty() ) {
         domXml = QLatin1String("QDesignerCustomWidgetInterface::domXml()");
     }

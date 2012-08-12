@@ -107,7 +107,7 @@ namespace KColorUtils {
 
     /**
      * Create a new color by tinting one color with another. This function is
-     * meant for creating additional colors withing the same class (background,
+     * meant for creating additional colors withings the same class (background,
      * foreground) from colors in a different class. Therefore when @p amount
      * is low, the luma of @p base is mostly preserved, while the hue and
      * chroma of @p color is mostly inherited.
