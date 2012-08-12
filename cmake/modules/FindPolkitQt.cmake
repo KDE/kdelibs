@@ -11,7 +11,7 @@
 #
 # The minimum required version of PolkitQt can be specified using the
 # standard syntax, e.g. find_package(PolkitQt 1.0)
-# For compatiblity, this can also be done by setting the POLKITQT_MIN_VERSION variable.
+# For compatibility, this can also be done by setting the POLKITQT_MIN_VERSION variable.
 
 # Copyright (c) 2009, Daniel Nicoletti, <dantti85-pk@yahoo.com.br>
 # Copyright (c) 2009, Dario Freddi, <drf54321@gmail.com>
