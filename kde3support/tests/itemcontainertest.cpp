@@ -6,6 +6,7 @@
 * Licensed under the GNU General Public License version 2
 */
 
+#include <QApplication>
 #include <QLayout>
 #include <QRadioButton>
 #include <QCheckBox>
@@ -13,12 +14,12 @@
 #include <QGroupBox>
 #include <QButtonGroup>
 
-#include <kapplication.h>
-#include <kcmdlineargs.h>
+#include <kglobal.h>
 #include <kconfig.h>
 #include <k3iconview.h>
 #include <k3listview.h>
 #include <klistwidget.h>
+#include <ksharedconfig.h>
 
 #include "itemcontainertest.h"
 
@@ -213,8 +214,8 @@ void TopLevel::slotToggleSingleColumn( bool b )
 
 int main( int argc, char ** argv )
 {
-    KCmdLineArgs::init( argc, argv, "test", 0, qi18n("Test"), "1.0", qi18n("test app"));
-    KApplication app;
+    QApplication::setApplicationName("test");
+    QApplication app(argc, argv);
 
     TopLevel *toplevel = new TopLevel(0);
 
