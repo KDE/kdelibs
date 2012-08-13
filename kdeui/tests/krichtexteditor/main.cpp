@@ -20,17 +20,12 @@
  */
 
 #include "krichtexteditor.h"
-#include <kapplication.h>
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
+#include <QApplication>
 
 int main(int argc, char **argv)
 {
-    const QByteArray& ba = QByteArray("krichtexteditor");
-    const KLocalizedString name = ki18n("KDE Rich Text Editor");
-    KAboutData aboutData(ba, ba, name, ba, name);
-    KCmdLineArgs::init(argc, argv, &aboutData);
-    KApplication app;
+    QApplication::setApplicationName("krichtexteditor");
+    QApplication app(argc, argv);
     KRichTextEditor* mw = new KRichTextEditor();
     mw->show();
     app.exec();
