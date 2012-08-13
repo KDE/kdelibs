@@ -31,9 +31,7 @@
 #include <QToolButton>
 #include <QMenu>
 
-#include <kapplication.h>
 #include <kaboutdata.h>
-#include <kcmdlineargs.h>
 #include <kmessagebox.h>
 
 #include <kpushbutton.h>
@@ -304,8 +302,8 @@ int main(int argc, char **argv)
                          qi18n("Goya Test"),
                          "http://www.kde.org");
 
-    KCmdLineArgs::init( argc, argv, &aboutData );
-    KApplication app;
+    QApplication::setApplicationName(aboutData.appName());
+    QApplication app(argc, argv);
 
     QMainWindow *mainWindow = new QMainWindow();
     mainWindow->setMinimumSize(640, 480);
