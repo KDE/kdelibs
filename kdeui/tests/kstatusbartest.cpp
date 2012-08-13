@@ -12,8 +12,8 @@
 #include <stdlib.h>
 
 #include "kstatusbar.h"
-#include <kcmdlineargs.h>
-#include <kapplication.h>
+#include <QApplication>
+#include <kglobal.h>
 #include <kmainwindow.h>
 #include <kmenubar.h>
 #include "kstatusbartest.h"
@@ -28,7 +28,7 @@ testWindow::testWindow (QWidget *)
     QAction *action = fileMenu->addAction("&Exit");
     action->setShortcut( Qt::ALT + Qt::Key_Q );
 
-    connect( action, SIGNAL(triggered()), KApplication::kApplication(), SLOT(quit()) );
+    connect( action, SIGNAL(triggered()), qApp, SLOT(quit()) );
 
     statusbar = new KStatusBar (this);
     statusbar->insertItem("Zoom: XXXX", 0);
@@ -110,8 +110,8 @@ testWindow::~testWindow ()
 
 int main( int argc, char *argv[] )
 {
-        KCmdLineArgs::init( argc, argv, "test", 0, qi18n("Test"), "1.0", qi18n("test app"));
-        KApplication *myApp = new KApplication;
+        QApplication::setApplicationName("test");
+        QApplication *myApp = new QApplication(argc, argv);
         testWindow *test = new testWindow;
 
         test->show();
