@@ -3,13 +3,13 @@
 #include <kservicetype.h>
 
 #include <kcmdlineargs.h>
-#include <kapplication.h>
+#include <qapplication.h>
 #include <kdebug.h>
 
 int main(int argc, char *argv[])
 {
-    KCmdLineArgs::init( argc,argv, "getalltest", 0, qi18n("getalltest"), 0);
-    KApplication k( false /*noGUI*/); // KMessageBox needs KApp for makeStdCaption
+    QApplication::setApplicationName("getalltest");
+    QApplication k(argc, argv);
 
 //for (int i = 0 ; i < 2 ; ++i ) { // test twice to see if they got deleted
    kDebug() << "All services";
