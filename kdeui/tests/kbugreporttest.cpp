@@ -17,18 +17,18 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <QApplication>
+
 #include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kapplication.h>
 #include <kbugreport.h>
 
 int main(int argc, char **argv) {
 
     // First a bug report to bugs.kde.org
     KAboutData about("kbugreporttest", 0, qi18n("kbugreporttest"), "version");
-    KCmdLineArgs::init(argc, argv, &about);
 
-    KApplication a;
+    QApplication::setApplicationName(about.appName());
+    QApplication a(argc, argv);
     a.setQuitOnLastWindowClosed(false);
     KBugReport rep(0,true,&about);
     rep.exec();
