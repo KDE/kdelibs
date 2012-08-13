@@ -22,10 +22,9 @@
 #include <config-acl.h>
 
 #include <kacl.h>
-#include <kapplication.h>
 #include <kdebug.h>
-#include <kcmdlineargs.h>
 
+#include <QtGui/QApplication>
 #include <QtCore/QFileInfo>
 #include <QtCore/QEventLoop>
 
@@ -67,9 +66,8 @@ static bool check(const QString& txt, T a, T b)
 
 int main(int argc, char *argv[])
 {
-    //KApplication::disableAutoDcopRegistration();
-    KCmdLineArgs::init(argc,argv, "kacltest", 0, qi18n("kacltest"), 0);
-    KApplication app;
+    QApplication::setApplicationName("kacltest");
+    QApplication app(argc, argv);
 
 #ifdef HAVE_POSIX_ACL
     KACLTest test;
