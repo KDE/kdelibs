@@ -116,8 +116,6 @@ int main(int argc, char *argv[])
     setenv("LC_ALL", "C", 1);
     // The difference with QTEST_KDEMAIN is here: not setting $KDEHOME
     unsetenv("KDE_COLOR_DEBUG");
-    KAboutData aboutData( "ktimezonewidgettest", 0, qi18n("qttest"), "version" );
-    KComponentData cData(&aboutData);
     QApplication app( argc, argv );
     app.setApplicationName( "ktimezonewidgettest" );
 
