@@ -16,8 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kcmdlineargs.h>
-#include <kapplication.h>
+#include <QApplication>
 #include <kxmlguiwindow.h>
 #include <klineedit.h>
 #include <ktoolbarlabelaction.h>
@@ -90,8 +89,8 @@ class MainWindow : public KXmlGuiWindow
 
 int main( int argc, char **argv )
 {
-  KCmdLineArgs::init( argc, argv, "test", 0, qi18n("Test"), "1.0", qi18n("test app"));
-  KApplication app;
+  QApplication::setApplicationName("test");
+  QApplication app(argc, argv);
 
   MainWindow* mw = new MainWindow;
   mw->show();
