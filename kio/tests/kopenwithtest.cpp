@@ -18,19 +18,18 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kapplication.h>
+#include <QApplication>
 #include <QWidget>
 #include <QtCore/QMutableStringListIterator>
 #include <QtCore/QDir>
 #include <kopenwithdialog.h>
 #include <QUrl>
 #include <kdebug.h>
-#include <kcmdlineargs.h>
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc, argv, "kopenwithdialogtest", 0, qi18n("kopenwithdialogtest"), "0.1", qi18n("kopenwithdialogtest"));
-    KApplication app;
+    QApplication::setApplicationName("kopenwithdialogtest");
+    QApplication app(argc, argv);
     QList<QUrl> list;
 
     list += QUrl("file:///tmp/testfile.txt");
