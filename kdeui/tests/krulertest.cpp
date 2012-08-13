@@ -1,9 +1,8 @@
-#include <kcmdlineargs.h>
-
 #include "krulertest.h"
 
 #include "kruler.h"
 
+#include <QApplication>
 #include <QLayout>
 #include <QLabel>
 #include <QKeyEvent>
@@ -374,11 +373,11 @@ KRulerTest::slotSetYTrans(double d)
 /* --- MAIN -----------------------*/
 int main(int argc, char **argv)
 {
-  KCmdLineArgs::init( argc, argv, "test", 0, qi18n("Test"), "1.0", qi18n("test app"));
-  KApplication *testapp;
+  QApplication::setApplicationName("test");
+  QApplication *testapp;
   KRulerTest   *window;
 
-  testapp = new KApplication;
+  testapp = new QApplication(argc, argv);
   testapp->setFont(QFont("Helvetica",12));
 
   window = new KRulerTest();
