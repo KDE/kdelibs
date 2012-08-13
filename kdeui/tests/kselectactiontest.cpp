@@ -19,9 +19,8 @@
 */
 
 #include <QToolBar>
+#include <QApplication>
 
-#include <kcmdlineargs.h>
-#include <kapplication.h>
 #include <kmenubar.h>
 #include <kdebug.h>
 
@@ -32,8 +31,8 @@
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init( argc, argv, "kselectactiontest", 0, qi18n("KSelectActionTest"), "1.0", qi18n("kselectaction test app"));
-    KApplication app;
+    QApplication::setApplicationName("kselectactiontest");
+    QApplication app(argc, argv);
 
     SelectActionTest* test = new SelectActionTest;
     test->show();
