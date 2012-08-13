@@ -1,15 +1,12 @@
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kapplication.h>
-#include <klocalizedstring.h>
+#include <QApplication>
+
 #include "kcharselect.h"
 
 int main (int argc,char **argv)
 {
-    KAboutData about("kcharselecttest", 0, qi18n("kcharselecttest"), "version");
-    KCmdLineArgs::init(argc, argv, &about);
+    QApplication::setApplicationName("kcharselecttest");
 
-    KApplication app;
+    QApplication app(argc, argv);
 
     KCharSelect selector( 0, 0 );
     selector.resize( selector.sizeHint() );
