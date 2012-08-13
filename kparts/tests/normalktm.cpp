@@ -31,12 +31,11 @@
 
 #include <kiconloader.h>
 
-#include <kapplication.h>
+#include <QApplication>
 #include <kmessagebox.h>
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <klocalizedstring.h>
-#include <kcmdlineargs.h>
 #include <kmenubar.h>
 #include <qstandardpaths.h>
 
@@ -143,8 +142,8 @@ void TestMainWindow::slotFileEdit()
 int main( int argc, char **argv )
 {
     // we cheat and call ourselves kpartstest for TestMainWindow::slotFileOpen()
-    KCmdLineArgs::init( argc, argv, "kpartstest", 0, qi18n("kpartstest"), 0);
-    KApplication app;
+    QApplication::setApplicationName("kpartstest");
+    QApplication app(argc, argv);
 
     TestMainWindow *shell = new TestMainWindow;
     shell->show();
