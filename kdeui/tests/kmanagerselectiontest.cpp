@@ -138,7 +138,7 @@ void SigCheckWatcher::lostOwner()
     }
 
 
-#include <kapplication.h>
+#include <QApplication>
 
 // the tested classes need KApplication - this is from qtest_kde.h, with QApp -> KApp
 #define QTEST_KDEMAIN_WITH_COMPONENTNAME_KAPP(TestObject, flags, componentName) \
@@ -154,8 +154,8 @@ int main(int argc, char *argv[]) \
     QFile::remove(QDir::homePath() + QLatin1String("/.kde-unit-test/share/config/qttestrc"));  \
     KAboutData aboutData( QByteArray(componentName), QByteArray(), qi18n("KDE Test Program"), QByteArray("version") );  \
     KDEMainFlags mainFlags = flags;                         \
-    KCmdLineArgs::init( argc, argv, &aboutData); \
-    KApplication app; \
+    QApplication::setApplicationName(aboutData.appName()); \
+    QApplication app(argc, argv); \
     app.setApplicationName( QLatin1String("qttest") ); \
     qRegisterMetaType<KUrl>(); /*as done by kapplication*/ \
     qRegisterMetaType<QList<QUrl> >(); \
