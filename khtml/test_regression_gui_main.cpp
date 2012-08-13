@@ -22,21 +22,15 @@
  *
  */
 
-#include <kapplication.h>
-#include <kcmdlineargs.h>
+#include <QApplication>
 
 #include "test_regression_gui_window.h"
 
 int main(int argc, char *argv[])
 {
-    KCmdLineOptions options;
+    QApplication::setApplicationName("testregressiongui");
 
-	KCmdLineArgs::init(argc, argv, "testregressiongui", 0, ki18n("TestRegressionGui"),
-								   "1.0", ki18n("GUI for the khtml regression tester"));
-
-	KCmdLineArgs::addCmdLineOptions(options);
-
-	KApplication app;
+	QApplication app(argc, argv);
 
 	TestRegressionWindow mainWindow;
 	mainWindow.show();
