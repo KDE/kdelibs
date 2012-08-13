@@ -1,9 +1,7 @@
+#include <QApplication>
 #include <QWidget>
 #include <QtCore/QEvent>
 #include <QCheckBox>
-
-#include <kapplication.h>
-#include <kcmdlineargs.h>
 
 #include "kprogressdialog.h"
 
@@ -42,8 +40,8 @@ void MyWidget::timerEvent(QTimerEvent *)
 
 int main(int argc, char *argv[])
 {
-    KCmdLineArgs::init( argc, argv, "test", 0, qi18n("Test"), "1.0", qi18n("test app"));
-    KApplication app;
+    QApplication::setApplicationName("test");
+    QApplication app(argc, argv);
     MyWidget w;
 
     w.show();
