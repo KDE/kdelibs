@@ -6,14 +6,12 @@
 * Licensed under the GNU General Public License version 2 or later
 */
 
+#include <QApplication>
 #include <QLayout>
 #include <QGroupBox>
 #include <QBoxLayout>
 
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
 #include <klocalizedstring.h>
-#include <kapplication.h>
 #include <knuminput.h>
 
 #include "knuminputtest.h"
@@ -169,10 +167,9 @@ TopLevel::TopLevel(QWidget *parent)
 
 int main( int argc, char ** argv )
 {
-    KAboutData about("KNuminputTest", 0, qi18n("KNuminputTest"), "version");
-    KCmdLineArgs::init(argc, argv, &about);
+    QApplication::setApplicationName("KNuminputTesT");
 
-    KApplication a;
+    QApplication a(argc, argv);
 
     TopLevel *toplevel = new TopLevel(0);
     toplevel->show();
