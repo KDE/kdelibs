@@ -17,8 +17,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kapplication.h>
-#include <kcmdlineargs.h>
+#include <QApplication>
 #include <ktextedit.h>
 
 #include <QFile>
@@ -26,8 +25,8 @@
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init( argc, argv, "ktextedittest", 0, qi18n("KTextEditTest"), "1.0", qi18n("ktextedit test app"));
-    KApplication app;
+    QApplication::setApplicationName("ktextedittest");
+    QApplication app(argc, argv);
     KTextEdit *edit = new KTextEdit();
 
     //QAction* action = new QAction("Select All", edit);
