@@ -19,10 +19,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kapplication.h>
-
+#include <QApplication>
 #include <QBoxLayout>
 #include <QLabel>
 
@@ -57,10 +54,9 @@ KPageDialogTest::~KPageDialogTest()
 
 int main( int argc, char **argv )
 {
-  KAboutData about("KPageDialogTest", 0, qi18n("KPageDialogTest"), "version");
-  KCmdLineArgs::init( argc, argv, &about );
+  QApplication::setApplicationName("KPageDialogTest");
 
-  KApplication app;
+  QApplication app(argc, argv);
 
   KPageDialogTest testDialog( 0 );
   testDialog.exec();
