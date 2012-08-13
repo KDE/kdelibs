@@ -1,15 +1,12 @@
-#include <kcmdlineargs.h>
-#include <kaboutdata.h>
-#include <kapplication.h>
+#include <QApplication>
 #include <keditlistbox.h>
 #include <kcombobox.h>
 
 int main( int argc, char **argv )
 {
-    KAboutData about("keditlistboxtest", 0, qi18n("keditlistboxtest"), "version");
-    KCmdLineArgs::init(argc, argv, &about);
+    QApplication::setApplicationName("keditlistboxtest");
 
-    KApplication app;
+    QApplication app(argc, argv);
 
 
     KEditListBox::CustomEditor editor( new KComboBox( true, 0 ) );
