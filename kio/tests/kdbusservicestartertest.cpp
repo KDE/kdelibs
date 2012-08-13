@@ -19,15 +19,14 @@
 
 #include <kdbusservicestarter.h>
 
-#include <kapplication.h>
 #include <kdebug.h>
 #include <kservice.h>
-#include <kcmdlineargs.h>
+#include <QApplication>
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc,argv, "kdbusservicestartertest", 0, qi18n("kdbusservicestartertest"), 0);
-    KApplication app;
+    QApplication::setApplicationName("kdbusservicestartertest");
+    QApplication app(argc, argv);
 
     QString error, dbusService;
     KDBusServiceStarter::self()->
