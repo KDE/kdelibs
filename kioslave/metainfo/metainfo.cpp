@@ -18,10 +18,8 @@
 
 #include "metainfo.h"
 
+#include <QApplication>
 #include <kurl.h>
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kapplication.h>
 #include <kdebug.h>
 #include <kfilemetainfo.h>
 #include <klocalizedstring.h>
@@ -35,10 +33,9 @@ using namespace KIO;
 
 extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
 {
-    KAboutData about("kio_metainfo", 0, qi18n("kio_metainfo"), 0);
-    KCmdLineArgs::init(&about);
+    QApplication::setApplicationName("kio_metainfo");
 
-    KApplication app;
+    QApplication app(argc, argv);
 
     //KApplication app(argc, argv, "kio_metainfo", false, true);
 
