@@ -5,10 +5,9 @@
 #include <stdlib.h>
 
 #include <kstatusbar.h>
-#include <kapplication.h>
+#include <QApplication>
 #include <kcombobox.h>
 #include <khelpmenu.h>
-#include <kcmdlineargs.h>
 #include <kmenu.h>
 #include "kwindowtest.h"
 #include <klineedit.h>
@@ -73,7 +72,7 @@ TestWindow::TestWindow (QWidget *parent)
     // Now add another button and align it right
     exitAction = new KAction(KDE::icon( "application-exit" ), "Exit", this);
     actionCollection()->addAction("exit", exitAction);
-    connect (exitAction, SIGNAL(triggered(bool)), KApplication::kApplication(), SLOT(quit()));
+    connect (exitAction, SIGNAL(triggered(bool)), qApp, SLOT(quit()));
 
     // Another toolbar
 
@@ -226,7 +225,7 @@ void TestWindow::slotGoGoGoo()
 
 void TestWindow::slotSave()
 {
-  kapp->beep();
+  qApp->beep();
   statusBar->changeItem("Saving properties...", 0);
 }
 
@@ -412,9 +411,9 @@ void TestWindow::slotMakeItem3Current()
 
 int main( int argc, char *argv[] )
 {
-    KCmdLineArgs::init(argc, argv, "kwindowtest", 0, qi18n("KWindowTest"), "version", qi18n("description"));
+    QApplication::setApplicationName("kwindowtest");
 
-    KApplication myApp;
+    QApplication myApp(argc, argv);
     TestWindow *test = new TestWindow;
 
     myApp.setQuitOnLastWindowClosed( false ); // don't quit after the messagebox!
