@@ -1,13 +1,12 @@
 #include "ksqueezedtextlabel.h"
-#include <kapplication.h>
-#include <kcmdlineargs.h>
+#include <QApplication>
 #include <QWidget>
 #include <QVBoxLayout>
 
 int main( int argc, char **argv )
 {
-  KCmdLineArgs::init(argc, argv, "test", 0, qi18n("Test"), "1.0", qi18n("test app"));
-  KApplication app;
+  QApplication::setApplicationName("test");
+  QApplication app(argc, argv);
 
   QWidget* box = new QWidget();
   QVBoxLayout* layout = new QVBoxLayout(box);
