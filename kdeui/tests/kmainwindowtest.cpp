@@ -18,11 +18,10 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <QApplication>
 #include <QtCore/QTimer>
 #include <QLabel>
 
-#include <kapplication.h>
-#include <kcmdlineargs.h>
 #include <kstatusbar.h>
 #include <kmenubar.h>
 
@@ -45,8 +44,8 @@ void MainWindow::showMessage()
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init( argc, argv, "kmainwindowtest", 0, qi18n("KMainWindowTest"), "1.0", qi18n("kmainwindow test app"));
-    KApplication app;
+    QApplication::setApplicationName("kmainwindowtest");
+    QApplication app(argc, argv);
 
     MainWindow* mw = new MainWindow; // deletes itself when closed
     mw->show();
