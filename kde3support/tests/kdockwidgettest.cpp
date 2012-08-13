@@ -14,12 +14,10 @@
 
 #include "kdockwidgettest.h"
 
+#include <QApplication>
 #include <QPushButton>
 //Added by qt3to4:
 #include <QPixmap>
-#include <kcmdlineargs.h>
-#include <kaboutdata.h>
-#include <kapplication.h>
 #include <kiconloader.h>
 #include <kstatusbar.h>
 #include <kmenubar.h>
@@ -255,10 +253,9 @@ void DockApplication::gSetPix2() {
 }
 
 int main(int argc, char* argv[]) {
-  KAboutData about("kdockdemoapp1", 0, qi18n("kdockdemoapp1"), "version");
-  KCmdLineArgs::init(argc, argv, &about);
+  QApplication::setApplicationName("kdockdemoapp1");
 
-  KApplication a;
+  QApplication a(argc, argv);
 
   DockApplication* ap = new DockApplication("DockWidget demo");
   ap->setCaption("DockWidget demo");
