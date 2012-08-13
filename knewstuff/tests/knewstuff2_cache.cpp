@@ -22,7 +22,7 @@
 #include <knewstuff2/core/coreengine.h>
 
 #include <kstandarddirs.h>
-#include <kapplication.h>
+#include <qapplication.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 
@@ -93,7 +93,7 @@ void KNewStuff2Cache::quitTest()
         // this would be the soft way out...
         delete m_engine;
         deleteLater();
-        kapp->quit();
+        qApp->quit();
     } else {
         exit(1);
     }
@@ -101,8 +101,8 @@ void KNewStuff2Cache::quitTest()
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc, argv, "knewstuff2_cache", 0, qi18n("knewstuff2_cache"), 0);
-    KApplication app(false);
+    QApplication::setApplicationName("knewstuff2_cache");
+    QApplication app(argc, argv);
 
     // Take source directory into account
     kDebug() << "-- adding source directory " << KNSSRCDIR;
