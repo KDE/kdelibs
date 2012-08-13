@@ -2,16 +2,13 @@
 
 #include <assert.h>
 
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kapplication.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>
 #include <kdialog.h>
-#include <klocalizedstring.h>
 #include <kiconloader.h>
 #include <kconfig.h>
 
+#include <QApplication>
 #include <QPushButton>
 #include <QLayout>
 #include <QPixmap>
@@ -230,15 +227,14 @@ void KComboBoxTest::slotReturnPressed(const QString& item)
 
 void KComboBoxTest::quitApp()
 {
-  kapp->closeAllWindows();
+  qApp->closeAllWindows();
 }
 
 int main ( int argc, char **argv)
 {
-  KAboutData about("kcomboboxtest", 0, qi18n("kcomboboxtest"), "version");
-  KCmdLineArgs::init(argc, argv, &about);
+  QApplication::setApplicationName("kcomboboxtest");
 
-  KApplication a;
+  QApplication a(argc, argv);
 
   KComboBoxTest* t= new KComboBoxTest;
   t->show ();
