@@ -1,5 +1,4 @@
-#include <kapplication.h>
-#include <kcmdlineargs.h>
+#include <QApplication>
 #include <QWidget>
 #include <QCursor>
 #include <QKeyEvent>
@@ -36,8 +35,8 @@ public:
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init( argc, argv, "test", 0, qi18n("Test"), "1.0", qi18n("test app"));
-    KApplication app;
+    QApplication::setApplicationName("test");
+    QApplication app(argc, argv);
     DemoWidget w;
     w.setFont(QFont("helvetica", 12, QFont::Bold));
     w.show();
