@@ -1,8 +1,7 @@
+#include <QApplication>
 #include <QToolBar>
 #include <QtCore/QTextCodec>
 
-#include <kcmdlineargs.h>
-#include <kapplication.h>
 #include <kmenubar.h>
 #include <kdebug.h>
 
@@ -13,8 +12,8 @@
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init( argc, argv, "kcodecactiontest", 0, qi18n("KCodecActionTest"), "1.0", qi18n("kselectaction test app"));
-    KApplication app;
+    QApplication::setApplicationName("kcodecactiontest");
+    QApplication app(argc, argv);
 
     CodecActionTest* test = new CodecActionTest;
     test->show();
