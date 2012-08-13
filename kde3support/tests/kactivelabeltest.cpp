@@ -18,11 +18,8 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#include <QApplication>
 #include <QLayout>
-
-#include <kaboutdata.h>
-#include <kapplication.h>
-#include <kcmdlineargs.h>
 
 #include "k3activelabel.h"
 
@@ -43,10 +40,9 @@ KActiveLabelTest::KActiveLabelTest(QWidget *parent)
 
 int main( int argc, char ** argv )
 {
-  KAboutData about( "KActiveLabelTest", 0, qi18n("KActiveLabelTest"), "version");
-  KCmdLineArgs::init(argc, argv, &about);
+  QApplication::setApplicationName("KActiveLabelTest");
 
-  KApplication app;
+  QApplication app(argc, argv);
 
   KActiveLabelTest *toplevel = new KActiveLabelTest( 0 );
   toplevel->show();
