@@ -20,11 +20,10 @@
 #include "kruntest.h"
 #include <QLabel>
 
-#include <kapplication.h>
+#include <QApplication>
 #include <kdebug.h>
 #include <kservice.h>
 #include <kde_file.h>
-#include <kcmdlineargs.h>
 #include <QPushButton>
 #include <QLayout>
 
@@ -145,8 +144,8 @@ void Receiver::slotLaunchOne()
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc,argv, "kruntest", 0, qi18n("kruntest"), 0);
-    KApplication app;
+    QApplication::setApplicationName("kruntest");
+    QApplication app(argc, argv);
 
     Receiver receiver;
     return app.exec();
