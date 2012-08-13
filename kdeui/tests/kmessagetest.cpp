@@ -18,13 +18,12 @@
 */
 #include "kmessagetest.h"
 
+#include <QApplication>
 #include <QtCore/QString>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QBoxLayout>
 
-#include <kapplication.h>
-#include <kcmdlineargs.h>
 #include <kdebug.h>
 
 #include <kmessage.h>
@@ -85,9 +84,9 @@ void KMessage_Test::showWarning()
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc, argv, "kmessagetest", 0, qi18n("KMessage_Test"), "version", qi18n("description"));
+    QApplication::setApplicationName("kmessagetest");
 
-    KApplication app;
+    QApplication app(argc, argv);
     app.setQuitOnLastWindowClosed( false );
 
     KMessage_Test *mainWidget = new KMessage_Test;
