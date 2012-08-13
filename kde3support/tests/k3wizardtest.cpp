@@ -22,14 +22,12 @@
 #include <QLayout>
 //Added by qt3to4:
 #include <QBoxLayout>
-#include <kcmdlineargs.h>
-#include <kapplication.h>
 #include <k3wizard.h>
 
 int main(int argc, char **argv)
 {
-  KCmdLineArgs::init( argc, argv, "test", 0, qi18n("Test"), "1.0", qi18n("test app"));
-  KApplication a;
+  QApplication::setApplicationName("test");
+  QApplication a(argc, argv);
   K3Wizard *wiz = new K3Wizard(0, "kwizardtest", false);
   QObject::connect((QObject*) wiz->cancelButton(), SIGNAL(clicked()),
 		   &a, SLOT(quit()));
