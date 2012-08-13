@@ -1,16 +1,12 @@
-#include <kapplication.h>
-#include <klocalizedstring.h>
-#include <kaboutdata.h>
+#include <QApplication>
 #include <kmessagebox.h>
-#include <kcmdlineargs.h>
 
 #include "passworddialog.h"
 
 int main ( int argc, char** argv )
 {
-    KAboutData aboutData(QByteArray("kiopassdlgtest"), QByteArray(), qi18n("KIO Password Dialog Test"), QByteArray("1.0"));
-    KCmdLineArgs::init(argc, argv, &aboutData);
-    KApplication app;
+    QApplication::setApplicationName("kiopassdlgtest");
+    QApplication app(argc, argv);
 
     QString usr, pass, comment, label;
     label = "Site:";
