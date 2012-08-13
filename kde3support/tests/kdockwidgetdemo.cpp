@@ -1,5 +1,6 @@
 #include "kdockwidgetdemo.h"
 
+#include <QApplication>
 #include <Qt3Support/Q3Header>
 #include <QToolButton>
 
@@ -21,9 +22,7 @@
 #include <QPixmap>
 
 #include <kconfiggroup.h>
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kapplication.h>
+#include <ksharedconfig.h>
 //#include <kimgio.h>
 #include <stdlib.h>
 
@@ -762,10 +761,9 @@ QString DirectoryView::selectedDir()
 /**********************************************************************************************/
 
 int main(int argc, char* argv[]) {
-  KAboutData about("kdockwidgetdemo", 0, qi18n("kdockwidgetdemo"), "version");
-  KCmdLineArgs::init(argc, argv, &about);
+  QApplication::setApplicationName("kdockwidgetdemo");
 
-  KApplication app;
+  QApplication app(argc, argv);
 
 #if 0
   SFileDialog* openfile = new SFileDialog();
