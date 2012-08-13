@@ -16,7 +16,7 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include <kapplication.h>
+#include <QApplication>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <kiconloader.h>
@@ -38,9 +38,8 @@
 //
 int main(int argc, char *argv[])
 {
-   //KApplication::disableAutoDcopRegistration();
-   KCmdLineArgs::init(argc,argv, "ksycocatest", 0, qi18n("ksycocatest"), 0);
-   KApplication k;//(argc,argv,"whatever",false/*noGUI*/); // KMessageBox needs KApp for makeStdCaption
+   QApplication::setApplicationName("ksycocatest");
+   QApplication k(argc, argv);//(argc,argv,"whatever",false/*noGUI*/); // KMessageBox needs KApp for makeStdCaption
 
    QString instname = "kword";
    QString desktopPath = QString::fromLatin1( "Office/%1.desktop" ).arg( instname );
