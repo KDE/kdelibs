@@ -18,9 +18,7 @@
  ***************************************************************************/
 
 #include <kemoticons.h>
-#include <kapplication.h>
-#include <kcmdlineargs.h>
-#include <kaboutdata.h>
+#include <QApplication>
 #include <kdebug.h>
 #include <qstring.h>
 #include <klineedit.h>
@@ -82,10 +80,8 @@ void KEmoTest::changeTheme(const QString &theme)
 
 int main(int argc, char **argv)
 {
-    KAboutData aboutData("kemoticonstest", 0, qi18n("KEmoticons Test"), "1.0");
-
-    KCmdLineArgs::init(argc, argv, &aboutData);
-    KApplication app;
+    QApplication::setApplicationName("kemoticonstest");
+    QApplication app(argc, argv);
 
     KEmoTest kt;
     
