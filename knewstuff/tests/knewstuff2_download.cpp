@@ -22,10 +22,10 @@
 #include <knewstuff2/core/author.h>
 
 #include <kstandarddirs.h>
-#include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 
+#include <QApplication>
 #include <QPushButton>
 #include <QLayout>
 #include <QListWidget>
@@ -337,8 +337,8 @@ void KNewStuff2Download::slotEntriesFailed()
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc, argv, "knewstuff2_download", 0, qi18n("knewstuff2_download"), 0);
-    KApplication app;
+    QApplication::setApplicationName("knewstuff2_download");
+    QApplication app(argc, argv);
 
     // Take source directory into account
     kDebug() << "-- adding source directory " << KNSSRCDIR;
