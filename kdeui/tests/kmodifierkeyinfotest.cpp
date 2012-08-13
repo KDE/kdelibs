@@ -18,10 +18,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kapplication.h>
 #include <kled.h>
+#include <QApplication>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -187,11 +185,9 @@ void TestWidget::lock()
 
 int main(int argc, char *argv[])
 {
-    KAboutData about("simple", "simple", qi18n("simple"),
-                     "0.0.1");
-    KCmdLineArgs::init(argc, argv, &about);
+    QApplication::setApplicationName("simple");
 
-    KApplication app;
+    QApplication app(argc, argv);
     TestWidget mainWidget;
     mainWidget.show();
 
