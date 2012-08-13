@@ -20,15 +20,14 @@
 
 #include <kdebug.h>
 #include <browseropenorsavequestion.h>
-#include <kapplication.h>
-#include <kcmdlineargs.h>
+#include <QApplication>
 
 using namespace KParts;
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc, argv, "openorsavequestion", QByteArray(), qi18n("Test for the 'open or save' question"), "0");
-    KApplication app;
+    QApplication::setApplicationName("openorsavequestion");
+    QApplication app(argc, argv);
 
     // A test for both 1) "unknown mimetype"  2) no associated app
     {
