@@ -1,10 +1,9 @@
-#include <kapplication.h>
+#include <QApplication>
 #include <kscan.h>
-#include <kcmdlineargs.h>
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init( argc, argv, "kscantest", 0, qi18n("kscantest"), 0);
-    KApplication app;
+    QApplication::setApplicationName("kscantest");
+    QApplication app(argc, argv);
     KScanDialog *dlg = KScanDialog::getScanDialog();
     if ( !dlg ) {
 	qDebug("*** EEK, no Scan-service available, aborting!");
