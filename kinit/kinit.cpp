@@ -164,7 +164,7 @@ int kdeinit_x_errhandler( Display *, XErrorEvent *err );
 }
 #endif
 
-#ifdef KDEINIT_OOM_PROTECT
+#if KDEINIT_OOM_PROTECT
 static int oom_pipe = -1;
 #endif
 
@@ -183,7 +183,7 @@ static void cleanup_fds()
         maxfd = rl.rlim_max;
     for (int fd = 3; fd < maxfd; ++fd)
     {
-#ifdef KDEINIT_OOM_PROTECT
+#if KDEINIT_OOM_PROTECT
        if( fd != oom_pipe )
 #endif
           close(fd);
@@ -431,7 +431,7 @@ QByteArray execpath_avoid_loops( const QByteArray& exec, int envc, const char* e
      return QFile::encodeName(execpath);
 }
 
-#ifdef KDEINIT_OOM_PROTECT
+#if KDEINIT_OOM_PROTECT
 static void oom_protect_sighandler( int ) {
 }
 
@@ -1696,7 +1696,7 @@ int main(int argc, char **argv, char **envp)
 	 printf("KDE: %s\n", KDE_VERSION_STRING);
 	 exit(0);
       }
-#ifdef KDEINIT_OOM_PROTECT
+#if KDEINIT_OOM_PROTECT
       if (strcmp(safe_argv[i], "--oom-pipe") == 0 && i+1<argc)
          oom_pipe = atol(argv[i+1]);
 #endif
@@ -1865,7 +1865,7 @@ int main(int argc, char **argv, char **envp)
          handle_requests(pid);
       }
       else if (safe_argv[i][0] == '-'
-#ifdef KDEINIT_OOM_PROTECT
+#if KDEINIT_OOM_PROTECT
           || isdigit(safe_argv[i][0])
 #endif
           )

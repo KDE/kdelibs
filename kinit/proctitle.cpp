@@ -34,7 +34,7 @@
 #define PF_ARGV_PSTAT     3
 #define PF_ARGV_PSSTRINGS 4
 
-#ifdef HAVE_SETPROCTITLE
+#if HAVE_SETPROCTITLE
 #  define PF_ARGV_TYPE PF_ARGV_NONE
 #  ifdef HAVE_SYS_TYPES_H
 #    include <sys/types.h>
@@ -49,7 +49,7 @@
 #  else /* __GNU_HURD__ */
 #    define PF_ARGV_TYPE PF_ARGV_WRITEABLE
 
-#    if defined(HAVE_SYS_PSTAT_H) && defined(HAVE_PSTAT)
+#    if HAVE_SYS_PSTAT_H && HAVE_PSTAT
 #      include <sys/pstat.h>
 #      undef PF_ARGV_TYPE
 #      define PF_ARGV_TYPE PF_ARGV_PSTAT
@@ -68,10 +68,10 @@
 
 #endif /* !HAVE_SETPROCTITLE */
 
-#ifdef HAVE___PROGNAME
+#if HAVE___PROGNAME
 extern char *__progname;
 #endif /* HAVE___PROGNAME */
-#ifdef HAVE___PROGNAME_FULL
+#if HAVE___PROGNAME_FULL
 extern char *__progname_full;
 #endif /* HAVE___PROGNAME_FULL */
 extern char **environ;
@@ -127,13 +127,13 @@ void proctitle_init(int argc, char *argv[], char *envp[]) {
     }
 #endif
 
-# ifdef HAVE___PROGNAME
+# if HAVE___PROGNAME
     /* Set the __progname variable so glibc and company
      * don't go nuts.
      */
     __progname = strdup("kdeinit5");
 # endif /* HAVE___PROGNAME */
-# ifdef HAVE___PROGNAME_FULL
+# if HAVE___PROGNAME_FULL
     /* __progname_full too */
     __progname_full = strdup(argv[0]);
 # endif /* HAVE___PROGNAME_FULL */
@@ -143,7 +143,7 @@ void proctitle_set(const char *fmt, ...) {
     va_list msg;
     static char statbuf[BUFSIZ];
 
-#ifndef HAVE_SETPROCTITLE
+#if ! HAVE_SETPROCTITLE
 # if PF_ARGV_TYPE == PF_ARGV_PSTAT
     union pstun pst;
 # endif /* PF_ARGV_PSTAT */
@@ -159,7 +159,7 @@ void proctitle_set(const char *fmt, ...) {
 
     memset(statbuf, 0, sizeof(statbuf));
 
-#ifdef HAVE_SETPROCTITLE
+#if HAVE_SETPROCTITLE
 # if __FreeBSD__ >= 4 && !defined(FREEBSD4_0) && !defined(FREEBSD4_1)
     /* FreeBSD's setproctitle() automatically prepends the process name. */
     vsnprintf(statbuf, sizeof(statbuf), fmt, msg);
@@ -187,7 +187,7 @@ void proctitle_set(const char *fmt, ...) {
 
     va_end(msg);
 
-#ifdef HAVE_SETPROCTITLE
+#if HAVE_SETPROCTITLE
     return;
 #else
     i = strlen(statbuf);
