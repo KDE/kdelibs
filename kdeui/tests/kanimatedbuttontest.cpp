@@ -22,16 +22,12 @@
 
 #include "kanimatedbutton.h"
 
+#include <QApplication>
 #include <QLabel>
 #include <qlayout.h>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QSpinBox>
-
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kapplication.h>
-
 
 AnimationGroup::AnimationGroup(const QString &name, int size, QWidget *parent)
     : QGroupBox(parent)
@@ -82,9 +78,8 @@ void MainWindow::slotAddNew()
 
 int main(int argc, char **argv)
 {
-    KAboutData aboutData("kanimatedbuttontest", 0, qi18n("kanimatedbuttontest"), "0.1");
-    KCmdLineArgs::init(argc, argv, &aboutData);
-    KApplication app;
+    QApplication::setApplicationName("kanimatedbuttontest");
+    QApplication app(argc, argv);
 
     MainWindow *window = new MainWindow();
     window->show();
