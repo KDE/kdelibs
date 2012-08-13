@@ -5,9 +5,8 @@
 #include <QDrag>
 #include <qinputdialog.h>
 #include <QBoxLayout>
+#include <QApplication>
 
-#include <kapplication.h>
-#include <kcmdlineargs.h>
 #include <kdebug.h>
 
 #include "ktabwidgettest.h"
@@ -392,9 +391,8 @@ void Test::toggleEliding(bool state)
 
 int main(int argc, char** argv )
 {
-    KCmdLineArgs::init(argc, argv, "ktabwidgettest", 0, qi18n("KTabWidgetTest"), "1.0", qi18n("ktabwidget test app"));
-    //KApplication::disableAutoDcopRegistration();
-    KApplication app;
+    QApplication::setApplicationName("ktabwidgettest");
+    QApplication app(argc, argv);
     Test *t = new Test();
     t->show();
     app.exec();
