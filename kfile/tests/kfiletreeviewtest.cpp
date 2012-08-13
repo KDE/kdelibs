@@ -20,13 +20,12 @@
 
 #include "kfiletreeviewtest.h"
 
+#include <QApplication>
 #include <QtCore/QDir>
 #include <QCheckBox>
 #include <QGridLayout>
 #include <QPushButton>
 
-#include <kapplication.h>
-#include <kcmdlineargs.h>
 #include <klocalizedstring.h>
 #include <kurl.h>
 
@@ -73,8 +72,8 @@ void Window::showRoot()
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc, argv, "kfiletreeviewtest", 0, qi18n("kfiletreeviewtest"), "0", qi18n("test app"));
-    KApplication app;
+    QApplication::setApplicationName("kfiletreeviewtest");
+    QApplication app(argc, argv);
 
     Window *window = new Window;
     window->show();
