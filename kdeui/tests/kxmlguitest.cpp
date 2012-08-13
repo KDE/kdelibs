@@ -1,6 +1,5 @@
 #include "kxmlguitest.h"
-#include <kapplication.h>
-#include <kcmdlineargs.h>
+#include <QApplication>
 #include <kmainwindow.h>
 #include <kxmlguifactory.h>
 #include <kxmlguiclient.h>
@@ -19,8 +18,8 @@ void Client::slotSec()
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init( argc, argv, "test", 0, qi18n("Test"), "1.0", qi18n("test app"));
-    KApplication app;
+    QApplication::setApplicationName("test");
+    QApplication app(argc, argv);
     KAction *a;
 
     KMainWindow *mainwindow = new KMainWindow;
