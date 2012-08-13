@@ -18,12 +18,11 @@
   * Boston, MA 02110-1301, USA.
   */
 
+#include <QApplication>
 #include <QMainWindow>
 #include <QStringListModel>
 
-#include <kapplication.h>
 #include <kaboutdata.h>
-#include <kcmdlineargs.h>
 #include <kiconloader.h>
 
 #include <kcategorizedview.h>
@@ -71,8 +70,8 @@ int main(int argc, char **argv)
                          qi18n("KCategorizedViewTest"),
                          "http://www.kde.org");
 
-    KCmdLineArgs::init(argc, argv, &aboutData);
-    KApplication app;
+    QApplication::setApplicationName(aboutData.appName());
+    QApplication app(argc, argv);
 
     QMainWindow *mainWindow = new QMainWindow();
     mainWindow->setMinimumSize(640, 480);
