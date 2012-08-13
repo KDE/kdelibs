@@ -1,14 +1,11 @@
 #include <ksystemtrayicon.h>
-#include <kapplication.h>
+#include <QApplication>
 #include <QLabel>
-#include <kcmdlineargs.h>
-#include <kaboutdata.h>
 
 int main(int argc, char **argv)
 {
-	KAboutData aboutData( "ksystemtraytest", 0 , qi18n("ksystemtraytest"), "1.0" );
-	KCmdLineArgs::init(argc, argv, &aboutData);
-        KApplication app;
+	QApplication::setApplicationName("ksystemtraytest");
+    QApplication app(argc, argv);
 	QLabel *l = new QLabel("System Tray Main Window", 0L);
 	KSystemTrayIcon *tray = new KSystemTrayIcon( "test", l );
 	l->show();
