@@ -1,6 +1,7 @@
 #include "kpixmapsequenceoverlaypaintertest.h"
 #include "kpixmapsequenceoverlaypainter.h"
 
+#include <QApplication>
 #include <QGridLayout>
 #include <QComboBox>
 #include <QSpinBox>
@@ -8,8 +9,6 @@
 #include <QEvent>
 
 #include <klocalizedstring.h>
-#include <kapplication.h>
-#include <kcmdlineargs.h>
 
 
 Q_DECLARE_METATYPE(Qt::Alignment)
@@ -93,10 +92,10 @@ bool TestWidget::eventFilter(QObject* o, QEvent* e)
 /* --- MAIN -----------------------*/
 int main(int argc, char **argv)
 {
-  KCmdLineArgs::init( argc, argv, "test", 0, qi18n("Test"), "1.0", qi18n("test app"));
+  QApplication::setApplicationName("test");
   TestWidget   *window;
 
-  KApplication testapp;
+  QApplication testapp(argc, argv);
   window = new TestWidget();
   window->show();
   return testapp.exec();
