@@ -18,9 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <kapplication.h>
+#include <QApplication>
 #include <kaboutdata.h>
-#include <kcmdlineargs.h>
 #include <kfiledialog.h>
 #include <kmessagebox.h>
 
@@ -36,8 +35,8 @@ int main (int argc, char **argv)
                          qi18n("kfiledialogtest"),
                          "http://www.kde.org/");
 
-    KCmdLineArgs::init( argc, argv, &aboutData );
-    KApplication app;
+    QApplication::setApplicationName(aboutData.appName());
+    QApplication app(argc, argv);
 
     // Test for: saved location keyword.
     //     - Should return to the starting directory last used for this test.
