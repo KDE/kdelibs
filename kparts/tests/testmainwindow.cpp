@@ -27,9 +27,8 @@
 #include <QCheckBox>
 #include <QtCore/QDir>
 #include <QCoreApplication>
-#include <kcmdlineargs.h>
 #include <kiconloader.h>
-#include <kapplication.h>
+#include <QApplication>
 #include <kxmlguifactory.h>
 #include <kmessagebox.h>
 #include <kaction.h>
@@ -160,8 +159,8 @@ void TestMainWindow::slotFileEdit()
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init( argc, argv, "kpartstest", 0, qi18n("kpartstest"), 0);
-    KApplication app;
+    QApplication::setApplicationName("kpartstest");
+    QApplication app(argc, argv);
 
     TestMainWindow *shell = new TestMainWindow;
     shell->show();
