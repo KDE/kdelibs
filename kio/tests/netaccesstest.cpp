@@ -16,7 +16,7 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include <kapplication.h>
+#include <QApplication>
 #include <kdebug.h>
 #include <kurl.h>
 #include <kio/netaccess.h>
@@ -25,12 +25,11 @@
 #ifdef Q_OS_WIN
 #include <QDir>
 #endif
-#include <kcmdlineargs.h>
 
 int main(int argc, char **argv)
 {
-  KCmdLineArgs::init(argc,argv, "netaccesstest", 0, qi18n("netaccesstest"), 0);
-  KApplication app;
+  QApplication::setApplicationName("netaccesstest");
+  QApplication app(argc, argv);
   KUrl srcURL( "ftp://ftp.kde.org/pub/kde/README" );
 #ifdef Q_OS_WIN
   KUrl tmpURL( "file://" + QDir::tempPath() + "/netaccesstest_README" );
