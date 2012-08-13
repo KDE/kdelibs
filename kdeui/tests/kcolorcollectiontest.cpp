@@ -1,21 +1,18 @@
 
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kapplication.h>
 #include <QWidget>
 #include <QtCore/QTimer>
 #include <stdlib.h>
 #include "kcolorcollection.h"
 #include <stdio.h>
 
+#include <QtGui/QApplication>
 #include <QtCore/QStringList>
 
 
 int main( int argc, char **argv )
 {
-    KAboutData about("KColorCollectionTest", 0, qi18n("KColorCollectionTest"), "version");
-    KCmdLineArgs::init(argc, argv, &about);
-    KApplication a;
+    QApplication::setApplicationName("KColorCollectionTest");
+    QApplication a(argc, argv);
 
     QStringList collections = KColorCollection::installedCollections();
     for(QStringList::ConstIterator it = collections.constBegin();
