@@ -1,16 +1,12 @@
 #include "kdatepicker.h"
+#include <QApplication>
 #include <QLineEdit>
-#include <kcmdlineargs.h>
-#include <kaboutdata.h>
-#include <kapplication.h>
-#include <klocalizedstring.h>
 
 int main(int argc, char** argv)
 {
-  KAboutData about("KDatePickertest", "kdelibs4", qi18n("KDatePickertest"), "version");
-  KCmdLineArgs::init(argc, argv, &about);
+  QApplication::setApplicationName("KDatePickertest");
 
-  KApplication app;
+  QApplication app(argc, argv);
 
   KDatePicker picker;
   picker.show();
