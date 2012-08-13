@@ -18,11 +18,10 @@
 
 #include <QTextEdit>
 #include <QTimer>
+#include <QApplication>
 
-#include <kapplication.h>
 #include <kxmlguiwindow.h>
 #include <kaboutdata.h>
-#include <kcmdlineargs.h>
 #include <kactioncollection.h>
 #include <kmessagebox.h>
 #include <kaction.h>
@@ -81,7 +80,7 @@ void MainWindow::setupActions()
     actionCollection()->addAction("test", testAction);
     connect(testAction, SIGNAL(triggered(bool)), this, SLOT(slotTest()));
 
-    KStandardAction::quit(kapp, SLOT(quit()), actionCollection());
+    KStandardAction::quit(qApp, SLOT(quit()), actionCollection());
 
     setAutoSaveSettings();
 
@@ -115,8 +114,8 @@ int main(int argc, char **argv)
                          qi18n("kxmlguiwindowtest"),
                          KAboutData::License_LGPL,
                          qi18n("Copyright (c) 2008 Rafael Fernandez Lopez"));
-    KCmdLineArgs::init(argc, argv, &aboutData);
-    KApplication app;
+    QApplication::setApplicationName(aboutData.appName());
+    QApplication app(argc, argv);
 
     MainWindow *mainWindow = new MainWindow;
     mainWindow->show();
