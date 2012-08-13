@@ -15,7 +15,7 @@
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <k3aboutapplication.h>
-#include <kapplication.h>
+#include <qapplication.h>
 #include <klocalizedstring.h>
 
 int main(int argc, char** argv)
@@ -38,9 +38,8 @@ int main(int argc, char** argv)
   aboutData.addAuthor(qi18n("Alexander Neundorf"), QLocalizedString(), "neundorf@kde.org");
   aboutData.addAuthor(qi18n("Clarence Dang"), QLocalizedString(), "dang@kde.org");
 
-  KCmdLineArgs::init(argc, argv, &aboutData);
-
-  KApplication app;
+  QApplication::setApplicationName(aboutData.appName());
+  QApplication app(argc, argv);
 
   QImage logo;
   QImage bg;
