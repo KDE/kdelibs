@@ -5,9 +5,7 @@
 #include <kde_terminal_interface.h>
 #include <KParts/Part>
 #include <KService>
-#include <KAboutData>
-#include <KCmdLineArgs>
-#include <KApplication>
+#include <QApplication>
 
 Window::Window()
 {
@@ -29,9 +27,8 @@ Window::Window()
 
 int main( int argc, char** argv )
 {
-    KAboutData* about = new KAboutData( "tetest", 0, ki18n("TETest"), "0.1" );
-    KCmdLineArgs::init( argc, argv, about );
-    KApplication app;
+    QApplication::setApplicationName("tetest");
+    QApplication app(argc, argv);
     Window* window = new Window();
     window->show();
     return app.exec();
