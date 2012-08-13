@@ -18,19 +18,17 @@
  *
  */
 
+#include <QApplication>
 #include <QLabel>
 #include <QLayout>
 //Added by qt3to4:
 #include <QBoxLayout>
-#include <kcmdlineargs.h>
-#include <kapplication.h>
 #include <kassistantdialog.h>
 
 int main(int argc, char **argv)
 {
-  KCmdLineArgs::init( argc, argv, "test", 0, qi18n("Test"), "1.0",
-                      qi18n("test app") );
-  KApplication a;
+  QApplication::setApplicationName("test");
+  QApplication a(argc, argv);
   KAssistantDialog *dlg = new KAssistantDialog();
   QObject::connect(dlg, SIGNAL(finished(int)),  &a, SLOT(quit()));
   for(int i = 1; i < 11; i++)
