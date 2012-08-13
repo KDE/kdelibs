@@ -1,9 +1,7 @@
 
 #include "kmainwindowrestoretest.h"
 
-#include <kapplication.h>
-#include <kcmdlineargs.h>
-
+#include <QApplication>
 #include <QLabel>
 
 #define MAKE_WINDOW( kind, title ) do { \
@@ -15,10 +13,10 @@
 
 int main( int argc, char * argv[] ) {
 
-  KCmdLineArgs::init( argc, argv, "kmainwindowrestoretest", 0, qi18n("kmainwindowrestoretest"), "1.0", qi18n("kmainwindow test app"));
-  KApplication app;
+  QApplication::setApplicationName("kmainwindowrestoretest");
+  QApplication app(argc, argv);
 
-  if ( kapp->isSessionRestored() ) {
+  if ( qApp->isSessionRestored() ) {
     kRestoreMainWindows< MainWin1, MainWin2, MainWin3 >();
     kRestoreMainWindows< MainWin4, MainWin5 >();
     RESTORE(MainWin6);
