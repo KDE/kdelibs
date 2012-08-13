@@ -1,19 +1,16 @@
-#include <kapplication.h>
+#include <QApplication>
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <QMainWindow>
 #include <ktoolbar.h>
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
 
 // This is a test for "Automatically hide extra toolbar separators"
 // If several separators are next to each other, only one should show up.
 
 int main( int argc, char **argv )
 {
-    KAboutData aboutData( "kactiontest", 0, qi18n("kactiontest"), "1.0" );
-    KCmdLineArgs::init(argc, argv, &aboutData);
-    KApplication app;
+    QApplication::setApplicationName("kactiontest");
+    QApplication app(argc, argv);
 
     KActionCollection coll( static_cast<QObject *>( 0 ) );
 
