@@ -19,8 +19,7 @@
 
 #include <assert.h>
 
-#include <kcmdlineargs.h>
-#include <kapplication.h>
+#include <QApplication>
 #include <QtCore/QEventLoop>
 #include <kpushbutton.h>
 #include "kreplace.h"
@@ -290,9 +289,8 @@ static void testReplacementHistory()
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init(argc, argv, "kreplacetest", 0, qi18n("KReplaceTest"), 0, qi18n("kreplace test"));
-    //KApplication::disableAutoDcopRegistration();
-    KApplication app;
+    QApplication::setApplicationName("kreplacetest");
+    QApplication app(argc, argv);
 
     testReplacementHistory(); // #130831
 
