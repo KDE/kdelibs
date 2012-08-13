@@ -1,13 +1,12 @@
 #include "ktreewidgetsearchlinetest.h"
 
+#include <QApplication>
 #include <QTreeWidget>
 #include <QBoxLayout>
 #include <QPushButton>
 #include <QHeaderView>
 
 #include <ktreewidgetsearchline.h>
-#include <kapplication.h>
-#include <kcmdlineargs.h>
 
 KTreeWidgetSearchLineTest::KTreeWidgetSearchLineTest()
     : KDialog()
@@ -106,8 +105,8 @@ void KTreeWidgetSearchLineTest::showEvent( QShowEvent * event )
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init( argc, argv, "KTreeWidgetSearchLineTest", 0, qi18n("KTreeWidgetSearchLineTest"), "1.0", qi18n("KTreeWidgetSearchLine test app"));
-    KApplication app;
+    QApplication::setApplicationName("KTreeWidgetSearchLineTest");
+    QApplication app(argc, argv);
     KTreeWidgetSearchLineTest dialog;
 
     dialog.exec();
