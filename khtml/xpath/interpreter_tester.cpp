@@ -35,10 +35,7 @@
 
 #include "kdom.h"
 
-#include <kaboutdata.h>
-#include <kapplication.h>
-#include <kcmdlineargs.h>
-
+#include <QApplication>
 #include <QBuffer>
 #include <QtDebug>
 
@@ -160,11 +157,9 @@ int main( int argc, char **argv )
 	       "</chapter>"
 	       "</book>";
 
-	KAboutData about( "interpreter_tester", "interpreter_tester", "0.1", "Tests KDOM's XPath 1.0 Interpreter" );
-	KCmdLineArgs::init( argc, argv, &about );
+    QApplication::setApplicationName("interpreter_tester");
 
-	KApplication::disableAutoDcopRegistration();
-	KApplication app( false, false );
+	QApplication app(argc, argv);
 
 	// Parser::syncParse called blow deletes the given buffer, so we
 	// cannot use QBuffer objects which live on the stack.
