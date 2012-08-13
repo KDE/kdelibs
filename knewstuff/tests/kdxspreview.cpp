@@ -18,10 +18,9 @@
 
 #include "kdxsview.h"
 
-#include <kapplication.h>
+#include <QApplication>
 #include <kaboutdata.h>
 #include <klocalizedstring.h>
-#include <kcmdlineargs.h>
 
 int main(int argc, char **argv)
 {
@@ -36,8 +35,8 @@ int main(int argc, char **argv)
                      0,
                      "spillner@kde.org");
 
-    KCmdLineArgs::init(argc, argv, &about);
-    KApplication app;
+    QApplication::setApplicationName(about.appName());
+    QApplication app(argc, argv);
 
     KNS::KDXSView view;
     return view.exec();
