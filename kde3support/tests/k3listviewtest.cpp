@@ -1,14 +1,14 @@
-#include <kapplication.h>
-#include <kcmdlineargs.h>
+#include <qapplication.h>
 #include <kconfig.h>
+#include <ksharedconfig.h>
 #include <kdialog.h>
 
 #include "k3listview.h"
 
 int main( int argc, char **argv )
 {
-	KCmdLineArgs::init( argc, argv, "klistviewtest", 0, qi18n("K3ListViewTest"), "1.0", qi18n("klistview test app"));
-	KApplication app;
+    QApplication::setApplicationName("klistviewtest");
+	QApplication app(argc, argv);
 	KDialog dialog;
 	K3ListView *view = new K3ListView();
   dialog.setMainWidget(view);
