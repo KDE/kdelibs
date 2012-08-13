@@ -18,14 +18,13 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <QApplication>
 #include <QLayout>
 #include <QPushButton>
 #include <QtCore/QDir>
 
-#include <kapplication.h>
 #include <kdirlister.h>
 #include <kdebug.h>
-#include <kcmdlineargs.h>
 #include "kdirlistertest_gui.h"
 
 #include <cstdlib>
@@ -156,8 +155,8 @@ void KDirListerTest::completed()
 
 int main ( int argc, char *argv[] )
 {
-  KCmdLineArgs::init( argc, argv, "kdirlistertest", 0, qi18n("kdirlistertest"), 0);
-  KApplication app;
+  QApplication::setApplicationName("kdirlistertest");
+  QApplication app(argc, argv);
 
   KDirListerTest *test = new KDirListerTest( 0 );
   test->show();
