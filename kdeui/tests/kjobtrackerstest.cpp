@@ -19,11 +19,10 @@
 
 #include "kjobtrackerstest.h"
 
+#include <QApplication>
 #include <QMainWindow>
 #include <QStatusBar>
 
-#include <kapplication.h>
-#include <kcmdlineargs.h>
 #include <kdebug.h>
 
 #include <kwidgetjobtracker.h>
@@ -146,10 +145,9 @@ bool KTestJob::doKill()
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc, argv, "kjobtrackerstest", 0, qi18n("KJobTrackerTest"),
-                       "0.0", qi18n("Test several job trackers at once"));
+    QApplication::setApplicationName("kjobtrackerstest");
 
-    KApplication app;
+    QApplication app(argc, argv);
 
     KTestJob *testJob = new KTestJob(10 /* 100000 bytes to process */);
 
