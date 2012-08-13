@@ -16,8 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <kapplication.h>
-#include <kcmdlineargs.h>
+#include <QApplication>
 #include <ktitlewidget.h>
 #include <kiconloader.h>
 
@@ -68,9 +67,9 @@ public:
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc, argv, "ktitlewidgettest", 0, qi18n("KTitleWidgetTest"), "version", qi18n("description"));
+    QApplication::setApplicationName("ktitlewidgettest");
 
-    KApplication app;
+    QApplication app(argc, argv);
 
     KTitleWidgetTestWidget *mainWidget = new KTitleWidgetTestWidget;
     mainWidget->show();
