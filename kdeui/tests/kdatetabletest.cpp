@@ -1,13 +1,13 @@
-#include <kapplication.h>
-#include <kcmdlineargs.h>
+#include <QApplication>
+
 #include <klocalizedstring.h>
 
 #include "kdatetable.h"
 
 int main( int argc, char** argv )
 {
-  KCmdLineArgs::init( argc, argv, "test", "kdelibs4", qi18n("Test"), "1.0", qi18n("test app"));
-  KApplication app;
+  QApplication::setApplicationName("test");
+  QApplication app(argc, argv);
 
   KDateTable widget;
   widget.setCustomDatePainting( QDate::currentDate().addDays(-3), QColor("green"), KDateTable::CircleMode, QColor("yellow") );
