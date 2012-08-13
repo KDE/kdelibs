@@ -1,15 +1,12 @@
+#include <QApplication>
 #include <QLabel>
 #include <QListWidget>
 #include <QPushButton>
 #include <QLayout>
 #include <QGroupBox>
 
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kapplication.h>
 #include <klineedit.h>
 #include <khistorycombobox.h>
-#include <klocalizedstring.h>
 #include "kcompletionuitest.h"
 
 /*
@@ -193,10 +190,9 @@ QStringList Form1::defaultItems() const
 
 int main(int argc, char **argv )
 {
-    KAboutData about("kcompletiontest", 0, qi18n("kcompletiontest"), "version");
-    KCmdLineArgs::init(argc, argv, &about);
+    QApplication::setApplicationName("kcompletiontest");
 
-    KApplication app;
+    QApplication app(argc, argv);
 
     Form1 *form = new Form1();
     form->show();
