@@ -285,6 +285,9 @@ class KDEUI_EXPORT Wallet : public QObject
 		 */
 		virtual QStringList entryList();
 
+                // TODO KDE5: a entryList(folder) so that kwalletmanager can list a folder without
+                // having to call setFolder before and after (which calls contains() in each)
+
 		/**
 		 *  Rename the entry @p oldName to @p newName.
 		 *  @param oldName The original key of the entry.
