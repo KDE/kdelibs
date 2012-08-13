@@ -1,9 +1,8 @@
 #include "kdocktest.h"
 
-#include <kapplication.h>
-#include <kcmdlineargs.h>
 #include <kiconloader.h>
 
+#include <QApplication>
 #include <QImage>
 #include <QtCore/QString>
 
@@ -61,8 +60,8 @@ DockTest::DockTest( QWidget* parent )
 int
 main( int argc, char** argv )
 {
-  KCmdLineArgs::init( argc, argv, "docktest", 0, qi18n("DockTest"), "1.0", qi18n("docktest"));
-  KApplication a;
+  QApplication::setApplicationName("docktest");
+  QApplication a(argc, argv);
   DockTest* ap = new DockTest();
   ap->setWindowTitle("DockWidget demo");
   ap->show();
