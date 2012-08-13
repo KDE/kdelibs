@@ -1,12 +1,11 @@
 #include "kdatetimewidget.h"
-#include <kapplication.h>
 #include <klocalizedstring.h>
-#include <kcmdlineargs.h>
+#include <QApplication>
 
 int main(int argc, char** argv)
 {
-  KCmdLineArgs::init(argc, argv, "test", "kdelibs4", qi18n("Test"), "1.0", qi18n("test app"));
-  KApplication app;
+  QApplication::setApplicationName("test");
+  QApplication app(argc, argv);
   KDateTimeWidget dateTimeWidget;
   dateTimeWidget.show();
   // dateTimeWidget.setEnabled(false);
