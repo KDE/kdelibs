@@ -17,9 +17,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kapplication.h>
+#include <qapplication.h>
 #include <knewpassworddialog.h>
 #include <klocalizedstring.h>
 #include <iostream>
@@ -27,10 +25,9 @@
 int main( int argc, char *argv[] )
 {
 	QApplication::setColorSpec( QApplication::CustomColor );
-	KAboutData about("KNewPasswordDialogTest", 0, qi18n("KNewPasswordDialogTest"), "1");
-	KCmdLineArgs::init(argc, argv, &about);
+    QApplication::setApplicationName("KNewPasswordDialogTest");
 
-    KApplication a;
+    QApplication a(argc, argv);
 
 	KNewPasswordDialog dlg;
     dlg.setPrompt(i18n("Enter a password for the test"));
