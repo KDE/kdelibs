@@ -1,6 +1,5 @@
 #include "kpassivepopuptest.h"
-#include <kapplication.h>
-#include <kcmdlineargs.h>
+#include <QApplication>
 #include <kpassivepopup.h>
 #include <QPushButton>
 #include <ksystemtrayicon.h>
@@ -47,8 +46,8 @@ void Test::showIt6(QSystemTrayIcon::ActivationReason reason)
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init( argc, argv, "test", 0, qi18n("Test"), "1.0", qi18n("test app"));
-    KApplication app;
+    QApplication::setApplicationName("test");
+    QApplication app(argc, argv);
 
     Test *t = new Test();
 
