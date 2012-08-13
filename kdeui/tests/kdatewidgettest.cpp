@@ -1,16 +1,14 @@
 #include "kdatewidget.h"
+#include <QApplication>
 #include <QLineEdit>
 #include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kapplication.h>
 #include <klocalizedstring.h>
 
 int main(int argc, char** argv)
 {
-  KAboutData about("KDateWidgettest", "kdelibs4", qi18n("KDateWidgettest"), "version");
-  KCmdLineArgs::init(argc, argv, &about);
+  QApplication::setApplicationName("KDateWidgettest");
 
-  KApplication app;
+  QApplication app(argc, argv);
 
   KDateWidget dateWidget;
   dateWidget.show();
