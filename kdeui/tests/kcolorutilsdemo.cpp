@@ -19,9 +19,10 @@
 #include "../colors/kcolorspaces.h"
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
-#include <kapplication.h>
 #include <kcolorutils.h>
 #include <kcolorscheme.h>
+
+#include <QApplication>
 
 KColorUtilsDemo::KColorUtilsDemo(QWidget *parent) : QWidget(parent),
   _leOutImg(128, 128, QImage::Format_RGB32),
@@ -205,11 +206,9 @@ int main(int argc, char* argv[]) {
                      QLocalizedString(), 0, "mw_triad@users.sourceforge.net");
     about.addAuthor(qi18n("Matthew Woehlke"), QLocalizedString(),
                     "mw_triad@users.sourceforge.net");
-    KCmdLineArgs::init(argc, argv, &about);
+    QApplication::setApplicationName(about.appName());
 
-    KApplication app;
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-    Q_UNUSED(args);
+    QApplication app(argc, argv);
 
     KColorUtilsDemo *d = new KColorUtilsDemo;
     d->show();
