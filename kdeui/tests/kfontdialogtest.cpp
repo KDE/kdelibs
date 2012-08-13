@@ -22,19 +22,16 @@
 */
 
 
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kapplication.h>
 #include "kfontdialog.h"
 #include <kconfig.h>
 
+#include <QApplication>
 
- int main( int argc, char **argv )
+int main( int argc, char **argv )
 {
-  KAboutData about("KFontDialogTest", 0, qi18n("KFontDialogTest"), "version");
-  KCmdLineArgs::init(argc, argv, &about);
+  QApplication::setApplicationName("KFontDialogTest");
 
-  KApplication app;
+  QApplication app(argc, argv);
 
   app.setFont(QFont("Helvetica",12));
 
