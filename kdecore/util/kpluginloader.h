@@ -37,7 +37,7 @@ class KPluginLoaderPrivate;
  *
  * This class can be used to dynamically load a plugin library at runtime.
  *
- * This class makes sure that the Qt and KDE versions used to compile this library aren't newer then
+ * This class makes sure that the Qt and KDE versions used to compile this library aren't newer than
  * the ones currently used.
  *
  *
