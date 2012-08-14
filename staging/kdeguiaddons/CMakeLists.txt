@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.9)
 
 project(kdeguiaddons)
 
-find_package(ECM 0.0.4 REQUIRED NO_MODULE)
+find_package(ECM 0.0.5 REQUIRED NO_MODULE)
 
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 

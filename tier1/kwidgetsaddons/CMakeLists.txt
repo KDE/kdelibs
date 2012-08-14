@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.9)
 
 project(kwidgetsaddons)
 
-find_package(ECM 0.0.4 REQUIRED NO_MODULE)
+find_package(ECM 0.0.5 REQUIRED NO_MODULE)
 
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
@@ -15,6 +15,7 @@ ecm_version(5 0 0)
 # --
 
 include(ECMQtFramework)
+include(ECMWriteVersionHeader)
 
 find_package(Qt5Transitional REQUIRED Core Gui)
 
@@ -22,6 +23,8 @@ include(FeatureSummary)
 
 add_subdirectory(src)
 add_subdirectory(tests)
+
+ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddons_version.h)
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddons_version.h

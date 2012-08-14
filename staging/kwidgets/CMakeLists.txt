@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.9)
 
 project(kwidgets)
 
-find_package(ECM 0.0.4 REQUIRED NO_MODULE)
+find_package(ECM 0.0.5 REQUIRED NO_MODULE)
 
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
@@ -15,6 +15,7 @@ ecm_version(5 0 0)
 # --
 
 include(ECMQtFramework)
+include(ECMWriteVersionHeader)
 
 find_package(Qt5Transitional REQUIRED Core Gui Svg)
 
@@ -59,6 +60,8 @@ remove_definitions(-DQT_USE_FAST_OPERATOR_PLUS)
 add_subdirectory(src)
 add_subdirectory(tests)
 add_subdirectory(autotests)
+
+ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/kwidgets_version.h)
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_version.h
