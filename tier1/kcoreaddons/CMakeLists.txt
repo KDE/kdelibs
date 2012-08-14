@@ -15,6 +15,7 @@ ecm_version(5 0 0)
 find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 include(ECMQtFramework)
+include(ECMWriteVersionHeader)
 
 find_package(Qt5Transitional REQUIRED Core Test)
 
@@ -44,6 +45,11 @@ configure_file(src/io/config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/src/i
 check_include_files(sys/stat.h HAVE_SYS_STAT_H)
 check_include_files(sys/time.h HAVE_SYS_TIME_H)
 configure_file(src/io/config-klockfile.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/src/io/config-klockfile.h)
+
+ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/kcoreaddons_version.h)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kcoreaddons_version.h
+        DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 add_subdirectory(src)
 add_subdirectory(autotests)

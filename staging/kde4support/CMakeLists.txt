@@ -15,6 +15,7 @@ ecm_version(5 0 0)
 # --
 
 include(ECMQtFramework)
+include(ECMWriteVersionHeader)
 
 find_package(Qt5Transitional REQUIRED Core)
 
@@ -22,6 +23,11 @@ remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_KEYWORDS)
+
+ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/kde4support_version.h)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kde4support_version.h
+        DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 add_subdirectory(src)
 add_subdirectory(autotests)

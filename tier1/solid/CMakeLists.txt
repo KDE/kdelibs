@@ -16,6 +16,7 @@ ecm_version(5 0 0)
 find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 include(ECMQtFramework)
+include(ECMWriteVersionHeader)
 
 # TODO: Remove these
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
@@ -33,6 +34,11 @@ find_package(Qt5Transitional REQUIRED Xml Concurrent DBus Gui Test)
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src)
 
 include(FeatureSummary)
+
+ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/solid_version.h)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_version.h
+        DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 add_subdirectory(src)
 add_subdirectory(autotests)

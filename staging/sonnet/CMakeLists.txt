@@ -16,6 +16,7 @@ ecm_version(5 0 0)
 # --
 
 include(ECMQtFramework)
+include(ECMWriteVersionHeader)
 
 # TODO: Remove these
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
@@ -27,6 +28,11 @@ remove_definitions(-DQT_USE_FAST_CONCATENATION)
 remove_definitions(-DQT_USE_FAST_OPERATOR_PLUS)
 
 find_package(Qt5Transitional REQUIRED Core DBus Gui Test)
+
+ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/sonnet_version.h)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sonnet_version.h
+        DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 add_subdirectory(src)
 add_subdirectory(autotests)
