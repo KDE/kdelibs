@@ -19,7 +19,7 @@
 
 INCLUDE (MacroEnsureVersion)
 
-cmake_minimum_required(VERSION 2.8.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.9 FATAL_ERROR)
 
 
 option(KDE4_BUILD_TESTS  "Build the tests")
