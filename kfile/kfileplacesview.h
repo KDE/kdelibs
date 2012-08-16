@@ -82,7 +82,7 @@ protected Q_SLOTS:
     void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
 
 Q_SIGNALS:
-    void urlChanged(const KUrl &url);
+    void urlChanged(const QUrl &url);
 
     /**
      * Is emitted if items are dropped on the place \a dest.

@@ -214,8 +214,8 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
 
     if (placesModel != 0) {
         m_placesSelector = new KUrlNavigatorPlacesSelector(q, placesModel);
-        connect(m_placesSelector, SIGNAL(placeActivated(KUrl)),
-                q, SLOT(setLocationUrl(KUrl)));
+        connect(m_placesSelector, SIGNAL(placeActivated(QUrl)),
+                q, SLOT(setLocationUrl(QUrl)));
 
         connect(placesModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
                 q, SLOT(updateContent()));
@@ -1126,7 +1126,7 @@ void KUrlNavigator::mouseReleaseEvent(QMouseEvent* event)
             const QMimeData* mimeData = clipboard->mimeData();
             if (mimeData->hasText()) {
                 const QString text = mimeData->text();
-                setLocationUrl(KUrl(text));
+                setLocationUrl(QUrl::fromUserInput(text));
             }
         }
     }
@@ -1251,7 +1251,7 @@ QPoint KUrlNavigator::savedPosition() const
 void KUrlNavigator::setHomeUrl(const QString& homeUrl)
 {
     // deprecated
-    setLocationUrl(KUrl(homeUrl));
+    setLocationUrl(QUrl::fromUserInput(homeUrl));
 }
 #endif
 

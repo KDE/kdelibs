@@ -294,7 +294,7 @@ KDirSelectDialog::KDirSelectDialog(const KUrl &startDir, bool localOnly,
     d->m_placesView->setObjectName( QLatin1String( "speedbar" ) );
     d->m_placesView->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     d->m_placesView->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    connect( d->m_placesView, SIGNAL(urlChanged(KUrl)),
+    connect( d->m_placesView, SIGNAL(urlChanged(QUrl)),
              SLOT(setCurrentUrl(KUrl)) );
     hlay->addWidget( d->m_placesView );
     hlay->addLayout( mainLayout );

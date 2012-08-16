@@ -76,7 +76,7 @@ Q_SIGNALS:
      * Is send when a bookmark has been activated by the user.
      * @param url URL of the selected place.
      */
-    void placeActivated(const KUrl& url);
+    void placeActivated(const QUrl& url);
 
 protected:
     /**

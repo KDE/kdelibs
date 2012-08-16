@@ -533,8 +533,8 @@ KFileWidget::KFileWidget( const QUrl& _startDir, QWidget *parent )
     pathCombo->setCompletionObject( pathCompletionObj );
     pathCombo->setAutoDeleteCompletionObject( true );
 
-    connect( d->urlNavigator, SIGNAL(urlChanged(KUrl)),
-             this,  SLOT(_k_enterUrl(KUrl)));
+    connect( d->urlNavigator, SIGNAL(urlChanged(QUrl)),
+             this,  SLOT(_k_enterUrl(QUrl)));
     connect( d->urlNavigator, SIGNAL(returnPressed()),
              d->ops,  SLOT(setFocus()));
 
@@ -1306,8 +1306,8 @@ void KFileWidgetPrivate::initSpeedbar()
     placesView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     placesView->setObjectName(QLatin1String("url bar"));
-    QObject::connect(placesView, SIGNAL(urlChanged(KUrl)),
-                     q, SLOT(_k_enterUrl(KUrl)));
+    QObject::connect(placesView, SIGNAL(urlChanged(QUrl)),
+                     q, SLOT(_k_enterUrl(QUrl)));
 
     // need to set the current url of the urlbar manually (not via urlEntered()
     // here, because the initial url of KDirOperator might be the same as the

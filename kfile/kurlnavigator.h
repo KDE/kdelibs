@@ -376,7 +376,7 @@ Q_SIGNALS:
      * the user.
      * @see KUrlNavigator::setUrl()
      */
-    void urlChanged(const KUrl& url);
+    void urlChanged(const QUrl& url);
 
     /**
      * Is emitted, before the location URL is going to be changed to \a newUrl.
