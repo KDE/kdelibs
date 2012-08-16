@@ -19,15 +19,12 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kiconloader.h>
 #include <kapplication.h>
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <klocalizedstring.h>
 #include <kfiledialog.h>
-#include <kmessagebox.h>
 #include <kcmdlineargs.h>
-#include <kpluginloader.h>
 #include <qmimedatabase.h>
 
 #include <QWidget>
@@ -98,7 +95,7 @@ int main( int argc, char **argv )
 
     KCmdLineArgs::init(argc, argv, "partviewer", 0, qi18n("partviewer"), version, description);
     KCmdLineArgs::addCmdLineOptions( options ); // Add my own options.
-    KApplication app;
+    QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     PartViewer *shell = new PartViewer;
     if ( args->count() == 1 )

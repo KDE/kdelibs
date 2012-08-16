@@ -1097,12 +1097,6 @@ if (UNIX)
    endif (NOT _OFFT_IS_64BIT)
 endif (UNIX)
 
-if (CMAKE_SYSTEM_NAME MATCHES BSD)
-   set ( _KDE4_PLATFORM_DEFINITIONS -D_GNU_SOURCE )
-   set ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lc")
-   set ( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -lc")
-endif (CMAKE_SYSTEM_NAME MATCHES BSD)
-
 
 ############################################################
 # compiler specific settings
@@ -1294,13 +1288,13 @@ macro (KDE4_PRINT_RESULTS)
    # inside kdelibs the include dir and lib dir are internal, not "found"
    if (NOT _kdeBootStrapping)
        if(KDE4_INCLUDE_DIR)
-          message(STATUS "Found KDE 4.8 include dir: ${KDE4_INCLUDE_DIR}")
+          message(STATUS "Found KDE 4.9 include dir: ${KDE4_INCLUDE_DIR}")
        else(KDE4_INCLUDE_DIR)
           message(STATUS "ERROR: unable to find the KDE 4 headers")
        endif(KDE4_INCLUDE_DIR)
 
        if(KDE4_LIB_DIR)
-          message(STATUS "Found KDE 4.8 library dir: ${KDE4_LIB_DIR}")
+          message(STATUS "Found KDE 4.9 library dir: ${KDE4_LIB_DIR}")
        else(KDE4_LIB_DIR)
           message(STATUS "ERROR: unable to find the KDE 4 core library")
        endif(KDE4_LIB_DIR)

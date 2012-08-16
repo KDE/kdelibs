@@ -101,7 +101,7 @@ bool KModifierKeyInfoProvider::s_eventFilterEnabled = false;
 QAbstractEventDispatcher::EventFilter KModifierKeyInfoProvider::s_nextFilter = 0;
 
 KModifierKeyInfoProvider::KModifierKeyInfoProvider()
-    : QWidget(0)
+    : QObject(0)
 {
     int code, xkberr, maj, min;
     m_xkbAvailable = XkbQueryExtension(QX11Info::display(), &code, &m_xkbEv, &xkberr, &maj, &min);

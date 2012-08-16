@@ -287,7 +287,7 @@ macro (KDE4_ADD_UNIT_TEST _test_NAME)
     endif( ${ARGV1} STREQUAL "TESTNAME" )
     
     set(_nogui)
-    list(GET ${_srcList} 0 first_PARAM)
+    list(GET _srcList 0 first_PARAM)
     if( ${first_PARAM} STREQUAL "NOGUI" )
         set(_nogui "NOGUI")
     endif( ${first_PARAM} STREQUAL "NOGUI" )

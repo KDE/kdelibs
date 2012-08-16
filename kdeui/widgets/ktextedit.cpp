@@ -297,8 +297,6 @@ void KTextEdit::setSpellCheckingLanguage(const QString &_language)
         d->spellCheckingLanguage = _language;
         emit languageChanged(_language);
     }
-    else
-        d->spellCheckingLanguage = _language;
 }
 
 void KTextEdit::showSpellConfigDialog(const QString &configFileName,
@@ -786,11 +784,13 @@ void KTextEdit::checkSpelling()
       KMessageBox::information(this, i18n("Nothing to spell check."));
       return;
   }
-  Sonnet::BackgroundChecker *backgroundSpellCheck = new Sonnet::BackgroundChecker(this);
+  Sonnet::BackgroundChecker *backgroundSpellCheck = new Sonnet::BackgroundChecker;
   if(!d->spellCheckingLanguage.isEmpty())
      backgroundSpellCheck->changeLanguage(d->spellCheckingLanguage);
   Sonnet::Dialog *spellDialog = new Sonnet::Dialog(
       backgroundSpellCheck, 0);
+  backgroundSpellCheck->setParent(spellDialog);
+  spellDialog->setAttribute(Qt::WA_DeleteOnClose, true);
   connect(spellDialog, SIGNAL(replace(QString,int,QString)),
           this, SLOT(spellCheckerCorrected(QString,int,QString)));
   connect(spellDialog, SIGNAL(misspelling(QString,int)),
@@ -1107,7 +1107,7 @@ void KTextEdit::paintEvent(QPaintEvent *ev)
         f.setItalic(d->italicizePlaceholder);
         p.setFont(f);
 
-        QColor color(palette().color(foregroundRole()));
+        QColor color(palette().color(viewport()->foregroundRole()));
         color.setAlphaF(0.5);
         p.setPen(color);
 

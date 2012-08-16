@@ -346,7 +346,16 @@ void KMessageWidget::setWordWrap(bool wordWrap)
 {
     d->wordWrap = wordWrap;
     d->textLabel->setWordWrap(wordWrap);
+    QSizePolicy policy = sizePolicy();
+    policy.setHeightForWidth(wordWrap);
+    setSizePolicy(policy);
     d->updateLayout();
+    // Without this, when user does wordWrap -> !wordWrap -> wordWrap, a minimum
+    // height is set, causing the widget to be too high.
+    // Mostly visible in test programs.
+    if (wordWrap) {
+        setMinimumHeight(0);
+    }
 }
 
 bool KMessageWidget::isCloseButtonVisible() const
@@ -357,6 +366,7 @@ bool KMessageWidget::isCloseButtonVisible() const
 void KMessageWidget::setCloseButtonVisible(bool show)
 {
     d->closeButton->setVisible(show);
+    updateGeometry();
 }
 
 void KMessageWidget::addAction(QAction* action)
