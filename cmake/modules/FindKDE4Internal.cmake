@@ -1135,11 +1135,6 @@ if (UNIX)
    endif (NOT _OFFT_IS_64BIT)
 endif (UNIX)
 
-if (CMAKE_SYSTEM_NAME MATCHES BSD)
-   set ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lc")
-   set ( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -lc")
-endif (CMAKE_SYSTEM_NAME MATCHES BSD)
-
 
 ############################################################
 # compiler specific settings
