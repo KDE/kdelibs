@@ -8,7 +8,7 @@
 
 project(qtonly)
 
-option(QTONLY_WEBKIT  "Build using WEBKIT from this directoy")
+option(QTONLY_WEBKIT  "Build using WEBKIT from this directory")
 set(QTONLY_WEBKIT_DIR "${QTONLY_WEBKIT_DIR}")
 
 # This is the QT_ONLY build, make sure the CMakeList.txt and source files know.

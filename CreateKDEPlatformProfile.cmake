@@ -29,7 +29,7 @@ if (KDE_PLATFORM_PROFILE STREQUAL "Mobile")
     set(KDE_PLATFORM_FEATURE_BINARY_INCOMPATIBLE_FEATURE_REDUCTION TRUE)
     set(KDE_PLATFORM_FEATURE_KIO_INPROCESS TRUE)
     set(KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED TRUE)
-    message(STATUS "KDE Platform Profile: MOBILE. Please be aware that this version of the KDE platform is BINARY INCOMPATIBLE to standard KDE. At this time no binary compatiblity is guaranteed even within the mobile target.")
+    message(STATUS "KDE Platform Profile: MOBILE. Please be aware that this version of the KDE platform is BINARY INCOMPATIBLE to standard KDE. At this time no binary compatibility is guaranteed even within the mobile target.")
 endif (KDE_PLATFORM_PROFILE STREQUAL "Mobile")
 
 

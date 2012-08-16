@@ -19,16 +19,13 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kiconloader.h>
 #include <kstandarddirs.h>
 #include <kapplication.h>
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <klocale.h>
 #include <kfiledialog.h>
-#include <kmessagebox.h>
 #include <kcmdlineargs.h>
-#include <kpluginloader.h>
 
 #include <QtGui/QWidget>
 #include <QtCore/QDir>

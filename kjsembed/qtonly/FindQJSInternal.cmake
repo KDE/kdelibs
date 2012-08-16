@@ -41,7 +41,7 @@ include (CheckCXXCompilerFlag)
 # Once a variable is in the cache, it doesn't depend on its "parent" variables
 # anymore and you can only change it by editing it directly.
 # this macro helps in this regard, because as long as you don't set one of the
-# variables explicitely to some location, it will always calculate its value from its
+# variables explicitly to some location, it will always calculate its value from its
 # parents. So modifying CMAKE_INSTALL_PREFIX later on will have the desired effect.
 # But once you decide to set e.g. EXEC_INSTALL_PREFIX to some special location
 # this will go into the cache and it will no longer depend on CMAKE_INSTALL_PREFIX.
@@ -92,7 +92,7 @@ if (WIN32)
 
    set( _KDE4_PLATFORM_INCLUDE_DIRS ${KDEWIN32_INCLUDES} ${GNUWIN32_INCLUDE_DIR})
 
-   # if we are compiling kdelibs, add KDEWIN32_LIBRARIES explicitely,
+   # if we are compiling kdelibs, add KDEWIN32_LIBRARIES explicitly,
    # otherwise they come from KDELibsDependencies.cmake, Alex
    if(EXISTS ${CMAKE_SOURCE_DIR}/kdecore/kernel/kglobal.h)
       set( KDE4_KDECORE_LIBS ${KDE4_KDECORE_LIBS} ${KDEWIN32_LIBRARIES} )

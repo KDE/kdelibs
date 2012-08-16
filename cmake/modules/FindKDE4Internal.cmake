@@ -269,7 +269,7 @@
 #
 #  KDE4_INSTALL_ICONS( path theme)
 #    Installs all png and svgz files in the current directory to the icon
-#    directoy given in path, in the subdirectory for the given icon theme.
+#    directory given in path, in the subdirectory for the given icon theme.
 #
 #  KDE4_CREATE_HANDBOOK( docbookfile [INSTALL_DESTINATION installdest] [SUBDIR subdir])
 #   Create the handbook from the docbookfile (using meinproc4)
@@ -314,7 +314,7 @@
 #          optimised but debuggable, debugging on (-g)
 #          (-fno-reorder-blocks -fno-schedule-insns -fno-inline)
 #  DebugFull
-#          no optimisation, full debugging on (-g3)
+#          no optimization, full debugging on (-g3)
 #  Profile
 #          DebugFull + -ftest-coverage -fprofile-arcs
 #
@@ -327,7 +327,7 @@
 #
 #
 #  This module allows to depend on a particular minimum version of kdelibs.
-#  To acomplish that one should use the apropriate cmake syntax for
+#  To acomplish that one should use the appropriate cmake syntax for
 #  find_package. For example to depend on kdelibs >= 4.1.0 one should use
 #
 #  find_package(KDE4 4.1.0 REQUIRED)
@@ -838,7 +838,7 @@ else (WIN32)
    # Once a variable is in the cache, it doesn't depend on its "parent" variables
    # anymore and you can only change it by editing it directly.
    # this macro helps in this regard, because as long as you don't set one of the
-   # variables explicitely to some location, it will always calculate its value from its
+   # variables explicitly to some location, it will always calculate its value from its
    # parents. So modifying CMAKE_INSTALL_PREFIX later on will have the desired effect.
    # But once you decide to set e.g. EXEC_INSTALL_PREFIX to some special location
    # this will go into the cache and it will no longer depend on CMAKE_INSTALL_PREFIX.
@@ -976,7 +976,7 @@ if (WIN32)
 
    set( _KDE4_PLATFORM_INCLUDE_DIRS ${KDEWIN_INCLUDES})
 
-   # if we are compiling kdelibs, add KDEWIN_LIBRARIES explicitely,
+   # if we are compiling kdelibs, add KDEWIN_LIBRARIES explicitly,
    # otherwise they come from KDELibsDependencies.cmake, Alex
    if (_kdeBootStrapping)
       set( KDE4_KDECORE_LIBS ${KDE4_KDECORE_LIBS} ${KDEWIN_LIBRARIES} )
@@ -1134,12 +1134,6 @@ if (UNIX)
      set ( _KDE4_PLATFORM_DEFINITIONS "${_KDE4_PLATFORM_DEFINITIONS} -D_FILE_OFFSET_BITS=64")
    endif (NOT _OFFT_IS_64BIT)
 endif (UNIX)
-
-if (CMAKE_SYSTEM_NAME MATCHES BSD)
-   set ( _KDE4_PLATFORM_DEFINITIONS -D_GNU_SOURCE )
-   set ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lc")
-   set ( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -lc")
-endif (CMAKE_SYSTEM_NAME MATCHES BSD)
 
 
 ############################################################
