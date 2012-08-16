@@ -78,7 +78,7 @@ public:
     void slotDataChangeFinished();
 
 #ifndef KIO_NO_NEPOMUK
-    QList<KUrl> sortedKeys(const QHash<KUrl, Nepomuk::Variant>& data) const;
+    QList<QUrl> sortedKeys(const QHash<QUrl, Nepomuk::Variant>& data) const;
 
     /**
      * @return True, if at least one of the file items \a m_fileItems has
@@ -203,12 +203,12 @@ void KFileMetaDataWidget::Private::slotLoadingFinished()
         m_gridLayout->setSpacing(q->fontMetrics().height() / 4);
     }
 
-    QHash<KUrl, Nepomuk::Variant> data = m_provider->data();
+    QHash<QUrl, Nepomuk::Variant> data = m_provider->data();
 
     // Remove all items, that are marked as hidden in kmetainformationrc
     KConfig config("kmetainformationrc", KConfig::NoGlobals);
     KConfigGroup settings = config.group("Show");
-    QHash<KUrl, Nepomuk::Variant>::iterator it = data.begin();
+    QHash<QUrl, Nepomuk::Variant>::iterator it = data.begin();
     while (it != data.end()) {
         const QString uriString = it.key().url();
         if (!settings.readEntry(uriString, true) ||
@@ -222,8 +222,8 @@ void KFileMetaDataWidget::Private::slotLoadingFinished()
     // Iterate through all remaining items embed the label
     // and the value as new row in the widget
     int rowIndex = 0;
-    const QList<KUrl> keys = sortedKeys(data);
-    foreach (const KUrl& key, keys) {
+    const QList<QUrl> keys = sortedKeys(data);
+    foreach (const QUrl& key, keys) {
         const Nepomuk::Variant value = data[key];
         QString itemLabel = m_provider->label(key);
         itemLabel.append(QLatin1Char(':'));
@@ -280,16 +280,16 @@ void KFileMetaDataWidget::Private::slotDataChangeFinished()
 }
 
 #ifndef KIO_NO_NEPOMUK
-QList<KUrl> KFileMetaDataWidget::Private::sortedKeys(const QHash<KUrl, Nepomuk::Variant>& data) const
+QList<QUrl> KFileMetaDataWidget::Private::sortedKeys(const QHash<QUrl, Nepomuk::Variant>& data) const
 {
     // Create a map, where the translated label prefixed with the
     // sort priority acts as key. The data of each entry is the URI
     // of the data. By this the all URIs are sorted by the sort priority
     // and sub sorted by the translated labels.
-    QMap<QString, KUrl> map;
-    QHash<KUrl, Nepomuk::Variant>::const_iterator hashIt = data.constBegin();
+    QMap<QString, QUrl> map;
+    QHash<QUrl, Nepomuk::Variant>::const_iterator hashIt = data.constBegin();
     while (hashIt != data.constEnd()) {
-        const KUrl uri = hashIt.key();
+        const QUrl uri = hashIt.key();
 
         QString key = m_provider->group(uri);
         key += m_provider->label(uri);
@@ -300,8 +300,8 @@ QList<KUrl> KFileMetaDataWidget::Private::sortedKeys(const QHash<KUrl, Nepomuk::
 
     // Apply the URIs from the map to the list that will get returned.
     // The list will then be alphabetically ordered by the translated labels of the URIs.
-    QList<KUrl> list;
-    QMap<QString, KUrl>::const_iterator mapIt = map.constBegin();
+    QList<QUrl> list;
+    QMap<QString, QUrl>::const_iterator mapIt = map.constBegin();
     while (mapIt != map.constEnd()) {
         list.append(mapIt.value());
         ++mapIt;

@@ -57,7 +57,7 @@ public:
     void _k_slotActuallyClear( );
 
     KUrl currentURL;
-    KUrl lastShownURL;
+    QUrl lastShownURL;
     QLabel *imageLabel;
     KIO::PreviewJob *m_job;
     QTimeLine *m_timeLine;

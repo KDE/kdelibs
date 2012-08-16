@@ -148,7 +148,7 @@ public:
     QList<KFileItem> m_fileItems;
 
 #ifndef KIO_NO_NEPOMUK
-    QHash<KUrl, Nepomuk::Variant> m_data;
+    QHash<QUrl, Nepomuk::Variant> m_data;
 
     QList<KFileMetaDataReader*> m_metaDataReaders;
     KFileMetaDataReader* m_latestMetaDataReader;
@@ -218,18 +218,18 @@ void KFileMetaDataProvider::Private::slotLoadingFinished()
         if (item.isDir()) {
             const int count = subDirectoriesCount(item.url().pathOrUrl());
             if (count == -1) {
-                m_data.insert(KUrl("kfileitem#size"), QString("Unknown"));
+                m_data.insert(QUrl("kfileitem#size"), QString("Unknown"));
             } else {
                 const QString itemCountString = i18ncp("@item:intable", "%1 item", "%1 items", count);
-                m_data.insert(KUrl("kfileitem#size"), itemCountString);
+                m_data.insert(QUrl("kfileitem#size"), itemCountString);
             }
         } else {
-            m_data.insert(KUrl("kfileitem#size"), KIO::convertSize(item.size()));
+            m_data.insert(QUrl("kfileitem#size"), KIO::convertSize(item.size()));
         }
-        m_data.insert(KUrl("kfileitem#type"), item.mimeComment());
-        m_data.insert(KUrl("kfileitem#modified"), KGlobal::locale()->formatDateTime(item.time(KFileItem::ModificationTime), KLocale::FancyLongDate));
-        m_data.insert(KUrl("kfileitem#owner"), item.user());
-        m_data.insert(KUrl("kfileitem#permissions"), item.permissionsString());
+        m_data.insert(QUrl("kfileitem#type"), item.mimeComment());
+        m_data.insert(QUrl("kfileitem#modified"), KGlobal::locale()->formatDateTime(item.time(KFileItem::ModificationTime), KLocale::FancyLongDate));
+        m_data.insert(QUrl("kfileitem#owner"), item.user());
+        m_data.insert(QUrl("kfileitem#permissions"), item.permissionsString());
     } else if (m_fileItems.count() > 1) {
         // Calculate the size of all items
         quint64 totalSize = 0;
@@ -238,7 +238,7 @@ void KFileMetaDataProvider::Private::slotLoadingFinished()
                 totalSize += item.size();
             }
         }
-        m_data.insert(KUrl("kfileitem#totalSize"), KIO::convertSize(totalSize));
+        m_data.insert(QUrl("kfileitem#totalSize"), KIO::convertSize(totalSize));
     }
 #endif
 
@@ -306,7 +306,7 @@ QList<Nepomuk::Resource> KFileMetaDataProvider::Private::resourceList() const
 {
     QList<Nepomuk::Resource> list;
     foreach (const KFileItem& item, m_fileItems) {
-        const KUrl url = item.nepomukUri();
+        const QUrl url = item.nepomukUri();
         if(url.isValid())
             list.append(Nepomuk::Resource(url));
     }
@@ -395,9 +395,9 @@ void KFileMetaDataProvider::setItems(const KFileItemList& items)
     }
     Q_PRIVATE_SLOT(d, void slotDataChangeStarted())
     Q_PRIVATE_SLOT(d, void slotDataChangeFinished())
-    QList<KUrl> urls;
+    QList<QUrl> urls;
     foreach (const KFileItem& item, items) {
-        const KUrl url = item.nepomukUri();
+        const QUrl url = item.nepomukUri();
         if (url.isValid()) {
             urls.append(url);
         }
@@ -411,7 +411,7 @@ void KFileMetaDataProvider::setItems(const KFileItemList& items)
 #endif
 }
 
-QString KFileMetaDataProvider::label(const KUrl& metaDataUri) const
+QString KFileMetaDataProvider::label(const QUrl& metaDataUri) const
 {
     struct TranslationItem {
         const char* const key;
@@ -449,7 +449,7 @@ QString KFileMetaDataProvider::label(const KUrl& metaDataUri) const
     return value;
 }
 
-QString KFileMetaDataProvider::group(const KUrl& metaDataUri) const
+QString KFileMetaDataProvider::group(const QUrl& metaDataUri) const
 {
     QString group; // return value
 
@@ -483,12 +483,12 @@ bool KFileMetaDataProvider::isReadOnly() const
 }
 
 #ifndef KIO_NO_NEPOMUK
-QHash<KUrl, Nepomuk::Variant> KFileMetaDataProvider::data() const
+QHash<QUrl, Nepomuk::Variant> KFileMetaDataProvider::data() const
 {
     return d->m_data;
 }
 
-QWidget* KFileMetaDataProvider::createValueWidget(const KUrl& metaDataUri,
+QWidget* KFileMetaDataProvider::createValueWidget(const QUrl& metaDataUri,
                                                   const Nepomuk::Variant& value,
                                                   QWidget* parent) const
 {

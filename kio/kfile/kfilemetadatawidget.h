@@ -27,8 +27,6 @@
 #include <QList>
 #include <QWidget>
 
-class KUrl;
-
 /**
  * @brief Shows the meta data of one or more file items.
  *

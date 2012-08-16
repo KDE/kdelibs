@@ -31,22 +31,22 @@ KFileModule::KFileModule(QObject* parent, const QVariantList&)
 {
 }
 
-QWidget* KFileModule::createFileWidget(const KUrl& startDir, QWidget *parent)
+QWidget* KFileModule::createFileWidget(const QUrl& startDir, QWidget *parent)
 {
     return new KFileWidget(startDir, parent);
 }
 
-KUrl KFileModule::getStartUrl( const KUrl& startDir, QString& recentDirClass )
+QUrl KFileModule::getStartUrl( const QUrl& startDir, QString& recentDirClass )
 {
     return KFileWidget::getStartUrl(startDir, recentDirClass);
 }
 
-void KFileModule::setStartDir( const KUrl& directory )
+void KFileModule::setStartDir( const QUrl& directory )
 {
     KFileWidget::setStartDir(directory);
 }
 
-KUrl KFileModule::selectDirectory( const KUrl& startDir,
+QUrl KFileModule::selectDirectory( const QUrl& startDir,
                                    bool localOnly, QWidget *parent,
                                    const QString& caption )
 {

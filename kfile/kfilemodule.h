@@ -28,13 +28,13 @@ class KFileModule : public KAbstractFileModule
 public:
     KFileModule(QObject* parent, const QVariantList&);
 
-    virtual QWidget* createFileWidget(const KUrl& startDir, QWidget *parent);
+    virtual QWidget* createFileWidget(const QUrl& startDir, QWidget *parent);
 
-    virtual KUrl getStartUrl( const KUrl& startDir, QString& recentDirClass );
+    virtual QUrl getStartUrl( const QUrl& startDir, QString& recentDirClass );
 
-    virtual void setStartDir( const KUrl& directory );
+    virtual void setStartDir( const QUrl& directory );
 
-    virtual KUrl selectDirectory( const KUrl& startDir,
+    virtual QUrl selectDirectory( const QUrl& startDir,
                                   bool localOnly, QWidget *parent,
                                   const QString& caption );
 };

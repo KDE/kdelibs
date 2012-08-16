@@ -61,9 +61,9 @@ private Q_SLOTS:
     void readAndSendMetaData();
 
 private:
-    void sendMetaData(const QHash<KUrl, Nepomuk::Variant>& data);
-    QHash<KUrl, Nepomuk::Variant> readFileMetaData(const QList<KUrl>& urls) const;
-    QHash<KUrl, Nepomuk::Variant> readFileAndContextMetaData(const QList<KUrl>& urls) const;
+    void sendMetaData(const QHash<QUrl, Nepomuk::Variant>& data);
+    QHash<QUrl, Nepomuk::Variant> readFileMetaData(const QList<QUrl>& urls) const;
+    QHash<QUrl, Nepomuk::Variant> readFileAndContextMetaData(const QList<QUrl>& urls) const;
 };
 
 
@@ -78,12 +78,12 @@ void KFileMetaDataReaderApplication::readAndSendMetaData()
 {
     const KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-    QList<KUrl> urls;
+    QList<QUrl> urls;
     for (int i = 0; i < args->count(); ++i) {
-        urls.append(KUrl(args->arg(i)));
+        urls.append(args->url(i));
     }
 
-    QHash<KUrl, Nepomuk::Variant> metaData;
+    QHash<QUrl, Nepomuk::Variant> metaData;
     if (args->isSet("file")) {
         metaData = readFileMetaData(urls);
     } else {
@@ -95,12 +95,12 @@ void KFileMetaDataReaderApplication::readAndSendMetaData()
     quit();
 }
 
-void KFileMetaDataReaderApplication::sendMetaData(const QHash<KUrl, Nepomuk::Variant>& data)
+void KFileMetaDataReaderApplication::sendMetaData(const QHash<QUrl, Nepomuk::Variant>& data)
 {
     QByteArray byteArray;
     QDataStream out(&byteArray, QIODevice::WriteOnly);
 
-    QHashIterator<KUrl, Nepomuk::Variant> it(data);
+    QHashIterator<QUrl, Nepomuk::Variant> it(data);
     while (it.hasNext()) {
         it.next();
 
@@ -122,9 +122,9 @@ void KFileMetaDataReaderApplication::sendMetaData(const QHash<KUrl, Nepomuk::Var
     cout << byteArray.toBase64().constData();
 }
 
-QHash<KUrl, Nepomuk::Variant> KFileMetaDataReaderApplication::readFileMetaData(const QList<KUrl>& urls) const
+QHash<QUrl, Nepomuk::Variant> KFileMetaDataReaderApplication::readFileMetaData(const QList<QUrl>& urls) const
 {
-    QHash<KUrl, Nepomuk::Variant> data;
+    QHash<QUrl, Nepomuk::Variant> data;
 
     // Currently only the meta-data of one file is supported.
     // It might be an option to read all meta-data and show
@@ -144,9 +144,9 @@ QHash<KUrl, Nepomuk::Variant> KFileMetaDataReaderApplication::readFileMetaData(c
     return data;
 }
 
-QHash<KUrl, Nepomuk::Variant> KFileMetaDataReaderApplication::readFileAndContextMetaData(const QList<KUrl>& urls) const
+QHash<QUrl, Nepomuk::Variant> KFileMetaDataReaderApplication::readFileAndContextMetaData(const QList<QUrl>& urls) const
 {
-    QHash<KUrl, Nepomuk::Variant> metaData;
+    QHash<QUrl, Nepomuk::Variant> metaData;
 
     bool isNepomukIndexerActive = false;
     if (Nepomuk::ResourceManager::instance()->initialized()) {
@@ -187,12 +187,12 @@ QHash<KUrl, Nepomuk::Variant> KFileMetaDataReaderApplication::readFileAndContext
         if (useReadFromFileFallback) {
             // No metadata could be received with Nepomuk. Parse the file
             // itself as fallback to extract metadata.
-            metaData = readFileMetaData(QList<KUrl>() << urls.first());
+            metaData = readFileMetaData(QList<QUrl>() << urls.first());
         }
     } else {
         // Read the data for rating, comment and tags
         bool first = true;
-        foreach (const KUrl& url, urls) {
+        foreach (const QUrl& url, urls) {
             Nepomuk::Resource file(url);
             if (!file.isValid()) {
                 continue;
@@ -220,14 +220,14 @@ QHash<KUrl, Nepomuk::Variant> KFileMetaDataReaderApplication::readFileAndContext
         }
     }
 
-    metaData.insert(KUrl("kfileitem#rating"), rating);
-    metaData.insert(KUrl("kfileitem#comment"), comment);
+    metaData.insert(QUrl("kfileitem#rating"), rating);
+    metaData.insert(QUrl("kfileitem#comment"), comment);
 
     QList<Nepomuk::Variant> tagVariants;
     foreach (const Nepomuk::Tag& tag, tags) {
         tagVariants.append(Nepomuk::Variant(tag));
     }
-    metaData.insert(KUrl("kfileitem#tags"), tagVariants);
+    metaData.insert(QUrl("kfileitem#tags"), tagVariants);
 
     return metaData;
 }

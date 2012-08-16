@@ -39,17 +39,17 @@ public:
     KAbstractFileModule(QObject* parent);
 
     /// the returned widget implements the KAbstractFileWidget interface
-    virtual QWidget* createFileWidget(const KUrl& startDir, QWidget *parent) = 0;
+    virtual QWidget* createFileWidget(const QUrl& startDir, QWidget *parent) = 0;
 
-    virtual KUrl getStartUrl( const KUrl& startDir, QString& recentDirClass ) = 0;
+    virtual QUrl getStartUrl( const QUrl& startDir, QString& recentDirClass ) = 0;
 
-    virtual void setStartDir( const KUrl& directory ) = 0;
+    virtual void setStartDir( const QUrl& directory ) = 0;
 
     /**
      * Creates a modal file dialog and returns the selected
      * directory or an empty string if none was chosen.
      */
-    virtual KUrl selectDirectory( const KUrl& startDir,
+    virtual QUrl selectDirectory( const QUrl& startDir,
                                   bool localOnly, QWidget *parent,
                                   const QString& caption ) = 0;
 

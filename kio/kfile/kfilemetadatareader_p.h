@@ -49,7 +49,7 @@ public:
      * @param urls   List of files where the metadata should be extracted from.
      * @param parent Parent object.
      */
-    explicit KFileMetaDataReader(const QList<KUrl>& urls, QObject* parent = 0);
+    explicit KFileMetaDataReader(const QList<QUrl>& urls, QObject* parent = 0);
     virtual ~KFileMetaDataReader();
 
     /**
@@ -73,7 +73,7 @@ public:
      *         after the signal finished() has been emitted. If it is invoked before
      *         an empty hash-table will be returned.
      */
-    QHash<KUrl, Nepomuk::Variant> metaData() const;
+    QHash<QUrl, Nepomuk::Variant> metaData() const;
 
 Q_SIGNALS:
     /**

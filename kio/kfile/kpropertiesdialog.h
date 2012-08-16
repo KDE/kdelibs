@@ -98,7 +98,7 @@ public:
 
   /**
    * Brings up a Properties dialog. Convenience constructor for
-   * non-file-manager applications, where you have a KUrl rather than a
+   * non-file-manager applications, where you have a QUrl rather than a
    * KFileItem or KFileItemList.
    *
    * @param url the URL whose properties should be displayed

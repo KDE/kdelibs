@@ -34,7 +34,7 @@ public:
 
     bool m_readContextData;
     KProcess* m_process;
-    QHash<KUrl, Nepomuk::Variant> m_metaData;
+    QHash<QUrl, Nepomuk::Variant> m_metaData;
 
 private:
     KFileMetaDataReader* const q;
@@ -60,7 +60,7 @@ void KFileMetaDataReader::Private::slotLoadingFinished(int exitCode, QProcess::E
 
     QDataStream in(QByteArray::fromBase64(m_process->readLine()));
 
-    KUrl key;
+    QUrl key;
     Nepomuk::Variant value;
     while (!in.atEnd()) {
         in >> key;
@@ -98,15 +98,15 @@ void KFileMetaDataReader::Private::slotLoadingFinished(int exitCode, QProcess::E
     emit q->finished();
 }
 
-KFileMetaDataReader::KFileMetaDataReader(const QList<KUrl>& urls, QObject* parent) :
+KFileMetaDataReader::KFileMetaDataReader(const QList<QUrl>& urls, QObject* parent) :
     QObject(parent),
     d(new Private(this))
 {
     const QString fileMetaDataReaderExe = QStandardPaths::findExecutable(QLatin1String("kfilemetadatareader"));
     (*d->m_process) << fileMetaDataReaderExe;
 
-    foreach (const KUrl& url, urls) {
-        (*d->m_process) << url.url();
+    foreach (const QUrl& url, urls) {
+        (*d->m_process) << url.toString();
     }
 
     d->m_process->setOutputChannelMode(KProcess::OnlyStdoutChannel);
@@ -140,7 +140,7 @@ void KFileMetaDataReader::start()
     }
 }
 
-QHash<KUrl, Nepomuk::Variant> KFileMetaDataReader::metaData() const
+QHash<QUrl, Nepomuk::Variant> KFileMetaDataReader::metaData() const
 {
     return d->m_metaData;
 }

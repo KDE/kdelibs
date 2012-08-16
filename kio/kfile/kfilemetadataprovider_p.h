@@ -33,7 +33,7 @@
 #endif
 
 class KFileItemList;
-class KUrl;
+class QUrl;
 class QWidget;
 
 /**
@@ -79,7 +79,7 @@ public:
      *         by \p metaDataUri. If no custom translation is provided, the
      *         base implementation must be invoked.
      */
-    virtual QString label(const KUrl& metaDataUri) const;
+    virtual QString label(const QUrl& metaDataUri) const;
 
     /**
      * Meta data items are sorted alphabetically by their translated
@@ -92,7 +92,7 @@ public:
      *         by \p metaDataUri belongs to. Per default an empty string
      *         is returned.
      */
-    virtual QString group(const KUrl& metaDataUri) const;
+    virtual QString group(const QUrl& metaDataUri) const;
 
 #ifndef KIO_NO_NEPOMUK
     /**
@@ -101,7 +101,7 @@ public:
      *         be invoked after the signal loadingFinished() has
      *         been received (otherwise no data will be returned).
      */
-    virtual QHash<KUrl, Nepomuk::Variant> data() const;
+    virtual QHash<QUrl, Nepomuk::Variant> data() const;
 
     /**
      * @return Factory method that returns a widget that should be used
@@ -110,7 +110,7 @@ public:
      *         implementation must be invoked. Per default an instance
      *         of QLabel will be returned.
      */
-    virtual QWidget* createValueWidget(const KUrl& metaDataUri,
+    virtual QWidget* createValueWidget(const QUrl& metaDataUri,
                                        const Nepomuk::Variant& value,
                                        QWidget* parent) const;
 #endif
