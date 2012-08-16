@@ -21,15 +21,15 @@
 #cmakedefine UDEV_FOUND
 #cmakedefine HUPNP_FOUND
 
-#cmakedefine HAVE_SYS_TYPES_H 1
-#cmakedefine HAVE_SYS_PARAM_H 1
-#cmakedefine HAVE_SYS_MNTTAB_H 1
-#cmakedefine HAVE_SYS_MOUNT_H 1
+#cmakedefine01 HAVE_SYS_TYPES_H
+#cmakedefine01 HAVE_SYS_PARAM_H
+#cmakedefine01 HAVE_SYS_MNTTAB_H
+#cmakedefine01 HAVE_SYS_MOUNT_H
 
-#cmakedefine HAVE_MNTENT_H 1
+#cmakedefine01 HAVE_MNTENT_H
 
-#cmakedefine   HAVE_GETMNTINFO 1
-#cmakedefine   HAVE_SETMNTENT 1
+#cmakedefine01   HAVE_GETMNTINFO
+#cmakedefine01   HAVE_SETMNTENT
 
-#cmakedefine GETMNTINFO_USES_STATVFS 1
+#cmakedefine01 GETMNTINFO_USES_STATVFS
 

@@ -29,7 +29,7 @@
 
 #include <solid/soliddefs_p.h>
 
-#ifdef HAVE_MNTENT_H
+#if HAVE_MNTENT_H
 #include <mntent.h>
 #elif defined(HAVE_SYS_MNTENT_H)
 #include <sys/mntent.h>

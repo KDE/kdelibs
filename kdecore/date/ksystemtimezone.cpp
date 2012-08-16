@@ -71,7 +71,7 @@ int gmtoff(time_t t)
     tm tmtime;
     if (!localtime_r(&t, &tmtime))
         return 0;
-#ifdef HAVE_TM_GMTOFF
+#if HAVE_TM_GMTOFF
     return tmtime.tm_gmtoff;
 #else
     int lwday = tmtime.tm_wday;
@@ -85,7 +85,7 @@ int gmtoff(time_t t)
     tm *tmtime = localtime(&t);
     if (!tmtime)
         return 0;
-#ifdef HAVE_TM_GMTOFF
+#if HAVE_TM_GMTOFF
     return tmtime->tm_gmtoff;
 #else
     int lwday = tmtime->tm_wday;
@@ -95,7 +95,7 @@ int gmtoff(time_t t)
     int ut = 3600*tmtime->tm_hour + 60*tmtime->tm_min + tmtime->tm_sec;
 #endif
 #endif
-#ifndef HAVE_TM_GMTOFF
+#if ! HAVE_TM_GMTOFF
     if (lwday != uwday)
     {
       // Adjust for different day
@@ -864,7 +864,7 @@ QByteArray KSystemTimeZoneData::abbreviation(const QDateTime &utcDateTime) const
 #ifdef _POSIX_THREAD_SAFE_FUNCTIONS
         tm tmtime;
         if (localtime_r(&t, &tmtime))
-#ifdef HAVE_STRUCT_TM_TM_ZONE
+#if HAVE_STRUCT_TM_TM_ZONE
             abbr = tmtime.tm_zone;
 #else
             abbr = tzname[(tmtime.tm_isdst > 0) ? 1 : 0];
@@ -872,7 +872,7 @@ QByteArray KSystemTimeZoneData::abbreviation(const QDateTime &utcDateTime) const
 #else
         const tm *tmtime = localtime(&t);
         if (tmtime)
-#ifdef HAVE_STRUCT_TM_TM_ZONE
+#if HAVE_STRUCT_TM_TM_ZONE
             abbr = tmtime->tm_zone;
 #else
             abbr = tzname[(tmtime->tm_isdst > 0) ? 1 : 0];

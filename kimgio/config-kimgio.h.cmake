@@ -1,1 +1,1 @@
-#cmakedefine HAVE_LIBTIFF 1
+#cmakedefine01 HAVE_LIBTIFF

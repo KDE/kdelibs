@@ -37,8 +37,8 @@
      getgrouplist
 */
 
-#cmakedefine HAVE_STRLCAT_PROTO 1
-#if !defined(HAVE_STRLCAT_PROTO)
+#cmakedefine01 HAVE_STRLCAT_PROTO
+#if ! HAVE_STRLCAT_PROTO
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -48,8 +48,8 @@ unsigned long strlcat(char*, const char*, unsigned long);
 #endif
 #endif
 
-#cmakedefine HAVE_STRLCPY_PROTO 1
-#if !defined(HAVE_STRLCPY_PROTO)
+#cmakedefine01 HAVE_STRLCPY_PROTO
+#if ! HAVE_STRLCPY_PROTO
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -59,8 +59,8 @@ unsigned long strlcpy(char*, const char*, unsigned long);
 #endif
 #endif
 
-#cmakedefine HAVE_STRCASESTR_PROTO 1
-#if !defined(HAVE_STRCASESTR_PROTO)
+#cmakedefine01 HAVE_STRCASESTR_PROTO
+#if ! HAVE_STRCASESTR_PROTO
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -70,8 +70,8 @@ char *strcasestr(const char *str1, const char *str2);
 #endif
 #endif
 
-#cmakedefine HAVE_RANDOM_PROTO 1
-#if !defined(HAVE_RANDOM_PROTO)
+#cmakedefine01 HAVE_RANDOM_PROTO 
+#if ! HAVE_RANDOM_PROTO
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -81,8 +81,8 @@ long int random(void);
 #endif
 #endif
 
-#cmakedefine HAVE_SRANDOM_PROTO 1
-#if !defined(HAVE_SRANDOM_PROTO)
+#cmakedefine01 HAVE_SRANDOM_PROTO 
+#if ! HAVE_SRANDOM_PROTO
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -92,8 +92,8 @@ void srandom(unsigned int);
 #endif
 #endif
 
-#cmakedefine HAVE_SETENV_PROTO 1
-#if !defined(HAVE_SETENV_PROTO)
+#cmakedefine01 HAVE_SETENV_PROTO
+#if ! HAVE_SETENV_PROTO
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -103,8 +103,8 @@ int setenv (const char *, const char *, int);
 #endif
 #endif
 
-#cmakedefine HAVE_UNSETENV_PROTO 1
-#if !defined(HAVE_UNSETENV_PROTO)
+#cmakedefine01 HAVE_UNSETENV_PROTO
+#if ! HAVE_UNSETENV_PROTO
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -114,8 +114,8 @@ int unsetenv (const char *);
 #endif
 #endif
 
-#cmakedefine HAVE_USLEEP_PROTO 1
-#if !defined(HAVE_USLEEP_PROTO)
+#cmakedefine01 HAVE_USLEEP_PROTO
+#if ! HAVE_USLEEP_PROTO
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -125,8 +125,8 @@ int usleep (unsigned int);
 #endif
 #endif
 
-#cmakedefine HAVE_INITGROUPS_PROTO 1
-#if !defined(HAVE_INITGROUPS_PROTO)
+#cmakedefine01 HAVE_INITGROUPS_PROTO
+#if ! HAVE_INITGROUPS_PROTO
 #include <unistd.h>
 #ifdef __cplusplus
 extern "C" {
@@ -137,8 +137,8 @@ int initgroups(const char *, gid_t);
 #endif
 #endif
 
-#cmakedefine HAVE_MKDTEMP_PROTO 1
-#if !defined(HAVE_MKDTEMP_PROTO)
+#cmakedefine01 HAVE_MKDTEMP_PROTO
+#if ! HAVE_MKDTEMP_PROTO
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -148,8 +148,8 @@ char *mkdtemp(char *);
 #endif
 #endif
 
-#cmakedefine HAVE_MKSTEMPS_PROTO 1
-#if !defined(HAVE_MKSTEMPS_PROTO)
+#cmakedefine01 HAVE_MKSTEMPS_PROTO
+#if ! HAVE_MKSTEMPS_PROTO
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -159,8 +159,8 @@ int mkstemps(char *, int);
 #endif
 #endif
 
-#cmakedefine HAVE_MKSTEMP_PROTO 1
-#if !defined(HAVE_MKSTEMP_PROTO)
+#cmakedefine01 HAVE_MKSTEMP_PROTO
+#if ! HAVE_MKSTEMP_PROTO
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -170,8 +170,8 @@ int mkstemp(char *);
 #endif
 #endif
 
-#cmakedefine HAVE_TRUNC 1
-#if !defined(HAVE_TRUNC)
+#cmakedefine01 HAVE_TRUNC
+#if ! HAVE_TRUNC
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -181,8 +181,8 @@ double trunc(double);
 #endif
 #endif
 
-#cmakedefine HAVE_GETGROUPLIST 1
-#if !defined(HAVE_GETGROUPLIST)
+#cmakedefine01 HAVE_GETGROUPLIST
+#if ! HAVE_GETGROUPLIST
 #include <sys/types.h> /* for gid_t */
 #ifdef __cplusplus
 extern "C" {

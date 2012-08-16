@@ -32,21 +32,21 @@
 #include "solid/config-solid.h"
 #include <stdlib.h>
 
-#ifdef HAVE_SYS_MNTTAB_H
+#if HAVE_SYS_MNTTAB_H
 #include <sys/mnttab.h>
 #endif
-#ifdef HAVE_MNTENT_H
+#if HAVE_MNTENT_H
 #include <mntent.h>
 #elif defined(HAVE_SYS_MNTENT_H)
 #include <sys/mntent.h>
 #endif
 
 // This is the *BSD branch
-#ifdef HAVE_SYS_MOUNT_H
-#ifdef HAVE_SYS_TYPES_H
+#if HAVE_SYS_MOUNT_H
+#if HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
-#ifdef HAVE_SYS_PARAM_H
+#if HAVE_SYS_PARAM_H
 #include <sys/param.h>
 #endif
 #include <sys/mount.h>
@@ -58,7 +58,7 @@
 #define FSTAB "/etc/fstab"
 #endif
 
-#ifndef HAVE_GETMNTINFO
+#if ! HAVE_GETMNTINFO
 # ifdef _PATH_MOUNTED
 // On some Linux, MNTTAB points to /etc/fstab !
 #  undef MNTTAB
@@ -81,7 +81,7 @@
 // getmntinfo + struct statfs&flags (BSD 4.4 and friends)
 // getfsent + char* (BSD 4.3 and friends)
 
-#ifdef HAVE_SETMNTENT
+#if HAVE_SETMNTENT
 #define SETMNTENT setmntent
 #define ENDMNTENT endmntent
 #define STRUCT_MNTENT struct mntent *
@@ -129,7 +129,7 @@ void Solid::Backends::Fstab::FstabHandling::_k_updateFstabMountPointsCache()
 
     globalFstabCache->m_fstabCache.clear();
 
-#ifdef HAVE_SETMNTENT
+#if HAVE_SETMNTENT
 
     FILE *fstab;
     if ((fstab = setmntent(FSTAB, "r")) == 0) {
@@ -249,7 +249,7 @@ void Solid::Backends::Fstab::FstabHandling::_k_updateMtabMountPointsCache()
 
     globalFstabCache->m_mtabCache.clear();
 
-#ifdef HAVE_GETMNTINFO
+#if HAVE_GETMNTINFO
 
 #ifdef GETMNTINFO_USES_STATVFS
     struct statvfs *mounted;
