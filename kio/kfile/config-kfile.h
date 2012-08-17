@@ -21,12 +21,8 @@
 
 const int kfile_area = 250;
 
-#define DefaultViewStyle QLatin1String("SimpleView")
-#define DefaultPannerPosition 40
 #define DefaultMixDirsAndFiles false
-#define DefaultShowStatusLine false
 #define DefaultShowHidden false
-#define DefaultCaseInsensitive true
 #define DefaultDirsFirst true
 #define DefaultSortReversed false
 #define DefaultRecentURLsNumber 15
