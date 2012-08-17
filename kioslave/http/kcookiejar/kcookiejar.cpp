@@ -120,11 +120,15 @@ static QDateTime parseDate(const QString& _value)
     return dt.toUtc().dateTime();  // Per RFC 2616 sec 3.3.1 always convert to UTC.
 }
 
-static qint64 epoch()
+static qint64 toEpochSecs(const QDateTime& dt)
 {
-    return (QDateTime::currentMSecsSinceEpoch()/1000); // convert to seconds...
+    return (dt.toMSecsSinceEpoch()/1000); // convert to seconds...
 }
 
+static qint64 epoch()
+{
+    return toEpochSecs(QDateTime::currentDateTimeUtc());
+}
 
 QString KCookieJar::adviceToStr(KCookieAdvice _advice)
 {
@@ -777,14 +781,14 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
                 if (max_age == 0)
                     lastCookie.mExpireDate = 1;
                 else
-                    lastCookie.mExpireDate = QDateTime::currentDateTimeUtc().addSecs(max_age).currentMSecsSinceEpoch();
+                    lastCookie.mExpireDate = toEpochSecs(QDateTime::currentDateTimeUtc().addSecs(max_age));
             }
             else if (Name.compare(QL1S("expires"), Qt::CaseInsensitive) == 0)
             {
                 const QDateTime dt = parseDate(Value);
 
                 if (dt.isValid()) {
-                    lastCookie.mExpireDate = (dt.toMSecsSinceEpoch()/1000);
+                    lastCookie.mExpireDate = toEpochSecs(dt);
                     if (lastCookie.mExpireDate == 0)
                         lastCookie.mExpireDate = 1;
                 }
