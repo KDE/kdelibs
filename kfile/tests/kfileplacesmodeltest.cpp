@@ -110,8 +110,12 @@ QStringList KFilePlacesModelTest::placesUrls() const
         QModelIndex index = m_places->index(row, 0);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         urls << m_places->url(index).toDisplayString(QUrl::PreferLocalFile);
-#else
-        urls << m_places->url(index).toString(); // was pathOrUrl
+#else // was pathOrUrl
+        const QUrl u = m_places->url(index);
+        if (u.isLocalFile())
+            urls << u.toLocalFile();
+        else
+            urls << u.toString();
 #endif
     }
     return urls;
