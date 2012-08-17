@@ -1,2 +1,2 @@
 
-#cmakedefine HAVE_KSECRETSSERVICE
+#cmakedefine01 HAVE_KSECRETSSERVICE

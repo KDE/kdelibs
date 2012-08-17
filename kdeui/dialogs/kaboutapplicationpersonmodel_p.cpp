@@ -17,7 +17,7 @@
 
 #include "kaboutapplicationpersonmodel_p.h"
 
-#ifdef HAVE_ATTICA
+#if HAVE_ATTICA
 #include <attica/person.h>
 #endif //HAVE_ATTICA
 
@@ -64,7 +64,7 @@ KAboutApplicationPersonModel::KAboutApplicationPersonModel( const QList< KAboutP
     m_ocsLinkIcons.insert( KAboutApplicationPersonProfileOcsLink::Blog, KDE::icon( "applications-internet" ).pixmap( 16 ) );
     m_ocsLinkIcons.insert( KAboutApplicationPersonProfileOcsLink::Homepage, KDE::icon( "applications-internet" ).pixmap( 16 ) );
 
-#ifdef HAVE_ATTICA
+#if HAVE_ATTICA
     connect( &m_providerManager, SIGNAL(defaultProvidersLoaded()),
              SLOT(onProvidersLoaded()) );
     if( hasOcsUsernames )
@@ -108,7 +108,7 @@ Qt::ItemFlags KAboutApplicationPersonModel::flags( const QModelIndex &index ) co
 
 void KAboutApplicationPersonModel::onProvidersLoaded()   //SLOT
 {
-#ifdef HAVE_ATTICA
+#if HAVE_ATTICA
     if( !m_providerManager.providers().isEmpty() ) {
         m_provider = m_providerManager.providerByUrl( QUrl( m_providerUrl ) );
         if( !m_provider.isValid() ) {
@@ -138,10 +138,10 @@ void KAboutApplicationPersonModel::onProvidersLoaded()   //SLOT
 
 void KAboutApplicationPersonModel::onPersonJobFinished( Attica::BaseJob *job )   //SLOT
 {
-#ifndef HAVE_ATTICA
+#if ! HAVE_ATTICA
     Q_UNUSED( job )
 #endif //HAVE_ATTICA
-#ifdef HAVE_ATTICA
+#if HAVE_ATTICA
     Attica::ItemJob< Attica::Person > *personJob =
         static_cast< Attica::ItemJob< Attica::Person > * >( job );
     if( personJob->metadata().error() == Attica::Metadata::NoError ) {
@@ -235,10 +235,10 @@ void KAboutApplicationPersonModel::onPersonJobFinished( Attica::BaseJob *job )  
 
 void KAboutApplicationPersonModel::onAvatarJobFinished( QNetworkReply *reply )  //SLOT
 {
-#ifndef HAVE_ATTICA
+#if ! HAVE_ATTICA
     Q_UNUSED( reply )
 #endif //HAVE_ATTICA
-#ifdef HAVE_ATTICA
+#if HAVE_ATTICA
     QNetworkAccessManager *manager = reply->manager();
     int personProfileListIndex = manager->property( "personProfile" ).toInt();
 

@@ -1,2 +1,2 @@
 /* libattica available */
-#cmakedefine HAVE_ATTICA 1
+#cmakedefine01 HAVE_ATTICA

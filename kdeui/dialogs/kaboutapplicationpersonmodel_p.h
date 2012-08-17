@@ -20,7 +20,7 @@
 
 #include "dialogs/kaboutapplicationconfigattica_p.h"
 
-#ifdef HAVE_ATTICA
+#if HAVE_ATTICA
 #include <attica/providermanager.h>
 #include <attica/provider.h>
 #endif //HAVE_ATTICA
@@ -79,7 +79,7 @@ private:
 
     bool m_hasAvatarPixmaps;
 
-#ifdef HAVE_ATTICA
+#if HAVE_ATTICA
     Attica::ProviderManager m_providerManager;
     Attica::Provider m_provider;
 #endif //HAVE_ATTICA

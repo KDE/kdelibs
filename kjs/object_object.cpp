@@ -21,7 +21,6 @@
  */
 
 #include "object_object.h"
-#include <config.h>
 
 #include "operations.h"
 #include "function_object.h"
