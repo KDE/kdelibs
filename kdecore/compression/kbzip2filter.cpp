@@ -38,6 +38,8 @@ extern "C" {
         #define bzCompressInit(x,y,z,a) BZ2_bzCompressInit(x, y, z, a);
 #endif
 
+#include <kdebug.h>
+
 #include <QDebug>
 
 #include <qiodevice.h>
