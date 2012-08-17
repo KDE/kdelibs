@@ -44,7 +44,7 @@ application palette (light and dark shades are\ncalculated)."), 0},
 */
 
 #include <QWidget>
-#include <kapplication.h>
+#include <QApplication>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <klocalizedstring.h>
@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
     qDebug("qt arg[%d] = %s", i, qtargs->arg(i).toLocal8Bit().data());
   }
 
-  KApplication app;
+  QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
 
   KCmdLineArgs *kdeargs = KCmdLineArgs::parsedArgs("kde");
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();

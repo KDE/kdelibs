@@ -1,5 +1,5 @@
 #include <QtCore/QDebug>
-#include <kapplication.h>
+#include <QApplication>
 #include <klocalizedstring.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
@@ -22,7 +22,7 @@ int main(int argc, char **argv)
     KCmdLineArgs::addCmdLineOptions( options );
     //KCmdLineArgs::addStdCmdLineOptions();
 
-    KApplication app;
+    QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     QByteArray path;

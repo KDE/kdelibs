@@ -24,7 +24,7 @@
 #include <knewstuff2/core/coreengine.h>
 
 #include <kstandarddirs.h>
-#include <kapplication.h>
+#include <QApplication>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 
@@ -259,7 +259,7 @@ int main(int argc, char **argv)
 
     KCmdLineArgs::init(argc, argv, "knewstuff2_test", 0, qi18n("knewstuff2_test"), 0);
     KCmdLineArgs::addCmdLineOptions(options);
-    KApplication app(false);
+    QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), false);
 
     // Take source directory into account
     kDebug() << "-- adding source directory " << KNSSRCDIR;

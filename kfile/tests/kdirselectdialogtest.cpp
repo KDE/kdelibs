@@ -1,4 +1,4 @@
-#include <kapplication.h>
+#include <QApplication>
 #include <kdirselectdialog.h>
 #include <kmessagebox.h>
 #include <kcmdlineargs.h>
@@ -14,7 +14,7 @@ int main( int argc, char **argv )
 
     KCmdLineArgs::addCmdLineOptions(opt);
 
-    KApplication app;
+    QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
     app.setQuitOnLastWindowClosed(false);
 
     QUrl startDir = KCmdLineArgs::parsedArgs()->count() >= 1 ?

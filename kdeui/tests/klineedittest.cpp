@@ -1,10 +1,10 @@
 #include <QPushButton>
 #include <QtCore/QTimer>
 #include <QBoxLayout>
+#include <QApplication>
 
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
-#include <kapplication.h>
 #include <kdebug.h>
 #include <kdialog.h>
 #include <klocalizedstring.h>
@@ -102,7 +102,7 @@ KLineEditTest::~KLineEditTest()
 
 void KLineEditTest::quitApp()
 {
-    kapp->closeAllWindows();
+    qApp->closeAllWindows();
 }
 
 void KLineEditTest::slotSetStyleSheet()
@@ -194,7 +194,7 @@ int main ( int argc, char **argv)
     KCmdLineArgs::init(argc, argv, &aboutData);
     KCmdLineArgs::addStdCmdLineOptions();
 
-    KApplication a;
+    QApplication a(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
     KLineEditTest *t = new KLineEditTest();
     //t->lineEdit()->setTrapReturnKey( true );
     //t->lineEdit()->completionBox()->setTabHandling( false );

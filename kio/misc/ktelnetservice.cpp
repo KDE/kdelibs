@@ -20,7 +20,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <kapplication.h>
+#include <QApplication>
 #include <ktoolinvocation.h>
 #include <kcoreauthorized.h>
 #include <kmessagebox.h>
@@ -40,7 +40,7 @@ int main(int argc, char **argv)
                "unknown", qi18n("telnet protocol handler"));
     KCmdLineArgs::addCmdLineOptions(options);
 
-    KApplication app;
+    QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 

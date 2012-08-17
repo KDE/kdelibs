@@ -27,7 +27,7 @@
 
 #include "kgesture.h"
 
-class KApplication;
+class QApplication;
 class KAction;
 class QEvent;
 
@@ -55,7 +55,7 @@ private:
 
     friend class KApplicationPrivate;
     //intended to be used at application initialization
-    void installEventFilterOnMe(KApplication *app);
+    void installEventFilterOnMe(QApplication *app);
 
     inline int bitCount(int n);
     void handleAction(KAction *kact);

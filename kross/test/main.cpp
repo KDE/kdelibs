@@ -30,11 +30,11 @@
 #include <QtCore/QFile>
 #include <QtCore/QArgument>
 #include <QtCore/QMetaEnum>
+#include <QApplication>
 
 // KDE
 #include <kdebug.h>
 #include <kcomponentdata.h>
-#include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <kurl.h>
@@ -50,7 +50,7 @@
 #define ERROR_NOINTERPRETER -4
 #define ERROR_EXCEPTION -6
 
-KApplication *app = 0;
+QApplication *app = 0;
 
 QString getInterpreterName(const QString& scriptfile)
 {
@@ -168,7 +168,7 @@ int main(int argc, char **argv)
     }
 
     // init
-    app = new KApplication(true);
+    app = new QApplication(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), true);
     TestObject* testobj1 = new TestObject(0, "TestObject1");
     TestObject* testobj2 = new TestObject(0, "TestObject2");
     Kross::Manager::self().addObject( testobj1 );

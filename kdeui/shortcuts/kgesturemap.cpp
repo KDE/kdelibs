@@ -122,7 +122,7 @@ KAction *KGestureMap::findAction(const KRockerGesture &gesture) const
 }
 
 
-void KGestureMap::installEventFilterOnMe(KApplication *app)
+void KGestureMap::installEventFilterOnMe(QApplication *app)
 {
     app->installEventFilter(this);
 }

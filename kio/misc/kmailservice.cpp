@@ -16,7 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <kapplication.h>
+#include <QApplication>
 #include <qdesktopservices.h>
 #include <klocalizedstring.h>
 #include <kcmdlineargs.h>
@@ -30,7 +30,7 @@ int main( int argc, char **argv )
     KCmdLineArgs::init( argc, argv, "kmailservice", "kdelibs4", qi18n("KMailService"), "unknown", qi18n("Mail service") );
     KCmdLineArgs::addCmdLineOptions( options );
 
-    KApplication a( false );
+    QApplication a(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), false);
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 

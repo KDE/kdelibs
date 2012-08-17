@@ -1,4 +1,4 @@
-#include <kapplication.h>
+#include <QApplication>
 #include <kdebug.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
@@ -44,7 +44,7 @@ int main(int argc, char **argv)
     KCmdLineArgs::addCmdLineOptions( options );
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     int count = args->count();
-    KApplication app;
+    QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
 
     if ( !count )
         args->usage();

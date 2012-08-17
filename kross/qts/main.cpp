@@ -22,13 +22,13 @@
 #include <QScriptEngine>
 #include <QLibraryInfo>
 #include <QDebug>
+#include <QApplication>
 
-#include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 // #include <kurl.h>
 
-KApplication* app = 0;
+QApplication* app = 0;
 
 bool runScriptFile(QScriptEngine* engine, const QString& scriptfile)
 {
@@ -82,7 +82,7 @@ int main(int argc, char **argv)
     }
 
 
-    app = new KApplication( /* GUIenabled */ true );
+    app = new QApplication(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), true);
     QScriptEngine* engine = new QScriptEngine();
     QScriptValue global = engine->globalObject();
 

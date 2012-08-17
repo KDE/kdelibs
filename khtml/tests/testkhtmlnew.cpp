@@ -12,8 +12,8 @@
 #include <QLabel>
 #include <QImage>
 #include <QtXml/QDomDocument>
+#include <QApplication>
 
-#include <kapplication.h>
 #include <kxmlguifactory.h>
 #include <kxmlguiwindow.h>
 #include <kcmdlineargs.h>
@@ -172,7 +172,7 @@ void TestKHTML::setupActions()
     ta->setChecked(m_part->isEditable());
     connect(ta, SIGNAL(toggled(bool)), this, SLOT(toggleEditable(bool)));
 
-    KStandardAction::quit( kapp, SLOT(quit()), m_part->actionCollection() );
+    KStandardAction::quit( qApp, SLOT(quit()), m_part->actionCollection() );
 
     guiFactory()->addClient(m_part);
 }
@@ -243,7 +243,7 @@ int main(int argc, char *argv[])
     options.add("+file", ki18n("url to open"));
     KCmdLineArgs::addCmdLineOptions(options);
 
-    KApplication app;
+    QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     if (args->count() == 0)
     {

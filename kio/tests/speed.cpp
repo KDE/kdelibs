@@ -17,7 +17,7 @@
  *  Boston, MA 02110-1301, USA.
  */
 #include <kdebug.h>
-#include <kapplication.h>
+#include <QApplication>
 #include <time.h>
 #include "speed.h"
 #include <kio/job.h>
@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
 
     KCmdLineArgs::addCmdLineOptions( options );
 
-    KApplication app;
+    QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
 // This is the real "speed test"
     // SpeedTest test( url );
     // app.exec();

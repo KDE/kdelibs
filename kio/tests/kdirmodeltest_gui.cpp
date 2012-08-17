@@ -18,11 +18,11 @@
 
 #include <kdebug.h>
 #include <kcmdlineargs.h>
-#include <kapplication.h>
 #include <kdirlister.h>
 #include <kdirmodel.h>
 #include <kurl.h>
 
+#include <QApplication>
 #include <QTreeView>
 #include <QListView>
 #include <QtCore/QDir>
@@ -67,7 +67,7 @@ int main (int argc, char **argv)
   KCmdLineArgs::addCmdLineOptions( options );
   KCmdLineArgs::addStdCmdLineOptions();
 
-  KApplication a;
+  QApplication a(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
   KDirModel *dirmodel = new KDirModel(0);

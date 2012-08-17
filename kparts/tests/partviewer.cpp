@@ -19,7 +19,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kapplication.h>
+#include <kiconloader.h>
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <klocalizedstring.h>
@@ -27,6 +27,7 @@
 #include <kcmdlineargs.h>
 #include <qmimedatabase.h>
 
+#include <QApplication>
 #include <QWidget>
 #include <QtCore/QDir>
 #include <QtCore/QFile>

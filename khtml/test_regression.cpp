@@ -32,7 +32,7 @@
 #include <signal.h>
 #include <unistd.h>
 
-#include <kapplication.h>
+#include <QApplication>
 #include <kacceleratormanager.h>
 
 #include <QImage>
@@ -698,7 +698,7 @@ int main(int argc, char *argv[])
         setenv( "DISPLAY", ":47", 1 );
     }
 
-    KApplication a;
+    QApplication a(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
 //    a.disableAutoDcopRegistration();
     a.setStyle( new TestStyle );
     KConfig sc1( "cryptodefaults", KConfig::SimpleConfig );

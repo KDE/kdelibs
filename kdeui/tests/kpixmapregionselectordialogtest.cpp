@@ -1,7 +1,7 @@
 #include "kpixmapregionselectordialog.h"
 #include <QPixmap>
 #include <QImage>
-#include <kapplication.h>
+#include <QApplication>
 #include <kcmdlineargs.h>
 #include <iostream>
 
@@ -12,7 +12,7 @@ int main(int argc, char**argv)
 
   KCmdLineArgs::init(argc, argv, "test", 0, qi18n("test"), "1.0", qi18n("test"));
   KCmdLineArgs::addCmdLineOptions( options );
-  KApplication app("test");
+  QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
 
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
   if (args->count()!=1)

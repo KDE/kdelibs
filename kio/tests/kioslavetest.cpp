@@ -9,13 +9,13 @@
   LGPL version 2.
  */
 
+#include <QApplication>
 #include <QLayout>
 #include <QMessageBox>
 #include <QtCore/QDir>
 #include <QGroupBox>
 
 #include <unistd.h>
-#include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
@@ -489,7 +489,7 @@ int main(int argc, char **argv) {
 
   KCmdLineArgs::init( argc, argv, "kioslavetest", 0, qi18n("KIOSlave test"), version, qi18n("Test for kioslaves"));
   KCmdLineArgs::addCmdLineOptions( options );
-  KApplication app;
+  QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
 
   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 

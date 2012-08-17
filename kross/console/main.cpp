@@ -23,9 +23,9 @@
 // Qt
 
 #include <QtCore/QFile>
+#include <QApplication>
 
 // KDE
-#include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <kurl.h>
@@ -42,7 +42,7 @@
 #define ERROR_NOINTERPRETER -4
 #define ERROR_EXCEPTION -6
 
-KApplication* app = 0;
+QApplication* app = 0;
 
 int runScriptFile(const QString& scriptfile)
 {
@@ -117,7 +117,7 @@ int main(int argc, char **argv)
     }
 
     // Create KApplication instance.
-    app = new KApplication( /* GUIenabled */ true );
+    app = new QApplication(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), true);
 
     // Each argument is a scriptfile to open
     for(int i = 0; i < args->count(); i++) {

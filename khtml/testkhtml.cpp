@@ -3,7 +3,7 @@
 #include "testkhtml.h"
 
 #include <stdlib.h>
-#include "kapplication.h"
+#include <QApplication>
 #include "khtmlview.h"
 #include "html_document.h"
 #include "htmltokenizer.h"
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
             "1.0", ki18n("a basic web browser using the KHTML library"));
     KCmdLineArgs::addCmdLineOptions(options);
 
-    KApplication a;
+    QApplication a(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs( );
     if ( args->count() == 0 ) {
 	KCmdLineArgs::usage();
@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
     doc->setJavaEnabled(true);
     doc->setPluginsEnabled( true );
     doc->setURLCursor(QCursor(Qt::PointingHandCursor));
-    a.setTopWidget(doc->widget());
+    a.setActiveWindow(doc->widget());
     QWidget::connect(doc, SIGNAL(setWindowCaption(QString)),
 		     doc->widget()->topLevelWidget(), SLOT(setCaption(QString)));
     doc->widget()->show();

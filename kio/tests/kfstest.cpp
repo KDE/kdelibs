@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <QtCore/QDir>
+#include <QApplication>
 #include <QLayout>
 #include <QtCore/QMutableStringListIterator>
 #include <QWidget>
@@ -29,7 +30,6 @@
 #include <kfiledialog.h>
 #include <kmessagebox.h>
 #include <kconfig.h>
-#include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kurl.h>
 #if 0 // SPLIT-TODO
@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 
     KCmdLineArgs::init(argc, argv, "kfstest", 0, qi18n("kfstest"), "0", qi18n("test app"));
     KCmdLineArgs::addCmdLineOptions(options);
-    KApplication a;
+    QApplication a(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
     a.setQuitOnLastWindowClosed(false);
 
     QString name1;

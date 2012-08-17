@@ -24,8 +24,8 @@
 #include <QDateTime>
 #include <QLabel>
 #include <QMovie>
+#include <QApplication>
 
-#include <kapplication.h>
 #include <kcmdlineargs.h>
 #include <kiconloader.h>
 #include <kdebug.h>
@@ -79,7 +79,7 @@ int main(int argc, char **argv)
     options.add("ksni-count <count>", qi18n("How many instances of KStatusNotifierItem to create"), "1");
     KCmdLineArgs::addCmdLineOptions(options);
 
-    KApplication app;
+    QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
     QLabel *l = new QLabel("System Tray Main Window", 0L);

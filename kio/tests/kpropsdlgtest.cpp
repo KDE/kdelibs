@@ -1,4 +1,4 @@
-#include <kapplication.h>
+#include <QApplication>
 #include <klocalizedstring.h>
 #include <kaboutdata.h>
 #include <kpropertiesdialog.h>
@@ -14,7 +14,7 @@ int main ( int argc, char** argv )
     KCmdLineArgs::init(argc, argv, &aboutData);
     KCmdLineArgs::addCmdLineOptions( options );
 
-    KApplication app;
+    QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     if ( args->count() < 1 )

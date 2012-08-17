@@ -24,8 +24,8 @@
 #include <unistd.h>
 
 #include <QtCore/QTextStream>
+#include <QApplication>
 
-#include <kapplication.h>
 #include <kemailsettings.h>
 #include <klocalizedstring.h>
 #include <kcmdlineargs.h>
@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
     KCmdLineArgs::addCmdLineOptions(options);
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-    KApplication a(false);
+    QApplication a(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), false);
 
     QString recipient = args->getOption("recipient");
     if (recipient.isEmpty())
