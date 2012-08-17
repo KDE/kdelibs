@@ -17,6 +17,13 @@ include_directories( ${KDE4_KIO_INCLUDES}
 include_directories( ${LIBXML2_INCLUDE_DIR} ${LIBXSLT_INCLUDE_DIR} )
 
 configure_file(checkXML.in.cmake ${CMAKE_CURRENT_BINARY_DIR}/checkXML )
+configure_file(config-kdoctools.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdoctools.h )
+
+check_include_files(stdio.h       HAVE_STDIO_H)
+check_include_files(stdlib.h      HAVE_STDLIB_H)
+check_include_files(sys/types.h   HAVE_SYS_TYPES_H)
+check_include_files(sys/stat.h    HAVE_SYS_STAT_H)
+
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/checkXML )
 
 find_package(DocBookXML)

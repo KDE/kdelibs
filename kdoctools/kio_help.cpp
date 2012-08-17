@@ -20,7 +20,7 @@
 */
 
 
-#include <config.h>
+#include <config-kdoctools.h>
 
 #include "kio_help.h"
 #include "xslt.h"
@@ -42,19 +42,19 @@
 #include <QTextDocument>
 
 
-#ifdef HAVE_SYS_TYPES_H
+#if HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #endif
-#ifdef HAVE_SYS_STAT_H
+#if HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #endif
 
 #include <errno.h>
 #include <fcntl.h>
-#ifdef HAVE_STDIO_H
+#if HAVE_STDIO_H
 # include <stdio.h>
 #endif
-#ifdef HAVE_STDLIB_H
+#if HAVE_STDLIB_H
 # include <stdlib.h>
 #endif
 
