@@ -21,7 +21,7 @@
 
 #include "kencodingfiledialog.h"
 
-#include <config-kfile.h>
+#include <defaults-kfile.h>
 
 #include <kabstractfilewidget.h>
 #include <kcombobox.h>

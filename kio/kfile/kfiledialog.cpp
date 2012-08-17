@@ -36,7 +36,7 @@
 #include <kimageio.h>
 #include <klocalizedstring.h>
 #include <kpushbutton.h>
-#include <config-kfile.h>
+#include <defaults-kfile.h>
 #include <krecentdocument.h>
 #include <kdebug.h>
 #include <kwindowsystem.h>

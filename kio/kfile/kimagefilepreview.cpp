@@ -28,7 +28,7 @@
 #include <kio/previewjob.h>
 #include <kconfiggroup.h>
 
-#include <config-kfile.h>
+#include <defaults-kfile.h>
 
 /**** KImageFilePreview ****/
 
