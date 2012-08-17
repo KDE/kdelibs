@@ -7,13 +7,13 @@
 
 #include "jp2.h"
 
-#include <config.h>
+#include <config-kimgio.h>
 
-#ifdef HAVE_SYS_TYPES_H
+#if HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
 
-#ifdef HAVE_STDINT_H
+#if HAVE_STDINT_H
 #include <stdint.h>
 #endif
 
