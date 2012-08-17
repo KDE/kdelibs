@@ -20,19 +20,23 @@
  */
 
 #include "../config.h"
-#cmakedefine HAVE_PTHREAD_ATTR_GET_NP 1
-#cmakedefine HAVE_PTHREAD_GETATTR_NP 1
-#cmakedefine HAVE_PCREPOSIX 1
-#cmakedefine HAVE_SYS_TIMEB_H 1
-#cmakedefine HAVE_FLOAT_H 1
-#cmakedefine HAVE_IEEEFP_H 1
-#cmakedefine HAVE_PTHREAD_NP_H 1
-#cmakedefine HAVE_MEMCHECK_H 1
-#cmakedefine HAVE_FUNC__FINITE 1
-#cmakedefine HAVE_FUNC_FINITE 1
-#cmakedefine HAVE_FUNC_ISINF 1
-#cmakedefine HAVE_FUNC_ISNAN 1
-#cmakedefine HAVE_FUNC_POSIX_MEMALIGN 1
+
+/* FIXME: Seems unused. */
+#cmakedefine01 HAVE_PTHREAD_ATTR_GET_NP
+#cmakedefine01 HAVE_PTHREAD_GETATTR_NP
+#cmakedefine01 HAVE_SYS_TIMEB_H
+#cmakedefine01 HAVE_FLOAT_H
+#cmakedefine01 HAVE_IEEEFP_H
+#cmakedefine01 HAVE_PTHREAD_NP_H
+#cmakedefine01 HAVE_MEMCHECK_H
+#cmakedefine01 HAVE_FUNC__FINITE
+#cmakedefine01 HAVE_FUNC_FINITE
+#cmakedefine01 HAVE_FUNC_ISINF
+#cmakedefine01 HAVE_FUNC_ISNAN
+#cmakedefine01 HAVE_FUNC_POSIX_MEMALIGN
+
+
+#cmakedefine01 HAVE_PCREPOSIX
 
 /* Defined to 1 if you have a tm_gmtoff member in struct tm */
-#cmakedefine HAVE_TM_GMTOFF 1
+#cmakedefine01 HAVE_TM_GMTOFF

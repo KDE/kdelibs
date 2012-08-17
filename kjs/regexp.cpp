@@ -263,7 +263,7 @@ int RegExp::availableStackSize = 8*1024*1024;
 RegExp::RegExp(const UString &p, char flags)
   : _pat(p), _flags(flags), _valid(true), _numSubPatterns(0)
 {
-#ifdef HAVE_PCREPOSIX
+#if HAVE_PCREPOSIX
   // Determine whether libpcre has unicode support if need be..
   if (utf8Support == Unknown) {
     int supported;
@@ -274,7 +274,7 @@ RegExp::RegExp(const UString &p, char flags)
 
   UString intern = sanitizePattern(p);
 
-#ifdef HAVE_PCREPOSIX
+#if HAVE_PCREPOSIX
   int options = 0;
 
   // we are close but not 100% the same as Perl
@@ -358,7 +358,7 @@ RegExp::RegExp(const UString &p, char flags)
 
 RegExp::~RegExp()
 {
-#ifdef HAVE_PCREPOSIX
+#if HAVE_PCREPOSIX
   pcre_free(_regex);
 #else
   /* TODO: is this really okay after an error ? */
@@ -466,7 +466,7 @@ UString RegExp::match(const RegExpStringContext& ctx, const UString &s, bool *er
   if (i > s.size() || s.isNull())
     return UString::null();
 
-#ifdef HAVE_PCREPOSIX
+#if HAVE_PCREPOSIX
 
   if (!_regex)
     return UString::null();

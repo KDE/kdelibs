@@ -92,7 +92,7 @@ inline int gmtoffset(const tm& t)
     // FIXME: Use undocumented _dstbias?
     return -(_timezone / 60 - (t.tm_isdst > 0 ? 60 : 0 )) * 60;
 #else
-#ifdef HAVE_TM_GMTOFF
+#if HAVE_TM_GMTOFF
     return t.tm_gmtoff;
 #else
     return - timezone;

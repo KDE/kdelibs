@@ -28,7 +28,7 @@
 
 #include <config.h>
 
-#ifdef HAVE_PCREPOSIX
+#if HAVE_PCREPOSIX
 #include <pcre.h>
 #else  // POSIX regex - not so good...
 extern "C" { // bug with some libc5 distributions
@@ -83,7 +83,7 @@ namespace KJS {
     static bool didIncreaseMaxStackSize;
     static int availableStackSize;
   private:
-#ifdef HAVE_PCREPOSIX
+#if HAVE_PCREPOSIX
     pcre *_regex;
 #else
     regex_t _regex;
