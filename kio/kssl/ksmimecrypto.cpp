@@ -30,7 +30,7 @@
 
 // this hack provided by Malte Starostik to avoid glibc/openssl bug
 // on some systems
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 #define crypt _openssl_crypt
 #include <openssl/err.h>
 #undef crypt
@@ -46,7 +46,7 @@
 #define BIO_ctrl kossl->BIO_ctrl
 
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 static const char eot = 0;
 
 class KSMIMECryptoPrivate {
@@ -283,7 +283,7 @@ KSMIMECrypto::rc KSMIMECryptoPrivate::sslErrToRc(void) {
 
 
 KSMIMECrypto::KSMIMECrypto() {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
     kossl = KOpenSSLProxy::self();
     priv = new KSMIMECryptoPrivate(kossl);
     if (!kossl->hasLibCrypto()) kossl = 0L;
@@ -295,7 +295,7 @@ KSMIMECrypto::KSMIMECrypto() {
 
 
 KSMIMECrypto::~KSMIMECrypto() {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
     delete priv;
 #endif
 }
@@ -306,7 +306,7 @@ KSMIMECrypto::rc KSMIMECrypto::signMessage(const QByteArray &clearText,
 					   const KSSLPKCS12 &privKey,
 					   const QList<KSSLCertificate *> &certs,
 					   bool detached) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
     if (!kossl) return KSC_R_NO_SSL;
     BIO *in = kossl->BIO_new_mem_buf((char *)clearText.data(), clearText.size());
     BIO *out = kossl->BIO_new(kossl->BIO_s_mem());
@@ -331,7 +331,7 @@ KSMIMECrypto::rc KSMIMECrypto::signMessage(const QByteArray &clearText,
 KSMIMECrypto::rc KSMIMECrypto::checkDetachedSignature(const QByteArray &clearText,
 						      const QByteArray &signature,
 						      QList<KSSLCertificate *> &foundCerts) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
     if (!kossl) return KSC_R_NO_SSL;
     BIO *txt = kossl->BIO_new_mem_buf((char *)clearText.data(), clearText.length());
     BIO *sig = kossl->BIO_new_mem_buf((char *)signature.data(), signature.size());
@@ -351,7 +351,7 @@ KSMIMECrypto::rc KSMIMECrypto::checkDetachedSignature(const QByteArray &clearTex
 KSMIMECrypto::rc KSMIMECrypto::checkOpaqueSignature(const QByteArray &signedText,
 						    QByteArray &clearText,
 						    QList<KSSLCertificate *> &foundCerts) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
     if (!kossl) return KSC_R_NO_SSL;
 
     BIO *in = kossl->BIO_new_mem_buf((char *)signedText.data(), signedText.size());
@@ -376,7 +376,7 @@ KSMIMECrypto::rc KSMIMECrypto::encryptMessage(const QByteArray &clearText,
 					      QByteArray &cipherText,
 					      algo algorithm,
 					      const QList<KSSLCertificate *> &recip) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
     if (!kossl) return KSC_R_NO_SSL;
 
     BIO *in = kossl->BIO_new_mem_buf((char *)clearText.data(), clearText.size());
@@ -400,7 +400,7 @@ KSMIMECrypto::rc KSMIMECrypto::encryptMessage(const QByteArray &clearText,
 KSMIMECrypto::rc KSMIMECrypto::decryptMessage(const QByteArray &cipherText,
 					      QByteArray &clearText,
 					      const KSSLPKCS12 &privKey) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
     if (!kossl) return KSC_R_NO_SSL;
 
     BIO *in = kossl->BIO_new_mem_buf((char *)cipherText.data(), cipherText.size());

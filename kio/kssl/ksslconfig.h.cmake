@@ -25,6 +25,6 @@
 #include <winsock2.h>
 #endif
 
-#cmakedefine KSSL_HAVE_SSL 1
+#cmakedefine01 KSSL_HAVE_SSL
 
 #endif

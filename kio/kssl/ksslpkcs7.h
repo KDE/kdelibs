@@ -23,7 +23,7 @@
 
 #include <ksslconfig.h>
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 #define crypt _openssl_crypt
 #include <openssl/pkcs7.h>
 #undef crypt

@@ -24,7 +24,7 @@
 #include <ksslconfig.h>
 
 #include <unistd.h>
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 #define crypt _openssl_crypt
 #include <openssl/x509.h>
 #undef crypt
@@ -33,7 +33,7 @@ class QString;
 class QDateTime;
 
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 // This functionality is missing in OpenSSL
 /**
  *  Convert an ASN1 UTCTIME value to a string.  Uses KLocale settings.

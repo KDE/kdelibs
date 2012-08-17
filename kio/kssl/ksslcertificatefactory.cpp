@@ -27,7 +27,7 @@
 KSSLCertificate*
 KSSLCertificateFactory::generateSelfSigned(KSSLKeyType /*keytype*/) {
 #if 0
-  //#ifdef KSSL_HAVE_SSL
+  //#if KSSL_HAVE_SSL
   X509_NAME *x509name = X509_NAME_new();
   X509      *x509;
   ASN1_UTCTIME *beforeafter;

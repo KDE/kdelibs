@@ -30,7 +30,7 @@ KSSLSession::KSSLSession() : _session(0L) {
 
 
 KSSLSession::~KSSLSession() {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 	if (_session) {
 		KOpenSSLProxy::self()->SSL_SESSION_free(static_cast<SSL_SESSION*>(_session));
 		_session = 0L;
@@ -41,7 +41,7 @@ KSSLSession::~KSSLSession() {
 
 QString KSSLSession::toString() const {
     QString rc;
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
     SSL_SESSION *session = static_cast<SSL_SESSION*>(_session);
     int slen = KOpenSSLProxy::self()->i2d_SSL_SESSION(session, 0L);
 
@@ -67,7 +67,7 @@ QString KSSLSession::toString() const {
 
 KSSLSession *KSSLSession::fromString(const QString& s) {
 KSSLSession *session = 0L;
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 QByteArray qba, qbb = s.toLocal8Bit();
         qba = QByteArray::fromBase64(qbb);
 	unsigned char *qbap = reinterpret_cast<unsigned char *>(qba.data());

@@ -47,7 +47,7 @@
  */
 #define MAX_ENTRIES 32
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 
 typedef QPair<QString,QString> KSSLCSession;
 typedef QList<KSSLCSession> KSSLCSessions;
@@ -72,7 +72,7 @@ static void setup() {
 #endif
 
 QString KSSLCSessionCache::getSessionForUrl(const QUrl &kurl) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
     if (!sessions) return QString();
     QString key = URLtoKey(kurl);
 
@@ -97,7 +97,7 @@ QString KSSLCSessionCache::getSessionForUrl(const QUrl &kurl) {
 
 
 void KSSLCSessionCache::putSessionForUrl(const QUrl &kurl, const QString &session) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
     if (!sessions) setup();
     QString key = URLtoKey(kurl);
     KSSLCSessions::iterator it = sessions->begin();

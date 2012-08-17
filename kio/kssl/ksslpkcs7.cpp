@@ -33,7 +33,7 @@
 
 #include <assert.h>
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 #define sk_new kossl->sk_new
 #define sk_push kossl->sk_push
 #define sk_free kossl->sk_free
@@ -52,7 +52,7 @@ KSSLPKCS7::KSSLPKCS7() {
 
 
 KSSLPKCS7::~KSSLPKCS7() {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
    if (_pkcs) kossl->PKCS7_free(_pkcs);
 #endif
    delete _cert;
@@ -60,7 +60,7 @@ KSSLPKCS7::~KSSLPKCS7() {
 
 
 KSSLPKCS7* KSSLPKCS7::fromString(const QString &base64) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
     QTemporaryFile ktf;
     ktf.open();
 
@@ -77,7 +77,7 @@ return NULL;
 
 
 KSSLPKCS7* KSSLPKCS7::loadCertFile(const QString &filename) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 QFile qf(filename);
 PKCS7 *newpkcs = NULL;
 
@@ -101,7 +101,7 @@ return NULL;
 
 
 void KSSLPKCS7::setCert(PKCS7 *c) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
    _pkcs = c;
    //STACK_OF(PKCS7_SIGNER_INFO) *PKCS7_get_signer_info(PKCS7 *p7);
    //X509 *PKCS7_cert_from_signer_info(PKCS7 *p7, PKCS7_SIGNER_INFO *si);
@@ -122,7 +122,7 @@ KSSLCertChain *KSSLPKCS7::getChain() {
 
 QString KSSLPKCS7::toString() const {
 QString base64;
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 unsigned char *p;
 int len;
 
@@ -141,7 +141,7 @@ return base64;
 
 
 bool KSSLPKCS7::toFile(const QString &filename) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 QFile out(filename);
 
    if (!out.open(QIODevice::WriteOnly)) return false;
@@ -164,7 +164,7 @@ return false;
 
 
 KSSLCertificate::KSSLValidation KSSLPKCS7::validate() const {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 KSSLCertificate::KSSLValidation xx = _cert->validate();
 return xx;
 #else
@@ -192,7 +192,7 @@ QString KSSLPKCS7::name() const {
 }
 
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 #undef sk_new
 #undef sk_push
 #undef sk_free

@@ -28,7 +28,7 @@
 
 // this hack provided by Malte Starostik to avoid glibc/openssl bug
 // on some systems
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 #define crypt _openssl_crypt
 #include <openssl/ssl.h>
 #include <openssl/x509.h>
@@ -44,7 +44,7 @@
 #include <kdebug.h>
 #include <QtCore/QStringList>
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 #define sk_new d->kossl->sk_new
 #define sk_push d->kossl->sk_push
 #define sk_free d->kossl->sk_free
@@ -74,7 +74,7 @@ KSSLCertChain::KSSLCertChain()
 
 
 KSSLCertChain::~KSSLCertChain() {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
   if (_chain) {
     STACK_OF(X509) *x = (STACK_OF(X509) *)_chain;
 
@@ -105,7 +105,7 @@ KSSLCertChain *KSSLCertChain::replicate() {
 
 
 int KSSLCertChain::depth() {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
   return sk_X509_num((STACK_OF(X509)*)_chain);
 #endif
 return 0;
@@ -120,7 +120,7 @@ void *KSSLCertChain::rawChain()
 QList<KSSLCertificate *> KSSLCertChain::getChain() const {
     QList<KSSLCertificate *> cl;
     if (!_chain) return cl;
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
     STACK_OF(X509) *x = (STACK_OF(X509) *)_chain;
 
    for (int i = 0; i < sk_X509_num(x); i++) {
@@ -137,7 +137,7 @@ QList<KSSLCertificate *> KSSLCertChain::getChain() const {
 
 
 void KSSLCertChain::setChain(const QList<KSSLCertificate *>& chain) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
     if (_chain) {
         STACK_OF(X509) *x = (STACK_OF(X509) *)_chain;
 
@@ -161,7 +161,7 @@ void KSSLCertChain::setChain(const QList<KSSLCertificate *>& chain) {
 
 
 void KSSLCertChain::setChain(void *stack_of_x509) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 if (_chain) {
     STACK_OF(X509) *x = (STACK_OF(X509) *)_chain;
 
@@ -203,7 +203,7 @@ void KSSLCertChain::setCertChain(const QStringList& chain) {
 }
 
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 #undef sk_new
 #undef sk_push
 #undef sk_free

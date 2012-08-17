@@ -77,7 +77,7 @@ public:
 KSSLKeyGen::KSSLKeyGen(QWidget *parent)
     : QWizard(parent), d(new KSSLKeyGenPrivate)
 {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 
     QWizardPage* page1 = new QWizardPage(this);
     page1->setTitle(i18n("KDE Certificate Request"));
@@ -159,7 +159,7 @@ bool KSSLKeyGen::validateCurrentPage() {
 
 
 int KSSLKeyGen::generateCSR(const QString& name, const QString& pass, int bits, int e) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 	KOSSL *kossl = KOSSL::self();
 	int rc;
 
@@ -253,7 +253,7 @@ int KSSLKeyGen::generateCSR(const QString& name, const QString& pass, int bits, 
 QStringList KSSLKeyGen::supportedKeySizes() {
     QStringList x;
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
     x	<< i18n("2048 (High Grade)")
         << i18n("1024 (Medium Grade)")
         << i18n("768  (Low Grade)")

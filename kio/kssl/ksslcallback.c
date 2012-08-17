@@ -18,7 +18,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 #ifndef _kde_ksslcallback_c
 #define _kde_ksslcallback_c
 

@@ -25,7 +25,7 @@
 
 // this hack provided by Malte Starostik to avoid glibc/openssl bug
 // on some systems
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 #include <unistd.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -65,7 +65,7 @@ public:
 
 	KSSLCertificate::KSSLValidation m_cert_vfy_res;
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 	SSL *m_ssl;
 	SSL_CTX *m_ctx;
 	SSL_METHOD *m_meth;
@@ -79,7 +79,7 @@ KSSL::KSSL(bool init) {
 	m_bInit = false;
 	m_bAutoReconfig = true;
 	m_cfg = new KSSLSettings();
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 	d->m_ssl = 0L;
 #endif
 
@@ -97,7 +97,7 @@ KSSL::~KSSL() {
 
 int KSSL::seedWithEGD() {
 int rc = 0;
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 	if (m_cfg->useEGD() && !m_cfg->getEGDPath().isEmpty()) {
 		rc = d->kossl->RAND_egd(m_cfg->getEGDPath().toLatin1().constData());
 		if (rc < 0)
@@ -117,7 +117,7 @@ return rc;
 
 
 bool KSSL::initialize() {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 	kDebug(7029) << "KSSL initialize";
 	if (m_bInit)
 		return false;
@@ -148,7 +148,7 @@ return false;
 
 
 void KSSL::close() {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 //kDebug(7029) << "KSSL close";
 	if (!m_bInit)
 		return;
@@ -200,7 +200,7 @@ KSSLSettings * KSSL::settings()
 }
 
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 bool KSSL::m_bSSLWorks = true;
 #else
 bool KSSL::m_bSSLWorks = false;

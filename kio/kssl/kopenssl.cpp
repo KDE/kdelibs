@@ -21,7 +21,7 @@
 #include <config.h>
 #include <ksslconfig.h>
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 #include <openssl/opensslv.h>
 #endif
 
@@ -38,7 +38,7 @@
 #include <unistd.h>
 
 extern "C" {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 static int (*K_SSL_connect)     (SSL *) = 0L;
 static int (*K_SSL_accept)      (SSL *) = 0L;
 static int (*K_SSL_read)        (SSL *, void *, int) = 0L;
@@ -403,7 +403,7 @@ KOpenSSLProxy::KOpenSSLProxy()
    }
 
    if (d->cryptoLib) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
       K_X509_free = (void (*) (X509 *)) d->cryptoLib->resolveFunction("X509_free");
       K_RAND_egd = (int (*)(const char *)) d->cryptoLib->resolveFunction("RAND_egd");
       K_RAND_load_file = (int (*)(const char *, long)) d->cryptoLib->resolveFunction("RAND_load_file");
@@ -576,7 +576,7 @@ KOpenSSLProxy::KOpenSSLProxy()
 #endif
 
    if (d->sslLib) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
       // stand back from your monitor and look at this.  it's fun! :)
       K_SSL_connect = (int (*)(SSL *)) d->sslLib->resolveFunction("SSL_connect");
       K_SSL_accept = (int (*)(SSL *)) d->sslLib->resolveFunction("SSL_accept");
@@ -674,7 +674,7 @@ KOpenSSLProxy::~KOpenSSLProxy() {
 // FIXME: we should check "ok" and allow this to init the lib if !ok.
 
 KOpenSSLProxy *KOpenSSLProxy::self() {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
    if(!KOpenSSLProxyPrivate::sSelf) {
       KOpenSSLProxyPrivate::sSelf = new KOpenSSLProxy();
       qAddPostRoutine(KOpenSSLProxyPrivate::cleanupKOpenSSLProxy);
@@ -689,7 +689,7 @@ KOpenSSLProxy *KOpenSSLProxy::self() {
 
 
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 
 
 

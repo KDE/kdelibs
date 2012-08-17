@@ -29,7 +29,7 @@ class KOpenSSLProxyPrivate;
 
 #include <ksslconfig.h>
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 #define crypt _openssl_crypt
 #include <openssl/ssl.h>
 #include <openssl/x509.h>
@@ -88,7 +88,7 @@ public:
    void destroy();
 
    // Here are the symbols that we need.
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 
    /*
     *   SSL_connect - initiate the TLS/SSL handshake with an TLS/SSL server

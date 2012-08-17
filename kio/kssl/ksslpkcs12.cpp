@@ -33,7 +33,7 @@
 
 #include <assert.h>
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 #define sk_new kossl->sk_new
 #define sk_push kossl->sk_push
 #define sk_free kossl->sk_free
@@ -55,7 +55,7 @@ KSSLPKCS12::KSSLPKCS12() {
 
 
 KSSLPKCS12::~KSSLPKCS12() {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
    if (_pkey) kossl->EVP_PKEY_free(_pkey);
    if (_caStack) {
       for (;;) {
@@ -72,7 +72,7 @@ KSSLPKCS12::~KSSLPKCS12() {
 
 
 KSSLPKCS12* KSSLPKCS12::fromString(const QString &base64, const QString &password) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
     QTemporaryFile ktf;
     ktf.open();
 
@@ -89,7 +89,7 @@ return NULL;
 
 
 KSSLPKCS12* KSSLPKCS12::loadCertFile(const QString &filename, const QString &password) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 QFile qf(filename);
 PKCS12 *newpkcs = NULL;
 
@@ -122,14 +122,14 @@ return NULL;
 
 
 void KSSLPKCS12::setCert(PKCS12 *c) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
    _pkcs = c;
 #endif
 }
 
 
 bool KSSLPKCS12::changePassword(const QString &pold, const QString &pnew) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
    // OpenSSL makes me cast away the const here.  argh
    return (0 == kossl->PKCS12_newpass(_pkcs,
                            pold.isNull() ? (char *)"" : (char *)pold.toLatin1().constData(),
@@ -140,7 +140,7 @@ return false;
 
 
 bool KSSLPKCS12::parse(const QString &pass) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 X509 *x = NULL;
 
   assert(_pkcs);   // if you're calling this before pkcs gets set, it's a BUG!
@@ -194,7 +194,7 @@ KSSLCertificate *KSSLPKCS12::getCertificate() {
 QString KSSLPKCS12::toString()
 {
    QString base64;
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
    unsigned char *p;
    int len;
 
@@ -213,7 +213,7 @@ QString KSSLPKCS12::toString()
 
 
 bool KSSLPKCS12::toFile(const QString &filename) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 QFile out(filename);
 
    if (!out.open(QIODevice::WriteOnly)) return false;
@@ -241,7 +241,7 @@ KSSLCertificate::KSSLValidation KSSLPKCS12::validate() {
 
 
 KSSLCertificate::KSSLValidation KSSLPKCS12::validate(KSSLCertificate::KSSLPurpose p) {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 KSSLCertificate::KSSLValidation xx = _cert->validate(p);
    if (1 != kossl->X509_check_private_key(_cert->getCert(), _pkey)) {
       xx = KSSLCertificate::PrivateKeyFailed;
@@ -279,7 +279,7 @@ QString KSSLPKCS12::name() const {
 }
 
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 #undef sk_new
 #undef sk_push
 #undef sk_free

@@ -41,7 +41,7 @@ KSSLX509V3::~KSSLX509V3() {
  */
 
 bool KSSLX509V3::certTypeCA() const {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 	// First try CA without X509_PURPOSE_ANY CA, then just try SSLCA
 	return (flags & (65471L << 16)) ? true : certTypeSSLCA();
 #endif
@@ -50,7 +50,7 @@ bool KSSLX509V3::certTypeCA() const {
 
 
 bool KSSLX509V3::certTypeSSLCA()  const {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 	return (flags & ((1 << (16+X509_PURPOSE_NS_SSL_SERVER-1))|
                          (1 << (16+X509_PURPOSE_SSL_SERVER-1))|
                          (1 << (16+X509_PURPOSE_SSL_CLIENT-1)))) ? true :
@@ -63,7 +63,7 @@ bool KSSLX509V3::certTypeSSLCA()  const {
 
 
 bool KSSLX509V3::certTypeEmailCA() const {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 	return (flags & ((1 << (16+X509_PURPOSE_SMIME_ENCRYPT-1))|
                          (1 << (16+X509_PURPOSE_SMIME_SIGN-1)))) ? true :
 			  certTypeSMIME();
@@ -73,7 +73,7 @@ bool KSSLX509V3::certTypeEmailCA() const {
 
 
 bool KSSLX509V3::certTypeCodeCA() const {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 	return (flags & (1 << (16+X509_PURPOSE_ANY-1))) ? true : false;
 #endif
 	return false;
@@ -81,7 +81,7 @@ bool KSSLX509V3::certTypeCodeCA() const {
 
 
 bool KSSLX509V3::certTypeSSLClient() const {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 	return (flags & (1 << (X509_PURPOSE_SSL_CLIENT-1))) ? true : false;
 #endif
 	return false;
@@ -89,7 +89,7 @@ bool KSSLX509V3::certTypeSSLClient() const {
 
 
 bool KSSLX509V3::certTypeSSLServer() const {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 	return (flags & (1 << (X509_PURPOSE_SSL_SERVER-1))) ? true : false;
 #endif
 	return false;
@@ -97,7 +97,7 @@ bool KSSLX509V3::certTypeSSLServer() const {
 
 
 bool KSSLX509V3::certTypeNSSSLServer() const {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 	return (flags & (1 << (X509_PURPOSE_NS_SSL_SERVER-1))) ? true : false;
 #endif
 	return false;
@@ -105,7 +105,7 @@ bool KSSLX509V3::certTypeNSSSLServer() const {
 
 
 bool KSSLX509V3::certTypeSMIME() const {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 	return certTypeSMIMEEncrypt()||certTypeSMIMESign();
 #endif
 	return false;
@@ -113,7 +113,7 @@ bool KSSLX509V3::certTypeSMIME() const {
 
 
 bool KSSLX509V3::certTypeSMIMEEncrypt() const {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 	return (flags & (1 << (X509_PURPOSE_SMIME_ENCRYPT-1))) ? true : false;
 #endif
 	return false;
@@ -121,7 +121,7 @@ bool KSSLX509V3::certTypeSMIMEEncrypt() const {
 
 
 bool KSSLX509V3::certTypeSMIMESign() const {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 	return (flags & (1 << (X509_PURPOSE_SMIME_SIGN-1))) ? true : false;
 #endif
 	return false;
@@ -129,7 +129,7 @@ bool KSSLX509V3::certTypeSMIMESign() const {
 
 
 bool KSSLX509V3::certTypeCRLSign() const {
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 	return (flags & (1 << (X509_PURPOSE_CRL_SIGN-1))) ? true : false;
 #endif
 	return false;

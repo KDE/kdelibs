@@ -141,7 +141,7 @@ KSockaddrUn::KSockaddrUn(const QString &path, KLocalSocket::LocalSocketType type
 
     sockaddr_un *saddr = reinterpret_cast<sockaddr_un *>(data.data());
     saddr->sun_family = AF_UNIX;
-#ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
+#if HAVE_STRUCT_SOCKADDR_SA_LEN
     saddr->sun_len = datalen;
 #endif
 

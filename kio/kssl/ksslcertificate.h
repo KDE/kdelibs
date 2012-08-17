@@ -50,7 +50,7 @@ class KSSLX509V3;
 
 #include <QtCore/QList>
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 typedef struct x509_st X509;
 #else
 #if !defined(QT_NO_OPENSSL)
