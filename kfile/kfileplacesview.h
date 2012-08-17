@@ -60,7 +60,7 @@ public:
     bool isAutoResizeItemsEnabled() const;
 
 public Q_SLOTS:
-    void setUrl(const KUrl &url);
+    void setUrl(const QUrl &url);
     void setShowAll(bool showAll);
     virtual QSize sizeHint() const;
     virtual void setModel(QAbstractItemModel *model);
@@ -89,7 +89,7 @@ Q_SIGNALS:
      * The application has to take care itself about performing the
      * corresponding action like copying or moving.
      */
-    void urlsDropped(const KUrl &dest, QDropEvent *event, QWidget *parent);
+    void urlsDropped(const QUrl &dest, QDropEvent *event, QWidget *parent);
 
 private:
     Q_PRIVATE_SLOT(d, void adaptItemSize())

@@ -87,7 +87,7 @@ public:
      * @param url            URL which is used for the navigation or editing.
      * @param parent         Parent widget.
      */
-    KUrlNavigator(KFilePlacesModel* placesModel, const KUrl& url, QWidget* parent);
+    KUrlNavigator(KFilePlacesModel* placesModel, const QUrl& url, QWidget* parent);
     virtual ~KUrlNavigator();
 
     /**
@@ -95,7 +95,7 @@ public:
      *         is smaller than 0, the URL of the current location is returned.
      * @since  4.5
      */
-    KUrl locationUrl(int historyIndex = -1) const;
+    QUrl locationUrl(int historyIndex = -1) const;
 
     /**
      * Saves the location state described by \a state for the current location. It is recommended
@@ -174,9 +174,9 @@ public:
      */
     // KDE5: Remove the home-property. It is sufficient to invoke
     // KUrlNavigator::setLocationUrl(homeUrl) on application-side.
-    void setHomeUrl(const KUrl& url);
+    void setHomeUrl(const QUrl& url);
 
-    KUrl homeUrl() const;
+    QUrl homeUrl() const;
 
     /**
      * Allows to edit the URL of the navigation bar if \a editable
@@ -242,7 +242,7 @@ public:
      * @return The currently entered, but not accepted URL.
      *         It is possible that the returned URL is not valid.
      */
-    KUrl uncommittedUrl() const;
+    QUrl uncommittedUrl() const;
 
     /**
      * @return The amount of locations in the history. The data for each
@@ -282,7 +282,7 @@ public:
      * @return     The current URL of the location.
      * @deprecated Use KUrlNavigator::locationUrl() instead.
      */
-    KFILE_DEPRECATED const KUrl& url() const;
+    KFILE_DEPRECATED const QUrl& url() const;
 
     /**
      * @return The portion of the current URL up to the path part given
@@ -294,7 +294,7 @@ public:
      * - index >= 3: /home/peter/Documents/Music
      * @deprecated It should not be necessary for a client of KUrlNavigator to query this information.
      */
-    KFILE_DEPRECATED KUrl url(int index) const;
+    KFILE_DEPRECATED QUrl url(int index) const;
 
     /**
      * @return URL for the history element with the index \a historyIndex.
@@ -302,13 +302,13 @@ public:
      * @since 4.3
      * @deprecated Use KUrlNavigator::locationUrl(historyIndex) instead.
      */
-    KFILE_DEPRECATED KUrl historyUrl(int historyIndex) const;
+    KFILE_DEPRECATED QUrl historyUrl(int historyIndex) const;
 
     /**
      * @return The saved root URL for the current URL (see KUrlNavigator::saveRootUrl()).
      * @deprecated Use KUrlNavigator::locationState() instead.
      */
-    KFILE_DEPRECATED const KUrl& savedRootUrl() const;
+    KFILE_DEPRECATED const QUrl& savedRootUrl() const;
 
     /**
      * @return The saved contents position of the upper left corner
@@ -317,7 +317,7 @@ public:
      */
     KFILE_DEPRECATED QPoint savedPosition() const;
 
-    /** @deprecated Use setHomeUrl(const KUrl& url) instead. */
+    /** @deprecated Use setHomeUrl(const QUrl& url) instead. */
     KFILE_DEPRECATED void setHomeUrl(const QString& homeUrl);
 #endif
 
@@ -348,13 +348,13 @@ public Q_SLOTS:
      * Sets the location to \a url.
      * @deprecated Use KUrlNavigator::setLocationUrl(url).
      */
-    KFILE_DEPRECATED void setUrl(const KUrl& url);
+    KFILE_DEPRECATED void setUrl(const QUrl& url);
 
     /**
      * Saves the used root URL of the content for the current history element.
      * @deprecated Use KUrlNavigator::saveLocationState() instead.
      */
-    KFILE_DEPRECATED void saveRootUrl(const KUrl& url);
+    KFILE_DEPRECATED void saveRootUrl(const QUrl& url);
 
     /**
      * Saves the coordinates of the contents for the current history element.
@@ -385,7 +385,7 @@ Q_SIGNALS:
      * of a view with KUrlNavigator::saveLocationState().
      * @since 4.5
      */
-    void urlAboutToBeChanged(const KUrl& newUrl);
+    void urlAboutToBeChanged(const QUrl& newUrl);
 
     /**
      * Is emitted, if the editable state for the URL has been changed
@@ -405,7 +405,7 @@ Q_SIGNALS:
      * the dropped data can be handled.
      * @since 4.2
      */
-    void urlsDropped(const KUrl& destination, QDropEvent* event);
+    void urlsDropped(const QUrl& destination, QDropEvent* event);
 
     /**
      * This signal is emitted when the Return or Enter key is pressed.
@@ -417,7 +417,7 @@ Q_SIGNALS:
      * the user clicked on a breadcrumb with the middle mouse button.
      * @since 4.5
      */
-    void tabRequested(const KUrl& url);
+    void tabRequested(const QUrl& url);
 
 protected:
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
@@ -451,8 +451,8 @@ private:
     Q_PRIVATE_SLOT(d, void slotReturnPressed())
     Q_PRIVATE_SLOT(d, void slotProtocolChanged(const QString& protocol))
     Q_PRIVATE_SLOT(d, void switchView())
-    Q_PRIVATE_SLOT(d, void dropUrls(const KUrl& destination, QDropEvent*))
-    Q_PRIVATE_SLOT(d, void slotNavigatorButtonClicked(const KUrl& url, Qt::MouseButton button))
+    Q_PRIVATE_SLOT(d, void dropUrls(const QUrl& destination, QDropEvent*))
+    Q_PRIVATE_SLOT(d, void slotNavigatorButtonClicked(const QUrl& url, Qt::MouseButton button))
     Q_PRIVATE_SLOT(d, void openContextMenu())
     Q_PRIVATE_SLOT(d, void openPathSelectorMenu())
     Q_PRIVATE_SLOT(d, void updateButtonVisibility())

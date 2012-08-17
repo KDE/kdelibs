@@ -23,13 +23,13 @@
 #include <QLayout>
 #include <QGroupBox>
 
+#include <defaults-kfile.h> // for ConfigGroup
+
 #include <kglobal.h>
 #include <kconfig.h>
 #include <klocale.h>
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
-
-#include <config-kfile.h>
 
 #include <phonon/mediaobject.h>
 #include <phonon/audiooutput.h>

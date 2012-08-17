@@ -24,7 +24,7 @@
 #include <QColor>
 #include <QPushButton>
 
-class KUrl;
+class QUrl;
 class QEvent;
 
 namespace KDEPrivate

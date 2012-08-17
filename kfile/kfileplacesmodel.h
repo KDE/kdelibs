@@ -51,7 +51,7 @@ public:
     KFilePlacesModel(QObject *parent=0);
     ~KFilePlacesModel();
 
-    KUrl url(const QModelIndex &index) const;
+    QUrl url(const QModelIndex &index) const;
     bool setupNeeded(const QModelIndex &index) const;
     QIcon icon(const QModelIndex &index) const;
     QString text(const QModelIndex &index) const;
@@ -66,9 +66,9 @@ public:
     void requestEject(const QModelIndex &index);
     void requestSetup(const QModelIndex &index);
 
-    void addPlace(const QString &text, const KUrl &url, const QString &iconName = QString(), const QString &appName = QString());
-    void addPlace(const QString &text, const KUrl &url, const QString &iconName, const QString &appName, const QModelIndex &after);
-    void editPlace(const QModelIndex &index, const QString &text, const KUrl &url, const QString &iconName = QString(), const QString &appName = QString());
+    void addPlace(const QString &text, const QUrl &url, const QString &iconName = QString(), const QString &appName = QString());
+    void addPlace(const QString &text, const QUrl &url, const QString &iconName, const QString &appName, const QModelIndex &after);
+    void editPlace(const QModelIndex &index, const QString &text, const QUrl &url, const QString &iconName = QString(), const QString &appName = QString());
     void removePlace(const QModelIndex &index) const;
     void setPlaceHidden(const QModelIndex &index, bool hidden);
 
@@ -119,7 +119,7 @@ public:
      *
      * The returned item will the one for '/home/peter/Documents'.
      */
-    QModelIndex closestItem(const KUrl &url) const;
+    QModelIndex closestItem(const QUrl &url) const;
 
 
     Qt::DropActions supportedDropActions() const;

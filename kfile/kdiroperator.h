@@ -862,7 +862,7 @@ Q_SIGNALS:
      * @param event the drop event itself.
      * @param urls the urls that where dropped.
      */
-    void dropped(const KFileItem &item, QDropEvent *event, const QList<KUrl> &urls);
+    void dropped(const KFileItem &item, QDropEvent *event, const QList<QUrl> &urls);
 
     /**
      * Emitted just before the context menu is shown, allows users to
@@ -906,7 +906,7 @@ private:
     Q_PRIVATE_SLOT( d, void _k_slotShowProgress() )
     Q_PRIVATE_SLOT( d, void _k_slotIOFinished() )
     Q_PRIVATE_SLOT( d, void _k_slotCanceled() )
-    Q_PRIVATE_SLOT( d, void _k_slotRedirected(const KUrl&) )
+    Q_PRIVATE_SLOT( d, void _k_slotRedirected(const QUrl&) )
     Q_PRIVATE_SLOT( d, void _k_slotProperties() )
     Q_PRIVATE_SLOT( d, void _k_slotActivated(const QModelIndex&) )
     Q_PRIVATE_SLOT( d, void _k_slotSelectionChanged() )
@@ -919,7 +919,7 @@ private:
     Q_PRIVATE_SLOT( d, void _k_slotChangeDecorationPosition() )
     Q_PRIVATE_SLOT( d, void _k_slotExpandToUrl(const QModelIndex&) )
     Q_PRIVATE_SLOT( d, void _k_slotItemsChanged() )
-    Q_PRIVATE_SLOT( d, void _k_slotDirectoryCreated(const KUrl&) )
+    Q_PRIVATE_SLOT( d, void _k_slotDirectoryCreated(const QUrl&) )
 };
 
 #endif

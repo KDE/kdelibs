@@ -34,6 +34,7 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QMimeData>
+#include <qurlpathinfo.h>
 
 namespace KDEPrivate
 {
@@ -114,7 +115,7 @@ void KUrlNavigatorPlacesSelector::updateTeardownAction()
     }
 }
 
-void KUrlNavigatorPlacesSelector::updateSelection(const KUrl& url)
+void KUrlNavigatorPlacesSelector::updateSelection(const QUrl& url)
 {
     const QModelIndex index = m_placesModel->closestItem(url);
     if (index.isValid()) {
@@ -130,10 +131,10 @@ void KUrlNavigatorPlacesSelector::updateSelection(const KUrl& url)
     updateTeardownAction();
 }
 
-KUrl KUrlNavigatorPlacesSelector::selectedPlaceUrl() const
+QUrl KUrlNavigatorPlacesSelector::selectedPlaceUrl() const
 {
     const QModelIndex index = m_placesModel->index(m_selectedItem, 0);
-    return index.isValid() ? m_placesModel->url(index) : KUrl();
+    return index.isValid() ? m_placesModel->url(index) : QUrl();
 }
 
 QString KUrlNavigatorPlacesSelector::selectedPlaceText() const
@@ -186,10 +187,10 @@ void KUrlNavigatorPlacesSelector::dropEvent(QDropEvent* event)
 
     QMimeDatabase db;
     const QList<QUrl> urlList = KUrlMimeData::urlsFromMimeData(event->mimeData());
-    foreach(const KUrl &url, urlList) {
+    foreach(const QUrl &url, urlList) {
         QMimeType mimetype = db.mimeTypeForUrl(url);
         if (mimetype.inherits("inode/directory")) {
-            m_placesModel->addPlace(url.fileName(), url);
+            m_placesModel->addPlace(QUrlPathInfo(url).fileName(), url);
         }
     }
 }

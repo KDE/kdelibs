@@ -35,13 +35,14 @@
 #include <QKeyEvent>
 #include <QStyleOption>
 #include <QMimeData>
+#include <qurlpathinfo.h>
 
 namespace KDEPrivate
 {
 
 QPointer<KUrlNavigatorMenu> KUrlNavigatorButton::m_subDirsMenu;
 
-KUrlNavigatorButton::KUrlNavigatorButton(const KUrl& url, QWidget* parent) :
+KUrlNavigatorButton::KUrlNavigatorButton(const QUrl& url, QWidget* parent) :
     KUrlNavigatorButtonBase(parent),
     m_hoverArrow(false),
     m_pendingTextChange(false),
@@ -69,7 +70,7 @@ KUrlNavigatorButton::~KUrlNavigatorButton()
 {
 }
 
-void KUrlNavigatorButton::setUrl(const KUrl& url)
+void KUrlNavigatorButton::setUrl(const QUrl& url)
 {
     m_url = url;
 
@@ -93,11 +94,11 @@ void KUrlNavigatorButton::setUrl(const KUrl& url)
                 this, SLOT(statFinished(KJob*)));
         emit startedTextResolving();
     } else {
-        setText(m_url.fileName().replace('&', "&&"));
+        setText(QUrlPathInfo(m_url).fileName().replace('&', "&&"));
     }
 }
 
-KUrl KUrlNavigatorButton::url() const
+QUrl KUrlNavigatorButton::url() const
 {
     return m_url;
 }
@@ -403,7 +404,7 @@ void KUrlNavigatorButton::startSubDirsJob()
         return;
     }
 
-    const KUrl url = m_replaceButton ? m_url.upUrl() : m_url;
+    const QUrl url = m_replaceButton ? KUrl(m_url).upUrl() : m_url;
     m_subDirsJob = KIO::listDir(url, KIO::HideProgressInfo, false /*no hidden files*/);
     m_subDirs.clear(); // just to be ++safe
 
@@ -439,17 +440,17 @@ void KUrlNavigatorButton::addEntriesToSubDirs(KIO::Job* job, const KIO::UDSEntry
 void KUrlNavigatorButton::urlsDropped(QAction* action, QDropEvent* event)
 {
     const int result = action->data().toInt();
-    KUrl url = m_url;
-    url.addPath(m_subDirs.at(result).first);
-    urlsDropped(url, event);
+    QUrlPathInfo urlInfo(m_url);
+    urlInfo.addPath(m_subDirs.at(result).first);
+    urlsDropped(urlInfo.url(), event);
 }
 
 void KUrlNavigatorButton::slotMenuActionClicked(QAction* action)
 {
     const int result = action->data().toInt();
-    KUrl url = m_url;
-    url.addPath(m_subDirs.at(result).first);
-    emit clicked(url, Qt::MidButton);
+    QUrlPathInfo urlInfo(m_url);
+    urlInfo.addPath(m_subDirs.at(result).first);
+    emit clicked(urlInfo.url(), Qt::MidButton);
 }
 
 void KUrlNavigatorButton::statFinished(KJob* job)
@@ -460,7 +461,7 @@ void KUrlNavigatorButton::statFinished(KJob* job)
         const KIO::UDSEntry entry = static_cast<KIO::StatJob*>(job)->statResult();
         QString name = entry.stringValue(KIO::UDSEntry::UDS_DISPLAY_NAME);
         if (name.isEmpty()) {
-            name = m_url.fileName();
+            name = QUrlPathInfo(m_url).fileName();
         }
         setText(name);
 
@@ -531,7 +532,7 @@ void KUrlNavigatorButton::replaceButton(KJob* job)
     qSort(m_subDirs.begin(), m_subDirs.end(), naturalLessThan);
 
     // Get index of the directory that is shown currently in the button
-    const QString currentDir = m_url.fileName();
+    const QString currentDir = QUrlPathInfo(m_url).fileName();
     int currentIndex = 0;
     const int subDirsCount = m_subDirs.count();
     while (currentIndex < subDirsCount) {
@@ -550,10 +551,9 @@ void KUrlNavigatorButton::replaceButton(KJob* job)
         targetIndex = subDirsCount - 1;
     }
 
-    KUrl url = m_url.upUrl();
-    url.addPath(m_subDirs[targetIndex].first);
-
-    emit clicked(url, Qt::LeftButton);
+    QUrlPathInfo urlInfo(KUrl(m_url).upUrl());
+    urlInfo.addPath(m_subDirs[targetIndex].first);
+    emit clicked(urlInfo.url(), Qt::LeftButton);
 
     m_subDirs.clear();
 }

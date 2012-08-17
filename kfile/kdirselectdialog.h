@@ -45,7 +45,7 @@ public:
      * @param localOnly unused. You can only select paths below the startDir
      * @param parent the parent for the dialog, usually 0L
      */
-    explicit KDirSelectDialog(const KUrl& startDir = KUrl(),
+    explicit KDirSelectDialog(const QUrl& startDir = QUrl(),
                               bool localOnly = false,
                               QWidget *parent = 0L);
 
@@ -60,7 +60,7 @@ public:
      * If the URL entered in the combobox is valid and exists, it is returned.
      * Otherwise, the URL selected in the treeview is returned instead.
      */
-    KUrl url() const;
+    QUrl url() const;
 
     /**
      * Returns a pointer to the view which is used for displaying the directories.
@@ -87,20 +87,20 @@ public:
      * or KFileDialog::getExistingDirectoryUrl (if localOnly was false),
      * and then you can link to libkio only instead of libkfile.
      */
-    static KUrl selectDirectory( const KUrl& startDir = KUrl(),
+    static QUrl selectDirectory( const QUrl& startDir = QUrl(),
                                  bool localOnly = false, QWidget *parent = 0L,
                                  const QString& caption = QString());
 
     /**
      * @return The path for the root node
      */
-    KUrl startDir() const;
+    QUrl startDir() const;
 
 public Q_SLOTS:
     /**
      * Sets the current @p url in the dialog.
      */
-    void setCurrentUrl( const KUrl& url );
+    void setCurrentUrl( const QUrl& url );
 
 protected:
     virtual void accept();

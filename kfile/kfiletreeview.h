@@ -49,7 +49,7 @@ class KFILE_EXPORT KFileTreeView : public QTreeView  // KDE5: remove KFILE_EXPOR
         /**
          * Returns the current url.
          */
-        KUrl currentUrl() const;
+        QUrl currentUrl() const;
 
         /**
          * Returns the selected url.
@@ -64,7 +64,7 @@ class KFILE_EXPORT KFileTreeView : public QTreeView  // KDE5: remove KFILE_EXPOR
         /**
          * Returns the current root url of the view.
          */
-        KUrl rootUrl() const;
+        QUrl rootUrl() const;
 
         /**
          * Returns true if the view is currently showing hidden files
@@ -94,25 +94,25 @@ class KFILE_EXPORT KFileTreeView : public QTreeView  // KDE5: remove KFILE_EXPOR
         /**
          * Sets the current @p url of the view.
          */
-        void setCurrentUrl(const KUrl &url);
+        void setCurrentUrl(const QUrl &url);
 
         /**
          * Sets the root @p url of the view.
          *
          * The default is file:///.
          */
-        void setRootUrl(const KUrl &url);
+        void setRootUrl(const QUrl &url);
 
     Q_SIGNALS:
         /**
          * This signal is emitted whenever an @p url has been activated.
          */
-        void activated(const KUrl &url);
+        void activated(const QUrl &url);
 
         /**
          * This signal is emitted whenever the current @p url has been changed.
          */
-        void currentChanged(const KUrl &url);
+        void currentChanged(const QUrl &url);
 
     protected:
         virtual void contextMenuEvent( QContextMenuEvent* );
