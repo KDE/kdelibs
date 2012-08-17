@@ -23,7 +23,7 @@
 #include "kjs_binding.h"
 
 #include <config-khtml.h>
-#if defined(HAVE_VALGRIND_MEMCHECK_H)
+#if HAVE_VALGRIND_MEMCHECK_H
 
 #include <valgrind/memcheck.h>
 #define VALGRIND_SUPPORT

@@ -43,7 +43,7 @@
 #include <QtGlobal>
 
 // VG annotations for arenas disabled since still buggy
-#if 0 && defined(HAVE_VALGRIND_MEMCHECK_H) && !defined(NDEBUG)
+#if 0 && HAVE_VALGRIND_MEMCHECK_H && !defined(NDEBUG)
 
 #include <valgrind/memcheck.h>
 #define VALGRIND_SUPPORT
