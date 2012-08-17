@@ -24,6 +24,7 @@
 #define KJS_GLOBAL_H
 
 #include <wtf/Platform.h>
+#include <../config.h>
 
 // we don't want any padding between UChars (ARM processor)
 #if defined(__GNUC__) || defined(__INTEL_COMPILER)
@@ -82,11 +83,11 @@
 // Debugging features, turned off by default
 #define DEBUG_COLLECTOR 0
 
-#ifndef HAVE_STDINT_H
-#cmakedefine HAVE_STDINT_H 1
+#if ! HAVE_STDINT_H
+#cmakedefine01 HAVE_STDINT_H
 #endif
 
 /* Valgrind memcheck presence */
-#cmakedefine HAVE_VALGRIND_MEMCHECK_H 1
+#cmakedefine01 HAVE_VALGRIND_MEMCHECK_H
 
 #endif
