@@ -1,5 +1,8 @@
 project(kfile)
 
+configure_file(config-kfile.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kfile.h )
+macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)
+
 include_directories(
   ${KDE4_KIO_INCLUDES}
   ${CMAKE_SOURCE_DIR}/tier1/solid/src

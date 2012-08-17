@@ -21,7 +21,7 @@
 
 #include "../kio/kio/defaultviewadapter_p.h" // KDE5 TODO: move this class here
 #include "../kio/kio/imagefilter_p.h"
-#include <config.h> // for HAVE_XRENDER
+#include <config-kfile.h> // for HAVE_XRENDER
 #include <kconfiggroup.h>
 #include <kfileitem.h>
 #include <kiconeffect.h>
@@ -44,7 +44,7 @@
 #include <QScrollBar>
 #include <QIcon>
 
-#if HAVE_X11 && defined(HAVE_XRENDER)
+#if HAVE_X11 && HAVE_XRENDER
 #  include <QX11Info>
 #  include <X11/Xlib.h>
 #  include <X11/extensions/Xrender.h>
@@ -970,7 +970,7 @@ void KFilePreviewGenerator::Private::limitToSize(QPixmap& icon, const QSize& max
 {
     if ((icon.width() > maxSize.width()) || (icon.height() > maxSize.height())) {
 #warning Cannot use XRender with QPixmap anymore. Find equivalent with Qt API.
-#if 0 // HAVE_X11 && defined(HAVE_XRENDER)
+#if 0 // HAVE_X11 && HAVE_XRENDER
         // Assume that the texture size limit is 2048x2048
         if ((icon.width() <= 2048) && (icon.height() <= 2048) && icon.x11PictureHandle()) {
             QSize size = icon.size();
