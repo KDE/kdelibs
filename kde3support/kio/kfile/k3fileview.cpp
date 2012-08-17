@@ -20,7 +20,7 @@
 */
 
 #include "k3fileview.h"
-#include <config-kfile.h>
+#include <defaults-kfile.h>
 
 #include <kaction.h>
 #include <kactioncollection.h>
