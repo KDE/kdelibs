@@ -24,7 +24,6 @@
  */
 
 #include "object.h"
-#include <config.h>
 
 #include "error_object.h"
 #include "lookup.h"

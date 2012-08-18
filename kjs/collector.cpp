@@ -22,7 +22,6 @@
  */
 
 #include "collector.h"
-#include <config.h>
 
 #include <wtf/FastMalloc.h>
 #include <wtf/HashCountedSet.h>
@@ -62,7 +61,7 @@
 using std::memset;
 #endif
 
-#if HAVE(PTHREAD_NP_H)
+#if HAVE_PTHREAD_NP_H
 #include <pthread_np.h>
 #endif
 
@@ -70,9 +69,9 @@ using std::memset;
 
 #define DEBUG_COLLECTOR 0
 
-#if HAVE(VALGRIND_MEMCHECK_H) && !defined(NDEBUG)
+#if HAVE_VALGRIND_MEMCHECK_H && !defined(NDEBUG)
    #include <valgrind/memcheck.h>
-   #if defined(VALGRIND_MAKE_MEM_DEFINED)
+   #if VALGRIND_MAKE_MEM_DEFINED
       #define VG_DEFINED(p) VALGRIND_MAKE_MEM_DEFINED(&p, sizeof(void*))
    #else
       #define VG_DEFINED(p)
@@ -181,9 +180,9 @@ static CollectorBlock* allocateBlock()
 #elif PLATFORM(WIN_OS) || COMPILER(CYGWIN)
      // windows virtual address granularity is naturally 64k
     LPVOID address = VirtualAlloc(NULL, BLOCK_SIZE, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-#elif HAVE(POSIX_MEMALIGN)
-    void* address;
-    posix_memalign(address, BLOCK_SIZE, BLOCK_SIZE);
+#elif HAVE_FUNC_POSIX_MEMALIGN
+    void *address;
+    posix_memalign(&address, BLOCK_SIZE, BLOCK_SIZE);
     memset(reinterpret_cast<void*>(address), 0, BLOCK_SIZE);
 #else
     static size_t pagesize = getpagesize();
@@ -222,7 +221,7 @@ static void freeBlock(CollectorBlock* block)
     vm_deallocate(current_task(), reinterpret_cast<vm_address_t>(block), BLOCK_SIZE);
 #elif PLATFORM(WIN_OS) || COMPILER(CYGWIN)
     VirtualFree(block, BLOCK_SIZE, MEM_RELEASE);
-#elif HAVE(POSIX_MEMALIGN)
+#elif HAVE_FUNC_POSIX_MEMALIGN
     free(block);
 #else
     munmap(block, BLOCK_SIZE);
@@ -500,7 +499,7 @@ static inline void* currentThreadStackBase()
     pthread_t thread = pthread_self();
     if (stackBase == 0 || thread != stackThread) {
         pthread_attr_t sattr;
-#if HAVE(PTHREAD_NP_H) || defined(__NetBSD__)
+#if HAVE_PTHREAD_NP_H || defined(__NetBSD__)
         // e.g. on FreeBSD 5.4, neundorf@kde.org
         // also on NetBSD 3 and 4, raphael.langerhorst@kdemail.net
         // HIGHLY RECCOMENDED by manpage to allocate storage, avoids

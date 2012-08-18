@@ -170,7 +170,6 @@
  */
 
 #include "dtoa.h"
-#include <config.h>
 
 #include "global.h"
 
@@ -225,7 +224,9 @@ static double private_mem[PRIVATE_mem], *pmem_next = private_mem;
 #define IEEE_Arith
 #endif
 
+#if HAVE_ERRNO_H
 #include <errno.h>
+#endif
 
 #ifdef Bad_float_h
 
@@ -1734,7 +1735,7 @@ strtod
 		if (e1 &= ~15) {
 			if (e1 > DBL_MAX_10_EXP) {
  ovfl:
-#ifndef NO_ERRNO
+#if HAVE_ERRNO_H
 				errno = ERANGE;
 #endif
 				/* Can't trust HUGE_VAL */
@@ -1827,7 +1828,7 @@ strtod
 				if (!dval(rv)) {
  undfl:
 					dval(rv) = 0.;
-#ifndef NO_ERRNO
+#if HAVE_ERRNO_H
 					errno = ERANGE;
 #endif
 					if (bd0)
@@ -2293,7 +2294,7 @@ strtod
 		word0(rv0) = Exp_1 - 2*P*Exp_msk1;
 		word1(rv0) = 0;
 		dval(rv) *= dval(rv0);
-#ifndef NO_ERRNO
+#if HAVE_ERRNO_H
 		/* try to avoid the bug of testing an 8087 register value */
 		if (word0(rv) == 0 && word1(rv) == 0)
 			errno = ERANGE;

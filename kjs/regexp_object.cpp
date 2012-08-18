@@ -22,7 +22,6 @@
  */
 
 #include "regexp_object.h"
-#include <config.h>
 
 #include "regexp_object.lut.h"
 

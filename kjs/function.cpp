@@ -25,7 +25,6 @@
  */
 
 #include "function.h"
-#include <config.h>
 #include "scriptfunction.h"
 #include "dtoa.h"
 #include "internal.h"

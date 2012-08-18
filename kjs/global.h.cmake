@@ -24,7 +24,6 @@
 #define KJS_GLOBAL_H
 
 #include <wtf/Platform.h>
-#include <../config.h>
 
 // we don't want any padding between UChars (ARM processor)
 #if defined(__GNUC__) || defined(__INTEL_COMPILER)
@@ -83,11 +82,32 @@
 // Debugging features, turned off by default
 #define DEBUG_COLLECTOR 0
 
-#if ! HAVE_STDINT_H
-#cmakedefine01 HAVE_STDINT_H
-#endif
-
 /* Valgrind memcheck presence */
 #cmakedefine01 HAVE_VALGRIND_MEMCHECK_H
+
+#cmakedefine01 HAVE_ERRNO_H
+#cmakedefine01 HAVE_SYS_PARAM_H
+
+/* Defined to 1 if you have a tm_gmtoff member in struct tm */
+#cmakedefine01 HAVE_TM_GMTOFF
+#cmakedefine01 HAVE_STDINT_H 
+#cmakedefine01 HAVE_SYS_TIMEB_H
+#cmakedefine01 HAVE_SYS_TIME_H
+#cmakedefine01 HAVE_UNISTD_H
+#cmakedefine01 HAVE_GETTIMEOFDAY
+#cmakedefine01 HAVE_FLOAT_H
+#cmakedefine01 HAVE_IEEEFP_H
+#cmakedefine01 HAVE_FUNC_FINITE
+#cmakedefine01 HAVE_FUNC_ISINF
+#cmakedefine01 HAVE_FUNC__FINITE
+#cmakedefine01 HAVE_FUNC_ISNAN
+#cmakedefine01 HAVE_PTHREAD_NP_H
+#cmakedefine01 HAVE_FUNC_POSIX_MEMALIGN
+#cmakedefine01 HAVE_PCREPOSIX
+/* Define to 1 if you have strings.h */
+#cmakedefine01 HAVE_STRINGS_H
+#cmakedefine01 HAVE_PTHREAD_ATTR_GET_NP
+#cmakedefine01 HAVE_PTHREAD_GETATTR_NP
+#cmakedefine01 HAVE_MEMCHECK_H
 
 #endif

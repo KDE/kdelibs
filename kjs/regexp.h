@@ -26,8 +26,6 @@
 
 #include "global.h"
 
-#include <config.h>
-
 #if HAVE_PCREPOSIX
 #include <pcre.h>
 #else  // POSIX regex - not so good...

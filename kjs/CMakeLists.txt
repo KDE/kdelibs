@@ -12,6 +12,10 @@ check_include_files(sys/timeb.h   HAVE_SYS_TIMEB_H)
 check_include_files(ieeefp.h      HAVE_IEEEFP_H)
 check_include_files("pthread.h;pthread_np.h" HAVE_PTHREAD_NP_H)
 check_include_files(valgrind/memcheck.h   HAVE_MEMCHECK_H)
+check_include_files(unistd.h      HAVE_UNISTD_H) 
+check_include_files(stdint.h      HAVE_STDINT_H)
+check_include_files(sys/time.h    HAVE_SYS_TIME_H)
+check_include_files(errno.h       HAVE_ERRNO_H)
 check_struct_member(tm tm_gmtoff time.h HAVE_TM_GMTOFF)
 
 macro_push_required_vars()
@@ -21,6 +25,7 @@ endif(NOT WIN32)
 check_function_exists(_finite    HAVE_FUNC__FINITE)
 check_function_exists(finite     HAVE_FUNC_FINITE)
 check_function_exists(posix_memalign     HAVE_FUNC_POSIX_MEMALIGN)
+check_function_exists(gettimeofday    HAVE_GETTIMEOFDAY)
 check_symbol_exists(isnan   "math.h" HAVE_FUNC_ISNAN)
 check_symbol_exists(isinf   "math.h" HAVE_FUNC_ISINF)
 macro_pop_required_vars()
@@ -34,7 +39,6 @@ option(KJS_FORCE_DISABLE_PCRE "Force building of KJS without PCRE. Doing this wi
 
 # Generate global.h
 configure_file(global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
-configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 
 include_directories(${KDE4_KDECORE_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/wtf ${KDEWIN_INCLUDES} )
 

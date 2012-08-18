@@ -23,17 +23,13 @@
  */
 
 #include "ustring.h"
-#include <config.h>
 
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include "wtf/DisallowCType.h"
 #include "wtf/ASCIICType.h"
-#if HAVE(STRING_H)
-#include <string.h>
-#endif
-#if HAVE(STRINGS_H)
+#if HAVE_STRINGS_H
 #include <strings.h>
 #endif
 #include <limits.h>

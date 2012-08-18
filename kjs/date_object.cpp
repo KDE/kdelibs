@@ -20,23 +20,23 @@
  */
 
 #include "date_object.h"
-#include <config.h>
+#include "global.h"
 #include "date_object.lut.h"
 #include "internal.h"
 
-#if HAVE(ERRNO_H)
+#if HAVE_ERRNO_H
 #include <errno.h>
 #endif
 
-#if HAVE(SYS_PARAM_H)
+#if HAVE_SYS_PARAM_H
 #include <sys/param.h>
 #endif
 
-#if HAVE(SYS_TIME_H)
+#if HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
 
-#if HAVE(SYS_TIMEB_H)
+#if HAVE_SYS_TIMEB_H
 #include <sys/timeb.h>
 #endif
 

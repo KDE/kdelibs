@@ -23,7 +23,6 @@
  */
 
 #include "number_object.h"
-#include <config.h>
 #include "number_object.lut.h"
 
 #include "dtoa.h"

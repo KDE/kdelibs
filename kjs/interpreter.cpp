@@ -24,7 +24,6 @@
  */
 
 #include "interpreter.h"
-#include <config.h>
 
 #include "SavedBuiltins.h"
 #include "array_object.h"
@@ -54,7 +53,7 @@
 #if defined _WIN32 || defined _WIN64
 #undef HAVE_SYS_TIME_H // no setitimer in kdewin32
 #endif
-#if HAVE(SYS_TIME_H)
+#if HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
 
@@ -62,7 +61,7 @@
 #include <math.h>
 #include <signal.h>
 #include <stdio.h>
-#if defined(HAVE_UNISTD_H)
+#if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
@@ -76,7 +75,7 @@ public:
     void resumeTimeoutCheck(Interpreter*);
 
 private:
-#if HAVE(SYS_TIME_H)
+#if HAVE_SYS_TIME_H
     static Interpreter* s_executingInterpreter;
     static void alarmHandler(int);
 
@@ -87,7 +86,7 @@ private:
 #endif
 };
 
-#if HAVE(SYS_TIME_H)
+#if HAVE_SYS_TIME_H
 Interpreter* TimeoutChecker::s_executingInterpreter = 0;
 #endif
 
@@ -98,7 +97,7 @@ void TimeoutChecker::startTimeoutCheck(Interpreter *interpreter)
 
     interpreter->m_startTimeoutCheckCount++;
 
-#if HAVE(SYS_TIME_H)
+#if HAVE_SYS_TIME_H
     if (s_executingInterpreter == interpreter)
         return;
 
@@ -131,7 +130,7 @@ void TimeoutChecker::stopTimeoutCheck(Interpreter* interpreter)
     if (interpreter->m_startTimeoutCheckCount != 0)
         return;
 
-#if HAVE(SYS_TIME_H)
+#if HAVE_SYS_TIME_H
     signal(SIGALRM, SIG_IGN);
 
     s_executingInterpreter = m_oldInterpreter;
@@ -141,7 +140,7 @@ void TimeoutChecker::stopTimeoutCheck(Interpreter* interpreter)
 #endif
 }
 
-#if HAVE(SYS_TIME_H)
+#if HAVE_SYS_TIME_H
 void TimeoutChecker::alarmHandler(int)
 {
     s_executingInterpreter->m_timedOut = true;
@@ -153,7 +152,7 @@ void TimeoutChecker::pauseTimeoutCheck(Interpreter* interpreter)
     if (interpreter->m_startTimeoutCheckCount == 0)
         return;
 
-#if HAVE(SYS_TIME_H)
+#if HAVE_SYS_TIME_H
     ASSERT(interpreter == s_executingInterpreter);
 
     void (*currentSignalHandler)(int);
@@ -177,7 +176,7 @@ void TimeoutChecker::resumeTimeoutCheck(Interpreter* interpreter)
     if (interpreter->m_startTimeoutCheckCount == 0)
         return;
 
-#if HAVE(SYS_TIME_H)
+#if HAVE_SYS_TIME_H
     ASSERT(interpreter == s_executingInterpreter);
 #endif
 
@@ -186,7 +185,7 @@ void TimeoutChecker::resumeTimeoutCheck(Interpreter* interpreter)
     if (interpreter->m_pauseTimeoutCheckCount != 0)
         return;
 
-#if HAVE(SYS_TIME_H)
+#if HAVE_SYS_TIME_H
     void (*currentSignalHandler)(int);
 
     // Check so we have the right handler

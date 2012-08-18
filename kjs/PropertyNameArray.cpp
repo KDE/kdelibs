@@ -20,7 +20,6 @@
  */
 
 #include "PropertyNameArray.h"
-#include <config.h>
 
 namespace KJS {
 

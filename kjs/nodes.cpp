@@ -23,7 +23,6 @@
  */
 
 #include "nodes.h"
-#include <config.h>
 #include "scriptfunction.h"
 #include "CompileState.h"
 

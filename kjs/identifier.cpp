@@ -20,7 +20,6 @@
  */
 
 #include "identifier.h"
-#include <config.h>
 
 #include <wtf/FastMalloc.h>
 #include <wtf/HashSet.h>

@@ -23,7 +23,6 @@
  */
 
 #include "regexp.h"
-#include <config.h>
 #include "lexer.h"
 
 #include <assert.h>
@@ -35,7 +34,7 @@
 #if defined _WIN32 || defined _WIN64
 #undef HAVE_SYS_TIME_H
 #endif
-#if HAVE(SYS_TIME_H)
+#if HAVE_SYS_TIME_H
 #include <sys/time.h>
 #include <sys/resource.h>
 

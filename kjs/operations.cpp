@@ -21,7 +21,7 @@
  */
 
 #include "operations.h"
-#include <config.h>
+#include "global.h"
 
 #include "object.h"
 #include "internal.h"
@@ -29,13 +29,13 @@
 #include <stdio.h>
 #include <wtf/MathExtras.h>
 
-#if HAVE(IEEEFP_H)
-#if HAVE(FUNC_ISINF) || HAVE(FUNC_FINITE)
+#if HAVE_IEEEFP_H
+#if HAVE_FUNC_ISINF || HAVE_FUNC_FINITE
 #include <ieeefp.h>
 #endif
 #endif
 
-#if HAVE(FLOAT_H)
+#if HAVE_FLOAT_H
 #include <float.h>
 #endif
 
@@ -49,9 +49,9 @@ namespace KJS {
 // FIXME: Merge with isnan in MathExtras.h and remove this one entirely.
 bool isNaN(double d)
 {
-#if HAVE(FUNC_ISNAN)
+#if HAVE_FUNC_ISNAN
     return isnan(d) != 0;
-#elif HAVE(FLOAT_H)
+#elif HAVE_FLOAT_H
     return _isnan(d) != 0;
 #else
     return !(d == d);
@@ -65,11 +65,11 @@ bool isInf(double d)
 #if PLATFORM(WIN_OS)
     int fpClass = _fpclass(d);
     return _FPCLASS_PINF == fpClass || _FPCLASS_NINF == fpClass;
-#elif HAVE(FUNC_ISINF) && !PLATFORM(SOLARIS_OS)
+#elif HAVE_FUNC_ISINF && !PLATFORM(SOLARIS_OS)
     return isinf(d);
-#elif HAVE(FUNC_FINITE)
+#elif HAVE_FUNC_FINITE
     return finite(d) == 0 && d == d;
-#elif HAVE(FUNC__FINITE)
+#elif HAVE_FUNC__FINITE
     return _finite(d) == 0 && d == d;
 #else
     return false;
@@ -81,11 +81,11 @@ bool isPosInf(double d)
     // FIXME: should be HAVE(_FPCLASS)
 #if PLATFORM(WIN_OS)
     return _FPCLASS_PINF == _fpclass(d);
-#elif HAVE(FUNC_ISINF) && !PLATFORM(SOLARIS_OS)
+#elif HAVE_FUNC_ISINF && !PLATFORM(SOLARIS_OS)
     return (isinf(d) == 1);
-#elif HAVE(FUNC_FINITE)
+#elif HAVE_FUNC_FINITE
     return !finite(d) && d == d; // ### can we distinguish between + and - ?
-#elif HAVE(FUNC__FINITE)
+#elif HAVE_FUNC__FINITE
     return !_finite(d) && d == d; // ###
 #else
     return false;
@@ -97,11 +97,11 @@ bool isNegInf(double d)
     // FIXME: should be HAVE(_FPCLASS)
 #if PLATFORM(WIN_OS)
     return _FPCLASS_NINF == _fpclass(d);
-#elif HAVE(FUNC_ISINF) && !PLATFORM(SOLARIS_OS)
+#elif HAVE_FUNC_ISINF && !PLATFORM(SOLARIS_OS)
     return (isinf(d) == -1);
-#elif HAVE(FUNC_FINITE)
+#elif HAVE_FUNC_FINITE
     return finite(d) == 0 && d == d; // ###
-#elif HAVE(FUNC__FINITE)
+#elif HAVE_FUNC__FINITE
     return _finite(d) == 0 && d == d; // ###
 #else
     return false;

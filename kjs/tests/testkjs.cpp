@@ -22,7 +22,6 @@
  *
  */
 
-#include <config.h>
 #include "collector.h"
 
 #include <wtf/HashTraits.h>
@@ -34,7 +33,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-#if HAVE(SYS_TIME_H)
+#if HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
 
@@ -62,7 +61,7 @@ public:
     long getElapsedMS(); // call stop() first
 
 private:
-#ifndef HAVE_GETTIMEOFDAY
+#if ! HAVE_GETTIMEOFDAY
     DWORD m_startTime;
     DWORD m_stopTime;
 #else
@@ -74,7 +73,7 @@ private:
 
 void StopWatch::start()
 {
-#ifndef HAVE_GETTIMEOFDAY
+#if ! HAVE_GETTIMEOFDAY
     m_startTime = timeGetTime();
 #else
     gettimeofday(&m_startTime, 0);
@@ -83,7 +82,7 @@ void StopWatch::start()
 
 void StopWatch::stop()
 {
-#ifndef HAVE_GETTIMEOFDAY
+#if ! HAVE_GETTIMEOFDAY
     m_stopTime = timeGetTime();
 #else
     gettimeofday(&m_stopTime, 0);
@@ -92,7 +91,7 @@ void StopWatch::stop()
 
 long StopWatch::getElapsedMS()
 {
-#ifndef HAVE_GETTIMEOFDAY
+#if ! HAVE_GETTIMEOFDAY
     return m_stopTime - m_startTime;
 #else
     timeval elapsedTime;

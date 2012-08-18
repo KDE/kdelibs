@@ -21,7 +21,6 @@
  */
 
 #include "error_object.h"
-#include <config.h>
 
 #include "value.h"
 #include "object.h"

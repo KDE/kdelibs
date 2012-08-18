@@ -22,7 +22,6 @@
  *
  */
 
-#include <config.h>
 #include "array_instance.h"
 
 #include "PropertyNameArray.h"

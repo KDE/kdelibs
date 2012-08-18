@@ -22,7 +22,6 @@
  */
 
 #include "internal.h"
-#include <config.h>
 
 #include "array_object.h"
 #include "bool_object.h"

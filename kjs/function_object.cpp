@@ -22,7 +22,6 @@
  */
 
 #include "function_object.h"
-#include <config.h>
 #include "internal.h"
 #include "function.h"
 #include "scriptfunction.h"

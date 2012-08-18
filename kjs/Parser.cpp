@@ -23,14 +23,13 @@
  */
 
 #include "Parser.h"
-#include <config.h>
 
 #include "lexer.h"
 #include "nodes.h"
 #include <wtf/HashSet.h>
 #include <wtf/Vector.h>
 
-#ifdef KJS_VERBOSE
+#if KJS_VERBOSE
 #include <stdio.h>
 #endif
 
@@ -126,7 +125,7 @@ void Parser::parse(const UString& sourceURL, int startingLineNumber,
         return;
     }
 
-#ifdef KJS_VERBOSE
+#if KJS_VERBOSE
   fprintf( stderr, "%s\n", m_progNode->toString().ascii() );
 #endif
 }

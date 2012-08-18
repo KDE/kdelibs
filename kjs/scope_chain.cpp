@@ -24,8 +24,6 @@
 #include "object.h"
 #include "JSVariableObject.h"
 
-#include <config.h>
-
 #include <stdio.h>
 
 namespace KJS {

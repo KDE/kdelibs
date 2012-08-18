@@ -22,7 +22,6 @@
 
 #include "debugger.h"
 #include "nodes.h"
-#include <config.h>
 #include "ustring.h"
 
 #include "internal.h"
