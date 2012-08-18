@@ -17,8 +17,8 @@
   Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
 #include <config-kstandarddirs.h>
+#include <config-kdeinit.h>
 
 #include <sys/types.h>
 #include <sys/param.h>
