@@ -17,7 +17,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <config.h>
 #include <config-prefix.h>
 #include <config-kdeinit.h>
 
@@ -27,7 +26,7 @@
 
 #define EXECUTE LIBEXEC_INSTALL_DIR "/start_kdeinit"
 
-#ifdef KDEINIT_OOM_PROTECT
+#if KDEINIT_OOM_PROTECT
 
 /*
  The start_kdeinit wrapper is setuid, which means some shell variables like LD_LIBRARY_PATH

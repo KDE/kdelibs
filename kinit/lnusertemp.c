@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <pwd.h>
-#ifdef HAVE_LIMITS_H
+#if HAVE_LIMITS_H
 #include <limits.h>
 #endif
 

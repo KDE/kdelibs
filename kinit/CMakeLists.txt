@@ -12,9 +12,16 @@ check_variable_exists(__progname_full HAVE___PROGNAME_FULL)
 check_include_files(sys/pstat.h HAVE_SYS_PSTAT_H)
 check_include_files(sys/types.h HAVE_SYS_TYPES_H)
 check_include_files(unistd.h HAVE_UNISTD_H)
+check_include_files(limits.h      HAVE_LIMITS_H)
+check_include_files(sys/select.h  HAVE_SYS_SELECT_H)
 check_function_exists(pstat HAVE_PSTAT)
 check_function_exists(setproctitle HAVE_SETPROCTITLE)
 
+#optional features
+find_package(X11)
+if(X11_FOUND)
+	macro_bool_to_01(X11_FOUND HAVE_X11)
+endif(X11_FOUND)
 
 # used by 4 executables in this file
 if(HAVE_SOCKET_LIBRARY)

@@ -20,7 +20,6 @@
  */
 
 #include "proctitle.h"
-#include <config.h>
 #include <config-kdeinit.h>
 
 #include <string.h>

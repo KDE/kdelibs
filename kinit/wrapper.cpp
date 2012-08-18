@@ -19,9 +19,9 @@
   Boston, MA 02110-1301, USA.
 */
 
-#include <config.h>
-
 #include "klauncher_cmds.h"
+
+#include "config-kdeinit.h"
 
 #include <qstandardpaths.h>
 #include <qfile.h>

@@ -21,7 +21,6 @@
 
 #define QT_NO_CAST_FROM_ASCII
 
-#include <config.h>
 #include <config-kdeinit.h>
 #include <config-prefix.h>
 
@@ -32,7 +31,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/wait.h>
-#ifdef HAVE_SYS_SELECT_H
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>		// Needed on some systems.
 #endif
 

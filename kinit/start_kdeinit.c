@@ -17,7 +17,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <config.h>
 #include <config-prefix.h>
 #include <config-kdeinit.h>
 
@@ -32,7 +31,7 @@
 
 #define EXECUTE BIN_INSTALL_DIR "/kdeinit5"
 
-#ifdef KDEINIT_OOM_PROTECT
+#if KDEINIT_OOM_PROTECT
 
 /*
  Prevent getting killed by bad heuristic in Linux OOM-killer.

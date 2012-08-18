@@ -26,7 +26,7 @@
 #include <unistd.h>
 #include <time.h>
 
-#include <config.h> // HAVE_X11
+#include <config-kdeinit.h> // HAVE_X11
 
 #if HAVE_X11
 #include <X11/Xlib.h>
