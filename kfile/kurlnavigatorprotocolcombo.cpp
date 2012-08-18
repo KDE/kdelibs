@@ -93,7 +93,8 @@ void KUrlNavigatorProtocolCombo::showEvent(QShowEvent* event)
 
         QStringList::iterator it = m_protocols.begin();
         while (it != m_protocols.end()) {
-            const KUrl url(*it + "://");
+            QUrl url;
+            url.setScheme(*it);
             if (!KProtocolManager::supportsListing(url)) {
                 it = m_protocols.erase(it);
             } else {

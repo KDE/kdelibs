@@ -101,14 +101,14 @@ public:
     void switchView();
 
     /** Emits the signal urlsDropped(). */
-    void dropUrls(const KUrl& destination, QDropEvent* event);
+    void dropUrls(const QUrl& destination, QDropEvent* event);
 
     /**
      * Is invoked when a navigator button has been clicked. Changes the URL
      * of the navigator if the left mouse button has been used. If the middle
      * mouse button has been used, the signal tabRequested() will be emitted.
      */
-    void slotNavigatorButtonClicked(const KUrl& url, Qt::MouseButton button);
+    void slotNavigatorButtonClicked(const QUrl& url, Qt::MouseButton button);
 
     void openContextMenu();
 
@@ -164,7 +164,7 @@ public:
      * Returns true, if the MIME type of the path represents a
      * compressed file like TAR or ZIP.
      */
-    bool isCompressedPath(const KUrl& path) const;
+    bool isCompressedPath(const QUrl& path) const;
 
     void removeTrailingSlash(QString& url) const;
 
@@ -407,14 +407,14 @@ void KUrlNavigator::Private::switchView()
     emit q->editableStateChanged(m_editable);
 }
 
-void KUrlNavigator::Private::dropUrls(const KUrl& destination, QDropEvent* event)
+void KUrlNavigator::Private::dropUrls(const QUrl& destination, QDropEvent* event)
 {
     if (event->mimeData()->hasUrls()) {
         emit q->urlsDropped(destination, event);
     }
 }
 
-void KUrlNavigator::Private::slotNavigatorButtonClicked(const KUrl& url, Qt::MouseButton button)
+void KUrlNavigator::Private::slotNavigatorButtonClicked(const QUrl& url, Qt::MouseButton button)
 {
     if (button & Qt::LeftButton) {
         q->setLocationUrl(url);
@@ -553,10 +553,10 @@ void KUrlNavigator::Private::updateButtons(int startIndex)
                 button = new KUrlNavigatorButton(buttonUrl(idx), q);
                 button->installEventFilter(q);
                 button->setForegroundRole(QPalette::WindowText);
-                connect(button, SIGNAL(urlsDropped(KUrl,QDropEvent*)),
-                        q, SLOT(dropUrls(KUrl,QDropEvent*)));
-                connect(button, SIGNAL(clicked(KUrl,Qt::MouseButton)),
-                        q, SLOT(slotNavigatorButtonClicked(KUrl,Qt::MouseButton)));
+                connect(button, SIGNAL(urlsDropped(QUrl,QDropEvent*)),
+                        q, SLOT(dropUrls(QUrl,QDropEvent*)));
+                connect(button, SIGNAL(clicked(QUrl,Qt::MouseButton)),
+                        q, SLOT(slotNavigatorButtonClicked(QUrl,Qt::MouseButton)));
                 connect(button, SIGNAL(finishedTextResolving()),
                         q, SLOT(updateButtonVisibility()));
                 appendWidget(button);
@@ -771,7 +771,7 @@ QString KUrlNavigator::Private::retrievePlacePath() const
     return placePath;
 }
 
-bool KUrlNavigator::Private::isCompressedPath(const KUrl& url) const
+bool KUrlNavigator::Private::isCompressedPath(const QUrl& url) const
 {
     QMimeDatabase db;
     const QMimeType mime = db.mimeTypeForUrl(url);
@@ -989,7 +989,7 @@ QUrl KUrlNavigator::uncommittedUrl() const
         return filteredData.uri();
     }
     else {
-        return KUrl(filteredData.typedString());
+        return QUrl::fromUserInput(filteredData.typedString());
     }
 }
 
@@ -1209,8 +1209,8 @@ const QUrl& KUrlNavigator::url() const
 {
     // deprecated
 
-    // Workaround required because of flawed interface ('const KUrl&' is returned
-    // instead of 'KUrl'): remember the URL to prevent a dangling pointer
+    // Workaround required because of flawed interface ('const QUrl&' is returned
+    // instead of 'QUrl'): remember the URL to prevent a dangling pointer
     static QUrl url;
     url = locationUrl();
     return url;
@@ -1238,8 +1238,8 @@ const QUrl& KUrlNavigator::savedRootUrl() const
 {
     // deprecated
 
-    // Workaround required because of flawed interface ('const KUrl&' is returned
-    // instead of 'KUrl'): remember the root URL to prevent a dangling pointer
+    // Workaround required because of flawed interface ('const QUrl&' is returned
+    // instead of 'QUrl'): remember the root URL to prevent a dangling pointer
     static QUrl rootUrl;
     rootUrl = d->m_history[d->m_historyIndex].rootUrl;
     return rootUrl;

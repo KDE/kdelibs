@@ -98,9 +98,9 @@ private Q_SLOTS:
             lineEdit->setText(typedFilename);
         }
         dialog->accept();
-        QSignalSpy spy(&menu, SIGNAL(fileCreated(KUrl)));
-        QTest::kWaitForSignal(&menu, SIGNAL(fileCreated(KUrl)));
-        const KUrl url = spy.at(0).at(0).value<KUrl>();
+        QSignalSpy spy(&menu, SIGNAL(fileCreated(QUrl)));
+        QTest::kWaitForSignal(&menu, SIGNAL(fileCreated(QUrl)));
+        const QUrl url = spy.at(0).at(0).value<QUrl>();
         const QString path = m_tmpDir.path() + '/' + expectedFilename;
         QCOMPARE(url.toLocalFile(), path);
         QFile::remove(path);

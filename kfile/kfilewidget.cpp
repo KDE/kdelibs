@@ -320,7 +320,7 @@ static bool containsProtocolSection( const QString& string )
 KFileWidget::KFileWidget( const QUrl& _startDir, QWidget *parent )
     : QWidget(parent), KAbstractFileWidget(), d(new KFileWidgetPrivate(this))
 {
-    KUrl startDir(_startDir);
+    QUrl startDir(_startDir);
     kDebug(kfile_area) << "startDir" << startDir;
     QString filename;
 
@@ -360,7 +360,7 @@ KFileWidget::KFileWidget( const QUrl& _startDir, QWidget *parent )
     d->urlNavigator->setPlacesSelectorVisible(false);
     opsWidgetLayout->addWidget(d->urlNavigator);
 
-    KUrl u;
+    QUrl u;
     KUrlComboBox *pathCombo = d->urlNavigator->editor();
 #ifdef Q_OS_WIN
 #if 0
@@ -383,23 +383,24 @@ KFileWidget::KFileWidget( const QUrl& _startDir, QWidget *parent )
 
     u = QUrl::fromLocalFile(QDir::homePath());
     pathCombo->addDefaultUrl(u, KIO::pixmapForUrl(u, 0, KIconLoader::Small),
-                             u.path(KUrl::AddTrailingSlash));
+                             u.toLocalFile());
 
-    KUrl docPath = QUrl::fromLocalFile(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
-    if ( (u.path(KUrl::AddTrailingSlash) != docPath.path(KUrl::AddTrailingSlash)) &&
-          QDir(docPath.path(KUrl::AddTrailingSlash)).exists() )
+    QUrl docPath = QUrl::fromLocalFile(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
+    if ( (QUrlPathInfo(u).path(QUrlPathInfo::AppendTrailingSlash) !=
+                QUrlPathInfo(docPath).path(QUrlPathInfo::AppendTrailingSlash)) &&
+          QDir(docPath.toLocalFile()).exists() )
     {
-        pathCombo->addDefaultUrl( docPath,
-                                  KIO::pixmapForUrl( docPath, 0, KIconLoader::Small ),
-                                  docPath.path(KUrl::AddTrailingSlash));
+        pathCombo->addDefaultUrl(docPath,
+                                 KIO::pixmapForUrl(docPath, 0, KIconLoader::Small),
+                                 docPath.toLocalFile());
     }
 
     u = QUrl::fromLocalFile(QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
     pathCombo->addDefaultUrl(u,
                              KIO::pixmapForUrl(u, 0, KIconLoader::Small),
-                             u.path(KUrl::AddTrailingSlash));
+                             u.toLocalFile());
 
-    d->ops = new KDirOperator(KUrl(), d->opsWidget);
+    d->ops = new KDirOperator(QUrl(), d->opsWidget);
     d->ops->setObjectName( "KFileWidget::ops" );
     d->ops->setIsSaving(d->operationMode == Saving);
     opsWidgetLayout->addWidget(d->ops);
@@ -621,8 +622,9 @@ KFileWidget::KFileWidget( const QUrl& _startDir, QWidget *parent )
         statRes = KIO::NetAccess::synchronousRun(statJob, this);
         kDebug(kfile_area) << "stat of" << startDir << "-> statRes" << statRes << "isDir" << statJob->statResult().isDir();
         if (!statRes || !statJob->statResult().isDir()) {
-            filename = startDir.fileName();
-            startDir.setPath(startDir.directory());
+            QUrlPathInfo startDirInfo(startDir);
+            filename = startDirInfo.fileName();
+            startDir.setPath(startDirInfo.directory());
             kDebug(kfile_area) << "statJob -> startDir" << startDir << "filename" << filename;
         }
     }
@@ -751,18 +753,18 @@ QUrl KFileWidgetPrivate::getCompleteUrl(const QString &_url) const
 //     kDebug(kfile_area) << "got url " << _url;
 
     const QString url = KShell::tildeExpand(_url);
-    KUrl u;
+    QUrl u;
 
     if (QDir::isAbsolutePath(url)) {
-        u = url;
+        u = QUrl::fromLocalFile(url);
     } else {
-        KUrl relativeUrlTest(ops->url());
+        QUrlPathInfo relativeUrlTest(ops->url());
         relativeUrlTest.addPath(url);
-        if (!ops->dirLister()->findByUrl(relativeUrlTest).isNull() ||
-            !KProtocolInfo::isKnownProtocol(relativeUrlTest)) {
-            u = relativeUrlTest;
+        if (!ops->dirLister()->findByUrl(relativeUrlTest.url()).isNull() ||
+            !KProtocolInfo::isKnownProtocol(relativeUrlTest.url())) {
+            u = relativeUrlTest.url();
         } else {
-            u = url;
+            u = QUrl(url); // keep it relative
         }
     }
 
@@ -952,7 +954,7 @@ void KFileWidget::slotOk()
         KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
         bool res = KIO::NetAccess::synchronousRun(statJob, this);
 
-        if (!KAuthorized::authorizeUrlAction("open", KUrl(), url)) {
+        if (!KAuthorized::authorizeUrlAction("open", QUrl(), url)) {
             QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->url.prettyUrl());
             KMessageBox::error(this, msg);
             return;
@@ -1075,7 +1077,7 @@ void KFileWidgetPrivate::_k_fileHighlighted(const KFileItem &i)
     if (!(ops->mode() & KFile::Files)) {
         if (i.isNull()) {
             if (!modified) {
-                setLocationText(KUrl());
+                setLocationText(QUrl());
             }
             return;
         }
@@ -1104,7 +1106,7 @@ void KFileWidgetPrivate::_k_fileSelected(const KFileItem &i)
 
     if (!(ops->mode() & KFile::Files)) {
         if (i.isNull()) {
-            setLocationText(KUrl());
+            setLocationText(QUrl());
             return;
         }
         setLocationText(i.url());
@@ -1134,7 +1136,7 @@ void KFileWidgetPrivate::multiSelectionChanged()
     const KFileItemList list = ops->selectedItems();
 
     if (list.isEmpty()) {
-        setLocationText(KUrl());
+        setLocationText(QUrl());
         return;
     }
 
@@ -1245,11 +1247,11 @@ void KFileWidgetPrivate::setLocationText(const QUrl& url)
 
 void KFileWidgetPrivate::setLocationText( const QList<QUrl>& urlList )
 {
-    const KUrl currUrl = ops->url();
+    const QUrl currUrl = ops->url();
 
     if ( urlList.count() > 1 ) {
         QString urls;
-        foreach (const KUrl &url, urlList) {
+        foreach (const QUrl &url, urlList) {
             urls += QString( "\"%1\"" ).arg( KUrl::relativeUrl(currUrl, url) ) + ' ';
         }
         urls = urls.left( urls.size() - 1 );
@@ -1476,7 +1478,7 @@ void KFileWidgetPrivate::_k_enterUrl( const QString& url )
 {
 //     kDebug(kfile_area);
 
-    _k_enterUrl( KUrl( KUrlCompletion::replacedPath( url, true, true )) );
+    _k_enterUrl(QUrl::fromUserInput(KUrlCompletion::replacedPath(url, true, true)));
 }
 
 bool KFileWidgetPrivate::toOverwrite(const QUrl &url)
@@ -1510,7 +1512,7 @@ void KFileWidget::setSelection(const QString& url)
         return;
     }
 
-    KUrl u = d->getCompleteUrl(url);
+    QUrl u = d->getCompleteUrl(url);
     if (!u.isValid()) { // if it still is
         kWarning() << url << " is not a correct argument for setSelection!";
         return;
@@ -1580,7 +1582,7 @@ QUrl KFileWidget::selectedUrl() const
     if ( d->inAccept )
         return d->url;
     else
-        return KUrl();
+        return QUrl();
 }
 
 QList<QUrl> KFileWidget::selectedUrls() const
@@ -1649,7 +1651,7 @@ QList<QUrl> KFileWidgetPrivate::tokenize( const QString& line ) const
             if ( u.isValid() )
                 urls.append( u );
         } else {
-            urls << KUrl(line);
+            urls << QUrl::fromUserInput(line);
         }
 
         return urls;
@@ -2603,7 +2605,7 @@ QUrl KFileWidget::getStartUrl(const QUrl& startDir,
             else
               recentDirClass = QString( ":%1" ).arg( keyword );
 
-            ret = KUrl( KRecentDirs::dir(recentDirClass) );
+            ret = QUrl::fromLocalFile(KRecentDirs::dir(recentDirClass));
         }
         else						// not special "kfiledialog" URL
         {
@@ -2627,15 +2629,15 @@ QUrl KFileWidget::getStartUrl(const QUrl& startDir,
     {
         if (lastDirectory()->isEmpty()) {
             lastDirectory()->setPath(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
-            KUrl home = QUrl::fromLocalFile(QDir::homePath());
+            const QUrlPathInfo home(QUrl::fromLocalFile(QDir::homePath()));
             // if there is no docpath set (== home dir), we prefer the current
             // directory over it. We also prefer the homedir when our CWD is
             // different from our homedirectory or when the document dir
             // does not exist
-            if ( lastDirectory()->path(KUrl::AddTrailingSlash) == home.path(KUrl::AddTrailingSlash) ||
+            if (QUrlPathInfo(*lastDirectory()).path(QUrlPathInfo::AppendTrailingSlash) == home.path(QUrlPathInfo::AppendTrailingSlash) ||
                  QDir::currentPath() != QDir::homePath() ||
-                 !QDir(lastDirectory()->path(KUrl::AddTrailingSlash)).exists() )
-                lastDirectory()->setPath(QDir::currentPath());
+                 !QDir(lastDirectory()->toLocalFile()).exists() )
+                *lastDirectory() = QUrl::fromLocalFile(QDir::currentPath());
         }
         ret = *lastDirectory();
     }
