@@ -39,7 +39,6 @@
  * - environment     Additional envvars  strings, last one is empty
  */
 
-#include <config.h>
 #include <config-kdesu.h>
 
 #include <stdio.h>
@@ -51,7 +50,7 @@
 #include <termios.h>
 #include <signal.h>
 
-#ifdef HAVE_INITGROUPS
+#if HAVE_INITGROUPS
 #include <grp.h>
 #endif
 
@@ -286,7 +285,7 @@ int main()
 #endif
     } else 
     {
-#ifdef HAVE_SETPRIORITY
+#if HAVE_SETPRIORITY
 	int val = 20 - (int) (((double) prio) * 40 / 100 + 0.5);
 	setpriority(PRIO_PROCESS, getpid(), val);
 #endif 
@@ -301,7 +300,7 @@ int main()
 	    perror("kdesu_stub: setgid()");
 	    exit(1);
 	}
-#ifdef HAVE_INITGROUPS
+#if HAVE_INITGROUPS
 	if (initgroups(pw->pw_name, pw->pw_gid) == -1) 
 	{
 	    perror("kdesu_stub: initgroups()");

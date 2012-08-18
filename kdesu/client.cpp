@@ -12,7 +12,6 @@
 
 #include "client.h"
 
-#include <config.h>
 #include <config-kdesu.h>
 #include <config-prefix.h>
 
@@ -111,8 +110,8 @@ int KDEsuClient::connect()
 	return -1;
     }
 
-#if !defined(SO_PEERCRED) || !defined(HAVE_STRUCT_UCRED)
-# if defined(HAVE_GETPEEREID)
+#if !defined(SO_PEERCRED) || ! HAVE_STRUCT_UCRED
+# if HAVE_GETPEEREID
     uid_t euid;
     gid_t egid;
     // Security: if socket exists, we must own it

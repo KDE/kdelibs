@@ -5,6 +5,16 @@ include_directories( ${KDE4_KPTY_INCLUDES} )
 
 check_function_exists(setpriority HAVE_SETPRIORITY)
 check_function_exists(getpeereid HAVE_GETPEEREID)
+check_function_exists(initgroups HAVE_INITGROUPS)
+
+check_include_files(sys/select.h  HAVE_SYS_SELECT_H)
+
+#optional features
+find_package(X11)
+if(X11_FOUND)
+	macro_bool_to_01(X11_FOUND HAVE_X11)
+endif(X11_FOUND)
+
 
 set(CMAKE_EXTRA_INCLUDE_FILES sys/socket.h)
 check_type_size("struct ucred" STRUCT_UCRED) #defines HAVE_STRUCT_UCRED (bool) and STRUCT_UCRED (size, unused)

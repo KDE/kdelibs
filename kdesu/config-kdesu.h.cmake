@@ -1,7 +1,12 @@
 
-#cmakedefine HAVE_STRUCT_UCRED 1
+#cmakedefine01 HAVE_STRUCT_UCRED
 
-#cmakedefine HAVE_SETPRIORITY 1
+#cmakedefine01 HAVE_SETPRIORITY
 
-#cmakedefine HAVE_GETPEEREID 1
+#cmakedefine01 HAVE_GETPEEREID
 
+#cmakedefine01 HAVE_X11
+
+#cmakedefine01 HAVE_INITGROUPS
+
+#cmakedefine01 HAVE_SYS_SELECT_H

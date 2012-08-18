@@ -11,9 +11,11 @@
  */
 
 #include "stub.h"
+
+#include <config-kdesu.h>
+
 #include "kcookie.h"
 
-#include <config.h>
 #include <stdlib.h>
 #include <unistd.h>
 

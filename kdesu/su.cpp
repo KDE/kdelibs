@@ -16,7 +16,6 @@
 #include "su.h"
 #include "kcookie.h"
 
-#include <config.h>
 #include <config-prefix.h> // for LIBEXEC_INSTALL_DIR
 
 #include <stdio.h>
