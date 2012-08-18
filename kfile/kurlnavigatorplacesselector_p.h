@@ -61,10 +61,10 @@ public:
      * is selected. If there are more than one possible parent URL candidates,
      * the bookmark which covers the bigger range of the URL is selected.
      */
-    void updateSelection(const KUrl& url);
+    void updateSelection(const QUrl& url);
 
     /** Returns the selected bookmark. */
-    KUrl selectedPlaceUrl() const;
+    QUrl selectedPlaceUrl() const;
     /** Returns the selected bookmark. */
     QString selectedPlaceText() const;
 
@@ -106,7 +106,7 @@ private:
     QPersistentModelIndex m_lastClickedIndex;
     KMenu* m_placesMenu;
     KFilePlacesModel* m_placesModel;
-    KUrl m_selectedUrl;
+    QUrl m_selectedUrl;
 };
 
 } // namespace KDEPrivate

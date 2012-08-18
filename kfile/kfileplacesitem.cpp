@@ -175,7 +175,7 @@ QVariant KFilePlacesItem::deviceData(int role) const
             return KDE::icon(d.icon(), d.emblems());
         case KFilePlacesModel::UrlRole:
             if (m_access) {
-                return QUrl(KUrl(m_access->filePath()));
+                return QUrl::fromLocalFile(m_access->filePath());
             } else if (m_disc && (m_disc->availableContent() & Solid::OpticalDisc::Audio)!=0) {
                 QString device = d.as<Solid::Block>()->device();
                 return QUrl(QString("audiocd:/?device=%1").arg(device));
@@ -225,7 +225,7 @@ QVariant KFilePlacesItem::deviceData(int role) const
 
 KBookmark KFilePlacesItem::createBookmark(KBookmarkManager *manager,
                                           const QString &label,
-                                          const KUrl &url,
+                                          const QUrl &url,
                                           const QString &iconName,
                                           KFilePlacesItem *after)
 {
@@ -233,7 +233,7 @@ KBookmark KFilePlacesItem::createBookmark(KBookmarkManager *manager,
     if (root.isNull())
         return KBookmark();
     QString empty_icon = iconName;
-    if (url==KUrl("trash:/")) {
+    if (url.toString() == QLatin1String("trash:/")) {
         if (empty_icon.endsWith(QLatin1String("-full"))) {
             empty_icon.chop(5);
         } else if (empty_icon.isEmpty()) {
@@ -253,7 +253,7 @@ KBookmark KFilePlacesItem::createBookmark(KBookmarkManager *manager,
 KBookmark KFilePlacesItem::createSystemBookmark(KBookmarkManager *manager,
                                                 const QString &untranslatedLabel,
                                                 const QString &translatedLabel,
-                                                const KUrl &url,
+                                                const QUrl &url,
                                                 const QString &iconName)
 {
     Q_UNUSED(translatedLabel); // parameter is only necessary to force the caller
@@ -299,7 +299,7 @@ void KFilePlacesItem::onAccessibilityChanged()
 
 bool KFilePlacesItem::hasFullIcon(const KBookmark &bookmark) const
 {
-    return bookmark.url()==KUrl("trash:/");
+    return bookmark.url().toString() == QLatin1String("trash:/");
 }
 
 QString KFilePlacesItem::iconNameForBookmark(const KBookmark &bookmark) const

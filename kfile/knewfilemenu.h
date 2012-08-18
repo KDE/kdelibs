@@ -147,12 +147,12 @@ Q_SIGNALS:
     /**
      * Emitted once the file (or symlink) @p url has been successfully created
      */
-    void fileCreated(const KUrl& url);
+    void fileCreated(const QUrl& url);
 
     /**
      * Emitted once the directory @p url has been successfully created
      */
-    void directoryCreated(const KUrl& url);
+    void directoryCreated(const QUrl& url);
 
 protected Q_SLOTS:
 

@@ -54,13 +54,22 @@
 
 #include <fixx11h.h>
 
+
+// Porting helpers. Qt 5: remove
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define pathOrUrl() toString()
+#define toDisplayString toString
+#else
+#define pathOrUrl() toDisplayString(QUrl::PreferLocalFile)
+#endif
+
 using namespace KDEPrivate;
 
 struct LocationData
 {
-    KUrl url;
+    QUrl url;
 #ifndef KDE_NO_DEPRECATED
-    KUrl rootUrl;      // KDE5: remove after the deprecated methods have been removed
+    QUrl rootUrl;      // KDE5: remove after the deprecated methods have been removed
     QPoint pos;        // KDE5: remove after the deprecated methods have been removed
 #endif
     QByteArray state;
@@ -71,7 +80,7 @@ class KUrlNavigator::Private
 public:
     Private(KUrlNavigator* q, KFilePlacesModel* placesModel);
 
-    void initialize(const KUrl& url);
+    void initialize(const QUrl& url);
 
     void slotReturnPressed();
     void slotProtocolChanged(const QString&);
@@ -132,7 +141,7 @@ public:
     /**
      * Returns the URL that should be applied for the button with the index \a index.
      */
-    KUrl buttonUrl(int index) const;
+    QUrl buttonUrl(int index) const;
 
     void switchToBreadcrumbMode();
 
@@ -183,7 +192,7 @@ public:
     KUrlNavigatorDropDownButton* m_dropDownButton;
     QList<KUrlNavigatorButton*> m_navButtons;
     KUrlNavigatorButtonBase* m_toggleEditableMode;
-    KUrl m_homeUrl;
+    QUrl m_homeUrl;
     QStringList m_customProtocols;
     KUrlNavigator* q;
 };
@@ -273,7 +282,7 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
             q, SLOT(openContextMenu()));
 }
 
-void KUrlNavigator::Private::initialize(const KUrl& url)
+void KUrlNavigator::Private::initialize(const QUrl& url)
 {
     LocationData data;
     data.url = url;
@@ -304,16 +313,16 @@ void KUrlNavigator::Private::slotReturnPressed()
     // Copyright (C) 2001 Joseph Wenninger <jowenn@kde.org>
     // Copyright (C) 2001 Anders Lund <anders.lund@lund.tdcadsl.dk>
 
-    const KUrl typedUrl = q->uncommittedUrl();
+    const QUrl typedUrl = q->uncommittedUrl();
     QStringList urls = m_pathBox->urls();
-    urls.removeAll(typedUrl.url());
-    urls.prepend(typedUrl.url());
+    urls.removeAll(typedUrl.toString());
+    urls.prepend(typedUrl.toString());
     m_pathBox->setUrls(urls, KUrlComboBox::RemoveBottom);
 
     q->setLocationUrl(typedUrl);
     // The URL might have been adjusted by KUrlNavigator::setUrl(), hence
     // synchronize the result in the path box.
-    const KUrl currentUrl = q->locationUrl();
+    const QUrl currentUrl = q->locationUrl();
     m_pathBox->setUrl(currentUrl);
 
     emit q->returnPressed();
@@ -330,7 +339,7 @@ void KUrlNavigator::Private::slotProtocolChanged(const QString& protocol)
 {
     Q_ASSERT(m_editable);
 
-    KUrl url;
+    QUrl url;
     url.setScheme(protocol);
     url.setPath((protocol == QLatin1String("file")) ? QLatin1String("/") : QLatin1String("//"));
 
@@ -343,7 +352,7 @@ void KUrlNavigator::Private::openPathSelectorMenu()
         return;
     }
 
-    const KUrl firstVisibleUrl = m_navButtons.first()->url();
+    const QUrl firstVisibleUrl = m_navButtons.first()->url();
 
     QString spacer;
     KMenu* popup = new KMenu(q);
@@ -362,11 +371,11 @@ void KUrlNavigator::Private::openPathSelectorMenu()
         const QString text = spacer + dirName;
 
         QAction* action = new QAction(text, popup);
-        const KUrl currentUrl = buttonUrl(idx);
+        const QUrl currentUrl = buttonUrl(idx);
         if (currentUrl == firstVisibleUrl) {
             popup->addSeparator();
         }
-        action->setData(QVariant(currentUrl.prettyUrl()));
+        action->setData(QVariant(currentUrl.toString()));
         popup->addAction(action);
 
         ++idx;
@@ -377,7 +386,7 @@ void KUrlNavigator::Private::openPathSelectorMenu()
     const QPoint pos = q->mapToGlobal(m_dropDownButton->geometry().bottomRight());
     const QAction* activatedAction = popup->exec(pos);
     if (activatedAction != 0) {
-        const KUrl url = KUrl(activatedAction->data().toString());
+        const QUrl url(activatedAction->data().toString());
         q->setLocationUrl(url);
     }
 
@@ -484,7 +493,7 @@ void KUrlNavigator::Private::slotPathBoxChanged(const QString& text)
 
 void KUrlNavigator::Private::updateContent()
 {
-    const KUrl currentUrl = q->locationUrl();
+    const QUrl currentUrl = q->locationUrl();
     if (m_placesSelector != 0) {
         m_placesSelector->updateSelection(currentUrl);
     }
@@ -509,7 +518,7 @@ void KUrlNavigator::Private::updateContent()
 
         // Calculate the start index for the directories that should be shown as buttons
         // and create the buttons
-        KUrl placeUrl;
+        QUrl placeUrl;
         if ((m_placesSelector != 0) && !m_showFullPath) {
             placeUrl = m_placesSelector->selectedPlaceUrl();
         }
@@ -524,7 +533,7 @@ void KUrlNavigator::Private::updateContent()
 
 void KUrlNavigator::Private::updateButtons(int startIndex)
 {
-    KUrl currentUrl = q->locationUrl();
+    QUrl currentUrl = q->locationUrl();
 
     const QString path = currentUrl.pathOrUrl();
 
@@ -679,12 +688,11 @@ QString KUrlNavigator::Private::firstButtonText() const
     // The first URL navigator button should get the name of the
     // place instead of the directory name
     if ((m_placesSelector != 0) && !m_showFullPath) {
-        const KUrl placeUrl = m_placesSelector->selectedPlaceUrl();
         text = m_placesSelector->selectedPlaceText();
     }
 
     if (text.isEmpty()) {
-        const KUrl currentUrl = q->locationUrl();
+        const QUrl currentUrl = q->locationUrl();
         if (currentUrl.isLocalFile()) {
 #ifdef Q_OS_WIN
             text = currentUrl.path().length() > 1 ? currentUrl.path().left(2) : QDir::rootPath();
@@ -702,7 +710,7 @@ QString KUrlNavigator::Private::firstButtonText() const
     return text;
 }
 
-KUrl KUrlNavigator::Private::buttonUrl(int index) const
+QUrl KUrlNavigator::Private::buttonUrl(int index) const
 {
     if (index < 0) {
         index = 0;
@@ -710,26 +718,25 @@ KUrl KUrlNavigator::Private::buttonUrl(int index) const
 
     // Keep scheme, hostname etc. as this is needed for e. g. browsing
     // FTP directories
-    const KUrl currentUrl = q->locationUrl();
-    KUrl newUrl = currentUrl;
-    newUrl.setPath(QString());
+    const QUrl currentUrl = q->locationUrl();
+    QUrl newUrl = currentUrl;
 
-    QString pathOrUrl = currentUrl.pathOrUrl();
-    if (!pathOrUrl.isEmpty()) {
+    QString path = currentUrl.path();
+    if (!path.isEmpty()) {
         if (index == 0) {
             // prevent the last "/" from being stripped
             // or we end up with an empty path
 #ifdef Q_OS_WIN
-            pathOrUrl = pathOrUrl.length() > 1 ? pathOrUrl.left(2) : QDir::rootPath();
+            path = path.length() > 1 ? path.left(2) : QDir::rootPath();
 #else
-            pathOrUrl = QLatin1String("/");
+            path = QLatin1String("/");
 #endif
         } else {
-            pathOrUrl = pathOrUrl.section('/', 0, index);
+            path = path.section('/', 0, index);
         }
     }
 
-    newUrl.setPath(KUrl(pathOrUrl).path());
+    newUrl.setPath(path);
     return newUrl;
 }
 
@@ -749,7 +756,7 @@ void KUrlNavigator::Private::deleteButtons()
 
 QString KUrlNavigator::Private::retrievePlacePath() const
 {
-    const KUrl currentUrl = q->locationUrl();
+    const QUrl currentUrl = q->locationUrl();
     const QString path = currentUrl.pathOrUrl();
     int idx = path.indexOf(QLatin1String("///"));
     if (idx >= 0) {
@@ -805,11 +812,11 @@ KUrlNavigator::KUrlNavigator(QWidget* parent) :
     QWidget(parent),
     d(new Private(this, 0))
 {
-    d->initialize(KUrl());
+    d->initialize(QUrl());
 }
 
 KUrlNavigator::KUrlNavigator(KFilePlacesModel* placesModel,
-                             const KUrl& url,
+                             const QUrl& url,
                              QWidget* parent) :
     QWidget(parent),
     d(new Private(this, placesModel))
@@ -822,7 +829,7 @@ KUrlNavigator::~KUrlNavigator()
     delete d;
 }
 
-KUrl KUrlNavigator::locationUrl(int historyIndex) const
+QUrl KUrlNavigator::locationUrl(int historyIndex) const
 {
     historyIndex = d->adjustedHistoryIndex(historyIndex);
     return d->m_history[historyIndex].url;
@@ -843,7 +850,7 @@ bool KUrlNavigator::goBack()
 {
     const int count = d->m_history.count();
     if (d->m_historyIndex < count - 1) {
-        const KUrl newUrl = locationUrl(d->m_historyIndex + 1);
+        const QUrl newUrl = locationUrl(d->m_historyIndex + 1);
         emit urlAboutToBeChanged(newUrl);
 
         ++d->m_historyIndex;
@@ -860,7 +867,7 @@ bool KUrlNavigator::goBack()
 bool KUrlNavigator::goForward()
 {
     if (d->m_historyIndex > 0) {
-        const KUrl newUrl = locationUrl(d->m_historyIndex - 1);
+        const QUrl newUrl = locationUrl(d->m_historyIndex - 1);
         emit urlAboutToBeChanged(newUrl);
 
         --d->m_historyIndex;
@@ -877,7 +884,7 @@ bool KUrlNavigator::goForward()
 bool KUrlNavigator::goUp()
 {
     const KUrl currentUrl = locationUrl();
-    const KUrl upUrl = currentUrl.upUrl();
+    const QUrl upUrl = currentUrl.upUrl();
     if (upUrl != currentUrl) {
         setLocationUrl(upUrl);
         return true;
@@ -895,12 +902,12 @@ void KUrlNavigator::goHome()
     }
 }
 
-void KUrlNavigator::setHomeUrl(const KUrl& url)
+void KUrlNavigator::setHomeUrl(const QUrl& url)
 {
     d->m_homeUrl = url;
 }
 
-KUrl KUrlNavigator::homeUrl() const
+QUrl KUrlNavigator::homeUrl() const
 {
     return d->m_homeUrl;
 }
@@ -974,7 +981,7 @@ bool KUrlNavigator::isPlacesSelectorVisible() const
     return d->m_showPlacesSelector;
 }
 
-KUrl KUrlNavigator::uncommittedUrl() const
+QUrl KUrlNavigator::uncommittedUrl() const
 {
     KUriFilterData filteredData(d->m_pathBox->currentText().trimmed());
     filteredData.setCheckForExecutables(false);
@@ -1077,7 +1084,7 @@ void KUrlNavigator::setFocus()
 }
 
 #ifndef KDE_NO_DEPRECATED
-void KUrlNavigator::setUrl(const KUrl& url)
+void KUrlNavigator::setUrl(const QUrl& url)
 {
     // deprecated
     setLocationUrl(url);
@@ -1085,7 +1092,7 @@ void KUrlNavigator::setUrl(const KUrl& url)
 #endif
 
 #ifndef KDE_NO_DEPRECATED
-void KUrlNavigator::saveRootUrl(const KUrl& url)
+void KUrlNavigator::saveRootUrl(const QUrl& url)
 {
     // deprecated
     d->m_history[d->m_historyIndex].rootUrl = url;
@@ -1198,20 +1205,20 @@ QStringList KUrlNavigator::customProtocols() const
 }
 
 #ifndef KDE_NO_DEPRECATED
-const KUrl& KUrlNavigator::url() const
+const QUrl& KUrlNavigator::url() const
 {
     // deprecated
 
     // Workaround required because of flawed interface ('const KUrl&' is returned
     // instead of 'KUrl'): remember the URL to prevent a dangling pointer
-    static KUrl url;
+    static QUrl url;
     url = locationUrl();
     return url;
 }
 #endif
 
 #ifndef KDE_NO_DEPRECATED
-KUrl KUrlNavigator::url(int index) const
+QUrl KUrlNavigator::url(int index) const
 {
     // deprecated
     return d->buttonUrl(index);
@@ -1219,7 +1226,7 @@ KUrl KUrlNavigator::url(int index) const
 #endif
 
 #ifndef KDE_NO_DEPRECATED
-KUrl KUrlNavigator::historyUrl(int historyIndex) const
+QUrl KUrlNavigator::historyUrl(int historyIndex) const
 {
     // deprecated
     return locationUrl(historyIndex);
@@ -1227,13 +1234,13 @@ KUrl KUrlNavigator::historyUrl(int historyIndex) const
 #endif
 
 #ifndef KDE_NO_DEPRECATED
-const KUrl& KUrlNavigator::savedRootUrl() const
+const QUrl& KUrlNavigator::savedRootUrl() const
 {
     // deprecated
 
     // Workaround required because of flawed interface ('const KUrl&' is returned
     // instead of 'KUrl'): remember the root URL to prevent a dangling pointer
-    static KUrl rootUrl;
+    static QUrl rootUrl;
     rootUrl = d->m_history[d->m_historyIndex].rootUrl;
     return rootUrl;
 }

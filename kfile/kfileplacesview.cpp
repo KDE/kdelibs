@@ -315,7 +315,7 @@ public:
 
     KFilePlacesView * const q;
 
-    KUrl currentUrl;
+    QUrl currentUrl;
     bool autoResizeItems;
     bool showAll;
     bool smoothItemResizing;
@@ -453,9 +453,9 @@ bool KFilePlacesView::isAutoResizeItemsEnabled() const
     return d->autoResizeItems;
 }
 
-void KFilePlacesView::setUrl(const KUrl &url)
+void KFilePlacesView::setUrl(const QUrl &url)
 {
-    KUrl oldUrl = d->currentUrl;
+    QUrl oldUrl = d->currentUrl;
     KFilePlacesModel *placesModel = qobject_cast<KFilePlacesModel*>(model());
 
     if (placesModel==0) return;
@@ -489,7 +489,7 @@ void KFilePlacesView::setUrl(const KUrl &url)
         d->currentUrl = url;
         selectionModel()->setCurrentIndex(index, QItemSelectionModel::ClearAndSelect);
     } else {
-        d->currentUrl = KUrl();
+        d->currentUrl = QUrl();
         selectionModel()->clear();
     }
 
@@ -570,7 +570,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
 
     if (index.isValid()) {
         if (!placesModel->isDevice(index)) {
-            if (placesModel->url(index) == KUrl("trash:/")) {
+            if (placesModel->url(index).toString() == QLatin1String("trash:/")) {
                 emptyTrash = menu.addAction(KDE::icon("trash-empty"), i18nc("@action:inmenu", "Empty Trash"));
                 KConfig trashConfig("trashrc", KConfig::SimpleConfig);
                 emptyTrash->setEnabled(!trashConfig.group("Status").readEntry("Empty", true));
@@ -643,14 +643,14 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
             QByteArray packedArgs;
             QDataStream stream(&packedArgs, QIODevice::WriteOnly);
             stream << int(1);
-            KIO::Job *job = KIO::special(KUrl("trash:/"), packedArgs);
+            KIO::Job *job = KIO::special(QUrl("trash:/"), packedArgs);
             KNotification::event("Trash: emptied", QString() , QPixmap() , 0, KNotification::DefaultEvent);
             job->ui()->setWindow(parentWidget());
             connect(job, SIGNAL(result(KJob*)), SLOT(_k_trashUpdated(KJob*)));
         }
     } else if (edit != 0 && result == edit) {
         KBookmark bookmark = placesModel->bookmarkForIndex(index);
-        KUrl url = bookmark.url();
+        QUrl url = bookmark.url();
         QString label = bookmark.text();
         QString iconName = bookmark.icon();
         bool appLocal = !bookmark.metaDataItem("OnlyInApp").isEmpty();
@@ -685,7 +685,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
     } else if (eject != 0 && result == eject) {
         placesModel->requestEject(index);
     } else if (add != 0 && result == add) {
-        KUrl url = d->currentUrl;
+        QUrl url = d->currentUrl;
         QString label;
         QString iconName = "folder";
         bool appLocal = true;
@@ -897,7 +897,7 @@ void KFilePlacesView::Private::setCurrentIndex(const QModelIndex &index)
 
     if (placesModel==0) return;
 
-    KUrl url = placesModel->url(index);
+    QUrl url = placesModel->url(index);
 
     if (url.isValid()) {
         currentUrl = url;

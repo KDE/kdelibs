@@ -55,11 +55,11 @@ class KUrlNavigatorButton : public KUrlNavigatorButtonBase
     Q_OBJECT
 
 public:
-    explicit KUrlNavigatorButton(const KUrl& url, QWidget* parent);
+    explicit KUrlNavigatorButton(const QUrl& url, QWidget* parent);
     virtual ~KUrlNavigatorButton();
 
-    void setUrl(const KUrl& url);
-    KUrl url() const;
+    void setUrl(const QUrl& url);
+    QUrl url() const;
 
     /* Implementation note: QAbstractButton::setText() is not virtual,
      * but KUrlNavigatorButton needs to adjust the minimum size when
@@ -87,9 +87,9 @@ Q_SIGNALS:
      * Is emitted if URLs have been dropped
      * to the destination \a destination.
      */
-    void urlsDropped(const KUrl& destination, QDropEvent* event);
+    void urlsDropped(const QUrl& destination, QDropEvent* event);
 
-    void clicked(const KUrl& url, Qt::MouseButton button);
+    void clicked(const QUrl& url, Qt::MouseButton button);
 
     /**
      * Is emitted, if KUrlNavigatorButton::setUrl() cannot resolve
@@ -186,7 +186,7 @@ private:
     bool m_replaceButton;
     bool m_showMnemonic;
     int m_wheelSteps;
-    KUrl m_url;
+    QUrl m_url;
 
     QString m_subDir;
     QTimer* m_openSubDirsTimer;

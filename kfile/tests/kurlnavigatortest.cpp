@@ -176,7 +176,7 @@ void KUrlNavigatorTest::bug251553_goUpFromArchive()
 
     bool ok = m_navigator->goUp();
     QVERIFY(ok);
-    QCOMPARE(m_navigator->locationUrl().path(KUrl::AddTrailingSlash), QLatin1String("/test/"));
+    QCOMPARE(m_navigator->locationUrl().path(), QLatin1String("/test"));
     QCOMPARE(m_navigator->locationUrl().scheme(), QLatin1String("file"));
 
     m_navigator->setLocationUrl(KUrl("tar:/test/archive.tar.gz"));
@@ -185,7 +185,7 @@ void KUrlNavigatorTest::bug251553_goUpFromArchive()
 
     ok = m_navigator->goUp();
     QVERIFY(ok);
-    QCOMPARE(m_navigator->locationUrl().path(KUrl::AddTrailingSlash), QLatin1String("/test/"));
+    QCOMPARE(m_navigator->locationUrl().path(), QLatin1String("/test"));
     QCOMPARE(m_navigator->locationUrl().scheme(), QLatin1String("file"));
 }
 

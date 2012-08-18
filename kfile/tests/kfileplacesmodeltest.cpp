@@ -84,7 +84,7 @@ void KFilePlacesModelTest::initTestCase()
     const QString file = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + "kfileplaces/bookmarks.xml";
     QFile f(file);
     f.remove();
-    
+
     // Erase the shared bookmarks file also
     const QString sharedBookmarksFile = KStandardDirs().localxdgdatadir() + "/user-places.xbel";
     QFile f2(sharedBookmarksFile);
@@ -108,7 +108,11 @@ QStringList KFilePlacesModelTest::placesUrls() const
     QStringList urls;
     for (int row = 0; row < m_places->rowCount(); ++row) {
         QModelIndex index = m_places->index(row, 0);
-        urls << m_places->url(index).pathOrUrl();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+        urls << m_places->url(index).toDisplayString(QUrl::PreferLocalFile);
+#else
+        urls << m_places->url(index).toString(); // was pathOrUrl
+#endif
     }
     return urls;
 }
@@ -122,13 +126,13 @@ QStringList KFilePlacesModelTest::placesUrls() const
     for (int row = 0; row < urls.size(); ++row) {                            \
         QModelIndex index = m_places->index(row, 0);                         \
                                                                              \
-        QCOMPARE(m_places->url(index).url(), KUrl(urls[row]).url());         \
+        QCOMPARE(m_places->url(index).toString(), QUrl::fromUserInput(urls[row]).toString()); \
         QCOMPARE(m_places->data(index, KFilePlacesModel::UrlRole).toUrl(),   \
                  QUrl(m_places->url(index)));                                \
                                                                              \
         index = m_places2->index(row, 0);                                    \
                                                                              \
-        QCOMPARE(m_places2->url(index).url(), KUrl(urls[row]).url());        \
+        QCOMPARE(m_places2->url(index).toString(), KUrl(urls[row]).toString()); \
         QCOMPARE(m_places2->data(index, KFilePlacesModel::UrlRole).toUrl(),  \
                  QUrl(m_places2->url(index)));                               \
     }                                                                        \

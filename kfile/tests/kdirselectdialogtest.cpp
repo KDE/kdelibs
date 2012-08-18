@@ -17,12 +17,13 @@ int main( int argc, char **argv )
     KApplication app;
     app.setQuitOnLastWindowClosed(false);
 
-    KUrl u = KDirSelectDialog::selectDirectory( KCmdLineArgs::parsedArgs()->count() >= 1 ? 
-        KCmdLineArgs::parsedArgs()->arg(0) : QString() );
+    QUrl startDir = KCmdLineArgs::parsedArgs()->count() >= 1 ?
+                    KCmdLineArgs::parsedArgs()->url(0) : QUrl();
+    QUrl u = KDirSelectDialog::selectDirectory(startDir);
     if ( u.isValid() )
-        KMessageBox::information( 0L,
-                                QString("You selected the url: %1")
-                                .arg( u.prettyUrl() ), "Selected URL" );
+        KMessageBox::information(NULL,
+                                 QString("You selected the url: %1")
+                                 .arg(u.toString()), "Selected URL");
 
     return 0;
 }

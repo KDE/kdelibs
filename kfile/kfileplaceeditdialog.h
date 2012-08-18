@@ -62,7 +62,7 @@ public:
      * If you leave the icon empty, the default icon for the given url will be
      * used (KMimeType::pixmapForUrl()).
      */
-    static bool getInformation( bool allowGlobal, KUrl& url,
+    static bool getInformation( bool allowGlobal, QUrl& url,
                                 QString& label, QString& icon,
                                 bool isAddingNewPlace,
                                 bool& appLocal, int iconSize,
@@ -85,7 +85,7 @@ public:
      * If you leave the icon empty, the default icon for the given url will be
      * used (KMimeType::pixmapForUrl()).
      */
-    KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
+    KFilePlaceEditDialog(bool allowGlobal, const QUrl& url,
                          const QString& label, const QString &icon,
                          bool isAddingNewPlace,
                          bool appLocal = true,
@@ -99,7 +99,7 @@ public:
     /**
      * @returns the configured url
      */
-    KUrl url() const;
+    QUrl url() const;
 
     /**
      * @returns the configured label

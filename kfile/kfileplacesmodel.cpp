@@ -34,6 +34,7 @@
 #include <QColor>
 #include <QAction>
 #include <qmimedatabase.h>
+#include <qurlpathinfo.h>
 
 #include <kfileitem.h>
 #include <klocalizedstring.h>
@@ -116,26 +117,26 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
 
         KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
                                               "Home", I18N_NOOP2("KFile System Bookmarks", "Home"),
-                                              KUrl(KUser().homeDir()), "user-home");
+                                              QUrl::fromLocalFile(KUser().homeDir()), "user-home");
         KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
                                               "Network", I18N_NOOP2("KFile System Bookmarks", "Network"),
-                                              KUrl("remote:/"), "network-workgroup");
+                                              QUrl("remote:/"), "network-workgroup");
 #if defined(_WIN32_WCE)
         // adding drives
         foreach ( const QFileInfo& info, QDir::drives() ) {
             QString driveIcon = "drive-harddisk";
             KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
                                                   info.absoluteFilePath(), info.absoluteFilePath(),
-                                                  KUrl(info.absoluteFilePath()), driveIcon);
+                                                  QUrl::fromLocalFile(info.absoluteFilePath()), driveIcon);
         }
 #elif !defined(Q_OS_WIN)
         KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
                                               "Root", I18N_NOOP2("KFile System Bookmarks", "Root"),
-                                              KUrl("/"), "folder-red");
+                                              QUrl::fromLocalFile("/"), "folder-red");
 #endif
         KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
                                               "Trash", I18N_NOOP2("KFile System Bookmarks", "Trash"),
-                                              KUrl("trash:/"), "user-trash");
+                                              QUrl("trash:/"), "user-trash");
 
         // Force bookmarks to be saved. If on open/save dialog and the bookmarks are not saved, QFile::exists
         // will always return false, which opening/closing all the time the open/save dialog would case the
@@ -172,9 +173,9 @@ KFilePlacesModel::~KFilePlacesModel()
     delete d;
 }
 
-KUrl KFilePlacesModel::url(const QModelIndex &index) const
+QUrl KFilePlacesModel::url(const QModelIndex &index) const
 {
-    return KUrl(data(index, UrlRole).toUrl());
+    return QUrl(data(index, UrlRole).toUrl());
 }
 
 bool KFilePlacesModel::setupNeeded(const QModelIndex &index) const
@@ -276,7 +277,7 @@ int KFilePlacesModel::columnCount(const QModelIndex &parent) const
     return 1;
 }
 
-QModelIndex KFilePlacesModel::closestItem(const KUrl &url) const
+QModelIndex KFilePlacesModel::closestItem(const QUrl &url) const
 {
     int foundRow = -1;
     int maxLength = 0;
@@ -286,7 +287,7 @@ QModelIndex KFilePlacesModel::closestItem(const KUrl &url) const
     // which covers the bigger range of the URL.
     for (int row = 0; row<d->items.size(); ++row) {
         KFilePlacesItem *item = d->items[row];
-        KUrl itemUrl = KUrl(item->data(UrlRole).toUrl());
+        KUrl itemUrl(item->data(UrlRole).toUrl());
 
         if (itemUrl.isParentOf(url)) {
             const int length = itemUrl.prettyUrl().length();
@@ -513,7 +514,7 @@ QMimeData *KFilePlacesModel::mimeData(const QModelIndexList &indexes) const
     QDataStream stream(&itemData, QIODevice::WriteOnly);
 
     foreach (const QModelIndex &index, indexes) {
-        KUrl itemUrl = url(index);
+        QUrl itemUrl = url(index);
         if (itemUrl.isValid())
             urls << itemUrl;
         stream << index.row();
@@ -583,7 +584,7 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
 
         KBookmarkGroup group = d->bookmarkManager->root();
 
-        foreach (const KUrl &url, urls) {
+        foreach (const QUrl &url, urls) {
             // TODO: use KIO::stat in order to get the UDS_DISPLAY_NAME too
             QMimeType mimetype = db.mimeTypeForName(KIO::NetAccess::mimetype(url, 0));
 
@@ -600,7 +601,7 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
             KFileItem item(url, mimetype.name(), S_IFDIR);
 
             KBookmark bookmark = KFilePlacesItem::createBookmark(d->bookmarkManager,
-                                                                 url.fileName(), url,
+                                                                 QUrlPathInfo(url).fileName(), url,
                                                                  item.iconName());
             group.moveBookmark(bookmark, afterBookmark);
             afterBookmark = bookmark;
@@ -617,13 +618,13 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
     return true;
 }
 
-void KFilePlacesModel::addPlace(const QString &text, const KUrl &url,
+void KFilePlacesModel::addPlace(const QString &text, const QUrl &url,
                                 const QString &iconName, const QString &appName)
 {
     addPlace(text, url, iconName, appName, QModelIndex());
 }
 
-void KFilePlacesModel::addPlace(const QString &text, const KUrl &url,
+void KFilePlacesModel::addPlace(const QString &text, const QUrl &url,
                                 const QString &iconName, const QString &appName,
                                 const QModelIndex &after)
 {
@@ -642,7 +643,7 @@ void KFilePlacesModel::addPlace(const QString &text, const KUrl &url,
     d->reloadAndSignal();
 }
 
-void KFilePlacesModel::editPlace(const QModelIndex &index, const QString &text, const KUrl &url,
+void KFilePlacesModel::editPlace(const QModelIndex &index, const QString &text, const QUrl &url,
                                  const QString &iconName, const QString &appName)
 {
     if (!index.isValid()) return;

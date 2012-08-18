@@ -48,7 +48,7 @@
 #include <kconfiggroup.h>
 
 
-bool KFilePlaceEditDialog::getInformation(bool allowGlobal, KUrl& url,
+bool KFilePlaceEditDialog::getInformation(bool allowGlobal, QUrl& url,
                                           QString& label, QString& icon,
                                           bool isAddingNewPlace,
                                           bool& appLocal, int iconSize,
@@ -75,7 +75,7 @@ bool KFilePlaceEditDialog::getInformation(bool allowGlobal, KUrl& url,
     return false;
 }
 
-KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const KUrl& url,
+KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const QUrl& url,
                                            const QString& label,
                                            const QString &icon,
                                            bool isAddingNewPlace,
@@ -172,7 +172,7 @@ void KFilePlaceEditDialog::urlChanged(const QString & text )
     enableButtonOk( !text.isEmpty() );
 }
 
-KUrl KFilePlaceEditDialog::url() const
+QUrl KFilePlaceEditDialog::url() const
 {
     return m_urlEdit->url();
 }

@@ -55,13 +55,13 @@ public:
 
     static KBookmark createBookmark(KBookmarkManager *manager,
                                     const QString &label,
-                                    const KUrl &url,
+                                    const QUrl &url,
                                     const QString &iconName,
                                     KFilePlacesItem *after = 0);
     static KBookmark createSystemBookmark(KBookmarkManager *manager,
                                           const QString &untranslatedLabel,
                                           const QString &translatedLabel,
-                                          const KUrl &url,
+                                          const QUrl &url,
                                           const QString &iconName);
     static KBookmark createDeviceBookmark(KBookmarkManager *manager,
                                           const QString &udi);
