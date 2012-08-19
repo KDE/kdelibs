@@ -5,7 +5,7 @@
 #include "kcolorcollection.h"
 #include <stdio.h>
 
-#include <QtGui/QApplication>
+#include <QApplication>
 #include <QtCore/QStringList>
 
 

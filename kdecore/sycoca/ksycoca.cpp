@@ -435,8 +435,20 @@ bool KSycocaPrivate::checkDatabase(BehaviorsIfNotFound ifNotFound)
             // and since kdeinit5 only returns after kbuildsycoca5 is done, we can proceed.
         } else {
             kDebug(7011) << QThread::currentThread() << "We have no database.... launching" << KBUILDSYCOCA_EXENAME;
-            if (QProcess::execute(QStandardPaths::findExecutable(QString::fromLatin1(KBUILDSYCOCA_EXENAME))) != 0)
-                qWarning("ERROR: Running KSycoca failed.");
+            const QString exec = QStandardPaths::findExecutable(QString::fromLatin1(KBUILDSYCOCA_EXENAME));
+            if (exec.isEmpty()) {
+                qWarning() << "ERROR: Could not find" << KBUILDSYCOCA_EXENAME << ", please check your PATH";
+            } else {
+                QStringList args;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+                if (QStandardPaths::isTestModeEnabled()) {
+                    args << QLatin1String("--testmode");
+                }
+#endif
+                if (QProcess::execute(exec, args) != 0) {
+                    qWarning("ERROR: Running KSycoca failed.");
+                }
+            }
         }
 
         closeDatabase(); // close the dummy one

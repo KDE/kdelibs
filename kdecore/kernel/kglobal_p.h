@@ -47,7 +47,11 @@ public:
 
     virtual QString translate(const char* context,
                               const char *sourceText,
-                              const char* message) const
+                              const char* message
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+                              , int n
+#endif
+                              ) const
     {
         return KGlobal::locale()->translateQt(context, sourceText, message);
     }

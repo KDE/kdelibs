@@ -40,7 +40,9 @@ KUrlNavigatorToggleButton::KUrlNavigatorToggleButton(QWidget* parent) :
             this, SLOT(updateCursor()));
     m_pixmap = KDE::icon("dialog-ok").pixmap(16, 16);
 
+#ifndef QT_NO_ACCESSIBILITY
     setAccessibleName(i18n("Edit mode"));
+#endif
 
     updateToolTip();
 }

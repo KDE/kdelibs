@@ -635,12 +635,19 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
    options.add("global", qi18n("Create global database"));
    options.add("menutest", qi18n("Perform menu generation test run only"));
    options.add("track <menu-id>", qi18n("Track menu id for debug purposes"));
+   options.add("testmode", qi18n("Switch QStandardPaths to test mode, for unit tests only"));
 
    KCmdLineArgs::init(argc, argv, &d);
    KCmdLineArgs::addCmdLineOptions(options);
    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
    bGlobalDatabase = args->isSet("global");
    bMenuTest = args->isSet("menutest");
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+   if (args->isSet("testmode")) {
+       QStandardPaths::enableTestMode(true);
+   }
+#endif
 
    if (bGlobalDatabase)
    {

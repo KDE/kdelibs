@@ -22,10 +22,10 @@
 #include "udisksstorageaccess.h"
 #include "udisks2.h"
 
-#include <QtCore/QProcess>
+#include <QProcess>
 #include <QtDBus/QtDBus>
-#include <QtGui/QApplication>
-#include <QtGui/QWidget>
+#include <QApplication>
+#include <QWidget>
 
 using namespace Solid::Backends::UDisks2;
 
