@@ -24,14 +24,14 @@
 #include <kacl.h>
 #include <kdebug.h>
 
-#include <QtGui/QApplication>
-#include <QtCore/QFileInfo>
-#include <QtCore/QEventLoop>
+#include <QApplication>
+#include <QDir>
+#include <QFileInfo>
+#include <QEventLoop>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <QtCore/QDir>
 
 // The code comes partly from kdebase/kioslave/trash/testtrash.cpp
 

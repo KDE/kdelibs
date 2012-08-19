@@ -21,7 +21,7 @@
 
 #include <kio/kio_export.h>
 #include <kdialog.h>
-#include <QtGui/QWidget>
+#include <QWidget>
 
 class QTreeWidgetItem;
 
