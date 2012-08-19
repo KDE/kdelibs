@@ -67,7 +67,13 @@ if(NOT KIO_NO_SOLID)
    set(KIO_EXTRA_LIBS ${KIO_EXTRA_LIBS} ${KDE4_SOLID_LIBS})
 endif(NOT KIO_NO_SOLID)
 
+find_package(X11)
+if(X11_FOUND)
+	macro_bool_to_01(X11_FOUND HAVE_X11)
+endif(X11_FOUND)
+
 configure_file(kio/config-kio.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-kio.h )
+
 if (NOT KIO_NO_STRIGI)
    configure_file(kio/config-strigi.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-strigi.h )
 endif (NOT KIO_NO_STRIGI)

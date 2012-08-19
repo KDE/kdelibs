@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     QApplication::setApplicationName("kacltest");
     QApplication app(argc, argv);
 
-#ifdef HAVE_POSIX_ACL
+#if HAVE_POSIX_ACL
     KACLTest test;
     test.setup();
     test.runAll();

@@ -46,6 +46,8 @@
 
 
 #include <config-acl.h>
+#include <config-kio.h>
+
 extern "C" {
 #include <pwd.h>
 #include <grp.h>

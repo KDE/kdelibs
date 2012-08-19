@@ -22,7 +22,7 @@
 
 #include <config-acl.h>
 
-#if defined(HAVE_POSIX_ACL) || defined(Q_MOC_RUN)
+#if HAVE_POSIX_ACL || defined(Q_MOC_RUN)
 #include <sys/acl.h>
 #include <kacl.h>
 

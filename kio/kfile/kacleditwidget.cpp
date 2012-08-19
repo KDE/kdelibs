@@ -22,7 +22,7 @@
 #include "kacleditwidget_p.h"
 
 #include <config-acl.h>
-#ifdef HAVE_POSIX_ACL
+#if HAVE_POSIX_ACL
 
 #include <qpainter.h>
 #include <qpushbutton.h>
