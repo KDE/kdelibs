@@ -20,7 +20,11 @@
 
 #include <kmimetypetrader.h>
 #include <kparts/browseropenorsavequestion.h>
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <qtest_gui.h>
+#else
+#include <qtest_widgets.h>
+#endif
 
 #include <kdialog.h>
 #include <kpushbutton.h>
