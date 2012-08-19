@@ -10,8 +10,6 @@
 
 #include "exr.h"
 
-#include <config.h>
-
 #include <ImfRgbaFile.h>
 #include <ImfStandardAttributes.h>
 #include <ImathBox.h>

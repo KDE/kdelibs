@@ -7,8 +7,6 @@
 
 #include "g3r.h"
 
-#include <config.h>
-
 #include <tiffio.h>
 
 #include <qimage.h>
