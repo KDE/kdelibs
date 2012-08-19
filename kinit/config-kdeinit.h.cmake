@@ -1,4 +1,5 @@
 #define kde_socklen_t socklen_t
+#define KDELIBSUFF "${KDELIBSUFF}"
 
 /* These are for proctitle.cpp: */
 #cmakedefine01 HAVE___PROGNAME
