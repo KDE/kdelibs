@@ -21,8 +21,6 @@
 #include "dataslave.h"
 #include "dataprotocol.h"
 
-#include <config.h>
-
 #include <klocalizedstring.h>
 #include <kdebug.h>
 

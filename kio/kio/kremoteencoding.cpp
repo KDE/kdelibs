@@ -18,8 +18,6 @@
 
 #include "kremoteencoding.h"
 
-#include <config.h>
-
 #include <kdebug.h>
 #include <kstringhandler.h>
 #include <qurlpathinfo.h>

@@ -24,6 +24,8 @@
 
 #include "hostinfo_p.h"
 
+#include <config-kio.h>
+
 #include <string.h>
 #include <unistd.h>
 #include <sys/utsname.h>
@@ -43,7 +45,6 @@
 #include <QtNetwork/QNetworkProxyQuery>
 #endif
 
-#include <config.h>
 #include <kdeversion.h>
 #include <kdebug.h>
 #include <klocale.h>

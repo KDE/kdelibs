@@ -29,8 +29,6 @@
 #include <kmessagebox.h>
 #include <QtCore/QFile>
 
-#include <config.h>
-
 #include <pwd.h>
 #include <grp.h>
 #include <sys/types.h>

@@ -70,7 +70,13 @@ endif(NOT KIO_NO_SOLID)
 find_package(X11)
 if(X11_FOUND)
 	macro_bool_to_01(X11_FOUND HAVE_X11)
+	macro_log_feature(X11_Xrender_FOUND "X Rendering Extension (libXrender)" "Support for compositing, rendering operations, and alpha-blending" "http://www.x.org" FALSE "" "STRONGLY RECOMMENDED")
+	macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)
 endif(X11_FOUND)
+
+check_include_files(sys/stat.h    HAVE_SYS_STAT_H)
+check_function_exists(backtrace        HAVE_BACKTRACE)
+check_struct_member("struct sockaddr" sa_len "sys/types.h;sys/socket.h" HAVE_STRUCT_SOCKADDR_SA_LEN)
 
 configure_file(kio/config-kio.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-kio.h )
 

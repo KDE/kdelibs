@@ -20,7 +20,6 @@
 
 #include "ksslcertchain.h"
 
-#include <config.h>
 #include <ksslconfig.h>
 
 #include "kssldefs.h"

@@ -20,7 +20,6 @@
 
 #include "ksslsettings.h"
 
-#include <config.h>
 #include <ksslconfig.h>
 
 #include <sys/types.h>

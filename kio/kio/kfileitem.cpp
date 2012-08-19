@@ -20,7 +20,6 @@
 
 #include "kfileitem.h"
 
-#include <config.h>
 #include <config-kio.h>
 
 #include <sys/time.h>
@@ -1430,7 +1429,7 @@ QUrl KFileItem::targetUrl() const
 
 QUrl KFileItem::nepomukUri() const
 {
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     const QString nepomukUriStr = d->m_entry.stringValue( KIO::UDSEntry::UDS_NEPOMUK_URI );
     if(!nepomukUriStr.isEmpty()) {
         return QUrl(nepomukUriStr);

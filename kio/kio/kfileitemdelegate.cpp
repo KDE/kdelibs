@@ -23,7 +23,7 @@
 #include "kfileitemdelegate.h"
 #include "imagefilter_p.h"
 
-#include <config.h> // for HAVE_XRENDER
+#include <config-kio.h> // for HAVE_XRENDER
 
 #include <QApplication>
 #include <QStyle>
@@ -51,7 +51,7 @@
 
 #include "delegateanimationhandler_p.h"
 
-#if HAVE_X11 && defined(HAVE_XRENDER)
+#if HAVE_X11 && HAVE_XRENDER
 #  include <X11/Xlib.h>
 #  include <X11/extensions/Xrender.h>
 #  include <QX11Info>
@@ -1689,7 +1689,6 @@ bool KFileItemDelegate::eventFilter(QObject *object, QEvent *event)
         return false;
     } // switch (event->type())
 }
-
 
 
 

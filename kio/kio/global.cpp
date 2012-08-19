@@ -19,8 +19,6 @@
 #include "global.h"
 #include "job.h"
 
-#include <config.h>
-
 #include <kconfiggroup.h>
 #include <kdebug.h>
 #include <klocale.h>

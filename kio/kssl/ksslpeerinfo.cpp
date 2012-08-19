@@ -20,7 +20,6 @@
 
 #include "ksslpeerinfo.h"
 
-#include <config.h>
 #include <ksslconfig.h>
 
 #include <QtCore/QRegExp>

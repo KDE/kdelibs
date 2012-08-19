@@ -21,6 +21,8 @@
 
 #include "kfilemetainfoitem.h"
 #include "kfilemetainfoitem_p.h"
+#include <config-kio.h>
+
 #ifdef HAVE_NEPOMUK
 #include <config-nepomuk.h>
 #endif
@@ -36,7 +38,7 @@ KFileMetaInfoItem::KFileMetaInfoItem(const QString& pp,
 #ifndef KDE_NO_DEPRECATED
     d->pp = pp;
 #else
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     d->pp = QUrl(pp);
 #endif
 #endif
@@ -57,7 +59,7 @@ KFileMetaInfoItem::name() const {
 #ifndef KDE_NO_DEPRECATED
     return d->pp.name();
 #else
-    #ifndef KIO_NO_NEPOMUK
+    #if ! KIO_NO_NEPOMUK
         return d->pp.name();
     #else
         return QString::null;

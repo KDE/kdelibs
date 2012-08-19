@@ -20,7 +20,6 @@
 
 #include "ksslpemcallback.h"
 
-#include <config.h>
 #include <ksslconfig.h>
 
 #include <kpassworddialog.h>

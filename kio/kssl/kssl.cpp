@@ -20,7 +20,6 @@
 
 #include "kssl.h"
 
-#include <config.h>
 #include <ksslconfig.h>
 
 // this hack provided by Malte Starostik to avoid glibc/openssl bug

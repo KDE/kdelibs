@@ -22,8 +22,6 @@
 
 #include "jobremotetest.h"
 
-#include <config.h>
-
 #include <kurl.h>
 #include <kio/netaccess.h>
 #include <kdebug.h>

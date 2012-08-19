@@ -23,8 +23,6 @@
 #include <QPointer>
 #include <QSignalSpy>
 
-#include <config.h>
-
 #include <kurl.h>
 #include <kio/netaccess.h>
 #include <kio/previewjob.h>

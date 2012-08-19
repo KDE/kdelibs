@@ -20,7 +20,6 @@
 
 #include "ksslsession.h"
 
-#include <config.h>
 #include <ksslconfig.h>
 
 #include <kopenssl.h>

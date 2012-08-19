@@ -26,8 +26,6 @@
 
 #include "tcpslavebase.h"
 
-#include <config.h>
-
 #include <kdebug.h>
 #include <kconfiggroup.h>
 #include <ksslcertificatemanager.h>
