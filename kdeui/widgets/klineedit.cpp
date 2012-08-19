@@ -49,7 +49,7 @@
 #include <QStyleOption>
 #include <QToolTip>
 
-#include <config.h>
+#include <config-kdeui.h>
 
 class KLineEditStyle;
 

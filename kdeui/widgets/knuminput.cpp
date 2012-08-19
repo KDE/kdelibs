@@ -22,8 +22,8 @@
 
 #include "knuminput.h"
 
-#include <config.h>
-#ifdef HAVE_LIMITS_H
+#include <config-kdeui.h>
+#if HAVE_LIMITS_H
 #include <limits.h>
 #endif
 

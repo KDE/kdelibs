@@ -41,7 +41,7 @@
 
 #include "kdebug.h"
 
-#include <config.h>
+#include <config-kdeui.h>
 
 class KKeySequenceWidgetPrivate
 {

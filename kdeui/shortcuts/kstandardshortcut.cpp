@@ -27,8 +27,9 @@
 #include "kshortcut.h"
 #include <kconfiggroup.h>
 
+#include <config-kdeui.h>
+
 #include <QKeySequence>
-#include <config.h>
 #if HAVE_X11
 #include <qx11info_x11.h>
 #endif

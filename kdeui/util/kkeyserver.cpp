@@ -22,7 +22,6 @@
 
 #include "kkeyserver.h"
 
-#include <config.h>
 #include <klocalizedstring.h>
 #include <kconfig.h>
 #include <ksharedconfig.h>

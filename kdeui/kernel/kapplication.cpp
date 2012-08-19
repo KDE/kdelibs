@@ -21,7 +21,7 @@
 #include "kapplication.h"
 
 #include "kdeversion.h"
-#include <config.h>
+#include <config-kdeui.h>
 
 #include <QtCore/QDir>
 #include <QtCore/QFile>
@@ -59,7 +59,7 @@
 #endif
 
 #include <sys/types.h>
-#ifdef HAVE_SYS_STAT_H
+#if HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
 #include <sys/wait.h>
@@ -75,7 +75,7 @@
 #include <netwm.h>
 #endif
 
-#ifdef HAVE_PATHS_H
+#if HAVE_PATHS_H
 #include <paths.h>
 #endif
 

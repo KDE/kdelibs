@@ -29,8 +29,6 @@
 
 #include <kdebug.h>
 
-#include <config.h>
-
 /** @internal */
 KCupsOptionsWidget::KCupsOptionsWidget( QPrintDialog *parent ) : QWidget( parent )
 {

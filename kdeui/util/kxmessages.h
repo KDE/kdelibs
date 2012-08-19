@@ -29,7 +29,7 @@ DEALINGS IN THE SOFTWARE.
 #include <QWidget>
 #include <QtCore/QMap>
 
-#include <config.h> // HAVE_X11
+#include <config-kdeui.h> // HAVE_X11
 #if HAVE_X11
 typedef struct _XDisplay Display;
 

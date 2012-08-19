@@ -45,7 +45,7 @@
 
 #include <netinet/in.h>
 
-#include <config.h>
+#include <config-kdeui.h>
 
 static const QString s_statusNotifierWatcherServiceName("org.kde.StatusNotifierWatcher");
 

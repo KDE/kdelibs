@@ -32,7 +32,7 @@
 #include "kstandardaction.h"
 #include <kwindowsystem.h>
 
-#include <config.h>
+#include <config-kdeui.h>
 #if HAVE_X11
 #include <QX11Info>
 #endif

@@ -19,8 +19,6 @@
 
 #include "kkeyserver_mac.h"
 
-#include <config.h>
-
 #include <QtCore/QCOORD>
 
 #ifdef Q_OS_MAC // Only compile this module if we're compiling for Mac OS X

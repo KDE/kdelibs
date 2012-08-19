@@ -27,7 +27,8 @@
 #include <config-kstandarddirs.h>
 #include <config-prefix.h>
 
-#include <config.h>
+#include <config-kdeui.h>
+#include <kdefakes.h>
 
 #include <string.h>
 #include <signal.h>
@@ -58,7 +59,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
 
-#include <config.h>
+#include <config-kdeui.h>
 #if HAVE_X11
 #include <qx11info_x11.h>
 #include <X11/Xlib.h>

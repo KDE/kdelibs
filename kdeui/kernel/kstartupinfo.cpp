@@ -35,7 +35,7 @@ DEALINGS IN THE SOFTWARE.
 #include <QWidget>
 
 
-#include <config.h> // HAVE_X11
+#include <config-kdeui.h> // HAVE_X11
 
 // need to resolve INT32(qglobal.h)<>INT32(Xlibint.h) conflict
 #ifndef QT_CLEAN_NAMESPACE

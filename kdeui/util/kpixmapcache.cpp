@@ -45,14 +45,14 @@
 #endif
 #include <kdefakes.h>
 
-#include <config.h>
+#include <config-kdeui.h>
 
 #include <time.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <string.h>
 
-#if defined(HAVE_MADVISE)
+#if HAVE_MADVISE
 #include <sys/mman.h>
 #endif
 

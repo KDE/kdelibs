@@ -61,8 +61,6 @@
 #include <ctype.h>
 #include <assert.h>
 
-#include <config.h>
-
 static bool no_query_exit = false;
 
 static KMenuBar *internalMenuBar(KMainWindow *mw)

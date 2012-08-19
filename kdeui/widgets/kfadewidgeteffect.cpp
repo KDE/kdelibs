@@ -22,7 +22,7 @@
 #include "kfadewidgeteffect.h"
 #include "kfadewidgeteffect_p.h"
 
-#include <config.h> // for HAVE_XRENDER
+#include <config-kdeui.h> // for HAVE_XRENDER
 
 #include <QtCore/QEvent>
 #include <QPaintEngine>
@@ -30,7 +30,7 @@
 
 #include <kglobalsettings.h>
 
-#if HAVE_X11 && defined(HAVE_XRENDER)
+#if HAVE_X11 && HAVE_XRENDER
 #  include <X11/Xlib.h>
 #  include <X11/extensions/Xrender.h>
 #  include <QX11Info>

@@ -26,7 +26,7 @@
 #include <QPointer>
 #include <QWidget>
 
-#include <config.h>
+#include <config-kdeui.h>
 #if HAVE_X11
 #include <QX11Info>
 #include <netwm.h>

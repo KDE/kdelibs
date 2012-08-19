@@ -30,9 +30,9 @@
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusReply>
 
-#include <config.h>
+#include <config-kdeui.h>
 
-#ifdef HAVE_XTEST
+#if HAVE_XTEST
 #include <QTimer>
 #include <QX11Info>
 
@@ -47,7 +47,7 @@ class KNotificationRestrictions::Private
             : q( qq ),
               control(c)
             , screenSaverDbusCookie(-1)
-#ifdef HAVE_XTEST
+#if HAVE_XTEST
              ,screensaverTimer(0),
               haveXTest(0),
               XTestKeyCode(0)
@@ -65,7 +65,7 @@ class KNotificationRestrictions::Private
         Services control;
         int screenSaverDbusCookie;
         QString reason;
-#ifdef HAVE_XTEST
+#if HAVE_XTEST
         QTimer* screensaverTimer;
         int haveXTest;
         int XTestKeyCode;
@@ -94,7 +94,7 @@ KNotificationRestrictions::~KNotificationRestrictions()
 void KNotificationRestrictions::Private::screensaverFakeKeyEvent()
 {
     kDebug(297);
-#ifdef HAVE_XTEST
+#if HAVE_XTEST
     kDebug(297) << "---- using XTestFakeKeyEvent";
     Display* display = QX11Info::display();
     XTestFakeKeyEvent(display, XTestKeyCode, true, CurrentTime);
@@ -116,7 +116,7 @@ void KNotificationRestrictions::Private::startScreenSaverPrevention()
         screenSaverDbusCookie = reply.value();
         return;
     }
-#ifdef HAVE_XTEST
+#if HAVE_XTEST
     if ( !haveXTest ) {
         int a,b,c,e;
         haveXTest = XTestQueryExtension(QX11Info::display(), &a, &b, &c, &e);
@@ -162,7 +162,7 @@ void KNotificationRestrictions::Private::stopScreenSaverPrevention()
             return;
         }
     }
-#ifdef HAVE_XTEST
+#if HAVE_XTEST
     delete screensaverTimer;
     screensaverTimer = 0;
 #endif // HAVE_XTEST

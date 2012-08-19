@@ -50,7 +50,6 @@
 #include <ktoolinvocation.h>
 #include <kglobal.h>
 
-#include <config.h>
 #pragma message("Revive QX11EmbedWidget in Qt5")
 #if 0
 #include <QX11EmbedWidget>

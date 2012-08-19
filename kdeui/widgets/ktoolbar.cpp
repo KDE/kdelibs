@@ -26,8 +26,6 @@
 
 #include "ktoolbar.h"
 
-#include <config.h>
-
 #include <QtCore/QPointer>
 #include <QApplication>
 #include <QDesktopWidget>

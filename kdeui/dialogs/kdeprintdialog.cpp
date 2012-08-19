@@ -21,7 +21,8 @@
  **/
 
 #include "kdeprintdialog.h"
-#include <config.h>
+#include <config-kdeui.h>
+
 #if HAVE_X11
 #include "kcupsoptionspageswidget_p.h"
 #include "kcupsoptionsjobwidget_p.h"

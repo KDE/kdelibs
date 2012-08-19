@@ -32,6 +32,7 @@
 #include "kcolordialog.h"
 #include "kcolordialog_p.h"
 
+#include <config-kdeui.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -72,7 +73,6 @@
 #include <kcolorutils.h>
 
 #include "kcolormimedata.h"
-#include <config.h>
 #include <kdebug.h>
 
 #include "kcolorchoosermode_p.h"

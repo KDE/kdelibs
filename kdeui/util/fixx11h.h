@@ -27,7 +27,7 @@ DEALINGS IN THE SOFTWARE.
 //#define   multiple times
 
 #include <QtCore/QtGlobal>
-#include <config.h>
+#include <config-kdeui.h>
 
 #if HAVE_X11
 

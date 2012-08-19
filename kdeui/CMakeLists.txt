@@ -69,6 +69,25 @@ endif(NOT KDEUI_NO_ATTICA)
 
 macro_bool_to_01(HAVE_ATTICA)
 
+
+find_package(X11)
+if(X11_FOUND)
+	macro_bool_to_01(X11_FOUND HAVE_X11)
+	macro_log_feature(X11_Xrender_FOUND "X Rendering Extension (libXrender)" "Support for compositing, rendering operations, and alpha-blending" "http://www.x.org" FALSE "" "STRONGLY RECOMMENDED")
+	macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)
+	macro_bool_to_01(X11_XTest_FOUND HAVE_XTEST)
+endif(X11_FOUND)
+
+check_include_files(sys/stat.h    HAVE_SYS_STAT_H) 
+check_include_files(paths.h       HAVE_PATHS_H)
+check_include_files(limits.h      HAVE_LIMITS_H)
+check_include_files(sys/types.h   HAVE_SYS_TYPES_H)
+check_include_files(sys/time.h    HAVE_SYS_TIME_H)
+check_include_files(unistd.h      HAVE_UNISTD_H)
+check_symbol_exists(posix_madvise   "sys/mman.h"               HAVE_MADVISE)
+
+configure_file(config-kdeui.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdeui.h )
+
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogs/kaboutapplicationconfigattica_p.h.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/dialogs/kaboutapplicationconfigattica_p.h

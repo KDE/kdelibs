@@ -23,8 +23,6 @@
 
 #include "kcheckaccelerators.h"
 
-#include <config.h>
-
 #include <QApplication>
 #include <QCheckBox>
 #include <QDialog>
