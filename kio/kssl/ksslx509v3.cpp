@@ -20,7 +20,6 @@
 
 #include "ksslx509v3.h"
 
-#include <config.h>
 #include <ksslconfig.h>
 
 #include <kopenssl.h>

@@ -23,7 +23,7 @@
 
 #include "slavebase.h"
 
-#include <config.h>
+#include <config-kio.h>
 
 #include <sys/time.h>
 
@@ -53,7 +53,7 @@
 #include "kpasswdserver_p.h"
 
 #ifndef NDEBUG
-#ifdef HAVE_BACKTRACE
+#if HAVE_BACKTRACE
 #include <execinfo.h>
 #endif
 #endif
@@ -754,7 +754,7 @@ static void sigsegv_handler(int sig)
     qsnprintf(buffer, sizeof(buffer), "kioslave: ####### CRASH ###### protocol = %s pid = %d signal = %d\n", s_protocol, getpid(), sig);
     write(2, buffer, strlen(buffer));
 #ifndef NDEBUG
-#ifdef HAVE_BACKTRACE
+#if HAVE_BACKTRACE
     void* trace[256];
     int n = backtrace(trace, 256);
     if (n)
