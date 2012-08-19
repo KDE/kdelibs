@@ -18,27 +18,26 @@
 */
 
 
-#include <config.h>
 #include <config-kpac.h>
 #include <config-prefix.h>
 #include <netdb.h>
 #include <unistd.h>
 
-#ifdef HAVE_SYS_TYPES_H
+#if HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
 #if HAVE_NETINET_IN_H
 #include <netinet/in.h>
 #endif
 #include <arpa/nameser.h>
-#ifdef HAVE_ARPA_NAMESER8_COMPAT_H
+#if HAVE_ARPA_NAMESER8_COMPAT_H
 #include <arpa/nameser8_compat.h>
 #else
-#ifdef HAVE_ARPA_NAMESER_COMPAT_H
+#if HAVE_ARPA_NAMESER_COMPAT_H
 #include <arpa/nameser_compat.h>
 #endif
 #endif
-#ifdef HAVE_SYS_PARAM_H
+#if HAVE_SYS_PARAM_H
 // Basically, the BSDs need this before resolv.h
 #include <sys/param.h>
 #endif

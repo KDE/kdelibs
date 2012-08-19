@@ -19,8 +19,6 @@
 
 #include "kfsprocess.h"
 
-#include <config.h>
-
 #include <kdebug.h>
 //#include <kuser.h>
 

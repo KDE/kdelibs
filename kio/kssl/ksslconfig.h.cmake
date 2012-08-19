@@ -27,4 +27,6 @@
 
 #cmakedefine01 KSSL_HAVE_SSL
 
+#define KDELIBSUFF "${KDELIBSUFF}"
+
 #endif

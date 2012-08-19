@@ -18,7 +18,6 @@
 
 #include "kopenssl.h"
 
-#include <config.h>
 #include <ksslconfig.h>
 
 #if KSSL_HAVE_SSL

@@ -27,7 +27,7 @@
 #include <QtCore/QString>
 
 #include <config-kio.h>
-#ifndef KIO_NO_NEPOMUK
+#if ! IO_NO_NEPOMUK
     #define DISABLE_NEPOMUK_LEGACY
     #include <variant.h>
 #endif
@@ -94,7 +94,7 @@ public:
      */
     virtual QString group(const QUrl& metaDataUri) const;
 
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     /**
      * @return Meta data for the items that have been set by
      *         KFileMetaDataProvider::setItems(). The method should

@@ -18,8 +18,6 @@
 */
 
 
-#include <config.h>
-
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/types.h>

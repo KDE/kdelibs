@@ -26,7 +26,7 @@
 
 #include <kurl.h>
 
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     #define DISABLE_NEPOMUK_LEGACY
     #include "nepomukmassupdatejob.h"
     #include "tagwidget.h"
@@ -130,7 +130,7 @@ public:
      */
     void startChangeDataJob(KJob* job);
 
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     QList<Nepomuk::Resource> resourceList() const;
     QWidget* createRatingWidget(int rating, QWidget* parent);
     QWidget* createTagWidget(const QList<Nepomuk::Tag>& tags, QWidget* parent);
@@ -147,7 +147,7 @@ public:
     bool m_nepomukActivated;
     QList<KFileItem> m_fileItems;
 
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     QHash<QUrl, Nepomuk::Variant> m_data;
 
     QList<KFileMetaDataReader*> m_metaDataReaders;
@@ -166,7 +166,7 @@ KFileMetaDataProvider::Private::Private(KFileMetaDataProvider* parent) :
     m_readOnly(false),
     m_nepomukActivated(false),
     m_fileItems(),
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     m_data(),
     m_metaDataReaders(),
     m_latestMetaDataReader(0),
@@ -176,21 +176,21 @@ KFileMetaDataProvider::Private::Private(KFileMetaDataProvider* parent) :
 #endif
     q(parent)
 {
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     m_nepomukActivated = Nepomuk::ResourceManager::instance()->initialized();
 #endif
 }
 
 KFileMetaDataProvider::Private::~Private()
 {
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     qDeleteAll(m_metaDataReaders);
 #endif
 }
 
 void KFileMetaDataProvider::Private::slotLoadingFinished()
 {
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     KFileMetaDataReader* finishedMetaDataReader = qobject_cast<KFileMetaDataReader*>(q->sender());
     // The process that has emitted the finished() signal
     // will get deleted and removed from m_metaDataReaders.
@@ -247,7 +247,7 @@ void KFileMetaDataProvider::Private::slotLoadingFinished()
 
 void KFileMetaDataProvider::Private::slotRatingChanged(unsigned int rating)
 {
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     Nepomuk::MassUpdateJob* job = Nepomuk::MassUpdateJob::rateResources(resourceList(), rating);
     startChangeDataJob(job);
 #else
@@ -257,7 +257,7 @@ void KFileMetaDataProvider::Private::slotRatingChanged(unsigned int rating)
 
 void KFileMetaDataProvider::Private::slotTagsChanged(const QList<Nepomuk::Tag>& tags)
 {
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     if (!m_tagWidget.isNull()) {
         m_tagWidget.data()->setSelectedTags(tags);
 
@@ -271,7 +271,7 @@ void KFileMetaDataProvider::Private::slotTagsChanged(const QList<Nepomuk::Tag>& 
 
 void KFileMetaDataProvider::Private::slotCommentChanged(const QString& comment)
 {
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     Nepomuk::MassUpdateJob* job = Nepomuk::MassUpdateJob::commentResources(resourceList(), comment);
     startChangeDataJob(job);
 #else
@@ -281,7 +281,7 @@ void KFileMetaDataProvider::Private::slotCommentChanged(const QString& comment)
 
 void KFileMetaDataProvider::Private::slotTagClicked(const Nepomuk::Tag& tag)
 {
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     emit q->urlActivated(tag.resourceUri());
 #else
     Q_UNUSED(tag);
@@ -301,7 +301,7 @@ void KFileMetaDataProvider::Private::startChangeDataJob(KJob* job)
     job->start();
 }
 
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
 QList<Nepomuk::Resource> KFileMetaDataProvider::Private::resourceList() const
 {
     QList<Nepomuk::Resource> list;
@@ -389,7 +389,7 @@ void KFileMetaDataProvider::setItems(const KFileItemList& items)
 {
     d->m_fileItems = items;
 
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     if (items.isEmpty()) {
         return;
     }
@@ -482,7 +482,7 @@ bool KFileMetaDataProvider::isReadOnly() const
     return d->m_readOnly;
 }
 
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
 QHash<QUrl, Nepomuk::Variant> KFileMetaDataProvider::data() const
 {
     return d->m_data;

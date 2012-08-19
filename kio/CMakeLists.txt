@@ -73,6 +73,7 @@ if (NOT KIO_NO_STRIGI)
 endif (NOT KIO_NO_STRIGI)
 
 configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
+set( KDELIBSUFF ${LIB_SUFFIX} )
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 
 add_subdirectory( kssl/kssl )

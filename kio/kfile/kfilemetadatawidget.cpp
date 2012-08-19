@@ -33,7 +33,7 @@
 #include <QTimer>
 
 #include <config-kio.h>
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     #define DISABLE_NEPOMUK_LEGACY
 
     #include <property.h>
@@ -77,7 +77,7 @@ public:
     void slotDataChangeStarted();
     void slotDataChangeFinished();
 
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     QList<QUrl> sortedKeys(const QHash<QUrl, Nepomuk::Variant>& data) const;
 
     /**
@@ -88,7 +88,7 @@ public:
 #endif
 
     QList<Row> m_rows;
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     KFileMetaDataProvider* m_provider;
 #endif
     QGridLayout* m_gridLayout;
@@ -99,7 +99,7 @@ private:
 
 KFileMetaDataWidget::Private::Private(KFileMetaDataWidget* parent) :
     m_rows(),
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     m_provider(0),
 #endif
     m_gridLayout(0),
@@ -107,7 +107,7 @@ KFileMetaDataWidget::Private::Private(KFileMetaDataWidget* parent) :
 {
     initMetaInfoSettings();
 
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     // TODO: If KFileMetaDataProvider might get a public class in future KDE releases,
     // the following code should be moved into KFileMetaDataWidget::setModel():
     m_provider = new KFileMetaDataProvider(q);
@@ -188,7 +188,7 @@ void KFileMetaDataWidget::Private::deleteRows()
 
 void KFileMetaDataWidget::Private::slotLoadingFinished()
 {
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     deleteRows();
 
     if (!hasNepomukUris()) {
@@ -256,7 +256,7 @@ void KFileMetaDataWidget::Private::slotLoadingFinished()
 #endif
 
     q->updateGeometry();
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     emit q->metaDataRequestFinished(m_provider->items());
 #endif
 }
@@ -279,7 +279,7 @@ void KFileMetaDataWidget::Private::slotDataChangeFinished()
     q->setEnabled(true);
 }
 
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
 QList<QUrl> KFileMetaDataWidget::Private::sortedKeys(const QHash<QUrl, Nepomuk::Variant>& data) const
 {
     // Create a map, where the translated label prefixed with the
@@ -334,14 +334,14 @@ KFileMetaDataWidget::~KFileMetaDataWidget()
 
 void KFileMetaDataWidget::setItems(const KFileItemList& items)
 {
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     d->m_provider->setItems(items);
 #endif
 }
 
 KFileItemList KFileMetaDataWidget::items() const
 {
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     return d->m_provider->items();
 #else
     return KFileItemList();
@@ -350,14 +350,14 @@ KFileItemList KFileMetaDataWidget::items() const
 
 void KFileMetaDataWidget::setReadOnly(bool readOnly)
 {
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     d->m_provider->setReadOnly(readOnly);
 #endif
 }
 
 bool KFileMetaDataWidget::isReadOnly() const
 {
-#ifndef KIO_NO_NEPOMUK
+#if ! KIO_NO_NEPOMUK
     return d->m_provider->isReadOnly();
 #else
     return true;

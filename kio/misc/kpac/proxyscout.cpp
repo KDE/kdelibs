@@ -32,7 +32,7 @@
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
 
-#ifndef KPAC_NO_SOLID
+#if ! KPAC_NO_SOLID
 #include <solid/networking.h>
 #endif
 
@@ -84,7 +84,7 @@ namespace KPAC
           m_debugArea (KDebug::registerArea("proxyscout")),
           m_watcher( 0 )
     {
-#ifndef KPAC_NO_SOLID
+#if ! KPAC_NO_SOLID
         connect (Solid::Networking::notifier(), SIGNAL(shouldDisconnect()), SLOT(disconnectNetwork()));
 #endif
     }

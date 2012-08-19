@@ -33,7 +33,7 @@
 #include <kservice.h>
 #include <kio_dbushelper.h>
 
-#ifndef KIO_NO_SOLID
+#if ! KIO_NO_SOLID
 //Solid
 #include <solid/devicenotifier.h>
 #include <solid/device.h>
@@ -180,7 +180,7 @@ QList<KServiceAction> KDesktopFileActions::builtinServices( const QUrl& _url )
             offerMount = true;
         }
     }
-#ifndef KIO_NO_SOLID
+#if ! KIO_NO_SOLID
     else { // url to device
         Solid::Predicate predicate(Solid::DeviceInterface::Block, "device", _url.toLocalFile());
         const QList<Solid::Device> devList = Solid::Device::listFromQuery(predicate, QString());
@@ -331,7 +331,7 @@ void KDesktopFileActions::executeService( const QList<QUrl>& urls, const KServic
 #endif
             }
         }
-#ifndef KIO_NO_SOLID
+#if ! KIO_NO_SOLID
         else { // path to device
             Solid::Predicate predicate(Solid::DeviceInterface::Block, "device", path);
             const QList<Solid::Device> devList = Solid::Device::listFromQuery(predicate, QString());

@@ -26,7 +26,7 @@
 #include "kfilewriteplugin.h"
 #include "kfilewriteplugin_p.h"
 
-#ifndef KIO_NO_STRIGI
+#if ! KIO_NO_STRIGI
 #include <strigi/bufferedstream.h>
 #include <strigi/analyzerconfiguration.h>
 #include <strigi/indexwriter.h>
@@ -63,7 +63,7 @@ QDataStream& operator << ( QDataStream& s, const KFileMetaInfo& )
 {
     return s;
 }
-#ifndef KIO_NO_STRIGI
+#if ! KIO_NO_STRIGI
 /**
  * @brief Wrap a QIODevice in a Strigi stream.
  **/

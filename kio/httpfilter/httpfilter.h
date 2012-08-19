@@ -21,8 +21,6 @@
 #ifndef _HTTPFILTER_H_
 #define _HTTPFILTER_H_
 
-#include <config.h>
-
 class KFilterBase;
 #include <QBuffer>
 
