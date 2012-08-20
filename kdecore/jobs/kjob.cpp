@@ -29,6 +29,7 @@
 #include <QMap>
 #include <QMetaType>
 #include <QTimer>
+#include <kdebug.h>
 
 bool KJobPrivate::_k_kjobUnitEnumRegistered = false;
 KJobPrivate::KJobPrivate()
@@ -168,6 +169,17 @@ bool KJob::resume()
     return false;
 }
 
+bool KJob::startInteraction()
+{
+    Q_D(KJob);
+    return d->doStartInteraction();
+}
+
+bool KJobPrivate::doStartInteraction()
+{
+    return false;
+}
+
 bool KJob::doKill()
 {
     return false;
@@ -263,6 +275,7 @@ void KJob::setProcessedAmount(Unit unit, qulonglong amount)
 {
     Q_D(KJob);
     bool should_emit = (d->processedAmount[unit] != amount);
+    kWarning() << "unit" << unit << "amount" << amount << "will emit" << should_emit << "old" << d->processedAmount[unit];
 
     d->processedAmount[unit] = amount;
 

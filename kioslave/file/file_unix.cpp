@@ -549,7 +549,14 @@ void FileProtocol::symlink( const QString &target, const KUrl &destUrl, KIO::Job
             return;
         }
     }
-    finished();
+    else
+    {
+        KDE_struct_stat buff_dest;
+        KDE_lstat( QFile::encodeName(dest), &buff_dest );
+        totalSize(buff_dest.st_size);
+        processedSize(buff_dest.st_size);
+        finished();
+    }
 }
 
 void FileProtocol::del(const KUrl& url, bool isfile)

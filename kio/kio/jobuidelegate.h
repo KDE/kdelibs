@@ -25,11 +25,15 @@
 #include <kdialogjobuidelegate.h>
 #include <kio/skipdialog.h>
 #include <kio/renamedialog.h>
+#include <kio/copyjob.h>
 
 class KJob;
 namespace KIO
 {
+
 class Job;
+class InteractionDialog;
+class FilesTransferDialog;
 
 /**
  * A UI delegate tuned to be used with KIO Jobs.
@@ -100,6 +104,13 @@ public:
                                       const QString & error_text);
 
     /**
+     * Constructs and returns a modeless, parent-less interaction dialog.
+     * Dialog is hidden by default. It will show itself after first request.
+     */
+    FilesTransferDialog *initInteractionModel(KJob * job, QList<int> fids, QList<KIO::CopyInfo> files);
+    void showInteractionDialog(KJob * job);
+
+    /**
      * The type of deletion: real deletion, moving the files to the trash
      * or emptying the trash
      * Used by askDeleteConfirmation.
@@ -130,6 +141,7 @@ public:
 private:
     class Private;
     Private * const d;
+    Q_PRIVATE_SLOT(d, void killJob())
 };
 }
 

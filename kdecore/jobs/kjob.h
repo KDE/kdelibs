@@ -88,7 +88,7 @@ class KDECORE_EXPORT KJob : public QObject
     Q_FLAGS( Capabilities )
 
 public:
-    enum Unit { Bytes, Files, Directories };
+    enum Unit { Bytes, Files, Directories, Errors, Skipped };
 
     enum Capability { NoCapabilities = 0x0000,
                       Killable       = 0x0001,
@@ -197,6 +197,13 @@ public Q_SLOTS:
      * @return true if the operation is supported and succeeded, false otherwise
      */
     bool resume();
+    
+    /**
+     * Starts user interactions if this job wants someting to know from user.
+     * 
+     * @return true if the operation is supported and succeeded, false otherwise
+     */
+    bool startInteraction();
 
 protected:
     /**

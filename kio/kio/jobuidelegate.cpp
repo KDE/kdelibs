@@ -30,7 +30,13 @@
 #include <QPointer>
 #include <QWidget>
 
+#include <QtDeclarative>
+#include <QDeclarativeContext>
+
 #include "kio/scheduler.h"
+#include "filestransferdialog/filestransferdialog.h"
+#include "filestransferdialog/qmlapplicationviewer.h"
+#include "filestransferdialog/copyjobfake.h"
 
 #if defined Q_WS_X11
 #include <QX11Info>
@@ -40,7 +46,23 @@
 class KIO::JobUiDelegate::Private
 {
 public:
+    QmlApplicationViewer *interactionsViewer;
+    FilesTransferDialog *interactionsModel;
+    KJob *job; // need this field to kill the job
+    
+    virtual ~Private()
+    {
+        interactionsViewer->deleteLater();
+        interactionsModel->deleteLater();
+    }
+    
+    void killJob();
 };
+
+void KIO::JobUiDelegate::Private::killJob()
+{
+    job->kill(KJob::EmitResult);
+}
 
 KIO::JobUiDelegate::JobUiDelegate()
     : d(new Private())
@@ -190,5 +212,49 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const KUrl::List& urls,
     }
     return true;
 }
+
+KIO::FilesTransferDialog* KIO::JobUiDelegate::initInteractionModel(KJob* job, QList<int> fids, QList<KIO::CopyInfo> files)
+{
+    kWarning() << "test1";
+    d->job = job;
+    d->interactionsModel = new FilesTransferDialog();
+    d->interactionsModel->gotAllFiles(fids, files);
+    return d->interactionsModel;
+}
+
+void KIO::JobUiDelegate::showInteractionDialog(KJob* job)
+{
+    Q_UNUSED(job);
+    
+    if (d->interactionsViewer == 0) {
+        d->interactionsViewer = new QmlApplicationViewer();
+        connect(job, SIGNAL(result(KJob*)), d->interactionsViewer, SLOT(hide()));
+        //viewer->addImportPath("./imports/");
+        d->interactionsViewer->addImportPath("/usr/lib/kde4/imports/");
+        d->interactionsViewer->addImportPath("/usr/lib64/kde4/imports/");
+
+        qmlRegisterUncreatableType<FileHelper>("FileTransferHelpers", 1, 0, "FileHelper", "");
+        connect(d->interactionsModel, SIGNAL(windowTitleChanged(QString)),
+                d->interactionsViewer, SLOT(setWindowTitle(QString)));
+        
+        connect(d->interactionsModel, SIGNAL(cancel()), this, SLOT(killJob()));
+        connect(d->interactionsModel, SIGNAL(suspend()), job, SLOT(suspend()));
+        connect(d->interactionsModel, SIGNAL(resume()), job, SLOT(resume()));
+
+        QDeclarativeContext *context = d->interactionsViewer->rootContext();
+        context->setContextProperty("TransferModel", d->interactionsModel);
+        context->setContextProperty("MainWindow", d->interactionsViewer);
+
+        //viewer->setStyleSheet("background:transparent;");
+        //viewer->setAttribute(Qt::WA_TranslucentBackground);
+        d->interactionsViewer->setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
+        d->interactionsViewer->setMainQmlFile(QLatin1String("org/kde/filestransferdialog/main.qml"));
+    }
+
+    d->interactionsModel->resendSignals();
+    d->interactionsViewer->show();
+    d->interactionsViewer->raise();
+}
+
 
 #include "jobuidelegate.moc"

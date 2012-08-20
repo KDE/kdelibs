@@ -113,6 +113,8 @@ void KUiServerJobTracker::registerJob(KJob *job)
                          SLOT(suspend()));
         QObject::connect(jobView, SIGNAL(resumeRequested()), job,
                          SLOT(resume()));
+        QObject::connect(jobView, SIGNAL(interactionRequested()), job,
+                         SLOT(startInteraction()));
 
         QVariant destUrl = job->property("destUrl");
         if (destUrl.isValid()) {
@@ -247,6 +249,12 @@ void KUiServerJobTracker::totalAmount(KJob *job, KJob::Unit unit, qulonglong amo
         break;
     case KJob::Directories:
         jobView->setTotalAmount(amount, "dirs");
+        break;
+    case KJob::Errors:
+        jobView->setTotalAmount(amount, "errors");
+        break;
+    case KJob::Skipped:
+        jobView->setTotalAmount(amount, "skipped");
         break;
     default:
         break;

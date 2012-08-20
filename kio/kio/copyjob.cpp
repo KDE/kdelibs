@@ -36,6 +36,7 @@
 #include "kprotocolmanager.h"
 
 #include "jobuidelegate.h"
+#include "filestransferdialog/filestransferdialog.h"
 
 #include <kdirnotify.h>
 #include <ktemporaryfile.h>
@@ -47,6 +48,7 @@
 
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
+#include <QtCore/QHash>
 #include <sys/stat.h> // mode_t
 #include <QPointer>
 
@@ -58,6 +60,8 @@ using namespace KIO;
 
 //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
 #define REPORT_TIMEOUT 200
+
+static const char s_interactionIdProperty[] = "interactionId";
 
 enum DestinationState {
     DEST_NOT_STATED,
@@ -77,9 +81,9 @@ enum DestinationState {
  *     STATE_CREATING_DIRS (createNextDir, iterating over 'd->dirs')
  *          if conflict: STATE_CONFLICT_CREATING_DIRS
  *     STATE_COPYING_FILES (copyNextFile, iterating over 'd->files')
- *          if conflict: STATE_CONFLICT_COPYING_FILES
  *     STATE_DELETING_DIRS (deleteNextDir) (if moving)
- *     STATE_SETTING_DIR_ATTRIBUTES (setNextDirAttribute, iterating over d->m_directoriesCopied)
+ *     STATE_SETTING_DIR_ATTRIBUTES (setNextDirAttribute, iterating over d->m_directoriesCopied
+ *                                   if updates exist go to STATE_COPYING_FILES)
  *     done.
  */
 enum CopyJobState {
@@ -89,7 +93,6 @@ enum CopyJobState {
     STATE_CREATING_DIRS,
     STATE_CONFLICT_CREATING_DIRS,
     STATE_COPYING_FILES,
-    STATE_CONFLICT_COPYING_FILES,
     STATE_DELETING_DIRS,
     STATE_SETTING_DIR_ATTRIBUTES
 };
@@ -114,6 +117,8 @@ public:
         , m_fileProcessedSize(0)
         , m_processedFiles(0)
         , m_processedDirs(0)
+        , m_isInteractionDialogCreated(false)
+        , m_interactionId(0)
         , m_srcList(src)
         , m_currentStatSrc(m_srcList.constBegin())
         , m_bCurrentOperationIsLink(false)
@@ -128,6 +133,8 @@ public:
         , m_bOverwriteAllDirs( false )
         , m_conflictError(0)
         , m_reportTimer(0)
+        , m_errorsCount(0)
+        , m_skippedCount(0)
     {
     }
 
@@ -161,6 +168,20 @@ public:
     int m_processedDirs;
     QList<CopyInfo> files;
     QList<CopyInfo> dirs;
+
+    bool m_isInteractionDialogCreated;
+    int m_interactionId;
+
+    struct InteractionRequest
+    {
+        CopyInfo copyInfo;
+        int error;
+    };
+    // files requiring interaction
+    QHash<int, InteractionRequest> m_requests;
+    // files which were updated after interaction
+    QList<CopyInfo> m_updatedFiles;
+
     KUrl::List dirsToRemove;
     KUrl::List m_srcList;
     KUrl::List m_successSrcList; // Entries in m_srcList that have successfully been moved
@@ -182,6 +203,8 @@ public:
     bool m_bOverwriteAllDirs;
     int m_conflictError;
 
+    QList<CopyInfo> m_allFiles;
+    
     QTimer *m_reportTimer;
 
     // The current src url being stat'ed or copied
@@ -190,6 +213,9 @@ public:
     KUrl m_currentDestURL;
 
     QSet<QString> m_parentDirs;
+    
+    int m_errorsCount;
+    int m_skippedCount;
 
     void statCurrentSrc();
     void statNextSrc();
@@ -201,9 +227,9 @@ public:
     void slotResultConflictCreatingDirs( KJob * job );
     void createNextDir();
     void slotResultCopyingFiles( KJob * job );
-    void slotResultConflictCopyingFiles( KJob * job );
 //     KIO::Job* linkNextFile( const KUrl& uSource, const KUrl& uDest, bool overwrite );
     KIO::Job* linkNextFile( const KUrl& uSource, const KUrl& uDest, JobFlags flags );
+    void skipUnprocessedFile(int id);
     void copyNextFile();
     void slotResultDeletingDirs( KJob * job );
     void deleteNextDir();
@@ -221,6 +247,33 @@ public:
 
     void slotStart();
     void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
+    void slotExistingFile(KJob *job);
+
+    int findFileID(const CopyInfo &file) {
+        int id = -1;
+        for (int i = 0; i < m_allFiles.count(); i++) {
+            if (m_allFiles[i].uSource == file.uSource) {
+                id = i;
+            }
+        }
+        if (id == -1) {
+            qDebug("findFileID(...): can not find id of file: %s", qPrintable(file.uSource.url()));
+        }
+        return id;
+    }
+    
+    // reimplemented from KJobPrivate::doStartInteraction()
+    bool doStartInteraction();
+    void initInteractionModel();
+
+    void overwriteRequest(int id);
+    void overwriteAlwaysRequest();
+    void renameRequest(int id, const KUrl &newDestUrl);
+    void renameAlwaysRequest();
+    void retryRequest(int id);
+    void skipRequest(int id);
+    void skipAlwaysRequest();
+
     void addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& srcUrl, bool srcIsDir, const KUrl& currentDest);
     /**
      * Forward signal from subjob
@@ -240,13 +293,17 @@ public:
                                   CopyJob::CopyMode mode, bool asMethod, JobFlags flags)
     {
         CopyJob *job = new CopyJob(*new CopyJobPrivate(src,dest,mode,asMethod));
-        job->setUiDelegate(new JobUiDelegate);
+        JobUiDelegate *delegate = new JobUiDelegate();
+        job->setUiDelegate(delegate);
+
         if (!(flags & HideProgressInfo))
             KIO::getJobTracker()->registerJob(job);
         if (flags & KIO::Overwrite) {
             job->d_func()->m_bOverwriteAllDirs = true;
             job->d_func()->m_bOverwriteAllFiles = true;
         }
+        kWarning() << "                 Starting new CopyJob" << src.first() << dest;
+
         return job;
     }
 };
@@ -270,6 +327,11 @@ KUrl::List CopyJob::srcUrls() const
 KUrl CopyJob::destUrl() const
 {
     return d_func()->m_dest;
+}
+
+QList<CopyInfo> CopyJob::allFiles() const
+{
+    return d_func()->m_allFiles;
 }
 
 void CopyJobPrivate::slotStart()
@@ -548,6 +610,23 @@ void CopyJobPrivate::slotReport()
             q->setTotalAmount(KJob::Directories, dirs.count());
             break;
 
+        case STATE_SETTING_DIR_ATTRIBUTES:
+            q->setProcessedAmount( KJob::Files, m_processedFiles );
+            q->setProcessedAmount( KJob::Bytes, m_processedSize );
+            if (m_bURLDirty)
+            {
+                m_bURLDirty = false;
+                if (m_mode==CopyJob::Move)
+                {
+                    emitMoving( q, m_currentSrcURL, m_currentDestURL );
+                }
+                else
+                {
+                    emitCopying( q, m_currentSrcURL, m_currentDestURL );
+                }
+            }
+            break;
+
         default:
             break;
     }
@@ -564,13 +643,92 @@ void CopyJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
     }
 }
 
+void CopyJobPrivate::slotExistingFile(KJob *job)
+{
+    Q_Q(CopyJob);
+
+    QVariant property = job->property(s_interactionIdProperty);
+    if (!property.isValid()) {
+        kWarning() << "There is no such property:" << s_interactionIdProperty;
+        return;
+    }
+
+    int id = property.toInt();
+
+    if (!m_requests.contains(id)) {
+        kWarning() << "Request was not found:" << id;
+        return;
+    }
+
+    InteractionRequest &request = m_requests[id];
+
+    StatJob *statJob = qobject_cast<StatJob *>(job);
+    Q_ASSERT(statJob);
+    const UDSEntry entry = statJob->statResult();
+
+    const time_t destmtime = (time_t) entry.numberValue( KIO::UDSEntry::UDS_MODIFICATION_TIME, -1 );
+    const time_t destctime = (time_t) entry.numberValue( KIO::UDSEntry::UDS_CREATION_TIME, -1 );
+    const KIO::filesize_t destsize = entry.numberValue( KIO::UDSEntry::UDS_SIZE );
+    const QString linkDest = entry.stringValue( KIO::UDSEntry::UDS_LINK_DEST );
+
+    CopyInfo &copyInfo = request.copyInfo;
+    emit q->existingFile(id);
+}
+
+bool CopyJobPrivate::doStartInteraction()
+{
+    kWarning() << "user requested interaction";
+    if (!m_isInteractionDialogCreated) {
+        initInteractionModel();
+    }
+    
+    ui()->showInteractionDialog(q_func());
+
+    return true;
+}
+
+
+void CopyJobPrivate::initInteractionModel()
+{
+    Q_Q(CopyJob);
+    Q_ASSERT(q->isInteractive());
+
+    QList<int> fileIDs;
+    fileIDs.reserve(m_allFiles.count());
+    for (int i = 0; i < m_allFiles.count(); i++) {
+        fileIDs.append(i);
+    }
+    FilesTransferDialog *dialog = ui()->initInteractionModel(q, fileIDs, m_allFiles);
+    m_isInteractionDialogCreated = true;
+
+    QObject::connect(q, SIGNAL(skippedFile(int)),
+                     dialog, SLOT(gotSkippedFile(int)), Qt::QueuedConnection);
+    QObject::connect(q, SIGNAL(retriedFile(int)),
+                     dialog, SLOT(gotRetriedFile(int)), Qt::QueuedConnection);
+    QObject::connect(q, SIGNAL(unreadableFile(int)),
+                     dialog, SLOT(gotUnreadableFile(int)), Qt::QueuedConnection);
+    QObject::connect(q, SIGNAL(disappearedFile(int)),
+                     dialog, SLOT(gotDisappearedFile(int)), Qt::QueuedConnection);
+    QObject::connect(q, SIGNAL(processedAmount(KJob*, KJob::Unit, qulonglong)),
+                     dialog, SLOT(gotProcessedAmount(KJob*, KJob::Unit, qulonglong)), Qt::QueuedConnection);
+    QObject::connect(q, SIGNAL(processedFileRatio(int,qreal)),
+                     dialog, SLOT(gotProcessedFileRatio(int,qreal)), Qt::QueuedConnection);
+    QObject::connect(q, SIGNAL(nothingToProcess()), dialog, SLOT(nothingToProcess()), Qt::QueuedConnection);
+    QObject::connect(q, SIGNAL(speed(KJob*, unsigned long)), dialog, SLOT(gotSpeed(KJob*, unsigned long)), Qt::QueuedConnection);
+
+    QObject::connect(dialog, SIGNAL(skipped(int)), q, SLOT(skipRequest(int)), Qt::QueuedConnection);
+    QObject::connect(dialog, SIGNAL(retried(int)), q, SLOT(retryRequest(int)), Qt::QueuedConnection);
+}
+
 void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& srcUrl, bool srcIsDir, const KUrl& currentDest)
 {
     struct CopyInfo info;
     info.permissions = entry.numberValue(KIO::UDSEntry::UDS_ACCESS, -1);
     info.mtime = (time_t) entry.numberValue(KIO::UDSEntry::UDS_MODIFICATION_TIME, -1);
     info.ctime = (time_t) entry.numberValue(KIO::UDSEntry::UDS_CREATION_TIME, -1);
+    info.linkDest = entry.stringValue(KIO::UDSEntry::UDS_LINK_DEST);
     info.size = (KIO::filesize_t) entry.numberValue(KIO::UDSEntry::UDS_SIZE, -1);
+    kWarning() << info.linkDest.isEmpty() << info.size << entry.stringValue(KIO::UDSEntry::UDS_URL);
     if (info.size != (KIO::filesize_t) -1)
         m_totalSize += info.size;
 
@@ -582,7 +740,6 @@ void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& 
         url = urlStr;
     QString localPath = entry.stringValue(KIO::UDSEntry::UDS_LOCAL_PATH);
     const bool isDir = entry.isDir();
-    info.linkDest = entry.stringValue(KIO::UDSEntry::UDS_LINK_DEST);
 
     if (fileName != QLatin1String("..") && fileName != QLatin1String(".")) {
         const bool hasCustomURL = !url.isEmpty() || !localPath.isEmpty();
@@ -645,6 +802,7 @@ void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& 
             //kDebug(7007) << " adding destFileName=" << destFileName;
             info.uDest.addPath(destFileName);
         }
+        kWarning() << "size" << info.size << "source" << info.uSource << "dest" << info.uDest;
         //kDebug(7007) << " uDest(2)=" << info.uDest;
         //kDebug(7007) << " " << info.uSource << "->" << info.uDest;
         if (info.linkDest.isEmpty() && isDir && m_mode != CopyJob::Link) { // Dir
@@ -769,14 +927,15 @@ void CopyJobPrivate::statCurrentSrc()
 
         // Testing for entry.count()>0 here is not good enough; KFileItem inserts
         // entries for UDS_USER and UDS_GROUP even on initially empty UDSEntries (#192185)
-        if (entry.contains(KIO::UDSEntry::UDS_NAME)) {
+        if (entry.contains(KIO::UDSEntry::UDS_NAME) && !entry.isLink()) {
             kDebug(7007) << "fast path! found info about" << m_currentSrcURL << "in KDirLister";
             sourceStated(entry, m_currentSrcURL);
             return;
         }
 
         // Stat the next src url
-        Job * job = KIO::stat( m_currentSrcURL, StatJob::SourceSide, 2, KIO::HideProgressInfo );
+        Job * job = KIO::stat( m_currentSrcURL, StatJob::SourceSide, 1, KIO::HideProgressInfo );
+        kWarning() << "normally stating" << m_currentSrcURL;
         //kDebug(7007) << "KIO::stat on" << m_currentSrcURL;
         state = STATE_STATING;
         q->addSubjob(job);
@@ -801,6 +960,8 @@ void CopyJobPrivate::statCurrentSrc()
         // Check if we are copying a single file
         m_bSingleFileCopy = ( files.count() == 1 && dirs.isEmpty() );
         // Then start copying things
+        m_allFiles = files;
+        initInteractionModel();
         state = STATE_CREATING_DIRS;
         createNextDir();
     }
@@ -853,6 +1014,7 @@ void CopyJobPrivate::startListing( const KUrl & src )
     m_bURLDirty = true;
     ListJob * newjob = listRecursive(src, KIO::HideProgressInfo);
     newjob->setUnrestricted(true);
+    newjob->setDetails(1); // do not follow links
     q->connect(newjob, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)),
                SLOT(slotEntries(KIO::Job*,KIO::UDSEntryList)));
     q->addSubjob( newjob );
@@ -1196,7 +1358,7 @@ void CopyJobPrivate::createNextDir()
         }
 
         state = STATE_COPYING_FILES;
-        m_processedFiles++; // Ralf wants it to start at 1, not 0
+        //m_processedFiles++; // Ralf wants it to start at 1, not 0
         copyNextFile();
     }
 }
@@ -1206,6 +1368,12 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
     Q_Q(CopyJob);
     // The file we were trying to copy:
     QList<CopyInfo>::Iterator it = files.begin();
+    CopyInfo processedFile = files.first();
+    
+//     // we should set the correct size of link
+//     if (m_bCurrentOperationIsLink)
+//         slotProcessedSize(job, processedFile.size);
+    
     if ( job->error() )
     {
         // Should we skip automatically ?
@@ -1244,16 +1412,26 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
                         return;
                     }
 
+                    // We need to stat the existing file, to get its last-modification time
+                    SimpleJob *statJob = KIO::stat(it->uDest, StatJob::DestinationSide, 2, KIO::HideProgressInfo);
+                    Scheduler::setJobPriority(statJob, 1);
+
+                    int interactionID = findFileID(*it);
+                    statJob->setProperty(s_interactionIdProperty, QVariant::fromValue<int>(interactionID));
+                    q->connect(statJob, SIGNAL(result(KJob*)),
+                               q, SLOT(slotExistingFile(KJob*)));
+
+                    InteractionRequest request;
+                    request.copyInfo = *it;
+                    request.error = m_conflictError;
+                    
+                    m_requests.insert(interactionID, request);
+
                     q->removeSubjob(job);
                     assert (!q->hasSubjobs());
-                    // We need to stat the existing file, to get its last-modification time
-                    KUrl existingFile((*it).uDest);
-                    SimpleJob * newJob = KIO::stat(existingFile, StatJob::DestinationSide, 2, KIO::HideProgressInfo);
-                    Scheduler::setJobPriority(newJob, 1);
-                    kDebug(7007) << "KIO::stat for resolving conflict on " << existingFile;
-                    state = STATE_CONFLICT_COPYING_FILES;
-                    q->addSubjob(newJob);
-                    return; // Don't move to next file yet !
+                    files.erase( it );
+                    copyNextFile();
+                    return;
                 }
             }
             else
@@ -1270,8 +1448,20 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
                         return;
                     }
 
-                    // Go directly to the conflict resolution, there is nothing to stat
-                    slotResultConflictCopyingFiles( job );
+                    q->removeSubjob(job);
+                    skip((*it).uSource, false);
+                    InteractionRequest request;
+                    request.copyInfo = *it;
+                    request.error = m_conflictError;
+                    
+                    int interactionID = findFileID(*it);
+                    m_requests.insert(interactionID, request);
+                    kWarning() << "emmiting unreadableFile" << interactionID << it->uSource.toLocalFile();
+                    emit q->unreadableFile(interactionID);
+
+                    m_fileProcessedSize = 0;
+                    files.erase( it ); // Move on to next file
+                    copyNextFile();
                     return;
                 }
             }
@@ -1314,6 +1504,7 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
         // remove from list, to move on to next file
         files.erase( it );
     }
+    kWarning() << "m_processedFiles++; <<" << processedFile.uSource << processedFile.size << m_fileProcessedSize << m_bCurrentOperationIsLink;
     m_processedFiles++;
 
     // clear processed size for last file and add it to overall processed size
@@ -1331,131 +1522,6 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
     copyNextFile();
 }
 
-void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
-{
-    Q_Q(CopyJob);
-    // We come here after a conflict has been detected and we've stated the existing file
-    // The file we were trying to create:
-    QList<CopyInfo>::Iterator it = files.begin();
-
-    RenameDialog_Result res;
-    QString newPath;
-
-    if (m_reportTimer)
-        m_reportTimer->stop();
-
-    if ( ( m_conflictError == ERR_FILE_ALREADY_EXIST )
-         || ( m_conflictError == ERR_DIR_ALREADY_EXIST )
-         || ( m_conflictError == ERR_IDENTICAL_FILES ) )
-    {
-        // Its modification time:
-        const UDSEntry entry = ((KIO::StatJob*)job)->statResult();
-
-        const time_t destmtime = (time_t) entry.numberValue( KIO::UDSEntry::UDS_MODIFICATION_TIME, -1 );
-        const time_t destctime = (time_t) entry.numberValue( KIO::UDSEntry::UDS_CREATION_TIME, -1 );
-        const KIO::filesize_t destsize = entry.numberValue( KIO::UDSEntry::UDS_SIZE );
-        const QString linkDest = entry.stringValue( KIO::UDSEntry::UDS_LINK_DEST );
-
-        // Offer overwrite only if the existing thing is a file
-        // If src==dest, use "overwrite-itself"
-        RenameDialog_Mode mode;
-        bool isDir = true;
-
-        if( m_conflictError == ERR_DIR_ALREADY_EXIST )
-            mode = M_ISDIR;
-        else
-        {
-            if ( (*it).uSource == (*it).uDest  ||
-                 ((*it).uSource.protocol() == (*it).uDest.protocol() &&
-                   (*it).uSource.path( KUrl::RemoveTrailingSlash ) == linkDest) )
-                mode = M_OVERWRITE_ITSELF;
-            else
-                mode = M_OVERWRITE;
-            isDir = false;
-        }
-
-        if ( !m_bSingleFileCopy )
-            mode = (RenameDialog_Mode) ( mode | M_MULTI | M_SKIP );
-
-        res = q->ui()->askFileRename( q, !isDir ?
-                                   i18n("File Already Exists") : i18n("Already Exists as Folder"),
-                                   (*it).uSource.url(),
-                                   (*it).uDest.url(),
-                                   mode, newPath,
-                                   (*it).size, destsize,
-                                   (*it).ctime, destctime,
-                                   (*it).mtime, destmtime );
-
-    }
-    else
-    {
-        if ( job->error() == ERR_USER_CANCELED )
-            res = R_CANCEL;
-        else if ( !q->isInteractive() ) {
-            q->Job::slotResult( job ); // will set the error and emit result(this)
-            return;
-        }
-        else
-        {
-            SkipDialog_Result skipResult = q->ui()->askSkip( q, files.count() > 1,
-                                                          job->errorString() );
-
-            // Convert the return code from SkipDialog into a RenameDialog code
-            res = ( skipResult == S_SKIP ) ? R_SKIP :
-                         ( skipResult == S_AUTO_SKIP ) ? R_AUTO_SKIP :
-                                        R_CANCEL;
-        }
-    }
-
-    if (m_reportTimer)
-        m_reportTimer->start(REPORT_TIMEOUT);
-
-    q->removeSubjob( job );
-    assert ( !q->hasSubjobs() );
-    switch ( res ) {
-        case R_CANCEL:
-            q->setError( ERR_USER_CANCELED );
-            q->emitResult();
-            return;
-        case R_AUTO_RENAME:
-            m_bAutoRenameFiles = true;
-            // fall through
-        case R_RENAME:
-        {
-            KUrl newUrl( (*it).uDest );
-            newUrl.setPath( newPath );
-            emit q->renamed( q, (*it).uDest, newUrl ); // for e.g. kpropsdlg
-            (*it).uDest = newUrl;
-
-            QList<CopyInfo> files;
-            files.append(*it);
-            emit q->aboutToCreate( q, files );
-        }
-        break;
-        case R_AUTO_SKIP:
-            m_bAutoSkipFiles = true;
-            // fall through
-        case R_SKIP:
-            // Move on to next file
-            skip((*it).uSource, false);
-            m_processedSize += (*it).size;
-            files.erase( it );
-            m_processedFiles++;
-            break;
-       case R_OVERWRITE_ALL:
-            m_bOverwriteAllFiles = true;
-            break;
-        case R_OVERWRITE:
-            // Add to overwrite list, so that copyNextFile knows to overwrite
-            m_overwriteList.insert( (*it).uDest.path() );
-            break;
-        default:
-            assert( 0 );
-    }
-    state = STATE_COPYING_FILES;
-    copyNextFile();
-}
-
 KIO::Job* CopyJobPrivate::linkNextFile( const KUrl& uSource, const KUrl& uDest, JobFlags flags )
 {
     //kDebug(7007) << "Linking";
@@ -1468,6 +1534,8 @@ KIO::Job* CopyJobPrivate::linkNextFile( const KUrl& uSource, const KUrl& uDest, 
     {
         // This is the case of creating a real symlink
         KIO::SimpleJob *newJob = KIO::symlink( uSource.path(), uDest, flags|HideProgressInfo /*no GUI*/ );
+        q_func()->connect( newJob, SIGNAL(processedSize(KJob*,qulonglong)),
+                           SLOT(slotProcessedSize(KJob*,qulonglong)) );
         Scheduler::setJobPriority(newJob, 1);
         //kDebug(7007) << "Linking target=" << uSource.path() << "link=" << uDest;
         //emit linking( this, uSource.path(), uDest );
@@ -1532,6 +1600,22 @@ KIO::Job* CopyJobPrivate::linkNextFile( const KUrl& uSource, const KUrl& uDest, 
     }
 }
 
+void CopyJobPrivate::skipUnprocessedFile(int id)
+{
+    const CopyInfo &info = m_allFiles[id];
+    int pos = -1;
+    for (int i = 0; i < files.count(); i++) {
+        if (files[i].uSource == info.uSource) {
+            pos = i;
+            break;
+        }
+    }
+    
+    if (pos != -1) {
+        files.removeAt(pos);
+    }
+}
+
 void CopyJobPrivate::copyNextFile()
 {
     Q_Q(CopyJob);
@@ -1591,6 +1675,8 @@ void CopyJobPrivate::copyNextFile()
         {
             const JobFlags flags = bOverwrite ? Overwrite : DefaultFlags;
             KIO::SimpleJob *newJob = KIO::symlink( (*it).linkDest, uDest, flags | HideProgressInfo /*no GUI*/ );
+            q->connect( newJob, SIGNAL(processedSize(KJob*,qulonglong)),
+                        SLOT(slotProcessedSize(KJob*,qulonglong)) );
             Scheduler::setJobPriority(newJob, 1);
             newjob = newJob;
             //kDebug(7007) << "Linking target=" << (*it).linkDest << "link=" << uDest;
@@ -1714,10 +1800,33 @@ void CopyJobPrivate::setNextDirAttribute()
         m_directoriesCopied.clear();
         // but then we need to jump to the else part below. Maybe with a recursive call?
 #endif
-    } else {
+    }
+    // if there are some resolved interaction requests
+    // then we put them to the queue again
+    else if ( !m_updatedFiles.isEmpty() ) {
+        files.append(m_updatedFiles);
+        m_updatedFiles.clear();
+        state = STATE_COPYING_FILES;
+        copyNextFile(); // check me
+    } else if (!m_requests.isEmpty()) {
+        // if there are some unresolved interactions we can not finish
+        // the job, but we need to clear urls at jobView
+        if (!m_currentSrcURL.isEmpty() || !m_currentDestURL.isEmpty()) {
+            // there is nothing to transfer but the job cann't be finished
+            // because there are some unresolved interaction requests
+            m_currentSrcURL.clear();
+            m_currentDestURL.clear();
+            m_bURLDirty = true;
+        }
+        slotReport();
+        // now just waiting for user to resolve remaining interaction requests
+        emit q->nothingToProcess();
+    }
+    // if all interaction requests are resolved we can finish the job
+    else {
         if (m_reportTimer)
             m_reportTimer->stop();
-        --m_processedFiles; // undo the "start at 1" hack
+        //--m_processedFiles; // undo the "start at 1" hack
         slotReport(); // display final numbers, important if progress dialog stays up
 
         q->emitResult();
@@ -1767,6 +1876,13 @@ void CopyJobPrivate::slotProcessedSize( KJob*, qulonglong data_size )
   }
   //kDebug(7007) << "emit processedSize" << (unsigned long) (m_processedSize + m_fileProcessedSize);
   q->setProcessedAmount(KJob::Bytes, m_processedSize + m_fileProcessedSize);
+  
+  if (!files.isEmpty()) {
+    const CopyInfo &file = files.first();
+    qreal ratio = (file.size == 0) ? 1 : qreal(m_fileProcessedSize) / qreal(file.size);
+    emit q->processedFileRatio(findFileID(file), ratio);
+    
+  }
 }
 
 void CopyJobPrivate::slotTotalSize( KJob*, qulonglong size )
@@ -2099,9 +2215,6 @@ void CopyJob::slotResult( KJob *job )
         case STATE_COPYING_FILES:
             d->slotResultCopyingFiles( job );
             break;
-        case STATE_CONFLICT_COPYING_FILES:
-            d->slotResultConflictCopyingFiles( job );
-            break;
         case STATE_DELETING_DIRS:
             d->slotResultDeletingDirs( job );
             break;
@@ -2138,6 +2251,226 @@ void KIO::CopyJob::setAutoRename(bool autoRename)
 void KIO::CopyJob::setWriteIntoExistingDirectories(bool overwriteAll) // #65926
 {
     d_func()->m_bOverwriteAllDirs = overwriteAll;
+}
+
+void CopyJob::overwriteRequest(int id)
+{
+    d_func()->overwriteRequest(id);
+}
+
+void CopyJobPrivate::overwriteRequest(int id)
+{
+    Q_Q(CopyJob);
+
+    QList<CopyInfo> filesToCreate;
+    if (!m_requests.contains(id)) {
+        kWarning() << "There is no such interaction request id:" << id;
+        return;
+    }
+
+    InteractionRequest request = m_requests.take(id);
+    CopyInfo &copyInfo = request.copyInfo;
+    m_updatedFiles.append(copyInfo);
+    m_overwriteList.insert(copyInfo.uDest.path());
+
+    filesToCreate.append( copyInfo );
+    emit q->aboutToCreate( q, filesToCreate );
+
+    // if transfer is already finished
+    if (files.isEmpty()) {
+        setNextDirAttribute();
+    }
+}
+
+void CopyJob::overwriteAlwaysRequest()
+{
+    d_func()->overwriteAlwaysRequest();
+}
+
+void CopyJobPrivate::overwriteAlwaysRequest()
+{
+    Q_Q(CopyJob);
+    m_bOverwriteAllFiles = true;
+
+    QList<CopyInfo> filesToCreate;
+
+    QMutableHashIterator<int, InteractionRequest> i(m_requests);
+    while (i.hasNext()) {
+        i.next();
+        int err = i.value().error;
+        if ( ( err == ERR_FILE_ALREADY_EXIST )
+                 || ( err == ERR_DIR_ALREADY_EXIST )
+                 || ( err == ERR_IDENTICAL_FILES ) )
+        {
+            CopyInfo &copyInfo = i.value().copyInfo;
+            m_updatedFiles.append(copyInfo);
+            filesToCreate.append(copyInfo);
+            m_overwriteList.insert(copyInfo.uDest.path());
+            i.remove();
+        }
+    }
+
+    emit q->aboutToCreate( q, filesToCreate );
+
+    // if transfer is already finished
+    if (files.isEmpty()) {
+        setNextDirAttribute();
+    }
+}
+
+void CopyJob::renameRequest(int id, const KUrl &newDestUrl)
+{
+    d_func()->renameRequest(id, newDestUrl);
+}
+
+void CopyJobPrivate::renameRequest(int id, const KUrl &newDestUrl)
+{
+    Q_Q(CopyJob);
+    if (!m_requests.contains(id)) {
+        kWarning() << "There is no such interaction request id:" << id;
+        return;
+    }
+
+    InteractionRequest request = m_requests.take(id);
+    CopyInfo &copyInfo = request.copyInfo;
+    emit q->renamed( q, copyInfo.uDest, newDestUrl ); // for e.g. kpropsdlg
+    copyInfo.uDest = newDestUrl;
+    m_updatedFiles.append(copyInfo);
+
+    QList<CopyInfo> filesToCreate;
+    filesToCreate.append( copyInfo );
+    emit q->aboutToCreate( q, filesToCreate );
+
+    // if transfer is already finished
+    if (files.isEmpty()) {
+        setNextDirAttribute();
+    }
+}
+
+void CopyJob::renameAlwaysRequest()
+{
+    d_func()->renameAlwaysRequest();
+}
+
+void CopyJobPrivate::renameAlwaysRequest()
+{
+    Q_Q(CopyJob);
+    m_bAutoRenameFiles = true;
+
+    QList<CopyInfo> filesToCreate;
+
+    QMutableHashIterator<int, InteractionRequest> i(m_requests);
+    while (i.hasNext()) {
+        i.next();
+        int err = i.value().error;
+        if ( ( err == ERR_FILE_ALREADY_EXIST )
+                 || ( err == ERR_DIR_ALREADY_EXIST )
+                 || ( err == ERR_IDENTICAL_FILES ) )
+        {
+            CopyInfo &copyInfo = i.value().copyInfo;
+            KUrl oldUrl = copyInfo.uDest;
+            KUrl &dest = copyInfo.uDest;
+            dest.setFileName( KIO::RenameDialog::suggestName(dest.directory(), dest.fileName()) );
+            emit q->renamed( q, oldUrl, dest ); // for e.g. kpropsdlg
+
+            m_updatedFiles.append(copyInfo);
+            filesToCreate.append(copyInfo);
+            i.remove();
+        }
+    }
+
+    emit q->aboutToCreate( q, filesToCreate );
+
+    // if transfer is already finished
+    if (files.isEmpty()) {
+        setNextDirAttribute();
+    }
+}
+
+void CopyJob::retryRequest(int id)
+{
+    d_func()->retryRequest(id);
+}
+
+void CopyJobPrivate::retryRequest(int id)
+{
+    Q_Q(CopyJob);
+
+    QList<CopyInfo> filesToCreate;
+//     if (!m_requests.contains(id)) {
+//         kWarning() << "There is no such interaction request id:" << id;
+//         return;
+//     }
+
+    InteractionRequest request = m_requests.take(id);
+    CopyInfo &copyInfo = request.copyInfo;
+    m_updatedFiles.append(copyInfo);
+    emit q->retriedFile(id);
+
+    filesToCreate.append( copyInfo );
+    emit q->aboutToCreate( q, filesToCreate );
+
+    // if transfer is already finished
+    if (files.isEmpty()) {
+        setNextDirAttribute();
+    }
+}
+
+void CopyJob::skipRequest(int id)
+{
+    d_func()->skipRequest(id);
+}
+
+void CopyJobPrivate::skipRequest(int id)
+{
+    Q_Q(CopyJob);
+    
+    if (m_requests.contains(id)) {
+        InteractionRequest request = m_requests.take(id);
+        CopyInfo &copyInfo = request.copyInfo;
+        skip(copyInfo.uSource, false);
+    } else {
+        skipUnprocessedFile(id);
+    }
+    
+    //should be called in each place where we skipping file
+    emit q->skippedFile(id);
+    m_skippedCount++;
+    q->setTotalAmount(KJob::Skipped, m_skippedCount);
+
+//     m_processedSize += copyInfo.size;
+//     m_processedFiles++;
+
+    // if transfer is already finished
+    if (files.isEmpty()) {
+        setNextDirAttribute();
+    }
+}
+
+void CopyJob::skipAlwaysRequest()
+{
+    d_func()->skipAlwaysRequest();
+}
+
+void CopyJobPrivate::skipAlwaysRequest()
+{
+    Q_Q(CopyJob);
+    m_bAutoSkipFiles = true;
+
+    QHash<int, InteractionRequest>::const_iterator i = m_requests.constBegin();
+    while (i != m_requests.constEnd()) {
+        const CopyInfo &copyInfo = i.value().copyInfo;
+        skip(copyInfo.uSource, false);
+        m_processedSize += copyInfo.size;
+        m_processedFiles++;
+        ++i;
+    }
+    m_requests.clear();
+
+    // if transfer is already finished
+    if (files.isEmpty()) {
+        setNextDirAttribute();
+    }
 }
 
 CopyJob *KIO::copy(const KUrl& src, const KUrl& dest, JobFlags flags)

@@ -58,6 +58,8 @@ public:
     static bool _k_kjobUnitEnumRegistered;
 
     bool isFinished;
+    
+    virtual bool doStartInteraction();
 
     Q_DECLARE_PUBLIC(KJob)
 };

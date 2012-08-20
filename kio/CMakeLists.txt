@@ -153,6 +153,13 @@ set(kiocore_STAT_SRCS
   kio/hostinfo.cpp
   kio/kpasswdserver.cpp
   kio/kpasswdserverloop.cpp
+  
+  kio/filestransferdialog/copyjobfake.cpp
+  kio/filestransferdialog/filehelpers.cpp
+  kio/filestransferdialog/fileitem.cpp
+  kio/filestransferdialog/filemodel.cpp
+  kio/filestransferdialog/filestransferdialog.cpp
+  kio/filestransferdialog/qmlapplicationviewer.cpp
 )
 
 if(NOT KDE_NO_DEPRECATED)
@@ -332,7 +339,7 @@ if(NOT KIO_NO_NEPOMUK)
   target_link_libraries(kfilemetadatareader ${KDE4_KIO_LIBS} ${KDE4_NEPOMUK_LIBRARY} nepomukutils)
   target_link_libraries(kio ${KDE4_NEPOMUK_LIBRARY} nepomukquery nepomukutils)
 endif(NOT KIO_NO_NEPOMUK)
-target_link_libraries(kio ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTSVG_LIBRARY} ${X11_LIBRARIES} ${KIO_EXTRA_LIBS})
+target_link_libraries(kio ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTSVG_LIBRARY} ${X11_LIBRARIES} ${KIO_EXTRA_LIBS} ${QT_QTDECLARATIVE_LIBRARY})
 target_link_libraries(kio LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} )
 
 if(ACL_FOUND)
@@ -411,6 +418,14 @@ install(  FILES
   kio/skipdialog.h
   kio/udsentry.h
   kssl/sslui.h
+  
+  kio/filestransferdialog/copyjobfake.h
+  kio/filestransferdialog/filehelpers.h
+  kio/filestransferdialog/fileitem.h
+  kio/filestransferdialog/filemodel.h
+  kio/filestransferdialog/filestransferdialog.h
+  kio/filestransferdialog/qmlapplicationviewer.h
+
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
 
 if( NOT WIN32 )
@@ -512,3 +527,31 @@ install(FILES
 
 
 install(FILES kio/accept-languages.codes DESTINATION ${CONFIG_INSTALL_DIR})
+
+install(FILES kio/filestransferdialog/qml/main.qml
+    kio/filestransferdialog/qml/BackgroundProgressBar.qml
+    kio/filestransferdialog/qml/ButtonShadow.qml
+    kio/filestransferdialog/qml/DisappearedBox.qml
+    kio/filestransferdialog/qml/FileDelegate.qml
+    kio/filestransferdialog/qml/FilesView.qml
+    kio/filestransferdialog/qml/FileTabs.qml
+    kio/filestransferdialog/qml/IconLoader.qml
+    kio/filestransferdialog/qml/ManualSolution.qml
+    kio/filestransferdialog/qml/MultiPartProgressBar.qml
+    kio/filestransferdialog/qml/MyToolButton.qml
+    kio/filestransferdialog/qml/NormalBox.qml
+    kio/filestransferdialog/qml/ProgressBarPart.qml
+    kio/filestransferdialog/qml/SkippedBox.qml
+    kio/filestransferdialog/qml/Tag.qml
+    kio/filestransferdialog/qml/TaskBar.qml
+    kio/filestransferdialog/qml/TextButton.qml
+    kio/filestransferdialog/qml/UnreadableBox.qml
+    kio/filestransferdialog/qml/helpers.js
+    kio/filestransferdialog/qml/img/progress-bar-up.png
+    kio/filestransferdialog/qml/img/progress-bar-down.png
+    DESTINATION ${PLUGIN_INSTALL_DIR}/imports/org/kde/filestransferdialog)
+
+install(FILES
+    kio/filestransferdialog/qml/img/progress-bar-up.png
+    kio/filestransferdialog/qml/img/progress-bar-down.png
+    DESTINATION ${PLUGIN_INSTALL_DIR}/imports/org/kde/filestransferdialog/img)

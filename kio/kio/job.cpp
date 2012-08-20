@@ -534,6 +534,7 @@ void SimpleJobPrivate::slotProcessedSize( KIO::filesize_t size )
 {
     Q_Q(SimpleJob);
     //kDebug(7007) << KIO::number(size);
+    kWarning() << size;
     q->setProcessedAmount(KJob::Bytes, size);
 }
 
@@ -2475,13 +2476,14 @@ public:
     ListJobPrivate(const KUrl& url, bool _recursive, const QString &_prefix, bool _includeHidden)
         : SimpleJobPrivate(url, CMD_LISTDIR, QByteArray()),
           recursive(_recursive), includeHidden(_includeHidden),
-          prefix(_prefix), m_processedEntries(0)
+          prefix(_prefix), m_processedEntries(0), m_details(2)
     {}
     bool recursive;
     bool includeHidden;
     QString prefix;
     unsigned long m_processedEntries;
     KUrl m_redirectionURL;
+    short int m_details;
 
     /**
      * @internal
@@ -2696,6 +2698,11 @@ void ListJob::setUnrestricted(bool unrestricted)
         d->m_extraFlags &= ~JobPrivate::EF_ListJobUnrestricted;
 }
 
+void ListJob::setDetails( short int details )
+{
+    d_func()->m_details = details;
+}
+
 void ListJobPrivate::start(Slave *slave)
 {
     Q_Q(ListJob);
@@ -2714,6 +2721,7 @@ void ListJobPrivate::start(Slave *slave)
     q->connect( slave, SIGNAL(redirection(KUrl)),
              SLOT(slotRedirection(KUrl)) );
 
+    m_outgoingMetaData.insert( "details", QString::number(m_details) );
     SimpleJobPrivate::start(slave);
 }
 

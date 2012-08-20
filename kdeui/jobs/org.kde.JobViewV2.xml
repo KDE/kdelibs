@@ -49,5 +49,6 @@
     <signal name="suspendRequested"/>
     <signal name="resumeRequested"/>
     <signal name="cancelRequested"/>
+    <signal name="interactionRequested"/>
   </interface>
 </node>

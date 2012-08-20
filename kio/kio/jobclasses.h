@@ -950,6 +950,17 @@ namespace KIO {
          * Do not apply any KIOSK restrictions to this job.
          */
         void setUnrestricted(bool unrestricted);
+        
+        /**
+         * Selects the level of @p details we want.
+         * By default this is 2 (all details wanted, including modification time, size, etc.),
+         * setDetails(1) is used when deleting: we don't need all the information if it takes
+         * too much time, no need to follow symlinks etc.
+         * setDetails(0) is used for very simple probing: we'll only get the answer
+         * "it's a file or a directory, or it doesn't exist". This is used by KRun.
+         * @param details 2 for all details, 1 for simple, 0 for very simple
+         */
+        void setDetails( short int details );
 
     Q_SIGNALS:
         /**

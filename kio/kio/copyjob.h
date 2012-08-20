@@ -93,6 +93,12 @@ namespace KIO {
         KUrl destUrl() const;
 
         /**
+         * Returns the list of all files stated by this job. If stating isn't finished
+         * empty list will be returned.
+         */
+        QList<CopyInfo> allFiles() const;
+        
+        /**
          * By default the permissions of the copied files will be those of the source files.
          *
          * But when copying "template" files to "new" files, people prefer the umask
@@ -131,6 +137,15 @@ namespace KIO {
          * Reimplemented for internal reasons
          */
         virtual bool doSuspend();
+
+    public Q_SLOTS:
+        void overwriteRequest(int id);
+        void overwriteAlwaysRequest();
+        void renameRequest(int id, const KUrl &newDestUrl);
+        void renameAlwaysRequest();
+        void retryRequest(int id);
+        void skipRequest(int id);
+        void skipAlwaysRequest();
 
     Q_SIGNALS:
 
@@ -249,6 +264,15 @@ namespace KIO {
          * @param to the destination URL
          */
         void copyingLinkDone( KIO::Job *job, const KUrl &from, const QString& target, const KUrl& to );
+
+        void processedFileRatio(int id, qreal ratio);
+        void skippedFile(int id);
+        void retriedFile(int id);
+        void unreadableFile(int id);
+        void disappearedFile(int id);
+        void existingFile(int id);
+        void nothingToProcess();
+
     protected Q_SLOTS:
         virtual void slotResult( KJob *job );
 
@@ -262,6 +286,8 @@ namespace KIO {
         Q_PRIVATE_SLOT(d_func(), void slotProcessedSize( KJob*, qulonglong data_size ))
         Q_PRIVATE_SLOT(d_func(), void slotTotalSize( KJob*, qulonglong size ))
         Q_PRIVATE_SLOT(d_func(), void slotReport())
+
+        Q_PRIVATE_SLOT(d_func(), void slotExistingFile(KJob *job))
 
         Q_DECLARE_PRIVATE(CopyJob)
     };

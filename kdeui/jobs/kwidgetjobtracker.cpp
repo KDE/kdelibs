@@ -311,6 +311,10 @@ void KWidgetJobTracker::Private::ProgressWidget::totalAmount(KJob::Unit unit, qu
         totalDirs = amount;
         showTotals();
         break;
+    case KJob::Errors:
+    case KJob::Skipped:
+        // do nothing
+        break;
     }
 }
 
@@ -360,6 +364,11 @@ void KWidgetJobTracker::Private::ProgressWidget::processedAmount(KJob::Unit unit
         }
         tmp += i18np("%2 / %1 file", "%2 / %1 files", totalFiles,  processedFiles);
         progressLabel->setText(tmp);
+        break;
+    case KJob::Errors:
+    case KJob::Skipped:
+        // do nothing
+        break;
     }
 }
 

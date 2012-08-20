@@ -1,0 +1,17 @@
+BackgroundProgressBar.qml BackgroundProgressBar.qml
+ButtonShadow.qml ButtonShadow.qml
+DisappearedBox.qml DisappearedBox.qml
+FileDelegate.qml FileDelegate.qml
+FilesView.qml FilesView.qml
+FileTabs.qml FileTabs.qml
+IconLoader.qml IconLoader.qml
+ManualSolution.qml ManualSolution.qml
+MultiPartProgressBar.qml MultiPartProgressBar.qml
+MyToolButton.qml MyToolButton.qml
+NormalBox.qml NormalBox.qml
+ProgressBarPart.qml ProgressBarPart.qml
+SkippedBox.qml SkippedBox.qml
+Tag.qml Tag.qml
+TaskBar.qml TaskBar.qml
+TextButton.qml TextButton.qml
+UnreadableBox.qml UnreadableBox.qml
