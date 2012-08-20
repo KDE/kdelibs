@@ -19,7 +19,6 @@
 #include <kfilterdev.h>
 #include <QtCore/QTextCodec>
 #include <stdlib.h>
-#include <config.h>
 #include <stdarg.h>
 #include <qurl.h>
 
