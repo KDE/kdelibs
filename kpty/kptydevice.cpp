@@ -24,7 +24,6 @@
 #include "kptydevice.h"
 #include "kpty_p.h"
 
-#include <config.h>
 #include <config-pty.h>
 
 #include <QSocketNotifier>
@@ -40,7 +39,7 @@
 #if HAVE_SYS_FILIO_H
 # include <sys/filio.h>
 #endif
-#ifdef HAVE_SYS_TIME_H
+#if HAVE_SYS_TIME_H
 # include <sys/time.h>
 #endif
 

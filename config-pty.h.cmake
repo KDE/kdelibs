@@ -29,6 +29,8 @@
 #cmakedefine01 HAVE_STRUCT_UTMP_UT_SYSLEN
 #cmakedefine01 HAVE_STRUCT_UTMP_UT_ID
 
+#cmakedefine01 HAVE_SYS_TIME_H
+
 /*
  * Steven Schultz <sms at to.gd-es.com> tells us :
  * BSD/OS 4.2 doesn't have a prototype for openpty in its system header files
