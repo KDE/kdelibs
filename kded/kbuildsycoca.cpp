@@ -22,7 +22,6 @@
 #include "ksycocaresourcelist.h"
 #include "vfolder_menu.h"
 
-#include <config.h>
 #include <config-kded.h>
 
 #include <kservice.h>

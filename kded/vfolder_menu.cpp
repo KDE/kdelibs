@@ -24,7 +24,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <dirent.h>
-#include <config.h>
 
 #include <kdebug.h>
 #include <kglobal.h>
