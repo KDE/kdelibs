@@ -356,8 +356,6 @@ include(ConfigureChecks.cmake)
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
 configure_file(config-prefix.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-prefix.h )
 configure_file(config-compiler.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compiler.h )
-#FIXME: Should be moved in kpty/ folder ? ( as only used here )
-configure_file(config-pty.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-pty.h )
 
 # these two calls here should go somewhere else, Alex
 check_library_exists(nsl gethostbyname "" HAVE_NSL_LIBRARY)
