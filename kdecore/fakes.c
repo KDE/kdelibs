@@ -36,27 +36,24 @@
 */
 
 #include <kdecore_export.h>
-
-#include <config.h>
-
-
+#include <kdefakes.h>
 
 #define KDE_open open
 #define KDE_mkdir mkdir
 
 
-#ifndef HAVE_SETENV
+#if ! HAVE_SETENV
 
-#ifdef HAVE_ALLOCA_H
+#if HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
-#ifdef HAVE_STRING_H
+#if HAVE_STRING_H
 #include <string.h>
 #endif
-#ifdef HAVE_STDLIB_H
+#if HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
-#ifdef HAVE_UNISTD_H
+#if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
@@ -80,19 +77,19 @@ KDECORE_EXPORT int setenv(const char *name, const char *value, int overwrite) {
 
 #ifndef HAVE_UNSETENV
 
-#ifdef HAVE_ALLOCA_H
+#if HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
-#ifdef HAVE_STRING_H
+#if HAVE_STRING_H
 #include <string.h>
 #endif
-#ifdef HAVE_STDLIB_H
+#if HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
-#ifdef HAVE_ERRNO_H
+#if HAVE_ERRNO_H
 #include <errno.h>
 #endif
-#ifdef HAVE_UNISTD_H
+#if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
@@ -133,20 +130,20 @@ KDECORE_EXPORT int unsetenv (const char *name)
 
 #endif /* !HAVE_UNSETENV */
 
-#ifndef HAVE_USLEEP
+#if ! HAVE_USLEEP
 
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
 # include <time.h>
 #else
-# if defined(HAVE_SYS_TIME_H)
+# if HAVE_SYS_TIME_H
 #  include <sys/time.h>
 # else
 #  include <time.h>
 # endif
 #endif
 
-#ifdef HAVE_SYS_SELECT_H
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
 
@@ -167,7 +164,7 @@ void usleep(unsigned int usec) {
 
 #endif /* !HAVE_USLEEP */
 
-#ifndef HAVE_RANDOM
+#if ! HAVE_RANDOM
 long int random()
 {
     return lrand48();
@@ -179,28 +176,28 @@ void srandom(unsigned int seed)
 }
 #endif /* !HAVE_RANDOM */
 
-#ifndef HAVE_SETEUID
+#if ! HAVE_SETEUID
 int seteuid(uid_t euid)
 {
     return setreuid(-1, euid); /* Well, if you have neither you are in trouble :) */
 }
 #endif /* !HAVE_SETEUID */
 
-#ifndef HAVE_MKSTEMPS
-#ifdef HAVE_SYS_TYPES_H
+#if ! HAVE_MKSTEMPS
+#if HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
-#ifdef HAVE_SYS_STAT_H
+#if HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
 #include <fcntl.h>
-#ifdef HAVE_STRING_H
+#if HAVE_STRING_H
 #include <string.h>
 #endif
-#ifdef HAVE_STRINGS_H
+#if HAVE_STRINGS_H
 #include <strings.h>
 #endif
-#ifdef HAVE_STDLIB_H
+#if HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
 
@@ -270,20 +267,20 @@ KDECORE_EXPORT int mkstemps (char* _template, int suffix_len)
 
 #endif /* !HAVE_MKSTEMPS */
 
-#ifndef HAVE_MKSTEMP
+#if ! HAVE_MKSTEMP
 KDECORE_EXPORT int mkstemp (char* _template)
 {
   return mkstemps( _template, 0 );
 }
 #endif /* !HAVE_MKSTEMP */
 
-#ifndef HAVE_MKDTEMP
+#if !HAVE_MKDTEMP
 
-#ifndef HAVE_MKSTEMPS
-#ifdef HAVE_SYS_TYPES_H
+#if ! HAVE_MKSTEMPS
+#if HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
-#ifdef HAVE_SYS_STAT_H
+#if HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
 #endif
@@ -347,7 +344,7 @@ KDECORE_EXPORT char* mkdtemp (char* _template)
 
 #ifndef HAVE_STRLCPY
 
-#ifdef HAVE_STRING_H
+#if HAVE_STRING_H
 #include <string.h>
 #endif
 
@@ -409,7 +406,7 @@ KDECORE_EXPORT unsigned long strlcpy(char* d, const char* s, unsigned long bufsi
 
 #ifndef HAVE_STRLCAT
 
-#ifdef HAVE_STRING_H
+#if HAVE_STRING_H
 #include <string.h>
 #endif
 

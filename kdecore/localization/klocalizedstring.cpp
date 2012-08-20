@@ -19,8 +19,6 @@
 
 #include <klocalizedstring.h>
 
-#include <config.h>
-
 #include <kglobal.h>
 #include <kdebug.h>
 #include <klocale.h>

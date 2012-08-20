@@ -19,8 +19,6 @@
 
 #include <kuitsemantics_p.h>
 
-#include <config.h>
-
 #include <QHash>
 #include <QSet>
 #include <QRegExp>

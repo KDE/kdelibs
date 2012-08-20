@@ -22,7 +22,6 @@
 #include "ksycocaentry.h"
 #include "ksycocadict_p.h"
 
-#include <config.h>
 #include <kdebug.h>
 
 #include <QThread>

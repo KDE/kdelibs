@@ -21,13 +21,13 @@
 
 #include "ktimezone.h"
 
-#include <config.h>
+#include <kdefakes.h>
 #include <config-date.h> // SIZEOF_TIME_T
 
-#ifdef HAVE_SYS_TIME_H
+#if HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
-#ifdef HAVE_TIME_H
+#if HAVE_TIME_H
 #include <time.h>
 #endif
 #include <climits>

@@ -84,7 +84,7 @@
 #include <kshell.h>
 #include <kmountpoint.h>
 
-#ifdef HAVE_VOLMGT
+#if HAVE_VOLMGT
 #include <volmgt.h>
 #include <sys/mnttab.h>
 #endif
@@ -913,7 +913,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
     kDebug(7101) << "fstype=" << _fstype;
 
 #ifndef _WIN32_WCE
-#ifdef HAVE_VOLMGT
+#if  HAVE_VOLMGT
 	/*
 	 *  support for Solaris volume management
 	 */
@@ -1066,7 +1066,7 @@ void FileProtocol::unmount( const QString& _point )
     QByteArray tmpFileName = QFile::encodeName(tmpFile.fileName());
     QString err;
 
-#ifdef HAVE_VOLMGT
+#if HAVE_VOLMGT
 	/*
 	 *  support for Solaris volume management
 	 */

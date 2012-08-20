@@ -20,7 +20,7 @@
 
 #include "kmountpoint.h"
 
-#include <config.h>
+#include <kdefakes.h>
 #include <stdlib.h>
 
 #include <QtCore/QFile>
@@ -32,30 +32,30 @@
 #include <QDir>
 #endif
 
-#ifdef HAVE_VOLMGT
+#if HAVE_VOLMGT
 #include <volmgt.h>
 #endif
-#ifdef HAVE_SYS_MNTTAB_H
+#if HAVE_SYS_MNTTAB_H
 #include <sys/mnttab.h>
 #endif
-#ifdef HAVE_MNTENT_H
+#if HAVE_MNTENT_H
 #include <mntent.h>
-#elif defined(HAVE_SYS_MNTENT_H)
+#elif HAVE_SYS_MNTENT_H
 #include <sys/mntent.h>
 #endif
 
 // This is the *BSD branch
-#ifdef HAVE_SYS_MOUNT_H
-#ifdef HAVE_SYS_TYPES_H
+#if HAVE_SYS_MOUNT_H
+#if HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
-#ifdef HAVE_SYS_PARAM_H
+#if HAVE_SYS_PARAM_H
 #include <sys/param.h>
 #endif
 #include <sys/mount.h>
 #endif
 
-#ifdef HAVE_FSTAB_H
+#if HAVE_FSTAB_H
 #include <fstab.h>
 #endif
 #if defined(_AIX)
@@ -71,7 +71,7 @@ extern "C" void endvfsent( );
 #endif
 
 
-#ifndef HAVE_GETMNTINFO
+#if ! HAVE_GETMNTINFO
 # ifdef _PATH_MOUNTED
 // On some Linux, MNTTAB points to /etc/fstab !
 #  undef MNTTAB
@@ -125,7 +125,7 @@ KMountPoint::~KMountPoint()
 // getmntinfo + struct statfs&flags (BSD 4.4 and friends)
 // getfsent + char* (BSD 4.3 and friends)
 
-#ifdef HAVE_SETMNTENT
+#if HAVE_SETMNTENT
 #define SETMNTENT setmntent
 #define ENDMNTENT endmntent
 #define STRUCT_MNTENT struct mntent *
@@ -206,7 +206,7 @@ KMountPoint::List KMountPoint::possibleMountPoints(DetailsNeededFlags infoNeeded
 
     KMountPoint::List result;
 
-#ifdef HAVE_SETMNTENT
+#if HAVE_SETMNTENT
    STRUCT_SETMNTENT fstab;
    if ((fstab = SETMNTENT(FSTAB, "r")) == 0)
       return result;
@@ -289,7 +289,7 @@ KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
 {
     KMountPoint::List result;
 
-#ifdef HAVE_GETMNTINFO
+#if HAVE_GETMNTINFO
 
 #ifdef GETMNTINFO_USES_STATVFS
     struct statvfs *mounted;

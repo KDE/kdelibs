@@ -22,8 +22,6 @@
 
 #include "kkernel_win.h"
 
-#include <config.h>
-
 #include <QtCore/QTextCodec>
 
 #ifdef Q_OS_WIN

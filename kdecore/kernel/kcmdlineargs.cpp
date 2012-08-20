@@ -18,7 +18,7 @@
 
 #include "kcmdlineargs.h"
 
-#include <config.h>
+#include <kdefakes.h>
 
 #include <sys/param.h>
 
@@ -29,7 +29,7 @@
 #include <unistd.h>
 #include <locale.h>
 
-#ifdef HAVE_LIMITS_H
+#if HAVE_LIMITS_H
 #include <limits.h>
 #endif
 

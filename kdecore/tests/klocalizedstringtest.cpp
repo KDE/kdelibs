@@ -20,8 +20,6 @@
 
 #include "klocalizedstringtest.h"
 
-#include <config.h>
-
 #include <locale.h>
 
 #include <kdebug.h>

@@ -1,9 +1,61 @@
 project(kdecore)
 
+include(CheckIncludeFile)
+include(CheckIncludeFiles)
+
 # Generate config-kstandarddirs.h
+set( KDELIBSUFF ${LIB_SUFFIX} )
+
 configure_file(config-kstandarddirs.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kstandarddirs.h )
 
+find_package(X11)
+if(X11_FOUND)
+	macro_bool_to_01(X11_FOUND HAVE_X11)
+endif(X11_FOUND)
+
+find_package(Libintl)
+macro_log_feature(LIBINTL_FOUND "Libintl" "Support for multiple languages" "http://www.gnu.org/software/gettext" FALSE "" "STRONGLY RECOMMENDED: Enables KDE to be available in many different languages")
+macro_bool_to_01(LIBINTL_FOUND ENABLE_NLS)
+
 # Generate kdefakes.h
+check_include_files(sys/time.h    HAVE_SYS_TIME_H)
+check_include_files(time.h        HAVE_TIME_H)
+check_include_files(alloca.h      HAVE_ALLOCA_H)
+check_include_files(string.h      HAVE_STRING_H)
+check_include_files(strings.h     HAVE_STRINGS_H)
+check_include_files(unistd.h      HAVE_UNISTD_H)
+check_include_files(stdlib.h      HAVE_STDLIB_H)
+check_include_files(sys/stat.h    HAVE_SYS_STAT_H)
+check_include_files(sys/types.h   HAVE_SYS_TYPES_H)
+check_include_files(sys/select.h  HAVE_SYS_SELECT_H)
+check_include_files(errno.h       HAVE_ERRNO_H)
+check_include_files("stdio.h;sys/mnttab.h"  HAVE_SYS_MNTTAB_H)
+check_include_files(mntent.h      HAVE_MNTENT_H)
+check_include_files(sys/mntent.h  HAVE_SYS_MNTENT_H)
+check_include_files("sys/param.h;sys/mount.h"  HAVE_SYS_MOUNT_H)
+check_include_files(sys/param.h   HAVE_SYS_PARAM_H) 
+check_include_files(fstab.h       HAVE_FSTAB_H)
+check_include_files(limits.h      HAVE_LIMITS_H)
+check_include_files(sys/time.h    HAVE_SYS_TIME_H)
+check_include_files(sys/time.h    TIME_WITH_SYS_TIME)
+
+check_function_exists(usleep     HAVE_USLEEP)
+check_function_exists(mkdtemp    HAVE_MKDTEMP) 
+check_function_exists(setmntent   HAVE_SETMNTENT) 
+check_function_exists(getmntinfo  HAVE_GETMNTINFO)
+check_function_exists(mkstemps    HAVE_MKSTEMPS)
+check_function_exists(mkstemp     HAVE_MKSTEMP)
+check_function_exists(mkstemps    HAVE_MKSTEMPS)
+check_function_exists(setenv      HAVE_SETENV)
+check_function_exists(random      HAVE_RANDOM)
+check_function_exists(seteuid     HAVE_SETEUID)
+check_function_exists(mmap        HAVE_MMAP)
+check_function_exists(backtrace   HAVE_BACKTRACE)
+
+check_symbol_exists(posix_madvise   "sys/mman.h"               HAVE_MADVISE)
+
+check_library_exists(volmgt volmgt_running "" HAVE_VOLMGT)
+
 configure_file(kdefakes.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h )
 
 # Generate kdeversion.h

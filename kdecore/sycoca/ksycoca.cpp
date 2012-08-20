@@ -38,7 +38,7 @@
 #include <QProcess>
 #include <QtDBus/QtDBus>
 
-#include <config.h>
+#include <kdefakes.h>
 
 #include <stdlib.h>
 #include <fcntl.h>
@@ -119,7 +119,7 @@ void KSycocaPrivate::setStrategyFromString(const QString& strategy) {
 
 bool KSycocaPrivate::tryMmap()
 {
-#ifdef HAVE_MMAP
+#if HAVE_MMAP
     Q_ASSERT(!m_databasePath.isEmpty());
     m_mmapFile = new QFile(m_databasePath);
     const bool canRead = m_mmapFile->open(QIODevice::ReadOnly);
@@ -138,7 +138,7 @@ bool KSycocaPrivate::tryMmap()
         sycoca_mmap = 0;
         return false;
     } else {
-#ifdef HAVE_MADVISE
+#if HAVE_MADVISE
         (void) posix_madvise((void*)sycoca_mmap, sycoca_size, POSIX_MADV_WILLNEED);
 #endif // HAVE_MADVISE
         return true;
@@ -238,7 +238,7 @@ KSycocaAbstractDevice* KSycocaPrivate::device()
         device = new KSycocaBufferDevice;
         device->device()->open(QIODevice::ReadOnly); // can't fail
     } else {
-#ifdef HAVE_MMAP
+#if HAVE_MMAP
         if (m_sycocaStrategy == StrategyMmap && tryMmap()) {
             device = new KSycocaMmapDevice(sycoca_mmap,
                                            sycoca_size);
@@ -322,7 +322,7 @@ void KSycocaPrivate::closeDatabase()
     // refcounted, and deleted when the last thread is done with them
     qDeleteAll(m_factories);
     m_factories.clear();
-#ifdef HAVE_MMAP
+#if HAVE_MMAP
     if (sycoca_mmap) {
         //QBuffer *buf = static_cast<QBuffer*>(device);
         //buf->buffer().clear();

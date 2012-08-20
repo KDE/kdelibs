@@ -36,7 +36,6 @@
 #include "kkernel_mac.h"
 #include "klocale.h"
 
-#include <config.h>
 #include <config-prefix.h>
 #include <config-kstandarddirs.h>
 

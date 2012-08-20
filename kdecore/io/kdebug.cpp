@@ -50,12 +50,12 @@
 #undef kBacktrace
 #endif
 
-#include <config.h>
+#include <kdefakes.h>
 
-#ifdef HAVE_SYS_TIME_H
+#if HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
-#ifdef HAVE_TIME_H
+#if HAVE_TIME_H
 #include <time.h>
 #endif
 
@@ -94,7 +94,7 @@
 #define HAVE_BACKTRACE (1)
 #endif
 
-#ifdef HAVE_BACKTRACE
+#if HAVE_BACKTRACE
 #include <execinfo.h>
 #ifdef __GNUC__
 #define HAVE_BACKTRACE_DEMANGLE
@@ -730,7 +730,7 @@ struct KDebugPrivate
 // TODO wait for Qt 5.1, uses isDestroyed()
 K_GLOBAL_STATIC(KDebugPrivate, kDebug_data)
 
-#ifdef HAVE_BACKTRACE
+#if HAVE_BACKTRACE
 static QString maybeDemangledName(char *name)
 {
 #ifdef HAVE_BACKTRACE_DEMANGLE
@@ -763,7 +763,7 @@ static QString maybeDemangledName(char *name)
 QString kRealBacktrace(int levels)
 {
     QString s;
-#ifdef HAVE_BACKTRACE
+#if HAVE_BACKTRACE
     void* trace[256];
     int n = backtrace(trace, 256);
     if (!n)

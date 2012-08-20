@@ -19,8 +19,6 @@
 
 #include "kkernel_mac.h"
 
-#include <config.h>
-
 #ifdef Q_OS_MACX
 
 #include <unistd.h>

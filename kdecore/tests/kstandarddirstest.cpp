@@ -23,6 +23,7 @@
 
 QTEST_KDEMAIN_CORE( KStandarddirsTest )
 
+#include <config-kstandarddirs.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
 #include <kconfig.h>
@@ -31,7 +32,6 @@ QTEST_KDEMAIN_CORE( KStandarddirsTest )
 #include <config-prefix.h>
 #include <QtCore/QDebug>
 #include <kconfiggroup.h>
-#include <config.h>
 
 // we need case-insensitive comparison of file paths on windows
 #ifdef Q_OS_WIN

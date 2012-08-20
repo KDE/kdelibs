@@ -19,8 +19,6 @@
 
 #include "kcatalog_p.h"
 
-#include <config.h>
-
 #include <qstandardpaths.h>
 #include <QFile>
 #include <QFileInfo>

@@ -19,7 +19,6 @@
 */
 
 #include "ktoolinvocation.h"
-#include <config.h>
 
 #include "kmessage.h"
 #include "klocalizedstring.h"

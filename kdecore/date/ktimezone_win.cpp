@@ -20,7 +20,6 @@
 
 
 #include "ktimezone_win.h"
-#include <config.h>
 
 #include <kdebug.h>
 

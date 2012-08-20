@@ -22,8 +22,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <config.h>
-
 #include "ktoolinvocation.h"
 
 #include <kconfiggroup.h>

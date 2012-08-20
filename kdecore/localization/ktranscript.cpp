@@ -19,8 +19,6 @@
 #include <ktranscript_p.h>
 #include <common_helpers_p.h>
 
-#include <config.h>
-
 #include <kdecore_export.h>
 
 //#include <unistd.h>

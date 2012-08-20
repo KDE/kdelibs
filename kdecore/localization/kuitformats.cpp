@@ -19,7 +19,6 @@
 
 #include <kuitformats_p.h>
 
-#include <config.h>
 #include <klocalizedstring.h>
 
 #include <QStringList>
