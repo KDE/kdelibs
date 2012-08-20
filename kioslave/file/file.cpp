@@ -28,7 +28,6 @@
 #include <QDirIterator>
 
 #include <config.h>
-#include <config-acl.h>
 #include <config-kioslave-file.h>
 
 
@@ -38,11 +37,6 @@
 #include <sys/socket.h>
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
-#endif
-
-#ifdef HAVE_POSIX_ACL
-#include <sys/acl.h>
-#include <acl/libacl.h>
 #endif
 
 #include <assert.h>
@@ -101,7 +95,6 @@ using namespace KIO;
 
 static QString testLogFile( const QByteArray&_filename );
 #ifdef HAVE_POSIX_ACL
-static bool isExtendedACL(  acl_t p_acl );
 static void appendACLAtoms( const QByteArray & path, UDSEntry& entry,
                             mode_t type, bool withACL );
 #endif
@@ -1279,7 +1272,7 @@ static QString testLogFile( const QByteArray& _filename )
  *************************************/
 #ifdef HAVE_POSIX_ACL
 
-static bool isExtendedACL( acl_t acl )
+bool FileProtocol::isExtendedACL( acl_t acl )
 {
     return ( acl_equiv_mode( acl, 0 ) != 0 );
 }
@@ -1298,7 +1291,7 @@ static void appendACLAtoms( const QByteArray & path, UDSEntry& entry, mode_t typ
      * ACL separately. Since a directory can have both, we need to check again. */
     if ( isDir ) {
         if ( acl ) {
-            if ( !isExtendedACL( acl ) ) {
+            if ( !FileProtocol::isExtendedACL( acl ) ) {
                 acl_free( acl );
                 acl = 0;
             }
