@@ -518,7 +518,7 @@ void KPty::login(const char *user, const char *remotehost)
 
     if (remotehost) {
       strncpy(l_struct.ut_host, remotehost, sizeof(l_struct.ut_host));
-# ifdef HAVE_STRUCT_UTMP_UT_SYSLEN
+# if HAVE_STRUCT_UTMP_UT_SYSLEN
       l_struct.ut_syslen = qMin(strlen(remotehost), sizeof(l_struct.ut_host));
 # endif
     }
