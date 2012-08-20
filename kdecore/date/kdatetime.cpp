@@ -20,7 +20,7 @@
 
 #include "kdatetime.h"
 
-#include <config.h>
+#include <kdefakes.h>
 #include <config-date.h>
 
 #if HAVE_SYS_TIME_H
