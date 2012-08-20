@@ -20,10 +20,6 @@
 
 #include "certexport.h"
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <QPushButton>
 #include <klineedit.h>
 #include <kfiledialog.h>

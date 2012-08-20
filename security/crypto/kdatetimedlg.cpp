@@ -20,10 +20,6 @@
 
 #include "kdatetimedlg.h"
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <QLayout>
 #include <QLabel>
 

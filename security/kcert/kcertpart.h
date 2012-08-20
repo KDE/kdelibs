@@ -20,8 +20,6 @@
 #ifndef _INCLUDE_KCERTPART_H
 #define _INCLUDE_KCERTPART_H
 
-#include <config.h>
-
 #include <kparts/part.h>
 #include <QTreeWidget>
 #include <QtCore/QVariantList>
