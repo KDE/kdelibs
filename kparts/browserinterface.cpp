@@ -22,8 +22,6 @@
 #include <QtCore/QMetaEnum>
 #include <QtCore/QStringList>
 
-#include <config.h>
-
 using namespace KParts;
 
 BrowserInterface::BrowserInterface( QObject *parent )
