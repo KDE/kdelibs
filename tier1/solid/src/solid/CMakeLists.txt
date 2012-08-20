@@ -71,7 +71,6 @@ set(solid_LIB_SRCS
    video.cpp
    smartcardreader.cpp
    internetgateway.cpp
-   xdgbasedirs.cpp
 
    ifaces/acadapter.cpp
    ifaces/audiointerface.cpp
@@ -398,7 +397,11 @@ add_library(solid  ${solid_LIB_SRCS})
 generate_export_header(solid)
 
 target_link_libraries(solid LINK_PUBLIC ${QT_QTCORE_LIBRARY}
-                            LINK_PRIVATE ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS} )
+                            LINK_PRIVATE ${QT_QTDBUS_LIBRARY}
+                                         ${QT_QTXML_LIBRARY}
+                                         ${QT_QTGUI_LIBRARY}
+                                         ${solid_OPTIONAL_LIBS}
+                                         ${inqt5_LIBRARY} )
 
 set_target_properties(solid PROPERTIES  VERSION ${ECM_VERSION_STRING}
                                         SOVERSION ${ECM_SOVERSION} )

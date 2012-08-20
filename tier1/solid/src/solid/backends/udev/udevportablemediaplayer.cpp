@@ -22,12 +22,11 @@
 
 #include "udevportablemediaplayer.h"
 
-#include "solid/xdgbasedirs_p.h"
-
 #include <QtCore/QChar>
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
+#include <qstandardpaths.h>
 
 using namespace Solid::Backends::UDev;
 
@@ -141,7 +140,7 @@ QString PortableMediaPlayer::mediaPlayerInfoFilePath() const
     }
     relativeFilename.prepend("media-player-info/");
     relativeFilename.append(".mpi");
-    QString filename = Solid::XdgBaseDirs::findResourceFile("data", relativeFilename);
+    QString filename = QStandardPaths::locate(QStandardPaths::GenericDataLocation, relativeFilename);
     if (filename.isEmpty()) {
         qWarning() << "media player info file" << relativeFilename << "not found under user and"
                    << "system XDG data directories. Do you have media-player-info installed?";
