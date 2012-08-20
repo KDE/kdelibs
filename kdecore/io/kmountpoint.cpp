@@ -529,12 +529,17 @@ bool KMountPoint::probablySlow() const
 bool KMountPoint::testFileSystemFlag(FileSystemFlag flag) const
 {
     const bool isMsDos = ( d->mountType == QLatin1String("msdos") || d->mountType == QLatin1String("fat") || d->mountType == QLatin1String("vfat") );
+    const bool isNtfs = d->mountType.contains(QLatin1String("fuse.ntfs")) || d->mountType.contains(QLatin1String("fuseblk.ntfs"))
+                        // fuseblk could really be anything. But its most common use is for NTFS mounts, these days.
+                        || d->mountType == QLatin1String("fuseblk");
+    const bool isSmb = d->mountType == QLatin1String("cifs") || d->mountType == QLatin1String("smbfs");
+
     switch (flag)  {
     case SupportsChmod:
     case SupportsChown:
     case SupportsUTime:
     case SupportsSymlinks:
-        return !isMsDos; // it's amazing the number of things FAT doesn't support :)
+        return !isMsDos && !isNtfs && !isSmb; // it's amazing the number of things Microsoft filesystems don't support :)
     case CaseInsensitive:
         return isMsDos;
     }
