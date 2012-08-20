@@ -32,11 +32,11 @@
 #include <klocale.h>
 
 
-#ifndef KUNITCONVERSION_NO_SOLID
+#if !KUNITCONVERSION_NO_SOLID
 #include <solid/networking.h>
 #endif
 
-#ifdef KUNITCONVERSION_NO_KIO
+#if KUNITCONVERSION_NO_KIO
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
@@ -534,7 +534,7 @@ Value Currency::convert(const Value& value, UnitPtr to)
     mutex.lock();
     QFileInfo info(m_cache);
     if (!info.exists() || info.lastModified().secsTo(QDateTime::currentDateTime()) > 86400) {
-#ifndef KUNITCONVERSION_NO_SOLID
+#if !KUNITCONVERSION_NO_SOLID
         Solid::Networking::Status status = Solid::Networking::status();
         if (status == Solid::Networking::Connected || status == Solid::Networking::Unknown ) {
 #else
@@ -551,7 +551,7 @@ Value Currency::convert(const Value& value, UnitPtr to)
             }
             */
             kDebug() << "Removed previous cache:" << QFile::remove(m_cache);
-#ifndef KUNITCONVERSION_NO_KIO
+#if !KUNITCONVERSION_NO_KIO
             QProcess copyProcess;
             copyProcess.start("kioclient", QStringList() << "copy" << "--noninteractive" << URL << m_cache);
             copyProcess.waitForFinished(-1);
