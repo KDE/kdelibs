@@ -1,32 +1,33 @@
 /* Defined to the path of the PTY multiplexer device, if any */
 #cmakedefine PTM_DEVICE "${PTM_DEVICE}"
 
-#cmakedefine HAVE_POSIX_OPENPT 1
-#cmakedefine HAVE_GETPT 1
-#cmakedefine HAVE_GRANTPT 1
-#cmakedefine HAVE_OPENPTY 1
-#cmakedefine HAVE_PTSNAME 1
-#cmakedefine HAVE_REVOKE 1
-#cmakedefine HAVE_UNLOCKPT 1
-#cmakedefine HAVE__GETPTY 1
+#cmakedefine01 HAVE_POSIX_OPENPT
+#cmakedefine01 HAVE_GETPT 
+#cmakedefine01 HAVE_GRANTPT
+#cmakedefine01 HAVE_OPENPTY
+#cmakedefine01 HAVE_PTSNAME
+#cmakedefine01 HAVE_REVOKE
+#cmakedefine01 HAVE_UNLOCKPT
+#cmakedefine01 HAVE__GETPTY
 
-#cmakedefine HAVE_LIBUTIL_H 1
-#cmakedefine HAVE_UTIL_H 1
-#cmakedefine HAVE_PTY_H 1
-#cmakedefine HAVE_TERMIOS_H 1
-#cmakedefine HAVE_TERMIO_H 1
-#cmakedefine HAVE_SYS_STROPTS_H 1
-#cmakedefine HAVE_SYS_FILIO_H 1
+#cmakedefine01 HAVE_LIBUTIL_H
+#cmakedefine01 HAVE_UTIL_H
+#cmakedefine01 HAVE_PTY_H
+/* Unused ? */
+#cmakedefine01 HAVE_TERMIOS_H
+#cmakedefine01 HAVE_TERMIO_H
+#cmakedefine01 HAVE_SYS_STROPTS_H
+#cmakedefine01 HAVE_SYS_FILIO_H
 
-#cmakedefine HAVE_UTEMPTER 1
-#cmakedefine HAVE_LOGIN 1
-#cmakedefine HAVE_UTMPX 1
-#cmakedefine HAVE_LOGINX 1
-#cmakedefine HAVE_STRUCT_UTMP_UT_TYPE 1
-#cmakedefine HAVE_STRUCT_UTMP_UT_PID 1
-#cmakedefine HAVE_STRUCT_UTMP_UT_SESSION 1
-#cmakedefine HAVE_STRUCT_UTMP_UT_SYSLEN 1
-#cmakedefine HAVE_STRUCT_UTMP_UT_ID 1
+#cmakedefine01 HAVE_UTEMPTER
+#cmakedefine01 HAVE_LOGIN
+#cmakedefine01 HAVE_UTMPX
+#cmakedefine01 HAVE_LOGINX
+#cmakedefine01 HAVE_STRUCT_UTMP_UT_TYPE
+#cmakedefine01 HAVE_STRUCT_UTMP_UT_PID
+#cmakedefine01 HAVE_STRUCT_UTMP_UT_SESSION
+#cmakedefine01 HAVE_STRUCT_UTMP_UT_SYSLEN
+#cmakedefine01 HAVE_STRUCT_UTMP_UT_ID
 
 /*
  * Steven Schultz <sms at to.gd-es.com> tells us :

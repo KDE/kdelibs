@@ -32,7 +32,7 @@ struct KPtyPrivate {
 
     KPtyPrivate(KPty* parent);
     virtual ~KPtyPrivate();
-#ifndef HAVE_OPENPTY
+#if ! HAVE_OPENPTY
     bool chownpty(bool grant);
 #endif
 

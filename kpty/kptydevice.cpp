@@ -37,7 +37,7 @@
 #include <termios.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
-#ifdef HAVE_SYS_FILIO_H
+#if HAVE_SYS_FILIO_H
 # include <sys/filio.h>
 #endif
 #ifdef HAVE_SYS_TIME_H

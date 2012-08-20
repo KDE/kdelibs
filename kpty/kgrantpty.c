@@ -38,7 +38,6 @@
  * Boston, MA  02110-1301, USA
  */
 
-#include <config.h>
 #include <config-pty.h>
 
 #include <sys/types.h>
@@ -50,7 +49,7 @@
 #include <sys/stat.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
-#ifdef HAVE_PTY_H
+#if HAVE_PTY_H
 #  include <pty.h>
 #endif
 
@@ -72,7 +71,7 @@ int main (int argc, char *argv[])
   mode_t        mod;
   char*         tty;
   int           fd;
-#if !defined(HAVE_PTSNAME) && defined(TIOCGPTN)
+#if !HAVE_PTSNAME && defined(TIOCGPTN)
   int           ptyno;
   char          ttyb[32];
 #endif
@@ -97,7 +96,7 @@ int main (int argc, char *argv[])
   fd = atoi(argv[2]);
 
   /* get slave pty name from master pty file handle *********/
-#ifdef HAVE_PTSNAME
+#if HAVE_PTSNAME
   tty = ptsname(fd);
   if (!tty)
 #elif defined(TIOCGPTN)

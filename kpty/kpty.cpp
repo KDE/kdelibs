@@ -24,7 +24,6 @@
 
 #include "kpty_p.h"
 
-#include <config.h>
 #include <config-prefix.h>
 
 #ifdef __sgi
@@ -64,23 +63,23 @@
 #include <unistd.h>
 #include <grp.h>
 
-#if defined(HAVE_PTY_H)
+#if HAVE_PTY_H
 # include <pty.h>
 #endif
 
-#ifdef HAVE_LIBUTIL_H
+#if HAVE_LIBUTIL_H
 # include <libutil.h>
-#elif defined(HAVE_UTIL_H)
+#elif HAVE_UTIL_H
 # include <util.h>
 #endif
 
-#ifdef HAVE_UTEMPTER
+#if HAVE_UTEMPTER
 extern "C" {
 # include <utempter.h>
 }
 #else
 # include <utmp.h>
-# ifdef HAVE_UTMPX
+# if HAVE_UTMPX
 #  include <utmpx.h>
 # endif
 # if !defined(_PATH_UTMPX) && defined(_UTMPX_FILE)
@@ -95,7 +94,7 @@ extern "C" {
    platforms it doesn't hurt */
 extern "C" {
 #include <termios.h>
-#if defined(HAVE_TERMIO_H)
+#if HAVE_TERMIO_H
 # include <termio.h> // struct winsize on some systems
 #endif
 }
@@ -105,7 +104,7 @@ extern "C" {
 # include <bsdtty.h>
 #endif
 
-#ifdef HAVE_SYS_STROPTS_H
+#if HAVE_SYS_STROPTS_H
 # include <sys/stropts.h>	// Defines I_PUSH
 # define _NEW_TTY_CTRL
 #endif
@@ -162,7 +161,7 @@ KPtyPrivate::~KPtyPrivate()
 {
 }
 
-#ifndef HAVE_OPENPTY
+#if ! HAVE_OPENPTY
 bool KPtyPrivate::chownpty(bool grant)
 {
     return !QProcess::execute(QFile::decodeName(CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kgrantpty"),
@@ -209,7 +208,7 @@ bool KPty::open()
 
   // We try, as we know them, one by one.
 
-#ifdef HAVE_OPENPTY
+#if HAVE_OPENPTY
 
   char ptsn[PATH_MAX];
   if (::openpty( &d->masterFd, &d->slaveFd, ptsn, 0, 0))
@@ -223,7 +222,7 @@ bool KPty::open()
 
 #else
 
-#ifdef HAVE__GETPTY // irix
+#if HAVE__GETPTY // irix
 
   char *ptsn = _getpty(&d->masterFd, O_RDWR|O_NOCTTY, S_IRUSR|S_IWUSR, 0);
   if (ptsn) {
@@ -231,11 +230,11 @@ bool KPty::open()
     goto grantedpt;
   }
 
-#elif defined(HAVE_PTSNAME) || defined(TIOCGPTN)
+#elif HAVE_PTSNAME || defined(TIOCGPTN)
 
-#ifdef HAVE_POSIX_OPENPT
+#if HAVE_POSIX_OPENPT
   d->masterFd = ::posix_openpt(O_RDWR|O_NOCTTY);
-#elif defined(HAVE_GETPT)
+#elif HAVE_GETPT
   d->masterFd = ::getpt();
 #elif defined(PTM_DEVICE)
   d->masterFd = KDE_open(PTM_DEVICE, O_RDWR|O_NOCTTY);
@@ -244,7 +243,7 @@ bool KPty::open()
 #endif
   if (d->masterFd >= 0)
   {
-#ifdef HAVE_PTSNAME
+#if HAVE_PTSNAME
     char *ptsn = ptsname(d->masterFd);
     if (ptsn) {
         d->ttyName = ptsn;
@@ -255,7 +254,7 @@ bool KPty::open()
         sprintf(buf, "/dev/pts/%d", ptyno);
         d->ttyName = buf;
 #endif
-#ifdef HAVE_GRANTPT
+#if HAVE_GRANTPT
         if (!grantpt(d->masterFd))
            goto grantedpt;
 #else
@@ -375,7 +374,7 @@ bool KPty::open()
 
 bool KPty::open(int fd)
 {
-#if !defined(HAVE_PTSNAME) && !defined(TIOCGPTN)
+#if !HAVE_PTSNAME && !defined(TIOCGPTN)
     kWarning(175) << "Unsupported attempt to open pty with fd" << fd;
     return false;
 #else
@@ -388,7 +387,7 @@ bool KPty::open(int fd)
 
     d->ownMaster = false;
 
-# ifdef HAVE_PTSNAME
+# if HAVE_PTSNAME
     char *ptsn = ptsname(fd);
     if (ptsn) {
         d->ttyName = ptsn;
@@ -451,7 +450,7 @@ void KPty::close()
         return;
     closeSlave();
     if (d->ownMaster) {
-#ifndef HAVE_OPENPTY
+#if ! HAVE_OPENPTY
         // don't bother resetting unix98 pty, it will go away after closing master anyway.
         if (memcmp(d->ttyName.data(), "/dev/pts/", 9)) {
             if (!geteuid()) {
@@ -500,13 +499,13 @@ void KPty::setCTty()
 
 void KPty::login(const char *user, const char *remotehost)
 {
-#ifdef HAVE_UTEMPTER
+#if HAVE_UTEMPTER
     Q_D(KPty);
 
     addToUtmp(d->ttyName, remotehost, d->masterFd);
     Q_UNUSED(user);
 #else
-# ifdef HAVE_UTMPX
+# if HAVE_UTMPX
     struct utmpx l_struct;
 # else
     struct utmp l_struct;
@@ -530,36 +529,36 @@ void KPty::login(const char *user, const char *remotehost)
     if (!memcmp(str_ptr, "/dev/", 5))
         str_ptr += 5;
     strncpy(l_struct.ut_line, str_ptr, sizeof(l_struct.ut_line));
-#  ifdef HAVE_STRUCT_UTMP_UT_ID
+#  if HAVE_STRUCT_UTMP_UT_ID
     strncpy(l_struct.ut_id,
             str_ptr + strlen(str_ptr) - sizeof(l_struct.ut_id),
             sizeof(l_struct.ut_id));
 #  endif
 # endif
 
-# ifdef HAVE_UTMPX
+# if HAVE_UTMPX
     gettimeofday(&l_struct.ut_tv, 0);
 # else
     l_struct.ut_time = time(0);
 # endif
 
-# ifdef HAVE_LOGIN
-#  ifdef HAVE_LOGINX
+# if HAVE_LOGIN
+#  if HAVE_LOGINX
     ::loginx(&l_struct);
 #  else
     ::login(&l_struct);
 #  endif
 # else
-#  ifdef HAVE_STRUCT_UTMP_UT_TYPE
+#  if HAVE_STRUCT_UTMP_UT_TYPE
     l_struct.ut_type = USER_PROCESS;
 #  endif
-#  ifdef HAVE_STRUCT_UTMP_UT_PID
+#  if HAVE_STRUCT_UTMP_UT_PID
     l_struct.ut_pid = getpid();
-#   ifdef HAVE_STRUCT_UTMP_UT_SESSION
+#   if HAVE_STRUCT_UTMP_UT_SESSION
     l_struct.ut_session = getsid(0);
 #   endif
 #  endif
-#  ifdef HAVE_UTMPX
+#  if HAVE_UTMPX
     utmpxname(_PATH_UTMPX);
     setutxent();
     pututxline(&l_struct);
@@ -578,7 +577,7 @@ void KPty::login(const char *user, const char *remotehost)
 
 void KPty::logout()
 {
-#ifdef HAVE_UTEMPTER
+#if HAVE_UTEMPTER
     Q_D(KPty);
 
     removeLineFromUtmp(d->ttyName, d->masterFd);
@@ -595,14 +594,14 @@ void KPty::logout()
             str_ptr = sl_ptr + 1;
     }
 # endif
-# ifdef HAVE_LOGIN
-#  ifdef HAVE_LOGINX
+# if HAVE_LOGIN
+#  if HAVE_LOGINX
     ::logoutx(str_ptr, 0, DEAD_PROCESS);
 #  else
     ::logout(str_ptr);
 #  endif
 # else
-#  ifdef HAVE_UTMPX
+#  if HAVE_UTMPX
     struct utmpx l_struct, *ut;
 #  else
     struct utmp l_struct, *ut;
@@ -611,7 +610,7 @@ void KPty::logout()
 
     strncpy(l_struct.ut_line, str_ptr, sizeof(l_struct.ut_line));
 
-#  ifdef HAVE_UTMPX
+#  if HAVE_UTMPX
     utmpxname(_PATH_UTMPX);
     setutxent();
     if ((ut = getutxline(&l_struct))) {
@@ -622,13 +621,13 @@ void KPty::logout()
 #  endif
         memset(ut->ut_name, 0, sizeof(*ut->ut_name));
         memset(ut->ut_host, 0, sizeof(*ut->ut_host));
-#  ifdef HAVE_STRUCT_UTMP_UT_SYSLEN
+#  if HAVE_STRUCT_UTMP_UT_SYSLEN
         ut->ut_syslen = 0;
 #  endif
-#  ifdef HAVE_STRUCT_UTMP_UT_TYPE
+#  if HAVE_STRUCT_UTMP_UT_TYPE
         ut->ut_type = DEAD_PROCESS;
 #  endif
-#  ifdef HAVE_UTMPX
+#  if HAVE_UTMPX
         gettimeofday(&(ut->ut_tv), 0);
         pututxline(ut);
     }
