@@ -153,8 +153,6 @@ set(kiocore_STAT_SRCS
   kio/hostinfo.cpp
   kio/kpasswdserver.cpp
   kio/kpasswdserverloop.cpp
-  
-  kio/filestransferdialog/copyjobfake.cpp
   kio/filestransferdialog/filehelpers.cpp
   kio/filestransferdialog/fileitem.cpp
   kio/filestransferdialog/filemodel.cpp
@@ -419,7 +417,6 @@ install(  FILES
   kio/udsentry.h
   kssl/sslui.h
   
-  kio/filestransferdialog/copyjobfake.h
   kio/filestransferdialog/filehelpers.h
   kio/filestransferdialog/fileitem.h
   kio/filestransferdialog/filemodel.h
