@@ -31,8 +31,6 @@
 #include <QtCore/QDirIterator>
 #include <QtCore/QFileInfo>
 
-#include <config.h>
-
 #include <kconfiggroup.h>
 #include <kdebug.h>
 

@@ -27,7 +27,6 @@
 #include "file.h"
 #include <QDirIterator>
 
-#include <config.h>
 #include <config-kioslave-file.h>
 
 #include <qmimedatabase.h>
