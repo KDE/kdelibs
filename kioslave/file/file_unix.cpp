@@ -27,7 +27,7 @@
 
 #include "file.h"
 
-#include <config.h>
+#include <config-acl.h>
 #include <config-kioslave-file.h>
 
 #include <QtCore/QFile>
@@ -45,7 +45,7 @@
 #include <pwd.h>
 #include <stdlib.h>
 
-#if defined(HAVE_LIMITS_H)
+#if HAVE_LIMITS_H
 #include <limits.h>  // PATH_MAX
 #endif
 
@@ -96,7 +96,7 @@ void FileProtocol::copy( const KUrl &srcUrl, const KUrl &destUrl,
     QByteArray _src( QFile::encodeName(src));
     QByteArray _dest( QFile::encodeName(dest));
     KDE_struct_stat buff_src;
-#ifdef HAVE_POSIX_ACL
+#if HAVE_POSIX_ACL
     acl_t acl;
 #endif
 
@@ -182,7 +182,7 @@ void FileProtocol::copy( const KUrl &srcUrl, const KUrl &destUrl,
     posix_fadvise(dest_fd,0,0,POSIX_FADV_SEQUENTIAL);
 #endif
 
-#ifdef HAVE_POSIX_ACL
+#if HAVE_POSIX_ACL
     acl = acl_get_fd(src_fd);
     if ( acl && !isExtendedACL( acl ) ) {
         kDebug(7101) << _dest.data() << " doesn't have extended ACL";
@@ -236,7 +236,7 @@ void FileProtocol::copy( const KUrl &srcUrl, const KUrl &destUrl,
           error(KIO::ERR_COULD_NOT_READ, src);
           ::close(src_fd);
           ::close(dest_fd);
-#ifdef HAVE_POSIX_ACL
+#if HAVE_POSIX_ACL
           if (acl) acl_free(acl);
 #endif
           return;
@@ -261,7 +261,7 @@ void FileProtocol::copy( const KUrl &srcUrl, const KUrl &destUrl,
               kWarning(7101) << "Couldn't write[2]. Error:" << strerror(errno);
               error(KIO::ERR_COULD_NOT_WRITE, dest);
            }
-#ifdef HAVE_POSIX_ACL
+#if HAVE_POSIX_ACL
            if (acl) acl_free(acl);
 #endif
            return;
@@ -279,7 +279,7 @@ void FileProtocol::copy( const KUrl &srcUrl, const KUrl &destUrl,
     {
         kWarning(7101) << "Error when closing file descriptor[2]:" << strerror(errno);
         error(KIO::ERR_COULD_NOT_WRITE, dest);
-#ifdef HAVE_POSIX_ACL
+#if HAVE_POSIX_ACL
         if (acl) acl_free(acl);
 #endif
         return;
@@ -289,7 +289,7 @@ void FileProtocol::copy( const KUrl &srcUrl, const KUrl &destUrl,
     if ( _mode != -1 )
     {
         if ( (::chmod(_dest.data(), _mode) != 0)
-#ifdef HAVE_POSIX_ACL
+#if HAVE_POSIX_ACL
           || (acl && acl_set_file(_dest.data(), ACL_TYPE_ACCESS, acl) != 0)
 #endif
         )
@@ -300,7 +300,7 @@ void FileProtocol::copy( const KUrl &srcUrl, const KUrl &destUrl,
                warning(i18n("Could not change permissions for\n%1", dest));
        }
     }
-#ifdef HAVE_POSIX_ACL
+#if HAVE_POSIX_ACL
     if (acl) acl_free(acl);
 #endif
 

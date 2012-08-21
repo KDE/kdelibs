@@ -36,7 +36,7 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
-#ifdef HAVE_SYS_TIME_H
+#if HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
 
@@ -52,7 +52,7 @@
 #include <time.h>
 #include <utime.h>
 #include <unistd.h>
-#ifdef HAVE_STRING_H
+#if HAVE_STRING_H
 #include <string.h>
 #endif
 
@@ -93,7 +93,7 @@ using namespace KIO;
 #define MAX_IPC_SIZE (1024*32)
 
 static QString testLogFile( const QByteArray&_filename );
-#ifdef HAVE_POSIX_ACL
+#if HAVE_POSIX_ACL
 static void appendACLAtoms( const QByteArray & path, UDSEntry& entry,
                             mode_t type, bool withACL );
 #endif
@@ -128,7 +128,7 @@ FileProtocol::~FileProtocol()
 {
 }
 
-#ifdef HAVE_POSIX_ACL
+#if HAVE_POSIX_ACL
 static QString aclToText(acl_t acl) {
     ssize_t size = 0;
     char* txt = acl_to_text(acl, &size);
@@ -141,7 +141,7 @@ static QString aclToText(acl_t acl) {
 int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
 {
     int ret = 0;
-#ifdef HAVE_POSIX_ACL
+#if HAVE_POSIX_ACL
 
     const QString ACLString = metaData(QLatin1String("ACL_STRING"));
     const QString defaultACLString = metaData(QLatin1String("DEFAULT_ACL_STRING"));
@@ -831,7 +831,7 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & 
 
     entry.insert( KIO::UDSEntry::UDS_SIZE, buff.st_size );
 
-#ifdef HAVE_POSIX_ACL
+#if HAVE_POSIX_ACL
     if (details > 0) {
         /* Append an atom indicating whether the file has extended acl information
          * and if withACL is specified also one with the acl itself. If it's a directory
@@ -1266,7 +1266,7 @@ static QString testLogFile( const QByteArray& _filename )
  * ACL handling helpers
  *
  *************************************/
-#ifdef HAVE_POSIX_ACL
+#if HAVE_POSIX_ACL
 
 bool FileProtocol::isExtendedACL( acl_t acl )
 {

@@ -31,7 +31,7 @@
 
 #include <config-acl.h>
 
-#ifdef HAVE_POSIX_ACL
+#if HAVE_POSIX_ACL
 #include <sys/acl.h>
 #include <acl/libacl.h>
 #endif
@@ -83,7 +83,7 @@ public:
   bool pumount( const QString &point );
   bool pmount( const QString &dev );
 
-#ifdef HAVE_POSIX_ACL
+#if HAVE_POSIX_ACL
   static bool isExtendedACL(acl_t acl);
 #endif
 
