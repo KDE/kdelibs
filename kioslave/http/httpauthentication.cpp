@@ -19,8 +19,8 @@
 
 #include "httpauthentication.h"
 
-#ifdef HAVE_LIBGSSAPI
-#ifdef GSSAPI_MIT
+#if HAVE_LIBGSSAPI
+#if GSSAPI_MIT
 #include <gssapi/gssapi.h>
 #else
 #include <gssapi.h>
@@ -233,7 +233,7 @@ QByteArray KAbstractHttpAuthentication::bestOffer(const QList<QByteArray> &offer
     QByteArray basicOffer;
     Q_FOREACH (const QByteArray &offer, offers) {
         const QByteArray scheme = offer.mid(0, offer.indexOf(' ')).toLower();
-#ifdef HAVE_LIBGSSAPI
+#if HAVE_LIBGSSAPI
         if (scheme == "negotiate") { // krazy:exclude=strings
             negotiateOffer = offer;
         } else
@@ -266,7 +266,7 @@ QByteArray KAbstractHttpAuthentication::bestOffer(const QList<QByteArray> &offer
 KAbstractHttpAuthentication *KAbstractHttpAuthentication::newAuth(const QByteArray &offer, KConfigGroup* config)
 {
     const QByteArray scheme = offer.mid(0, offer.indexOf(' ')).toLower();
-#ifdef HAVE_LIBGSSAPI
+#if HAVE_LIBGSSAPI
     if (scheme == "negotiate") { // krazy:exclude=strings
         return new KHttpNegotiateAuthentication(config);
     } else
@@ -781,7 +781,7 @@ void KHttpNtlmAuthentication::generateResponse(const QString &_user, const QStri
 
 
 //////////////////////////
-#ifdef HAVE_LIBGSSAPI
+#if HAVE_LIBGSSAPI
 
 // just an error message formatter
 static QByteArray gssError(int major_status, int minor_status)

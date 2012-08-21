@@ -1,5 +1,5 @@
 
 /* Define if you have GSSAPI libraries */
-#cmakedefine HAVE_LIBGSSAPI 1
+#cmakedefine01 HAVE_LIBGSSAPI
 /* Define if you have the MIT Kerberos libraries */
-#cmakedefine GSSAPI_MIT 1
+#cmakedefine01 GSSAPI_MIT

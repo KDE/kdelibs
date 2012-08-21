@@ -137,7 +137,7 @@ void HTTPAuthenticationTest::testAuthenticationSelection_data()
     QTest::addColumn<QByteArray>("expectedScheme");
     QTest::addColumn<QByteArray>("expectedOffer");
 
-#ifdef HAVE_LIBGSSAPI
+#if HAVE_LIBGSSAPI
     QTest::newRow("all-with-negotiate") << QByteArray("Negotiate , Digest , NTLM , Basic") << QByteArray("Negotiate") << QByteArray("Negotiate");
 #endif
     QTest::newRow("all-without-negotiate") << QByteArray("Digest , NTLM , Basic , NewAuth") << QByteArray("Digest") << QByteArray("Digest");

@@ -233,7 +233,7 @@ private:
 };
 
 
-#ifdef HAVE_LIBGSSAPI
+#if HAVE_LIBGSSAPI
 class KHttpNegotiateAuthentication : public KAbstractHttpAuthentication
 {
 public:

@@ -30,7 +30,6 @@
 
 #include "http.h"
 
-#include <config.h>
 #include <config-prefix.h>
 
 #include <fcntl.h>
