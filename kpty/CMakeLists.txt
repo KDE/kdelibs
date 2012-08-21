@@ -13,6 +13,7 @@ set(kpty_LIB_SRCS
 kde4_add_library(kpty ${LIBRARY_TYPE} ${kpty_LIB_SRCS})
 generate_export_header(kpty)
 
+include(ConfigureChecks.cmake)
 configure_file(config-pty.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-pty.h )
 
 target_link_libraries(kpty ${KDE4_KDECORE_LIBS} ${UTIL_LIBRARY} ${UTEMPTER_LIBRARY})
