@@ -21,8 +21,6 @@
 #ifndef KDELIBS_FTP_H
 #define KDELIBS_FTP_H
 
-#include <config.h>
-
 #include <sys/types.h>
 #include <sys/socket.h>
 
