@@ -346,10 +346,6 @@ kde4_add_ui_files(kio_LIB_SRCS
    kssl/certificateparty.ui
 )
 
-install(FILES kssl/ksslcertificatemanager.upd
-              kssl/ksslcertificatemanager.upd.sh
-        DESTINATION  ${DATA_INSTALL_DIR}/kconf_update)
-
 kde4_add_library(kio ${LIBRARY_TYPE} ${kio_LIB_SRCS})
 generate_export_header(kio)
 

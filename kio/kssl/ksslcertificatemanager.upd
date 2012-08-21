@@ -1,5 +1,0 @@
-# KConfigGroup cannot handle arbitrary binary data as group names.
-# As fixing this right would be quite hard, and the data is not very valuable,
-# we'll simply wipe the config file.
-Id=kde4.2
-Script=ksslcertificatemanager.upd.sh,sh
