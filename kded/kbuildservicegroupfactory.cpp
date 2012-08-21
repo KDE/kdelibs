@@ -22,7 +22,6 @@
 #include "ksycocaresourcelist.h"
 #include <kservicegroup_p.h>
 
-#include <kstandarddirs.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <assert.h>

@@ -179,6 +179,7 @@ void KServiceTest::runKBuildSycoca(bool noincremental)
     const QString kbuildsycoca = QStandardPaths::findExecutable(KBUILDSYCOCA_EXENAME);
     QVERIFY(!kbuildsycoca.isEmpty());
     QStringList args;
+    args << "--testmode";
     if (noincremental)
         args << "--noincremental";
     //proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output
@@ -205,7 +206,7 @@ void KServiceTest::cleanupTestCase()
     }
     QProcess proc;
     proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output
-    proc.start(QStandardPaths::findExecutable(KBUILDSYCOCA_EXENAME));
+    proc.start(QStandardPaths::findExecutable(KBUILDSYCOCA_EXENAME), QStringList() << "--testmode");
     proc.waitForFinished();
 }
 

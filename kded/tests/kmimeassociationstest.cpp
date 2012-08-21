@@ -104,6 +104,10 @@ class KMimeAssociationsTest : public QObject
 private Q_SLOTS:
     void initTestCase()
     {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+        QStandardPaths::enableTestMode(true);
+        m_localApps = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation) + QLatin1Char('/');
+#else
         QString kdehome = QDir::home().canonicalPath() + "/.kde-unit-test";
 
         setenv("KDEHOME", QFile::encodeName(kdehome), 1);
@@ -111,6 +115,7 @@ private Q_SLOTS:
 
         m_localApps = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation) + QLatin1Char('/');
         QVERIFY(m_localApps.startsWith(kdehome));
+#endif
 
         // Create factory on the heap and don't delete it.
         // It registers to KSycoca, which deletes it at end of program execution.
@@ -404,7 +409,7 @@ private:
         const QString kbuildsycoca = QStandardPaths::findExecutable(KBUILDSYCOCA_EXENAME);
         QVERIFY(!kbuildsycoca.isEmpty());
         proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output
-        proc.start(kbuildsycoca);
+        proc.start(kbuildsycoca, QStringList() << "--testmode");
         proc.waitForFinished();
         loop.exec();
     }

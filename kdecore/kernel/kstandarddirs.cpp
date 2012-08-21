@@ -1895,19 +1895,7 @@ void KStandardDirs::addKDEDefaults()
 #endif
     }
 
-    QString localXdgDir = readEnvPath("XDG_CONFIG_HOME");
-    if (!localXdgDir.isEmpty()) {
-        if (!localXdgDir.endsWith(QLatin1Char('/')))
-            localXdgDir += QLatin1Char('/');
-    } else {
-#ifdef Q_OS_MAC
-        localXdgDir = QDir::homePath() + QString::fromLatin1("/Library/Preferences/XDG/");
-#else
-        localXdgDir = QDir::homePath() + QString::fromLatin1("/.config/");
-#endif
-    }
-
-    localXdgDir = KShell::tildeExpand(localXdgDir);
+    QString localXdgDir = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
     addXdgConfigPrefix(localXdgDir);
 
     for (QStringList::ConstIterator it = xdgdirList.constBegin();
@@ -1947,18 +1935,7 @@ void KStandardDirs::addKDEDefaults()
 #endif
     }
 
-    localXdgDir = readEnvPath("XDG_DATA_HOME");
-    if (!localXdgDir.isEmpty())
-    {
-        if (localXdgDir[localXdgDir.length()-1] != QLatin1Char('/'))
-            localXdgDir += QLatin1Char('/');
-    }
-    else
-    {
-        localXdgDir = QDir::homePath() + QLatin1String("/.local/share/");
-    }
-
-    localXdgDir = KShell::tildeExpand(localXdgDir);
+    localXdgDir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
     addXdgDataPrefix(localXdgDir);
 
     for (QStringList::ConstIterator it = xdgdirList.constBegin();
