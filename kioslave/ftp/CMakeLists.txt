@@ -1,6 +1,9 @@
 
 project(kioslave-ftp)
 
+include(ConfigureChecks.cmake)
+configure_file(config-kioslave-ftp.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kioslave-ftp.h )
+
 include_directories( ${KDE4_KIO_INCLUDES} )
 
 

@@ -28,11 +28,12 @@
       RFC 2428 "FTP Extensions for IPv6 and NATs" (defines EPRT and EPSV)
 */
 
+#include <config-kioslave-ftp.h>
 
 #define  KIO_FTP_PRIVATE_INCLUDE
 #include "ftp.h"
 
-#ifdef HAVE_SYS_TIME_H
+#if HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
 
@@ -64,7 +65,7 @@
 #include <kde_file.h>
 #include <kconfiggroup.h>
 
-#ifdef HAVE_STRTOLL
+#if HAVE_STRTOLL
   #define charToLongLong(a) strtoll(a, 0, 10)
 #else
   #define charToLongLong(a) strtol(a, 0, 10)
