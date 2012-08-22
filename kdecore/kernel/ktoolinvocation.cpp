@@ -32,6 +32,7 @@
 #include <QCoreApplication>
 #include <QThread>
 #include <qstandardpaths.h>
+#include <kdefakes.h>
 
 #include <errno.h>
 
