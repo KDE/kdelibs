@@ -37,7 +37,7 @@ set(CMAKE_REQUIRED_DEFINITIONS ${_KDE4_PLATFORM_DEFINITIONS})
 check_include_files(stdio.h       HAVE_STDIO_H)                        # kdoctools 
 check_include_files(stdlib.h      HAVE_STDLIB_H)                       # kdecore, kdoctools
 check_include_files(string.h      HAVE_STRING_H)                       # kdecore, kioslave/file
-check_include_files(strings.h     HAVE_STRINGS_H)                      # various
+check_include_files(strings.h     HAVE_STRINGS_H)                      # kjs, kdecore, kde3support
 check_include_files(malloc.h      HAVE_MALLOC_H)                       # khtml
 check_include_files(sys/time.h    TIME_WITH_SYS_TIME)                  # kdecore, kioslave
 check_include_files(crt_externs.h HAVE_CRT_EXTERNS_H)                  # kinit, config.h
