@@ -99,7 +99,7 @@ void BackendsManager::init()
     if (!auth) {
         // Load the fake auth backend then
         auth = new FakeBackend;
-#ifndef KAUTH_COMPILING_FAKE_BACKEND
+#if !KAUTH_COMPILING_FAKE_BACKEND
         // Spit a fat warning
         qWarning() << "WARNING: KAuth was compiled with a working backend, but was unable to load it! Check your installation!";
 #endif
@@ -108,7 +108,7 @@ void BackendsManager::init()
     if (!helper) {
         // Load the fake helper backend then
         helper = new FakeHelperProxy;
-#ifndef KAUTH_COMPILING_FAKE_BACKEND
+#if !KAUTH_COMPILING_FAKE_BACKEND
         // Spit a fat warning
         qWarning() << "WARNING: KAuth was compiled with a working helper backend, but was unable to load it! "
                       "Check your installation!";
