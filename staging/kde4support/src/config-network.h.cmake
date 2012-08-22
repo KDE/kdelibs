@@ -9,9 +9,7 @@
 #define HAVE_STRUCT_SOCKADDR_IN6_SIN6_SCOPE_ID 1 /* Define to 1 if `sin6_scope_id' is member of `struct sockaddr_in6'. */
 
 /* functions */
-/* cmakedefine   HAVE_FREEADDRINFO 1 */
 #cmakedefine01 HAVE_GETADDRINFO
-/* cmakedefine   HAVE_GETHOSTBYNAME */
 #cmakedefine01 HAVE_GETHOSTBYNAME2
 #cmakedefine01 HAVE_GETHOSTBYNAME2_R
 #cmakedefine01 HAVE_GETHOSTBYNAME_R
@@ -29,7 +27,6 @@
 
 /* header files */
 #cmakedefine01 HAVE_NET_IF_H
-/* cmakedefine HAVE_IDNA_H */
 #cmakedefine01 HAVE_SYS_FILIO_H
 
 /* structs */
