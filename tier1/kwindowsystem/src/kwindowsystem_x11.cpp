@@ -39,7 +39,7 @@
 
 #include <config-kwindowsystem.h>
 
-#ifdef HAVE_XFIXES
+#if HAVE_XFIXES
 #include <X11/extensions/Xfixes.h>
 #endif
 
@@ -130,7 +130,7 @@ KWindowSystemPrivate::KWindowSystemPrivate(int _what)
 #endif
     (void ) qApp->desktop(); //trigger desktop widget creation to select root window events
 
-#ifdef HAVE_XFIXES
+#if HAVE_XFIXES
     int errorBase;
     if ((haveXfixes = XFixesQueryExtension(QX11Info::display(), &xfixesEventBase, &errorBase))) {
         create_atoms();
@@ -155,7 +155,7 @@ bool KWindowSystemPrivate::x11Event( XEvent * ev )
 {
     KWindowSystem* s_q = KWindowSystem::self();
 
-#ifdef HAVE_XFIXES
+#if HAVE_XFIXES
     if ( ev->type == xfixesEventBase + XFixesSelectionNotify && ev->xany.window == winId() ) {
         XFixesSelectionNotifyEvent *event = reinterpret_cast<XFixesSelectionNotifyEvent*>(ev);
         bool haveOwner = event->owner != None;

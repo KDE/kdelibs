@@ -28,7 +28,7 @@
 #include <qbitmap.h>
 #include <qpixmap.h>
 
-#ifdef HAVE_XRENDER
+#if HAVE_XRENDER
 #include <X11/extensions/Xrender.h>
 #endif
 
@@ -53,7 +53,7 @@ QPixmap createPixmapFromHandle( WId pixmap, WId pixmap_mask )
         pm.detach();
 #warning delete this whole code and find another solution (QPixmap::x11PictureHandle() does not exist anymore)
 #if 0
-#ifdef HAVE_XRENDER
+#if HAVE_XRENDER
         if( int( depth ) != pm.depth() && depth != 1 && pm.x11PictureHandle() != None )
         {
             XRenderPictFormat tmpl;

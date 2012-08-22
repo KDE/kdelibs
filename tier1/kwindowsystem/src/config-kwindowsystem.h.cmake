@@ -4,8 +4,8 @@
 #cmakedefine01 HAVE_X11
 
 /* Define to 1 if you have the Xfixes library */
-#cmakedefine HAVE_XFIXES 1
+#cmakedefine01 HAVE_XFIXES
 
 /* Define to 1 if you have the Xrender library */
-#cmakedefine HAVE_XRENDER 1
+#cmakedefine01 HAVE_XRENDER
 

@@ -182,8 +182,8 @@ void KIdleTimePrivate::loadSystem()
 
     // Priority order
 
-#ifdef HAVE_XSYNC
-#ifdef HAVE_XSCREENSAVER
+#if HAVE_XSYNC
+#if HAVE_XSCREENSAVER
     if (XSyncBasedPoller::instance()->isAvailable()) {
         poller = XSyncBasedPoller::instance();
     } else {
@@ -193,7 +193,7 @@ void KIdleTimePrivate::loadSystem()
     poller = XSyncBasedPoller::instance();
 #endif
 #else
-#ifdef HAVE_XSCREENSAVER
+#if HAVE_XSCREENSAVER
     poller = new XScreensaverBasedPoller();
 #endif
 #endif
@@ -215,11 +215,11 @@ void KIdleTimePrivate::unloadCurrentSystem()
 {
     if (!poller.isNull()) {
         poller.data()->unloadPoller();
-#ifdef HAVE_XSYNC
+#if HAVE_XSYNC
         if (qobject_cast<XSyncBasedPoller*>(poller.data()) == 0) {
 #endif
             poller.data()->deleteLater();
-#ifdef HAVE_XSYNC
+#if HAVE_XSYNC
         }
 #endif
     }
