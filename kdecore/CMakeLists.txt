@@ -1,10 +1,5 @@
 project(kdecore)
 
-include(CheckIncludeFile)
-include(CheckIncludeFiles)
-include(CheckSymbolExists)
-include(CheckStructMember)
-
 # Generate config-kstandarddirs.h
 set( KDELIBSUFF ${LIB_SUFFIX} )
 
