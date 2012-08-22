@@ -251,7 +251,7 @@ void Solid::Backends::Fstab::FstabHandling::_k_updateMtabMountPointsCache()
 
 #if HAVE_GETMNTINFO
 
-#ifdef GETMNTINFO_USES_STATVFS
+#if GETMNTINFO_USES_STATVFS
     struct statvfs *mounted;
 #else
     struct statfs *mounted;

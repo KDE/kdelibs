@@ -291,7 +291,7 @@ KMountPoint::List KMountPoint::currentMountPoints(DetailsNeededFlags infoNeeded)
 
 #if HAVE_GETMNTINFO
 
-#ifdef GETMNTINFO_USES_STATVFS
+#if GETMNTINFO_USES_STATVFS
     struct statvfs *mounted;
 #else
     struct statfs *mounted;

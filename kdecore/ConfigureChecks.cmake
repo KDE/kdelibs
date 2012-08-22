@@ -58,3 +58,14 @@ else()
 endif()
 
 check_struct_member(dirent d_type dirent.h HAVE_DIRENT_D_TYPE)
+
+check_cxx_source_compiles("
+  #include <sys/types.h>
+  #include <sys/statvfs.h>
+  int main(){
+  	struct statvfs *mntbufp;
+	int flags;
+	return getmntinfo(&mntbufp, flags);
+	}
+" GETMNTINFO_USES_STATVFS )
+
