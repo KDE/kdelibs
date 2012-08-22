@@ -67,7 +67,7 @@ public:
 protected:
     virtual QString iconNameForAction(QAction *action)
     {
-        KDE::icon icon(action->icon());
+	QIcon icon(action->icon());
 #if QT_VERSION >= 0x040701
         // QIcon::name() is in the 4.7 git branch, but it is not in 4.7 TP.
         // If you get a build error here, you need to update your pre-release
