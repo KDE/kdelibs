@@ -53,7 +53,7 @@ static QRgb qt_colorref2qrgb(COLORREF col)
     return qRgb(GetRValue(col),GetGValue(col),GetBValue(col));
 }
 #endif
-#include <config.h>
+#include <config-kwidgets.h>
 #if HAVE_X11
 #include <X11/Xlib.h>
 #include <xcb/xcb.h>

@@ -1,4 +1,11 @@
 
+find_package(X11)
+if(X11_FOUND)
+	macro_bool_to_01(X11_FOUND HAVE_X11)
+endif(X11_FOUND)
+
+configure_file(config-kwidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kwidgets.h )
+
 set(kwidgets_LIB_SRCS
   utils/kglobalsettings.cpp
   icons/kiconeffect.cpp
