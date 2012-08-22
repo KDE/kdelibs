@@ -74,9 +74,7 @@ if(X11_FOUND)
 	macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)
 endif(X11_FOUND)
 
-check_include_files(sys/stat.h    HAVE_SYS_STAT_H)
-check_function_exists(backtrace        HAVE_BACKTRACE)
-check_struct_member("struct sockaddr" sa_len "sys/types.h;sys/socket.h" HAVE_STRUCT_SOCKADDR_SA_LEN)
+include(ConfigureChecks.cmake)
 
 configure_file(kio/config-kio.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-kio.h )
 
@@ -85,7 +83,6 @@ if (NOT KIO_NO_STRIGI)
 endif (NOT KIO_NO_STRIGI)
 
 configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
-set( KDELIBSUFF ${LIB_SUFFIX} )
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 
 add_subdirectory( kssl/kssl )
