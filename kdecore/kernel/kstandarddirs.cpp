@@ -38,14 +38,14 @@
 
 #include <config-prefix.h>
 #include <config-kstandarddirs.h>
-
+#include <kdefakes.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <errno.h>
-#ifdef HAVE_SYS_STAT_H
+#if HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
-#ifdef HAVE_UNISTD_H
+#if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 #include <sys/param.h>
@@ -773,7 +773,7 @@ static void lookupDirectory(const QString& path, const QString &relPart,
             bool isReg;
 
             QString pathfn = path + fn;
-#ifdef HAVE_DIRENT_D_TYPE
+#if HAVE_DIRENT_D_TYPE
             isDir = ep->d_type == DT_DIR;
             isReg = ep->d_type == DT_REG;
 
@@ -907,7 +907,7 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 
             bool isDir;
 
-#ifdef HAVE_DIRENT_D_TYPE
+#if HAVE_DIRENT_D_TYPE
             isDir = ep->d_type == DT_DIR;
 
             if (ep->d_type == DT_UNKNOWN || ep->d_type == DT_LNK)

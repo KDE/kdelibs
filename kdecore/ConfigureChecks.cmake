@@ -57,3 +57,4 @@ else()
 	check_prototype_exists(strcasestr string.h          HAVE_STRCASESTR_PROTO)
 endif()
 
+check_struct_member(dirent d_type dirent.h HAVE_DIRENT_D_TYPE)
