@@ -225,7 +225,7 @@ public:
   void save();
   void defaults();
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
   bool loadCiphers();
 #endif
 

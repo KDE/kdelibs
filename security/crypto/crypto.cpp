@@ -70,7 +70,7 @@
 #include <kurlrequester.h>
 
 #include <ksslconfig.h>
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 #define crypt _openssl_crypt
 #include <openssl/ssl.h>
 #include <openssl/x509.h>
@@ -266,7 +266,7 @@ QString whatstr;
   pcerts = new KConfig("ksslcertificates", KConfig::SimpleConfig);
   authcfg = new KConfig("ksslauthmap", KConfig::SimpleConfig);
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
   SSLv3Box = new QTreeWidget(tabSSL);
   SSLv3Box->setHeaderLabel(i18n("SSL Ciphers to Use"));
   whatstr = i18n("Select the ciphers you wish to enable when using the"
@@ -345,7 +345,7 @@ QString whatstr;
   // SECOND TAB
   ///////////////////////////////////////////////////////////////////////////
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
   tabOSSL = new QFrame(this);
   QBoxLayout *vbox = new QVBoxLayout(tabOSSL);
 
@@ -407,7 +407,7 @@ QString whatstr;
 
   QVBoxLayout *yourLay= new QVBoxLayout(tabYourSSLCert);
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
   QHBoxLayout *treeLay=new QHBoxLayout();
   yourLay->addLayout(treeLay,50);
 
@@ -501,7 +501,7 @@ QString whatstr;
   ///////////////////////////////////////////////////////////////////////////
   tabAuth = new QFrame(this);
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
   grid = new QGridLayout(tabAuth);
 
 //  grid->addWidget(new QLabel(i18n("Default Authentication Certificate"), tabAuth), 0, 0, 0, 3 );
@@ -587,7 +587,7 @@ QString whatstr;
   tabOtherSSLCert = new QFrame(this);
 
   QVBoxLayout* mainOther=new QVBoxLayout(tabOtherSSLCert);
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 
   QHBoxLayout* hb=new QHBoxLayout();
   mainOther->addLayout(hb);
@@ -723,7 +723,7 @@ QString whatstr;
   ///////////////////////////////////////////////////////////////////////////
   tabSSLCA = new QFrame(this);
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
   grid = new QGridLayout(tabSSLCA);
 
   caList = new QTreeWidget(tabSSLCA);
@@ -789,7 +789,7 @@ QString whatstr;
   ///////////////////////////////////////////////////////////////////////////
   tabSSLCOpts = new QFrame(this);
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
   grid = new QGridLayout(tabSSLCOpts);
   mWarnSelfSigned = new QCheckBox(i18n("Warn on &self-signed certificates or unknown CA's"), tabSSLCOpts);
   connect(mWarnSelfSigned, SIGNAL(clicked()), SLOT(configChanged()));
@@ -837,7 +837,7 @@ QString whatstr;
   // Add the tabs and startup
   ///////////////////////////////////////////////////////////////////////////
   tabs->addTab(tabSSL, i18n("SSL"));
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
   tabs->addTab(tabOSSL, i18n("OpenSSL"));
 #endif
   tabs->addTab(tabYourSSLCert, i18n("Your Certificates"));
@@ -875,7 +875,7 @@ void KCryptoConfig::configChanged()
 void KCryptoConfig::load()
 {
   KConfigGroup cg(config, "");
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
   otherCertDelList.clear();
   yourCertDelList.clear();
   authDelList.clear();
@@ -906,7 +906,7 @@ void KCryptoConfig::load()
   mEGDPath->setUrl(KUrl(cgEGD.readPathEntry("EGDPath", QString())));
 
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
   KConfigGroup cgSSL( config, "OpenSSL");
   oPath->setUrl(cgSSL.readPathEntry("Path", QString()));
 #endif
@@ -1015,7 +1015,7 @@ void KCryptoConfig::load()
 void KCryptoConfig::save()
 {
   KConfigGroup cg(config, "");
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
   KConfigGroup cgWarning(config, "Warnings");
   cgWarning.writeEntry("OnEnter", mWarnOnEnter->isChecked());
   cgWarning.writeEntry("OnLeave", mWarnOnLeave->isChecked());
@@ -1035,7 +1035,7 @@ void KCryptoConfig::save()
   cg.writeEntry("WarnRevoked", mWarnRevoked->isChecked());
 #endif
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
   KConfigGroup cgSSL(config,"OpenSSL");
   cgSSL.writePathEntry("Path", oPath->url().path());
 #endif
@@ -1196,7 +1196,7 @@ void KCryptoConfig::defaults()
   mWarnRevoked->setChecked(true);
 #endif
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
     // We don't want to make
     // ciphers < 56 bit a default selection.  This is very unsafe and
     // I have already witnessed OpenSSL negotiate a 0 bit connection
@@ -1240,7 +1240,7 @@ void KCryptoConfig::slotSelectCipher(int id) {
 }
 
 void KCryptoConfig::cwUS() {
-  #ifdef KSSL_HAVE_SSL
+  #if KSSL_HAVE_SSL
   QTreeWidgetItemIterator it( SSLv3Box );
   while (*it) {
       CipherItem *item = static_cast<CipherItem *>(*it);
@@ -1253,7 +1253,7 @@ void KCryptoConfig::cwUS() {
 
 
 void KCryptoConfig::cwExp() {
-  #ifdef KSSL_HAVE_SSL
+  #if KSSL_HAVE_SSL
   QTreeWidgetItemIterator it( SSLv3Box );
   while (*it) {
       CipherItem *item = static_cast<CipherItem *>(*it);
@@ -1266,7 +1266,7 @@ void KCryptoConfig::cwExp() {
 
 
 void KCryptoConfig::cwAll() {
-  #ifdef KSSL_HAVE_SSL
+  #if KSSL_HAVE_SSL
   QTreeWidgetItemIterator it( SSLv3Box );
   while (*it) {
       (*it)->setCheckState( 0, Qt::Checked );
@@ -1515,7 +1515,7 @@ void KCryptoConfig::slotYourImport() {
    if (certFile.isEmpty())
       return;
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 KSSLPKCS12 *cert = NULL;
 
 TryImportPassAgain:
@@ -1819,7 +1819,7 @@ void KCryptoConfig::slotCAImport() {
     if (certFile.isEmpty())
         return;
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 #define sk_free KOSSL::self()->sk_free
 #define sk_num KOSSL::self()->sk_num
 #define sk_value KOSSL::self()->sk_value
@@ -2295,7 +2295,7 @@ void KCryptoConfig::slotGeneratePersonal() {
 }
 
 
-#ifdef KSSL_HAVE_SSL
+#if KSSL_HAVE_SSL
 // This gets all the available ciphers from OpenSSL
 bool KCryptoConfig::loadCiphers() {
 unsigned int i;
