@@ -1,2 +1,2 @@
-#cmakedefine KDECLARATIVE_NO_KIO
+#cmakedefine01 KDECLARATIVE_NO_KIO
 
