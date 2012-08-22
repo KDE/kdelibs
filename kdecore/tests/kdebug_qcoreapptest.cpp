@@ -27,6 +27,7 @@
 #include <QtCore/QtGlobal>
 #include <QtCore/QFile>
 #include <QtCore/QDir>
+#include <qstandardpaths.h>
 #include <kcomponentdata.h>
 #include <klocalizedstring.h>
 #include <kconfiggroup.h>
@@ -40,7 +41,11 @@ int main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
 
-    setenv("KDEHOME", QFile::encodeName( QDir::homePath() + QLatin1String("/.kde-unit-test") ), 1);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QStandardPaths::enableTestMode(true);
+#else
+    setenv("XDG_CONFIG_HOME", QFile::encodeName(QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/config")), 1);
+#endif
     {
         KConfig config("kdebugrc");
         config.group(QString()).writeEntry("DisableAll", false); // in case of a global kdebugrc with DisableAll=true

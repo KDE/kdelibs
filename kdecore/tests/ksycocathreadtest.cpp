@@ -192,6 +192,7 @@ static void runKBuildSycoca()
     const QString kbuildsycoca = QStandardPaths::findExecutable(KBUILDSYCOCA_EXENAME);
     QVERIFY(!kbuildsycoca.isEmpty());
     QStringList args;
+    args << "--testmode";
     proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output
     proc.start(kbuildsycoca, args);
     kDebug() << "waiting for signal";
@@ -292,9 +293,13 @@ void KSycocaThreadTest::createFakeService()
 
 int main(int argc, char** argv)
 {
-    setenv("KDEHOME", QFile::encodeName(QDir::homePath() + QString::fromLatin1("/.kde-unit-test")), 1);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QStandardPaths::enableTestMode(true);
+#else
+    setenv("XDG_CONFIG_HOME", QFile::encodeName(QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/config")), 1);
     setenv("XDG_DATA_HOME", QFile::encodeName(QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/local")), 1);
     setenv("XDG_CACHE_HOME", QFile::encodeName(QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/cache")), 1);
+#endif
     QCoreApplication app(argc, argv);
     KComponentData cData("ksycocathreadtest");
     KSycocaThreadTest mainObj;

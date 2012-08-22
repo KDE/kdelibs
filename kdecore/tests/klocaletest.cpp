@@ -38,6 +38,12 @@
 void
 KLocaleTest::initTestCase()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QStandardPaths::enableTestMode(true);
+#else
+    setenv("XDG_CONFIG_HOME", QFile::encodeName(QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/config")), 1);
+#endif
+
     KGlobal::locale()->setThousandsSeparator(QLatin1String(","));
 }
 
@@ -683,7 +689,7 @@ KLocaleTest::formatDate()
 	QDate date;
 
         // Ensure that user configuration isn't messing with us;
-        // shouldn't happen though, since qtest_kde.h sets KDEHOME.
+        // shouldn't happen though, due to QStandardPaths::enableTestMode(true)
         QCOMPARE(locale.dateFormat(), QString("%A %d %B %Y"));
 
 	date.setDate(2002, 5, 3);
@@ -776,7 +782,7 @@ KLocaleTest::formatDateTime()
 	QDateTime qdt;
 
         // Ensure that user configuration isn't messing with us;
-        // shouldn't happen though, since qtest_kde.h sets KDEHOME.
+        // shouldn't happen though, due to QStandardPaths::enableTestMode(true)
         QCOMPARE(locale.dateFormat(), QString("%A %d %B %Y"));
 
 	qdt = QDateTime(QDate(2002, 5, 3), QTime(10, 20, 30));

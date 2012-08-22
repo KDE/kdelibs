@@ -288,7 +288,7 @@ public:
      *  static int debugArea() { static int s_area = KDebug::registerArea("areaName"); return s_area; }
      * </code>
      * Please do not use a file-static int, it would (indirectly) create KGlobal too early,
-     * create KConfig instances too early (breaking unittests which set KDEHOME), etc.
+     * create KConfig instances too early (breaking unittests which change QStandardPaths dirs), etc.
      * By using a function as shown above, you make it all happen on-demand, rather than upfront.
      *
      * If all uses of the debug area are restricted to a single .cpp file, do the same

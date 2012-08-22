@@ -17,7 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "qtest_kde.h"
+#include "qtest.h"
 #include <ktimezonewidget.h>
 #include <kconfiggroup.h>
 #include <QtDBus/QtDBus>
@@ -105,32 +105,12 @@ private:
     TimeZoneTestData mTestData;
 };
 
-// Tricky problem. The kded module writes out a config file, but unit tests have
-// a different KDEHOME so they don't see those config files.
+// Note: no QStandardPaths::enableTestMode(true) here.
+// The kded module writes out a config file, but unit tests have
+// a different configuration directory so they don't see those config files.
 // Ideally unit tests should talk to their own kded instance,
 // but that means starting a new DBus session bus for all (each?) unit tests, somehow...
-//QTEST_KDEMAIN( KTimeZoneWidgetTest, GUI )
 
-int main(int argc, char *argv[])
-{
-    setenv("LC_ALL", "C", 1);
-    // The difference with QTEST_KDEMAIN is here: not setting $KDEHOME
-    unsetenv("KDE_COLOR_DEBUG");
-    QApplication app( argc, argv );
-    app.setApplicationName( "ktimezonewidgettest" );
-
-    KTimeZoneWidgetTest tc;
-#if 0
-    tc.init();
-    KTimeZoneWidget tzw;
-    tzw.setItemsCheckable(true);
-    tzw.setSelectionMode(KTimeZoneWidget::MultiSelection);
-    tzw.setSelected("Europe/Paris", true);
-    tzw.show();
-    return app.exec();
-#else
-    return QTest::qExec( &tc, argc, argv );
-#endif
-}
+QTEST_MAIN(KTimeZoneWidgetTest)
 
 #include "ktimezonewidget_unittest.moc"

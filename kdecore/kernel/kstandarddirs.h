@@ -46,7 +46,9 @@ class KConfig;
  *
  * There are several toplevel prefixes under which files can be located.
  * One of them is the kdelibs install location, one is the application
- * install location, and one is <tt>$KDEHOME</tt>.
+ * install location, and one used to be <tt>$KDEHOME</tt>, no longer applicable
+ * in KDE Frameworks 5 (splitted into XDG_CONFIG_HOME and XDG_DATA_HOME, mostly).
+ *
  * Under these toplevel prefixes there are several well-defined suffixes
  * where specific resource types can be found.
  * For example, for the resource type @c "html" the suffixes could be

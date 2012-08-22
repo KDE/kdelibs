@@ -108,16 +108,6 @@ if (NOT WIN32)
 
   install(TARGETS kdeinit5_shutdown ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
-  ########### lnusertemp ###############
-
-  set(lnusertemp_SRCS lnusertemp.c )
-
-  kde4_add_executable(lnusertemp NOGUI ${lnusertemp_SRCS})
-
-  target_link_libraries(lnusertemp kdefakes)
-
-  install(TARGETS lnusertemp DESTINATION ${LIBEXEC_INSTALL_DIR} )
-
 endif (NOT WIN32)
 
 

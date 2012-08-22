@@ -146,7 +146,6 @@ int main(int argc, char *argv[]) \
 { \
     setenv("LC_ALL", "C", 1); \
     assert( !QDir::homePath().isEmpty() ); \
-    setenv("KDEHOME", QFile::encodeName( QDir::homePath() + QLatin1String("/.kde-unit-test") ), 1); \
     setenv("XDG_DATA_HOME", QFile::encodeName( QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/local") ), 1); \
     setenv("XDG_CONFIG_HOME", QFile::encodeName( QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/config") ), 1); \
     setenv("KDE_SKIP_KDERC", "1", 1); \

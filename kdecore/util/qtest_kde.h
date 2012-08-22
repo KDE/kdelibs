@@ -73,7 +73,6 @@ int main(int argc, char *argv[]) \
 { \
     setenv("LC_ALL", "C", 1); \
     assert( !QDir::homePath().isEmpty() ); \
-    setenv("KDEHOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test") ).constData(), 1); \
     setenv("XDG_DATA_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/local") ).constData(), 1); \
     setenv("XDG_CONFIG_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/config") ).constData(), 1); \
     setenv("XDG_CACHE_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/cache") ).constData(), 1); \
@@ -125,7 +124,6 @@ int main(int argc, char *argv[]) \
 { \
     setenv("LC_ALL", "C", 1); \
     assert( !QDir::homePath().isEmpty() ); \
-    setenv("KDEHOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test" )).constData(), 1); \
     setenv("XDG_DATA_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/local")).constData(), 1); \
     setenv("XDG_CONFIG_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/config") ).constData(), 1); \
     setenv("XDG_CACHE_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/cache") ).constData(), 1); \

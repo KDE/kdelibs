@@ -224,7 +224,7 @@ void ScriptingPlugin::save()
         "\n"
         "Collection name attribute represents the name of the menu, e.g., to use menu \"File\" use \"file\" or \"Help\" use \"help\". You can add new menus."
         "\n\n\n"
-        "If you type a relative script file beware the this script is located in  $KDEHOME/share/apps/applicationname/"
+        "If you type a relative script file beware that this script is located in $XDG_DATA_HOME/applicationname/"
         "\n\n"
         "The following example adds an action with the text \"Export...\" into the \"File\" menu"
         "\n\n"

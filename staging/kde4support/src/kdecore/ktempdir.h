@@ -54,8 +54,7 @@ public:
     * Creates a temporary directory with the name:
     *  \p \<directoryPrefix\>\<six letters\>
     *
-    * The default \p directoryPrefix is "$KDEHOME/tmp-$HOST/appname", i.e.
-    * as returned by KStandardDirs::locateLocal("tmp", QCoreApplication::instance()->applicationName())
+    * The default \p directoryPrefix is "/tmp/appname"
     *
     * @param directoryPrefix the prefix of the file name, or
     *        QString() for the default value

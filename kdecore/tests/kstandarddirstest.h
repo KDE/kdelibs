@@ -47,7 +47,8 @@ private Q_SLOTS:
     void testThreads();
 
 private:
-    QString m_kdehome;
+    QString m_configHome;
+    QString m_dataHome;
 };
 
 #endif

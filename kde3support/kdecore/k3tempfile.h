@@ -60,7 +60,7 @@ public:
     * Creates a temporary file with the name:
     *  \<filePrefix>\<six letters>\<fileExtension>
     *
-    * The default @p filePrefix is "$KDEHOME/tmp-$HOST/appname/"
+    * The default @p filePrefix is "/tmp/appname/"
     * The default @p fileExtension is ".tmp"
     * @param filePrefix the prefix of the file name, or QString()
     *        for the default value

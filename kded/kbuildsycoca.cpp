@@ -650,8 +650,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
 
    if (bGlobalDatabase)
    {
-     setenv("KDEHOME", "-", 1);
-     setenv("KDEROOTHOME", "-", 1);
+     setenv("XDG_DATA_HOME", "-", 1);
    }
 
    QCoreApplication k(argc, argv);

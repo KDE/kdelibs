@@ -101,7 +101,7 @@ public:
 protected Q_SLOTS:
 
     /**
-     * This slot will open/create a scriptactions.rc file at $KDEHOME/share/apps/application/scripts/
+     * This slot will open/create a scriptactions.rc file in XDG_DATA_HOME/application/scripts/
      * which will overide other kross rc files. This allows a user to extend existing menus with new actions.
      */
     virtual void slotEditScriptActions();

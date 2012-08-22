@@ -598,7 +598,8 @@ int main(int argc, char *argv[])
 
     QString kh("/var/tmp/%1_non_existant");
     kh = kh.arg( pw->pw_name );
-    setenv( "KDEHOME", kh.toLatin1(), 1 );
+    setenv( "XDG_CONFIG_HOME", kh.toLatin1(), 1 );
+    setenv( "XDG_DATA_HOME", kh.toLatin1(), 1 );
     setenv( "LC_ALL", "C", 1 );
     setenv( "LANG", "C", 1 );
 

@@ -37,6 +37,12 @@ void KDebugTest::initTestCase()
     // The source files (kdebugrc and kdebug.areas) are in the "global" config dir:
     qputenv("XDG_CONFIG_DIRS", QByteArray(KDESRCDIR) + "/..");
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QStandardPaths::enableTestMode(true);
+#else
+    setenv("XDG_CONFIG_HOME", QFile::encodeName(QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/config")), 1);
+#endif
+
     QString kdebugrc = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + "kdebugrc";
     if (!kdebugrc.isEmpty())
         QFile::remove(kdebugrc);

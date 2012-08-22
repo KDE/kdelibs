@@ -19,13 +19,15 @@
 #include "kstandarddirstest.h"
 #include "qstandardpaths.h"
 
-#include "qtest_kde.h"
+#include "qtest.h"
+#include "kde_qt5_compat.h"
 
-QTEST_KDEMAIN_CORE( KStandarddirsTest )
+QTEST_MAIN(KStandarddirsTest)
 
 #include <config-kstandarddirs.h>
 #include <kdebug.h>
 #include <kstandarddirs.h>
+#include <kcomponentdata.h>
 #include <kconfig.h>
 #include <kglobal.h>
 #include <qtemporarydir.h>
@@ -44,27 +46,36 @@ QTEST_KDEMAIN_CORE( KStandarddirsTest )
 
 void KStandarddirsTest::initTestCase()
 {
-    m_kdehome = QDir::home().canonicalPath() + "/.kde-unit-test";
-    // as set by qtest_kde.h
-    QCOMPARE(KGlobal::dirs()->localxdgconfdir(), QString(m_kdehome + "/xdg/config/"));
+    m_configHome = QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/config");
+    setenv("XDG_CONFIG_HOME", QFile::encodeName(m_configHome), 1);
+
+    m_dataHome = QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/local");
+    setenv("XDG_DATA_HOME", QFile::encodeName(m_dataHome), 1);
+
+    // Create a main component data so that testAppData doesn't suddenly change the main component
+    // data.
+    KComponentData mainData("kstandarddirstest");
+
+    // Must initialize KStandardDirs only after all the setenv() calls.
+    QCOMPARE(KGlobal::dirs()->localxdgconfdir(), QString(m_configHome + '/'));
 }
 
 void KStandarddirsTest::testSaveLocation()
 {
     const QString saveLocConfig = KGlobal::dirs()->saveLocation("config");
-    QCOMPARE_PATHS(saveLocConfig, m_kdehome + "/xdg/config/");
+    QCOMPARE_PATHS(saveLocConfig, KGlobal::dirs()->localxdgconfdir());
     const QString saveLocXdgConfig = KGlobal::dirs()->saveLocation("xdgconf");
     QCOMPARE_PATHS(saveLocConfig, saveLocXdgConfig); // same result
 
     const QString saveLocAppData = KGlobal::dirs()->saveLocation("appdata");
-    QCOMPARE_PATHS(saveLocAppData, m_kdehome + "/xdg/local/qttest/");
+    QCOMPARE_PATHS(saveLocAppData, m_dataHome + "/kstandarddirstest/");
 }
 
 void KStandarddirsTest::testLocateLocal()
 {
     const QString configLocal = KStandardDirs::locateLocal( "config", "ksomethingrc" );
     // KStandardDirs resolves symlinks, so we must compare with canonicalPath()
-    QCOMPARE_PATHS( configLocal, m_kdehome + "/xdg/config/ksomethingrc" );
+    QCOMPARE_PATHS( configLocal, m_configHome + "/ksomethingrc" );
 }
 
 void KStandarddirsTest::testResourceDirs()
@@ -87,15 +98,15 @@ void KStandarddirsTest::testAppData()
     // In addition to testSaveLocation(), we want to also check other KComponentDatas
     KComponentData cData("foo");
     const QString fooAppData = cData.dirs()->saveLocation( "appdata" );
-    QCOMPARE_PATHS( fooAppData, m_kdehome + "/xdg/local/foo/" );
+    QCOMPARE_PATHS( fooAppData, m_dataHome + "/foo/" );
 }
 
 void KStandarddirsTest::testChangeSaveLocation()
 {
     KComponentData cData("changeSave");
-    QCOMPARE_PATHS(cData.dirs()->saveLocation("config"), m_kdehome + "/xdg/config/");
+    QCOMPARE_PATHS(cData.dirs()->saveLocation("config"), m_configHome + "/");
     // Can we change the save location?
-    const QString newSaveLoc = m_kdehome + "/newconfigdir/";
+    const QString newSaveLoc = m_configHome + "/newconfigdir/";
     //cData.dirs()->addResourceDir("config", newSaveLoc); // can't be done, absolute paths have less priority than relative paths
     cData.dirs()->addResourceType("config", 0, "newconfigdir");
     QCOMPARE_PATHS(KStandardDirs::realPath(cData.dirs()->saveLocation("config")), newSaveLoc);
@@ -213,7 +224,7 @@ void KStandarddirsTest::testFindAllResources()
 
 void KStandarddirsTest::testFindAllResourcesNewDir()
 {
-    const QString dir = m_kdehome + "/xdg/local/cmake/modules";
+    const QString dir = m_dataHome + "/cmake/modules";
     const QString fileName = dir + "/unittest.testfile";
     QFile::remove(fileName);
     const QStringList origFiles = KGlobal::dirs()->findAllResources("data", "cmake/modules/");
@@ -237,7 +248,7 @@ void KStandarddirsTest::testFindDirs()
         QSKIP_PORTING( "kdelibs not installed", SkipAll );
 
     const QString t = KStandardDirs::locateLocal("data", "kconf_update/" );
-    QCOMPARE(t, QString(m_kdehome + "/xdg/local/kconf_update/"));
+    QCOMPARE(t, QString(m_dataHome + "/kconf_update/"));
     const QStringList dirs = KGlobal::dirs()->findDirs( "data", "kconf_update" );
     QVERIFY( !dirs.isEmpty() );
     QVERIFY2(dirs.count() >= 2, qPrintable(dirs.join(","))); // at least local and global
@@ -271,9 +282,9 @@ void KStandarddirsTest::testFindExe()
 
 #ifdef Q_OS_UNIX
     // findExe with a result in libexec
-    const QString lnusertemp = KGlobal::dirs()->findExe( "lnusertemp" );
-    QVERIFY( !lnusertemp.isEmpty() );
-    QVERIFY( lnusertemp.endsWith( "lib" KDELIBSUFF "/kde5/libexec/lnusertemp" EXT, PATH_SENSITIVITY ) );
+    const QString kioslave = KGlobal::dirs()->findExe( "kioslave" );
+    QVERIFY( !kioslave.isEmpty() );
+    QVERIFY( kioslave.endsWith( "lib" KDELIBSUFF "/kde5/libexec/kioslave" EXT, PATH_SENSITIVITY ) );
 #endif
 
 #ifndef Q_OS_MAC // kdeinit5 is a bundle on Mac, so the below doesn't work
@@ -291,8 +302,7 @@ void KStandarddirsTest::testFindExe()
 #endif
 
 #ifdef Q_OS_UNIX
-    QCOMPARE_PATHS( KGlobal::dirs()->realFilePath(lnusertemp),
-              KGlobal::dirs()->locate( "exe", "lnusertemp" ) );
+    QCOMPARE_PATHS(KGlobal::dirs()->realFilePath(kioslave), KGlobal::dirs()->locate("exe", "kioslave"));
 
     // findExe with relative path
     const QString pwd = QDir::currentPath();
@@ -307,11 +317,13 @@ void KStandarddirsTest::testFindExe()
     QDir::setCurrent(pwd);
 #endif
 
+#if 0 // Broken test, findExe doesn't look in kdehome, but in kdehome/bin (in kde4) and in $PATH.
 #ifdef Q_OS_UNIX
     QFile home( m_kdehome );
     const QString target = m_kdehome + "/linktodir";
     home.link( target );
     QVERIFY( KGlobal::dirs()->findExe( target ).isEmpty() );
+#endif
 #endif
 
 #ifdef Q_OS_UNIX
@@ -406,27 +418,31 @@ void KStandarddirsTest::testSetXdgDataDirs()
     }
     QVERIFY(dirs.contains(kdeDataApps, PATH_SENSITIVITY));
 
-    // When setting XDG_DATA_DIR this should still be true
-    const QString localApps = m_kdehome + "/share/applications/";
+    // When setting XDG_DATA_DIRS this should still be true
+    const QString localApps = m_dataHome + "/applications/";
     QVERIFY(KStandardDirs::makeDir(localApps));
-    ::setenv("XDG_DATA_DIRS", QFile::encodeName(m_kdehome + "/share"), 1 );
+    const QString customDataDir = QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/global");
+    ::setenv("XDG_DATA_DIRS", QFile::encodeName(customDataDir), 1 );
+    QVERIFY(QDir(customDataDir).mkpath("applications"));
     KStandardDirs newStdDirs;
     const QStringList newDirs = newStdDirs.resourceDirs("xdgdata-apps");
+    //qDebug() << newDirs;
     QVERIFY(newDirs.contains(kdeDataApps, PATH_SENSITIVITY));
     QVERIFY(newDirs.contains(localApps, PATH_SENSITIVITY));
+    QVERIFY(newDirs.contains(customDataDir + "/applications/", PATH_SENSITIVITY));
 }
 
 void KStandarddirsTest::testRestrictedResources()
 {
     // Ensure we have a local xdgdata-apps dir
     QFile localFile(KStandardDirs::locateLocal("xdgdata-apps", "foo.desktop"));
-    localFile.open(QIODevice::WriteOnly|QIODevice::Text);
+    QVERIFY(localFile.open(QIODevice::WriteOnly|QIODevice::Text));
     localFile.write("foo");
     localFile.close();
     const QString localAppsDir = KStandardDirs::realPath(QFileInfo(localFile).absolutePath() + '/');
     QVERIFY(!localAppsDir.contains("foo.desktop"));
-    // Ensure we have a local share/qttest dir
-    const QString localDataDir = KStandardDirs::locateLocal("data", "qttest/");
+    // Ensure we have a local share/kstandarddirstest dir
+    const QString localDataDir = KStandardDirs::locateLocal("data", "kstandarddirstest/");
     QVERIFY(!localDataDir.isEmpty());
     QVERIFY(QFile::exists(localDataDir));
     const QString localOtherDataDir = KStandardDirs::locateLocal("data", "other/");
@@ -434,10 +450,10 @@ void KStandarddirsTest::testRestrictedResources()
 
     // Check unrestricted results first
     const QStringList appsDirs = KGlobal::dirs()->resourceDirs("xdgdata-apps");
-    const QString kdeDataApps = KStandardDirs::realPath(CMAKE_INSTALL_PREFIX "/share/applications/");
     QCOMPARE_PATHS(appsDirs.first(), localAppsDir);
+    const QString kdeDataApps = KStandardDirs::realPath(CMAKE_INSTALL_PREFIX "/share/applications/");
     QVERIFY(appsDirs.contains(kdeDataApps, PATH_SENSITIVITY));
-    const QStringList dataDirs = KGlobal::dirs()->findDirs("data", "qttest");
+    const QStringList dataDirs = KGlobal::dirs()->findDirs("data", "kstandarddirstest");
     QCOMPARE_PATHS(dataDirs.first(), localDataDir);
     const QStringList otherDataDirs = KGlobal::dirs()->findDirs("data", "other");
     QCOMPARE_PATHS(otherDataDirs.first(), localOtherDataDir);
@@ -448,18 +464,18 @@ void KStandarddirsTest::testRestrictedResources()
     KConfig foorc("foorc");
     KConfigGroup restrictionsGroup(&foorc, "KDE Resource Restrictions");
     restrictionsGroup.writeEntry("xdgdata-apps", false);
-    restrictionsGroup.writeEntry("data_qttest", false);
+    restrictionsGroup.writeEntry("data_kstandarddirstest", false);
     restrictionsGroup.sync();
 
     // Check restrictions.
     KComponentData cData("foo");
     QVERIFY(cData.dirs()->isRestrictedResource("xdgdata-apps"));
-    QVERIFY(cData.dirs()->isRestrictedResource("data", "qttest"));
+    QVERIFY(cData.dirs()->isRestrictedResource("data", "kstandarddirstest"));
 
     const QStringList newAppsDirs = cData.dirs()->resourceDirs("xdgdata-apps");
     QVERIFY(newAppsDirs.contains(kdeDataApps, PATH_SENSITIVITY));
     QVERIFY(!newAppsDirs.contains(localAppsDir, PATH_SENSITIVITY)); // restricted!
-    const QStringList newDataDirs = cData.dirs()->findDirs("data", "qttest");
+    const QStringList newDataDirs = cData.dirs()->findDirs("data", "kstandarddirstest");
     QVERIFY(!newDataDirs.contains(localDataDir, PATH_SENSITIVITY)); // restricted!
     const QStringList newOtherDataDirs = cData.dirs()->findDirs("data", "other");
     QVERIFY(newOtherDataDirs.contains(localOtherDataDir, PATH_SENSITIVITY)); // not restricted!
@@ -475,7 +491,7 @@ void KStandarddirsTest::testSymlinkResolution()
     // where symlink points to "real", and the subdir test will be created later
     // This used to confuse KStandardDirs and make it return unresolved paths,
     // and thus making comparisons fail later on in KConfig.
-    QString baseDir = m_kdehome + "/xdg/local"; // XDG DATA HOME
+    QString baseDir = m_dataHome;
     const QString symlink = baseDir + "/symlink";
     const QString expected = baseDir + "/real/test/";
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))

@@ -84,7 +84,6 @@ public:
 
     bool hasDataRestrictions(const QString &relPath) const;
     QStringList resourceDirs(const char* type, const QString& subdirForRestrictions);
-    void createSpecialResource(const char*);
 
     bool m_restrictionsActive : 1;
     bool m_checkRestrictions : 1;
@@ -228,14 +227,13 @@ static void tokenize(QStringList& token, const QString& str,
     enum BasePrefix { XdgConf, XdgData, KdePrefixes };
 static BasePrefix basePrefixForResource(const char* type)
 {
-    // KDE5: We now use xdgdata_prefixes for every resource in share/*,
+    // KF5: We now use xdgdata_prefixes for every resource in share/*,
     // i.e. everything except exe, lib, config and xdgconf...
-    // So we could almost get rid of $KDEHOME, if we don't support binaries and libs in the user home dir?
 
     const QByteArray typeBa(type);
-    if (typeBa.startsWith("xdgconf")) {
+    if (typeBa.startsWith("xdgconf") || typeBa == "config") {
         return XdgConf;
-    } else if (typeBa == "exe" || typeBa == "lib" || typeBa == "config" /*for kde4 compat (config file migration)*/) {
+    } else if (typeBa == "exe" || typeBa == "lib") {
         return KdePrefixes;
     } else { // was: if (typeBa.startsWith("xdgdata") || typeBa == "data")
         return XdgData;
@@ -402,7 +400,7 @@ static void priorityAdd(QStringList &prefixes, const QString& dir, bool priority
 {
     if (priority && !prefixes.isEmpty())
     {
-        // Add in front but behind $KDEHOME
+        // Add in front but behind the most-local prefix
         QStringList::iterator it = prefixes.begin();
         ++it;
         prefixes.insert(it, dir);
@@ -1090,74 +1088,6 @@ KStandardDirs::realFilePath(const QString &filename)
 }
 
 
-void KStandardDirs::KStandardDirsPrivate::createSpecialResource(const char *type)
-{
-    char hostname[256];
-    hostname[0] = 0;
-    gethostname(hostname, 255);
-    const QString localkdedir = m_prefixes.first();
-    QString dir = localkdedir + QString::fromLatin1(type) + QLatin1Char('-') + QString::fromLocal8Bit(hostname);
-    char link[1024];
-    link[1023] = 0;
-    int result = readlink(QFile::encodeName(dir).constData(), link, 1023);
-    bool relink = (result == -1) && (errno == ENOENT);
-    if (result > 0)
-    {
-        link[result] = 0;
-        if (!QDir::isRelativePath(QFile::decodeName(link)))
-        {
-            KDE_struct_stat stat_buf;
-            int res = KDE::lstat(QFile::decodeName(link), &stat_buf);
-            if ((res == -1) && (errno == ENOENT))
-            {
-                relink = true;
-            }
-            else if ((res == -1) || (!S_ISDIR(stat_buf.st_mode)))
-            {
-                fprintf(stderr, "Error: \"%s\" is not a directory.\n", link);
-                relink = true;
-            }
-            else if (stat_buf.st_uid != getuid())
-            {
-                fprintf(stderr, "Error: \"%s\" is owned by uid %d instead of uid %d.\n", link, stat_buf.st_uid, getuid());
-                relink = true;
-            }
-        }
-    }
-#ifdef Q_OS_WIN
-    if (relink)
-    {
-        if (!makeDir(dir, 0700))
-            fprintf(stderr, "failed to create \"%s\"", qPrintable(dir));
-        else
-            result = readlink(QFile::encodeName(dir).constData(), link, 1023);
-    }
-#else //UNIX
-    if (relink)
-    {
-        QString srv = findExe(QLatin1String("lnusertemp"), installPath("libexec"));
-        if (srv.isEmpty())
-            srv = findExe(QLatin1String("lnusertemp"));
-        if (!srv.isEmpty())
-        {
-            if (system(QByteArray(QFile::encodeName(srv) + ' ' + type)) == -1) {
-                fprintf(stderr, "Error: unable to launch lnusertemp command" );
-            }
-            result = readlink(QFile::encodeName(dir).constData(), link, 1023);
-        }
-    }
-    if (result > 0)
-    {
-        link[result] = 0;
-        if (link[0] == '/')
-            dir = QFile::decodeName(link);
-        else
-            dir = QDir::cleanPath(dir + QFile::decodeName(link));
-    }
-#endif
-    q->addResourceDir(type, dir + QLatin1Char('/'), false);
-}
-
 QStringList KStandardDirs::resourceDirs(const char *type) const
 {
     return d->resourceDirs(type, QString());
@@ -1181,13 +1111,6 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
     else // filling cache
     {
         //qDebug() << this << "resourceDirs(" << type << "), not in cache";
-        if (strcmp(type, "socket") == 0)
-            createSpecialResource(type);
-        else if (strcmp(type, "tmp") == 0)
-            createSpecialResource(type);
-        else if (strcmp(type, "cache") == 0)
-            createSpecialResource(type);
-
         QDir testdir;
 
         bool restrictionActive = false;
@@ -1821,6 +1744,7 @@ void KStandardDirs::addKDEDefaults()
         kdedirList.append( linuxExecPrefix );
 #endif
 
+#if 0 // No longer applicable in KDE Frameworks 5
     // We treat root differently to prevent a "su" shell messing up the
     // file permissions in the user's home directory.
     QString localKdeDir = readEnvPath(getuid() ? "KDEHOME" : "KDEROOTHOME");
@@ -1828,10 +1752,6 @@ void KStandardDirs::addKDEDefaults()
         if (!localKdeDir.endsWith(QLatin1Char('/')))
             localKdeDir += QLatin1Char('/');
     } else {
-        // TODO KDE5: make localKdeDir equal to localXdgDir (which is determined further below and
-        // defaults to ~/.config) + '/' + $KDECONFIG (which would default to e.g. "KDE")
-        // This would mean ~/.config/KDE/ by default, more xdg-compliant.
-
 #if defined(Q_OS_MAC)
         localKdeDir =  QDir::homePath() + QLatin1String("/Library/Preferences/KDE/");
 #elif defined(Q_OS_WIN)
@@ -1855,6 +1775,7 @@ void KStandardDirs::addKDEDefaults()
         localKdeDir = KShell::tildeExpand(localKdeDir);
         addPrefix(localKdeDir);
     }
+#endif
 
 #ifdef Q_OS_MAC
     // Adds the "Contents" directory of the current application bundle to
