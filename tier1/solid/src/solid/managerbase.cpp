@@ -34,11 +34,11 @@
 #include "backends/udisks/udisksmanager.h"
 #include "backends/upower/upowermanager.h"
 
-#if defined (HUPNP_FOUND)
+#if HUPNP_FOUND
 #include "backends/upnp/upnpdevicemanager.h"
 #endif
 
-#if defined (UDEV_FOUND)
+#if UDEV_FOUND
 #include "backends/udev/udevmanager.h"
 #endif
 
@@ -80,7 +80,7 @@ void Solid::ManagerBasePrivate::loadBackends()
             if (solidHalLegacyEnabled) {
                 m_backends << new Solid::Backends::Hal::HalManager(0);
             } else {
-#               if defined(UDEV_FOUND)
+#               if UDEV_FOUND
                     m_backends << new Solid::Backends::UDev::UDevManager(0);
 #               endif
                 m_backends << new Solid::Backends::UDisks::UDisksManager(0)
@@ -89,7 +89,7 @@ void Solid::ManagerBasePrivate::loadBackends()
             }
 #        endif
 
-#        if defined (HUPNP_FOUND)
+#        if HUPNP_FOUND
             m_backends << new Solid::Backends::UPnP::UPnPDeviceManager(0);
 #        endif
     }

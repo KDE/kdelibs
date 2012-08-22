@@ -18,8 +18,8 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#cmakedefine UDEV_FOUND
-#cmakedefine HUPNP_FOUND
+#cmakedefine01 UDEV_FOUND
+#cmakedefine01 HUPNP_FOUND
 
 #cmakedefine01 HAVE_SYS_TYPES_H
 #cmakedefine01 HAVE_SYS_PARAM_H
