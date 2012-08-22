@@ -212,11 +212,16 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const KUrl::List& urls,
     return true;
 }
 
-KIO::FilesTransferDialog* KIO::JobUiDelegate::initInteractionModel(KJob* job, QList<int> fids, QList<KIO::CopyInfo> files)
+KIO::FilesTransferDialog* KIO::JobUiDelegate::initInteractionModel(KJob* job, QList<KIO::CopyInfo> files)
 {
     d->job = job;
     d->interactionsModel = new FilesTransferDialog();
-    d->interactionsModel->gotAllFiles(fids, files);
+    QList<int> fileIDs;
+    fileIDs.reserve(files.count());
+    for (int i = 0; i < files.count(); i++) {
+        fileIDs.append(i);
+    }
+    d->interactionsModel->gotAllFiles(fileIDs, files);
     return d->interactionsModel;
 }
 

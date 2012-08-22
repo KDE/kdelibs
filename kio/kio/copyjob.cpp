@@ -249,11 +249,12 @@ public:
     void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
     void slotExistingFile(KJob *job);
 
-    int findFileID(const CopyInfo &file) {
+    int findFileID(const CopyInfo &file) const {
         int id = -1;
         for (int i = 0; i < m_allFiles.count(); i++) {
             if (m_allFiles[i].uSource == file.uSource) {
                 id = i;
+                break;
             }
         }
         if (id == -1) {
@@ -293,8 +294,7 @@ public:
                                   CopyJob::CopyMode mode, bool asMethod, JobFlags flags)
     {
         CopyJob *job = new CopyJob(*new CopyJobPrivate(src,dest,mode,asMethod));
-        JobUiDelegate *delegate = new JobUiDelegate();
-        job->setUiDelegate(delegate);
+        job->setUiDelegate(new JobUiDelegate());
 
         if (!(flags & HideProgressInfo))
             KIO::getJobTracker()->registerJob(job);
@@ -660,18 +660,12 @@ void CopyJobPrivate::slotExistingFile(KJob *job)
         return;
     }
 
-    InteractionRequest &request = m_requests[id];
-
     StatJob *statJob = qobject_cast<StatJob *>(job);
     Q_ASSERT(statJob);
     const UDSEntry entry = statJob->statResult();
 
-    const time_t destmtime = (time_t) entry.numberValue( KIO::UDSEntry::UDS_MODIFICATION_TIME, -1 );
-    const time_t destctime = (time_t) entry.numberValue( KIO::UDSEntry::UDS_CREATION_TIME, -1 );
-    const KIO::filesize_t destsize = entry.numberValue( KIO::UDSEntry::UDS_SIZE );
-    const QString linkDest = entry.stringValue( KIO::UDSEntry::UDS_LINK_DEST );
+    Q_UNUSED(entry); // should be passed to dialog
 
-    CopyInfo &copyInfo = request.copyInfo;
     emit q->existingFile(id);
 }
 
@@ -693,12 +687,7 @@ void CopyJobPrivate::initInteractionModel()
     Q_Q(CopyJob);
     Q_ASSERT(q->isInteractive());
 
-    QList<int> fileIDs;
-    fileIDs.reserve(m_allFiles.count());
-    for (int i = 0; i < m_allFiles.count(); i++) {
-        fileIDs.append(i);
-    }
-    FilesTransferDialog *dialog = ui()->initInteractionModel(q, fileIDs, m_allFiles);
+    FilesTransferDialog *dialog = ui()->initInteractionModel(q, m_allFiles);
     m_isInteractionDialogCreated = true;
 
     QObject::connect(q, SIGNAL(skippedFile(int)),
