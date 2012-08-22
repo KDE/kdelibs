@@ -2476,7 +2476,7 @@ public:
     ListJobPrivate(const KUrl& url, bool _recursive, const QString &_prefix, bool _includeHidden)
         : SimpleJobPrivate(url, CMD_LISTDIR, QByteArray()),
           recursive(_recursive), includeHidden(_includeHidden),
-          prefix(_prefix), m_processedEntries(0), m_details(2)
+          prefix(_prefix), m_processedEntries(0)
     {}
     bool recursive;
     bool includeHidden;
@@ -2698,11 +2698,6 @@ void ListJob::setUnrestricted(bool unrestricted)
         d->m_extraFlags &= ~JobPrivate::EF_ListJobUnrestricted;
 }
 
-void ListJob::setDetails( short int details )
-{
-    d_func()->m_details = details;
-}
-
 void ListJobPrivate::start(Slave *slave)
 {
     Q_Q(ListJob);
@@ -2721,7 +2716,7 @@ void ListJobPrivate::start(Slave *slave)
     q->connect( slave, SIGNAL(redirection(KUrl)),
              SLOT(slotRedirection(KUrl)) );
 
-    m_outgoingMetaData.insert( "details", QString::number(m_details) );
+    m_outgoingMetaData.insert( "details", "2" );
     SimpleJobPrivate::start(slave);
 }
 

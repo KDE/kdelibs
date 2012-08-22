@@ -1002,7 +1002,7 @@ void CopyJobPrivate::startListing( const KUrl & src )
     m_bURLDirty = true;
     ListJob * newjob = listRecursive(src, KIO::HideProgressInfo);
     newjob->setUnrestricted(true);
-    newjob->setDetails(1); // do not follow links
+    newjob->addMetaData("details", "1"); // do not follow links
     q->connect(newjob, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)),
                SLOT(slotEntries(KIO::Job*,KIO::UDSEntryList)));
     q->addSubjob( newjob );
