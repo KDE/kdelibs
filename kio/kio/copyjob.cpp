@@ -257,7 +257,7 @@ public:
             }
         }
         if (id == -1) {
-            qDebug("findFileID(...): can not find id of file: %s", qPrintable(file.uSource.url()));
+            kDebug() << "can not find id of file:" << file.uSource.url();
         }
         return id;
     }
@@ -302,7 +302,7 @@ public:
             job->d_func()->m_bOverwriteAllDirs = true;
             job->d_func()->m_bOverwriteAllFiles = true;
         }
-        kWarning() << "                 Starting new CopyJob" << src.first() << dest;
+        kDebug() << "                 Starting new CopyJob" << src.first() << dest;
 
         return job;
     }
@@ -677,7 +677,7 @@ void CopyJobPrivate::slotExistingFile(KJob *job)
 
 bool CopyJobPrivate::doStartInteraction()
 {
-    kWarning() << "user requested interaction";
+    kDebug() << "user requested interaction";
     if (!m_isInteractionDialogCreated) {
         initInteractionModel();
     }
@@ -728,7 +728,7 @@ void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& 
     info.ctime = (time_t) entry.numberValue(KIO::UDSEntry::UDS_CREATION_TIME, -1);
     info.linkDest = entry.stringValue(KIO::UDSEntry::UDS_LINK_DEST);
     info.size = (KIO::filesize_t) entry.numberValue(KIO::UDSEntry::UDS_SIZE, -1);
-    kWarning() << info.linkDest.isEmpty() << info.size << entry.stringValue(KIO::UDSEntry::UDS_URL);
+    kDebug() << info.linkDest.isEmpty() << info.size << entry.stringValue(KIO::UDSEntry::UDS_URL);
     if (info.size != (KIO::filesize_t) -1)
         m_totalSize += info.size;
 
@@ -802,7 +802,7 @@ void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& 
             //kDebug(7007) << " adding destFileName=" << destFileName;
             info.uDest.addPath(destFileName);
         }
-        kWarning() << "size" << info.size << "source" << info.uSource << "dest" << info.uDest;
+        kDebug() << "size" << info.size << "source" << info.uSource << "dest" << info.uDest;
         //kDebug(7007) << " uDest(2)=" << info.uDest;
         //kDebug(7007) << " " << info.uSource << "->" << info.uDest;
         if (info.linkDest.isEmpty() && isDir && m_mode != CopyJob::Link) { // Dir
@@ -935,7 +935,6 @@ void CopyJobPrivate::statCurrentSrc()
 
         // Stat the next src url
         Job * job = KIO::stat( m_currentSrcURL, StatJob::SourceSide, 1, KIO::HideProgressInfo );
-        kWarning() << "normally stating" << m_currentSrcURL;
         //kDebug(7007) << "KIO::stat on" << m_currentSrcURL;
         state = STATE_STATING;
         q->addSubjob(job);
@@ -1456,7 +1455,7 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
                     
                     int interactionID = findFileID(*it);
                     m_requests.insert(interactionID, request);
-                    kWarning() << "emmiting unreadableFile" << interactionID << it->uSource.toLocalFile();
+                    kDebug() << "emmiting unreadableFile" << interactionID << it->uSource.toLocalFile();
                     emit q->unreadableFile(interactionID);
 
                     m_fileProcessedSize = 0;
@@ -1504,7 +1503,7 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
         // remove from list, to move on to next file
         files.erase( it );
     }
-    kWarning() << "m_processedFiles++; <<" << processedFile.uSource << processedFile.size << m_fileProcessedSize << m_bCurrentOperationIsLink;
+    kDebug() << "m_processedFiles++; <<" << processedFile.uSource << processedFile.size << m_fileProcessedSize << m_bCurrentOperationIsLink;
     m_processedFiles++;
 
     // clear processed size for last file and add it to overall processed size

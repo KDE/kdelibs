@@ -22,6 +22,7 @@
 #include <QtCore>
 #include "kglobal.h"
 #include "klocale.h"
+#include "kdebug.h"
 #include "filemodel.h"
 
 using namespace KIO;
@@ -81,7 +82,7 @@ QObject* FilesTransferDialog::disappearedModel()
 
 void FilesTransferDialog::gotAllFiles(QList<int> fids, QList<KIO::CopyInfo> files)
 {
-    qDebug("FilesTransferDialog::gotAllFiles: count:(%d, %d)", fids.count(), files.count());
+    kDebug() << "count:(%d, %d)" << fids.count() << files.count();
     m_totalSize = 0;
     for (int i = 0; i < fids.count(); i++) {
         m_totalSize += files[i].size;
@@ -90,7 +91,7 @@ void FilesTransferDialog::gotAllFiles(QList<int> fids, QList<KIO::CopyInfo> file
 
     m_unfinishedFilesCount = fids.count();
     m_unfinishedFilesSize = m_totalSize;
-    qDebug("KIOConnect::gotAllFiles: files:%lld, bytes:%lld", static_cast<qulonglong>(fids.count()), m_totalSize);
+    kDebug() << "files" << fids.count() << "bytes:" << m_totalSize;
     emit finishedAmountChanged(convertAmounts(0, 0, 0));
     emit unfinishedAmountChanged(convertAmounts(m_unfinishedFilesCount, m_unfinishedFilesSize, 1));
     emit errorsAmountChanged(convertAmounts(0, 0, 0));
@@ -104,12 +105,12 @@ void FilesTransferDialog::gotProcessedAmount(KJob*, KJob::Unit unit, qulonglong 
         qulonglong delta = amount - m_finishedFilesCount;
         m_finishedFilesCount = amount;
         m_unfinishedFilesCount -= delta;
-        qDebug("KIOConnect::gotProcessedAmount: files:%lld", amount);
+        kDebug() << "files:" << amount;
     } else if (unit == KJob::Bytes) {
         qulonglong delta = amount - m_finishedFilesSize;
         m_finishedFilesSize = amount;
         m_unfinishedFilesSize -= delta;
-        qDebug("KIOConnect::gotProcessedAmount: unit:%d, amount:%lld, unfSize%lld", unit, amount, m_unfinishedFilesSize);
+        kDebug() << "unit:" << unit << "amount:" << amount << "unfinishedSize" << m_unfinishedFilesSize;
     }
 
     emit finishedAmountChanged(convertAmounts(m_finishedFilesCount, m_finishedFilesSize, qreal(m_finishedFilesSize)/qreal(m_totalSize)));
@@ -134,7 +135,7 @@ FileModel* FilesTransferDialog::findModelByFileId(int id)
         model = m_disappearedModel;
     } else {
         model = NULL;
-        qDebug("Error: KIOConnect::findModelByFileId: file %d was not found!", id);
+        kDebug() << "Error: file" << id << "was not found!";
     }
 
     return model;
@@ -144,12 +145,12 @@ void FilesTransferDialog::gotSkippedFile(int id)
 {
     FileModel *model = findModelByFileId(id);
     if (model == NULL) {
-        qDebug("Error: KIOConnect::gotSkippedFile: file %d was not found!", id);
+        kDebug() << "Error: file" << id << "was not found!";
         return;
     }
     FileItem file = model->takeFile(id);
     if (file.isNull()) {
-        qDebug("Error: KIOConnect::gotSkippedFile: trying to skip file with id:%d", id);
+        kDebug() << "Error: trying to skip file with id:" << id;
         return;
     }
 
@@ -175,12 +176,12 @@ void FilesTransferDialog::gotRetriedFile(int id)
 {
     FileModel *model = findModelByFileId(id);
     if (model == NULL) {
-        qDebug("Error: KIOConnect::gotRetriedFile: file %d was not found!", id);
+        kDebug() << "Error: file" << id << "was not found!";
         return;
     }
     FileItem file = model->takeFile(id);
     if (file.isNull()) {
-        qDebug("Error: KIOConnect::gotRetriedFile: trying to skip file with id:%d", id);
+        kDebug() << "Error: trying to skip file with id:" << id;
         return;
     }
 
@@ -207,7 +208,7 @@ void FilesTransferDialog::gotUnreadableFile(int id)
 {
     FileItem file = m_normalModel->takeFile(id);
     if (file.isNull()) {
-        qDebug("Error: KIOConnect::gotUnreadableFile: trying to take file with id:%d", id);
+        kDebug() << "Error: trying to take file with id:" << id;
         return;
     }
 
@@ -226,7 +227,7 @@ void FilesTransferDialog::gotDisappearedFile(int id)
 {
     FileItem file = m_normalModel->takeFile(id);
     if (file.isNull()) {
-        qDebug("Error: KIOConnect::gotDisappearedFile: trying to take file with id:%d", id);
+        kDebug() << "Error: trying to take file with id:" << id;
         return;
     }
 
@@ -243,14 +244,14 @@ void FilesTransferDialog::gotDisappearedFile(int id)
 
 void FilesTransferDialog::nothingToProcess()
 {
-    qDebug("KIOConnect::nothingToProcess:");
+    kDebug() << "nothingToProcess";
     m_normalModel->setFinished();
     updateWindowTitle();
 }
 
 void FilesTransferDialog::resendSignals()
 {
-    qDebug("FilesTransferDialog::resendSignals:");
+    kDebug() << "resending signals";
     emit finishedAmountChanged(convertAmounts(m_finishedFilesCount, m_finishedFilesSize, qreal(m_finishedFilesSize)/qreal(m_totalSize)));
     emit unfinishedAmountChanged(convertAmounts(m_unfinishedFilesCount, m_unfinishedFilesSize, qreal(m_unfinishedFilesSize)/qreal(m_totalSize)));
     emit skippedAmountChanged(convertAmounts(m_skippedFilesCount, m_skippedFilesSize, qreal(m_skippedFilesSize)/qreal(m_totalSize)));
@@ -260,7 +261,7 @@ void FilesTransferDialog::resendSignals()
 
 void FilesTransferDialog::gotSpeed(KJob*, unsigned long speed)
 {
-    qDebug("FilesTransferDialog::gotSpeed: %u", speed);
+    kDebug() << "speed" << speed;
     m_speed = speed;
     updateWindowTitle();
 }
@@ -289,7 +290,7 @@ void FilesTransferDialog::skipFile(const QString &modelName, int id)
 {
     FileModel *model = findChild<FileModel *>(modelName);
     if (model == NULL || !model->contains(id)) {
-        qDebug("Error: KIOConnect::skipFile: no fild:%d in model:%s", id, qPrintable(modelName));
+        kDebug() << "Error: no field:" << id << "in model:" << qPrintable(modelName);
         return;
     }
     // notify CopyJob
@@ -300,7 +301,7 @@ void FilesTransferDialog::retryFile(const QString &modelName, int id)
 {
     Q_UNUSED(modelName);
     if (!m_skippedModel->contains(id)) {
-        qDebug("Error: KIOConnect::retryFile: trying to retry file with id:%d", id);
+        kDebug() << "Error: trying to retry file with id:" << id;
         return;
     }
     // notify CopyJob
@@ -311,12 +312,12 @@ void FilesTransferDialog::skipAllFiles(const QString &modelName)
 {
     FileModel *model = findChild<FileModel *>(modelName);
     if (model == NULL) {
-        qDebug("Error: KIOConnect::skipAllFiles: no such model: %s", qPrintable(modelName));
+        kDebug() << "Error: no such model:" << modelName;
         return;
     }
     QList<int> fids = model->allIDs();
     if (fids.isEmpty()) {
-        qDebug("Error: KIOConnect::skipAllFiles: model %s is empty", qPrintable(modelName));
+        kDebug() << "Error: model:" << modelName << "is empty";
         return;
     }
     foreach (int fid, fids) {
@@ -328,12 +329,12 @@ void FilesTransferDialog::retryAllFiles(const QString &modelName)
 {
     FileModel *model = findChild<FileModel *>(modelName);
     if (model == NULL) {
-        qDebug("Error: KIOConnect::retryAllFiles: no such model: %s", qPrintable(modelName));
+        kDebug() << "Error: no such model:" << modelName;
         return;
     }
     QList<int> fids = model->allIDs();
     if (fids.isEmpty()) {
-        qDebug("Error: KIOConnect::retryAllFiles: model %s is empty", qPrintable(modelName));
+        kDebug() << "Error: model:" << modelName << "is empty";
         return;
     }
     foreach (int fid, fids) {

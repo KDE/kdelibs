@@ -19,6 +19,7 @@
 
 #include <math.h>
 #include "filemodel.h"
+#include "kdebug.h"
 
 FileModel::FileModel(QObject *parent) :
     QAbstractListModel(parent)
@@ -32,7 +33,7 @@ void FileModel::enqueue(const FileItem &file)
 {
     beginInsertRows(QModelIndex(), rowCount(), rowCount());
     m_files.append(file);
-    qDebug("FileModel::enqueue appending fid:%d name:%s to %s", file.id.toInt(), qPrintable(file.url.toString()), qPrintable(objectName()));
+    kDebug() << "appending fid:" << file.id.toInt() << "url:" << file.url.toString() << "to" << objectName();
     endInsertRows();
     emit countChanged();
 }
@@ -67,7 +68,7 @@ bool FileModel::contains(int id) const
 
 FileItem FileModel::peekAtFile(int id) const
 {
-    qDebug("FileModel::peekAtFile: fid:%d", id);
+    kDebug() << "fid:" << id;
 
     FileItem requestedFile;
     int pos = findPosById(id);
@@ -79,12 +80,12 @@ FileItem FileModel::peekAtFile(int id) const
 
 FileItem FileModel::takeFile(int id)
 {
-    qDebug("FileModel::takeFile: fid:%d from:%s", id, qPrintable(objectName()));
+    kDebug() << "fid:" << id << "from:" << objectName();
 
     FileItem requestedFile;
     int pos = findPosById(id);
     if (pos != -1) {
-        qDebug("FileModel::takeFile: found pos = %d", pos);
+        kDebug() << "found pos =" << pos;
         requestedFile = m_files[pos];
         beginRemoveRows(QModelIndex(), pos, pos);
         m_files.removeOne(requestedFile);
@@ -95,11 +96,11 @@ FileItem FileModel::takeFile(int id)
 
 void FileModel::replaceFile(int id, const FileItem &newFile)
 {
-    qDebug("FileModel::replaceFile: fid:%d", id);
+    kDebug() << "fid:" <<id;
 
     int pos = findPosById(id);
     if (pos != -1) {
-        qDebug("FileModel::replaceFile: found pos = %d", pos);
+        kDebug() << "found pos = " << pos;
         m_files[pos] = newFile;
         emit dataChanged(createIndex(pos, 0), createIndex(pos, 0));
     }
@@ -107,30 +108,28 @@ void FileModel::replaceFile(int id, const FileItem &newFile)
 
 void FileModel::updateFileProgress(int id, qreal progress, FileHelper::FileActions updActions)
 {
-    //qDebug("FileModel::updateFileProgress: fid:%d, progress:%f", id, progress);
-
     int pos = findPosById(id);
     if (pos != -1) {
         m_files[pos].progress = QVariant::fromValue(progress);
         int firstUpdated = pos - 1;
         while (firstUpdated >= 0 &&  m_files[firstUpdated].actions.toInt() != updActions) {
             m_files[firstUpdated].progress = QVariant::fromValue(1.0);
-            qDebug("FileModel::updateFileProgress: fid:%d, actions:%d", id, updActions);
+            kDebug() << "fid:" << id << "actions:" << updActions;
             m_files[firstUpdated].actions = QVariant::fromValue((int)updActions);
             firstUpdated--;
         }
         firstUpdated++;
         emit dataChanged(createIndex(firstUpdated, 0), createIndex(pos, 0));
     } else {
-        qDebug("Error: FileModel::updateFileProgress: fid:%d, progress:%f no such file", id, progress);
+        kDebug() << "Error: fid:" << id << "progress:" << progress;
     }
 }
 
 void FileModel::setFinished()
 {
-    qDebug("FileModel::setFinished:");
+    kDebug() << objectName() << "finished";
     if (!m_files.isEmpty()) {
-        qDebug("FileModel::setFinished: for file %s", qPrintable(m_files.last().url.toString()));
+        kDebug() << "for file" << m_files.last().url.toString();
         m_files.last().progress = QVariant::fromValue(1.0);
         m_files.last().actions = FileHelper::Finished;
         int pos = m_files.count() - 1;

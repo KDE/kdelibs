@@ -534,7 +534,7 @@ void SimpleJobPrivate::slotProcessedSize( KIO::filesize_t size )
 {
     Q_Q(SimpleJob);
     //kDebug(7007) << KIO::number(size);
-    kWarning() << size;
+    kDebug() << size;
     q->setProcessedAmount(KJob::Bytes, size);
 }
 

@@ -275,7 +275,7 @@ void KJob::setProcessedAmount(Unit unit, qulonglong amount)
 {
     Q_D(KJob);
     bool should_emit = (d->processedAmount[unit] != amount);
-    kWarning() << "unit" << unit << "amount" << amount << "will emit" << should_emit << "old" << d->processedAmount[unit];
+    kDebug() << "unit" << unit << "amount" << amount << "will emit" << should_emit << "old" << d->processedAmount[unit];
 
     d->processedAmount[unit] = amount;
 

@@ -36,7 +36,6 @@
 #include "kio/scheduler.h"
 #include "filestransferdialog/filestransferdialog.h"
 #include "filestransferdialog/qmlapplicationviewer.h"
-#include "filestransferdialog/copyjobfake.h"
 
 #if defined Q_WS_X11
 #include <QX11Info>
@@ -215,7 +214,6 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const KUrl::List& urls,
 
 KIO::FilesTransferDialog* KIO::JobUiDelegate::initInteractionModel(KJob* job, QList<int> fids, QList<KIO::CopyInfo> files)
 {
-    kWarning() << "test1";
     d->job = job;
     d->interactionsModel = new FilesTransferDialog();
     d->interactionsModel->gotAllFiles(fids, files);
