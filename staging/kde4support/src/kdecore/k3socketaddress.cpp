@@ -24,8 +24,8 @@
 
 #include "k3socketaddress.h"
 
-#include <config.h>
 #include <config-network.h>
+#include <config-kde4support.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -216,7 +216,7 @@ QString KIpAddress::toString() const
  */
 struct our_sockaddr_in6
 {
-# ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
+# if HAVE_STRUCT_SOCKADDR_SA_LEN
   quint8		sin6_len;
   quint8		sin6_family;
 # else  //!HAVE_STRUCT_SOCKADDR_SA_LEN
@@ -304,7 +304,7 @@ public:
     dup(0L, SOCKADDR_IN_LEN);
 
     addr.in->sin_family = AF_INET;
-#ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
+#if HAVE_STRUCT_SOCKADDR_SA_LEN
     addr.in->sin_len = SOCKADDR_IN_LEN;
 #endif
     addr.in->sin_port = oldport;
@@ -331,7 +331,7 @@ public:
 #ifdef AF_INET6
     addr.in6->sin6_family = AF_INET6;
 #endif
-#ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
+#if HAVE_STRUCT_SOCKADDR_SA_LEN
     addr.in6->sin6_len = SOCKADDR_IN6_LEN;
 #endif
     addr.in6->sin6_port = oldport;
@@ -524,7 +524,7 @@ bool KSocketAddress::operator ==(const KSocketAddress& other) const
       Q_ASSERT(d->reallen >= MIN_SOCKADDR_IN6_LEN);
       Q_ASSERT(other.d->reallen >= MIN_SOCKADDR_IN6_LEN);
 
-# if !defined(HAVE_STRUCT_SOCKADDR_IN6) || defined(HAVE_STRUCT_SOCKADDR_IN6_SIN6_SCOPE_ID)
+# if !HAVE_STRUCT_SOCKADDR_IN6 || defined(HAVE_STRUCT_SOCKADDR_IN6_SIN6_SCOPE_ID)
       // check for the case where sin6_scope_id isn't present
       if (d->reallen != other.d->reallen)
 	{
@@ -947,7 +947,7 @@ KUnixSocketAddress& KUnixSocketAddress::setPathname(const QString& path)
   d->addr.un->sun_family = AF_UNIX;
   strcpy(d->addr.un->sun_path, QFile::encodeName(path));
 
-#ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
+#if HAVE_STRUCT_SOCKADDR_SA_LEN
   d->addr.un->sun_len = d->reallen;
 #endif
 

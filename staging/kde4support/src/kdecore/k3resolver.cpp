@@ -25,7 +25,6 @@
 #include "k3resolver.h"
 #include "k3resolver_p.h"
 
-#include <config.h>
 #include <config-network.h>
 
 // System includes
@@ -785,7 +784,7 @@ int KResolver::protocolNumber(const char *protoname)
 int KResolver::servicePort(const char *servname, const char *protoname)
 {
   struct servent *se = 0L;
-#ifndef HAVE_GETSERVBYNAME_R
+#if !HAVE_GETSERVBYNAME_R
   QMutexLocker locker(&getXXbyYYmutex);
 
   se = getservbyname(servname, protoname);
@@ -829,7 +828,7 @@ int KResolver::servicePort(const char *servname, const char *protoname)
   if (se != NULL)
     servport = ntohs(se->s_port);
 
-#ifdef HAVE_GETSERVBYNAME_R
+#if HAVE_GETSERVBYNAME_R
 # ifndef USE_OPENBSD
   delete [] buf;
 # endif
@@ -841,7 +840,7 @@ int KResolver::servicePort(const char *servname, const char *protoname)
 QList<QByteArray> KResolver::serviceName(const char* servname, const char *protoname)
 {
   struct servent *se = 0L;
-#ifndef HAVE_GETSERVBYNAME_R
+#if !HAVE_GETSERVBYNAME_R
   QMutexLocker locker(&getXXbyYYmutex);
 
   se = getservbyname(servname, protoname);
@@ -889,7 +888,7 @@ QList<QByteArray> KResolver::serviceName(const char* servname, const char *proto
 	lst.append(*p);
     }
 
-#ifdef HAVE_GETSERVBYNAME_R
+#if HAVE_GETSERVBYNAME_R
 # ifndef USE_OPENBSD
   delete [] buf;
 # endif
@@ -901,7 +900,7 @@ QList<QByteArray> KResolver::serviceName(const char* servname, const char *proto
 QList<QByteArray> KResolver::serviceName(int port, const char *protoname)
 {
   struct servent *se = 0L;
-#ifndef HAVE_GETSERVBYPORT_R
+#if !HAVE_GETSERVBYPORT_R
   QMutexLocker locker(&getXXbyYYmutex);
 
   se = getservbyport(port, protoname);
@@ -949,7 +948,7 @@ QList<QByteArray> KResolver::serviceName(int port, const char *protoname)
 	lst.append(*p);
     }
 
-#ifdef HAVE_GETSERVBYPORT_R
+#if HAVE_GETSERVBYPORT_R
 # ifndef USE_OPENBSD
   delete [] buf;
 # endif

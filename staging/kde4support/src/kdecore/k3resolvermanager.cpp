@@ -22,7 +22,6 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <config.h>
 #include <config-network.h>
 
 #include <sys/types.h>
@@ -30,7 +29,7 @@
 #include <limits.h>
 #include <unistd.h>		// only needed for pid_t
 
-#ifdef HAVE_RES_INIT
+#if HAVE_RES_INIT
 # include <sys/stat.h>
 extern "C" {
 #   include <arpa/nameser.h>
@@ -124,7 +123,7 @@ class ResInitUsage
 {
 public:
 
-#ifdef HAVE_RES_INIT
+#if HAVE_RES_INIT
   time_t mTime;
   int useCount;
 

@@ -19,12 +19,10 @@
  **/
 
 #include "ktempdir.h"
-
-#include <config.h>
-
+#include <config-kde4support.h>
 #include <sys/types.h>
 
-#ifdef HAVE_SYS_STAT_H
+#if HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
 
@@ -37,7 +35,7 @@
 #ifdef HAVE_TEST
 #include <test.h>
 #endif
-#ifdef HAVE_PATHS_H
+#if HAVE_PATHS_H
 #include <paths.h>
 #endif
 

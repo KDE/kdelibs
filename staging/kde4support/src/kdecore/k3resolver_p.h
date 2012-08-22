@@ -25,7 +25,6 @@
 #ifndef KRESOLVER_P_H
 #define KRESOLVER_P_H
 
-#include <config.h>
 #include <config-network.h>
 #include <sys/types.h>
 
@@ -41,13 +40,13 @@
 #include "k3resolver.h"
 
 /* decide whether we need a mutex */
-#if !defined(HAVE_GETPROTOBYNAME_R) || !defined(HAVE_GETSERVBYNAME_R) || !defined(HAVE_GETHOSTBYNAME_R) || !defined(HAVE_GETSERVBYPORT_R)
+#if !defined(HAVE_GETPROTOBYNAME_R) || !HAVE_GETSERVBYNAME_R || !HAVE_GETHOSTBYNAME_R || !HAVE_GETSERVBYPORT_R
 # define NEED_MUTEX
 extern QMutex getXXbyYYmutex;
 #endif
 
 /* some systems have the functions, but don't declare them */
-#if defined(HAVE_GETSERVBYNAME_R) && !HAVE_GETSERVBYNAME_R_PROTO
+#if HAVE_GETSERVBYNAME_R && !HAVE_GETSERVBYNAME_R_PROTO
 extern "C" {
   struct servent;
   extern int getservbyname_r(const char* serv, const char* proto,

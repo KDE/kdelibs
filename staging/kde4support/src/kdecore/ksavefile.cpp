@@ -23,8 +23,6 @@
 
 #include "ksavefile.h"
 
-#include <config.h> // HAVE_FDATASYNC
-
 #include <QDir>
 #include <QTemporaryFile>
 
@@ -199,7 +197,7 @@ void KSaveFile::abort()
     d->wasFinalized = true;
 }
 
-#ifdef HAVE_FDATASYNC
+#if HAVE_FDATASYNC
 #  define FDATASYNC fdatasync
 #else
 #  define FDATASYNC fsync

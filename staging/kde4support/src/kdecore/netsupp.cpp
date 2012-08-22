@@ -37,7 +37,6 @@
 // broken getaddrinfo
 #include <netdb.h>
 
-#include <config.h>
 #include <config-network.h>
 #include "klocalizedstring.h"
 
@@ -158,7 +157,7 @@ make_unix(const char *name, const char *serv)
     }
 
   _sun->sun_family = AF_UNIX;
-# ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
+# if HAVE_STRUCT_SOCKADDR_SA_LEN
   _sun->sun_len = len;
 # endif
   if (*buf == '/')
@@ -358,12 +357,12 @@ int kde_getaddrinfo(const char *name, const char *service,
   return err;
 }
 
-#if defined(HAVE_GETADDRINFO) && !defined(HAVE_BROKEN_GETADDRINFO)
+#if HAVE_GETADDRINFO && !defined(HAVE_BROKEN_GETADDRINFO)
 
 #define KRF_getaddrinfo		0
 #define KRF_resolver		0
 
-#else  // !defined(HAVE_GETADDRINFO) || defined(HAVE_BROKEN_GETADDRINFO)
+#else  // !HAVE_GETADDRINFO || defined(HAVE_BROKEN_GETADDRINFO)
 
 #define KRF_getaddrinfo			KRF_USING_OWN_GETADDRINFO
 #define KRF_resolver			KRF_CAN_RESOLVE_UNIX | KRF_CAN_RESOLVE_IPV4
@@ -470,7 +469,7 @@ static int inet_lookup(const char *name, int portnum, int protonum,
     {
       struct sockaddr_in *sin = (sockaddr_in*)q->ai_addr;
       sin->sin_family = AF_INET;
-# ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
+# if HAVE_STRUCT_SOCKADDR_SA_LEN
       sin->sin_len = sizeof(*sin);
 # endif
       sin->sin_port = portnum;
@@ -481,7 +480,7 @@ static int inet_lookup(const char *name, int portnum, int protonum,
     {
       struct sockaddr_in6 *sin6 = (sockaddr_in6*)q->ai_addr;
       sin6->sin6_family = AF_INET6;
-#  ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
+#  if HAVE_STRUCT_SOCKADDR_SA_LEN
       sin6->sin6_len = sizeof(*sin6);
 #  endif
       sin6->sin6_port = portnum;
@@ -521,7 +520,7 @@ static int inet_lookup(const char *name, int portnum, int protonum,
 	{
 	  struct sockaddr_in *sin = (sockaddr_in*)q->ai_addr;
 	  sin->sin_family = AF_INET;
-# ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
+# if HAVE_STRUCT_SOCKADDR_SA_LEN
 	  sin->sin_len = sizeof(*sin);
 # endif
 	  sin->sin_port = portnum;
@@ -532,7 +531,7 @@ static int inet_lookup(const char *name, int portnum, int protonum,
 	{
 	  struct sockaddr_in6 *sin6 = (sockaddr_in6*)q->ai_addr;
 	  sin6->sin6_family = AF_INET6;
-#  ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
+#  if HAVE_STRUCT_SOCKADDR_SA_LEN
 	  sin6->sin6_len = sizeof(*sin6);
 #  endif
 	  sin6->sin6_port = portnum;
@@ -611,7 +610,7 @@ static int make_inet(const char *name, int portnum, int protonum, struct addrinf
 		}
 
 	      sin6->sin6_family = AF_INET6;
-#  ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
+#  if HAVE_STRUCT_SOCKADDR_SA_LEN
 	      sin6->sin6_len = sizeof(*sin6);
 #  endif
 	      sin6->sin6_port = portnum;
@@ -660,7 +659,7 @@ static int make_inet(const char *name, int portnum, int protonum, struct addrinf
 		}
 
 	      sin->sin_family = AF_INET;
-# ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
+# if HAVE_STRUCT_SOCKADDR_SA_LEN
 	      sin->sin_len = sizeof(*sin);
 # endif
 	      sin->sin_port = portnum;
@@ -711,7 +710,7 @@ static int make_inet(const char *name, int portnum, int protonum, struct addrinf
 	    }
 
 	  sin->sin_family = AF_INET;
-# ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
+# if HAVE_STRUCT_SOCKADDR_SA_LEN
 	  sin->sin_len = sizeof(*sin);
 # endif
 	  sin->sin_port = portnum;
@@ -747,7 +746,7 @@ static int make_inet(const char *name, int portnum, int protonum, struct addrinf
 	    }
 
 	  sin6->sin6_family = AF_INET6;
-#  ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
+#  if HAVE_STRUCT_SOCKADDR_SA_LEN
 	  sin6->sin6_len = sizeof(*sin6);
 #  endif
 	  sin6->sin6_port = portnum;
@@ -886,7 +885,7 @@ void freeaddrinfo(struct addrinfo *p)
   dofreeaddrinfo(p);
 }
 
-#ifndef HAVE_GAI_STRERROR_PROTO
+#if !HAVE_GAI_STRERROR_PROTO
 char *gai_strerror(int errorcode)
 {
   static const char messages[] =
@@ -1025,7 +1024,7 @@ int getnameinfo(const struct sockaddr *sa, kde_socklen_t salen,
 
 #endif // HAVE_GETADDRINFO
 
-#ifndef HAVE_INET_NTOP
+#if !HAVE_INET_NTOP
 
 #define KRF_inet_ntop	KRF_USING_OWN_INET_NTOP
 
@@ -1136,7 +1135,7 @@ const char* inet_ntop(int af, const void *cp, char *buf, size_t len)
 
 #endif	// HAVE_INET_NTOP
 
-#ifndef HAVE_INET_PTON
+#if !HAVE_INET_PTON
 
 #define KRF_inet_pton		KRF_USING_OWN_INET_PTON
 int inet_pton(int af, const char *cp, void *buf)

@@ -19,7 +19,6 @@
 
 #include "k3sockssocketdevice.h"
 
-#include <config.h>
 #include <config-network.h>
 
 #include <errno.h>

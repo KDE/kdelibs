@@ -27,12 +27,12 @@
 
 #include "k3socketdevice.h" //krazy:exclude=includes (KDE3 compat: not worth fixing)
 
-#include <config.h>
 #include <config-network.h>
+#include <config-kde4support.h>
 
 #include <QMap>
 
-#ifdef HAVE_SYS_FILIO_H
+#if HAVE_SYS_FILIO_H
 # include <sys/filio.h>
 #endif
 #include <sys/types.h>
@@ -45,10 +45,10 @@
 #include <netinet/tcp.h>	// WARNING: verify if this is portable
 #include <unistd.h>
 
-#ifdef HAVE_POLL
+#if HAVE_POLL
 # include <sys/poll.h>
 #else
-# ifdef HAVE_SYS_SELECT_H
+# if HAVE_SYS_SELECT_H
 #  include <sys/select.h>
 # endif
 #endif
@@ -578,7 +578,7 @@ KSocketAddress KSocketDevice::localAddress() const
     // error!
     return d->local = KSocketAddress();
 
-#ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
+#if HAVE_STRUCT_SOCKADDR_SA_LEN
   len = localAddress.address()->sa_len;
 #endif
 
@@ -614,7 +614,7 @@ KSocketAddress KSocketDevice::peerAddress() const
     // error!
     return d->peer = KSocketAddress();
 
-#ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
+#if HAVE_STRUCT_SOCKADDR_SA_LEN
   len = peerAddress.address()->sa_len;
 #endif
 
@@ -706,7 +706,7 @@ bool KSocketDevice::poll(bool *input, bool *output, bool *exception,
     }
 
   resetError();
-#ifdef HAVE_POLL
+#if HAVE_POLL
   struct pollfd fds;
   fds.fd = m_sockfd;
   fds.events = 0;

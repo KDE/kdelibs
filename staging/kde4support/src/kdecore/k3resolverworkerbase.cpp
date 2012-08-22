@@ -24,7 +24,6 @@
 
 #include "k3resolverworkerbase.h"
 
-#include <config.h>
 #include <config-network.h>
 
 #include <assert.h>

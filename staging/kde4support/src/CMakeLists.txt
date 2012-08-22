@@ -58,6 +58,7 @@ include_directories(
 # Configure checks for network/ but also for netsupp.*
 include(ConfigureChecks.cmake)
 configure_file(config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-network.h )
+configure_file(config-kde4support.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kde4support.h )
 
 configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 

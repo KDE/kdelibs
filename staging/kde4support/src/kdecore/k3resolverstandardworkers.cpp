@@ -24,7 +24,6 @@
 
 #include "k3resolverstandardworkers_p.h"
 
-#include <config.h>
 #include <config-network.h>
 
 #include <sys/types.h>
@@ -37,7 +36,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#ifdef HAVE_NET_IF_H
+#if HAVE_NET_IF_H
 #include <net/if.h>
 #endif
 
@@ -203,14 +202,14 @@ namespace
    * Lastly, gethostbyname will be used if nothing else is present.
    */
 
-#ifndef HAVE_GETADDRINFO
+#if !HAVE_GETADDRINFO
 
-# if defined(HAVE_GETHOSTBYNAME2_R)
+# if HAVE_GETHOSTBYNAME2_R
 #  define USE_GETHOSTBYNAME2_R
-# elif defined(HAVE_GETHOSTBYNAME_R) && (!defined(AF_INET6) || !defined(HAVE_GETHOSTBYNAME2))
+# elif HAVE_GETHOSTBYNAME_R && (!defined(AF_INET6) || !HAVE_GETHOSTBYNAME2)
 #  define USE_GETHOSTBYNAME_R
-# elif defined(HAVE_GETHOSTBYNAME2)
-#  define USE_GETHOSTBYNAME2)
+# elif HAVE_GETHOSTBYNAME2
+#  define USE_GETHOSTBYNAME2
 # else
 #  define USE_GETHOSTBYNAME
 # endif
@@ -613,7 +612,7 @@ bool KStandardWorker::resolveScopeId()
     {
       // it's not a number
       // therefore, it's an interface name
-#ifdef HAVE_IF_NAMETOINDEX
+#if HAVE_IF_NAMETOINDEX
       scopeid = if_nametoindex(scopename.toLatin1());
 #else
       scopeid = 0;
@@ -860,7 +859,7 @@ bool KStandardWorker::preprocess()
 
 bool KStandardWorker::run()
 {
-#ifndef HAVE_GETADDRINFO
+#if !HAVE_GETADDRINFO
   // check the scope id first
   // since most of the resolutions won't have a scope id, this should be fast
   // and we won't have wasted time on services if this fails

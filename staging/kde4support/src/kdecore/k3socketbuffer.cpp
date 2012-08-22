@@ -24,7 +24,6 @@
 
 #include "k3socketbuffer_p.h"
 
-#include <config.h>
 #include <config-network.h>
 
 #include <assert.h>

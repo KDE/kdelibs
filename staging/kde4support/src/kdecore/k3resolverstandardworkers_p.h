@@ -35,7 +35,6 @@
 #include "k3resolver.h"
 #include "k3resolverworkerbase.h"
 
-#include <config.h>
 #include <config-network.h>
 
 namespace KNetwork { namespace Internal
@@ -86,7 +85,7 @@ namespace KNetwork { namespace Internal
     KNetwork::KResolver::ErrorCodes addUnix();
   };
 
-#if defined(HAVE_GETADDRINFO)
+#if HAVE_GETADDRINFO
   /** @internal
    * Worker class based on getaddrinfo(3).
    *

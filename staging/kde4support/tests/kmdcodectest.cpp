@@ -19,7 +19,6 @@
 
 #undef QT_NO_CAST_FROM_ASCII
 
-#include <config.h>
 #include <unistd.h>
 #include <time.h>
 

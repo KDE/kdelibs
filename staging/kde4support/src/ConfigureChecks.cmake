@@ -35,6 +35,10 @@ macro_pop_required_vars()
 check_include_files("sys/types.h;sys/socket.h;net/if.h" HAVE_NET_IF_H)
 check_include_files("sys/filio.h" HAVE_SYS_FILIO_H)
 check_include_files(stropts.h HAVE_STROPTS_H)
+check_include_files(paths.h       HAVE_PATHS_H)
+check_include_files(sys/stat.h    HAVE_SYS_STAT_H) 
+check_include_files(sys/time.h    HAVE_SYS_TIME_H) 
+check_include_files(sys/filio.h  HAVE_SYS_FILIO_H)
 
 check_function_exists(inet_pton        HAVE_INET_PTON)
 check_function_exists(inet_ntop        HAVE_INET_NTOP)
@@ -69,3 +73,6 @@ check_type_size("struct addrinfo" HAVE_STRUCT_ADDRINFO)
 set(CMAKE_EXTRA_INCLUDE_FILES "sys/socket.h;netdb.h")
 check_type_size("struct sockaddr_in6" HAVE_STRUCT_SOCKADDR_IN6)
 set(CMAKE_EXTRA_INCLUDE_FILES)  #reset CMAKE_EXTRA_INCLUDE_FILES
+
+check_struct_member("struct sockaddr" sa_len "sys/types.h;sys/socket.h" HAVE_STRUCT_SOCKADDR_SA_LEN)
+check_prototype_exists(res_init "sys/types.h;netinet/in.h;arpa/nameser.h;resolv.h" HAVE_RES_INIT_PROTO)

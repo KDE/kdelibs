@@ -24,7 +24,6 @@
 
 #include "k3clientsocketbase.h"
 
-#include <config.h>
 #include <config-network.h>
 
 #include <QSocketNotifier>

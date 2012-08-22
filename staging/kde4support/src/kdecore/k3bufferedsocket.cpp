@@ -24,7 +24,6 @@
 
 #include "k3bufferedsocket.h"
 
-#include <config.h>
 #include <config-network.h>
 
 #include <QMutex>

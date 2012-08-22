@@ -16,12 +16,11 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <config.h>
 #define I_KNOW_KSOCKS_ISNT_PUBLIC
 #include "k3socks.h" //krazy:exclude=includes (not public: you should know you need kde_socklen_t if you use this)
 #undef I_KNOW_KSOCKS_ISNT_PUBLIC
 
-#ifdef HAVE_SYS_TIME_H
+#if HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
 

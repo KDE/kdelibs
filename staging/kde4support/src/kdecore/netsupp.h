@@ -23,7 +23,6 @@
 
 #include <kde4support_export.h>
 
-#include <config.h>
 #include <config-network.h>
 
 #include <sys/socket.h>
@@ -163,9 +162,9 @@ extern KDE4SUPPORT_DEPRECATED_EXPORT int kde_getaddrinfo(const char *name, const
 			   struct kde_addrinfo** result);
 extern KDE4SUPPORT_DEPRECATED_EXPORT void kde_freeaddrinfo(struct kde_addrinfo *p);
 
-#if !defined(HAVE_GETADDRINFO) || defined(HAVE_BROKEN_GETADDRINFO)
+#if !HAVE_GETADDRINFO || defined(HAVE_BROKEN_GETADDRINFO)
 
-# ifndef HAVE_STRUCT_ADDRINFO
+# if !HAVE_STRUCT_ADDRINFO
 /**
  * @internal
  */
@@ -296,7 +295,7 @@ namespace KDE
 			 int flags);
 }
 
-# ifndef HAVE_GAI_STRERROR_PROTO
+# if !HAVE_GAI_STRERROR_PROTO
 /** \internal */
 extern KDE4SUPPORT_DEPRECATED_EXPORT char *gai_strerror(int errorcode);
 # endif
@@ -308,7 +307,7 @@ extern KDE4SUPPORT_DEPRECATED_EXPORT char *gai_strerror(int errorcode);
 
 #endif
 
-#ifndef HAVE_INET_PTON
+#if !HAVE_INET_PTON
 
 namespace KDE
 {
@@ -319,7 +318,7 @@ namespace KDE
 # define inet_pton	KDE::inet_pton
 #endif
 
-#ifndef HAVE_INET_NTOP
+#if !HAVE_INET_NTOP
 
 namespace KDE
 {

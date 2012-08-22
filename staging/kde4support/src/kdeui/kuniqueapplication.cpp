@@ -21,8 +21,6 @@
 #include "kuniqueapplication_p.h"
 #include <kmainwindow.h>
 
-#include <config.h>
-
 #include <sys/types.h>
 #include <sys/wait.h>
 

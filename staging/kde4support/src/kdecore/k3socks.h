@@ -22,6 +22,7 @@
 /* "ksocks.h is not public API" */
 
 #include <kde4support_export.h>
+#include <config-kde4support.h>
 
 #include <QtCore/QStringList>
 #include <sys/types.h>

@@ -24,7 +24,6 @@
 
 #include "k3reverseresolver.h"
 
-#include <config.h>
 #include <config-network.h>
 
 // System includes
@@ -43,7 +42,7 @@
 #include "k3resolverworkerbase.h"
 #include "k3socketaddress.h"
 
-#ifndef HAVE_GETNAMEINFO
+#if !HAVE_GETNAMEINFO
 // FIXME KDE4:
 // move to syssocket or adapt
 # include "netsupp.h"
