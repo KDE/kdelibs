@@ -100,7 +100,7 @@ protected:
 #endif
     }
 };
-#endif
+#endif //HAVE_DBUSMENUQT
 
 KStatusNotifierItem::KStatusNotifierItem(QObject *parent)
       : QObject(parent),

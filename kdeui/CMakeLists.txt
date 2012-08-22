@@ -78,6 +78,10 @@ if(X11_FOUND)
 	macro_bool_to_01(X11_XTest_FOUND HAVE_XTEST)
 endif(X11_FOUND)
 
+find_package(DBusMenuQt)
+macro_log_feature(DBUSMENUQT_FOUND "DBusMenuQt" "Support for notification area menus via the DBusMenu protocol" "https://launchpad.net/libdbusmenu-qt" TRUE "" "")
+macro_bool_to_01(DBUSMENUQT_FOUND HAVE_DBUSMENUQT)
+
 check_include_files(sys/stat.h    HAVE_SYS_STAT_H) 
 check_include_files(paths.h       HAVE_PATHS_H)
 check_include_files(limits.h      HAVE_LIMITS_H)
