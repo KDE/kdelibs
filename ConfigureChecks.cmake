@@ -34,7 +34,7 @@ set(SVG_SUPPORT 1)              # unused yet, but for the future
 # checks below.
 set(CMAKE_REQUIRED_DEFINITIONS ${_KDE4_PLATFORM_DEFINITIONS})
 
-check_include_files(stdio.h       HAVE_STDIO_H)                        # various
+check_include_files(stdio.h       HAVE_STDIO_H)                        # kdoctools, kdoctools 
 check_include_files(stdlib.h      HAVE_STDLIB_H)                       # various
 check_include_files(string.h      HAVE_STRING_H)                       # various
 check_include_files(strings.h     HAVE_STRINGS_H)                      # various
