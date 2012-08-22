@@ -42,6 +42,8 @@ check_symbol_exists(posix_madvise   "sys/mman.h"               HAVE_MADVISE)
 
 check_library_exists(volmgt volmgt_running "" HAVE_VOLMGT)
 
+macro_bool_to_01(LIBINTL_FOUND ENABLE_NLS)
+
 check_cxx_symbol_exists(__CORRECT_ISO_CPP_STRING_H_PROTO "string.h" HAVE_STRCASESTR_OVERLOAD) # glibc-2.9 strangeness
 if (HAVE_STRCASESTR_OVERLOAD)
 	#message(STATUS "string.h defines __CORRECT_ISO_CPP_STRING_H_PROTO")

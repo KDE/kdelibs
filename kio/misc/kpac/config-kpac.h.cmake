@@ -4,3 +4,6 @@
 #cmakedefine01 HAVE_NETINET_IN_H
 #cmakedefine01 HAVE_SYS_TYPES_H
 #cmakedefine01 HAVE_SYS_PARAM_H
+#cmakedefine01 HAVE___RES_INIT_IN_RESOLV_LIBRARY
+#cmakedefine01 HAVE_RES_INIT_IN_RESOLV_LIBRARY
+#cmakedefine01 HAVE_RESOLV_LIBRARY
