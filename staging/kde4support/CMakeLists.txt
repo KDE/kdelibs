@@ -19,11 +19,6 @@ include(ECMWriteVersionHeader)
 
 find_package(Qt5Transitional REQUIRED Core)
 
-include(ConfigureChecks.cmake)
-
-set( KDELIBSUFF ${LIB_SUFFIX} )
-configure_file(config-kde4support.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kde4support.h )
-
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 remove_definitions(-DQT_NO_CAST_TO_ASCII)

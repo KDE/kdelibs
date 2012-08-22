@@ -7,6 +7,8 @@ include(CheckSymbolExists)
 include(CheckTypeSize)
 include(CheckStructHasMember)
 
+set( KDELIBSUFF ${LIB_SUFFIX} )
+
 macro_push_required_vars()
   set(CMAKE_REQUIRED_INCLUDES "${CMAKE_REQUIRED_INCLUDES};${QT_INCLUDES}")
   if (QT_USE_FRAMEWORKS)
