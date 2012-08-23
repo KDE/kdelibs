@@ -94,7 +94,7 @@ check_c_source_runs("
     hint.ai_protocol = 0;
     hint.ai_socktype = SOCK_STREAM;
     hint.ai_flags = AI_PASSIVE;
-    err = getaddrinfo(0, \"18300\", &hint, &res); /* kxmlrpc tries this */
+    err = getaddrinfo(0, \"18300\", &hint, &res);
     if (err != 0 || res == 0 || res->ai_family != AF_INET)
       return 1;
     return 0;
