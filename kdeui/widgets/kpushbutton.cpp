@@ -260,7 +260,7 @@ void KPushButton::setIcon( const KIcon &icon )
 
 void KPushButton::setIcon( const QIcon &qicon )
 {
-    d->item.setIcon(KIcon(qicon));
+    setIcon(KIcon(qicon));
 }
 
 void KPushButton::setDragEnabled( bool enable )
