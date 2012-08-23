@@ -147,6 +147,7 @@ void PublicService::stop()
 {
 	K_D;
         if (d->m_group) d->m_group->Reset();
+        d->m_running = false;
 	d->m_published = false;
 }
 bool PublicServicePrivate::fillEntryGroup()
@@ -200,7 +201,7 @@ void PublicServicePrivate::serverStateChanged(int s,const QString&)
 	    break;
 	case AVAHI_SERVER_REGISTERING:
 	case AVAHI_SERVER_COLLISION:
-	    m_group->Reset();
+	    if (m_group) m_group->Reset();
 	    m_collision=true;
 	    break;
 	case AVAHI_SERVER_RUNNING:
