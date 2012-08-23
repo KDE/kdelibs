@@ -12,8 +12,8 @@ if(NOT KPAC_NO_SOLID)
 endif(NOT KPAC_NO_SOLID)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}")
-check_include_files(sys/param.h   HAVE_SYS_PARAM_H)
-check_include_files(sys/types.h   HAVE_SYS_TYPES_H)
+
+include(ConfigureChecks.cmake)
 configure_file(config-kpac.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kpac.h)
 
 ########### next target ###############
