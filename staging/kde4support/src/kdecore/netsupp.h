@@ -22,6 +22,7 @@
 #define _NETSUPP_H_
 
 #include <kde4support_export.h>
+#include <config-kde4support.h>
 
 #include <config-network.h>
 
@@ -162,7 +163,7 @@ extern KDE4SUPPORT_DEPRECATED_EXPORT int kde_getaddrinfo(const char *name, const
 			   struct kde_addrinfo** result);
 extern KDE4SUPPORT_DEPRECATED_EXPORT void kde_freeaddrinfo(struct kde_addrinfo *p);
 
-#if !HAVE_GETADDRINFO || defined(HAVE_BROKEN_GETADDRINFO)
+#if !HAVE_GETADDRINFO || HAVE_BROKEN_GETADDRINFO
 
 # if !HAVE_STRUCT_ADDRINFO
 /**

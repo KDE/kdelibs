@@ -357,12 +357,12 @@ int kde_getaddrinfo(const char *name, const char *service,
   return err;
 }
 
-#if HAVE_GETADDRINFO && !defined(HAVE_BROKEN_GETADDRINFO)
+#if HAVE_GETADDRINFO && !HAVE_BROKEN_GETADDRINFO
 
 #define KRF_getaddrinfo		0
 #define KRF_resolver		0
 
-#else  // !HAVE_GETADDRINFO || defined(HAVE_BROKEN_GETADDRINFO)
+#else  // !HAVE_GETADDRINFO || HAVE_BROKEN_GETADDRINFO
 
 #define KRF_getaddrinfo			KRF_USING_OWN_GETADDRINFO
 #define KRF_resolver			KRF_CAN_RESOLVE_UNIX | KRF_CAN_RESOLVE_IPV4

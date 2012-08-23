@@ -31,6 +31,7 @@
 
 /* structs */
 #cmakedefine01 HAVE_STRUCT_ADDRINFO
+#cmakedefine01 HAVE_BROKEN_GETADDRINFO
 #cmakedefine01 HAVE_STRUCT_SOCKADDR_IN6
 
 #cmakedefine01 HAVE_GETSERVBYNAME_R_PROTO

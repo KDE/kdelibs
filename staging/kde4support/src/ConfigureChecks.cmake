@@ -6,6 +6,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/modules/CheckPrototypeExists.cmake)
 include(CheckSymbolExists)
 include(CheckTypeSize)
 include(CheckStructHasMember)
+include(CheckCSourceRuns)
 
 set( KDELIBSUFF ${LIB_SUFFIX} )
 
@@ -78,3 +79,29 @@ set(CMAKE_EXTRA_INCLUDE_FILES)  #reset CMAKE_EXTRA_INCLUDE_FILES
 
 check_struct_member("struct sockaddr" sa_len "sys/types.h;sys/socket.h" HAVE_STRUCT_SOCKADDR_SA_LEN)
 check_prototype_exists(res_init "sys/types.h;netinet/in.h;arpa/nameser.h;resolv.h" HAVE_RES_INIT_PROTO)
+
+check_c_source_runs("
+  #include <sys/types.h>
+  #include <sys/socket.h>
+  #include <netdb.h>
+  #include <string.h>
+  int main()
+  {
+    struct addrinfo hint, *res;
+    int err;
+    memset(&hint, 0, sizeof(hint));
+    hint.ai_family = AF_INET;
+    hint.ai_protocol = 0;
+    hint.ai_socktype = SOCK_STREAM;
+    hint.ai_flags = AI_PASSIVE;
+    err = getaddrinfo(0, \"18300\", &hint, &res); /* kxmlrpc tries this */
+    if (err != 0 || res == 0 || res->ai_family != AF_INET)
+      return 1;
+    return 0;
+  }"
+  HAVE_GOOD_GETADDRINFO
+)
+
+if( NOT HAVE_GOOD_GETADDRINFO )
+  set( HAVE_BROKEN_GETADDRINFO 1 )
+endif( NOT HAVE_GOOD_GETADDRINFO )
