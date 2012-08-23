@@ -81,7 +81,7 @@ void PartViewer::openUrl( const QUrl & url )
 
 void PartViewer::slotFileOpen()
 {
-    KUrl url = KFileDialog::getOpenUrl();
+    QUrl url = KFileDialog::getOpenUrl();
     if( !url.isEmpty() )
         openUrl( url );
 }
@@ -101,8 +101,7 @@ int main( int argc, char **argv )
     PartViewer *shell = new PartViewer;
     if ( args->count() == 1 )
     {
-        // Allow full paths, but also simple filenames from current dir
-        KUrl url(QString(QDir::currentPath()+'/'), args->arg(0));
+        QUrl url = args->url(0);
         shell->openUrl( url );
     }
     shell->show();

@@ -97,7 +97,7 @@ bool Part1::openFile()
         return false;
     m_edit->setPlainText(s);
 
-    emit setStatusBarText( url().prettyUrl() );
+    emit setStatusBarText(url().toString());
 
     return true;
 }

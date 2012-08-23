@@ -72,7 +72,7 @@ void ChildFrame::dump(int i)
                 << this << m_part.data()
                 << "url:" << (m_part.isNull() ?
                                 QString::fromLatin1("") :
-                                m_part->url().url())
+                                m_part->url().toString())
                 << "el:" << (m_partContainerElement.isNull() ?
                                 QString::fromLatin1("") :
                                 DOM::getPrintableName(m_partContainerElement.data()->id()))

@@ -46,7 +46,7 @@ public:
      * @param url the URL in question
      * @param mimeType the mimetype of the URL
      */
-    BrowserOpenOrSaveQuestion(QWidget* parent, const KUrl& url, const QString& mimeType);
+    BrowserOpenOrSaveQuestion(QWidget* parent, const QUrl& url, const QString& mimeType);
     ~BrowserOpenOrSaveQuestion();
 
     /**

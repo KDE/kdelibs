@@ -1980,7 +1980,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
         if (pos == -1) // There can be no url (David)
         {
             if(ok)
-                v->part()->scheduleRedirection(delay, v->part()->url().url() );
+                v->part()->scheduleRedirection(delay, v->part()->url().toString());
         } else {
             pos++;
             while(pos < (int)str.length() && str[pos].isSpace()) pos++;

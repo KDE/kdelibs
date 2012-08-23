@@ -739,7 +739,7 @@ void KHTMLPopupGUIClient::slotBlockIFrame()
     bool ok = false;
     QString url = QInputDialog::getText( d->m_khtml->widget(), i18n( "Add URL to Filter"),
                                          i18n("Enter the URL:"), QLineEdit::Normal,
-                                         d->m_khtml->url().url(), &ok );
+                                         d->m_khtml->url().toString(), &ok );
     if ( ok ) {
         KHTMLGlobal::defaultHTMLSettings()->addAdFilter( url );
         d->m_khtml->reparseConfiguration();
@@ -1097,7 +1097,7 @@ KHTMLHtmlExtension::KHTMLHtmlExtension(KHTMLPart* part)
 {
 }
 
-KUrl KHTMLHtmlExtension::baseUrl() const
+QUrl KHTMLHtmlExtension::baseUrl() const
 {
     return part()->baseURL();
 }

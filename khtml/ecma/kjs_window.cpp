@@ -2816,7 +2816,7 @@ JSValue *LocationFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const 
   case Location::Reload: {
     KHTMLPart *khtmlpart = qobject_cast<KHTMLPart*>(part);
     if (khtmlpart)
-      khtmlpart->scheduleRedirection(-1, part->url().url(), true/*lock history*/);
+      khtmlpart->scheduleRedirection(-1, part->url().toString(), true/*lock history*/);
     else
       part->openUrl(part->url());
     break;

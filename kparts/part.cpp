@@ -42,12 +42,17 @@
 #include <kmessagebox.h>
 #include <kxmlguifactory.h>
 #include <kglobal.h>
+#include <qurlpathinfo.h>
 
 #include <stdio.h>
 #include <unistd.h>
 #include <assert.h>
 #include <kdebug.h>
 #include <kiconloader.h>
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define toDisplayString toString
+#endif
 
 using namespace KParts;
 
@@ -392,7 +397,7 @@ public:
     KIO::FileCopyJob * m_job;
     KIO::StatJob * m_statJob;
     KIO::FileCopyJob * m_uploadJob;
-    KUrl m_originalURL; // for saveAs
+    QUrl m_originalURL; // for saveAs
     QString m_originalFilePath; // for saveAs
     bool m_showProgressInfo : 1;
     bool m_saveOk : 1;
@@ -410,7 +415,7 @@ public:
     /**
      * Remote (or local) url - the one displayed to the user.
      */
-    KUrl m_url;
+    QUrl m_url;
 
     /**
      * Local file - the only one the part implementation should deal with.
@@ -459,7 +464,7 @@ ReadOnlyPart::~ReadOnlyPart()
     ReadOnlyPart::closeUrl();
 }
 
-KUrl ReadOnlyPart::url() const
+QUrl ReadOnlyPart::url() const
 {
     Q_D(const ReadOnlyPart);
 
@@ -587,7 +592,7 @@ bool ReadOnlyPartPrivate::openLocalFile()
     }
     const bool ret = q->openFile();
     if (ret) {
-        emit q->setWindowCaption(m_url.prettyUrl());
+        emit q->setWindowCaption(m_url.toDisplayString());
         emit q->completed();
     } else {
         emit q->canceled(QString());
@@ -600,11 +605,11 @@ void ReadOnlyPartPrivate::openRemoteFile()
     Q_Q(ReadOnlyPart);
     m_bTemp = true;
     // Use same extension as remote file. This is important for mimetype-determination (e.g. koffice)
-    QString fileName = m_url.fileName();
+    QString fileName = QUrlPathInfo(m_url).fileName();
     QFileInfo fileInfo(fileName);
     QString ext = fileInfo.completeSuffix();
     QString extension;
-    if (!ext.isEmpty() && m_url.query().isNull()) // not if the URL has a query, e.g. cgi.pl?something
+    if (!ext.isEmpty() && !m_url.hasQuery()) // not if the URL has a query, e.g. cgi.pl?something
         extension = '.'+ext; // keep the '.'
     QTemporaryFile tempFile(QDir::tempPath() + QLatin1Char('/') + q->componentData().componentName() + QLatin1String("XXXXXX") + extension);
     tempFile.setAutoRemove(false);
@@ -666,7 +671,7 @@ void ReadOnlyPartPrivate::_k_slotStatJobFinished(KJob * job)
     // this could maybe confuse some apps? So for now we'll just fallback to KIO::get
     // and error again. Well, maybe this even helps with wrong stat results.
     if (!job->error()) {
-        const KUrl localUrl = static_cast<KIO::StatJob*>(job)->mostLocalUrl();
+        const QUrl localUrl = static_cast<KIO::StatJob*>(job)->mostLocalUrl();
         if (localUrl.isLocalFile()) {
             m_file = localUrl.toLocalFile();
             (void)openLocalFile();
@@ -687,7 +692,7 @@ void ReadOnlyPartPrivate::_k_slotJobFinished( KJob * job )
     else
     {
         if ( q->openFile() ) {
-            emit q->setWindowCaption( m_url.prettyUrl() );
+            emit q->setWindowCaption(m_url.toDisplayString());
             emit q->completed();
         } else emit q->canceled(QString());
     }
@@ -713,7 +718,7 @@ void ReadOnlyPart::guiActivateEvent( GUIActivateEvent * event )
         if (!d->m_url.isEmpty())
         {
             kDebug(1000) << d->m_url;
-            emit setWindowCaption( d->m_url.prettyUrl() );
+            emit setWindowCaption(d->m_url.toDisplayString());
         } else emit setWindowCaption( "" );
     }
 }
@@ -807,7 +812,7 @@ bool ReadWritePart::queryClose()
     if ( !isReadWrite() || !isModified() )
         return true;
 
-    QString docName = url().fileName();
+    QString docName = QUrlPathInfo(url()).fileName();
     if (docName.isEmpty()) docName = i18n( "Untitled" );
 
     QWidget *parentWidget=widget();
@@ -828,7 +833,7 @@ bool ReadWritePart::queryClose()
         {
             if (d->m_url.isEmpty())
             {
-                KUrl url = KFileDialog::getSaveUrl(KUrl(), QString(), parentWidget);
+                QUrl url = KFileDialog::getSaveUrl(QUrl(), QString(), parentWidget);
                 if (url.isEmpty())
                     return false;
 
@@ -894,12 +899,12 @@ bool ReadWritePart::saveAs(const QUrl & url)
     d->prepareSaving();
     bool result = save(); // Save local file and upload local file
     if (result) {
-        emit setWindowCaption( d->m_url.prettyUrl() );
+        emit setWindowCaption(d->m_url.toDisplayString());
     } else {
         d->m_url = d->m_originalURL;
         d->m_file = d->m_originalFilePath;
         d->m_duringSaveAs = false;
-        d->m_originalURL = KUrl();
+        d->m_originalURL = QUrl();
         d->m_originalFilePath.clear();
     }
 
@@ -946,7 +951,7 @@ bool ReadWritePart::saveToUrl()
         assert( !d->m_bTemp );
         d->m_saveOk = true;
         d->m_duringSaveAs = false;
-        d->m_originalURL = KUrl();
+        d->m_originalURL = QUrl();
         d->m_originalFilePath.clear();
         return true; // Nothing to do
     }
@@ -993,9 +998,9 @@ void ReadWritePartPrivate::_k_slotUploadFinished( KJob * )
     }
     else
     {
-        KUrl dirUrl( m_url );
-        dirUrl.setPath( dirUrl.directory() );
-        ::org::kde::KDirNotify::emitFilesAdded(dirUrl);
+        QUrlPathInfo dirUrlInfo( m_url );
+        dirUrlInfo.setPath(dirUrlInfo.directory());
+        ::org::kde::KDirNotify::emitFilesAdded(dirUrlInfo.url());
 
         m_uploadJob = 0;
         q->setModified( false );
@@ -1003,7 +1008,7 @@ void ReadWritePartPrivate::_k_slotUploadFinished( KJob * )
         m_saveOk = true;
     }
     m_duringSaveAs = false;
-    m_originalURL = KUrl();
+    m_originalURL = QUrl();
     m_originalFilePath.clear();
     if (m_waitForSave) {
         m_eventLoop.quit();

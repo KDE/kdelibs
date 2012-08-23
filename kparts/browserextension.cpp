@@ -55,7 +55,7 @@ public:
   }
   static const char *s_strOpenUrlEvent;
   ReadOnlyPart *m_part;
-  KUrl m_url;
+  QUrl m_url;
   OpenUrlArguments m_args;
   BrowserArguments m_browserArgs;
 };
@@ -81,7 +81,7 @@ ReadOnlyPart *OpenUrlEvent::part() const
     return d->m_part;
 }
 
-KUrl OpenUrlEvent::url() const
+QUrl OpenUrlEvent::url() const
 {
     return d->m_url;
 }
@@ -459,7 +459,7 @@ public:
   {}
 
   struct DelayedRequest {
-    KUrl m_delayedURL;
+    QUrl m_delayedURL;
     KParts::OpenUrlArguments m_delayedArgs;
     KParts::BrowserArguments m_delayedBrowserArgs;
   };
@@ -582,7 +582,7 @@ void BrowserExtension::saveState( QDataStream &stream )
 
 void BrowserExtension::restoreState( QDataStream &stream )
 {
-  KUrl u;
+  QUrl u;
   qint32 xOfs, yOfs;
   stream >> u >> xOfs >> yOfs;
 

@@ -489,7 +489,7 @@ class KPARTS_EXPORT ReadOnlyPart : public Part
 {
     Q_OBJECT
 
-    Q_PROPERTY( KUrl url READ url )
+    Q_PROPERTY( QUrl url READ url )
 
     KPARTS_DECLARE_PRIVATE(ReadOnlyPart)
 
@@ -541,7 +541,7 @@ public:
      *
      *  @return The current URL.
      */
-    KUrl url() const;
+    QUrl url() const;
 
     /**
      * Called when closing the current url (e.g. document), for instance

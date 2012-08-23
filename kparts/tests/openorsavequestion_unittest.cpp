@@ -49,7 +49,7 @@ private Q_SLOTS:
     void testAutoEmbed()
     {
         // This one should get the fast path, no dialog should show up.
-        BrowserOpenOrSaveQuestion questionEmbedHtml(0, KUrl("http://www.example.com/"),
+        BrowserOpenOrSaveQuestion questionEmbedHtml(0, QUrl("http://www.example.com/"),
                                                     QString::fromLatin1("text/html"));
         QCOMPARE(questionEmbedHtml.askEmbedOrSave(), BrowserOpenOrSaveQuestion::Embed);
 
@@ -58,7 +58,7 @@ private Q_SLOTS:
     {
         KSharedConfig::Ptr cfg = KSharedConfig::openConfig("filetypesrc", KConfig::NoGlobals);
         cfg->group("Notification Messages").writeEntry("askSave" "text/plain", "false");
-        BrowserOpenOrSaveQuestion question(0, KUrl("http://www.example.com/"),
+        BrowserOpenOrSaveQuestion question(0, QUrl("http://www.example.com/"),
                                            QString::fromLatin1("text/plain"));
         QCOMPARE((int)question.askOpenOrSave(), (int)BrowserOpenOrSaveQuestion::Open);
         cfg->group("Notification Messages").writeEntry("askSave" "text/plain", "true");
@@ -120,7 +120,7 @@ private Q_SLOTS:
         QFETCH(bool, expectedService);
 
         QWidget parent;
-        BrowserOpenOrSaveQuestion questionEmbedZip(&parent, KUrl("http://www.example.com/"), mimetype);
+        BrowserOpenOrSaveQuestion questionEmbedZip(&parent, QUrl("http://www.example.com/"), mimetype);
         questionEmbedZip.setFeatures(BrowserOpenOrSaveQuestion::ServiceSelection);
         KDialog* theDialog = parent.findChild<KDialog *>();
         QVERIFY(theDialog);

@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 
     // A test for both 1) "unknown mimetype"  2) no associated app
     {
-        BrowserOpenOrSaveQuestion questionOpenUnknownMimeType(0, KUrl("http://www.example.com/foo.foo"),
+        BrowserOpenOrSaveQuestion questionOpenUnknownMimeType(0, QUrl("http://www.example.com/foo.foo"),
                                                               QString::fromLatin1("application/foo"));
         BrowserOpenOrSaveQuestion::Result res = questionOpenUnknownMimeType.askOpenOrSave();
         kDebug() << res;
@@ -39,7 +39,7 @@ int main(int argc, char **argv)
 
     // The normal case
     {
-        BrowserOpenOrSaveQuestion questionOpen(0, KUrl("http://www.example.com/foo.pdf"),
+        BrowserOpenOrSaveQuestion questionOpen(0, QUrl("http://www.example.com/foo.pdf"),
                                                QString::fromLatin1("application/pdf"));
         questionOpen.setSuggestedFileName(QString::fromLatin1("file.pdf"));
         questionOpen.setFeatures(BrowserOpenOrSaveQuestion::ServiceSelection);
@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 
     // Trying a case with only one app associated
     {
-        BrowserOpenOrSaveQuestion questionOpen(0, KUrl("http://www.example.com/foo.zip"),
+        BrowserOpenOrSaveQuestion questionOpen(0, QUrl("http://www.example.com/foo.zip"),
                                                QString::fromLatin1("application/zip"));
         questionOpen.setFeatures(BrowserOpenOrSaveQuestion::ServiceSelection);
         BrowserOpenOrSaveQuestion::Result res = questionOpen.askOpenOrSave();

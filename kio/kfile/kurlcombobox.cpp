@@ -64,7 +64,7 @@ public:
     QIcon dirIcon;
     bool urlAdded;
     int myMaximum;
-    KUrlComboBox::Mode myMode; // can be used as parameter to KUrl::path( int ) or url( int )
+    KUrlComboBox::Mode myMode; // can be used as parameter to QUrlPathInfo::path()
                                // to specify if we want a trailing slash or not
     QPoint m_dragPoint;
 

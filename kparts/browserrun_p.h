@@ -67,7 +67,7 @@ private Q_SLOTS:
             Nepomuk::Utils::createCopyEvent( fileCopyJob->srcUrl(),
                                              fileCopyJob->destUrl(),
                                              m_downloadJobStartTime,
-                                             KUrl(m_metaData.value("referrer")) );
+                                             QUrl(m_metaData.value("referrer")) );
 #endif
         }
     }

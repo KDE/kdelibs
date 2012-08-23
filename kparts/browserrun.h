@@ -63,7 +63,7 @@ namespace KParts {
         KParts::OpenUrlArguments& arguments();
         KParts::BrowserArguments& browserArguments();
         KParts::ReadOnlyPart* part() const;
-        KUrl url() const;
+        QUrl url() const;
 
         bool hideErrorDialog() const;
 
@@ -126,7 +126,7 @@ namespace KParts {
          * Otherwise, asks the user for a destination url, and calls saveUrlUsingKIO.
          * @since 4.4
          */
-        static void saveUrl(const KUrl & url, const QString & suggestedFileName,
+        static void saveUrl(const QUrl & url, const QString & suggestedFileName,
                             QWidget* window, const KParts::OpenUrlArguments& args);
 
         /**
@@ -136,7 +136,7 @@ namespace KParts {
         static void saveUrlUsingKIO(const QUrl & srcUrl, const QUrl & destUrl,
                                     QWidget* window, const QMap<QString, QString> &metaData);
 
-        static bool allowExecution( const QString &mimeType, const KUrl &url );
+        static bool allowExecution( const QString &mimeType, const QUrl &url );
 
         static bool isTextExecutable( const QString &mimeType );
 
@@ -146,10 +146,10 @@ namespace KParts {
          * @param error the KIO error code (or KIO::ERR_SLAVE_DEFINED if not from KIO)
          * @param errorText the text of the error message
          * @param initialUrl the URL that we were trying to open (as a string, so that this can
-         *                   support invalid URLs as well)
+         *                   support invalid URLs as well) (changed from QString to QUrl in KF5)
          * @since 4.6
          */
-        static KUrl makeErrorUrl(int error, const QString& errorText, const QString& initialUrl);
+        static QUrl makeErrorUrl(int error, const QString& errorText, const QUrl& initialUrl);
 
     protected:
         /**

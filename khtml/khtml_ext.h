@@ -207,7 +207,7 @@ public:
     KHTMLHtmlExtension(KHTMLPart* part);
 
     // HtmlExtension
-    virtual KUrl baseUrl() const;
+    virtual QUrl baseUrl() const;
     virtual bool hasSelection() const;
 
     // SelectorInterface

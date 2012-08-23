@@ -455,7 +455,7 @@ void KFileDialog::setSelection(const QString& name)
 {
     if (d->native) {
          d->native->selectedUrls.clear();
-         d->native->selectedUrls.append( KUrl(name) );
+         d->native->selectedUrls.append(QUrl(name)); // could be relative
          return;
     }
     d->w->setSelection(name);
@@ -561,7 +561,7 @@ QUrl KFileDialogPrivate::getOpenUrl(const QUrl& startDir, const QString& filter,
     if (KFileDialogPrivate::isNative() && (!startDir.isValid() || startDir.isLocalFile())) {
         const QString fileName( KFileDialogPrivate::getOpenFileName(
             startDir, filter, parent, caption, selectedFilter) );
-        return fileName.isEmpty() ? QUrl() : KUrl::fromPath(fileName);
+        return fileName.isEmpty() ? QUrl() : QUrl::fromLocalFile(fileName);
     }
     KFileDialogPrivate::Native::s_allowNative = false;
     KFileDialog dlg(startDir, filter, parent);

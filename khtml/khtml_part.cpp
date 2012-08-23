@@ -140,6 +140,10 @@ using namespace DOM;
 #include <svg/SVGDocument.h>
 #include <qstandardpaths.h>
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define toDisplayString() toString()
+#endif
+
 bool KHTMLPartPrivate::s_dnsInitialised = false;
 
 // DNS prefetch settings
@@ -633,7 +637,7 @@ bool KHTMLPartPrivate::isLocalAnchorJump( const KUrl& url )
     if (url.scheme() == QLatin1String("help"))
         return false;
 
-    return url.hasRef() && url.equals( q->url(),
+    return url.hasFragment() && url.equals( q->url(),
               KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment | KUrl::AllowEmptyPath );
 }
 
@@ -643,15 +647,15 @@ void KHTMLPartPrivate::executeAnchorJump( const KUrl& url, bool lockHistory )
     if (!lockHistory)
         emit m_extension->openUrlNotify();
 
-    const QString &oldRef = q->url().ref();
-    const QString &newRef = url.ref();
+    const QString &oldRef = KUrl(q->url()).ref();
+    const QString &newRef = KUrl(url).ref();
     if ((oldRef != newRef) || (oldRef.isNull() && newRef.isEmpty())) {
         DOM::HashChangeEventImpl *evImpl = new DOM::HashChangeEventImpl();
         evImpl->initHashChangeEvent("hashchange",
                                     true, //bubble
                                     false, //cancelable
-                                    q->url().url(), //oldURL
-                                    url.url() //newURL
+                                    q->url().toString(), //oldURL
+                                    url.toString() //newURL
                                     );
         m_doc->dispatchWindowEvent(evImpl);
     }
@@ -660,7 +664,7 @@ void KHTMLPartPrivate::executeAnchorJump( const KUrl& url, bool lockHistory )
         q->gotoAnchor( url.htmlRef() );
 
     q->setUrl(url);
-    emit m_extension->setLocationBarUrl( url.prettyUrl() );
+    emit m_extension->setLocationBarUrl( url.toDisplayString() );
 }
 
 bool KHTMLPart::openUrl(const QUrl &_url)
@@ -702,8 +706,8 @@ bool KHTMLPart::openUrl(const QUrl &_url)
       const QString errorText = mainURL.queryItem( "errText" );
       urls.pop_front();
       d->m_workingURL = KUrl::join( urls );
-      //kDebug(6050) << "Emitting fixed URL " << d->m_workingURL.prettyUrl();
-      emit d->m_extension->setLocationBarUrl( d->m_workingURL.prettyUrl() );
+      //kDebug(6050) << "Emitting fixed URL " << d->m_workingURL;
+      emit d->m_extension->setLocationBarUrl( d->m_workingURL.toDisplayString() );
       htmlError( error, errorText, d->m_workingURL );
       return true;
     }
@@ -764,7 +768,7 @@ bool KHTMLPart::openUrl(const QUrl &_url)
     return true;
   }
 
-  if ( url.hasRef() && !isFrameSet )
+  if ( url.hasFragment() && !isFrameSet )
   {
     bool noReloadForced = !args.reload() && !browserArgs.redirectedRequest() && !browserArgs.doPost();
     if ( noReloadForced &&  d->isLocalAnchorJump(url) )
@@ -818,8 +822,8 @@ bool KHTMLPart::openUrl(const QUrl &_url)
           write(QString::fromLatin1("<embed "));
       write(QString::fromLatin1("src=\""));
 
-      assert(url.url().indexOf('"') == -1);
-      write(url.url());
+      assert(url.toString().indexOf('"') == -1);
+      write(url.toString());
 
       write(QString::fromLatin1("\">"));
       end();
@@ -833,7 +837,7 @@ bool KHTMLPart::openUrl(const QUrl &_url)
   if(url.scheme().startsWith( "http" ) && !url.host().isEmpty() &&
      url.path().isEmpty()) {
     d->m_workingURL.setPath("/");
-    emit d->m_extension->setLocationBarUrl( d->m_workingURL.prettyUrl() );
+    emit d->m_extension->setLocationBarUrl( d->m_workingURL.toDisplayString() );
   }
   setUrl(d->m_workingURL);
 
@@ -844,7 +848,7 @@ bool KHTMLPart::openUrl(const QUrl &_url)
   metaData.insert("PropagateHttpHeader", "true");
   metaData.insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE" : "FALSE" );
   metaData.insert("ssl_activate_warnings", "TRUE" );
-  metaData.insert("cross-domain", toplevelURL().url());
+  metaData.insert("cross-domain", toplevelURL().toString());
 
   if (d->m_restored)
   {
@@ -958,8 +962,8 @@ bool KHTMLPart::closeUrl()
   if ( !d->m_workingURL.isEmpty() )
   {
     // Aborted before starting to render
-    kDebug( 6050 ) << "Aborted before starting to render, reverting location bar to " << url().prettyUrl();
-    emit d->m_extension->setLocationBarUrl( url().prettyUrl() );
+    kDebug( 6050 ) << "Aborted before starting to render, reverting location bar to " << url();
+    emit d->m_extension->setLocationBarUrl( url().toDisplayString() );
   }
 
   d->m_workingURL = KUrl();
@@ -1224,7 +1228,7 @@ KJSErrorDlg *KHTMLPart::jsErrorExtension() {
   }
   if (!d->m_jsedlg) {
     d->m_jsedlg = new KJSErrorDlg;
-    d->m_jsedlg->setURL(url().prettyUrl());
+    d->m_jsedlg->setURL(url().toDisplayString());
     if (widget()->style()->styleHint(QStyle::SH_DialogButtonBox_ButtonsHaveIcons, 0, widget())) {
       d->m_jsedlg->_clear->setIcon(KDE::icon("edit-clear-locationbar-ltr"));
       d->m_jsedlg->_close->setIcon(KDE::icon("window-close"));
@@ -1829,7 +1833,7 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KUrl& reqUr
 
   // This is somewhat confusing, but we have to escape the externally-
   // controlled URL twice: once for i18n, and once for HTML.
-  url = Qt::escape( Qt::escape( reqUrl.prettyUrl() ) );
+  url = Qt::escape( Qt::escape( reqUrl.toDisplayString() ) );
   protocol = reqUrl.scheme();
   datetime = KGlobal::locale()->formatDateTime( QDateTime::currentDateTime(),
                                                 KLocale::LongDate );
@@ -2021,9 +2025,9 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
   d->m_bCleared = false;
 
   if(url.isValid()) {
-      QString urlString = url.url();
+      QString urlString = url.toString();
       KHTMLGlobal::vLinks()->insert( urlString );
-      QString urlString2 = url.prettyUrl();
+      QString urlString2 = url.toDisplayString();
       if ( urlString != urlString2 ) {
           KHTMLGlobal::vLinks()->insert( urlString2 );
       }
@@ -2040,7 +2044,7 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
   d->m_pageReferrer.clear();
 
   KUrl ref(url);
-  d->m_referrer = ref.scheme().startsWith("http") ? ref.url() : "";
+  d->m_referrer = ref.scheme().startsWith("http") ? ref.toString() : "";
 
   setUrl(url);
 
@@ -2068,7 +2072,7 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
   }
 
   d->m_doc->ref();
-  d->m_doc->setURL( url.url() );
+  d->m_doc->setURL( url.toString() );
   d->m_doc->open( );
   if (!d->m_doc->attached())
     d->m_doc->attach( );
@@ -2638,7 +2642,7 @@ void KHTMLPart::slotRedirect()
   //   but that's ok.
   //   - If we are not the toplevel frame then we check against the toplevelURL()
   if (parentPart())
-      args.metaData().insert("cross-domain", toplevelURL().url());
+      args.metaData().insert("cross-domain", toplevelURL().toString());
 
   KParts::BrowserArguments browserArgs;
   browserArgs.setLockHistory( d->m_redirectLockHistory );
@@ -2654,7 +2658,7 @@ void KHTMLPart::slotRedirection(KIO::Job*, const KUrl& url)
 {
   // the slave told us that we got redirected
   //kDebug( 6050 ) << "redirection by KIO to" << url;
-  emit d->m_extension->setLocationBarUrl( url.prettyUrl() );
+  emit d->m_extension->setLocationBarUrl( url.toDisplayString() );
   d->m_workingURL = url;
 }
 
@@ -2703,7 +2707,7 @@ QString KHTMLPart::defaultEncoding() const
 void KHTMLPart::setUserStyleSheet(const KUrl &url)
 {
   if ( d->m_doc && d->m_doc->docLoader() )
-    (void) new khtml::PartStyleSheetLoader(this, url.url(), d->m_doc->docLoader());
+    (void) new khtml::PartStyleSheetLoader(this, url.toString(), d->m_doc->docLoader());
 }
 
 void KHTMLPart::setUserStyleSheet(const QString &styleSheet)
@@ -3535,7 +3539,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
   emit onURL( url );
 
   if ( url.isEmpty() ) {
-    setStatusBarText(Qt::escape(u.prettyUrl()), BarHoverText);
+    setStatusBarText(Qt::escape(u.toDisplayString()), BarHoverText);
     return;
   }
 
@@ -3553,7 +3557,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
   const QString com = item.mimeComment();
 
   if ( !u.isValid() ) {
-    setStatusBarText(Qt::escape(u.prettyUrl()), BarHoverText);
+    setStatusBarText(Qt::escape(u.toDisplayString()), BarHoverText);
     return;
   }
 
@@ -3569,7 +3573,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     KDE_struct_stat lbuff;
     if (ok) ok = !KDE::lstat( path, &lbuff );
 
-    QString text = Qt::escape(u.prettyUrl());
+    QString text = Qt::escape(u.toDisplayString());
     QString text2 = text;
 
     if (ok && S_ISLNK( lbuff.st_mode ) )
@@ -3676,12 +3680,12 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
                 locate("locale", QLatin1String("l10n/")
                 + countryCode
                 + QLatin1String("/flag.png")));
-            emit setStatusBarText(flagImg + u.prettyUrl() + extra);
+            emit setStatusBarText(flagImg + u.toDisplayString() + extra);
           }
         }
       }
 #endif
-    setStatusBarText(Qt::escape(u.prettyUrl()) + extra, BarHoverText);
+    setStatusBarText(Qt::escape(u.toDisplayString()) + extra, BarHoverText);
   }
 }
 
@@ -3716,7 +3720,7 @@ bool KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     // ### ERROR HANDLING
     return false;
 
-  kDebug(6050) << this << "complete URL:" << cURL.url() << "target=" << target;
+  kDebug(6050) << this << "complete URL:" << cURL << "target=" << target;
 
   if ( state & Qt::ControlModifier )
   {
@@ -3779,7 +3783,7 @@ bool KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   //If we're asked to open up an anchor in the current URL, in current window,
   //merely gotoanchor, and do not reload the new page. Note that this does
   //not apply if the URL is the same page, but without a ref
-  if (cURL.hasRef() && (!hasTarget || target == "_self"))
+  if (cURL.hasFragment() && (!hasTarget || target == "_self"))
   {
     if (d->isLocalAnchorJump(cURL))
     {
@@ -3840,8 +3844,8 @@ void KHTMLPart::slotViewPageInfo()
   if (!d->m_pageServices.isEmpty())
     editStr = i18n("   <a href=\"%1\">[Properties]</a>", d->m_pageServices);
 
-  QString squeezedURL = KStringHandler::csqueeze( url().prettyUrl(), 80 );
-  ui._url->setText("<a href=\"" + url().url() + "\">" + squeezedURL + "</a>" + editStr);
+  QString squeezedURL = KStringHandler::csqueeze( url().toDisplayString(), 80 );
+  ui._url->setText("<a href=\"" + url().toString() + "\">" + squeezedURL + "</a>" + editStr);
   if (lastModified().isEmpty())
   {
     ui._lastModified->hide();
@@ -3994,7 +3998,7 @@ void KHTMLPart::slotSecurity()
   if (certChainOk) {
     kid->setup(certChain,
                d->m_ssl_peer_ip,
-               url().url(),
+               url().toString(),
                d->m_ssl_cipher,
                d->m_ssl_cipher_desc,
                d->m_ssl_cipher_version,
@@ -4221,7 +4225,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KUrl &url, const 
 {
   // we always permit javascript: URLs here since they're basically just
   // empty pages (and checkLinkSecurity/KAuthorized doesn't know what to do with them)
-  if (!d->isJavaScriptURL(url.url()) && !checkLinkSecurity(url))
+  if (!d->isJavaScriptURL(url.toString()) && !checkLinkSecurity(url))
   {
     kDebug(6031) << this << "checkLinkSecurity refused";
     return false;
@@ -4251,7 +4255,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KUrl &url, const 
   }
 
   // ### Dubious -- the whole dir/ vs. img thing
-  if ( child->m_part && !args.reload() && child->m_part.data()->url().equals( url,
+  if ( child->m_part && !args.reload() && KUrl(child->m_part.data()->url()).equals( url,
               KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment | KUrl::AllowEmptyPath ) )
     args.setMimeType(child->m_serviceType);
 
@@ -4274,12 +4278,12 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KUrl &url, const 
   child->m_args.metaData().insert("ssl_was_in_use",
                                   d->m_ssl_in_use ? "TRUE":"FALSE");
   child->m_args.metaData().insert("ssl_activate_warnings", "TRUE");
-  child->m_args.metaData().insert("cross-domain", toplevelURL().url());
+  child->m_args.metaData().insert("cross-domain", toplevelURL().toString());
 
   // We know the frame will be text/html if the HTML says <frame src=""> or <frame src="about:blank">,
   // no need to KHTMLRun to figure out the mimetype"
   // ### What if we're inside an XML document?
-  if ((url.isEmpty() || url.url() == "about:blank" || url.scheme() == "javascript") && args.mimeType().isEmpty())
+  if ((url.isEmpty() || url.toString() == "about:blank" || url.scheme() == "javascript") && args.mimeType().isEmpty())
     args.setMimeType(QLatin1String("text/html"));
 
   if ( args.mimeType().isEmpty() ) {
@@ -4463,10 +4467,10 @@ bool KHTMLPart::navigateLocalProtocol( khtml::ChildFrame* /*child*/, KParts::Rea
     d->propagateInitialDomainAndBaseTo(p);
 
     // Support for javascript: sources
-    if (d->isJavaScriptURL(url.url())) {
+    if (d->isJavaScriptURL(url.toString())) {
         // See if we want to replace content with javascript: output..
         QVariant res = p->executeScript( DOM::Node(),
-                                        d->codeForJavaScriptURL(url.url()));
+                                        d->codeForJavaScriptURL(url.toString()));
         if (res.type() == QVariant::String && p->d->m_redirectURL.isEmpty()) {
             p->begin();
             p->setAlwaysHonourDoctype(); // Disable public API compat; it messes with doctype
@@ -4488,7 +4492,7 @@ bool KHTMLPart::navigateLocalProtocol( khtml::ChildFrame* /*child*/, KParts::Rea
 
 bool KHTMLPart::navigateChild( khtml::ChildFrame *child, const KUrl& url )
 {
-    if (url.scheme() == "javascript" || url.url() == "about:blank") {
+    if (url.scheme() == "javascript" || url.toString() == "about:blank") {
         return navigateLocalProtocol(child, child->m_part.data(), url);
     } else if ( !url.isEmpty() ) {
         kDebug( 6031 ) << "opening" << url << "in frame" << child->m_part;
@@ -4766,7 +4770,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   // End form security checks
   //
 
-  QString urlstring = u.url();
+  QString urlstring = u.toString();
 
   if ( d->isJavaScriptURL(urlstring) ) {
     crossFrameExecuteScript( _target, d->codeForJavaScriptURL(urlstring) );
@@ -4796,7 +4800,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   args.metaData().insert("ssl_activate_warnings", "TRUE");
 //WABA: When we post a form we should treat it as the main url
 //the request should never be considered cross-domain
-//args.metaData().insert("cross-domain", toplevelURL().url());
+//args.metaData().insert("cross-domain", toplevelURL().toString());
   KParts::BrowserArguments browserArgs;
   browserArgs.frameName = _target.isEmpty() ? d->m_doc->baseTarget() : _target ;
 
@@ -4952,7 +4956,7 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
     else                                                // look at "extension" of link
     {
       const QString fname(popupURL.fileName(KUrl::ObeyTrailingSlash));
-      if (!fname.isEmpty() && !popupURL.hasRef() && popupURL.query().isEmpty())
+      if (!fname.isEmpty() && !popupURL.hasFragment() && popupURL.query().isEmpty())
       {
         QMimeType pmt = db.mimeTypeForFile(fname, QMimeDatabase::MatchExtension);
 
@@ -5073,7 +5077,7 @@ void KHTMLPart::slotChildURLRequest( const KUrl &url, const KParts::OpenUrlArgum
   KHTMLPart *callingHtmlPart = const_cast<KHTMLPart *>(dynamic_cast<const KHTMLPart *>(sender()->parent()));
 
   // TODO: handle child target correctly! currently the script are always executed for the parent
-  QString urlStr = url.url();
+  QString urlStr = url.toString();
   if ( d->isJavaScriptURL(urlStr) ) {
       executeScript( DOM::Node(), d->codeForJavaScriptURL(urlStr) );
       return;
@@ -5385,7 +5389,7 @@ void KHTMLPart::saveState( QDataStream &stream )
 #ifdef DEBUG_SAVESTATE
   QString indent= QString().leftJustified( s_saveStateIndentLevel * 4, ' ' );
   const int indentLevel = s_saveStateIndentLevel++;
-  kDebug( 6050 ) << indent << "saveState this=" << this << " '" << objectName() << "' saving URL " << url().url();
+  kDebug( 6050 ) << indent << "saveState this=" << this << " '" << objectName() << "' saving URL " << url();
 #endif
 
   stream << url() << (qint32)d->m_view->contentsX() << (qint32)d->m_view->contentsY()
@@ -5531,7 +5535,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
   d->m_bLoadEventEmitted = false;
 
 //   kDebug( 6050 ) << "docState.count() = " << docState.count();
-//   kDebug( 6050 ) << "m_url " << url().url() << " <-> " << u.url();
+//   kDebug( 6050 ) << "m_url " << url() << " <-> " << u;
 //   kDebug( 6050 ) << "m_frames.count() " << d->m_frames.count() << " <-> " << frameCount;
 
   if (d->m_cacheId == old_cacheId && signed(frameCount) == d->m_frames.count())
@@ -5947,7 +5951,7 @@ QString KHTMLPart::pageReferrer() const
           referrerURL.setRef(QString());
           referrerURL.setUser(QString());
           referrerURL.setPass(QString());
-          return referrerURL.url();
+          return referrerURL.toString();
       }
    }
 
@@ -6813,7 +6817,7 @@ bool KHTMLPart::checkLinkSecurity(const KUrl &linkURL,const KLocalizedString &me
     {
             // Dangerous flag makes the Cancel button the default
             response = KMessageBox::warningContinueCancel( 0,
-                                                           message.subs(Qt::escape(linkURL.prettyUrl())).toString(),
+                                                           message.subs(Qt::escape(linkURL.toDisplayString())).toString(),
                                                            i18n( "Security Warning" ),
                                                            KGuiItem(button),
                                                            KStandardGuiItem::cancel(),
@@ -6823,7 +6827,7 @@ bool KHTMLPart::checkLinkSecurity(const KUrl &linkURL,const KLocalizedString &me
     else
     {
             KMessageBox::error( 0,
-                                i18n( "<qt>Access by untrusted page to<br /><b>%1</b><br /> denied.</qt>", Qt::escape(linkURL.prettyUrl())),
+                                i18n( "<qt>Access by untrusted page to<br /><b>%1</b><br /> denied.</qt>", Qt::escape(linkURL.toDisplayString())),
                                 i18n( "Security Alert" ));
     }
 
@@ -6933,7 +6937,7 @@ DOM::EventListener *KHTMLPart::createHTMLEventListener( QString code, QString na
   if (!proxy)
     return 0;
 
-  return proxy->createHTMLEventHandler( url().url(), name, code, node, svg );
+  return proxy->createHTMLEventHandler( url().toString(), name, code, node, svg );
 }
 
 KHTMLPart *KHTMLPart::opener()
@@ -7049,11 +7053,11 @@ void KHTMLPart::restoreScrollPosition()
 {
   const KParts::OpenUrlArguments args( arguments() );
 
-  if ( url().hasRef() && !d->m_restoreScrollPosition && !args.reload()) {
+  if ( url().hasFragment() && !d->m_restoreScrollPosition && !args.reload()) {
     if ( !d->m_doc || !d->m_doc->parsing() )
       disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
-    if ( !gotoAnchor(url().encodedHtmlRef()) )
-      gotoAnchor(url().htmlRef());
+    if ( !gotoAnchor(KUrl(url()).ref()) )
+      gotoAnchor(url().fragment());
     return;
   }
 

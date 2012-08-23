@@ -167,11 +167,11 @@ bool KHTMLImage::openUrl(const QUrl &url)
         impl->docLoader()->setCachePolicy( KIO::CC_Reload );
 
     khtml::DocLoader *dl = impl->docLoader();
-    m_image = dl->requestImage( this->url().url() );
+    m_image = dl->requestImage( this->url().toString() );
     if ( m_image )
         m_image->ref( this );
 
-    m_khtml->write( html.arg( this->url().url() ) );
+    m_khtml->write( html.arg( this->url().toString() ) );
     m_khtml->end();
 
     /*

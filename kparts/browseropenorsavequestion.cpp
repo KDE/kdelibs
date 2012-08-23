@@ -37,6 +37,13 @@
 #include <QVBoxLayout>
 #include <QCheckBox>
 #include <QLabel>
+#include <qurlpathinfo.h>
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#define pathOrUrl() toDisplayString(QUrl::PreferLocalFile)
+#else
+#define pathOrUrl() toString()
+#endif
 
 using namespace KParts;
 Q_DECLARE_METATYPE(KService::Ptr)
@@ -61,7 +68,7 @@ public:
     static const KDialog::ButtonCode OpenWith = KDialog::User1;
     static const KDialog::ButtonCode Cancel = KDialog::Cancel;
 
-    BrowserOpenOrSaveQuestionPrivate(QWidget* parent, const KUrl& url, const QString& mimeType)
+    BrowserOpenOrSaveQuestionPrivate(QWidget* parent, const QUrl& url, const QString& mimeType)
         : KDialog(parent), url(url), mimeType(mimeType),
           features(0)
     {
@@ -101,7 +108,7 @@ public:
         fileNameLabel->hide();
         textVLayout->addWidget(fileNameLabel);
 
-        mime = fixupMimeType(mimeType, url.fileName());
+        mime = fixupMimeType(mimeType, QUrlPathInfo(url).fileName());
         QString mimeDescription (mimeType);
         if (mime.isValid()) {
             // Always prefer the mime-type comment over the raw type for display
@@ -151,7 +158,7 @@ public:
         setButtonGuiItem(OpenWith, openItem);
     }
 
-    KUrl url;
+    QUrl url;
     QString mimeType;
     QMimeType mime;
     KService::Ptr selectedService;
@@ -184,7 +191,7 @@ public Q_SLOTS:
 };
 
 
-BrowserOpenOrSaveQuestion::BrowserOpenOrSaveQuestion(QWidget* parent, const KUrl& url, const QString& mimeType)
+BrowserOpenOrSaveQuestion::BrowserOpenOrSaveQuestion(QWidget* parent, const QUrl& url, const QString& mimeType)
     : d(new BrowserOpenOrSaveQuestionPrivate(parent, url, mimeType))
 {
 }

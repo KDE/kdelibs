@@ -37,7 +37,7 @@ KHTMLPartIface::~KHTMLPartIface()
 
 QString KHTMLPartIface::url() const
 {
-    return part->url().url();
+    return part->url().toString();
 }
 
 void KHTMLPartIface::setJScriptEnabled( bool enable )

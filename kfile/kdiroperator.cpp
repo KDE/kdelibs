@@ -228,7 +228,7 @@ public:
     void _k_slotShowProgress();
     void _k_slotIOFinished();
     void _k_slotCanceled();
-    void _k_slotRedirected(const KUrl&);
+    void _k_slotRedirected(const QUrl&);
     void _k_slotProperties();
     void _k_slotActivated(const QModelIndex&);
     void _k_slotSelectionChanged();
@@ -241,7 +241,7 @@ public:
     void _k_slotChangeDecorationPosition();
     void _k_slotExpandToUrl(const QModelIndex&);
     void _k_slotItemsChanged();
-    void _k_slotDirectoryCreated(const KUrl&);
+    void _k_slotDirectoryCreated(const QUrl&);
 
     void updateListViewGrid();
     int iconSizeForViewType(QAbstractItemView *itemView) const;
@@ -747,24 +747,27 @@ bool KDirOperator::mkdir(const QString& directory, bool enterDirectory)
 
     bool writeOk = false;
     bool exists = false;
-    KUrl url(d->currUrl);
+    QUrlPathInfo urlInfo(d->currUrl);
 
     const QStringList dirs = directory.split('/', QString::SkipEmptyParts);
     QStringList::ConstIterator it = dirs.begin();
 
     for (; it != dirs.end(); ++it) {
-        url.addPath(*it);
-        exists = KIO::NetAccess::exists(url, KIO::NetAccess::DestinationSide, this);
-        writeOk = !exists && KIO::NetAccess::mkdir(url, this);
+        urlInfo.addPath(*it);
+        exists = KIO::NetAccess::exists(urlInfo.url(), KIO::NetAccess::DestinationSide, this);
+        writeOk = !exists && KIO::NetAccess::mkdir(urlInfo.url(), this);
     }
 
     if (exists) { // url was already existent
-        KMessageBox::sorry(d->itemView, i18n("A file or folder named %1 already exists.", url.pathOrUrl()));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+        KMessageBox::sorry(d->itemView, i18n("A file or folder named %1 already exists.",
+                    urlInfo.url().toDisplayString(QUrl::PreferLocalFile)));
+#endif
     } else if (!writeOk) {
         KMessageBox::sorry(d->itemView, i18n("You do not have permission to "
                                               "create that folder."));
     } else if (enterDirectory) {
-        setUrl(url, true);
+        setUrl(urlInfo.url(), true);
     }
 
     return writeOk;
@@ -1203,7 +1206,7 @@ void KDirOperator::pathChanged()
     }
 }
 
-void KDirOperator::Private::_k_slotRedirected(const KUrl& newURL)
+void KDirOperator::Private::_k_slotRedirected(const QUrl& newURL)
 {
     currUrl = newURL;
     pendingMimeTypes.clear();
@@ -1684,8 +1687,8 @@ void KDirOperator::setDirLister(KDirLister *lister)
     connect(d->dirLister, SIGNAL(started(KUrl)), SLOT(_k_slotStarted()));
     connect(d->dirLister, SIGNAL(completed()), SLOT(_k_slotIOFinished()));
     connect(d->dirLister, SIGNAL(canceled()), SLOT(_k_slotCanceled()));
-    connect(d->dirLister, SIGNAL(redirection(KUrl)),
-            SLOT(_k_slotRedirected(KUrl)));
+    connect(d->dirLister, SIGNAL(redirection(QUrl)),
+            SLOT(_k_slotRedirected(QUrl)));
     connect(d->dirLister, SIGNAL(newItems(KFileItemList)), SLOT(_k_slotItemsChanged()));
     connect(d->dirLister, SIGNAL(itemsDeleted(KFileItemList)), SLOT(_k_slotItemsChanged()));
     connect(d->dirLister, SIGNAL(itemsFilteredByMime(KFileItemList)), SLOT(_k_slotItemsChanged()));
@@ -1997,7 +2000,7 @@ void KDirOperator::setupActions()
     // an interface to add a custom action collection.
 
     d->newFileMenu = new KNewFileMenu(d->actionCollection, "new", this);
-    connect(d->newFileMenu, SIGNAL(directoryCreated(KUrl)), this, SLOT(_k_slotDirectoryCreated(KUrl)));
+    connect(d->newFileMenu, SIGNAL(directoryCreated(QUrl)), this, SLOT(_k_slotDirectoryCreated(QUrl)));
 
     d->actionCollection->addAssociatedWidget(this);
     foreach (QAction* action, d->actionCollection->actions())
@@ -2648,7 +2651,7 @@ bool KDirOperator::Private::isReadable(const QUrl& url)
     return readable;
 }
 
-void KDirOperator::Private::_k_slotDirectoryCreated(const KUrl& url)
+void KDirOperator::Private::_k_slotDirectoryCreated(const QUrl& url)
 {
     parent->setUrl(url, true);
 }

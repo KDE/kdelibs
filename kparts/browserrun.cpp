@@ -38,6 +38,10 @@
 #include <qstandardpaths.h>
 #include <qurlpathinfo.h>
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define toDisplayString toString
+#endif
+
 using namespace KParts;
 
 class BrowserRun::BrowserRunPrivate
@@ -81,7 +85,7 @@ KParts::ReadOnlyPart* BrowserRun::part() const
     return d->m_part;
 }
 
-KUrl BrowserRun::url() const
+QUrl BrowserRun::url() const
 {
     return KRun::url();
 }
@@ -320,7 +324,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& _
 }
 
 //static
-bool BrowserRun::allowExecution( const QString &mimeType, const KUrl &url )
+bool BrowserRun::allowExecution( const QString &mimeType, const QUrl &url )
 {
     if ( !KRun::isExecutable( mimeType ) )
       return true;
@@ -329,7 +333,7 @@ bool BrowserRun::allowExecution( const QString &mimeType, const KUrl &url )
         return false;
 
     return ( KMessageBox::warningContinueCancel( 0,
-                                                 i18n( "Do you really want to execute '%1'?", url.prettyUrl() ),
+                                                 i18n("Do you really want to execute '%1'?", url.toDisplayString()),
     i18n("Execute File?"), KGuiItem(i18n("Execute")) ) == KMessageBox::Continue );
 }
 
@@ -373,7 +377,7 @@ void BrowserRun::simpleSave( const QUrl & url, const QString & suggestedFileName
     saveUrl(url, suggestedFileName, window, KParts::OpenUrlArguments());
 }
 
-void KParts::BrowserRun::saveUrl(const KUrl & url, const QString & suggestedFileName,
+void KParts::BrowserRun::saveUrl(const QUrl & url, const QString & suggestedFileName,
                                  QWidget* window, const KParts::OpenUrlArguments& args)
 {
     // DownloadManager <-> konqueror integration
@@ -403,7 +407,7 @@ void KParts::BrowserRun::saveUrl(const KUrl & url, const QString & suggestedFile
                 // the duplicated code) with shiny new KDownload class for 3.2 (pfeiffer)
                 // Until the shiny new class comes about, send the suggestedFileName
                 // along with the actual URL to download. (DA)
-                cmd += ' ' + KShell::quoteArg(url.url());
+                cmd += ' ' + KShell::quoteArg(url.toString());
                 if ( !suggestedFileName.isEmpty() )
                     cmd += ' ' + KShell::quoteArg(suggestedFileName);
 
@@ -426,7 +430,7 @@ void KParts::BrowserRun::saveUrl(const KUrl & url, const QString & suggestedFile
     if ( !suggestedFileName.isEmpty() )
         name = suggestedFileName;
     else
-        name = url.fileName(KUrl::ObeyTrailingSlash); // can be empty, e.g. in case http://www.kde.org/
+        name = QUrlPathInfo(url).fileName(); // can be empty, e.g. in case http://www.kde.org/
 
     dlg->setSelection(name);
     if ( dlg->exec() )
@@ -495,7 +499,7 @@ void BrowserRun::handleError( KJob * job )
 }
 
 // static
-KUrl BrowserRun::makeErrorUrl(int error, const QString& errorText, const QString& initialUrl)
+QUrl BrowserRun::makeErrorUrl(int error, const QString& errorText, const QUrl& initialUrl)
 {
     /*
      * The format of the error:/ URL is error:/?query#url,
@@ -503,15 +507,15 @@ KUrl BrowserRun::makeErrorUrl(int error, const QString& errorText, const QString
      * error = int kio error code, errText = QString error text from kio
      * The sub-url is the URL that we were trying to open.
      */
-    KUrl newURL(QString("error:/?error=%1&errText=%2")
+    QUrl newURL(QString("error:/?error=%1&errText=%2")
                 .arg( error )
                 .arg( QString::fromUtf8( QUrl::toPercentEncoding( errorText ) ) ) );
 
-    QString cleanedOrigUrl = initialUrl;
-    KUrl runURL = cleanedOrigUrl;
+    QString cleanedOrigUrl = initialUrl.toString();
+    QUrl runURL(cleanedOrigUrl);
     if (runURL.isValid()) {
-        runURL.setPass( QString() ); // don't put the password in the error URL
-        cleanedOrigUrl = runURL.url();
+        runURL.setPassword(QString()); // don't put the password in the error URL
+        cleanedOrigUrl = runURL.toString();
     }
 
     newURL.setFragment(cleanedOrigUrl);
@@ -530,7 +534,7 @@ void BrowserRun::redirectToError( int error, const QString& errorText )
      * we tell konq that the mimetype is text/html, and we redirect to
      * an error:/ URL that sends the info to khtml.
      */
-    KRun::setUrl(makeErrorUrl(error, errorText, url().url()));
+    KRun::setUrl(makeErrorUrl(error, errorText, url()));
     setJob( 0 );
     mimeTypeDetermined( "text/html" );
 }

@@ -25,7 +25,7 @@
 
 #include <kparts/kparts_export.h>
 
-class KUrl;
+class QUrl;
 
 namespace KParts
 {
@@ -61,7 +61,7 @@ public:
      * This function is mostly used to resolve any relative URLs that might be
      * returned when querying the part for links.
      */
-    virtual KUrl baseUrl() const = 0;
+    virtual QUrl baseUrl() const = 0;
 
     /**
      * Returns true if portions of the content in the part that implements
