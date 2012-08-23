@@ -22,8 +22,6 @@
 
 #include "kjs_proxy.h"
 
-#include <config.h>
-
 #include "kjs_window.h"
 #include "kjs_events.h"
 #ifdef KJS_DEBUGGER

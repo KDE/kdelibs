@@ -28,7 +28,6 @@
 
 #include "java/kjavaappletcontext.h"
 #include "java/kjavaapplet.h"
-#include <config.h>
 #pragma message ("Revive QX11EmbedContainer")
 #if 0
 #include <QX11EmbedContainer>

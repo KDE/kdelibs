@@ -51,8 +51,6 @@
 #include <kdebug.h>
 #include <stdlib.h>
 
-#include <config.h>
-
 #include "kentities.c"
 #include "htmlprospectivetokenizer.h"
 

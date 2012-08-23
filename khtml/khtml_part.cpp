@@ -77,9 +77,6 @@ using namespace DOM;
 #include <assert.h>
 #include <unistd.h>
 
-#include <config.h>
-
-
 #include <kstringhandler.h>
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>

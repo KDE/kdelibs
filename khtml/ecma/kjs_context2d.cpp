@@ -24,8 +24,6 @@
 
 #include "kjs_html.h"
 
-#include <config.h>
-
 #include <misc/loader.h>
 #include <dom/dom_exception.h>
 #include <xml/dom2_eventsimpl.h>

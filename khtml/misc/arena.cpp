@@ -44,11 +44,11 @@
  
 #include "arena.h"
 
-#include <config.h>
+#include <config-khtml.h>
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef HAVE_GETPAGESIZE
+#if HAVE_GETPAGESIZE
 #include <unistd.h>
 #define POOL_SIZE qMax(8192u, 2*( unsigned ) getpagesize())
 #else
@@ -189,7 +189,7 @@ void* ArenaAllocate(ArenaPool *pool, unsigned int nb)
     /* attempt to allocate from the heap */
     {
         unsigned int sz;
-#ifdef HAVE_MMAP
+#if HAVE_MMAP
         if (pool->cumul > pool->largealloc) {
             // High memory pressure. Switch to a fractional allocation strategy
             // so that malloc gets a chance to successfully trim us down when it's over.

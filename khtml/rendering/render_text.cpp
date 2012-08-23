@@ -46,13 +46,13 @@
 #include <limits.h>
 #include <math.h>
 
-#include <config.h>
+#include <config-khtml.h>
 
-#ifdef HAVE_ALLOCA_H
+#if HAVE_ALLOCA_H
 // explicitly included for systems that don't provide it in stdlib.h or malloc.h
 #  include <alloca.h>
 #else
-#  ifdef HAVE_MALLOC_H
+#  if HAVE_MALLOC_H
 #    include <malloc.h>
 #  else
 #    include <stdlib.h>

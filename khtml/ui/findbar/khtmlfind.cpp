@@ -33,8 +33,6 @@
 
 #include "khtmlview.h"
 
-#include <config.h>
-
 #include <QClipboard>
 
 #include "rendering/render_form.h"

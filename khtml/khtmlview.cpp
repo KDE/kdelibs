@@ -31,7 +31,7 @@
 
 #include "khtml_part.h"
 #include "khtml_events.h"
-#include <config.h>
+#include <config-khtml.h>
 #if HAVE_X11
 #include <qx11info_x11.h>
 #endif

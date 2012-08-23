@@ -24,12 +24,12 @@
 
 #include "font.h"
 
-#include <config.h>
+//#include <config-khtml.h>
 
-#ifdef HAVE_ALLOCA_H
+#if HAVE_ALLOCA_H
 #  include <alloca.h>
 #  else
-#  ifdef HAVE_MALLOC_H
+#  if HAVE_MALLOC_H
 #    include <malloc.h>
 #  else
 #    include <stdlib.h>

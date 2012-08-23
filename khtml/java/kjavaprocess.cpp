@@ -28,8 +28,6 @@
 #include <QtCore/QTextStream>
 #include <QtCore/QMap>
 
-#include <config.h>
-
 class KJavaProcessPrivate
 {
 friend class KJavaProcess;

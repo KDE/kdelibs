@@ -28,8 +28,9 @@
 
 #include <QLabel>
 
-#include <config.h>
-#ifndef HAVE_X11
+#include "../config-khtml.h"
+
+#if !HAVE_X11
 #define QXEmbed QWidget
 #endif
 

@@ -34,7 +34,7 @@
 #include <html/html_documentimpl.h>
 #include <rendering/render_frames.h>
 
-#include <config.h>
+#include <config-khtml.h>
 
 #include <QtCore/QTimer>
 #include <QApplication>

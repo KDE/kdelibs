@@ -49,8 +49,6 @@
 #include <khtmlview.h>
 #include <khtml_part.h>
 
-#include <config.h>
-
 #include <kdebug.h>
 
 #include <dom/dom_exception.h>

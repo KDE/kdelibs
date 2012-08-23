@@ -25,8 +25,6 @@
 #include "kjavaprocess.h"
 #include "kjavadownloader.h"
 
-#include <config.h>
-
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>

@@ -3,8 +3,6 @@
 #include <QtCore/QTextCodec>
 #include <stdio.h>
 #include <stdlib.h>
-#include <config.h>
-
 
 /* If HAVE_LIBTHAI is defined, libkhtml will link against
  * libthai since compile time. Otherwise it will try to

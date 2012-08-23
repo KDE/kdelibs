@@ -3,6 +3,10 @@ project(khtml)
 
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=6000)
 
+include(ConfigureChecks.cmake)
+configure_file(config-khtml.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-khtml.h )
+
+
 ########svg#########
 add_definitions(-DENABLE_SVG)
 add_definitions(-DENABLE_SVG_FONTS)
@@ -19,6 +23,11 @@ macro_log_feature(GIF_FOUND "giflib" "GIF image format support" "http://sourcefo
 
 find_package(PNG)
 macro_log_feature(PNG_FOUND "libpng" "PNG image format support" "http://www.libpng.org/pub/png" TRUE "" "Required by khtml.")
+
+find_package(X11)
+if(X11_FOUND)
+	macro_bool_to_01(X11_FOUND HAVE_X11)
+endif(X11_FOUND)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${KDE4_ENABLE_EXCEPTIONS}")
 
