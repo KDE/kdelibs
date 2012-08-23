@@ -20,8 +20,6 @@
 #include "k3processcontroller.h"
 #include "k3process.h"
 
-#include <config.h>
-
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/wait.h>

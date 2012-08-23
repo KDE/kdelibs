@@ -21,8 +21,6 @@
 #include "k3listview.h"
 #include "k3listviewlineedit.h"
 
-#include <config.h>
-
 #include <Qt3Support/Q3ColorDrag>
 #include <QActionEvent>
 #include <QtCore/QTimer>

@@ -1,6 +1,9 @@
 
 project(kde3support)
 
+include(ConfigureChecks.cmake)
+configure_file(config-kde3support.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kde3support.h )
+
 # inter-subdir dependencies
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kdecore ${CMAKE_CURRENT_SOURCE_DIR}/kdeui
                      ${CMAKE_CURRENT_SOURCE_DIR}/kio/kfile

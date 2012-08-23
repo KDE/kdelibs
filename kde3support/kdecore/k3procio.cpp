@@ -18,7 +18,6 @@
 
 #include "k3procio.h"
 
-#include <config.h>
 #include <stdio.h>
 
 #include <kdebug.h>

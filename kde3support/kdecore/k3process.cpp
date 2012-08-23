@@ -20,7 +20,6 @@
 
 
 #include "k3process.h"
-#include <config.h>
 
 #include "k3processcontroller.h"
 #include "kpty/kpty.h"
@@ -43,7 +42,8 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 
-#ifdef HAVE_SYS_SELECT_H
+#include <config-kde3support.h>
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
 
@@ -288,7 +288,7 @@ bool K3Process::start(RunMode runmode, Communication comm)
 
   // We do this in the parent because if we do it in the child process
   // gdb gets confused when the application runs from gdb.
-#ifdef HAVE_INITGROUPS
+#if HAVE_INITGROUPS
   struct passwd *pw = geteuid() ? 0 : getpwuid(getuid());
 #endif
 
@@ -324,7 +324,7 @@ bool K3Process::start(RunMode runmode, Communication comm)
         if (!runPrivileged())
         {
            setgid(getgid());
-#ifdef HAVE_INITGROUPS
+#if HAVE_INITGROUPS
            if (pw)
               initgroups(pw->pw_name, pw->pw_gid);
 #endif

@@ -20,8 +20,6 @@
 
 #include "k3rfcdate.h"
 
-#include <config.h>
-
 #include <sys/param.h>
 #include <ctype.h>
 #include <stdlib.h>

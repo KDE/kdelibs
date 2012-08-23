@@ -18,8 +18,6 @@
 
 #include "k3iconview.h"
 
-//#include <config.h>
-
 #include <QtCore/QTimer>
 #include <QPainter>
 #include <QPixmapCache>

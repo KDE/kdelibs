@@ -19,11 +19,11 @@
 
 #include "k3tempfile.h"
 
-#include <config.h>
+#include <config-kde3support.h>
 
 #include <sys/types.h>
 
-#ifdef HAVE_SYS_STAT_H
+#if HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
 
@@ -32,7 +32,7 @@
 #include <unistd.h>
 #include <errno.h>
 
-#ifdef HAVE_PATHS_H
+#if HAVE_PATHS_H
 #include <paths.h>
 #endif
 

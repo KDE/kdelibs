@@ -38,7 +38,7 @@
 #include <kpushbutton.h>
 #include <kstandardguiitem.h>
 
-#include <config.h>
+#include <config-kde3support.h>
 #include <kconfiggroup.h>
 
 class K3SpellConfigPrivate

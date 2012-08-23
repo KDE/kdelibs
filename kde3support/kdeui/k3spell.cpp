@@ -21,8 +21,6 @@
 
 #include "k3spell.h"
 
-#include <config.h>
-
 #include <stdio.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -30,7 +28,9 @@
 #include <ctype.h>
 #include <stdlib.h> // atoi
 
-#ifdef HAVE_STRINGS_H
+#include <config-kde3support.h>
+
+#if HAVE_STRINGS_H
 #include <strings.h>
 #endif
 

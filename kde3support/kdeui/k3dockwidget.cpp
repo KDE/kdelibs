@@ -44,7 +44,6 @@
 #include <kdebug.h>
 #include <kglobalsettings.h>
 
-#include <config.h>
 #if HAVE_X11
 #include <X11/X.h>
 #include <X11/Xlib.h>
