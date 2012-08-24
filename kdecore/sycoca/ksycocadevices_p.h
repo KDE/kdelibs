@@ -22,6 +22,8 @@
 #ifndef KSYCOCADEVICES_P_H
 #define KSYCOCADEVICES_P_H
 
+#include <kdefakes.h>
+
 class KSycocaAbstractDevice
 {
 public:
@@ -45,7 +47,7 @@ private:
     QDataStream* m_stream;
 };
 
-#ifdef HAVE_MMAP
+#if HAVE_MMAP
 // Reading from a mmap'ed file
 class KSycocaMmapDevice : public KSycocaAbstractDevice
 {
