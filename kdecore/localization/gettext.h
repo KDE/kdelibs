@@ -166,6 +166,11 @@ npgettext_aux (const char *domain,
 
 #include <string.h>
 
+#ifndef __STRICT_ANSI__
+#define __STRICT_ANSI__
+#define __STRICT_ANSI_FORCED__
+#endif
+
 #define _LIBGETTEXT_HAVE_VARIABLE_SIZE_ARRAYS \
   (__STRICT_ANSI__ - 0 == 0) && (__GNUC__ >= 3 || __GNUG__ >= 2 /* || __STDC_VERSION__ >= 199901L */ )
 
@@ -263,5 +268,10 @@ dcnpgettext_expr (const char *domain,
     }
   return (n == 1 ? msgid : msgid_plural);
 }
+
+#ifdef __STRICT_ANSI_FORCED__
+#undef __STRICT_ANSI__
+#undef __STRICT_ANSI_FORCED__
+#endif
 
 #endif /* _LIBGETTEXT_H */
