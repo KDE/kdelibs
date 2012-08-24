@@ -27,7 +27,7 @@
 
 #include "kjs/global.h"
 
-#ifdef HAVE_STDINT_H
+#if HAVE_STDINT_H
 #include <stdint.h>   // int32_t
 #endif
 #include <wtf/Vector.h>
