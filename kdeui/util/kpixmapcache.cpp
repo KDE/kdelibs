@@ -52,7 +52,7 @@
 #include <sys/types.h>
 #include <string.h>
 
-#if HAVE_MADVISE
+#if HAVE_MADVISE || HAVE_MMAP
 #include <sys/mman.h>
 #endif
 
