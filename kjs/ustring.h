@@ -34,7 +34,7 @@
 
 #include <assert.h>
 #include "collector.h"
-#ifdef HAVE_STDINT_H
+#if HAVE_STDINT_H
 #include <stdint.h>
 #endif
 

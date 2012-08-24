@@ -24,7 +24,7 @@
 #define KJS_SCOPE_CHAIN_H
 
 #include "global.h"
-#ifdef HAVE_STDINT_H
+#if HAVE_STDINT_H
 #include <stdint.h>
 #endif
 #include <assert.h>

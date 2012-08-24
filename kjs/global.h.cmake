@@ -109,5 +109,6 @@
 #cmakedefine01 HAVE_PTHREAD_ATTR_GET_NP
 #cmakedefine01 HAVE_PTHREAD_GETATTR_NP
 #cmakedefine01 HAVE_MEMCHECK_H
+#cmakedefine01 HAVE_CRTDBG_H 
 
 #endif

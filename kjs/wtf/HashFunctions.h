@@ -24,7 +24,7 @@
 
 #include "RefPtr.h"
 #include <kjs/global.h>
-#ifdef HAVE_STDINT_H
+#if HAVE_STDINT_H
 #include <stdint.h>
 #endif
 

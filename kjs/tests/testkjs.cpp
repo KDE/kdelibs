@@ -33,6 +33,8 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+
+#include "global.h"
 #if HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
@@ -41,7 +43,7 @@
 
 #if PLATFORM(WIN_OS)
 #include <windows.h>
-#ifdef HAVE_CRTDBG_H
+#if HAVE_CRTDBG_H
 #include <crtdbg.h>
 #endif
 #endif
