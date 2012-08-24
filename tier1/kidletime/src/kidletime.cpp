@@ -22,11 +22,11 @@
 
 #include "abstractsystempoller.h"
 
-#ifdef HAVE_XSCREENSAVER
+#if HAVE_XSCREENSAVER
 #include "xscreensaverbasedpoller.h"
 #endif
 
-#ifdef HAVE_XSYNC
+#if HAVE_XSYNC
 #include "xsyncbasedpoller.h"
 #endif
 
