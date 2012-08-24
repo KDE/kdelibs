@@ -40,6 +40,8 @@
 
 #include <sys/types.h>
 
+#include <config-kio.h>
+
 #if HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
