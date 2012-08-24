@@ -51,8 +51,8 @@ public:
     
     virtual ~Private()
     {
-        interactionsViewer->deleteLater();
-        interactionsModel->deleteLater();
+        delete interactionsViewer;
+        delete interactionsModel;
     }
     
     void killJob();
