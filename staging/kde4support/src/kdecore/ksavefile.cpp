@@ -34,6 +34,8 @@
 #include <stdlib.h>
 #include <errno.h>
 
+#include <config-kde4support.h>
+
 static int s_umask;
 
 // Read umask before any threads are created to avoid race conditions

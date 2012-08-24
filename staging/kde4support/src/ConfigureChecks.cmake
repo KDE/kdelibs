@@ -44,6 +44,12 @@ check_include_files(sys/time.h    HAVE_SYS_TIME_H)
 check_include_files(sys/filio.h  HAVE_SYS_FILIO_H)
 check_include_file( "stropts.h" HAVE_STROPTS_H )
 
+# This is broken on OSX 10.6 (succeeds but shouldn't do) and doesn't exist
+# on previous versions so don't do the check on APPLE.
+if(NOT APPLE)
+  check_function_exists(fdatasync      HAVE_FDATASYNC)  # kdecore, kate
+endif(NOT APPLE)
+
 check_function_exists(inet_pton        HAVE_INET_PTON)
 check_function_exists(inet_ntop        HAVE_INET_NTOP)
 check_function_exists(getprotobyname_r HAVE_GETPROTOBYNAME_R)
