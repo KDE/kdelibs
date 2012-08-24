@@ -24,7 +24,9 @@
 #include <QtCore/QStringList>
 
 #include "publicservice.h"
-#ifdef HAVE_SYS_TYPES_H
+
+#include <config-dnssd.h>
+#if HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
 #include "servicebrowser.h"

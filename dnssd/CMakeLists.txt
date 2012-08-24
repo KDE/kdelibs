@@ -1,4 +1,9 @@
 project(dnssd)
+
+include(ConfigureChecks.cmake)
+configure_file(config-dnssd.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-dnssd.h )
+
+
 find_package(Avahi)
 macro_bool_to_01(AVAHI_FOUND HAVE_AVAHI)
 macro_log_feature(AVAHI_FOUND "Avahi" "Facilities for service discovery on a local network (DNSSD)" "http://avahi.org" FALSE "" "Either Avahi or DNSSD is required for KDE applications to make use of multicast DNS/DNS-SD service discovery")
