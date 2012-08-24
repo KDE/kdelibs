@@ -92,6 +92,12 @@ public slots:
 private:
     FileModel* findModelByFileId(int id);
     void updateWindowTitle();
+    
+    // helpers
+    void emitFinishedAmountChanged();
+    void emitUnfinishedAmountChanged();
+    void emitSkippedAmountChanged();
+    void emitErrorsAmountChanged();
 
     qulonglong m_totalSize;
     qulonglong m_speed;

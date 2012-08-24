@@ -80,6 +80,26 @@ QObject* FilesTransferDialog::disappearedModel()
     return m_disappearedModel;
 }
 
+void FilesTransferDialog::emitFinishedAmountChanged()
+{
+    emit finishedAmountChanged(convertAmounts(m_finishedFilesCount, m_finishedFilesSize, qreal(m_finishedFilesSize)/qreal(m_totalSize)));
+}
+
+void FilesTransferDialog::emitUnfinishedAmountChanged()
+{
+    emit unfinishedAmountChanged(convertAmounts(m_unfinishedFilesCount, m_unfinishedFilesSize, qreal(m_unfinishedFilesSize)/qreal(m_totalSize)));
+}
+
+void FilesTransferDialog::emitSkippedAmountChanged()
+{
+    emit skippedAmountChanged(convertAmounts(m_skippedFilesCount, m_skippedFilesSize, qreal(m_skippedFilesSize)/qreal(m_totalSize)));
+}
+
+void FilesTransferDialog::emitErrorsAmountChanged()
+{
+    emit errorsAmountChanged(convertAmounts(m_errorsFilesCount, m_errorsFilesSize, qreal(m_errorsFilesSize)/qreal(m_totalSize)));
+}
+
 void FilesTransferDialog::gotAllFiles(QList<int> fids, QList<KIO::CopyInfo> files)
 {
     kDebug() << "count:(%d, %d)" << fids.count() << files.count();
@@ -101,20 +121,28 @@ void FilesTransferDialog::gotAllFiles(QList<int> fids, QList<KIO::CopyInfo> file
 
 void FilesTransferDialog::gotProcessedAmount(KJob*, KJob::Unit unit, qulonglong amount)
 {
-    if (unit == KJob::Files) {
-        qulonglong delta = amount - m_finishedFilesCount;
-        m_finishedFilesCount = amount;
-        m_unfinishedFilesCount -= delta;
-        kDebug() << "files:" << amount;
-    } else if (unit == KJob::Bytes) {
-        qulonglong delta = amount - m_finishedFilesSize;
-        m_finishedFilesSize = amount;
-        m_unfinishedFilesSize -= delta;
-        kDebug() << "unit:" << unit << "amount:" << amount << "unfinishedSize" << m_unfinishedFilesSize;
+    switch (unit) {
+        case KJob::Files: {
+            qulonglong delta = amount - m_finishedFilesCount;
+            m_finishedFilesCount = amount;
+            m_unfinishedFilesCount -= delta;
+            kDebug() << "files:" << amount;
+            break;
+        }
+        case KJob::Bytes: {
+            qulonglong delta = amount - m_finishedFilesSize;
+            m_finishedFilesSize = amount;
+            m_unfinishedFilesSize -= delta;
+            kDebug() << "unit:" << unit << "amount:" << amount << "unfinishedSize" << m_unfinishedFilesSize;
+            break;
+        }
+        case KJob::Errors:
+        case KJob::Skipped:
+            return;
     }
 
-    emit finishedAmountChanged(convertAmounts(m_finishedFilesCount, m_finishedFilesSize, qreal(m_finishedFilesSize)/qreal(m_totalSize)));
-    emit unfinishedAmountChanged(convertAmounts(m_unfinishedFilesCount, m_unfinishedFilesSize, qreal(m_unfinishedFilesSize)/qreal(m_totalSize)));
+    emitFinishedAmountChanged();
+    emitUnfinishedAmountChanged();
 }
 
 void FilesTransferDialog::gotProcessedFileRatio(int fid, qreal ratio)
@@ -157,19 +185,19 @@ void FilesTransferDialog::gotSkippedFile(int id)
     if (model == m_normalModel) {
         m_unfinishedFilesCount -= 1;
         m_unfinishedFilesSize -= file.size.toLongLong();
-        emit unfinishedAmountChanged(convertAmounts(m_unfinishedFilesCount, m_unfinishedFilesSize, qreal(m_unfinishedFilesSize)/qreal(m_totalSize)));
+        emitUnfinishedAmountChanged();
     } else {
         m_errorsFilesCount -= 1;
         m_errorsFilesSize -= file.size.toLongLong();
-        emit errorsAmountChanged(convertAmounts(m_errorsFilesCount, m_errorsFilesSize, qreal(m_errorsFilesSize)/qreal(m_totalSize)));
+        emitErrorsAmountChanged();
     }
 
-    m_skippedFilesCount += 1;
+    m_skippedFilesCount++;
     m_skippedFilesSize += file.size.toLongLong();
     file.progress = 0;
     file.actions = FileHelper::Skipped;
     m_skippedModel->enqueue(file);
-    emit skippedAmountChanged(convertAmounts(m_skippedFilesCount, m_skippedFilesSize, qreal(m_skippedFilesSize)/qreal(m_totalSize)));
+    emitSkippedAmountChanged();
 }
 
 void FilesTransferDialog::gotRetriedFile(int id)
@@ -188,20 +216,20 @@ void FilesTransferDialog::gotRetriedFile(int id)
     if (model == m_skippedModel) {
         m_skippedFilesCount -= 1;
         m_skippedFilesSize -= file.size.toLongLong();
-        emit skippedAmountChanged(convertAmounts(m_skippedFilesCount, m_skippedFilesSize, qreal(m_skippedFilesSize)/qreal(m_totalSize)));
+        emitSkippedAmountChanged();
     } else { // m_errorsModel
         m_errorsFilesCount -= 1;
         m_errorsFilesSize -= file.size.toLongLong();
-        emit errorsAmountChanged(convertAmounts(m_errorsFilesCount, m_errorsFilesSize, qreal(m_errorsFilesSize)/qreal(m_totalSize)));
+        emitErrorsAmountChanged();
     }
 
-    m_unfinishedFilesCount += 1;
+    m_unfinishedFilesCount++;
     m_unfinishedFilesSize += file.size.toLongLong();
     file.progress = 0;
     file.actions = FileHelper::Unfinished;
     m_normalModel->enqueue(file);
 
-    emit unfinishedAmountChanged(convertAmounts(m_unfinishedFilesCount, m_unfinishedFilesSize, qreal(m_unfinishedFilesSize)/qreal(m_totalSize)));
+    emitUnfinishedAmountChanged();
 }
 
 void FilesTransferDialog::gotUnreadableFile(int id)
@@ -214,13 +242,13 @@ void FilesTransferDialog::gotUnreadableFile(int id)
 
     m_unfinishedFilesCount -= 1;
     m_unfinishedFilesSize -= file.size.toLongLong();
-    m_errorsFilesCount += 1;
+    m_errorsFilesCount++;
     m_errorsFilesSize += file.size.toLongLong();
     file.progress = 0;
     file.actions = FileHelper::Unreadable;
     m_unreadableModel->enqueue(file);
-    emit errorsAmountChanged(convertAmounts(m_errorsFilesCount, m_errorsFilesSize, qreal(m_errorsFilesSize)/qreal(m_totalSize)));
-    emit unfinishedAmountChanged(convertAmounts(m_unfinishedFilesCount, m_unfinishedFilesSize, qreal(m_unfinishedFilesSize)/qreal(m_totalSize)));
+    emitErrorsAmountChanged();
+    emitUnfinishedAmountChanged();
 }
 
 void FilesTransferDialog::gotDisappearedFile(int id)
@@ -233,13 +261,13 @@ void FilesTransferDialog::gotDisappearedFile(int id)
 
     m_unfinishedFilesCount -= 1;
     m_unfinishedFilesSize -= file.size.toLongLong();
-    m_errorsFilesCount += 1;
+    m_errorsFilesCount++;
     m_errorsFilesSize += file.size.toLongLong();
     file.progress = 0;
     file.actions = FileHelper::Disappeared;
     m_disappearedModel->enqueue(file);
-    emit errorsAmountChanged(convertAmounts(m_errorsFilesCount, m_errorsFilesSize, qreal(m_errorsFilesSize)/qreal(m_totalSize)));
-    emit unfinishedAmountChanged(convertAmounts(m_unfinishedFilesCount, m_unfinishedFilesSize, qreal(m_unfinishedFilesSize)/qreal(m_totalSize)));
+    emitErrorsAmountChanged();
+    emitUnfinishedAmountChanged();
 }
 
 void FilesTransferDialog::nothingToProcess()
@@ -252,10 +280,10 @@ void FilesTransferDialog::nothingToProcess()
 void FilesTransferDialog::resendSignals()
 {
     kDebug() << "resending signals";
-    emit finishedAmountChanged(convertAmounts(m_finishedFilesCount, m_finishedFilesSize, qreal(m_finishedFilesSize)/qreal(m_totalSize)));
-    emit unfinishedAmountChanged(convertAmounts(m_unfinishedFilesCount, m_unfinishedFilesSize, qreal(m_unfinishedFilesSize)/qreal(m_totalSize)));
-    emit skippedAmountChanged(convertAmounts(m_skippedFilesCount, m_skippedFilesSize, qreal(m_skippedFilesSize)/qreal(m_totalSize)));
-    emit errorsAmountChanged(convertAmounts(m_errorsFilesCount, m_errorsFilesSize, qreal(m_errorsFilesSize)/qreal(m_totalSize)));
+    emitFinishedAmountChanged();
+    emitUnfinishedAmountChanged();
+    emitSkippedAmountChanged();
+    emitErrorsAmountChanged();
     updateWindowTitle();
 }
 

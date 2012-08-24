@@ -107,7 +107,7 @@ public:
      * Constructs and returns a modeless, parent-less interaction dialog.
      * Dialog is hidden by default. It will show itself after first request.
      */
-    FilesTransferDialog *initInteractionModel(KJob * job, QList<KIO::CopyInfo> files);
+    FilesTransferDialog *initInteractionModel(KJob * job, const QList<KIO::CopyInfo> files);
     void showInteractionDialog(KJob * job);
 
     /**

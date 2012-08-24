@@ -42,7 +42,7 @@ FileItem FileModel::dequeue()
 {
     beginRemoveRows(QModelIndex(), 0, 0);
     if (m_files.isEmpty()) {
-        qFatal("UnfinishedModel::dequeue(): m_files is empty");
+        kFatal() << "m_files is empty";
     }
     FileItem file = m_files.takeFirst();
     endRemoveRows();
