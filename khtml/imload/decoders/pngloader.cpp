@@ -26,7 +26,6 @@
 #include "imageloader.h"
 #include "imagemanager.h"
 
-#include <config.h> //For endian
 #include <png.h>
 
 namespace khtmlImLoad {
@@ -156,7 +155,7 @@ private:
         if (imFrm.type == ImageFormat::Image_RGB_32)
         {
             //Need fillers, plus perhaps BGR swapping for non-alpha
-#if Q_BYTE_ORDER == Q_BIG_ENDIAN || defined(__BIG_ENDIAN__)
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN
             png_set_filler(pngReadStruct, 0xff, PNG_FILLER_BEFORE);
 #else
             png_set_filler(pngReadStruct, 0xff, PNG_FILLER_AFTER);
@@ -165,7 +164,7 @@ private:
         }
         else if (imFrm.type == ImageFormat::Image_ARGB_32)
         {
-#if Q_BYTE_ORDER == Q_BIG_ENDIAN || defined(__BIG_ENDIAN__)
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN
             png_set_swap_alpha(pngReadStruct); //ARGB, not RGBA
 #else
             png_set_bgr   (pngReadStruct);     //BGRA

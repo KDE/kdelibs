@@ -47,8 +47,7 @@
 
 #define SFNT_CHECKSUM_CALC_CONST  0xB1B0AFBAU /* from the TT/OT spec */
 
-# include <config.h>
-#if Q_BYTE_ORDER == Q_BIG_ENDIAN || defined(__BIG_ENDIAN__)
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN
 #  define READ16BE(x) (x)
 #  define READ32BE(x) (x)
 #else

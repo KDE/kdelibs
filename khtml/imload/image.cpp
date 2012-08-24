@@ -33,7 +33,6 @@
 #include <QPainter>
 #include <limits.h>
 #include <kdebug.h>
-#include <config.h> //For endian
 
 namespace khtmlImLoad {
 
@@ -326,7 +325,7 @@ void Image::notifyScanline(uchar version, uchar* data)
         int planeImageWidth = plane->image.width();
         for (int x = 0; x < planeImageWidth; ++x)
         {
-#if Q_BYTE_ORDER == Q_BIG_ENDIAN || defined(__BIG_ENDIAN__)
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN
             unsigned a = src[0];
             unsigned r = src[1];
             unsigned g = src[2];

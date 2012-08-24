@@ -40,7 +40,6 @@
 
 #include <stdlib.h>
 
-#include <config.h> //For endian
 extern "C" {
 #include <gif_lib.h>
 }
