@@ -13,88 +13,88 @@
 /****************************/
 
 /* Define to 1 if you have stdlib.h */
-#cmakedefine   HAVE_STDLIB_H 1
+#cmakedefine01   HAVE_STDLIB_H
 
 /* Define to 1 if you have string.h */
-#cmakedefine   HAVE_STRING_H 1
+#cmakedefine01   HAVE_STRING_H
 
 /* Define to 1 if you have strings.h */
-#cmakedefine   HAVE_STRINGS_H 1
+#cmakedefine01   HAVE_STRINGS_H
 
 /* Define to 1 if you have malloc.h */
-#cmakedefine   HAVE_MALLOC_H 1
+#cmakedefine01   HAVE_MALLOC_H
 
 /* define if message translations are enabled */
-#cmakedefine ENABLE_NLS 1
+#cmakedefine01 ENABLE_NLS
 
-#cmakedefine HAVE_VOLMGT 1
+#cmakedefine01 HAVE_VOLMGT
 
-#cmakedefine HAVE_ERRNO_H 1
-#cmakedefine HAVE_STDINT_H 1
-#cmakedefine HAVE_SYS_STAT_H 1
-#cmakedefine HAVE_SYS_TYPES_H 1
-#cmakedefine HAVE_SYS_PARAM_H 1
-#cmakedefine HAVE_SYS_TIME_H 1
-#cmakedefine HAVE_SYS_SELECT_H 1
-#cmakedefine HAVE_SYSENT_H 1
-#cmakedefine HAVE_SYS_MNTTAB_H 1
-#cmakedefine HAVE_SYS_MNTENT_H 1
-#cmakedefine HAVE_SYS_MOUNT_H 1
-#cmakedefine HAVE_CRTDBG_H 1
+#cmakedefine01 HAVE_ERRNO_H
+#cmakedefine01 HAVE_STDINT_H
+#cmakedefine01 HAVE_SYS_STAT_H
+#cmakedefine01 HAVE_SYS_TYPES_H
+#cmakedefine01 HAVE_SYS_PARAM_H
+#cmakedefine01 HAVE_SYS_TIME_H
+#cmakedefine01 HAVE_SYS_SELECT_H
+#cmakedefine01 HAVE_SYSENT_H
+#cmakedefine01 HAVE_SYS_MNTTAB_H
+#cmakedefine01 HAVE_SYS_MNTENT_H
+#cmakedefine01 HAVE_SYS_MOUNT_H
+#cmakedefine01 HAVE_CRTDBG_H
 
-#cmakedefine HAVE_ALLOCA_H 1
-#cmakedefine HAVE_CRT_EXTERNS_H 1
-#cmakedefine HAVE_FSTAB_H 1
-#cmakedefine HAVE_LIMITS_H 1
-#cmakedefine HAVE_MNTENT_H 1
-#cmakedefine HAVE_PATHS_H 1
-#cmakedefine HAVE_UNISTD_H 1
+#cmakedefine01 HAVE_ALLOCA_H
+#cmakedefine01 HAVE_CRT_EXTERNS_H
+#cmakedefine01 HAVE_FSTAB_H
+#cmakedefine01 HAVE_LIMITS_H
+#cmakedefine01 HAVE_MNTENT_H
+#cmakedefine01 HAVE_PATHS_H
+#cmakedefine01 HAVE_UNISTD_H
 
 #cmakedefine01 HAVE_X11
-#cmakedefine HAVE_XTEST 1
+#cmakedefine01 HAVE_XTEST
 
 /* Define to 1 if you have the Xcursor library */
-#cmakedefine HAVE_XCURSOR 1
+#cmakedefine01 HAVE_XCURSOR
 
 /* Define to 1 if you have the Xfixes library */
-#cmakedefine HAVE_XFIXES 1
+#cmakedefine01 HAVE_XFIXES
 
 /* Define to 1 if you have the Xrender library */
-#cmakedefine HAVE_XRENDER 1
+#cmakedefine01 HAVE_XRENDER
 
-#cmakedefine   HAVE_BACKTRACE 1
-#cmakedefine   HAVE_GETMNTINFO 1
-#cmakedefine   HAVE_GETPAGESIZE 1
-#cmakedefine   HAVE_INITGROUPS 1
-#cmakedefine   HAVE_FDATASYNC 1
-#cmakedefine   HAVE_MADVISE 1
-#cmakedefine   HAVE_MMAP 1
-#cmakedefine   HAVE_MKSTEMPS 1
-#cmakedefine   HAVE_MKSTEMP 1
-#cmakedefine   HAVE_MKDTEMP 1
-#cmakedefine   HAVE_RANDOM 1
-#cmakedefine   HAVE_SENDFILE 1
-#cmakedefine   HAVE_SETENV 1
-#cmakedefine   HAVE_SETEUID 1
-#cmakedefine   HAVE_SETMNTENT 1
-#cmakedefine   HAVE_SRANDOM 1
-#cmakedefine   HAVE_STRCMP 1
-#cmakedefine   HAVE_STRLCPY 1
-#cmakedefine   HAVE_STRLCAT 1
-#cmakedefine   HAVE_STRCASESTR 1
-#cmakedefine   HAVE_STRRCHR 1
-#cmakedefine   HAVE_STRTOLL 1
-#cmakedefine   HAVE_UNSETENV 1
-#cmakedefine   HAVE_USLEEP 1
-#cmakedefine   HAVE_VSNPRINTF 1
-#cmakedefine   HAVE_NSGETENVIRON 1
-#cmakedefine   HAVE_GETTIMEOFDAY 1
-#cmakedefine   HAVE_GETGROUPLIST 1
-#cmakedefine   HAVE_TRUNC 1
+#cmakedefine01   HAVE_BACKTRACE
+#cmakedefine01   HAVE_GETMNTINFO
+#cmakedefine01   HAVE_GETPAGESIZE
+#cmakedefine01   HAVE_INITGROUPS
+#cmakedefine01   HAVE_FDATASYNC
+#cmakedefine01   HAVE_MADVISE
+#cmakedefine01   HAVE_MMAP
+#cmakedefine01   HAVE_MKSTEMPS
+#cmakedefine01   HAVE_MKSTEMP
+#cmakedefine01   HAVE_MKDTEMP
+#cmakedefine01   HAVE_RANDOM
+#cmakedefine01   HAVE_SENDFILE
+#cmakedefine01   HAVE_SETENV
+#cmakedefine01   HAVE_SETEUID
+#cmakedefine01   HAVE_SETMNTENT
+#cmakedefine01   HAVE_SRANDOM
+#cmakedefine01   HAVE_STRCMP
+#cmakedefine01   HAVE_STRLCPY
+#cmakedefine01   HAVE_STRLCAT
+#cmakedefine01   HAVE_STRCASESTR
+#cmakedefine01   HAVE_STRRCHR
+#cmakedefine01   HAVE_STRTOLL
+#cmakedefine01   HAVE_UNSETENV
+#cmakedefine01   HAVE_USLEEP
+#cmakedefine01   HAVE_VSNPRINTF
+#cmakedefine01   HAVE_NSGETENVIRON
+#cmakedefine01   HAVE_GETTIMEOFDAY
+#cmakedefine01   HAVE_GETGROUPLIST
+#cmakedefine01   HAVE_TRUNC
 
-#cmakedefine HAVE_S_ISSOCK 1
+#cmakedefine01 HAVE_S_ISSOCK
 
-#cmakedefine TIME_WITH_SYS_TIME 1
+#cmakedefine01 TIME_WITH_SYS_TIME
 
 /*********************/
 
@@ -107,7 +107,7 @@
  * On HP-UX, the declaration of vsnprintf() is needed every time !
  */
 
-#if !defined(HAVE_VSNPRINTF) || defined(hpux)
+#if !HAVE_VSNPRINTF || defined(hpux)
 #if __STDC__
 #include <stdarg.h>
 #include <stdlib.h>
@@ -124,15 +124,15 @@ extern "C"
 int snprintf(char *str, size_t n, char const *fmt, ...);
 #endif
 
-#if defined(HAVE_NSGETENVIRON) && defined(HAVE_CRT_EXTERNS_H)
+#if HAVE_NSGETENVIRON && HAVE_CRT_EXTERNS_H
 # include <sys/time.h>
 # include <crt_externs.h>
 # define environ (*_NSGetEnviron())
 #endif
 
-#cmakedefine GETMNTINFO_USES_STATVFS 1
+#cmakedefine01 GETMNTINFO_USES_STATVFS
 
-/* Defined to 1 if you have a d_type member in struct dirent */
-#cmakedefine HAVE_DIRENT_D_TYPE 1
+/* Defined to if you have a d_type member in struct dirent */
+#cmakedefine01 HAVE_DIRENT_D_TYPE
 
 #include "kdecore/kdefakes.h"
