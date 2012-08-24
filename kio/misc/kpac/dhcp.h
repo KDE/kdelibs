@@ -22,7 +22,9 @@
 #ifndef __dhcp_h__
 #define __dhcp_h__
 
-#ifdef HAVE_STDINT_H
+#include <config-kpac.h>
+
+#if HAVE_STDINT_H
 # include <stdint.h>
 #endif
 
