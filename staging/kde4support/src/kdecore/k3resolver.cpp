@@ -607,7 +607,7 @@ bool KResolver::resolveAsync(QObject* userObj, const char *userSlot,
 QList<QByteArray> KResolver::protocolName(int protonum)
 {
   struct protoent *pe;
-#ifndef HAVE_GETPROTOBYNAME_R
+#if !HAVE_GETPROTOBYNAME_R
   QMutexLocker locker(&getXXbyYYmutex);
 
   pe = getprotobynumber(protonum);
@@ -655,7 +655,7 @@ QList<QByteArray> KResolver::protocolName(int protonum)
 	lst.append(*p);
     }
 
-#ifdef HAVE_GETPROTOBYNAME_R
+#if HAVE_GETPROTOBYNAME_R
 # ifndef USE_OPENBSD
   delete [] buf;
 # endif
@@ -667,7 +667,7 @@ QList<QByteArray> KResolver::protocolName(int protonum)
 QList<QByteArray> KResolver::protocolName(const char *protoname)
 {
   struct protoent *pe = 0L;
-#ifndef HAVE_GETPROTOBYNAME_R
+#if !HAVE_GETPROTOBYNAME_R
   QMutexLocker locker(&getXXbyYYmutex);
 
   pe = getprotobyname(protoname);
@@ -715,7 +715,7 @@ QList<QByteArray> KResolver::protocolName(const char *protoname)
 	lst.append(*p);
     }
 
-#ifdef HAVE_GETPROTOBYNAME_R
+#if HAVE_GETPROTOBYNAME_R
 # ifndef USE_OPENBSD
   delete [] buf;
 # endif
@@ -727,7 +727,7 @@ QList<QByteArray> KResolver::protocolName(const char *protoname)
 int KResolver::protocolNumber(const char *protoname)
 {
   struct protoent *pe = 0L;
-#ifndef HAVE_GETPROTOBYNAME_R
+#if !HAVE_GETPROTOBYNAME_R
   QMutexLocker locker(&getXXbyYYmutex);
 
   pe = getprotobyname(protoname);
@@ -772,7 +772,7 @@ int KResolver::protocolNumber(const char *protoname)
   if (pe != NULL)
     protonum = pe->p_proto;
 
-#ifdef HAVE_GETPROTOBYNAME_R
+#if HAVE_GETPROTOBYNAME_R
 # ifndef USE_OPENBSD
   delete [] buf;
 # endif

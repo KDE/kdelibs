@@ -40,7 +40,7 @@
 #include "k3resolver.h"
 
 /* decide whether we need a mutex */
-#if !defined(HAVE_GETPROTOBYNAME_R) || !HAVE_GETSERVBYNAME_R || !HAVE_GETHOSTBYNAME_R || !HAVE_GETSERVBYPORT_R
+#if !HAVE_GETPROTOBYNAME_R || !HAVE_GETSERVBYNAME_R || !HAVE_GETHOSTBYNAME_R || !HAVE_GETSERVBYPORT_R
 # define NEED_MUTEX
 extern QMutex getXXbyYYmutex;
 #endif
