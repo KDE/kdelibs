@@ -61,7 +61,7 @@
  */
 #define KSYCOCA_FILENAME "ksycoca5"
 
-#if HAVE_MADVISE
+#if HAVE_MADVISE || HAVE_MMAP
 #include <sys/mman.h> // This #include was checked when looking for posix_madvise
 #endif
 
