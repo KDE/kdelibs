@@ -47,7 +47,6 @@ public:
     void setFinished();
     void removeFinished();
     QList<int> allIDs() const;
-    QList<int> takeAll();
 
     // overloaded
     int rowCount(const QModelIndex &parent = QModelIndex()) const;

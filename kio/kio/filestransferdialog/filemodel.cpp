@@ -167,19 +167,6 @@ QList<int> FileModel::allIDs() const
     return fids;
 }
 
-QList<int> FileModel::takeAll()
-{
-    QList<int> fids;
-    foreach (const FileItem &file, m_files) {
-        fids.append(file.id.toInt());
-    }
-
-    beginRemoveRows(QModelIndex(), 0, m_files.count() - 1);
-    m_files.clear();
-    endRemoveRows();
-    return fids;
-}
-
 int FileModel::rowCount(const QModelIndex &) const
 {
     return m_files.count();
