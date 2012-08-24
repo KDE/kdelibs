@@ -27,6 +27,7 @@ check_include_files(fstab.h       HAVE_FSTAB_H)
 check_include_files(limits.h      HAVE_LIMITS_H)
 check_include_files(sys/time.h    HAVE_SYS_TIME_H)
 check_include_files(sys/time.h    TIME_WITH_SYS_TIME)
+check_include_files(time.h        HAVE_TIME_H)
 
 check_function_exists(usleep     HAVE_USLEEP)
 check_function_exists(mkdtemp    HAVE_MKDTEMP)
