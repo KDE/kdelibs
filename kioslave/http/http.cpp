@@ -31,6 +31,7 @@
 #include "http.h"
 
 #include <config-prefix.h>
+#include <config-kioslave-http.h>
 
 #include <fcntl.h>
 #include <utime.h>
@@ -374,7 +375,7 @@ static bool isAuthenticationRequired(int responseCode)
 
 #define NO_SIZE ((KIO::filesize_t) -1)
 
-#ifdef HAVE_STRTOLL
+#if HAVE_STRTOLL
 #define STRTOLL strtoll
 #else
 #define STRTOLL strtol

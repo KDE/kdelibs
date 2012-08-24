@@ -1,6 +1,8 @@
 
 project(kioslave-http)
 
+include(ConfigureChecks.cmake)
+configure_file(config-kioslave-http.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kioslave-http.h )
 
 find_package(GSSAPI)
 macro_log_feature(GSSAPI_FOUND "GSSAPI" "Allows KIO to make use of certain HTTP authentication services" "http://web.mit.edu/kerberos/www" FALSE "" "A MIT or HEIMDAL flavor of GSSAPI can be used")
