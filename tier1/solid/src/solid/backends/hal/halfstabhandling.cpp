@@ -28,6 +28,7 @@
 #include <QtCore/QTime>
 
 #include <solid/soliddefs_p.h>
+#include <config-solid.h>
 
 #if HAVE_MNTENT_H
 #include <mntent.h>
@@ -88,7 +89,7 @@ void _k_updateMountPointsCache()
 
 #ifdef HAVE_SETMNTENT
 
-    struct mntent *fstab;
+    FILE *fstab;
     if ((fstab = setmntent(FSTAB, "r")) == 0) {
         return;
     }
