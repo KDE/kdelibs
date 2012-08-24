@@ -899,7 +899,7 @@ bool KStandardWorker::run()
 	KResolverWorkerBase *worker;
 	KResolverResults *res = new KResolverResults;
 	resultList.append(res);
-#ifdef HAVE_GETADDRINFO
+#if HAVE_GETADDRINFO
 	worker = new GetAddrInfoThread(m_encodedName,
 				       serviceName().toLatin1(),
 				       families[i].af, flags(), res);
@@ -951,7 +951,7 @@ bool KStandardWorker::postprocess()
   return true;
 }
 
-#ifdef HAVE_GETADDRINFO
+#if HAVE_GETADDRINFO
 KGetAddrinfoWorker::~KGetAddrinfoWorker()
 {
 }
@@ -1039,7 +1039,7 @@ void KNetwork::Internal::initStandardWorkers()
   //KResolverWorkerFactoryBase::registerNewWorker(new KResolverWorkerFactory<KBlacklistWorker>);
   KResolverWorkerFactoryBase::registerNewWorker(new KResolverWorkerFactory<KStandardWorker>);
 
-#ifdef HAVE_GETADDRINFO
+#if HAVE_GETADDRINFO
   KResolverWorkerFactoryBase::registerNewWorker(new KResolverWorkerFactory<KGetAddrinfoWorker>);
 #endif
 }
