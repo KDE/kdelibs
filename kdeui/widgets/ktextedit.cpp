@@ -497,7 +497,7 @@ QMenu *KTextEdit::mousePopupMenu()
       d->autoSpellCheckAction->setCheckable( true );
       d->autoSpellCheckAction->setChecked( checkSpellingEnabled() );
       popup->addSeparator();
-      if( d->showTabAction )  {
+      if (d->showTabAction) {
         d->allowTab = popup->addAction( i18n("Allow Tabulations") );
         d->allowTab->setCheckable( true );
         d->allowTab->setChecked( !tabChangesFocus() );
