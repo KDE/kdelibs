@@ -264,12 +264,12 @@ namespace
 	    KBlacklistWorker::isBlacklisted(QLatin1String(m_hostname)))
 	  break;
 
-# ifdef USE_GETHOSTBYNAME2_R
+# if USE_GETHOSTBYNAME2_R
 	buf = new char[buflen];
 	res = gethostbyname2_r(m_hostname, m_af, &my_results, buf, buflen,
 			       &resultptr, &my_h_errno);
 
-# elif defined(USE_GETHOSTBYNAME_R)
+# elif USE_GETHOSTBYNAME_R
 	if (m_af == AF_INET)
 	  {
 	    buf = new char[buflen];
@@ -279,7 +279,7 @@ namespace
 	else
 	  resultptr = 0;		// signal error
 
-# elif defined(USE_GETHOSTBYNAME2)
+# elif USE_GETHOSTBYNAME2
 	// must lock mutex
 	resultptr = gethostbyname2(m_hostname, m_af);
 	my_h_errno = h_errno;

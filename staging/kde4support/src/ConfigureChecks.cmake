@@ -42,6 +42,7 @@ check_include_files(paths.h       HAVE_PATHS_H)
 check_include_files(sys/stat.h    HAVE_SYS_STAT_H) 
 check_include_files(sys/time.h    HAVE_SYS_TIME_H) 
 check_include_files(sys/filio.h  HAVE_SYS_FILIO_H)
+check_include_file( "stropts.h" HAVE_STROPTS_H )
 
 check_function_exists(inet_pton        HAVE_INET_PTON)
 check_function_exists(inet_ntop        HAVE_INET_NTOP)
