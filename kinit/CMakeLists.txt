@@ -14,6 +14,7 @@ check_include_files(sys/types.h HAVE_SYS_TYPES_H)
 check_include_files(unistd.h HAVE_UNISTD_H)
 check_include_files(limits.h      HAVE_LIMITS_H)
 check_include_files(sys/select.h  HAVE_SYS_SELECT_H)
+check_include_files(sys/exec.h  HAVE_SYS_EXEC_H)
 check_function_exists(pstat HAVE_PSTAT)
 check_function_exists(setproctitle HAVE_SETPROCTITLE)
 

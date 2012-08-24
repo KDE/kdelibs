@@ -35,10 +35,10 @@
 
 #if HAVE_SETPROCTITLE
 #  define PF_ARGV_TYPE PF_ARGV_NONE
-#  ifdef HAVE_SYS_TYPES_H
+#  if HAVE_SYS_TYPES_H
 #    include <sys/types.h>
 #  endif /* HAVE_SYS_TYPES_H */
-#  ifdef HAVE_UNISTD_H
+#  if HAVE_UNISTD_H
 #    include <unistd.h>
 #  endif /* HAVE_UNISTD_H */
 
@@ -54,9 +54,9 @@
 #      define PF_ARGV_TYPE PF_ARGV_PSTAT
 #    endif /* HAVE_SYS_PSTAT_H && HAVE_PSTAT */
 
-#    ifdef HAVE_SYS_EXEC_H
+#    if HAVE_SYS_EXEC_H
 #      include <sys/exec.h>
-#      ifdef PS_STRINGS
+#      if PS_STRINGS
 #        include <machine/vmparam.h>
 #        undef PF_ARGV_TYPE
 #        define PF_ARGV_TYPE PF_ARGV_PSSTRINGS
