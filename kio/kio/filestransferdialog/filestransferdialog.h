@@ -32,12 +32,12 @@ class FileModel;
 namespace KIO
 {
 
-class FilesTransferDialog : public QObject
+class FilesTransferModel : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit FilesTransferDialog(QObject *parent = 0);
+    explicit FilesTransferModel(QObject *parent = 0);
     Q_INVOKABLE QObject* normalModel();
     Q_INVOKABLE QObject* skippedModel();
     Q_INVOKABLE QObject* unreadableModel();

@@ -37,7 +37,7 @@ static QVariant convertAmounts(qulonglong files, qulonglong bytes, qreal ratio)
 }
 
 
-FilesTransferDialog::FilesTransferDialog(QObject *parent) :
+FilesTransferModel::FilesTransferModel(QObject *parent) :
     QObject(parent),
     m_totalSize(0),
     m_speed(0),
@@ -60,47 +60,47 @@ FilesTransferDialog::FilesTransferDialog(QObject *parent) :
     m_disappearedModel->setObjectName("disappearedModel");
 }
 
-QObject* FilesTransferDialog::normalModel()
+QObject* FilesTransferModel::normalModel()
 {
     return m_normalModel;
 }
 
-QObject* FilesTransferDialog::skippedModel()
+QObject* FilesTransferModel::skippedModel()
 {
     return m_skippedModel;
 }
 
-QObject* FilesTransferDialog::unreadableModel()
+QObject* FilesTransferModel::unreadableModel()
 {
     return m_unreadableModel;
 }
 
-QObject* FilesTransferDialog::disappearedModel()
+QObject* FilesTransferModel::disappearedModel()
 {
     return m_disappearedModel;
 }
 
-void FilesTransferDialog::emitFinishedAmountChanged()
+void FilesTransferModel::emitFinishedAmountChanged()
 {
     emit finishedAmountChanged(convertAmounts(m_finishedFilesCount, m_finishedFilesSize, qreal(m_finishedFilesSize)/qreal(m_totalSize)));
 }
 
-void FilesTransferDialog::emitUnfinishedAmountChanged()
+void FilesTransferModel::emitUnfinishedAmountChanged()
 {
     emit unfinishedAmountChanged(convertAmounts(m_unfinishedFilesCount, m_unfinishedFilesSize, qreal(m_unfinishedFilesSize)/qreal(m_totalSize)));
 }
 
-void FilesTransferDialog::emitSkippedAmountChanged()
+void FilesTransferModel::emitSkippedAmountChanged()
 {
     emit skippedAmountChanged(convertAmounts(m_skippedFilesCount, m_skippedFilesSize, qreal(m_skippedFilesSize)/qreal(m_totalSize)));
 }
 
-void FilesTransferDialog::emitErrorsAmountChanged()
+void FilesTransferModel::emitErrorsAmountChanged()
 {
     emit errorsAmountChanged(convertAmounts(m_errorsFilesCount, m_errorsFilesSize, qreal(m_errorsFilesSize)/qreal(m_totalSize)));
 }
 
-void FilesTransferDialog::gotAllFiles(QList<int> fids, QList<KIO::CopyInfo> files)
+void FilesTransferModel::gotAllFiles(QList<int> fids, QList<KIO::CopyInfo> files)
 {
     kDebug() << "count:(%d, %d)" << fids.count() << files.count();
     m_totalSize = 0;
@@ -119,7 +119,7 @@ void FilesTransferDialog::gotAllFiles(QList<int> fids, QList<KIO::CopyInfo> file
     updateWindowTitle();
 }
 
-void FilesTransferDialog::gotProcessedAmount(KJob*, KJob::Unit unit, qulonglong amount)
+void FilesTransferModel::gotProcessedAmount(KJob*, KJob::Unit unit, qulonglong amount)
 {
     switch (unit) {
         case KJob::Files: {
@@ -145,12 +145,12 @@ void FilesTransferDialog::gotProcessedAmount(KJob*, KJob::Unit unit, qulonglong 
     emitUnfinishedAmountChanged();
 }
 
-void FilesTransferDialog::gotProcessedSizeOfFile(int fid, qulonglong size)
+void FilesTransferModel::gotProcessedSizeOfFile(int fid, qulonglong size)
 {
     m_normalModel->updateFileProgress(fid, size, FileHelper::Finished);
 }
 
-FileModel* FilesTransferDialog::findModelByFileId(int id)
+FileModel* FilesTransferModel::findModelByFileId(int id)
 {
     FileModel *model = NULL;
     if (m_normalModel->contains(id)) {
@@ -169,7 +169,7 @@ FileModel* FilesTransferDialog::findModelByFileId(int id)
     return model;
 }
 
-void FilesTransferDialog::gotSkippedFile(int id)
+void FilesTransferModel::gotSkippedFile(int id)
 {
     FileModel *model = findModelByFileId(id);
     if (model == NULL) {
@@ -200,7 +200,7 @@ void FilesTransferDialog::gotSkippedFile(int id)
     emitSkippedAmountChanged();
 }
 
-void FilesTransferDialog::gotRetriedFile(int id)
+void FilesTransferModel::gotRetriedFile(int id)
 {
     FileModel *model = findModelByFileId(id);
     if (model == NULL) {
@@ -232,7 +232,7 @@ void FilesTransferDialog::gotRetriedFile(int id)
     emitUnfinishedAmountChanged();
 }
 
-void FilesTransferDialog::gotUnreadableFile(int id)
+void FilesTransferModel::gotUnreadableFile(int id)
 {
     FileItem file = m_normalModel->takeFile(id);
     if (file.isNull()) {
@@ -251,7 +251,7 @@ void FilesTransferDialog::gotUnreadableFile(int id)
     emitUnfinishedAmountChanged();
 }
 
-void FilesTransferDialog::gotDisappearedFile(int id)
+void FilesTransferModel::gotDisappearedFile(int id)
 {
     FileItem file = m_normalModel->takeFile(id);
     if (file.isNull()) {
@@ -270,14 +270,14 @@ void FilesTransferDialog::gotDisappearedFile(int id)
     emitUnfinishedAmountChanged();
 }
 
-void FilesTransferDialog::nothingToProcess()
+void FilesTransferModel::nothingToProcess()
 {
     kDebug() << "nothingToProcess";
     m_normalModel->setFinished();
     updateWindowTitle();
 }
 
-void FilesTransferDialog::resendSignals()
+void FilesTransferModel::resendSignals()
 {
     kDebug() << "resending signals";
     emitFinishedAmountChanged();
@@ -287,14 +287,14 @@ void FilesTransferDialog::resendSignals()
     updateWindowTitle();
 }
 
-void FilesTransferDialog::gotSpeed(KJob*, unsigned long speed)
+void FilesTransferModel::gotSpeed(KJob*, unsigned long speed)
 {
     kDebug() << "speed" << speed;
     m_speed = speed;
     updateWindowTitle();
 }
 
-void FilesTransferDialog::updateWindowTitle()
+void FilesTransferModel::updateWindowTitle()
 {
     QString title;
     
@@ -314,7 +314,7 @@ void FilesTransferDialog::updateWindowTitle()
 
 // from QML
 
-void FilesTransferDialog::skipFile(const QString &modelName, int id)
+void FilesTransferModel::skipFile(const QString &modelName, int id)
 {
     FileModel *model = findChild<FileModel *>(modelName);
     if (model == NULL || !model->contains(id)) {
@@ -325,7 +325,7 @@ void FilesTransferDialog::skipFile(const QString &modelName, int id)
     emit skipped(id);
 }
 
-void FilesTransferDialog::retryFile(const QString &modelName, int id)
+void FilesTransferModel::retryFile(const QString &modelName, int id)
 {
     Q_UNUSED(modelName);
     if (!m_skippedModel->contains(id)) {
@@ -336,7 +336,7 @@ void FilesTransferDialog::retryFile(const QString &modelName, int id)
     emit retried(id);
 }
 
-void FilesTransferDialog::skipAllFiles(const QString &modelName)
+void FilesTransferModel::skipAllFiles(const QString &modelName)
 {
     FileModel *model = findChild<FileModel *>(modelName);
     if (model == NULL) {
@@ -353,7 +353,7 @@ void FilesTransferDialog::skipAllFiles(const QString &modelName)
     }
 }
 
-void FilesTransferDialog::retryAllFiles(const QString &modelName)
+void FilesTransferModel::retryAllFiles(const QString &modelName)
 {
     FileModel *model = findChild<FileModel *>(modelName);
     if (model == NULL) {
@@ -370,17 +370,17 @@ void FilesTransferDialog::retryAllFiles(const QString &modelName)
     }
 }
 
-void FilesTransferDialog::changeRights(const QString &modelName, bool always)
+void FilesTransferModel::changeRights(const QString &modelName, bool always)
 {
 
 }
 
-void FilesTransferDialog::clearFinished(const QString &modelName)
+void FilesTransferModel::clearFinished(const QString &modelName)
 {
     m_normalModel->removeFinished();
 }
 
-void FilesTransferDialog::clearSkipped(const QString &modelName)
+void FilesTransferModel::clearSkipped(const QString &modelName)
 {
 
 }

@@ -33,7 +33,7 @@ namespace KIO
 
 class Job;
 class InteractionDialog;
-class FilesTransferDialog;
+class FilesTransferModel;
 
 /**
  * A UI delegate tuned to be used with KIO Jobs.
@@ -107,7 +107,7 @@ public:
      * Constructs and returns a modeless, parent-less interaction dialog.
      * Dialog is hidden by default. It will show itself after first request.
      */
-    FilesTransferDialog *initInteractionModel(KJob * job, const QList<KIO::CopyInfo> files);
+    FilesTransferModel *initInteractionModel(KJob * job, const QList<KIO::CopyInfo> files);
     void showInteractionDialog(KJob * job);
 
     /**

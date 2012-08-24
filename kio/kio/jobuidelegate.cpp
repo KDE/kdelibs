@@ -46,7 +46,7 @@ class KIO::JobUiDelegate::Private
 {
 public:
     QmlApplicationViewer *interactionsViewer;
-    FilesTransferDialog *interactionsModel;
+    FilesTransferModel *interactionsModel;
     KJob *job; // need this field to kill the job
     
     virtual ~Private()
@@ -212,10 +212,10 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const KUrl::List& urls,
     return true;
 }
 
-KIO::FilesTransferDialog* KIO::JobUiDelegate::initInteractionModel(KJob* job, const QList<KIO::CopyInfo> files)
+KIO::FilesTransferModel* KIO::JobUiDelegate::initInteractionModel(KJob* job, const QList<KIO::CopyInfo> files)
 {
     d->job = job;
-    d->interactionsModel = new FilesTransferDialog();
+    d->interactionsModel = new FilesTransferModel();
     QList<int> fileIDs;
     fileIDs.reserve(files.count());
     for (int i = 0; i < files.count(); i++) {

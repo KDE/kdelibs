@@ -687,7 +687,7 @@ void CopyJobPrivate::initInteractionModel()
     Q_Q(CopyJob);
     Q_ASSERT(q->isInteractive());
 
-    FilesTransferDialog *dialog = ui()->initInteractionModel(q, m_allFiles);
+    FilesTransferModel *dialog = ui()->initInteractionModel(q, m_allFiles);
     m_isInteractionDialogCreated = true;
 
     QObject::connect(q, SIGNAL(skippedFile(int)),
