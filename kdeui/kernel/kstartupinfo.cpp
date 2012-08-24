@@ -444,7 +444,7 @@ bool KStartupInfo::sendStartup( const KStartupInfoId& id_P, const KStartupInfoDa
     {
     if( id_P.none())
         return false;
-#ifdef  HAVE_X11
+#if  HAVE_X11
     KXMessages msgs;
     QString msg = QString::fromLatin1( "new: %1 %2" )
         .arg( id_P.d->to_text()).arg( data_P.d->to_text());
