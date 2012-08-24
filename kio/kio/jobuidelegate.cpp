@@ -212,7 +212,7 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const KUrl::List& urls,
     return true;
 }
 
-KIO::FilesTransferDialog* KIO::JobUiDelegate::initInteractionModel(KJob* job, QList<KIO::CopyInfo> files)
+KIO::FilesTransferDialog* KIO::JobUiDelegate::initInteractionModel(KJob* job, const QList<KIO::CopyInfo> files)
 {
     d->job = job;
     d->interactionsModel = new FilesTransferDialog();

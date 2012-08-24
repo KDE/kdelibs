@@ -29,7 +29,7 @@ class FileItem
 public:
     FileItem();
     FileItem(int id, KIO::CopyInfo file, int actions = 0, int progress = 0);
-    FileItem(int id, const QString &url, int size, int actions = 0, int progress = 0);
+    FileItem(int id, const QString &url, qulonglong size, int actions = 0, int progress = 0);
     bool operator==(const FileItem &other) const;
 
     bool isNull() const;

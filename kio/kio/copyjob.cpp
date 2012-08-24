@@ -700,8 +700,8 @@ void CopyJobPrivate::initInteractionModel()
                      dialog, SLOT(gotDisappearedFile(int)), Qt::QueuedConnection);
     QObject::connect(q, SIGNAL(processedAmount(KJob*, KJob::Unit, qulonglong)),
                      dialog, SLOT(gotProcessedAmount(KJob*, KJob::Unit, qulonglong)), Qt::QueuedConnection);
-    QObject::connect(q, SIGNAL(processedFileRatio(int,qreal)),
-                     dialog, SLOT(gotProcessedFileRatio(int,qreal)), Qt::QueuedConnection);
+    QObject::connect(q, SIGNAL(processedSizeOfFile(int,qulonglong)),
+                     dialog, SLOT(gotProcessedSizeOfFile(int,qulonglong)), Qt::QueuedConnection);
     QObject::connect(q, SIGNAL(nothingToProcess()), dialog, SLOT(nothingToProcess()), Qt::QueuedConnection);
     QObject::connect(q, SIGNAL(speed(KJob*, unsigned long)), dialog, SLOT(gotSpeed(KJob*, unsigned long)), Qt::QueuedConnection);
 
@@ -1867,8 +1867,7 @@ void CopyJobPrivate::slotProcessedSize( KJob*, qulonglong data_size )
   
   if (!files.isEmpty()) {
     const CopyInfo &file = files.first();
-    qreal ratio = (file.size == 0) ? 1 : qreal(m_fileProcessedSize) / qreal(file.size);
-    emit q->processedFileRatio(findFileID(file), ratio);
+    emit q->processedSizeOfFile(findFileID(file), m_fileProcessedSize);
     
   }
 }

@@ -43,7 +43,7 @@ public:
     FileItem peekAtFile(int id) const;
     FileItem takeFile(int id);
     void replaceFile(int id, const FileItem &newFile);
-    void updateFileProgress(int id, qreal progress, FileHelper::FileActions actions);
+    void updateFileProgress(int id, qulonglong size, FileHelper::FileActions actions);
     void setFinished();
     void removeFinished();
     QList<int> allIDs() const;

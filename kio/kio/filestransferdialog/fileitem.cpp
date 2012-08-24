@@ -32,7 +32,7 @@ FileItem::FileItem(int id, KIO::CopyInfo file, int actions, int progress)
     this->progress = QVariant::fromValue(progress);
 }
 
-FileItem::FileItem(int id, const QString &url, int size, int actions, int progress)
+FileItem::FileItem(int id, const QString &url, qulonglong size, int actions, int progress)
 {
     this->id = QVariant::fromValue(id);
     this->url = QVariant::fromValue(url);

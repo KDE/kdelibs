@@ -265,12 +265,44 @@ namespace KIO {
          */
         void copyingLinkDone( KIO::Job *job, const KUrl &from, const QString& target, const KUrl& to );
 
-        void processedFileRatio(int id, qreal ratio);
+        /**
+         * Emitted to notify about the progress of currently processed file.
+         * This is not garantued to be emitted for each file.
+         * @param id id of current file
+         * @param size processed size in bytes
+         */
+        void processedSizeOfFile(int id, qulonglong size);
+
+        /**
+         * Emitted to notify about skipped file with @param id.
+         */
         void skippedFile(int id);
+
+        /**
+         * Emitted to notify about retried file with @param id.
+         */
         void retriedFile(int id);
+
+        /**
+         * Emitted to notify about unreadable file with @param id.
+         */
         void unreadableFile(int id);
+
+        /**
+         * Emitted to notify about disappeared file with @param id.
+         */
         void disappearedFile(int id);
+
+        /**
+         * Emitted to notify about existing file with @param id.
+         * There is already a file with such name on the destination side.
+         */
         void existingFile(int id);
+
+        /**
+         * Emitted when there is nothing to process,
+         * but there are some pending interaction requests
+         */
         void nothingToProcess();
 
     protected Q_SLOTS:

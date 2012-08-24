@@ -69,7 +69,7 @@ public slots:
     void gotRetriedFile(int id);
     void gotUnreadableFile(int id);
     void gotDisappearedFile(int id);
-    void gotProcessedFileRatio(int fid, qreal ratio);
+    void gotProcessedSizeOfFile(int fid, qulonglong size);
     void gotSpeed(KJob*, unsigned long speed);
     void nothingToProcess();
     void resendSignals();

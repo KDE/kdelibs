@@ -106,11 +106,12 @@ void FileModel::replaceFile(int id, const FileItem &newFile)
     }
 }
 
-void FileModel::updateFileProgress(int id, qreal progress, FileHelper::FileActions updActions)
+void FileModel::updateFileProgress(int id, qulonglong size, FileHelper::FileActions updActions)
 {
     int pos = findPosById(id);
     if (pos != -1) {
-        m_files[pos].progress = QVariant::fromValue(progress);
+        qreal ratio = qreal(size) / qreal(m_files[pos].size.toULongLong());
+        m_files[pos].progress = QVariant::fromValue(ratio);
         int firstUpdated = pos - 1;
         while (firstUpdated >= 0 &&  m_files[firstUpdated].actions.toInt() != updActions) {
             m_files[firstUpdated].progress = QVariant::fromValue(1.0);
@@ -121,7 +122,7 @@ void FileModel::updateFileProgress(int id, qreal progress, FileHelper::FileActio
         firstUpdated++;
         emit dataChanged(createIndex(firstUpdated, 0), createIndex(pos, 0));
     } else {
-        kDebug() << "Error: fid:" << id << "progress:" << progress;
+        kDebug() << "Error: fid:" << id << "processed size:" << size;
     }
 }
 

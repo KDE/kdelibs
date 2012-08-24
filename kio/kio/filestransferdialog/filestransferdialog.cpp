@@ -145,9 +145,9 @@ void FilesTransferDialog::gotProcessedAmount(KJob*, KJob::Unit unit, qulonglong 
     emitUnfinishedAmountChanged();
 }
 
-void FilesTransferDialog::gotProcessedFileRatio(int fid, qreal ratio)
+void FilesTransferDialog::gotProcessedSizeOfFile(int fid, qulonglong size)
 {
-    m_normalModel->updateFileProgress(fid, ratio, FileHelper::Finished);
+    m_normalModel->updateFileProgress(fid, size, FileHelper::Finished);
 }
 
 FileModel* FilesTransferDialog::findModelByFileId(int id)
@@ -184,16 +184,16 @@ void FilesTransferDialog::gotSkippedFile(int id)
 
     if (model == m_normalModel) {
         m_unfinishedFilesCount -= 1;
-        m_unfinishedFilesSize -= file.size.toLongLong();
+        m_unfinishedFilesSize -= file.size.toULongLong();
         emitUnfinishedAmountChanged();
     } else {
         m_errorsFilesCount -= 1;
-        m_errorsFilesSize -= file.size.toLongLong();
+        m_errorsFilesSize -= file.size.toULongLong();
         emitErrorsAmountChanged();
     }
 
     m_skippedFilesCount++;
-    m_skippedFilesSize += file.size.toLongLong();
+    m_skippedFilesSize += file.size.toULongLong();
     file.progress = 0;
     file.actions = FileHelper::Skipped;
     m_skippedModel->enqueue(file);
@@ -215,16 +215,16 @@ void FilesTransferDialog::gotRetriedFile(int id)
 
     if (model == m_skippedModel) {
         m_skippedFilesCount -= 1;
-        m_skippedFilesSize -= file.size.toLongLong();
+        m_skippedFilesSize -= file.size.toULongLong();
         emitSkippedAmountChanged();
     } else { // m_errorsModel
         m_errorsFilesCount -= 1;
-        m_errorsFilesSize -= file.size.toLongLong();
+        m_errorsFilesSize -= file.size.toULongLong();
         emitErrorsAmountChanged();
     }
 
     m_unfinishedFilesCount++;
-    m_unfinishedFilesSize += file.size.toLongLong();
+    m_unfinishedFilesSize += file.size.toULongLong();
     file.progress = 0;
     file.actions = FileHelper::Unfinished;
     m_normalModel->enqueue(file);
@@ -241,9 +241,9 @@ void FilesTransferDialog::gotUnreadableFile(int id)
     }
 
     m_unfinishedFilesCount -= 1;
-    m_unfinishedFilesSize -= file.size.toLongLong();
+    m_unfinishedFilesSize -= file.size.toULongLong();
     m_errorsFilesCount++;
-    m_errorsFilesSize += file.size.toLongLong();
+    m_errorsFilesSize += file.size.toULongLong();
     file.progress = 0;
     file.actions = FileHelper::Unreadable;
     m_unreadableModel->enqueue(file);
@@ -260,9 +260,9 @@ void FilesTransferDialog::gotDisappearedFile(int id)
     }
 
     m_unfinishedFilesCount -= 1;
-    m_unfinishedFilesSize -= file.size.toLongLong();
+    m_unfinishedFilesSize -= file.size.toULongLong();
     m_errorsFilesCount++;
-    m_errorsFilesSize += file.size.toLongLong();
+    m_errorsFilesSize += file.size.toULongLong();
     file.progress = 0;
     file.actions = FileHelper::Disappeared;
     m_disappearedModel->enqueue(file);
