@@ -24,7 +24,7 @@
 
 #include "font.h"
 
-//#include <config-khtml.h>
+#include <config-khtml.h>
 
 #if HAVE_ALLOCA_H
 #  include <alloca.h>
