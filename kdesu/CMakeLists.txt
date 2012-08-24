@@ -3,6 +3,8 @@ project(kdesu)
 
 include_directories( ${KDE4_KPTY_INCLUDES} )
 
+include(CheckTypeSize)
+
 check_function_exists(setpriority HAVE_SETPRIORITY)
 check_function_exists(getpeereid HAVE_GETPEEREID)
 check_function_exists(initgroups HAVE_INITGROUPS)
