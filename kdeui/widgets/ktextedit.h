@@ -24,6 +24,8 @@
 #include <sonnet/highlighter.h>
 #include <QTextEdit>
 
+#define HAVE_SHOWTABACTION 1
+
 /**
  * This interface is a workaround to keep binary compatibility in KDE4, because
  * adding the virtual keyword to functions is not BC.
@@ -252,6 +254,11 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
      */
     QString clickMessage() const;
 
+
+    /**
+     * @since 4.10
+     */
+    void showTabAction(bool show);
   Q_SIGNALS:
     /**
      * emit signal when we activate or not autospellchecking

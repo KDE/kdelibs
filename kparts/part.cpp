@@ -476,6 +476,7 @@ void ReadOnlyPart::setUrl(const QUrl &url)
     Q_D(ReadOnlyPart);
 
     d->m_url = url;
+    emit urlChanged( url );
 }
 
 QString ReadOnlyPart::localFilePath() const
@@ -547,7 +548,7 @@ bool ReadOnlyPart::openUrl( const QUrl &url )
     if ( !closeUrl() )
         return false;
     d->m_arguments = args;
-    d->m_url = url;
+    setUrl(url);
 
     d->m_file.clear();
 
@@ -731,7 +732,7 @@ bool ReadOnlyPart::openStream( const QString& mimeType, const QUrl & url )
     if ( !closeUrl() )
         return false;
     d->m_arguments = args;
-    d->m_url = url;
+    setUrl( url );
     return doOpenStream( mimeType );
 }
 
@@ -899,6 +900,7 @@ bool ReadWritePart::saveAs(const QUrl & url)
     d->prepareSaving();
     bool result = save(); // Save local file and upload local file
     if (result) {
+        emit urlChanged(d->m_url);
         emit setWindowCaption(d->m_url.toDisplayString());
     } else {
         d->m_url = d->m_originalURL;
@@ -991,7 +993,7 @@ void ReadWritePartPrivate::_k_slotUploadFinished( KJob * )
         QString error = m_uploadJob->errorString();
         m_uploadJob = 0;
         if (m_duringSaveAs) {
-            m_url = m_originalURL;
+            q->setUrl(m_originalURL);
             m_file = m_originalFilePath;
         }
         emit q->canceled( error );

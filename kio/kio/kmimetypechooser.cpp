@@ -83,19 +83,17 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
   vboxLayout->addWidget(d->mimeTypeTree);
   QStringList headerLabels;
   headerLabels.append( i18n("Mime Type") );
-//   d->mimeTypeTree->setColumnWidthMode( 0, QListView::Manual );
 
   if ( visuals & Comments ) {
       headerLabels.append( i18n("Comment") );
-      //d->mimeTypeTree->setColumnWidthMode( 1, Q3ListView::Manual );
   }
   if ( visuals & Patterns ) {
       headerLabels.append( i18n("Patterns") );
   }
 
-//  d->mimeTypeTree->setRootIsDecorated( true );
   d->mimeTypeTree->setColumnCount(headerLabels.count());
   d->mimeTypeTree->setHeaderLabels(headerLabels);
+  d->mimeTypeTree->setColumnWidth(0, 200); // big enough for most names, but not for the insanely long ones
 
   d->loadMimeTypes( selMimeTypes );
 
@@ -200,6 +198,7 @@ void KMimeTypeChooserPrivate::loadMimeTypes( const QStringList &_selectedMimeTyp
     idefault->setExpanded( true );
     mimeTypeTree->scrollToItem( idefault );
   }
+  mimeTypeTree->resizeColumnToContents(1);
 }
 
 void KMimeTypeChooserPrivate::_k_editMimeType()
@@ -347,7 +346,7 @@ void KMimeTypeChooserDialog::Private::init()
   q->setDefaultButton( Ok );
 
   KConfigGroup group( KSharedConfig::openConfig(), "KMimeTypeChooserDialog");
-  q->resize( group.readEntry("size", QSize(500,400)));
+  q->resize(group.readEntry("size", QSize(600,500)));
 }
 
 KMimeTypeChooserDialog::~KMimeTypeChooserDialog()

@@ -203,7 +203,7 @@ QSize KFontFamilyDelegate::sizeHint (const QStyleOptionViewItem &option,
     QFont sampleFont = baseFont;
     sampleFont.setFamily(fontFamily);
     sampleFont.setPointSizeF(sampleFont.pointSizeF() * sizeFactSample);
-    QFontMetrics sampleMetrics(familyFont);
+    QFontMetrics sampleMetrics(sampleFont);
     QString sample = alphabetSample();
 
     // Only the hight matters here, the width is mandated by KFontComboBox::event()
