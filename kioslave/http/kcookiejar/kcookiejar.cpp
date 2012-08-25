@@ -69,35 +69,66 @@
 #define QL1C(x)   QLatin1Char(x)
 
 
-static KDateTime parseDate(const QString& value)
+static QString removeWeekday(const QString& value)
 {
-    KTimeZones *zones = KSystemTimeZones::timeZones();
-    // Check for the most common cookie expire date format: Thu, 01-Jan-1970 00:00:00 GMT
-    KDateTime dt = KDateTime::fromString(value, QL1S("%:A,%t%d-%:B-%Y%t%H:%M:%S%t%Z"), zones);
-    if (dt.isValid())
-        return dt;
+    const int index = value.indexOf(QL1C(' '));
+    if (index > -1) {
+        int pos = 0;
+        const QString weekday = value.left(index);
+        for (int i = 1; i < 8; ++i) {
+            if (weekday.startsWith(QDate::shortDayName(i), Qt::CaseInsensitive) ||
+                weekday.startsWith(QDate::longDayName(i), Qt::CaseInsensitive)) {
+                pos = index + 1;
+                break;
+            }
+        }
+        if (pos > 0) {
+            return value.mid(pos);
+        }
+    }
+    return value;
+}
 
-    // Check for incorrect formats (amazon.com): Thu Jan 01 1970 00:00:00 GMT
-    dt = KDateTime::fromString(value, QL1S("%:A%t%:B%t%d%t%Y%t%H:%M:%S%t%Z"), zones);
-    if (dt.isValid())
-        return dt;
+static QDateTime parseDate(const QString& _value)
+{
+    // Handle sites sending invalid weekday as part of the date. #298660
+    const QString value (removeWeekday(_value));
 
-    // Check for a variation of the above format: Thu Jan 01 00:00:00 1970 GMT (BR# 145244)
-    dt = KDateTime::fromString(value, QL1S("%:A%t%:B%t%d%t%H:%M:%S%t%Y%t%Z"), zones);
-    if (dt.isValid())
-        return dt;
+    // Check if expiration date matches RFC dates as specified under
+    // RFC 2616 sec 3.3.1 & RFC 6265 sec 4.1.1
+    KDateTime dt = KDateTime::fromString(value, KDateTime::RFCDate);
 
-    // Finally we try the RFC date formats as last resort
-    return KDateTime::fromString(value, KDateTime::RFCDate);
+    // In addition to the RFC date formats we support the ANSI C asctime format
+    // per RFC 2616 sec 3.3.1 and a variation of that detected @ amazon.com
+    if (!dt.isValid()) {
+        static const char* date_formats[] = {
+            "%:B%t%d%t%H:%M:%S%t%Y%t%Z", /* ANSI C's asctime() format (#145244): Jan 01 00:00:00 1970 GMT */
+            "%:B%t%d%t%Y%t%H:%M:%S%t%Z", /* A variation on the above format seen @ amazon.com: Jan 01 1970 00:00:00 GMT */
+            0
+        };
+
+        for (int i = 0; date_formats[i]; ++i) {
+            qDebug() << "Checking" << value << "vs" << date_formats[i];
+            dt = KDateTime::fromString(value, QL1S(date_formats[i]));
+            if (dt.isValid()) {
+                qDebug() << "Matched" << date_formats[i];
+                break;
+            }
+        }
+    }
+
+    return dt.toUtc().dateTime();  // Per RFC 2616 sec 3.3.1 always convert to UTC.
+}
+
+static qint64 toEpochSecs(const QDateTime& dt)
+{
+    return (dt.toMSecsSinceEpoch()/1000); // convert to seconds...
 }
 
 static qint64 epoch()
 {
-    KDateTime epoch;
-    epoch.setTime_t(0);
-    return epoch.secsTo_long(KDateTime::currentUtcDateTime());
+    return toEpochSecs(QDateTime::currentDateTimeUtc());
 }
-
 
 QString KCookieJar::adviceToStr(KCookieAdvice _advice)
 {
@@ -661,9 +692,6 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
     if (index > 0)
        defaultPath = path.left(index);
 
-    KDateTime epoch;
-    epoch.setTime_t(0);
-
     // Check for cross-domain flag from kio_http
     if (qstrncmp(cookieStr, "Cross-Domain\n", 13) == 0)
     {
@@ -753,14 +781,14 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
                 if (max_age == 0)
                     lastCookie.mExpireDate = 1;
                 else
-                    lastCookie.mExpireDate = epoch.secsTo_long(KDateTime::currentUtcDateTime().addSecs(max_age));
+                    lastCookie.mExpireDate = toEpochSecs(QDateTime::currentDateTimeUtc().addSecs(max_age));
             }
             else if (Name.compare(QL1S("expires"), Qt::CaseInsensitive) == 0)
             {
-                const KDateTime dt = parseDate(Value);
+                const QDateTime dt = parseDate(Value);
 
                 if (dt.isValid()) {
-                    lastCookie.mExpireDate = epoch.secsTo_long(dt);
+                    lastCookie.mExpireDate = toEpochSecs(dt);
                     if (lastCookie.mExpireDate == 0)
                         lastCookie.mExpireDate = 1;
                 }

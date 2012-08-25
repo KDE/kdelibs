@@ -32,6 +32,7 @@ static KCookieJar *jar;
 static QString *lastYear;
 static QString *nextYear;
 static KConfig *config = 0;
+static int windowId = -1;
 
 
 static void FAIL(const QString &msg)
@@ -70,9 +71,13 @@ static void clearConfig()
    jar->loadConfig(config, false);
 }
 
-static void clearCookies()
+static void clearCookies(bool sessionOnly = false)
 {
-   jar->eatAllCookies();
+   if (sessionOnly) {
+      jar->eatSessionCookies(windowId);
+   } else {
+      jar->eatAllCookies();
+   }
 }
 
 static void saveCookies()
@@ -112,7 +117,7 @@ static void processCookie(QString &line)
    line.replace("%LASTYEAR%", *lastYear);
    line.replace("%NEXTYEAR%", *nextYear);
 
-   KHttpCookieList list = jar->makeCookies(urlStr, line.toUtf8(), 0);
+   KHttpCookieList list = jar->makeCookies(urlStr, line.toUtf8(), windowId);
 
    if (list.isEmpty())
       FAIL(QString("Failed to make cookies from: '%1'").arg(line));
@@ -141,7 +146,7 @@ static void processCheck(QString &line)
 
    QString expectedCookies = line;
 
-   QString cookies = jar->findCookies(urlStr, false, 0, 0).trimmed();
+   QString cookies = jar->findCookies(urlStr, false, windowId, 0).trimmed();
    if (cookies != expectedCookies)
       FAIL(urlStr+QString("\nGot '%1' expected '%2'")
               .arg(cookies, expectedCookies));
@@ -153,6 +158,8 @@ static void processClear(QString &line)
       clearConfig();
    else if (line == "COOKIES")
       clearCookies();
+   else if (line == "SESSIONCOOKIES")
+      clearCookies(true);
    else
       FAIL(QString("Unknown command 'CLEAR %1'").arg(line));
 }

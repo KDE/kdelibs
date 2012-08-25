@@ -63,6 +63,7 @@ class KTextEdit::Private
         customPalette( false ),
         checkSpellingEnabled( false ),
         findReplaceEnabled(true),
+        showTabAction(true),
         highlighter( 0 ), findDlg(0),find(0),repDlg(0),replace(0), findIndex(0), repIndex(0),
         lastReplacedPosition(-1)
     {
@@ -135,6 +136,7 @@ class KTextEdit::Private
 
     bool checkSpellingEnabled : 1;
     bool findReplaceEnabled: 1;
+    bool showTabAction: 1;
     QTextDocumentFragment originalDoc;
     QString spellCheckingConfigFileName;
     QString spellCheckingLanguage;
@@ -495,9 +497,11 @@ QMenu *KTextEdit::mousePopupMenu()
       d->autoSpellCheckAction->setCheckable( true );
       d->autoSpellCheckAction->setChecked( checkSpellingEnabled() );
       popup->addSeparator();
-      d->allowTab = popup->addAction( i18n("Allow Tabulations") );
-      d->allowTab->setCheckable( true );
-      d->allowTab->setChecked( !tabChangesFocus() );
+      if (d->showTabAction) {
+        d->allowTab = popup->addAction( i18n("Allow Tabulations") );
+        d->allowTab->setCheckable( true );
+        d->allowTab->setChecked( !tabChangesFocus() );
+      }
   }
 
   if (d->findReplaceEnabled) {
@@ -1007,6 +1011,11 @@ void KTextEdit::slotReplace()
 void KTextEdit::enableFindReplace( bool enabled )
 {
     d->findReplaceEnabled = enabled;
+}
+
+void KTextEdit::showTabAction( bool show )
+{
+    d->showTabAction = show;
 }
 
 void KTextEdit::setSpellInterface(KTextEditSpellInterface *spellInterface)

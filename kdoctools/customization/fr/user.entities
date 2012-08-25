@@ -199,6 +199,8 @@
 <!ENTITY  traducteurPaulMarcelinNana  '<othercredit role="translator"><firstname>Paul-Marcelin</firstname><surname>Nana</surname><affiliation><address><email>paul.nana@tic.unilim.fr</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurPaulMarcelinNana   '<othercredit role="reviewer"><firstname>Paul-Marcelin</firstname><surname>Nana</surname><affiliation><address><email>paul.nana@tic.unilim.fr</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
+<!ENTITY  traducteurYannNeveu  '<othercredit role="translator"><firstname>Yann</firstname><surname>Neveu</surname><affiliation><address><email>yneveu@gmail.com</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
+<!ENTITY relecteurYannNeveu   '<othercredit role="reviewer"><firstname>Yann</firstname><surname>Neveu</surname><affiliation><address><email>yneveu@gmail.com</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
 <!ENTITY traducteurCedricPasteur   '<othercredit role="translator"><firstname>Cédric</firstname><surname>Pasteur</surname><affiliation><address><email>cedric.pasteur@free.fr</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurCedricPasteur   '<othercredit role="reviewer"><firstname>Cédric</firstname><surname>Pasteur</surname><affiliation><address><email>cedric.pasteur@free.fr</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
@@ -339,6 +341,7 @@
 <!ENTITY BaptisteMathus  'Baptiste Mathus <email>bmathus@free.fr</email>'>
 <!ENTITY Pierre-EmmanuelMuller 'Pierre-Emmanuel Müller <email>pem@levillage.org</email>'>
 <!ENTITY PaulMarcelinNana 'Paul-Marcelin Nana <email>paul.nana@tic.unilim.fr</email>'>
+<!ENTITY YannNeveu 'Yann Neveu <email>yneveu@gmail.common</email>'>
 <!ENTITY CedricPasteur 'Cédric Pasteur <email>cedric.pasteur@free.fr</email>'>
 <!ENTITY PatricePawlak 'Patrice Pawlak <email>patrice.pawlak@free.fr</email>'>
 <!ENTITY RomainPelisse 'Romain Pelisse <email>belaran@gmail.com</email>'>
