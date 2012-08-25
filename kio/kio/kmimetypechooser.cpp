@@ -23,7 +23,6 @@
 #include <kshell.h>
 #include <ksharedconfig.h>
 #include <krun.h>
-#include <ksycoca.h>
 
 #include <QLabel>
 #include <QLayout>
@@ -99,7 +98,7 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
 
   if (visuals & EditButton)
   {
-    QHBoxLayout *buttonLayout = new QHBoxLayout( this );
+    QHBoxLayout *buttonLayout = new QHBoxLayout();
     buttonLayout->addStretch(1);
     d->btnEditMimeType = new QPushButton( i18n("&Edit..."), this );
     buttonLayout->addWidget(d->btnEditMimeType);
@@ -207,10 +206,14 @@ void KMimeTypeChooserPrivate::_k_editMimeType()
     if ( !item || !item->parent() )
         return;
     QString mt = (item->parent())->text(0) + '/' + item->text(0);
-    // thanks to libkonq/konq_operations.cc
-    q->connect( KSycoca::self(), SIGNAL(databaseChanged(QStringList)),
-                q, SLOT(_k_slotSycocaDatabaseChanged(QStringList)) );
+    // KF5 TODO: use a QFileSystemWatcher on one of the shared-mime-info generated files, instead.
+    //q->connect( KSycoca::self(), SIGNAL(databaseChanged(QStringList)),
+    //            q, SLOT(_k_slotSycocaDatabaseChanged(QStringList)) );
+#pragma message("KF5 TODO: use QFileSystemWatcher to be told when keditfiletype changed a mimetype")
+
     QString keditfiletype = QString::fromLatin1("keditfiletype");
+    // TODO: Port to QProcess
+    // Then move this class to the kwidgets framework, no more kio dependency.
     KRun::runCommand( keditfiletype
 #ifndef Q_OS_WIN
                       + " --parent " + QString::number( (ulong)q->topLevelWidget()->winId())
@@ -225,6 +228,7 @@ void KMimeTypeChooserPrivate::_k_slotCurrentChanged(QTreeWidgetItem* item)
     btnEditMimeType->setEnabled( item->parent() );
 }
 
+// TODO: see _k_editMimeType
 void KMimeTypeChooserPrivate::_k_slotSycocaDatabaseChanged(const QStringList& changedResources)
 {
     if (changedResources.contains("xdgdata-mime"))
