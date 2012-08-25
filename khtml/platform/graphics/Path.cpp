@@ -26,7 +26,6 @@
  */
 
 
-#include "config.h"
 #include "wtf/Platform.h"
 #include "Path.h"
 
