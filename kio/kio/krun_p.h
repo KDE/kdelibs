@@ -25,7 +25,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QPointer>
 
-#include "config.h"
+#include "config-kio.h"
 #include "kprocess.h"
 #include "kstartupinfo.h"
 

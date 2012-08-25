@@ -50,7 +50,7 @@
 #include <ktoolinvocation.h>
 #include <kde_file.h>
 #include "klauncher_iface.h"
-#include "config.h"
+#include "config-kded.h"
 
 #if HAVE_X11
 #include <qx11info_x11.h>

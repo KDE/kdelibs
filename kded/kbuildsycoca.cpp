@@ -48,7 +48,7 @@
 #include <klocale.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
-#ifndef KBUILDSYCOCA_NO_KCRASH
+#if !KBUILDSYCOCA_NO_KCRASH
 #include <kcrash.h>
 #endif
 #include <kmemfile.h>
@@ -656,7 +656,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
    QCoreApplication k(argc, argv);
    KComponentData mainComponent(d);
 
-#ifndef KBUILDSYCOCA_NO_KCRASH
+#if !KBUILDSYCOCA_NO_KCRASH
    KCrash::setCrashHandler(KCrash::defaultCrashHandler);
    KCrash::setEmergencySaveFunction(crashHandler);
    KCrash::setApplicationName(QString::fromLatin1(KBUILDSYCOCA_EXENAME));
