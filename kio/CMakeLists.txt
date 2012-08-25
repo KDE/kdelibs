@@ -392,7 +392,6 @@ install( FILES
  kfile/kiofilemodule.desktop
 DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 
-install( FILES kioslave.upd  DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
 install(  FILES
   kio/accessmanager.h
   kio/connection.h
