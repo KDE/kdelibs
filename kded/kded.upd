@@ -1,7 +1,0 @@
-# Migrating kdirwatch poll interval from kdedrc to kdeglobals
-Id=kde3.0
-File=kdedrc,kdeglobals
-Group=General,DirWatch
-Key=PollInterval
-Key=NFSPollInterval
-

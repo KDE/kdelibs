@@ -81,6 +81,5 @@ else (WIN32)
 install( FILES applications.menu  DESTINATION  ${SYSCONF_INSTALL_DIR}/xdg/menus )
 endif (WIN32)
 install( FILES kdedmodule.desktop DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
-install( FILES kded.upd           DESTINATION  ${DATA_INSTALL_DIR}/kconf_update )
 
 
