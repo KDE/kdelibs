@@ -351,12 +351,18 @@ void DirectoryListThread::run()
 
             if (m_filter.isEmpty() || file_name.startsWith(m_filter)) {
 
-                QString toAppend = m_complete_url ? QUrl::toPercentEncoding(file_name) : file_name;
+                QString toAppend = file_name;
                 // Add '/' to directories
                 if (m_appendSlashToDir && file_info.isDir())
                     toAppend.append(QLatin1Char('/'));
 
-                addMatch(m_prepend + toAppend);
+                if (m_complete_url) {
+                    KUrl url(m_prepend);
+                    url.addPath(toAppend);
+                    addMatch(url.prettyUrl());
+                } else {
+                    addMatch(m_prepend + toAppend);
+                }
             }
         }
 
@@ -1185,7 +1191,7 @@ void KUrlCompletionPrivate::_k_slotEntries(KIO::Job*, const KIO::UDSEntryList& e
 
         if (filter_len == 0 || entry_name.left(filter_len) == filter) {
 
-            QString toAppend = complete_url ? QUrl::toPercentEncoding(entry_name) : entry_name;
+            QString toAppend = entry_name;
 
             if (isDir)
                 toAppend.append(QLatin1Char('/'));
@@ -1193,7 +1199,13 @@ void KUrlCompletionPrivate::_k_slotEntries(KIO::Job*, const KIO::UDSEntryList& e
             if (!list_urls_only_exe ||
                     (entry.numberValue(KIO::UDSEntry::UDS_ACCESS) & MODE_EXE)  // true if executable
                ) {
-                matchList.append(prepend + toAppend);
+                if (complete_url) {
+                    KUrl url(prepend);
+                    url.addPath(toAppend);
+                    matchList.append(url.prettyUrl());
+                } else {
+                    matchList.append(prepend + toAppend);
+                }
             }
         }
     }
