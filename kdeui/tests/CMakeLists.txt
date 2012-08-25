@@ -63,7 +63,6 @@ KDEUI_EXECUTABLE_TESTS(
   kactionselectortest
   kanimatedbuttontest
   kcharselecttest
-  kapptest
   kassistantdialogtest
   kbugreporttest
   kcategorizedviewtest
