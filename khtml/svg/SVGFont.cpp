@@ -18,8 +18,6 @@
  *
  */
 
-#include "config.h"
-
 #if ENABLE(SVG_FONTS)
 #include "Font.h"
 

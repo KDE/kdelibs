@@ -18,7 +18,6 @@
  *
  */
 
-#include "config.h"
 #include "wtf/Platform.h"
 
 #if ENABLE(SVG_FONTS)

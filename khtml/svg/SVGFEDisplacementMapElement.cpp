@@ -18,8 +18,6 @@
  */
 
 
-#include "config.h"
-
 #if ENABLE(SVG) && ENABLE(SVG_FILTERS)
 #include "SVGFEDisplacementMapElement.h"
 

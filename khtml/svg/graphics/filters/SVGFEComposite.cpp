@@ -19,8 +19,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "config.h"
-
 #if ENABLE(SVG) && ENABLE(SVG_FILTERS)
 #include "SVGFEComposite.h"
 #include "TextStream.h"
