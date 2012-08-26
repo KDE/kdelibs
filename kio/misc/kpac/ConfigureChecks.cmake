@@ -1,6 +1,7 @@
 include(CheckIncludeFiles)
 include(CheckLibraryExists)
 include(CheckPrototypeExists)
+include(CheckLibraryExists)
 
 check_include_files(sys/param.h   HAVE_SYS_PARAM_H)
 check_include_files(sys/types.h   HAVE_SYS_TYPES_H)
@@ -19,3 +20,6 @@ check_library_exists(resolv __res_init "" HAVE___RES_INIT_IN_RESOLV_LIBRARY)
 if (HAVE___RES_INIT_IN_RESOLV_LIBRARY OR HAVE_RES_INIT_IN_RESOLV_LIBRARY)
 	set(HAVE_RESOLV_LIBRARY TRUE)
 endif (HAVE___RES_INIT_IN_RESOLV_LIBRARY OR HAVE_RES_INIT_IN_RESOLV_LIBRARY)
+
+check_library_exists(nsl gethostbyname "" HAVE_NSL_LIBRARY)
+check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
