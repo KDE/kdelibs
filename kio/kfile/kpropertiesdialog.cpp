@@ -45,7 +45,6 @@
 #include "kpropertiesdialog_p.h"
 
 
-#include <config-acl.h>
 #include <config-kio.h>
 
 extern "C" {

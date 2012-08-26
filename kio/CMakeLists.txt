@@ -74,6 +74,10 @@ if(X11_FOUND)
 	macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)
 endif(X11_FOUND)
 
+find_package(ACL)
+macro_bool_to_01(ACL_FOUND HAVE_LIBACL HAVE_POSIX_ACL)
+macro_log_feature(ACL_FOUND "LibACL" "Support for manipulating access control lists" "ftp://oss.sgi.com/projects/xfs/cmd_tars" FALSE "" "STRONGLY RECOMMENDED")
+
 include(ConfigureChecks.cmake)
 
 configure_file(kio/config-kio.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-kio.h )

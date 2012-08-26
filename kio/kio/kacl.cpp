@@ -20,7 +20,7 @@
 
 #include "kacl.h"
 
-#include <config-acl.h>
+#include <config-kio.h>
 
 #include <sys/types.h>
 #include <pwd.h>

@@ -348,7 +348,6 @@ endif(STATIC_LIBRARY)
 find_package(ACL)
 macro_bool_to_01(ACL_FOUND HAVE_LIBACL HAVE_POSIX_ACL)
 macro_log_feature(ACL_FOUND "LibACL" "Support for manipulating access control lists" "ftp://oss.sgi.com/projects/xfs/cmd_tars" FALSE "" "STRONGLY RECOMMENDED")
-configure_file(config-acl.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-acl.h )
 
 include(ConfigureChecks.cmake)
 

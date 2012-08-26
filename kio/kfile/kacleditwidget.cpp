@@ -21,7 +21,7 @@
 #include "kacleditwidget.h"
 #include "kacleditwidget_p.h"
 
-#include <config-acl.h>
+#include <config-kio.h>
 #if HAVE_POSIX_ACL
 
 #include <qpainter.h>
@@ -42,7 +42,7 @@
 #include <kdebug.h>
 #include <kdialog.h>
 
-#ifdef HAVE_ACL_LIBACL_H
+#if HAVE_ACL_LIBACL_H
 # include <acl/libacl.h>
 #endif
 extern "C" {

@@ -27,7 +27,6 @@
 
 #include "file.h"
 
-#include <config-acl.h>
 #include <config-kioslave-file.h>
 
 #include <QtCore/QFile>

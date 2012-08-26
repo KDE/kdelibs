@@ -19,7 +19,7 @@
 
 #include "kacltest.h"
 
-#include <config-acl.h>
+#include <config-kio.h>
 
 #include <kacl.h>
 #include <kdebug.h>
