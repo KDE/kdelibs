@@ -1,4 +1,4 @@
-#cmakedefine HAVE_LIBACL 1
+#cmakedefine01 HAVE_LIBACL
 
 /* Defined if system has POSIX ACL support. */
 #cmakedefine01 HAVE_POSIX_ACL
