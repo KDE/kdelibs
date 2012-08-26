@@ -907,7 +907,7 @@ void KFontChooser::Private::setupDisplay()
 {
     QFontDatabase dbase;
     QString family = selFont.family().toLower();
-    QString style = dbase.styleString(selFont).toLower();
+    QString style = qtStyles[dbase.styleString(selFont)].toLower();
     qreal size = selFont.pointSizeF();
     if (size == -1)
         size = QFontInfo( selFont ).pointSizeF();
@@ -987,7 +987,7 @@ void KFontChooser::Private::setupDisplay()
     // If smoothly scalable, allow customizing one of the standard size slots,
     // otherwise just select the nearest available size.
     QString currentFamily = qtFamilies[familyListBox->currentItem()->text()];
-    QString currentStyle = qtFamilies[styleListBox->currentItem()->text()];
+    QString currentStyle = qtStyles[styleListBox->currentItem()->text()];
     bool canCustomize = dbase.isSmoothlyScalable(currentFamily, currentStyle);
     sizeListBox->setCurrentRow(nearestSizeRow(size, canCustomize));
 
