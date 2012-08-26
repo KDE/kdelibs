@@ -350,10 +350,6 @@ include(ConfigureChecks.cmake)
 configure_file(config-prefix.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-prefix.h )
 configure_file(config-compiler.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compiler.h )
 
-# these two calls here should go somewhere else, Alex
-check_library_exists(nsl gethostbyname "" HAVE_NSL_LIBRARY)
-check_library_exists(socket connect "" HAVE_SOCKET_LIBRARY)
-
 # TODO: Port away from this:
 if (QT5_BUILD)
   add_definitions(-DKDE_NO_PHONON)
