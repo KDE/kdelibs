@@ -279,7 +279,7 @@ namespace
 	else
 	  resultptr = 0;		// signal error
 
-# elif USE_GETHOSTBYNAME2
+# elif defined(USE_GETHOSTBYNAME2)
 	// must lock mutex
 	resultptr = gethostbyname2(m_hostname, m_af);
 	my_h_errno = h_errno;
