@@ -22,8 +22,7 @@
 #include "ksycoca_p.h"
 #include "ksycocatype.h"
 #include "ksycocafactory.h"
-#include "kmemfile.h"
-#include "kde_file.h"
+#include "kmemfile_p.h"
 #include "kconfiggroup.h"
 #include "ksharedconfig.h"
 
@@ -192,13 +191,13 @@ bool KSycocaPrivate::openDatabase(bool openDummyIfNotFound)
     delete m_device; m_device = 0;
     QString path = KSycoca::absoluteFilePath();
 
-    bool canRead = KDE::access(path, R_OK) == 0;
+    bool canRead = QFileInfo(path).isReadable();
     kDebug(7011) << "Trying to open ksycoca from" << path;
     if (!canRead) {
         path = KSycoca::absoluteFilePath(KSycoca::GlobalDatabase);
         if (!path.isEmpty()) {
             kDebug(7011) << "Trying to open global ksycoca from " << path;
-            canRead = KDE::access(path, R_OK) == 0;
+            canRead = QFileInfo(path).isReadable();
         }
     }
 
@@ -460,6 +459,8 @@ bool KSycocaPrivate::checkDatabase(BehaviorsIfNotFound ifNotFound)
             sycoca.call(QLatin1String("enableTestMode"));
             Q_ASSERT(QDBusReply<bool>(sycoca.call(QLatin1String("isTestModeEnabled"))).value());
         }
+#else
+        Q_UNUSED(justStarted);
 #endif
 
         kDebug(7011) << QThread::currentThread() << "We have no database.... asking kded to create it";

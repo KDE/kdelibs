@@ -51,7 +51,7 @@
 #if !KBUILDSYCOCA_NO_KCRASH
 #include <kcrash.h>
 #endif
-#include <kmemfile.h>
+#include <kmemfile_p.h>
 
 #include <stdlib.h>
 #include <unistd.h>

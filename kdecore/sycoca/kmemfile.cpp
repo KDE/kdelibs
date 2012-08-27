@@ -18,7 +18,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kmemfile.h"
+#include "kmemfile_p.h"
 
 #ifndef QT_NO_SHAREDMEMORY
 
