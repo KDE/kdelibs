@@ -103,6 +103,7 @@ public:
     qreal setupSizeListBox(const QString& family, const QString& style);
 
     void setupDisplay();
+    QString styleIdentifier (const QFont &font);
 
     void _k_toggled_checkbox();
     void _k_family_chosen_slot(const QString&);
@@ -146,6 +147,8 @@ public:
     // Mappings of translated to Qt originated family and style strings.
     QHash<QString, QString> qtFamilies;
     QHash<QString, QString> qtStyles;
+    // Mapping of translated style strings to internal style identifiers.
+    QHash<QString, QString> styleIDs;
 
 };
 
@@ -608,16 +611,19 @@ void KFontChooser::Private::_k_family_chosen_slot(const QString& family)
     splitFontString(family, &pureFamily);
     QStringList filteredStyles;
     qtStyles.clear();
+    styleIDs.clear();
     foreach (const QString &style, styles) {
         // Sometimes the font database will report an invalid style,
         // that falls back back to another when set.
         // Remove such styles, by checking set/get round-trip.
-        if (dbase.styleString(dbase.font(currentFamily, style, 10)) != style) {
+        QFont testFont = dbase.font(currentFamily, style, 10);
+        if (dbase.styleString(testFont) != style) {
             styles.removeAll(style);
             continue;
         }
 
         // We don't like Qt's name for some styles.
+        // FIXME: Actually "Normal" is better, remove this in KF5.
         QString styleMod = style;
         if (style == I18NC_NOX("QFontDatabase", "Normal"))
             styleMod = i18nc("@item font", "Regular");
@@ -631,6 +637,7 @@ void KFontChooser::Private::_k_family_chosen_slot(const QString& family)
         if (!filteredStyles.contains(fstyle)) {
             filteredStyles.append(fstyle);
             qtStyles.insert(fstyle, style);
+            styleIDs.insert(fstyle, styleIdentifier(testFont));
         }
     }
     styleListBox->clear();
@@ -907,7 +914,7 @@ void KFontChooser::Private::setupDisplay()
 {
     QFontDatabase dbase;
     QString family = selFont.family().toLower();
-    QString style = qtStyles[dbase.styleString(selFont)].toLower();
+    QString styleID = styleIdentifier(selFont);
     qreal size = selFont.pointSizeF();
     if (size == -1)
         size = QFontInfo( selFont ).pointSizeF();
@@ -973,7 +980,7 @@ void KFontChooser::Private::setupDisplay()
     // Set current style in the listbox.
     numEntries = styleListBox->count();
     for (i = 0; i < numEntries; i++) {
-        if (style == qtStyles[styleListBox->item(i)->text()].toLower()) {
+        if (styleID == styleIDs[styleListBox->item(i)->text()]) {
             styleListBox->setCurrentRow(i);
             break;
         }
@@ -1057,6 +1064,20 @@ void KFontChooser::Private::_k_showXLFDArea(bool show)
     {
         xlfdEdit->parentWidget()->hide();
     }
+}
+
+// Human-readable style identifiers returned by QFontDatabase::styleString()
+// do not always survive round trip of QFont serialization/deserialization,
+// causing wrong style in the style box to be highlighted when
+// the chooser dialog is opened. This will cause the style to be changed
+// when the dialog is closed and the user did not touch the style box.
+// Hence, construct custom style identifiers sufficient for the purpose.
+QString KFontChooser::Private::styleIdentifier(const QFont &font)
+{
+    const QChar comma(QLatin1Char(','));
+    return   QString::number(font.weight()) + comma
+           + QString::number((int)font.style()) + comma
+           + QString::number(font.stretch());
 }
 
 #include "kfontchooser.moc"
