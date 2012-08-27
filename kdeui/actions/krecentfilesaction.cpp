@@ -157,12 +157,11 @@ void KRecentFilesAction::addUrl(const QUrl& _url, const QString& name)
        return;
     QUrlPathInfo urlPathInfo(url);
     const QString tmpName = name.isEmpty() ? urlPathInfo.fileName() : name;
-//#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     const QString pathOrUrl = url.toString();
-//#else
-#pragma message("Uncomment when this is merged: http://codereview.qt-project.org/#change,18638")
-//   const QString pathOrUrl(url.toDisplayString(QUrl::PreferLocalFile));
-//#endif
+#else
+   const QString pathOrUrl(url.toDisplayString(QUrl::PreferLocalFile));
+#endif
 
 #ifdef Q_OS_WIN
     const QString file = url.isLocalFile() ? QDir::toNativeSeparators(pathOrUrl) : pathOrUrl;
@@ -173,8 +172,11 @@ void KRecentFilesAction::addUrl(const QUrl& _url, const QString& name)
     // remove file if already in list
     foreach (QAction* action, selectableActionGroup()->actions())
     {
-#pragma message("use toDisplayString(QUrl::PreferLocalFile)")
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
       if ( d->m_urls[action].toString().endsWith(file) )
+#else
+      if ( d->m_urls[action].toDisplayString(QUrl::PreferLocalFile).endsWith(file) )
+#endif
       {
         removeAction(action)->deleteLater();
         break;
@@ -338,8 +340,11 @@ void KRecentFilesAction::saveEntries( const KConfigGroup &_cg )
     {
         key = QString( "File%1" ).arg( i );
         // i - 1 because we started from 1
-#pragma message("use toDisplayString(QUrl::PreferLocalFile) instead of toString")
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         value = d->m_urls[ selectableActionGroup()->actions()[ i - 1 ] ].toString();
+#else
+        value = d->m_urls[ selectableActionGroup()->actions()[ i - 1 ] ].toDisplayString(QUrl::PreferLocalFile);
+#endif
         cg.writePathEntry( key, value );
         key = QString( "Name%1" ).arg( i );
         value = d->m_shortNames[ selectableActionGroup()->actions()[ i - 1 ] ];
