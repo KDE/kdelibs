@@ -70,3 +70,15 @@ check_cxx_source_compiles("
 	}
 " GETMNTINFO_USES_STATVFS )
 
+check_prototype_exists(strlcat string.h             HAVE_STRLCAT_PROTO)
+check_prototype_exists(strlcpy string.h             HAVE_STRLCPY_PROTO)
+check_prototype_exists(random stdlib.h              HAVE_RANDOM_PROTO)
+check_prototype_exists(setenv stdlib.h              HAVE_SETENV_PROTO)
+check_prototype_exists(unsetenv stdlib.h            HAVE_UNSETENV_PROTO)
+check_prototype_exists(usleep unistd.h              HAVE_USLEEP_PROTO)
+check_prototype_exists(initgroups "unistd.h;sys/types.h;unistd.h;grp.h" HAVE_INITGROUPS_PROTO)
+check_prototype_exists(mkstemps "stdlib.h;unistd.h" HAVE_MKSTEMPS_PROTO)
+check_prototype_exists(mkdtemp "stdlib.h;unistd.h"  HAVE_MKDTEMP_PROTO)
+check_prototype_exists(mkstemp "stdlib.h;unistd.h"  HAVE_MKSTEMP_PROTO)
+check_prototype_exists(trunc math.h                 HAVE_TRUNC)
+check_symbol_exists(getgrouplist    "unistd.h;grp.h"           HAVE_GETGROUPLIST)
