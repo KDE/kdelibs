@@ -774,6 +774,22 @@ void KBuildsycocaAdaptor::recreate(const QDBusMessage &msg)
    Kded::self()->recreate(msg);
 }
 
+bool KBuildsycocaAdaptor::isTestModeEnabled()
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    return QStandardPaths::isTestModeEnabled();
+#else
+    return false;
+#endif
+}
+
+void KBuildsycocaAdaptor::enableTestMode()
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QStandardPaths::enableTestMode(true);
+#endif
+}
+
 extern "C" Q_DECL_EXPORT int kdemain(int argc, char *argv[])
 {
      KAboutData aboutData( "kded5",

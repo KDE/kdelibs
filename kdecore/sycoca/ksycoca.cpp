@@ -22,7 +22,6 @@
 #include "ksycoca_p.h"
 #include "ksycocatype.h"
 #include "ksycocafactory.h"
-#include "ktoolinvocation.h"
 #include "kmemfile.h"
 #include "kde_file.h"
 #include "kconfiggroup.h"
@@ -414,12 +413,12 @@ bool KSycocaPrivate::checkDatabase(BehaviorsIfNotFound ifNotFound)
 
     closeDatabase(); // close the dummy one
 
-    // We can only use the installed ksycoca file if kdeinit+klauncher+kded are running,
+    // We can only use the installed ksycoca file if kded is running,
     // since kded is what keeps the file uptodate.
-    const bool kdeinitRunning = QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1("org.kde.klauncher5"));
+    const bool kdedRunning = QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1("org.kde.kded5"));
 
     // Check if new database already available
-    if (kdeinitRunning && openDatabase(ifNotFound & IfNotFoundOpenDummy)) {
+    if (kdedRunning && openDatabase(ifNotFound & IfNotFoundOpenDummy)) {
         if (checkVersion()) {
             // Database exists, and version is ok.
             return true;
@@ -427,29 +426,44 @@ bool KSycocaPrivate::checkDatabase(BehaviorsIfNotFound ifNotFound)
     }
 
     if (ifNotFound & IfNotFoundRecreate) {
-        // Well, if kdeinit is not running we need to launch it,
-        // but otherwise we simply need to run kbuildsycoca to recreate the sycoca file.
-        if (!kdeinitRunning) {
-            kDebug(7011) << "We have no database.... launching kdeinit";
-            KToolInvocation::klauncher(); // this calls startKdeinit, and blocks until it returns
-            // and since kdeinit5 only returns after kbuildsycoca5 is done, we can proceed.
+        // Ask kded to rebuild ksycoca
+        // (so that it's not only built, but also kept up-to-date...)
+        bool justStarted = false;
+        QDBusConnectionInterface* bus = QDBusConnection::sessionBus().interface();
+        if (!bus->isServiceRegistered(QLatin1String("org.kde.kded5"))) {
+            // kded isn't even running: start it
+            QDBusReply<void> reply = bus->startService(QLatin1String("org.kde.kded5"));
+            if (!reply.isValid()) {
+                kError() << "Couldn't start kded5 from org.kde.kded5.service:" << reply.error();
+            }
+            kDebug() << "kded5 registered";
+            justStarted = true;
         } else {
-            kDebug(7011) << QThread::currentThread() << "We have no database.... launching" << KBUILDSYCOCA_EXENAME;
-            const QString exec = QStandardPaths::findExecutable(QString::fromLatin1(KBUILDSYCOCA_EXENAME));
-            if (exec.isEmpty()) {
-                qWarning() << "ERROR: Could not find" << KBUILDSYCOCA_EXENAME << ", please check your PATH";
-            } else {
-                QStringList args;
+            kDebug() << "kded5 found";
+        }
+
+        QDBusInterface sycoca(QLatin1String("org.kde.kded5"), QLatin1String("/kbuildsycoca"));
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-                if (QStandardPaths::isTestModeEnabled()) {
-                    args << QLatin1String("--testmode");
-                }
-#endif
-                if (QProcess::execute(exec, args) != 0) {
-                    qWarning("ERROR: Running KSycoca failed.");
+        if (QStandardPaths::isTestModeEnabled()) {
+            if (!justStarted) {
+                const QDBusReply<bool> testMode = sycoca.call(QLatin1String("isTestModeEnabled"));
+                if (!testMode.value()) {
+                    qWarning() << "This unit test uses ksycoca, it needs to be run in a separate DBus session, so that kded can be started in 'test mode'.";
+                    qWarning() << "KSycoca updates will very likely fail unless you do that.";
+                    qWarning() << "`eval dbus-launch` ; make test";
+                    // Idea for the future: move kbuildsycoca stuff to its own kded module, and use
+                    // the same module with a different name, for test mode.
+                    // On the other hand, the use of other kded modules (cookies, timezone, etc.)
+                    // is also better separated from the user's kded anyway.
                 }
             }
+            sycoca.call(QLatin1String("enableTestMode"));
+            Q_ASSERT(QDBusReply<bool>(sycoca.call(QLatin1String("isTestModeEnabled"))).value());
         }
+#endif
+
+        kDebug(7011) << QThread::currentThread() << "We have no database.... asking kded to create it";
+        sycoca.call(QLatin1String("recreate"));
 
         closeDatabase(); // close the dummy one
 
@@ -585,13 +599,6 @@ void KSycoca::flagError()
         // It deletes m_str which is a problem when flagError is called during the KSycocaFactory ctor...
     }
 }
-
-#ifndef KDE_NO_DEPRECATED
-bool KSycoca::readError() // KDE5: remove
-{
-    return false;
-}
-#endif
 
 bool KSycoca::isBuilding()
 {

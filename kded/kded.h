@@ -220,7 +220,9 @@ public:
    KBuildsycocaAdaptor(QObject *parent);
 
 public Q_SLOTS:
-   Q_NOREPLY void recreate(const QDBusMessage&);
+   void recreate(const QDBusMessage&);
+   bool isTestModeEnabled();
+   void enableTestMode();
 };
 
 

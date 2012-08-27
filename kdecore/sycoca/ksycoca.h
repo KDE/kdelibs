@@ -167,11 +167,6 @@ public:
     */
    static void flagError();
 
-   /// @deprecated
-#ifndef KDE_NO_DEPRECATED
-   static KDECORE_DEPRECATED bool readError();
-#endif
-
 Q_SIGNALS:
     /**
      * Connect to this to get notified when the database changes
