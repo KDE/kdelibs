@@ -24,8 +24,6 @@
 #include <qstandardpaths.h>
 
 #include <kdebug.h>
-#include <ksycoca.h>
-#include <ksycocadict_p.h>
 
 Q_GLOBAL_STATIC(KProtocolInfoFactory, kProtocolInfoFactoryInstance)
 

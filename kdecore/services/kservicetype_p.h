@@ -23,7 +23,6 @@ Boston, MA 02110-1301, USA.
 
 #include "kservicetype.h"
 #include <ksycocaentry_p.h>
-#include <kurl.h>
 
 class KServiceTypePrivate : public KSycocaEntryPrivate
 {
