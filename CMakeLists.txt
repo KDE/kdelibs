@@ -344,8 +344,6 @@ else(STATIC_LIBRARY)
   set(LIBRARY_TYPE SHARED)
 endif(STATIC_LIBRARY)
 
-include(ConfigureChecks.cmake)
-
 # now create config headers
 configure_file(config-prefix.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-prefix.h )
 configure_file(config-compiler.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compiler.h )
