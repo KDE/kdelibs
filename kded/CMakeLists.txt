@@ -42,7 +42,18 @@ install(TARGETS kded5 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 qt4_generate_dbus_interface( kdedadaptor.h org.kde.kded5.xml )
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded5.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
+#include(MacroDBusAddActivationService) # for dbus_add_activation_service
 
+macro(dbus_add_activation_service _sources)
+    foreach (_i ${_sources})
+        get_filename_component(_service_file ${_i} ABSOLUTE)
+        string(REGEX REPLACE "\\.service.*$" ".service" _output_file ${_i})
+        set(_target ${CMAKE_CURRENT_BINARY_DIR}/${_output_file})
+        configure_file(${_service_file} ${_target})
+        install(FILES ${_target} DESTINATION ${DBUS_SERVICES_INSTALL_DIR} )
+    endforeach (_i ${ARGN})
+endmacro(dbus_add_activation_service _sources)
+dbus_add_activation_service(org.kde.kded5.service.in)
 
 ########### next target ###############
 
