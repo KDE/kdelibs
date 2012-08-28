@@ -22,7 +22,7 @@
 #include "ksycocaentry.h"
 #include "ksycocadict_p.h"
 
-#include <kdebug.h>
+#include <QDebug>
 
 #include <QThread>
 #include <QtCore/QHash>
@@ -193,7 +193,7 @@ KSycocaEntry::List KSycocaFactory::allEntries() const
 
     if (entryCount > 8192)
     {
-        kDebug(7021) << QThread::currentThread() << "error detected in factory" << this;
+        qWarning() << QThread::currentThread() << "error detected in factory" << this;
         KSycoca::flagError();
         return list;
     }

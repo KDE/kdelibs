@@ -67,7 +67,7 @@
  *
  * @see KMimeTypeTrader, KService
  */
-class KDECORE_EXPORT KServiceTypeTrader
+class KSERVICE_EXPORT KServiceTypeTrader
 {
 public:
     /**
@@ -189,7 +189,7 @@ public:
             }
         }
         if (error)
-            *error = i18n("No service matching the requirements was found");
+            *error = QCoreApplication::translate("", "No service matching the requirements was found");
         return 0;
     }
 

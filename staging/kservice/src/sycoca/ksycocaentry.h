@@ -21,7 +21,7 @@
 
 #include <ksycocatype.h>
 #include <ksharedptr.h>
-#include <kdecore_export.h>
+#include <kservice_export.h>
 
 #include <QtCore/QDataStream>
 #include <QtCore/QStringList>
@@ -38,7 +38,7 @@ class KSycocaEntryPrivate;
  * @internal
  * @see http://techbase.kde.org/Development/Architecture/KDE3/System_Configuration_Cache
  */
-class KDECORE_EXPORT KSycocaEntry : public KShared
+class KSERVICE_EXPORT KSycocaEntry : public KShared
 {
 
 public:

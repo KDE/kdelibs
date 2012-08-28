@@ -20,7 +20,7 @@
 #ifndef KSERVICEACTION_H
 #define KSERVICEACTION_H
 
-#include <kdecore_export.h>
+#include <kservice_export.h>
 #include <QtCore/QSharedDataPointer>
 class QVariant;
 class KServiceActionPrivate;
@@ -31,7 +31,7 @@ class KServiceActionPrivate;
  * group, followed by one group per action, as per the desktop entry standard.
  * @see KService::actions
  */
-class KDECORE_EXPORT KServiceAction
+class KSERVICE_EXPORT KServiceAction
 {
 public:
     /**
@@ -109,12 +109,12 @@ public:
 
 private:
     QSharedDataPointer<KServiceActionPrivate> d;
-    friend KDECORE_EXPORT QDataStream& operator>>( QDataStream& str, KServiceAction& act );
-    friend KDECORE_EXPORT QDataStream& operator<<( QDataStream& str, const KServiceAction& act );
+    friend KSERVICE_EXPORT QDataStream& operator>>( QDataStream& str, KServiceAction& act );
+    friend KSERVICE_EXPORT QDataStream& operator<<( QDataStream& str, const KServiceAction& act );
 };
 
-KDECORE_EXPORT QDataStream& operator>>( QDataStream& str, KServiceAction& act );
-KDECORE_EXPORT QDataStream& operator<<( QDataStream& str, const KServiceAction& act );
+KSERVICE_EXPORT QDataStream& operator>>( QDataStream& str, KServiceAction& act );
+KSERVICE_EXPORT QDataStream& operator<<( QDataStream& str, const KServiceAction& act );
 
 #endif /* KSERVICEACTION_H */
 

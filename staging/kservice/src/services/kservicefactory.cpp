@@ -21,9 +21,8 @@
 #include "ksycocatype.h"
 #include "ksycocadict_p.h"
 #include "kservice.h"
+#include <QDebug>
 
-#include <klocalizedstring.h>
-#include <kdebug.h>
 
 extern int servicesDebugArea();
 
@@ -137,7 +136,7 @@ KService::Ptr KServiceFactory::findServiceByDesktopPath(const QString &_name)
 
     KService::Ptr newService(createEntry(offset));
     if (!newService) {
-        kDebug(servicesDebugArea()) << "findServiceByDesktopPath: createEntry failed!";
+        qDebug() << "createEntry failed!";
     }
     // Check whether the dictionary was right
     // It's ok that it's wrong, for the case where we're looking up an unknown service,
@@ -179,11 +178,11 @@ KService* KServiceFactory::createEntry(int offset) const
         newEntry = new KService(*str, offset);
         break;
     default:
-        kError(7011) << "KServiceFactory: unexpected object entry in KSycoca database (type=" << int(type) << ")";
+        qWarning() << "KServiceFactory: unexpected object entry in KSycoca database (type=" << int(type) << ")";
         return 0;
     }
     if (!newEntry->isValid()) {
-        kError(7011) << "KServiceFactory: corrupt object in KSycoca database!";
+        qWarning() << "KServiceFactory: corrupt object in KSycoca database!";
         delete newEntry;
         newEntry = 0;
     }

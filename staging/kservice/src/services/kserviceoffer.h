@@ -35,7 +35,7 @@
  * @see KService
  * @short Holds the user's preference of a service.
  */
-class KDECORE_EXPORT KServiceOffer // exported for kbuildsycoca
+class KSERVICE_EXPORT KServiceOffer // exported for kbuildsycoca
 {
 public:
   /**

@@ -30,9 +30,9 @@ void KTraderParse_mainParse( const char *_code );
 
 #include <assert.h>
 #include <stdlib.h>
-#include <kdebug.h>
 
-#include <QtCore/QThreadStorage>
+#include <QThreadStorage>
+#include <QDebug>
 
 namespace KTraderParse
 {
@@ -69,7 +69,7 @@ void KTraderParse_setParseTree( void *_ptr1 )
 
 void KTraderParse_error( const char* err )
 {
-    kWarning(7014) << "Parsing" << s_parsingData()->localData()->buffer << "gave:" << err;
+    qWarning() << "Parsing" << s_parsingData()->localData()->buffer << "gave:" << err;
 }
 
 void* KTraderParse_newOR( void *_ptr1, void *_ptr2 )

@@ -19,19 +19,20 @@
 
 #include "kplugininfo.h"
 #include <kservicetypetrader.h>
-#include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kservice.h>
 #include <QList>
+#include <QDebug>
 #include <QDirIterator>
 #include <kconfiggroup.h>
 #include <qstandardpaths.h>
+#include <qdebug.h>
 
 //#ifndef NDEBUG
 #define KPLUGININFO_ISVALID_ASSERTION \
     do { \
         if (!d) { \
-            kFatal(703) << "Accessed invalid KPluginInfo object"; \
+            qFatal("Accessed invalid KPluginInfo object"); \
         } \
     } while (false)
 //#else
@@ -69,11 +70,6 @@ class KPluginInfoPrivate : public QSharedData
         KConfigGroup config;
         KService::Ptr service;
         mutable QList<KService::Ptr> kcmservices;
-
-    static int debugArea() {
-        static int s_area = KDebug::registerArea("kdecore (KPluginInfo)");
-        return s_area;
-    }
 };
 
 KPluginInfo::KPluginInfo(const QString & filename /*, QStandardPaths::StandardLocation resource*/)
@@ -323,11 +319,13 @@ QString KPluginInfo::license() const
     return d->license;
 }
 
+#if 0
 KAboutLicense KPluginInfo::fullLicense() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
     return KAboutLicense::byKeyword(d->license);
 }
+#endif
 
 QStringList KPluginInfo::dependencies() const
 {
@@ -348,7 +346,7 @@ QList<KService::Ptr> KPluginInfo::kcmServices() const
     {
         d->kcmservices = KServiceTypeTrader::self()->query( QLatin1String("KCModule"), QLatin1Char('\'') + d->pluginName +
             QString::fromLatin1("' in [X-KDE-ParentComponents]") );
-        kDebug(d->debugArea()) << "found" << d->kcmservices.count() << "offers for" << d->pluginName;
+        //kDebug(d->debugArea()) << "found" << d->kcmservices.count() << "offers for" << d->pluginName;
 
         d->kcmservicesCached = true;
     }
@@ -385,7 +383,7 @@ void KPluginInfo::save(KConfigGroup config)
         config.writeEntry(d->pluginName + QString::fromLatin1("Enabled"), isPluginEnabled());
     } else {
         if (!d->config.isValid()) {
-            kWarning( d->debugArea() ) << "no KConfigGroup, cannot save";
+            qWarning() << "no KConfigGroup, cannot save";
             return;
         }
         d->config.writeEntry(d->pluginName + QString::fromLatin1("Enabled"), isPluginEnabled());
@@ -400,7 +398,7 @@ void KPluginInfo::load(const KConfigGroup &config)
         setPluginEnabled(config.readEntry(d->pluginName + QString::fromLatin1("Enabled"), isPluginEnabledByDefault()));
     } else {
         if (!d->config.isValid()) {
-            kWarning( d->debugArea() ) << "no KConfigGroup, cannot load";
+            qWarning() << "no KConfigGroup, cannot load";
             return;
         }
         setPluginEnabled(d->config.readEntry(d->pluginName + QString::fromLatin1("Enabled"), isPluginEnabledByDefault()));

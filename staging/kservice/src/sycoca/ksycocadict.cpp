@@ -20,9 +20,10 @@
 #include <kservice.h>
 #include "ksycocaentry.h"
 #include "ksycoca.h"
-#include "kdebug.h"
 
-#include <QtCore/QBitArray>
+#include <QBitArray>
+#include <QDebug>
+#include <QVector>
 
 namespace
 {
@@ -139,7 +140,7 @@ KSycocaDict::remove(const QString &key)
       }
    }
    if (!found) {
-       kWarning(7011) << "key not found:" << key;
+       qDebug() << "key not found:" << key;
    }
 }
 
@@ -172,7 +173,7 @@ int KSycocaDict::find_string(const QString &key ) const
        //kDebug(7011) << QString(">> %1 %2").arg(offset,8,16).arg(dupkey);
        if (dupkey == key) return offset;
    }
-   //kWarning(7011) << "Not found!";
+   //qDebug() << "Not found!";
 
    return 0;
 }
@@ -507,10 +508,10 @@ KSycocaDict::save(QDataStream &str)
                const qint32 offset = (*dup)->payload->offset();
                if (!offset) {
                    const QString storageId = (*dup)->payload->storageId();
-                   kDebug() << "about to assert! dict=" << this << "storageId=" << storageId << (*dup)->payload.data();
+                   qDebug() << "about to assert! dict=" << this << "storageId=" << storageId << (*dup)->payload.data();
                    if ((*dup)->payload->isType(KST_KService)) {
                        KService::Ptr service = KService::Ptr::staticCast((*dup)->payload);
-                       kDebug() << service->storageId() << service->entryPath();
+                       qDebug() << service->storageId() << service->entryPath();
                    }
                    // save() must have been called on the entry
                    Q_ASSERT_X( offset, "KSycocaDict::save",
@@ -541,7 +542,7 @@ qint32 KSycocaDict::Private::offsetForKey(const QString& key) const
 {
    if ( !stream || !offset )
    {
-      kError() << "No ksycoca database available! Tried running" << KBUILDSYCOCA_EXENAME << "?";
+      qWarning() << "No ksycoca database available! Tried running" << KBUILDSYCOCA_EXENAME << "?";
       return 0;
    }
 

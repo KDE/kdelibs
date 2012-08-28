@@ -26,8 +26,7 @@
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QFile>
 #include <QtCore/QDir>
-
-#include "klocalizedstring.h"
+#include <QCoreApplication>
 
 class KMemFile::Private
 {
@@ -72,12 +71,12 @@ bool KMemFile::Private::loadContentsFromFile()
   QFile f ( filename );
   if ( !f.exists() ) {
     close();
-    parent->setErrorString ( i18n ( "File %1 does not exist" , filename ) );
+    parent->setErrorString(QCoreApplication::translate("", "File %1 does not exist").arg(filename));
     return false;
   }
   if ( !f.open ( QIODevice::ReadOnly ) ) {
     close();
-    parent->setErrorString ( i18n ( "Cannot open %1 for reading" , filename ) );
+    parent->setErrorString(QCoreApplication::translate("", "Cannot open %1 for reading").arg(filename));
     return false;
   }
 
@@ -87,7 +86,7 @@ bool KMemFile::Private::loadContentsFromFile()
   shmData.setKey ( getShmKey ( infoPtr->shmCounter ) );
   if ( !shmData.create ( infoPtr->shmDataSize ) ) {
     close();
-    parent->setErrorString ( i18n ( "Cannot create memory segment for file %1" , filename ) );
+    parent->setErrorString(QCoreApplication::translate("", "Cannot create memory segment for file %1").arg(filename));
     return false;
   }
   shmData.lock();
@@ -97,7 +96,7 @@ bool KMemFile::Private::loadContentsFromFile()
   bytesRead = f.read ( data, infoPtr->shmDataSize );
   if ( bytesRead != infoPtr->shmDataSize ) {
     close();
-    parent->setErrorString ( i18n ( "Could not read data from %1 into shm" , filename ) );
+    parent->setErrorString(QCoreApplication::translate("", "Could not read data from %1 into shm").arg(filename));
     return false;
   }
   shmDataSize = size;
@@ -148,12 +147,12 @@ bool KMemFile::open ( OpenMode mode )
   }
 
   if ( mode != QIODevice::ReadOnly ) {
-    setErrorString ( i18n ( "Only 'ReadOnly' allowed" ) );
+    setErrorString(QCoreApplication::translate("", "Only 'ReadOnly' allowed"));
     return false;
   }
 
   if ( !QFile::exists ( d->filename ) ) {
-    setErrorString ( i18n ( "File %1 does not exist" , d->filename ) );
+    setErrorString(QCoreApplication::translate("", "File %1 does not exist").arg(d->filename));
     return false;
   }
 
@@ -166,7 +165,7 @@ bool KMemFile::open ( OpenMode mode )
   if ( !d->shmInfo.attach ( QSharedMemory::ReadWrite ) ) {
     if ( !d->shmInfo.create ( sizeof ( Private::sharedInfoData ) ) ) {
       lock.unlock();
-      setErrorString ( i18n ( "Cannot create memory segment for file %1" , d->filename ) );
+      setErrorString(QCoreApplication::translate("", "Cannot create memory segment for file %1").arg(d->filename));
       return false;
     }
     d->shmInfo.lock();
@@ -204,7 +203,7 @@ bool KMemFile::open ( OpenMode mode )
 bool KMemFile::seek ( qint64 pos )
 {
   if ( d->shmDataSize < pos ) {
-    setErrorString ( i18n ( "Cannot seek past eof" ) );
+    setErrorString ( QCoreApplication::translate("", "Cannot seek past eof" ) );
     return false;
   }
   d->readWritePos = pos;

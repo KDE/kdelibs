@@ -36,7 +36,7 @@ class KSycoca;
  * Since KDE 4.6, this is only used to point to the "service offers" in ksycoca for each mimetype.
  * @see KMimeType
  */
-class KDECORE_EXPORT KMimeTypeFactory : public KSycocaFactory
+class KSERVICE_EXPORT KMimeTypeFactory : public KSycocaFactory
 {
     K_SYCOCAFACTORY( KST_KMimeTypeFactory )
 public:
@@ -78,7 +78,7 @@ public:
 public: // public for KBuildServiceFactory
     // A small entry for each mimetype with name and offset into the services-offer-list.
     class MimeTypeEntryPrivate;
-    class KDECORE_EXPORT MimeTypeEntry : public KSycocaEntry
+    class KSERVICE_EXPORT MimeTypeEntry : public KSycocaEntry
     {
         Q_DECLARE_PRIVATE( MimeTypeEntry )
     public:

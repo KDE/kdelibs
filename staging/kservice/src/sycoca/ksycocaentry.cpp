@@ -18,7 +18,6 @@
 
 #include "ksycocaentry.h"
 #include "ksycocaentry_p.h"
-#include <kdebug.h>
 
 #include <ksycoca.h>
 

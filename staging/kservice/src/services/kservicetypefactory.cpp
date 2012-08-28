@@ -21,8 +21,8 @@
 #include "ksycocatype.h"
 #include "ksycocadict_p.h"
 #include "kservicetypeprofile.h"
+#include <QDebug>
 
-#include <kdebug.h>
 #include <assert.h>
 
 Q_GLOBAL_STATIC(KSycocaFactorySingleton<KServiceTypeFactory>, kServiceTypeFactoryInstance)
@@ -121,12 +121,12 @@ KServiceType * KServiceTypeFactory::createEntry(int offset) const
         newEntry = new KServiceType(*str, offset);
         break;
      default:
-         kError(7011) << "KServiceTypeFactory: unexpected object entry in KSycoca database (type=" << int(type) << ")";
+         qWarning() << "KServiceTypeFactory: unexpected object entry in KSycoca database (type=" << int(type) << ")";
         break;
    }
    if (newEntry && !newEntry->isValid())
    {
-      kError(7011) << "KServiceTypeFactory: corrupt object in KSycoca database!";
+      qWarning() << "KServiceTypeFactory: corrupt object in KSycoca database!";
       delete newEntry;
       newEntry = 0;
    }

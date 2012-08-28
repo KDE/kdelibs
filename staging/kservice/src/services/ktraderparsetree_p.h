@@ -42,7 +42,7 @@ int matchConstraint( const ParseTreeBase *_tree, const KService::Ptr &,
 /**
  * @internal
  */
-struct KDECORE_EXPORT PreferencesMaxima
+struct KSERVICE_EXPORT PreferencesMaxima
 {
   PreferencesMaxima()
     : iMax( 0 ), iMin( 0 ), fMax( 0 ), fMin( 0 )

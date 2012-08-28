@@ -27,7 +27,7 @@
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
 #include <ksycocaentry.h>
-#include <klocalizedstring.h>
+#include <QtCore/QCoreApplication>
 
 class KServiceType;
 class QDataStream;
@@ -52,7 +52,7 @@ class KServicePrivate;
  * @see KServiceGroup
  * @author Torben Weis
  */
-class KDECORE_EXPORT KService : public KSycocaEntry // TODO KDE5: inherit kshared, but move KSycocaEntry to Private
+class KSERVICE_EXPORT KService : public KSycocaEntry // TODO KDE5: inherit kshared, but move KSycocaEntry to Private
 {
 public:
     typedef KSharedPtr<KService> Ptr;
@@ -102,7 +102,7 @@ public:
      * @deprecated use isApplication()
      */
 #ifndef KDE_NO_DEPRECATED
-    KDECORE_DEPRECATED QString type() const;
+    KSERVICE_DEPRECATED QString type() const;
 #endif
 
     /**
@@ -169,7 +169,7 @@ public:
      *         or QString() if not set
      */
 #ifndef KDE_NO_DEPRECATED
-    KDECORE_DEPRECATED QString desktopEntryPath() const;
+    KSERVICE_DEPRECATED QString desktopEntryPath() const;
 #endif
 
     /**
@@ -302,7 +302,7 @@ public:
      * @deprecated, use hasMimeType(QString)
      */
 #ifndef KDE_NO_DEPRECATED
-    KDECORE_DEPRECATED bool hasMimeType( const KServiceType* mimeTypePtr ) const;
+    KSERVICE_DEPRECATED bool hasMimeType( const KServiceType* mimeTypePtr ) const;
 #endif
 
     /**
@@ -556,8 +556,8 @@ public:
         if (factory) {
             T *o = factory->template create<T>(parentWidget, parent, pluginKeyword(), args);
             if (!o && error)
-                *error = i18n("The service '%1' does not provide an interface '%2' with keyword '%3'",
-                              name(), QString::fromLatin1(T::staticMetaObject.className()), pluginKeyword());
+                *error = QCoreApplication::translate("", "The service '%1' does not provide an interface '%2' with keyword '%3'")
+                    .arg(name(), QString::fromLatin1(T::staticMetaObject.className()), pluginKeyword());
             return o;
         }
         else if (error) {
@@ -572,7 +572,7 @@ public:
      */
 #ifndef KDE_NO_DEPRECATED
     template <class T>
-    static KDECORE_DEPRECATED T *createInstance(const KService::Ptr &service, QObject *parent = 0,
+    static KSERVICE_DEPRECATED T *createInstance(const KService::Ptr &service, QObject *parent = 0,
             const QVariantList &args = QVariantList(), QString *error = 0)
     {
         return service->createInstance<T>(parent, args, error);

@@ -17,8 +17,8 @@
 
 */
 
-#ifndef KDECORE_KPLUGININFO_H
-#define KDECORE_KPLUGININFO_H
+#ifndef KPLUGININFO_H
+#define KPLUGININFO_H
 
 #include <QtCore/QExplicitlySharedDataPointer>
 #include <QtCore/QString>
@@ -27,7 +27,6 @@
 
 #include <kconfiggroup.h>
 #include <kservice.h>
-#include <kaboutdata.h>
 #include <QtCore/QList>
 
 class KPluginInfoPrivate;
@@ -40,7 +39,7 @@ class KPluginInfoPrivate;
  *
  * @author Matthias Kretz <kretz@kde.org>
  */
-class KDECORE_EXPORT KPluginInfo
+class KSERVICE_EXPORT KPluginInfo
 {
     public:
         typedef QList<KPluginInfo> List;
@@ -243,6 +242,7 @@ class KDECORE_EXPORT KPluginInfo
          */
         QString license() const;
 
+#if 0 // removed in KF5 to avoid dependency on KAboutData. Seems unused anyway.
         /**
          * @return The full license object, according to the license keyword.
          *         It can be used to present friendlier and more detailed
@@ -256,6 +256,7 @@ class KDECORE_EXPORT KPluginInfo
          * @since 4.1
          */
         KAboutLicense fullLicense() const;
+#endif
 
         /**
          * @return A list of plugins required for this plugin to be enabled. Use
@@ -351,10 +352,10 @@ class KDECORE_EXPORT KPluginInfo
         bool operator>(const KPluginInfo &rhs) const;
 
     private:
-        friend KDECORE_EXPORT uint qHash(const KPluginInfo &);
+        friend KSERVICE_EXPORT uint qHash(const KPluginInfo &);
         QExplicitlySharedDataPointer<KPluginInfoPrivate> d;
 };
 
-KDECORE_EXPORT uint qHash(const KPluginInfo &);
+KSERVICE_EXPORT uint qHash(const KPluginInfo &);
 
-#endif // KDECORE_KPLUGININFO_H
+#endif // KPLUGININFO_H
