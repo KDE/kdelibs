@@ -43,6 +43,7 @@
 #include <kcategorydrawer.h>
 #include <kcategorizedview.h>
 #include <kcategorizedsortfilterproxymodel.h>
+#include <kaboutdata.h>
 #include <kaboutapplicationdialog.h>
 
 #define MARGIN 5

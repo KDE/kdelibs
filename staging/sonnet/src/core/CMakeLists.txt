@@ -1,5 +1,6 @@
 project(sonnetcore)
 
+# TODO port away from kdecore/ includes
 include_directories(
   ${QT_INCLUDES}
   ${CMAKE_SOURCE_DIR}/kdecore/kernel
@@ -7,13 +8,14 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/kdecore/localization
   ${CMAKE_SOURCE_DIR}/kdecore/config
   ${CMAKE_SOURCE_DIR}/kdecore/global
-  ${CMAKE_SOURCE_DIR}/kdecore/services
-  ${CMAKE_SOURCE_DIR}/kdecore/sycoca
   ${CMAKE_SOURCE_DIR}/kdecore/io
   ${kcoreaddons_SOURCE_DIR}/src/io
   ${kcoreaddons_BINARY_DIR}/src
   ${kconfig_SOURCE_DIR}/src/core # ksharedptr.h, used by kservice
   ${kconfig_BINARY_DIR}/src/core
+  ${kservice_BINARY_DIR}/src # KServiceTypeTrader, KService
+  ${kservice_SOURCE_DIR}/src/sycoca
+  ${kservice_SOURCE_DIR}/src/services
   ${CMAKE_SOURCE_DIR}/kdecore
   ${CMAKE_BINARY_DIR}/kdecore
   ${CMAKE_CURRENT_BINARY_DIR}
@@ -36,6 +38,7 @@ set(sonnetcore_SRCS
 add_library(sonnetcore ${sonnetcore_SRCS})
 generate_export_header(sonnetcore)
 
+# TODO: port away from KDE4_KDECORE_LIBS
 target_link_libraries(sonnetcore ${QT_QTCORE_LIBRARY} ${KDE4_KDECORE_LIBS})
 
 set_target_properties(sonnetcore PROPERTIES VERSION ${ECM_VERSION_STRING}

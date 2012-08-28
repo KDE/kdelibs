@@ -25,6 +25,7 @@
 #include <QShowEvent>
 #include <qtemporarydir.h>
 
+#include <klocalizedstring.h>
 #include <kmimetypetrader.h>
 #include <kparts/part.h>
 #include <kpluginfactory.h>
