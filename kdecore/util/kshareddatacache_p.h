@@ -184,7 +184,7 @@ public:
         timeout.tv_sec = 10 + ::time(NULL); // Absolute time, so 10 seconds from now
         timeout.tv_nsec = 0;
 
-        return pthread_mutex_timedlock(&m_mutex, &timeout) >= 0;
+        return pthread_mutex_timedlock(&m_mutex, &timeout) == 0;
     }
 };
 #endif
