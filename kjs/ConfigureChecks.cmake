@@ -1,7 +1,16 @@
 # Configuration checks
 include(FindThreads)
+include(CheckLibraryExists)
+include(CheckIncludeFile)
+include(CheckIncludeFiles)
+include(CheckSymbolExists)
+include(CheckCXXSymbolExists)
+include(CheckFunctionExists)
+include(CheckStructMember)
+
 check_library_exists(pthread pthread_attr_get_np "" HAVE_PTHREAD_ATTR_GET_NP)
 check_library_exists(pthread pthread_getattr_np "" HAVE_PTHREAD_GETATTR_NP)
+
 check_include_files("float.h"       HAVE_FLOAT_H)
 check_include_files("sys/timeb.h"   HAVE_SYS_TIMEB_H)
 check_include_files("ieeefp.h"      HAVE_IEEEFP_H)
