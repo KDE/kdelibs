@@ -34,7 +34,7 @@ typedef QHash<QString, KSycocaEntry::Ptr> KSycocaEntryDict;
  * @internal
  * Base class for sycoca factories
  */
-class KDECORE_EXPORT KSycocaFactory
+class KSERVICE_EXPORT KSycocaFactory
 {
 public:
     virtual KSycocaFactoryId factoryId() const = 0;
@@ -146,7 +146,7 @@ protected:
  * This, instead of a typedef, allows to declare "class ..." in header files.
  * @internal
  */
-class KDECORE_EXPORT KSycocaFactoryList : public QList<KSycocaFactory*> //krazy:exclude=dpointer (acts as a typedef)
+class KSERVICE_EXPORT KSycocaFactoryList : public QList<KSycocaFactory*> //krazy:exclude=dpointer (acts as a typedef)
 {
 public:
     KSycocaFactoryList() { }

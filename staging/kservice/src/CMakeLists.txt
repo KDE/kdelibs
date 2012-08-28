@@ -7,8 +7,11 @@ include_directories(
 IF(NOT QT5_BUILD)
     include_directories( ${QtMimeTypes_SOURCE_DIR}/include/QtMimeTypes )
 endif()
-include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io )
-include_directories( ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/core )
+#include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io )
+include_directories(
+   ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/core
+   ${CMAKE_BINARY_DIR}/tier2/kconfig/src/core
+)
 
 set(kservice_SRCS
    services/kmimetypefactory.cpp
@@ -35,7 +38,7 @@ set(kservice_SRCS
    sycoca/kmemfile.cpp
 )
 
-add_library(kservice ${sonnetcore_SRCS})
+add_library(kservice ${kservice_SRCS})
 generate_export_header(kservice)
 
 target_link_libraries(kservice

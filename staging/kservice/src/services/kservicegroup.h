@@ -19,7 +19,7 @@
 #ifndef KSERVICEGROUP_H
 #define KSERVICEGROUP_H
 
-#include <kdecore_export.h>
+#include <kservice_export.h>
 #include <ksycocaentry.h>
 #include <kservice.h>
 
@@ -59,7 +59,7 @@ class KServiceGroupPrivate;
  *
  * @short Represents a group of services
  */
-class KDECORE_EXPORT KServiceGroup : public KSycocaEntry
+class KSERVICE_EXPORT KServiceGroup : public KSycocaEntry
 {
   friend class KBuildServiceGroupFactory;
 public:
@@ -250,7 +250,7 @@ public:
    * way of finding related services.
    */
 #ifndef KDE_NO_DEPRECATED
-  static KDECORE_DEPRECATED Ptr baseGroup( const QString &baseGroupName );
+  static KSERVICE_DEPRECATED Ptr baseGroup( const QString &baseGroupName );
 #endif
 
   /**

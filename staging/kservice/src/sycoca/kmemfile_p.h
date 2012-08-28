@@ -24,7 +24,7 @@
 #ifndef QT_NO_SHAREDMEMORY
 
 #include <QtCore/QIODevice>
-#include <kdecore_export.h>
+#include <kservice_export.h>
 
 /**
  * @internal
@@ -36,7 +36,7 @@
  * is automatically destroyed when the last process closed KMemFile.
  */
 
-class KDECORE_EXPORT KMemFile : public QIODevice
+class KSERVICE_EXPORT KMemFile : public QIODevice
 {
 public:
   /**

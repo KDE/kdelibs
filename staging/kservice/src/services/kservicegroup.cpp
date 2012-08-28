@@ -22,11 +22,9 @@
 #include "kservicegroupfactory.h"
 #include "kservice.h"
 #include <ksycoca.h>
-#include <klocalizedstring.h>
-#include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kconfiggroup.h>
-
+#include <QDebug>
 
 KServiceGroup::KServiceGroup( const QString & name )
  : KSycocaEntry(*new KServiceGroupPrivate(name))
@@ -677,7 +675,7 @@ void KServiceGroupPrivate::parseAttribute( const QString &item ,  bool &showEmpt
         inlineValue =  _inlineValue;
     }
     else
-        kDebug()<<" This attribute is not supported :"<<item;
+        qDebug() << "This attribute is not supported:" << item;
 }
 
 void KServiceGroup::setLayoutInfo(const QStringList &layout)

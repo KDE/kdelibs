@@ -20,7 +20,7 @@
 #include "kmimetypefactory.h"
 #include <ksycoca.h>
 #include <ksycocadict_p.h>
-#include <kdebug.h>
+#include <QDebug>
 
 extern int servicesDebugArea();
 
@@ -87,12 +87,12 @@ KMimeTypeFactory::MimeTypeEntry * KMimeTypeFactory::createEntry(int offset) cons
          return 0;
 
      default:
-        kError(7011) << "KMimeTypeFactory: unexpected object entry in KSycoca database (type=" << int(type) << ")";
+        qWarning() << "KMimeTypeFactory: unexpected object entry in KSycoca database (type=" << int(type) << ")";
         break;
    }
    if (newEntry && !newEntry->isValid())
    {
-      kError(7011) << "KMimeTypeFactory: corrupt object in KSycoca database!\n";
+      qWarning() << "KMimeTypeFactory: corrupt object in KSycoca database!\n";
       delete newEntry;
       newEntry = 0;
    }

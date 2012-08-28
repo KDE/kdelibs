@@ -25,9 +25,9 @@
 #include "kservicefactory.h"
 #include "kservicetypeprofile.h"
 #include <assert.h>
-#include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kconfiggroup.h>
+#include <QDebug>
 
 extern int servicesDebugArea();
 
@@ -212,7 +212,7 @@ KServiceType::Ptr KServiceType::parentType()
 
     d->parentType = KServiceTypeFactory::self()->findServiceTypeByName( parentSt );
     if (!d->parentType)
-        kWarning(servicesDebugArea()) << entryPath() << "specifies undefined mimetype/servicetype"<< parentSt;
+        qWarning() << entryPath() << "specifies undefined mimetype/servicetype" << parentSt;
     return d->parentType;
 }
 

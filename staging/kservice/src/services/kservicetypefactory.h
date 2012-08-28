@@ -40,7 +40,7 @@ class KServiceType;
  *
  * Exported for kbuildsycoca, but not installed.
  */
-class KDECORE_EXPORT KServiceTypeFactory : public KSycocaFactory
+class KSERVICE_EXPORT KServiceTypeFactory : public KSycocaFactory
 {
   K_SYCOCAFACTORY( KST_KServiceTypeFactory )
 public:

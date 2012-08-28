@@ -20,7 +20,7 @@
 #ifndef KSYCOCA_H
 #define KSYCOCA_H
 
-#include <kdecore_export.h>
+#include <kservice_export.h>
 #include <ksycocatype.h>
 
 #include <QtCore/QObject>
@@ -40,7 +40,7 @@ class KSycocaPrivate;
  * @internal
  * Read-only SYstem COnfiguration CAche
  */
-class KDECORE_EXPORT KSycoca : public QObject
+class KSERVICE_EXPORT KSycoca : public QObject
 {
   Q_OBJECT
   //Q_CLASSINFO("D-Bus Interface", "org.kde.KSycoca")
@@ -158,7 +158,7 @@ public:
     * @deprecated use the signal databaseChanged(QStringList) instead.
     */
 #ifndef KDE_NO_DEPRECATED
-   static KDECORE_DEPRECATED bool isChanged(const char *type);
+   static KSERVICE_DEPRECATED bool isChanged(const char *type);
 #endif
 
    /**

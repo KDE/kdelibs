@@ -19,7 +19,7 @@
 #ifndef KSYCOCADICT_H
 #define KSYCOCADICT_H
 
-#include <kdecore_export.h>
+#include <kservice_export.h>
 #include "ksycocaentry.h"
 
 #include <QList>
@@ -33,7 +33,7 @@ class QDataStream;
  *
  * Only exported for the unit test
  */
-class KDECORE_EXPORT KSycocaDict //krazy:exclude=dpointer (not const because it gets deleted by clear())
+class KSERVICE_EXPORT KSycocaDict //krazy:exclude=dpointer (not const because it gets deleted by clear())
 {
 public:
    /**

@@ -50,7 +50,7 @@ namespace KServiceTypeProfile
      * @param disabledServices List of services which are normally associated with this serviceType,
      * but which should be disabled, i.e. trader queries will not return them.
      */
-    KDECORE_EXPORT void writeServiceTypeProfile( const QString& serviceType,
+    KSERVICE_EXPORT void writeServiceTypeProfile( const QString& serviceType,
                                                  const KService::List& services,
                                                  const KService::List& disabledServices = KService::List() );
 
@@ -62,7 +62,7 @@ namespace KServiceTypeProfile
      * Do not use this for mimetypes.
      * @param serviceType The name of the servicetype.
      */
-    KDECORE_EXPORT void deleteServiceTypeProfile( const QString& serviceType );
+    KSERVICE_EXPORT void deleteServiceTypeProfile( const QString& serviceType );
 
     /**
      * This method activates a special mode of KServiceTypeProfile, in which all/all
@@ -70,16 +70,16 @@ namespace KServiceTypeProfile
      * It is meant for the configuration module _only_.
      * @internal
      */
-    KDECORE_EXPORT void setConfigurationMode();
+    KSERVICE_EXPORT void setConfigurationMode();
     /**
      * @internal
      */
-    KDECORE_EXPORT bool configurationMode();
+    KSERVICE_EXPORT bool configurationMode();
 
     /**
      * @internal, for KServiceTypeTrader
      */
-    KDECORE_EXPORT bool hasProfile( const QString& serviceType );
+    KSERVICE_EXPORT bool hasProfile( const QString& serviceType );
 
     /**
      * Clear all cached information
