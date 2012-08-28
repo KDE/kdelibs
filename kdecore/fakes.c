@@ -75,7 +75,7 @@ KDECORE_EXPORT int setenv(const char *name, const char *value, int overwrite) {
 }
 #endif /* !HAVE_SETENV */
 
-#ifndef HAVE_UNSETENV
+#if !HAVE_UNSETENV
 
 #if HAVE_ALLOCA_H
 #include <alloca.h>
