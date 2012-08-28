@@ -214,8 +214,6 @@ int getgrouplist(const char *, gid_t , gid_t *, int *);
 #cmakedefine01 HAVE_MKDTEMP
 
 /* FIXME: Move in a config-kdecore.h file ?*/
-#cmakedefine01 HAVE_MMAP
-#cmakedefine01 HAVE_MADVISE 
 #cmakedefine01 HAVE_BACKTRACE
 #cmakedefine01 HAVE_VOLMGT
 #cmakedefine01 HAVE_SYS_MNTTAB_H

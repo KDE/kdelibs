@@ -4,6 +4,7 @@ project(kdecore)
 set( KDELIBSUFF ${LIB_SUFFIX} )
 
 configure_file(config-kstandarddirs.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kstandarddirs.h )
+configure_file(config-ksycoca.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-ksycoca.h )
 
 find_package(X11)
 if(X11_FOUND)

@@ -22,7 +22,7 @@
 #ifndef KSYCOCADEVICES_P_H
 #define KSYCOCADEVICES_P_H
 
-#include <kdefakes.h>
+#include <config-ksycoca.h>
 
 class KSycocaAbstractDevice
 {
