@@ -250,6 +250,9 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src
                           ${CMAKE_BINARY_DIR}/tier2/kconfig/src/core
                           ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/core
+                          ${CMAKE_BINARY_DIR}/staging/kservice/src/
+                          ${CMAKE_SOURCE_DIR}/staging/kservice/src/sycoca
+                          ${CMAKE_SOURCE_DIR}/staging/kservice/src/services
                           ${QT_INCLUDES}
                           ${_KDE4_PLATFORM_INCLUDE_DIRS})
 

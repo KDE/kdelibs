@@ -20,6 +20,7 @@
 
 #include "browseropenorsavequestion.h"
 #include <kdebug.h>
+#include <klocalizedstring.h>
 #include <kaction.h>
 #include <kfileitemactions.h>
 #include <kpushbutton.h>
