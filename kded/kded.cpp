@@ -692,12 +692,12 @@ static void sighandler(int /*sig*/)
 
 KUpdateD::KUpdateD()
 {
-    m_pDirWatch = new KDirWatch;
-    m_pTimer = new QTimer;
+    m_pDirWatch = new KDirWatch(this);
+    m_pTimer = new QTimer(this);
     m_pTimer->setSingleShot( true );
     connect(m_pTimer, SIGNAL(timeout()), this, SLOT(runKonfUpdate()));
     QObject::connect( m_pDirWatch, SIGNAL(dirty(QString)),
-           this, SLOT(slotNewUpdateFile()));
+           this, SLOT(slotNewUpdateFile(QString)));
 
     const QStringList dirs = KGlobal::dirs()->findDirs("data", "kconf_update");
     for( QStringList::ConstIterator it = dirs.begin();
@@ -709,14 +709,12 @@ KUpdateD::KUpdateD()
           path += '/';
 
        if (!m_pDirWatch->contains(path))
-          m_pDirWatch->addDir(path,KDirWatch::WatchFiles|KDirWatch::WatchSubDirs);
+          m_pDirWatch->addDir(path,KDirWatch::WatchFiles);
     }
 }
 
 KUpdateD::~KUpdateD()
 {
-    delete m_pDirWatch;
-    delete m_pTimer;
 }
 
 void KUpdateD::runKonfUpdate()
@@ -724,8 +722,10 @@ void KUpdateD::runKonfUpdate()
     ::runKonfUpdate();
 }
 
-void KUpdateD::slotNewUpdateFile()
+void KUpdateD::slotNewUpdateFile(const QString& dirty)
 {
+    Q_UNUSED(dirty);
+    //qDebug() << dirty;
     m_pTimer->start( 500 );
 }
 

@@ -235,7 +235,7 @@ public:
 
 public Q_SLOTS:
    void runKonfUpdate();
-   void slotNewUpdateFile();
+   void slotNewUpdateFile(const QString&);
 
 private:
    /**
