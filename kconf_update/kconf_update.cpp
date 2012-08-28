@@ -30,9 +30,7 @@
 #include <QtCore/QTextCodec>
 #include <QUrl>
 #include <QTemporaryFile>
-#ifdef _WIN32_WCE
 #include <QtCore/QDir>
-#endif
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -189,7 +187,9 @@ QTextStream &
 KonfUpdate::log()
 {
     if (!m_textStream) {
-        QString file = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + "kconf_update/log/update.log";
+        QString dir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + "kconf_update/log";
+        QDir().mkpath(dir);
+        QString file = dir + "/update.log";
         m_file = new QFile(file);
         if (m_file->open(QIODevice::WriteOnly | QIODevice::Append)) {
             m_textStream = new QTextStream(m_file);
