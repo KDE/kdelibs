@@ -2,9 +2,7 @@ project(kdecore)
 
 # Generate config-kstandarddirs.h
 set( KDELIBSUFF ${LIB_SUFFIX} )
-
 configure_file(config-kstandarddirs.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kstandarddirs.h )
-configure_file(config-ksycoca.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-ksycoca.h )
 
 find_package(X11)
 if(X11_FOUND)
@@ -47,6 +45,10 @@ include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/kernel )
 include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/randomness )
 include_directories( ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src/ )
 include_directories( ${CMAKE_BINARY_DIR}/tier1/kcodecs/src/ )
+include_directories( ${CMAKE_BINARY_DIR}/staging/kservice/src
+                     ${CMAKE_SOURCE_DIR}/staging/kservice/src/services
+                     ${CMAKE_SOURCE_DIR}/staging/kservice/src/sycoca
+)
 
 if (KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
    set(KDECORE_NO_KDE3SUPPORT TRUE)
@@ -176,23 +178,6 @@ set(kdecore_LIB_SRCS
    kernel/kcmdlineargs.cpp
    kernel/kstandarddirs.cpp
    kernel/ktoolinvocation.cpp
-   services/kmimetypefactory.cpp
-   services/kmimetypetrader.cpp
-   services/kservice.cpp
-   services/kserviceaction.cpp
-   services/kservicefactory.cpp
-   services/kservicegroup.cpp
-   services/kservicegroupfactory.cpp
-   services/kserviceoffer.cpp
-   services/kservicetype.cpp
-   services/kservicetypefactory.cpp
-   services/kservicetypeprofile.cpp
-   services/kservicetypetrader.cpp
-   services/ktraderparse.cpp
-   services/ktraderparsetree.cpp
-   services/yacc.c
-   services/lex.c
-   services/kplugininfo.cpp
 )
 
 set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
@@ -207,11 +192,6 @@ set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    localization/kuitsemantics.cpp
    localization/kuitformats.cpp
    localization/common_helpers.cpp
-   sycoca/ksycoca.cpp
-   sycoca/ksycocadict.cpp
-   sycoca/ksycocaentry.cpp
-   sycoca/ksycocafactory.cpp
-   sycoca/kmemfile.cpp
    util/kautostart.cpp
    util/kdedmodule.cpp
    util/kdeversion.cpp
@@ -233,7 +213,7 @@ generate_export_header(kdecore)
 
 target_link_libraries(kdecore
   LINK_PUBLIC
-    ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons kconfigcore kcodecs
+    ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons kconfigcore kcodecs kservice
   LINK_PRIVATE
     ${QtMimeTypes_LIBRARY} ${QT_QTXML_LIBRARY} ${kdecore_OPTIONAL_LIBS}
 )
@@ -331,23 +311,9 @@ install( FILES
 install(FILES
    network/ksocketfactory.h
    network/ktcpsocket.h
-   services/kmimetypetrader.h
-   services/kservice.h
-   services/kserviceaction.h
-   services/kservicegroup.h
-   #services/kservicefactory.h: do not install, internal API
-   services/kservicetype.h
-   #services/kservicetypefactory.h: do not install, internal API
-   services/kservicetypeprofile.h
-   services/kservicetypetrader.h
-   #services/kserviceoffer.h: do not install, internal API
-   services/kplugininfo.h
    localization/kcurrencycode.h
    localization/klocale.h
    localization/klocalizedstring.h
-   sycoca/ksycoca.h
-   sycoca/ksycocaentry.h
-   sycoca/ksycocatype.h
    util/kautostart.h
    util/kde_file.h
    util/kdedmodule.h
@@ -365,11 +331,10 @@ install(FILES
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 
-install( FILES
+#install( FILES
    #config/kconfigbackend.desktop
-   services/kplugininfo.desktop
-   DESTINATION  ${SERVICETYPES_INSTALL_DIR}
-)
+   #DESTINATION  ${SERVICETYPES_INSTALL_DIR}
+   #)
 
 install( FILES
     KDECoreMacros.cmake
