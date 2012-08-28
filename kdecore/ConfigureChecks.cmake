@@ -37,9 +37,6 @@ check_function_exists(mkstemp     HAVE_MKSTEMP)
 check_function_exists(mkstemps    HAVE_MKSTEMPS)
 check_function_exists(random      HAVE_RANDOM)
 check_function_exists(seteuid     HAVE_SETEUID)
-check_function_exists(mmap        HAVE_MMAP)
-
-check_symbol_exists(posix_madvise   "sys/mman.h"               HAVE_MADVISE)
 
 check_library_exists(volmgt volmgt_running "" HAVE_VOLMGT)
 
