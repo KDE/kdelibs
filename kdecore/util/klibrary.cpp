@@ -21,19 +21,14 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QPointer>
+#include <QDebug>
 
 #include <kcomponentdata.h>
 
 #include <kpluginfactory.h>
-#include <kdebug.h>
 
 extern QString makeLibName( const QString &libname );
 extern QString findLibraryInternal(const QString &name, const KComponentData &cData);
-
-int kLibraryDebugArea() {
-    static int s_area = KDebug::registerArea("kdecore (KLibrary)");
-    return s_area;
-}
 
 //static
 KDECORE_EXPORT QString findLibrary(const QString &name, const KComponentData &cData)
@@ -117,8 +112,7 @@ static KPluginFactory* kde3Factory(KLibrary *lib, const QByteArray &factoryname)
         if (!factoryname.startsWith(QByteArray("lib")))
             return kde3Factory(lib, QByteArray("lib")+symname.mid(5 /*"init_"*/));
 #endif
-        kDebug(kLibraryDebugArea()) << "The library" << lib->fileName() << "does not offer an"
-                    << symname << "function.";
+        qDebug() << "The library" << lib->fileName() << "does not offer an" << symname << "function.";
         return 0;
     }
 
@@ -126,7 +120,7 @@ static KPluginFactory* kde3Factory(KLibrary *lib, const QByteArray &factoryname)
 
     if( !factory )
     {
-        kDebug(kLibraryDebugArea()) << "The library" << lib->fileName() << "does not offer a KDE compatible factory.";
+        qDebug() << "The library" << lib->fileName() << "does not offer a KDE compatible factory.";
         return 0;
     }
     s_createdKde3Factories()->insert(hashKey, factory);
@@ -142,7 +136,7 @@ static KPluginFactory *kde4Factory(KLibrary *lib)
     t_func func = reinterpret_cast<t_func>(lib->resolveFunction(symname));
     if ( !func )
     {
-        kDebug(kLibraryDebugArea()) << "The library" << lib->fileName() << "does not offer a qt_plugin_instance function.";
+        qDebug() << "The library" << lib->fileName() << "does not offer a qt_plugin_instance function.";
         return 0;
     }
 
@@ -152,8 +146,8 @@ static KPluginFactory *kde4Factory(KLibrary *lib)
     if( !factory )
     {
         if (instance)
-            kDebug(kLibraryDebugArea()) << "Expected a KPluginFactory, got a" << instance->metaObject()->className();
-        kDebug(kLibraryDebugArea()) << "The library" << lib->fileName() << "does not offer a KDE 4 compatible factory.";
+            qDebug() << "Expected a KPluginFactory, got a" << instance->metaObject()->className();
+        qDebug() << "The library" << lib->fileName() << "does not offer a KDE 4 compatible factory.";
         return 0;
     }
     return factory;

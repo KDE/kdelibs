@@ -25,13 +25,11 @@
 #include "kpluginfactory.h"
 #include <kservice.h>
 #include "klibrary.h"
-#include <kdebug.h>
 
 #include <QtCore/QLibrary>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
-
-extern int kLibraryDebugArea();
+#include <QDebug>
 
 class KPluginLoaderPrivate
 {
@@ -89,7 +87,7 @@ QString findLibraryInternal(const QString &name, const KComponentData &cData)
     bool kdeinit = fileinfo.fileName().startsWith(QLatin1String("libkdeinit5_"));
 
     if (hasPrefix && !kdeinit)
-        kDebug(kLibraryDebugArea()) << "plugins should not have a 'lib' prefix:" << libname;
+        qDebug() << "plugins should not have a 'lib' prefix:" << libname;
 #ifdef Q_CC_MSVC
     // first remove the 'lib' prefix in front of windows plugins
     libname = fixLibPrefix(libname);
@@ -116,7 +114,7 @@ QString findLibraryInternal(const QString &name, const KComponentData &cData)
     libfile = cData.dirs()->findResource("lib", libname);
     if (!libfile.isEmpty()) {
         if (!kdeinit) {
-            kDebug(kLibraryDebugArea()) << "library" << libname << "not found under 'module' but under 'lib'";
+            qDebug() << "library" << libname << "not found under 'module' but under 'lib'";
         }
         return libfile;
     }
@@ -206,7 +204,7 @@ KPluginFactory *KPluginLoader::factory()
     KPluginFactory *factory = qobject_cast<KPluginFactory *>(obj);
 
     if (factory == 0) {
-        kDebug(kLibraryDebugArea()) << "Expected a KPluginFactory, got a" << obj->metaObject()->className();
+        qDebug() << "Expected a KPluginFactory, got a" << obj->metaObject()->className();
         delete obj;
         d->errorString = i18n("The library %1 does not offer a KDE 4 compatible factory." , d->name);
     }
@@ -244,7 +242,7 @@ bool KPluginLoader::load()
             return false;
         }
     } else {
-        kDebug(kLibraryDebugArea()) << "The plugin" << d->name << "doesn't contain a kde_plugin_verification_data structure";
+        qDebug() << "The plugin" << d->name << "doesn't contain a kde_plugin_verification_data structure";
     }
 
     quint32 *version = (quint32 *) lib.resolve("kde_plugin_version");
