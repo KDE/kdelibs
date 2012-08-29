@@ -10,6 +10,14 @@ include(CheckCSourceRuns)
 
 set( KDELIBSUFF ${LIB_SUFFIX} )
 
+# now check for dlfcn.h using the cmake supplied CHECK_INCLUDE_FILES() macro
+# If definitions like -D_GNU_SOURCE are needed for these checks they
+# should be added to _KDE4_PLATFORM_DEFINITIONS when it is originally
+# defined outside this file.  Here we include these definitions in
+# CMAKE_REQUIRED_DEFINITIONS so they will be included in the build of
+# checks below.
+set(CMAKE_REQUIRED_DEFINITIONS ${_KDE4_PLATFORM_DEFINITIONS})
+
 macro_push_required_vars()
   set(CMAKE_REQUIRED_INCLUDES "${CMAKE_REQUIRED_INCLUDES};${QT_INCLUDES}")
   if (QT_USE_FRAMEWORKS)
