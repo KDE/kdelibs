@@ -220,7 +220,7 @@ void KTimeZonesTest::currentOffset()
 {
     QString tzfile = ':' + mDataDir + "/Europe/Paris";
     const char *originalZone = ::getenv("TZ");   // save the original local time zone
-    ::setenv("TZ", tzfile.toLatin1().data(), 1);
+    qputenv("TZ", tzfile.toLatin1().data());
     ::tzset();
 
     // Find the current offset of a time zone
@@ -240,7 +240,7 @@ void KTimeZonesTest::currentOffset()
     if (!originalZone)
         ::unsetenv("TZ");
     else
-        ::setenv("TZ", originalZone, 1);
+        qputenv("TZ", originalZone);
     ::tzset();
 }
 

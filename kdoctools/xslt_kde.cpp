@@ -34,7 +34,7 @@ void fillInstance(KComponentData &ins, const QString &srcdir)
         ins.dirs()->addResourceDir("dtd", srcdir);
     }
 
-    setenv( "XML_CATALOG_FILES", catalogs.constData(), 1 );
+    qputenv( "XML_CATALOG_FILES", catalogs);
     xmlInitializeCatalog();
 }
 

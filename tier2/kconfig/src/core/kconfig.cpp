@@ -174,7 +174,7 @@ QString KConfigPrivate::expandString(const QString& value)
                     newpath += KPATH_SEPARATOR;
             }
             newpath += oldpath;
-            setenv( "PATH", newpath, 1/*overwrite*/ );
+            qputenv( "PATH", newpath);
 #endif
 
 // FIXME: wince does not have pipes
@@ -187,7 +187,7 @@ QString KConfigPrivate::expandString(const QString& value)
             }
 #endif
 #if 0 // Removed in KDE Frameworks 5, see above.
-            setenv( "PATH", oldpath, 1/*overwrite*/ );
+            qputenv( "PATH", oldpath);
 #endif
             aValue.replace( nDollarPos, nEndPos-nDollarPos, result );
             nDollarPos += result.length();

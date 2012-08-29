@@ -144,8 +144,8 @@ K3Process::setupEnvironment()
    QMap<QString,QString>::Iterator it;
    for(it = d->env.begin(); it != d->env.end(); ++it)
    {
-      setenv(QFile::encodeName(it.key()).data(),
-             QFile::encodeName(it.value()).data(), 1);
+      qputenv(QFile::encodeName(it.key()).data(),
+             QFile::encodeName(it.value()));
    }
    if (!d->wd.isEmpty())
    {

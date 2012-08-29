@@ -28,7 +28,7 @@
    functions:
      strlcat, strlcpy, 
      strcasestr,
-     setenv, unsetenv, 
+     unsetenv, 
      usleep, initgroups, 
      random, srandom  (this is for KRandom itself, prefer using KRandom in any other code)
      mkdtemp (this is for KTempDir itself, prefer using KTempDir everywhere else)
@@ -87,17 +87,6 @@ long int random(void);
 extern "C" {
 #endif
 void srandom(unsigned int);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-#cmakedefine01 HAVE_SETENV_PROTO
-#if ! HAVE_SETENV_PROTO
-#ifdef __cplusplus
-extern "C" {
-#endif
-int setenv (const char *, const char *, int);
 #ifdef __cplusplus
 }
 #endif
@@ -205,7 +194,7 @@ int getgrouplist(const char *, gid_t , gid_t *, int *);
 #cmakedefine01 HAVE_MKSTEMPS
 #cmakedefine01 HAVE_MKSTEMP
 #cmakedefine01 HAVE_MKSTEMPS 
-#cmakedefine01 HAVE_SETENV
+#cmakedefine01 HAVE_UNSETENV
 #cmakedefine01 HAVE_SYS_SELECT_H
 #cmakedefine01 HAVE_RANDOM
 #cmakedefine01 HAVE_SETEUID

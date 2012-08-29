@@ -26,6 +26,7 @@ CheckResult check(const QString &checkFilename, const QString &exe, const QByteA
 
 void doOutput(QString output, bool usingStdOut, bool usingOutput, const QString &outputOption, bool replaceCharset);
 
+// FIXME: To remove ?
 #ifdef _WIN32
 #include <windows.h>
 #define setenv(x,y,z) SetEnvironmentVariable((LPCTSTR)x,(LPCTSTR)y)

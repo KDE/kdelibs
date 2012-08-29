@@ -1214,7 +1214,7 @@ static bool handle_launcher_request(int sock, const char *who)
                             olddisplay != kdedisplay);
 
       if (reset_display)
-          setenv(displayEnvVarName(), kdedisplay, true);
+          qputenv(displayEnvVarName(), kdedisplay);
 
       pid = launch( argc, name, args, cwd, envc, envs,
           request_header.cmd == LAUNCHER_SHELL || request_header.cmd == LAUNCHER_KWRAPPER,
@@ -1222,7 +1222,7 @@ static bool handle_launcher_request(int sock, const char *who)
 
       if (reset_display) {
           unsetenv("KDE_DISPLAY");
-          setenv(displayEnvVarName(), olddisplay, true);
+          qputenv(displayEnvVarName(), olddisplay);
       }
 
       if (pid && (d.result == 0))
@@ -1272,7 +1272,7 @@ static bool handle_launcher_request(int sock, const char *who)
          free(request_data);
          return true; // sure?
       }
-      setenv( env_name, env_value, 1);
+      qputenv( env_name, env_value);
    }
    else if (request_header.cmd == LAUNCHER_TERMINATE_KDE)
    {
@@ -1614,7 +1614,7 @@ static void setupX()
             || xauthfile.write(xauthfrom.readAll()) != xauthfrom.size() || !xauthfile.commit()) {
             // error
         } else {
-            setenv( "XAUTHORITY", QFile::encodeName( xauth ), true );
+            qputenv( "XAUTHORITY", QFile::encodeName( xauth ));
         }
     }
 }
@@ -1842,7 +1842,7 @@ int main(int argc, char **argv, char **envp)
 
    if (launch_kded)
    {
-      setenv("KDED_STARTED_BY_KDEINIT", "1", true);
+      qputenv("KDED_STARTED_BY_KDEINIT", "1");
       pid = launch( 1, KDED_EXENAME, 0 );
       unsetenv("KDED_STARTED_BY_KDEINIT");
 #ifndef NDEBUG

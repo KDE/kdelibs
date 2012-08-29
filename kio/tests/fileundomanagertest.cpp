@@ -171,7 +171,7 @@ void FileUndoManagerTest::initTestCase()
 #endif
 
     // Get kio_trash to share our environment so that it writes trashrc to the right kdehome
-    setenv( "KDE_FORK_SLAVES", "yes", true );
+    qputenv( "KDE_FORK_SLAVES", "yes");
 
     // Start with a clean base dir
     cleanupTestCase();

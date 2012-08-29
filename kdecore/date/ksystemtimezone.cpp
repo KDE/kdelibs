@@ -570,7 +570,7 @@ int KSystemTimeZoneBackend::offsetAtZoneTime(const KTimeZone *caller, const QDat
     const bool change = (tz != originalZone);
     if (change)
     {
-        ::setenv("TZ", tz, 1);
+        qputenv("TZ", tz);
         ::tzset();
     }
 
@@ -622,7 +622,7 @@ int KSystemTimeZoneBackend::offsetAtZoneTime(const KTimeZone *caller, const QDat
         if (originalZone.isEmpty())
             ::unsetenv("TZ");
         else
-            ::setenv("TZ", originalZone, 1);
+            qputenv("TZ", originalZone);
         ::tzset();
     }
     return offset1;
@@ -645,7 +645,7 @@ int KSystemTimeZoneBackend::offset(const KTimeZone *caller, time_t t) const
     const bool change = (tz != originalZone);
     if (change)
     {
-        ::setenv("TZ", tz, 1);
+        qputenv("TZ", tz);
         ::tzset();
     }
 
@@ -657,7 +657,7 @@ int KSystemTimeZoneBackend::offset(const KTimeZone *caller, time_t t) const
         if (originalZone.isEmpty())
             ::unsetenv("TZ");
         else
-            ::setenv("TZ", originalZone, 1);
+            qputenv("TZ", originalZone);
         ::tzset();
     }
     return secs;
@@ -771,7 +771,7 @@ void KSystemTimeZoneSource::endParseBlock()
         if (KSystemTimeZoneSourcePrivate::originalTZ.isEmpty())
             ::unsetenv("TZ");
         else
-            ::setenv("TZ", KSystemTimeZoneSourcePrivate::originalTZ, 1);
+            qputenv("TZ", KSystemTimeZoneSourcePrivate::originalTZ);
         ::tzset();
         KSystemTimeZoneSourcePrivate::multiParse = false;
     }
@@ -792,7 +792,7 @@ void KSystemTimeZoneSourcePrivate::setTZ(const QByteArray &zoneName)
     }
     if (setTZ)
     {
-        ::setenv("TZ", tz, 1);
+        qputenv("TZ", tz);
         ::tzset();
     }
 }
@@ -805,7 +805,7 @@ void KSystemTimeZoneSourcePrivate::restoreTZ()
         if (savedTZ.isEmpty())
             ::unsetenv("TZ");
         else
-            ::setenv("TZ", savedTZ, 1);
+            qputenv("TZ", savedTZ);
         ::tzset();
         TZIsSaved = false;
     }

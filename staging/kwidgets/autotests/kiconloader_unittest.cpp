@@ -61,7 +61,7 @@ private Q_SLOTS:
         // KDE4:
         //QVERIFY(KGlobal::dirs()->addResourceDir("icon", tempRoot.path(), false));
         // KF5-with-qt4-on-unix: (no solution on other platforms)
-        ::setenv("XDG_DATA_DIRS", qgetenv("XDG_DATA_DIRS") + ":" + QFile::encodeName(tempRoot.path()), 1);
+        qputenv("XDG_DATA_DIRS", (qgetenv("XDG_DATA_DIRS") + ":" + QFile::encodeName(tempRoot.path())));
         // KF5-with-qt5: port to QStandardPaths::enableTestMode
 
         KIconLoader iconLoader;

@@ -42,39 +42,6 @@
 #define KDE_mkdir mkdir
 
 
-#if ! HAVE_SETENV
-
-#if HAVE_ALLOCA_H
-#include <alloca.h>
-#endif
-#if HAVE_STRING_H
-#include <string.h>
-#endif
-#if HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-#if HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-KDECORE_EXPORT int setenv(const char *name, const char *value, int overwrite) {
-    int i;
-    char * a;
-
-    if (!overwrite && getenv(name)) return 0;
-
-    i = strlen(name) + strlen(value) + 2;
-    a = (char*)malloc(i);
-    if (!a) return 1;
-
-    strcpy(a, name);
-    strcat(a, "=");
-    strcat(a, value);
-
-    return putenv(a);
-}
-#endif /* !HAVE_SETENV */
-
 #if !HAVE_UNSETENV
 
 #if HAVE_ALLOCA_H

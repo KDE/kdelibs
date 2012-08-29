@@ -91,7 +91,7 @@ void KFilePlacesModelTest::initTestCase()
     f2.remove();
 
     qRegisterMetaType<QModelIndex>();
-    setenv("SOLID_FAKEHW", TEST_DATA, 1);
+    qputenv("SOLID_FAKEHW", TEST_DATA);
     m_places = new KFilePlacesModel();
     m_places2 = new KFilePlacesModel();
 }

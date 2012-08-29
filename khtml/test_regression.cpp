@@ -598,16 +598,16 @@ int main(int argc, char *argv[])
 
     QString kh("/var/tmp/%1_non_existant");
     kh = kh.arg( pw->pw_name );
-    setenv( "XDG_CONFIG_HOME", kh.toLatin1(), 1 );
-    setenv( "XDG_DATA_HOME", kh.toLatin1(), 1 );
-    setenv( "LC_ALL", "C", 1 );
-    setenv( "LANG", "C", 1 );
+    qputenv( "XDG_CONFIG_HOME", kh.toLatin1());
+    qputenv( "XDG_DATA_HOME", kh.toLatin1());
+    qputenv( "LC_ALL", "C");
+    qputenv( "LANG", "C");
 
     // We want KIO to be in the slave-forking mode since
     // then it'll ask KProtocolInfo::exec for the binary to run,
     // and we intercept that, limiting the I/O to file://
     // and the magic data://. See Slave::createSlave in KIO's slave.cpp
-    setenv( "KDE_FORK_SLAVES", "true", 1);
+    qputenv( "KDE_FORK_SLAVES", "true");
     signal( SIGALRM, signal_handler );
 
     // workaround various Qt crashes by always enforcing a TrueColor visual
@@ -696,7 +696,7 @@ int main(int argc, char *argv[])
                     "1024x768x16", "-ac", "-fp", buffer.data(), ":47", (char*)NULL );
         }
 
-        setenv( "DISPLAY", ":47", 1 );
+        qputenv( "DISPLAY", ":47");
     }
 
     QApplication a(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());

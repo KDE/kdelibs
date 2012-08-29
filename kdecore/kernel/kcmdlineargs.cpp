@@ -1429,7 +1429,7 @@ KCmdLineArgsPrivate::setOption(const QByteArray &opt, const QByteArray &value)
       // Hack coming up!
       if (argString == "-display")
       {
-         setenv(DISPLAY, value.data(), true);
+         qputenv(DISPLAY, value);
       }
 #endif
    }

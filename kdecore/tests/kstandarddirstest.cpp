@@ -47,10 +47,10 @@ QTEST_MAIN(KStandarddirsTest)
 void KStandarddirsTest::initTestCase()
 {
     m_configHome = QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/config");
-    setenv("XDG_CONFIG_HOME", QFile::encodeName(m_configHome), 1);
+    qputenv("XDG_CONFIG_HOME", QFile::encodeName(m_configHome));
 
     m_dataHome = QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/local");
-    setenv("XDG_DATA_HOME", QFile::encodeName(m_dataHome), 1);
+    qputenv("XDG_DATA_HOME", QFile::encodeName(m_dataHome));
 
     // Create a main component data so that testAppData doesn't suddenly change the main component
     // data.
@@ -422,7 +422,7 @@ void KStandarddirsTest::testSetXdgDataDirs()
     const QString localApps = m_dataHome + "/applications/";
     QVERIFY(KStandardDirs::makeDir(localApps));
     const QString customDataDir = QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/global");
-    ::setenv("XDG_DATA_DIRS", QFile::encodeName(customDataDir), 1 );
+    qputenv("XDG_DATA_DIRS", QFile::encodeName(customDataDir));
     QVERIFY(QDir(customDataDir).mkpath("applications"));
     KStandardDirs newStdDirs;
     const QStringList newDirs = newStdDirs.resourceDirs("xdgdata-apps");

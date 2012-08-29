@@ -31,7 +31,7 @@ CheckResult check(const QString &checkFilename, const QString &exe, const QByteA
     const QString pwd_buffer = QDir::currentPath();
     const QFileInfo file( checkFilename );
 
-    setenv( "XML_CATALOG_FILES", catalogs.constData(), 1 );
+    qputenv( "XML_CATALOG_FILES", catalogs);
     if ( QFileInfo( exe ).isExecutable() ) {
         QDir::setCurrent( file.absolutePath() );
         QString cmd = exe;

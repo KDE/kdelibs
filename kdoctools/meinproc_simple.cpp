@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
     QByteArray catalogs;
     catalogs += customizationCatalog.toUtf8();
     
-    setenv( "XML_CATALOG_FILES", catalogs.constData(), 1 );
+    qputenv( "XML_CATALOG_FILES", catalogs);
     xmlInitializeCatalog();
 
     LIBXML_TEST_VERSION

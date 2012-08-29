@@ -118,7 +118,7 @@ bool mac_set_dbus_address(QString value)
 {
 	if (!value.isEmpty() && QFile::exists(value) && (QFile::permissions(value) & QFile::WriteUser)) {
 		value = QLatin1String("unix:path=") + value;
-		::setenv("DBUS_SESSION_BUS_ADDRESS", value.toLocal8Bit(), 1);
+		qputenv("DBUS_SESSION_BUS_ADDRESS", value.toLocal8Bit());
 		kDebug() << "set session bus address to" << value;
 		return true;
 	}

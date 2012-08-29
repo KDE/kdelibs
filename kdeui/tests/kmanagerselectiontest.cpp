@@ -144,11 +144,11 @@ void SigCheckWatcher::lostOwner()
 #define QTEST_KDEMAIN_WITH_COMPONENTNAME_KAPP(TestObject, flags, componentName) \
 int main(int argc, char *argv[]) \
 { \
-    setenv("LC_ALL", "C", 1); \
+    qputenv("LC_ALL", "C"); \
     assert( !QDir::homePath().isEmpty() ); \
-    setenv("XDG_DATA_HOME", QFile::encodeName( QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/local") ), 1); \
-    setenv("XDG_CONFIG_HOME", QFile::encodeName( QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/config") ), 1); \
-    setenv("KDE_SKIP_KDERC", "1", 1); \
+    qputenv("XDG_DATA_HOME", QFile::encodeName( QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/local") )); \
+    qputenv("XDG_CONFIG_HOME", QFile::encodeName( QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/config") )); \
+    qputenv("KDE_SKIP_KDERC", "1"); \
     unsetenv("KDE_COLOR_DEBUG"); \
     QFile::remove(QDir::homePath() + QLatin1String("/.kde-unit-test/share/config/qttestrc"));  \
     KAboutData aboutData( QByteArray(componentName), QByteArray(), qi18n("KDE Test Program"), QByteArray("version") );  \

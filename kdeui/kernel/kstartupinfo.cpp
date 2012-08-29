@@ -1081,7 +1081,7 @@ bool KStartupInfoId::setupStartupEnv() const
         unsetenv( NET_STARTUP_ENV );
         return false;
         }
-    return setenv( NET_STARTUP_ENV, id(), true ) == 0;
+    return ! qputenv( NET_STARTUP_ENV, id()) == 0;
     }
 
 KStartupInfoId KStartupInfo::currentStartupIdEnv()
