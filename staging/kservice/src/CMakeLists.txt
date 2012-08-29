@@ -13,8 +13,8 @@ IF(NOT QT5_BUILD)
 endif()
 #include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io )
 include_directories(
-   ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/core
-   ${CMAKE_BINARY_DIR}/tier2/kconfig/src/core
+   ${kconfig_SOURCE_DIR}/src/core
+   ${kconfig_BINARY_DIR}/src/core
 )
 
 set(kservice_SRCS

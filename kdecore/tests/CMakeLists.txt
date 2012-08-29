@@ -39,19 +39,16 @@ KDECORE_UNIT_TESTS(
  ksharedptrtest
  kdatetimetest
  kautostarttest
- ksycocadicttest
  kglobalstatictest
  globalcleanuptest
  kprocesstest
  kconfigafterkglobaltest1
  kconfigafterkglobaltest2
  ktcpsockettest
- ksycocathreadtest
  kdebug_unittest
  qcoreapptest
  kdebug_qcoreapptest
  kcalendartest
- kservicetest
  kglobaltest
  kstandarddirstest
  kconfignokdehometest

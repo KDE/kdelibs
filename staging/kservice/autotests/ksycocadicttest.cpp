@@ -21,8 +21,6 @@
 #include <QBuffer>
 #include <kservicetype.h>
 #include <ksycocadict_p.h>
-#include <kdebug.h>
-#include "qtest_kde.h"
 
 class KSycocaDictTest : public QObject
 {
@@ -36,12 +34,12 @@ private:
     {
         KServiceType::Ptr ptr = KServiceType::serviceType(name);
         if (!ptr)
-            kWarning() << "serviceType not found" << name;
+            qWarning() << "serviceType not found" << name;
         dict.add(key, KSycocaEntry::Ptr::staticCast(ptr));
     }
 };
 
-QTEST_KDEMAIN_CORE(KSycocaDictTest)
+QTEST_MAIN(KSycocaDictTest)
 
 // Standard use of KSycocaDict: mapping entry name to entry
 void KSycocaDictTest::testStandardDict()

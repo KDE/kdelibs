@@ -26,7 +26,6 @@
 #include <kdesktopfile.h>
 #include <ksycoca.h>
 
-#include <kdebug.h>
 #include <kservicegroup.h>
 #include <kservicetypetrader.h>
 #include <kservicetype.h>
@@ -38,7 +37,47 @@
 #include <qthread.h>
 #include <qsignalspy.h>
 #include <kde_qt5_compat.h>
-#include <qtest_kde.h> // kWaitForSignal
+
+#include <QTimer>
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+class KDESignalSpy : public QObject
+{
+    Q_OBJECT
+public:
+    KDESignalSpy(QObject *obj, const char *signal, int timeout)
+        : QObject(0), m_obj(obj), m_emitted(false)
+    {
+        connect(obj, signal, this, SLOT(slotSignalEmitted()));
+        if (timeout > 0) {
+            QObject::connect(&m_timer, SIGNAL(timeout()), &m_loop, SLOT(quit()));
+            m_timer.setSingleShot(true);
+            m_timer.start(timeout);
+        }
+        m_loop.exec();
+    }
+    bool signalEmitted() const { return m_emitted; }
+
+private Q_SLOTS:
+    void slotSignalEmitted()
+    {
+        m_emitted = true;
+        disconnect(m_obj, 0, this, 0);
+        m_timer.stop();
+        m_loop.quit();
+    }
+private:
+    QObject* m_obj;
+    bool m_emitted;
+    QEventLoop m_loop;
+    QTimer m_timer;
+};
+bool kWaitForSignal(QObject *obj, const char *signal, int timeout )
+{
+    KDESignalSpy spy(obj, signal, timeout);
+    return spy.signalEmitted();
+}
+#endif
 
 QTEST_MAIN(KServiceTest)
 
@@ -66,7 +105,7 @@ void KServiceTest::initTestCase()
     setlocale(LC_ALL, "fr_FR.utf8");
     m_hasNonCLocale = (setlocale(LC_ALL, NULL) == QByteArray("fr_FR.utf8"));
     if (!m_hasNonCLocale) {
-        kDebug() << "Setting locale to fr_FR.utf8 failed";
+        qDebug() << "Setting locale to fr_FR.utf8 failed";
     }
 
     m_hasKde5Konsole = false;
@@ -185,9 +224,14 @@ void KServiceTest::runKBuildSycoca(bool noincremental)
     //proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output
     proc.start(kbuildsycoca, args);
     proc.waitForFinished();
-    kDebug() << "waiting for signal";
-    QVERIFY(QTest::kWaitForSignal(KSycoca::self(), SIGNAL(databaseChanged(QStringList)), 10000));
-    kDebug() << "got signal";
+    qDebug() << "waiting for signal";
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    QVERIFY(kWaitForSignal(KSycoca::self(), SIGNAL(databaseChanged(QStringList)), 10000));
+#else
+    QSignalSpy spy(KSycoca::self(), SIGNAL(databaseChanged(QStringList)));
+    QVERIFY(spy.wait(10000));
+#endif
+    qDebug() << "got signal";
 }
 
 void KServiceTest::cleanupTestCase()
@@ -570,7 +614,7 @@ void KServiceTest::testServiceGroups()
                                                    false /* allow separators */,
                                                    true /* sort by generic name */);
 
-    kDebug() << list.count();
+    qDebug() << list.count();
     Q_FOREACH(KServiceGroup::SPtr s, list) {
         qDebug() << s->name() << s->entryPath();
     }
@@ -596,7 +640,7 @@ void KServiceTest::testKSycocaUpdate()
     QVERIFY(!spy.isEmpty());
     QVERIFY(!KService::serviceByDesktopPath("fakeservice.desktop")); // not in ksycoca anymore
     QVERIFY(spy[0][0].toStringList().contains("services"));
-    kDebug() << QThread::currentThread() << "got signal ok";
+    qDebug() << "got signal ok";
 
     spy.clear();
     QVERIFY(fakeService); // the whole point of refcounting is that this KService instance is still valid.
@@ -605,11 +649,11 @@ void KServiceTest::testKSycocaUpdate()
     // Recreate it, for future tests
     createFakeService();
     QVERIFY(QFile::exists(servPath));
-    kDebug() << QThread::currentThread() << "executing kbuildsycoca (2)";
+    qDebug() << "executing kbuildsycoca (2)";
     runKBuildSycoca();
     while (spy.isEmpty())
         QTest::qWait(50);
-    kDebug() << QThread::currentThread() << "got signal ok (2)";
+    qDebug() << "got signal ok (2)";
     QVERIFY(spy[0][0].toStringList().contains("services"));
     if (QThread::currentThread() != QCoreApplication::instance()->thread())
         m_sycocaUpdateDone.ref();
@@ -665,6 +709,8 @@ void KServiceTest::testThreads()
     while (m_sycocaUpdateDone.load() == 0) // not using a bool, just to silence helgrind
 #endif
         QTest::qWait(100); // process D-Bus events!
-    kDebug() << "Joining all threads";
+    qDebug() << "Joining all threads";
     sync.waitForFinished();
 }
+
+#include "kservicetest.moc"

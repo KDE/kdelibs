@@ -19,7 +19,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <kcomponentdata.h>
 #include <kservicegroup.h>
 #include <qmimedatabase.h>
 #include <qtest_kde.h>
@@ -29,11 +28,11 @@
 #include <kdesktopfile.h>
 #include <ksycoca.h>
 
-#include <kdebug.h>
 #include <kservicetype.h>
 #include <kservicetypeprofile.h>
 
 #include <qstandardpaths.h>
+#include <QDebug>
 
 // Helper method for all the trader tests
 static bool offerListHasService( const KService::List& offers,
@@ -62,7 +61,7 @@ public:
 
 public slots:
     void work() {
-        kDebug() << QThread::currentThread() << "working...";
+        qDebug() << QThread::currentThread() << "working...";
 
         const KServiceType::List allServiceTypes = KServiceType::allServiceTypes();
         Q_ASSERT(!allServiceTypes.isEmpty());
@@ -80,7 +79,7 @@ public slots:
             Q_ASSERT(service->isType(KST_KService));
             const QString name = service->name();
             const QString entryPath = service->entryPath();
-            //kDebug() << name << "entryPath=" << entryPath << "menuId=" << service->menuId();
+            //qDebug() << name << "entryPath=" << entryPath << "menuId=" << service->menuId();
             Q_ASSERT(!name.isEmpty());
             Q_ASSERT(!entryPath.isEmpty());
 
@@ -169,7 +168,7 @@ private slots:
         QTimer::singleShot(1000, this, SLOT(slotFinish()));
     }
     void slotFinish() {
-        kDebug() << "Terminating";
+        qDebug() << "Terminating";
         for (int i=0; i<threads.size(); i++) {
             threads[i]->stop();
         }
@@ -195,9 +194,9 @@ static void runKBuildSycoca()
     args << "--testmode";
     proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output
     proc.start(kbuildsycoca, args);
-    kDebug() << "waiting for signal";
+    qDebug() << "waiting for signal";
     QVERIFY(QTest::kWaitForSignal(KSycoca::self(), SIGNAL(databaseChanged(QStringList)), 10000));
-    kDebug() << "got signal";
+    qDebug() << "got signal";
     proc.waitForFinished();
     QCOMPARE(proc.exitStatus(), QProcess::NormalExit);
 }
@@ -254,7 +253,7 @@ void KSycocaThreadTest::testCreateService()
     const QString servPath = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1String("/kde5/services/") + "fakeservice.desktop";
 
     Q_ASSERT(QFile::exists(servPath));
-    kDebug() << "executing kbuildsycoca (1)";
+    qDebug() << "executing kbuildsycoca (1)";
     runKBuildSycoca();
 
     QTimer::singleShot(1000, this, SLOT(testDeleteService()));
@@ -270,7 +269,7 @@ void KSycocaThreadTest::deleteFakeService()
     QSignalSpy spy(KSycoca::self(), SIGNAL(databaseChanged(QStringList)));
     Q_ASSERT(spy.isValid());
 
-    kDebug() << "executing kbuildsycoca (2)";
+    qDebug() << "executing kbuildsycoca (2)";
     runKBuildSycoca();
     Q_ASSERT(spy[0][0].toStringList().contains("services"));
 
@@ -301,7 +300,6 @@ int main(int argc, char** argv)
     qputenv("XDG_CACHE_HOME", QFile::encodeName(QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/cache")));
 #endif
     QCoreApplication app(argc, argv);
-    KComponentData cData("ksycocathreadtest");
     KSycocaThreadTest mainObj;
     mainObj.launch();
     return app.exec();
