@@ -28,6 +28,10 @@ check_include_files("strings.h"     HAVE_STRINGS_H)
 check_include_files("crtdbg.h"      HAVE_CRTDBG_H)
 check_struct_member(tm tm_gmtoff time.h HAVE_TM_GMTOFF)
 
+if(NOT WIN32)
+    set(CMAKE_REQUIRED_LIBRARIES "-lm")
+endif(NOT WIN32)
+
 check_function_exists(_finite    HAVE_FUNC__FINITE)
 check_function_exists(finite     HAVE_FUNC_FINITE)
 check_function_exists(posix_memalign     HAVE_FUNC_POSIX_MEMALIGN)
