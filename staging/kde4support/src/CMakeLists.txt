@@ -47,9 +47,6 @@ include_directories(
     ${kcoreaddons_BINARY_DIR}/src
     ${kconfig_BINARY_DIR}/src/core # ksharedconfig.h
     ${kconfig_SOURCE_DIR}/src/core
-    ${kservice_BINARY_DIR}/src
-    ${kservice_SOURCE_DIR}/src/sycoca
-    ${kservice_SOURCE_DIR}/src/services
     ${kwidgets_BINARY_DIR}/src
     ${kwidgets_SOURCE_DIR}/src/icons # kiconloader
     ${kwidgets_SOURCE_DIR}/src/utils # kglobalsettings
