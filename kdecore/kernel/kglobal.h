@@ -590,53 +590,5 @@ namespace KGlobal
     KDECORE_EXPORT void setLocale(KLocale *, CopyCatalogs copy = DoCopyCatalogs);
 }
 
-#ifdef KDE_SUPPORT
-/**
- * @relates KGlobal
- * A typesafe function to find the smaller of the two arguments.
- * @deprecated, used qMin instead
- */
-#define KMIN(a,b)	qMin(a,b)
-/**
- * @relates KGlobal
- * A typesafe function to find the larger of the two arguments.
- * @deprecated, used qMax instead
- */
-#define KMAX(a,b)	qMax(a,b)
-/**
- * \relates KGlobal
- * A typesafe function to determine the absolute value of the argument.
- * @deprecated, used qAbs instead
- */
-#define KABS(a)	qAbs(a)
-/**
- * @relates KGlobal
- * A typesafe function that returns x if it's between low and high values.
- * low if x is smaller than low and high if x is bigger than high.
- * @deprecated, used qBound instead. Warning, the argument order differs.
- */
-#define KCLAMP(x,low,high) qBound(low,x,high)
-
-#define kMin qMin
-#define kMax qMax
-#define kAbs qAbs
-
-/**
- * @relates KGlobal
- * A typesafe function that returns x if it's between low and high values.
- * low if x is smaller than low and high if x is bigger than high.
- * @deprecated, used qBound instead. Warning, the argument order differs.
- */
-
-template<class T>
-inline KDECORE_DEPRECATED T kClamp( const T& x, const T& low, const T& high )
-{
-    if ( x < low )       return low;
-    else if ( high < x ) return high;
-                         return x;
-}
-
-#endif
-
 #endif // _KGLOBAL_H
 
