@@ -29,7 +29,6 @@
 #include <QtCore/QStringList>
 #include <kcomponentdata.h>
 #include <kexportplugin.h>
-#include <kglobal.h>
 
 class KPluginFactoryPrivate;
 namespace KParts { class Part; }

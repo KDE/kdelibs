@@ -18,10 +18,10 @@
 #ifndef KEXPORTPLUGIN_H
 #define KEXPORTPLUGIN_H
 
-#include <kdeversion.h>
-
 #include <QtCore/QPluginLoader>
 #include <QtCore/QtPlugin>
+#include <kservice_export.h>
+#include <kservice_version.h>
 
 /**
  * \internal
@@ -50,7 +50,7 @@ struct KDEPluginVerificationData
  */
 #define K_PLUGIN_VERIFICATION_DATA \
 Q_EXTERN_C KSERVICE_EXPORT const KDEPluginVerificationData kde_plugin_verification_data = \
-{ KDEPluginVerificationData::PluginVerificationDataVersion, KDE_VERSION, KDE_VERSION_STRING };
+{ KDEPluginVerificationData::PluginVerificationDataVersion, KSERVICE_VERSION, KSERVICE_VERSION_STRING };
 
 /**
  * \relates KPluginLoader

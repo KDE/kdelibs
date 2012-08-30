@@ -29,7 +29,7 @@ remove_definitions(-DQT_USE_FAST_OPERATOR_PLUS)
 
 find_package(Qt5Transitional REQUIRED Core DBus Test)
 
-ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/kservice_version.h)
+ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/src/kservice_version.h)
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kservice_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )

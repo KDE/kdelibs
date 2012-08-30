@@ -20,7 +20,6 @@
 
 #include <kservice_export.h>
 
-
 #include <QtCore/QLibrary>
 
 class KLibraryPrivate;

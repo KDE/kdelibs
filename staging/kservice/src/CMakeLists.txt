@@ -42,9 +42,9 @@ set(kservice_SRCS
    sycoca/ksycocafactory.cpp
    sycoca/kmemfile.cpp
    plugin/klibrary.cpp
-   plugin/klibrary.h
    plugin/kpluginfactory.cpp
    plugin/kpluginloader.cpp
+   plugin/kcomponentdata.cpp
 )
 
 add_library(kservice ${kservice_SRCS})
@@ -81,6 +81,8 @@ install(FILES
    plugin/klibrary.h
    plugin/kpluginfactory.h
    plugin/kpluginloader.h
+   plugin/kexportplugin.h
+   plugin/kcomponentdata.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 

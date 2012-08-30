@@ -178,7 +178,6 @@ set(kdecore_LIB_SRCS
    io/kprocess.cpp
    io/kurl.cpp
    kernel/kglobal.cpp
-   kernel/kcomponentdata.cpp
    kernel/kcmdlineargs.cpp
    kernel/kstandarddirs.cpp
    kernel/ktoolinvocation.cpp
@@ -302,7 +301,6 @@ install( FILES
    io/kmountpoint.h
    io/kurl.h
    kernel/kglobal.h
-   kernel/kcomponentdata.h
    kernel/kcmdlineargs.h
    kernel/kstandarddirs.h
    kernel/ktoolinvocation.h
@@ -319,7 +317,6 @@ install(FILES
    util/kde_file.h
    util/kdedmodule.h
    util/klauncher_iface.h
-   util/kexportplugin.h
    util/kshell.h
    util/ksortablelist.h
    util/kuser.h
