@@ -24,7 +24,6 @@
 #include <QtCore/QCoreApplication>
 
 #include "kaboutdata.h"
-#include "kcmdlineargs.h"
 #include "kconfig.h"
 #include "klocalizedstring.h"
 #include "kconfiggroup.h"

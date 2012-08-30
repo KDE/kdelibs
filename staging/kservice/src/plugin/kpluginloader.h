@@ -15,8 +15,8 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#ifndef KDECORE_KPLUGINLOADER_H
-#define KDECORE_KPLUGINLOADER_H
+#ifndef KPLUGINLOADER_H
+#define KPLUGINLOADER_H
 
 #include <kdeversion.h>
 #include <kexportplugin.h>
@@ -73,7 +73,7 @@ class KPluginLoaderPrivate;
  *
  * \author Bernhard Loos <nhuh.put@web.de>
  */
-class KDECORE_EXPORT KPluginLoader : public QPluginLoader
+class KSERVICE_EXPORT KPluginLoader : public QPluginLoader
 {
     Q_OBJECT
     Q_PROPERTY(QString fileName READ fileName) // KDE5: REMOVE?
@@ -85,7 +85,6 @@ public:
      * errorString() will be set if problems are encountered.
      *
      * \param plugin The name of the plugin library.
-     * \param componentdata The KStandardDirs object from componentdata is used to search the library.
      * \param parent A parent object.
      */
     explicit KPluginLoader(const QString &plugin, QObject *parent = 0);
@@ -96,7 +95,6 @@ public:
      * errorString() will be set if problems are encountered.
      *
      * \param service The service for which the library should be loaded.
-     * \param componentdata The KStandardDirs object from componentdata is used to search the library.
      * \param parent A parent object.
      */
     explicit KPluginLoader(const KService &service, QObject *parent = 0);

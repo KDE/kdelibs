@@ -7,6 +7,7 @@ configure_file(config-ksycoca.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-ksycoca
 include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}/services
    ${CMAKE_CURRENT_SOURCE_DIR}/sycoca
+   ${CMAKE_CURRENT_SOURCE_DIR}/plugin
    ${QT_INCLUDES} )
 IF(NOT QT5_BUILD)
     include_directories( ${QtMimeTypes_SOURCE_DIR}/include/QtMimeTypes )
@@ -40,6 +41,10 @@ set(kservice_SRCS
    sycoca/ksycocaentry.cpp
    sycoca/ksycocafactory.cpp
    sycoca/kmemfile.cpp
+   plugin/klibrary.cpp
+   plugin/klibrary.h
+   plugin/kpluginfactory.cpp
+   plugin/kpluginloader.cpp
 )
 
 add_library(kservice ${kservice_SRCS})
@@ -73,6 +78,9 @@ install(FILES
    sycoca/ksycoca.h
    sycoca/ksycocaentry.h
    sycoca/ksycocatype.h
+   plugin/klibrary.h
+   plugin/kpluginfactory.h
+   plugin/kpluginloader.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 

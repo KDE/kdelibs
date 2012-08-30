@@ -25,6 +25,7 @@
 #include "ktoolinvocation.h"
 
 #include <kconfiggroup.h>
+#include <ksharedconfig.h>
 #include <kmimetypetrader.h>
 
 #include "kcmdlineargs.h"

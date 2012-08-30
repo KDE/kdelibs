@@ -200,9 +200,6 @@ set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    util/kdedmodule.cpp
    util/kdeversion.cpp
    util/klauncher_iface.cpp
-   util/klibrary.cpp
-   util/kpluginfactory.cpp
-   util/kpluginloader.cpp
    util/kshell.cpp
    util/qtest_kde.cpp
    ${kdecore_OPTIONAL_SRCS}
@@ -322,10 +319,7 @@ install(FILES
    util/kde_file.h
    util/kdedmodule.h
    util/klauncher_iface.h
-   util/klibrary.h
    util/kexportplugin.h
-   util/kpluginfactory.h
-   util/kpluginloader.h
    util/kshell.h
    util/ksortablelist.h
    util/kuser.h

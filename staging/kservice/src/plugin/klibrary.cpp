@@ -29,7 +29,7 @@ extern QString makeLibName( const QString &libname );
 extern QString findLibraryInternal(const QString &name);
 
 //static
-KDECORE_EXPORT QString findLibrary(const QString &name)
+KSERVICE_EXPORT QString findLibrary(const QString &name)
 {
     QString libname = findLibraryInternal(name);
 #ifdef Q_OS_WIN

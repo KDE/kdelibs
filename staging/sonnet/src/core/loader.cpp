@@ -25,8 +25,10 @@
 
 #include <klocale.h>
 #include <kservicetypetrader.h>
+#include <kpluginloader.h>
 
 #include <kconfig.h>
+#include <kglobal.h>
 
 #include <QtCore/QHash>
 #include <QtCore/QMap>
@@ -50,16 +52,18 @@ public:
     QStringList languagesNameCache;
 };
 
-// TODO wait for Qt 5.1, uses isDestroyed()
-K_GLOBAL_STATIC(Loader, s_loader)
+Q_GLOBAL_STATIC(Loader, s_loader)
 
 Loader *Loader::openLoader()
 {
+#pragma message("Reenable once Qt-5.1 has the new QGlobalStatic")
+#if 0
     if (s_loader.isDestroyed()) {
         return 0;
     }
+#endif
 
-    return s_loader;
+    return s_loader();
 }
 
 Loader::Loader()

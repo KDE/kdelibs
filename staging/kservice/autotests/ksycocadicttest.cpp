@@ -19,8 +19,11 @@
 
 #include <ksycoca.h>
 #include <QBuffer>
+#include <QtTest>
+#include <QDebug>
 #include <kservicetype.h>
 #include <ksycocadict_p.h>
+#include <kde_qt5_compat.h>
 
 class KSycocaDictTest : public QObject
 {

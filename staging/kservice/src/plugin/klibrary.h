@@ -18,7 +18,7 @@
 #ifndef KLIBRARY_H
 #define KLIBRARY_H
 
-#include <kdecore_export.h>
+#include <kservice_export.h>
 
 
 #include <QtCore/QLibrary>
@@ -34,7 +34,7 @@ class KPluginFactory;
  * KLibrary adds kde3-factory and kde4-factory support to QLibrary (for the deprecated KLibLoader)
  * KLibrary also searches libs in the kde search paths.
  */
-class KDECORE_EXPORT KLibrary : public QLibrary
+class KSERVICE_EXPORT KLibrary : public QLibrary
 {
     Q_OBJECT
     Q_PROPERTY(QString fileName READ fileName WRITE setFileName)
@@ -55,7 +55,7 @@ public:
      * @return The factory of the library if there is any, otherwise 0
      * @deprecated use KPluginLoader::factory
      */
-    KDECORE_DEPRECATED KPluginFactory* factory( const char* factoryname = 0 );
+    KSERVICE_DEPRECATED KPluginFactory* factory( const char* factoryname = 0 );
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     /**

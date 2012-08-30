@@ -18,7 +18,6 @@
 
 #include "kpluginloader.h"
 
-#include "kaboutdata.h"
 #include <klocalizedstring.h>
 #include "kpluginfactory.h"
 #include <kservice.h>

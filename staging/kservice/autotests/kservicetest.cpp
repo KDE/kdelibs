@@ -37,47 +37,10 @@
 #include <qthread.h>
 #include <qsignalspy.h>
 #include <kde_qt5_compat.h>
+#include <kwaitforsignal.h>
 
 #include <QTimer>
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-class KDESignalSpy : public QObject
-{
-    Q_OBJECT
-public:
-    KDESignalSpy(QObject *obj, const char *signal, int timeout)
-        : QObject(0), m_obj(obj), m_emitted(false)
-    {
-        connect(obj, signal, this, SLOT(slotSignalEmitted()));
-        if (timeout > 0) {
-            QObject::connect(&m_timer, SIGNAL(timeout()), &m_loop, SLOT(quit()));
-            m_timer.setSingleShot(true);
-            m_timer.start(timeout);
-        }
-        m_loop.exec();
-    }
-    bool signalEmitted() const { return m_emitted; }
-
-private Q_SLOTS:
-    void slotSignalEmitted()
-    {
-        m_emitted = true;
-        disconnect(m_obj, 0, this, 0);
-        m_timer.stop();
-        m_loop.quit();
-    }
-private:
-    QObject* m_obj;
-    bool m_emitted;
-    QEventLoop m_loop;
-    QTimer m_timer;
-};
-bool kWaitForSignal(QObject *obj, const char *signal, int timeout )
-{
-    KDESignalSpy spy(obj, signal, timeout);
-    return spy.signalEmitted();
-}
-#endif
+#include <QDebug>
 
 QTEST_MAIN(KServiceTest)
 
@@ -624,7 +587,6 @@ void KServiceTest::testServiceGroups()
 
 void KServiceTest::testKSycocaUpdate()
 {
-    kWarning();
     KService::Ptr fakeService = KService::serviceByDesktopPath("fakeservice.desktop");
     QVERIFY(fakeService); // see initTestCase; it should be found.
 
@@ -713,4 +675,3 @@ void KServiceTest::testThreads()
     sync.waitForFinished();
 }
 
-#include "kservicetest.moc"

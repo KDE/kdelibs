@@ -19,10 +19,10 @@
 
 */
 
-#ifndef KDECORE_KPLUGINFACTORY_H
-#define KDECORE_KPLUGINFACTORY_H
+#ifndef KPLUGINFACTORY_H
+#define KPLUGINFACTORY_H
 
-#include "kdecore_export.h"
+#include "kservice_export.h"
 
 #include <QtCore/QObject>
 #include <QtCore/QVariant>
@@ -229,7 +229,7 @@ KComponentData name::componentData() \
  * \author Matthias Kretz <kretz@kde.org>
  * \author Bernhard Loos <nhuh.put@web.de>
  */
-class KDECORE_EXPORT KPluginFactory : public QObject
+class KSERVICE_EXPORT KPluginFactory : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(KPluginFactory)
@@ -260,14 +260,14 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDECORE_DEPRECATED explicit KPluginFactory(const KAboutData *aboutData, QObject *parent = 0);
+    KSERVICE_DEPRECATED explicit KPluginFactory(const KAboutData *aboutData, QObject *parent = 0);
 #endif
 
     /**
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    explicit KDECORE_DEPRECATED KPluginFactory(QObject *parent);
+    explicit KSERVICE_DEPRECATED KPluginFactory(QObject *parent);
 #endif
 
     /**
@@ -339,7 +339,7 @@ public:
      */
 #ifndef KDE_NO_DEPRECATED
     template<typename T>
-    KDECORE_DEPRECATED
+    KSERVICE_DEPRECATED
     T *create(QObject *parent, const QStringList &args)
     {
         return create<T>(parent, stringListToVariantList(args));
@@ -350,7 +350,7 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDECORE_DEPRECATED QObject *create(QObject *parent = 0, const char *classname = "QObject", const QStringList &args = QStringList())
+    KSERVICE_DEPRECATED QObject *create(QObject *parent = 0, const char *classname = "QObject", const QStringList &args = QStringList())
     {
         return create(classname, 0, parent, stringListToVariantList(args), QString());
     }
@@ -426,14 +426,14 @@ protected:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    virtual KDECORE_DEPRECATED QObject *createObject(QObject *parent, const char *className, const QStringList &args);
+    virtual KSERVICE_DEPRECATED QObject *createObject(QObject *parent, const char *className, const QStringList &args);
 #endif
 
     /**
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    virtual KDECORE_DEPRECATED KParts::Part *createPartObject(QWidget *parentWidget, QObject *parent, const char *classname, const QStringList &args);
+    virtual KSERVICE_DEPRECATED KParts::Part *createPartObject(QWidget *parentWidget, QObject *parent, const char *classname, const QStringList &args);
 #endif
 
 
@@ -538,4 +538,4 @@ inline T *KPluginFactory::create(QWidget *parentWidget, QObject *parent, const Q
     return t;
 }
 
-#endif // KDECORE_KPLUGINFACTORY_H
+#endif // KPLUGINFACTORY_H

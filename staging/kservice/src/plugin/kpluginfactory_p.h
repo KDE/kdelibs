@@ -19,8 +19,8 @@
 
 */
 
-#ifndef KDECORE_KPLUGINFACTORY_P_H
-#define KDECORE_KPLUGINFACTORY_P_H
+#ifndef KPLUGINFACTORY_P_H
+#define KPLUGINFACTORY_P_H
 
 #include "kpluginfactory.h"
 
@@ -49,4 +49,4 @@ protected:
     KPluginFactory *q_ptr;
 };
 
-#endif // KDECORE_KPLUGINFACTORY_P_H
+#endif // KPLUGINFACTORY_P_H

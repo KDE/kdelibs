@@ -21,7 +21,7 @@
 
 #include <kservicegroup.h>
 #include <qmimedatabase.h>
-#include <qtest_kde.h>
+#include <QtTest>
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -32,6 +32,7 @@
 #include <kservicetypeprofile.h>
 
 #include <qstandardpaths.h>
+#include "kwaitforsignal.h" // for kWaitForSignal
 #include <QDebug>
 
 // Helper method for all the trader tests
@@ -195,7 +196,13 @@ static void runKBuildSycoca()
     proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output
     proc.start(kbuildsycoca, args);
     qDebug() << "waiting for signal";
-    QVERIFY(QTest::kWaitForSignal(KSycoca::self(), SIGNAL(databaseChanged(QStringList)), 10000));
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    QVERIFY(kWaitForSignal(KSycoca::self(), SIGNAL(databaseChanged(QStringList)), 10000));
+#else
+    QSignalSpy spy(KSycoca::self(), SIGNAL(databaseChanged(QStringList)));
+    spy.wait(10000);
+#endif
+
     qDebug() << "got signal";
     proc.waitForFinished();
     QCOMPARE(proc.exitStatus(), QProcess::NormalExit);
