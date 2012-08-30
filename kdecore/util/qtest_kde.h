@@ -73,9 +73,9 @@ int main(int argc, char *argv[]) \
 { \
     qputenv("LC_ALL", "C"); \
     assert( !QDir::homePath().isEmpty() ); \
-    qputenv("XDG_DATA_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/local") ).constData()); \
-    qputenv("XDG_CONFIG_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/config") ).constData()); \
-    qputenv("XDG_CACHE_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/cache") ).constData()); \
+    qputenv("XDG_DATA_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/local") )); \
+    qputenv("XDG_CONFIG_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/config") )); \
+    qputenv("XDG_CACHE_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/cache") )); \
     qputenv("KDE_SKIP_KDERC", "1"); \
     unsetenv("KDE_COLOR_DEBUG"); \
     QFile::remove(QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/config/qttestrc"));  \
@@ -124,9 +124,9 @@ int main(int argc, char *argv[]) \
 { \
     qputenv("LC_ALL", "C"); \
     assert( !QDir::homePath().isEmpty() ); \
-    qputenv("XDG_DATA_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/local")).constData()); \
-    qputenv("XDG_CONFIG_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/config") ).constData()); \
-    qputenv("XDG_CACHE_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/cache") ).constData()); \
+    qputenv("XDG_DATA_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/local"))); \
+    qputenv("XDG_CONFIG_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/config") )); \
+    qputenv("XDG_CACHE_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/cache") )); \
     qputenv("KDE_SKIP_KDERC", "1"); \
     unsetenv("KDE_COLOR_DEBUG"); \
     QFile::remove(QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/config/qttestrc"));  \
