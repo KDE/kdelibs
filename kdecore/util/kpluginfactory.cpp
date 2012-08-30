@@ -229,7 +229,6 @@ void KPluginFactory::setComponentData(const KComponentData &kcd)
     d->componentData = kcd;
 }
 
-// KDE5 TODO: should be static, and possibly public (for apps to use)
 QStringList KPluginFactory::variantListToStringList(const QVariantList &list)
 {
     QStringList stringlist;
@@ -238,7 +237,6 @@ QStringList KPluginFactory::variantListToStringList(const QVariantList &list)
     return stringlist;
 }
 
-// KDE5 TODO: should be static, and possibly public (for apps to use)
 QVariantList KPluginFactory::stringListToVariantList(const QStringList &list)
 {
     QVariantList variantlist;
