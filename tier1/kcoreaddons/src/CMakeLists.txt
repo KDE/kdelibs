@@ -54,7 +54,6 @@ set(libkcoreaddons_SRCS
     jobs/kjob.cpp
     jobs/kjobtrackerinterface.cpp
     jobs/kjobuidelegate.cpp
-    kernel/kaboutdata.cpp
     randomness/krandom.cpp
     randomness/krandomsequence.cpp
     text/kmacroexpander.cpp
@@ -103,7 +102,6 @@ install(FILES
     jobs/kjob_p.h
     jobs/kjobtrackerinterface.h
     jobs/kjobuidelegate.h
-    kernel/kaboutdata.h
     # Only so that we can build kdepimlibs against kf5.
     kernel/qlocalizedstring_porting.h
     randomness/krandom.h

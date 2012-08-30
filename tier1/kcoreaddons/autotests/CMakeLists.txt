@@ -33,7 +33,6 @@ include_directories(
 )
 
 kcoreaddons_unit_tests(
-    kaboutdatatest
     kjobtest
     klockfiletest
     kautosavefiletest

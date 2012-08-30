@@ -16,15 +16,27 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include "kaboutdatatest.h"
-
 // test object
 #include <kaboutdata.h>
 // Qt
-#include <QtCore/QFile>
-#include <QtCore/QTextStream>
+#include <QObject>
+#include <QFile>
+#include <QTextStream>
 #include <QTest>
 
+class KAboutDataTest : public QObject
+{
+    Q_OBJECT
+
+private Q_SLOTS:
+    void testConstructorWithDefaults();
+    void testConstructor();
+    void testSetAddLicense();
+    void testSetProgramIconName();
+    void testCopying();
+
+    void testKAboutDataOrganizationDomain();
+};
 
 static const char AppName[] =            "app";
 static const char CatalogName[] =        "Catalog";
@@ -126,6 +138,22 @@ void KAboutDataTest::testConstructor()
     //TODO: test internalVersion, internalProgramName, internalBugAddress
 }
 
+void KAboutDataTest::testKAboutDataOrganizationDomain()
+{
+    KAboutData data( "app", 0, qi18n("program"), "version",
+                     qi18n("description"), KAboutData::License_LGPL,
+                     qi18n("copyright"), qi18n("hello world"),
+                     "http://www.koffice.org" );
+    QCOMPARE( data.organizationDomain(), QString::fromLatin1( "koffice.org" ) );
+
+    KAboutData data2( "app", 0, qi18n("program"), "version",
+                      qi18n("description"), KAboutData::License_LGPL,
+                      qi18n("copyright"), qi18n("hello world"),
+                      "http://edu.kde.org/kig" );
+    QCOMPARE( data2.organizationDomain(), QString::fromLatin1( "kde.org" ) );
+}
+
+
 void KAboutDataTest::testSetAddLicense()
 {
     // prepare a file with a license text
@@ -150,7 +178,7 @@ void KAboutDataTest::testSetAddLicense()
     QCOMPARE( aboutData.licenseName(KAboutData::FullName), QString::fromLatin1("GNU General Public License Version 2") );
 //     QCOMPARE( aboutData.license(), QString(GPL2Text) );
     QVERIFY( !aboutData.license().isEmpty() );
-    
+
     QCOMPARE( aboutData.licenses().count(), 1 );
     QCOMPARE( aboutData.licenses().at(0).name(KAboutData::ShortName), QString::fromLatin1("GPL v2") );
     QCOMPARE( aboutData.licenses().at(0).name(KAboutData::FullName), QString::fromLatin1("GNU General Public License Version 2") );
@@ -250,3 +278,5 @@ void KAboutDataTest::testCopying()
 }
 
 QTEST_MAIN( KAboutDataTest )
+
+#include "kaboutdatatest.moc"

@@ -52,7 +52,6 @@ KDECORE_UNIT_TESTS(
  kglobaltest
  kstandarddirstest
  kconfignokdehometest
- kaboutdatatest
 )
 
 

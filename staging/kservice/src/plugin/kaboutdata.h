@@ -24,7 +24,7 @@
 #ifndef KABOUTDATA_H
 #define KABOUTDATA_H
 
-#include <kcoreaddons_export.h>
+#include <kservice_export.h>
 // Qt
 #include <QtCore/QString>
 #include <QtCore/QSharedDataPointer>
@@ -66,7 +66,7 @@ class KAboutData;
  *
  * @bc KDE4
  */
-class KCOREADDONS_EXPORT KAboutPerson
+class KSERVICE_EXPORT KAboutPerson
 {
     friend class KAboutData;
 public:
@@ -190,7 +190,7 @@ class KAboutLicense;
  * classes.
  * @author Espen Sand (espen@kde.org), David Faure (faure@kde.org)
  */
-class KCOREADDONS_EXPORT KAboutData
+class KSERVICE_EXPORT KAboutData
 {
   public:
   /**
@@ -515,7 +515,7 @@ class KCOREADDONS_EXPORT KAboutData
      * Use this if you need to have an application logo
      * in AboutData other than the application icon.
      *
-     * Because KAboutData is in kcoreaddons it cannot use QImage directly,
+     * Because KAboutData is a core class it cannot use QImage directly,
      * so this is a QVariant that should contain a QImage.
      *
      * @param image logo image.
@@ -700,7 +700,7 @@ class KCOREADDONS_EXPORT KAboutData
     /**
      * Returns the program logo image.
      *
-     * Because KAboutData is in kcoreaddons it cannot use QImage directly,
+     * Because KAboutData is a core class it cannot use QImage directly,
      * so this is a QVariant containing a QImage.
      *
      * @return the program logo data, or a null image if there is
@@ -892,7 +892,7 @@ class KCOREADDONS_EXPORT KAboutData
  * lookup. This is necessary because the translation catalogs are usually not
  * yet initialized at the point where KAboutData is constructed.
  */
-class KCOREADDONS_EXPORT KAboutLicense
+class KSERVICE_EXPORT KAboutLicense
 {
     friend class KAboutData;
 public:

@@ -41,6 +41,7 @@ set(kservice_SRCS
    sycoca/ksycocaentry.cpp
    sycoca/ksycocafactory.cpp
    sycoca/kmemfile.cpp
+   plugin/kaboutdata.cpp
    plugin/klibrary.cpp
    plugin/kpluginfactory.cpp
    plugin/kpluginloader.cpp
@@ -78,6 +79,7 @@ install(FILES
    sycoca/ksycoca.h
    sycoca/ksycocaentry.h
    sycoca/ksycocatype.h
+   plugin/kaboutdata.h
    plugin/klibrary.h
    plugin/kpluginfactory.h
    plugin/kpluginloader.h
