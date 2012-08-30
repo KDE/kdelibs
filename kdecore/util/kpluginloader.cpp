@@ -97,6 +97,7 @@ QString findLibraryInternal(const QString &name, const KComponentData &cData)
     if (!QDir::isRelativePath(libname))
         return libname;
 
+#if 0
     // TEMPORARY HACK
     Q_FOREACH(const QString &path, QFile::decodeName(qgetenv("LD_LIBRARY_PATH")).split(QLatin1Char(':'), QString::SkipEmptyParts)) {
         QString libfile = path + QLatin1String("/kde5/") + libname;
@@ -113,6 +114,7 @@ QString findLibraryInternal(const QString &name, const KComponentData &cData)
             return libfile;
         }
     }
+#endif
 
     // Ask Qt for the list of based paths containing plugins
     Q_FOREACH(const QString &path, QCoreApplication::libraryPaths()) {

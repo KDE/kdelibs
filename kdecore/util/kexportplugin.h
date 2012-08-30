@@ -22,6 +22,7 @@
 
 #include <QtCore/QPluginLoader>
 #include <QtCore/QtPlugin>
+#include <kdecore_export.h>
 
 /**
  * \internal

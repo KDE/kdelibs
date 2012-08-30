@@ -140,9 +140,9 @@ templates
 exe
 bin
 module
-%lib/kde5
+%lib/plugins/kf5
 qtplugins
-%lib/kde5/plugins
+%lib/plugins
 kcfg
 config.kcfg
 emoticons
@@ -225,12 +225,15 @@ static const int types_indices[] = {
 static void tokenize(QStringList& token, const QString& str,
                      const QString& delim);
 
-
-    enum BasePrefix { XdgConf, XdgData, KdePrefixes };
+enum BasePrefix { XdgConf, XdgData, KdePrefixes };
 static BasePrefix basePrefixForResource(const char* type)
 {
     // KF5: We now use xdgdata_prefixes for every resource in share/*,
     // i.e. everything except exe, lib, config and xdgconf...
+
+    // TODO: exe: replaced with $PATH
+    //       lib: unused as is, right?
+    //     module: based on lib, but mostly replaced with QT_PLUGIN_PATH (+"/kf5")
 
     const QByteArray typeBa(type);
     if (typeBa.startsWith("xdgconf") || typeBa == "config") {

@@ -129,7 +129,7 @@
 #  LOCALE_INSTALL_DIR       - the directory where translations will be installed
 #  MAN_INSTALL_DIR          - the directory where man pages will be installed (default prefix/man/)
 #  MIME_INSTALL_DIR         - the directory where mimetype desktop files will be installed
-#  PLUGIN_INSTALL_DIR       - the subdirectory relative to the install prefix where plugins will be installed (default is ${KDE4_LIB_INSTALL_DIR}/kde5)
+#  PLUGIN_INSTALL_DIR       - the subdirectory relative to the install prefix where plugins will be installed (default is ${KDE4_LIB_INSTALL_DIR}/plugins/kf5)
 #  IMPORTS_INSTALL_DIR      - the subdirectory relative to the install prefix where imports will be installed
 #  SERVICES_INSTALL_DIR     - the directory where service (desktop, protocol, ...) files will be installed
 #  SERVICETYPES_INSTALL_DIR - the directory where servicestypes desktop files will be installed
@@ -195,6 +195,7 @@
 #  KDE4_ADD_PLUGIN ( name [WITH_PREFIX] file1 ... fileN )
 #    Create a KDE plugin (KPart, kioslave, etc.) from the given source files.
 #    If WITH_PREFIX is given, the resulting plugin will have the prefix "lib", otherwise it won't.
+#    Do NOT use WITH_PREFIX in new code! This is for compatibility only.
 #
 #  KDE4_ADD_KDEINIT_EXECUTABLE (name [NOGUI] [RUN_UNINSTALLED] file1 ... fileN)
 #    Create a KDE application in the form of a module loadable via kdeinit.
@@ -759,8 +760,9 @@ else()
 endif()
    set(INCLUDE_INSTALL_DIR  "include"                     ) # The subdirectory to the header prefix
 
-   set(PLUGIN_INSTALL_DIR       "lib${LIB_SUFFIX}/kde5"   ) #                "The subdirectory relative to the install prefix where plugins will be installed (default is ${LIB_INSTALL_DIR}/kde4)
-   set(IMPORTS_INSTALL_DIR       "${PLUGIN_INSTALL_DIR}/imports"   ) # "The subdirectory relative to the install prefix where imports will be installed
+   set(QT_PLUGIN_INSTALL_DIR    "lib${LIB_SUFFIX}/plugins"   )
+   set(PLUGIN_INSTALL_DIR       "${QT_PLUGIN_INSTALL_DIR}/kf5"   )
+   set(IMPORTS_INSTALL_DIR      "${QT_PLUGIN_INSTALL_DIR}/imports"   ) # "The subdirectory relative to the install prefix where imports will be installed
    set(DATA_INSTALL_DIR         "share"                   ) # The parent directory where applications can install their data
    set(HTML_INSTALL_DIR         "share/doc/HTML"          ) # The HTML install dir for documentation
    set(ICON_INSTALL_DIR         "share/icons"             ) # The icon install dir (default ${SHARE_INSTALL_PREFIX}/share/icons/)
@@ -832,7 +834,7 @@ if (False)
    _set_fancy(LIBEXEC_INSTALL_DIR  "${LIB_INSTALL_DIR}/kde5/libexec"         "The subdirectory relative to the install prefix where libraries will be installed (default is ${LIB_INSTALL_DIR}/kde5/libexec)")
    _set_fancy(INCLUDE_INSTALL_DIR  "${CMAKE_INSTALL_PREFIX}/include"         "The subdirectory to the header prefix")
 
-   _set_fancy(PLUGIN_INSTALL_DIR       "${LIB_INSTALL_DIR}/kde5"                "The subdirectory relative to the install prefix where plugins will be installed (default is ${LIB_INSTALL_DIR}/kde5)")
+   _set_fancy(PLUGIN_INSTALL_DIR       "${LIB_INSTALL_DIR}/plugins/kf5"                "The subdirectory relative to the install prefix where plugins will be installed (default is ${LIB_INSTALL_DIR}/plugins/kf5)")
    _set_fancy(IMPORTS_INSTALL_DIR       "${PLUGIN_INSTALL_DIR}/imports"                "The subdirectory relative to the install prefix where imports will be installed")
    _set_fancy(DATA_INSTALL_DIR         "${SHARE_INSTALL_PREFIX}"                "The parent directory where applications can install their data")
    _set_fancy(HTML_INSTALL_DIR         "${SHARE_INSTALL_PREFIX}/doc/HTML"       "The HTML install dir for documentation")

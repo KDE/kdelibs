@@ -64,7 +64,7 @@ if(QT_QTDESIGNER_FOUND)
                          )
   endif(NOT WIN32)
 
-  install(TARGETS kdewidgets  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/designer )
+  install(TARGETS kdewidgets  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/designer )
 
   # deprecated widgets
   if(NOT KDE_NO_DEPRECATED)
@@ -95,7 +95,7 @@ if(QT_QTDESIGNER_FOUND)
                            )
     endif(NOT WIN32)
 
-    install(TARGETS kdedeprecated  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/designer )
+    install(TARGETS kdedeprecated  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/designer )
   endif(NOT KDE_NO_DEPRECATED)
 
 
@@ -131,7 +131,7 @@ if(QT_QTDESIGNER_FOUND)
                          )
   endif(NOT WIN32)
 
-  install(TARGETS kdewebkitwidgets  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/designer )
+  install(TARGETS kdewebkitwidgets  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/designer )
 
 
   if (QT_QT3SUPPORT_FOUND)
@@ -168,7 +168,7 @@ if(QT_QTDESIGNER_FOUND)
                              )
      endif(NOT WIN32)
 
-     install(TARGETS kde3supportwidgets  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/designer )
+     install(TARGETS kde3supportwidgets  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/designer )
   endif (QT_QT3SUPPORT_FOUND)
 endif (QT_QTDESIGNER_FOUND)
 

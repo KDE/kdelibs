@@ -629,8 +629,8 @@ public:
      * @li @c templates - @c share/templates
      * @li @c exe - @c bin
      * @li @c lib - @c lib[suffix]
-     * @li @c module - @c lib[suffix]/kde5
-     * @li @c qtplugins - @c lib[suffix]/kde5/plugins
+     * @li @c module - @c lib[suffix]/plugins/kde5
+     * @li @c qtplugins - @c lib[suffix]/plugins
      * @li @c kcfg - @c share/config.kcfg
      * @li @c emoticons - @c share/emoticons
      * @li @c xdgdata - @c shared files (QStandardPaths::GenericDataLocation)

@@ -10,7 +10,7 @@ if (NOT CYGWIN)
     set_target_properties(krossqtsplugin PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 endif (NOT CYGWIN)
 
-install(TARGETS krossqtsplugin DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/script)
+install(TARGETS krossqtsplugin DESTINATION ${QT_PLUGIN_INSTALL_DIR}/script)
 
 ########### next target ###############
 
