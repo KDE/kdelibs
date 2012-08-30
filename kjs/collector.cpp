@@ -71,7 +71,7 @@ using std::memset;
 
 #if HAVE_VALGRIND_MEMCHECK_H && !defined(NDEBUG)
    #include <valgrind/memcheck.h>
-   #if VALGRIND_MAKE_MEM_DEFINED
+   #if defined(VALGRIND_MAKE_MEM_DEFINED)
       #define VG_DEFINED(p) VALGRIND_MAKE_MEM_DEFINED(&p, sizeof(void*))
    #else
       #define VG_DEFINED(p)
