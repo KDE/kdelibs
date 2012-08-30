@@ -231,8 +231,8 @@ QValidator::State KDateValidator::validate( QString &text, int &unused ) const
 QValidator::State KDateValidator::date( const QString &text, QDate &d ) const
 {
     //FIXME This is wrong if the widget is not using the global!
-    QDate tmp = KGlobal::locale()->readDate( text );
-    if ( KGlobal::locale()->calendar()->isValid( tmp ) ) {
+    QDate tmp = KLocale::global()->readDate( text );
+    if ( KLocale::global()->calendar()->isValid( tmp ) ) {
         d = tmp;
         return Acceptable;
     } else {
@@ -396,14 +396,14 @@ void KDateTable::paintCell( QPainter *painter, int row, int col, const KColorSch
 
     //FIXME This is wrong if the widget is not using the global!
     //See if cell day is normally a working day
-    if ( KGlobal::locale()->workingWeekStartDay() <= KGlobal::locale()->workingWeekEndDay() ) {
-        if ( cellWeekDay >= KGlobal::locale()->workingWeekStartDay() &&
-             cellWeekDay <= KGlobal::locale()->workingWeekEndDay() ) {
+    if ( KLocale::global()->workingWeekStartDay() <= KGlobal::locale()->workingWeekEndDay() ) {
+        if ( cellWeekDay >= KLocale::global()->workingWeekStartDay() &&
+             cellWeekDay <= KLocale::global()->workingWeekEndDay() ) {
                 workingDay = true;
         }
     } else {
-        if ( cellWeekDay >= KGlobal::locale()->workingWeekStartDay() ||
-             cellWeekDay <= KGlobal::locale()->workingWeekEndDay() ) {
+        if ( cellWeekDay >= KLocale::global()->workingWeekStartDay() ||
+             cellWeekDay <= KLocale::global()->workingWeekEndDay() ) {
                 workingDay = true;
         }
     }

@@ -86,7 +86,7 @@ KConfigPrivate::KConfigPrivate(KConfig::OpenFlags flags,
 //    }
 
 #if 0 // KDE4 code
-    setLocale(KGlobal::hasLocale() ? KGlobal::locale()->language() : KLocale::defaultLanguage());
+    setLocale(KGlobal::hasLocale() ? KLocale::global()->language() : KLocale::defaultLanguage());
 #else
     setLocale(QLocale::system().name());
 #endif

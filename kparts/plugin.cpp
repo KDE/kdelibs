@@ -216,7 +216,7 @@ bool Plugin::hasPlugin( QObject* parent, const QString& library )
 
 void Plugin::setComponentData(const KComponentData &componentData)
 {
-    KGlobal::locale()->insertCatalog(componentData.catalogName());
+    KLocale::global()->insertCatalog(componentData.catalogName());
     KXMLGUIClient::setComponentData(componentData);
 }
 

@@ -220,7 +220,7 @@ QString KFileItemDelegate::Private::itemSize(const QModelIndex &index, const KFi
 {
     // Return a formatted string containing the file size, if the item is a file
     if (item.isFile())
-        return KGlobal::locale()->formatByteSize(item.size());
+        return KLocale::global()->formatByteSize(item.size());
 
     // Return the number of items in the directory
     const QVariant value = index.data(KDirModel::ChildCountRole);
@@ -997,11 +997,11 @@ QString KFileItemDelegate::Private::display(const QModelIndex &index) const
         }
 
         case QVariant::Double:
-            return KGlobal::locale()->formatNumber(value.toDouble());
+            return KLocale::global()->formatNumber(value.toDouble());
 
         case QVariant::Int:
         case QVariant::UInt:
-            return KGlobal::locale()->formatLong(value.toInt());
+            return KLocale::global()->formatLong(value.toInt());
 
         default:
             return QString();

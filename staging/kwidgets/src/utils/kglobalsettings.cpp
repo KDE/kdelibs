@@ -815,7 +815,7 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
                     KGlobalSettingsData::self()->dropMouseSettingsCache();
                     break;
                 case SETTINGS_LOCALE:
-                    // QT5 TODO REPLACEMENT ? KGlobal::locale()->reparseConfiguration();
+                    // QT5 TODO REPLACEMENT ? KLocale::global()->reparseConfiguration();
                     break;
                 default:
                     break;

@@ -64,7 +64,7 @@ public:
     QMap<int, UnitCategory *> categories;
     ConverterPrivate()
     {
-        KGlobal::locale()->insertCatalog("libkunitconversion");
+        KLocale::global()->insertCatalog("libkunitconversion");
 
         categories[InvalidCategory] = new Invalid;
         categories[LengthCategory] = new Length;

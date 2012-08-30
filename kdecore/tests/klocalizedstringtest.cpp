@@ -47,13 +47,13 @@ void KLocalizedStringTest::initTestCase ()
     }
 
     if (m_hasFrench)
-        KGlobal::locale()->setLanguage(QStringList() << "fr" << "en_US");
-    KGlobal::locale()->setThousandsSeparator(QLatin1String(","));
-    KGlobal::locale()->setDecimalSymbol(QLatin1String("."));
-    QCOMPARE(KGlobal::locale()->isApplicationTranslatedInto("en_US"), true);
+        KLocale::global()->setLanguage(QStringList() << "fr" << "en_US");
+    KLocale::global()->setThousandsSeparator(QLatin1String(","));
+    KLocale::global()->setDecimalSymbol(QLatin1String("."));
+    QCOMPARE(KLocale::global()->isApplicationTranslatedInto("en_US"), true);
 
     if (m_hasFrench) {
-        QCOMPARE(KGlobal::locale()->isApplicationTranslatedInto("fr"), true);
+        QCOMPARE(KLocale::global()->isApplicationTranslatedInto("fr"), true);
     }
 
 }
@@ -225,7 +225,7 @@ void KLocalizedStringTest::translateToFrench()
 
 void KLocalizedStringTest::translateQt()
 {
-    QString result = KGlobal::locale()->translateQt("QPrintPreviewDialog", "Landscape", 0);
+    QString result = KLocale::global()->translateQt("QPrintPreviewDialog", "Landscape", 0);
     // When we use the default language, translateQt returns an empty string.
     QString expected = m_hasFrench ? QString("Paysage") : QString();
     QCOMPARE(result, expected);
@@ -235,7 +235,7 @@ void KLocalizedStringTest::translateQt()
 
     // So let's use translateRaw instead for the threaded test
     QString lang;
-    KGlobal::locale()->translateRaw("Landscape", &lang, &result);
+    KLocale::global()->translateRaw("Landscape", &lang, &result);
     QCOMPARE(lang, m_hasFrench ? QString("fr") : QString("en_US")); // it finds it in kdeqt.po
     QCOMPARE(result, m_hasFrench ? QString("Paysage") : QString("Landscape"));
 }
@@ -255,7 +255,7 @@ void KLocalizedStringTest::testThreads()
     sync.addFuture(QtConcurrent::run(this, &KLocalizedStringTest::translateQt));
     sync.addFuture(QtConcurrent::run(this, &KLocalizedStringTest::translateQt));
     sync.addFuture(QtConcurrent::run(this, &KLocalizedStringTest::translateToFrench));
-    KGlobal::locale()->removeCatalog("kdelibs4");
+    KLocale::global()->removeCatalog("kdelibs4");
     sync.waitForFinished();
     QThreadPool::globalInstance()->setMaxThreadCount(1); // delete those threads
 }

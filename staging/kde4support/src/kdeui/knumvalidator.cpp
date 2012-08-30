@@ -190,7 +190,7 @@ void KDoubleValidator::setAcceptLocalizedNumbers( bool accept ) {
 QValidator::State KDoubleValidator::validate( QString & input, int & p ) const {
   QString s = input;
   if ( acceptLocalizedNumbers() ) {
-    KLocale * l = KGlobal::locale();
+    KLocale * l = KLocale::global();
     // ok, we have to re-format the number to have:
     // 1. decimalSymbol == '.'
     // 2. negativeSign  == '-'

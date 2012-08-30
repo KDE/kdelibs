@@ -190,12 +190,12 @@ bool KLocalizedString::isEmpty () const
 
 QString KLocalizedString::toString () const
 {
-    return d->toString(KGlobal::locale(), QString());
+    return d->toString(KLocale::global(), QString());
 }
 
 QString KLocalizedString::toString (const QString &catalogName) const
 {
-    return d->toString(KGlobal::locale(), catalogName);
+    return d->toString(KLocale::global(), catalogName);
 }
 
 QString KLocalizedString::toString (const KLocale *locale) const

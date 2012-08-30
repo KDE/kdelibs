@@ -55,8 +55,8 @@ public:
 
     virtual QDate parseDate(const QString &dateString,
                             const QString &format,
-                            const KCalendarSystem *calendar  = KGlobal::locale()->calendar(),
-                            const KLocale *locale = KGlobal::locale(),
+                            const KCalendarSystem *calendar  = KLocale::global()->calendar(),
+                            const KLocale *locale = KLocale::global(),
                             KLocale::DigitSet digitSet = KLocale::ArabicDigits,
                             KLocale::DateTimeFormatStandard standard = KLocale::KdeFormat) const;
 

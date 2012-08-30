@@ -203,7 +203,7 @@ void KCalendarTest::testTypes()
 
 void KCalendarTest::testFormatDate()
 {
-    KLocale *locale = new KLocale(*KGlobal::locale());
+    KLocale *locale = new KLocale(*KLocale::global());
     locale->setDateFormatShort("%y-%m-%d");
     const KCalendarSystem *calendar = KCalendarSystem::create(KLocale::QDateCalendar, locale);
 
@@ -499,7 +499,7 @@ void KCalendarTest::testFormatDate()
 
 void KCalendarTest::testFormatUnicode()
 {
-    KLocale *locale = new KLocale(*KGlobal::locale());
+    KLocale *locale = new KLocale(*KLocale::global());
     locale->setDateFormatShort("%y-%m-%d");
     const KCalendarSystem *calendar = KCalendarSystem::create(KLocale::QDateCalendar, locale);
 
@@ -537,7 +537,7 @@ void KCalendarTest::compareFormatUnicode(const KCalendarSystem *calendar, const 
 
 void KCalendarTest::testReadDate()
 {
-    KLocale *locale = new KLocale(*KGlobal::locale());
+    KLocale *locale = new KLocale(*KLocale::global());
     locale->setDateFormatShort("%y-%m-%d");
     const KCalendarSystem *calendar = KCalendarSystem::create(KLocale::QDateCalendar, locale);
     int currentYear = QDate::currentDate().year();
@@ -700,7 +700,7 @@ void KCalendarTest::testStringForms()
 
 void KCalendarTest::testStrings(KLocale::DigitSet testDigitSet)
 {
-    KLocale *locale = new KLocale(*KGlobal::locale());
+    KLocale *locale = new KLocale(*KLocale::global());
     locale->setDigitSet(testDigitSet);
     const KCalendarSystem *calendar = KCalendarSystem::create(KLocale::QDateCalendar, locale);
 
@@ -770,7 +770,7 @@ void KCalendarTest::testStrings(KLocale::DigitSet testDigitSet)
 
 void KCalendarTest::testIsoWeekDate()
 {
-    KLocale *locale = new KLocale(*KGlobal::locale());
+    KLocale *locale = new KLocale(*KLocale::global());
     const KCalendarSystem *calendar = KCalendarSystem::create(KLocale::QDateCalendar, locale);
 
     int earliestValidYear = calendar->year(calendar->earliestValidDate());
@@ -868,7 +868,7 @@ void KCalendarTest::testHebrewStrings()
     */
 
     QString oldLocale = setlocale(LC_ALL, "he.utf8");
-    KLocale *locale = new KLocale(*KGlobal::locale());
+    KLocale *locale = new KLocale(*KLocale::global());
     locale->setLanguage(QStringList() << "he");
     locale->insertCatalog("kdecalendarsystems");
     locale->setDateFormat("%d %B %Y");
@@ -908,7 +908,7 @@ QDate KCalendarTest::setIsoWeekDate(const KCalendarSystem * calendar, int year, 
 
 void KCalendarTest::testDayOfYearDate()
 {
-    KLocale *locale = new KLocale(*KGlobal::locale());
+    KLocale *locale = new KLocale(*KLocale::global());
     const KCalendarSystem *calendar = KCalendarSystem::create(KLocale::QDateCalendar, locale);
 
     int earliestValidYear = calendar->year(calendar->earliestValidDate());
@@ -2515,8 +2515,8 @@ void KCalendarTest::testQDateIsLeapYear()
 
 void KCalendarTest::testKLocalizedDate()
 {
-    KGlobal::locale()->setDateFormatShort("%y-%m-%d");
-    const KCalendarSystem *calendar = KGlobal::locale()->calendar();
+    KLocale::global()->setDateFormatShort("%y-%m-%d");
+    const KCalendarSystem *calendar = KLocale::global()->calendar();
 
     // Set up a bunch of KLocalizedDates and QDates that should be equal
     QDate testQDate(2010, 1, 1);
@@ -2722,7 +2722,7 @@ void KCalendarTest::testKLocalizedDate()
 
 void KCalendarTest::testWeekNumberSystem()
 {
-    KLocale *locale = new KLocale(*KGlobal::locale());
+    KLocale *locale = new KLocale(*KLocale::global());
     const KCalendarSystem *calendar = KCalendarSystem::create(KLocale::QDateCalendar, locale);
     int weekYear = 0;
 

@@ -313,7 +313,7 @@ void KMenu::keyPressEvent(QKeyEvent* e)
             thisText = a->text();
 
         // if there is an accelerator present, remove it
-        thisText = KGlobal::locale()->removeAcceleratorMarker(thisText);
+        thisText = KLocale::global()->removeAcceleratorMarker(thisText);
 
         // chop text to the search length
         thisText = thisText.left(seqLen);

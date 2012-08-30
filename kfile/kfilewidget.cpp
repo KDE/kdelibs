@@ -2117,7 +2117,7 @@ static QString stripUndisplayable (const QString &string)
     QString ret = string;
 
     ret.remove (':');
-    ret = KGlobal::locale()->removeAcceleratorMarker (ret);
+    ret = KLocale::global()->removeAcceleratorMarker (ret);
 
     return ret;
 }

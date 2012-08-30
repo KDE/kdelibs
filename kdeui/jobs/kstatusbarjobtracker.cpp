@@ -243,7 +243,7 @@ void KStatusBarJobTracker::Private::ProgressWidget::speed(unsigned long value)
     if (value == 0 ) { // speed is measured in bytes-per-second
         label->setText(i18n(" Stalled "));
     } else {
-        label->setText(i18n(" %1/s ", KGlobal::locale()->formatByteSize(value)));
+        label->setText(i18n(" %1/s ", KLocale::global()->formatByteSize(value)));
     }
 }
 

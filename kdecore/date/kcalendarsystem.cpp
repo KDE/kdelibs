@@ -80,7 +80,7 @@ QString KCalendarSystem::calendarLabel(const QString &calendarType)
     if (calendarSystemsList().contains(calendarSystem(calendarType))) {
         return KCalendarSystem::calendarLabel(KCalendarSystem::calendarSystem(calendarType));
     } else {
-        return ki18nc("@item Calendar system", "Invalid Calendar Type").toString(KGlobal::locale());
+        return ki18nc("@item Calendar system", "Invalid Calendar Type").toString(KLocale::global());
     }
 }
 
@@ -910,7 +910,7 @@ const KLocale * KCalendarSystemPrivate::locale() const
     if (m_locale) {
         return m_locale;
     } else {
-        return KGlobal::locale();
+        return KLocale::global();
     }
 }
 

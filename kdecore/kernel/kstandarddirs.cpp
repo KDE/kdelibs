@@ -552,7 +552,7 @@ QString KStandardDirs::findResource( const char *type,
 {
     if (!QDir::isRelativePath(_filename))
       return !KGlobal::hasLocale() ? _filename // absolute dirs are absolute dirs, right? :-/
-                                   : KGlobal::locale()->localizedFilePath(_filename); // -- almost.
+                                   : KLocale::global()->localizedFilePath(_filename); // -- almost.
 
 #if 0
     kDebug(180) << "Find resource: " << type;
@@ -576,7 +576,7 @@ QString KStandardDirs::findResource( const char *type,
       return dir;
     else
       return !KGlobal::hasLocale() ? dir + filename
-                                   : KGlobal::locale()->localizedFilePath(dir + filename);
+                                   : KLocale::global()->localizedFilePath(dir + filename);
 }
 
 static quint32 updateHash(const QString &file, quint32 hash)

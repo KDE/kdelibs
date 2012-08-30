@@ -96,7 +96,7 @@ Highlighter::Highlighter(QTextEdit *textEdit,
     d->loader = Loader::openLoader();
 
     //Do not load an empty settings file as it will cause the spellchecker to fail
-    //if the KGlobal::locale()->language() (default value) spellchecker is not installed,
+    //if the KLocale::global()->language() (default value) spellchecker is not installed,
     //and we have a global sonnetrc file with a spellcheck lang installed which could be used.
     if (!configFile.isEmpty()) {
         KConfig conf(configFile);

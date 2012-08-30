@@ -186,7 +186,7 @@ KLocale *KGlobal::locale()
         // (gdb) c
         // And now it will stop at the first construction of the KLocale object, type bt or go up to find the
         // guilty i18n call.
-        if (d->locale != 0) qDebug() << "KGlobal::locale::Warning your global KLocale is being recreated with a valid main component instead of a fake component, this usually means you tried to call i18n related functions before your main component was created. You should not do that since it most likely will not work";
+        if (d->locale != 0) qDebug() << "KLocale::global::Warning your global KLocale is being recreated with a valid main component instead of a fake component, this usually means you tried to call i18n related functions before your main component was created. You should not do that since it most likely will not work";
         delete d->locale;
         d->locale = 0;
         d->locale = new KLocale(mainComponent().catalogName());
@@ -196,7 +196,7 @@ KLocale *KGlobal::locale()
         QCoreApplication* coreApp = QCoreApplication::instance();
         if (coreApp) { // testcase: kwrite --help: no qcore app
             if (coreApp->thread() != QThread::currentThread()) {
-                qFatal("KGlobal::locale() must be called from the main thread before using i18n() in threads. KApplication takes care of this. If not using KApplication, call KGlobal::locale() during initialization.");
+                qFatal("KLocale::global() must be called from the main thread before using i18n() in threads. KApplication takes care of this. If not using KApplication, call KGlobal::locale() during initialization.");
             } else {
                 QCoreApplication::installTranslator(new KDETranslator(coreApp));
             }

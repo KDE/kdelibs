@@ -69,7 +69,7 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent, const QVariantList & )
     : KPreviewWidgetBase( parent )
     , d( new Private )
 {
-    KGlobal::locale()->insertCatalog("kfileaudiopreview4");
+    KLocale::global()->insertCatalog("kfileaudiopreview4");
 
     setSupportedMimeTypes(BackendCapabilities::availableMimeTypes());
 

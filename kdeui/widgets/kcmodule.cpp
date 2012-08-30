@@ -79,7 +79,7 @@ KCModule::KCModule( QWidget *parent, const char *name, const QStringList& )
 {
     if (name && strlen(name)) {
         d->_componentData = KComponentData(name);
-        KGlobal::locale()->insertCatalog(name);
+        KLocale::global()->insertCatalog(name);
     } else
         d->_componentData = KComponentData("kcmunnamed");
 }
@@ -89,7 +89,7 @@ KCModule::KCModule(const KComponentData &componentData, QWidget *parent, const Q
 {
     Q_ASSERT(componentData.isValid());
 
-    KGlobal::locale()->insertCatalog(componentData.componentName());
+    KLocale::global()->insertCatalog(componentData.componentName());
 
     d->_componentData = componentData;
 }
@@ -99,7 +99,7 @@ KCModule::KCModule(const KComponentData &componentData, QWidget *parent, const Q
 {
     Q_ASSERT(componentData.isValid());
 
-    KGlobal::locale()->insertCatalog(componentData.componentName());
+    KLocale::global()->insertCatalog(componentData.componentName());
 
     d->_componentData = componentData;
 }

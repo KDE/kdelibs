@@ -110,8 +110,8 @@ QString KTimeComboBoxPrivate::timeFormatToInputMask(const QString &format, bool 
     null.replace(convertDigits(QLatin1String("789")), QLatin1String(""));
     if (format.contains(QLatin1String("%p")) ||
         format.contains(QLatin1String("%P"))) {
-        QString am = KGlobal::locale()->dayPeriodText(QTime(0, 0, 0));
-        QString pm = KGlobal::locale()->dayPeriodText(QTime(12, 0, 0));
+        QString am = KLocale::global()->dayPeriodText(QTime(0, 0, 0));
+        QString pm = KLocale::global()->dayPeriodText(QTime(12, 0, 0));
         int ampmLen = qMax(am.length(), pm.length());
         QString ampmMask;
         for (int i = 0; i < ampmLen; ++i) {
@@ -145,12 +145,12 @@ QTime KTimeComboBoxPrivate::nearestIntervalTime(const QTime &time)
 
 QString KTimeComboBoxPrivate::formatTime(const QTime &time)
 {
-    return KGlobal::locale()->formatTime(time, m_displayFormat);
+    return KLocale::global()->formatTime(time, m_displayFormat);
 }
 
 QString KTimeComboBoxPrivate::convertDigits(const QString &digits)
 {
-    return KGlobal::locale()->convertDigits(digits, KGlobal::locale()->dateTimeDigitSet());
+    return KLocale::global()->convertDigits(digits, KGlobal::locale()->dateTimeDigitSet());
 }
 
 void KTimeComboBoxPrivate::initTimeWidget()
@@ -159,8 +159,8 @@ void KTimeComboBoxPrivate::initTimeWidget()
     q->clear();
 
     // Set the input mask from the current format
-    q->lineEdit()->setInputMask(timeFormatToInputMask(KGlobal::locale()->timeFormat()));
-    m_nullString = timeFormatToInputMask(KGlobal::locale()->timeFormat(), true);
+    q->lineEdit()->setInputMask(timeFormatToInputMask(KLocale::global()->timeFormat()));
+    m_nullString = timeFormatToInputMask(KLocale::global()->timeFormat(), true);
 
     // If EditTime then set the line edit
     q->lineEdit()->setReadOnly((m_options &KTimeComboBox::EditTime) != KTimeComboBox::EditTime);
@@ -235,12 +235,12 @@ void KTimeComboBoxPrivate::selectTime(int index)
 void KTimeComboBoxPrivate::editTime(const QString &text)
 {
     m_warningShown = false;
-    emit q->timeEdited(KGlobal::locale()->readTime(text));
+    emit q->timeEdited(KLocale::global()->readTime(text));
 }
 
 void KTimeComboBoxPrivate::parseTime()
 {
-    m_time = KGlobal::locale()->readTime(q->lineEdit()->text());
+    m_time = KLocale::global()->readTime(q->lineEdit()->text());
 }
 
 void KTimeComboBoxPrivate::enterTime(const QTime &time)

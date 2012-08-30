@@ -204,7 +204,7 @@ void KFontRequester::KFontRequesterPrivate::displaySampleText()
 
   if ( m_sampleText.isEmpty() ) {
     QString family = translateFontName(m_selFont.family());
-    m_sampleLabel->setText( QString( "%1 %2" ).arg( family ).arg( KGlobal::locale()->formatNumber( size, (size == floor(size)) ? 0 : 1 ) ) );
+    m_sampleLabel->setText( QString( "%1 %2" ).arg( family ).arg( KLocale::global()->formatNumber( size, (size == floor(size)) ? 0 : 1 ) ) );
   }
   else {
     m_sampleLabel->setText( m_sampleText );

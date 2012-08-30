@@ -53,12 +53,12 @@ Q_GLOBAL_STATIC(KDynamicJobTracker, globalJobTracker)
 
 KIO_EXPORT QString KIO::convertSize( KIO::filesize_t size )
 {
-    return KGlobal::locale()->formatByteSize(size);
+    return KLocale::global()->formatByteSize(size);
 }
 
 KIO_EXPORT QString KIO::convertSizeFromKiB( KIO::filesize_t kibSize )
 {
-    return KGlobal::locale()->formatByteSize(kibSize * 1024);
+    return KLocale::global()->formatByteSize(kibSize * 1024);
 }
 
 KIO_EXPORT QString KIO::number( KIO::filesize_t size )
@@ -85,7 +85,7 @@ KIO_EXPORT QString KIO::convertSeconds( unsigned int seconds )
   seconds            = (seconds - (days * 86400) - (hours * 3600) - (mins * 60));
 
   const QTime time(hours, mins, seconds);
-  const QString timeStr( KGlobal::locale()->formatTime(time, true /*with seconds*/, true /*duration*/) );
+  const QString timeStr( KLocale::global()->formatTime(time, true /*with seconds*/, true /*duration*/) );
   if ( days > 0 )
     return i18np("1 day %2", "%1 days %2", days, timeStr);
   else
@@ -442,7 +442,7 @@ KIO_EXPORT QStringList KIO::Job::detailedErrorStrings(const QUrl *reqUrl /*= 0*/
     url = i18nc("@info url", "(unknown)" );
   }
 
-  datetime = KGlobal::locale()->formatDateTime( QDateTime::currentDateTime(),
+  datetime = KLocale::global()->formatDateTime( QDateTime::currentDateTime(),
                                                 KLocale::LongDate );
 
   ret << errorName;
@@ -508,7 +508,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
     protocol = i18nc("@info protocol", "(unknown)" );
   }
 
-  datetime = KGlobal::locale()->formatDateTime( QDateTime::currentDateTime(),
+  datetime = KLocale::global()->formatDateTime( QDateTime::currentDateTime(),
                                                 KLocale::LongDate );
 
   QString errorName, techName, description;

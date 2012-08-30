@@ -68,7 +68,7 @@ QSize KUrlNavigatorProtocolCombo::sizeHint() const
     const QSize size = KUrlNavigatorButtonBase::sizeHint();
 
     QFontMetrics fontMetrics(font());
-    int width = fontMetrics.width(KGlobal::locale()->removeAcceleratorMarker(text()));
+    int width = fontMetrics.width(KLocale::global()->removeAcceleratorMarker(text()));
     width += (3 * BorderWidth) + ArrowSize;
 
     return QSize(width, size.height());

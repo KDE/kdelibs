@@ -107,7 +107,7 @@ KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
 
     QTreeWidgetItem *listItem = new QTreeWidgetItem( this );
     listItem->setText( Private::CityColumn, continentCity[ continentCity.count() - 1 ] );
-    QString countryName = KGlobal::locale()->countryCodeToName( zone.countryCode() );
+    QString countryName = KLocale::global()->countryCodeToName( zone.countryCode() );
     if ( countryName.isEmpty() ) {
       continentCity[ continentCity.count() - 1 ] = zone.countryCode();
     } else {

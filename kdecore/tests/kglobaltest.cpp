@@ -64,12 +64,12 @@ private Q_SLOTS:
     // For testing from multiple threads in testThreads
     void testLocale()
     {
-        KGlobal::locale();
-        KGlobal::locale()->setDecimalPlaces(2);
-        QCOMPARE(KGlobal::locale()->formatNumber(70), QString("70.00"));
+        KLocale::global();
+        KLocale::global()->setDecimalPlaces(2);
+        QCOMPARE(KLocale::global()->formatNumber(70), QString("70.00"));
     }
 
-    // Calling this directly aborts in KGlobal::locale(), this is intended.
+    // Calling this directly aborts in KLocale::global(), this is intended.
     // We have to install the qtranslator in the main thread.
     void testThreads()
     {

@@ -288,10 +288,10 @@ QMap<QString, QString> Sonnet::Speller::availableDictionaries() const
 
         if (!cIsoName.isEmpty())
             description= QString::fromLatin1("%1 (%2)")
-                         .arg(KGlobal::locale()->languageCodeToName(lIsoName))
-                         .arg(KGlobal::locale()->countryCodeToName(cIsoName));
+                         .arg(KLocale::global()->languageCodeToName(lIsoName))
+                         .arg(KLocale::global()->countryCodeToName(cIsoName));
         else
-            description= KGlobal::locale()->languageCodeToName(lIsoName);
+            description= KLocale::global()->languageCodeToName(lIsoName);
         //qDebug()<<"Dict is "<<tag<<" ( "<<loc.name()<<")"<<", descr = "<<description;
         langs.insert(description, tag);
     }

@@ -49,7 +49,7 @@
 // display ampersands literally.
 static QString DropAmpersands(const QString &text)
 {
-    return KGlobal::locale()->removeAcceleratorMarker(text);
+    return KLocale::global()->removeAcceleratorMarker(text);
 }
 
 

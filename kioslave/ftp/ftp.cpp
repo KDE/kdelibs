@@ -173,7 +173,7 @@ extern "C" Q_DECL_EXPORT int kdemain( int argc, char **argv )
 {
   QCoreApplication app(argc, argv);
   KComponentData componentData( "kio_ftp", "kdelibs4" );
-  ( void ) KGlobal::locale();
+  ( void ) KLocale::global();
 
   kDebug(7102) << "Starting " << getpid();
 

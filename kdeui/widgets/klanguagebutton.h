@@ -70,7 +70,7 @@ public:
   virtual ~KLanguageButton();
 
   /**
-   * Sets the locale to display language names. By default, KGlobal::locale() is used.
+   * Sets the locale to display language names. By default, KLocale::global() is used.
    *
    * @param locale locale to use
    */

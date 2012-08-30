@@ -329,7 +329,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
     d->m_autoDetectLanguage = static_cast<KEncodingProber::ProberType>(config.readEntry( "AutomaticDetectionLanguage", /*static_cast<int>(language) */0));
     if (d->m_autoDetectLanguage==KEncodingProber::None) {
-      const QByteArray name = KGlobal::locale()->encoding().toLower();
+      const QByteArray name = KLocale::global()->encoding().toLower();
 //       kWarning() << "00000000 ";
       if (name.endsWith("1251")||name.startsWith("koi")||name=="iso-8859-5")
         d->m_autoDetectLanguage=KEncodingProber::Cyrillic;
@@ -357,7 +357,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
         d->m_autoDetectLanguage=KEncodingProber::WesternEuropean;
       else
         d->m_autoDetectLanguage=KEncodingProber::Universal;
-//         kWarning() << "0000000end " << d->m_autoDetectLanguage << " " << KGlobal::locale()->encodingMib();
+//         kWarning() << "0000000end " << d->m_autoDetectLanguage << " " << KLocale::global()->encodingMib();
     }
     d->m_paSetEncoding->setCurrentProberType(d->m_autoDetectLanguage);
   }
@@ -536,10 +536,10 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       loadPlugins();
 
   // "khtml" catalog does not exist, our translations are in kdelibs.
-  // removing this catalog from KGlobal::locale() prevents problems
+  // removing this catalog from KLocale::global() prevents problems
   // with changing the language in applications at runtime -Thomas Reitelbach
   // DF: a better fix would be to set the right catalog name in the KComponentData!
-  KGlobal::locale()->removeCatalog("khtml");
+  KLocale::global()->removeCatalog("khtml");
 }
 
 KHTMLPart::~KHTMLPart()
@@ -1835,7 +1835,7 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KUrl& reqUr
   // controlled URL twice: once for i18n, and once for HTML.
   url = Qt::escape( Qt::escape( reqUrl.toDisplayString() ) );
   protocol = reqUrl.scheme();
-  datetime = KGlobal::locale()->formatDateTime( QDateTime::currentDateTime(),
+  datetime = KLocale::global()->formatDateTime( QDateTime::currentDateTime(),
                                                 KLocale::LongDate );
 
   QString filename( QStandardPaths::locate(QStandardPaths::GenericDataLocation, "khtml/error.html" ) );
@@ -2701,7 +2701,7 @@ QString KHTMLPart::defaultEncoding() const
   if ( url().scheme().startsWith( "http" ) )
     return "iso-8859-1";
   else
-    return KGlobal::locale()->encoding();
+    return KLocale::global()->encoding();
 }
 
 void KHTMLPart::setUserStyleSheet(const KUrl &url)
@@ -3606,7 +3606,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
       else
       {
         float d = (float) buff.st_size/1024.0;
-        text = i18n("%2 (%1 K)", KGlobal::locale()->formatNumber(d, 2), text2); // was %.2f
+        text = i18n("%2 (%1 K)", KLocale::global()->formatNumber(d, 2), text2); // was %.2f
       }
       text += "  ";
       text += com;

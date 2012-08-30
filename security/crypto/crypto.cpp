@@ -1402,7 +1402,7 @@ QDateTime qdt = x->getExpires();
    int rc = kdtd.exec();
    if (rc == KDialog::Accepted) {
       x->setExpires(kdtd.getDateTime());
-      untilDate->setText(KGlobal::locale()->formatDateTime(x->getExpires()));
+      untilDate->setText(KLocale::global()->formatDateTime(x->getExpires()));
       configChanged();
    }
 }
@@ -1448,8 +1448,8 @@ void KCryptoConfig::slotOtherCertSelect() {
 
          validFrom->setText(cert->getNotBefore());
          validUntil->setText(cert->getNotAfter());
-         untilDate->setText(x ? KGlobal::locale()->formatDateTime(x->getExpires())
-                              : KGlobal::locale()->formatDateTime(QDateTime::currentDateTime()));
+         untilDate->setText(x ? KLocale::global()->formatDateTime(x->getExpires())
+                              : KLocale::global()->formatDateTime(QDateTime::currentDateTime()));
          untilDate->setEnabled(x && !x->isPermanent());
          pHash->setText(cert->getMD5DigestText());
          oSubject->setCertificate(QSslCertificate(cert->toPem()), KSslCertificateBox::Subject);

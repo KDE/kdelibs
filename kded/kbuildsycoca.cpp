@@ -496,7 +496,7 @@ void KBuildSycoca::save(QDataStream* str)
    // Write KDEDIRS
    (*str) << KGlobal::dirs()->kfsstnd_prefixes();
    (*str) << newTimestamp;
-   (*str) << KGlobal::locale()->language();
+   (*str) << KLocale::global()->language();
    (*str) << KGlobal::dirs()->calcResourceHash("services", "update_ksycoca",
                                                  KStandardDirs::Recursive );
    (*str) << (*g_allResourceDirs);
@@ -664,7 +664,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
 
    // force generating of KLocale object. if not, the database will get
    // be translated
-   KGlobal::locale();
+   KLocale::global();
    KGlobal::dirs()->addResourceType("app-reg", 0, "share/application-registry" );
 
    while(QDBusConnection::sessionBus().isConnected())
@@ -691,7 +691,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
    if (incremental || !checkfiles)
    {
      KSycoca::disableAutoRebuild(); // Prevent deadlock
-     QString current_language = KGlobal::locale()->language();
+     QString current_language = KLocale::global()->language();
      QString ksycoca_language = KSycoca::self()->language();
      quint32 current_update_sig = KGlobal::dirs()->calcResourceHash("services", "update_ksycoca",
                                                                     KStandardDirs::Recursive );

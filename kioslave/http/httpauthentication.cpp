@@ -335,7 +335,7 @@ QString KAbstractHttpAuthentication::realm() const
 {
     const QByteArray realm = valueForKey(m_challenge, "realm");
     // TODO: Find out what this is supposed to address. The site mentioned below does not exist.
-    if (KGlobal::locale()->language().contains(QLatin1String("ru"))) {
+    if (KLocale::global()->language().contains(QLatin1String("ru"))) {
         //for sites like lib.homelinux.org
         return QTextCodec::codecForName("CP1251")->toUnicode(realm);
     }

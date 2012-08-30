@@ -151,7 +151,7 @@ const KCalendarSystem *KLocalizedDate::calendar() const
     if (d->m_calendar) {
         return d->m_calendar;
     }
-    return  KGlobal::locale()->calendar();
+    return  KLocale::global()->calendar();
 }
 
 /*****************************************************************************
@@ -375,7 +375,7 @@ KLocalizedDate KLocalizedDate::readDate(const QString &dateString,
 {
     Q_UNUSED(parseMode);
     if (!calendar) {
-        calendar = KGlobal::locale()->calendar();
+        calendar = KLocale::global()->calendar();
     }
     return KLocalizedDate(calendar->readDate(dateString));
 }
@@ -387,7 +387,7 @@ KLocalizedDate KLocalizedDate::readDate(const QString &dateString,
 {
     Q_UNUSED(parseMode);
     if (!calendar) {
-        calendar = KGlobal::locale()->calendar();
+        calendar = KLocale::global()->calendar();
     }
     return KLocalizedDate(calendar->readDate(dateString, formatFlags));
 }
@@ -400,7 +400,7 @@ KLocalizedDate KLocalizedDate::readDate(const QString &dateString,
 {
     Q_UNUSED(parseMode);
     if (!calendar) {
-        calendar = KGlobal::locale()->calendar();
+        calendar = KLocale::global()->calendar();
     }
     return KLocalizedDate(calendar->readDate(dateString, dateFormat, 0, formatStandard));
 }

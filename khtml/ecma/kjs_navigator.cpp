@@ -261,7 +261,7 @@ JSValue *Navigator::getValueProperty(ExecState *exec, int token) const
   case BrowserLanguage:
   case Language:
   case UserLanguage:
-    return jsString(KGlobal::locale()->language());
+    return jsString(KLocale::global()->language());
   case UserAgent:
     return jsString(userAgent);
   case Platform:

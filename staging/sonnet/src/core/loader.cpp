@@ -192,12 +192,12 @@ QString Loader::languageNameForCode(const QString &langCode) const
         else
             lISOName = currentDictionary;
     }
-    localizedLang = KGlobal::locale()->languageCodeToName(lISOName);
+    localizedLang = KLocale::global()->languageCodeToName(lISOName);
     if (localizedLang.isEmpty())
         localizedLang = lISOName;
     if (!cISOName.isEmpty()) {
-        if (!KGlobal::locale()->countryCodeToName(cISOName).isEmpty())
-            localizedCountry = KGlobal::locale()->countryCodeToName(cISOName);
+        if (!KLocale::global()->countryCodeToName(cISOName).isEmpty())
+            localizedCountry = KLocale::global()->countryCodeToName(cISOName);
         else
             localizedCountry = cISOName;
     }

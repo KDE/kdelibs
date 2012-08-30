@@ -1397,7 +1397,7 @@ QString KuitSemanticsPrivate::modifyTagText (const QString &text,
         int fieldWidth = avals.value(Kuit::Att::Width, QString(QLatin1Char('0'))).toInt();
         const QString fillStr = avals.value(Kuit::Att::Fill, QString(QLatin1Char(' ')));
         const QChar fillChar = !fillStr.isEmpty() ? fillStr[0] : QChar::fromLatin1(' ');
-        return QString::fromLatin1("%1").arg(KGlobal::locale()->formatNumber(text, false),
+        return QString::fromLatin1("%1").arg(KLocale::global()->formatNumber(text, false),
                                  fieldWidth, fillChar);
     }
     else if (tag == Kuit::Tag::Filename) {

@@ -53,8 +53,8 @@ void DisplayCertDialog::showCertificate(int index)
     m_ui.issuerCertBox->setCertificate(cert, KSslCertificateBox::Issuer);
     
     QString vp = i18nc("%1 is the effective date of the certificate, %2 is the expiry date", "%1 to %2",
-                       KGlobal::locale()->formatDateTime(cert.effectiveDate()),
-                       KGlobal::locale()->formatDateTime(cert.expiryDate()));
+                       KLocale::global()->formatDateTime(cert.effectiveDate()),
+                       KLocale::global()->formatDateTime(cert.expiryDate()));
     m_ui.validityPeriod->setText(vp);
 
     m_ui.serialNumber->setText(cert.serialNumber());

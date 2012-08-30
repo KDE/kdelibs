@@ -85,7 +85,7 @@ public:
    * to kdeui. The main difference is that you will have to do a number of things yourself:
    * <ul>
    *  <li>Register to DBus, if necessary.</li>
-   *  <li>Call KGlobal::locale(), if using multiple threads.</li>
+   *  <li>Call KLocale::global(), if using multiple threads.</li>
    * </ul>
    */
   explicit KApplication(bool GUIenabled = true);

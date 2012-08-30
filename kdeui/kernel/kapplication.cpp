@@ -509,7 +509,7 @@ void KApplicationPrivate::init(bool GUIenabled)
                                                QDBusConnection::ExportAdaptors);
 
   // Trigger creation of locale.
-  (void) KGlobal::locale();
+  (void) KLocale::global();
 
   KSharedConfig::Ptr config = componentData.config();
   QByteArray readOnly = qgetenv("KDE_HOME_READONLY");

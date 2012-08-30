@@ -34,8 +34,8 @@ void KDateComboBoxTest::testDefaults()
 {
     m_combo = new KDateComboBox(0);
     QCOMPARE(m_combo->date(), QDate::currentDate());
-    QCOMPARE(m_combo->minimumDate(), KGlobal::locale()->calendar()->earliestValidDate());
-    QCOMPARE(m_combo->maximumDate(), KGlobal::locale()->calendar()->latestValidDate());
+    QCOMPARE(m_combo->minimumDate(), KLocale::global()->calendar()->earliestValidDate());
+    QCOMPARE(m_combo->maximumDate(), KLocale::global()->calendar()->latestValidDate());
     QCOMPARE(m_combo->isValid(), true);
     QCOMPARE(m_combo->isNull(), false);
     QCOMPARE(m_combo->options(), KDateComboBox::EditDate | KDateComboBox::SelectDate | KDateComboBox::DatePicker | KDateComboBox::DateKeywords);
@@ -62,8 +62,8 @@ void KDateComboBoxTest::testDateRange()
 {
     m_combo = new KDateComboBox(0);
     m_combo->setDate(QDate(2000, 1, 1));
-    QCOMPARE(m_combo->minimumDate(), KGlobal::locale()->calendar()->earliestValidDate());
-    QCOMPARE(m_combo->maximumDate(), KGlobal::locale()->calendar()->latestValidDate());
+    QCOMPARE(m_combo->minimumDate(), KLocale::global()->calendar()->earliestValidDate());
+    QCOMPARE(m_combo->maximumDate(), KLocale::global()->calendar()->latestValidDate());
     QCOMPARE(m_combo->isValid(), true);
 
     m_combo->setDateRange(QDate(2001, 1, 1), QDate(2002, 1, 1));

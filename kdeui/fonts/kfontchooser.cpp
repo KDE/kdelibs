@@ -74,7 +74,7 @@ static int minimumListHeight( const QListWidget *list, int numVisibleEntry )
 
 static QString formatFontSize(qreal size)
 {
-    return KGlobal::locale()->formatNumber(size, (size == floor(size)) ? 0 : 1);
+    return KLocale::global()->formatNumber(size, (size == floor(size)) ? 0 : 1);
 }
 
 class KFontChooser::Private
@@ -706,9 +706,9 @@ void KFontChooser::Private::_k_size_chosen_slot(const QString& size)
 
     qreal currentSize;
     if (size.isEmpty()) {
-        currentSize = KGlobal::locale()->readNumber(sizeListBox->currentItem()->text());
+        currentSize = KLocale::global()->readNumber(sizeListBox->currentItem()->text());
     } else {
-        currentSize = KGlobal::locale()->readNumber(size);
+        currentSize = KLocale::global()->readNumber(size);
     }
 
     // Reset the customized size slot in the list if not needed.
@@ -760,18 +760,18 @@ void KFontChooser::Private::_k_size_value_slot(double dval)
         int nrow;
         if (val - selFont.pointSizeF() > 0) {
             for (nrow = row + 1; nrow < nrows; ++nrow)
-                if (KGlobal::locale()->readNumber(sizeListBox->item(nrow)->text()) >= val)
+                if (KLocale::global()->readNumber(sizeListBox->item(nrow)->text()) >= val)
                     break;
         }
         else {
             for (nrow = row - 1; nrow >= 0; --nrow)
-                if (KGlobal::locale()->readNumber(sizeListBox->item(nrow)->text()) <= val)
+                if (KLocale::global()->readNumber(sizeListBox->item(nrow)->text()) <= val)
                     break;
         }
         // Make sure the new row is not out of bounds.
         nrow = nrow < 0 ? 0 : nrow >= nrows ? nrows - 1 : nrow;
         // Get the size from the new row and set the spinbox to that size.
-        val = KGlobal::locale()->readNumber(sizeListBox->item(nrow)->text());
+        val = KLocale::global()->readNumber(sizeListBox->item(nrow)->text());
         sizeOfFont->setValue(val);
     }
 
@@ -804,7 +804,7 @@ int KFontChooser::Private::nearestSizeRow (qreal val, bool customize)
     qreal diff = 1000;
     int row = 0;
     for (int r = 0; r < sizeListBox->count(); ++r) {
-        qreal cval = KGlobal::locale()->readNumber(sizeListBox->item(r)->text());
+        qreal cval = KLocale::global()->readNumber(sizeListBox->item(r)->text());
         if (qAbs(cval - val) < diff) {
             diff = qAbs(cval - val);
             row = r;
@@ -860,7 +860,7 @@ qreal KFontChooser::Private::fillSizeList (const QList<qreal> &sizes_)
     // thus size slot customization is not allowed.
     customSizeRow = -1;
     int row = nearestSizeRow(selectedSize, canCustomize);
-    return KGlobal::locale()->readNumber(sizeListBox->item(row)->text());
+    return KLocale::global()->readNumber(sizeListBox->item(row)->text());
 }
 
 qreal KFontChooser::Private::setupSizeListBox (const QString& family, const QString& style)
@@ -985,7 +985,7 @@ void KFontChooser::Private::setupDisplay()
     sizeListBox->setCurrentRow(nearestSizeRow(size, canCustomize));
 
     // Set current size in the spinbox.
-    sizeOfFont->setValue(KGlobal::locale()->readNumber(sizeListBox->currentItem()->text()));
+    sizeOfFont->setValue(KLocale::global()->readNumber(sizeListBox->currentItem()->text()));
 }
 
 

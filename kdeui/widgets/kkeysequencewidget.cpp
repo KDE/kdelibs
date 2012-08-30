@@ -221,7 +221,7 @@ bool KKeySequenceWidgetPrivate::stealShortcuts(
     Q_FOREACH(const KAction *action, actions) {
         conflictingShortcuts += i18n("Shortcut '%1' for action '%2'\n",
                 action->shortcut().toString(QKeySequence::NativeText),
-                KGlobal::locale()->removeAcceleratorMarker(action->text()));
+                KLocale::global()->removeAcceleratorMarker(action->text()));
     }
     QString message = i18ncp("%1 is the number of ambigious shortcut clashes (hidden)",
             "The \"%2\" shortcut is ambiguous with the following shortcut.\n"
@@ -245,7 +245,7 @@ void KKeySequenceWidgetPrivate::wontStealShortcut(QAction *item, const QKeySeque
     QString title( i18n( "Shortcut conflict" ) );
     QString msg( i18n( "<qt>The '%1' key combination is already used by the <b>%2</b> action.<br>"
             "Please select a different one.</qt>", seq.toString(QKeySequence::NativeText) ,
-            KGlobal::locale()->removeAcceleratorMarker(item->text()) ) );
+            KLocale::global()->removeAcceleratorMarker(item->text()) ) );
     KMessageBox::sorry( q, msg );
 }
 

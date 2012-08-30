@@ -136,7 +136,7 @@ void KLanguageButton::insertLanguage( const QString &languageCode, const QString
   if (name.isEmpty())
   {
     text = languageCode;
-    const KLocale *locale = d->locale ? d->locale : KGlobal::locale();
+    const KLocale *locale = d->locale ? d->locale : KLocale::global();
     if (locale)
       text = locale->languageCodeToName(languageCode);
     else
@@ -189,7 +189,7 @@ void KLanguageButton::loadAllLanguages()
     insertLanguage(code, name);
   }
 
-  const KLocale *locale = d->locale ? d->locale : KGlobal::locale();
+  const KLocale *locale = d->locale ? d->locale : KLocale::global();
   setCurrentItem(locale ? locale->language() : KLocale::defaultLanguage());
 }
 

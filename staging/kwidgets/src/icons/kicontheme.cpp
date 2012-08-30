@@ -692,7 +692,7 @@ QString KIconThemeDir::iconPath(const QString& name) const
     QString file = dir() + '/' + name;
 
     if (QFile::exists(file)) {
-        return KGlobal::hasLocale() ? KGlobal::locale()->localizedFilePath(file) : file;
+        return KGlobal::hasLocale() ? KLocale::global()->localizedFilePath(file) : file;
     }
 
     return QString();

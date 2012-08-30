@@ -36,8 +36,8 @@ void KDateTimeEditTest::testDefaults()
     QCOMPARE(m_edit->dateTime(), KDateTime(QDate::currentDate(), QTime(0, 0, 0)));
     QCOMPARE(m_edit->date(), QDate::currentDate());
     QCOMPARE(m_edit->time(), QTime(0, 0, 0));
-    QCOMPARE(m_edit->minimumDateTime(), KDateTime(KGlobal::locale()->calendar()->earliestValidDate(), QTime(0, 0, 0)));
-    QCOMPARE(m_edit->maximumDateTime(), KDateTime(KGlobal::locale()->calendar()->latestValidDate(), QTime(23, 59, 59, 999)));
+    QCOMPARE(m_edit->minimumDateTime(), KDateTime(KLocale::global()->calendar()->earliestValidDate(), QTime(0, 0, 0)));
+    QCOMPARE(m_edit->maximumDateTime(), KDateTime(KLocale::global()->calendar()->latestValidDate(), QTime(23, 59, 59, 999)));
     QCOMPARE(m_edit->isValid(), true);
     QCOMPARE(m_edit->isNull(), false);
     QCOMPARE(m_edit->options(), KDateTimeEdit::ShowDate | KDateTimeEdit::EditDate | KDateTimeEdit::SelectDate | KDateTimeEdit::DatePicker | KDateTimeEdit::DateKeywords | KDateTimeEdit::ShowTime | KDateTimeEdit::EditTime | KDateTimeEdit::SelectTime);
@@ -62,8 +62,8 @@ void KDateTimeEditTest::testDateTimeRange()
 {
     m_edit = new KDateTimeEdit(0);
     m_edit->setDateTime(KDateTime(QDate(2000, 1, 1), QTime(12, 0, 0)));
-    QCOMPARE(m_edit->minimumDateTime(), KDateTime(KGlobal::locale()->calendar()->earliestValidDate(), QTime(0, 0, 0)));
-    QCOMPARE(m_edit->maximumDateTime(), KDateTime(KGlobal::locale()->calendar()->latestValidDate(), QTime(23, 59, 59, 999)));
+    QCOMPARE(m_edit->minimumDateTime(), KDateTime(KLocale::global()->calendar()->earliestValidDate(), QTime(0, 0, 0)));
+    QCOMPARE(m_edit->maximumDateTime(), KDateTime(KLocale::global()->calendar()->latestValidDate(), QTime(23, 59, 59, 999)));
     QCOMPARE(m_edit->isValid(), true);
 
     m_edit->setDateTimeRange(KDateTime(QDate(2001, 1, 1), QTime(10, 0, 0)),
@@ -186,7 +186,7 @@ void KDateTimeEditTest::testCalendarSystem()
     m_edit = new KDateTimeEdit();
     QList<KLocale::CalendarSystem> calendars = KCalendarSystem::calendarSystemsList();
 
-    QCOMPARE(m_edit->calendarSystem(), KGlobal::locale()->calendarSystem());
+    QCOMPARE(m_edit->calendarSystem(), KLocale::global()->calendarSystem());
     QCOMPARE(m_edit->calendarSystemsList(), calendars);
 
     m_edit->setCalendarSystem(KLocale::JulianCalendar);

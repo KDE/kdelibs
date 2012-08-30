@@ -105,7 +105,7 @@ int main(int argc, char **argv) {
 
     QCoreApplication app( argc, argv );
     KComponentData ins("kio_help4");
-    KGlobal::locale();
+    KLocale::global();
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     if ( args->count() != 1 ) {

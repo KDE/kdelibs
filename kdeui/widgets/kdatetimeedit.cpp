@@ -244,7 +244,7 @@ void KDateTimeEditPrivate::warnDateTime()
             } else {
                 warnMsg = m_minWarnMsg;
                 //TODO localize properly
-                warnMsg.replace("%1", KGlobal::locale()->formatDateTime(m_minDateTime));
+                warnMsg.replace("%1", KLocale::global()->formatDateTime(m_minDateTime));
             }
         } else if (m_dateTime > m_maxDateTime) {
             if (m_maxWarnMsg.isEmpty()) {
@@ -253,7 +253,7 @@ void KDateTimeEditPrivate::warnDateTime()
                 warnMsg = i18nc("@info", "The entered date and time is after the maximum allowed date and time.");
             } else {
                 warnMsg = m_maxWarnMsg;
-                warnMsg.replace("%1", KGlobal::locale()->formatDateTime(m_maxDateTime));
+                warnMsg.replace("%1", KLocale::global()->formatDateTime(m_maxDateTime));
             }
         }
         KMessageBox::sorry(q, warnMsg);
@@ -265,7 +265,7 @@ KDateTimeEdit::KDateTimeEdit(QWidget *parent)
               :QWidget(parent),
                d(new KDateTimeEditPrivate(this))
 {
-    KGlobal::locale()->insertCatalog("timezones4");
+    KLocale::global()->insertCatalog("timezones4");
     d->ui.setupUi(this);
     //Need to do the min/max defaults here and not in private init as need to wait for ui to init
     //the KDateComboBox which holds the calendar object.  Revisit this???

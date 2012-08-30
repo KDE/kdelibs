@@ -44,20 +44,20 @@ KLocaleTest::initTestCase()
     qputenv("XDG_CONFIG_HOME", QFile::encodeName(QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/config")));
 #endif
 
-    KGlobal::locale()->setThousandsSeparator(QLatin1String(","));
+    KLocale::global()->setThousandsSeparator(QLatin1String(","));
 }
 
 void KLocaleTest::languages()
 {
-    QVERIFY(KGlobal::locale()->installedLanguages().contains("en_US"));
+    QVERIFY(KLocale::global()->installedLanguages().contains("en_US"));
 }
 
 void
 KLocaleTest::formatNumbers()
 {
-	KLocale locale(*KGlobal::locale());
+	KLocale locale(*KLocale::global());
 
-    KGlobal::locale()->setDecimalPlaces(2);
+    KLocale::global()->setDecimalPlaces(2);
 	QCOMPARE(locale.formatNumber(70), QString("70.00"));
 	QCOMPARE(locale.formatNumber(70, 0), QString("70"));
 	QCOMPARE(locale.formatNumber(70.2), QString("70.20"));
@@ -93,9 +93,9 @@ KLocaleTest::formatNumbers()
 void
 KLocaleTest::formatNumberStrings()
 {
-	KLocale locale(*KGlobal::locale());
+	KLocale locale(*KLocale::global());
 
-    KGlobal::locale()->setDecimalPlaces(2);
+    KLocale::global()->setDecimalPlaces(2);
 	QCOMPARE(locale.formatNumber("70"), QString("70.00"));
 	QCOMPARE(locale.formatNumber("70", true, 2), QString("70.00"));
 	QCOMPARE(locale.formatNumber("70", true, 0), QString("70"));
@@ -142,7 +142,7 @@ KLocaleTest::formatNumberStrings()
 void
 KLocaleTest::readNumber()
 {
-	KLocale locale(*KGlobal::locale());
+	KLocale locale(*KLocale::global());
 	bool ok=false;
 
 	locale.readNumber("12,1", &ok);
@@ -252,7 +252,7 @@ KLocaleTest::readNumber()
 
 void KLocaleTest::formatMoney()
 {
-    KLocale locale(*KGlobal::locale());
+    KLocale locale(*KLocale::global());
     locale.setPositiveSign(QString());
     locale.setNegativeSign("-");
     locale.setPositivePrefixCurrencySymbol(true);
@@ -465,7 +465,7 @@ void KLocaleTest::formatMoney()
 void KLocaleTest::readMoney()
 {
     bool ok = false;
-    KLocale locale(*KGlobal::locale());
+    KLocale locale(*KLocale::global());
     locale.setPositiveSign(QString());
     locale.setNegativeSign("-");
     locale.setPositivePrefixCurrencySymbol(true);
@@ -683,7 +683,7 @@ void KLocaleTest::readMoney()
 void
 KLocaleTest::formatDate()
 {
-	KLocale locale(*KGlobal::locale());
+	KLocale locale(*KLocale::global());
 	QString small("yyyy-MM-dd");
 	QString full("dddd dd MMMM yyyy");
 	QDate date;
@@ -721,7 +721,7 @@ KLocaleTest::formatDate()
 void
 KLocaleTest::readDate()
 {
-	KLocale locale(*KGlobal::locale());
+	KLocale locale(*KLocale::global());
 	QString small("yyyy-MM-dd");
 	QString full("dddd dd MMMM yyyy");
 	bool ok=false;
@@ -753,7 +753,7 @@ KLocaleTest::readDate()
 void
 KLocaleTest::formatTime()
 {
-    KLocale locale(*KGlobal::locale());
+    KLocale locale(*KLocale::global());
     QTime time(0,22,33);
 
     locale.setTimeFormat("%H:%M %p");
@@ -773,7 +773,7 @@ KLocaleTest::formatTime()
 void
 KLocaleTest::formatDateTime()
 {
-	KLocale locale(*KGlobal::locale());
+	KLocale locale(*KLocale::global());
 	QString small("yyyy-MM-dd hh:mm");
 	QString smallsecs("yyyy-MM-dd hh:mm:ss");
 	QString full("dddd dd MMMM yyyy hh:mm");
@@ -872,7 +872,7 @@ KLocaleTest::formatDateTime()
 void
 KLocaleTest::readTime()
 {
-    KLocale locale(*KGlobal::locale());
+    KLocale locale(*KLocale::global());
     bool ok = false;
 
     QCOMPARE(locale.readTime("11:22:33", &ok), QTime(11,22,33));
@@ -900,7 +900,7 @@ KLocaleTest::readTime()
 
 void KLocaleTest::testDayPeriods()
 {
-    KLocale locale(*KGlobal::locale());
+    KLocale locale(*KLocale::global());
     locale.setTimeFormat("%I:%M:%S %p");
 
     //Test default standard AM/PM Day Periods
@@ -1061,7 +1061,7 @@ void KLocaleTest::testDayPeriods()
 
 void KLocaleTest::testCalendarSystemType()
 {
-    KLocale locale(*KGlobal::locale());
+    KLocale locale(*KLocale::global());
 
     locale.setCalendar("coptic");
     QCOMPARE( locale.calendarSystem(), KLocale::CopticCalendar);
@@ -1162,7 +1162,7 @@ void KLocaleTest::testCalendarSystemType()
 
 void KLocaleTest::testCountryDivision()
 {
-    KLocale locale(*KGlobal::locale());
+    KLocale locale(*KLocale::global());
     QCOMPARE( locale.countryDivisionCode(), locale.country().toUpper() );
     QVERIFY( locale.setCountryDivisionCode( "US-NY" ) );
     QCOMPARE( locale.countryDivisionCode(), QString( "US-NY" ) );
@@ -1171,7 +1171,7 @@ void KLocaleTest::testCountryDivision()
 void
 KLocaleTest::prettyFormatDuration()
 {
-	KLocale locale(*KGlobal::locale());
+	KLocale locale(*KLocale::global());
 
 	QCOMPARE(locale.prettyFormatDuration(1000), QString("1 second"));
 	QCOMPARE(locale.prettyFormatDuration(5000), QString("5 seconds"));
@@ -1194,7 +1194,7 @@ KLocaleTest::prettyFormatDuration()
 void
 KLocaleTest::formatByteSize()
 {
-    KLocale locale(*KGlobal::locale());
+    KLocale locale(*KLocale::global());
 
     QCOMPARE(locale.formatByteSize(0), QString("0 B"));
     QCOMPARE(locale.formatByteSize(50), QString("50 B"));
@@ -1218,7 +1218,7 @@ KLocaleTest::formatByteSize()
 void
 KLocaleTest::bug95511()
 {
-	KLocale locale(*KGlobal::locale());
+	KLocale locale(*KLocale::global());
 	bool ok=false;
 
 	locale.setCurrencySymbol("$$");
@@ -1238,7 +1238,7 @@ KLocaleTest::bug95511()
 
 void  KLocaleTest::weekDays()
 {
-    KLocale locale(*KGlobal::locale());
+    KLocale locale(*KLocale::global());
 
     //Test setting of weekStartDay
     locale.setWeekStartDay(3);
@@ -1280,7 +1280,7 @@ void  KLocaleTest::weekDays()
 void
 KLocaleTest::removeAcceleratorMarker()
 {
-	KLocale locale(*KGlobal::locale());
+	KLocale locale(*KLocale::global());
 
 	// No accelerator marker.
 	QCOMPARE(locale.removeAcceleratorMarker(QString()),
@@ -1338,7 +1338,7 @@ KLocaleTest::removeAcceleratorMarker()
 void
 KLocaleTest::formatByteSize2()
 {
-    KLocale locale(*KGlobal::locale());
+    KLocale locale(*KLocale::global());
 
     // IEC is also default
     locale.setBinaryUnitDialect(KLocale::IECBinaryDialect);

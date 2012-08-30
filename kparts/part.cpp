@@ -149,7 +149,7 @@ void PartBase::setComponentData(const KComponentData &componentData, bool bLoadP
     Q_D(PartBase);
 
     KXMLGUIClient::setComponentData(componentData);
-    KGlobal::locale()->insertCatalog(componentData.catalogName());
+    KLocale::global()->insertCatalog(componentData.catalogName());
     if (bLoadPlugins) {
         loadPlugins(d->m_obj, this, componentData);
     }

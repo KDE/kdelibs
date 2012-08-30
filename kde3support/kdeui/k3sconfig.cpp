@@ -301,12 +301,12 @@ K3SpellConfig::interpret( const QString &fname, QString &lname,
   // but since aspell 0.6 also 3-character ISO-codes can be used
   if ( (dname.length() == 2) || (dname.length() == 3) ) {
     lname = dname;
-    hname = KGlobal::locale()->languageCodeToName( lname );
+    hname = KLocale::global()->languageCodeToName( lname );
   }
   else if ( (dname.length() == 5) && (dname[2] == '_') ) {
     lname = dname.left(2);
-    hname = KGlobal::locale()->languageCodeToName( lname );
-    QString country = KGlobal::locale()->countryCodeToName( dname.right(2) );
+    hname = KLocale::global()->languageCodeToName( lname );
+    QString country = KLocale::global()->countryCodeToName( dname.right(2) );
     if ( extension.isEmpty() )
       extension = country;
     else
@@ -387,9 +387,9 @@ K3SpellConfig::interpret( const QString &fname, QString &lname,
   }
 
   //We have explicitly chosen English as the default here.
-  if ( ( KGlobal::locale()->language() == QLatin1String("C") &&
+  if ( ( KLocale::global()->language() == QLatin1String("C") &&
          lname==QLatin1String("en") ) ||
-       KGlobal::locale()->language() == lname )
+       KLocale::global()->language() == lname )
     return true;
 
   return false;

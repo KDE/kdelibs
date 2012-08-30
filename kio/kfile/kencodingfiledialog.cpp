@@ -50,7 +50,7 @@ KEncodingFileDialog::KEncodingFileDialog(const QUrl& startDir, const QString& en
 
   d->encoding->clear ();
   QString sEncoding = encoding;
-  QString systemEncoding = QLatin1String(KGlobal::locale()->encoding());
+  QString systemEncoding = QLatin1String(KLocale::global()->encoding());
   if (sEncoding.isEmpty() || sEncoding == "System")
      sEncoding = systemEncoding;
 

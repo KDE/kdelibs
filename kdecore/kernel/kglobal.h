@@ -433,11 +433,13 @@ namespace KGlobal
      * Returns the global locale object.
      * @return the global locale object
      *
-     * Note: in multi-threaded programs, you should call KGlobal::locale()
+     * Note: in multi-threaded programs, you should call KLocale::global()
      * in the main thread (e.g. in main(), after creating the QCoreApplication
      * and setting the main component), to ensure that the initialization is
      * done in the main thread. However KApplication takes care of this, so this
      * is only needed when not using KApplication.
+     *
+     * @deprecated use KLocale::global()
      */
     KDECORE_DEPRECATED_EXPORT KLocale *locale();
     /**

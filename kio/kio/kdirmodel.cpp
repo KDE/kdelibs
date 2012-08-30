@@ -664,10 +664,10 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                 //
                 //return KIO::convertSize(item->size());
                 // Default to "file size in bytes" like in kde3's filedialog
-                return KGlobal::locale()->formatNumber(item.size(), 0);
+                return KLocale::global()->formatNumber(item.size(), 0);
             case ModifiedTime: {
                 KDateTime dt = item.time(KFileItem::ModificationTime);
-                return KGlobal::locale()->formatDateTime(dt);
+                return KLocale::global()->formatDateTime(dt);
             }
             case Permissions:
                 return item.permissionsString();

@@ -61,5 +61,5 @@ Tester::~Tester()
     Q_ASSERT(!KGlobal::hasMainComponent());
     KConfigGroup group = m_config->group("test");
     group.writeEntry("test", 1);
-    delete m_config; // this calls KConfig::sync() which needs KGlobal::locale()
+    delete m_config; // this calls KConfig::sync() which needs KLocale::global()
 }

@@ -327,10 +327,10 @@ void KWidgetJobTracker::Private::ProgressWidget::processedAmount(KJob::Unit unit
         if (totalSizeKnown) {
             tmp = i18np( "%2 of %3 complete", "%2 of %3 complete",
 						amount,
-                        KGlobal::locale()->formatByteSize(amount),
-                        KGlobal::locale()->formatByteSize(totalSize));
+                        KLocale::global()->formatByteSize(amount),
+                        KLocale::global()->formatByteSize(totalSize));
         } else {
-            tmp = KGlobal::locale()->formatByteSize(amount);
+            tmp = KLocale::global()->formatByteSize(amount);
         }
         sizeLabel->setText(tmp);
         if (!totalSizeKnown) // update jumping progressbar
@@ -368,7 +368,7 @@ void KWidgetJobTracker::Private::ProgressWidget::percent(unsigned long percent)
 
     if (totalSizeKnown) {
         title += i18n("%1% of %2", percent,
-                      KGlobal::locale()->formatByteSize(totalSize));
+                      KLocale::global()->formatByteSize(totalSize));
     } else if (totalFiles) {
         title += i18np("%2% of 1 file", "%2% of %1 files", totalFiles, percent);
     } else {
@@ -387,11 +387,11 @@ void KWidgetJobTracker::Private::ProgressWidget::speed(unsigned long value)
     if (value == 0) {
         speedLabel->setText(i18n("Stalled"));
     } else {
-        const QString speedStr = KGlobal::locale()->formatByteSize(value);
+        const QString speedStr = KLocale::global()->formatByteSize(value);
         if (totalSizeKnown) {
             const int remaining = 1000*(totalSize - processedSize)/value;
             speedLabel->setText(i18np("%2/s (%3 remaining)", "%2/s (%3 remaining)", remaining, speedStr,
-                                     KGlobal::locale()->prettyFormatDuration(remaining)));
+                                     KLocale::global()->prettyFormatDuration(remaining)));
         } else { // total size is not known (#24228)
             speedLabel->setText(i18nc("speed in bytes per second", "%1/s", speedStr));
         }
@@ -413,7 +413,7 @@ void KWidgetJobTracker::Private::ProgressWidget::slotClean()
         if (!s)
             s = 1;
         speedLabel->setText(i18n("%1/s (done)",
-                                    KGlobal::locale()->formatByteSize(1000 * totalSize / s)));
+                                    KLocale::global()->formatByteSize(1000 * totalSize / s)));
     }
 }
 

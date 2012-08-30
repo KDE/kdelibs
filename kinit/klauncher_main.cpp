@@ -70,7 +70,7 @@ extern "C" Q_DECL_EXPORT int kdemain( int argc, char**argv )
 #endif
 
    KComponentData componentData("klauncher", "kdelibs4");
-   KGlobal::locale();
+   KLocale::global();
 
    // WABA: Make sure not to enable session management.
    putenv(strdup("SESSION_MANAGER="));

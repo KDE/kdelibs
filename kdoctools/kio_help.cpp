@@ -70,7 +70,7 @@ QString HelpProtocol::langLookup(const QString &fname)
     // assemble the local search paths
     const QStringList localDoc = KGlobal::dirs()->resourceDirs("html");
 
-    QStringList langs = KGlobal::locale()->languageList();
+    QStringList langs = KLocale::global()->languageList();
     langs.append( "en" );
     langs.removeAll( "C" );
 

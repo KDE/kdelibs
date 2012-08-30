@@ -47,7 +47,7 @@ void KLocaleTimeFormatTest::initTestCase()
 
     // get countries with according time formats
     // for formatAndReadAllCountriesTest().
-    QStringList countries(KGlobal::locale()->allCountriesList());
+    QStringList countries(KLocale::global()->allCountriesList());
     QString timeFormat;
     Q_FOREACH(const QString &c, countries) {
         timeFormat = loadTimeFormat(c);
@@ -120,7 +120,7 @@ void KLocaleTimeFormatTest::initTestCase()
 
 void KLocaleTimeFormatTest::formatTimeTest()
 {
-    KLocale locale(*KGlobal::locale());
+    KLocale locale(*KLocale::global());
     QTime time(15, 59, 59);
 
     QMap<QString, TimeFormatTestValue>::const_iterator it;
@@ -138,7 +138,7 @@ void KLocaleTimeFormatTest::formatTimeTest()
 
 void KLocaleTimeFormatTest::readTimeTest()
 {
-    KLocale locale(*KGlobal::locale());
+    KLocale locale(*KLocale::global());
     QMap<KLocale::TimeFormatOptions, QTime> timeMap;
     timeMap[KLocale::TimeDefault] = QTime(15, 59, 59);
     timeMap[KLocale::TimeWithoutSeconds] = QTime(15, 59, 0);
@@ -176,7 +176,7 @@ void KLocaleTimeFormatTest::readTimeTest()
 
 void KLocaleTimeFormatTest::formatAndReadAllCountriesTest()
 {
-    KLocale locale(*KGlobal::locale());
+    KLocale locale(*KLocale::global());
 
     // for each of the countries, format with any options, read again
     // and check if times match.

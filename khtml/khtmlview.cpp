@@ -3099,7 +3099,7 @@ void KHTMLView::print(bool quick)
         int headerHeight = 0;
         QFont headerFont("Sans Serif", 8);
 
-        QString headerLeft = KGlobal::locale()->formatDate(QDate::currentDate(),KLocale::ShortDate);
+        QString headerLeft = KLocale::global()->formatDate(QDate::currentDate(),KLocale::ShortDate);
         QString headerMid = docname;
         QString headerRight;
 

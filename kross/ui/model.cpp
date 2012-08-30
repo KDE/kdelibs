@@ -284,7 +284,7 @@ QVariant ActionCollectionModel::data(const QModelIndex& index, int role) const
                             return act->icon();
                 } break;
                 case Qt::DisplayRole:
-                    return KGlobal::locale()->removeAcceleratorMarker( act->text() );
+                    return KLocale::global()->removeAcceleratorMarker( act->text() );
                 case Qt::ToolTipRole: // fall through
                 case Qt::WhatsThisRole: {
                     if( d->mode & ToolTips ) {

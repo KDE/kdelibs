@@ -228,7 +228,7 @@ void Settings::restore(KConfig *config)
     d->defaultClient = conf.readEntry("defaultClient",
                                       QString());
     d->defaultLanguage = conf.readEntry(
-        "defaultLanguage", KGlobal::locale()->language());
+        "defaultLanguage", KLocale::global()->language());
 
     //same defaults are in the default filter (filter.cpp)
     d->checkUppercase = conf.readEntry(

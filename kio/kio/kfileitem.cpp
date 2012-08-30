@@ -1296,7 +1296,7 @@ QString KFileItem::permissionsString() const
 // check if we need to cache this
 QString KFileItem::timeString( FileTimes which ) const
 {
-    return KGlobal::locale()->formatDateTime( d->time(which) );
+    return KLocale::global()->formatDateTime( d->time(which) );
 }
 
 #ifndef KDE_NO_DEPRECATED

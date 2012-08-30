@@ -751,7 +751,7 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
       if (modifiers.contains('l'))
       {
         supp += QL1S("; ");
-        supp += KGlobal::locale()->language();
+        supp += KLocale::global()->language();
       }
     }
 
@@ -825,7 +825,7 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
 
       // Language (e.g. en_US)
       if (modifiers.contains('l'))
-        agentStr.replace(QL1S("%language%"), KGlobal::locale()->language(), Qt::CaseInsensitive);
+        agentStr.replace(QL1S("%language%"), KLocale::global()->language(), Qt::CaseInsensitive);
       else
         agentStr.remove(QL1S("%language%"), Qt::CaseInsensitive);
 
@@ -920,7 +920,7 @@ QString KProtocolManager::acceptLanguagesHeader()
   const QLatin1String english("en");
 
   // User's desktop language preference.
-  QStringList languageList = KGlobal::locale()->languageList();
+  QStringList languageList = KLocale::global()->languageList();
 
   // Replace possible "C" in the language list with "en", unless "en" is
   // already pressent. This is to keep user's priorities in order.

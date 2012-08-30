@@ -40,25 +40,25 @@ public:
 
     virtual QString formatDate(const QDate &fromDate,
                                const QString &toFormat,
-                               const KCalendarSystem *calendar  = KGlobal::locale()->calendar(),
-                               const KLocale *locale = KGlobal::locale(),
-                               KLocale::DigitSet digitSet = KGlobal::locale()->dateTimeDigitSet(),
+                               const KCalendarSystem *calendar  = KLocale::global()->calendar(),
+                               const KLocale *locale = KLocale::global(),
+                               KLocale::DigitSet digitSet = KLocale::global()->dateTimeDigitSet(),
                                KLocale::DateTimeFormatStandard standard = KLocale::KdeFormat) const;
 
     virtual QString formatTime(const QTime &fromTime,
                                const QString &toFormat,
                                KLocale::TimeFormatOptions timeOptions = 0,
-                               const KCalendarSystem *calendar  = KGlobal::locale()->calendar(),
-                               const KLocale *locale = KGlobal::locale(),
-                               KLocale::DigitSet digitSet = KGlobal::locale()->dateTimeDigitSet(),
+                               const KCalendarSystem *calendar  = KLocale::global()->calendar(),
+                               const KLocale *locale = KLocale::global(),
+                               KLocale::DigitSet digitSet = KLocale::global()->dateTimeDigitSet(),
                                KLocale::DateTimeFormatStandard standard = KLocale::KdeFormat) const;
 
     virtual QString formatDateTime(const KDateTime &fromDateTime,
                                    const QString &toFormat,
                                    KLocale::TimeFormatOptions timeOptions = 0,
-                                   const KCalendarSystem *calendar  = KGlobal::locale()->calendar(),
-                                   const KLocale *locale = KGlobal::locale(),
-                                   KLocale::DigitSet digitSet = KGlobal::locale()->dateTimeDigitSet(),
+                                   const KCalendarSystem *calendar  = KLocale::global()->calendar(),
+                                   const KLocale *locale = KLocale::global(),
+                                   KLocale::DigitSet digitSet = KLocale::global()->dateTimeDigitSet(),
                                    KLocale::DateTimeFormatStandard standard = KLocale::KdeFormat) const;
 
 private:

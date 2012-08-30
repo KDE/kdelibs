@@ -2985,7 +2985,7 @@ void KDateTimeTest::dstShifts()
 void KDateTimeTest::strings_iso8601()
 {
     KTimeZone london = KSystemTimeZones::zone("Europe/London");
-    bool decpt = KGlobal::locale()->decimalSymbol() == QLatin1String(".");   // whether this locale uses '.' as decimal symbol
+    bool decpt = KLocale::global()->decimalSymbol() == QLatin1String(".");   // whether this locale uses '.' as decimal symbol
 
     // Ensure that local time is different from UTC and different from 'london'
     QByteArray originalZone = qgetenv("TZ");   // save the original local time zone
@@ -3629,7 +3629,7 @@ void KDateTimeTest::strings_qttextdate()
 
 void KDateTimeTest::strings_format()
 {
-    KCalendarSystem* calendar = KCalendarSystem::create(QString("gregorian"), KGlobal::locale());
+    KCalendarSystem* calendar = KCalendarSystem::create(QString("gregorian"), KLocale::global());
     KTimeZone london = KSystemTimeZones::zone("Europe/London");
     KTimeZone paris  = KSystemTimeZones::zone("Europe/Paris");
     KTimeZone berlin = KSystemTimeZones::zone("Europe/Berlin");

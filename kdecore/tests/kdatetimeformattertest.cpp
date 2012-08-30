@@ -38,9 +38,9 @@ QTEST_KDEMAIN_CORE_WITH_COMPONENTNAME(KDateTimeFormatterTest, "kdecalendarsystem
 
 void KDateTimeFormatterTest::testFormatDateTimePosix()
 {
-    KGlobal::locale()->setLanguage(QStringList("en_US"));
-    KGlobal::locale()->setCalendarSystem(KLocale::QDateCalendar);
-    KGlobal::locale()->setDateFormatShort("%y-%m-%d");
+    KLocale::global()->setLanguage(QStringList("en_US"));
+    KLocale::global()->setCalendarSystem(KLocale::QDateCalendar);
+    KLocale::global()->setDateFormatShort("%y-%m-%d");
 
     KDateTimeFormatter formatter;
 
@@ -334,9 +334,9 @@ void KDateTimeFormatterTest::testFormatDateTimePosix()
 
 void KDateTimeFormatterTest::testFormatUnicode()
 {
-    KGlobal::locale()->setLanguage(QStringList("en_US"));
-    KGlobal::locale()->setCalendarSystem(KLocale::QDateCalendar);
-    KGlobal::locale()->setDateFormatShort("%y-%m-%d");
+    KLocale::global()->setLanguage(QStringList("en_US"));
+    KLocale::global()->setCalendarSystem(KLocale::QDateCalendar);
+    KLocale::global()->setDateFormatShort("%y-%m-%d");
 
     KDateTimeFormatter formatter;
 
@@ -369,5 +369,5 @@ void KDateTimeFormatterTest::testFormatUnicode()
 
 void KDateTimeFormatterTest::compareFormatUnicode(KDateTimeFormatter formatter, const KDateTime &testDateTime, const QString &testFormat)
 {
-    QCOMPARE(formatter.formatDateTime(testDateTime, testFormat, 0, KGlobal::locale()->calendar(), KGlobal::locale(), KGlobal::locale()->dateTimeDigitSet(), KLocale::UnicodeFormat), testDateTime.dateTime().toString(testFormat));
+    QCOMPARE(formatter.formatDateTime(testDateTime, testFormat, 0, KLocale::global()->calendar(), KGlobal::locale(), KGlobal::locale()->dateTimeDigitSet(), KLocale::UnicodeFormat), testDateTime.dateTime().toString(testFormat));
 }

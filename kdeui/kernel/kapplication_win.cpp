@@ -41,8 +41,8 @@
 */
 void KApplication_init_windows()
 {
-	//QString qt_transl_file = ::locate( "locale", KGlobal::locale()->language()
-	//	+ "/LC_MESSAGES/qt_" + KGlobal::locale()->language() + ".qm" );
+	//QString qt_transl_file = ::locate( "locale", KLocale::global()->language()
+	//	+ "/LC_MESSAGES/qt_" + KLocale::global()->language() + ".qm" );
 
 	QString qt_transl_file = QString("qt_") + QLocale::system().name();
 	qt_transl_file.truncate(5);

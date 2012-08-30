@@ -128,7 +128,7 @@ KSwitchLanguageDialog::KSwitchLanguageDialog( QWidget *parent )
 
     if (!count)
     {
-        d->addLanguageButton(KGlobal::locale()->defaultLanguage(), true);
+        d->addLanguageButton(KLocale::global()->defaultLanguage(), true);
     }
 
     QHBoxLayout *addButtonHorizontalLayout = new QHBoxLayout();
@@ -198,7 +198,7 @@ void KSwitchLanguageDialog::languageOnButtonChanged(const QString & languageCode
         {
             //update all buttons which have matching id
             //might update buttons which were not changed, but well...
-            languageButton->setText(KGlobal::locale()->languageCodeToName(languageCode));
+            languageButton->setText(KLocale::global()->languageCodeToName(languageCode));
         }
     }
 #endif
@@ -230,7 +230,7 @@ void KSwitchLanguageDialog::slotOk()
             "ApplicationLanguageChangedWarning" //dontShowAgainName
             );
 
-	KGlobal::locale()->setLanguage(d->applicationLanguageList());
+	KLocale::global()->setLanguage(d->applicationLanguageList());
         QEvent ev(QEvent::LanguageChange);
         QApplication::sendEvent(qApp, &ev);
     }
@@ -258,7 +258,7 @@ void KSwitchLanguageDialog::slotDefault()
             "ApplicationLanguageChangedWarning" //dontShowAgainName
             );
 
-        KGlobal::locale()->setLanguage(QStringList() << language);
+        KLocale::global()->setLanguage(QStringList() << language);
         QEvent ev(QEvent::LanguageChange);
         QApplication::sendEvent(qApp, &ev);
     }
@@ -277,7 +277,7 @@ KSwitchLanguageDialogPrivate::KSwitchLanguageDialogPrivate(
 
 void KSwitchLanguageDialogPrivate::fillApplicationLanguages(KLanguageButton *button)
 {
-    KLocale *locale = KGlobal::locale();
+    KLocale *locale = KLocale::global();
     const QStringList allLanguages = locale->allLanguagesList();
     for ( int i = 0, count = allLanguages.count(); i < count; ++i )
     {
@@ -304,10 +304,10 @@ QStringList KSwitchLanguageDialogPrivate::applicationLanguageList()
     }
     if (languagesList.isEmpty())
     {
-      languagesList = KGlobal::locale()->languageList();
+      languagesList = KLocale::global()->languageList();
     }
 
-    KLocale *locale = KGlobal::locale();
+    KLocale *locale = KLocale::global();
     for (int i = 0; i < languagesList.count();)
     {
       if (!locale->isApplicationTranslatedInto(languagesList[i]))

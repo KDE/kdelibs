@@ -1436,7 +1436,7 @@ QString KDateTime::toString(const QString &format) const
     if (!isValid())
         return QString();
     enum { TZNone, UTCOffsetShort, UTCOffset, UTCOffsetColon, TZAbbrev, TZName };
-    KLocale *locale = KGlobal::locale();
+    KLocale *locale = KLocale::global();
     KCalendarSystemQDate calendar(locale);
     QString result;
     QString s;
@@ -1752,7 +1752,7 @@ QString KDateTime::toString(TimeFormat format) const
                 {
                     // Comma is preferred by ISO8601 as the decimal point symbol,
                     // so use it unless '.' is the symbol used in this locale or we don't have a locale.
-                    KLocale *locale = KGlobal::locale();
+                    KLocale *locale = KLocale::global();
                     result += (locale && locale->decimalSymbol() == QLatin1String(".")) ? QLatin1Char('.') : QLatin1Char(',');
                     result += s.sprintf("%03d", d->dt().time().msec());
                 }
@@ -2493,7 +2493,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
     zoneAbbrev.clear();
 
     enum { TZNone, UTCOffset, UTCOffsetColon, TZAbbrev, TZName };
-    KLocale *locale = KGlobal::locale();
+    KLocale *locale = KLocale::global();
     KCalendarSystemQDate calendar(locale);
     int zone;
     int s = 0;

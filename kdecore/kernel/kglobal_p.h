@@ -53,7 +53,7 @@ public:
 #endif
                               ) const
     {
-        return KGlobal::locale()->translateQt(context, sourceText, message);
+        return KLocale::global()->translateQt(context, sourceText, message);
     }
 
     virtual bool isEmpty() const

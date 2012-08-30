@@ -1320,8 +1320,8 @@ bool KToolBar::eventFilter(QObject * watched, QEvent * event)
             if (event->type() == QEvent::Show || event->type() == QEvent::Paint || event->type() == QEvent::EnabledChange) {
                 QAction *act = tb->defaultAction();
                 if (act) {
-                    const QString text = KGlobal::locale()->removeAcceleratorMarker(act->iconText().isEmpty() ? act->text() : act->iconText());
-                    const QString toolTip = KGlobal::locale()->removeAcceleratorMarker(act->toolTip());
+                    const QString text = KLocale::global()->removeAcceleratorMarker(act->iconText().isEmpty() ? act->text() : act->iconText());
+                    const QString toolTip = KLocale::global()->removeAcceleratorMarker(act->toolTip());
                     // Filtering messages requested by translators (scripting).
                     tb->setText(i18nc("@action:intoolbar Text label of toolbar button", "%1", text));
                     tb->setToolTip(i18nc("@info:tooltip Tooltip of toolbar button", "%1", toolTip));
