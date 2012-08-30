@@ -46,6 +46,7 @@
 #include <kdefakes.h>
 
 #include <config-kdeui.h>
+#include <config-ksycoca.h>
 
 #include <time.h>
 #include <unistd.h>

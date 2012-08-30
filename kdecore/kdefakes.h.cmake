@@ -220,6 +220,4 @@ int getgrouplist(const char *, gid_t , gid_t *, int *);
 #cmakedefine01 TIME_WITH_SYS_TIME
 #cmakedefine01 HAVE_DIRENT_D_TYPE
 #cmakedefine01 GETMNTINFO_USES_STATVFS
-#cmakedefine01 HAVE_MMAP
-#cmakedefine01 HAVE_MADVISE 
 #endif /* KDEFAKES_H */
