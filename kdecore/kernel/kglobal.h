@@ -439,7 +439,7 @@ namespace KGlobal
      * done in the main thread. However KApplication takes care of this, so this
      * is only needed when not using KApplication.
      */
-    KDECORE_EXPORT KLocale *locale();
+    KDECORE_DEPRECATED_EXPORT KLocale *locale();
     /**
      * @internal
      * Returns whether KGlobal has a valid KLocale object

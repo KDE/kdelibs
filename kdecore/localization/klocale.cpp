@@ -368,9 +368,16 @@ QString KLocale::formatDate(const QDate &date, KLocale::DateFormat format) const
     return d->formatDate(date, format);
 }
 
-void KLocale::setMainCatalog(const char *catalog)
+void KLocale::setMainCatalog(const QString &catalog)
 {
     KLocalePrivate::setMainCatalog(catalog);
+}
+
+Q_GLOBAL_STATIC_WITH_ARGS(KLocale, s_global, (KLocalePrivate::mainCatalog()))
+
+KLocale * KLocale::global()
+{
+    return s_global();
 }
 
 double KLocale::readNumber(const QString &_str, bool * ok) const

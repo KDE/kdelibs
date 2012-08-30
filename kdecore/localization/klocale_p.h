@@ -271,10 +271,15 @@ protected:
 public:
 
     /**
-     * @internal Set the main catalog for *all* KLocales
+     * @internal
      * The worker of the same-name KLocale API function.
      */
-    static void setMainCatalog(const char *catalog);
+    static void setMainCatalog(const QString &catalog);
+
+    /**
+     * Main catalog name, see KLocale::global()
+     */
+    static QString mainCatalog();
 
     /**
      * Sets the active catalog for translation lookup.

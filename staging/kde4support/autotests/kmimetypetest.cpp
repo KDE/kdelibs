@@ -152,8 +152,6 @@ void KMimeTypeTest::initTestCase()
     KService::Ptr fakeApp = KService::serviceByStorageId("fake_nonkde_application.desktop");
     QVERIFY(fakeApp); // it should be found.
     QVERIFY(KService::serviceByDesktopPath(m_nonKdeApp)); // the desktoppath is the full path nowadays
-
-    KGlobal::locale();
 }
 
 void KMimeTypeTest::cleanupTestCase()

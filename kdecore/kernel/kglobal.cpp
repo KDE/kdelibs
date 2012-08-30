@@ -252,6 +252,7 @@ void KGlobal::newComponentData(const KComponentData &c)
     }
     d->mainComponent = c;
     KSharedConfig::setMainConfigName(c.aboutData()->appName() + QLatin1String("rc"));
+    KLocale::setMainCatalog(c.catalogName());
     KGlobal::setActiveComponent(c);
 }
 

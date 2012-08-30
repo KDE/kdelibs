@@ -21,7 +21,6 @@
 
 #include "kpluginfactory.h"
 #include "kpluginfactory_p.h"
-#include <kglobal.h>
 #include <klocale.h>
 
 #include <QObjectCleanupHandler>
@@ -220,7 +219,7 @@ void KPluginFactory::setupTranslations()
     if (!d->componentData.isValid())
         return;
 
-    KGlobal::locale()->insertCatalog(d->componentData.catalogName());
+    KLocale::global()->insertCatalog(d->componentData.catalogName());
 }
 
 void KPluginFactory::setComponentData(const KComponentData &kcd)

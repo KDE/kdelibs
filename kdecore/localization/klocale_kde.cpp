@@ -48,11 +48,11 @@
 #include <QtCore/QHash>
 #include <QtCore/QMutexLocker>
 #include <QtCore/QStringList>
+#include <QCoreApplication>
 #include <QDir>
 #include <qstandardpaths.h>
 
 #include "kcatalog_p.h"
-#include "kglobal.h"
 #include "kconfig.h"
 #include "kdatetime.h"
 #include "kcalendarsystem.h"
@@ -128,7 +128,7 @@ KLocalePrivate &KLocalePrivate::operator=(const KLocalePrivate &rhs)
 
 KSharedConfig::Ptr KLocalePrivate::config()
 {
-    if (m_config != KSharedConfig::Ptr()) {
+    if (!m_config.isNull()) {
         return m_config;
     } else {
         return KSharedConfig::openConfig();
@@ -294,19 +294,12 @@ void KLocalePrivate::initConfig(KConfig *config)
 
 void KLocalePrivate::initMainCatalogs()
 {
-    KLocaleStaticData *s = staticData();
     QMutexLocker lock(kLocaleMutex());
 
-    if (!s->maincatalog.isEmpty()) {
-        // If setMainCatalog was called, then we use that
-        // (e.g. korgac calls setMainCatalog("korganizer") to use korganizer.po)
-        m_catalogName = s->maincatalog;
-    }
-
     if (m_catalogName.isEmpty()) {
-        qDebug() << "KLocale instance created called without valid "
-                << "catalog! Give an argument or call setMainCatalog "
-                << "before init";
+        qWarning() << "KLocale instance created called without valid "
+                       "catalog! Give an argument or call setMainCatalog "
+                       "before init";
     } else {
         // do not use insertCatalog here, that would already trigger updateCatalogs
         m_catalogNames.append(KCatalogName(m_catalogName));   // application catalog
@@ -1847,10 +1840,27 @@ QString KLocalePrivate::formatDate(const QDate &date, KLocale::DateFormat format
     return calendar()->formatDate(date, format);
 }
 
-void KLocalePrivate::setMainCatalog(const char *catalog)
+QString KLocalePrivate::mainCatalog()
 {
     KLocaleStaticData *s = staticData();
-    s->maincatalog = QString::fromUtf8(catalog);
+    // If setMainCatalog was called, then we use that
+    // (e.g. korgac calls setMainCatalog("korganizer") to use korganizer.po)
+    if (!s->maincatalog.isEmpty()) {
+        return s->maincatalog;
+    }
+    QString appName = QCoreApplication::applicationName();
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    if (appName.isEmpty()) {
+        appName = qAppName();
+    }
+#endif
+    return appName;
+}
+
+void KLocalePrivate::setMainCatalog(const QString& catalog)
+{
+    KLocaleStaticData *s = staticData();
+    s->maincatalog = catalog;
 }
 
 double KLocalePrivate::readNumber(const QString &_str, bool * ok) const

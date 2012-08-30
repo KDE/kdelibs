@@ -53,13 +53,13 @@ class KLocalePrivate;
   * KLocale supports translating, as well as specifying the format
   * for numbers, currency, time, and date.
   *
-  * Use KGlobal::locale() to get pointer to the global KLocale object,
+  * Use KLocale::global() to get pointer to the global KLocale object,
   * containing the applications current locale settings.
   *
   * For example, to format the date May 17, 1995 in the current locale, use:
   *
   * \code
-  *   QString date = KGlobal::locale()->formatDate(QDate(1995,5,17));
+  *   QString date = KLocale::global()->formatDate(QDate(1995,5,17));
   * \endcode
   *
   * @author Stephan Kulow <coolo@kde.org>, Preston Brown <pbrown@kde.org>,
@@ -1915,14 +1915,30 @@ public:
                             QString &modifier, QString &charset);
 
     /**
-     * Use this as main catalog for *all* KLocales, if not the appname
+     * Use this as main catalog for KLocale::global(), if not the appname
      * will be used. This function is best to be the very first instruction
      * in your program's main function as it only has an effect before the
      * first KLocale object is created.
      *
      * @param catalog Catalog to override all other main Catalogs.
      */
-    static void setMainCatalog(const char *catalog);
+    static void setMainCatalog(const QString &catalog);
+
+    /**
+     * Return the global KLocale instance.
+     * This is the one used by default by all i18n calls.
+     * It is initialized with the application name as main catalog,
+     * this can be changed with setMainCatalog().
+     *
+     * Note: in multi-threaded programs, you should call KLocale::global()
+     * in the main thread (e.g. in main(), after creating the QCoreApplication
+     * and setting the main component), to ensure that the initialization is
+     * done in the main thread. However KApplication takes care of this, so this
+     * is only needed when not using KApplication.
+     *
+     * @since 5.0
+     */
+    static KLocale* global();
 
     /**
      * Returns the name of the internal language.
