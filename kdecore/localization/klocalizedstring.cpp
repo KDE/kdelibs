@@ -273,11 +273,7 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale,
         if (   !s->loadTranscriptCalled && !strans.isEmpty()
             && locale && locale->useTranscript())
         {
-            if (KGlobal::hasMainComponent())
-                loadTranscript();
-            else
-                kDebug(173) << QString::fromLatin1("Scripted message {%1} before transcript engine can be loaded.")
-                                      .arg(shortenMessage(trans));
+            loadTranscript();
         }
     }
     else if (cdpos < 0)

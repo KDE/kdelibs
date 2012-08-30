@@ -869,10 +869,8 @@ void KLocalePrivate::removeCatalog(const QString &catalog)
         return;
     }
     m_catalogNames.removeAt(pos);
-    if (KGlobal::hasMainComponent()) {
-        // walk through the KCatalog instances and weed out everything we no longer need
-        updateCatalogs();
-    }
+    // walk through the KCatalog instances and weed out everything we no longer need
+    updateCatalogs();
 }
 
 void KLocalePrivate::setActiveCatalog(const QString &catalog)
