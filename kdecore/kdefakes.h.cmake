@@ -27,7 +27,6 @@
    You should include this file in any .cpp file that uses any one of these 
    functions:
      strlcat, strlcpy, 
-     strcasestr,
      unsetenv, 
      usleep, initgroups, 
      random, srandom  (this is for KRandom itself, prefer using KRandom in any other code)
@@ -54,17 +53,6 @@ unsigned long strlcat(char*, const char*, unsigned long);
 extern "C" {
 #endif
 unsigned long strlcpy(char*, const char*, unsigned long);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-#cmakedefine01 HAVE_STRCASESTR_PROTO
-#if ! HAVE_STRCASESTR_PROTO
-#ifdef __cplusplus
-extern "C" {
-#endif
-char *strcasestr(const char *str1, const char *str2);
 #ifdef __cplusplus
 }
 #endif
