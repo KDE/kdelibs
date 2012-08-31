@@ -443,7 +443,7 @@ bool KPixmapCache::Private::mmapFile(const QString& filename, MmapInfo* info, in
         return false;
     }
     info->indexHeader = reinterpret_cast<KPixmapCacheIndexHeader *>(indexMem);
-#ifdef HAVE_MADVISE
+#if HAVE_MADVISE
     posix_madvise(indexMem, info->size, POSIX_MADV_WILLNEED);
 #endif
 
