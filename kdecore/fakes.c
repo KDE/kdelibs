@@ -42,61 +42,6 @@
 #define KDE_mkdir mkdir
 
 
-#if !HAVE_UNSETENV
-
-#if HAVE_ALLOCA_H
-#include <alloca.h>
-#endif
-#if HAVE_STRING_H
-#include <string.h>
-#endif
-#if HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-#if HAVE_ERRNO_H
-#include <errno.h>
-#endif
-#if HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
-#ifndef environ
-extern char ** environ;
-#endif
-
-KDECORE_EXPORT int unsetenv (const char *name)
-{
-  size_t len;
-  char **ep;
-
-  if (name == NULL || *name == '\0' || strchr (name, '=') != NULL)
-    {
-      errno = EINVAL;
-      return -1;
-    }
-
-  len = strlen (name);
-
-  ep = environ;
-  while (*ep != NULL)
-    if (!strncmp (*ep, name, len) && (*ep)[len] == '=')
-      {
-	/* Found it.  Remove this pointer by moving later ones back.  */
-	char **dp = ep;
-
-	do
-	  dp[0] = dp[1];
-	while (*dp++);
-	/* Continue the loop in case NAME appears again.  */
-      }
-    else
-      ++ep;
-
-  return 0;
-}
-
-#endif /* !HAVE_UNSETENV */
-
 #if ! HAVE_USLEEP
 
 #if TIME_WITH_SYS_TIME

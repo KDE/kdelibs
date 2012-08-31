@@ -27,7 +27,6 @@
    You should include this file in any .cpp file that uses any one of these 
    functions:
      strlcat, strlcpy, 
-     unsetenv, 
      usleep, initgroups, 
      random, srandom  (this is for KRandom itself, prefer using KRandom in any other code)
      mkdtemp (this is for KTempDir itself, prefer using KTempDir everywhere else)
@@ -75,17 +74,6 @@ long int random(void);
 extern "C" {
 #endif
 void srandom(unsigned int);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-#cmakedefine01 HAVE_UNSETENV_PROTO
-#if ! HAVE_UNSETENV_PROTO
-#ifdef __cplusplus
-extern "C" {
-#endif
-int unsetenv (const char *);
 #ifdef __cplusplus
 }
 #endif
@@ -170,7 +158,6 @@ int getgrouplist(const char *, gid_t , gid_t *, int *);
 #endif
 #endif
 
-#cmakedefine01 HAVE_UNSETENV
 #cmakedefine01 HAVE_ALLOCA_H
 #cmakedefine01 HAVE_STRING_H
 #cmakedefine01 HAVE_STDLIB_H
