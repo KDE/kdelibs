@@ -20,8 +20,9 @@
 
 #include "kmountpoint.h"
 
-#include <kdefakes.h>
 #include <stdlib.h>
+
+#include <config-kmountpoint.h>
 
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
@@ -38,7 +39,7 @@
 #if HAVE_SYS_MNTTAB_H
 #include <sys/mnttab.h>
 #endif
-#if HAVE_MNTENT_H
+#if HAVE_MNTENT_H 
 #include <mntent.h>
 #elif HAVE_SYS_MNTENT_H
 #include <sys/mntent.h>

@@ -182,42 +182,23 @@ int getgrouplist(const char *, gid_t , gid_t *, int *);
 #endif
 #endif
 
-#cmakedefine01 HAVE_SYS_TIME_H
-#cmakedefine01 HAVE_TIME_H
-#cmakedefine01 HAVE_ALLOCA_H 
-#cmakedefine01 HAVE_STRING_H
-#cmakedefine01 HAVE_STRINGS_H
-#cmakedefine01 HAVE_STDLIB_H
-#cmakedefine01 HAVE_UNISTD_H
-#cmakedefine01 HAVE_SYS_STAT_H
-#cmakedefine01 HAVE_SYS_TYPES_H
-#cmakedefine01 HAVE_MKSTEMPS
-#cmakedefine01 HAVE_MKSTEMP
-#cmakedefine01 HAVE_MKSTEMPS 
 #cmakedefine01 HAVE_UNSETENV
+#cmakedefine01 HAVE_ALLOCA_H
+#cmakedefine01 HAVE_STRING_H
+#cmakedefine01 HAVE_STDLIB_H
+#cmakedefine01 HAVE_ERRNO_H
+#cmakedefine01 HAVE_UNISTD_H
+#cmakedefine01 HAVE_USLEEP
+#cmakedefine01 TIME_WITH_SYS_TIME
 #cmakedefine01 HAVE_SYS_SELECT_H
 #cmakedefine01 HAVE_RANDOM
 #cmakedefine01 HAVE_SETEUID
-#cmakedefine01 HAVE_ERRNO_H
-#cmakedefine01 HAVE_USLEEP
+#cmakedefine01 HAVE_MKSTEMPS
+#cmakedefine01 HAVE_SYS_TYPES_H
+#cmakedefine01 HAVE_SYS_STAT_H
+#cmakedefine01 HAVE_STRINGS_H
+#cmakedefine01 HAVE_MKSTEMP
 #cmakedefine01 HAVE_MKDTEMP
+#cmakedefine01 HAVE_MKSTEMPS
 
-/* FIXME: Move in a config-kdecore.h file ?*/
-#cmakedefine01 HAVE_BACKTRACE
-#cmakedefine01 HAVE_VOLMGT
-#cmakedefine01 HAVE_SYS_MNTTAB_H
-#cmakedefine01 HAVE_MNTENT_H
-#cmakedefine01 HAVE_SYS_MNTENT_H
-#cmakedefine01 HAVE_SYS_MOUNT_H
-#cmakedefine01 HAVE_SYS_PARAM_H
-#cmakedefine01 HAVE_FSTAB_H
-#cmakedefine01 HAVE_GETMNTINFO
-#cmakedefine01 HAVE_SETMNTENT
-#cmakedefine01 HAVE_LIMITS_H
-#cmakedefine01 HAVE_X11
-#cmakedefine01 ENABLE_NLS
-#cmakedefine01 HAVE_SYS_TIME_H
-#cmakedefine01 TIME_WITH_SYS_TIME
-#cmakedefine01 HAVE_DIRENT_D_TYPE
-#cmakedefine01 GETMNTINFO_USES_STATVFS
 #endif /* KDEFAKES_H */

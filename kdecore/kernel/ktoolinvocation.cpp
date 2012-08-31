@@ -33,6 +33,7 @@
 #include <QThread>
 #include <qstandardpaths.h>
 #include <kdefakes.h>
+#include <config-kernel.h>
 
 #include <errno.h>
 

@@ -29,9 +29,21 @@ include(date/ConfigureChecks.cmake)
 configure_file(date/config-date.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/date/config-date.h)
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/date )
 
-# Configure checks for localization
-configure_file(localization/config-localization.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-localization.h)
+# Configure checks for io/
+include(io/ConfigureChecks.cmake)
+configure_file(io/config-io.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/io/config-io.h)
+configure_file(io/config-kmountpoint.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/io/config-kmountpoint.h)
+include_directories( ${CMAKE_CURRENT_BINARY_DIR}/io )
 
+# Configure checks for kernel/
+include(kernel/ConfigureChecks.cmake)
+configure_file(kernel/config-kernel.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kernel/config-kernel.h)
+include_directories( ${CMAKE_CURRENT_BINARY_DIR}/kernel )
+
+# Configure checks for localization
+include(localization/ConfigureChecks.cmake)
+configure_file(localization/config-localization.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/localization/config-localization.h)
+include_directories( ${CMAKE_CURRENT_BINARY_DIR}/localization )
 
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 include_directories( ${ZLIB_INCLUDE_DIR} )

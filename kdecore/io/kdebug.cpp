@@ -32,6 +32,7 @@
 #endif
 
 #include "kdebug.h"
+#include <config-io.h>
 #include <QThreadStorage>
 
 #ifdef Q_OS_WIN
@@ -50,7 +51,7 @@
 #undef kBacktrace
 #endif
 
-#include <kdefakes.h>
+//#include <kdefakes.h>
 
 #if HAVE_SYS_TIME_H
 #include <sys/time.h>

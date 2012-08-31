@@ -38,6 +38,7 @@
 
 #include <config-prefix.h>
 #include <config-kstandarddirs.h>
+#include <config-kernel.h>
 #include <kdefakes.h>
 #include <stdlib.h>
 #include <assert.h>

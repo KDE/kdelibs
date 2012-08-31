@@ -1,0 +1,1 @@
+macro_bool_to_01(LIBINTL_FOUND ENABLE_NLS)

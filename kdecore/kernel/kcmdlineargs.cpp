@@ -19,6 +19,7 @@
 #include "kcmdlineargs.h"
 
 #include <kdefakes.h>
+#include <config-kernel.h>
 
 #include <sys/param.h>
 

@@ -31,6 +31,7 @@
 #include <QThread>
 
 #include <kdefakes.h>
+#include <config-kernel.h>
 
 #if HAVE_SYS_STAT_H
 #include <sys/stat.h>

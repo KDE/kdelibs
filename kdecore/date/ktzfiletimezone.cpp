@@ -21,6 +21,7 @@
 #include "ktzfiletimezone.h"
 
 #include <kdefakes.h>
+#include <config-date.h>
 
 #if HAVE_SYS_TIME_H
 #include <sys/time.h>
