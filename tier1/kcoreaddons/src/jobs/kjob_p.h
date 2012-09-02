@@ -23,7 +23,7 @@
 #define KJOB_P_H
 
 #include "kjob.h"
-#include <QMap>
+#include <QtCore/QMap>
 
 class KJobUiDelegate;
 class QTimer;

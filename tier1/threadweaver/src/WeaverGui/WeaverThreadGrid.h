@@ -31,7 +31,7 @@
 
 #include <QtCore/QMap>
 #include <QtCore/QSize>
-#include <QFrame>
+#include <QtWidgets/QFrame>
 
 #include <WeaverObserver.h>
 #include <ThreadWeaver.h>

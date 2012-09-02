@@ -22,8 +22,8 @@
 #ifndef RECURSIVE_PM_WIDGET_H
 #define RECURSIVE_PM_WIDGET_H
 
-#include <QWidget>
-#include <QRegExp>
+#include <QtWidgets/QWidget>
+#include <QtCore/QRegExp>
 
 #include "krecursivefilterproxymodel.h"
 

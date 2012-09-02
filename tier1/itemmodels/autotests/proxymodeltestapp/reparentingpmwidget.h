@@ -23,7 +23,7 @@
 #ifndef REPARENTINGPM_WIDGET_H
 #define REPARENTINGPM_WIDGET_H
 
-#include <QWidget>
+#include <QtWidgets/QWidget>
 
 #include "kreparentingproxymodel.h"
 

@@ -20,7 +20,7 @@
 #ifndef DYNAMICTREEWIDGET_H
 #define DYNAMICTREEWIDGET_H
 
-#include <QWidget>
+#include <QtWidgets/QWidget>
 
 #include "proxymodeltestsuite_export.h"
 

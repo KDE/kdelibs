@@ -22,7 +22,7 @@
 #ifndef PROXYITEMSELECTIONWIDGET_H
 #define PROXYITEMSELECTIONWIDGET_H
 
-#include <QWidget>
+#include <QtWidgets/QWidget>
 
 class ProxyItemSelectionWidget : public QWidget
 {

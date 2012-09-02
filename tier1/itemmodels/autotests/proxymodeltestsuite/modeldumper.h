@@ -22,7 +22,7 @@
 #ifndef MODELDUMPER_H
 #define MODELDUMPER_H
 
-#include <QIODevice>
+#include <QtCore/QIODevice>
 
 #include "proxymodeltestsuite_export.h"
 

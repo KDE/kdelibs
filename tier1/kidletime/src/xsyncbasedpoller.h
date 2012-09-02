@@ -21,7 +21,7 @@
 
 #include "abstractsystempoller.h"
 
-#include <QDebug>
+#include <QtCore/QDebug>
 
 #include <config-kidletime.h>
 

@@ -20,7 +20,7 @@
 #ifndef KREPARENTINGPROXYMODEL_H
 #define KREPARENTINGPROXYMODEL_H
 
-#include <QAbstractProxyModel>
+#include <QtCore/QAbstractProxyModel>
 
 class KReparentingProxyModelPrivate;
 

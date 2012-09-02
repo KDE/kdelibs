@@ -24,7 +24,7 @@
 
 #include "itemmodels_export.h"
 
-#include <QObject>
+#include <QtCore/QObject>
 
 class QItemSelectionModel;
 class QAbstractItemView;

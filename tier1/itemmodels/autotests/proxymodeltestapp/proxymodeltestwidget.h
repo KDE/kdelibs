@@ -23,7 +23,7 @@
 #ifndef PROXYMODELTESTWIDGET_H
 #define PROXYMODELTESTWIDGET_H
 
-#include <QWidget>
+#include <QtWidgets/QWidget>
 
 class DynamicTreeModel;
 class ModelCommander;

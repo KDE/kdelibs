@@ -28,7 +28,7 @@
 #define   netwm_h
 
 #include <kwindowsystem_export.h>
-#include <QWidget>
+#include <QtWidgets/QWidget>
 #include <config-kwindowsystem.h>
 #if HAVE_X11
 #include <X11/Xlib.h>

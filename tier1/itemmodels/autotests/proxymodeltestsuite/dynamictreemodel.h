@@ -20,12 +20,12 @@
 #ifndef DYNAMICTREEMODEL_H
 #define DYNAMICTREEMODEL_H
 
-#include <QAbstractItemModel>
+#include <QtCore/QAbstractItemModel>
 
-#include <QHash>
-#include <QList>
+#include <QtCore/QHash>
+#include <QtCore/QList>
 
-#include <QDebug>
+#include <QtCore/QDebug>
 
 #include "indexfinder.h"
 

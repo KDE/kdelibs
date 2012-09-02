@@ -21,7 +21,7 @@
 #ifndef KCAPACITYBAR_H
 #define KCAPACITYBAR_H
 
-#include <QWidget>
+#include <QtWidgets/QWidget>
 
 #include <kwidgetsaddons_export.h>
 

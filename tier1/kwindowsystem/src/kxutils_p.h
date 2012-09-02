@@ -21,8 +21,8 @@
 #ifndef KXUTILS_H
 #define KXUTILS_H
 
-#include <QWidget>
-#include <QPixmap>
+#include <QtWidgets/QWidget>
+#include <QtGui/QPixmap>
 #include <config-kwindowsystem.h>
 
 #if HAVE_X11

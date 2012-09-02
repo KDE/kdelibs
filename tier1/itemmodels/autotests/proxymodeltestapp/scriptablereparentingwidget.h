@@ -20,8 +20,8 @@
 #ifndef SCRIPTABLEREPARENTINGWIDGET_H
 #define SCRIPTABLEREPARENTINGWIDGET_H
 
-#include <QWidget>
-#include <QScriptValue>
+#include <QtWidgets/QWidget>
+#include <QtScript/QScriptValue>
 
 #include "kreparentingproxymodel.h"
 

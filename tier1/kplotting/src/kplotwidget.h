@@ -23,7 +23,7 @@
 
 #include <kplotting_export.h>
 
-#include <QFrame>
+#include <QtWidgets/QFrame>
 #include <QtCore/QList>
 
 class KPlotAxis;

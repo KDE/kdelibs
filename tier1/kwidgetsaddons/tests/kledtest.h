@@ -1,7 +1,7 @@
 #ifndef kledtest_h
 #define kledtest_h
 
-#include <QWidget>
+#include <QtWidgets/QWidget>
 #include <QtCore/QTimer>
 #include <stdlib.h>
 #include <kled.h>

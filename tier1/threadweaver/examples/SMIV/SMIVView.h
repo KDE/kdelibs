@@ -17,7 +17,7 @@
 #ifndef SMIVView_H
 #define SMIVView_H
 
-#include <QListView>
+#include <QtWidgets/QListView>
 
 class SMIVView : public QListView
 {

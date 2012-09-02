@@ -22,7 +22,7 @@
 
 #include <kwidgetsaddons_export.h>
 
-#include <QWidget>
+#include <QtWidgets/QWidget>
 
 class QColor;
 

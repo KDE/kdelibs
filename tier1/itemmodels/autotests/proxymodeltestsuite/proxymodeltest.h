@@ -20,11 +20,11 @@
 #ifndef PROXY_MODEL_TEST_H
 #define PROXY_MODEL_TEST_H
 
-#include <QtTest>
-#include <QtCore>
-#include <qtestevent.h>
-#include <QItemSelectionRange>
-#include <QAbstractProxyModel>
+#include <QtTest/QtTest>
+#include <QtCore/QtCore>
+#include <QtTest/QTestEvent>
+#include <QtCore/QItemSelectionRange>
+#include <QtCore/QAbstractProxyModel>
 
 #include "dynamictreemodel.h"
 #include "indexfinder.h"

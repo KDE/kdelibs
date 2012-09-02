@@ -22,8 +22,8 @@
 
 #include <kwidgetsaddons_export.h>
 
-#include <QWidget>
-#include <QPixmap>
+#include <QtWidgets/QWidget>
+#include <QtGui/QPixmap>
 
 /**
  * KXYSelector is the base class for other widgets which

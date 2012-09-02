@@ -26,7 +26,7 @@
 
 #include "itemmodels_export.h"
 
-#include <QItemSelection>
+#include <QtCore/QItemSelection>
 
 class KCheckableProxyModelPrivate;
 

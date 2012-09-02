@@ -18,7 +18,7 @@
 #ifndef TESTPLOT_WIDGET_H
 #define TESTPLOT_WIDGET_H
 
-#include <QMainWindow>
+#include <QtWidgets/QMainWindow>
 
 class QComboBox;
 class QVBoxLayout;

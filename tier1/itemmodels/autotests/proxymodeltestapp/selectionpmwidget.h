@@ -22,7 +22,7 @@
 #ifndef SELECTION_PM_WIDGET_H
 #define SELECTION_PM_WIDGET_H
 
-#include <QWidget>
+#include <QtWidgets/QWidget>
 
 class QTreeView;
 

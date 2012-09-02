@@ -22,7 +22,7 @@
 #ifndef TESTAPPLICATION_H
 #define TESTAPPLICATION_H
 
-#include <QMainWindow>
+#include <QtWidgets/QMainWindow>
 
 class DynamicTreeModel;
 

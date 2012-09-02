@@ -21,11 +21,11 @@
 #ifndef SOLID_BACKENDS_UDISKS2_H
 #define SOLID_BACKENDS_UDISKS2_H
 
-#include <QMetaType>
-#include <QtDBus>
-#include <QVariant>
-#include <QMap>
-#include <QList>
+#include <QtCore/QMetaType>
+#include <QtDBus/QtDBus>
+#include <QtCore/QVariant>
+#include <QtCore/QMap>
+#include <QtCore/QList>
 
 typedef QList<QByteArray> QByteArrayList;
 Q_DECLARE_METATYPE(QByteArrayList)

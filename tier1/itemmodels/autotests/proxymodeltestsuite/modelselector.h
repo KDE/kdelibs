@@ -20,7 +20,7 @@
 #ifndef MODELSELECTOR_H
 #define MODELSELECTOR_H
 
-#include <QItemSelectionModel>
+#include <QtCore/QItemSelectionModel>
 
 #include <kselectionproxymodel.h>
 

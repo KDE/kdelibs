@@ -23,7 +23,7 @@
 #ifndef DESCENDANTPM_WIDGET_H
 #define DESCENDANTPM_WIDGET_H
 
-#include <QWidget>
+#include <QtWidgets/QWidget>
 
 class DynamicTreeModel;
 class QTreeView;

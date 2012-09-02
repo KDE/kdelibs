@@ -22,7 +22,7 @@
 #ifndef EVENTLOGGERREGISTER_H
 #define EVENTLOGGERREGISTER_H
 
-#include <QVector>
+#include <QtCore/QVector>
 
 #include <memory>
 

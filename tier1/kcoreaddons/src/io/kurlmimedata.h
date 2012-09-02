@@ -20,8 +20,8 @@
 #ifndef KURLMIMEDATA_H
 #define KURLMIMEDATA_H
 
-#include <QMap>
-#include <QUrl>
+#include <QtCore/QMap>
+#include <QtCore/QUrl>
 #include "kcoreaddons_export.h"
 QT_BEGIN_NAMESPACE
 class QMimeData;

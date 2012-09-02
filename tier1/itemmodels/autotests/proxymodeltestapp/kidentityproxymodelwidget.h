@@ -22,7 +22,7 @@
 #ifndef KIDENTITYPROXYMODELWIDGET_H
 #define KIDENTITYPROXYMODELWIDGET_H
 
-#include <QWidget>
+#include <QtWidgets/QWidget>
 
 class KIdentityProxyModelWidget : public QWidget
 {

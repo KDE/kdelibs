@@ -27,7 +27,7 @@ http://www.hackerbuero.org $
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
+#include <QtWidgets/QMainWindow>
 #include <Job.h>
 
 #include "ui_MainWindowUi.h"

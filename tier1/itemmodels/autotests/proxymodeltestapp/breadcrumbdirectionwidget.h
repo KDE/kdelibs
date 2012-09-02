@@ -22,7 +22,7 @@
 #ifndef BREADCRUMBDIRECTIONWIDGET_H
 #define BREADCRUMBDIRECTIONWIDGET_H
 
-#include <QWidget>
+#include <QtWidgets/QWidget>
 
 class BreadcrumbDirectionWidget : public QWidget
 {

@@ -22,8 +22,8 @@
 #ifndef LESSTHANWIDGET_H
 #define LESSTHANWIDGET_H
 
-#include <QWidget>
-#include <QItemSelectionModel>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QItemSelectionModel>
 
 #include "dynamictreemodel.h"
 

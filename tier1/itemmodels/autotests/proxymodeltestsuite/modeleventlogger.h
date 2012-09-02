@@ -22,8 +22,8 @@
 #ifndef MODELEVENTLOGGER_H
 #define MODELEVENTLOGGER_H
 
-#include <QAbstractItemModel>
-#include <QIODevice>
+#include <QtCore/QAbstractItemModel>
+#include <QtCore/QIODevice>
 
 #include "proxymodeltestsuite_export.h"
 

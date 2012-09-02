@@ -21,7 +21,7 @@
 #ifndef SOLID_BACKENDS_FSTAB_WATCHER_H
 #define SOLID_BACKENDS_FSTAB_WATCHER_H
 
-#include <QObject>
+#include <QtCore/QObject>
 
 class QFileSystemWatcher;
 class QFile;

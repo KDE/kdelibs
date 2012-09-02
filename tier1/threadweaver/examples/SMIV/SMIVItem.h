@@ -19,7 +19,7 @@
 
 #include <QtCore/QObject>
 
-#include <QImage>
+#include <QtGui/QImage>
 
 #include <ThreadWeaver.h>
 #include <JobSequence.h>

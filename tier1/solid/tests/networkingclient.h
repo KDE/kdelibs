@@ -21,8 +21,8 @@
 #ifndef KTESTNETWORKSTATUS_H
 #define KTESTNETWORKSTATUS_H
 
-#include <QApplication>
-#include <QMainWindow>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QMainWindow>
 
 #include <solid/networking.h>
 
