@@ -1627,6 +1627,14 @@ public:
                                    const QStyleOption *opt) const;
     bool eventFilter(QObject *, QEvent *);
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    int layoutSpacing(QSizePolicy::ControlType control1,
+                    QSizePolicy::ControlType control2, Qt::Orientation orientation,
+                    const QStyleOption *option = 0, const QWidget *widget = 0) const Q_DECL_OVERRIDE;
+
+    QIcon standardIcon(StandardPixmap standardIcon, const QStyleOption *option = 0,
+                                     const QWidget *widget = 0) const Q_DECL_OVERRIDE;
+#else
 protected Q_SLOTS:
     int layoutSpacingImplementation(QSizePolicy::ControlType control1,
                     QSizePolicy::ControlType control2, Qt::Orientation orientation,
@@ -1634,6 +1642,7 @@ protected Q_SLOTS:
 
     QIcon standardIconImplementation(StandardPixmap standardIcon, const QStyleOption *option = 0,
                                      const QWidget *widget = 0) const;
+#endif
 //@}
 private:
     KStylePrivate * const d;

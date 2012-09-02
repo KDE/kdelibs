@@ -98,6 +98,13 @@ QRect KdeUiProxyStyle::itemTextRect(const QFontMetrics &metrics, const QRect &re
     return style()->itemTextRect(metrics, rectangle, alignment, enabled, text);
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+int KdeUiProxyStyle::layoutSpacing(QSizePolicy::ControlType control1, QSizePolicy::ControlType control2, Qt::Orientation orientation, const QStyleOption *option, const QWidget *widget) const
+{
+    return style()->layoutSpacing(control1, control2, orientation, option, widget);
+}
+#endif
+
 int KdeUiProxyStyle::pixelMetric(PixelMetric metric, const QStyleOption *option, const QWidget *widget) const
 {
     return style()->pixelMetric(metric, option, widget);
