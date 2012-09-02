@@ -29,6 +29,9 @@ static const char collClassDef[] = "class %CollName : public QObject, public QDe
                                 "{\n"
                                 "	Q_OBJECT\n"
                                 "	Q_INTERFACES(QDesignerCustomWidgetCollectionInterface)\n"
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+                                "       Q_PLUGIN_METADATA(IID \"org.qt-project.Qt.QDesignerCustomWidgetInterface\")\n"
+#endif
                                 "public:\n"
                                 "	%CollName(QObject *parent = 0);\n"
                                 "	virtual ~%CollName() {}\n"
@@ -37,7 +40,10 @@ static const char collClassDef[] = "class %CollName : public QObject, public QDe
                                 "private:\n"
                                 "	QList<QDesignerCustomWidgetInterface*> m_plugins;\n"
                                 "};\n\n"
-                                "Q_EXPORT_PLUGIN2(%CollName, %CollName)\n\n";
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+                                "Q_EXPORT_PLUGIN2(%CollName, %CollName)\n\n"
+#endif
+                                ;
 
 static const char collClassImpl[] = "%CollName::%CollName(QObject *parent)\n"
                                 "	: QObject(parent)"
