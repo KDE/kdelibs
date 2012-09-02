@@ -19,7 +19,7 @@
 #ifndef ABSTRACTSYSTEMPOLLER_H
 #define ABSTRACTSYSTEMPOLLER_H
 
-#include <QtWidgets/QWidget>
+#include <QWidget>
 
 class AbstractSystemPoller : public QWidget
 {

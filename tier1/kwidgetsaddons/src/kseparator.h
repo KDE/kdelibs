@@ -21,7 +21,7 @@
 #define KSEPARATOR_H
 
 #include <kwidgetsaddons_export.h>
-#include <QtWidgets/QFrame>
+#include <QFrame>
 
 /**
  * Standard horizontal or vertical separator.

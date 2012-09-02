@@ -22,10 +22,10 @@
 #ifndef BREADCRUBS_WIDGET_H
 #define BREADCRUBS_WIDGET_H
 
-#include <QtWidgets/QWidget>
-#include <QtWidgets/QItemSelection>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QListView>
+#include <QWidget>
+#include <QItemSelection>
+#include <QLabel>
+#include <QListView>
 #include <kselectionproxymodel.h>
 
 #include "klinkitemselectionmodel.h"

@@ -25,7 +25,7 @@
 #ifndef KXERRORHANDLER_H
 #define KXERRORHANDLER_H
 
-#include <QtWidgets/QWidget>
+#include <QWidget>
 #include <QtGui/QWidgetList>
 #include <config-kwindowsystem.h>
 

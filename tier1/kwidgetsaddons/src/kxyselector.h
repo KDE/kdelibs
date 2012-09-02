@@ -22,7 +22,7 @@
 
 #include <kwidgetsaddons_export.h>
 
-#include <QtWidgets/QWidget>
+#include <QWidget>
 #include <QtGui/QPixmap>
 
 /**

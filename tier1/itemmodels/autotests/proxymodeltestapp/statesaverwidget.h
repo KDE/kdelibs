@@ -22,7 +22,7 @@
 #ifndef STATESAVERWIDGET_H
 #define STATESAVERWIDGET_H
 
-#include <QtWidgets/QWidget>
+#include <QWidget>
 
 #include "kviewstatesaver.h"
 

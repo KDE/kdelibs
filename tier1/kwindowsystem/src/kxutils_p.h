@@ -21,7 +21,7 @@
 #ifndef KXUTILS_H
 #define KXUTILS_H
 
-#include <QtWidgets/QWidget>
+#include <QWidget>
 #include <QtGui/QPixmap>
 #include <config-kwindowsystem.h>
 

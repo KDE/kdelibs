@@ -23,7 +23,7 @@
 
 #include <kwidgetsaddons_export.h>
 
-#include <QtWidgets/QAbstractSlider>
+#include <QAbstractSlider>
 
 /**
  * A ruler widget.

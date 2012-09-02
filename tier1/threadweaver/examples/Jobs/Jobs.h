@@ -17,7 +17,7 @@ $Id: Jobs.h 30 2005-08-16 16:16:04Z mirko $
 #ifndef Jobs_H
 #define Jobs_H
 
-#include <QtWidgets/QWidget>
+#include <QWidget>
 
 #include <Job.h>
 #include <ThreadWeaver.h>

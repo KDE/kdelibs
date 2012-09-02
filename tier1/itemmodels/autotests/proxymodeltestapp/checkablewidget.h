@@ -22,7 +22,7 @@
 #ifndef CHECKABLEWIDGET_H
 #define CHECKABLEWIDGET_H
 
-#include <QtWidgets/QWidget>
+#include <QWidget>
 
 class CheckableWidget : public QWidget
 {

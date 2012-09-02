@@ -22,7 +22,7 @@
 
 #include "kwindowsystem_export.h"
 
-#include <QtWidgets/QWidget> // for WId, etc.
+#include <QWidget> // for WId, etc.
 
 /**
  * Namespace for common standardized window effects

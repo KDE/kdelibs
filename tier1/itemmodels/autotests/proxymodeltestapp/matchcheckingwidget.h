@@ -20,7 +20,7 @@
 #ifndef MATCHCHECKINGWIDGET_H343434
 #define MATCHCHECKINGWIDGET_H343434
 
-#include <QtWidgets/QWidget>
+#include <QWidget>
 
 class QTreeView;
 class QLineEdit;

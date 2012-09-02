@@ -20,7 +20,7 @@
 #ifndef MODELCOMMANDERWIDGET_H
 #define MODELCOMMANDERWIDGET_H
 
-#include <QtWidgets/QWidget>
+#include <QWidget>
 
 class QTreeWidget;
 class QTreeWidgetItem;
