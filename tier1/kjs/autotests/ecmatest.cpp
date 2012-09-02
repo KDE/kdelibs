@@ -10,6 +10,7 @@
  */
 
 #include "ecmatest.h"
+#include <QtTest>
 #include "../../kde_qt5_compat.h" // QSKIP_PORTING
 
 #include <wtf/HashTraits.h>
@@ -160,7 +161,7 @@ static bool loadInclude( const QByteArray &fn )
     return true;
 }
 
-QTEST_KDEMAIN(ECMAscriptTest, NoGUI)
+QTEST_MAIN(ECMAscriptTest)
 
 void ECMAscriptTest::initTestCase()
 {

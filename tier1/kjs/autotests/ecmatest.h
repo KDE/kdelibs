@@ -12,11 +12,7 @@
 #ifndef ECMATEST_H
 #define ECMATEST_H
 
-#include <kio/global.h>
-#include <qtest_kde.h>
-
 #include <QtCore/QObject>
-#include <QtCore/QString>
 
 class ECMAscriptTest : public QObject {
   Q_OBJECT

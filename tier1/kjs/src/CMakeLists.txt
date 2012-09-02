@@ -1,8 +1,3 @@
-
-project(kjs)
-
-add_subdirectory(tests)
-
 if(NOT WIN32)
     set(CMAKE_REQUIRED_LIBRARIES "-lm")
 endif(NOT WIN32)
@@ -10,7 +5,7 @@ endif(NOT WIN32)
 #Do not make PCRE optional here. PCRE is a hard requirement for modern systems
 #but we give old systems some slack... that's why we don't specify "REQUIRED".
 find_package(PCRE)
-macro_bool_to_01(PCRE_FOUND HAVE_PCREPOSIX)
+set(HAVE_PCREPOSIX ${PCRE_FOUND})
 
 option(KJS_FORCE_DISABLE_PCRE "Force building of KJS without PCRE. Doing this will result in many webpage working incorrectly, due to extremely poor regular expression support")
 
@@ -21,10 +16,14 @@ configure_file(global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
 
 include_directories(${KDE4_KDECORE_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/wtf ${KDEWIN_INCLUDES} )
 
-macro_log_feature(PCRE_FOUND "PCRE" "Perl-compatible regular expressions in KJS" "http://www.pcre.org" FALSE "" "Without PCRE, KJS will have extremely poor regular expression support, breaking many webpages.")
+set_package_properties(PCRE PROPERTIES
+  URL "http://www.pcre.org"
+  DESCRIPTION "Perl-compatible regular expressions in KJS"
+  TYPE OPTIONAL
+  PURPOSE "Without PCRE, KJS will have extremely poor regular expression support, breaking many webpages.")
 
-# the check for pcre is in kdelibs/CMakeLists.txt
-if(PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
+# the check for pcre is in ../CMakeLists.txt
+if(PCRE_FOUND AND NOT KJS_FORCE_DISABLE_PCRE)
    include_directories(${PCRE_INCLUDE_DIR})
 
    # tell check_symbol_exists to -I pcre dirs.
@@ -76,7 +75,7 @@ endif(PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
        bytecode/generator/lexer.cpp
        bytecode/generator/parser.cpp
       )
-   kde4_add_executable(icemaker NOGUI ${icemaker_SRCS})
+   add_executable(icemaker ${icemaker_SRCS})
 
    # get the name of the generated wrapper script (which sets up LD_LIBRARY_PATH)
    get_target_property(ICEMAKER_EXECUTABLE icemaker WRAPPER_SCRIPT)
@@ -179,7 +178,7 @@ else (NOT DEFINED QT_ONLY)
 endif (NOT DEFINED QT_ONLY)
 
 
-kde4_add_library(${KJSLIBNAME} ${LIBRARY_TYPE} ${kjs_LIB_SRCS})
+add_library(${KJSLIBNAME} ${LIBRARY_TYPE} ${kjs_LIB_SRCS})
 
 if(WIN32)
    target_link_libraries(${KJSLIBNAME} ${KDEWIN_LIBRARIES})
@@ -208,7 +207,7 @@ set(kjs_SRCS kjs.cpp)
 set (kjs_bin_OUTPUT_NAME kjs)
 
 # 'kjs_bin' because cmake doesn't like having a lib and app with the same name
-kde4_add_executable(kjs_bin NOGUI ${kjs_SRCS})
+add_executable(kjs_bin ${kjs_SRCS})
 
 set_target_properties(kjs_bin PROPERTIES OUTPUT_NAME ${kjs_bin_OUTPUT_NAME})
 

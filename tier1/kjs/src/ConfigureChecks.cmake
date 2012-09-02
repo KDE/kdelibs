@@ -6,7 +6,7 @@ include(CheckIncludeFiles)
 include(CheckSymbolExists)
 include(CheckCXXSymbolExists)
 include(CheckFunctionExists)
-include(CheckStructMember)
+include(CheckStructHasMember)
 
 # The FindKDE4.cmake module sets _KDE4_PLATFORM_DEFINITIONS with
 # definitions like _GNU_SOURCE that are needed on each platform.
@@ -26,7 +26,7 @@ check_include_files("sys/time.h"    HAVE_SYS_TIME_H)
 check_include_files("errno.h"       HAVE_ERRNO_H)
 check_include_files("strings.h"     HAVE_STRINGS_H)
 check_include_files("crtdbg.h"      HAVE_CRTDBG_H)
-check_struct_member(tm tm_gmtoff time.h HAVE_TM_GMTOFF)
+check_struct_has_member("struct tm" tm_gmtoff time.h HAVE_TM_GMTOFF)
 
 if(NOT WIN32)
     set(CMAKE_REQUIRED_LIBRARIES "-lm")

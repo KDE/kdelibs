@@ -8,7 +8,7 @@ set(kjsapi_LIB_SRCS
     kjsarguments.cpp
    )
 
-kde4_add_library(kjsapi ${LIBRARY_TYPE} ${kjsapi_LIB_SRCS})
+add_library(kjsapi ${LIBRARY_TYPE} ${kjsapi_LIB_SRCS})
 generate_export_header(kjsapi)
 
 target_link_libraries(kjsapi ${KJSLIBNAME} ${KDE4_KDECORE_LIBS})
@@ -28,5 +28,6 @@ install(FILES
 
 ############# tests ########################
 
-kde4_add_unit_test(kjsapitest NOGUI kjsapitest.cpp)
+add_executable(kjsapitest kjsapitest.cpp)
+add_test(kjsapitest kjsapitest)
 target_link_libraries(kjsapitest kjsapi ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)

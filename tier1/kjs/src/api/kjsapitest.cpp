@@ -24,7 +24,7 @@
 #include "kjsarguments.h"
 #include "kjsinterpreter.h"
 
-#include "qtest_kde.h"
+#include "qtest.h"
 
 class KJSApiTest : public QObject
 {

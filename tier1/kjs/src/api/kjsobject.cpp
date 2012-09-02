@@ -28,7 +28,7 @@
 #include "kjs/ExecState.h"
 #include "kjs/JSVariableObject.h"
 
-#include <kdebug.h>
+#include <QDebug>
 #include <QDateTime>
 
 using namespace KJS;
@@ -113,7 +113,7 @@ static JSValue* constructDateHelper(KJSContext* ctx, const QDateTime& dt)
 {
     Q_UNUSED(ctx);
     Q_UNUSED(dt);
-    kWarning() << "converDateTimeHelper() not implemented, yet";
+    qWarning() << "converDateTimeHelper() not implemented, yet";
 
     // ### make call into data_object.cpp
 
