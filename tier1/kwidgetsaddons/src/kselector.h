@@ -26,7 +26,7 @@
 #include <kwidgetsaddons_export.h>
 
 #include <QAbstractSlider>
-#include <QtGui/QGradient>
+#include <QGradient>
 #include <QWidget>
 
 /**

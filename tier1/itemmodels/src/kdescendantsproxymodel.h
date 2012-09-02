@@ -21,7 +21,7 @@
 #ifndef KDESCENDANTSPROXYMODEL_P_H
 #define KDESCENDANTSPROXYMODEL_P_H
 
-#include <QtCore/QAbstractProxyModel>
+#include <QAbstractProxyModel>
 
 class KDescendantsProxyModelPrivate;
 

@@ -18,7 +18,7 @@
 #ifndef QIMAGELOADERJOB_H
 #define QIMAGELOADERJOB_H
 
-#include <QtGui/QImage>
+#include <QImage>
 
 #include <Job.h>
 

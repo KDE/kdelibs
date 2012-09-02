@@ -20,10 +20,10 @@
 #ifndef KLIMITEDIODEVICETEST_H
 #define KLIMITEDIODEVICETEST_H
 
-#include <QtCore/QByteArray>
-#include <QtCore/QBuffer>
-#include <QtCore/QList>
-#include <QtCore/QObject>
+#include <QByteArray>
+#include <QBuffer>
+#include <QList>
+#include <QObject>
 
 struct ChunkData
 {

@@ -22,7 +22,7 @@
 #define KXUTILS_H
 
 #include <QWidget>
-#include <QtGui/QPixmap>
+#include <QPixmap>
 #include <config-kwindowsystem.h>
 
 #if HAVE_X11

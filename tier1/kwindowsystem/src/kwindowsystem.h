@@ -25,8 +25,8 @@
 #define KWINDOWSYSTEM_H
 
 #include <kwindowsystem_export.h>
-#include <QtCore/QObject>
-#include <QtGui/QWidgetList> //For WId
+#include <QObject>
+#include <QWidgetList> //For WId
 #include <netwm_def.h>
 #include <kwindowinfo.h>
 #include <config-kwindowsystem.h>

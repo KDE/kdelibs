@@ -23,7 +23,7 @@
 #define RECURSIVE_PM_WIDGET_H
 
 #include <QWidget>
-#include <QtCore/QRegExp>
+#include <QRegExp>
 
 #include "krecursivefilterproxymodel.h"
 

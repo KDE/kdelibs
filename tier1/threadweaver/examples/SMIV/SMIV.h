@@ -17,8 +17,8 @@
 #ifndef SMIV_H
 #define SMIV_H
 
-#include <QtCore/QDate>
-#include <QtCore/QList>
+#include <QDate>
+#include <QList>
 #include <QWidget>
 
 #include <ThreadWeaver.h>

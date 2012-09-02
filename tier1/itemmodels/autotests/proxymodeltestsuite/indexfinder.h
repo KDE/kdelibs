@@ -20,7 +20,7 @@ Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #ifndef INDEXFINDER_H
 #define INDEXFINDER_H
 
-#include <QtCore/QModelIndex>
+#include <QModelIndex>
 
 class IndexFinder
 {

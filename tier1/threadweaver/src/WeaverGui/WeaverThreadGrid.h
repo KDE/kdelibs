@@ -29,8 +29,8 @@
 #ifndef WEAVERTHREADGRID_H
 #define WEAVERTHREADGRID_H
 
-#include <QtCore/QMap>
-#include <QtCore/QSize>
+#include <QMap>
+#include <QSize>
 #include <QFrame>
 
 #include <WeaverObserver.h>

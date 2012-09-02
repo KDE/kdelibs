@@ -20,7 +20,7 @@
 #ifndef KIDLETEST_H
 #define KIDLETEST_H
 
-#include <QtCore/QObject>
+#include <QObject>
 
 class KIdleTest : public QObject
 {

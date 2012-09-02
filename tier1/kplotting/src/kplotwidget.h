@@ -24,7 +24,7 @@
 #include <kplotting_export.h>
 
 #include <QFrame>
-#include <QtCore/QList>
+#include <QList>
 
 class KPlotAxis;
 class KPlotObject;

@@ -22,7 +22,7 @@
 #ifndef KMODELINDEXPROXYMAPPER_H
 #define KMODELINDEXPROXYMAPPER_H
 
-#include <QtCore/QObject>
+#include <QObject>
 
 #include "itemmodels_export.h"
 

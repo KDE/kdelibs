@@ -26,7 +26,7 @@
 #define KXERRORHANDLER_H
 
 #include <QWidget>
-#include <QtGui/QWidgetList>
+#include <QWidgetList>
 #include <config-kwindowsystem.h>
 
 #if HAVE_X11

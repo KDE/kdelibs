@@ -20,7 +20,7 @@
 #ifndef KSELECTIONPROXYMODEL_H
 #define KSELECTIONPROXYMODEL_H
 
-#include <QtCore/QAbstractProxyModel>
+#include <QAbstractProxyModel>
 
 #include <itemmodels_export.h>
 

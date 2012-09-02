@@ -17,7 +17,7 @@
 #ifndef COMPUTETHUMBNAILJOB_H
 #define COMPUTETHUMBNAILJOB_H
 
-#include <QtGui/QImage>
+#include <QImage>
 
 #include "Job.h"
 
