@@ -14,7 +14,12 @@ include(ConfigureChecks.cmake)
 # Generate global.h
 configure_file(global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
 
-include_directories(${KDE4_KDECORE_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/wtf ${KDEWIN_INCLUDES} )
+include_directories(
+  ${CMAKE_CURRENT_BINARY_DIR}/..
+  ${CMAKE_CURRENT_SOURCE_DIR}/..
+  ${CMAKE_CURRENT_SOURCE_DIR}/../wtf
+  ${KDEWIN_INCLUDES}
+)
 
 set_package_properties(PCRE PROPERTIES
   URL "http://www.pcre.org"
@@ -102,8 +107,6 @@ string(REPLACE "--pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 string(REPLACE "-pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 add_definitions(-DBUILDING_KDE__)
-
-add_subdirectory( wtf )
 
 set(CREATE_HASH_TABLE ${CMAKE_CURRENT_SOURCE_DIR}/create_hash_table )
 
