@@ -22,10 +22,3 @@ install(FILES
         kjsprototype.h
         kjsarguments.h
         DESTINATION  ${INCLUDE_INSTALL_DIR}/kjs)
-
-
-############# tests ########################
-
-add_executable(kjsapitest kjsapitest.cpp)
-add_test(kjsapitest kjsapitest)
-target_link_libraries(kjsapitest kjsapi ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY})
