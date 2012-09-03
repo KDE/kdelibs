@@ -74,7 +74,8 @@ class KGlobalPrivate
 {
     public:
         inline KGlobalPrivate()
-            : stringDict(0),
+            : dirs(0),
+            stringDict(0),
             locale(0),
             localeIsFromFakeComponent(false)
         {
@@ -86,12 +87,15 @@ class KGlobalPrivate
 
         inline ~KGlobalPrivate()
         {
+            delete dirs;
+            dirs = 0;
             delete locale;
             locale = 0;
             delete stringDict;
             stringDict = 0;
         }
 
+        KStandardDirs *dirs;
         KComponentData activeComponent;
         KComponentData mainComponent; // holds a refcount
         KStringDict *stringDict;
@@ -129,7 +133,14 @@ Q_GLOBAL_STATIC_WITH_ARGS(KComponentData, fakeComponent, (KGlobalPrivate::initFa
 KStandardDirs *KGlobal::dirs()
 {
     PRIVATE_DATA;
-    return d->mainComponent.isValid() ? d->mainComponent.dirs() : fakeComponent()->dirs();
+    if (!d->dirs) {
+        d->dirs = new KStandardDirs;
+        KSharedConfig::Ptr config = KSharedConfig::openConfig();
+        if (d->dirs->addCustomized(config.data())) {
+            config->reparseConfiguration();
+        }
+    }
+    return d->dirs;
 }
 
 KSharedConfig::Ptr KGlobal::config()

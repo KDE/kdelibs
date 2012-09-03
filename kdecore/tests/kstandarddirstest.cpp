@@ -52,6 +52,8 @@ void KStandarddirsTest::initTestCase()
     m_dataHome = QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/local");
     qputenv("XDG_DATA_HOME", QFile::encodeName(m_dataHome));
 
+    QFile::remove(KGlobal::dirs()->saveLocation("config") + "kstandarddirstestrc");
+
     // Create a main component data so that testAppData doesn't suddenly change the main component
     // data.
     KComponentData mainData("kstandarddirstest");
@@ -95,21 +97,24 @@ void KStandarddirsTest::testResourceDirs()
 
 void KStandarddirsTest::testAppData()
 {
+    // This API is gone
+#if 0
     // In addition to testSaveLocation(), we want to also check other KComponentDatas
     KComponentData cData("foo");
     const QString fooAppData = cData.dirs()->saveLocation( "appdata" );
     QCOMPARE_PATHS( fooAppData, m_dataHome + "/foo/" );
+#endif
 }
 
 void KStandarddirsTest::testChangeSaveLocation()
 {
-    KComponentData cData("changeSave");
-    QCOMPARE_PATHS(cData.dirs()->saveLocation("config"), m_configHome + "/");
+    KStandardDirs cData;
+    QCOMPARE_PATHS(cData.saveLocation("config"), m_configHome + "/");
     // Can we change the save location?
     const QString newSaveLoc = m_configHome + "/newconfigdir/";
-    //cData.dirs()->addResourceDir("config", newSaveLoc); // can't be done, absolute paths have less priority than relative paths
-    cData.dirs()->addResourceType("config", 0, "newconfigdir");
-    QCOMPARE_PATHS(KStandardDirs::realPath(cData.dirs()->saveLocation("config")), newSaveLoc);
+    //cData.addResourceDir("config", newSaveLoc); // can't be done, absolute paths have less priority than relative paths
+    cData.addResourceType("config", 0, "newconfigdir");
+    QCOMPARE_PATHS(KStandardDirs::realPath(cData.saveLocation("config")), newSaveLoc);
 }
 
 static bool isKdelibsInstalled()
@@ -460,28 +465,31 @@ void KStandarddirsTest::testRestrictedResources()
 
     // Initialize restrictions.
     // Need a new componentdata to trigger restricted-resource initialization
-    // And we need to write the config _before_ creating the KComponentData.
-    KConfig foorc("foorc");
+    // And we need to write the config _before_ creating the KStandardDirs.
+    KConfig foorc("kstandarddirstestrc");
     KConfigGroup restrictionsGroup(&foorc, "KDE Resource Restrictions");
     restrictionsGroup.writeEntry("xdgdata-apps", false);
     restrictionsGroup.writeEntry("data_kstandarddirstest", false);
     restrictionsGroup.sync();
 
     // Check restrictions.
-    KComponentData cData("foo");
-    QVERIFY(cData.dirs()->isRestrictedResource("xdgdata-apps"));
-    QVERIFY(cData.dirs()->isRestrictedResource("data", "kstandarddirstest"));
+    //KComponentData cData("foo");
+    KStandardDirs* dirs = new KStandardDirs;
+    dirs->addCustomized(&foorc); // like KGlobal::dirs() does
+    QVERIFY(dirs->isRestrictedResource("xdgdata-apps"));
+    QVERIFY(dirs->isRestrictedResource("data", "kstandarddirstest"));
 
-    const QStringList newAppsDirs = cData.dirs()->resourceDirs("xdgdata-apps");
+    const QStringList newAppsDirs = dirs->resourceDirs("xdgdata-apps");
     QVERIFY(newAppsDirs.contains(kdeDataApps, PATH_SENSITIVITY));
     QVERIFY(!newAppsDirs.contains(localAppsDir, PATH_SENSITIVITY)); // restricted!
-    const QStringList newDataDirs = cData.dirs()->findDirs("data", "kstandarddirstest");
+    const QStringList newDataDirs = dirs->findDirs("data", "kstandarddirstest");
     QVERIFY(!newDataDirs.contains(localDataDir, PATH_SENSITIVITY)); // restricted!
-    const QStringList newOtherDataDirs = cData.dirs()->findDirs("data", "other");
+    const QStringList newOtherDataDirs = dirs->findDirs("data", "other");
     QVERIFY(newOtherDataDirs.contains(localOtherDataDir, PATH_SENSITIVITY)); // not restricted!
 
     restrictionsGroup.deleteGroup();
     localFile.remove();
+    delete dirs;
 }
 
 void KStandarddirsTest::testSymlinkResolution()

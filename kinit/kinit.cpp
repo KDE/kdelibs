@@ -50,6 +50,7 @@
 #include <QtCore/QString>
 #include <QtCore/QFile>
 #include <QtCore/QDate>
+#include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QRegExp>
 #include <QFont>
@@ -107,7 +108,6 @@ static Display *X11display = 0;
 static int X11_startup_notify_fd = -1;
 static Display *X11_startup_notify_display = 0;
 #endif
-static KComponentData *s_instance = 0;
 #define MAX_SOCK_FILE 255
 static char sock_file[MAX_SOCK_FILE];
 
@@ -480,10 +480,10 @@ static pid_t launch(int argc, const char *_name, const char *args,
         name = _name;
         lib = QFile::decodeName(name);
         exec = name;
-        KLibrary klib(QLatin1String("libkdeinit5_") + lib, *s_instance );
+        KLibrary klib(QLatin1String("libkdeinit5_") + lib);
         libpath = klib.fileName();
         if( libpath.isEmpty()) {
-            KLibrary klib(lib, *s_instance);
+            KLibrary klib(lib);
             libpath = klib.fileName();
         }
         execpath = execpath_avoid_loops(exec, envc, envs, avoid_loops);
@@ -1432,6 +1432,7 @@ static void handle_requests(pid_t waitForPid)
 
 static void kdeinit_library_path()
 {
+
    const QStringList ltdl_library_path =
      QFile::decodeName(qgetenv("LTDL_LIBRARY_PATH")).split(QLatin1Char(':'),QString::SkipEmptyParts);
 #ifdef Q_OS_DARWIN
@@ -1441,6 +1442,8 @@ static void kdeinit_library_path()
 #endif
    const QStringList ld_library_path =
      QFile::decodeName(ldlibpath).split(QLatin1Char(':'),QString::SkipEmptyParts);
+
+#if 0 // unused
 
    QByteArray extra_path;
    const QStringList candidates = s_instance->dirs()->resourceDirs("lib");
@@ -1473,6 +1476,7 @@ static void kdeinit_library_path()
          extra_path += ':';
       extra_path += dir;
    }
+#endif
 
 //   if (!extra_path.isEmpty())
 //      lt_dlsetsearchpath(extra_path.data());
@@ -1606,7 +1610,7 @@ static void setupX()
 #ifdef __APPLE__
         display.replace('/','_');
 #endif
-        QString xauth = s_instance->dirs()->saveLocation( "tmp" ) + QLatin1String( "xauth-" )
+        QString xauth = QDir::tempPath() + QLatin1String( "/xauth-" )
             + QString::number( getuid()) + QLatin1String( "-" ) + QString::fromLocal8Bit( display );
         QSaveFile xauthfile( xauth );
         QFile xauthfrom( QFile::decodeName( qgetenv( "XAUTHORITY" )));
@@ -1758,7 +1762,7 @@ int main(int argc, char **argv, char **envp)
       setsid();
 
    /** Create our instance **/
-   s_instance = new KComponentData("kdeinit5", QByteArray(), KComponentData::SkipMainComponentRegistration);
+   //s_instance = new KComponentData("kdeinit5", QByteArray(), KComponentData::SkipMainComponentRegistration);
 
    /** Prepare to change process name **/
 #ifndef SKIP_PROCTITLE
@@ -1800,7 +1804,7 @@ int main(int argc, char **argv, char **envp)
     if (!d.suicide && qgetenv("KDE_IS_PRELINKED").isEmpty()) {
         const int extrasCount = sizeof(extra_libs)/sizeof(extra_libs[0]);
         for (int i=0; i<extrasCount; i++) {
-            QString extra = KStandardDirs::locate("lib", QLatin1String(extra_libs[i]), *s_instance);
+            QString extra = KStandardDirs::locate("lib", QLatin1String(extra_libs[i]));
 
             // can't use KLibLoader here as it would unload the library
             // again

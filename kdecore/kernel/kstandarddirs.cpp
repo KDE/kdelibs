@@ -72,6 +72,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QSettings>
+#include <QCoreApplication>
 
 class KStandardDirs::KStandardDirsPrivate
 {
@@ -1886,6 +1887,14 @@ void KStandardDirs::addKDEDefaults()
 
     addResourceType("autostart", "xdgconf-autostart", "/"); // merge them, start with xdg autostart
     addResourceType("autostart", NULL, "share/autostart"); // KDE ones are higher priority - KDE 5: deprecated, use xdgconf-autostart
+
+    QString appName = QCoreApplication::applicationName();
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    if (appName.isEmpty()) {
+        appName = qAppName();
+    }
+#endif
+    addResourceType("appdata", "data", appName + QLatin1Char('/'), true);
 }
 
 static QStringList lookupProfiles(const QString &mapFile)
@@ -2103,33 +2112,32 @@ QString KStandardDirs::localxdgconfdir() const
 
 
 // just to make code more readable without macros
-QString KStandardDirs::locate( const char *type,
-                               const QString& filename, const KComponentData &cData)
+QString KStandardDirs::locate(const char *type,
+                              const QString& filename)
 {
-    return cData.dirs()->findResource(type, filename);
+    return KGlobal::dirs()->findResource(type, filename);
 }
 
-QString KStandardDirs::locateLocal( const char *type,
-                                    const QString& filename, const KComponentData &cData)
+QString KStandardDirs::locateLocal(const char *type,
+                                   const QString& filename)
 {
-    return locateLocal(type, filename, true, cData);
+    return KGlobal::dirs()->locateLocal(type, filename, true);
 }
 
-QString KStandardDirs::locateLocal( const char *type,
-                                    const QString& filename, bool createDir,
-                                    const KComponentData &cData)
+QString KStandardDirs::locateLocal(const char *type,
+                                   const QString& filename, bool createDir)
 {
     // try to find slashes. If there are some, we have to
     // create the subdir first
     int slash = filename.lastIndexOf(QLatin1Char('/')) + 1;
     if (!slash) { // only one filename
-        return cData.dirs()->saveLocation(type, QString(), createDir) + filename;
+        return KGlobal::dirs()->saveLocation(type, QString(), createDir) + filename;
     }
 
     // split path from filename
     QString dir = filename.left(slash);
     QString file = filename.mid(slash);
-    return cData.dirs()->saveLocation(type, dir, createDir) + file;
+    return KGlobal::dirs()->saveLocation(type, dir, createDir) + file;
 }
 
 bool KStandardDirs::checkAccess(const QString& pathname, int mode)

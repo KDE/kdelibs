@@ -132,22 +132,16 @@ bool KComponentData::isValid() const
 
 void KComponentDataPrivate::lazyInit()
 {
-    if (dirs == 0) {
-        dirs = new KStandardDirs();
-        // install appdata resource type
-        dirs->addResourceType("appdata", "data", aboutData.appName() + QLatin1Char('/'), true);
-
+    if (sharedConfig == 0) {
         configInit();
-
-        if (dirs->addCustomized(sharedConfig.data()))
-            sharedConfig->reparseConfiguration();
     }
 
+#if 0 // obsolete in KF5
 #ifdef Q_OS_WIN
-    if (QCoreApplication::instance() && dirs && kdeLibraryPathsAdded != KdeLibraryPathsAddedDone) {
+    if (QCoreApplication::instance() && kdeLibraryPathsAdded != KdeLibraryPathsAddedDone) {
 #else
     // the first KComponentData sets the KDE Qt plugin paths
-    if (dirs && kdeLibraryPathsAdded != KdeLibraryPathsAddedDone) {
+    if (kdeLibraryPathsAdded != KdeLibraryPathsAddedDone) {
 #endif
         kdeLibraryPathsAdded = KdeLibraryPathsAddedDone;
         const QStringList &plugins = dirs->resourceDirs("qtplugins");
@@ -157,6 +151,7 @@ void KComponentDataPrivate::lazyInit()
             ++it;
         }
     }
+#endif
 }
 
 extern KCONFIGCORE_EXPORT bool kde_kiosk_exception;
@@ -189,14 +184,6 @@ void KComponentDataPrivate::configInit()
         sharedConfig = 0;
         configInit(); // Reread...
     }
-}
-
-KStandardDirs *KComponentData::dirs() const
-{
-    Q_ASSERT(d);
-    d->lazyInit();
-
-    return d->dirs;
 }
 
 const KSharedConfig::Ptr &KComponentData::config() const

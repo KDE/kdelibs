@@ -20,7 +20,6 @@
 
 #include "kaboutdata.h"
 #include <kcomponentdata.h>
-#include <kstandarddirs.h>
 #include <klocalizedstring.h>
 #include "kpluginfactory.h"
 #include <kservice.h>
@@ -30,6 +29,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QDebug>
+#include <QCoreApplication>
 
 class KPluginLoaderPrivate
 {
@@ -97,26 +97,48 @@ QString findLibraryInternal(const QString &name, const KComponentData &cData)
     if (!QDir::isRelativePath(libname))
         return libname;
 
-    // Start looking
-    QString libfile;
+    // TEMPORARY HACK
+    Q_FOREACH(const QString &path, QFile::decodeName(qgetenv("LD_LIBRARY_PATH")).split(QLatin1Char(':'), QString::SkipEmptyParts)) {
+        QString libfile = path + QLatin1String("/kde5/") + libname;
+        if (QFile::exists(libfile)) {
+            //qDebug() << "Looking at" << libfile << ": FOUND!";
+            return libfile;
+        }
+        //qDebug() << "Looking at" << libfile << ": doesn't exist";
+        libfile = path + QLatin1String("/") + libname;
+        if (QFile::exists(libfile)) {
+            if (!kdeinit) {
+                qDebug() << "library" << libname << "not found under 'module' but under 'lib'";
+            }
+            return libfile;
+        }
+    }
 
-    // Check for kde modules/plugins?
-    libfile = cData.dirs()->findResource("module", libname);
-    if (!libfile.isEmpty())
-        return libfile;
+    // Ask Qt for the list of based paths containing plugins
+    Q_FOREACH(const QString &path, QCoreApplication::libraryPaths()) {
+        // Check for kde modules/plugins?
+        QString libfile = path + QLatin1String("/kf5/") + libname;
+        if (QFile::exists(libfile)) {
+            //qDebug() << "Looking at" << libfile << ": FOUND!";
+            return libfile;
+        }
+        //qDebug() << "Looking at" << libfile << ": doesn't exist";
 
+#if 0 // old code, not sure how to port
     // Now look where they don't belong but sometimes are
 #ifndef Q_CC_MSVC
     if (!hasPrefix)
         libname = fileinfo.path() + QLatin1String("/lib") + fileinfo.fileName();
 #endif
+#endif
 
-    libfile = cData.dirs()->findResource("lib", libname);
-    if (!libfile.isEmpty()) {
-        if (!kdeinit) {
-            qDebug() << "library" << libname << "not found under 'module' but under 'lib'";
+        libfile = path + QLatin1String("/") + libname;
+        if (QFile::exists(libfile)) {
+            if (!kdeinit) {
+                qDebug() << "library" << libname << "not found under 'module' but under 'lib'";
+            }
+            return libfile;
         }
-        return libfile;
     }
 
     // Nothing found

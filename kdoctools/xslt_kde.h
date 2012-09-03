@@ -6,9 +6,8 @@
 
 class QByteArray;
 class QIODevice;
-class KComponentData;
 
-void fillInstance(KComponentData &ins, const QString &srcdir = QString() );
+void setupStandardDirs(const QString &srcdir = QString() );
 bool saveToCache( const QString &contents, const QString &filename );
 
 #endif

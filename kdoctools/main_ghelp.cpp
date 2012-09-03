@@ -37,7 +37,7 @@ extern "C"
     Q_DECL_EXPORT int kdemain( int argc, char **argv )
     {
         KComponentData componentData( "kio_ghelp" );
-        fillInstance(componentData);
+        setupStandardDirs();
         (void)componentData.config(); // we need this one to make sure system globals are read
 
         kDebug(7101) << "Starting " << getpid();

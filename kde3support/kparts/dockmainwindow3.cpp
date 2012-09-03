@@ -137,7 +137,7 @@ void DockMainWindow3::createShellGUI( bool create )
             d->m_helpMenu = new KHelpMenu( this, componentData().aboutData(), true, actionCollection() );
 
         QString f = xmlFile();
-        setXMLFile( KStandardDirs::locate( "config", "ui/ui_standards.rc", componentData() ) );
+        setXMLFile( KStandardDirs::locate( "config", "ui/ui_standards.rc" ) );
         if ( !f.isEmpty() )
             setXMLFile( f, true );
         else

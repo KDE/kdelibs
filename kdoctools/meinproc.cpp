@@ -115,11 +115,11 @@ int main(int argc, char **argv) {
 
     exsltRegisterAll();
 
-    // Need to set SRCDIR before calling fillInstance
+    // Need to set SRCDIR before calling setupStandardDirs
     QString srcdir;
     if ( args->isSet( "srcdir" ) )
         srcdir = QDir( args->getOption( "srcdir" ) ).absolutePath();
-    fillInstance(ins,srcdir);
+    setupStandardDirs(srcdir);
 
     LIBXML_TEST_VERSION
 

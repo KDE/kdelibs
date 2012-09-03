@@ -27,14 +27,15 @@
 QTEST_MAIN( KLibLoaderTest )
 
 #include <klibloader.h>
-#include <kstandarddirs.h>
+//#include <kstandarddirs.h>
 #include <QtCore/QDir>
 #include <QDebug>
 
 void KLibLoaderTest::initTestCase()
 {
     const QString libdir = QDir::currentPath();
-    KGlobal::dirs()->addResourceDir( "module", libdir );
+    qputenv("LD_LIBRARY_PATH", qgetenv("LD_LIBRARY_PATH") + ":" + QFile::encodeName(libdir));
+    //KGlobal::dirs()->addResourceDir( "module", libdir );
     //qDebug( "initTestCase: added %s to 'module' resource", qPrintable(libdir) );
 }
 

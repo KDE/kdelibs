@@ -22,16 +22,16 @@
 #include <stdarg.h>
 #include <qurl.h>
 
-void fillInstance(KComponentData &ins, const QString &srcdir)
+void setupStandardDirs(const QString &srcdir)
 {
     QByteArray catalogs;
 
     if ( srcdir.isEmpty() ) {
-        catalogs += QUrl::fromLocalFile( ins.dirs()->findResource("data", "ksgmltools2/customization/catalog.xml") ).toEncoded();
-        ins.dirs()->addResourceType("dtd", "data", "ksgmltools2/");
+        catalogs += QUrl::fromLocalFile( KGlobal::dirs()->findResource("data", "ksgmltools2/customization/catalog.xml") ).toEncoded();
+        KGlobal::dirs()->addResourceType("dtd", "data", "ksgmltools2/");
     } else {
         catalogs += QUrl::fromLocalFile( srcdir +"/customization/catalog.xml" ).toEncoded();
-        ins.dirs()->addResourceDir("dtd", srcdir);
+        KGlobal::dirs()->addResourceDir("dtd", srcdir);
     }
 
     qputenv( "XML_CATALOG_FILES", catalogs);

@@ -25,14 +25,13 @@
 class QByteArray;
 class QString;
 class KAboutData;
-class KStandardDirs;
 class KComponentDataPrivate;
 
 /**
  * @short Per component data.
  *
- * This class holds a KAboutData object or only a component name, a KStandardDirs object and a
- * KSharedConfig object. Those objects normally are different per component but the same per
+ * This class holds a KAboutData object or only a component name, and a KSharedConfig object.
+ * Those objects normally are different per component but the same per
  * instance of one component.
  *
  * The application component data can always be accessed using KGlobal::mainComponent() (or the
@@ -128,12 +127,6 @@ public:
      * destruction) is the only valid operation you may do.
      */
     bool isValid() const;
-
-    /**
-     * Returns the application standard dirs object.
-     * @return The KStandardDirs of the application.
-     */
-    KStandardDirs *dirs() const;
 
     /**
      * Returns the general config object ("appnamerc").

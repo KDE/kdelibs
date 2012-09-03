@@ -716,12 +716,11 @@ public:
      *
      * @param type   The type of the wanted resource, see KStandardDirs
      * @param filename   A relative filename of the resource
-     * @param cData   The KComponentData object
      *
      * @return A full path to the filename specified in the second
      *         argument, or QString() if not found
      **/
-    static QString locate( const char *type, const QString& filename, const KComponentData &cData = KGlobal::mainComponent() );
+    static QString locate( const char *type, const QString& filename );
 
     /**
      * This function is much like locate. However it returns a
@@ -732,12 +731,11 @@ public:
      *
      * @param type   The type of the wanted resource, see KStandardDirs
      * @param filename   A relative filename of the resource
-     * @param cData   The KComponentData object
      *
      * @return A full path to the filename specified in the second
      *         argument, or QString() if not found
      **/
-    static QString locateLocal( const char *type, const QString& filename, const KComponentData &cData = KGlobal::mainComponent() );
+    static QString locateLocal(const char *type, const QString& filename);
 
     /**
      * This function is much like locate. No check is made if the
@@ -750,12 +748,11 @@ public:
      * @param filename   A relative filename of the resource
      * @param createDir  If @c true, missing directories are created,
      *        if @c false, no directory is created
-     * @param cData   The KComponentData object
      *
      * @return A full path to the filename specified in the second
      *         argument, or QString() if not found
      **/
-    static QString locateLocal( const char *type, const QString& filename, bool createDir, const KComponentData &cData = KGlobal::mainComponent() );
+    static QString locateLocal(const char *type, const QString& filename, bool createDir);
 
     /**
      * Check, if a file may be accessed in a given mode.

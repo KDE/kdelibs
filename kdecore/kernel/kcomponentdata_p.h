@@ -27,15 +27,14 @@
 
 #include <kconfig.h>
 #include <kaboutdata.h>
-#include <kstandarddirs.h>
+#include <kglobal.h>
 #include <klocale.h>
 
 class KComponentDataPrivate
 {
 public:
     KComponentDataPrivate(const KAboutData &aboutData_)
-        : dirs(0),
-        aboutData(aboutData_),
+        : aboutData(aboutData_),
         syncing(false),
         refCount(1)
     {
@@ -54,7 +53,6 @@ public:
             KGlobal::locale()->removeCatalog(aboutData.catalogName());
 
         sharedConfig = 0;   //delete the config object first, because it could access the standard dirs while syncing
-        delete dirs;
     }
 
     inline void ref()
@@ -75,7 +73,6 @@ public:
     void lazyInit();
     void configInit();  //call this only from lazyInit()!
 
-    KStandardDirs *dirs;
     KAboutData aboutData;
     QString configName;
     KSharedConfig::Ptr sharedConfig;

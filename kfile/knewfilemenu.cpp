@@ -800,7 +800,7 @@ void KNewFileMenuPrivate::_k_slotFillTemplates()
     // Ensure any changes in the templates dir will call this
     if (! s->dirWatch) {
         s->dirWatch = new KDirWatch;
-        const QStringList dirs = m_actionCollection->componentData().dirs()->resourceDirs("templates");
+        const QStringList dirs = KGlobal::dirs()->resourceDirs("templates");
         for (QStringList::const_iterator it = dirs.constBegin() ; it != dirs.constEnd() ; ++it) {
             //kDebug(1203) << "Templates resource dir:" << *it;
             s->dirWatch->addDir(*it);
@@ -819,7 +819,7 @@ void KNewFileMenuPrivate::_k_slotFillTemplates()
     s->templatesList->clear();
 
     // Look into "templates" dirs.
-    const QStringList files = m_actionCollection->componentData().dirs()->findAllResources("templates");
+    const QStringList files = KGlobal::dirs()->findAllResources("templates");
     QMap<QString, KNewFileMenuSingleton::Entry> slist; // used for sorting
     Q_FOREACH(const QString& file, files) {
         //kDebug(1203) << file;
