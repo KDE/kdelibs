@@ -132,7 +132,7 @@ bool KComponentData::isValid() const
 
 void KComponentDataPrivate::lazyInit()
 {
-    if (sharedConfig == 0) {
+    if (sharedConfig.isNull()) {
         configInit();
     }
 
