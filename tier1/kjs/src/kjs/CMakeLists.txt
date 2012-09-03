@@ -32,6 +32,7 @@ if(PCRE_FOUND AND NOT KJS_FORCE_DISABLE_PCRE)
    include_directories(${PCRE_INCLUDE_DIR})
 
    # tell check_symbol_exists to -I pcre dirs.
+   include(MacroPushRequiredVars)
    macro_push_required_vars()
    set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${PCRE_INCLUDE_DIR})
 
