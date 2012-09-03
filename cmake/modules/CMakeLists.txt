@@ -86,7 +86,6 @@ set(cmakeFiles CheckCXXSourceCompiles.cmake
                FindOggVorbis.cmake
                FindOpenEXR.cmake
                FindOpenSSL.cmake
-               FindPCRE.cmake
                FindPhonon.cmake
                FindPkgConfig.cmake
                FindPlasma.cmake
