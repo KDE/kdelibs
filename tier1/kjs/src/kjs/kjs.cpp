@@ -39,7 +39,7 @@
 #  include <unistd.h>
 #endif
 
-#include <kdeversion.h>
+#include <kjs_version.h>
 
 enum ExitCode { ErrorNone,
                 ErrorUnknownSwitch,
@@ -235,7 +235,7 @@ static ExitCode parseArgs(int argc, char** argv)
         const char* a = argv[ai];
         if (strcmp(a, "-v" ) == 0 || strcmp(a, "-version") == 0 ||
             strcmp(a, "--version") == 0) {
-             printf("KDE: %s\n", KDE_VERSION_STRING); 
+             printf("KDE: %s\n", KJS_VERSION_STRING);
              return ErrorNone;
         } else if (strcmp(a, "-h" ) == 0 || strcmp(a, "-help") == 0 ||
             strcmp(a, "--help") == 0) {

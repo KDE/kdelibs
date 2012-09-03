@@ -92,7 +92,7 @@ void KJSApiTest::objectConstruction()
 void KJSApiTest::interpreterEvaluate()
 {
     KJSInterpreter ip;
-    KJSContext* ctx = ip.globalContext();    
+    KJSContext* ctx = ip.globalContext();
     KJSResult res;
 
     // syntax error
@@ -132,8 +132,8 @@ void KJSApiTest::interpreterNormalizeCode()
 void KJSApiTest::objectProperties()
 {
    KJSInterpreter ip;
-   KJSContext* ctx = ip.globalContext();    
- 
+   KJSContext* ctx = ip.globalContext();
+
    KJSObject global = ip.globalObject();
    KJSObject v;
 
@@ -171,7 +171,7 @@ void KJSApiTest::objectProperties()
 void KJSApiTest::prototypeConstants()
 {
     KJSInterpreter ip;
-    KJSContext* ctx = ip.globalContext();    
+    KJSContext* ctx = ip.globalContext();
 
     KJSPrototype proto;
 
@@ -203,7 +203,7 @@ static void setX(KJSContext* context, void* object, KJSObject value)
 void KJSApiTest::prototypeProperties()
 {
     KJSInterpreter ip;
-    KJSContext* ctx = ip.globalContext();    
+    KJSContext* ctx = ip.globalContext();
 
     KJSPrototype proto;
 
@@ -235,7 +235,7 @@ static KJSObject multiply(KJSContext* context, void* object,
     KJSObject a0 = arguments.at(0);
     if (!a0.isNumber())
         return KJSNumber(-2);
-    
+
     double v0 = a0.toNumber(context);
 
     return KJSNumber(factor * v0);
@@ -244,7 +244,7 @@ static KJSObject multiply(KJSContext* context, void* object,
 void KJSApiTest::prototypeFunctions()
 {
     KJSInterpreter ip;
-    KJSContext* ctx = ip.globalContext();    
+    KJSContext* ctx = ip.globalContext();
 
     KJSPrototype proto;
 
@@ -274,6 +274,6 @@ void KJSApiTest::globalObject()
     QCOMPARE(res.value().toNumber(ip.globalContext()), 111.0);
 }
 
-QTEST_KDEMAIN_CORE(KJSApiTest)
+QTEST_MAIN(KJSApiTest)
 
 #include "kjsapitest.moc"

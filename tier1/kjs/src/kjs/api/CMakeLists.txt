@@ -1,5 +1,3 @@
-include_directories(${KDE4_KDECORE_INCLUDES})
-
 set(kjsapi_LIB_SRCS
     kjsinterpreter.cpp
     kjscontext.cpp
@@ -11,7 +9,7 @@ set(kjsapi_LIB_SRCS
 add_library(kjsapi ${LIBRARY_TYPE} ${kjsapi_LIB_SRCS})
 generate_export_header(kjsapi)
 
-target_link_libraries(kjsapi ${KJSLIBNAME} ${KDE4_KDECORE_LIBS})
+target_link_libraries(kjsapi ${KJSLIBNAME} ${QT_QTCORE_LIBRARY})
 
 set_target_properties(kjsapi PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS kjsapi EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
@@ -30,4 +28,4 @@ install(FILES
 
 add_executable(kjsapitest kjsapitest.cpp)
 add_test(kjsapitest kjsapitest)
-target_link_libraries(kjsapitest kjsapi ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
+target_link_libraries(kjsapitest kjsapi ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY})

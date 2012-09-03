@@ -15,8 +15,8 @@ include(ConfigureChecks.cmake)
 configure_file(global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
 
 include_directories(
-  ${CMAKE_CURRENT_BINARY_DIR}/..
-  ${CMAKE_CURRENT_SOURCE_DIR}/..
+  ${CMAKE_CURRENT_BINARY_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/../wtf
   ${KDEWIN_INCLUDES}
 )

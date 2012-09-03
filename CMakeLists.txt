@@ -214,8 +214,11 @@ endif(QCA2_FOUND)
 # Use the one variable for the lib you depend upon.
 # E.g. kdeui uses ${KDE4_KDECORE_INCLUDES}. Something that depends on kparts uses ${KDE4_KPARTS_INCLUDES}.
 
-set(KDE4_KJS_INCLUDES ${CMAKE_SOURCE_DIR}/tier1/kjs/src
-                      ${CMAKE_BINARY_DIR}/tier1/kjs/src)
+set(KDE4_KJS_INCLUDES ${CMAKE_SOURCE_DIR}/tier1/kjs/src/kjs
+                      ${CMAKE_BINARY_DIR}/tier1/kjs/src/kjs
+                      ${CMAKE_SOURCE_DIR}/tier1/kjs/src
+                      ${CMAKE_BINARY_DIR}/tier1/kjs/src
+                      )
 
 if(NOT WINCE)
     set(KDE4_KDECORE_INCLUDES ${KDE4_KJS_INCLUDES} )

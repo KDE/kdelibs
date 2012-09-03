@@ -151,7 +151,7 @@ static QStringList expectedBroken;	// list of tests we know that will fail
  */
 static bool loadInclude( const QByteArray &fn )
 {
-    QFile runnerfile( basedir + QLatin1String( "test/harness/" ) + QString::fromAscii( fn ) );
+    QFile runnerfile( basedir + QLatin1String( "test/harness/" ) + QString::fromLatin1( fn.constData() ) );
 
     if ( !runnerfile.open( QIODevice::ReadOnly ) )
         return false;
@@ -165,7 +165,7 @@ QTEST_MAIN(ECMAscriptTest)
 
 void ECMAscriptTest::initTestCase()
 {
-    basedir = QString::fromUtf8( qgetenv( "ECMATEST_BASEDIR" ) );
+    basedir = QString::fromUtf8( qgetenv( "ECMATEST_BASEDIR" ).constData() );
 
     if ( basedir.isEmpty() )
         qFatal( "ECMATEST_BASEDIR not set" );
@@ -178,14 +178,14 @@ void ECMAscriptTest::initTestCase()
 
     testrunner = includes[ "sta.js" ] + includes[ "ed.js" ] + '\n';
 
-    const QString brokenFn = QString::fromAscii( qgetenv( "ECMATEST_BROKEN" ) );
+    const QString brokenFn = QString::fromAscii( qgetenv( "ECMATEST_BROKEN" ).constData() );
     if ( !brokenFn.isEmpty() ) {
         QFile brokenF( brokenFn );
         if ( !brokenF.open( QIODevice::ReadOnly ) ) {
-            const QString errmsg = QString::fromAscii( "cannot open " ) + brokenFn;
-            QWARN( errmsg.toAscii() );
+            const QByteArray errmsg = QByteArray("cannot open ") + QFile::encodeName(brokenFn);
+            QWARN( errmsg.constData() );
         } else {
-            expectedBroken = QString::fromAscii( brokenF.readAll() ).split( QLatin1Char( '\n' ) )
+            expectedBroken = QString::fromAscii( brokenF.readAll().constData() ).split( QLatin1Char( '\n' ) )
                                                .filter( QRegExp( "^[^#].*" ) );
         }
     }
@@ -219,9 +219,9 @@ void ECMAscriptTest::runAllTests()
 
     QFile input( filename );
 
-    foreach ( const QByteArray &skip, skips.keys() ) {
+    Q_FOREACH( const QByteArray &skip, skips.keys() ) {
         if ( skip == QTest::currentDataTag() )
-            QSKIP_PORTING( skips[ skip ], SkipSingle );
+            QSKIP_PORTING( skips[ skip ].constData(), SkipSingle );
     }
 
     QVERIFY( input.open( QIODevice::ReadOnly ) );
@@ -314,10 +314,10 @@ void ECMAscriptTest::runAllTests_data()
 
     const QStringList js( QLatin1String( "*.js" ) );
     const QStringList all( QLatin1String( "*" ) );
-    const QString chapter = QString::fromAscii( qgetenv( "ECMATEST_CHAPTER" ) );
+    const QString chapter = QString::fromAscii( qgetenv( "ECMATEST_CHAPTER" ).constData() );
 
     if ( !chapter.isEmpty() )
-        QWARN( "===> Testing chapter " + chapter.toAscii() );
+        QWARN( QByteArray("===> Testing chapter " + chapter.toAscii()).constData() );
 
     // some tests fail when the suite is run as a whole
     if ( chapter.isEmpty() || chapter == "ch15" ) {
@@ -342,7 +342,7 @@ void ECMAscriptTest::runAllTests_data()
 
         filename.chop(3); // .js
 
-        QTest::newRow( filename.toAscii() ) << info.absoluteFilePath();
+        QTest::newRow( filename.toAscii().constData() ) << info.absoluteFilePath();
     }
 }
 

@@ -166,7 +166,7 @@ KJSResult KJSInterpreter::evaluate(const QString& sourceURL,
                                    KJSObject* thisValue)
 {
     Interpreter* ip = INTERPRETER(this);
-    
+
     JSValue* tv = thisValue ? JSVALUE(thisValue) : 0;
     KJS::Completion c = ip->evaluate(toUString(sourceURL), startingLineNumber,
                                      toUString(code), tv);
@@ -197,7 +197,7 @@ KJSResult KJSInterpreter::evaluate(const QString& sourceURL,
 KJSResult KJSInterpreter::evaluate(const QString& code,
                                    KJSObject* thisValue)
 {
-    return evaluate("<string>", 0, code, thisValue);
+    return evaluate(QLatin1String("<string>"), 0, code, thisValue);
 }
 
 bool KJSInterpreter::normalizeCode(const QString& code, QString* normalized,
