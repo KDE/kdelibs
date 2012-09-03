@@ -83,7 +83,7 @@ public:
 
     enum ExecutionMode {
         ExecuteMode,
-        AuthorizeOnlyMode,
+        AuthorizeOnlyMode
     };
 
     /**

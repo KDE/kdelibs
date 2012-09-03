@@ -300,7 +300,7 @@ public:
   typedef enum { Name, FromUrl, DisplayName } FileNameUsedForCopying;
 
 private:
-    Q_DISABLE_COPY(KProtocolInfo);
+    Q_DISABLE_COPY(KProtocolInfo)
 };
 
 #endif

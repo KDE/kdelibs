@@ -407,7 +407,7 @@ public:
         HelperBusyError, ///< The helper is busy executing another action (or group of actions). Try later
         AlreadyStartedError, ///< The action was already started and is currently running
         DBusError, ///< An error from D-Bus occurred
-        BackendError, ///< The underlying backend reported an error
+        BackendError ///< The underlying backend reported an error
     };
 
     /// Default constructor. Sets type() to Success and errorCode() to zero.
