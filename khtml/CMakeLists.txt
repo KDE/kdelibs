@@ -566,7 +566,8 @@ set_target_properties(khtml PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
 generate_export_header(khtml)
 
 
-set(CREATE_HASH_TABLE ${CMAKE_SOURCE_DIR}/kjs/create_hash_table )
+# TODO install this script from the kjs framework [with a better name], so other frameworks can use it
+set(CREATE_HASH_TABLE ${CMAKE_SOURCE_DIR}/tier1/kjs/src/kjs/create_hash_table)
 macro(CREATE_LUT _in_FILE _out_FILE)
 
    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}

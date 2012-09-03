@@ -289,7 +289,7 @@ install(TARGETS kde4-config ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 if(NOT WINCE)
     # kjs hash stuff for transcript plugin
-    set( CREATE_HASH_TABLE ${CMAKE_SOURCE_DIR}/kjs/create_hash_table )
+    set( CREATE_HASH_TABLE ${CMAKE_SOURCE_DIR}/tier1/kjs/src/kjs/create_hash_table )
 
     add_custom_command(
        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h
