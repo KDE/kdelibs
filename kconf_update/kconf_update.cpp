@@ -30,6 +30,7 @@
 #include <QtCore/QTextCodec>
 #include <QUrl>
 #include <QTemporaryFile>
+#include <QCoreApplication>
 #include <QtCore/QDir>
 
 #include <kconfig.h>
@@ -40,7 +41,6 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kaboutdata.h>
-#include <kcomponentdata.h>
 #include <qstandardpaths.h>
 
 #include "kconfigutils.h"
@@ -979,7 +979,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
     KCmdLineArgs::init(argc, argv, &aboutData);
     KCmdLineArgs::addCmdLineOptions(options);
 
-    KComponentData componentData(&aboutData);
+    QCoreApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
 
     KonfUpdate konfUpdate;
 
