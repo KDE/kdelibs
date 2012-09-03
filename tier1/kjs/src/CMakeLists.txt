@@ -78,7 +78,9 @@ endif(PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
    add_executable(icemaker ${icemaker_SRCS})
 
    # get the name of the generated wrapper script (which sets up LD_LIBRARY_PATH)
-   get_target_property(ICEMAKER_EXECUTABLE icemaker WRAPPER_SCRIPT)
+   #get_target_property(ICEMAKER_EXECUTABLE icemaker WRAPPER_SCRIPT)
+   #get_target_property(ICEMAKER_EXECUTABLE_DIR icemaker RUNTIME_OUTPUT_DIRECTORY)
+   set(ICEMAKER_EXECUTABLE icemaker)
 
 #    export(TARGETS icemaker FILE ${CMAKE_BINARY_DIR}/ImportIcemakerExecutable.cmake)
 # endif (CMAKE_CROSSCOMPILING)
