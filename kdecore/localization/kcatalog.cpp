@@ -23,8 +23,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QMutexLocker>
-
-#include <kdebug.h>
+#include <QDebug>
 
 #include <stdlib.h>
 #include <locale.h>

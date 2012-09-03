@@ -27,12 +27,12 @@
 #include <QStringList>
 #include <QPair>
 #include <QDir>
+#include <QDebug>
 
-#include <kdebug.h>
-#include <kglobal.h>
 #include <kcatalog_p.h>
 #include <kuitformats_p.h>
 #include <klocale.h>
+#include <kglobal.h>
 
 #define QL1S(x)   QLatin1String(x)
 
@@ -946,7 +946,7 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromContextMarker (
     else { // unknown role
         rol = Kuit::Rol::None;
         if (!rolname.isEmpty()) {
-            kDebug(173) << QString::fromLatin1("Unknown semantic role '@%1' in "
+            qWarning() << QString::fromLatin1("Unknown semantic role '@%1' in "
                                    "context marker for message {%2}.")
                                   .arg(rolname, shorten(text));
         }
@@ -960,7 +960,7 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromContextMarker (
     else { // unknown or not given subcue
         cue = Kuit::Cue::None;
         if (!cuename.isEmpty()) {
-            kDebug(173) << QString::fromLatin1("Unknown interface subcue ':%1' in "
+            qWarning() << QString::fromLatin1("Unknown interface subcue ':%1' in "
                                    "context marker for message {%2}.")
                                   .arg(cuename, shorten(text));
         }
@@ -988,7 +988,7 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromContextMarker (
         }
 
         if (!fmtname.isEmpty()) {
-            kDebug(173) << QString::fromLatin1("Unknown visual format '/%1' in "
+            qWarning() << QString::fromLatin1("Unknown visual format '/%1' in "
                                    "context marker for message {%2}.")
                                   .arg(fmtname, shorten(text));
         }
@@ -1190,7 +1190,7 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
     }
 
     if (xml.hasError()) {
-        kDebug(173) << QString::fromLatin1("Markup error in message {%1}: %2. Last tag parsed: %3")
+        qWarning() << QString::fromLatin1("Markup error in message {%1}: %2. Last tag parsed: %3")
                               .arg(shorten(text), xml.errorString(), lastElementName.toString());
         return QString();
     }
@@ -1232,7 +1232,7 @@ KuitSemanticsPrivate::parseOpenEl (const QXmlStreamReader &xml,
         }
         else {
             oel.handling = OpenEl::Dropout;
-            kDebug(173) << QString::fromLatin1("Tag '%1' cannot be subtag of '%2' "
+            qWarning() << QString::fromLatin1("Tag '%1' cannot be subtag of '%2' "
                                    "in message {%3}.")
                                   .arg(s->tagNames[oel.tag], s->tagNames[etag],
                                        shorten(text));
@@ -1248,14 +1248,14 @@ KuitSemanticsPrivate::parseOpenEl (const QXmlStreamReader &xml,
                     oel.avals[att] = attvals[i];
                 }
                 else {
-                    kDebug(173) << QString::fromLatin1("Attribute '%1' cannot be used in "
+                    qWarning() << QString::fromLatin1("Attribute '%1' cannot be used in "
                                            "tag '%2' in message {%3}.")
                                           .arg(attnams[i], oel.name,
                                                shorten(text));
                 }
             }
             else {
-                kDebug(173) << QString::fromLatin1("Unknown semantic tag attribute '%1' "
+                qWarning() << QString::fromLatin1("Unknown semantic tag attribute '%1' "
                                        "in message {%2}.")
                                       .arg(attnams[i], shorten(text));
             }
@@ -1269,7 +1269,7 @@ KuitSemanticsPrivate::parseOpenEl (const QXmlStreamReader &xml,
     else { // other element, leave it in verbatim
         oel.handling = OpenEl::Ignored;
         if (!s->qtHtmlTagNames.contains(oel.name)) {
-            kDebug(173) << QString::fromLatin1("Tag '%1' is neither semantic nor HTML in "
+            qWarning() << QString::fromLatin1("Tag '%1' is neither semantic nor HTML in "
                                    "message {%3}.")
                                   .arg(oel.name, shorten(text));
         }

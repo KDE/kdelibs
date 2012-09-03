@@ -40,6 +40,7 @@
 
 #include <QtCore/QTextCodec>
 #include <QtCore/QFile>
+#include <QtCore/QDebug>
 #include <QPrinter>
 #include <QtCore/QFileInfo>
 #include <QtCore/QRegExp>
@@ -53,8 +54,6 @@
 #include "kcatalog_p.h"
 #include "kglobal.h"
 #include "kconfig.h"
-#include "kcomponentdata.h"
-#include "kdebug.h"
 #include "kdatetime.h"
 #include "kcalendarsystem.h"
 #include "kcurrencycode.h"
@@ -305,9 +304,9 @@ void KLocalePrivate::initMainCatalogs()
     }
 
     if (m_catalogName.isEmpty()) {
-        kDebug(173) << "KLocale instance created called without valid "
-                    << "catalog! Give an argument or call setMainCatalog "
-                    << "before init" << endl;
+        qDebug() << "KLocale instance created called without valid "
+                << "catalog! Give an argument or call setMainCatalog "
+                << "before init";
     } else {
         // do not use insertCatalog here, that would already trigger updateCatalogs
         m_catalogNames.append(KCatalogName(m_catalogName));   // application catalog
@@ -729,7 +728,7 @@ bool KLocalePrivate::isApplicationTranslatedInto(const QString &lang)
     }
 
     if (m_catalogName.isEmpty()) {
-        kDebug() << "no appName!";
+        qWarning() << "no appName!";
         return false;
     }
 
@@ -889,19 +888,16 @@ void KLocalePrivate::translateRawFrom(const char *catname, const char *msgctxt, 
                                       unsigned long n, QString *language, QString *translation) const
 {
     if (!msgid || !msgid[0]) {
-        kDebug(173) << "KLocale: trying to look up \"\" in catalog. "
-        << "Fix the program" << endl;
+        qWarning() << "KLocale: trying to look up \"\" in catalog. Fix the program!";
         language->clear();
         translation->clear();
         return;
     }
     if (msgctxt && !msgctxt[0]) {
-        kDebug(173) << "KLocale: trying to use \"\" as context to message. "
-        << "Fix the program" << endl;
+        qWarning() << "KLocale: trying to use \"\" as context to message. Fix the program!";
     }
     if (msgid_plural && !msgid_plural[0]) {
-        kDebug(173) << "KLocale: trying to use \"\" as plural message. "
-        << "Fix the program" << endl;
+        qWarning() << "KLocale: trying to use \"\" as plural message. Fix the program!";
     }
 
     QMutexLocker locker(kLocaleMutex());
@@ -993,8 +989,7 @@ QString KLocalePrivate::translateQt(const char *context, const char *sourceText,
     // on sourceText.
 
     if (!sourceText || !sourceText[0]) {
-        kDebug(173) << "KLocale: trying to look up \"\" in catalog. "
-        << "Fix the program" << endl;
+        qWarning() << "KLocale: trying to look up \"\" in catalog. " << "Fix the program";
         return QString();
     }
 
@@ -2607,7 +2602,7 @@ void KLocalePrivate::initEncoding()
     }
 
     if (!m_codecForEncoding) {
-        kWarning() << "Cannot resolve system encoding, defaulting to ISO 8859-1.";
+        qWarning() << "Cannot resolve system encoding, defaulting to ISO 8859-1.";
         const int mibDefault = 4; // ISO 8859-1
         setEncoding(mibDefault);
     }

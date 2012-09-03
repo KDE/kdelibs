@@ -36,7 +36,6 @@
 
 #include "kcatalog_p.h"
 #include "kconfig.h"
-#include "kdebug.h"
 #include "kdatetime.h"
 #include "kcalendarsystem.h"
 #include "kdayperiod_p.h"
