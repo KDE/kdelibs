@@ -32,14 +32,14 @@ if(PCRE_FOUND AND NOT KJS_FORCE_DISABLE_PCRE)
    include_directories(${PCRE_INCLUDE_DIR})
 
    # tell check_symbol_exists to -I pcre dirs.
-   include(MacroPushRequiredVars)
-   macro_push_required_vars()
+   include(CMakePushCheckState)
+   cmake_push_check_state()
    set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${PCRE_INCLUDE_DIR})
 
    check_symbol_exists(PCRE_CONFIG_UTF8 "pcre.h" HAVE_PCRE_UTF8)
    check_symbol_exists(PCRE_CONFIG_STACKRECURSE "pcre.h" HAVE_PCRE_STACK)
 
-   macro_pop_required_vars()
+   cmake_pop_check_state()
 
    # Even though we "support" non-PCRE builds, if we build PCRE, we want a version 
    # recent enough, and we don't want to fallback to a completely crippled 
