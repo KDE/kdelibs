@@ -634,7 +634,8 @@ void KTextEdit::contextMenuEvent(QContextMenuEvent *event)
             suggestionsAction->setEnabled(false);
         }
         else {
-            for (QStringList::const_iterator it = reps.constBegin(); it != reps.constEnd(); ++it) {
+            QStringList::const_iterator end(reps.constEnd());
+            for (QStringList::const_iterator it = reps.constBegin(); it != end; ++it) {
                 menu.addAction(*it);
             }
         }
