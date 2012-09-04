@@ -27,7 +27,7 @@
 #include <QtCore/QFile>
 #include <QtDBus/QDBusConnection>
 
-#include "../shared/udevqtclient.h"
+#include "../shared/udevqt.h"
 
 #include "udisks2.h"
 #include "udisksopticaldisc.h"
