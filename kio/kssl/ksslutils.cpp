@@ -22,7 +22,6 @@
 #include "ksslutils.h"
 
 #include <QtCore/QString>
-#include <kglobal.h>
 #include <klocale.h>
 #include <QtCore/QDate>
 

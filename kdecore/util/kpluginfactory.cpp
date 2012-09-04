@@ -85,7 +85,7 @@ KPluginFactory::~KPluginFactory()
     Q_D(KPluginFactory);
 
     if (d->catalogInitialized && d->componentData.isValid()) {
-        KGlobal::locale()->removeCatalog(d->componentData.catalogName());
+        KLocale::global()->removeCatalog(d->componentData.catalogName());
     }
 
     delete d_ptr;

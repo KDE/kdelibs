@@ -38,7 +38,6 @@
 #include <qmath.h>
 #include <qmimedatabase.h>
 
-#include <kglobal.h>
 #include <klocale.h>
 #include <kiconloader.h>
 #include <kiconeffect.h>

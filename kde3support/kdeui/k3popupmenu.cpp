@@ -28,7 +28,6 @@
 #include <QMenuItem>
 
 #include <kdebug.h>
-#include <kglobal.h>
 #include <klocale.h>
 
 class K3PopupMenu::K3PopupMenuPrivate

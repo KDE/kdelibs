@@ -37,7 +37,6 @@
 #include <krandom.h>
 #include <kdebug.h>
 #include <klocale.h>
-#include <kglobal.h>
 #include <kconfiggroup.h>
 #include <kio/authinfo.h>
 #include <misc/kntlm/kntlm.h>

@@ -21,7 +21,7 @@
 
 #include <QtCore/QSet>
 
-#include <kapplication.h>
+#include <kglobal.h>
 
 using namespace KParts;
 

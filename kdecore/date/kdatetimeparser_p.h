@@ -21,7 +21,6 @@
 #define KDATETIMEPARSER_H
 
 #include "klocale.h"
-#include "kglobal.h"
 
 class QChar;
 class QString;

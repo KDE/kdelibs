@@ -38,7 +38,6 @@
 #include <QtCore/QStringList>
 #include <QtCore/QSharedData>
 
-#include <kglobal.h>
 #include <klocale.h>
 #include "kcalendarsystemqdate_p.h"
 #include <ksystemtimezone.h>

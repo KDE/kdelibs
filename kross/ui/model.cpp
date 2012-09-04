@@ -23,7 +23,6 @@
 #include <kross/core/actioncollection.h>
 #include <kross/core/manager.h>
 
-#include <kglobal.h>
 #include <klocale.h>
 #include <kdebug.h>
 

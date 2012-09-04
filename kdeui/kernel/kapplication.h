@@ -39,7 +39,6 @@ typedef unsigned long Atom;
 
 #include <QApplication>
 #include <kcomponentdata.h>
-#include <kglobal.h>
 
 struct _IceConn;
 class QPixmap;

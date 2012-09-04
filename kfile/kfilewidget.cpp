@@ -56,7 +56,6 @@
 #include <klocale.h>
 #include <kio/kfileitemdelegate.h>
 #include <kde_file.h>
-#include <kglobal.h>
 
 #include <QCheckBox>
 #include <QDockWidget>

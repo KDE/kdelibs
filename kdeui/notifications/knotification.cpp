@@ -36,8 +36,8 @@
 #include <kdialog.h>
 #include <kwindowsystem.h>
 #include <kdebug.h>
-#include <kapplication.h>
 
+#include <QCoreApplication>
 #include <QMap>
 #include <QPixmap>
 #include <QPointer>
@@ -364,7 +364,7 @@ void KNotification::sendEvent()
 		else if(d->componentData.isValid()) {
 			appname = d->componentData.componentName();
 		} else {
-			appname = KGlobal::mainComponent().componentName();
+			appname = QCoreApplication::applicationName();
 		}
 
 		if (KNotificationManager::self()->notify( this , d->pixmap , d->actions , d->contexts , appname ))

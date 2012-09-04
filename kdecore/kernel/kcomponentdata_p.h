@@ -39,7 +39,7 @@ public:
         refCount(1)
     {
         if (KGlobal::hasLocale()) {
-            KGlobal::locale()->insertCatalog(aboutData.catalogName());
+            KLocale::global()->insertCatalog(aboutData.catalogName());
             shouldRemoveCatalog = true;
         } else {
             shouldRemoveCatalog = false;
@@ -50,7 +50,7 @@ public:
     {
         refCount.fetchAndStoreOrdered(-0x00FFFFFF); //prevent a reentering of the dtor
         if (shouldRemoveCatalog && KGlobal::hasLocale())
-            KGlobal::locale()->removeCatalog(aboutData.catalogName());
+            KLocale::global()->removeCatalog(aboutData.catalogName());
 
         sharedConfig = 0;   //delete the config object first, because it could access the standard dirs while syncing
     }

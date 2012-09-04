@@ -24,7 +24,6 @@
 #include <kde_file.h>
 #include <kmimetype.h>
 #include <ksycoca.h>
-#include <kglobal.h>
 #include <kuser.h>
 #include <qtemporarydir.h>
 #include <kconfiggroup.h>

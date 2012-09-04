@@ -31,7 +31,6 @@ namespace KGlobal
     void newComponentData(const KComponentData &c);
 }
 
-#include "kglobal.h"
 #include "klocale.h"
 #undef QT_NO_TRANSLATION
 #include <QtCore/QTranslator>

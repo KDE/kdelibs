@@ -85,7 +85,6 @@
 #include <kdirnotify.h>
 #include <kio/ioslave_defaults.h>
 #include <kde_file.h>
-#include <kglobal.h>
 
 using namespace KIO;
 

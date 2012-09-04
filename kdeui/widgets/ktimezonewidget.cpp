@@ -25,7 +25,6 @@
 
 #include <kdebug.h>
 #include <klocale.h>
-#include <kglobal.h>
 #include <ksystemtimezone.h>
 #include <ktimezone.h>
 

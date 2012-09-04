@@ -61,7 +61,6 @@
 
 #include <kcombobox.h>
 #include <kconfig.h>
-#include <kglobal.h>
 #include <kiconloader.h>
 #include <klineedit.h>
 #include <klocale.h>

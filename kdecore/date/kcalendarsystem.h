@@ -24,7 +24,6 @@
 
 #include <kdecore_export.h>
 #include "klocale.h"  // needed for enums
-#include "kglobal.h"
 
 #include <QtCore/QStringList>
 #include <QtCore/QDate>
@@ -174,7 +173,7 @@ public:
      * @param locale the locale to use for the label, defaults to global
      * @return label for calendar
      */
-    static QString calendarLabel(KLocale::CalendarSystem calendarSystem, const KLocale *locale = KGlobal::locale());
+    static QString calendarLabel(KLocale::CalendarSystem calendarSystem, const KLocale *locale = KLocale::global());
 
     //KDE5 Remove
     /**
@@ -1192,9 +1191,9 @@ public:
      * automatic validation of translations) and stating the format's purpose:
      * \code
      * QDate reportDate;
-     * KGlobal::locale()->calendar()->setDate(reportDate, reportYear, reportMonth, 1);
+     * KLocale::global()->calendar()->setDate(reportDate, reportYear, reportMonth, 1);
      * dateFormat = i18nc("(kdedt-format) Report month and year in report header", "%B %Y"));
-     * dateString = KGlobal::locale()->calendar()->formatDate(reportDate, dateFormat);
+     * dateString = KLocale::global()->calendar()->formatDate(reportDate, dateFormat);
      * \endcode
      *
      * The date format string can be defined using either the KDE or POSIX standards.

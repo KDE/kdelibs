@@ -41,7 +41,6 @@
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <kxmlguifactory.h>
-#include <kglobal.h>
 #include <qurlpathinfo.h>
 
 #include <stdio.h>

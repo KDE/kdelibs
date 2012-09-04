@@ -27,7 +27,6 @@
 
 #include <kfontdialog.h>
 #include <klocale.h>
-#include <kglobal.h>
 
 #include <cmath>
 

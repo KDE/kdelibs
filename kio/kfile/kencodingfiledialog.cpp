@@ -25,7 +25,6 @@
 
 #include <kabstractfilewidget.h>
 #include <kcombobox.h>
-#include <kglobal.h>
 #include <klocale.h>
 #include <kcharsets.h>
 #include <QtCore/QTextCodec>

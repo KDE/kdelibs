@@ -27,7 +27,6 @@
 
 #include "klanguagebutton.h"
 
-#include <kglobal.h>
 #include <klocale.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>

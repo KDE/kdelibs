@@ -23,7 +23,6 @@
 
 #include <kconfig.h>
 #include <kcolorscheme.h>
-#include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kdebug.h>
 #include <knotification.h>
@@ -396,7 +395,7 @@ void KDateTable::paintCell( QPainter *painter, int row, int col, const KColorSch
 
     //FIXME This is wrong if the widget is not using the global!
     //See if cell day is normally a working day
-    if ( KLocale::global()->workingWeekStartDay() <= KGlobal::locale()->workingWeekEndDay() ) {
+    if ( KLocale::global()->workingWeekStartDay() <= KLocale::global()->workingWeekEndDay() ) {
         if ( cellWeekDay >= KLocale::global()->workingWeekStartDay() &&
              cellWeekDay <= KLocale::global()->workingWeekEndDay() ) {
                 workingDay = true;

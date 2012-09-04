@@ -27,7 +27,6 @@
 #include "qtest_kde.h"
 #include "kcalendarsystem.h"
 #include "klocalizeddate.h"
-#include "kglobal.h"
 #include "kdebug.h"
 #include "kconfiggroup.h"
 

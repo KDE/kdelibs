@@ -42,6 +42,7 @@
 #include <ktextedit.h>
 #include <ksqueezedtextlabel.h>
 #include <kwindowsystem.h>
+#include <kglobal.h>
 
 // Some i18n filters, that standard button texts are piped through
 // (the new KGuiItem object with filtered text is created from the old one).

@@ -55,7 +55,6 @@
 #include <qmimedatabase.h>
 
 #include <kdebug.h>
-#include <kglobal.h>
 #include <klocale.h>
 #include <kcomponentdata.h>
 #include <kio/ioslave_defaults.h>

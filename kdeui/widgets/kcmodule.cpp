@@ -33,7 +33,6 @@
 #include <kconfigskeleton.h>
 #include <kconfigdialogmanager.h>
 #include <kdebug.h>
-#include <kglobal.h>
 #include <kcomponentdata.h>
 #include <klocale.h>
 #include "kauthaction.h"

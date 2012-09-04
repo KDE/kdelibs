@@ -712,7 +712,7 @@ void KAboutData::translateInternalProgramName() const
   d->_translatedProgramName.clear();
 #pragma message("KDE5 FIXME: This code must be replaced by something with QLocalizedString")
 #if 0
-  if( KGlobal::locale())
+  if( KLocale::global())
       d->_translatedProgramName = programName().toUtf8();
 #endif
 }
@@ -818,12 +818,12 @@ QList<KAboutPerson> KAboutData::translators() const
 #pragma message("KDE5 TODO: What about this code ?")
 #if 0
     KLocale *tmpLocale = NULL;
-    if (KGlobal::locale()) {
+    if (KLocale::global()) {
         // There could be many catalogs loaded into the global locale,
         // e.g. in systemsettings. The tmp locale is needed to make sure we
         // use the translators name from this aboutdata's catalog, rather than
         // from any other loaded catalog.
-        tmpLocale = new KLocale(*KGlobal::locale());
+        tmpLocale = new KLocale(*KLocale::global());
         tmpLocale->setActiveCatalog(catalogName());
     }
 #endif

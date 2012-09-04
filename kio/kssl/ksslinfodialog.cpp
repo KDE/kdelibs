@@ -33,7 +33,6 @@
 #include <QtCore/Q_PID>
 #include <QtNetwork/QSslCertificate>
 
-#include <kglobal.h>
 #include <klocale.h>
 
 #include "ksslcertificate.h"

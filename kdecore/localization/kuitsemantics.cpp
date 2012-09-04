@@ -32,7 +32,6 @@
 #include <kcatalog_p.h>
 #include <kuitformats_p.h>
 #include <klocale.h>
-#include <kglobal.h>
 
 #define QL1S(x)   QLatin1String(x)
 

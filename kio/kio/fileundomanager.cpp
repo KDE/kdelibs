@@ -25,7 +25,6 @@
 #include <kdatetime.h>
 #include <kdebug.h>
 #include <kdirnotify.h>
-#include <kglobal.h>
 #include <kio/copyjob.h>
 #include <kio/job.h>
 #include <kio/mkdirjob.h>

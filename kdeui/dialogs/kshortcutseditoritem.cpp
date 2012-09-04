@@ -28,7 +28,6 @@
 #include <kaction.h>
 #include <kdebug.h>
 #include <kstringhandler.h>
-#include <kglobal.h>
 
 #include <QTreeWidgetItem>
 

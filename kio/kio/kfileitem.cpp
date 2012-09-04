@@ -51,7 +51,6 @@
 #include <kdesktopfile.h>
 #include <kmountpoint.h>
 #include <kconfiggroup.h>
-#include <kglobal.h>
 #ifndef Q_OS_WIN
 #include <knfsshare.h>
 #include <ksambashare.h>

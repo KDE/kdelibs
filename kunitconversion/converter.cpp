@@ -19,7 +19,6 @@
 
 #include "converter.h"
 
-#include <kglobal.h>
 #include <klocale.h>
 
 #include "unitcategory.h"

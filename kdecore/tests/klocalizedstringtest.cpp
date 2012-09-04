@@ -25,7 +25,6 @@
 #include <kdebug.h>
 #include "qtest_kde.h"
 
-#include "kglobal.h"
 
 #include "klocale.h"
 #include "klocalizedstring.h"

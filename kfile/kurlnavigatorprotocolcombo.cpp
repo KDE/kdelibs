@@ -30,7 +30,6 @@
 #include <kprotocolinfo.h>
 #include <kprotocolmanager.h>
 #include <kurlnavigator.h>
-#include <kglobal.h>
 
 namespace
 {

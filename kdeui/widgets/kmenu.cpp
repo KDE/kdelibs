@@ -36,7 +36,6 @@
 #include <QWidgetAction>
 
 #include <kdebug.h>
-#include <kglobal.h>
 #include <klocale.h>
 #include <kacceleratormanager.h>
 

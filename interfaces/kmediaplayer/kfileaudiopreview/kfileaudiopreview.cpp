@@ -25,7 +25,6 @@
 
 #include <defaults-kfile.h> // for ConfigGroup
 
-#include <kglobal.h>
 #include <kconfig.h>
 #include <klocale.h>
 #include <kpluginfactory.h>

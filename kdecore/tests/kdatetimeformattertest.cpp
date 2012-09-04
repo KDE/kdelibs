@@ -28,7 +28,6 @@
 #include "kcalendarsystem.h"
 #include "kdatetimeformatter_p.h"
 #include "klocale.h"
-#include "kglobal.h"
 #include "kdebug.h"
 #include "kconfiggroup.h"
 
@@ -369,5 +368,5 @@ void KDateTimeFormatterTest::testFormatUnicode()
 
 void KDateTimeFormatterTest::compareFormatUnicode(KDateTimeFormatter formatter, const KDateTime &testDateTime, const QString &testFormat)
 {
-    QCOMPARE(formatter.formatDateTime(testDateTime, testFormat, 0, KLocale::global()->calendar(), KGlobal::locale(), KGlobal::locale()->dateTimeDigitSet(), KLocale::UnicodeFormat), testDateTime.dateTime().toString(testFormat));
+    QCOMPARE(formatter.formatDateTime(testDateTime, testFormat, 0, KLocale::global()->calendar(), KLocale::global(), KLocale::global()->dateTimeDigitSet(), KLocale::UnicodeFormat), testDateTime.dateTime().toString(testFormat));
 }

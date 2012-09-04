@@ -23,7 +23,6 @@
 #include <QKeyEvent>
 #include <QLineEdit>
 
-#include "kglobal.h"
 #include "kdebug.h"
 #include "klocale.h"
 #include "kcombobox.h"
@@ -150,7 +149,7 @@ QString KTimeComboBoxPrivate::formatTime(const QTime &time)
 
 QString KTimeComboBoxPrivate::convertDigits(const QString &digits)
 {
-    return KLocale::global()->convertDigits(digits, KGlobal::locale()->dateTimeDigitSet());
+    return KLocale::global()->convertDigits(digits, KLocale::global()->dateTimeDigitSet());
 }
 
 void KTimeComboBoxPrivate::initTimeWidget()

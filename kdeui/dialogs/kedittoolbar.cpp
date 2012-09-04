@@ -50,7 +50,6 @@
 #include <kdeversion.h>
 #include <kcombobox.h>
 #include <klineedit.h>
-#include <kglobal.h>
 
 #include "kaction.h"
 #include "kactioncollection.h"

@@ -54,6 +54,7 @@
 #include <ktoolbar.h>
 #include <kwindowsystem.h>
 #include <kconfiggroup.h>
+#include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kwindowconfig.h>
 

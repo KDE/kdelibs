@@ -630,9 +630,9 @@ public:
      * automatic validation of translations) and stating the format's purpose:
      * \code
      * QDate reportDate;
-     * KGlobal::locale()->calendar()->setDate(reportDate, reportYear, reportMonth, 1);
+     * KLocale::global()->calendar()->setDate(reportDate, reportYear, reportMonth, 1);
      * dateFormat = i18nc("(kdedt-format) Report month and year in report header", "%B %Y"));
-     * dateString = KGlobal::locale()->calendar()->formatDate(reportDate, dateFormat);
+     * dateString = KLocale::global()->calendar()->formatDate(reportDate, dateFormat);
      * \endcode
      *
      * The date format string can be defined using either the KDE, POSIX or the Qt

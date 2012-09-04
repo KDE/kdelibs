@@ -54,7 +54,6 @@
 #include <kdialog.h>
 #include <kfiledialog.h>
 #include <kpluginfactory.h>
-#include <kglobal.h>
 #include <klineedit.h>
 #include <klocale.h>
 #include <kcodecs.h>

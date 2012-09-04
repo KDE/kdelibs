@@ -23,7 +23,6 @@
 #include "kdebug.h"
 #include "klocale.h"
 #include "klocale_p.h"
-#include "kglobal.h"
 #include "kconfiggroup.h"
 #include "kcalendarsystem.h"
 #include "kdayperiod_p.h"

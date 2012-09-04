@@ -14,7 +14,6 @@
 #include <QGroupBox>
 #include <QButtonGroup>
 
-#include <kglobal.h>
 #include <kconfig.h>
 #include <k3iconview.h>
 #include <k3listview.h>
