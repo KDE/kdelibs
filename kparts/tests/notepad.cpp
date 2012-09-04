@@ -29,7 +29,6 @@
 #include <QTextEdit>
 
 #include <kaboutdata.h>
-#include <kapplication.h>
 #include <kdebug.h>
 #include <kaction.h>
 #include <kactioncollection.h>

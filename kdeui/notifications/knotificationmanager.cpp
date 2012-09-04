@@ -25,7 +25,6 @@
 #include <QPointer>
 
 #include <kdebug.h>
-#include <kapplication.h>
 #include <kiconloader.h>
 #include <kconfig.h>
 #include <klocalizedstring.h>

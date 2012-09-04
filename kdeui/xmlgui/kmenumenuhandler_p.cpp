@@ -34,7 +34,6 @@
 #include <QWidget>
 #include <QDomDocument>
 #include <QDomNode>
-#include <kapplication.h>
 #include <kmainwindow.h>
 #include <ktoolbar.h>
 #include <kselectaction.h>

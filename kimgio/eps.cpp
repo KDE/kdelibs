@@ -14,7 +14,6 @@
 #include <QPrinter>
 #include <QtCore/QTextStream>
 #include <QtCore/QTemporaryFile>
-#include <kapplication.h>
 #include <kdebug.h>
 
 #define BUFLEN 200

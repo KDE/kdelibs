@@ -73,7 +73,6 @@
 
 #include <solid/networking.h>
 
-#include <kapplication.h>
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
 #include <kde_file.h>

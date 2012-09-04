@@ -27,7 +27,6 @@
 #include <qurlpathinfo.h>
 
 #include <kactioncollection.h>
-#include <kapplication.h>
 #include <kcoreauthorized.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>

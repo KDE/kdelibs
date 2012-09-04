@@ -27,10 +27,10 @@
 
 #include "kpastetextaction.h"
 
+#include <QApplication>
 #include <QClipboard>
 #include <QtDBus/QtDBus>
 
-#include <kapplication.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
 

@@ -36,7 +36,7 @@
 #include <QtDBus/QtDBus>
 
 #include <kdbusservice.h>
-#include <kapplication.h>
+#include <qapplication.h>
 #include <kcmdlineargs.h>
 #include <kaboutdata.h>
 #include <klocalizedstring.h>

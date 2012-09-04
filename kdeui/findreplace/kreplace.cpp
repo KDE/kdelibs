@@ -22,7 +22,6 @@
 #include "kfind_p.h"
 
 #include <QLabel>
-#include <kapplication.h>
 #include <kdebug.h>
 
 #include <klocalizedstring.h>

@@ -33,7 +33,6 @@
 #include <QTreeView>
 #include <QLabel>
 
-#include <kapplication.h>
 //#include <kdeversion.h>
 #include <kconfig.h>
 

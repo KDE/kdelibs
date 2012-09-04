@@ -21,7 +21,6 @@
 #include "knotifyeventlist.h"
 #include "knotifyconfigelement.h"
 
-#include <kapplication.h>
 #include <kdialog.h>
 #include <QVBoxLayout>
 #include <QDBusInterface>

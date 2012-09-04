@@ -19,7 +19,7 @@
 
 #include "kgesturemap.h"
 
-#include <kapplication.h>
+#include <qapplication.h>
 #include <kaction.h>
 #include <QActionEvent>
 

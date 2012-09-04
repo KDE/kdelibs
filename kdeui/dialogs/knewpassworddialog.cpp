@@ -28,7 +28,7 @@
 #include <QtCore/QSize>
 #include <QtCore/QString>
 
-#include <kapplication.h>
+#include <qapplication.h>
 #include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>

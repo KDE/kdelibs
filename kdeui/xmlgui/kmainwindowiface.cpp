@@ -21,7 +21,7 @@
 #include "kmainwindowiface_p.h"
 
 #include <kactioncollection.h>
-#include <kapplication.h>
+#include <qapplication.h>
 #include <kxmlguiwindow.h>
 #include <kaction.h>
 #include <QClipboard>

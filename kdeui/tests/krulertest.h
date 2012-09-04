@@ -7,7 +7,6 @@
 #include <QRadioButton>
 #include <QFrame>
 
-#include <kapplication.h>
 #include <kmainwindow.h>
 #include <knuminput.h>
 

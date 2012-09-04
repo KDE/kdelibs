@@ -3,7 +3,6 @@
 #include <klocalizedstring.h>
 #include <QtCore/QPointer>
 
-#include <kapplication.h>
 #include <kaction.h>
 #include <kconfig.h>
 

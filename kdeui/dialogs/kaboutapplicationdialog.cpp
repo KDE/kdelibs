@@ -28,15 +28,16 @@
 #include "kaboutapplicationpersonlistdelegate_p.h"
 #include "kdeversion.h"
 #include "kiconloader.h"
-#include "kapplication.h"
 #include "kglobalsettings.h"
 #include "ktextbrowser.h"
 #include "ktitlewidget.h"
 
 #include <kaboutdata.h>
 #include <kglobal.h>
+#include <kcomponentdata.h>
 #include <klocalizedstring.h>
 
+#include <QApplication>
 #include <QLabel>
 #include <QLayout>
 #include <QPushButton>

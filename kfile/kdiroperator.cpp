@@ -52,7 +52,7 @@
 #include <qurlpathinfo.h>
 
 #include <kaction.h>
-#include <kapplication.h>
+#include <qapplication.h>
 #include <kdebug.h>
 #include <kdialog.h>
 #include <kdirlister.h>

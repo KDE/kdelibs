@@ -24,14 +24,14 @@
 
 #include <QList>
 #include <QPixmap>
+#include <QStyle>
+#include <QLabel>
 
 #include "k3aboutdialog_p.h"
 #include <kaboutdata.h>
-#include <kapplication.h>
-#include <QLabel>
 #include <kglobal.h>
+#include <kcomponentdata.h>
 #include <klocalizedstring.h>
-#include <QStyle>
 
 K3AboutApplication::K3AboutApplication( const KAboutData *aboutData, QWidget *parent, bool modal )
   :K3AboutDialog( Tabbed|Product, aboutData->programName(), parent ),

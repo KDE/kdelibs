@@ -23,7 +23,6 @@
 
 #include <QtCore/QTextStream>
 
-#include <kapplication.h>
 #include <kactioncollection.h>
 #include <kstandardaction.h>
 #include <kfiledialog.h>

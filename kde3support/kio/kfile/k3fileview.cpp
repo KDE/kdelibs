@@ -24,7 +24,7 @@
 
 #include <kaction.h>
 #include <kactioncollection.h>
-#include <kapplication.h>
+#include <qapplication.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
 

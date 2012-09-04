@@ -30,7 +30,7 @@
 #include <QScrollBar>
 #include <QTextDocumentFragment>
 
-#include <kapplication.h>
+#include <qapplication.h>
 #include <kconfig.h>
 #include <kdialog.h>
 #include <kdialogqueue_p.h>

@@ -39,7 +39,6 @@
 #include <errno.h>
 
 #include <assert.h>
-#include <kapplication.h>
 #include <kglobal.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
