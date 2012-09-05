@@ -189,6 +189,8 @@ void ECMAscriptTest::initTestCase()
                                                .filter( QRegExp( "^[^#].*" ) );
         }
     }
+
+    m_passed = 0;
 }
 
 static QByteArray getTextProperty( const QByteArray &property, const QByteArray &code )
@@ -304,6 +306,7 @@ void ECMAscriptTest::runAllTests()
             }
         }
     }
+    m_passed++;
 }
 
 void ECMAscriptTest::runAllTests_data()
@@ -349,6 +352,11 @@ void ECMAscriptTest::runAllTests_data()
 void ECMAscriptTest::cleanup()
 {
     global->clearProperties();
+}
+
+void ECMAscriptTest::cleanupTestCase()
+{
+    qDebug() << "passed testcases:" << m_passed;
 }
 
 #include "ecmatest.moc"

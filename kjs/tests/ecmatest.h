@@ -25,6 +25,9 @@ private Q_SLOTS:
   void runAllTests();
   void runAllTests_data();
   void cleanup();
+  void cleanupTestCase();
+private:
+  unsigned int m_passed;
 };
 
 #endif /* ECMATEST_H */
