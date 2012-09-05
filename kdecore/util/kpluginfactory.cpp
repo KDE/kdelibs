@@ -84,7 +84,7 @@ KPluginFactory::~KPluginFactory()
 {
     Q_D(KPluginFactory);
 
-    if (d->catalogInitialized && d->componentData.isValid()) {
+    if (d->catalogInitialized && d->componentData.isValid() && KLocale::global()) {
         KLocale::global()->removeCatalog(d->componentData.catalogName());
     }
 
