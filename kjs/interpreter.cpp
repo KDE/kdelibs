@@ -46,6 +46,7 @@
 #include "types.h"
 #include "value.h"
 #include "lexer.h"
+#include "json_object.h"
 
 #if USE(BINDINGS)
 #include "runtime.h"
@@ -465,6 +466,7 @@ void Interpreter::initGlobalObject()
 
     // built-in objects
     m_globalObject->put(&m_globalExec, "Math", new MathObjectImp(&m_globalExec, objProto), DontEnum);
+    m_globalObject->put(&m_globalExec, "JSON", new JSONObjectImp(&m_globalExec, objProto), DontEnum);
 }
 
 ExecState* Interpreter::globalExec()
