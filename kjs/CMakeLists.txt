@@ -193,6 +193,7 @@ set(kjs_LIB_SRCS
    CompileState.cpp
    jsonlexer.cpp
    json_object.cpp
+   jsonstringify.cpp
    )
 
 if (NOT DEFINED QT_ONLY)

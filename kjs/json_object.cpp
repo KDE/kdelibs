@@ -25,6 +25,7 @@
 #include <config.h>
 #include "lookup.h"
 #include "array_instance.h"
+#include "jsonstringify.h"
 
 #include "json_object.lut.h"
 
@@ -35,8 +36,9 @@ using namespace KJS;
 const ClassInfo JSONObjectImp::info = { "JSON", 0, &jsonTable, 0 };
 
 /* Source for json_object.lut.h
-@begin jsonTable 1
+@begin jsonTable 2
   parse           JSONObjectImp::Parse      DontEnum|Function 2
+  stringify       JSONObjectImp::Stringify  DontEnum|Function 3
 @end
 */
 
@@ -157,6 +159,24 @@ JSValue *JSONFuncImp::callAsFunction(ExecState* exec, JSObject* /*thisObj*/, con
             }
 
             return val;
+        }
+        case JSONObjectImp::Stringify: {
+            JSValue* object = args[0];
+            JSONStringify stringifier(exec, args[1], args[2]);
+
+            JSONStringify::StringifyState state;
+            JSValue* ret = stringifier.stringify(exec, object, state);
+            switch (state) {
+                case JSONStringify::Success:
+                    return ret;
+                case JSONStringify::FailedCyclic:
+                    return throwError(exec, TypeError, "cyclic object value");
+                case JSONStringify::FailedStackLimitExceeded:
+                    return throwError(exec, TypeError, "object stack limit exceeded");
+                case JSONStringify::FailedException:
+                    //stringify already got an exception
+                    return jsUndefined();
+            }
         }
         default:
             ASSERT_NOT_REACHED();

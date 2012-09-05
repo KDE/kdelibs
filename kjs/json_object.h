@@ -36,7 +36,7 @@ public:
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
-    enum { Parse };
+    enum { Parse, Stringify };
 };
 
 class JSONFuncImp : public InternalFunctionImp {
