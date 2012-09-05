@@ -31,6 +31,8 @@
     #include "klocale_unix_p.h"
 #endif
 
+#include <QThread>
+#include <QCoreApplication>
 #include <QtCore/QDateTime>
 #include <QtCore/QTextCodec>
 
@@ -373,11 +375,31 @@ void KLocale::setMainCatalog(const QString &catalog)
     KLocalePrivate::setMainCatalog(catalog);
 }
 
-Q_GLOBAL_STATIC_WITH_ARGS(KLocale, s_global, (KLocalePrivate::mainCatalog()))
+class KGlobalLocaleStatic
+{
+public:
+    KGlobalLocaleStatic()
+        : locale(KLocalePrivate::mainCatalog())
+    {
+        QTextCodec::setCodecForLocale(locale.codecForEncoding());
+        QCoreApplication* coreApp = QCoreApplication::instance();
+        if (coreApp) { // testcase: kwrite --help: no qcore app
+            if (coreApp->thread() != QThread::currentThread()) {
+                qFatal("KLocale::global() must be called from the main thread before using i18n() in threads. KApplication takes care of this. If not using KApplication, call KGlobal::locale() during initialization.");
+            } else {
+                QCoreApplication::installTranslator(new KDETranslator(coreApp));
+            }
+        }
+
+    }
+    KLocale locale;
+};
+
+Q_GLOBAL_STATIC(KGlobalLocaleStatic, s_globalLocale)
 
 KLocale * KLocale::global()
 {
-    return s_global();
+    return &s_globalLocale()->locale;
 }
 
 double KLocale::readNumber(const QString &_str, bool * ok) const

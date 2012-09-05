@@ -1224,5 +1224,33 @@ private:
     bool        m_utf8FileEncoding;
 };
 
-#endif /* KLOCALE_P_H */
+#include <QtCore/QTranslator>
+#include <QDebug>
 
+class KDETranslator : public QTranslator
+{
+public:
+    KDETranslator(QObject *parent) : QTranslator(parent)
+    {
+        setObjectName(QLatin1String("kdetranslator"));
+    }
+
+    virtual QString translate(const char* context,
+                              const char *sourceText,
+                              const char* message
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+                              , int n
+#endif
+                              ) const
+    {
+        qDebug() << context << sourceText << message;
+        return KLocale::global()->translateQt(context, sourceText, message);
+    }
+
+    virtual bool isEmpty() const
+    {
+        return false;
+    }
+};
+
+#endif /* KLOCALE_P_H */

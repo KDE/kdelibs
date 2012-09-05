@@ -176,31 +176,8 @@ void KGlobal::insertCatalog(const QString& catalog)
 KLocale *KGlobal::locale()
 {
     PRIVATE_DATA;
-    if (d->locale == 0 || (d->localeIsFromFakeComponent && d->mainComponent.isValid() && d->mainComponent.config())) {
-        // If you hit the warning below, here's how to debug it in gdb:
-        // (gdb) set auto-solib-add on
-        // (gdb) b qt_message_output
-        // (gdb) run
-        // It will stop at the "-nograb" information.
-        // (gdb) b KLocalePrivate::KLocalePrivate
-        // (gdb) c
-        // And now it will stop at the first construction of the KLocale object, type bt or go up to find the
-        // guilty i18n call.
-        if (d->locale != 0) qDebug() << "KLocale::global::Warning your global KLocale is being recreated with a valid main component instead of a fake component, this usually means you tried to call i18n related functions before your main component was created. You should not do that since it most likely will not work";
-        delete d->locale;
-        d->locale = 0;
-        d->locale = new KLocale(mainComponent().catalogName());
-        d->localeIsFromFakeComponent = !d->mainComponent.isValid();
-        QTextCodec::setCodecForLocale(d->locale->codecForEncoding());
-        mainComponent().aboutData()->translateInternalProgramName();
-        QCoreApplication* coreApp = QCoreApplication::instance();
-        if (coreApp) { // testcase: kwrite --help: no qcore app
-            if (coreApp->thread() != QThread::currentThread()) {
-                qFatal("KLocale::global() must be called from the main thread before using i18n() in threads. KApplication takes care of this. If not using KApplication, call KGlobal::locale() during initialization.");
-            } else {
-                QCoreApplication::installTranslator(new KDETranslator(coreApp));
-            }
-        }
+    if (d->locale == 0 /*|| (d->localeIsFromFakeComponent && d->mainComponent.isValid() && d->mainComponent.config())*/) {
+        d->locale = KLocale::global();
         foreach(const QString &catalog, d->catalogsToInsert)
             d->locale->insertCatalog(catalog);
         d->catalogsToInsert.clear();
