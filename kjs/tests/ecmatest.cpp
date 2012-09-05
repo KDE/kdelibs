@@ -189,6 +189,8 @@ void ECMAscriptTest::initTestCase()
                                                .filter( QRegExp( "^[^#].*" ) );
         }
     }
+
+    m_passed = 0;
 }
 
 static QByteArray getTextProperty( const QByteArray &property, const QByteArray &code )
@@ -304,6 +306,7 @@ void ECMAscriptTest::runAllTests()
             }
         }
     }
+    m_passed++;
 }
 
 void ECMAscriptTest::runAllTests_data()
@@ -320,7 +323,7 @@ void ECMAscriptTest::runAllTests_data()
         QWARN( "===> Testing chapter " + chapter.toAscii() );
 
     // some tests fail when the suite is run as a whole
-    if ( chapter.isEmpty() || chapter == "ch15" ) {
+    if ( chapter.isEmpty() || chapter.startsWith("ch15") ) {
         const QByteArray endlessLoop = "this test causes an endless loop, avoid it for the moment";
         skips[ "S15.1.2.3_A6" ] = endlessLoop;
         skips[ "S15.1.3.1_A2.5_T1" ] = endlessLoop;
@@ -349,6 +352,11 @@ void ECMAscriptTest::runAllTests_data()
 void ECMAscriptTest::cleanup()
 {
     global->clearProperties();
+}
+
+void ECMAscriptTest::cleanupTestCase()
+{
+    qDebug() << "passed testcases:" << m_passed;
 }
 
 #include "ecmatest.moc"

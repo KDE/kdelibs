@@ -19,6 +19,7 @@
         KJS::FunctionObjectImp*;
         KJS::DateObjectImp*;
         KJS::MathObjectImp*;
+        KJS::JSONObjectImp*;
         KJS::ArrayObjectImp*;
         KJS::NumberObjectImp*;
         KJS::RegExpObjectImp*;

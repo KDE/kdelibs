@@ -778,6 +778,7 @@ install( FILES
   KParts/HistoryProvider
   KParts/HtmlExtension
   KParts/LiveConnectExtension
+  KParts/ListingExtension
   KParts/MainWindow
   KParts/OpenUrlEvent
   KParts/Part
