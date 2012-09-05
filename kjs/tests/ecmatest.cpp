@@ -275,8 +275,10 @@ void ECMAscriptTest::runAllTests()
         if ( knownBroken ) {
             QWARN( "It is known that KJS doesn't pass this test" );
             QVERIFY2( completion.complType() == KJS::Throw, "test expected to be broken now works!" );
+            m_failed++;
         } else {
             QVERIFY( completion.complType() != KJS::Throw );
+            m_passed++;
         }
     } else {
         if ( knownBroken && completion.complType() != KJS::Throw ) {
@@ -291,8 +293,10 @@ void ECMAscriptTest::runAllTests()
                 if ( knownBroken ) {
                     QWARN( "It is known that KJS doesn't pass this test" );
                     QVERIFY2( eMsg.indexOf( "NotEarlyError" ) >= 0, "test expected to be broken now works!" );
+                    m_failed++;
                 } else {
                     QVERIFY( eMsg.indexOf( "NotEarlyError" ) == -1 );
+                    m_passed++;
                 }
             } else if ( expectedError == "." ) {
                 // means "every exception passes
@@ -300,13 +304,14 @@ void ECMAscriptTest::runAllTests()
                 if ( knownBroken ) {
                     QWARN( "It is known that KJS doesn't pass this test" );
                     QVERIFY2( eMsg.indexOf( expectedError ) == -1, "test expected to be broken now works!" );
+                    m_failed++;
                 } else {
                     QVERIFY( eMsg.indexOf( expectedError ) >= 0 );
+                    m_passed++;
                 }
             }
         }
     }
-    m_passed++;
 }
 
 void ECMAscriptTest::runAllTests_data()
@@ -356,7 +361,7 @@ void ECMAscriptTest::cleanup()
 
 void ECMAscriptTest::cleanupTestCase()
 {
-    qDebug() << "passed testcases:" << m_passed;
+    qDebug() << "passed testcases:" << m_passed << "failed testcases:" << m_failed;
 }
 
 #include "ecmatest.moc"
