@@ -79,7 +79,7 @@ class ReadOnlyPart;
  *    }
  * \endcode
  *
- * @since 4.9.1
+ * @since 4.9.2
  */
 class KPARTS_EXPORT ListingFilterExtension : public QObject
 {
@@ -160,7 +160,7 @@ private:
  * it would emit @ref itemsDeleted and @ref itemsAdded signal whenever new files
  * or folders are deleted and added to a directory respectively.
  *
- * @since 4.9.1
+ * @since 4.9.2
  */
 class KPARTS_EXPORT ListingNotificationExtension : public QObject
 {
@@ -202,7 +202,7 @@ Q_SIGNALS:
       * This signal is emitted when one of the notification events listed
       * in @ref NotificationEventType occur.
       */
-    void listingEvent(NotificationEventType type, const KFileItemList&);
+    void listingEvent(KParts::ListingNotificationExtension::NotificationEventType, const KFileItemList&);
 
 private:
     class ListingNotificationExtensionPrivate;
