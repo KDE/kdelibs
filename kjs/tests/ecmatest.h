@@ -28,6 +28,7 @@ private Q_SLOTS:
   void cleanupTestCase();
 private:
   unsigned int m_passed;
+  unsigned int m_failed;
 };
 
 #endif /* ECMATEST_H */
