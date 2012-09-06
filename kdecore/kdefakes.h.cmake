@@ -30,7 +30,6 @@
      usleep, initgroups, 
      random, srandom  (this is for KRandom itself, prefer using KRandom in any other code)
      mkstemp, mkstemps (prefer to use QTemporaryfile instead)
-     trunc
      getgrouplist
 */
 
