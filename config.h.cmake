@@ -71,7 +71,6 @@
 #cmakedefine01   HAVE_MMAP
 #cmakedefine01   HAVE_MKSTEMPS
 #cmakedefine01   HAVE_MKSTEMP
-#cmakedefine01   HAVE_MKDTEMP
 #cmakedefine01   HAVE_RANDOM
 #cmakedefine01   HAVE_SENDFILE
 #cmakedefine01   HAVE_SETENV

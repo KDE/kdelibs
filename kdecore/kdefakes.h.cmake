@@ -29,7 +29,6 @@
      strlcat, strlcpy, 
      usleep, initgroups, 
      random, srandom  (this is for KRandom itself, prefer using KRandom in any other code)
-     mkdtemp (this is for KTempDir itself, prefer using KTempDir everywhere else)
      mkstemp, mkstemps (prefer to use QTemporaryfile instead)
      trunc
      getgrouplist
@@ -102,17 +101,6 @@ int initgroups(const char *, gid_t);
 #endif
 #endif
 
-#cmakedefine01 HAVE_MKDTEMP_PROTO
-#if ! HAVE_MKDTEMP_PROTO
-#ifdef __cplusplus
-extern "C" {
-#endif
-char *mkdtemp(char *);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
 #cmakedefine01 HAVE_MKSTEMPS_PROTO
 #if ! HAVE_MKSTEMPS_PROTO
 #ifdef __cplusplus
@@ -173,7 +161,6 @@ int getgrouplist(const char *, gid_t , gid_t *, int *);
 #cmakedefine01 HAVE_SYS_STAT_H
 #cmakedefine01 HAVE_STRINGS_H
 #cmakedefine01 HAVE_MKSTEMP
-#cmakedefine01 HAVE_MKDTEMP
 #cmakedefine01 HAVE_MKSTEMPS
 
 #endif /* KDEFAKES_H */

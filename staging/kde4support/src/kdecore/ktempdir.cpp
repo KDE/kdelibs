@@ -41,22 +41,12 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QDebug>
+#include <qtemporarydir.h>
 
-#include "krandom.h"
 #include <QCoreApplication>
 #include <QFileInfo>
 
-#ifdef Q_OS_WIN
-#include <QtCore/QVarLengthArray>
-#include <windows.h>
-#include <shellapi.h>
-extern QString mkdtemp_QString (const QString &_template);
-#endif
-
-#ifdef _WIN32_WCE
-#include <shellapi.h>
-#endif
-
+#ifdef Q_OS_UNIX
 static int s_umask;
 
 // Read umask before any threads are created to avoid race conditions
@@ -68,6 +58,7 @@ static int kStoreUmask()
 }
 
 Q_CONSTRUCTOR_FUNCTION(kStoreUmask)
+#endif
 
 class KTempDir::Private
 {
@@ -92,52 +83,28 @@ KTempDir::KTempDir(const QString &directoryPrefix, int mode) : d(new Private)
 
 bool KTempDir::create(const QString &directoryPrefix, int mode)
 {
-   (void) KRandom::random();
-
-#ifdef Q_OS_WIN
-   const QString nme = directoryPrefix + QLatin1String("XXXXXX");
-   const QString realName = mkdtemp_QString(nme);
-   if(realName.isEmpty())
+   QByteArray nme = QFile::encodeName(directoryPrefix) + "XXXXXX";
+   QTemporaryDir tempdir(nme);
+   tempdir.setAutoRemove(false);
+   if(!tempdir.isValid())
    {
        qWarning() << "KTempDir: Error trying to create " << nme
-		  << ": " << ::strerror(errno);
-       d->error = errno;
+       << ": " << ::strerror(errno);
        d->tmpName.clear();
        return false;
    }
 
    // got a return value != 0
-   d->tmpName = realName + QLatin1Char('/');
+   QString realNameStr(tempdir.path());
+   d->tmpName = realNameStr + QLatin1Char('/');
    qDebug() << "KTempDir: Temporary directory created :" << d->tmpName;
-   KDE::chmod(nme, mode&(~s_umask));
-
-   // Success!
-   d->exists = true;
-#else
-   QByteArray nme = QFile::encodeName(directoryPrefix) + "XXXXXX";
-   char *realName;
-   if((realName=mkdtemp(nme.data())) == 0)
-   {
-       // Recreate it for the warning, mkdtemps emptied it
-       nme = QFile::encodeName(directoryPrefix) + "XXXXXX";
-       qWarning() << "KTempDir: Error trying to create " << nme.constData()
-                  << ": " << ::strerror(errno);
-       d->error = errno;
-       d->tmpName.clear();
-       return false;
-   }
-
-   // got a return value != 0
-   QByteArray realNameStr(realName);
-   d->tmpName = QFile::decodeName(realNameStr.constData())+QLatin1Char('/');
-   qDebug() << "KTempDir: Temporary directory created :" << d->tmpName;
-
-   if(chmod(nme.data(), mode&(~s_umask)) < 0) {
+#ifndef Q_OS_WIN
+   if(chmod(QFile::encodeName(realNameStr), mode&(~s_umask)) < 0) {
        qWarning() << "KTempDir: Unable to change permissions on" << d->tmpName
                   << ":" << ::strerror(errno);
        d->error = errno;
        d->tmpName.clear();
-       (void) ::rmdir(realName); // Cleanup created directory
+       tempdir.remove(); // Cleanup created directory
        return false;
    }
 
@@ -145,13 +112,15 @@ bool KTempDir::create(const QString &directoryPrefix, int mode)
    d->exists = true;
 
    // Set uid/gid (necessary for SUID programs)
-   if(chown(nme.data(), getuid(), getgid()) < 0) {
+   if(chown(QFile::encodeName(realNameStr), getuid(), getgid()) < 0) {
        // Just warn, but don't failover yet
        qWarning() << "KTempDir: Unable to change owner on" << d->tmpName
                   << ":" << ::strerror(errno);
    }
 
 #endif
+   // Success!
+   d->exists = true;
    return true;
 }
 

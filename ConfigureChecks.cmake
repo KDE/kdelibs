@@ -210,7 +210,6 @@ check_function_exists(getmntinfo HAVE_GETMNTINFO)        # kdecore, kio
 check_function_exists(initgroups HAVE_INITGROUPS)        # kde3support/k3process, kdesu
 check_function_exists(mkstemps   HAVE_MKSTEMPS)          # dcop, kdecore/fakes.c
 check_function_exists(mkstemp    HAVE_MKSTEMP)           # kdecore/fakes.c
-check_function_exists(mkdtemp    HAVE_MKDTEMP)           # kdecore/fakes.c
 check_function_exists(random     HAVE_RANDOM)            # kdecore/fakes.c
 check_function_exists(strlcpy    HAVE_STRLCPY)           # kdecore/fakes.c
 check_function_exists(strlcat    HAVE_STRLCAT)           # kdecore/fakes.c
@@ -223,7 +222,6 @@ check_function_exists(usleep     HAVE_USLEEP)            # kdecore/fakes.c, kdeu
 # check for prototypes [for functions provided by kdefakes when not available]
 
 check_prototype_exists(mkstemps "stdlib.h;unistd.h" HAVE_MKSTEMPS_PROTO)
-check_prototype_exists(mkdtemp "stdlib.h;unistd.h"  HAVE_MKDTEMP_PROTO)
 check_prototype_exists(mkstemp "stdlib.h;unistd.h"  HAVE_MKSTEMP_PROTO)
 check_prototype_exists(strlcat string.h             HAVE_STRLCAT_PROTO)
 check_prototype_exists(strlcpy string.h             HAVE_STRLCPY_PROTO)
