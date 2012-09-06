@@ -26,7 +26,7 @@
 
    You should include this file in any .cpp file that uses any one of these 
    functions:
-     strlcat, strlcpy, 
+     strlcat, 
      usleep, initgroups, 
      random, srandom  (this is for KRandom itself, prefer using KRandom in any other code)
      mkstemp, mkstemps (prefer to use QTemporaryfile instead)
@@ -40,17 +40,6 @@
 extern "C" {
 #endif
 unsigned long strlcat(char*, const char*, unsigned long);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-#cmakedefine01 HAVE_STRLCPY_PROTO
-#if ! HAVE_STRLCPY_PROTO
-#ifdef __cplusplus
-extern "C" {
-#endif
-unsigned long strlcpy(char*, const char*, unsigned long);
 #ifdef __cplusplus
 }
 #endif

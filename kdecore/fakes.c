@@ -186,29 +186,6 @@ KDECORE_EXPORT int mkstemp (char* _template)
 }
 #endif /* !HAVE_MKSTEMP */
 
-#ifndef HAVE_STRLCPY
-
-#if HAVE_STRING_H
-#include <string.h>
-#endif
-
-KDECORE_EXPORT unsigned long strlcpy(char* d, const char* s, unsigned long bufsize)
-{
-    unsigned long len, ret = strlen(s);
-
-    if (ret >= bufsize) {
-        if (bufsize) {
-            len = bufsize - 1;
-            memcpy(d, s, len);
-            d[len] = '\0';
-        }
-    } else
-	memcpy(d, s, ret + 1);
-
-    return ret;
-}
-#endif /* !HAVE_STRLCPY */
-
 /*
  * Copyright (c) 1998 Todd C. Miller <Todd.Miller@courtesan.com>
  * All rights reserved.

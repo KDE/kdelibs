@@ -28,7 +28,7 @@
 #include <config-prefix.h>
 
 #include <config-kdeui.h>
-#include <kdefakes.h>
+#include <config-strlcpy.h>
 
 #include <string.h>
 #include <signal.h>
