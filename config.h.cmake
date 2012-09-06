@@ -89,7 +89,6 @@
 #cmakedefine01   HAVE_NSGETENVIRON
 #cmakedefine01   HAVE_GETTIMEOFDAY
 #cmakedefine01   HAVE_GETGROUPLIST
-#cmakedefine01   HAVE_TRUNC
 
 #cmakedefine01 HAVE_S_ISSOCK
 

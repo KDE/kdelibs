@@ -123,17 +123,6 @@ int mkstemp(char *);
 #endif
 #endif
 
-#cmakedefine01 HAVE_TRUNC
-#if ! HAVE_TRUNC
-#ifdef __cplusplus
-extern "C" {
-#endif
-double trunc(double);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
 #cmakedefine01 HAVE_GETGROUPLIST
 #if ! HAVE_GETGROUPLIST
 #include <sys/types.h> /* for gid_t */

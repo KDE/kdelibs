@@ -282,24 +282,6 @@ KDECORE_EXPORT unsigned long strlcat(char *dst, const char *src, unsigned long s
 }
 #endif /* !HAVE_STRLCAT */
 
-#ifndef HAVE_TRUNC
-
-#include <math.h> /* floor */
-
-/*
- * Here we simulate the trunc() function behavior. This function is not
- * available for not C99 compatible systems.
- *
- * For example, Solaris 8.
- */
-
-KDECORE_EXPORT double trunc (double x)
-{
-       return x < 0 ? -floor(-x) : floor(x);
-}
-#endif /* !HAVE_TRUNC */
-
-
 #ifndef HAVE_GETGROUPLIST
 /* Although this full license text is 4-clause BSD, it is taken directly
    from the FreeBSD source tree; the Regents of the University of

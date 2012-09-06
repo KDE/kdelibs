@@ -143,9 +143,6 @@ if (UNIX)
 
    kde4_add_library(kdefakes ${LIBRARY_TYPE} fakes.c)
    set_target_properties(kdefakes PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION})
-   if (NOT HAVE_TRUNC)
-       target_link_libraries(kdefakes  m )
-   endif (NOT HAVE_TRUNC)
    install(TARGETS kdefakes EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 endif (UNIX)
