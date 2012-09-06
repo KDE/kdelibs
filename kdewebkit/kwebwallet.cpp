@@ -44,7 +44,10 @@
     if (formList.length > 0) { \
         forms = new Array; \
         for (var i = 0; i < formList.length; ++i) { \
-            var inputList = formList[i].querySelectorAll('input[type=text]:not([disabled]):not([autocomplete=off]),input[type=password]:not([disabled]):not([autocomplete=off]),input:not([type]):not([disabled]):not([autocomplete=off])'); \
+            var inputList = formList[i].querySelectorAll('input[type=text]:not([disabled]):not([autocomplete=off]),\
+                                                          input[type=email]:not([disabled]):not([autocomplete=off]),\
+                                                          input[type=password]:not([disabled]):not([autocomplete=off]),\
+                                                          input:not([type]):not([disabled]):not([autocomplete=off])'); \
             if (inputList.length < 1) { \
                 continue; \
             } \

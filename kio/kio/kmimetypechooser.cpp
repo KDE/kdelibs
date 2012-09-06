@@ -90,7 +90,8 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
 
   d->mimeTypeTree->setColumnCount(headerLabels.count());
   d->mimeTypeTree->setHeaderLabels(headerLabels);
-  d->mimeTypeTree->setColumnWidth(0, 200); // big enough for most names, but not for the insanely long ones
+  QFontMetrics fm(d->mimeTypeTree->fontMetrics());
+  d->mimeTypeTree->setColumnWidth(0, 20 * fm.height()); // big enough for most names, but not for the insanely long ones
 
   d->loadMimeTypes( selMimeTypes );
 
