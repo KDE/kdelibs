@@ -1243,7 +1243,6 @@ public:
 #endif
                               ) const
     {
-        qDebug() << context << sourceText << message;
         return KLocale::global()->translateQt(context, sourceText, message);
     }
 
