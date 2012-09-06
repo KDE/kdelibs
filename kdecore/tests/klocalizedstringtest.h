@@ -30,6 +30,7 @@ private Q_SLOTS:
     void correctButIllFormed();
     void wrongSubs ();
     void miscMethods ();
+    void translateToFrenchLowlevel();
     void translateToFrench ();
     void translateQt ();
 

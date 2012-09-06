@@ -25,6 +25,7 @@
 #include <kdebug.h>
 #include "qtest_kde.h"
 
+#include <libintl.h>
 
 #include "klocale.h"
 #include "klocalizedstring.h"
@@ -211,6 +212,21 @@ void KLocalizedStringTest::miscMethods ()
 {
     KLocalizedString k;
     QVERIFY(k.isEmpty());
+}
+
+// Same as translateToFrench, but using libintl directly (bindtextdomain+dgettext).
+// Useful for debugging. This changes global state, though, so it's skipped by default.
+void KLocalizedStringTest::translateToFrenchLowlevel()
+{
+    if (!m_hasFrench) {
+        QSKIP_PORTING("l10n/fr not installed", SkipAll);
+    }
+    QSKIP_PORTING("skipped by default to avoid changing global state", SkipAll);
+    // fr_FR locale was set by initTestCase already.
+    if (QFile::exists("/usr/share/locale/fr/LC_MESSAGES/kdelibs4.mo")) {
+        bindtextdomain("kdelibs4", "/usr/share/locale");
+        QCOMPARE(QString::fromUtf8(dgettext("kdelibs4", "Loadable modules")), QString::fromUtf8("Modules chargeables"));
+    }
 }
 
 void KLocalizedStringTest::translateToFrench()
