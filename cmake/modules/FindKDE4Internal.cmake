@@ -775,7 +775,7 @@ endif()
    set(TEMPLATES_INSTALL_DIR    "share/templates"         ) # The install dir for templates (Create new file...)
    set(WALLPAPER_INSTALL_DIR    "share/wallpapers"        ) # The install dir for wallpapers
    set(DEMO_INSTALL_DIR         "share/demos"             ) # The install dir for demos
-   set(KCONF_UPDATE_INSTALL_DIR "share/apps/kconf_update" ) # The kconf_update install dir
+   set(KCONF_UPDATE_INSTALL_DIR "share/kconf_update"      ) # The kconf_update install dir
 
    set(XDG_APPS_INSTALL_DIR      "share/applications/kde5"   ) # The XDG apps dir
    set(XDG_DIRECTORY_INSTALL_DIR "share/desktop-directories" ) # The XDG directory
@@ -838,7 +838,7 @@ if (False)
    _set_fancy(IMPORTS_INSTALL_DIR       "${PLUGIN_INSTALL_DIR}/imports"                "The subdirectory relative to the install prefix where imports will be installed")
    _set_fancy(DATA_INSTALL_DIR         "${SHARE_INSTALL_PREFIX}"                "The parent directory where applications can install their data")
    _set_fancy(HTML_INSTALL_DIR         "${SHARE_INSTALL_PREFIX}/doc/HTML"       "The HTML install dir for documentation")
-   _set_fancy(ICON_INSTALL_DIR         "${SHARE_INSTALL_PREFIX}/icons"          "The icon install dir (default ${SHARE_INSTALL_PREFIX}/share/icons/)")
+   _set_fancy(ICON_INSTALL_DIR         "${SHARE_INSTALL_PREFIX}/icons"          "The icon install dir (default ${SHARE_INSTALL_PREFIX}/icons/)")
    _set_fancy(KCFG_INSTALL_DIR         "${SHARE_INSTALL_PREFIX}/config.kcfg"    "The install dir for kconfig files")
    _set_fancy(LOCALE_INSTALL_DIR       "${SHARE_INSTALL_PREFIX}/locale"         "The install dir for translations")
    _set_fancy(MIME_INSTALL_DIR         "${SHARE_INSTALL_PREFIX}/mimelnk"        "The install dir for the mimetype desktop files")
