@@ -31,6 +31,7 @@
     #include "klocale_unix_p.h"
 #endif
 
+#include <QMutex>
 #include <QThread>
 #include <QCoreApplication>
 #include <QtCore/QDateTime>
@@ -379,8 +380,20 @@ class KGlobalLocaleStatic
 {
 public:
     KGlobalLocaleStatic()
-        : locale(KLocalePrivate::mainCatalog())
+        : locale(KLocalePrivate::mainCatalog()),
+          mutex(QMutex::Recursive),
+          inited(false)
     {
+    }
+
+    // This cannot be called from the constructor, because the LanguageChange event
+    // calls tr() which calls KLocale::global(), so KLocale::global() must exist already.
+    void init()
+    {
+        QMutexLocker lock(&mutex);
+        if (inited)
+            return;
+        inited = true;
         QTextCodec::setCodecForLocale(locale.codecForEncoding());
         QCoreApplication* coreApp = QCoreApplication::instance();
         if (coreApp) { // testcase: kwrite --help: no qcore app
@@ -390,16 +403,19 @@ public:
                 QCoreApplication::installTranslator(new KDETranslator(coreApp));
             }
         }
-
     }
     KLocale locale;
+    QMutex mutex;
+    bool inited;
 };
 
 Q_GLOBAL_STATIC(KGlobalLocaleStatic, s_globalLocale)
 
 KLocale * KLocale::global()
 {
-    return &s_globalLocale()->locale;
+    KGlobalLocaleStatic* glob = s_globalLocale();
+    glob->init();
+    return &glob->locale;
 }
 
 double KLocale::readNumber(const QString &_str, bool * ok) const
