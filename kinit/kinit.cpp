@@ -22,7 +22,6 @@
 #define QT_NO_CAST_FROM_ASCII
 
 #include <config-kdeinit.h>
-#include <config-prefix.h>
 
 #include <sys/types.h>
 #include <sys/time.h>
@@ -56,8 +55,6 @@
 #include <QFont>
 #include <kcomponentdata.h>
 #include <klibrary.h>
-#include <kstandarddirs.h>
-#include <kglobal.h>
 #include <kconfig.h>
 #include <kapplication.h>
 #include <klocalizedstring.h>
@@ -497,12 +494,12 @@ static pid_t launch(int argc, const char *_name, const char *args,
         else {
             // try to match an absolute path to an executable binary (either in bin/ or in libexec/)
             // to a kdeinit module in the same prefix
-            if( lib.contains( QLatin1String( "/lib" KDELIBSUFF "/kde5/libexec/" ))) {
-                libpath = QString( lib ).replace( QLatin1String( "/lib" KDELIBSUFF "/kde5/libexec/" ),
-                    QLatin1String("/lib" KDELIBSUFF "/libkdeinit5_")) + QLatin1String(".so");
+            if( lib.contains( QLatin1String( LIBEXEC_INSTALL_DIR ))) {
+                libpath = QString( lib ).replace( QLatin1String( LIBEXEC_INSTALL_DIR ),
+                    QLatin1String(LIB_INSTALL_DIR "/libkdeinit5_")) + QLatin1String(".so");
             } else if( lib.contains( QLatin1String( "/bin/" ))) {
                 libpath = QString( lib ).replace( QLatin1String( "/bin/" ),
-                    QLatin1String("/lib" KDELIBSUFF "/libkdeinit5_")) + QLatin1String(".so");
+                    QLatin1String(LIB_INSTALL_DIR "/libkdeinit5_")) + QLatin1String(".so");
             }
             // Don't confuse the user with "Could not load libkdeinit5_foo.so" if it doesn't exist
             if (!QFile::exists(libpath)) {
@@ -1647,6 +1644,17 @@ static int initXconnection()
 }
 #endif
 
+// Find a shared lib in the lib dir, e.g. libkio.so.
+// Completely unrelated to plugins.
+static QString findSharedLib(const QString& lib)
+{
+    QString path = QFile::decodeName(CMAKE_INSTALL_PREFIX "/" LIB_INSTALL_DIR "/") + lib;
+    if (QFile::exists(path))
+        return path;
+    // We could also look in LD_LIBRARY_PATH, but really, who installs the main libs in different prefixes?
+    return QString();
+}
+
 extern "C" {
 
 static void secondary_child_handler(int)
@@ -1770,10 +1778,6 @@ int main(int argc, char **argv, char **envp)
 #endif
 
    kdeinit_library_path();
-   // Don't make our instance the global instance
-   // (do it only after kdeinit_library_path, that one indirectly uses KConfig,
-   // which seems to be buggy and always use KGlobal instead of the matching KComponentData)
-   Q_ASSERT(!KGlobal::hasMainComponent());
    // don't change envvars before proctitle_init()
    unsetenv("LD_BIND_NOW");
    unsetenv("DYLD_BIND_AT_LAUNCH");
@@ -1804,10 +1808,7 @@ int main(int argc, char **argv, char **envp)
     if (!d.suicide && qgetenv("KDE_IS_PRELINKED").isEmpty()) {
         const int extrasCount = sizeof(extra_libs)/sizeof(extra_libs[0]);
         for (int i=0; i<extrasCount; i++) {
-            QString extra = KStandardDirs::locate("lib", QLatin1String(extra_libs[i]));
-
-            // can't use KLibLoader here as it would unload the library
-            // again
+            const QString extra = findSharedLib(QString::fromLatin1(extra_libs[i]));
             if (!extra.isEmpty()) {
                 QLibrary l(extra);
                 l.setLoadHints(QLibrary::ExportExternalSymbolsHint);
