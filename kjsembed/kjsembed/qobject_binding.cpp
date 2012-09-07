@@ -690,6 +690,7 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
         switch( returnTypeId ) {
             case QVariant::Invalid: // fall through
             case QVariant::UserType: {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
                 switch( tp ) {
                     case QMetaType::QWidgetStar: {
                         QVariant v(tp, param[0]);
@@ -706,6 +707,14 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
                     default:
                         break;
                 }
+#else
+                if( QMetaType::typeFlags(tp) & QMetaType::PointerToQObject ) {
+                    const QVariant v(tp, param[0]);
+                    QObject *obj = v.value< QObject* >();
+                    if( obj )
+                        jsReturnValue = KJSEmbed::createQObject(exec, obj, KJSEmbed::ObjectBinding::CPPOwned);
+                }
+#endif
             } break;
             default:
                 if( returnIsMetaType )
