@@ -11,9 +11,6 @@ if(X11_FOUND)
 	macro_bool_to_01(X11_FOUND HAVE_X11)
 endif(X11_FOUND)
 
-find_package(Libintl)
-macro_log_feature(LIBINTL_FOUND "Libintl" "Support for multiple languages" "http://www.gnu.org/software/gettext" FALSE "" "STRONGLY RECOMMENDED: Enables KDE to be available in many different languages")
-
 # Generate kdefakes.h
 include(ConfigureChecks.cmake)
 configure_file(kdefakes.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h )
@@ -83,10 +80,8 @@ if(KDE4_BUILD_TESTS)
 endif(KDE4_BUILD_TESTS)
 
 # compile Gettext support if available
-if(LIBINTL_FOUND)
-  include_directories(${LIBINTL_INCLUDE_DIR})
-  set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${LIBINTL_LIBRARIES})
-endif(LIBINTL_FOUND)
+include_directories(${LIBINTL_INCLUDE_DIR})
+set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${LIBINTL_LIBRARIES})
 
 if (HAVE_RESOLV_LIBRARY)
   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} resolv)

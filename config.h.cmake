@@ -24,9 +24,6 @@
 /* Define to 1 if you have malloc.h */
 #cmakedefine01   HAVE_MALLOC_H
 
-/* define if message translations are enabled */
-#cmakedefine01 ENABLE_NLS
-
 #cmakedefine01 HAVE_VOLMGT
 
 #cmakedefine01 HAVE_ERRNO_H

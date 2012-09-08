@@ -43,9 +43,6 @@ check_symbol_exists(posix_madvise   "sys/mman.h"               HAVE_MADVISE)
 
 check_library_exists(volmgt volmgt_running "" HAVE_VOLMGT)
 
-macro_bool_to_01(LIBINTL_FOUND ENABLE_NLS)
-
-
 check_struct_member(dirent d_type dirent.h HAVE_DIRENT_D_TYPE)
 
 check_cxx_source_compiles("
