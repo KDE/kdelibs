@@ -414,6 +414,8 @@ Q_GLOBAL_STATIC(KGlobalLocaleStatic, s_globalLocale)
 KLocale * KLocale::global()
 {
     KGlobalLocaleStatic* glob = s_globalLocale();
+    if (!glob)
+        return 0;
     glob->init();
     return &glob->locale;
 }
