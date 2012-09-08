@@ -546,6 +546,8 @@ i18n("Asia/Bangkok");
 i18n("Asia/Beijing");
 // i18n: comment to the previous timezone
 i18n("east China - Beijing, Guangdong, Shanghai, etc.");
+// i18n: comment to the previous timezone
+i18n("China Standard Time");
 i18n("Asia/Beirut");
 i18n("Asia/Bishkek");
 i18n("Asia/Brunei");
@@ -556,6 +558,8 @@ i18n("Dornod, Sukhbaatar");
 i18n("Asia/Chongqing");
 // i18n: comment to the previous timezone
 i18n("central China - Sichuan, Yunnan, Guangxi, Shaanxi, Guizhou, etc.");
+// i18n: comment to the previous timezone
+i18n("China mountains");
 i18n("Asia/Chungking");
 // i18n: comment to the previous timezone
 i18n("central China - Sichuan, Yunnan, Guangxi, Shaanxi, Guizhou, etc.");
@@ -572,6 +576,8 @@ i18n("Gaza Strip");
 i18n("Asia/Harbin");
 // i18n: comment to the previous timezone
 i18n("Heilongjiang (except Mohe), Jilin");
+// i18n: comment to the previous timezone
+i18n("China north");
 i18n("Asia/Hebron");
 // i18n: comment to the previous timezone
 i18n("West Bank");
@@ -602,6 +608,8 @@ i18n("Asia/Karachi");
 i18n("Asia/Kashgar");
 // i18n: comment to the previous timezone
 i18n("west Tibet & Xinjiang");
+// i18n: comment to the previous timezone
+i18n("China west Xinjiang");
 i18n("Asia/Kathmandu");
 i18n("Asia/Katmandu");
 i18n("Asia/Kolkata");
@@ -662,6 +670,8 @@ i18n("Asia/Seoul");
 i18n("Asia/Shanghai");
 // i18n: comment to the previous timezone
 i18n("east China - Beijing, Guangdong, Shanghai, etc.");
+// i18n: comment to the previous timezone
+i18n("China east");
 i18n("Asia/Singapore");
 i18n("Asia/Taipei");
 i18n("Asia/Tashkent");
@@ -685,6 +695,8 @@ i18n("most locations");
 i18n("Asia/Urumqi");
 // i18n: comment to the previous timezone
 i18n("most of Tibet & Xinjiang");
+// i18n: comment to the previous timezone
+i18n("China Xinjiang-Tibet");
 i18n("Asia/Vientiane");
 i18n("Asia/Vladivostok");
 // i18n: comment to the previous timezone

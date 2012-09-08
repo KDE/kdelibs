@@ -136,7 +136,8 @@ UString JSONStringify::quotedString(ExecState* exec, const UString& string)
     for (int i = 0; i < size; ++i) {
         int start = i;
         static const short unsigned blackSlashUC = '\\';
-        while (i < size && (string[i].uc > 0x001F && string[i].uc != blackSlashUC))
+        static const short unsigned quoteUC = '\"';
+        while (i < size && (string[i].uc > 0x001F && string[i].uc != blackSlashUC && string[i].uc != quoteUC))
             ++i;
         ret += string.substr(start, i-start);
 
