@@ -473,9 +473,11 @@ void KWebWallet::saveFormData(QWebFrame *frame, bool recursive, bool ignorePassw
     if (isAlreadyPending)
         return;
 
-    for (int i = 0 ; i < list.count(); ++i) {
-        if (hasCachedFormData(list.at(i)))
-            list.takeAt(i);
+    QMutableListIterator<WebForm> it (list);
+    while (it.hasNext()) {
+        const WebForm form (it.next());
+        if (hasCachedFormData(form))
+            it.remove();
     }
 
     if (list.isEmpty()) {
