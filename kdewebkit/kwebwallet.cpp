@@ -40,7 +40,7 @@
 // Javascript used to extract/set data from <form> elements.
 #define FILLABLE_FORM_ELEMENT_EXTRACTOR_JS "(function (){ \
     var forms; \
-    var formList = document.querySelectorAll('form'); \
+    var formList = document.forms; \
     if (formList.length > 0) { \
         forms = new Array; \
         for (var i = 0; i < formList.length; ++i) { \
@@ -449,9 +449,27 @@ void KWebWallet::fillFormData(QWebFrame *frame, bool recursive)
         fillFormDataFromCache(urlList);
 }
 
+static void createSaveKeyFor(QWebFrame* frame, QString* key)
+{
+    QUrl frameUrl(urlForFrame(frame));
+    frameUrl.setPassword(QString());
+    frameUrl.setPassword(QString());
+
+    QString keyStr = frameUrl.toString();
+    if (!frame->frameName().isEmpty())
+        keyStr += frame->frameName();
+
+    *key = QString::number(qHash(keyStr), 16);
+}
+
 void KWebWallet::saveFormData(QWebFrame *frame, bool recursive, bool ignorePasswordFields)
 {
     if (!frame)
+        return;
+
+    QString key;
+    createSaveKeyFor(frame, &key);
+    if (d->pendingSaveRequests.contains(key))
         return;
 
     WebFormList list = d->parseFormData(frame, false, ignorePasswordFields);
@@ -466,12 +484,7 @@ void KWebWallet::saveFormData(QWebFrame *frame, bool recursive, bool ignorePassw
     if (list.isEmpty())
         return;
 
-    const QString key = QString::number(qHash(urlForFrame(frame).toString() + frame->frameName()), 16);
-    const bool isAlreadyPending = d->pendingSaveRequests.contains(key);
     d->pendingSaveRequests.insert(key, list);
-
-    if (isAlreadyPending)
-        return;
 
     QMutableListIterator<WebForm> it (list);
     while (it.hasNext()) {
