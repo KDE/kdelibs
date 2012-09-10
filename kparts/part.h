@@ -659,7 +659,7 @@ Q_SIGNALS:
      * Emitted by the part when url() changes
      * @since 4.10
      */
-    void urlChanged( const KUrl & url );
+    void urlChanged( const QUrl & url );
 
 protected:
     /**

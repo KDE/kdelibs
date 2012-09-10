@@ -162,7 +162,7 @@ static QString parseQuotedString(const QString &buf, int &pos) {
  * @param mimeOnly if the only interesting information is the mime type
  * @return DataHeader structure with the header information
  */
-static DataHeader parseDataHeader(const KUrl &url, const bool mimeOnly)
+static DataHeader parseDataHeader(const QUrl &url, const bool mimeOnly)
 {
   DataHeader header_info;
 
@@ -246,9 +246,9 @@ DataProtocol::~DataProtocol() {
 
 /* --------------------------------------------------------------------- */
 
-void DataProtocol::get(const KUrl& url) {
+void DataProtocol::get(const QUrl& url) {
   ref();
-  kDebug() << "kio_data@"<<this<<"::get(const KUrl& url)";
+  kDebug() << this;
 
   const DataHeader hdr = parseDataHeader(url, false);
 
@@ -301,7 +301,7 @@ void DataProtocol::get(const KUrl& url) {
 
 /* --------------------------------------------------------------------- */
 
-void DataProtocol::mimetype(const KUrl &url) {
+void DataProtocol::mimetype(const QUrl &url) {
   ref();
   mimeType(parseDataHeader(url, true).mime_type);
   finished();

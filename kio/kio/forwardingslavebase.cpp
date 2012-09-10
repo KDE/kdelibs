@@ -27,6 +27,11 @@
 #include <qmimedatabase.h>
 
 #include <QtCore/QEventLoop>
+#include <qurlpathinfo.h>
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define toDisplayString toString
+#endif
 
 namespace KIO
 {
@@ -39,11 +44,11 @@ public:
     {}
     ForwardingSlaveBase *q;
 
-    KUrl m_processedURL;
-    KUrl m_requestedURL;
+    QUrl m_processedURL;
+    QUrl m_requestedURL;
     QEventLoop eventLoop;
 
-    bool internalRewriteUrl(const KUrl &url, KUrl &newURL);
+    bool internalRewriteUrl(const QUrl &url, QUrl &newURL);
 
     void connectJob(Job *job);
     void connectSimpleJob(SimpleJob *job);
@@ -58,7 +63,7 @@ public:
     void _k_slotSpeed(KJob *job, unsigned long bytesPerSecond);
 
     // KIO::SimpleJob subclasses
-    void _k_slotRedirection(KIO::Job *job, const KUrl &url);
+    void _k_slotRedirection(KIO::Job *job, const QUrl &url);
 
     // KIO::ListJob
     void _k_slotEntries(KIO::Job *job, const KIO::UDSEntryList &entries);
@@ -84,7 +89,7 @@ ForwardingSlaveBase::~ForwardingSlaveBase()
     delete d;
 }
 
-bool ForwardingSlaveBasePrivate::internalRewriteUrl(const KUrl &url, KUrl &newURL)
+bool ForwardingSlaveBasePrivate::internalRewriteUrl(const QUrl &url, QUrl &newURL)
 {
     bool result = true;
 
@@ -109,35 +114,32 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
 
     const QString name = entry.stringValue( KIO::UDSEntry::UDS_NAME );
     QString mimetype = entry.stringValue( KIO::UDSEntry::UDS_MIME_TYPE );
-    KUrl url;
+    QUrl url;
     const QString urlStr = entry.stringValue( KIO::UDSEntry::UDS_URL );
     const bool url_found = !urlStr.isEmpty();
     if ( url_found )
     {
-        url = urlStr;
-        KUrl new_url = d->m_requestedURL;
+        url = QUrl(urlStr);
+        QUrlPathInfo new_url(d->m_requestedURL);
         if (listing)
-            new_url.addPath(url.fileName());
+            new_url.addPath(QUrlPathInfo(url).fileName());
         // ## Didn't find a way to use an iterator instead of re-doing a key lookup
-        entry.insert( KIO::UDSEntry::UDS_URL, new_url.url() );
+        entry.insert(KIO::UDSEntry::UDS_URL, new_url.url().toString());
         kDebug() << "URL =" << url;
-        kDebug() << "New URL =" << new_url;
+        kDebug() << "New URL =" << new_url.url();
     }
 
     if (mimetype.isEmpty())
     {
-        KUrl new_url = d->m_processedURL;
-        if (url_found && listing)
-        {
-            new_url.addPath( url.fileName() );
-        }
-        else if (listing)
-        {
-            new_url.addPath( name );
+        QUrlPathInfo new_url(d->m_processedURL);
+        if (url_found && listing) {
+            new_url.addPath(QUrlPathInfo(url).fileName());
+        } else if (listing) {
+            new_url.addPath(name);
         }
 
         QMimeDatabase db;
-        mimetype = db.mimeTypeForUrl(new_url).name();
+        mimetype = db.mimeTypeForUrl(new_url.url()).name();
 
         entry.insert( KIO::UDSEntry::UDS_MIME_TYPE, mimetype );
 
@@ -146,31 +148,30 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
 
     if ( d->m_processedURL.isLocalFile() )
     {
-        KUrl new_url = d->m_processedURL;
-        if (listing)
-        {
-            new_url.addPath( name );
+        QUrlPathInfo new_url(d->m_processedURL);
+        if (listing) {
+            new_url.addPath(name);
         }
 
-        entry.insert( KIO::UDSEntry::UDS_LOCAL_PATH, new_url.toLocalFile() );
+        entry.insert( KIO::UDSEntry::UDS_LOCAL_PATH, new_url.localPath() );
     }
 }
 
-KUrl ForwardingSlaveBase::processedUrl() const
+QUrl ForwardingSlaveBase::processedUrl() const
 {
     return d->m_processedURL;
 }
 
-KUrl ForwardingSlaveBase::requestedUrl() const
+QUrl ForwardingSlaveBase::requestedUrl() const
 {
     return d->m_requestedURL;
 }
 
-void ForwardingSlaveBase::get(const KUrl &url)
+void ForwardingSlaveBase::get(const QUrl &url)
 {
     kDebug() << url;
 
-    KUrl new_url;
+    QUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
     {
         KIO::TransferJob *job = KIO::get(new_url, NoReload, HideProgressInfo);
@@ -180,16 +181,16 @@ void ForwardingSlaveBase::get(const KUrl &url)
     }
     else
     {
-        error(KIO::ERR_DOES_NOT_EXIST, url.prettyUrl());
+        error(KIO::ERR_DOES_NOT_EXIST, url.toDisplayString());
     }
 }
 
-void ForwardingSlaveBase::put(const KUrl &url, int permissions,
+void ForwardingSlaveBase::put(const QUrl &url, int permissions,
                               JobFlags flags)
 {
     kDebug() << url;
 
-    KUrl new_url;
+    QUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
     {
         KIO::TransferJob *job = KIO::put(new_url, permissions,
@@ -200,15 +201,15 @@ void ForwardingSlaveBase::put(const KUrl &url, int permissions,
     }
     else
     {
-        error( KIO::ERR_MALFORMED_URL, url.prettyUrl() );
+        error( KIO::ERR_MALFORMED_URL, url.toDisplayString() );
     }
 }
 
-void ForwardingSlaveBase::stat(const KUrl &url)
+void ForwardingSlaveBase::stat(const QUrl &url)
 {
     kDebug() << url;
 
-    KUrl new_url;
+    QUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
     {
         KIO::SimpleJob *job = KIO::stat(new_url, KIO::HideProgressInfo);
@@ -218,15 +219,15 @@ void ForwardingSlaveBase::stat(const KUrl &url)
     }
     else
     {
-        error(KIO::ERR_DOES_NOT_EXIST, url.prettyUrl());
+        error(KIO::ERR_DOES_NOT_EXIST, url.toDisplayString());
     }
 }
 
-void ForwardingSlaveBase::mimetype(const KUrl &url)
+void ForwardingSlaveBase::mimetype(const QUrl &url)
 {
     kDebug() << url;
 
-    KUrl new_url;
+    QUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
     {
         KIO::TransferJob *job = KIO::mimetype(new_url, KIO::HideProgressInfo);
@@ -236,15 +237,15 @@ void ForwardingSlaveBase::mimetype(const KUrl &url)
     }
     else
     {
-        error(KIO::ERR_DOES_NOT_EXIST, url.prettyUrl());
+        error(KIO::ERR_DOES_NOT_EXIST, url.toDisplayString());
     }
 }
 
-void ForwardingSlaveBase::listDir(const KUrl &url)
+void ForwardingSlaveBase::listDir(const QUrl &url)
 {
     kDebug() << url;
 
-    KUrl new_url;
+    QUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
     {
         KIO::ListJob *job = KIO::listDir(new_url, KIO::HideProgressInfo);
@@ -254,15 +255,15 @@ void ForwardingSlaveBase::listDir(const KUrl &url)
     }
     else
     {
-        error(KIO::ERR_DOES_NOT_EXIST, url.prettyUrl());
+        error(KIO::ERR_DOES_NOT_EXIST, url.toDisplayString());
     }
 }
 
-void ForwardingSlaveBase::mkdir(const KUrl &url, int permissions)
+void ForwardingSlaveBase::mkdir(const QUrl &url, int permissions)
 {
     kDebug() << url;
 
-    KUrl new_url;
+    QUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
     {
         KIO::SimpleJob *job = KIO::mkdir(new_url, permissions);
@@ -272,19 +273,19 @@ void ForwardingSlaveBase::mkdir(const KUrl &url, int permissions)
     }
     else
     {
-        error( KIO::ERR_MALFORMED_URL, url.prettyUrl() );
+        error( KIO::ERR_MALFORMED_URL, url.toDisplayString() );
     }
 }
 
-void ForwardingSlaveBase::rename(const KUrl &src, const KUrl &dest,
+void ForwardingSlaveBase::rename(const QUrl &src, const QUrl &dest,
                                  JobFlags flags)
 {
     kDebug() << src << "," << dest;
 
-    KUrl new_src, new_dest;
+    QUrl new_src, new_dest;
     if( !d->internalRewriteUrl(src, new_src) )
     {
-        error(KIO::ERR_DOES_NOT_EXIST, src.prettyUrl());
+        error(KIO::ERR_DOES_NOT_EXIST, src.toDisplayString());
     }
     else if ( d->internalRewriteUrl(dest, new_dest) )
     {
@@ -295,16 +296,16 @@ void ForwardingSlaveBase::rename(const KUrl &src, const KUrl &dest,
     }
     else
     {
-        error( KIO::ERR_MALFORMED_URL, dest.prettyUrl() );
+        error( KIO::ERR_MALFORMED_URL, dest.toDisplayString() );
     }
 }
 
-void ForwardingSlaveBase::symlink(const QString &target, const KUrl &dest,
+void ForwardingSlaveBase::symlink(const QString &target, const QUrl &dest,
                                   JobFlags flags)
 {
     kDebug() << target << ", " << dest;
 
-    KUrl new_dest;
+    QUrl new_dest;
     if ( d->internalRewriteUrl(dest, new_dest) )
     {
         KIO::SimpleJob *job = KIO::symlink(target, new_dest, flags & HideProgressInfo);
@@ -314,15 +315,15 @@ void ForwardingSlaveBase::symlink(const QString &target, const KUrl &dest,
     }
     else
     {
-        error( KIO::ERR_MALFORMED_URL, dest.prettyUrl() );
+        error( KIO::ERR_MALFORMED_URL, dest.toDisplayString() );
     }
 }
 
-void ForwardingSlaveBase::chmod(const KUrl &url, int permissions)
+void ForwardingSlaveBase::chmod(const QUrl &url, int permissions)
 {
     kDebug() << url;
 
-    KUrl new_url;
+    QUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
     {
         KIO::SimpleJob *job = KIO::chmod(new_url, permissions);
@@ -332,15 +333,15 @@ void ForwardingSlaveBase::chmod(const KUrl &url, int permissions)
     }
     else
     {
-        error(KIO::ERR_DOES_NOT_EXIST, url.prettyUrl());
+        error(KIO::ERR_DOES_NOT_EXIST, url.toDisplayString());
     }
 }
 
-void ForwardingSlaveBase::setModificationTime(const KUrl& url, const QDateTime& mtime)
+void ForwardingSlaveBase::setModificationTime(const QUrl& url, const QDateTime& mtime)
 {
     kDebug() << url;
 
-    KUrl new_url;
+    QUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
     {
         KIO::SimpleJob *job = KIO::setModificationTime(new_url, mtime);
@@ -350,19 +351,19 @@ void ForwardingSlaveBase::setModificationTime(const KUrl& url, const QDateTime& 
     }
     else
     {
-        error(KIO::ERR_DOES_NOT_EXIST, url.prettyUrl());
+        error(KIO::ERR_DOES_NOT_EXIST, url.toDisplayString());
     }
 }
 
-void ForwardingSlaveBase::copy(const KUrl &src, const KUrl &dest,
+void ForwardingSlaveBase::copy(const QUrl &src, const QUrl &dest,
                                int permissions, JobFlags flags)
 {
     kDebug() << src << "," << dest;
 
-    KUrl new_src, new_dest;
+    QUrl new_src, new_dest;
     if ( !d->internalRewriteUrl(src, new_src) )
     {
-        error(KIO::ERR_DOES_NOT_EXIST, src.prettyUrl());
+        error(KIO::ERR_DOES_NOT_EXIST, src.toDisplayString());
     }
     else if( d->internalRewriteUrl(dest, new_dest) )
     {
@@ -375,15 +376,15 @@ void ForwardingSlaveBase::copy(const KUrl &src, const KUrl &dest,
     }
     else
     {
-        error( KIO::ERR_MALFORMED_URL, dest.prettyUrl() );
+        error( KIO::ERR_MALFORMED_URL, dest.toDisplayString() );
     }
 }
 
-void ForwardingSlaveBase::del(const KUrl &url, bool isfile)
+void ForwardingSlaveBase::del(const QUrl &url, bool isfile)
 {
     kDebug() << url;
 
-    KUrl new_url;
+    QUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
     {
         if (isfile)
@@ -401,7 +402,7 @@ void ForwardingSlaveBase::del(const KUrl &url, bool isfile)
     }
     else
     {
-        error(KIO::ERR_DOES_NOT_EXIST, url.prettyUrl());
+        error(KIO::ERR_DOES_NOT_EXIST, url.toDisplayString());
     }
 }
 
@@ -440,8 +441,8 @@ void ForwardingSlaveBasePrivate::connectJob(KIO::Job *job)
 void ForwardingSlaveBasePrivate::connectSimpleJob(KIO::SimpleJob *job)
 {
     connectJob(job);
-    q->connect( job, SIGNAL(redirection(KIO::Job*,KUrl)),
-                SLOT(_k_slotRedirection(KIO::Job*,KUrl)) );
+    q->connect( job, SIGNAL(redirection(KIO::Job*,QUrl)),
+                SLOT(_k_slotRedirection(KIO::Job*,QUrl)) );
 }
 
 void ForwardingSlaveBasePrivate::connectListJob(KIO::ListJob *job)
@@ -512,7 +513,7 @@ void ForwardingSlaveBasePrivate::_k_slotSpeed(KJob* /*job*/, unsigned long bytes
     q->speed(bytesPerSecond);
 }
 
-void ForwardingSlaveBasePrivate::_k_slotRedirection(KIO::Job *job, const KUrl &url)
+void ForwardingSlaveBasePrivate::_k_slotRedirection(KIO::Job *job, const QUrl &url)
 {
     q->redirection(url);
 

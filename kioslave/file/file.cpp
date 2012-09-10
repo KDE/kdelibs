@@ -181,7 +181,7 @@ int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
     return ret;
 }
 
-void FileProtocol::chmod( const KUrl& url, int permissions )
+void FileProtocol::chmod( const QUrl& url, int permissions )
 {
     const QString path(url.toLocalFile());
     const QByteArray _path( QFile::encodeName(path) );
@@ -211,7 +211,7 @@ void FileProtocol::chmod( const KUrl& url, int permissions )
         finished();
 }
 
-void FileProtocol::setModificationTime( const KUrl& url, const QDateTime& mtime )
+void FileProtocol::setModificationTime( const QUrl& url, const QDateTime& mtime )
 {
     const QString path(url.toLocalFile());
     KDE_struct_stat statbuf;
@@ -230,7 +230,7 @@ void FileProtocol::setModificationTime( const KUrl& url, const QDateTime& mtime 
     }
 }
 
-void FileProtocol::mkdir( const KUrl& url, int permissions )
+void FileProtocol::mkdir( const QUrl& url, int permissions )
 {
     const QString path(url.toLocalFile());
 
@@ -271,10 +271,10 @@ void FileProtocol::mkdir( const KUrl& url, int permissions )
     return;
 }
 
-void FileProtocol::get( const KUrl& url )
+void FileProtocol::get( const QUrl& url )
 {
     if (!url.isLocalFile()) {
-        KUrl redir(url);
+        QUrl redir(url);
 	redir.setScheme(config()->readEntry("DefaultRemoteProtocol", "smb"));
 	redirection(redir);
 	finished();
@@ -391,7 +391,7 @@ int write_all(int fd, const char *buf, size_t len)
    return 0;
 }
 
-void FileProtocol::open(const KUrl &url, QIODevice::OpenMode mode)
+void FileProtocol::open(const QUrl &url, QIODevice::OpenMode mode)
 {
     kDebug(7101) << url;
 
@@ -531,7 +531,7 @@ void FileProtocol::close()
     finished();
 }
 
-void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
+void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
 {
     const QString dest_orig = url.toLocalFile();
 

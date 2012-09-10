@@ -130,7 +130,7 @@ QString HelpProtocol::lookupFile(const QString &fname,
             red.setPath( path + "/index.html" );
             red.setQuery( query );
             redirection(red);
-            kDebug( 7119 ) << "redirect to " << red.url();
+            kDebug( 7119 ) << "redirect to " << red;
             redirect = true;
 	}
         else
@@ -179,15 +179,15 @@ HelpProtocol::HelpProtocol( bool ghelp, const QByteArray &pool, const QByteArray
     slave = this;
 }
 
-void HelpProtocol::get( const KUrl& url )
+void HelpProtocol::get( const QUrl& url )
 {
-    kDebug( 7119 ) << "path=" << url.path()
-                   << "query=" << url.query();
+    //kDebug( 7119 ) << "path=" << url.path()
+                   //<< "query=" << url.query();
 
     bool redirect;
     QString doc = QDir::cleanPath(url.path());
     if (doc.contains("..")) {
-        error( KIO::ERR_DOES_NOT_EXIST, url.url() );
+        error(KIO::ERR_DOES_NOT_EXIST, url.toString());
         return;
     }
 
@@ -202,7 +202,12 @@ void HelpProtocol::get( const KUrl& url )
     infoMessage(i18n("Looking up correct file"));
 
     if ( !mGhelp ) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
       doc = lookupFile(doc, url.query(), redirect);
+#else
+      // wrong
+      doc = lookupFile(doc, url.encodedQuery(), redirect);
+#endif
 
       if (redirect)
       {
@@ -213,19 +218,19 @@ void HelpProtocol::get( const KUrl& url )
 
     if (doc.isEmpty())
     {
-        error( KIO::ERR_DOES_NOT_EXIST, url.url() );
+        error(KIO::ERR_DOES_NOT_EXIST, url.toString());
         return;
     }
 
     mimeType("text/html");
-    KUrl target;
+    QUrl target;
     target.setPath(doc);
-    if (url.hasHTMLRef())
-        target.setHTMLRef(url.htmlRef());
+    if (url.hasFragment())
+        target.setFragment(url.fragment());
 
-    kDebug( 7119 ) << "target " << target.url();
+    kDebug( 7119 ) << "target " << target;
 
-    QString file = target.scheme() == "file" ? target.toLocalFile() : target.path();
+    QString file = target.isLocalFile() ? target.toLocalFile() : target.path();
 
     if ( mGhelp ) {
       if ( !file.endsWith( QLatin1String( ".xml" ) ) ) {
@@ -303,7 +308,12 @@ void HelpProtocol::get( const KUrl& url )
         if (mParsed.isEmpty()) {
             unicodeError( i18n( "The requested help file could not be parsed:<br />%1" ,  file ) );
         } else {
-            QString query = url.query(), anchor;
+            QString anchor;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+            QString query = url.query();
+#else
+            QString query; // HACK
+#endif
 
             // if we have a query, look if it contains an anchor
             if (!query.isEmpty())
@@ -311,15 +321,14 @@ void HelpProtocol::get( const KUrl& url )
                     anchor = query.mid(8).toLower();
 
 			    KUrl redirURL(url);
-
 			    redirURL.setQuery(QString());
 			    redirURL.setHTMLRef(anchor);
 			    redirection(redirURL);
 			    finished();
 			    return;
 		    }
-            if (anchor.isEmpty() && url.hasHTMLRef())
-	        anchor = url.htmlRef();
+            if (anchor.isEmpty() && url.hasFragment())
+	        anchor = url.fragment();
 
             kDebug( 7119 ) << "anchor: " << anchor;
 
@@ -343,7 +352,7 @@ void HelpProtocol::get( const KUrl& url )
                         QString path = target.path();
                         path = path.left( path.lastIndexOf( '/' ) + 1) + filename;
                         target.setPath( path );
-                        kDebug( 7119 ) << "anchor found in " << target.url();
+                        kDebug( 7119 ) << "anchor found in " << target;
                         break;
                     }
                     index++;
@@ -356,7 +365,7 @@ void HelpProtocol::get( const KUrl& url )
     finished();
 }
 
-void HelpProtocol::emitFile( const KUrl& url )
+void HelpProtocol::emitFile( const QUrl& url )
 {
     infoMessage(i18n("Looking up section"));
 
@@ -369,7 +378,7 @@ void HelpProtocol::emitFile( const KUrl& url )
             return;
         }
 
-        unicodeError( i18n("Could not find filename %1 in %2.", filename,  url.url() ) );
+        unicodeError(i18n("Could not find filename %1 in %2.", filename, url.toString()));
         return;
     }
 
@@ -380,7 +389,7 @@ void HelpProtocol::emitFile( const KUrl& url )
     data( QByteArray() );
 }
 
-void HelpProtocol::mimetype( const KUrl &)
+void HelpProtocol::mimetype( const QUrl &)
 {
     mimeType("text/html");
     finished();
@@ -390,18 +399,18 @@ void HelpProtocol::mimetype( const KUrl &)
 
 #define MAX_IPC_SIZE (1024*32)
 
-void HelpProtocol::get_file( const KUrl& url )
+void HelpProtocol::get_file( const QUrl& url )
 {
-    kDebug( 7119 ) << "get_file " << url.url();
+    kDebug( 7119 ) << "get_file " << url;
 
 #ifdef Q_OS_WIN
     QFile f( url.toLocalFile() );
     if ( !f.exists() ) {
-        error( KIO::ERR_DOES_NOT_EXIST, url.url() );
+        error(KIO::ERR_DOES_NOT_EXIST, url.toString());
         return;
     }
     if ( !f.open(QIODevice::ReadOnly) ) {
-        error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
+        error(KIO::ERR_CANNOT_OPEN_FOR_READING, url.path());
         return;
     }
     int processed_size = 0;
@@ -437,9 +446,9 @@ void HelpProtocol::get_file( const KUrl& url )
     KDE_struct_stat buff;
     if ( KDE_stat( _path.data(), &buff ) == -1 ) {
         if ( errno == EACCES )
-           error( KIO::ERR_ACCESS_DENIED, url.url() );
+           error(KIO::ERR_ACCESS_DENIED, url.toString());
         else
-           error( KIO::ERR_DOES_NOT_EXIST, url.url() );
+           error(KIO::ERR_DOES_NOT_EXIST, url.toString());
         return;
     }
 

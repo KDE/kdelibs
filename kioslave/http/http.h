@@ -161,8 +161,8 @@ public:
     // Miscellaneous
     QString id;
     DAVRequest davData;
-    KUrl redirectUrl;
-    KUrl proxyUrl;
+    QUrl redirectUrl;
+    QUrl proxyUrl;
     QStringList proxyUrls;
 
     bool isPersistentProxyConnection;
@@ -220,9 +220,9 @@ public:
       isPersistentProxyConnection = false;
     }
 
-    KUrl url;
+    QUrl url;
     QString encoded_hostname;
-    KUrl proxyUrl;
+    QUrl proxyUrl;
     bool isKeepAlive;
     bool isPersistentProxyConnection;
   };
@@ -233,27 +233,27 @@ public:
 
   virtual void slave_status();
 
-  virtual void get( const KUrl& url );
-  virtual void put( const KUrl& url, int _mode, KIO::JobFlags flags );
+  virtual void get( const QUrl& url );
+  virtual void put( const QUrl& url, int _mode, KIO::JobFlags flags );
 
 //----------------- Re-implemented methods for WebDAV -----------
-  virtual void listDir( const KUrl& url );
-  virtual void mkdir( const KUrl& url, int _permissions );
+  virtual void listDir( const QUrl& url );
+  virtual void mkdir( const QUrl& url, int _permissions );
 
-  virtual void rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flags );
-  virtual void copy( const KUrl& src, const KUrl& dest, int _permissions, KIO::JobFlags flags );
-  virtual void del( const KUrl& url, bool _isfile );
+  virtual void rename( const QUrl& src, const QUrl& dest, KIO::JobFlags flags );
+  virtual void copy( const QUrl& src, const QUrl& dest, int _permissions, KIO::JobFlags flags );
+  virtual void del( const QUrl& url, bool _isfile );
 
   // ask the host whether it supports WebDAV & cache this info
   bool davHostOk();
 
   // send generic DAV request
-  void davGeneric( const KUrl& url, KIO::HTTP_METHOD method, qint64 size = -1 );
+  void davGeneric( const QUrl& url, KIO::HTTP_METHOD method, qint64 size = -1 );
 
   // Send requests to lock and unlock resources
-  void davLock( const KUrl& url, const QString& scope,
+  void davLock( const QUrl& url, const QString& scope,
                 const QString& type, const QString& owner );
-  void davUnlock( const KUrl& url );
+  void davUnlock( const QUrl& url );
 
   // Calls httpClose() and finished()
   void davFinished();
@@ -273,9 +273,9 @@ public:
    */
   virtual void special( const QByteArray &data );
 
-  virtual void mimetype( const KUrl& url);
+  virtual void mimetype( const QUrl& url);
 
-  virtual void stat( const KUrl& url );
+  virtual void stat( const QUrl& url );
 
   virtual void reparseConfiguration();
 
@@ -284,9 +284,9 @@ public:
    */
   virtual void closeConnection();
 
-  void post( const KUrl& url, qint64 size = -1 );
+  void post( const QUrl& url, qint64 size = -1 );
   void multiGet(const QByteArray &data);
-  bool maybeSetRequestUrl(const KUrl &);
+  bool maybeSetRequestUrl(const QUrl &);
 
   /**
    * Generate and send error message based on response code.
@@ -393,7 +393,7 @@ protected:
    * Performs a WebDAV stat or list
    */
   void davSetRequest( const QByteArray& requestXML );
-  void davStatList( const KUrl& url, bool stat = true );
+  void davStatList( const QUrl& url, bool stat = true );
   void davParsePropstats( const QDomNodeList& propstats, KIO::UDSEntry& entry );
   void davParseActiveLocks( const QDomNodeList& activeLocks,
                             uint& lockCount );
@@ -426,7 +426,7 @@ protected:
 
   void cacheParseResponseHeader(const HeaderTokenizer &tokenizer);
 
-  QString cacheFilePathFromUrl(const KUrl &url) const;
+  QString cacheFilePathFromUrl(const QUrl &url) const;
   bool cacheFileOpenRead();
   bool cacheFileOpenWrite();
   void cacheFileClose();
@@ -438,7 +438,7 @@ protected:
   /**
    * check URL to guard against hash collisions, and load the etag for validation
    */
-  bool cacheFileReadTextHeader1(const KUrl &desiredUrl);
+  bool cacheFileReadTextHeader1(const QUrl &desiredUrl);
   /**
    * load the rest of the text fields
    */

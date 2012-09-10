@@ -318,7 +318,7 @@ void KAbstractHttpAuthentication::reset()
     m_password.clear();
 }
 
-void KAbstractHttpAuthentication::setChallenge(const QByteArray &c, const KUrl &resource,
+void KAbstractHttpAuthentication::setChallenge(const QByteArray &c, const QUrl &resource,
                                                const QByteArray &httpMethod)
 {
     reset();
@@ -402,7 +402,7 @@ QByteArray KHttpDigestAuthentication::scheme() const
 }
 
 
-void KHttpDigestAuthentication::setChallenge(const QByteArray &c, const KUrl &resource,
+void KHttpDigestAuthentication::setChallenge(const QByteArray &c, const QUrl &resource,
                                              const QByteArray &httpMethod)
 {
     QString oldUsername;
@@ -699,7 +699,7 @@ QByteArray KHttpNtlmAuthentication::scheme() const
 }
 
 
-void KHttpNtlmAuthentication::setChallenge(const QByteArray &c, const KUrl &resource,
+void KHttpNtlmAuthentication::setChallenge(const QByteArray &c, const QUrl &resource,
                                            const QByteArray &httpMethod)
 {
     QString oldUsername, oldPassword;
@@ -811,7 +811,7 @@ QByteArray KHttpNegotiateAuthentication::scheme() const
 }
 
 
-void KHttpNegotiateAuthentication::setChallenge(const QByteArray &c, const KUrl &resource,
+void KHttpNegotiateAuthentication::setChallenge(const QByteArray &c, const QUrl &resource,
                                                 const QByteArray &httpMethod)
 {
     KAbstractHttpAuthentication::setChallenge(c, resource, httpMethod);

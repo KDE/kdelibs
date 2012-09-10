@@ -41,7 +41,7 @@
 
 class QByteArray;
 
-class KUrl;
+class QUrl;
 
 #if defined(DATAKIOSLAVE)
 #  include <kio/slavebase.h>
@@ -70,8 +70,8 @@ public:
   DataProtocol();
 #endif
   virtual ~DataProtocol();
-  virtual void mimetype(const KUrl &url);
-  virtual void get(const KUrl &url);
+  virtual void mimetype(const QUrl &url);
+  virtual void get(const QUrl &url);
 };
 
 }/*end namespace*/

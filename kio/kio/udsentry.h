@@ -228,7 +228,7 @@ namespace KIO
             /// Client applications should only provide annotations for
             /// entries that provide this URI
             ///
-            /// URIs need to be encoded using KUrl::url()
+            /// URIs need to be encoded using QUrl::toString()
             ///
             /// @since 4.4
             UDS_NEPOMUK_URI = 25 | UDS_STRING,

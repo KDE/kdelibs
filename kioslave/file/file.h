@@ -49,24 +49,24 @@ public:
   FileProtocol( const QByteArray &pool, const QByteArray &app);
   virtual ~FileProtocol();
 
-  virtual void get( const KUrl& url );
-  virtual void put( const KUrl& url, int _mode,
+  virtual void get( const QUrl& url );
+  virtual void put( const QUrl& url, int _mode,
 		    KIO::JobFlags _flags );
-  virtual void copy( const KUrl &src, const KUrl &dest,
+  virtual void copy( const QUrl &src, const QUrl &dest,
                      int mode, KIO::JobFlags flags );
-  virtual void rename( const KUrl &src, const KUrl &dest,
+  virtual void rename( const QUrl &src, const QUrl &dest,
                        KIO::JobFlags flags );
-  virtual void symlink( const QString &target, const KUrl &dest,
+  virtual void symlink( const QString &target, const QUrl &dest,
                         KIO::JobFlags flags );
 
-  virtual void stat( const KUrl& url );
-  virtual void listDir( const KUrl& url );
-  virtual void mkdir( const KUrl& url, int permissions );
-  virtual void chmod( const KUrl& url, int permissions );
-  virtual void chown( const KUrl& url, const QString& owner, const QString& group );
-  virtual void setModificationTime( const KUrl& url, const QDateTime& mtime );
-  virtual void del( const KUrl& url, bool isfile);
-  virtual void open( const KUrl &url, QIODevice::OpenMode mode );
+  virtual void stat( const QUrl& url );
+  virtual void listDir( const QUrl& url );
+  virtual void mkdir( const QUrl& url, int permissions );
+  virtual void chmod( const QUrl& url, int permissions );
+  virtual void chown( const QUrl& url, const QString& owner, const QString& group );
+  virtual void setModificationTime( const QUrl& url, const QDateTime& mtime );
+  virtual void del( const QUrl& url, bool isfile);
+  virtual void open( const QUrl &url, QIODevice::OpenMode mode );
   virtual void read( KIO::filesize_t size );
   virtual void write( const QByteArray &data );
   virtual void seek( KIO::filesize_t offset );

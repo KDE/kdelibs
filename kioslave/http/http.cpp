@@ -52,6 +52,7 @@
 #include <QtNetwork/QNetworkProxy>
 #include <QtNetwork/QTcpSocket>
 #include <qmimedatabase.h>
+#include <qurlpathinfo.h>
 
 #include <kurl.h>
 #include <kdebug.h>
@@ -85,6 +86,10 @@
 #include "parsinghelpers.h"
 //string parsing helpers and HeaderTokenizer implementation
 #include "parsinghelpers.cpp"
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define toDisplayString toString
+#endif
 
 // KDE5 TODO (QT5) : use QString::htmlEscape or whatever https://qt.gitorious.org/qt/qtbase/merge_requests/56
 // ends up with.
@@ -210,13 +215,13 @@ static bool isPotentialSpoofingAttack(const HTTPProtocol::HTTPRequest& request, 
         return false;
     }
 
-    if (request.url.user().isEmpty()) {
+    if (request.url.userName().isEmpty()) {
         return false;
     }
 
     // NOTE: Workaround for brain dead clients that include "undefined" as
     // username and password in the request URL (BR# 275033).
-    if (request.url.user() == QLatin1String("undefined") && request.url.pass() == QLatin1String("undefined")) {
+    if (request.url.userName() == QLatin1String("undefined") && request.url.password() == QLatin1String("undefined")) {
         return false;
     }
 
@@ -226,7 +231,7 @@ static bool isPotentialSpoofingAttack(const HTTPProtocol::HTTPRequest& request, 
     }
 
     const QString userName = config->readEntry(QLatin1String("LastSpoofedUserName"), QString());
-    return ((userName.isEmpty() || userName != request.url.user()) && request.responseCode != 401 && request.prevResponseCode != 401);
+    return ((userName.isEmpty() || userName != request.url.userName()) && request.responseCode != 401 && request.prevResponseCode != 401);
 }
 
 // for a given response code, conclude if the response is going to/likely to have a response body
@@ -579,8 +584,8 @@ void HTTPProtocol::setHost( const QString& host, quint16 port,
         m_request.encoded_hostname = QLatin1Char('[') + host.left(pos) + QLatin1Char(']');
   }
   m_request.url.setPort((port > 0 && port != defaultPort()) ? port : -1);
-  m_request.url.setUser(user);
-  m_request.url.setPass(pass);
+  m_request.url.setUserName(user);
+  m_request.url.setPassword(pass);
 
   // On new connection always clear previous proxy information...
   m_request.proxyUrl.clear();
@@ -590,9 +595,9 @@ void HTTPProtocol::setHost( const QString& host, quint16 port,
                << "(" << m_request.encoded_hostname << ")";
 }
 
-bool HTTPProtocol::maybeSetRequestUrl(const KUrl &u)
+bool HTTPProtocol::maybeSetRequestUrl(const QUrl &u)
 {
-  kDebug (7113) << u.url();
+  kDebug (7113) << u;
 
   m_request.url = u;
   m_request.url.setPort(u.port(defaultPort()) != defaultPort() ? u.port() : -1);
@@ -694,9 +699,9 @@ bool HTTPProtocol::proceedUntilResponseHeader()
   return true;
 }
 
-void HTTPProtocol::stat(const KUrl& url)
+void HTTPProtocol::stat(const QUrl& url)
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
       return;
@@ -708,13 +713,13 @@ void HTTPProtocol::stat(const KUrl& url)
     if (statSide != QLatin1String("source"))
     {
       // When uploading we assume the file doesn't exit
-      error( ERR_DOES_NOT_EXIST, url.prettyUrl() );
+      error(ERR_DOES_NOT_EXIST, url.toDisplayString());
       return;
     }
 
     // When downloading we assume it exists
     UDSEntry entry;
-    entry.insert( KIO::UDSEntry::UDS_NAME, url.fileName() );
+    entry.insert( KIO::UDSEntry::UDS_NAME, QUrlPathInfo(url).fileName() );
     entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG ); // a file
     entry.insert( KIO::UDSEntry::UDS_ACCESS, S_IRUSR | S_IRGRP | S_IROTH ); // readable by everybody
 
@@ -726,9 +731,9 @@ void HTTPProtocol::stat(const KUrl& url)
   davStatList( url );
 }
 
-void HTTPProtocol::listDir( const KUrl& url )
+void HTTPProtocol::listDir( const QUrl& url )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -743,7 +748,7 @@ void HTTPProtocol::davSetRequest( const QByteArray& requestXML )
   cachePostData(requestXML);
 }
 
-void HTTPProtocol::davStatList( const KUrl& url, bool stat )
+void HTTPProtocol::davStatList( const QUrl& url, bool stat )
 {
   UDSEntry entry;
 
@@ -799,7 +804,7 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
   m_request.cacheTag.policy = CC_Reload;
   m_request.davData.depth = stat ? 0 : 1;
   if (!stat)
-     m_request.url.adjustPath(KUrl::AddTrailingSlash);
+     m_request.url.setPath(QUrlPathInfo(m_request.url).path(QUrlPathInfo::AppendTrailingSlash));
 
   proceedUntilResponseContent( true );
   infoMessage(QLatin1String(""));
@@ -831,22 +836,13 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
     if ( !href.isNull() ) {
       entry.clear();
 
-      QString urlStr = QUrl::fromPercentEncoding(href.text().toUtf8());
-#if 0 // qt4/kde4 say: it's all utf8...
-      int encoding = remoteEncoding()->encodingMib();
-      if ((encoding == 106) && (!KStringHandler::isUtf8(KUrl::decode_string(urlStr, 4).toLatin1())))
-        encoding = 4; // Use latin1 if the file is not actually utf-8
-
-      KUrl thisURL ( urlStr, encoding );
-#else
-      KUrl thisURL( urlStr );
-#endif
-
+      const QUrl thisURL(href.text()); // href.text() is a percent-encoded url.
       if ( thisURL.isValid() ) {
-        QString name = thisURL.fileName();
+        QUrlPathInfo thisUrlInfo(thisURL);
+        QString name = thisUrlInfo.fileName();
 
         // base dir of a listDir(): name should be "."
-        if ( !stat && thisURL.path(KUrl::AddTrailingSlash).length() == url.path(KUrl::AddTrailingSlash).length() )
+        if ( !stat && thisUrlInfo.path(QUrlPathInfo::AppendTrailingSlash).length() == QUrlPathInfo(url).path(QUrlPathInfo::AppendTrailingSlash).length() )
           name = QLatin1Char('.');
 
         entry.insert( KIO::UDSEntry::UDS_NAME, name.isEmpty() ? href.text() : name );
@@ -861,9 +857,9 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
       // the resource name so long as the resource is not a directory.
       if (entry.stringValue(KIO::UDSEntry::UDS_MIME_TYPE).isEmpty() &&
           entry.numberValue(KIO::UDSEntry::UDS_FILE_TYPE) != S_IFDIR) {
-          QMimeType mime = db.mimeTypeForFile(thisURL.fileName(), QMimeDatabase::MatchExtension);
+          QMimeType mime = db.mimeTypeForFile(thisURL.path(), QMimeDatabase::MatchExtension);
           if (mime.isValid() && !mime.isDefault()) {
-              kDebug(7113) << "Setting" << mime.name() << "as guessed mime type for" << thisURL.fileName();
+              kDebug(7113) << "Setting" << mime.name() << "as guessed mime type for" << thisURL.path();
               entry.insert(KIO::UDSEntry::UDS_GUESSED_MIME_TYPE, mime.name());
           }
       }
@@ -882,7 +878,7 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
   }
 
   if ( stat || !hasResponse ) {
-    error( ERR_DOES_NOT_EXIST, url.prettyUrl() );
+    error(ERR_DOES_NOT_EXIST, url.toDisplayString());
     return;
   }
 
@@ -890,9 +886,9 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
   davFinished();
 }
 
-void HTTPProtocol::davGeneric( const KUrl& url, KIO::HTTP_METHOD method, qint64 size )
+void HTTPProtocol::davGeneric( const QUrl& url, KIO::HTTP_METHOD method, qint64 size )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1272,9 +1268,9 @@ void HTTPProtocol::davFinished()
   finished();
 }
 
-void HTTPProtocol::mkdir( const KUrl& url, int )
+void HTTPProtocol::mkdir( const QUrl& url, int )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1292,9 +1288,9 @@ void HTTPProtocol::mkdir( const KUrl& url, int )
     davError();
 }
 
-void HTTPProtocol::get( const KUrl& url )
+void HTTPProtocol::get( const QUrl& url )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1311,9 +1307,9 @@ void HTTPProtocol::get( const KUrl& url )
   proceedUntilResponseContent();
 }
 
-void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
+void HTTPProtocol::put( const QUrl &url, int, KIO::JobFlags flags )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1367,9 +1363,9 @@ void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
   proceedUntilResponseContent();
 }
 
-void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, KIO::JobFlags flags )
+void HTTPProtocol::copy( const QUrl& src, const QUrl& dest, int, KIO::JobFlags flags )
 {
-  kDebug(7113) << src.url() << "->" << dest.url();
+  kDebug(7113) << src << "->" << dest;
 
   if (!maybeSetRequestUrl(dest) || !maybeSetRequestUrl(src))
     return;
@@ -1383,7 +1379,7 @@ void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, KIO::JobFlags f
     newDest.setScheme(QLatin1String("http"));
 
   m_request.method = DAV_COPY;
-  m_request.davData.desturl = newDest.url();
+  m_request.davData.desturl = newDest.toString();
   m_request.davData.overwrite = (flags & KIO::Overwrite);
   m_request.url.setQuery(QString());
   m_request.cacheTag.policy = CC_Reload;
@@ -1397,9 +1393,9 @@ void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, KIO::JobFlags f
     davError();
 }
 
-void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flags )
+void HTTPProtocol::rename( const QUrl& src, const QUrl& dest, KIO::JobFlags flags )
 {
-  kDebug(7113) << src.url() << "->" << dest.url();
+  kDebug(7113) << src << "->" << dest;
 
   if (!maybeSetRequestUrl(dest) || !maybeSetRequestUrl(src))
     return;
@@ -1413,7 +1409,7 @@ void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flag
     newDest.setScheme(QLatin1String("http"));
 
   m_request.method = DAV_MOVE;
-  m_request.davData.desturl = newDest.url();
+  m_request.davData.desturl = newDest.toString();
   m_request.davData.overwrite = (flags & KIO::Overwrite);
   m_request.url.setQuery(QString());
   m_request.cacheTag.policy = CC_Reload;
@@ -1427,7 +1423,7 @@ void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flag
   if ( m_request.responseCode == 301) {
     m_request.url = m_request.redirectUrl;
     m_request.method = DAV_MOVE;
-    m_request.davData.desturl = newDest.url();
+    m_request.davData.desturl = newDest.toString();
     m_request.davData.overwrite = (flags & KIO::Overwrite);
     m_request.url.setQuery(QString());
     m_request.cacheTag.policy = CC_Reload;
@@ -1443,9 +1439,9 @@ void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flag
     davError();
 }
 
-void HTTPProtocol::del( const KUrl& url, bool )
+void HTTPProtocol::del( const QUrl& url, bool )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1474,9 +1470,9 @@ void HTTPProtocol::del( const KUrl& url, bool )
   proceedUntilResponseContent();
 }
 
-void HTTPProtocol::post( const KUrl& url, qint64 size )
+void HTTPProtocol::post( const QUrl& url, qint64 size )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1489,10 +1485,10 @@ void HTTPProtocol::post( const KUrl& url, qint64 size )
   proceedUntilResponseContent();
 }
 
-void HTTPProtocol::davLock( const KUrl& url, const QString& scope,
+void HTTPProtocol::davLock( const QUrl& url, const QString& scope,
                             const QString& type, const QString& owner )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1553,9 +1549,9 @@ void HTTPProtocol::davLock( const KUrl& url, const QString& scope,
     davError();
 }
 
-void HTTPProtocol::davUnlock( const KUrl& url )
+void HTTPProtocol::davUnlock( const QUrl& url )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1586,7 +1582,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
 
   QString url = _url;
   if ( !url.isNull() )
-    url = m_request.url.url();
+    url = m_request.url.toString();
 
   QString action, errorString;
   int errorCode = ERR_SLAVE_DEFINED;
@@ -1827,7 +1823,7 @@ static int httpPutError(const HTTPProtocol::HTTPRequest& request, QString* error
 
   int errorCode = 0;
   const int responseCode = request.responseCode;
-  const QString action (i18nc("request type", "upload %1", request.url.prettyUrl()));
+  const QString action (i18nc("request type", "upload %1", request.url.toDisplayString()));
 
   switch (responseCode) {
     case 403:
@@ -1966,7 +1962,7 @@ void HTTPProtocol::multiGet(const QByteArray &data)
         //### should maybe call resetSessionSettings() if the server/domain is
         //    different from the last request!
 
-        kDebug(7113) << url.url();
+        kDebug(7113) << url;
 
         m_request.method = HTTP_GET;
         m_request.isKeepAlive = true;   //readResponseHeader clears it if necessary
@@ -2154,10 +2150,10 @@ static bool isCompatibleNextUrl(const KUrl &previous, const KUrl &now)
     if (previous.host() != now.host() || previous.port() != now.port()) {
         return false;
     }
-    if (previous.user().isEmpty() && previous.pass().isEmpty()) {
+    if (previous.userName().isEmpty() && previous.password().isEmpty()) {
         return true;
     }
-    return previous.user() == now.user() && previous.pass() == now.pass();
+    return previous.userName() == now.userName() && previous.password() == now.password();
 }
 
 bool HTTPProtocol::httpShouldCloseConnection()
@@ -2213,7 +2209,7 @@ bool HTTPProtocol::httpOpenConnection()
 
             if (!supportedProxyScheme(scheme)) {
                 connectError = ERR_COULD_NOT_CONNECT;
-                errorString = url.url();
+                errorString = url.toDisplayString();
                 continue;
             }
 
@@ -2249,7 +2245,7 @@ bool HTTPProtocol::httpOpenConnection()
                     break;
                 }
             } else {
-                QNetworkProxy proxy (proxyType, url.host(), url.port(), url.user(), url.pass());
+                QNetworkProxy proxy (proxyType, url.host(), url.port(), url.userName(), url.password());
                 QNetworkProxy::setApplicationProxy(proxy);
                 connectError = connectToHost(m_request.url.host(), m_request.url.port(defaultPort()), &errorString);
                 if (connectError == 0) {
@@ -2309,9 +2305,9 @@ bool HTTPProtocol::satisfyRequestFromCache(bool *cacheHasPage)
                 // cache-only or offline -> we give a definite answer and it is "no"
                 *cacheHasPage = false;
                 if (isCacheOnly) {
-                    error(ERR_DOES_NOT_EXIST, m_request.url.url());
+                    error(ERR_DOES_NOT_EXIST, m_request.url.toDisplayString());
                 } else if (offline) {
-                    error(ERR_COULD_NOT_CONNECT, m_request.url.url());
+                    error(ERR_COULD_NOT_CONNECT, m_request.url.toDisplayString());
                 }
                 return true;
             }
@@ -2348,7 +2344,7 @@ QString HTTPProtocol::formatRequestUri() const
         u.setPort(m_request.url.port());
         u.setEncodedPathAndQuery(m_request.url.encodedPathAndQuery(
                                     KUrl::LeaveTrailingSlash, KUrl::AvoidEmptyPath));
-        return u.url();
+        return u.toString();
     } else {
         return m_request.url.encodedPathAndQuery(KUrl::LeaveTrailingSlash, KUrl::AvoidEmptyPath);
     }
@@ -2609,7 +2605,7 @@ bool HTTPProtocol::sendQuery()
     {
       m_request.cookieMode = HTTPRequest::CookiesAuto;
       if (m_request.useCookieJar)
-        cookieStr = findCookies(m_request.url.url());
+        cookieStr = findCookies(m_request.url.toString());
     }
 
     if (!cookieStr.isEmpty())
@@ -3041,13 +3037,13 @@ try_again:
                                             "does not require authentication. "
                                             "This may be an attempt to trick you."
                                             "<p>Is \"%1\" the site you want to visit?",
-                                            m_request.url.host(), m_request.url.user()),
+                                            m_request.url.host(), m_request.url.userName()),
                                       i18nc("@title:window", "Confirm Website Access"));
         if (result == KMessageBox::No) {
-            error(ERR_USER_CANCELED, m_request.url.url());
+            error(ERR_USER_CANCELED, m_request.url.toDisplayString());
             return false;
         }
-        setMetaData(QLatin1String("{internal~currenthost}LastSpoofedUserName"), m_request.url.user());
+        setMetaData(QLatin1String("{internal~currenthost}LastSpoofedUserName"), m_request.url.userName());
     }
 
     if (m_request.responseCode != 200 && m_request.responseCode != 304) {
@@ -3061,7 +3057,7 @@ try_again:
             ; // Ignore error
         } else {
             if (!sendErrorPageNotification()) {
-                error(ERR_INTERNAL_SERVER, m_request.url.url());
+                error(ERR_INTERNAL_SERVER, m_request.url.toDisplayString());
                 return false;
             }
         }
@@ -3077,9 +3073,9 @@ try_again:
         // Tell that we will only get an error page here.
         if (!sendErrorPageNotification()) {
             if (m_request.responseCode == 403)
-                error(ERR_ACCESS_DENIED, m_request.url.url());
+                error(ERR_ACCESS_DENIED, m_request.url.toDisplayString());
             else
-                error(ERR_DOES_NOT_EXIST, m_request.url.url());
+                error(ERR_DOES_NOT_EXIST, m_request.url.toDisplayString());
             return false;
         }
     } else if (m_request.responseCode >= 301 && m_request.responseCode<= 303) {
@@ -3416,7 +3412,7 @@ endParsing:
                 if (!domain.isEmpty() && isCrossDomainRequest(m_request.url.host(), domain)) {
                     cookieStr = "Cross-Domain\n" + cookieStr;
                 }
-                addCookies( m_request.url.url(), cookieStr );
+                addCookies(m_request.url.toString(), cookieStr);
             } else if (m_request.cookieMode == HTTPRequest::CookiesManual) {
                 // Pass cookie to application
                 setMetaData(QLatin1String("setcookies"), QString::fromUtf8(cookieStr)); // ## is encoding ok?
@@ -3462,7 +3458,7 @@ endParsing:
             KUrl u(m_request.url, locationStr);
             if(!u.isValid())
             {
-                error(ERR_MALFORMED_URL, u.url());
+                error(ERR_MALFORMED_URL, u.toString());
                 return false;
             }
 
@@ -3493,8 +3489,7 @@ endParsing:
                 m_request.redirectUrl = u;
             }
 
-            kDebug(7113) << "Re-directing from" << m_request.url.url()
-                         << "to" << u.url();
+            kDebug(7113) << "Re-directing from" << m_request.url << "to" << u;
 
             redirection(u);
 
@@ -3786,12 +3781,12 @@ void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
 
     // validation handling
     if (mayCache && m_request.responseCode == 200 && !m_mimeType.isEmpty()) {
-        kDebug(7113) << "Cache, adding" << m_request.url.url();
+        kDebug(7113) << "Cache, adding" << m_request.url;
         // ioMode can still be ReadFromCache here if we're performing a conditional get
         // aka validation
         m_request.cacheTag.ioMode = WriteToCache;
         if (!cacheFileOpenWrite()) {
-            kDebug(7113) << "Error creating cache entry for " << m_request.url.url()<<"!\n";
+            kDebug(7113) << "Error creating cache entry for" << m_request.url << "!\n";
         }
         m_maxCacheSize = config()->readEntry("MaxCacheSize", DEFAULT_MAX_CACHE_SIZE);
     } else if (m_request.responseCode == 304 && m_request.cacheTag.file) {
@@ -4007,9 +4002,9 @@ void HTTPProtocol::slave_status()
   slaveStatus( m_server.url.host(), isConnected() );
 }
 
-void HTTPProtocol::mimetype( const KUrl& url )
+void HTTPProtocol::mimetype( const QUrl& url )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -4261,7 +4256,7 @@ void HTTPProtocol::slotData(const QByteArray &_d)
         kDebug(7113) << "Mimetype buffer size:" << m_mimeTypeBuffer.size();
 
         QMimeDatabase db;
-        QMimeType mime = db.mimeTypeForNameAndData(m_request.url.fileName(), m_mimeTypeBuffer);
+        QMimeType mime = db.mimeTypeForNameAndData(m_request.url.path(), m_mimeTypeBuffer);
         if (mime.isValid() && !mime.isDefault())
         {
           m_mimeType = mime.name();
@@ -4788,7 +4783,7 @@ static bool readLineChecked(QIODevice *dev, QByteArray *line)
     return true;
 }
 
-bool HTTPProtocol::cacheFileReadTextHeader1(const KUrl &desiredUrl)
+bool HTTPProtocol::cacheFileReadTextHeader1(const QUrl &desiredUrl)
 {
     QFile *&file = m_request.cacheTag.file;
     Q_ASSERT(file);
@@ -4846,7 +4841,7 @@ static QString filenameFromUrl(const KUrl &url)
     return toQString(hash.result().toHex());
 }
 
-QString HTTPProtocol::cacheFilePathFromUrl(const KUrl &url) const
+QString HTTPProtocol::cacheFilePathFromUrl(const QUrl &url) const
 {
     QString filePath = m_strCacheDir;
     if (!filePath.endsWith(QLatin1Char('/'))) {
@@ -5227,8 +5222,8 @@ void HTTPProtocol::proxyAuthenticationForSocket(const QNetworkProxy &proxy, QAut
     kDebug(7113) << "realm:" << authenticator->realm() << "user:" << authenticator->user();
 
     // Set the proxy URL...
-    m_request.proxyUrl.setProtocol(protocolForProxyType(proxy.type()));
-    m_request.proxyUrl.setUser(proxy.user());
+    m_request.proxyUrl.setScheme(protocolForProxyType(proxy.type()));
+    m_request.proxyUrl.setUserName(proxy.user());
     m_request.proxyUrl.setHost(proxy.hostName());
     m_request.proxyUrl.setPort(proxy.port());
 
@@ -5276,8 +5271,8 @@ void HTTPProtocol::proxyAuthenticationForSocket(const QNetworkProxy &proxy, QAut
         m_socketProxyAuth = new QAuthenticator(*authenticator);
     }
 
-    if (!m_request.proxyUrl.user().isEmpty()) {
-        m_request.proxyUrl.setUser(info.username);
+    if (!m_request.proxyUrl.userName().isEmpty()) {
+        m_request.proxyUrl.setUserName(info.username);
     }
 }
 
@@ -5358,7 +5353,7 @@ bool HTTPProtocol::handleAuthenticationHeader(const HeaderTokenizer* tokenizer)
         auth = &m_wwwAuth;
         authTokens = tokenizer->iterator("www-authenticate").all();
         authinfo.url = m_request.url;
-        authinfo.username = m_server.url.user();
+        authinfo.username = m_server.url.userName();
         authinfo.prompt = i18n("You need to supply a username and a "
                                "password to access this site.");
         authinfo.commentLabel = i18n("Site:");
@@ -5370,7 +5365,7 @@ bool HTTPProtocol::handleAuthenticationHeader(const HeaderTokenizer* tokenizer)
         auth = &m_proxyAuth;
         authTokens = tokenizer->iterator("proxy-authenticate").all();
         authinfo.url = m_request.proxyUrl;
-        authinfo.username = m_request.proxyUrl.user();
+        authinfo.username = m_request.proxyUrl.userName();
         authinfo.prompt = i18n("You need to supply a username and a password for "
                                "the proxy server listed below before you are allowed "
                                "to access any sites." );
@@ -5434,11 +5429,11 @@ try_next_auth_scheme:
             bool generateAuthHeader = true;
             if ((*auth)->needCredentials()) {
                 // use credentials supplied by the application if available
-                if (!m_request.url.user().isEmpty() && !m_request.url.pass().isEmpty()) {
-                    username = m_request.url.user();
-                    password = m_request.url.pass();
+                if (!m_request.url.userName().isEmpty() && !m_request.url.password().isEmpty()) {
+                    username = m_request.url.userName();
+                    password = m_request.url.password();
                     // don't try this password any more
-                    m_request.url.setPass(QString());
+                    m_request.url.setPassword(QString());
                 } else {
                     // try to get credentials from kpasswdserver's cache, then try asking the user.
                     authinfo.verifyPath = false; // we have realm, no path based checking please!

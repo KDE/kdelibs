@@ -31,7 +31,7 @@
 
 class KConfigGroup;
 class KRemoteEncoding;
-class KUrl;
+class QUrl;
 
 namespace KIO {
 
@@ -348,7 +348,7 @@ public:
     /**
      * Prepare slave for streaming operation
      */
-    virtual void setSubUrl(const KUrl&url);
+    virtual void setSubUrl(const QUrl&url);
 
     /**
      * Opens the connection (forced)
@@ -390,7 +390,7 @@ public:
      * can now happen. All with a single call to get() in the slave.
      * This mechanism is also described in KIO::get().
      */
-    virtual void get( const KUrl& url );
+    virtual void get( const QUrl& url );
 
     /**
      * open.
@@ -398,7 +398,7 @@ public:
      *        can be assumed to be the same as in the last setHost() call.
      * @param mode see \ref QIODevice::OpenMode
      */
-    virtual void open( const KUrl &url, QIODevice::OpenMode mode );
+    virtual void open( const QUrl &url, QIODevice::OpenMode mode );
 
     virtual void read( KIO::filesize_t size );
     virtual void write( const QByteArray &data );
@@ -420,7 +420,7 @@ public:
      *
      * @see canResume()
      */
-    virtual void put( const KUrl& url, int permissions, JobFlags flags );
+    virtual void put( const QUrl& url, int permissions, JobFlags flags );
 
     /**
      * Finds all details for one file or directory.
@@ -437,7 +437,7 @@ public:
      * details==0 is used for very simple probing: we'll only get the answer
      * "it's a file or a directory (or a symlink), or it doesn't exist".
      */
-    virtual void stat( const KUrl& url );
+    virtual void stat( const QUrl& url );
 
     /**
      * Finds mimetype for one file or directory.
@@ -451,7 +451,7 @@ public:
      * determining the mimetype on it - this is obviously not a
      * good thing in most cases.
      */
-    virtual void mimetype( const KUrl& url );
+    virtual void mimetype( const QUrl& url );
 
     /**
      * Lists the contents of @p url.
@@ -460,7 +460,7 @@ public:
      * It should also emit totalFiles as soon as it knows how many
      * files it will list.
      */
-    virtual void listDir( const KUrl& url );
+    virtual void listDir( const QUrl& url );
 
     /**
      * Create a directory
@@ -469,7 +469,7 @@ public:
      * (-1 if no permissions to be set)
      * The slave emits ERR_COULD_NOT_MKDIR if failure.
      */
-    virtual void mkdir( const KUrl&url, int permissions );
+    virtual void mkdir( const QUrl&url, int permissions );
 
     /**
      * Rename @p oldname into @p newname.
@@ -497,7 +497,7 @@ public:
      * @param dest where to move the file to
      * @param flags: We support Overwrite here
      */
-    virtual void rename( const KUrl& src, const KUrl& dest, JobFlags flags );
+    virtual void rename( const QUrl& src, const QUrl& dest, JobFlags flags );
 
     /**
      * Creates a symbolic link named @p dest, pointing to @p target, which
@@ -506,19 +506,19 @@ public:
      * @param dest The symlink to create.
      * @param flags: We support Overwrite here
      */
-    virtual void symlink( const QString& target, const KUrl& dest, JobFlags flags );
+    virtual void symlink( const QString& target, const QUrl& dest, JobFlags flags );
 
     /**
      * Change permissions on @p url
      * The slave emits ERR_DOES_NOT_EXIST or ERR_CANNOT_CHMOD
      */
-    virtual void chmod( const KUrl& url, int permissions );
+    virtual void chmod( const QUrl& url, int permissions );
 
     /**
      * Change ownership of @p url
      * The slave emits ERR_DOES_NOT_EXIST or ERR_CANNOT_CHOWN
      */
-    virtual void chown( const KUrl& url, const QString& owner, const QString& group );
+    virtual void chown( const QUrl& url, const QString& owner, const QString& group );
 
     /**
      * Sets the modification time for @url
@@ -527,7 +527,7 @@ public:
      * The usual implementation on unix is to call utime(path, &myutimbuf).
      * The slave emits ERR_DOES_NOT_EXIST or ERR_CANNOT_SETTIME
      */
-    virtual void setModificationTime( const KUrl& url, const QDateTime& mtime );
+    virtual void setModificationTime( const QUrl& url, const QDateTime& mtime );
 
     /**
      * Copy @p src into @p dest.
@@ -553,7 +553,7 @@ public:
      *
      * Don't forget to set the modification time of @p dest to be the modification time of @p src.
      */
-    virtual void copy( const KUrl &src, const KUrl &dest, int permissions, JobFlags flags );
+    virtual void copy( const QUrl &src, const QUrl &dest, int permissions, JobFlags flags );
 
     /**
      * Delete a file or directory.
@@ -565,14 +565,14 @@ public:
      * However, if metadata("recurse") == "true", then the slave can do a recursive deletion.
      * This behavior is only invoked if the slave specifies deleteRecursive=true in its protocol file.
      */
-    virtual void del( const KUrl &url, bool isfile);
+    virtual void del( const QUrl &url, bool isfile);
 
     /**
      * Change the destination of a symlink
      * @param url the url of the symlink to modify
      * @param target the new destination (target) of the symlink
      */
-    virtual void setLinkDest( const KUrl& url, const QString& target );
+    virtual void setLinkDest( const QUrl& url, const QString& target );
 
     /**
      * Used for any command that is specific to this slave (protocol)
@@ -755,7 +755,7 @@ public:
      *
      * \code
      * AuthInfo info;
-     * info.url = KUrl("http://www.foobar.org/foo/bar");
+     * info.url = QUrl("http://www.foobar.org/foo/bar");
      * info.username = "somename";
      * info.verifyPath = true;
      * if ( !checkCachedAuthentication( info ) )
@@ -781,7 +781,7 @@ public:
      *
      * \code
      * AuthInfo info;
-     * info.url = KUrl("http://www.foobar.org/foo/bar");
+     * info.url = QUrl("http://www.foobar.org/foo/bar");
      * info.username = "somename";
      * info.verifyPath = true;
      * if ( !checkCachedAuthentication( info ) ) {

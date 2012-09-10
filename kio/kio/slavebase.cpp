@@ -96,7 +96,7 @@ public:
     MetaData configData;
     KConfig *config;
     KConfigGroup *configGroup;
-    KUrl onHoldUrl;
+    QUrl onHoldUrl;
 
     struct timeval last_tv;
     KIO::filesize_t totalSize;
@@ -784,17 +784,17 @@ void SlaveBase::openConnection(void)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_CONNECT)); }
 void SlaveBase::closeConnection(void)
 { } // No response!
-void SlaveBase::stat(KUrl const &)
+void SlaveBase::stat(QUrl const &)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_STAT)); }
-void SlaveBase::put(KUrl const &, int, JobFlags )
+void SlaveBase::put(QUrl const &, int, JobFlags )
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_PUT)); }
 void SlaveBase::special(const QByteArray &)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_SPECIAL)); }
-void SlaveBase::listDir(KUrl const &)
+void SlaveBase::listDir(QUrl const &)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_LISTDIR)); }
-void SlaveBase::get(KUrl const & )
+void SlaveBase::get(QUrl const & )
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_GET)); }
-void SlaveBase::open(KUrl const &, QIODevice::OpenMode)
+void SlaveBase::open(QUrl const &, QIODevice::OpenMode)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_OPEN)); }
 void SlaveBase::read(KIO::filesize_t)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_READ)); }
@@ -804,27 +804,27 @@ void SlaveBase::seek(KIO::filesize_t)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_SEEK)); }
 void SlaveBase::close()
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_CLOSE)); }
-void SlaveBase::mimetype(KUrl const &url)
+void SlaveBase::mimetype(QUrl const &url)
 { get(url); }
-void SlaveBase::rename(KUrl const &, KUrl const &, JobFlags)
+void SlaveBase::rename(QUrl const &, QUrl const &, JobFlags)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_RENAME)); }
-void SlaveBase::symlink(QString const &, KUrl const &, JobFlags)
+void SlaveBase::symlink(QString const &, QUrl const &, JobFlags)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_SYMLINK)); }
-void SlaveBase::copy(KUrl const &, KUrl const &, int, JobFlags)
+void SlaveBase::copy(QUrl const &, QUrl const &, int, JobFlags)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_COPY)); }
-void SlaveBase::del(KUrl const &, bool)
+void SlaveBase::del(QUrl const &, bool)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_DEL)); }
-void SlaveBase::setLinkDest(const KUrl &, const QString&)
+void SlaveBase::setLinkDest(const QUrl &, const QString&)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_SETLINKDEST)); }
-void SlaveBase::mkdir(KUrl const &, int)
+void SlaveBase::mkdir(QUrl const &, int)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_MKDIR)); }
-void SlaveBase::chmod(KUrl const &, int)
+void SlaveBase::chmod(QUrl const &, int)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_CHMOD)); }
-void SlaveBase::setModificationTime(KUrl const &, const QDateTime&)
+void SlaveBase::setModificationTime(QUrl const &, const QDateTime&)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_SETMODIFICATIONTIME)); }
-void SlaveBase::chown(KUrl const &, const QString &, const QString &)
+void SlaveBase::chown(QUrl const &, const QString &, const QString &)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_CHOWN)); }
-void SlaveBase::setSubUrl(KUrl const &)
+void SlaveBase::setSubUrl(QUrl const &)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_SUBURL)); }
 void SlaveBase::multiGet(const QByteArray &)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_MULTI_GET)); }

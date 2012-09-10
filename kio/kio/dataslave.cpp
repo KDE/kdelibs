@@ -68,7 +68,7 @@ DataSlave::~DataSlave() {
   //kDebug() << this;
 }
 
-void DataSlave::hold(const KUrl &/*url*/) {
+void DataSlave::hold(const QUrl &/*url*/) {
   // ignored
 }
 
@@ -118,7 +118,7 @@ void DataSlave::dispatchNext() {
 void DataSlave::send(int cmd, const QByteArray &arr) {
   QDataStream stream(arr);
 
-  KUrl url;
+  QUrl url;
 
   switch (cmd) {
     case CMD_GET: {

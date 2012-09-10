@@ -75,7 +75,7 @@ public:
     /**
      * initiate authentication with challenge string (from HTTP header)
      */
-    virtual void setChallenge(const QByteArray &c, const KUrl &resource, const QByteArray &httpMethod);
+    virtual void setChallenge(const QByteArray &c, const QUrl &resource, const QByteArray &httpMethod);
     /**
      * return value updated by setChallenge()
      *
@@ -199,7 +199,7 @@ class KHttpDigestAuthentication : public KAbstractHttpAuthentication
 {
 public:
     virtual QByteArray scheme() const;
-    virtual void setChallenge(const QByteArray &c, const KUrl &resource, const QByteArray &httpMethod);
+    virtual void setChallenge(const QByteArray &c, const QUrl &resource, const QByteArray &httpMethod);
     virtual void fillKioAuthInfo(KIO::AuthInfo *ai) const;
     virtual void generateResponse(const QString &user, const QString &password);
     virtual bool supportsPathMatching() const { return true; }
@@ -223,7 +223,7 @@ class KHttpNtlmAuthentication : public KAbstractHttpAuthentication
 {
 public:
     virtual QByteArray scheme() const;
-    virtual void setChallenge(const QByteArray &c, const KUrl &resource, const QByteArray &httpMethod);
+    virtual void setChallenge(const QByteArray &c, const QUrl &resource, const QByteArray &httpMethod);
     virtual void fillKioAuthInfo(KIO::AuthInfo *ai) const;
     virtual void generateResponse(const QString &user, const QString &password);
 private:
@@ -238,7 +238,7 @@ class KHttpNegotiateAuthentication : public KAbstractHttpAuthentication
 {
 public:
     virtual QByteArray scheme() const;
-    virtual void setChallenge(const QByteArray &c, const KUrl &resource, const QByteArray &httpMethod);
+    virtual void setChallenge(const QByteArray &c, const QUrl &resource, const QByteArray &httpMethod);
     virtual void fillKioAuthInfo(KIO::AuthInfo *ai) const;
     virtual void generateResponse(const QString &user, const QString &password);
 private:

@@ -30,6 +30,7 @@
 #include <config-kioslave-file.h>
 
 #include <QtCore/QFile>
+#include <qurlpathinfo.h>
 
 #include <kde_file.h>
 #include <kdebug.h>
@@ -85,7 +86,7 @@ same_inode(const KDE_struct_stat &src, const KDE_struct_stat &dest)
 
 extern int write_all(int fd, const char *buf, size_t len);
 
-void FileProtocol::copy( const KUrl &srcUrl, const KUrl &destUrl,
+void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
                          int _mode, JobFlags _flags )
 {
     kDebug(7101) << "copy(): " << srcUrl << " -> " << destUrl << ", mode=" << _mode;
@@ -316,13 +317,13 @@ void FileProtocol::copy( const KUrl &srcUrl, const KUrl &destUrl,
     finished();
 }
 
-void FileProtocol::listDir( const KUrl& url)
+void FileProtocol::listDir( const QUrl& url)
 {
     if (!url.isLocalFile()) {
-        KUrl redir(url);
+        QUrl redir(url);
 	redir.setScheme(config()->readEntry("DefaultRemoteProtocol", "smb"));
 	redirection(redir);
-	kDebug(7101) << "redirecting to " << redir.url();
+	kDebug(7101) << "redirecting to " << redir;
 	finished();
 	return;
     }
@@ -448,7 +449,7 @@ void FileProtocol::listDir( const KUrl& url)
     finished();
 }
 
-void FileProtocol::rename( const KUrl &srcUrl, const KUrl &destUrl,
+void FileProtocol::rename( const QUrl &srcUrl, const QUrl &destUrl,
                            KIO::JobFlags _flags )
 {
     char off_t_should_be_64_bits[sizeof(off_t) >= 8 ? 1 : -1]; (void) off_t_should_be_64_bits;
@@ -510,7 +511,7 @@ void FileProtocol::rename( const KUrl &srcUrl, const KUrl &destUrl,
     finished();
 }
 
-void FileProtocol::symlink( const QString &target, const KUrl &destUrl, KIO::JobFlags flags )
+void FileProtocol::symlink( const QString &target, const QUrl &destUrl, KIO::JobFlags flags )
 {
     const QString dest = destUrl.toLocalFile();
     // Assume dest is local too (wouldn't be here otherwise)
@@ -551,7 +552,7 @@ void FileProtocol::symlink( const QString &target, const KUrl &destUrl, KIO::Job
     finished();
 }
 
-void FileProtocol::del(const KUrl& url, bool isfile)
+void FileProtocol::del(const QUrl& url, bool isfile)
 {
     const QString path = url.toLocalFile();
     const QByteArray _path( QFile::encodeName(path));
@@ -577,7 +578,7 @@ void FileProtocol::del(const KUrl& url, bool isfile)
        * Delete empty directory
        *****/
 
-      kDebug( 7101 ) << "Deleting directory " << url.url();
+      kDebug( 7101 ) << "Deleting directory " << url;
       if (metaData(QLatin1String("recurse")) == QLatin1String("true")) {
           if (!deleteRecursive(path))
               return;
@@ -596,7 +597,7 @@ void FileProtocol::del(const KUrl& url, bool isfile)
     finished();
 }
 
-void FileProtocol::chown( const KUrl& url, const QString& owner, const QString& group )
+void FileProtocol::chown( const QUrl& url, const QString& owner, const QString& group )
 {
     const QString path = url.toLocalFile();
     const QByteArray _path( QFile::encodeName(path) );
@@ -645,13 +646,13 @@ void FileProtocol::chown( const KUrl& url, const QString& owner, const QString& 
         finished();
 }
 
-void FileProtocol::stat( const KUrl & url )
+void FileProtocol::stat( const QUrl & url )
 {
     if (!url.isLocalFile()) {
-        KUrl redir(url);
+        QUrl redir(url);
 	redir.setScheme(config()->readEntry("DefaultRemoteProtocol", "smb"));
 	redirection(redir);
-	kDebug(7101) << "redirecting to " << redir.url();
+	kDebug(7101) << "redirecting to " << redir;
 	finished();
 	return;
     }
@@ -663,14 +664,14 @@ void FileProtocol::stat( const KUrl & url )
      * stat("/is/unaccessible/") -> EPERM            H.Z.
      * This is the reason for the -1
      */
-    const QString path(url.path(KUrl::RemoveTrailingSlash));
-    const QByteArray _path( QFile::encodeName(path));
+    const QUrlPathInfo pathInfo(url);
+    const QString path(pathInfo.localPath(QUrlPathInfo::StripTrailingSlash));
+    const QByteArray _path(QFile::encodeName(path));
     const QString sDetails = metaData(QLatin1String("details"));
     const int details = sDetails.isEmpty() ? 2 : sDetails.toInt();
 
     UDSEntry entry;
-    if ( !createUDSEntry( url.fileName(), _path, entry, details, true /*with acls*/ ) )
-    {
+    if (!createUDSEntry(pathInfo.fileName(), _path, entry, details, true /*with acls*/)) {
         error(KIO::ERR_DOES_NOT_EXIST, path);
         return;
     }

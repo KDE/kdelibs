@@ -100,7 +100,7 @@ static UDSEntry createUDSEntryWin( const QFileInfo &fileInfo )
     return entry;
 }
 
-void FileProtocol::copy( const KUrl &src, const KUrl &dest,
+void FileProtocol::copy( const QUrl &src, const QUrl &dest,
                          int _mode, JobFlags _flags )
 {
     kDebug(7101) << "copy(): " << src << " -> " << dest << ", mode=" << _mode;
@@ -183,15 +183,15 @@ void FileProtocol::copy( const KUrl &src, const KUrl &dest,
     finished();
 }
 
-void FileProtocol::listDir( const KUrl& url )
+void FileProtocol::listDir( const QUrl& url )
 {
-    kDebug(7101) << "========= LIST " << url.url() << " =========";
+    kDebug(7101) << "========= LIST " << url << " =========";
 
     if (!url.isLocalFile()) {
-        KUrl redir(url);
+        QUrl redir(url);
         redir.setScheme(config()->readEntry("DefaultRemoteProtocol", "smb"));
         redirection(redir);
-        kDebug(7101) << "redirecting to " << redir.url();
+        kDebug(7101) << "redirecting to " << redir;
         finished();
         return;
     }
@@ -227,7 +227,7 @@ void FileProtocol::listDir( const KUrl& url )
     finished();
 }
 
-void FileProtocol::rename( const KUrl &src, const KUrl &dest,
+void FileProtocol::rename( const QUrl &src, const QUrl &dest,
                            KIO::JobFlags _flags )
 {
     kDebug(7101) << "rename(): " << src << " -> " << dest;
@@ -292,14 +292,14 @@ void FileProtocol::rename( const KUrl &src, const KUrl &dest,
     finished();
 }
 
-void FileProtocol::symlink( const QString &target, const KUrl &dest, KIO::JobFlags flags )
+void FileProtocol::symlink( const QString &target, const QUrl &dest, KIO::JobFlags flags )
 {
     // no symlink on windows for now
     // vista provides a CreateSymbolicLink() function. for now use ::copy
     FileProtocol::copy( target, dest, 0, flags );
 }
 
-void FileProtocol::del( const KUrl& url, bool isfile )
+void FileProtocol::del( const QUrl& url, bool isfile )
 {
     QString _path( url.toLocalFile() );
     /*****
@@ -345,18 +345,18 @@ void FileProtocol::del( const KUrl& url, bool isfile )
     finished();
 }
 
-void FileProtocol::chown( const KUrl& url, const QString&, const QString& )
+void FileProtocol::chown( const QUrl& url, const QString&, const QString& )
 {
     error( KIO::ERR_CANNOT_CHOWN, url.toLocalFile() );
 }
 
-void FileProtocol::stat( const KUrl & url )
+void FileProtocol::stat( const QUrl & url )
 {
     if (!url.isLocalFile()) {
-        KUrl redir(url);
+        QUrl redir(url);
         redir.setScheme(config()->readEntry("DefaultRemoteProtocol", "smb"));
         redirection(redir);
-        kDebug(7101) << "redirecting to " << redir.url();
+        kDebug(7101) << "redirecting to " << redir;
         finished();
         return;
     }

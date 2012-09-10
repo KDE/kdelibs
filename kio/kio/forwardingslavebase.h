@@ -47,7 +47,7 @@ class ForwardingSlaveBasePrivate;
  * like this in the child class:
  *
  * \code
- *     void ChildProtocol::stat(const KUrl &url)
+ *     void ChildProtocol::stat(const QUrl &url)
  *     {
  *         bool is_special = false;
  *
@@ -94,32 +94,32 @@ public:
                         const QByteArray &appSocket);
     virtual ~ForwardingSlaveBase();
 
-    virtual void get(const KUrl &url);
+    virtual void get(const QUrl &url);
 
-    virtual void put(const KUrl &url, int permissions,
+    virtual void put(const QUrl &url, int permissions,
                      JobFlags flags);
 
-    virtual void stat(const KUrl &url);
+    virtual void stat(const QUrl &url);
 
-    virtual void mimetype(const KUrl &url);
+    virtual void mimetype(const QUrl &url);
 
-    virtual void listDir(const KUrl &url);
+    virtual void listDir(const QUrl &url);
 
-    virtual void mkdir(const KUrl &url, int permissions);
+    virtual void mkdir(const QUrl &url, int permissions);
 
-    virtual void rename(const KUrl &src, const KUrl &dest, JobFlags flags);
+    virtual void rename(const QUrl &src, const QUrl &dest, JobFlags flags);
 
-    virtual void symlink(const QString &target, const KUrl &dest,
+    virtual void symlink(const QString &target, const QUrl &dest,
                          JobFlags flags);
 
-    virtual void chmod(const KUrl &url, int permissions);
+    virtual void chmod(const QUrl &url, int permissions);
 
-    virtual void setModificationTime(const KUrl& url, const QDateTime& mtime);
+    virtual void setModificationTime(const QUrl& url, const QDateTime& mtime);
 
-    virtual void copy(const KUrl &src, const KUrl &dest,
+    virtual void copy(const QUrl &src, const QUrl &dest,
                       int permissions, JobFlags flags);
 
-    virtual void del(const KUrl &url, bool isfile);
+    virtual void del(const QUrl &url, bool isfile);
 
 protected:
     /**
@@ -134,7 +134,7 @@ protected:
      * @param newURL The new URL to forward the slave call to
      * @return true if the given url could be correctly rewritten
      */
-    virtual bool rewriteUrl(const KUrl &url, KUrl &newURL)=0;
+    virtual bool rewriteUrl(const QUrl &url, QUrl &newURL)=0;
 
     /**
      * Allow to modify a UDSEntry before it's sent to the ioslave endpoint.
@@ -153,13 +153,13 @@ protected:
      * Return the URL being processed by the ioslave
      * Only access it inside prepareUDSEntry()
      */
-    KUrl processedUrl() const;
+    QUrl processedUrl() const;
 
     /**
      * Return the URL asked to the ioslave
      * Only access it inside prepareUDSEntry()
      */
-    KUrl requestedUrl() const;
+    QUrl requestedUrl() const;
 
 private:
     // KIO::Job
@@ -171,7 +171,7 @@ private:
     Q_PRIVATE_SLOT(d, void _k_slotSpeed(KJob *job, unsigned long bytesPerSecond))
 
     // KIO::SimpleJob subclasses
-    Q_PRIVATE_SLOT(d, void _k_slotRedirection(KIO::Job *job, const KUrl &url))
+    Q_PRIVATE_SLOT(d, void _k_slotRedirection(KIO::Job *job, const QUrl &url))
 
     // KIO::ListJob
     Q_PRIVATE_SLOT(d, void _k_slotEntries(KIO::Job *job, const KIO::UDSEntryList &entries))

@@ -523,6 +523,7 @@ public:
    *
    * @param trailing  RemoveTrailingSlash strips any trailing '/' and
    *                  AddTrailingSlash adds  a trailing '/' if there is none yet
+   * @deprecated use setPath(QUrlPathInfo(url).path(QUrlPathInfo::Append/StripTrailingSlash))
    */
   void adjustPath(AdjustPathOption trailing);
 
@@ -575,7 +576,7 @@ public:
    *
    * The query should start with a '?'. If it doesn't '?' is prepended.
    *
-   * @deprecated use QUrl::setEncodedQuery(QByteArray), but note that it's encoded, and doesn't start with '?'.
+   * @deprecated use QUrl::setQuery(QString), but note that it doesn't start with '?' (it uses null vs empty, instead).
    */
   void setQuery( const QString& query );
 
@@ -587,7 +588,7 @@ public:
    * An empty string means no query.
    * @return The encoded query, or QString() if there is none.
    *
-   * @deprecated use QByteArray QUrl::encodedQuery(), but note that it's encoded, and doesn't start with '?'.
+   * @deprecated use QByteArray QUrl::query(), but note that it doesn't start with '?'.
    */
   QString query() const;
 
@@ -595,6 +596,7 @@ public:
    * Returns the reference (or "fragment") of the URL.
    * The reference is @em never decoded automatically.
    * @return the undecoded reference, or QString() if there is none
+   * @deprecated use QUrl::fragment(QUrl::FullyEncoded)
    */
   QString ref() const;
 
@@ -602,6 +604,7 @@ public:
    * Sets the reference/fragment part (everything after '#').
    * If you have an encoded fragment already (as a QByteArray), you can call setFragment directly.
    * @param fragment the unencoded reference (or QString() to remove it).
+   * @deprecated use QUrl::setFragment()
    */
   void setRef( const QString& fragment );
 
@@ -610,6 +613,7 @@ public:
    * @return true if the URL has a reference part. In a URL like
    *         http://www.kde.org/kdebase.tar#tar:/README it would
    *         return true, too.
+   * @deprecated use QUrl::hasFragment()
    */
   bool hasRef() const;
 
@@ -619,6 +623,7 @@ public:
    * @see split
    * @see hasSubUrl
    * @see encodedHtmlRef
+   * @deprecated use QUrl::fragment()
    */
   QString htmlRef() const;
 
@@ -626,22 +631,25 @@ public:
    * Returns the HTML reference (the part of the URL after "#") in
    * encoded form.
    * @return The HTML-style reference in its original form.
+   * @deprecated use QUrl::fragment(QUrl::FullyEncoded)
    */
   QString encodedHtmlRef() const;
 
   /**
    * Sets the HTML-style reference.
    *
-   * @param _ref The new reference. This is considered to be @em not encoded in
+   * @param ref The new reference. This is considered to be @em not encoded in
    *         contrast to setRef(). Use QString() to remove it.
    * @see htmlRef()
+   * @deprecated use QUrl::setFragment(ref, QUrl::DecodedMode)
    */
-  void setHTMLRef( const QString& _ref );
+  void setHTMLRef( const QString& ref );
 
   /**
    * Checks whether there is a HTML reference.
    * @return true if the URL has an HTML-style reference.
    * @see htmlRef()
+   * @deprecated use QUrl::hasFragment()
    */
   bool hasHTMLRef() const;
 
