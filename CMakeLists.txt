@@ -54,6 +54,10 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${ECM_MODULE_PATH})
 
 find_package(Qt5Transitional)
 
+if (Qt5_POSITION_INDEPENDENT_CODE)
+  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
+
 if (NOT QT5_BUILD)
   add_subdirectory( libinqt5 )
   set(inqt5_LIBRARY inqt5)
