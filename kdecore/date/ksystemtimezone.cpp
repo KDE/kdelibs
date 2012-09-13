@@ -51,7 +51,6 @@
 #include <kconfig.h>
 #include <klocalizedstring.h>
 #include <kstringhandler.h>
-#include <ktoolinvocation.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>
 #include "ktzfiletimezone.h"
@@ -296,8 +295,14 @@ KSystemTimeZonesPrivate *KSystemTimeZonesPrivate::instance()
         // A KSystemTimeZones instance is required only to catch D-Bus signals.
         m_parent = new KSystemTimeZones;
         // Ensure that the KDED time zones module has initialized. The call loads the module on demand.
-        if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QLatin1String("org.kde.kded5")))
-            KToolInvocation::klauncher();   // this calls startKdeinit, and blocks until it returns
+        QDBusConnectionInterface* bus = QDBusConnection::sessionBus().interface();
+        if (!bus->isServiceRegistered(QLatin1String("org.kde.kded5"))) {
+            // kded isn't even running: start it
+            QDBusReply<void> reply = bus->startService(QLatin1String("org.kde.kded5"));
+            if (!reply.isValid()) {
+                qWarning() << "Couldn't start kded5 from org.kde.kded5.service:" << reply.error();
+            }
+        }
         const QString dbusIface = QString::fromLatin1(KTIMEZONED_DBUS_IFACE);
         QDBusInterface *ktimezoned = new QDBusInterface(QLatin1String("org.kde.kded5"), QLatin1String("/modules/ktimezoned"), dbusIface);
         QDBusReply<void> reply = ktimezoned->call(QLatin1String("initialize"), false);
