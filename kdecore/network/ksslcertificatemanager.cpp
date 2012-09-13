@@ -28,7 +28,6 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocalizedstring.h>
-#include <ktoolinvocation.h>
 
 #include <QtDBus/QtDBus>
 #include <qstandardpaths.h>
@@ -206,7 +205,7 @@ static QList<QSslCertificate> deduplicate(const QList<QSslCertificate> &certs)
 
 KSslCertificateManagerPrivate::KSslCertificateManagerPrivate()
  : config(QString::fromLatin1("ksslcertificatemanager"), KConfig::SimpleConfig),
-   iface(new org::kde::KSSLDInterface(QString::fromLatin1("org.kde.kded"),
+   iface(new org::kde::KSSLDInterface(QString::fromLatin1("org.kde.kded5"),
                                       QString::fromLatin1("/modules/kssld"),
                                       QDBusConnection::sessionBus())),
    isCertListLoaded(false),
@@ -445,8 +444,12 @@ KSslCertificateManager::KSslCertificateManager()
  : d(new KSslCertificateManagerPrivate())
 {
     // Make sure kded is running
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1("org.kde.kded"))) {
-        KToolInvocation::klauncher(); // this calls startKdeinit
+    QDBusConnectionInterface* bus = QDBusConnection::sessionBus().interface();
+    if (!bus->isServiceRegistered(QLatin1String("org.kde.kded5"))) {
+        QDBusReply<void> reply = bus->startService(QLatin1String("org.kde.kded5"));
+        if (!reply.isValid()) {
+            qWarning() << "Couldn't start kded5 from org.kde.kded5.service:" << reply.error();
+        }
     }
 }
 
