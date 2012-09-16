@@ -44,7 +44,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <krandom.h>
 #include <kseparator.h>
 #include <ktextbrowser.h>
-#include <kglobal.h>
 
 class KTipDatabase::Private
 {
@@ -120,7 +119,7 @@ KTipDatabase::KTipDatabase( const QString &_tipFile )
   QString tipFile = _tipFile;
 
   if ( tipFile.isEmpty() )
-    tipFile = KGlobal::mainComponent().aboutData()->appName() + "/tips";
+    tipFile = KComponentData::mainComponent().aboutData()->appName() + "/tips";
 
   d->loadTips( tipFile );
 
@@ -132,7 +131,7 @@ KTipDatabase::KTipDatabase( const QStringList& tipsFiles )
   : d( new Private )
 {
   if ( tipsFiles.isEmpty() || ( ( tipsFiles.count() == 1 ) && tipsFiles.first().isEmpty() ) ) {
-    d->addTips( KGlobal::mainComponent().aboutData()->appName() + "/tips" );
+    d->addTips( KComponentData::mainComponent().aboutData()->appName() + "/tips" );
   } else {
     for ( QStringList::ConstIterator it = tipsFiles.begin(); it != tipsFiles.end(); ++it )
       d->addTips( *it );

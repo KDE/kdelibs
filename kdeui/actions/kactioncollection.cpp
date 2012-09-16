@@ -31,7 +31,6 @@
 #include "kxmlguifactory.h"
 
 #include "kdebug.h"
-#include "kglobal.h"
 #include "kaction.h"
 #include "kaction_p.h"
 
@@ -171,7 +170,7 @@ void KActionCollection::setComponentData(const KComponentData &cData)
   if (cData.isValid()) {
     d->m_componentData = cData;
   } else {
-    d->m_componentData = KGlobal::mainComponent();
+    d->m_componentData = KComponentData::mainComponent();
   }
 }
 

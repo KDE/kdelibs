@@ -53,7 +53,6 @@
 #include <kstandardaction.h>
 #include <ktoggleaction.h>
 #include <kxmlguifactory.h>
-#include <kglobal.h>
 #include <kconfiggroup.h>
 
 /*
@@ -698,7 +697,7 @@ void KToolBar::Private::slotContextShowText()
         filename = client->xmlFile();
     }
     if (filename.isEmpty()) {
-        componentData = KGlobal::mainComponent();
+        componentData = KComponentData::mainComponent();
         filename = componentData.componentName() + "ui.rc";
     }
 

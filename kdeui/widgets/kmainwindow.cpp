@@ -417,7 +417,7 @@ KMenu* KMainWindow::helpMenu( const QString &aboutAppText, bool showWhatsThis )
     K_D(KMainWindow);
     if(!d->helpMenu) {
         if ( aboutAppText.isEmpty() )
-            d->helpMenu = new KHelpMenu( this, KGlobal::mainComponent().aboutData(), showWhatsThis);
+            d->helpMenu = new KHelpMenu( this, KComponentData::mainComponent().aboutData(), showWhatsThis);
         else
             d->helpMenu = new KHelpMenu( this, aboutAppText, showWhatsThis );
 

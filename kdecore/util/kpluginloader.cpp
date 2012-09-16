@@ -19,7 +19,6 @@
 #include "kpluginloader.h"
 
 #include "kaboutdata.h"
-#include <kcomponentdata.h>
 #include <klocalizedstring.h>
 #include "kpluginfactory.h"
 #include <kservice.h>
@@ -78,7 +77,7 @@ inline QString makeLibName( const QString &libname )
 extern QString fixLibPrefix(const QString& libname);
 #endif
 
-QString findLibraryInternal(const QString &name, const KComponentData &cData)
+QString findLibraryInternal(const QString &name)
 {
     // Convert name to a valid platform libname
     QString libname = makeLibName(name);
@@ -152,8 +151,8 @@ bool KPluginLoader::isLoaded() const
     return QPluginLoader::isLoaded() || d_ptr->lib;
 }
 
-KPluginLoader::KPluginLoader(const QString &plugin, const KComponentData &componentdata, QObject *parent)
-    : QPluginLoader(findLibraryInternal(plugin, componentdata), parent), d_ptr(new KPluginLoaderPrivate(plugin))
+KPluginLoader::KPluginLoader(const QString &plugin, QObject *parent)
+    : QPluginLoader(findLibraryInternal(plugin), parent), d_ptr(new KPluginLoaderPrivate(plugin))
 {
     d_ptr->q_ptr = this;
     Q_D(KPluginLoader);
@@ -163,14 +162,14 @@ KPluginLoader::KPluginLoader(const QString &plugin, const KComponentData &compon
         d->errorString = i18n(
                 "Could not find plugin '%1' for application '%2'",
                 plugin,
-                componentdata.aboutData()->appName());
+                QCoreApplication::instance()->applicationName());
         return;
     }
 }
 
 
-KPluginLoader::KPluginLoader(const KService &service, const KComponentData &componentdata, QObject *parent)
-: QPluginLoader(findLibraryInternal(service.library(), componentdata), parent), d_ptr(new KPluginLoaderPrivate(service.library()))
+KPluginLoader::KPluginLoader(const KService &service, QObject *parent)
+: QPluginLoader(findLibraryInternal(service.library()), parent), d_ptr(new KPluginLoaderPrivate(service.library()))
 {
     d_ptr->q_ptr = this;
     Q_D(KPluginLoader);
@@ -194,7 +193,7 @@ KPluginLoader::KPluginLoader(const KService &service, const KComponentData &comp
         d->errorString = i18n(
                 "Could not find plugin '%1' for application '%2'",
                 service.name(),
-                componentdata.aboutData()->appName());
+                QCoreApplication::instance()->applicationName());
         return;
     }
 }

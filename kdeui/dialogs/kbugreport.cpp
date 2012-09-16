@@ -101,7 +101,7 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
   // otherwise the KGlobal one. _activeInstance should neved be 0L in theory.
   d->m_aboutData = aboutData ? aboutData
       : (KGlobal::activeComponent().isValid() ? KGlobal::activeComponent().aboutData()
-                                  : KGlobal::mainComponent().aboutData());
+                                  : KComponentData::mainComponent().aboutData());
   d->m_process = 0;
   QWidget * parent = new QWidget(this);
   d->submitBugWeb = false;

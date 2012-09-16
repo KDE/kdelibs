@@ -18,15 +18,12 @@
 #ifndef KDECORE_KPLUGINLOADER_H
 #define KDECORE_KPLUGINLOADER_H
 
-#include <kglobal.h>
 #include <kdeversion.h>
 #include <kexportplugin.h>
 
 #include <QtCore/QPluginLoader>
 #include <QtCore/QtPlugin>
 
-
-class KComponentData;
 class KPluginFactory;
 class KService;
 
@@ -91,7 +88,7 @@ public:
      * \param componentdata The KStandardDirs object from componentdata is used to search the library.
      * \param parent A parent object.
      */
-    explicit KPluginLoader(const QString &plugin, const KComponentData &componentdata = KGlobal::mainComponent(), QObject *parent = 0);
+    explicit KPluginLoader(const QString &plugin, QObject *parent = 0);
 
     /**
      * Used this constructor to load a plugin from a service. The service must contain a library.
@@ -102,7 +99,7 @@ public:
      * \param componentdata The KStandardDirs object from componentdata is used to search the library.
      * \param parent A parent object.
      */
-    explicit KPluginLoader(const KService &service, const KComponentData &componentdata = KGlobal::mainComponent(), QObject *parent = 0);
+    explicit KPluginLoader(const KService &service, QObject *parent = 0);
 
     /**
      * Destroys the plugin loader.

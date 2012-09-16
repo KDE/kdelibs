@@ -4630,7 +4630,7 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget,
   {
     KService::Ptr service = (*it);
 
-    KPluginLoader loader( *service, KHTMLGlobal::componentData() );
+    KPluginLoader loader(*service);
     KPluginFactory* const factory = loader.factory();
     if ( factory ) {
       // Turn params into a QVariantList as expected by KPluginFactory

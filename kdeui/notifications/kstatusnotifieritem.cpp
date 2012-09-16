@@ -752,12 +752,12 @@ void KStatusNotifierItemPrivate::init(const QString &extraId)
     //create a default menu, just like in KSystemtrayIcon
     KMenu *m = new KMenu(associatedWidget);
     titleAction = m->addTitle(qApp->windowIcon(), KGlobal::caption());
-    m->setTitle(KGlobal::mainComponent().aboutData()->programName());
+    m->setTitle(KComponentData::mainComponent().aboutData()->programName());
     q->setContextMenu(m);
 
     KStandardAction::quit(q, SLOT(maybeQuit()), actionCollection);
 
-    id = title = KGlobal::mainComponent().aboutData()->programName();
+    id = title = KComponentData::mainComponent().aboutData()->programName();
 
     if (!extraId.isEmpty()) {
         id.append('_').append(extraId);

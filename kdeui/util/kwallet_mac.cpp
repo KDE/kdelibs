@@ -28,7 +28,6 @@
 #include <QtCore/QPointer>
 #include <QWidget>
 
-#include <kglobal.h>
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <kconfiggroup.h>
@@ -74,7 +73,7 @@ static bool isError( OSStatus s, QString* errMsg ) {
 
 static QString appid()
 {
-    KComponentData cData = KGlobal::mainComponent();
+    KComponentData cData = KComponentData::mainComponent();
     if (cData.isValid()) {
         const KAboutData* aboutData = cData.aboutData();
         if (aboutData) {

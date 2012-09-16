@@ -21,8 +21,8 @@
 #define KSYSTEMTRAY_H
 
 #include <kdeui_export.h>
-#include <kglobal.h>
 
+#include <kcomponentdata.h>
 #include <QSystemTrayIcon>
 
 class KActionCollection;
@@ -52,7 +52,7 @@ class QMovie;
  *
  * Also, QSystemTrayIcon::showMessage(..) should not be
  * used for KDE application because the popup message has no KDE standard
- * look & feel and cannot be controlled by KDE configurations. 
+ * look & feel and cannot be controlled by KDE configurations.
  * Use KNotification or KPassivePopup instead.
  *
  * @author Matthias Ettrich <ettrich@kde.org>
@@ -122,15 +122,15 @@ public:
     */
     KActionCollection* actionCollection();
 
-    /** 
+    /**
        Returns the QWidget set by the constructor
     */
     QWidget *parentWidget() const;
 
     /**
-       Function to be used from function handling closing of the window associated 
-       with the tray icon (i.e. QWidget::closeEvent(), KMainWindow::queryClose() or 
-       similar). When false is returned, the window closing should proceed normally, 
+       Function to be used from function handling closing of the window associated
+       with the tray icon (i.e. QWidget::closeEvent(), KMainWindow::queryClose() or
+       similar). When false is returned, the window closing should proceed normally,
        when true is returned, special systray-related handling should take place.
      */
     bool parentWidgetTrayClose() const;
@@ -141,7 +141,7 @@ public:
      * system tray.
      * It's commonly used in the form : systray->setPixmap( systray->loadIcon( "mysystray" ) );
      */
-    static QIcon loadIcon(const QString &icon, const KComponentData &componentData = KGlobal::mainComponent());
+    static QIcon loadIcon(const QString &icon, const KComponentData &componentData = KComponentData::mainComponent());
 
     /**
      * Sets the context menu title action to @p action.

@@ -22,6 +22,7 @@
 #include <klocale.h>
 #include <klocale_p.h>
 #include <klibrary.h>
+#include <kglobal.h> // K_GLOBAL_STATIC (TODO port to Q_GLOBAL_STATIC)
 
 #include <ktranscript_p.h>
 #include <kuitsemantics_p.h>

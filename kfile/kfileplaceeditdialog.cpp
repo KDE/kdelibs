@@ -22,7 +22,6 @@
 #include <kaboutdata.h>
 #include <kconfig.h>
 #include <kdebug.h>
-#include <kglobal.h>
 #include <kiconbutton.h>
 #include <kiconloader.h>
 #include <kcomponentdata.h>

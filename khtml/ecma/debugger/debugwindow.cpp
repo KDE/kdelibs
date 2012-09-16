@@ -31,7 +31,6 @@
 #include <klocalizedstring.h>
 #include <kdebug.h>
 #include <kiconloader.h>
-#include <kglobal.h>
 #include <kmessagebox.h>
 #include <kguiitem.h>
 #include <kmenu.h>

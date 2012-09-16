@@ -22,7 +22,6 @@
 #include <kaboutdata.h>
 #include <kcomponentdata.h>
 #include <kdebug.h>
-#include <kglobal.h>
 #include <klocalizedstring.h>
 
 #include <QApplication>
@@ -171,8 +170,8 @@ void KNotificationRestrictions::Private::stopScreenSaverPrevention()
 QString KNotificationRestrictions::Private::determineProgramName()
 {
     QString appName;
-    if (KGlobal::mainComponent().isValid()) {
-        appName = KGlobal::mainComponent().aboutData()->programName();
+    if (KComponentData::mainComponent().isValid()) {
+        appName = KComponentData::mainComponent().aboutData()->programName();
     }
     if (appName.isEmpty() && qApp) {
         appName = QCoreApplication::applicationName();

@@ -30,6 +30,7 @@
 #include "kshortcut.h"
 #include "kactioncollection.h"
 #include "kstandardaction.h"
+#include <kglobal.h>
 #include <kwindowsystem.h>
 
 #include <config-kdeui.h>
@@ -145,7 +146,7 @@ void KSystemTrayIcon::init( QWidget* parent )
     KGlobal::ref();
     d->menu = new KMenu( parent );
     d->titleAction = d->menu->addTitle( qApp->windowIcon(), KGlobal::caption() );
-    d->menu->setTitle( KGlobal::mainComponent().aboutData()->programName() );
+    d->menu->setTitle( KComponentData::mainComponent().aboutData()->programName() );
     connect( d->menu, SIGNAL(aboutToShow()), this, SLOT(contextMenuAboutToShow()) );
     setContextMenu( d->menu );
 

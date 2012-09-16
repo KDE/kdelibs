@@ -21,7 +21,6 @@
 #include "kautostart.h"
 
 #include "kaboutdata.h"
-#include "kglobal.h"
 #include "kcomponentdata.h"
 #include "kdesktopfile.h"
 #include "kconfiggroup.h"
@@ -76,7 +75,7 @@ KAutostart::KAutostart(const QString& entryName, QObject* parent)
       d(new Private)
 {
     if (entryName.isEmpty()) {
-        d->name = KGlobal::mainComponent().aboutData()->appName();
+        d->name = KComponentData::mainComponent().aboutData()->appName();
     } else {
         d->name = entryName;
     }

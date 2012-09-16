@@ -33,7 +33,6 @@
 #include "ktitlewidget.h"
 
 #include <kaboutdata.h>
-#include <kglobal.h>
 #include <kcomponentdata.h>
 #include <klocalizedstring.h>
 
@@ -78,7 +77,7 @@ KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, Op
 void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
 {
     if (ad == 0)
-        ad = KGlobal::mainComponent().aboutData();
+        ad = KComponentData::mainComponent().aboutData();
 
     aboutData = ad;
 

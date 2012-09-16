@@ -1170,7 +1170,7 @@ KLauncher::requestSlave(const QString &protocol,
     }
     if (mSlaveValgrind == protocol) {
 #ifndef USE_KPROCESS_FOR_KIOSLAVES // otherwise we've already done this
-       KLibrary lib(name, KGlobal::mainComponent());
+       KLibrary lib(name);
        arg_list.prepend(lib.fileName());
        arg_list.prepend(QFile::decodeName(CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kioslave"));
 #endif

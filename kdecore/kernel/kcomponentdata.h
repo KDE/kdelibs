@@ -34,7 +34,7 @@ class KComponentDataPrivate;
  * Those objects normally are different per component but the same per
  * instance of one component.
  *
- * The application component data can always be accessed using KGlobal::mainComponent() (or the
+ * The application component data can always be accessed using KComponentData::mainComponent() (or the
  * convenience function KGlobal::dirs() and KSharedConfig::openConfig()) while the
  * component data of the currently active component (mainly used for KParts) can be accessed using
  * KGlobal::activeComponent().
@@ -94,7 +94,7 @@ public:
      * @param registerAsMain whether to register the component as the main component
      *                       of the application. This has no effect, if the application
      *                       already has a main component.
-     *                       @see KGlobal::mainComponent
+     *                       @see KComponentData::mainComponent
      */
     explicit KComponentData(const QByteArray &componentName, const QByteArray &catalogName = QByteArray(),
                 MainComponentRegistration registerAsMain = RegisterAsMainComponent);
@@ -108,7 +108,7 @@ public:
      * @param registerAsMain whether to register the component as the main component
      *                       of the application. This has no effect, if the application
      *                       already has a main component.
-     *                       @see KGlobal::mainComponent
+     *                       @see KComponentData::mainComponent
      *
      * @see KAboutData
      */

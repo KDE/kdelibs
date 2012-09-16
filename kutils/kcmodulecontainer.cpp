@@ -28,7 +28,6 @@
 #include <kcmoduleproxy.h>
 #include <kdebug.h>
 #include <kdialog.h>
-#include <kglobal.h>
 #include <kguiitem.h>
 #include <kiconloader.h>
 #include <kpushbutton.h>
@@ -61,14 +60,14 @@ class KCModuleContainer::KCModuleContainerPrivate
 // KComponentData objects when needed.
 /***********************************************************************/
 KCModuleContainer::KCModuleContainer( QWidget* parent, const QString& mods )
-    : KCModule( KGlobal::mainComponent(), parent ),
+    : KCModule( KComponentData::mainComponent(), parent ),
       d(new KCModuleContainerPrivate( QString(mods).remove( ' ' ).split( ',', QString::SkipEmptyParts ) ))
 {
 	init();
 }
 
 KCModuleContainer::KCModuleContainer( QWidget* parent, const QStringList& mods )
-    : KCModule( KGlobal::mainComponent(), parent ),
+    : KCModule( KComponentData::mainComponent(), parent ),
       d( new KCModuleContainerPrivate( mods ) )
 {
 	init();

@@ -59,7 +59,7 @@ KLibLoader::~KLibLoader()
 
 extern QString makeLibName( const QString &libname );
 
-extern KDECORE_EXPORT QString findLibrary(const QString &name, const KComponentData &cData);
+extern KDECORE_EXPORT QString findLibrary(const QString &name);
 
 #ifdef Q_OS_WIN
 // removes "lib" prefix, if present
@@ -83,7 +83,8 @@ QString fixLibPrefix(const QString& libname)
 //static
 QString KLibLoader::findLibrary(const QString &_name, const KComponentData &cData)
 {
-    return ::findLibrary(_name, cData);
+    Q_UNUSED(cData); // removed as part of the KF5 changes
+    return ::findLibrary(_name);
 }
 
 KLibrary* KLibLoader::library( const QString &_name, QLibrary::LoadHints hint )

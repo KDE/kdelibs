@@ -110,7 +110,7 @@ KAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
       case AboutApp:
       case HelpContents:
       {
-        const KAboutData *aboutData = KGlobal::mainComponent().aboutData();
+        const KAboutData *aboutData = KComponentData::mainComponent().aboutData();
         /* TODO KDE4
         const KAboutData *aboutData;
         if ( parent )

@@ -33,7 +33,7 @@ class KActionPrivate
 {
     public:
         KActionPrivate()
-            : componentData(KGlobal::mainComponent()), globalShortcutEnabled(false), q(0), authAction(0)
+            : componentData(KComponentData::mainComponent()), globalShortcutEnabled(false), q(0), authAction(0)
         {
         }
 

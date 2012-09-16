@@ -26,7 +26,6 @@
 #include <kcomponentdata.h>
 #include <kstatusbar.h>
 #include <khelpmenu.h>
-#include <kglobal.h>
 
 #include <QApplication>
 #include <kxmlguifactory.h>
@@ -112,7 +111,7 @@ void MainWindow::createGUI( Part * part )
 
   if ( !d->m_bShellGUIActivated )
   {
-    loadPlugins( this, this, KGlobal::mainComponent() );
+    loadPlugins( this, this, KComponentData::mainComponent() );
     createShellGUI();
     d->m_bShellGUIActivated = true;
   }

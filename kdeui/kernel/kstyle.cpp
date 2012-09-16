@@ -116,7 +116,7 @@ KStylePrivate::KStylePrivate() : m_componentData()
 {
     if(KGlobal::hasMainComponent())
     {
-        m_componentData = KGlobal::mainComponent();
+        m_componentData = KComponentData::mainComponent();
     } else
     {
         QString name(QApplication::applicationName());

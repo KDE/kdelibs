@@ -33,7 +33,6 @@
 #include <kcomponentdata.h>
 #include <kcoreauthorized.h>
 #include <kdebug.h>
-#include <kglobal.h>
 
 #include "kaction.h"
 #include "kactioncollection.h"
@@ -45,7 +44,7 @@ class KXMLGUIClientPrivate
 public:
   KXMLGUIClientPrivate()
   {
-    m_componentData = KGlobal::mainComponent();
+    m_componentData = KComponentData::mainComponent();
     m_parent = 0L;
     m_builder = 0L;
     m_actionCollection = 0;

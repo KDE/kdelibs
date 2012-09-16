@@ -20,7 +20,6 @@
 
 #include <kdecore_export.h>
 
-#include <kglobal.h>
 
 #include <QtCore/QLibrary>
 
@@ -30,7 +29,7 @@ class KPluginFactory;
 
 /**
  * \class KLibrary klibrary.h <KLibrary>
- * 
+ *
  * Thin wrapper around QLibrary; you should rarely use this directly, see KPluginLoader for higher-level loading of plugins.
  * KLibrary adds kde3-factory and kde4-factory support to QLibrary (for the deprecated KLibLoader)
  * KLibrary also searches libs in the kde search paths.
@@ -43,8 +42,8 @@ public:
     typedef void (*void_function_ptr) ();
 
     explicit KLibrary(QObject *parent = 0);
-    explicit KLibrary(const QString &name, const KComponentData &cData = KGlobal::mainComponent(), QObject *parent = 0);
-    KLibrary(const QString &name, int verNum, const KComponentData &cData = KGlobal::mainComponent(), QObject *parent = 0);
+    explicit KLibrary(const QString &name, QObject *parent = 0);
+    KLibrary(const QString &name, int verNum, QObject *parent = 0);
 
     virtual ~KLibrary();
 
@@ -83,7 +82,7 @@ public:
     }
 #endif
 
-    void setFileName(const QString &name, const KComponentData &data = KGlobal::mainComponent());
+    void setFileName(const QString &name);
 
     bool unload() { return false; } //this is only temporary. i will remove it as soon as I have removed all dangerous users of it
 private:

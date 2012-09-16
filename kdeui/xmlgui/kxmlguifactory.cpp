@@ -39,7 +39,6 @@
 #include <kdebug.h>
 #include <kcomponentdata.h>
 #include <kshortcut.h>
-#include <kglobal.h>
 
 #include "kaction.h"
 #include "kshortcutsdialog.h"
@@ -119,7 +118,7 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, const KComponen
         xml_file = filename;
     else
     {
-        KComponentData componentData = _componentData.isValid() ? _componentData : KGlobal::mainComponent();
+        KComponentData componentData = _componentData.isValid() ? _componentData : KComponentData::mainComponent();
         xml_file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, componentData.componentName() + '/' + filename);
         if ( !QFile::exists( xml_file ) )
           xml_file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, filename);
@@ -139,7 +138,7 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, const KComponen
 bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
                                      const QString& filename, const KComponentData &_componentData )
 {
-    KComponentData componentData = _componentData.isValid() ? _componentData : KGlobal::mainComponent();
+    KComponentData componentData = _componentData.isValid() ? _componentData : KComponentData::mainComponent();
     QString xml_file(filename);
 
     if (QDir::isRelativePath(xml_file))

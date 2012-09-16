@@ -26,7 +26,6 @@
 
 #include <klocalizedstring.h>
 #include <kdebug.h>
-#include <kglobal.h>
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <kjob.h>
@@ -83,7 +82,7 @@ void KUiServerJobTracker::registerJob(KJob *job)
         return;
     }
 
-    KComponentData componentData = KGlobal::mainComponent();
+    KComponentData componentData = KComponentData::mainComponent();
     QString programIconName = componentData.aboutData()->programIconName();
 
     if (programIconName.isEmpty()) {

@@ -23,17 +23,15 @@
 #include <QtCore/QPointer>
 #include <QDebug>
 
-#include <kcomponentdata.h>
-
 #include <kpluginfactory.h>
 
 extern QString makeLibName( const QString &libname );
-extern QString findLibraryInternal(const QString &name, const KComponentData &cData);
+extern QString findLibraryInternal(const QString &name);
 
 //static
-KDECORE_EXPORT QString findLibrary(const QString &name, const KComponentData &cData)
+KDECORE_EXPORT QString findLibrary(const QString &name)
 {
-    QString libname = findLibraryInternal(name, cData);
+    QString libname = findLibraryInternal(name);
 #ifdef Q_OS_WIN
     // we don't have 'lib' prefix on windows -> remove it and try again
     if( libname.isEmpty() )
@@ -56,7 +54,7 @@ KDECORE_EXPORT QString findLibrary(const QString &name, const KComponentData &cD
       if( !file.startsWith( QLatin1String("lib") ) )
           return file;
 
-      libname = findLibraryInternal(libname, cData);
+      libname = findLibraryInternal(libname);
       if( libname.isEmpty() )
         libname = name;
     }
@@ -70,13 +68,13 @@ KLibrary::KLibrary(QObject *parent)
 {
 }
 
-KLibrary::KLibrary(const QString &name, const KComponentData &cData, QObject *parent)
-    : QLibrary(findLibrary(name, cData), parent), d_ptr(0)
+KLibrary::KLibrary(const QString &name, QObject *parent)
+    : QLibrary(findLibrary(name), parent), d_ptr(0)
 {
 }
 
-KLibrary::KLibrary(const QString &name, int verNum, const KComponentData &cData, QObject *parent)
-    : QLibrary(findLibrary(name, cData), verNum, parent), d_ptr(0)
+KLibrary::KLibrary(const QString &name, int verNum, QObject *parent)
+    : QLibrary(findLibrary(name), verNum, parent), d_ptr(0)
 {
 }
 
@@ -190,9 +188,9 @@ KLibrary::void_function_ptr KLibrary::resolveFunction( const char* symname )
 }
 #endif
 
-void KLibrary::setFileName(const QString &name, const KComponentData &data)
+void KLibrary::setFileName(const QString &name)
 {
-    QLibrary::setFileName(findLibrary(name, data));
+    QLibrary::setFileName(findLibrary(name));
 }
 
 #include "klibrary.moc"

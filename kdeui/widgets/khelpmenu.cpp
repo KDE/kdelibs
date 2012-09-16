@@ -158,7 +158,7 @@ void KHelpMenuPrivate::createActions(KHelpMenu* q)
         mWhatsThisAction = KStandardAction::whatsThis(q, SLOT(contextHelpActivated()), q);
     }
 
-    const KAboutData *aboutData = mAboutData ? mAboutData : KGlobal::mainComponent().aboutData();
+    const KAboutData *aboutData = mAboutData ? mAboutData : KComponentData::mainComponent().aboutData();
     if (KAuthorized::authorizeKAction("help_report_bug") && aboutData && !aboutData->bugAddress().isEmpty()) {
         mReportBugAction = KStandardAction::reportBug(q, SLOT(reportBug()), q);
     }

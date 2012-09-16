@@ -35,7 +35,6 @@
 
 #include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kglobal.h>
 
 #include <ktoolinvocation.h>
 #include <klauncher_iface.h>
@@ -441,7 +440,7 @@ Slave* Slave::createSlave( const QString &protocol, const QUrl& url, int& error,
           delete slave;
           return 0;
        }
-       KLibrary lib(_name, KGlobal::mainComponent());
+       KLibrary lib(_name);
        QString lib_path = lib.fileName();
        if (lib_path.isEmpty())
        {
