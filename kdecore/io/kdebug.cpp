@@ -84,7 +84,6 @@
 #include <errno.h>
 #include <string.h>
 #include <kconfig.h>
-#include "kcomponentdata.h"
 
 #ifdef Q_OS_SOLARIS
 // For the purposes of KDebug Solaris has a GNU-libc-compatible
