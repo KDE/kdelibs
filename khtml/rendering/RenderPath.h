@@ -67,9 +67,9 @@ public:
     
     virtual void layout();
     virtual IntRect absoluteClippedOverflowRect();
-    virtual bool requiresLayer();
-    virtual short lineHeight(bool b, bool isRootLineBox = false) const;
-    virtual short baselinePosition(bool b, bool isRootLineBox = false) const;
+    virtual bool requiresLayer() const;
+    virtual short lineHeight(bool b) const;
+    virtual short baselinePosition(bool b) const;
     virtual void paint(PaintInfo&, int parentX, int parentY);
 
     virtual void absoluteRects(Vector<IntRect>&, int tx, int ty, bool topLevel = true);

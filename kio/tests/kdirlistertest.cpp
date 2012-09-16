@@ -124,7 +124,7 @@ void KDirListerTest::testOpenUrl()
 
     KFileItem rootByUrl = m_dirLister.findByUrl(path);
     QVERIFY(!rootByUrl.isNull());
-    QCOMPARE(QString(rootByUrl.url().path() + '/'), path);
+    QCOMPARE(QString(rootByUrl.url().toLocalFile() + '/'), path);
 
     m_dirLister.clearSpies(); // for the tests that call testOpenUrl for setup
 }
@@ -318,7 +318,7 @@ void KDirListerTest::testNewItemsInSymlink() // #213799
         }
         QCOMPARE(dirLister2.spyDeleteItem.count(), 1);
         const KFileItem item = dirLister2.spyDeleteItem[0][0].value<KFileItem>();
-        QCOMPARE(item.url().path(), QString(symPath + '/' + fileName));
+        QCOMPARE(item.url().toLocalFile(), QString(symPath + '/' + fileName));
     }
 
     // TODO: test file update.
@@ -356,10 +356,10 @@ void KDirListerTest::testRefreshItems()
     QCOMPARE(m_dirLister.spyClearKUrl.count(), 0);
     QCOMPARE(m_refreshedItems.count(), 1);
     QPair<KFileItem, KFileItem> entry = m_refreshedItems.first();
-    QCOMPARE(entry.first.url().path(), fileName);
+    QCOMPARE(entry.first.url().toLocalFile(), fileName);
     QCOMPARE(entry.first.size(), KIO::filesize_t(11));
     QCOMPARE(entry.first.mimetype(), QString("application/octet-stream"));
-    QCOMPARE(entry.second.url().path(), fileName);
+    QCOMPARE(entry.second.url().toLocalFile(), fileName);
     QCOMPARE(entry.second.size(), KIO::filesize_t(11 /*Hello world*/ + 6 /*<html>*/));
     QCOMPARE(entry.second.mimetype(), QString("text/html"));
 
@@ -398,15 +398,15 @@ void KDirListerTest::testRefreshRootItem()
     QCOMPARE(m_dirLister.spyClearKUrl.count(), 0);
     QCOMPARE(m_refreshedItems.count(), 1);
     QPair<KFileItem, KFileItem> entry = m_refreshedItems.first();
-    QCOMPARE(entry.first.url().path(), path);
+    QCOMPARE(entry.first.url().toLocalFile(), path);
     QCOMPARE(entry.first.name(), QString("subdir"));
-    QCOMPARE(entry.second.url().path(), path);
+    QCOMPARE(entry.second.url().toLocalFile(), path);
     QCOMPARE(entry.second.name(), QString("subdir"));
 
     QCOMPARE(m_refreshedItems2.count(), 1);
     entry = m_refreshedItems2.first();
-    QCOMPARE(entry.first.url().path(), path);
-    QCOMPARE(entry.second.url().path(), path);
+    QCOMPARE(entry.first.url().toLocalFile(), path);
+    QCOMPARE(entry.second.url().toLocalFile(), path);
     // item name() doesn't matter here, it's the root item.
 
     m_refreshedItems.clear();
@@ -424,8 +424,8 @@ void KDirListerTest::testRefreshRootItem()
     waitForRefreshedItems();
     QCOMPARE(m_refreshedItems.count(), 1);
     entry = m_refreshedItems.first();
-    QCOMPARE(entry.first.url().path(), path);
-    QCOMPARE(entry.second.url().path(), path);
+    QCOMPARE(entry.first.url().toLocalFile(), path);
+    QCOMPARE(entry.second.url().toLocalFile(), path);
 
     m_refreshedItems.clear();
     m_refreshedItems2.clear();
@@ -488,16 +488,16 @@ void KDirListerTest::testRenameItem()
 
     QCOMPARE(m_refreshedItems.count(), 1);
     QPair<KFileItem, KFileItem> entry = m_refreshedItems.first();
-    QCOMPARE(entry.first.url().path(), path);
+    QCOMPARE(entry.first.url().toLocalFile(), path);
     QCOMPARE(entry.first.mimetype(), QString("application/octet-stream"));
-    QCOMPARE(entry.second.url().path(), newPath);
+    QCOMPARE(entry.second.url().toLocalFile(), newPath);
     QCOMPARE(entry.second.mimetype(), QString("text/html"));
     disconnect(&m_dirLister, 0, this, 0);
 
     // Let's see what KDirLister has in cache now
     KFileItem cachedItem = m_dirLister.findByUrl(KUrl(newPath));
     QVERIFY(!cachedItem.isNull());
-    QCOMPARE(cachedItem.url().path(), newPath);
+    QCOMPARE(cachedItem.url().toLocalFile(), newPath);
     KFileItem oldCachedItem = m_dirLister.findByUrl(KUrl(path));
     QVERIFY(oldCachedItem.isNull());
     m_refreshedItems.clear();
@@ -517,7 +517,7 @@ void KDirListerTest::testRenameAndOverwrite() // has to be run after testRenameI
         QTest::qWait(100);
         existingItem = m_dirLister.findByUrl(KUrl(path));
     };
-    QCOMPARE(existingItem.url().path(), path);
+    QCOMPARE(existingItem.url().toLocalFile(), path);
 
     m_refreshedItems.clear();
     connect(&m_dirLister, SIGNAL(refreshItems(QList<QPair<KFileItem,KFileItem> >)),
@@ -538,13 +538,13 @@ void KDirListerTest::testRenameAndOverwrite() // has to be run after testRenameI
 
     QCOMPARE(m_refreshedItems.count(), 1);
     QPair<KFileItem, KFileItem> entry = m_refreshedItems.first();
-    QCOMPARE(entry.first.url().path(), newPath);
-    QCOMPARE(entry.second.url().path(), path);
+    QCOMPARE(entry.first.url().toLocalFile(), newPath);
+    QCOMPARE(entry.second.url().toLocalFile(), path);
     disconnect(&m_dirLister, 0, this, 0);
 
     // Let's see what KDirLister has in cache now
     KFileItem cachedItem = m_dirLister.findByUrl(KUrl(path));
-    QCOMPARE(cachedItem.url().path(), path);
+    QCOMPARE(cachedItem.url().toLocalFile(), path);
     KFileItem oldCachedItem = m_dirLister.findByUrl(KUrl(newPath));
     QVERIFY(oldCachedItem.isNull());
     m_refreshedItems.clear();

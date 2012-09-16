@@ -217,9 +217,6 @@ private:
     // For prompting for the client certificate to use
     void selectClientCertificate();
 
-    //we can't include ktcpsocket.h here as it is not exported
-    SslResult startTLSInternal(uint KTcpSocket_SslVersion);
-
     class TcpSlaveBasePrivate;
     TcpSlaveBasePrivate* const d;
 };

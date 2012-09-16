@@ -89,7 +89,7 @@ namespace KJS {
    * @return 1 if v1 is "less-than" v2, 0 if the relation is "greater-than-or-
    * equal". -1 if the result is undefined.
    */
-  int relation(ExecState *exec, JSValue *v1, JSValue *v2);
+  int relation(ExecState *exec, JSValue *v1, JSValue *v2, bool leftFirst = true);
   int relation(ExecState *exec, JSValue *v1, double n2);
   int maxInt(int d1, int d2);
   int minInt(int d1, int d2);

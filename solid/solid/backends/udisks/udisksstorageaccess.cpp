@@ -153,8 +153,6 @@ void UDisksStorageAccess::slotDBusReply( const QDBusMessage & reply )
         {
             m_setupInProgress = false;
             m_device->broadcastActionDone("setup");
-
-            slotChanged();
         }
     }
     else if (m_teardownInProgress)
@@ -169,10 +167,9 @@ void UDisksStorageAccess::slotDBusReply( const QDBusMessage & reply )
         }
         else
         {
-            m_teardownInProgress = false;
-            m_device->broadcastActionDone("teardown");
-
-            if (m_device->prop("DriveIsMediaEjectable").toBool() && !m_device->prop("DeviceIsOpticalDisc").toBool()) // optical drives have their Eject method
+            if (m_device->prop("DriveIsMediaEjectable").toBool() &&
+                    m_device->prop("DeviceIsMediaAvailable").toBool() &&
+                    !m_device->prop("DeviceIsOpticalDisc").toBool()) // optical drives have their Eject method
             {
                 QString devnode = m_device->prop("DeviceFile").toString();
 
@@ -202,9 +199,18 @@ void UDisksStorageAccess::slotDBusReply( const QDBusMessage & reply )
                 QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, drivePath, UD_DBUS_INTERFACE_DISKS_DEVICE, "DriveEject");
                 msg << QStringList();   // options, unused now
                 c.call(msg, QDBus::NoBlock);
+
+                // power down removable USB hard drives, rhbz#852196
+                UDisksDevice drive(drivePath);
+                if (drive.prop("DriveCanDetach").toBool()) {
+                    QDBusMessage msg2 = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, drivePath, UD_DBUS_INTERFACE_DISKS_DEVICE, "DriveDetach");
+                    msg2 << QStringList();   // options, unused now
+                    c.call(msg2, QDBus::NoBlock);
+                }
             }
 
-            slotChanged();
+            m_teardownInProgress = false;
+            m_device->broadcastActionDone("teardown");
         }
     }
 }
@@ -217,14 +223,12 @@ void UDisksStorageAccess::slotDBusError( const QDBusError & error )
         m_device->broadcastActionDone("setup", m_device->errorToSolidError(error.name()),
                                       m_device->errorToString(error.name()) + ": " +error.message());
 
-        slotChanged();
     }
     else if (m_teardownInProgress)
     {
         m_teardownInProgress = false;
         m_device->broadcastActionDone("teardown", m_device->errorToSolidError(error.name()),
                                       m_device->errorToString(error.name()) + ": " + error.message());
-        slotChanged();
     }
 }
 
@@ -238,6 +242,7 @@ void UDisksStorageAccess::slotSetupDone(int error, const QString &errorString)
 {
     m_setupInProgress = false;
     emit setupDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
+    slotChanged();
 }
 
 void UDisksStorageAccess::slotTeardownRequested()
@@ -250,6 +255,7 @@ void UDisksStorageAccess::slotTeardownDone(int error, const QString &errorString
 {
     m_teardownInProgress = false;
     emit teardownDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
+    slotChanged();
 }
 
 bool UDisksStorageAccess::mount()
@@ -259,6 +265,7 @@ bool UDisksStorageAccess::mount()
         path.chop(6);
     }
     QString fstype;
+    QStringList options;
 
     if (isLuksDevice()) { // mount options for the cleartext volume
         path = m_device->prop("LuksHolder").value<QDBusObjectPath>().path();
@@ -272,8 +279,12 @@ bool UDisksStorageAccess::mount()
     if (m_device->prop("IdUsage").toString() == "filesystem")
         fstype = m_device->prop("IdType").toString();
 
+    if (fstype == "vfat") {
+        options << "flush";
+    }
+
     msg << fstype;
-    msg << QStringList();   // options, unused now
+    msg << options;
 
     return c.callWithCallback(msg, this,
                               SLOT(slotDBusReply(QDBusMessage)),

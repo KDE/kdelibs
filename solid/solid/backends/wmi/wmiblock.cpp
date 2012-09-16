@@ -37,17 +37,29 @@ Block::~Block()
 
 int Block::deviceMajor() const
 {
-    return m_device->property("block.major").toInt();
+    return 0;
 }
 
 int Block::deviceMinor() const
 {
-    return m_device->property("block.minor").toInt();
+    return 0;
 }
 
 QString Block::device() const
 {
-    return m_device->property("drive").toString();
+    QString drive;
+    switch(m_device->type()){
+    case Solid::DeviceInterface::StorageVolume:
+    {
+        drive = WmiDevice::win32LogicalDiskByDiskPartitionID(m_device->property("DeviceID").toString()).getProperty("DeviceID").toString();
+    }
+        break;
+    case Solid::DeviceInterface::OpticalDrive:
+    case Solid::DeviceInterface::OpticalDisc:
+        drive = m_device->property("Drive").toString();
+        break;
+    }
+    return drive;
 }
 
 #include "backends/wmi/wmiblock.moc"

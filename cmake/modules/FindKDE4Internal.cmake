@@ -269,7 +269,7 @@
 #
 #  KDE4_INSTALL_ICONS( path theme)
 #    Installs all png and svgz files in the current directory to the icon
-#    directoy given in path, in the subdirectory for the given icon theme.
+#    directory given in path, in the subdirectory for the given icon theme.
 #
 #  KDE4_CREATE_HANDBOOK( docbookfile [INSTALL_DESTINATION installdest] [SUBDIR subdir])
 #   Create the handbook from the docbookfile (using meinproc4)
@@ -314,7 +314,7 @@
 #          optimised but debuggable, debugging on (-g)
 #          (-fno-reorder-blocks -fno-schedule-insns -fno-inline)
 #  DebugFull
-#          no optimisation, full debugging on (-g3)
+#          no optimization, full debugging on (-g3)
 #  Profile
 #          DebugFull + -ftest-coverage -fprofile-arcs
 #
@@ -327,7 +327,7 @@
 #
 #
 #  This module allows to depend on a particular minimum version of kdelibs.
-#  To acomplish that one should use the apropriate cmake syntax for
+#  To acomplish that one should use the appropriate cmake syntax for
 #  find_package. For example to depend on kdelibs >= 4.1.0 one should use
 #
 #  find_package(KDE4 4.1.0 REQUIRED)
@@ -838,7 +838,7 @@ else (WIN32)
    # Once a variable is in the cache, it doesn't depend on its "parent" variables
    # anymore and you can only change it by editing it directly.
    # this macro helps in this regard, because as long as you don't set one of the
-   # variables explicitely to some location, it will always calculate its value from its
+   # variables explicitly to some location, it will always calculate its value from its
    # parents. So modifying CMAKE_INSTALL_PREFIX later on will have the desired effect.
    # But once you decide to set e.g. EXEC_INSTALL_PREFIX to some special location
    # this will go into the cache and it will no longer depend on CMAKE_INSTALL_PREFIX.
@@ -976,7 +976,7 @@ if (WIN32)
 
    set( _KDE4_PLATFORM_INCLUDE_DIRS ${KDEWIN_INCLUDES})
 
-   # if we are compiling kdelibs, add KDEWIN_LIBRARIES explicitely,
+   # if we are compiling kdelibs, add KDEWIN_LIBRARIES explicitly,
    # otherwise they come from KDELibsDependencies.cmake, Alex
    if (_kdeBootStrapping)
       set( KDE4_KDECORE_LIBS ${KDE4_KDECORE_LIBS} ${KDEWIN_LIBRARIES} )
@@ -1135,12 +1135,6 @@ if (UNIX)
    endif (NOT _OFFT_IS_64BIT)
 endif (UNIX)
 
-if (CMAKE_SYSTEM_NAME MATCHES BSD)
-   set ( _KDE4_PLATFORM_DEFINITIONS -D_GNU_SOURCE )
-   set ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lc")
-   set ( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -lc")
-endif (CMAKE_SYSTEM_NAME MATCHES BSD)
-
 
 ############################################################
 # compiler specific settings
@@ -1210,10 +1204,15 @@ if (CMAKE_COMPILER_IS_GNUCXX)
    set(CMAKE_C_FLAGS_DEBUGFULL        "-g3 -fno-inline")
    set(CMAKE_C_FLAGS_PROFILE          "-g3 -fno-inline -ftest-coverage -fprofile-arcs")
 
+   set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -Wno-long-long -std=iso9899:1990 -Wundef -Wcast-align -Werror-implicit-function-declaration -Wchar-subscripts -Wall -W -Wpointer-arith -Wwrite-strings -Wformat-security -Wmissing-format-attribute -fno-common")
+   # As of Qt 4.6.x we need to override the new exception macros if we want compile with -fno-exceptions
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wnon-virtual-dtor -Wno-long-long -Wundef -Wcast-align -Wchar-subscripts -Wall -W -Wpointer-arith -Wformat-security -fno-exceptions -DQT_NO_EXCEPTIONS -fno-check-new -fno-common")
+
    if (CMAKE_SYSTEM_NAME MATCHES Linux OR CMAKE_SYSTEM_NAME STREQUAL GNU)
-     set ( CMAKE_C_FLAGS     "${CMAKE_C_FLAGS} -Wno-long-long -std=iso9899:1990 -Wundef -Wcast-align -Werror-implicit-function-declaration -Wchar-subscripts -Wall -W -Wpointer-arith -Wwrite-strings -Wformat-security -Wmissing-format-attribute -fno-common")
-     # As off Qt 4.6.x we need to override the new exception macros if we want compile with -fno-exceptions
-     set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wnon-virtual-dtor -Wno-long-long -ansi -Wundef -Wcast-align -Wchar-subscripts -Wall -W -Wpointer-arith -Wformat-security -fno-exceptions -DQT_NO_EXCEPTIONS -fno-check-new -fno-common")
+     # This should not be needed, as it is also part of _KDE4_PLATFORM_DEFINITIONS below.
+     # It is kept here nonetheless both for backwards compatibility in case one does not use add_definitions(${KDE4_DEFINITIONS})
+     # and also because it is/was needed by glibc for snprintf to be available when building C files.
+     # See commit 4a44862b2d178c1d2e1eb4da90010d19a1e4a42c.
      add_definitions (-D_BSD_SOURCE)
    endif (CMAKE_SYSTEM_NAME MATCHES Linux OR CMAKE_SYSTEM_NAME STREQUAL GNU)
 
@@ -1350,13 +1349,13 @@ macro (KDE4_PRINT_RESULTS)
    # inside kdelibs the include dir and lib dir are internal, not "found"
    if (NOT _kdeBootStrapping)
        if(KDE4_INCLUDE_DIR)
-          message(STATUS "Found KDE 4.8 include dir: ${KDE4_INCLUDE_DIR}")
+          message(STATUS "Found KDE 4.9 include dir: ${KDE4_INCLUDE_DIR}")
        else(KDE4_INCLUDE_DIR)
           message(STATUS "ERROR: unable to find the KDE 4 headers")
        endif(KDE4_INCLUDE_DIR)
 
        if(KDE4_LIB_DIR)
-          message(STATUS "Found KDE 4.8 library dir: ${KDE4_LIB_DIR}")
+          message(STATUS "Found KDE 4.9 library dir: ${KDE4_LIB_DIR}")
        else(KDE4_LIB_DIR)
           message(STATUS "ERROR: unable to find the KDE 4 core library")
        endif(KDE4_LIB_DIR)

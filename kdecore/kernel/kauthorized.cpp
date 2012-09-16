@@ -290,6 +290,10 @@ static void initUrlActionRestrictions()
   d->urlActionRestrictions.append(
 	URLActionRule("redirect", Any, Any, Any, QLatin1String("about"), Any, Any, true));
 
+  // Anyone may redirect to mailto:
+  d->urlActionRestrictions.append(
+     URLActionRule("redirect", Any, Any, Any, QLatin1String("mailto"), Any, Any, true));
+
   // Anyone may redirect to itself, cq. within it's own group
   d->urlActionRestrictions.append(
 	URLActionRule("redirect", Any, Any, Any, QLatin1String("="), Any, Any, true));

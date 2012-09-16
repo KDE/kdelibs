@@ -604,8 +604,8 @@ public:
 
     JSEditor *jsEditor();
 
-    QHash<QString,khtml::CounterNode*>* counters(const khtml::RenderObject* o) { return m_counterDict.value(o); }
-    void setCounters(const khtml::RenderObject* o, QHash<QString,khtml::CounterNode*> *dict) { m_counterDict.insert(o, dict);}
+    QHash<DOMString,khtml::CounterNode*>* counters(const khtml::RenderObject* o) { return m_counterDict.value(o); }
+    void setCounters(const khtml::RenderObject* o, QHash<DOMString,khtml::CounterNode*> *dict) { m_counterDict.insert(o, dict);}
     void removeCounters(const khtml::RenderObject* o) { delete m_counterDict.take(o); }
 
     ElementMappingCache& underDocNamedCache() {
@@ -687,7 +687,7 @@ protected:
     QList<NodeImpl*> m_maintainsState;
 
     // ### evaluate for placement in RenderStyle
-    QHash<const khtml::RenderObject*,QHash<QString,khtml::CounterNode*> *> m_counterDict;
+    QHash<const khtml::RenderObject*,QHash<DOMString,khtml::CounterNode*> *> m_counterDict;
 
     khtml::DynamicDomRestyler *m_dynamicDomRestyler;
 
@@ -769,7 +769,6 @@ class DocumentFragmentImpl : public NodeBaseImpl
 {
 public:
     DocumentFragmentImpl(DocumentImpl *doc);
-    DocumentFragmentImpl(const DocumentFragmentImpl &other);
 
     // DOM methods overridden from  parent classes
     virtual DOMString nodeName() const;

@@ -294,7 +294,7 @@ KMenu *KToolBar::Private::contextMenu(const QPoint &globalPos)
 
     context->addTitle(i18nc("@title:menu", "Toolbar Settings"));
 
-    contextOrient = new KMenu(i18n("Orientation"), context);
+    contextOrient = new KMenu(i18nc("Toolbar orientation", "Orientation"), context);
 
     contextTop = contextOrient->addAction(i18nc("toolbar position string", "Top"), q, SLOT(slotContextTop()));
     contextTop->setChecked(true);
@@ -862,6 +862,11 @@ void KToolBar::setXMLGUIClient(KXMLGUIClient *client)
 void KToolBar::addXMLGUIClient( KXMLGUIClient *client )
 {
     d->xmlguiClients << client;
+}
+
+void KToolBar::removeXMLGUIClient( KXMLGUIClient *client )
+{
+    d->xmlguiClients.remove(client);
 }
 
 void KToolBar::contextMenuEvent(QContextMenuEvent* event)

@@ -176,12 +176,6 @@ QList<Nepomuk::ResourceData*> Nepomuk::ResourceManagerPrivate::allResourceData()
 }
 
 
-bool Nepomuk::ResourceManagerPrivate::dataCacheFull() const
-{
-    return dataCnt >= 1000;
-}
-
-
 void Nepomuk::ResourceManagerPrivate::cleanupCache( int num )
 {
     QMutexLocker lock( &mutex );
@@ -201,12 +195,8 @@ void Nepomuk::ResourceManagerPrivate::cleanupCache( int num )
 
 bool Nepomuk::ResourceManagerPrivate::shouldBeDeleted( ResourceData * rd ) const
 {
-    //
-    // We delete data objects in one of two cases:
-    // 1. They are not valid and as such not in one of the ResourceManagerPrivate kickoff lists
-    // 2. The cache is already full and we need to clean up
-    //
-    return( !rd->cnt() && ( !rd->isValid() || dataCacheFull() ));
+    // We only delete ResourceData objects if no other Resource is accessing them
+    return !rd->cnt();
 }
 
 

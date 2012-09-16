@@ -32,49 +32,50 @@ class QStringList;
  * some signals you can connect to.  They aren't in this class cause
  * we can't have signals without having a QObject, which
  * TerminalInterface is not.
- * These are the signals you can connect to:
- *  void processExited( int status );
- *  void receivedData( const QString& s );
- * See the example code below for how to connect to these..
+ *
+ * These are some signals you can connect to:
+ *  void currentDirectoryChanged(const QString& dir);
+ *
+ * See the example code below for how to connect to these.
  *
  * Use it like this:
  * \code
- *  // fetch the Library..
- *  KLibFactory* factory = KLibLoader::self()->factory( "libkonsolepart" );
- *  if ( factory == 0L )
- *  {
- *    // inform the user that he should install konsole..
- *    return;
- *  }
- *  // fetch the part..
- *  KParts::Part* p = static_cast<KParts::Part*>(
- *      factory->create( this, "tralala", "QObject",
- *                       "KParts::ReadOnlyPart" ) );
- *  assert( p );
- *  setCentralWidget( p->widget() );
+ *  //query the .desktop file to get service information about konsolepart
+ *  KService::Ptr service = KService::serviceByDesktopName("konsolepart");
  *
- *  // cast the part to the TerminalInterface..
- *  TerminalInterface* t = static_cast<TerminalInterface*>( p->qt_cast( "TerminalInterface" ) );
- *  if( ! t )
+ *  if (!service)
  *  {
- *    // This probably happens because the konsole that is installed
- *    // comes from before KDE 3.2 , and the TerminalInterface is not
- *    // available..  What you can do here is either inform the user
- *    // that he needs a more recent konsole, or try to deliver the
- *    // functionality in some other way...
- *    return;
+ *      QMessageBox::critical(this, tr("Konsole not installed"), tr("Please install the kde konsole and try again!"), QMessageBox::Ok);
+ *      return ;
  *  }
+ *
+ *  // create one instance of konsolepart
+ *  KParts::ReadOnlyPart* p = service->createInstance<KParts::ReadOnlyPart>(parent, parentWidget, QVariantList());
+ *
+ *  if (!p)
+ *  {
+ *      return;
+ *  }
+ *
+ *  // cast the konsolepart to the TerminalInterface..
+ *  TerminalInterface* t = qobject_cast<TerminalInterface*>(p);
+ *
+ *  if (!t)
+ *  {
+ *      return;
+ *  }
+ *
  *  // now use the interface in all sorts of ways, e.g.
  *  //    t->showShellInDir( QDir::home().path() );
  *  // or:
- *  //    QStrList l;
+ *  //    QStringList l;
  *  //    l.append( "python" );
  *  //    t->startProgram( QString::fromUtf8( "/usr/bin/python" ), l);
  *  // or connect to one of the signals.  Connect to the Part object,
  *  // not to the TerminalInterface, since the latter is no QObject,
  *  // and as such cannot have signals..:
- *  //    connect( p, SIGNAL( processExited( int ) ),
- *  //             this, SLOT( shellExited( int ) ) );
+ *  //    connect(p, SIGNAL(currentDirectoryChanged(QString)),
+ *  //             this, SLOT(currentDirectoryChanged(QString)));
  *  // etc.
  *
  * \endcode

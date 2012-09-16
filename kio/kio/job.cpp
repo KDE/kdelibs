@@ -2319,7 +2319,7 @@ void FileCopyJobPrivate::slotDataReq( KIO::Job * , QByteArray &data)
    if (!m_resumeAnswerSent && !m_getJob) {
        // This can't happen
        q->setError( ERR_INTERNAL );
-       q->setErrorText( i18n( "'Put' job did not send canResume or 'Get' job did not send data!" ) );
+       q->setErrorText( "'Put' job did not send canResume or 'Get' job did not send data!" );
        m_putJob->kill( FileCopyJob::Quietly );
        q->removeSubjob(m_putJob);
        m_putJob = 0;
@@ -2613,10 +2613,15 @@ void ListJobPrivate::gotEntries(KIO::Job *, const KIO::UDSEntryList& list )
 
 void ListJob::slotResult( KJob * job )
 {
-    // If we can't list a subdir, the result is still ok
-    // This is why we override Job::slotResult() - to skip error checking
-    removeSubjob( job );
-    if ( !hasSubjobs() )
+    if (job->error()) {
+	// If we can't list a subdir, the result is still ok
+	// This is why we override KCompositeJob::slotResult - to not set
+	// an error on parent job.
+	// Let's emit a signal about this though
+	emit subError(this, static_cast<KIO::ListJob*>(job));
+    }
+    removeSubjob(job);
+    if (!hasSubjobs())
         emitResult();
 }
 

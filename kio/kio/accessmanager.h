@@ -2,6 +2,7 @@
  * This file is part of the KDE project.
  *
  * Copyright (C) 2008 - 2009 Urs Wolfer <uwolfer @ kde.org>
+ * Copyright (C) 2009 - 2012 Dawit Alemayehu <adawit @ kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public

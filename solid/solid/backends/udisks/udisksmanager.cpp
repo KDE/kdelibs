@@ -108,6 +108,9 @@ QStringList UDisksManager::devicesFromQuery(const QString& parentUdi, Solid::Dev
     {
         foreach (const QString &udi, deviceCache())
         {
+            if (udi==udiPrefix())
+                continue;
+
             UDisksDevice device(udi);
             if (device.queryDeviceInterface(type) && device.parentUdi() == parentUdi)
                 result << udi;
@@ -119,6 +122,9 @@ QStringList UDisksManager::devicesFromQuery(const QString& parentUdi, Solid::Dev
     {
         foreach (const QString &udi, deviceCache())
         {
+            if (udi==udiPrefix())
+                continue;
+
             UDisksDevice device(udi);
             if (device.queryDeviceInterface(type))
                 result << udi;

@@ -9,7 +9,7 @@
 # This file defines the following variables:
 #
 # SIP_VERSION - The version of SIP found expressed as a 6 digit hex number
-#     suitable for comparision as a string.
+#     suitable for comparison as a string.
 #
 # SIP_VERSION_STR - The version of SIP found as a human readable string.
 #
@@ -44,7 +44,11 @@ ELSE(SIP_VERSION)
     STRING(REGEX REPLACE ".*\nsip_inc_dir:([^\n]+).*$" "\\1" SIP_INCLUDE_DIR ${sip_config})
     FILE(TO_CMAKE_PATH ${SIP_DEFAULT_SIP_DIR} SIP_DEFAULT_SIP_DIR)
     FILE(TO_CMAKE_PATH ${SIP_INCLUDE_DIR} SIP_INCLUDE_DIR)
-    SET(SIP_FOUND TRUE)
+    IF(EXISTS ${SIP_EXECUTABLE})
+      SET(SIP_FOUND TRUE)
+    ELSE()
+      MESSAGE(STATUS "Found SIP configuration but the sip executable could not be found.")
+    ENDIF()
   ENDIF(sip_config)
 
   IF(SIP_FOUND)

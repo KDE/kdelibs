@@ -1381,60 +1381,61 @@ const QFont &RenderText::font()
 
 void RenderText::setText(DOMStringImpl *text, bool force)
 {
-    if( !force && str == text ) return;
+    if (!force && str == text)
+        return;
+
     setTextInternal(text);
 }
 
 void RenderText::setTextInternal(DOMStringImpl *text)
 {
     DOMStringImpl *oldstr = str;
-    if(text && style())
+    if (text && style())
         str = text->collapseWhiteSpace(style()->preserveLF(), style()->preserveWS());
     else
         str = text;
-    if(str) str->ref();
-    if(oldstr) oldstr->deref();
 
-    if ( str && style() ) {
+    if (str)
+        str->ref();
+    if (oldstr)
+        oldstr->deref();
+
+    if (str && style()) {
         oldstr = str;
-        switch(style()->textTransform()) {
-        case CAPITALIZE:
-        {
-            RenderObject *o;
-            bool runOnString = false;
-
-            // find previous non-empty text renderer if one exists
-            for (o = previousRenderer(); o; o = o->previousRenderer()) {
-                if (!o->isInlineFlow()) {
-                    if (!o->isText())
+        switch (style()->textTransform()) {
+            case CAPITALIZE: {
+                RenderObject *o;
+                bool runOnString = false;
+                // find previous non-empty text renderer if one exists
+                for (o = previousRenderer(); o; o = o->previousRenderer()) {
+                    if (!o->isInlineFlow()) {
+                        if (!o->isText())
+                            break;
+                        DOMStringImpl *prevStr = static_cast<RenderText*>(o)->string();
+                        // !prevStr can happen with css like "content:open-quote;"
+                        if (!prevStr)
+                            break;
+                        if (prevStr->length() == 0)
+                            continue;
+                        QChar c = (*prevStr)[prevStr->length() - 1];
+                        if (!c.isSpace())
+                            runOnString = true;
                         break;
-
-                    DOMStringImpl *prevStr = static_cast<RenderText*>(o)->string();
-                    // !prevStr can happen with css like "content:open-quote;"
-                    if (!prevStr)
-                        break;
-
-                    if (prevStr->length() == 0)
-                        continue;
-                    QChar c = (*prevStr)[prevStr->length() - 1];
-                    if (!c.isSpace())
-                        runOnString = true;
-
-                    break;
+                    }
                 }
+                str = str->capitalize(runOnString);
+                break;
             }
-
-            str = str->capitalize(runOnString);
+            case UPPERCASE:
+                str = str->upper();
+                break;
+            case LOWERCASE:
+                str = str->lower();
+                break;
+            case TTNONE:
+            default:
+                break;
         }
-        break;
-
-		
-		
-        case UPPERCASE: str = str->upper();       break;
-        case LOWERCASE: str = str->lower();       break;
-        case NONE:
-        default:;
-    }
         str->ref();
         oldstr->deref();
     }
@@ -1598,11 +1599,11 @@ bool RenderText::containsOnlyWhitespace(unsigned int from, unsigned int len) con
     return currPos >= (from+len);
 }
 
-void RenderText::trimmedMinMaxWidth(short& beginMinW, bool& beginWS,
-                                    short& endMinW, bool& endWS,
+void RenderText::trimmedMinMaxWidth(int& beginMinW, bool& beginWS,
+                                    int& endMinW, bool& endWS,
                                     bool& hasBreakableChar, bool& hasBreak,
-                                    short& beginMaxW, short& endMaxW,
-                                    short& minW, short& maxW, bool& stripFrontSpaces)
+                                    int& beginMaxW, int& endMaxW,
+                                    int& minW, int& maxW, bool& stripFrontSpaces)
 {
     bool preserveWS = style()->preserveWS();
     bool preserveLF = style()->preserveLF();

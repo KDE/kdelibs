@@ -74,9 +74,6 @@ Nepomuk::ResourceData::ResourceData( const QUrl& uri, const QUrl& kickOffUri, co
 
     m_types << m_mainType;
 
-    if( m_rm->dataCacheFull() )
-        m_rm->cleanupCache();
-
     m_rm->dataCnt.ref();
 
     if( !uri.isEmpty() ) {
@@ -180,7 +177,7 @@ void Nepomuk::ResourceData::resetAll( bool isDelete )
             // See load() for an explanation of the QMetaObject call
 
             // stop the watcher since we do not want to watch all changes in case there is no ResourceData left
-            if(m_rm->m_watcher->resources().count() == 1) {
+            if(m_rm->m_watcher->resourceCount() == 1) {
                 QMetaObject::invokeMethod(m_rm->m_watcher, "stop", Qt::AutoConnection);
             }
 
@@ -432,9 +429,8 @@ bool Nepomuk::ResourceData::load()
             // It would only pollute the user interface
             //
             Soprano::QueryResultIterator it = MAINMODEL->executeQuery(QString("select distinct ?p ?o where { "
-                                                                              "graph ?g { %1 ?p ?o . } . FILTER(?g!=<urn:crappyinference2:inferredtriples>) . "
-                                                                              "}").arg(Soprano::Node::resourceToN3(m_uri)),
-                                                                      Soprano::Query::QueryLanguageSparql);
+                                                                              "%1 ?p ?o . }").arg(Soprano::Node::resourceToN3(m_uri)),
+                                                                      Soprano::Query::QueryLanguageSparqlNoInference);
             while ( it.next() ) {
                 QUrl p = it["p"].uri();
                 Soprano::Node o = it["o"];
@@ -462,7 +458,7 @@ bool Nepomuk::ResourceData::load()
                 QueryResultIterator pimoIt = MAINMODEL->executeQuery( QString( "select ?r where { ?r <%1> <%2> . }")
                                                                       .arg( Vocabulary::PIMO::groundingOccurrence().toString() )
                                                                       .arg( QString::fromAscii( m_uri.toEncoded() ) ),
-                                                                      Soprano::Query::QueryLanguageSparql );
+                                                                      Soprano::Query::QueryLanguageSparqlNoInference );
                 if( pimoIt.next() ) {
                     m_pimoThing = new Thing( pimoIt.binding("r").uri() );
                 }

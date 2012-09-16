@@ -38,6 +38,8 @@ extern "C" {
         #define bzCompressInit(x,y,z,a) BZ2_bzCompressInit(x, y, z, a);
 #endif
 
+#include <kdebug.h>
+
 #include <QDebug>
 
 #include <qiodevice.h>
@@ -153,10 +155,9 @@ KBzip2Filter::Result KBzip2Filter::uncompress()
 {
     //qDebug() << "Calling bzDecompress with avail_in=" << inBufferAvailable() << " avail_out=" << outBufferAvailable();
     int result = bzDecompress(&d->zStream);
-    if ( result != BZ_OK )
+    if ( result < BZ_OK )
     {
-        qDebug() << "bzDecompress returned" << result;
-        qDebug() << "KBzip2Filter::uncompress" << ( result == BZ_STREAM_END ? KFilterBase::End : KFilterBase::Error );
+        kWarning() << "bzDecompress returned" << result;
     }
 
     switch (result) {

@@ -101,8 +101,6 @@ namespace Nepomuk {
          */
         ResourceData* dataForResourceUri( const QUrl& uri, const QUrl& type );
 
-        bool dataCacheFull() const;
-
         /**
          * Delete unused ResourceData objects from the cache.
          * \param num The number of needed slots. The ResourceData constructor

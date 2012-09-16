@@ -403,7 +403,6 @@ void RenderWidget::updateFromElement()
                                        (backgroundColor == colorForCSSValue(CSS_VAL_BUTTONFACE)) );
             if (shouldChangeBgPal || trans) {
                 pal.setColor(widget()->backgroundRole(), trans ? QColor(0,0,0,0) : backgroundColor);
-                non_trans_pal.setColor(widget()->backgroundRole(), backgroundColor);
                 for ( int i = 0; i < QPalette::NColorGroups; ++i ) {
                     if (shouldChangeBgPal) {
                         pal.setColor( (QPalette::ColorGroup)i, QPalette::Window, backgroundColor );
@@ -411,28 +410,22 @@ void RenderWidget::updateFromElement()
                         pal.setColor( (QPalette::ColorGroup)i, QPalette::Dark, backgroundColor.dark(lowlightVal) );
                         pal.setColor( (QPalette::ColorGroup)i, QPalette::Mid, backgroundColor.dark(120) );
                         pal.setColor( (QPalette::ColorGroup)i, QPalette::Midlight, backgroundColor.light(110) );
-                        non_trans_pal.setColor( (QPalette::ColorGroup)i, QPalette::Window, backgroundColor );
-                        non_trans_pal.setColor( (QPalette::ColorGroup)i, QPalette::Light, backgroundColor.light(highlightVal) );
-                        non_trans_pal.setColor( (QPalette::ColorGroup)i, QPalette::Dark, backgroundColor.dark(lowlightVal) );
-                        non_trans_pal.setColor( (QPalette::ColorGroup)i, QPalette::Mid, backgroundColor.dark(120) );
-                        non_trans_pal.setColor( (QPalette::ColorGroup)i, QPalette::Midlight, backgroundColor.light(110) );
                     }
                     pal.setColor( (QPalette::ColorGroup)i, QPalette::Button, trans ? QColor(0,0,0,0):backgroundColor );
                     pal.setColor( (QPalette::ColorGroup)i, QPalette::Base, trans ? QColor(0,0,0,0):backgroundColor );
-                    non_trans_pal.setColor( (QPalette::ColorGroup)i, QPalette::Button, backgroundColor );
-                    non_trans_pal.setColor( (QPalette::ColorGroup)i, QPalette::Base, backgroundColor );
                 }
             }
+
             if ( color.isValid() ) {
                 struct ColorSet {
                     QPalette::ColorGroup cg;
                     QPalette::ColorRole cr;
                 };
                 const struct ColorSet toSet [] = {
-                    { QPalette::Active, QPalette::Foreground },
+                    { QPalette::Active, QPalette::WindowText },
                     { QPalette::Active, QPalette::ButtonText },
                     { QPalette::Active, QPalette::Text },
-                    { QPalette::Inactive, QPalette::Foreground },
+                    { QPalette::Inactive, QPalette::WindowText },
                     { QPalette::Inactive, QPalette::ButtonText },
                     { QPalette::Inactive, QPalette::Text },
                     { QPalette::NColorGroups, QPalette::NColorRoles },
@@ -457,32 +450,41 @@ void RenderWidget::updateFromElement()
 		    // for really dark fg - use darkgray disabled fg,
 		    // as ::light is pretty useless in this range
 		    disfg = Qt::darkGray;
-		pal.setColor(QPalette::Disabled,QPalette::Foreground,disfg);
+		pal.setColor(QPalette::Disabled,QPalette::WindowText,disfg);
 		pal.setColor(QPalette::Disabled,QPalette::Text,disfg);
 		pal.setColor(QPalette::Disabled,QPalette::ButtonText,disfg);
-                non_trans_pal.setColor(QPalette::Disabled,QPalette::Foreground,disfg);
+                non_trans_pal.setColor(QPalette::Disabled,QPalette::WindowText,disfg);
                 non_trans_pal.setColor(QPalette::Disabled,QPalette::Text,disfg);
                 non_trans_pal.setColor(QPalette::Disabled,QPalette::ButtonText,disfg);
             }
         }
+
+        m_widget->setPalette(pal);
+
+        // Combobox's popup colors
         if (qobject_cast<QComboBox*>(m_widget)) {
-            m_widget->setPalette(pal);
+            // Background
+            if (style()->hasBackgroundImage()) {
+                non_trans_pal = QApplication::palette();
+            }
+            else if (backgroundColor.isValid() && backgroundColor != Qt::transparent) {
+                non_trans_pal.setColor(QPalette::Base, backgroundColor);
+            }
             // mmh great, there's no accessor for the popup... 
             QList<QWidget*>l = qFindChildren<QWidget *>(m_widget, QString());
             foreach(QWidget* w, l) {
-                if (qobject_cast<QAbstractScrollArea*>(w)) {
+                if (QAbstractScrollArea* lView = qobject_cast<QAbstractScrollArea*>(w)) {
                     // we have the listview, climb up to reach its container.
                     assert( w->parentWidget() != m_widget );
-                    if (w->parentWidget())
+                    if (w->parentWidget()) {
                         w->parentWidget()->setPalette(non_trans_pal);
+                        // System colors for scrollbar
+                        lView->verticalScrollBar()->setPalette(QApplication::palette());
+                    }
                 }
             }
-        } else {
-            m_widget->setPalette(pal);
-        }
-
-        // Border:
-        if (QFrame* frame = qobject_cast<QFrame*>(m_widget)) {
+        } // Border:
+        else if (QFrame* frame = qobject_cast<QFrame*>(m_widget)) {
             if (shouldDisableNativeBorders()) {
                 if (frame->frameShape() != QFrame::NoFrame) {
                     m_nativeFrameShape = frame->frameShape();
@@ -495,9 +497,6 @@ void RenderWidget::updateFromElement()
         } else if (QLineEdit* lineEdit = qobject_cast<QLineEdit*>(m_widget)) {
             lineEdit->setFrame(!shouldDisableNativeBorders()); 
         }
-
-        // Font:
-        setStyle(style());
     }
 
     RenderReplaced::updateFromElement();
@@ -510,7 +509,6 @@ void RenderWidget::paintOneBackground(QPainter *p, const QColor& c, const Backgr
                                 fudge ? 1 : borderLeft() , fudge ? 1 : borderRight(), paddingLeft(), paddingRight(),
                                 fudge ? 1 : borderTop(), fudge ? 1 : borderBottom(), paddingTop(), paddingBottom());
 }
-                             
 
 void RenderWidget::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
 {
@@ -1060,7 +1058,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
             }
             m_underMouse = target;
         }
-
+#if 0
         if (target && ev.id() == EventImpl::MOUSEMOVE_EVENT) {
             // ### is this one still necessary? it doubles every mouse event...
             // I'd reckon it's no longer needed since Harri made the event propagation bubble
@@ -1068,7 +1066,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
                             QApplication::mouseButtons(), QApplication::keyboardModifiers());
             QApplication::sendEvent(target, &evt);
         }
-
+#endif
         if (ev.id() == EventImpl::MOUSEDOWN_EVENT) {
             if (!target || (!::qobject_cast<QScrollBar*>(target) && 
                             !::qobject_cast<KUrlRequester*>(m_widget) &&

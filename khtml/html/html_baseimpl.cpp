@@ -177,6 +177,10 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
         document()->setHTMLWindowEventListener(EventImpl::MESSAGE_EVENT,
             document()->createHTMLEventListener(attr->value().string(), "onmessage", NULL));
         break;        
+    case ATTR_ONHASHCHANGE:
+        document()->setHTMLWindowEventListener(EventImpl::HASHCHANGE_EVENT,
+            document()->createHTMLEventListener(attr->value().string(), "onhashchange", NULL));
+        break;
     case ATTR_NOSAVE:
 	break;
     default:
@@ -641,13 +645,15 @@ void HTMLFrameSetElementImpl::attach()
         node = static_cast<HTMLElementImpl*>(node->parentNode());
     }
 
+    RenderStyle* _style = document()->styleSelector()->styleForElement(this);
+    _style->ref();
     // ignore display: none
     if ( parentNode()->renderer() && parentNode()->renderer()->childAllowed() ) {
-        RenderStyle* _style = document()->styleSelector()->styleForElement(this);
         m_render = new (document()->renderArena()) RenderFrameSet(this);
         m_render->setStyle(_style);
         parentNode()->renderer()->addChild(m_render, nextRenderer());
     }
+    _style->deref();
 
     NodeBaseImpl::attach();
 }

@@ -393,6 +393,7 @@ void KAction::setAuthAction(const QString &actionName)
         setAuthAction(0);
     } else {
         setAuthAction(new KAuth::Action(actionName));
+        // this memory leak is gone in frameworks 5
     }
 }
 
@@ -405,7 +406,8 @@ void KAction::setAuthAction(KAuth::Action *action)
     if (d->authAction) {
         disconnect(d->authAction->watcher(), SIGNAL(statusChanged(int)),
                 this, SLOT(authStatusChanged(int)));
-        //delete d->authAction;
+        // d->authAction can not be deleted because it could
+        // be any kind of pointer, including a pointer to a stack object.
         d->authAction = 0;
         if (!d->oldIcon.isNull()) {
             setIcon(d->oldIcon);

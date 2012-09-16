@@ -53,17 +53,15 @@ RenderSVGRoot::~RenderSVGRoot()
 {
 }
 
-short RenderSVGRoot::lineHeight(bool b, bool isRootLineBox) const
+short RenderSVGRoot::lineHeight(bool b) const
 {
     Q_UNUSED(b);
-    Q_UNUSED(isRootLineBox);
     return height() + marginTop() + marginBottom();
 }
 
-short RenderSVGRoot::baselinePosition(bool b, bool isRootLineBox) const
+short RenderSVGRoot::baselinePosition(bool b) const
 {
     Q_UNUSED(b);
-    Q_UNUSED(isRootLineBox);
     return height() + marginTop() + marginBottom();
 }
 

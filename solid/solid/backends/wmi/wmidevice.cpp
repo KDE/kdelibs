@@ -48,22 +48,6 @@
 
 using namespace Solid::Backends::Wmi;
 
-QString& WmiDevice::driveLetterToUid(const QString &letter){
-    static QMap<QString,QString> uids;
-    static QRegExp uidreg("([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})");
-    if(uids.isEmpty()){
-        QString query("SELECT * FROM Win32_Volume");
-        WmiQuery::ItemList list = WmiQuery::instance().sendQuery(query);
-        foreach(const WmiQuery::Item & item,list){
-            uidreg.indexIn(item.getProperty("DeviceID").toString());
-            QString key = item.getProperty("DriveLetter").toString().toLower();
-            QString value = uidreg.capturedTexts()[0];
-            uids[key] = value;
-        }
-    }
-    return uids[letter.toLower()];
-}
-
 class Solid::Backends::Wmi::WmiDevicePrivate
 {
 public:
@@ -92,15 +76,15 @@ public:
 
     WmiQuery::Item sendQuery()
     {
-        if(m_list.isEmpty()){
+        if(m_item.isNull()){
             QString query("SELECT * FROM " + m_wmiTable + " WHERE " + m_wmiProperty + "='" + m_wmiValue + "'");
             WmiQuery::ItemList items = WmiQuery::instance().sendQuery(query);
-            Q_ASSERT(items.length() != 1);
+            Q_ASSERT(items.length() == 1);
             if(items.length() != 1)
                 qDebug()<<"WmiDevicePrivate::sendQuery() failed";
-            m_list = items;
+            m_item = items[0];
         }
-        return m_list[0];
+        return m_item;
     }
 
     static bool convertUDItoWMI(const QString &udi, QString &wmiTable, QString &wmiProperty, QString &wmiValue,Solid::DeviceInterface::Type &type)
@@ -112,11 +96,9 @@ public:
             return false;
         }
         type = DeviceInterface::fromString(x[0]);
-        wmiTable = getWMITable(type);        
         wmiProperty = getPropertyNameForUDI(type);
-        wmiValue = x[1];        
-        if(type == Solid::DeviceInterface::StorageVolume )
-            wmiValue = "\\\\\\\\?\\\\Volume{"+wmiValue+"}\\\\";
+        wmiValue = x[1];
+        wmiTable = getWMITable(type);
 //        qDebug()<<"wmi"<<  type <<wmiTable <<wmiProperty <<wmiValue;
         return true;
     }
@@ -164,13 +146,13 @@ public:
         case Solid::DeviceInterface::StorageDrive:
             break;
         case Solid::DeviceInterface::OpticalDrive:
-            interfaceList <<Solid::DeviceInterface::StorageDrive;
+            interfaceList <<Solid::DeviceInterface::Block<<Solid::DeviceInterface::StorageDrive;
             break;
         case Solid::DeviceInterface::StorageVolume:
-            interfaceList <<Solid::DeviceInterface::StorageAccess;
+            interfaceList <<Solid::DeviceInterface::Block<<Solid::DeviceInterface::StorageAccess;
             break;
         case Solid::DeviceInterface::OpticalDisc:
-            interfaceList <<Solid::DeviceInterface::StorageDrive<<Solid::DeviceInterface::OpticalDrive;
+            interfaceList <<Solid::DeviceInterface::Block<<Solid::DeviceInterface::StorageVolume;
             break;
         case Solid::DeviceInterface::Camera:
             break;
@@ -220,16 +202,16 @@ public:
         case Solid::DeviceInterface::Block:
             break;
         case Solid::DeviceInterface::StorageAccess:
-            wmiTable = "Win32_LogicalDisk";
+            wmiTable = "Win32_DiskPartition";
             break;
         case Solid::DeviceInterface::StorageDrive:
             wmiTable = "Win32_DiskDrive";
             break;
         case Solid::DeviceInterface::OpticalDrive:
-            wmiTable = "Win32_LogicalDisk";
+            wmiTable = "Win32_CDROMDrive";
             break;
         case Solid::DeviceInterface::StorageVolume:
-            wmiTable = "Win32_Volume";
+            wmiTable = "Win32_DiskPartition";
             break;
         case Solid::DeviceInterface::OpticalDisc:
             wmiTable = "Win32_CDROMDrive";
@@ -241,7 +223,6 @@ public:
         case Solid::DeviceInterface::NetworkInterface:
             break;
         case Solid::DeviceInterface::AcAdapter:
-            break;
         case Solid::DeviceInterface::Battery:
             wmiTable = "Win32_Battery";
             break;
@@ -262,21 +243,24 @@ public:
         return wmiTable;
     }
 
+    static QString getIgnorePattern(const Solid::DeviceInterface::Type &type)
+    {
+        QString propertyName;
+        switch(type){
+        case Solid::DeviceInterface::OpticalDisc:
+            propertyName = " WHERE MediaLoaded=TRUE";
+            break;
+        }
+        return propertyName;
+    }
+
     static QString getPropertyNameForUDI(const Solid::DeviceInterface::Type &type)
     {
         QString propertyName;
         switch(type){
         case Solid::DeviceInterface::OpticalDrive:
+        case Solid::DeviceInterface::OpticalDisc:
             propertyName = "Drive";
-            break;
-        case Solid::DeviceInterface::Battery:
-            propertyName = "Name";
-            break;
-        case Solid::DeviceInterface::StorageAccess:
-             propertyName = "DeviceID";
-             break;
-        case Solid::DeviceInterface::StorageVolume:
-            propertyName = "DeviceID";
             break;
         case Solid::DeviceInterface::StorageDrive:
             propertyName = "Index";
@@ -288,103 +272,14 @@ public:
         return propertyName;
     }
 
-    static QString getIgnorePatternForUDI(const Solid::DeviceInterface::Type &type)
-    {
-        QString ignorePattern;
-        switch(type){
-        case Solid::DeviceInterface::OpticalDrive:
-            break;
-        case Solid::DeviceInterface::Battery:
-            break;
-            //ignore cd for now
-        case Solid::DeviceInterface::StorageAccess:
-        case Solid::DeviceInterface::StorageVolume:
-            ignorePattern = " WHERE DriveType != 5";
-            break;
-        case Solid::DeviceInterface::StorageDrive:
-            break;
-        default:
-            ignorePattern = "";
-        }
-
-        return ignorePattern;
-    }
-
-    static QString getPropertyNameForVendor(const Solid::DeviceInterface::Type &type)
-    {
-        QString propertyName;
-        switch(type){
-        case Solid::DeviceInterface::Processor:
-            propertyName = "Manufacturer";
-            break;
-        case Solid::DeviceInterface::OpticalDrive:
-            propertyName = "Drive";//TODO:
-            break;
-        case Solid::DeviceInterface::Battery:
-            propertyName = "Name";//TODO:
-            break;
-        case Solid::DeviceInterface::StorageAccess:
-            propertyName = "DeviceID";//TODO:
-            break;
-        case Solid::DeviceInterface::StorageVolume:
-            propertyName = "DriveLetter";//TODO:
-            break;
-        case Solid::DeviceInterface::StorageDrive:
-            propertyName = "Model";
-            break;
-        default:
-            propertyName = "DeviceID";//TODO:
-        }
-        return propertyName;
-    }
-
-    static QString getPropertyNameForProduct(const Solid::DeviceInterface::Type &type)
-    {
-        QString propertyName;
-        switch(type){
-        case Solid::DeviceInterface::Processor:
-            propertyName = "Name";
-            break;
-        case Solid::DeviceInterface::OpticalDrive:
-            propertyName = "Drive";//TODO:
-            break;
-        case Solid::DeviceInterface::Battery:
-            propertyName = "Name";//TODO:
-            break;
-        case Solid::DeviceInterface::StorageAccess:
-             propertyName = "DeviceID";//TODO:
-             break;
-        case Solid::DeviceInterface::StorageVolume:
-            propertyName = "Label";
-            break;
-        case Solid::DeviceInterface::StorageDrive:
-            propertyName = "Caption";
-            break;
-        default:
-            propertyName = "DeviceID";//TODO:
-        }
-        return propertyName;
-    }
-
-
-
     static QStringList generateUDIList(const Solid::DeviceInterface::Type &type)
     {
         QStringList result;
 
-        WmiQuery::ItemList list = WmiQuery::instance().sendQuery( "select * from " + getWMITable(type) + getIgnorePatternForUDI(type) );
+        WmiQuery::ItemList list = WmiQuery::instance().sendQuery( "SELECT * FROM " + getWMITable(type) + getIgnorePattern(type));
         foreach(const WmiQuery::Item& item, list) {
             QString propertyName = getPropertyNameForUDI(type);
             QString property = item.getProperty(propertyName).toString();
-            if(type == Solid::DeviceInterface::StorageVolume ){
-                static QRegExp uid("([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})");
-                uid.indexIn(property);
-                property =  uid.capturedTexts()[0];
-            }else if(type == Solid::DeviceInterface::StorageAccess ){
-                property = WmiDevice::driveLetterToUid(property);
-                if(property.isEmpty())//as far as I know this can only happen with subst drives
-                    continue;
-            }
             result << generateUDI(getUDIKey(type),property.toLower());
         }
         return result;
@@ -398,8 +293,9 @@ public:
     QString m_wmiProperty;
     QString m_wmiValue;
     Solid::DeviceInterface::Type m_type;
-    WmiQuery::ItemList m_list;
+    WmiQuery::Item m_item;
     QList<Solid::DeviceInterface::Type> interfaceList;
+
 };
 
 Q_DECLARE_METATYPE(ChangeDescription)
@@ -425,6 +321,7 @@ QStringList WmiDevice::generateUDIList(const Solid::DeviceInterface::Type &type)
     return WmiDevicePrivate::generateUDIList(type);
 }
 
+
 bool WmiDevice::exists(const QString &udi)
 {
     return WmiDevicePrivate::exists(udi);
@@ -449,17 +346,16 @@ QString WmiDevice::parentUdi() const
     QString result;
     const QString value = udi().split("/").last();
 
-    if(d->m_type == Solid::DeviceInterface::StorageVolume){
-        QString id = property("DriveLetter").toString();
-        QString query = "ASSOCIATORS OF {Win32_LogicalDisk.DeviceID='"+id+"'} WHERE AssocClass = Win32_LogicalDiskToPartition";
-        WmiQuery::ItemList list = WmiQuery::instance().sendQuery(query);
-        if(list.length() == 1){
-            id = list[0].getProperty("Name").toString();
-            query = "ASSOCIATORS OF {Win32_DiskPartition.DeviceID='"+id+"'} WHERE AssocClass = Win32_DiskDriveToDiskPartition";
-            list = WmiQuery::instance().sendQuery(query);
-            result = "/org/kde/solid/wmi/storage/"+list[0].getProperty("Index").toString();
-        }
+    switch(d->m_type){
+    case Solid::DeviceInterface::StorageVolume:
+    case Solid::DeviceInterface::StorageAccess:
+            result = "/org/kde/solid/wmi/storage/"+property("DiskIndex").toString();
+            break;
+    case Solid::DeviceInterface::OpticalDisc:
+        result = "/org/kde/solid/wmi/storage.cdrom/"+property("Drive").toString().toLower();
+        break;
     }
+
     if(result.isEmpty() && !value.isEmpty()){
         result = udi();
         result = result.remove("/"+value);
@@ -470,117 +366,90 @@ QString WmiDevice::parentUdi() const
 
 QString WmiDevice::vendor() const
 {
-    return property(WmiDevicePrivate::getPropertyNameForVendor(d->m_type)).toString();
+    QString propertyName;
+    switch(type()){
+    case Solid::DeviceInterface::Processor:
+        propertyName = "Manufacturer";
+        break;
+    case Solid::DeviceInterface::OpticalDrive:
+    case Solid::DeviceInterface::OpticalDisc:
+        propertyName = "Caption";
+        break;
+    case Solid::DeviceInterface::Battery:
+        propertyName = "DeviceID";
+        break;
+    case Solid::DeviceInterface::StorageAccess:
+    case Solid::DeviceInterface::StorageVolume:
+    {
+        WmiDevice parent(parentUdi());
+        return parent.vendor();
+    }
+        break;
+    case Solid::DeviceInterface::StorageDrive:
+        propertyName = "Model";
+        break;
+    default:
+        propertyName = "DeviceID";//TODO:
+    }
+    return property(propertyName).toString();
 }
 
 QString WmiDevice::product() const
 {
-    return property(WmiDevicePrivate::getPropertyNameForProduct(d->m_type)).toString();
+    QString propertyName;
+    switch(type()){
+    case Solid::DeviceInterface::Processor:
+        propertyName = "Name";
+        break;
+    case Solid::DeviceInterface::StorageAccess:
+    case Solid::DeviceInterface::StorageVolume:
+    {
+        WmiQuery::Item item = win32LogicalDiskByDiskPartitionID(property("DeviceID").toString());
+        return item.getProperty("VolumeName").toString();
+    }
+        break;
+    case Solid::DeviceInterface::AcAdapter:
+        return description();
+    default:
+        propertyName = "Caption";
+    }
+    return property(propertyName).toString();
 }
 
 QString WmiDevice::icon() const
 {
-    QString category = property("info.category").toString();
-
-    if(parentUdi().isEmpty()) {
-
-        QString formfactor = property("system.formfactor").toString();
-        if (formfactor=="laptop") {
-            return "computer-laptop";
-        } else {
-            return "computer";
-        }
-
-    } else if (category=="storage") {
-
-        if (property("storage.drive_type").toString()=="floppy") {
-            return "media-floppy";
-        } else if (property("storage.drive_type").toString()=="cdrom") {
-            return "drive-optical";
-        } else if (property("storage.hotpluggable").toBool()) {
-            if (property("storage.bus").toString()=="usb") {
-                if (property("storage.no_partitions_hint").toBool()
-                 || property("storage.removable.media_size").toLongLong()<4000000000LL) {
-                    return "drive-removable-media-usb-pendrive";
-                } else {
-                    return "drive-removable-media-usb";
-                }
-            }
-
-            return "drive-removable-media";
-        }
-
-        return "drive-harddisk";
-
-    } else if (category=="volume") {
-
-        QStringList capabilities = property("info.capabilities").toStringList();
-
-        if (capabilities.contains("volume.disc")) {
-            bool has_video = property("volume.disc.is_vcd").toBool()
-                          || property("volume.disc.is_svcd").toBool()
-                          || property("volume.disc.is_videodvd").toBool();
-            bool has_audio = property("volume.disc.has_audio").toBool();
-            bool recordable = property("volume.disc.is_blank").toBool()
-                          || property("volume.disc.is_appendable").toBool()
-                          || property("volume.disc.is_rewritable").toBool();
-
-            if (has_video) {
-                return "media-optical-video";
-            } else if (has_audio) {
-                return "media-optical-audio";
-            } else if (recordable) {
-                return "media-optical-recordable";
-            } else {
-                return "media-optical";
-            }
-
-        } else {
-            if (!d->parent) {
-                d->parent = new WmiDevice(parentUdi());
-            }
-            QString iconName = d->parent->icon();
-
-            if (!iconName.isEmpty()) {
-                return iconName;
-            }
-
-            return "drive-harddisk";
-        }
-
-    } else if (category=="camera") {
-        return "camera-photo";
-
-    } else if (category=="input") {
-        QStringList capabilities = property("info.capabilities").toStringList();
-
-        if (capabilities.contains("input.mouse")) {
-            return "input-mouse";
-        } else if (capabilities.contains("input.keyboard")) {
-            return "input-keyboard";
-        } else if (capabilities.contains("input.joystick")) {
-            return "input-gaming";
-        } else if (capabilities.contains("input.tablet")) {
-            return "input-tablet";
-        }
-
-    } else if (category=="portable_audio_player") {
-        QStringList protocols = property("portable_audio_player.access_method.protocols").toStringList();
-
-        if (protocols.contains("ipod")) {
-            return "multimedia-player-apple-ipod";
-        } else {
-            return "multimedia-player";
-        }
-    } else if (category=="battery") {
-        return "battery";
-    } else if (category=="processor") {
-        return "cpu"; // FIXME: Doesn't follow icon spec
-    } else if (category=="video4linux") {
-        return "camera-web";
+    QString propertyName;
+    switch(type()){
+    case Solid::DeviceInterface::Processor:
+        propertyName = "cpu";
+        break;
+    case Solid::DeviceInterface::OpticalDisc:
+    {
+        WmiDevice dev(udi());
+        OpticalDisc disk(&dev);
+        if(disk.availableContent() | Solid::OpticalDisc::Audio)//no other are recognized yet
+            propertyName = "media-optical-audio";
+        else
+            propertyName = "drive-optical";
+        
+        break;
     }
-
-    return QString();
+    case Solid::DeviceInterface::Battery:
+        propertyName = "battery";
+        break;
+    case Solid::DeviceInterface::StorageAccess:
+    case Solid::DeviceInterface::StorageVolume:
+    {
+        WmiDevice parent(parentUdi());
+        Storage storage(&parent);
+        if(storage.bus() == Solid::StorageDrive::Usb)
+            propertyName = "drive-removable-media-usb-pendrive";
+        else
+            propertyName = "drive-harddisk";
+    }
+        break;
+    }
+    return propertyName;
 }
 
 QStringList WmiDevice::emblems() const
@@ -590,20 +459,118 @@ QStringList WmiDevice::emblems() const
 
 QString WmiDevice::description() const
 {
-    return product(); // TODO
+    switch(type()){
+        case Solid::DeviceInterface::OpticalDisc:
+            return property("VolumeName").toString();
+        case Solid::DeviceInterface::AcAdapter:
+        return QObject::tr("A/C Adapter");
+        case Solid::DeviceInterface::Battery:
+        {
+            WmiDevice dev(udi());
+            Battery bat(&dev);
+            return QObject::tr("%1 Battery", "%1 is battery technology").arg(bat.batteryTechnology());
+        }
+        default:
+            return product();
+    }
 }
+
 
 QVariant WmiDevice::property(const QString &key) const
 {
     WmiQuery::Item item = d->sendQuery();
 
-    QVariant result = item.getAllProperties()[key];
+    QVariant result = item.getProperty(key);
 //    qDebug()<<"property"<<key<<result;
     return result;
 }
 
 const Solid::DeviceInterface::Type WmiDevice::type() const{
     return d->m_type;
+}
+
+/**
+ * @brief WmiDevice::win32DiskPartitionByDeviceIndex
+ * @param deviceID something like "\\.\PHYSICALDRIVE0"
+ * @return
+ */
+WmiQuery::Item WmiDevice::win32DiskPartitionByDeviceIndex(const QString &deviceID){
+    WmiQuery::Item result;
+    QString id = deviceID;
+    QString query("ASSOCIATORS OF {Win32_DiskDrive.DeviceID='"+ id +"'} WHERE AssocClass = Win32_DiskDriveToDiskPartition");
+    WmiQuery::ItemList items = WmiQuery::instance().sendQuery(query);
+    if(items.length()>0){
+        result = items[0];
+    }
+    return result;
+}
+
+/**
+ * @brief WmiDevice::win32DiskDriveByDiskPartitionID
+ * @param deviceID something like "disk #1, partition #0"
+ * @return
+ */
+
+WmiQuery::Item WmiDevice::win32DiskDriveByDiskPartitionID(const QString &deviceID){
+    WmiQuery::Item result;
+    QString id = deviceID;
+    QString query("ASSOCIATORS OF {Win32_DiskPartition.DeviceID='"+ id +"'} WHERE AssocClass = Win32_DiskDriveToDiskPartition");
+    WmiQuery::ItemList items = WmiQuery::instance().sendQuery(query);
+    if(items.length()>0){
+        result = items[0];
+    }
+    return result;
+}
+
+/**
+ * @brief WmiDevice::win32LogicalDiskByDiskPartitionID
+ * @param deviceID something like "disk #1, partition #0"
+ * @return
+ */
+
+WmiQuery::Item WmiDevice::win32LogicalDiskByDiskPartitionID(const QString &deviceID){
+    WmiQuery::Item result;
+    QString id = deviceID;
+    QString query("ASSOCIATORS OF {Win32_DiskPartition.DeviceID='" + id + "'} WHERE AssocClass = Win32_LogicalDiskToPartition");
+    WmiQuery::ItemList items = WmiQuery::instance().sendQuery(query);
+        if(items.length()>0){
+            result = items[0];
+        }
+    return result;
+}
+
+/**
+ * @brief WmiDevice::win32DiskPartitionByDriveLetter
+ * @param driveLetter something lik "D:"
+ * @return
+ */
+
+WmiQuery::Item WmiDevice::win32DiskPartitionByDriveLetter(const QString &driveLetter){
+    WmiQuery::Item result;
+    QString id = driveLetter;
+    QString query("ASSOCIATORS OF {Win32_LogicalDisk.DeviceID='" + id + "'} WHERE AssocClass = Win32_LogicalDiskToPartition");
+    WmiQuery::ItemList items = WmiQuery::instance().sendQuery(query);
+        if(items.length()>0){
+            result = items[0];
+        }
+    return result;
+}
+
+/**
+ * @brief WmiDevice::win32LogicalDiskByDriveLetter
+ * @param driveLetter something lik "D:"
+ * @return
+ */
+
+WmiQuery::Item WmiDevice::win32LogicalDiskByDriveLetter(const QString &driveLetter){
+    WmiQuery::Item result;
+    QString id = driveLetter;
+    QString query("SELECT * FROM Win32_LogicalDisk WHERE DeviceID='"+id+"'");
+    WmiQuery::ItemList items = WmiQuery::instance().sendQuery(query);
+        if(items.length()>0){
+            result = items[0];
+        }
+    return result;
 }
 
 QMap<QString, QVariant> WmiDevice::allProperties() const

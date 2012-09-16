@@ -24,6 +24,7 @@
 
 #define INSIDE_WMIQUERY
 #include "wmiquery.h"
+#include "wmimanager.h"
 
 #ifdef _DEBUG
 # pragma comment(lib, "comsuppwd.lib")
@@ -42,6 +43,7 @@
 #include <QtCore/QVariant>
 #include <QtCore/QList>
 #include <QtCore/QStringList>
+#include <QtCore/QCoreApplication>
 
 //needed for mingw
 inline OLECHAR* SysAllocString(const QString &s){
@@ -50,6 +52,7 @@ inline OLECHAR* SysAllocString(const QString &s){
 }
 
 using namespace Solid::Backends::Wmi;
+
 
 QString bstrToQString(BSTR bstr)
 {
@@ -60,7 +63,7 @@ QString bstrToQString(BSTR bstr)
 
 QVariant WmiQuery::Item::msVariantToQVariant(VARIANT msVariant, CIMTYPE variantType)
 {
-    QVariant returnVariant;
+    QVariant returnVariant(QVariant::Invalid);
     if(msVariant.vt == VT_NULL){
         return QVariant(QVariant::String);
     }
@@ -126,34 +129,29 @@ QVariant WmiQuery::Item::msVariantToQVariant(VARIANT msVariant, CIMTYPE variantT
 QVariant WmiQuery::Item::getProperty(BSTR bstrProp) const
 {
     QVariant result;
+    if(m_p == NULL)
+        return result;
     VARIANT vtProp;
     CIMTYPE variantType;
     HRESULT hr = m_p->Get(bstrProp, 0, &vtProp, &variantType, 0);
     if (SUCCEEDED(hr)) {
         result = msVariantToQVariant(vtProp,variantType);
-    }/*else{
-        qWarning()<<"Querying "<<property<<"failed";
-    }*/
+    }else{
+        QString className = getProperty(L"__CLASS").toString();
+        QString qprop = bstrToQString(bstrProp);
+        qFatal("\r\n--------------------------------------------------------------\r\n"
+               "Error: Property: %s not found in %s\r\n"
+               "--------------------------------------------------------------\r\n",qPrintable(qprop),qPrintable(className));
+    }
     return result;
 }
 QVariant WmiQuery::Item::getProperty(const QString &property) const
 {
-    //    qDebug() << "start property:" << property;
     QVariant result;
-    QString prop = property;
-    if (property == "voule.ignore")
-        return "false";
-    else if(property == "block.storage_device")
-        return "true";
-    else if (property == "volume.is_mounted")
-        return "true";
-    // todo check first if property is available
-
     BSTR bstrProp;
-    bstrProp = ::SysAllocString(prop);
+    bstrProp = ::SysAllocString(property);
     result = getProperty(bstrProp);
     ::SysFreeString(bstrProp);
-    //    qDebug() << "Querying "<<property<<"end result:" << result;
     return result;
 }
 
@@ -179,47 +177,67 @@ QVariantMap WmiQuery::Item::getAllProperties()
             qWarning()<<"Querying all failed";
         }
         SafeArrayDestroy( psaNames);
-        //        qDebug() << "Querying all: "<< m_properies;
     }
     return m_properies;
 }
 
-WmiQuery::Item::Item(IWbemClassObject *p) : m_p(p), m_int(new QAtomicInt)
+WmiQuery::Item::Item()
+    :m_p(NULL)
 {
-    m_int->ref();
 }
 
-WmiQuery::Item::Item(const Item& other) : m_p(other.m_p), m_int(other.m_int)
+WmiQuery::Item::Item(IWbemClassObject *p) : m_p(p)
 {
-    m_int->ref();
+    if(m_p != NULL)
+        m_p->AddRef();
+}
+
+WmiQuery::Item::Item(const Item& other) : m_p(other.m_p)
+{
+    if(m_p != NULL)
+        m_p->AddRef();
 }
 
 WmiQuery::Item& WmiQuery::Item::operator=(const Item& other)
 {
-    m_p = other.m_p;
-    m_int = other.m_int;
-    m_int->ref();
+    if(m_p != NULL){
+        m_p->Release();
+        m_p = NULL;
+    }
+    if(other.m_p != NULL){
+        m_p = other.m_p;
+        m_p->AddRef();
+    }
     return *this;
 }
 
 WmiQuery::Item::~Item()
 {
-    if(!m_int->deref()) {
+    if(m_p != NULL &&
+            !(qApp->closingDown() || WmiQuery::instance().m_bNeedUninit))//this means we are in a QApplication, so qt already called CoUninitialize and all COM references are all ready freed
         m_p->Release();
-    }
+}
+
+IWbemClassObject* WmiQuery::Item::data() const
+{
+    if(m_p != NULL)
+        m_p->AddRef();
+    return m_p;
+}
+
+bool WmiQuery::Item::isNull() const
+{
+    return m_p == NULL;
 }
 
 WmiQuery::WmiQuery()
     : m_failed(false)
     , pLoc(0)
     , pSvc(0)
-    , pEnumerator(NULL)
 {
-    //does this all look hacky?  yes...but it came straight from the MSDN example...
-
     HRESULT hres;
 
-    hres =  CoInitialize(0);
+    hres =  CoInitializeEx(0,COINIT_MULTITHREADED);
     if( FAILED(hres) && hres != S_FALSE && hres != RPC_E_CHANGED_MODE )
     {
         qCritical() << "Failed to initialize COM library.  Error code = 0x" << hex << quint32(hres) << endl;
@@ -286,15 +304,24 @@ WmiQuery::~WmiQuery()
 {
     if( m_failed )
         return; // already cleaned up properly
-    /* This does crash because someone else already called
-   CoUninitialize()... :(
     if( pSvc )
       pSvc->Release();
     if( pLoc )
       pLoc->Release();
     if( m_bNeedUninit )
       CoUninitialize();
-*/
+}
+
+void WmiQuery::addDeviceListeners(WmiManager::WmiEventSink *sink){
+    if(m_failed)
+        return;
+    BSTR bstrQuery;
+    bstrQuery = ::SysAllocString(sink->query());
+    HRESULT hr = pSvc->ExecNotificationQueryAsync(L"WQL",bstrQuery,0, NULL,sink);
+    ::SysFreeString(bstrQuery);
+    if(FAILED(hr)){
+        qWarning()<<"WmiQuery::addDeviceListeners "<<sink->query()<<" failed!";
+    }
 }
 
 WmiQuery::ItemList WmiQuery::sendQuery( const QString &wql )
@@ -310,6 +337,7 @@ WmiQuery::ItemList WmiQuery::sendQuery( const QString &wql )
 
     HRESULT hres;
 
+    IEnumWbemClassObject* pEnumerator = NULL;
     BSTR bstrQuery;
     bstrQuery = ::SysAllocString(wql);
     hres = pSvc->ExecQuery( L"WQL",bstrQuery ,
@@ -334,14 +362,17 @@ WmiQuery::ItemList WmiQuery::sendQuery( const QString &wql )
 
             // pclsObj will be released on destruction of Item
             retList.append( Item( pclsObj ) );
+            pclsObj->Release();
         }
-        if( pEnumerator ) pEnumerator->Release();
-        else qDebug() << "failed to release enumerator!";
+        if( pEnumerator )
+            pEnumerator->Release();
+        else
+            qDebug() << "failed to release enumerator!";
     }
-    //    if(retList.size()== 0)
-    //        qDebug()<<"querying"<<wql<<"returned empty list";
-    //    else
-    //        qDebug()<<"Feteched"<<retList.size()<<"items";
+//        if(retList.size()== 0)
+//            qDebug()<<"querying"<<wql<<"returned empty list";
+//        else
+//            qDebug()<<"Feteched"<<retList.size()<<"items";
     return retList;
 }
 

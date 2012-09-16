@@ -433,34 +433,46 @@ bool RegExpObjectImp::implementsConstruct() const
 
 RegExp* RegExpObjectImp::makeEngine(ExecState *exec, const UString &p, JSValue *flagsInput)
 {
-  UString flags = flagsInput->isUndefined() ? UString("") : flagsInput->toString(exec);
+  int reflags = RegExp::None;
 
-  // Check for validity of flags
-  for (int pos = 0; pos < flags.size(); ++pos) {
-    switch (flags[pos].unicode()) {
-    case 'g':
-    case 'i':
-    case 'm':
-      break;
-    default: {
-        throwError(exec, SyntaxError,
-                   "Invalid regular expression flags", 1, -1, "<regexp>");
-        return 0;
+  if (!flagsInput->isUndefined()) {
+    const UString flags = flagsInput->toString(exec);
+
+    // Check flags
+    for (int pos = 0; pos < flags.size(); ++pos) {
+      switch (flags[pos].unicode()) {
+      case 'g':
+        if (reflags & RegExp::Global) {
+          throwError(exec, SyntaxError,
+                     "Regular expression flag 'g' given twice", 1, -1, "<regexp>");
+          return 0;
+        }
+        reflags |= RegExp::Global;
+        break;
+      case 'i':
+        if (reflags & RegExp::IgnoreCase) {
+          throwError(exec, SyntaxError,
+                     "Regular expression flag 'i' given twice", 1, -1, "<regexp>");
+          return 0;
+        }
+        reflags |= RegExp::IgnoreCase;
+        break;
+      case 'm':
+        if (reflags & RegExp::Multiline) {
+          throwError(exec, SyntaxError,
+                     "Regular expression flag 'm' given twice", 1, -1, "<regexp>");
+          return 0;
+        }
+        reflags |= RegExp::Multiline;
+        break;
+      default: {
+          throwError(exec, SyntaxError,
+                     "Invalid regular expression flags", 1, -1, "<regexp>");
+          return 0;
+        }
       }
     }
   }
-
-  bool global = (flags.find("g") >= 0);
-  bool ignoreCase = (flags.find("i") >= 0);
-  bool multiline = (flags.find("m") >= 0);
-
-  int reflags = RegExp::None;
-  if (global)
-      reflags |= RegExp::Global;
-  if (ignoreCase)
-      reflags |= RegExp::IgnoreCase;
-  if (multiline)
-      reflags |= RegExp::Multiline;
 
   RegExp *re = new RegExp(p, reflags);
   if (!re->isValid()) {

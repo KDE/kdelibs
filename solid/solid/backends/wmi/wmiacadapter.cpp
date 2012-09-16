@@ -25,8 +25,8 @@ using namespace Solid::Backends::Wmi;
 AcAdapter::AcAdapter(WmiDevice *device)
     : DeviceInterface(device)
 {
-    connect(device, SIGNAL(propertyChanged(QMap<QString,int>)),
-             this, SLOT(slotPropertyChanged(QMap<QString,int>)));
+//     connect(device, SIGNAL(propertyChanged(QMap<QString,int>)),
+//              this, SLOT(slotPropertyChanged(QMap<QString,int>)));
 }
 
 AcAdapter::~AcAdapter()
@@ -36,15 +36,11 @@ AcAdapter::~AcAdapter()
 
 bool AcAdapter::isPlugged() const
 {
-    return m_device->property("ac_adapter.present").toBool();
+    return m_device->property("BatteryStatus").toUInt() == 2;
 }
 
 void AcAdapter::slotPropertyChanged(const QMap<QString,int> &changes)
 {
-    if (changes.contains("ac_adapter.present"))
-    {
-        emit plugStateChanged(isPlugged(), m_device->udi());
-    }
 }
 
 #include "backends/wmi/wmiacadapter.moc"

@@ -28,6 +28,8 @@
 #include <QtCore/QVariant>
 #include <QtCore/QStringList>
 
+#include <Wbemidl.h>
+
 namespace Solid
 {
 namespace Backends
@@ -41,6 +43,32 @@ class WmiManager : public Solid::Ifaces::DeviceManager
     Q_OBJECT
 
 public:
+
+    class WmiEventSink : public IWbemObjectSink
+    {
+    public:
+        WmiEventSink(class WmiManager* parent,const QString &query,const QList<Solid::DeviceInterface::Type> &types);
+        ~WmiEventSink();
+
+        virtual ulong STDMETHODCALLTYPE AddRef();
+        virtual ulong STDMETHODCALLTYPE Release();
+
+        virtual HRESULT  STDMETHODCALLTYPE QueryInterface(REFIID riid, void** ppv);
+
+        virtual HRESULT STDMETHODCALLTYPE Indicate(long lObjectCount,IWbemClassObject **apObjArray);
+
+        virtual HRESULT STDMETHODCALLTYPE SetStatus(long lFlags,HRESULT hResult,BSTR strParam,IWbemClassObject *pObjParam);
+
+        const QString& query() const;
+
+    private:
+        WmiManager *m_parent;
+        QString m_query;
+        QList<Solid::DeviceInterface::Type> m_types;
+        long m_count;
+
+    };
+
     WmiManager(QObject *parent=0);
     virtual ~WmiManager();
 
@@ -65,6 +93,7 @@ private:
     QStringList findDeviceByDeviceInterface(Solid::DeviceInterface::Type type);
 
     WmiManagerPrivate *d;
+    friend class WmiManagerPrivate;
 };
 }
 }

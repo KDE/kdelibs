@@ -1372,6 +1372,10 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
                 }
             }
         }
+        else if (QTextEdit* te = qobject_cast<QTextEdit*>(rw->widget())) {
+            if (te->verticalScrollBar()->underMouse() || te->horizontalScrollBar()->underMouse())
+                forceDefault = true;
+        }
     }
     khtml::RenderStyle* style = (r && r->style()) ? r->style() : 0;
     QCursor c;
@@ -2648,15 +2652,8 @@ bool KHTMLView::focusNodeWithAccessKey( QChar c, KHTMLView* caller )
             guard = node;
 	}
         // Set focus node on the document
-#ifdef __GNUC__
-#warning "port QFocusEvent::setReason( QFocusEvent::Shortcut ); to qt4"
-#endif
-        //QFocusEvent::setReason( QFocusEvent::Shortcut );
         m_part->xmlDocImpl()->setFocusNode(node);
-#ifdef __GNUC__
-#warning "port QFocusEvent::resetReason(); to qt4"
-#endif
-        //QFocusEvent::resetReason();
+
         if( node != NULL && node->hasOneRef()) // deleted, only held by guard
             return true;
         emit m_part->nodeActivated(Node(node));

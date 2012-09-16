@@ -63,7 +63,12 @@ static QSsl::SslProtocol qSslProtocolFromK(KTcpSocket::SslVersion sslVersion)
         return QSsl::AnyProtocol;
     }
     //does it contain any valid protocol?
-    if (!(sslVersion & (KTcpSocket::SslV2 | KTcpSocket::SslV3 | KTcpSocket::TlsV1))) {
+    KTcpSocket::SslVersions validVersions (KTcpSocket::SslV2 | KTcpSocket::SslV3 | KTcpSocket::TlsV1);
+#if QT_VERSION >= 0x040800
+    validVersions |= KTcpSocket::TlsV1SslV3;
+    validVersions |= KTcpSocket::SecureProtocols;
+#endif
+    if (!(sslVersion & validVersions)) {
         return QSsl::UnknownProtocol;
     }
 
@@ -805,6 +810,16 @@ QVariant KTcpSocket::socketOption(QAbstractSocket::SocketOption options) const
 void KTcpSocket::setSocketOption(QAbstractSocket::SocketOption options, const QVariant &value)
 {
     d->sock.setSocketOption(options, value);
+}
+
+QSslConfiguration KTcpSocket::sslConfiguration() const
+{
+    return d->sock.sslConfiguration();
+}
+
+void KTcpSocket::setSslConfiguration (const QSslConfiguration& configuration)
+{
+    d->sock.setSslConfiguration(configuration);
 }
 
 //slot

@@ -96,7 +96,7 @@ public:
 protected:
     virtual bool isRenderButton() const { return false; }
     virtual bool isEditable() const { return false; }
-	Qt::AlignmentFlag textAlignment() const;
+    Qt::Alignment textAlignment() const;
 
     virtual void setPadding();
     KdeUiProxyStyle* getProxyStyle();
@@ -459,6 +459,7 @@ public:
 
     bool selectionChanged() { return m_selectionChanged; }
     void setSelectionChanged(bool _selectionChanged) { m_selectionChanged = _selectionChanged; }
+    virtual void setStyle(RenderStyle* _style);
     virtual void updateFromElement();
     virtual short baselinePosition( bool ) const;
 
@@ -480,6 +481,7 @@ protected:
     bool m_optionsChanged;
 
     void clearItemFlags(int index, Qt::ItemFlags flags);
+    virtual bool canHaveBorder() const { return true; }
 
 protected Q_SLOTS:
     void slotSelected(int index);
@@ -527,7 +529,7 @@ public:
     { return static_cast<DOM::HTMLTextAreaElementImpl*>(RenderObject::element()); }
 
     QString text();
-    void    setText(const QString& text);
+    void setText(const QString& text);
 
     void highLightWord( unsigned int length, unsigned int pos );
 
@@ -548,6 +550,7 @@ protected:
     virtual bool canHaveBorder() const { return true; }
 
     bool scrollbarsStyled;
+    Qt::Alignment m_textAlignment;
 };
 
 // -------------------------------------------------------------------------

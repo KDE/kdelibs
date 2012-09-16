@@ -47,6 +47,9 @@ public:
     virtual QString uuid() const;
     virtual qulonglong size() const;
     virtual QString encryptedContainerUdi() const;
+
+private:
+    WmiQuery::Item m_logicalDisk;
 };
 }
 }

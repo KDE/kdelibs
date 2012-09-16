@@ -1783,6 +1783,17 @@ bool Applet::sceneEventFilter(QGraphicsItem *watched, QEvent *event)
             case QEvent::GraphicsSceneHoverEnter:
                 //kDebug() << "got hoverenterEvent" << immutability() << " " << immutability();
                 if (immutability() == Mutable) {
+                    QGraphicsWidget *pw = this;
+                    //This is for the rare case of applet in applet (systray)
+                    //if the applet is in an applet that is not a containment, don't create the handle BUG:301648
+                    while (pw = pw->parentWidget()) {
+                        if (qobject_cast<Containment *>(pw)) {
+                            break;
+                        } else if (qobject_cast<Applet *>(pw)) {
+                            return false;
+                        }
+                    }
+
                     QGraphicsSceneHoverEvent *he = static_cast<QGraphicsSceneHoverEvent*>(event);
                     if (d->handle) {
                         d->handle.data()->setHoverPos(he->pos());
@@ -1922,7 +1933,13 @@ void Applet::showConfigurationInterface()
 #ifndef PLASMA_NO_KUTILS
                 KCModuleProxy *module = new KCModuleProxy(kcm);
                 if (module->realModule()) {
+                    //preemptively load modules to prevent save() crashing on some kcms, like powerdevil ones
+                    module->load();
                     connect(module, SIGNAL(changed(bool)), dialog, SLOT(settingsModified(bool)));
+                    connect(dialog, SIGNAL(okClicked()),
+                            module->realModule(), SLOT(save()));
+                    connect(dialog, SIGNAL(applyClicked()),
+                            module->realModule(), SLOT(save()));
                     dialog->addPage(module, module->moduleInfo().moduleName(), module->moduleInfo().icon());
                     hasPages = true;
                 } else {
@@ -1934,7 +1951,12 @@ void Applet::showConfigurationInterface()
                     QString error;
                     KCModule *module = service->createInstance<KCModule>(dialog, QVariantList(), &error);
                     if (module) {
+                        module->load();
                         connect(module, SIGNAL(changed(bool)), dialog, SLOT(settingsModified(bool)));
+                        connect(dialog, SIGNAL(okClicked()),
+                                module, SLOT(save()));
+                        connect(dialog, SIGNAL(applyClicked()), 
+                                module, SLOT(save()));
                         dialog->addPage(module, service->name(), service->icon());
                         hasPages = true;
                     } else {

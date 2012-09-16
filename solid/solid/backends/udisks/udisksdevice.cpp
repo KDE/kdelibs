@@ -563,6 +563,15 @@ QString UDisksDevice::icon() const
                 return iconName;
         }
 
+        // handle mounted ISOs
+        bool isLoop = prop( "DeviceIsLinuxLoop" ).toBool();
+        QString fstype = prop("IdType").toString();
+
+        if( isLoop && ( fstype == "iso9660" || fstype == "udf" ) )
+        {
+            return "media-optical";
+        }
+
         // handle media
         const QString media = prop( "DriveMedia" ).toString();
         bool isOptical = prop( "DeviceIsOpticalDisc" ).toBool();
@@ -706,6 +715,7 @@ QMap<QString, QVariant> UDisksDevice::allProperties() const
 {
     QDBusMessage call = QDBusMessage::createMethodCall(m_device->service(), m_device->path(),
                                                        "org.freedesktop.DBus.Properties", "GetAll");
+    call << m_device->interface();
     QDBusPendingReply< QVariantMap > reply = QDBusConnection::systemBus().asyncCall(call);
     reply.waitForFinished();
 

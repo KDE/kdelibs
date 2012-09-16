@@ -22,7 +22,7 @@
 #define KTCPSOCKET_H
 
 #include <QtNetwork/QSslSocket>
-//#include <QtCore/QRegExp>
+#include <QtNetwork/QSslConfiguration>
 
 #include "kdecore_export.h"
 
@@ -335,6 +335,20 @@ public:
      * @since 4.5.0
      */
     void setSocketOption(QAbstractSocket::SocketOption options, const QVariant &value);
+
+    /**
+     * Returns the socket's SSL configuration.
+     *
+     * @since 4.8.4
+     */
+    QSslConfiguration sslConfiguration() const;
+
+    /**
+     * Sets the socket's SSL configuration.
+     *
+     * @since 4.8.4
+     */
+    void setSslConfiguration(const QSslConfiguration& configuration);
 
 Q_SIGNALS:
     //from QAbstractSocket

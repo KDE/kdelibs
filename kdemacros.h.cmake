@@ -444,7 +444,7 @@
  * @ingroup KDEMacros
  *
  * The KDE_WEAK_SYMBOL macro can be used to tell the compiler that
- * a particular function should be a weak symbol (that e.g. may be overriden
+ * a particular function should be a weak symbol (that e.g. may be overridden
  * in another library, -Bdirect will not bind this symbol directly)
  */
 

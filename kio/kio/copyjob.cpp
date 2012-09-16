@@ -221,6 +221,7 @@ public:
 
     void slotStart();
     void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
+    void slotSubError(KIO::ListJob* job, KIO::ListJob *subJob);
     void addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& srcUrl, bool srcIsDir, const KUrl& currentDest);
     /**
      * Forward signal from subjob
@@ -337,6 +338,12 @@ void CopyJobPrivate::slotResultStating( KJob *job )
     if ( destinationState == DEST_NOT_STATED ) {
         if ( m_dest.isLocalFile() ) { //works for dirs as well
             QString path = m_dest.toLocalFile();
+            if (m_asMethod) {
+                // In copy-as mode, we want to check the directory to which we're
+                // copying. The target file or directory does not exist yet, which
+                // might confuse KDiskFreeSpaceInfo.
+                path = QFileInfo(path).absolutePath();
+            }
             KFileSystemType::Type fsType = KFileSystemType::fileSystemType( path );
             if ( fsType != KFileSystemType::Nfs && fsType != KFileSystemType::Smb ) {
                 m_freeSpace = KDiskFreeSpaceInfo::freeSpaceInfo( path ).available();
@@ -557,6 +564,18 @@ void CopyJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
         addCopyInfoFromUDSEntry(entry, static_cast<SimpleJob *>(job)->url(), m_bCurrentSrcIsDir, m_currentDest);
     }
 }
+
+void CopyJobPrivate::slotSubError(ListJob* job, ListJob* subJob)
+{
+	const KUrl url = subJob->url();
+	kWarning() << url << subJob->errorString();
+
+	Q_Q(CopyJob);
+
+	emit q->warning(job, subJob->errorString(), QString());
+	skip(url, true);
+}
+
 
 void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& srcUrl, bool srcIsDir, const KUrl& currentDest)
 {
@@ -849,6 +868,8 @@ void CopyJobPrivate::startListing( const KUrl & src )
     newjob->setUnrestricted(true);
     q->connect(newjob, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)),
                SLOT(slotEntries(KIO::Job*,KIO::UDSEntryList)));
+    q->connect(newjob, SIGNAL(subError(KIO::ListJob*,KIO::ListJob*)),
+	       SLOT(slotSubError(KIO::ListJob*,KIO::ListJob*)));
     q->addSubjob( newjob );
 }
 

@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2008-2010 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2008-2012 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -450,28 +450,20 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags sparqlFlags ) const
     QueryBuilderData qbd( d.constData(), sparqlFlags );
 
 
-    // We restrict results to user visible types only. There is no need for this with file queries as normally all files are visible.
     //
-    // Here we use an optimizations:
-    // The storage service creates "nao:userVisible 1" entries for all visible resources. This contains two optimizations:
-    // - We use an integer instead of a boolean because Virtuoso does not support booleans and, thus, Soprano converts
-    //   booleans into a fake type which is stored as a string. This makes comparision much slower.
-    // - Instead of using crappy inference via "?r a ?t . ?t nao:userVisible true" we can directly check the resources.
-    // - Instead of restricting the visibility to 1 we trick the Virtuoso query optimizer so it won't try to use the visibility
-    //   as priority. We do this with a filter that does not test for equality. Using "?r nao:userVisible 1" has a drastic
-    //   performance impact which the filter has not.
+    // We restrict results to user visible types only. There is no need for this with file queries as normally all files are visible.
     //
     QString userVisibilityRestriction;
     if( !(queryFlags()&NoResultRestrictions) && !d->m_isFileQuery ) {
-        userVisibilityRestriction = QString::fromLatin1("?r %1 %2 . FILTER(%2>0) . ")
-                .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::userVisible()),
-                     qbd.uniqueVarName());
+        userVisibilityRestriction = QString::fromLatin1("FILTER EXISTS { ?r a [ %1 %2 ] . } . ")
+                                    .arg(Soprano::Node::resourceToN3(Soprano::Vocabulary::NAO::userVisible()),
+                                         Soprano::Node::literalToN3(Soprano::LiteralValue(true)));
     }
 
 
     QString termGraphPattern;
     if( term.isValid() ) {
-        termGraphPattern = term.d_ptr->toSparqlGraphPattern( QLatin1String( "?r" ), 0, &qbd );
+        termGraphPattern = term.d_ptr->toSparqlGraphPattern( QLatin1String( "?r" ), 0, userVisibilityRestriction, &qbd );
         if( termGraphPattern.isEmpty() ) {
             kDebug() << "Got no valid SPARQL pattern from" << term;
             return QString();
@@ -489,9 +481,8 @@ QString Nepomuk::Query::Query::toSparqlQuery( SparqlFlags sparqlFlags ) const
     }
 
     // build the core of the query - the part that never changes
-    QString queryBase = QString::fromLatin1( "where { %1 %2 }" )
-                        .arg( termGraphPattern,
-                              userVisibilityRestriction );
+    QString queryBase = QString::fromLatin1( "where { %1 }" )
+                        .arg( termGraphPattern );
 
     // build the final query
     QString query;

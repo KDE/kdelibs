@@ -223,16 +223,7 @@ bool EXRHandler::canRead(QIODevice *device)
         return false;
     }
 
-    qint64 oldPos = device->pos();
-
-    const QByteArray head = device->readLine(4);
-    int readBytes = head.size();
-    if (device->isSequential()) {
-        while (readBytes > 0)
-            device->ungetChar(head[readBytes-- - 1]);
-    } else {
-        device->seek(oldPos);
-    }
+    const QByteArray head = device->peek(4);
 
     return Imf::isImfMagic( head.data() );
 }

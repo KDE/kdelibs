@@ -107,6 +107,7 @@ install( FILES
   KCheckableProxyModel
   KCmdLineArgs
   KCmdLineOptions
+  KCodecAction
   KCodecs
   KColor
   KColorButton
@@ -777,6 +778,7 @@ install( FILES
   KParts/HistoryProvider
   KParts/HtmlExtension
   KParts/LiveConnectExtension
+  KParts/ListingExtension
   KParts/MainWindow
   KParts/OpenUrlEvent
   KParts/Part

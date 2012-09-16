@@ -313,7 +313,7 @@ KRunMX2::subst(int option, const KUrl &url, QStringList &ret)
         break;
     case 'v':
         if (url.isLocalFile() && QFile::exists(url.toLocalFile())) {
-            ret << KDesktopFile(url.path()).desktopGroup().readEntry("Dev");
+            ret << KDesktopFile(url.toLocalFile()).desktopGroup().readEntry("Dev");
         }
         break;
     }
@@ -373,7 +373,9 @@ static QStringList supportedProtocols(const KService& _service)
         if (supportedProtocols.isEmpty()) {
             // compat mode: assume KIO if not set and it's a KDE app (or a KDE service)
             const QStringList categories = _service.property("Categories").toStringList();
-            if (categories.contains("KDE") || !_service.isApplication()) {
+            if (categories.contains("KDE")
+                    || !_service.isApplication()
+                    || _service.entryPath().isEmpty() /*temp service*/) {
                 supportedProtocols.append("KIO");
             }
             else { // if no KDE app, be a bit over-generic
@@ -1159,7 +1161,7 @@ void KRun::init()
     } else if (d->m_bIsLocalFile) {
         if (d->m_mode == 0) {
             KDE_struct_stat buff;
-            if (KDE::stat(d->m_strURL.path(), &buff) == -1) {
+            if (KDE::stat(d->m_strURL.toLocalFile(), &buff) == -1) {
                 d->m_showingDialog = true;
                 KMessageBoxWrapper::error(d->m_window,
                                           i18n("<qt>Unable to run the command specified. "
@@ -1174,15 +1176,25 @@ void KRun::init()
             d->m_mode = buff.st_mode;
         }
 
-        KMimeType::Ptr mime = KMimeType::findByUrl(d->m_strURL, d->m_mode, d->m_bIsLocalFile);
+        KMimeType::Ptr mime = KMimeType::findByUrl(d->m_strURL, d->m_mode, true /*local*/);
         assert(mime);
         kDebug(7010) << "MIME TYPE is " << mime->name();
-        if (!d->m_externalBrowser.isEmpty() && (
-               mime->is(QLatin1String("text/html")) ||
-               mime->is(QLatin1String("application/xml")))) {
+        if (!d->m_externalBrowser.isEmpty() &&
+            (mime->is(QLatin1String("text/html")) ||
+             mime->is(QLatin1String("application/xhtml+xml")))) {
             if (d->runExecutable(d->m_externalBrowser)) {
                 return;
             }
+        } else if (mime->isDefault() && !QFileInfo(d->m_strURL.toLocalFile()).isReadable()) {
+            // Unknown mimetype because the file is unreadable, no point in showing an open-with dialog (#261002)
+            const QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->m_strURL.prettyUrl());
+            d->m_showingDialog = true;
+            KMessageBoxWrapper::error(d->m_window, msg);
+            d->m_showingDialog = false;
+            d->m_bFault = true;
+            d->m_bFinished = true;
+            d->startTimer();
+            return;
         } else {
             mimeTypeDetermined(mime->name());
             return;

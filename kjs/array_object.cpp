@@ -172,18 +172,10 @@ JSValue* ArrayProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, cons
         }
 
         if (id == ToString || id == Join || fallback) {
-            if (element->isObject()) {
-                JSObject *o = static_cast<JSObject *>(element);
-                JSValue *conversionFunction = o->get(exec, exec->propertyNames().toString);
-                if (conversionFunction->isObject() && static_cast<JSObject *>(conversionFunction)->implementsCall()) {
-                    str += static_cast<JSObject *>(conversionFunction)->call(exec, o, List())->toString(exec);
-                } else {
-                    visitedElems.remove(thisObj);
-                    return throwError(exec, RangeError, "Cannot convert " + o->className() + " object to string");
-                }
-            } else {
-                str += element->toString(exec);
-            }
+            str += element->toString(exec);
+            if (exec->hadException())
+                break;
+
             if (str.isNull()) {
                 JSObject* error = Error::create(exec, GeneralError, "Out of memory");
                 exec->setException(error);
@@ -439,7 +431,7 @@ JSValue* ArrayProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, cons
       }
       else
       {
-        for ( unsigned int k = length - deleteCount; (int)k > begin; --k )
+        for ( unsigned int k = length - deleteCount; k > begin; --k )
         {
           if (JSValue *obj = getProperty(exec, thisObj, k + deleteCount - 1))
             thisObj->put(exec, k + additionalArgs - 1, obj);

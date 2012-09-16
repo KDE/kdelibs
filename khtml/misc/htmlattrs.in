@@ -136,6 +136,7 @@ onchange
 onclick
 ondblclick
 onfocus
+onhashchange
 onkeydown
 onkeypress
 onkeyup

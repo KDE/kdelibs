@@ -59,6 +59,7 @@ KDEUI_UNIT_TESTS(
   kuniqueapptest
   kwordwraptest
   kapplication_unittest
+  kstartupinfo_unittest
   kcolorutilstest
   kxmlgui_unittest
   ktimezonewidget_unittest
@@ -115,6 +116,7 @@ KDEUI_EXECUTABLE_TESTS(
   kmainwindowrestoretest
   kmessageboxtest
   kmessagetest
+  kmessagewidgettest
   kmodifierkeyinfotest
   knewpassworddialogtest
   kstatusnotifieritemtest
@@ -147,6 +149,7 @@ KDEUI_EXECUTABLE_TESTS(
   kxmlguiwindowtest
   testqtargs
   kpixmapsequenceoverlaypaintertest
+  kmanagerselectiontest
 )
 
 if (NOT KDE_NO_DEPRECATED)
@@ -160,7 +163,6 @@ if (Q_WS_X11)
 KDEUI_EXECUTABLE_TESTS(
  fixx11h_test
  fixx11h_test2
- kmanagerselectiontest
  kxerrorhandlertest
 )
 target_link_libraries(kmanagerselectiontest ${X11_X11_LIB})

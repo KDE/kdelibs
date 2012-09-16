@@ -34,7 +34,7 @@ namespace KJS {
     static const ClassInfo info;
   };
   
-  class ErrorPrototype : public JSObject {
+  class ErrorPrototype : public ErrorInstance {
   public:
     ErrorPrototype(ExecState *exec,
                       ObjectPrototype *objectProto,

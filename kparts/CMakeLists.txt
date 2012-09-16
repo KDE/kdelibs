@@ -34,6 +34,8 @@ set(kparts_LIB_SRCS
    # Private classes from libkactivities
    private/libkactivities/manager_p.cpp
    private/libkactivities/resourceinstance.cpp
+
+   listingextension.cpp
    )
 
 
@@ -68,5 +70,5 @@ install( FILES kparts_export.h part.h plugin.h partmanager.h mainwindow.h event.
          browserextension.h factory.h historyprovider.h browserinterface.h genericfactory.h
          componentfactory.h browserrun.h statusbarextension.h browseropenorsavequestion.h
          scriptableextension.h textextension.h htmlextension.h fileinfoextension.h
+         listingextension.h
          DESTINATION  ${INCLUDE_INSTALL_DIR}/kparts COMPONENT Devel )
-

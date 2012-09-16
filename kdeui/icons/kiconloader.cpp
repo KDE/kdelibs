@@ -452,6 +452,7 @@ KIconLoader::KIconLoader(const KComponentData &componentData, QObject* parent)
 
 void KIconLoader::reconfigure( const QString& _appname, KStandardDirs *_dirs )
 {
+    d->mIconCache->clear();
     delete d;
     d = new KIconLoaderPrivate(this);
     d->init( _appname, _dirs );
@@ -1219,17 +1220,13 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     bool iconWasUnknown = false;
     K3Icon icon;
 
-    if (d->findCachedPixmapWithPath(key, pix, icon.path)) {
+    // icon.path would be empty for "unknown" icons, which should be searched for
+    // anew each time.
+    if (d->findCachedPixmapWithPath(key, pix, icon.path) && !icon.path.isEmpty()) {
         if (path_store) {
             *path_store = icon.path;
         }
 
-        // We cache the pixmap for the event of trying to find an unknown icon
-        // with canReturnNull set to false, but if we *can* return null then
-        // we should do so when necessary.
-        if (canReturnNull && icon.path.isEmpty()) {
-            return QPixmap();
-        }
         return pix;
     }
 

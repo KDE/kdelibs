@@ -89,7 +89,7 @@ void RenderSVGContainer::destroyLeftoverChildren()
     }*/
 }
 
-RenderObject* RenderSVGContainer::removeChildNode(RenderObject* oldChild, bool fullRemove)
+RenderObject* RenderSVGContainer::removeChildNode(RenderObject* oldChild)
 {
     ASSERT(oldChild->parent() == this);
     bool inCleanup = documentBeingDestroyed();
@@ -98,7 +98,7 @@ RenderObject* RenderSVGContainer::removeChildNode(RenderObject* oldChild, bool f
     // that a positioned child got yanked).  We also repaint, so that the area exposed when the child
     // disappears gets repainted properly.
     
-    if (!inCleanup && fullRemove) {
+    if (!inCleanup) {
         oldChild->setNeedsLayoutAndMinMaxRecalc(); // Dirty the containing block chain
         oldChild->setNeedsLayout( false ); // The child itself does not need to layout - it's going away.
         oldChild->repaint();
@@ -114,7 +114,7 @@ RenderObject* RenderSVGContainer::removeChildNode(RenderObject* oldChild, bool f
         }
     }
 
-    if (!inCleanup && fullRemove) {
+    if (!inCleanup) {
         // If oldChild is the start or end of the selection, then clear the selection to
         // avoid problems of invalid pointers.
         // FIXME: The SelectionController should be responsible for this when it
@@ -146,7 +146,7 @@ RenderObject* RenderSVGContainer::removeChildNode(RenderObject* oldChild, bool f
     return oldChild;
 }
 
-void RenderSVGContainer::appendChildNode(RenderObject* newChild, bool)
+void RenderSVGContainer::appendChildNode(RenderObject* newChild)
 {
     ASSERT(!newChild->parent());
     /*khtml vtokarevASSERT(newChild->element()->isSVGElement());*/
@@ -171,7 +171,7 @@ void RenderSVGContainer::appendChildNode(RenderObject* newChild, bool)
         document()->axObjectCache()->childrenChanged(this);*/
 }
 
-void RenderSVGContainer::insertChildNode(RenderObject* child, RenderObject* beforeChild, bool)
+void RenderSVGContainer::insertChildNode(RenderObject* child, RenderObject* beforeChild)
 {
     if (!beforeChild) {
         appendChildNode(child);
@@ -217,23 +217,21 @@ AffineTransform RenderSVGContainer::localTransform() const
     return m_localTransform;
 }
 
-bool RenderSVGContainer::requiresLayer()
+bool RenderSVGContainer::requiresLayer() const
 {
     // Only allow an <svg> element to generate a layer when it's positioned in a non-SVG context
     return false;
 }
 
-short RenderSVGContainer::lineHeight(bool b, bool isRootLineBox) const
+short RenderSVGContainer::lineHeight(bool b) const
 {
     Q_UNUSED(b);
-    Q_UNUSED(isRootLineBox);
     return height() + marginTop() + marginBottom();
 }
 
-short RenderSVGContainer::baselinePosition(bool b, bool isRootLineBox) const
+short RenderSVGContainer::baselinePosition(bool b) const
 {
     Q_UNUSED(b);
-    Q_UNUSED(isRootLineBox);
     return height() + marginTop() + marginBottom();
 }
 

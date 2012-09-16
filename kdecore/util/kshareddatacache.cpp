@@ -44,13 +44,30 @@
 
 /// The maximum number of probes to make while searching for a bucket in
 /// the presence of collisions in the cache index table.
-static const int MAX_PROBE_COUNT = 6;
+static const uint MAX_PROBE_COUNT = 6;
 
 int ksdcArea()
 {
     static int s_ksdcArea = KDebug::registerArea("KSharedDataCache", false);
     return s_ksdcArea;
 }
+
+/**
+ * A very simple class whose only purpose is to be thrown as an exception from
+ * underlying code to indicate that the shared cache is apparently corrupt.
+ * This must be caught by top-level library code and used to unlink the cache
+ * in this circumstance.
+ *
+ * @internal
+ */
+class KSDCCorrupted
+{
+    public:
+    KSDCCorrupted()
+    {
+        kError(ksdcArea()) << "Error detected in cache, re-generating";
+    }
+};
 
 //-----------------------------------------------------------------------------
 // MurmurHashAligned, by Austin Appleby
@@ -239,10 +256,28 @@ T *offsetAs(void *const base, qint32 offset)
  * @param a Numerator, should be ≥ 0.
  * @param b Denominator, should be > 0.
  */
-template<class T>
-T intCeil(T a, T b)
+unsigned intCeil(unsigned a, unsigned b)
 {
+    if (KDE_ISUNLIKELY(b == 0)) {
+        throw KSDCCorrupted();
+    }
+
     return (a + b - 1) / b;
+}
+
+/**
+ * @return number of set bits in @p value (see also "Hamming weight")
+ */
+static unsigned countSetBits(unsigned value)
+{
+    // K&R / Wegner's algorithm used. GCC supports __builtin_popcount but we
+    // expect there to always be only 1 bit set so this should be perhaps a bit
+    // faster 99.9% of the time.
+    unsigned count = 0;
+    for (count = 0; value != 0; count++) {
+        value &= (value - 1); // Clears least-significant set bit.
+    }
+    return count;
 }
 
 typedef qint32 pageID;
@@ -361,6 +396,7 @@ struct SharedMemory
         }
 
         // Bound page size between 512 bytes and 256 KiB.
+        // If this is adjusted, also alter validSizeMask in cachePageSize
         log2OfSize = qBound(9, log2OfSize, 18);
 
         return (1 << log2OfSize);
@@ -369,7 +405,16 @@ struct SharedMemory
     // Returns pageSize in unsigned format.
     unsigned cachePageSize() const
     {
-        return static_cast<unsigned>(pageSize);
+        unsigned _pageSize = static_cast<unsigned>(pageSize);
+        // bits 9-18 may be set.
+        static const unsigned validSizeMask = 0x7FE00u;
+
+        // Check for page sizes that are not a power-of-2, or are too low/high.
+        if (KDE_ISUNLIKELY(countSetBits(_pageSize) != 1 || (_pageSize & ~validSizeMask))) {
+            throw KSDCCorrupted();
+        }
+
+        return _pageSize;
     }
 
     /**
@@ -398,7 +443,7 @@ struct SharedMemory
         }
 
         shmLock.type = findBestSharedLock();
-        if (static_cast<int>(shmLock.type) == 0) {
+        if (shmLock.type == LOCKTYPE_INVALID) {
             kError(ksdcArea()) << "Unable to find an appropriate lock to guard the shared cache. "
                         << "This *should* be essentially impossible. :(";
             return false;
@@ -483,7 +528,7 @@ struct SharedMemory
 
     const void *page(pageID at) const
     {
-        if (static_cast<int>(at) >= static_cast<int>(pageTableSize())) {
+        if (static_cast<uint>(at) >= pageTableSize()) {
             return 0;
         }
 
@@ -540,12 +585,16 @@ struct SharedMemory
      */
     pageID findEmptyPages(uint pagesNeeded) const
     {
+        if (KDE_ISUNLIKELY(pagesNeeded > pageTableSize())) {
+            return pageTableSize();
+        }
+
         // Loop through the page table, find the first empty page, and just
         // makes sure that there are enough free pages.
         const PageTableEntry *table = pageTable();
         uint contiguousPagesFound = 0;
         pageID base = 0;
-        for (pageID i = 0; i < static_cast<int>(pageTableSize() - pagesNeeded + 1); ++i) {
+        for (pageID i = 0; i < static_cast<int>(pageTableSize()); ++i) {
             if (table[i].index < 0) {
                 if (contiguousPagesFound == 0) {
                     base = i;
@@ -627,6 +676,10 @@ struct SharedMemory
         pageID idLimit = static_cast<pageID>(pageTableSize());
         PageTableEntry *pages = pageTable();
 
+        if (KDE_ISUNLIKELY(!pages || idLimit <= 0)) {
+            throw KSDCCorrupted();
+        }
+
         // Skip used pages
         while (currentPage < idLimit && pages[currentPage].index >= 0) {
             ++currentPage;
@@ -648,15 +701,26 @@ struct SharedMemory
 
             // Found an entry, move it.
             qint32 affectedIndex = pages[currentPage].index;
-            Q_ASSERT(affectedIndex >= 0);
-            Q_ASSERT(indexTable()[affectedIndex].firstPage == currentPage);
+            if (KDE_ISUNLIKELY(affectedIndex < 0 ||
+                        affectedIndex >= idLimit ||
+                        indexTable()[affectedIndex].firstPage != currentPage))
+            {
+                throw KSDCCorrupted();
+            }
 
             indexTable()[affectedIndex].firstPage = freeSpot;
 
             // Moving one page at a time guarantees we can use memcpy safely
             // (in other words, the source and destination will not overlap).
             while (currentPage < idLimit && pages[currentPage].index >= 0) {
-                ::memcpy(page(freeSpot), page(currentPage), cachePageSize());
+                const void *const sourcePage = page(currentPage);
+                void *const destinationPage = page(freeSpot);
+
+                if(KDE_ISUNLIKELY(!sourcePage || !destinationPage)) {
+                    throw KSDCCorrupted();
+                }
+
+                ::memcpy(destinationPage, sourcePage, cachePageSize());
                 pages[freeSpot].index = affectedIndex;
                 pages[currentPage].index = -1;
                 ++currentPage;
@@ -693,7 +757,7 @@ struct SharedMemory
     {
         uint keyHash = generateHash(key);
         uint position = keyHash % indexTableSize();
-        int probeNumber = 1; // See insert() for description
+        uint probeNumber = 1; // See insert() for description
 
         // Imagine 3 entries A, B, C in this logical probing chain. If B is
         // later removed then we can't find C either. So, we must keep
@@ -712,9 +776,13 @@ struct SharedMemory
             if (firstPage < 0 || static_cast<uint>(firstPage) >= pageTableSize()) {
                 return -1;
             }
-            const void *resultPage = page(firstPage);
-            const char *utf8FileName = reinterpret_cast<const char *>(resultPage);
 
+            const void *resultPage = page(firstPage);
+            if (KDE_ISUNLIKELY(!resultPage)) {
+                throw KSDCCorrupted();
+            }
+
+            const char *utf8FileName = reinterpret_cast<const char *>(resultPage);
             if (qstrncmp(utf8FileName, key.constData(), cachePageSize()) == 0) {
                 return position;
             }
@@ -742,13 +810,13 @@ struct SharedMemory
     {
         if (numberNeeded == 0) {
             kError(ksdcArea()) << "Internal error: Asked to remove exactly 0 pages for some reason.";
-            return pageTableSize();
+            throw KSDCCorrupted();
         }
 
         if (numberNeeded > pageTableSize()) {
             kError(ksdcArea()) << "Internal error: Requested more space than exists in the cache.";
             kError(ksdcArea()) << numberNeeded << "requested, " << pageTableSize() << "is the total possible.";
-            return pageTableSize();
+            throw KSDCCorrupted();
         }
 
         // If the cache free space is large enough we will defragment first
@@ -781,7 +849,7 @@ struct SharedMemory
         if (!tablePtr) {
             kError(ksdcArea()) << "Unable to allocate temporary memory for sorting the cache!";
             clearInternalTables();
-            return pageTableSize();
+            throw KSDCCorrupted();
         }
 
         // We use tablePtr to ensure the data is destroyed, but do the access
@@ -833,13 +901,11 @@ struct SharedMemory
         while (i < indexTableSize() && numberNeeded > cacheAvail) {
             int curIndex = table[i++].firstPage; // Really an index, not a page
 
-            // Removed everything, still no luck. At *this* point,
-            // pagesRemoved < numberNeeded or in other words we can't fulfill
-            // the request even if we defragment. This is really a logic error.
-            if (curIndex < 0) {
-                kError(ksdcArea()) << "Unable to remove enough used pages to allocate"
-                              << numberNeeded << "pages. In theory the cache is empty, weird.";
-                return pageTableSize();
+            // Removed everything, still no luck (or curIndex is set but too high).
+            if (curIndex < 0 || static_cast<uint>(curIndex) >= indexTableSize()) {
+                kError(ksdcArea()) << "Trying to remove index" << curIndex
+                    << "out-of-bounds for index table of size" << indexTableSize();
+                throw KSDCCorrupted();
             }
 
             kDebug(ksdcArea()) << "Removing entry of" << indexTable()[curIndex].totalItemSize
@@ -853,7 +919,7 @@ struct SharedMemory
 
         pageID result = pageTableSize();
         while (i < indexTableSize() &&
-              (result = findEmptyPages(numberNeeded)) >= static_cast<int>(pageTableSize()))
+              (static_cast<uint>(result = findEmptyPages(numberNeeded))) >= pageTableSize())
         {
             int curIndex = table[i++].firstPage;
 
@@ -861,6 +927,10 @@ struct SharedMemory
                 // One last shot.
                 defragment();
                 return findEmptyPages(numberNeeded);
+            }
+
+            if (KDE_ISUNLIKELY(static_cast<uint>(curIndex) >= indexTableSize())) {
+                throw KSDCCorrupted();
             }
 
             removeEntry(curIndex);
@@ -928,7 +998,7 @@ class KSharedDataCache::Private
         , m_mapSize(0)
         , m_defaultCacheSize(defaultCacheSize)
         , m_expectedItemSize(expectedItemSize)
-        , m_expectedType(static_cast<SharedLockId>(0))
+        , m_expectedType(LOCKTYPE_INVALID)
     {
         mapSharedMemory();
     }
@@ -1076,7 +1146,7 @@ class KSharedDataCache::Private
         //         2 means "ready"
         uint usecSleepTime = 8; // Start by sleeping for 8 microseconds
         while (shm->ready != 2) {
-            if (usecSleepTime >= (1 << 21)) {
+            if (KDE_ISUNLIKELY(usecSleepTime >= (1 << 21))) {
                 // Didn't acquire within ~8 seconds?  Assume an issue exists
                 kError(ksdcArea()) << "Unable to acquire shared lock, is the cache corrupt?";
 
@@ -1126,13 +1196,44 @@ class KSharedDataCache::Private
         mapSharedMemory();
     }
 
+    // This should be called for any memory access to shared memory. This
+    // function will verify that the bytes [base, base+accessLength) are
+    // actually mapped to d->shm. The cache itself may have incorrect cache
+    // page sizes, incorrect cache size, etc. so this function should be called
+    // despite the cache data indicating it should be safe.
+    //
+    // If the access is /not/ safe then a KSDCCorrupted exception will be
+    // thrown, so be ready to catch that.
+    void verifyProposedMemoryAccess(const void *base, unsigned accessLength) const
+    {
+        quintptr startOfAccess = reinterpret_cast<quintptr>(base);
+        quintptr startOfShm = reinterpret_cast<quintptr>(shm);
+
+        if (KDE_ISUNLIKELY(startOfAccess < startOfShm)) {
+            throw KSDCCorrupted();
+        }
+
+        quintptr endOfShm = startOfShm + m_mapSize;
+        quintptr endOfAccess = startOfAccess + accessLength;
+
+        // Check for unsigned integer wraparound, and then
+        // bounds access
+        if (KDE_ISUNLIKELY((endOfShm < startOfShm) ||
+                    (endOfAccess < startOfAccess) ||
+                    (endOfAccess > endOfShm)))
+        {
+            throw KSDCCorrupted();
+        }
+    }
+
     bool lock() const
     {
         if (KDE_ISLIKELY(shm && shm->shmLock.type == m_expectedType)) {
             return m_lock->lock();
         }
 
-        return false;
+        // No shm or wrong type --> corrupt!
+        throw KSDCCorrupted();
     }
 
     void unlock() const
@@ -1174,77 +1275,75 @@ class KSharedDataCache::Private
         public:
         CacheLocker(const Private *_d) : d(const_cast<Private *>(_d))
         {
-            if (d->shm) {
+            if (KDE_ISUNLIKELY(!d || !d->shm || !cautiousLock())) {
+                return;
+            }
+
+            uint testSize = SharedMemory::totalSize(d->shm->cacheSize, d->shm->cachePageSize());
+
+            // A while loop? Indeed, think what happens if this happens
+            // twice -- hard to debug race conditions.
+            while (testSize > d->m_mapSize) {
+                kDebug(ksdcArea()) << "Someone enlarged the cache on us,"
+                            << "attempting to match new configuration.";
+
+                // Protect against two threads accessing this same KSDC
+                // from trying to execute the following remapping at the
+                // same time.
+                QMutexLocker d_locker(&d->m_threadLock);
+                if (testSize == d->m_mapSize) {
+                    break; // Bail if the other thread already solved.
+                }
+
+                // Linux supports mremap, but it's not portable. So,
+                // drop the map and (try to) re-establish.
+                d->unlock();
+
+#ifdef KSDC_MSYNC_SUPPORTED
+                ::msync(d->shm, d->m_mapSize, MS_INVALIDATE | MS_ASYNC);
+#endif
+                ::munmap(d->shm, d->m_mapSize);
+                d->m_mapSize = 0;
+                d->shm = 0;
+
+                QFile f(d->m_cacheName);
+                if (!f.open(QFile::ReadWrite)) {
+                    kError(ksdcArea()) << "Unable to re-open cache, unfortunately"
+                                << "the connection had to be dropped for"
+                                << "crash safety -- things will be much"
+                                << "slower now.";
+                    return;
+                }
+
+                void *newMap = ::mmap(0, testSize, PROT_READ | PROT_WRITE,
+                                      MAP_SHARED, f.handle(), 0);
+                if (newMap == MAP_FAILED) {
+                    kError(ksdcArea()) << "Unopen to re-map the cache into memory"
+                                << "things will be much slower now";
+                    return;
+                }
+
+                d->shm = reinterpret_cast<SharedMemory *>(newMap);
+                d->m_mapSize = testSize;
+
                 if (!cautiousLock()) {
                     return;
                 }
 
-                uint testSize = SharedMemory::totalSize(d->shm->cacheSize, d->shm->cachePageSize());
-
-                // A while loop? Indeed, think what happens if this happens
-                // twice -- hard to debug race conditions.
-                while (testSize > d->m_mapSize) {
-                    kDebug(ksdcArea()) << "Someone enlarged the cache on us,"
-                                << "attempting to match new configuration.";
-
-                    // Protect against two threads accessing this same KSDC
-                    // from trying to execute the following remapping at the
-                    // same time.
-                    QMutexLocker d_locker(&d->m_threadLock);
-                    if (testSize == d->m_mapSize) {
-                        break; // Bail if the other thread already solved.
-                    }
-
-                    // Linux supports mremap, but it's not portable. So,
-                    // drop the map and (try to) re-establish.
-                    d->unlock();
-
-#ifdef KSDC_MSYNC_SUPPORTED
-                    ::msync(d->shm, d->m_mapSize, MS_INVALIDATE | MS_ASYNC);
-#endif
-                    ::munmap(d->shm, d->m_mapSize);
-                    d->m_mapSize = 0;
-                    d->shm = 0;
-
-                    QFile f(d->m_cacheName);
-                    if (!f.open(QFile::ReadWrite)) {
-                        kError(ksdcArea()) << "Unable to re-open cache, unfortunately"
-                                    << "the connection had to be dropped for"
-                                    << "crash safety -- things will be much"
-                                    << "slower now.";
-                        return;
-                    }
-
-                    void *newMap = ::mmap(0, testSize, PROT_READ | PROT_WRITE,
-                                          MAP_SHARED, f.handle(), 0);
-                    if (newMap == MAP_FAILED) {
-                        kError(ksdcArea()) << "Unopen to re-map the cache into memory"
-                                    << "things will be much slower now";
-                        return;
-                    }
-
-                    d->shm = reinterpret_cast<SharedMemory *>(newMap);
-                    d->m_mapSize = testSize;
-
-                    if (!cautiousLock()) {
-                        return;
-                    }
-
-                    testSize = SharedMemory::totalSize(d->shm->cacheSize, d->shm->cachePageSize());
-                }
+                testSize = SharedMemory::totalSize(d->shm->cacheSize, d->shm->cachePageSize());
             }
         }
 
         ~CacheLocker()
         {
-            if (d->shm) {
+            if (d && d->shm) {
                 d->unlock();
             }
         }
 
         bool failed() const
         {
-            return d->shm == 0;
+            return !d || d->shm == 0;
         }
     };
 
@@ -1261,36 +1360,25 @@ class KSharedDataCache::Private
 // Must be called while the lock is already held!
 void SharedMemory::removeEntry(uint index)
 {
-    Q_ASSERT(index < indexTableSize());
-    Q_ASSERT(cacheAvail <= pageTableSize());
+    if (index >= indexTableSize() || cacheAvail > pageTableSize()) {
+        throw KSDCCorrupted();
+    }
 
     PageTableEntry *pageTableEntries = pageTable();
     IndexTableEntry *entriesIndex = indexTable();
 
-    if (entriesIndex[index].firstPage < 0) {
-        kDebug(ksdcArea()) << "Trying to remove an entry which is already invalid. This "
-                    << "cache is likely corrupt.";
-
-        clearInternalTables(); // The nuclear option...
-        return;
-    }
-
     // Update page table first
     pageID firstPage = entriesIndex[index].firstPage;
     if (firstPage < 0 || static_cast<quint32>(firstPage) >= pageTableSize()) {
-        kError(ksdcArea()) << "Removing" << index << "which is already marked as empty!";
-
-        clearInternalTables();
-        return;
+        kDebug(ksdcArea()) << "Trying to remove an entry which is already invalid. This "
+                    << "cache is likely corrupt.";
+        throw KSDCCorrupted();
     }
 
     if (index != static_cast<uint>(pageTableEntries[firstPage].index)) {
-        kError(ksdcArea()) << "Removing" << index << "will not work as it is assigned"
-                    << "to page" << firstPage << "which is itself assigned to"
-                    << "entry" << pageTableEntries[firstPage].index << "instead!";
-
-        clearInternalTables();
-        return;
+        kError(ksdcArea()) << "Removing entry" << index << "but the matching data"
+                    << "doesn't link back -- cache is corrupt, clearing.";
+        throw KSDCCorrupted();
     }
 
     uint entriesToRemove = intCeil(entriesIndex[index].totalItemSize, cachePageSize());
@@ -1306,16 +1394,20 @@ void SharedMemory::removeEntry(uint index)
         kError(ksdcArea()) << "We somehow did not remove" << entriesToRemove
                     << "when removing entry" << index << ", instead we removed"
                     << (cacheAvail - savedCacheSize);
+        throw KSDCCorrupted();
     }
 
     // For debugging
 #ifdef NDEBUG
-    QByteArray str((const char *)page(firstPage));
-    str.prepend(" REMOVED: ");
-    str.prepend(QByteArray::number(index));
-    str.prepend("ENTRY ");
+    void *const startOfData = page(firstPage);
+    if (startOfData) {
+        QByteArray str((const char *) startOfData);
+        str.prepend(" REMOVED: ");
+        str.prepend(QByteArray::number(index));
+        str.prepend("ENTRY ");
 
-    ::memcpy(page(firstPage), str.constData(), str.size() + 1);
+        ::memcpy(startOfData, str.constData(), str.size() + 1);
+    }
 #endif
 
     // Update the index
@@ -1330,8 +1422,25 @@ void SharedMemory::removeEntry(uint index)
 KSharedDataCache::KSharedDataCache(const QString &cacheName,
                                    unsigned defaultCacheSize,
                                    unsigned expectedItemSize)
-  : d(new Private(cacheName, defaultCacheSize, expectedItemSize))
+  : d(0)
 {
+    try {
+        d = new Private(cacheName, defaultCacheSize, expectedItemSize);
+    }
+    catch(KSDCCorrupted) {
+        KSharedDataCache::deleteCache(cacheName);
+
+        // Try only once more
+        try {
+            d = new Private(cacheName, defaultCacheSize, expectedItemSize);
+        }
+        catch(KSDCCorrupted) {
+            kError(ksdcArea())
+                << "Even a brand-new cache starts off corrupted, something is"
+                << "seriously wrong. :-(";
+            d = 0; // Just in case
+        }
+    }
 }
 
 KSharedDataCache::~KSharedDataCache()
@@ -1339,6 +1448,10 @@ KSharedDataCache::~KSharedDataCache()
     // Note that there is no other actions required to separate from the
     // shared memory segment, simply unmapping is enough. This makes things
     // *much* easier so I'd recommend maintaining this ideal.
+    if (!d) {
+        return;
+    }
+
     if (d->shm) {
 #ifdef KSDC_MSYNC_SUPPORTED
         ::msync(d->shm, d->m_mapSize, MS_INVALIDATE | MS_ASYNC);
@@ -1354,184 +1467,202 @@ KSharedDataCache::~KSharedDataCache()
 
 bool KSharedDataCache::insert(const QString &key, const QByteArray &data)
 {
-    Private::CacheLocker lock(d);
-    if (lock.failed()) {
-        return false;
-    }
+    try {
+        Private::CacheLocker lock(d);
+        if (lock.failed()) {
+            return false;
+        }
 
-    QByteArray encodedKey = key.toUtf8();
-    uint keyHash = generateHash(encodedKey);
-    uint position = keyHash % d->shm->indexTableSize();
+        QByteArray encodedKey = key.toUtf8();
+        uint keyHash = generateHash(encodedKey);
+        uint position = keyHash % d->shm->indexTableSize();
 
-    // See if we're overwriting an existing entry.
-    IndexTableEntry *indices = d->shm->indexTable();
+        // See if we're overwriting an existing entry.
+        IndexTableEntry *indices = d->shm->indexTable();
 
-    // In order to avoid the issue of a very long-lived cache having items
-    // with a use count of 1 near-permanently, we attempt to artifically
-    // reduce the use count of long-lived items when there is high load on
-    // the cache. We do this randomly, with a weighting that makes the event
-    // impossible if load < 0.5, and guaranteed if load >= 0.96.
-    static double startCullPoint = 0.5l;
-    static double mustCullPoint = 0.96l;
+        // In order to avoid the issue of a very long-lived cache having items
+        // with a use count of 1 near-permanently, we attempt to artifically
+        // reduce the use count of long-lived items when there is high load on
+        // the cache. We do this randomly, with a weighting that makes the event
+        // impossible if load < 0.5, and guaranteed if load >= 0.96.
+        const static double startCullPoint = 0.5l;
+        const static double mustCullPoint = 0.96l;
 
-    // cacheAvail is in pages, cacheSize is in bytes.
-    double loadFactor = 1.0 - (1.0l * d->shm->cacheAvail * d->shm->cachePageSize()
-                              / d->shm->cacheSize);
-    bool cullCollisions = false;
+        // cacheAvail is in pages, cacheSize is in bytes.
+        double loadFactor = 1.0 - (1.0l * d->shm->cacheAvail * d->shm->cachePageSize()
+                                  / d->shm->cacheSize);
+        bool cullCollisions = false;
 
-    if (KDE_ISUNLIKELY(loadFactor >= mustCullPoint)) {
-        cullCollisions = true;
-    }
-    else if (loadFactor > startCullPoint) {
-        const int tripWireValue = RAND_MAX * (loadFactor - startCullPoint) / (mustCullPoint - startCullPoint);
-        if (KRandom::random() >= tripWireValue) {
+        if (KDE_ISUNLIKELY(loadFactor >= mustCullPoint)) {
             cullCollisions = true;
         }
-    }
-
-    // In case of collisions in the index table (i.e. identical positions), use
-    // quadratic chaining to attempt to find an empty slot. The equation we use
-    // is:
-    // position = (hash + (i + i*i) / 2) % size, where i is the probe number.
-    int probeNumber = 1;
-    while (indices[position].useCount > 0 && probeNumber < MAX_PROBE_COUNT) {
-        // If we actually stumbled upon an old version of the key we are
-        // overwriting, then use that position, do not skip over it.
-
-        if (KDE_ISUNLIKELY(indices[position].fileNameHash == keyHash)) {
-            break;
-        }
-
-        // If we are "culling" old entries, see if this one is old and if so
-        // reduce its use count. If it reduces to zero then eliminate it and
-        // use its old spot.
-
-        if (cullCollisions && (::time(0) - indices[position].lastUsedTime) > 60) {
-            indices[position].useCount >>= 1;
-            if (indices[position].useCount == 0) {
-                kDebug(ksdcArea()) << "Overwriting existing old cached entry due to collision.";
-                d->shm->removeEntry(position); // Remove it first
-
-                break;
+        else if (loadFactor > startCullPoint) {
+            const int tripWireValue = RAND_MAX * (loadFactor - startCullPoint) / (mustCullPoint - startCullPoint);
+            if (KRandom::random() >= tripWireValue) {
+                cullCollisions = true;
             }
         }
 
-        position = (keyHash + (probeNumber + probeNumber * probeNumber) / 2)
-                   % d->shm->indexTableSize();
-        probeNumber++;
-    }
+        // In case of collisions in the index table (i.e. identical positions), use
+        // quadratic chaining to attempt to find an empty slot. The equation we use
+        // is:
+        // position = (hash + (i + i*i) / 2) % size, where i is the probe number.
+        uint probeNumber = 1;
+        while (indices[position].useCount > 0 && probeNumber < MAX_PROBE_COUNT) {
+            // If we actually stumbled upon an old version of the key we are
+            // overwriting, then use that position, do not skip over it.
 
-    if (indices[position].useCount > 0 && indices[position].firstPage >= 0) {
-        kDebug(ksdcArea()) << "Overwriting existing cached entry due to collision.";
-        d->shm->removeEntry(position); // Remove it first
-    }
+            if (KDE_ISUNLIKELY(indices[position].fileNameHash == keyHash)) {
+                break;
+            }
 
-    // Data will be stored as fileNamefoo\0PNGimagedata.....
-    // So total size required is the length of the encoded file name + 1
-    // for the trailing null, and then the length of the image data.
-    uint fileNameLength = 1 + encodedKey.length();
-    uint requiredSize = fileNameLength + data.size();
-    uint pagesNeeded = intCeil(requiredSize, d->shm->cachePageSize());
-    uint firstPage = (uint) -1;
+            // If we are "culling" old entries, see if this one is old and if so
+            // reduce its use count. If it reduces to zero then eliminate it and
+            // use its old spot.
 
-    if (pagesNeeded >= d->shm->pageTableSize()) {
-        kWarning(ksdcArea()) << key << "is too large to be cached.";
-        return false;
-    }
+            if (cullCollisions && (::time(0) - indices[position].lastUsedTime) > 60) {
+                indices[position].useCount >>= 1;
+                if (indices[position].useCount == 0) {
+                    kDebug(ksdcArea()) << "Overwriting existing old cached entry due to collision.";
+                    d->shm->removeEntry(position); // Remove it first
 
-    // If the cache has no room, or the fragmentation is too great to find
-    // the required number of consecutive free pages, take action.
-    if (pagesNeeded > d->shm->cacheAvail ||
-       (firstPage = d->shm->findEmptyPages(pagesNeeded)) >= d->shm->pageTableSize())
-    {
-        // If we have enough free space just defragment
-        uint freePagesDesired = 3 * qMax(1u, pagesNeeded / 2);
+                    break;
+                }
+            }
 
-        if (d->shm->cacheAvail > freePagesDesired) {
-            // TODO: How the hell long does this actually take on real
-            // caches?
-            d->shm->defragment();
-            firstPage = d->shm->findEmptyPages(pagesNeeded);
-        }
-        else {
-            // If we already have free pages we don't want to remove a ton
-            // extra. However we can't rely on the return value of
-            // removeUsedPages giving us a good location since we're not
-            // passing in the actual number of pages that we need.
-            d->shm->removeUsedPages(qMin(2 * freePagesDesired, d->shm->pageTableSize())
-                                    - d->shm->cacheAvail);
-            firstPage = d->shm->findEmptyPages(pagesNeeded);
+            position = (keyHash + (probeNumber + probeNumber * probeNumber) / 2)
+                       % d->shm->indexTableSize();
+            probeNumber++;
         }
 
-        if (firstPage >= d->shm->pageTableSize() ||
-           d->shm->cacheAvail < pagesNeeded)
-        {
-            kError(ksdcArea()) << "Unable to free up memory for" << key;
+        if (indices[position].useCount > 0 && indices[position].firstPage >= 0) {
+            kDebug(ksdcArea()) << "Overwriting existing cached entry due to collision.";
+            d->shm->removeEntry(position); // Remove it first
+        }
+
+        // Data will be stored as fileNamefoo\0PNGimagedata.....
+        // So total size required is the length of the encoded file name + 1
+        // for the trailing null, and then the length of the image data.
+        uint fileNameLength = 1 + encodedKey.length();
+        uint requiredSize = fileNameLength + data.size();
+        uint pagesNeeded = intCeil(requiredSize, d->shm->cachePageSize());
+        uint firstPage = (uint) -1;
+
+        if (pagesNeeded >= d->shm->pageTableSize()) {
+            kWarning(ksdcArea()) << key << "is too large to be cached.";
             return false;
         }
+
+        // If the cache has no room, or the fragmentation is too great to find
+        // the required number of consecutive free pages, take action.
+        if (pagesNeeded > d->shm->cacheAvail ||
+           (firstPage = d->shm->findEmptyPages(pagesNeeded)) >= d->shm->pageTableSize())
+        {
+            // If we have enough free space just defragment
+            uint freePagesDesired = 3 * qMax(1u, pagesNeeded / 2);
+
+            if (d->shm->cacheAvail > freePagesDesired) {
+                // TODO: How the hell long does this actually take on real
+                // caches?
+                d->shm->defragment();
+                firstPage = d->shm->findEmptyPages(pagesNeeded);
+            }
+            else {
+                // If we already have free pages we don't want to remove a ton
+                // extra. However we can't rely on the return value of
+                // removeUsedPages giving us a good location since we're not
+                // passing in the actual number of pages that we need.
+                d->shm->removeUsedPages(qMin(2 * freePagesDesired, d->shm->pageTableSize())
+                                        - d->shm->cacheAvail);
+                firstPage = d->shm->findEmptyPages(pagesNeeded);
+            }
+
+            if (firstPage >= d->shm->pageTableSize() ||
+               d->shm->cacheAvail < pagesNeeded)
+            {
+                kError(ksdcArea()) << "Unable to free up memory for" << key;
+                return false;
+            }
+        }
+
+        // Update page table
+        PageTableEntry *table = d->shm->pageTable();
+        for (uint i = 0; i < pagesNeeded; ++i) {
+            table[firstPage + i].index = position;
+        }
+
+        // Update index
+        indices[position].fileNameHash = keyHash;
+        indices[position].totalItemSize = requiredSize;
+        indices[position].useCount = 1;
+        indices[position].addTime = ::time(0);
+        indices[position].lastUsedTime = indices[position].addTime;
+        indices[position].firstPage = firstPage;
+
+        // Update cache
+        d->shm->cacheAvail -= pagesNeeded;
+
+        // Actually move the data in place
+        void *dataPage = d->shm->page(firstPage);
+        if (KDE_ISUNLIKELY(!dataPage)) {
+            throw KSDCCorrupted();
+        }
+
+        // Verify it will all fit
+        d->verifyProposedMemoryAccess(dataPage, requiredSize);
+
+        // Cast for byte-sized pointer arithmetic
+        uchar *startOfPageData = reinterpret_cast<uchar *>(dataPage);
+        ::memcpy(startOfPageData, encodedKey.constData(), fileNameLength);
+        ::memcpy(startOfPageData + fileNameLength, data.constData(), data.size());
+
+        return true;
     }
-
-    // Update page table
-    PageTableEntry *table = d->shm->pageTable();
-    for (uint i = 0; i < pagesNeeded; ++i) {
-        table[firstPage + i].index = position;
+    catch(KSDCCorrupted) {
+        d->recoverCorruptedCache();
+        return false;
     }
-
-    // Update index
-    indices[position].fileNameHash = keyHash;
-    indices[position].totalItemSize = requiredSize;
-    indices[position].useCount = 1;
-    indices[position].addTime = ::time(0);
-    indices[position].lastUsedTime = indices[position].addTime;
-    indices[position].firstPage = firstPage;
-
-    // Update cache
-    d->shm->cacheAvail -= pagesNeeded;
-
-    // Actually move the data in place
-    void *dataPage = d->shm->page(firstPage);
-
-    // Cast for byte-sized pointer arithmetic
-    uchar *startOfPageData = reinterpret_cast<uchar *>(dataPage);
-    ::memcpy(startOfPageData, encodedKey.constData(), fileNameLength);
-    ::memcpy(startOfPageData + fileNameLength, data.constData(), data.size());
-
-    return true;
 }
 
 bool KSharedDataCache::find(const QString &key, QByteArray *destination) const
 {
-    if (!d->shm) {
-        return false;
-    }
-
-    Private::CacheLocker lock(d);
-    if (lock.failed()) {
-        return false;
-    }
-
-    // Search in the index for our data, hashed by key;
-    QByteArray encodedKey = key.toUtf8();
-    qint32 entry = d->shm->findNamedEntry(encodedKey);
-
-    if (entry >= 0) {
-        const IndexTableEntry *header = &d->shm->indexTable()[entry];
-        const void *resultPage = d->shm->page(header->firstPage);
-
-        header->useCount++;
-        header->lastUsedTime = ::time(0);
-
-        // Our item is the key followed immediately by the data, so skip
-        // past the key.
-        const char *cacheData = reinterpret_cast<const char *>(resultPage);
-        cacheData += encodedKey.size();
-        cacheData++; // Skip trailing null -- now we're pointing to start of data
-
-        if (destination) {
-            *destination = QByteArray(cacheData, header->totalItemSize - encodedKey.size() - 1);
+    try {
+        Private::CacheLocker lock(d);
+        if (lock.failed()) {
+            return false;
         }
 
-        return true;
+        // Search in the index for our data, hashed by key;
+        QByteArray encodedKey = key.toUtf8();
+        qint32 entry = d->shm->findNamedEntry(encodedKey);
+
+        if (entry >= 0) {
+            const IndexTableEntry *header = &d->shm->indexTable()[entry];
+            const void *resultPage = d->shm->page(header->firstPage);
+            if (KDE_ISUNLIKELY(!resultPage)) {
+                throw KSDCCorrupted();
+            }
+
+            d->verifyProposedMemoryAccess(resultPage, header->totalItemSize);
+
+            header->useCount++;
+            header->lastUsedTime = ::time(0);
+
+            // Our item is the key followed immediately by the data, so skip
+            // past the key.
+            const char *cacheData = reinterpret_cast<const char *>(resultPage);
+            cacheData += encodedKey.size();
+            cacheData++; // Skip trailing null -- now we're pointing to start of data
+
+            if (destination) {
+                *destination = QByteArray(cacheData, header->totalItemSize - encodedKey.size() - 1);
+            }
+
+            return true;
+        }
+    }
+    catch(KSDCCorrupted) {
+        d->recoverCorruptedCache();
     }
 
     return false;
@@ -1539,21 +1670,32 @@ bool KSharedDataCache::find(const QString &key, QByteArray *destination) const
 
 void KSharedDataCache::clear()
 {
-    Private::CacheLocker lock(d);
+    try {
+        Private::CacheLocker lock(d);
 
-    if(!lock.failed()) {
-        d->shm->clear();
+        if(!lock.failed()) {
+            d->shm->clear();
+        }
+    }
+    catch(KSDCCorrupted) {
+        d->recoverCorruptedCache();
     }
 }
 
 bool KSharedDataCache::contains(const QString &key) const
 {
-    Private::CacheLocker lock(d);
-    if (lock.failed()) {
+    try {
+        Private::CacheLocker lock(d);
+        if (lock.failed()) {
+            return false;
+        }
+
+        return d->shm->findNamedEntry(key.toUtf8()) >= 0;
+    }
+    catch(KSDCCorrupted) {
+        d->recoverCorruptedCache();
         return false;
     }
-
-    return d->shm->findNamedEntry(key.toUtf8()) >= 0;
 }
 
 void KSharedDataCache::deleteCache(const QString &cacheName)
@@ -1569,27 +1711,39 @@ void KSharedDataCache::deleteCache(const QString &cacheName)
 
 unsigned KSharedDataCache::totalSize() const
 {
-    Private::CacheLocker lock(d);
-    if (lock.failed()) {
+    try {
+        Private::CacheLocker lock(d);
+        if (lock.failed()) {
+            return 0u;
+        }
+
+        return d->shm->cacheSize;
+    }
+    catch(KSDCCorrupted) {
+        d->recoverCorruptedCache();
         return 0u;
     }
-
-    return d->shm->cacheSize;
 }
 
 unsigned KSharedDataCache::freeSize() const
 {
-    Private::CacheLocker lock(d);
-    if (lock.failed()) {
+    try {
+        Private::CacheLocker lock(d);
+        if (lock.failed()) {
+            return 0u;
+        }
+
+        return d->shm->cacheAvail * d->shm->cachePageSize();
+    }
+    catch(KSDCCorrupted) {
+        d->recoverCorruptedCache();
         return 0u;
     }
-
-    return d->shm->cacheAvail * d->shm->cachePageSize();
 }
 
 KSharedDataCache::EvictionPolicy KSharedDataCache::evictionPolicy() const
 {
-    if (d->shm) {
+    if (d && d->shm) {
         return static_cast<EvictionPolicy>(d->shm->evictionPolicy.fetchAndAddAcquire(0));
     }
 
@@ -1598,14 +1752,14 @@ KSharedDataCache::EvictionPolicy KSharedDataCache::evictionPolicy() const
 
 void KSharedDataCache::setEvictionPolicy(EvictionPolicy newPolicy)
 {
-    if (d->shm) {
+    if (d && d->shm) {
         d->shm->evictionPolicy.fetchAndStoreRelease(static_cast<int>(newPolicy));
     }
 }
 
 unsigned KSharedDataCache::timestamp() const
 {
-    if (d->shm) {
+    if (d && d->shm) {
         return static_cast<unsigned>(d->shm->cacheTimestamp.fetchAndAddAcquire(0));
     }
 
@@ -1614,7 +1768,7 @@ unsigned KSharedDataCache::timestamp() const
 
 void KSharedDataCache::setTimestamp(unsigned newTimestamp)
 {
-    if (d->shm) {
+    if (d && d->shm) {
         d->shm->cacheTimestamp.fetchAndStoreRelease(static_cast<int>(newTimestamp));
     }
 }

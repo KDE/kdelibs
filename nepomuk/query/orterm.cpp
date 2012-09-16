@@ -1,6 +1,6 @@
 /*
    This file is part of the Nepomuk KDE project.
-   Copyright (C) 2009-2010 Sebastian Trueg <trueg@kde.org>
+   Copyright (C) 2009-2012 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,7 @@
 
 #include <QtCore/QStringList>
 
-QString Nepomuk::Query::OrTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, const TermPrivate* parentTerm, QueryBuilderData* qbd ) const
+QString Nepomuk::Query::OrTermPrivate::toSparqlGraphPattern( const QString& resourceVarName, const TermPrivate* parentTerm, const QString &additionalFilters, QueryBuilderData *qbd ) const
 {
     Q_UNUSED(parentTerm);
 
@@ -33,7 +33,7 @@ QString Nepomuk::Query::OrTermPrivate::toSparqlGraphPattern( const QString& reso
 
     qbd->pushGroupTerm(this);
     foreach( const Nepomuk::Query::Term &t, m_subTerms ) {
-        pattern += t.d_ptr->toSparqlGraphPattern( resourceVarName, this, qbd );
+        pattern += t.d_ptr->toSparqlGraphPattern( resourceVarName, this, additionalFilters, qbd );
     }
     qbd->popGroupTerm();
 

@@ -651,8 +651,9 @@ QString KGlobalSettings::documentPath()
 
 QString KGlobalSettings::downloadPath()
 {
-    // Qt 4.4.1 does not have DOWNLOAD, so we based on old code for now
-    QString downloadPath = QDir::homePath();
+    // Qt 4.x does not have QDesktopServices::DownloadLocation, so we do our own xdg reading.
+    QString defaultDownloadPath = QDir::homePath() + "/Downloads";
+    QString downloadPath = defaultDownloadPath;
 #ifndef Q_WS_WIN
     const QString xdgUserDirs = KGlobal::dirs()->localxdgconfdir() + QLatin1String( "user-dirs.dirs" );
     if( QFile::exists( xdgUserDirs ) ) {
@@ -660,11 +661,12 @@ QString KGlobalSettings::downloadPath()
         KConfigGroup g( &xdgUserConf, "" );
         downloadPath  = g.readPathEntry( "XDG_DOWNLOAD_DIR", downloadPath ).remove(  '"' );
         if ( downloadPath.isEmpty() ) {
-            downloadPath = QDir::homePath();
+            downloadPath = defaultDownloadPath;
         }
     }
 #endif
     downloadPath = QDir::cleanPath( downloadPath );
+    QDir().mkpath(downloadPath);
     if ( !downloadPath.endsWith( '/' ) ) {
         downloadPath.append( QLatin1Char(  '/' ) );
     }

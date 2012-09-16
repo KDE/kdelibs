@@ -3088,11 +3088,6 @@ DocumentFragmentImpl::DocumentFragmentImpl(DocumentImpl *doc) : NodeBaseImpl(doc
 {
 }
 
-DocumentFragmentImpl::DocumentFragmentImpl(const DocumentFragmentImpl &other)
-    : NodeBaseImpl(other)
-{
-}
-
 DOMString DocumentFragmentImpl::nodeName() const
 {
   return "#document-fragment";

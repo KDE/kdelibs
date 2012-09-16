@@ -35,7 +35,7 @@ namespace Nepomuk {
 
             TermPrivate* clone() const { return new AndTermPrivate( *this ); }
 
-            QString toSparqlGraphPattern( const QString& resourceVarName, const TermPrivate*, QueryBuilderData* qbd ) const;
+            QString toSparqlGraphPattern( const QString& resourceVarName, const TermPrivate*, const QString& additionalFilters, QueryBuilderData* qbd ) const;
 
             /**
              * Since filters can only work on a "real" graph pattern

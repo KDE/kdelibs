@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2008 Alex Merry <alex.merry @ kdemail.net>
  * Copyright (C) 2008 - 2009 Urs Wolfer <uwolfer @ kde.org>
- * Copyright (C) 2009 - 2010 Dawit Alemayehu <adawit @ kde.org>
+ * Copyright (C) 2009 - 2012 Dawit Alemayehu <adawit @ kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -39,16 +39,16 @@
 
 namespace KDEPrivate {
 
-AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation &op,
+AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation op,
                                        const QNetworkRequest &request,
                                        KIO::SimpleJob *kioJob,
                                        bool emitReadyReadOnMetaDataChange,
                                        QObject *parent)
-                   :QNetworkReply(parent),
-                    m_metaDataRead(false),
-                    m_ignoreContentDisposition(false),
-                    m_emitReadyReadOnMetaDataChange(emitReadyReadOnMetaDataChange),
-                    m_kioJob(kioJob)
+    :QNetworkReply(parent),
+     m_metaDataRead(false),
+     m_ignoreContentDisposition(false),
+     m_emitReadyReadOnMetaDataChange(emitReadyReadOnMetaDataChange),
+     m_kioJob(kioJob)
 
 {
     setRequest(request);
@@ -60,20 +60,61 @@ AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation &o
     if (!request.sslConfiguration().isNull())
         setSslConfiguration(request.sslConfiguration());
 
-    if (kioJob) {
-        connect(kioJob, SIGNAL(redirection(KIO::Job*,KUrl)), SLOT(slotRedirection(KIO::Job*,KUrl)));
-        connect(kioJob, SIGNAL(percent(KJob*,ulong)), SLOT(slotPercent(KJob*,ulong)));
+    connect(kioJob, SIGNAL(redirection(KIO::Job*,KUrl)), SLOT(slotRedirection(KIO::Job*,KUrl)));
+    connect(kioJob, SIGNAL(percent(KJob*,ulong)), SLOT(slotPercent(KJob*,ulong)));
 
-        if (qobject_cast<KIO::StatJob*>(kioJob)) {
-            connect(kioJob, SIGNAL(result(KJob*)), SLOT(slotStatResult(KJob*)));
-        } else {
-            connect(kioJob, SIGNAL(result(KJob*)), SLOT(slotResult(KJob*)));
-            connect(kioJob, SIGNAL(data(KIO::Job*,QByteArray)),
-                SLOT(slotData(KIO::Job*,QByteArray)));
-            connect(kioJob, SIGNAL(mimetype(KIO::Job*,QString)),
-                SLOT(slotMimeType(KIO::Job*,QString)));
-        }
+    if (qobject_cast<KIO::StatJob*>(kioJob)) {
+        connect(kioJob, SIGNAL(result(KJob*)), SLOT(slotStatResult(KJob*)));
+    } else {
+        connect(kioJob, SIGNAL(result(KJob*)), SLOT(slotResult(KJob*)));
+        connect(kioJob, SIGNAL(data(KIO::Job*,QByteArray)),
+            SLOT(slotData(KIO::Job*,QByteArray)));
+        connect(kioJob, SIGNAL(mimetype(KIO::Job*,QString)),
+            SLOT(slotMimeType(KIO::Job*,QString)));
     }
+}
+
+AccessManagerReply::AccessManagerReply (const QNetworkAccessManager::Operation op,
+                                        const QNetworkRequest& request,
+                                        const QByteArray& data,
+                                        const QUrl& url,
+                                        const KIO::MetaData& metaData,
+                                        QObject* parent)
+    :QNetworkReply (parent),
+     m_data(data),
+     m_ignoreContentDisposition(false),
+     m_emitReadyReadOnMetaDataChange(false)
+{
+    setRequest(request);
+    setOpenMode(QIODevice::ReadOnly);
+    setUrl((url.isValid() ? url : request.url()));
+    setOperation(op);
+    setHeaderFromMetaData(metaData);
+
+    if (!request.sslConfiguration().isNull())
+        setSslConfiguration(request.sslConfiguration());
+
+    setError(NoError, QString());
+    emitFinished(true, Qt::QueuedConnection);
+}
+
+AccessManagerReply::AccessManagerReply (const QNetworkAccessManager::Operation op,
+                                        const QNetworkRequest& request,
+                                        QNetworkReply::NetworkError errorCode,
+                                        const QString& errorMessage,
+                                        QObject* parent)
+    :QNetworkReply (parent)
+{
+    setRequest(request);
+    setOpenMode(QIODevice::ReadOnly);
+    setUrl(request.url());
+    setOperation(op);
+    setError(static_cast<QNetworkReply::NetworkError>(errorCode), errorMessage);
+    if (error() != QNetworkReply::NoError) {
+        QMetaObject::invokeMethod(this, "error", Qt::QueuedConnection, Q_ARG(QNetworkReply::NetworkError, error()));
+    }
+
+    emitFinished(true, Qt::QueuedConnection);
 }
 
 AccessManagerReply::~AccessManagerReply()
@@ -82,11 +123,9 @@ AccessManagerReply::~AccessManagerReply()
 
 void AccessManagerReply::abort()
 {
-    if (m_kioJob) {
-        m_kioJob.data()->kill();
-        m_kioJob.clear();
-    }
-
+    if (!m_kioJob)
+        kDebug(7044) << this;
+    m_kioJob.clear();
     m_data.clear();
     m_metaDataRead = false;
 }
@@ -108,13 +147,13 @@ qint64 AccessManagerReply::readData(char *data, qint64 maxSize)
     return length;
 }
 
-bool AccessManagerReply::ignoreContentDisposition (KIO::Job* job)
+bool AccessManagerReply::ignoreContentDisposition (const KIO::MetaData& metaData)
 {
     if (m_ignoreContentDisposition) {
         return true;
     }
 
-    if (job->queryMetaData(QL1S("content-disposition-type")).isEmpty()) {
+    if (!metaData.contains(QL1S("content-disposition-type"))) {
         return true;
     }
 
@@ -127,55 +166,13 @@ bool AccessManagerReply::ignoreContentDisposition (KIO::Job* job)
     return false;
 }
 
-void AccessManagerReply::setIgnoreContentDisposition(bool on)
+void AccessManagerReply::setHeaderFromMetaData (const KIO::MetaData& _metaData)
 {
-    // kDebug(7044) << on;
-    m_ignoreContentDisposition = on;
-}
-
-void AccessManagerReply::setStatus(const QString& message, QNetworkReply::NetworkError code)
-{
-    setError(code, message);
-    if (code != QNetworkReply::NoError) {
-        QMetaObject::invokeMethod(this, "error", Qt::QueuedConnection, Q_ARG(QNetworkReply::NetworkError, code));
-    }
-    QMetaObject::invokeMethod(this, "finished", Qt::QueuedConnection);
-}
-
-void AccessManagerReply::putOnHold()
-{
-    if (!m_kioJob || isFinished())
-        return;
-
-    // kDebug(7044) << m_kioJob << m_data;
-    m_kioJob.data()->disconnect(this);
-    m_kioJob.data()->putOnHold();
-    m_kioJob.clear();
-    KIO::Scheduler::publishSlaveOnHold();
-}
-
-bool AccessManagerReply::isLocalRequest (const KUrl& url)
-{
-    const QString scheme (url.protocol());
-    return (KProtocolInfo::isKnownProtocol(scheme) &&
-            KProtocolInfo::protocolClass(scheme).compare(QL1S(":local"), Qt::CaseInsensitive) == 0);
-}
-
-void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
-{
-    if (!job || m_metaDataRead)
-        return;
-
-    KIO::MetaData metaData (job->metaData());
-    if (metaData.isEmpty()) {
-        // Allow handling of local resources such as man pages and file url...
-        if (isLocalRequest(url())) {
-            setHeader(QNetworkRequest::ContentLengthHeader, job->totalAmount(KJob::Bytes));
-            setAttribute(QNetworkRequest::HttpStatusCodeAttribute, "200");
-            emit metaDataChanged();
-        }
+    if (_metaData.isEmpty()) {
         return;
     }
+
+    KIO::MetaData metaData(_metaData);
 
     // Set the encryption attribute and values...
     QSslConfiguration sslConfig;
@@ -187,13 +184,13 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
     // Set the raw header information...
     const QStringList httpHeaders (metaData.value(QL1S("HTTP-Headers")).split(QL1C('\n'), QString::SkipEmptyParts));
     if (httpHeaders.isEmpty()) {
-      if (metaData.contains(QL1S("charset"))) {
-         QString mimeType = header(QNetworkRequest::ContentTypeHeader).toString();
-         mimeType += QL1S(" ; charset=");
-         mimeType += metaData.value(QL1S("charset"));
-         kDebug(7044) << "changed content-type to" << mimeType;
-         setHeader(QNetworkRequest::ContentTypeHeader, mimeType.toUtf8());
-      }
+        if (metaData.contains(QL1S("charset"))) {
+          QString mimeType = header(QNetworkRequest::ContentTypeHeader).toString();
+          mimeType += QL1S(" ; charset=");
+          mimeType += metaData.value(QL1S("charset"));
+          // kDebug(7044) << "changed content-type to" << mimeType;
+          setHeader(QNetworkRequest::ContentTypeHeader, mimeType.toUtf8());
+        }
     } else {
         Q_FOREACH(const QString& httpHeader, httpHeaders) {
             int index = httpHeader.indexOf(QL1C(':'));
@@ -226,7 +223,7 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
             }
 
             if (headerName.startsWith(QL1S("content-disposition"), Qt::CaseInsensitive) &&
-                ignoreContentDisposition(job)) {
+                ignoreContentDisposition(metaData)) {
                 continue;
             }
 
@@ -267,7 +264,51 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
 
     // Set the returned meta data as attribute...
     setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::MetaData), metaData.toVariant());
+}
 
+
+void AccessManagerReply::setIgnoreContentDisposition(bool on)
+{
+    // kDebug(7044) << on;
+    m_ignoreContentDisposition = on;
+}
+
+void AccessManagerReply::putOnHold()
+{
+    if (!m_kioJob || isFinished())
+        return;
+
+    // kDebug(7044) << m_kioJob << m_data;
+    m_kioJob.data()->disconnect(this);
+    m_kioJob.data()->putOnHold();
+    m_kioJob.clear();
+    KIO::Scheduler::publishSlaveOnHold();
+}
+
+bool AccessManagerReply::isLocalRequest (const KUrl& url)
+{
+    const QString scheme (url.protocol());
+    return (KProtocolInfo::isKnownProtocol(scheme) &&
+            KProtocolInfo::protocolClass(scheme).compare(QL1S(":local"), Qt::CaseInsensitive) == 0);
+}
+
+void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
+{
+    if (!job || m_metaDataRead)
+        return;
+
+    KIO::MetaData metaData (job->metaData());
+    if (metaData.isEmpty()) {
+        // Allow handling of local resources such as man pages and file url...
+        if (isLocalRequest(url())) {
+            setHeader(QNetworkRequest::ContentLengthHeader, job->totalAmount(KJob::Bytes));
+            setAttribute(QNetworkRequest::HttpStatusCodeAttribute, "200");
+            emit metaDataChanged();
+        }
+        return;
+    }
+
+    setHeaderFromMetaData(metaData);
     m_metaDataRead = true;
     emit metaDataChanged();
 }
@@ -383,14 +424,14 @@ void AccessManagerReply::slotResult(KJob *kJob)
         readHttpResponseHeaders(qobject_cast<KIO::Job*>(kJob));
     }
 
-    emit finished();
+    emitFinished(true);
 }
 
 void AccessManagerReply::slotStatResult(KJob* kJob)
 {
     if (jobError(kJob)) {
         emit error (error());
-        emit finished();
+        emitFinished(true);
         return;
     }
 
@@ -405,7 +446,7 @@ void AccessManagerReply::slotStatResult(KJob* kJob)
     if (!mimeType.isEmpty())
         setHeader(QNetworkRequest::ContentTypeHeader, mimeType.toUtf8());
 
-    emit finished();
+    emitFinished(true);
 }
 
 void AccessManagerReply::slotRedirection(KIO::Job* job, const KUrl& u)
@@ -432,6 +473,17 @@ void AccessManagerReply::slotPercent(KJob *job, unsigned long percent)
     }
     emit downloadProgress(bytesProcessed, bytesTotal);
 }
+
+void AccessManagerReply::emitFinished (bool state, Qt::ConnectionType type)
+{
+#if QT_VERSION >= 0x040800
+    setFinished(state);
+#else
+    Q_UNUSED(state);
+#endif
+    emit QMetaObject::invokeMethod(this, "finished", type);
+}
+
 }
 
 #include "accessmanagerreply_p.moc"

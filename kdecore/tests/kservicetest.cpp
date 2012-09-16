@@ -233,7 +233,7 @@ static bool offerListHasService( const KService::List& offers,
 {
     bool found = false;
     KService::List::const_iterator it = offers.begin();
-    for ( ; it != offers.end() ; it++ )
+    for ( ; it != offers.end() ; ++it )
     {
         if ( (*it)->entryPath() == entryPath ) {
             if( found ) { // should be there only once

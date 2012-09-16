@@ -194,8 +194,8 @@ void KViewStateSaver::restoreState(const KConfigGroup& configGroup)
 {
   Q_D(KViewStateSaver);
 
-  // Delete myself if not finished after ten seconds.
-  QTimer::singleShot(10000, this, SLOT(deleteLater()));
+  // Delete myself if not finished after 60 seconds.
+  QTimer::singleShot(60000, this, SLOT(deleteLater()));
 
 
   d->m_pendingCurrent = configGroup.readEntry( currentKey, QString() );

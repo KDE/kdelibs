@@ -278,6 +278,7 @@ KLockFile::LockResult KLockFile::Private::lockFileOExcl(KDE_struct_stat &st_buf)
     if (fd < 0) {
         if (errno == EEXIST) {
             // File already exists
+            KDE_lstat( lockFileName, &st_buf ); // caller wants stat buf details
             return LockFail;
         } else {
             return LockError;

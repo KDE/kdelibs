@@ -466,7 +466,9 @@ void HTTPProtocol::resetSessionSettings()
   m_request.useCookieJar = config()->readEntry("Cookies", false);
   m_request.cacheTag.useCache = config()->readEntry("UseCache", true);
   m_request.preferErrorPage = config()->readEntry("errorPage", true);
-  m_request.doNotAuthenticate = config()->readEntry("no-auth", false);
+  const bool noAuth = config()->readEntry("no-auth", false);
+  m_request.doNotWWWAuthenticate = config()->readEntry("no-www-auth", noAuth);
+  m_request.doNotProxyAuthenticate = config()->readEntry("no-proxy-auth", noAuth);
   m_strCacheDir = config()->readPathEntry("CacheDir", QString());
   m_maxCacheAge = config()->readEntry("MaxCacheAge", DEFAULT_MAX_CACHE_AGE);
   m_request.windowId = config()->readEntry("window-id");
@@ -2131,9 +2133,9 @@ bool HTTPProtocol::readDelimitedText(char *buf, int *idx, int end, int numNewlin
             if (buf[pos] == '\n') {
                 bool found = numNewlines == 1;
                 if (!found) {   // looking for two newlines
+                    // Detect \n\n and \n\r\n. The other cases (\r\n\n, \r\n\r\n) are covered by the first two.
                     found = ((pos >= 1 && buf[pos - 1] == '\n') ||
-                             (pos >= 3 && buf[pos - 3] == '\r' && buf[pos - 2] == '\n' &&
-                                          buf[pos - 1] == '\r'));
+                             (pos >= 2 && buf[pos - 2] == '\n' && buf[pos - 1] == '\r'));
                 }
                 if (found) {
                     i++;    // unread bytes *after* CRLF
@@ -2252,7 +2254,7 @@ bool HTTPProtocol::httpOpenConnection()
                 QNetworkProxy::setApplicationProxy(proxy);
                 connectError = connectToHost(m_request.url.host(), m_request.url.port(defaultPort()), &errorString);
                 if (connectError == 0) {
-                    kDebug(7113) << "Connected to proxy: host=" << url.host() << "port=" << url.port();
+                    kDebug(7113) << "Tunneling thru proxy: host=" << url.host() << "port=" << url.port();
                     break;
                 } else {
                     if (connectError == ERR_UNKNOWN_HOST)
@@ -3148,6 +3150,8 @@ endParsing:
 
         foundDelimiter = readDelimitedText(buffer, &bufPos, maxHeaderSize, 2);
         kDebug(7113) << " -- full response:" << endl << QByteArray(buffer, bufPos).trimmed();
+        // Use this to see newlines:
+        //kDebug(7113) << " -- full response:" << endl << QByteArray(buffer, bufPos).replace("\r", "\\r").replace("\n", "\\n\n");
         Q_ASSERT(foundDelimiter);
 
         //NOTE because tokenizer will overwrite newlines in case of line continuations in the header
@@ -3437,7 +3441,8 @@ endParsing:
         // TODO cache the proxy auth data (not doing this means a small performance regression for now)
 
         // we may need to send (Proxy or WWW) authorization data
-        if (!m_request.doNotAuthenticate && isAuthenticationRequired(m_request.responseCode)) {
+        if ((!m_request.doNotWWWAuthenticate && m_request.responseCode == 401) ||
+            (!m_request.doNotProxyAuthenticate && m_request.responseCode == 407)) {
             authRequiresAnotherRoundtrip = handleAuthenticationHeader(&tokenizer);
             if (m_iError) {
                 // If error is set, then handleAuthenticationHeader failed.
@@ -5194,19 +5199,40 @@ QString HTTPProtocol::authenticationHeader()
     return toQString(ret); // ## encoding ok?
 }
 
+static QString protocolForProxyType(QNetworkProxy::ProxyType type)
+{
+    switch (type) {
+      case QNetworkProxy::DefaultProxy:
+          break;
+      case QNetworkProxy::Socks5Proxy:
+          return QLatin1String("socks");
+      case QNetworkProxy::NoProxy:
+          break;
+      case QNetworkProxy::HttpProxy:
+      case QNetworkProxy::HttpCachingProxy:
+      case QNetworkProxy::FtpCachingProxy:
+      default:
+          break;
+    }
+
+    return QLatin1String("http");
+}
 
 void HTTPProtocol::proxyAuthenticationForSocket(const QNetworkProxy &proxy, QAuthenticator *authenticator)
 {
-    Q_UNUSED(proxy);
-    kDebug(7113) << "Authenticator received -- realm:" << authenticator->realm()
-                 << "user:" << authenticator->user();
+    kDebug(7113) << "realm:" << authenticator->realm() << "user:" << authenticator->user();
+
+    // Set the proxy URL...
+    m_request.proxyUrl.setProtocol(protocolForProxyType(proxy.type()));
+    m_request.proxyUrl.setUser(proxy.user());
+    m_request.proxyUrl.setHost(proxy.hostName());
+    m_request.proxyUrl.setPort(proxy.port());
 
     AuthInfo info;
-    Q_ASSERT(proxy.hostName() == m_request.proxyUrl.host() && proxy.port() == m_request.proxyUrl.port());
     info.url = m_request.proxyUrl;
     info.realmValue = authenticator->realm();
     info.username = authenticator->user();
-    info.verifyPath = true;    //### whatever
+    info.verifyPath = info.realmValue.isEmpty();
 
     const bool haveCachedCredentials = checkCachedAuthentication(info);
     const bool retryAuth = (m_socketProxyAuth != 0);
@@ -5229,7 +5255,7 @@ void HTTPProtocol::proxyAuthenticationForSocket(const QNetworkProxy &proxy, QAut
         const QString errMsg ((retryAuth ? i18n("Proxy Authentication Failed.") : QString()));
 
         if (!openPasswordDialog(info, errMsg)) {
-            kDebug(7103) << "looks like the user canceled proxy authentication.";
+            kDebug(7113) << "looks like the user canceled proxy authentication.";
             error(ERR_USER_CANCELED, m_request.proxyUrl.host());
             delete m_proxyAuth;
             m_proxyAuth = 0;
@@ -5258,8 +5284,7 @@ void HTTPProtocol::saveProxyAuthenticationForSocket()
                this, SLOT(saveProxyAuthenticationForSocket()));
     Q_ASSERT(m_socketProxyAuth);
     if (m_socketProxyAuth) {
-        kDebug(7113) << "-- realm:" << m_socketProxyAuth->realm() << "user:"
-                     << m_socketProxyAuth->user();
+        kDebug(7113) << "realm:" << m_socketProxyAuth->realm() << "user:" << m_socketProxyAuth->user();
         KIO::AuthInfo a;
         a.verifyPath = true;
         a.url = m_request.proxyUrl;

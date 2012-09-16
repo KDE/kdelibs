@@ -336,6 +336,8 @@ static const TransKey g_rgQtToSymX[] =
 #define XF86XK_Hibernate           0x1008FFA8
 // end of XF86keysyms.h
         ,
+
+    // All of the stuff below really has to match qkeymapper_x11.cpp in Qt!
     { Qt::Key_Back,       XF86XK_Back },
     { Qt::Key_Forward,    XF86XK_Forward },
     { Qt::Key_Stop,       XF86XK_Stop },
@@ -355,7 +357,7 @@ static const TransKey g_rgQtToSymX[] =
     { Qt::Key_MediaRecord, XF86XK_AudioRecord },
     { Qt::Key_LaunchMail, XF86XK_Mail },
     { Qt::Key_Launch0,    XF86XK_MyComputer },
-    { Qt::Key_Calculator,    XF86XK_Calculator },
+    { Qt::Key_Launch1,    XF86XK_Calculator },
     { Qt::Key_Memo,    XF86XK_Memo },
     { Qt::Key_ToDoList,    XF86XK_ToDoList },
     { Qt::Key_Calendar,    XF86XK_Calendar },

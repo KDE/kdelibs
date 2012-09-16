@@ -388,6 +388,16 @@ endif(NOT KDE_NO_DEPRECATED)
 if(NOT WIN32)
     set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} util/kshareddatacache.cpp)
     set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+
+    # KSharedDataCache uses exceptions as of 4.8.4, the rest of kdecore
+    # doesn't. Try to enable exceptions only for that file, except for
+    # enable-final builds where set_source_files_properties doesn't work.
+    if(KDE4_ENABLE_FINAL)
+        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}")
+    else()
+        set_source_files_properties(util/kshareddatacache.cpp
+            PROPERTIES COMPILE_FLAGS ${KDE4_ENABLE_EXCEPTIONS})
+    endif()
 else(NOT WIN32)
     set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} util/kshareddatacache_win.cpp)
     set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} io/kdirwatch_win.cpp)

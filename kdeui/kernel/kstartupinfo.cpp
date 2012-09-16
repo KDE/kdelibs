@@ -1192,7 +1192,7 @@ QString KStartupInfoData::Private::to_text() const
     if( !description.isEmpty())
         ret += QString::fromLatin1( " DESCRIPTION=\"%1\"" ).arg( escape_str( description ));
     if( !icon.isEmpty())
-        ret += QString::fromLatin1( " ICON=%1" ).arg( icon );
+        ret += QString::fromLatin1( " ICON=\"%1\"" ).arg( icon );
     if( desktop != 0 )
         ret += QString::fromLatin1( " DESKTOP=%1" )
 #ifdef Q_WS_X11
@@ -1219,7 +1219,7 @@ QString KStartupInfoData::Private::to_text() const
     if( launched_by != 0 )
         ret += QString::fromLatin1( " LAUNCHED_BY=%1" ).arg( (qptrdiff)launched_by );
     if( !application_id.isEmpty())
-        ret += QString::fromLatin1( " APPLICATION_ID=%1" ).arg( application_id );
+        ret += QString::fromLatin1( " APPLICATION_ID=\"%1\"" ).arg( application_id );
     return ret;
     }
 

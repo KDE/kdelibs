@@ -1,7 +1,7 @@
 /*
  * This file is part of the KDE project.
  *
- * Copyright (C) 2009,2010 Dawit Alemayehu <adawit @ kde.org>
+ * Copyright (C) 2009 - 2012 Dawit Alemayehu <adawit @ kde.org>
  * Copyright (C) 2008 - 2009 Urs Wolfer <uwolfer @ kde.org>
  * Copyright (C) 2007 Trolltech ASA
  *
@@ -28,6 +28,7 @@
 #include "job.h"
 #include "scheduler.h"
 #include "jobuidelegate.h"
+#include "netaccess.h"
 
 #include <kdebug.h>
 #include <kconfiggroup.h>
@@ -36,8 +37,8 @@
 #include <klocalizedstring.h>
 
 #include <QtCore/QUrl>
+#include <QtCore/QPointer>
 #include <QtGui/QWidget>
-#include <QtCore/QWeakPointer>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusReply>
@@ -47,7 +48,6 @@
 #include <QtNetwork/QSslCertificate>
 #include <QtNetwork/QSslConfiguration>
 
-
 #define QL1S(x)   QLatin1String(x)
 #define QL1C(x)   QLatin1Char(x)
 
@@ -56,6 +56,9 @@ static QNetworkRequest::Attribute gSynchronousNetworkRequestAttribute = QNetwork
 #else // QtWebkit hack to use the internal attribute
 static QNetworkRequest::Attribute gSynchronousNetworkRequestAttribute = static_cast<QNetworkRequest::Attribute>(QNetworkRequest::HttpPipeliningWasUsedAttribute + 7);
 #endif
+
+
+
 
 static qint64 sizeFromRequest(const QNetworkRequest& req)
 {
@@ -84,7 +87,7 @@ public:
     bool emitReadyReadOnMetaDataChange;
     KIO::MetaData requestMetaData;
     KIO::MetaData sessionMetaData;
-    QWidget* window;
+    QPointer<QWidget> window;
 };
 
 namespace Integration {
@@ -209,30 +212,13 @@ void AccessManager::setEmitReadyReadOnMetaDataChange(bool enable)
 
 QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest &req, QIODevice *outgoingData)
 {
-    /*
-     * WORKAROUND: Since there is no way to do a synchronous KIO request
-     * without creating a nested event loop and creating such a loop here is
-     * the surest way to encounter the inherent flaws of creating such loops,
-     * i.e. crashes (bug# 287778), we let Qt's networking layer handle such
-     * requests because it can block without the need for nested event loops.
-     *
-     * The only consequence of doing this is the HTTP response will never be
-     * cached since it won't be handled by kio_http.
-     */
-    if (req.attribute(gSynchronousNetworkRequestAttribute).toBool()) {
-        return QNetworkAccessManager::createRequest(op, req, outgoingData);
-    }
-
-    KIO::SimpleJob *kioJob = 0;
     const KUrl reqUrl (req.url());
 
     if (!d->externalContentAllowed &&
         !KDEPrivate::AccessManagerReply::isLocalRequest(reqUrl) &&
         reqUrl.scheme() != QL1S("data")) {
         kDebug( 7044 ) << "Blocked: " << reqUrl;
-        KDEPrivate::AccessManagerReply* reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadyReadOnMetaDataChange, this);
-        reply->setStatus(i18n("Blocked request."),QNetworkReply::ContentAccessDenied);
-        return reply;
+        return new KDEPrivate::AccessManagerReply(op, req, QNetworkReply::ContentAccessDenied, i18n("Blocked request."), this);
     }
 
     // Check if the internal ignore content disposition header is set.
@@ -241,6 +227,8 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     // Retrieve the KIO meta data...
     KIO::MetaData metaData;
     d->setMetaDataForRequest(req, metaData);
+
+    KIO::SimpleJob *kioJob = 0;
 
     switch (op) {
         case HeadOperation: {
@@ -292,9 +280,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             //kDebug(7044) << "CustomOperation:" << reqUrl << "method:" << method << "outgoing data:" << outgoingData;
 
             if (method.isEmpty()) {
-                KDEPrivate::AccessManagerReply* reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadyReadOnMetaDataChange, this);
-                reply->setStatus(i18n("Unknown HTTP verb."), QNetworkReply::ProtocolUnknownError);
-                return reply;
+                return new KDEPrivate::AccessManagerReply(op, req, QNetworkReply::ProtocolUnknownError, i18n("Unknown HTTP verb."), this);
             }
 
             if (outgoingData)
@@ -311,14 +297,6 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         }
     }
 
-    // Set the window on the the KIO ui delegate
-    if (d->window) {
-        kioJob->ui()->setWindow(d->window);
-    }
-
-    // Disable internal automatic redirection handling
-    kioJob->setRedirectionHandlingEnabled(false);
-
     // Set the job priority
     switch (req.priority()) {
     case QNetworkRequest::HighPriority:
@@ -331,14 +309,62 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         break;
     }
 
-    // Set the meta data for this job...
-    kioJob->setMetaData(metaData);
+    KDEPrivate::AccessManagerReply *reply;
 
-    // Create the reply...
-    KDEPrivate::AccessManagerReply *reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadyReadOnMetaDataChange, this);
+    /*
+      NOTE: Here we attempt to handle synchronous XHR requests. Unfortunately,
+      due to the fact that QNAM is both synchronous and multi-thread while KIO
+      is completely the opposite (asynchronous and not thread safe), the code
+      below might cause crashes like the one reported in bug# 287778 (nested
+      event loops are inherently dangerous).
 
-    if (ignoreContentDisposition) {
-        kDebug(7044) << "Content-Disposition WILL BE IGNORED!";
+      Unfortunately, all attempts to address the crash has so far failed due to
+      the many regressions they caused, e.g. bug# 231932 and 297954. Hence, until
+      a solution is found, we have to live with the side effects of creating
+      nested event loops.
+    */
+    if (req.attribute(gSynchronousNetworkRequestAttribute).toBool()) {
+        KUrl finalURL;
+        QByteArray data;
+
+        if (KIO::NetAccess::synchronousRun(kioJob, d->window, &data, &finalURL, &metaData)) {
+            reply = new KDEPrivate::AccessManagerReply(op, req, data, finalURL, metaData, this);
+            kDebug(7044) << "Synchronous XHR:" << reply << reqUrl;
+        } else {
+            kWarning(7044) << "Failed to create a synchronous XHR for" << reqUrl;
+            reply = 0;
+        }
+    } else {
+        // Set the window on the the KIO ui delegate
+        if (d->window) {
+            kioJob->ui()->setWindow(d->window);
+        }
+
+        // Disable internal automatic redirection handling
+        kioJob->setRedirectionHandlingEnabled(false);
+
+        // Set the job priority
+        switch (req.priority()) {
+        case QNetworkRequest::HighPriority:
+            KIO::Scheduler::setJobPriority(kioJob, -5);
+            break;
+        case QNetworkRequest::LowPriority:
+            KIO::Scheduler::setJobPriority(kioJob, 5);
+            break;
+        default:
+            break;
+        }
+
+        // Set the meta data for this job...
+        kioJob->setMetaData(metaData);
+
+        // Create the reply...
+        reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadyReadOnMetaDataChange, this);
+        //kDebug(7044) << reply << reqUrl;
+    }
+
+    if (ignoreContentDisposition && reply) {
+        //kDebug(7044) << "Content-Disposition WILL BE IGNORED!";
         reply->setIgnoreContentDisposition(ignoreContentDisposition);
     }
 

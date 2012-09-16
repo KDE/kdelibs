@@ -111,26 +111,25 @@ find_library_with_debug(SOPRANO_SERVER_LIBRARIES
   ${KDE4_LIB_DIR}
   )
 
-
 # check Soprano version
 
+# Support SOPRANO_MIN_VERSION for compatibility:
+if(NOT Soprano_FIND_VERSION)
+  set(Soprano_FIND_VERSION "${SOPRANO_MIN_VERSION}")
+endif(NOT Soprano_FIND_VERSION)
+
 # We set a default for the minimum required version to be backwards compatible
-if(NOT SOPRANO_MIN_VERSION)
-  set(SOPRANO_MIN_VERSION "1.99")
-endif(NOT SOPRANO_MIN_VERSION)
+if(NOT Soprano_FIND_VERSION)
+  set(Soprano_FIND_VERSION "1.99")
+endif(NOT Soprano_FIND_VERSION)
+
 
 if(SOPRANO_INCLUDE_DIR)
   file(READ ${SOPRANO_INCLUDE_DIR}/soprano/version.h SOPRANO_VERSION_CONTENT)
   string(REGEX MATCH "SOPRANO_VERSION_STRING \".*\"\n" SOPRANO_VERSION_MATCH "${SOPRANO_VERSION_CONTENT}")
   if(SOPRANO_VERSION_MATCH)
     string(REGEX REPLACE "SOPRANO_VERSION_STRING \"(.*)\"\n" "\\1" SOPRANO_VERSION ${SOPRANO_VERSION_MATCH})
-    if(SOPRANO_VERSION STRLESS "${SOPRANO_MIN_VERSION}")
-      if(Soprano_FIND_REQUIRED)
-        message(FATAL_ERROR "Soprano version ${SOPRANO_VERSION} is too old. Please install ${SOPRANO_MIN_VERSION} or newer")
-      else(Soprano_FIND_REQUIRED)
-        message(STATUS "Soprano version ${SOPRANO_VERSION} is too old. Please install ${SOPRANO_MIN_VERSION} or newer")
-      endif(Soprano_FIND_REQUIRED)
-    endif(SOPRANO_VERSION STRLESS "${SOPRANO_MIN_VERSION}")
+    # find_package_handle_standard_args will do the version checking
   endif(SOPRANO_VERSION_MATCH)
 endif(SOPRANO_INCLUDE_DIR)
 
@@ -191,7 +190,7 @@ if(SOPRANO_INCLUDE_DIR)
   endif(EXISTS ${SOPRANO_PLUGIN_DIR}/virtuosobackend.desktop)
 
   # make sure the Soprano cmake macros are found
-  # We also include it directly for convinience
+  # We also include it directly for convenience
   find_file(_SOPRANO_MACRO_FILE NAMES SopranoAddOntology.cmake HINTS ${_SOPRANO_PREFIX}/share/soprano/cmake )
   if(_SOPRANO_MACRO_FILE)
     # new Soprano > 2.3.0 location

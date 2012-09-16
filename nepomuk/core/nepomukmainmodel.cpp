@@ -1,6 +1,6 @@
 /*
  * This file is part of the Nepomuk KDE project.
- * Copyright (C) 2008-2010 Sebastian Trueg <trueg@kde.org>
+ * Copyright (C) 2008-2012 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -26,8 +26,6 @@
 #include <Soprano/StatementIterator>
 #include <Soprano/NodeIterator>
 #include <Soprano/QueryResultIterator>
-#include <Soprano/Client/DBusModel>
-#include <Soprano/Client/DBusClient>
 #include <Soprano/Client/LocalSocketClient>
 #include <Soprano/Query/QueryLanguage>
 #include <Soprano/Util/DummyModel>
@@ -42,8 +40,6 @@
 #include <QtCore/QTimer>
 #include <QtCore/QMutex>
 #include <QtCore/QMutexLocker>
-#include <QtDBus/QDBusConnection>
-#include <QtDBus/QDBusConnectionInterface>
 
 
 // FIXME: disconnect localSocketClient after n seconds of idling (but take care of not
@@ -57,23 +53,18 @@ class GlobalModelContainer
 {
 public:
     GlobalModelContainer()
-        : dbusClient( "org.kde.nepomuk.services.nepomukstorage" ),
-          dbusModel( 0 ),
-          localSocketModel( 0 ),
+        : localSocketModel( 0 ),
           dummyModel( 0 ),
           m_socketConnectFailed( false ),
           m_initMutex( QMutex::Recursive ) {
     }
 
     ~GlobalModelContainer() {
-        delete dbusModel;
         delete localSocketModel;
         delete dummyModel;
     }
 
-    Soprano::Client::DBusClient dbusClient;
     Soprano::Client::LocalSocketClient localSocketClient;
-    Soprano::Client::DBusModel* dbusModel;
     Soprano::Model* localSocketModel;
 
     Soprano::Util::DummyModel* dummyModel;
@@ -83,19 +74,17 @@ public:
 
         if( forced ) {
             m_socketConnectFailed = false;
-            delete dbusModel;
-            dbusModel = 0;
-        }
-
-        // TODO: check if the service is also initialized
-        if ( !dbusModel ) {
-            dbusModel = dbusClient.createModel( "main" );
         }
 
         // we may get disconnected from the server but we don't want to try
         // to connect every time the model is requested
-        if ( forced || (!m_socketConnectFailed && !localSocketClient.isConnected()) ) {
-            delete localSocketModel;
+        if ( !m_socketConnectFailed && !localSocketClient.isConnected() ) {
+            // ###### FIXME
+            // Cannot delete the model, other threads might still be using it.
+            // With the API that returns iterators, the only way to do this right would be to
+            // use shared pointers, for refcounting the use of the model.
+            // Meanwhile, better leak (on rare occasions) than crash.
+            //delete localSocketModel;
             localSocketModel = 0;
             localSocketClient.disconnect();
             QString socketName = KGlobal::dirs()->locateLocal( "socket", "nepomuk-socket" );
@@ -118,9 +107,6 @@ public:
         // we always prefer the faster local socket client
         if ( localSocketModel ) {
             return localSocketModel;
-        }
-        else if ( dbusModel ) {
-            return dbusModel;
         }
         else {
             if ( !dummyModel ) {
@@ -156,7 +142,6 @@ Nepomuk::MainModel::MainModel( QObject* parent )
       d( new Private(this) )
 {
     setParent( parent );
-    init();
 }
 
 
@@ -168,24 +153,13 @@ Nepomuk::MainModel::~MainModel()
 
 bool Nepomuk::MainModel::isValid() const
 {
-    return s_modelContainer->dbusClient.isValid() || s_modelContainer->localSocketClient.isConnected();
+    return s_modelContainer->localSocketClient.isConnected();
 }
 
 
 bool Nepomuk::MainModel::init()
 {
     s_modelContainer->init( true );
-    if ( s_modelContainer->dbusModel ) {
-        // we have to use the dbus model for signals in any case
-        connect( s_modelContainer->dbusModel, SIGNAL(statementsAdded()),
-                 this, SIGNAL(statementsAdded()) );
-        connect( s_modelContainer->dbusModel, SIGNAL(statementsRemoved()),
-                 this, SIGNAL(statementsRemoved()) );
-        connect( s_modelContainer->dbusModel, SIGNAL(statementAdded(Soprano::Statement)),
-                 this, SIGNAL(statementAdded(Soprano::Statement)) );
-        connect( s_modelContainer->dbusModel, SIGNAL(statementRemoved(Soprano::Statement)),
-                 this, SIGNAL(statementRemoved(Soprano::Statement)) );
-    }
     return isValid();
 }
 

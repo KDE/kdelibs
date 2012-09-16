@@ -11,6 +11,9 @@
 <!ENTITY traducteurDavidAmmouial      '<othercredit role="translator"><firstname>David</firstname><surname>Ammouial</surname><affiliation><address><email></email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurDavidAmmouial        '<othercredit role="reviewer"><firstname>David</firstname><surname>Ammouial</surname><affiliation><address><email></email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
+<!ENTITY traducteurFrederickAngelique      '<othercredit role="translator"><firstname>Frederick</firstname><surname>Angelique</surname><affiliation><address><email>ti_orion@hotmail.fr</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
+<!ENTITY relecteurFrederickAngelique        '<othercredit role="reviewer"><firstname>Frederick</firstname><surname>Angelique</surname><affiliation><address><email>ti_orion@hotmail.fr</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
+
 <!ENTITY traducteurPierreAuckenthaler      '<othercredit role="translator"><firstname>Pierre</firstname><surname>Auckenthaler</surname><affiliation><address><email>pierre.auckenthaler@polytechnique.org</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurPierreAuckenthaler         '<othercredit role="reviewer"><firstname>Pierre</firstname><surname>Auckenthaler</surname><affiliation><address><email>pierre.auckenthaler@polytechnique.org</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
@@ -196,6 +199,11 @@
 <!ENTITY  traducteurPaulMarcelinNana  '<othercredit role="translator"><firstname>Paul-Marcelin</firstname><surname>Nana</surname><affiliation><address><email>paul.nana@tic.unilim.fr</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurPaulMarcelinNana   '<othercredit role="reviewer"><firstname>Paul-Marcelin</firstname><surname>Nana</surname><affiliation><address><email>paul.nana@tic.unilim.fr</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
+<!ENTITY  traducteurGregoryMarfjan  '<othercredit role="translator"><firstname>Gregory</firstname><surname>Marfjan</surname><affiliation><address><email>gmarfjan@gmail.com</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
+<!ENTITY relecteurGregoryMarfjan   '<othercredit role="reviewer"><firstname>Gregory</firstname><surname>Marfjan</surname><affiliation><address><email>gmarfjan@gmail.com</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
+
+<!ENTITY  traducteurYannNeveu  '<othercredit role="translator"><firstname>Yann</firstname><surname>Neveu</surname><affiliation><address><email>yneveu@gmail.com</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
+<!ENTITY relecteurYannNeveu   '<othercredit role="reviewer"><firstname>Yann</firstname><surname>Neveu</surname><affiliation><address><email>yneveu@gmail.com</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
 <!ENTITY traducteurCedricPasteur   '<othercredit role="translator"><firstname>Cédric</firstname><surname>Pasteur</surname><affiliation><address><email>cedric.pasteur@free.fr</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurCedricPasteur   '<othercredit role="reviewer"><firstname>Cédric</firstname><surname>Pasteur</surname><affiliation><address><email>cedric.pasteur@free.fr</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
@@ -273,6 +281,7 @@
 <!-- CREDITS FOR TRANSLATORS -->
 
 <!ENTITY DavidAmmouial     'David Ammouial <email></email>'>
+<!ENTITY FrederickAngelique 'Frederick Angelique <email>ti_orion@hotmail.fr</email>'>
 <!ENTITY PierreAuckenthaler 'Pierre Auckenthaler <email>pierre.auckenthaler@polytechnique.org</email>'>
 <!ENTITY KeziahAzad        'Keziah Azad <email>kydeza@yahoo.fr</email>'>
 <!ENTITY XavierBesnard      'Xavier Besnard <email>ktranslator31@yahoo.fr</email>'>
@@ -335,6 +344,8 @@
 <!ENTITY BaptisteMathus  'Baptiste Mathus <email>bmathus@free.fr</email>'>
 <!ENTITY Pierre-EmmanuelMuller 'Pierre-Emmanuel Müller <email>pem@levillage.org</email>'>
 <!ENTITY PaulMarcelinNana 'Paul-Marcelin Nana <email>paul.nana@tic.unilim.fr</email>'>
+<!ENTITY GregoryMarfjan 'Gregory Marfjan <email>gmarfjan@gmail.com</email>'>
+<!ENTITY YannNeveu 'Yann Neveu <email>yneveu@gmail.common</email>'>
 <!ENTITY CedricPasteur 'Cédric Pasteur <email>cedric.pasteur@free.fr</email>'>
 <!ENTITY PatricePawlak 'Patrice Pawlak <email>patrice.pawlak@free.fr</email>'>
 <!ENTITY RomainPelisse 'Romain Pelisse <email>belaran@gmail.com</email>'>

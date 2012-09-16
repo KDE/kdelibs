@@ -150,7 +150,7 @@ void KUrlCompletionTest::testLocalURL()
 {
     // Completion from URL
     kDebug() ;
-    KUrl url( m_dirURL.path() + "file" );
+    KUrl url( m_dirURL.toLocalFile() + "file" );
     m_completion->makeCompletion( url.prettyUrl() );
     waitForCompletion();
     QStringList comp1all = m_completion->allMatches();
@@ -163,10 +163,10 @@ void KUrlCompletionTest::testLocalURL()
     assert( comp1all.contains( filehash ) );
     QString filehashPath = m_completion->replacedPath( filehash ); // note that it returns a path!!
     kDebug() << filehashPath;
-    assert( filehashPath == m_dirURL.path() + "file#a" );
+    assert( filehashPath == m_dirURL.toLocalFile() + "file#a" );
 
     // Completion from URL with no match
-    url = KUrl( m_dirURL.path() + "foobar" );
+    url = KUrl( m_dirURL.toLocalFile() + "foobar" );
     kDebug() << "makeCompletion(" << url << ")";
     QString comp2 = m_completion->makeCompletion( url.prettyUrl() );
     assert( comp2.isEmpty() );
@@ -174,7 +174,7 @@ void KUrlCompletionTest::testLocalURL()
     assert( m_completion->allMatches().isEmpty() );
 
     // Completion from URL with a ref -> no match
-    url = KUrl( m_dirURL.path() + 'f' );
+    url = KUrl( m_dirURL.toLocalFile() + 'f' );
     url.setRef( "ref" );
     kDebug() << "makeCompletion(" << url << ")";
     m_completion->makeCompletion( url.prettyUrl() );

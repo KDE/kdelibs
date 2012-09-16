@@ -303,6 +303,9 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
 KAboutApplicationDialog::~KAboutApplicationDialog()
 {
     delete d;
+    // The delegate wants to be deleted before the items it created, otherwise
+    // complains bitterly about it
+    qDeleteAll(findChildren<KWidgetItemDelegate*>());
 }
 
 void KAboutApplicationDialog::Private::_k_showLicense( const QString &number )

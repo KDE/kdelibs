@@ -36,7 +36,7 @@ KCalendarEra::~KCalendarEra()
 bool KCalendarEra::isValid() const
 {
     return m_startDate.isValid() &&
-           m_startDate.isValid() &&
+           m_endDate.isValid() &&
            !m_longName.isEmpty() &&
            !m_shortName.isEmpty() &&
            !m_format.isEmpty();
