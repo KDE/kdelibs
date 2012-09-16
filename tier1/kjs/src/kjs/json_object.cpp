@@ -22,7 +22,6 @@
 #include "json_object.h"
 
 #include "jsonlexer.h"
-#include <config.h>
 #include "lookup.h"
 #include "array_instance.h"
 #include "jsonstringify.h"
