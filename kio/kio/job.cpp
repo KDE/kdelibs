@@ -2522,10 +2522,15 @@ void ListJobPrivate::gotEntries(KIO::Job *, const KIO::UDSEntryList& list )
 
 void ListJob::slotResult( KJob * job )
 {
-    // If we can't list a subdir, the result is still ok
-    // This is why we override Job::slotResult() - to skip error checking
-    removeSubjob( job );
-    if ( !hasSubjobs() )
+    if (job->error()) {
+	// If we can't list a subdir, the result is still ok
+	// This is why we override KCompositeJob::slotResult - to not set
+	// an error on parent job.
+	// Let's emit a signal about this though
+	emit subError(this, static_cast<KIO::ListJob*>(job));
+    }
+    removeSubjob(job);
+    if (!hasSubjobs())
         emitResult();
 }
 

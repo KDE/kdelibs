@@ -775,6 +775,39 @@ static double getCurrentUTCTime()
     return utc;
 }
 
+static bool isNaNorInf(double value)
+{
+    return isNaN(value) || isInf(value);
+}
+
+static double makeTimeFromList(ExecState *exec, const List &args, bool utc)
+{
+    const int numArgs = args.size();
+    if (isNaNorInf(args[0]->toNumber(exec))
+        || isNaNorInf(args[1]->toNumber(exec))
+        || (numArgs >= 3 && isNaNorInf(args[2]->toNumber(exec)))
+        || (numArgs >= 4 && isNaNorInf(args[3]->toNumber(exec)))
+        || (numArgs >= 5 && isNaNorInf(args[4]->toNumber(exec)))
+        || (numArgs >= 6 && isNaNorInf(args[5]->toNumber(exec)))
+        || (numArgs >= 7 && isNaNorInf(args[6]->toNumber(exec)))) {
+      return NaN;
+    }
+
+    tm t;
+    memset(&t, 0, sizeof(t));
+    int year = args[0]->toInt32(exec);
+    t.tm_year = (year >= 0 && year <= 99) ? year : year - 1900;
+    t.tm_mon = args[1]->toInt32(exec);
+    t.tm_mday = (numArgs >= 3) ? args[2]->toInt32(exec) : 1;
+    t.tm_hour = (numArgs >= 4) ? args[3]->toInt32(exec) : 0;
+    t.tm_min = (numArgs >= 5) ? args[4]->toInt32(exec) : 0;
+    t.tm_sec = (numArgs >= 6) ? args[5]->toInt32(exec) : 0;
+    if (!utc)
+        t.tm_isdst = -1;
+    double ms = (numArgs >= 7) ? roundValue(exec, args[6]) : 0;
+    return makeTime(&t, ms, true);
+}
+
 // ECMA 15.9.3
 JSObject *DateObjectImp::construct(ExecState *exec, const List &args)
 {
@@ -795,29 +828,7 @@ JSObject *DateObjectImp::construct(ExecState *exec, const List &args)
         value = primitive->toNumber(exec);
     }
   } else {
-    JSValue* arg0 = args[0];
-    if (isNaN(arg0->toNumber(exec))
-        || isNaN(args[1]->toNumber(exec))
-        || (numArgs >= 3 && isNaN(args[2]->toNumber(exec)))
-        || (numArgs >= 4 && isNaN(args[3]->toNumber(exec)))
-        || (numArgs >= 5 && isNaN(args[4]->toNumber(exec)))
-        || (numArgs >= 6 && isNaN(args[5]->toNumber(exec)))
-        || (numArgs >= 7 && isNaN(args[6]->toNumber(exec)))) {
-      value = NaN;
-    } else {
-      tm t;
-      memset(&t, 0, sizeof(t));
-      int year = arg0->toInt32(exec);
-      t.tm_year = (year >= 0 && year <= 99) ? year : year - 1900;
-      t.tm_mon = args[1]->toInt32(exec);
-      t.tm_mday = (numArgs >= 3) ? args[2]->toInt32(exec) : 1;
-      t.tm_hour = (numArgs >= 4) ? args[3]->toInt32(exec) : 0;
-      t.tm_min = (numArgs >= 5) ? args[4]->toInt32(exec) : 0;
-      t.tm_sec = (numArgs >= 6) ? args[5]->toInt32(exec) : 0;
-      t.tm_isdst = -1;
-      double ms = (numArgs >= 7) ? roundValue(exec, args[6]) : 0;
-      value = makeTime(&t, ms, false);
-    }
+    value = makeTimeFromList(exec, args, false);
   }
 
   DateInstance *ret = new DateInstance(exec->lexicalInterpreter()->builtinDatePrototype());
@@ -849,28 +860,7 @@ JSValue *DateObjectFuncImp::callAsFunction(ExecState* exec, JSObject*, const Lis
   } else if (id == Now) {
     return jsNumber(getCurrentUTCTime());
   } else { // UTC
-    int n = args.size();
-    if (isNaN(args[0]->toNumber(exec))
-        || isNaN(args[1]->toNumber(exec))
-        || (n >= 3 && isNaN(args[2]->toNumber(exec)))
-        || (n >= 4 && isNaN(args[3]->toNumber(exec)))
-        || (n >= 5 && isNaN(args[4]->toNumber(exec)))
-        || (n >= 6 && isNaN(args[5]->toNumber(exec)))
-        || (n >= 7 && isNaN(args[6]->toNumber(exec)))) {
-      return jsNaN();
-    }
-
-    tm t;
-    memset(&t, 0, sizeof(t));
-    int year = args[0]->toInt32(exec);
-    t.tm_year = (year >= 0 && year <= 99) ? year : year - 1900;
-    t.tm_mon = args[1]->toInt32(exec);
-    t.tm_mday = (n >= 3) ? args[2]->toInt32(exec) : 1;
-    t.tm_hour = (n >= 4) ? args[3]->toInt32(exec) : 0;
-    t.tm_min = (n >= 5) ? args[4]->toInt32(exec) : 0;
-    t.tm_sec = (n >= 6) ? args[5]->toInt32(exec) : 0;
-    double ms = (n >= 7) ? roundValue(exec, args[6]) : 0;
-    return jsNumber(makeTime(&t, ms, true));
+    return jsNumber(makeTimeFromList(exec, args, true));
   }
 }
 

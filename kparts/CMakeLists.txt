@@ -31,6 +31,7 @@ set(kparts_LIB_SRCS
    textextension.cpp
    htmlextension.cpp
    fileinfoextension.cpp
+   listingextension.cpp
    )
 
 kde4_add_library(kparts ${LIBRARY_TYPE} ${kparts_LIB_SRCS})
@@ -57,5 +58,5 @@ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kparts_export.h part.h plugin.h partm
          browserextension.h factory.h historyprovider.h browserinterface.h
          browserrun.h statusbarextension.h browseropenorsavequestion.h
          scriptableextension.h textextension.h htmlextension.h fileinfoextension.h
+         listingextension.h
          DESTINATION  ${INCLUDE_INSTALL_DIR}/kparts COMPONENT Devel )
-

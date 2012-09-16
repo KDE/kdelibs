@@ -24,8 +24,10 @@
 
 #include <QtCore/QDebug>
 #include <QtCore/QSharedPointer>
+#include <QtCore/QBasicAtomicInt>
 
-#include <unistd.h>
+#include <unistd.h> // Check for sched_yield
+#include <sched.h>  // sched_yield
 #include <errno.h>
 #include <fcntl.h>
 #include <time.h>
@@ -112,6 +114,69 @@ public:
     }
 };
 
+/**
+ * This is a very basic lock that should work on any system where GCC atomic
+ * intrinsics are supported. It can waste CPU so better primitives should be
+ * used if available on the system.
+ */
+class simpleSpinLock : public KSDCLock
+{
+public:
+    simpleSpinLock(QBasicAtomicInt &spinlock)
+        : m_spinlock(spinlock)
+    {
+    }
+
+    virtual bool initialize(bool &processSharingSupported)
+    {
+        // Clear the spinlock
+        m_spinlock = 0;
+        processSharingSupported = true;
+        return true;
+    }
+
+    virtual bool lock()
+    {
+        // Spin a few times attempting to gain the lock, as upper-level code won't
+        // attempt again without assuming the cache is corrupt.
+        for (unsigned i = 50; i > 0; --i) {
+            if (m_spinlock.testAndSetAcquire(0, 1)) {
+                return true;
+            }
+
+            // Don't steal the processor and starve the thread we're waiting
+            // on.
+            loopSpinPause();
+        }
+
+        return false;
+    }
+
+    virtual void unlock()
+    {
+        m_spinlock.testAndSetRelease(1, 0);
+    }
+
+private:
+#ifdef Q_CC_GNU
+    __attribute__((always_inline, gnu_inline, artificial))
+#endif
+    static inline void loopSpinPause()
+    {
+        // TODO: Spinning might be better in multi-core systems... but that means
+        // figuring how to find numbers of CPUs in a cross-platform way.
+#ifdef _POSIX_PRIORITY_SCHEDULING
+        sched_yield();
+#else
+        // Sleep for shortest possible time (nanosleep should round-up).
+        struct timespec wait_time = { 0 /* sec */, 100 /* ns */ };
+        ::nanosleep(&wait_time, static_cast<struct timespec*>(0));
+#endif
+    }
+
+    QBasicAtomicInt &m_spinlock;
+};
+
 #ifdef KSDC_THREAD_PROCESS_SHARED_SUPPORTED
 class pthreadLock : public KSDCLock
 {
@@ -180,7 +245,7 @@ public:
         timeout.tv_sec = 10 + ::time(NULL); // Absolute time, so 10 seconds from now
         timeout.tv_nsec = 0;
 
-        return pthread_mutex_timedlock(&m_mutex, &timeout) >= 0;
+        return pthread_mutex_timedlock(&m_mutex, &timeout) == 0;
     }
 };
 #endif
@@ -259,7 +324,8 @@ public:
 enum SharedLockId {
     LOCKTYPE_INVALID   = 0,
     LOCKTYPE_MUTEX     = 1,  // pthread_mutex
-    LOCKTYPE_SEMAPHORE = 2   // sem_t
+    LOCKTYPE_SEMAPHORE = 2,  // sem_t
+    LOCKTYPE_SPINLOCK  = 3   // atomic int in shared memory
 };
 
 // This type is a union of all possible lock types, with a SharedLockId used
@@ -274,6 +340,7 @@ struct SharedLock
 #if defined(KSDC_SEMAPHORES_SUPPORTED)
         sem_t semaphore;
 #endif
+        QBasicAtomicInt spinlock;
 
         // It would be highly unfortunate if a simple glibc upgrade or kernel
         // addition caused this structure to change size when an existing
@@ -295,8 +362,6 @@ static SharedLockId findBestSharedLock()
     // We would prefer a process-shared capability that also supports
     // timeouts. Failing that, process-shared is preferred over timeout
     // support. Failing that we'll go thread-local
-    bool pthreadsSupported = false;
-    bool semaphoresSupported = false;
     bool timeoutsSupported = false;
     bool pthreadsProcessShared = false;
     bool semaphoresProcessShared = false;
@@ -320,7 +385,7 @@ static SharedLockId findBestSharedLock()
             tempLock = QSharedPointer<KSDCLock>(new pthreadLock(tempMutex));
         }
 
-        pthreadsSupported = tempLock->initialize(pthreadsProcessShared);
+        tempLock->initialize(pthreadsProcessShared);
     }
 #endif
 
@@ -340,7 +405,7 @@ static SharedLockId findBestSharedLock()
             tempLock = QSharedPointer<KSDCLock>(new semaphoreLock(tempSemaphore));
         }
 
-        semaphoresSupported = tempLock->initialize(semaphoresProcessShared);
+        tempLock->initialize(semaphoresProcessShared);
     }
 #endif
 
@@ -353,16 +418,9 @@ static SharedLockId findBestSharedLock()
     else if(semaphoresProcessShared) {
         return LOCKTYPE_SEMAPHORE;
     }
-    else if(pthreadsSupported) {
-        return LOCKTYPE_MUTEX;
-    }
-    else if(semaphoresSupported) {
-        return LOCKTYPE_SEMAPHORE;
-    }
 
-    // If we get to this point we'll likely fail later but this is the
-    // standard behavior that has existed as well, so...
-    return static_cast<SharedLockId>(0);
+    // Fallback to a dumb-simple but possibly-CPU-wasteful solution.
+    return LOCKTYPE_SPINLOCK;
 }
 
 static KSDCLock *createLockFromId(SharedLockId id, SharedLock &lock)
@@ -391,6 +449,10 @@ static KSDCLock *createLockFromId(SharedLockId id, SharedLock &lock)
 
     break;
 #endif
+
+    case LOCKTYPE_SPINLOCK:
+        return new simpleSpinLock(lock.spinlock);
+    break;
 
     default:
         qCritical() << "Creating shell of a lock!";

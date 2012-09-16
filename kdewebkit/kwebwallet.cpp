@@ -40,11 +40,14 @@
 // Javascript used to extract/set data from <form> elements.
 #define FILLABLE_FORM_ELEMENT_EXTRACTOR_JS "(function (){ \
     var forms; \
-    var formList = document.querySelectorAll('form'); \
+    var formList = document.forms; \
     if (formList.length > 0) { \
         forms = new Array; \
         for (var i = 0; i < formList.length; ++i) { \
-            var inputList = formList[i].querySelectorAll('input[type=text]:not([disabled]):not([autocomplete=off]),input[type=password]:not([disabled]):not([autocomplete=off]),input:not([type]):not([disabled]):not([autocomplete=off])'); \
+            var inputList = formList[i].querySelectorAll('input[type=text]:not([disabled]):not([autocomplete=off]),\
+                                                          input[type=email]:not([disabled]):not([autocomplete=off]),\
+                                                          input[type=password]:not([disabled]):not([autocomplete=off]),\
+                                                          input:not([type]):not([disabled]):not([autocomplete=off])'); \
             if (inputList.length < 1) { \
                 continue; \
             } \
@@ -446,9 +449,27 @@ void KWebWallet::fillFormData(QWebFrame *frame, bool recursive)
         fillFormDataFromCache(urlList);
 }
 
+static void createSaveKeyFor(QWebFrame* frame, QString* key)
+{
+    QUrl frameUrl(urlForFrame(frame));
+    frameUrl.setPassword(QString());
+    frameUrl.setPassword(QString());
+
+    QString keyStr = frameUrl.toString();
+    if (!frame->frameName().isEmpty())
+        keyStr += frame->frameName();
+
+    *key = QString::number(qHash(keyStr), 16);
+}
+
 void KWebWallet::saveFormData(QWebFrame *frame, bool recursive, bool ignorePasswordFields)
 {
     if (!frame)
+        return;
+
+    QString key;
+    createSaveKeyFor(frame, &key);
+    if (d->pendingSaveRequests.contains(key))
         return;
 
     WebFormList list = d->parseFormData(frame, false, ignorePasswordFields);
@@ -463,16 +484,13 @@ void KWebWallet::saveFormData(QWebFrame *frame, bool recursive, bool ignorePassw
     if (list.isEmpty())
         return;
 
-    const QString key = QString::number(qHash(urlForFrame(frame).toString() + frame->frameName()), 16);
-    const bool isAlreadyPending = d->pendingSaveRequests.contains(key);
     d->pendingSaveRequests.insert(key, list);
 
-    if (isAlreadyPending)
-        return;
-
-    for (int i = 0 ; i < list.count(); ++i) {
-        if (hasCachedFormData(list.at(i)))
-            list.takeAt(i);
+    QMutableListIterator<WebForm> it (list);
+    while (it.hasNext()) {
+        const WebForm form (it.next());
+        if (hasCachedFormData(form))
+            it.remove();
     }
 
     if (list.isEmpty()) {

@@ -90,14 +90,7 @@ void KDialogJobUiDelegate::slotWarning(KJob* /*job*/, const QString &plain, cons
 {
     if (isAutoWarningHandlingEnabled())
     {
-        static uint msgBoxDisplayed = 0;
-        if ( msgBoxDisplayed == 0 ) // don't bomb the user with message boxes, only one at a time
-        {
-            msgBoxDisplayed++;
-            KMessageBox::information( d->errorParentWidget, plain );
-            msgBoxDisplayed--;
-        }
-        // otherwise just discard it.
+	KMessageBox::queuedMessageBox(d->errorParentWidget, KMessageBox::Information, plain);
     }
 }
 

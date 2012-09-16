@@ -189,6 +189,8 @@ void ECMAscriptTest::initTestCase()
                                                .filter( QRegExp( "^[^#].*" ) );
         }
     }
+
+    m_passed = 0;
 }
 
 static QByteArray getTextProperty( const QByteArray &property, const QByteArray &code )
@@ -273,8 +275,10 @@ void ECMAscriptTest::runAllTests()
         if ( knownBroken ) {
             QWARN( "It is known that KJS doesn't pass this test" );
             QVERIFY2( completion.complType() == KJS::Throw, "test expected to be broken now works!" );
+            m_failed++;
         } else {
             QVERIFY( completion.complType() != KJS::Throw );
+            m_passed++;
         }
     } else {
         if ( knownBroken && completion.complType() != KJS::Throw ) {
@@ -289,8 +293,10 @@ void ECMAscriptTest::runAllTests()
                 if ( knownBroken ) {
                     QWARN( "It is known that KJS doesn't pass this test" );
                     QVERIFY2( eMsg.indexOf( "NotEarlyError" ) >= 0, "test expected to be broken now works!" );
+                    m_failed++;
                 } else {
                     QVERIFY( eMsg.indexOf( "NotEarlyError" ) == -1 );
+                    m_passed++;
                 }
             } else if ( expectedError == "." ) {
                 // means "every exception passes
@@ -298,8 +304,10 @@ void ECMAscriptTest::runAllTests()
                 if ( knownBroken ) {
                     QWARN( "It is known that KJS doesn't pass this test" );
                     QVERIFY2( eMsg.indexOf( expectedError ) == -1, "test expected to be broken now works!" );
+                    m_failed++;
                 } else {
                     QVERIFY( eMsg.indexOf( expectedError ) >= 0 );
+                    m_passed++;
                 }
             }
         }
@@ -320,7 +328,7 @@ void ECMAscriptTest::runAllTests_data()
         QWARN( QByteArray("===> Testing chapter " + chapter.toAscii()).constData() );
 
     // some tests fail when the suite is run as a whole
-    if ( chapter.isEmpty() || chapter == "ch15" ) {
+    if ( chapter.isEmpty() || chapter.startsWith("ch15") ) {
         const QByteArray endlessLoop = "this test causes an endless loop, avoid it for the moment";
         skips[ "S15.1.2.3_A6" ] = endlessLoop;
         skips[ "S15.1.3.1_A2.5_T1" ] = endlessLoop;
@@ -349,6 +357,11 @@ void ECMAscriptTest::runAllTests_data()
 void ECMAscriptTest::cleanup()
 {
     global->clearProperties();
+}
+
+void ECMAscriptTest::cleanupTestCase()
+{
+    qDebug() << "passed testcases:" << m_passed << "failed testcases:" << m_failed;
 }
 
 #include "ecmatest.moc"

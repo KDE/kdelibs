@@ -262,11 +262,10 @@ bool EPSHandler::write(const QImage &image)
 #warning QT5 Port to whatever replaces this?
 #endif
     psOut.setFullPage(true);
+    psOut.setPaperSize(image.size(), QPrinter::DevicePixel);
 
     // painting the pixmap to the "printer" which is a file
     p.begin( &psOut );
-    // Qt uses the clip rect for the bounding box
-    p.setClipRect( 0, 0, image.width(), image.height());
     p.drawImage( QPoint( 0, 0 ), image );
     p.end();
 

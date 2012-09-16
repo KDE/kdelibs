@@ -471,7 +471,9 @@ void HTTPProtocol::resetSessionSettings()
   m_request.useCookieJar = config()->readEntry("Cookies", false);
   m_request.cacheTag.useCache = config()->readEntry("UseCache", true);
   m_request.preferErrorPage = config()->readEntry("errorPage", true);
-  m_request.doNotAuthenticate = config()->readEntry("no-auth", false);
+  const bool noAuth = config()->readEntry("no-auth", false);
+  m_request.doNotWWWAuthenticate = config()->readEntry("no-www-auth", noAuth);
+  m_request.doNotProxyAuthenticate = config()->readEntry("no-proxy-auth", noAuth);
   m_strCacheDir = config()->readPathEntry("CacheDir", QString());
   m_maxCacheAge = config()->readEntry("MaxCacheAge", DEFAULT_MAX_CACHE_AGE);
   m_request.windowId = config()->readEntry("window-id");
@@ -3436,7 +3438,8 @@ endParsing:
         // TODO cache the proxy auth data (not doing this means a small performance regression for now)
 
         // we may need to send (Proxy or WWW) authorization data
-        if (!m_request.doNotAuthenticate && isAuthenticationRequired(m_request.responseCode)) {
+        if ((!m_request.doNotWWWAuthenticate && m_request.responseCode == 401) ||
+            (!m_request.doNotProxyAuthenticate && m_request.responseCode == 407)) {
             authRequiresAnotherRoundtrip = handleAuthenticationHeader(&tokenizer);
             if (m_iError) {
                 // If error is set, then handleAuthenticationHeader failed.

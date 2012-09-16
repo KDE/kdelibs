@@ -406,7 +406,7 @@ struct SharedMemory
         unsigned _pageSize = static_cast<unsigned>(pageSize.load());
 #endif
         // bits 9-18 may be set.
-        static const unsigned validSizeMask = 0x2F200u;
+        static const unsigned validSizeMask = 0x7FE00u;
 
         // Check for page sizes that are not a power-of-2, or are too low/high.
         if (Q_UNLIKELY(countSetBits(_pageSize) != 1 || (_pageSize & ~validSizeMask))) {

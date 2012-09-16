@@ -24,7 +24,7 @@
 
 #include <ifaces/storagedrive.h>
 
-#include "../shared/udevqtdevice.h"
+#include "../shared/udevqt.h"
 
 #include "udisksblock.h"
 

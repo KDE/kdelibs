@@ -1167,14 +1167,14 @@ void RenderLineEdit::calcMinMaxWidth()
     const QFontMetrics &fm = style()->fontMetrics();
     QSize s;
 
-    int size = element()->size();
+    int size = (element()->size() > 0) ? (element()->size() + 1) : 17; // "some"
 
     int h = fm.lineSpacing();
-    int w = fm.width( 'x' ) * (size > 0 ? size+1 : 17); // "some"
+    int w = (fm.height() * size) / 2; // on average a character cell is twice as tall as it is wide
 
     QStyleOptionFrame opt;
     opt.initFrom(widget());
-    if (static_cast<LineEditWidget*>(widget())->hasFrame())
+    if (widget()->hasFrame())
         opt.lineWidth = widget()->style()->pixelMetric(QStyle::PM_DefaultFrameWidth, &opt, widget());
 
     s = QSize(w, qMax(h, 14));
@@ -1483,21 +1483,22 @@ void RenderFileButton::calcMinMaxWidth()
     KHTMLAssert( !minMaxKnown() );
 
     const QFontMetrics &fm = style()->fontMetrics();
-    int size = element()->size();
+    int size = (element()->size() > 0) ? (element()->size() + 1) : 17; // "some"
 
     int h = fm.lineSpacing();
-    int w = fm.width( 'x' ) * (size > 0 ? size+1 : 17); // "some"
-    KLineEdit* edit = static_cast<KUrlRequester*>( m_widget )->lineEdit();
+    int w = (fm.height() * size) / 2; // on average a character cell is twice as tall as it is wide
+    KLineEdit* edit = widget()->lineEdit();
 
     QStyleOptionFrame opt;
     opt.initFrom(edit);
     if (edit->hasFrame())
         opt.lineWidth = edit->style()->pixelMetric(QStyle::PM_DefaultFrameWidth, &opt, edit);
-    QSize s = edit->style()->sizeFromContents(QStyle::CT_LineEdit,
-                                             &opt,
-          QSize(w, qMax(h, 14)), edit)
-        .expandedTo(QApplication::globalStrut());
-    QSize bs = static_cast<KUrlRequester*>( m_widget )->minimumSizeHint() - edit->minimumSizeHint();
+
+    QSize s(w, qMax(h, 14));
+    s = edit->style()->sizeFromContents(QStyle::CT_LineEdit, &opt, s, edit);
+    s = s.expandedTo(QApplication::globalStrut());
+
+    QSize bs = widget()->minimumSizeHint() - edit->minimumSizeHint();
 
     setIntrinsicWidth( s.width() + bs.width() );
     setIntrinsicHeight( qMax(s.height(), bs.height()) );
@@ -2363,7 +2364,7 @@ void RenderTextArea::setText(const QString& newText)
         int cx = w->horizontalScrollBar()->value();
         int cy = w->verticalScrollBar()->value();
         // Not using setPlaintext as it resets text alignment property
-        int minLen = (newTextLen < oldTextLen) ? newTextLen : oldTextLen;
+        int minLen = qMin(newTextLen, oldTextLen);
         int ex = 0;
         while (ex < minLen && (newText.at(ex) == oldText.at(ex)))
                ++ex;

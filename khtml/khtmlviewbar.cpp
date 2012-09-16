@@ -30,7 +30,7 @@
 KHTMLViewBar::KHTMLViewBar( Position position, KHTMLView *view, QWidget *parent ) :
     QWidget( parent ),
     m_view( view ),
-    m_permanentBarWidget( false )
+    m_permanentBarWidget( 0 )
 {
     const QBoxLayout::Direction direction = ( position == Top ? QBoxLayout::TopToBottom : QBoxLayout::BottomToTop );
 
