@@ -21,7 +21,6 @@
 #include "partmanager.h"
 #include <kparts/event.h>
 #include <kparts/part.h>
-#include <kglobal.h>
 #include <kdebug.h>
 
 #include <QApplication>
@@ -472,8 +471,8 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
             QApplication::sendEvent( d->m_activeWidget, &ev );
         }
     }
-    // Set the new active instance in KGlobal
-    setActiveComponent(d->m_activePart ? d->m_activePart->componentData() : KGlobal::mainComponent());
+    // Set the new active instance
+    setActiveComponent(d->m_activePart ? d->m_activePart->componentData() : KComponentData::mainComponent());
 
 #ifdef DEBUG_PARTMANAGER
     kDebug(1000) << this << " emitting activePartChanged " << d->m_activePart;
@@ -484,7 +483,7 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
 void PartManager::setActiveComponent(const KComponentData &instance)
 {
     // It's a separate method to allow redefining this behavior
-    KGlobal::setActiveComponent(instance);
+    KComponentData::setActiveComponent(instance);
 }
 
 Part *PartManager::activePart() const

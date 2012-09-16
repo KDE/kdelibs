@@ -27,7 +27,6 @@
 #undef KDE3_SUPPORT
 
 #include "kglobal.h"
-#include "kglobal_p.h"
 #include <QThread>
 
 #include <kdefakes.h>
@@ -53,15 +52,6 @@
 #include <QtCore/QTextCodec>
 #include "kcmdlineargs.h"
 #include <unistd.h> // umask
-
-#ifndef NDEBUG
-#define MYASSERT(x) if (!x) \
-   qFatal("Fatal error: you need to have a KComponentData object before\n" \
-         "you do anything that requires it! Examples of this are config\n" \
-         "objects, standard directories or translations.");
-#else
-#define MYASSERT(x) /* nope */
-#endif
 
 // ~KConfig needs qrand(). qrand() depends on a Q_GLOBAL_STATIC. With this Q_CONSTRUCTOR_FUNCTION we
 // try to make qrand() live longer than any KConfig object.
@@ -92,25 +82,8 @@ class KGlobalPrivate
         }
 
         KStandardDirs *dirs;
-        KComponentData activeComponent;
-        KComponentData mainComponent; // holds a refcount
         KStringDict *stringDict;
         QStringList catalogsToInsert;
-
-        /**
-         * This component may be used in applications that doesn't have a
-         * main component (such as pure Qt applications).
-         */
-        static KComponentData initFakeComponent()
-        {
-            QString name = QCoreApplication::applicationName();
-            if(name.isEmpty() && QCoreApplication::instance())
-                name = qAppName();
-            if(name.isEmpty())
-                name = QString::fromLatin1("kde");
-            return KComponentData(name.toLatin1(), name.toLatin1(),
-                                  KComponentData::SkipMainComponentRegistration);
-        }
 };
 
 KCatalogLoader::KCatalogLoader(const QString &catalogName)
@@ -118,9 +91,7 @@ KCatalogLoader::KCatalogLoader(const QString &catalogName)
     KLocale::global()->insertCatalog(catalogName);
 }
 
-
 K_GLOBAL_STATIC(KGlobalPrivate, globalData)
-Q_GLOBAL_STATIC_WITH_ARGS(KComponentData, fakeComponent, (KGlobalPrivate::initFakeComponent()))
 
 #define PRIVATE_DATA KGlobalPrivate *d = globalData
 
@@ -139,22 +110,17 @@ KStandardDirs *KGlobal::dirs()
 
 KSharedConfig::Ptr KGlobal::config()
 {
-    return mainComponent().config();
+    return KComponentData::mainComponent().config();
 }
 
 const KComponentData &KGlobal::mainComponent()
 {
-    PRIVATE_DATA;
-    return d->mainComponent.isValid() ? d->mainComponent : *fakeComponent();
+    return KComponentData::mainComponent();
 }
 
 bool KGlobal::hasMainComponent()
 {
-    if (globalData.isDestroyed()) {
-        return false;
-    }
-    PRIVATE_DATA;
-    return d->mainComponent.isValid();
+    return KComponentData::hasMainComponent();
 }
 
 void KGlobal::insertCatalog(const QString& catalog)
@@ -185,30 +151,12 @@ mode_t KGlobal::umask()
 
 KComponentData KGlobal::activeComponent()
 {
-    PRIVATE_DATA;
-    MYASSERT(d->activeComponent.isValid());
-    return d->activeComponent;
+    return KComponentData::activeComponent();
 }
 
 void KGlobal::setActiveComponent(const KComponentData &c)
 {
-    PRIVATE_DATA;
-    d->activeComponent = c;
-    if (c.isValid()) {
-        KLocale::global()->setActiveCatalog(c.catalogName());
-    }
-}
-
-void KGlobal::newComponentData(const KComponentData &c)
-{
-    PRIVATE_DATA;
-    if (d->mainComponent.isValid()) {
-        return;
-    }
-    d->mainComponent = c;
-    KSharedConfig::setMainConfigName(c.aboutData()->appName() + QLatin1String("rc"));
-    KLocale::setMainCatalog(c.catalogName());
-    KGlobal::setActiveComponent(c);
+    KComponentData::setActiveComponent(c);
 }
 
 /**
@@ -240,15 +188,15 @@ const QString &KGlobal::staticQString(const QString &str)
 
 QString KGlobal::caption()
 {
-    PRIVATE_DATA;
     // Caption set from command line ?
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
     if (args && args->isSet("caption")) {
         return args->getOption("caption");
     } else {
         // We have some about data ?
-        if (d->mainComponent.isValid() && d->mainComponent.aboutData()) {
-            return d->mainComponent.aboutData()->programName();
+        const KComponentData& cData = KComponentData::mainComponent();
+        if (cData.isValid() && cData.aboutData()) {
+            return cData.aboutData()->programName();
         } else {
             // Last resort : application name
             return QCoreApplication::instance()->applicationName();

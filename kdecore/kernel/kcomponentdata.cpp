@@ -26,12 +26,18 @@
 #include "kaboutdata.h"
 #include "kcmdlineargs.h"
 #include "kconfig.h"
-#include "kglobal.h"
-#include "kglobal_p.h"
 #include "klocalizedstring.h"
 #include "kconfiggroup.h"
-#include "kstandarddirs.h"
 #include <QtDebug>
+
+#ifndef NDEBUG
+#define MYASSERT(x) if (!x) \
+   qFatal("Fatal error: you need to have a KComponentData object before\n" \
+         "you do anything that requires it! Examples of this are config\n" \
+         "objects, standard directories or translations.");
+#else
+#define MYASSERT(x) /* nope */
+#endif
 
 KComponentData::KComponentData()
     : d(0)
@@ -72,6 +78,43 @@ enum KdeLibraryPathsAdded {
 };
 static KdeLibraryPathsAdded kdeLibraryPathsAdded = NeedLazyInit;
 
+class KComponentDataStatic
+{
+public:
+    KComponentData mainComponent; // holds a refcount
+    KComponentData activeComponent;
+
+    void newComponentData(const KComponentData &c)
+    {
+        if (mainComponent.isValid()) {
+            return;
+        }
+        mainComponent = c;
+        KSharedConfig::setMainConfigName(c.aboutData()->appName() + QLatin1String("rc"));
+        KLocale::setMainCatalog(c.catalogName());
+        KComponentData::setActiveComponent(c);
+    }
+};
+
+
+/**
+ * This component may be used in applications that doesn't have a
+ * main component (such as pure Qt applications).
+ */
+static KComponentData initFakeComponent()
+{
+    QString name = QCoreApplication::applicationName();
+    if(name.isEmpty() && QCoreApplication::instance())
+        name = qAppName();
+    if(name.isEmpty())
+        name = QString::fromLatin1("kde");
+    return KComponentData(name.toLatin1(), name.toLatin1(),
+                          KComponentData::SkipMainComponentRegistration);
+}
+
+Q_GLOBAL_STATIC(KComponentDataStatic, globalStatic)
+Q_GLOBAL_STATIC_WITH_ARGS(KComponentData, fakeComponent, (initFakeComponent()))
+
 KComponentData::KComponentData(const QByteArray &name, const QByteArray &catalog, MainComponentRegistration registerAsMain)
     : d(new KComponentDataPrivate(KAboutData(name, catalog, QLocalizedString(), "", QLocalizedString())))
 {
@@ -83,7 +126,7 @@ KComponentData::KComponentData(const QByteArray &name, const QByteArray &catalog
     }
 
     if (registerAsMain == RegisterAsMainComponent) {
-        KGlobal::newComponentData(*this);
+        globalStatic()->newComponentData(*this);
     }
 }
 
@@ -98,7 +141,7 @@ KComponentData::KComponentData(const KAboutData *aboutData, MainComponentRegistr
     }
 
     if (registerAsMain == RegisterAsMainComponent) {
-        KGlobal::newComponentData(*this);
+        globalStatic()->newComponentData(*this);
     }
 }
 
@@ -113,7 +156,7 @@ KComponentData::KComponentData(const KAboutData &aboutData, MainComponentRegistr
     }
 
     if (registerAsMain == RegisterAsMainComponent) {
-        KGlobal::newComponentData(*this);
+        globalStatic()->newComponentData(*this);
     }
 }
 
@@ -221,6 +264,32 @@ QString KComponentData::catalogName() const
 {
     Q_ASSERT(d);
     return d->aboutData.catalogName();
+}
+
+bool KComponentData::hasMainComponent()
+{
+    KComponentDataStatic* s = globalStatic();
+    return s && s->mainComponent.isValid();
+}
+
+const KComponentData& KComponentData::mainComponent()
+{
+    KComponentDataStatic* s = globalStatic();
+    return s && s->mainComponent.isValid() ? s->mainComponent : *fakeComponent();
+}
+
+const KComponentData& KComponentData::activeComponent()
+{
+    MYASSERT(globalStatic()->activeComponent.isValid());
+    return globalStatic()->activeComponent;
+}
+
+void KComponentData::setActiveComponent(const KComponentData &c)
+{
+    globalStatic()->activeComponent = c;
+    if (c.isValid()) {
+        KLocale::global()->setActiveCatalog(c.catalogName());
+    }
 }
 
 void KComponentData::virtual_hook(int, void*)

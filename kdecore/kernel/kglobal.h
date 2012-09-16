@@ -400,14 +400,16 @@ namespace KGlobal
      * one instance of a component in one application (in most
      * cases the application itself).
      * @return the global component data
+     * @deprecated since 5.0 use KComponentData::mainComponent() if you really need a KComponentData
      */
-    KDECORE_EXPORT const KComponentData &mainComponent(); //krazy:exclude=constref (don't mess up ref-counting)
+    KDECORE_DEPRECATED_EXPORT const KComponentData &mainComponent(); //krazy:exclude=constref (don't mess up ref-counting)
 
     /**
      * @internal
      * Returns whether a main KComponentData is available.
+     * @deprecated since 5.0, use KComponentData::hasMainComponent() if you really need a KComponentData
      */
-    KDECORE_EXPORT bool hasMainComponent();
+    KDECORE_DEPRECATED_EXPORT bool hasMainComponent();
 
     /**
      * Returns the application standard dirs object.
@@ -498,7 +500,7 @@ namespace KGlobal
      * and as you know static objects are EVIL.
      * @param str the string to create
      * @return the static string
-     * @deprecated don't make the string static
+     * @deprecated since 5.0 don't make the string static
      */
     KDECORE_DEPRECATED_EXPORT const QString& staticQString(const QString &str); //krazy:exclude=constref (doesn't make sense otherwise)
 
@@ -553,16 +555,18 @@ namespace KGlobal
      * application, such as a KParts application).
      * Don't use this - it's mainly for KAboutDialog and KBugReport.
      * @internal
+     * @deprecated since 5.0 use KComponentData::activeComponent()
      */
-    KDECORE_EXPORT KComponentData activeComponent();
+    KDECORE_DEPRECATED_EXPORT KComponentData activeComponent();
 
     /**
      * Set the active component for use by KAboutDialog and KBugReport.
      * To be used only by a multi-component (KParts) application.
      *
      * @see activeComponent()
+     * @deprecated since 5.0 use KComponentData::setActiveComponent
      */
-    KDECORE_EXPORT void setActiveComponent(const KComponentData &d);
+    KDECORE_DEPRECATED_EXPORT void setActiveComponent(const KComponentData &d);
 
     /**
      * Returns a text for the window caption.
@@ -581,7 +585,7 @@ namespace KGlobal
      * Returns the child of the given object that can be cast into type T, or 0 if there is no such object.
      * Unlike QObject::findChild, the search is NOT performed recursively.
      * @since 4.4
-     * @deprecated use QObject::findChild(FindDirectChildrenOnly) in Qt5
+     * @deprecated since Qt 5, use QObject::findChild(FindDirectChildrenOnly)
      */
     template<typename T>
     KDECORE_DEPRECATED inline T findDirectChild(const QObject* object) {

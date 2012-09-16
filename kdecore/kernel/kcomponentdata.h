@@ -164,6 +164,37 @@ public:
      */
     QString catalogName() const;
 
+    /**
+     * @internal
+     * Returns whether a main KComponentData is available.
+     * @since 5.0
+     */
+    static bool hasMainComponent();
+
+    /**
+     * Returns the global component data, if one was set.
+     * @since 5.0
+     */
+    static const KComponentData &mainComponent(); //krazy:exclude=constref (don't mess up ref-counting)
+
+    /**
+     * The component currently active (useful in a multi-component
+     * application, such as a KParts application).
+     * Don't use this - it's mainly for KAboutDialog and KBugReport.
+     * @internal
+     * @since 5.0
+     */
+    static const KComponentData &activeComponent(); //krazy:exclude=constref (don't mess up ref-counting)
+
+    /**
+     * Set the active component for use by KAboutDialog and KBugReport.
+     * To be used only by a multi-component (KParts) application.
+     *
+     * @see activeComponent()
+     * @since 5.0
+     */
+    static void setActiveComponent(const KComponentData &d);
+
 protected:
     friend class KApplicationPrivate;
 
