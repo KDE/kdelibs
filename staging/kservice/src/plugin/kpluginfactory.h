@@ -46,23 +46,23 @@ class name : public baseFactory \
 };
 
 #define K_PLUGIN_FACTORY_DEFINITION_WITH_BASEFACTORY(name, baseFactory, pluginRegistrations) \
-K_GLOBAL_STATIC(KComponentData, name##factorycomponentdata) \
+Q_GLOBAL_STATIC(KComponentData, name##factorycomponentdata) \
 name::name(const char *componentName, const char *catalogName, QObject *parent) \
     : baseFactory(componentName, catalogName, parent) { init(); } \
 name::name(const KAboutData &aboutData, QObject *parent) \
     : baseFactory(aboutData, parent) { init(); } \
 void name::init() \
 { \
-    if (name##factorycomponentdata->isValid()) \
-        setComponentData(*name##factorycomponentdata); \
+    if (name##factorycomponentdata()->isValid()) \
+        setComponentData(*name##factorycomponentdata()); \
     else \
-        *name##factorycomponentdata = KPluginFactory::componentData(); \
+        *name##factorycomponentdata() = KPluginFactory::componentData(); \
     pluginRegistrations \
 } \
 name::~name() {} \
 KComponentData name::componentData() \
 { \
-    return *name##factorycomponentdata; \
+    return *name##factorycomponentdata(); \
 }
 
 #define K_PLUGIN_FACTORY_WITH_BASEFACTORY(name, baseFactory, pluginRegistrations) \
