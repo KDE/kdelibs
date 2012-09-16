@@ -28,7 +28,9 @@
 
 #include <kconfig.h>
 #include <kaboutdata.h>
+#if 0 // TEMP_KF5_REENABLE
 #include <klocale.h>
+#endif
 
 class KComponentDataPrivate
 {
@@ -36,22 +38,25 @@ public:
     KComponentDataPrivate(const KAboutData &aboutData_)
         : aboutData(aboutData_),
         syncing(false),
+        shouldRemoveCatalog(false),
         refCount(1)
     {
+#if 0 // TEMP_KF5_REENABLE
         if (QCoreApplication::instance()) {
             // KLocal::global() needs an app name
             KLocale::global()->insertCatalog(aboutData.catalogName());
             shouldRemoveCatalog = true;
-        } else {
-            shouldRemoveCatalog = false;
         }
+#endif
     }
 
     ~KComponentDataPrivate()
     {
         refCount.fetchAndStoreOrdered(-0x00FFFFFF); //prevent a reentering of the dtor
+#if 0 // TEMP_KF5_REENABLE
         if (shouldRemoveCatalog && KLocale::global())
             KLocale::global()->removeCatalog(aboutData.catalogName());
+#endif
 
         sharedConfig = 0;   //delete the config object first, because it could access the standard dirs while syncing
     }

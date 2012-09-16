@@ -25,7 +25,6 @@
 
 #include "kaboutdata.h"
 #include "kconfig.h"
-#include "klocalizedstring.h"
 #include "kconfiggroup.h"
 #include <QtDebug>
 
@@ -90,7 +89,9 @@ public:
         }
         mainComponent = c;
         KSharedConfig::setMainConfigName(c.aboutData()->appName() + QLatin1String("rc"));
+#if 0 // TEMP_KF5_REENABLE
         KLocale::setMainCatalog(c.catalogName());
+#endif
         KComponentData::setActiveComponent(c);
     }
 };
@@ -286,9 +287,11 @@ const KComponentData& KComponentData::activeComponent()
 void KComponentData::setActiveComponent(const KComponentData &c)
 {
     globalStatic()->activeComponent = c;
+#if 0 // TEMP_KF5_REENABLE
     if (c.isValid()) {
         KLocale::global()->setActiveCatalog(c.catalogName());
     }
+#endif
 }
 
 void KComponentData::virtual_hook(int, void*)

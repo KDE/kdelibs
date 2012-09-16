@@ -21,7 +21,9 @@
 
 #include "kpluginfactory.h"
 #include "kpluginfactory_p.h"
+#if 0 // TEMP_KF5_REENABLE
 #include <klocale.h>
+#endif
 
 #include <QObjectCleanupHandler>
 #include <QDebug>
@@ -84,9 +86,11 @@ KPluginFactory::~KPluginFactory()
 {
     Q_D(KPluginFactory);
 
+#if 0 // TEMP_KF5_REENABLE
     if (d->catalogInitialized && d->componentData.isValid() && KLocale::global()) {
         KLocale::global()->removeCatalog(d->componentData.catalogName());
     }
+#endif
 
     delete d_ptr;
 }
@@ -219,7 +223,9 @@ void KPluginFactory::setupTranslations()
     if (!d->componentData.isValid())
         return;
 
+#if 0 // TEMP_KF5_REENABLE
     KLocale::global()->insertCatalog(d->componentData.catalogName());
+#endif
 }
 
 void KPluginFactory::setComponentData(const KComponentData &kcd)

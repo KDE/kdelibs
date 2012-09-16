@@ -36,6 +36,16 @@
 
 void KLocalizedStringTest::initTestCase ()
 {
+    // Check that setting the component name worked
+    QCOMPARE(KGlobal::mainComponent().componentName(), QString::fromLatin1("kdelibs4"));
+
+#if 0 // see "TEMP_KF5_REENABLE" in newComponentData
+    // Check that newComponentData did call KLocale::setMainCatalog.
+    QCOMPARE(KLocale::mainCatalog(), QString::fromLatin1("kdelibs4"));
+#else
+    KLocale::setMainCatalog("kdelibs4");
+#endif
+
     const QString kdelibs_fr = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("locale/") + "fr/LC_MESSAGES/kdelibs4.mo");
     m_hasFrench = !kdelibs_fr.isEmpty();
     if (m_hasFrench) {

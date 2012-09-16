@@ -18,7 +18,13 @@
 
 #include "kpluginloader.h"
 
+#if 0 // TEMP_KF5_REENABLE
 #include <klocalizedstring.h>
+#else
+QString i18n(QString a) { return a; }
+QString i18n(QString a, QString) { return a; }
+QString i18n(QString a, QString, QString) { return a; }
+#endif
 #include "kpluginfactory.h"
 #include <kservice.h>
 #include "klibrary.h"
