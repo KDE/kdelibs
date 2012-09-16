@@ -424,10 +424,10 @@ namespace KGlobal
     /**
      * Inserts the catalog in the main locale object if it exists.
      * Otherwise the catalog name is stored and added once the main locale gets created
-     *
      * @since 4.6
+     * @deprecated since 5.0, use KLocale::global()->insertCatalog
      */
-    KDECORE_EXPORT void insertCatalog(const QString& catalog);
+    KDECORE_DEPRECATED_EXPORT void insertCatalog(const QString& catalog);
 
     /**
      * Returns the global locale object.
@@ -439,20 +439,22 @@ namespace KGlobal
      * done in the main thread. However KApplication takes care of this, so this
      * is only needed when not using KApplication.
      *
-     * @deprecated use KLocale::global()
+     * @deprecated since 5.0, use KLocale::global()
      */
     KDECORE_DEPRECATED_EXPORT KLocale *locale();
     /**
      * @internal
      * Returns whether KGlobal has a valid KLocale object
+     * @deprecated since 5.0, KLocale::global() always exists, so this is always true
      */
-    KDECORE_EXPORT bool hasLocale();
+    KDECORE_DEPRECATED_EXPORT bool hasLocale();
 
     /**
      * The global charset manager.
      * @return the global charset manager
+     * @deprecated since 5.0, use KCharsets::charsets()
      */
-    KDECORE_EXPORT KCharsets *charsets();
+    KDECORE_DEPRECATED_EXPORT KCharsets *charsets();
 
     /**
      * Returns the umask of the process.
@@ -476,8 +478,9 @@ namespace KGlobal
      * and as you know static objects are EVIL.
      * @param str the string to create
      * @return the static string
+     * @deprecated since 5.0, use QLatin1Literal()
      */
-    KDECORE_EXPORT const QString& staticQString(const char *str); //krazy:exclude=constref (doesn't make sense otherwise)
+    KDECORE_DEPRECATED_EXPORT const QString& staticQString(const char *str); //krazy:exclude=constref (doesn't make sense otherwise)
 
     /**
      * Creates a static QString.
@@ -495,8 +498,9 @@ namespace KGlobal
      * and as you know static objects are EVIL.
      * @param str the string to create
      * @return the static string
+     * @deprecated don't make the string static
      */
-    KDECORE_EXPORT const QString& staticQString(const QString &str); //krazy:exclude=constref (doesn't make sense otherwise)
+    KDECORE_DEPRECATED_EXPORT const QString& staticQString(const QString &str); //krazy:exclude=constref (doesn't make sense otherwise)
 
     /**
      * Tells KGlobal about one more operations that should be finished
@@ -577,19 +581,12 @@ namespace KGlobal
      * Returns the child of the given object that can be cast into type T, or 0 if there is no such object.
      * Unlike QObject::findChild, the search is NOT performed recursively.
      * @since 4.4
+     * @deprecated use QObject::findChild(FindDirectChildrenOnly) in Qt5
      */
     template<typename T>
-    inline T findDirectChild(const QObject* object) {
+    KDECORE_DEPRECATED inline T findDirectChild(const QObject* object) {
         return static_cast<T>(findDirectChild_helper(object, (static_cast<T>(0))->staticMetaObject));
     }
-
-    /**
-     * For setLocale
-     */
-    enum CopyCatalogs { DoCopyCatalogs, DontCopyCatalogs};
-
-    ///@internal
-    KDECORE_EXPORT void setLocale(KLocale *, CopyCatalogs copy = DoCopyCatalogs);
 }
 
 #endif // _KGLOBAL_H

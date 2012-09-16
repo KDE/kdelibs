@@ -1093,7 +1093,6 @@ KCmdLineArgs::enable_i18n()
 void
 KCmdLineArgs::usageError(const QString &error)
 {
-    //Q_ASSERT(KGlobal::hasLocale());
     QByteArray localError = staticObj()->encodeOutput(error);
     if (localError.endsWith('\n'))
         localError.chop(1);

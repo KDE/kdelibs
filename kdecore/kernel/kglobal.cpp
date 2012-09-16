@@ -75,9 +75,7 @@ class KGlobalPrivate
     public:
         inline KGlobalPrivate()
             : dirs(0),
-            stringDict(0),
-            locale(0),
-            localeIsFromFakeComponent(false)
+            stringDict(0)
         {
             // the umask is read here before any threads are created to avoid race conditions
             mode_t tmp = 0;
@@ -89,8 +87,6 @@ class KGlobalPrivate
         {
             delete dirs;
             dirs = 0;
-            delete locale;
-            locale = 0;
             delete stringDict;
             stringDict = 0;
         }
@@ -99,8 +95,6 @@ class KGlobalPrivate
         KComponentData activeComponent;
         KComponentData mainComponent; // holds a refcount
         KStringDict *stringDict;
-        KLocale *locale;
-        bool localeIsFromFakeComponent;
         QStringList catalogsToInsert;
 
         /**
@@ -121,7 +115,7 @@ class KGlobalPrivate
 
 KCatalogLoader::KCatalogLoader(const QString &catalogName)
 {
-    KGlobal::insertCatalog(catalogName);
+    KLocale::global()->insertCatalog(catalogName);
 }
 
 
@@ -165,33 +159,17 @@ bool KGlobal::hasMainComponent()
 
 void KGlobal::insertCatalog(const QString& catalog)
 {
-    PRIVATE_DATA;
-    if (d->locale) {
-        locale()->insertCatalog(catalog);
-    } else {
-        d->catalogsToInsert.append(catalog);
-    }
+    KLocale::global()->insertCatalog(catalog);
 }
 
 KLocale *KGlobal::locale()
 {
-    PRIVATE_DATA;
-    if (d->locale == 0 /*|| (d->localeIsFromFakeComponent && d->mainComponent.isValid() && d->mainComponent.config())*/) {
-        d->locale = KLocale::global();
-        foreach(const QString &catalog, d->catalogsToInsert)
-            d->locale->insertCatalog(catalog);
-        d->catalogsToInsert.clear();
-    }
-    return d->locale;
+    return KLocale::global();
 }
 
 bool KGlobal::hasLocale()
 {
-    if (globalData.isDestroyed()) {
-        return false;
-    }
-    PRIVATE_DATA;
-    return (d->locale != 0);
+    return true;
 }
 
 KCharsets *KGlobal::charsets()
@@ -216,8 +194,8 @@ void KGlobal::setActiveComponent(const KComponentData &c)
 {
     PRIVATE_DATA;
     d->activeComponent = c;
-    if (c.isValid() && d->locale) {
-        locale()->setActiveCatalog(c.catalogName());
+    if (c.isValid()) {
+        KLocale::global()->setActiveCatalog(c.catalogName());
     }
 }
 
@@ -231,15 +209,6 @@ void KGlobal::newComponentData(const KComponentData &c)
     KSharedConfig::setMainConfigName(c.aboutData()->appName() + QLatin1String("rc"));
     KLocale::setMainCatalog(c.catalogName());
     KGlobal::setActiveComponent(c);
-}
-
-void KGlobal::setLocale(KLocale *newLocale, CopyCatalogs copy)
-{
-    PRIVATE_DATA;
-    if (copy == DoCopyCatalogs && d->locale)
-        locale()->copyCatalogsTo(newLocale);
-    delete d->locale;
-    d->locale = newLocale;
 }
 
 /**
