@@ -137,11 +137,12 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const QUrl& url,
 
     if ( allowGlobal ) {
         QString appName;
-        if ( KGlobal::mainComponent().aboutData() )
-            appName = KGlobal::mainComponent().aboutData()->programName();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+        appName = QGuiApplication::applicationDisplayName();
+#endif
         if ( appName.isEmpty() )
-            appName = KGlobal::mainComponent().componentName();
-        m_appLocal = new QCheckBox( i18n("&Only show when using this application (%1)",  appName ), wdg );
+            appName = QCoreApplication::applicationName();
+        m_appLocal = new QCheckBox( i18n("&Only show when using this application (%1)", appName ), wdg );
         m_appLocal->setChecked( appLocal );
         m_appLocal->setWhatsThis(i18n("<qt>Select this setting if you want this "
                               "entry to show only when using the current application (%1).<br /><br />"

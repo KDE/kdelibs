@@ -251,7 +251,7 @@ struct KDebugPrivate
     typedef QHash<unsigned int, Area> Cache;
 
     KDebugPrivate()
-        : config(0), kDebugDBusIface(0), m_disableAll(false), m_seenMainComponent(false)
+        : config(0), kDebugDBusIface(0), m_disableAll(false)
     {
         Q_ASSERT(int(QtDebugMsg) == 0);
         Q_ASSERT(int(QtFatalMsg) == 3);
@@ -292,13 +292,18 @@ struct KDebugPrivate
         Area &areaData = cache[0];
         areaData.clear();
 
-        if (KGlobal::hasMainComponent()) {
-            areaData.name = KGlobal::mainComponent().componentName().toUtf8();
-            m_seenMainComponent = true;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+        areaData.name = qApp ? QCoreApplication::applicationName().toUtf8() : QByteArray("unnamed app");
+#else
+        if (qApp) {
+            areaData.name = QCoreApplication::applicationName().toUtf8();
+            if (areaData.name.isEmpty()) {
+                areaData.name = qAppName().toUtf8();
+            }
         } else {
-            areaData.name = qApp ? qAppName().toUtf8() : QByteArray("unnamed app");
-            m_seenMainComponent = false;
+            areaData.name = QByteArray("unnamed app");
         }
+#endif
         //qDebug() << "loadAreaNames: area 0 has name" << areaData.name;
 
         for (int i = 0; i < 8; i++) {
@@ -435,10 +440,6 @@ struct KDebugPrivate
             //qDebug() << "cache size=" << cache.count() << "loading area names";
             loadAreaNames(); // fills 'cache'
             Q_ASSERT(cache.contains(0));
-        } else if (!m_seenMainComponent && KGlobal::hasMainComponent()) {
-            // Update the name for area 0 once a main component exists
-            cache[0].name = KGlobal::mainComponent().componentName().toUtf8();
-            m_seenMainComponent = true;
         }
 
         Cache::Iterator it = cache.find(num);
@@ -717,7 +718,6 @@ struct KDebugPrivate
     KDebugDBusIface *kDebugDBusIface;
     Cache cache;
     bool m_disableAll;
-    bool m_seenMainComponent; // false: area zero still contains qAppName
     int m_nullOutputYesNoCache[8];
 
     KNoDebugStream devnull;

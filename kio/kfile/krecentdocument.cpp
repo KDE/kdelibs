@@ -87,7 +87,7 @@ QStringList KRecentDocument::recentDocuments()
 
 void KRecentDocument::add(const QUrl& url)
 {
-    KRecentDocument::add(url, QCoreApplication::instance()->applicationName());
+    KRecentDocument::add(url, QCoreApplication::applicationName());
     // ### componentName might not match the service filename...
 }
 
