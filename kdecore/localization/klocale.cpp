@@ -391,7 +391,8 @@ public:
     void init()
     {
         QMutexLocker lock(&mutex);
-        if (inited)
+        // If there's no QApp, postpone initialization
+        if (inited || !QCoreApplication::instance())
             return;
         inited = true;
         QTextCodec::setCodecForLocale(locale.codecForEncoding());
