@@ -169,7 +169,7 @@ KLocale *KGlobal::locale()
 
 bool KGlobal::hasLocale()
 {
-    return true;
+    return QCoreApplication::instance() != 0;
 }
 
 KCharsets *KGlobal::charsets()

@@ -445,7 +445,7 @@ namespace KGlobal
     /**
      * @internal
      * Returns whether KGlobal has a valid KLocale object
-     * @deprecated since 5.0, KLocale::global() always exists, so this is always true
+     * @deprecated since 5.0, port to if (qApp) because KLocale::global() can be called, as soon as a qApp exists.
      */
     KDECORE_DEPRECATED_EXPORT bool hasLocale();
 
