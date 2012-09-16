@@ -317,9 +317,25 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
     finished();
 }
 
+static bool isLocalFileSameHost(const QUrl& url)
+{
+  if (!url.isLocalFile())
+     return false;
+
+  if (url.host().isEmpty() || (url.host() == QLatin1String("localhost")))
+     return true;
+
+  char hostname[ 256 ];
+  hostname[ 0 ] = '\0';
+  if (!gethostname(hostname, 255))
+     hostname[sizeof(hostname)-1] = '\0';
+
+  return (QString::compare(url.host(), QLatin1String(hostname), Qt::CaseInsensitive) == 0);
+}
+
 void FileProtocol::listDir( const QUrl& url)
 {
-    if (!url.isLocalFile()) {
+    if (!isLocalFileSameHost(url)) {
         QUrl redir(url);
 	redir.setScheme(config()->readEntry("DefaultRemoteProtocol", "smb"));
 	redirection(redir);
