@@ -1,12 +1,12 @@
 /* Copyright (C) 2004-2005 ian reinhart geiser <geiseri@sourcextreme.com> */
 #include <kaboutdata.h>
-#include <kcomponentdata.h>
 #include <kcmdlineargs.h>
 #include <kconfig.h>
 #include <kmacroexpander.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>
 #include <klocalizedstring.h>
+#include <QtCore/QCoreApplication>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QHash>
@@ -85,7 +85,6 @@ static QString buildWidgetInclude( const QString &name, KConfig &input );
 static void buildFile( QTextStream &stream, const QString& group, const QString& fileName, const QString& pluginName );
 
 int main( int argc, char **argv ) {
-    KComponentData data( "makekdewidgets" );
 
     QLocalizedString description = qi18n( "Builds Qt widget plugins from an ini style description file." );
     const char version[] = "0.4";
@@ -107,6 +106,8 @@ int main( int argc, char **argv ) {
         args->usage();
         return ( 1 );
     }
+
+    QCoreApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
 
     QFileInfo fi( args->arg( args->count() - 1 ) );
 
