@@ -153,7 +153,7 @@ DebugWindow::DebugWindow(QWidget *parent)
 
 void DebugWindow::syncFromConfig()
 {
-    KConfigGroup config(KGlobal::config(), "Javascript Debugger");
+    KConfigGroup config(KSharedConfig::openConfig(), "Javascript Debugger");
     m_reindentSources = config.readEntry<bool>("ReindentSources", true);
     m_catchExceptions = config.readEntry<bool>("CatchExceptions", true);
     // m_catchExceptions = khtmlpart->settings()->isJavaScriptErrorReportingEnabled();
@@ -162,7 +162,7 @@ void DebugWindow::syncFromConfig()
 
 void DebugWindow::syncToConfig()
 {
-    KConfigGroup config(KGlobal::config(), "Javascript Debugger");
+    KConfigGroup config(KSharedConfig::openConfig(), "Javascript Debugger");
     config.writeEntry("ReindentSources", m_reindentSources);
     config.writeEntry("CatchExceptions", m_catchExceptions);
 }

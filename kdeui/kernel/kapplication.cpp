@@ -378,7 +378,8 @@ void KApplicationPrivate::preqapplicationhack()
 {
     preread_app_startup_id();
 
-    KGlobal::config(); // initialize qt plugin path (see KComponentDataPrivate::lazyInit)
+    // Removed in KF5
+    //KGlobal::config(); // initialize qt plugin path (see KComponentDataPrivate::lazyInit)
 }
 
 #if HAVE_X11

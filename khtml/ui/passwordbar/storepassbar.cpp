@@ -34,10 +34,10 @@ StorePassBar::StorePassBar( QWidget *parent ) :
 
   m_store->setIcon( KDE::icon( "document-save" ) );
   // Same as KStandardGuiItem::no()
-  m_neverForThisSite->setIcon( KDE::icon( "process-stop" ) ); 
+  m_neverForThisSite->setIcon( KDE::icon( "process-stop" ) );
   m_doNotStore->setIcon( KDE::icon( "dialog-cancel" ) );
   centralWidget()->setFocusProxy( m_store );
-  
+
   QPalette pal = palette();
   KColorScheme::adjustBackground(pal, KColorScheme::ActiveBackground);
   setPalette(pal);
@@ -81,7 +81,7 @@ StorePass::~StorePass()
 void StorePass::saveLoginInformation(const QString& host, const QString& key,
   const QMap<QString, QString>& walletMap)
 {
-  KConfigGroup config( KGlobal::config(), "HTML Settings" );
+  KConfigGroup config( KSharedConfig::openConfig(), "HTML Settings" );
   if (!config.readEntry("OfferToSaveWebsitePassword", true))
     return;
 
@@ -89,7 +89,7 @@ void StorePass::saveLoginInformation(const QString& host, const QString& key,
   m_key = key;
   m_walletMap = walletMap;
   m_storePassBar.setHost(host);
-  
+
   m_part->pTopViewBar()->addBarWidget( &m_storePassBar );
   m_part->pTopViewBar()->showBarWidget( &m_storePassBar );
 }
@@ -113,7 +113,7 @@ void StorePass::slotNeverForThisSiteClicked()
   m_part->view()->addNonPasswordStorableSite(m_host);
   removeBar();
 }
-    
+
 void StorePass::slotDoNotStoreClicked()
 {
   removeBar();
