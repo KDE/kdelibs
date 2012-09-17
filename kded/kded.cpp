@@ -49,6 +49,7 @@
 #include <kservicetypetrader.h>
 #include <ktoolinvocation.h>
 #include <kde_file.h>
+#include <kdeversion.h> // KDE_VERSION_MAJOR
 #include "klauncher_iface.h"
 #include "config-kded.h"
 

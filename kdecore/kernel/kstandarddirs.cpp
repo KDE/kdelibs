@@ -34,6 +34,7 @@
 #include "kkernel_win.h"
 #include "kkernel_mac.h"
 #include "klocale.h"
+#include <kservice_export.h>
 
 #include <config-prefix.h>
 #include <config-kstandarddirs.h>
@@ -1966,7 +1967,7 @@ static QStringList lookupProfiles(const QString &mapFile)
     return profiles;
 }
 
-extern bool kde_kiosk_admin;
+extern KSERVICE_EXPORT bool kde_kiosk_admin;
 
 bool KStandardDirs::addCustomized(KConfig *config)
 {

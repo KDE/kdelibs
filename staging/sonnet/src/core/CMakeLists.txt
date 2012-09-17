@@ -16,6 +16,7 @@ include_directories(
   ${kservice_BINARY_DIR}/src # KServiceTypeTrader, KService
   ${kservice_SOURCE_DIR}/src/sycoca
   ${kservice_SOURCE_DIR}/src/services
+  ${kservice_SOURCE_DIR}/src/plugin
   ${CMAKE_SOURCE_DIR}/kdecore
   ${CMAKE_BINARY_DIR}/kdecore
   ${CMAKE_CURRENT_BINARY_DIR}

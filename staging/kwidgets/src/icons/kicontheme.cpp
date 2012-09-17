@@ -44,7 +44,6 @@
 
 #include <ksharedconfig.h>
 #include <kconfig.h>
-#include <kcomponentdata.h>
 
 #include <kconfiggroup.h>
 

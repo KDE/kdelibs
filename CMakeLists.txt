@@ -260,6 +260,7 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_BINARY_DIR}/staging/kservice/src/
                           ${CMAKE_SOURCE_DIR}/staging/kservice/src/sycoca
                           ${CMAKE_SOURCE_DIR}/staging/kservice/src/services
+                          ${CMAKE_SOURCE_DIR}/staging/kservice/src/plugin
                           ${QT_INCLUDES}
                           ${_KDE4_PLATFORM_INCLUDE_DIRS})
 

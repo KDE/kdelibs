@@ -22,6 +22,7 @@
 
 #include <kdefakes.h>
 #include <kde_file.h>
+#include <kdeversion.h> // KDE_MAKE_VERSION
 #include <kmimetype.h>
 #include <ksycoca.h>
 #include <kuser.h>

@@ -26,6 +26,8 @@
 
 #include <config-kio.h>
 
+#include <kglobal.h> // K_GLOBAL_STATIC
+
 #include <string.h>
 #include <unistd.h>
 #include <sys/utsname.h>

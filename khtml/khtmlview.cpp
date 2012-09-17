@@ -72,6 +72,7 @@
 #include <knotification.h>
 #include <kdeprintdialog.h>
 #include <kconfig.h>
+#include <kdeversion.h>
 
 #include <kstringhandler.h>
 #include <kconfiggroup.h>
