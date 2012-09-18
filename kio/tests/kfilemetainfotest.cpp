@@ -83,6 +83,7 @@ void KFileMetaInfoTest::testReentrancy()
     m_exitCount = 20;
     for (int i = 0; i < m_exitCount; ++i) {
         QThread* thread = new KFileMetaInfoThread(file);
+        thread->setParent(this);
         connect(thread, SIGNAL(finished()), this, SLOT(exitLoop()));
         thread->start();
     }
