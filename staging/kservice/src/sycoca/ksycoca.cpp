@@ -410,7 +410,9 @@ bool KSycocaPrivate::checkDatabase(BehaviorsIfNotFound ifNotFound)
 
     // We can only use the installed ksycoca file if kded is running,
     // since kded is what keeps the file uptodate.
-    const bool kdedRunning = QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1("org.kde.kded5"));
+    QDBusConnectionInterface* bus = QDBusConnection::sessionBus().interface();
+    const bool kdedRunning = bus->isServiceRegistered(QString::fromLatin1("org.kde.kded5")) ||
+                             qAppName() == "kbuildsycoca5";
 
     // Check if new database already available
     if (kdedRunning && openDatabase(ifNotFound & IfNotFoundOpenDummy)) {
@@ -424,7 +426,6 @@ bool KSycocaPrivate::checkDatabase(BehaviorsIfNotFound ifNotFound)
         // Ask kded to rebuild ksycoca
         // (so that it's not only built, but also kept up-to-date...)
         bool justStarted = false;
-        QDBusConnectionInterface* bus = QDBusConnection::sessionBus().interface();
         if (!bus->isServiceRegistered(QLatin1String("org.kde.kded5"))) {
             // kded isn't even running: start it
             QDBusReply<void> reply = bus->startService(QLatin1String("org.kde.kded5"));
