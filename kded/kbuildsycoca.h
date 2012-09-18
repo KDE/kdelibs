@@ -60,6 +60,14 @@ public:
     static void clearCaches() { KSycoca::clearCaches(); }
     QString kfsstnd_prefixes() { return KSycoca::kfsstnd_prefixes(); }
 
+    /**
+     * Returns a number that identifies the current version of the file @p filename,
+     * which is located under GenericDataLocation (including local overrides).
+     *
+     * When a change is made to the file this number will change.
+     */
+    static quint32 calcResourceHash(const QString& subdir, const QString &filename);
+
 private:
    /**
     * Add single entry to the sycoca database.

@@ -59,11 +59,10 @@ KSycocaEntry::List KBuildMimeTypeFactory::allEntries() const
     return lst;
 }
 
-KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &_file) const
+KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file) const
 {
-    // file=mime/text/plain.xml  ->  name=plain.xml dirName=text
-    Q_ASSERT(_file.startsWith("mime/"));
-    const QString file = _file.mid(5);
+    // file=text/plain.xml  ->  name=plain.xml dirName=text
+    Q_ASSERT(!file.startsWith("mime/"));
 
     const int pos = file.lastIndexOf('/');
     if (pos == -1) // huh?

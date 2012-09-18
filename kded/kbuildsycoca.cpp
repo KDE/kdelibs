@@ -113,14 +113,15 @@ KSycocaEntry::Ptr KBuildSycoca::createEntry(const QString &file, bool addToFacto
    quint32 timeStamp = g_ctimeInfo->dict()->ctime(file, g_resource);
    if (!timeStamp)
    {
-      timeStamp = KGlobal::dirs()->calcResourceHash( g_resource, file,
-                                                     KStandardDirs::Recursive);
+      timeStamp = calcResourceHash(g_resourceSubdir, file);
    }
    KSycocaEntry::Ptr entry;
    if (g_allEntries)
    {
       assert(g_ctimeDict);
       quint32 oldTimestamp = g_ctimeDict->ctime(file, g_resource);
+      if (file.contains("fake"))
+          kDebug(7021) << "g_ctimeDict->ctime(" << file << ") = " << oldTimestamp << "compared with" << timeStamp;
 
       if (timeStamp && (timeStamp == oldTimestamp))
       {
@@ -135,19 +136,19 @@ KSycocaEntry::Ptr KBuildSycoca::createEntry(const QString &file, bool addToFacto
          // after all files have been processed, it means
          // some files were removed since last time
          if (file.contains("fake"))
-            kDebug(7021) << g_resource << "reusing (and removing) old entry [\"fake\"] for:" << file;
+             kDebug(7021) << "reusing (and removing) old entry for:" << file << "entry=" << entry;
          g_ctimeDict->remove(file, g_resource);
       }
       else if (oldTimestamp)
       {
          g_changed = true;
          g_ctimeDict->remove(file, g_resource);
-         kDebug(7021) << "modified:" << file << "in" << g_resource.constData();
+         kDebug(7021) << "modified:" << file;
       }
       else
       {
          g_changed = true;
-         kDebug(7021) << "new:" << file << "in" << g_resource.constData();
+         kDebug(7021) << "new:" << file;
       }
    }
    g_ctimeInfo->dict()->addCTime(file, g_resource, timeStamp);
@@ -191,11 +192,10 @@ bool KBuildSycoca::build()
      if (g_allEntries)
      {
          const KSycocaEntry::List list = (*g_allEntries)[i++];
-         for( KSycocaEntry::List::const_iterator it = list.begin();
-            it != list.end();
-            ++it)
-         {
-            entryDict->insert( (*it)->entryPath(), *it );
+         Q_FOREACH(const KSycocaEntry::Ptr& entry, list) {
+             //if (entry->entryPath().contains("fake"))
+             //    qDebug() << "inserting into entryDict:" << entry->entryPath() << entry;
+             entryDict->insert(entry->entryPath(), entry);
          }
      }
      if ((*factory) == g_serviceFactory)
@@ -270,8 +270,6 @@ bool KBuildSycoca::build()
                // Check if file matches filter
               if ((*it3).endsWith(res.extension)) {
                  QString entryPath = (*it3);
-                 if (!QDir::isAbsolutePath(entryPath))
-                    entryPath = g_resourceSubdir + '/' + entryPath;
                  createEntry(entryPath, true);
               }
            }
@@ -293,7 +291,7 @@ bool KBuildSycoca::build()
       // so we end up always saving ksycoca, i.e. this method never returns false
 
       // Get the list of resources from which some files were deleted
-      const QStringList resources = g_ctimeDict->resourceList();
+      const QStringList resources = g_ctimeDict->remainingResourceList();
       kDebug() << "Still in the time dict (i.e. deleted files)" << resources;
       m_changedResources += resources;
   }
@@ -347,8 +345,7 @@ void KBuildSycoca::createMenu(const QString &caption_, const QString &name_, VFo
         directoryFile = subName+".directory";
      quint32 timeStamp = g_ctimeInfo->dict()->ctime(directoryFile, g_resource);
      if (!timeStamp) {
-        timeStamp = KGlobal::dirs()->calcResourceHash( g_resource, directoryFile,
-                                                       KStandardDirs::Recursive );
+        timeStamp = calcResourceHash(g_resourceSubdir, directoryFile);
      }
 
      KServiceGroup::Ptr entry;
@@ -367,7 +364,8 @@ void KBuildSycoca::createMenu(const QString &caption_, const QString &name_, VFo
             }
         }
      }
-     g_ctimeInfo->dict()->addCTime(directoryFile, g_resource, timeStamp);
+     if (timeStamp) // bug? (see calcResourceHash). There might not be a .directory file...
+         g_ctimeInfo->dict()->addCTime(directoryFile, g_resource, timeStamp);
 
      entry = g_buildServiceGroupFactory->addNew(subName, subMenu->directoryFile, entry, subMenu->isDeleted);
      entry->setLayoutInfo(subMenu->layoutList);
@@ -492,12 +490,12 @@ void KBuildSycoca::save(QDataStream* str)
       (*str) << aOffset;
    }
    (*str) << (qint32) 0; // No more factories.
-   // Write KDEDIRS
-   (*str) << KGlobal::dirs()->kfsstnd_prefixes();
+   // Write XDG_DATA_DIRS
+   (*str) << QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).join(QString(QLatin1Char(':')));
    (*str) << newTimestamp;
    (*str) << KLocale::global()->language();
-   (*str) << KGlobal::dirs()->calcResourceHash("services", "update_ksycoca",
-                                                 KStandardDirs::Recursive );
+   // This makes it possible to trigger a ksycoca update for all users (KIOSK feature)
+   (*str) << calcResourceHash("kde5/services", "update_ksycoca");
    (*str) << (*g_allResourceDirs);
 
    // Calculate per-servicetype/mimetype data
@@ -664,7 +662,6 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
    // force generating of KLocale object. if not, the database will get
    // be translated
    KLocale::global();
-   KGlobal::dirs()->addResourceType("app-reg", 0, "share/application-registry" );
 
    while(QDBusConnection::sessionBus().isConnected())
    {
@@ -692,11 +689,9 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
      KSycoca::disableAutoRebuild(); // Prevent deadlock
      QString current_language = KLocale::global()->language();
      QString ksycoca_language = KSycoca::self()->language();
-     quint32 current_update_sig = KGlobal::dirs()->calcResourceHash("services", "update_ksycoca",
-                                                                    KStandardDirs::Recursive );
+     quint32 current_update_sig = KBuildSycoca::calcResourceHash("kde5/services", "update_ksycoca");
      quint32 ksycoca_update_sig = KSycoca::self()->updateSignature();
-     // KDE5 TODO also save and compare the XDG conf and data dirs!
-     QString current_prefixes = KGlobal::dirs()->kfsstnd_prefixes();
+     QString current_prefixes = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).join(QString(QLatin1Char(':')));
      QString ksycoca_prefixes = static_cast<KBuildSycoca*>(KSycoca::self())->kfsstnd_prefixes();
 
      if ((current_update_sig != ksycoca_update_sig) ||
@@ -801,8 +796,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
         // better delete them if they are empty
         QString appsDir = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
         ::rmdir(QFile::encodeName(appsDir));
-        QString servicetypesDir = KGlobal::dirs()->saveLocation("servicetypes", QString(), false);
-        ::rmdir(QFile::encodeName(servicetypesDir));
+        // was doing the same with servicetypes, but I don't think any of these gets created-by-mistake anymore.
       }
    }
 
@@ -820,4 +814,33 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
    }
 
    return 0;
+}
+
+static quint32 updateHash(const QString &file, quint32 hash)
+{
+    QFileInfo fi(file);
+    if (fi.isReadable() && fi.isFile()) {
+        // This was using buff.st_ctime (in Waldo's initial commit to kstandarddirs.cpp in 2001), but that looks wrong?
+        // Surely we want to catch manual editing, while a chmod doesn't matter much?
+        hash += fi.lastModified().toTime_t();
+    }
+    return hash;
+}
+
+quint32 KBuildSycoca::calcResourceHash(const QString& resourceSubDir, const QString &filename)
+{
+    quint32 hash = 0;
+    if (!QDir::isRelativePath(filename))
+        return updateHash(filename, hash);
+    const QStringList files = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, resourceSubDir + '/' + filename);
+    Q_FOREACH(const QString& file, files) {
+        hash = updateHash(file, hash);
+    }
+    if (hash == 0 && !filename.endsWith("update_ksycoca")
+        && !filename.endsWith(".directory") // bug? needs investigation from someone who understands the VFolder spec
+        ) {
+        qWarning() << "File not found or not readable:" << filename << "found:" << files;
+        Q_ASSERT(hash != 0);
+    }
+    return hash;
 }

@@ -33,7 +33,7 @@ public:
     void remove(const QString &path, const QByteArray& resource);
     void dump() const;
     bool isEmpty() const { return m_hash.isEmpty(); }
-    QStringList resourceList() const;
+    QStringList remainingResourceList() const;
 
     void load(QDataStream &str);
     void save(QDataStream &str) const;

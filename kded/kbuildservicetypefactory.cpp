@@ -67,7 +67,7 @@ KSycocaEntry* KBuildServiceTypeFactory::createEntry(const QString &file) const
     if (name.isEmpty())
         return 0;
 
-    KDesktopFile desktopFile(QStandardPaths::GenericDataLocation, file);
+    KDesktopFile desktopFile(QStandardPaths::GenericDataLocation, "kde5/servicetypes/" + file);
     const KConfigGroup desktopGroup = desktopFile.desktopGroup();
 
     if ( desktopGroup.readEntry( "Hidden", false ) == true )

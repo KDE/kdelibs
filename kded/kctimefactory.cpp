@@ -23,6 +23,11 @@
 
 #include <assert.h>
 
+
+// NOTE: the storing of "resource" here is now completely useless (since everything is under GenericDataLocation),
+// except for remainingResourceList() which is used for the compat signal databaseChanged(...)
+// We could possibly replace this with a subdir->old_resource mapping (applications -> apps, kde5/services -> services, etc.)
+
 static inline QString key(const QString &path, const QByteArray& resource)
 {
     return QString::fromLatin1(resource) + QLatin1Char('|') + path;
@@ -30,6 +35,7 @@ static inline QString key(const QString &path, const QByteArray& resource)
 
 void KCTimeDict::addCTime(const QString &path, const QByteArray& resource, quint32 ctime)
 {
+    Q_ASSERT(ctime != 0);
     assert(!path.isEmpty());
     m_hash.insert(key(path, resource), ctime );
 }
@@ -49,7 +55,7 @@ void KCTimeDict::dump() const
     kDebug() << m_hash.keys();
 }
 
-QStringList KCTimeDict::resourceList() const
+QStringList KCTimeDict::remainingResourceList() const
 {
     QSet<QString> resources;
     Hash::const_iterator it = m_hash.constBegin();

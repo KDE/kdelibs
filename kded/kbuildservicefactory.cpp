@@ -84,6 +84,8 @@ KService::Ptr KBuildServiceFactory::findServiceByMenuId(const QString &menuId)
 
 KSycocaEntry* KBuildServiceFactory::createEntry(const QString& file) const
 {
+    Q_ASSERT(!file.startsWith("kde5/services/")); // we add this ourselves, below
+
     QString name = file;
     int pos = name.lastIndexOf('/');
     if (pos != -1) {
@@ -98,9 +100,11 @@ KSycocaEntry* KBuildServiceFactory::createEntry(const QString& file) const
         if (QDir::isAbsolutePath(file)) { // vfolder sends us full paths for applications
             serv = new KService(file);
         } else { // we get relative paths for services
-            KDesktopFile desktopFile(QStandardPaths::GenericDataLocation, file);
-            Q_ASSERT(file.startsWith("kde5/services/"));
-            serv = new KService(&desktopFile, file.mid(strlen("kde5/services/")));
+            KDesktopFile desktopFile(QStandardPaths::GenericDataLocation, "kde5/services/" + file);
+            // Note that the second arg below MUST be 'file', unchanged.
+            // If the entry path doesn't match the 'file' parameter to createEntry, reusing old entries
+            // (via time dict, which uses the entry path as key) cannot work.
+            serv = new KService(&desktopFile, file);
         }
 
         //kDebug(7021) << "Creating KService from" << file << "entryPath=" << serv->entryPath();
@@ -109,7 +113,7 @@ KSycocaEntry* KBuildServiceFactory::createEntry(const QString& file) const
 
         if ( serv->isValid() && !serv->isDeleted() ) {
             kDebug(7021) << "Creating KService from" << file << "entryPath=" << serv->entryPath() <<
-                "storageId=" << serv->storageId() << "menuId=" << serv->menuId();
+                "storageId=" << serv->storageId();
             return serv;
         } else {
             if (!serv->isDeleted()) {
@@ -226,7 +230,7 @@ void KBuildServiceFactory::postProcessServices()
         m_nameMemoryHash.insert(name, service);
 
         const QString relName = service->entryPath();
-        //kDebug(7021) << "adding service" << service.data() << service->type() << "menuId=" << service->menuId() << "name=" << name << "relName=" << relName;
+        //kDebug(7021) << "adding service" << service.data() << "isApp=" << service->isApplication() << "menuId=" << service->menuId() << "name=" << name << "relName=" << relName;
         m_relNameDict->add(relName, entry);
         m_relNameMemoryHash.insert(relName, service); // for KMimeAssociations
 
