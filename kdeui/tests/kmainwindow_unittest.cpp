@@ -145,6 +145,7 @@ void KMainWindow_UnitTest::testSaveWindowSize()
     tb->setObjectName("testtb");
     mw.reallyResize(800, 600);
 
+    QCOMPARE(KSharedConfig::openConfig()->name(), QString::fromLatin1("qttestrc"));
     KConfigGroup cfg(KSharedConfig::openConfig(), "TestWindowSize");
     mw.saveMainWindowSettings(cfg);
     mw.close();
@@ -152,7 +153,7 @@ void KMainWindow_UnitTest::testSaveWindowSize()
     KMainWindow mw2;
     tb = new KToolBar(&mw2);
     tb->setObjectName("testtb");
-    mw2.resize(50, 50);
+    mw2.resize(500, 500);
     mw2.applyMainWindowSettings(cfg);
     QCOMPARE(mw2.size(), QSize(800, 600));
 }
