@@ -114,7 +114,7 @@ public:
 
 KStylePrivate::KStylePrivate() : m_componentData()
 {
-    if(KGlobal::hasMainComponent())
+    if(KComponentData::hasMainComponent())
     {
         m_componentData = KComponentData::mainComponent();
     } else

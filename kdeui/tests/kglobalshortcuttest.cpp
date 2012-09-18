@@ -277,9 +277,9 @@ void KGlobalShortcutTest::testComponentAssignment()
         KAction action("Text For Action A", NULL);
         action.setObjectName("Action C");
 
-        QVERIFY(action.d->componentData == KGlobal::mainComponent());
+        QVERIFY(action.d->componentData == KComponentData::mainComponent());
         action.setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
-        QVERIFY(action.d->componentData == KGlobal::mainComponent());
+        QVERIFY(action.d->componentData == KComponentData::mainComponent());
         // cleanup
         action.forgetGlobalShortcut();
     }
@@ -330,10 +330,10 @@ void KGlobalShortcutTest::testOverrideMainComponentData()
 
     // Action without action collection
     KAction *action = new KAction("Text For Action A", this);
-    QVERIFY(action->d->componentData == KGlobal::mainComponent());
+    QVERIFY(action->d->componentData == KComponentData::mainComponent());
     action->setObjectName("Action A");
     action->setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
-    QVERIFY(action->d->componentData == KGlobal::mainComponent());
+    QVERIFY(action->d->componentData == KComponentData::mainComponent());
 
     // Action with action collection
     action->forgetGlobalShortcut();
@@ -356,7 +356,7 @@ void KGlobalShortcutTest::testOverrideMainComponentData()
 
     // Action with action collection gets the global component
     action = new KAction("Text For Action A", this);
-    QVERIFY(action->d->componentData == KGlobal::mainComponent());
+    QVERIFY(action->d->componentData == KComponentData::mainComponent());
     action->setObjectName("Action A");
     action->setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
     QVERIFY(action->d->componentData == globalComponent);
@@ -385,11 +385,11 @@ void KGlobalShortcutTest::testNotification()
 
     // Action without action collection
     KAction *action = new KAction("Text For Action A", this);
-    QVERIFY(action->d->componentData == KGlobal::mainComponent());
+    QVERIFY(action->d->componentData == KComponentData::mainComponent());
     action->setObjectName("Action A");
     KShortcut cutB;
     action->setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
-    QVERIFY(action->d->componentData == KGlobal::mainComponent());
+    QVERIFY(action->d->componentData == KComponentData::mainComponent());
 
     // kglobalacceld collects registrations and shows the together. Give it
     // time to kick in.

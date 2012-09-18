@@ -148,8 +148,8 @@ KGlobalAccel::KGlobalAccel()
     connect(&d->iface, SIGNAL(yourShortcutGotChanged(QStringList,QList<int>)),
             SLOT(_k_shortcutGotChanged(QStringList,QList<int>)));
 
-    if (KGlobal::hasMainComponent()) {
-        d->readComponentData( KGlobal::mainComponent() );
+    if (KComponentData::hasMainComponent()) {
+        d->readComponentData( KComponentData::mainComponent() );
     }
 
 }

@@ -75,7 +75,7 @@ K_GLOBAL_STATIC(KWalletDLauncher, walletLauncher)
 
 static QString appid()
 {
-    if (KGlobal::hasMainComponent()) {
+    if (KComponentData::hasMainComponent()) {
         KComponentData cData = KComponentData::mainComponent();
         if (cData.isValid()) {
             const KAboutData* aboutData = cData.aboutData();

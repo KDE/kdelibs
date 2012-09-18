@@ -51,6 +51,7 @@
 
 #include "kdebug.h"
 #include "kglobal.h"
+#include "kcomponentdata.h"
 #include "kstandarddirs.h"
 
 #include "k3resolver.h"
@@ -95,7 +96,7 @@ QStringList KBlacklistWorker::blacklist;
 
 void KBlacklistWorker::init()
 {
-  if (!KGlobal::hasMainComponent())
+  if (!KComponentData::hasMainComponent())
     return;
 
   static bool beenhere = false;

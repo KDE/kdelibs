@@ -25,7 +25,7 @@
 #include "kdeui_export.h"
 #include "kaction.h"
 #include "kglobalshortcutinfo.h"
-#include "kglobal.h"
+#include "kcomponentdata.h"
 
 #include <QtCore/QObject>
 
@@ -90,7 +90,7 @@ public:
     static void activateGlobalShortcutContext(
             const QString &contextUnique,
             const QString &contextFriendly,
-            const KComponentData &component = KGlobal::mainComponent());
+            const KComponentData &component = KComponentData::mainComponent());
 
     /**
      * Clean the shortcuts for component @a componentUnique.

@@ -168,7 +168,7 @@ QString KConfigPrivate::expandString(const QString& value)
 #if 0 // Removed in KDE Frameworks 5. No such concept anymore. Just set your PATH.
             QByteArray oldpath = qgetenv( "PATH" );
             QByteArray newpath;
-            if (KGlobal::hasMainComponent()) {
+            if (KComponentData::hasMainComponent()) {
                 newpath = QFile::encodeName(KGlobal::dirs()->resourceDirs("exe").join(QChar::fromLatin1(KPATH_SEPARATOR)));
                 if (!newpath.isEmpty() && !oldpath.isEmpty())
                     newpath += KPATH_SEPARATOR;

@@ -22,7 +22,6 @@
 #include <kcomponentdata.h>
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>
-#include <kglobal.h>
 
 class Tester
 {
@@ -58,7 +57,7 @@ int main(int argc, char **argv)
 
 Tester::~Tester()
 {
-    Q_ASSERT(!KGlobal::hasMainComponent()); // the KGlobal K_GLOBAL_STATIC should already be deleted
+    Q_ASSERT(!KComponentData::hasMainComponent()); // the KGlobal K_GLOBAL_STATIC should already be deleted
     KConfigGroup group = m_config->group("test");
     group.writeEntry("test", 1);
     delete m_config; // this calls KConfig::sync() which needs KStandardDirs
