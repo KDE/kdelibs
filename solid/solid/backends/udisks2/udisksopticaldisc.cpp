@@ -33,11 +33,11 @@
 
 #include "udisks2.h"
 #include "udisksopticaldisc.h"
+#include "soliddefs_p.h"
 
-namespace {
-    QMap<QByteArray, Solid::OpticalDisc::ContentTypes> cache;
-    QMutex cacheLock;
-}
+typedef QMap<QByteArray, Solid::OpticalDisc::ContentTypes> ContentTypesCache;
+SOLID_GLOBAL_STATIC(ContentTypesCache, cache)
+SOLID_GLOBAL_STATIC(QMutex, cacheLock)
 
 // inspired by http://cgit.freedesktop.org/hal/tree/hald/linux/probing/probe-volume.c
 static Solid::OpticalDisc::ContentType advancedDiscDetect(const QByteArray & device_file)
@@ -251,12 +251,12 @@ Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
     }
 
     if (m_needsReprobe) {
-        QMutexLocker lock(&cacheLock);
+        QMutexLocker lock(cacheLock);
 
         const QByteArray deviceFile = m_device->prop("Device").toByteArray();
 
-        if (cache.contains(deviceFile)) {
-            m_cachedContent = cache[deviceFile];
+        if (cache->contains(deviceFile)) {
+            m_cachedContent = cache->value(deviceFile);
             m_needsReprobe = false;
             return m_cachedContent;
         }
@@ -273,7 +273,7 @@ Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
             m_cachedContent |= Solid::OpticalDisc::Audio;
 
         m_needsReprobe = false;
-        cache[deviceFile] = m_cachedContent;
+        cache->insert(deviceFile, m_cachedContent);
     }
 
     return m_cachedContent;
@@ -284,10 +284,10 @@ void OpticalDisc::slotDrivePropertiesChanged(const QString &ifaceName, const QVa
     Q_UNUSED(ifaceName);
 
     if (changedProps.keys().contains("Media") || invalidatedProps.contains("Media")) {
-        QMutexLocker lock(&cacheLock);
+        QMutexLocker lock(cacheLock);
         m_needsReprobe = true;
         m_cachedContent = Solid::OpticalDisc::NoContent;
-        cache.remove(m_device->prop("Device").toByteArray());
+        cache->remove(m_device->prop("Device").toByteArray());
     }
 }
 
