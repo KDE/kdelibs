@@ -29,11 +29,11 @@
 #include <QtCore/QMutexLocker>
 
 #include "udisksopticaldisc.h"
+#include "soliddefs_p.h"
 
-namespace {
-    QMap<QString, Solid::OpticalDisc::ContentTypes> cache;
-    QMutex cacheLock;
-}
+typedef QMap<QString, Solid::OpticalDisc::ContentTypes> ContentTypesCache;
+SOLID_GLOBAL_STATIC(ContentTypesCache, cache)
+SOLID_GLOBAL_STATIC(QMutex, cacheLock)
 
 // inspired by http://cgit.freedesktop.org/hal/tree/hald/linux/probing/probe-volume.c
 static Solid::OpticalDisc::ContentType advancedDiscDetect(const QString & device_file)
@@ -241,12 +241,12 @@ Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
     }
 
     if (m_needsReprobe) {
-        QMutexLocker lock(&cacheLock);
+        QMutexLocker lock(cacheLock);
 
         QString deviceFile = m_device->prop("DeviceFile").toString();
 
-        if (cache.contains(deviceFile)) {
-            m_cachedContent = cache[deviceFile];
+        if (cache->contains(deviceFile)) {
+            m_cachedContent = cache->value(deviceFile);
             m_needsReprobe = false;
             return m_cachedContent;
         }
@@ -265,7 +265,7 @@ Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
 
         m_needsReprobe = false;
 
-        cache[deviceFile] = m_cachedContent;
+        cache->insert(deviceFile, m_cachedContent);
     }
 
     return m_cachedContent;
@@ -273,8 +273,8 @@ Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
 
 void OpticalDisc::slotChanged()
 {
-    QMutexLocker lock(&cacheLock);
+    QMutexLocker lock(cacheLock);
     m_needsReprobe = true;
     m_cachedContent = Solid::OpticalDisc::NoContent;
-    cache.remove(m_device->prop("DeviceFile").toString());
+    cache->remove(m_device->prop("DeviceFile").toString());
 }
