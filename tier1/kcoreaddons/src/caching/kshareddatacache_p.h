@@ -24,7 +24,7 @@
 
 #include <QtCore/QDebug>
 #include <QtCore/QSharedPointer>
-#include <QtCore/QBasicAtomicInt>
+#include <qbasicatomic.h>
 
 #include <unistd.h> // Check for sched_yield
 #include <sched.h>  // sched_yield
@@ -130,7 +130,11 @@ public:
     virtual bool initialize(bool &processSharingSupported)
     {
         // Clear the spinlock
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         m_spinlock = 0;
+#else
+        m_spinlock.store(0);
+#endif
         processSharingSupported = true;
         return true;
     }
