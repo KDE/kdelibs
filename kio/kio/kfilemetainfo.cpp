@@ -434,7 +434,7 @@ bool KFileMetaInfo::applyChanges()
     return false;
 }
 
-QUrl KFileMetaInfo::url() const
+const QUrl & KFileMetaInfo::url() const
 {
     return QUrl();
 }
