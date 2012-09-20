@@ -27,10 +27,12 @@
 #include <QtDeclarative/QDeclarativeContext>
 #include <QtDeclarative/QDeclarativeEngine>
 #include <QtDeclarative/QDeclarativeExpression>
+#include <QtDeclarative/qdeclarativedebug.h>
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptValueIterator>
 #include <QtCore/QWeakPointer>
 
+#include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
@@ -184,4 +186,11 @@ void KDeclarative::setupBindings()
 QScriptEngine *KDeclarative::scriptEngine() const
 {
     return d->scriptEngine.data();
+}
+
+void KDeclarative::setupQmlJsDebugger()
+{
+    if (KCmdLineArgs::parsedArgs("qt")->isSet("qmljsdebugger")) {
+        QDeclarativeDebuggingEnabler enabler;
+    }
 }
