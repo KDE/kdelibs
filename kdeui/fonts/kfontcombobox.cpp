@@ -253,7 +253,7 @@ void KFontComboBoxPrivate::updateDatabase ()
     model->setStringList(trFontFamilies);
     KCompletion *completion = k->completionObject();
     if (completion) {
-        completion->insertItems(trFontFamilies);
+        completion->setItems(trFontFamilies);
         completion->setIgnoreCase(true);
     }
 }
