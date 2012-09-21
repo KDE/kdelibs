@@ -225,6 +225,7 @@ public:
     bool signalsAllowed;
     KFontFamilyDelegate *delegate;
     QStringListModel *model;
+    QStringList fontList;
 };
 
 KFontComboBoxPrivate::KFontComboBoxPrivate (KFontComboBox *parent)
@@ -237,9 +238,11 @@ KFontComboBoxPrivate::KFontComboBoxPrivate (KFontComboBox *parent)
 
 void KFontComboBoxPrivate::updateDatabase ()
 {
-    QStringList fontFamilies;
-    KFontChooser::getFontList(fontFamilies,
-                              onlyFixed ? KFontChooser::FixedWidthFonts : 0);
+    QStringList fontFamilies = fontList;
+    if (fontList.isEmpty()) {
+        KFontChooser::getFontList(fontFamilies,
+                                  onlyFixed ? KFontChooser::FixedWidthFonts : 0);
+    }
 
     // Translate font families for the list model.
     delegate->fontFamilyTrMap.clear();
@@ -336,6 +339,14 @@ void KFontComboBox::setOnlyFixed (bool onlyFixed)
 {
     if (onlyFixed != d->onlyFixed) {
         d->onlyFixed = onlyFixed;
+        d->updateDatabase();
+    }
+}
+
+void KFontComboBox::setFontList (const QStringList &fontList)
+{
+    if (fontList != d->fontList) {
+        d->fontList = fontList;
         d->updateDatabase();
     }
 }
