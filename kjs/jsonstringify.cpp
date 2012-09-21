@@ -37,7 +37,7 @@
 
 namespace KJS {
 
-static const int StackObjectLimit = 1500;
+static const uint StackObjectLimit = 1500;
 
 JSONStringify::JSONStringify(ExecState* exec, JSValue* replacer, JSValue* spacer)
     : m_state(Success)
