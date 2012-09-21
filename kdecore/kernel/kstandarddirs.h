@@ -365,10 +365,14 @@ public:
      *
      * @return A number identifying the current version of the
      *          resource.
+     * @deprecated since 5.0. Only kbuildsycoca needed the multi-dir version of this.
+     * In other apps, just use QFileInfo(fullPath).lastModified().toTime_t()
      */
-    quint32 calcResourceHash( const char *type,
+#ifndef KDE_NO_DEPRECATED
+    KDECORE_DEPRECATED quint32 calcResourceHash( const char *type,
                               const QString& filename,
                               SearchOptions options = NoSearchOptions) const;
+#endif
 
     /**
      * Tries to find all directories whose names consist of the
@@ -647,6 +651,7 @@ public:
      *          instead.
      * @see locate()
      * @see locateLocal()
+     * @deprecated now returns % + type + / ...
      */
 #ifndef KDE_NO_DEPRECATED
     static KDECORE_DEPRECATED QString kde_default(const char *type);
@@ -654,8 +659,12 @@ public:
 
     /**
      * @internal (for use by sycoca only)
+     * @deprecated since 5.0, there is no KDEDIRS anymore. If you care for XDG_DATA_DIRS instead, use this:
+     * QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).join(QString(':'))
      */
-    QString kfsstnd_prefixes();
+#ifndef KDE_NO_DEPRECATED
+    KDECORE_DEPRECATED QString kfsstnd_prefixes();
+#endif
 
     /**
      * Returns the toplevel directory in which KStandardDirs

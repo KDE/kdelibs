@@ -476,12 +476,12 @@ void KStandardDirs::addXdgDataPrefix( const QString& _dir, bool priority )
     }
 }
 
+#ifndef KDE_NO_DEPRECATED
 QString KStandardDirs::kfsstnd_prefixes()
 {
     return d->m_prefixes.join(QString(QLatin1Char(':')));
 }
 
-#ifndef KDE_NO_DEPRECATED
 bool KStandardDirs::addResourceType( const char *type,
                                      const QString& relativename,
                                      bool priority )
@@ -582,6 +582,7 @@ QString KStandardDirs::findResource( const char *type,
       return KLocale::global()->localizedFilePath(dir + filename);
 }
 
+#ifndef KDE_NO_DEPRECATED
 static quint32 updateHash(const QString &file, quint32 hash)
 {
     KDE_struct_stat buff;
@@ -613,7 +614,7 @@ quint32 KStandardDirs::calcResourceHash( const char *type,
     }
     return hash;
 }
-
+#endif
 
 QStringList KStandardDirs::findDirs( const char *type,
                                      const QString& reldir ) const
