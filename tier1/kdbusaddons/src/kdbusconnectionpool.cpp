@@ -55,7 +55,7 @@ private:
 };
 } // namespace
 
-QThreadStorage<KDBusConnectionPoolPrivate *> s_perThreadConnection;
+static QThreadStorage<KDBusConnectionPoolPrivate *> s_perThreadConnection;
 
 QDBusConnection KDBusConnectionPool::threadConnection()
 {
