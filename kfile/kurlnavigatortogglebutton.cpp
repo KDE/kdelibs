@@ -38,7 +38,7 @@ KUrlNavigatorToggleButton::KUrlNavigatorToggleButton(QWidget* parent) :
             this, SLOT(updateToolTip()));
     connect(this, SIGNAL(clicked(bool)),
             this, SLOT(updateCursor()));
-    m_pixmap = KIcon("dialog-ok").pixmap(16, 16);
+    m_pixmap = KIcon("dialog-ok").pixmap(QSize(22, 22).expandedTo(iconSize()));
     updateToolTip();
 }
 
