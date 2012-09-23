@@ -332,7 +332,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             kDebug(7044) << "Synchronous XHR:" << reply << reqUrl;
         } else {
             kWarning(7044) << "Failed to create a synchronous XHR for" << reqUrl;
-            reply = 0;
+            reply = new KDEPrivate::AccessManagerReply(op, req, QNetworkReply::UnknownNetworkError, kioJob->errorText(), this);
         }
     } else {
         // Set the window on the the KIO ui delegate
