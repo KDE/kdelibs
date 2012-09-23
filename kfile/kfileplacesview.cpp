@@ -946,7 +946,7 @@ void KFilePlacesView::Private::adaptItemSize()
 
     if (rowCount==0) return; // We've nothing to display anyway
 
-    const int minSize = 16;
+    const int minSize = IconSize(KIconLoader::Small);
     const int maxSize = 64;
 
     int textWidth = 0;

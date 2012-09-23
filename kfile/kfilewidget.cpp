@@ -2496,6 +2496,9 @@ void KFileWidgetPrivate::_k_toggleSpeedbar(bool show)
     }
 
     static_cast<KToggleAction *>(q->actionCollection()->action("toggleSpeedbar"))->setChecked(show);
+
+    // if we don't show the places panel, at least show the places menu
+    urlNavigator->setPlacesSelectorVisible(!show);
 }
 
 void KFileWidgetPrivate::_k_toggleBookmarks(bool show)
