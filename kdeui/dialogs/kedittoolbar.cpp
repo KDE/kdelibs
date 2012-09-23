@@ -823,6 +823,16 @@ bool KEditToolBarWidget::save()
     if ( (*it).type() == XmlData::Merged )
       continue;
 
+    // Add noMerge="1" to all the menus since we are saving the merged data
+    QDomNodeList menuNodes = (*it).domDocument().elementsByTagName( "Menu" );
+    for (uint i = 0; i < menuNodes.length(); ++i)
+    {
+        QDomNode menuNode = menuNodes.item(i);
+        QDomElement menuElement = menuNode.toElement();
+        if (menuElement.isNull()) continue;
+        menuElement.setAttribute( "noMerge", "1" );
+    }
+
     kDebug() << (*it).domDocument().toString();
 
     kDebug(240) << "Saving " << (*it).xmlFile();
