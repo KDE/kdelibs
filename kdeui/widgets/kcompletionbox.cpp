@@ -107,7 +107,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 
     if (wid && wid == d->m_parent &&
         (type == QEvent::Move || type == QEvent::Resize)) {
-        hide();
+        sizeAndPosition();
         return false;
     }
 
