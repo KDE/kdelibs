@@ -326,6 +326,7 @@ install( FILES
   KPushButton
   KRandom
   KRandomSequence
+  KRatingPainter
   KRatingWidget
   KRecentDocument
   KRecentFilesAction
@@ -959,8 +960,6 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/khtml COMPONENT Devel)
 
 install(FILES
   Nepomuk/File
-  Nepomuk/KRatingPainter
-  Nepomuk/KRatingWidget
   Nepomuk/MassUpdateJob
   Nepomuk/Resource
   Nepomuk/ResourceManager
