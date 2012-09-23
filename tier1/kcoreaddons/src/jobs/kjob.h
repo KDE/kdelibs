@@ -37,7 +37,7 @@ class KJobPrivate;
  * void SomeClass::methodWithAsynchronousJobCall()
  * {
  *   KJob * job = someoperation( some parameters );
- *   connect( job, SIGNAL( result( KJob * ) ),
+ *   connect( job, SIGNAL(result(KJob*)),
  *            this, SLOT( handleResult( KJob * ) ) );
  *   job->start();
  * }
@@ -49,8 +49,9 @@ class KJobPrivate;
  * \code
  * void SomeClass::handleResult( KJob *job )
  * {
- *   if ( job->error() )
+ *   if (job->error()) {
  *       doSomething();
+ *   }
  * }
  * \endcode
  *
@@ -60,12 +61,9 @@ class KJobPrivate;
  * void SomeClass::methodWithSynchronousJobCall()
  * {
  *   KJob *job = someoperation( some parameters );
- *   if ( !job->exec() )
- *   {
+ *   if (!job->exec()) {
  *       // An error occurred
- *   }
- *   else
- *   {
+ *   } else {
  *       // Do something
  *   }
  * }
@@ -73,7 +71,7 @@ class KJobPrivate;
  *
  * Subclasses must implement start(), which should trigger
  * the execution of the job (although the work should be
- * done asynchronously).  errorString() should also be
+ * done asynchronously). errorString() should also be
  * reimplemented by any subclasses that introduce new
  * error codes.
  *
@@ -161,7 +159,7 @@ public:
      * \code
      * void ExampleJob::start()
      * {
-     *  QTimer::singleShot( 0, this, SLOT( doWork() ) );
+     *  QTimer::singleShot(0, this, SLOT(doWork()));
      * }
      * \endcode
      */
@@ -296,8 +294,9 @@ public:
      * error message from the error code and error text.
      * For example:
      * \code
-     * if (error() == ReadFailed)
-     *   i18n( "Could not read \"%1\"", errorText() );
+     * if (error() == ReadFailed) {
+     *   i18n("Could not read \"%1\"", errorText());
+     * }
      * \endcode
      *
      * @return a translated error message, providing error() is 0
