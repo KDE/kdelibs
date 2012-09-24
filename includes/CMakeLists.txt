@@ -1043,7 +1043,7 @@ install(FILES
   Plasma/Credentials
   Plasma/DataContainer
   Plasma/DataEngine
-  Plasma/DataEngineManager
+  Plasma/DataEngineConsumer
   Plasma/DataEngineScript
   Plasma/DeclarativeWidget
   Plasma/Delegate
