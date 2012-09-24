@@ -36,9 +36,9 @@ class KJobPrivate;
  * \code
  * void SomeClass::methodWithAsynchronousJobCall()
  * {
- *   KJob * job = someoperation( some parameters );
- *   connect( job, SIGNAL(result(KJob*)),
- *            this, SLOT( handleResult( KJob * ) ) );
+ *   KJob* job = someoperation(some parameters);
+ *   connect(job, SIGNAL(result(KJob*)),
+ *           this, SLOT(handleResult(KJob*)));
  *   job->start();
  * }
  * \endcode
