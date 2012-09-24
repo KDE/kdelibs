@@ -64,6 +64,7 @@ class KTextEdit::Private
         checkSpellingEnabled( false ),
         findReplaceEnabled(true),
         showTabAction(true),
+	showAutoCorrectionButton(true),
         highlighter( 0 ), findDlg(0),find(0),repDlg(0),replace(0), findIndex(0), repIndex(0),
         lastReplacedPosition(-1)
     {
@@ -137,6 +138,7 @@ class KTextEdit::Private
     bool checkSpellingEnabled : 1;
     bool findReplaceEnabled: 1;
     bool showTabAction: 1;
+    bool showAutoCorrectionButton: 1;
     QTextDocumentFragment originalDoc;
     QString spellCheckingConfigFileName;
     QString spellCheckingLanguage;
@@ -159,9 +161,9 @@ void KTextEdit::Private::spellCheckerCanceled()
     spellCheckerFinished();
 }
 
-void KTextEdit::Private::spellCheckerAutoCorrect(const QString&,const QString&)
+void KTextEdit::Private::spellCheckerAutoCorrect(const QString& currentWord,const QString& autoCorrectWord)
 {
-    //TODO
+    emit parent->spellCheckerAutoCorrect(currentWord, autoCorrectWord);
 }
 
 void KTextEdit::Private::spellCheckerMisspelling( const QString &text, int pos )
@@ -798,6 +800,7 @@ void KTextEdit::checkSpelling()
       backgroundSpellCheck, 0);
   backgroundSpellCheck->setParent(spellDialog);
   spellDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  spellDialog->activeAutoCorrect(d->showAutoCorrectionButton);
   connect(spellDialog, SIGNAL(replace(QString,int,QString)),
           this, SLOT(spellCheckerCorrected(QString,int,QString)));
   connect(spellDialog, SIGNAL(misspelling(QString,int)),
@@ -1136,6 +1139,11 @@ void KTextEdit::focusOutEvent(QFocusEvent *ev)
         d->updateClickMessageRect();
     }
     QTextEdit::focusOutEvent(ev);
+}
+
+void KTextEdit::showAutoCorrectButton(bool show)
+{
+    d->showAutoCorrectionButton = show;
 }
 
 #include "ktextedit.moc"

@@ -25,7 +25,7 @@
 #include <QtGui/QTextEdit>
 
 #define HAVE_SHOWTABACTION 1
-
+#define HAVE_AUTOCORRECTFEATURE 1
 /**
  * This interface is a workaround to keep binary compatibility in KDE4, because
  * adding the virtual keyword to functions is not BC.
@@ -259,6 +259,12 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
      * @since 4.10
      */
     void showTabAction(bool show);
+
+    /**
+     * since 4.10
+     */
+    void showAutoCorrectButton(bool show);
+
   Q_SIGNALS:
     /**
      * emit signal when we activate or not autospellchecking
@@ -296,6 +302,11 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
      * @since 4.5
      */
     void aboutToShowContextMenu(QMenu* menu);
+
+    /**
+     * @since 4.10
+     */
+    void spellCheckerAutoCorrect(const QString& currentWord, const QString& autoCorrectWord);
 
   public Q_SLOTS:
 
