@@ -45,15 +45,15 @@ void PackageStructure::pathChanged(Package *package)
     Q_UNUSED(package)
 }
 
-bool PackageStructure::installPackage(Package *package, const QString &archivePath, const QString &packageRoot)
-{
-    return PackagePrivate::installPackage(archivePath, packageRoot, package->servicePrefix());
-}
-
-bool PackageStructure::uninstallPackage(Package *package, const QString &packageName, const QString &packageRoot)
-{
-    return PackagePrivate::uninstallPackage(packageName, packageRoot, package->servicePrefix());
-}
+// bool PackageStructure::installPackage(Package *package, const QString &archivePath, const QString &packageRoot)
+// {
+//     return PackagePrivate::installPackage(archivePath, packageRoot, package->servicePrefix());
+// }
+//
+// bool PackageStructure::uninstallPackage(Package *package, const QString &packageName, const QString &packageRoot)
+// {
+//     return PackagePrivate::uninstallPackage(packageName, packageRoot, package->servicePrefix());
+// }
 
 }
 

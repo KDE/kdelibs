@@ -125,7 +125,10 @@ set(plasma_LIB_SRCS
     private/effects/halopainter.cpp
     private/effectwatcher.cpp
     private/getsource.cpp
+
     private/packages.cpp
+    private/packagejob.cpp
+    private/packagejobthread.cpp
     private/plasmoidservice.cpp
     private/remotedataengine.cpp
     private/remoteservice.cpp
