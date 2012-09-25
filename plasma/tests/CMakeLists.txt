@@ -33,4 +33,9 @@ if(QCA2_FOUND)
   target_link_libraries(plasmoidpackagetest ${QCA2_LIBRARIES})
 endif(QCA2_FOUND)
 
-
+if (NOT TARGET QtMimeTypes)
+	message(" ++++++++++++++++++++ QtMimeTypes is NOT a target")
+ELSE()
+	get_target_property(loc QtMimeTypes LOCATION)
+	message(" ++++++++++++++++++++ QtMimeTypes FOUND IN ${loc}")
+endif()

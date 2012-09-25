@@ -1,5 +1,5 @@
 /******************************************************************************
-*   Copyright 2007 by Bertjan Broeksema <b.broeksema@kdemail.net>             *
+*   Copyright 2012 Sebastian Kügler <sebas@kde.org>                           *
 *                                                                             *
 *   This library is free software; you can redistribute it and/or             *
 *   modify it under the terms of the GNU Library General Public               *
@@ -17,37 +17,47 @@
 *   Boston, MA 02110-1301, USA.                                               *
 *******************************************************************************/
 
-#ifndef PACKAGETEST_H
+#include "packagejob_p.h"
+#include "packagejobthread_p.h"
+#include "config-plasma.h"
 
-#include <qtest_kde.h>
-
-#include "plasma/package.h"
-
-class PlasmoidPackageTest : public QObject
+namespace Plasma
 {
-    Q_OBJECT
-
-public Q_SLOTS:
-    void init();
-    void cleanup();
-
-private Q_SLOTS:
-    void createAndInstallPackage();
-    void isValid();
-    void filePath();
-    void entryList();
-
-    void packageInstalled(KJob* j);
-    void packageUninstalled(KJob* j);
-
-private:
-    void createTestPackage(const QString &packageName);
-
-    QString m_packageRoot;
-    QString m_package;
-    KJob* m_packageJob;
-    Plasma::Package m_defaultPackage;
+class PackageJobPrivate {
+public:
+    PackageJobThread *thread;
 };
 
-#endif
+PackageJob::PackageJob(const QString& packageRoot, const QString& serviceRoot, QObject* parent) :
+    KJob(parent)
+{
+    d = new PackageJobPrivate;
+    d->thread = new PackageJobThread(packageRoot,  serviceRoot, this);
+    d->thread->start();
+}
+
+PackageJob::~PackageJob()
+{
+    delete d;
+}
+
+void PackageJob::start()
+{
+
+}
+
+void PackageJob::install(const QString& archivePath)
+{
+    d->thread->install(archivePath);
+}
+
+void PackageJob::uninstall(const QString& package)
+{
+    d->thread->uninstall(package);
+}
+
+
+} // namespace Plasma
+
+#include "moc_packagejob_p.cpp"
 

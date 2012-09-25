@@ -1,5 +1,6 @@
 /******************************************************************************
-*   Copyright 2007 by Bertjan Broeksema <b.broeksema@kdemail.net>             *
+*   Copyright 2007-2009 by Aaron Seigo <aseigo@kde.org>                       *
+*   Copyright 2012 Sebastian Kügler <sebas@kde.org>                           *
 *                                                                             *
 *   This library is free software; you can redistribute it and/or             *
 *   modify it under the terms of the GNU Library General Public               *
@@ -17,37 +18,37 @@
 *   Boston, MA 02110-1301, USA.                                               *
 *******************************************************************************/
 
-#ifndef PACKAGETEST_H
+#ifndef PLASMA_PACKAGEJOBTHREAD_P_H
+#define PLASMA_PACKAGEJOBTHREAD_P_H
 
-#include <qtest_kde.h>
+#include "kjob.h"
+#include <QThread>
 
-#include "plasma/package.h"
+namespace Plasma
+{
 
-class PlasmoidPackageTest : public QObject
+class PackageJobThreadPrivate;
+
+class PackageJobThread : public QThread
 {
     Q_OBJECT
 
-public Q_SLOTS:
-    void init();
-    void cleanup();
+    public:
+        PackageJobThread(const QString& packageRoot, const QString& servicePrefix, QObject* parent = 0);
+        virtual ~PackageJobThread();
 
-private Q_SLOTS:
-    void createAndInstallPackage();
-    void isValid();
-    void filePath();
-    void entryList();
+//        void init();
 
-    void packageInstalled(KJob* j);
-    void packageUninstalled(KJob* j);
+        bool install(const QString& archivePath);
+        bool uninstall(const QString& packageName);
 
-private:
-    void createTestPackage(const QString &packageName);
+    Q_SIGNALS:
+        void finished(bool success);
 
-    QString m_packageRoot;
-    QString m_package;
-    KJob* m_packageJob;
-    Plasma::Package m_defaultPackage;
+    private:
+        PackageJobThreadPrivate* d;
 };
 
-#endif
+}
 
+#endif

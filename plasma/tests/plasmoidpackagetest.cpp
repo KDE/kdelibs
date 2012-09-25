@@ -26,11 +26,14 @@
 #include <kstandarddirs.h>
 #include <kio/netaccess.h>
 
+#include <kdebug.h>
+
 #include "applet.h"
 #include "pluginloader.h"
 
 void PlasmoidPackageTest::init()
 {
+    kDebug() << "THIS IS A PLASMOID SCRIPT THIGN";
     m_package = QString("Package");
     m_packageRoot = QDir::homePath() + "/.kde-unit-test/packageRoot";
     m_defaultPackage = Plasma::PluginLoader::self()->loadPackage("Plasma/Applet");
@@ -66,6 +69,8 @@ void PlasmoidPackageTest::createTestPackage(const QString &packageName)
     file.flush();
     file.close();
 
+    kDebug() << "OUT: " << packageName;
+
     // Create the code dir.
     QVERIFY(QDir().mkpath(m_packageRoot + "/" + packageName + "/contents/code"));
 
@@ -77,6 +82,8 @@ void PlasmoidPackageTest::createTestPackage(const QString &packageName)
     file.flush();
     file.close();
 
+
+    kDebug() << "THIS IS A PLASMOID SCRIPT THIGN";
     // Now we have a minimal plasmoid package which is valid. Let's add some
     // files to it for test purposes.
 
@@ -252,7 +259,9 @@ void PlasmoidPackageTest::createAndInstallPackage()
     QVERIFY(contents->entry("images"));
 
     Plasma::Package *p = new Plasma::Package(m_defaultPackage);
-    QVERIFY(p->installPackage(packagePath, m_packageRoot));
+    job = p->install(packagePath, m_packageRoot);
+    connect(job, SIGNAL(finished(KJob*)), SLOT(packageInstalled(KJob*)));
+
     const QString installedPackage = m_packageRoot + "/plasmoid_to_package";
 
     QVERIFY(QFile::exists(installedPackage));
@@ -261,5 +270,22 @@ void PlasmoidPackageTest::createAndInstallPackage()
     QVERIFY(p->isValid());
     delete p;
 }
+
+void PlasmoidPackageTest::packageInstalled(KJob* j)
+{
+    kDebug() << "package installed";
+    QVERIFY(j->error() == KJob::NoError);
+    Plasma::Package *p = new Plasma::Package(m_defaultPackage);
+    KJob* jj = p->uninstall();
+    disconnect(p, SIGNAL(finished(KJob*)), SLOT(packageInstalled(KJob*)));
+}
+
+
+void PlasmoidPackageTest::packageUninstalled(KJob* j)
+{
+    kDebug() << "package uninstalled";
+    QVERIFY(j->error() == KJob::NoError);
+}
+
 
 QTEST_KDEMAIN(PlasmoidPackageTest, NoGUI)
