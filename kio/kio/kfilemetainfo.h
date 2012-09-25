@@ -154,7 +154,7 @@ public:
 #endif
     KFileMetaInfoGroupList groups() const;
     QStringList keys() const;
-    const QUrl& url() const;
+    QUrl url() const;
 
 private:
     QSharedDataPointer<KFileMetaInfoPrivate> d;
