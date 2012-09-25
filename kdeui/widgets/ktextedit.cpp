@@ -64,7 +64,7 @@ class KTextEdit::Private
         checkSpellingEnabled( false ),
         findReplaceEnabled(true),
         showTabAction(true),
-	showAutoCorrectionButton(true),
+	showAutoCorrectionButton(false),
         highlighter( 0 ), findDlg(0),find(0),repDlg(0),replace(0), findIndex(0), repIndex(0),
         lastReplacedPosition(-1)
     {
