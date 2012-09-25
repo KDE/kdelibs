@@ -65,6 +65,7 @@ set_target_properties(kservice PROPERTIES VERSION ${ECM_VERSION_STRING}
 install(TARGETS kservice EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install(FILES
+   "${CMAKE_CURRENT_BINARY_DIR}/kservice_export.h"
    services/kmimetypetrader.h
    services/kservice.h
    services/kserviceaction.h
