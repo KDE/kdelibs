@@ -55,7 +55,7 @@ static void printResult(const QString &s)
 int main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
-    KAboutData about("kde4-config", "kdelibs4", qi18n("kde4-config"), "1.0",
+    KAboutData about("kde5-config", "kdelibs4", qi18n("kde5-config"), "1.0",
                      qi18n("A little program to output installation paths"),
                      KAboutData::License_GPL,
                      qi18n("(C) 2000 Stephan Kulow"));

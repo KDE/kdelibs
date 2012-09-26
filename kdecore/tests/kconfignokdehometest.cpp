@@ -53,7 +53,7 @@ void KConfigNoKdeHomeTest::testNoKdeHome()
 #endif
     QVERIFY(!QFile::exists(xdgConfigHome));
 
-    // Do what kde4-config does, and ensure kdehome doesn't get created (#233892)
+    // Do what kde5-config does, and ensure kdehome doesn't get created (#233892)
     QVERIFY(!QFile::exists(xdgConfigHome));
     KGlobal::dirs();
     QVERIFY(!QFile::exists(xdgConfigHome));
