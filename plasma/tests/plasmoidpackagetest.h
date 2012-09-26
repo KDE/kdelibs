@@ -22,6 +22,7 @@
 #include <qtest_kde.h>
 
 #include "plasma/package.h"
+#include "plasma/packagestructure.h"
 
 class PlasmoidPackageTest : public QObject
 {
@@ -47,6 +48,7 @@ private:
     QString m_package;
     KJob* m_packageJob;
     Plasma::Package m_defaultPackage;
+    Plasma::PackageStructure* m_defaultPackageStructure;
 };
 
 #endif

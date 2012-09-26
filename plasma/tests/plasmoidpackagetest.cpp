@@ -235,38 +235,37 @@ void PlasmoidPackageTest::entryList()
 
 void PlasmoidPackageTest::createAndInstallPackage()
 {
-    createTestPackage("plasmoid_to_package");
-    const QString packagePath = m_packageRoot + '/' + "testpackage.plasmoid";
+//     createTestPackage("plasmoid_to_package");
+//     const QString packagePath = m_packageRoot + '/' + "testpackage.plasmoid";
+//
+//     KZip creator(packagePath);
+//     QVERIFY(creator.open(QIODevice::WriteOnly));
+//     creator.addLocalDirectory(m_packageRoot + '/' + "plasmoid_to_package", ".");
+//     creator.close();
+//     KIO::NetAccess::del(KUrl(m_packageRoot + "/plasmoid_to_package"), 0);
+//
+//     QVERIFY(QFile::exists(packagePath));
+//
+//     KZip package(packagePath);
+//     QVERIFY(package.open(QIODevice::ReadOnly));
+//     const KArchiveDirectory *dir = package.directory();
+//     QVERIFY(dir);
+//     QVERIFY(dir->entry("metadata.desktop"));
+//     const KArchiveEntry *contentsEntry = dir->entry("contents");
+//     QVERIFY(contentsEntry);
+//     QVERIFY(contentsEntry->isDirectory());
+//     const KArchiveDirectory *contents = static_cast<const KArchiveDirectory *>(contentsEntry);
+//     QVERIFY(contents->entry("code"));
+//     QVERIFY(contents->entry("images"));
 
-    KZip creator(packagePath);
-    QVERIFY(creator.open(QIODevice::WriteOnly));
-    creator.addLocalDirectory(m_packageRoot + '/' + "plasmoid_to_package", ".");
-    creator.close();
-    KIO::NetAccess::del(KUrl(m_packageRoot + "/plasmoid_to_package"), 0);
+    QString archivePath = "/tmp/myplasmoid.plasmoid";
 
-    QVERIFY(QFile::exists(packagePath));
+    m_defaultPackageStructure = new Plasma::PackageStructure(this);
+    Plasma::Package *p = new Plasma::Package(m_defaultPackageStructure);
+//     p->setPath(archivePath);
+//     KJob* job = p->install();
+//     connect(job, SIGNAL(finished(KJob*)), SLOT(packageInstalled(KJob*)));
 
-    KZip package(packagePath);
-    QVERIFY(package.open(QIODevice::ReadOnly));
-    const KArchiveDirectory *dir = package.directory();
-    QVERIFY(dir);
-    QVERIFY(dir->entry("metadata.desktop"));
-    const KArchiveEntry *contentsEntry = dir->entry("contents");
-    QVERIFY(contentsEntry);
-    QVERIFY(contentsEntry->isDirectory());
-    const KArchiveDirectory *contents = static_cast<const KArchiveDirectory *>(contentsEntry);
-    QVERIFY(contents->entry("code"));
-    QVERIFY(contents->entry("images"));
-
-    Plasma::Package *p = new Plasma::Package(m_defaultPackage);
-    job = p->install(packagePath, m_packageRoot);
-    connect(job, SIGNAL(finished(KJob*)), SLOT(packageInstalled(KJob*)));
-
-    const QString installedPackage = m_packageRoot + "/plasmoid_to_package";
-
-    QVERIFY(QFile::exists(installedPackage));
-
-    p->setPath(installedPackage);
     QVERIFY(p->isValid());
     delete p;
 }
@@ -275,9 +274,12 @@ void PlasmoidPackageTest::packageInstalled(KJob* j)
 {
     kDebug() << "package installed";
     QVERIFY(j->error() == KJob::NoError);
-    Plasma::Package *p = new Plasma::Package(m_defaultPackage);
-    KJob* jj = p->uninstall();
-    disconnect(p, SIGNAL(finished(KJob*)), SLOT(packageInstalled(KJob*)));
+    //QVERIFY(p->path());
+
+//     Plasma::Package *p = new Plasma::Package(m_defaultPackageStructure);
+//     KJob* jj = p->uninstall();
+//     //QObject::disconnect(j, SIGNAL(finished(KJob*)), this, SLOT(packageInstalled(KJob*)));
+//     connect(jj, SIGNAL(finished(KJob*)), SLOT(packageInstalled(KJob*)));
 }
 
 

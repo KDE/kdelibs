@@ -28,11 +28,11 @@ public:
     PackageJobThread *thread;
 };
 
-PackageJob::PackageJob(const QString& packageRoot, const QString& serviceRoot, QObject* parent) :
+PackageJob::PackageJob(const QString &servicePrefix, QObject* parent) :
     KJob(parent)
 {
     d = new PackageJobPrivate;
-    d->thread = new PackageJobThread(packageRoot,  serviceRoot, this);
+    d->thread = new PackageJobThread(servicePrefix, this);
     d->thread->start();
 }
 
@@ -46,14 +46,14 @@ void PackageJob::start()
 
 }
 
-void PackageJob::install(const QString& archivePath)
+void PackageJob::install(const QString& src, const QString &dest)
 {
-    d->thread->install(archivePath);
+    d->thread->install(src, dest);
 }
 
-void PackageJob::uninstall(const QString& package)
+void PackageJob::uninstall(const QString& installationPath)
 {
-    d->thread->uninstall(package);
+    d->thread->uninstall(installationPath);
 }
 
 

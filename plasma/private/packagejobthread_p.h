@@ -34,13 +34,11 @@ class PackageJobThread : public QThread
     Q_OBJECT
 
     public:
-        PackageJobThread(const QString& packageRoot, const QString& servicePrefix, QObject* parent = 0);
+        PackageJobThread(const QString &servicePrefix, QObject* parent = 0);
         virtual ~PackageJobThread();
 
-//        void init();
-
-        bool install(const QString& archivePath);
-        bool uninstall(const QString& packageName);
+        bool install(const QString& src, const QString &dest);
+        bool uninstall(const QString& packagePath);
 
     Q_SIGNALS:
         void finished(bool success);

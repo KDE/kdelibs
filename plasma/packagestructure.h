@@ -69,10 +69,10 @@ public:
      * accessing file paths
      * @param archivePath path to the package archive file
      * @param packageRoot path to the directory where the package should be
-     *                    installed to
+     *                    installed t
      * @return true on successful installation, false otherwise
      **/
-//     virtual KJob* install(Package *package, const QString &archivePath, const QString &packageRoot);
+    virtual KJob* install(Package *package, const QString &archivePath, const QString &packageRoot);
 
     /**
      * Uninstalls a package matching this package structure.
@@ -83,7 +83,7 @@ public:
      * @param packageRoot path to the directory where the package should be installed to
      * @return true on successful removal of the package, false otherwise
      */
-//     virtual KJob* uninstall(Package *package, const QString &packageName, const QString &packageRoot);
+     virtual KJob* uninstall(Package *package, const QString &packageRoot);
 
 private:
     PackageStructurePrivate *const d;
