@@ -20,6 +20,7 @@
 #include "packagestructure.h"
 
 #include "private/package_p.h"
+#include <private/packagejob_p.h>
 
 namespace Plasma
 {
@@ -45,15 +46,20 @@ void PackageStructure::pathChanged(Package *package)
     Q_UNUSED(package)
 }
 
-// bool PackageStructure::installPackage(Package *package, const QString &archivePath, const QString &packageRoot)
-// {
+KJob* PackageStructure::install(Package *package, const QString &archivePath, const QString &packageRoot)
+{
+    PackageJob* j = new PackageJob(package->servicePrefix(), this);
+    j->install(archivePath, packageRoot);
+    return j;
 //     return PackagePrivate::installPackage(archivePath, packageRoot, package->servicePrefix());
-// }
-//
-// bool PackageStructure::uninstallPackage(Package *package, const QString &packageName, const QString &packageRoot)
-// {
-//     return PackagePrivate::uninstallPackage(packageName, packageRoot, package->servicePrefix());
-// }
+}
+
+KJob* PackageStructure::uninstall(Package *package, const QString &packageRoot)
+{
+    PackageJob* j = new PackageJob(package->servicePrefix(), this);
+    j->uninstall(packageRoot);
+    return j;
+}
 
 }
 

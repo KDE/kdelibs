@@ -32,17 +32,14 @@ class PackageJob : public KJob
 {
     Q_OBJECT
 
-
     public:
-        PackageJob(const QString& packageRoot, const QString& serviceRoot, QObject* parent = 0);
+        PackageJob(const QString &servicePrefix, QObject* parent = 0);
         ~PackageJob();
-
-        //void init();
 
         virtual void start(); // ??
 
-        void install(const QString& archivePath);
-        void uninstall(const QString& packageName);
+        void install(const QString& src, const QString& dest);
+        void uninstall(const QString &installationPath);
 
     Q_SIGNALS:
         void finished(bool success);

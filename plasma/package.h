@@ -307,7 +307,7 @@ public:
      * Installs a package matching this package structure. By default installs a
      * native Plasma::Package.
      *
-s     * @return KJob to track installation progress and result
+     * @return KJob to track installation progress and result
      **/
     KJob* install();
 

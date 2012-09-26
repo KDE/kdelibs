@@ -637,10 +637,12 @@ KJob* Package::install()
 //     }
 //
 //     return PackagePrivate::install(package, packageRoot, d->servicePrefix);
-    PackageJob* pj = new PackageJob(d->path, d->servicePrefix);
-    pj->uninstall(package); /// FIXME??
+    const QString src = d->path;
+    const QString dest = defaultPackageRoot();
+    kDebug() << "Source: " << src;
+    kDebug() << "DefaultpackageRoot: " << dest;
     //connect(pj, SIGNAL(finished(bool)), SLOT(finished(bool)));
-    return pj;
+    return d->structure.data()->install(this, src, dest);
 }
 
 // KJob* Package::uninstall(const QString &package, const QString &packageRoot, const QString &servicePrefix)
@@ -654,15 +656,19 @@ KJob* Package::install()
 
 KJob* Package::uninstall()
 {
-    PackageJob* pj = new PackageJob(d->path, d->servicePrefix);
-    pj->uninstall();
+
+    const QString pname = metadata().pluginName();
+
+    QString packageRoot = path();
+    packageRoot.replace(pname, "");
+    return d->structure.data()->uninstall(this, packageRoot);
     //connect(pj, SIGNAL(finished(bool)), SLOT(finished(bool)));
 //     if (d->structure) {
 //         return d->structure.data()->uninstall(this, packageName, packageRoot);
 //     }
 //
 //     return PackagePrivate::uninstall(packageName, packageRoot, d->servicePrefix);
-    return pj;
+    //return pj;
 }
 /*
 KJob* PackagePrivate::uninstall(const QString &packageName, const QString &packageRoot, const QString &servicePrefix)

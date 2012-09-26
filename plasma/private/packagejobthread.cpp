@@ -108,17 +108,16 @@ bool removeFolder(QString folderPath)
 
 class PackageJobThreadPrivate {
 public:
-    QString packageRoot;
+//     QString packageRoot;
     QString servicePrefix;
 };
 
 
 
-PackageJobThread::PackageJobThread(const QString& packageRoot, const QString& servicePrefix, QObject* parent) :
+PackageJobThread::PackageJobThread(const QString &servicePrefix, QObject* parent) :
 QThread(parent)
 {
     d = new PackageJobThreadPrivate;
-    d->packageRoot = packageRoot;
     d->servicePrefix = servicePrefix;
 }
 
@@ -127,22 +126,25 @@ PackageJobThread::~PackageJobThread()
     delete d;
 }
 
-bool PackageJobThread::install(const QString& archivePath)
+bool PackageJobThread::install(const QString& src, const QString &dest)
 {
     //TODO: report *what* failed if something does fail
-    QDir root(d->packageRoot);
+    QString packageRoot = dest;
 
+    QDir root(dest);
+
+    // FIXME: make sure package root is there.
     if (!root.exists()) {
-        QDir().mkpath(d->packageRoot);
+        QDir().mkpath(dest);
         if (!root.exists()) {
-            kWarning() << "Could not create package root directory:" << d->packageRoot;
+            kWarning() << "Could not create package root directory:" << dest;
             return false;
         }
     }
 
-    QFileInfo fileInfo(archivePath);
+    QFileInfo fileInfo(src);
     if (!fileInfo.exists()) {
-        kWarning() << "No such file:" << archivePath;
+        kWarning() << "No such file:" << src;
         return false;
     }
 
@@ -152,7 +154,7 @@ bool PackageJobThread::install(const QString& archivePath)
 
     if (fileInfo.isDir()) {
         // we have a directory, so let's just install what is in there
-        path = archivePath;
+        path = src;
 
         // make sure we end in a slash!
         if (path[path.size() - 1] != '/') {
@@ -161,21 +163,21 @@ bool PackageJobThread::install(const QString& archivePath)
     } else {
         KArchive *archive = 0;
         QMimeDatabase db;
-        QMimeType mimetype = db.mimeTypeForFile(archivePath);
+        QMimeType mimetype = db.mimeTypeForFile(src);
 
         if (mimetype.inherits("application/zip")) {
-            archive = new KZip(archivePath);
+            archive = new KZip(src);
         } else if (mimetype.inherits("application/x-compressed-tar") ||
                    mimetype.inherits("application/x-tar")|| mimetype.inherits("application/x-bzip-compressed-tar") ||
                    mimetype.inherits("application/x-xz") || mimetype.inherits("application/x-lzma")) {
-            archive = new KTar(archivePath);
+            archive = new KTar(src);
         } else {
-            kWarning() << "Could not open package file, unsupported archive format:" << archivePath << mimetype.name();
+            kWarning() << "Could not open package file, unsupported archive format:" << src << mimetype.name();
             return false;
         }
 
         if (!archive->open(QIODevice::ReadOnly)) {
-            kWarning() << "Could not open package file:" << archivePath;
+            kWarning() << "Could not open package file:" << src;
         delete archive;
             return false;
         }
@@ -199,14 +201,14 @@ bool PackageJobThread::install(const QString& archivePath)
 
     QString metadataPath = path + "metadata.desktop";
     if (!QFile::exists(metadataPath)) {
-        kWarning() << "No metadata file in package" << archivePath << metadataPath;
+        kWarning() << "No metadata file in package" << src << metadataPath;
         return false;
     }
 
     KPluginInfo meta(metadataPath);
-    QString targetName = meta.pluginName();
+    QString pluginName = meta.pluginName();
 
-    if (targetName.isEmpty()) {
+    if (pluginName.isEmpty()) {
         kWarning() << "Package plugin name not specified";
         return false;
     }
@@ -214,12 +216,13 @@ bool PackageJobThread::install(const QString& archivePath)
     // Ensure that package names are safe so package uninstall can't inject
     // bad characters into the paths used for removal.
     QRegExp validatePluginName("^[\\w-\\.]+$"); // Only allow letters, numbers, underscore and period.
-    if (!validatePluginName.exactMatch(targetName)) {
-        kWarning() << "Package plugin name " << targetName << "contains invalid characters";
+    if (!validatePluginName.exactMatch(pluginName)) {
+        kWarning() << "Package plugin name " << pluginName << "contains invalid characters";
         return false;
     }
 
-    targetName = d->packageRoot + '/' + targetName;
+    const QString targetName = dest + '/' + pluginName;
+    kDebug() << " Target installation path: " << targetName;
     if (QFile::exists(targetName)) {
         kWarning() << targetName << "already exists";
         return false;
@@ -279,22 +282,25 @@ bool PackageJobThread::install(const QString& archivePath)
             kWarning() << "Could not register package as service (this is not necessarily fatal):" << serviceName;
         }
     }
-
+    /*
     QDBusInterface sycoca("org.kde.kded5", "/kbuildsycoca");
     sycoca.asyncCall("recreate");
+    */
+    kWarning() << "Not updating kbuildsycoca4, since that will go away. Do it yourself for now if needed.";
     return true;
 
 }
 
-bool PackageJobThread::uninstall(const QString& packageName)
+bool PackageJobThread::uninstall(const QString& packagePath)
 {
     // We need to remove the package directory and its metadata file.
-    const QString targetName = d->packageRoot + '/' + packageName;
+    const QString targetName = packagePath; // FIXME : remove
 
     if (!QFile::exists(targetName)) {
         kWarning() << targetName << "does not exist";
         return false; // FIXME: KJob!
     }
+    const QString &packageName = "FIXME";
 
     const QString serviceName = d->servicePrefix + packageName + ".desktop";
 
@@ -314,8 +320,8 @@ bool PackageJobThread::uninstall(const QString& packageName)
         return false; // FIXME: KJob!
     }
 
-    QDBusInterface sycoca("org.kde.kded5", "/kbuildsycoca");
-    sycoca.asyncCall("recreate");
+//     QDBusInterface sycoca("org.kde.kded5", "/kbuildsycoca");
+//     sycoca.asyncCall("recreate");
     return true; // FIXME: KJob!
 }
 
