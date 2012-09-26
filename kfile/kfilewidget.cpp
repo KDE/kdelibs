@@ -1871,33 +1871,30 @@ void KFileWidgetPrivate::readConfig(KConfigGroup &configGroup)
 
 void KFileWidgetPrivate::writeConfig(KConfigGroup &configGroup)
 {
-//     kDebug(kfile_area);
-
     // these settings are global settings; ALL instances of the file dialog
     // should reflect them
-    KConfig config("kdeglobals");
-    KConfigGroup group(&config, configGroup.name());
+    const KConfigBase::WriteConfigFlags globalFlags = KConfigGroup::Persistent | KConfigGroup::Global;
 
     KUrlComboBox *pathCombo = urlNavigator->editor();
-    group.writePathEntry( RecentURLs, pathCombo->urls() );
-    //saveDialogSize( group, KConfigGroup::Persistent | KConfigGroup::Global );
-    group.writeEntry( PathComboCompletionMode, static_cast<int>(pathCombo->completionMode()) );
-    group.writeEntry( LocationComboCompletionMode, static_cast<int>(locationEdit->completionMode()) );
+    configGroup.writePathEntry( RecentURLs, pathCombo->urls(), globalFlags );
+    //saveDialogSize( configGroup, KConfigGroup::Persistent | KConfigGroup::Global );
+    configGroup.writeEntry( PathComboCompletionMode, static_cast<int>(pathCombo->completionMode()), globalFlags );
+    configGroup.writeEntry( LocationComboCompletionMode, static_cast<int>(locationEdit->completionMode()), globalFlags );
 
     const bool showSpeedbar = placesDock && !placesDock->isHidden();
-    group.writeEntry( ShowSpeedbar, showSpeedbar );
+    configGroup.writeEntry( ShowSpeedbar, showSpeedbar, globalFlags );
     if (showSpeedbar) {
         const QList<int> sizes = placesViewSplitter->sizes();
         Q_ASSERT( sizes.count() > 0 );
-        group.writeEntry( SpeedbarWidth, sizes[0] );
+        configGroup.writeEntry( SpeedbarWidth, sizes[0], globalFlags );
     }
 
-    group.writeEntry( ShowBookmarks, bookmarkHandler != 0 );
-    group.writeEntry( AutoSelectExtChecked, autoSelectExtChecked );
-    group.writeEntry( BreadcrumbNavigation, !urlNavigator->isUrlEditable() );
-    group.writeEntry( ShowFullPath, urlNavigator->showFullPath() );
+    configGroup.writeEntry( ShowBookmarks, bookmarkHandler != 0, globalFlags );
+    configGroup.writeEntry( AutoSelectExtChecked, autoSelectExtChecked, globalFlags );
+    configGroup.writeEntry( BreadcrumbNavigation, !urlNavigator->isUrlEditable(), globalFlags );
+    configGroup.writeEntry( ShowFullPath, urlNavigator->showFullPath(), globalFlags );
 
-    ops->writeConfig(group);
+    ops->writeConfig(configGroup);
 }
 
 
