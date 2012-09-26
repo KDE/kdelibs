@@ -2096,11 +2096,13 @@ bool KStandardDirs::addCustomized(KConfig *config)
     return configDirsChanged;
 }
 
+#ifndef KDE_NO_DEPRECATED
 QString KStandardDirs::localkdedir() const
 {
     // Return the prefix to use for saving
     return d->m_prefixes.first();
 }
+#endif
 
 QString KStandardDirs::localxdgdatadir() const
 {

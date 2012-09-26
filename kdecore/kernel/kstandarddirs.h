@@ -671,8 +671,12 @@ public:
      * will store things. Most likely <tt>$HOME/.kde</tt>.
      * Don't use this function if you can use locateLocal()
      * @return the toplevel directory
+     * @deprecated since 5.0, there is no KDEDIRS nor KDEHOME anymore.
+     * Use localxdgdatadir or localxdgconfdir instead.
      */
-    QString localkdedir() const;
+#ifndef KDE_NO_DEPRECATED
+    KDECORE_DEPRECATED QString localkdedir() const;
+#endif
 
     /**
      * @return @c $XDG_DATA_HOME

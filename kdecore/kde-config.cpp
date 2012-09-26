@@ -40,25 +40,16 @@
 #include <config-kstandarddirs.h>
 #include <kconfiggroup.h>
 #include <kkernel_win.h>
-#include <kde_file.h>
+#include <qstandardpaths.h>
 
 static void printResult(const QString &s)
 {
     if (s.isEmpty())
         printf("\n");
-	else {
-		QString path = QDir::toNativeSeparators( s );
+    else {
+        const QString path = QDir::toNativeSeparators( s );
         printf("%s\n", path.toLocal8Bit().constData());
-	}
-}
-
-static QString readXdg( const char* type )
-{
-    QProcess proc;
-    proc.start( QString::fromLatin1("xdg-user-dir"), QStringList() << QString::fromLatin1(type) );
-    if (!proc.waitForStarted() || !proc.waitForFinished())
-        return QString();
-    return QString::fromLocal8Bit( proc.readAll()).trimmed();
+    }
 }
 
 int main(int argc, char **argv)
@@ -75,7 +66,7 @@ int main(int argc, char **argv)
     options.add("prefix",      qi18n("Compiled in prefix for KDE libraries"));
     options.add("exec-prefix", qi18n("Compiled in exec_prefix for KDE libraries"));
     options.add("libsuffix",   qi18n("Compiled in library path suffix"));
-    options.add("localprefix", qi18n("Prefix in $HOME used to write files"));
+    //options.add("localprefix", qi18n("Prefix in $HOME used to write files"));
     options.add("kde-version", qi18n("Compiled in version string for KDE libraries"));
     options.add("types",       qi18n("Available KDE resource types"));
     options.add("path type",       qi18n("Search path for resource type"));
@@ -114,11 +105,13 @@ int main(int argc, char **argv)
         return 0;
     }
 
+#if 0
     if (args->isSet("localprefix"))
     {
         printResult(KGlobal::dirs()->localkdedir());
         return 0;
     }
+#endif
 
     if (args->isSet("kde-version"))
     {
@@ -192,6 +185,13 @@ int main(int argc, char **argv)
             return result.isEmpty() ? 1 : 0;
         }
 
+        // ### maybe Qt should have a QDir::pathSeparator() to avoid ifdefs..
+#ifdef Q_OS_WIN
+        #define KPATH_SEPARATOR ';'
+#else
+        #define KPATH_SEPARATOR ':'
+#endif
+
         printResult(KGlobal::dirs()->resourceDirs(type.toLatin1()).join(QString(QChar::fromLatin1(KPATH_SEPARATOR))));
         return 0;
     }
@@ -199,17 +199,13 @@ int main(int argc, char **argv)
     type = args->getOption("userpath");
     if (!type.isEmpty())
     {
-        //code duplicated with KGlobalSettings::initPath()
+        //code duplicated with KGlobalSettings
         if (type == QLatin1String("desktop"))
-        { // QDesktopServices is QtGui :-/
-            QString path = readXdg( "DESKTOP" );
-            if (path.isEmpty())
-                path = QDir::homePath() + QLatin1String("/Desktop");
-            path = QDir::cleanPath(path);
-            if (!path.endsWith(QLatin1Char('/')))
-              path.append(QLatin1Char('/'));
-            printResult(path);
+        {
+            QString path = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+            printResult(path.isEmpty() ? QDir::homePath() : path);
         }
+#if 0 // See KGlobalSettings::autostartPath
         else if (type == QLatin1String("autostart"))
         {
             KConfigGroup g( KSharedConfig::openConfig(), "Paths" );
@@ -221,15 +217,11 @@ int main(int argc, char **argv)
             printResult(path);
 
         }
+#endif
         else if (type == QLatin1String("document"))
         {
-            QString path = readXdg( "DOCUMENTS" );
-            if ( path.isEmpty())
-                path = QDir::homePath() + QLatin1String("/Documents");
-            path = QDir::cleanPath( path );
-            if (!path.endsWith(QLatin1Char('/')))
-              path.append(QLatin1Char('/'));
-            printResult(path);
+            QString path = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+            printResult(path.isEmpty() ? QDir::homePath() : path);
         }
         else
             fprintf(stderr, "%s", i18n("%1 - unknown type of userpath\n", type).toLocal8Bit().data() );
