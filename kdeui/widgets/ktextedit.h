@@ -26,6 +26,7 @@
 
 #define HAVE_SHOWTABACTION 1
 #define HAVE_AUTOCORRECTFEATURE 1
+#define HAVE_FORCESPELLCHECKING 1
 /**
  * This interface is a workaround to keep binary compatibility in KDE4, because
  * adding the virtual keyword to functions is not BC.
@@ -261,9 +262,15 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
     void showTabAction(bool show);
 
     /**
-     * since 4.10
+     * @since 4.10
      */
     void showAutoCorrectButton(bool show);
+
+    /**
+     * @since 4.10
+     * create a modal spellcheck dialogbox and send signal when we finish/cancel it.
+     */
+    void forceCheckSpelling();
 
   Q_SIGNALS:
     /**
@@ -307,6 +314,16 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
      * @since 4.10
      */
     void spellCheckerAutoCorrect(const QString& currentWord, const QString& autoCorrectWord);
+
+    /**
+     * @since 4.10
+     */
+    void spellCheckingFinished();
+
+    /**
+     * @since 4.10
+     */
+    void spellCheckingCanceled();
 
   public Q_SLOTS:
 

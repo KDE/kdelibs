@@ -126,6 +126,7 @@ class KTextEdit::Private
 
     void init();
 
+    void checkSpelling(bool force);
     KTextEdit *parent;
     KTextEditSpellInterface *spellInterface;
     QAction *autoSpellCheckAction;
@@ -151,6 +152,55 @@ class KTextEdit::Private
     int lastReplacedPosition;
     KConfig *sonnetKConfig;
 };
+
+void KTextEdit::Private::checkSpelling(bool force)
+{
+  if(parent->document()->isEmpty())
+  {
+      KMessageBox::information(parent, i18n("Nothing to spell check."));
+      if(force) {
+	emit parent->spellCheckingFinished();
+      }
+      return;
+  }
+  Sonnet::BackgroundChecker *backgroundSpellCheck = new Sonnet::BackgroundChecker;
+  if(!spellCheckingLanguage.isEmpty())
+     backgroundSpellCheck->changeLanguage(spellCheckingLanguage);
+  Sonnet::Dialog *spellDialog = new Sonnet::Dialog(
+      backgroundSpellCheck, force ? parent : 0);
+  backgroundSpellCheck->setParent(spellDialog);
+  spellDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+  spellDialog->activeAutoCorrect(showAutoCorrectionButton);
+  connect(spellDialog, SIGNAL(replace(QString,int,QString)),
+          parent, SLOT(spellCheckerCorrected(QString,int,QString)));
+  connect(spellDialog, SIGNAL(misspelling(QString,int)),
+          parent, SLOT(spellCheckerMisspelling(QString,int)));
+  connect(spellDialog, SIGNAL(autoCorrect(QString,QString)),
+          parent, SLOT(spellCheckerAutoCorrect(QString,QString)));
+  connect(spellDialog, SIGNAL(done(QString)),
+          parent, SLOT(spellCheckerFinished()));
+  connect(spellDialog, SIGNAL(cancel()),
+          parent, SLOT(spellCheckerCanceled()));
+  //Laurent in sonnet/dialog.cpp we emit done(QString) too => it calls here twice spellCheckerFinished not necessary
+  /*
+  connect(spellDialog, SIGNAL(stop()),
+          parent, SLOT(spellCheckerFinished()));
+  */
+  connect(spellDialog, SIGNAL(spellCheckStatus(QString)),
+          parent, SIGNAL(spellCheckStatus(QString)));
+  connect(spellDialog, SIGNAL(languageChanged(QString)),
+          parent, SIGNAL(languageChanged(QString)));
+  if(force) {
+      connect(spellDialog, SIGNAL(done(QString)),parent, SIGNAL(spellCheckingFinished()));
+      connect(spellDialog, SIGNAL(cancel()), parent, SIGNAL(spellCheckingCanceled()));
+      //Laurent in sonnet/dialog.cpp we emit done(QString) too => it calls here twice spellCheckerFinished not necessary
+      //connect(spellDialog, SIGNAL(stop()), parent, SIGNAL(spellCheckingFinished()));
+  }
+  originalDoc = QTextDocumentFragment(parent->document());
+  spellDialog->setBuffer(parent->toPlainText());
+  spellDialog->show();
+}
+
 
 void KTextEdit::Private::spellCheckerCanceled()
 {
@@ -788,38 +838,12 @@ void KTextEdit::setReadOnly( bool readOnly )
 
 void KTextEdit::checkSpelling()
 {
-  if(document()->isEmpty())
-  {
-      KMessageBox::information(this, i18n("Nothing to spell check."));
-      return;
-  }
-  Sonnet::BackgroundChecker *backgroundSpellCheck = new Sonnet::BackgroundChecker;
-  if(!d->spellCheckingLanguage.isEmpty())
-     backgroundSpellCheck->changeLanguage(d->spellCheckingLanguage);
-  Sonnet::Dialog *spellDialog = new Sonnet::Dialog(
-      backgroundSpellCheck, 0);
-  backgroundSpellCheck->setParent(spellDialog);
-  spellDialog->setAttribute(Qt::WA_DeleteOnClose, true);
-  spellDialog->activeAutoCorrect(d->showAutoCorrectionButton);
-  connect(spellDialog, SIGNAL(replace(QString,int,QString)),
-          this, SLOT(spellCheckerCorrected(QString,int,QString)));
-  connect(spellDialog, SIGNAL(misspelling(QString,int)),
-          this, SLOT(spellCheckerMisspelling(QString,int)));
-  connect(spellDialog, SIGNAL(autoCorrect(QString,QString)),
-          this, SLOT(spellCheckerAutoCorrect(QString,QString)));
-  connect(spellDialog, SIGNAL(done(QString)),
-          this, SLOT(spellCheckerFinished()));
-  connect(spellDialog, SIGNAL(cancel()),
-          this, SLOT(spellCheckerCanceled()));
-  connect(spellDialog, SIGNAL(stop()),
-          this, SLOT(spellCheckerFinished()));
-  connect(spellDialog, SIGNAL(spellCheckStatus(QString)),
-          this,SIGNAL(spellCheckStatus(QString)));
-  connect(spellDialog, SIGNAL(languageChanged(QString)),
-          this, SIGNAL(languageChanged(QString)));
-  d->originalDoc = QTextDocumentFragment(document());
-  spellDialog->setBuffer(toPlainText());
-  spellDialog->show();
+  d->checkSpelling(false);
+}
+
+void KTextEdit::forceCheckSpelling()
+{
+  d->checkSpelling(true);
 }
 
 void KTextEdit::highlightWord( int length, int pos )
