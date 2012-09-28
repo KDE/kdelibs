@@ -960,6 +960,8 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/khtml COMPONENT Devel)
 
 install(FILES
   Nepomuk/File
+  Nepomuk/KRatingPainter
+  Nepomuk/KRatingWidget
   Nepomuk/MassUpdateJob
   Nepomuk/Resource
   Nepomuk/ResourceManager
