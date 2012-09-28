@@ -26,20 +26,12 @@
 #include <unistd.h>
 #include <math.h>
 
-#include <QtCore/QSysInfo>
-#include <QApplication>
+#include <QSysInfo>
 #include <QDebug>
-#include <QPaintEngine>
-#include <QDesktopWidget>
-#include <QtCore/QCharRef>
-#include <QtCore/QMutableStringListIterator>
-#include <QBitmap>
+#include <QMutableStringListIterator>
 #include <QPixmap>
 #include <QImage>
 #include <QColor>
-#include <QWidget>
-#include <QPainter>
-#include <QPen>
 
 #include <ksharedconfig.h>
 #include <kcolorscheme.h>
@@ -338,18 +330,6 @@ struct KIEImgEdit
     }
 };
 
-static bool painterSupportsAntialiasing()
-{
-#ifdef Q_OS_WIN
-   // apparently QApplication::desktop()->paintEngine() is null on windows
-   // but we can assume the paint engine supports antialiasing there, right?
-   return true;
-#else
-   QPaintEngine* const pe = QApplication::desktop()->paintEngine();
-   return pe && pe->hasFeature(QPaintEngine::Antialiasing);
-#endif
-}
-
 // Taken from KImageEffect. We don't want to link kdecore to kdeui! As long
 // as this code is not too big, it doesn't seem much of a problem to me.
 
@@ -523,89 +503,72 @@ void KIconEffect::toGamma(QImage &img, float value)
 
 void KIconEffect::semiTransparent(QImage &img)
 {
-    int x, y;
-    if(img.depth() == 32){
+    if (img.depth() == 32) {
         if(img.format() == QImage::Format_ARGB32_Premultiplied)
             img = img.convertToFormat(QImage::Format_ARGB32);
         int width  = img.width();
-	int height = img.height();
+        int height = img.height();
 
-        if(painterSupportsAntialiasing()){
-            unsigned char *line;
-            for(y=0; y<height; ++y){
-                if(QSysInfo::ByteOrder == QSysInfo::BigEndian)
-                    line = img.scanLine(y);
-                else
-                    line = img.scanLine(y) + 3;
-                for(x=0; x<width; ++x){
-                    *line >>= 1;
-                    line += 4;
-                }
+        unsigned char *line;
+        for (int y = 0; y < height; ++y) {
+            if(QSysInfo::ByteOrder == QSysInfo::BigEndian)
+                line = img.scanLine(y);
+            else
+                line = img.scanLine(y) + 3;
+            for (int x = 0; x < width; ++x) {
+                *line >>= 1;
+                line += 4;
             }
         }
-        else{
-            for(y=0; y<height; ++y){
-                QRgb* line = (QRgb*)img.scanLine(y);
-                for(x=(y%2); x<width; x+=2)
-                    line[x] &= 0x00ffffff;
-            }
+    } else if (img.depth() == 8) {
+        // not running on 8 bit, we can safely install a new colorTable
+        QVector<QRgb> colorTable = img.colorTable();
+        for (int i = 0; i < colorTable.size(); ++i) {
+            colorTable[i] = (colorTable[i] & 0x00ffffff) | ((colorTable[i] & 0xfe000000) >> 1);
         }
-    }
-    else{
-        if (img.depth() == 8) {
-            if (painterSupportsAntialiasing()) {
-                // not running on 8 bit, we can safely install a new colorTable
-                QVector<QRgb> colorTable = img.colorTable();
-                for (int i = 0; i < colorTable.size(); ++i) {
-                    colorTable[i] = (colorTable[i] & 0x00ffffff) | ((colorTable[i] & 0xfe000000) >> 1);
-                }
-                img.setColorTable(colorTable);
-                return;
-            }
-        }
+        img.setColorTable(colorTable);
+    } else {
         // Insert transparent pixel into the clut.
         int transColor = -1;
 
         // search for a color that is already transparent
-        for(x=0; x<img.colorCount(); ++x){
+        for (int x=0; x<img.numColors(); ++x) {
             // try to find already transparent pixel
-            if(qAlpha(img.color(x)) < 127){
+            if (qAlpha(img.color(x)) < 127) {
                 transColor = x;
                 break;
             }
         }
 
         // FIXME: image must have transparency
-        if(transColor < 0 || transColor >= img.colorCount())
+        if (transColor < 0 || transColor >= img.numColors())
             return;
 
 	img.setColor(transColor, 0);
         unsigned char *line;
-        if(img.depth() == 8){
-            for(y=0; y<img.height(); ++y){
+        if (img.depth() == 8) {
+            for (int y = 0; y < img.height(); ++y) {
                 line = img.scanLine(y);
-                for(x=(y%2); x<img.width(); x+=2)
+                for (int x = (y%2); x < img.width(); x+=2)
                     line[x] = transColor;
             }
-	}
-        else{
-            bool setOn = (transColor != 0);
-            if(img.format() == QImage::Format_MonoLSB){
-                for(y=0; y<img.height(); ++y){
+	} else {
+            const bool setOn = (transColor != 0);
+            if (img.format() == QImage::Format_MonoLSB) {
+                for (int y=0; y<img.height(); ++y) {
                     line = img.scanLine(y);
-                    for(x=(y%2); x<img.width(); x+=2){
-                        if(!setOn)
+                    for (int x=(y%2); x<img.width(); x+=2) {
+                        if (!setOn)
                             *(line + (x >> 3)) &= ~(1 << (x & 7));
                         else
                             *(line + (x >> 3)) |= (1 << (x & 7));
                     }
                 }
-            }
-            else{
-                for(y=0; y<img.height(); ++y){
+            } else {
+                for (int y=0; y<img.height(); ++y) {
                     line = img.scanLine(y);
-                    for(x=(y%2); x<img.width(); x+=2){
-                        if(!setOn)
+                    for (int x=(y%2); x<img.width(); x+=2) {
+                        if (!setOn)
                             *(line + (x >> 3)) &= ~(1 << (7-(x & 7)));
                         else
                             *(line + (x >> 3)) |= (1 << (7-(x & 7)));
@@ -618,32 +581,9 @@ void KIconEffect::semiTransparent(QImage &img)
 
 void KIconEffect::semiTransparent(QPixmap &pix)
 {
-    if (painterSupportsAntialiasing()) {
-        QImage img=pix.toImage();
-        semiTransparent(img);
-        pix = QPixmap::fromImage(img);
-        return;
-    }
-
-    QImage img;
-    if (!pix.mask().isNull())
-      img = pix.mask().toImage();
-    else
-    {
-        img = QImage(pix.size(), QImage::Format_Mono);
-        img.fill(1);
-    }
-
-    for (int y=0; y<img.height(); y++)
-    {
-        QRgb* line = (QRgb*)img.scanLine(y);
-        QRgb pattern = (y % 2) ? 0x55555555 : 0xaaaaaaaa;
-        for (int x=0; x<(img.width()+31)/32; x++)
-            line[x] &= pattern;
-    }
-    QBitmap mask;
-    mask = QBitmap::fromImage(img);
-    pix.setMask(mask);
+    QImage img = pix.toImage();
+    semiTransparent(img);
+    pix = QPixmap::fromImage(img);
 }
 
 QImage KIconEffect::doublePixels(const QImage &src) const
