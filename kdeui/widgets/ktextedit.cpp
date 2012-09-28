@@ -127,7 +127,7 @@ class KTextEdit::Private
 
     void init();
 
-    void spellChecking(bool force);
+    void checkSpelling(bool force);
     KTextEdit *parent;
     KTextEditSpellInterface *spellInterface;
     QAction *autoSpellCheckAction;
@@ -154,7 +154,7 @@ class KTextEdit::Private
     KConfig *sonnetKConfig;
 };
 
-void KTextEdit::Private::spellChecking(bool force)
+void KTextEdit::Private::checkSpelling(bool force)
 {
   if(parent->document()->isEmpty())
   {
@@ -839,12 +839,12 @@ void KTextEdit::setReadOnly( bool readOnly )
 
 void KTextEdit::checkSpelling()
 {
-  d->spellChecking(false);
+  d->checkSpelling(false);
 }
 
 void KTextEdit::forceSpellChecking()
 {
-  d->spellChecking(true);
+  d->checkSpelling(true);
 }
 
 void KTextEdit::highlightWord( int length, int pos )
