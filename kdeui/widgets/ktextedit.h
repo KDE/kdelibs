@@ -268,9 +268,10 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
 
     /**
      * @since 4.10
-     * create a modal spellcheck dialogbox and send signal when we finish/cancel it.
+     * create a modal spellcheck dialogbox and spellCheckingFinished signal we sent when 
+     * we finish spell checking or spellCheckingCanceled signal when we cancel spell checking
      */
-    void forceCheckSpelling();
+    void forceSpellChecking();
 
   Q_SIGNALS:
     /**
@@ -316,11 +317,13 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
     void spellCheckerAutoCorrect(const QString& currentWord, const QString& autoCorrectWord);
 
     /**
+     * signal spellCheckingFinished is sent when we finish spell check or we click on "Terminate" button in sonnet dialogbox
      * @since 4.10
      */
     void spellCheckingFinished();
 
     /**
+     * signal spellCheckingCanceled is sent when we cancel spell checking. 
      * @since 4.10
      */
     void spellCheckingCanceled();

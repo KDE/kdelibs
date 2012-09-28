@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2002 Carsten Pfeiffer <pfeiffer@kde.org>
                  2005 Michael Brade <brade@kde.org>
+		 2012 Laurent Montel <montel@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -126,7 +127,7 @@ class KTextEdit::Private
 
     void init();
 
-    void checkSpelling(bool force);
+    void spellChecking(bool force);
     KTextEdit *parent;
     KTextEditSpellInterface *spellInterface;
     QAction *autoSpellCheckAction;
@@ -153,7 +154,7 @@ class KTextEdit::Private
     KConfig *sonnetKConfig;
 };
 
-void KTextEdit::Private::checkSpelling(bool force)
+void KTextEdit::Private::spellChecking(bool force)
 {
   if(parent->document()->isEmpty())
   {
@@ -838,12 +839,12 @@ void KTextEdit::setReadOnly( bool readOnly )
 
 void KTextEdit::checkSpelling()
 {
-  d->checkSpelling(false);
+  d->spellChecking(false);
 }
 
-void KTextEdit::forceCheckSpelling()
+void KTextEdit::forceSpellChecking()
 {
-  d->checkSpelling(true);
+  d->spellChecking(true);
 }
 
 void KTextEdit::highlightWord( int length, int pos )
@@ -857,7 +858,7 @@ void KTextEdit::highlightWord( int length, int pos )
 
 void KTextEdit::replace()
 {
-     if( document()->isEmpty() )  // saves having to track the text changes
+     if ( document()->isEmpty() )  // saves having to track the text changes
         return;
 
     if ( d->repDlg ) {
@@ -1008,7 +1009,7 @@ void KTextEdit::slotFindNext()
 
 void KTextEdit::slotFind()
 {
-    if( document()->isEmpty() )  // saves having to track the text changes
+    if ( document()->isEmpty() )  // saves having to track the text changes
         return;
 
     if ( d->findDlg ) {
@@ -1023,7 +1024,7 @@ void KTextEdit::slotFind()
 
 void KTextEdit::slotReplace()
 {
-    if( document()->isEmpty() )  // saves having to track the text changes
+    if ( document()->isEmpty() )  // saves having to track the text changes
         return;
 
     if ( d->repDlg ) {
