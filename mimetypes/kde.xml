@@ -84,10 +84,6 @@ Notes:
     <comment>SuperKaramba theme</comment>
     <glob pattern="*.skz"/>
   </mime-type>
-  <mime-type type="application/x-vnd.kde.kexi"> <!-- FIXED 0.70 -->
-    <comment>Kexi project file</comment>
-    <glob pattern="*.kexi"/>
-  </mime-type>
   <mime-type type="application/x-vnd.kde.plan">
     <comment>Calligra Plan project management document</comment>
     <glob pattern="*.plan"/>
@@ -359,10 +355,6 @@ Notes:
     <comment>shortcut to Kexi project on database server</comment>
     <glob pattern="*.kexis"/>
   </mime-type>
-  <mime-type type="application/x-kexiproject-sqlite"> <!-- FIXED 0.70 -->
-    <comment>Kexi database file-based project</comment>
-    <glob pattern="*.kexi"/>
-  </mime-type>
   <mime-type type="application/x-kexiproject-sqlite2"> <!-- FIXED 0.70 -->
     <sub-class-of type="application/x-sqlite2"/>
     <comment>Kexi database file-based project</comment>
@@ -372,6 +364,8 @@ Notes:
     <sub-class-of type="application/x-sqlite3"/>
     <comment>Kexi database file-based project</comment>
     <glob pattern="*.kexi"/>
+    <alias type="application/x-kexiproject-sqlite"/>
+    <alias type="application/x-vnd.kde.kexi"/>
   </mime-type>
   <mime-type type="application/x-kexi-connectiondata"> <!-- FIXED 0.70 -->
     <comment>data for database server connection</comment>
