@@ -42,8 +42,10 @@ class PackageJobThread : public QThread
 
     Q_SIGNALS:
         void finished(bool success);
+        void installPathChanged(const QString &installPath);
 
     private:
+        bool installPackage(const QString& src, const QString &dest);
         PackageJobThreadPrivate* d;
 };
 

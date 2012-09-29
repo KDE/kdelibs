@@ -309,7 +309,7 @@ public:
      *
      * @return KJob to track installation progress and result
      **/
-    KJob* install();
+    KJob* install(const QString &sourcePackage, const QString &packageRoot = QString());
 
     /**
      * Uninstalls a package matching this package structure.

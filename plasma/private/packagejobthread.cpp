@@ -108,6 +108,7 @@ bool removeFolder(QString folderPath)
 
 class PackageJobThreadPrivate {
 public:
+    QString installPath;
 //     QString packageRoot;
     QString servicePrefix;
 };
@@ -128,6 +129,17 @@ PackageJobThread::~PackageJobThread()
 
 bool PackageJobThread::install(const QString& src, const QString &dest)
 {
+    bool ok = installPackage(src, dest);
+    kDebug() << "emit installPathChanged " << d->installPath;
+    emit installPathChanged(d->installPath);
+    kDebug() << "Thread: installFinished" << ok;
+    emit finished(ok);
+    return ok;
+}
+
+bool PackageJobThread::installPackage(const QString& src, const QString &dest)
+{
+    kDebug() << "::install: " << src << dest;
     //TODO: report *what* failed if something does fail
     QString packageRoot = dest;
 
@@ -185,6 +197,9 @@ bool PackageJobThread::install(const QString& src, const QString &dest)
         archivedPackage = true;
         path = tempdir.path() + '/';
 
+        kDebug() << "path: " << path;
+        d->installPath = path;
+
         const KArchiveDirectory *source = archive->directory();
         source->copyTo(path);
 
@@ -207,7 +222,7 @@ bool PackageJobThread::install(const QString& src, const QString &dest)
 
     KPluginInfo meta(metadataPath);
     QString pluginName = meta.pluginName();
-
+    kDebug() << "pluginname: " << meta.pluginName();
     if (pluginName.isEmpty()) {
         kWarning() << "Package plugin name not specified";
         return false;

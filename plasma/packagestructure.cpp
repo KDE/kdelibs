@@ -43,6 +43,9 @@ void PackageStructure::initPackage(Package *package)
 
 void PackageStructure::pathChanged(Package *package)
 {
+//     if (package) {
+//         package->setPath();
+//     }
     Q_UNUSED(package)
 }
 

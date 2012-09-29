@@ -26,6 +26,7 @@ namespace Plasma
 class PackageJobPrivate {
 public:
     PackageJobThread *thread;
+    QString installPath;
 };
 
 PackageJob::PackageJob(const QString &servicePrefix, QObject* parent) :
@@ -33,7 +34,9 @@ PackageJob::PackageJob(const QString &servicePrefix, QObject* parent) :
 {
     d = new PackageJobPrivate;
     d->thread = new PackageJobThread(servicePrefix, this);
-    d->thread->start();
+    connect(d->thread, SIGNAL(finished(bool)), SIGNAL(finished(bool)));
+    connect(d->thread, SIGNAL(installPathChanged(const QString&)), SIGNAL(installPathChanged(const QString&)));
+    //d->thread->start();
 }
 
 PackageJob::~PackageJob()
@@ -43,7 +46,7 @@ PackageJob::~PackageJob()
 
 void PackageJob::start()
 {
-
+    d->thread->start();
 }
 
 void PackageJob::install(const QString& src, const QString &dest)
@@ -55,7 +58,6 @@ void PackageJob::uninstall(const QString& installationPath)
 {
     d->thread->uninstall(installationPath);
 }
-
 
 } // namespace Plasma
 

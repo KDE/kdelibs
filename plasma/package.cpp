@@ -396,7 +396,7 @@ void Package::setPath(const QString &path)
                 location = d->defaultPackageRoot + path;
             }
         }
-
+        kDebug() << "location : " << location;
         if (location.isEmpty()) {
             location = QStandardPaths::locate(QStandardPaths::GenericDataLocation, path);
 
@@ -630,21 +630,22 @@ QList<const char*> Package::requiredFiles() const
     return files;
 }
 
-KJob* Package::install()
+KJob* Package::install(const QString &sourcePackage, const QString &packageRoot)
 {
 //     if (d->structure) {
 //         return d->structure.data()->install(this, package, packageRoot);
 //     }
 //
 //     return PackagePrivate::install(package, packageRoot, d->servicePrefix);
-    const QString src = d->path;
-    const QString dest = defaultPackageRoot();
+    const QString src = sourcePackage;
+    const QString dest = packageRoot.isEmpty() ? defaultPackageRoot() : packageRoot;
     kDebug() << "Source: " << src;
-    kDebug() << "DefaultpackageRoot: " << dest;
-    //connect(pj, SIGNAL(finished(bool)), SLOT(finished(bool)));
-    return d->structure.data()->install(this, src, dest);
+    kDebug() << "PackageRoot: " << dest;
+    d->path = packageRoot + "plasma-applet-org.kde.microblog-qml";
+    KJob *j = d->structure.data()->install(this, src, dest);
+    //connect(j, SIGNAL(finished(bool)), SLOT(installFinished(bool)));
+    return j;
 }
-
 // KJob* Package::uninstall(const QString &package, const QString &packageRoot, const QString &servicePrefix)
 // {
 //
