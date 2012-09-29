@@ -39,3 +39,5 @@ ELSE()
 	get_target_property(loc QtMimeTypes LOCATION)
 	message(" ++++++++++++++++++++ QtMimeTypes FOUND IN ${loc}")
 endif()
+
+#add_subdirectory(plasmapkg)
