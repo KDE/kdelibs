@@ -111,6 +111,13 @@ public:
      * @param path and absolute path
      * @since 4.3
      */
+    void load(const QString &pluginName);
+
+    /**
+     * Sets the path to the root of this package
+     * @param path and absolute path
+     * @since 4.3
+     */
     void setPath(const QString &path);
 
     /**
@@ -119,7 +126,7 @@ public:
     const QString path() const;
 
     /**
-     * Get the path to a given file based on the key and.an optional filename.
+     * Get the path to a given file based on the key and an optional filename.
      * Example: finding the main script in a scripting package:
      *      filePath("mainscript")
      *

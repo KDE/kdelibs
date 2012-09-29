@@ -111,6 +111,15 @@ bool Package::isValid() const
     return true;
 }
 
+void Package::load(const QString& pluginName)
+{
+#warning "load not implemented this is wonky"
+    kDebug() << " implement me.";
+    //const QString p = KStandardDirs
+    //setPath();
+}
+
+
 QString Package::name(const char *key) const
 {
 #ifndef PLASMA_NO_PACKAGE_EXTRADATA
