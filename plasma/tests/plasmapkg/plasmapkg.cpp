@@ -35,6 +35,7 @@
 #include <plasma/package.h>
 
 #include <klocale.h>
+#include <kjob.h>
 
 #include <QDir>
 #include <QMap>
@@ -48,6 +49,8 @@ namespace Plasma
 {
 class PlasmaPkgPrivate {
 public:
+    QString packageRoot;
+    Plasma::PackageStructure* structure;
     QString installPath;
     void output(const QString &msg);
     void runKbuildsycoca();
@@ -436,10 +439,40 @@ void PlasmaPkgPrivate::listTypes()
 
 void PlasmaPkg::install(const QString& src, const QString &dest)
 {
+    QString archivePath = "/home/sebas/kde5/src/kdelibs/plasma/tests/microblog.plasmoid";
+
+    d->structure = new Plasma::PackageStructure(this);
+    Plasma::Package *p = new Plasma::Package(d->structure);
+    kDebug() << "Installing " << archivePath;
+//     p->setPath(,z
+    //const QString packageRoot = "plasma/plasmoids/";
+    //const QString servicePrefix = "plasma-applet-";
+    KJob* job = p->install(archivePath, d->packageRoot);
+    connect(job, SIGNAL(finished(KJob*)), SLOT(packageInstalled(KJob*)));
+
 }
 
 void PlasmaPkg::uninstall(const QString& installationPath)
 {
+}
+
+void PlasmaPkg::packageInstalled(KJob* j)
+{
+    kDebug() << "!!!!!!!!!!!!!!!!!!!! package installed" << (j->error() == KJob::NoError);
+    //QVERIFY(j->error() == KJob::NoError);
+    //QVERIFY(p->path());
+
+//     Plasma::Package *p = new Plasma::Package(d->structure);
+//     KJob* jj = p->uninstall();
+//     //QObject::disconnect(j, SIGNAL(finished(KJob*)), this, SLOT(packageInstalled(KJob*)));
+//     connect(jj, SIGNAL(finished(KJob*)), SLOT(packageInstalled(KJob*)));
+}
+
+
+void PlasmaPkg::packageUninstalled(KJob* j)
+{
+    kDebug() << "!!!!!!!!!!!!!!!!!!!!! package uninstalled";
+    //QVERIFY(j->error() == KJob::NoError);
 }
 
 } // namespace Plasma

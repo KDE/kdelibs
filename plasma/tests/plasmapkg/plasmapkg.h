@@ -23,6 +23,7 @@
 
 #include <QCoreApplication>
 
+class KJob;
 
 namespace Plasma
 {
@@ -45,6 +46,10 @@ class PlasmaPkg : public QCoreApplication
 //     Q_SIGNALS:
 //         void installPathChanged(const QString &path);
 //         void finished(bool success);
+
+    private Q_SLOTS:
+        void packageInstalled(KJob* j);
+        void packageUninstalled(KJob* j);
 
     private:
         PlasmaPkgPrivate* d;
