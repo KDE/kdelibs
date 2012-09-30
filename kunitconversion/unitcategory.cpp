@@ -41,7 +41,7 @@ public:
     QList<UnitPtr> units;
     QList<UnitPtr> mostCommonUnits;
     QString description;
-    KUrl url;
+    QUrl url;
     KLocalizedString symbolStringFormat;
     int id;
 };
@@ -178,7 +178,7 @@ void UnitCategory::setDescription(const QString& description)
     d->description = description;
 }
 
-KUrl UnitCategory::url() const
+QUrl UnitCategory::url() const
 {
     return d->url;
 }

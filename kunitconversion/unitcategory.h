@@ -51,7 +51,7 @@ public:
     /**
      * @return unit category url for description
      **/
-    KUrl url() const;
+    QUrl url() const;
 
     /**
      * Returns default unit.

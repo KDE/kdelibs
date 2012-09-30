@@ -28,7 +28,6 @@
 
 #include <kdebug.h>
 #include <kde_file.h>
-#include <kurl.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
@@ -40,6 +39,7 @@
 #include <QtCore/QRegExp>
 #include <QtCore/QTextCodec>
 #include <QTextDocument>
+#include <QUrl>
 
 
 #if HAVE_SYS_TYPES_H
@@ -125,23 +125,28 @@ QString HelpProtocol::lookupFile(const QString &fname,
     {
         result = langLookup(path+"/index.html");
         if (!result.isEmpty())
-	{
-            KUrl red( "help:/" );
+        {
+            QUrl red;
+            red.setScheme("help");
             red.setPath( path + "/index.html" );
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
             red.setQuery( query );
+#endif
             redirection(red);
             kDebug( 7119 ) << "redirect to " << red;
             redirect = true;
-	}
+        }
         else
         {
             const QString documentationNotFound = "khelpcenter/documentationnotfound/index.html";
             if (!langLookup(documentationNotFound).isEmpty())
             {
-                KUrl red;
+                QUrl red;
                 red.setScheme("help");
                 red.setPath(documentationNotFound);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
                 red.setQuery(query);
+#endif
                 redirection(red);
                 redirect = true;
             }
@@ -320,9 +325,11 @@ void HelpProtocol::get( const QUrl& url )
                 if (query.startsWith(QLatin1String("?anchor="))) {
                     anchor = query.mid(8).toLower();
 
-			    KUrl redirURL(url);
+			    QUrl redirURL(url);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 			    redirURL.setQuery(QString());
-			    redirURL.setHTMLRef(anchor);
+			    redirURL.setFragment(anchor);
+#endif
 			    redirection(redirURL);
 			    finished();
 			    return;

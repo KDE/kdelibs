@@ -36,7 +36,6 @@
 #define IM_CLIENT_PREFERENCES_SECTION "InstantMessenger"
 #define IM_CLIENT_PREFERENCES_ENTRY "imClient"
 
-class KUrl;
 class ContactPresenceListCurrent;
 class OrgKdeKIMInterface;
 
@@ -196,7 +195,7 @@ class KIMPROXY_EXPORT KIMProxy : public QObject
 		/**
 		 * Send the file to the contact
 		 * @param uid the KABC uid you are sending to.
-		 * @param sourceURL a KUrl to send.
+		 * @param sourceURL a url to send.
 		 * @param altFileName an alternate filename describing the file
 		 * @param fileSize file size in bytes
 		 */

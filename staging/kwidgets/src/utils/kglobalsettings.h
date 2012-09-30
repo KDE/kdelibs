@@ -37,8 +37,6 @@
 #define KDE_DEFAULT_ALLOW_DEFAULT_BACKGROUND_IMAGES true
 #define KDE_DEFAULT_NATURAL_SORTING true
 
-class KUrl;
-
 class QColor;
 class QFont;
 class QPoint;

@@ -52,7 +52,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
 {
     setName(i18n("Currency"));
     setDescription(i18n("From ECB"));
-    setUrl(KUrl("http://www.ecb.int/stats/exchange/eurofxref/html/index.en.html"));
+    setUrl(QUrl("http://www.ecb.int/stats/exchange/eurofxref/html/index.en.html"));
     setSymbolStringFormat(ki18nc("%1 value, %2 unit symbol (currency)", "%1 %2"));
 
     // Static rates
@@ -542,7 +542,7 @@ Value Currency::convert(const Value& value, UnitPtr to)
             kDebug() << "Getting currency info from net:" << URL;
             // TODO: This crashes in runner. Threading issues??
             /*
-            KIO::Job* job = KIO::file_copy(KUrl(URL), KUrl(m_cache), -1,
+            KIO::Job* job = KIO::file_copy(QUrl(URL), QUrl::fromLocalFile(m_cache), -1,
                                            KIO::Overwrite | KIO::HideProgressInfo);
             job->setUiDelegate(0);
             if (KIO::NetAccess::synchronousRun(job, 0)) {
