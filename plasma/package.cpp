@@ -111,10 +111,11 @@ bool Package::isValid() const
     return true;
 }
 
-void Package::load(const QString& pluginName)
+void Package::load(const QString& packageRoot, const QString& packageName)
 {
-#warning "load not implemented this is wonky"
-    kDebug() << " implement me.";
+    QString packagePath = packageRoot + "/" + packageName;
+    #warning "load not implemented this is wonky"
+    kDebug() << " implement me." << packageRoot << packageName << packagePath;
     //const QString p = KStandardDirs
     //setPath();
 }
