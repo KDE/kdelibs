@@ -27,6 +27,7 @@
 #include <plasma/plasma.h>
 #include <plasma/plasma_export.h>
 #include <plasma/package.h>
+#include <ksharedptr.h>
 
 namespace Plasma
 {
@@ -38,6 +39,8 @@ class PLASMA_EXPORT PackageStructure : public QObject
     Q_OBJECT
 
 public:
+//    typedef KSharedPtr<PackageStructure> Ptr;
+
     explicit PackageStructure(QObject *parent = 0, const QVariantList &args = QVariantList());
 
     ~PackageStructure();
@@ -85,8 +88,11 @@ public:
      */
      virtual KJob* uninstall(Package *package, const QString &packageRoot);
 
+    static PackageStructure* load(const QString &packageFormat);
+
+
 private:
-    PackageStructurePrivate *const d;
+    PackageStructurePrivate* d;
 };
 
 } // Plasma namespace
