@@ -146,7 +146,7 @@ void listTypes()
     //if (KSycoca::isAvailable()) {
         offers = KServiceTypeTrader::self()->query("Plasma/PackageStructure");
     //}
-
+    /*
     if (!offers.isEmpty()) {
         std::cout << std::endl;
         output(i18n("Provided by plugins:"));
@@ -154,10 +154,12 @@ void listTypes()
         QMap<QString, QStringList> plugins;
         foreach (const KService::Ptr service, offers) {
             KPluginInfo info(service);
-            Plasma::PackageStructure::Ptr structure = Plasma::PackageStructure::load(info.pluginName());
+            const QString proot = "";
+            Plasma::PackageStructure* structure = Plasma::PackageStructure::load(info.pluginName());
             QString name = info.name();
             QString plugin = info.pluginName();
-            QString path = structure->defaultPackageRoot();
+            //QString path = structure->defaultPackageRoot();
+            QString path =
             plugins.insert(name, QStringList() << plugin << path);
         }
 
@@ -178,15 +180,16 @@ void listTypes()
             plugins.insert(name, QStringList() << structure.type() << structure.defaultPackageRoot());
         }
     }
+    */
 }
 
 int main(int argc, char **argv)
 {
-//     KAboutData aboutData("plasmapkg", 0, ki18n("Plasma Package Manager"),
-//                          version, ki18n(description), KAboutData::License_GPL,
-//                          ki18n("(C) 2008, Aaron Seigo"));
-//     aboutData.addAuthor( ki18n("Aaron Seigo"),
-//                          ki18n("Original author"),
+//     KAboutData aboutData("plasmapkg", 0, qi18n("Plasma Package Manager"),
+//                          version, qi18n(description), KAboutData::License_GPL,
+//                          qi18n("(C) 2008, Aaron Seigo"));
+//     aboutData.addAuthor( qi18n("Aaron Seigo"),
+//                          qi18n("Original author"),
 //                         "aseigo@kde.org" );
 //
 //     KComponentData componentData(aboutData);
@@ -196,13 +199,13 @@ int main(int argc, char **argv)
 
     KCmdLineArgs::init(argc, argv, "plasmapkg", "plasmapkg", qi18n("Plasma Package Manager"), version, description);
 
-    KCmdLineArgs::init( argc, argv, &aboutData );
+    //KCmdLineArgs::init( argc, argv, &aboutData );
 
     KCmdLineOptions options;
     options.add("h");
     options.add("hash <path>", qi18nc("Do not translate <path>", "Generate a SHA1 hash for the package at <path>"));
     options.add("g");
-    options.add("global", ki18n("For install or remove, operates on packages installed for all users."));
+    options.add("global", qi18n("For install or remove, operates on packages installed for all users."));
     options.add("t");
     options.add("type <type>",
                 qi18nc("theme, wallpaper, etc. are keywords, but they may be translated, as both versions "
@@ -216,22 +219,23 @@ int main(int argc, char **argv)
     options.add("u");
     options.add("upgrade <path>", qi18nc("Do not translate <path>", "Upgrade the package at <path>"));
     options.add("l");
-    options.add("list", ki18n("List installed packages"));
-    options.add("list-types", ki18n("lists all known Package types that can be installed"));
+    options.add("list", qi18n("List installed packages"));
+    options.add("list-types", qi18n("lists all known Package types that can be installed"));
     options.add("r");
     options.add("remove <name>", qi18nc("Do not translate <name>", "Remove the package named <name>"));
     options.add("p");
-    options.add("packageroot <path>", ki18n("Absolute path to the package root. If not supplied, then the standard data directories for this KDE session will be searched instead."));
+    options.add("packageroot <path>", qi18n("Absolute path to the package root. If not supplied, then the standard data directories for this KDE session will be searched instead."));
     KCmdLineArgs::addCmdLineOptions( options );
 
     QCoreApplication app(argc, argv);
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
+    Plasma::PackageStructure* structure = new Plasma::PackageStructure;
     if (args->isSet("hash")) {
         const QString path = args->getOption("hash");
-        Plasma::PackageStructure::Ptr structure(new Plasma::PackageStructure);
-        Plasma::Package package(path, structure);
+        Plasma::Package package(structure);
+        package.setPath(path);
         const QString hash = package.contentsHash();
         if (hash.isEmpty()) {
             output(i18n("Failed to generate a Package hash for %1", path));
@@ -251,7 +255,7 @@ int main(int argc, char **argv)
     QString packageRoot = type;
     QString servicePrefix;
     QStringList pluginTypes;
-    Plasma::PackageStructure *installer = 0;
+    Plasma::Package *installer = 0;
     QString package;
     QString packageFile;
 
@@ -272,9 +276,9 @@ int main(int argc, char **argv)
         type.compare(i18nc("package type", "wallpaper"), Qt::CaseInsensitive) == 0 ||
         type.compare("wallpaper", Qt::CaseInsensitive) == 0)) {
         // Check type for common plasma packages
-        Plasma::PackageStructure package;
+        Plasma::Package package(structure);
         package.setPath(packageFile);
-        QString serviceType = package.metadata().serviceType();
+        QString serviceType = package.metadata().property("X-Plasma-ServiceType").toString();
         if (!serviceType.isEmpty()) {
             if (serviceType.contains("Plasma/Applet") ||
                 serviceType.contains("Plasma/PopupApplet") ||
@@ -359,10 +363,11 @@ int main(int argc, char **argv)
             output(i18n("Could not find a suitable installer for package of type %1", type));
             return 1;
         }
-
+        kWarning() << "custom PackageStructure plugins not ported";
         KService::Ptr offer = offers.first();
         QString error;
-        installer = offer->createInstance<Plasma::PackageStructure>(0, QVariantList(), &error);
+
+        //installer = new Plasma::Package(offer->createInstance<Plasma::PackageStructure>(0, QVariantList(), &error));
 
         if (!installer) {
             output(i18n("Could not load installer for package of type %1. Error reported was: %2",
@@ -370,8 +375,8 @@ int main(int argc, char **argv)
             return 1;
         }
 
-        packageRoot = installer->defaultPackageRoot();
-        pluginTypes << installer->type();
+        //packageRoot = installer->defaultPackageRoot();
+        //pluginTypes << installer->type();
         kDebug() << "we have: " << packageRoot << pluginTypes;
     }
 
@@ -380,8 +385,8 @@ int main(int argc, char **argv)
     } else {
         // install, remove or upgrade
         if (!installer) {
-            installer = new Plasma::PackageStructure();
-            installer->setServicePrefix(servicePrefix);
+            installer = new Plasma::Package(new Plasma::PackageStructure());
+            //installer->setServicePrefix(servicePrefix);
         }
 
         if (args->isSet("packageroot") && args->isSet("global")) {
@@ -396,7 +401,7 @@ int main(int argc, char **argv)
 
         if (args->isSet("remove") || args->isSet("upgrade")) {
             installer->setPath(packageFile);
-            Plasma::PackageMetadata metadata = installer->metadata();
+            KPluginInfo metadata = installer->metadata();
 
             QString pluginName;
             if (metadata.pluginName().isEmpty()) {
@@ -409,22 +414,25 @@ int main(int argc, char **argv)
 
             QStringList installed = packages(pluginTypes);
             if (installed.contains(pluginName)) {
-                if (installer->uninstallPackage(pluginName, packageRoot)) {
-                    output(i18n("Successfully removed %1", pluginName));
-                } else if (!args->isSet("upgrade")) {
-                    output(i18n("Removal of %1 failed.", pluginName));
-                    delete installer;
-                    return 1;
-                }
+                kWarning() << " is now async.";
+//                 if (installer->uninstall(pluginName, packageRoot)) {
+//                     output(i18n("Successfully removed %1", pluginName));
+//                 } else if (!args->isSet("upgrade")) {
+//                     output(i18n("Removal of %1 failed.", pluginName));
+//                     delete installer;
+//                     return 1;
+//                 }
             } else {
                 output(i18n("Plugin %1 is not installed.", pluginName));
             }
         }
         if (args->isSet("install") || args->isSet("upgrade")) {
-            if (installer->installPackage(packageFile, packageRoot)) {
+            if (installer->install(packageFile, packageRoot)) {
+                kWarning() << " is now async.";
                 output(i18n("Successfully installed %1", packageFile));
             } else {
                 output(i18n("Installation of %1 failed.", packageFile));
+                kWarning() << " is now async.";
                 delete installer;
                 return 1;
             }

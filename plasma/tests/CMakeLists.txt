@@ -40,4 +40,4 @@ ELSE()
 	message(" ++++++++++++++++++++ QtMimeTypes FOUND IN ${loc}")
 endif()
 
-#add_subdirectory(plasmapkg)
+add_subdirectory(plasmapkg)

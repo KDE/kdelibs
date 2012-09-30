@@ -1,11 +1,15 @@
+#project("plasmapkg")
+
 set(plasmapkg_SRCS
     main.cpp
-    plasmapkg.cpp
+#    plasmapkg.cpp
 )
 
-kde4_add_executable(plasmapkg ${plasmapkg_SRCS})
+kde4_add_executable(plasmapkg2 ${plasmapkg_SRCS})
 
-target_link_libraries(plasmapkg ${KDE4_KDEUI_LIBS} ${KDE4_PLASMA_LIBS})
+target_link_libraries(plasmapkg2 ${KDE4_KDECORE_LIBS} ${KDE4_PLASMA_LIBS})
 
-install(TARGETS plasmapkg ${INSTALL_TARGETS_DEFAULT_ARGS})
+message("INSTALL_TARGETS_DEFAULT_ARGS ${INSTALL_TARGETS_DEFAULT_ARGS}")
+
+install(TARGETS plasmapkg2 ${INSTALL_TARGETS_DEFAULT_ARGS})
 
