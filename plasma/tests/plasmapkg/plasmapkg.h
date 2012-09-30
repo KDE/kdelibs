@@ -21,7 +21,7 @@
 #ifndef PLASMAPKG_H
 #define PLASMAPKG_H
 
-#include <QObject>
+#include <QCoreApplication>
 
 
 namespace Plasma
@@ -29,13 +29,15 @@ namespace Plasma
 
 class PlasmaPkgPrivate;
 
-class PlasmaPkg : public QObject
+class PlasmaPkg : public QCoreApplication
 {
     Q_OBJECT
 
     public:
-        PlasmaPkg(QObject* parent = 0);
-        ~PlasmaPkg();
+        PlasmaPkg(int& argc, char** argv);
+        virtual ~PlasmaPkg();
+
+        void runMain();
 
         void install(const QString& src, const QString& dest);
         void uninstall(const QString &installationPath);

@@ -2,7 +2,7 @@
 
 set(plasmapkg_SRCS
     main.cpp
-#    plasmapkg.cpp
+    plasmapkg.cpp
 )
 
 kde4_add_executable(plasmapkg2 ${plasmapkg_SRCS})
