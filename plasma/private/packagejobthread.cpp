@@ -236,7 +236,11 @@ bool PackageJobThread::installPackage(const QString& src, const QString &dest)
         return false;
     }
 
-    const QString targetName = dest + '/' + pluginName;
+    QString targetName = dest;
+    if (targetName[targetName.size() - 1] != '/') {
+        targetName.append('/');
+    }
+    targetName.append(pluginName);
     kDebug() << " Target installation path: " << targetName;
     if (QFile::exists(targetName)) {
         kWarning() << targetName << "already exists";

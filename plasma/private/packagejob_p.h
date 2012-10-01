@@ -48,6 +48,7 @@ class PackageJob : public KJob
         void finished(bool success);
 
     private:
+        void slotFinished(bool ok);
         PackageJobPrivate* d;
 };
 

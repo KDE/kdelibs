@@ -21,6 +21,8 @@
 #include "packagejobthread_p.h"
 #include "config-plasma.h"
 
+#include <kdebug.h>
+
 namespace Plasma
 {
 class PackageJobPrivate {
@@ -34,14 +36,20 @@ PackageJob::PackageJob(const QString &servicePrefix, QObject* parent) :
 {
     d = new PackageJobPrivate;
     d->thread = new PackageJobThread(servicePrefix, this);
-    connect(d->thread, SIGNAL(finished(bool)), SIGNAL(finished(bool)));
-    connect(d->thread, SIGNAL(installPathChanged(const QString&)), SIGNAL(installPathChanged(const QString&)));
+    connect(d->thread, SIGNAL(finished(bool)), SIGNAL(finished(bool)), Qt::QueuedConnection);
+    connect(d->thread, SIGNAL(finished(bool)), SLOT(slotFinished(bool)), Qt::QueuedConnection);
+    connect(d->thread, SIGNAL(installPathChanged(const QString&)), SIGNAL(installPathChanged(const QString&)), Qt::QueuedConnection);
     //d->thread->start();
 }
 
 PackageJob::~PackageJob()
 {
     delete d;
+}
+
+void PackageJob::slotFinished(bool ok)
+{
+    kDebug() << "caught finish from thread";
 }
 
 void PackageJob::start()
