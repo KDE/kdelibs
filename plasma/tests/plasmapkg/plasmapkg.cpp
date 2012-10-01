@@ -59,7 +59,7 @@ public:
     void renderTypeTable(const QMap<QString, QStringList> &plugins);
     void listTypes();
     void coutput(const QString &msg);
-
+    KCmdLineArgs *args;
 };
 
 PlasmaPkg::PlasmaPkg(int& argc, char** argv) :
@@ -76,11 +76,11 @@ PlasmaPkg::~PlasmaPkg()
 
 void PlasmaPkg::runMain()
 {
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+    d->args = KCmdLineArgs::parsedArgs();
 
     Plasma::PackageStructure* structure = new Plasma::PackageStructure;
-    if (args->isSet("hash")) {
-        const QString path = args->getOption("hash");
+    if (d->args->isSet("hash")) {
+        const QString path = d->args->getOption("hash");
         Plasma::Package package(structure);
         package.setPath(path);
         const QString hash = package.contentsHash();
@@ -93,12 +93,12 @@ void PlasmaPkg::runMain()
         exit(0);
     }
 
-    if (args->isSet("list-types")) {
+    if (d->args->isSet("list-types")) {
         d->listTypes();
         exit(0);
     }
 
-    QString type = args->getOption("type");
+    QString type = d->args->getOption("type");
     QString packageRoot = type;
     QString servicePrefix;
     QStringList pluginTypes;
@@ -106,12 +106,12 @@ void PlasmaPkg::runMain()
     QString package;
     QString packageFile;
 
-    if (args->isSet("remove")) {
-        package = args->getOption("remove");
-    } else if (args->isSet("upgrade")) {
-        package = args->getOption("upgrade");
-    } else if (args->isSet("install")) {
-        package = args->getOption("install");
+    if (d->args->isSet("remove")) {
+        package = d->args->getOption("remove");
+    } else if (d->args->isSet("upgrade")) {
+        package = d->args->getOption("upgrade");
+    } else if (d->args->isSet("install")) {
+        package = d->args->getOption("install");
     }
     if (!QDir::isAbsolutePath(package)) {
         packageFile = QDir(QDir::currentPath() + '/' + package).absolutePath();
@@ -119,7 +119,7 @@ void PlasmaPkg::runMain()
         packageFile = package;
     }
 
-    if (!packageFile.isEmpty() && (!args->isSet("type") ||
+    if (!packageFile.isEmpty() && (!d->args->isSet("type") ||
         type.compare(i18nc("package type", "wallpaper"), Qt::CaseInsensitive) == 0 ||
         type.compare("wallpaper", Qt::CaseInsensitive) == 0)) {
         // Check type for common plasma packages
@@ -219,7 +219,7 @@ void PlasmaPkg::runMain()
 
         if (!installer) {
             d->coutput(i18n("Could not load installer for package of type %1. Error reported was: %2",
-                        args->getOption("type"), error));
+                        d->args->getOption("type"), error));
             return;
             //return 1;
         }
@@ -229,7 +229,7 @@ void PlasmaPkg::runMain()
         kDebug() << "we have: " << packageRoot << pluginTypes;
     }
 
-    if (args->isSet("list")) {
+    if (d->args->isSet("list")) {
         d->listPackages(pluginTypes);
     } else {
         // install, remove or upgrade
@@ -238,17 +238,17 @@ void PlasmaPkg::runMain()
             //installer->setServicePrefix(servicePrefix);
         }
 
-        if (args->isSet("packageroot") && args->isSet("global")) {
+        if (d->args->isSet("packageroot") && d->args->isSet("global")) {
             KCmdLineArgs::usageError(i18nc("The user entered conflicting options packageroot and global, this is the error message telling the user he can use only one", "The packageroot and global options conflict each other, please select only one."));
-        } else if (args->isSet("packageroot")) {
-            packageRoot = args->getOption("packageroot");
-        } else if (args->isSet("global")) {
+        } else if (d->args->isSet("packageroot")) {
+            packageRoot = d->args->getOption("packageroot");
+        } else if (d->args->isSet("global")) {
             packageRoot = KStandardDirs::locate("data", packageRoot);
         } else {
             packageRoot = KStandardDirs::locateLocal("data", packageRoot);
         }
 
-        if (args->isSet("remove") || args->isSet("upgrade")) {
+        if (d->args->isSet("remove") || d->args->isSet("upgrade")) {
             installer->setPath(packageFile);
             KPluginInfo metadata = installer->metadata();
 
@@ -266,7 +266,7 @@ void PlasmaPkg::runMain()
                 kWarning() << " is now async.";
 //                 if (installer->uninstall(pluginName, packageRoot)) {
 //                     output(i18n("Successfully removed %1", pluginName));
-//                 } else if (!args->isSet("upgrade")) {
+//                 } else if (!d->args->isSet("upgrade")) {
 //                     output(i18n("Removal of %1 failed.", pluginName));
 //                     delete installer;
 //                     return 1;
@@ -275,7 +275,7 @@ void PlasmaPkg::runMain()
                 d->coutput(i18n("Plugin %1 is not installed.", pluginName));
             }
         }
-        if (args->isSet("install") || args->isSet("upgrade")) {
+        if (d->args->isSet("install") || d->args->isSet("upgrade")) {
             if (installer->install(packageFile, packageRoot)) {
                 kWarning() << " is now async.";
                 d->coutput(i18n("Successfully installed %1", packageFile));
@@ -466,13 +466,15 @@ void PlasmaPkg::packageInstalled(KJob* j)
 //     KJob* jj = p->uninstall();
 //     //QObject::disconnect(j, SIGNAL(finished(KJob*)), this, SLOT(packageInstalled(KJob*)));
 //     connect(jj, SIGNAL(finished(KJob*)), SLOT(packageInstalled(KJob*)));
+    quit();
 }
-
 
 void PlasmaPkg::packageUninstalled(KJob* j)
 {
     kDebug() << "!!!!!!!!!!!!!!!!!!!!! package uninstalled";
     //QVERIFY(j->error() == KJob::NoError);
+
+    quit();
 }
 
 } // namespace Plasma
