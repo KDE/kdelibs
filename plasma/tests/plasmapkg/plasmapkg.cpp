@@ -242,10 +242,13 @@ void PlasmaPkg::runMain()
             KCmdLineArgs::usageError(i18nc("The user entered conflicting options packageroot and global, this is the error message telling the user he can use only one", "The packageroot and global options conflict each other, please select only one."));
         } else if (d->args->isSet("packageroot")) {
             packageRoot = d->args->getOption("packageroot");
+            kDebug() << "(set via arg) packageRoot is: " << packageRoot;
         } else if (d->args->isSet("global")) {
             packageRoot = KStandardDirs::locate("data", packageRoot);
+            kDebug() << "(set via locate) packageRoot is: " << packageRoot;
         } else {
             packageRoot = KStandardDirs::locateLocal("data", packageRoot);
+            kDebug() << "(set via locateLocal) packageRoot is: " << packageRoot;
         }
 
         if (d->args->isSet("remove") || d->args->isSet("upgrade")) {
@@ -263,7 +266,7 @@ void PlasmaPkg::runMain()
 
             QStringList installed = d->packages(pluginTypes);
             if (installed.contains(pluginName)) {
-                kWarning() << " is now async.";
+                kWarning() << " method is now async.";
 //                 if (installer->uninstall(pluginName, packageRoot)) {
 //                     output(i18n("Successfully removed %1", pluginName));
 //                 } else if (!d->args->isSet("upgrade")) {
@@ -276,16 +279,18 @@ void PlasmaPkg::runMain()
             }
         }
         if (d->args->isSet("install") || d->args->isSet("upgrade")) {
-            if (installer->install(packageFile, packageRoot)) {
-                kWarning() << " is now async.";
-                d->coutput(i18n("Successfully installed %1", packageFile));
-            } else {
-                d->coutput(i18n("Installation of %1 failed.", packageFile));
-                kWarning() << " is now async.";
-                delete installer;
-                return;
-                //return 1;
-            }
+            KJob *installJob = installer->install(packageFile, packageRoot);
+            connect(installJob, SIGNAL(finished(bool)), SLOT(packageInstalled(bool)));
+//             if () {
+//                 kWarning() << " is now async.";
+//                 d->coutput(i18n("Successfully installed %1", packageFile));
+//             } else {
+//                 d->coutput(i18n("Installation of %1 failed.", packageFile));
+//                 kWarning() << " is now async.";
+//                 delete installer;
+//                 return;
+//                 //return 1;
+//             }
         }
         if (package.isEmpty()) {
             KCmdLineArgs::usageError(i18nc("No option was given, this is the error message telling the user he needs at least one, do not translate install, remove, upgrade nor list", "One of install, remove, upgrade or list is required."));
@@ -448,7 +453,7 @@ void PlasmaPkg::install(const QString& src, const QString &dest)
     //const QString packageRoot = "plasma/plasmoids/";
     //const QString servicePrefix = "plasma-applet-";
     KJob* job = p->install(archivePath, d->packageRoot);
-    connect(job, SIGNAL(finished(KJob*)), SLOT(packageInstalled(KJob*)));
+    connect(job, SIGNAL(finished(bool)), SLOT(packageInstalled(bool)));
 
 }
 
@@ -456,8 +461,9 @@ void PlasmaPkg::uninstall(const QString& installationPath)
 {
 }
 
-void PlasmaPkg::packageInstalled(KJob* j)
+void PlasmaPkg::packageInstalled(bool)
 {
+    KJob *j = qobject_cast<KJob*>(sender());
     kDebug() << "!!!!!!!!!!!!!!!!!!!! package installed" << (j->error() == KJob::NoError);
     //QVERIFY(j->error() == KJob::NoError);
     //QVERIFY(p->path());
@@ -469,7 +475,7 @@ void PlasmaPkg::packageInstalled(KJob* j)
     quit();
 }
 
-void PlasmaPkg::packageUninstalled(KJob* j)
+void PlasmaPkg::packageUninstalled(bool)
 {
     kDebug() << "!!!!!!!!!!!!!!!!!!!!! package uninstalled";
     //QVERIFY(j->error() == KJob::NoError);

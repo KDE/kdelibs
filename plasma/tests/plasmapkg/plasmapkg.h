@@ -48,8 +48,8 @@ class PlasmaPkg : public QCoreApplication
 //         void finished(bool success);
 
     private Q_SLOTS:
-        void packageInstalled(KJob* j);
-        void packageUninstalled(KJob* j);
+        void packageInstalled(bool);
+        void packageUninstalled(bool);
 
     private:
         PlasmaPkgPrivate* d;
