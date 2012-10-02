@@ -639,8 +639,8 @@ KJob* Package::install(const QString &sourcePackage, const QString &packageRoot)
 //     return PackagePrivate::install(package, packageRoot, d->servicePrefix);
     const QString src = sourcePackage;
     const QString dest = packageRoot.isEmpty() ? defaultPackageRoot() : packageRoot;
-    kDebug() << "Source: " << src;
-    kDebug() << "PackageRoot: " << dest;
+    //kDebug() << "Source: " << src;
+    //kDebug() << "PackageRoot: " << dest;
     d->path = packageRoot + "plasma-applet-org.kde.microblog-qml";
     KJob *j = d->structure.data()->install(this, src, dest);
     //connect(j, SIGNAL(finished(bool)), SLOT(installFinished(bool)));

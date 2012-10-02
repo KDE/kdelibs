@@ -49,15 +49,13 @@ PackageJob::~PackageJob()
 
 void PackageJob::slotFinished(bool ok, const QString &err)
 {
-    kDebug() << "caught finish from thread" << ok << err;
     if (ok) {
-        kDebug() << "set NoError";
         setError(NoError);
     } else {
         setError(UserDefinedError);
         setErrorText(err);
-        kDebug() << "set UserDefinedError" << err;
     }
+    d->thread->exit(0);
     emitResult();
 }
 

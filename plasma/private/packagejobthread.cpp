@@ -132,16 +132,16 @@ PackageJobThread::~PackageJobThread()
 bool PackageJobThread::install(const QString& src, const QString &dest)
 {
     bool ok = installPackage(src, dest);
-    kDebug() << "emit installPathChanged " << d->installPath;
+    //kDebug() << "emit installPathChanged " << d->installPath;
     emit installPathChanged(d->installPath);
-    kDebug() << "Thread: installFinished" << ok;
+    //kDebug() << "Thread: installFinished" << ok;
     emit finished(ok, d->errorMessage);
     return ok;
 }
 
 bool PackageJobThread::installPackage(const QString& src, const QString &dest)
 {
-    kDebug() << "::install: " << src << dest;
+//     kDebug() << "::install: " << src << dest;
     //TODO: report *what* failed if something does fail
     QString packageRoot = dest;
 
@@ -152,7 +152,7 @@ bool PackageJobThread::installPackage(const QString& src, const QString &dest)
         QDir().mkpath(dest);
         if (!root.exists()) {
             d->errorMessage = i18n("Could not create package root directory: %1", dest);
-            kWarning() << "Could not create package root directory: " << dest;
+            //kWarning() << "Could not create package root directory: " << dest;
             return false;
         }
     }
@@ -160,7 +160,7 @@ bool PackageJobThread::installPackage(const QString& src, const QString &dest)
     QFileInfo fileInfo(src);
     if (!fileInfo.exists()) {
         d->errorMessage = i18n("No such file: %1", src);
-        kWarning() << "No such file:" << src;
+        //kWarning() << "No such file:" << src;
         return false;
     }
 
@@ -188,13 +188,13 @@ bool PackageJobThread::installPackage(const QString& src, const QString &dest)
                    mimetype.inherits("application/x-xz") || mimetype.inherits("application/x-lzma")) {
             archive = new KTar(src);
         } else {
-            kWarning() << "Could not open package file, unsupported archive format:" << src << mimetype.name();
+            //kWarning() << "Could not open package file, unsupported archive format:" << src << mimetype.name();
             d->errorMessage = i18n("Could not open package file, unsupported archive format: %1 %2", src, mimetype.name());
             return false;
         }
 
         if (!archive->open(QIODevice::ReadOnly)) {
-            kWarning() << "Could not open package file:" << src;
+            //kWarning() << "Could not open package file:" << src;
             delete archive;
             d->errorMessage = i18n("Could not open package file: %1", src);
             return false;
@@ -203,7 +203,7 @@ bool PackageJobThread::installPackage(const QString& src, const QString &dest)
         archivedPackage = true;
         path = tempdir.path() + '/';
 
-        kDebug() << "path: " << path;
+        //kDebug() << "path: " << path;
         d->installPath = path;
 
         const KArchiveDirectory *source = archive->directory();
@@ -222,7 +222,7 @@ bool PackageJobThread::installPackage(const QString& src, const QString &dest)
 
     QString metadataPath = path + "metadata.desktop";
     if (!QFile::exists(metadataPath)) {
-        kWarning() << "No metadata file in package" << src << metadataPath;
+        //kWarning() << "No metadata file in package" << src << metadataPath;
         d->errorMessage = i18n("No metadata file in package: %1", src);
         return false;
     }
@@ -231,7 +231,7 @@ bool PackageJobThread::installPackage(const QString& src, const QString &dest)
     QString pluginName = meta.pluginName();
     kDebug() << "pluginname: " << meta.pluginName();
     if (pluginName.isEmpty()) {
-        kWarning() << "Package plugin name not specified";
+        //kWarning() << "Package plugin name not specified";
         d->errorMessage = i18n("Package plugin name not specified: %1", src);
         return false;
     }
@@ -240,7 +240,7 @@ bool PackageJobThread::installPackage(const QString& src, const QString &dest)
     // bad characters into the paths used for removal.
     QRegExp validatePluginName("^[\\w-\\.]+$"); // Only allow letters, numbers, underscore and period.
     if (!validatePluginName.exactMatch(pluginName)) {
-        kWarning() << "Package plugin name " << pluginName << "contains invalid characters";
+        //kWarning() << "Package plugin name " << pluginName << "contains invalid characters";
         d->errorMessage = i18n("Package plugin name %1 contains invalid characters", pluginName);
         return false;
     }
@@ -251,9 +251,9 @@ bool PackageJobThread::installPackage(const QString& src, const QString &dest)
     }
     targetName.append(pluginName);
 
-    kDebug() << " Target installation path: " << targetName;
+    //kDebug() << " Target installation path: " << targetName;
     if (QFile::exists(targetName)) {
-        kWarning() << targetName << "already exists";
+        //kWarning() << targetName << "already exists";
         d->errorMessage = i18n("%1 already exists", targetName);
         return false;
     }
@@ -263,7 +263,7 @@ bool PackageJobThread::installPackage(const QString& src, const QString &dest)
         const bool ok = copyFolder(path, targetName);
         removeFolder(path);
         if (!ok) {
-            kWarning() << "Could not move package to destination:" << targetName;
+            //kWarning() << "Could not move package to destination:" << targetName;
             d->errorMessage = i18n("Could not move package to destination: %1", targetName);
             return false;
         }
@@ -272,7 +272,7 @@ bool PackageJobThread::installPackage(const QString& src, const QString &dest)
         // than move them
         const bool ok = copyFolder(path, targetName);
         if (!ok) {
-            kWarning() << "Could not copy package to destination:" << targetName;
+            //kWarning() << "Could not copy package to destination:" << targetName;
             d->errorMessage = i18n("Could not copy package to destination: %1", targetName);
             return false;
         }
@@ -299,7 +299,7 @@ bool PackageJobThread::installPackage(const QString& src, const QString &dest)
         const QString serviceName = d->servicePrefix + meta.pluginName() + ".desktop";
 
         QString service = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1String("/kde5/services/") + serviceName;
-        kDebug() << "Copying from " <<  metaPath << " to " << service;
+        //kDebug() << "Copying from " <<  metaPath << " to " << service;
         const bool ok = QFile::copy(metaPath, service);
         if (ok) {
             // the icon in the installed file needs to point to the icon in the
@@ -312,7 +312,7 @@ bool PackageJobThread::installPackage(const QString& src, const QString &dest)
                 cg.writeEntry("Icon", iconPath);
             }
         } else {
-            kWarning() << "Could not register package as service (this is not necessarily fatal):" << serviceName;
+            //kWarning() << "Could not register package as service (this is not necessarily fatal):" << serviceName;
             d->errorMessage = i18n("Could not register package as service (this is not necessarily fatal): %1", serviceName);
         }
     }
@@ -322,7 +322,7 @@ bool PackageJobThread::installPackage(const QString& src, const QString &dest)
     */
     d->installPath = targetName;
 
-    kWarning() << "Not updating kbuildsycoca4, since that will go away. Do it yourself for now if needed.";
+    //kWarning() << "Not updating kbuildsycoca4, since that will go away. Do it yourself for now if needed.";
     return true;
 
 }
@@ -364,7 +364,7 @@ bool PackageJobThread::uninstall(const QString& packagePath)
 
     ok = removeFolder(targetName);
     if (!ok) {
-        kWarning() << "Could not delete package from:" << targetName;
+        d->errorMessage = i18n("Could not delete package from: %1", targetName);
         return false; // FIXME: KJob!
     }
 
