@@ -27,7 +27,6 @@
 #include <plasma/plasma.h>
 #include <plasma/plasma_export.h>
 #include <plasma/package.h>
-#include <ksharedptr.h>
 
 namespace Plasma
 {
@@ -39,7 +38,6 @@ class PLASMA_EXPORT PackageStructure : public QObject
     Q_OBJECT
 
 public:
-//    typedef KSharedPtr<PackageStructure> Ptr;
 
     explicit PackageStructure(QObject *parent = 0, const QVariantList &args = QVariantList());
 
@@ -72,8 +70,8 @@ public:
      * accessing file paths
      * @param archivePath path to the package archive file
      * @param packageRoot path to the directory where the package should be
-     *                    installed t
-     * @return true on successful installation, false otherwise
+     *                    installed to
+     * @return KJob* to track the installation status
      **/
     virtual KJob* install(Package *package, const QString &archivePath, const QString &packageRoot);
 
@@ -84,12 +82,9 @@ public:
      * accessing file paths
      * @param packageName the name of the package to remove
      * @param packageRoot path to the directory where the package should be installed to
-     * @return true on successful removal of the package, false otherwise
+     * @return KJob* to track the installation status
      */
-     virtual KJob* uninstall(Package *package, const QString &packageRoot);
-
-    static PackageStructure* load(const QString &packageFormat);
-
+    virtual KJob* uninstall(Package *package, const QString &packageRoot);
 
 private:
     PackageStructurePrivate* d;

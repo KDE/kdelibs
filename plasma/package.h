@@ -107,14 +107,6 @@ public:
     bool isValid() const;
 
     /**
-     * Load a package from disk
-     * @param packageRoot and absolute path
-     * @param packageName the name of the package, usually the pluginName
-     * @since 5.0
-     */
-    void load(const QString &packageRoot, const QString &packageName);
-
-    /**
      * Sets the path to the root of this package
      * @param path and absolute path
      * @since 4.3
