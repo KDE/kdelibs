@@ -84,8 +84,8 @@ int main(int argc, char **argv)
     options.add("s");
     options.add("i");
     options.add("install <path>", qi18nc("Do not translate <path>", "Install the package at <path>"));
-    options.add("if");
-    options.add("info <name>", qi18nc("Do not translate <name>", "Show information of package"));
+    options.add("s");
+    options.add("show <name>", qi18nc("Do not translate <name>", "Show information of package <name>"));
     options.add("u");
     options.add("upgrade <path>", qi18nc("Do not translate <path>", "Upgrade the package at <path>"));
     options.add("l");
