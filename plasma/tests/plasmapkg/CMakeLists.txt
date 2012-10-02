@@ -1,4 +1,4 @@
-#project("plasmapkg")
+project("plasmapkg")
 
 set(plasmapkg_SRCS
     main.cpp

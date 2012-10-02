@@ -42,14 +42,15 @@ class PlasmaPkg : public QCoreApplication
 
         void install(const QString& src, const QString& dest);
         void uninstall(const QString &installationPath);
+        void listPackages(const QStringList& types);
 
 //     Q_SIGNALS:
 //         void installPathChanged(const QString &path);
 //         void finished(bool success);
 
     private Q_SLOTS:
-        void packageInstalled(bool);
-        void packageUninstalled(bool);
+        void packageInstalled(KJob *job);
+        void packageUninstalled(KJob *job);
 
     private:
         PlasmaPkgPrivate* d;
