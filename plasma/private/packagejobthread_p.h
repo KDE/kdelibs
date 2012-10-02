@@ -41,7 +41,9 @@ class PackageJobThread : public QThread
         bool uninstall(const QString& packagePath);
 
     Q_SIGNALS:
-        void finished(bool success);
+        void finished(bool success, const QString &errorMessage = QString());
+        void percentChanged(int percent);
+        void error(const QString &errorMessage);
         void installPathChanged(const QString &installPath);
 
     private:

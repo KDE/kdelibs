@@ -36,10 +36,10 @@ PackageJob::PackageJob(const QString &servicePrefix, QObject* parent) :
 {
     d = new PackageJobPrivate;
     d->thread = new PackageJobThread(servicePrefix, this);
-    connect(d->thread, SIGNAL(finished(bool)), SIGNAL(finished(bool)), Qt::QueuedConnection);
-    connect(d->thread, SIGNAL(finished(bool)), SLOT(slotFinished(bool)), Qt::QueuedConnection);
-    connect(d->thread, SIGNAL(installPathChanged(const QString&)), SIGNAL(installPathChanged(const QString&)), Qt::QueuedConnection);
-    //d->thread->start();
+    connect(d->thread, SIGNAL(finished(bool, const QString&)),
+            SLOT(slotFinished(bool, const QString&)), Qt::QueuedConnection);
+    connect(d->thread, SIGNAL(installPathChanged(const QString&)),
+           SIGNAL(installPathChanged(const QString&)), Qt::QueuedConnection);
 }
 
 PackageJob::~PackageJob()
@@ -47,9 +47,18 @@ PackageJob::~PackageJob()
     delete d;
 }
 
-void PackageJob::slotFinished(bool ok)
+void PackageJob::slotFinished(bool ok, const QString &err)
 {
-    kDebug() << "caught finish from thread";
+    kDebug() << "caught finish from thread" << ok << err;
+    if (ok) {
+        kDebug() << "set NoError";
+        setError(NoError);
+    } else {
+        setError(UserDefinedError);
+        setErrorText(err);
+        kDebug() << "set UserDefinedError" << err;
+    }
+    emitResult();
 }
 
 void PackageJob::start()
@@ -70,4 +79,3 @@ void PackageJob::uninstall(const QString& installationPath)
 } // namespace Plasma
 
 #include "moc_packagejob_p.cpp"
-
