@@ -33,6 +33,7 @@
 
 #include <plasma/packagestructure.h>
 #include <plasma/package.h>
+#include <plasma/pluginloader.h>
 
 #include <klocale.h>
 #include <kjob.h>
@@ -96,6 +97,14 @@ void PlasmaPkg::runMain()
     if (d->args->isSet("list-types")) {
         d->listTypes();
         exit(0);
+    }
+
+    if (d->args->isSet("info")) {
+        const QString pluginName = d->args->getOption("info");
+        kDebug() << "Showing info for " << pluginName;
+        showPackageInfo(pluginName);
+        exit(0);
+        return;
     }
 
     QString type = d->args->getOption("type");
@@ -254,7 +263,13 @@ void PlasmaPkg::runMain()
             #warning "path is wrong here"
             kDebug() << "UNinstalljob " << packageRoot << d->package;
             //installer->setPath(d->package);
-            //installer->setPath("/home/sebas/.local/share/plasma/plasmoids/org.kde.microblog-qml");
+            QString _p = packageRoot;
+            if (!_p.endsWith('/')) {
+                _p.append('/');
+            }
+            _p.append(d->package);
+            kDebug() << "path to package: " << _p;
+            installer->setPath(_p);
             KPluginInfo metadata = installer->metadata();
 
             QString pluginName;
@@ -286,6 +301,7 @@ void PlasmaPkg::runMain()
         if (d->args->isSet("install") || d->args->isSet("upgrade")) {
             KJob *installJob = installer->install(d->packageFile, packageRoot);
             connect(installJob, SIGNAL(result(KJob*)), SLOT(packageInstalled(KJob*)));
+            //return;
         }
         if (d->package.isEmpty()) {
             KCmdLineArgs::usageError(i18nc("No option was given, this is the error message telling the user he needs at least one, do not translate install, remove, upgrade nor list", "One of install, remove, upgrade or list is required."));
@@ -294,7 +310,7 @@ void PlasmaPkg::runMain()
         }
     }
     delete installer;
-    exit(0);
+    exit(0); // good idea?
 
 }
 
@@ -326,6 +342,11 @@ QStringList PlasmaPkgPrivate::packages(const QStringList& types)
 //     }
 
     return result;
+}
+
+void PlasmaPkg::showPackageInfo(const QString& pluginName)
+{
+    kDebug() << "showPackageInfo" << pluginName;
 }
 
 void PlasmaPkg::listPackages(const QStringList& types)
@@ -409,13 +430,13 @@ void PlasmaPkgPrivate::listTypes()
         QMap<QString, QStringList> plugins;
         foreach (const KService::Ptr service, offers) {
             KPluginInfo info(service);
-            const QString proot = "";
-            Plasma::PackageStructure* structure = Plasma::PackageStructure::load(info.pluginName());
+            //const QString proot = "";
+            //Plasma::PackageStructure* structure = Plasma::PackageStructure::load(info.pluginName());
             QString name = info.name();
             QString plugin = info.pluginName();
             //QString path = structure->defaultPackageRoot();
             //QString path = defaultPackageRoot;
-            //plugins.insert(name, QStringList() << plugin << path);
+            plugins.insert(name, QStringList() << plugin);
         }
 
         renderTypeTable(plugins);

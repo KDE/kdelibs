@@ -40,7 +40,8 @@ class PlasmaPkg : public QCoreApplication
 
         void runMain();
 
-        void listPackages(const QStringList& types);
+        void listPackages(const QStringList &types);
+        void showPackageInfo(const QString &pluginName);
 
 
     private Q_SLOTS:
