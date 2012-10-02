@@ -213,7 +213,7 @@ void PlasmaPkg::runMain()
         KService::Ptr offer = offers.first();
         QString error;
 
-        //installer = new Plasma::Package(offer->createInstance<Plasma::PackageStructure>(0, QVariantList(), &error));
+        installer = new Plasma::Package(offer->createInstance<Plasma::PackageStructure>(0, QVariantList(), &error));
 
         if (!installer) {
             d->coutput(i18n("Could not load installer for package of type %1. Error reported was: %2",
@@ -229,6 +229,7 @@ void PlasmaPkg::runMain()
 
     if (d->args->isSet("list")) {
         listPackages(pluginTypes);
+        exit(0);
     } else {
         // install, remove or upgrade
         if (!installer) {
@@ -250,8 +251,10 @@ void PlasmaPkg::runMain()
         }
 
         if (d->args->isSet("remove") || d->args->isSet("upgrade")) {
-            kDebug() << "starting uninstalljob " << d->packageFile;
-            installer->setPath(d->packageFile);
+            #warning "path is wrong here"
+            kDebug() << "UNinstalljob " << packageRoot << d->package;
+            //installer->setPath(d->package);
+            //installer->setPath("/home/sebas/.local/share/plasma/plasmoids/org.kde.microblog-qml");
             KPluginInfo metadata = installer->metadata();
 
             QString pluginName;
@@ -266,7 +269,7 @@ void PlasmaPkg::runMain()
             QStringList installed = d->packages(pluginTypes);
             if (installed.contains(pluginName)) {
                 kDebug() << "starting uninstalljob " << pluginName;
-                KJob *installJob = installer->install(d->packageFile, packageRoot);
+                KJob *installJob = installer->uninstall();
                 connect(installJob, SIGNAL(result(KJob*)), SLOT(packageInstalled(KJob*)));
                 kWarning() << " method is now async.";
 //                 if (installer->uninstall(pluginName, packageRoot)) {
@@ -291,6 +294,7 @@ void PlasmaPkg::runMain()
         }
     }
     delete installer;
+    exit(0);
 
 }
 
@@ -331,7 +335,7 @@ void PlasmaPkg::listPackages(const QStringList& types)
     foreach (const QString& package, list) {
         d->coutput(package);
     }
-    quit();
+    exit(0);
 }
 
 void PlasmaPkgPrivate::renderTypeTable(const QMap<QString, QStringList> &plugins)
@@ -398,10 +402,9 @@ void PlasmaPkgPrivate::listTypes()
     //if (KSycoca::isAvailable()) {
         offers = KServiceTypeTrader::self()->query("Plasma/PackageStructure");
     //}
-    /*
     if (!offers.isEmpty()) {
         std::cout << std::endl;
-        output(i18n("Provided by plugins:"));
+        coutput(i18n("Provided by plugins:"));
 
         QMap<QString, QStringList> plugins;
         foreach (const KService::Ptr service, offers) {
@@ -411,8 +414,8 @@ void PlasmaPkgPrivate::listTypes()
             QString name = info.name();
             QString plugin = info.pluginName();
             //QString path = structure->defaultPackageRoot();
-            QString path =
-            plugins.insert(name, QStringList() << plugin << path);
+            //QString path = defaultPackageRoot;
+            //plugins.insert(name, QStringList() << plugin << path);
         }
 
         renderTypeTable(plugins);
@@ -420,38 +423,19 @@ void PlasmaPkgPrivate::listTypes()
 
     QStringList desktopFiles = KGlobal::dirs()->findAllResources("data", "plasma/packageformats/*rc", KStandardDirs::NoDuplicates);
     if (!desktopFiles.isEmpty()) {
-        output(i18n("Provided by .desktop files:"));
+        coutput(i18n("Provided by .desktop files:"));
         Plasma::PackageStructure structure;
         QMap<QString, QStringList> plugins;
         foreach (const QString &file, desktopFiles) {
             // extract the type
             KConfig config(file, KConfig::SimpleConfig);
-            structure.read(&config);
+            #warning "read config here"
+            // structure.read(&config);
             // get the name based on the rc file name, just as Plasma::PackageStructure does
             const QString name = file.left(file.length() - 2);
-            plugins.insert(name, QStringList() << structure.type() << structure.defaultPackageRoot());
+            //plugins.insert(name, QStringList() << structure.type() << structure.defaultPackageRoot());
         }
     }
-    */
-}
-
-void PlasmaPkg::install(const QString& src, const QString &dest)
-{
-    QString archivePath = "/home/sebas/kde5/src/kdelibs/plasma/tests/microblog.plasmoid";
-
-    d->structure = new Plasma::PackageStructure(this);
-    Plasma::Package *p = new Plasma::Package(d->structure);
-    kDebug() << " ----> Installing " << archivePath;
-//     p->setPath(,z
-    //const QString packageRoot = "plasma/plasmoids/";
-    //const QString servicePrefix = "plasma-applet-";
-    KJob* job = p->install(archivePath, d->packageRoot);
-    connect(job, SIGNAL(finished(KJob*)), SLOT(packageInstalled(KJob*)));
-
-}
-
-void PlasmaPkg::uninstall(const QString& installationPath)
-{
 }
 
 void PlasmaPkg::packageInstalled(KJob *job)
