@@ -1894,7 +1894,10 @@ void KFileWidgetPrivate::writeConfig(KConfigGroup &configGroup)
     configGroup.writeEntry( BreadcrumbNavigation, !urlNavigator->isUrlEditable(), globalFlags );
     configGroup.writeEntry( ShowFullPath, urlNavigator->showFullPath(), globalFlags );
 
-    ops->writeConfig(configGroup);
+    KConfig tmp( QString(), KConfig::SimpleConfig );
+    KConfigGroup tmpGroup( &tmp, configGroup.name() );
+    ops->writeConfig( tmpGroup );
+    tmpGroup.copyTo( &configGroup, globalFlags );
 }
 
 
