@@ -336,7 +336,19 @@ bool PackageJobThread::uninstall(const QString& packagePath)
         kWarning() << targetName << "does not exist";
         return false; // FIXME: KJob!
     }
-    const QString &packageName = "FIXME";
+    QString pkg;
+    {
+        QString _path = packagePath;
+        int ix = 0;
+        if (packagePath.endsWith('/')) {
+            //ix =
+        }
+        QStringList ps = packagePath.split('/');
+        pkg = ps[-1];
+        kDebug() << " PJT: split: " << pkg << ps;
+
+    }
+    const QString &packageName = pkg;
 
     const QString serviceName = d->servicePrefix + packageName + ".desktop";
 

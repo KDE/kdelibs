@@ -117,7 +117,7 @@ void Package::load(const QString& packageRoot, const QString& packageName)
     #warning "load not implemented this is wonky"
     kDebug() << " implement me." << packageRoot << packageName << packagePath;
     //const QString p = KStandardDirs
-    //setPath();
+    setPath(packagePath);
 }
 
 

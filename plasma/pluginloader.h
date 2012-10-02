@@ -40,20 +40,20 @@ class PluginLoaderPrivate;
 // * add KPluginInfo listing support for Containments (already loaded via the applet loading code)
 
 /**
- * This is an abstract base class which defines an interface to which Plasma's 
+ * This is an abstract base class which defines an interface to which Plasma's
  * Applet Loading logic can communicate with a parent application. The plugin loader
  * must be set before any plugins are loaded, otherwise (for safety reasons), the
  * default PluginLoader implementation will be used. The reimplemented version should
  * not do more than simply returning a loaded plugin. It should not init() it, and it should not
  * hang on to it. The associated methods will be called only when a component of Plasma
- * needs to load a _new_ plugin. (e.g. DataEngine does it's own caching).
+ * needs to load a _new_ plugin. (e.g. DataEngine does its own caching).
  *
  * @author Ryan Rix <ry@n.rix.si>
  * @since 4.6
  **/
 class PLASMA_EXPORT PluginLoader
 {
-public: 
+public:
     /**
      * Load an Applet plugin.
      *
@@ -276,7 +276,7 @@ protected:
 
     /**
      * A re-implementable method that allows subclasses to provide additional applets
-     * for listAppletInfo. If the application has no applets to give to the application, 
+     * for listAppletInfo. If the application has no applets to give to the application,
      * then the implementation should return an empty list.
      *
      * This method is called by listAppletInfo prior to generating the list of applets installed
