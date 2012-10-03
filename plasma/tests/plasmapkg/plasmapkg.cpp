@@ -39,6 +39,7 @@
 #include <kjob.h>
 
 #include <QDir>
+#include <QFileInfo>
 #include <QMap>
 #include <QStringList>
 
@@ -64,6 +65,7 @@ public:
     void listTypes();
     void coutput(const QString &msg);
     KCmdLineArgs *args;
+
 };
 
 PlasmaPkg::PlasmaPkg(int& argc, char** argv) :
@@ -92,21 +94,13 @@ void PlasmaPkg::runMain()
             exit(1);
         }
 
-        d->coutput(i18n("SHA1 hash for Package at %1: '%2'", path, hash));
+        d->coutput(i18n("SHA1 hash for Package at %1: '%2'", package.path(), hash));
         exit(0);
     }
 
     if (d->args->isSet("list-types")) {
         d->listTypes();
         exit(0);
-    }
-
-    if (d->args->isSet("show")) {
-        const QString pluginName = d->args->getOption("show");
-        kDebug() << "Showing info for " << pluginName;
-        showPackageInfo(pluginName);
-        exit(0);
-        return;
     }
 
     QString type = d->args->getOption("type");
@@ -120,20 +114,43 @@ void PlasmaPkg::runMain()
         d->package = d->args->getOption("upgrade");
     } else if (d->args->isSet("install")) {
         d->package = d->args->getOption("install");
+    } else if (d->args->isSet("show")) {
+        d->package = d->args->getOption("show");
     }
+    kDebug() << "read d->package from args: " << d->package;
+    if (d->args->isSet("show")) {
+        const QString pluginName = d->package;
+        kDebug() << "Showing info for " << pluginName;
+        showPackageInfo(pluginName);
+        exit(0);
+        return;
+    }
+
     if (!QDir::isAbsolutePath(d->package)) {
         d->packageFile = QDir(QDir::currentPath() + '/' + d->package).absolutePath();
+        d->packageFile = QFileInfo(d->packageFile).canonicalFilePath();
     } else {
         d->packageFile = d->package;
     }
-
+    kDebug() << "packageFile" << d->packageFile;
     if (!d->packageFile.isEmpty() && (!d->args->isSet("type") ||
         type.compare(i18nc("package type", "wallpaper"), Qt::CaseInsensitive) == 0 ||
         type.compare("wallpaper", Qt::CaseInsensitive) == 0)) {
         // Check type for common plasma packages
         Plasma::Package package(structure);
-        package.setPath(d->packageFile);
-        QString serviceType = package.metadata().property("X-Plasma-ServiceType").toString();
+        QString serviceType;
+        if (d->args->isSet("remove")) {
+            kDebug() << "141 package: " << d->package;
+            package.setPath(d->package);
+        } else {
+            package.setPath(d->packageFile);
+        }
+        if (package.isValid()) {
+            kDebug() << "package valid: " << package.path();
+            serviceType = package.metadata().property("X-Plasma-ServiceType").toString();
+        } else {
+            kDebug() << "package invalid: " << package.path();
+        }
         if (!serviceType.isEmpty()) {
             if (serviceType.contains("Plasma/Applet") ||
                 serviceType.contains("Plasma/PopupApplet") ||
@@ -162,7 +179,9 @@ void PlasmaPkg::runMain()
             }
         }
     }
+    kDebug() << " type:" << type << d->pluginTypes;
 
+    //kDebug() << " 171 dp:" << d->package;
     if (type.compare(i18nc("package type", "plasmoid"), Qt::CaseInsensitive) == 0 ||
         type.compare("plasmoid", Qt::CaseInsensitive) == 0) {
         d->packageRoot = "plasma/plasmoids/";
@@ -236,10 +255,16 @@ void PlasmaPkg::runMain()
         //pluginTypes << installer->type();
         kDebug() << "we have: " << d->packageRoot << d->pluginTypes;
     }
-
+    kDebug() << " 245 dp:" << d->package;
     if (d->args->isSet("list")) {
         listPackages(d->pluginTypes);
         exit(0);
+//     } else if (d->args->isSet("show")) {
+//         const QString pluginName = d->package;
+//         kDebug() << "Showing info for " << pluginName;
+//         showPackageInfo(pluginName);
+//         exit(0);
+//         return;
     } else {
         // install, remove or upgrade
         if (!installer) {
@@ -247,30 +272,33 @@ void PlasmaPkg::runMain()
             //installer->setServicePrefix(d->servicePrefix);
         }
 
-        if (d->args->isSet("packageroot") && d->args->isSet("global")) {
-            KCmdLineArgs::usageError(i18nc("The user entered conflicting options packageroot and global, this is the error message telling the user he can use only one", "The packageroot and global options conflict each other, please select only one."));
-        } else if (d->args->isSet("packageroot")) {
-            d->packageRoot = d->args->getOption("packageroot");
-            kDebug() << "(set via arg) d->packageRoot is: " << d->packageRoot;
-        } else if (d->args->isSet("global")) {
-            d->packageRoot = KStandardDirs::locate("data", d->packageRoot);
-            kDebug() << "(set via locate) d->packageRoot is: " << d->packageRoot;
-        } else {
-            d->packageRoot = KStandardDirs::locateLocal("data", d->packageRoot);
-            kDebug() << "(set via locateLocal) d->packageRoot is: " << d->packageRoot;
-        }
-
+        d->packageRoot = findPackageRoot(d->package, d->packageRoot);
         if (d->args->isSet("remove") || d->args->isSet("upgrade")) {
             #warning "path is wrong here"
-            kDebug() << "UNinstalljob " << d->packageRoot << d->package;
+            kDebug() << "UNinstalljob " << d->packageRoot << d->package << type << d->pluginTypes;
+            QString pkgPath;
+            foreach (const QString &t, d->pluginTypes) {
+                Plasma::Package pkg = Plasma::PluginLoader::self()->loadPackage(t);
+                pkg.setPath(d->package);
+                if (pkg.isValid()) {
+                    //kDebug() << "pkg for type " << t << " valid" << pkg.path();
+                    pkgPath = pkg.path();
+                    continue;
+                } else {
+                    //kDebug() << "pkg for type " << t << " invalid";
+                }
+
+            }
             //installer->setPath(d->package);
             QString _p = d->packageRoot;
             if (!_p.endsWith('/')) {
                 _p.append('/');
             }
             _p.append(d->package);
-            kDebug() << "path to package: " << _p;
-            installer->setPath(_p);
+            kDebug() << "        package: " << pkgPath;
+            installer->setPath(pkgPath);
+            //installer->setPath(d->package);
+            kDebug() << "path to package: " << installer->path();
             KPluginInfo metadata = installer->metadata();
 
             QString pluginName;
@@ -285,8 +313,8 @@ void PlasmaPkg::runMain()
             QStringList installed = d->packages(d->pluginTypes);
             if (installed.contains(pluginName)) {
                 kDebug() << "starting uninstalljob " << pluginName;
-                KJob *installJob = installer->uninstall();
-                connect(installJob, SIGNAL(result(KJob*)), SLOT(packageInstalled(KJob*)));
+                KJob *installJob = installer->uninstall(pluginName, d->packageRoot);
+                connect(installJob, SIGNAL(result(KJob*)), SLOT(packageUninstalled(KJob*)));
                 kWarning() << " method is now async.";
 //                 if (installer->uninstall(pluginName, d->packageRoot)) {
 //                     output(i18n("Successfully removed %1", pluginName));
@@ -350,11 +378,38 @@ void PlasmaPkg::showPackageInfo(const QString& pluginName)
     kDebug() << "showPackageInfo" << pluginName;
     Plasma::Package pkg = Plasma::PluginLoader::self()->loadPackage("Plasma/Applet");
 
-    QString p;
+    //QString p = findPackageRoot("org.kde.microblog-qml", "plasma/plasmoids/");
 
-    pkg.setPath(p);
+    pkg.setPath(pluginName);
 
-    exit(0);
+    KPluginInfo i = pkg.metadata();
+
+    d->coutput(i18n("Showing info for package: %1", pluginName));
+    d->coutput(i18n("      Name : %1", i.name()));
+    d->coutput(i18n("   Comment : %1", i.comment()));
+    d->coutput(i18n("    Plugin : %1", i.pluginName()));
+    d->coutput(i18n("    Author : %1", i.author()));
+    d->coutput(i18n("      Path : %1", pkg.path()));
+
+    //exit(0);
+}
+
+QString PlasmaPkg::findPackageRoot(const QString& pluginName, const QString& prefix)
+{
+    QString packageRoot;
+    if (d->args->isSet("packageroot") && d->args->isSet("global")) {
+        KCmdLineArgs::usageError(i18nc("The user entered conflicting options packageroot and global, this is the error message telling the user he can use only one", "The packageroot and global options conflict each other, please select only one."));
+    } else if (d->args->isSet("packageroot")) {
+        packageRoot = d->args->getOption("packageroot");
+        kDebug() << "(set via arg) d->packageRoot is: " << d->packageRoot;
+    } else if (d->args->isSet("global")) {
+        packageRoot = KStandardDirs::locate("data", d->packageRoot);
+        kDebug() << "(set via locate) d->packageRoot is: " << d->packageRoot;
+    } else {
+        packageRoot = KStandardDirs::locateLocal("data", d->packageRoot);
+        kDebug() << "(set via locateLocal) d->packageRoot is: " << d->packageRoot;
+    }
+    return packageRoot;
 }
 
 void PlasmaPkg::listPackages(const QStringList& types)

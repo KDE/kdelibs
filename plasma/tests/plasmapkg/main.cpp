@@ -81,7 +81,7 @@ int main(int argc, char **argv)
                        "(if translated, should be same as messages with 'package type' context below)",
                        "The type of package, e.g. theme, wallpaper, plasmoid, dataengine, runner, layout-template, etc."),
                 "plasmoid");
-    options.add("s");
+    //options.add("s");
     options.add("i");
     options.add("install <path>", qi18nc("Do not translate <path>", "Install the package at <path>"));
     options.add("s");

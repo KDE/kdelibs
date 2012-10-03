@@ -288,7 +288,7 @@ void PlasmoidPackageTest::packageInstalled(KJob* j)
     //QVERIFY(p->path());
 
     Plasma::Package *p = new Plasma::Package(m_defaultPackageStructure);
-    KJob* jj = p->uninstall();
+    KJob* jj = p->uninstall("org.kde.microblog-qml", m_packageRoot);
     //QObject::disconnect(j, SIGNAL(finished(KJob*)), this, SLOT(packageInstalled(KJob*)));
     connect(jj, SIGNAL(finished(KJob*)), SLOT(packageInstalled(KJob*)));
 }

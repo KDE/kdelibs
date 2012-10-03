@@ -43,6 +43,8 @@ class PlasmaPkg : public QCoreApplication
         void listPackages(const QStringList &types);
         void showPackageInfo(const QString &pluginName);
 
+        QString findPackageRoot(const QString &pluginName, const QString &prefix);
+
 
     private Q_SLOTS:
         void packageInstalled(KJob *job);
