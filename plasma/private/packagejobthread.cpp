@@ -327,7 +327,17 @@ bool PackageJobThread::installPackage(const QString& src, const QString &dest)
 
 }
 
-bool PackageJobThread::uninstall(const QString& packagePath)
+bool PackageJobThread::uninstall(const QString &packagePath)
+{
+    bool ok = uninstallPackage(packagePath);
+    //kDebug() << "emit installPathChanged " << d->installPath;
+    emit installPathChanged(QString());
+    //kDebug() << "Thread: installFinished" << ok;
+    emit finished(ok, d->errorMessage);
+    return ok;
+}
+
+bool PackageJobThread::uninstallPackage(const QString& packagePath)
 {
     // We need to remove the package directory and its metadata file.
     const QString targetName = packagePath; // FIXME : remove
@@ -337,14 +347,15 @@ bool PackageJobThread::uninstall(const QString& packagePath)
         return false; // FIXME: KJob!
     }
     QString pkg;
-    {
+    { // FIXME: remove, pass in packageroot, type and pluginName separately?
         QString _path = packagePath;
-        int ix = 0;
-        if (packagePath.endsWith('/')) {
-            //ix =
-        }
         QStringList ps = packagePath.split('/');
-        pkg = ps[-1];
+        int ix = ps.count()-1;
+        if (packagePath.endsWith('/')) {
+            ix = ps.count()-2;
+        }
+        //kDebug() << " PJT: split: " << pkg << ps;
+        pkg = ps[ix];
         kDebug() << " PJT: split: " << pkg << ps;
 
     }

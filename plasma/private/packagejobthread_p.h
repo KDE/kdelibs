@@ -37,8 +37,8 @@ class PackageJobThread : public QThread
         PackageJobThread(const QString &servicePrefix, QObject* parent = 0);
         virtual ~PackageJobThread();
 
-        bool install(const QString& src, const QString &dest);
-        bool uninstall(const QString& packagePath);
+        bool install(const QString &src, const QString &dest);
+        bool uninstall(const QString &packagePath);
 
     Q_SIGNALS:
         void finished(bool success, const QString &errorMessage = QString());
@@ -47,7 +47,8 @@ class PackageJobThread : public QThread
         void installPathChanged(const QString &installPath);
 
     private:
-        bool installPackage(const QString& src, const QString &dest);
+        bool installPackage(const QString &src, const QString &dest);
+        bool uninstallPackage(const QString &packagePath);
         PackageJobThreadPrivate* d;
 };
 

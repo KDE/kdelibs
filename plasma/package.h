@@ -316,7 +316,7 @@ public:
      *
      * @return KJob to track removal progress and result
      */
-    KJob* uninstall();
+    KJob* uninstall(const QString &packageName, const QString &packageRoot);
 
 private:
     QExplicitlySharedDataPointer<PackagePrivate> d;

@@ -18,7 +18,7 @@
 *******************************************************************************/
 
 #include "packagestructure.h"
-
+#include <kdebug.h>
 #include <private/packagejob_p.h>
 
 namespace Plasma
@@ -55,7 +55,8 @@ KJob* PackageStructure::install(Package *package, const QString &archivePath, co
 KJob* PackageStructure::uninstall(Package *package, const QString &packageRoot)
 {
     PackageJob* j = new PackageJob(package->servicePrefix(), this);
-    j->uninstall(packageRoot);
+    kDebug() << "PS: " << package->path() << package->isValid();
+    j->uninstall(package->path());
     return j;
 }
 

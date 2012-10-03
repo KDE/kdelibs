@@ -28,6 +28,7 @@
 #include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kservicetypetrader.h>
+#include <kstandarddirs.h>
 #include <ktar.h>
 #include <kzip.h>
 
@@ -368,6 +369,7 @@ QStringList Package::entryList(const char *key) const
 
 void Package::setPath(const QString &path)
 {
+    kDebug() << "Package::setPath() " << path;
     if (path == d->path) {
         return;
     }
@@ -388,15 +390,19 @@ void Package::setPath(const QString &path)
     QDir dir(path);
     if (dir.isRelative()) {
         QString location;
+        //kDebug() <<
         if (!d->defaultPackageRoot.isEmpty()) {
             dir.setPath(d->defaultPackageRoot);
             if (dir.isRelative()) {
-                location = QStandardPaths::locate(QStandardPaths::GenericDataLocation, d->defaultPackageRoot + path);
+//                 location = QStandardPaths::locate(QStandardPaths::GenericDataLocation, d->defaultPackageRoot + path);
+//                 kDebug() << "From QStandardPaths: " << location;
+                location = KStandardDirs::locateLocal("data", d->defaultPackageRoot + path);
+                kDebug() << "From KStandardDirs: " << location;
+
             } else {
                 location = d->defaultPackageRoot + path;
             }
         }
-        kDebug() << "location : " << location;
         if (location.isEmpty()) {
             location = QStandardPaths::locate(QStandardPaths::GenericDataLocation, path);
 
@@ -406,7 +412,6 @@ void Package::setPath(const QString &path)
                 return;
             }
         }
-
         dir.setPath(location);
     }
 
@@ -418,7 +423,7 @@ void Package::setPath(const QString &path)
         if (info.isDir() && !basePath.endsWith('/')) {
             basePath.append('/');
         }
-        //kDebug() << "basePath is" << basePath;
+        kDebug() << "basePath is" << basePath;
     } else {
 #ifndef NDEBUG
         kDebug() << path << "invalid, basePath is" << basePath;
@@ -655,13 +660,14 @@ KJob* Package::install(const QString &sourcePackage, const QString &packageRoot)
 //     return pj
 // }
 
-KJob* Package::uninstall()
+KJob* Package::uninstall(const QString &packageName, const QString &packageRoot)
 {
 
     const QString pname = metadata().pluginName();
 
-    QString packageRoot = path();
-    packageRoot.replace(pname, "");
+    QString proot = path();
+    proot.replace(pname, "");
+    kDebug() << "Package::uninstalling ... " << packageRoot << proot << pname << packageName;
     return d->structure.data()->uninstall(this, packageRoot);
     //connect(pj, SIGNAL(finished(bool)), SLOT(finished(bool)));
 //     if (d->structure) {
