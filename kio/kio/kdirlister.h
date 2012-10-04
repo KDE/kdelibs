@@ -26,8 +26,7 @@
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-
-#include <kurl.h>
+#include <QUrl>
 
 class KJob;
 namespace KIO { class Job; class ListJob; }
@@ -100,7 +99,7 @@ public:
    * Run the directory lister on the given url.
    *
    * This method causes KDirLister to emit _all_ the items of @p _url, in any case.
-   * Depending on _flags, either clear() or clear(const KUrl &) will be
+   * Depending on _flags, either clear() or clear(const QUrl &) will be
    * emitted first.
    *
    * The newItems() signal may be emitted more than once to supply you
@@ -112,13 +111,13 @@ public:
    * @return true    if successful,
    *         false   otherwise (e.g. invalid @p _url)
    */
-  virtual bool openUrl( const KUrl& _url, OpenUrlFlags _flags = NoFlags );
+  virtual bool openUrl( const QUrl& _url, OpenUrlFlags _flags = NoFlags );
 
   /**
    * Stop listing all directories currently being listed.
    *
    * Emits canceled() if there was at least one job running.
-   * Emits canceled( const KUrl& ) for each stopped job if
+   * Emits canceled( const QUrl& ) for each stopped job if
    * there are at least two directories being watched by KDirLister.
    */
   virtual void stop();
@@ -127,12 +126,12 @@ public:
    * Stop listing the given directory.
    *
    * Emits canceled() if the killed job was the last running one.
-   * Emits canceled( const KUrl& ) for the killed job if
+   * Emits canceled( const QUrl& ) for the killed job if
    * there are at least two directories being watched by KDirLister.
    * No signal is emitted if there was no job running for @p _url.
    * @param _url the directory URL
    */
-  virtual void stop( const KUrl& _url );
+  virtual void stop( const QUrl& _url );
 
   /**
    * @return true if the "delayed mimetypes" feature was enabled
@@ -228,7 +227,7 @@ public:
    *
    * @return the url used by this instance to list the files.
    */
-  KUrl url() const;
+  QUrl url() const;
 
   /**
    * Returns all URLs that are listed by this KDirLister. This is only
@@ -257,7 +256,7 @@ public:
    *
    * @param _dir the directory URL
    */
-  virtual void updateDirectory( const KUrl& _dir );
+  virtual void updateDirectory( const QUrl& _dir );
 
   /**
    * Returns true if no io operation is currently in progress.
@@ -278,7 +277,7 @@ public:
    * @param _url the item URL
    * @return the KFileItem
    */
-  virtual KFileItem findByUrl( const KUrl& _url ) const;
+  virtual KFileItem findByUrl( const QUrl& _url ) const;
 
   /**
    * Find an item by its name.
@@ -431,7 +430,7 @@ public:
    * newItems() signal, sending out filtered items in chunks.
    * @return the items listed for @p dir.
    */
-  KFileItemList itemsForDir( const KUrl& dir,
+  KFileItemList itemsForDir( const QUrl& dir,
                              WhichItems which = FilteredItems ) const;
 
     /**
@@ -444,7 +443,7 @@ public:
      *
      * @since 4.2
      */
-    static KFileItem cachedItemForUrl(const KUrl& url);
+    static KFileItem cachedItemForUrl(const QUrl& url);
 
 Q_SIGNALS:
 
@@ -457,7 +456,7 @@ Q_SIGNALS:
    * but the view also needs to know when an automatic update happens.
    * @param _url the URL to list
    */
-  void started( const KUrl& _url );
+  void started( const QUrl& _url );
 
   /**
    * Tell the view that listing is finished. There are no jobs running anymore.
@@ -469,7 +468,7 @@ Q_SIGNALS:
    * There might be other running jobs left.
    * @param _url the directory URL
    */
-  void completed( const KUrl& _url );
+  void completed( const QUrl& _url );
 
   /**
    * Tell the view that the user canceled the listing. No running jobs are left.
@@ -481,7 +480,7 @@ Q_SIGNALS:
    * There might be other running jobs left.
    * @param _url the directory URL
    */
-  void canceled( const KUrl& _url );
+  void canceled( const QUrl& _url );
 
   /**
    * Signal a redirection.
@@ -489,14 +488,14 @@ Q_SIGNALS:
    * probably openUrl() has been called without OpenUrlFlag::Keep.
    * @param _url the new URL
    */
-  void redirection( const KUrl& _url );
+  void redirection( const QUrl& _url );
 
   /**
    * Signal a redirection.
    * @param oldUrl the original URL
    * @param newUrl the new URL
    */
-  void redirection( const KUrl& oldUrl, const KUrl& newUrl );
+  void redirection( const QUrl& oldUrl, const QUrl& newUrl );
 
   /**
    * Signal to clear all items.
@@ -509,7 +508,7 @@ Q_SIGNALS:
    * It is only emitted if the lister is holding more than one directory.
    * @param _url the directory that will be emptied
    */
-  void clear( const KUrl& _url );
+  void clear( const QUrl& _url );
 
   /**
    * Signal new items.
@@ -526,7 +525,7 @@ Q_SIGNALS:
    * @param items a list of new items
    * @since 4.2
    */
-  void itemsAdded(const KUrl& directoryUrl, const KFileItemList& items);
+  void itemsAdded(const QUrl& directoryUrl, const KFileItemList& items);
 
   /**
    * Send a list of items filtered-out by mime-type.

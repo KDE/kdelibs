@@ -605,7 +605,7 @@ void KDirModelTest::testRenameDirectoryInCache() // #188807
     // Ensure the stuff is in cache.
     fillModel(true);
     const QString path = m_tempDir->path() + '/';
-    QVERIFY(!m_dirModel->dirLister()->findByUrl(path).isNull());
+    QVERIFY(!m_dirModel->dirLister()->findByUrl(QUrl::fromLocalFile(path)).isNull());
 
     // No more dirmodel nor dirlister.
     delete m_dirModel;
@@ -632,7 +632,7 @@ void KDirModelTest::testRenameDirectoryInCache() // #188807
     fillModel(true);
 
     QVERIFY(m_dirIndex.isValid());
-    KFileItem rootItem = m_dirModel->dirLister()->findByUrl(path);
+    KFileItem rootItem = m_dirModel->dirLister()->findByUrl(QUrl::fromLocalFile(path));
     QVERIFY(!rootItem.isNull());
 }
 

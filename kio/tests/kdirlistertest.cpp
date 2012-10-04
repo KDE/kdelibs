@@ -122,7 +122,7 @@ void KDirListerTest::testOpenUrl()
     QCOMPARE(itemForUrl.url().toString(), itemUrl.toString());
     QCOMPARE(itemForUrl.entry().stringValue(KIO::UDSEntry::UDS_NAME), fileName);
 
-    KFileItem rootByUrl = m_dirLister.findByUrl(path);
+    KFileItem rootByUrl = m_dirLister.findByUrl(QUrl::fromLocalFile(path));
     QVERIFY(!rootByUrl.isNull());
     QCOMPARE(QString(rootByUrl.url().toLocalFile() + '/'), path);
 
@@ -892,7 +892,7 @@ void KDirListerTest::testRedirection()
 
     // then wait for the redirection signal
     qDebug("waiting for redirection");
-    connect(&m_dirLister, SIGNAL(redirection(KUrl,KUrl)), this, SLOT(exitLoop()));
+    connect(&m_dirLister, SIGNAL(redirection(QUrl,QUrl)), this, SLOT(exitLoop()));
     enterLoop();
     QCOMPARE(m_dirLister.spyStarted.count(), 1);
     QCOMPARE(m_dirLister.spyCompleted.count(), 0); // we stopped before the listing.

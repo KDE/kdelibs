@@ -263,11 +263,11 @@ private:
     friend class KDirModelPrivate;
     KDirModelPrivate *const d;
 
-    Q_PRIVATE_SLOT( d, void _k_slotNewItems(const KUrl&, const KFileItemList&) )
+    Q_PRIVATE_SLOT( d, void _k_slotNewItems(const QUrl&, const KFileItemList&) )
     Q_PRIVATE_SLOT( d, void _k_slotDeleteItems(const KFileItemList&) )
     Q_PRIVATE_SLOT( d, void _k_slotRefreshItems(const QList<QPair<KFileItem, KFileItem> >&) )
     Q_PRIVATE_SLOT( d, void _k_slotClear() )
-    Q_PRIVATE_SLOT( d, void _k_slotRedirection(const KUrl&, const KUrl&) )
+    Q_PRIVATE_SLOT( d, void _k_slotRedirection(const QUrl&, const QUrl&) )
     Q_PRIVATE_SLOT( d, void _k_slotJobUrlsChanged(const QStringList&))
 };
 

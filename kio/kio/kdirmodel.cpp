@@ -139,11 +139,11 @@ public:
         delete m_rootNode;
     }
 
-    void _k_slotNewItems(const KUrl& directoryUrl, const KFileItemList&);
+    void _k_slotNewItems(const QUrl& directoryUrl, const KFileItemList&);
     void _k_slotDeleteItems(const KFileItemList&);
     void _k_slotRefreshItems(const QList<QPair<KFileItem, KFileItem> >&);
     void _k_slotClear();
-    void _k_slotRedirection(const KUrl& oldUrl, const KUrl& newUrl);
+    void _k_slotRedirection(const QUrl& oldUrl, const QUrl& newUrl);
     void _k_slotJobUrlsChanged(const QStringList& urlList);
 
     void clear() {
@@ -155,13 +155,13 @@ public:
     KDirModelNode* expandAllParentsUntil(const QUrl& url) const;
 
     // Return the node for a given url, using the hash.
-    KDirModelNode* nodeForUrl(const KUrl& url) const;
+    KDirModelNode* nodeForUrl(const QUrl& url) const;
     KDirModelNode* nodeForIndex(const QModelIndex& index) const;
     QModelIndex indexForNode(KDirModelNode* node, int rowNumber = -1 /*unknown*/) const;
     bool isDir(KDirModelNode* node) const {
         return (node == m_rootNode) || node->item().isDir();
     }
-    KUrl urlForNode(KDirModelNode* node) const {
+    QUrl urlForNode(KDirModelNode* node) const {
         /**
          * Queries and fragments are removed from the URL, so that the URL of
          * child items really starts with the URL of the parent.
@@ -176,7 +176,7 @@ public:
         }
         return url;
     }
-    void removeFromNodeHash(KDirModelNode* node, const KUrl& url);
+    void removeFromNodeHash(KDirModelNode* node, const QUrl& url);
 #ifndef NDEBUG
     void dump();
 #endif
@@ -189,19 +189,19 @@ public:
     // key = current known parent node (always a KDirModelDirNode but KDirModelNode is more convenient),
     // value = final url[s] being fetched
     QMap<KDirModelNode*, QList<QUrl> > m_urlsBeingFetched;
-    QHash<KUrl, KDirModelNode *> m_nodeHash; // global node hash: url -> node
+    QHash<QUrl, KDirModelNode *> m_nodeHash; // global node hash: url -> node
     QStringList m_allCurrentDestUrls; //list of all dest urls that have jobs on them (e.g. copy, download)
 };
 
-KDirModelNode* KDirModelPrivate::nodeForUrl(const KUrl& _url) const // O(1), well, O(length of url as a string)
+KDirModelNode* KDirModelPrivate::nodeForUrl(const QUrl& _url) const // O(1), well, O(length of url as a string)
 {
-    KUrl url = cleanupUrl(_url);
+    QUrl url = cleanupUrl(_url);
     if (url == urlForNode(m_rootNode))
         return m_rootNode;
     return m_nodeHash.value(url);
 }
 
-void KDirModelPrivate::removeFromNodeHash(KDirModelNode* node, const KUrl& url)
+void KDirModelPrivate::removeFromNodeHash(KDirModelNode* node, const QUrl& url)
 {
     if (node->item().isDir()) {
         QList<QUrl> urls;
@@ -274,7 +274,7 @@ KDirModelNode* KDirModelPrivate::expandAllParentsUntil(const QUrl& _url) const /
 void KDirModelPrivate::dump()
 {
     kDebug() << "Dumping contents of KDirModel" << q << "dirLister url:" << m_dirLister->url();
-    QHashIterator<KUrl, KDirModelNode *> it(m_nodeHash);
+    QHashIterator<QUrl, KDirModelNode *> it(m_nodeHash);
     while (it.hasNext()) {
         it.next();
         kDebug() << it.key() << it.value();
@@ -346,16 +346,16 @@ void KDirModel::setDirLister(KDirLister* dirLister)
     }
     d->m_dirLister = dirLister;
     d->m_dirLister->setParent(this);
-    connect( d->m_dirLister, SIGNAL(itemsAdded(KUrl,KFileItemList)),
-             this, SLOT(_k_slotNewItems(KUrl,KFileItemList)) );
+    connect( d->m_dirLister, SIGNAL(itemsAdded(QUrl,KFileItemList)),
+             this, SLOT(_k_slotNewItems(QUrl,KFileItemList)) );
     connect( d->m_dirLister, SIGNAL(itemsDeleted(KFileItemList)),
              this, SLOT(_k_slotDeleteItems(KFileItemList)) );
     connect( d->m_dirLister, SIGNAL(refreshItems(QList<QPair<KFileItem,KFileItem> >)),
              this, SLOT(_k_slotRefreshItems(QList<QPair<KFileItem,KFileItem> >)) );
     connect( d->m_dirLister, SIGNAL(clear()),
              this, SLOT(_k_slotClear()) );
-    connect(d->m_dirLister, SIGNAL(redirection(KUrl,KUrl)),
-            this, SLOT(_k_slotRedirection(KUrl,KUrl)));
+    connect(d->m_dirLister, SIGNAL(redirection(QUrl,QUrl)),
+            this, SLOT(_k_slotRedirection(QUrl,QUrl)));
 }
 
 KDirLister* KDirModel::dirLister() const
@@ -363,7 +363,7 @@ KDirLister* KDirModel::dirLister() const
     return d->m_dirLister;
 }
 
-void KDirModelPrivate::_k_slotNewItems(const KUrl& directoryUrl, const KFileItemList& items)
+void KDirModelPrivate::_k_slotNewItems(const QUrl& directoryUrl, const KFileItemList& items)
 {
     //kDebug(7008) << "directoryUrl=" << directoryUrl;
 
@@ -589,7 +589,7 @@ void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileIte
 
 // Called when a kioslave redirects (e.g. smb:/Workgroup -> smb://workgroup)
 // and when renaming a directory.
-void KDirModelPrivate::_k_slotRedirection(const KUrl& oldUrl, const KUrl& newUrl)
+void KDirModelPrivate::_k_slotRedirection(const QUrl& oldUrl, const QUrl& newUrl)
 {
     KDirModelNode* node = nodeForUrl(oldUrl);
     if (!node)
@@ -850,9 +850,9 @@ QModelIndex KDirModel::parent( const QModelIndex & index ) const
     return d->indexForNode(parentNode); // O(n)
 }
 
-static bool lessThan(const KUrl &left, const KUrl &right)
+static bool lessThan(const QUrl &left, const QUrl &right)
 {
-    return left.url().compare(right.url()) < 0;
+    return left.toString().compare(right.toString()) < 0;
 }
 
 void KDirModel::requestSequenceIcon(const QModelIndex& index, int sequenceIndex)
@@ -1099,7 +1099,7 @@ void KDirModel::fetchMore( const QModelIndex & parent )
         return;
     dirNode->setPopulated( true );
 
-    const KUrl parentUrl = parentItem.url();
+    const QUrl parentUrl = parentItem.url();
     d->m_dirLister->openUrl(parentUrl, KDirLister::Keep);
 }
 

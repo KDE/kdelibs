@@ -33,7 +33,6 @@ class GlobalInits
 public:
     GlobalInits() {
         // Must be done before the QSignalSpys connect
-        qRegisterMetaType<KUrl>();
         qRegisterMetaType<KFileItem>();
         qRegisterMetaType<KFileItemList>();
     }
@@ -43,15 +42,15 @@ class MyDirLister : public KDirLister, GlobalInits
 {
 public:
     MyDirLister()
-        : spyStarted(this, SIGNAL(started(KUrl))),
+        : spyStarted(this, SIGNAL(started(QUrl))),
           spyClear(this, SIGNAL(clear())),
-          spyClearKUrl(this, SIGNAL(clear(KUrl))),
+          spyClearKUrl(this, SIGNAL(clear(QUrl))),
           spyCompleted(this, SIGNAL(completed())),
-          spyCompletedKUrl(this, SIGNAL(completed(KUrl))),
+          spyCompletedKUrl(this, SIGNAL(completed(QUrl))),
           spyCanceled(this, SIGNAL(canceled())),
-          spyCanceledKUrl(this, SIGNAL(canceled(KUrl))),
-          spyRedirection(this, SIGNAL(redirection(KUrl))),
-          spyDeleteItem(this, SIGNAL(deleteItem(KFileItem))), 
+          spyCanceledKUrl(this, SIGNAL(canceled(QUrl))),
+          spyRedirection(this, SIGNAL(redirection(QUrl))),
+          spyDeleteItem(this, SIGNAL(deleteItem(KFileItem))),
           spyItemsDeleted(this, SIGNAL(itemsDeleted(KFileItemList)))
     {}
 

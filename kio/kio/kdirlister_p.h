@@ -66,7 +66,7 @@ public:
     window = 0;
   }
 
-    void _k_emitCachedItems(const KUrl&, bool, bool);
+    void _k_emitCachedItems(const QUrl&, bool, bool);
   void _k_slotInfoMessage( KJob*, const QString& );
   void _k_slotPercent( KJob*, unsigned long );
   void _k_slotTotalSize( KJob*, qulonglong );
@@ -78,9 +78,9 @@ public:
   void connectJob( KIO::ListJob * );
   void jobDone( KIO::ListJob * );
   uint numJobs();
-    void addNewItem(const KUrl& directoryUrl, const KFileItem& item);
-    void addNewItems(const KUrl& directoryUrl, const KFileItemList& items);
-    void addRefreshItem(const KUrl& directoryUrl, const KFileItem& oldItem, const KFileItem& item);
+    void addNewItem(const QUrl& directoryUrl, const KFileItem& item);
+    void addNewItems(const QUrl& directoryUrl, const KFileItemList& items);
+    void addRefreshItem(const QUrl& directoryUrl, const KFileItem& oldItem, const KFileItem& item);
   void emitItems();
   void emitItemsDeleted(const KFileItemList &items);
 
@@ -89,7 +89,7 @@ public:
      * @param keepItems if true, keep the fileitems (e.g. when renaming an existing dir);
      * if false, clear out everything (e.g. when redirecting during listing).
      */
-    void redirect(const KUrl& oldUrl, const KUrl& newUrl, bool keepItems);
+    void redirect(const QUrl& oldUrl, const QUrl& newUrl, bool keepItems);
 
     /**
      * Should this item be visible according to the current filter settings?
@@ -106,7 +106,7 @@ public:
     void emitChanges();
 
     class CachedItemsJob;
-    CachedItemsJob* cachedItemsJobForUrl(const KUrl& url) const;
+    CachedItemsJob* cachedItemsJobForUrl(const QUrl& url) const;
 
 
   KDirLister *m_parent;
@@ -185,36 +185,36 @@ public:
     KDirListerCache(); // only called by K_GLOBAL_STATIC
     ~KDirListerCache();
 
-    void updateDirectory( const KUrl& dir );
+    void updateDirectory( const QUrl& dir );
 
-    KFileItem itemForUrl( const KUrl& url ) const;
-    KFileItemList *itemsForDir(const KUrl& dir) const;
+    KFileItem itemForUrl( const QUrl& url ) const;
+    KFileItemList *itemsForDir(const QUrl& dir) const;
 
-    bool listDir( KDirLister *lister, const KUrl& _url, bool _keep, bool _reload );
+    bool listDir( KDirLister *lister, const QUrl& _url, bool _keep, bool _reload );
 
     // stop all running jobs for lister
     void stop( KDirLister *lister, bool silent = false );
     // stop just the job listing url for lister
-    void stopListingUrl( KDirLister *lister, const KUrl &_url, bool silent = false );
+    void stopListingUrl( KDirLister *lister, const QUrl &_url, bool silent = false );
 
   void setAutoUpdate( KDirLister *lister, bool enable );
 
   void forgetDirs( KDirLister *lister );
-  void forgetDirs( KDirLister *lister, const KUrl &_url, bool notify );
+  void forgetDirs( KDirLister *lister, const QUrl &_url, bool notify );
 
     KFileItem findByName( const KDirLister *lister, const QString &_name ) const;
     // findByUrl returns a pointer so that it's possible to modify the item.
     // See itemForUrl for the version that returns a readonly kfileitem.
     // @param lister can be 0. If set, it is checked that the url is held by the lister
-    KFileItem *findByUrl(const KDirLister *lister, const KUrl &url) const;
+    KFileItem *findByUrl(const KDirLister *lister, const QUrl &url) const;
 
     // Called by CachedItemsJob:
     // Emits the cached items, for this lister and this url
     void emitItemsFromCache(KDirLister::Private::CachedItemsJob* job, KDirLister* lister,
-                            const KUrl& _url, bool _reload, bool _emitCompleted);
+                            const QUrl& _url, bool _reload, bool _emitCompleted);
     // Called by CachedItemsJob:
     void forgetCachedItemsJob(KDirLister::Private::CachedItemsJob* job, KDirLister* lister,
-                              const KUrl& url);
+                              const QUrl& url);
 
 public Q_SLOTS:
   /**
@@ -250,7 +250,7 @@ private Q_SLOTS:
 
   void slotEntries( KIO::Job *job, const KIO::UDSEntryList &entries );
   void slotResult( KJob *j );
-  void slotRedirection( KIO::Job *job, const KUrl &url );
+  void slotRedirection( KIO::Job *job, const QUrl &url );
 
   void slotUpdateEntries( KIO::Job *job, const KIO::UDSEntryList &entries );
   void slotUpdateResult( KJob *job );
@@ -258,9 +258,9 @@ private Q_SLOTS:
 
 private:
     class DirItem;
-    DirItem* dirItemForUrl(const KUrl& dir) const;
+    DirItem* dirItemForUrl(const QUrl& dir) const;
 
-    bool validUrl( const KDirLister *lister, const KUrl& _url ) const;
+    bool validUrl( const KDirLister *lister, const QUrl& _url ) const;
 
     void stopListJob(const QString& url, bool silent);
 
@@ -272,11 +272,11 @@ private:
     // Called when something tells us that the directory @p url has changed.
     // Returns true if @p url is held by some lister (meaning: do the update now)
     // otherwise mark the cached item as not-up-to-date for later and return false
-    bool checkUpdate( const QString& url );
+    bool checkUpdate(const QUrl& url);
 
     // Helper method for slotFileDirty
-    void handleFileDirty(const KUrl& url);
-    void handleDirDirty(const KUrl& url);
+    void handleFileDirty(const QUrl& url);
+    void handleDirDirty(const QUrl& url);
 
   // when there were items deleted from the filesystem all the listers holding
   // the parent directory need to be notified, the unmarked items have to be deleted
@@ -286,13 +286,13 @@ private:
     void itemsDeleted(const QList<KDirLister *>& listers, const KFileItemList& deletedItems);
     void slotFilesRemoved(const QList<QUrl>& urls);
     // common for slotRedirection and slotFileRenamed
-  void renameDir( const KUrl &oldUrl, const KUrl &url );
+  void renameDir( const QUrl &oldUrl, const QUrl &url );
   // common for deleteUnmarkedItems and slotFilesRemoved
-  void deleteDir( const KUrl& dirUrl );
+  void deleteDir( const QUrl& dirUrl );
   // remove directory from cache (itemsCached), including all child dirs
-  void removeDirFromCache( const KUrl& dir );
+  void removeDirFromCache( const QUrl& dir );
   // helper for renameDir
-  void emitRedirections( const KUrl &oldUrl, const KUrl &url );
+  void emitRedirections( const QUrl &oldUrl, const QUrl &url );
 
     /**
      * Emits refreshItem() in the directories that cared for oldItem.
@@ -305,7 +305,7 @@ private:
      * When KDirWatch tells us that something changed in "dir", we need to
      * also notify the dirlisters that are listing a symlink to "dir" (#213799)
      */
-    QStringList directoriesForCanonicalPath(const QString& dir) const;
+    QList<QUrl> directoriesForCanonicalPath(const QUrl& dir) const;
 
 #ifndef NDEBUG
   void printDebug();
@@ -314,7 +314,7 @@ private:
   class DirItem
   {
   public:
-    DirItem(const KUrl &dir, const QString& canonicalPath)
+    DirItem(const QUrl &dir, const QString& canonicalPath)
       : url(dir), m_canonicalPath(canonicalPath)
     {
       autoUpdates = 0;
@@ -332,7 +332,7 @@ private:
       lstItems.clear();
     }
 
-    void sendSignal( bool entering, const KUrl& url )
+    void sendSignal( bool entering, const QUrl& url )
     {
         // Note that "entering" means "start watching", and "leaving" means "stop watching"
         // (i.e. it's not when the user leaves the directory, it's when the directory is removed from the cache)
@@ -342,7 +342,7 @@ private:
             org::kde::KDirNotify::emitLeftDirectory(url);
     }
 
-    void redirect( const KUrl& newUrl )
+    void redirect( const QUrl& newUrl )
     {
       if ( autoUpdates )
       {
@@ -419,7 +419,7 @@ private:
     // Symlink-to-directories are registered here so that we can
     // find the url that changed, when kdirwatch tells us about
     // changes in the canonical url. (#213799)
-    QHash<QString /*canonical path*/, QStringList /*dirlister urls*/> canonicalUrls;
+    QHash<QUrl /*canonical path*/, QList<QUrl> /*dirlister urls*/> canonicalUrls;
 
     // Set of local files that we have changed recently (according to KDirWatch)
     // We temporize the notifications by keeping them 500ms in this list.
@@ -454,7 +454,7 @@ struct KDirListerCacheDirectoryData
     // Listers that are currently holding this url
     QList<KDirLister *> listersCurrentlyHolding;
 
-    void moveListersWithoutCachedItemsJob(const KUrl& url);
+    void moveListersWithoutCachedItemsJob(const QUrl& url);
 };
 
 //const unsigned short KDirListerCache::MAX_JOBS_PER_LISTER = 5;
@@ -466,14 +466,14 @@ struct KDirListerCacheDirectoryData
 class KDirLister::Private::CachedItemsJob : public KJob {
     Q_OBJECT
 public:
-    CachedItemsJob(KDirLister* lister, const KUrl& url, bool reload);
+    CachedItemsJob(KDirLister* lister, const QUrl& url, bool reload);
 
     /*reimp*/ void start() { QMetaObject::invokeMethod(this, "done", Qt::QueuedConnection); }
 
     // For updateDirectory() to cancel m_emitCompleted;
     void setEmitCompleted(bool b) { m_emitCompleted = b; }
 
-    KUrl url() const { return m_url; }
+    QUrl url() const { return m_url; }
 
 protected:
     virtual bool doKill();
