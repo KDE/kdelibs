@@ -853,6 +853,8 @@ public:
    * @see prettyUrl()
    *
    * @deprecated since 5.0, use QUrl::toString() instead.
+   * RemoveTrailingSlash becomes QUrl::StripTrailingSlash
+   * AddTrailingSlash is not available directly, use QUrlPathInfo::adjustPath(AppendTrailingSlash) first.
    */
   QString url( AdjustPathOption trailing = LeaveTrailingSlash ) const;
 
