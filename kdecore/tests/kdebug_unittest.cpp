@@ -310,8 +310,8 @@ void KDebugTest::testNoMainComponentData()
     expectedLines << "qcoreapp_myarea main: Test debug using qcoreapp_myarea 1";
     expectedLines << "kdebug_qcoreapptest main: Debug in area 100";
     expectedLines << "kdebug_qcoreapptest main: Simple debug";
-    expectedLines << "kdebug_qcoreapptest_mainData main: This should appear, under the kdebug_qcoreapptest_mainData area";
-    expectedLines << "kdebug_qcoreapptest_mainData main: Debug in area 100";
+    expectedLines << "kdebug_qcoreapptest main: This should appear, under the kdebug_qcoreapptest area";
+    expectedLines << "kdebug_qcoreapptest main: Debug in area 100";
     expectedLines << ""; // artefact of split, I guess?
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     QSKIP("this test requires QT_MESSAGE_PATTERN support, equivalent code in kdebug is gone", SkipAll);
