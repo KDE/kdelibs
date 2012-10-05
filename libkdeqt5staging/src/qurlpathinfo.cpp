@@ -118,9 +118,19 @@ QUrlPathInfo::~QUrlPathInfo()
 
     \sa setUrl()
 */
-QUrl QUrlPathInfo::url() const
+QUrl QUrlPathInfo::url(PathFormattingOption options) const
 {
-    return d->url;
+    if (options == None) {
+        return d->url;
+    } else {
+        QUrl url(d->url);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+        url.setPath(path(options), QUrl::DecodedMode);
+#else
+        url.setPath(path(options));
+#endif
+        return url;
+    }
 }
 
 /*!

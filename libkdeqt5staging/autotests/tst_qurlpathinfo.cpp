@@ -56,6 +56,8 @@ private Q_SLOTS:
     void path();
     void addPath_data();
     void addPath();
+    void adjustPath_data();
+    void adjustPath();
 };
 
 void tst_QUrlPathInfo::directoryAndFileName_data()
@@ -185,5 +187,35 @@ void tst_QUrlPathInfo::addPath()
     QCOMPARE(info.url().toString(), expectedUrl);
 }
 
+void tst_QUrlPathInfo::adjustPath_data()
+{
+    path_data();
+}
+
+void tst_QUrlPathInfo::adjustPath()
+{
+    QFETCH(QString, urlStr);
+    QFETCH(QString, expectedPath);
+    QFETCH(QString, expectedPathNoSlash);
+    QFETCH(QString, expectedPathWithSlash);
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    const QUrl url(urlStr);
+#else
+    const QUrl url = QUrl::fromEncoded(urlStr.toUtf8());
+#endif
+    QUrlPathInfo info(url);
+
+    // Go via QUrlPathInfo::path in order to get decoded paths
+    QCOMPARE(QUrlPathInfo(info.url()).path(), expectedPath);
+    QCOMPARE(QUrlPathInfo(info.url(QUrlPathInfo::StripTrailingSlash)).path(), expectedPathNoSlash);
+    QCOMPARE(QUrlPathInfo(info.url(QUrlPathInfo::AppendTrailingSlash)).path(), expectedPathWithSlash);
+    info.adjustPath(QUrlPathInfo::StripTrailingSlash);
+    QCOMPARE(info.path(), expectedPathNoSlash);
+    info.adjustPath(QUrlPathInfo::AppendTrailingSlash);
+    QCOMPARE(info.path(), expectedPathWithSlash);
+}
+
 QTEST_MAIN(tst_QUrlPathInfo)
+
 #include "tst_qurlpathinfo.moc"

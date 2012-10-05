@@ -74,7 +74,7 @@ public:
 
     inline void swap(QUrlPathInfo &other) { qSwap(d, other.d); }
 
-    QUrl url() const;
+    QUrl url(PathFormattingOption options = None) const;
     void setUrl(const QUrl &u);
 
     QString path(PathFormattingOptions options = None) const;
