@@ -98,7 +98,7 @@ int main(int argc, char **argv)
     KCmdLineArgs::addCmdLineOptions( options );
 
     Plasma::PlasmaPkg app(argc, argv);
-    app.runMain();
+    //app.runMain();
     return app.exec();
 }
 

@@ -42,6 +42,7 @@
 #include <QFileInfo>
 #include <QMap>
 #include <QStringList>
+#include <QTimer>
 
 #include <iostream>
 #include <iomanip>
@@ -72,6 +73,7 @@ PlasmaPkg::PlasmaPkg(int& argc, char** argv) :
     QCoreApplication(argc, argv)
 {
     d = new PlasmaPkgPrivate;
+    QTimer::singleShot(0, this, SLOT(runMain()));
 }
 
 PlasmaPkg::~PlasmaPkg()

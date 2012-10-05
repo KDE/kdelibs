@@ -38,7 +38,6 @@ class PlasmaPkg : public QCoreApplication
         PlasmaPkg(int& argc, char** argv);
         virtual ~PlasmaPkg();
 
-        void runMain();
 
         void listPackages(const QStringList &types);
         void showPackageInfo(const QString &pluginName);
@@ -47,6 +46,7 @@ class PlasmaPkg : public QCoreApplication
 
 
     private Q_SLOTS:
+        void runMain();
         void packageInstalled(KJob *job);
         void packageUninstalled(KJob *job);
 
