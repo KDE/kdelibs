@@ -30,10 +30,10 @@ using namespace KIO;
 class KIO::MkdirJobPrivate: public SimpleJobPrivate
 {
 public:
-    MkdirJobPrivate(const KUrl& url, int command, const QByteArray &packedArgs)
+    MkdirJobPrivate(const QUrl& url, int command, const QByteArray &packedArgs)
         : SimpleJobPrivate(url, command, packedArgs)
         { }
-    KUrl m_redirectionURL;
+    QUrl m_redirectionURL;
     void slotRedirection(const QUrl &url);
 
     /**
@@ -46,7 +46,7 @@ public:
 
     Q_DECLARE_PUBLIC(MkdirJob)
 
-    static inline MkdirJob *newJob(const KUrl& url, int command, const QByteArray &packedArgs)
+    static inline MkdirJob *newJob(const QUrl& url, int command, const QByteArray &packedArgs)
     {
         MkdirJob *job = new MkdirJob(*new MkdirJobPrivate(url, command, packedArgs));
         job->setUiDelegate(new JobUiDelegate);
@@ -105,7 +105,7 @@ void MkdirJob::slotFinished()
 
         if ( d->m_redirectionHandlingEnabled )
         {
-            KUrl dummyUrl;
+            QUrl dummyUrl;
             int permissions;
             QDataStream istream( d->m_packedArgs );
             istream >> dummyUrl >> permissions;

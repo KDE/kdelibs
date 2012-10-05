@@ -872,12 +872,12 @@ void KDirListerCache::slotFilesRemoved(const QList<QUrl>& fileList)
     QList<QUrl> deletedSubdirs;
 
     for (QList<QUrl>::const_iterator it = fileList.begin(); it != fileList.end() ; ++it) {
-        const KUrl url(*it);
+        QUrl url(*it);
         DirItem* dirItem = dirItemForUrl(url); // is it a listed directory?
         if (dirItem) {
             deletedSubdirs.append(url);
             if (!dirItem->rootItem.isNull()) {
-                removedItemsByDir[url.url()].append(dirItem->rootItem);
+                removedItemsByDir[url.toString()].append(dirItem->rootItem);
             }
         }
 
@@ -986,7 +986,7 @@ void KDirListerCache::slotFileRenamed( const QString &_src, const QString &_dst 
     nameOnly &= QUrlPathInfo(src).directory() == QUrlPathInfo(dst).directory();
 
     if (!nameOnly && fileitem->isDir()) {
-        renameDir( src, dst );
+        renameDir( oldurl.url(), dst );
         // #172945 - if the fileitem was the root item of a DirItem that was just removed from the cache,
         // then it's a dangling pointer now...
         fileitem = findByUrl(0, oldurl.url());
@@ -1533,7 +1533,7 @@ void KDirListerCache::renameDir( const KUrl &oldUrl, const KUrl &newUrl )
         KUrl oldDirUrl ( itu.key() );
         //kDebug(7004) << "itemInUse:" << oldDirUrl;
         // Check if this dir is oldUrl, or a subfolder of it
-        if ( oldUrl.isParentOf( oldDirUrl ) ) {
+        if ( oldDirUrl == oldUrl || oldUrl.isParentOf( oldDirUrl ) ) {
             // TODO should use KUrl::cleanpath like isParentOf does
             QString relPath = oldDirUrl.path().mid( oldUrl.path().length() );
 
@@ -1642,7 +1642,8 @@ void KDirListerCache::removeDirFromCache( const KUrl& dir )
     kDebug(7004) << dir;
     const QList<QString> cachedDirs = itemsCached.keys(); // seems slow, but there's no qcache iterator...
     foreach(const QString& cachedDir, cachedDirs) {
-        if ( dir.isParentOf( KUrl( cachedDir ) ) )
+        const QUrl cachedDirUrl(cachedDir);
+        if (dir == cachedDirUrl || dir.isParentOf(cachedDirUrl))
             itemsCached.remove( cachedDir );
     }
 }
@@ -1879,12 +1880,14 @@ void KDirListerCache::itemsDeleted(const QList<KDirLister *>& listers, const KFi
     }
 }
 
-void KDirListerCache::deleteDir( const KUrl& dirUrl )
+void KDirListerCache::deleteDir(const QUrl& _dirUrl)
 {
     //kDebug() << dirUrl;
     // unregister and remove the children of the deleted item.
     // Idea: tell all the KDirListers that they should forget the dir
     //       and then remove it from the cache.
+
+    QUrl dirUrl(QUrlPathInfo(_dirUrl).url(QUrlPathInfo::StripTrailingSlash));
 
     // Separate itemsInUse iteration and calls to forgetDirs (which modify itemsInUse)
     QList<QUrl> affectedItems;
@@ -1893,7 +1896,7 @@ void KDirListerCache::deleteDir( const KUrl& dirUrl )
     const QHash<QString, DirItem *>::iterator ituend = itemsInUse.end();
     for ( ; itu != ituend; ++itu ) {
         const KUrl deletedUrl( itu.key() );
-        if ( dirUrl.isParentOf( deletedUrl ) ) {
+        if (dirUrl == deletedUrl || dirUrl.isParentOf(deletedUrl)) {
             affectedItems.append(deletedUrl);
         }
     }

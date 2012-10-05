@@ -56,6 +56,11 @@
 #include <kdiskfreespaceinfo.h>
 #include <kfilesystemtype_p.h>
 
+// Porting helpers. Qt 5: remove
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define toDisplayString toString
+#endif
+
 using namespace KIO;
 
 //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
@@ -100,7 +105,7 @@ enum CopyJobState {
 class KIO::CopyJobPrivate: public KIO::JobPrivate
 {
 public:
-    CopyJobPrivate(const QList<QUrl>& src, const KUrl& dest,
+    CopyJobPrivate(const QList<QUrl>& src, const QUrl& dest,
                    CopyJob::CopyMode mode, bool asMethod)
         : m_globalDest(dest)
         , m_globalDestinationState(DEST_NOT_STATED)
@@ -198,24 +203,24 @@ public:
 
     // Those aren't slots but submethods for slotResult.
     void slotResultStating( KJob * job );
-    void startListing( const KUrl & src );
+    void startListing( const QUrl & src );
     void slotResultCreatingDirs( KJob * job );
     void slotResultConflictCreatingDirs( KJob * job );
     void createNextDir();
     void slotResultCopyingFiles( KJob * job );
     void slotResultConflictCopyingFiles( KJob * job );
-//     KIO::Job* linkNextFile( const KUrl& uSource, const KUrl& uDest, bool overwrite );
-    KIO::Job* linkNextFile( const KUrl& uSource, const KUrl& uDest, JobFlags flags );
+//     KIO::Job* linkNextFile( const QUrl& uSource, const QUrl& uDest, bool overwrite );
+    KIO::Job* linkNextFile( const QUrl& uSource, const QUrl& uDest, JobFlags flags );
     void copyNextFile();
     void slotResultDeletingDirs( KJob * job );
     void deleteNextDir();
-    void sourceStated(const UDSEntry& entry, const KUrl& sourceUrl);
-    void skip(const KUrl & sourceURL, bool isDir);
+    void sourceStated(const UDSEntry& entry, const QUrl& sourceUrl);
+    void skip(const QUrl & sourceURL, bool isDir);
     void slotResultRenaming( KJob * job );
     void slotResultSettingDirAttributes( KJob * job );
     void setNextDirAttribute();
 
-    void startRenameJob(const KUrl &slave_url);
+    void startRenameJob(const QUrl &slave_url);
     bool shouldOverwriteDir( const QString& path ) const;
     bool shouldOverwriteFile( const QString& path ) const;
     bool shouldSkip( const QString& path ) const;
@@ -224,7 +229,7 @@ public:
     void slotStart();
     void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
     void slotSubError(KIO::ListJob* job, KIO::ListJob *subJob);
-    void addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& srcUrl, bool srcIsDir, const KUrl& currentDest);
+    void addCopyInfoFromUDSEntry(const UDSEntry& entry, const QUrl& srcUrl, bool srcIsDir, const QUrl& currentDest);
     /**
      * Forward signal from subjob
      */
@@ -239,7 +244,7 @@ public:
 
     Q_DECLARE_PUBLIC(CopyJob)
 
-    static inline CopyJob *newJob(const QList<QUrl>& src, const KUrl& dest,
+    static inline CopyJob *newJob(const QList<QUrl>& src, const QUrl& dest,
                                   CopyJob::CopyMode mode, bool asMethod, JobFlags flags)
     {
         CopyJob *job = new CopyJob(*new CopyJobPrivate(src,dest,mode,asMethod));
@@ -304,7 +309,7 @@ void CopyJobPrivate::slotResultStating( KJob *job )
     // Was there an error while stating the src ?
     if (job->error() && destinationState != DEST_NOT_STATED )
     {
-        const KUrl srcurl = static_cast<SimpleJob*>(job)->url();
+        const QUrl srcurl = static_cast<SimpleJob*>(job)->url();
         if ( !srcurl.isLocalFile() )
         {
             // Probably : src doesn't exist. Well, over some protocols (e.g. FTP)
@@ -322,7 +327,7 @@ void CopyJobPrivate::slotResultStating( KJob *job )
             info.uDest = m_dest;
             // Append filename or dirname to destination URL, if allowed
             if (destinationState == DEST_IS_DIR && !m_asMethod) {
-                info.uDest = QUrlPathInfo::addPathToUrl(info.uDest, srcurl.fileName());
+                info.uDest = QUrlPathInfo::addPathToUrl(info.uDest, QUrlPathInfo(srcurl).fileName());
             }
 
             files.append( info );
@@ -387,7 +392,7 @@ void CopyJobPrivate::slotResultStating( KJob *job )
     }
 }
 
-void CopyJobPrivate::sourceStated(const UDSEntry& entry, const KUrl& sourceUrl)
+void CopyJobPrivate::sourceStated(const UDSEntry& entry, const QUrl& sourceUrl)
 {
     const QString sLocalPath = entry.stringValue( KIO::UDSEntry::UDS_LOCAL_PATH );
     const bool isDir = entry.isDir();
@@ -407,7 +412,7 @@ void CopyJobPrivate::sourceStated(const UDSEntry& entry, const KUrl& sourceUrl)
     // 5 - src is a file, destination is a file, m_dest is the exact destination name
     // 6 - src is a file, destination doesn't exist, m_dest is the exact destination name
 
-    KUrl srcurl;
+    QUrl srcurl;
     if (!sLocalPath.isEmpty() && destinationState != DEST_DOESNT_EXIST) {
         kDebug() << "Using sLocalPath. destinationState=" << destinationState;
         // Prefer the local path -- but only if we were able to stat() the dest.
@@ -417,6 +422,8 @@ void CopyJobPrivate::sourceStated(const UDSEntry& entry, const KUrl& sourceUrl)
         srcurl = sourceUrl;
     }
     addCopyInfoFromUDSEntry(entry, srcurl, false, m_dest);
+
+    QUrlPathInfo srcurlInfo(srcurl);
 
     m_currentDest = m_dest;
     m_bCurrentSrcIsDir = false;
@@ -429,7 +436,7 @@ void CopyJobPrivate::sourceStated(const UDSEntry& entry, const KUrl& sourceUrl)
         //kDebug(7007) << "Source is a directory";
 
         if (srcurl.isLocalFile()) {
-            const QString parentDir = srcurl.toLocalFile(KUrl::RemoveTrailingSlash);
+            const QString parentDir = srcurlInfo.localPath(QUrlPathInfo::StripTrailingSlash);
             m_parentDirs.insert(parentDir);
         }
 
@@ -439,7 +446,7 @@ void CopyJobPrivate::sourceStated(const UDSEntry& entry, const KUrl& sourceUrl)
             if ( !m_asMethod )
             {
                 // Use <desturl>/<directory_copied> as destination, from now on
-                QString directory = srcurl.fileName();
+                QString directory = srcurlInfo.fileName();
                 const QString sName = entry.stringValue( KIO::UDSEntry::UDS_NAME );
                 KProtocolInfo::FileNameUsedForCopying fnu = KProtocolManager::fileNameUsedForCopying(srcurl);
                 if (fnu == KProtocolInfo::Name) {
@@ -473,7 +480,7 @@ void CopyJobPrivate::sourceStated(const UDSEntry& entry, const KUrl& sourceUrl)
         //kDebug(7007) << "Source is a file (or a symlink), or we are linking -> no recursive listing";
 
         if (srcurl.isLocalFile()) {
-            const QString parentDir = srcurl.directory(KUrl::ObeyTrailingSlash);
+            const QString parentDir = srcurlInfo.directory();
             m_parentDirs.insert(parentDir);
         }
 
@@ -579,7 +586,7 @@ void CopyJobPrivate::slotSubError(ListJob* job, ListJob* subJob)
 }
 
 
-void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& srcUrl, bool srcIsDir, const KUrl& currentDest)
+void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const QUrl& srcUrl, bool srcIsDir, const QUrl& currentDest)
 {
     struct CopyInfo info;
     info.permissions = entry.numberValue(KIO::UDSEntry::UDS_ACCESS, -1);
@@ -592,9 +599,9 @@ void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& 
     // recursive listing, displayName can be a/b/c/d
     const QString fileName = entry.stringValue(KIO::UDSEntry::UDS_NAME);
     const QString urlStr = entry.stringValue(KIO::UDSEntry::UDS_URL);
-    KUrl url;
+    QUrl url;
     if (!urlStr.isEmpty())
-        url = urlStr;
+        url = QUrl(urlStr);
     QString localPath = entry.stringValue(KIO::UDSEntry::UDS_LOCAL_PATH);
     const bool isDir = entry.isDir();
     info.linkDest = entry.stringValue(KIO::UDSEntry::UDS_LINK_DEST);
@@ -611,7 +618,7 @@ void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& 
         }
         //kDebug(7007) << "displayName=" << displayName << "url=" << url;
         if (!localPath.isEmpty() && kio_resolve_local_urls && destinationState != DEST_DOESNT_EXIST) {
-            url = KUrl(localPath);
+            url = QUrl::fromLocalFile(localPath);
         }
 
         info.uSource = url;
@@ -825,7 +832,7 @@ void CopyJobPrivate::statCurrentSrc()
     }
 }
 
-void CopyJobPrivate::startRenameJob( const KUrl& slave_url )
+void CopyJobPrivate::startRenameJob( const QUrl& slave_url )
 {
     Q_Q(CopyJob);
 
@@ -865,7 +872,7 @@ void CopyJobPrivate::startRenameJob( const KUrl& slave_url )
         m_bOnlyRenames = false;
 }
 
-void CopyJobPrivate::startListing( const KUrl & src )
+void CopyJobPrivate::startListing( const QUrl & src )
 {
     Q_Q(CopyJob);
     state = STATE_LISTING;
@@ -879,14 +886,14 @@ void CopyJobPrivate::startListing( const KUrl & src )
     q->addSubjob( newjob );
 }
 
-void CopyJobPrivate::skip(const KUrl & sourceUrl, bool isDir)
+void CopyJobPrivate::skip(const QUrl & sourceUrl, bool isDir)
 {
-    KUrl dir = sourceUrl;
+    QUrlPathInfo dir(sourceUrl);
     if (!isDir) {
         // Skipping a file: make sure not to delete the parent dir (#208418)
         dir.setPath(dir.directory());
     }
-    while (dirsToRemove.removeAll(dir) > 0) {
+    while (dirsToRemove.removeAll(dir.url()) > 0) {
         // Do not rely on rmdir() on the parent directories aborting.
         // Exclude the parent dirs explicitly.
         dir.setPath(dir.directory());
@@ -1445,7 +1452,7 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
             // fall through
         case R_RENAME:
         {
-            KUrl newUrl( (*it).uDest );
+            QUrl newUrl( (*it).uDest );
             newUrl.setPath( newPath );
             emit q->renamed( q, (*it).uDest, newUrl ); // for e.g. kpropsdlg
             (*it).uDest = newUrl;
@@ -1479,15 +1486,15 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
     copyNextFile();
 }
 
-KIO::Job* CopyJobPrivate::linkNextFile( const KUrl& uSource, const KUrl& uDest, JobFlags flags )
+KIO::Job* CopyJobPrivate::linkNextFile( const QUrl& uSource, const QUrl& uDest, JobFlags flags )
 {
     //kDebug(7007) << "Linking";
     if (
         (uSource.scheme() == uDest.scheme()) &&
         (uSource.host() == uDest.host()) &&
         (uSource.port() == uDest.port()) &&
-        (uSource.user() == uDest.user()) &&
-        (uSource.pass() == uDest.pass()) )
+        (uSource.userName() == uDest.userName()) &&
+        (uSource.password() == uDest.password()) )
     {
         // This is the case of creating a real symlink
         KIO::SimpleJob *newJob = KIO::symlink( uSource.path(), uDest, flags|HideProgressInfo /*no GUI*/ );
@@ -1548,7 +1555,7 @@ KIO::Job* CopyJobPrivate::linkNextFile( const KUrl& uSource, const KUrl& uDest, 
         } else {
             // Todo: not show "link" on remote dirs if the src urls are not from the same protocol+host+...
             q->setError( ERR_CANNOT_SYMLINK );
-            q->setErrorText( uDest.prettyUrl() );
+            q->setErrorText( uDest.toDisplayString() );
             q->emitResult();
             return 0;
         }
@@ -1706,7 +1713,7 @@ void CopyJobPrivate::setNextDirAttribute()
         ++m_directoriesCopiedIterator;
     }
     if ( m_directoriesCopiedIterator != m_directoriesCopied.constEnd() ) {
-        const KUrl url = (*m_directoriesCopiedIterator).uDest;
+        const QUrl url = (*m_directoriesCopiedIterator).uDest;
         const time_t mtime = (*m_directoriesCopiedIterator).mtime;
         const QDateTime dt = QDateTime::fromTime_t(mtime);
         ++m_directoriesCopiedIterator;
@@ -1722,7 +1729,7 @@ void CopyJobPrivate::setNextDirAttribute()
         //
         QLinkedList<CopyInfo>::const_iterator it = m_directoriesCopied.constBegin();
         for ( ; it != m_directoriesCopied.constEnd() ; ++it ) {
-            const KUrl& url = (*it).uDest;
+            const QUrl& url = (*it).uDest;
             if ( url.isLocalFile() && (*it).mtime != (time_t)-1 ) {
                 KDE_struct_stat statbuf;
                 if (KDE::lstat(url.path(), &statbuf) == 0) {
@@ -1754,7 +1761,7 @@ void CopyJob::emitResult()
     // Even if some error made us abort midway, we might still have done
     // part of the job so we better update the views! (#118583)
     if (!d->m_bOnlyRenames) {
-        KUrl url(d->m_globalDest);
+        QUrl url(d->m_globalDest);
         if (d->m_globalDestinationState != DEST_IS_DIR || d->m_asMethod)
             url = QUrlPathInfo(url).directoryUrl();
         //kDebug(7007) << "KDirNotify'ing FilesAdded" << url;

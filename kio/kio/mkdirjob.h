@@ -45,7 +45,7 @@ Q_SIGNALS:
      * @param job the job that is redirected
      * @param url the new url
      */
-    void redirection(KIO::Job *job, const KUrl &url);
+    void redirection(KIO::Job *job, const QUrl &url);
 
     /**
      * Signals a permanent redirection.
@@ -54,7 +54,7 @@ Q_SIGNALS:
      * @param fromUrl the original URL
      * @param toUrl the new URL
      */
-    void permanentRedirection(KIO::Job *job, const KUrl &fromUrl, const KUrl &toUrl);
+    void permanentRedirection(KIO::Job *job, const QUrl &fromUrl, const QUrl &toUrl);
 
 protected Q_SLOTS:
     virtual void slotFinished();

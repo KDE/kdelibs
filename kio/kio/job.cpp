@@ -486,10 +486,10 @@ void SimpleJob::slotFinished( )
             }
             else /*if ( m_command == CMD_RENAME )*/
             {
-                KUrl src, dst;
+                QUrl src, dst;
                 QDataStream str( d->m_packedArgs );
                 str >> src >> dst;
-                if( src.directory() == dst.directory() ) // For the user, moving isn't renaming. Only renaming is.
+                if( QUrlPathInfo(src).directory() == QUrlPathInfo(dst).directory() ) // For the user, moving isn't renaming. Only renaming is.
                     org::kde::KDirNotify::emitFileRenamed(src, dst);
 
                 org::kde::KDirNotify::emitFileMoved(src, dst);
@@ -1829,8 +1829,8 @@ public:
 
     void startBestCopyMethod();
     void startCopyJob();
-    void startCopyJob(const KUrl &slave_url);
-    void startRenameJob(const KUrl &slave_url);
+    void startCopyJob(const QUrl &slave_url);
+    void startRenameJob(const QUrl &slave_url);
     void startDataPump();
     void connectSubjob( SimpleJob * job );
 
@@ -1988,7 +1988,7 @@ void FileCopyJobPrivate::startCopyJob()
     startCopyJob(m_src);
 }
 
-void FileCopyJobPrivate::startCopyJob(const KUrl &slave_url)
+void FileCopyJobPrivate::startCopyJob(const QUrl &slave_url)
 {
     Q_Q(FileCopyJob);
     //kDebug(7007);
@@ -2000,7 +2000,7 @@ void FileCopyJobPrivate::startCopyJob(const KUrl &slave_url)
                 SLOT(slotCanResume(KIO::Job*,KIO::filesize_t)));
 }
 
-void FileCopyJobPrivate::startRenameJob(const KUrl &slave_url)
+void FileCopyJobPrivate::startRenameJob(const QUrl &slave_url)
 {
     Q_Q(FileCopyJob);
     m_mustChmod = true;  // CMD_RENAME by itself doesn't change permissions
@@ -2644,12 +2644,12 @@ const QUrl& ListJob::redirectionUrl() const
 class KIO::MultiGetJobPrivate: public KIO::TransferJobPrivate
 {
 public:
-    MultiGetJobPrivate(const KUrl& url)
+    MultiGetJobPrivate(const QUrl& url)
         : TransferJobPrivate(url, 0, QByteArray(), QByteArray()),
           m_currentEntry( 0, QUrl(), MetaData() )
     {}
     struct GetRequest {
-        GetRequest(long _id, const KUrl &_url, const MetaData &_metaData)
+        GetRequest(long _id, const QUrl &_url, const MetaData &_metaData)
             : id(_id), url(_url), metaData(_metaData) { }
         long id;
         KUrl url;
@@ -2678,7 +2678,7 @@ public:
 
     Q_DECLARE_PUBLIC(MultiGetJob)
 
-    static inline MultiGetJob *newJob(const KUrl &url)
+    static inline MultiGetJob *newJob(const QUrl &url)
     {
         MultiGetJob *job = new MultiGetJob(*new MultiGetJobPrivate(url));
         job->setUiDelegate(new JobUiDelegate);
@@ -2873,7 +2873,7 @@ MultiGetJob *KIO::multi_get(long id, const QUrl &url, const MetaData &metaData)
 
 class KIO::SpecialJobPrivate: public TransferJobPrivate
 {
-    SpecialJobPrivate(const KUrl& url, int command,
+    SpecialJobPrivate(const QUrl& url, int command,
                              const QByteArray &packedArgs,
                              const QByteArray &_staticData)
         : TransferJobPrivate(url, command, packedArgs, _staticData)
@@ -2902,7 +2902,7 @@ QByteArray SpecialJob::arguments() const
 
 // Never defined, never used - what's this code about?
 #ifdef CACHE_INFO
-CacheInfo::CacheInfo(const KUrl &url)
+CacheInfo::CacheInfo(const QUrl &url)
 {
     m_url = url;
 }
