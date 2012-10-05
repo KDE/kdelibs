@@ -94,15 +94,17 @@ void PlasmaPkg::runMain()
         if (hash.isEmpty()) {
             d->coutput(i18n("Failed to generate a Package hash for %1", path));
             exit(1);
+        } else {
+            d->coutput(i18n("SHA1 hash for Package at %1: '%2'", package.path(), hash));
+            exit(0);
         }
-
-        d->coutput(i18n("SHA1 hash for Package at %1: '%2'", package.path(), hash));
-        exit(0);
+        return;
     }
 
     if (d->args->isSet("list-types")) {
         d->listTypes();
         exit(0);
+        return;
     }
 
     QString type = d->args->getOption("type");
@@ -325,23 +327,26 @@ void PlasmaPkg::runMain()
 //                     delete installer;
 //                     return 1;
 //                 }
+                return;
             } else {
                 d->coutput(i18n("Plugin %1 is not installed.", pluginName));
+                exit(1);
             }
         }
         if (d->args->isSet("install") || d->args->isSet("upgrade")) {
             KJob *installJob = installer->install(d->packageFile, d->packageRoot);
             connect(installJob, SIGNAL(result(KJob*)), SLOT(packageInstalled(KJob*)));
-            //return;
+            return;
         }
         if (d->package.isEmpty()) {
             KCmdLineArgs::usageError(i18nc("No option was given, this is the error message telling the user he needs at least one, do not translate install, remove, upgrade nor list", "One of install, remove, upgrade or list is required."));
+            exit(1);
         } else {
             d->runKbuildsycoca();
         }
     }
     delete installer;
-    exit(0); // good idea?
+    //exit(0); // good idea?
 
 }
 
@@ -393,7 +398,7 @@ void PlasmaPkg::showPackageInfo(const QString& pluginName)
     d->coutput(i18n("    Author : %1", i.author()));
     d->coutput(i18n("      Path : %1", pkg.path()));
 
-    //exit(0);
+    exit(0);
 }
 
 QString PlasmaPkg::findPackageRoot(const QString& pluginName, const QString& prefix)
@@ -498,10 +503,12 @@ void PlasmaPkgPrivate::listTypes()
             //const QString proot = "";
             //Plasma::PackageStructure* structure = Plasma::PackageStructure::load(info.pluginName());
             QString name = info.name();
+            QString comment = info.comment();
             QString plugin = info.pluginName();
             //QString path = structure->defaultPackageRoot();
             //QString path = defaultPackageRoot;
             plugins.insert(name, QStringList() << plugin);
+            kDebug() << "KService stuff:" << name << plugin << comment;
         }
 
         renderTypeTable(plugins);
