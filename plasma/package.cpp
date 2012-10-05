@@ -394,17 +394,13 @@ void Package::setPath(const QString &path)
         if (!d->defaultPackageRoot.isEmpty()) {
             dir.setPath(d->defaultPackageRoot);
             if (dir.isRelative()) {
-//                 location = QStandardPaths::locate(QStandardPaths::GenericDataLocation, d->defaultPackageRoot + path);
-//                 kDebug() << "From QStandardPaths: " << location;
-                location = KStandardDirs::locateLocal("data", d->defaultPackageRoot + path);
-                kDebug() << "From KStandardDirs: " << location;
-
+                 location = QStandardPaths::locate(QStandardPaths::GenericDataLocation, d->defaultPackageRoot + path, QStandardPaths::LocateDirectory);
             } else {
                 location = d->defaultPackageRoot + path;
             }
         }
         if (location.isEmpty()) {
-            location = QStandardPaths::locate(QStandardPaths::GenericDataLocation, path);
+            location = QStandardPaths::locate(QStandardPaths::GenericDataLocation, path, QStandardPaths::LocateDirectory);
 
             if (location.isEmpty()) {
                 d->path.clear();
