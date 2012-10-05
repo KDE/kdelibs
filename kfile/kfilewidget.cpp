@@ -861,7 +861,7 @@ void KFileWidget::slotOk()
                     }
 
                     // iterate while this item is contained on the top most url
-                    while (!topMostUrl.isParentOf(currUrl)) {
+                    while (!QUrlPathInfo(topMostUrl).isParentOfOrEqual(currUrl)) {
                         topMostUrl = topMostUrl.upUrl();
                     }
                 }

@@ -423,14 +423,14 @@ void KDirModelPrivate::_k_slotNewItems(const QUrl& directoryUrl, const KFileItem
         //kDebug(7008) << url;
 
         if (!urlsBeingFetched.isEmpty()) {
-            const KUrl dirUrl = url;
+            const QUrlPathInfo dirUrl(url);
             foreach(const QUrl& urlFetched, urlsBeingFetched) {
-                if (dirUrl.isParentOf(urlFetched)) {
-                    kDebug(7008) << "Listing found" << dirUrl << "which is a parent of fetched url" << urlFetched;
+                if (dirUrl.isParentOfOrEqual(urlFetched)) {
+                    kDebug(7008) << "Listing found" << dirUrl.url() << "which is a parent of fetched url" << urlFetched;
                     const QModelIndex parentIndex = indexForNode(node, dirNode->m_childNodes.count()-1);
                     Q_ASSERT(parentIndex.isValid());
                     emitExpandFor.append(parentIndex);
-                    if (isDir && dirUrl != urlFetched) {
+                    if (isDir && dirUrl.url() != urlFetched) {
                         q->fetchMore(parentIndex);
                         m_urlsBeingFetched[node].append(urlFetched);
                     }
@@ -888,10 +888,10 @@ QList<QUrl> KDirModel::simplifiedUrlList(const QList<QUrl> &urls)
     qSort(ret.begin(), ret.end(), lessThan);
 
     QList<QUrl>::iterator it = ret.begin();
-    KUrl url = *it;
+    QUrl url = *it;
     ++it;
     while (it != ret.end()) {
-        if (url.isParentOf(*it)) {
+        if (url.isParentOf(*it) || url == *it) {
             it = ret.erase(it);
         } else {
             url = *it;

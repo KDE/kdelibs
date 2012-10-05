@@ -287,10 +287,10 @@ QModelIndex KFilePlacesModel::closestItem(const QUrl &url) const
     // which covers the bigger range of the URL.
     for (int row = 0; row<d->items.size(); ++row) {
         KFilePlacesItem *item = d->items[row];
-        KUrl itemUrl(item->data(UrlRole).toUrl());
+        const QUrl itemUrl(item->data(UrlRole).toUrl());
 
-        if (itemUrl.isParentOf(url)) {
-            const int length = itemUrl.prettyUrl().length();
+        if (QUrlPathInfo(itemUrl).isParentOfOrEqual(url)) {
+            const int length = itemUrl.toString().length();
             if (length > maxLength) {
                 foundRow = row;
                 maxLength = length;

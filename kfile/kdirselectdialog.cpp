@@ -210,10 +210,10 @@ void KDirSelectDialog::Private::slotComboTextChanged( const QString& text )
     m_treeView->blockSignals(true);
     KUrl url = QUrl::fromUserInput(text);
 #ifdef Q_OS_WIN
-    if( url.isLocalFile() && !m_treeView->rootUrl().isParentOf( url ) )
-    {
+    QUrlPathInfo rootUrlInfo(m_treeView->rootUrl());
+    if(url.isLocalFile() && !rootUrlInfo.isParentOfOrEqual(url)) {
         KUrl tmp = url.upUrl();
-        while(tmp != KUrl("file:///")) {
+        while(tmp.path().length() > 1) {
             url = tmp;
             tmp = url.upUrl();
         }
