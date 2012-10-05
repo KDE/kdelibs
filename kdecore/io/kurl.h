@@ -982,6 +982,7 @@ public:
    * false is returned.
    * @see operator==. This function should be used if you want to
    * set additional options, like ignoring trailing '/' characters.
+   * @deprecated since 5.0, use QUrlPathInfo::equals(u, options)
    */
   bool equals( const KUrl &u, const EqualsOptions& options=0 ) const;
 
@@ -989,11 +990,9 @@ public:
    * Checks whether the given URL is parent of this URL.
    * For instance, ftp://host/dir/ is a parent of ftp://host/dir/subdir/subsubdir/.
    * @return true if this url is a parent of @p u (or the same URL as @p u)
-   *
+   * @deprecated since 5.0, use QUrlPathInfo::isParentOfOrEqual
    */
   bool isParentOf( const KUrl& u ) const;
-    // (this overload of the QUrl method allows to use the implicit KUrl constructors)
-    // but also the equality test
 
   /**
    * Splits nested URLs like file:///home/weis/kde.tgz#gzip:/#tar:/kdebase

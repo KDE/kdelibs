@@ -71,6 +71,42 @@
     \sa QUrl
 */
 
+/*!
+    \enum QUrlPathInfo::PathFormattingOption
+
+    The path formatting options define transformations for the path.
+
+    \value None The path is unchanged.
+    \value StripTrailingSlash  The trailing slash is removed if one is present.
+    \value AppendTrailingSlash  A trailing slash is added at the end of the path, if necessary.
+
+    Note that a path of "/" will always remain unchanged.
+*/
+
+/*!
+    \enum QUrlPathInfo::EqualsOption
+
+    Options for the equals() method.
+
+    \value CompareWithoutTrailingSlash Ignore trailing '/' in paths.
+    The paths "dir" and "dir/" are treated the same.
+    Note however, that by default, the paths "" and "/" are not the same
+    (For instance ftp://user@host redirects to ftp://user@host/home/user (on a linux server),
+    while ftp://user@host/ is the root dir).
+    This is also why path(StripTrailingSlash) for "/" returns "/" and not "".
+    When dealing with web pages however, you should also set AllowEmptyPath so that
+    no path and "/" are considered equal.
+
+    \value CompareWithoutFragment Disables comparison of HTML-style references (fragments).
+
+    \value AllowEmptyPath Treat a URL with no path as equal to a URL with a path of "/",
+    when CompareWithoutTrailingSlash is set.
+    Example:
+    QUrlPathInfo("http://www.kde.org").equals("http://www.kde.org/", QUrlPathInfo::CompareWithoutTrailingSlash | QUrlPathInfo::AllowEmptyPath)
+    returns true.
+    This option is ignored if CompareWithoutTrailingSlash isn't set.
+*/
+
 QT_BEGIN_NAMESPACE
 
 class QUrlPathInfoPrivate : public QSharedData
@@ -306,10 +342,10 @@ QUrl QUrlPathInfo::directoryUrl() const
    Adds to the current path.
 
    Assumes that the current path is a directory.
-   \p relativePath is appended to the current path.
+   \a relativePath is appended to the current path.
    This method adds '/' if needed while concatenating.
    This means it does not matter whether the current path has a trailing
-   '/' or not. If there is none, it becomes appended. If \p relativePath
+   '/' or not. If there is none, it becomes appended. If \a relativePath
    has a leading '/' then this one is stripped.
 
    \param relativePath The relative path to add to the current directory path.
@@ -326,7 +362,7 @@ void QUrlPathInfo::addPath(const QString &relativePath)
     if (!p.endsWith(QLatin1Char('/')))
         p += QLatin1Char('/');
 
-    // If \p relativePath has a leading '/' then this one is stripped.
+    // If relativePath has a leading '/' then this one is stripped.
     int i = 0;
     if (relativePath.startsWith(QLatin1Char('/')))
         ++i;
@@ -335,11 +371,11 @@ void QUrlPathInfo::addPath(const QString &relativePath)
 }
 
 /*!
-  Convenience method, for adding a relative path to a url.
+    Convenience method, for adding a relative path to a url.
 
-  \param url the initial URL
-  \param relativePath the relative path to add (often just a file name)
-  \return the modified URL
+    \param url the initial URL
+    \param relativePath the relative path to add (often just a file name)
+    \return the modified URL
 */
 QUrl QUrlPathInfo::addPathToUrl(const QUrl &url, const QString& relativePath)
 {
@@ -358,4 +394,66 @@ QUrl QUrlPathInfo::addPathToUrl(const QUrl &url, const QString& relativePath)
 void QUrlPathInfo::adjustPath(PathFormattingOptions options)
 {
     setPath(path(options));
+}
+
+/*!
+    Return true if this URL is a parent of \a child, or if they are equal.
+    Trailing slashes are ignored.
+*/
+bool QUrlPathInfo::isParentOfOrEqual(const QUrl &child) const
+{
+    return d->url.isParentOf(child) || equals(child, CompareWithoutTrailingSlash);
+}
+
+/*!
+    Compares this url with \a u.
+    \param u the URL to compare this one with.
+    \param options a set of EqualsOption flags
+    \return True if both urls are the same. If at least one of the urls is invalid,
+    false is returned.
+    \see operator==. This function should be used if you want to
+    set additional options, like ignoring trailing '/' characters.
+*/
+bool QUrlPathInfo::equals(const QUrl& u, EqualsOptions options) const
+{
+    if (!d->url.isValid() || !u.isValid())
+        return false;
+
+    if (options & CompareWithoutTrailingSlash || options & CompareWithoutFragment) {
+        QString path1 = path((options & CompareWithoutTrailingSlash) ? StripTrailingSlash : None);
+        QString path2 = QUrlPathInfo(u).path((options & CompareWithoutTrailingSlash) ? StripTrailingSlash : None);
+
+        if (options & AllowEmptyPath) {
+            if (path1 == QLatin1String("/"))
+                path1.clear();
+            if (path2 == QLatin1String("/"))
+                path2.clear();
+        }
+
+#ifdef Q_OS_WIN
+        const bool bLocal1 = isLocalFile();
+        const bool bLocal2 = u.isLocalFile();
+        if (!bLocal1 && bLocal2 || bLocal1 && !bLocal2)
+            return false;
+        // local files are case insensitive
+        if (bLocal1 && bLocal2 && 0 != QString::compare(path1, path2, Qt::CaseInsensitive))
+            return false;
+#endif
+        if (path1 != path2)
+            return false;
+
+        if (d->url.scheme() == u.scheme() &&
+            d->url.authority() == u.authority() && // user+pass+host+port
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+            d->url.query() == u.query() &&
+#else
+            d->url.encodedQuery() == u.encodedQuery() &&
+#endif
+            (d->url.fragment() == u.fragment() || options & CompareWithoutFragment)   )
+            return true;
+
+        return false;
+    }
+
+    return d->url == u;
 }

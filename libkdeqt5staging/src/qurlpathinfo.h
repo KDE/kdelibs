@@ -62,6 +62,19 @@ public:
     };
     Q_DECLARE_FLAGS(PathFormattingOptions, PathFormattingOption)
 
+    /*!
+     * Flags to be used in URL comparison functions like equals, or urlcmp
+     */
+    enum EqualsOption
+    {
+        StrictComparison = 0x00,
+        CompareWithoutTrailingSlash = 0x01,
+        CompareWithoutFragment = 0x02,
+        AllowEmptyPath = 0x04
+    };
+    Q_DECLARE_FLAGS(EqualsOptions, EqualsOption)
+
+
     QUrlPathInfo();
     explicit QUrlPathInfo(const QUrl &url);
     QUrlPathInfo(const QUrlPathInfo &other);
@@ -86,6 +99,8 @@ public:
     QString localPath(PathFormattingOptions options = None) const;
 
     bool isEmpty() const;
+    bool equals(const QUrl& u, EqualsOptions options = StrictComparison) const;
+    bool isParentOfOrEqual(const QUrl &child) const;
 
     void clear();
 
