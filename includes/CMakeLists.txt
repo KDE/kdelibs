@@ -440,6 +440,7 @@ install( FILES
   KUserGroup
   KVBox
   KViewStateMaintainer
+  KViewStateSaver
   KWindowInfo
   KWindowSystem
   KWordMacroExpander
