@@ -42,6 +42,7 @@
 #include <QMenu>
 #include <QtCore/QUrl>
 #include <QtCore/QMetaEnum>
+#include <QtCore/QMimeData>
 #include <qstandardpaths.h>
 #include <qinputdialog.h>
 #include <assert.h>
