@@ -37,7 +37,7 @@ MACRO(PYTHON_INSTALL SOURCE_FILE DESTINATION_DIR)
 
   # Python 3.2 changed the pyc file location
   IF(PYTHON_SHORT_VERSION GREATER 3.1)
-    # TO get the right version for ssuffix
+    # To get the right version for suffix
     STRING(REPLACE "." "" _suffix ${PYTHON_SHORT_VERSION})
     SET(_bin_pyc ${CMAKE_CURRENT_BINARY_DIR}/${_basepath}/__pycache__/${_filenamebase}.cpython-${_suffix}.pyc)
   ELSE(PYTHON_SHORT_VERSION GREATER 3.1)
