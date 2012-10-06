@@ -93,25 +93,18 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
         host += portNum;
     }
 
-    QString txt = i18n("<html><body style=\"p {line-height: 150%}; text-align: center;\"><p>");
-
-    if (count > 1) {
-        txt += i18nc("@label: multiple cookies", "You received %1 cookies from", count);
-    } else {
-        txt += i18nc("@label: single cookie", "You received a cookie from");
-    }
-
-    txt += QString(QLatin1String("</p><p><b>%1")).arg(QUrl::fromAce(host.toLatin1()));
-
-    if (cookie.isCrossDomain()) {
-        txt += i18nc("@label: cross domain cookie", " [Cross Domain]");
-    }
-
-    if (count > 1) {
-        txt += i18nc("@label: multiple cookies", "</b></p><p>Do you want to accept or reject these cookies?</p></body></html>");
-    } else {
-        txt += i18nc("@label: single cookie", "</b></p><p>Do you want to accept or reject this cookie?</p></body></html>");
-    }
+    QString txt = QLatin1String("<html><body style=\"p {line-height: 150%}; text-align: center;\">");
+    txt += i18ncp("%2 hostname, %3 optional cross domain suffix (translated below)",
+                  "<p>You received a cookie from<br/>"
+                  "<b>%2%3</b><br/>"
+                  "Do you want to accept or reject this cookie?</p>",
+                  "<p>You received %1 cookies from<br/>"
+                  "<b>%2%3</b><br/>"
+                  "Do you want to accept or reject these cookies?</p>",
+                  count,
+                  QUrl::fromAce(host.toLatin1()),
+                  cookie.isCrossDomain() ? i18nc("@item:intext cross domain cookie", " [Cross Domain]") : QString());
+    txt += QLatin1String("</body></html>");
 
     KVBox* vBox1 = new KVBox( this );
     vBox1->setSpacing( -1 );
