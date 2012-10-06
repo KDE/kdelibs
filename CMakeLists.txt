@@ -377,12 +377,6 @@ endif(STATIC_LIBRARY)
 configure_file(config-prefix.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-prefix.h )
 configure_file(config-compiler.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compiler.h )
 
-# TODO: Port away from this:
-if (QT5_BUILD)
-  add_definitions(-DKDE_NO_PHONON)
-  set(KDE_NO_PHONON True)
-endif()
-
 # Needed for the calls to kconfig_add_kcfg_files in some modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/tier2/kconfig/cmake")
 set(KCONFIG_KCFGC_EXECUTABLE kconfig_compiler)
@@ -422,9 +416,9 @@ endif(NOT WINCE)
 add_subdirectory( kioslave   )
 add_subdirectory( kparts     )
 add_subdirectory( kunitconversion )
-if(NOT KDE_NO_PHONON)
+if (PHONON_FOUND)
     add_subdirectory( khtml  )
-endif()
+endif(PHONON_FOUND)
 add_subdirectory( interfaces  )
 if (NOT QT5_BUILD) # TODO: Qt5UiTools_FOUND
     add_subdirectory( kross )

@@ -21,7 +21,10 @@
 #include <kstandarddirs.h>
 #include <kiconloader.h>
 
+#include "knotify-config.h"
+#if HAVE_PHONON
 #include <phonon/mediaobject.h>
+#endif
 
 KNotifyConfigActionsWidget::KNotifyConfigActionsWidget( QWidget * parent )
 	: QWidget(parent)
@@ -134,7 +137,7 @@ void KNotifyConfigActionsWidget::slotPlay(  )
           if ( search.isEmpty() )*/
         soundURL = QUrl::fromLocalFile(KStandardDirs::locate("sound", soundString));
     }
-#ifndef KDE_NO_PHONON
+#if HAVE_PHONON
 	Phonon::MediaObject* media = Phonon::createPlayer( Phonon::NotificationCategory, soundURL );
 	media->play();
 	connect(media, SIGNAL(finished()), media, SLOT(deleteLater()));

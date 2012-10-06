@@ -1,5 +1,9 @@
+configure_file(knotify-config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/knotify-config.h )
 
-include_directories(BEFORE ${KDE4_PHONON_INCLUDES})
+find_package(Phonon 4.3.80)
+macro_bool_to_01(PHONON_FOUND HAVE_PHONON)
+
+include_directories(BEFORE ${PHONON_INCLUDES})
 
 ########### next target ###############
 
@@ -19,7 +23,7 @@ kde4_add_library(knotifyconfig ${LIBRARY_TYPE} ${knotifyconfig_LIB_SRCS})
 generate_export_header(knotifyconfig)
 
 # Needs KIO for KUrlRequester
-target_link_libraries(knotifyconfig  ${KDE4_KIO_LIBS} ${KDE4_PHONON_LIBS} kcoreaddons kwidgets ki18n)
+target_link_libraries(knotifyconfig  ${KDE4_KIO_LIBS} ${PHONON_LIBS} kcoreaddons kwidgets ki18n)
 target_link_libraries(knotifyconfig  LINK_INTERFACE_LIBRARIES kdecore ${QT_QTGUI_LIBRARY})
 
 set_target_properties(knotifyconfig PROPERTIES

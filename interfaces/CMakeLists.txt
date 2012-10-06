@@ -3,9 +3,9 @@
 project(interfaces)
 
 add_subdirectory( kregexpeditor )
-if (NOT KDE_NO_PHONON)
-  add_subdirectory( kmediaplayer )
-endif()
+if (PHONON_FOUND)
+    add_subdirectory( kmediaplayer )
+endif (PHONON_FOUND)
 add_subdirectory( kio )
 add_subdirectory( terminal )
 add_subdirectory( khexedit )

@@ -429,12 +429,6 @@ endif(NOT PERL_FOUND)
 # restore the original CMAKE_MODULE_PATH
 set(CMAKE_MODULE_PATH ${_kde_cmake_module_path_back})
 
-# we check for Phonon not here, but further below, i.e. after KDELibsDependencies.cmake
-# has been loaded, which helps in the case that phonon is installed to the same
-# directory as kdelibs.
-# find_package(Phonon ${_REQ_STRING_KDE4})
-
-
 # Check that we really found everything.
 # If KDE4 was searched with REQUIRED, we error out with FATAL_ERROR if something wasn't found
 # already above in the other FIND_PACKAGE() calls.
@@ -670,15 +664,12 @@ endif(_kdeBootStrapping  OR  TARGET ${KDE4_TARGET_PREFIX}nepomuk)
 # since FindPhonon.cmake also uses ${KDE4_LIB_INSTALL_DIR} to check for Phonon,
 # which helps with finding the phonon installed as part of kdesupport:
 
-# only make Phonon REQUIRED if KDE4 itself is REQUIRED
-find_package(Phonon 4.3.80 ${_REQ_STRING_KDE4})
+find_package(Phonon 4.3.80)
 set(KDE4_PHONON_LIBRARY ${PHONON_LIBRARY})
 set(KDE4_PHONON_LIBS ${PHONON_LIBS})
 set(KDE4_PHONON_INCLUDES ${PHONON_INCLUDES})
-
 if(NOT PHONON_FOUND)
-   message(STATUS "KDE4 not found, because Phonon was not found")
-   return()
+   message(STATUS "Phonon not found")
 endif(NOT PHONON_FOUND)
 
 

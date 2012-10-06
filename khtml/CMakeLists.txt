@@ -15,6 +15,8 @@ add_definitions(-DWTF_PLATFORM_QT)
 
 add_subdirectory( tests )
 
+find_package(Phonon 4.3.80 REQUIRED)
+
 find_package(JPEG)
 macro_log_feature(JPEG_FOUND "libjpeg" "JPEG image format support" "http://www.ijg.org" TRUE "" "Required by khtml.")
 
