@@ -7,21 +7,21 @@
 #
 # This file defines the following macros:
 #
-# PYTHON_INSTALL (SOURCE_FILE DESINATION_DIR)
+# PYTHON_INSTALL (SOURCE_FILE DESTINATION_DIR)
 #     Install the SOURCE_FILE, which is a Python .py file, into the
 #     destination directory during install. The file will be byte compiled
 #     and both the .py file and .pyc file will be installed.
 
 GET_FILENAME_COMPONENT(PYTHON_MACROS_MODULE_PATH ${CMAKE_CURRENT_LIST_FILE}  PATH)
 
-MACRO(PYTHON_INSTALL SOURCE_FILE DESINATION_DIR)
+MACRO(PYTHON_INSTALL SOURCE_FILE DESTINATION_DIR)
 
   FIND_FILE(_python_compile_py PythonCompile.py PATHS ${CMAKE_MODULE_PATH})
 
   ADD_CUSTOM_TARGET(compile_python_files ALL)
 
   # Install the source file.
-  INSTALL(FILES ${SOURCE_FILE} DESTINATION ${DESINATION_DIR})
+  INSTALL(FILES ${SOURCE_FILE} DESTINATION ${DESTINATION_DIR})
 
   # Byte compile and install the .pyc file.        
   GET_FILENAME_COMPONENT(_absfilename ${SOURCE_FILE} ABSOLUTE)
@@ -34,11 +34,19 @@ MACRO(PYTHON_INSTALL SOURCE_FILE DESINATION_DIR)
   endif(WIN32)
 
   SET(_bin_py ${CMAKE_CURRENT_BINARY_DIR}/${_basepath}/${_filename})
-  SET(_bin_pyc ${CMAKE_CURRENT_BINARY_DIR}/${_basepath}/${_filenamebase}.pyc)
+
+  # Python 3.2 changed the pyc file location
+  IF(PYTHON_SHORT_VERSION GREATER 3.1)
+    # TO get the right version for ssuffix
+    STRING(REPLACE "." "" _suffix ${PYTHON_SHORT_VERSION})
+    SET(_bin_pyc ${CMAKE_CURRENT_BINARY_DIR}/${_basepath}/__pycache__/${_filenamebase}.cpython-${_suffix}.pyc)
+  ELSE(PYTHON_SHORT_VERSION GREATER 3.1)
+    SET(_bin_pyc ${CMAKE_CURRENT_BINARY_DIR}/${_basepath}/${_filenamebase}.pyc)
+  ENDIF(PYTHON_SHORT_VERSION GREATER 3.1)
 
   FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${_basepath})
 
-  SET(_message "-DMESSAGE=Byte-compiling ${_bin_py}")
+  SET(_message "Byte-compiling ${_bin_py}")
 
   GET_FILENAME_COMPONENT(_abs_bin_py ${_bin_py} ABSOLUTE)
   IF(_abs_bin_py STREQUAL ${_absfilename})    # Don't copy the file onto itself.
@@ -58,5 +66,10 @@ MACRO(PYTHON_INSTALL SOURCE_FILE DESINATION_DIR)
     )
   ENDIF(_abs_bin_py STREQUAL ${_absfilename})
 
-  INSTALL(FILES ${_bin_pyc} DESTINATION ${DESINATION_DIR})
+  IF(PYTHON_SHORT_VERSION GREATER 3.1)
+    INSTALL(FILES ${_bin_pyc} DESTINATION ${DESTINATION_DIR}/__pycache__/)
+  ELSE (PYTHON_SHORT_VERSION GREATER 3.1)
+      INSTALL(FILES ${_bin_pyc} DESTINATION ${DESTINATION_DIR})
+  ENDIF (PYTHON_SHORT_VERSION GREATER 3.1)
+
 ENDMACRO(PYTHON_INSTALL)
