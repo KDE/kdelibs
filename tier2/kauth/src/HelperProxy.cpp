@@ -27,4 +27,4 @@ HelperProxy::~HelperProxy() {}
 
 } // namespace KAuth
 
-#include "HelperProxy.moc"
+#include "moc_HelperProxy.cpp"

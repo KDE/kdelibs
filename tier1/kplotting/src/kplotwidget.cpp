@@ -19,7 +19,6 @@
 */
 
 #include "kplotwidget.h"
-#include "kplotwidget.moc"
 
 #include <math.h>
 
