@@ -205,7 +205,7 @@ A script is available in kdesdk/scripts/kf5/convert-kstandarddirs.pl to port som
    KMimeType::findByContent(data) -&gt; db.mimeTypeForData(data)
    KMimeType::findByNameAndContent(name, data_or_device) -&gt; db.mimeTypeForNameAndData(name, data_or_device)
    KMimeType::findByFileContent(path) -&gt; db.mimeTypeForFile(path, QMimeDatabase::MatchContent)
-   mime->name() == KMimeType::defaultMimeType() -&gt; mime.isDefault()
+   mime-&gt;name() == KMimeType::defaultMimeType() -&gt; mime.isDefault()
    mime.allParentMimeTypes() -&gt; mime.allAncestors()
    KMimeType::extractKnownExtension(fileName) -&gt; db.suffixForFileName(fileName)
    KMimeType::iconNameForUrl(url) has additional logic on top of db.mimeTypeForUrl(url).iconName(), to
