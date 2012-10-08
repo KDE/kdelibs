@@ -694,7 +694,7 @@ void K7Zip::K7ZipPrivate::readHashDigests(int numItems,
 Folder* K7Zip::K7ZipPrivate::folderItem()
 {
     if (!buffer) {
-        return false;
+        return 0;
     }
 
     Folder* folder = new Folder;
