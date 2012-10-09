@@ -202,6 +202,10 @@ void KCalendarTest::testTypes()
 
 void KCalendarTest::testFormatDate()
 {
+    KConfigGroup lcg(KSharedConfig::openConfig(), QString("Locale"));
+    KConfigGroup cg = lcg.group(QString("KCalendarSystem %1").arg("gregorian"));
+    cg.deleteGroup();
+
     KLocale *locale = new KLocale(*KLocale::global());
     locale->setDateFormatShort("%y-%m-%d");
     const KCalendarSystem *calendar = KCalendarSystem::create(KLocale::QDateCalendar, locale);
@@ -1357,6 +1361,10 @@ void KCalendarTest::testIndianNational()
 
 void KCalendarTest::testQDateCalendarBasic()
 {
+    KConfigGroup lcg(KSharedConfig::openConfig(), QString("Locale"));
+    KConfigGroup cg = lcg.group(QString("KCalendarSystem %1").arg("gregorian"));
+    cg.deleteGroup();
+
     const KCalendarSystem *calendar = KCalendarSystem::create(KLocale::QDateCalendar);
 
     testCalendarSystemType(calendar, KLocale::QDateCalendar, "gregorian", "Gregorian");
