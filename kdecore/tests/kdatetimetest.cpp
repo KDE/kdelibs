@@ -3787,25 +3787,24 @@ void KDateTimeTest::strings_format()
     QCOMPARE(dt.dateTime(), QDateTime(QDate(-4712,9,5), QTime(14,30,1,300), Qt::LocalTime));
     QCOMPARE(dt.utcOffset(), 5*3600);
     QVERIFY(dt.isValid());
-    QVERIFY(!dt.outOfRange());
 
     dt = KDateTime::fromString(QLatin1String("999909051430:01.3+0500"), QLatin1String("%Y%m%d%H%M%:S%:s%z"));
     QCOMPARE(dt.dateTime(), QDateTime(QDate(9999,9,5), QTime(14,30,1,300), Qt::LocalTime));
     QCOMPARE(dt.utcOffset(), 5*3600);
     QVERIFY(dt.isValid());
-    QVERIFY(!dt.outOfRange());
 
     dt = KDateTime::fromString(QLatin1String("123456.09051430:01.3+0500"), QLatin1String("%:Y.%m%d%H%M%:S%:s%z"));
     QCOMPARE(dt.dateTime(), QDateTime(QDate(123456,9,5), QTime(14,30,1,300), Qt::LocalTime));
     QCOMPARE(dt.utcOffset(), 5*3600);
     QVERIFY(dt.isValid());
-    QVERIFY(!dt.outOfRange());
     s = dt.toString(QLatin1String("%Y"));
     QCOMPARE(s, QString::fromLatin1("123456"));
 
-    dt = KDateTime::fromString(QLatin1String("-471412311430:01.3+0500"), QLatin1String("%Y%m%d%H%M%:S%:s%z"));
-    QVERIFY(!dt.isValid());    // too early
-    QVERIFY(dt.outOfRange());
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    dt = KDateTime::fromString(QLatin1String("-471411231430:01.3+0500"), QLatin1String("%Y%m%d%H%M%:S%:s%z"));
+    QVERIFY(dt.isValid());
+    QVERIFY(dt.date().toJulianDay() == -1);
+#endif
 
 
     // Restore the original local time zone

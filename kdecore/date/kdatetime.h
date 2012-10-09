@@ -52,12 +52,9 @@ class KDateTimeSpecPrivate;
  * can also be set to represent a date-only value with no associated time.
  *
  * The class uses QDateTime internally to represent date/time values, and
- * therefore uses the Gregorian calendar for dates starting from 15 October 1582,
- * and the Julian calendar for dates up to 4 October 1582. The minimum year
- * number is -4712 (4713 BC), while the upper limit is more than 11,000,000. The
- * actual adoption of the Gregorian calendar after 1582 was slow; the last European
- * country to adopt it, Greece, did so only in 1923. See QDateTime Considerations
- * section below for further discussion of the date range limitations.
+ * therefore uses the Gregorian calendar retroactively. If you need the Julian
+ * calendar for historical dates (as commonly used prior to some date between 1582
+ * and 1923 depending on nation), please use @c KCalendarSystem and related classes.
  *
  * The time specification types which KDateTime supports are:
  * - the UTC time zone
@@ -132,27 +129,6 @@ class KDateTimeSpecPrivate;
  * of QDateTime, but with adjustments to cater for time zone handling. Because
  * QDateTime lacks virtual methods, KDateTime is not inherited from QDateTime,
  * but instead is implemented using a private QDateTime object.
- *
- * The date range restriction due to the use of QDateTime internally may at
- * first sight seem a design limitation. However, two factors should be
- * considered:
- *
- * - there are significant problems in the representation of dates before the
- *   Gregorian calendar was adopted. The date of adoption of the Gregorian
- *   calendar varied from place to place, and in the Julian calendar the
- *   date of the new year varied so that in different places the year number
- *   could differ by one. So any date/time system which attempted to represent
- *   dates as actually used in history would be too specialized to belong to
- *   the core KDE libraries. Date/time systems for scientific applications can
- *   be much simpler, but may differ from historical records.
- *
- * - time zones were not invented until the middle of the 19th century. Before
- *   that, solar time was used.
- *
- * Because of these issues, together with the fact that KDateTime's aim is to
- * provide automatic time zone handling for date/time values, QDateTime was
- * chosen as the basis for KDateTime. For those who need an extended date
- * range, other classes exist.
  *
  * @section simulation Simulation Facility
  *
@@ -1291,19 +1267,13 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      * to RFCDate. Only set it to RFCDateDay if you want to return an error
      * when the day of the week is omitted.
      *
-     * For @p format = ISODate or RFCDate[Day], if an invalid KDateTime is
-     * returned, you can check why @p format was considered invalid by use of
-     * outOfRange(). If that method returns true, it indicates that @p format
-     * was in fact valid, but the date lies outside the range which can be
-     * represented by QDate.
-     *
      * @param string string to convert
      * @param format format code. LocalDate cannot be used here.
      * @param negZero if non-null, the value is set to true if a UTC offset of
      *                '-0000' is found or, for RFC 2822 format, an unrecognised
      *                or invalid time zone abbreviation is found, else false.
      * @return KDateTime value, or an invalid KDateTime if either parameter is invalid
-     * @see setFromStringDefault(), toString(), outOfRange(), QString::fromString()
+     * @see setFromStringDefault(), toString(), QString::fromString()
      */
     static KDateTime fromString(const QString &string, TimeFormat format = ISODate, bool *negZero = 0);
 
@@ -1427,11 +1397,6 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      * appears more than once but with different values, the weekday name does
      * not tally with the date, an invalid KDateTime is returned.
      *
-     * If an invalid KDateTime is returned, you can check why @p format was
-     * considered invalid by use of outOfRange(). If that method returns true,
-     * it indicates that @p format was in fact valid, but the date lies outside
-     * the range which can be represented by QDate.
-     *
      * @param string string to convert
      * @param format format string
      * @param zones time zone collection, or null for none
@@ -1442,7 +1407,7 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      *         time zone information doesn't match any in @p zones, or if the
      *         time zone information is ambiguous and @p offsetIfAmbiguous is
      *         false
-     * @see setFromStringDefault(), toString(), outOfRange()
+     * @see setFromStringDefault(), toString()
      */
     static KDateTime fromString(const QString &string, const QString &format,
                                 const KTimeZones *zones = 0, bool offsetIfAmbiguous = true);
@@ -1463,17 +1428,17 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
 
 
     /**
-     * Checks whether the date/time returned by the last call to fromString()
-     * was invalid because an otherwise valid date was outside the range which
-     * can be represented by QDate. This status occurs when fromString() read
-     * a valid string containing a year earlier than -4712 (4713 BC). On exit
-     * from fromString(), if outOfRange() returns @c true, isValid() will
-     * return @c false.
+     * Always returns false, as dates earlier than -4712 are now supported by
+     * @c KDateTime.
      *
-     * @return @c true if date was earlier than -4712, else @c false
-     * @see isValid(), fromString()
+     * @return @c false
+     * @see isValid()
+     * @deprecated since 5.0, we now supports all valid dates.
      */
-    bool outOfRange() const;
+    inline bool outOfRange() const
+    {
+        return false;
+    }
 
     /**
      * Compare this instance with another to determine whether they are

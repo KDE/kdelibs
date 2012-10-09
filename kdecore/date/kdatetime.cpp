@@ -70,16 +70,8 @@ static const char longMonth[][10] = {
     "October", "November", "December"
 };
 
-
-// The reason for the KDateTime being invalid, returned from KDateTime::fromString()
-enum Status {
-    stValid = 0,   // either valid, or really invalid
-    stTooEarly     // invalid (valid date before QDate range)
-};
-
-
 static QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
-                         QString& zoneName, QByteArray& zoneAbbrev, bool& dateOnly, Status&);
+                         QString& zoneName, QByteArray& zoneAbbrev, bool& dateOnly);
 static int matchDay(const QString &string, int &offset, KCalendarSystem*);
 static int matchMonth(const QString &string, int &offset, KCalendarSystem*);
 static bool getUTCOffset(const QString &string, int &offset, bool colon, int &result);
@@ -89,10 +81,8 @@ static int findString_internal(const QString &string, const char *ptr, int count
 template<int disp> static inline
 int findString(const QString &string, const char array[][disp], int count, int &offset)
 { return findString_internal(string, array[0], count, offset, disp); }
-static QDate checkDate(int year, int month, int day, Status&);
 
-static const int MIN_YEAR = -4712;        // minimum year which QDate allows
-static const int NO_NUMBER = 0x8000000;   // indicates that no number is present in string conversion functions
+static const int NO_NUMBER = std::numeric_limits<int>::min();   // indicates that no number is present in string conversion functions
 
 #ifdef COMPILING_TESTS
 KDECORE_EXPORT int KDateTime_utcCacheHit  = 0;
@@ -317,7 +307,6 @@ class KDateTimePrivate : public QSharedData
     KDateTimePrivate()
         : QSharedData(),
           specType(KDateTime::Invalid),
-          status(stValid),
           utcCached(true),
           convertedCached(false),
           m2ndOccurrence(false),
@@ -329,7 +318,6 @@ class KDateTimePrivate : public QSharedData
         : QSharedData(),
           mDt(d),
           specType(s.type()),
-          status(stValid),
           utcCached(false),
           convertedCached(false),
           m2ndOccurrence(false),
@@ -360,7 +348,6 @@ class KDateTimePrivate : public QSharedData
           ut(rhs.ut),
           converted(rhs.converted),
           specType(rhs.specType),
-          status(rhs.status),
           utcCached(rhs.utcCached),
           convertedCached(rhs.convertedCached),
           m2ndOccurrence(rhs.m2ndOccurrence),
@@ -456,7 +443,6 @@ private:
     } converted;
 public:
     KDateTime::SpecType   specType          : 4; // time spec type (N.B. need 3 bits + sign bit, since enums are signed on some platforms)
-    Status                status            : 2; // reason for invalid status
     mutable bool          utcCached         : 1; // true if 'ut' is valid
     mutable bool          convertedCached   : 1; // true if 'converted' is valid
     mutable bool          m2ndOccurrence    : 1; // this is the second occurrence of a time zone time
@@ -827,7 +813,6 @@ KDateTime &KDateTime::operator=(const KDateTime &other)
 void      KDateTime::detach()                   { d.detach(); }
 bool      KDateTime::isNull() const             { return d->dt().isNull(); }
 bool      KDateTime::isValid() const            { return d->specType != Invalid  &&  d->dt().isValid(); }
-bool      KDateTime::outOfRange() const         { return d->status == stTooEarly; }
 bool      KDateTime::isDateOnly() const         { return d->dateOnly(); }
 bool      KDateTime::isLocalZone() const        { return d->specType == TimeZone  &&  d->specZone == KSystemTimeZones::local(); }
 bool      KDateTime::isClockTime() const        { return d->specType == ClockTime; }
@@ -1928,8 +1913,7 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
                     }
                 }
             }
-            Status invalid = stValid;
-            QDate qdate = checkDate(year, month+1, day, invalid);   // convert date, and check for out-of-range
+            QDate qdate(year, month+1, day);
             if (!qdate.isValid())
                 break;
             KDateTime result(qdate, QTime(hour, minute, second), Spec(OffsetFromUTC, offset));
@@ -1948,12 +1932,6 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
                 // Convert the time to UTC and check that it is 00:00:00.
                 if ((hour*3600 + minute*60 + 60 - offset + 86400*5) % 86400)   // (max abs(offset) is 100 hours)
                     break;    // the time isn't the last second of the day
-            }
-            if (invalid)
-            {
-                KDateTime dt;            // date out of range - return invalid KDateTime ...
-                dt.d->status = invalid;  // ... with reason for error
-                return dt;
             }
             return result;
         }
@@ -2112,15 +2090,14 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
                 }
             }
             int month, day;
-            Status invalid = stValid;
             if (parts[3].length() == 3)
             {
                 // A day of the year is specified
                 day = parts[3].toInt(&ok);
                 if (!ok || day < 1 || day > 366)
                     break;
-                d = checkDate(year, 1, 1, invalid).addDays(day - 1);   // convert date, and check for out-of-range
-                if (!d.isValid()  ||  (!invalid && d.year() != year))
+                d = QDate(year, 1, 1).addDays(day - 1);
+                if (!d.isValid()  ||  (d.year() != year))
                     break;
                 day   = d.day();
                 month = d.month();
@@ -2132,18 +2109,12 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
                 day   = parts[3].right(2).toInt(&ok1);
                 if (!ok || !ok1)
                     break;
-                d = checkDate(year, month, day, invalid);   // convert date, and check for out-of-range
+                d = QDate(year, month, day);
                 if (!d.isValid())
                     break;
             }
             if (dateOnly)
             {
-                if (invalid)
-                {
-                    KDateTime dt;            // date out of range - return invalid KDateTime ...
-                    dt.d->status = invalid;    // ... with reason for error
-                    return dt;
-                }
                 return KDateTime(d, Spec(ClockTime));
             }
             if (hour == 24  && !minute && !second && !msecs)
@@ -2159,12 +2130,6 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
             if (parts[8].isEmpty())
             {
                 // No UTC offset is specified. Don't try to validate leap seconds.
-                if (invalid)
-                {
-                    KDateTime dt;            // date out of range - return invalid KDateTime ...
-                    dt.d->status = invalid;  // ... with reason for error
-                    return dt;
-                }
                 return KDateTime(d, t, KDateTimePrivate::fromStringDefault());
             }
             int offset = 0;
@@ -2193,12 +2158,6 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
                 // Convert the time to UTC and check that it is 00:00:00.
                 if ((hour*3600 + minute*60 + 60 - offset + 86400*5) % 86400)   // (max abs(offset) is 100 hours)
                     break;    // the time isn't the last second of the day
-            }
-            if (invalid)
-            {
-                KDateTime dt;            // date out of range - return invalid KDateTime ...
-                dt.d->status = invalid;  // ... with reason for error
-                return dt;
             }
             return KDateTime(d, t, Spec(spec, offset));
         }
@@ -2274,10 +2233,9 @@ KDateTime KDateTime::fromString(const QString &string, const QString &format,
 {
     int     utcOffset = 0;    // UTC offset in seconds
     bool    dateOnly = false;
-    Status invalid = stValid;
     QString zoneName;
     QByteArray zoneAbbrev;
-    QDateTime qdt = fromStr(string, format, utcOffset, zoneName, zoneAbbrev, dateOnly, invalid);
+    QDateTime qdt = fromStr(string, format, utcOffset, zoneName, zoneAbbrev, dateOnly);
     if (!qdt.isValid())
         return KDateTime();
     if (zones)
@@ -2292,97 +2250,88 @@ KDateTime KDateTime::fromString(const QString &string, const QString &format,
             zone = zones->zone(zoneName);
             zname = true;
         }
-        else if (!invalid)
+        else if (!zoneAbbrev.isEmpty())
         {
-            if (!zoneAbbrev.isEmpty())
+            // A time zone abbreviation has been found.
+            // Use the time zone which contains it, if any, provided that the
+            // abbreviation applies at the specified date/time.
+            bool useUtcOffset = false;
+            const KTimeZones::ZoneMap z = zones->zones();
+            for (KTimeZones::ZoneMap::ConstIterator it = z.constBegin();  it != z.constEnd();  ++it)
             {
-                // A time zone abbreviation has been found.
-                // Use the time zone which contains it, if any, provided that the
-                // abbreviation applies at the specified date/time.
-                bool useUtcOffset = false;
-                const KTimeZones::ZoneMap z = zones->zones();
-                for (KTimeZones::ZoneMap::ConstIterator it = z.constBegin();  it != z.constEnd();  ++it)
+                if (it.value().abbreviations().contains(zoneAbbrev))
                 {
-                    if (it.value().abbreviations().contains(zoneAbbrev))
+                    int offset2;
+                    int offset = it.value().offsetAtZoneTime(qdt, &offset2);
+                    QDateTime ut(qdt);
+                    ut.setTimeSpec(Qt::UTC);
+                    ut.addSecs(-offset);
+                    if (it.value().abbreviation(ut) != zoneAbbrev)
                     {
-                        int offset2;
-                        int offset = it.value().offsetAtZoneTime(qdt, &offset2);
-                        QDateTime ut(qdt);
-                        ut.setTimeSpec(Qt::UTC);
-                        ut.addSecs(-offset);
+                        if (offset == offset2)
+                            continue;     // abbreviation doesn't apply at specified time
+                        ut.addSecs(offset - offset2);
                         if (it.value().abbreviation(ut) != zoneAbbrev)
-                        {
-                            if (offset == offset2)
-                                continue;     // abbreviation doesn't apply at specified time
-                            ut.addSecs(offset - offset2);
-                            if (it.value().abbreviation(ut) != zoneAbbrev)
-                                continue;     // abbreviation doesn't apply at specified time
-                            offset = offset2;
-                        }
-                        // Found a time zone which uses this abbreviation at the specified date/time
-                        if (zone.isValid())
-                        {
-                            // Abbreviation is used by more than one time zone
-                            if (!offsetIfAmbiguous  ||  offset != utcOffset)
-                                return KDateTime();
-                            useUtcOffset = true;
-                        }
-                        else
-                        {
-                            zone = it.value();
-                            utcOffset = offset;
-                        }
+                            continue;     // abbreviation doesn't apply at specified time
+                        offset = offset2;
                     }
-                }
-                if (useUtcOffset)
-                {
-                    zone = KTimeZone();
-                    if (!utcOffset)
-                        qdt.setTimeSpec(Qt::UTC);
-                }
-                else
-                    zname = true;
-            }
-            else if (utcOffset  ||  qdt.timeSpec() == Qt::UTC)
-            {
-                // A UTC offset has been found.
-                // Use the time zone which contains it, if any.
-                // For a date-only value, use the start of the day.
-                QDateTime dtUTC = qdt;
-                dtUTC.setTimeSpec(Qt::UTC);
-                dtUTC.addSecs(-utcOffset);
-                const KTimeZones::ZoneMap z = zones->zones();
-                for (KTimeZones::ZoneMap::ConstIterator it = z.constBegin();  it != z.constEnd();  ++it)
-                {
-                    QList<int> offsets = it.value().utcOffsets();
-                    if ((offsets.isEmpty() || offsets.contains(utcOffset))
-                    &&  it.value().offsetAtUtc(dtUTC) == utcOffset)
+                    // Found a time zone which uses this abbreviation at the specified date/time
+                    if (zone.isValid())
                     {
-                        // Found a time zone which uses this offset at the specified time
-                        if (zone.isValid()  ||  !utcOffset)
-                        {
-                            // UTC offset is used by more than one time zone
-                            if (!offsetIfAmbiguous)
-                                return KDateTime();
-                            if (invalid)
-                            {
-                                KDateTime dt;            // date out of range - return invalid KDateTime ...
-                                dt.d->status = invalid;    // ... with reason for error
-                                return dt;
-                            }
-                            if (dateOnly)
-                                return KDateTime(qdt.date(), Spec(OffsetFromUTC, utcOffset));
-                            qdt.setTimeSpec(Qt::LocalTime);
-                            return KDateTime(qdt, Spec(OffsetFromUTC, utcOffset));
-                        }
-                        zone = it.value();
+                        // Abbreviation is used by more than one time zone
+                        if (!offsetIfAmbiguous  ||  offset != utcOffset)
+                            return KDateTime();
+                        useUtcOffset = true;
                     }
+                    else
+                    {
+                        zone = it.value();
+                        utcOffset = offset;
+                    }
+                }
+            }
+            if (useUtcOffset)
+            {
+                zone = KTimeZone();
+                if (!utcOffset)
+                    qdt.setTimeSpec(Qt::UTC);
+            }
+            else
+                zname = true;
+        }
+        else if (utcOffset  ||  qdt.timeSpec() == Qt::UTC)
+        {
+            // A UTC offset has been found.
+            // Use the time zone which contains it, if any.
+            // For a date-only value, use the start of the day.
+            QDateTime dtUTC = qdt;
+            dtUTC.setTimeSpec(Qt::UTC);
+            dtUTC.addSecs(-utcOffset);
+            const KTimeZones::ZoneMap z = zones->zones();
+            for (KTimeZones::ZoneMap::ConstIterator it = z.constBegin();  it != z.constEnd();  ++it)
+            {
+                QList<int> offsets = it.value().utcOffsets();
+                if ((offsets.isEmpty() || offsets.contains(utcOffset))
+                &&  it.value().offsetAtUtc(dtUTC) == utcOffset)
+                {
+                    // Found a time zone which uses this offset at the specified time
+                    if (zone.isValid()  ||  !utcOffset)
+                    {
+                        // UTC offset is used by more than one time zone
+                        if (!offsetIfAmbiguous)
+                            return KDateTime();
+                        if (dateOnly)
+                            return KDateTime(qdt.date(), Spec(OffsetFromUTC, utcOffset));
+                        qdt.setTimeSpec(Qt::LocalTime);
+                        return KDateTime(qdt, Spec(OffsetFromUTC, utcOffset));
+                    }
+                    zone = it.value();
                 }
             }
         }
         if (!zone.isValid() && zname)
             return KDateTime();    // an unknown zone name or abbreviation was found
-        if (zone.isValid() && !invalid)
+        if (zone.isValid())
         {
             if (dateOnly)
                 return KDateTime(qdt.date(), Spec(zone));
@@ -2391,12 +2340,6 @@ KDateTime KDateTime::fromString(const QString &string, const QString &format,
     }
 
     // No time zone match was found
-    if (invalid)
-    {
-        KDateTime dt;            // date out of range - return invalid KDateTime ...
-        dt.d->status = invalid;    // ... with reason for error
-        return dt;
-    }
     KDateTime result;
     if (utcOffset)
     {
@@ -2474,9 +2417,8 @@ QDataStream & operator>>(QDataStream &s, KDateTime &kdt)
  * utcOffset == 0, that indicates that no UTC offset was found.
  */
 QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
-                  QString& zoneName, QByteArray& zoneAbbrev, bool& dateOnly, Status &status)
+                  QString& zoneName, QByteArray& zoneAbbrev, bool& dateOnly)
 {
-    status = stValid;
     QString str = string.simplified();
     int year      = NO_NUMBER;
     int month     = NO_NUMBER;
@@ -2796,10 +2738,10 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
         year = KDateTime::currentLocalDate().year();
     if (month == NO_NUMBER)
         month = 1;
-    QDate d = checkDate(year, month, (day > 0 ? day : 1), status);   // convert date, and check for out-of-range
+    QDate d = QDate(year, month, (day > 0 ? day : 1));
     if (!d.isValid())
         return QDateTime();
-    if (dayOfWeek != NO_NUMBER  &&  !status)
+    if (dayOfWeek != NO_NUMBER)
     {
         if (day == NO_NUMBER)
         {
@@ -3049,28 +2991,3 @@ int findString_internal(const QString &string, const char *array, int count, int
     }
     return -1;
 }
-
-/*
- * Return the QDate for a given year, month and day.
- * If in error, check whether the reason is that the year is out of range.
- * If so, return a valid (but wrong) date but with 'status' set to the
- * appropriate error code. If no error, 'status' is set to stValid.
- */
-QDate checkDate(int year, int month, int day, Status &status)
-{
-    status = stValid;
-    QDate qdate(year, month, day);
-    if (qdate.isValid())
-        return qdate;
-
-    // Invalid date - check whether it's simply out of range
-    if (year < MIN_YEAR)
-    {
-        bool leap = (year % 4 == 0) && (year % 100 || year % 400 == 0);
-        qdate.setDate((leap ? 2000 : 2001), month, day);
-        if (qdate.isValid())
-            status = stTooEarly;
-    }
-    return qdate;
-}
-
