@@ -387,12 +387,6 @@ QString KCalendarSystemIndianNationalPrivate::weekDayName(int weekDay, KLocale::
 }
 
 
-KCalendarSystemIndianNational::KCalendarSystemIndianNational(const KLocale *locale)
-                             : KCalendarSystem(*new KCalendarSystemIndianNationalPrivate(this), KSharedConfig::Ptr(), locale)
-{
-    d_ptr->loadConfig(calendarType());
-}
-
 KCalendarSystemIndianNational::KCalendarSystemIndianNational(const KSharedConfig::Ptr config, const KLocale *locale)
                              : KCalendarSystem(*new KCalendarSystemIndianNationalPrivate(this), config, locale)
 {

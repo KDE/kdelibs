@@ -81,12 +81,6 @@ int KCalendarSystemThaiPrivate::earliestValidYear() const
 }
 
 
-KCalendarSystemThai::KCalendarSystemThai(const KLocale *locale)
-                   : KCalendarSystemGregorian(*new KCalendarSystemThaiPrivate(this), KSharedConfig::Ptr(), locale)
-{
-    d_ptr->loadConfig(calendarType());
-}
-
 KCalendarSystemThai::KCalendarSystemThai(const KSharedConfig::Ptr config, const KLocale *locale)
                    : KCalendarSystemGregorian(*new KCalendarSystemThaiPrivate(this), config, locale)
 {

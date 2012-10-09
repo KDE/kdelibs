@@ -213,23 +213,6 @@ public:
     static QString calendarType(KLocale::CalendarSystem calendarSystem);
 
     /**
-     * Constructor of abstract calendar class. This will be called by derived classes.
-     *
-     * @param locale locale to use for translations. The global locale is used if null.
-     */
-    explicit KCalendarSystem(const KLocale *locale = 0);
-
-    /**
-     * Constructor of abstract calendar class. This will be called by derived classes.
-     *
-     * @param config a configuration file with a 'KCalendarSystem %calendarName' group detailing
-     *               locale-related preferences (such as era options).  The global config is used
-                     if null.
-     * @param locale locale to use for translations. The global locale is used if null.
-     */
-    explicit KCalendarSystem(const KSharedConfig::Ptr config, const KLocale *locale = 0);
-
-    /**
      * Destructor.
      */
     virtual ~KCalendarSystem();
@@ -1617,35 +1600,6 @@ protected:
     const KLocale *locale() const;
 
     /**
-     * @deprecated for internal use only
-     *
-     * Sets the maximum number of months in a year
-     *
-     * Only for internal calendar system use
-     */
-    KDECORE_DEPRECATED void setMaxMonthsInYear(int maxMonths);
-
-    /**
-     * @deprecated for internal use only
-     *
-     * Sets the maximum number of days in a week
-     *
-     * Only for internal calendar system use
-     */
-    KDECORE_DEPRECATED void setMaxDaysInWeek(int maxDays);
-
-    /**
-     * @deprecated for internal use only
-     *
-     * @since 4.4
-     *
-     * Sets if Calendar System has Year 0 or not
-     *
-     * Only for internal calendar system use
-     */
-    KDECORE_DEPRECATED void setHasYear0(bool hasYear0);
-
-    /**
      * Constructor of abstract calendar class. This will be called by derived classes.
      *
      * @param dd derived private d-pointer.
@@ -1654,9 +1608,7 @@ protected:
                      if null.
      * @param locale locale to use for translations. The global locale is used if null.
      */
-    KCalendarSystem(KCalendarSystemPrivate &dd,
-                    const KSharedConfig::Ptr config = KSharedConfig::Ptr(),
-                    const KLocale *locale = 0);
+    KCalendarSystem(KCalendarSystemPrivate &dd, const KSharedConfig::Ptr config, const KLocale *locale);
 
     KCalendarSystemPrivate * const d_ptr;
 

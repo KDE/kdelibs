@@ -82,7 +82,7 @@ void KCalendarSystemQDatePrivate::loadDefaultEraList()
     QString name, shortName, format;
 
     KConfigGroup lcg(config(), QString::fromLatin1("Locale"));
-    KConfigGroup cg = lcg.group(QString::fromLatin1("KCalendarSystem %1").arg(q->calendarType(q->calendarSystem())));
+    KConfigGroup cg = lcg.group(QString::fromLatin1("KCalendarSystem %1").arg(q->calendarType()));
     m_useCommonEra = cg.readEntry("UseCommonEra", false);
 
     if (m_useCommonEra) {
@@ -386,12 +386,6 @@ QString KCalendarSystemQDatePrivate::weekDayName(int weekDay, KLocale::DateTimeC
     }
 }
 
-
-KCalendarSystemQDate::KCalendarSystemQDate(const KLocale *locale)
-                    : KCalendarSystem(*new KCalendarSystemQDatePrivate(this), KSharedConfig::Ptr(), locale)
-{
-    d_ptr->loadConfig(calendarType());
-}
 
 KCalendarSystemQDate::KCalendarSystemQDate(const KSharedConfig::Ptr config, const KLocale *locale)
                     : KCalendarSystem(*new KCalendarSystemQDatePrivate(this), config, locale)

@@ -74,7 +74,7 @@ void KCalendarSystemJulianPrivate::loadDefaultEraList()
 {
     QString name, shortName, format;
 
-    KConfigGroup cg(config(), QString::fromLatin1("KCalendarSystem %1").arg(q->calendarType(q->calendarSystem())));
+    KConfigGroup cg(config(), QString::fromLatin1("KCalendarSystem %1").arg(q->calendarType()));
     m_useCommonEra = cg.readEntry("UseCommonEra", false);
 
     if (m_useCommonEra) {
@@ -400,12 +400,6 @@ QString KCalendarSystemJulianPrivate::weekDayName(int weekDay, KLocale::DateTime
     }
 }
 
-
-KCalendarSystemJulian::KCalendarSystemJulian(const KLocale *locale)
-                     : KCalendarSystem(*new KCalendarSystemJulianPrivate(this), KSharedConfig::Ptr(), locale)
-{
-    d_ptr->loadConfig(calendarType());
-}
 
 KCalendarSystemJulian::KCalendarSystemJulian(const KSharedConfig::Ptr config, const KLocale *locale)
                      : KCalendarSystem(*new KCalendarSystemJulianPrivate(this), config, locale)

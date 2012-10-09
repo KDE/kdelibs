@@ -76,7 +76,6 @@ public:
     virtual QString stringFromInteger(int number, int padWidth, QChar padChar, KLocale::DigitSet digitSet) const;
 
     // Utility functions
-    bool setAnyDate(QDate &date, int year, int month, int day) const;
     int addYears(int startYear, int yearsToAdd) const;
     int differenceYearNumbers(int fromYear, int toYear) const;
     QDate invalidDate() const;

@@ -399,12 +399,6 @@ QString KCalendarSystemJalaliPrivate::weekDayName(int weekDay, KLocale::DateTime
 }
 
 
-KCalendarSystemJalali::KCalendarSystemJalali(const KLocale *locale)
-                     : KCalendarSystem(*new KCalendarSystemJalaliPrivate(this), KSharedConfig::Ptr(), locale)
-{
-    d_ptr->loadConfig(calendarType());
-}
-
 KCalendarSystemJalali::KCalendarSystemJalali(const KSharedConfig::Ptr config, const KLocale *locale)
                      : KCalendarSystem(*new KCalendarSystemJalaliPrivate(this), config, locale)
 {

@@ -38,8 +38,7 @@ class KCalendarSystemJapanesePrivate;
 class KCalendarSystemJapanese: public KCalendarSystemGregorian
 {
 public:
-    explicit KCalendarSystemJapanese(const KLocale *locale = 0);
-    explicit KCalendarSystemJapanese(const KSharedConfig::Ptr config, const KLocale *locale = 0);
+    explicit KCalendarSystemJapanese(const KSharedConfig::Ptr config, const KLocale *locale);
     virtual ~KCalendarSystemJapanese();
 
     virtual QString calendarType() const;
@@ -71,9 +70,7 @@ public:
 protected:
     virtual bool julianDayToDate(int jd, int &year, int &month, int &day) const;
     virtual bool dateToJulianDay(int year, int month, int day, int &jd) const;
-    KCalendarSystemJapanese(KCalendarSystemJapanesePrivate &dd,
-                            const KSharedConfig::Ptr config = KSharedConfig::Ptr(),
-                            const KLocale *locale = 0);
+    KCalendarSystemJapanese(KCalendarSystemJapanesePrivate &dd, const KSharedConfig::Ptr config, const KLocale *locale);
 
 private:
     Q_DECLARE_PRIVATE(KCalendarSystemJapanese)

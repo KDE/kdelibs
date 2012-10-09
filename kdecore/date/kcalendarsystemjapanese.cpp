@@ -100,12 +100,6 @@ int KCalendarSystemJapanesePrivate::earliestValidYear() const
 }
 
 
-KCalendarSystemJapanese::KCalendarSystemJapanese(const KLocale *locale)
-                       : KCalendarSystemGregorian(*new KCalendarSystemJapanesePrivate(this), KSharedConfig::Ptr(), locale)
-{
-    d_ptr->loadConfig(calendarType());
-}
-
 KCalendarSystemJapanese::KCalendarSystemJapanese(const KSharedConfig::Ptr config, const KLocale *locale)
                        : KCalendarSystemGregorian(*new KCalendarSystemJapanesePrivate(this), config, locale)
 {

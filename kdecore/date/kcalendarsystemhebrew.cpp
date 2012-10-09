@@ -876,12 +876,6 @@ QString KCalendarSystemHebrewPrivate::weekDayName(int weekDay, KLocale::DateTime
 }
 
 
-KCalendarSystemHebrew::KCalendarSystemHebrew(const KLocale *locale)
-                     : KCalendarSystem(*new KCalendarSystemHebrewPrivate(this), KSharedConfig::Ptr(), locale)
-{
-    d_ptr->loadConfig(calendarType());
-}
-
 KCalendarSystemHebrew::KCalendarSystemHebrew(const KSharedConfig::Ptr config, const KLocale *locale)
                      : KCalendarSystem(*new KCalendarSystemHebrewPrivate(this), config, locale)
 {

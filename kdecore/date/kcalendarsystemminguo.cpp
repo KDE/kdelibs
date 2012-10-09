@@ -75,12 +75,6 @@ int KCalendarSystemMinguoPrivate::earliestValidYear() const
 }
 
 
-KCalendarSystemMinguo::KCalendarSystemMinguo(const KLocale *locale)
-                     : KCalendarSystemGregorian(*new KCalendarSystemMinguoPrivate(this), KSharedConfig::Ptr(), locale)
-{
-    d_ptr->loadConfig(calendarType());
-}
-
 KCalendarSystemMinguo::KCalendarSystemMinguo(const KSharedConfig::Ptr config, const KLocale *locale)
                      : KCalendarSystemGregorian(*new KCalendarSystemMinguoPrivate(this), config, locale)
 {

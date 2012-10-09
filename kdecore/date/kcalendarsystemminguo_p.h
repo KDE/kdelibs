@@ -38,8 +38,7 @@ class KCalendarSystemMinguoPrivate;
 class KCalendarSystemMinguo: public KCalendarSystemGregorian
 {
 public:
-    explicit KCalendarSystemMinguo(const KLocale *locale = 0);
-    explicit KCalendarSystemMinguo(const KSharedConfig::Ptr config, const KLocale *locale = 0);
+    explicit KCalendarSystemMinguo(const KSharedConfig::Ptr config, const KLocale *locale);
     virtual ~KCalendarSystemMinguo();
 
     virtual QString calendarType() const;
@@ -69,9 +68,7 @@ public:
 protected:
     virtual bool julianDayToDate(int jd, int &year, int &month, int &day) const;
     virtual bool dateToJulianDay(int year, int month, int day, int &jd) const;
-    KCalendarSystemMinguo(KCalendarSystemMinguoPrivate &dd,
-                          const KSharedConfig::Ptr config = KSharedConfig::Ptr(),
-                          const KLocale *locale = 0);
+    KCalendarSystemMinguo(KCalendarSystemMinguoPrivate &dd, const KSharedConfig::Ptr config, const KLocale *locale);
 
 private:
     Q_DECLARE_PRIVATE(KCalendarSystemMinguo)

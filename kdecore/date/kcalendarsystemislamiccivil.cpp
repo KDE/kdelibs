@@ -393,12 +393,6 @@ QString KCalendarSystemIslamicCivilPrivate::weekDayName(int weekDay, KLocale::Da
 }
 
 
-KCalendarSystemIslamicCivil::KCalendarSystemIslamicCivil(const KLocale *locale)
-                           : KCalendarSystem(*new KCalendarSystemIslamicCivilPrivate(this), KSharedConfig::Ptr(), locale)
-{
-    d_ptr->loadConfig(calendarType());
-}
-
 KCalendarSystemIslamicCivil::KCalendarSystemIslamicCivil(const KSharedConfig::Ptr config, const KLocale *locale)
                            : KCalendarSystem(*new KCalendarSystemIslamicCivilPrivate(this), config, locale)
 {

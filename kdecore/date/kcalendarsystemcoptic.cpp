@@ -392,12 +392,6 @@ QString KCalendarSystemCopticPrivate::weekDayName(int weekDay, KLocale::DateTime
 }
 
 
-KCalendarSystemCoptic::KCalendarSystemCoptic(const KLocale *locale)
-                     : KCalendarSystem(*new KCalendarSystemCopticPrivate(this), KSharedConfig::Ptr(), locale)
-{
-    d_ptr->loadConfig(calendarType());
-}
-
 KCalendarSystemCoptic::KCalendarSystemCoptic(const KSharedConfig::Ptr config, const KLocale *locale)
                      : KCalendarSystem(*new KCalendarSystemCopticPrivate(this), config, locale)
 {

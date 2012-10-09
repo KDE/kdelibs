@@ -648,15 +648,6 @@ QString KCalendarSystemPrivate::stringFromInteger(int number, int padWidth, QCha
     }
 }
 
-// Allows us to set dates outside publically valid range, USE WITH CARE!!!!
-bool KCalendarSystemPrivate::setAnyDate(QDate &date, int year, int month, int day) const
-{
-    int jd;
-    q->dateToJulianDay(year, month, day, jd);
-    date = QDate::fromJulianDay(jd);
-    return true;
-}
-
 // Utility to correctly add years to a year number because some systems such as
 // Julian and Gregorian calendars don't have a year 0
 int KCalendarSystemPrivate::addYears(int originalYear, int addYears) const
@@ -921,21 +912,6 @@ void KCalendarSystemPrivate::loadConfig(const QString & calendarType)
     KConfigGroup calendarGroup = localeGroup.group(QString::fromLatin1("KCalendarSystem %1").arg(calendarType));
     loadEraList(calendarGroup);
     loadShortYearWindowStartYear(calendarGroup);
-}
-
-
-KCalendarSystem::KCalendarSystem(const KLocale *locale)
-               : d_ptr(new KCalendarSystemPrivate(this))
-{
-    d_ptr->m_config = KSharedConfig::Ptr();
-    d_ptr->m_locale = locale;
-}
-
-KCalendarSystem::KCalendarSystem(const KSharedConfig::Ptr config, const KLocale *locale)
-               : d_ptr(new KCalendarSystemPrivate(this))
-{
-    d_ptr->m_config = config;
-    d_ptr->m_locale = locale;
 }
 
 KCalendarSystem::KCalendarSystem(KCalendarSystemPrivate &dd, const KSharedConfig::Ptr config, const KLocale *locale)
@@ -2250,22 +2226,4 @@ const KLocale * KCalendarSystem::locale() const
     Q_D(const KCalendarSystem);
 
     return d->locale();
-}
-
-// Deprecated
-void KCalendarSystem::setMaxMonthsInYear(int maxMonths)
-{
-    Q_UNUSED(maxMonths)
-}
-
-// Deprecated
-void KCalendarSystem::setMaxDaysInWeek(int maxDays)
-{
-    Q_UNUSED(maxDays)
-}
-
-// Deprecated
-void KCalendarSystem::setHasYear0(bool hasYear0)
-{
-    Q_UNUSED(hasYear0)
 }

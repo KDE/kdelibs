@@ -384,12 +384,6 @@ QString KCalendarSystemGregorianPrivate::weekDayName(int weekDay, KLocale::DateT
 }
 
 
-KCalendarSystemGregorian::KCalendarSystemGregorian(const KLocale *locale)
-                        : KCalendarSystem(*new KCalendarSystemGregorianPrivate(this), KSharedConfig::Ptr(), locale)
-{
-    d_ptr->loadConfig(calendarType());
-}
-
 KCalendarSystemGregorian::KCalendarSystemGregorian(const KSharedConfig::Ptr config,
                                                                      const KLocale *locale)
                         : KCalendarSystem(*new KCalendarSystemGregorianPrivate(this), config, locale)

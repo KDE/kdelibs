@@ -292,12 +292,6 @@ QString KCalendarSystemEthiopianPrivate::weekDayName(int weekDay, KLocale::DateT
 }
 
 
-KCalendarSystemEthiopian::KCalendarSystemEthiopian(const KLocale *locale)
-                        : KCalendarSystemCoptic(*new KCalendarSystemEthiopianPrivate(this), KSharedConfig::Ptr(), locale)
-{
-    d_ptr->loadConfig(calendarType());
-}
-
 KCalendarSystemEthiopian::KCalendarSystemEthiopian(const KSharedConfig::Ptr config, const KLocale *locale)
                         : KCalendarSystemCoptic(*new KCalendarSystemEthiopianPrivate(this), config, locale)
 {
