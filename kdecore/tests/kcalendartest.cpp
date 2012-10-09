@@ -1343,8 +1343,8 @@ void KCalendarTest::testIndianNational()
     QCOMPARE(calendar->day(testDate), 1);
 
     // Test some key dates
-    testYmd(calendar,    0,  1,  1, QDate(78,  3, 24).toJulianDay());
-    testYmd(calendar,    0, 12, 30, QDate(79,  3, 23).toJulianDay());
+    testYmd(calendar,    0,  1,  1, 1749630);
+    testYmd(calendar,    0, 12, 30, 1749994);
     testYmd(calendar, 1922,  1,  1, QDate(2000,  3, 21).toJulianDay());
     testYmd(calendar, 1922, 12, 30, QDate(2001,  3, 21).toJulianDay());
     testYmd(calendar, 1932,  1,  1, QDate(2010,  3, 22).toJulianDay());
@@ -1580,8 +1580,8 @@ void KCalendarTest::testIslamicCivilBasic()
 
     testCalendarSystemType(calendar, KLocale::IslamicCivilCalendar, "hijri", "Islamic / Hijri (Civil)");
 
-    QCOMPARE(calendar->epoch(), QDate(622, 7, 16));
-    QCOMPARE(calendar->earliestValidDate(), QDate(622, 7, 16));
+    QCOMPARE(calendar->epoch(), QDate::fromJulianDay(1948440));
+    QCOMPARE(calendar->earliestValidDate(), QDate::fromJulianDay(1948440));
     QCOMPARE(calendar->latestValidDate(), QDate(10323, 10, 21));
 
     testValid(calendar, 0, 10000, 13, 31, QDate(1, 1, 1));
@@ -1641,7 +1641,7 @@ void KCalendarTest::testJalaliBasic()
     testCalendarSystemType(calendar, KLocale::JalaliCalendar, "jalali", "Jalali");
 
     //Birashk argorithm only good between AP 1244-01-01 to 1530-12-29 (AD 1865 to 2152)
-    QCOMPARE(calendar->epoch(), QDate(622, 3, 19));
+    QCOMPARE(calendar->epoch(), QDate::fromJulianDay(1948321));
     QCOMPARE(calendar->earliestValidDate(), QDate(1865, 03, 21));
     QCOMPARE(calendar->latestValidDate(), QDate(2152, 03, 19));
     QCOMPARE(calendar->isValid(1243, 12, 29), false);
@@ -1878,8 +1878,8 @@ void KCalendarTest::testThaiBasic()
 
     testCalendarSystemType(calendar, KLocale::ThaiCalendar, "thai", "Thai");
 
-    QCOMPARE(calendar->epoch(), QDate(-544, 1, 7));
-    QCOMPARE(calendar->earliestValidDate(), QDate(-544, 1, 7));
+    QCOMPARE(calendar->epoch(), QDate::fromJulianDay(1522734));
+    QCOMPARE(calendar->earliestValidDate(), QDate::fromJulianDay(1522734));
     QCOMPARE(calendar->latestValidDate(), QDate(9456, 12, 31));
 
     testValid(calendar, -1, 10000, 13, 32, QDate());
