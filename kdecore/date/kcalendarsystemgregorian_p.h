@@ -80,7 +80,6 @@ protected:
                                       const KLocale *locale = 0);
 
 private:
-    friend class KCalendarSystemIndianNational;  // To allow access to julianDayToDate() and dateToJulianDay()
     Q_DECLARE_PRIVATE(KCalendarSystemGregorian)
 };
 

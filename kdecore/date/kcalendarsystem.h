@@ -1556,7 +1556,6 @@ public:
     virtual bool isProleptic() const = 0;
 
 protected:
-
     /**
      * Internal method to convert a Julian Day number into the YMD values for
      * this calendar system.
@@ -1659,21 +1658,10 @@ protected:
                     const KSharedConfig::Ptr config = KSharedConfig::Ptr(),
                     const KLocale *locale = 0);
 
+    KCalendarSystemPrivate * const d_ptr;
+
 private:
-    //Required for shared d-pointer as already private, remove in KDE5
-    friend class KCalendarSystemCoptic;
-    friend class KCalendarSystemEthiopian;
-    friend class KCalendarSystemGregorian;
-    friend class KCalendarSystemHebrew;
-    friend class KCalendarSystemIndianNational;
-    friend class KCalendarSystemIslamicCivil;
-    friend class KCalendarSystemJalali;
-    friend class KCalendarSystemJapanese;
-    friend class KCalendarSystemJulian;
-    friend class KCalendarSystemMinguo;
-    friend class KCalendarSystemQDate;
-    friend class KCalendarSystemThai;
-    //Other friends that need access to protected/private functions
+    // Other classes that need access to protected/private functions
     friend class KLocalizedDate;
     friend class KLocalizedDatePrivate;
     friend class KDateTimeParser;
@@ -1685,7 +1673,6 @@ private:
     KCalendarEra era(const QString &eraName, int yearInEra) const;
 
     Q_DISABLE_COPY(KCalendarSystem)
-    KCalendarSystemPrivate * const d_ptr; // KDE5 make protected
     Q_DECLARE_PRIVATE(KCalendarSystem)
 };
 
