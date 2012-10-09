@@ -716,7 +716,7 @@ endif(NOT PHONON_FOUND)
 #####################  provide some options   ##########################################
 
 option(KDE4_ENABLE_FINAL "Enable final all-in-one compilation")
-option(KDE4_BUILD_TESTS  "Build the tests")
+option(KDE4_BUILD_TESTS  "Build the tests" ON)
 option(KDE4_ENABLE_HTMLHANDBOOK  "Create targets htmlhandbook for creating the html versions of the docbook docs")
 set(KDE4_SERIALIZE_TOOL "" CACHE STRING "Tool to serialize resource-intensive commands in parallel builds")
 
