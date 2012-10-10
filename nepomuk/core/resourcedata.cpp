@@ -491,11 +491,14 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
                                                            QLatin1String("org.kde.nepomuk.DataManagement"),
                                                            QLatin1String("setProperty") );
         QVariantList varList;
-        foreach( const Nepomuk::Variant var, value.toVariantList() ) {
-            // make sure resource values are in the store
+        foreach( const Variant& var, value.toVariantList() ) {
+            // make sure resource values are identified and in the store
             if( var.simpleType() == qMetaTypeId<Resource>() ) {
-                var.toResource().m_data->store();
-                varList << var.toUrl();
+                Resource res = var.toResource();
+                res.determineFinalResourceData();
+                res.m_data->store();
+
+                varList << res.uri();
             }
             else {
                 varList << var.variant();
