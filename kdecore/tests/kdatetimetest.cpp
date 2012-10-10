@@ -3816,6 +3816,9 @@ void KDateTimeTest::strings_format()
     ::tzset();
 }
 
+#ifdef COMPILING_TESTS
+// This test requires a specially-modified kdecore, so use the same compile guard here
+// as used in kdecore/date/kdatetime.cpp
 void KDateTimeTest::cache()
 {
     KTimeZone london = KSystemTimeZones::zone("Europe/London");
@@ -3900,6 +3903,7 @@ void KDateTimeTest::cache()
         ::setenv("TZ", originalZone, 1);
     ::tzset();
 }
+#endif /* COMPILING_TESTS */
 
 void KDateTimeTest::stream()
 {
