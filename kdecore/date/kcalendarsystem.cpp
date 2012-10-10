@@ -1185,20 +1185,6 @@ QDate KCalendarSystem::addMonths(const QDate &date, int numMonths) const
     return QDate();
 }
 
-QDate KCalendarSystem::addDays(const QDate &date, int numDays) const
-{
-    // QDate only holds a uint and has no boundary checking in addDays(), so we need to check
-    if (isValid(date) && (long) date.toJulianDay() + (long) numDays > 0) {
-        // QDate adds straight to jd
-        QDate temp = date.addDays(numDays);
-        if (isValid(temp)) {
-            return temp;
-        }
-    }
-
-    return QDate();
-}
-
 // NOT VIRTUAL - Uses shared-d instead
 void KCalendarSystem::dateDifference(const QDate &fromDate, const QDate &toDate,
                                      int *yearsDiff, int *monthsDiff, int *daysDiff, int *direction) const
@@ -1229,16 +1215,6 @@ int KCalendarSystem::monthsDifference(const QDate &fromDate, const QDate &toDate
 
     if (isValid(fromDate) && isValid(toDate)) {
         return d->monthsDifference(fromDate, toDate);
-    }
-
-    return 0;
-}
-
-// NOT VIRTUAL - Uses shared-d instead
-int KCalendarSystem::daysDifference(const QDate &fromDate, const QDate &toDate) const
-{
-    if (isValid(fromDate) && isValid(toDate)) {
-        return toDate.toJulianDay() - fromDate.toJulianDay();
     }
 
     return 0;

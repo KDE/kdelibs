@@ -422,7 +422,11 @@ public:
      * @param ndays number of days to add
      * @return The new date, null date if any errors
      */
-    virtual QDate addDays(const QDate &date, int ndays) const;
+    inline QDate addDays(const QDate &date, int ndays) const
+    {
+        QDate d = date.addDays(ndays);
+        return isValid(d) ? d : QDate();
+    }
 
     //KDE5 make virtual?
     /**
@@ -474,7 +478,6 @@ public:
      */
     int monthsDifference(const QDate &fromDate, const QDate &toDate) const;
 
-    //KDE5 make virtual?
     /**
      * Returns the difference between two dates in days
      * The returned value will be negative if @p fromDate > @p toDate.
@@ -483,7 +486,10 @@ public:
      * @param toDate The date to end at
      * @return The number of days difference
      */
-    int daysDifference(const QDate &fromDate, const QDate &toDate) const;
+    inline int daysDifference(const QDate &fromDate, const QDate &toDate) const
+    {
+        return isValid(fromDate) && isValid(toDate) ? toDate.toJulianDay() - fromDate.toJulianDay() : 0;
+    }
 
     /**
      * Returns number of months in the given year
