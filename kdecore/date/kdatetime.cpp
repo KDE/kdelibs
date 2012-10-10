@@ -40,7 +40,7 @@
 #include <QtCore/QSharedData>
 
 #include <klocale.h>
-#include "kcalendarsystemqdate_p.h"
+#include "kcalendarsystem.h"
 #include <ksystemtimezone.h>
 #include <kdebug.h>
 
@@ -73,8 +73,8 @@ static const char longMonth[][10] = {
 
 static QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                          QString& zoneName, QByteArray& zoneAbbrev, bool& dateOnly);
-static int matchDay(const QString &string, int &offset, KCalendarSystem*);
-static int matchMonth(const QString &string, int &offset, KCalendarSystem*);
+static int matchDay(const QString &string, int &offset, const KCalendarSystem*);
+static int matchMonth(const QString &string, int &offset, const KCalendarSystem*);
 static bool getUTCOffset(const QString &string, int &offset, bool colon, int &result);
 static int getAmPm(const QString &string, int &offset, KLocale*);
 static bool getNumber(const QString &string, int &offset, int mindigits, int maxdigits, int minval, int maxval, int &result);
@@ -1422,7 +1422,7 @@ QString KDateTime::toString(const QString &format) const
         return QString();
     enum { TZNone, UTCOffsetShort, UTCOffset, UTCOffsetColon, TZAbbrev, TZName };
     KLocale *locale = KLocale::global();
-    KCalendarSystemQDate calendar(locale);
+    QSharedPointer<const KCalendarSystem> calendar(KCalendarSystem::create(KLocale::QDateCalendar, locale));
     QString result;
     QString s;
     int num, numLength, zone;
@@ -1465,10 +1465,10 @@ QString KDateTime::toString(const QString &format) const
                     num = d->date().month();
                     break;
                 case 'B':     // month name, translated
-                    result += calendar.monthName(d->date().month(), 2000, KCalendarSystem::LongName);
+                    result += calendar->monthName(d->date().month(), 2000, KCalendarSystem::LongName);
                     break;
                 case 'b':     // month name, translated, short
-                    result += calendar.monthName(d->date().month(), 2000, KCalendarSystem::ShortName);
+                    result += calendar->monthName(d->date().month(), 2000, KCalendarSystem::ShortName);
                     break;
                 case 'd':     // day of month, 01 - 31
                     numLength = 2;
@@ -1477,10 +1477,10 @@ QString KDateTime::toString(const QString &format) const
                     num = d->date().day();
                     break;
                 case 'A':     // week day name, translated
-                    result += calendar.weekDayName(d->date().dayOfWeek(), KCalendarSystem::LongDayName);
+                    result += calendar->weekDayName(d->date().dayOfWeek(), KCalendarSystem::LongDayName);
                     break;
                 case 'a':     // week day name, translated, short
-                    result += calendar.weekDayName(d->date().dayOfWeek(), KCalendarSystem::ShortDayName);
+                    result += calendar->weekDayName(d->date().dayOfWeek(), KCalendarSystem::ShortDayName);
                     break;
                 case 'H':     // hour, 00 - 23
                     numLength = 2;
@@ -2436,7 +2436,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
 
     enum { TZNone, UTCOffset, UTCOffsetColon, TZAbbrev, TZName };
     KLocale *locale = KLocale::global();
-    KCalendarSystemQDate calendar(locale);
+    QSharedPointer<const KCalendarSystem> calendar(KCalendarSystem::create(KLocale::QDateCalendar, locale));
     int zone;
     int s = 0;
     int send = str.length();
@@ -2488,7 +2488,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                 case 'B':
                 case 'b':     // month name, translated or English
                 {
-                    int m = matchMonth(str, s, &calendar);
+                    int m = matchMonth(str, s, calendar.data());
                     if (m <= 0  ||  (month != NO_NUMBER && month != m))
                         return QDateTime();
                     month = m;
@@ -2505,7 +2505,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                 case 'A':
                 case 'a':     // week day name, translated or English
                 {
-                    int dow = matchDay(str, s, &calendar);
+                    int dow = matchDay(str, s, calendar.data());
                     if (dow <= 0  ||  (dayOfWeek != NO_NUMBER && dayOfWeek != dow))
                         return QDateTime();
                     dayOfWeek = dow;
@@ -2790,7 +2790,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
  * 'offset' is incremented by the length of the match.
  * Reply = day number (1 - 7), or <= 0 if no match.
  */
-int matchDay(const QString &string, int &offset, KCalendarSystem *calendar)
+int matchDay(const QString &string, int &offset, const KCalendarSystem *calendar)
 {
     int dayOfWeek;
     QString part = string.mid(offset);
@@ -2831,7 +2831,7 @@ int matchDay(const QString &string, int &offset, KCalendarSystem *calendar)
  * 'offset' is incremented by the length of the match.
  * Reply = month number (1 - 12), or <= 0 if no match.
  */
-int matchMonth(const QString &string, int &offset, KCalendarSystem *calendar)
+int matchMonth(const QString &string, int &offset, const KCalendarSystem *calendar)
 {
     int month;
     QString part = string.mid(offset);
