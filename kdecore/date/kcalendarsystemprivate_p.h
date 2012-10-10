@@ -78,7 +78,6 @@ public:
     // Utility functions
     int addYears(int startYear, int yearsToAdd) const;
     int differenceYearNumbers(int fromYear, int toYear) const;
-    QDate invalidDate() const;
     QString simpleDateString(const QString &str) const;
     int dayOfYear(const QDate &date) const;
     int dayOfWeek(const QDate &date) const;

@@ -682,12 +682,6 @@ int KCalendarSystemPrivate::differenceYearNumbers(int fromYear, int toYear) cons
     return dy;
 }
 
-QDate KCalendarSystemPrivate::invalidDate() const
-{
-    //Is QDate's way of saying is invalid
-    return QDate();
-}
-
 QString KCalendarSystemPrivate::simpleDateString(const QString &str) const
 {
     QString newStr;
@@ -1031,9 +1025,7 @@ bool KCalendarSystem::isValid(const QDate &date) const
 
 bool KCalendarSystem::setDate(QDate &date, int year, int month, int day) const
 {
-    Q_D(const KCalendarSystem);
-
-    date = d->invalidDate();
+    date = QDate();
 
     if (isValid(year, month, day)) {
         int jd;
@@ -1052,9 +1044,7 @@ bool KCalendarSystem::setDate(QDate &date, int year, int month, int day) const
 // NOT VIRTUAL - If override needed use shared-d
 bool KCalendarSystem::setDate(QDate &date, int year, int dayOfYear) const
 {
-    Q_D(const KCalendarSystem);
-
-    date = d->invalidDate();
+    date = QDate();
 
     if (isValid(year, dayOfYear)) {
         int jd;
@@ -1083,7 +1073,7 @@ bool KCalendarSystem::setDateIsoWeek(QDate &date, int year, int isoWeekNumber, i
 {
     Q_D(const KCalendarSystem);
 
-    date = d->invalidDate();
+    date = QDate();
 
     if (isValidIsoWeekDate(year, isoWeekNumber, dayOfIsoWeek)) {
 
@@ -1267,7 +1257,7 @@ QDate KCalendarSystem::addYears(const QDate &date, int numYears) const
 
     }
 
-    return d->invalidDate();
+    return QDate();
 }
 
 QDate KCalendarSystem::addMonths(const QDate &date, int numMonths) const
@@ -1306,13 +1296,11 @@ QDate KCalendarSystem::addMonths(const QDate &date, int numMonths) const
 
     }
 
-    return d->invalidDate();
+    return QDate();
 }
 
 QDate KCalendarSystem::addDays(const QDate &date, int numDays) const
 {
-    Q_D(const KCalendarSystem);
-
     // QDate only holds a uint and has no boundary checking in addDays(), so we need to check
     if (isValid(date) && (long) date.toJulianDay() + (long) numDays > 0) {
         // QDate adds straight to jd
@@ -1322,7 +1310,7 @@ QDate KCalendarSystem::addDays(const QDate &date, int numDays) const
         }
     }
 
-    return d->invalidDate();
+    return QDate();
 }
 
 // NOT VIRTUAL - Uses shared-d instead
@@ -2167,8 +2155,6 @@ QDate KCalendarSystem::readDate(const QString &str, bool *ok) const
 
 QDate KCalendarSystem::readDate(const QString &str, KLocale::ReadDateFlags flags, bool *ok) const
 {
-    Q_D(const KCalendarSystem);
-
     if (flags & KLocale::ShortFormat) {
         return readDate(str, locale()->dateFormatShort(), ok);
     } else if (flags & KLocale::NormalFormat) {
@@ -2180,7 +2166,7 @@ QDate KCalendarSystem::readDate(const QString &str, KLocale::ReadDateFlags flags
     } else if (flags & KLocale::IsoOrdinalFormat) {
         return readDate(str, QLatin1String("%Y-%j"), ok);
     }
-    return d->invalidDate();
+    return QDate();
 }
 
 QDate KCalendarSystem::readDate(const QString &inputString, const QString &formatString, bool *ok) const
