@@ -155,11 +155,6 @@ QString KCalendarSystemMinguo::weekDayName(const QDate &date, WeekDayNameFormat 
     return KCalendarSystemGregorian::weekDayName(date, format);
 }
 
-int KCalendarSystemMinguo::weekDayOfPray() const
-{
-    return 7; // TODO JPL ???
-}
-
 bool KCalendarSystemMinguo::isLunar() const
 {
     return KCalendarSystemGregorian::isLunar();

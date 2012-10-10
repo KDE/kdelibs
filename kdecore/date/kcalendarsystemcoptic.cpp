@@ -476,10 +476,6 @@ QString KCalendarSystemCoptic::weekDayName(const QDate &date, WeekDayNameFormat 
     return KCalendarSystem::weekDayName(date, format);
 }
 
-int KCalendarSystemCoptic::weekDayOfPray() const
-{
-    return 7;
-}
 
 bool KCalendarSystemCoptic::isLunar() const
 {

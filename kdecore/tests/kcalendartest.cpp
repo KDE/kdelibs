@@ -1316,7 +1316,6 @@ void KCalendarTest::testQDateCalendarBasic()
     QCOMPARE(calendar->monthsInYear(QDate(2007, 1, 1)), 12);
 
     QCOMPARE(calendar->weekStartDay(), 1);
-    QCOMPARE(calendar->weekDayOfPray(), 7);
 
     QCOMPARE(calendar->isProleptic(), false);
     QCOMPARE(calendar->isLunar(), false);
@@ -1401,7 +1400,6 @@ void KCalendarTest::testGregorianBasic()
     QCOMPARE(calendar->monthsInYear(QDate(2007, 1, 1)), 12);
 
     QCOMPARE(calendar->weekStartDay(), 1);
-    QCOMPARE(calendar->weekDayOfPray(), 7);
 
     QCOMPARE(calendar->isProleptic(), true);
     QCOMPARE(calendar->isLunar(), false);
@@ -1456,7 +1454,6 @@ void KCalendarTest::testHebrewBasic()
     testMonthName(calendar, 1, 5707, testDate, "T", "Tis", "Tishrey", "of Tis", "of Tishrey");
 
     QCOMPARE(calendar->weekStartDay(), 1);
-    QCOMPARE(calendar->weekDayOfPray(), 6);
 
     QCOMPARE(calendar->isProleptic(), false);
     QCOMPARE(calendar->isLunar(), false);
@@ -1535,7 +1532,6 @@ void KCalendarTest::testIslamicCivilBasic()
     QCOMPARE(calendar->monthsInYear(testDate), 12);
 
     QCOMPARE(calendar->weekStartDay(), 1);
-    QCOMPARE(calendar->weekDayOfPray(), 5);
 
     QCOMPARE(calendar->isProleptic(), false);
     QCOMPARE(calendar->isLunar(), true);
@@ -1594,7 +1590,6 @@ void KCalendarTest::testJalaliBasic()
     QCOMPARE(calendar->monthsInYear(testDate), 12);
 
     QCOMPARE(calendar->weekStartDay(), 1);
-    QCOMPARE(calendar->weekDayOfPray(), 5);
 
     QCOMPARE(calendar->isProleptic(), false);
     QCOMPARE(calendar->isLunar(), false);
@@ -1685,7 +1680,6 @@ void KCalendarTest::testJapaneseBasic()
     QCOMPARE(calendar->monthsInYear(QDate(2007, 1, 1)), 12);
 
     QCOMPARE(calendar->weekStartDay(), 1);
-    QCOMPARE(calendar->weekDayOfPray(), 7);
 
     QCOMPARE(calendar->isProleptic(), false);
     QCOMPARE(calendar->isLunar(), false);
@@ -1783,7 +1777,6 @@ void KCalendarTest::testMinguoBasic()
     QCOMPARE(calendar->monthsInYear(QDate(2007, 1, 1)), 12);
 
     QCOMPARE(calendar->weekStartDay(), 1);
-    QCOMPARE(calendar->weekDayOfPray(), 7);
 
     QCOMPARE(calendar->isProleptic(), false);
     QCOMPARE(calendar->isLunar(), false);
@@ -1832,7 +1825,6 @@ void KCalendarTest::testThaiBasic()
     QCOMPARE(calendar->monthsInYear(QDate(2007, 1, 1)), 12);
 
     QCOMPARE(calendar->weekStartDay(), 1);
-    QCOMPARE(calendar->weekDayOfPray(), 7);
 
     QCOMPARE(calendar->isProleptic(), false);
     QCOMPARE(calendar->isLunar(), false);

@@ -472,11 +472,6 @@ int KCalendarSystemGregorian::yearStringToInteger(const QString &sNum, int &iLen
     return KCalendarSystem::yearStringToInteger(sNum, iLength);
 }
 
-int KCalendarSystemGregorian::weekDayOfPray() const
-{
-    return 7; // sunday
-}
-
 bool KCalendarSystemGregorian::isLunar() const
 {
     return false;

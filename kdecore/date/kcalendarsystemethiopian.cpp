@@ -376,11 +376,6 @@ QString KCalendarSystemEthiopian::weekDayName(const QDate &date, WeekDayNameForm
     return KCalendarSystemCoptic::weekDayName(date, format);
 }
 
-int KCalendarSystemEthiopian::weekDayOfPray() const
-{
-    return 7;
-}
-
 bool KCalendarSystemEthiopian::isLunar() const
 {
     return KCalendarSystemCoptic::isLunar();

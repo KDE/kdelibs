@@ -1412,7 +1412,10 @@ public:
      *
      * @return day number (None = 0, Monday = 1, ..., Sunday = 7)
      */
-    KDECORE_DEPRECATED virtual int weekDayOfPray() const = 0;
+    KDECORE_DEPRECATED inline int weekDayOfPray() const
+    {
+        return locale()->weekDayOfPray();
+    }
 
     /**
      * Returns whether the calendar is lunar based.

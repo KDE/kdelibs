@@ -473,11 +473,6 @@ QString KCalendarSystemIslamicCivil::weekDayName(const QDate &date, WeekDayNameF
     return KCalendarSystem::weekDayName(date, format);
 }
 
-int KCalendarSystemIslamicCivil::weekDayOfPray() const
-{
-    return 5; // Friday
-}
-
 bool KCalendarSystemIslamicCivil::isLunar() const
 {
     return true;

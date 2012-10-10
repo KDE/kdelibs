@@ -60,8 +60,6 @@ public:
 
     virtual int yearStringToInteger(const QString &sNum, int &iLength) const;
 
-    virtual int weekDayOfPray() const;
-
     virtual bool isLunar() const;
     virtual bool isLunisolar() const;
     virtual bool isSolar() const;

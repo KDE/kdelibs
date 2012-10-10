@@ -141,11 +141,6 @@ bool KCalendarSystemThai::isLeapYear(const QDate &date) const
     return KCalendarSystemGregorian::isLeapYear(date);
 }
 
-int KCalendarSystemThai::weekDayOfPray() const
-{
-    return 7; // TODO JPL ???
-}
-
 bool KCalendarSystemThai::isLunar() const
 {
     return KCalendarSystemGregorian::isLunar();

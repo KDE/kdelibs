@@ -481,11 +481,6 @@ QString KCalendarSystemJalali::weekDayName(const QDate &date, WeekDayNameFormat 
     return KCalendarSystem::weekDayName(date, format);
 }
 
-int KCalendarSystemJalali::weekDayOfPray() const
-{
-    return 5; // friday
-}
-
 bool KCalendarSystemJalali::isLunar() const
 {
     return false;

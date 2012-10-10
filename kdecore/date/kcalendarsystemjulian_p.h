@@ -61,8 +61,6 @@ public:
     virtual QString weekDayName(int weekDay, WeekDayNameFormat format = LongDayName) const;
     virtual QString weekDayName(const QDate &date, WeekDayNameFormat format = LongDayName) const;
 
-    virtual int weekDayOfPray() const;
-
     virtual bool isLunar() const;
     virtual bool isLunisolar() const;
     virtual bool isSolar() const;

@@ -986,11 +986,6 @@ int KCalendarSystemHebrew::yearStringToInteger(const QString &string, int &readL
     return result;
 }
 
-int KCalendarSystemHebrew::weekDayOfPray() const
-{
-    return 6; // Saturday
-}
-
 bool KCalendarSystemHebrew::isLunar() const
 {
     return false;

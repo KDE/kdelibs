@@ -192,11 +192,6 @@ int KCalendarSystemJapanese::yearStringToInteger(const QString &sNum, int &iLeng
     }
 }
 
-int KCalendarSystemJapanese::weekDayOfPray() const
-{
-    return 7; // TODO JPL ???
-}
-
 bool KCalendarSystemJapanese::isLunar() const
 {
     return KCalendarSystemGregorian::isLunar();

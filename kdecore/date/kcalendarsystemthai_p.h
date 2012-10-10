@@ -52,8 +52,6 @@ public:
     virtual bool isLeapYear(int year) const;
     virtual bool isLeapYear(const QDate &date) const;
 
-    virtual int weekDayOfPray() const;
-
     virtual bool isLunar() const;
     virtual bool isLunisolar() const;
     virtual bool isSolar() const;
