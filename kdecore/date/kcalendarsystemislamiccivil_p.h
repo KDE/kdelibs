@@ -52,8 +52,6 @@ public:
     virtual QDate epoch() const;
     virtual QDate earliestValidDate() const;
     virtual QDate latestValidDate() const;
-    virtual bool isValid(int year, int month, int day) const;
-    virtual bool isValid(const QDate &date) const;
 
     virtual bool isLeapYear(int year) const;
     virtual bool isLeapYear(const QDate &date) const;

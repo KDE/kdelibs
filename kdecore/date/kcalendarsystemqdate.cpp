@@ -428,21 +428,6 @@ QDate KCalendarSystemQDate::latestValidDate() const
     return QDate::fromJulianDay(5373484);
 }
 
-bool KCalendarSystemQDate::isValid(int year, int month, int day) const
-{
-    // Limit to max year 9999 for now, QDate allows to be greater
-    if (year <= 9999) {
-        return QDate::isValid(year, month, day);
-    }
-
-    return false;
-}
-
-bool KCalendarSystemQDate::isValid(const QDate &date) const
-{
-    return KCalendarSystem::isValid(date);
-}
-
 int KCalendarSystemQDate::year(const QDate &date) const
 {
     return date.year();

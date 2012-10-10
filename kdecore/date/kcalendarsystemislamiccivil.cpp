@@ -432,16 +432,6 @@ QDate KCalendarSystemIslamicCivil::latestValidDate() const
     return QDate::fromJulianDay(5491751);
 }
 
-bool KCalendarSystemIslamicCivil::isValid(int year, int month, int day) const
-{
-    return KCalendarSystem::isValid(year, month, day);
-}
-
-bool KCalendarSystemIslamicCivil::isValid(const QDate &date) const
-{
-    return KCalendarSystem::isValid(date);
-}
-
 bool KCalendarSystemIslamicCivil::isLeapYear(int year) const
 {
     return KCalendarSystem::isLeapYear(year);

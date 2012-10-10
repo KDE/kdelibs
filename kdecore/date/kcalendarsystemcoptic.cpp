@@ -436,16 +436,6 @@ QDate KCalendarSystemCoptic::latestValidDate() const
     return QDate::fromJulianDay(5477164);
 }
 
-bool KCalendarSystemCoptic::isValid(int year, int month, int day) const
-{
-    return KCalendarSystem::isValid(year, month, day);
-}
-
-bool KCalendarSystemCoptic::isValid(const QDate &date) const
-{
-    return KCalendarSystem::isValid(date);
-}
-
 bool KCalendarSystemCoptic::isLeapYear(int year) const
 {
     return KCalendarSystem::isLeapYear(year);

@@ -440,16 +440,6 @@ QDate KCalendarSystemJalali::latestValidDate() const
     return QDate::fromJulianDay(2507140);
 }
 
-bool KCalendarSystemJalali::isValid(int year, int month, int day) const
-{
-    return KCalendarSystem::isValid(year, month, day);
-}
-
-bool KCalendarSystemJalali::isValid(const QDate &date) const
-{
-    return KCalendarSystem::isValid(date);
-}
-
 bool KCalendarSystemJalali::isLeapYear(int year) const
 {
     return KCalendarSystem::isLeapYear(year);

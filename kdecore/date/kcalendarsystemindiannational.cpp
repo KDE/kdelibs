@@ -432,16 +432,6 @@ QDate KCalendarSystemIndianNational::latestValidDate() const
     return QDate::fromJulianDay(5402054);
 }
 
-bool KCalendarSystemIndianNational::isValid(int year, int month, int day) const
-{
-    return KCalendarSystem::isValid(year, month, day);
-}
-
-bool KCalendarSystemIndianNational::isValid(const QDate &date) const
-{
-    return KCalendarSystem::isValid(date);
-}
-
 bool KCalendarSystemIndianNational::isLeapYear(int year) const
 {
     return KCalendarSystem::isLeapYear(year);

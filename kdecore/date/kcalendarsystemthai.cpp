@@ -120,16 +120,6 @@ QDate KCalendarSystemThai::latestValidDate() const
     return QDate::fromJulianDay(5175158);
 }
 
-bool KCalendarSystemThai::isValid(int year, int month, int day) const
-{
-    return KCalendarSystemGregorian::isValid(year, month, day);
-}
-
-bool KCalendarSystemThai::isValid(const QDate &date) const
-{
-    return KCalendarSystemGregorian::isValid(date);
-}
-
 bool KCalendarSystemThai::isLeapYear(int year) const
 {
     return KCalendarSystemGregorian::isLeapYear(year);

@@ -824,23 +824,11 @@ bool KCalendarSystem::isValid(int year, int month, int day) const
 {
     Q_D(const KCalendarSystem);
 
-    if (year < d->earliestValidYear() || year > d->latestValidYear() ||
-            (!d->hasYearZero() && year == 0)) {
-        return false;
-    }
-
-    if (month < 1 || month > d->monthsInYear(year)) {
-        return false;
-    }
-
-    if (day < 1 || day > d->daysInMonth(year, month)) {
-        return false;
-    }
-
-    return true;
+    return year >= d->earliestValidYear() && year <= d->latestValidYear() && (d->hasYearZero() || year != 0) &&
+           month >= 1 && month <= d->monthsInYear(year) &&
+           day >= 1 && day <= d->daysInMonth(year, month);
 }
 
-// NOT VIRTUAL - If override needed use shared-d
 bool KCalendarSystem::isValid(int year, int dayOfYear) const
 {
     Q_D(const KCalendarSystem);
@@ -848,7 +836,6 @@ bool KCalendarSystem::isValid(int year, int dayOfYear) const
     return (isValid(year, 1, 1) && dayOfYear > 0 && dayOfYear <= d->daysInYear(year));
 }
 
-// NOT VIRTUAL - If override needed use shared-d
 bool KCalendarSystem::isValid(const QString &eraName, int yearInEra, int month, int day) const
 {
     Q_D(const KCalendarSystem);
@@ -898,14 +885,6 @@ bool KCalendarSystem::isValidIsoWeekDate(int year, int isoWeekNumber, int dayOfI
         }
     }
 
-    return true;
-}
-
-bool KCalendarSystem::isValid(const QDate &date) const
-{
-    if (date.isNull() || date < earliestValidDate() || date > latestValidDate()) {
-        return false;
-    }
     return true;
 }
 

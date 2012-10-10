@@ -199,9 +199,8 @@ public:
      * @param day the day portion of the date to check
      * @return @c true if the date is valid, @c false otherwise
      */
-    virtual bool isValid(int year, int month, int day) const = 0;
+    bool isValid(int year, int month, int day) const;
 
-    //KDE5 make virtual?
     /**
      * @since 4.4
      *
@@ -213,7 +212,6 @@ public:
      */
     bool isValid(int year, int dayOfYear) const;
 
-    //KDE5 make virtual?
     /**
      * @since 4.5
      *
@@ -246,7 +244,10 @@ public:
      * @param date the date to check
      * @return @c true if the date is valid, @c false otherwise
      */
-    virtual bool isValid(const QDate &date) const;
+    inline bool isValid(const QDate &date) const
+    {
+        return date.isValid() && date >= earliestValidDate() && date <= latestValidDate();
+    }
 
     /**
      * Changes the date's year, month and day. The range of the year, month
