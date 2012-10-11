@@ -1315,8 +1315,6 @@ void KCalendarTest::testQDateCalendarBasic()
 
     QCOMPARE(calendar->monthsInYear(QDate(2007, 1, 1)), 12);
 
-    QCOMPARE(calendar->weekStartDay(), 1);
-
     QCOMPARE(calendar->isProleptic(), false);
     QCOMPARE(calendar->isLunar(), false);
     QCOMPARE(calendar->isLunisolar(), false);
@@ -1399,8 +1397,6 @@ void KCalendarTest::testGregorianBasic()
 
     QCOMPARE(calendar->monthsInYear(QDate(2007, 1, 1)), 12);
 
-    QCOMPARE(calendar->weekStartDay(), 1);
-
     QCOMPARE(calendar->isProleptic(), true);
     QCOMPARE(calendar->isLunar(), false);
     QCOMPARE(calendar->isLunisolar(), false);
@@ -1452,8 +1448,6 @@ void KCalendarTest::testHebrewBasic()
 
     testWeekDayName(calendar, 4, testDate, "T", "Thu", "Thursday");
     testMonthName(calendar, 1, 5707, testDate, "T", "Tis", "Tishrey", "of Tis", "of Tishrey");
-
-    QCOMPARE(calendar->weekStartDay(), 1);
 
     QCOMPARE(calendar->isProleptic(), false);
     QCOMPARE(calendar->isLunar(), false);
@@ -1531,8 +1525,6 @@ void KCalendarTest::testIslamicCivilBasic()
 
     QCOMPARE(calendar->monthsInYear(testDate), 12);
 
-    QCOMPARE(calendar->weekStartDay(), 1);
-
     QCOMPARE(calendar->isProleptic(), false);
     QCOMPARE(calendar->isLunar(), true);
     QCOMPARE(calendar->isLunisolar(), false);
@@ -1588,8 +1580,6 @@ void KCalendarTest::testJalaliBasic()
     testMonthName(calendar, 6, 1384, testDate, "S", "Sha", "Shahrivar", "of Sha", "of Shahrivar");
 
     QCOMPARE(calendar->monthsInYear(testDate), 12);
-
-    QCOMPARE(calendar->weekStartDay(), 1);
 
     QCOMPARE(calendar->isProleptic(), false);
     QCOMPARE(calendar->isLunar(), false);
@@ -1678,8 +1668,6 @@ void KCalendarTest::testJapaneseBasic()
     testMonthName(calendar, 12, 2007, QDate(2007, 12, 20), "D", "Dec", "December", "of Dec", "of December");
 
     QCOMPARE(calendar->monthsInYear(QDate(2007, 1, 1)), 12);
-
-    QCOMPARE(calendar->weekStartDay(), 1);
 
     QCOMPARE(calendar->isProleptic(), false);
     QCOMPARE(calendar->isLunar(), false);
@@ -1776,8 +1764,6 @@ void KCalendarTest::testMinguoBasic()
 
     QCOMPARE(calendar->monthsInYear(QDate(2007, 1, 1)), 12);
 
-    QCOMPARE(calendar->weekStartDay(), 1);
-
     QCOMPARE(calendar->isProleptic(), false);
     QCOMPARE(calendar->isLunar(), false);
     QCOMPARE(calendar->isLunisolar(), false);
@@ -1823,8 +1809,6 @@ void KCalendarTest::testThaiBasic()
     testMonthName(calendar, 12, 2007 + 543, QDate(2007, 12, 20), "D", "Dec", "December", "of Dec", "of December");
 
     QCOMPARE(calendar->monthsInYear(QDate(2007, 1, 1)), 12);
-
-    QCOMPARE(calendar->weekStartDay(), 1);
 
     QCOMPARE(calendar->isProleptic(), false);
     QCOMPARE(calendar->isLunar(), false);

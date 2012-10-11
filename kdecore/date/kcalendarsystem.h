@@ -1390,15 +1390,18 @@ public:
      * Use this to determine which day is the first day of the week.
      *
      * Uses the calendar system's internal locale set when the instance was
-     * created, which ensures that the correct calendar system and locale
-     * settings are respected, which would not occur in some cases if using
-     * the global locale.  Defaults to global locale.
+     * created, which ensures that the the caller will use the same value
+     * as the calendar system, which would not necessisarily happen if
+     * @c KLocale::weekStartDay() was used directly.
      *
      * @see KLocale::weekStartDay
      *
      * @return an integer (Monday = 1, ..., Sunday = 7)
      */
-    virtual int weekStartDay() const;
+    inline int weekStartDay() const
+    {
+        return locale()->weekStartDay();
+    }
 
     /**
      * @deprecated use KLocale::weekDayOfPray() instead

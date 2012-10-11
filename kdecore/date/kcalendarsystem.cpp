@@ -2088,11 +2088,6 @@ int KCalendarSystem::applyShortYearWindow(int inputYear) const
     return d->applyShortYearWindow(inputYear);
 }
 
-int KCalendarSystem::weekStartDay() const
-{
-    return locale()->weekStartDay();
-}
-
 const KLocale * KCalendarSystem::locale() const
 {
     Q_D(const KCalendarSystem);
