@@ -36,16 +36,10 @@ public:
     virtual ~KCalendarSystemEthiopianPrivate() {
     }
 
-    virtual KLocale::CalendarSystem calendarSystem() const;
     virtual void loadDefaultEraList();
     virtual QString monthName(int month, int year, KLocale::DateTimeComponentFormat format, bool possessive) const;
     virtual QString weekDayName(int weekDay, KLocale::DateTimeComponentFormat format) const;
 };
-
-KLocale::CalendarSystem KCalendarSystemEthiopianPrivate::calendarSystem() const
-{
-    return KLocale::EthiopianCalendar;
-}
 
 void KCalendarSystemEthiopianPrivate::loadDefaultEraList()
 {
@@ -312,6 +306,11 @@ KCalendarSystemEthiopian::~KCalendarSystemEthiopian()
 QString KCalendarSystemEthiopian::calendarType() const
 {
     return QLatin1String("ethiopian");
+}
+
+KLocale::CalendarSystem KCalendarSystemEthiopian::calendarSystem() const
+{
+    return KLocale::EthiopianCalendar;
 }
 
 QDate KCalendarSystemEthiopian::epoch() const

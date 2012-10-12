@@ -32,7 +32,6 @@ public:
     virtual ~KCalendarSystemIslamicCivilPrivate();
 
     // Virtual methods each calendar system must re-implement
-    virtual KLocale::CalendarSystem calendarSystem() const;
     virtual void loadDefaultEraList();
     virtual int monthsInYear(int year) const;
     virtual int daysInMonth(int year, int month) const;
@@ -58,11 +57,6 @@ KCalendarSystemIslamicCivilPrivate::KCalendarSystemIslamicCivilPrivate(KCalendar
 
 KCalendarSystemIslamicCivilPrivate::~KCalendarSystemIslamicCivilPrivate()
 {
-}
-
-KLocale::CalendarSystem KCalendarSystemIslamicCivilPrivate::calendarSystem() const
-{
-    return KLocale::IslamicCivilCalendar;
 }
 
 void KCalendarSystemIslamicCivilPrivate::loadDefaultEraList()
@@ -413,6 +407,11 @@ KCalendarSystemIslamicCivil::~KCalendarSystemIslamicCivil()
 QString KCalendarSystemIslamicCivil::calendarType() const
 {
     return QLatin1String("hijri");
+}
+
+KLocale::CalendarSystem KCalendarSystemIslamicCivil::calendarSystem() const
+{
+    return KLocale::IslamicCivilCalendar;
 }
 
 QDate KCalendarSystemIslamicCivil::epoch() const

@@ -36,7 +36,6 @@ public:
     virtual ~KCalendarSystemPrivate();
 
     // Virtual methods each calendar system must re-implement
-    virtual KLocale::CalendarSystem calendarSystem() const = 0;
     virtual void loadDefaultEraList() = 0;
     virtual int monthsInYear(int year) const = 0;
     virtual int daysInMonth(int year, int month) const = 0;

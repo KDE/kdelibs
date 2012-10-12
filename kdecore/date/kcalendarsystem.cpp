@@ -815,14 +815,6 @@ KCalendarSystem::~KCalendarSystem()
 }
 
 // NOT VIRTUAL - If override needed use shared-d
-KLocale::CalendarSystem KCalendarSystem::calendarSystem() const
-{
-    Q_D(const KCalendarSystem);
-
-    return d->calendarSystem();
-}
-
-// NOT VIRTUAL - If override needed use shared-d
 QString KCalendarSystem::calendarLabel() const
 {
     return KCalendarSystem::calendarLabel(calendarSystem());

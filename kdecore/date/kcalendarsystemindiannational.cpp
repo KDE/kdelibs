@@ -34,7 +34,6 @@ public:
     virtual ~KCalendarSystemIndianNationalPrivate();
 
     // Virtual methods each calendar system must re-implement
-    virtual KLocale::CalendarSystem calendarSystem() const;
     virtual void loadDefaultEraList();
     virtual int monthsInYear(int year) const;
     virtual int daysInMonth(int year, int month) const;
@@ -60,11 +59,6 @@ KCalendarSystemIndianNationalPrivate::KCalendarSystemIndianNationalPrivate(KCale
 
 KCalendarSystemIndianNationalPrivate::~KCalendarSystemIndianNationalPrivate()
 {
-}
-
-KLocale::CalendarSystem KCalendarSystemIndianNationalPrivate::calendarSystem() const
-{
-    return KLocale::IndianNationalCalendar;
 }
 
 void KCalendarSystemIndianNationalPrivate::loadDefaultEraList()
@@ -408,6 +402,11 @@ KCalendarSystemIndianNational::~KCalendarSystemIndianNational()
 QString KCalendarSystemIndianNational::calendarType() const
 {
     return QLatin1String("indian-national");
+}
+
+KLocale::CalendarSystem KCalendarSystemIndianNational::calendarSystem() const
+{
+    return KLocale::IndianNationalCalendar;
 }
 
 QDate KCalendarSystemIndianNational::epoch() const

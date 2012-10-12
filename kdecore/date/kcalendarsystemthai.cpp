@@ -32,7 +32,6 @@ public:
     explicit KCalendarSystemThaiPrivate(KCalendarSystemThai *q);
     virtual ~KCalendarSystemThaiPrivate();
 
-    virtual KLocale::CalendarSystem calendarSystem() const;
     virtual void loadDefaultEraList();
     virtual bool isLeapYear(int year) const;
     virtual bool hasYearZero() const;
@@ -48,11 +47,6 @@ KCalendarSystemThaiPrivate::KCalendarSystemThaiPrivate(KCalendarSystemThai *q)
 
 KCalendarSystemThaiPrivate::~KCalendarSystemThaiPrivate()
 {
-}
-
-KLocale::CalendarSystem KCalendarSystemThaiPrivate::calendarSystem() const
-{
-    return KLocale::ThaiCalendar;
 }
 
 void KCalendarSystemThaiPrivate::loadDefaultEraList()
@@ -101,6 +95,11 @@ KCalendarSystemThai::~KCalendarSystemThai()
 QString KCalendarSystemThai::calendarType() const
 {
     return QLatin1String("thai");
+}
+
+KLocale::CalendarSystem KCalendarSystemThai::calendarSystem() const
+{
+    return KLocale::ThaiCalendar;
 }
 
 QDate KCalendarSystemThai::epoch() const

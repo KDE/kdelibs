@@ -41,11 +41,6 @@ KCalendarSystemGregorianPrivate::~KCalendarSystemGregorianPrivate()
 {
 }
 
-KLocale::CalendarSystem KCalendarSystemGregorianPrivate::calendarSystem() const
-{
-    return KLocale::GregorianCalendar;
-}
-
 // Dummy version using Gregorian as an example
 // This method MUST be re-implemented in any new Calendar System
 void KCalendarSystemGregorianPrivate::loadDefaultEraList()
@@ -406,6 +401,11 @@ KCalendarSystemGregorian::~KCalendarSystemGregorian()
 QString KCalendarSystemGregorian::calendarType() const
 {
     return QLatin1String("gregorian-proleptic");
+}
+
+KLocale::CalendarSystem KCalendarSystemGregorian::calendarSystem() const
+{
+    return KLocale::GregorianCalendar;
 }
 
 QDate KCalendarSystemGregorian::epoch() const

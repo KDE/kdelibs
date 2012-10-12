@@ -35,7 +35,6 @@ public:
     virtual ~KCalendarSystemJulianPrivate();
 
     // Virtual methods each calendar system must re-implement
-    virtual KLocale::CalendarSystem calendarSystem() const;
     virtual void loadDefaultEraList();
     virtual int monthsInYear(int year) const;
     virtual int daysInMonth(int year, int month) const;
@@ -63,11 +62,6 @@ KCalendarSystemJulianPrivate::KCalendarSystemJulianPrivate(KCalendarSystemJulian
 
 KCalendarSystemJulianPrivate::~KCalendarSystemJulianPrivate()
 {
-}
-
-KLocale::CalendarSystem KCalendarSystemJulianPrivate::calendarSystem() const
-{
-    return KLocale::JulianCalendar;
 }
 
 void KCalendarSystemJulianPrivate::loadDefaultEraList()
@@ -421,6 +415,11 @@ KCalendarSystemJulian::~KCalendarSystemJulian()
 QString KCalendarSystemJulian::calendarType() const
 {
     return QLatin1String("julian");
+}
+
+KLocale::CalendarSystem KCalendarSystemJulian::calendarSystem() const
+{
+    return KLocale::JulianCalendar;
 }
 
 QDate KCalendarSystemJulian::epoch() const

@@ -36,6 +36,7 @@ public:
     virtual ~KCalendarSystemJalali();
 
     virtual QString calendarType() const;
+    virtual KLocale::CalendarSystem calendarSystem() const;
 
     virtual QDate epoch() const;
     virtual QDate earliestValidDate() const;

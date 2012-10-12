@@ -133,7 +133,6 @@ public:
      */
     KDECORE_DEPRECATED virtual QString calendarType() const = 0;
 
-    //KDE5 make virtual?
     /**
      * @since 4.6
      *
@@ -141,7 +140,7 @@ public:
      *
      * @return type of calendar system
      */
-    KLocale::CalendarSystem calendarSystem() const;
+    virtual KLocale::CalendarSystem calendarSystem() const = 0;
 
     //KDE5 make virtual?
     /**

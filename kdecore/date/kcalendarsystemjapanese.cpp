@@ -32,7 +32,6 @@ public:
     explicit KCalendarSystemJapanesePrivate(KCalendarSystemJapanese *q);
     virtual ~KCalendarSystemJapanesePrivate();
 
-    virtual KLocale::CalendarSystem calendarSystem() const;
     virtual void loadDefaultEraList();
     virtual int earliestValidYear() const;
 };
@@ -46,11 +45,6 @@ KCalendarSystemJapanesePrivate::KCalendarSystemJapanesePrivate(KCalendarSystemJa
 
 KCalendarSystemJapanesePrivate::~KCalendarSystemJapanesePrivate()
 {
-}
-
-KLocale::CalendarSystem KCalendarSystemJapanesePrivate::calendarSystem() const
-{
-    return KLocale::JapaneseCalendar;
 }
 
 void KCalendarSystemJapanesePrivate::loadDefaultEraList()
@@ -120,6 +114,11 @@ KCalendarSystemJapanese::~KCalendarSystemJapanese()
 QString KCalendarSystemJapanese::calendarType() const
 {
     return QLatin1String("japanese");
+}
+
+KLocale::CalendarSystem KCalendarSystemJapanese::calendarSystem() const
+{
+    return KLocale::JapaneseCalendar;
 }
 
 QDate KCalendarSystemJapanese::epoch() const
