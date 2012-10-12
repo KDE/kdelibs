@@ -278,7 +278,7 @@ public:
      *
      * @return epoch of calendar system
      */
-    virtual QDate epoch() const;
+    virtual QDate epoch() const = 0;
 
     /**
      * Returns the earliest date valid in this calendar system implementation.
@@ -290,7 +290,7 @@ public:
      *
      * @return date the earliest valid date
      */
-    virtual QDate earliestValidDate() const;
+    virtual QDate earliestValidDate() const = 0;
 
     /**
      * Returns the latest date valid in this calendar system implementation.
@@ -300,7 +300,7 @@ public:
      *
      * @return date the latest valid date
      */
-    virtual QDate latestValidDate() const;
+    virtual QDate latestValidDate() const = 0;
 
     /**
      * Returns whether a given date is valid in this calendar system.

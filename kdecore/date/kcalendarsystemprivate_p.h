@@ -36,21 +36,21 @@ public:
     virtual ~KCalendarSystemPrivate();
 
     // Virtual methods each calendar system must re-implement
-    virtual KLocale::CalendarSystem calendarSystem() const;
-    virtual void loadDefaultEraList();
-    virtual int monthsInYear(int year) const;
-    virtual int daysInMonth(int year, int month) const;
-    virtual int daysInYear(int year) const;
-    virtual int daysInWeek() const;
-    virtual bool isLeapYear(int year) const;
-    virtual bool hasLeapMonths() const;
-    virtual bool hasYearZero() const;
-    virtual int maxDaysInWeek() const;
-    virtual int maxMonthsInYear() const;
-    virtual int earliestValidYear() const;
-    virtual int latestValidYear() const;
-    virtual QString monthName(int month, int year, KLocale::DateTimeComponentFormat format, bool possessive = false) const;
-    virtual QString weekDayName(int weekDay, KLocale::DateTimeComponentFormat format) const;
+    virtual KLocale::CalendarSystem calendarSystem() const = 0;
+    virtual void loadDefaultEraList() = 0;
+    virtual int monthsInYear(int year) const = 0;
+    virtual int daysInMonth(int year, int month) const = 0;
+    virtual int daysInYear(int year) const = 0;
+    virtual int daysInWeek() const = 0;
+    virtual bool isLeapYear(int year) const = 0;
+    virtual bool hasLeapMonths() const = 0;
+    virtual bool hasYearZero() const = 0;
+    virtual int maxDaysInWeek() const = 0;
+    virtual int maxMonthsInYear() const = 0;
+    virtual int earliestValidYear() const = 0;
+    virtual int latestValidYear() const = 0;
+    virtual QString monthName(int month, int year, KLocale::DateTimeComponentFormat format, bool possessive = false) const = 0;
+    virtual QString weekDayName(int weekDay, KLocale::DateTimeComponentFormat format) const = 0;
 
     // Virtual methods to re-implement if special maths needed
     virtual int week(const QDate &date, KLocale::WeekNumberSystem weekNumberSystem, int *yearNum) const;
