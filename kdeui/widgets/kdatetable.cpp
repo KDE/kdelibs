@@ -797,11 +797,6 @@ bool KDateTable::setCalendar( KCalendarSystem *newCalendar )
     return setDate( oldDate );
 }
 
-bool KDateTable::setCalendar( const QString &newCalendarType )
-{
-    return setCalendarSystem( KCalendarSystem::calendarSystem( newCalendarType ) );
-}
-
 bool KDateTable::setCalendarSystem( KLocale::CalendarSystem newCalendarSystem )
 {
     d->m_date.setCalendarSystem( newCalendarSystem );

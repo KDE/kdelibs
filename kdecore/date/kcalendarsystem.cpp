@@ -44,46 +44,6 @@
 #include "kcalendarsystemqdate_p.h"
 #include "kcalendarsystemthai_p.h"
 
-KCalendarSystem *KCalendarSystem::create(const QString &calendarType, const KLocale *locale)
-{
-    return create(calendarSystem(calendarType), locale);
-}
-
-KCalendarSystem *KCalendarSystem::create(const QString &calendarType, KSharedConfig::Ptr config,
-                                         const KLocale *locale)
-{
-    return create(calendarSystem(calendarType), config, locale);
-}
-
-QStringList KCalendarSystem::calendarSystems()
-{
-    QStringList lst;
-
-    lst.append(QLatin1String("coptic"));
-    lst.append(QLatin1String("ethiopian"));
-    lst.append(QLatin1String("gregorian"));
-    lst.append(QLatin1String("gregorian-proleptic"));
-    lst.append(QLatin1String("hebrew"));
-    lst.append(QLatin1String("hijri"));
-    lst.append(QLatin1String("indian-national"));
-    lst.append(QLatin1String("jalali"));
-    lst.append(QLatin1String("japanese"));
-    lst.append(QLatin1String("julian"));
-    lst.append(QLatin1String("minguo"));
-    lst.append(QLatin1String("thai"));
-
-    return lst;
-}
-
-QString KCalendarSystem::calendarLabel(const QString &calendarType)
-{
-    if (calendarSystemsList().contains(calendarSystem(calendarType))) {
-        return KCalendarSystem::calendarLabel(KCalendarSystem::calendarSystem(calendarType));
-    } else {
-        return ki18nc("@item Calendar system", "Invalid Calendar Type").toString(KLocale::global());
-    }
-}
-
 KCalendarSystem *KCalendarSystem::create(KLocale::CalendarSystem calendarSystem, const KLocale *locale)
 {
     return create(calendarSystem, KSharedConfig::Ptr(), locale);
@@ -173,73 +133,6 @@ QString KCalendarSystem::calendarLabel(KLocale::CalendarSystem calendarSystem, c
     }
 
     return ki18nc("@item Calendar system", "Invalid Calendar Type").toString(locale);
-}
-
-KLocale::CalendarSystem KCalendarSystem::calendarSystemForCalendarType(const QString &calendarType )
-{
-    return calendarSystem( calendarType );
-}
-
-KLocale::CalendarSystem KCalendarSystem::calendarSystem(const QString &calendarType )
-{
-    if (calendarType == QLatin1String("coptic")) {
-        return KLocale::CopticCalendar;
-    } else if (calendarType == QLatin1String("ethiopian")) {
-        return KLocale::EthiopianCalendar;
-    } else if (calendarType == QLatin1String("gregorian")) {
-        return KLocale::QDateCalendar;
-    } else if (calendarType == QLatin1String("gregorian-proleptic")) {
-        return KLocale::GregorianCalendar;
-    } else if (calendarType == QLatin1String("hebrew")) {
-        return KLocale::HebrewCalendar;
-    } else if (calendarType == QLatin1String("hijri")) {
-        return KLocale::IslamicCivilCalendar;
-    } else if (calendarType == QLatin1String("indian-national")) {
-        return KLocale::IndianNationalCalendar;
-    } else if (calendarType == QLatin1String("jalali")) {
-        return KLocale::JalaliCalendar;
-    } else if (calendarType == QLatin1String("japanese")) {
-        return KLocale::JapaneseCalendar;
-    } else if (calendarType == QLatin1String("julian")) {
-        return KLocale::JulianCalendar;
-    } else if (calendarType == QLatin1String("minguo")) {
-        return KLocale::MinguoCalendar;
-    } else if (calendarType == QLatin1String("thai")) {
-        return KLocale::ThaiCalendar;
-    } else {
-        return KLocale::QDateCalendar;
-    }
-}
-
-QString KCalendarSystem::calendarType(KLocale::CalendarSystem calendarSystem)
-{
-    if (calendarSystem == KLocale::QDateCalendar) {
-        return QLatin1String("gregorian");
-    } else if (calendarSystem == KLocale::CopticCalendar) {
-        return QLatin1String("coptic");
-    } else if (calendarSystem == KLocale::EthiopianCalendar) {
-        return QLatin1String("ethiopian");
-    } else if (calendarSystem == KLocale::GregorianCalendar) {
-        return QLatin1String("gregorian-proleptic");
-    } else if (calendarSystem == KLocale::HebrewCalendar) {
-        return QLatin1String("hebrew");
-    } else if (calendarSystem == KLocale::IndianNationalCalendar) {
-        return QLatin1String("indian-national");
-    } else if (calendarSystem == KLocale::IslamicCivilCalendar) {
-        return QLatin1String("hijri");
-    } else if (calendarSystem == KLocale::JalaliCalendar) {
-        return QLatin1String("jalali");
-    } else if (calendarSystem == KLocale::JapaneseCalendar) {
-        return QLatin1String("japanese");
-    } else if (calendarSystem == KLocale::JulianCalendar) {
-        return QLatin1String("julian");
-    } else if (calendarSystem == KLocale::MinguoCalendar) {
-        return QLatin1String("minguo");
-    } else if (calendarSystem == KLocale::ThaiCalendar) {
-        return QLatin1String("thai");
-    } else {
-        return QLatin1String("gregorian");
-    }
 }
 
 // Shared d pointer base class definitions

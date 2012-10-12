@@ -68,39 +68,6 @@ public:
         NarrowDayName                /**< Narrow name format, e.g. "F". @since 4.7 */
     };
 
-    //KDE5 remove
-    /**
-     * @deprecated use create(KLocale::CalendarSystem, KLocale) instead
-     *
-     * Creates specific calendar type
-     *
-     * @param calType string identification of the specific calendar type
-     * to be constructed
-     * @param locale locale to use for translations. The global locale is used if null.
-     * @return a KCalendarSystem object
-     */
-    KDECORE_DEPRECATED static KCalendarSystem *create(const QString & calType = QLatin1String("gregorian"),
-                                                  const KLocale * locale = 0);
-
-    //KDE5 remove
-    /**
-     * @deprecated use create(KLocale::CalendarSystem, KSharedConfig, KLocale) instead
-     *
-     * @since 4.5
-     *
-     * Creates specific calendar type
-     *
-     * @param calType string identification of the specific calendar type to be constructed
-     * @param config a configuration file with a 'KCalendarSystem %calendarType' group detailing
-     *               locale-related preferences (such as era options).  The global config is used
-                     if null.
-     * @param locale locale to use for translations. The global locale is used if null.
-     * @return a KCalendarSystem object
-     */
-    KDECORE_DEPRECATED static KCalendarSystem *create(const QString & calType, KSharedConfig::Ptr config,
-                                                  const KLocale * locale = 0);
-
-    //KDE5 add default value to calendarSystem
     /**
      * @since 4.6
      *
@@ -111,7 +78,7 @@ public:
      * @return a KCalendarSystem object
      */
     static KCalendarSystem *create(KLocale::CalendarSystem calendarSystem,
-                                   const KLocale *locale = 0);
+                                   const KLocale *locale);
 
     /**
      * @since 4.6
@@ -125,18 +92,9 @@ public:
      * @param locale locale to use for translations. The global locale is used if null.
      * @return a KCalendarSystem object
      */
-    static KCalendarSystem *create(KLocale::CalendarSystem calendarSystem, KSharedConfig::Ptr config,
+    static KCalendarSystem *create(KLocale::CalendarSystem calendarSystem = KLocale::QDateCalendar,
+                                   KSharedConfig::Ptr config = KSharedConfig::Ptr(),
                                    const KLocale *locale = 0);
-
-    //KDE5 remove
-    /**
-     * @deprecated use calendarSystemsList() instead
-     *
-     * Gets a list of names of supported calendar systems.
-     *
-     * @return list of names
-     */
-    KDECORE_DEPRECATED static QStringList calendarSystems();
 
     /**
      * @since 4.6
@@ -146,20 +104,6 @@ public:
      * @return list of Calendar Systems
      */
     static QList<KLocale::CalendarSystem> calendarSystemsList();
-
-    //KDE5 remove
-    /**
-     * @deprecated use calendarLabel( KLocale::CalendarSystem ) instead
-     *
-     * Returns a typographically correct and translated label to display for
-     * the calendar system type.  Use with calendarSystems() to neatly
-     * format labels to display on combo widget of available calendar systems.
-     *
-     * @param calendarType the specific calendar type to return the label for
-     *
-     * @return label for calendar
-     */
-    KDECORE_DEPRECATED static QString calendarLabel(const QString &calendarType);
 
     /**
      * @since 4.6
@@ -174,43 +118,6 @@ public:
      * @return label for calendar
      */
     static QString calendarLabel(KLocale::CalendarSystem calendarSystem, const KLocale *locale = KLocale::global());
-
-    //KDE5 Remove
-    /**
-     * @deprecated use calendarSystem(const QString &calendarType) instead
-     * @since 4.6
-     *
-     * Returns the Calendar System enum value for a given Calendar Type,
-     * e.g. KLocale::QDateCalendar for "gregorian"
-     *
-     * @param calendarType the calendar type to convert
-     * @return calendar system for calendar type
-     */
-    KDECORE_DEPRECATED static KLocale::CalendarSystem calendarSystemForCalendarType(const QString &calendarType);
-
-    //KDE5 Remove
-    /**
-     * @since 4.7
-     *
-     * Returns the Calendar System enum value for a given Calendar Type,
-     * e.g. KLocale::QDateCalendar for "gregorian"
-     *
-     * @param calendarType the calendar type to convert
-     * @return calendar system for calendar type
-     */
-    static KLocale::CalendarSystem calendarSystem(const QString &calendarType);
-
-    //KDE5 remove
-    /**
-     * @since 4.7
-     *
-     * Returns the deprecated Calendar Type for a given Calendar System enum value,
-     * e.g. "gregorian" for KLocale::QDateCalendar
-     *
-     * @param calendarSystem the calendar system to convert
-     * @return calendar type for calendar system
-     */
-    static QString calendarType(KLocale::CalendarSystem calendarSystem);
 
     /**
      * Destructor.

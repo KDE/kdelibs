@@ -93,15 +93,6 @@ public:
     bool setCalendar( KCalendarSystem *calendar = 0 );
 
     /**
-     * Changes the calendar system to use.  Will always use global locale.
-     * 
-     * @param calendarType the calendar system type to use
-     * 
-     * @return @c true if the calendar system was successfully set, @c false otherwise
-     */
-    bool setCalendar( const QString &calendarType );
-
-    /**
      * @since 4.6
      *
      * Changes the calendar system to use.  Will always use global locale.

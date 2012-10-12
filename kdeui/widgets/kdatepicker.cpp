@@ -401,11 +401,6 @@ bool KDatePicker::setCalendar( KCalendarSystem *calendar )
     return  d->table->setCalendar( calendar );
 }
 
-bool KDatePicker::setCalendar( const QString &calendarType )
-{
-    return  d->table->setCalendar( calendarType );
-}
-
 bool KDatePicker::setCalendarSystem( KLocale::CalendarSystem calendarSystem )
 {
     return  d->table->setCalendarSystem( calendarSystem );

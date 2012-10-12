@@ -170,11 +170,6 @@ bool KDateWidget::setCalendar( KCalendarSystem *newCalendar )
     return setDate( oldDate );
 }
 
-bool KDateWidget::setCalendar( const QString &newCalendarType )
-{
-    return setCalendarSystem( KCalendarSystem::calendarSystem( newCalendarType ) );
-}
-
 bool KDateWidget::setCalendarSystem( KLocale::CalendarSystem newCalendarSystem )
 {
     d->m_date.setCalendarSystem( newCalendarSystem );
