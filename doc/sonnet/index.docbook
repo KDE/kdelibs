@@ -5,9 +5,9 @@
   <!ENTITY % addindex "IGNORE">
 ]>
 
-<article id="sonnet" lang="&language;">
+<article lang="&language;">
 
-<article id="sonnet"info>
+<articleinfo>
 <!--title>The &sonnet; Handbook</title-->
 <title>Check Spelling Dialog</title>
 
