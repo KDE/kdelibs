@@ -71,8 +71,8 @@ public:
     virtual bool isProleptic() const;
 
 protected:
-    virtual bool julianDayToDate(int jd, int &year, int &month, int &day) const;
-    virtual bool dateToJulianDay(int year, int month, int day, int &jd) const;
+    virtual bool julianDayToDate(qint64 js, int &year, int &month, int &day) const;
+    virtual bool dateToJulianDay(int year, int month, int day, qint64 &jd) const;
     KCalendarSystemHebrew(KCalendarSystemHebrewPrivate &dd, const KSharedConfig::Ptr config, const KLocale *locale);
 
 private:

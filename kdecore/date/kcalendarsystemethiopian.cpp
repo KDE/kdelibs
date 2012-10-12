@@ -396,12 +396,12 @@ bool KCalendarSystemEthiopian::isProleptic() const
     return false;
 }
 
-bool KCalendarSystemEthiopian::julianDayToDate(int jd, int &year, int &month, int &day) const
+bool KCalendarSystemEthiopian::julianDayToDate(qint64 jd, int &year, int &month, int &day) const
 {
     return KCalendarSystemCoptic::julianDayToDate(jd, year, month, day);
 }
 
-bool KCalendarSystemEthiopian::dateToJulianDay(int year, int month, int day, int &jd) const
+bool KCalendarSystemEthiopian::dateToJulianDay(int year, int month, int day, qint64 &jd) const
 {
     return KCalendarSystemCoptic::dateToJulianDay(year, month, day, jd);
 }

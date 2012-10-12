@@ -1006,7 +1006,7 @@ bool KCalendarSystemHebrew::isProleptic() const
     return false;
 }
 
-bool KCalendarSystemHebrew::julianDayToDate(int jd, int &year, int &month, int &day) const
+bool KCalendarSystemHebrew::julianDayToDate(qint64 jd, int &year, int &month, int &day) const
 {
     class h_date * sd = toHebrew(QDate::fromJulianDay(jd));
 
@@ -1028,7 +1028,7 @@ bool KCalendarSystemHebrew::julianDayToDate(int jd, int &year, int &month, int &
     return true;
 }
 
-bool KCalendarSystemHebrew::dateToJulianDay(int year, int month, int day, int &jd) const
+bool KCalendarSystemHebrew::dateToJulianDay(int year, int month, int day, qint64 &jd) const
 {
     class h_date * gd = hebrewToGregorian(year, month, day);
 

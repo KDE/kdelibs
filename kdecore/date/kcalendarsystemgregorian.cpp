@@ -492,7 +492,7 @@ bool KCalendarSystemGregorian::isProleptic() const
     return true;
 }
 
-bool KCalendarSystemGregorian::julianDayToDate(int jd, int &year, int &month, int &day) const
+bool KCalendarSystemGregorian::julianDayToDate(qint64 jd, int &year, int &month, int &day) const
 {
     Q_D(const KCalendarSystemGregorian);
 
@@ -520,7 +520,7 @@ bool KCalendarSystemGregorian::julianDayToDate(int jd, int &year, int &month, in
     return true;
 }
 
-bool KCalendarSystemGregorian::dateToJulianDay(int year, int month, int day, int &jd) const
+bool KCalendarSystemGregorian::dateToJulianDay(int year, int month, int day, qint64 &jd) const
 {
     Q_D(const KCalendarSystemGregorian);
 

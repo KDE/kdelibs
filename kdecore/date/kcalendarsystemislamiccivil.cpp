@@ -493,7 +493,7 @@ bool KCalendarSystemIslamicCivil::isProleptic() const
     return false;
 }
 
-bool KCalendarSystemIslamicCivil::julianDayToDate(int jd, int &year, int &month, int &day) const
+bool KCalendarSystemIslamicCivil::julianDayToDate(qint64 jd, int &year, int &month, int &day) const
 {
     Q_D(const KCalendarSystemIslamicCivil);
 
@@ -509,7 +509,7 @@ bool KCalendarSystemIslamicCivil::julianDayToDate(int jd, int &year, int &month,
 
     // Search forward year by year from approximate year
     year = (jd - epoch().toJulianDay()) / 355;
-    int testJd;
+    qint64 testJd;
     dateToJulianDay(year, 12, d->daysInMonth(year, 12), testJd);
     while (jd > testJd) {
         year++;
@@ -555,7 +555,7 @@ bool KCalendarSystemIslamicCivil::julianDayToDate(int jd, int &year, int &month,
     */
 }
 
-bool KCalendarSystemIslamicCivil::dateToJulianDay(int year, int month, int day, int &jd) const
+bool KCalendarSystemIslamicCivil::dateToJulianDay(int year, int month, int day, qint64 &jd) const
 {
     /*
     The following C++ code is translated from the Lisp code

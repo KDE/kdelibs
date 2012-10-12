@@ -497,7 +497,7 @@ bool KCalendarSystemCoptic::isProleptic() const
     return false;
 }
 
-bool KCalendarSystemCoptic::julianDayToDate(int jd, int &year, int &month, int &day) const
+bool KCalendarSystemCoptic::julianDayToDate(qint64 jd, int &year, int &month, int &day) const
 {
     //The Coptic calendar has 12 months of 30 days, a 13th month of 5 or 6 days,
     //and a leap year every 4th year without fail that falls on the last day of
@@ -533,7 +533,7 @@ bool KCalendarSystemCoptic::julianDayToDate(int jd, int &year, int &month, int &
     return true;
 }
 
-bool KCalendarSystemCoptic::dateToJulianDay(int year, int month, int day, int &jd) const
+bool KCalendarSystemCoptic::dateToJulianDay(int year, int month, int day, qint64 &jd) const
 {
     //The Coptic calendar has 12 months of 30 days, a 13th month of 5 or 6 days,
     //and a leap year every 4th year without fail that falls on the last day of

@@ -493,7 +493,7 @@ bool KCalendarSystemIndianNational::isProleptic() const
     return false;
 }
 
-bool KCalendarSystemIndianNational::julianDayToDate(int jd, int &year, int &month, int &day) const
+bool KCalendarSystemIndianNational::julianDayToDate(qint64 jd, int &year, int &month, int &day) const
 {
     int L, N, I, J, D, M, Y;
 
@@ -517,7 +517,7 @@ bool KCalendarSystemIndianNational::julianDayToDate(int jd, int &year, int &mont
     return true;
 }
 
-bool KCalendarSystemIndianNational::dateToJulianDay(int year, int month, int day, int &jd) const
+bool KCalendarSystemIndianNational::dateToJulianDay(int year, int month, int day, qint64 &jd) const
 {
     int Y = year;
     int M = month;

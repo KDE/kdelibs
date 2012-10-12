@@ -501,7 +501,7 @@ bool KCalendarSystemJalali::isProleptic() const
     return false;
 }
 
-bool KCalendarSystemJalali::julianDayToDate(int jd, int &year, int &month, int &day) const
+bool KCalendarSystemJalali::julianDayToDate(qint64 jd, int &year, int &month, int &day) const
 {
     // Birashk algorithm is incorrect in two years in period AP 1244 to 1531.
     // This results in a leap day being added to the end of 1404 instead of 1403
@@ -524,7 +524,7 @@ bool KCalendarSystemJalali::julianDayToDate(int jd, int &year, int &month, int &
     // From original KDE3 code, source unknown?  Unable to contact author or committer to confirm
     // Matches Fermilab code, EMACS and D&R so check for PD source, likely Birashk's book
 
-    int jdCycleStart;
+    qint64 jdCycleStart;
     int daysSinceCycleStart;
     int cycle;
     int dayInCycle;
@@ -545,7 +545,7 @@ bool KCalendarSystemJalali::julianDayToDate(int jd, int &year, int &month, int &
         year = year - 1;
     }
 
-    int firstDayOfYear;
+    qint64 firstDayOfYear;
     dateToJulianDay(year, 1, 1, firstDayOfYear);
     int dayinYear = jd - firstDayOfYear + 1;
     if (dayinYear <= 186) {
@@ -559,7 +559,7 @@ bool KCalendarSystemJalali::julianDayToDate(int jd, int &year, int &month, int &
     return true;
 }
 
-bool KCalendarSystemJalali::dateToJulianDay(int year, int month, int day, int &jd) const
+bool KCalendarSystemJalali::dateToJulianDay(int year, int month, int day, qint64 &jd) const
 {
     Q_D(const KCalendarSystemJalali);
 

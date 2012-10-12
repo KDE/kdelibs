@@ -591,7 +591,8 @@ QString KCalendarSystemPrivate::simpleDateString(const QString &str) const
 
 int KCalendarSystemPrivate::dayOfYear(const QDate &date) const
 {
-    int y, m, d, jdFirstDayOfYear;
+    qint64 jdFirstDayOfYear;
+    int y, m, d;
     q->julianDayToDate(date.toJulianDay(), y, m, d);
     q->dateToJulianDay(y, 1, 1, jdFirstDayOfYear);
     //Take the jd of the given date, and subtract the jd of the first day of that year
@@ -609,14 +610,14 @@ int KCalendarSystemPrivate::dayOfWeek(const QDate &date) const
 
 QDate KCalendarSystemPrivate::firstDayOfYear(int year) const
 {
-    int jd;
+    qint64 jd;
     q->dateToJulianDay(year, 1, 1, jd);
     return QDate::fromJulianDay(jd);
 }
 
 QDate KCalendarSystemPrivate::lastDayOfYear(int year) const
 {
-    int jd;
+    qint64 jd;
     q->dateToJulianDay(year, 1, 1, jd);
     jd = jd + daysInYear(year) - 1;
     return QDate::fromJulianDay(jd);
@@ -624,14 +625,14 @@ QDate KCalendarSystemPrivate::lastDayOfYear(int year) const
 
 QDate KCalendarSystemPrivate::firstDayOfMonth(int year, int month) const
 {
-    int jd;
+    qint64 jd;
     q->dateToJulianDay(year, month, 1, jd);
     return QDate::fromJulianDay(jd);
 }
 
 QDate KCalendarSystemPrivate::lastDayOfMonth(int year, int month) const
 {
-    int jd;
+    qint64 jd;
     q->dateToJulianDay(year, month, 1, jd);
     jd = jd + daysInMonth(year, month) - 1;
     return QDate::fromJulianDay(jd);
@@ -921,7 +922,7 @@ bool KCalendarSystem::setDate(QDate &date, int year, int month, int day) const
     date = QDate();
 
     if (isValid(year, month, day)) {
-        int jd;
+        qint64 jd;
         dateToJulianDay(year, month, day, jd);
         QDate calcDate = QDate::fromJulianDay(jd);
 
@@ -940,7 +941,7 @@ bool KCalendarSystem::setDate(QDate &date, int year, int dayOfYear) const
     date = QDate();
 
     if (isValid(year, dayOfYear)) {
-        int jd;
+        qint64 jd;
         dateToJulianDay(year, 1, 1, jd);
         QDate calcDate = QDate::fromJulianDay(jd + dayOfYear - 1);
         if (isValid(calcDate)) {

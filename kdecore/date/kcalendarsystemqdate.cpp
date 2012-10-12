@@ -529,7 +529,7 @@ bool KCalendarSystemQDate::isProleptic() const
     return false;
 }
 
-bool KCalendarSystemQDate::julianDayToDate(int jd, int &year, int &month, int &day) const
+bool KCalendarSystemQDate::julianDayToDate(qint64 jd, int &year, int &month, int &day) const
 {
     QDate date = QDate::fromJulianDay(jd);
 
@@ -538,7 +538,7 @@ bool KCalendarSystemQDate::julianDayToDate(int jd, int &year, int &month, int &d
     return date.isValid();
 }
 
-bool KCalendarSystemQDate::dateToJulianDay(int year, int month, int day, int &jd) const
+bool KCalendarSystemQDate::dateToJulianDay(int year, int month, int day, qint64 &jd) const
 {
     QDate date;
 

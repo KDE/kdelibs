@@ -1465,7 +1465,7 @@ protected:
      * @param day day of month returned in this variable
      * @return @c true if the date is valid, @c false otherwise
      */
-    virtual bool julianDayToDate(int jd, int &year, int &month, int &day) const = 0;
+    virtual bool julianDayToDate(qint64 jd, int &year, int &month, int &day) const = 0;
 
     /**
      * Internal method to convert YMD values for this calendar system into a
@@ -1483,7 +1483,7 @@ protected:
      * @param jd Julian day number returned in this variable
      * @return @c true if the date is valid, @c false otherwise
      */
-    virtual bool dateToJulianDay(int year, int month, int day, int &jd) const = 0;
+    virtual bool dateToJulianDay(int year, int month, int day, qint64 &jd) const = 0;
 
     /**
      * Returns the locale used for translations and formats for this

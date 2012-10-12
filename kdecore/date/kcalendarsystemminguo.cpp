@@ -175,14 +175,14 @@ bool KCalendarSystemMinguo::isProleptic() const
     return false;
 }
 
-bool KCalendarSystemMinguo::julianDayToDate(int jd, int &year, int &month, int &day) const
+bool KCalendarSystemMinguo::julianDayToDate(qint64 jd, int &year, int &month, int &day) const
 {
     bool result = KCalendarSystemGregorian::julianDayToDate(jd, year, month, day);
     year = year - 1911;
     return result;
 }
 
-bool KCalendarSystemMinguo::dateToJulianDay(int year, int month, int day, int &jd) const
+bool KCalendarSystemMinguo::dateToJulianDay(int year, int month, int day, qint64 &jd) const
 {
     return KCalendarSystemGregorian::dateToJulianDay(year + 1911, month, day, jd);
 }

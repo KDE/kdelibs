@@ -212,12 +212,12 @@ bool KCalendarSystemJapanese::isProleptic() const
     return false;
 }
 
-bool KCalendarSystemJapanese::julianDayToDate(int jd, int &year, int &month, int &day) const
+bool KCalendarSystemJapanese::julianDayToDate(qint64 jd, int &year, int &month, int &day) const
 {
     return KCalendarSystemGregorian::julianDayToDate(jd, year, month, day);
 }
 
-bool KCalendarSystemJapanese::dateToJulianDay(int year, int month, int day, int &jd) const
+bool KCalendarSystemJapanese::dateToJulianDay(int year, int month, int day, qint64 &jd) const
 {
     return KCalendarSystemGregorian::dateToJulianDay(year, month, day, jd);
 }

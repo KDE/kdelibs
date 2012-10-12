@@ -161,14 +161,14 @@ bool KCalendarSystemThai::isProleptic() const
     return false;
 }
 
-bool KCalendarSystemThai::julianDayToDate(int jd, int &year, int &month, int &day) const
+bool KCalendarSystemThai::julianDayToDate(qint64 jd, int &year, int &month, int &day) const
 {
     bool result = KCalendarSystemGregorian::julianDayToDate(jd, year, month, day);
     year = year + 543;
     return result;
 }
 
-bool KCalendarSystemThai::dateToJulianDay(int year, int month, int day, int &jd) const
+bool KCalendarSystemThai::dateToJulianDay(int year, int month, int day, qint64 &jd) const
 {
     return KCalendarSystemGregorian::dateToJulianDay(year - 543, month, day, jd);
 }

@@ -502,7 +502,7 @@ bool KCalendarSystemJulian::isProleptic() const
     return true;
 }
 
-bool KCalendarSystemJulian::julianDayToDate(int jd, int &year, int &month, int &day) const
+bool KCalendarSystemJulian::julianDayToDate(qint64 jd, int &year, int &month, int &day) const
 {
     // Formula from The Calendar FAQ by Claus Tondering
     // http://www.tondering.dk/claus/cal/node3.html#SECTION003161000000000000000
@@ -527,7 +527,7 @@ bool KCalendarSystemJulian::julianDayToDate(int jd, int &year, int &month, int &
     return true;
 }
 
-bool KCalendarSystemJulian::dateToJulianDay(int year, int month, int day, int &jd) const
+bool KCalendarSystemJulian::dateToJulianDay(int year, int month, int day, qint64 &jd) const
 {
     // Formula from The Calendar FAQ by Claus Tondering
     // http://www.tondering.dk/claus/cal/node3.html#SECTION003161000000000000000
