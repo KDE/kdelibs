@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <limits>
 
 #include <QtCore/QDateTime>
 #include <QtCore/QRegExp>
