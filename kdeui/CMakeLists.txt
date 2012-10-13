@@ -312,9 +312,9 @@ if (Q_WS_MAC AND MAC_USE_OSXKEYCHAIN)
     FIND_LIBRARY(SECURITY_LIBRARY Security)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwallet_mac.cpp)
 else(Q_WS_MAC AND MAC_USE_OSXKEYCHAIN)
-     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwallet.cpp)
+     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwallet.cpp util/kwalletdefaultplugin.cpp)
 else(Q_WS_MAC AND MAC_USE_OSXKEYCHAIN)
-  set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwallet.cpp)
+  set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwallet.cpp util/kwalletdefaultplugin.cpp)
 endif(Q_WS_MAC AND MAC_USE_OSXKEYCHAIN)
 
 if(NOT WINCE)
@@ -628,6 +628,7 @@ install( FILES
  util/kstandardguiitem.h
  util/ksvgrenderer.h
  util/kwallet.h
+ util/kwalletplugin.h
  util/kwordwrap.h
  util/kxerrorhandler.h
  util/kxutils.h

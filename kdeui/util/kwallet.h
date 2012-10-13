@@ -28,27 +28,11 @@
 
 #include <kdeui_export.h>
 
-/**
- * NOTE: KSecretsService folder semantics
- * The KWallet API uses folders for organising items. KSecretsService does not
- * have this notion. But it uses attributes that can be applied arbitrarily on
- * all the items. The KWallet code that maps to KSecretsService applies an special
- * attribute KSS_ATTR_ENTRYFOLDER to all items with the currentFolder() value.
- * The KWallet folder API's calls will always succeed and they'll only change the
- * current folder value. The folderList() call will scan all the collection
- * items and collect the KSS_ATTR_ENTRYFOLDER attributes into a list.
- */
-
-/**
- * NOTE: KWalet API distinguish KSecretsService collection items by attaching
- * them some specific attributes, defined below
- */
-#define KSS_ATTR_ENTRYFOLDER "kwallet.folderName"
-#define KSS_ATTR_WALLETTYPE "kwallet.type"
-
 class QDBusError;
 
 namespace KWallet {
+
+class WalletPlugin;
 
 /**
  * KDE Wallet
@@ -75,6 +59,12 @@ class KDEUI_EXPORT Wallet : public QObject
 		 *  @internal
 		 */
 		Wallet(const Wallet&);
+
+        /**
+         * Construct a Wallet given it's already initialized plugin
+         * @internal
+         */
+        Wallet( WalletPlugin *plugin );
 
 	public:
 		enum EntryType { Unknown=0, Password, Stream, Map, Unused=0xffff };
@@ -445,7 +435,7 @@ class KDEUI_EXPORT Wallet : public QObject
 		 */
 		static bool keyDoesNotExist(const QString& wallet, const QString& folder,
 					    const QString& key);
-        
+
         /**
          * Determine if the KWallet API is using the KSecretsService infrastructure
          * This can ben changed in system settings
@@ -482,39 +472,7 @@ class KDEUI_EXPORT Wallet : public QObject
 		 */
 		void walletOpened(bool success);
 
-	private Q_SLOTS:
-		/**
-		 *  @internal
-		 *  DBUS slot for signals emitted by the wallet service.
-		 */
-		void slotWalletClosed(int handle);
-
-		/**
-		 *  @internal
-		 *  DBUS slot for signals emitted by the wallet service.
-		 */
-		void slotFolderUpdated(const QString& wallet, const QString& folder);
-
-		/**
-		 *  @internal
-		 *  DBUS slot for signals emitted by the wallet service.
-		 */
-		void slotFolderListUpdated(const QString& wallet);
-
-		/**
-		 *  @internal
-		 *  DBUS slot for signals emitted by the wallet service.
-		 */
-		void slotApplicationDisconnected(const QString& wallet, const QString& application);
-
-		/**
-		 *  @internal
-		 *  Callback for kwalletd
-		 *  @param tId identifer for the open transaction
-		 *  @param handle the wallet's handle
-		 */
-		void walletAsyncOpened(int tId, int handle);
-
+	private Q_SLOTS: // TODO; remove these slots
 		/**
 		 *  @internal
 		 *  DBUS error slot.
@@ -526,17 +484,6 @@ class KDEUI_EXPORT Wallet : public QObject
 		 *  Emits wallet opening success.
 		 */
 		void emitWalletOpened();
-        
-        /**
-         * @internal
-         * Receives status changed notifications from KSecretsService infrastructure
-         */
-        void slotCollectionStatusChanged( int );
-        /**
-         * @internal
-         * Received delete notification from KSecretsService infrastructure
-         */
-        void slotCollectionDeleted();
 
 	private:
 		class WalletPrivate;
