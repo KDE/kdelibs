@@ -59,7 +59,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
 {
     setModal(true);
     setObjectName("cookiealert");
-    setButtons(Yes|No|Details);
+    setButtons(Yes|User1|No|Details);
 #ifndef Q_WS_QWS //FIXME(E): Implement for Qt Embedded
     setCaption( i18n("Cookie Alert") );
     setWindowIcon( KIcon("preferences-web-browser-cookies") );
@@ -81,6 +81,31 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
         kapp->updateUserTimestamp();
     }
 #endif
+
+    const int count = cookieList.count();
+    const KHttpCookie& cookie = cookieList.first();
+    QString host (cookie.host());
+    int pos = host.indexOf(':');
+    if ( pos > 0 ) {
+        QString portNum = host.left(pos);
+        host.remove(0, pos+1);
+        host += ':';
+        host += portNum;
+    }
+
+    QString txt = QLatin1String("<html><body style=\"p {line-height: 150%}; text-align: center;\">");
+    txt += i18ncp("%2 hostname, %3 optional cross domain suffix (translated below)",
+                  "<p>You received a cookie from<br/>"
+                  "<b>%2%3</b><br/>"
+                  "Do you want to accept or reject this cookie?</p>",
+                  "<p>You received %1 cookies from<br/>"
+                  "<b>%2%3</b><br/>"
+                  "Do you want to accept or reject these cookies?</p>",
+                  count,
+                  QUrl::fromAce(host.toLatin1()),
+                  cookie.isCrossDomain() ? i18nc("@item:intext cross domain cookie", " [Cross Domain]") : QString());
+    txt += QLatin1String("</body></html>");
+
     KVBox* vBox1 = new KVBox( this );
     vBox1->setSpacing( -1 );
     setMainWidget(vBox1);
@@ -91,32 +116,9 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     icon->setAlignment( Qt::AlignCenter );
     icon->setFixedSize( 2*icon->sizeHint() );
 
-    int count = cookieList.count();
-
-    KVBox* vBox = new KVBox( hBox );
-    QString txt = i18np("You received a cookie from",
-                       "You received %1 cookies from", count);
-    QLabel* lbl = new QLabel( txt, vBox );
-    lbl->setAlignment( Qt::AlignCenter );
-    const KHttpCookie& cookie = cookieList.first();
-
-    QString host (cookie.host());
-    int pos = host.indexOf(':');
-    if ( pos > 0 )
-    {
-        QString portNum = host.left(pos);
-        host.remove(0, pos+1);
-        host += ':';
-        host += portNum;
-    }
-
-    txt = QString("<b>%1</b>").arg( QUrl::fromAce(host.toLatin1()) );
-    if (cookie.isCrossDomain())
-       txt += i18n(" <b>[Cross Domain]</b>");
-    lbl = new QLabel( txt, vBox );
-    lbl->setAlignment( Qt::AlignCenter );
-    lbl = new QLabel( i18n("Do you want to accept or reject?"), vBox );
-    lbl->setAlignment( Qt::AlignCenter );
+    KVBox* vBox = new KVBox(hBox);
+    QLabel* lbl = new QLabel(txt, vBox);
+    lbl->setAlignment(Qt::AlignCenter);
 
     // Cookie Details dialog...
     m_detailView = new KCookieDetail( cookieList, count, vBox1 );
@@ -129,39 +131,48 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     m_onlyCookies = new QRadioButton( txt, m_btnGrp );
     vbox->addWidget(m_onlyCookies);
 #ifndef QT_NO_WHATSTHIS
-    m_onlyCookies->setWhatsThis(i18n("Select this option to accept/reject only this cookie. "
-                              "You will be prompted if another cookie is received. "
-                              "<em>(see WebBrowsing/Cookies in the System Settings)</em>." ) );
+    m_onlyCookies->setWhatsThis(i18n("Select this option to only accept or reject this cookie. "
+                                     "You will be prompted again if you receive another cookie."));
 #endif
     m_allCookiesDomain = new QRadioButton( i18n("All cookies from this do&main"), m_btnGrp );
     vbox->addWidget(m_allCookiesDomain);
 #ifndef QT_NO_WHATSTHIS
-    m_allCookiesDomain->setWhatsThis(i18n("Select this option to accept/reject all cookies from "
-                              "this site. Choosing this option will add a new policy for "
-                              "the site this cookie originated from. This policy will be "
-                              "permanent until you manually change it from the System Settings "
-                              "<em>(see WebBrowsing/Cookies in the System Settings)</em>.") );
+    m_allCookiesDomain->setWhatsThis(i18n("Select this option to accept or reject all cookies from "
+                                          "this site. Choosing this option will add a new policy for "
+                                          "the site this cookie originated from. This policy will be "
+                                          "permanent until you manually change it from the System Settings."));
 #endif
     m_allCookies = new QRadioButton( i18n("All &cookies"), m_btnGrp);
     vbox->addWidget(m_allCookies);
 #ifndef QT_NO_WHATSTHIS
     m_allCookies->setWhatsThis(i18n("Select this option to accept/reject all cookies from "
-                              "anywhere. Choosing this option will change the global "
-                              "cookie policy set in the System Settings for all cookies "
-                              "<em>(see WebBrowsing/Cookies in the System Settings)</em>.") );
+                                    "anywhere. Choosing this option will change the global "
+                                    "cookie policy for all cookies until you manually change "
+                                    "it from the System Settings."));
 #endif
     m_btnGrp->setLayout(vbox);
-    if (defaultButton == KCookieJar::ApplyToShownCookiesOnly )
+
+    switch (defaultButton) {
+    case KCookieJar::ApplyToShownCookiesOnly:
         m_onlyCookies->setChecked(true);
-    else if (defaultButton == KCookieJar::ApplyToCookiesFromDomain)
+        break;
+    case KCookieJar::ApplyToCookiesFromDomain:
         m_allCookiesDomain->setChecked(true);
-    else if (defaultButton == KCookieJar::ApplyToAllCookies)
+        break;
+    case KCookieJar::ApplyToAllCookies:
         m_allCookies->setChecked(true);
-    else
+        break;
+    default:
         m_onlyCookies->setChecked(true);
+        break;
+    }
+
     setButtonText(KDialog::Yes, i18n("&Accept"));
+    setButtonText(KDialog::User1, i18n("Accept for this &session"));
+    setButtonIcon(KDialog::User1, KIcon("chronometer"));
+    setButtonToolTip(KDialog::User1, i18n("Accept cookie(s) until the end of the current session"));
     setButtonText(KDialog::No, i18n("&Reject"));
-    //QShortcut( Qt::Key_Escape, btn, SLOT(animateClick()) );
+
     setButtonToolTip(Details, i18n("See or modify the cookie information") );
     setDefaultButton(Yes);
 
@@ -174,11 +185,23 @@ KCookieWin::~KCookieWin()
 
 KCookieAdvice KCookieWin::advice( KCookieJar *cookiejar, const KHttpCookie& cookie )
 {
-    int result = exec();
+    const int result = exec();
 
-    cookiejar->setShowCookieDetails ( isDetailsWidgetVisible() );
+    cookiejar->setShowCookieDetails (isDetailsWidgetVisible());
 
-    KCookieAdvice advice = (result==KDialog::Yes) ? KCookieAccept : KCookieReject;
+    KCookieAdvice advice;
+
+    switch (result) {
+    case KDialog::Yes:
+        advice = KCookieAccept;
+        break;
+    case KDialog::User1:
+        advice = KCookieAcceptForSession;
+        break;
+    default:
+        advice = KCookieReject;
+        break;
+    }
 
     KCookieJar::KCookieDefaultPolicy preferredPolicy = KCookieJar::ApplyToShownCookiesOnly;
     if (m_allCookiesDomain->isChecked()) {
@@ -306,5 +329,16 @@ void KCookieDetail::displayCookieDetails()
     }
     m_secure->setText(sec);
 }
+
+void KCookieWin::slotButtonClicked(int button)
+{
+    if (button == KDialog::User1) {
+        done (KDialog::User1);
+        return;
+    }
+
+    KDialog::slotButtonClicked(button);
+}
+
 
 #include "kcookiewin.moc"

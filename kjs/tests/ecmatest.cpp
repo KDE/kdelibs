@@ -210,6 +210,18 @@ static QByteArray getTextProperty( const QByteArray &property, const QByteArray 
     return code.mid( from, to - from ).replace( "\\", "\\\\" ).replace( "\"", "\\\"" );
 }
 
+#define ECMATEST_VERIFY( expr ) \
+    do { \
+        const bool tmp_result = ( expr ); \
+        if ( tmp_result ) \
+            m_passed++; \
+        else \
+            m_failed++; \
+        if ( knownBroken ) \
+            QEXPECT_FAIL(QTest::currentDataTag(), "It is known that KJS doesn't pass this test", Abort); \
+        QVERIFY( tmp_result ); \
+    } while (0)
+
 static QMap< QByteArray, QByteArray > skips;
 
 void ECMAscriptTest::runAllTests()
@@ -272,44 +284,24 @@ void ECMAscriptTest::runAllTests()
     const bool knownBroken = expectedBroken.contains( QString::fromAscii( QTest::currentDataTag() ) );
 
     if ( expectedError.isEmpty() ) {
-        if ( knownBroken ) {
-            QWARN( "It is known that KJS doesn't pass this test" );
-            QVERIFY2( completion.complType() == KJS::Throw, "test expected to be broken now works!" );
-            m_failed++;
-        } else {
-            QVERIFY( completion.complType() != KJS::Throw );
-            m_passed++;
-        }
+        ECMATEST_VERIFY( completion.complType() != KJS::Throw );
     } else {
         if ( knownBroken && completion.complType() != KJS::Throw ) {
-            QWARN( "It is known that KJS doesn't pass this test" );
+            QEXPECT_FAIL(QTest::currentDataTag(), "It is known that KJS doesn't pass this test", Abort);
+            m_failed++;
+        }
+
+        QCOMPARE( completion.complType(), KJS::Throw );
+        QVERIFY( completion.value() != NULL );
+
+        const QString eMsg = exceptionToString( interp->execState(), completion.value() );
+
+        if ( expectedError == "^((?!NotEarlyError).)*$" ) {
+            ECMATEST_VERIFY( eMsg.indexOf( "NotEarlyError" ) == -1 );
+        } else if ( expectedError == "." ) {
+            // means "every exception passes
         } else {
-            QVERIFY( completion.complType() == KJS::Throw );
-            QVERIFY( completion.value() != NULL );
-
-            const QString eMsg = exceptionToString( interp->execState(), completion.value() );
-
-            if ( expectedError == "^((?!NotEarlyError).)*$" ) {
-                if ( knownBroken ) {
-                    QWARN( "It is known that KJS doesn't pass this test" );
-                    QVERIFY2( eMsg.indexOf( "NotEarlyError" ) >= 0, "test expected to be broken now works!" );
-                    m_failed++;
-                } else {
-                    QVERIFY( eMsg.indexOf( "NotEarlyError" ) == -1 );
-                    m_passed++;
-                }
-            } else if ( expectedError == "." ) {
-                // means "every exception passes
-            } else {
-                if ( knownBroken ) {
-                    QWARN( "It is known that KJS doesn't pass this test" );
-                    QVERIFY2( eMsg.indexOf( expectedError ) == -1, "test expected to be broken now works!" );
-                    m_failed++;
-                } else {
-                    QVERIFY( eMsg.indexOf( expectedError ) >= 0 );
-                    m_passed++;
-                }
-            }
+            ECMATEST_VERIFY( eMsg.indexOf( expectedError ) >= 0 );
         }
     }
 }

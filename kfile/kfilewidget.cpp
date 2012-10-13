@@ -2593,7 +2593,7 @@ KUrl KFileWidget::getStartUrl( const KUrl& startDir,
         }
         else						// not special "kfiledialog" URL
         {
-            if (!startDir.directory().isEmpty())	// has directory, maybe with filename
+            if (!startDir.isRelative())	// has directory, maybe with filename
             {
                 ret = startDir;				// will be checked by stat later
                 // If we won't be able to list it (e.g. http), then use default
