@@ -1866,6 +1866,8 @@ void KStandardDirs::addKDEDefaults()
 
     addResourceType("lib", 0, "lib" KDELIBSUFF "/");
 
+    addResourceType("qtplugins", "lib", "plugins");
+
     uint index = 0;
     while (types_indices[index] != -1) {
         addResourceType(types_string + types_indices[index], 0, types_string + types_indices[index+1], true);

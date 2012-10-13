@@ -195,7 +195,7 @@ div.sect2 {
     border-radius: 2px;
 }
 
-.keycap {
+.keycap, .keysym {
     background-color: #DFDFFF;
     font-weight: bold;
 

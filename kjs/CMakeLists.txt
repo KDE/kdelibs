@@ -139,6 +139,7 @@ create_lut(kjs_LIB_SRCS number_object.cpp number_object.lut.h number_object.cpp)
 create_lut(kjs_LIB_SRCS string_object.cpp string_object.lut.h string_object.cpp)
 create_lut(kjs_LIB_SRCS array_object.cpp array_object.lut.h array_object.cpp)
 create_lut(kjs_LIB_SRCS math_object.cpp math_object.lut.h math_object.cpp)
+create_lut(kjs_LIB_SRCS json_object.cpp json_object.lut.h json_object.cpp)
 create_lut(kjs_LIB_SRCS regexp_object.cpp regexp_object.lut.h regexp_object.cpp)
 create_lut(kjs_LIB_SRCS keywords.table lexer.lut.h lexer.cpp)
 
@@ -190,6 +191,9 @@ set(kjs_LIB_SRCS
    ${CMAKE_CURRENT_BINARY_DIR}/machine.cpp
    nodes2bytecode.cpp
    CompileState.cpp
+   jsonlexer.cpp
+   json_object.cpp
+   jsonstringify.cpp
    )
 
 if (NOT DEFINED QT_ONLY)

@@ -177,7 +177,7 @@ void Nepomuk::ResourceData::resetAll( bool isDelete )
             // See load() for an explanation of the QMetaObject call
 
             // stop the watcher since we do not want to watch all changes in case there is no ResourceData left
-            if(m_rm->m_watcher->resources().count() == 1) {
+            if(m_rm->m_watcher->resourceCount() == 1) {
                 QMetaObject::invokeMethod(m_rm->m_watcher, "stop", Qt::AutoConnection);
             }
 
@@ -491,11 +491,14 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
                                                            QLatin1String("org.kde.nepomuk.DataManagement"),
                                                            QLatin1String("setProperty") );
         QVariantList varList;
-        foreach( const Nepomuk::Variant var, value.toVariantList() ) {
-            // make sure resource values are in the store
+        foreach( const Variant& var, value.toVariantList() ) {
+            // make sure resource values are identified and in the store
             if( var.simpleType() == qMetaTypeId<Resource>() ) {
-                var.toResource().m_data->store();
-                varList << var.toUrl();
+                Resource res = var.toResource();
+                res.determineFinalResourceData();
+                res.m_data->store();
+
+                varList << res.uri();
             }
             else {
                 varList << var.variant();

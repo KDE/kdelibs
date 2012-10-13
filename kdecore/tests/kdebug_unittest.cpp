@@ -42,6 +42,7 @@ void KDebugTest::initTestCase()
 
     // Now set up logging to file
     KConfig config("kdebugrc");
+    config.group(QString()).writeEntry("DisableAll", false); // in case of a global kdebugrc with DisableAll=true
     config.group("180").writeEntry("InfoOutput", 0 /*FileOutput*/);
     config.group("myarea").writeEntry("InfoOutput", 0 /*FileOutput*/);
     config.group("myarea").writeEntry("InfoFilename", "myarea.dbg");

@@ -9,8 +9,8 @@ include(CPack)
 ################# set KDE specific information #################
 
 set (KDE_VERSION_MAJOR 4)
-set (KDE_VERSION_MINOR 8)
-set (KDE_VERSION_RELEASE 97)
+set (KDE_VERSION_MINOR 9)
+set (KDE_VERSION_RELEASE 80)
 set (KDE_VERSION "${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}.${KDE_VERSION_RELEASE}" )
 set (KDE_VERSION_STRING "${KDE_VERSION}")
 
@@ -37,6 +37,9 @@ include(CreateKDEPlatformProfile.cmake)
 if(KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
    set(KDE_NO_DEPRECATED TRUE)
 endif(KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
+
+############### Give the user the option to build the udisks2 solid backend instead of the udisks backend ###############
+option(WITH_SOLID_UDISKS2 "Enable the udisks2 solid backend instead")
 
 ############### Load the CTest options ###############
 # CTestCustom.cmake has to be in the CTEST_BINARY_DIR.

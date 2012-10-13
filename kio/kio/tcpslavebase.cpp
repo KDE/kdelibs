@@ -527,50 +527,6 @@ bool TCPSlaveBase::startSsl()
     return d->startTLSInternal(KTcpSocket::TlsV1) & ResultOk;
 }
 
-// Find out if a hostname matches an SSL certificate's Common Name (including wildcards)
-static bool isMatchingHostname(const QString &cnIn, const QString &hostnameIn)
-{
-    const QString cn = cnIn.toLower();
-    const QString hostname = hostnameIn.toLower();
-
-    const int wildcard = cn.indexOf(QLatin1Char('*'));
-
-    // Check this is a wildcard cert, if not then just compare the strings
-    if (wildcard < 0)
-        return cn == hostname;
-
-    const int firstCnDot = cn.indexOf(QLatin1Char('.'));
-    const int secondCnDot = cn.indexOf(QLatin1Char('.'), firstCnDot+1);
-
-    // Check at least 3 components
-    if ((-1 == secondCnDot) || (secondCnDot+1 >= cn.length()))
-        return false;
-
-    // Check * is last character of 1st component (ie. there's a following .)
-    if (wildcard+1 != firstCnDot)
-        return false;
-
-    // Check only one star
-    if (cn.lastIndexOf(QLatin1Char('*')) != wildcard)
-        return false;
-
-    // Check characters preceding * (if any) match
-    if (wildcard && (hostname.leftRef(wildcard) != cn.leftRef(wildcard)))
-        return false;
-
-    // Check characters following first . match
-    if (hostname.midRef(hostname.indexOf(QLatin1Char('.'))) != cn.midRef(firstCnDot))
-        return false;
-
-    // Check if the hostname is an IP address, if so then wildcards are not allowed
-    QHostAddress addr(hostname);
-    if (!addr.isNull())
-        return false;
-
-    // Ok, I guess this was a wildcard CN and the hostname matches.
-    return true;
-}
-
 TCPSlaveBase::SslResult TCPSlaveBase::TcpSlaveBasePrivate::startTLSInternal (KTcpSocket::SslVersion version,
                                                                              const QSslConfiguration& sslConfig,
                                                                              int waitForEncryptedTimeout)
@@ -629,39 +585,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::TcpSlaveBasePrivate::startTLSInternal (KTc
                  << " supportedBits:" << cipher.supportedBits()
                  << " usedBits:" << cipher.usedBits();
 
-    // Since we connect by IP (cf. KIO::HostInfo) the SSL code will not recognize
-    // that the site certificate belongs to the domain. We therefore do the
-    // domain<->certificate matching here.
     sslErrors = socket.sslErrors();
-    QSslCertificate peerCert = socket.peerCertificateChain().first();
-    QMutableListIterator<KSslError> it(sslErrors);
-    while (it.hasNext()) {
-        // As of 4.4.0 Qt does not assign a certificate to the QSslError it emits
-        // *in the case of HostNameMismatch*. A HostNameMismatch, however, will always
-        // be an error of the peer certificate so we just don't check the error's
-        // certificate().
-
-        // Remove all HostNameMismatch, we have to redo name checking later.
-        if (it.next().error() == KSslError::HostNameMismatch) {
-            it.remove();
-        }
-    }
-    // Redo name checking here and (re-)insert HostNameMismatch to sslErrors if
-    // host name does not match any of the names in server certificate.
-    // QSslSocket may not report HostNameMismatch error, when server
-    // certificate was issued for the IP we are connecting to.
-    QStringList domainPatterns(peerCert.subjectInfo(QSslCertificate::CommonName));
-    domainPatterns += peerCert.alternateSubjectNames().values(QSsl::DnsEntry);
-    bool names_match = false;
-    foreach (const QString &dp, domainPatterns) {
-        if (isMatchingHostname(dp, host)) {
-            names_match = true;
-            break;
-        }
-    }
-    if (!names_match) {
-        sslErrors.insert(0, KSslError(KSslError::HostNameMismatch, peerCert));
-    }
 
     // TODO: review / rewrite / remove the comment
     // The app side needs the metadata now for the SSL error dialog (if any) but

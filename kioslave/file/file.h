@@ -30,6 +30,12 @@
 #include <QtCore/QObject>
 #include <QtCore/QHash>
 
+#include <config-acl.h>
+
+#ifdef HAVE_POSIX_ACL
+#include <sys/acl.h>
+#include <acl/libacl.h>
+#endif
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -77,6 +83,10 @@ public:
   void mount( bool _ro, const char *_fstype, const QString& dev, const QString& point );
   bool pumount( const QString &point );
   bool pmount( const QString &dev );
+
+#ifdef HAVE_POSIX_ACL
+  static bool isExtendedACL(acl_t acl);
+#endif
 
 private:
   bool createUDSEntry( const QString & filename, const QByteArray & path, KIO::UDSEntry & entry,

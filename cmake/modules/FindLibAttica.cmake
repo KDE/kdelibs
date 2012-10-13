@@ -39,7 +39,7 @@ FIND_PATH(LIBATTICA_INCLUDE_DIR attica/provider.h
    PATH_SUFFIXES attica
    )
 
-# Store the version number in the cache, so we don't have to search everytime:
+# Store the version number in the cache, so we don't have to search every time:
 IF(LIBATTICA_INCLUDE_DIR  AND NOT  LIBATTICA_VERSION)
   FILE(READ ${LIBATTICA_INCLUDE_DIR}/attica/version.h LIBATTICA_VERSION_CONTENT)
   STRING (REGEX MATCH "LIBATTICA_VERSION_STRING \".*\"\n" LIBATTICA_VERSION_MATCH "${LIBATTICA_VERSION_CONTENT}")

@@ -655,6 +655,12 @@ Q_SIGNALS:
      */
     void canceled( const QString &errMsg );
 
+    /**
+     * Emitted by the part when url() changes
+     * @since 4.10
+     */
+    void urlChanged( const KUrl & url );
+
 protected:
     /**
      * If the part uses the standard implementation of openUrl(),

@@ -256,10 +256,10 @@ void KRatingPainter::paint( QPainter* painter, const QRect& rect, int rating, in
     }
     if( half ) {
         painter->drawPixmap( x, y, ratingPix.width()/2, ratingPix.height(),
-                             d->direction == Qt::LeftToRight ? ratingPix : ( numHoverStars > 0 ? hoverPix : disabledRatingPix ),
+                             d->direction == Qt::RightToLeft ? ( numHoverStars > 0 ? hoverPix : disabledRatingPix ) : ratingPix,
                              0, 0, ratingPix.width()/2, ratingPix.height() );
         painter->drawPixmap( x + ratingPix.width()/2, y, ratingPix.width()/2, ratingPix.height(),
-                             d->direction == Qt::LeftToRight ? ( numHoverStars > 0 ? hoverPix : disabledRatingPix ) : ratingPix,
+                             d->direction == Qt::RightToLeft ? ratingPix : ( numHoverStars > 0 ? hoverPix : disabledRatingPix ),
                              ratingPix.width()/2, 0, ratingPix.width()/2, ratingPix.height() );
         x += xInc;
         ++i;
@@ -270,10 +270,10 @@ void KRatingPainter::paint( QPainter* painter, const QRect& rect, int rating, in
     }
     if( halfHover ) {
         painter->drawPixmap( x, y, ratingPix.width()/2, ratingPix.height(),
-                             d->direction == Qt::LeftToRight ? hoverPix : disabledRatingPix,
+                             d->direction == Qt::RightToLeft ? disabledRatingPix : hoverPix,
                              0, 0, ratingPix.width()/2, ratingPix.height() );
         painter->drawPixmap( x + ratingPix.width()/2, y, ratingPix.width()/2, ratingPix.height(),
-                             d->direction == Qt::LeftToRight ? disabledRatingPix : hoverPix,
+                             d->direction == Qt::RightToLeft ? hoverPix : disabledRatingPix,
                              ratingPix.width()/2, 0, ratingPix.width()/2, ratingPix.height() );
         x += xInc;
         ++i;

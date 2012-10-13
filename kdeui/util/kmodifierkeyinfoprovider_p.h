@@ -38,7 +38,7 @@
  * the different supported platforms.
  * @internal
  */
-class KModifierKeyInfoProvider : public QWidget
+class KModifierKeyInfoProvider : public QObject
 {
     Q_OBJECT
 

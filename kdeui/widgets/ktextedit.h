@@ -24,6 +24,9 @@
 #include <sonnet/highlighter.h>
 #include <QtGui/QTextEdit>
 
+#define HAVE_SHOWTABACTION 1
+#define HAVE_AUTOCORRECTFEATURE 1
+#define HAVE_FORCESPELLCHECKING 1
 /**
  * This interface is a workaround to keep binary compatibility in KDE4, because
  * adding the virtual keyword to functions is not BC.
@@ -252,6 +255,24 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
      */
     QString clickMessage() const;
 
+
+    /**
+     * @since 4.10
+     */
+    void showTabAction(bool show);
+
+    /**
+     * @since 4.10
+     */
+    void showAutoCorrectButton(bool show);
+
+    /**
+     * @since 4.10
+     * create a modal spellcheck dialogbox and spellCheckingFinished signal we sent when 
+     * we finish spell checking or spellCheckingCanceled signal when we cancel spell checking
+     */
+    void forceSpellChecking();
+
   Q_SIGNALS:
     /**
      * emit signal when we activate or not autospellchecking
@@ -289,6 +310,23 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
      * @since 4.5
      */
     void aboutToShowContextMenu(QMenu* menu);
+
+    /**
+     * @since 4.10
+     */
+    void spellCheckerAutoCorrect(const QString& currentWord, const QString& autoCorrectWord);
+
+    /**
+     * signal spellCheckingFinished is sent when we finish spell check or we click on "Terminate" button in sonnet dialogbox
+     * @since 4.10
+     */
+    void spellCheckingFinished();
+
+    /**
+     * signal spellCheckingCanceled is sent when we cancel spell checking. 
+     * @since 4.10
+     */
+    void spellCheckingCanceled();
 
   public Q_SLOTS:
 

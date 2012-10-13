@@ -177,3 +177,12 @@ CLEAR COOKIES
 COOKIE ASK http://a.b.c/app1 Set-Cookie: name=value; Path="/app1"; expires=%NEXTYEAR%
 COOKIE ASK http://a.b.c/app2 Set-Cookie: name1=value1; Path="/app2"; expires=%NEXTYEAR%
 CHECK http://a.b.c/app1 Cookie: name=value
+## Check invalid weekday value in expire headers (BR# 298660)
+COOKIE ASK http://foo.bar Set-Cookie: name=value; expires=Thu, 01 Jan 1970 00:00:00 GMT; path="/"
+COOKIE ASK http://foo.bar Set-Cookie: name1=value1; expires=Thu, 30 Dec 2037 00:00:00 GMT; path="/"
+CLEAR SESSIONCOOKIES
+CHECK http://foo.bar Cookie: name1=value1
+CLEAR COOKIES
+## Check JSON formatted cookie values (QTBUG-26002)
+COOKIE ASK http://www.foo.bar Set-Cookie: name={"value":"null","value2":"null","value3":"null"}; domain=.foo.bar; path=/
+CHECK http://www.foo.bar Cookie: name={"value":"null","value2":"null","value3":"null"}

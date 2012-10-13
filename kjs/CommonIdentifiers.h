@@ -48,7 +48,8 @@
     macro(toLocaleString) \
     macro(toPrecision) \
     macro(toString) \
-    macro(valueOf)
+    macro(valueOf) \
+    macro(toJSON)
 
 namespace KJS {
 

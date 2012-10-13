@@ -23,8 +23,8 @@
 //
 // KDE File Manager -- HTTP Cookie Dialogs
 
-#ifndef _KCOOKIEWIN_H_
-#define _KCOOKIEWIN_H_
+#ifndef KCOOKIEWIN_H
+#define KCOOKIEWIN_H
 
 #include <QtGui/QGroupBox>
 #include <QtGui/QRadioButton>
@@ -58,7 +58,6 @@ private:
 
     KHttpCookieList m_cookieList;
     int m_cookieNumber;
-
 };
 
 class KCookieWin : public KDialog
@@ -71,6 +70,9 @@ public :
     ~KCookieWin();
 
     KCookieAdvice advice( KCookieJar *cookiejar, const KHttpCookie& cookie );
+
+protected:
+  virtual void slotButtonClicked(int button);
 
 private :
     QPushButton*   m_button;
