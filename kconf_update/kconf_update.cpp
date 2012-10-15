@@ -604,6 +604,8 @@ void KonfUpdate::copyOrMoveKey(const QStringList &srcGroupPath, const QString &s
     }
 
     KConfigGroup srcCg = KConfigUtils::openGroup(m_oldConfig1, srcGroupPath);
+    if (!srcCg.hasKey(srcKey))
+        return;
     QString value = srcCg.readEntry(srcKey, QString());
     log() << m_currentFilename << ": Updating " << m_newFileName << ":" << dstCg.name() << ":" << dstKey << " to '" << value << "'" << endl;
     dstCg.writeEntry(dstKey, value);
