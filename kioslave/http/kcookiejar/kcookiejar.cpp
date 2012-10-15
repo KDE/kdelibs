@@ -108,10 +108,8 @@ static QDateTime parseDate(const QString& _value)
         };
 
         for (int i = 0; date_formats[i]; ++i) {
-            qDebug() << "Checking" << value << "vs" << date_formats[i];
             dt = KDateTime::fromString(value, QL1S(date_formats[i]));
             if (dt.isValid()) {
-                qDebug() << "Matched" << date_formats[i];
                 break;
             }
         }
