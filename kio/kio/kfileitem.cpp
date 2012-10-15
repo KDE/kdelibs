@@ -1302,7 +1302,7 @@ void KFileItem::setMetaInfo( const KFileMetaInfo & info ) const
 
 KFileMetaInfo KFileItem::metaInfo(bool autoget, int what) const
 {
-    if ((isRegularFile() || isDir()) && autoget && !d->m_metaInfo.isValid())
+    if (d && (isRegularFile() || isDir()) && autoget && !d->m_metaInfo.isValid())
     {
         bool isLocalUrl;
         KUrl url(mostLocalUrl(isLocalUrl));
