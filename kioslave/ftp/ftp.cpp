@@ -1293,7 +1293,7 @@ void Ftp::chmod( const KUrl & url, int permissions )
     finished();
 }
 
-void Ftp::ftpCreateUDSEntry( const QString & filename, FtpEntry& ftpEnt, UDSEntry& entry, bool isDir )
+void Ftp::ftpCreateUDSEntry( const QString & filename, const FtpEntry& ftpEnt, UDSEntry& entry, bool isDir )
 {
   Q_ASSERT(entry.count() == 0); // by contract :-)
 
@@ -1461,24 +1461,29 @@ void Ftp::stat(const KUrl &url)
   Q_ASSERT( !search.isEmpty() && search != "/" );
 
   bool bFound = false;
-  KUrl      linkURL;
-  FtpEntry  ftpEnt;
-  while( ftpReadDir(ftpEnt) )
-  {
+  KUrl linkURL;
+  FtpEntry ftpEnt;
+  QList<FtpEntry> ftpValidateEntList;
+  while (ftpReadDir(ftpEnt)) {
+    if (!ftpEnt.name.isEmpty() && ftpEnt.name.at(0).isSpace()) {
+      ftpValidateEntList.append(ftpEnt);
+      continue;
+    }
+
     // We look for search or filename, since some servers (e.g. ftp.tuwien.ac.at)
     // return only the filename when doing "dir /full/path/to/file"
     if (!bFound) {
-        if ( ( search == ftpEnt.name || filename == ftpEnt.name ) ) {
-            if ( !filename.isEmpty() ) {
-              bFound = true;
-              UDSEntry entry;
-              ftpCreateUDSEntry( filename, ftpEnt, entry, isDir );
-              statEntry( entry );
-            }
-        }
+      bFound = maybeEmitStatEntry(ftpEnt, search, filename, isDir);
     }
-
     // kDebug(7102) << ftpEnt.name;
+  }
+
+  for (int i = 0, count = ftpValidateEntList.count(); i < count; ++i) {
+    FtpEntry& ftpEnt = ftpValidateEntList[i];
+    fixupEntryName(&ftpEnt);
+    if (maybeEmitStatEntry(ftpEnt, search, filename, isDir)) {
+      break;
+    }
   }
 
   ftpCloseCommand();        // closes the data connection only
@@ -1504,6 +1509,17 @@ void Ftp::stat(const KUrl &url)
   finished();
 }
 
+bool Ftp::maybeEmitStatEntry(FtpEntry& ftpEnt, const QString& search, const QString& filename, bool isDir)
+{
+    if ((search == ftpEnt.name || filename == ftpEnt.name) && !filename.isEmpty()) {
+        UDSEntry entry;
+        ftpCreateUDSEntry( filename, ftpEnt, entry, isDir );
+        statEntry( entry );
+        return true;
+    }
+
+    return false;
+}
 
 void Ftp::listDir( const KUrl &url )
 {
@@ -1546,21 +1562,33 @@ void Ftp::listDir( const KUrl &url )
 
   UDSEntry entry;
   FtpEntry  ftpEnt;
+  QList<FtpEntry> ftpValidateEntList;
   while( ftpReadDir(ftpEnt) )
   {
     //kDebug(7102) << ftpEnt.name;
     //Q_ASSERT( !ftpEnt.name.isEmpty() );
-    if ( !ftpEnt.name.isEmpty() )
-    {
+    if (!ftpEnt.name.isEmpty()) {
+      if (ftpEnt.name.at(0).isSpace()) {
+        ftpValidateEntList.append(ftpEnt);
+        continue;
+      }
+
       //if ( S_ISDIR( (mode_t)ftpEnt.type ) )
       //   kDebug(7102) << "is a dir";
       //if ( !ftpEnt.link.isEmpty() )
       //   kDebug(7102) << "is a link to " << ftpEnt.link;
-      entry.clear();
       ftpCreateUDSEntry( ftpEnt.name, ftpEnt, entry, false );
       listEntry( entry, false );
     }
   }
+
+  for (int i = 0, count = ftpValidateEntList.count(); i < count; ++i) {
+    FtpEntry& ftpEnt = ftpValidateEntList[i];
+    fixupEntryName(&ftpEnt);
+    ftpCreateUDSEntry( ftpEnt.name, ftpEnt, entry, false );
+    listEntry( entry, false );
+  }
+
   listEntry( entry, true ); // ready
   ftpCloseCommand();        // closes the data connection only
   finished();
@@ -2606,4 +2634,48 @@ void Ftp::saveProxyAuthentication()
     }
     delete m_socketProxyAuth;
     m_socketProxyAuth = 0;
+}
+
+void Ftp::fixupEntryName(FtpEntry* e)
+{
+    Q_ASSERT(e);
+    if (e->type == S_IFDIR) {
+        if (!ftpFolder(e->name, false)) {
+            QString name (e->name.trimmed());
+            if (ftpFolder(name, false)) {
+                e->name = name;
+                kDebug(7102) << "fixing up directory name from" << e->name << "to" << name;
+            } else {
+                int index = 0;
+                while (e->name.at(index).isSpace()) {
+                    index++;
+                    name = e->name.mid(index);
+                    if (ftpFolder(name, false)) {
+                        kDebug(7102) << "fixing up directory name from" << e->name << "to" << name;
+                        e->name = name;
+                        break;
+                    }
+                }
+            }
+        }
+    } else {
+        if (!ftpFileExists(e->name)) {
+            QString name (e->name.trimmed());
+            if (ftpFileExists(name)) {
+                e->name = name;
+                kDebug(7102) << "fixing up filename from" << e->name << "to" << name;
+            } else {
+                int index = 0;
+                while (e->name.at(index).isSpace()) {
+                    index++;
+                    name = e->name.mid(index);
+                    if (ftpFileExists(name)) {
+                        kDebug(7102) << "fixing up filename from" << e->name << "to" << name;
+                        e->name = name;
+                        break;
+                    }
+                }
+            }
+        }
+    }
 }
