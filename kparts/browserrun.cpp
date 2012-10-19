@@ -306,8 +306,18 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& _
                          this, SLOT(slotCopyToTempFileResult(KJob*)) );
                 return Delayed; // We'll continue after the job has finished
             }
-            if (selectedService)
+            if (selectedService) {
                 *selectedService = question.selectedService();
+                if (selectedService) {
+                    KUrl::List lst;
+                    lst.append(KRun::url());
+
+                    if (*selectedService && KRun::run( *(*selectedService), lst, 0 ) ) {
+                        setFinished( true );
+                        return Handled;
+                    }
+                }
+            }
         }
     }
 
@@ -318,7 +328,6 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& _
         setFinished( true );
         return Handled;
     }
-
     KIO::Scheduler::publishSlaveOnHold(); // publish any slave on hold so it can be reused.
     return NotHandled;
 }
@@ -328,7 +337,6 @@ bool BrowserRun::allowExecution( const QString &mimeType, const QUrl &url )
 {
     if ( !KRun::isExecutable( mimeType ) )
       return true;
-
     if ( !url.isLocalFile() ) // Don't permit to execute remote files
         return false;
 

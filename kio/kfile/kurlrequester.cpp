@@ -243,7 +243,7 @@ void KUrlRequester::KUrlRequesterPrivate::init()
 
     myButton = new KUrlDragPushButton(m_parent);
     myButton->setIcon(KDE::icon("document-open"));
-    int buttonSize = widget->sizeHint().height();
+    int buttonSize = myButton->sizeHint().expandedTo(widget->sizeHint()).height();
     myButton->setFixedSize(buttonSize, buttonSize);
     myButton->setToolTip(i18n("Open file dialog"));
 

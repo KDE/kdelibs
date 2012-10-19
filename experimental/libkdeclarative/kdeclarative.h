@@ -41,6 +41,13 @@ public:
 
     QScriptEngine *scriptEngine() const;
 
+    /**
+     * This method must be called very early at startup time to ensure the
+     * QDeclarativeDebugger is enabled. Ideally it should be called in main(),
+     * after command-line options are defined.
+     */
+    static void setupQmlJsDebugger();
+
 private:
     KDeclarativePrivate *const d;
     friend class EngineAccess;

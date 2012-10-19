@@ -113,6 +113,9 @@ if(KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
    set(CMAKE_AUTOMOC_MOC_OPTIONS "-DKDE_NO_DEPRECATED")
 endif(KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
 
+############### Give the user the option to build the udisks2 solid backend instead of the udisks backend ###############
+option(WITH_SOLID_UDISKS2 "Enable the udisks2 solid backend instead")
+
 ############### Load the CTest options ###############
 # CTestCustom.cmake has to be in the CTEST_BINARY_DIR.
 # in the KDE build system, this is the same as CMAKE_BINARY_DIR.

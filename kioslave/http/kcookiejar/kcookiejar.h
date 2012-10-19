@@ -41,6 +41,7 @@ enum KCookieAdvice
 {
     KCookieDunno=0,
     KCookieAccept,
+    KCookieAcceptForSession,
     KCookieReject,
     KCookieAsk
 };
@@ -65,6 +66,7 @@ protected:
     bool    mExplicitPath;
     QList<long> mWindowIds;
     QList<int> mPorts;
+    KCookieAdvice mUserSelectedAdvice;
 
     QString cookieStr(bool useDOMFormat) const;
 
@@ -101,6 +103,9 @@ public:
     bool isHttpOnly() const { return mHttpOnly; }
     bool hasExplicitPath() const { return mExplicitPath; }
     bool match(const QString &fqdn, const QStringList &domainList, const QString &path, int port=-1) const;
+
+    KCookieAdvice getUserSelectedAdvice() const { return mUserSelectedAdvice; }
+    void setUserSelectedAdvice(KCookieAdvice advice) { mUserSelectedAdvice = advice; }
 };
 
 QDebug operator<<(QDebug, const KHttpCookie&);
@@ -202,17 +207,26 @@ public:
     void addCookie(KHttpCookie &cookie);
 
     /**
+     * This function tells whether a single KHttpCookie object should
+     * be considered persistent. Persistent cookies do not get deleted
+     * at the end of the session and are saved on disk.
+     */
+    bool cookieIsPersistent(const KHttpCookie& cookie) const;
+
+    /**
      * This function advices whether a single KHttpCookie object should
      * be added to the cookie jar.
      *
      * Possible return values are:
      *     - KCookieAccept, the cookie should be added
+     *     - KCookieAcceptForSession, the cookie should be added as session cookie
      *     - KCookieReject, the cookie should not be added
      *     - KCookieAsk, the user should decide what to do
      *
-     * @param cookie not const, since this method can "fix up" the cookie too.
+     * Before sending cookies back to a server this function is consulted,
+     * so that cookies having advice KCookieReject are not sent back.
      */
-    KCookieAdvice cookieAdvice(KHttpCookie& cookie);
+    KCookieAdvice cookieAdvice(const KHttpCookie& cookie) const;
 
     /**
      * This function gets the advice for all cookies originating from
@@ -220,10 +234,11 @@ public:
      *
      *     - KCookieDunno, no specific advice for _domain
      *     - KCookieAccept, accept all cookies for _domain
+     *     - KCookieAcceptForSession, accept all cookies for _domain as session cookies
      *     - KCookieReject, reject all cookies for _domain
      *     - KCookieAsk, the user decides what to do with cookies for _domain
      */
-    KCookieAdvice getDomainAdvice(const QString &_domain);
+    KCookieAdvice getDomainAdvice(const QString &_domain) const;
 
     /**
      * This function sets the advice for all cookies originating from
@@ -232,6 +247,7 @@ public:
      * _advice can have the following values:
      *     - KCookieDunno, no specific advice for _domain
      *     - KCookieAccept, accept all cookies for _domain
+     *     - KCookieAcceptForSession, accept all cookies for _domain as session cookies
      *     - KCookieReject, reject all cookies for _domain
      *     - KCookieAsk, the user decides what to do with cookies for _domain
      */
@@ -244,6 +260,7 @@ public:
      * _advice can have the following values:
      *     - KCookieDunno, no specific advice for _domain
      *     - KCookieAccept, accept all cookies for _domain
+     *     - KCookieAcceptForSession, accept all cookies for _domain as session cookies
      *     - KCookieReject, reject all cookies for _domain
      *     - KCookieAsk, the user decides what to do with cookies for _domain
      */
@@ -254,18 +271,20 @@ public:
      *
      * The returned advice can have the following values:
      *     - KCookieAccept, accept cookies
+     *     - KCookieAcceptForSession, accept cookies as session cookies
      *     - KCookieReject, reject cookies
      *     - KCookieAsk, the user decides what to do with cookies
      *
      * The global advice is used if the domain has no advice set.
      */
-    KCookieAdvice getGlobalAdvice() { return m_globalAdvice; }
+    KCookieAdvice getGlobalAdvice() const { return m_globalAdvice; }
 
     /**
      * This function sets the global advice for cookies
      *
      * _advice can have the following values:
      *     - KCookieAccept, accept cookies
+     *     - KCookieAcceptForSession, accept cookies as session cookies
      *     - KCookieReject, reject cookies
      *     - KCookieAsk, the user decides what to do with cookies
      *
@@ -321,10 +340,7 @@ public:
     /**
      * Parses _url and returns the FQDN (_fqdn) and path (_path).
      */
-    static bool parseUrl(const QString &_url,
-                         QString &_fqdn,
-                         QString &_path,
-                         int *port = 0);
+    static bool parseUrl(const QString &_url, QString &_fqdn, QString &_path, int *port = 0);
 
     /**
      * Returns a list of domains in @p _domainList relevant for this host.
@@ -360,8 +376,8 @@ public:
      void setShowCookieDetails (bool value) { m_showCookieDetails = value; }
 
 protected:
-     void stripDomain(const QString &_fqdn, QString &_domain);
-     QString stripDomain(const KHttpCookie& cookie);
+     void stripDomain(const QString &_fqdn, QString &_domain) const;
+     QString stripDomain(const KHttpCookie& cookie) const;
 
 protected:
     QStringList m_domainList;    
@@ -375,7 +391,6 @@ protected:
     bool m_showCookieDetails;
     bool m_rejectCrossDomainCookies;
     bool m_autoAcceptSessionCookies;
-    bool m_ignoreCookieExpirationDate;
 
     KCookieDefaultPolicy m_preferredPolicy;
 };

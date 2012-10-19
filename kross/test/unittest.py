@@ -15,6 +15,10 @@ KrossAction = self
 def testFunction(*args):
     return args
 
+def testFunctionException(*args):
+    raise Exception()
+    return args
+
 class TestKross(unittest.TestCase):
 	""" Testcases to test the Kross python functionality for regressions. """
 
@@ -272,6 +276,48 @@ class TestKross(unittest.TestCase):
 		#qobj = pyqtextension.getQObject()
 		#qo = sip.wrapinstance (qobj, QObject)
 		#print ">>>>>>>>>>>>>>>>>>> %s" % qo
+
+	def testPyQtSignal(self):
+		try:
+			from PyQt4 import QtCore, Qt
+			import string
+			version = string.split(QtCore.PYQT_VERSION_STR, ".")
+			if map(int, version) < [4, 5]:
+				print "PyQt4 version (", QtCore.PYQT_VERSION_STR, ") is lower than 4.5, skipping test"
+				return
+		except:
+			print "PyQt4 wasn't found, skipping test"
+			return
+
+		class PyQtObject(Qt.QObject):
+			customSignal = QtCore.pyqtSignal()
+
+		pyQtObject = PyQtObject()
+		self.object1.connectCallTestFunction(KrossAction, pyQtObject, "customSignal()")
+		pyQtObject.customSignal.emit()
+
+		self.assert_( self.object1.testFunctionReturnedValue() == [42] )
+
+	def testPyQtSignalException(self):
+		try:
+			from PyQt4 import QtCore, Qt
+			import string
+			version = string.split(QtCore.PYQT_VERSION_STR, ".")
+			if map(int, version) < [4, 5]:
+				print "PyQt4 version (", QtCore.PYQT_VERSION_STR, ") is lower than 4.5, skipping test"
+				return
+		except:
+			print "PyQt4 wasn't found, skipping test"
+			return
+
+		class PyQtObject(Qt.QObject):
+			customSignal = QtCore.pyqtSignal()
+
+		pyQtObject = PyQtObject()
+		self.object1.connectCallTestFunctionException(KrossAction, pyQtObject, "customSignal()")
+		pyQtObject.customSignal.emit()
+
+		self.assert_( self.object1.testFunctionReturnedValue() == None )
 
 	def testClass(self):
 		class MyClass:

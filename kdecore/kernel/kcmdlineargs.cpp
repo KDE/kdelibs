@@ -302,6 +302,7 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
     qt_options.add("reverse", qi18n("mirrors the whole layout of widgets"));
     qt_options.add("stylesheet <file.qss>", qi18n("applies the Qt stylesheet to the application widgets"));
     qt_options.add("graphicssystem <system>", qi18n("use a different graphics system instead of the default one, options are raster and opengl (experimental)"));
+    qt_options.add("qmljsdebugger <port>", qi18n("QML JS debugger information. Application must be\nbuilt with -DQT_DECLARATIVE_DEBUG for the debugger to be\nenabled"));
     // KDE options
     kde_options.add("caption <caption>",   qi18n("Use 'caption' as name in the titlebar"));
     kde_options.add("icon <icon>",         qi18n("Use 'icon' as the application icon"));
@@ -1422,8 +1423,16 @@ KCmdLineArgsPrivate::setOption(const QByteArray &opt, const QByteArray &value)
       // Qt does it's own parsing.
       QByteArray argString = "-"; // krazy:exclude=doublequote_chars
       argString += opt;
-      addArgument(argString);
-      addArgument(value);
+      if (opt == "qmljsdebugger") {
+          // hack: Qt expects the value of the "qmljsdebugger" option to be 
+          // passed using a '=' separator rather than a space, so we recreate it
+          // correctly.
+          // See code of QCoreApplicationPrivate::processCommandLineArguments()
+          addArgument(argString + "=" + value);
+      } else {
+          addArgument(argString);
+          addArgument(value);
+      }
 
 #if HAVE_X11
       // Hack coming up!

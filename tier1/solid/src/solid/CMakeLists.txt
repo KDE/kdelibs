@@ -247,20 +247,38 @@ if(NOT WIN32 AND NOT APPLE)
 
    # FIXME: this should work on more Unix systems
    if (CMAKE_SYSTEM_NAME MATCHES Linux)
-      message(STATUS "Building Solid UDisks backend." )
-      set(solid_LIB_SRCS ${solid_LIB_SRCS}
-         backends/udisks/udisksmanager.cpp
-         backends/udisks/udisksdevice.cpp
-         backends/udisks/udisksblock.cpp
-         backends/udisks/udisksstoragevolume.cpp
-         backends/udisks/udisksdeviceinterface.cpp
-         backends/udisks/udisksopticaldisc.cpp
-         backends/udisks/udisksopticaldrive.cpp
-         backends/udisks/udisksstoragedrive.cpp
-         backends/udisks/udisksstorageaccess.cpp
-         backends/udisks/udisksgenericinterface.cpp
-      )
-   endif ()
+       if ( WITH_SOLID_UDISKS2 )
+           message(STATUS "Building Solid UDisks2 backend." )
+           add_definitions(-DWITH_SOLID_UDISKS2)
+           set(solid_LIB_SRCS ${solid_LIB_SRCS}
+           backends/udisks2/udisksmanager.cpp
+           backends/udisks2/udisksdevice.cpp
+           backends/udisks2/udisksblock.cpp
+           backends/udisks2/udisksstoragevolume.cpp
+           backends/udisks2/udisksdeviceinterface.cpp
+           backends/udisks2/udisksopticaldisc.cpp
+           backends/udisks2/udisksopticaldrive.cpp
+           backends/udisks2/udisksstoragedrive.cpp
+           backends/udisks2/udisksstorageaccess.cpp
+           backends/udisks2/udisksgenericinterface.cpp
+           backends/udisks2/dbus/manager.cpp
+           )
+       else ( WITH_SOLID_UDISKS2 )
+           message(STATUS "Building Solid UDisks backend." )
+           set(solid_LIB_SRCS ${solid_LIB_SRCS}
+           backends/udisks/udisksmanager.cpp
+           backends/udisks/udisksdevice.cpp
+           backends/udisks/udisksblock.cpp
+           backends/udisks/udisksstoragevolume.cpp
+           backends/udisks/udisksdeviceinterface.cpp
+           backends/udisks/udisksopticaldisc.cpp
+           backends/udisks/udisksopticaldrive.cpp
+           backends/udisks/udisksstoragedrive.cpp
+           backends/udisks/udisksstorageaccess.cpp
+           backends/udisks/udisksgenericinterface.cpp
+          )
+       endif ( WITH_SOLID_UDISKS2 )
+   endif (CMAKE_SYSTEM_NAME MATCHES Linux)
 
    message(STATUS "Building Solid fstab backend." )
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
