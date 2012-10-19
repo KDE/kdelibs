@@ -27,7 +27,7 @@
 #include <QDeclarativeContext>
 #include <QDeclarativeEngine>
 #include <QDeclarativeExpression>
-#include <QtDeclarative/qdeclarativedebug.h>
+#include <QDeclarativeDebuggingEnabler>
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptValueIterator>
 #include <QtCore/QWeakPointer>
