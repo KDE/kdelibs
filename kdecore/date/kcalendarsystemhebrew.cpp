@@ -927,16 +927,6 @@ int KCalendarSystemHebrew::dayOfWeek(const QDate &date) const
     }
 }
 
-bool KCalendarSystemHebrew::isLeapYear(int year) const
-{
-    return KCalendarSystem::isLeapYear(year);
-}
-
-bool KCalendarSystemHebrew::isLeapYear(const QDate &date) const
-{
-    return KCalendarSystem::isLeapYear(date);
-}
-
 QString KCalendarSystemHebrew::monthName(int month, int year, MonthNameFormat format) const
 {
     return KCalendarSystem::monthName(month, year, format);

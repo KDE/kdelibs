@@ -443,16 +443,6 @@ int KCalendarSystemQDate::day(const QDate &date) const
     return date.day();
 }
 
-int KCalendarSystemQDate::daysInYear(const QDate &date) const
-{
-    return date.daysInYear();
-}
-
-int KCalendarSystemQDate::daysInMonth(const QDate &date) const
-{
-    return date.daysInMonth();
-}
-
 int KCalendarSystemQDate::dayOfYear(const QDate &date) const
 {
     return date.dayOfYear();
@@ -461,16 +451,6 @@ int KCalendarSystemQDate::dayOfYear(const QDate &date) const
 int KCalendarSystemQDate::dayOfWeek(const QDate &date) const
 {
     return date.dayOfWeek();
-}
-
-bool KCalendarSystemQDate::isLeapYear(int year) const
-{
-    return QDate::isLeapYear(year);
-}
-
-bool KCalendarSystemQDate::isLeapYear(const QDate &date) const
-{
-    return QDate::isLeapYear(date.year());
 }
 
 QString KCalendarSystemQDate::monthName(int month, int year, MonthNameFormat format) const

@@ -427,16 +427,6 @@ QDate KCalendarSystemGregorian::latestValidDate() const
     return QDate::fromJulianDay(5373484);
 }
 
-bool KCalendarSystemGregorian::isLeapYear(int year) const
-{
-    return KCalendarSystem::isLeapYear(year);
-}
-
-bool KCalendarSystemGregorian::isLeapYear(const QDate &date) const
-{
-    return KCalendarSystem::isLeapYear(date);
-}
-
 QString KCalendarSystemGregorian::monthName(int month, int year, MonthNameFormat format) const
 {
     return KCalendarSystem::monthName(month, year, format);

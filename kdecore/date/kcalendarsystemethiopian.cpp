@@ -335,16 +335,6 @@ QDate KCalendarSystemEthiopian::latestValidDate() const
     return QDate::fromJulianDay(5376721);
 }
 
-bool KCalendarSystemEthiopian::isLeapYear(int year) const
-{
-    return KCalendarSystemCoptic::isLeapYear(year);
-}
-
-bool KCalendarSystemEthiopian::isLeapYear(const QDate &date) const
-{
-    return KCalendarSystemCoptic::isLeapYear(date);
-}
-
 QString KCalendarSystemEthiopian::monthName(int month, int year, MonthNameFormat format) const
 {
     return KCalendarSystemCoptic::monthName(month, year, format);

@@ -498,9 +498,8 @@ public:
      * @param date the date to obtain year from
      * @return number of months in the year, -1 if input date invalid
      */
-    virtual int monthsInYear(const QDate &date) const;
+    int monthsInYear(const QDate &date) const;
 
-    //KDE5 make virtual?
     /**
      * @since 4.5
      *
@@ -567,9 +566,8 @@ public:
      * @param date the date to obtain year from
      * @return number of days in year, -1 if input date invalid
      */
-    virtual int daysInYear(const QDate &date) const;
+    int daysInYear(const QDate &date) const;
 
-    //KDE5 make virtual?
     /**
      * @since 4.5
      *
@@ -586,9 +584,8 @@ public:
      * @param date the date to obtain month from
      * @return number of days in month, -1 if input date invalid
      */
-    virtual int daysInMonth(const QDate &date) const;
+    int daysInMonth(const QDate &date) const;
 
-    //KDE5 make virtual?
     /**
      * @since 4.5
      *
@@ -699,7 +696,7 @@ public:
      * @param year the year to check
      * @return @c true if the year is a leap year, @c false otherwise
      */
-    virtual bool isLeapYear(int year) const = 0;
+    bool isLeapYear(int year) const;
 
     /**
      * Returns whether a given date falls in a leap year.
@@ -710,7 +707,7 @@ public:
      * @param date the date to check
      * @return @c true if the date falls in a leap year, @c false otherwise
      */
-    virtual bool isLeapYear(const QDate &date) const;
+    bool isLeapYear(const QDate &date) const;
 
     //KDE5 Make virtual?
     /**

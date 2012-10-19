@@ -1210,7 +1210,6 @@ int KCalendarSystem::monthsInYear(const QDate &date) const
     return -1;
 }
 
-// NOT VIRTUAL - Uses shared-d instead
 int KCalendarSystem::monthsInYear(int year) const
 {
     Q_D(const KCalendarSystem);
@@ -1267,7 +1266,6 @@ int KCalendarSystem::daysInYear(const QDate &date) const
     return -1;
 }
 
-// NOT VIRTUAL - Uses shared-d instead
 int KCalendarSystem::daysInYear(int year) const
 {
     Q_D(const KCalendarSystem);
@@ -1284,20 +1282,19 @@ int KCalendarSystem::daysInMonth(const QDate &date) const
     Q_D(const KCalendarSystem);
 
     if (isValid(date)) {
-        int year, month;
-        getDate(date, &year, &month, 0);
+        int year, month, day;
+        julianDayToDate(date.toJulianDay(), year, month, day);
         return d->daysInMonth(year, month);
     }
 
     return -1;
 }
 
-// NOT VIRTUAL - Uses shared-d instead
 int KCalendarSystem::daysInMonth(int year, int month) const
 {
     Q_D(const KCalendarSystem);
 
-    if (isValid(year, 1, 1)) {
+    if (isValid(year, month, 1)) {
         return d->daysInMonth(year, month);
     }
 

@@ -140,16 +140,6 @@ QDate KCalendarSystemJapanese::latestValidDate() const
     return QDate::fromJulianDay(5373484);
 }
 
-bool KCalendarSystemJapanese::isLeapYear(int year) const
-{
-    return KCalendarSystemGregorian::isLeapYear(year);
-}
-
-bool KCalendarSystemJapanese::isLeapYear(const QDate &date) const
-{
-    return KCalendarSystemGregorian::isLeapYear(date);
-}
-
 QString KCalendarSystemJapanese::monthName(int month, int year, MonthNameFormat format) const
 {
     return KCalendarSystemGregorian::monthName(month, year, format);
