@@ -398,9 +398,11 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   QString homeDir = currentUser.homeDir();
   QEXPECT_FAIL("", "No more user-expansion in KUrl", Continue);
   QCOMPARE( tilde.url(), QString("file://%1/Mat%C3%A9riel").arg(homeDir));
-  tilde = KUrl("http://foo.bar/index.html");
-  tilde.setPath( "~slajsjdlsjd/test.html" );
-  QCOMPARE( tilde.url(), QString("http://foo.bar/~slajsjdlsjd/test.html"));
+
+  QUrl httpTilde("http://foo.bar/index.html");
+  httpTilde.setPath( "/~slajsjdlsjd/test.html" );
+  QVERIFY2( httpTilde.isValid(), qPrintable(httpTilde.errorString()) );
+  QCOMPARE( httpTilde.toString(), QString("http://foo.bar/~slajsjdlsjd/test.html"));
 #endif
 }
 
@@ -1663,26 +1665,32 @@ void KUrlTest::testMoreBrokenStuff()
   //qDebug("%s",qPrintable( weird.query() ) );
   QCOMPARE( weird.queryItem("cmd"), QString("'echo $HOSTNAME'") );
 
-  weird = ":pictures"; // for KFileDialog's startDir
+  weird = ":pictures"; // for KFileDialog's startDir, long ago. Nowadays it uses a proper URL, kfiledialog:///pictures
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+  QVERIFY( !weird.isValid() );
+  QVERIFY( weird.protocol().isEmpty() );
+  QVERIFY( weird.host().isEmpty() );
+  QCOMPARE( weird.path(), QString( ":pictures" ) );
+  QCOMPARE( weird.url(), QString() );
+#else
   QVERIFY( weird.isValid() );
   QVERIFY( weird.protocol().isEmpty() );
   QVERIFY( weird.host().isEmpty() );
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-  QCOMPARE( weird.path(), QString( ":pictures" ) );
-  QCOMPARE( weird.url(), QString( ":pictures" ) );
-#else
   QCOMPARE( weird.path(), QString( "pictures" ) );
   QCOMPARE( weird.url(), QString( "pictures" ) ); // # BUG: the : is missing
 #endif
 
-  weird = "::keyword"; // for KFileDialog's startDir
+  weird = "::keyword"; // for KFileDialog's startDir, long ago.
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+  QVERIFY( !weird.isValid() );
+  QVERIFY( weird.protocol().isEmpty() );
+  QVERIFY( weird.host().isEmpty() );
+  QCOMPARE( weird.path(), QString( "::keyword" ) );
+  QCOMPARE( weird.url(), QString() );
+#else
   QVERIFY( weird.isValid() );
   QVERIFY( weird.protocol().isEmpty() );
   QVERIFY( weird.host().isEmpty() );
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-  QCOMPARE( weird.path(), QString( "::keyword" ) );
-  QCOMPARE( weird.url(), QString( "::keyword" ) );
-#else
   QCOMPARE( weird.path(), QString( ":keyword" ) );
   QCOMPARE( weird.url(), QString( ":keyword" ) ); // # BUG: the : is missing
 #endif
