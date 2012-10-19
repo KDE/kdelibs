@@ -1552,6 +1552,9 @@ QString KStandardDirs::saveLocation(const char *type,
                 QString basepath = saveLocation(rel.toUtf8().constData(), QString(), create);
                 path = basepath + rest;
             } else {
+                if (path == QLatin1String("./")) {
+                    path.clear();
+                }
                 // Check for existence of typed directory + suffix
                 const BasePrefix basePrefix = basePrefixForResource(type);
                 if (basePrefix == XdgConf) {
