@@ -714,15 +714,21 @@ QList<KTimeZone::Transition> KTimeZone::transitions(const QDateTime &start, cons
 const KTimeZone::Transition *KTimeZone::transition(const QDateTime &dt, const Transition **secondTransition,
                                                    bool *validTime) const
 {
-    if (!data(true))
+    if (!data(true)) {
+        if (validTime)
+            *validTime = false;
         return 0;
+    }
     return d->d->data->transition(dt, secondTransition, validTime);
 }
 
 int KTimeZone::transitionIndex(const QDateTime &dt, int *secondIndex, bool *validTime) const
 {
-    if (!data(true))
+    if (!data(true)) {
+        if (validTime)
+            *validTime = false;
         return -1;
+    }
     return d->d->data->transitionIndex(dt, secondIndex, validTime);
 }
 
