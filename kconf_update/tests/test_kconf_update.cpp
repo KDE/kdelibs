@@ -217,6 +217,32 @@ void TestKConfUpdate::test_data()
         <<
         ""
         ;
+    QTest::newRow("moveKeysSameFileDontExist")
+        <<
+        "File=testrc\n"
+        "Group=group,group2\n"
+        "Key=key1\n"
+        "Key=key2\n"
+        <<
+        "testrc"
+        <<
+        "[group]\n"
+        "key1=value1\n"
+        "key3=value3\n"
+        <<
+        "testrc"
+        <<
+        "[$Version]\n"
+        "update_info=%1\n"
+        "\n"
+        "[group]\n"
+        "key3=value3\n"
+        "\n"
+        "[group2]\n"
+        "key1=value1\n"
+        <<
+        ""
+        ;
 }
 
 void TestKConfUpdate::test()
