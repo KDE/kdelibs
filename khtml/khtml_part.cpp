@@ -5242,8 +5242,12 @@ KHTMLPart* KHTMLPartPrivate::top()
 
 bool KHTMLPartPrivate::canNavigate(KParts::ReadOnlyPart* bCand)
 {
+    if (!bCand) // No part here (e.g. invalid url), reuse that frame
+        return true;
+
     KHTMLPart* b = qobject_cast<KHTMLPart*>(bCand);
-    assert(b);
+    if (!b) // Another kind of part? Not sure what to do...
+        return false;
 
     // HTML5 gives conditions for this (a) being able to navigate b
     
