@@ -532,9 +532,8 @@ static pid_t launch(int argc, const char *_name, const char *args,
   if( !startup_id.none())
       init_startup_info( startup_id, name, envc, envs );
 #endif
-  // find out these paths before forking, doing it afterwards
+  // find out this path before forking, doing it afterwards
   // crashes on some platforms, notably OSX
-  const QByteArray docPath = QFile::encodeName(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
 #ifdef Q_OS_MAC
   const QString bundlepath = QStandardPaths::findExecutable(QFile::decodeName(execpath));
 #endif

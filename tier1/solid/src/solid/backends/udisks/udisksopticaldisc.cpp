@@ -25,8 +25,15 @@
 #include <fcntl.h>
 
 #include <QtCore/QFile>
+#include <QtCore/QMap>
+#include <QtCore/QMutexLocker>
 
 #include "udisksopticaldisc.h"
+#include "soliddefs_p.h"
+
+typedef QMap<QString, Solid::OpticalDisc::ContentTypes> ContentTypesCache;
+SOLID_GLOBAL_STATIC(ContentTypesCache, cache)
+SOLID_GLOBAL_STATIC(QMutex, cacheLock)
 
 // inspired by http://cgit.freedesktop.org/hal/tree/hald/linux/probing/probe-volume.c
 static Solid::OpticalDisc::ContentType advancedDiscDetect(const QString & device_file)
@@ -234,6 +241,16 @@ Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
     }
 
     if (m_needsReprobe) {
+        QMutexLocker lock(cacheLock);
+
+        QString deviceFile = m_device->prop("DeviceFile").toString();
+
+        if (cache->contains(deviceFile)) {
+            m_cachedContent = cache->value(deviceFile);
+            m_needsReprobe = false;
+            return m_cachedContent;
+        }
+
         m_cachedContent = Solid::OpticalDisc::NoContent;
         bool hasData = m_device->prop("OpticalDiscNumTracks").toInt() > 0 &&
                         m_device->prop("OpticalDiscNumTracks").toInt() > m_device->prop("OpticalDiscNumAudioTracks").toInt();
@@ -241,12 +258,14 @@ Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
 
         if ( hasData ) {
             m_cachedContent |= Solid::OpticalDisc::Data;
-            m_cachedContent |= advancedDiscDetect(m_device->prop("DeviceFile").toString());
+            m_cachedContent |= advancedDiscDetect(deviceFile);
         }
         if ( hasAudio )
             m_cachedContent |= Solid::OpticalDisc::Audio;
 
         m_needsReprobe = false;
+
+        cache->insert(deviceFile, m_cachedContent);
     }
 
     return m_cachedContent;
@@ -254,7 +273,8 @@ Solid::OpticalDisc::ContentTypes OpticalDisc::availableContent() const
 
 void OpticalDisc::slotChanged()
 {
+    QMutexLocker lock(cacheLock);
     m_needsReprobe = true;
     m_cachedContent = Solid::OpticalDisc::NoContent;
+    cache->remove(m_device->prop("DeviceFile").toString());
 }
-

@@ -7,6 +7,9 @@ COOKIE REJECT http://a.b.c/ Set-Cookie: some_value=value4; Path="/"
 CONFIG CookieGlobalAdvice Accept
 COOKIE ACCEPT http://a.b.c/ Set-Cookie: some_value=value5; Path="/"; expires=%NEXTYEAR%
 COOKIE ACCEPT http://a.b.c/ Set-Cookie: some_value=value6; Path="/"
+CONFIG CookieGlobalAdvice AcceptForSession
+COOKIE ACCEPTFORSESSION http://a.b.c/ Set-Cookie: some_value=value5; Path="/"; expires=%NEXTYEAR%
+COOKIE ACCEPTFORSESSION http://a.b.c/ Set-Cookie: some_value=value6; Path="/"
 CONFIG CookieGlobalAdvice Ask
 COOKIE ASK http://a.b.c/ Set-Cookie: some_value=value7; Path="/"; expires=%NEXTYEAR%
 COOKIE ASK http://a.b.c/ Set-Cookie: some_value=value8; Path="/"
@@ -20,14 +23,7 @@ COOKIE ACCEPT http://a.b.c/ Set-Cookie2: some_value=value12; Version=1; Path="/"
 # COOKIE ACCEPT http://a.b.c/ Set-Cookie: some_value=value9; Path="/"; expires=%LASTYEAR%
 # FIXME: The 'Discard' attribute makes the cookie a session cookie
 # COOKIE ACCEPT http://a.b.c/ Set-Cookie2: some_value=value10; Version=1; Path="/"; max-age="600"
-## Treat all cookies as session cookies
-CONFIG IgnoreExpirationDate true
-COOKIE ACCEPT http://a.b.c/ Set-Cookie: some_value=value9; Path="/"; expires=%NEXTYEAR%
-COOKIE ACCEPT http://a.b.c/ Set-Cookie2: some_value=value10; Version=1; Path="/"; max-age="600"
-COOKIE ACCEPT http://a.b.c/ Set-Cookie: some_value=value11; Path="/"
-COOKIE ACCEPT http://a.b.c/ Set-Cookie2: some_value=value12; Version=1; Path="/"
 ## Check host-based domain policies
-CONFIG IgnoreExpirationDate false
 CONFIG AcceptSessionCookies false
 CONFIG CookieDomainAdvice a.b.c:Reject
 COOKIE REJECT http://a.b.c/ Set-Cookie: some_value=value9; Path="/"; expires=%NEXTYEAR%

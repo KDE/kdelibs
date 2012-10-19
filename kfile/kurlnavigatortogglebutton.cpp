@@ -38,7 +38,7 @@ KUrlNavigatorToggleButton::KUrlNavigatorToggleButton(QWidget* parent) :
             this, SLOT(updateToolTip()));
     connect(this, SIGNAL(clicked(bool)),
             this, SLOT(updateCursor()));
-    m_pixmap = KDE::icon("dialog-ok").pixmap(16, 16);
+    m_pixmap = KDE::icon("dialog-ok").pixmap(QSize(22, 22).expandedTo(iconSize()));
 
 #ifndef QT_NO_ACCESSIBILITY
     setAccessibleName(i18n("Edit mode"));
@@ -78,6 +78,7 @@ void KUrlNavigatorToggleButton::paintEvent(QPaintEvent* event)
     const int buttonWidth = width();
     const int buttonHeight = height();
     if (isChecked()) {
+        drawHoverBackground(&painter);
         const int x = (buttonWidth - m_pixmap.width()) / 2;
         const int y = (buttonHeight - m_pixmap.height()) / 2;
         painter.drawPixmap(QRect(x, y, m_pixmap.width(), m_pixmap.height()), m_pixmap);
