@@ -906,7 +906,7 @@ void KDirListerCache::slotFilesRemoved(const QList<QUrl>& fileList)
         }
     }
 
-    Q_FOREACH(const KUrl& url, deletedSubdirs) {
+    Q_FOREACH(const QUrl& url, deletedSubdirs) {
         // in case of a dir, check if we have any known children, there's much to do in that case
         // (stopping jobs, removing dirs from cache etc.)
         deleteDir(url);
@@ -919,7 +919,7 @@ void KDirListerCache::slotFilesChanged( const QStringList &fileList ) // from KD
     QList<QUrl> dirsToUpdate;
     QStringList::const_iterator it = fileList.begin();
     for (; it != fileList.end() ; ++it) {
-        KUrl url( *it );
+        QUrl url(*it);
         KFileItem *fileitem = findByUrl(0, url);
         if (!fileitem) {
             kDebug(7004) << "item not found for" << url;
@@ -931,7 +931,7 @@ void KDirListerCache::slotFilesChanged( const QStringList &fileList ) // from KD
             pendingRemoteUpdates.insert(fileitem);
             // For remote files, we won't be able to figure out the new information,
             // we have to do a update (directory listing)
-            KUrl dir = QUrlPathInfo(url).directoryUrl();
+            const QUrl dir = QUrlPathInfo(url).directoryUrl();
             if (!dirsToUpdate.contains(dir))
                 dirsToUpdate.prepend(dir);
         }
@@ -1017,8 +1017,8 @@ QSet<KDirLister*> KDirListerCache::emitRefreshItem(const KFileItem& oldItem, con
     //kDebug(7004) << "old:" << oldItem.name() << oldItem.url()
     //             << "new:" << fileitem.name() << fileitem.url();
     // Look whether this item was shown in any view, i.e. held by any dirlister
-    const KUrl parentDir = QUrlPathInfo(oldItem.url()).directoryUrl();
-    const QString parentDirURL = parentDir.url();
+    const QUrl parentDir = QUrlPathInfo(oldItem.url()).directoryUrl();
+    const QString parentDirURL = parentDir.toString();
     DirectoryDataHash::iterator dit = directoryData.find(parentDirURL);
     QList<KDirLister *> listers;
     // Also look in listersCurrentlyListing, in case the user manages to rename during a listing
@@ -2481,7 +2481,7 @@ void KDirLister::Private::emitItems()
   lstRemoveItems = 0;
 
     if (tmpNew) {
-        QHashIterator<KUrl, KFileItemList> it(*tmpNew);
+        QHashIterator<QUrl, KFileItemList> it(*tmpNew);
         while (it.hasNext()) {
             it.next();
             emit m_parent->itemsAdded(it.key(), it.value());
@@ -2709,7 +2709,7 @@ void KDirLister::setDelayedMimeTypes( bool delayedMimeTypes )
 // called by KDirListerCache::slotRedirection
 void KDirLister::Private::redirect(const QUrl& oldUrl, const QUrl& newUrl, bool keepItems)
 {
-    if ( url.equals( oldUrl, KUrl::CompareWithoutTrailingSlash ) ) {
+    if (QUrlPathInfo(url).equals(oldUrl, QUrlPathInfo::CompareWithoutTrailingSlash)) {
         if (!keepItems)
             rootFileItem = KFileItem();
         url = newUrl;

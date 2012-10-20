@@ -28,6 +28,7 @@
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <QtCore/QFile>
+#include <qurlpathinfo.h>
 
 #include <pwd.h>
 #include <grp.h>
@@ -41,7 +42,7 @@ namespace KIO {
 
     struct ChmodInfo
     {
-        KUrl url;
+        QUrl url;
         int permissions;
     };
 
@@ -163,7 +164,7 @@ void ChmodJobPrivate::_k_slotEntries( KIO::Job*, const KIO::UDSEntryList & list 
 
             ChmodInfo info;
             info.url = m_lstItems.first().url(); // base directory
-            info.url.addPath( relativePath );
+            info.url = QUrlPathInfo::addPathToUrl(info.url, relativePath);
             int mask = m_mask;
             // Emulate -X: only give +x to files that had a +x bit already
             // So the check is the opposite : if the file had no x bit, don't touch x bits

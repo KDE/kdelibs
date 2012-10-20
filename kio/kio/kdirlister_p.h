@@ -118,7 +118,7 @@ public:
   QList<QUrl> lstDirs;
 
   // toplevel URL
-  KUrl url;
+  QUrl url;
 
   bool complete:1;
 
@@ -141,7 +141,7 @@ public:
   // file item for the root itself (".")
   KFileItem rootFileItem;
 
-    typedef QHash<KUrl, KFileItemList> NewItemsHash;
+    typedef QHash<QUrl, KFileItemList> NewItemsHash;
     NewItemsHash *lstNewItems;
   QList<QPair<KFileItem,KFileItem> > *lstRefreshItems;
   KFileItemList *lstMimeFilteredItems, *lstRemoveItems;
@@ -393,7 +393,7 @@ private:
     bool complete;
 
     // the complete url of this directory
-    KUrl url;
+    QUrl url;
 
     // the local path, with symlinks resolved, so that KDirWatch works
     QString m_canonicalPath;
@@ -483,7 +483,7 @@ public Q_SLOTS:
 
 private:
     KDirLister* m_lister;
-    KUrl m_url;
+    QUrl m_url;
     bool m_reload;
     bool m_emitCompleted;
 };

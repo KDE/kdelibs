@@ -458,7 +458,7 @@ void PreviewJob::slotResult( KJob *job )
 
             bool skipCurrentItem = false;
             const KIO::filesize_t size = (KIO::filesize_t)entry.numberValue( KIO::UDSEntry::UDS_SIZE, 0 );
-            const KUrl itemUrl = d->currentItem.item.mostLocalUrl();
+            const QUrl itemUrl = d->currentItem.item.mostLocalUrl();
 
             if (itemUrl.isLocalFile() || KProtocolInfo::protocolClass(itemUrl.scheme()) == QLatin1String(":local"))
             {
@@ -529,10 +529,10 @@ bool PreviewJobPrivate::statResultThumbnail()
     if ( thumbPath.isEmpty() )
         return false;
 
-    KUrl url = currentItem.item.mostLocalUrl();
+    QUrl url = currentItem.item.mostLocalUrl();
     // Don't include the password if any
-    url.setPass(QString());
-    origName = url.url();
+    url.setPassword(QString());
+    origName = url.toString();
 
     QCryptographicHash md5(QCryptographicHash::Md5);
     md5.addData(QFile::encodeName( origName ) );
