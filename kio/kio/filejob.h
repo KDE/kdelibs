@@ -91,7 +91,7 @@ Q_SIGNALS:
      * @param job the job that emitted this signal
      * @param url the new URL
      */
-    void redirection( KIO::Job *job, const KUrl &url );
+    void redirection(KIO::Job *job, const QUrl &url);
 
     /**
      * Mimetype determined.

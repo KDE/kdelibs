@@ -60,7 +60,7 @@ AccessManagerReply::AccessManagerReply(const QNetworkAccessManager::Operation op
     if (!request.sslConfiguration().isNull())
         setSslConfiguration(request.sslConfiguration());
 
-    connect(kioJob, SIGNAL(redirection(KIO::Job*,KUrl)), SLOT(slotRedirection(KIO::Job*,KUrl)));
+    connect(kioJob, SIGNAL(redirection(KIO::Job*,QUrl)), SLOT(slotRedirection(KIO::Job*,QUrl)));
     connect(kioJob, SIGNAL(percent(KJob*,ulong)), SLOT(slotPercent(KJob*,ulong)));
 
     if (qobject_cast<KIO::StatJob*>(kioJob)) {
@@ -447,13 +447,13 @@ void AccessManagerReply::slotStatResult(KJob* kJob)
     emitFinished(true);
 }
 
-void AccessManagerReply::slotRedirection(KIO::Job* job, const KUrl& u)
+void AccessManagerReply::slotRedirection(KIO::Job* job, const QUrl& u)
 {
     Q_UNUSED(job);
 
     if (!KAuthorized::authorizeUrlAction(QLatin1String("redirect"), url(), u)) {
         kWarning(7007) << "Redirection from" << url() << "to" << u << "REJECTED by policy!";
-        setError(QNetworkReply::ContentAccessDenied, u.url());
+        setError(QNetworkReply::ContentAccessDenied, u.toString());
         emit error(error());
         return;
     }

@@ -18,6 +18,7 @@
 #include <QResizeEvent>
 #include <QtCore/QTimer>
 #include <QtCore/QTimeLine>
+#include <qurlpathinfo.h>
 
 #include <kglobalsettings.h>
 #include <kconfig.h>
@@ -56,7 +57,7 @@ public:
     void _k_slotFinished( );
     void _k_slotActuallyClear( );
 
-    KUrl currentURL;
+    QUrl currentURL;
     QUrl lastShownURL;
     QLabel *imageLabel;
     KIO::PreviewJob *m_job;
@@ -98,7 +99,7 @@ KImageFilePreview::~KImageFilePreview()
 void KImageFilePreview::showPreview()
 {
     // Pass a copy since clearPreview() will clear currentURL
-    KUrl url = d->currentURL;
+    QUrl url = d->currentURL;
     showPreview( url, true );
 }
 
@@ -112,7 +113,7 @@ void KImageFilePreview::showPreview( const QUrl &url, bool force )
 {
     if (!url.isValid() ||
         (d->lastShownURL.isValid() &&
-         KUrl(url).equals(d->lastShownURL, KUrl::CompareWithoutTrailingSlash) &&
+         QUrlPathInfo(url).equals(d->lastShownURL, QUrlPathInfo::CompareWithoutTrailingSlash) &&
          d->currentURL.isValid()))
         return;
 

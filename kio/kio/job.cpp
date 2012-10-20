@@ -668,7 +668,7 @@ public:
         {}
 
     UDSEntry m_statResult;
-    KUrl m_redirectionURL;
+    QUrl m_redirectionURL;
     bool m_bSource;
     short int m_details;
     void slotStatEntry( const KIO::UDSEntry & entry );
@@ -949,7 +949,7 @@ void TransferJob::slotFinished()
             d->m_internalSuspended = false;
             // The very tricky part is the packed arguments business
             QString dummyStr;
-            KUrl dummyUrl;
+            QUrl dummyUrl;
             QDataStream istream( d->m_packedArgs );
             switch( d->m_command ) {
                 case CMD_GET: {
@@ -1477,7 +1477,7 @@ static KIO::PostErrorJob* precheckHttpPost(const QUrl& url, const QByteArray& po
 TransferJob *KIO::http_post( const QUrl& url, const QByteArray &postData, JobFlags flags )
 {
     bool redirection = false;
-    KUrl _url(url);
+    QUrl _url(url);
     if (_url.path().isEmpty())
     {
       redirection = true;
@@ -1501,7 +1501,7 @@ TransferJob *KIO::http_post( const QUrl& url, const QByteArray &postData, JobFla
 TransferJob *KIO::http_post( const QUrl& url, QIODevice* ioDevice, qint64 size, JobFlags flags )
 {
     bool redirection = false;
-    KUrl _url(url);
+    QUrl _url(url);
     if (_url.path().isEmpty())
     {
       redirection = true;
@@ -1539,7 +1539,7 @@ TransferJob* KIO::http_delete(const QUrl& url, JobFlags flags)
 
 StoredTransferJob *KIO::storedHttpPost( const QByteArray& postData, const QUrl& url, JobFlags flags )
 {
-    KUrl _url(url);
+    QUrl _url(url);
     if (_url.path().isEmpty())
     {
       _url.setPath("/");
@@ -1557,7 +1557,7 @@ StoredTransferJob *KIO::storedHttpPost( const QByteArray& postData, const QUrl& 
 
 StoredTransferJob *KIO::storedHttpPost( QIODevice* ioDevice, const QUrl& url, qint64 size, JobFlags flags )
 {
-    KUrl _url(url);
+    QUrl _url(url);
     if (_url.path().isEmpty())
     {
       _url.setPath("/");
@@ -1811,8 +1811,8 @@ public:
         }
     KIO::filesize_t m_sourceSize;
     QDateTime m_modificationTime;
-    KUrl m_src;
-    KUrl m_dest;
+    QUrl m_src;
+    QUrl m_dest;
     QByteArray m_buffer;
     SimpleJob *m_moveJob;
     SimpleJob *m_copyJob;
@@ -1907,9 +1907,8 @@ void FileCopyJobPrivate::slotStart()
       if ((m_src.scheme() == m_dest.scheme()) &&
           (m_src.host() == m_dest.host()) &&
           (m_src.port() == m_dest.port()) &&
-          (m_src.user() == m_dest.user()) &&
-          (m_src.pass() == m_dest.pass()) &&
-          !m_src.hasSubUrl() && !m_dest.hasSubUrl())
+          (m_src.userName() == m_dest.userName()) &&
+          (m_src.password() == m_dest.password()))
       {
          startRenameJob(m_src);
          return;
@@ -1934,9 +1933,8 @@ void FileCopyJobPrivate::startBestCopyMethod()
    if ((m_src.scheme() == m_dest.scheme()) &&
        (m_src.host() == m_dest.host()) &&
        (m_src.port() == m_dest.port()) &&
-       (m_src.user() == m_dest.user()) &&
-       (m_src.pass() == m_dest.pass()) &&
-       !m_src.hasSubUrl() && !m_dest.hasSubUrl())
+       (m_src.userName() == m_dest.userName()) &&
+       (m_src.password() == m_dest.password()))
    {
       startCopyJob();
    }
@@ -2390,7 +2388,7 @@ public:
     bool includeHidden;
     QString prefix;
     unsigned long m_processedEntries;
-    KUrl m_redirectionURL;
+    QUrl m_redirectionURL;
 
     /**
      * @internal
@@ -2451,22 +2449,19 @@ void ListJobPrivate::slotListEntries( const KIO::UDSEntryList& list )
 
             const UDSEntry& entry = *it;
 
-            KUrl itemURL;
-            // const UDSEntry::ConstIterator end2 = entry.end();
-            // UDSEntry::ConstIterator it2 = entry.find( KIO::UDSEntry::UDS_URL );
-            // if ( it2 != end2 )
-            if (entry.contains(KIO::UDSEntry::UDS_URL))
-                // itemURL = it2.value().toString();
-                itemURL = entry.stringValue(KIO::UDSEntry::UDS_URL);
-            else { // no URL, use the name
+            QUrl itemURL;
+            const QString udsUrl = entry.stringValue(KIO::UDSEntry::UDS_URL);
+            if (!udsUrl.isEmpty()) {
+                itemURL = QUrl(udsUrl);
+            } else { // no URL, use the name
                 itemURL = q->url();
                 const QString fileName = entry.stringValue(KIO::UDSEntry::UDS_NAME);
                 Q_ASSERT(!fileName.isEmpty()); // we'll recurse forever otherwise :)
-                itemURL.addPath(fileName);
+                itemURL = QUrlPathInfo::addPathToUrl(itemURL, fileName);
             }
 
             if (entry.isDir() && !entry.isLink()) {
-                const QString filename = itemURL.fileName();
+                const QString filename = QUrlPathInfo(itemURL).fileName();
                 // skip hidden dirs when listing if requested
                 if (filename != ".." && filename != "." && (includeHidden || filename[0] != '.')) {
                     ListJob *job = ListJobPrivate::newJobNoUi(itemURL,
@@ -2652,7 +2647,7 @@ public:
         GetRequest(long _id, const QUrl &_url, const MetaData &_metaData)
             : id(_id), url(_url), metaData(_metaData) { }
         long id;
-        KUrl url;
+        QUrl url;
         MetaData metaData;
 
         inline bool operator==( const GetRequest& req ) const

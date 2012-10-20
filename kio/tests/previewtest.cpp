@@ -36,7 +36,7 @@ PreviewTest::PreviewTest()
 void PreviewTest::slotGenerate()
 {
     KFileItemList items;
-    items.append(KFileItem(KFileItem::Unknown, KFileItem::Unknown, KUrl(m_url->text()), true));
+    items.append(KFileItem(KFileItem::Unknown, KFileItem::Unknown, QUrl::fromUserInput(m_url->text()), true));
 
     KIO::PreviewJob *job = KIO::filePreview(items, QSize(m_preview->width(), m_preview->height()));
     connect(job, SIGNAL(result(KJob*)), SLOT(slotResult(KJob*)));

@@ -22,6 +22,7 @@
 #include <kdebug.h>
 #include <kfileitem.h>
 #include <kicontheme.h>
+#include <kurl.h>
 
 /* --- K3FileTreeViewItem --- */
 /*

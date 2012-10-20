@@ -31,6 +31,7 @@ class QColorGroup;
 #include <kdirlister.h>
 #include <kio/job.h>
 #include <k3filetreeviewitem.h>
+#include <kurl.h>
 
 class KUrl;
 class K3FileTreeView;

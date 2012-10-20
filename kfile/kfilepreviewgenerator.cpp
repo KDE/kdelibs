@@ -30,6 +30,7 @@
 #include <kdirmodel.h>
 #include <ksharedconfig.h>
 #include <kurlmimedata.h>
+#include <qurlpathinfo.h>
 
 #include <QApplication>
 #include <QAbstractItemView>
@@ -307,7 +308,7 @@ public:
     /** Remembers the pixmap for an item specified by an URL. */
     struct ItemInfo
     {
-        KUrl url;
+        QUrl url;
         QPixmap pixmap;
     };
 
@@ -368,9 +369,9 @@ public:
       * Referencing the pixmaps here imposes no overhead, as they were also given to KDirModel::setData(),
       * and thus are held anyway.
       */
-    QHash<KUrl, QPixmap> m_cutItemsCache;
+    QHash<QUrl, QPixmap> m_cutItemsCache;
     QList<ItemInfo> m_previews;
-    QMap<KUrl, int> m_sequenceIndices;
+    QMap<QUrl, int> m_sequenceIndices;
 
     /**
      * When huge items are copied, it must be prevented that a preview gets generated
@@ -378,7 +379,7 @@ public:
      * is assured that a final preview is only done if an item does not change within
      * at least 5 seconds.
      */
-    QHash<KUrl, bool> m_changedItems;
+    QHash<QUrl, bool> m_changedItems;
     QTimer* m_changedItemsTimer;
 
     /**
@@ -578,7 +579,7 @@ void KFilePreviewGenerator::Private::updateIcons(const QModelIndex& topLeft,
         Q_ASSERT(!item.isNull());
 
         if (m_previewShown) {
-            const KUrl url = item.url();
+            const QUrl url = item.url();
             const bool hasChanged = m_changedItems.contains(url); // O(1)
             m_changedItems.insert(url, hasChanged);
             if (!hasChanged) {
@@ -601,7 +602,7 @@ void KFilePreviewGenerator::Private::addToPreviewQueue(const KFileItem& item, co
     KIO::PreviewJob* senderJob = qobject_cast<KIO::PreviewJob*>(q->sender());
     Q_ASSERT(senderJob != 0);
     if (senderJob != 0) {
-        QMap<KUrl, int>::iterator it = m_sequenceIndices.find(item.url());
+        QMap<QUrl, int>::iterator it = m_sequenceIndices.find(item.url());
         if (senderJob->sequenceIndex() && (it == m_sequenceIndices.end() || *it != senderJob->sequenceIndex())) {
             return; // the sequence index does not match the one we want
         }
@@ -626,11 +627,11 @@ void KFilePreviewGenerator::Private::addToPreviewQueue(const KFileItem& item, co
     // that a preview from an old directory lister is received)
     bool isOldPreview = true;
 
-    KUrl itemParentDir(item.url());
-    itemParentDir.setPath(itemParentDir.directory());
+    QUrl itemParentDir(item.url());
+    itemParentDir.setPath(QUrlPathInfo(itemParentDir).directory());
 
-    foreach (const KUrl& dir, dirModel->dirLister()->directories()) {
-        if (dir == itemParentDir || !dir.hasPath()) {
+    foreach (const QUrl& dir, dirModel->dirLister()->directories()) {
+        if (dir == itemParentDir || dir.path().isEmpty()) {
             isOldPreview = false;
             break;
         }
@@ -713,7 +714,7 @@ void KFilePreviewGenerator::Private::clearCutItemsCache()
     KFileItemList previews;
     // Reset the icons of all items that are stored in the cache
     // to use their default MIME type icon.
-    foreach (const KUrl& url, m_cutItemsCache.keys()) {
+    foreach (const QUrl& url, m_cutItemsCache.keys()) {
         const QModelIndex index = dirModel->indexForUrl(url);
         if (index.isValid()) {
             dirModel->setData(index, QIcon(), Qt::DecorationRole);
@@ -911,7 +912,7 @@ void KFilePreviewGenerator::Private::applyCutItemEffect(const KFileItemList& ite
                 const QSize actualSize = icon.actualSize(m_viewAdapter->iconSize());
                 QPixmap pixmap = icon.pixmap(actualSize);
 
-                const QHash<KUrl, QPixmap>::const_iterator cacheIt = m_cutItemsCache.constFind(item.url());
+                const QHash<QUrl, QPixmap>::const_iterator cacheIt = m_cutItemsCache.constFind(item.url());
                 if ((cacheIt == m_cutItemsCache.constEnd()) || (cacheIt->cacheKey() != pixmap.cacheKey())) {
                     pixmap = iconEffect->apply(pixmap, KIconLoader::Desktop, KIconLoader::DisabledState);
                     dirModel->setData(index, QIcon(pixmap), Qt::DecorationRole);
@@ -1052,7 +1053,7 @@ void KFilePreviewGenerator::Private::startPreviewJob(const KFileItemList& items,
         // Set the sequence index to the target. We only need to check if items.count() == 1,
         // because requestSequenceIcon(..) creates exactly such a request.
         if (!m_sequenceIndices.isEmpty() && (items.count() == 1)) {
-            QMap<KUrl, int>::iterator it = m_sequenceIndices.find(items[0].url());
+            QMap<QUrl, int>::iterator it = m_sequenceIndices.find(items[0].url());
             if (it != m_sequenceIndices.end()) {
                 job->setSequenceIndex(*it);
             }
@@ -1160,7 +1161,7 @@ void KFilePreviewGenerator::Private::delayedIconUpdate()
 
     KFileItemList itemList;
 
-    QHash<KUrl, bool>::const_iterator it = m_changedItems.constBegin();
+    QHash<QUrl, bool>::const_iterator it = m_changedItems.constBegin();
     while (it != m_changedItems.constEnd()) {
         const bool hasChanged = it.value();
         if (hasChanged) {

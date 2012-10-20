@@ -41,10 +41,10 @@ private Q_SLOTS:
     void initTestCase();
     void cleanupTestCase();
 
-    // Remote tests 
+    // Remote tests
     void putAndGet();
     void openFileWriting();
-    void openFileReading();    
+    void openFileReading();
 
     //void calculateRemainingSeconds();
 
@@ -59,22 +59,22 @@ protected Q_SLOTS:
     void slotMimetype(KIO::Job*, const QString&);
 
     void slotFileJobData (KIO::Job *job, const QByteArray &data);
-    void slotFileJobRedirection (KIO::Job *job, const KUrl &url);
+    void slotFileJobRedirection (KIO::Job *job, const QUrl &url);
     void slotFileJobMimetype (KIO::Job *job, const QString &type);
     void slotFileJobOpen (KIO::Job *job);
     void slotFileJobWritten (KIO::Job *job, KIO::filesize_t written);
     void slotFileJobPosition (KIO::Job *job, KIO::filesize_t offset);
     void slotFileJobClose (KIO::Job *job);
-    
+
     void slotFileJob2Data (KIO::Job *job, const QByteArray &data);
-    void slotFileJob2Redirection (KIO::Job *job, const KUrl &url);
+    void slotFileJob2Redirection (KIO::Job *job, const QUrl &url);
     void slotFileJob2Mimetype (KIO::Job *job, const QString &type);
     void slotFileJob2Open (KIO::Job *job);
     void slotFileJob2Written (KIO::Job *job, KIO::filesize_t written);
     void slotFileJob2Position (KIO::Job *job, KIO::filesize_t offset);
-    void slotFileJob2Close (KIO::Job *job);    
-    
-    
+    void slotFileJob2Close (KIO::Job *job);
+
+
 private:
     void enterLoop();
     enum { AlreadyExists = 1 };
@@ -84,7 +84,7 @@ private:
     QStringList m_names;
     int m_dataReqCount;
     QString m_mimetype;
-    
+
     // openReadWrite test
     KIO::FileJob * fileJob;
     int m_rwCount;

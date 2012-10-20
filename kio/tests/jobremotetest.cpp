@@ -238,7 +238,7 @@ void JobRemoteTest::slotFileJobData (KIO::Job *job, const QByteArray &data)
     Q_UNUSED(data);
 }
 
-void JobRemoteTest::slotFileJobRedirection (KIO::Job *job, const KUrl &url)
+void JobRemoteTest::slotFileJobRedirection (KIO::Job *job, const QUrl &url)
 {
     Q_UNUSED(job);
     Q_UNUSED(url);
@@ -349,7 +349,7 @@ void JobRemoteTest::slotFileJob2Data (KIO::Job *job, const QByteArray &data)
     }
 }
 
-void JobRemoteTest::slotFileJob2Redirection (KIO::Job *job, const KUrl &url)
+void JobRemoteTest::slotFileJob2Redirection (KIO::Job *job, const QUrl &url)
 {
     Q_UNUSED(job);
     Q_UNUSED(url);

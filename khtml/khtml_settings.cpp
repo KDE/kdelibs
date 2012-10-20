@@ -28,6 +28,7 @@
 #include <kmessagebox.h>
 #include <khtml_filter_p.h>
 
+#include <kurl.h>
 #include <kjob.h>
 #include <kio/job.h>
 

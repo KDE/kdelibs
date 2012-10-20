@@ -46,7 +46,7 @@ private:
     void waitForCompletion();
     KUrlCompletion* m_completion;
     QTemporaryDir* m_tempDir;
-    KUrl m_dirURL;
+    QUrl m_dirURL;
     QString m_dir;
     KUrlCompletion* m_completionEmptyCwd;
 };
@@ -66,7 +66,7 @@ void KUrlCompletionTest::setup()
     QDir().mkdir(m_dir);
     kDebug() << "m_dir=" << m_dir;
     m_completion->setDir(QUrl::fromLocalFile(m_dir));
-    m_dirURL.setPath( m_dir );
+    m_dirURL = QUrl::fromLocalFile(m_dir);
 
     QFile f1( m_dir + "/file1" );
     bool ok = f1.open( QIODevice::WriteOnly );
@@ -158,16 +158,16 @@ void KUrlCompletionTest::testLocalURL()
 {
     // Completion from URL
     kDebug() ;
-    KUrl url(m_dirURL.toLocalFile() + "file");
-    m_completion->makeCompletion(url.prettyUrl());
+    QUrl url = QUrl::fromLocalFile(m_dirURL.toLocalFile() + "file");
+    m_completion->makeCompletion(url.toString());
     waitForCompletion();
     QStringList comp1all = m_completion->allMatches();
     kDebug() << comp1all;
     QCOMPARE(comp1all.count(), 3);
-    kDebug() << "Looking for" << m_dirURL.prettyUrl() + "file1";
-    QVERIFY(comp1all.contains(m_dirURL.prettyUrl() + "file1"));
-    QVERIFY(comp1all.contains(m_dirURL.prettyUrl() + "file_subdir/"));
-    QString filehash = m_dirURL.prettyUrl() + "file%23a";
+    kDebug() << "Looking for" << m_dirURL.toString() + "file1";
+    QVERIFY(comp1all.contains(m_dirURL.toString() + "file1"));
+    QVERIFY(comp1all.contains(m_dirURL.toString() + "file_subdir/"));
+    QString filehash = m_dirURL.toString() + "file%23a";
     QVERIFY(comp1all.contains(filehash));
     QString filehashPath = m_completion->replacedPath(filehash); // note that it returns a path!!
     kDebug() << filehashPath;
@@ -176,18 +176,18 @@ void KUrlCompletionTest::testLocalURL()
 #endif
 
     // Completion from URL with no match
-    url = KUrl(m_dirURL.toLocalFile() + "foobar");
+    url = QUrl::fromLocalFile(m_dirURL.toLocalFile() + "foobar");
     kDebug() << "makeCompletion(" << url << ")";
-    QString comp2 = m_completion->makeCompletion(url.prettyUrl());
+    QString comp2 = m_completion->makeCompletion(url.toString());
     QVERIFY(comp2.isEmpty());
     waitForCompletion();
     QVERIFY(m_completion->allMatches().isEmpty());
 
     // Completion from URL with a ref -> no match
-    url = KUrl(m_dirURL.toLocalFile() + 'f');
-    url.setRef("ref");
+    url = QUrl::fromLocalFile(m_dirURL.toLocalFile() + 'f');
+    url.setFragment("ref");
     kDebug() << "makeCompletion(" << url << ")";
-    m_completion->makeCompletion(url.prettyUrl());
+    m_completion->makeCompletion(url.toString());
     waitForCompletion();
     QVERIFY(m_completion->allMatches().isEmpty());
 }

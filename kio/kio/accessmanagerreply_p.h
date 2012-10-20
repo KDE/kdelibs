@@ -34,7 +34,7 @@ namespace KIO
     class MetaData;
 }
 class KJob;
-class KUrl;
+class QUrl;
 
 namespace KDEPrivate {
 
@@ -90,7 +90,7 @@ private Q_SLOTS:
     void slotMimeType(KIO::Job *kioJob, const QString &mimeType);
     void slotResult(KJob *kJob);
     void slotStatResult(KJob *kJob);
-    void slotRedirection(KIO::Job *job, const KUrl &url);
+    void slotRedirection(KIO::Job *job, const QUrl &url);
     void slotPercent(KJob *job, unsigned long percent);
 
 private:

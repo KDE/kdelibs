@@ -195,7 +195,7 @@ void AtticaHelper::contentLoaded(Attica::BaseJob* baseJob)
     emit contentLoaded(content);
 
     for (int previewNum = 1; previewNum <=3; ++previewNum) {
-        KUrl url = content.smallPreviewPicture(QString::number(previewNum));
+        QUrl url = QUrl::fromUserInput(content.smallPreviewPicture(QString::number(previewNum)));
         if (! url.isEmpty()) {
             m_previewJob[previewNum-1] = KIO::get(url, KIO::NoReload, KIO::HideProgressInfo);
             connect(m_previewJob[previewNum-1], SIGNAL(result(KJob*)), SLOT(slotPreviewDownload(KJob*)));
