@@ -419,7 +419,7 @@ bool QUrlPathInfo::equals(const QUrl& u, EqualsOptions options) const
     if (!d->url.isValid() || !u.isValid())
         return false;
 
-    if (options & CompareWithoutTrailingSlash || options & CompareWithoutFragment) {
+    if (options != StrictComparison) {
         QString path1 = path((options & CompareWithoutTrailingSlash) ? StripTrailingSlash : None);
         QString path2 = QUrlPathInfo(u).path((options & CompareWithoutTrailingSlash) ? StripTrailingSlash : None);
 
@@ -436,11 +436,16 @@ bool QUrlPathInfo::equals(const QUrl& u, EqualsOptions options) const
         if (!bLocal1 && bLocal2 || bLocal1 && !bLocal2)
             return false;
         // local files are case insensitive
-        if (bLocal1 && bLocal2 && 0 != QString::compare(path1, path2, Qt::CaseInsensitive))
-            return false;
+        if (bLocal1 && bLocal2)
+            options |= ComparePathsCaseInsensitively;
 #endif
-        if (path1 != path2)
-            return false;
+        if (options & ComparePathsCaseInsensitively) {
+            if (QString::compare(path1, path2, Qt::CaseInsensitive) != 0)
+                return false;
+        } else {
+            if (path1 != path2)
+                return false;
+        }
 
         if (d->url.scheme() == u.scheme() &&
             d->url.authority() == u.authority() && // user+pass+host+port

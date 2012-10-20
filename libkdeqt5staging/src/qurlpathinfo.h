@@ -70,7 +70,8 @@ public:
         StrictComparison = 0x00,
         CompareWithoutTrailingSlash = 0x01,
         CompareWithoutFragment = 0x02,
-        AllowEmptyPath = 0x04
+        AllowEmptyPath = 0x04,
+        ComparePathsCaseInsensitively = 0x08
     };
     Q_DECLARE_FLAGS(EqualsOptions, EqualsOption)
 
@@ -120,6 +121,7 @@ private:
 Q_DECLARE_TYPEINFO(QUrlPathInfo, Q_MOVABLE_TYPE);
 // Q_DECLARE_SHARED(QUrlPathInfo)
 Q_DECLARE_OPERATORS_FOR_FLAGS(QUrlPathInfo::PathFormattingOptions)
+Q_DECLARE_OPERATORS_FOR_FLAGS(QUrlPathInfo::EqualsOptions)
 
 QT_END_NAMESPACE
 
