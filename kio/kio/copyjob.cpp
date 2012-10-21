@@ -59,6 +59,11 @@
 // Porting helpers. Qt 5: remove
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #define toDisplayString toString
+#define FullyDecoded
+#define CommaDecodedMode
+#else
+#define FullyDecoded QUrl::FullyDecoded
+#define CommaDecodedMode , QUrl::DecodedMode
 #endif
 
 using namespace KIO;
@@ -225,6 +230,7 @@ public:
     bool shouldOverwriteFile( const QString& path ) const;
     bool shouldSkip( const QString& path ) const;
     void skipSrc(bool isDir);
+    void renameDirectory(QList<CopyInfo>::iterator it, const QUrl& newUrl);
 
     void slotStart();
     void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
@@ -576,7 +582,7 @@ void CopyJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
 
 void CopyJobPrivate::slotSubError(ListJob* job, ListJob* subJob)
 {
-	const KUrl url = subJob->url();
+	const QUrl url = subJob->url();
 	kWarning() << url << subJob->errorString();
 
 	Q_Q(CopyJob);
@@ -845,7 +851,7 @@ void CopyJobPrivate::startRenameJob( const QUrl& slave_url )
         }
     }
 
-    KUrl dest = m_dest;
+    QUrl dest = m_dest;
     // Append filename or dirname to destination URL, if allowed
     if ( destinationState == DEST_IS_DIR && !m_asMethod )
         dest = QUrlPathInfo::addPathToUrl(dest, QUrlPathInfo(m_currentSrcURL).fileName());
@@ -923,6 +929,54 @@ bool CopyJobPrivate::shouldSkip( const QString& path ) const
     return false;
 }
 
+void CopyJobPrivate::renameDirectory(QList<CopyInfo>::iterator it, const QUrl& newUrl)
+{
+    Q_Q(CopyJob);
+    emit q->renamed(q, (*it).uDest, newUrl); // for e.g. KPropertiesDialog
+
+    const QUrlPathInfo destInfo((*it).uDest);
+    const QString oldPath = destInfo.path(QUrlPathInfo::AppendTrailingSlash);
+
+    const QUrlPathInfo newUrlInfo(newUrl);
+    // Change the current one and strip the trailing '/'
+    (*it).uDest.setPath(newUrlInfo.path(QUrlPathInfo::StripTrailingSlash) CommaDecodedMode);
+
+    const QString newPath = newUrlInfo.path(QUrlPathInfo::AppendTrailingSlash); // With trailing slash
+    QList<CopyInfo>::Iterator renamedirit = it;
+    ++renamedirit;
+    // Change the name of subdirectories inside the directory
+    for(; renamedirit != dirs.end() ; ++renamedirit) {
+        QString path = (*renamedirit).uDest.path(FullyDecoded);
+        if (path.startsWith(oldPath)) {
+            QString n = path;
+            n.replace(0, oldPath.length(), newPath);
+            kDebug(7007) << "dirs list:" << (*renamedirit).uSource.path()
+                         << "was going to be" << path
+                         << ", changed into" << n;
+            (*renamedirit).uDest.setPath(n CommaDecodedMode);
+        }
+    }
+    // Change filenames inside the directory
+    QList<CopyInfo>::Iterator renamefileit = files.begin();
+    for(; renamefileit != files.end() ; ++renamefileit) {
+        QString path = (*renamefileit).uDest.path(FullyDecoded);
+        if (path.startsWith(oldPath)) {
+            QString n = path;
+            n.replace(0, oldPath.length(), newPath);
+            kDebug(7007) << "files list:" << (*renamefileit).uSource.path()
+                         << "was going to be" << path
+                         << ", changed into" << n;
+            (*renamefileit).uDest.setPath(n CommaDecodedMode);
+        }
+    }
+    if (!dirs.isEmpty()) {
+        emit q->aboutToCreate(q, dirs);
+    }
+    if (!files.isEmpty()) {
+        emit q->aboutToCreate(q, files);
+    }
+}
+
 void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
 {
     Q_Q(CopyJob);
@@ -935,11 +989,11 @@ void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
         if ( (m_conflictError == ERR_DIR_ALREADY_EXIST)
              || (m_conflictError == ERR_FILE_ALREADY_EXIST) ) // can't happen?
         {
-            KUrl oldURL = ((SimpleJob*)job)->url();
+            QUrl oldURL = ((SimpleJob*)job)->url();
             // Should we skip automatically ?
             if ( m_bAutoSkipDirs ) {
                 // We don't want to copy files in this directory, so we put it on the skip list
-                m_skipList.append( oldURL.path( KUrl::AddTrailingSlash ) );
+                m_skipList.append(QUrlPathInfo(oldURL).path(QUrlPathInfo::AppendTrailingSlash));
                 skip(oldURL, true);
                 dirs.erase( it ); // Move on to next dir
             } else {
@@ -950,55 +1004,14 @@ void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
                     dirs.erase( it ); // Move on to next dir
                 } else {
                     if (m_bAutoRenameDirs) {
-                        QUrlPathInfo destInfo((*it).uDest);
-                        QString oldPath = destInfo.path(QUrlPathInfo::AppendTrailingSlash);
+                        const QUrlPathInfo destInfo((*it).uDest);
+                        const QUrl destDirectory = destInfo.directoryUrl();
+                        const QString newName = KIO::RenameDialog::suggestName(destDirectory, destInfo.fileName());
 
-                        QUrl destDirectory = QUrlPathInfo((*it).uDest).directoryUrl();
-                        QString newName = KIO::RenameDialog::suggestName(destDirectory, destInfo.fileName());
-
-                        KUrl newUrl((*it).uDest);
+                        QUrlPathInfo newUrl((*it).uDest);
                         newUrl.setFileName(newName);
 
-                        emit q->renamed(q, (*it).uDest, newUrl); // for e.g. kpropsdlg
-
-                        // Change the current one and strip the trailing '/'
-                        (*it).uDest.setPath(newUrl.path(KUrl::RemoveTrailingSlash));
-
-                        QString newPath = newUrl.path(KUrl::AddTrailingSlash); // With trailing slash
-                        QList<CopyInfo>::Iterator renamedirit = it;
-                        ++renamedirit;
-                        // Change the name of subdirectories inside the directory
-                        for(; renamedirit != dirs.end() ; ++renamedirit) {
-                            QString path = (*renamedirit).uDest.path();
-                            if (path.startsWith(oldPath)) {
-                                QString n = path;
-                                n.replace(0, oldPath.length(), newPath);
-                                kDebug(7007) << "dirs list:" << (*renamedirit).uSource.path()
-                                              << "was going to be" << path
-                                              << ", changed into" << n;
-                                (*renamedirit).uDest.setPath(n);
-                            }
-                        }
-                        // Change filenames inside the directory
-                        QList<CopyInfo>::Iterator renamefileit = files.begin();
-                        for(; renamefileit != files.end() ; ++renamefileit) {
-                            QString path = (*renamefileit).uDest.path();
-                            if (path.startsWith(oldPath)) {
-                                QString n = path;
-                                n.replace(0, oldPath.length(), newPath);
-                                kDebug(7007) << "files list:" << (*renamefileit).uSource.path()
-                                              << "was going to be" << path
-                                              << ", changed into" << n;
-                                (*renamefileit).uDest.setPath(n);
-                            }
-                        }
-                        if (!dirs.isEmpty()) {
-                            emit q->aboutToCreate(q, dirs);
-                        }
-                        if (!files.isEmpty()) {
-                            emit q->aboutToCreate(q, files);
-                        }
-
+                        renameDirectory(it, newUrl.url());
                     }
                     else {
                         if (!q->isInteractive()) {
@@ -1011,10 +1024,10 @@ void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
                         assert (!q->hasSubjobs()); // We should have only one job at a time ...
 
                         // We need to stat the existing dir, to get its last-modification time
-                        KUrl existingDest((*it).uDest);
+                        QUrl existingDest((*it).uDest);
                         SimpleJob * newJob = KIO::stat(existingDest, StatJob::DestinationSide, 2, KIO::HideProgressInfo);
                         Scheduler::setJobPriority(newJob, 1);
-                        kDebug(7007) << "KIO::stat for resolving conflict on " << existingDest;
+                        kDebug(7007) << "KIO::stat for resolving conflict on" << existingDest;
                         state = STATE_CONFLICT_CREATING_DIRS;
                         q->addSubjob(newJob);
                         return; // Don't move to next dir yet !
@@ -1103,47 +1116,10 @@ void CopyJobPrivate::slotResultConflictCreatingDirs( KJob * job )
             // fall through
         case R_RENAME:
         {
-            const QString oldPath = destInfo.path(QUrlPathInfo::StripTrailingSlash);
-            QUrlPathInfo newUrl((*it).uDest);
-            newUrl.setPath(newPath);
-            emit q->renamed(q, (*it).uDest, newUrl.url()); // for e.g. kpropsdlg
+            QUrl newUrl( (*it).uDest );
+            newUrl.setPath(newPath CommaDecodedMode);
 
-            // Change the current one and strip the trailing '/'
-            (*it).uDest.setPath(newUrl.path(QUrlPathInfo::StripTrailingSlash));
-            newPath = newUrl.path(QUrlPathInfo::AppendTrailingSlash); // With trailing slash
-            QList<CopyInfo>::Iterator renamedirit = it;
-            ++renamedirit;
-            // Change the name of subdirectories inside the directory
-            for( ; renamedirit != dirs.end() ; ++renamedirit )
-            {
-                QString path = (*renamedirit).uDest.path();
-                if ( path.startsWith( oldPath ) ) {
-                    QString n = path;
-                    n.replace( 0, oldPath.length(), newPath );
-                    kDebug(7007) << "dirs list:" << (*renamedirit).uSource.path()
-                                  << "was going to be" << path
-                                  << ", changed into" << n;
-                    (*renamedirit).uDest.setPath( n );
-                }
-            }
-            // Change filenames inside the directory
-            QList<CopyInfo>::Iterator renamefileit = files.begin();
-            for( ; renamefileit != files.end() ; ++renamefileit )
-            {
-                QString path = (*renamefileit).uDest.path();
-                if ( path.startsWith( oldPath ) ) {
-                    QString n = path;
-                    n.replace( 0, oldPath.length(), newPath );
-                    kDebug(7007) << "files list:" << (*renamefileit).uSource.path()
-                                  << "was going to be" << path
-                                  << ", changed into" << n;
-                    (*renamefileit).uDest.setPath( n );
-                }
-            }
-            if (!dirs.isEmpty())
-                emit q->aboutToCreate( q, dirs );
-            if (!files.isEmpty())
-                emit q->aboutToCreate( q, files );
+            renameDirectory(it, newUrl);
         }
         break;
         case R_AUTO_SKIP:
@@ -1181,7 +1157,7 @@ void CopyJobPrivate::slotResultConflictCreatingDirs( KJob * job )
 void CopyJobPrivate::createNextDir()
 {
     Q_Q(CopyJob);
-    KUrl udir;
+    QUrl udir;
     if ( !dirs.isEmpty() )
     {
         // Take first dir to create out of list
@@ -1277,10 +1253,10 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
                     q->removeSubjob(job);
                     assert (!q->hasSubjobs());
                     // We need to stat the existing file, to get its last-modification time
-                    KUrl existingFile((*it).uDest);
+                    QUrl existingFile((*it).uDest);
                     SimpleJob * newJob = KIO::stat(existingFile, StatJob::DestinationSide, 2, KIO::HideProgressInfo);
                     Scheduler::setJobPriority(newJob, 1);
-                    kDebug(7007) << "KIO::stat for resolving conflict on " << existingFile;
+                    kDebug(7007) << "KIO::stat for resolving conflict on" << existingFile;
                     state = STATE_CONFLICT_COPYING_FILES;
                     q->addSubjob(newJob);
                     return; // Don't move to next file yet !
@@ -1521,10 +1497,10 @@ KIO::Job* CopyJobPrivate::linkNextFile( const QUrl& uSource, const QUrl& uDest, 
                 f.close();
                 KDesktopFile desktopFile( path );
                 KConfigGroup config = desktopFile.desktopGroup();
-                KUrl url = uSource;
-                url.setPass( "" );
-                config.writePathEntry( "URL", url.url() );
-                config.writeEntry( "Name", url.url() );
+                QUrl url = uSource;
+                url.setPassword(QString());
+                config.writePathEntry( "URL", url.toString() );
+                config.writeEntry( "Name", url.toString() );
                 config.writeEntry( "Type", QString::fromLatin1("Link") );
                 QString protocol = uSource.scheme();
                 if ( protocol == QLatin1String("ftp") )
@@ -1592,8 +1568,8 @@ void CopyJobPrivate::copyNextFile()
             //TODO check if dst mount is msdos and (*it).size exceeds it's limits
         }
 
-        const KUrl& uSource = (*it).uSource;
-        const KUrl& uDest = (*it).uDest;
+        const QUrl& uSource = (*it).uSource;
+        const QUrl& uDest = (*it).uDest;
         // Do we set overwrite ?
         bool bOverwrite;
         const QString destFile = uDest.path();
@@ -1615,8 +1591,8 @@ void CopyJobPrivate::copyNextFile()
                   (uSource.scheme() == uDest.scheme()) &&
                   (uSource.host() == uDest.host()) &&
                   (uSource.port() == uDest.port()) &&
-                  (uSource.user() == uDest.user()) &&
-                  (uSource.pass() == uDest.pass()))
+                  (uSource.userName() == uDest.userName()) &&
+                  (uSource.password() == uDest.password()))
             // Copying a symlink - only on the same protocol/host/etc. (#5601, downloading an FTP file through its link),
         {
             const JobFlags flags = bOverwrite ? Overwrite : DefaultFlags;
@@ -1624,7 +1600,7 @@ void CopyJobPrivate::copyNextFile()
             Scheduler::setJobPriority(newJob, 1);
             newjob = newJob;
             //kDebug(7007) << "Linking target=" << (*it).linkDest << "link=" << uDest;
-            m_currentSrcURL = KUrl( (*it).linkDest );
+            m_currentSrcURL = QUrl::fromUserInput((*it).linkDest);
             m_currentDestURL = uDest;
             m_bURLDirty = true;
             //emit linking( this, (*it).linkDest, uDest );
@@ -1857,7 +1833,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
     q->removeSubjob( job );
     assert ( !q->hasSubjobs() );
     // Determine dest again
-    KUrl dest = m_dest;
+    QUrl dest = m_dest;
     if ( destinationState == DEST_IS_DIR && !m_asMethod )
         dest = QUrlPathInfo::addPathToUrl(dest, QUrlPathInfo(m_currentSrcURL).fileName());
     if ( err )
