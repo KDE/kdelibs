@@ -84,7 +84,7 @@ public:
     /**
      * Returns the icon name associated with the search provider when available.
      */
-    QString iconName() const;
+    virtual QString iconName() const;
 
     /**
      * Returns all the web shortcut keys associated with this search provider.
