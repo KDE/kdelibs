@@ -306,15 +306,16 @@ bool KProtocolInfo::determineMimetypeFromExtension( const QString &_protocol )
 
 QString KProtocolInfo::exec(const QString& protocol)
 {
+  // Maybe it's "helper protocol", i.e. launches an app?
+  const KService::Ptr service = KMimeTypeTrader::self()->preferredService(QString::fromLatin1("x-scheme-handler/") + protocol);
+  if (service) {
+      return service->exec();
+  }
+
   KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(protocol);
   if ( prot ) {
       return prot->m_exec;
   }
-
-  // Maybe it's "helper protocol", i.e. launches an app?
-  const KService::Ptr service = KMimeTypeTrader::self()->preferredService(QString::fromLatin1("x-scheme-handler/") + protocol);
-  if (service)
-      return service->exec();
 
   return QString();
 }
