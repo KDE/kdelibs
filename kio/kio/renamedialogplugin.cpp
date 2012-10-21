@@ -25,6 +25,7 @@
 
 
 #include "kio/renamedialogplugin.h"
+#include <QUrl>
 
 using namespace KIO;
 

@@ -30,8 +30,14 @@
 #include <QPointer>
 #include <QWidget>
 #include <QIcon>
+#include <QUrl>
 
 #include "kio/scheduler.h"
+
+// Porting helpers. Qt 5: remove
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define toDisplayString toString
+#endif
 
 class KIO::JobUiDelegate::Private
 {
@@ -124,7 +130,7 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const QList<QUrl>& urls,
     }
     if (ask) {
         QStringList prettyList;
-        Q_FOREACH(const KUrl& url, urls) {
+        Q_FOREACH(const QUrl& url, urls) {
             if ( url.scheme() == "trash" ) {
                 QString path = url.path();
                 // HACK (#98983): remove "0-foo". Note that it works better than
@@ -132,7 +138,7 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const QList<QUrl>& urls,
                 path.remove(QRegExp("^/[0-9]*-"));
                 prettyList.append(path);
             } else {
-                prettyList.append(url.pathOrUrl());
+                prettyList.append(url.toDisplayString());
             }
         }
 

@@ -27,7 +27,6 @@
 #include <QtCore/QString>
 #include <kio/global.h>
 #include <kio/udsentry.h>
-#include <kurl.h>
 #include <kio/jobclasses.h> // for KIO::JobFlags
 
 class QStringList;
@@ -112,7 +111,7 @@ public:
      * \code
      * QTemporaryFile tmpFile;
      * if (tmpFile.open()) {
-     *     KIO::Job* getJob = KIO::file_copy(url, KUrl(tmpFile.fileName()), -1, KIO::Overwrite | KIO::HideProgressInfo);
+     *     KIO::Job* getJob = KIO::file_copy(url, QUrl::fromLocalFile(tmpFile.fileName()), -1, KIO::Overwrite | KIO::HideProgressInfo);
      *     getJob->ui()->setWindow(window);
      *     if (KIO::NetAccess::synchronousRun(getJob, 0)) {
      *         loadFile(tmpFile.fileName());
@@ -473,7 +472,7 @@ private Q_SLOTS:
     void slotResult( KJob * job );
     void slotMimetype( KIO::Job * job, const QString & type );
     void slotData( KIO::Job*, const QByteArray& );
-    void slotRedirection( KIO::Job*, const KUrl& );
+    void slotRedirection( KIO::Job*, const QUrl& );
 
 private:
     NetAccessPrivate * const d;

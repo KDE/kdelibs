@@ -24,7 +24,6 @@
 
 #include <QtCore/QStringList>
 
-#include <kurl.h>
 #include "global.h"
 
 #include "jobclasses.h"

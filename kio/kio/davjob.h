@@ -21,8 +21,6 @@
 #ifndef KIO_DAVJOB_H
 #define KIO_DAVJOB_H
 
-#include <kurl.h>
-
 #include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QStringList>

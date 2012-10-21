@@ -84,7 +84,7 @@ void KAutoMountPrivate::slotResult( KJob * job )
             kWarning(7015) << m_strDevice << "was correctly mounted, but findByDevice() didn't find it."
                            << "This looks like a bug, please report it on http://bugs.kde.org, together with your /etc/fstab and /etc/mtab lines for this device";
         } else {
-            KUrl url(mp->mountPoint());
+            const QUrl url = QUrl::fromLocalFile(mp->mountPoint());
             //kDebug(7015) << "KAutoMount: m_strDevice=" << m_strDevice << " -> mountpoint=" << mountpoint;
             if ( m_bShowFilemanagerWindow ) {
                 KRun::runUrl( url, "inode/directory", 0 /*TODO - window*/ );
@@ -140,7 +140,7 @@ void KAutoUnmountPrivate::slotResult( KJob * job )
         // You may think we removed files, but this may have also readded some
         // (if the mountpoint wasn't empty). The only possible behavior on FilesAdded
         // is to relist the directory anyway.
-        KUrl mp( m_mountpoint );
+        const QUrl mp = QUrl::fromLocalFile(m_mountpoint);
         org::kde::KDirNotify::emitFilesAdded(mp);
 
         emit q->finished();

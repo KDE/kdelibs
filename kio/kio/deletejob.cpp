@@ -35,8 +35,14 @@
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
 #include <QPointer>
+#include <qurlpathinfo.h>
 
 #include "job_p.h"
+
+// Porting helpers. Qt 5: remove
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define toDisplayString toString
+#endif
 
 extern bool kio_resolve_local_urls; // from copyjob.cpp, abused here to save a symbol.
 
@@ -79,7 +85,7 @@ namespace KIO
         int m_processedFiles;
         int m_processedDirs;
         int m_totalFilesDirs;
-        KUrl m_currentURL;
+        QUrl m_currentURL;
         QList<QUrl> files;
         QList<QUrl> symlinks;
         QList<QUrl> dirs;
@@ -175,13 +181,13 @@ void DeleteJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
         Q_ASSERT(!displayName.isEmpty());
         if (displayName != ".." && displayName != ".")
         {
-            KUrl url;
+            QUrl url;
             const QString urlStr = entry.stringValue( KIO::UDSEntry::UDS_URL );
             if ( !urlStr.isEmpty() )
-                url = urlStr;
+                url = QUrl(urlStr);
             else {
                 url = static_cast<SimpleJob *>(job)->url(); // assumed to be a dir
-                url.addPath( displayName );
+                url = QUrlPathInfo::addPathToUrl(url, displayName);
             }
 
             //kDebug(7007) << displayName << "(" << url << ")";
@@ -207,7 +213,7 @@ void DeleteJobPrivate::statNextSrc()
         if (!KProtocolManager::supportsDeleting(m_currentURL)) {
             QPointer<DeleteJob> that = q;
             ++m_currentStat;
-            emit q->warning( q, buildErrorString(ERR_CANNOT_DELETE, m_currentURL.prettyUrl()) );
+            emit q->warning(q, buildErrorString(ERR_CANNOT_DELETE, m_currentURL.toDisplayString()));
             if (that)
                 statNextSrc();
             return;
@@ -376,7 +382,7 @@ void DeleteJobPrivate::deleteNextDir()
 void DeleteJobPrivate::currentSourceStated(bool isDir, bool isLink)
 {
     Q_Q(DeleteJob);
-    const KUrl url = (*m_currentStat);
+    const QUrl url = (*m_currentStat);
     if (isDir && !isLink) {
         // Add toplevel dir in list of dirs
         dirs.append( url );
@@ -384,7 +390,7 @@ void DeleteJobPrivate::currentSourceStated(bool isDir, bool isLink)
             // We are about to delete this dir, no need to watch it
             // Maybe we should ask kdirwatch to remove all watches recursively?
             // But then there would be no feedback (things disappearing progressively) during huge deletions
-            KDirWatch::self()->stopDirScan(url.toLocalFile(KUrl::RemoveTrailingSlash));
+            KDirWatch::self()->stopDirScan(QUrlPathInfo(url).localPath(QUrlPathInfo::StripTrailingSlash));
         }
         if (!KProtocolManager::canDeleteRecursive(url)) {
             //kDebug(7007) << url << "is a directory, let's list it";
@@ -407,7 +413,7 @@ void DeleteJobPrivate::currentSourceStated(bool isDir, bool isLink)
         }
     }
     if (url.isLocalFile()) {
-        const QString parentDir = url.directory(KUrl::IgnoreTrailingSlash);
+        const QString parentDir = QUrlPathInfo(url).directory();
         m_parentDirs.insert(parentDir);
     }
 }

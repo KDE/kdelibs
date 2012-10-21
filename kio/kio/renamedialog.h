@@ -23,7 +23,6 @@
 #define KIO_RENAMEDIALOG_H
 
 #include <ksqueezedtextlabel.h>
-#include <kurl.h>
 #include <QDialog>
 #include <QtCore/QString>
 #include <sys/types.h>

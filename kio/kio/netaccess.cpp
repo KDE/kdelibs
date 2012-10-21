@@ -463,10 +463,10 @@ bool NetAccess::synchronousRunInternal( Job* job, QWidget* window, QByteArray* d
                this, SLOT(slotData(KIO::Job*,QByteArray)) );
   }
 
-  static const char redirSignal[] = "redirection(KIO::Job*,KUrl)";
+  static const char redirSignal[] = "redirection(KIO::Job*,QUrl)";
   if ( meta->indexOfSignal( redirSignal ) != -1 ) {
-      connect( job, SIGNAL(redirection(KIO::Job*,KUrl)),
-               this, SLOT(slotRedirection(KIO::Job*,KUrl)) );
+      connect( job, SIGNAL(redirection(KIO::Job*,QUrl)),
+               this, SLOT(slotRedirection(KIO::Job*,QUrl)) );
   }
 
   enter_loop();
@@ -518,7 +518,7 @@ void NetAccess::slotData( KIO::Job*, const QByteArray& data )
   std::memcpy( d->m_data.data() + offset, data.data(), data.size() );
 }
 
-void NetAccess::slotRedirection( KIO::Job*, const KUrl& url )
+void NetAccess::slotRedirection( KIO::Job*, const QUrl& url )
 {
   d->m_url = url;
 }

@@ -325,7 +325,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
       nested event loops.
     */
     if (req.attribute(gSynchronousNetworkRequestAttribute).toBool()) {
-        KUrl finalURL;
+        QUrl finalURL;
         QByteArray data;
 
         if (KIO::NetAccess::synchronousRun(kioJob, d->window, &data, &finalURL, &metaData)) {

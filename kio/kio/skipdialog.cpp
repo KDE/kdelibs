@@ -27,7 +27,6 @@
 #include <QLabel>
 
 #include <klocalizedstring.h>
-#include <kurl.h>
 
 using namespace KIO;
 

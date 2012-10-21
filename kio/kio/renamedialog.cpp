@@ -45,7 +45,6 @@
 #include <kdialog.h>
 #include <klocalizedstring.h>
 #include <kdebug.h>
-#include <kurl.h>
 #include <kfileitem.h>
 #include <kseparator.h>
 #include <kstringhandler.h>

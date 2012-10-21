@@ -28,7 +28,6 @@
 #include "kio/kprotocolmanager.h"
 #include "jobuidelegate.h"
 
-#include <kurl.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
@@ -77,10 +76,10 @@ static KIO::Job *pasteClipboardUrls(const QMimeData* mimeData, const QUrl& destD
             QApplication::clipboard()->clear();
 
             QList<QUrl> newUrls;
-            Q_FOREACH(const KUrl& url, urls) {
-                KUrl dUrl = destDir;
-                dUrl.addPath(url.fileName());
-                newUrls.append(dUrl);
+            Q_FOREACH(const QUrl& url, urls) {
+                QUrlPathInfo dUrlInfo(destDir);
+                dUrlInfo.addPath(QUrlPathInfo(url).fileName());
+                newUrls.append(dUrlInfo.url());
             }
 
             QMimeData* mime = new QMimeData;
@@ -92,7 +91,7 @@ static KIO::Job *pasteClipboardUrls(const QMimeData* mimeData, const QUrl& destD
     return 0;
 }
 
-static KUrl getNewFileName(const QUrl &u, const QString& text, const QString& suggestedFileName, QWidget *widget, bool delIfOverwrite)
+static QUrl getNewFileName(const QUrl &u, const QString& text, const QString& suggestedFileName, QWidget *widget, bool delIfOverwrite)
 {
   bool ok;
   QString dialogText( text );
@@ -102,8 +101,9 @@ static KUrl getNewFileName(const QUrl &u, const QString& text, const QString& su
   if ( !ok )
      return QUrl();
 
-  KUrl myurl(u);
-  myurl.addPath( file );
+  QUrlPathInfo myurlInfo(u);
+  myurlInfo.addPath(file);
+  QUrl myurl = myurlInfo.url();
 
   // Check for existing destination file.
   // When we were using CopyJob, we couldn't let it do that (would expose
@@ -116,7 +116,7 @@ static KUrl getNewFileName(const QUrl &u, const QString& text, const QString& su
 
       KIO::RenameDialog dlg( widget,
                           i18n("File Already Exists"),
-                          KUrl(u),
+                          u,
                           myurl,
                           (KIO::RenameDialog_Mode) (KIO::M_OVERWRITE | KIO::M_SINGLE) );
       res = static_cast<KIO::RenameDialog_Result>(dlg.exec());
@@ -158,7 +158,7 @@ static KIO::CopyJob* pasteDataAsyncTo( const QUrl& newUrl, const QByteArray& _da
     tempFile.open();
     tempFile.write(_data.data(), _data.size());
     tempFile.flush();
-    KUrl origUrl(tempFile.fileName());
+    QUrl origUrl = QUrl::fromLocalFile(tempFile.fileName());
     return KIO::move(origUrl, newUrl);
 }
 
@@ -266,7 +266,7 @@ KIO::CopyJob* KIO::pasteMimeSource( const QMimeData* mimeData, const QUrl& destU
           return 0;
 
       if ( formats.size() > 1 ) {
-          KUrl newUrl;
+          QUrl newUrl;
           ba = chooseFormatAndUrl(destUrl, mimeData, formats, dialogText, suggestedFilename, widget, clipboard, &newUrl);
           KIO::CopyJob* job = pasteDataAsyncTo(newUrl, ba);
           job->ui()->setWindow(widget);
@@ -280,7 +280,7 @@ KIO::CopyJob* KIO::pasteMimeSource( const QMimeData* mimeData, const QUrl& destU
     return 0;
   }
 
-    const KUrl newUrl = getNewFileName(destUrl, dialogText, suggestedFilename, widget, true);
+    const QUrl newUrl = getNewFileName(destUrl, dialogText, suggestedFilename, widget, true);
     if (newUrl.isEmpty())
         return 0;
 
@@ -310,7 +310,7 @@ KIO::Job* pasteMimeDataImpl(const QMimeData* mimeData, const QUrl& destUrl,
         if (formats.isEmpty()) {
             return 0;
         } else if (formats.size() > 1) {
-            KUrl newUrl;
+            QUrl newUrl;
             ba = chooseFormatAndUrl(destUrl, mimeData, formats, dialogText, suggestedFilename, widget, clipboard, &newUrl);
             if (ba.isEmpty()) {
                 return 0;
@@ -323,7 +323,7 @@ KIO::Job* pasteMimeDataImpl(const QMimeData* mimeData, const QUrl& destUrl,
         return 0;
     }
 
-    const KUrl newUrl = getNewFileName(destUrl, dialogText, suggestedFilename, widget, false);
+    const QUrl newUrl = getNewFileName(destUrl, dialogText, suggestedFilename, widget, false);
     if (newUrl.isEmpty())
         return 0;
 
@@ -370,7 +370,7 @@ KIO_EXPORT void KIO::pasteData(const QUrl& u, const QByteArray& data, QWidget* w
 // KDE5: remove
 KIO_EXPORT KIO::CopyJob* KIO::pasteDataAsync( const QUrl& u, const QByteArray& _data, QWidget *widget, const QString& text )
 {
-    KUrl newUrl = getNewFileName(u, text, QString(), widget, true);
+    QUrl newUrl = getNewFileName(u, text, QString(), widget, true);
 
     if (newUrl.isEmpty())
        return 0;

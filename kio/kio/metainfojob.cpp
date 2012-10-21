@@ -128,7 +128,7 @@ void MetaInfoJob::getMetaInfo()
     KFileItem item = d->items.at( d->currentItem );
     Q_ASSERT(!item.isNull());
 
-    KUrl URL;
+    QUrl URL;
     URL.setScheme("metainfo");
     URL.setPath(item.url().path());
 
@@ -164,7 +164,7 @@ KIO_EXPORT MetaInfoJob *KIO::fileMetaInfo( const KFileItemList& items)
 KIO_EXPORT MetaInfoJob *KIO::fileMetaInfo( const QList<QUrl> &items)
 {
     KFileItemList fileItems;
-    foreach (const KUrl& url, items) {
+    foreach (const QUrl& url, items) {
         fileItems.append(KFileItem(KFileItem::Unknown, KFileItem::Unknown, url,
             true));
     }

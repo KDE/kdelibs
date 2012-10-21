@@ -21,7 +21,6 @@
 #ifndef KIO_CHMODJOB_H
 #define KIO_CHMODJOB_H
 
-#include <kurl.h>
 #include "global.h"
 #include "job.h"
 #include <kfileitem.h>
