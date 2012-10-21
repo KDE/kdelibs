@@ -106,37 +106,37 @@ void DavJob::slotData( const QByteArray& data )
 
 void DavJob::slotFinished()
 {
-  Q_D(DavJob);
-  // kDebug(7113) << d->str_response;
-	if (!d->m_redirectionURL.isEmpty() && d->m_redirectionURL.isValid() &&
-            (d->m_command == CMD_SPECIAL)) {
-		QDataStream istream( d->m_packedArgs );
-		int s_cmd, s_method;
-    qint64 s_size;
-		KUrl s_url;
-		istream >> s_cmd;
-		istream >> s_url;
-		istream >> s_method;
-    istream >> s_size;
-		// PROPFIND
-		if ( (s_cmd == 7) && (s_method == (int)KIO::DAV_PROPFIND) ) {
-			d->m_packedArgs.truncate(0);
-			QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
-			stream << (int)7 << d->m_redirectionURL << (int)KIO::DAV_PROPFIND << s_size;
-		}
-  } else if ( ! d->m_response.setContent( d->str_response, true ) ) {
-		// An error occurred parsing the XML response
-		QDomElement root = d->m_response.createElementNS( "DAV:", "error-report" );
-		d->m_response.appendChild( root );
+    Q_D(DavJob);
+    // kDebug(7113) << d->str_response;
+    if (!d->m_redirectionURL.isEmpty() && d->m_redirectionURL.isValid() &&
+        (d->m_command == CMD_SPECIAL)) {
+        QDataStream istream( d->m_packedArgs );
+        int s_cmd, s_method;
+        qint64 s_size;
+        QUrl s_url;
+        istream >> s_cmd;
+        istream >> s_url;
+        istream >> s_method;
+        istream >> s_size;
+        // PROPFIND
+        if ( (s_cmd == 7) && (s_method == (int)KIO::DAV_PROPFIND) ) {
+            d->m_packedArgs.truncate(0);
+            QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
+            stream << (int)7 << d->m_redirectionURL << (int)KIO::DAV_PROPFIND << s_size;
+        }
+    } else if ( ! d->m_response.setContent( d->str_response, true ) ) {
+        // An error occurred parsing the XML response
+        QDomElement root = d->m_response.createElementNS( "DAV:", "error-report" );
+        d->m_response.appendChild( root );
 
-		QDomElement el = d->m_response.createElementNS( "DAV:", "offending-response" );
-    QDomText textnode = d->m_response.createTextNode( d->str_response );
-		el.appendChild( textnode );
-		root.appendChild( el );
-	}
-  // kDebug(7113) << d->m_response.toString();
-	TransferJob::slotFinished();
-	d->staticData = d->savedStaticData; // Need to send DAV request to this host too
+        QDomElement el = d->m_response.createElementNS( "DAV:", "offending-response" );
+        QDomText textnode = d->m_response.createTextNode( d->str_response );
+        el.appendChild( textnode );
+        root.appendChild( el );
+    }
+    // kDebug(7113) << d->m_response.toString();
+    TransferJob::slotFinished();
+    d->staticData = d->savedStaticData; // Need to send DAV request to this host too
 }
 
 /* Convenience methods */
