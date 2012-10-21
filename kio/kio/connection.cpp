@@ -31,8 +31,6 @@
 #include <qstandardpaths.h>
 #include <QCoreApplication>
 
-#include <kdebug.h>
-#include <kcomponentdata.h>
 #include <klocalizedstring.h>
 
 using namespace KIO;
@@ -180,7 +178,7 @@ bool SocketConnectionBackend::connectToRemote(const QUrl &url)
 
         if (!socket->waitForConnected(1000)) {
             state = Idle;
-            kDebug() << "could not connect to " << url;
+            qDebug() << "could not connect to" << url;
             return false;
         }
     }
@@ -368,7 +366,7 @@ void SocketConnectionBackend::socketReadyRead()
             signalEmitted = true;
             emit commandReceived(task);
         } else if (len > StandardBufferSize) {
-            kDebug(7017) << this << "Jumbo packet of" << len << "bytes";
+            qDebug() << this << "Jumbo packet of" << len << "bytes";
             socket->setReadBufferSize(len + 1);
         }
 
@@ -452,8 +450,7 @@ void Connection::connectToRemote(const QUrl &address)
     } else if (scheme == QLatin1String("tcp")) {
         d->setBackend(new SocketConnectionBackend(SocketConnectionBackend::TcpSocketMode, this));
     } else {
-        kWarning(7017) << "Unknown requested KIO::Connection protocol='" << scheme
-                       << "' (" << address << ")";
+        qWarning() << "Unknown protocol requested:" << scheme << "(" << address << ")";
         Q_ASSERT(0);
         return;
     }
@@ -564,7 +561,7 @@ void ConnectionServer::listenForRemote()
     }
 
     connect(d->backend, SIGNAL(newConnection()), SIGNAL(newConnection()));
-    kDebug(7017) << "Listening on" << d->backend->address;
+    //kDebug(7017) << "Listening on" << d->backend->address;
 }
 
 QUrl ConnectionServer::address() const
