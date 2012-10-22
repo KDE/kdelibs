@@ -326,7 +326,8 @@ void KMimeTypeTest::testFindByPathWithContent()
     }
 
     // Now the case where extension differs from contents, but contents has >80 magic rule
-    // XDG spec says: contents wins. But we can't sniff all files...
+    // XDG spec used to say: contents wins. But we can't sniff all files...
+    // XDG spec has now been amended, extensions always win.
     {
         KTemporaryFile txtTempFile;
         txtTempFile.setSuffix(".txt");
