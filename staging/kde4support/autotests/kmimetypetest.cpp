@@ -518,19 +518,18 @@ void KMimeTypeTest::testAllMimeTypes()
 
         const KMimeType::Ptr lookedupMime = KMimeType::mimeType( name );
         QVERIFY( lookedupMime ); // not null
-        if (name == "application/vnd.ms-word") { // this comes from /usr/share/mime/packages/libreoffice.xml....
-            QEXPECT_FAIL("", "libreoffice.xml is messing with us", Continue);
-        } else if (name == "application/x-pkcs7-certificates" || name == "application/x-x509-ca-cert") {
-            QEXPECT_FAIL("", "gcr-crypto-types.xml is buggy", Continue);
+        if (name != "application/vnd.ms-word" && name != "application/x-pkcs7-certificates" && name != "application/x-x509-ca-cert") {
+            QCOMPARE( lookedupMime->name(), name );
+            // if this fails, you have an alias defined as a real mimetype too!
+            //
+            // Note: this also happens with x-win-lnk when your kde.xml defines it as an alias, while
+            // /usr/share/mime/packages/kde.xml defines it as a real mimetype. This is a false positive,
+            // remove one of the kde.xml files.
+            //
+            // It also happens with application/x-pkcs7-certificates due to
+            // /usr/share/mime/packages/gcr-crypto-types.xml. Remove that file and run
+            // `update-mime-database /usr/share/mime`.
         }
-        QCOMPARE( lookedupMime->name(), name ); // if this fails, you have an alias defined as a real mimetype too!
-        // Note: this happens with x-win-lnk when your kde.xml defines it as an alias, while
-        // /usr/share/mime/packages/kde.xml defines it as a real mimetype. This is a false positive,
-        // remove one of the kde.xml files.
-        //
-        // It also happens with application/x-pkcs7-certificates due to
-        // /usr/share/mime/packages/gcr-crypto-types.xml. Remove that file and run
-        // `update-mime-database /usr/share/mime`.
     }
 }
 
