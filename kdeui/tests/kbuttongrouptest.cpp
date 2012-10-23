@@ -47,6 +47,7 @@ void KButtonGroupTest::initTestCase()
     buttons << r;
   }
 
+  kbuttongroup->show();
   QCOMPARE( kbuttongroup->selected(), -1 );
 }
 
