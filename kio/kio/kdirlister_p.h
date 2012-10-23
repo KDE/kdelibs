@@ -257,6 +257,8 @@ private Q_SLOTS:
   void processPendingUpdates();
 
 private:
+    void itemsAddedInDirectory(const QUrl& url);
+
     class DirItem;
     DirItem* dirItemForUrl(const QUrl& dir) const;
 

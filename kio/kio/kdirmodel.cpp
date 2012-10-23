@@ -26,7 +26,6 @@
 #include <kio/fileundomanager.h>
 #include <kio/jobuidelegate.h>
 #include <kio/joburlcache_p.h>
-#include <kurl.h>
 #include <kurlmimedata.h>
 #include <kdebug.h>
 #include <QMimeData>
@@ -46,11 +45,13 @@ class KDirModelNode;
 class KDirModelDirNode;
 
 static QUrl cleanupUrl(const QUrl& url) {
-    KUrl u = url;
-    u.cleanPath(); // remove double slashes in the path, simplify "foo/." to "foo/", etc.
-    u.adjustPath(KUrl::RemoveTrailingSlash); // KDirLister does this too, so we remove the slash before comparing with the root node url.
+    QUrl u = url;
+    u.setPath(QDir::cleanPath(u.path())); // remove double slashes in the path, simplify "foo/." to "foo/", etc.
+    QUrlPathInfo::adjustPath(u, QUrlPathInfo::StripTrailingSlash); // KDirLister does this too, so we remove the slash before comparing with the root node url.
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     u.setQuery(QString());
-    u.setRef(QString());
+#endif
+    u.setFragment(QString());
     return u;
 }
 
@@ -169,10 +170,12 @@ public:
          * For instance ksvn+http://url?rev=100 is the parent for ksvn+http://url/file?rev=100
          * so we have to remove the query in both to be able to compare the URLs
          */
-        KUrl url(node == m_rootNode ? m_dirLister->url() : node->item().url());
-        if (url.hasQuery() || url.hasRef()) { // avoid detach if not necessary.
+        QUrl url(node == m_rootNode ? m_dirLister->url() : node->item().url());
+        if (url.hasQuery() || url.hasFragment()) { // avoid detach if not necessary.
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
             url.setQuery(QString());
-            url.setRef(QString()); // kill ref (#171117)
+#endif
+            url.setFragment(QString()); // kill ref (#171117)
         }
         return url;
     }
@@ -418,7 +421,7 @@ void KDirModelPrivate::_k_slotNewItems(const QUrl& directoryUrl, const KFileItem
         //             << "url=" << dirNode->m_childNodes.last()->item().url();
 #endif
         dirNode->m_childNodes.append(node);
-        const KUrl url = it->url();
+        const QUrl url = it->url();
         m_nodeHash.insert(cleanupUrl(url), node);
         //kDebug(7008) << url;
 
@@ -537,8 +540,8 @@ void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileIte
     for ( QList<QPair<KFileItem, KFileItem> >::const_iterator fit = items.begin(), fend = items.end() ; fit != fend ; ++fit ) {
         Q_ASSERT(!fit->first.isNull());
         Q_ASSERT(!fit->second.isNull());
-        const KUrl oldUrl = fit->first.url();
-        const KUrl newUrl = fit->second.url();
+        const QUrl oldUrl = fit->first.url();
+        const QUrl newUrl = fit->second.url();
         KDirModelNode* node = nodeForUrl(oldUrl); // O(n); maybe we could look up to the parent only once
         //kDebug(7008) << "in model for" << m_dirLister->url() << ":" << oldUrl << "->" << newUrl << "node=" << node;
         if (!node) // not found [can happen when renaming a dir, redirection was emitted already]
@@ -787,12 +790,12 @@ bool KDirModel::setData( const QModelIndex & index, const QVariant & value, int 
             const QString newName = value.toString();
             if (newName.isEmpty() || newName == item.text() || (newName == QLatin1String(".")) || (newName == QLatin1String("..")))
                 return true;
-            KUrl newurl(item.url());
-            newurl.setPath(newurl.directory(KUrl::AppendTrailingSlash) + KIO::encodeFileName(newName));
-            KIO::Job * job = KIO::moveAs(item.url(), newurl, newurl.isLocalFile() ? KIO::HideProgressInfo : KIO::DefaultFlags);
+            QUrlPathInfo newUrlInfo(item.url());
+            newUrlInfo.setFileName(KIO::encodeFileName(newName));
+            KIO::Job * job = KIO::moveAs(item.url(), newUrlInfo.url(), item.url().isLocalFile() ? KIO::HideProgressInfo : KIO::DefaultFlags);
             job->ui()->setAutoErrorHandlingEnabled(true);
             // undo handling
-            KIO::FileUndoManager::self()->recordJob( KIO::FileUndoManager::Rename, QList<QUrl>() << item.url(), newurl, job );
+            KIO::FileUndoManager::self()->recordJob( KIO::FileUndoManager::Rename, QList<QUrl>() << item.url(), newUrlInfo.url(), job );
             return true;
         }
         break;

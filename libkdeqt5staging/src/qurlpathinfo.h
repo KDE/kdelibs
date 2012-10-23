@@ -96,6 +96,7 @@ public:
     void addPath(const QString &relativePath);
     void adjustPath(PathFormattingOptions options);
     static QUrl addPathToUrl(const QUrl &url, const QString& relativePath) Q_REQUIRED_RESULT;
+    static void adjustPath(QUrl& url, PathFormattingOptions options);
 
     QString localPath(PathFormattingOptions options = None) const;
 

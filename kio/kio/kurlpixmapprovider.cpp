@@ -19,7 +19,7 @@
 */
 
 #include "kurlpixmapprovider.h"
-#include <kurl.h>
+#include <QUrl>
 #include <kio/global.h>
 
 KUrlPixmapProvider::KUrlPixmapProvider()
@@ -33,12 +33,8 @@ KUrlPixmapProvider::~KUrlPixmapProvider()
 
 QPixmap KUrlPixmapProvider::pixmapFor( const QString& url, int size )
 {
-	KUrl u;
-	if ( url.at(0) == '/' )
-	    u.setPath( url );
-	else
-	    u = url;
-	return KIO::pixmapForUrl( u, 0, KIconLoader::Desktop, size );
+    const QUrl u = QUrl::fromUserInput(url); // absolute path or URL
+    return KIO::pixmapForUrl( u, 0, KIconLoader::Desktop, size );
 }
 
 void KUrlPixmapProvider::virtual_hook( int id, void* data )

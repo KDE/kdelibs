@@ -462,3 +462,19 @@ bool QUrlPathInfo::equals(const QUrl& u, EqualsOptions options) const
 
     return d->url == u;
 }
+
+/*!
+    Adjust the trailing slash in the path of the URL.
+
+    The other components of the URL (scheme, host, query, fragment...) remain unchanged.
+
+    \sa path(), addPath()
+*/
+void QUrlPathInfo::adjustPath(QUrl& url, PathFormattingOptions options)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    url.setPath(QUrlPathInfo(url).path(options), QUrl::DecodedMode);
+#else
+    url.setPath(QUrlPathInfo(url).path(options));
+#endif
+}

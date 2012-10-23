@@ -507,6 +507,8 @@ public:
    *
    * @param options use KeepDirSeparators if you don't want to remove consecutive
    *                occurrences of directory separator
+   * @deprecated use url.setPath(QDir::cleanPath(url.path())) in file-management code.
+   * No replacement available yet for the old HTTP issue mentionned above.
    */
   void cleanPath(const CleanPathOption& options = SimplifyDirSeparators);
 
@@ -523,7 +525,7 @@ public:
    *
    * @param trailing  RemoveTrailingSlash strips any trailing '/' and
    *                  AddTrailingSlash adds  a trailing '/' if there is none yet
-   * @deprecated use setPath(QUrlPathInfo(url).path(QUrlPathInfo::Append/StripTrailingSlash))
+   * @deprecated use QUrlPathInfo::adjustPath(url, QUrlPathInfo::Append/StripTrailingSlash)
    */
   void adjustPath(AdjustPathOption trailing);
 
