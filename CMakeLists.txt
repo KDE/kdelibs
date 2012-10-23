@@ -48,7 +48,7 @@ configure_file(${CMAKE_SOURCE_DIR}/CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCu
 
 ################# now find all used packages #################
 
-set (QT_MIN_VERSION "4.7.0")
+set (QT_MIN_VERSION "4.8.0")
 
 find_package(KDE4Internal REQUIRED)
 include(KDE4Defaults)
