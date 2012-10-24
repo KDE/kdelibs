@@ -452,11 +452,11 @@ void KMainWindow::parseGeometry(bool parsewidth)
     } else {
         if ( (m & XNegative) )
             x = KApplication::desktop()->width()  + x - w;
-        else if ( (m & XValue) )
+        else if ( !(m & XValue) )
             x = geometry().x();
         if ( (m & YNegative) )
             y = KApplication::desktop()->height() + y - h;
-        else if ( (m & YValue) )
+        else if ( !(m & YValue) )
             y = geometry().y();
 
         move(x, y);
