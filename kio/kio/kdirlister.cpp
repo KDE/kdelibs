@@ -437,9 +437,9 @@ void KDirListerCache::stop( KDirLister *lister, bool silent )
 
 void KDirListerCache::stopListingUrl(KDirLister *lister, const QUrl& _u, bool silent)
 {
-    KUrl url(_u);
+    QUrl url(_u);
     QUrlPathInfo::adjustPath(url, QUrlPathInfo::StripTrailingSlash);
-    const QString urlStr = url.url();
+    const QString urlStr = url.toString();
 
     KDirLister::Private::CachedItemsJob* cachedItemsJob = lister->d->cachedItemsJobForUrl(url);
     if (cachedItemsJob) {
@@ -931,7 +931,7 @@ void KDirListerCache::slotFilesChanged( const QStringList &fileList ) // from KD
             continue;
         }
         if (url.isLocalFile()) {
-            pendingUpdates.insert(*it); // delegate the work to processPendingUpdates
+            pendingUpdates.insert(url.toLocalFile()); // delegate the work to processPendingUpdates
         } else {
             pendingRemoteUpdates.insert(fileitem);
             // For remote files, we won't be able to figure out the new information,
@@ -1159,9 +1159,9 @@ void KDirListerCache::slotFileDeleted( const QString& path ) // from KDirWatch
 
 void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entries )
 {
-    KUrl url(joburl( static_cast<KIO::ListJob *>(job) ));
+    QUrl url(joburl(static_cast<KIO::ListJob *>(job)));
     QUrlPathInfo::adjustPath(url, QUrlPathInfo::StripTrailingSlash);
-    QString urlStr = url.url();
+    QString urlStr = url.toString();
 
     //kDebug(7004) << "new entries for " << url;
 
@@ -1661,9 +1661,9 @@ void KDirListerCache::slotUpdateResult( KJob * j )
     Q_ASSERT( j );
     KIO::ListJob *job = static_cast<KIO::ListJob *>( j );
 
-    KUrl jobUrl (joburl( job ));
+    QUrl jobUrl(joburl( job ));
     QUrlPathInfo::adjustPath(jobUrl, QUrlPathInfo::StripTrailingSlash);  // need remove trailing slashes again, in case of redirections
-    QString jobUrlStr (jobUrl.url());
+    QString jobUrlStr(jobUrl.toString());
 
     kDebug(7004) << "finished update" << jobUrl;
 
@@ -1826,13 +1826,16 @@ KIO::ListJob *KDirListerCache::jobForUrl( const QString& url, KIO::ListJob *not_
   while ( it != runningListJobs.constEnd() )
   {
     KIO::ListJob *job = it.key();
+    QString jobUrlStr = joburl(job).toString(QUrl::StripTrailingSlash);
+
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     // QUrl::toString(QUrl::StripTrailingSlash) is broken in Qt-4.x, it turns file:/// into file:.
     // This breaks KDirListerTest::testOpenAndStop(), so use KUrl for now.
-    if (KUrl(joburl(job)).url(KUrl::RemoveTrailingSlash) == url && job != not_job)
-#else
-    if (joburl(job).toString(QUrl::StripTrailingSlash) == url && job != not_job)
+    if (jobUrlStr == QLatin1String("file:"))
+        jobUrlStr = QLatin1String("file:///");
+
 #endif
+    if (jobUrlStr == url && job != not_job)
        return job;
     ++it;
   }
@@ -1898,14 +1901,14 @@ void KDirListerCache::deleteDir(const QUrl& _dirUrl)
     QHash<QString, DirItem *>::iterator itu = itemsInUse.begin();
     const QHash<QString, DirItem *>::iterator ituend = itemsInUse.end();
     for ( ; itu != ituend; ++itu ) {
-        const KUrl deletedUrl( itu.key() );
+        const QUrl deletedUrl( itu.key() );
         if (dirUrl == deletedUrl || dirUrl.isParentOf(deletedUrl)) {
             affectedItems.append(deletedUrl);
         }
     }
 
-    foreach(const KUrl& deletedUrl, affectedItems) {
-        const QString deletedUrlStr = deletedUrl.url();
+    foreach(const QUrl& deletedUrl, affectedItems) {
+        const QString deletedUrlStr = deletedUrl.toString();
         // stop all jobs for deletedUrlStr
         DirectoryDataHash::iterator dit = directoryData.find(deletedUrlStr);
         if (dit != directoryData.end()) {
@@ -1963,7 +1966,7 @@ void KDirListerCache::processPendingUpdates()
     QSet<KDirLister *> listers;
     foreach(const QString& file, pendingUpdates) { // always a local path
         kDebug(7004) << file;
-        KUrl u(file);
+        QUrl u = QUrl::fromLocalFile(file);
         KFileItem *item = findByUrl( 0, u ); // search all items
         if ( item ) {
             // we need to refresh the item, because e.g. the permissions can have changed.
@@ -2168,7 +2171,7 @@ void KDirLister::Private::emitChanges()
     settings = oldSettings; // temporarily
 
     // Mark all items that are currently visible
-    Q_FOREACH(const KUrl& dir, lstDirs) {
+    Q_FOREACH(const QUrl& dir, lstDirs) {
         KFileItemList* itemList = kDirListerCache->itemsForDir(dir);
         if (!itemList) {
             continue;
@@ -2186,7 +2189,7 @@ void KDirLister::Private::emitChanges()
 
     settings = newSettings;
 
-    Q_FOREACH(const KUrl& dir, lstDirs) {
+    Q_FOREACH(const QUrl& dir, lstDirs) {
         KFileItemList deletedItems;
 
         KFileItemList* itemList = kDirListerCache->itemsForDir(dir);
