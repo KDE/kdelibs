@@ -1038,7 +1038,7 @@ QSet<KDirLister*> KDirListerCache::emitRefreshItem(const KFileItem& oldItem, con
     QSet<KDirLister*> listersToRefresh;
     Q_FOREACH(KDirLister *kdl, listers) {
         // For a directory, look for dirlisters where it's the root item.
-        KUrl directoryUrl(oldItem.url());
+        QUrl directoryUrl(oldItem.url());
         if (oldItem.isDir() && kdl->d->rootFileItem == oldItem) {
             const KFileItem oldRootItem = kdl->d->rootFileItem;
             kdl->d->rootFileItem = fileitem;
@@ -1247,9 +1247,9 @@ void KDirListerCache::slotResult( KJob *j )
   KIO::ListJob *job = static_cast<KIO::ListJob *>( j );
   runningListJobs.remove( job );
 
-  KUrl jobUrl(joburl( job ));
+  QUrl jobUrl(joburl( job ));
   QUrlPathInfo::adjustPath(jobUrl, QUrlPathInfo::StripTrailingSlash);  // need remove trailing slashes again, in case of redirections
-  QString jobUrlStr = jobUrl.url();
+  QString jobUrlStr = jobUrl.toString();
 
   kDebug(7004) << "finished listing" << jobUrl;
 
@@ -1332,8 +1332,8 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const QUrl& url )
     Q_ASSERT( j );
     KIO::ListJob *job = static_cast<KIO::ListJob *>( j );
 
-    KUrl oldUrl(job->url());  // here we really need the old url!
-    KUrl newUrl(url);
+    QUrl oldUrl(job->url());  // here we really need the old url!
+    QUrl newUrl(url);
 
     // strip trailing slashes
     QUrlPathInfo::adjustPath(oldUrl, QUrlPathInfo::StripTrailingSlash);
@@ -1347,8 +1347,8 @@ void KDirListerCache::slotRedirection( KIO::Job *j, const QUrl& url )
         return;
     }
 
-    const QString oldUrlStr = oldUrl.url();
-    const QString newUrlStr = newUrl.url();
+    const QString oldUrlStr = oldUrl.toString();
+    const QString newUrlStr = newUrl.toString();
 
     kDebug(7004) << oldUrl << "->" << newUrl;
 
@@ -1533,23 +1533,23 @@ void KDirListerCache::renameDir( const QUrl &oldUrl, const QUrl &newUrl )
     const QHash<QString, DirItem *>::iterator ituend = itemsInUse.end();
     for (; itu != ituend ; ++itu) {
         DirItem *dir = itu.value();
-        KUrl oldDirUrl ( itu.key() );
+        QUrl oldDirUrl(itu.key());
         //kDebug(7004) << "itemInUse:" << oldDirUrl;
         // Check if this dir is oldUrl, or a subfolder of it
         if ( oldDirUrl == oldUrl || oldUrl.isParentOf( oldDirUrl ) ) {
             // TODO should use KUrl::cleanpath like isParentOf does
             QString relPath = oldDirUrl.path().mid( oldUrl.path().length() );
 
-            KUrl newDirUrl( newUrl ); // take new base
+            QUrl newDirUrl(newUrl); // take new base
             if ( !relPath.isEmpty() )
-                newDirUrl.addPath( relPath ); // add unchanged relative path
+                newDirUrl = QUrlPathInfo::addPathToUrl(newDirUrl, relPath); // add unchanged relative path
             //kDebug(7004) << "new url=" << newDirUrl;
 
             // Update URL in dir item and in itemsInUse
             dir->redirect( newDirUrl );
 
-            itemsToChange.append(ItemInUseChange(oldDirUrl.url(KUrl::RemoveTrailingSlash),
-                                                 newDirUrl.url(KUrl::RemoveTrailingSlash),
+            itemsToChange.append(ItemInUseChange(oldDirUrl.toString(QUrl::StripTrailingSlash),
+                                                 newDirUrl.toString(QUrl::StripTrailingSlash),
                                                  dir));
             // Rename all items under that dir
 
@@ -1558,11 +1558,11 @@ void KDirListerCache::renameDir( const QUrl &oldUrl, const QUrl &newUrl )
             {
                 const KFileItem oldItem = *kit;
 
-                const KUrl oldItemUrl ((*kit).url());
-                const QString oldItemUrlStr( oldItemUrl.url(KUrl::RemoveTrailingSlash) );
-                KUrl newItemUrl( oldItemUrl );
-                newItemUrl.setPath( newDirUrl.path() );
-                newItemUrl.addPath( oldItemUrl.fileName() );
+                const QUrl oldItemUrl ((*kit).url());
+                const QString oldItemUrlStr(oldItemUrl.toString(QUrl::StripTrailingSlash));
+                QUrl newItemUrl(oldItemUrl);
+                newItemUrl.setPath(newDirUrl.path());
+                newItemUrl = QUrlPathInfo::addPathToUrl(newItemUrl, QUrlPathInfo(oldItemUrl).fileName());
                 kDebug(7004) << "renaming" << oldItemUrl << "to" << newItemUrl;
                 (*kit).setUrl(newItemUrl);
 

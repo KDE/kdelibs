@@ -28,8 +28,8 @@
 #include <QtCore/QSet>
 #include <QtCore/QTimer>
 #include <QWidget>
+#include <QUrl>
 
-#include <kurl.h>
 #include <kdebug.h>
 #include <kio/global.h>
 #include <kdirwatch.h>

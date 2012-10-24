@@ -434,8 +434,8 @@ void KDirModelTest::testModifyFile()
 
 void KDirModelTest::testRenameFile()
 {
-    const KUrl url(m_tempDir->path() + "/toplevelfile_2");
-    const KUrl newUrl(m_tempDir->path() + "/toplevelfile_2_renamed");
+    const QUrl url = QUrl::fromLocalFile(m_tempDir->path() + "/toplevelfile_2");
+    const QUrl newUrl = QUrl::fromLocalFile(m_tempDir->path() + "/toplevelfile_2_renamed");
 
     QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)));
     connect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
