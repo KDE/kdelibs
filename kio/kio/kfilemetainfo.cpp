@@ -420,9 +420,10 @@ KFileMetaInfo::KFileMetaInfo ( const KFileMetaInfo& k )
 {
 }
 
-const KFileMetaInfo& KFileMetaInfo::operator= ( KFileMetaInfo const & kfmi )
+KFileMetaInfo& KFileMetaInfo::operator= ( KFileMetaInfo const & kfmi )
 {
-    return kfmi;
+    d = kfmi.d;
+    return *this;
 }
 
 KFileMetaInfo::~KFileMetaInfo()
