@@ -481,7 +481,7 @@ int KTimeZoneBackend::offsetAtZoneTime(const KTimeZone* caller, const QDateTime 
         if (!d->cachedTransitionTimesValid)
         {
             const int offset = transitions[index].phase().utcOffset();
-	    const int preoffset = (index > 0) ? transitions[index - 1].phase().utcOffset() : d->data ? d->data->previousUtcOffset() : 0;
+            const int preoffset = (index > 0) ? transitions[index - 1].phase().utcOffset() : d->data ? d->data->previousUtcOffset() : KTimeZone::InvalidOffset;
             d->cachedTransitionStartZoneTime = transitions[index].time().addSecs(qMax(offset, preoffset));
             if (index + 1 < transitions.count())
 	    {
@@ -515,7 +515,7 @@ int KTimeZoneBackend::offsetAtZoneTime(const KTimeZone* caller, const QDateTime 
     index = caller->transitionIndex(zoneDateTime, (secondOffset ? &secondIndex : 0), &validTime);
     const KTimeZone::Transition* tr = (index >= 0) ? &transitions[index] : 0;
     const int offset = tr ? tr->phase().utcOffset()
-                          : validTime ? (d->data ? d->data->previousUtcOffset() : 0)
+                          : validTime ? (d->data ? d->data->previousUtcOffset() : KTimeZone::InvalidOffset)
                                       : KTimeZone::InvalidOffset;
     if (secondOffset)
         *secondOffset = (secondIndex >= 0) ? transitions.at(secondIndex).phase().utcOffset() : offset;
@@ -555,7 +555,7 @@ int KTimeZoneBackend::offsetAtUtc(const KTimeZone* caller, const QDateTime &utcD
     d->cachedTransitionIndex = index;   // cache transition data
     d->cachedTransitionTimesValid = false;
     const KTimeZone::Transition* tr = (index >= 0) ? &transitions.at(index) : 0;
-    return tr ? tr->phase().utcOffset() : (d->data ? d->data->previousUtcOffset() : 0);
+    return tr ? tr->phase().utcOffset() : (d->data ? d->data->previousUtcOffset() : KTimeZone::InvalidOffset);
 }
 
 int KTimeZoneBackend::offset(const KTimeZone* caller, time_t t) const

@@ -25,6 +25,7 @@
 #include <klocale.h>
 #include <kcalendarsystem.h>
 #include <ksystemtimezone.h>
+#include <ktzfiletimezone.h>
 #include <kdatetime.h>
 #include <kconfiggroup.h>
 #include <QtDBus/QtDBus>
@@ -335,6 +336,12 @@ void KDateTimeTest::specConstructors()
     QCOMPARE(clockCopy.utcOffset(), 0);
     QVERIFY(!clockCopy.timeZone().isValid());
 
+    // "valid but garbage" timezone spec
+    KTzfileTimeZoneSource source("/invalid/tzinfo/dir");
+    KDateTime dateTimeInvalidTz(QDate(2001,02,13), QTime(3,45,14), KTzfileTimeZone(&source,"Europe/London"));
+    QVERIFY(!dateTimeInvalidTz.isNull());
+    QVERIFY(!dateTimeInvalidTz.isValid());
+    QCOMPARE(dateTimeInvalidTz.toString(KDateTime::ISODate), QLatin1String("2001-02-13T03:45:14+EINVAL"));
 
     // Restore the original local time zone
     if (originalZone.isEmpty())

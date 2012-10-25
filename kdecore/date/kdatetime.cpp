@@ -171,7 +171,7 @@ void KDateTime::Spec::setType(const KTimeZone &tz)
 {
     if (tz == KTimeZone::utc())
         d->type = KDateTime::UTC;
-    else if (tz.isValid())
+    else if (tz.isValid() && tz.currentOffset() != KTimeZone::InvalidOffset)
     {
         d->type = KDateTime::TimeZone;
         d->tz   = tz;
@@ -1619,7 +1619,7 @@ QString KDateTime::toString(const QString &format) const
 QString KDateTime::toString(TimeFormat format) const
 {
     QString result;
-    if (!isValid())
+    if (!d->dt().isValid())
         return result;
 
     QString s;
@@ -1724,17 +1724,18 @@ QString KDateTime::toString(TimeFormat format) const
     }
 
     // Return the string with UTC offset ±hhmm appended
-    if (d->specType == OffsetFromUTC  ||  d->specType == TimeZone  ||  tz.isValid())
-    {
-        if (d->specType == TimeZone)
-            offset = d->timeZoneOffset();   // calculate offset and cache UTC value
-        else
-            offset = tz.isValid() ? tz.offsetAtZoneTime(d->dt()) : d->specUtcOffset;
-        if (offset < 0)
-        {
-            offset = -offset;
-            tzsign = '-';
-        }
+    if (d->specType == OffsetFromUTC) {
+        offset =  d->specUtcOffset;
+    } else if (d->specType == TimeZone) {
+        offset = d->timeZoneOffset();   // calculate offset and cache UTC value
+    } else if (tz.isValid()) {
+        offset = tz.offsetAtZoneTime(d->dt());
+    }
+    if (d->specType == Invalid || offset == KTimeZone::InvalidOffset)
+        return result + QLatin1String("+EINVAL");
+    if (offset < 0) {
+        offset = -offset;
+        tzsign = '-';
     }
     offset /= 60;
     return result + s.sprintf("%c%02d%s%02d", tzsign, offset/60, tzcolon, offset%60);
