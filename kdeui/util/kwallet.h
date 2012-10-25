@@ -33,6 +33,8 @@ class QDBusError;
 namespace KWallet {
 
 class WalletPlugin;
+class WalletDefaultPlugin;
+class WalletDefaultPluginPrivate;
 
 /**
  * KDE Wallet
@@ -435,7 +437,7 @@ class KDEUI_EXPORT Wallet : public QObject
 		 */
 		static bool keyDoesNotExist(const QString& wallet, const QString& folder,
 					    const QString& key);
-
+        
         /**
          * Determine if the KWallet API is using the KSecretsService infrastructure
          * This can ben changed in system settings
@@ -472,23 +474,80 @@ class KDEUI_EXPORT Wallet : public QObject
 		 */
 		void walletOpened(bool success);
 
-	private Q_SLOTS: // TODO; remove these slots
+	private Q_SLOTS:
+		/**
+		 *  @internal
+		 *  DBUS slot for signals emitted by the wallet service.
+         *  @note This member has no implementation, it's only kept for ABI compatibility
+		 */
+		void slotWalletClosed(int handle);
+
+		/**
+		 *  @internal
+		 *  DBUS slot for signals emitted by the wallet service.
+         *  @note This member has no implementation, it's only kept for ABI compatibility
+		 */
+		void slotFolderUpdated(const QString& wallet, const QString& folder);
+
+		/**
+		 *  @internal
+		 *  DBUS slot for signals emitted by the wallet service.
+         *  @note This member has no implementation, it's only kept for ABI compatibility
+		 */
+		void slotFolderListUpdated(const QString& wallet);
+
+		/**
+		 *  @internal
+		 *  DBUS slot for signals emitted by the wallet service.
+         *  @note This member has no implementation, it's only kept for ABI compatibility
+		 */
+		void slotApplicationDisconnected(const QString& wallet, const QString& application);
+
+		/**
+		 *  @internal
+		 *  Callback for kwalletd
+		 *  @param tId identifer for the open transaction
+		 *  @param handle the wallet's handle
+         *  @note This member has no implementation, it's only kept for ABI compatibility
+		 */
+		void walletAsyncOpened(int tId, int handle);
+
 		/**
 		 *  @internal
 		 *  DBUS error slot.
+         *  @note This member has no implementation, it's only kept for ABI compatibility
 		 */
 		void emitWalletAsyncOpenError();
 
 		/**
 		 *  @internal
 		 *  Emits wallet opening success.
+         *  @note This member has no implementation, it's only kept for ABI compatibility
 		 */
 		void emitWalletOpened();
 
+        /**
+         * @internal
+         * Receives status changed notifications from KSecretsService infrastructure
+         */
+        void slotCollectionStatusChanged( int );
+        /**
+         * @internal
+         * Received delete notification from KSecretsService infrastructure
+         *  @note This member has no implementation, it's only kept for ABI compatibility
+         */
+        void slotCollectionDeleted();
+
 	private:
-		class WalletPrivate;
-		WalletPrivate* const d;
-		Q_PRIVATE_SLOT(d, void walletServiceUnregistered())
+        /** @note well, this is not very beautiful, but at least this let one
+         * access the private slots of the Wallet class from the WalletDefaultPluginPrivate
+         * class, which in turn contains the old KWallet logic implemented as a plugin
+         */
+        friend class WalletDefaultPluginPrivate;
+
+        class WalletPrivate;
+        WalletPrivate* const d;
+        //Q_PRIVATE_SLOT(d, void walletServiceUnregistered())
 
 	protected:
 		/**

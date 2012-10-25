@@ -42,20 +42,46 @@ Q_DECLARE_METATYPE(StringByteArrayMap)
 
 namespace KWallet {
 
+class KWalletDLauncher
+{
+public:
+    KWalletDLauncher();
+    ~KWalletDLauncher();
+
+    org::kde::KWallet &getInterface();
+
+    // this static variable is used below to switch between old KWallet
+    // infrastructure and the new one which is built on top of the new
+    // KSecretsService infrastructure. It's value can be changed via the 
+    // the Wallet configuration module in System Settings
+    bool m_useKSecretsService;
+    WalletPlugin *m_plugin;
+    KConfigGroup m_cgroup;
+    WalletPluginLoader *m_pluginLoader;
+};
+
+
+K_GLOBAL_STATIC(KWalletDLauncher, walletLauncher)
+
+
 static const char s_kwalletdServiceName[] = "org.kde.kwalletd";
 
 
-class WalletDefaultPlugin::Private
+class WalletDefaultPluginPrivate
 {
 public:
-    Private() :
+    WalletDefaultPluginPrivate( WalletDefaultPlugin* walletPlugin ) :
+        m_walletPlugin( walletPlugin ),
         m_cgroup(KSharedConfig::openConfig("kwalletrc", KConfig::NoGlobals)->group("Wallet"))
     {
-        m_wallet = new org::kde::KWallet(QString::fromLatin1(s_kwalletdServiceName), "/modules/kwalletd", QDBusConnection::sessionBus());
+        m_walletInterface = new org::kde::KWallet(QString::fromLatin1(s_kwalletdServiceName), "/modules/kwalletd", QDBusConnection::sessionBus());
     }
+    void walletServiceUnregistered();
+
     org::kde::KWallet &getInterface();
 
-    org::kde::KWallet *m_wallet;
+    WalletDefaultPlugin *m_walletPlugin;
+    org::kde::KWallet *m_walletInterface;
     KConfigGroup m_cgroup;
     int m_handle;
     int m_transactionId;
@@ -64,9 +90,9 @@ public:
     QPointer<QEventLoop> m_loop;
 };
 
-org::kde::KWallet &WalletDefaultPlugin::Private::getInterface()
+org::kde::KWallet &WalletDefaultPluginPrivate::getInterface()
 {
-    Q_ASSERT(m_wallet != 0);
+    Q_ASSERT(m_walletInterface != 0);
 
     // check if kwalletd is already running
     if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1(s_kwalletdServiceName)))
@@ -93,7 +119,7 @@ org::kde::KWallet &WalletDefaultPlugin::Private::getInterface()
         }
     }
 
-    return *m_wallet;
+    return *m_walletInterface;
 }
 
 
@@ -123,7 +149,7 @@ static QString appid()
 
 
 WalletDefaultPlugin::WalletDefaultPlugin() :
-    d( new Private() )
+    d( new WalletDefaultPluginPrivate(this) )
 {
     QDBusServiceWatcher *watcher = new QDBusServiceWatcher(QString::fromLatin1(s_kwalletdServiceName), QDBusConnection::sessionBus(),
                                                         QDBusServiceWatcher::WatchForUnregistration, this);
@@ -149,7 +175,7 @@ WalletDefaultPlugin::~WalletDefaultPlugin()
 {
     if (d->m_handle != -1) {
         if (!walletLauncher.isDestroyed()) {
-            walletLauncher->getInterface().close(d->handle, false, appid());
+            d->getInterface().close(d->m_handle, false, appid());
         } else {
             kDebug(285) << "Problem with static destruction sequence."
                         "Destroy any static Wallet before the event-loop exits.";
@@ -175,7 +201,6 @@ void WalletDefaultPlugin::slotFolderUpdated(const QString& wallet, const QString
         emit folderUpdated(folder);
     }
 }
-
 
 void WalletDefaultPlugin::slotFolderListUpdated(const QString& wallet) {
     if (d->m_name == wallet) {
@@ -267,34 +292,19 @@ int WalletDefaultPlugin::deleteWallet(const QString& name) {
         return r;
 }
 
-class WalletFactory : protected Wallet
-{
-    WalletFactory(int handle, const QString& name) :
-        Wallet( handle, name ) {
-    }
-
-public:
-    static Wallet* createWallet( int handle, const QString& name ) {
-        return new WalletFactory( handle, name );
-    }
-};
-
-
-Wallet *WalletDefaultPlugin::openWallet(const QString& name, WId w, OpenType ot) {
+bool WalletDefaultPlugin::openWallet(const QString& name, WId w, OpenType ot) {
     if( w == 0 )
         kDebug(285) << "Pass a valid window to KWalletDefaultPlugin::WalletDefaultPlugin::openWallet().";
-
-    Wallet *wallet = WalletFactory::createWallet( d );
 
     // connect the daemon's opened signal to the slot filtering the
     // signals we need
     connect(&d->getInterface(), SIGNAL(walletAsyncOpened(int,int)),
-            wallet, SLOT(walletAsyncOpened(int,int)));
+            this, SLOT(walletAsyncOpened(int,int)));
 
     // Use an eventloop for synchronous calls
     QEventLoop loop;
     if (ot == Synchronous || ot == Path) {
-        connect(wallet, SIGNAL(walletOpened(bool)), &loop, SLOT(quit()));
+        connect(this, SIGNAL(walletOpened(bool)), &loop, SLOT(quit()));
     }
 
     // Make sure the password prompt window will be visible and activated
@@ -307,40 +317,35 @@ Wallet *WalletDefaultPlugin::openWallet(const QString& name, WId w, OpenType ot)
     } else if (ot == Path) {
         r = d->getInterface().openPathAsync(name, (qlonglong)w, appid(), true);
     } else {
-        delete wallet;
-        return 0;
+        return false;
     }
     // error communicating with the daemon (maybe not running)
     if (!r.isValid()) {
         kDebug(285) << "Invalid DBus reply: " << r.error();
-        delete wallet;
-        return 0;
+        return false;
     }
-    d->transactionId = r.value();
+    d->m_transactionId = r.value();
 
     if (ot == Synchronous || ot == Path) {
         // check for an immediate error
-        if (d->transactionId < 0) {
-            delete wallet;
-            wallet = 0;
+        if (d->m_transactionId < 0) {
+            return false;
         } else {
             // wait for the daemon's reply
             // store a pointer to the event loop so it can be quit in error case
-            d->loop = &loop;
+            d->m_loop = &loop;
             loop.exec();
             if (d->m_handle < 0) {
-                delete wallet;
-                return 0;
+                return false;
             }
         }
     } else if (ot == Asynchronous) {
-        if (d->transactionId < 0) {
-            QTimer::singleShot(0, wallet, SLOT(emitWalletAsyncOpenError()));
-            // client code is responsible for deleting the wallet
+        if (d->m_transactionId < 0) {
+            QTimer::singleShot(0, this, SLOT(emitWalletAsyncOpenError()));
         }
     }
 
-    return wallet;
+    return true;
 }
 
 bool WalletDefaultPlugin::disconnectApplication(const QString& wallet, const QString& app) {
@@ -374,6 +379,7 @@ int WalletDefaultPlugin::sync() {
     }
 
     d->getInterface().sync(d->m_handle, appid());
+    return 0;
 }
 
 
@@ -419,17 +425,6 @@ void WalletDefaultPlugin::requestChangePassword(WId w) {
 
     d->getInterface().changePassword(d->m_name, (qlonglong)w, appid());
 }
-
-
-void WalletDefaultPlugin::slotWalletClosed(int handle) {
-    if (d->m_handle == handle) {
-        d->m_handle = -1;
-        d->m_folder.clear();
-        d->m_name.clear();
-        emit walletClosed();
-    }
-}
-
 
 QStringList WalletDefaultPlugin::folderList() {
     if (d->m_handle == -1) {
@@ -495,6 +490,7 @@ bool WalletDefaultPlugin::createFolder(const QString& f) {
         else
             return r;
     }
+    return false;
 }
 
 
@@ -517,11 +513,6 @@ bool WalletDefaultPlugin::setFolder(const QString& f) {
     }
 
     return rc;
-}
-
-QString WalletDefaultPlugin::walletName() const
-{
-    return d->m_name;
 }
 
 bool WalletDefaultPlugin::removeFolder(const QString& f) {
@@ -798,42 +789,20 @@ WalletDefaultPlugin::EntryType WalletDefaultPlugin::entryType(const QString& key
 }
 
 
-void WalletDefaultPlugin::WalletPrivate::walletServiceUnregistered()
+void WalletDefaultPluginPrivate::walletServiceUnregistered()
 {
     if (m_loop) {
-        loop->quit();
+        m_loop->quit();
     }
 
     if (m_handle >= 0) {
-        m_q->slotWalletClosed(handle);
-    }
-}
-
-void WalletDefaultPlugin::slotFolderUpdated(const QString& wallet, const QString& folder) {
-    if (d->m_name == wallet) {
-        emit folderUpdated(folder);
-    }
-}
-
-
-void WalletDefaultPlugin::slotFolderListUpdated(const QString& wallet) {
-    if (d->m_name == wallet) {
-        emit folderListUpdated();
-    }
-}
-
-
-void WalletDefaultPlugin::slotApplicationDisconnected(const QString& wallet, const QString& application) {
-    if (d->m_handle >= 0
-        && d->m_name == wallet
-        && application == appid()) {
-        slotWalletClosed(d->m_handle);
+        m_walletPlugin->slotWalletClosed(m_handle);
     }
 }
 
 void WalletDefaultPlugin::walletAsyncOpened(int tId, int handle) {
     // ignore responses to calls other than ours
-    if (d->transactionId != tId || d->m_handle != -1) {
+    if (d->m_transactionId != tId || d->m_handle != -1) {
         return;
     }
 
@@ -854,8 +823,21 @@ void WalletDefaultPlugin::emitWalletOpened() {
 
 bool WalletDefaultPlugin::folderDoesNotExist(const QString& wallet, const QString& folder)
 {
-    return PLUGIN()->m_folderDoesNotExist( wallet, folder );
+    bool result = false;
     QDBusReply<bool> r = d->getInterface().folderDoesNotExist(wallet, folder);
+    if (!r.isValid())
+    {
+        kDebug(285) << "Invalid DBus reply: " << r.error();
+    }
+    else
+        result = r;
+    return result;
+}
+
+
+bool WalletDefaultPlugin::keyDoesNotExist(const QString& wallet, const QString& folder, const QString& key)
+{
+    QDBusReply<bool> r = d->getInterface().keyDoesNotExist(wallet, folder, key);
     if (!r.isValid())
     {
         kDebug(285) << "Invalid DBus reply: " << r.error();
@@ -865,57 +847,26 @@ bool WalletDefaultPlugin::folderDoesNotExist(const QString& wallet, const QStrin
         return r;
 }
 
-
-bool WalletDefaultPlugin::keyDoesNotExist(const QString& wallet, const QString& folder, const QString& key)
-{
-    return PLUGIN()->keyDoesNotExist( wallet, folder, key );
-#ifdef HAVE_KSECRETSSERVICE
-    if (walletLauncher->m_useKSecretsService) {
-        kDebug(285) << "WARNING: changing semantics of keyDoesNotExist with KSS: will prompt for the password";
-        Wallet *w = openWallet( wallet, 0, Synchronous );
-        if ( w ) {
-            return !w->hasEntry(key);
-        }
-        return false;
-    }
-    else {
-#endif
-        QDBusReply<bool> r = d->getInterface().keyDoesNotExist(wallet, folder, key);
-        if (!r.isValid())
-        {
-            kDebug(285) << "Invalid DBus reply: " << r.error();
-            return false;
-        }
-        else
-            return r;
-#ifdef HAVE_KSECRETSSERVICE
-    }
-#endif
-}
-
-void WalletDefaultPlugin::virtual_hook(int, void*) {
-    //BASE::virtual_hook( id, data );
-}
-
-
 KWalletDLauncher::KWalletDLauncher()
-    : m_plugin(0)
+    : m_plugin(0),
     m_cgroup(KSharedConfig::openConfig("kwalletrc", KConfig::NoGlobals)->group("Wallet"))
 {
     // TODO: plugin loading should occur here
     m_useKSecretsService = m_cgroup.readEntry("UseKSecretsService", false);
     if (m_useKSecretsService) {
-         m_plugin = m_pluginLoader.loadKSecrets();
+         m_plugin = m_pluginLoader->loadKSecrets();
     }
     else {
-        m_plugin = m_pluginLoader.loadKWallet();
+        m_plugin = m_pluginLoader->loadKWallet();
     }
 }
 
 KWalletDLauncher::~KWalletDLauncher()
 {
-    delete m_wallet;
+    delete m_plugin;
 }
 
 
 } // namespace
+
+#include "kwalletdefaultplugin.moc"

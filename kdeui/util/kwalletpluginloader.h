@@ -25,6 +25,8 @@
 
 namespace KWallet {
 
+class WalletPlugin;
+
 class WalletPluginLoader : public QObject
 {
     Q_OBJECT
@@ -36,8 +38,8 @@ class WalletPluginLoader : public QObject
 public:
     virtual ~WalletPluginLoader();
     static WalletPluginLoader* instance();
-    void loadKWallet();
-    void loadKSecrets();
+    WalletPlugin* loadKWallet();
+    WalletPlugin* loadKSecrets();
 
 private:
     class Private;

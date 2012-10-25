@@ -19,21 +19,47 @@
  */
 
 #include "kwalletpluginloader.h"
+#include "kwalletplugin.h"
 
 namespace KWallet {
 
-class Private {
+class WalletPluginLoader::Private {
+public:
+    Private( WalletPluginLoader* loader ) : m_loader( loader ) {}
+
+    WalletPluginLoader *m_loader;
 };
 
-KWallet::WalletPluginLoader::WalletPluginLoader(): QObject() :
-    d( new Private() )
+WalletPluginLoader::WalletPluginLoader(): 
+    QObject(),
+    d( new Private( this ) )
 {
 }
 
-KWallet::WalletPluginLoader::~WalletPluginLoader()
+WalletPluginLoader::~WalletPluginLoader()
 {
     delete d;
 }
+
+WalletPlugin* WalletPluginLoader::loadKWallet()
+{
+    return 0;
+}
+
+WalletPlugin* WalletPluginLoader::loadKSecrets()
+{
+    return 0;
+}
+
+WalletPluginLoader* WalletPluginLoader::instance()
+{
+    static WalletPluginLoader *instance =0;
+    if ( 0 == instance ) {
+        instance = new WalletPluginLoader();
+    }
+    return instance;
+}
+
 
 
 } // namespace 

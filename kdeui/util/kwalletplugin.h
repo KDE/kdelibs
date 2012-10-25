@@ -36,13 +36,15 @@ class Wallet;
  *
  * This is the interface a KWallet plugin MUST provide
  * It's defined basically from the original Wallet class
- *
+ * 
  * @author Valentin Rusu
  */
 class WalletPlugin
 {
     public:
         enum EntryType { Unknown=0, Password, Stream, Map, Unused=0xffff };
+
+        virtual ~WalletPlugin() {}
 
         /**
          *  List all the wallets available.
@@ -109,10 +111,9 @@ class WalletPlugin
          *  @param w The window id to associate any dialogs with. You can pass
          *           0 if you don't have a window the password dialog should
          *           associate with.
-         *  @return Returns a pointer to the wallet if successful,
-         *          or a null pointer on error or if rejected.
+         *  @return true upon success
          */
-        virtual Wallet* openWallet(const QString& name, WId w, OpenType ot = Synchronous) =0;
+        virtual bool openWallet(const QString& name, WId w, OpenType ot = Synchronous) =0;
 
         /**
          *  List the applications that are using the wallet @p wallet.

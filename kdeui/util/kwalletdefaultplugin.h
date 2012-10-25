@@ -25,9 +25,11 @@
 
 namespace KWallet {
 
+class WalletDefaultPluginPrivate;
 
 class WalletDefaultPlugin : public QObject, public WalletPlugin
 {
+    Q_OBJECT
 public:
     WalletDefaultPlugin();
     virtual ~WalletDefaultPlugin();
@@ -39,11 +41,12 @@ public:
     virtual int closeWallet(const QString& name, bool force) ;
     virtual int deleteWallet(const QString& name) ;
     virtual bool disconnectApplication(const QString& wallet, const QString& app) ;
-    virtual Wallet* openWallet(const QString& name, WId w, OpenType ot = Synchronous) ;
+    virtual bool openWallet(const QString& name, WId w, OpenType ot = Synchronous) ;
     virtual QStringList users(const QString& wallet) ;
     virtual void changePassword(const QString& name, WId w) ;
     virtual int sync() ;
     virtual int lockWallet() ;
+    virtual const QString& walletName() const;
     virtual bool isOpen() const ;
     virtual void requestChangePassword(WId w) ;
     virtual QStringList folderList() ;
@@ -72,34 +75,34 @@ public:
                     const QString& key) ;
     // END WalletPlugin abstract methods implementation
 
-    Q_SIGNALS:
-        /**
-         *  Emitted when this wallet is closed.
-         */
-        void walletClosed();
+Q_SIGNALS:
+    /**
+        *  Emitted when this wallet is closed.
+        */
+    void walletClosed();
 
-        /**
-         *  Emitted when a folder in this wallet is updated.
-         *  @param folder The folder that was updated.
-         */
-        void folderUpdated(const QString& folder);
+    /**
+        *  Emitted when a folder in this wallet is updated.
+        *  @param folder The folder that was updated.
+        */
+    void folderUpdated(const QString& folder);
 
-        /**
-         *  Emitted when the folder list is changed in this wallet.
-         */
-        void folderListUpdated();
+    /**
+        *  Emitted when the folder list is changed in this wallet.
+        */
+    void folderListUpdated();
 
-        /**
-         *  Emitted when a folder in this wallet is removed.
-         *  @param folder The folder that was removed.
-         */
-        void folderRemoved(const QString& folder);
+    /**
+        *  Emitted when a folder in this wallet is removed.
+        *  @param folder The folder that was removed.
+        */
+    void folderRemoved(const QString& folder);
 
-        /**
-         *  Emitted when a wallet is opened in asynchronous mode.
-         *  @param success True if the wallet was opened successfully.
-         */
-        void walletOpened(bool success);
+    /**
+        *  Emitted when a wallet is opened in asynchronous mode.
+        *  @param success True if the wallet was opened successfully.
+        */
+    void walletOpened(bool success);
 
 private Q_SLOTS:
     /**
@@ -135,8 +138,11 @@ private Q_SLOTS:
     void walletAsyncOpened(int tId, int handle);
 
 private:
-    class Private;
-    Private *d;
+    void emitWalletAsyncOpenError();
+    void emitWalletOpened();
+    
+    friend class WalletDefaultPluginPrivate;
+    WalletDefaultPluginPrivate *d;
 };
 
 } // namespace
