@@ -657,8 +657,7 @@ void Device::checkCache(const QString &key) const
     if (reply.isValid()) {
         m_cache.insert(key, reply);
     } else {
-        //qDebug() << "got invalid reply for cache:" << key;
-        //m_cache.insert(key, QVariant());
+        qWarning() << "got invalid reply for cache:" << key;
     }
 }
 
