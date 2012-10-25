@@ -988,7 +988,7 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      * @return resultant date/time
      * @see addSecs(), addMonths(), addYears(), daysTo()
      */
-    KDateTime addDays(int days) const;
+    KDateTime addDays(qint64 days) const;
 
     /**
      * Returns a date/time @p months months later than the stored date/time.
@@ -1041,11 +1041,13 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      *
      * @param other other date/time
      * @return number of seconds difference
-     * @see secsTo_long(), addSecs(), daysTo()
+     * @see addSecs(), daysTo()
      */
-    int secsTo(const KDateTime &other) const;
+    qint64 secsTo(const KDateTime &other) const;
 
     /**
+     * @deprecated Since 5.0, use @c secsTo instead
+     *
      * Returns the number of seconds from this date/time to the @p other date/time.
      *
      * Before performing the comparison, the two date/times are converted to UTC
@@ -1070,7 +1072,10 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      * @return number of seconds difference
      * @see secsTo(), addSecs(), daysTo()
      */
-    qint64 secsTo_long(const KDateTime &other) const;
+    KDECORE_DEPRECATED inline qint64 secsTo_long(const KDateTime &other) const
+    {
+        return secsTo(other);
+    }
 
     /**
      * Calculates the number of days from this date/time to the @p other date/time.
@@ -1095,7 +1100,7 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      * @return number of days difference
      * @see secsTo(), addDays()
      */
-    int daysTo(const KDateTime &other) const;
+    qint64 daysTo(const KDateTime &other) const;
 
     /**
      * Returns the current date and time, as reported by the system clock,
@@ -1433,9 +1438,9 @@ class KDECORE_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      *
      * @return @c false
      * @see isValid()
-     * @deprecated since 5.0, we now supports all valid dates.
+     * @deprecated Since 5.0, we now supports all valid dates.
      */
-    inline bool outOfRange() const
+    KDECORE_DEPRECATED inline bool outOfRange() const
     {
         return false;
     }

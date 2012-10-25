@@ -994,12 +994,10 @@ uint KDateTime::toTime_t() const
 void KDateTime::setTime_t(qint64 seconds)
 {
     d->setSpec(UTC);
-    int days = static_cast<int>(seconds / 86400);
-    int secs = static_cast<int>(seconds % 86400);
     QDateTime dt;
-    dt.setTimeSpec(Qt::UTC);   // prevent QDateTime::setTime_t() converting to local time
-    dt.setTime_t(0);
-    d->setDt(dt.addDays(days).addSecs(secs));
+    dt.setTimeSpec(Qt::UTC);   // prevent QDateTime::setMSecsSinceEpoch() converting to local time
+    dt.setMSecsSinceEpoch(seconds / 1000);
+    d->setDt(dt);
 }
 
 void KDateTime::setDateOnly(bool dateOnly)
@@ -1061,60 +1059,26 @@ KDateTime KDateTime::addMSecs(qint64 msecs) const
     if (d->dateOnly())
     {
         KDateTime result(*this);
-        result.d->setDate(d->date().addDays(static_cast<int>(msecs / 86400000)));
-        return result;
-    }
-    qint64 secs = msecs / 1000;
-    int oldms = d->dt().time().msec();
-    int ms = oldms  +  static_cast<int>(msecs % 1000);
-    if (msecs >= 0)
-    {
-        if (ms >= 1000)
-        {
-            ++secs;
-            ms -= 1000;
-        }
-    }
-    else
-    {
-        if (ms < 0)
-        {
-            --secs;
-            ms += 1000;
-        }
-    }
-    KDateTime result = addSecs(secs);
-    QTime t = result.time();
-    result.d->setTime(QTime(t.hour(), t.minute(), t.second(), ms));
-    return result;
-}
-
-KDateTime KDateTime::addSecs(qint64 secs) const
-{
-    if (!secs)
-        return *this;  // retain cache - don't create another instance
-    if (!isValid())
-        return KDateTime();
-    int days    = static_cast<int>(secs / 86400);
-    int seconds = static_cast<int>(secs % 86400);
-    if (d->dateOnly())
-    {
-        KDateTime result(*this);
-        result.d->setDate(d->date().addDays(days));
+        result.d->setDate(d->date().addDays(msecs / 86400000));
         return result;
     }
     if (d->specType == ClockTime)
     {
         QDateTime qdt = d->dt();
         qdt.setTimeSpec(Qt::UTC);    // set time as UTC to avoid daylight savings adjustments in addSecs()
-        qdt = qdt.addDays(days).addSecs(seconds);
+        qdt = qdt.addMSecs(msecs);
         qdt.setTimeSpec(Qt::LocalTime);
         return KDateTime(qdt, Spec(ClockTime));
     }
-    return KDateTime(d->toUtc().addDays(days).addSecs(seconds), d->spec());
+    return KDateTime(d->toUtc().addMSecs(msecs), d->spec());
 }
 
-KDateTime KDateTime::addDays(int days) const
+KDateTime KDateTime::addSecs(qint64 secs) const
+{
+    return addMSecs(secs * 1000);
+}
+
+KDateTime KDateTime::addDays(qint64 days) const
 {
     if (!days)
         return *this;  // retain cache - don't create another instance
@@ -1141,22 +1105,17 @@ KDateTime KDateTime::addYears(int years) const
     return result;
 }
 
-int KDateTime::secsTo(const KDateTime &t2) const
-{
-    return static_cast<int>(secsTo_long(t2));
-}
-
-qint64 KDateTime::secsTo_long(const KDateTime &t2) const
+qint64 KDateTime::secsTo(const KDateTime &t2) const
 {
     if (!isValid() || !t2.isValid())
         return 0;
     if (d->dateOnly())
     {
         QDate dat = t2.d->dateOnly() ? t2.d->date() : t2.toTimeSpec(d->spec()).d->date();
-        return static_cast<qint64>(d->date().daysTo(dat)) * 86400;
+        return d->date().daysTo(dat) * 86400;
     }
     if (t2.d->dateOnly())
-        return static_cast<qint64>(toTimeSpec(t2.d->spec()).d->date().daysTo(t2.d->date())) * 86400;
+        return toTimeSpec(t2.d->spec()).d->date().daysTo(t2.d->date()) * 86400;
 
     QDateTime dt1, dt2;
     if (d->specType == ClockTime  &&  t2.d->specType == ClockTime)
@@ -1166,18 +1125,16 @@ qint64 KDateTime::secsTo_long(const KDateTime &t2) const
         dt1.setTimeSpec(Qt::UTC);
         dt2 = t2.d->dt();
         dt2.setTimeSpec(Qt::UTC);
-        return dt1.secsTo(dt2);
     }
     else
     {
         dt1 = d->toUtc();
         dt2 = t2.d->toUtc();
     }
-    return static_cast<qint64>(dt1.date().daysTo(dt2.date())) * 86400
-         + dt1.time().secsTo(dt2.time());
+    return dt1.secsTo(dt2);
 }
 
-int KDateTime::daysTo(const KDateTime &t2) const
+qint64 KDateTime::daysTo(const KDateTime &t2) const
 {
     if (!isValid() || !t2.isValid())
         return 0;
