@@ -22,8 +22,24 @@
 #include <QVBoxLayout>
 #include <QFrame>
 #include <QCheckBox>
+#include <QWhatsThis>
 
 #include <kmessagewidget.h>
+
+class Receiver : public QObject
+{
+    Q_OBJECT
+public:
+    Receiver(QObject* parent) : QObject(parent)
+    {}
+    virtual ~Receiver() {}
+
+public Q_SLOTS:
+    void showWhatsThis(const QString& text)
+    {
+        QWhatsThis::showText(QCursor::pos(), text);
+    }
+};
 
 int main(int argc, char* argv[])
 {
@@ -35,7 +51,7 @@ int main(int argc, char* argv[])
     KMessageWidget* mw = new KMessageWidget(mainWindow);
     mw->setWordWrap(true);
     mw->setText(
-        "Test KMessageWidget is properly sized when word-wrap is enabled by default."
+        "Test KMessageWidget is properly sized when <a href=\"this is the contents\">word-wrap</a> is enabled by default."
     );
     // A frame to materialize the end of the KMessageWidget
     QFrame* frame = new QFrame(mainWindow);
@@ -58,8 +74,14 @@ int main(int argc, char* argv[])
     mainWindow->resize(400, 300);
     mainWindow->show();
 
+    // demonstrate linkActivated
+    Receiver* info = new Receiver(mw);
+    QObject::connect(mw, SIGNAL(linkActivated(QString)), info, SLOT(showWhatsThis(QString)));
+
     return app.exec();
     delete mainWindow;
 }
+
+#include "kmessagewidgettest.moc"
 
 // kate: replace-tabs on;
