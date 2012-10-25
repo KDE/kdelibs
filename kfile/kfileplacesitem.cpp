@@ -28,6 +28,7 @@
 #include <klocale.h>
 #include <solid/block.h>
 #include <solid/opticaldisc.h>
+#include <solid/opticaldrive.h>
 #include <solid/storageaccess.h>
 #include <solid/storagevolume.h>
 #include <solid/storagedrive.h>
@@ -60,10 +61,10 @@ KFilePlacesItem::KFilePlacesItem(KBookmarkManager *manager,
         if (m_access) {
             connect(m_access, SIGNAL(accessibilityChanged(bool,QString)),
                     this, SLOT(onAccessibilityChanged(bool)));
-	    onAccessibilityChanged(m_access->isAccessible());
+        onAccessibilityChanged(m_access->isAccessible());
         }
         m_iconPath = m_device.icon();
-	m_emblems = m_device.emblems();
+    m_emblems = m_device.emblems();
     }
 }
 
@@ -207,7 +208,7 @@ QVariant KFilePlacesItem::deviceData(int role) const
             }
 
         case KFilePlacesModel::CapacityBarRecommendedRole:
-	    return m_isAccessible && !m_isCdrom;
+        return m_isAccessible && !m_isCdrom;
 
         default:
             return QVariant();
@@ -289,10 +290,7 @@ QString KFilePlacesItem::generateNewId()
 void KFilePlacesItem::onAccessibilityChanged(bool isAccessible)
 {
     m_isAccessible = isAccessible;
-    m_isCdrom = ((m_device.is<Solid::StorageDrive>()
-                        && m_device.as<Solid::StorageDrive>()->driveType() == Solid::StorageDrive::CdromDrive)
-                || (m_device.parent().is<Solid::StorageDrive>()
-                        && m_device.parent().as<Solid::StorageDrive>()->driveType() == Solid::StorageDrive::CdromDrive));
+    m_isCdrom = m_device.is<Solid::OpticalDrive>() || m_device.parent().is<Solid::OpticalDrive>();
     m_emblems = m_device.emblems();
 
     emit itemChanged(id());
