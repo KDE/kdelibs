@@ -418,7 +418,7 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 generate_export_header(kdeui)
 
-target_link_libraries(kdeui itemmodels sonnetcore kauth kdeguiaddons kwidgets kwidgetsaddons ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
+target_link_libraries(kdeui LINK_PUBLIC itemmodels sonnetcore kauth kdeguiaddons kwidgets kwidgetsaddons ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
                             ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} kcoreaddons ${kwindowsystem_LIBRARY} ${kdeqt5staging_LIBRARY} kconfiggui)
 
 if(NOT WINCE)

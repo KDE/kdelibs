@@ -642,7 +642,7 @@ _kde4_set_lib_variables(SOLID         solid         "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(THREADWEAVER  threadweaver  "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(KDE4SUPPORT   kde4support   "${KDE4_TARGET_PREFIX}")
 
-set(KDE4_KDEUI_LIBRARY itemmodels sonnetcore kdeguiaddons kwidgets kwindowsystem karchive ${KDE4_KDEUI_UNPORTED_LIBRARY} )
+set(KDE4_KDEUI_LIBRARY ${KDE4_KDEUI_UNPORTED_LIBRARY} )
 set(KDE4_KDEUI_LIBS    ${KDE4_KDEUI_LIBRARY} )
 set(KDE4_KDECORE_LIBS  ${INQT5_LIBRARY} ${KDE4_KDECORE_UNPORTED_LIBRARY} )
 
