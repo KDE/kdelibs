@@ -31,6 +31,7 @@ private Q_SLOTS:
     void ktimezones();
     void refcount();
     void utc();
+    void invalidLocal();
     void local();
     void zone();
     void zoneinfoDir();

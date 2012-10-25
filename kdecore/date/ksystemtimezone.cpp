@@ -168,6 +168,19 @@ KTzfileTimeZoneSource *KSystemTimeZonesPrivate::tzfileSource()
     return m_tzfileSource;
 }
 
+// for the benefit of KTimeZoneTest
+KDECORE_EXPORT void k_system_time_zone_private_reset_config()
+{
+    // Remove any old zones from the collection
+    const KTimeZones::ZoneMap oldZones = KSystemTimeZonesPrivate::instance()->zones();
+    for (KTimeZones::ZoneMap::ConstIterator it = oldZones.constBegin();  it != oldZones.constEnd();  ++it)
+    {
+        KSystemTimeZonesPrivate::instance()->remove(it.value());
+    }
+
+    // Read new config file
+    KSystemTimeZonesPrivate::readConfig(false);
+}
 
 #ifndef NDEBUG
 Q_GLOBAL_STATIC(KTimeZone, simulatedLocalZone)
@@ -326,8 +339,6 @@ kDebug(161)<<"instance(): ... initialised";
             m_instance->readZoneTab(false);
 #endif
         setLocalZone();
-        if (!m_localZone.isValid())
-            m_localZone = KTimeZone::utc();   // ensure a time zone is always returned
 
         qAddPostRoutine(KSystemTimeZonesPrivate::cleanup);
     }
@@ -337,11 +348,11 @@ kDebug(161)<<"instance(): ... initialised";
 void KSystemTimeZonesPrivate::readConfig(bool init)
 {
     KConfig config(QLatin1String("ktimezonedrc"));
-    if (!init)
+    if (!init) {
         config.reparseConfiguration();
+    }
     KConfigGroup group(&config, "TimeZones");
-    if (!group.exists())
-    {
+    if (!group.exists()) {
         kError(161) << "No time zone information obtained from ktimezoned";
         m_ktimezonedError = true;
     }
@@ -350,25 +361,41 @@ void KSystemTimeZonesPrivate::readConfig(bool init)
     m_localZoneName = group.readEntry("LocalZone");
     if (m_zoneinfoDir.length() > 1 && m_zoneinfoDir.endsWith(QLatin1Char('/')))
         m_zoneinfoDir.truncate(m_zoneinfoDir.length() - 1);  // strip trailing '/'
-    if (!init)
+    if (!init) {
+        updateZonetab();
         setLocalZone();
+    }
     kDebug(161) << "readConfig(): local zone=" << m_localZoneName;
 }
 
 void KSystemTimeZonesPrivate::setLocalZone()
 {
+    // Check whether the local zone name is set at all
+    if (m_localZoneName.isEmpty()) {
+        m_localZone = KTimeZone::utc();
+        return;
+    }
+
+    // Check if the zone name is a known zone
+    if (m_instance) {
+        m_localZone = m_instance->zone(m_localZoneName);
+        if (m_localZone.isValid())
+            return;
+    }
+
     QString filename;
     if (m_localZoneName.startsWith(QLatin1Char('/'))) {
         // The time zone is specified by a file outside the zoneinfo directory
         filename = m_localZoneName;
     } else {
-        // The zone name is either a known zone, or it's a relative file name
-        // in zoneinfo directory which isn't in zone.tab.
-        m_localZone = m_instance->zone(m_localZoneName);
-        if (m_localZone.isValid())
-            return;
-        // It's a relative file name
+        // The zone name is specified by a relative file name in zoneinfo directory.
         filename = m_zoneinfoDir + QLatin1Char('/') + m_localZoneName;
+    }
+
+    // Verify that the time zone file actually exists
+    if (!QFile::exists(filename)) {
+        m_localZone = KTimeZone::utc();
+        return;
     }
 
     // Parse the specified time zone data file
@@ -376,12 +403,11 @@ void KSystemTimeZonesPrivate::setLocalZone()
     if (zonename.startsWith(m_zoneinfoDir + QLatin1Char('/')))
         zonename = zonename.mid(m_zoneinfoDir.length() + 1);
     m_localZone = KTzfileTimeZone(KSystemTimeZonesPrivate::tzfileSource(), zonename);
-    if (m_localZone.isValid() && m_instance)
-    {
-        // Add the new time zone to the list
+
+    // Add the new time zone to the list of known time zones
+    if (m_instance) {
         const KTimeZone oldzone = m_instance->zone(zonename);
-        if (!oldzone.isValid() || oldzone.type() != "KTzfileTimeZone")
-        {
+        if (!oldzone.isValid() || oldzone.type() != "KTzfileTimeZone") {
             m_instance->remove(oldzone);
             m_instance->add(m_localZone);
         }

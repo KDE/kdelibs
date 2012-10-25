@@ -115,8 +115,79 @@ void KTimeZonesTest::utc()
 // KSystemTimeZones tests
 /////////////////////////
 
+// Defined in ksystemtimezone.cpp for our benefit
+KDECORE_EXPORT void k_system_time_zone_private_reset_config();
+
+void KTimeZonesTest::invalidLocal()
+{
+    KTimeZone local;
+    KConfig config("ktimezonedrc");
+    KConfigGroup group(&config, "TimeZones");
+
+    // Check that the originally set local local time zone is valid
+    local = KSystemTimeZones::local();
+    QVERIFY(local.isValid());
+    QCOMPARE(local.name(), QString::fromLatin1("Europe/Paris"));
+    QCOMPARE(local.type(), QByteArray("KTzfileTimeZone"));
+
+    // Check invalid LocalZone
+    group.writeEntry("LocalZone", QString::fromLatin1("Invalid/Zone"));
+    config.sync();
+    k_system_time_zone_private_reset_config();
+
+    local = KSystemTimeZones::local();
+    QVERIFY(local.isValid());
+    QCOMPARE(local.name(), QString::fromLatin1("UTC"));
+    QCOMPARE(local, KTimeZone::utc());
+
+    // Check empty LocalZone
+    group.deleteEntry("LocalZone");
+    config.sync();
+    k_system_time_zone_private_reset_config();
+
+    local = KSystemTimeZones::local();
+    QVERIFY(local.isValid());
+    QCOMPARE(local.name(), QString::fromLatin1("UTC"));
+    QCOMPARE(local, KTimeZone::utc());
+
+    // Check invalid ZoneinfoDir
+    group.writeEntry("ZoneinfoDir", QString::fromLatin1("/invalid/zoneinfo/dir"));
+    group.writeEntry("Zonetab", QString("/invalid/zoneinfo/dir" + QString::fromLatin1("/zone.tab")));
+    group.writeEntry("LocalZone", QString::fromLatin1("Europe/Paris"));
+    config.sync();
+    k_system_time_zone_private_reset_config();
+
+    local = KSystemTimeZones::local();
+    QVERIFY(local.isValid());
+    QCOMPARE(local.name(), QString::fromLatin1("UTC"));
+    QCOMPARE(local, KTimeZone::utc());
+
+    // Check empty ZoneinfoDir
+    group.deleteEntry("ZoneinfoDir");
+    group.deleteEntry("Zonetab");
+    config.sync();
+    k_system_time_zone_private_reset_config();
+
+    local = KSystemTimeZones::local();
+    QVERIFY(local.isValid());
+    QCOMPARE(local.name(), QString::fromLatin1("UTC"));
+    QCOMPARE(local, KTimeZone::utc());
+
+    // KTimeZonesTest::local() will restore config for us
+}
+
 void KTimeZonesTest::local()
 {
+    // Restore the configuration after ::invalidLocal()
+    KConfig config("ktimezonedrc");
+    KConfigGroup group(&config, "TimeZones");
+    group.writeEntry("ZoneinfoDir", mDataDir);
+    group.writeEntry("Zonetab", QString(mDataDir + QString::fromLatin1("/zone.tab")));
+    group.writeEntry("LocalZone", QString::fromLatin1("Europe/Paris"));
+    config.sync();
+    k_system_time_zone_private_reset_config();
+
+    // Verify that we have a valid local time zone
     KTimeZone local = KSystemTimeZones::local();
     QVERIFY(local.isValid());
     QCOMPARE(local.name(), QString::fromLatin1("Europe/Paris"));
