@@ -53,7 +53,6 @@
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
 
-#include <kurl.h>
 #include <kmimetypetrader.h>
 #include <kprotocolinfofactory_p.h>
 

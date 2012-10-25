@@ -55,7 +55,6 @@
 
 #include <kauthorized.h>
 #include <kmessageboxwrapper.h>
-#include <kurl.h>
 #include <kglobal.h>
 #include <ktoolinvocation.h>
 #include <kdebug.h>

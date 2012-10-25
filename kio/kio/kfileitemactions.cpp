@@ -236,7 +236,7 @@ int KFileItemActions::addServiceActionsTo(QMenu* mainMenu)
 
     // first check the .directory if this is a directory
     if (d->m_props.isDirectory() && isSingleLocal) {
-        QString dotDirectoryFile = KUrl::fromPath(firstItem.localPath()).path(KUrl::AddTrailingSlash).append(".directory");
+        QString dotDirectoryFile = QUrl::fromLocalFile(firstItem.localPath()).path().append("/.directory");
         if (QFile::exists(dotDirectoryFile)) {
             const KDesktopFile desktopFile(dotDirectoryFile);
             const KConfigGroup cfg = desktopFile.desktopGroup();

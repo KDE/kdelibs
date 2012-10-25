@@ -26,6 +26,7 @@
 #include <kprotocolmanager.h>
 
 #include <QFileInfo>
+#include <qurlpathinfo.h>
 
 class KFileItemListPropertiesPrivate : public QSharedData
 {
@@ -87,7 +88,7 @@ void KFileItemListPropertiesPrivate::setItems(const KFileItemList& items)
 
     QFileInfo parentDirInfo;
     foreach (const KFileItem &item, items) {
-        const KUrl url = item.url();
+        const QUrl url = item.url();
         m_isLocal = m_isLocal && url.isLocalFile();
         m_supportsReading  = m_supportsReading  && KProtocolManager::supportsReading(url);
         m_supportsDeleting = m_supportsDeleting && KProtocolManager::supportsDeleting(url);
@@ -97,7 +98,7 @@ void KFileItemListPropertiesPrivate::setItems(const KFileItemList& items)
         // For local files we can do better: check if we have write permission in parent directory
         // TODO: if we knew about the parent KFileItem, we could even do that for remote protocols too
         if (m_isLocal && (m_supportsDeleting || m_supportsMoving)) {
-            const QString directory = url.directory();
+            const QString directory = QUrlPathInfo(url).directory();
             if (parentDirInfo.filePath() != directory) {
                 parentDirInfo.setFile(directory);
             }

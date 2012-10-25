@@ -42,7 +42,6 @@
 
 #include <kauthorized.h>
 #include <kdebug.h>
-#include <kurl.h>
 #include <kio/job.h>
 #include <kprotocolmanager.h>
 #include <kconfig.h>
@@ -60,6 +59,11 @@
 
 #ifdef Q_OS_WIN
 #include <kkernel_win.h>
+#endif
+
+// Porting helpers. Qt 5: remove
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define toDisplayString toString
 #endif
 
 static bool expandTilde(QString&);
@@ -354,9 +358,9 @@ void DirectoryListThread::run()
                     toAppend.append(QLatin1Char('/'));
 
                 if (m_complete_url) {
-                    KUrl url(m_prepend);
-                    url.addPath(toAppend);
-                    addMatch(url.prettyUrl());
+                    QUrlPathInfo info = QUrlPathInfo(QUrl(m_prepend));
+                    info.addPath(toAppend);
+                    addMatch(info.url().toDisplayString());
                 } else {
                     addMatch(m_prepend + toAppend);
                 }
@@ -1196,9 +1200,9 @@ void KUrlCompletionPrivate::_k_slotEntries(KIO::Job*, const KIO::UDSEntryList& e
                     (entry.numberValue(KIO::UDSEntry::UDS_ACCESS) & MODE_EXE)  // true if executable
                ) {
                 if (complete_url) {
-                    KUrl url(prepend);
-                    url.addPath(toAppend);
-                    matchList.append(url.prettyUrl());
+                    QUrlPathInfo info = QUrlPathInfo(QUrl(prepend));
+                    info.addPath(toAppend);
+                    matchList.append(info.url().toDisplayString());
                 } else {
                     matchList.append(prepend + toAppend);
                 }

@@ -37,7 +37,6 @@
 #include <qtemporaryfile.h>
 
 #include <klocalizedstring.h>
-#include <kurl.h>
 #include <kstandarddirs.h>
 
 #include "job.h"

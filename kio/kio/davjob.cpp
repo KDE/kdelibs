@@ -20,16 +20,7 @@
 
 #include "davjob.h"
 
-#include <kurl.h>
-
-#include <QtCore/QObject>
-#include <QtCore/QCharRef>
-#include <QtCore/QMutableStringListIterator>
-#include <QtCore/QPointer>
 #include <QtXml/QDomDocument>
-
-#include <sys/types.h>
-#include <sys/stat.h>
 
 #include <kdebug.h>
 #include <kio/http.h>

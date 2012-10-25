@@ -26,7 +26,7 @@
 #include <windows.h>
 
 // TODO move to a shared lib
-static int runDll(WId windowId, const QString& libraryName, const QByteArray& functionName, 
+static int runDll(WId windowId, const QString& libraryName, const QByteArray& functionName,
             const QString& arguments)
 {
   HMODULE libHandle = LoadLibraryW( (LPCWSTR)libraryName.utf16() );
@@ -35,10 +35,10 @@ static int runDll(WId windowId, const QString& libraryName, const QByteArray& fu
   typedef int (WINAPI *FunctionType)(HWND, HMODULE, LPCWSTR, int);
 #ifdef _WIN32_WCE
   QString functionNamestr = QString(functionName);
-  FunctionType function 
+  FunctionType function
     = (FunctionType)GetProcAddressW( libHandle, functionNamestr.utf16() );
 #else
-  FunctionType function 
+  FunctionType function
     = (FunctionType)GetProcAddress( libHandle, functionName.constData() );
 #endif
   if (!function)
@@ -48,7 +48,7 @@ static int runDll(WId windowId, const QString& libraryName, const QByteArray& fu
   return result;
 }
 
-static int runDll(WId windowId, const QString& libraryName, const QByteArray& functionName, 
+static int runDll(WId windowId, const QString& libraryName, const QByteArray& functionName,
             const QByteArray& arguments)
 {
   HMODULE libHandle = LoadLibraryW( (LPCWSTR)libraryName.utf16() );
@@ -57,10 +57,10 @@ static int runDll(WId windowId, const QString& libraryName, const QByteArray& fu
   typedef int (WINAPI *FunctionType)(HWND, HMODULE, LPCSTR, int);
 #ifdef _WIN32_WCE
   QString functionNamestr = QString(functionName);
-  FunctionType function 
+  FunctionType function
     = (FunctionType)GetProcAddressW( libHandle, functionNamestr.utf16() );
 #else
-  FunctionType function 
+  FunctionType function
     = (FunctionType)GetProcAddress( libHandle, functionName.constData() );
 #endif
   if (!function)
@@ -71,7 +71,7 @@ static int runDll(WId windowId, const QString& libraryName, const QByteArray& fu
 }
 
 // TODO move to a shared lib
-static int runDll(QWidget* parent, const QString& libraryName, const QByteArray& functionName, 
+static int runDll(QWidget* parent, const QString& libraryName, const QByteArray& functionName,
             const QString& arguments)
 {
   return runDll(parent ? parent->winId() : 0, libraryName, functionName, arguments);
@@ -87,13 +87,13 @@ bool KRun::KRunPrivate::displayNativeOpenWithDialog( const QList<QUrl>& lst, QWi
     Q_UNUSED(asn);
 
     QStringList fnames;
-    foreach( const KUrl& url, lst )
+    foreach( const QUrl& url, lst )
     {
       fnames += QDir::toNativeSeparators( url.path() );
     }
     int result = runDll( window,
                          QLatin1String("shell32.dll"),
-                         "OpenAs_RunDLLW", 
+                         "OpenAs_RunDLLW",
                          fnames.join(QLatin1String(" ")) );
     return result == 0;
 }

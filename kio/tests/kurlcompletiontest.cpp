@@ -168,10 +168,11 @@ void KUrlCompletionTest::testLocalURL()
     QVERIFY(comp1all.contains(m_dirURL.toString() + "file1"));
     QVERIFY(comp1all.contains(m_dirURL.toString() + "file_subdir/"));
     QString filehash = m_dirURL.toString() + "file%23a";
+    kDebug() << "Looking for" << filehash;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QVERIFY(comp1all.contains(filehash));
     QString filehashPath = m_completion->replacedPath(filehash); // note that it returns a path!!
     kDebug() << filehashPath;
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QCOMPARE(filehashPath, QString(m_dirURL.toLocalFile() + "file#a"));
 #endif
 
