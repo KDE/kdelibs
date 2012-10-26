@@ -19,6 +19,7 @@
 */
 
 #include "ktoolinvocation.h"
+#include <QDesktopServices>
 #include "klauncher_iface.h"
 #include "kdebug.h"
 #include "kmessage.h"
@@ -298,40 +299,31 @@ void KToolInvocation::invokeHelp( const QString& anchor,
     // launch a browser for URIs not handled by khelpcenter
     // (following KCMultiDialog::slotHelpClicked())
     if (!(url.scheme() == QLatin1String("help") || url.scheme() == QLatin1String("man") || url.scheme() == QLatin1String("info"))) {
-        invokeBrowser(url.toString());
+        //TODO QDesktopServices::openUrl(url);
         return;
     }
 
-    QDBusInterface *iface = new QDBusInterface(QLatin1String("org.kde.khelpcenter"),
-                                               QLatin1String("/KHelpCenter"),
-                                               QLatin1String("org.kde.khelpcenter.khelpcenter"),
-                                               QDBusConnection::sessionBus());
-    if ( !iface->isValid() )
-    {
+    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QLatin1String("org.kde.khelpcenter"))) {
         QString error;
 #ifdef Q_OS_WIN
         // startServiceByDesktopName() does not work yet; KRun:processDesktopExec returned 'KRun: syntax error in command "khelpcenter %u" , service "KHelpCenter" '
-        if (kdeinitExec(QLatin1String("khelpcenter"), QStringList() << url.toString(), &error, 0, startup_id))
+        if (KToolInvocation::kdeinitExec(QLatin1String("khelpcenter"), QStringList() << url.toString(), &error, 0, startup_id))
 #else
-        if (startServiceByDesktopName(QLatin1String("khelpcenter"), url.toString(), &error, 0, 0, startup_id, false))
+        if (KToolInvocation::startServiceByDesktopName(QLatin1String("khelpcenter"), url.toString(), &error, 0, 0, startup_id, false))
 #endif
         {
             KMessage::message(KMessage::Error,
                               i18n("Could not launch the KDE Help Center:\n\n%1", error),
                               i18n("Could not Launch Help Center"));
-            delete iface;
 	    return;
         }
-
-        delete iface;
-        iface = new QDBusInterface(QLatin1String("org.kde.khelpcenter"),
-                                   QLatin1String("/KHelpCenter"),
-                                   QLatin1String("org.kde.khelpcenter.khelpcenter"),
-                                   QDBusConnection::sessionBus());
     }
+    QDBusInterface iface(QLatin1String("org.kde.khelpcenter"),
+                         QLatin1String("/KHelpCenter"),
+                         QLatin1String("org.kde.khelpcenter.khelpcenter"),
+                         QDBusConnection::sessionBus());
 
-    iface->call(QString::fromLatin1("openUrl"), url.toString(), startup_id );
-    delete iface;
+    iface.call(QString::fromLatin1("openUrl"), url.toString(), startup_id );
 }
 
 void KToolInvocation::invokeMailer(const QString &address, const QString &subject, const QByteArray& startup_id)
