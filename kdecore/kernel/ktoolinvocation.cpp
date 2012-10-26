@@ -19,24 +19,19 @@
 */
 
 #include "ktoolinvocation.h"
-#include <QDesktopServices>
 #include "klauncher_iface.h"
 #include "kdebug.h"
-#include "kmessage.h"
-#include "kdesktopfile.h"
 #include <klockfile.h>
 #include <klocalizedstring.h>
 
 #include <QUrl>
-#include <QMutex>
-#include <QMutexLocker>
 #include <QCoreApplication>
 #include <QThread>
 #include <qstandardpaths.h>
 #include <kdefakes.h>
 #include <config-kernel.h>
 
-#include <errno.h>
+#include <errno.h> // for EINVAL
 
 class KToolInvocationSingleton
 {
@@ -252,78 +247,6 @@ KToolInvocation::kdeinitExecWait( const QString& name, const QStringList &args,
 
     return self()->startServiceInternal("kdeinit_exec_wait",
                                 name, args, error, 0, pid, startup_id, false);
-}
-
-void KToolInvocation::invokeHelp( const QString& anchor,
-                                  const QString& _appname,
-                                  const QByteArray& startup_id )
-{
-    if (!isMainThreadActive())
-        return;
-
-    QString appname;
-    QString docPath;
-    if (_appname.isEmpty()) {
-        appname = QCoreApplication::instance()->applicationName();
-    } else
-        appname = _appname;
-
-    // Look for the .desktop file of the application
-    const QStringList desktopDirs = QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation);
-    Q_FOREACH(const QString& dir, desktopDirs) {
-        QDirIterator it(dir, QStringList() << appname + QLatin1String(".desktop"), QDir::NoFilter, QDirIterator::Subdirectories);
-        while (it.hasNext()) {
-            const QString desktopPath(it.next());
-            KDesktopFile desktopFile(desktopPath);
-            docPath = desktopFile.readDocPath();
-        }
-    }
-
-    // was:
-    //KService::Ptr service(KService::serviceByDesktopName(appname));
-    //if (service) {
-    //    docPath = service->docPath(); // Could be a path or a full URL, I think.
-    //}
-
-    QUrl url;
-    if (!docPath.isEmpty()) {
-        url = QUrl(QLatin1String("help:/")).resolved(QUrl::fromUserInput(docPath));
-    } else {
-        url = QUrl(QString::fromLatin1("help:/%1/index.html").arg(appname));
-    }
-
-    if (!anchor.isEmpty()) {
-        url.addQueryItem(QString::fromLatin1("anchor"), anchor);
-    }
-
-    // launch a browser for URIs not handled by khelpcenter
-    // (following KCMultiDialog::slotHelpClicked())
-    if (!(url.scheme() == QLatin1String("help") || url.scheme() == QLatin1String("man") || url.scheme() == QLatin1String("info"))) {
-        //TODO QDesktopServices::openUrl(url);
-        return;
-    }
-
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QLatin1String("org.kde.khelpcenter"))) {
-        QString error;
-#ifdef Q_OS_WIN
-        // startServiceByDesktopName() does not work yet; KRun:processDesktopExec returned 'KRun: syntax error in command "khelpcenter %u" , service "KHelpCenter" '
-        if (KToolInvocation::kdeinitExec(QLatin1String("khelpcenter"), QStringList() << url.toString(), &error, 0, startup_id))
-#else
-        if (KToolInvocation::startServiceByDesktopName(QLatin1String("khelpcenter"), url.toString(), &error, 0, 0, startup_id, false))
-#endif
-        {
-            KMessage::message(KMessage::Error,
-                              i18n("Could not launch the KDE Help Center:\n\n%1", error),
-                              i18n("Could not Launch Help Center"));
-	    return;
-        }
-    }
-    QDBusInterface iface(QLatin1String("org.kde.khelpcenter"),
-                         QLatin1String("/KHelpCenter"),
-                         QLatin1String("org.kde.khelpcenter.khelpcenter"),
-                         QDBusConnection::sessionBus());
-
-    iface.call(QString::fromLatin1("openUrl"), url.toString(), startup_id );
 }
 
 void KToolInvocation::invokeMailer(const QString &address, const QString &subject, const QByteArray& startup_id)

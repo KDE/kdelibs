@@ -27,7 +27,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
 
-#include <ktoolinvocation.h>
+#include <khelpclient.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kdialog.h>
@@ -1126,7 +1126,7 @@ void K3SpellConfig::activateHelp( void )
 
 void K3SpellConfig::sHelp( void )
 {
-  KToolInvocation::invokeHelp("configuration", "k3spell");
+  KHelpClient::invokeHelp("configuration", "k3spell");
 }
 
 /*

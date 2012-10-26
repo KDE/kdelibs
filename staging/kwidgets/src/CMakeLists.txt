@@ -7,16 +7,17 @@ endif(X11_FOUND)
 configure_file(config-kwidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kwidgets.h )
 
 set(kwidgets_LIB_SRCS
-  utils/kglobalsettings.cpp
+  dialogs/kdialog.cpp
   icons/kiconeffect.cpp
   icons/kiconengine.cpp
   icons/kiconloader.cpp
   icons/kicontheme.cpp
-  widgets/kurllabel.cpp # Not good enough quality. Needs to use QUrl instead of QString and should not inherit QLabel, but hold it as a member instead.
-  widgets/kpushbutton.cpp
-  utils/kstandardguiitem.cpp
+  utils/kglobalsettings.cpp
   utils/kguiitem.cpp
-  dialogs/kdialog.cpp
+  utils/khelpclient.cpp
+  utils/kstandardguiitem.cpp
+  widgets/kpushbutton.cpp
+  widgets/kurllabel.cpp # Not good enough quality. Needs to use QUrl instead of QString and should not inherit QLabel, but hold it as a member instead.
 )
 
 add_library(kwidgets ${LIBRARY_TYPE} ${kwidgets_LIB_SRCS})
@@ -46,15 +47,16 @@ set_target_properties(kwidgets PROPERTIES VERSION ${ECM_VERSION_STRING}
 install(TARGETS kwidgets EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install(FILES
-  utils/kglobalsettings.h
-  utils/kstandardguiitem.h
-  utils/kguiitem.h
-  icons/kicontheme.h
-  icons/kiconloader.h
+  dialogs/kdialog.h
   icons/kiconeffect.h
+  icons/kiconloader.h
+  icons/kicontheme.h
+  utils/kglobalsettings.h
+  utils/kguiitem.h
+  utils/khelpclient.h
+  utils/kstandardguiitem.h
   widgets/kpushbutton.h
   widgets/kurllabel.h
-  dialogs/kdialog.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

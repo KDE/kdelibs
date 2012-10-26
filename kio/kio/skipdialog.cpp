@@ -21,7 +21,6 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include <QMessageBox>
 #include <QWidget>
 #include <QLayout>
 #include <QLabel>

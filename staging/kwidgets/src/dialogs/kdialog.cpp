@@ -41,7 +41,7 @@
 #include <kpushbutton.h>
 #include <kseparator.h>
 #include <kstandardguiitem.h>
-#include <ktoolinvocation.h>
+#include <khelpclient.h>
 #include <kurllabel.h>
 #include <kwindowconfig.h>
 
@@ -922,7 +922,7 @@ void KDialog::slotButtonClicked( int button )
     case Help:
       emit helpClicked();
       if ( !d->mAnchor.isEmpty() || !d->mHelpApp.isEmpty() )
-        KToolInvocation::invokeHelp( d->mAnchor, d->mHelpApp );
+        KHelpClient::invokeHelp( d->mAnchor, d->mHelpApp );
       break;
     case Default:
       emit defaultClicked();

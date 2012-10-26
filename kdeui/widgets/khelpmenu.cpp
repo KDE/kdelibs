@@ -47,7 +47,7 @@
 #include <kstandardaction.h>
 #include <kstandardguiitem.h>
 #include <kswitchlanguagedialog_p.h>
-#include <ktoolinvocation.h>
+#include <khelpclient.h>
 #include <kglobal.h>
 
 #pragma message("Revive QX11EmbedWidget in Qt5")
@@ -277,7 +277,7 @@ QAction *KHelpMenu::action( MenuId id ) const
 
 void KHelpMenu::appHelpActivated()
 {
-  KToolInvocation::invokeHelp();
+    KHelpClient::invokeHelp();
 }
 
 

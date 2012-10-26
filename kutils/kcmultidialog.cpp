@@ -348,7 +348,7 @@ void KCMultiDialog::slotHelpClicked()
     }
   }
 
-  QUrl docUrl = QUrl("help:/").resolved(QUrl::fromUserInput(docPath)); // same code as in KToolInvocation::invokeHelp
+  QUrl docUrl = QUrl("help:/").resolved(QUrl::fromUserInput(docPath)); // same code as in KHelpClient::invokeHelp
   if ( docUrl.scheme() == "help" || docUrl.scheme() == "man" || docUrl.scheme() == "info" ) {
     QProcess::startDetached("khelpcenter", QStringList() << docUrl.toString());
   } else {

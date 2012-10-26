@@ -18,7 +18,7 @@
 */
 
 #include <kcomponentdata.h>
-#include <kcmdlineargs.h>
+#include <qcoreapplication.h>
 #include <kaboutdata.h>
 #include <ktoolinvocation.h>
 #include <kdebug.h>
@@ -26,10 +26,7 @@
 int
 main(int argc, char *argv[])
 {
-   KAboutData about("ktoolinvocationtest", 0, qi18n("ktoolinvocationtest"), "version");
-   KComponentData cData(&about);
-   //KCmdLineArgs::init(argc, argv, &about);
-   //KApplication a;
+   QCoreApplication a(argc, argv);
 
    QString serviceId = "kwrite.desktop";
    if (argc > 1) {

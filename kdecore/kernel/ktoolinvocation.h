@@ -80,22 +80,6 @@ public:
 	static KToolInvocation *self();
 
 public Q_SLOTS:
-  /**
-   * Invokes the KHelpCenter HTML help viewer from docbook sources.
-   *
-   * @param anchor      This has to be a defined anchor in your
-   *                    docbook sources. If empty the main index
-   *                    is loaded
-   * @param appname     This allows you to show the help of another
-   *                    application. If empty the current name() is
-   *                    used
-   * @param startup_id for app startup notification, "0" for none,
-   *           "" ( empty string ) is the default
-   */
-
-  static void invokeHelp( const QString& anchor = QString(),
-                   const QString& appname = QString(),
-		   const QByteArray& startup_id = QByteArray());
 
   /**
    * Convenience method; invokes the standard email application.
