@@ -240,6 +240,14 @@ WalletPlugin* Wallet::WalletPrivate::getPlugin() {
 Wallet::Wallet(WalletPlugin *plugin)
     : QObject(0L), d(new WalletPrivate(this, plugin))
 {
+    // we'll now connect the signals of the plugin to the signals of the wallet
+    // this will allow triggerring wallet signals when the plugin emit these signals
+    // without needing intermediary slots into kwallet
+    connect( plugin, SIGNAL(walletOpened(bool)), this, SLOT(emitWalletOpened()) );
+    connect( plugin, SIGNAL(walletClosed()), this, SLOT(emitWalletClosed()) );
+    connect( plugin, SIGNAL(folderUpdated(const QString&)), this, SLOT(emitFolderUpdated(const QString&)) );
+    connect( plugin, SIGNAL(folderListUpdated()), this, SLOT(emitFolderListUpdated()) );
+    connect( plugin, SIGNAL(folderRemoved(const QString&)), this, SLOT(emitFolderRemoved(const QString&)) );
 }
 
 
@@ -463,7 +471,27 @@ void Wallet::emitWalletAsyncOpenError() {
 }
 
 void Wallet::emitWalletOpened() {
-  emit walletOpened(true);
+    emit walletOpened(true);
+}
+
+void Wallet::emitFolderListUpdated()
+{
+    emit folderListUpdated();
+}
+
+void Wallet::emitFolderRemoved(const QString& folderName)
+{
+    emit folderRemoved( folderName );
+}
+
+void Wallet::emitFolderUpdated(const QString& folderName)
+{
+    emit folderUpdated( folderName );
+}
+
+void Wallet::emitWalletClosed()
+{
+    emit walletClosed();
 }
 
 bool Wallet::folderDoesNotExist(const QString& wallet, const QString& folder)

@@ -312,9 +312,9 @@ if (Q_WS_MAC AND MAC_USE_OSXKEYCHAIN)
     FIND_LIBRARY(SECURITY_LIBRARY Security)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwallet_mac.cpp)
 else(Q_WS_MAC AND MAC_USE_OSXKEYCHAIN)
-     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwallet.cpp util/kwalletdefaultplugin.cpp util/kwalletpluginloader.cpp)
+     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwallet.cpp util/kwalletpluginloader.cpp util/kwalletplugin.cpp)
 else(Q_WS_MAC AND MAC_USE_OSXKEYCHAIN)
-  set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwallet.cpp util/kwalletdefaultplugin.cpp util/kwalletpluginloader.cpp)
+  set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwallet.cpp util/kwalletpluginloader.cpp util/kwalletplugin.cpp)
 endif(Q_WS_MAC AND MAC_USE_OSXKEYCHAIN)
 
 if(NOT WINCE)
@@ -391,10 +391,6 @@ endif (Q_WS_X11)
 kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )
 
 
-set(kwallet_xml util/org.kde.KWallet.xml)
-install(FILES ${kwallet_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
-
-qt4_add_dbus_interface( kdeui_LIB_SRCS ${kwallet_xml} kwallet_interface )
 qt4_add_dbus_interfaces(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.JobViewServer.xml )
 
 qt4_add_dbus_interface(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.JobView.xml jobviewiface )
@@ -748,3 +744,5 @@ if (NOT Q_WS_X11)
     # install our copy of the rgb.txt named colors list on systems without X11
     install(FILES colors/rgb.txt DESTINATION ${DATA_INSTALL_DIR}/kdeui)
 endif (NOT Q_WS_X11)
+
+install(FILES util/kwallet-plugin.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})

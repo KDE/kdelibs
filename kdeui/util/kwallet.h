@@ -522,9 +522,12 @@ class KDEUI_EXPORT Wallet : public QObject
 		/**
 		 *  @internal
 		 *  Emits wallet opening success.
-         *  @note This member has no implementation, it's only kept for ABI compatibility
 		 */
 		void emitWalletOpened();
+        void emitWalletClosed();
+        void emitFolderUpdated(const QString&);
+        void emitFolderListUpdated();
+        void emitFolderRemoved(const QString&);
 
         /**
          * @internal
@@ -534,7 +537,6 @@ class KDEUI_EXPORT Wallet : public QObject
         /**
          * @internal
          * Received delete notification from KSecretsService infrastructure
-         *  @note This member has no implementation, it's only kept for ABI compatibility
          */
         void slotCollectionDeleted();
 

@@ -22,16 +22,19 @@
 
 #include <QObject>
 #include "kwalletplugin.h"
+#include <kcomponentdata.h>
 
 namespace KWallet {
 
 class WalletDefaultPluginPrivate;
 
-class WalletDefaultPlugin : public QObject, public WalletPlugin
+class WalletDefaultPlugin : public WalletPlugin
 {
     Q_OBJECT
 public:
     WalletDefaultPlugin();
+    explicit WalletDefaultPlugin(QObject* parent = 0);
+    WalletDefaultPlugin(QObject* parent, const QVariantList& );
     virtual ~WalletDefaultPlugin();
 
     // BEGIN WalletPlugin abstract methods implementation
@@ -77,67 +80,73 @@ public:
 
 Q_SIGNALS:
     /**
-        *  Emitted when this wallet is closed.
-        */
+    *  Emitted when this wallet is closed.
+    */
     void walletClosed();
 
     /**
-        *  Emitted when a folder in this wallet is updated.
-        *  @param folder The folder that was updated.
-        */
+    *  Emitted when a folder in this wallet is updated.
+    *  @param folder The folder that was updated.
+    */
     void folderUpdated(const QString& folder);
 
     /**
-        *  Emitted when the folder list is changed in this wallet.
-        */
+    *  Emitted when the folder list is changed in this wallet.
+    */
     void folderListUpdated();
 
     /**
-        *  Emitted when a folder in this wallet is removed.
-        *  @param folder The folder that was removed.
-        */
+    *  Emitted when a folder in this wallet is removed.
+    *  @param folder The folder that was removed.
+    */
     void folderRemoved(const QString& folder);
 
     /**
-        *  Emitted when a wallet is opened in asynchronous mode.
-        *  @param success True if the wallet was opened successfully.
-        */
+    *  Emitted when a wallet is opened in asynchronous mode.
+    *  @param success True if the wallet was opened successfully.
+    */
     void walletOpened(bool success);
 
 private Q_SLOTS:
     /**
-        *  @internal
-        *  DBUS slot for signals emitted by the wallet service.
-        */
+    *  @internal
+    *  DBUS slot for signals emitted by the wallet service.
+    */
     void slotWalletClosed(int handle);
 
     /**
-        *  @internal
-        *  DBUS slot for signals emitted by the wallet service.
-        */
+    *  @internal
+    *  DBUS slot for signals emitted by the wallet service.
+    */
     void slotFolderUpdated(const QString& wallet, const QString& folder);
 
     /**
-        *  @internal
-        *  DBUS slot for signals emitted by the wallet service.
-        */
+    *  @internal
+    *  DBUS slot for signals emitted by the wallet service.
+    */
     void slotFolderListUpdated(const QString& wallet);
 
     /**
-        *  @internal
-        *  DBUS slot for signals emitted by the wallet service.
-        */
+    *  @internal
+    *  DBUS slot for signals emitted by the wallet service.
+    */
     void slotApplicationDisconnected(const QString& wallet, const QString& application);
 
     /**
-        *  @internal
-        *  Callback for kwalletd
-        *  @param tId identifer for the open transaction
-        *  @param handle the wallet's handle
-        */
+    *  @internal
+    *  Callback for kwalletd
+    *  @param tId identifer for the open transaction
+    *  @param handle the wallet's handle
+    */
     void walletAsyncOpened(int tId, int handle);
 
+    /**
+    *  @internal
+    */
+    void walletServiceUnregistered();
+
 private:
+    void connectTokwalletd();
     void emitWalletAsyncOpenError();
     void emitWalletOpened();
     

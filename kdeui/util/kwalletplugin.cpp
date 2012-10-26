@@ -17,37 +17,16 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-#ifndef KWALLET_PLUGIN_LOADER_H
-#define KWALLET_PLUGIN_LOADER_H
 
-
-#include <qobject.h>
+#include "kwalletplugin.h"
 
 namespace KWallet {
 
-class WalletPlugin;
-
-class WalletPluginLoader : public QObject
+    WalletPlugin::WalletPlugin(QObject* parent): QObject(parent)
 {
-    Q_OBJECT
-
-    WalletPluginLoader();
-    WalletPluginLoader(const WalletPluginLoader&);
-    WalletPluginLoader operator = (const WalletPluginLoader&);
-
-public:
-    virtual ~WalletPluginLoader();
-    static WalletPluginLoader* instance();
-    WalletPlugin* loadKWallet();
-    WalletPlugin* loadKSecrets();
-
-private:
-    void connectSignals( WalletPlugin* );
-
-    class Private;
-    Private * const d;
-};
+   // empty
+}
 
 } // namespace
 
-#endif // KWALLET_PLUGIN_LOADER_H
+#include "kwalletplugin.moc"

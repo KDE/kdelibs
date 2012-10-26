@@ -20,6 +20,11 @@
 
 #include "kwalletpluginloader.h"
 #include "kwalletplugin.h"
+#include <kmessagebox.h>
+#include <kstandarddirs.h>
+
+#include <kdebug.h>
+#include <kservice.h>
 
 namespace KWallet {
 
@@ -43,12 +48,58 @@ WalletPluginLoader::~WalletPluginLoader()
 
 WalletPlugin* WalletPluginLoader::loadKWallet()
 {
-    return 0;
+    WalletPlugin *plugin =0;
+    kDebug(285) << "Loading kwallet default plugin";
+
+    QString pathToDesktopFile = KStandardDirs::locate("services", "kwalletdefaultplugin.desktop");
+    KService service(pathToDesktopFile);
+
+    KPluginFactory *factory = KPluginLoader( service.library() ).factory();
+    if ( !factory ) {
+        kDebug() << "Cannot create kwalletdefaultplugin factory";
+    }
+    else {
+        plugin = factory->create< WalletPlugin >();
+        if ( plugin )
+            kDebug() << "Plugin loaded";
+        else {
+            kDebug() << "Factory cannot create kwalletdefaultplugin instance";
+        }
+    }
+
+    if ( !plugin ) {
+        KMessageBox::error(0, i18n("Cannot load KWallet default plugin. Please check your installation."), "KWallet");
+    }
+
+    return plugin;
 }
 
 WalletPlugin* WalletPluginLoader::loadKSecrets()
 {
-    return 0;
+    WalletPlugin *plugin =0;
+    kDebug(285) << "Loading kwallet ksecrets plugin";
+
+    QString pathToDesktopFile = KStandardDirs::locate("services", "kwallet-ksecrets-plugin.desktop");
+    KService service(pathToDesktopFile);
+
+    KPluginFactory *factory = KPluginLoader( service.library() ).factory();
+    if ( !factory ) {
+        kDebug() << "Cannot create kwallet ksecrets factory";
+    }
+    else {
+        plugin = factory->create< WalletPlugin >();
+        if ( plugin )
+            kDebug() << "Plugin loaded";
+        else {
+            kDebug() << "Factory cannot create kwallet ksecrets instance";
+        }
+    }
+
+    if ( !plugin ) {
+        KMessageBox::error(0, i18n("Cannot load KWallet KSecrets plugin. Please check your installation or configuration."), "KWallet");
+    }
+
+    return plugin;
 }
 
 WalletPluginLoader* WalletPluginLoader::instance()

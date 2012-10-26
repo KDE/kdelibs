@@ -21,6 +21,8 @@
 #include "kwalletdefaultplugin.h"
 #include "kwalletpluginloader.h"
 #include "kwallet.h"
+#include "kwallet_interface.h"
+
 #include <ktoolinvocation.h>
 #include <ksharedconfig.h>
 #include <kdebug.h>
@@ -34,34 +36,16 @@
 #include <QByteArray>
 #include <QMap>
 #include <QString>
-#include "kwallet_interface.h"
+#include <kpluginfactory.h>
+#include <kpluginloader.h>
 
 typedef QMap<QString, QByteArray> StringByteArrayMap;
 Q_DECLARE_METATYPE(StringByteArrayMap)
 
+K_PLUGIN_FACTORY(WalletDefaultPluginFactory, registerPlugin< KWallet::WalletDefaultPlugin >();)
+K_EXPORT_PLUGIN(WalletDefaultPluginFactory("kwalletdefaultplugin"))
 
 namespace KWallet {
-
-class KWalletDLauncher
-{
-public:
-    KWalletDLauncher();
-    ~KWalletDLauncher();
-
-    org::kde::KWallet &getInterface();
-
-    // this static variable is used below to switch between old KWallet
-    // infrastructure and the new one which is built on top of the new
-    // KSecretsService infrastructure. It's value can be changed via the 
-    // the Wallet configuration module in System Settings
-    bool m_useKSecretsService;
-    WalletPlugin *m_plugin;
-    KConfigGroup m_cgroup;
-    WalletPluginLoader *m_pluginLoader;
-};
-
-
-K_GLOBAL_STATIC(KWalletDLauncher, walletLauncher)
 
 
 static const char s_kwalletdServiceName[] = "org.kde.kwalletd";
@@ -148,8 +132,7 @@ static QString appid()
 }
 
 
-WalletDefaultPlugin::WalletDefaultPlugin() :
-    d( new WalletDefaultPluginPrivate(this) )
+void WalletDefaultPlugin::connectTokwalletd()
 {
     QDBusServiceWatcher *watcher = new QDBusServiceWatcher(QString::fromLatin1(s_kwalletdServiceName), QDBusConnection::sessionBus(),
                                                         QDBusServiceWatcher::WatchForUnregistration, this);
@@ -171,15 +154,32 @@ WalletDefaultPlugin::WalletDefaultPlugin() :
     }
 }
 
+WalletDefaultPlugin::WalletDefaultPlugin() :
+    d( new WalletDefaultPluginPrivate(this) )
+{
+    connectTokwalletd();
+}
+
+
+WalletDefaultPlugin::WalletDefaultPlugin(QObject* parent): 
+    WalletPlugin(parent), 
+    d( new WalletDefaultPluginPrivate(this) )
+{
+    connectTokwalletd();
+}
+
+WalletDefaultPlugin::WalletDefaultPlugin(QObject* parent, const QVariantList& ): 
+    WalletPlugin(parent),
+    d( new WalletDefaultPluginPrivate(this) )
+{
+    connectTokwalletd();
+}
+
+
 WalletDefaultPlugin::~WalletDefaultPlugin()
 {
     if (d->m_handle != -1) {
-        if (!walletLauncher.isDestroyed()) {
-            d->getInterface().close(d->m_handle, false, appid());
-        } else {
-            kDebug(285) << "Problem with static destruction sequence."
-                        "Destroy any static Wallet before the event-loop exits.";
-        }
+        d->getInterface().close(d->m_handle, false, appid());
         d->m_handle = -1;
         d->m_folder.clear();
         d->m_name.clear();
@@ -847,23 +847,9 @@ bool WalletDefaultPlugin::keyDoesNotExist(const QString& wallet, const QString& 
         return r;
 }
 
-KWalletDLauncher::KWalletDLauncher()
-    : m_plugin(0),
-    m_cgroup(KSharedConfig::openConfig("kwalletrc", KConfig::NoGlobals)->group("Wallet"))
+void WalletDefaultPlugin::walletServiceUnregistered()
 {
-    // TODO: plugin loading should occur here
-    m_useKSecretsService = m_cgroup.readEntry("UseKSecretsService", false);
-    if (m_useKSecretsService) {
-         m_plugin = m_pluginLoader->loadKSecrets();
-    }
-    else {
-        m_plugin = m_pluginLoader->loadKWallet();
-    }
-}
-
-KWalletDLauncher::~KWalletDLauncher()
-{
-    delete m_plugin;
+    d->walletServiceUnregistered();
 }
 
 

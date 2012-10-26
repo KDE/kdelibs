@@ -334,6 +334,8 @@ add_subdirectory( includes )
 add_subdirectory( experimental )
 macro_optional_add_subdirectory( doc  )
 
+add_subdirectory(kwalletdefaultplugin)
+
 ################# write dependency file which will be installed #################
 
 # Used in configure_file() and install(EXPORT)
