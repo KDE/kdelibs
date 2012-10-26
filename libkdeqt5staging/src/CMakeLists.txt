@@ -4,8 +4,7 @@ set(libkdeqt5staging_SRCS
 )
 if (QT5_BUILD)
 set(libkdeqt5staging_SRCS ${libkdeqt5staging_SRCS} qt5only/qx11info.cpp)
-# TODO fix once https://codereview.qt-project.org/#change,29228 is merged
-include_directories(${_qt5Gui_install_prefix}/include/QtGui/5.0.0/QtGui)
+include_directories(${Qt5Gui_PRIVATE_INCLUDE_DIRS})
 endif()
 
 add_library(kdeqt5staging ${LIBRARY_TYPE} ${libkdeqt5staging_SRCS})
