@@ -299,11 +299,11 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
         // we do not know the applet url here so we just use a dummy url
         // this is a workaround for now
         // FIXME
-        const KUrl dummyURL( "http://www.kde.org/" );
+        const QUrl dummyURL( "http://www.kde.org/" );
         const QString httpProxy = KProtocolManager::proxyForUrl(dummyURL);
         kDebug(6100) << "httpProxy is " << httpProxy;
 
-        const KUrl url( httpProxy );
+        const QUrl url( httpProxy );
         p->setSystemProperty( "http.proxyHost", url.host() );
         p->setSystemProperty( "http.proxyPort", QString::number( url.port() ) );
     }

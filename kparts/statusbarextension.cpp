@@ -19,6 +19,7 @@
  */
 
 #include "statusbarextension.h"
+#include <QPointer>
 
 #include <QtCore/QObject>
 

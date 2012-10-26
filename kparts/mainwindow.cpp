@@ -28,6 +28,7 @@
 #include <khelpmenu.h>
 
 #include <QApplication>
+#include <QPointer>
 #include <kxmlguifactory.h>
 #include <kconfiggroup.h>
 

@@ -31,6 +31,7 @@
 
 #include <kparts/part.h>
 #include <kparts/browserextension.h>
+#include <kurl.h>
 #include <kfind.h>
 #include <kfinddialog.h>
 #include <klocalizedstring.h>

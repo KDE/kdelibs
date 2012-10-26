@@ -68,7 +68,6 @@
 #endif
 
 #include <kdebug.h>
-#include <kurl.h>
 #include <kcomponentdata.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>

@@ -20,12 +20,9 @@
 #ifndef _KPART_H
 #define _KPART_H
 
-#include <QtCore/QPointer>
-#include <QtCore/QEvent>
+#include <QtCore/QUrl>
 #include <QtCore/QSharedDataPointer>
-#include <QtXml/QDomElement> // KDE5: remove
 
-#include <kurl.h>
 #include <kxmlguiclient.h>
 
 #include <kparts/kparts_export.h>

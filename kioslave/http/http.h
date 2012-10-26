@@ -37,7 +37,7 @@
 #include <QtCore/QStringList>
 #include <QtNetwork/QLocalSocket>
 
-#include <kurl.h>
+#include <kurl.h> // many setQuery calls, port when using qt5
 #include "kio/tcpslavebase.h"
 #include "kio/http.h"
 

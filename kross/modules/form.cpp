@@ -18,6 +18,7 @@
  ***************************************************************************/
 
 #include "form.h"
+#include <QDomDocument>
 
 #include <QtCore/QByteRef>
 #include <QtCore/QBuffer>

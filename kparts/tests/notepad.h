@@ -23,6 +23,7 @@
 #ifndef notepad_h
 #define notepad_h
 
+#include <QVariantList>
 #include <kparts/part.h>
 
 class KAboutData;

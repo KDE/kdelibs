@@ -20,6 +20,7 @@
 #ifndef __kmultipart_h__
 #define __kmultipart_h__
 
+#include <QPointer>
 #include <httpfilter/httpfilter.h>
 
 #include <kparts/part.h>

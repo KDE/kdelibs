@@ -20,6 +20,7 @@
 */
 
 #include "dockmainwindow3.h"
+#include <QPointer>
 #include <kparts/event.h>
 #include <kparts/part.h>
 #include <kparts/plugin.h>
