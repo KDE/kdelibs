@@ -201,11 +201,15 @@ QStringList Device::emblems() const
 
 QString Device::description() const
 {
-    const QString hintName = prop("HintName").toString();
+    const QString hintName = property("HintName").toString(); // non-cached
     if (!hintName.isEmpty())
         return hintName;
 
-    if (queryDeviceInterface(Solid::DeviceInterface::StorageDrive))
+    if (isLoop())
+        return QObject::tr("Loop Device");
+    else if (isSwap())
+        return QObject::tr("Swap Space");
+    else if (queryDeviceInterface(Solid::DeviceInterface::StorageDrive))
         return storageDescription();
     else if (queryDeviceInterface(Solid::DeviceInterface::StorageVolume))
         return volumeDescription();
@@ -218,7 +222,7 @@ QString Device::storageDescription() const
     QString description;
     const UDisks2::StorageDrive storageDrive(const_cast<Device*>(this));
     Solid::StorageDrive::DriveType drive_type = storageDrive.driveType();
-    bool drive_is_hotpluggable = storageDrive.isHotpluggable();
+    const bool drive_is_hotpluggable = storageDrive.isHotpluggable();
 
     if (drive_type == Solid::StorageDrive::CdromDrive)
     {
@@ -290,7 +294,7 @@ QString Device::storageDescription() const
         return description;
     }
 
-    bool drive_is_removable = storageDrive.isRemovable();
+    const bool drive_is_removable = storageDrive.isRemovable();
 
     if (drive_type == Solid::StorageDrive::HardDisk && !drive_is_removable)
     {
@@ -523,11 +527,15 @@ QString Device::volumeDescription() const
 
 QString Device::icon() const
 {
-    QString iconName = prop( "HintIconName" ).toString();
+    QString iconName = property( "HintIconName" ).toString(); // non-cached
 
     if ( !iconName.isEmpty() )
     {
         return iconName;
+    }
+    else if (isLoop() || isSwap())
+    {
+        return "drive-harddisk";
     }
     else if (isDrive()) {
         const bool isRemovable = prop("Removable").toBool();
@@ -535,7 +543,7 @@ QString Device::icon() const
 
         if (isOpticalDrive())
             return "drive-optical";
-        else if (isRemovable && !isOpticalDisc()) {
+        else if (isRemovable && !prop("Optical").toBool()) {
             if (conn == "usb")
                 return "drive-removable-media-usb";
             else
@@ -543,14 +551,18 @@ QString Device::icon() const
         }
     }
     else if (isBlock()) {
-        Device drive(drivePath());
+        const QString drv = drivePath();
+        if (drv.isEmpty() || drv == "/")
+            return "drive-harddisk";    // stuff like loop devices or swap which don't have the Drive prop set
+
+        Device drive(drv);
 
         // handle media
         const QString media = drive.prop("Media").toString();
 
         if ( !media.isEmpty() )
         {
-            if ( isOpticalDisc() )    // optical stuff
+            if ( drive.prop("Optical").toBool() )    // optical stuff
             {
                 bool isWritable = drive.prop("OpticalBlank").toBool();
 
@@ -689,11 +701,12 @@ bool Device::propertyExists(const QString &key) const
 
 QVariantMap Device::allProperties() const
 {
+    QDBusMessage call = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, m_udi, DBUS_INTERFACE_PROPS, "GetAll");
+
     Q_FOREACH (const QString & iface, m_interfaces) {
         if (iface.startsWith("org.freedesktop.DBus"))
             continue;
-        QDBusMessage call = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, m_udi, DBUS_INTERFACE_PROPS, "GetAll");
-        call << iface;
+        call.setArguments(QVariantList() << iface);
         QDBusPendingReply<QVariantMap> reply = QDBusConnection::systemBus().asyncCall(call);
         reply.waitForFinished();
 
@@ -901,6 +914,11 @@ bool Device::isEncryptedCleartext() const
 bool Device::isSwap() const
 {
     return hasInterface(UD2_DBUS_INTERFACE_SWAP);
+}
+
+bool Device::isLoop() const
+{
+    return hasInterface(UD2_DBUS_INTERFACE_LOOP);
 }
 
 QString Device::drivePath() const
