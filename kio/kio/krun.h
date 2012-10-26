@@ -25,14 +25,15 @@
 #include <kio/kio_export.h>
 
 #include <QtCore/QObject>
-#include <QtCore/QTimer>
 #include <QtCore/QString>
+#include <QtCore/QUrl>
 #include <sys/types.h>
-#include <kurl.h>
 
 class KService;
 class KStartupInfo;
 class KJob;
+class QTimer;
+
 namespace KIO
 {
 class Job;

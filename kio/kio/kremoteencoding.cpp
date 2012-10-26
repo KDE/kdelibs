@@ -21,6 +21,7 @@
 #include <kdebug.h>
 #include <kstringhandler.h>
 #include <qurlpathinfo.h>
+#include <QTextCodec>
 
 class KRemoteEncodingPrivate
 {

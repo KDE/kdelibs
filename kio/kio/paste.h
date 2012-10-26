@@ -21,9 +21,9 @@
 
 #include <kio/kio_export.h>
 #include <QtCore/QString>
-#include <kurl.h>
 class QWidget;
-class QMimeSource;
+class QUrl;
+class QMimeData;
 
 namespace KIO {
     class Job;

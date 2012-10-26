@@ -85,7 +85,7 @@ public Q_SLOTS:
 
 private:
     static void delDir(const QString& pathOrUrl) {
-        KIO::Job* job = KIO::del(KUrl(pathOrUrl), KIO::HideProgressInfo);
+        KIO::Job* job = KIO::del(QUrl::fromLocalFile(pathOrUrl), KIO::HideProgressInfo);
         job->setUiDelegate(0);
         KIO::NetAccess::synchronousRun(job, 0);
     }

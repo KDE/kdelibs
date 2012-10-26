@@ -21,7 +21,7 @@
 #define KIO_FILEUNDOMANAGER_H
 
 #include <QtCore/QObject>
-#include <kurl.h>
+#include <QtCore/QUrl>
 
 #include <kio/kio_export.h>
 

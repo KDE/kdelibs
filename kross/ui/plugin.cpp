@@ -30,7 +30,9 @@
 #include <kio/netaccess.h>
 
 #include <QPointer>
+#include <QUrl>
 #include <qstandardpaths.h>
+#include <qurlpathinfo.h>
 
 using namespace Kross;
 
@@ -248,19 +250,19 @@ void ScriptingPlugin::save()
 
 void ScriptingPlugin::slotEditScriptActions()
 {
-    if(!KIO::NetAccess::exists(KUrl(d->userActionsFile), KIO::NetAccess::SourceSide, 0)) {
-        KUrl dir = KUrl(d->userActionsFile).directory();
+    if(!KIO::NetAccess::exists(QUrl::fromLocalFile(d->userActionsFile), KIO::NetAccess::SourceSide, 0)) {
+        QUrl dir = QUrlPathInfo(QUrl::fromLocalFile(d->userActionsFile)).directoryUrl();
         KIO::NetAccess::mkdir(dir, 0);
 
         save();
     }
 
     //TODO very funny! this should use ui/view.h instead --Nick
-    KRun::runUrl(KUrl(d->userActionsFile), QString("text/plain"), 0, false);
+    KRun::runUrl(QUrl::fromLocalFile(d->userActionsFile), QString("text/plain"), 0, false);
 }
 
 void ScriptingPlugin::slotResetScriptActions()
 {
-    KIO::NetAccess::del(KUrl(d->userActionsFile), 0);
+    KIO::NetAccess::del(QUrl::fromLocalFile(d->userActionsFile), 0);
 }
 

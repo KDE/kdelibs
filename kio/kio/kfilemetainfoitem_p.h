@@ -21,7 +21,6 @@
 #ifndef KFILEMETAINFOITEM_P_H
 #define KFILEMETAINFOITEM_P_H
 
-#include "kurl.h"
 #include <config-kio.h>
 
 #ifndef KDE_NO_DEPRECATED

@@ -29,8 +29,6 @@
 
 #include <QtCore/QObject>
 
-#include <kurl.h>
-
 #include "kio/slaveinterface.h"
 
 namespace KIO {

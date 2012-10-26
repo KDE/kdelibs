@@ -26,12 +26,12 @@
 #define KURIFILTER_H
 
 #include <kio/kio_export.h>
-#include <kurl.h>
 
 #include <QtCore/QObject>
 #include <QtCore/QHash>
 #include <QtCore/QPair>
 #include <QtCore/QStringList>
+#include <QtCore/QUrl>
 
 #ifdef Q_OS_WIN
 #undef ERROR

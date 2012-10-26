@@ -24,7 +24,6 @@
 #include "fileundomanager.h"
 #include <QtCore/QStack>
 #include <QUndoCommand>
-#include <kurl.h>
 #include <ctime>
 
 class KJob;

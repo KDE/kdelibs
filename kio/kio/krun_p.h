@@ -24,6 +24,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QPointer>
+#include <QtCore/QTimer>
 
 #include "config-kio.h"
 #include "kprocess.h"

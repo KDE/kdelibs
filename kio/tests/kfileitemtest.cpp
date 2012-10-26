@@ -22,6 +22,7 @@
 #include <qtest.h>
 #include <kfileitem.h>
 
+#include <qurlpathinfo.h>
 #include <qtemporarydir.h>
 #include <qtemporaryfile.h>
 #include <kuser.h>
@@ -36,7 +37,7 @@ void KFileItemTest::testPermissionsString()
 {
     // Directory
     QTemporaryDir tempDir;
-    KFileItem dirItem(KUrl(tempDir.path() + '/' ), QString(), KFileItem::Unknown);
+    KFileItem dirItem(QUrl::fromLocalFile(tempDir.path() + '/' ), QString(), KFileItem::Unknown);
     QCOMPARE((uint)dirItem.permissions(), (uint)0700);
     QCOMPARE(dirItem.permissionsString(), QString("drwx------"));
     QVERIFY(dirItem.isReadable());
@@ -45,7 +46,7 @@ void KFileItemTest::testPermissionsString()
     QFile file(tempDir.path() + "/afile");
     QVERIFY(file.open(QIODevice::WriteOnly));
     file.setPermissions(QFile::ReadOwner | QFile::WriteOwner | QFile::ReadOther); // 0604
-    KFileItem fileItem(KUrl(file.fileName()), QString(), KFileItem::Unknown);
+    KFileItem fileItem(QUrl::fromLocalFile(file.fileName()), QString(), KFileItem::Unknown);
     QCOMPARE((uint)fileItem.permissions(), (uint)0604);
     QCOMPARE(fileItem.permissionsString(), QString("-rw----r--"));
     QVERIFY(fileItem.isReadable());
@@ -53,7 +54,7 @@ void KFileItemTest::testPermissionsString()
     // Symlink to file
     QString symlink = tempDir.path() + "/asymlink";
     QVERIFY( file.link( symlink ) );
-    KUrl symlinkUrl(symlink);
+    QUrl symlinkUrl = QUrl::fromLocalFile(symlink);
     KFileItem symlinkItem(symlinkUrl, QString(), KFileItem::Unknown);
     QCOMPARE((uint)symlinkItem.permissions(), (uint)0604);
     // This is a bit different from "ls -l": we get the 'l' but we see the permissions of the target.
@@ -73,7 +74,7 @@ void KFileItemTest::testNull()
 {
     KFileItem null;
     QVERIFY(null.isNull());
-    KFileItem fileItem(KUrl("/"), QString(), KFileItem::Unknown);
+    KFileItem fileItem(QUrl::fromLocalFile("/"), QString(), KFileItem::Unknown);
     QVERIFY(!fileItem.isNull());
     fileItem.mark();
     null = fileItem; // ok, now 'null' isn't so null anymore
@@ -85,7 +86,7 @@ void KFileItemTest::testNull()
 
 void KFileItemTest::testDoesNotExist()
 {
-    KFileItem fileItem(KUrl("/doesnotexist"), QString(), KFileItem::Unknown);
+    KFileItem fileItem(QUrl::fromLocalFile("/doesnotexist"), QString(), KFileItem::Unknown);
     QVERIFY(!fileItem.isNull());
     QVERIFY(!fileItem.isReadable());
     QVERIFY(fileItem.user().isEmpty());
@@ -94,7 +95,7 @@ void KFileItemTest::testDoesNotExist()
 
 void KFileItemTest::testDetach()
 {
-    KFileItem fileItem(KUrl("/"), QString(), KFileItem::Unknown);
+    KFileItem fileItem(QUrl::fromLocalFile("/"), QString(), KFileItem::Unknown);
 #ifndef KDE_NO_DEPRECATED
     fileItem.setExtraData(this, this);
     QCOMPARE(fileItem.extraData(this), (const void*)this);
@@ -123,9 +124,9 @@ void KFileItemTest::testBasic()
     fileObj.write(QByteArray("Hello"));
     fileObj.close();
 
-    KUrl url(file.fileName());
+    QUrl url = QUrl::fromLocalFile(file.fileName());
     KFileItem fileItem(url, QString(), KFileItem::Unknown);
-    QCOMPARE(fileItem.text(), url.fileName());
+    QCOMPARE(fileItem.text(), QUrlPathInfo(url).fileName());
     QVERIFY(fileItem.isLocalFile());
     QCOMPARE(fileItem.localPath(), url.path());
     QCOMPARE(fileItem.size(), KIO::filesize_t(5));
@@ -162,7 +163,7 @@ void KFileItemTest::testHiddenFile()
     QTemporaryDir tempDir;
     QFile file(tempDir.path() + "/.hiddenfile");
     QVERIFY(file.open(QIODevice::WriteOnly));
-    KFileItem fileItem(KUrl(file.fileName()), QString(), KFileItem::Unknown);
+    KFileItem fileItem(QUrl::fromLocalFile(file.fileName()), QString(), KFileItem::Unknown);
     QCOMPARE(fileItem.text(), QString(".hiddenfile"));
     QVERIFY(fileItem.isLocalFile());
     QVERIFY(fileItem.isHidden());
@@ -174,7 +175,7 @@ void KFileItemTest::testMimeTypeOnDemand()
     QVERIFY(file.open());
 
     {
-        KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, KUrl(file.fileName()), true /*on demand*/);
+        KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, QUrl::fromLocalFile(file.fileName()), true /*on demand*/);
         QVERIFY(fileItem.currentMimeType().isDefault());
         QVERIFY(!fileItem.isMimeTypeKnown());
         //kDebug() << fileItem.determineMimeType().name();
@@ -185,7 +186,7 @@ void KFileItemTest::testMimeTypeOnDemand()
 
     {
         // Calling mimeType directly also does mimetype determination
-        KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, KUrl(file.fileName()), true /*on demand*/);
+        KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, QUrl::fromLocalFile(file.fileName()), true /*on demand*/);
         QVERIFY(!fileItem.isMimeTypeKnown());
         QCOMPARE(fileItem.mimetype(), QString("application/x-zerosize"));
         QVERIFY(fileItem.isMimeTypeKnown());
@@ -193,7 +194,7 @@ void KFileItemTest::testMimeTypeOnDemand()
 
     {
         // Calling overlays should NOT do mimetype determination (#237668)
-        KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, KUrl(file.fileName()), true /*on demand*/);
+        KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, QUrl::fromLocalFile(file.fileName()), true /*on demand*/);
         QVERIFY(!fileItem.isMimeTypeKnown());
         fileItem.overlays();
         QVERIFY(!fileItem.isMimeTypeKnown());
@@ -208,7 +209,7 @@ void KFileItemTest::testMimeTypeOnDemand()
         QString fileName = file.fileName();
         QVERIFY(!fileName.isEmpty());
         file.close();
-        KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, KUrl(fileName), true /*on demand*/);
+        KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, QUrl::fromLocalFile(fileName), true /*on demand*/);
         QCOMPARE(fileItem.currentMimeType().name(), QLatin1String("application/octet-stream"));
         QVERIFY(fileItem.currentMimeType().isValid());
         QVERIFY(fileItem.currentMimeType().isDefault());
@@ -226,14 +227,14 @@ void KFileItemTest::testMimeTypeOnDemand()
         QString fileName = file.fileName();
         QVERIFY(!fileName.isEmpty());
         file.close();
-        KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, KUrl(fileName), true /*on demand*/);
+        KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, QUrl::fromLocalFile(fileName), true /*on demand*/);
         QCOMPARE(fileItem.currentMimeType().name(), QString("text/plain"));
         QVERIFY(fileItem.isMimeTypeKnown());
         QCOMPARE(fileItem.determineMimeType().name(), QString("text/plain"));
         QCOMPARE(fileItem.mimetype(), QString("text/plain"));
 
         // And if the mimetype is not on demand?
-        KFileItem fileItem2(KFileItem::Unknown, KFileItem::Unknown, KUrl(fileName));
+        KFileItem fileItem2(KFileItem::Unknown, KFileItem::Unknown, QUrl::fromLocalFile(fileName));
         QCOMPARE(fileItem2.currentMimeType().name(), QString("text/plain")); // XDG says: application/smil; but can't sniff all files so this can't work
         QVERIFY(fileItem2.isMimeTypeKnown());
     }
@@ -244,8 +245,8 @@ void KFileItemTest::testCmp()
     QTemporaryFile file;
     QVERIFY(file.open());
 
-    KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, KUrl(file.fileName()), true /*on demand*/);
-    KFileItem fileItem2(KFileItem::Unknown, KFileItem::Unknown, KUrl(file.fileName()), false);
+    KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, QUrl::fromLocalFile(file.fileName()), true /*on demand*/);
+    KFileItem fileItem2(KFileItem::Unknown, KFileItem::Unknown, QUrl::fromLocalFile(file.fileName()), false);
     QVERIFY(fileItem != fileItem2); // created independently so not 'equal'
     QVERIFY(fileItem.cmp(fileItem2));
 }
@@ -256,7 +257,7 @@ void KFileItemTest::testRename()
     const QString origName = QString::fromLatin1("foo");
     entry.insert(KIO::UDSEntry::UDS_NAME, origName);
     entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
-    KFileItem fileItem(entry, KUrl("/dir/foo"));
+    KFileItem fileItem(entry, QUrl::fromLocalFile("/dir/foo"));
     QCOMPARE(fileItem.name(), origName);
     QCOMPARE(fileItem.text(), origName);
     const QString newName = QString::fromLatin1("FiNeX_rocks");
@@ -274,14 +275,14 @@ void KFileItemTest::testDotDirectory()
     file.write("[Desktop Entry]\nIcon=foo\nComment=com\n");
     file.close();
     {
-        KFileItem fileItem(KUrl(tempDir.path() + '/'), QString(), KFileItem::Unknown);
+        KFileItem fileItem(QUrl::fromLocalFile(tempDir.path() + '/'), QString(), KFileItem::Unknown);
         QVERIFY(fileItem.isLocalFile());
         QCOMPARE(fileItem.mimeComment(), QString::fromLatin1("com"));
         QCOMPARE(fileItem.iconName(), QString::fromLatin1("foo"));
     }
     // Test for calling iconName first, to trigger mimetype resolution
     {
-        KFileItem fileItem(KUrl(tempDir.path()), QString(), KFileItem::Unknown);
+        KFileItem fileItem(QUrl::fromLocalFile(tempDir.path()), QString(), KFileItem::Unknown);
         QVERIFY(fileItem.isLocalFile());
         QCOMPARE(fileItem.iconName(), QString::fromLatin1("foo"));
     }
@@ -370,18 +371,18 @@ void KFileItemTest::testListProperties()
             QVERIFY(file.open(QIODevice::WriteOnly));
             if (i!=2) // 3rd file is empty
                 file.write("Hello");
-            items << KFileItem(KUrl(fileName), QString(), KFileItem::Unknown);
+            items << KFileItem(QUrl::fromLocalFile(fileName), QString(), KFileItem::Unknown);
         }
             break;
         case 'd':
             QVERIFY(baseDir.mkdir(fileName));
-            items << KFileItem(KUrl(fileName), QString(), KFileItem::Unknown);
+            items << KFileItem(QUrl::fromLocalFile(fileName), QString(), KFileItem::Unknown);
             break;
         case '/':
-            items << KFileItem(KUrl("/"), QString(), KFileItem::Unknown);
+            items << KFileItem(QUrl::fromLocalFile("/"), QString(), KFileItem::Unknown);
             break;
         case 'h':
-            items << KFileItem(KUrl("http://www.kde.org"), QString(), KFileItem::Unknown);
+            items << KFileItem(QUrl("http://www.kde.org"), QString(), KFileItem::Unknown);
             break;
         default:
             QVERIFY(false);

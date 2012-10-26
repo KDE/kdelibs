@@ -25,6 +25,7 @@
 #include "kfilemetainfoitem.h"
 #include <QtCore/QList>
 #include <QtCore/QStringList>
+#include <QtCore/QUrl>
 class QUrl;
 
 typedef QList<KFileMetaInfoItem> KFileMetaInfoItemList;

@@ -117,7 +117,7 @@ public:
 
 #include "dataprotocol.cpp"	// we need access to static data & functions
 
-void runTest(const QByteArray &mimetype, const QStringList &metalist, const QByteArray &content, const KUrl &url)
+void runTest(const QByteArray &mimetype, const QStringList &metalist, const QByteArray &content, const QUrl &url)
 {
     DataProtocol kio_data;
 
@@ -146,7 +146,7 @@ void DataProtocolTest::runAllTests()
 
     const QStringList metalist = metadata.split(QLatin1Char('\n'));
 
-    runTest(expected_mime_type, metalist, exp_content, KUrl(url));
+    runTest(expected_mime_type, metalist, exp_content, QUrl(url));
 }
 
 void DataProtocolTest::runAllTests_data()
