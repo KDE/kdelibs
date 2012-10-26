@@ -996,7 +996,7 @@ void KDateTime::setTime_t(qint64 seconds)
     d->setSpec(UTC);
     QDateTime dt;
     dt.setTimeSpec(Qt::UTC);   // prevent QDateTime::setMSecsSinceEpoch() converting to local time
-    dt.setMSecsSinceEpoch(seconds / 1000);
+    dt.setMSecsSinceEpoch(seconds * 1000);
     d->setDt(dt);
 }
 
