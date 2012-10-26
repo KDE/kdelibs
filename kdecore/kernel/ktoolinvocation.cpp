@@ -22,7 +22,7 @@
 #include "klauncher_iface.h"
 #include "kdebug.h"
 #include "kmessage.h"
-#include "kservice.h"
+#include "kdesktopfile.h"
 #include <klockfile.h>
 #include <klocalizedstring.h>
 
@@ -267,10 +267,22 @@ void KToolInvocation::invokeHelp( const QString& anchor,
     } else
         appname = _appname;
 
-    KService::Ptr service(KService::serviceByDesktopName(appname));
-    if (service) {
-        docPath = service->docPath(); // Could be a path or a full URL, I think.
+    // Look for the .desktop file of the application
+    const QStringList desktopDirs = QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation);
+    Q_FOREACH(const QString& dir, desktopDirs) {
+        QDirIterator it(dir, QStringList() << appname + QLatin1String(".desktop"), QDir::NoFilter, QDirIterator::Subdirectories);
+        while (it.hasNext()) {
+            const QString desktopPath(it.next());
+            KDesktopFile desktopFile(desktopPath);
+            docPath = desktopFile.readDocPath();
+        }
     }
+
+    // was:
+    //KService::Ptr service(KService::serviceByDesktopName(appname));
+    //if (service) {
+    //    docPath = service->docPath(); // Could be a path or a full URL, I think.
+    //}
 
     QUrl url;
     if (!docPath.isEmpty()) {
