@@ -20,6 +20,7 @@
 #define QTEST_KDE_H
 
 #include <QtTest/QtTest>
+#include "qtest_staging.h"
 #include <stdlib.h>
 #include <assert.h>
 #include <kaboutdata.h>

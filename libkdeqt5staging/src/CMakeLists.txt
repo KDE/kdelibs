@@ -22,6 +22,7 @@ set_target_properties(kdeqt5staging PROPERTIES VERSION   ${ECM_VERSION_STRING}
 install(FILES
     qurlpathinfo.h
     qsavefile.h
+    qtest_staging.h
     ${CMAKE_CURRENT_BINARY_DIR}/kdeqt5staging_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/kdeqt5staging COMPONENT Devel
 )
