@@ -47,7 +47,7 @@
 
 #include "kremoteencoding.h"
 
-#include "connection.h"
+#include "connection_p.h"
 #include "ioslave_defaults.h"
 #include "slaveinterface.h"
 #include "kpasswdserver_p.h"

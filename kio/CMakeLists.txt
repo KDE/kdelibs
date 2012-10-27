@@ -50,8 +50,9 @@ include_directories(
    ${ZLIB_INCLUDE_DIR}
    ${CMAKE_SOURCE_DIR}/tier1/kwidgetsaddons/src
    ${CMAKE_BINARY_DIR}/tier1/kwidgetsaddons/src
-
-   )
+   ${kiocore_SOURCE_DIR}/
+   ${kiocore_BINARY_DIR}/
+)
 if (NOT KIO_NO_STRIGI)
    include_directories(${STRIGI_INCLUDE_DIR})
    set(KIO_EXTRA_LIBS ${KIO_EXTRA_LIBS} ${STRIGI_STREAMANALYZER_LIBRARY} ${STRIGI_STREAMS_LIBRARY})
@@ -103,7 +104,6 @@ set(kiocore_STAT_SRCS
   kio/accessmanagerreply_p.cpp
   kio/authinfo.cpp
   kio/chmodjob.cpp
-  kio/connection.cpp
   kio/copyjob.cpp
   kio/dataprotocol.cpp
   kio/dataslave.cpp
@@ -143,7 +143,6 @@ set(kiocore_STAT_SRCS
   kio/kfileshare.cpp
   kio/kfilewriteplugin.cpp
   kio/kimageio.cpp
-  kio/klocalsocket.cpp
   kio/kmimetypechooser.cpp
   kio/kprotocolinfo.cpp
   kio/kprotocolinfofactory.cpp
@@ -211,14 +210,12 @@ if(UNIX)
        kio/knfsshare.cpp
        kio/ksambashare.cpp
        kio/ksambasharedata.cpp
-       kio/klocalsocket_unix.cpp
    )
 endif(UNIX)
 
 if(WIN32)
    set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS}
        kio/krun_win.cpp
-       kio/klocalsocket_win.cpp
    )
 endif(WIN32)
 
@@ -325,13 +322,6 @@ set(kio_LIB_SRCS
    ${kssl_STAT_SRCS}
 )
 
-set(kio_LIB_PRIVATE_SRCS
-    kio/kfileshare_p.h
-    kio/krun_p.h
-    kio/connection_p.h
-    kio/slaveinterface_p.h
-)
-
 if(NOT KIO_NO_NEPOMUK)
     set(kfilemetadatareaderprocess_SRCS
         kfile/kfilemetadatareaderprocess.cpp
@@ -355,8 +345,8 @@ if(NOT KIO_NO_NEPOMUK)
   target_link_libraries(kfilemetadatareader ${KDE4_KIO_LIBS} ${KDE4_NEPOMUK_LIBRARY} nepomukutils kcoreaddons kde4support)
   target_link_libraries(kio ${KDE4_NEPOMUK_LIBRARY} nepomukquery nepomukutils)
 endif(NOT KIO_NO_NEPOMUK)
-target_link_libraries(kio kdeqt5staging ${QtMimeTypes_LIBRARY} kcoreaddons kwidgetsaddons ${kwindowsystem_LIBRARY} ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTSVG_LIBRARY} ${X11_LIBRARIES} ${KIO_EXTRA_LIBS})
-target_link_libraries(kio LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} )
+target_link_libraries(kio kdeqt5staging ${QtMimeTypes_LIBRARY} kiocore kcoreaddons kwidgetsaddons ${kwindowsystem_LIBRARY} ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTSVG_LIBRARY} ${X11_LIBRARIES} ${KIO_EXTRA_LIBS})
+target_link_libraries(kio LINK_INTERFACE_LIBRARIES kiocore kdeui kdecore ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} )
 
 if(ACL_FOUND)
    target_link_libraries(kio ${ACL_LIBS})
@@ -398,7 +388,6 @@ DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 
 install(  FILES
   kio/accessmanager.h
-  kio/connection.h
   kio/slaveinterface.h
   kio/slave.h
   kio/slaveconfig.h

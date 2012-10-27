@@ -21,7 +21,6 @@
 #include "filejob.h"
 
 #include "slavebase.h"
-#include "connection.h"
 #include "scheduler.h"
 #include "slave.h"
 

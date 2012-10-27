@@ -22,13 +22,7 @@
 #ifndef KIO_CONNECTION_H
 #define KIO_CONNECTION_H
 
-#if defined(MAKE_KIO_LIB) || defined(MAKE_KLAUNCHER)
-# define KIO_CONNECTION_EXPORT  KIO_EXPORT
-#else
-# define KIO_CONNECTION_EXPORT  KIO_DEPRECATED_EXPORT
-#endif
-
-#include "kio_export.h"
+#include "kiocore_export.h"
 
 #include <QUrl>
 #include <QtCore/QObject>
@@ -46,7 +40,7 @@ namespace KIO {
      * It handles a queue of commands to be sent which makes it possible to
      * queue data before an actual connection has been established.
      */
-    class KIO_CONNECTION_EXPORT Connection : public QObject
+    class KIOCORE_EXPORT Connection : public QObject
     {
 	Q_OBJECT
     public:
@@ -153,7 +147,7 @@ namespace KIO {
      *
      * This class provides a way to obtaining KIO::Connection connections.
      */
-    class KIO_EXPORT ConnectionServer : public QObject
+    class KIOCORE_EXPORT ConnectionServer : public QObject
     {
         Q_OBJECT
     public:
@@ -186,7 +180,5 @@ namespace KIO {
     };
 
 }
-
-#undef KIO_CONNECTION_EXPORT
 
 #endif

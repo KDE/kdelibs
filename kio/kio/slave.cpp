@@ -43,7 +43,7 @@
 #include "dataprotocol.h"
 #include "kservice.h"
 #include <kio/global.h>
-#include "kio/connection.h"
+#include "connection_p.h"
 #include <kprotocolinfo.h>
 #include <config-prefix.h>
 

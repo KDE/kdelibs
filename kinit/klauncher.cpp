@@ -51,7 +51,6 @@
 #include <kurl.h>
 
 #include <kio/global.h>
-#include <kio/connection.h>
 #include <kio/slaveinterface.h>
 
 // Dispose slaves after being idle for SLAVE_MAX_IDLE seconds

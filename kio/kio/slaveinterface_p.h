@@ -20,7 +20,7 @@
 #define KIO_SLAVEINTERFACEPRIVATE_H
 
 #include "global.h"
-#include "connection.h"
+#include "connection_p.h"
 #include <QtCore/QTimer>
 #include <QtNetwork/QHostInfo>
 

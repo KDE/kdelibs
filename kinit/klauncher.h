@@ -47,7 +47,7 @@
 
 #include <kservice.h>
 #include <kurl.h>
-#include <kio/connection.h>
+#include <connection_p.h> // from KIO
 
 class IdleSlave : public QObject
 {

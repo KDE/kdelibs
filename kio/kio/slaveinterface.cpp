@@ -20,7 +20,7 @@
 #include "slaveinterface_p.h"
 
 #include "slavebase.h"
-#include "connection.h"
+#include "connection_p.h"
 #include "hostinfo_p.h"
 #include <errno.h>
 #include <assert.h>

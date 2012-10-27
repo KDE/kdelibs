@@ -1,0 +1,4 @@
+
+#cmakedefine01 HAVE_STRUCT_SOCKADDR_SA_LEN
+#cmakedefine01 HAVE_BACKTRACE
+

@@ -20,8 +20,11 @@
 #ifndef KIO_CONNECTION_P_H
 #define KIO_CONNECTION_P_H
 
+#include <QUrl>
 #include <QObject>
-#include <klocalsocket.h>
+class KLocalSocketServer;
+class QTcpServer;
+class QTcpSocket;
 
 namespace KIO {
     struct Task {
