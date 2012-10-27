@@ -2004,7 +2004,7 @@ int main( int argc, char **argv )
     cpp << "{" << endl;
     if ( cfgFileNameArg ) {
       cpp << "  if (!s_global" << cfg.className << "()->q)" << endl;
-      cpp << "     qFatal() << \"you need to call " << cfg.className << "::instance before using\";" << endl;
+      cpp << "     qFatal(\"you need to call " << cfg.className << "::instance before using\");" << endl;
     } else {
       cpp << "  if (!s_global" << cfg.className << "()->q) {" << endl;
       cpp << "    new " << cfg.className << ';' << endl;
