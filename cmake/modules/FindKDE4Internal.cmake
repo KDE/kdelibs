@@ -356,10 +356,10 @@ cmake_policy(SET CMP0005 OLD)
 # were when the were defined. Keep the OLD behaviour so we can set the policies here
 # for all KDE software without the big warning
 cmake_policy(SET CMP0011 OLD)
-# since cmake 2.6.4
-if(POLICY CMP0017)
-  cmake_policy(SET CMP0017 NEW)
-endif(POLICY CMP0017)
+
+# since cmake 2.8.4: when include()ing from inside cmake's module dir, prefer the files
+# in this directory over those from CMAKE_MODULE_PATH
+cmake_policy(SET CMP0017 NEW)
 
 # Only do something if it hasn't been found yet
 if(NOT KDE4_FOUND)
