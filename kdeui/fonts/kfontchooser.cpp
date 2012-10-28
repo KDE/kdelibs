@@ -622,12 +622,6 @@ void KFontChooser::Private::_k_family_chosen_slot(const QString& family)
             continue;
         }
 
-        // We don't like Qt's name for some styles.
-        // FIXME: Actually "Normal" is better, remove this in KF5.
-        QString styleMod = style;
-        if (style == I18NC_NOX("QFontDatabase", "Normal"))
-            styleMod = i18nc("@item font", "Regular");
-
         // i18n: Filtering message, so that translators can script the
         // style string according to the font family name (e.g. may need
         // noun-adjective congruence wrt. gender of the family name).
