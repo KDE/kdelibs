@@ -1,5 +1,7 @@
 /* This file is part of the KDE project
  *
+ * Copyright (C) 2002-2004 George Staikos <staikos@kde.org>
+ * Copyright (C) 2008 Michael Leupold <lemma@confuego.org>
  * Copyright (C) 2012 Valentin Rusu <kde@rusu.info>
  *
  * This library is free software; you can redistribute it and/or
