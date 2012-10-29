@@ -61,10 +61,10 @@ KFilePlacesItem::KFilePlacesItem(KBookmarkManager *manager,
         if (m_access) {
             connect(m_access, SIGNAL(accessibilityChanged(bool,QString)),
                     this, SLOT(onAccessibilityChanged(bool)));
-        onAccessibilityChanged(m_access->isAccessible());
+            onAccessibilityChanged(m_access->isAccessible());
         }
         m_iconPath = m_device.icon();
-    m_emblems = m_device.emblems();
+        m_emblems = m_device.emblems();
     }
 }
 
