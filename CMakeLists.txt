@@ -325,8 +325,9 @@ set(KDE4_KIO_INCLUDES ${CMAKE_SOURCE_DIR}/kio
                       ${CMAKE_SOURCE_DIR}/kio/kio
                       ${CMAKE_SOURCE_DIR}/kio/kfile
                       ${CMAKE_SOURCE_DIR}/staging/kio/src/core
+                      ${CMAKE_BINARY_DIR}/staging/kio/src/core
                       ${CMAKE_SOURCE_DIR}/staging/kio/src/widgets
-                      ${CMAKE_BINARY_DIR}/staging/kio/src
+                      ${CMAKE_BINARY_DIR}/staging/kio/src/widgets
                       ${KDE4_KDEUI_INCLUDES})
 
 # kpty
