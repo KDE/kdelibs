@@ -119,7 +119,6 @@ KDEUI_EXECUTABLE_TESTS(
   kxmlguiwindowtest
   testqtargs
   kpixmapsequenceoverlaypaintertest
-  kmanagerselectiontest
 )
 
 if (NOT KDE_NO_DEPRECATED)
@@ -134,6 +133,9 @@ KDEUI_EXECUTABLE_TESTS(
  fixx11h_test
  fixx11h_test2
  kxerrorhandlertest
+)
+KDEUI_UNIT_TESTS(
+  kmanagerselectiontest
 )
 target_link_libraries(kmanagerselectiontest ${X11_X11_LIB})
 target_link_libraries(kxerrorhandlertest ${X11_X11_LIB})
