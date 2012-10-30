@@ -512,6 +512,11 @@ KFileItem::~KFileItem()
 
 void KFileItem::refresh()
 {
+    if (!d) {
+        kWarning() << "null item";
+        return;
+    }
+
     d->m_fileMode = KFileItem::Unknown;
     d->m_permissions = KFileItem::Unknown;
     d->m_metaInfo = KFileMetaInfo();
@@ -528,6 +533,9 @@ void KFileItem::refresh()
 
 void KFileItem::refreshMimeType()
 {
+    if (!d)
+        return;
+
     d->m_mimeType = QMimeType();
     d->m_bMimeTypeKnown = false;
     d->m_iconName.clear();
@@ -535,12 +543,22 @@ void KFileItem::refreshMimeType()
 
 void KFileItem::setUrl( const QUrl &url )
 {
+    if (!d) {
+        kWarning() << "null item";
+        return;
+    }
+
     d->m_url = url;
     setName(QUrlPathInfo(url).fileName());
 }
 
 void KFileItem::setName( const QString& name )
 {
+    if (!d) {
+        kWarning() << "null item";
+        return;
+    }
+
     d->m_strName = name;
     d->m_strText = KIO::decodeFileName( d->m_strName );
     if (d->m_entry.contains(KIO::UDSEntry::UDS_NAME))
@@ -550,6 +568,9 @@ void KFileItem::setName( const QString& name )
 
 QString KFileItem::linkDest() const
 {
+    if (!d)
+        return QString();
+
     // Extract it from the KIO::UDSEntry
     const QString linkStr = d->m_entry.stringValue( KIO::UDSEntry::UDS_LINK_DEST );
     if ( !linkStr.isEmpty() )
@@ -581,22 +602,34 @@ QString KFileItemPrivate::localPath() const
 
 QString KFileItem::localPath() const
 {
+    if (!d)
+        return QString();
+
     return d->localPath();
 }
 
 KIO::filesize_t KFileItem::size() const
 {
+    if (!d)
+        return 0;
+
     return d->size();
 }
 
 bool KFileItem::hasExtendedACL() const
 {
+    if (!d)
+        return false;
+
     // Check if the field exists; its value doesn't matter
     return d->m_entry.contains(KIO::UDSEntry::UDS_EXTENDED_ACL);
 }
 
 KACL KFileItem::ACL() const
 {
+    if (!d)
+        return KACL();
+
     if ( hasExtendedACL() ) {
         // Extract it from the KIO::UDSEntry
         const QString fieldVal = d->m_entry.stringValue( KIO::UDSEntry::UDS_ACL_STRING );
@@ -609,6 +642,9 @@ KACL KFileItem::ACL() const
 
 KACL KFileItem::defaultACL() const
 {
+    if (!d)
+        return KACL();
+
     // Extract it from the KIO::UDSEntry
     const QString fieldVal = d->m_entry.stringValue( KIO::UDSEntry::UDS_DEFAULT_ACL_STRING );
     if ( !fieldVal.isEmpty() )
@@ -619,12 +655,18 @@ KACL KFileItem::defaultACL() const
 
 KDateTime KFileItem::time( FileTimes which ) const
 {
+    if (!d)
+        return KDateTime();
+
     return d->time(which);
 }
 
 #ifndef KDE_NO_DEPRECATED
 time_t KFileItem::time( unsigned int which ) const
 {
+    if (!d)
+        return 0;
+
     switch (which) {
     case KIO::UDSEntry::UDS_ACCESS_TIME:
         return d->time(AccessTime).toTime_t();
@@ -639,6 +681,9 @@ time_t KFileItem::time( unsigned int which ) const
 
 QString KFileItem::user() const
 {
+    if (!d)
+        return QString();
+
     return d->user();
 }
 
@@ -655,6 +700,9 @@ QString KFileItemPrivate::user() const
 
 QString KFileItem::group() const
 {
+    if (!d)
+        return QString();
+
     return d->group();
 }
 
@@ -685,17 +733,26 @@ bool KFileItemPrivate::isSlow() const
 
 bool KFileItem::isSlow() const
 {
+    if (!d)
+        return false;
+
     return d->isSlow();
 }
 
 QString KFileItem::mimetype() const
 {
+    if (!d)
+        return QString();
+
     KFileItem * that = const_cast<KFileItem *>(this);
     return that->determineMimeType().name();
 }
 
 QMimeType KFileItem::determineMimeType() const
 {
+    if (!d)
+        return QMimeType();
+
     if (!d->m_mimeType.isValid() || !d->m_bMimeTypeKnown) {
         QMimeDatabase db;
         bool isLocalUrl;
@@ -713,6 +770,9 @@ QMimeType KFileItem::determineMimeType() const
 
 bool KFileItem::isMimeTypeKnown() const
 {
+    if (!d)
+        return false;
+
     // The mimetype isn't known if determineMimeType was never called (on-demand determination)
     // or if this fileitem has a guessed mimetype (e.g. ftp symlink) - in which case
     // it always remains "not fully determined"
@@ -741,6 +801,9 @@ static bool isDirectoryMounted(const QUrl& url)
 // KDE5 TODO: merge with comment()? Need to see what lxr says about the usage of both.
 QString KFileItem::mimeComment() const
 {
+    if (!d)
+        return QString();
+
     const QString displayType = d->m_entry.stringValue( KIO::UDSEntry::UDS_DISPLAY_TYPE );
     if (!displayType.isEmpty())
         return displayType;
@@ -840,6 +903,9 @@ static QString iconFromDesktopFile(const QString& path)
 
 QString KFileItem::iconName() const
 {
+    if (!d)
+        return QString();
+
     if (d->m_useIconNameCache && !d->m_iconName.isEmpty()) {
         return d->m_iconName;
     }
@@ -910,6 +976,9 @@ static bool checkDesktopFile(const KFileItem& item, bool _determineMimeType)
 
 QStringList KFileItem::overlays() const
 {
+    if (!d)
+        return QStringList();
+
     QStringList names = d->m_entry.stringValue( KIO::UDSEntry::UDS_ICON_OVERLAY_NAMES ).split(',');
     if ( d->m_bLink ) {
         names.append("emblem-symbolic-link");
@@ -966,12 +1035,18 @@ QStringList KFileItem::overlays() const
 
 QString KFileItem::comment() const
 {
+    if (!d)
+        return QString();
+
     return d->m_entry.stringValue( KIO::UDSEntry::UDS_COMMENT );
 }
 
 // ## where is this used?
 QPixmap KFileItem::pixmap( int _size, int _state ) const
 {
+    if (!d)
+        return QPixmap();
+
     const QString udsIconName = d->m_entry.stringValue( KIO::UDSEntry::UDS_ICON_NAME );
     if ( !udsIconName.isEmpty() )
         return DesktopIcon(udsIconName, _size, _state);
@@ -1025,6 +1100,9 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
 
 bool KFileItem::isReadable() const
 {
+    if (!d)
+        return false;
+
     /*
       struct passwd * user = getpwuid( geteuid() );
       bool isMyFile = (QString::fromLocal8Bit(user->pw_name) == d->m_user);
@@ -1052,6 +1130,9 @@ bool KFileItem::isReadable() const
 
 bool KFileItem::isWritable() const
 {
+    if (!d)
+        return false;
+
     /*
       struct passwd * user = getpwuid( geteuid() );
       bool isMyFile = (QString::fromLocal8Bit(user->pw_name) == d->m_user);
@@ -1075,6 +1156,9 @@ bool KFileItem::isWritable() const
 
 bool KFileItem::isHidden() const
 {
+    if (!d)
+        return false;
+
     // The kioslave can specify explicitly that a file is hidden or shown
     if ( d->m_hidden != KFileItemPrivate::Auto )
         return d->m_hidden == KFileItemPrivate::Hidden;
@@ -1088,6 +1172,9 @@ bool KFileItem::isHidden() const
 
 bool KFileItem::isDir() const
 {
+    if (!d)
+        return false;
+
     if (d->m_fileMode == KFileItem::Unknown) {
         // Probably the file was deleted already, and KDirLister hasn't told the world yet.
         //kDebug() << d << url() << "can't say -> false";
@@ -1098,6 +1185,9 @@ bool KFileItem::isDir() const
 
 bool KFileItem::isFile() const
 {
+    if (!d)
+        return false;
+
     return !isDir();
 }
 
@@ -1126,6 +1216,9 @@ bool KFileItem::acceptsDrops() const
 
 QString KFileItem::getStatusBarInfo() const
 {
+    if (!d)
+        return QString();
+
     QString text = d->m_strText;
     const QString comment = mimeComment();
 
@@ -1159,6 +1252,9 @@ QString KFileItem::getStatusBarInfo() const
 #ifndef KDE_NO_DEPRECATED
 QString KFileItem::getToolTipText(int maxcount) const
 {
+    if (!d)
+        return QString();
+
     // we can return QString() if no tool tip should be shown
     QString tip;
     KFileMetaInfo info = metaInfo();
@@ -1236,23 +1332,33 @@ QString KFileItem::getToolTipText(int maxcount) const
 
 void KFileItem::run( QWidget* parentWidget ) const
 {
+    if (!d) {
+        kWarning() << "null item";
+        return;
+    }
+
     (void) new KRun( targetUrl(), parentWidget, d->m_fileMode, d->m_bIsLocalUrl );
 }
 
 bool KFileItem::cmp( const KFileItem & item ) const
 {
+    if (!d && !item.d)
+        return true;
+
+    if (!d || !item.d)
+        return false;
+
     return d->cmp(*item.d);
 }
 
 bool KFileItem::operator==(const KFileItem& other) const
 {
-    // is this enough?
-    return d == other.d;
+    return d == other.d || d->m_url == other.d->m_url;
 }
 
 bool KFileItem::operator!=(const KFileItem& other) const
 {
-    return d != other.d;
+    return !operator==(other);
 }
 
 KFileItem::operator QVariant() const
@@ -1263,6 +1369,9 @@ KFileItem::operator QVariant() const
 #ifndef KDE_NO_DEPRECATED
 void KFileItem::setExtraData( const void *key, void *value )
 {
+    if (!d)
+        return;
+
     if ( !key )
         return;
 
@@ -1273,6 +1382,9 @@ void KFileItem::setExtraData( const void *key, void *value )
 #ifndef KDE_NO_DEPRECATED
 const void * KFileItem::extraData( const void *key ) const
 {
+    if (!d)
+        return 0;
+
     return d->m_extra.value( key, 0 );
 }
 #endif
@@ -1280,12 +1392,18 @@ const void * KFileItem::extraData( const void *key ) const
 #ifndef KDE_NO_DEPRECATED
 void KFileItem::removeExtraData( const void *key )
 {
+    if (!d)
+        return;
+
     d->m_extra.remove( key );
 }
 #endif
 
 QString KFileItem::permissionsString() const
 {
+    if (!d)
+        return QString();
+
     if (d->m_access.isNull() && d->m_permissions != KFileItem::Unknown)
         d->m_access = d->parsePermissions( d->m_permissions );
 
@@ -1295,12 +1413,18 @@ QString KFileItem::permissionsString() const
 // check if we need to cache this
 QString KFileItem::timeString( FileTimes which ) const
 {
+    if (!d)
+        return QString();
+
     return KLocale::global()->formatDateTime( d->time(which) );
 }
 
 #ifndef KDE_NO_DEPRECATED
 QString KFileItem::timeString( unsigned int which ) const
 {
+    if (!d)
+        return QString();
+
     switch (which) {
     case KIO::UDSEntry::UDS_ACCESS_TIME:
         return timeString(AccessTime);
@@ -1315,12 +1439,18 @@ QString KFileItem::timeString( unsigned int which ) const
 
 void KFileItem::setMetaInfo( const KFileMetaInfo & info ) const
 {
+    if (!d)
+        return;
+
     d->m_metaInfo = info;
 }
 
 KFileMetaInfo KFileItem::metaInfo(bool autoget, int what) const
 {
-    if (d && (isRegularFile() || isDir()) && autoget && !d->m_metaInfo.isValid())
+    if (!d)
+        return KFileMetaInfo();
+
+    if ((isRegularFile() || isDir()) && autoget && !d->m_metaInfo.isValid())
     {
         bool isLocalUrl;
         QUrl url(mostLocalUrl(isLocalUrl));
@@ -1340,6 +1470,9 @@ void KFileItem::assign( const KFileItem & item )
 
 QUrl KFileItem::mostLocalUrl(bool &local) const
 {
+    if (!d)
+        return QUrl();
+
     const QString local_path = localPath();
     if ( !local_path.isEmpty() ) {
         local = true;
@@ -1358,57 +1491,103 @@ QUrl KFileItem::mostLocalUrl() const
 
 QDataStream & operator<< ( QDataStream & s, const KFileItem & a )
 {
-    // We don't need to save/restore anything that refresh() invalidates,
-    // since that means we can re-determine those by ourselves.
-    s << a.d->m_url;
-    s << a.d->m_strName;
-    s << a.d->m_strText;
+    if (a.d) {
+        // We don't need to save/restore anything that refresh() invalidates,
+        // since that means we can re-determine those by ourselves.
+        s << a.d->m_url;
+        s << a.d->m_strName;
+        s << a.d->m_strText;
+    } else {
+        s << QUrl();
+        s << QString();
+        s << QString();
+    }
+
     return s;
 }
 
 QDataStream & operator>> ( QDataStream & s, KFileItem & a )
 {
-    s >> a.d->m_url;
-    s >> a.d->m_strName;
-    s >> a.d->m_strText;
+    QUrl url;
+    QString strName, strText;
+
+    s >> url;
+    s >> strName;
+    s >> strText;
+
+    if (!a.d) {
+        kWarning() << "null item";
+        return s;
+    }
+
+    if (url.isEmpty()) {
+        a.d = 0;
+        return s;
+    }
+
+    a.d->m_url = url;
+    a.d->m_strName = strName;
+    a.d->m_strText = strText;
     a.d->m_bIsLocalUrl = a.d->m_url.isLocalFile();
     a.d->m_bMimeTypeKnown = false;
     a.refresh();
+
     return s;
 }
 
 QUrl KFileItem::url() const
 {
+    if (!d)
+        return QUrl();
+
     return d->m_url;
 }
 
 mode_t KFileItem::permissions() const
 {
+    if (!d)
+        return 0;
+
     return d->m_permissions;
 }
 
 mode_t KFileItem::mode() const
 {
+    if (!d)
+        return 0;
+
     return d->m_fileMode;
 }
 
 bool KFileItem::isLink() const
 {
+    if (!d)
+        return false;
+
     return d->m_bLink;
 }
 
 bool KFileItem::isLocalFile() const
 {
+    if (!d)
+        return false;
+
     return d->m_bIsLocalUrl;
 }
 
 QString KFileItem::text() const
 {
+    if (!d)
+        return QString();
+
     return d->m_strText;
 }
 
 QString KFileItem::name( bool lowerCase ) const
 {
+    if (!d)
+        return QString();
+
     if ( !lowerCase )
         return d->m_strName;
     else
@@ -1419,6 +1598,9 @@ QString KFileItem::name( bool lowerCase ) const
 
 QUrl KFileItem::targetUrl() const
 {
+    if (!d)
+        return QUrl();
+
     const QString targetUrlStr = d->m_entry.stringValue( KIO::UDSEntry::UDS_TARGET_URL );
     if (!targetUrlStr.isEmpty())
         return QUrl(targetUrlStr);
@@ -1429,6 +1611,9 @@ QUrl KFileItem::targetUrl() const
 QUrl KFileItem::nepomukUri() const
 {
 #if ! KIO_NO_NEPOMUK
+    if (!d)
+        return QUrl();
+
     const QString nepomukUriStr = d->m_entry.stringValue( KIO::UDSEntry::UDS_NEPOMUK_URI );
     if(!nepomukUriStr.isEmpty()) {
         return QUrl(nepomukUriStr);
@@ -1458,6 +1643,9 @@ QUrl KFileItem::nepomukUri() const
 
 QMimeType KFileItem::currentMimeType() const
 {
+    if (!d)
+        return QMimeType();
+
     if (!d->m_mimeType.isValid()) {
         // On-demand fast (but not always accurate) mimetype determination
         Q_ASSERT(!d->m_url.isEmpty());
@@ -1484,21 +1672,37 @@ QMimeType KFileItem::currentMimeType() const
 
 KIO::UDSEntry KFileItem::entry() const
 {
+    if (!d)
+        return KIO::UDSEntry();
+
     return d->m_entry;
 }
 
 bool KFileItem::isMarked() const
 {
+    if (!d)
+        return false;
+
     return d->m_bMarked;
 }
 
 void KFileItem::mark()
 {
+    if (!d) {
+        kWarning() << "null item";
+        return;
+    }
+
     d->m_bMarked = true;
 }
 
 void KFileItem::unmark()
 {
+    if (!d) {
+        kWarning() << "null item";
+        return;
+    }
+
     d->m_bMarked = false;
 }
 
@@ -1574,6 +1778,9 @@ bool KFileItem::isDesktopFile() const
 
 bool KFileItem::isRegularFile() const
 {
+    if (!d)
+        return false;
+
     return S_ISREG(d->m_fileMode);
 }
 

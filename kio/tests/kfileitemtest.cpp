@@ -105,14 +105,18 @@ void KFileItemTest::testDetach()
     QCOMPARE(fileItem2.extraData(this), (const void*)this);
 #endif
     QVERIFY(fileItem == fileItem2);
+    QVERIFY(fileItem.d == fileItem2.d);
     fileItem2.mark();
     QVERIFY(fileItem2.isMarked());
     QVERIFY(!fileItem.isMarked());
-    QVERIFY(fileItem != fileItem2);
+    QVERIFY(fileItem == fileItem2);
+    QVERIFY(fileItem.d != fileItem2.d);
 
     fileItem = fileItem2;
     QVERIFY(fileItem2.isMarked());
     QVERIFY(fileItem == fileItem2);
+    QVERIFY(fileItem.d == fileItem2.d);
+    QVERIFY(!(fileItem != fileItem2));
 }
 
 void KFileItemTest::testBasic()
@@ -247,7 +251,9 @@ void KFileItemTest::testCmp()
 
     KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, QUrl::fromLocalFile(file.fileName()), true /*on demand*/);
     KFileItem fileItem2(KFileItem::Unknown, KFileItem::Unknown, QUrl::fromLocalFile(file.fileName()), false);
-    QVERIFY(fileItem != fileItem2); // created independently so not 'equal'
+    QVERIFY(fileItem == fileItem2); // created independently, but still 'equal'
+    QVERIFY(fileItem.d != fileItem2.d);
+    QVERIFY(!(fileItem != fileItem2));
     QVERIFY(fileItem.cmp(fileItem2));
 }
 

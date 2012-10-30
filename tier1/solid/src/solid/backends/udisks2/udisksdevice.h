@@ -79,6 +79,7 @@ public:
     bool isEncryptedContainer() const;
     bool isEncryptedCleartext() const;
     bool isSwap() const;
+    bool isLoop() const;
 
     QString drivePath() const;
 
