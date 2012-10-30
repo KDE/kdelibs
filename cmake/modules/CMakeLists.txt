@@ -18,9 +18,7 @@ set(cmakeFilesDontInstall
 # which are used inside kdelibs, but which don't have to be installed (and
 # so become part of the public interface of kdelibs which has to be kept
 # compatible).
-set(cmakeFiles CheckCXXSourceCompiles.cmake
-               CheckCXXSourceRuns.cmake
-               CheckCXXSymbolExists.cmake
+set(cmakeFiles
                CheckPointerMember.cmake
                CheckPrototypeExists.cmake
                CheckStructMember.cmake
@@ -33,7 +31,6 @@ set(cmakeFiles CheckCXXSourceCompiles.cmake
                FindBerkeleyDB.cmake
                FindBlitz.cmake
                FindBlueZ.cmake
-               FindBoost.cmake
                FindCarbon.cmake
                FindDBusMenuQt.cmake
                FindDNSSD.cmake
@@ -45,8 +42,6 @@ set(cmakeFiles CheckCXXSourceCompiles.cmake
                FindFlac.cmake
                FindFlex.cmake
                FindFontconfig.cmake
-               FindFreetype.cmake
-               FindGIF.cmake
                FindGLIB2.cmake
                FindGMP.cmake
                FindGObject.cmake
@@ -73,7 +68,6 @@ set(cmakeFiles CheckCXXSourceCompiles.cmake
                FindLibAttica.cmake
                FindLibKonq.cmake
                FindLibLZMA.cmake
-               FindLibXml2.cmake
                FindLibXslt.cmake
                FindLibintl.cmake
                FindLibraryWithDebug.cmake
@@ -85,9 +79,7 @@ set(cmakeFiles CheckCXXSourceCompiles.cmake
                FindNetworkManager.cmake
                FindOggVorbis.cmake
                FindOpenEXR.cmake
-               FindOpenSSL.cmake
                FindPhonon.cmake
-               FindPkgConfig.cmake
                FindPlasma.cmake
                FindPopplerQt4.cmake
                FindPostgreSQL.cmake
@@ -96,8 +88,6 @@ set(cmakeFiles CheckCXXSourceCompiles.cmake
                FindPyQt4.cmake
                Qt4Macros.cmake
                Qt4ConfigDependentSettings.cmake
-               FindPackageHandleStandardArgs.cmake
-               CMakeParseArguments.cmake  # used by FindPackageHandleStandardArgs.cmake, will be in CMake 2.8.3
                FindPythonLibrary.cmake
                FindQCA2.cmake
                FindQImageBlitz.cmake
