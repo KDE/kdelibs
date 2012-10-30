@@ -22,6 +22,8 @@
 
 #include <kdeclarative_export.h>
 
+#include <QStringList>
+
 class QDeclarativeEngine;
 class QScriptEngine;
 
@@ -47,6 +49,26 @@ public:
      * after command-line options are defined.
      */
     static void setupQmlJsDebugger();
+
+    /**
+     * @return the runtime platform, e.g. "desktop" or "tablet, touch". The first entry/ies in
+     *         the list relate to the platform formfactor and the last is the input method
+     *         specialization. If the string is empty, there is no specified runtime platform
+     *         and a traditional desktop environment may be assumed
+     * @since 4.10
+     */
+    static QStringList runtimePlatform();
+
+    /**
+     * @return the QML components target, based on the runtime platform. e.g. touch or desktop
+     */
+    static QString componentsTarget();
+
+    /**
+     * @return the default components target; can be used to compare against the returned value
+     *         from @see componentsTarget()
+     */
+    static QString defaultComponentsTarget();
 
 private:
     KDeclarativePrivate *const d;
