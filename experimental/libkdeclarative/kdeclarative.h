@@ -61,12 +61,14 @@ public:
 
     /**
      * @return the QML components target, based on the runtime platform. e.g. touch or desktop
+     * @since 4.10
      */
     static QString componentsTarget();
 
     /**
      * @return the default components target; can be used to compare against the returned value
      *         from @see componentsTarget()
+     * @since 4.10
      */
     static QString defaultComponentsTarget();
 
