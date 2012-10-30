@@ -40,7 +40,7 @@ if (PYTHONINTERP_FOUND)
     set(PYTHON_SHORT_VERSION "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
     set(PYTHON_LONG_VERSION ${PYTHON_VERSION_STRING})
     
-    find_package(PythonLibs)
+    find_package(PythonLibs QUIET)
     
     if(PYTHONLIBS_FOUND)
         set(PYTHON_LIBRARY ${PYTHON_LIBRARIES})
@@ -58,4 +58,4 @@ if (PYTHONINTERP_FOUND)
         
 endif(PYTHONINTERP_FOUND)
 
-find_package_handle_standard_args(PYTHON_LIBRARY DEFAULT_MSG PYTHONLIBRARY_FOUND PYTHONINTERP_FOUND)
+find_package_handle_standard_args(PythonLibrary DEFAULT_MSG PYTHON_LIBRARY)
