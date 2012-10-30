@@ -23,6 +23,7 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
 #include <QtDBus>
+#include <QtXml/QDomDocument>
 
 #include "../shared/rootdevice.h"
 
@@ -128,6 +129,7 @@ QStringList Manager::allDevices()
 {
     m_deviceCache.clear();
 
+#if 0
     QDBusPendingReply<DBUSManagerStruct> reply = m_manager.GetManagedObjects();
     reply.waitForFinished();
     if (!reply.isError()) {  // enum devices
@@ -156,9 +158,47 @@ QStringList Manager::allDevices()
         qWarning() << "Failed enumerating UDisks2 objects:" << reply.error().name() << "\n" << reply.error().message();
     }
 
+#endif
+
+    introspect("/org/freedesktop/UDisks2/block_devices", true /*checkOptical*/);
+    introspect("/org/freedesktop/UDisks2/drives");
+
     return m_deviceCache;
 }
 
+void Manager::introspect(const QString & path, bool checkOptical)
+{
+    QDBusMessage call = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, path,
+                                                       DBUS_INTERFACE_INTROSPECT, "Introspect");
+    QDBusPendingReply<QString> reply = QDBusConnection::systemBus().asyncCall(call);
+    reply.waitForFinished();
+
+    if (reply.isValid()) {
+        QDomDocument dom;
+        dom.setContent(reply.value());
+        QDomNodeList nodeList = dom.documentElement().elementsByTagName("node");
+        for (int i = 0; i < nodeList.count(); i++) {
+            QDomElement nodeElem = nodeList.item(i).toElement();
+            if (!nodeElem.isNull() && nodeElem.hasAttribute("name")) {
+                const QString udi = path + "/" + nodeElem.attribute("name");
+
+                if (checkOptical) {
+                    Device device(udi);
+                    if (device.mightBeOpticalDisc()) {
+                        QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, udi, DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
+                                                             SLOT(slotMediaChanged(QDBusMessage)));
+                        if (!device.isOpticalDisc())  // skip empty CD disc
+                            continue;
+                    }
+                }
+
+                m_deviceCache.append(udi);
+            }
+        }
+    }
+    else
+        qWarning() << "Failed enumerating UDisks2 objects:" << reply.error().name() << "\n" << reply.error().message();
+}
 
 QSet< Solid::DeviceInterface::Type > Manager::supportedInterfaces() const
 {
@@ -226,3 +266,4 @@ const QStringList & Manager::deviceCache()
 
     return m_deviceCache;
 }
+

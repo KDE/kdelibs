@@ -154,6 +154,16 @@ public Q_SLOTS:
      */
     void animatedHide();
 
+Q_SIGNALS:
+    /**
+     * This signal is emitted when the user clicks a link in the text label.
+     * The URL referred to by the href anchor is passed in contents.
+     * @param contents text of the href anchor
+     * @see QLabel::linkActivated()
+     * @since 4.10
+     */
+    void linkActivated(const QString& contents);
+
 protected:
     void paintEvent(QPaintEvent *event);
 

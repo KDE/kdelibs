@@ -1030,7 +1030,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
             p.setY(qMin(qMax(0,p.y()),m_widget->height()));
         }
 
-        QWidget* target = 0;
+        QPointer<QWidget> target;
         target = m_widget->childAt(p);
 
         if (target) {
@@ -1103,16 +1103,18 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
             }
         }
 
-        QEvent *e = isMouseWheel ?
+        QScopedPointer<QEvent> e(isMouseWheel ?
                     static_cast<QEvent*>(new QWheelEvent(p, -me.detail()*40, buttons, state, orient)) :
-                    static_cast<QEvent*>(new QMouseEvent(type,    p, button, buttons, state));
+                    static_cast<QEvent*>(new QMouseEvent(type,    p, button, buttons, state)));
 
 
-        ret = bubblingSend(target, e, m_widget);
+        ret = bubblingSend(target, e.data(), m_widget);
 
+        if (!target)
+            break;
         if (needContextMenuEvent) {
             QContextMenuEvent cme(QContextMenuEvent::Mouse, p);
-            static_cast<EventPropagator *>(target)->sendEvent(&cme);
+            static_cast<EventPropagator *>(target.data())->sendEvent(&cme);
         } else if (type == QEvent::MouseMove && target->testAttribute(Qt::WA_Hover)) {
             QHoverEvent he( QEvent::HoverMove, p, p );
             QApplication::sendEvent(target, &he);
@@ -1120,7 +1122,6 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         if (ev.id() == EventImpl::MOUSEUP_EVENT) {
             view()->setMouseEventsTarget( 0 );
         }
-        delete e;
         break;
     }
     case EventImpl::KEYDOWN_EVENT:

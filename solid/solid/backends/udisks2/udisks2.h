@@ -53,6 +53,7 @@ Q_DECLARE_METATYPE(DBUSManagerStruct)
 #define UD2_DBUS_INTERFACE_FILESYSTEM    "org.freedesktop.UDisks2.Filesystem"
 #define UD2_DBUS_INTERFACE_ENCRYPTED     "org.freedesktop.UDisks2.Encrypted"
 #define UD2_DBUS_INTERFACE_SWAP          "org.freedesktop.UDisks2.Swapspace"
+#define UD2_DBUS_INTERFACE_LOOP          "org.freedesktop.UDisks2.Loop"
 
 /* errors */
 #define UD2_ERROR_UNAUTHORIZED            "org.freedesktop.PolicyKit.Error.NotAuthorized"
