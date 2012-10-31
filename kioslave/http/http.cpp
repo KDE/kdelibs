@@ -3204,10 +3204,10 @@ endParsing:
                 // Assign the mime-type.
                 m_mimeType = toQString(l.first().trimmed().toLower());
                 if (m_mimeType.startsWith(QLatin1Char('"'))) {
-                    m_mimeType.remove(QLatin1Char('"'));
+                    m_mimeType.remove(0, 1);
                 }
                 if (m_mimeType.endsWith(QLatin1Char('"'))) {
-                    m_mimeType.truncate(mediaValue.length()-1);
+                    m_mimeType.chop(1);
                 }
                 kDebug(7113) << "Content-type:" << m_mimeType;
                 l.removeFirst();
@@ -3229,11 +3229,11 @@ endParsing:
                 bool quoted = false;
                 if (mediaValue.startsWith(QLatin1Char('"'))) {
                     quoted = true;
-                    mediaValue.remove(QLatin1Char('"'));
+                    mediaValue.remove(0, 1);
                 }
 
                 if (mediaValue.endsWith(QLatin1Char('"'))) {
-                    mediaValue.truncate(mediaValue.length()-1);
+                    mediaValue.chop(1);
                 }
 
                 kDebug (7113) << "Encoding-type:" << mediaAttribute << "=" << mediaValue;
