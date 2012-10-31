@@ -3203,6 +3203,12 @@ endParsing:
             if (!l.isEmpty()) {
                 // Assign the mime-type.
                 m_mimeType = toQString(l.first().trimmed().toLower());
+                if (m_mimeType.startsWith(QLatin1Char('"'))) {
+                    m_mimeType.remove(QLatin1Char('"'));
+                }
+                if (m_mimeType.endsWith(QLatin1Char('"'))) {
+                    m_mimeType.truncate(mediaValue.length()-1);
+                }
                 kDebug(7113) << "Content-type:" << m_mimeType;
                 l.removeFirst();
             }
