@@ -407,7 +407,10 @@ int KApplicationPrivate::xErrhandler( Display* dpy, void* err_ )
 
 void KApplicationPrivate::iceIOErrorHandler( _IceConn *conn )
 {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    http://thread.gmane.org/gmane.comp.kde.devel.frameworks/1122
     emit kapp->aboutToQuit();
+#endif
 
     if ( oldIceIOErrorHandler != NULL )
       (*oldIceIOErrorHandler)( conn );
