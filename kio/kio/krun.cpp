@@ -1534,6 +1534,11 @@ void KRun::abort()
     d->startTimer();
 }
 
+QWidget* KRun::window() const
+{
+    return d->m_window;
+}
+
 bool KRun::hasError() const
 {
     return d->m_bFault;

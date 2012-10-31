@@ -248,8 +248,7 @@ void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
 
 BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& mimeType)
 {
-    KService::Ptr dummy;
-    return handleNonEmbeddable(mimeType, &dummy);
+    return handleNonEmbeddable(mimeType, NULL);
 }
 
 BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& _mimeType, KService::Ptr* selectedService)
