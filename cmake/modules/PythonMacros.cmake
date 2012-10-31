@@ -35,18 +35,17 @@ MACRO(PYTHON_INSTALL SOURCE_FILE DESTINATION_DIR)
 
   SET(_bin_py ${CMAKE_CURRENT_BINARY_DIR}/${_basepath}/${_filename})
 
-  # Python 3.2 changed the pyc file location
-  IF(PYTHON_SHORT_VERSION GREATER 3.1)
+ # Python 3.2 changed the pyc file location
+  IF(PYTHON_VERSION_STRING VERSION_GREATER 3.1)
     # To get the right version for suffix
-    STRING(REPLACE "." "" _suffix ${PYTHON_SHORT_VERSION})
-    SET(_bin_pyc ${CMAKE_CURRENT_BINARY_DIR}/${_basepath}/__pycache__/${_filenamebase}.cpython-${_suffix}.pyc)
-  ELSE(PYTHON_SHORT_VERSION GREATER 3.1)
+    SET(_bin_pyc ${CMAKE_CURRENT_BINARY_DIR}/${_basepath}/__pycache__/${_filenamebase}.cpython-${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}.pyc)
+  ELSE(PYTHON_VERSION_STRING VERSION_GREATER 3.1)
     SET(_bin_pyc ${CMAKE_CURRENT_BINARY_DIR}/${_basepath}/${_filenamebase}.pyc)
-  ENDIF(PYTHON_SHORT_VERSION GREATER 3.1)
+  ENDIF(PYTHON_VERSION_STRING VERSION_GREATER 3.1)
 
   FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${_basepath})
 
-  SET(_message "Byte-compiling ${_bin_py}")
+  MESSAGE(STATUS "Byte-compiling ${_bin_py}")
 
   GET_FILENAME_COMPONENT(_abs_bin_py ${_bin_py} ABSOLUTE)
   IF(_abs_bin_py STREQUAL ${_absfilename})    # Don't copy the file onto itself.
