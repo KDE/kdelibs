@@ -36,7 +36,7 @@ if (PYTHONINTERP_FOUND)
 
     # Set the Python libraries to what we actually found for interpreters
     set(Python_ADDITIONAL_VERSIONS "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
-    # For compatibility, set the same results
+    # These are kept for compatibility
     set(PYTHON_SHORT_VERSION "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
     set(PYTHON_LONG_VERSION ${PYTHON_VERSION_STRING})
     
