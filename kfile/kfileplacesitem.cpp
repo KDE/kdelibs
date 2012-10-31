@@ -32,6 +32,7 @@
 #include <solid/storageaccess.h>
 #include <solid/storagevolume.h>
 #include <solid/storagedrive.h>
+#include <solid/portablemediaplayer.h>
 
 
 KFilePlacesItem::KFilePlacesItem(KBookmarkManager *manager,
@@ -58,6 +59,7 @@ KFilePlacesItem::KFilePlacesItem(KBookmarkManager *manager,
         m_access = m_device.as<Solid::StorageAccess>();
         m_volume = m_device.as<Solid::StorageVolume>();
         m_disc = m_device.as<Solid::OpticalDisc>();
+        m_mtp = m_device.as<Solid::PortableMediaPlayer>();
         if (m_access) {
             connect(m_access, SIGNAL(accessibilityChanged(bool,QString)),
                     this, SLOT(onAccessibilityChanged(bool)));
@@ -115,10 +117,12 @@ Solid::Device KFilePlacesItem::device() const
             m_access = m_device.as<Solid::StorageAccess>();
             m_volume = m_device.as<Solid::StorageVolume>();
             m_disc = m_device.as<Solid::OpticalDisc>();
+            m_mtp = m_device.as<Solid::PortableMediaPlayer>();
         } else {
             m_access = 0;
             m_volume = 0;
             m_disc = 0;
+            m_mtp = 0;
         }
     }
     return m_device;
@@ -183,6 +187,8 @@ QVariant KFilePlacesItem::deviceData(int role) const
             } else if (m_disc && (m_disc->availableContent() & Solid::OpticalDisc::Audio)!=0) {
                 QString device = d.as<Solid::Block>()->device();
                 return QUrl(QString("audiocd:/?device=%1").arg(device));
+            } else if (m_mtp) {
+                return QUrl(QString("mtp:udi=%1").arg(d.udi()));
             } else {
                 return QVariant();
             }
