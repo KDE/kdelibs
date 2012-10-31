@@ -180,15 +180,15 @@ public:
             const QVariantList &args = QVariantList(), QString *error = 0)
     {
         const KService::List offers = self()->query(serviceType, constraint);
+        if (error)
+            error->clear();
         Q_FOREACH (const KService::Ptr &ptr, offers) {
             T *component = ptr->template createInstance<T>(parentWidget, parent, args, error);
             if (component) {
-                if (error)
-                    error->clear();
                 return component;
             }
         }
-        if (error)
+        if (error && error->isEmpty())
             *error = i18n("No service matching the requirements was found");
         return 0;
     }

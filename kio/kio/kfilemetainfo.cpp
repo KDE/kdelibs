@@ -313,10 +313,10 @@ KFileMetaInfo::KFileMetaInfo ( const KFileMetaInfo& k ) : d ( k.d )
 {
 }
 
-const KFileMetaInfo& KFileMetaInfo::operator= ( KFileMetaInfo const & kfmi )
+KFileMetaInfo& KFileMetaInfo::operator= ( KFileMetaInfo const & kfmi )
 {
     d = kfmi.d;
-    return kfmi;
+    return *this;
 }
 
 KFileMetaInfo::~KFileMetaInfo()

@@ -923,7 +923,7 @@ void KDirListerCache::slotFilesChanged( const QStringList &fileList ) // from KD
             continue;
         }
         if (url.isLocalFile()) {
-            pendingUpdates.insert(*it); // delegate the work to processPendingUpdates
+            pendingUpdates.insert(url.toLocalFile()); // delegate the work to processPendingUpdates
         } else {
             pendingRemoteUpdates.insert(fileitem);
             // For remote files, we won't be able to figure out the new information,

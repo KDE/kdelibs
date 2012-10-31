@@ -326,6 +326,7 @@ install( FILES
   KPushButton
   KRandom
   KRandomSequence
+  KRatingPainter
   KRatingWidget
   KRecentDocument
   KRecentFilesAction
@@ -439,6 +440,7 @@ install( FILES
   KUserGroup
   KVBox
   KViewStateMaintainer
+  KViewStateSaver
   KWindowInfo
   KWindowSystem
   KWordMacroExpander

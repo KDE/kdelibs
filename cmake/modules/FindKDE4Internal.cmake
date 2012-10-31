@@ -347,7 +347,7 @@
 
 
 # this is required now by cmake 2.6 and so must not be skipped by if(KDE4_FOUND) below
-cmake_minimum_required(VERSION 2.6.4 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.8 FATAL_ERROR)
 # set the cmake policies to the 2.4.x compatibility settings (may change for KDE 4.3)
 cmake_policy(VERSION 2.4.5)
 
@@ -368,10 +368,10 @@ cmake_policy(SET CMP0005 OLD)
 # were when the were defined. Keep the OLD behaviour so we can set the policies here
 # for all KDE software without the big warning
 cmake_policy(SET CMP0011 OLD)
-# since cmake 2.6.4
-if(POLICY CMP0017)
-  cmake_policy(SET CMP0017 NEW)
-endif(POLICY CMP0017)
+
+# since cmake 2.8.4: when include()ing from inside cmake's module dir, prefer the files
+# in this directory over those from CMAKE_MODULE_PATH
+cmake_policy(SET CMP0017 NEW)
 
 # Only do something if it hasn't been found yet
 if(NOT KDE4_FOUND)
@@ -716,7 +716,7 @@ endif(NOT PHONON_FOUND)
 #####################  provide some options   ##########################################
 
 option(KDE4_ENABLE_FINAL "Enable final all-in-one compilation")
-option(KDE4_BUILD_TESTS  "Build the tests")
+option(KDE4_BUILD_TESTS  "Build the tests" ON)
 option(KDE4_ENABLE_HTMLHANDBOOK  "Create targets htmlhandbook for creating the html versions of the docbook docs")
 set(KDE4_SERIALIZE_TOOL "" CACHE STRING "Tool to serialize resource-intensive commands in parallel builds")
 
@@ -1349,13 +1349,13 @@ macro (KDE4_PRINT_RESULTS)
    # inside kdelibs the include dir and lib dir are internal, not "found"
    if (NOT _kdeBootStrapping)
        if(KDE4_INCLUDE_DIR)
-          message(STATUS "Found KDE 4.9 include dir: ${KDE4_INCLUDE_DIR}")
+          message(STATUS "Found KDE 4.10 include dir: ${KDE4_INCLUDE_DIR}")
        else(KDE4_INCLUDE_DIR)
           message(STATUS "ERROR: unable to find the KDE 4 headers")
        endif(KDE4_INCLUDE_DIR)
 
        if(KDE4_LIB_DIR)
-          message(STATUS "Found KDE 4.9 library dir: ${KDE4_LIB_DIR}")
+          message(STATUS "Found KDE 4.10 library dir: ${KDE4_LIB_DIR}")
        else(KDE4_LIB_DIR)
           message(STATUS "ERROR: unable to find the KDE 4 core library")
        endif(KDE4_LIB_DIR)

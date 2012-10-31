@@ -892,7 +892,7 @@ QSize KFilePlacesView::sizeHint() const
            textWidth = qMax(textWidth,fm.width(index.data(Qt::DisplayRole).toString()));
     }
 
-    const int iconSize = KIconLoader::global()->currentSize(KIconLoader::Dialog);
+    const int iconSize = KIconLoader::global()->currentSize(KIconLoader::Small) + 3 * LATERAL_MARGIN;
     return QSize(iconSize + textWidth + fm.height() / 2, height);
 }
 
@@ -946,7 +946,7 @@ void KFilePlacesView::Private::adaptItemSize()
 
     if (rowCount==0) return; // We've nothing to display anyway
 
-    const int minSize = 16;
+    const int minSize = IconSize(KIconLoader::Small);
     const int maxSize = 64;
 
     int textWidth = 0;

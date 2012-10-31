@@ -77,7 +77,19 @@ struct InterpreterContext
     InterpreterContext() : mode(Normal), depthAtSkip(0)
     {}
 
-    void addCall(DebugDocument::Ptr doc, const QString&, int line);
+    /**
+     * add a new entry to the call stack
+     *
+     * @param doc the document the function is in
+     * @param function the function called
+     * @param line the line number of the function
+     */
+    void addCall(DebugDocument::Ptr doc, const QString &function, int line);
+    /**
+     * update the line number of the current context
+     *
+     * @param line the new line number within the current function
+     */
     void updateCall(int line);
     void removeCall();
 

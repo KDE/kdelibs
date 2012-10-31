@@ -2496,6 +2496,9 @@ void KFileWidgetPrivate::_k_toggleSpeedbar(bool show)
     }
 
     static_cast<KToggleAction *>(q->actionCollection()->action("toggleSpeedbar"))->setChecked(show);
+
+    // if we don't show the places panel, at least show the places menu
+    urlNavigator->setPlacesSelectorVisible(!show);
 }
 
 void KFileWidgetPrivate::_k_toggleBookmarks(bool show)
@@ -2590,7 +2593,7 @@ KUrl KFileWidget::getStartUrl( const KUrl& startDir,
         }
         else						// not special "kfiledialog" URL
         {
-            if (!startDir.directory().isEmpty())	// has directory, maybe with filename
+            if (!startDir.isRelative())	// has directory, maybe with filename
             {
                 ret = startDir;				// will be checked by stat later
                 // If we won't be able to list it (e.g. http), then use default

@@ -396,7 +396,7 @@ if(NOT WIN32)
         set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}")
     else()
         set_source_files_properties(util/kshareddatacache.cpp
-            PROPERTIES COMPILE_FLAGS ${KDE4_ENABLE_EXCEPTIONS})
+            PROPERTIES COMPILE_FLAGS "${KDE4_ENABLE_EXCEPTIONS}")
     endif()
 else(NOT WIN32)
     set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} util/kshareddatacache_win.cpp)
