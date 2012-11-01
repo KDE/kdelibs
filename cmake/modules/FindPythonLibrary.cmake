@@ -12,7 +12,7 @@
 # PYTHON_LONG_VERSION - The version of the Python interpreter found as a human
 #     readable string.
 #
-# PYTHON_SITE_PACKAGES_INSTALL_DIR - this cache variable can be used for installing 
+# PYTHON_SITE_PACKAGES_INSTALL_DIR - this cache variable can be used for installing
 #                              own python modules. You may want to adjust this to be the
 #                              same as ${PYTHON_SITE_PACKAGES_DIR}, but then admin
 #                              privileges may be required for installation.
@@ -39,23 +39,24 @@ if (PYTHONINTERP_FOUND)
     # These are kept for compatibility
     set(PYTHON_SHORT_VERSION "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
     set(PYTHON_LONG_VERSION ${PYTHON_VERSION_STRING})
-    
+
     find_package(PythonLibs QUIET)
-    
+
     if(PYTHONLIBS_FOUND)
         set(PYTHON_LIBRARY ${PYTHON_LIBRARIES})
     endif(PYTHONLIBS_FOUND)
-    
+
     # Auto detect Python site-packages directory
     execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(True))" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
-    
+
     # Set the destination install directory to be the same as the site-packages dir if not supplied
     if(NOT DEFINED PYTHON_SITE_PACKAGES_INSTALL_DIR)
-        set(PYTHON_SITE_PACKAGES_INSTALL_DIR ${PYTHON_SITE_PACKAGES_DIR})
+        set(PYTHON_SITE_PACKAGES_INSTALL_DIR "${PYTHON_SITE_PACKAGES_DIR}")
     endif(NOT DEFINED PYTHON_SITE_PACKAGES_INSTALL_DIR)
-    
-    message(STATUS "Using Python site packages directory: ${PYTHON_SITE_PACKAGES_INSTALL_DIR}")
-        
+
+    message (STATUS "Python system site-packages directory: ${PYTHON_SITE_PACKAGES_DIR}")
+    message(STATUS "Installing Python modules to: ${PYTHON_SITE_PACKAGES_INSTALL_DIR}")
+
 endif(PYTHONINTERP_FOUND)
 
 find_package_handle_standard_args(PythonLibrary DEFAULT_MSG PYTHON_LIBRARY)
