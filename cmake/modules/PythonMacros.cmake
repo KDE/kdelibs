@@ -41,7 +41,7 @@ macro(PYTHON_INSTALL SOURCE_FILE DESTINATION_DIR)
   # Python 3.2 changed the pyc file location
   if(PYTHON_VERSION_STRING VERSION_GREATER 3.1)
     # To get the right version for suffix
-    set(_bin_pyc "${CMAKE_CURRENT_BINARY_DIR}/${_basepath}/__pycache__/${_filenamebase}.cpython-${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.pyc")
+    set(_bin_pyc "${CMAKE_CURRENT_BINARY_DIR}/${_basepath}/__pycache__/${_filenamebase}.cpython-${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}.pyc")
     set(_py_install_dir "${DESTINATION_DIR}/__pycache__/")
   else()
     set(_bin_pyc "${CMAKE_CURRENT_BINARY_DIR}/${_basepath}/${_filenamebase}.pyc")
