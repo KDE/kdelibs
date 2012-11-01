@@ -51,7 +51,7 @@ macro(PYTHON_INSTALL SOURCE_FILE DESTINATION_DIR)
   FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${_basepath})
 
   # Setting because it will be displayed later, in compile_python_files
-  set(_message "Byte-compiling ${_bin_py}")
+  set(_message "Byte-compiling ${_bin_py} to ${_bin_pyc}")
 
   get_filename_component(_abs_bin_py ${_bin_py} ABSOLUTE)
   if(_abs_bin_py STREQUAL _absfilename)    # Don't copy the file onto itself.
