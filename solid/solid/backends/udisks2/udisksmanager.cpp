@@ -129,37 +129,6 @@ QStringList Manager::allDevices()
 {
     m_deviceCache.clear();
 
-#if 0
-    QDBusPendingReply<DBUSManagerStruct> reply = m_manager.GetManagedObjects();
-    reply.waitForFinished();
-    if (!reply.isError()) {  // enum devices
-        m_deviceCache << udiPrefix();
-
-        Q_FOREACH(const QDBusObjectPath &path, reply.value().keys()) {
-            const QString udi = path.path();
-            //qDebug() << "Adding device" << udi;
-
-            if (udi == UD2_DBUS_PATH_MANAGER || udi == UD2_UDI_DISKS_PREFIX || udi.startsWith(UD2_DBUS_PATH_JOBS))
-                continue;
-
-            Device device(udi);
-            if (device.mightBeOpticalDisc()) {
-                QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, udi, DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
-                                                     SLOT(slotMediaChanged(QDBusMessage)));
-                if (!device.isOpticalDisc())  // skip empty CD disc
-                    continue;
-            }
-
-            m_deviceCache.append(udi);
-        }
-    }
-    else  // show error
-    {
-        qWarning() << "Failed enumerating UDisks2 objects:" << reply.error().name() << "\n" << reply.error().message();
-    }
-
-#endif
-
     introspect("/org/freedesktop/UDisks2/block_devices", true /*checkOptical*/);
     introspect("/org/freedesktop/UDisks2/drives");
 
