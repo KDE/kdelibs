@@ -19,6 +19,7 @@
 
 #include "kemoticons.h"
 #include "kemoticonsprovider.h"
+#include <qstandardpaths.h>
 
 #include <QFile>
 #include <QDir>
@@ -98,7 +99,7 @@ KEmoticonsTheme KEmoticonsPrivate::loadTheme(const QString &name)
     const int numberOfTheme = m_loaded.size();
     for (int i = 0; i < numberOfTheme; ++i) {
         const QString fName = m_loaded.at(i)->property("X-KDE-EmoticonsFileName").toString();
-        const QString path = KStandardDirs::locate("emoticons", name + '/' + fName);
+        const QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "emoticons/" + name + '/' + fName);
 
         if (QFile::exists(path)) {
             KEmoticonsProvider *provider = loadProvider(m_loaded.at(i));
@@ -193,7 +194,7 @@ QStringList KEmoticons::installTheme(const QString &archiveName)
     KArchiveDirectory* currentDir = 0L;
     KArchive *archive = 0L;
 
-    QString localThemesDir(KStandardDirs::locateLocal("emoticons", QString()));
+    QString localThemesDir( QStandardPaths::writableLocation( QStandardPaths::GenericDataLocation ) + "/emoticons" );
 
     if (localThemesDir.isEmpty()) {
         kError() << "Could not find a suitable place in which to install the emoticon theme";
