@@ -8,7 +8,7 @@ set(SOURCES
 
 qt4_wrap_ui(SOURCES mimetypeviewer.ui)
 
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../../include/QtMimeTypes)
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../../include/QtMimeTypes ${CMAKE_CURRENT_SOURCE_DIR}/../../src/mimetypes)
 
 add_executable( mimetypeviewer ${SOURCES} )
 

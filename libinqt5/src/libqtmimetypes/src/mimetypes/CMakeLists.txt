@@ -27,3 +27,6 @@ set_target_properties( QtMimeTypes PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                               SOVERSION ${ECM_SOVERSION})
 
 install(TARGETS QtMimeTypes EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+
+install(FILES qmimedatabase.h qmimetype.h DESTINATION ${INCLUDE_INSTALL_DIR}/inqt5/QtMimeTypes)
+

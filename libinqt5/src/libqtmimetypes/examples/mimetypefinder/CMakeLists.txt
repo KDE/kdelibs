@@ -2,7 +2,7 @@ set(SOURCES
 	 main.cpp
 )
 
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../../include/QtMimeTypes)
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../../include/QtMimeTypes ${CMAKE_CURRENT_SOURCE_DIR}/../../src/mimetypes)
 
 add_executable( mimetypefinder ${SOURCES} )
 
