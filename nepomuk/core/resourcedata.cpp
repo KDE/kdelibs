@@ -498,7 +498,7 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
                 res.determineFinalResourceData();
                 res.m_data->store();
 
-                varList << res.uri();
+                varList << res.resourceUri();
             }
             else {
                 varList << var.variant();

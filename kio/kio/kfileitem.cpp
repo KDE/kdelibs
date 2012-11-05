@@ -1307,7 +1307,13 @@ bool KFileItem::cmp( const KFileItem & item ) const
 
 bool KFileItem::operator==(const KFileItem& other) const
 {
-    return d == other.d || d->m_url == other.d->m_url;
+    if (!d && !other.d)
+        return true;
+
+    if (!d || !other.d)
+        return false;
+
+    return d->m_url == other.d->m_url;
 }
 
 bool KFileItem::operator!=(const KFileItem& other) const
