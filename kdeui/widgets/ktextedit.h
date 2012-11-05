@@ -27,6 +27,7 @@
 #define HAVE_SHOWTABACTION 1
 #define HAVE_AUTOCORRECTFEATURE 1
 #define HAVE_FORCESPELLCHECKING 1
+#define HAVE_MOUSEPOPUPMENUIMPLEMENTATION 1
 /**
  * This interface is a workaround to keep binary compatibility in KDE4, because
  * adding the virtual keyword to functions is not BC.
@@ -368,6 +369,14 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
      * @since 4.1
      */
     void replace();
+
+
+    /**
+     * @since 4.10
+     * Because of binary compatibility constraints, mousePopupMenu()
+     * is not virtual. Therefore it must dynamically detect and call this slot.  
+     */
+    void mousePopupMenuImplementation(const QPoint& pos);
 
   protected Q_SLOTS:
     /**
