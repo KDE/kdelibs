@@ -13,6 +13,7 @@ include_directories(
 )
 if(NOT QT5_BUILD)
     include_directories( ${QtMimeTypes_SOURCE_DIR}/include/QtMimeTypes )
+    include_directories( ${QtMimeTypes_SOURCE_DIR}/src/mimetypes )
 endif()
 
 include(ECMMarkAsTest)
