@@ -21,12 +21,9 @@
 #include <karchive.h>
 
 /**
- * A class for reading / writing (optionally compressed) tar archives.
+ * A class for reading / writing p7zip archives.
  *
- * K7Zip allows you to read and write tar archives, including those
- * that are compressed using gzip, bzip2 or xz.
- *
- * @author Torben Weis <weis@kde.org>, David Faure <faure@kde.org>
+ * @author Mario Bensi
  */
 class KARCHIVE_EXPORT K7Zip : public KArchive
 {
