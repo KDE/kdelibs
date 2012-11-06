@@ -11,37 +11,6 @@ include_directories( ${KDE4_KDEUI_INCLUDES}
                      ${CMAKE_BINARY_DIR}/tier2/kauth/src/
 )
 
-########### kemoticons ################
-add_subdirectory(kemoticons)
-
-set(kemoticons_LIB_SRCS
-    kemoticons/kemoticons.cpp
-    kemoticons/kemoticonstheme.cpp
-    kemoticons/kemoticonsprovider.cpp
-)
-
-kde4_add_library(kemoticons ${LIBRARY_TYPE} ${kemoticons_LIB_SRCS})
-generate_export_header(kemoticons)
-target_link_libraries(kemoticons ${KDE4_KIO_LIBS} karchive kcoreaddons kwidgetsaddons ${QtMimeTypes_LIBRARY})
-target_link_libraries(kemoticons LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY})
-set_target_properties(kemoticons PROPERTIES
-                      VERSION ${GENERIC_LIB_VERSION}
-                      SOVERSION ${GENERIC_LIB_SOVERSION})
-
-install(FILES kemoticons/kemoticonsTheme.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
-
-install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/kemoticons_export.h
-    kemoticons/kemoticons.h
-    kemoticons/kemoticonstheme.h
-    kemoticons/kemoticonsprovider.h
-    DESTINATION ${INCLUDE_INSTALL_DIR}
-    COMPONENT Devel
-)
-
-install(TARGETS kemoticons EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
-
-
 ########### kcmutils ###############
 set(kcmutils_LIB_SRCS
     kcmoduleinfo.cpp
@@ -117,8 +86,8 @@ set(kutils_LIB_SRCS
 
 kde4_add_library(kutils ${LIBRARY_TYPE} ${kutils_LIB_SRCS})
 
-target_link_libraries(kutils kemoticons kidletime kcmutils kprintutils ${QT_QTCORE_LIBRARY})
-target_link_libraries(kutils LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY} kemoticons kidletime kcmutils kprintutils)
+target_link_libraries(kutils kidletime kcmutils kprintutils ${QT_QTCORE_LIBRARY})
+target_link_libraries(kutils LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY} kidletime kcmutils kprintutils)
 set_target_properties(kutils PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}
                       SOVERSION ${GENERIC_LIB_SOVERSION})
