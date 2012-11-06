@@ -493,9 +493,9 @@ QString Device::volumeDescription() const
     if (isEncryptedContainer())
     {
         if (!size_str.isEmpty())
-            description = QCoreApplication::translate("", "%1 Encrypted Container", "%1 is the size").arg(size_str);
+            description = QCoreApplication::translate("", "%1 Encrypted Drive", "%1 is the size").arg(size_str);
         else
-            description = QCoreApplication::translate("", "Encrypted Container");
+            description = QCoreApplication::translate("", "Encrypted Drive");
     }
     else if (drive_type == Solid::StorageDrive::HardDisk && !drive_is_removable)
     {
