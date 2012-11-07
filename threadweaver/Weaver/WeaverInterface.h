@@ -93,9 +93,9 @@ namespace ThreadWeaver {
         /** Add a job to be executed.
 
             It depends on the state if execution of the job will be attempted
-            immidiately. In suspended state, jobs can be added to the queue,
+            immediately. In suspended state, jobs can be added to the queue,
             but the threads remain suspended. In WorkongHard state, an idle
-            thread may immidiately execute the job, or it might be queued if
+            thread may immediately execute the job, or it might be queued if
             all threads are busy.
         */
         virtual void enqueue ( Job* ) = 0;
@@ -131,7 +131,7 @@ namespace ThreadWeaver {
             When all threads are done processing the assigned job, the
             signal suspended will() be emitted.
             If you call suspend() and there are no jobs left to
-            be done, you will immidiately receive the suspended()
+            be done, you will immediately receive the suspended()
             signal. */
         virtual void suspend () = 0;
         /** Resume job queueing.
