@@ -5,12 +5,7 @@ include(ECMMarkAsTest)
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/../src/core
   ${CMAKE_CURRENT_BINARY_DIR}/../src/core
-
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../kdecore/config
-  #${CMAKE_CURRENT_SOURCE_DIR}/../../../kdecore/io
-  #${CMAKE_CURRENT_SOURCE_DIR}/../../../kdecore/util
-  ${CMAKE_CURRENT_BINARY_DIR}/../../../kdecore
-  ${KDE4_KDEUI_INCLUDES}
+  ${KDE4_KDEUI_INCLUDES}  # for sonnet/dialog.h (TODO)
 )
 ########### test_suggest ###############
 

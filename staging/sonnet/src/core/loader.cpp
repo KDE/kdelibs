@@ -28,7 +28,6 @@
 #include <kpluginloader.h>
 
 #include <kconfig.h>
-#include <kglobal.h>
 
 #include <QtCore/QHash>
 #include <QtCore/QMap>

@@ -1,14 +1,10 @@
 project(sonnetcore)
 
-# TODO port away from kdecore/ includes
 include_directories(
   ${QT_INCLUDES}
-  ${CMAKE_SOURCE_DIR}/kdecore/kernel
-  ${CMAKE_SOURCE_DIR}/kdecore/util
-  ${CMAKE_SOURCE_DIR}/kdecore/localization
-  ${CMAKE_SOURCE_DIR}/kdecore/config
-  ${CMAKE_SOURCE_DIR}/kdecore/global
-  ${CMAKE_SOURCE_DIR}/kdecore/io
+  ${CMAKE_SOURCE_DIR}/kdecore/localization # TODO port to i18n framework
+  ${CMAKE_BINARY_DIR}/kdecore
+
   ${kcoreaddons_SOURCE_DIR}/src/io
   ${kcoreaddons_BINARY_DIR}/src
   ${kconfig_SOURCE_DIR}/src/core # ksharedptr.h, used by kservice
@@ -17,8 +13,6 @@ include_directories(
   ${kservice_SOURCE_DIR}/src/sycoca
   ${kservice_SOURCE_DIR}/src/services
   ${kservice_SOURCE_DIR}/src/plugin
-  ${CMAKE_SOURCE_DIR}/kdecore
-  ${CMAKE_BINARY_DIR}/kdecore
   ${CMAKE_CURRENT_BINARY_DIR}
 )
 
