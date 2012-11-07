@@ -246,7 +246,7 @@ void KNewStuff2Test::quitTest()
         // this would be the soft way out...
         delete m_engine;
         deleteLater();
-        kapp->quit();
+        qApp->quit();
     } else {
         exit(1);
     }

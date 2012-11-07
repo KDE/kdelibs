@@ -526,12 +526,6 @@ Q_DECL_EXPORT void QApplication::setPalette( const QPalette &, bool ,
 }
 #endif
 
-#include <kapplication.h>
-// void KApplication::dcopFailure( const QString & )
-// {
-//     qDebug( "KApplication::dcopFailure" );
-// }
-
 #include <kparts/historyprovider.h>
 
 bool KParts::HistoryProvider::contains( const QString& t ) const

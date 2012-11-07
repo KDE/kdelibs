@@ -511,7 +511,7 @@ JSValue* KHTMLPartFunction::callAsFunction(ExecState *exec, JSObject*/*thisObj*/
             PartMonitor pm(m_part);
             m_part->openUrl(url);
             pm.waitForCompletion();
-	    kapp->processEvents(QEventLoop::AllEvents);
+	    qApp->processEvents(QEventLoop::AllEvents);
             break;
         }
 	case OpenPageAsUrl: {
@@ -548,7 +548,7 @@ JSValue* KHTMLPartFunction::callAsFunction(ExecState *exec, JSObject*/*thisObj*/
 		m_part->end();
 		pm.waitForCompletion();
 	    }
-	    kapp->processEvents(QEventLoop::AllEvents);
+	    qApp->processEvents(QEventLoop::AllEvents);
 	    break;
 	}
 	case Begin: {
@@ -563,7 +563,7 @@ JSValue* KHTMLPartFunction::callAsFunction(ExecState *exec, JSObject*/*thisObj*/
         }
         case End: {
             m_part->end();
-	    kapp->processEvents(QEventLoop::AllEvents);
+	    qApp->processEvents(QEventLoop::AllEvents);
             break;
         }
 	case ExecuteScript: {
@@ -573,11 +573,11 @@ JSValue* KHTMLPartFunction::callAsFunction(ExecState *exec, JSObject*/*thisObj*/
 	    proxy->evaluate("",0,code,0,&comp);
 	    if (comp.complType() == Throw)
 		exec->setException(comp.value());
-	    kapp->processEvents(QEventLoop::AllEvents);
+	    qApp->processEvents(QEventLoop::AllEvents);
 	    break;
 	}
 	case ProcessEvents: {
-	    kapp->processEvents(QEventLoop::AllEvents);
+	    qApp->processEvents(QEventLoop::AllEvents);
 	    break;
 	}
     }
