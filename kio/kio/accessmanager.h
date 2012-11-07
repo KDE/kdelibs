@@ -25,6 +25,7 @@
 #define KIO_ACCESSMANAGER_H
 
 #include <kio/global.h>
+#include <qwindowdefs.h> // WId
 
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>
@@ -331,7 +332,7 @@ public:
 
     /**
      * Returns true if persistent caching of cookies is disabled.
-     * 
+     *
      * @see setDisableCookieStorage
      * @since 4.6
      */
@@ -339,11 +340,11 @@ public:
 
     /**
      * Prevent persistent storage of cookies.
-     * 
+     *
      * Call this function if you do not want cookies to be stored locally for
      * later access without disabling the cookiejar. All cookies will be discarded
      * once the sessions that are using the cookie are done.
-     * 
+     *
      * @since 4.6
      */
     void setDisableCookieStorage (bool disable);

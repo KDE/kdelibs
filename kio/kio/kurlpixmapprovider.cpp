@@ -21,6 +21,7 @@
 #include "kurlpixmapprovider.h"
 #include <QUrl>
 #include <kio/global.h>
+#include <pixmaploader.h>
 
 KUrlPixmapProvider::KUrlPixmapProvider()
     : d(0)

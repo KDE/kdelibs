@@ -23,10 +23,10 @@
 #define KIO_JOBCLASSES_H
 
 #include <QtCore/QObject>
-#include <QtCore/QLinkedList> // KDE5: remove
 #include <QtCore/QStringList>
 
-#include <kio/global.h>
+#include <kio/global.h> // filesize_t
+#include <kio/metadata.h>
 #include <kio/udsentry.h>
 
 #include <kcompositejob.h>

@@ -46,7 +46,7 @@
 #include <kurlcompletion.h>
 #include <kuser.h>
 #include <kprotocolmanager.h>
-#include <kio/global.h>
+#include <kio/pixmaploader.h>
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
 #include <kio/netaccess.h>

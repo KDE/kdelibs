@@ -24,6 +24,7 @@
 #include <kdebug.h>
 #include <kio/global.h>
 #include <kio/kio_export.h>
+#include <sys/stat.h> // S_ISDIR
 
 #include <QtCore/QString>
 #include <QtCore/QHash>

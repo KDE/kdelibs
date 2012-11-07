@@ -28,6 +28,7 @@
 #include <kio/scheduler.h>
 #include <kprotocolinfo.h>
 #include <QtCore/QTimer>
+#include <sys/stat.h>  // S_ISDIR
 
 #include "kioslavetest.h"
 

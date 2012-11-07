@@ -28,12 +28,10 @@
 #include <QtCore/QVariant>
 
 #include <kiconloader.h>
-#include <QPixmap> // for pixmapForUrl
-
-#include <sys/stat.h>  // S_ISDIR
-#include <sys/types.h> // mode_t
 
 #include <kjob.h>
+
+#include "metadata.h" // for source compat
 
 class QUrl;
 class KJobTrackerInterface;
@@ -46,10 +44,11 @@ class QTime;
  */
 namespace KIO
 {
-  /// 64-bit file offset
-  typedef qlonglong fileoffset_t;
-  /// 64-bit file size
-  typedef qulonglong filesize_t;
+
+    /// 64-bit file offset
+    typedef qlonglong fileoffset_t;
+    /// 64-bit file size
+    typedef qulonglong filesize_t;
 
   /**
    * Converts @p size from bytes to the string representation.
@@ -371,95 +370,7 @@ namespace KIO
    */
   KIO_EXPORT QString iconNameForUrl(const QUrl& url);
 
-  /**
-   * Convenience method to find the pixmap for a URL.
-   *
-   * Call this one when you don't know the mimetype.
-   *
-   * @param _url URL for the file.
-   * @param _mode the mode of the file. The mode may modify the icon
-   *              with overlays that show special properties of the
-   *              icon. Use 0 for default
-   * @param _group The icon group where the icon is going to be used.
-   * @param _force_size Override globally configured icon size.
-   *        Use 0 for the default size
-   * @param _state The icon state, one of: KIconLoader::DefaultState,
-   * KIconLoader::ActiveState or KIconLoader::DisabledState.
-   * @param _path Output parameter to get the full path. Seldom needed.
-   *              Ignored if 0
-   * @return the pixmap of the URL, can be a default icon if not found
-   */
-  KIO_EXPORT QPixmap pixmapForUrl( const QUrl & _url, mode_t _mode = 0, KIconLoader::Group _group = KIconLoader::Desktop,
-                                   int _force_size = 0, int _state = 0, QString * _path = 0 );
-
   KIO_EXPORT KJobTrackerInterface *getJobTracker();
-
-
-/**
- * MetaData is a simple map of key/value strings.
- */
-class KIO_EXPORT MetaData : public QMap<QString, QString>
-{
-public:
-  /**
-   * Creates an empty meta data map.
-   */
-   MetaData() : QMap<QString, QString>() { }
-  /**
-   * Copy constructor.
-   */
-   MetaData(const QMap<QString, QString>&metaData) :
-     QMap<QString, QString>(metaData) { }
-
-   /**
-    * Creates a meta data map from a QVaraint map.
-    * @since 4.3.1
-    */
-    MetaData(const QMap<QString,QVariant> &);
-
-   /**
-    * Adds the given meta data map to this map.
-    * @param metaData the map to add
-    * @return this map
-    */
-   MetaData & operator += ( const QMap<QString,QString> &metaData )
-   {
-      QMap<QString,QString>::ConstIterator it;
-      for(it = metaData.constBegin(); it !=  metaData.constEnd(); ++it)
-      {
-         insert(it.key(), it.value());
-      }
-      return *this;
-   }
-
-   /**
-    * Same as above except the value in the map is a QVariant.
-    *
-    * This convenience function allows you to easily assign the values
-    * of a QVariant to this meta data class.
-    *
-    * @param metaData the map to add
-    * @return this map
-    * @since 4.3.1
-    */
-   MetaData & operator += ( const QMap<QString,QVariant> &metaData );
-
-   /**
-    * Sets the given meta data map to this map.
-    * @param metaData the map to add
-    * @return this map
-    * @since 4.3.1
-    */
-   MetaData & operator = ( const QMap<QString,QVariant> &metaData );
-
-   /**
-    * Returns the contents of the map as a QVariant.
-    *
-    * @return a QVariant representation of the meta data map.
-    * @since 4.3.1
-    */
-   QVariant toVariant() const;
-};
 
 }
 #endif

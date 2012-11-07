@@ -1300,57 +1300,7 @@ QString KIO::iconNameForUrl(const QUrl& url)
     return !i.isEmpty() ? i : unknown;
 }
 
-QPixmap KIO::pixmapForUrl( const QUrl & _url, mode_t _mode, KIconLoader::Group _group,
-                           int _force_size, int _state, QString * _path )
-{
-    Q_UNUSED(_mode);
-    const QString iconName = KIO::iconNameForUrl(_url);
-    return KIconLoader::global()->loadMimeTypeIcon( iconName, _group, _force_size, _state, QStringList(), _path );
-}
-
 KJobTrackerInterface *KIO::getJobTracker()
 {
     return globalJobTracker();
-}
-
-
-/***************************************************************
- *
- * KIO::MetaData
- *
- ***************************************************************/
-KIO::MetaData::MetaData(const QMap<QString,QVariant>& map)
-{
-  *this = map;
-}
-
-KIO::MetaData & KIO::MetaData::operator += ( const QMap<QString,QVariant> &metaData )
-{
-  QMapIterator<QString,QVariant> it (metaData);
-
-  while(it.hasNext()) {
-     it.next();
-     insert(it.key(), it.value().toString());
-   }
-
-  return *this;
-}
-
-KIO::MetaData & KIO::MetaData::operator = ( const QMap<QString,QVariant> &metaData )
-{
-  clear();
-  return (*this += metaData);
-}
-
-QVariant KIO::MetaData::toVariant() const
-{
-  QMap<QString, QVariant> map;
-  QMapIterator <QString,QString> it (*this);
-
- while (it.hasNext()) {
-   it.next();
-   map.insert(it.key(), it.value());
- }
-
- return QVariant(map);
 }

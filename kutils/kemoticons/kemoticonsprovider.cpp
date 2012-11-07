@@ -17,6 +17,7 @@
  **********************************************************************************/
 
 #include "kemoticonsprovider.h"
+#include <QPixmap>
 #include "kemoticons.h"
 
 #include <QtCore/QFileInfo>

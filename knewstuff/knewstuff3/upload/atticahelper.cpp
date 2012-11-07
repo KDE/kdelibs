@@ -16,6 +16,7 @@
 */
 
 #include "atticahelper.h"
+#include <QImage>
 
 #include <kdebug.h>
 

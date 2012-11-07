@@ -81,6 +81,7 @@ using namespace DOM;
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
 #include <kio/global.h>
+#include <kio/pixmaploader.h>
 #include <kio/netaccess.h>
 #include <kio/hostinfo_p.h>
 #include <kprotocolmanager.h>

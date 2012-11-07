@@ -23,6 +23,7 @@
 #define KIO_JOB_H
 
 #include <kio/jobclasses.h>
+#include <time.h> // time_t
 
 namespace KIO {
 
