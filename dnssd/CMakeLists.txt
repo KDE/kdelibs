@@ -3,23 +3,14 @@ project(dnssd)
 include(ConfigureChecks.cmake)
 configure_file(config-dnssd.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-dnssd.h )
 
+include_directories( ${KDE4_KDECORE_INCLUDES} )
 
 find_package(Avahi)
 macro_bool_to_01(AVAHI_FOUND HAVE_AVAHI)
 macro_log_feature(AVAHI_FOUND "Avahi" "Facilities for service discovery on a local network (DNSSD)" "http://avahi.org" FALSE "" "Either Avahi or DNSSD is required for KDE applications to make use of multicast DNS/DNS-SD service discovery")
 
-if(KDE_PLATFORM_FEATURE_BINARY_INCOMPATIBLE_FEATURE_REDUCTION)
-   include_directories( ${KDE4_KDECORE_INCLUDES} )
-   set(KDNSSD_BASE_LIBS ${KDE4_KDECORE_LIBS})
-else(KDE_PLATFORM_FEATURE_BINARY_INCOMPATIBLE_FEATURE_REDUCTION)
-   include_directories( ${KDE4_KDEUI_INCLUDES} )
-   set(KDNSSD_BASE_LIBS ${KDE4_KDEUI_LIBS})
-endif(KDE_PLATFORM_FEATURE_BINARY_INCOMPATIBLE_FEATURE_REDUCTION)
-
-include(CreateKcfgFiles.cmake)
-
 set(kdnssd_LIB_SRCS  servicebase.cpp servicemodel.cpp domainmodel.cpp)
-kconfig_add_kcfg_files(kdnssd_LIB_SRCS ${CMAKE_CURRENT_BINARY_DIR}/settings.kcfgc )
+kconfig_add_kcfg_files(kdnssd_LIB_SRCS settings.kcfgc)
 
 if (HAVE_AVAHI) 
    include_directories( ${AVAHI_INCLUDE_DIR} )
@@ -73,11 +64,10 @@ generate_export_header(kdnssd
   EXPORT_FILE_NAME dnssd_export.h
 )
 
-# KDE 5: don't link against KDEUI_LIBS (when settings.kfgc is changed)
+# Currently uses kdecore for i18n, TODO port to QCoreApplication::translate
+target_link_libraries(kdnssd kdecore ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY})
 if (HAVE_DNSSD)
-  target_link_libraries(kdnssd ${KDNSSD_BASE_LIBS} ${DNSSD_LIBRARIES} ${QT_QTNETWORK_LIBRARY})
-else (HAVE_DNSSD)
-  target_link_libraries(kdnssd ${KDNSSD_BASE_LIBS} ${QT_QTNETWORK_LIBRARY})
+  target_link_libraries(kdnssd ${DNSSD_LIBRARIES})
 endif (HAVE_DNSSD)
 
 target_link_libraries(kdnssd  LINK_INTERFACE_LIBRARIES kdecore ${QT_QTCORE_LIBRARY} )
