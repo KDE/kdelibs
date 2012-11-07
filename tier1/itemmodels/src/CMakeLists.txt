@@ -3,7 +3,6 @@ set(itemmodels_SRCS
   kbreadcrumbselectionmodel.cpp
   kcheckableproxymodel.cpp
   kdescendantsproxymodel.cpp
-  kidentityproxymodel.cpp
   klinkitemselectionmodel.cpp
   kmodelindexproxymapper.cpp
   krecursivefilterproxymodel.cpp
@@ -29,7 +28,6 @@ install(FILES
   klinkitemselectionmodel.h
   krecursivefilterproxymodel.h
   kdescendantsproxymodel.h
-  kidentityproxymodel.h
   kviewstateserializer.h
   kviewstatemaintainerbase.h
   kmodelindexproxymapper.h

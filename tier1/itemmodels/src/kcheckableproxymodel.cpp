@@ -43,7 +43,7 @@ class KCheckableProxyModelPrivate
 };
 
 KCheckableProxyModel::KCheckableProxyModel(QObject* parent)
-  : KIdentityProxyModel(parent), d_ptr(new KCheckableProxyModelPrivate(this))
+  : QIdentityProxyModel(parent), d_ptr(new KCheckableProxyModelPrivate(this))
 {
 
 }
@@ -70,8 +70,8 @@ QItemSelectionModel *KCheckableProxyModel::selectionModel() const
 Qt::ItemFlags KCheckableProxyModel::flags(const QModelIndex& index) const
 {
   if (!index.isValid() || index.column() != 0)
-    return KIdentityProxyModel::flags(index);
-  return KIdentityProxyModel::flags(index) | Qt::ItemIsUserCheckable;
+    return QIdentityProxyModel::flags(index);
+  return QIdentityProxyModel::flags(index) | Qt::ItemIsUserCheckable;
 }
 
 QVariant KCheckableProxyModel::data(const QModelIndex& index, int role) const
@@ -87,7 +87,7 @@ QVariant KCheckableProxyModel::data(const QModelIndex& index, int role) const
 
     return d->m_itemSelectionModel->selection().contains(mapToSource(index)) ? Qt::Checked : Qt::Unchecked;
   }
-  return KIdentityProxyModel::data(index, role);
+  return QIdentityProxyModel::data(index, role);
 }
 
 bool KCheckableProxyModel::setData(const QModelIndex& index, const QVariant& value, int role)
@@ -106,12 +106,12 @@ bool KCheckableProxyModel::setData(const QModelIndex& index, const QVariant& val
     Q_EMIT dataChanged(index, index);
     return result;
   }
-  return KIdentityProxyModel::setData(index, value, role);
+  return QIdentityProxyModel::setData(index, value, role);
 }
 
 void KCheckableProxyModel::setSourceModel(QAbstractItemModel* sourceModel)
 {
-  KIdentityProxyModel::setSourceModel(sourceModel);
+  QIdentityProxyModel::setSourceModel(sourceModel);
   Q_ASSERT(d_ptr->m_itemSelectionModel ? d_ptr->m_itemSelectionModel->model() == sourceModel : true);
 }
 

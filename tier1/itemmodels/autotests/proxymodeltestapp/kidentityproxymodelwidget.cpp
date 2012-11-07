@@ -27,9 +27,9 @@
 #include <QSplitter>
 #include <QTreeView>
 #include <QEvent>
-#include "dynamictreewidget.h"
+#include <QIdentityProxyModel>
 
-#include "kidentityproxymodel.h"
+#include "dynamictreewidget.h"
 
 #include "modeltest.h"
 
@@ -67,7 +67,7 @@ KIdentityProxyModelWidget::KIdentityProxyModelWidget(QWidget* parent, Qt::Window
 //     " - 21"
   );
 
-  KIdentityProxyModel *proxy = new KIdentityProxyModel(this);
+  QIdentityProxyModel *proxy = new QIdentityProxyModel(this);
   proxy->setSourceModel(rootModel);
 
   QTreeView *view1 = new QTreeView(splitter);

@@ -22,11 +22,10 @@
 #ifndef KCHECKABLEPROXYMODEL_H
 #define KCHECKABLEPROXYMODEL_H
 
-#include "kidentityproxymodel.h"
-
 #include "itemmodels_export.h"
 
 #include <QItemSelection>
+#include <QIdentityProxyModel>
 
 class KCheckableProxyModelPrivate;
 
@@ -65,7 +64,7 @@ class KCheckableProxyModelPrivate;
  * @since 4.6
  * @author Stephen Kelly <steveire@gmail.com>
  */
-class ITEMMODELS_EXPORT KCheckableProxyModel : public KIdentityProxyModel
+class ITEMMODELS_EXPORT KCheckableProxyModel : public QIdentityProxyModel
 {
   Q_OBJECT
 public:
