@@ -28,7 +28,6 @@
 #include <QtCore/QtAlgorithms>
 
 #include <kio/netaccess.h>
-#include <kstandarddirs.h>
 #include <kdebug.h>
 
 class KEmoticonsTheme::KEmoticonsThemeData : public QSharedData

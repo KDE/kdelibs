@@ -26,12 +26,12 @@
 
 #include <kpluginloader.h>
 #include <kdebug.h>
-#include <kstandarddirs.h>
 #include <kconfiggroup.h>
 #include <ktar.h>
 #include <kzip.h>
 #include <qmimedatabase.h>
 #include <kdirwatch.h>
+#include <kstandarddirs.h>
 
 class KEmoticonsPrivate
 {

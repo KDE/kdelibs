@@ -26,7 +26,6 @@
 #include <QUrl>
 
 #include <kio/netaccess.h>
-#include "kstandarddirs.h"
 #include "kdebug.h"
 
 class KEmoticonsProviderPrivate
