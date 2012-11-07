@@ -6,7 +6,7 @@
 
 #include <kaboutdata.h>
 #include <kcmdlineargs.h>
-#include <kapplication.h>
+#include <qapplication.h>
 
 class ExampleWidget : public QLabel
 {
@@ -64,19 +64,17 @@ void showResult(int test, int i)
 
 int main( int argc, char *argv[] )
 {
-    int i, test;
-    KAboutData about("KMessageBoxTest", 0, qi18n("KMessageBoxTest"), "version");
-    KCmdLineArgs::init(argc, argv, &about);
-
-    new KApplication();
+    QApplication app(argc, argv);
+    app.setApplicationName("kmessageboxtest");
 
     ExampleWidget *w = new ExampleWidget();
     w->show();
 
     QStringList list; list.append("Hello"); list.append("World");
 
-    for( test = 1; true; test++)
+    for( int test = 1; true; test++)
     {
+         int i;
          switch(test)
          {
 case 1:
