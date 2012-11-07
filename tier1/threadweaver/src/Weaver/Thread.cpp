@@ -145,12 +145,6 @@ void Thread::run()
     debug ( 3, "Thread::run [%u]: exiting.\n", id() );
 }
 
-void Thread::msleep(unsigned long msec)
-{
-    QThread::msleep(msec);
-}
-
-
 void Thread::requestAbort ()
 {
     if ( d->runhelper )
