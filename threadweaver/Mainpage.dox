@@ -62,7 +62,7 @@ operations are executed (load and decode an MP3 while another one is fed
 to the audio device): Implement both the file loading operation and the
 play operation in a job and queue both at the same time. There is also a
 synchronous sleep method in the Job class if a job needs to be delayed
-for a number of millieconds after it is taken over by a thread.</li>
+for a number of milliseconds after it is taken over by a thread.</li>
 
 <li>How do you implement many small operations where the cost of each
 individual one is hard to estimate (loading two hundred icons from an
@@ -257,18 +257,7 @@ I/O, network and CPU load. The SMIV example shows how this can be done.
 <p>To notify the application's GUI of progress or other events, it may
 be desirable to emit signals from the Job objects that can be connected
 to the main thread. Since the job will be executed in another thread,
-such signals are delivered asynchroneously.</p>
-
-<p>There is a pitfall to this that Job class developers need to be aware
-of. The Job objects are usually created in the main thread, and
-Job::thread() will return the GUI thread's id because of that. When
-signals are emitted, this will fool Qt to consider those to be signals
-between QObjects owned by the same thread, and deliver them
-syncroneously. The solution is to not emit the signals directly, but
-create a helper QObject derived class that has the same signals, create
-an object of this class when the job is executed, and emit the signals
-from there. Since this object will be created in the context of the
-executing thread, the signals will be delivered asyncronously again.</p>
+such signals are delivered asynchronously.</p>
 
 <p>The Job class in the ThreadWeaver library itself contains such a
 helper class that can be used as a reference for this approach.</p>

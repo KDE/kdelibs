@@ -128,7 +128,7 @@ namespace ThreadWeaver {
             action.
             The method is not pure virtual because users are not supposed to
             be forced to always implement requestAbort().
-            Also, this method is supposed to return immidiately, not after the
+            Also, this method is supposed to return immediately, not after the
             abort has completed. It requests the abort, the Job has to act on
             the request. */
         // FIXME (Mirko) this should be private, I guess?
