@@ -23,7 +23,7 @@
 
 #include <QTimer>
 
-WindowsPoller::WindowsPoller(QWidget *parent)
+WindowsPoller::WindowsPoller(QObject *parent)
         : WidgetBasedPoller(parent)
 {
 }

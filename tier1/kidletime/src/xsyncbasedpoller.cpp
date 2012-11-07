@@ -55,7 +55,7 @@ XSyncBasedPoller *XSyncBasedPoller::instance()
     return s_globalXSyncBasedPoller()->q;
 }
 
-XSyncBasedPoller::XSyncBasedPoller(QWidget *parent)
+XSyncBasedPoller::XSyncBasedPoller(QObject *parent)
         : AbstractSystemPoller(parent)
         , m_display(QX11Info::display())
         , m_xcb_connection(XGetXCBConnection(m_display))

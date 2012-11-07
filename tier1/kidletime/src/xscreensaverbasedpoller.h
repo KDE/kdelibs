@@ -28,7 +28,7 @@ class XScreensaverBasedPoller: public WidgetBasedPoller
     Q_OBJECT
 
 public:
-    XScreensaverBasedPoller(QWidget *parent = 0);
+    XScreensaverBasedPoller(QObject *parent = 0);
     virtual ~XScreensaverBasedPoller();
 
 public Q_SLOTS:

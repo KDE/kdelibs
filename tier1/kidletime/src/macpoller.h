@@ -28,7 +28,7 @@ class MacPoller: public AbstractSystemPoller
     Q_OBJECT
 
 public:
-    MacPoller(QWidget *parent = 0);
+    MacPoller(QObject *parent = 0);
     virtual ~MacPoller();
 
     bool isAvailable();

@@ -44,7 +44,7 @@ public:
 
     bool xcbEvent(xcb_generic_event_t *event);
 protected:
-    XSyncBasedPoller(QWidget *parent = 0);
+    XSyncBasedPoller(QObject *parent = 0);
 
 public Q_SLOTS:
     void addTimeout(int nextTimeout);

@@ -19,15 +19,15 @@
 #ifndef ABSTRACTSYSTEMPOLLER_H
 #define ABSTRACTSYSTEMPOLLER_H
 
-#include <QWidget>
+#include <QObject>
 
-class AbstractSystemPoller : public QWidget
+class AbstractSystemPoller : public QObject
 {
     Q_OBJECT
 
 public:
 
-    AbstractSystemPoller(QWidget *parent = 0);
+    AbstractSystemPoller(QObject *parent = 0);
     virtual ~AbstractSystemPoller();
 
     virtual bool isAvailable() = 0;

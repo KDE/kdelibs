@@ -18,8 +18,8 @@
 
 #include "abstractsystempoller.h"
 
-AbstractSystemPoller::AbstractSystemPoller(QWidget *parent)
-        : QWidget(parent)
+AbstractSystemPoller::AbstractSystemPoller(QObject *parent)
+        : QObject(parent)
 {
 }
 

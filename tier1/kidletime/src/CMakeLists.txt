@@ -31,7 +31,7 @@ configure_file(config-kidletime.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kidle
 set(kidletime_LIB_SRCS
     kidletime.cpp
     abstractsystempoller.cpp
-    widgetbasedpoller.cpp
+    widgetbasedpoller.cpp # TODO: make optional, to avoid always depending on QtWidgets? Or port to QtGui?
 )
 
 if (X11_FOUND)

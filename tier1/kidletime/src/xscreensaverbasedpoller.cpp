@@ -25,7 +25,7 @@
 #include <X11/Xlib.h>
 #include <X11/extensions/scrnsaver.h>
 
-XScreensaverBasedPoller::XScreensaverBasedPoller(QWidget *parent)
+XScreensaverBasedPoller::XScreensaverBasedPoller(QObject *parent)
         : WidgetBasedPoller(parent)
 {
 
