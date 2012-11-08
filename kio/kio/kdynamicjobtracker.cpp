@@ -24,6 +24,7 @@
 #include <kwidgetjobtracker.h>
 #include <kjobtrackerinterface.h>
 #include <kdebug.h>
+#include <kio/jobtracker.h>
 
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
@@ -107,5 +108,17 @@ void KDynamicJobTracker::unregisterJob(KJob *job)
     if(widgetTracker)
         widgetTracker->unregisterJob(job);
 }
+
+Q_GLOBAL_STATIC(KDynamicJobTracker, globalJobTracker)
+
+// Simply linking to this library, creates a GUI job tracker for all KIO jobs
+static int registerDynamicJobTracker()
+{
+    KIO::setJobTracker(globalJobTracker());
+
+    return 0; // something
+}
+
+Q_CONSTRUCTOR_FUNCTION(registerDynamicJobTracker)
 
 #include "moc_kdynamicjobtracker_p.cpp"

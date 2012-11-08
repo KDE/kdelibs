@@ -44,8 +44,6 @@
 #include <unistd.h>
 #include <stdio.h>
 
-Q_GLOBAL_STATIC(KDynamicJobTracker, globalJobTracker)
-
 // If someone wants the SI-standard prefixes kB/MB/GB/TB, I would recommend
 // a hidden kconfig option and getting the code from #57240 into the same
 // method, so that all KDE apps use the same unit, instead of letting each app decide.
@@ -1298,9 +1296,4 @@ QString KIO::iconNameForUrl(const QUrl& url)
             i = mimeTypeIcon;
     }
     return !i.isEmpty() ? i : unknown;
-}
-
-KJobTrackerInterface *KIO::getJobTracker()
-{
-    return globalJobTracker();
 }

@@ -32,9 +32,9 @@
 #include <kjob.h>
 
 #include "metadata.h" // for source compat
+#include "jobtracker.h" // for source compat
 
 class QUrl;
-class KJobTrackerInterface;
 
 class QTime;
 
@@ -369,8 +369,6 @@ namespace KIO
    * @since 5.0
    */
   KIO_EXPORT QString iconNameForUrl(const QUrl& url);
-
-  KIO_EXPORT KJobTrackerInterface *getJobTracker();
 
 }
 #endif
