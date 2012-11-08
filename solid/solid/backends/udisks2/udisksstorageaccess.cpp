@@ -100,7 +100,7 @@ QString StorageAccess::filePath() const
 
 bool StorageAccess::isIgnored() const
 {
-    return m_device->prop("HintIgnore").toBool(); // FIXME tune
+    return m_device->prop("HintIgnore").toBool();
 }
 
 bool StorageAccess::setup()
@@ -136,16 +136,12 @@ void StorageAccess::checkAccessibility()
     const bool old_isAccessible = m_isAccessible;
     updateCache();
 
-    //qDebug() << QString("CHECKING ACCESSIBILITY, device %1 was mounted: %2").arg(m_device->udi()).arg(old_isAccessible);
-    //qDebug() << "CLEARTEXT path:" << clearTextPath();
-
     if (old_isAccessible != m_isAccessible) {
-        //qDebug() << "\tnow is mounted:" << m_isAccessible;
-        Q_EMIT accessibilityChanged(m_isAccessible, isLuksDevice() ? clearTextPath() : m_device->udi());
+        Q_EMIT accessibilityChanged(m_isAccessible, m_device->udi());
     }
 }
 
-void StorageAccess::slotDBusReply( const QDBusMessage & reply )
+void StorageAccess::slotDBusReply( const QDBusMessage & /*reply*/ )
 {
     const QString ctPath = clearTextPath();
     if (m_setupInProgress)

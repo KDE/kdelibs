@@ -644,12 +644,6 @@ QString Device::parentUdi() const
 {
     QString parent;
 
-    if (isEncryptedContainer()) {
-        QString path = prop("CryptoBackingDevice").value<QDBusObjectPath>().path();
-        if (!path.isEmpty() && path != "/")
-            parent = path;
-    }
-
     if (propertyExists("Drive"))  // block
         parent = prop("Drive").value<QDBusObjectPath>().path();
     else if (propertyExists("Table"))  // partition
@@ -673,7 +667,7 @@ void Device::checkCache(const QString &key) const
     if (reply.isValid()) {
         m_cache.insert(key, reply);
     } else {
-        qDebug() << "got invalid reply for cache:" << key;
+        //qDebug() << "got invalid reply for cache:" << key;
     }
 }
 
