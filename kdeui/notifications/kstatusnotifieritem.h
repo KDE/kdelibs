@@ -30,8 +30,6 @@
 
 class KActionCollection;
 class KMenu;
-class QMovie;
-
 
 class KStatusNotifierItemPrivate;
 

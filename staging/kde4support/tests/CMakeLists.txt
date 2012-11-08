@@ -23,5 +23,6 @@ kde4support_examples(
   kcmdlineargstest
   kdialogbuttonboxtest
   khboxtest
+  ksystemtraytest
 )
 

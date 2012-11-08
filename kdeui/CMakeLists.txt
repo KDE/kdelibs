@@ -330,7 +330,6 @@ set(kdeui_LIB_SRCS
  dialogs/kdeprintdialog.cpp
  notifications/kstatusnotifieritem.cpp
  notifications/kstatusnotifieritemdbus_p.cpp
- notifications/ksystemtrayicon.cpp
 )
 endif(NOT WINCE)
 
@@ -568,7 +567,6 @@ install( FILES
  kernel/kstyle.h
  kernel/kstartupinfo.h
  notifications/kstatusnotifieritem.h
- notifications/ksystemtrayicon.h
  notifications/knotification.h
  notifications/knotificationrestrictions.h
  paged/kpagedialog.h

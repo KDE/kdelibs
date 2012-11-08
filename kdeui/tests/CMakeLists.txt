@@ -104,7 +104,6 @@ KDEUI_EXECUTABLE_TESTS(
   kselectactiontest
   kstatusbartest
   ksqueezedtextlabeltest
-  ksystemtraytest
   ktabwidgettest
   ktextedittest
   ktextbrowsertest

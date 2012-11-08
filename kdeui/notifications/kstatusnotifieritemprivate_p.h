@@ -25,10 +25,11 @@
 #include <QString>
 #include <QDBusArgument>
 #include <QDBusConnection>
+#include <QMovie>
 #include <QPixmap>
+#include <QSystemTrayIcon>
 #include <QWheelEvent>
 
-#include <ksystemtrayicon.h>
 
 #include "kstatusnotifieritem.h"
 #include "kstatusnotifieritemdbus_p.h"
@@ -39,20 +40,19 @@
 class KActionCollection;
 class KSystemTrayIcon;
 class KMenu;
-class QMovie;
 class QAction;
 
 
 // this class is needed because we can't just put an event filter on it:
 // the events that are passed to QSystemTrayIcon are done so in a way that
 // bypasses the usual event filtering mechanisms *sigh*
-class KStatusNotifierLegacyIcon : public KSystemTrayIcon
+class KStatusNotifierLegacyIcon : public QSystemTrayIcon
 {
     Q_OBJECT
 
 public:
-    KStatusNotifierLegacyIcon(QWidget *parent)
-        : KSystemTrayIcon(parent)
+    KStatusNotifierLegacyIcon(QObject *parent)
+        : QSystemTrayIcon(parent)
     {
     }
 
@@ -66,8 +66,37 @@ public:
         return false;
     }
 
+    void setMovie(QMovie *movie)
+    {
+        if (m_movie.data() == movie) {
+            return;
+        }
+
+        delete m_movie.data();
+        m_movie = movie;
+
+        if (!movie) {
+            return;
+        }
+
+        movie->setParent(this);
+        movie->setCacheMode(QMovie::CacheAll);
+        connect(movie, SIGNAL(frameChanged(int)), this, SLOT(slotNewFrame()));
+    }
+
 signals:
     void wheel(int);
+
+private Q_SLOTS:
+    void slotNewFrame()
+    {
+        if (m_movie) {
+            setIcon(QIcon(m_movie.data()->currentPixmap()));
+        }
+    }
+
+private:
+    QWeakPointer<QMovie> m_movie;
 };
 
 class KStatusNotifierItemPrivate
@@ -132,7 +161,7 @@ public:
     org::kde::StatusNotifierWatcher *statusNotifierWatcher;
     org::freedesktop::Notifications *notificationsClient;
 
-    KSystemTrayIcon *systemTrayIcon;
+    KStatusNotifierLegacyIcon *systemTrayIcon;
     KStatusNotifierItemDBus *statusNotifierItemDBus;
 
     bool hasQuit : 1;
