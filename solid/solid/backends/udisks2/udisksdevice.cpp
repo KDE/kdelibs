@@ -618,20 +618,21 @@ QString Device::icon() const
 
 QString Device::product() const
 {
-    QString product = prop("Model").toString();
-
     if (!isDrive()) {
-        QString label = prop("IdLabel").toString();
-        if (!label.isEmpty()) {
-            product = label;
-        }
+        Device drive(drivePath());
+        return drive.prop("Model").toString();
     }
 
-    return product;
+    return prop("Model").toString();
 }
 
 QString Device::vendor() const
 {
+    if (!isDrive()) {
+        Device drive(drivePath());
+        return drive.prop("Vendor").toString();
+    }
+
     return prop("Vendor").toString();
 }
 
