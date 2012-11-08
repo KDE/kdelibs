@@ -19,7 +19,7 @@
 #ifndef KEMOTICONS_PROVIDER_H
 #define KEMOTICONS_PROVIDER_H
 
-#include "kemoticons_export.h"
+#include <kemoticons_export.h>
 #include <QtCore/QObject>
 #include <QtCore/QVariant>
 #include <QtCore/QStringList>

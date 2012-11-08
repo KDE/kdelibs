@@ -1,4 +1,8 @@
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR} 
+    ${CMAKE_CURRENT_SOURCE_DIR}/../..
+    ${CMAKE_CURRENT_BINARY_DIR}/../..
+)
 
 ########### next target ###############
 set(xmppemoticons_SRCS xmpp_emoticons.cpp)
