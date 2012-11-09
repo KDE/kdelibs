@@ -30,7 +30,6 @@
 
 
 #include <kdebug.h>
-#include <ksystemtrayicon.h>
 #include <kaboutdata.h>
 #include <kmenu.h>
 #include <kaction.h>

@@ -2,14 +2,14 @@
 #include <QApplication>
 #include <kpassivepopup.h>
 #include <QPushButton>
-#include <ksystemtrayicon.h>
+#include <qsystemtrayicon.h>
 
 QPushButton *pb;
 QPushButton *pb2;
 QPushButton *pb3;
 QPushButton *pb4;
 QPushButton *pb5;
-KSystemTrayIcon *icon;
+QSystemTrayIcon *icon;
 
 void Test::showIt()
 {
@@ -76,8 +76,8 @@ int main( int argc, char **argv )
     pb5->connect( pb5, SIGNAL(clicked()), t, SLOT(showIt5()) );
     pb5->show();
 
-    icon = new KSystemTrayIcon();
-    icon->setIcon(icon->loadIcon("xorg"));
+    icon = new QSystemTrayIcon();
+    // TODO icon->setIcon(icon->loadIcon("xorg"));
     icon->connect( icon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), t, SLOT(showIt6(QSystemTrayIcon::ActivationReason)) );
     icon->show();
 
