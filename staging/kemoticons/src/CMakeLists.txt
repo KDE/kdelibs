@@ -8,7 +8,7 @@ include_directories(
     ${CMAKE_BINARY_DIR}/kdecore
     ${CMAKE_SOURCE_DIR}/kdecore/io
     ${CMAKE_SOURCE_DIR}/kdecore/kernel
-    ${CMAKE_SOURCE_DIR}/kio
+    ${KDE4_KIO_INCLUDES}
     ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src
     ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/jobs # kjob.h
     ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io # kdirwatch.h

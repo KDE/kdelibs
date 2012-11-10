@@ -325,6 +325,7 @@ set(KDE4_KIO_INCLUDES ${CMAKE_SOURCE_DIR}/kio
                       ${CMAKE_SOURCE_DIR}/kio/bookmarks
                       ${CMAKE_SOURCE_DIR}/kio/kio
                       ${CMAKE_SOURCE_DIR}/kio/kfile
+                      ${CMAKE_SOURCE_DIR}/staging/kio/src/include
                       ${CMAKE_SOURCE_DIR}/staging/kio/src/core
                       ${CMAKE_BINARY_DIR}/staging/kio/src/core
                       ${CMAKE_SOURCE_DIR}/staging/kio/src/widgets

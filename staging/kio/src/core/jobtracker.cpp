@@ -16,25 +16,20 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KIO_JOBTRACKER_H
-#define KIO_JOBTRACKER_H
+#include "jobtracker.h"
+#include <kjobtrackerinterface.h>
 
-#include <kio/kio_export.h>
+static KJobTrackerInterface* s_tracker = 0;
+Q_GLOBAL_STATIC(KJobTrackerInterface, globalDummyTracker)
 
-class KJobTrackerInterface;
-
-namespace KIO {
-/**
- * Returns the job tracker to be used by all KIO jobs (in which HideProgressInfo is not set)
- */
-KIO_EXPORT KJobTrackerInterface *getJobTracker();
-
-/**
- * Internal. Allows the KIO widgets library to register its widget-based job tracker automatically.
- * @since 5.0
- */
-KIO_EXPORT void setJobTracker(KJobTrackerInterface* tracker);
+KJobTrackerInterface *KIO::getJobTracker()
+{
+    if (!s_tracker)
+        s_tracker = globalDummyTracker(); // don't return NULL, caller doesn't expect that
+    return s_tracker;
 }
 
-#endif /* KIO_JOBTRACKER_H */
-
+void KIO::setJobTracker(KJobTrackerInterface* tracker)
+{
+    s_tracker = tracker;
+}

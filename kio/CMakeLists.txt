@@ -52,6 +52,7 @@ include_directories(
    ${CMAKE_BINARY_DIR}/tier1/kwidgetsaddons/src
    ${kiocore_SOURCE_DIR}/
    ${kiocore_BINARY_DIR}/
+   ${CMAKE_SOURCE_DIR}/staging/kio/src/include
 )
 if (NOT KIO_NO_STRIGI)
    include_directories(${STRIGI_INCLUDE_DIR})
@@ -117,7 +118,6 @@ set(kiocore_STAT_SRCS
   kio/fileundomanager.cpp
   kio/forwardingslavebase.cpp
   kio/global.cpp
-  kio/jobtracker.cpp
   kio/pixmaploader.cpp
   kio/metadata.cpp
   kio/imagefilter.cpp
@@ -396,7 +396,6 @@ install(  FILES
   kio/slaveconfig.h
   kio/sessiondata.h
   kio/global.h
-  kio/jobtracker.h
   kio/pixmaploader.h
   kio/metadata.h
   kio/netaccess.h

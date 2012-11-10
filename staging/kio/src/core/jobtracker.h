@@ -1,4 +1,3 @@
-#include "jobtracker.h"
 /* This file is part of the KDE libraries
    Copyright (C) 2012 David Faure <faure@kde.org>
 
@@ -17,20 +16,25 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "jobtracker.h"
-#include <kjobtrackerinterface.h>
+#ifndef KIO_JOBTRACKER_H
+#define KIO_JOBTRACKER_H
 
-static KJobTrackerInterface* s_tracker = 0;
-Q_GLOBAL_STATIC(KJobTrackerInterface, globalDummyTracker)
+#include "kiocore_export.h"
 
-KJobTrackerInterface *KIO::getJobTracker()
-{
-    if (!s_tracker)
-        s_tracker = globalDummyTracker(); // don't return NULL, caller doesn't expect that
-    return s_tracker;
+class KJobTrackerInterface;
+
+namespace KIO {
+/**
+ * Returns the job tracker to be used by all KIO jobs (in which HideProgressInfo is not set)
+ */
+KIOCORE_EXPORT KJobTrackerInterface *getJobTracker();
+
+/**
+ * Internal. Allows the KIO widgets library to register its widget-based job tracker automatically.
+ * @since 5.0
+ */
+KIOCORE_EXPORT void setJobTracker(KJobTrackerInterface* tracker);
 }
 
-void KIO::setJobTracker(KJobTrackerInterface* tracker)
-{
-    s_tracker = tracker;
-}
+#endif /* KIO_JOBTRACKER_H */
+
