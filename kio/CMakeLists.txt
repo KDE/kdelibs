@@ -52,7 +52,7 @@ include_directories(
    ${CMAKE_BINARY_DIR}/tier1/kwidgetsaddons/src
    ${kiocore_SOURCE_DIR}/
    ${kiocore_BINARY_DIR}/
-   ${CMAKE_SOURCE_DIR}/staging/kio/src/include
+   ${CMAKE_BINARY_DIR}/staging/kio/src/include
 )
 if (NOT KIO_NO_STRIGI)
    include_directories(${STRIGI_INCLUDE_DIR})
