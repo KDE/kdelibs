@@ -64,8 +64,8 @@ void KEmoticonTest::testEmoticonParser()
             continue;
         }
         if (inputFile.open(QIODevice::ReadOnly) && expectedFile.open(QIODevice::ReadOnly)) {
-            const QString inputData = QString::fromLatin1(inputFile.readAll());
-            const QString expectedData = QString::fromLatin1(expectedFile.readAll());
+            const QString inputData = QString::fromLatin1(inputFile.readAll().constData());
+            const QString expectedData = QString::fromLatin1(expectedFile.readAll().constData());
 
             inputFile.close();
             expectedFile.close();
