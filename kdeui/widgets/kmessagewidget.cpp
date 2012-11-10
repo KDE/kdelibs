@@ -35,6 +35,7 @@
 #include <QShowEvent>
 #include <QTimeLine>
 #include <QToolButton>
+#include <QStyle>
 
 //---------------------------------------------------------------------
 // KMessageWidgetPrivate
@@ -269,13 +270,16 @@ void KMessageWidget::setMessageType(KMessageWidget::MessageType type)
             "    stop: 1.0 %3);"
             "border-radius: 5px;"
             "border: 1px solid %4;"
+            "margin: %5px;"
             "}"
-            ".QLabel { color: %5; }"
+            ".QLabel { color: %6; }"
             )
         .arg(bg0.name())
         .arg(bg1.name())
         .arg(bg2.name())
         .arg(border.name())
+        // DefaultFrameWidth returns the size of the external margin + border width. We know our border is 1px, so we subtract this from the frame normal QStyle FrameWidth to get our margin
+        .arg(style()->pixelMetric(QStyle::PM_DefaultFrameWidth, 0, this) -1)
         .arg(fg.name())
         );
 

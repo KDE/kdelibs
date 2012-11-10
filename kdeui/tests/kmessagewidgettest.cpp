@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
     );
     // A frame to materialize the end of the KMessageWidget
     QFrame* frame = new QFrame(mainWindow);
-    frame->setFrameStyle(QFrame::Panel);
+    frame->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
     frame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     QCheckBox* wordWrapCb = new QCheckBox("wordWrap", mainWindow);
