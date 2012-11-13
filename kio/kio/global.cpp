@@ -20,12 +20,9 @@
 #include "job.h"
 
 #include <kconfiggroup.h>
-#include <kdebug.h>
 #include <klocale.h>
-#include <kiconloader.h>
 #include <kprotocolmanager.h>
 #include <qmimedatabase.h>
-#include <kdynamicjobtracker_p.h>
 #include <QtDBus/QtDBus>
 
 #include <QtCore/QByteArray>
@@ -1225,7 +1222,7 @@ KIO::CacheControl KIO::parseCacheControl(const QString &cacheControl)
   if (tmp == "reload")
      return KIO::CC_Reload;
 
-  kDebug() << "unrecognized Cache control option:"<<cacheControl;
+  qDebug() << "unrecognized Cache control option:"<<cacheControl;
   return KIO::CC_Verify;
 }
 
@@ -1241,7 +1238,7 @@ QString KIO::getCacheControlString(KIO::CacheControl cacheControl)
 	return "Refresh";
     if (cacheControl == KIO::CC_Reload)
 	return "Reload";
-    kDebug() << "unrecognized Cache control enum value:"<<cacheControl;
+    qDebug() << "unrecognized Cache control enum value:"<<cacheControl;
     return QString();
 }
 
