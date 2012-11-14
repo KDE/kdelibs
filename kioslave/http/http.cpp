@@ -594,7 +594,7 @@ void HTTPProtocol::setHost( const QString& host, quint16 port,
 
 bool HTTPProtocol::maybeSetRequestUrl(const KUrl &u)
 {
-  kDebug (7113) << u.url();
+  kDebug(7113) << u;
 
   m_request.url = u;
   m_request.url.setPort(u.port(defaultPort()) != defaultPort() ? u.port() : -1);
@@ -698,7 +698,7 @@ bool HTTPProtocol::proceedUntilResponseHeader()
 
 void HTTPProtocol::stat(const KUrl& url)
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
       return;
@@ -730,7 +730,7 @@ void HTTPProtocol::stat(const KUrl& url)
 
 void HTTPProtocol::listDir( const KUrl& url )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -893,7 +893,7 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
 
 void HTTPProtocol::davGeneric( const KUrl& url, KIO::HTTP_METHOD method, qint64 size )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1275,7 +1275,7 @@ void HTTPProtocol::davFinished()
 
 void HTTPProtocol::mkdir( const KUrl& url, int )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1295,7 +1295,7 @@ void HTTPProtocol::mkdir( const KUrl& url, int )
 
 void HTTPProtocol::get( const KUrl& url )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1314,7 +1314,7 @@ void HTTPProtocol::get( const KUrl& url )
 
 void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1370,7 +1370,7 @@ void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
 
 void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, KIO::JobFlags flags )
 {
-  kDebug(7113) << src.url() << "->" << dest.url();
+  kDebug(7113) << src << "->" << dest;
 
   if (!maybeSetRequestUrl(dest) || !maybeSetRequestUrl(src))
     return;
@@ -1400,7 +1400,7 @@ void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, KIO::JobFlags f
 
 void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flags )
 {
-  kDebug(7113) << src.url() << "->" << dest.url();
+  kDebug(7113) << src << "->" << dest;
 
   if (!maybeSetRequestUrl(dest) || !maybeSetRequestUrl(src))
     return;
@@ -1446,7 +1446,7 @@ void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flag
 
 void HTTPProtocol::del( const KUrl& url, bool )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1477,7 +1477,7 @@ void HTTPProtocol::del( const KUrl& url, bool )
 
 void HTTPProtocol::post( const KUrl& url, qint64 size )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1493,7 +1493,7 @@ void HTTPProtocol::post( const KUrl& url, qint64 size )
 void HTTPProtocol::davLock( const KUrl& url, const QString& scope,
                             const QString& type, const QString& owner )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1556,7 +1556,7 @@ void HTTPProtocol::davLock( const KUrl& url, const QString& scope,
 
 void HTTPProtocol::davUnlock( const KUrl& url )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1967,7 +1967,7 @@ void HTTPProtocol::multiGet(const QByteArray &data)
         //### should maybe call resetSessionSettings() if the server/domain is
         //    different from the last request!
 
-        kDebug(7113) << url.url();
+        kDebug(7113) << url;
 
         m_request.method = HTTP_GET;
         m_request.isKeepAlive = true;   //readResponseHeader clears it if necessary
@@ -3501,8 +3501,8 @@ endParsing:
                 m_request.redirectUrl = u;
             }
 
-            kDebug(7113) << "Re-directing from" << m_request.url.url()
-                         << "to" << u.url();
+            kDebug(7113) << "Re-directing from" << m_request.url
+                         << "to" << u;
 
             redirection(u);
 
@@ -3794,12 +3794,12 @@ void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
 
     // validation handling
     if (mayCache && m_request.responseCode == 200 && !m_mimeType.isEmpty()) {
-        kDebug(7113) << "Cache, adding" << m_request.url.url();
+        kDebug(7113) << "Cache, adding" << m_request.url;
         // ioMode can still be ReadFromCache here if we're performing a conditional get
         // aka validation
         m_request.cacheTag.ioMode = WriteToCache;
         if (!cacheFileOpenWrite()) {
-            kDebug(7113) << "Error creating cache entry for " << m_request.url.url()<<"!\n";
+            kDebug(7113) << "Error creating cache entry for " << m_request.url << "!\n";
         }
         m_maxCacheSize = config()->readEntry("MaxCacheSize", DEFAULT_MAX_CACHE_SIZE);
     } else if (m_request.responseCode == 304 && m_request.cacheTag.file) {
@@ -4017,7 +4017,7 @@ void HTTPProtocol::slave_status()
 
 void HTTPProtocol::mimetype( const KUrl& url )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
