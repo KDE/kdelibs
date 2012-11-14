@@ -26,7 +26,7 @@
 #include <QtTest/QtTest>
 #include <QtCore/QFileInfo>
 #include <kfilterdev.h>
-#include <qtemporarydir.h>
+#include <QDir>
 
 #ifndef Q_OS_WIN
 #include <unistd.h> // symlink
@@ -204,8 +204,9 @@ static void testReadWrite( KArchive* archive )
 static void testCopyTo( KArchive* archive )
 {
     const KArchiveDirectory* dir = archive->directory();
-    QTemporaryDir tmpDir;
-    const QString dirName = tmpDir.path() + '/';
+
+    QVERIFY(QDir().mkpath("tmp1"));
+    const QString dirName = "tmp1/";
 
     dir->copyTo( dirName );
 
@@ -844,8 +845,8 @@ static bool writeFile(const QString& dirName, const QString& fileName, const QBy
 void KArchiveTest::testZipAddLocalDirectory()
 {
     // Prepare local dir
-    QTemporaryDir tmpDir;
-    const QString dirName = tmpDir.path() + '/';
+    QVERIFY(QDir().mkpath("tmp2"));
+    const QString dirName = "tmp2/";
 
     const QByteArray file1Data = "Hello Shantanu";
     const QString file1 = QLatin1String("file1");

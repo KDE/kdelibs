@@ -5,7 +5,7 @@ include_directories(
    ${CMAKE_CURRENT_BINARY_DIR}/../src
 )
 
-include(ECMMarkAsTest)
+#include(ECMMarkAsTest)
 
 macro(KARCHIVE_UNIT_TESTS)
    foreach(_testname ${ARGN})
@@ -17,7 +17,7 @@ macro(KARCHIVE_UNIT_TESTS)
       if(WINCE)
          target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
       endif()
-      ecm_mark_as_test(${_testname})
+      #ecm_mark_as_test(${_testname})
    endforeach(_testname)
 endmacro(KARCHIVE_UNIT_TESTS)
 

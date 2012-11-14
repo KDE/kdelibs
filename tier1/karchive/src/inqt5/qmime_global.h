@@ -1,0 +1,10 @@
+#ifndef QMIME_GLOBAL_H
+#define QMIME_GLOBAL_H
+
+#define QMIME_EXPORT
+
+#ifndef TEST_COMPILER_RVALUE_REFS
+#define TEST_COMPILER_RVALUE_REFS 0
+#endif
+
+#endif // QMIME_GLOBAL_H

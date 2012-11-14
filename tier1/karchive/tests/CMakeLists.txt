@@ -6,7 +6,7 @@ include_directories(
    ${CMAKE_SOURCE_DIR}/kio/httpfilter
 )
 
-include(ECMMarkAsTest)
+#include(ECMMarkAsTest)
 
 macro(KARCHIVE_EXECUTABLE_TESTS)
    foreach(_testname ${ARGN})
@@ -15,7 +15,7 @@ macro(KARCHIVE_EXECUTABLE_TESTS)
       if(WINCE)
          target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
       endif()
-      ecm_mark_as_test(${_testname})
+      #ecm_mark_as_test(${_testname})
    endforeach(_testname)
 endmacro(KARCHIVE_EXECUTABLE_TESTS)
 
