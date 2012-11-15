@@ -39,7 +39,7 @@
 **
 ****************************************************************************/
 
-#ifndef QT_NO_DESKTOPSERVICES
+#ifndef QT_NO_STANDARDPATHS
 
 #include "qstandardpaths.h"
 #include <qdir.h>
@@ -170,4 +170,4 @@ QString QStandardPaths::displayName(StandardLocation type)
 
 QT_END_NAMESPACE
 
-#endif // QT_NO_DESKTOPSERVICES
+#endif // QT_NO_STANDARDPATHS

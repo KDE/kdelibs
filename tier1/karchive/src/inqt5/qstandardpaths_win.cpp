@@ -43,7 +43,7 @@
 
 #include <qsettings.h>
 #include <qdir.h>
-#include <private/qsystemlibrary_p.h>
+#include <qlibrary.h>
 #include <qurl.h>
 #include <qstringlist.h>
 #include <qprocess.h>
@@ -76,9 +76,9 @@ static GetSpecialFolderPath resolveGetSpecialFolderPath()
     static GetSpecialFolderPath gsfp = 0;
     if (!gsfp) {
 #ifndef Q_OS_WINCE
-        QSystemLibrary library(QLatin1String("shell32"));
+        QLibrary library(QLatin1String("shell32"));
 #else
-        QSystemLibrary library(QLatin1String("coredll"));
+        QLibrary library(QLatin1String("coredll"));
 #endif // Q_OS_WINCE
         gsfp = (GetSpecialFolderPath)library.resolve("SHGetSpecialFolderPathW");
     }
