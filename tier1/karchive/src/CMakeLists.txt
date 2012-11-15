@@ -51,12 +51,12 @@ endif()
 
 qt4_add_resources( karchive_SRCS inqt5/mimetypes.qrc )
 
-add_library(karchive ${LIBRARY_TYPE} ${karchive_SRCS} ${karchive_OPTIONAL_SRCS})
-generate_export_header(karchive)
+add_library(karchive-qt4 ${LIBRARY_TYPE} ${karchive_SRCS} ${karchive_OPTIONAL_SRCS})
+generate_export_header(karchive-qt4)
 
-target_link_libraries(karchive ${QT_QTCORE_LIBRARY} ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY})
+target_link_libraries(karchive-qt4 ${QT_QTCORE_LIBRARY} ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY})
 
-set_target_properties(karchive PROPERTIES VERSION   ${ECM_VERSION_STRING}
+set_target_properties(karchive-qt4 PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                           SOVERSION ${ECM_SOVERSION}
 )
 
@@ -102,7 +102,7 @@ if(APPLE)
                                     BUNDLE DESTINATION "${BUNDLE_INSTALL_DIR}" )
 endif(APPLE)
 
-install(TARGETS karchive EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS karchive-qt4 EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
   karchive.h
