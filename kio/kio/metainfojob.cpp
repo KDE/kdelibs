@@ -23,7 +23,6 @@
 #include <kfileitem.h>
 #include <kdebug.h>
 #include <kfilemetainfo.h>
-#include <kservicetypetrader.h>
 
 #include <QtCore/QTimer>
 
@@ -53,12 +52,12 @@ MetaInfoJob::MetaInfoJob(const KFileItemList& items, KFileMetaInfo::WhatFlags,
 
     if (d->items.isEmpty())
     {
-        kDebug(7007) << "nothing to do for the MetaInfoJob\n";
+        kDebug(7007) << "nothing to do for the MetaInfoJob";
         emitResult();
         return;
     }
 
-    kDebug(7007) << "starting MetaInfoJob\n";
+    kDebug(7007) << "starting MetaInfoJob";
 
     // Return to event loop first, determineNextFile() might delete this;
     // (no idea what that means, it comes from previewjob)
@@ -93,7 +92,7 @@ void MetaInfoJob::determineNextFile()
     Q_D(MetaInfoJob);
     if (d->currentItem >= d->items.count() - 1)
     {
-        kDebug(7007) << "finished MetaInfoJob\n";
+        kDebug(7007) << "finished MetaInfoJob";
         emitResult();
         return;
     }
@@ -105,7 +104,7 @@ void MetaInfoJob::determineNextFile()
     KFileItem item = d->items.at( d->currentItem );
     if (item.metaInfo(false).isValid())
     {
-//        kDebug(7007) << "Is already valid *************************\n";
+//        kDebug(7007) << "Is already valid *************************";
         emit gotMetaInfo(item);
         determineNextFile();
         return;
