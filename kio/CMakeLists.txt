@@ -147,8 +147,6 @@ set(kiocore_STAT_SRCS
   kio/kfilewriteplugin.cpp
   kio/kimageio.cpp
   kio/kmimetypechooser.cpp
-  kio/kprotocolinfo.cpp
-  kio/kprotocolinfofactory.cpp
   kio/kprotocolmanager.cpp
   kio/kremoteencoding.cpp
   kio/krun.cpp
@@ -461,7 +459,6 @@ install( FILES
   kio/kimageio.h
   kio/kmimetypechooser.h
   kio/knfsshare.h
-  kio/kprotocolinfo.h
   kio/kprotocolmanager.h
   kio/kremoteencoding.h
   kio/krun.h

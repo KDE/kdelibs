@@ -102,13 +102,16 @@ void KProtocolInfoTest::testHelperProtocols()
     QVERIFY(!KProtocolInfo::isHelperProtocol("file"));
     QVERIFY(!KProtocolInfo::isHelperProtocol("unknown"));
     // Comes from ktelnetservice.desktop:MimeType=x-scheme-handler/telnet;x-scheme-handler/rlogin;x-scheme-handler/ssh;
-    QVERIFY(KProtocolInfo::isHelperProtocol("telnet"));
+    // TODO: this logic has moved to KRun. Should it be public API, so we can unittest it?
+    //QVERIFY(KProtocolInfo::isHelperProtocol("telnet"));
 
     // To test that compat still works
     if (KProtocolInfo::isKnownProtocol("tel")) {
         QVERIFY(KProtocolInfo::isHelperProtocol("tel"));
     }
 
+    // TODO: this logic has moved to KRun. Should it be public API, so we can unittest it?
+#if 0
     QVERIFY(KProtocolInfo::isKnownProtocol("mailto"));
     QVERIFY(KProtocolInfo::isHelperProtocol("mailto"));
     QVERIFY(KProtocolInfo::isHelperProtocol(QUrl("mailto:faure@kde.org")));
@@ -122,6 +125,7 @@ void KProtocolInfoTest::testHelperProtocols()
     } else {
         QCOMPARE(KProtocolInfo::exec("mailto"), QLatin1String("kmailservice %u"));
     }
+#endif
 }
 
 QTEST_MAIN(KProtocolInfoTest)

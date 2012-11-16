@@ -101,6 +101,38 @@ void KRun::KRunPrivate::startTimer()
 
 // ---------------------------------------------------------------------------
 
+static bool hasSchemeHandler(const QUrl& url)
+{
+    if (KProtocolInfo::isHelperProtocol(url)) {
+        return true;
+    }
+    const KService::Ptr service = KMimeTypeTrader::self()->preferredService(QString::fromLatin1("x-scheme-handler/") + url.scheme());
+    return !service.isNull();
+}
+
+static QString schemeHandler(const QString& protocol)
+{
+    // We have up to two sources of data, for protocols not handled by kioslaves (so called "helper") :
+    // 1) the exec line of the .protocol file, if there's one
+    // 2) the application associated with x-scheme-handler/<protocol> if there's one
+
+    // If both exist, then:
+    //  A) if the .protocol file says "launch an application", then the new-style handler-app has priority
+    //  B) but if the .protocol file is for a kioslave (e.g. kio_http) then this has priority over
+    //     firefox or chromium saying x-scheme-handler/http. Gnome people want to send all HTTP urls
+    //     to a webbrowser, but we want mimetype-determination-in-calling-application by default
+    //     (the user can configure a BrowserApplication though)
+
+    const KService::Ptr service = KMimeTypeTrader::self()->preferredService(QString::fromLatin1("x-scheme-handler/") + protocol);
+    if (service) {
+        return service->exec(); // for helper protocols, the handler app has priority over the hardcoded one (see A above)
+    }
+    Q_ASSERT(KProtocolInfo::isHelperProtocol(protocol));
+    return KProtocolInfo::exec(protocol);
+}
+
+// ---------------------------------------------------------------------------
+
 bool KRun::isExecutableFile(const QUrl& url, const QString &mimetype)
 {
     if (!url.isLocalFile()) {
@@ -440,7 +472,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const QList<QUrl>
     bool useKioexec = false;
     if (!mx1.hasUrls) {
         for (QList<QUrl>::ConstIterator it = _urls.begin(); it != _urls.end(); ++it)
-            if (!(*it).isLocalFile() && !KProtocolInfo::isHelperProtocol(*it)) {
+            if (!(*it).isLocalFile() && !hasSchemeHandler(*it)) {
                 useKioexec = true;
                 kDebug(7010) << "non-local files, application does not support urls, using kioexec";
                 break;
@@ -448,7 +480,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const QList<QUrl>
     } else { // app claims to support %u/%U, check which protocols
         QStringList appSupportedProtocols = supportedProtocols(_service);
         for (QList<QUrl>::ConstIterator it = _urls.begin(); it != _urls.end(); ++it)
-            if (!isProtocolInSupportedList(*it, appSupportedProtocols) && !KProtocolInfo::isHelperProtocol(*it)) {
+            if (!isProtocolInSupportedList(*it, appSupportedProtocols) && !hasSchemeHandler(*it)) {
                 useKioexec = true;
                 kDebug(7010) << "application does not support url, using kioexec:" << *it;
                 break;
@@ -1206,9 +1238,9 @@ void KRun::init()
             return;
         }
     }
-    else if (KProtocolInfo::isHelperProtocol(d->m_strURL)) {
-        kDebug(7010) << "Helper protocol";
-        const QString exec = KProtocolInfo::exec(d->m_strURL.scheme());
+    else if (hasSchemeHandler(d->m_strURL)) {
+        kDebug(7010) << "Using scheme handler";
+        const QString exec = schemeHandler(d->m_strURL.scheme());
         if (exec.isEmpty()) {
             mimeTypeDetermined(KProtocolManager::defaultMimetype(d->m_strURL));
             return;

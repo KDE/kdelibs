@@ -20,6 +20,8 @@ set(kiocore_SRCS
   klocalsocket.cpp
   socketconnectionbackend.cpp
   connection.cpp
+  kprotocolinfo.cpp
+  kprotocolinfofactory.cpp
   jobtracker.cpp
 )
 
@@ -53,6 +55,7 @@ set_target_properties(kiocore PROPERTIES VERSION ${ECM_VERSION_STRING}
 install(TARGETS kiocore EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install( FILES
+  kprotocolinfo.h
   jobtracker.h
 
    ${CMAKE_CURRENT_BINARY_DIR}/kiocore_export.h

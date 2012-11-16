@@ -22,8 +22,8 @@
 #include "kprotocolinfo_p.h"
 #include "kprotocolinfofactory_p.h"
 
-#include <kmimetypetrader.h>
 #include <kconfig.h>
+#include <ksharedconfig.h>
 #include <kconfiggroup.h>
 #include <QUrl>
 
@@ -178,32 +178,10 @@ bool KProtocolInfo::determineMimetypeFromExtension(const QString &_protocol)
 
 QString KProtocolInfo::exec(const QString& protocol)
 {
-  KProtocolInfoPrivate * prot = KProtocolInfoFactory::self()->findProtocol(protocol);
-
-  // We have up to two sources of data:
-  // 1) the exec line of the .protocol file, if there's one (could be a kioslave or a helper app)
-  // 2) the application associated with x-scheme-handler/<protocol> if there's one
-
-  // If both exist, then:
-  //  A) if the .protocol file says "launch an application", then the new-style handler-app has priority
-  //  B) but if the .protocol file is for a kioslave (e.g. kio_http) then this has priority over
-  //     firefox or chromium saying x-scheme-handler/http. Gnome people want to send all HTTP urls
-  //     to a webbrowser, but we want mimetype-determination-in-calling-application by default
-  //     (the user can configure a BrowserApplication though)
-
-  QString helperExe;
-  const KService::Ptr service = KMimeTypeTrader::self()->preferredService(QString::fromLatin1("x-scheme-handler/") + protocol);
-  if (service) {
-      helperExe = service->exec();
-      if (prot && prot->m_isHelperProtocol)
-          return helperExe; // for helper protocols, the handler app has priority over the hardcoded one (see A above)
-  }
-  if (prot) {
-      return prot->m_exec;
-  }
-
-  // If there's no protocol file, then return the handler app if any, otherwise empty string
-  return helperExe;
+    KProtocolInfoPrivate * prot = KProtocolInfoFactory::self()->findProtocol(protocol);
+    if (!prot)
+        return QString();
+    return prot->m_exec;
 }
 
 KProtocolInfo::ExtraFieldList KProtocolInfo::extraFields(const QUrl &url)
@@ -276,9 +254,7 @@ bool KProtocolInfo::isHelperProtocol(const QString &protocol)
   KProtocolInfoPrivate * prot = KProtocolInfoFactory::self()->findProtocol(protocol);
   if (prot)
       return prot->m_isHelperProtocol;
-
-  const KService::Ptr service = KMimeTypeTrader::self()->preferredService(QString::fromLatin1("x-scheme-handler/") + protocol);
-  return !service.isNull();
+  return false;
 }
 
 bool KProtocolInfo::isKnownProtocol(const QUrl &url)
