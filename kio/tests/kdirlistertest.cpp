@@ -29,6 +29,7 @@ QTEST_MAIN(KDirListerTest)
 #include "kiotesthelper.h"
 #include <kio/deletejob.h>
 #include <kdirwatch.h>
+#include <kprotocolinfo.h>
 #include <kio/job.h>
 #include <kio/copyjob.h>
 
@@ -875,6 +876,10 @@ void KDirListerTest::testRedirection()
 {
     m_items.clear();
     const KUrl url("file://somemachine/");
+
+    if (!KProtocolInfo::isKnownProtocol("smb"))
+        QSKIP_PORTING("smb not installed", SkipAll);
+
     connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
     // The call to openUrl itself, emits started
     m_dirLister.openUrl(url, KDirLister::NoFlags);
@@ -908,7 +913,6 @@ void KDirListerTest::testRedirection()
     m_dirLister.stop(url);
     QVERIFY(!m_dirLister.isFinished());
     disconnect(&m_dirLister, 0, this, 0);
-
 }
 
 void KDirListerTest::enterLoop(int exitCount)
