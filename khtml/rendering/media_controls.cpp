@@ -33,6 +33,7 @@
 #include <phonon/videowidget.h>
 #include <ktogglefullscreenaction.h>
 #include <kshortcut.h>
+#include <kiconloader.h> // KDE::icon
 #include <kdebug.h>
 #include <klocalizedstring.h>
 

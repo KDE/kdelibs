@@ -23,6 +23,7 @@
 #include <QtCore/QFile>
 
 #include <kfileitem.h>
+#include <kiconloader.h>
 #include <kdebug.h>
 #include <kde_file.h>
 

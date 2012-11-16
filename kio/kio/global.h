@@ -22,12 +22,6 @@
 #include <kio/kio_export.h>
 
 #include <QtCore/QString>
-#include <QtCore/QHash>
-#include <QtCore/QMap>
-#include <QtCore/QList>
-#include <QtCore/QVariant>
-
-#include <kiconloader.h>
 
 #include <kjob.h>
 

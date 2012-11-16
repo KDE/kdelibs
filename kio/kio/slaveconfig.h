@@ -22,7 +22,8 @@
 #define KIO_SLAVE_CONFIG_H
 
 #include <QtCore/QObject>
-#include <kio/global.h>
+#include <kio/kio_export.h>
+#include <kio/metadata.h>
 
 namespace KIO {
 

@@ -28,6 +28,7 @@
 #include <kio/previewjob.h>
 #include <kdirlister.h>
 #include <kdirmodel.h>
+#include <kiconloader.h>
 #include <ksharedconfig.h>
 #include <kurlmimedata.h>
 #include <qurlpathinfo.h>

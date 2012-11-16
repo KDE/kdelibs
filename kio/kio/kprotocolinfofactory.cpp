@@ -23,8 +23,6 @@
 #include <QDirIterator>
 #include <qstandardpaths.h>
 
-#include <kdebug.h>
-
 Q_GLOBAL_STATIC(KProtocolInfoFactory, kProtocolInfoFactoryInstance)
 
 KProtocolInfoFactory* KProtocolInfoFactory::self()

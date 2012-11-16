@@ -8,6 +8,7 @@
 
 #include <kdebug.h>
 #include <klineedit.h>
+#include <kiconloader.h>
 #include <kio/previewjob.h>
 
 #include "previewtest.moc"

@@ -23,7 +23,7 @@
 
 #include <QtCore/QStringList>
 
-#include <kio/global.h>
+#include <kio/global.h> // KIO::CacheControl
 #include "kprotocolinfo.h"
 
 class KSharedConfig;

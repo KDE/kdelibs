@@ -20,8 +20,6 @@
 
 #include "slaveconfig.h"
 
-#include <assert.h>
-
 #include <QtCore/QHash>
 
 #include <kconfig.h>

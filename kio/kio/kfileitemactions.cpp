@@ -33,6 +33,7 @@
 #include <kservicetypetrader.h>
 #include <QFile>
 #include <qmimedatabase.h>
+#include <kiconloader.h> // KDE::icon
 #include <QtAlgorithms>
 #include <kio_dbushelper.h>
 

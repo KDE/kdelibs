@@ -41,6 +41,7 @@
 #include <kuser.h>
 
 #include <kcomponentdata.h>
+#include <kiconloader.h> // KDE::icon
 #include <kdebug.h>
 #include <kurlmimedata.h>
 
