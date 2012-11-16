@@ -28,10 +28,10 @@ generate_export_header(threadweaver)
 target_link_libraries(threadweaver ${QT_QTCORE_LIBRARY})
 
 set_target_properties(threadweaver PROPERTIES
-    VERSION ${ECM_VERSION_STRING}
-    SOVERSION ${ECM_SOVERSION}
+    VERSION ${THREADWEAVER_VERSION_STRING}
+    SOVERSION ${THREADWEAVER_SOVERSION}
 )
-install(TARGETS threadweaver EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS threadweaver EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     WeaverInterface.h
