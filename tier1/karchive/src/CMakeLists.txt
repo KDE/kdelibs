@@ -62,16 +62,10 @@ set_target_properties(karchive-qt4 PROPERTIES VERSION "1.0.0"
 
 include(GNUInstallDirs)
 
-set(INSTALL_TARGETS_DEFAULT_ARGS  RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
-                                  LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-                                  ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}" COMPONENT Devel )
-# on the Mac support an extra install directory for application bundles
-if(APPLE)
-  set(INSTALL_TARGETS_DEFAULT_ARGS  ${INSTALL_TARGETS_DEFAULT_ARGS}
-                                    BUNDLE DESTINATION "${BUNDLE_INSTALL_DIR}" )
-endif(APPLE)
 
-install(TARGETS karchive-qt4 EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS karchive-qt4 RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+                             LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+                             ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}" COMPONENT Devel )
 
 install( FILES
   karchive.h
