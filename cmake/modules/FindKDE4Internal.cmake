@@ -413,7 +413,7 @@ endif( ${QT_MIN_VERSION} VERSION_LESS "4.5.0" )
 # Qt libs and are flexible regarding the install location of Qt under Windows:
 set(QT_USE_IMPORTED_TARGETS TRUE)
 
-find_package(Qt5Transitional)
+find_package(Qt5Transitional MODULE)
 
 # Perl is not required for building KDE software, but we had that here since 4.0
 find_package(Perl)
