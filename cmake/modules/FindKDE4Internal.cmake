@@ -413,6 +413,11 @@ endif( ${QT_MIN_VERSION} VERSION_LESS "4.5.0" )
 # Qt libs and are flexible regarding the install location of Qt under Windows:
 set(QT_USE_IMPORTED_TARGETS TRUE)
 
+if(NOT _kdeBootStrapping)
+  find_package(ECM 0.0.5 NO_MODULE REQUIRED)
+  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH})
+endif()
+
 find_package(Qt5Transitional MODULE)
 
 # Perl is not required for building KDE software, but we had that here since 4.0
