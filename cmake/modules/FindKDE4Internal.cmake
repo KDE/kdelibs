@@ -367,6 +367,16 @@ if(NOT KDE4_FOUND)
 # get the directory of the current file, used later on in the file
 get_filename_component( kde_cmake_module_dir  ${CMAKE_CURRENT_LIST_FILE} PATH)
 
+# are we trying to compile kdelibs ? kdelibs_SOURCE_DIR comes from "project(kdelibs)" in kdelibs/CMakeLists.txt
+# then enter bootstrap mode
+
+if(kdelibs_SOURCE_DIR)
+   set(_kdeBootStrapping TRUE)
+   message(STATUS "Building kdelibs...")
+else(kdelibs_SOURCE_DIR)
+   set(_kdeBootStrapping FALSE)
+endif(kdelibs_SOURCE_DIR)
+
 
 include (MacroEnsureVersion)
 
@@ -437,17 +447,6 @@ endif()
 include (MacroLibrary)
 include (CheckCXXCompilerFlag)
 include (CheckCXXSourceCompiles)
-
-
-# are we trying to compile kdelibs ? kdelibs_SOURCE_DIR comes from "project(kdelibs)" in kdelibs/CMakeLists.txt
-# then enter bootstrap mode
-
-if(kdelibs_SOURCE_DIR)
-   set(_kdeBootStrapping TRUE)
-   message(STATUS "Building kdelibs...")
-else(kdelibs_SOURCE_DIR)
-   set(_kdeBootStrapping FALSE)
-endif(kdelibs_SOURCE_DIR)
 
 
 # helper macro, sets both the KDE4_FOO_LIBRARY and KDE4_FOO_LIBS variables to KDE4__foo
