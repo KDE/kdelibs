@@ -52,14 +52,12 @@
 #include <QDir>
 #include <qstandardpaths.h>
 
-#include "kcatalog_p.h"
 #include "kconfig.h"
 #include "kdatetime.h"
 #include "kcalendarsystem.h"
 #include "kcurrencycode.h"
 #include "klocalizedstring.h"
 #include "kconfiggroup.h"
-#include "kcatalogname_p.h"
 #include "common_helpers_p.h"
 #include "kdayperiod_p.h"
 
@@ -68,8 +66,6 @@ class KLocaleStaticData
 public:
 
     KLocaleStaticData();
-
-    QString maincatalog;
 
     // FIXME: Temporary until full language-sensitivity implemented.
     QHash<KLocale::DigitSet, QStringList> languagesUsingDigitSet;
@@ -96,11 +92,7 @@ KLocaleStaticData::KLocaleStaticData()
 
 Q_GLOBAL_STATIC(KLocaleStaticData, staticData)
 
-
-QDebug operator<<(QDebug debug, const KCatalogName &cn)
-{
-    return debug << cn.name << cn.loadCount;
-}
+Q_GLOBAL_STATIC_WITH_ARGS(QMutex, s_kLocaleMutex, (QMutex::Recursive))
 
 KLocalePrivate::KLocalePrivate(KLocale *q_ptr)
                : q(q_ptr),
@@ -108,7 +100,6 @@ KLocalePrivate::KLocalePrivate(KLocale *q_ptr)
                  m_country(QString()),
                  m_language(QString()),
                  m_languages(0),
-                 m_catalogName(QString()),
                  m_calendar(0),
                  m_currency(0),
                  m_codecForEncoding(0)
@@ -153,13 +144,6 @@ void KLocalePrivate::copy(const KLocalePrivate &rhs)
     m_languageList = rhs.m_languageList;
     m_languageSensitiveDigits = rhs.m_languageSensitiveDigits;
     m_nounDeclension = rhs.m_nounDeclension;
-
-    // Catalog settings
-    m_catalogName = rhs.m_catalogName;
-    m_catalogNames = rhs.m_catalogNames;
-    m_catalogs = rhs.m_catalogs;
-    m_numberOfSysCatalogs = rhs.m_numberOfSysCatalogs;
-    m_useTranscript = rhs.m_useTranscript;
 
     // Calendar settings
     m_calendarSystem = rhs.m_calendarSystem;
@@ -225,11 +209,9 @@ KLocalePrivate::~KLocalePrivate()
 
 // init only called from platform specific constructor, so set everything up
 // Will be given a persistantConfig or a tempConfig or neither, but never both
-void KLocalePrivate::init(const QString& catalogName, const QString &language, const QString &country,
+void KLocalePrivate::init(const QString &language, const QString &country,
                           KSharedConfig::Ptr persistantConfig, KConfig *tempConfig)
 {
-    m_catalogName = catalogName;
-
     // Only keep the persistant config if it is not the global
     if (persistantConfig != KSharedConfig::Ptr() && persistantConfig != KSharedConfig::openConfig()) {
         m_config = persistantConfig;
@@ -260,7 +242,6 @@ void KLocalePrivate::init(const QString& catalogName, const QString &language, c
     initLanguageList(language, cg.readEntry(QLatin1String("Language")), useEnvironmentVariables);
     // Now that we have a language, we can set up the config which uses it to setLocale()
     initConfig(tempConfig);
-    initMainCatalogs();
     initFormat();
 }
 
@@ -289,32 +270,6 @@ void KLocalePrivate::initConfig(KConfig *config)
             config->copyTo(QString(), m_config.data());
             m_config->markAsClean();
         }
-    }
-}
-
-void KLocalePrivate::initMainCatalogs()
-{
-    QMutexLocker lock(kLocaleMutex());
-
-    if (m_catalogName.isEmpty()) {
-        qWarning() << "KLocale instance created called without valid "
-                       "catalog! Give an argument or call setMainCatalog "
-                       "before init";
-    } else {
-        // do not use insertCatalog here, that would already trigger updateCatalogs
-        m_catalogNames.append(KCatalogName(m_catalogName));   // application catalog
-
-        // catalogs from which each application can draw translations
-        const int numberOfCatalogs = m_catalogNames.size();
-        m_catalogNames.append(KCatalogName(QString::fromLatin1("libphonon")));
-        m_catalogNames.append(KCatalogName(QString::fromLatin1("kio4")));
-        m_catalogNames.append(KCatalogName(QString::fromLatin1("kdelibs4")));
-        m_catalogNames.append(KCatalogName(QString::fromLatin1("kdeqt")));
-        m_catalogNames.append(KCatalogName(QString::fromLatin1("solid_qt")));
-        m_catalogNames.append(KCatalogName(QString::fromLatin1("kdecalendarsystems")));
-        m_numberOfSysCatalogs = m_catalogNames.size() - numberOfCatalogs;
-
-        updateCatalogs(); // evaluate this for all languages
     }
 }
 
@@ -540,8 +495,6 @@ void KLocalePrivate::initFormat()
     readConfigEntry("CalendarSystem", "gregorian", calendarType);
     setCalendar(calendarType);
 
-    readConfigEntry("Transcript", true, m_useTranscript);
-
     //Grammatical
     //Precedence here is l10n / i18n / config file
     KConfig langCfg(QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("locale/") + QString::fromLatin1("%1/entry.desktop").arg(m_language)));
@@ -626,15 +579,11 @@ bool KLocalePrivate::setCountryDivisionCode(const QString &countryDivisionCode)
 
 bool KLocalePrivate::setLanguage(const QString &language, KConfig *config)
 {
-    QMutexLocker lock(kLocaleMutex());
+    QMutexLocker lock(s_kLocaleMutex());
     m_languageList.removeAll(language);
     m_languageList.prepend(language);   // let us consider this language to be the most important one
 
     m_language = language; // remember main language for shortcut evaluation
-
-    // important when called from the outside and harmless when called before
-    // populating the catalog name list
-    updateCatalogs();
 
     // Get rid of the old config, start again with the new
     m_config = KSharedConfig::Ptr();
@@ -652,20 +601,14 @@ bool KLocalePrivate::setLanguage(const QString &language, KConfig *config)
 // config so this can be reparsed when required.
 bool KLocalePrivate::setLanguage(const QStringList &languages)
 {
-    QMutexLocker lock(kLocaleMutex());
+    QMutexLocker lock(s_kLocaleMutex());
     // This list might contain
     // 1) some empty strings that we have to eliminate
     // 2) duplicate entries like in de:fr:de, where we have to keep the first occurrence of a
     //    language in order to preserve the order of precenence of the user
-    // 3) languages into which the application is not translated. For those languages we should not
-    //    even load kdelibs.mo or kio.po. these languages have to be dropped. Otherwise we get
-    //    strange side effects, e.g. with Hebrew: the right/left switch for languages that write
-    //    from right to left (like Hebrew or Arabic) is set in kdelibs.mo. If you only have
-    //    kdelibs.mo but nothing from appname.mo, you get a mostly English app with layout from
-    //    right to left. That was considered to be a bug by the Hebrew translators.
     QStringList list;
     foreach(const QString &language, languages) {
-        if (!language.isEmpty() && !list.contains(language) && isApplicationTranslatedInto(language)) {
+        if (!language.isEmpty() && !list.contains(language)) {
             list.append(language);
         }
     }
@@ -680,10 +623,6 @@ bool KLocalePrivate::setLanguage(const QStringList &languages)
     m_language = list.first(); // keep this for shortcut evaluations
 
     m_languageList = list; // keep this new list of languages to use
-
-    // important when called from the outside and harmless when called before populating the
-    // catalog name list
-    updateCatalogs();
 
     return true; // we found something. Maybe it's only English, but we found something
 }
@@ -707,28 +646,6 @@ void KLocalePrivate::setCurrencyCode(const QString &newCurrencyCode)
         m_currencyCode = newCurrencyCode;
         initCurrency();
     }
-}
-
-bool KLocalePrivate::isApplicationTranslatedInto(const QString &lang)
-{
-    if (lang.isEmpty()) {
-        return false;
-    }
-
-    if (lang == KLocale::defaultLanguage()) {
-        // default language is always "installed"
-        return true;
-    }
-
-    if (m_catalogName.isEmpty()) {
-        qWarning() << "no appName!";
-        return false;
-    }
-
-    if (!KCatalog::catalogLocaleDir(m_catalogName, lang).isEmpty()) {
-        return true;
-    }
-    return false;
 }
 
 void KLocalePrivate::splitLocale(const QString &aLocale, QString &language, QString &country,
@@ -799,222 +716,6 @@ KCurrencyCode *KLocalePrivate::currency()
 QString KLocalePrivate::currencyCode() const
 {
     return m_currencyCode;
-}
-
-void KLocalePrivate::insertCatalog(const QString &catalog)
-{
-    QMutexLocker lock(kLocaleMutex());
-    int pos = m_catalogNames.indexOf(KCatalogName(catalog));
-    if (pos != -1) {
-        ++m_catalogNames[pos].loadCount;
-        return;
-    }
-
-    // Insert new catalog just before system catalogs, to preserve the
-    // lowest priority of system catalogs.
-    m_catalogNames.insert(m_catalogNames.size() - m_numberOfSysCatalogs, KCatalogName(catalog));
-    updateCatalogs(); // evaluate the changed list and generate the necessary KCatalog objects
-}
-
-void KLocalePrivate::updateCatalogs()
-{
-    // some changes have occurred. Maybe we have learned or forgotten some languages.
-    // Maybe the language precedence has changed.
-    // Maybe we have learned or forgotten some catalog names.
-
-    QList<KCatalog> newCatalogs;
-
-    // now iterate over all languages and all wanted catalog names and append or create them in the
-    // right order the sequence must be e.g. nds/appname nds/kdelibs nds/kio de/appname de/kdelibs
-    // de/kio etc. and not nds/appname de/appname nds/kdelibs de/kdelibs etc. Otherwise we would be
-    // in trouble with a language sequende nds,<default>,de. In this case <default> must hide
-    // everything after itself in the language list.
-    foreach(const QString &lang, m_languageList) {
-        if (lang == KLocale::defaultLanguage()) {
-            // Default language has no catalogs (messages from the code),
-            // so loading catalogs for languages below the default
-            // would later confuse the fallback resolution.
-            break;
-        }
-        foreach(const KCatalogName &name, m_catalogNames) {
-            // create and add catalog for this name and language if it exists
-            if (! KCatalog::catalogLocaleDir(name.name, lang).isEmpty()) {
-                newCatalogs.append(KCatalog(name.name, lang));
-                //kDebug(173) << "Catalog: " << name << ":" << lang;
-            }
-        }
-    }
-
-    // notify KLocalizedString of catalog update.
-    m_catalogs = newCatalogs;
-    KLocalizedString::notifyCatalogsUpdated(m_languageList, m_catalogNames);
-}
-
-void KLocalePrivate::removeCatalog(const QString &catalog)
-{
-    QMutexLocker lock(kLocaleMutex());
-    int pos = m_catalogNames.indexOf(KCatalogName(catalog));
-    if (pos == -1) {
-        return;
-    }
-    if (--m_catalogNames[pos].loadCount > 0) {
-        return;
-    }
-    m_catalogNames.removeAt(pos);
-    // walk through the KCatalog instances and weed out everything we no longer need
-    updateCatalogs();
-}
-
-void KLocalePrivate::setActiveCatalog(const QString &catalog)
-{
-    QMutexLocker lock(kLocaleMutex());
-    int pos = m_catalogNames.indexOf(KCatalogName(catalog));
-    if (pos == -1) {
-        return;
-    }
-    m_catalogNames.move(pos, 0);
-    // walk through the KCatalog instances and adapt to the new order
-    updateCatalogs();
-}
-
-void KLocalePrivate::translateRawFrom(const char *catname, const char *msgctxt, const char *msgid, const char *msgid_plural,
-                                      unsigned long n, QString *language, QString *translation) const
-{
-    if (!msgid || !msgid[0]) {
-        qWarning() << "KLocale: trying to look up \"\" in catalog. Fix the program!";
-        language->clear();
-        translation->clear();
-        return;
-    }
-    if (msgctxt && !msgctxt[0]) {
-        qWarning() << "KLocale: trying to use \"\" as context to message. Fix the program!";
-    }
-    if (msgid_plural && !msgid_plural[0]) {
-        qWarning() << "KLocale: trying to use \"\" as plural message. Fix the program!";
-    }
-
-    QMutexLocker locker(kLocaleMutex());
-    // determine the fallback string
-    QString fallback;
-    if (msgid_plural == NULL) {
-        fallback = QString::fromUtf8(msgid);
-    } else {
-        if (n == 1) {
-            fallback = QString::fromUtf8(msgid);
-        } else {
-            fallback = QString::fromUtf8(msgid_plural);
-        }
-    }
-    if (language) {
-        *language = KLocale::defaultLanguage();
-    }
-    if (translation) {
-        *translation = fallback;
-    }
-
-    // shortcut evaluation if default language is main language: do not consult the catalogs
-    if (useDefaultLanguage()) {
-        return;
-    }
-
-    const QList<KCatalog> catalogList = m_catalogs;
-    QString catNameDecoded;
-    if (catname != NULL) {
-        catNameDecoded = QString::fromUtf8(catname);
-    }
-    for (QList<KCatalog>::ConstIterator it = catalogList.constBegin(); it != catalogList.constEnd();
-         ++it) {
-        // shortcut evaluation: once we have arrived at default language, we cannot consult
-        // the catalog as it will not have an assiciated mo-file. For this default language we can
-        // immediately pick the fallback string.
-        if ((*it).language() == KLocale::defaultLanguage()) {
-            return;
-        }
-
-        if (catNameDecoded.isEmpty() || catNameDecoded == (*it).name()) {
-            QString text;
-            if (msgctxt != NULL && msgid_plural != NULL) {
-                text = (*it).translateStrict(msgctxt, msgid, msgid_plural, n);
-            } else if (msgid_plural != NULL) {
-                text = (*it).translateStrict(msgid, msgid_plural, n);
-            } else if (msgctxt != NULL) {
-                text = (*it).translateStrict(msgctxt, msgid);
-            } else {
-                text = (*it).translateStrict(msgid);
-            }
-
-            if (!text.isEmpty()) {
-                // we found it
-                if (language) {
-                    *language = (*it).language();
-                }
-                if (translation) {
-                    *translation = text;
-                }
-                return;
-            }
-        }
-    }
-}
-
-QString KLocalePrivate::translateQt(const char *context, const char *sourceText, const char *comment) const
-{
-    // Qt's context is normally the name of the class of the method which makes
-    // the tr(sourceText) call. However, it can also be manually supplied via
-    // translate(context, sourceText) call.
-    //
-    // Qt's sourceText is the actual message displayed to the user.
-    //
-    // Qt's comment is an optional argument of tr() and translate(), like
-    // tr(sourceText, comment) and translate(context, sourceText, comment).
-    //
-    // We handle this in the following way:
-    //
-    // If the comment is given, then it is considered gettext's msgctxt, so a
-    // context call is made.
-    //
-    // If the comment is not given, but context is given, then we treat it as
-    // msgctxt only if it was manually supplied (the one in translate()) -- but
-    // we don't know this, so we first try a context call, and if translation
-    // is not found, we fallback to ordinary call.
-    //
-    // If neither comment nor context are given, it's just an ordinary call
-    // on sourceText.
-
-    if (!sourceText || !sourceText[0]) {
-        qWarning() << "KLocale: trying to look up \"\" in catalog. " << "Fix the program";
-        return QString();
-    }
-
-    if (useDefaultLanguage()) {
-        return QString();
-    }
-
-    QString translation;
-    QString language;
-
-    // NOTE: Condition (language != defaultLanguage()) means that translation
-    // was found, otherwise we got the original string back as translation.
-
-    if (comment && comment[0]) {
-        // Comment given, go for context call.
-        translateRawFrom(0, comment, sourceText, 0, 0, &language, &translation);
-    } else {
-        // Comment not given, go for try-fallback with context.
-        if (context && context[0]) {
-            translateRawFrom(0, context, sourceText, 0, 0, &language, &translation);
-        }
-        if (language.isEmpty() || language == defaultLanguage()) {
-            translateRawFrom(0, 0, sourceText, 0, 0, &language, &translation);
-        }
-    }
-
-    if (language != defaultLanguage()) {
-        return translation;
-    }
-
-    // No proper translation found, return empty according to Qt's expectation.
-    return QString();
 }
 
 QList<KLocale::DigitSet> KLocalePrivate::allDigitSetsList() const
@@ -1606,12 +1307,10 @@ QString KLocalePrivate::formatNumber(const QString &numStr, bool round, int prec
 QList<QString> KLocalePrivate::dialectUnitsList(KLocale::BinaryUnitDialect dialect)
 {
     QList<QString> binaryUnits;
-    QString s; // Used in CACHE_BYTE_FMT macro defined shortly
 
     // Adds a given translation to the binaryUnits list.
-#define CACHE_BYTE_FMT(ctxt_text) \
-        translateRawFrom(0, ctxt_text, 0, 0, 0, &s); \
-        binaryUnits.append(s);
+    #define CACHE_BYTE_FMT(ctxt_text) \
+        binaryUnits.append(i18nc(ctxt_text, QLatin1String("%1")));
 
     // Do not remove i18n: comments below, they are used by the
     // translators.
@@ -1700,7 +1399,7 @@ QString KLocalePrivate::formatByteSize(double size, int precision, KLocale::Bina
     if (dialect == m_binaryUnitDialect) {
         // Cache default units for speed
         if (m_byteSizeFmt.size() == 0) {
-            QMutexLocker lock(kLocaleMutex());
+            QMutexLocker lock(s_kLocaleMutex());
 
             // We only cache the user's default dialect.
             m_byteSizeFmt = dialectUnitsList(m_binaryUnitDialect);
@@ -1754,7 +1453,7 @@ KLocale::BinaryUnitDialect KLocalePrivate::binaryUnitDialect() const
 void KLocalePrivate::setBinaryUnitDialect(KLocale::BinaryUnitDialect newDialect)
 {
     if (newDialect > KLocale::DefaultBinaryDialect && newDialect <= KLocale::LastBinaryDialect) {
-        QMutexLocker lock(kLocaleMutex());
+        QMutexLocker lock(s_kLocaleMutex());
         m_binaryUnitDialect = newDialect;
         m_byteSizeFmt.clear(); // Reset cached translations.
     }
@@ -1838,29 +1537,6 @@ QString KLocalePrivate::prettyFormatDuration(unsigned long mSec) const
 QString KLocalePrivate::formatDate(const QDate &date, KLocale::DateFormat format)
 {
     return calendar()->formatDate(date, format);
-}
-
-QString KLocalePrivate::mainCatalog()
-{
-    KLocaleStaticData *s = staticData();
-    // If setMainCatalog was called, then we use that
-    // (e.g. korgac calls setMainCatalog("korganizer") to use korganizer.po)
-    if (!s->maincatalog.isEmpty()) {
-        return s->maincatalog;
-    }
-    QString appName = QCoreApplication::applicationName();
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    if (appName.isEmpty()) {
-        appName = qAppName();
-    }
-#endif
-    return appName;
-}
-
-void KLocalePrivate::setMainCatalog(const QString& catalog)
-{
-    KLocaleStaticData *s = staticData();
-    s->maincatalog = catalog;
 }
 
 double KLocalePrivate::readNumber(const QString &_str, bool * ok) const
@@ -2839,11 +2515,6 @@ QString KLocalePrivate::defaultCurrencyCode()
     return QString::fromLatin1("USD");
 }
 
-bool KLocalePrivate::useTranscript() const
-{
-    return m_useTranscript;
-}
-
 const QByteArray KLocalePrivate::encoding()
 {
     return codecForEncoding()->name();
@@ -3043,51 +2714,6 @@ KLocale::WeekNumberSystem KLocalePrivate::weekNumberSystem()
     return m_weekNumberSystem;
 }
 
-void KLocalePrivate::copyCatalogsTo(KLocale *locale)
-{
-    QMutexLocker lock(kLocaleMutex());
-    locale->d->m_catalogNames = m_catalogNames;
-    locale->d->updateCatalogs();
-}
-
-QString KLocalePrivate::localizedFilePath(const QString &filePath) const
-{
-    // Stop here if the default language is primary.
-    if (useDefaultLanguage()) {
-        return filePath;
-    }
-
-    // Check if l10n sudir is present, stop if not.
-    QFileInfo fileInfo(filePath);
-    QString locDirPath = fileInfo.path() + QLatin1String("/l10n");
-    QFileInfo locDirInfo(locDirPath);
-    if (!locDirInfo.isDir()) {
-        return filePath;
-    }
-
-    // Go through possible localized paths by priority of languages,
-    // return first that exists.
-    QString fileName = fileInfo.fileName();
-    foreach(const QString &lang, languageList()) {
-        // Stop when the default language is reached.
-        if (lang == KLocale::defaultLanguage()) {
-            return filePath;
-        }
-        QString locFilePath = locDirPath + QLatin1Char('/') + lang + QLatin1Char('/') + fileName;
-        QFileInfo locFileInfo(locFilePath);
-        if (locFileInfo.isFile() && locFileInfo.isReadable()) {
-            return locFilePath;
-        }
-    }
-
-    return filePath;
-}
-
-QString KLocalePrivate::removeAcceleratorMarker(const QString &label) const
-{
-    return ::removeAcceleratorMarker(label);
-}
-
 void KLocalePrivate::setDigitSet(KLocale::DigitSet digitSet)
 {
     m_digitSet = digitSet;
@@ -3116,11 +2742,4 @@ void KLocalePrivate::setDateTimeDigitSet(KLocale::DigitSet digitSet)
 KLocale::DigitSet KLocalePrivate::dateTimeDigitSet() const
 {
     return m_dateTimeDigitSet;
-}
-
-Q_GLOBAL_STATIC_WITH_ARGS(QMutex, s_kLocaleMutex, (QMutex::Recursive))
-
-QMutex *kLocaleMutex()
-{
-    return s_kLocaleMutex();
 }

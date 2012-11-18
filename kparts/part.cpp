@@ -38,7 +38,7 @@
 #include <kcomponentdata.h>
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kxmlguifactory.h>
 #include <qurlpathinfo.h>
@@ -148,7 +148,7 @@ void PartBase::setComponentData(const KComponentData &componentData, bool bLoadP
     Q_D(PartBase);
 
     KXMLGUIClient::setComponentData(componentData);
-    KLocale::global()->insertCatalog(componentData.catalogName());
+    KLocalizedString::insertCatalog(componentData.catalogName());
     if (bLoadPlugins) {
         loadPlugins(d->m_obj, this, componentData);
     }

@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (c) 2001 Hans Petter Bieker <bieker@kde.org>
+   Copyright (c) 2012 Chusslove Illich <caslav.ilic@gmx.net>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -21,191 +22,124 @@
 #define KCATALOG_H
 
 #include <QtCore/QString>
+#include <QtCore/QByteArray>
 
 class KCatalogPrivate;
 
 /**
- * This class abstracts a gettext message catalog. It will take care of
- * needed gettext bindings.
+ * This class abstracts a gettext message catalog.
+ * It takes care of needed gettext bindings.
  *
- * @see KLocale
+ * @see KLocalizedString
  * @internal
  */
-//REVISED: hausmann
 class KCatalog
 {
 public:
-  /**
-   * Constructor.
-   *
-   * @param name The name of the catalog
-   * @param language The language of this catalog
-   */
-  KCatalog( const QString &name, const QString &language );
+    /**
+     * Constructor.
+     *
+     * @param name name of the catalog
+     * @param language language of this catalog
+     */
+    KCatalog (const QString &name, const QString &language);
 
-  /**
-   * Copy constructor.
-   */
-  KCatalog(const KCatalog & rhs);
+    /**
+     * Destructor.
+     */
+    ~KCatalog ();
 
-  /**
-   * Assignment operator.
-   */
-  KCatalog & operator = ( const KCatalog & rhs);
+    /**
+     * Get the name of the catalog.
+     *
+     * @return name of the catalog
+     */
+    QString name () const;
 
-  /**
-   * Destructor.
-   */
-  virtual ~KCatalog();
+    /**
+     * Get the language of the catalog.
+     *
+     * @return language of the catalog
+     */
+    QString language () const;
 
-  /**
-   * Finds the locale directory for the given catalog in given language.
-   *
-   * @param name The name of the catalog
-   * @param language The language of this catalog
-   *
-   * @return The locale directory if found, QString() otherwise.
-   */
-  static QString catalogLocaleDir( const QString &name,
-                                   const QString &language );
+    /**
+     * Get the locale directory of the catalog.
+     *
+     * @return locale directory of the catalog.
+     */
+    QString localeDir () const;
 
-  /**
-   * Returns the name of the catalog.
-   *
-   * @return The name of the catalog
-   */
-  QString name() const;
+    /**
+     * Get translation of the given message text.
+     *
+     * Do not pass empty message text.
+     *
+     * @param msgid message text
+     *
+     * @return translated message if found, <tt>QString()</tt> otherwise
+     */
+    QString translate (const QByteArray &msgid) const;
 
-  /**
-   * Returns the language of the catalog.
-   *
-   * @return The language of the catalog
-   */
-  QString language() const;
+    /**
+     * Get translation of the given message text with given context.
+     *
+     * Do not pass empty message text.
+     *
+     * @param msgctxt message context
+     * @param msgid message text
+     *
+     * @return translated message if found, <tt>QString()</tt> otherwise
+     */
+    QString translate (const QByteArray &msgctxt, const QByteArray &msgid) const;
 
-  /**
-   * Returns locale directory of the catalog.
-   *
-   * @return The locale directory of the catalog.
-   */
-  QString localeDir() const;
+    /**
+     * Get translation of given message with plural forms.
+     *
+     * Do not pass empty message text.
+     *
+     * @param msgid singular message text
+     * @param msgid_plural plural message text
+     * @param n number for which the plural form is needed
+     *
+     * @return translated message if found, <tt>QString()</tt> otherwise
+     */
+    QString translate (const QByteArray &msgid, const QByteArray &msgid_plural,
+                       qulonglong n) const;
 
-  /**
-   * Retrieves a translation of the specified message id.
-   *
-   * Do not pass 0 or "" strings as message id.
-   *
-   * @param msgid The message id
-   *
-   * @return The translated message, or @p msgid if not found
-   */
-  QString translate( const char * msgid ) const;
+    /**
+     * Get translation of given message with plural forms with given context.
+     *
+     * Do not pass empty message text.
+     *
+     * @param msgctxt message context
+     * @param msgid singular message text
+     * @param msgid_plural plural message text
+     * @param n number for which the plural form is needed
+     *
+     * @return translated message if found, <tt>QString()</tt> otherwise
+     */
+    QString translate (const QByteArray &msgctxt, const QByteArray &msgid,
+                       const QByteArray &msgid_plural, qulonglong n) const;
 
-  /**
-   * Retrieves a translation of the specified message id with given context.
-   *
-   * Do not pass 0 or "" strings as message id or context.
-   *
-   * @param msgctxt The context
-   * @param msgid The message id
-   *
-   * @return The translated message, or @p msgid if not found
-   */
-  QString translate( const char * msgctxt, const char * msgid ) const;
-
-  /**
-   * Retrieves a proper plural form of translation for the specified English
-   * singular and plural message ids.
-   *
-   * Do not pass 0 or "" strings as message ids.
-   *
-   * @param msgid The singular message id
-   * @param msgid_plural The plural message id
-   * @param n The number to which the plural form applies
-   *
-   * @return The translated message, or proper English form if not found
-   */
-  QString translate( const char * msgid, const char * msgid_plural,
-                     unsigned long n ) const;
-
-  /**
-   * Retrieves a proper plural form of translation for the specified English
-   * singular and plural message ids, with given context.
-   *
-   * Do not pass 0 or "" strings as message ids or context.
-   *
-   * @param msgctxt The context
-   * @param msgid The singular message id
-   * @param msgid_plural The plural message id
-   * @param n The number to which the plural form applies
-   *
-   * @return The translated message, or proper English form if not found
-   */
-  QString translate( const char * msgctxt, const char * msgid,
-                     const char * msgid_plural, unsigned long n ) const;
-
-  /**
-   * Retrieves a translation of the specified message id,
-   * returning empty if the translation was not found.
-   *
-   * Do not pass 0 or "" strings as message id.
-   *
-   * @param msgid The message id
-   *
-   * @return The translated message, or QString() if not found
-   */
-  QString translateStrict( const char * msgid ) const;
-
-  /**
-   * Retrieves a translation of the specified message id with given context,
-   * returning empty if the translation was not found.
-   *
-   * Do not pass 0 or "" strings as message id or context.
-   *
-   * @param msgctxt The context
-   * @param msgid The message id
-   *
-   * @return The translated message, or QString() if not found
-   */
-  QString translateStrict( const char * msgctxt, const char * msgid ) const;
-
-  /**
-   * Retrieves a proper plural form of translation for the specified English
-   * singular and plural message ids,
-   * returning empty if the translation was not found.
-   *
-   * Do not pass 0 or "" strings as message ids.
-   *
-   * @param msgid The singular message id
-   * @param msgid_plural The plural message id
-   * @param n The number to which the plural form applies
-   *
-   * @return The translated message, or QString() if not found
-   */
-  QString translateStrict( const char * msgid, const char * msgid_plural,
-                           unsigned long n ) const;
-
-  /**
-   * Retrieves a proper plural form of translation for the specified English
-   * singular and plural message ids, with given context,
-   * returning empty if the translation was not found.
-   *
-   * Do not pass 0 or "" strings as message ids or context.
-   *
-   * @param msgctxt The context
-   * @param msgid The singular message id
-   * @param msgid_plural The plural message id
-   * @param n The number to which the plural form applies
-   *
-   * @return The translated message, or QString() if not found
-   */
-  QString translateStrict( const char * msgctxt, const char * msgid,
-                           const char * msgid_plural, unsigned long n ) const;
-
-  friend QDebug operator<<(QDebug debug, const KCatalog &c);
+    /**
+     * Find the locale directory for the given catalog in the given language.
+     *
+     * @param name name of the catalog
+     * @param language language of the catalog
+     *
+     * @return the locale directory if found, <tt>QString()</tt> otherwise.
+     */
+    static QString catalogLocaleDir (const QString &name,
+                                     const QString &language);
 
 private:
-  KCatalogPrivate* const d;
+
+    KCatalogPrivate* const d;
+
+    KCatalog (const KCatalog &);
+    KCatalog &operator= (const KCatalog &);
+
 };
 
 QDebug operator<<(QDebug debug, const KCatalog &c);

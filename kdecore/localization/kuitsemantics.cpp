@@ -31,7 +31,6 @@
 
 #include <kcatalog_p.h>
 #include <kuitformats_p.h>
-#include <klocale.h>
 
 #define QL1S(x)   QLatin1String(x)
 
@@ -358,7 +357,7 @@ class KuitSemanticsPrivate
                                   Kuit::FmtVar fmtImp) const;
 
     // Final touches to the formatted text.
-    QString finalizeVisualText (const QString &final,
+    QString finalizeVisualText (const QString &ftext,
                                 Kuit::FmtVar fmt,
                                 bool hadQtTag = false,
                                 bool hadAnyHtmlTag = false) const;
@@ -449,7 +448,11 @@ QString KuitSemanticsPrivate::metaTr (const char *ctxt, const char *id) const
     if (m_metaCat == NULL) {
         return QString::fromLatin1(id);
     }
-    return m_metaCat->translate(ctxt, id);
+    QString str = m_metaCat->translate(ctxt, id);
+    if (str.isEmpty()) {
+        str = QString::fromUtf8(id);
+    }
+    return str;
 }
 
 void KuitSemanticsPrivate::setFormattingPatterns ()
@@ -945,9 +948,9 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromContextMarker (
     else { // unknown role
         rol = Kuit::Rol::None;
         if (!rolname.isEmpty()) {
-            qWarning() << QString::fromLatin1("Unknown semantic role '@%1' in "
-                                   "context marker for message {%2}.")
-                                  .arg(rolname, shorten(text));
+            qWarning() << QString::fromLatin1(
+                "Unknown semantic role '@%1' in context marker for message {%2}.")
+                .arg(rolname, shorten(text));
         }
     }
 
@@ -959,9 +962,9 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromContextMarker (
     else { // unknown or not given subcue
         cue = Kuit::Cue::None;
         if (!cuename.isEmpty()) {
-            qWarning() << QString::fromLatin1("Unknown interface subcue ':%1' in "
-                                   "context marker for message {%2}.")
-                                  .arg(cuename, shorten(text));
+            qWarning() << QString::fromLatin1(
+                "Unknown interface subcue ':%1' in context marker for message {%2}.")
+                .arg(cuename, shorten(text));
         }
     }
 
@@ -987,9 +990,9 @@ Kuit::FmtVar KuitSemanticsPrivate::formatFromContextMarker (
         }
 
         if (!fmtname.isEmpty()) {
-            qWarning() << QString::fromLatin1("Unknown visual format '/%1' in "
-                                   "context marker for message {%2}.")
-                                  .arg(fmtname, shorten(text));
+            qWarning() << QString::fromLatin1(
+                "Unknown visual format '/%1' in context marker for message {%2}.")
+                .arg(fmtname, shorten(text));
         }
     }
 
@@ -1189,8 +1192,9 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
     }
 
     if (xml.hasError()) {
-        qWarning() << QString::fromLatin1("Markup error in message {%1}: %2. Last tag parsed: %3")
-                              .arg(shorten(text), xml.errorString(), lastElementName.toString());
+        qWarning() << QString::fromLatin1(
+            "Markup error in message {%1}: %2. Last tag parsed: %3")
+            .arg(shorten(text), xml.errorString(), lastElementName.toString());
         return QString();
     }
 
@@ -1231,10 +1235,9 @@ KuitSemanticsPrivate::parseOpenEl (const QXmlStreamReader &xml,
         }
         else {
             oel.handling = OpenEl::Dropout;
-            qWarning() << QString::fromLatin1("Tag '%1' cannot be subtag of '%2' "
-                                   "in message {%3}.")
-                                  .arg(s->tagNames[oel.tag], s->tagNames[etag],
-                                       shorten(text));
+            qWarning() << QString::fromLatin1(
+                "Tag '%1' cannot be subtag of '%2' in message {%3}.")
+                .arg(s->tagNames[oel.tag], s->tagNames[etag], shorten(text));
         }
 
         // Resolve attributes and compute attribute set key.
@@ -1247,16 +1250,15 @@ KuitSemanticsPrivate::parseOpenEl (const QXmlStreamReader &xml,
                     oel.avals[att] = attvals[i];
                 }
                 else {
-                    qWarning() << QString::fromLatin1("Attribute '%1' cannot be used in "
-                                           "tag '%2' in message {%3}.")
-                                          .arg(attnams[i], oel.name,
-                                               shorten(text));
+                    qWarning() << QString::fromLatin1(
+                        "Attribute '%1' cannot be used in tag '%2' in message {%3}.")
+                        .arg(attnams[i], oel.name, shorten(text));
                 }
             }
             else {
-                qWarning() << QString::fromLatin1("Unknown semantic tag attribute '%1' "
-                                       "in message {%2}.")
-                                      .arg(attnams[i], shorten(text));
+                qWarning() << QString::fromLatin1(
+                    "Unknown semantic tag attribute '%1' in message {%2}.")
+                    .arg(attnams[i], shorten(text));
             }
         }
         oel.akey = attSetKey(attset);
@@ -1268,9 +1270,9 @@ KuitSemanticsPrivate::parseOpenEl (const QXmlStreamReader &xml,
     else { // other element, leave it in verbatim
         oel.handling = OpenEl::Ignored;
         if (!s->qtHtmlTagNames.contains(oel.name)) {
-            qWarning() << QString::fromLatin1("Tag '%1' is neither semantic nor HTML in "
-                                   "message {%3}.")
-                                  .arg(oel.name, shorten(text));
+            qWarning() << QString::fromLatin1(
+                "Tag '%1' is neither semantic nor HTML in message {%3}.")
+                .arg(oel.name, shorten(text));
         }
     }
 
@@ -1396,8 +1398,9 @@ QString KuitSemanticsPrivate::modifyTagText (const QString &text,
         int fieldWidth = avals.value(Kuit::Att::Width, QString(QLatin1Char('0'))).toInt();
         const QString fillStr = avals.value(Kuit::Att::Fill, QString(QLatin1Char(' ')));
         const QChar fillChar = !fillStr.isEmpty() ? fillStr[0] : QChar::fromLatin1(' ');
-        return QString::fromLatin1("%1").arg(KLocale::global()->formatNumber(text, false),
-                                 fieldWidth, fillChar);
+        // FIXME: Use locale to format the number, once ready.
+        // Pass locale object as argument to this function?
+        return QString::fromLatin1("%1").arg(text, fieldWidth, fillChar);
     }
     else if (tag == Kuit::Tag::Filename) {
         return QDir::toNativeSeparators(text);
@@ -1413,14 +1416,14 @@ QString KuitSemanticsPrivate::modifyTagText (const QString &text,
     return text;
 }
 
-QString KuitSemanticsPrivate::finalizeVisualText (const QString &final,
+QString KuitSemanticsPrivate::finalizeVisualText (const QString &ftext,
                                                   Kuit::FmtVar fmt,
                                                   bool hadQtTag,
                                                   bool hadAnyHtmlTag) const
 {
     KuitSemanticsStaticData *s = semanticsStaticData();
 
-    QString text = final;
+    QString text = ftext;
 
     // Resolve XML entities if format explicitly not rich
     // and no HTML tag encountered.

@@ -188,14 +188,9 @@ set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    network/ksocketfactory.cpp
    network/ksslcertificatemanager.cpp
    network/ktcpsocket.cpp
-   localization/kcatalog.cpp
    localization/kcurrencycode.cpp
    localization/klocale.cpp
    localization/klocale_kde.cpp
-   localization/klocalizedstring.cpp
-   localization/kuitsemantics.cpp
-   localization/kuitformats.cpp
-   localization/common_helpers.cpp
    util/kautostart.cpp
    util/kdedmodule.cpp
    util/kdeversion.cpp
@@ -214,7 +209,7 @@ generate_export_header(kdecore)
 
 target_link_libraries(kdecore
   LINK_PUBLIC
-    ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons kconfigcore kcodecs kservice
+    ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons kconfigcore kcodecs ki18n
   LINK_PRIVATE
     ${QtMimeTypes_LIBRARY} ${QT_QTXML_LIBRARY} ${kdecore_OPTIONAL_LIBS}
 )
@@ -253,6 +248,35 @@ target_link_libraries(kde5-config ${KDE4_KDECORE_LIBS} kcoreaddons)
 
 install(TARGETS kde5-config ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
+
+########### next target ###############
+
+set(ki18n_LIB_SRCS
+   localization/klocalizedstring.cpp
+   localization/kcatalog.cpp
+   localization/kuitsemantics.cpp
+   localization/kuitformats.cpp
+   localization/common_helpers.cpp
+)
+
+kde4_add_library(ki18n ${LIBRARY_TYPE} ${ki18n_LIB_SRCS})
+generate_export_header(ki18n)
+
+target_link_libraries(ki18n
+  LINK_PUBLIC
+    ${QT_QTCORE_LIBRARY} kservice
+  LINK_PRIVATE
+    ${QtMimeTypes_LIBRARY} ${QT_QTXML_LIBRARY}
+)
+
+target_link_libraries(ki18n LINK_INTERFACE_LIBRARIES ${ki18n_LINK_INTERFACE_LIBRARIES})
+
+set_target_properties(ki18n PROPERTIES
+                            VERSION ${KDE_NON_GENERIC_LIB_VERSION}
+                            SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
+                     )
+
+install(TARGETS ki18n EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### next target ###############
 

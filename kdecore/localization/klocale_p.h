@@ -28,9 +28,6 @@ class QMutex;
 class KCatalog;
 class KDayPeriod;
 
-// Used by both KLocale and KLocalizedString, since they call each other.
-QMutex* kLocaleMutex();
-
 class KLocalePrivate
 {
 public:
@@ -83,7 +80,7 @@ protected:
     /**
      * @internal Main init function, needs to be called by appropriate child constructor.
      */
-    virtual void init(const QString& catalogName, const QString &language, const QString &country,
+    virtual void init(const QString &language, const QString &country,
                       KSharedConfig::Ptr persistantconfig, KConfig *tempConfig);
 
     /**
@@ -243,86 +240,7 @@ public:
      */
     virtual bool nounDeclension() const;
 
-    /**
-     * @internal Returns whether evaluation of translation scripts is enabled.
-     * The worker of the same-name KLocale API function.
-     */
-    virtual bool useTranscript() const;
-
-    /**************************
-     **   Catalog settings   **
-     **************************/
-
-protected:
-
-    /**
-     * @internal Initializes the catalogs appname, kdelibs and kio for all chosen languages.
-     */
-    virtual void initMainCatalogs();
-
-    /**
-     * @internal evaluate the list of catalogs and check that all instances for all languages are
-     * loaded and that they are sorted according to the catalog names
-     *
-     * Callers must lock the mutex first.
-     */
-    virtual void updateCatalogs();
-
 public:
-
-    /**
-     * @internal
-     * The worker of the same-name KLocale API function.
-     */
-    static void setMainCatalog(const QString &catalog);
-
-    /**
-     * Main catalog name, see KLocale::global()
-     */
-    static QString mainCatalog();
-
-    /**
-     * Sets the active catalog for translation lookup.
-     * @param catalog The catalog to activate.
-     */
-    virtual void setActiveCatalog(const QString &catalog);
-
-    /**
-     * @internal Adds another catalog to search for translation lookup.
-     * The worker of the same-name KLocale API function.
-     */
-    virtual void insertCatalog(const QString &catalog);
-
-    /**
-     * @internal Removes a catalog for translation lookup.
-     * The worker of the same-name KLocale API function.
-     */
-    virtual void removeCatalog(const QString &catalog);
-
-    /**
-     * @internal Copies the catalogs of this object to an other KLocale object.
-     * The worker of the same-name KLocale API function.
-     */
-    virtual void copyCatalogsTo(KLocale *locale);
-
-    /**
-     * @internal Function used by the translate versions
-     * The worker of the same-name KLocale API function.
-     */
-    virtual void translateRawFrom(const char *catname, const char *msgctxt, const char *msgid, const char *msgid_plural = 0,
-                                  unsigned long n = 0, QString *language = 0, QString *translation = 0) const;
-
-    /**
-     * @internal Translates a message as a QTranslator is supposed to.
-     * The worker of the same-name KLocale API function.
-     */
-    virtual QString translateQt(const char *context, const char *sourceText, const char *comment) const;
-
-    /**
-     * @internal Checks whether or not the active catalog is found for the given language.
-     * The worker of the same-name KLocale API function.
-     */
-    virtual bool isApplicationTranslatedInto(const QString &language);
 
     /***************************
      **   Calendar settings   **
@@ -1114,18 +1032,6 @@ public:
     static void splitLocale(const QString &locale, QString &language, QString &country,
                             QString &modifier, QString &charset);
 
-    /**
-     * @internal Tries to find a path to the localized file for the given original path.
-     * The worker of the same-name KLocale API function.
-     */
-    virtual QString localizedFilePath(const QString &filePath) const;
-
-    /**
-     * @internal Removes accelerator marker from a UI text label.
-     * The worker of the same-name KLocale API function.
-     */
-    virtual QString removeAcceleratorMarker(const QString &label) const;
-
 private:
 
     /**
@@ -1161,13 +1067,6 @@ private:
     QStringList  m_languageList;
     bool         m_languageSensitiveDigits;  // FIXME: Temporary until full language-sensitivity implemented.
     bool         m_nounDeclension;
-
-    // Catalog settings
-    QString             m_catalogName;          // catalogName ("app name") used by this KLocale object
-    QList<KCatalogName> m_catalogNames;         // list of all catalogs (regardless of language)
-    QList<KCatalog>     m_catalogs;             // list of all found catalogs, one instance per catalog name and language
-    int                 m_numberOfSysCatalogs;  // number of catalogs that each app draws from
-    bool                m_useTranscript;        // indicates if scripted messages are to be executed
 
     // Calendar settings
     KLocale::CalendarSystem m_calendarSystem;
@@ -1237,13 +1136,13 @@ public:
 
     virtual QString translate(const char* context,
                               const char *sourceText,
-                              const char* message
+                              const char* comment
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
                               , int n
 #endif
                               ) const
     {
-        return KLocale::global()->translateQt(context, sourceText, message);
+        return KLocalizedString::translateQt(context, sourceText, comment);
     }
 
     virtual bool isEmpty() const

@@ -34,7 +34,7 @@
 #include <kconfigdialogmanager.h>
 #include <kdebug.h>
 #include <kcomponentdata.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include "kauthaction.h"
 #include "kauthexecutejob.h"
 
@@ -78,7 +78,7 @@ KCModule::KCModule( QWidget *parent, const char *name, const QStringList& )
 {
     if (name && strlen(name)) {
         d->_componentData = KComponentData(name);
-        KLocale::global()->insertCatalog(name);
+        KLocalizedString::insertCatalog(name);
     } else
         d->_componentData = KComponentData("kcmunnamed");
 }
@@ -88,7 +88,7 @@ KCModule::KCModule(const KComponentData &componentData, QWidget *parent, const Q
 {
     Q_ASSERT(componentData.isValid());
 
-    KLocale::global()->insertCatalog(componentData.componentName());
+    KLocalizedString::insertCatalog(componentData.componentName());
 
     d->_componentData = componentData;
 }
@@ -98,7 +98,7 @@ KCModule::KCModule(const KComponentData &componentData, QWidget *parent, const Q
 {
     Q_ASSERT(componentData.isValid());
 
-    KLocale::global()->insertCatalog(componentData.componentName());
+    KLocalizedString::insertCatalog(componentData.componentName());
 
     d->_componentData = componentData;
 }

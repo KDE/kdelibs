@@ -26,7 +26,7 @@
 #include <QPaintEvent>
 #include <QStyleOption>
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kprotocolinfo.h>
 #include <kprotocolmanager.h>
 #include <kurlnavigator.h>
@@ -67,7 +67,7 @@ QSize KUrlNavigatorProtocolCombo::sizeHint() const
     const QSize size = KUrlNavigatorButtonBase::sizeHint();
 
     QFontMetrics fontMetrics(font());
-    int width = fontMetrics.width(KLocale::global()->removeAcceleratorMarker(text()));
+    int width = fontMetrics.width(KLocalizedString::removeAcceleratorMarker(text()));
     width += (3 * BorderWidth) + ArrowSize;
 
     return QSize(width, size.height());

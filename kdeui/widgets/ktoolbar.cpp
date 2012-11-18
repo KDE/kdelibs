@@ -47,7 +47,7 @@
 #include <kglobalsettings.h>
 #include <kguiitem.h>
 #include <kiconloader.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kxmlguiwindow.h>
 #include <kmenu.h>
 #include <kstandardaction.h>
@@ -1315,12 +1315,12 @@ bool KToolBar::eventFilter(QObject * watched, QEvent * event)
             // CJK languages use more verbose accelerator marker: they add a Latin
             // letter in parenthesis, and put accelerator on that. Hence, the default
             // removal of ampersand only may not be enough there, instead the whole
-            // parenthesis construct should be removed. Use KLocale's method to do this.
+            // parenthesis construct should be removed. Use KLocalizedString's method to do this.
             if (event->type() == QEvent::Show || event->type() == QEvent::Paint || event->type() == QEvent::EnabledChange) {
                 QAction *act = tb->defaultAction();
                 if (act) {
-                    const QString text = KLocale::global()->removeAcceleratorMarker(act->iconText().isEmpty() ? act->text() : act->iconText());
-                    const QString toolTip = KLocale::global()->removeAcceleratorMarker(act->toolTip());
+                    const QString text = KLocalizedString::removeAcceleratorMarker(act->iconText().isEmpty() ? act->text() : act->iconText());
+                    const QString toolTip = KLocalizedString::removeAcceleratorMarker(act->toolTip());
                     // Filtering messages requested by translators (scripting).
                     tb->setText(i18nc("@action:intoolbar Text label of toolbar button", "%1", text));
                     tb->setToolTip(i18nc("@info:tooltip Tooltip of toolbar button", "%1", toolTip));

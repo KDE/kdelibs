@@ -28,7 +28,7 @@ include_directories(
   ${CMAKE_BINARY_DIR}/tier2/kauth/src
   ${CMAKE_SOURCE_DIR}/tier2/kauth/src
   ${CMAKE_BINARY_DIR}/kdecore
-  ${CMAKE_SOURCE_DIR}/kdecore/localization # KLocale::localizedFilePath
+  ${CMAKE_SOURCE_DIR}/kdecore/localization # KLocalizedString::localizedFilePath
   ${CMAKE_SOURCE_DIR}/kdecore/kernel # KGlobal (TODO)
   ${CMAKE_SOURCE_DIR}/kdecore/util # kde_file.h (TODO)
   ${CMAKE_BINARY_DIR}/tier2/kconfig/src/core

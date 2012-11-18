@@ -168,32 +168,34 @@ QString KCalendarSystemIslamicCivilPrivate::monthName(int month, int year, KLoca
 {
     Q_UNUSED(year);
 
+    QStringList languages = locale()->languageList();
+
     if (format == KLocale::NarrowName) {
         switch (month) {
         case 1:
-            return ki18nc("Hijri month 1 - KLocale::NarrowName",  "M").toString(locale());
+            return ki18nc("Hijri month 1 - KLocale::NarrowName",  "M").toString(languages);
         case 2:
-            return ki18nc("Hijri month 2 - KLocale::NarrowName",  "S").toString(locale());
+            return ki18nc("Hijri month 2 - KLocale::NarrowName",  "S").toString(languages);
         case 3:
-            return ki18nc("Hijri month 3 - KLocale::NarrowName",  "A").toString(locale());
+            return ki18nc("Hijri month 3 - KLocale::NarrowName",  "A").toString(languages);
         case 4:
-            return ki18nc("Hijri month 4 - KLocale::NarrowName",  "T").toString(locale());
+            return ki18nc("Hijri month 4 - KLocale::NarrowName",  "T").toString(languages);
         case 5:
-            return ki18nc("Hijri month 5 - KLocale::NarrowName",  "A").toString(locale());
+            return ki18nc("Hijri month 5 - KLocale::NarrowName",  "A").toString(languages);
         case 6:
-            return ki18nc("Hijri month 6 - KLocale::NarrowName",  "T").toString(locale());
+            return ki18nc("Hijri month 6 - KLocale::NarrowName",  "T").toString(languages);
         case 7:
-            return ki18nc("Hijri month 7 - KLocale::NarrowName",  "R").toString(locale());
+            return ki18nc("Hijri month 7 - KLocale::NarrowName",  "R").toString(languages);
         case 8:
-            return ki18nc("Hijri month 8 - KLocale::NarrowName",  "S").toString(locale());
+            return ki18nc("Hijri month 8 - KLocale::NarrowName",  "S").toString(languages);
         case 9:
-            return ki18nc("Hijri month 9 - KLocale::NarrowName",  "R").toString(locale());
+            return ki18nc("Hijri month 9 - KLocale::NarrowName",  "R").toString(languages);
         case 10:
-            return ki18nc("Hijri month 10 - KLocale::NarrowName", "S").toString(locale());
+            return ki18nc("Hijri month 10 - KLocale::NarrowName", "S").toString(languages);
         case 11:
-            return ki18nc("Hijri month 11 - KLocale::NarrowName", "Q").toString(locale());
+            return ki18nc("Hijri month 11 - KLocale::NarrowName", "Q").toString(languages);
         case 12:
-            return ki18nc("Hijri month 12 - KLocale::NarrowName", "H").toString(locale());
+            return ki18nc("Hijri month 12 - KLocale::NarrowName", "H").toString(languages);
         default:
             return QString();
         }
@@ -202,29 +204,29 @@ QString KCalendarSystemIslamicCivilPrivate::monthName(int month, int year, KLoca
     if (format == KLocale::ShortName && possessive) {
         switch (month) {
         case 1:
-            return ki18nc("Hijri month 1 - KLocale::ShortName Possessive",  "of Muh").toString(locale());
+            return ki18nc("Hijri month 1 - KLocale::ShortName Possessive",  "of Muh").toString(languages);
         case 2:
-            return ki18nc("Hijri month 2 - KLocale::ShortName Possessive",  "of Saf").toString(locale());
+            return ki18nc("Hijri month 2 - KLocale::ShortName Possessive",  "of Saf").toString(languages);
         case 3:
-            return ki18nc("Hijri month 3 - KLocale::ShortName Possessive",  "of R.A").toString(locale());
+            return ki18nc("Hijri month 3 - KLocale::ShortName Possessive",  "of R.A").toString(languages);
         case 4:
-            return ki18nc("Hijri month 4 - KLocale::ShortName Possessive",  "of R.T").toString(locale());
+            return ki18nc("Hijri month 4 - KLocale::ShortName Possessive",  "of R.T").toString(languages);
         case 5:
-            return ki18nc("Hijri month 5 - KLocale::ShortName Possessive",  "of J.A").toString(locale());
+            return ki18nc("Hijri month 5 - KLocale::ShortName Possessive",  "of J.A").toString(languages);
         case 6:
-            return ki18nc("Hijri month 6 - KLocale::ShortName Possessive",  "of J.T").toString(locale());
+            return ki18nc("Hijri month 6 - KLocale::ShortName Possessive",  "of J.T").toString(languages);
         case 7:
-            return ki18nc("Hijri month 7 - KLocale::ShortName Possessive",  "of Raj").toString(locale());
+            return ki18nc("Hijri month 7 - KLocale::ShortName Possessive",  "of Raj").toString(languages);
         case 8:
-            return ki18nc("Hijri month 8 - KLocale::ShortName Possessive",  "of Sha").toString(locale());
+            return ki18nc("Hijri month 8 - KLocale::ShortName Possessive",  "of Sha").toString(languages);
         case 9:
-            return ki18nc("Hijri month 9 - KLocale::ShortName Possessive",  "of Ram").toString(locale());
+            return ki18nc("Hijri month 9 - KLocale::ShortName Possessive",  "of Ram").toString(languages);
         case 10:
-            return ki18nc("Hijri month 10 - KLocale::ShortName Possessive", "of Shw").toString(locale());
+            return ki18nc("Hijri month 10 - KLocale::ShortName Possessive", "of Shw").toString(languages);
         case 11:
-            return ki18nc("Hijri month 11 - KLocale::ShortName Possessive", "of Qid").toString(locale());
+            return ki18nc("Hijri month 11 - KLocale::ShortName Possessive", "of Qid").toString(languages);
         case 12:
-            return ki18nc("Hijri month 12 - KLocale::ShortName Possessive", "of Hij").toString(locale());
+            return ki18nc("Hijri month 12 - KLocale::ShortName Possessive", "of Hij").toString(languages);
         default:
             return QString();
         }
@@ -233,29 +235,29 @@ QString KCalendarSystemIslamicCivilPrivate::monthName(int month, int year, KLoca
     if (format == KLocale::ShortName && !possessive) {
         switch (month) {
         case 1:
-            return ki18nc("Hijri month 1 - KLocale::ShortName",  "Muh").toString(locale());
+            return ki18nc("Hijri month 1 - KLocale::ShortName",  "Muh").toString(languages);
         case 2:
-            return ki18nc("Hijri month 2 - KLocale::ShortName",  "Saf").toString(locale());
+            return ki18nc("Hijri month 2 - KLocale::ShortName",  "Saf").toString(languages);
         case 3:
-            return ki18nc("Hijri month 3 - KLocale::ShortName",  "R.A").toString(locale());
+            return ki18nc("Hijri month 3 - KLocale::ShortName",  "R.A").toString(languages);
         case 4:
-            return ki18nc("Hijri month 4 - KLocale::ShortName",  "R.T").toString(locale());
+            return ki18nc("Hijri month 4 - KLocale::ShortName",  "R.T").toString(languages);
         case 5:
-            return ki18nc("Hijri month 5 - KLocale::ShortName",  "J.A").toString(locale());
+            return ki18nc("Hijri month 5 - KLocale::ShortName",  "J.A").toString(languages);
         case 6:
-            return ki18nc("Hijri month 6 - KLocale::ShortName",  "J.T").toString(locale());
+            return ki18nc("Hijri month 6 - KLocale::ShortName",  "J.T").toString(languages);
         case 7:
-            return ki18nc("Hijri month 7 - KLocale::ShortName",  "Raj").toString(locale());
+            return ki18nc("Hijri month 7 - KLocale::ShortName",  "Raj").toString(languages);
         case 8:
-            return ki18nc("Hijri month 8 - KLocale::ShortName",  "Sha").toString(locale());
+            return ki18nc("Hijri month 8 - KLocale::ShortName",  "Sha").toString(languages);
         case 9:
-            return ki18nc("Hijri month 9 - KLocale::ShortName",  "Ram").toString(locale());
+            return ki18nc("Hijri month 9 - KLocale::ShortName",  "Ram").toString(languages);
         case 10:
-            return ki18nc("Hijri month 10 - KLocale::ShortName", "Shw").toString(locale());
+            return ki18nc("Hijri month 10 - KLocale::ShortName", "Shw").toString(languages);
         case 11:
-            return ki18nc("Hijri month 11 - KLocale::ShortName", "Qid").toString(locale());
+            return ki18nc("Hijri month 11 - KLocale::ShortName", "Qid").toString(languages);
         case 12:
-            return ki18nc("Hijri month 12 - KLocale::ShortName", "Hij").toString(locale());
+            return ki18nc("Hijri month 12 - KLocale::ShortName", "Hij").toString(languages);
         default:
             return QString();
         }
@@ -264,29 +266,29 @@ QString KCalendarSystemIslamicCivilPrivate::monthName(int month, int year, KLoca
     if (format == KLocale::LongName && possessive) {
         switch (month) {
         case 1:
-            return ki18nc("Hijri month 1 - KLocale::LongName Possessive",  "of Muharram").toString(locale());
+            return ki18nc("Hijri month 1 - KLocale::LongName Possessive",  "of Muharram").toString(languages);
         case 2:
-            return ki18nc("Hijri month 2 - KLocale::LongName Possessive",  "of Safar").toString(locale());
+            return ki18nc("Hijri month 2 - KLocale::LongName Possessive",  "of Safar").toString(languages);
         case 3:
-            return ki18nc("Hijri month 3 - KLocale::LongName Possessive",  "of Rabi` al-Awal").toString(locale());
+            return ki18nc("Hijri month 3 - KLocale::LongName Possessive",  "of Rabi` al-Awal").toString(languages);
         case 4:
-            return ki18nc("Hijri month 4 - KLocale::LongName Possessive",  "of Rabi` al-Thaani").toString(locale());
+            return ki18nc("Hijri month 4 - KLocale::LongName Possessive",  "of Rabi` al-Thaani").toString(languages);
         case 5:
-            return ki18nc("Hijri month 5 - KLocale::LongName Possessive",  "of Jumaada al-Awal").toString(locale());
+            return ki18nc("Hijri month 5 - KLocale::LongName Possessive",  "of Jumaada al-Awal").toString(languages);
         case 6:
-            return ki18nc("Hijri month 6 - KLocale::LongName Possessive",  "of Jumaada al-Thaani").toString(locale());
+            return ki18nc("Hijri month 6 - KLocale::LongName Possessive",  "of Jumaada al-Thaani").toString(languages);
         case 7:
-            return ki18nc("Hijri month 7 - KLocale::LongName Possessive",  "of Rajab").toString(locale());
+            return ki18nc("Hijri month 7 - KLocale::LongName Possessive",  "of Rajab").toString(languages);
         case 8:
-            return ki18nc("Hijri month 8 - KLocale::LongName Possessive",  "of Sha`ban").toString(locale());
+            return ki18nc("Hijri month 8 - KLocale::LongName Possessive",  "of Sha`ban").toString(languages);
         case 9:
-            return ki18nc("Hijri month 9 - KLocale::LongName Possessive",  "of Ramadan").toString(locale());
+            return ki18nc("Hijri month 9 - KLocale::LongName Possessive",  "of Ramadan").toString(languages);
         case 10:
-            return ki18nc("Hijri month 10 - KLocale::LongName Possessive", "of Shawwal").toString(locale());
+            return ki18nc("Hijri month 10 - KLocale::LongName Possessive", "of Shawwal").toString(languages);
         case 11:
-            return ki18nc("Hijri month 11 - KLocale::LongName Possessive", "of Thu al-Qi`dah").toString(locale());
+            return ki18nc("Hijri month 11 - KLocale::LongName Possessive", "of Thu al-Qi`dah").toString(languages);
         case 12:
-            return ki18nc("Hijri month 12 - KLocale::LongName Possessive", "of Thu al-Hijjah").toString(locale());
+            return ki18nc("Hijri month 12 - KLocale::LongName Possessive", "of Thu al-Hijjah").toString(languages);
         default:
             return QString();
         }
@@ -295,29 +297,29 @@ QString KCalendarSystemIslamicCivilPrivate::monthName(int month, int year, KLoca
     // Default to LongName
     switch (month) {
     case 1:
-        return ki18nc("Hijri month 1 - KLocale::LongName",  "Muharram").toString(locale());
+        return ki18nc("Hijri month 1 - KLocale::LongName",  "Muharram").toString(languages);
     case 2:
-        return ki18nc("Hijri month 2 - KLocale::LongName",  "Safar").toString(locale());
+        return ki18nc("Hijri month 2 - KLocale::LongName",  "Safar").toString(languages);
     case 3:
-        return ki18nc("Hijri month 3 - KLocale::LongName",  "Rabi` al-Awal").toString(locale());
+        return ki18nc("Hijri month 3 - KLocale::LongName",  "Rabi` al-Awal").toString(languages);
     case 4:
-        return ki18nc("Hijri month 4 - KLocale::LongName",  "Rabi` al-Thaani").toString(locale());
+        return ki18nc("Hijri month 4 - KLocale::LongName",  "Rabi` al-Thaani").toString(languages);
     case 5:
-        return ki18nc("Hijri month 5 - KLocale::LongName",  "Jumaada al-Awal").toString(locale());
+        return ki18nc("Hijri month 5 - KLocale::LongName",  "Jumaada al-Awal").toString(languages);
     case 6:
-        return ki18nc("Hijri month 6 - KLocale::LongName",  "Jumaada al-Thaani").toString(locale());
+        return ki18nc("Hijri month 6 - KLocale::LongName",  "Jumaada al-Thaani").toString(languages);
     case 7:
-        return ki18nc("Hijri month 7 - KLocale::LongName",  "Rajab").toString(locale());
+        return ki18nc("Hijri month 7 - KLocale::LongName",  "Rajab").toString(languages);
     case 8:
-        return ki18nc("Hijri month 8 - KLocale::LongName",  "Sha`ban").toString(locale());
+        return ki18nc("Hijri month 8 - KLocale::LongName",  "Sha`ban").toString(languages);
     case 9:
-        return ki18nc("Hijri month 9 - KLocale::LongName",  "Ramadan").toString(locale());
+        return ki18nc("Hijri month 9 - KLocale::LongName",  "Ramadan").toString(languages);
     case 10:
-        return ki18nc("Hijri month 10 - KLocale::LongName", "Shawwal").toString(locale());
+        return ki18nc("Hijri month 10 - KLocale::LongName", "Shawwal").toString(languages);
     case 11:
-        return ki18nc("Hijri month 11 - KLocale::LongName", "Thu al-Qi`dah").toString(locale());
+        return ki18nc("Hijri month 11 - KLocale::LongName", "Thu al-Qi`dah").toString(languages);
     case 12:
-        return ki18nc("Hijri month 12 - KLocale::LongName", "Thu al-Hijjah").toString(locale());
+        return ki18nc("Hijri month 12 - KLocale::LongName", "Thu al-Hijjah").toString(languages);
     default:
         return QString();
     }
@@ -325,22 +327,24 @@ QString KCalendarSystemIslamicCivilPrivate::monthName(int month, int year, KLoca
 
 QString KCalendarSystemIslamicCivilPrivate::weekDayName(int weekDay, KLocale::DateTimeComponentFormat format) const
 {
+    QStringList languages = locale()->languageList();
+
     if (format == KLocale::NarrowName) {
         switch (weekDay) {
         case 1:
-            return ki18nc("Hijri weekday 1 - KLocale::NarrowName ", "I").toString(locale());
+            return ki18nc("Hijri weekday 1 - KLocale::NarrowName ", "I").toString(languages);
         case 2:
-            return ki18nc("Hijri weekday 2 - KLocale::NarrowName ", "T").toString(locale());
+            return ki18nc("Hijri weekday 2 - KLocale::NarrowName ", "T").toString(languages);
         case 3:
-            return ki18nc("Hijri weekday 3 - KLocale::NarrowName ", "A").toString(locale());
+            return ki18nc("Hijri weekday 3 - KLocale::NarrowName ", "A").toString(languages);
         case 4:
-            return ki18nc("Hijri weekday 4 - KLocale::NarrowName ", "K").toString(locale());
+            return ki18nc("Hijri weekday 4 - KLocale::NarrowName ", "K").toString(languages);
         case 5:
-            return ki18nc("Hijri weekday 5 - KLocale::NarrowName ", "J").toString(locale());
+            return ki18nc("Hijri weekday 5 - KLocale::NarrowName ", "J").toString(languages);
         case 6:
-            return ki18nc("Hijri weekday 6 - KLocale::NarrowName ", "S").toString(locale());
+            return ki18nc("Hijri weekday 6 - KLocale::NarrowName ", "S").toString(languages);
         case 7:
-            return ki18nc("Hijri weekday 7 - KLocale::NarrowName ", "A").toString(locale());
+            return ki18nc("Hijri weekday 7 - KLocale::NarrowName ", "A").toString(languages);
         default:
             return QString();
         }
@@ -349,38 +353,38 @@ QString KCalendarSystemIslamicCivilPrivate::weekDayName(int weekDay, KLocale::Da
     if (format == KLocale::ShortName  || format == KLocale:: ShortNumber) {
         switch (weekDay) {
         case 1:
-            return ki18nc("Hijri weekday 1 - KLocale::ShortName", "Ith").toString(locale());
+            return ki18nc("Hijri weekday 1 - KLocale::ShortName", "Ith").toString(languages);
         case 2:
-            return ki18nc("Hijri weekday 2 - KLocale::ShortName", "Thl").toString(locale());
+            return ki18nc("Hijri weekday 2 - KLocale::ShortName", "Thl").toString(languages);
         case 3:
-            return ki18nc("Hijri weekday 3 - KLocale::ShortName", "Arb").toString(locale());
+            return ki18nc("Hijri weekday 3 - KLocale::ShortName", "Arb").toString(languages);
         case 4:
-            return ki18nc("Hijri weekday 4 - KLocale::ShortName", "Kha").toString(locale());
+            return ki18nc("Hijri weekday 4 - KLocale::ShortName", "Kha").toString(languages);
         case 5:
-            return ki18nc("Hijri weekday 5 - KLocale::ShortName", "Jum").toString(locale());
+            return ki18nc("Hijri weekday 5 - KLocale::ShortName", "Jum").toString(languages);
         case 6:
-            return ki18nc("Hijri weekday 6 - KLocale::ShortName", "Sab").toString(locale());
+            return ki18nc("Hijri weekday 6 - KLocale::ShortName", "Sab").toString(languages);
         case 7:
-            return ki18nc("Hijri weekday 7 - KLocale::ShortName", "Ahd").toString(locale());
+            return ki18nc("Hijri weekday 7 - KLocale::ShortName", "Ahd").toString(languages);
         default: return QString();
         }
     }
 
     switch (weekDay) {
     case 1:
-        return ki18nc("Hijri weekday 1 - KLocale::LongName", "Yaum al-Ithnain").toString(locale());
+        return ki18nc("Hijri weekday 1 - KLocale::LongName", "Yaum al-Ithnain").toString(languages);
     case 2:
-        return ki18nc("Hijri weekday 2 - KLocale::LongName", "Yau al-Thulatha").toString(locale());
+        return ki18nc("Hijri weekday 2 - KLocale::LongName", "Yau al-Thulatha").toString(languages);
     case 3:
-        return ki18nc("Hijri weekday 3 - KLocale::LongName", "Yaum al-Arbi'a").toString(locale());
+        return ki18nc("Hijri weekday 3 - KLocale::LongName", "Yaum al-Arbi'a").toString(languages);
     case 4:
-        return ki18nc("Hijri weekday 4 - KLocale::LongName", "Yaum al-Khamees").toString(locale());
+        return ki18nc("Hijri weekday 4 - KLocale::LongName", "Yaum al-Khamees").toString(languages);
     case 5:
-        return ki18nc("Hijri weekday 5 - KLocale::LongName", "Yaum al-Jumma").toString(locale());
+        return ki18nc("Hijri weekday 5 - KLocale::LongName", "Yaum al-Jumma").toString(languages);
     case 6:
-        return ki18nc("Hijri weekday 6 - KLocale::LongName", "Yaum al-Sabt").toString(locale());
+        return ki18nc("Hijri weekday 6 - KLocale::LongName", "Yaum al-Sabt").toString(languages);
     case 7:
-        return ki18nc("Hijri weekday 7 - KLocale::LongName", "Yaum al-Ahad").toString(locale());
+        return ki18nc("Hijri weekday 7 - KLocale::LongName", "Yaum al-Ahad").toString(languages);
     default:
         return QString();
     }

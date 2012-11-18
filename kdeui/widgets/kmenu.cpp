@@ -36,7 +36,7 @@
 #include <QWidgetAction>
 
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kacceleratormanager.h>
 
 static const char KMENU_TITLE[] = "kmenu_title";
@@ -312,7 +312,7 @@ void KMenu::keyPressEvent(QKeyEvent* e)
             thisText = a->text();
 
         // if there is an accelerator present, remove it
-        thisText = KLocale::global()->removeAcceleratorMarker(thisText);
+        thisText = KLocalizedString::removeAcceleratorMarker(thisText);
 
         // chop text to the search length
         thisText = thisText.left(seqLen);

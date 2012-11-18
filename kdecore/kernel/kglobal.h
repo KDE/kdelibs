@@ -427,7 +427,7 @@ namespace KGlobal
      * Inserts the catalog in the main locale object if it exists.
      * Otherwise the catalog name is stored and added once the main locale gets created
      * @since 4.6
-     * @deprecated since 5.0, use KLocale::global()->insertCatalog
+     * @deprecated since 5.0, use KLocalizedString::insertCatalog
      */
     KDECORE_DEPRECATED_EXPORT void insertCatalog(const QString& catalog);
 

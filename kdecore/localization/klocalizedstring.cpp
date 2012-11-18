@@ -19,14 +19,13 @@
 
 #include <klocalizedstring.h>
 
-#include <klocale.h>
-#include <klocale_p.h>
 #include <klibrary.h>
 #include <kglobal.h> // K_GLOBAL_STATIC (TODO port to Q_GLOBAL_STATIC)
 
+#include <common_helpers_p.h>
+#include <kcatalog_p.h>
 #include <ktranscript_p.h>
 #include <kuitsemantics_p.h>
-#include "kcatalogname_p.h"
 
 #include <QDebug>
 #include <QMutexLocker>
@@ -36,9 +35,11 @@
 #include <QHash>
 #include <QList>
 #include <QVector>
+#include <QFile>
+#include <QFileInfo>
 #include <qstandardpaths.h>
 
-// Truncates string, for output of long messages.
+// Truncate string, for output of long messages.
 static QString shortenMessage (const QString &str)
 {
     const int maxlen = 20;
@@ -48,12 +49,105 @@ static QString shortenMessage (const QString &str)
         return str.left(maxlen).append(QLatin1String("..."));
 }
 
+// FIXME: Temporary, until locales ready.
+static void splitLocale (const QString &aLocale,
+                         QString &language, QString &country,
+                         QString &modifier, QString &charset)
+{
+    QString locale = aLocale;
+
+    language.clear();
+    country.clear();
+    modifier.clear();
+    charset.clear();
+
+    // In case there are several concatenated locale specifications,
+    // truncate all but first.
+    int f = locale.indexOf(QLatin1Char(':'));
+    if (f >= 0) {
+        locale.truncate(f);
+    }
+
+    f = locale.indexOf(QLatin1Char('.'));
+    if (f >= 0) {
+        charset = locale.mid(f + 1);
+        locale.truncate(f);
+    }
+
+    f = locale.indexOf(QLatin1Char('@'));
+    if (f >= 0) {
+        modifier = locale.mid(f + 1);
+        locale.truncate(f);
+    }
+
+    f = locale.indexOf(QLatin1Char('_'));
+    if (f >= 0) {
+        country = locale.mid(f + 1);
+        locale.truncate(f);
+    }
+
+    language = locale;
+}
+
+// FIXME: Temporary, until locales ready.
+static void appendLanguagesFromVariable (QStringList &languages,
+                                         const char *envar, bool isList = false)
+{
+    QByteArray qenvar(qgetenv(envar));
+    if (!qenvar.isEmpty()) {
+        QString value = QFile::decodeName(qenvar);
+        if (isList) {
+            languages += value.split(QLatin1Char(':'));
+        } else {
+            // Process the value to create possible combinations.
+            QString language, country, modifier, charset;
+            splitLocale(value, language, country, modifier, charset);
+
+            if (!country.isEmpty() && !modifier.isEmpty()) {
+                languages +=   language + QLatin1Char('_')
+                             + country + QLatin1Char('@')
+                             + modifier;
+            }
+            // NOTE: Priority is unclear in case both the country and
+            // the modifier are present. Should really language@modifier be of
+            // higher priority than language_country?
+            // In at least one case (Serbian language), it is better this way.
+            if (!modifier.isEmpty()) {
+                languages += language + QLatin1Char('@') + modifier;
+            }
+            if (!country.isEmpty()) {
+                languages += language + QLatin1Char('_') + country;
+            }
+            languages += language;
+        }
+    }
+}
+
+// Extract the first country code from a list of language_COUNTRY strings.
+// Country code is converted to all lower case letters.
+static QString extractCountry (const QStringList &languages)
+{
+    QString country;
+    foreach (const QString &language, languages) {
+        int pos1 = language.indexOf(QLatin1Char('_'));
+        if (pos1 >= 0) {
+            ++pos1;
+            int pos2 = pos1;
+            while (pos2 < language.length() && language[pos2].isLetter()) {
+                ++pos2;
+            }
+            country = language.mid(pos1, pos2 - pos1);
+            break;
+        }
+    }
+    country = country.toLower();
+    return country;
+}
+
 typedef qulonglong pluraln;
 typedef qlonglong intn;
 typedef qulonglong uintn;
 typedef double realn;
-
-class KLocalizedStringPrivateStatics;
 
 class KLocalizedStringPrivate
 {
@@ -69,7 +163,17 @@ class KLocalizedStringPrivate
     QByteArray msg;
     QByteArray plural;
 
-    QString toString (const KLocale *locale, const QString &catalogName) const;
+    static void translateRaw (const QStringList &catalogNames,
+                              const QStringList &languages,
+                              const QByteArray &msgctxt,
+                              const QByteArray &msgid,
+                              const QByteArray &msgid_plural,
+                              qulonglong n,
+                              QString &language,
+                              QString &translation);
+
+    QString toString (const QStringList &catalogNames,
+                      const QStringList &languages) const;
     QString selectForEnglish () const;
     QString substituteSimple (const QString &trans,
                               const QChar &plchar = QLatin1Char('%'),
@@ -80,28 +184,44 @@ class KLocalizedStringPrivate
     QString substituteTranscript (const QString &trans,
                                   const QString &lang,
                                   const QString &ctry,
-                                  const QString &final,
+                                  const QString &ftrans,
                                   bool &fallback) const;
     int resolveInterpolation (const QString &trans, int pos,
                               const QString &lang,
                               const QString &ctry,
-                              const QString &final,
+                              const QString &ftrans,
                               QString &result,
                               bool &fallback) const;
     QVariant segmentToValue (const QString &arg) const;
     QString postTranscript (const QString &pcall,
                             const QString &lang,
                             const QString &ctry,
-                            const QString &final) const;
+                            const QString &ftrans) const;
 
-    static void notifyCatalogsUpdated (const QStringList &languages,
-                                       const QList<KCatalogName> &catalogs);
+    static const KCatalog &getCatalog (const QString &catalogName,
+                                      const QString &language);
+    static void locateScriptingModule (const QString &catalogName,
+                                       const QString &language);
+
     static void loadTranscript ();
 };
+
+typedef QHash<QString, KCatalog*> KCatalogPtrHash;
 
 class KLocalizedStringPrivateStatics
 {
     public:
+
+    QHash<QString, KCatalogPtrHash> catalogs;
+    QStringList catalogNames;
+    QStringList languages;
+
+    QString ourCatalogName;
+    QString appCatalogName;
+    QString codeLanguage;
+    QStringList localeLanguages;
+
+    QList<int> catalogInsertCount;
 
     const QString theFence;
     const QString startInterp;
@@ -118,25 +238,52 @@ class KLocalizedStringPrivateStatics
 
     QHash<QString, KuitSemantics*> formatters;
 
-    KLocalizedStringPrivateStatics () :
-        theFence(QLatin1String("|/|")),
-        startInterp(QLatin1String("$[")),
-        endInterp(QLatin1String("]")),
-        scriptPlchar(QLatin1Char('%')),
-        scriptVachar(QLatin1Char('^')),
+    QMutex klspMutex;
 
-        scriptDir(QLatin1String("LC_SCRIPTS")),
-        scriptModules(),
-        scriptModulesToLoad(),
+    // FIXME: Temporary, until locales ready.
+    void initLocaleLanguages ();
 
-        loadTranscriptCalled(false),
-        ktrs(NULL),
+    KLocalizedStringPrivateStatics ()
+        : catalogs()
+        , catalogNames()
+        , languages()
 
-        formatters()
-    {}
+        , ourCatalogName(QLatin1String("kdelibs4")) // FIXME: New name in KF 5.
+        , appCatalogName()
+        , codeLanguage(QLatin1String("en_US"))
+        , localeLanguages()
+
+        , catalogInsertCount()
+
+        , theFence(QLatin1String("|/|"))
+        , startInterp(QLatin1String("$["))
+        , endInterp(QLatin1String("]"))
+        , scriptPlchar(QLatin1Char('%'))
+        , scriptVachar(QLatin1Char('^'))
+
+        , scriptDir(QLatin1String("LC_SCRIPTS"))
+        , scriptModules()
+        , scriptModulesToLoad()
+
+        , loadTranscriptCalled(false)
+        , ktrs(NULL)
+
+        , formatters()
+
+        , klspMutex(QMutex::Recursive)
+    {
+        initLocaleLanguages();
+        languages = localeLanguages;
+
+        catalogNames.prepend(ourCatalogName);
+        catalogInsertCount.prepend(1);
+    }
 
     ~KLocalizedStringPrivateStatics ()
     {
+        foreach (const KCatalogPtrHash &langCatalogs, catalogs) {
+            qDeleteAll(langCatalogs);
+        }
         // ktrs is handled by KLibLoader.
         //delete ktrs;
         qDeleteAll(formatters);
@@ -144,6 +291,24 @@ class KLocalizedStringPrivateStatics
 };
 //TODO wait for Qt 5.1, uses isDestroyed()
 K_GLOBAL_STATIC(KLocalizedStringPrivateStatics, staticsKLSP)
+
+// FIXME: Temporary, until locales ready.
+void KLocalizedStringPrivateStatics::initLocaleLanguages ()
+{
+    QMutexLocker lock(&klspMutex);
+
+    // Collect translation languages by decreasing priority.
+
+    // KDE_LANG contains list of language codes, not locale string.
+    appendLanguagesFromVariable(localeLanguages, "KDE_LANG", true);
+
+    // Collect languages by same order of priority as for gettext(3).
+    // LANGUAGE contains list of language codes, not locale string.
+    appendLanguagesFromVariable(localeLanguages, "LANGUAGE", true);
+    appendLanguagesFromVariable(localeLanguages, "LC_ALL");
+    appendLanguagesFromVariable(localeLanguages, "LC_MESSAGES");
+    appendLanguagesFromVariable(localeLanguages, "LANG");
+}
 
 KLocalizedString::KLocalizedString ()
 : d(new KLocalizedStringPrivate)
@@ -189,38 +354,120 @@ bool KLocalizedString::isEmpty () const
     return d->msg.isEmpty();
 }
 
+void KLocalizedStringPrivate::translateRaw (const QStringList &catalogNames,
+                                            const QStringList &languages,
+                                            const QByteArray &msgctxt,
+                                            const QByteArray &msgid,
+                                            const QByteArray &msgid_plural,
+                                            qulonglong n,
+                                            QString &language,
+                                            QString &translation)
+{
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
+
+    // Empty msgid would result in returning the catalog header,
+    // which is never intended, so warn and return empty translation.
+    if (msgid.isNull() || msgid.isEmpty()) {
+        qWarning() << QString::fromLatin1(
+            "KLocalizedString: "
+            "Trying to look up translation of \"\", fix the code.");
+        language.clear();
+        translation.clear();
+        return;
+    }
+    // Gettext semantics allows empty context, but it is pointless, so warn.
+    if (!msgctxt.isNull() && msgctxt.isEmpty()) {
+        qWarning() << QString::fromLatin1(
+            "KLocalizedString: "
+            "Using \"\" as context, fix the code.");
+    }
+    // Gettext semantics allows empty plural, but it is pointless, so warn.
+    if (!msgid_plural.isNull() && msgid_plural.isEmpty()) {
+        qWarning() << QString::fromLatin1(
+            "KLocalizedString: "
+            "Using \"\" as plural text, fix the code.");
+    }
+
+    // Set translation to text in code language, in case no translation found.
+    translation =   msgid_plural.isNull() || n == 1
+                  ? QString::fromUtf8(msgid)
+                  : QString::fromUtf8(msgid_plural);
+    language = s->codeLanguage;
+
+    // Languages are ordered from highest to lowest priority.
+    // Priority of catalogs is undefined.
+    foreach (const QString &testLanguage, languages) {
+        // If code language reached, no catalog lookup is needed.
+        if (testLanguage == s->codeLanguage) {
+            break;
+        }
+        // Skip this language if there is no application catalog for it.
+        const KCatalog &appCatalog = getCatalog(s->appCatalogName, testLanguage);
+        if (appCatalog.localeDir().isEmpty()) {
+            continue;
+        }
+        foreach (const QString &catalogName, catalogNames) {
+            const KCatalog &catalog = getCatalog(catalogName, testLanguage);
+            QString text;
+            if (!msgctxt.isNull() && !msgid_plural.isNull()) {
+                text = catalog.translate(msgctxt, msgid, msgid_plural, n);
+            } else if (!msgid_plural.isNull()) {
+                text = catalog.translate(msgid, msgid_plural, n);
+            } else if (!msgctxt.isNull()) {
+                text = catalog.translate(msgctxt, msgid);
+            } else {
+                text = catalog.translate(msgid);
+            }
+            if (!text.isEmpty()) {
+                // Translation found.
+                language = testLanguage;
+                translation = text;
+                break;
+            }
+        }
+    }
+}
+
 QString KLocalizedString::toString () const
 {
-    return d->toString(KLocale::global(), QString());
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    return d->toString(s->catalogNames, s->languages);
 }
 
 QString KLocalizedString::toString (const QString &catalogName) const
 {
-    return d->toString(KLocale::global(), catalogName);
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    QStringList catalogNames;
+    catalogNames.append(catalogName);
+    return d->toString(catalogNames, s->languages);
 }
 
-QString KLocalizedString::toString (const KLocale *locale) const
+QString KLocalizedString::toString (const QStringList &languages) const
 {
-    return d->toString(locale, QString());
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    return d->toString(s->catalogNames, languages);
 }
 
-QString KLocalizedString::toString (const KLocale *locale,
-                                    const QString &catalogName) const
+QString KLocalizedString::toString (const QString &catalogName,
+                                    const QStringList &languages) const
 {
-    return d->toString(locale, catalogName);
+    QStringList catalogNames;
+    catalogNames.append(catalogName);
+    return d->toString(catalogNames, languages);
 }
 
-QString KLocalizedStringPrivate::toString (const KLocale *locale,
-                                           const QString &catalogName) const
+QString KLocalizedStringPrivate::toString (const QStringList &catalogNames,
+                                           const QStringList &languages) const
 {
-    const KLocalizedStringPrivateStatics *s = staticsKLSP;
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
 
-    QMutexLocker lock(kLocaleMutex());
+    QMutexLocker lock(&s->klspMutex);
 
     // Assure the message has been supplied.
     if (msg.isEmpty())
     {
-        qWarning() << "Trying to convert empty KLocalizedString to QString.";
+        qWarning() << QString::fromLatin1(
+            "Trying to convert empty KLocalizedString to QString.");
         #ifndef NDEBUG
         return QString::fromLatin1("(I18N_EMPTY_MESSAGE)");
         #else
@@ -230,32 +477,15 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale,
 
     // Check whether plural argument has been supplied, if message has plural.
     if (!plural.isEmpty() && !numberSet)
-        qWarning() << QString::fromLatin1("Plural argument to message {%1} not supplied before conversion.")
-                              .arg(shortenMessage(QString::fromUtf8(msg)));
+        qWarning() << QString::fromLatin1(
+            "Plural argument to message {%1} not supplied before conversion.")
+            .arg(shortenMessage(QString::fromUtf8(msg)));
 
     // Get raw translation.
-    QString rawtrans, lang, ctry;
-    const char *catname = catalogName.toUtf8();
-    if (locale != NULL) {
-        if (!ctxt.isEmpty() && !plural.isEmpty()) {
-            locale->translateRawFrom(catname, ctxt, msg, plural, number,
-                                     &lang, &rawtrans);
-        } else if (!plural.isEmpty()) {
-            locale->translateRawFrom(catname, msg, plural, number,
-                                     &lang, &rawtrans);
-        } else if (!ctxt.isEmpty()) {
-            locale->translateRawFrom(catname, ctxt, msg,
-                                     &lang, &rawtrans);
-        } else {
-            locale->translateRawFrom(catname, msg,
-                                     &lang, &rawtrans);
-        }
-        ctry = locale->country();
-    } else {
-        lang = KLocale::defaultLanguage();
-        ctry = QLatin1Char('C');
-        rawtrans = selectForEnglish();
-    }
+    QString rawtrans, lang;
+    translateRaw(catalogNames, languages,
+                 ctxt, msg, plural, number,
+                 lang, rawtrans);
 
     // Set ordinary translation and possibly scripted translation.
     QString trans, strans;
@@ -270,10 +500,16 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale,
         strans = rawtrans.mid(cdpos + s->theFence.length());
 
         // Try to initialize Transcript if not initialized, and script not empty.
-        if (   !s->loadTranscriptCalled && !strans.isEmpty()
-            && locale && locale->useTranscript())
+        // FIXME: And also if Transcript not disabled: where to configure this?
+        if (!s->loadTranscriptCalled && !strans.isEmpty())
         {
             loadTranscript();
+
+            // Definitions from this library's scripting module
+            // must be available to all other modules.
+            // So force creation of this library's catalog here,
+            // to make sure the scripting module is loaded.
+            getCatalog(s->ourCatalogName, lang);
         }
     }
     else if (cdpos < 0)
@@ -285,25 +521,31 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale,
     {
         // The msgstr starts with the script fence, no ordinary translation.
         // This is not allowed, consider message not translated.
-        qWarning() << QString::fromLatin1("Scripted message {%1} without ordinary translation, discarded.")
-                               .arg(shortenMessage(trans)) ;
+        qWarning() << QString::fromLatin1(
+            "Scripted message {%1} without ordinary translation, discarded.")
+            .arg(shortenMessage(trans)) ;
         trans = selectForEnglish();
     }
 
     // Substitute placeholders in ordinary translation.
-    QString final = substituteSimple(trans);
+    QString ftrans = substituteSimple(trans);
     // Post-format ordinary translation.
-    final = postFormat(final, lang, QString::fromLatin1(ctxt));
+    ftrans = postFormat(ftrans, lang, QString::fromLatin1(ctxt));
+
+    QString ctry;
 
     // If there is also a scripted translation.
     if (!strans.isEmpty()) {
         // Evaluate scripted translation.
         bool fallback;
-        QString sfinal = substituteTranscript(strans, lang, ctry, final, fallback);
+        if (ctry.isEmpty()) {
+            ctry = extractCountry(languages);
+        }
+        QString sfinal = substituteTranscript(strans, lang, ctry, ftrans, fallback);
 
         // If any translation produced and no fallback requested.
         if (!sfinal.isEmpty() && !fallback) {
-            final = postFormat(sfinal, lang, QString::fromLatin1(ctxt));
+            ftrans = postFormat(sfinal, lang, QString::fromLatin1(ctxt));
         }
     }
 
@@ -312,12 +554,17 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale,
     if (s->ktrs != NULL)
     {
         QStringList pcalls = s->ktrs->postCalls(lang);
-        foreach(const QString &pcall, pcalls)
-            postTranscript(pcall, lang, ctry, final);
+        if (!pcalls.isEmpty() && ctry.isEmpty()) {
+            ctry = extractCountry(languages);
+        }
+        foreach(const QString &pcall, pcalls) {
+            postTranscript(pcall, lang, ctry, ftrans);
+        }
     }
 
-    return final;
+    return ftrans;
 }
+
 
 QString KLocalizedStringPrivate::selectForEnglish () const
 {
@@ -410,26 +657,26 @@ QString KLocalizedStringPrivate::substituteSimple (const QString &trans,
     #endif
 
     // Assemble the final string from text segments and arguments.
-    QString final;
+    QString ftrans;
     for (int i = 0; i < plords.size(); i++)
     {
-        final.append(tsegs.at(i));
+        ftrans.append(tsegs.at(i));
         if (plords.at(i) >= args.size())
         // too little arguments
         {
             // put back the placeholder
-            final.append(QLatin1Char('%') + QString::number(plords.at(i) + 1));
+            ftrans.append(QLatin1Char('%') + QString::number(plords.at(i) + 1));
             #ifndef NDEBUG
             if (!partial)
                 // spoof the message
-                final.append(QLatin1String("(I18N_ARGUMENT_MISSING)"));
+                ftrans.append(QLatin1String("(I18N_ARGUMENT_MISSING)"));
             #endif
         }
         else
         // just fine
-            final.append(args.at(plords.at(i)));
+            ftrans.append(args.at(plords.at(i)));
     }
-    final.append(tsegs.last());
+    ftrans.append(tsegs.last());
 
     #ifndef NDEBUG
     if (!partial)
@@ -440,53 +687,56 @@ QString KLocalizedStringPrivate::substituteSimple (const QString &trans,
             if (!ords.at(i))
             {
                 gaps = true;
-                qWarning() << QString::fromLatin1("Placeholder %%1 skipped in message {%2}.")
-                                      .arg(QString::number(i + 1), shortenMessage(trans));
+                qWarning() << QString::fromLatin1(
+                    "Placeholder %%1 skipped in message {%2}.")
+                    .arg(QString::number(i + 1), shortenMessage(trans));
             }
-        // If no gaps, check for mismatch between number of unique placeholders and
-        // actually supplied arguments.
+        // If no gaps, check for mismatch between the number of
+        // unique placeholders and actually supplied arguments.
         if (!gaps && ords.size() != args.size())
-            qWarning() << QString::fromLatin1("%1 instead of %2 arguments to message {%3} supplied before conversion.")
-                                  .arg(args.size()).arg(ords.size()).arg(shortenMessage(trans));
+            qWarning() << QString::fromLatin1(
+                "%1 instead of %2 arguments to message {%3} "
+                "supplied before conversion.")
+                .arg(args.size()).arg(ords.size()).arg(shortenMessage(trans));
 
         // Some spoofs.
         if (gaps)
-            final.append(QLatin1String("(I18N_GAPS_IN_PLACEHOLDER_SEQUENCE)"));
+            ftrans.append(QLatin1String("(I18N_GAPS_IN_PLACEHOLDER_SEQUENCE)"));
         if (ords.size() < args.size())
-            final.append(QLatin1String("(I18N_EXCESS_ARGUMENTS_SUPPLIED)"));
+            ftrans.append(QLatin1String("(I18N_EXCESS_ARGUMENTS_SUPPLIED)"));
         if (!plural.isEmpty() && !numberSet)
-            final.append(QLatin1String("(I18N_PLURAL_ARGUMENT_MISSING)"));
+            ftrans.append(QLatin1String("(I18N_PLURAL_ARGUMENT_MISSING)"));
     }
     #endif
 
-    return final;
+    return ftrans;
 }
 
 QString KLocalizedStringPrivate::postFormat (const QString &text,
                                              const QString &lang,
                                              const QString &ctxt) const
 {
-    const KLocalizedStringPrivateStatics *s = staticsKLSP;
-    QMutexLocker lock(kLocaleMutex());
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
 
-    QString final = text;
+    QString ftrans = text;
 
-    // Transform any semantic markup into visual formatting.
-    if (s->formatters.contains(lang)) {
-        final = s->formatters[lang]->format(final, ctxt);
+    QHash<QString, KuitSemantics*>::iterator formatter = s->formatters.find(lang);
+    if (formatter == s->formatters.end()) {
+        formatter = s->formatters.insert(lang, new KuitSemantics(lang));
     }
 
-    return final;
+    ftrans = (*formatter)->format(ftrans, ctxt);
+
+    return ftrans;
 }
 
 QString KLocalizedStringPrivate::substituteTranscript (const QString &strans,
                                                        const QString &lang,
                                                        const QString &ctry,
-                                                       const QString &final,
+                                                       const QString &ftrans,
                                                        bool &fallback) const
 {
-    const KLocalizedStringPrivateStatics *s = staticsKLSP;
-    QMutexLocker lock(kLocaleMutex());
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
 
     if (s->ktrs == NULL)
         // Scripting engine not available.
@@ -507,7 +757,7 @@ QString KLocalizedStringPrivate::substituteTranscript (const QString &strans,
         // Resolve interpolation.
         QString result;
         bool fallbackLocal;
-        tpos = resolveInterpolation(strans, tpos, lang, ctry, final,
+        tpos = resolveInterpolation(strans, tpos, lang, ctry, ftrans,
                                     result, fallbackLocal);
 
         // If there was a problem in parsing the interpolation, cannot proceed
@@ -539,7 +789,7 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
                                                    int pos,
                                                    const QString &lang,
                                                    const QString &ctry,
-                                                   const QString &final,
+                                                   const QString &ftrans,
                                                    QString &result,
                                                    bool &fallback) const
 {
@@ -550,7 +800,6 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
     // fallback is set to true if Transcript evaluation requested so.
 
     KLocalizedStringPrivateStatics *s = staticsKLSP;
-    QMutexLocker lock(kLocaleMutex());
 
     result.clear();
     fallback = false;
@@ -568,8 +817,9 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
             ++tpos;
         }
         if (tpos == slen) {
-            qWarning() << QString::fromLatin1("Unclosed interpolation {%1} in message {%2}.")
-                                  .arg(strans.mid(pos, tpos - pos), shortenMessage(strans));
+            qWarning() << QString::fromLatin1(
+                "Unclosed interpolation {%1} in message {%2}.")
+                .arg(strans.mid(pos, tpos - pos), shortenMessage(strans));
             return -1;
         }
         if (strans.mid(tpos, ielen) == s->endInterp) {
@@ -599,8 +849,9 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
                     ++tpos;
                 }
                 if (tpos == slen) {
-                    qWarning() << QString::fromLatin1("Unclosed quote in interpolation {%1} in message {%2}.")
-                                        .arg(strans.mid(pos, tpos - pos), shortenMessage(strans));
+                    qWarning() << QString::fromLatin1(
+                        "Unclosed quote in interpolation {%1} in message {%2}.")
+                        .arg(strans.mid(pos, tpos - pos), shortenMessage(strans));
                     return -1;
                 }
 
@@ -612,7 +863,7 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
             else if (strans.mid(tpos, islen) == s->startInterp) { // sub-interpolation
                 QString resultLocal;
                 bool fallbackLocal;
-                tpos = resolveInterpolation(strans, tpos, lang, ctry, final,
+                tpos = resolveInterpolation(strans, tpos, lang, ctry, ftrans,
                                             resultLocal, fallbackLocal);
                 if (tpos < 0) { // unrecoverable problem in sub-interpolation
                     // Error reported in the subcall.
@@ -637,8 +888,9 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
                     ++tpos;
                 }
                 if (tpos == slen) {
-                    qWarning() << QString::fromLatin1("Non-terminated interpolation {%1} in message {%2}.")
-                                        .arg(strans.mid(pos, tpos - pos), shortenMessage(strans));
+                    qWarning() << QString::fromLatin1(
+                        "Non-terminated interpolation {%1} in message {%2}.")
+                        .arg(strans.mid(pos, tpos - pos), shortenMessage(strans));
                     return -1;
                 }
 
@@ -681,7 +933,7 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
     bool fallbackLocal;
     result = s->ktrs->eval(iargs, lang, ctry,
                            msgctxt, dynctxt, msgid,
-                           args, vals, final, s->scriptModulesToLoad,
+                           args, vals, ftrans, s->scriptModulesToLoad,
                            scriptError, fallbackLocal);
     // s->scriptModulesToLoad will be cleared during the call.
 
@@ -691,8 +943,10 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
     if (!scriptError.isEmpty()) { // problem with evaluation
         fallback = true; // also signal fallback
         if (!scriptError.isEmpty()) {
-            qWarning() << QString::fromLatin1("Interpolation {%1} in {%2} failed: %3")
-                                  .arg(strans.mid(pos, tpos - pos), shortenMessage(strans), scriptError);
+            qWarning() << QString::fromLatin1(
+                "Interpolation {%1} in {%2} failed: %3")
+                .arg(strans.mid(pos, tpos - pos), shortenMessage(strans),
+                     scriptError);
         }
     }
 
@@ -701,8 +955,7 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
 
 QVariant KLocalizedStringPrivate::segmentToValue (const QString &seg) const
 {
-    const KLocalizedStringPrivateStatics *s = staticsKLSP;
-    QMutexLocker lock(kLocaleMutex());
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
 
     // Return invalid variant if segment is either not a proper
     // value reference, or the reference is out of bounds.
@@ -733,10 +986,9 @@ QVariant KLocalizedStringPrivate::segmentToValue (const QString &seg) const
 QString KLocalizedStringPrivate::postTranscript (const QString &pcall,
                                                  const QString &lang,
                                                  const QString &ctry,
-                                                 const QString &final) const
+                                                 const QString &ftrans) const
 {
     KLocalizedStringPrivateStatics *s = staticsKLSP;
-    QMutexLocker lock(kLocaleMutex());
 
     if (s->ktrs == NULL)
         // Scripting engine not available.
@@ -752,19 +1004,20 @@ QString KLocalizedStringPrivate::postTranscript (const QString &pcall,
     bool fallback;
     QString dummy = s->ktrs->eval(iargs, lang, ctry,
                                   msgctxt, dynctxt, msgid,
-                                  args, vals, final, s->scriptModulesToLoad,
+                                  args, vals, ftrans, s->scriptModulesToLoad,
                                   scriptError, fallback);
     // s->scriptModulesToLoad will be cleared during the call.
 
     // If the evaluation went wrong.
     if (!scriptError.isEmpty())
     {
-        qWarning() << QString::fromLatin1("Post call {%1} for message {%2} failed: %3")
-                              .arg(pcall, shortenMessage(msgid), scriptError);
+        qWarning() << QString::fromLatin1(
+            "Post call {%1} for message {%2} failed: %3")
+            .arg(pcall, shortenMessage(msgid), scriptError);
         return QString();
     }
 
-    return final;
+    return ftrans;
 }
 
 static QString wrapNum (const QString &tag, const QString &numstr,
@@ -914,6 +1167,264 @@ KLocalizedString KLocalizedString::inContext (const QString &key,
     return kls;
 }
 
+void KLocalizedString::insertCatalog (const QString &catalogName)
+{
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
+
+    QMutexLocker lock(&s->klspMutex);
+
+    int pos = s->catalogNames.indexOf(catalogName);
+    if (pos < 0) {
+        // Catalog priority is undefined, but to minimize damage
+        // due to message conflicts, put later inserted catalogs at front.
+        s->catalogNames.prepend(catalogName);
+        s->catalogInsertCount.prepend(1);
+        // Catalog is created when first queried for translation.
+    } else {
+        ++s->catalogInsertCount[pos];
+    }
+}
+
+void KLocalizedString::removeCatalog (const QString &catalogName)
+{
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
+
+    QMutexLocker lock(&s->klspMutex);
+
+    int pos = s->catalogNames.indexOf(catalogName);
+    if (pos >= 0 && --s->catalogInsertCount[pos] == 0) {
+        s->catalogNames.removeAt(pos);
+        s->catalogInsertCount.removeAt(pos);
+        s->catalogs.remove(catalogName);
+    }
+}
+
+void KLocalizedString::setApplicationCatalog (const QString &catalogName)
+{
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
+
+    QMutexLocker lock(&s->klspMutex);
+
+    s->appCatalogName = catalogName;
+    insertCatalog(catalogName);
+}
+
+void KLocalizedString::setLanguages (const QStringList &languages)
+{
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
+
+    QMutexLocker lock(&s->klspMutex);
+
+    s->languages = languages;
+}
+
+void KLocalizedString::clearLanguages ()
+{
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
+
+    QMutexLocker lock(&s->klspMutex);
+
+    s->languages = s->localeLanguages;
+}
+
+bool KLocalizedString::isApplicationTranslatedInto (const QString &language)
+{
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
+
+    return !KCatalog::catalogLocaleDir(s->appCatalogName, language).isEmpty();
+}
+
+const KCatalog &KLocalizedStringPrivate::getCatalog (const QString &catalogName,
+                                                     const QString &language)
+{
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
+
+    QMutexLocker lock(&s->klspMutex);
+
+    QHash<QString, KCatalogPtrHash>::iterator langCatalogs = s->catalogs.find(catalogName);
+    if (langCatalogs == s->catalogs.end()) {
+        langCatalogs = s->catalogs.insert(catalogName, KCatalogPtrHash());
+    }
+    KCatalogPtrHash::iterator catalog = langCatalogs->find(language);
+    if (catalog == langCatalogs->end()) {
+        catalog = langCatalogs->insert(language, new KCatalog(catalogName, language));
+        locateScriptingModule(catalogName, language);
+    }
+    return **catalog;
+}
+
+void KLocalizedStringPrivate::locateScriptingModule (const QString &catalogName,
+                                                     const QString &language)
+{
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
+
+    QMutexLocker lock(&s->klspMutex);
+
+    // Assemble module's relative path.
+    QString modrpath =   language + QLatin1Char('/')
+                        + s->scriptDir + QLatin1Char('/')
+                        + catalogName + QLatin1Char('/')
+                        + catalogName + QLatin1String(".js");
+
+    // Try to find this module.
+    QString modapath = QStandardPaths::locate(
+        QStandardPaths::GenericDataLocation,
+        QLatin1String("locale") + QLatin1Char('/') + modrpath);
+
+    // If the module exists and hasn't been already included.
+    if (   !modapath.isEmpty()
+        && !s->scriptModules[language].contains(catalogName))
+    {
+        // Indicate that the module has been considered.
+        s->scriptModules[language].append(catalogName);
+
+        // Store the absolute path and language of the module,
+        // to load on next script evaluation.
+        QStringList module;
+        module.append(modapath);
+        module.append(language);
+        s->scriptModulesToLoad.append(module);
+    }
+}
+
+extern "C"
+{
+    typedef KTranscript *(*InitFunc)();
+}
+
+void KLocalizedStringPrivate::loadTranscript ()
+{
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
+
+    QMutexLocker lock(&s->klspMutex);
+
+    s->loadTranscriptCalled = true;
+    s->ktrs = NULL; // null indicates that Transcript is not available
+
+    KLibrary lib(QLatin1String("ktranscript"));
+    if (!lib.load()) {
+        qWarning() << QString::fromLatin1("Cannot load Transcript plugin:")
+                   << lib.errorString();
+        return;
+    }
+
+    InitFunc initf = (InitFunc) lib.resolveFunction("load_transcript");
+    if (!initf) {
+        lib.unload();
+        qWarning() << QString::fromLatin1(
+            "Cannot find function load_transcript in Transcript plugin.");
+        return;
+    }
+
+    s->ktrs = initf();
+}
+
+QString KLocalizedString::translateQt (const char *context,
+                                       const char *sourceText,
+                                       const char *comment
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+                                       , int n
+#endif
+                                       )
+{
+    // NOTE: Qt message semantics.
+    //
+    // Qt's context is normally the name of the class of the method which makes
+    // the tr(sourceText) call. However, it can also be manually supplied via
+    // translate(context, sourceText) call.
+    //
+    // Qt's sourceText is the actual message displayed to the user.
+    //
+    // Qt's comment is an optional argument of tr() and translate(), like
+    // tr(sourceText, comment) and translate(context, sourceText, comment).
+    //
+    // We handle this in the following way:
+    //
+    // If the comment is given, then it is considered gettext's msgctxt, so a
+    // context call is made.
+    //
+    // If the comment is not given, but context is given, then we treat it as
+    // msgctxt only if it was manually supplied (the one in translate()) -- but
+    // we don't know this, so we first try a context call, and if translation
+    // is not found, we fallback to ordinary call.
+    //
+    // If neither comment nor context are given, it's just an ordinary call
+    // on sourceText.
+
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
+
+    QMutexLocker lock(&s->klspMutex);
+
+    if (!sourceText || !sourceText[0]) {
+        qWarning() << QString::fromLatin1(
+            "KLocalizedString::translateQt: "
+            "Trying to look up translation of \"\", fix the code.");
+        return QString();
+    }
+
+    // NOTE: Condition (language != s->codeLanguage) means that translation
+    // was found, otherwise the original text was returned as translation.
+    QString translation;
+    QString language;
+    if (comment && comment[0]) {
+        // Comment given, go for context call.
+        KLocalizedStringPrivate::translateRaw(s->catalogNames, s->languages,
+                                              comment, sourceText, 0, 0,
+                                              language, translation);
+    } else {
+        // Comment not given, go for try-fallback with context.
+        if (context && context[0]) {
+            KLocalizedStringPrivate::translateRaw(s->catalogNames, s->languages,
+                                                  context, sourceText, 0, 0,
+                                                  language, translation);
+        }
+        if (language.isEmpty() || language == s->codeLanguage) {
+            KLocalizedStringPrivate::translateRaw(s->catalogNames, s->languages,
+                                                  0, sourceText, 0, 0,
+                                                  language, translation);
+        }
+    }
+    if (language != s->codeLanguage) {
+        return translation;
+    }
+    // No proper translation found, return empty according to Qt semantics.
+    return QString();
+}
+
+QString KLocalizedString::localizedFilePath (const QString &filePath)
+{
+    KLocalizedStringPrivateStatics *s = staticsKLSP;
+
+    // Check if l10n subdirectory is present, stop if not.
+    QFileInfo fileInfo(filePath);
+    QString locDirPath =   fileInfo.path() + QLatin1Char('/')
+                         + QLatin1String("l10n");
+    QFileInfo locDirInfo(locDirPath);
+    if (!locDirInfo.isDir()) {
+        return filePath;
+    }
+
+    // Go through possible localized paths by priority of languages,
+    // return first that exists.
+    QString fileName = fileInfo.fileName();
+    foreach (const QString &lang, s->languages) {
+        QString locFilePath =   locDirPath + QLatin1Char('/')
+                              + lang + QLatin1Char('/')
+                              + fileName;
+        QFileInfo locFileInfo(locFilePath);
+        if (locFileInfo.isFile() && locFileInfo.isReadable()) {
+            return locFilePath;
+        }
+    }
+
+    return filePath;
+}
+
+QString KLocalizedString::removeAcceleratorMarker(const QString &label)
+{
+    return ::removeAcceleratorMarker(label);
+}
+
 KLocalizedString ki18n (const char* msg)
 {
     return KLocalizedString(NULL, msg, NULL);
@@ -935,88 +1446,3 @@ KLocalizedString ki18ncp (const char* ctxt,
     return KLocalizedString(ctxt, singular, plural);
 }
 
-extern "C"
-{
-    typedef KTranscript *(*InitFunc)();
-}
-
-void KLocalizedStringPrivate::loadTranscript ()
-{
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
-    QMutexLocker lock(kLocaleMutex());
-
-    s->loadTranscriptCalled = true;
-    s->ktrs = NULL; // null indicates that Transcript is not available
-
-    KLibrary lib(QLatin1String("ktranscript"));
-    if (!lib.load()) {
-        qWarning() << "Cannot load transcript plugin:" << lib.errorString();
-        return;
-    }
-
-    InitFunc initf = (InitFunc) lib.resolveFunction("load_transcript");
-    if (!initf) {
-        lib.unload();
-        qWarning() << "Cannot find function load_transcript in transcript plugin.";
-        return;
-    }
-
-    s->ktrs = initf();
-}
-
-void KLocalizedString::notifyCatalogsUpdated (const QStringList &languages,
-                                              const QList<KCatalogName> &catalogs)
-{
-    KLocalizedStringPrivate::notifyCatalogsUpdated(languages, catalogs);
-}
-
-void KLocalizedStringPrivate::notifyCatalogsUpdated (const QStringList &languages,
-                                                     const QList<KCatalogName> &catalogs)
-{
-    if (staticsKLSP.isDestroyed()) {
-        return;
-    }
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
-    // Very important: do not the mutex here.
-    //QMutexLocker lock(kLocaleMutex());
-
-    // Find script modules for all included language/catalogs that have them,
-    // and remember their paths.
-    // A more specific module may reference the calls from a less specific,
-    // and the catalog list is ordered from more to less specific. Therefore,
-    // work on reversed list of catalogs.
-    foreach (const QString &lang, languages) {
-        for (int i = catalogs.size() - 1; i >= 0; --i) {
-            const KCatalogName &cat(catalogs[i]);
-
-            // Assemble module's relative path.
-            QString modrpath =   lang + QLatin1Char('/') + s->scriptDir + QLatin1Char('/')
-                            + cat.name + QLatin1Char('/') + cat.name + QLatin1String(".js");
-
-            // Try to find this module.
-            QString modapath = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("locale/") + modrpath);
-
-            // If the module exists and hasn't been already included.
-            if (   !modapath.isEmpty()
-                && !s->scriptModules[lang].contains(cat.name))
-            {
-                // Indicate that the module has been considered.
-                s->scriptModules[lang].append(cat.name);
-
-                // Store the absolute path and language of the module,
-                // to load on next script evaluation.
-                QStringList mod;
-                mod.append(modapath);
-                mod.append(lang);
-                s->scriptModulesToLoad.append(mod);
-            }
-        }
-    }
-
-    // Create visual formatters for each new language.
-    foreach (const QString &lang, languages) {
-        if (!s->formatters.contains(lang)) {
-            s->formatters.insert(lang, new KuitSemantics(lang));
-        }
-    }
-}

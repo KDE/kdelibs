@@ -29,7 +29,7 @@
   * @internal
   * (used by KLocalizedString)
   *
-  * KTranscript provides support for programmable translations.
+  * @c KTranscript provides support for programmable translations.
   * The class is abstract in order to facilitate dynamic loading.
   *
   * @author Chusslove Illich <caslav.ilic@gmx.net>
@@ -50,7 +50,7 @@ class KTranscript
      * @param msgid original message
      * @param subs substitutions for message placeholders
      * @param vals values that were formatted to substitutions
-     * @param final finalized ordinary translation
+     * @param ftrans finalized ordinary translation
      * @param mods scripting modules to load; the list is cleared after loading
      * @param error set to the message detailing the problem, if the script
                     failed; set to empty otherwise
@@ -67,7 +67,7 @@ class KTranscript
                           const QString &msgid,
                           const QStringList &subs,
                           const QList<QVariant> &vals,
-                          const QString &final,
+                          const QString &ftrans,
                           QList<QStringList> &mods,
                           QString &error,
                           bool &fallback) = 0;

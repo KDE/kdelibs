@@ -29,6 +29,7 @@ private Q_SLOTS:
     void correctSubs ();
     void correctButIllFormed();
     void wrongSubs ();
+    void removeAcceleratorMarker();
     void miscMethods ();
     void translateToFrenchLowlevel();
     void translateToFrench ();

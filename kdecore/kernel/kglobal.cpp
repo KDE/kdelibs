@@ -42,6 +42,7 @@
 #include <kaboutdata.h>
 #include <kconfig.h>
 #include <klocale.h>
+#include <klocalizedstring.h>
 #include <kcharsets.h>
 #include <kstandarddirs.h>
 #include <kcomponentdata.h>
@@ -88,7 +89,7 @@ class KGlobalPrivate
 
 KCatalogLoader::KCatalogLoader(const QString &catalogName)
 {
-    KLocale::global()->insertCatalog(catalogName);
+    KLocalizedString::insertCatalog(catalogName);
 }
 
 K_GLOBAL_STATIC(KGlobalPrivate, globalData)
@@ -125,7 +126,7 @@ bool KGlobal::hasMainComponent()
 
 void KGlobal::insertCatalog(const QString& catalog)
 {
-    KLocale::global()->insertCatalog(catalog);
+    KLocalizedString::insertCatalog(catalog);
 }
 
 KLocale *KGlobal::locale()

@@ -22,7 +22,7 @@
 
 #include "kglobalaccel.h"
 #include "kglobalaccel_p.h"
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include <memory>
 
@@ -365,7 +365,7 @@ QStringList KGlobalAccelPrivate::makeActionId(const KAction *action)
     Q_ASSERT(!action->objectName().isEmpty());
     ret.append(action->objectName());                   // Action Unique Name
     ret.append(componentFriendlyForAction(action));     // Component Friendly name
-    const QString actionText = KLocale::global()->removeAcceleratorMarker(action->text());
+    const QString actionText = KLocalizedString::removeAcceleratorMarker(action->text());
     ret.append(actionText);                             // Action Friendly Name
     return ret;
 }

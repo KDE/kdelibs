@@ -33,7 +33,7 @@
 #include "kde_file.h"
 #include "kkernel_win.h"
 #include "kkernel_mac.h"
-#include "klocale.h"
+#include "klocalizedstring.h"
 #include <kservice_export.h>
 
 #include <config-prefix.h>
@@ -555,7 +555,7 @@ QString KStandardDirs::findResource( const char *type,
 {
     if (!QDir::isRelativePath(_filename)) {
       // absolute dirs are absolute dirs, right? :-/
-      return KLocale::global()->localizedFilePath(_filename); // -- almost.
+      return KLocalizedString::localizedFilePath(_filename); // -- almost.
     }
 
 #if 0
@@ -579,7 +579,7 @@ QString KStandardDirs::findResource( const char *type,
     if (dir.isEmpty())
       return dir;
     else
-      return KLocale::global()->localizedFilePath(dir + filename);
+      return KLocalizedString::localizedFilePath(dir + filename);
 }
 
 #ifndef KDE_NO_DEPRECATED

@@ -47,10 +47,9 @@ class KLocalePrivate;
 
 /**
   *
-  * KLocale provides support for country specific stuff like
-  * the national language.
+  * KLocale provides support for language and country specific stuff.
   *
-  * KLocale supports translating, as well as specifying the format
+  * KLocale supports specifying the format
   * for numbers, currency, time, and date.
   *
   * Use KLocale::global() to get pointer to the global KLocale object,
@@ -64,54 +63,51 @@ class KLocalePrivate;
   *
   * @author Stephan Kulow <coolo@kde.org>, Preston Brown <pbrown@kde.org>,
   * Hans Petter Bieker <bieker@kde.org>, Lukas Tinkl <lukas.tinkl@suse.cz>
-  * @short class for supporting locale settings and national language
+  * @short class for supporting locale settings
   */
 class KDECORE_EXPORT KLocale
 {
 public:
     /**
-     * Constructs a KLocale with the given catalog name
+     * Constructs a KLocale.
      *
-     * The constructor looks for an entry Language in the group Locale in the
-     * configuration file.
+     * The constructor looks for entries Language and Country
+     * in the group Locale in the configuration file.
      *
      * If no configuration file is specified, it will also look for languages
-     * using the environment variables (KDE_LANG, LC_MESSAGES, LC_ALL, LANG),
-     * as well as the global configuration file. If KLocale is not able to use
-     * any of the specified languages, the default language (en_US) will be
-     * used.
+     * and country using the environment variables (KDE_LANG, LC_MESSAGES,
+     * LC_ALL, LANG), as well as the global configuration file.
      *
      * If you specify a configuration file, it has to be valid until the KLocale
      * object is destroyed.  Note that a setLocale() will be performed on the
-     * config using the current locale language, which may cause a sync()
-     * and reparseConfiguration() which will save any changes you have made and
-     * load any changes other shared copies have made.
+     * config using the current locale language and country, which may cause
+     * a sync() and reparseConfiguration() which will save any changes
+     * you have made and load any changes other shared copies have made.
      *
-     * @param catalog the name of the main language file
      * @param config  a configuration file with a Locale group detailing
-     *                locale-related preferences (such as language and
-     *                formatting options).
+     *                locale-related preferences (such as language, country,
+     *                and formatting options).
      */
-    explicit KLocale(const QString& catalog, KSharedConfig::Ptr config = KSharedConfig::Ptr());
+    explicit KLocale(KSharedConfig::Ptr config = KSharedConfig::Ptr());
 
     /**
-     * Constructs a KLocale with the given catalog name
+     * Constructs a KLocale.
      *
      * Allows you to override the language and, optionally, the
      * country of this locale.
      *
      * If you specify a configuration file, a setLocale() will be performed on
-     * the config using the current locale language, which may cause a sync()
-     * and reparseConfiguration() which will save any changes you have made.
+     * the config using the current locale language and country,
+     * which may cause a sync() and reparseConfiguration() which
+     * will save any changes you have made.
      *
-     * @param catalog  the name of the main language file
      * @param language the ISO Language Code for the locale, e.g. "en" for English
-     * @param country  the ISO Country Code for the locale, e.g. "us" for USA
+     * @param country  the ISO Country Code for the locale, e.g. "US" for USA
      * @param config   a configuration file with a Locale group detailing
-     *                 locale-related preferences (such as language and
-     *                 formatting options).
+     *                 locale-related preferences (such as language, country,
+     *                  and formatting options).
      */
-    KLocale(const QString& catalog, const QString &language, const QString &country = QString(),
+    KLocale(const QString &language, const QString &country = QString(),
             KConfig *config = 0);
 
     /**
@@ -128,142 +124,6 @@ public:
      * Destructor
      */
     virtual ~KLocale();
-
-    /**
-     * @since 4.5
-     *
-     * Raw translation from a message catalog.
-     * If catalog name is null or empty,
-     * all loaded catalogs are searched for the translation.
-     *
-     * Never use this directly to get message translations. See the i18n and ki18n
-     * family of calls related to KLocalizedString.
-     *
-     * @param catname the catalog name. Must be UTF-8 encoded.
-     * @param msg the message. Must not be null or empty. Must be UTF-8 encoded.
-     * @param lang language in which the translation was found. If no translation
-     *             was found, KLocale::defaultLanguage() is reported. If null,
-     *             the language is not reported.
-     * @param trans raw translation, or original if not found. If no translation
-     *              was found, original message is reported. If null, the
-     *              translation is not reported.
-     *
-     * @see KLocalizedString
-     */
-    void translateRawFrom(const char* catname, const char* msg, QString *lang, QString *trans) const;
-
-    /**
-     * Like translateRawFrom, with implicit lookup through all loaded catalogs.
-     *
-     * @deprecated Use translateRawFrom with null or empty catalog name.
-     */
-    void translateRaw(const char* msg, QString *lang, QString *trans) const;
-
-    /**
-     * @since 4.5
-     *
-     * Raw translation from a message catalog, with given context.
-     * Context + message are used as the lookup key in the catalog.
-     * If catalog name is null or empty,
-     * all loaded catalogs are searched for the translation.
-     *
-     * Never use this directly to get message translations. See i18n* and ki18n*
-     * calls related to KLocalizedString.
-     *
-     * @param catname the catalog name. Must be UTF-8 encoded.
-     * @param ctxt the context. Must not be null. Must be UTF-8 encoded.
-     * @param msg the message. Must not be null or empty. Must be UTF-8 encoded.
-     * @param lang language in which the translation was found. If no translation
-     *             was found, KLocale::defaultLanguage() is reported. If null,
-     *             the language is not reported.
-     * @param trans raw translation, or original if not found. If no translation
-     *              was found, original message is reported. If null, the
-     *              translation is not reported.
-     *
-     * @see KLocalizedString
-     */
-    void translateRawFrom(const char *catname, const char *ctxt, const char *msg, QString *lang, QString *trans) const;
-
-    /**
-     * Like translateRawFrom, with implicit lookup through all loaded catalogs.
-     *
-     * @deprecated Use translateRawFrom with null or empty catalog name.
-     */
-    void translateRaw(const char *ctxt, const char *msg, QString *lang, QString *trans) const;
-
-    /**
-     * @since 4.5
-     *
-     * Raw translation from a message catalog, with given singular/plural form.
-     * Singular form is used as the lookup key in the catalog.
-     * If catalog name is null or empty,
-     * all loaded catalogs are searched for the translation.
-     *
-     * Never use this directly to get message translations. See i18n* and ki18n*
-     * calls related to KLocalizedString.
-     *
-     * @param catname the catalog name. Must be UTF-8 encoded.
-     * @param singular the singular form. Must not be null or empty. Must be UTF-8 encoded.
-     * @param plural the plural form. Must not be null. Must be UTF-8 encoded.
-     * @param n number on which the forms are decided.
-     * @param lang language in which the translation was found. If no translation
-     *             was found, KLocale::defaultLanguage() is reported. If null,
-     *             the language is not reported.
-     * @param trans raw translation, or original if not found. If no translation
-     *              was found, original message is reported (either plural or
-     *              singular, as determined by @p n ). If null, the
-     *              translation is not reported.
-     *
-     * @see KLocalizedString
-     */
-    void translateRawFrom(const char *catname, const char *singular, const char *plural,  unsigned long n,
-                            QString *lang, QString *trans) const;
-
-    /**
-     * Like translateRawFrom, with implicit lookup through all loaded catalogs.
-     *
-     * @deprecated Use translateRawFrom with null or empty catalog name.
-     */
-    void translateRaw(const char *singular, const char *plural,  unsigned long n, QString *lang,
-                      QString *trans) const;
-
-    /**
-     * @since 4.5
-     *
-     * Raw translation from a message catalog, with given context and
-     * singular/plural form.
-     * Context + singular form is used as the lookup key in the catalog.
-     * If catalog name is null or empty,
-     * all loaded catalogs are searched for the translation.
-     *
-     * Never use this directly to get message translations. See i18n* and ki18n*
-     * calls related to KLocalizedString.
-     *
-     * @param catname the catalog name. Must be UTF-8 encoded.
-     * @param ctxt the context. Must not be null. Must be UTF-8 encoded.
-     * @param singular the singular form. Must not be null or empty. Must be UTF-8 encoded.
-     * @param plural the plural form. Must not be null. Must be UTF-8 encoded.
-     * @param n number on which the forms are decided.
-     * @param lang language in which the translation was found. If no translation
-     *             was found, KLocale::defaultLanguage() is reported. If null,
-     *             the language is not reported.
-     * @param trans raw translation, or original if not found. If no translation
-     *              was found, original message is reported (either plural or
-     *              singular, as determined by @p n ). If null, the
-     *              translation is not reported.
-     *
-     * @see KLocalizedString
-     */
-    void translateRawFrom(const char *catname, const char *ctxt, const char *singular, const char *plural,
-                            unsigned long n, QString *lang, QString *trans) const;
-
-    /**
-     * Like translateRawFrom, with implicit lookup through all loaded catalogs.
-     *
-     * @deprecated Use translateRawFrom with null or empty catalog name.
-     */
-    void translateRaw(const char *ctxt, const char *singular, const char *plural, unsigned long n,
-                      QString *lang, QString *trans) const;
 
     /**
      * Changes the current encoding.
@@ -1355,9 +1215,7 @@ public:
                          TimeProcessingOptions processing = ProcessNonStrict) const;
 
     /**
-     * Returns the language code used by this object. The domain AND the
-     * library translation must be available in this language.
-     * defaultLanguage() is returned by default, if no other available.
+     * Returns the language code used by this object.
      *
      * Use languageCodeToName(language) to get human readable, localized
      * language name.
@@ -1797,38 +1655,6 @@ public:
     void setMeasureSystem(MeasureSystem value);
 
     /**
-     * Adds another catalog to search for translation lookup.
-     * This function is useful for extern libraries and/or code,
-     * that provide their own messages.
-     *
-     * If the catalog does not exist for the chosen language,
-     * it will be ignored and en_US will be used.
-     *
-     * @param catalog The catalog to add.
-     */
-    void insertCatalog(const QString& catalog);
-
-    /**
-     * Removes a catalog for translation lookup.
-     * @param catalog The catalog to remove.
-     * @see insertCatalog()
-     */
-    void removeCatalog(const QString &catalog);
-
-    /**
-     * Sets the active catalog for translation lookup.
-     * @param catalog The catalog to activate.
-     */
-    void setActiveCatalog(const QString &catalog);
-
-    /**
-     * Translates a message as a QTranslator is supposed to.
-     * The parameters are similar to i18n(), but the result
-     * value has other semantics (it can be QString())
-     */
-    QString translateQt(const char *context, const char *sourceText, const char *comment) const;
-
-    /**
      * Provides list of all known language codes.
      *
      * Use languageCodeToName(language) to get human readable, localized
@@ -1915,20 +1741,8 @@ public:
                             QString &modifier, QString &charset);
 
     /**
-     * Use this as main catalog for KLocale::global(), if not the appname
-     * will be used. This function is best to be the very first instruction
-     * in your program's main function as it only has an effect before the
-     * first KLocale object is created.
-     *
-     * @param catalog Catalog to override all other main Catalogs.
-     */
-    static void setMainCatalog(const QString &catalog);
-
-    /**
      * Return the global KLocale instance.
      * This is the one used by default by all i18n calls.
-     * It is initialized with the application name as main catalog,
-     * this can be changed with setMainCatalog().
      *
      * Note: in multi-threaded programs, you should call KLocale::global()
      * in the main thread (e.g. in main(), after creating the QCoreApplication
@@ -1969,27 +1783,6 @@ public:
     static QString defaultCurrencyCode();
 
     /**
-     * Reports whether evaluation of translation scripts is enabled.
-     *
-     * @return true if script evaluation is enabled, false otherwise.
-     */
-    bool useTranscript() const;
-
-    /**
-     * Checks whether or not the active catalog is found for the given language.
-     *
-     * @param language language to check
-     */
-    bool isApplicationTranslatedInto(const QString & language);
-
-    /**
-     * Copies the catalogs of this object to an other KLocale object.
-     *
-     * @param locale the destination KLocale object
-     */
-    void copyCatalogsTo(KLocale *locale);
-
-    /**
      * Changes the current country. The current country will be left
      * unchanged if failed. It will force a reload of the country specific
      * configuration.
@@ -2002,8 +1795,8 @@ public:
      *
      * @param country the ISO 3166 country code
      * @param config  a configuration file with a Locale group detailing
-     *                locale-related preferences (such as language and
-     *                formatting options).
+     *                locale-related preferences (such as language, contry,
+     *                and formatting options).
      *
      * @return @c true on success, @c false on failure
      */
@@ -2037,8 +1830,8 @@ public:
      *
      * @param language the language code
      * @param config   a configuration file with a Locale group detailing
-     *                 locale-related preferences (such as language and
-     *                 formatting options).
+     *                 locale-related preferences (such as language, country,
+     *                 and formatting options).
      *
      * @return true on success
      */
@@ -2054,48 +1847,6 @@ public:
      * @return true if one of the specified languages were used
      */
     bool setLanguage(const QStringList &languages);
-
-    /**
-     * @since 4.1
-     *
-     * Tries to find a path to the localized file for the given original path.
-     * This is intended mainly for non-text resources (images, sounds, etc.),
-     * whereas text resources should be handled in more specific ways.
-     *
-     * The possible localized paths are checked in turn by priority of set
-     * languages, in form of dirname/l10n/ll/basename, where dirname and
-     * basename are those of the original path, and ll is the language code.
-     *
-     * KDE core classes which resolve paths internally (e.g. KStandardDirs)
-     * will usually perform this lookup behind the scene.
-     * In general, you should pipe resource paths through this method only
-     * on explicit translators' request, or when a resource is an obvious
-     * candidate for localization (e.g. a splash screen or a custom icon
-     * with some text drawn on it).
-     *
-     * @param filePath path to the original file
-     *
-     * @return path to the localized file if found, original path otherwise
-     */
-    QString localizedFilePath(const QString &filePath) const;
-
-    /**
-     * @since 4.2
-     *
-     * Removes accelerator marker from a UI text label.
-     *
-     * Accelerator marker is not always a plain ampersand (&),
-     * so it is not enough to just remove it by @c QString::remove().
-     * The label may contain escaped markers ("&&") which must be resolved
-     * and skipped, as well as CJK-style markers ("Foo (&F)") where
-     * the whole parenthesis construct should be removed.
-     * Therefore always use this function to remove accelerator marker
-     * from UI labels.
-     *
-     * @param label UI label which may contain an accelerator marker
-     * @return label without the accelerator marker
-     */
-    QString removeAcceleratorMarker(const QString &label) const;
 
     /**
      * @since 4.3

@@ -63,7 +63,7 @@
 #include <kconfig.h>
 #include <kiconloader.h>
 #include <klineedit.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <knuminput.h>
 #include <kseparator.h>
@@ -642,7 +642,7 @@ KColorTable::readNamedColor(void)
         return; // Strings already present
     }
 
-    KLocale::global()->insertCatalog("kdelibs_colors4");
+    KLocalizedString::insertCatalog("kdelibs_colors4");
 
     //
     // Code somewhat inspired by KColorCollection.

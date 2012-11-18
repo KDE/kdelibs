@@ -265,7 +265,7 @@ KDateTimeEdit::KDateTimeEdit(QWidget *parent)
               :QWidget(parent),
                d(new KDateTimeEditPrivate(this))
 {
-    KLocale::global()->insertCatalog("timezones4");
+    KLocalizedString::insertCatalog("timezones4");
     d->ui.setupUi(this);
     //Need to do the min/max defaults here and not in private init as need to wait for ui to init
     //the KDateComboBox which holds the calendar object.  Revisit this???

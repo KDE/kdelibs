@@ -68,7 +68,7 @@ class KTranscriptImp : public KTranscript
                   const QString &msgid,
                   const QStringList &subs,
                   const QList<QVariant> &vals,
-                  const QString &final,
+                  const QString &ftrans,
                   QList<QStringList> &mods,
                   QString &error,
                   bool &fallback);
@@ -179,7 +179,7 @@ class Scriptface : public JSObject
     const QString *msgid;
     const QStringList *subs;
     const QList<QVariant> *vals;
-    const QString *final;
+    const QString *ftrans;
     const QString *ctry;
 
     // Fallback request handle.
@@ -479,7 +479,7 @@ QString KTranscriptImp::eval (const QList<QVariant> &argv,
                               const QString &msgid,
                               const QStringList &subs,
                               const QList<QVariant> &vals,
-                              const QString &final,
+                              const QString &ftrans,
                               QList<QStringList> &mods,
                               QString &error,
                               bool &fallback)
@@ -531,7 +531,7 @@ QString KTranscriptImp::eval (const QList<QVariant> &argv,
     sface->msgid = &msgid;
     sface->subs = &subs;
     sface->vals = &vals;
-    sface->final = &final;
+    sface->ftrans = &ftrans;
     sface->fallback = &fallback;
     sface->ctry = &ctry;
 
@@ -635,8 +635,8 @@ void KTranscriptImp::loadModules (const QList<QStringList> &mods,
         int posls = mpath.lastIndexOf(QLatin1Char('/'));
         if (posls < 1)
         {
-            modErrors.append(QString::fromLatin1("Funny module path '%1', skipping.")
-                                    .arg(mpath));
+            modErrors.append(QString::fromLatin1(
+                "Funny module path '%1', skipping.").arg(mpath));
             continue;
         }
         currentModulePath = mpath.left(posls);
@@ -1081,7 +1081,7 @@ JSValue *Scriptface::msgkeyf (ExecState *exec)
 JSValue *Scriptface::msgstrff (ExecState *exec)
 {
     Q_UNUSED(exec);
-    return jsString(*final);
+    return jsString(*ftrans);
 }
 
 JSValue *Scriptface::dbgputsf (ExecState *exec, JSValue *str)

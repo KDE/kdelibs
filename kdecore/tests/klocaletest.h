@@ -44,7 +44,6 @@ private Q_SLOTS:
 	void formatByteSize();
 	void bug95511();
 	void weekDays();
-	void removeAcceleratorMarker();
 	void formatByteSize2();
 };
 

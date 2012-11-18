@@ -162,32 +162,34 @@ QString KCalendarSystemQDatePrivate::monthName(int month, int year, KLocale::Dat
 {
     Q_UNUSED(year);
 
+    QStringList languages = locale()->languageList();
+
     if (format == KLocale::NarrowName) {
         switch (month) {
         case 1:
-            return ki18nc("Gregorian month 1 - KLocale::NarrowName",  "J").toString(locale());
+            return ki18nc("Gregorian month 1 - KLocale::NarrowName",  "J").toString(languages);
         case 2:
-            return ki18nc("Gregorian month 2 - KLocale::NarrowName",  "F").toString(locale());
+            return ki18nc("Gregorian month 2 - KLocale::NarrowName",  "F").toString(languages);
         case 3:
-            return ki18nc("Gregorian month 3 - KLocale::NarrowName",  "M").toString(locale());
+            return ki18nc("Gregorian month 3 - KLocale::NarrowName",  "M").toString(languages);
         case 4:
-            return ki18nc("Gregorian month 4 - KLocale::NarrowName",  "A").toString(locale());
+            return ki18nc("Gregorian month 4 - KLocale::NarrowName",  "A").toString(languages);
         case 5:
-            return ki18nc("Gregorian month 5 - KLocale::NarrowName",  "M").toString(locale());
+            return ki18nc("Gregorian month 5 - KLocale::NarrowName",  "M").toString(languages);
         case 6:
-            return ki18nc("Gregorian month 6 - KLocale::NarrowName",  "J").toString(locale());
+            return ki18nc("Gregorian month 6 - KLocale::NarrowName",  "J").toString(languages);
         case 7:
-            return ki18nc("Gregorian month 7 - KLocale::NarrowName",  "J").toString(locale());
+            return ki18nc("Gregorian month 7 - KLocale::NarrowName",  "J").toString(languages);
         case 8:
-            return ki18nc("Gregorian month 8 - KLocale::NarrowName",  "A").toString(locale());
+            return ki18nc("Gregorian month 8 - KLocale::NarrowName",  "A").toString(languages);
         case 9:
-            return ki18nc("Gregorian month 9 - KLocale::NarrowName",  "S").toString(locale());
+            return ki18nc("Gregorian month 9 - KLocale::NarrowName",  "S").toString(languages);
         case 10:
-            return ki18nc("Gregorian month 10 - KLocale::NarrowName", "O").toString(locale());
+            return ki18nc("Gregorian month 10 - KLocale::NarrowName", "O").toString(languages);
         case 11:
-            return ki18nc("Gregorian month 11 - KLocale::NarrowName", "N").toString(locale());
+            return ki18nc("Gregorian month 11 - KLocale::NarrowName", "N").toString(languages);
         case 12:
-            return ki18nc("Gregorian month 12 - KLocale::NarrowName", "D").toString(locale());
+            return ki18nc("Gregorian month 12 - KLocale::NarrowName", "D").toString(languages);
         default:
             return QString();
         }
@@ -196,29 +198,29 @@ QString KCalendarSystemQDatePrivate::monthName(int month, int year, KLocale::Dat
     if (format == KLocale::ShortName && possessive) {
         switch (month) {
         case 1:
-            return ki18nc("Gregorian month 1 - KLocale::ShortName Possessive",  "of Jan").toString(locale());
+            return ki18nc("Gregorian month 1 - KLocale::ShortName Possessive",  "of Jan").toString(languages);
         case 2:
-            return ki18nc("Gregorian month 2 - KLocale::ShortName Possessive",  "of Feb").toString(locale());
+            return ki18nc("Gregorian month 2 - KLocale::ShortName Possessive",  "of Feb").toString(languages);
         case 3:
-            return ki18nc("Gregorian month 3 - KLocale::ShortName Possessive",  "of Mar").toString(locale());
+            return ki18nc("Gregorian month 3 - KLocale::ShortName Possessive",  "of Mar").toString(languages);
         case 4:
-            return ki18nc("Gregorian month 4 - KLocale::ShortName Possessive",  "of Apr").toString(locale());
+            return ki18nc("Gregorian month 4 - KLocale::ShortName Possessive",  "of Apr").toString(languages);
         case 5:
-            return ki18nc("Gregorian month 5 - KLocale::ShortName Possessive",  "of May").toString(locale());
+            return ki18nc("Gregorian month 5 - KLocale::ShortName Possessive",  "of May").toString(languages);
         case 6:
-            return ki18nc("Gregorian month 6 - KLocale::ShortName Possessive",  "of Jun").toString(locale());
+            return ki18nc("Gregorian month 6 - KLocale::ShortName Possessive",  "of Jun").toString(languages);
         case 7:
-            return ki18nc("Gregorian month 7 - KLocale::ShortName Possessive",  "of Jul").toString(locale());
+            return ki18nc("Gregorian month 7 - KLocale::ShortName Possessive",  "of Jul").toString(languages);
         case 8:
-            return ki18nc("Gregorian month 8 - KLocale::ShortName Possessive",  "of Aug").toString(locale());
+            return ki18nc("Gregorian month 8 - KLocale::ShortName Possessive",  "of Aug").toString(languages);
         case 9:
-            return ki18nc("Gregorian month 9 - KLocale::ShortName Possessive",  "of Sep").toString(locale());
+            return ki18nc("Gregorian month 9 - KLocale::ShortName Possessive",  "of Sep").toString(languages);
         case 10:
-            return ki18nc("Gregorian month 10 - KLocale::ShortName Possessive", "of Oct").toString(locale());
+            return ki18nc("Gregorian month 10 - KLocale::ShortName Possessive", "of Oct").toString(languages);
         case 11:
-            return ki18nc("Gregorian month 11 - KLocale::ShortName Possessive", "of Nov").toString(locale());
+            return ki18nc("Gregorian month 11 - KLocale::ShortName Possessive", "of Nov").toString(languages);
         case 12:
-            return ki18nc("Gregorian month 12 - KLocale::ShortName Possessive", "of Dec").toString(locale());
+            return ki18nc("Gregorian month 12 - KLocale::ShortName Possessive", "of Dec").toString(languages);
         default:
             return QString();
         }
@@ -227,29 +229,29 @@ QString KCalendarSystemQDatePrivate::monthName(int month, int year, KLocale::Dat
     if (format == KLocale::ShortName && !possessive) {
         switch (month) {
         case 1:
-            return ki18nc("Gregorian month 1 - KLocale::ShortName",  "Jan").toString(locale());
+            return ki18nc("Gregorian month 1 - KLocale::ShortName",  "Jan").toString(languages);
         case 2:
-            return ki18nc("Gregorian month 2 - KLocale::ShortName",  "Feb").toString(locale());
+            return ki18nc("Gregorian month 2 - KLocale::ShortName",  "Feb").toString(languages);
         case 3:
-            return ki18nc("Gregorian month 3 - KLocale::ShortName",  "Mar").toString(locale());
+            return ki18nc("Gregorian month 3 - KLocale::ShortName",  "Mar").toString(languages);
         case 4:
-            return ki18nc("Gregorian month 4 - KLocale::ShortName",  "Apr").toString(locale());
+            return ki18nc("Gregorian month 4 - KLocale::ShortName",  "Apr").toString(languages);
         case 5:
-            return ki18nc("Gregorian month 5 - KLocale::ShortName",  "May").toString(locale());
+            return ki18nc("Gregorian month 5 - KLocale::ShortName",  "May").toString(languages);
         case 6:
-            return ki18nc("Gregorian month 6 - KLocale::ShortName",  "Jun").toString(locale());
+            return ki18nc("Gregorian month 6 - KLocale::ShortName",  "Jun").toString(languages);
         case 7:
-            return ki18nc("Gregorian month 7 - KLocale::ShortName",  "Jul").toString(locale());
+            return ki18nc("Gregorian month 7 - KLocale::ShortName",  "Jul").toString(languages);
         case 8:
-            return ki18nc("Gregorian month 8 - KLocale::ShortName",  "Aug").toString(locale());
+            return ki18nc("Gregorian month 8 - KLocale::ShortName",  "Aug").toString(languages);
         case 9:
-            return ki18nc("Gregorian month 9 - KLocale::ShortName",  "Sep").toString(locale());
+            return ki18nc("Gregorian month 9 - KLocale::ShortName",  "Sep").toString(languages);
         case 10:
-            return ki18nc("Gregorian month 10 - KLocale::ShortName", "Oct").toString(locale());
+            return ki18nc("Gregorian month 10 - KLocale::ShortName", "Oct").toString(languages);
         case 11:
-            return ki18nc("Gregorian month 11 - KLocale::ShortName", "Nov").toString(locale());
+            return ki18nc("Gregorian month 11 - KLocale::ShortName", "Nov").toString(languages);
         case 12:
-            return ki18nc("Gregorian month 12 - KLocale::ShortName", "Dec").toString(locale());
+            return ki18nc("Gregorian month 12 - KLocale::ShortName", "Dec").toString(languages);
         default:
             return QString();
         }
@@ -258,29 +260,29 @@ QString KCalendarSystemQDatePrivate::monthName(int month, int year, KLocale::Dat
     if (format == KLocale::LongName && possessive) {
         switch (month) {
         case 1:
-            return ki18nc("Gregorian month 1 - KLocale::LongName Possessive",  "of January").toString(locale());
+            return ki18nc("Gregorian month 1 - KLocale::LongName Possessive",  "of January").toString(languages);
         case 2:
-            return ki18nc("Gregorian month 2 - KLocale::LongName Possessive",  "of February").toString(locale());
+            return ki18nc("Gregorian month 2 - KLocale::LongName Possessive",  "of February").toString(languages);
         case 3:
-            return ki18nc("Gregorian month 3 - KLocale::LongName Possessive",  "of March").toString(locale());
+            return ki18nc("Gregorian month 3 - KLocale::LongName Possessive",  "of March").toString(languages);
         case 4:
-            return ki18nc("Gregorian month 4 - KLocale::LongName Possessive",  "of April").toString(locale());
+            return ki18nc("Gregorian month 4 - KLocale::LongName Possessive",  "of April").toString(languages);
         case 5:
-            return ki18nc("Gregorian month 5 - KLocale::LongName Possessive",  "of May").toString(locale());
+            return ki18nc("Gregorian month 5 - KLocale::LongName Possessive",  "of May").toString(languages);
         case 6:
-            return ki18nc("Gregorian month 6 - KLocale::LongName Possessive",  "of June").toString(locale());
+            return ki18nc("Gregorian month 6 - KLocale::LongName Possessive",  "of June").toString(languages);
         case 7:
-            return ki18nc("Gregorian month 7 - KLocale::LongName Possessive",  "of July").toString(locale());
+            return ki18nc("Gregorian month 7 - KLocale::LongName Possessive",  "of July").toString(languages);
         case 8:
-            return ki18nc("Gregorian month 8 - KLocale::LongName Possessive",  "of August").toString(locale());
+            return ki18nc("Gregorian month 8 - KLocale::LongName Possessive",  "of August").toString(languages);
         case 9:
-            return ki18nc("Gregorian month 9 - KLocale::LongName Possessive",  "of September").toString(locale());
+            return ki18nc("Gregorian month 9 - KLocale::LongName Possessive",  "of September").toString(languages);
         case 10:
-            return ki18nc("Gregorian month 10 - KLocale::LongName Possessive", "of October").toString(locale());
+            return ki18nc("Gregorian month 10 - KLocale::LongName Possessive", "of October").toString(languages);
         case 11:
-            return ki18nc("Gregorian month 11 - KLocale::LongName Possessive", "of November").toString(locale());
+            return ki18nc("Gregorian month 11 - KLocale::LongName Possessive", "of November").toString(languages);
         case 12:
-            return ki18nc("Gregorian month 12 - KLocale::LongName Possessive", "of December").toString(locale());
+            return ki18nc("Gregorian month 12 - KLocale::LongName Possessive", "of December").toString(languages);
         default:
             return QString();
         }
@@ -289,29 +291,29 @@ QString KCalendarSystemQDatePrivate::monthName(int month, int year, KLocale::Dat
     // Default to LongName
     switch (month) {
     case 1:
-        return ki18nc("Gregorian month 1 - KLocale::LongName",  "January").toString(locale());
+        return ki18nc("Gregorian month 1 - KLocale::LongName",  "January").toString(languages);
     case 2:
-        return ki18nc("Gregorian month 2 - KLocale::LongName",  "February").toString(locale());
+        return ki18nc("Gregorian month 2 - KLocale::LongName",  "February").toString(languages);
     case 3:
-        return ki18nc("Gregorian month 3 - KLocale::LongName",  "March").toString(locale());
+        return ki18nc("Gregorian month 3 - KLocale::LongName",  "March").toString(languages);
     case 4:
-        return ki18nc("Gregorian month 4 - KLocale::LongName",  "April").toString(locale());
+        return ki18nc("Gregorian month 4 - KLocale::LongName",  "April").toString(languages);
     case 5:
-        return ki18nc("Gregorian month 5 - KLocale::LongName",  "May").toString(locale());
+        return ki18nc("Gregorian month 5 - KLocale::LongName",  "May").toString(languages);
     case 6:
-        return ki18nc("Gregorian month 6 - KLocale::LongName",  "June").toString(locale());
+        return ki18nc("Gregorian month 6 - KLocale::LongName",  "June").toString(languages);
     case 7:
-        return ki18nc("Gregorian month 7 - KLocale::LongName",  "July").toString(locale());
+        return ki18nc("Gregorian month 7 - KLocale::LongName",  "July").toString(languages);
     case 8:
-        return ki18nc("Gregorian month 8 - KLocale::LongName",  "August").toString(locale());
+        return ki18nc("Gregorian month 8 - KLocale::LongName",  "August").toString(languages);
     case 9:
-        return ki18nc("Gregorian month 9 - KLocale::LongName",  "September").toString(locale());
+        return ki18nc("Gregorian month 9 - KLocale::LongName",  "September").toString(languages);
     case 10:
-        return ki18nc("Gregorian month 10 - KLocale::LongName", "October").toString(locale());
+        return ki18nc("Gregorian month 10 - KLocale::LongName", "October").toString(languages);
     case 11:
-        return ki18nc("Gregorian month 11 - KLocale::LongName", "November").toString(locale());
+        return ki18nc("Gregorian month 11 - KLocale::LongName", "November").toString(languages);
     case 12:
-        return ki18nc("Gregorian month 12 - KLocale::LongName", "December").toString(locale());
+        return ki18nc("Gregorian month 12 - KLocale::LongName", "December").toString(languages);
     default:
         return QString();
     }
@@ -319,22 +321,24 @@ QString KCalendarSystemQDatePrivate::monthName(int month, int year, KLocale::Dat
 
 QString KCalendarSystemQDatePrivate::weekDayName(int weekDay, KLocale::DateTimeComponentFormat format) const
 {
+    QStringList languages = locale()->languageList();
+
     if (format == KLocale::NarrowName) {
         switch (weekDay) {
         case 1:
-            return ki18nc("Gregorian weekday 1 - KLocale::NarrowName ", "M").toString(locale());
+            return ki18nc("Gregorian weekday 1 - KLocale::NarrowName ", "M").toString(languages);
         case 2:
-            return ki18nc("Gregorian weekday 2 - KLocale::NarrowName ", "T").toString(locale());
+            return ki18nc("Gregorian weekday 2 - KLocale::NarrowName ", "T").toString(languages);
         case 3:
-            return ki18nc("Gregorian weekday 3 - KLocale::NarrowName ", "W").toString(locale());
+            return ki18nc("Gregorian weekday 3 - KLocale::NarrowName ", "W").toString(languages);
         case 4:
-            return ki18nc("Gregorian weekday 4 - KLocale::NarrowName ", "T").toString(locale());
+            return ki18nc("Gregorian weekday 4 - KLocale::NarrowName ", "T").toString(languages);
         case 5:
-            return ki18nc("Gregorian weekday 5 - KLocale::NarrowName ", "F").toString(locale());
+            return ki18nc("Gregorian weekday 5 - KLocale::NarrowName ", "F").toString(languages);
         case 6:
-            return ki18nc("Gregorian weekday 6 - KLocale::NarrowName ", "S").toString(locale());
+            return ki18nc("Gregorian weekday 6 - KLocale::NarrowName ", "S").toString(languages);
         case 7:
-            return ki18nc("Gregorian weekday 7 - KLocale::NarrowName ", "S").toString(locale());
+            return ki18nc("Gregorian weekday 7 - KLocale::NarrowName ", "S").toString(languages);
         default:
             return QString();
         }
@@ -343,38 +347,38 @@ QString KCalendarSystemQDatePrivate::weekDayName(int weekDay, KLocale::DateTimeC
     if (format == KLocale::ShortName  || format == KLocale:: ShortNumber) {
         switch (weekDay) {
         case 1:
-            return ki18nc("Gregorian weekday 1 - KLocale::ShortName", "Mon").toString(locale());
+            return ki18nc("Gregorian weekday 1 - KLocale::ShortName", "Mon").toString(languages);
         case 2:
-            return ki18nc("Gregorian weekday 2 - KLocale::ShortName", "Tue").toString(locale());
+            return ki18nc("Gregorian weekday 2 - KLocale::ShortName", "Tue").toString(languages);
         case 3:
-            return ki18nc("Gregorian weekday 3 - KLocale::ShortName", "Wed").toString(locale());
+            return ki18nc("Gregorian weekday 3 - KLocale::ShortName", "Wed").toString(languages);
         case 4:
-            return ki18nc("Gregorian weekday 4 - KLocale::ShortName", "Thu").toString(locale());
+            return ki18nc("Gregorian weekday 4 - KLocale::ShortName", "Thu").toString(languages);
         case 5:
-            return ki18nc("Gregorian weekday 5 - KLocale::ShortName", "Fri").toString(locale());
+            return ki18nc("Gregorian weekday 5 - KLocale::ShortName", "Fri").toString(languages);
         case 6:
-            return ki18nc("Gregorian weekday 6 - KLocale::ShortName", "Sat").toString(locale());
+            return ki18nc("Gregorian weekday 6 - KLocale::ShortName", "Sat").toString(languages);
         case 7:
-            return ki18nc("Gregorian weekday 7 - KLocale::ShortName", "Sun").toString(locale());
+            return ki18nc("Gregorian weekday 7 - KLocale::ShortName", "Sun").toString(languages);
         default: return QString();
         }
     }
 
     switch (weekDay) {
     case 1:
-        return ki18nc("Gregorian weekday 1 - KLocale::LongName", "Monday").toString(locale());
+        return ki18nc("Gregorian weekday 1 - KLocale::LongName", "Monday").toString(languages);
     case 2:
-        return ki18nc("Gregorian weekday 2 - KLocale::LongName", "Tuesday").toString(locale());
+        return ki18nc("Gregorian weekday 2 - KLocale::LongName", "Tuesday").toString(languages);
     case 3:
-        return ki18nc("Gregorian weekday 3 - KLocale::LongName", "Wednesday").toString(locale());
+        return ki18nc("Gregorian weekday 3 - KLocale::LongName", "Wednesday").toString(languages);
     case 4:
-        return ki18nc("Gregorian weekday 4 - KLocale::LongName", "Thursday").toString(locale());
+        return ki18nc("Gregorian weekday 4 - KLocale::LongName", "Thursday").toString(languages);
     case 5:
-        return ki18nc("Gregorian weekday 5 - KLocale::LongName", "Friday").toString(locale());
+        return ki18nc("Gregorian weekday 5 - KLocale::LongName", "Friday").toString(languages);
     case 6:
-        return ki18nc("Gregorian weekday 6 - KLocale::LongName", "Saturday").toString(locale());
+        return ki18nc("Gregorian weekday 6 - KLocale::LongName", "Saturday").toString(languages);
     case 7:
-        return ki18nc("Gregorian weekday 7 - KLocale::LongName", "Sunday").toString(locale());
+        return ki18nc("Gregorian weekday 7 - KLocale::LongName", "Sunday").toString(languages);
     default:
         return QString();
     }

@@ -33,7 +33,7 @@
 #include <kcomponentdata.h>
 #include <kdebug.h>
 #include <kxmlguifactory.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdesktopfile.h>
 #include <kconfiggroup.h>
 #include <qstandardpaths.h>
@@ -216,7 +216,7 @@ bool Plugin::hasPlugin( QObject* parent, const QString& library )
 
 void Plugin::setComponentData(const KComponentData &componentData)
 {
-    KLocale::global()->insertCatalog(componentData.catalogName());
+    KLocalizedString::insertCatalog(componentData.catalogName());
     KXMLGUIClient::setComponentData(componentData);
 }
 

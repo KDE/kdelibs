@@ -26,7 +26,7 @@
 #include <defaults-kfile.h> // for ConfigGroup
 
 #include <kconfig.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
 
@@ -68,7 +68,7 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent, const QVariantList & )
     : KPreviewWidgetBase( parent )
     , d( new Private )
 {
-    KLocale::global()->insertCatalog("kfileaudiopreview4");
+    KLocalizedString::insertCatalog("kfileaudiopreview4");
 
     setSupportedMimeTypes(BackendCapabilities::availableMimeTypes());
 

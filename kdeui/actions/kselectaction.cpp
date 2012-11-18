@@ -37,7 +37,7 @@
 #include <QToolButton>
 #include <QToolBar>
 #include <QStandardItem>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kdebug.h>
 
 #include "kcombobox.h"
@@ -48,7 +48,7 @@
 // display ampersands literally.
 static QString DropAmpersands(const QString &text)
 {
-    return KLocale::global()->removeAcceleratorMarker(text);
+    return KLocalizedString::removeAcceleratorMarker(text);
 }
 
 

@@ -105,34 +105,36 @@ QList<KLocale::CalendarSystem> KCalendarSystem::calendarSystemsList()
 
 QString KCalendarSystem::calendarLabel(KLocale::CalendarSystem calendarSystem, const KLocale *locale)
 {
+    QStringList languages = locale->languageList();
+
     switch (calendarSystem) {
     case KLocale::QDateCalendar:
-        return ki18nc("@item Calendar system", "Gregorian").toString(locale);
+        return ki18nc("@item Calendar system", "Gregorian").toString(languages);
     case KLocale::CopticCalendar:
-        return ki18nc("@item Calendar system", "Coptic").toString(locale);
+        return ki18nc("@item Calendar system", "Coptic").toString(languages);
     case KLocale::EthiopianCalendar:
-        return ki18nc("@item Calendar system", "Ethiopian").toString(locale);
+        return ki18nc("@item Calendar system", "Ethiopian").toString(languages);
     case KLocale::GregorianCalendar:
-        return ki18nc("@item Calendar system", "Gregorian (Proleptic)").toString(locale);
+        return ki18nc("@item Calendar system", "Gregorian (Proleptic)").toString(languages);
     case KLocale::HebrewCalendar:
-        return ki18nc("@item Calendar system", "Hebrew").toString(locale);
+        return ki18nc("@item Calendar system", "Hebrew").toString(languages);
     case KLocale::IslamicCivilCalendar:
-        return ki18nc("@item Calendar system", "Islamic / Hijri (Civil)").toString(locale);
+        return ki18nc("@item Calendar system", "Islamic / Hijri (Civil)").toString(languages);
     case KLocale::IndianNationalCalendar:
-        return ki18nc("@item Calendar system", "Indian National").toString(locale);
+        return ki18nc("@item Calendar system", "Indian National").toString(languages);
     case KLocale::JalaliCalendar:
-        return ki18nc("@item Calendar system", "Jalali").toString(locale);
+        return ki18nc("@item Calendar system", "Jalali").toString(languages);
     case KLocale::JapaneseCalendar:
-        return ki18nc("@item Calendar system", "Japanese").toString(locale);
+        return ki18nc("@item Calendar system", "Japanese").toString(languages);
     case KLocale::JulianCalendar:
-        return ki18nc("@item Calendar system", "Julian").toString(locale);
+        return ki18nc("@item Calendar system", "Julian").toString(languages);
     case KLocale::MinguoCalendar:
-        return ki18nc("@item Calendar system", "Taiwanese").toString(locale);
+        return ki18nc("@item Calendar system", "Taiwanese").toString(languages);
     case KLocale::ThaiCalendar:
-        return ki18nc("@item Calendar system", "Thai").toString(locale);
+        return ki18nc("@item Calendar system", "Thai").toString(languages);
     }
 
-    return ki18nc("@item Calendar system", "Invalid Calendar Type").toString(locale);
+    return ki18nc("@item Calendar system", "Invalid Calendar Type").toString(languages);
 }
 
 // Shared d pointer base class definitions

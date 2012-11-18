@@ -53,7 +53,7 @@
 #include <kio/scheduler.h>
 #include <krecentdirs.h>
 #include <kdebug.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 #include <kio/kfileitemdelegate.h>
 #include <kde_file.h>
 
@@ -2116,7 +2116,7 @@ static QString stripUndisplayable (const QString &string)
     QString ret = string;
 
     ret.remove (':');
-    ret = KLocale::global()->removeAcceleratorMarker (ret);
+    ret = KLocalizedString::removeAcceleratorMarker (ret);
 
     return ret;
 }

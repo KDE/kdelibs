@@ -40,7 +40,7 @@
 #include <QtCore/QDir>
 #include <QDebug>
 
-#include <klocale.h> // KLocale::localizedFilePath. Need such functionality in, hmm, QLocale? QStandardPaths?
+#include <klocalizedstring.h> // KLocalizedString::localizedFilePath. Need such functionality in, hmm, QLocale? QStandardPaths?
 
 #include <ksharedconfig.h>
 #include <kconfig.h>
@@ -690,7 +690,7 @@ QString KIconThemeDir::iconPath(const QString& name) const
     QString file = dir() + '/' + name;
 
     if (QFile::exists(file)) {
-        return KLocale::global()->localizedFilePath(file);
+        return KLocalizedString::localizedFilePath(file);
     }
 
     return QString();

@@ -537,10 +537,10 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       loadPlugins();
 
   // "khtml" catalog does not exist, our translations are in kdelibs.
-  // removing this catalog from KLocale::global() prevents problems
+  // removing this catalog from KLocalizedString prevents problems
   // with changing the language in applications at runtime -Thomas Reitelbach
   // DF: a better fix would be to set the right catalog name in the KComponentData!
-  KLocale::global()->removeCatalog("khtml");
+  KLocalizedString::removeCatalog("khtml");
 }
 
 KHTMLPart::~KHTMLPart()

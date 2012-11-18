@@ -628,36 +628,38 @@ QString KCalendarSystemHebrewPrivate::monthName(int month, int year, KLocale::Da
     // We must map month number to month index
     int monthIndex = monthNumberToMonthIndex(year, month);
 
+    QStringList languages = locale()->languageList();
+
     if (format == KLocale::NarrowName) {
         switch (monthIndex) {
         case 1:
-            return ki18nc("Hebrew month 1 - KLocale::NarrowName",  "T").toString(locale());
+            return ki18nc("Hebrew month 1 - KLocale::NarrowName",  "T").toString(languages);
         case 2:
-            return ki18nc("Hebrew month 2 - KLocale::NarrowName",  "H").toString(locale());
+            return ki18nc("Hebrew month 2 - KLocale::NarrowName",  "H").toString(languages);
         case 3:
-            return ki18nc("Hebrew month 3 - KLocale::NarrowName",  "K").toString(locale());
+            return ki18nc("Hebrew month 3 - KLocale::NarrowName",  "K").toString(languages);
         case 4:
-            return ki18nc("Hebrew month 4 - KLocale::NarrowName",  "T").toString(locale());
+            return ki18nc("Hebrew month 4 - KLocale::NarrowName",  "T").toString(languages);
         case 5:
-            return ki18nc("Hebrew month 5 - KLocale::NarrowName",  "S").toString(locale());
+            return ki18nc("Hebrew month 5 - KLocale::NarrowName",  "S").toString(languages);
         case 6:
-            return ki18nc("Hebrew month 6 - KLocale::NarrowName",  "A").toString(locale());
+            return ki18nc("Hebrew month 6 - KLocale::NarrowName",  "A").toString(languages);
         case 7:
-            return ki18nc("Hebrew month 7 - KLocale::NarrowName",  "N").toString(locale());
+            return ki18nc("Hebrew month 7 - KLocale::NarrowName",  "N").toString(languages);
         case 8:
-            return ki18nc("Hebrew month 8 - KLocale::NarrowName",  "I").toString(locale());
+            return ki18nc("Hebrew month 8 - KLocale::NarrowName",  "I").toString(languages);
         case 9:
-            return ki18nc("Hebrew month 9 - KLocale::NarrowName",  "S").toString(locale());
+            return ki18nc("Hebrew month 9 - KLocale::NarrowName",  "S").toString(languages);
         case 10:
-            return ki18nc("Hebrew month 10 - KLocale::NarrowName", "T").toString(locale());
+            return ki18nc("Hebrew month 10 - KLocale::NarrowName", "T").toString(languages);
         case 11:
-            return ki18nc("Hebrew month 11 - KLocale::NarrowName", "A").toString(locale());
+            return ki18nc("Hebrew month 11 - KLocale::NarrowName", "A").toString(languages);
         case 12:
-            return ki18nc("Hebrew month 12 - KLocale::NarrowName", "E").toString(locale());
+            return ki18nc("Hebrew month 12 - KLocale::NarrowName", "E").toString(languages);
         case 13:
-            return ki18nc("Hebrew month 13 - KLocale::NarrowName", "A").toString(locale());
+            return ki18nc("Hebrew month 13 - KLocale::NarrowName", "A").toString(languages);
         case 14:
-            return ki18nc("Hebrew month 14 - KLocale::NarrowName", "A").toString(locale());
+            return ki18nc("Hebrew month 14 - KLocale::NarrowName", "A").toString(languages);
         default:
             return QString();
         }
@@ -666,33 +668,33 @@ QString KCalendarSystemHebrewPrivate::monthName(int month, int year, KLocale::Da
     if (format == KLocale::ShortName && possessive) {
         switch (monthIndex) {
         case 1:
-            return ki18nc("Hebrew month 1 - KLocale::ShortName Possessive",  "of Tis").toString(locale());
+            return ki18nc("Hebrew month 1 - KLocale::ShortName Possessive",  "of Tis").toString(languages);
         case 2:
-            return ki18nc("Hebrew month 2 - KLocale::ShortName Possessive",  "of Hes").toString(locale());
+            return ki18nc("Hebrew month 2 - KLocale::ShortName Possessive",  "of Hes").toString(languages);
         case 3:
-            return ki18nc("Hebrew month 3 - KLocale::ShortName Possessive",  "of Kis").toString(locale());
+            return ki18nc("Hebrew month 3 - KLocale::ShortName Possessive",  "of Kis").toString(languages);
         case 4:
-            return ki18nc("Hebrew month 4 - KLocale::ShortName Possessive",  "of Tev").toString(locale());
+            return ki18nc("Hebrew month 4 - KLocale::ShortName Possessive",  "of Tev").toString(languages);
         case 5:
-            return ki18nc("Hebrew month 5 - KLocale::ShortName Possessive",  "of Shv").toString(locale());
+            return ki18nc("Hebrew month 5 - KLocale::ShortName Possessive",  "of Shv").toString(languages);
         case 6:
-            return ki18nc("Hebrew month 6 - KLocale::ShortName Possessive",  "of Ada").toString(locale());
+            return ki18nc("Hebrew month 6 - KLocale::ShortName Possessive",  "of Ada").toString(languages);
         case 7:
-            return ki18nc("Hebrew month 7 - KLocale::ShortName Possessive",  "of Nis").toString(locale());
+            return ki18nc("Hebrew month 7 - KLocale::ShortName Possessive",  "of Nis").toString(languages);
         case 8:
-            return ki18nc("Hebrew month 8 - KLocale::ShortName Possessive",  "of Iya").toString(locale());
+            return ki18nc("Hebrew month 8 - KLocale::ShortName Possessive",  "of Iya").toString(languages);
         case 9:
-            return ki18nc("Hebrew month 9 - KLocale::ShortName Possessive",  "of Siv").toString(locale());
+            return ki18nc("Hebrew month 9 - KLocale::ShortName Possessive",  "of Siv").toString(languages);
         case 10:
-            return ki18nc("Hebrew month 10 - KLocale::ShortName Possessive", "of Tam").toString(locale());
+            return ki18nc("Hebrew month 10 - KLocale::ShortName Possessive", "of Tam").toString(languages);
         case 11:
-            return ki18nc("Hebrew month 11 - KLocale::ShortName Possessive", "of Av").toString(locale());
+            return ki18nc("Hebrew month 11 - KLocale::ShortName Possessive", "of Av").toString(languages);
         case 12:
-            return ki18nc("Hebrew month 12 - KLocale::ShortName Possessive", "of Elu").toString(locale());
+            return ki18nc("Hebrew month 12 - KLocale::ShortName Possessive", "of Elu").toString(languages);
         case 13:
-            return ki18nc("Hebrew month 13 - KLocale::ShortName Possessive", "of Ad1").toString(locale());
+            return ki18nc("Hebrew month 13 - KLocale::ShortName Possessive", "of Ad1").toString(languages);
         case 14:
-            return ki18nc("Hebrew month 14 - KLocale::ShortName Possessive", "of Ad2").toString(locale());
+            return ki18nc("Hebrew month 14 - KLocale::ShortName Possessive", "of Ad2").toString(languages);
         default:
             return QString();
         }
@@ -701,33 +703,33 @@ QString KCalendarSystemHebrewPrivate::monthName(int month, int year, KLocale::Da
     if (format == KLocale::ShortName && !possessive) {
         switch (monthIndex) {
         case 1:
-            return ki18nc("Hebrew month 1 - KLocale::ShortName",  "Tis").toString(locale());
+            return ki18nc("Hebrew month 1 - KLocale::ShortName",  "Tis").toString(languages);
         case 2:
-            return ki18nc("Hebrew month 2 - KLocale::ShortName",  "Hes").toString(locale());
+            return ki18nc("Hebrew month 2 - KLocale::ShortName",  "Hes").toString(languages);
         case 3:
-            return ki18nc("Hebrew month 3 - KLocale::ShortName",  "Kis").toString(locale());
+            return ki18nc("Hebrew month 3 - KLocale::ShortName",  "Kis").toString(languages);
         case 4:
-            return ki18nc("Hebrew month 4 - KLocale::ShortName",  "Tev").toString(locale());
+            return ki18nc("Hebrew month 4 - KLocale::ShortName",  "Tev").toString(languages);
         case 5:
-            return ki18nc("Hebrew month 5 - KLocale::ShortName",  "Shv").toString(locale());
+            return ki18nc("Hebrew month 5 - KLocale::ShortName",  "Shv").toString(languages);
         case 6:
-            return ki18nc("Hebrew month 6 - KLocale::ShortName",  "Ada").toString(locale());
+            return ki18nc("Hebrew month 6 - KLocale::ShortName",  "Ada").toString(languages);
         case 7:
-            return ki18nc("Hebrew month 7 - KLocale::ShortName",  "Nis").toString(locale());
+            return ki18nc("Hebrew month 7 - KLocale::ShortName",  "Nis").toString(languages);
         case 8:
-            return ki18nc("Hebrew month 8 - KLocale::ShortName",  "Iya").toString(locale());
+            return ki18nc("Hebrew month 8 - KLocale::ShortName",  "Iya").toString(languages);
         case 9:
-            return ki18nc("Hebrew month 9 - KLocale::ShortName",  "Siv").toString(locale());
+            return ki18nc("Hebrew month 9 - KLocale::ShortName",  "Siv").toString(languages);
         case 10:
-            return ki18nc("Hebrew month 10 - KLocale::ShortName", "Tam").toString(locale());
+            return ki18nc("Hebrew month 10 - KLocale::ShortName", "Tam").toString(languages);
         case 11:
-            return ki18nc("Hebrew month 11 - KLocale::ShortName", "Av").toString(locale());
+            return ki18nc("Hebrew month 11 - KLocale::ShortName", "Av").toString(languages);
         case 12:
-            return ki18nc("Hebrew month 12 - KLocale::ShortName", "Elu").toString(locale());
+            return ki18nc("Hebrew month 12 - KLocale::ShortName", "Elu").toString(languages);
         case 13:
-            return ki18nc("Hebrew month 13 - KLocale::ShortName", "Ad1").toString(locale());
+            return ki18nc("Hebrew month 13 - KLocale::ShortName", "Ad1").toString(languages);
         case 14:
-            return ki18nc("Hebrew month 14 - KLocale::ShortName", "Ad2").toString(locale());
+            return ki18nc("Hebrew month 14 - KLocale::ShortName", "Ad2").toString(languages);
         default:
             return QString();
         }
@@ -736,33 +738,33 @@ QString KCalendarSystemHebrewPrivate::monthName(int month, int year, KLocale::Da
     if (format == KLocale::LongName && possessive) {
         switch (monthIndex) {
         case 1:
-            return ki18nc("Hebrew month 1 - KLocale::LongName Possessive",  "of Tishrey").toString(locale());
+            return ki18nc("Hebrew month 1 - KLocale::LongName Possessive",  "of Tishrey").toString(languages);
         case 2:
-            return ki18nc("Hebrew month 2 - KLocale::LongName Possessive",  "of Heshvan").toString(locale());
+            return ki18nc("Hebrew month 2 - KLocale::LongName Possessive",  "of Heshvan").toString(languages);
         case 3:
-            return ki18nc("Hebrew month 3 - KLocale::LongName Possessive",  "of Kislev").toString(locale());
+            return ki18nc("Hebrew month 3 - KLocale::LongName Possessive",  "of Kislev").toString(languages);
         case 4:
-            return ki18nc("Hebrew month 4 - KLocale::LongName Possessive",  "of Tevet").toString(locale());
+            return ki18nc("Hebrew month 4 - KLocale::LongName Possessive",  "of Tevet").toString(languages);
         case 5:
-            return ki18nc("Hebrew month 5 - KLocale::LongName Possessive",  "of Shvat").toString(locale());
+            return ki18nc("Hebrew month 5 - KLocale::LongName Possessive",  "of Shvat").toString(languages);
         case 6:
-            return ki18nc("Hebrew month 6 - KLocale::LongName Possessive",  "of Adar").toString(locale());
+            return ki18nc("Hebrew month 6 - KLocale::LongName Possessive",  "of Adar").toString(languages);
         case 7:
-            return ki18nc("Hebrew month 7 - KLocale::LongName Possessive",  "of Nisan").toString(locale());
+            return ki18nc("Hebrew month 7 - KLocale::LongName Possessive",  "of Nisan").toString(languages);
         case 8:
-            return ki18nc("Hebrew month 8 - KLocale::LongName Possessive",  "of Iyar").toString(locale());
+            return ki18nc("Hebrew month 8 - KLocale::LongName Possessive",  "of Iyar").toString(languages);
         case 9:
-            return ki18nc("Hebrew month 9 - KLocale::LongName Possessive",  "of Sivan").toString(locale());
+            return ki18nc("Hebrew month 9 - KLocale::LongName Possessive",  "of Sivan").toString(languages);
         case 10:
-            return ki18nc("Hebrew month 10 - KLocale::LongName Possessive", "of Tamuz").toString(locale());
+            return ki18nc("Hebrew month 10 - KLocale::LongName Possessive", "of Tamuz").toString(languages);
         case 11:
-            return ki18nc("Hebrew month 11 - KLocale::LongName Possessive", "of Av").toString(locale());
+            return ki18nc("Hebrew month 11 - KLocale::LongName Possessive", "of Av").toString(languages);
         case 12:
-            return ki18nc("Hebrew month 12 - KLocale::LongName Possessive", "of Elul").toString(locale());
+            return ki18nc("Hebrew month 12 - KLocale::LongName Possessive", "of Elul").toString(languages);
         case 13:
-            return ki18nc("Hebrew month 13 - KLocale::LongName Possessive", "of Adar I").toString(locale());
+            return ki18nc("Hebrew month 13 - KLocale::LongName Possessive", "of Adar I").toString(languages);
         case 14:
-            return ki18nc("Hebrew month 14 - KLocale::LongName Possessive", "of Adar II").toString(locale());
+            return ki18nc("Hebrew month 14 - KLocale::LongName Possessive", "of Adar II").toString(languages);
         default:
             return QString();
         }
@@ -771,33 +773,33 @@ QString KCalendarSystemHebrewPrivate::monthName(int month, int year, KLocale::Da
     // Default to LongName
     switch (monthIndex) {
     case 1:
-        return ki18nc("Hebrew month 1 - KLocale::LongName",  "Tishrey").toString(locale());
+        return ki18nc("Hebrew month 1 - KLocale::LongName",  "Tishrey").toString(languages);
     case 2:
-        return ki18nc("Hebrew month 2 - KLocale::LongName",  "Heshvan").toString(locale());
+        return ki18nc("Hebrew month 2 - KLocale::LongName",  "Heshvan").toString(languages);
     case 3:
-        return ki18nc("Hebrew month 3 - KLocale::LongName",  "Kislev").toString(locale());
+        return ki18nc("Hebrew month 3 - KLocale::LongName",  "Kislev").toString(languages);
     case 4:
-        return ki18nc("Hebrew month 4 - KLocale::LongName",  "Tevet").toString(locale());
+        return ki18nc("Hebrew month 4 - KLocale::LongName",  "Tevet").toString(languages);
     case 5:
-        return ki18nc("Hebrew month 5 - KLocale::LongName",  "Shvat").toString(locale());
+        return ki18nc("Hebrew month 5 - KLocale::LongName",  "Shvat").toString(languages);
     case 6:
-        return ki18nc("Hebrew month 6 - KLocale::LongName",  "Adar").toString(locale());
+        return ki18nc("Hebrew month 6 - KLocale::LongName",  "Adar").toString(languages);
     case 7:
-        return ki18nc("Hebrew month 7 - KLocale::LongName",  "Nisan").toString(locale());
+        return ki18nc("Hebrew month 7 - KLocale::LongName",  "Nisan").toString(languages);
     case 8:
-        return ki18nc("Hebrew month 8 - KLocale::LongName",  "Iyar").toString(locale());
+        return ki18nc("Hebrew month 8 - KLocale::LongName",  "Iyar").toString(languages);
     case 9:
-        return ki18nc("Hebrew month 9 - KLocale::LongName",  "Sivan").toString(locale());
+        return ki18nc("Hebrew month 9 - KLocale::LongName",  "Sivan").toString(languages);
     case 10:
-        return ki18nc("Hebrew month 10 - KLocale::LongName", "Tamuz").toString(locale());
+        return ki18nc("Hebrew month 10 - KLocale::LongName", "Tamuz").toString(languages);
     case 11:
-        return ki18nc("Hebrew month 11 - KLocale::LongName", "Av").toString(locale());
+        return ki18nc("Hebrew month 11 - KLocale::LongName", "Av").toString(languages);
     case 12:
-        return ki18nc("Hebrew month 12 - KLocale::LongName", "Elul").toString(locale());
+        return ki18nc("Hebrew month 12 - KLocale::LongName", "Elul").toString(languages);
     case 13:
-        return ki18nc("Hebrew month 13 - KLocale::LongName", "Adar I").toString(locale());
+        return ki18nc("Hebrew month 13 - KLocale::LongName", "Adar I").toString(languages);
     case 14:
-        return ki18nc("Hebrew month 14 - KLocale::LongName", "Adar II").toString(locale());
+        return ki18nc("Hebrew month 14 - KLocale::LongName", "Adar II").toString(languages);
     default:
         return QString();
     }
@@ -808,22 +810,24 @@ QString KCalendarSystemHebrewPrivate::monthName(int month, int year, KLocale::Da
 // Could make it switchable by adding new enums to WeekDayFormat, e.g. ShortNameWestern?
 QString KCalendarSystemHebrewPrivate::weekDayName(int weekDay, KLocale::DateTimeComponentFormat format) const
 {
+    QStringList languages = locale()->languageList();
+
     if (format == KLocale::NarrowName) {
         switch (weekDay) {
         case 1:
-            return ki18nc("Gregorian weekday 1 - KLocale::NarrowName ", "M").toString(locale());
+            return ki18nc("Gregorian weekday 1 - KLocale::NarrowName ", "M").toString(languages);
         case 2:
-            return ki18nc("Gregorian weekday 2 - KLocale::NarrowName ", "T").toString(locale());
+            return ki18nc("Gregorian weekday 2 - KLocale::NarrowName ", "T").toString(languages);
         case 3:
-            return ki18nc("Gregorian weekday 3 - KLocale::NarrowName ", "W").toString(locale());
+            return ki18nc("Gregorian weekday 3 - KLocale::NarrowName ", "W").toString(languages);
         case 4:
-            return ki18nc("Gregorian weekday 4 - KLocale::NarrowName ", "T").toString(locale());
+            return ki18nc("Gregorian weekday 4 - KLocale::NarrowName ", "T").toString(languages);
         case 5:
-            return ki18nc("Gregorian weekday 5 - KLocale::NarrowName ", "F").toString(locale());
+            return ki18nc("Gregorian weekday 5 - KLocale::NarrowName ", "F").toString(languages);
         case 6:
-            return ki18nc("Gregorian weekday 6 - KLocale::NarrowName ", "S").toString(locale());
+            return ki18nc("Gregorian weekday 6 - KLocale::NarrowName ", "S").toString(languages);
         case 7:
-            return ki18nc("Gregorian weekday 7 - KLocale::NarrowName ", "S").toString(locale());
+            return ki18nc("Gregorian weekday 7 - KLocale::NarrowName ", "S").toString(languages);
         default:
             return QString();
         }
@@ -832,38 +836,38 @@ QString KCalendarSystemHebrewPrivate::weekDayName(int weekDay, KLocale::DateTime
     if (format == KLocale::ShortName  || format == KLocale:: ShortNumber) {
         switch (weekDay) {
         case 1:
-            return ki18nc("Gregorian weekday 1 - KLocale::ShortName", "Mon").toString(locale());
+            return ki18nc("Gregorian weekday 1 - KLocale::ShortName", "Mon").toString(languages);
         case 2:
-            return ki18nc("Gregorian weekday 2 - KLocale::ShortName", "Tue").toString(locale());
+            return ki18nc("Gregorian weekday 2 - KLocale::ShortName", "Tue").toString(languages);
         case 3:
-            return ki18nc("Gregorian weekday 3 - KLocale::ShortName", "Wed").toString(locale());
+            return ki18nc("Gregorian weekday 3 - KLocale::ShortName", "Wed").toString(languages);
         case 4:
-            return ki18nc("Gregorian weekday 4 - KLocale::ShortName", "Thu").toString(locale());
+            return ki18nc("Gregorian weekday 4 - KLocale::ShortName", "Thu").toString(languages);
         case 5:
-            return ki18nc("Gregorian weekday 5 - KLocale::ShortName", "Fri").toString(locale());
+            return ki18nc("Gregorian weekday 5 - KLocale::ShortName", "Fri").toString(languages);
         case 6:
-            return ki18nc("Gregorian weekday 6 - KLocale::ShortName", "Sat").toString(locale());
+            return ki18nc("Gregorian weekday 6 - KLocale::ShortName", "Sat").toString(languages);
         case 7:
-            return ki18nc("Gregorian weekday 7 - KLocale::ShortName", "Sun").toString(locale());
+            return ki18nc("Gregorian weekday 7 - KLocale::ShortName", "Sun").toString(languages);
         default: return QString();
         }
     }
 
     switch (weekDay) {
     case 1:
-        return ki18nc("Gregorian weekday 1 - KLocale::LongName", "Monday").toString(locale());
+        return ki18nc("Gregorian weekday 1 - KLocale::LongName", "Monday").toString(languages);
     case 2:
-        return ki18nc("Gregorian weekday 2 - KLocale::LongName", "Tuesday").toString(locale());
+        return ki18nc("Gregorian weekday 2 - KLocale::LongName", "Tuesday").toString(languages);
     case 3:
-        return ki18nc("Gregorian weekday 3 - KLocale::LongName", "Wednesday").toString(locale());
+        return ki18nc("Gregorian weekday 3 - KLocale::LongName", "Wednesday").toString(languages);
     case 4:
-        return ki18nc("Gregorian weekday 4 - KLocale::LongName", "Thursday").toString(locale());
+        return ki18nc("Gregorian weekday 4 - KLocale::LongName", "Thursday").toString(languages);
     case 5:
-        return ki18nc("Gregorian weekday 5 - KLocale::LongName", "Friday").toString(locale());
+        return ki18nc("Gregorian weekday 5 - KLocale::LongName", "Friday").toString(languages);
     case 6:
-        return ki18nc("Gregorian weekday 6 - KLocale::LongName", "Saturday").toString(locale());
+        return ki18nc("Gregorian weekday 6 - KLocale::LongName", "Saturday").toString(languages);
     case 7:
-        return ki18nc("Gregorian weekday 7 - KLocale::LongName", "Sunday").toString(locale());
+        return ki18nc("Gregorian weekday 7 - KLocale::LongName", "Sunday").toString(languages);
     default:
         return QString();
     }

@@ -27,9 +27,9 @@
 class KLocaleMacPrivate : public KLocalePrivate
 {
 public:
-    KLocaleMacPrivate(KLocale *q_ptr, const QString &catalog, KSharedConfig::Ptr config);
+    KLocaleMacPrivate(KLocale *q_ptr, KSharedConfig::Ptr config);
 
-    KLocaleMacPrivate(KLocale *q_ptr, const QString& catalog,
+    KLocaleMacPrivate(KLocale *q_ptr,
                       const QString &language, const QString &country, KConfig *config);
 
     KLocaleMacPrivate( const KLocaleMacPrivate &rhs );

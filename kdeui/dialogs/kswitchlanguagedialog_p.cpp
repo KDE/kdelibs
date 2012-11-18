@@ -30,6 +30,7 @@
 #include <klanguagebutton.h>
 #include <kconfig.h>
 #include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
 #include <kpushbutton.h>
@@ -277,12 +278,11 @@ KSwitchLanguageDialogPrivate::KSwitchLanguageDialogPrivate(
 
 void KSwitchLanguageDialogPrivate::fillApplicationLanguages(KLanguageButton *button)
 {
-    KLocale *locale = KLocale::global();
-    const QStringList allLanguages = locale->allLanguagesList();
+    const QStringList allLanguages = KLocale::global()->allLanguagesList();
     for ( int i = 0, count = allLanguages.count(); i < count; ++i )
     {
         QString languageCode = allLanguages[i];
-        if (locale->isApplicationTranslatedInto(languageCode))
+        if (KLocalizedString::isApplicationTranslatedInto(languageCode))
         {
             button->insertLanguage(languageCode);
         }
@@ -307,10 +307,9 @@ QStringList KSwitchLanguageDialogPrivate::applicationLanguageList()
       languagesList = KLocale::global()->languageList();
     }
 
-    KLocale *locale = KLocale::global();
     for (int i = 0; i < languagesList.count();)
     {
-      if (!locale->isApplicationTranslatedInto(languagesList[i]))
+      if (!KLocalizedString::isApplicationTranslatedInto(languagesList[i]))
         languagesList.removeAt(i);
       else
         ++i;

@@ -789,8 +789,8 @@ void KCalendarTest::testHebrewStrings()
     QString oldLocale = setlocale(LC_ALL, "he.utf8");
     KLocale *locale = new KLocale(*KLocale::global());
     locale->setLanguage(QStringList() << "he");
-    locale->insertCatalog("kdecalendarsystems");
     locale->setDateFormat("%d %B %Y");
+    KLocalizedString::insertCatalog("kdecalendarsystems");
     const KCalendarSystem *calendar = KCalendarSystem::create(KLocale::HebrewCalendar, locale);
     if (locale->language() == "he") {
         QDate testDate;

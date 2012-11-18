@@ -1052,7 +1052,7 @@ void KLocaleTest::testDayPeriods()
                           QStringList() << "third3" << "First Third" << "T3" << "R" <<
                           QTime( 16, 0, 0 ).toString("HH:mm:ss.zzz") << QTime( 23, 59, 59, 999 ).toString("HH:mm:ss.zzz") <<
                           QString::number(4) << QString::number(12) );
-    locale = KLocale("klocaletest", "en_us", "us", testConfig);
+    locale = KLocale("en_us", "us", testConfig);
     QCOMPARE( locale.d->dayPeriodForTime( QTime( 1, 0, 0 ) ).periodName( KLocale::ShortName ), QString( "T1" ) );
     QCOMPARE( locale.d->dayPeriodForTime( QTime( 11, 0, 0 ) ).periodName( KLocale::ShortName ), QString( "T2" ) );
     QCOMPARE( locale.d->dayPeriodForTime( QTime( 21, 0, 0 ) ).periodName( KLocale::ShortName ), QString( "T3" ) );
@@ -1274,64 +1274,6 @@ void  KLocaleTest::weekDays()
     QCOMPARE(locale.weekDayOfPray(), 3);
     locale.setWeekDayOfPray(0);
     QCOMPARE(locale.weekDayOfPray(), 0);
-}
-
-void
-KLocaleTest::removeAcceleratorMarker()
-{
-	KLocale locale(*KLocale::global());
-
-	// No accelerator marker.
-	QCOMPARE(locale.removeAcceleratorMarker(QString()),
-	         QString());
-	QCOMPARE(locale.removeAcceleratorMarker("Foo bar"),
-	         QString("Foo bar"));
-
-	// Run of the mill.
-	QCOMPARE(locale.removeAcceleratorMarker("&Foo bar"),
-	         QString("Foo bar"));
-	QCOMPARE(locale.removeAcceleratorMarker("Foo &bar"),
-	         QString("Foo bar"));
-	QCOMPARE(locale.removeAcceleratorMarker("Foo b&ar"),
-	         QString("Foo bar"));
-	// - presence of escaped ampersands
-	QCOMPARE(locale.removeAcceleratorMarker("Foo && Bar"),
-	         QString("Foo & Bar"));
-	QCOMPARE(locale.removeAcceleratorMarker("Foo && &Bar"),
-	         QString("Foo & Bar"));
-	QCOMPARE(locale.removeAcceleratorMarker("&Foo && Bar"),
-	         QString("Foo & Bar"));
-
-	// CJK-style markers.
-	QCOMPARE(locale.removeAcceleratorMarker("Foo bar (&F)"),
-	         QString("Foo bar"));
-	QCOMPARE(locale.removeAcceleratorMarker("(&F) Foo bar"),
-	         QString("Foo bar"));
-	// - interpunction after/before parenthesis still qualifies CJK marker
-	QCOMPARE(locale.removeAcceleratorMarker("Foo bar (&F):"),
-	         QString("Foo bar:"));
-	QCOMPARE(locale.removeAcceleratorMarker("Foo bar (&F)..."),
-	         QString("Foo bar..."));
-	QCOMPARE(locale.removeAcceleratorMarker("...(&F) foo bar"),
-	         QString("...foo bar"));
-	// - alphanumerics around parenthesis disqualify CJK marker
-	QCOMPARE(locale.removeAcceleratorMarker("Foo (&F) bar"),
-	         QString("Foo (F) bar"));
-	// - something removed raw ampersands, leaving dangling reduced CJK markers.
-	// Remove reduced markers only if CJK characters are found in the string.
-	QCOMPARE(locale.removeAcceleratorMarker(QString::fromUtf8("Foo bar (F)")),
-	         QString::fromUtf8("Foo bar (F)"));
-	QCOMPARE(locale.removeAcceleratorMarker(QString::fromUtf8("印刷(P)...")),
-	         QString::fromUtf8("印刷..."));
-
-	// Shady cases, where ampersand is obviously not a marker
-	// and should have been escaped, but it was not.
-	QCOMPARE(locale.removeAcceleratorMarker("&"),
-	         QString("&"));
-	QCOMPARE(locale.removeAcceleratorMarker("Foo bar &"),
-	         QString("Foo bar &"));
-	QCOMPARE(locale.removeAcceleratorMarker("Foo & Bar"),
-	         QString("Foo & Bar"));
 }
 
 void

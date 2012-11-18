@@ -19,7 +19,7 @@
 
 #include "converter.h"
 
-#include <klocale.h>
+#include <klocalizedstring.h>
 
 #include "unitcategory.h"
 #include "area.h"
@@ -63,7 +63,7 @@ public:
     QMap<int, UnitCategory *> categories;
     ConverterPrivate()
     {
-        KLocale::global()->insertCatalog("libkunitconversion");
+        KLocalizedString::insertCatalog("libkunitconversion");
 
         categories[InvalidCategory] = new Invalid;
         categories[LengthCategory] = new Length;

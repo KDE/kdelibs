@@ -37,33 +37,31 @@
 #include <QtCore/QDateTime>
 #include <QtCore/QTextCodec>
 
-#include "kcatalog_p.h"
 #include "kconfig.h"
 #include "kdatetime.h"
 #include "kcalendarsystem.h"
 #include "kdayperiod_p.h"
 #include "kcurrencycode.h"
-#include "kcatalogname_p.h"
 #include "common_helpers_p.h"
 
-KLocale::KLocale(const QString &catalog, KSharedConfig::Ptr config)
+KLocale::KLocale(KSharedConfig::Ptr config)
 #if defined Q_OS_WIN
-        : d(new KLocaleWindowsPrivate(this, catalog, config))
+        : d(new KLocaleWindowsPrivate(this, config))
 #elif defined Q_OS_MAC
-        : d(new KLocaleMacPrivate(this, catalog, config))
+        : d(new KLocaleMacPrivate(this, config))
 #else
-        : d(new KLocaleUnixPrivate(this, catalog, config))
+        : d(new KLocaleUnixPrivate(this, config))
 #endif
 {
 }
 
-KLocale::KLocale(const QString& catalog, const QString &language, const QString &country, KConfig *config)
+KLocale::KLocale(const QString &language, const QString &country, KConfig *config)
 #if defined Q_OS_WIN
-        : d(new KLocaleWindowsPrivate(this, catalog, language, country, config))
+        : d(new KLocaleWindowsPrivate(this, language, country, config))
 #elif defined Q_OS_MAC
-        : d(new KLocaleMacPrivate(this, catalog, language, country, config))
+        : d(new KLocaleMacPrivate(this, language, country, config))
 #else
-        : d(new KLocaleUnixPrivate(this, catalog, language, country, config))
+        : d(new KLocaleUnixPrivate(this, language, country, config))
 #endif
 {
 }
@@ -98,11 +96,6 @@ void KLocale::setCurrencyCode(const QString &newCurrencyCode)
     d->setCurrencyCode(newCurrencyCode);
 }
 
-bool KLocale::isApplicationTranslatedInto(const QString &lang)
-{
-    return d->isApplicationTranslatedInto(lang);
-}
-
 void KLocale::splitLocale(const QString &locale, QString &language, QString &country, QString &modifier,
                           QString &charset)
 {
@@ -132,72 +125,6 @@ KCurrencyCode *KLocale::currency() const
 QString KLocale::currencyCode() const
 {
     return d->currencyCode();
-}
-
-void KLocale::insertCatalog(const QString &catalog)
-{
-    d->insertCatalog(catalog);
-}
-
-void KLocale::removeCatalog(const QString &catalog)
-{
-    d->removeCatalog(catalog);
-}
-
-void KLocale::setActiveCatalog(const QString &catalog)
-{
-    d->setActiveCatalog(catalog);
-}
-
-void KLocale::translateRawFrom(const char *catname, const char *ctxt, const char *singular, const char *plural,
-                               unsigned long n, QString *lang, QString *trans) const
-{
-    d->translateRawFrom(catname, ctxt, singular, plural, n, lang, trans);
-}
-
-//Convenience versions
-void KLocale::translateRawFrom(const char *catname, const char *msg, QString *lang, QString *trans) const
-{
-    d->translateRawFrom(catname, 0, msg, 0, 0, lang, trans);
-}
-
-void KLocale::translateRaw(const char *msg, QString *lang, QString *trans) const
-{
-    d->translateRawFrom(0, 0, msg, 0, 0, lang, trans);
-}
-
-void KLocale::translateRawFrom(const char *catname, const char *ctxt, const char *msg, QString *lang,
-                               QString *trans) const
-{
-    d->translateRawFrom(catname, ctxt, msg, 0, 0, lang, trans);
-}
-
-void KLocale::translateRaw(const char *ctxt, const char *msg, QString *lang, QString *trans) const
-{
-    d->translateRawFrom(0, ctxt, msg, 0, 0, lang, trans);
-}
-
-void KLocale::translateRawFrom(const char *catname, const char *singular, const char *plural,
-                               unsigned long n, QString *lang, QString *trans) const
-{
-    d->translateRawFrom(catname, 0, singular, plural, n, lang, trans);
-}
-
-void KLocale::translateRaw(const char *singular, const char *plural, unsigned long n, QString *lang,
-                           QString *trans) const
-{
-    d->translateRawFrom(0, 0, singular, plural, n, lang, trans);
-}
-
-void KLocale::translateRaw(const char *ctxt, const char *singular, const char *plural,
-                           unsigned long n, QString *lang, QString *trans) const
-{
-    d->translateRawFrom(0, ctxt, singular, plural, n, lang, trans);
-}
-
-QString KLocale::translateQt(const char *context, const char *sourceText, const char *comment) const
-{
-    return d->translateQt(context, sourceText, comment);
 }
 
 QList<KLocale::DigitSet> KLocale::allDigitSetsList() const
@@ -371,16 +298,11 @@ QString KLocale::formatDate(const QDate &date, KLocale::DateFormat format) const
     return d->formatDate(date, format);
 }
 
-void KLocale::setMainCatalog(const QString &catalog)
-{
-    KLocalePrivate::setMainCatalog(catalog);
-}
-
 class KGlobalLocaleStatic
 {
 public:
     KGlobalLocaleStatic()
-        : locale(KLocalePrivate::mainCatalog()),
+        : locale(),
           mutex(QMutex::Recursive),
           inited(false)
     {
@@ -669,11 +591,6 @@ QString KLocale::defaultCurrencyCode()
     return KLocalePrivate::defaultCurrencyCode();
 }
 
-bool KLocale::useTranscript() const
-{
-    return d->useTranscript();
-}
-
 const QByteArray KLocale::encoding() const
 {
     return d->encoding();
@@ -776,21 +693,6 @@ KLocale & KLocale::operator=(const KLocale & rhs)
     *d = *rhs.d;
     d->q = this;
     return *this;
-}
-
-void KLocale::copyCatalogsTo(KLocale *locale)
-{
-    d->copyCatalogsTo(locale);
-}
-
-QString KLocale::localizedFilePath(const QString &filePath) const
-{
-    return d->localizedFilePath(filePath);
-}
-
-QString KLocale::removeAcceleratorMarker(const QString &label) const
-{
-    return d->removeAcceleratorMarker(label);
 }
 
 void KLocale::setDigitSet(KLocale::DigitSet digitSet)

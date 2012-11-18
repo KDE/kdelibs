@@ -27,7 +27,6 @@
 
 #include <libintl.h>
 
-#include "klocale.h"
 #include "klocalizedstring.h"
 #include "kconfiggroup.h"
 
@@ -36,16 +35,6 @@
 
 void KLocalizedStringTest::initTestCase ()
 {
-    // Check that setting the component name worked
-    QCOMPARE(KGlobal::mainComponent().componentName(), QString::fromLatin1("kdelibs4"));
-
-#if 0 // see "TEMP_KF5_REENABLE" in newComponentData
-    // Check that newComponentData did call KLocale::setMainCatalog.
-    QCOMPARE(KLocale::mainCatalog(), QString::fromLatin1("kdelibs4"));
-#else
-    KLocale::setMainCatalog("kdelibs4");
-#endif
-
     const QString kdelibs_fr = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("locale/") + "fr/LC_MESSAGES/kdelibs4.mo");
     m_hasFrench = !kdelibs_fr.isEmpty();
     if (m_hasFrench) {
@@ -56,16 +45,19 @@ void KLocalizedStringTest::initTestCase ()
         }
     }
 
+    KLocalizedString::setApplicationCatalog("kdelibs4");
+    if (m_hasFrench) {
+        QStringList languages;
+        languages.append("fr");
+        KLocalizedString::setLanguages(languages);
+    }
+
+    #if 0 // until locale system is ready
     if (m_hasFrench)
         KLocale::global()->setLanguage(QStringList() << "fr" << "en_US");
     KLocale::global()->setThousandsSeparator(QLatin1String(","));
     KLocale::global()->setDecimalSymbol(QLatin1String("."));
-    QCOMPARE(KLocale::global()->isApplicationTranslatedInto("en_US"), true);
-
-    if (m_hasFrench) {
-        QCOMPARE(KLocale::global()->isApplicationTranslatedInto("fr"), true);
-    }
-
+    #endif
 }
 
 void KLocalizedStringTest::correctSubs ()
@@ -218,6 +210,62 @@ void KLocalizedStringTest::wrongSubs ()
     #endif
 }
 
+void
+KLocalizedStringTest::removeAcceleratorMarker ()
+{
+    // No accelerator marker.
+    QCOMPARE(KLocalizedString::removeAcceleratorMarker(QString()),
+             QString());
+    QCOMPARE(KLocalizedString::removeAcceleratorMarker("Foo bar"),
+             QString("Foo bar"));
+
+    // Run of the mill.
+    QCOMPARE(KLocalizedString::removeAcceleratorMarker("&Foo bar"),
+             QString("Foo bar"));
+    QCOMPARE(KLocalizedString::removeAcceleratorMarker("Foo &bar"),
+             QString("Foo bar"));
+    QCOMPARE(KLocalizedString::removeAcceleratorMarker("Foo b&ar"),
+             QString("Foo bar"));
+    // - presence of escaped ampersands
+    QCOMPARE(KLocalizedString::removeAcceleratorMarker("Foo && Bar"),
+             QString("Foo & Bar"));
+    QCOMPARE(KLocalizedString::removeAcceleratorMarker("Foo && &Bar"),
+             QString("Foo & Bar"));
+    QCOMPARE(KLocalizedString::removeAcceleratorMarker("&Foo && Bar"),
+             QString("Foo & Bar"));
+
+    // CJK-style markers.
+    QCOMPARE(KLocalizedString::removeAcceleratorMarker("Foo bar (&F)"),
+             QString("Foo bar"));
+    QCOMPARE(KLocalizedString::removeAcceleratorMarker("(&F) Foo bar"),
+             QString("Foo bar"));
+    // - interpunction after/before parenthesis still qualifies CJK marker
+    QCOMPARE(KLocalizedString::removeAcceleratorMarker("Foo bar (&F):"),
+             QString("Foo bar:"));
+    QCOMPARE(KLocalizedString::removeAcceleratorMarker("Foo bar (&F)..."),
+             QString("Foo bar..."));
+    QCOMPARE(KLocalizedString::removeAcceleratorMarker("...(&F) foo bar"),
+             QString("...foo bar"));
+    // - alphanumerics around parenthesis disqualify CJK marker
+    QCOMPARE(KLocalizedString::removeAcceleratorMarker("Foo (&F) bar"),
+             QString("Foo (F) bar"));
+    // - something removed raw ampersands, leaving dangling reduced CJK markers.
+    // Remove reduced markers only if CJK characters are found in the string.
+    QCOMPARE(KLocalizedString::removeAcceleratorMarker(QString::fromUtf8("Foo bar (F)")),
+             QString::fromUtf8("Foo bar (F)"));
+    QCOMPARE(KLocalizedString::removeAcceleratorMarker(QString::fromUtf8("印刷(P)...")),
+             QString::fromUtf8("印刷..."));
+
+    // Shady cases, where ampersand is obviously not a marker
+    // and should have been escaped, but it was not.
+    QCOMPARE(KLocalizedString::removeAcceleratorMarker("&"),
+             QString("&"));
+    QCOMPARE(KLocalizedString::removeAcceleratorMarker("Foo bar &"),
+             QString("Foo bar &"));
+    QCOMPARE(KLocalizedString::removeAcceleratorMarker("Foo & Bar"),
+             QString("Foo & Bar"));
+}
+
 void KLocalizedStringTest::miscMethods ()
 {
     KLocalizedString k;
@@ -250,19 +298,25 @@ void KLocalizedStringTest::translateToFrench()
 
 void KLocalizedStringTest::translateQt()
 {
-    QString result = KLocale::global()->translateQt("QPrintPreviewDialog", "Landscape", 0);
+    KLocalizedString::insertCatalog("kdeqt");
+    QString result = KLocalizedString::translateQt("QPrintPreviewDialog", "Landscape", 0);
     // When we use the default language, translateQt returns an empty string.
     QString expected = m_hasFrench ? QString("Paysage") : QString();
     QCOMPARE(result, expected);
+    #if 0 // KLocalizedString no longer does anything with QTranslator, this needed?
     result = QCoreApplication::translate("QPrintPreviewDialog", "Landscape");
     QString expected2 = m_hasFrench ? QString("Paysage") : QString("Landscape");
     QCOMPARE(result, expected2);
+    #endif
 
+    #if 0 // translateRaw no longer public, this needed?
     // So let's use translateRaw instead for the threaded test
     QString lang;
     KLocale::global()->translateRaw("Landscape", &lang, &result);
-    QCOMPARE(lang, m_hasFrench ? QString("fr") : QString("en_US")); // it finds it in kdeqt.po
+    QCOMPARE(lang, m_hasFrench ? QString("fr") : QString("en_US"));
     QCOMPARE(result, m_hasFrench ? QString("Paysage") : QString("Landscape"));
+    #endif
+    KLocalizedString::removeCatalog("kdeqt");
 }
 
 #include <QThreadPool>
@@ -280,7 +334,7 @@ void KLocalizedStringTest::testThreads()
     sync.addFuture(QtConcurrent::run(this, &KLocalizedStringTest::translateQt));
     sync.addFuture(QtConcurrent::run(this, &KLocalizedStringTest::translateQt));
     sync.addFuture(QtConcurrent::run(this, &KLocalizedStringTest::translateToFrench));
-    KLocale::global()->removeCatalog("kdelibs4");
+    KLocalizedString::removeCatalog("kdelibs4");
     sync.waitForFinished();
     QThreadPool::globalInstance()->setMaxThreadCount(1); // delete those threads
 }
