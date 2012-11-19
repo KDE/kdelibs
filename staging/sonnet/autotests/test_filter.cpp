@@ -39,13 +39,13 @@ struct Hit {
 
 void SonnetFilterTest::testFilter()
 {
-    QString buffer( "This is     a sample buffer.Please test me .     He's don't Le'Clerk." );
+    QString buffer( "This is     a sample thing. Please test me .     He's don't Le'Clerk." );
     QList<Hit> hits;
     hits.append( Hit( "This", 0 ) );
     hits.append( Hit( "is", 5 ) );
     hits.append( Hit( "a", 12 ) );
     hits.append( Hit( "sample", 14 ) );
-    hits.append( Hit( "buffer", 21 ) );
+    hits.append( Hit( "thing", 21 ) );
     hits.append( Hit( "Please", 28 ) );
     hits.append( Hit( "test", 35 ) );
     hits.append( Hit( "me", 40 ) );
@@ -72,7 +72,7 @@ void SonnetFilterTest::testFilter()
 
 void SonnetFilterTest::testWordAt()
 {
-    QString buffer( "This is     a sample buffer.Please test me .     He's don't Le'Clerk." );
+    QString buffer( "This is     a sample thing. Please test me .     He's don't Le'Clerk." );
     QList<Hit> hits;
     hits.append( Hit( "This", 0 ) );
     hits.append( Hit( "is", 5 ) );
