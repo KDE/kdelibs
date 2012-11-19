@@ -69,6 +69,7 @@ private Q_SLOTS:
     void stat();
     void mostLocalUrl();
     void mimeType();
+    void mimeTypeError();
     //void newApiPerformance();
     void calculateRemainingSeconds();
     void moveFileDestAlreadyExists();
