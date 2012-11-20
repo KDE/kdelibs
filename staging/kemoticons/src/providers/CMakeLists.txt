@@ -1,3 +1,17 @@
+
+include_directories( 
+    ${CMAKE_SOURCE_DIR}/libinqt5/src/libqtmimetypes/src/mimetypes
+    ${CMAKE_BINARY_DIR}/staging/kservice/src # kservice_export.h
+    ${CMAKE_SOURCE_DIR}/staging/kservice/src/services # kservicetrader.h
+    ${CMAKE_SOURCE_DIR}/staging/kservice/src/plugin # kpluginfactory.h
+    ${CMAKE_SOURCE_DIR}/staging/kservice/src/sycoca # ksycocaentry.h
+    ${CMAKE_BINARY_DIR}/tier2/kconfig/src/core # kconfigcore_export.h
+    ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/core # ksharedconfig.h
+    ${CMAKE_BINARY_DIR}/kdecore # kdecore_export
+    ${CMAKE_SOURCE_DIR}/kdecore/io # kdebug.h
+    ${CMAKE_SOURCE_DIR}/kdecore/kernel # kstandarddirs.h
+)
+
 add_subdirectory(kde)
 add_subdirectory(xmpp)
 add_subdirectory(adium)
