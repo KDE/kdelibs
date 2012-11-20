@@ -1,7 +1,7 @@
 # Configure checks for compression/
 include(ConfigureChecks.cmake)
 configure_file(config-compression.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compression.h)
-include_directories( ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/inqt5)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inqt5)
 
 if(BZIP2_FOUND)
    include_directories(${BZIP2_INCLUDE_DIR})
