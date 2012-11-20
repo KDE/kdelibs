@@ -780,6 +780,49 @@ void SlaveBase::setHost(QString const &, quint16, QString const &, QString const
 {
 }
 
+KIO_EXPORT QString KIO::unsupportedActionErrorString(const QString &protocol, int cmd) {
+  switch (cmd) {
+    case CMD_CONNECT:
+      return i18n("Opening connections is not supported with the protocol %1." , protocol);
+    case CMD_DISCONNECT:
+      return i18n("Closing connections is not supported with the protocol %1." , protocol);
+    case CMD_STAT:
+      return i18n("Accessing files is not supported with the protocol %1.", protocol);
+    case CMD_PUT:
+      return i18n("Writing to %1 is not supported.", protocol);
+    case CMD_SPECIAL:
+      return i18n("There are no special actions available for protocol %1.", protocol);
+    case CMD_LISTDIR:
+      return i18n("Listing folders is not supported for protocol %1.", protocol);
+    case CMD_GET:
+      return i18n("Retrieving data from %1 is not supported.", protocol);
+    case CMD_MIMETYPE:
+      return i18n("Retrieving mime type information from %1 is not supported.", protocol);
+    case CMD_RENAME:
+      return i18n("Renaming or moving files within %1 is not supported.", protocol);
+    case CMD_SYMLINK:
+      return i18n("Creating symlinks is not supported with protocol %1.", protocol);
+    case CMD_COPY:
+      return i18n("Copying files within %1 is not supported.", protocol);
+    case CMD_DEL:
+      return i18n("Deleting files from %1 is not supported.", protocol);
+    case CMD_MKDIR:
+      return i18n("Creating folders is not supported with protocol %1.", protocol);
+    case CMD_CHMOD:
+      return i18n("Changing the attributes of files is not supported with protocol %1.", protocol);
+    case CMD_CHOWN:
+      return i18n("Changing the ownership of files is not supported with protocol %1.", protocol);
+    case CMD_SUBURL:
+      return i18n("Using sub-URLs with %1 is not supported.", protocol);
+    case CMD_MULTI_GET:
+      return i18n("Multiple get is not supported with protocol %1.", protocol);
+    case CMD_OPEN:
+      return i18n("Opening files is not supported with protocol %1.", protocol);
+    default:
+      return i18n("Protocol %1 does not support action %2.", protocol, cmd);
+  }/*end switch*/
+}
+
 void SlaveBase::openConnection(void)
 { error(  ERR_UNSUPPORTED_ACTION, unsupportedActionErrorString(mProtocol, CMD_CONNECT)); }
 void SlaveBase::closeConnection(void)

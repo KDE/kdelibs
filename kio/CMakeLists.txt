@@ -122,6 +122,7 @@ set(kiocore_STAT_SRCS
   kio/metadata.cpp
   kio/imagefilter.cpp
   kio/job.cpp
+  kio/job_error.cpp
   kio/jobuidelegate.cpp
   kio/joburlcache.cpp
   kio/kabstractfileitemactionplugin.cpp

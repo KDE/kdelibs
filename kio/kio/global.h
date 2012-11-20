@@ -261,56 +261,6 @@ namespace KIO
   };
 
   /**
-   * Returns a translated error message for @p errorCode using the
-   * additional error information provided by @p errorText.
-   * @param errorCode the error code
-   * @param errorText the additional error text
-   * @return the created error string
-   */
-  KIO_EXPORT QString buildErrorString(int errorCode, const QString &errorText);
-
-  /**
-   * Returns a translated html error message for @p errorCode using the
-   * additional error information provided by @p errorText , @p reqUrl
-   * (the request URL), and the ioslave @p method .
-   * @param errorCode the error code
-   * @param errorText the additional error text
-   * @param reqUrl the request URL
-   * @param method the ioslave method
-   * @return the created error string
-   */
-  KIO_EXPORT QString buildHTMLErrorString(int errorCode, const QString &errorText,
-                                          const QUrl *reqUrl = 0, int method = -1 );
-
-  /**
-   * Returns translated error details for @p errorCode using the
-   * additional error information provided by @p errorText , @p reqUrl
-   * (the request URL), and the ioslave @p method .
-   *
-   * @param errorCode the error code
-   * @param errorText the additional error text
-   * @param reqUrl the request URL
-   * @param method the ioslave method
-   * @return the following data:
-   * @li QString errorName - the name of the error
-   * @li QString techName - if not null, the more technical name of the error
-   * @li QString description - a description of the error
-   * @li QStringList causes - a list of possible causes of the error
-   * @li QStringList solutions - a liso of solutions for the error
-   */
-  KIO_EXPORT QByteArray rawErrorDetail(int errorCode, const QString &errorText,
-                                       const QUrl *reqUrl = 0, int method = -1 );
-
-  /**
-   * Returns an appropriate error message if the given command @p cmd
-   * is an unsupported action (ERR_UNSUPPORTED_ACTION).
-   * @param protocol name of the protocol
-   * @param cmd given command
-   * @see enum Command
-   */
-  KIO_EXPORT QString unsupportedActionErrorString(const QString &protocol, int cmd);
-
-  /**
    * Specifies how to use the cache.
    * @see parseCacheControl()
    * @see getCacheControlString()

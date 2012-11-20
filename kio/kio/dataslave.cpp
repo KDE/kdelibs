@@ -20,6 +20,7 @@
 
 #include "dataslave.h"
 #include "dataprotocol.h"
+#include "slavebase.h"
 
 #include <klocalizedstring.h>
 #include <kdebug.h>

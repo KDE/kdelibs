@@ -907,6 +907,14 @@ private:
     friend class SlaveBasePrivate;
 };
 
+    /**
+     * Returns an appropriate error message if the given command @p cmd
+     * is an unsupported action (ERR_UNSUPPORTED_ACTION).
+     * @param protocol name of the protocol
+     * @param cmd given command
+     * @see enum Command
+     */
+    KIO_EXPORT QString unsupportedActionErrorString(const QString &protocol, int cmd);
 }
 
 #endif
