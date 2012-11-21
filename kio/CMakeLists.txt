@@ -119,7 +119,6 @@ set(kiocore_STAT_SRCS
   kio/forwardingslavebase.cpp
   kio/global.cpp
   kio/pixmaploader.cpp
-  kio/metadata.cpp
   kio/imagefilter.cpp
   kio/job.cpp
   kio/job_error.cpp
@@ -396,7 +395,6 @@ install(  FILES
   kio/sessiondata.h
   kio/global.h
   kio/pixmaploader.h
-  kio/metadata.h
   kio/netaccess.h
   kio/job.h
   kio/scheduler.h

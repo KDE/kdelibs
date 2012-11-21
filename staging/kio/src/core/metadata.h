@@ -21,7 +21,7 @@
 #include <QMap>
 #include <QString>
 #include <QVariant>
-#include <kio/kio_export.h>
+#include "kiocore_export.h"
 
 namespace KIO
 {
@@ -29,7 +29,7 @@ namespace KIO
 /**
  * MetaData is a simple map of key/value strings.
  */
-class KIO_EXPORT MetaData : public QMap<QString, QString>
+class KIOCORE_EXPORT MetaData : public QMap<QString, QString>
 {
 public:
     /**

@@ -20,6 +20,7 @@ set(kiocore_SRCS
   klocalsocket.cpp
   socketconnectionbackend.cpp
   connection.cpp
+  metadata.cpp
   kprotocolinfo.cpp
   kprotocolinfofactory.cpp
   jobtracker.cpp
