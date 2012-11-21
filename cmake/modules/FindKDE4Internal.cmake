@@ -606,6 +606,7 @@ else (_kdeBootStrapping)
    # dependent libraries handled correctly. But to keep compatibility and not to change
    # behaviour we set all these variables anyway as seen below. Alex
    include(${kde_cmake_module_dir}/KDELibs4LibraryTargets.cmake)
+   include(${KDE4_LIB_INSTALL_DIR}/cmake/threadweaver/threadweaverTargets.cmake)
 
    # This one is for compatibility only:
    set(KDE4_THREADWEAVER_LIBRARIES ${KDE4_TARGET_PREFIX}threadweaver )

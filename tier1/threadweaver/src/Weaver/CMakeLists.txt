@@ -31,7 +31,7 @@ set_target_properties(threadweaver PROPERTIES
     VERSION ${THREADWEAVER_VERSION_STRING}
     SOVERSION ${THREADWEAVER_SOVERSION}
 )
-install(TARGETS threadweaver EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS threadweaver EXPORT threadweaverTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     WeaverInterface.h
