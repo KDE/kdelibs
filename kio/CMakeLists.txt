@@ -407,8 +407,6 @@ install(  FILES
   kio/forwardingslavebase.h
   kio/chmodjob.h
   kio/authinfo.h
-  kio/ioslave_defaults.h
-  kio/http_slave_defaults.h
   kio/previewjob.h
   kio/thumbcreator.h
   kio/thumbsequencecreator.h

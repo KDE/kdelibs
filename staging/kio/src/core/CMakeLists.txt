@@ -59,8 +59,14 @@ set_target_properties(kiocore PROPERTIES VERSION ${ECM_VERSION_STRING}
 install(TARGETS kiocore EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install( FILES
-  kprotocolinfo.h
+  http_slave_defaults.h
+  global.h
+  ioslave_defaults.h
   jobtracker.h
+  klocalsocket.h
+  kprotocolinfo.h
+  metadata.h
+  udsentry.h
 
    ${CMAKE_CURRENT_BINARY_DIR}/kiocore_export.h
    DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
