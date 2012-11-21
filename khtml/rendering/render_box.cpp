@@ -1777,9 +1777,9 @@ void RenderBox::calcAbsoluteHorizontalValues(Length width, const RenderObject* c
 
     int leftValue = 0;
 
-    bool widthIsAuto = width.isAuto();
-    bool leftIsAuto = left.isAuto();
-    bool rightIsAuto = right.isAuto();
+    const bool widthIsAuto = width.isAuto();
+    const bool leftIsAuto = left.isAuto();
+    const bool rightIsAuto = right.isAuto();
 
     if (!leftIsAuto && !widthIsAuto && !rightIsAuto) {
         /*-----------------------------------------------------------------------*\
@@ -1920,7 +1920,8 @@ void RenderBox::calcAbsoluteHorizontalValues(Length width, const RenderObject* c
     }
 
     // Use computed values to calculate the horizontal position.
-    xPos = leftValue + marginLeftValue + containerBlock->borderLeft();
+    int calculatedHorizontalPosition = leftValue + marginLeftValue + containerBlock->borderLeft();
+    xPos = qBound((int)SHRT_MIN, calculatedHorizontalPosition, (int)SHRT_MAX);
 }
 
 void RenderBox::calcAbsoluteVertical()
@@ -2318,7 +2319,8 @@ void RenderBox::calcAbsoluteHorizontalReplaced()
         leftValue = containerWidth - (totalWidth - leftValue);
 
     // Use computed values to calculate the horizontal position.
-    m_x = leftValue + m_marginLeft + containerBlock->borderLeft();
+    int calculatedHorizontalPosition = leftValue + m_marginLeft + containerBlock->borderLeft();
+    m_x = qBound((int)SHRT_MIN, calculatedHorizontalPosition, (int)SHRT_MAX);
 }
 
 void RenderBox::calcAbsoluteVerticalReplaced()

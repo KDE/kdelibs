@@ -22,6 +22,7 @@
 #include "global.h"
 #include "connection.h"
 #include <QtCore/QTimer>
+#include <QtCore/QPointer>
 #include <QtNetwork/QHostInfo>
 
 static const unsigned int max_nums = 8;
@@ -57,7 +58,7 @@ public:
     struct timeval start_time;
     uint nums;
     bool slave_calcs_speed;
-    QWidget* parentWindow;
+    QPointer<QWidget> parentWindow;
 
     int messageBox(int type, const QString &text, const QString &caption,
                  const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName);
