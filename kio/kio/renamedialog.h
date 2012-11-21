@@ -28,6 +28,7 @@
 #include <sys/types.h>
 
 #include <kio/global.h>
+#include "kio_export.h"
 
 class QScrollArea;
 class QLabel;

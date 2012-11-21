@@ -28,24 +28,24 @@
 // a hidden kconfig option and getting the code from #57240 into the same
 // method, so that all KDE apps use the same unit, instead of letting each app decide.
 
-KIO_EXPORT QString KIO::convertSize( KIO::filesize_t size )
+KIOCORE_EXPORT QString KIO::convertSize( KIO::filesize_t size )
 {
     return KLocale::global()->formatByteSize(size);
 }
 
-KIO_EXPORT QString KIO::convertSizeFromKiB( KIO::filesize_t kibSize )
+KIOCORE_EXPORT QString KIO::convertSizeFromKiB( KIO::filesize_t kibSize )
 {
     return KLocale::global()->formatByteSize(kibSize * 1024);
 }
 
-KIO_EXPORT QString KIO::number( KIO::filesize_t size )
+KIOCORE_EXPORT QString KIO::number( KIO::filesize_t size )
 {
     char charbuf[256];
     sprintf(charbuf, "%lld", size);
     return QLatin1String(charbuf);
 }
 
-KIO_EXPORT unsigned int KIO::calculateRemainingSeconds( KIO::filesize_t totalSize,
+KIOCORE_EXPORT unsigned int KIO::calculateRemainingSeconds( KIO::filesize_t totalSize,
                                                         KIO::filesize_t processedSize, KIO::filesize_t speed )
 {
   if ( (speed != 0) && (totalSize != 0) )
@@ -54,7 +54,7 @@ KIO_EXPORT unsigned int KIO::calculateRemainingSeconds( KIO::filesize_t totalSiz
     return 0;
 }
 
-KIO_EXPORT QString KIO::convertSeconds( unsigned int seconds )
+KIOCORE_EXPORT QString KIO::convertSeconds( unsigned int seconds )
 {
   unsigned int days  = seconds / 86400;
   unsigned int hours = (seconds - (days * 86400)) / 3600;
@@ -70,7 +70,7 @@ KIO_EXPORT QString KIO::convertSeconds( unsigned int seconds )
 }
 
 #ifndef KDE_NO_DEPRECATED
-KIO_EXPORT QTime KIO::calculateRemaining( KIO::filesize_t totalSize, KIO::filesize_t processedSize, KIO::filesize_t speed )
+KIOCORE_EXPORT QTime KIO::calculateRemaining( KIO::filesize_t totalSize, KIO::filesize_t processedSize, KIO::filesize_t speed )
 {
   QTime remainingTime;
 
@@ -94,7 +94,7 @@ KIO_EXPORT QTime KIO::calculateRemaining( KIO::filesize_t totalSize, KIO::filesi
 }
 #endif
 
-KIO_EXPORT QString KIO::itemsSummaryString(uint items, uint files, uint dirs, KIO::filesize_t size, bool showSize)
+KIOCORE_EXPORT QString KIO::itemsSummaryString(uint items, uint files, uint dirs, KIO::filesize_t size, bool showSize)
 {
     if ( files == 0 && dirs == 0 && items == 0 ) {
         return i18np( "%1 Item", "%1 Items", 0 );
@@ -121,14 +121,14 @@ KIO_EXPORT QString KIO::itemsSummaryString(uint items, uint files, uint dirs, KI
     return summary;
 }
 
-KIO_EXPORT QString KIO::encodeFileName( const QString & _str )
+KIOCORE_EXPORT QString KIO::encodeFileName( const QString & _str )
 {
     QString str( _str );
     str.replace('/', QChar(0x2044)); // "Fraction slash"
     return str;
 }
 
-KIO_EXPORT QString KIO::decodeFileName( const QString & _str )
+KIOCORE_EXPORT QString KIO::decodeFileName( const QString & _str )
 {
     // Nothing to decode. "Fraction slash" is fine in filenames.
     return _str;

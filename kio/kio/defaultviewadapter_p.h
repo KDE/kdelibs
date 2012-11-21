@@ -20,7 +20,7 @@
 #ifndef DEFAULTVIEWADAPTER_H
 #define DEFAULTVIEWADAPTER_H
 
-#include <kio/global.h>
+#include "kio_export.h"
 #include "kabstractviewadapter_p.h"
 
 class QAbstractItemView;

@@ -19,7 +19,7 @@
 #ifndef KIO_GLOBAL_H
 #define KIO_GLOBAL_H
 
-#include <kio/kio_export.h>
+#include "kiocore_export.h"
 
 #include <QtCore/QString>
 
@@ -50,7 +50,7 @@ namespace KIO
    * @param  size  size in bytes
    * @return converted size as a string - e.g. 123.4 KiB , 12.0 MiB
    */
-  KIO_EXPORT QString convertSize( KIO::filesize_t size );
+  KIOCORE_EXPORT QString convertSize( KIO::filesize_t size );
 
   /**
    * Converts a size to a string representation
@@ -59,7 +59,7 @@ namespace KIO
    * @param size size in bytes
    * @return  converted size as a string - e.g. 123456789
    */
-  KIO_EXPORT QString number( KIO::filesize_t size );
+  KIOCORE_EXPORT QString number( KIO::filesize_t size );
 
   /**
    * Converts size from kibi-bytes (2^10) to the string representation.
@@ -67,7 +67,7 @@ namespace KIO
    * @param  kibSize  size in kibi-bytes (2^10)
    * @return converted size as a string - e.g. 123.4 KiB , 12.0 MiB
    */
-   KIO_EXPORT QString convertSizeFromKiB( KIO::filesize_t kibSize );
+   KIOCORE_EXPORT QString convertSizeFromKiB( KIO::filesize_t kibSize );
 
   /**
    * Calculates remaining time in seconds from total size, processed size and speed.
@@ -77,7 +77,7 @@ namespace KIO
    * @param  speed          speed in bytes per second
    * @return calculated remaining time in seconds
    */
-  KIO_EXPORT unsigned int calculateRemainingSeconds( KIO::filesize_t totalSize,
+  KIOCORE_EXPORT unsigned int calculateRemainingSeconds( KIO::filesize_t totalSize,
                                                      KIO::filesize_t processedSize, KIO::filesize_t speed );
 
   /**
@@ -86,7 +86,7 @@ namespace KIO
    * @param  seconds number of seconds to convert
    * @return string representation in a locale depending format
    */
-  KIO_EXPORT QString convertSeconds( unsigned int seconds );
+  KIOCORE_EXPORT QString convertSeconds( unsigned int seconds );
 
   /**
    * Calculates remaining time from total size, processed size and speed.
@@ -98,7 +98,7 @@ namespace KIO
    * @return calculated remaining time
    */
 #ifndef KDE_NO_DEPRECATED
-  KIO_DEPRECATED_EXPORT QTime calculateRemaining( KIO::filesize_t totalSize, KIO::filesize_t processedSize, KIO::filesize_t speed );
+  KIOCORE_DEPRECATED_EXPORT QTime calculateRemaining( KIO::filesize_t totalSize, KIO::filesize_t processedSize, KIO::filesize_t speed );
 #endif
 
   /**
@@ -110,7 +110,7 @@ namespace KIO
    * @param showSize whether to show the size in the result
    * @return the summary string
    */
-  KIO_EXPORT QString itemsSummaryString(uint items, uint files, uint dirs, KIO::filesize_t size, bool showSize);
+  KIOCORE_EXPORT QString itemsSummaryString(uint items, uint files, uint dirs, KIO::filesize_t size, bool showSize);
 
   /**
    * Encodes (from the text displayed to the real filename)
@@ -119,7 +119,7 @@ namespace KIO
    * @param str the file name to encode
    * @return the encoded file name
    */
-  KIO_EXPORT QString encodeFileName( const QString & str );
+  KIOCORE_EXPORT QString encodeFileName( const QString & str );
   /**
    * Decodes (from the filename to the text displayed)
    * This doesn't do anything anymore, it used to do the opposite of encodeFileName
@@ -127,7 +127,7 @@ namespace KIO
    * @param str the file name to decode
    * @return the decoded file name
    */
-  KIO_EXPORT QString decodeFileName( const QString & str );
+  KIOCORE_EXPORT QString decodeFileName( const QString & str );
 
   /**
    * @internal
@@ -281,7 +281,7 @@ namespace KIO
    * @return the cache control value
    * @see getCacheControlString()
    */
-  KIO_EXPORT KIO::CacheControl parseCacheControl(const QString &cacheControl);
+  KIOCORE_EXPORT KIO::CacheControl parseCacheControl(const QString &cacheControl);
 
   /**
    * Returns a string representation of the given cache control method.
@@ -290,7 +290,7 @@ namespace KIO
    * @return the string representation
    * @see parseCacheControl()
    */
-  KIO_EXPORT QString getCacheControlString(KIO::CacheControl cacheControl);
+  KIOCORE_EXPORT QString getCacheControlString(KIO::CacheControl cacheControl);
 
   /**
    * Return the "favicon" (see http://www.favicon.com) for the given @p url,
@@ -303,7 +303,7 @@ namespace KIO
    *
    * @since 5.0
    */
-  KIO_EXPORT QString favIconForUrl(const QUrl& url);
+  KIOCORE_EXPORT QString favIconForUrl(const QUrl& url);
 
   /**
    * Return the icon name for a URL.
@@ -312,7 +312,7 @@ namespace KIO
    *
    * @since 5.0
    */
-  KIO_EXPORT QString iconNameForUrl(const QUrl& url);
+  KIOCORE_EXPORT QString iconNameForUrl(const QUrl& url);
 
 }
 #endif

@@ -35,7 +35,7 @@
 #ifndef KIO_IMAGEFILTER_P_H
 #define KIO_IMAGEFILTER_P_H
 
-#include <kio/global.h>
+#include "kio_export.h"
 
 class QImage;
 class QColor;

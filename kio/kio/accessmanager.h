@@ -25,6 +25,7 @@
 #define KIO_ACCESSMANAGER_H
 
 #include <kio/global.h>
+#include "kio_export.h"
 #include <qwindowdefs.h> // WId
 
 #include <QtNetwork/QNetworkAccessManager>

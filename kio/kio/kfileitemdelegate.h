@@ -24,7 +24,7 @@
 
 #include <QAbstractItemDelegate>
 #include <QTextOption>
-#include <kio/global.h>
+#include "kio_export.h"
 
 
 class QAbstractItemModel;

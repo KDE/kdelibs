@@ -24,6 +24,7 @@
 #include <QtCore/QStringList>
 
 #include <kio/global.h> // KIO::CacheControl
+#include "kio_export.h"
 #include "kprotocolinfo.h"
 
 class KSharedConfig;

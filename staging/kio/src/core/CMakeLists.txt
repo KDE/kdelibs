@@ -20,6 +20,7 @@ set(kiocore_SRCS
   klocalsocket.cpp
   socketconnectionbackend.cpp
   connection.cpp
+  global.cpp
   metadata.cpp
   kprotocolinfo.cpp
   kprotocolinfofactory.cpp
@@ -47,6 +48,7 @@ target_link_libraries(kiocore
  ${QT_QTCORE_LIBRARY}
  ${QT_QTNETWORK_LIBRARY}
  ${QT_QTDBUS_LIBRARY}
+ ${QtMimeTypes_LIBRARY}
 )
 
 set_target_properties(kiocore PROPERTIES VERSION ${ECM_VERSION_STRING}
