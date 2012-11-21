@@ -21,7 +21,6 @@
 
 #include "udsentry.h"
 
-#include <kdebug.h>
 #include <sys/stat.h> // S_ISDIR
 
 #include <QtCore/QString>

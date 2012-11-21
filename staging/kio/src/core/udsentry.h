@@ -26,7 +26,7 @@
 #include <QtCore/QList>
 #include <QtCore/QSharedData>
 
-#include <kio/kio_export.h>
+#include "kiocore_export.h"
 
 namespace KIO
 {
@@ -55,7 +55,7 @@ namespace KIO
      *      ...
      * \endcode
      */
-    class KIO_EXPORT UDSEntry
+    class KIOCORE_EXPORT UDSEntry
     {
     public:
 
@@ -294,7 +294,7 @@ namespace KIO
     typedef QList<UDSEntry> UDSEntryList;
 } // end namespace
 
-KIO_EXPORT QDataStream & operator<< ( QDataStream & s, const KIO::UDSEntry & a );
-KIO_EXPORT QDataStream & operator>> ( QDataStream & s, KIO::UDSEntry & a );
+KIOCORE_EXPORT QDataStream & operator<< ( QDataStream & s, const KIO::UDSEntry & a );
+KIOCORE_EXPORT QDataStream & operator>> ( QDataStream & s, KIO::UDSEntry & a );
 
 #endif /*UDSENTRY_H*/

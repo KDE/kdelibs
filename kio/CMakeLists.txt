@@ -173,7 +173,6 @@ set(kiocore_STAT_SRCS
   kio/tcpslavebase.cpp
   kio/thumbcreator.cpp
   kio/thumbsequencecreator.cpp
-  kio/udsentry.cpp
   kio/hostinfo.cpp
   kio/kpasswdserver.cpp
   kio/kpasswdserverloop.cpp
@@ -419,7 +418,6 @@ install(  FILES
   kio/renamedialog.h
   kio/renamedialogplugin.h
   kio/skipdialog.h
-  kio/udsentry.h
   kssl/sslui.h
   ${CMAKE_CURRENT_BINARY_DIR}/kio_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
