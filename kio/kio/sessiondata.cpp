@@ -18,7 +18,7 @@
    Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
-#include "sessiondata.h"
+#include "sessiondata_p.h"
 
 #include <QtCore/QList>
 #include <QtCore/QTextCodec>

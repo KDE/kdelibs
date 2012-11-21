@@ -21,7 +21,7 @@
 #include "scheduler.h"
 #include "scheduler_p.h"
 
-#include "sessiondata.h"
+#include "sessiondata_p.h"
 #include "slaveconfig.h"
 #include "authinfo.h"
 #include "slave.h"

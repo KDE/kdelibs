@@ -391,7 +391,6 @@ install(  FILES
   kio/slaveinterface.h
   kio/slave.h
   kio/slaveconfig.h
-  kio/sessiondata.h
   kio/pixmaploader.h
   kio/netaccess.h
   kio/job.h

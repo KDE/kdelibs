@@ -27,12 +27,10 @@
 
 namespace KIO  {
 
-// KDE5 TODO: remove the KIO_EXPORT and rename to _p.h, this is really internal only
-
 /**
  * @internal
  */
-class KIO_EXPORT SessionData : public QObject
+class SessionData : public QObject
 {
     Q_OBJECT
 
@@ -40,18 +38,11 @@ public:
     SessionData();
     ~SessionData();
 
-    virtual void configDataFor( KIO::MetaData &configData, const QString &proto,
-                                const QString &host );
-    virtual void reset();
-
-//    struct AuthData;
+    void configDataFor( KIO::MetaData &configData, const QString &proto, const QString &host );
+    void reset();
 
 private:
-    class AuthDataList;
-    friend class AuthDataList;
-//    AuthDataList* authData;
-
-private:
+    // TODO: fold private class back into this one, it's internal anyway
     class SessionDataPrivate;
     SessionDataPrivate* const d;
 };
