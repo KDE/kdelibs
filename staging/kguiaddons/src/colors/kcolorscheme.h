@@ -20,7 +20,7 @@
 #ifndef KCOLORSCHEME_H
 #define KCOLORSCHEME_H
 
-#include <kdeguiaddons_export.h>
+#include <kguiaddons_export.h>
 #include <ksharedconfig.h>
 
 #include <QtCore/QExplicitlySharedDataPointer>
@@ -68,7 +68,7 @@ class KColorSchemePrivate;
  * KColorScheme::BackgroundRole, KColorScheme::DecorationRole,
  * KColorScheme::ShadeRole
  */
-class KDEGUIADDONS_EXPORT KColorScheme {
+class KGUIADDONS_EXPORT KColorScheme {
 public:
 
     /**
@@ -454,7 +454,7 @@ private:
  * new state. Using KStatefulBrush will allow your application to inherit these
  * changes "for free", without even recompiling.
  */
-class KDEGUIADDONS_EXPORT KStatefulBrush
+class KGUIADDONS_EXPORT KStatefulBrush
 {
 public:
     /**

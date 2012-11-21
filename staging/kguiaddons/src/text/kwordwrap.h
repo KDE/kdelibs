@@ -19,7 +19,7 @@
 #ifndef kwordwrap_h
 #define kwordwrap_h
 
-#include <kdeguiaddons_export.h>
+#include <kguiaddons_export.h>
 #include <qglobal.h>
 #include <qnamespace.h>
 
@@ -47,7 +47,7 @@ class QPainter;
  *
  * @author David Faure <faure@kde.org>
  */
-class KDEGUIADDONS_EXPORT KWordWrap
+class KGUIADDONS_EXPORT KWordWrap
 {
 public:
     /**

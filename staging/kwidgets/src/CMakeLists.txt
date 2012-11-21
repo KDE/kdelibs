@@ -34,7 +34,7 @@ target_link_libraries(kwidgets
   kconfigcore
   kconfiggui
   kcoreaddons
-  kdeguiaddons
+  kguiaddons
   kwidgetsaddons
   kauth
   ${kwindowsystem_LIBRARY}

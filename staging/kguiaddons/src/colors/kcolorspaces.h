@@ -28,12 +28,12 @@
 
 #include <QColor>
 
-#include <kdeguiaddons_export.h>
+#include <kguiaddons_export.h>
 
 namespace KColorSpaces
 {
 
-class KDEGUIADDONS_EXPORT KHCY
+class KGUIADDONS_EXPORT KHCY
 {
 public:
     explicit KHCY(const QColor&);

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.10.1)
 
-project(kdeguiaddons)
+project(kguiaddons)
 
 find_package(ECM 0.0.5 REQUIRED NO_MODULE)
 

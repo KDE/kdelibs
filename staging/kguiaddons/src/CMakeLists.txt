@@ -4,7 +4,7 @@ include_directories(
  ${CMAKE_BINARY_SOURCE_DIR}
 )
 
-set(kdeguiaddons_LIB_SRCS
+set(kguiaddons_LIB_SRCS
  colors/kcolorspaces.cpp
  colors/kcolorutils.cpp
  colors/kcolorscheme.cpp
@@ -13,16 +13,16 @@ set(kdeguiaddons_LIB_SRCS
  text/kwordwrap.cpp
 )
 
-add_library(kdeguiaddons ${kdeguiaddons_LIB_SRCS})
+add_library(kguiaddons ${kguiaddons_LIB_SRCS})
 
-generate_export_header(kdeguiaddons)
+generate_export_header(kguiaddons)
 
-target_link_libraries(kdeguiaddons ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY})
+target_link_libraries(kguiaddons ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY})
 
-install(TARGETS kdeguiaddons EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kguiaddons EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
- ${CMAKE_CURRENT_BINARY_DIR}/kdeguiaddons_export.h
+ ${CMAKE_CURRENT_BINARY_DIR}/kguiaddons_export.h
  colors/kcolorutils.h
  colors/kcolorscheme.h
  colors/kcolorcollection.h

@@ -34,4 +34,4 @@ class QPainter;
 class QRect;
 class QBrush;
 
-#endif // KDEUI_COLORS_KCOLORHELPERS_P_H
+#endif // KGUIADDONS_KCOLORHELPERS_P_H

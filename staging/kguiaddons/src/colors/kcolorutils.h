@@ -22,7 +22,7 @@
 #ifndef KCOLORUTILS_H
 #define KCOLORUTILS_H
 
-#include <kdeguiaddons_export.h>
+#include <kguiaddons_export.h>
 #include <QPainter>
 
 class QColor;
@@ -41,7 +41,7 @@ namespace KColorUtils {
      *
      * @see http://en.wikipedia.org/wiki/Luma_(video)
      */
-    KDEGUIADDONS_EXPORT qreal luma(const QColor&);
+    KGUIADDONS_EXPORT qreal luma(const QColor&);
 
     /**
      * Calculate the contrast ratio between two colors, according to the
@@ -55,7 +55,7 @@ namespace KColorUtils {
      *
      * @see KColorUtils::luma
      */
-    KDEGUIADDONS_EXPORT qreal contrastRatio(const QColor&, const QColor&);
+    KGUIADDONS_EXPORT qreal contrastRatio(const QColor&, const QColor&);
 
     /**
      * Adjust the luma of a color by changing its distance from white.
@@ -72,7 +72,7 @@ namespace KColorUtils {
      * component of the color; 1.0 means no change, 0.0 maximizes chroma
      * @see KColorUtils::shade
      */
-    KDEGUIADDONS_EXPORT QColor lighten(const QColor&, qreal amount = 0.5, qreal chromaInverseGain = 1.0);
+    KGUIADDONS_EXPORT QColor lighten(const QColor&, qreal amount = 0.5, qreal chromaInverseGain = 1.0);
 
     /**
      * Adjust the luma of a color by changing its distance from black.
@@ -89,7 +89,7 @@ namespace KColorUtils {
      * component of the color; 1.0 means no change, 0.0 minimizes chroma
      * @see KColorUtils::shade
      */
-    KDEGUIADDONS_EXPORT QColor darken(const QColor&, qreal amount = 0.5, qreal chromaGain = 1.0);
+    KGUIADDONS_EXPORT QColor darken(const QColor&, qreal amount = 0.5, qreal chromaGain = 1.0);
 
     /**
      * Adjust the luma and chroma components of a color. The amount is added
@@ -103,7 +103,7 @@ namespace KColorUtils {
      * 1.0 maximizes chroma
      * @see KColorUtils::luma
      */
-    KDEGUIADDONS_EXPORT QColor shade(const QColor&, qreal lumaAmount, qreal chromaAmount = 0.0);
+    KGUIADDONS_EXPORT QColor shade(const QColor&, qreal lumaAmount, qreal chromaAmount = 0.0);
 
     /**
      * Create a new color by tinting one color with another. This function is
@@ -117,7 +117,7 @@ namespace KColorUtils {
      * @param amount how strongly to tint the base; 0.0 gives @p base,
      * 1.0 gives @p color
      */
-    KDEGUIADDONS_EXPORT QColor tint(const QColor &base, const QColor &color, qreal amount = 0.3);
+    KGUIADDONS_EXPORT QColor tint(const QColor &base, const QColor &color, qreal amount = 0.3);
 
     /**
      * Blend two colors into a new color by linear combination.
@@ -130,7 +130,7 @@ namespace KColorUtils {
      * @p bias >= 1 gives @p c2. @p bias == 0.5 gives a 50% blend of @p c1
      * and @p c2.
      */
-    KDEGUIADDONS_EXPORT QColor mix(const QColor &c1, const QColor &c2,
+    KGUIADDONS_EXPORT QColor mix(const QColor &c1, const QColor &c2,
                             qreal bias = 0.5);
 
     /**
@@ -145,7 +145,7 @@ namespace KColorUtils {
      * @param paint the color to be overlayed onto the base color.
      * @param comp the CompositionMode used to do the blending.
      */
-    KDEGUIADDONS_EXPORT QColor overlayColors(const QColor &base, const QColor &paint,
+    KGUIADDONS_EXPORT QColor overlayColors(const QColor &base, const QColor &paint,
                                       QPainter::CompositionMode comp = QPainter::CompositionMode_SourceOver);
 
 }
