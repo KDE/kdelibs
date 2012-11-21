@@ -17,28 +17,12 @@
 */
 
 #include "global.h"
-#include "job.h"
 
 #include <kprotocolinfo.h>
 #include <kconfiggroup.h>
 #include <klocale.h>
 #include <qmimedatabase.h>
 #include <QtDBus/QtDBus>
-
-#include <QtCore/QByteArray>
-#include <QtCore/QDate>
-#include <qurlpathinfo.h>
-
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/uio.h>
-
-#include <assert.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <stdio.h>
 
 // If someone wants the SI-standard prefixes kB/MB/GB/TB, I would recommend
 // a hidden kconfig option and getting the code from #57240 into the same
