@@ -96,7 +96,7 @@ struct MiniCacheFileInfo {
     qint32 useCount;
 // from filesystem
     qint64 lastUsedDate;
-    qint32 sizeOnDisk;
+    qint64 sizeOnDisk;
     // we want to delete the least "useful" files and we'll have to sort a list for that...
     bool operator<(const MiniCacheFileInfo &other) const;
     void debugPrint() const
@@ -463,7 +463,7 @@ public:
         return true;
     }
 
-    int runCommand(const QByteArray &cmd)
+    qint64 runCommand(const QByteArray &cmd)
     {
         // execute the command; return number of bytes if a new file was created, zero otherwise.
         Q_ASSERT(cmd.size() == 80);
@@ -801,7 +801,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
     QFile::remove(socketFileName);
     lServer.listen(socketFileName);
     QList<QLocalSocket *> sockets;
-    int newBytesCounter = INT_MAX;  // force cleaner run on startup
+    qint64 newBytesCounter = LLONG_MAX;  // force cleaner run on startup
 
     Scoreboard scoreboard;
     CacheCleaner *cleaner = 0;
@@ -854,7 +854,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
                 delete cleaner;
                 cleaner = 0;
             }
-        } else if (newBytesCounter > g_maxCacheSize / 8) {
+        } else if (newBytesCounter > (g_maxCacheSize / 8)) {
             cacheDir.refresh();
             cleaner = new CacheCleaner(cacheDir);
             newBytesCounter = 0;
