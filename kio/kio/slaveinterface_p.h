@@ -22,12 +22,12 @@
 #include "global.h"
 #include "connection.h"
 #include <QtCore/QTimer>
+#include <QtGui/QWidget>
 #include <QtCore/QPointer>
 #include <QtNetwork/QHostInfo>
 
 static const unsigned int max_nums = 8;
 
-class QWidget;
 
 class KIO::SlaveInterfacePrivate
 {
