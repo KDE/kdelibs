@@ -1218,4 +1218,9 @@ QString KProtocolManager::protocolForArchiveMimetype( const QString& mimeType )
     return d->protocolForArchiveMimetypes.value(mimeType);
 }
 
+QString KProtocolManager::charsetFor(const QUrl& url)
+{
+    return KIO::SlaveConfig::self()->configData(url.scheme(), url.host(), QLatin1String("Charset"));
+}
+
 #undef PRIVATE_DATA
