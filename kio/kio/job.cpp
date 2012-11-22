@@ -23,18 +23,9 @@
 #include "job_p.h"
 
 #include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
 
-#include <signal.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <time.h>
-#include <unistd.h>
-extern "C" {
-#include <pwd.h>
-#include <grp.h>
-}
+
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
 
@@ -48,10 +39,7 @@ extern "C" {
 #include "jobuidelegate.h"
 #include "slave.h"
 #include "scheduler.h"
-#include "kdirwatch.h"
-#include "kprotocolinfo.h"
 #include "kprotocolmanager.h"
-#include "filejob.h"
 #include <qurlpathinfo.h>
 
 #include <kdirnotify.h>
