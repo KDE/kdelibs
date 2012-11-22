@@ -675,6 +675,13 @@ public:
    */
   static QString acceptLanguagesHeader();
 
+  /**
+   * Returns the charset to use for the specified @ref url.
+   *
+   * @since 4.10
+   */
+  static QString charsetFor(const KUrl& url);
+
 private:
   friend class KIO::SlaveConfigPrivate;
 
