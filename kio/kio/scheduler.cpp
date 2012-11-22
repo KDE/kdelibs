@@ -34,7 +34,6 @@
 #include <assert.h>
 
 #include <QtCore/QHash>
-#include <QWidget>
 #include <QtDBus/QtDBus>
 
 // Slaves may be idle for a certain time (3 minutes) before they are killed.
@@ -683,7 +682,6 @@ public:
     bool m_ignoreConfigReparse;
 
     SessionData sessionData;
-    QMap<QObject *,WId> m_windowList;
 
     void doJob(SimpleJob *job);
 #ifndef KDE_NO_DEPRECATED
@@ -701,7 +699,6 @@ public:
     void publishSlaveOnHold();
     Slave *heldSlaveForJob(KIO::SimpleJob *job);
     bool isSlaveOnHoldFor(const QUrl& url);
-    void registerWindow(QWidget *wid);
     void updateInternalMetaData(SimpleJob* job);
 
     MetaData metaDataFor(const QString &protocol, const QStringList &proxyList, const QUrl &url);
@@ -717,7 +714,6 @@ public:
 
     void slotSlaveConnected();
     void slotSlaveError(int error, const QString &errorMsg);
-    void slotUnregisterWindow(QObject *);
 
     ProtoQueue *protoQ(const QString& protocol, const QString& host)
     {
@@ -773,7 +769,6 @@ Slave *heldSlaveForJob(SimpleJob *job)
 
 
 Scheduler::Scheduler()
- : removeMe(0)
 {
     setObjectName( "scheduler" );
 
@@ -858,16 +853,6 @@ bool Scheduler::assignJobToSlave(KIO::Slave *slave, KIO::SimpleJob *job)
 bool Scheduler::disconnectSlave(KIO::Slave *slave)
 {
     return schedulerPrivate()->disconnectSlave(slave);
-}
-
-void Scheduler::registerWindow(QWidget *wid)
-{
-    schedulerPrivate()->registerWindow(wid);
-}
-
-void Scheduler::unregisterWindow(QObject *wid)
-{
-    schedulerPrivate()->slotUnregisterWindow(wid);
 }
 
 bool Scheduler::connect( const char *signal, const QObject *receiver,
@@ -1309,66 +1294,6 @@ void SchedulerPrivate::checkSlaveOnHold(bool b)
 {
     kDebug(7006) << b;
     m_checkOnHold = b;
-}
-
-/*
-  Returns the top most window associated with widget.
-
-  Unlike QWidget::window(), this function does its best to find and return the
-  main application window associated with the given widget.
-
-  If widget itself is a dialog or its parent is a dialog, and that dialog has a
-  parent widget then this function will iterate through all those widgets to
-  find the top most window, which most of the time is the main window of the
-  application. By contrast, QWidget::window() would simply return the first
-  file dialog it encountered since it is the "next ancestor widget that has (or
-  could have) a window-system frame".
-*/
-static QWidget* topLevelWindow(QWidget* widget)
-{
-    QWidget* w = widget;
-    while (w && w->parentWidget()) {
-        w = w->parentWidget();
-    }
-    return (w ? w->window() : 0);
-}
-
-void SchedulerPrivate::registerWindow(QWidget *wid)
-{
-   if (!wid)
-      return;
-
-   QWidget* window = topLevelWindow(wid);
-   QObject *obj = static_cast<QObject *>(window);
-
-   if (!m_windowList.contains(obj))
-   {
-      // We must store the window Id because by the time
-      // the destroyed signal is emitted we can no longer
-      // access QWidget::winId() (already destructed)
-      WId windowId = window->winId();
-      m_windowList.insert(obj, windowId);
-      q->connect(window, SIGNAL(destroyed(QObject*)),
-                 SLOT(slotUnregisterWindow(QObject*)));
-      QDBusInterface("org.kde.kded5", "/kded", "org.kde.kded5").
-          call(QDBus::NoBlock, "registerWindowId", qlonglong(windowId));
-   }
-}
-
-void SchedulerPrivate::slotUnregisterWindow(QObject *obj)
-{
-   if (!obj)
-      return;
-
-   QMap<QObject *, WId>::Iterator it = m_windowList.find(obj);
-   if (it == m_windowList.end())
-      return;
-   WId windowId = it.value();
-   q->disconnect(it.key(), SIGNAL(destroyed(QObject*)),
-                 q, SLOT(slotUnregisterWindow(QObject*)));
-   m_windowList.erase( it );
-   QDBusInterface("org.kde.kded5", "/kded", "org.kde.kded5").
-       call(QDBus::NoBlock, "unregisterWindowId", qlonglong(windowId));
 }
 
 void SchedulerPrivate::updateInternalMetaData(SimpleJob* job)

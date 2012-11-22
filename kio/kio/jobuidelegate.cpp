@@ -26,6 +26,7 @@
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <ksharedconfig.h>
+#include <QDBusInterface>
 
 #include <QPointer>
 #include <QWidget>
@@ -54,10 +55,77 @@ KIO::JobUiDelegate::~JobUiDelegate()
     delete d;
 }
 
+/*
+  Returns the top most window associated with widget.
+
+  Unlike QWidget::window(), this function does its best to find and return the
+  main application window associated with the given widget.
+
+  If widget itself is a dialog or its parent is a dialog, and that dialog has a
+  parent widget then this function will iterate through all those widgets to
+  find the top most window, which most of the time is the main window of the
+  application. By contrast, QWidget::window() would simply return the first
+  file dialog it encountered since it is the "next ancestor widget that has (or
+  could have) a window-system frame".
+*/
+static QWidget* topLevelWindow(QWidget* widget)
+{
+    QWidget* w = widget;
+    while (w && w->parentWidget()) {
+        w = w->parentWidget();
+    }
+    return (w ? w->window() : 0);
+}
+
+class JobUiDelegateStatic : public QObject
+{
+    Q_OBJECT
+public:
+    void registerWindow(QWidget *wid)
+    {
+        if (!wid)
+            return;
+
+        QWidget* window = topLevelWindow(wid);
+        QObject *obj = static_cast<QObject *>(window);
+        if (!m_windowList.contains(obj)) {
+            // We must store the window Id because by the time
+            // the destroyed signal is emitted we can no longer
+            // access QWidget::winId() (already destructed)
+            WId windowId = window->winId();
+            m_windowList.insert(obj, windowId);
+            connect(window, SIGNAL(destroyed(QObject*)),
+                    this, SLOT(slotUnregisterWindow(QObject*)));
+            QDBusInterface("org.kde.kded5", "/kded", "org.kde.kded5").
+                call(QDBus::NoBlock, "registerWindowId", qlonglong(windowId));
+        }
+    }
+private Q_SLOTS:
+    void slotUnregisterWindow(QObject *obj)
+    {
+        if (!obj)
+            return;
+
+        QMap<QObject *, WId>::Iterator it = m_windowList.find(obj);
+        if (it == m_windowList.end())
+            return;
+        WId windowId = it.value();
+        disconnect(it.key(), SIGNAL(destroyed(QObject*)),
+                   this, SLOT(slotUnregisterWindow(QObject*)));
+        m_windowList.erase( it );
+        QDBusInterface("org.kde.kded5", "/kded", "org.kde.kded5").
+            call(QDBus::NoBlock, "unregisterWindowId", qlonglong(windowId));
+    }
+private:
+    QMap<QObject *, WId> m_windowList;
+};
+
+Q_GLOBAL_STATIC(JobUiDelegateStatic, s_static);
+
 void KIO::JobUiDelegate::setWindow(QWidget *window)
 {
     KDialogJobUiDelegate::setWindow(window);
-    KIO::Scheduler::registerWindow(window);
+    s_static()->registerWindow(window);
 }
 
 KIO::RenameDialog_Result KIO::JobUiDelegate::askFileRename(KJob * job,
@@ -193,3 +261,4 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const QList<QUrl>& urls,
     return true;
 }
 
+#include "jobuidelegate.moc"

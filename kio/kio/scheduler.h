@@ -26,7 +26,6 @@
 #include "kio/jobclasses.h"
 #include <QtCore/QTimer>
 #include <QtCore/QMap>
-#include <QWidgetList>
 #include <sys/types.h> // pid_t
 
 namespace KIO {
@@ -225,20 +224,6 @@ namespace KIO {
         static bool disconnectSlave(KIO::Slave *slave);
 
         /**
-         * Register the mainwindow @p wid with the KIO subsystem
-         * Do not call this, it is called automatically from
-         * void KIO::Job::setWindow(QWidget*).
-         * @param wid the window to register
-         */
-        static void registerWindow(QWidget *wid);
-
-        /**
-         * @internal
-         * Unregisters the window registered by registerWindow().
-         */
-        static void unregisterWindow(QObject *wid);
-
-        /**
          * Function to connect signals emitted by the scheduler.
          *
          * @see slaveConnected()
@@ -305,10 +290,8 @@ namespace KIO {
 
         Q_PRIVATE_SLOT(d_func(), void slotSlaveConnected())
         Q_PRIVATE_SLOT(d_func(), void slotSlaveError(int error, const QString &errorMsg))
-        Q_PRIVATE_SLOT(d_func(), void slotUnregisterWindow(QObject *))
     private:
         friend class SchedulerPrivate;
-        SchedulerPrivate *const removeMe; // for BC only, KDE5: remove
         SchedulerPrivate *d_func();
 };
 
