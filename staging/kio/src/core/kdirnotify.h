@@ -27,7 +27,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
 #include <QtDBus/QtDBus>
-#include <kio/kio_export.h>
+#include <kiocore_export.h>
 
 /**
  * \class OrgKdeKDirNotifyInterface kdirnotify.h KDirNotify
@@ -52,7 +52,7 @@
  * The second usage is to actually emit the signals. For that emitFileRenamed() and friends are
  * to be used.
  */
-class KIO_EXPORT OrgKdeKDirNotifyInterface: public QDBusAbstractInterface
+class KIOCORE_EXPORT OrgKdeKDirNotifyInterface: public QDBusAbstractInterface
 {
     Q_OBJECT
 public:

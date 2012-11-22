@@ -20,6 +20,7 @@ set(kiocore_SRCS
   klocalsocket.cpp
   socketconnectionbackend.cpp
   connection.cpp
+  kdirnotify.cpp
   kauthorized.cpp
   udsentry.cpp
   global.cpp
