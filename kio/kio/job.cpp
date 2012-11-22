@@ -41,7 +41,6 @@ extern "C" {
 #include <kauthorized.h>
 #include <klocalizedstring.h>
 #include <kconfig.h>
-#include <kdebug.h>
 #include <kde_file.h>
 
 #include <errno.h>
@@ -214,7 +213,7 @@ void JobPrivate::slotSpeed( KJob*, unsigned long speed )
     q_func()->emitSpeed( speed );
 }
 
-//Job::errorString is implemented in global.cpp
+//Job::errorString is implemented in job_error.cpp
 
 #ifndef KDE_NO_DEPRECATED
 void Job::showErrorDialog( QWidget *parent )
@@ -226,7 +225,7 @@ void Job::showErrorDialog( QWidget *parent )
     }
     else
     {
-        kError() << errorString();
+        qWarning() << errorString();
     }
 }
 #endif
@@ -321,7 +320,7 @@ bool SimpleJob::doKill()
         d->m_extraFlags |= JobPrivate::EF_KillCalled;
         Scheduler::cancelJob(this); // deletes the slave if not 0
     } else {
-        kWarning(7007) << this << "This is overkill.";
+        qWarning() << this << "This is overkill.";
     }
     return Job::doKill();
 }
@@ -381,7 +380,7 @@ SimpleJob::~SimpleJob()
     Q_D(SimpleJob);
     // last chance to remove this job from the scheduler!
     if (d->m_schedSerial) {
-        kDebug(7007) << "Killing job" << this << "in destructor!"  << kBacktrace();
+        qDebug() << "Killing job" << this << "in destructor!"/* << qBacktrace()*/;
         Scheduler::cancelJob(this);
     }
 }
@@ -763,10 +762,10 @@ void StatJobPrivate::slotStatEntry( const KIO::UDSEntry & entry )
 void StatJobPrivate::slotRedirection(const QUrl &url)
 {
      Q_Q(StatJob);
-     kDebug(7007) << m_url << "->" << url;
+     qDebug() << m_url << "->" << url;
      if (!KAuthorized::authorizeUrlAction("redirect", m_url, url))
      {
-       kWarning(7007) << "Redirection from " << m_url << " to " << url << " REJECTED!";
+       qWarning() << "Redirection from" << m_url << "to" << url << "REJECTED!";
        q->setError( ERR_ACCESS_DENIED );
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
        q->setErrorText(url.toString());
@@ -880,7 +879,7 @@ void TransferJob::slotData( const QByteArray &_data)
 {
     Q_D(TransferJob);
     if (d->m_command == CMD_GET && !d->m_isMimetypeEmitted) {
-        kWarning(7007) << "mimeType() not emitted when sending first data!; job URL ="
+        qWarning() << "mimeType() not emitted when sending first data!; job URL ="
                        << d->m_url << "data size =" << _data.size();
     }
     // shut up the warning, HACK: downside is that it changes the meaning of the variable
@@ -900,10 +899,10 @@ void KIO::TransferJob::setTotalSize(KIO::filesize_t bytes)
 void TransferJob::slotRedirection(const QUrl &url)
 {
     Q_D(TransferJob);
-    kDebug(7007) << url;
+    //qDebug() << url;
     if (!KAuthorized::authorizeUrlAction("redirect", d->m_url, url))
     {
-        kWarning(7007) << "Redirection from " << d->m_url << " to " << url << " REJECTED!";
+        qWarning() << "Redirection from" << d->m_url << "to" << url << "REJECTED!";
         return;
     }
 
@@ -912,7 +911,7 @@ void TransferJob::slotRedirection(const QUrl &url)
     // as 5 redirections to the same URL.
     if (d->m_redirectionList.count(url) > 5)
     {
-       kDebug(7007) << "CYCLIC REDIRECTION!";
+       qDebug() << "CYCLIC REDIRECTION!";
        setError( ERR_CYCLIC_LINK );
        setErrorText(d->m_url.toDisplayString());
     }
@@ -930,7 +929,7 @@ void TransferJob::slotFinished()
 {
     Q_D(TransferJob);
 
-    kDebug(7007) << d->m_url;
+    //qDebug() << d->m_url;
     if (!d->m_redirectionURL.isEmpty() && d->m_redirectionURL.isValid()) {
 
         //kDebug(7007) << "Redirection to" << m_redirectionURL;
@@ -1062,7 +1061,7 @@ void TransferJob::slotDataReq()
     static const int max_size = 14 * 1024 * 1024;
     if (dataForSlave.size() > max_size)
     {
-       kDebug(7007) << "send " << dataForSlave.size() / 1024 / 1024 << "MB of data in TransferJob::dataReq. This needs to be split, which requires a copy. Fix the application.\n";
+       qDebug() << "send" << dataForSlave.size() / 1024 / 1024 << "MB of data in TransferJob::dataReq. This needs to be split, which requires a copy. Fix the application.";
        d->staticData = QByteArray(dataForSlave.data() + max_size ,  dataForSlave.size() - max_size);
        dataForSlave.truncate(max_size);
     }
@@ -1082,8 +1081,7 @@ void TransferJob::slotMimetype( const QString& type )
     Q_D(TransferJob);
     d->m_mimetype = type;
     if (d->m_command == CMD_GET && d->m_isMimetypeEmitted) {
-        kWarning(7007) << "mimetype() emitted again, or after sending first data!; job URL ="
-                       << d->m_url;
+        qWarning() << "mimetype() emitted again, or after sending first data!; job URL =" << d->m_url;
     }
     d->m_isMimetypeEmitted = true;
     emit mimetype( this, type );
@@ -1585,7 +1583,7 @@ StoredTransferJob *KIO::storedHttpPost( QIODevice* ioDevice, const QUrl& url, qi
 void TransferJobPrivate::slotPostRedirection()
 {
     Q_Q(TransferJob);
-    kDebug(7007) << "TransferJob::slotPostRedirection(" << m_url << ")";
+    //qDebug() << m_url;
     // Tell the user about the new url.
     emit q->redirection(q, m_url);
 }
@@ -1718,7 +1716,7 @@ void MimetypeJob::slotFinished( )
         // It is in fact a directory. This happens when HTTP redirects to FTP.
         // Due to the "protocol doesn't support listing" code in KRun, we
         // assumed it was a file.
-        kDebug(7007) << "It is in fact a directory!";
+        //qDebug() << "It is in fact a directory!";
         d->m_mimetype = QString::fromLatin1("inode/directory");
         emit TransferJob::mimetype( this, d->m_mimetype );
         setError( 0 );
@@ -2196,8 +2194,7 @@ void FileCopyJobPrivate::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
         jobSlave(m_getJob)->setOffset( jobSlave(m_putJob)->offset() );
     }
     else
-        kWarning(7007) << "unknown job=" << job
-                        << "m_getJob=" << m_getJob << "m_putJob=" << m_putJob;
+        qWarning() << "unknown job=" << job << "m_getJob=" << m_getJob << "m_putJob=" << m_putJob;
 }
 
 void FileCopyJobPrivate::slotData( KIO::Job * , const QByteArray &data)
@@ -2534,7 +2531,7 @@ void ListJobPrivate::slotRedirection(const QUrl & url)
     Q_Q(ListJob);
     if (!KAuthorized::authorizeUrlAction("redirect", m_url, url))
     {
-        kWarning(7007) << "ListJob: Redirection from " << m_url << " to " << url << " REJECTED!";
+        qWarning() << "Redirection from" << m_url << "to" << url << "REJECTED!";
         return;
     }
     m_redirectionURL = url; // We'll remember that when the job finishes
@@ -2792,7 +2789,7 @@ void MultiGetJob::slotRedirection(const QUrl &url)
   if (!d->findCurrentEntry()) return; // Error
   if (!KAuthorized::authorizeUrlAction("redirect", d->m_url, url))
   {
-     kWarning(7007) << "MultiGetJob: Redirection from " << d->m_currentEntry.url << " to " << url << " REJECTED!";
+     qWarning() << "Redirection from" << d->m_currentEntry.url << "to" << url << "REJECTED!";
      return;
   }
   d->m_redirectionURL = url;
