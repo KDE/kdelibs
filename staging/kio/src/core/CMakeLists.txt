@@ -20,6 +20,7 @@ set(kiocore_SRCS
   klocalsocket.cpp
   socketconnectionbackend.cpp
   connection.cpp
+  kauthorized.cpp
   udsentry.cpp
   global.cpp
   metadata.cpp

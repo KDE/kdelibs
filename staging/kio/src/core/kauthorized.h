@@ -21,7 +21,7 @@
 #ifndef KAUTHORIZED_H
 #define KAUTHORIZED_H
 
-#include "kio_export.h"
+#include "kiocore_export.h"
 #include <kcoreauthorized.h>
 
 class QUrl;
@@ -44,7 +44,7 @@ namespace KAuthorized
    * @param destUrl The object of the action
    * @return true when the action is authorized, false otherwise.
    */
-  KIO_EXPORT bool authorizeUrlAction(const QString& action, const QUrl& baseUrl, const QUrl& destUrl);
+  KIOCORE_EXPORT bool authorizeUrlAction(const QString& action, const QUrl& baseUrl, const QUrl& destUrl);
 
   /**
    * Allow a certain URL action. This can be useful if your application
@@ -54,7 +54,7 @@ namespace KAuthorized
    * @param baseUrl The url where the action originates from
    * @param _destUrl The object of the action
    */
-  KIO_EXPORT void allowUrlAction(const QString& action, const QUrl& baseUrl, const QUrl&  _destUrl);
+  KIOCORE_EXPORT void allowUrlAction(const QString& action, const QUrl& baseUrl, const QUrl&  _destUrl);
 }
 
 #endif
