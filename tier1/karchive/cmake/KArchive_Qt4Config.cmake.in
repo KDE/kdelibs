@@ -1,0 +1,23 @@
+
+@PACKAGE_INIT@
+
+if (KArchive_Qt4_FIND_REQUIRED)
+  set(KArchive_Qt4_FIND_DEPENDENCIES_REQUIRED REQUIRED)
+endif()
+if (KArchive_Qt4_FIND_QUIETLY)
+  set(KArchive_Qt4_DEPENDENCIES_FIND_QUIET QUIET)
+endif()
+
+if(NOT TARGET Qt4::QtCore)
+  set(QT_USE_IMPORTED_TARGETS TRUE)
+  find_package(Qt4
+    ${KArchive_Qt4_DEPENDENCIES_FIND_QUIET}
+    ${KArchive_Qt4_FIND_DEPENDENCIES_REQUIRED}
+  )
+endif()
+
+set(KArchive_Qt4_INCLUDE_DIRS   "${PACKAGE_PREFIX_DIR}/@INCLUDE_INSTALL_DIR@" ${QT_INCLUDES})
+
+if (NOT TARGET KArchive::karchive-qt4)
+  include(${CMAKE_CURRENT_LIST_DIR}/KArchive_Qt4Targets.cmake)
+endif()

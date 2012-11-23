@@ -55,7 +55,9 @@ add_library(karchive-qt4 ${LIBRARY_TYPE} ${karchive_SRCS} ${karchive_OPTIONAL_SR
 
 target_link_libraries(karchive-qt4 ${QT_QTCORE_LIBRARY} ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY})
 
-set_target_properties(karchive-qt4 PROPERTIES VERSION "1.0.0"
+set(KARCHIVE_QT4_VERSION_STRING 1.0.0)
+
+set_target_properties(karchive-qt4 PROPERTIES VERSION "${KARCHIVE_QT4_VERSION_STRING}"
                                           SOVERSION 1
                                           DEFINE_SYMBOL KARCHIVE_QT4_MAKEDLL
 )
@@ -64,7 +66,8 @@ generate_export_header(karchive-qt4 BASE_NAME karchive EXPORT_FILE_NAME karchive
 include(GNUInstallDirs)
 
 
-install(TARGETS karchive-qt4 RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+install(TARGETS karchive-qt4 EXPORT KArchive_Qt4Targets
+                             RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
                              LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
                              ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}" COMPONENT Devel )
 
@@ -87,3 +90,19 @@ if(LIBLZMA_FOUND)
    )
 endif()
 
+
+set(CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/KArchive_Qt4" )
+
+install(EXPORT KArchive_Qt4Targets DESTINATION ${CMAKECONFIG_INSTALL_DIR} NAMESPACE KArchive::)
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(../cmake/KArchive_Qt4Config.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/KArchive_Qt4Config.cmake
+                              INSTALL_DESTINATION ${CMAKECONFIG_INSTALL_DIR}
+                              NO_SET_AND_CHECK_MACRO NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+
+write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/KArchive_Qt4ConfigVersion.cmake
+                                  VERSION ${KARCHIVE_QT4_VERSION_STRING}
+                                  COMPATIBILITY SameMajorVersion )
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/KArchive_Qt4Config.cmake ${CMAKE_CURRENT_BINARY_DIR}/KArchive_Qt4ConfigVersion.cmake
+        DESTINATION ${CMAKECONFIG_INSTALL_DIR})
