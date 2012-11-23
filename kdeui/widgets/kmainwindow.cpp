@@ -57,6 +57,7 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kwindowconfig.h>
+#include <kconfiggui.h>
 
 #include <stdlib.h>
 #include <ctype.h>
@@ -132,7 +133,7 @@ public:
     bool dummyInit() { return true; }
     bool saveState( QSessionManager& )
     {
-        KConfig* config = KApplication::kApplication()->sessionConfig();
+        KConfig* config = KConfigGui::sessionConfig();
         if ( KMainWindow::memberList().count() ){
             // According to Jochen Wilhelmy <digisnap@cs.tu-berlin.de>, this
             // hook is useful for better document orientation
@@ -444,7 +445,7 @@ bool KMainWindow::canBeRestored( int number )
 {
     if ( !qApp->isSessionRestored() )
         return false;
-    KConfig *config = kapp->sessionConfig();
+    KConfig *config = KConfigGui::sessionConfig();
     if ( !config )
         return false;
 
@@ -457,7 +458,7 @@ const QString KMainWindow::classNameOfToplevel( int number )
 {
     if ( !qApp->isSessionRestored() )
         return QString();
-    KConfig *config = kapp->sessionConfig();
+    KConfig *config = KConfigGui::sessionConfig();
     if ( !config )
         return QString();
     QString s;
@@ -475,7 +476,7 @@ bool KMainWindow::restore( int number, bool show )
 {
     if ( !canBeRestored( number ) )
         return false;
-    KConfig *config = kapp->sessionConfig();
+    KConfig *config = KConfigGui::sessionConfig();
     if ( readPropertiesInternal( config, number ) ){
         if ( show )
             KMainWindow::show();
