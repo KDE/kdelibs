@@ -20,7 +20,7 @@
 #ifndef __kfilterbase__h
 #define __kfilterbase__h
 
-#include <karchive_export.h>
+#include <karchive_qt4_export.h>
 
 #include <QtCore/QObject>
 #include <QtCore/QString>

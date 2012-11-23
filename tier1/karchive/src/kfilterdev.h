@@ -18,7 +18,7 @@
 #ifndef __kfilterdev_h
 #define __kfilterdev_h
 
-#include <karchive_export.h>
+#include <karchive_qt4_export.h>
 #include <kcompressiondevice.h>
 #include <QtCore/QString>
 

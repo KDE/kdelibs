@@ -19,7 +19,7 @@
 #ifndef __kcompressiondevice_h
 #define __kcompressiondevice_h
 
-#include <karchive_export.h>
+#include <karchive_qt4_export.h>
 #include <QtCore/QIODevice>
 #include <QtCore/QString>
 

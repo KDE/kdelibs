@@ -29,7 +29,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QHash>
 
-#include <karchive_export.h>
+#include <karchive_qt4_export.h>
 
 class KArchiveDirectory;
 class KArchiveFile;

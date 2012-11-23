@@ -52,13 +52,14 @@ endif()
 qt4_add_resources( karchive_SRCS inqt5/mimetypes.qrc )
 
 add_library(karchive-qt4 ${LIBRARY_TYPE} ${karchive_SRCS} ${karchive_OPTIONAL_SRCS})
-generate_export_header(karchive-qt4)
 
 target_link_libraries(karchive-qt4 ${QT_QTCORE_LIBRARY} ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY})
 
 set_target_properties(karchive-qt4 PROPERTIES VERSION "1.0.0"
                                           SOVERSION 1
+                                          DEFINE_SYMBOL KARCHIVE_QT4_MAKEDLL
 )
+generate_export_header(karchive-qt4 BASE_NAME karchive EXPORT_FILE_NAME karchive_qt4_export.h)
 
 include(GNUInstallDirs)
 
@@ -76,7 +77,7 @@ install( FILES
   ktar.h
   kzip.h
 
-  ${CMAKE_CURRENT_BINARY_DIR}/karchive_export.h
+  ${CMAKE_CURRENT_BINARY_DIR}/karchive_qt4_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 
