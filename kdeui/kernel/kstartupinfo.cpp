@@ -51,8 +51,8 @@ DEALINGS IN THE SOFTWARE.
 #include <qx11info_x11.h>
 #include <netwm.h>
 #endif
+#include <QApplication>
 #include <kdebug.h>
-#include <kapplication.h>
 #include <signal.h>
 #include <qstandardpaths.h>
 #if HAVE_X11
@@ -584,16 +584,8 @@ bool KStartupInfo::sendFinishX( Display* disp_P, const KStartupInfoId& id_P,
 
 void KStartupInfo::appStarted()
     {
-    if( kapp != NULL )  // KApplication constructor unsets the env. variable
-        {
-        appStarted( startupId());
-        setStartupId("0"); // reset the id, no longer valid (must use clearStartupId() to avoid infinite loop)
-        }
-    else
-        {
-        appStarted( currentStartupIdEnv().id());
-        resetStartupEnv();
-        }
+    appStarted( startupId());
+    setStartupId("0"); // reset the id, no longer valid (must use clearStartupId() to avoid infinite loop)
     }
 
 void KStartupInfo::appStarted( const QByteArray& startup_id )
@@ -602,9 +594,7 @@ void KStartupInfo::appStarted( const QByteArray& startup_id )
     id.initId( startup_id );
     if( id.none())
         return;
-    if( kapp != NULL )
-        KStartupInfo::sendFinish( id );
-    else if( !qgetenv( "DISPLAY" ).isEmpty() ) // don't rely on QX11Info::display()
+    if( !qgetenv( "DISPLAY" ).isEmpty() ) // don't rely on QX11Info::display()
         {
 #if HAVE_X11
         Display* disp = XOpenDisplay( NULL );
