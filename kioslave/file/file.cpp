@@ -97,7 +97,7 @@ static void appendACLAtoms( const QByteArray & path, UDSEntry& entry,
 extern "C" Q_DECL_EXPORT int kdemain( int argc, char **argv )
 {
   QCoreApplication app( argc, argv ); // needed for QSocketNotifier
-  app.setApplicationName("kio_file");
+  app.setApplicationName(QLatin1String("kio_file"));
   ( void ) KLocale::global();
 
   kDebug(7101) << "Starting" << getpid();

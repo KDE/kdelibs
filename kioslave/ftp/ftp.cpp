@@ -170,7 +170,7 @@ using namespace KIO;
 extern "C" Q_DECL_EXPORT int kdemain( int argc, char **argv )
 {
   QCoreApplication app(argc, argv);
-  app.setApplicationName("kio_ftp");
+  app.setApplicationName(QLatin1String("kio_ftp"));
   ( void ) KLocale::global();
 
   kDebug(7102) << "Starting " << getpid();
