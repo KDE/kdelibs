@@ -29,12 +29,7 @@ include_directories(
   ${ZLIB_INCLUDE_DIR}
 )
 
-#ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/karchive_version.h)
-
 set(INCLUDE_INSTALL_DIR "include")
-
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/karchive_version.h
-        DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 add_subdirectory(src)
 add_subdirectory(autotests)
