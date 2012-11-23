@@ -22,6 +22,7 @@ endif ()
 configure_file(config-kwindowsystem.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kwindowsystem.h )
 
 set(kwindowsystem_SRCS
+    kstartupinfo.cpp
     kwindoweffects.cpp
     kxerrorhandler.cpp
     kxutils.cpp
@@ -31,6 +32,8 @@ if (QT5_BUILD)
   set(kwindowsystem_SRCS ${kwindowsystem_SRCS}
     ksystemeventfilter.cpp
   )
+else()
+  set(qt5CompatLib ${inqt5_LIBRARY})
 endif()
 
 set(platformLinkLibraries)
@@ -39,6 +42,7 @@ if (HAVE_X11)
    set(platformLinkLibraries ${X11_LIBRARIES} ${X11_Xfixes_LIB} ${X11_Xrender_LIB} ${kdeqt5staging_LIBRARY})
    set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_x11.cpp
                                                 kwindowinfo_x11.cpp
+                                                kxmessages.cpp
                                                 netwm.cpp )
 endif ()
 
@@ -55,7 +59,7 @@ endif ()
 add_library(kwindowsystem ${kwindowsystem_SRCS})
 generate_export_header(kwindowsystem)
 
-target_link_libraries(kwindowsystem ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDBUS_LIBRARY} ${platformLinkLibraries})
+target_link_libraries(kwindowsystem ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDBUS_LIBRARY} ${platformLinkLibraries} ${qt5CompatLib})
 
 set_target_properties(kwindowsystem PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                                SOVERSION ${ECM_SOVERSION})
@@ -63,9 +67,11 @@ set_target_properties(kwindowsystem PROPERTIES VERSION   ${ECM_VERSION_STRING}
 install(TARGETS kwindowsystem EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install( FILES
+   kstartupinfo.h
    kwindoweffects.h
    kwindowinfo.h
    kwindowsystem.h
+   kxmessages.h
    netwm_def.h
    netwm.h
 

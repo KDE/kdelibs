@@ -25,6 +25,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kwindowsystem_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 add_subdirectory(src)
+add_subdirectory(autotests)
 
 include(FeatureSummary)
 

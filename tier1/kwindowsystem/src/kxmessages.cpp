@@ -78,7 +78,7 @@ public:
             incoming_messages[cm_event->window] = buf;
         }
         if (strlen(buf) < 20) { // last message fragment
-            emit q->gotMessage(QString::fromUtf8(incoming_messages[cm_event->window]));
+            Q_EMIT q->gotMessage(QString::fromUtf8(incoming_messages[cm_event->window].constData()));
             incoming_messages.remove(cm_event->window);
         }
         return false; // lets other KXMessages instances get the event too
@@ -172,7 +172,7 @@ static void send_message_internal(WId w_P, const QString& msg_P, long mask_P,
     //qDebug() << "send_message_internal" << w_P << msg_P << mask_P << atom1_P << atom2_P << handle_P;
     unsigned int pos = 0;
     QByteArray msg = msg_P.toUtf8();
-    unsigned int len = strlen( msg );
+    unsigned int len = strlen( msg.constData() );
     XEvent e;
     e.xclient.type = ClientMessage;
     e.xclient.message_type = atom1_P; // leading message

@@ -37,12 +37,10 @@ KDEUI_UNIT_TESTS(
   klineedit_unittest
   ktextedit_unittest
   kcombobox_unittest
-  kxmessages_unittest
   kreplacetest
   kshortcuttest
   kstandardactiontest
   kstandardshortcuttest
-  kstartupinfo_unittest
   kcolorutilstest
   kxmlgui_unittest
   ktimezonewidget_unittest

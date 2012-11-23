@@ -30,12 +30,20 @@ DEALINGS IN THE SOFTWARE.
 #endif
 #endif
 
+#ifdef QT_NO_KEYWORDS
+#undef QT_NO_KEYWORDS
+#endif
+
+#ifdef QT_NO_CAST_FROM_ASCII
+#undef QT_NO_CAST_FROM_ASCII
+#endif
+
 #include "kstartupinfo.h"
 
 #include <QWidget>
 
 
-#include <config-kdeui.h> // HAVE_X11
+#include <config-kwindowsystem.h> // HAVE_X11
 
 // need to resolve INT32(qglobal.h)<>INT32(Xlibint.h) conflict
 #ifndef QT_CLEAN_NAMESPACE

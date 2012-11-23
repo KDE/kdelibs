@@ -18,8 +18,13 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qtest_kde.h>
 #include <kxmessages.h>
+#include <QSignalSpy>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#include <qtest_widgets.h>
+#else
+#include <qtest_gui.h>
+#endif
 
 class KXMessages_UnitTest : public QObject
 {
@@ -50,7 +55,7 @@ void KXMessages_UnitTest::testStart()
         m_msgs.broadcastMessage(type, message);
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-        QSKIP_PORTING("KXMessages needs Qt5 native event filtering", SkipAll);
+        QSKIP("KXMessages needs Qt5 native event filtering", SkipAll);
 #else
         QVERIFY(spy.wait());
         QCOMPARE(spy.count(), 1);

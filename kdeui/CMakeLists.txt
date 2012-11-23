@@ -204,7 +204,6 @@ set(kdeui_LIB_SRCS
  kernel/kclipboard.cpp
  kernel/ksessionmanager.cpp
  kernel/kstyle.cpp
- kernel/kstartupinfo.cpp
  notifications/knotification.cpp
  notifications/knotificationmanager.cpp
  notifications/knotificationrestrictions.cpp
@@ -338,7 +337,6 @@ if (X11_FOUND)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kkeyserver_x11.cpp
                                          util/kmanagerselection.cpp
                                          util/kxerrorhandler.cpp
-                                         util/kxmessages.cpp
                                          dialogs/kcupsoptionswidget_p.cpp
                                          dialogs/kcupsoptionsjobwidget_p.cpp
                                          dialogs/kcupsoptionspageswidget_p.cpp
@@ -564,7 +562,6 @@ install( FILES
  kernel/kapplication.h
  kernel/ksessionmanager.h
  kernel/kstyle.h
- kernel/kstartupinfo.h
  notifications/kstatusnotifieritem.h
  notifications/knotification.h
  notifications/knotificationrestrictions.h
@@ -594,7 +591,6 @@ install( FILES
  util/kimagecache.h
  util/kwallet.h
  util/kxerrorhandler.h
- util/kxmessages.h
  util/kundostack.h
  util/kpixmapsequence.h
  util/kpixmapsequenceoverlaypainter.h

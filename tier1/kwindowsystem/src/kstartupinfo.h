@@ -25,7 +25,7 @@ DEALINGS IN THE SOFTWARE.
 #ifndef KSTARTUPINFO_H
 #define KSTARTUPINFO_H
 
-#include <kdeui_export.h>
+#include <kwindowsystem_export.h>
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
@@ -59,7 +59,7 @@ class KStartupInfoData;
  *
  * @author Lubos Lunak <l.lunak@kde.org>
  */
-class KDEUI_EXPORT KStartupInfo
+class KWINDOWSYSTEM_EXPORT KStartupInfo
     : public QObject
     {
     Q_OBJECT
@@ -378,7 +378,7 @@ class KDEUI_EXPORT KStartupInfo
  *
  * @author Lubos Lunak <l.lunak@kde.org>
  */
-class KDEUI_EXPORT KStartupInfoId
+class KWINDOWSYSTEM_EXPORT KStartupInfoId
     {
     public:
 	/**
@@ -449,7 +449,7 @@ class KDEUI_EXPORT KStartupInfoId
  *
  * @author Lubos Lunak <l.lunak@kde.org>
  */
-class KDEUI_EXPORT KStartupInfoData
+class KWINDOWSYSTEM_EXPORT KStartupInfoData
     {
     public:
 	/**

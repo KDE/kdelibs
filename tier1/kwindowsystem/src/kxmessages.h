@@ -25,11 +25,11 @@ DEALINGS IN THE SOFTWARE.
 #ifndef KXMESSAGES_H
 #define KXMESSAGES_H
 
-#include <kdeui_export.h>
+#include <kwindowsystem_export.h>
 #include <QWidget>
 #include <QtCore/QMap>
 
-#include <config-kdeui.h> // HAVE_X11
+#include <config-kwindowsystem.h> // HAVE_X11
 #if HAVE_X11
 typedef struct _XDisplay Display;
 
@@ -47,7 +47,7 @@ class KXMessagesPrivate;
  *
  * @author Lubos Lunak <l.lunak@kde.org>
  */
-class KDEUI_EXPORT KXMessages : public QObject
+class KWINDOWSYSTEM_EXPORT KXMessages : public QObject
 {
     Q_OBJECT
 public:
