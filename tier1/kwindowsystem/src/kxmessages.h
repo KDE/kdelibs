@@ -26,7 +26,7 @@ DEALINGS IN THE SOFTWARE.
 #define KXMESSAGES_H
 
 #include <kwindowsystem_export.h>
-#include <QWidget>
+#include <QtCore/QObject>
 #include <QtCore/QMap>
 
 #include <config-kwindowsystem.h> // HAVE_X11

@@ -27,15 +27,16 @@ DEALINGS IN THE SOFTWARE.
 
 #if HAVE_X11
 
-#include <qx11info_x11.h>
-#include <X11/Xlib.h>
-#include <fixx11h.h>
 #include <qcoreapplication.h>
-#include <xcb/xcb.h>
 #include <QDebug>
+#include <QWidget> // WId
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QAbstractNativeEventFilter>
 #endif
+
+#include <xcb/xcb.h>
+#include <qx11info_x11.h>
+#include <X11/Xlib.h>
 
 class KXMessagesPrivate
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
