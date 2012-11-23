@@ -52,7 +52,7 @@ DEALINGS IN THE SOFTWARE.
 #include <netwm.h>
 #endif
 #include <QApplication>
-#include <kdebug.h>
+#include <QDebug>
 #include <signal.h>
 #include <qstandardpaths.h>
 #if HAVE_X11
@@ -224,7 +224,7 @@ void KStartupInfo::Private::got_message( const QString& msg_P )
     {
 #if HAVE_X11
 // TODO do something with SCREEN= ?
-    kDebug( 172 ) << "got:" << msg_P;
+    //qDebug() << "got:" << msg_P;
     QString msg = msg_P.trimmed();
     if( msg.startsWith( QLatin1String("new:") )) // must match length below
         got_startup_info( msg.mid( 4 ), false );
@@ -281,7 +281,7 @@ void KStartupInfo::Private::window_added( WId w_P )
     switch( ret )
         {
         case Match:
-            kDebug( 172 ) << "new window match";
+            //qDebug() << "new window match";
           break;
         case NoMatch:
           break; // nothing
@@ -310,7 +310,7 @@ void KStartupInfo::Private::new_startup_info_internal( const KStartupInfoId& id_
         { // already reported, update
         startups[ id_P ].update( data_P );
         startups[ id_P ].age = 0; // CHECKME
-        kDebug( 172 ) << "updating";
+        //qDebug() << "updating";
 	if( startups[ id_P ].silent() == KStartupInfo::Data::Yes
 	    && !( flags & AnnounceSilenceChanges ))
 	    {
@@ -326,7 +326,7 @@ void KStartupInfo::Private::new_startup_info_internal( const KStartupInfoId& id_
         { // already reported, update
         silent_startups[ id_P ].update( data_P );
         silent_startups[ id_P ].age = 0; // CHECKME
-        kDebug( 172 ) << "updating silenced";
+        //qDebug() << "updating silenced";
 	if( silent_startups[ id_P ].silent() != Data::Yes )
 	    {
 	    startups[ id_P ] = silent_startups[ id_P ];
@@ -340,7 +340,7 @@ void KStartupInfo::Private::new_startup_info_internal( const KStartupInfoId& id_
     if( uninited_startups.contains( id_P ))
         {
         uninited_startups[ id_P ].update( data_P );
-        kDebug( 172 ) << "updating uninited";
+        //qDebug() << "updating uninited";
         if( !update_P ) // uninited finally got new:
             {
             startups[ id_P ] = uninited_startups[ id_P ];
@@ -353,18 +353,18 @@ void KStartupInfo::Private::new_startup_info_internal( const KStartupInfoId& id_
         }
     if( update_P ) // change: without any new: first
         {
-        kDebug( 172 ) << "adding uninited";
+        //qDebug() << "adding uninited";
 	uninited_startups.insert( id_P, data_P );
         }
     else if( data_P.silent() != Data::Yes || flags & AnnounceSilenceChanges )
 	{
-        kDebug( 172 ) << "adding";
+        //qDebug() << "adding";
         startups.insert( id_P, data_P );
 	emit q->gotNewStartup( id_P, data_P );
 	}
     else // new silenced, and silent shouldn't be announced
 	{
-        kDebug( 172 ) << "adding silent";
+        //qDebug() << "adding silent";
 	silent_startups.insert( id_P, data_P );
 	}
     cleanup->start( 1000 ); // 1 sec
@@ -389,18 +389,18 @@ void KStartupInfo::Private::remove_startup_info_internal( const KStartupInfoId& 
     {
     if( startups.contains( id_P ))
         {
-	kDebug( 172 ) << "removing";
+	//qDebug() << "removing";
 	emit q->gotRemoveStartup( id_P, startups[ id_P ]);
 	startups.remove( id_P );
 	}
     else if( silent_startups.contains( id_P ))
 	{
-	kDebug( 172 ) << "removing silent";
+	//qDebug() << "removing silent";
 	silent_startups.remove( id_P );
 	}
     else if( uninited_startups.contains( id_P ))
 	{
-	kDebug( 172 ) << "removing uninited";
+	//qDebug() << "removing uninited";
 	uninited_startups.remove( id_P );
 	}
     return;
@@ -424,7 +424,8 @@ void KStartupInfo::Private::remove_startup_pids( const KStartupInfoData& data_P 
 void KStartupInfo::Private::remove_startup_pids( const KStartupInfoId& id_P,
     const KStartupInfoData& data_P )
     {
-    kFatal( data_P.pids().count() == 0, 172 );
+    if( data_P.pids().count() != 0 )
+        qFatal( "data_P.pids().count() != 0" );
     Data* data = NULL;
     if( startups.contains( id_P ))
 	data = &startups[ id_P ];
@@ -451,7 +452,7 @@ bool KStartupInfo::sendStartup( const KStartupInfoId& id_P, const KStartupInfoDa
     QString msg = QString::fromLatin1( "new: %1 %2" )
         .arg( id_P.d->to_text()).arg( data_P.d->to_text());
     msg = Private::check_required_startup_fields( msg, data_P, QX11Info::appScreen());
-    kDebug( 172 ) << "sending " << msg;
+    //qDebug() << "sending " << msg;
     msgs.broadcastMessage(NET_STARTUP_MSG, msg);
 #endif
     return true;
@@ -467,7 +468,7 @@ bool KStartupInfo::sendStartupX( Display* disp_P, const KStartupInfoId& id_P,
         .arg( id_P.d->to_text()).arg( data_P.d->to_text());
     msg = Private::check_required_startup_fields( msg, data_P, DefaultScreen( disp_P ));
 #ifdef KSTARTUPINFO_ALL_DEBUG
-    kDebug( 172 ) << "sending " << msg;
+    qDebug() << "sending " << msg;
 #endif
     return KXMessages::broadcastMessageX(disp_P, NET_STARTUP_MSG, msg);
 #else
@@ -481,7 +482,7 @@ QString KStartupInfo::Private::check_required_startup_fields( const QString& msg
     QString ret = msg;
     if( data_P.name().isEmpty())
         {
-//        kWarning( 172 ) << "NAME not specified in initial startup message";
+//        qWarning() << "NAME not specified in initial startup message";
         QString name = data_P.bin();
         if( name.isEmpty())
             name = "UNKNOWN";
@@ -500,7 +501,7 @@ bool KStartupInfo::sendChange( const KStartupInfoId& id_P, const KStartupInfoDat
     KXMessages msgs;
     QString msg = QString::fromLatin1( "change: %1 %2" )
         .arg( id_P.d->to_text()).arg( data_P.d->to_text());
-    kDebug( 172 ) << "sending " << msg;
+    //qDebug() << "sending " << msg;
     msgs.broadcastMessage(NET_STARTUP_MSG, msg);
 #endif
     return true;
@@ -515,7 +516,7 @@ bool KStartupInfo::sendChangeX( Display* disp_P, const KStartupInfoId& id_P,
     QString msg = QString::fromLatin1( "change: %1 %2" )
         .arg( id_P.d->to_text()).arg( data_P.d->to_text());
 #ifdef KSTARTUPINFO_ALL_DEBUG
-    kDebug( 172 ) << "sending " << msg;
+    qDebug() << "sending " << msg;
 #endif
     return KXMessages::broadcastMessageX(disp_P, NET_STARTUP_MSG, msg);
 #else
@@ -530,7 +531,7 @@ bool KStartupInfo::sendFinish( const KStartupInfoId& id_P )
 #if HAVE_X11
     KXMessages msgs;
     QString msg = QString::fromLatin1( "remove: %1" ).arg( id_P.d->to_text());
-    kDebug( 172 ) << "sending " << msg;
+    //qDebug() << "sending " << msg;
     msgs.broadcastMessage(NET_STARTUP_MSG, msg);
 #endif
     return true;
@@ -543,7 +544,7 @@ bool KStartupInfo::sendFinishX( Display* disp_P, const KStartupInfoId& id_P )
 #if HAVE_X11
     QString msg = QString::fromLatin1( "remove: %1" ).arg( id_P.d->to_text());
 #ifdef KSTARTUPINFO_ALL_DEBUG
-    kDebug( 172 ) << "sending " << msg;
+    qDebug() << "sending " << msg;
 #endif
     return KXMessages::broadcastMessageX(disp_P, NET_STARTUP_MSG, msg);
 #else
@@ -559,7 +560,7 @@ bool KStartupInfo::sendFinish( const KStartupInfoId& id_P, const KStartupInfoDat
     KXMessages msgs;
     QString msg = QString::fromLatin1( "remove: %1 %2" )
         .arg( id_P.d->to_text()).arg( data_P.d->to_text());
-    kDebug( 172 ) << "sending " << msg;
+    //qDebug() << "sending " << msg;
     msgs.broadcastMessage(NET_STARTUP_MSG, msg);
 #endif
     return true;
@@ -574,7 +575,7 @@ bool KStartupInfo::sendFinishX( Display* disp_P, const KStartupInfoId& id_P,
     QString msg = QString::fromLatin1( "remove: %1 %2" )
         .arg( id_P.d->to_text()).arg( data_P.d->to_text());
 #ifdef KSTARTUPINFO_ALL_DEBUG
-    kDebug( 172 ) << "sending " << msg;
+    qDebug() << "sending " << msg;
 #endif
     return KXMessages::broadcastMessageX(disp_P, NET_STARTUP_MSG, msg);
 #else
@@ -732,13 +733,13 @@ KStartupInfo::startup_t KStartupInfo::Private::check_startup_internal( WId w_P, 
     //  - No - Is this a NET_WM compliant app ?
     //           - Yes - test for pid match
     //           - No - test for WM_CLASS match
-    kDebug( 172 ) << "check_startup";
+    qDebug() << "check_startup";
     QByteArray id = windowStartupId( w_P );
     if( !id.isNull())
         {
         if( id.isEmpty() || id == "0" ) // means ignore this window
             {
-            kDebug( 172 ) << "ignore";
+            qDebug() << "ignore";
             return NoMatch;
             }
         return find_id( id, id_O, data_O ) ? Match : NoMatch;
@@ -783,14 +784,14 @@ KStartupInfo::startup_t KStartupInfo::Private::check_startup_internal( WId w_P, 
         && transient_for != None )
 	return NoMatch;
 #endif
-    kDebug( 172 ) << "check_startup:cantdetect";
+    qDebug() << "check_startup:cantdetect";
     return CantDetect;
     }
 
 bool KStartupInfo::Private::find_id( const QByteArray& id_P, KStartupInfoId* id_O,
     KStartupInfoData* data_O )
     {
-    kDebug( 172 ) << "find_id:" << id_P;
+    //qDebug() << "find_id:" << id_P;
     KStartupInfoId id;
     id.initId( id_P );
     if( startups.contains( id ))
@@ -799,7 +800,7 @@ bool KStartupInfo::Private::find_id( const QByteArray& id_P, KStartupInfoId* id_
             *id_O = id;
         if( data_O != NULL )
             *data_O = startups[ id ];
-        kDebug( 172 ) << "check_startup_id:match";
+        //qDebug() << "check_startup_id:match";
         return true;
         }
     return false;
@@ -808,7 +809,7 @@ bool KStartupInfo::Private::find_id( const QByteArray& id_P, KStartupInfoId* id_
 bool KStartupInfo::Private::find_pid( pid_t pid_P, const QByteArray& hostname_P,
     KStartupInfoId* id_O, KStartupInfoData* data_O )
     {
-    kDebug( 172 ) << "find_pid:" << pid_P;
+    //qDebug() << "find_pid:" << pid_P;
     for( QMap< KStartupInfoId, KStartupInfo::Data >::Iterator it = startups.begin();
          it != startups.end();
          ++it )
@@ -821,7 +822,7 @@ bool KStartupInfo::Private::find_pid( pid_t pid_P, const QByteArray& hostname_P,
                 *data_O = *it;
             // non-compliant, remove on first match
             remove_startup_info_internal( it.key());
-            kDebug( 172 ) << "check_startup_pid:match";
+            //qDebug() << "check_startup_pid:match";
             return true;
             }
         }
@@ -833,7 +834,7 @@ bool KStartupInfo::Private::find_wclass( const QByteArray &_res_name, const QByt
     {
     QByteArray res_name = _res_name.toLower();
     QByteArray res_class = _res_class.toLower();
-    kDebug( 172 ) << "find_wclass:" << res_name << ":" << res_class;
+    //qDebug() << "find_wclass:" << res_name << ":" << res_class;
     for( QMap< KStartupInfoId, Data >::Iterator it = startups.begin();
          it != startups.end();
          ++it )
@@ -847,7 +848,7 @@ bool KStartupInfo::Private::find_wclass( const QByteArray &_res_name, const QByt
                 *data_O = *it;
             // non-compliant, remove on first match
             remove_startup_info_internal( it.key());
-            kDebug( 172 ) << "check_startup_wclass:match";
+            //qDebug() << "check_startup_wclass:match";
             return true;
             }
         }
@@ -974,7 +975,7 @@ void KStartupInfo::Private::startups_cleanup_internal( bool age_P )
             {
             const KStartupInfoId& key = it.key();
             ++it;
-            kDebug( 172 ) << "entry timeout:" << key.id();
+            //qDebug() << "entry timeout:" << key.id();
             remove_startup_info_internal( key );
             }
         else
@@ -993,7 +994,7 @@ void KStartupInfo::Private::startups_cleanup_internal( bool age_P )
             {
             const KStartupInfoId& key = it.key();
             ++it;
-            kDebug( 172 ) << "entry timeout:" << key.id();
+            //qDebug() << "entry timeout:" << key.id();
             remove_startup_info_internal( key );
             }
         else
@@ -1012,7 +1013,7 @@ void KStartupInfo::Private::startups_cleanup_internal( bool age_P )
             {
             const KStartupInfoId& key = it.key();
             ++it;
-            kDebug( 172 ) << "entry timeout:" << key.id();
+            //qDebug() << "entry timeout:" << key.id();
             remove_startup_info_internal( key );
             }
         else
@@ -1033,7 +1034,7 @@ void KStartupInfo::Private::clean_all_noncompliant()
             }
         const KStartupInfoId& key = it.key();
         ++it;
-        kDebug( 172 ) << "entry cleaning:" << key.id();
+        //qDebug() << "entry cleaning:" << key.id();
         remove_startup_info_internal( key );
         }
     }
@@ -1055,7 +1056,7 @@ QByteArray KStartupInfo::createNewStartupId()
 #endif
     QByteArray id = QString::fromLatin1( "%1;%2;%3;%4_TIME%5" ).arg( hostname ).arg( tm.tv_sec )
         .arg( tm.tv_usec ).arg( getpid()).arg( qt_x_user_time ).toUtf8();
-    kDebug( 172 ) << "creating: " << id << ":" << (qApp ? qAppName() : QString("unnamed app") /* e.g. kdeinit */);
+    //qDebug() << "creating: " << id << ":" << (qApp ? qAppName() : QString("unnamed app") /* e.g. kdeinit */);
     return id;
     }
 
@@ -1090,7 +1091,7 @@ void KStartupInfoId::initId( const QByteArray& id_P )
         {
         d->id = id_P;
 #ifdef KSTARTUPINFO_ALL_DEBUG
-        kDebug( 172 ) << "using: " << d->id;
+        qDebug() << "using: " << d->id;
 #endif
         return;
         }
@@ -1099,7 +1100,7 @@ void KStartupInfoId::initId( const QByteArray& id_P )
         { // already has id
         d->id = startup_env;
 #ifdef KSTARTUPINFO_ALL_DEBUG
-        kDebug( 172 ) << "reusing: " << d->id;
+        qDebug() << "reusing: " << d->id;
 #endif
         return;
         }
