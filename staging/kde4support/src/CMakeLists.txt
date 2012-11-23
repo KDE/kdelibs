@@ -24,6 +24,7 @@ set(libkde4support_SRCS
     kdecore/netsupp.cpp
     kdecore/kascii.cpp
 
+    kdeui/kfadewidgeteffect.cpp
     kdeui/kicon.cpp
     kdeui/knumvalidator.cpp
     kdeui/karrowbutton.cpp
@@ -98,6 +99,7 @@ install(FILES
     kdecore/ktypelist.h
     kdecore/kascii.h
 
+    kdeui/kfadewidgeteffect.h
     kdeui/kicon.h
     kdeui/knumvalidator.h
     kdeui/karrowbutton.h

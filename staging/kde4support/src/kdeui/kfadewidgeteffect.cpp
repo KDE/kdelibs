@@ -22,7 +22,8 @@
 #include "kfadewidgeteffect.h"
 #include "kfadewidgeteffect_p.h"
 
-#include <config-kdeui.h> // for HAVE_XRENDER
+// Cannot use XRender with QPixmap anymore.
+//#include <config-kde4support.h> // for HAVE_XRENDER
 
 #include <QtCore/QEvent>
 #include <QPaintEngine>
@@ -30,7 +31,8 @@
 
 #include <kglobalsettings.h>
 
-#if HAVE_X11 && HAVE_XRENDER
+// Cannot use XRender with QPixmap anymore.
+#if 0 //HAVE_X11 && HAVE_XRENDER
 #  include <X11/Xlib.h>
 #  include <X11/extensions/Xrender.h>
 #  include <QX11Info>

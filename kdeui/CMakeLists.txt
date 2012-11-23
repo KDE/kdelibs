@@ -263,7 +263,6 @@ set(kdeui_LIB_SRCS
  widgets/kdatetimewidget.cpp
  widgets/kdatewidget.cpp
  widgets/keditlistwidget.cpp
- widgets/kfadewidgeteffect.cpp
  widgets/khelpmenu.cpp
  widgets/khistorycombobox.cpp
  widgets/kkeysequencewidget.cpp
@@ -614,7 +613,6 @@ install( FILES
  widgets/kdatetimewidget.h
  widgets/kdatewidget.h
  widgets/keditlistwidget.h
- widgets/kfadewidgeteffect.h
  widgets/khelpmenu.h
  widgets/khistorycombobox.h
  widgets/kkeysequencewidget.h

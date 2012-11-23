@@ -21,7 +21,7 @@
 #ifndef KFADEWIDGETEFFECT_H
 #define KFADEWIDGETEFFECT_H
 
-#include <kdeui_export.h>
+#include <kde4support_export.h>
 #include <QWidget>
 
 class KFadeWidgetEffectPrivate;
@@ -45,7 +45,7 @@ class KFadeWidgetEffectPrivate;
  * \author Matthias Kretz <kretz@kde.org>
  * \since 4.1
  */
-class KDEUI_EXPORT KFadeWidgetEffect : public QWidget
+class KDE4SUPPORT_EXPORT KFadeWidgetEffect : public QWidget
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(KFadeWidgetEffect)
