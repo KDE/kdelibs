@@ -56,7 +56,7 @@ KRichTextEditor::~KRichTextEditor()
 
 void KRichTextEditor::setupActions()
 {
-    KStandardAction::quit(kapp, SLOT(quit()),
+    KStandardAction::quit(qApp, SLOT(quit()),
                           actionCollection());
 
     KStandardAction::open(this, SLOT(openFile()),
