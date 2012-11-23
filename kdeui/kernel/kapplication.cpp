@@ -52,6 +52,7 @@
 #include "kmessage.h"
 #include "kmessageboxmessagehandler.h"
 #include <kiconloader.h>
+#include <kconfiggui.h>
 
 #if HAVE_X11
 #include <qx11info_x11.h>
@@ -195,7 +196,6 @@ public:
   void _k_checkAppStartedSlot();
   void _k_slot_KToolInvocation_hook(QStringList&, QByteArray&);
 
-  QString sessionConfigName() const;
   void init(bool GUIenabled=true);
   void parseCommandLine( ); // Handle KDE arguments (Using KCmdLineArgs)
 
@@ -317,22 +317,6 @@ void KApplicationPrivate::_k_checkAppStartedSlot()
 #if HAVE_X11
     KStartupInfo::handleAutoAppStartedSending();
 #endif
-}
-
-/*
-  Auxiliary function to calculate a a session config name used for the
-  instance specific config object.
-  Syntax:  "session/<appname>_<sessionId>"
- */
-QString KApplicationPrivate::sessionConfigName() const
-{
-#ifdef QT_NO_SESSIONMANAGER
-#error QT_NO_SESSIONMANAGER was set, this will not compile. Reconfigure Qt with Session management support.
-#endif
-    QString sessKey = q->sessionKey();
-    if ( sessKey.isEmpty() && !sessionKey.isEmpty() )
-        sessKey = sessionKey;
-    return QString(QLatin1String("session/%1_%2_%3")).arg(q->applicationName()).arg(q->sessionId()).arg(sessKey);
 }
 
 #if HAVE_X11
@@ -556,9 +540,7 @@ KApplication* KApplication::kApplication()
 
 KConfig* KApplication::sessionConfig()
 {
-    if (!d->pSessionConfig) // create an instance specific config object
-        d->pSessionConfig = new KConfig( d->sessionConfigName(), KConfig::SimpleConfig );
-    return d->pSessionConfig;
+    return KConfigGui::sessionConfig();
 }
 
 void KApplication::reparseConfiguration()
@@ -746,10 +728,10 @@ void KApplication::saveState( QSessionManager& sm )
     }
 
     // if we created a new session config object, register a proper discard command
-    if ( d->pSessionConfig ) {
-        d->pSessionConfig->sync();
+    if ( KConfigGui::hasSessionConfig() ) {
+        KConfigGui::sessionConfig()->sync();
         QStringList discard;
-        discard  << QLatin1String("rm") << QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + '/' + d->sessionConfigName();
+        discard  << QLatin1String("rm") << QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + '/' + KConfigGui::sessionConfigName();
         sm.setDiscardCommand( discard );
     } else {
     sm.setDiscardCommand( QStringList( QLatin1String("") ) );

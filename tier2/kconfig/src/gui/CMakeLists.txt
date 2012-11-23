@@ -4,6 +4,7 @@ include_directories(
 )
 
 set(libkconfiggui_SRCS
+   kconfiggui.cpp
    kconfiggroupgui.cpp
    kconfigskeleton.cpp
    kwindowconfig.cpp
@@ -21,6 +22,7 @@ install(TARGETS kconfiggui EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARG
 
 install( FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kconfiggui_export.h
+   kconfiggui.h
    kconfigskeleton.h
    kwindowconfig.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
