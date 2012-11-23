@@ -68,6 +68,8 @@ static const char* const NET_STARTUP_ENV = "DESKTOP_STARTUP_ID";
 
 static bool auto_app_started_sending = true;
 
+static QByteArray s_startup_id;
+
 static long get_num( const QString& item_P );
 static unsigned long get_unum( const QString& item_P );
 static QString get_str( const QString& item_P );
@@ -584,8 +586,8 @@ void KStartupInfo::appStarted()
     {
     if( kapp != NULL )  // KApplication constructor unsets the env. variable
         {
-        appStarted( kapp->startupId());
-        kapp->clearStartupId(); // reset the id, no longer valid (must use clearStartupId() to avoid infinite loop)
+        appStarted( startupId());
+        setStartupId("0"); // reset the id, no longer valid (must use clearStartupId() to avoid infinite loop)
         }
     else
         {
@@ -623,7 +625,7 @@ void KStartupInfo::disableAutoAppStartedSending( bool disable )
 void KStartupInfo::silenceStartup( bool silence )
     {
     KStartupInfoId id;
-    id.initId( kapp->startupId());
+    id.initId( startupId());
     if( id.none())
         return;
     KStartupInfoData data;
@@ -637,10 +639,50 @@ void KStartupInfo::handleAutoAppStartedSending()
         appStarted();
     }
 
+QByteArray KStartupInfo::startupId()
+{
+    if (s_startup_id.isEmpty()) {
+        KStartupInfoId id =currentStartupIdEnv();
+        resetStartupEnv();
+        s_startup_id = id.id();
+    }
+
+    return s_startup_id;
+}
+
+void KStartupInfo::setStartupId( const QByteArray& startup_id )
+{
+    if( startup_id == startupId() )
+        return;
+#if HAVE_X11
+    KStartupInfo::handleAutoAppStartedSending(); // finish old startup notification if needed
+#endif
+    if( startup_id.isEmpty())
+        s_startup_id = "0";
+    else
+        {
+        s_startup_id = startup_id;
+#if HAVE_X11
+        KStartupInfoId id;
+        id.initId( startup_id );
+        long timestamp = id.timestamp();
+        if( timestamp != 0 )
+            {
+            if ( QX11Info::appUserTime() == 0
+                 || NET::timestampCompare( timestamp, QX11Info::appUserTime()) > 0 ) // time > appUserTime
+                 QX11Info::setAppUserTime(timestamp);
+            if ( QX11Info::appTime() == 0
+                 || NET::timestampCompare( timestamp, QX11Info::appTime()) > 0 ) // time > appTime
+                 QX11Info::setAppTime(timestamp);
+            }
+#endif
+        }
+}
+
 void KStartupInfo::setNewStartupId( QWidget* window, const QByteArray& startup_id )
     {
     bool activate = true;
-    kapp->setStartupId( startup_id );
+    setStartupId( startup_id );
 #if HAVE_X11
     if( window != NULL )
         {

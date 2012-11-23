@@ -89,6 +89,21 @@ class KDEUI_EXPORT KStartupInfo
         static void appStarted( const QByteArray& startup_id );
 
         /**
+         * Returns the app startup notification identifier for this running
+         * application.
+         * @return the startup notification identifier
+         */
+        static QByteArray startupId();
+
+        /**
+         * Sets a new value for the application startup notification window property for newly
+         * created toplevel windows.
+         * @param startup_id the startup notification identifier
+         * @see KStartupInfo::setNewStartupId
+         */
+        static void setStartupId( const QByteArray& startup_id );
+
+        /**
          * Use this function if the application got a request with startup
          * notification from outside (for example, when KUniqueApplication::newInstance()
          * is called, or e.g. when khelpcenter opens new URL in its window).

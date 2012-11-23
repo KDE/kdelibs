@@ -113,7 +113,6 @@ bool KApplication::loadedByKdeinit = false;
 static Atom atom_DesktopWindow;
 static Atom atom_NetSupported;
 static Atom kde_xdnd_drop;
-static QByteArray* startup_id_tmp;
 #endif
 
 template class QList<KSessionManager*>;
@@ -133,7 +132,6 @@ public:
   KApplicationPrivate(KApplication* q, const QByteArray &cName)
       : q(q)
       , componentData(cName)
-      , startup_id("0")
       , app_started_timer(0)
       , session_save(false)
 #if HAVE_X11
@@ -150,7 +148,6 @@ public:
   KApplicationPrivate(KApplication* q, const KComponentData &cData)
       : q(q)
       , componentData(cData)
-      , startup_id("0")
       , app_started_timer(0)
       , session_save(false)
 #if HAVE_X11
@@ -167,7 +164,6 @@ public:
   KApplicationPrivate(KApplication *q)
       : q(q)
       , componentData(KCmdLineArgs::aboutData())
-      , startup_id( "0" )
       , app_started_timer( 0 )
       , session_save( false )
 #if HAVE_X11
@@ -202,13 +198,9 @@ public:
   QString sessionConfigName() const;
   void init(bool GUIenabled=true);
   void parseCommandLine( ); // Handle KDE arguments (Using KCmdLineArgs)
-  static void preqapplicationhack();
-  static void preread_app_startup_id();
-  void read_app_startup_id();
 
   KApplication *q;
   KComponentData componentData;
-  QByteArray startup_id;
   QTimer* app_started_timer;
   bool session_save;
 
@@ -301,8 +293,8 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
     {
         QWidget* w = static_cast< QWidget* >( receiver );
 #if HAVE_X11
-        if( w->isTopLevel() && !startupId().isEmpty()) // TODO better done using window group leader?
-            KStartupInfo::setWindowStartupId( w->winId(), startupId());
+        if( w->isTopLevel() && !KStartupInfo::startupId().isEmpty()) // TODO better done using window group leader?
+            KStartupInfo::setWindowStartupId( w->winId(), KStartupInfo::startupId());
 #endif
         if( w->isTopLevel() && !( w->windowFlags() & Qt::X11BypassWindowManagerHint ) && w->windowType() != Qt::Popup && !event->spontaneous())
         {
@@ -351,10 +343,9 @@ static SmcConn mySmcConnection = 0;
 #endif
 
 KApplication::KApplication(bool GUIenabled)
-    : QApplication((KApplicationPrivate::preqapplicationhack(),KCmdLineArgs::qtArgc()), KCmdLineArgs::qtArgv(), GUIenabled),
+    : QApplication(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), GUIenabled),
     d(new KApplicationPrivate(this))
 {
-    d->read_app_startup_id();
     setApplicationName(d->componentData.componentName());
     setOrganizationDomain(d->componentData.aboutData()->organizationDomain());
     installSigpipeHandler();
@@ -362,24 +353,13 @@ KApplication::KApplication(bool GUIenabled)
 }
 
 KApplication::KApplication(bool GUIenabled, const KComponentData &cData)
-    : QApplication((KApplicationPrivate::preqapplicationhack(),KCmdLineArgs::qtArgc()), KCmdLineArgs::qtArgv(), GUIenabled),
+    : QApplication(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), GUIenabled),
     d (new KApplicationPrivate(this, cData))
 {
-    d->read_app_startup_id();
     setApplicationName(d->componentData.componentName());
     setOrganizationDomain(d->componentData.aboutData()->organizationDomain());
     installSigpipeHandler();
     d->init(GUIenabled);
-}
-
-// this function is called in KApplication ctors while evaluating arguments to QApplication ctor,
-// i.e. before QApplication ctor is called
-void KApplicationPrivate::preqapplicationhack()
-{
-    preread_app_startup_id();
-
-    // Removed in KF5
-    //KGlobal::config(); // initialize qt plugin path (see KComponentDataPrivate::lazyInit)
 }
 
 #if HAVE_X11
@@ -1041,57 +1021,17 @@ void KApplication::setTopWidget( QWidget *topWidget )
 
 QByteArray KApplication::startupId() const
 {
-    return d->startup_id;
+    return KStartupInfo::startupId();
 }
 
 void KApplication::setStartupId( const QByteArray& startup_id )
 {
-    if( startup_id == d->startup_id )
-        return;
-#if HAVE_X11
-    KStartupInfo::handleAutoAppStartedSending(); // finish old startup notification if needed
-#endif
-    if( startup_id.isEmpty())
-        d->startup_id = "0";
-    else
-        {
-        d->startup_id = startup_id;
-#if HAVE_X11
-        KStartupInfoId id;
-        id.initId( startup_id );
-        long timestamp = id.timestamp();
-        if( timestamp != 0 )
-            updateUserTimestamp( timestamp );
-#endif
-        }
+    KStartupInfo::setStartupId( startup_id );
 }
 
 void KApplication::clearStartupId()
 {
-    d->startup_id = "0";
-}
-
-// Qt reads and unsets the value and doesn't provide any way to reach the value,
-// so steal it from it beforehand. If Qt gets API for taking (reading and unsetting)
-// the startup id from it, this can be dumped.
-void KApplicationPrivate::preread_app_startup_id()
-{
-#if HAVE_X11
-    KStartupInfoId id = KStartupInfo::currentStartupIdEnv();
-    KStartupInfo::resetStartupEnv();
-    startup_id_tmp = new QByteArray( id.id());
-#endif
-}
-
-// read the startup notification env variable, save it and unset it in order
-// not to propagate it to processes started from this app
-void KApplicationPrivate::read_app_startup_id()
-{
-#if HAVE_X11
-    startup_id = *startup_id_tmp;
-    delete startup_id_tmp;
-    startup_id_tmp = NULL;
-#endif
+    KStartupInfo::setStartupId( "0" );
 }
 
 // Hook called by KToolInvocation
